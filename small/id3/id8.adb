@@ -2,8 +2,6 @@
 ##
 #W  id8.adb                GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id8_adb :=
-    "@(#)$Id: id8.adb,v 1.1 1998/07/18 16:02:57 gap Exp $";
 
 ID_GROUP_TREE.next[8].next[1].next[106]:=
 rec(

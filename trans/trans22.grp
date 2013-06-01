@@ -2,14 +2,11 @@
 ##
 #A  trans22.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id: trans22.grp,v 4.4 2001/09/21 16:33:01 gap Exp $
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 22
 ##
-Revision.trans22_grp:=
-  "@(#)$Id: trans22.grp,v 4.4 2001/09/21 16:33:01 gap Exp $";
 
 TRANSGRP[22]:=[];
 TRANSPROPERTIES[22]:=[];

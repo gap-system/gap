@@ -2,8 +2,6 @@
 ##
 #W  id192.bm               GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id192_bm :=
-    "@(#)$Id: id192.bm,v 1.1 2000/01/23 13:48:23 gap Exp $";
 
 ID_GROUP_TREE.next[192].next[65]:=
 rec(

@@ -6,8 +6,6 @@
 ##  This file contains the basic installations for the library of small
 ##  groups and the group identification routines. 
 ##
-Revision.small_gi :=
-    "@(#)$Id: small.gi,v 4.20 2005/03/24 13:26:03 gap Exp $";
 
 #############################################################################
 ##
@@ -468,7 +466,7 @@ end );
 #F  FinalizeSmallGroupData()
 ##
 ##  This function should be called when all levels of the small group library 
-##  have been loaded. It makes various structures immutable for thread-safety.
+##  have been loaded. It makes various records immutable for thread-safety.
 ##
 InstallGlobalFunction( FinalizeSmallGroupData,
         function()
@@ -479,7 +477,5 @@ InstallGlobalFunction( FinalizeSmallGroupData,
     MakeImmutable(SMALL_AVAILABLE_FUNCS);
     MakeImmutable(READ_SMALL_FUNCS);
     MakeImmutable(READ_IDLIB_FUNCS);
-    MakeImmutable(ID_AVAILABLE_FUNCS);
-    MakeImmutable(ID_GROUP_FUNCS);
 end);
 

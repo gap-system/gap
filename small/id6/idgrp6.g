@@ -6,8 +6,6 @@
 ##  This file contains the identification routines for groups of order
 ##  1152 and 1920.
 ##
-Revision.idgrp6_g :=
-    "@(#)$Id: idgrp6.g,v 1.4 2000/07/30 14:28:13 gap Exp $";
 
 #############################################################################
 ##

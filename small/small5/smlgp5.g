@@ -7,8 +7,6 @@
 ##  size 1001 to 2000 except 1024, 1152, 1536, 1920 and size a product of
 ##  more then 3 primes
 ##
-Revision.smlgp5_g :=
-    "@(#)$Id: smlgp5.g,v 1.2 2000/07/30 14:30:40 gap Exp $";
 
 #############################################################################
 ##

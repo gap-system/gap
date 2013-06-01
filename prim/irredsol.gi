@@ -1,12 +1,11 @@
 #############################################################################
 ##
 #W  irredsol.gi                 GAP group library                  Mark Short
-#W                                                           Burkhard Hofling
+#W                                                           Burkhard Höfling
 ##
-#H  @(#)$Id: irredsol.gi,v 1.4 2001/12/13 11:48:06 gap Exp $
 ##
 #Y  Copyright (C) 1993, Murdoch University, Perth, Australia
-#Y  Copyright (C) 2001, Technische Universitaet, Braunschweig, Germany
+#Y  Copyright (C) 2001, Technische Universität, Braunschweig, Germany
 ##
 ##  This file contains the  functions and  data for the  irreducible solvable
 ##  matrix group library.  It contains  exactely one member  for each of  the
@@ -19,8 +18,6 @@
 ##  This file contains the data  from Mark Short's thesis,  plus  two  groups 
 ##  missing from that list, subsequently discovered by Alexander Hulpke.
 ##
-Revision.irredsol_gi :=
-    "@(#)$Id: irredsol.gi,v 1.4 2001/12/13 11:48:06 gap Exp $";
 
 #############################################################################
 ##

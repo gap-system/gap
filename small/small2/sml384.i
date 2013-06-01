@@ -3,8 +3,6 @@
 #W  sml384.i               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml384_i :=
-    "@(#)$Id: sml384.i,v 1.1 1998/07/18 16:57:06 gap Exp $";
 
 SMALL_GROUP_LIB[ 384 ][ 9 ] :=
 `[ 21687347825100572029055144531972, 8327941564838619659174762676459780,

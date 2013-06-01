@@ -2,8 +2,6 @@
 ##
 #W  id256raa.vbb           GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256raa_vbb :=
-    "@(#)$Id: id256raa.vbb,v 1.1 2000/01/23 13:48:28 gap Exp $";
 
 ID_GROUP_TREE.next[256].next[18].next[1].next[48].next[54]:=
 rec(

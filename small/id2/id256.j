@@ -2,8 +2,6 @@
 ##
 #W  id256.j                GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256_j :=
-    "@(#)$Id: id256.j,v 1.1 2000/01/23 13:48:26 gap Exp $";
 
 ID_GROUP_TREE.next[256].next[10]:=
 rec(

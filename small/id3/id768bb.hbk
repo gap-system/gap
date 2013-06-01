@@ -2,8 +2,6 @@
 ##
 #W  id768bb.hbk            GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id768bb_hbk :=
-    "@(#)$Id: id768bb.hbk,v 1.1 2000/01/23 13:58:54 gap Exp $";
 
 ID_GROUP_TREE.next[768].next[2].next[60].next[63]:=
 rec(

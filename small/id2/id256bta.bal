@@ -2,8 +2,6 @@
 ##
 #W  id256bta.bal           GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256bta_bal :=
-    "@(#)$Id: id256bta.bal,v 1.1 2000/01/23 13:48:27 gap Exp $";
 
 ID_GROUP_TREE.next[256].next[72].next[1].next[2].next[38]:=
 rec(

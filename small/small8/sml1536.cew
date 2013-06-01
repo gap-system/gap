@@ -3,8 +3,6 @@
 #W  sml1536.cew            GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1536_cew :=
-    "@(#)$Id: sml1536.cew,v 1.1 1999/12/08 18:58:03 gap Exp $";
 
 SMALL_GROUP_LIB[ 1536 ].npnil[ 5 ][ 23 ] :=
 `[ 817217279246202423370697426173, 2084873320968785664005774525693,

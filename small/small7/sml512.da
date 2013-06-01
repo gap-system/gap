@@ -3,8 +3,6 @@
 #W  sml512.da              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml512_da :=
-    "@(#)$Id: sml512.da,v 1.1 1999/12/08 18:56:59 gap Exp $";
 
 SMALL_GROUP_LIB[ 512 ][ 105 ] := `[
 Concatenation(

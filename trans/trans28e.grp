@@ -2,14 +2,11 @@
 ##
 #A  trans28e.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id: trans28e.grp,v 1.1 2002/02/10 22:13:10 gap Exp $
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 28
 ##
-Revision.trans28e_grp:=
-  "@(#)$Id: trans28e.grp,v 1.1 2002/02/10 22:13:10 gap Exp $";
 
 TRANSGRP[28]{[1201..1500]}:=
 [[(1,13,3,11,5,9,7,14,2,12,4,10,6,8)(15,27,16,28,20,25)(17,22)(18,23,21,26,19,24),

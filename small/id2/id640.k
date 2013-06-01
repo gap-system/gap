@@ -2,8 +2,6 @@
 ##
 #W  id640.k                GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id640_k :=
-    "@(#)$Id: id640.k,v 1.1 2000/01/23 13:48:24 gap Exp $";
 
 ID_GROUP_TREE.next[640].next[11]:=
 rec(

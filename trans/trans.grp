@@ -2,14 +2,11 @@
 ##
 #W  trans.grp         GAP transitive groups library          Alexander Hulpke
 ##
-#H  @(#)$Id: trans.grp,v 4.25 2008/12/03 15:46:18 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the routines for the transitive groups library
 ##
-Revision.trans_grp:=
-  "@(#)$Id: trans.grp,v 4.25 2008/12/03 15:46:18 gap Exp $";
 
 #############################################################################
 ##

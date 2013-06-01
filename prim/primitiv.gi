@@ -2,14 +2,11 @@
 ##
 #W  primitiv.gi       GAP primitive groups library          Alexander Hulpke
 ##
-#H  @(#)$Id: primitiv.gi,v 4.52 2007/03/14 17:42:07 gap Exp $
 ##
 #Y  Copyright (C)  1999, School Math.&Comp. Sci., University of St Andrews
 ##
 ##  This file contains the routines for the primitive groups library
 ##
-Revision.primitiv_gi:=
-  "@(#)$Id: primitiv.gi,v 4.52 2007/03/14 17:42:07 gap Exp $";
 
 Unbind(PRIMGRP);
 

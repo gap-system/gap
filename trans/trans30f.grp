@@ -2,14 +2,11 @@
 ##
 #A  trans30f.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id: trans30f.grp,v 1.1 2002/02/10 22:13:11 gap Exp $
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 30
 ##
-Revision.trans30f_grp:=
-  "@(#)$Id: trans30f.grp,v 1.1 2002/02/10 22:13:11 gap Exp $";
 
 TRANSGRP[30]{[1501..1800]}:=
 [[(1,24,18)(2,23,17)(3,22,19,10,25,15,4,21,20,9,26,16)(5,30,11,8,28,14,6,29,12,7,27,

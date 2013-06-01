@@ -2,8 +2,6 @@
 ##
 #W  id896d.nht             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id896d_nht :=
-    "@(#)$Id: id896d.nht,v 1.1 2000/01/23 13:48:25 gap Exp $";
 
 ID_GROUP_TREE.next[896].next[118].next[228]:=
 rec(

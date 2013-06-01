@@ -2,14 +2,11 @@
 ##
 #A  trans18a.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id: trans18a.grp,v 4.3 2001/09/21 16:33:01 gap Exp $
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 18
 ##
-Revision.trans18a_grp:=
-  "@(#)$Id: trans18a.grp,v 4.3 2001/09/21 16:33:01 gap Exp $";
 
 TRANSGRP[18]{[1..300]}:=
 [[(1,15,11,8,3,17,14,9,6,2,16,12,7,4,18,13,10,5),"t18n1"],

@@ -2,8 +2,6 @@
 ##
 #W  id384f.mau             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id384f_mau :=
-    "@(#)$Id: id384f.mau,v 1.1 2000/01/23 13:48:23 gap Exp $";
 
 ID_GROUP_TREE.next[384].next[169].next[47]:=
 rec(

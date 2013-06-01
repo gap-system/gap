@@ -2,8 +2,6 @@
 ##
 #W  id640a.zah             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id640a_zah :=
-    "@(#)$Id: id640a.zah,v 1.1 2000/01/23 13:48:24 gap Exp $";
 
 ID_GROUP_TREE.next[640].next[52].next[1].next[8]:=
 rec(

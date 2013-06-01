@@ -2,8 +2,6 @@
 ##
 #W  id256bta.das           GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256bta_das :=
-    "@(#)$Id: id256bta.das,v 1.1 2000/01/23 13:48:27 gap Exp $";
 
 ID_GROUP_TREE.next[256].next[72].next[1].next[4].next[45]:=
 rec(

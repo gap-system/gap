@@ -6,8 +6,6 @@
 ##  This file contains the reading and constrution functions for the groups
 ##  of size 1536.
 ##
-Revision.smlgp8_g :=
-    "@(#)$Id: smlgp8.g,v 1.5 2009/11/05 15:31:29 alexk Exp $";
 
 #############################################################################
 ##

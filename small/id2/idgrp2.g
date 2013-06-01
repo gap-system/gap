@@ -6,8 +6,6 @@
 ##  This file contains the identification routines for groups of order up to
 ##  1000 except 512, 768 and size a product of more then 3 primes
 ##
-Revision.idgrp2_g :=
-    "@(#)$Id: idgrp2.g,v 1.16 2006/11/27 08:38:18 gap Exp $";
 
 #############################################################################
 ##
@@ -37,7 +35,7 @@ end;
 ##  fpcache is a list of 'fp's which will be used first to preselect a branch
 ##  of the ID_GROUP_TREE
 ##  if lookup is set, just the information if the specifed branch exists is
-##  returned (used to investigate if some situations are unique in small3)
+##  returned (used to investigate if some situaations are unique in small3)
 ##
 ID_GROUP_FUNCS[ 8 ] := function( arg )
     local level, branch, indices, fp, l, L, i, j, size,

@@ -3,8 +3,6 @@
 #W  sml400.z               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml400_z :=
-    "@(#)$Id: sml400.z,v 1.1 1998/07/18 16:57:07 gap Exp $";
 
 SMALL_GROUP_LIB[ 400 ] :=
 `[ 133701730715387405889551, 276259254325834544, 21444919428607335810624221199, 

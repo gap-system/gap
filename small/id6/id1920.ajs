@@ -2,8 +2,6 @@
 ##
 #W  id1920.ajs             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id1920_ajs :=
-    "@(#)$Id: id1920.ajs,v 1.2 2000/01/23 22:13:33 gap Exp $";
 
 ID_GROUP_TREE.next[1920].next[1].next[279]:=
 rec(

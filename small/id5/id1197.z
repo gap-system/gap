@@ -2,8 +2,6 @@
 ##
 #W  id1197.z               GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id1197_z :=
-    "@(#)$Id: id1197.z,v 1.2 2000/01/23 21:55:17 gap Exp $";
 
 ID_GROUP_TREE.next[1197]:=
 rec(

@@ -2,8 +2,6 @@
 ##
 #W  id1920.aea             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id1920_aea :=
-    "@(#)$Id: id1920.aea,v 1.2 2000/01/23 22:13:25 gap Exp $";
 
 ID_GROUP_TREE.next[1920].next[1].next[131]:=
 rec(

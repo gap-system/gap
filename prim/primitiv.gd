@@ -1,82 +1,77 @@
 #############################################################################
 ##
-#W  primitiv.gd              GAP group library               Heiko Theissen
+#W  primitiv.gd              GAP group library               Heiko Theißen
 #W                                                           Alexander Hulpke
 #W                                                          Colva Roney-Dougal
 ##
 ##
-#H  @(#)$Id: primitiv.gd,v 4.31 2008/10/27 08:56:56 gap Exp $
 ##
 ##
-Revision.primitiv_gd :=
-    "@(#)$Id: primitiv.gd,v 4.31 2008/10/27 08:56:56 gap Exp $";
 
 
 ##  <#GAPDoc Label="[1]{primitiv}">
-##  &GAP; contains a library of primitive permutation groups which includes
-##  the following permutation groups up to permutation isomorphism (i.e., up
-##  to conjugacy  in the corresponding symmetric group)
+##  &GAP; contains a library of primitive permutation groups which includes,
+##  up to permutation isomorphism (i.e., up to conjugacy in the corresponding
+##  symmetric group),
+##  all  primitive  permutation groups of  degree <M>&lt;&nbsp;2500</M>,
+##  calculated in <Cite Key="RoneyDougal05"/>,
+##  in particular,
 ##  <List>
 ##  <Item>
-##    all  primitive  permutation groups of  degree <M>&lt;2500</M>,
-##      calculated in <Cite Key="RoneyDougal05"/>
-##      in particular,
-##      <List>
-##      <Item>
-##        the primitive permutation groups up to degree&nbsp;50,
-##        calculated by C.&nbsp;Sims,
-##      </Item>
-##      <Item>
-##        the primitive groups with insoluble socles of 
-##        degree <M>&lt;1000</M> as calculated in <Cite Key="DixonMortimer88"/>,
-##      </Item>
-##      <Item>
-##        the solvable (hence affine) primitive permutation
-##        groups of degree <M>&lt;256</M> as calculated by M.&nbsp;Short <Cite Key="Sho92"/>,
-##      </Item>
-##      <Item>
-##        some insolvable affine primitive permutation groups
-##        of degree <M>&lt;256</M> as calculated in <Cite Key="Theissen97"/>.
-##      </Item>
-##      <Item>
-##        The solvable primitive groups of degree up to
-##        <M>999</M> as calculated in  <Cite Key="EickHoefling02"/>.
-##      </Item>
-##      <Item>
-##        The primitive groups of affine type of degree up 
-##        to <M>999</M> as calculated in <Cite Key="RoneyDougal02"/>.
-##      </Item>
-##      </List>
+##    the primitive permutation groups up to degree&nbsp;50,
+##    calculated by C.&nbsp;Sims,
+##  </Item>
+##  <Item>
+##    the primitive groups with insoluble socles of degree
+##    <M>&lt;&nbsp;1000</M> as calculated in <Cite Key="DixonMortimer88"/>,
+##  </Item>
+##  <Item>
+##    the solvable (hence affine) primitive permutation groups of degree
+##    <M>&lt;&nbsp;256</M> as calculated by M.&nbsp;Short <Cite Key="Sho92"/>,
+##  </Item>
+##  <Item>
+##    some insolvable affine primitive permutation groups of degree
+##    <M>&lt;&nbsp;256</M> as calculated in <Cite Key="Theissen97"/>.
+##  </Item>
+##  <Item>
+##    The solvable primitive groups of degree up to <M>999</M> as calculated
+##    in <Cite Key="EickHoefling02"/>.
+##  </Item>
+##  <Item>
+##    The primitive groups of affine type of degree up to <M>999</M> as
+##    calculated in <Cite Key="RoneyDougal02"/>.
 ##  </Item>
 ##  </List>
 ##  <P/>
-##  Not all groups are named, those which do have names use
-##  ATLAS notation. Not all names are necessary unique!
+##  Not all groups are named, those which do have names use ATLAS notation.
+##  Not all names are necessary unique!
 ##  <P/>
 ##  The list given in <Cite Key="RoneyDougal05"/> is believed to be complete,
-##  correcting various omissions in <Cite Key="DixonMortimer88"/>, <Cite Key="Sho92"/>
-##  and <Cite Key="Theissen97"/>.
+##  correcting various omissions in <Cite Key="DixonMortimer88"/>,
+##  <Cite Key="Sho92"/> and <Cite Key="Theissen97"/>.
 ##  <P/>
 ##  In detail, we guarantee the following properties for this and further
-##  versions (but <E>not</E> versions which came before &GAP;&nbsp;4.2) of the library:
+##  versions (but <E>not</E> versions which came before &GAP;&nbsp;4.2)
+##  of the library:
 ##  <P/>
 ##  <List>
 ##  <Item>
-##    All groups in the library are primitive permutation
-##  groups of the indicated degree.
-##  The positions of the groups in the library are stable.
-##  That is <C>PrimitiveGroup(<A>n</A>,<A>nr</A>)</C> will always give you a permutation
-##  isomorphic group. Note however that we do not guarantee to keep the
-##  chosen <M>S_n</M>-representative, the generating set or the name for 
-##  eternity.
+##    All groups in the library are primitive permutation groups
+##    of the indicated degree.
 ##  </Item>
 ##  <Item>
-##    Different groups in the library are not conjugate in
-##  <M>S_n</M>.
+##    The positions of the groups in the library are stable.
+##    That is <C>PrimitiveGroup(<A>n</A>,<A>nr</A>)</C> will always give you
+##    a permutation isomorphic group.
+##    Note however that we do not guarantee to keep the chosen
+##    <M>S_n</M>-representative, the generating set or the name for eternity.
 ##  </Item>
 ##  <Item>
-##    If a group in the library has a primitive subgroup with 
-##  the same socle, this group is in the library as well.
+##    Different groups in the library are not conjugate in <M>S_n</M>.
+##  </Item>
+##  <Item>
+##    If a group in the library has a primitive subgroup with the same socle,
+##    this group is in the library as well.
 ##  </Item>
 ##  </List>
 ##  <P/>
@@ -146,9 +141,10 @@ DeclareGlobalFunction( "NrPrimitiveGroups" );
 
 
 ##  <#GAPDoc Label="[2]{primitiv}">
-##  The selection functions (see&nbsp;<Ref Sect="Selection Functions"/>) for the primitive
-##  groups library are <C>AllPrimitiveGroups</C> and <C>OnePrimitiveGroup</C>. They
-##  obtain the following properties from the database without having to
+##  The selection functions (see&nbsp;<Ref Sect="Selection Functions"/>) for
+##  the primitive groups library are <C>AllPrimitiveGroups</C> and
+##  <C>OnePrimitiveGroup</C>.
+##  They obtain the following properties from the database without having to
 ##  compute them anew: 
 ##  <P/>
 ##  <Ref Attr="NrMovedPoints" Label="for a list or collection of permutations"/>,

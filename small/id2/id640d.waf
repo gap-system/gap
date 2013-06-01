@@ -2,8 +2,6 @@
 ##
 #W  id640d.waf             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id640d_waf :=
-    "@(#)$Id: id640d.waf,v 1.1 2000/01/23 13:48:24 gap Exp $";
 
 ID_GROUP_TREE.next[640].next[127].next[1].next[6]:=
 rec(

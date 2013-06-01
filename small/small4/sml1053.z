@@ -3,8 +3,6 @@
 #W  sml1053.z              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1053_z :=
-    "@(#)$Id: sml1053.z,v 1.1 1999/12/08 18:52:48 gap Exp $";
 
 SMALL_GROUP_LIB[ 1053 ].pnil := AtomicRecord( `rec( syl :=
 [ 15 ], oper :=

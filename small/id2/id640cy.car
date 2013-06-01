@@ -2,8 +2,6 @@
 ##
 #W  id640cy.car            GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id640cy_car :=
-    "@(#)$Id: id640cy.car,v 1.1 2000/01/23 13:48:24 gap Exp $";
 
 ID_GROUP_TREE.next[640].next[103].next[3].next[44]:=
 rec(

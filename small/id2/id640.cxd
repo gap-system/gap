@@ -2,8 +2,6 @@
 ##
 #W  id640.cxd              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id640_cxd :=
-    "@(#)$Id: id640.cxd,v 1.1 2000/01/23 13:48:24 gap Exp $";
 
 ID_GROUP_TREE.next[640].next[102].next[4]:=
 rec(

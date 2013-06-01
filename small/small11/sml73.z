@@ -3,8 +3,6 @@
 #W  sml73.z                GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml73_z :=
-    "@(#)$Id: sml73.z,v 1.1 2008/05/23 16:26:37 gap Exp $";
 
 SMALL_GROUP_LIB[ 73 ] := AtomicRecord( rec( heads :=
 `[ 5630288496337704, 9289322242642, 727464993793287641826,

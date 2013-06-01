@@ -2,16 +2,13 @@
 ##
 #W  trans9.grp          GAP transitive groups library        Alexander Hulpke
 ##
-#H  @(#)$Id: trans9.grp,v 4.2 2001/02/21 19:45:33 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the transitive groups of degree 9
 ##  They were originally published by Greg Butler and John McKay
 ##  Names and actual generators are by John Conway, John McKay and AH.
 ##
-Revision.trans9_grp:=
-  "@(#)$Id: trans9.grp,v 4.2 2001/02/21 19:45:33 gap Exp $";
 
 TRANSGRP[9]:=
 [[(1,2,3,4,5,6,7,8,9),"C(9)=9"],

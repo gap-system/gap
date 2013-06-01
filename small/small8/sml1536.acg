@@ -3,8 +3,6 @@
 #W  sml1536.acg            GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1536_acg :=
-    "@(#)$Id: sml1536.acg,v 1.1 1999/12/08 18:58:00 gap Exp $";
 
 SMALL_GROUP_LIB[ 1536 ].2nil[ 85 ] := `rec( ops :=
 [ 2, 194,, 458,, 1329, 145, 2,,,,,,,,,,,,,,,,,, 1329,, 2,,,,,, 1329,, 2,,,,,,

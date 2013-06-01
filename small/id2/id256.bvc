@@ -2,8 +2,6 @@
 ##
 #W  id256.bvc              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256_bvc :=
-    "@(#)$Id: id256.bvc,v 1.1 2000/01/23 13:48:25 gap Exp $";
 
 ID_GROUP_TREE.next[256].next[74].next[3]:=
 rec(

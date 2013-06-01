@@ -2,15 +2,12 @@
 ##
 #W  trans.gi          GAP transitive groups library          Alexander Hulpke
 ##
-#H  @(#)$Id: trans.gi,v 1.2 2001/09/21 16:33:00 gap Exp $
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains methods that rely on the transitive groups library
 ##  being available.
 ##
-Revision.trans_gi:=
-  "@(#)$Id: trans.gi,v 1.2 2001/09/21 16:33:00 gap Exp $";
 
 # computes the perfect subgroups of S_n or A_n. Symconj indicates whether
 # they are up to conjugacy in S_n.

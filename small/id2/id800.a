@@ -2,8 +2,6 @@
 ##
 #W  id800.a                GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id800_a :=
-    "@(#)$Id: id800.a,v 1.1 2000/01/23 13:51:38 gap Exp $";
 
 ID_GROUP_TREE.next[800].next[1]:=
 rec(

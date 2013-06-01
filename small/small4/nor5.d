@@ -3,8 +3,6 @@
 #W  nor5.d                 GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.nor5_d :=
-    "@(#)$Id: nor5.d,v 1.1 1999/12/08 18:52:48 gap Exp $";
 
 SMALL_GROUP_LIB[ 175 ] := AtomicList( List( [
 [ [ 1 ], -1, [ 1, 5 ], [ 1, 5, -2, -3, -4 ], -3, [ 1, -2, -3, -4, 5 ], -3, -3

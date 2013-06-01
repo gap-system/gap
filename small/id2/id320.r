@@ -2,8 +2,6 @@
 ##
 #W  id320.r                GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id320_r :=
-    "@(#)$Id: id320.r,v 1.1 2000/01/23 13:48:23 gap Exp $";
 
 ID_GROUP_TREE.next[320].next[18]:=
 rec(

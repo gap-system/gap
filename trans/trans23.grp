@@ -2,14 +2,11 @@
 ##
 #A  trans23.grp                 GAP group library            Alexander Hulpke
 ##
-#A  @(#)$Id: trans23.grp,v 4.2 2001/02/21 19:45:33 gap Exp $
 ##
 #Y  Copyright (C) 1996, A. Hulpke, Lehrstuhl D f"ur Mathematik, RWTH Aachen
 ##
 ##  This file contains the transitive groups of degree 23
 ##
-Revision.trans23_grp:=
-  "@(#)$Id: trans23.grp,v 4.2 2001/02/21 19:45:33 gap Exp $";
 
 TRANSGRP[23]:=
 [[(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23),"C(23)"],

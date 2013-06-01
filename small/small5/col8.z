@@ -3,8 +3,6 @@
 #W  col8.z                 GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.col8_z :=
-    "@(#)$Id: col8.z,v 1.1 1999/12/08 18:54:24 gap Exp $";
 
 SMALL_GROUP_LIB[ 1356 ] :=
 `[ 109491929890561, 12135308753711471, 16455498947802235103, 27311418179807,

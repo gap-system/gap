@@ -2,14 +2,11 @@
 ##
 #A  trans16f.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id: trans16f.grp,v 4.3 2001/09/21 16:33:00 gap Exp $
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 16
 ##
-Revision.trans16f_grp:=
-  "@(#)$Id: trans16f.grp,v 4.3 2001/09/21 16:33:00 gap Exp $";
 
 TRANSGRP[16]{[1501..1800]}:=
 [[(1,13,5,12,2,16,3,15,7,14,8,10)(4,11,6,9),

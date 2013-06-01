@@ -6,7 +6,6 @@
 ##
 ##  This file contains information about the SmallGroups Library
 ##
-"@(#)$Id: README,v 1.14 2010/02/23 15:13:39 gap Exp $";
 
 #############################################################################
 #
@@ -34,7 +33,7 @@ Pockelsstrasse 14
 Germany
 
 e-mail: hubesche@tu-bs.de
-http://www.tu-bs.de/~hubesche/
+http://www-public.tu-bs.de/~hubesche/
 
 Bettina Eick
 Fachbereich Mathematik und Informatik
@@ -44,7 +43,7 @@ Pockelsstr. 14
 Germany
 
 e-mail: beick@tu-bs.de
-http://www.tu-bs.de/~beick/
+http://www-public.tu-bs.de/~beick/
 
 Eamonn A. O'Brien
 Department of Mathematics
@@ -834,9 +833,9 @@ earlier layers.
 #
 #############################################################################
 
-Please report bugs/problems/feedback to the authors or to gap-trouble
+Please report bugs/problems/feedback to the authors or to gap-support
 
 hubesche@tu-bs.de
 beick@tu-bs.de
 obrien@math.auckland.ac.nz
-gap-trouble@dcs.st-and.ac.uk
+support@gap-system.org

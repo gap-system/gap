@@ -2,14 +2,11 @@
 ##
 #A  trans21a.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id: trans21a.grp,v 4.3 2001/09/21 16:33:01 gap Exp $
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 21
 ##
-Revision.trans21a_grp:=
-  "@(#)$Id: trans21a.grp,v 4.3 2001/09/21 16:33:01 gap Exp $";
 
 TRANSGRP[21]{[1..164]}:=
 [[(1,2,3)(4,5,6)(7,8,9)(10,11,12)(13,14,15)(16,17,18)(19,20,21),

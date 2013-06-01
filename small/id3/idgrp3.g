@@ -6,8 +6,6 @@
 ##  This file contains the identification routines for groups of order
 ##  2^n * p with 3 <= n <= 8 and p an odd prime
 ##
-Revision.idgrp3_g :=
-    "@(#)$Id: idgrp3.g,v 1.9 2000/01/23 13:58:54 gap Exp $";
 
 #############################################################################
 ##

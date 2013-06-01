@@ -2,16 +2,13 @@
 ##
 #W  trans14.grp         GAP transitive groups library        Alexander Hulpke
 ##
-#H  @(#)$Id: trans14.grp,v 4.2 2001/02/21 19:45:33 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the transitive groups of degree 14
 ##  They were originally published by Greg Butler
 ##  Names and actual generators are by John Conway, John McKay and AH.
 ##
-Revision.trans14_grp:=
-  "@(#)$Id: trans14.grp,v 4.2 2001/02/21 19:45:33 gap Exp $";
 
 
 TRANSGRP[14]:=

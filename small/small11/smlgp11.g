@@ -15,8 +15,6 @@
 ##  if they need unpacking. Components 'heads', 'regsegms' and 'pntr' are 
 ##  remaining unchanged.
 ##
-Revision.smlgp11_g :=
-    "@(#)$Id: smlgp11.g,v 1.2 2008/06/01 16:02:04 gap Exp $";
 
 #############################################################################
 ##

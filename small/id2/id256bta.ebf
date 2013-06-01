@@ -2,8 +2,6 @@
 ##
 #W  id256bta.ebf           GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256bta_ebf :=
-    "@(#)$Id: id256bta.ebf,v 1.1 2000/01/23 13:48:27 gap Exp $";
 
 ID_GROUP_TREE.next[256].next[72].next[1].next[5].next[58]:=
 rec(

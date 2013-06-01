@@ -3,8 +3,6 @@
 #W  readsml.g                GAP group library             Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.readsml_g :=
-    "@(#)$Id: readsml.g,v 4.8 2004/09/26 18:33:30 gap Exp $";
 
 #############################################################################
 ##

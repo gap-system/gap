@@ -3,8 +3,6 @@
 #W  prop640.z              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.prop640_z :=
-    "@(#)$Id: prop640.z,v 1.1 1998/07/18 16:56:06 gap Exp $";
 
 PROPERTIES_SMALL_GROUPS[ 640 ] := AtomicRecord( `rec(
 isNilpotent := [ 2, 403, -564, 5022, -5854, 17942, -19094, 21285, -21453,

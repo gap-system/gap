@@ -2,8 +2,6 @@
 ##
 #W  id864.cj               GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id864_cj :=
-    "@(#)$Id: id864.cj,v 1.1 2000/01/23 13:48:24 gap Exp $";
 
 ID_GROUP_TREE.next[864].next[88]:=
 rec(

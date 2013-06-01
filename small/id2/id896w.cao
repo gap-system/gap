@@ -2,8 +2,6 @@
 ##
 #W  id896w.cao             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id896w_cao :=
-    "@(#)$Id: id896w.cao,v 1.1 2000/01/23 13:48:25 gap Exp $";
 
 ID_GROUP_TREE.next[896].next[23].next[3].next[41]:=
 rec(

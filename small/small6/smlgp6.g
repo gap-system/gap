@@ -6,8 +6,6 @@
 ##  This file contains the reading and construction functions for the groups
 ##  of size 1152 and 1920.
 ##
-Revision.smlgp6_g :=
-    "@(#)$Id: smlgp6.g,v 1.3 2000/07/30 14:35:05 gap Exp $";
 
 #############################################################################
 ##

@@ -3,8 +3,6 @@
 #W  sml1728.k              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1728_k :=
-    "@(#)$Id: sml1728.k,v 1.1 1999/12/08 18:54:26 gap Exp $";
 
 SMALL_GROUP_LIB[ 1728 ][ 11 ] :=
 `[ 420852343835852265594144162923904379911,

@@ -2,8 +2,6 @@
 ##
 #W  id1152.afu             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id1152_afu :=
-    "@(#)$Id: id1152.afu,v 1.2 2000/01/23 22:13:17 gap Exp $";
 
 ID_GROUP_TREE.next[1152].next[1].next[177]:=
 rec(

@@ -2,8 +2,6 @@
 ##
 #W  id128.ma               GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id128_ma :=
-    "@(#)$Id: id128.ma,v 1.1 2000/01/23 13:48:23 gap Exp $";
 
 ID_GROUP_TREE.next[128].next[13].next[1]:=
 rec(

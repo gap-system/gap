@@ -3,8 +3,6 @@
 #W  sml1536.b              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1536_b :=
-    "@(#)$Id: sml1536.b,v 1.1 1999/12/08 18:58:01 gap Exp $";
 
 SMALL_GROUP_LIB[ 1536 ].3nil := `rec( 2syl := 
 [ 3, 91, 104, 106, 335, 338, 340, 451, 844, 858, 2045, 2046, 2048, 2052,

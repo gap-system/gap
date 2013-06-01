@@ -2,8 +2,6 @@
 ##
 #W  id768.bt               GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id768_bt :=
-    "@(#)$Id: id768.bt,v 1.1 2000/01/23 13:58:54 gap Exp $";
 
 ID_GROUP_TREE.next[768].next[2].next[20]:=
 rec(

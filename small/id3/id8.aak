@@ -2,8 +2,6 @@
 ##
 #W  id8.aak                GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id8_aak :=
-    "@(#)$Id: id8.aak,v 1.1 1998/07/18 16:01:32 gap Exp $";
 
 ID_GROUP_TREE.next[8].next[1].next[37]:=
 rec(

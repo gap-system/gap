@@ -3,8 +3,6 @@
 #W  sml640.i               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml640_i :=
-    "@(#)$Id: sml640.i,v 1.1 1998/07/18 16:57:42 gap Exp $";
 
 SMALL_GROUP_LIB[ 640 ][ 9 ] :=
 `[ 1136328672735340633188204547, 466649147225150003760980074561539,

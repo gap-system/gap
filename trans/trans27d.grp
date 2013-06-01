@@ -2,14 +2,11 @@
 ##
 #A  trans27d.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id: trans27d.grp,v 1.1 2002/02/10 22:13:10 gap Exp $
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 27
 ##
-Revision.trans27d_grp:=
-  "@(#)$Id: trans27d.grp,v 1.1 2002/02/10 22:13:10 gap Exp $";
 
 TRANSGRP[27]{[901..1200]}:=
 [[(1,5,8)(2,6,9)(3,4,7)(10,13,17)(11,14,18)(12,15,16)(19,22,25)(20,23,26)(21,24,27),

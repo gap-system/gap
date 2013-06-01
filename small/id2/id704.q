@@ -2,8 +2,6 @@
 ##
 #W  id704.q                GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id704_q :=
-    "@(#)$Id: id704.q,v 1.1 2000/01/23 13:48:24 gap Exp $";
 
 ID_GROUP_TREE.next[704].next[17]:=
 rec(

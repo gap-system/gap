@@ -2,8 +2,6 @@
 ##
 #W  id288.az               GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id288_az :=
-    "@(#)$Id: id288.az,v 1.1 2000/01/23 13:48:25 gap Exp $";
 
 ID_GROUP_TREE.next[288].next[52]:=
 rec(

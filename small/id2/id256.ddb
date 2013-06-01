@@ -2,8 +2,6 @@
 ##
 #W  id256.ddb              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256_ddb :=
-    "@(#)$Id: id256.ddb,v 1.1 2000/01/23 13:48:26 gap Exp $";
 
 ID_GROUP_TREE.next[256].next[108].next[2]:=
 rec(

@@ -2,14 +2,11 @@
 ##
 #A  trans24ah.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id: trans24ah.grp,v 1.1 2002/02/10 22:13:09 gap Exp $
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 24
 ##
-Revision.trans24ah_grp:=
-  "@(#)$Id: trans24ah.grp,v 1.1 2002/02/10 22:13:09 gap Exp $";
 
 TRANSGRP[24]{[9901..10200]}:=
 [[(1,11,18,5,14,20,4,9,23,2,12,17,6,13,19,3,10,24)(7,16,21,8,15,22),

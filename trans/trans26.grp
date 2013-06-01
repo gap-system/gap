@@ -2,14 +2,11 @@
 ##
 #A  trans26.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id: trans26.grp,v 4.3 2001/09/21 16:33:02 gap Exp $
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 26
 ##
-Revision.trans26_grp:=
-  "@(#)$Id: trans26.grp,v 4.3 2001/09/21 16:33:02 gap Exp $";
 
 TRANSGRP[26]:=[];
 TRANSPROPERTIES[26]:=[];

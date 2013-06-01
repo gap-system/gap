@@ -3,8 +3,6 @@
 #W  sml1920.a              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1920_a :=
-    "@(#)$Id: sml1920.a,v 1.2 2000/07/30 14:35:05 gap Exp $";
 
 SMALL_GROUP_LIB[ 1920 ].2nil.codes :=
 `[ 49154, 49160, 49184, 49280, 49664, 51200, 57344, 81921, 81924, 81936, 

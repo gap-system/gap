@@ -2,8 +2,6 @@
 ##
 #W  id384e.gaj             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id384e_gaj :=
-    "@(#)$Id: id384e.gaj,v 1.1 2000/01/23 13:48:23 gap Exp $";
 
 ID_GROUP_TREE.next[384].next[137].next[1].next[10]:=
 rec(

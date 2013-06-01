@@ -3,8 +3,6 @@
 #W  sml256.l               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml256_l :=
-    "@(#)$Id: sml256.l,v 1.1 1998/07/18 16:56:33 gap Exp $";
 
 SMALL_GROUP_LIB[ 256 ][ 12 ] :=
 `[ 2540291722095147762144122029973, 650314680856357827135317865449367,

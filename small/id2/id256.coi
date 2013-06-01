@@ -2,8 +2,6 @@
 ##
 #W  id256.coi              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256_coi :=
-    "@(#)$Id: id256.coi,v 1.1 2000/01/23 13:48:25 gap Exp $";
 
 ID_GROUP_TREE.next[256].next[93].next[9]:=
 rec(

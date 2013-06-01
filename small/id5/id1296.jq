@@ -2,8 +2,6 @@
 ##
 #W  id1296.jq              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id1296_jq :=
-    "@(#)$Id: id1296.jq,v 1.1 2000/01/23 21:55:18 gap Exp $";
 
 ID_GROUP_TREE.next[1296].next[277]:=
 rec(

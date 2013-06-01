@@ -3,8 +3,6 @@
 #W  prop1344.z             GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.prop1344_z :=
-    "@(#)$Id: prop1344.z,v 1.1 1999/12/08 18:54:24 gap Exp $";
 
 PROPERTIES_SMALL_GROUPS[ 1344 ] := AtomicRecord( `rec(
 isNilpotent := [ 6, 761, -813, 6174, -6310, 11220, -11287, 11677, -11683,

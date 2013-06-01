@@ -2,8 +2,6 @@
 ##
 #W  id256l.aac             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256l_aac :=
-    "@(#)$Id: id256l.aac,v 1.1 2000/01/23 13:48:28 gap Exp $";
 
 ID_GROUP_TREE.next[256].next[12].next[1].next[1].next[3]:=
 rec(
