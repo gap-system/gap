@@ -1,0 +1,78 @@
+#############################################################################
+#
+#
+# patternstextbinary.txt
+#
+# These are patterns to classify files in a checked out GAP root
+# directory which are either to be shipped with the main archive
+# or in the tools archive into text files and binary files.
+# Lines starting with # are ignored, lines starting with T are
+# patterns for text files, lines starting with B are patterns
+# for binary files. The first match decides about the type.
+#
+# *** DIRECTORIES CONTANING ONLY TEXT FILES (IN ALPHABETICAL ORDER) ***
+#
+Tlib/*
+Tsmall/*
+Tsrc/*
+#
+# *** TEXT FILES ***
+#
+T*CHANGES*
+TCOPYING
+Tgap.ini
+TGPL
+TINSTALL
+TLICENSE
+T*README*
+TTODO
+TVERSION
+#
+# extensions pointing out that the file is text, in alphabetical order
+#
+T*.bat
+T*.bib
+T*.c
+T*.css
+T*.g
+T*.gap
+T*.gd
+T*.gi
+T*.grp
+T*.h
+T*.htm
+T*.html
+T*.msk
+T*.tex
+T*.tom
+T*.tst
+T*.txt
+T*.xml
+#
+# *** BINARY FILES ***
+#
+B*configure*
+B*Makefile*
+Bcnf/*
+#
+# extensions pointing out that the file is binary, in alphabetical order
+#
+B*.bmp
+B*.bz2
+B*.dll
+B*.dvi
+B*.exe
+B*.gz
+B*.ico
+B*.jpg
+B*.js
+B*.m4
+B*.pif
+B*.pdf
+B*.ps
+B*.sh
+B*.shi
+B*.six
+B*.tar
+B*.tgz
+B*.zip

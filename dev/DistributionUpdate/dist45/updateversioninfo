@@ -1,0 +1,60 @@
+#!/bin/sh
+#############################################################################
+##
+##
+## Updates version number and release date. 
+## The following information should be changed for *every* release:
+## 1) lib/system.g: 'Version' and 'Date' in lines
+##    Version := "4.dev",
+##    Date := "today",
+##    NeedKernelVersion := "4.dev",
+## 2) src/system.g: 'SyKernelVersion' in line
+##    const Char * SyKernelVersion = "4.dev";
+## 3) doc/versiondata: 'VERSIONNUMBER', 'VERSIONSUFFIX', 'RELEASEDAY', 
+##    'RELEASEYEAR' in lines
+##  <!ENTITY VERSIONNUMBER "4.dev">
+##  <!ENTITY VERSIONSUFFIX "4r5dev">
+##  <!ENTITY RELEASEDAY "today">
+##  <!ENTITY RELEASEYEAR "this year">
+
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+line='cd '${DISTROOT}/gapcore
+echo $line
+$line 
+
+source ./core_checkout_time.txt
+
+cd ${DISTNAME}/lib/
+echo 's/"4.dev"/"4.'$FULLVERSION'"/g' > sedfile
+echo 's/"today"/"'$COREDATE'"/g' >> sedfile
+sed -f sedfile system.g > system.g.new
+mv system.g.new system.g
+rm -f sedfile
+
+cd ../src/
+echo 's/"4.dev"/"4.'$FULLVERSION'"/g' > sedfile
+sed -f sedfile system.c > system.c.new
+mv system.c.new system.c
+rm -f sedfile
+
+cd ../doc/
+echo 's/"4.dev"/"4.'$FULLVERSION'"/g' > sedfile
+echo 's/"4r5dev"/"'$RBVERSION'"/g' >> sedfile
+echo 's/"today"/"'$COREDATE'"/g' >> sedfile
+echo 's/"this year"/"'$COREYEAR'"/g' >> sedfile
+sed -f sedfile versiondata > versiondata.new
+mv versiondata.new versiondata
+rm -f sedfile
+
+cd ../cnf/
+sed -i -e "s/4.dev/4.$FULLVERSION/g" configure.in
+sed -i -e "s/4.dev/4.$FULLVERSION/g" configure.out
+
+cd ..
+
+exit 0

@@ -1,0 +1,19 @@
+#!/bin/sh
+# (C) Frank Lübeck
+
+mypath=`dirname  $0`/
+
+source ${mypath}setvarpkg
+
+if [ "$#" != "2" ]; then
+  echo "Usage: addPackage <pkgname> <URL of PackageInfo.g> "
+  exit 1
+fi;
+
+$GAP -r -b -q  ${mypath}PackageInfoTools.g  << EOI
+ANSI_COLORS := false;;
+Unbind(PrintPromptHook);
+AddPackage("${PkgCacheDir}", "$1", "$2"); 
+quit;
+EOI
+

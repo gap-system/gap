@@ -1,0 +1,77 @@
+#!/bin/sh
+#############################################################################
+##
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+export GAPSOURCE=${DISTROOT}/gapsourcedistro
+
+cp ./classifyfiles.py ${GAPSOURCE}/classifyfiles.py
+cp ./patternstextbinary.txt ${GAPSOURCE}/patternstextbinary.txt
+echo "B*" >> ${GAPSOURCE}/patternstextbinary.txt
+cp ./patternscolorpkg.txt ${GAPSOURCE}/patternscolor.txt
+
+line='cd '${GAPSOURCE}
+echo $line
+$line
+
+rm -rf pkgnow
+mkdir -p pkgnow/${DISTNAME}/pkg
+cd pkgnow/${DISTNAME}/pkg
+
+# these exceptions above have to be classified here, while for the
+# rest of the packages we will get the metainformation together with
+# the merged packages archive
+echo 'Classifying files from exceptional packages'
+echo 'into {text,binary}x{main_archive,tools} or not shipped'
+
+cd ${GAPSOURCE}/pkgnow
+cp ../classifyfiles.py .
+cp ../pattern* .
+python ./classifyfiles.py ${DISTNAME}
+
+cat listtextfiles.txt >> ../listtextfiles.txt
+cat listbinaryfiles.txt >> ../listbinaryfiles.txt
+cat listignoredfiles.txt >> ../listignoredfiles.txt
+
+# get the merged packages archive and the corresponding metainformation
+# TODO: unify archive formats used
+
+cd ${GAPSOURCE}/pkgnow/${DISTNAME}/pkg
+echo 'Unpacking packages archive'
+cp `ls ${MERGEDPKGLOC}/packages-*|tail -1` pkgnow.tar.gz
+gzip -dc pkgnow.tar.gz | tar xp
+rm pkgnow.tar.gz
+
+echo 'Reading the metainformation about text/binary files'
+cp `ls ${MERGEDPKGLOC}/metainfopackages*.zip|tail -1` metainfo.zip
+unzip metainfo.zip
+echo "s#^#"${DISTNAME}"/pkg/#" > sedfile
+sed -f sedfile metainfotxtfiles* > metainfotxtfileslong.txt
+sed -f sedfile metainfobinfiles* > metainfobinfileslong.txt
+cat metainfotxtfileslong.txt >> ${GAPSOURCE}/listtextfiles.txt
+cat metainfobinfileslong.txt* >> ${GAPSOURCE}/listbinaryfiles.txt
+rm metainfo*
+rm sedfile
+
+echo 'Deleting packages to be used from GAP.dev or replaced by newer versions'
+
+# If needed, add here commands to remove packages taken from GAP.dev.
+# This section should be adjusted simultaneosly with 'checkoutcvs' script.
+# If there are no such packages leave this section empty. 
+# For example, some time ago we were removing the official GAPDoc package 
+# because we want to take it from the CVS
+# rm -rf GAPDoc-*
+
+echo 'Moving packages to the GAP root directory'
+mkdir -p ${GAPSOURCE}/${DISTNAME}/pkg
+cd ${GAPSOURCE}/${DISTNAME}/pkg
+mv ${GAPSOURCE}/pkgnow/${DISTNAME}/pkg/* .
+rm -rf ${GAPSOURCE}/pkgnow/
+
+# that's it
+
+exit 0

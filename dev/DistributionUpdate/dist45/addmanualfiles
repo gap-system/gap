@@ -1,0 +1,34 @@
+#!/bin/sh
+#############################################################################
+##
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+export GAPSOURCE=${DISTROOT}/gapsourcedistro
+
+line='cd '${GAPSOURCE}
+echo $line
+$line 
+
+pre=${DISTNAME}
+
+echo 'Adding a list of text documentation files to '${GAPSOURCE}/listtextfiles.txt
+
+find \
+   $pre/doc/{ref,tut,changes}/*.{txt,html,six,lab,toc,ind,css} \
+       -print >> listtextfiles.txt
+
+echo 'Adding a list of binary documentation files to '${GAPSOURCE}/listbinaryfiles.txt
+             
+find \
+   $pre/doc/{ref,tut,changes}/*.pdf \
+       -print >> listbinaryfiles.txt
+
+find \
+   $pre/doc/{ref,tut,changes}/*.js \
+       -print >> listbinaryfiles.txt
+                         
+exit 0

@@ -1,0 +1,31 @@
+#!/bin/sh
+#############################################################################
+##
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+line='cd '${DISTROOT}/gapcore
+echo $line
+$line 
+
+# dirs to 755, files to 644
+echo 'chmod 755 for directories and chmod 644 for files...'
+find ${DISTNAME} -type d -exec chmod 755 {} ";"
+find ${DISTNAME} -type f -exec chmod 644 {} ";"
+
+# very few files are executables
+
+echo 'and there are a few executables ...' 
+find \
+  ${DISTNAME}/{configure,gap.shi,tst/remake.sh} \
+  ${DISTNAME}/bin/*.bat \
+  ${DISTNAME}/cnf/{config.guess,config.sub,configure.out,install-sh} \
+  ${DISTNAME}/doc/manualindex \
+  ${DISTNAME}/doc/test/mktestx.sh \
+  ${DISTNAME}/etc/{buildman.pe,convert.pl,install-tools.sh,packpack} \
+  -exec chmod 755 {} ";"
+
+exit 0

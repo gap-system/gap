@@ -1,0 +1,43 @@
+#!/bin/sh
+#############################################################################
+#
+#
+# Where to put the temporary export tree and archives. The path 
+# "/mnt/raid/hudson-slave/..." is used by Jenkins continuous build system.
+export DISTROOT=/mnt/raid/hudson-slave/workspace/GAP-update-release/wrap/gap45
+
+# the cvs repository (login once, before using these scripts) 
+export CVSROOT=":pserver:visitor@cvs.gap-system.org:/gap/CVS"
+
+
+# the version to wrap dependently on our needs:
+# - to get the current snapshot, use "-D now"
+# - to get the state used for the previous release (e.g. to merge with the
+#   new packages archive, use e.g. "-r GAP4R5P1" 
+# export GAPCVSVERSION="-D now"
+export GAPCVSVERSION="-r GAP4R5P4"
+
+# version to wrap
+export VERSION="5"
+export FULLVERSION="$VERSION.4"
+
+# directory name
+export DISTNAME="gap4r$VERSION"
+
+# archive name
+export RBVERSION="4r5p4"
+export ARCHNAME="gap$RBVERSION"
+
+# location of the merged packages archive (assumed to be on the same machine)
+export MERGEDPKGLOC="/mnt/raid/hudson-slave/workspace/GAP-pkg-update/pkgadmin/mergedarchives"
+
+#-----------------------------------------------------------------------------
+# everything below should be system independent.
+
+# unset locale settings
+export LANG="C"
+export LC_ALL="C"
+
+umask 022
+
+echo "*** Environment set for creating Version GAP 4."${FULLVERSION}

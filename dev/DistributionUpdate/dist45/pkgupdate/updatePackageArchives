@@ -1,0 +1,24 @@
+#!/bin/sh
+# (C) Frank Lübeck
+
+
+mypath=`dirname  $0`/
+
+source ${mypath}setvarpkg
+
+$GAP -r -b -q  ${mypath}PackageInfoTools.g  << EOI
+ANSI_COLORS := false;;
+Unbind(PrintPromptHook);
+Print("\n");
+
+
+newarchs := UpdatePackageArchives("${PkgCacheDir}", "${PkgReposDir}", "${PkgWebFtpDir}");;
+if Length(newarchs) > 0 then
+  Print("\nPackages with new archive files:\n", newarchs, "\n");
+else
+  Print("\nNo new package archive  files!\n");
+fi;
+
+quit;
+EOI
+

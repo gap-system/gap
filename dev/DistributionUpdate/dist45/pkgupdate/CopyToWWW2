@@ -1,0 +1,35 @@
+#!/bin/sh
+# $Id$    (C) Frank Lübeck
+
+mypath=`dirname  $0`/
+
+source ${mypath}setvarpkg
+
+cd ${PkgWebFtpDir}/Packages
+
+echo "Dry run for packages metainformation:"
+rsync -av -c -n *.mixer pkgconf.py ${WWW2Dir}/Packages/
+read -n 1 -p "Shall I copy? (y/n)> " ANSWER
+echo
+
+if [ $ANSWER = "y" ]; then
+  echo "Ok, I'll copy packages metainformation ..."
+  rsync -av -c *.mixer pkgconf.py ${WWW2Dir}/Packages/
+else
+  echo "Don't copy, bye."
+fi
+
+cd ${PkgWebFtpDir}/Packages/pkg
+
+echo "Dry run for packages manuals:"
+rsync -av -c -n * ${WWW2Dir}/Manuals/pkg/
+read -n 1 -p "Shall I copy? (y/n)> " ANSWER
+echo
+
+if [ $ANSWER = "y" ]; then
+  echo "Ok, I'll copy packages manuals ..."
+  rsync -av -c * ${WWW2Dir}/Manuals/pkg/
+else
+  echo "Don't copy, bye."
+fi
+

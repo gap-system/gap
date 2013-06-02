@@ -1,0 +1,93 @@
+#!/bin/sh
+#############################################################################
+##
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+export RELEASEBRANCH=${DISTROOT}/releasebranch
+
+# create and go to build directory
+if ! mkdir -p ${RELEASEBRANCH}; then
+  echo 'Cannot create temporary directory '${RELEASEBRANCH}
+  exit 1
+fi
+
+# copying ./setvar to the build directory for the meta-information archive
+
+cp ./setvar ${RELEASEBRANCH}
+
+echo 'Changing the directory to '${RELEASEBRANCH}
+  
+echo 'cd '${RELEASEBRANCH}
+cd ${RELEASEBRANCH}
+rm -rf ${DISTNAME}
+
+# Checkout the files. Note that currently we do not use any tags.
+echo "$0: checking out the repository for version 4.$FULLVERSION of $DATE"
+line='cvs -q -Q checkout '${GAPCVSVERSION}' -d '${DISTNAME}' 4.0'
+echo $line
+$line
+if [ \! -d ${DISTNAME} ];  then
+    echo "PANIC: cvs did not create a distribution directory"
+    exit 1
+fi
+
+# What is *this moment*? If the subsequent wrapping and tests will be
+# successful, recorded time of the checkout will be used to tag 
+# corresponding revisions as included in the particular release.
+export COREDATE=`date +"%d-%b-%Y"`
+export CORETIME=`date -u +"%Y_%m_%d-%H_%M"`
+export COREYEAR=`date +"%Y"`
+echo "export CORETIME=\"$CORETIME\"" > core_checkout_time.txt
+echo "export COREDATE=\"$COREDATE\"" >> core_checkout_time.txt
+echo "export COREYEAR=\"$COREYEAR\"" >> core_checkout_time.txt
+
+# logging the checked out state to a file
+cd ${DISTNAME}
+echo 'Logging the checkout state to '${RELEASEBRANCH}'/statuslog.txt'
+cvs -q log -h -N > ../core_checkout_log.txt
+cd ..
+echo 'Logged the checkout state to '${RELEASEBRANCH}'/statuslog.txt'
+
+# We do not use CVS later so we may erase .cvsignore files and CVS directories
+echo 'Removing all .cvsignore files'
+find ${DISTNAME} -name .cvsignore -exec rm -f {} ";"
+echo 'Removing all CVS directories'
+find -d ${DISTNAME} -name CVS -exec rm -rf {} ";"
+
+echo 'Copying file classification tools to etc'
+cp ${DISTNAME}/dev/DistributionUpdate/dist45/classifyfiles.py ${DISTNAME}/etc/classifyfiles.py
+cp ${DISTNAME}/dev/DistributionUpdate/dist45/patternscolorpkg.txt ${DISTNAME}/etc/patternscolor.txt 
+cp ${DISTNAME}/dev/DistributionUpdate/dist45/patternstextbinary.txt ${DISTNAME}/etc/patternstextbinary.txt 
+
+echo 'Removing development versions of packages'
+# if needed leave packages which are required to be in a development version
+# (see an example in commented out commands for 'gapdoc')
+# This should be adjusted simultaneosly with the script 
+# 'pkgupdate/currentPackageInfoURLList'
+#
+# mv ${DISTNAME}/pkg/gapdoc/ .
+rm -rf ${DISTNAME}/pkg/*
+# mv gapdoc ${DISTNAME}/pkg/
+
+echo 'Adding packages needed to run GAP'
+
+# if GAPCVSVERSION="-D now" then the development version of GAPDoc will be 
+# checked out from the CVS in lines above. Otherwise, if GAPCVSVERSION is 
+# pointing to a tag e.g. "-r GAP4R5P1" or if the latest release of GAPDoc
+# is needed instead of its development version, we have to plug it into
+# the archive at early stage, since GAP will not start without GAPDoc.
+
+# the 'pkg' subdirectory will not be there if checkout was made using the 
+# tag for the latest release, so we have to create it first
+# mkdir ${DISTNAME}/pkg/
+# cd ${DISTNAME}/pkg/
+# echo 'Adding GAPDoc package'
+# wget -nv http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/GAPDoc-1.4.tar.bz2
+# gzip -dc GAPDoc-1.4.tar.gz | tar xp
+# rm GAPDoc-1.4.tar.gz
+
+exit 0
