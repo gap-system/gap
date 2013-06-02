@@ -3,7 +3,7 @@
 %W  objects.msk              GAP manual                     Thomas Breuer
 %W                                                       Martin Schoenert
 %%
-%H  @(#)$Id: objects.msk,v 1.29 2007/09/05 15:06:07 gap Exp $
+%H  @(#)$Id$
 %%
 
 %T modify and use the text in `object.gd' for the discussion of

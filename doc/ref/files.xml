@@ -70,6 +70,7 @@ should only be used as an informational message for the user.
 <Section Label="GAP Root Directories">
 <Heading>GAP Root Directories</Heading>
 <Index Key="GAPInfo.RootPaths"><C>GAPInfo.RootPaths</C></Index>
+<Index Key="GAPInfo.UserGapRoot"><C>GAPInfo.UserGapRoot</C></Index>
 
 When &GAP; is started it determines a list of directories which we
 call the <E>&GAP; root directories</E>. In a running &GAP; session  

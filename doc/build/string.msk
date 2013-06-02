@@ -3,7 +3,7 @@
 %A  string.msk                  GAP documentation            Martin Schoenert
 %A                                                           Alexander Hulpke
 %%
-%A  @(#)$Id: string.msk,v 1.36 2006/08/16 10:21:03 gap Exp $
+%A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group

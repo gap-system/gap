@@ -2,7 +2,7 @@
 ##
 #W  Makefile                    GAP autodoc                  Alexander Hulpke
 ##
-#H  @(#)$Id: Makefile,v 1.52 2010/02/23 15:12:27 gap Exp $
+#H  @(#)$Id$
 ##
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
