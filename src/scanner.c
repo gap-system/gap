@@ -3330,7 +3330,12 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 
 Obj FuncINPUT_FILENAME( Obj self) {
   Obj s;
-  C_NEW_STRING( s, strlen(TLS->input->name), TLS->input->name );
+  if (TLS->input && TLS->input->name) {
+    C_NEW_STRING( s, strlen(TLS->input->name), TLS->input->name );
+  } else {
+    char *defin = "*defin*";
+    C_NEW_STRING( s, strlen(defin), defin);
+  }
   return s;
 }
 
