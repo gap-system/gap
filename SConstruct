@@ -132,6 +132,10 @@ if not GetOption("clean"):
     libs.append("m")
   if conf.CheckLib("dl"):
     libs.append("dl")
+  if conf.CheckLib("readline"):
+    libs.append("readline")
+  if conf.CheckLib("util"):
+    libs.append("util")
   if GAP["gc"] == "system":
     if conf.CheckLib("gc"):
       compile_gc = False

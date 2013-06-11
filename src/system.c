@@ -1804,7 +1804,7 @@ void InitSystem (
     SyDebugLoading = 0;
     SyHasUserHome = 0;
     SyLineEdit = 1;
-    SyUseReadline = 1;
+    SyUseReadline = 0;
     /* SyAutoloadPackages = 1; */
     /*  SyBreakSuppress = 0; */
     SyMsgsFlagBags = 0;
