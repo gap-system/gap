@@ -17,8 +17,8 @@ vars.Add('compiler', "C compiler", "")
 vars.Add('cpp_compiler', "C++ compiler", "")
 vars.Add(EnumVariable("gmp", "Use GMP: yes, no, or system", "yes",
   allowed_values=("yes", "no", "system")))
-vars.Add(EnumVariable("gc", "Use GC: yes, no, or system", "yes",
-  allowed_values=("yes", "no", "system")))
+vars.Add(EnumVariable("gc", "Use GC: bdw, bdw-tl, fusion, no, or system",
+  "bdw-tl", allowed_values=("bdw", "bdw-tl", "fusion", "no", "system")))
 vars.Add('preprocess', 'Use source preprocessor', "")
 vars.Add('ward', 'Specify Ward directory', "")
 vars.Add('cpus', "Number of logical CPUs", "auto")
@@ -138,7 +138,7 @@ if not GetOption("clean"):
     else:
       print "=== No system gc library found, using internal one. ==="
       compile_gc = True
-  elif GAP["gc"] == "yes":
+  elif GAP["gc"] != "no":
     compile_gc = True
   else:
     compile_gc = False
@@ -194,8 +194,12 @@ if GAP["zmq"] != "no":
 defines.append("CONFIG_H")
 if "gc" in libs:
   defines.append("GC_THREADS")
-else:
+if GAP["gc"] == "no":
   defines.append("DISABLE_GC")
+elif GAP["gc"] == "fusion":
+  defines.append("FUSION_GC")
+else:
+  defines.append("BOEHM_GC")
 if "gmp" in libs:
   defines.append("USE_GMP")
 
@@ -219,7 +223,7 @@ GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags+linkflags)
 abi_path = "extern/"+GAP["abi"]+"bit"
 GAP.Append(RPATH=os.path.join(os.getcwd(), abi_path, "lib"))
 
-def build_external(libname, confargs="", makeargs="", cc=""):
+def build_external(libname, confargs="", makeargs="", cc="", patch=[]):
   global abi_path
   if GetOption("help") or GetOption("clean"):
     return
@@ -237,11 +241,21 @@ def build_external(libname, confargs="", makeargs="", cc=""):
   else:
     ccprefix = "CC=\"%(CC)s -m%(abi)s\"" % GAP
   confargs = " " + ccprefix + confargs
+  print "=== Extracting " + libname + " ==="
+  if os.system("cd " + abi_path
+          + " && tar xzf ../" + libname + ".tar.gz"):
+    print("=== Missing or damaged " + libname + ".tar.gz")
+    sys.exit(1)
+  if patch:
+    for p in patch:
+      print "=== Patching " + libname + " with " + p + " ==="
+      if os.system("cd " + abi_path + "/" + libname
+                 + " && patch -p1 -f < ../../" + p) != 0:
+	print("=== Failed to patch " + libname);
+	sys.exit(1)
   print "=== Building " + libname + " ==="
-  if os.system("cd " + abi_path + ";"
-          + "tar xzf ../" + libname + ".tar.gz;"
-	  + "cd " + libname + ";"
-	  + "./configure --prefix=$PWD/.." + confargs
+  if os.system("cd " + abi_path + "/" + libname
+	  + " && ./configure --prefix=$PWD/.." + confargs
 	  + " && make -j " + str(jobs) + makeargs
 	  + " && make" + makeargs + " install") != 0:
     print "=== Failed to build " + libname + " ==="
@@ -256,7 +270,8 @@ if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
   build_external("libatomic_ops-2012-03-02")
 
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
-  build_external("gc-7.2d", confargs="--disable-shared")
+  build_external("gc-7.2d", confargs="--disable-shared",
+    patch=(GAP["gc"] == "bdw-tl" and ["gc-7.2d-tl.patch"] or []))
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
   os.environ["CXX"] = GAP["CXX"]+" -m"+GAP["abi"]
