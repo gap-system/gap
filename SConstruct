@@ -132,6 +132,8 @@ if not GetOption("clean"):
     libs.append("m")
   if conf.CheckLib("dl"):
     libs.append("dl")
+  if conf.CheckLib("ncurses"):
+    libs.append("ncurses")
   if conf.CheckLib("readline"):
     libs.append("readline")
   if conf.CheckLib("util"):
