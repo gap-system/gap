@@ -118,6 +118,10 @@
 #include        "gasman.h"              /* garbage collector               */
 
 #ifdef BOEHM_GC
+
+#define LARGE_GC_SIZE (8192 * sizeof(UInt))
+#define TL_GC_SIZE (256 * sizeof(UInt))
+
 #ifndef DISABLE_GC
 #include <gc/gc.h>
 #include <gc/gc_typed.h>
@@ -756,7 +760,6 @@ void MarkBagWeakly(
 
 
 #ifdef BOEHM_GC
-#define MAX_GC_PREFIX_DESC 4
 static GC_descr GCDesc[MAX_GC_PREFIX_DESC+1];
 static unsigned GCKind[MAX_GC_PREFIX_DESC+1];
 #endif
@@ -1171,13 +1174,18 @@ void BuildPrefixGCDescriptor(unsigned prefix_len) {
   
   GC_word bits[1] = {0};
   unsigned i;
+  GC_set_bit(bits, 0);
   for (i=0; i<prefix_len; i++)
     GC_set_bit(bits, (i + HEADER_SIZE));
   GCDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + HEADER_SIZE);
   GCKind[prefix_len] = GC_new_kind(GC_new_free_list(), GCDesc[prefix_len],
-    1, 1);
+    0, 1);
 }
 
+#endif
+
+#ifdef BOEHM_GC
+static void TLAllocatorInit(void);
 #endif
 
 void            InitBags (
@@ -1258,10 +1266,10 @@ void            InitBags (
         TabMarkFuncBags[i] = MarkAllSubBagsDefault;
 	TabMarkTypeBags[i] = -1;
     }
-#define LARGE_GC_SIZE (SIZEOF_VOID_P * 8192)
 #ifndef DISABLE_GC
     GC_set_all_interior_pointers(0);
     GC_init();
+    TLAllocatorInit();
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
     initial_size *= 1024;
@@ -1271,13 +1279,49 @@ void            InitBags (
       GC_set_max_heap_size(SyStorKill * 1024);
     AddGCRoots();
     CreateMainRegion();
-    for (i=1; i<=MAX_GC_PREFIX_DESC; i++)
+    for (i=0; i<=MAX_GC_PREFIX_DESC; i++) {
       BuildPrefixGCDescriptor(i);
+      /* This is necessary to initialize some internal structures
+       * in the garbage collector: */
+      GC_generic_malloc((HEADER_SIZE + i) * sizeof(UInt), GCKind[i]);
+    }
 #endif /* DISABLE_GC */
 #endif /* BOEHM_GC */
 }
 
 #ifdef BOEHM_GC
+
+#define GRANULE_SIZE (2 * sizeof(UInt))
+
+static unsigned char TLAllocatorSeg[TL_GC_SIZE / GRANULE_SIZE + 1];
+static unsigned TLAllocatorSize[TL_GC_SIZE / GRANULE_SIZE];
+static UInt TLAllocatorMaxSeg;
+
+static void TLAllocatorInit(void) {
+  unsigned stage = 16;
+  unsigned inc = 1;
+  unsigned i = 0;
+  unsigned k = 0;
+  unsigned j;
+  unsigned max = TL_GC_SIZE / GRANULE_SIZE;
+  while (i <= max) {
+    if (i == stage) {
+      stage *= 2;
+      inc *= 2;
+    }
+    TLAllocatorSize[k] = i * GRANULE_SIZE;
+    TLAllocatorSeg[i] = k;
+    for (j=1; j<inc; j++) {
+      if (i + j <= max)
+        TLAllocatorSeg[i+j] = k+1;
+    }
+    i += inc;
+    k ++;
+  }
+  TLAllocatorMaxSeg = k;
+  if (MAX_GC_PREFIX_DESC * sizeof(void *) > sizeof(TLS->FreeList))
+    abort();
+}
 
 /****************************************************************************
 **
@@ -1293,28 +1337,40 @@ void            InitBags (
 **/
 void *AllocateBagMemory(int gc_type, int type, UInt size)
 {
-    void *result;
-    if (!gc_type) {
-      if (size >= LARGE_GC_SIZE)
+    void *result = NULL;
+    if (size <= TL_GC_SIZE) {
+      UInt alloc_seg, alloc_size;
+      alloc_size = (size + GRANULE_SIZE - 1 ) / GRANULE_SIZE;
+      alloc_seg = TLAllocatorSeg[alloc_size];
+      alloc_size = TLAllocatorSize[alloc_seg];
+      if (!TLS->FreeList[gc_type+1])
+        TLS->FreeList[gc_type+1] =
+	  GC_malloc(sizeof(void *) * TLAllocatorMaxSeg);
+      if (!(result = TLS->FreeList[gc_type+1][alloc_seg])) {
+        if (gc_type < 0)
+	  TLS->FreeList[0][alloc_seg] = GC_malloc_many(alloc_size);
+	else
+	  GC_generic_malloc_many(alloc_size, GCKind[gc_type],
+	    &TLS->FreeList[gc_type+1][alloc_seg]);
+	result = TLS->FreeList[gc_type+1][alloc_seg];
+      }
+      TLS->FreeList[gc_type+1][alloc_seg] = *(void **)result;
+      memset(result, 0, alloc_size);
+    } else if (size >= LARGE_GC_SIZE) {
+      if (!gc_type)
         result = GC_malloc_atomic_ignore_off_page(size);
-      else
-	result = GC_malloc_atomic(size);
-      memset(result, 0, size);
-    } else if (gc_type > 0 && size >= 32 * sizeof(UInt)) {
-      /* Explicitly typed allocations are not thread-local,
-       * so we only use them for reasonably large bags where
-       * we also expect to have significant scanning overhead.
-       */
-      if (size >= LARGE_GC_SIZE)
+      else if (gc_type > 0)
         result = GC_malloc_explicitly_typed_ignore_off_page(size,
-	  GCDesc[gc_type]);
+	           GCDesc[gc_type]);
       else
-        result = GC_malloc_explicitly_typed(size, GCDesc[gc_type]);
+        result = GC_malloc_ignore_off_page(size);
     } else {
-      if (size >= LARGE_GC_SIZE)
-	result = GC_malloc_ignore_off_page(size);
+      if (!gc_type)
+        result = GC_malloc_atomic(size);
+      else if (gc_type > 0)
+        result = GC_malloc_explicitly_typed(size, GCDesc[gc_type]);
       else
-	result = GC_malloc(size);
+        result = GC_malloc(size);
     }
     if (TabFinalizerFuncBags[type])
       GC_register_finalizer_no_order(result, StandardFinalizer,

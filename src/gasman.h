@@ -36,8 +36,6 @@
 #ifndef GAP_GASMAN_H
 #define GAP_GASMAN_H
 
-#define BOEHM_GC 1
-
 /* This definition switches to the bigger bag header, supporting bags up to
    4GB in length (lists limited to 1GB for other reasons) */
 

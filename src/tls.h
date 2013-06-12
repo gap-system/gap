@@ -150,6 +150,12 @@ typedef struct ThreadLocalStorage
   Obj SerializationRegistry;
   Obj SerializationStack;
 
+  /* Allocation */
+#ifdef BOEHM_GC
+#define MAX_GC_PREFIX_DESC 4
+  void **FreeList[MAX_GC_PREFIX_DESC+2];
+#endif
+
 } ThreadLocalStorage;
 
 extern ThreadLocalStorage *MainThreadTLS;
