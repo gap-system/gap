@@ -762,6 +762,8 @@ void MarkBagWeakly(
 #ifdef BOEHM_GC
 static GC_descr GCDesc[MAX_GC_PREFIX_DESC+1];
 static unsigned GCKind[MAX_GC_PREFIX_DESC+1];
+static GC_descr GCMDesc[MAX_GC_PREFIX_DESC+1];
+static unsigned GCMKind[MAX_GC_PREFIX_DESC+1];
 #endif
 
 
@@ -1172,14 +1174,22 @@ TNumAbortFuncBags       AbortFuncBags;
 
 void BuildPrefixGCDescriptor(unsigned prefix_len) {
   
-  GC_word bits[1] = {0};
-  unsigned i;
-  GC_set_bit(bits, 0);
-  for (i=0; i<prefix_len; i++)
-    GC_set_bit(bits, (i + HEADER_SIZE));
-  GCDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + HEADER_SIZE);
+  if (prefix_len) {
+    GC_word bits[1] = {0};
+    unsigned i;
+    for (i=0; i<prefix_len; i++)
+      GC_set_bit(bits, (i + HEADER_SIZE));
+    GCDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + HEADER_SIZE);
+    GC_set_bit(bits, 0);
+    GCMDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + HEADER_SIZE);
+  } else {
+    GCDesc[prefix_len] = GC_DS_LENGTH;
+    GCMDesc[prefix_len] = GC_DS_LENGTH | sizeof(void *);
+  }
   GCKind[prefix_len] = GC_new_kind(GC_new_free_list(), GCDesc[prefix_len],
     0, 1);
+  GCMKind[prefix_len] = GC_new_kind(GC_new_free_list(), GCMDesc[prefix_len],
+    0, 0);
 }
 
 #endif
@@ -1283,7 +1293,7 @@ void            InitBags (
       BuildPrefixGCDescriptor(i);
       /* This is necessary to initialize some internal structures
        * in the garbage collector: */
-      GC_generic_malloc((HEADER_SIZE + i) * sizeof(UInt), GCKind[i]);
+      GC_generic_malloc((HEADER_SIZE + i) * sizeof(UInt), GCMKind[i]);
     }
 #endif /* DISABLE_GC */
 #endif /* BOEHM_GC */
@@ -1350,25 +1360,15 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
         if (gc_type < 0)
 	  TLS->FreeList[0][alloc_seg] = GC_malloc_many(alloc_size);
 	else
-	  GC_generic_malloc_many(alloc_size, GCKind[gc_type],
+	  GC_generic_malloc_many(alloc_size, GCMKind[gc_type],
 	    &TLS->FreeList[gc_type+1][alloc_seg]);
 	result = TLS->FreeList[gc_type+1][alloc_seg];
       }
       TLS->FreeList[gc_type+1][alloc_seg] = *(void **)result;
       memset(result, 0, alloc_size);
-    } else if (size >= LARGE_GC_SIZE) {
-      if (!gc_type)
-        result = GC_malloc_atomic_ignore_off_page(size);
-      else if (gc_type > 0)
-        result = GC_malloc_explicitly_typed_ignore_off_page(size,
-	           GCDesc[gc_type]);
-      else
-        result = GC_malloc_ignore_off_page(size);
     } else {
-      if (!gc_type)
-        result = GC_malloc_atomic(size);
-      else if (gc_type > 0)
-        result = GC_malloc_explicitly_typed(size, GCDesc[gc_type]);
+      if (gc_type >= 0)
+        result = GC_generic_malloc(size, GCKind[gc_type]);
       else
         result = GC_malloc(size);
     }
