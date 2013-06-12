@@ -15,15 +15,18 @@ vars.Add(EnumVariable("abi", "Set to 32 or 64 depending on platform", 'auto',
   allowed_values=('32', '64', 'auto')))
 vars.Add('compiler', "C compiler", "")
 vars.Add('cpp_compiler', "C++ compiler", "")
-vars.Add(EnumVariable("gmp", "Use GMP: yes, no, or system", "yes",
+vars.Add(EnumVariable("gmp", "Use GMP", "yes",
   allowed_values=("yes", "no", "system")))
-vars.Add(EnumVariable("gc", "Use GC: bdw, bdw-tl, fusion, no, or system",
-  "bdw-tl", allowed_values=("bdw", "bdw-tl", "fusion", "no", "system")))
+vars.Add(EnumVariable("gc", "Use GC",
+  "boehm-tl", allowed_values=("boehm", "boehm-tl", "boehm-par", "fusion", "no", "system")))
 vars.Add('preprocess', 'Use source preprocessor', "")
 vars.Add('ward', 'Specify Ward directory', "")
 vars.Add('cpus', "Number of logical CPUs", "auto")
 
 GAP = DefaultEnvironment(variables=vars, PATH=os.environ["PATH"])
+
+Help(vars.GenerateHelpText(GAP))
+
 if GAP["compiler"] != "":
   GAP["CC"] = GAP["compiler"]
 if GAP["cpp_compiler"] != "":
@@ -123,7 +126,7 @@ GAP.Command("config", [], "") # Empty builder for the config target
 
 libs = ["gmp", "gc", "atomic_ops"]
 conf = Configure(GAP)
-if not GetOption("clean"):
+if not GetOption("clean") and not GetOption("help"):
   if conf.CheckLib("pthread"):
     libs.append("pthread")
   if conf.CheckLib("rt"):
@@ -276,8 +279,10 @@ if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
   build_external("libatomic_ops-2012-03-02")
 
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
-  build_external("gc-7.2d", confargs="--disable-shared",
-    patch=(GAP["gc"] == "bdw-tl" and ["gc-7.2d-tl.patch"] or []))
+  build_external("gc-7.2d",
+    confargs="CFLAGS=-DMAX_MARKERS=32 --disable-shared --disable-gcj-support" +
+      (GAP["gc"] == "boehm-par" and " --enable-parallel-mark" or ""),
+    patch=(GAP["gc"].startswith("boehm-") and ["gc-7.2d-tl.patch"] or []))
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
   os.environ["CXX"] = GAP["CXX"]+" -m"+GAP["abi"]

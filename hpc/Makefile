@@ -1,5 +1,6 @@
 JOBS=4
 GMP=yes
+GC=boehm-tl
 WARD=../ward
 SCONS=bin/scons
 CFLAGS=
@@ -7,7 +8,7 @@ DEBUG=debugguards=1 cflags=-"DTRACK_CREATOR $(CFLAGS)"
 ZMQ=no
 COMPILER=
 CPP_COMPILER=
-BUILD=$(SCONS) -j $(JOBS) ward=$(WARD) gmp=$(GMP) zmq=$(ZMQ) \
+BUILD=$(SCONS) -j $(JOBS) ward=$(WARD) gc=$(GC) gmp=$(GMP) zmq=$(ZMQ) \
 	cflags=$(CFLAGS) compiler=$(COMPILER) cpp_compiler=$(CPP_COMPILER)
 
 all opt: $(WARD)/bin/ward
