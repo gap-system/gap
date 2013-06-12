@@ -56,7 +56,7 @@ syntax: regexp
 ^extern/lib/
 ^extern/32bit/
 ^extern/64bit/
-^bin/scons-local-2.0.1/.*\.pyc$
+^bin/scons-local-[^/]*/.*\.pyc$
 ^\.scon
 ^\.scon
 ^gen/
