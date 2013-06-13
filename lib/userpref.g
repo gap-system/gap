@@ -176,9 +176,9 @@
 #T - Support also an ``extendible menu'', i. e. a list of choices plus the
 #T   possibility to enter a value not in the list.
 ##
-GAPInfo.DeclarationsOfUserPreferences:= [];
+GAPInfo.DeclarationsOfUserPreferences:= AtomicList([]);
 
-GAPInfo.UserPreferences:= rec();
+GAPInfo.UserPreferences := AtomicRecord(rec());
 
 DeclareUserPreference:= function( record )
     local name, package, default, i, up;
@@ -252,7 +252,7 @@ DeclareUserPreference:= function( record )
     fi;
     up := GAPInfo.UserPreferences;
     if not IsBound( up.( package ) ) then
-      up.( package ):= rec();
+      up.( package ):= AtomicRecord(rec());
     fi;
     if IsString( record.name ) then
       if not IsBound(up.( package ).( record.name )) then
