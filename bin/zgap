@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+import sys, os, subprocess, time, tempfile, shutil, re, glob
+
+args = sys.argv[1:]
+
+if len(args) < 2 or args[0] != "-N" or not re.match("^[0-9]+$", args[1]):
+  print("Usage: zgap -N <nodes> <gap arguments>")
+  sys.exit(1)
+
+numnodes = int(args[1])
+args = args[2:]
+
+dir = tempfile.mkdtemp()
+try: os.mkdir(dir)
+except: pass
+
+print "[zgap] %s" % dir
+
+nodes = [ None ] * (numnodes + 1)
+
+gap = [ "bin/gap.sh" ]
+
+for i in xrange(numnodes+1):
+  node_file = "%s/setup%02d.g" % (dir, i)
+  log = open("%s/log%02d.txt" % (dir, i), "w")
+  fp = open(node_file, "w")
+  init = """
+  ReadLib("znode.g");
+  ZSetNodes(%d, [1..%d]);
+  ZSetIncoming("ipc://%s/%02d.socket");
+  """ % (i, numnodes, dir, i)
+  for j in xrange(0, numnodes+1):
+    init += """ZSetOutgoing(%d, "+ipc://%s/%02d.socket");\n""" %(j, dir, j)
+  fp.write(init)
+  fp.close()
+  if i > 0:
+    nodes[i] = subprocess.Popen(gap + [ "-S", "-T" ] + args +
+      [ node_file ], stdin = subprocess.PIPE, stdout = log)
+  log.close()
+
+main_file = "%s/setup00.g" % dir
+
+subprocess.call(gap + args + [ main_file ])
+
+for node in nodes[1:]:
+  node.stdin.write("QUIT_GAP();\n");
+  node.stdin.flush();
+time.sleep(0.1);
+for node in nodes[1:]:
+  node.kill()
+
+for file in (glob.glob(dir+"/setup[0-9][0-9].g") +
+             glob.glob(dir+"/log[0-9][0-9].txt") +
+	     glob.glob(dir+"/[0-9][0-9].socket")):
+  try: os.unlink(file)
+  except: pass
+os.rmdir(dir)
