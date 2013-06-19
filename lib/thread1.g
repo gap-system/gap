@@ -50,7 +50,7 @@ ShareKernelObj := function(arg)
 end;
 
 ShareInternalObj := function(arg)
-  ShareObjWithPriority(arg, InternalRegion);
+  return ShareObjWithPriority(arg, InternalRegion);
 end;
 
 ShareSingleObjWithPriority := function(arg, priority)
