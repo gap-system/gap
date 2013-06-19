@@ -31,6 +31,8 @@ static void *ZmqContext;
 #define ZMQ_DAT_URI_OFF 3
 #define ZMQ_DAT_FLAG_OFF 4
 
+#define ZMQ_DAT_WORDS (ZMQ_DAT_FLAG_OFF + 1)
+
 #define ZMQ_SOCK_FLAG_BOUND 1
 
 static void BadArgType(Obj obj, char *fname, int pos, char *expected) {
@@ -200,7 +202,7 @@ static Obj FuncZmqSocket(Obj self, Obj type) {
   socket = zmq_socket(ZmqContext, t);
   if (!socket)
     ZmqError("ZmqSocket");
-  result = NewBag(T_DATOBJ, 4 * sizeof(Bag));
+  result = NewBag(T_DATOBJ, ZMQ_DAT_WORDS * sizeof(Bag));
   ADDR_OBJ(result)[0] = TypeZmqSocket();
   ADDR_OBJ(result)[ZMQ_DAT_SOCKET_OFF] = socket;
   ADDR_OBJ(result)[ZMQ_DAT_TYPE_OFF] = INTOBJ_INT(t);
@@ -305,7 +307,7 @@ static Obj FuncZmqReceive(Obj self, Obj socketobj) {
   return result;
 }
 
-static Obj FuncZmqReceiveAll(Obj self, Obj socketobj) {
+static Obj FuncZmqReceiveList(Obj self, Obj socketobj) {
   void *socket;
   int flags;
   zmq_msg_t msg;
@@ -314,11 +316,11 @@ static Obj FuncZmqReceiveAll(Obj self, Obj socketobj) {
   Obj result, elem;
 
   if (!IsOpenSocket(socketobj))
-    BadArgType(socketobj, "ZmqReceiveAll", 1, "zmq socket");
+    BadArgType(socketobj, "ZmqReceiveList", 1, "zmq socket");
   socket = Socket(socketobj);
   zmq_msg_init(&msg);
   if (zmq_recvmsg(socket, &msg, 0) < 0)
-    ZmqError("ZmqReceiveAll");
+    ZmqError("ZmqReceiveList");
   result = NEW_PLIST(T_PLIST, 1);
   SET_LEN_PLIST(result, 1);
   elem = NEW_STRING(zmq_msg_size(&msg));
@@ -331,7 +333,7 @@ static Obj FuncZmqReceiveAll(Obj self, Obj socketobj) {
     if (!more) break;
     zmq_msg_init(&msg);
     if (zmq_recvmsg(socket, &msg, 0) < 0)
-      ZmqError("ZmqReceiveAll");
+      ZmqError("ZmqReceiveList");
     elem = NEW_STRING(zmq_msg_size(&msg));
     memcpy(CSTR_STRING(elem), zmq_msg_data(&msg), zmq_msg_size(&msg));
     zmq_msg_close(&msg);
@@ -551,7 +553,7 @@ static StructGVarFunc GVarFuncs [] = {
   FUNC_DEF(ZmqConnect, 2, "zmq socket, remote address"),
   FUNC_DEF(ZmqSend, 2, "zmq socket, string|list of strings"),
   FUNC_DEF(ZmqReceive, 1, "zmq socket"),
-  FUNC_DEF(ZmqReceiveAll, 1, "zmq socket"),
+  FUNC_DEF(ZmqReceiveList, 1, "zmq socket"),
   FUNC_DEF(ZmqClose, 1, "zmq socket"),
   FUNC_DEF(ZmqPoll, 3, "list of input sockets, list of output sockets, timeout (ms)"),
 

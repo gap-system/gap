@@ -68,9 +68,9 @@ BindGlobal("ZmqSubscriberSocket", function(arg)
   return ZmqAttachedSocket("SUB", arg);
 end);
 
-BindGlobal("ZmqReceiveAllAsString", function(socket, sep)
+BindGlobal("ZmqReceiveListAsString", function(socket, sep)
   local parts;
-  parts := ZmqReceiveAll(socket);
+  parts := ZmqReceiveList(socket);
   return JoinStringsWithSeparator(parts, sep);
 end);
 
