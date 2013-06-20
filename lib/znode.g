@@ -213,7 +213,7 @@ ZResponse := function()
   response := CreateSyncVar();
   return `rec(
     put := function(result)
-      SyncWrite(response, result);
+      SyncWrite(response, MakeReadOnly(result));
     end,
     get := -> SyncRead(response),
     test := -> SyncIsBound(response),
