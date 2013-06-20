@@ -34,13 +34,13 @@ for i in xrange(numnodes+1):
   fp.write(init)
   fp.close()
   if i > 0:
-    nodes[i] = subprocess.Popen(gap + [ "-S", "-T" ] + args +
-      [ node_file ], stdin = subprocess.PIPE, stdout = log)
+    nodes[i] = subprocess.Popen(gap + [ "-S", "-T", node_file ] + args,
+      stdin = subprocess.PIPE, stdout = log, stderr = log)
   log.close()
 
 main_file = "%s/setup00.g" % dir
 
-subprocess.call(gap + args + [ main_file ])
+subprocess.call(gap + [ main_file ] + args)
 
 for node in nodes[1:]:
   node.stdin.write("QUIT_GAP();\n");
