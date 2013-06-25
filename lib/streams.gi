@@ -706,6 +706,7 @@ InstallMethod( ReadAll,
     [ IsInputTextStream and IsInputTextCustomRep ],
 function( stream )
     local chunk;
+    stream!.endofinput := false;
     while not stream!.endofinput do
       chunk := stream!.read(stream!.state);
       if chunk = "" then
@@ -730,6 +731,7 @@ function( stream, limit )
         Error("ReadAll: negative limit is not allowed");
     fi;
 
+    stream!.endofinput := false;
     while not stream!.endofinput and Length(stream!.buffer) < limit do
       chunk := stream!.read(stream!.state);
       Append(stream!.buffer, chunk);
@@ -752,9 +754,6 @@ InstallMethod( ReadByte,
     "input text custom",
     [ IsInputTextStream and IsInputTextCustomRep ],
 function( stream )
-    if stream!.endofinput and stream!.buffer = "" then
-      return fail;
-    fi;
     if stream!.buffer = "" then
       stream!.buffer := stream!.read(stream!.state);
       if stream!.buffer = "" then
@@ -777,6 +776,7 @@ InstallMethod( ReadLine,
 function ( stream )
     local pos, chunk;
     pos := Position(stream!.buffer, '\n');
+    stream!.endofinput := false;
     while pos = fail and not stream!.endofinput do
       chunk := stream!.read(stream!.state);
       if chunk = "" then
