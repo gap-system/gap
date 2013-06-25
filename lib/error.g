@@ -12,6 +12,7 @@
 CallAndInstallPostRestore( function()
     ASS_GVAR( "ERROR_COUNT", 0 );
     ASS_GVAR( "ErrorLevel", 0 );
+    MakeThreadLocal("ErrorLevel");
     ASS_GVAR( "QUITTING", false );
 end);
 
