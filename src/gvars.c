@@ -178,7 +178,6 @@ void            AssGVar (
     UInt                i;              /* loop variable                   */
     Char *              name;           /* name of a function              */
     Obj                 onam;           /* object of <name>                */
-    Int                 len;            /* length of string                */
 
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
@@ -233,10 +232,7 @@ void            AssGVar (
     /* assign name to a function                                           */
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
         name = NameGVar(gvar);
-        /*CCC        onam = NEW_STRING(strlen(name));
-          SyStrncat( CSTR_STRING(onam), name, strlen(name) ); CCC*/
-        len = strlen(name);
-        C_NEW_STRING(onam, len, name);
+        C_NEW_STRING_DYN(onam, name);
         RESET_FILT_LIST( onam, FN_IS_MUTABLE );
         NAME_FUNC(val) = onam;
         CHANGED_BAG(val);
@@ -329,19 +325,14 @@ UInt GVarName (
     const Char *        p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
     Int                 len;            /* length of name                  */
-    Int                 len2;           /* length of namespace name        */
 
     /* First see whether it could be namespace-local: */
     cns = CSTR_STRING(CurrNamespace);
     if (*cns) {   /* only if a namespace is set */
         len = strlen(name);
         if (name[len-1] == NSCHAR) {
-            gvarbuf[0] = 0;
-            if (len > 512) len = 512;
-            SyStrncat(gvarbuf,name,len);
-            len2 = GET_LEN_STRING(CurrNamespace);
-            if (len2 > 511) len2 = 511;
-            SyStrncat(gvarbuf+len,cns,GET_LEN_STRING(CurrNamespace));
+            strlcpy(gvarbuf, name, 512);
+            strlcat(gvarbuf, cns, sizeof(gvarbuf));
             name = gvarbuf;
         }
     }
@@ -365,13 +356,9 @@ UInt GVarName (
         CountGVars++;
         gvar = INTOBJ_INT(CountGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
-        /*CCC        namx[0] = '\0';
-        SyStrncat( namx, name, 1023 );
-        string = NEW_STRING( strlen(namx) );
-        SyStrncat( CSTR_STRING(string), namx, strlen(namx) );CCC*/
-        len = strlen(name);
-        memcpy(namx, name, len+1);
-        C_NEW_STRING(string, len, namx);
+        strlcpy(namx, name, sizeof(namx));
+        C_NEW_STRING_DYN(string, namx);
+
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
         GROW_PLIST(    ValGVars,    CountGVars );
         SET_LEN_PLIST( ValGVars,    CountGVars );

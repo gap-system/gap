@@ -1,0 +1,233 @@
+<Chapter Label="ChangesGAP46toGAP47"> 
+<Heading>Changes between &GAP; 4.6 and &GAP; 4.7</Heading>
+
+This chapter contains an overview of changes introduced in the 
+beta release of &GAP; 4.7 for package authors. 
+
+<!--
+This chapter lists most important changes between 
+&GAP; 4.6.4 and &GAP; 4.6.0 
+(i.e. between the last release of &GAP; 4.5 
+and the first public release of &GAP; 4.6).
+It will also contain information 
+about subsequent update releases for &GAP; 4.7.
+-->
+
+<Section Label="fix470"> 
+<Heading>&GAP; 4.7.0 (June 2013)</Heading>
+
+<Subsection Label="Changes in the core GAP47 system"> 
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.7</Heading>
+
+Improved and extended functionality:
+<List>
+<!-- cf. #411, 412, 413 -->
+<Item>
+The methods for computing conjugacy classes of permutation groups have 
+been rewritten from scratch to enable potential use for groups in 
+different representations. As a byproduct the resulting code is 
+(sometimes notably) faster. It also now is possible to calculate 
+canonical conjugacy class representatives in permutation groups, 
+which can be beneficial when calculating character tables.
+</Item>
+<Item>
+The methods for determining (conjugacy classes of) subgroups in 
+non-solvable groups have been substantially improved in speed and 
+scope for groups with multiple nonabelian composition factors. 
+</Item>
+<Item>
+There is a new method for calculating the maximal subgroups of 
+a permutation group (with chief factors of width less or equal 5) 
+without calculating the whole subgroup lattice.
+</Item>
+<Item>
+If available, information from the table of marks library is 
+used to speed up subgroup calculations in almost simple factor groups.
+</Item>
+<Item>
+The broader availability of maximal subgroups is used to improve 
+the calculation of double cosets.
+</Item>
+<Item>
+To illustrate the improvements listed above, one could try, for example
+<Log><![CDATA[
+g:=WreathProduct(MathieuGroup(11),Group((1,2)));
+Length(ConjugacyClassesSubgroups(g));
+]]></Log>
+and
+<Log><![CDATA[
+g:=SemidirectProduct(GL(3,5),GF(5)^3);
+g:=Image(IsomorphismPermGroup(g));
+MaximalSubgroupClassReps(g);
+]]></Log>
+</Item>
+<Item>
+<!-- #414 -->
+The functionality in &GAP; for transformations and transformation semigroups has
+been rewritten and extended. Partial permutations and inverse semigroups have
+been newly implemented. The documentation for transformations and
+transformation semigroups has been improved. Transformations and partial
+permutations are implemented in the &GAP; kernel. Methods for calculating
+attributes of transformations and partial permutations, and taking products,
+and so are also implemented in the kernel. The new implementations are largely
+backwards compatible; some exceptions are given below. 
+<P/>
+The degree of a transformation <C>f</C> is usually defined as the
+largest positive integer where <C>f</C> is defined.  In previous versions of
+&GAP;, transformations were only defined on positive integers less than their
+degree, it was only possible to multiply transformations of equal degree, and a
+transformation did not act on any point exceeding its degree.  Starting with
+&GAP; 4.7, transformations behave more like permutations, in that
+they fix unspecified points and it is possible to multiply arbitrary
+transformations.
+<List>
+<Item>
+in the display of a transformation, the trailing fixed points are no longer
+printed. More precisely, in the display of a transformation <C>f</C> if
+<C>n</C> is the largest value such that <C>n^f&lt;>n</C> or
+<C>i^f=n</C> for some <C>i&lt;>n</C>, then the values exceeding <C>n</C>
+are not printed.
+</Item>
+<Item>
+the display for semigroups of transformations now includes more information,
+for example <C>&lt;transformation semigroup on 10 pts with 10 generators></C> and 
+<C>&lt;inverse partial perm semigroup on 10 pts with 10 generators></C>.
+</Item>
+<Item>
+transformations which define a permutation can be inverted, and groups of
+transformations can be created. 
+</Item>
+</List>
+Further information regarding transformations and partial permutations, can be
+found in the relevant chapters of the reference manual. 
+<P/>
+The code for Rees matrix semigroups has been completely rewritten to fix the
+numerous bugs in the previous versions. The display of a Rees matrix semigroup
+has also been improved to include the numbers of rows and columns, and the
+underlying semigroup.  Again the new implementations should be backwards
+compatible with the exception that the display is different.  
+<P/>
+The code for magmas with a zero adjoined has been improved so that it is
+possible to access more information about the original magma. The display has
+also been changed to indicate that the created magma is a magma with zero
+adjoined (incorporating the display of the underlying magma). Elements of a
+magma with zero are also printed so that it is clear that they belong to a
+magma with zero. 
+<P/>
+If a semigroup is created by generators in the category
+IsMultiplicativeElementWithOneCollection and CanEasilyCompareElements, then it
+is now checked if the One of the generators is given as a generator. In this
+case, the semigroup is created as a monoid.  
+</Item>
+<Item>
+<!-- #29 -->
+The message about halving the pool size at startup is only shown
+when <C>-D</C> command line option is used 
+(see <Ref Sect="Command line options" BookName="ref"/>).
+[Suggested by Volker Braun]
+</Item>
+<Item>
+<!-- #180 -->
+An info class called <Ref InfoClass="InfoObsolete" BookName="ref"/> 
+with the default level 0 is introduced.
+Setting it to 1 will trigger warnings at runtime if an obsolete variable
+declared with <C>DeclareObsoleteSynonym</C> is used. This is recommended for 
+testing &GAP; distribution and packages.
+</Item>
+<Item>
+<!-- #198 -->
+It is now possible to compile &GAP; with user-supplied <C>CFLAGS</C>
+which now will not be overwritten by &GAP; default settings. 
+[Suggested by Jeroen Demeyer]
+</Item>
+</List>
+
+Fixed bugs:
+
+<List>
+<Item>
+Fixed inconsistent behaviour of <C>QuotientMod( Integers, r, s, m )</C>
+in the case where <A>s</A> and <A>m</A> are not coprime. This fix also 
+corrects the division behaviour of <C>ZmodnZ</C> objects, see 
+<Ref Oper="QuotientMod" BookName="ref" /> and 
+<Ref Func="ZmodnZ" BookName="ref"/>.
+[Reported by Mark Dickinson]
+</Item>
+<Item>
+Fixed an oversight in the loading process causing 
+<Ref Func="OnQuit" BookName="ref"/> not resetting the options 
+stack after exiting the break loop.
+</Item>
+</List>
+
+Changed functionality:
+<List>  
+<Item>
+<!-- #230 -->
+It is not possible now to call <Ref Oper="WreathProduct" BookName="ref"/> 
+with 2nd argument <A>H</A> not being a permutation group, without using the 3rd 
+argument specifying the permutation representation. This is an incompatible 
+change but it will produce an error instead of a wrong result. The former
+behaviour of <Ref Oper="WreathProduct" BookName="ref"/> may now be achieved
+by using <Ref Oper="WreathProduct" BookName="ref"/> which returns the wreath 
+product for the (right regular) permutation action of <A>H</A> on its elements.
+</Item>
+<Item>
+<!-- #180 -->
+The function <C>ViewLength</C> to specify the maximal number of lines
+that are printed in <Ref Oper="ViewObj" BookName="ref" /> became 
+obsolete, since there was already a user preference <C>ViewLength</C> 
+to specify this. The value of this preference is also accessible in
+<C>GAPInfo.ViewLength</C>.
+</Item>
+</List>
+
+</Subsection>
+
+<Subsection Label="New and updated packages since GAP 4.6.4"> 
+<Heading>New and updated packages since &GAP; 4.6.4</Heading>
+
+<Index>Packages, new</Index>
+At the time of the release of &GAP; 4.6 there were 106 packages 
+redistributed with &GAP;. The beta release of &GAP;&nbsp;4.7 
+contains 108 packages. 
+<P/>
+
+One of essential changes is that
+the <Package>Citrus</Package> package by J.Mitchell has been renamed 
+to <Package>Semigroups</Package>. The package has been completely 
+overhauled, the performance has been improved, and the code has been 
+generalized so that in the future the same code can be used to compute 
+with other types of semigroups.
+
+<!--
+The new packages that have been added to the redistribution 
+since the release of &GAP; 4.6.4 are: 
+
+<List>
+<Item>
+<Package>Semigroups</Package> package by James Mitchell, ...
+</Item>
+</List>
+-->
+
+<!--
+<Index>Packages, upgraded</Index>
+Furthermore, some packages have been upgraded substantially 
+since the &GAP;&nbsp;4.6.4 release:
+<List>
+<Item>
+</Item>
+</List>
+-->
+
+</Subsection>
+
+</Section>
+
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<!-- %% --> 
+<!-- %E -->

@@ -1071,7 +1071,7 @@ RedispatchOnCondition(Derivative,true,
 ##
 #F  Discriminant( <f> ) . . . . . . . . . . . . discriminant of polynomial f
 ##
-InstallOtherMethod(Discriminant,"univariate",true,[IsUnivariatePolynomial],0,
+InstallMethod( Discriminant, "univariate", true, [IsUnivariatePolynomial], 0,
 function(f)
 local d;
   # the discriminant is \prod_i\prod_{j\not= i}(\alpha_i-\alpha_j), but

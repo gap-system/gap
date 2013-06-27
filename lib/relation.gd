@@ -16,7 +16,6 @@
 ##
 
 
-#############################################################################
 ##
 ##  <#GAPDoc Label="[1]{relation}">
 ##  <Index>binary relation</Index>
@@ -924,7 +923,7 @@ DeclareOperation("EquivalenceClassOfElementNC",
 DeclareGlobalFunction("EquivalenceRelationByPairs");
 DeclareGlobalFunction("EquivalenceRelationByPairsNC");
 
-
+#############################################################################
 #############################################################################
 ##
 #E

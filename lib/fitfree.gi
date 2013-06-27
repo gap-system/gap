@@ -1,12 +1,748 @@
 #############################################################################
 ##
-#W  fitfree.gd                  GAP library                  Alexander Hulpke
+#W  fitfree.gi                  GAP library                  Alexander Hulpke
 ##
 ##
 #Y  Copyright (C) 2012 The GAP Group
 ##
 ##  This file contains functions using the trivial-fitting paradigm.
+##  They are representation independent and will work for permutation and
+##  matrix groups
 ##
+
+InstallGlobalFunction(FittingFreeSubgroupSetup,function(G,U)
+local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r;
+  ffs:=FittingFreeLiftSetup(G);
+
+  # result cached?
+  if not IsBound(U!.cachedFFS) then
+    cache:=[];
+    U!.cachedFFS:=cache;
+  else
+    cache:=U!.cachedFFS;
+  fi;
+  r:=First(cache,x->IsIdenticalObj(x[1],ffs));
+  if r<>fail then
+    return r[2];
+  fi;
+
+  pcisom:=ffs.pcisom;
+
+  rest:=RestrictedMapping(ffs.factorhom,U);
+
+  # in radical?
+  if ForAll(MappingGeneratorsImages(rest)[2],IsOne) then
+    ker:=U;
+    k:=InducedPcgsByGeneratorsNC(ffs.pcgs,GeneratorsOfGroup(U));
+  elif Length(ffs.pcgs)=0 then
+    # no radical
+    ker:=TrivialSubgroup(G);
+    k:=ffs.pcgs;
+  else
+
+    it:=CoKernelGensIterator(InverseGeneralMapping(rest));
+    kpc:=TrivialSubgroup(Image(pcisom));
+    while not IsDoneIterator(it) do
+      x:=ImagesRepresentative(pcisom,NextIterator(it));
+      if not x in kpc then
+	kpc:=ClosureGroup(kpc,x);
+      fi;
+    od;
+    SetSize(U,Size(Image(rest))*Size(kpc));
+    k:=InducedPcgs(FamilyPcgs(Image(pcisom)),kpc);
+    k:=List(k,x->PreImagesRepresentative(pcisom,x));
+    k:=InducedPcgsByPcSequenceNC(ffs.pcgs,k);
+    ker:=SubgroupNC(G,k);
+    SetSize(ker,Size(kpc));
+  fi;
+
+  SetPcgs(ker,k);
+  SetKernelOfMultiplicativeGeneralMapping(rest,ker);
+  if Length(ffs.pcgs)=0 then
+    r:=[1];
+  else
+    r:=Concatenation(k!.depthsInParent,[Length(ffs.pcgs)+1]);
+  fi;
+
+  r:=rec(parentffs:=ffs,
+            rest:=rest,
+            ker:=ker,
+	    pcgs:=k,
+	    serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
+	    );
+  Add(cache,[ffs,r]); # keep
+  return r;
+
+end);
+
+InstallGlobalFunction(SubgroupByFittingFreeData,function(G,gens,imgs,ipcgs)
+local ffs,hom,U,rest,ker,r;
+
+  ffs:=FittingFreeLiftSetup(G);
+  # get back to initial group -- dont induce of induce
+  while IsBound(ffs.inducedfrom) do
+    ffs:=ffs.inducedfrom;
+  od;
+
+  hom:=ffs.factorhom;
+
+  if not IsGeneralPcgs(ipcgs) then
+    ipcgs:=InducedPcgsByPcSequenceNC(ffs.pcgs,ipcgs);
+  fi;
+
+  U:=SubgroupNC(G,Concatenation(gens,ipcgs));
+
+  gens:=Concatenation(gens,ipcgs);
+  imgs:=Concatenation(imgs,List(ipcgs,x->One(Range(hom))));
+
+  if IsPermGroup(U) and AssertionLevel()>0 then
+    rest:=GroupHomomorphismByImages(U,Range(hom),gens,imgs);
+  else
+    RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+    rest:=GroupHomomorphismByImagesNC(U,Range(hom),gens,imgs);
+    RUN_IN_GGMBI:=false;
+  fi;
+  if rest=fail then Error("can't build homomorphism"); fi;
+
+  if HasRecogDecompinfoHomomorphism(hom) then
+    SetRecogDecompinfoHomomorphism(rest,RecogDecompinfoHomomorphism(hom));
+  fi;
+
+  ker:=SubgroupNC(G,ipcgs);
+  SetPcgs(ker,ipcgs);
+  if Length(ipcgs)=0 then
+    SetSize(ker,1);
+  else
+    SetSize(ker,Product(RelativeOrders(ipcgs)));
+  fi;
+  SetKernelOfMultiplicativeGeneralMapping(rest,ker);
+
+  SetSize(U,Size(Group(imgs,One(Image(ffs.factorhom))))*Size(ker));
+
+  if Length(ipcgs)=0 then
+    r:=[Length(ffs.pcgs)+1];
+  elif IsBound(ipcgs!.depthsInParent) then
+    r:=Concatenation(ipcgs!.depthsInParent,[Length(ffs.pcgs)+1]);
+  else
+    r:=Concatenation(List(ipcgs,x->DepthOfPcElement(ffs.pcgs,x)),
+      [Length(ffs.pcgs)+1]);
+  fi;
+  r:=rec(parentffs:=ffs,
+            rest:=rest,
+            ker:=ker,
+	    pcgs:=ipcgs,
+	    serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
+	    );
+
+  U!.cachedFFS:=[[ffs,r]];
+
+  # FittingFreeLiftSetup for U
+  r:=rec(inducedfrom:=ffs,
+         pcgs:=ipcgs,
+         depths:=IndicesNormalSteps(ipcgs),
+         pcisom:=ffs.pcisom,
+         radical:=ker,
+         factorhom:=rest
+	);
+  SetFittingFreeLiftSetup(U,r);
+
+  return U;
+
+end);
+
+
+InstallGlobalFunction(FittingFreeElementarySeries,function(arg)
+local G,A,wholesocle,ff,r,ser,fser,hom,q,s,d,act,o,i,j,a,perm,k;
+
+  G:=arg[1];
+  if Length(arg)>1 then
+    A:=arg[2];
+    wholesocle:=arg[3];
+  else
+    A:=TrivialSubgroup(G);
+    wholesocle:=false;
+  fi;
+  ff:=FittingFreeLiftSetup(G);
+
+  if IsSubset(G,A) then
+    # just use inner automorphisms...
+    A:=Group(List(GeneratorsOfGroup(G),x->InnerAutomorphismNC(G,x)));
+  fi;
+
+  r:=ff.radical;
+  if Size(r)=1 then
+    ser:=[r];
+  else
+    ser:=InvariantElementaryAbelianSeries(r,GeneratorsOfGroup(A));
+  fi;
+  if Size(r)<Size(G) then
+    ser:=Reversed(ser);
+    hom:=ff.factorhom;
+    q:=Image(hom);
+    s:=Socle(q);
+
+    d:=DirectFactorsFittingFreeSocle(q);
+    if wholesocle<>true then
+      # orbits on socle components
+      act:=List(GeneratorsOfGroup(A),x->InducedAutomorphism(hom,x));
+      o:=Orbits(Group(act,IdentityMapping(q)),d,
+	  function(u,a) return Image(a,u);end);
+      fser:=[TrivialSubgroup(q)];
+      for i in o do
+	a:=fser[Length(fser)];
+	for j in i do
+	  a:=ClosureGroup(a,j);
+	od;
+	Add(fser,a);
+      od;
+    else
+      fser:=[TrivialSubgroup(q),s];
+    fi;
+    for i in fser{[2..Length(fser)]} do
+      Add(ser,PreImage(hom,i));
+    od;
+#Print("A",List(ser,Size),"\n");
+    # pker/S*
+    perm:=ActionHomomorphism(q,d,"surjective");
+    k:=PreImage(hom,KernelOfMultiplicativeGeneralMapping(perm));
+    if Size(s)<Size(KernelOfMultiplicativeGeneralMapping(perm)) then
+      s:=ser[Length(ser)];
+      hom:=NaturalHomomorphismByNormalSubgroupNC(k,s);
+      q:=Image(hom);
+      act:=List(GeneratorsOfGroup(A),x->InducedAutomorphism(hom,x));
+      fser:=InvariantElementaryAbelianSeries(q,act);
+      for i in fser{[1..Length(fser)-1]} do
+	Add(ser,PreImage(hom,i));
+      od;
+    fi;
+#Print("B",List(ser,Size),"\n");
+
+    if Size(k)<Size(G) then
+      # G/Pker, recursive
+      hom:=NaturalHomomorphismByNormalSubgroupNC(G,k);
+      q:=Image(hom);
+      act:=List(GeneratorsOfGroup(A),x->InducedAutomorphism(hom,x));
+      A:=Group(act,IdentityMapping(q));
+      fser:=FittingFreeElementarySeries(q,A,wholesocle);
+      for i in fser{[Length(fser)-1,Length(fser)-2..1]} do
+	Add(ser,PreImage(hom,i));
+      od;
+    fi;
+    ser:=Reversed(ser);
+  fi;
+#Print(List([1..Length(ser)-1],x->Size(ser[x])/Size(ser[x+1])),"\n");
+  return ser;
+
+end);
+
+#############################################################################
+##
+#M  \in( <e>,<G> ) . . . . . . . . . . . . . . using TF method
+##
+InstallMethod( \in, "TF method, use tree",IsElmsColls,
+  [ IsMultiplicativeElementWithInverse,
+    IsGroup and IsFinite and HasFittingFreeLiftSetup], OVERRIDENICE,
+function(e, G)
+local f;
+  f:=FittingFreeLiftSetup(G);
+  # permutation groups don't need the .csi component
+  if not IsBound(f.csi) then TryNextMethod();fi;
+  return e in f.csi.recog;
+end );
+
+#############################################################################
+##
+#M  RadicalGroup( <G> ) . . . . . . . . . . . . . . using TF method
+##
+InstallMethod( RadicalGroup, "TF method, use tree",true,
+  [ IsGroup and IsFinite and HasFittingFreeLiftSetup], OVERRIDENICE,
+function(G)
+local f;
+  f:=FittingFreeLiftSetup(G);
+  if not IsBound(f.radical) then TryNextMethod();fi;
+  return f.radical;
+end );
+
+# evaluate homomorphism given by generators
+# 
+InstallGlobalFunction(TFEvalRFHom,function(
+  # generators for whole group
+  pcgs,pcgsimgs, # radical part
+  freps,frimgs, # outside radical
+  quotelms, # images of freps in G/Rad
+  fgp, # Group generated by frimgs
+  elm, elmimg # element to be mapped and its image
+  )
+
+local map,fword,repeval,q,freegens;
+  map:=EpimorphismFromFreeGroup(fgp);
+  freegens:=MappingGeneratorsImages(map)[1];
+  fword:=PreImagesRepresentative(map,elmimg);
+  repeval:=MappedWord(fword,freegens,freps);
+  q:=elm/repeval; # will be trivial in factor, so in radical
+  return LinearCombinationPcgs(pcgsimgs,ExponentsOfPcElement(pcgs,q))*
+           MappedWord(fword,freegens,frimgs);
+end);
+
+
+# We will be in the situation that an IGS has been corrected only on the
+# lowest level, i.e. the inly obstacle to being an IGS is on the lowest
+# level. Thus the situation is that of a vector space and we do not need to
+# consider commutators and powers, but simply do a Gaussian elimination.
+InstallGlobalFunction(TFMakeInducedPcgsModulo,function(pcgs,gens,ignoredepths)
+local i,j,d,igs,g,a,l,al;
+  d:=[];
+  igs:=[];
+  l:=[];
+  for g in gens do
+    a:=DepthAndLeadingExponentOfPcElement(pcgs,g); al:=a[2]; a:=a[1];
+    #Print(a,"\n");
+    if not a in ignoredepths then
+      j:=1;
+      while j<=Length(d) do
+	if a<d[j] then
+	  #insert
+	  for i in [Length(d),Length(d)-1..j] do
+	    d[i+1]:=d[i];
+	    igs[i+1]:=igs[i];
+	    l[i+1]:=l[i];
+	  od;
+	  d[j]:=a;
+	  igs[j]:=g;
+	  l[j]:=al;
+	  j:=Length(d)+2; # pop
+	elif a=d[j] then
+	  # conflict--divide off
+	  g:=igs[j]/g^(l[j]/al mod RelativeOrders(pcgs)[a]);
+	  a:=DepthAndLeadingExponentOfPcElement(pcgs,g); al:=a[2]; a:=a[1];
+#Print("change ",a,"\n");
+	  if a=d[j] then Error("clash!");fi;
+	  if a in ignoredepths then
+	    j:=Length(d)+2; # force ignore
+	  fi;
+	else
+	  j:=j+1;
+	fi;
+      od;
+      if j<Length(d)+2 then #we did not insert
+	Add(igs,g);
+	Add(d,a);
+	Add(l,al);
+      fi;
+    fi;
+  od;
+  IsRange(d);
+#Print("Made IGS ",d," lendiff ",Length(gens)-Length(d),"\n");
+  return igs;
+end);
+
+# Orbit functions for multi-stage calculations
+
+InstallGlobalFunction(OrbitsRepsAndStabsVectorsMultistage,
+  function(pcgs,pcgsimgs,pcisom,solvsz,solvtriv,gens,imgs,fgens,
+           factorhom,gpsz,actfun,domain)
+
+local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
+      stabfacgens,s,orblock,orb,rep,b,p,repwords,orpo,i,j,k,repword,
+      img,stabfac,reps,stage,genum,orbstabs,stabfacimg,
+      fgrp,solsubsz,failcnt,stabstack,relo,orbitseed;
+
+  orbitseed:=ValueOption("orbitseed");
+
+  stabilizergen:=function()
+  local im,i,fe,gpe;
+
+    if stage=1 then
+
+      Error("solv stage is gone");
+      #stabilizer in radical
+      if IsRecord(st) then st:=st.left/st.right;fi;
+      fe:=ImagesRepresentative(pcisom,st);
+      if not fe in stabrsub then
+	stabrsub:=ClosureGroup(stabrsub,fe);
+	stabrsubsz:=Size(stabrsub);
+	subsz:=stabrsubsz*Size(stabfac);
+	ratio:=gpsz/subsz/Length(orb);
+	if ratio=1 then vp:=Length(orb);fi;
+	Add(stabrad,st);
+      else
+	failcnt:=failcnt+1;
+	if IsInt(failcnt/50) then
+	  Info(InfoHomClass,5,"failed ",failcnt," times, ratio ",EvalF(ratio),
+		", ",Length(stabrad)," gens\n");
+	fi;
+      fi;
+
+    else
+      # in radical factor, still it could be the identity
+      if Length(repword)>0 then
+	# build the factor group element
+	fe:=One(Image(factorhom));
+	for i in repword do
+	  fe:=fe*fgens[i];
+	od;
+	for i in Reversed(repwords[p]) do
+	  fe:=fe/fgens[i];
+	od;
+	if not fe in stabfac then
+	  # not known -- add to generators
+	  Add(stabfacimg,fe);
+
+	  if IsRecord(st) then 
+	    if st.left<>fail then
+	      Error("cannot happen");
+	      st:=st.left/st.right;
+	    else
+	      gpe:=One(Source(factorhom));
+	      for i in repwords[st.vp] do
+		gpe:=gpe*gens[i];
+	      od;
+	      gpe:=gpe*gens[st.genumr];
+	      for i in Reversed(repwords[st.right]) do
+		gpe:=gpe/gens[i];
+	      od;
+
+	      # vector image under st
+	      im:=orb[1];
+	      for i in repwords[st.vp] do
+		im:=im*imgs[i];
+	      od;
+	      im:=im*imgs[st.genumr];
+	      for i in Reversed(repwords[st.right]) do
+		im:=im/imgs[i];
+	      od;
+	    fi;
+
+	    # make sure st really stabilizes by dividing off solvable bit
+	    st:=gpe/reps[orpo[Position(domain,im)]];
+	  fi;
+
+	  Add(stabfacgens,st);
+	  stabfac:=ClosureGroup(stabfac,fe);
+	  subsz:=stabrsubsz*Size(stabfac);
+	  ratio:=gpsz/subsz/Length(orb);
+	  if ratio=1 then vp:=Length(orb);fi;
+	  Assert(1,GeneratorsOfGroup(stabfac)=stabfacimg);
+
+	fi;
+      fi;
+    fi;
+
+    # radical stabilizer element. TODO: Use PCGS to remove
+    # duplicates
+  end;
+
+  fgrp:=Group(fgens,One(Range(factorhom)));
+
+  # now compute orbits, being careful to get stabilizers in steps
+  orbstabs:=[];
+  # use positions in bit list to know which ones are done
+  sz:=Length(domain);
+  b:=BlistList([1..sz],[]);
+  while sz>0 do
+    failcnt:=0;
+    if orbitseed<>fail then
+      # get seed number
+      p:=Position(domain,orbitseed);
+    else
+      # still orbits left to do
+      p:=Position(b,false);
+    fi;
+    orb:=[domain[p]];
+    orpo:=[];
+    orpo[p]:=1;
+    b[p]:=true;
+    sz:=sz-1;
+    reps:=[One(pcgs[1])];
+    stabstack:=[];
+    stabrad:=[];
+    stabrsub:=solvtriv;
+    stabrsubsz:=Size(solvtriv);
+    stabfac:=TrivialSubgroup(fgrp);
+    subsz:=stabrsubsz*Size(stabfac);
+    stabfacgens:=[];
+    stabfacimg:=[];
+    repwords:=[[]];
+
+    # now do a two-stage orbit algorithm. first solvable, then via the
+    # factor group. Both times we can check that we have the correct orbit.
+
+    # ratio 1: full orbit/stab known, ratio <2 stab cannot grow any more.
+    ratio:=5; 
+    vp:=1; # position in orbit to process
+
+    # solvable iteration
+    stage:=1;
+    for genum in [Length(pcgs),Length(pcgs)-1..1] do
+      relo:=RelativeOrders(pcisom!.sourcePcgs)[
+	      DepthOfPcElement(pcisom!.sourcePcgs,pcgs[genum])];
+      img:=actfun(orb[1],pcgsimgs[genum]);
+      repword:=repwords[1];
+      p:=Position(domain,img);
+      if not b[p] then
+	# new orbit images
+	vp:=Length(orb)*(relo-1);
+	sz:=sz-vp;
+	for j in [1..vp] do
+	  img:=actfun(orb[j],pcgsimgs[genum]);
+	  p:=Position(domain,img);
+	  b[p]:=true;
+	  Add(orb,img);
+	  orpo[p]:=Length(orb);
+	  Add(reps,reps[j]*pcgs[genum]);
+	  Add(repwords,repword);
+	od;
+      else
+	rep:=pcgs[genum]/reps[orpo[p]];
+#if Order(rep)=1 then Error("HUH4"); fi;
+	Add(stabrad,rep);
+#Print("increased ",stabrsubsz," by ",relo,"\n");
+	stabrsubsz:=stabrsubsz*relo;
+	#rep:=ImageElm(pcisom,rep);
+	#stabrsub:=ClosureGroup(stabrsub,rep);
+#if Size(stabrsub)<>stabrzubsz then Error("HUH10");fi;
+	subsz:=stabrsubsz;
+	ratio:=gpsz/subsz/Length(orb);
+      fi;
+
+    od;
+    stabrad:=Reversed(stabrad);
+
+#if Length(orb)<>Length(Orbit(Group(pcgsimgs),orb[1],actfun)) then Error("HUH9");fi;
+
+    subsz:=stabrsubsz;
+    if  solvsz<>subsz*Length(orb) then
+      Error("processing stabstack solvable ", Length(stabrad));
+
+      s:=1;
+      while solvsz<>subsz*Length(orb) do
+	vp:=stabstack[s][1];
+	genum:=stabstack[s][2];
+	img:=orb[vp]*pcgsimgs[genum];
+	rep:=reps[vp]*pcgs[genum];
+	repword:=repwords[vp];
+	p:=Position(domain,img);
+	p:=orpo[p];
+	#st:=rep/reps[p];
+	st:=rec(left:=rep,right:=reps[p]);
+	stabilizergen();
+	s:=s+1;
+      od;
+      Info(InfoHomClass,5,"processed solvable ",s," from ",Length(stabstack));
+    fi;
+
+    subsz:=stabrsubsz;
+    solsubsz:=subsz;
+
+    orblock:=Length(orb);
+    Info(InfoHomClass,5,"solvob=",orblock);
+
+    # nonsolvable iteration: We act on orbits
+    stage:=2;
+
+    # ratio 1: full orbit/stab known, ratio <2 stab cannot grow any more.
+    ratio:=5; 
+    vp:=1;
+    while vp<=Length(orb) do
+      for genum in [1..Length(gens)] do
+	img:=actfun(orb[vp],imgs[genum]);
+
+	repword:=Concatenation(repwords[vp],[genum]);
+
+	p:=Position(domain,img);
+	if not b[p] then
+	  # new orbit image
+	  Add(orb,img);
+	  orpo[p]:=Length(orb);
+	  if rep<>fail then Add(reps,rep); fi;
+	  Add(repwords,repword);
+	  b[p]:=true;
+	  for j in [1..orblock-1] do
+	    img:=actfun(orb[vp+j],imgs[genum]);
+	    p:=Position(domain,img);
+	    if b[p] then Error("duplicate!");fi;
+	    Add(orb,img);
+	    orpo[p]:=Length(orb);
+	    #if IsBound(reps[vp+j]) then
+	    #  Add(reps,reps[vp+j]*gens[genum]);
+	    #fi;
+	    # repwordslso needs to change!
+	    Add(repwords,Concatenation(repwords[vp+j],[genum]));
+	    b[p]:=true;
+	  od;
+
+	  sz:=sz-orblock;
+	  ratio:=gpsz/subsz/Length(orb);
+	  if ratio=1 then vp:=Length(orb);fi;
+
+	elif ratio>=2 then
+	  # old orbit element -- stabilizer generator
+	  # if ratio <2 the stabilizer cannot grow any more
+
+	  p:=orpo[p];
+	  st:=rec(left:=fail,vp:=vp,genumr:=genum,right:=p);
+	  stabilizergen();
+	fi;
+      od;
+      vp:=vp+orblock; # jump in steps
+    od;
+
+    s:=1;
+    subsz:=stabrsubsz*Size(stabfac);
+    if  gpsz<>subsz*Length(orb) then
+      Error("should not happen nonslv stabstack");
+    fi;
+
+
+    Info(InfoHomClass,4,"orblen=",Length(orb)," blocked ",orblock," left:",
+      sz," len=", Length(stabrad)," ",Length(stabfacgens));
+
+    #Assert(2,ForAll(GeneratorsOfGroup(stabsub),i->Comm(i,h*rep) in NT));
+    s:=rec(rep:=orb[1],len:=Length(orb),stabradgens:=stabrad,
+	   stabfacgens:=stabfacgens,stabfacimgs:=stabfacimg,
+	   stabrsub:=stabrsub,stabrsubsz:=stabrsubsz,subsz:=subsz
+		  );
+    if orbitseed<>fail then
+      s.gens:=gens;
+      s.fgens:=fgens;
+      s.orbit:=orb;
+      s.orblock:=orblock;
+      s.reps:=reps;
+      s.repwords:=repwords;
+      sz:=0; # force bailout
+    else
+      # by construction, we seed each orbit with its smallest element
+      Assert(1,orb[1]=Minimum(orb));
+    fi;
+    Add(orbstabs,s);
+  od;
+  return orbstabs;
+end);
+
+InstallGlobalFunction(OrbitMinimumMultistage,
+  function(pcgs,pcgsimgs,pcisom,solvsz,solvtriv,gens,imgs,fgens,
+           factorhom,gpsz,actfun,seed,orblen,stops)
+
+#was: OrbitMinimumMultistage:=function(pcgs,pcgsimgs,gens,imgs,fgens,actfun,seed,orblen,stops)
+
+local sel,orb,dict,reps,repwords,vp,img,cont,minpo,genum,rep,repword,p,
+  orblock,s,i,j;
+
+
+
+
+  orb:=[seed];
+  p:=DefaultHashLength;
+  DefaultHashLength:=4*orblen; # remember that we might need all orbit elements
+  if IsRowVector(seed) then
+    dict:=NewDictionary(seed,true,DefaultField(seed)^Length(seed));
+  else
+    dict:=NewDictionary(seed,true);
+  fi;
+  DefaultHashLength:=p;
+  AddDictionary(dict,seed,Length(orb));
+  reps:=[One(pcgs[1])];
+  repwords:=[[]];
+
+  # now do a two-stage orbit algorithm. first solvable, then via the
+  # factor group. Both times we can check that we have the correct orbit.
+
+  vp:=1;
+  img:=fail;
+  cont:=true;
+  minpo:=fail;
+
+  while vp<=Length(orb) and cont do
+    for genum in [Length(pcgs),Length(pcgs)-1..1] do
+
+      img:=actfun(orb[vp],pcgsimgs[genum]);
+      rep:=reps[vp]*pcgs[genum];
+      repword:=repwords[vp];
+      p:=LookupDictionary(dict,img);
+      if p=fail then
+	# new orbit element
+	Add(orb,img);
+	AddDictionary(dict,img,Length(orb));
+	Add(reps,rep);
+	Add(repwords,repword);
+	if img in stops then
+	  minpo:=Length(orb);
+	  cont:=false;
+	elif Length(orb)>=orblen then
+	  cont:=false;
+	fi;
+      fi;
+    od;
+    vp:=vp+1;
+  od;
+#if Length(orb)>Length(Set(orb)) then Error("EH");fi;
+  orblock:=Length(orb);
+  Info(InfoHomClass,5,"solvob=",orblock);
+
+  # nonsolvable iteration: We act on orbits
+
+  # these are the proper actors
+  sel:=Filtered([1..Length(gens)],x->Order(gens[x])>1);
+  vp:=1;
+  while vp<=Length(orb) and cont do
+    for genum in sel do
+      img:=actfun(orb[vp],imgs[genum]);
+      repword:=Concatenation(repwords[vp],[genum]);
+      p:=LookupDictionary(dict,img);
+      if p=fail then
+	# new orbit image
+	Add(orb,img);
+	AddDictionary(dict,img,Length(orb));
+	Add(repwords,repword);
+	if img in stops then 
+	  minpo:=Length(orb);
+	  cont:=false;
+	fi;
+	for j in [1..orblock-1] do
+	  img:=actfun(orb[vp+j],imgs[genum]);
+	  Add(orb,img);
+	  AddDictionary(dict,img,Length(orb));
+	  Add(repwords,Concatenation(repwords[vp+j],[genum]));
+	  if img in stops then
+	    minpo:=Length(orb);
+	    cont:=false;
+	  fi;
+	od;
+	if Length(orb)>=orblen then cont:=false;fi;
+      fi;
+    od;
+    vp:=vp+orblock; # jump in steps
+  od;
+
+  if minpo=fail then
+    # guarantee minimum
+    p:=orb[1];minpo:=1;
+    for j in [2..Length(orb)] do
+      if orb[j]<p then
+	minpo:=j;p:=orb[j];
+      fi;
+    od;
+  fi;
+
+  # now find rep mapping to minimum
+  if Length(gens)=0 then
+    p:=One(pcgs[1]);
+    s:=();
+  else
+    p:=One(gens[1]);
+    s:=One(fgens[1]);
+  fi;
+  for i in repwords[minpo] do
+    p:=p*gens[i];
+    s:=s*fgens[i];
+  od;
+  i:=minpo mod orblock;
+  if i=0 then i:=orblock;fi;
+  p:=reps[i]*p;
+
+  p:=rec(elm:=p,felm:=s,min:=orb[minpo]);
+  return p;
+end);
 
 BindGlobal("SylowViaRadical",function(G,prime)
 local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
@@ -21,7 +757,7 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
   sg:=List(sf,x->PreImagesRepresentative(hom,x));
   sp:=[];
   RUN_IN_GGMBI:=true; # hack to skip Nice treatment
-  fphom:=GroupGeneralMappingByImages(Group(sg,One(G)),fp,sg,
+  fphom:=GroupGeneralMappingByImagesNC(Group(sg,One(G)),fp,sg,
     GeneratorsOfGroup(fp));
   RUN_IN_GGMBI:=false;
 
@@ -55,7 +791,7 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
       sg:=gens{[1..Length(sg)]};
       sp:=gens{[Length(sg)+1..Length(gens)]};
       RUN_IN_GGMBI:=true; # hack to skip Nice treatment
-      fphom:=GroupGeneralMappingByImages(ocr.complement,fp,gens,
+      fphom:=GroupGeneralMappingByImagesNC(ocr.complement,fp,gens,
 	GeneratorsOfGroup(fp));
       RUN_IN_GGMBI:=false;
       
@@ -344,7 +1080,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,prd,k,nk,map,ns,all,hl,hcomp,
       for j in [1..Length(pcgs)] do
 	h:=ClosureGroup(dser[j],gens);
 	RUN_IN_GGMBI:=true; # hack to skip Nice treatment
-	fphom:=GroupGeneralMappingByImages(h,fp,
+	fphom:=GroupGeneralMappingByImagesNC(h,fp,
 		Concatenation(GeneratorsOfGroup(dser[j]),gens),
 		Concatenation(List(GeneratorsOfGroup(dser[j]),x->One(fp)),imgs));
 	RUN_IN_GGMBI:=false;
@@ -360,7 +1096,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,prd,k,nk,map,ns,all,hl,hcomp,
 
 	h:=ClosureGroup(b,gens);
 	RUN_IN_GGMBI:=true; # hack to skip Nice treatment
-	fphom:=GroupGeneralMappingByImages(h,fp,
+	fphom:=GroupGeneralMappingByImagesNC(h,fp,
 		Concatenation(GeneratorsOfGroup(b),gens),
 		Concatenation(List(GeneratorsOfGroup(b),x->One(fp)),imgs));
 	RUN_IN_GGMBI:=false;
@@ -429,7 +1165,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,prd,k,nk,map,ns,all,hl,hcomp,
 	for z in [1..Length(pcgs)] do
 	  h:=ClosureGroup(dser[z],cgens);
 	  RUN_IN_GGMBI:=true; # hack to skip Nice treatment
-	  fphom:=GroupGeneralMappingByImages(h,fp,
+	  fphom:=GroupGeneralMappingByImagesNC(h,fp,
 		  Concatenation(GeneratorsOfGroup(dser[z]),cgens),
 		  Concatenation(List(GeneratorsOfGroup(dser[z]),x->One(fp)),
 		    imgs));
@@ -515,7 +1251,7 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
     sg:=List(sf,x->PreImagesRepresentative(hom,x));
     sp:=[];
     RUN_IN_GGMBI:=true; # hack to skip Nice treatment
-    fphom:=GroupGeneralMappingByImages(Group(sg,One(G)),fp,sg,
+    fphom:=GroupGeneralMappingByImagesNC(Group(sg,One(G)),fp,sg,
       GeneratorsOfGroup(fp));
     RUN_IN_GGMBI:=false;
 
@@ -547,7 +1283,7 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
 	sg:=gens{[1..Length(sg)]};
 	sp:=gens{[Length(sg)+1..Length(gens)]};
 	RUN_IN_GGMBI:=true; # hack to skip Nice treatment
-	fphom:=GroupGeneralMappingByImages(ocr.complement,fp,gens,
+	fphom:=GroupGeneralMappingByImagesNC(ocr.complement,fp,gens,
 	  GeneratorsOfGroup(fp));
 	RUN_IN_GGMBI:=false;
 	

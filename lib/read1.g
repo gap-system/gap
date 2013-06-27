@@ -44,6 +44,8 @@ ReadLib( "arith.gi"    );
 ReadLib( "list.g"      );
 ReadLib( "wpobj.g"     );
 ReadLib( "permutat.g"  );
+ReadLib( "trans.g"  );
+ReadLib( "pperm.g"  );
 
 ReadLib( "object.gi"   );
 ReadLib( "listcoef.gd" );

@@ -39,6 +39,8 @@
 #include        "integer.h"             /* integers                        */
 
 #include        "permutat.h"            /* permutations                    */
+#include        "trans.h"               /* transformations                 */
+#include        "pperm.h"               /* partial perms                   */
 
 #include        "precord.h"             /* plain records                   */
 
@@ -1904,16 +1906,13 @@ void            IntrFloatExpr (
     Char *              str )
 {
     Obj                 val;
-    UInt len;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
     if ( IntrCoding    > 0 ) {  CodeFloatExpr( str );   return; }
 
-    len = strlen(str)+1;
-    val = NEW_STRING(len-1);
-    memcpy(CHARS_STRING(val), (void *) str, len);
+    C_NEW_STRING_DYN(val, str);
     PushObj(ConvertFloatLiteralEager(val));
 }
 

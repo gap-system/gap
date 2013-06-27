@@ -17,6 +17,8 @@
 **  except file/stream handling which is done in "sysfiles.h".
 */
 
+#define _GNU_SOURCE  /* is used for ptsname_r prototype etc. */
+
 #ifndef GAP_SYSTEM_H
 #define GAP_SYSTEM_H
 

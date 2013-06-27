@@ -60,7 +60,9 @@ local s,sg,o,gi;
   fi;
   sg:=FreeGeneratorsOfFpGroup(s);
   o:=One(Range(hom));
-  gi:=MappingGeneratorsImages(hom)[2];
+  # take the images corresponding to the free gens in case of reordering or
+  # duplicates
+  gi:=MappingGeneratorsImages(hom)[2]{hom!.genpositions};
   return ForAll(RelatorsOfFpGroup(s),i->MappedWord(i,sg,gi)=o);
 end);
 
@@ -81,7 +83,9 @@ local s, bas, sg, o, gi, l, p, rel, start, i;
   bas:=BaseStabChain(StabChainMutable(Range(hom)));
   sg:=FreeGeneratorsOfFpGroup(s);
   o:=One(Range(hom));
-  gi:=MappingGeneratorsImages(hom)[2];
+  # take the images corresponding to the free gens in case of reordering or
+  # duplicates
+  gi:=MappingGeneratorsImages(hom)[2]{hom!.genpositions};
   for rel in RelatorsOfFpGroup(s) do
     l:=LetterRepAssocWord(rel);
     for start in bas do
@@ -708,7 +712,12 @@ local mapi;
 	  i->Length(i)=1 and i[1]>0) ) then
     TryNextMethod();
   fi;
-  return MappedWord(elm,mapi[2],mapi[1]);
+  if Length(mapi[2])=0 then 
+    mapi:=One(Source(hom));
+  else
+    mapi:=MappedWord(elm,mapi[2],mapi[1]);
+  fi;
+  return mapi;
 end);
 
 #############################################################################

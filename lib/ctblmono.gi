@@ -102,8 +102,8 @@ InstallMethod( Alpha,
       # Compute the derived lengths
       for k in relevant do
 
-        dl:= Length( DerivedSeriesOfGroup( FactorGroupNormalSubgroupClasses(
-                         OrdinaryCharacterTable( G ), k ) ) ) - 1;
+        dl:= DerivedLength( FactorGroupNormalSubgroupClasses(
+                         OrdinaryCharacterTable( G ), k ) );
         if dl > max then
           max:= dl;
         fi;

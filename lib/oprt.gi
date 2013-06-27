@@ -1507,7 +1507,7 @@ local   orbs, orb,sort,plist,pos,use,o,nc,ld,ld1;
   if not plist then
     use:=BlistList([1..Length(D)],[]);
   fi;
-  nc:=false;
+  nc:=true;
   ld1:=Length(D);
   orbs := [  ];
   pos:=1;
@@ -1523,7 +1523,7 @@ local   orbs, orb,sort,plist,pos,use,o,nc,ld,ld1;
 	D:=Filtered(D,i-> not i in orb);
       fi;
       if Length(D)+Length(orb)>ld then
-	nc:=true; # there are elements in `orb' not in D
+	nc:=false; # there are elements in `orb' not in D
       fi;
     else
       for o in orb do
@@ -1908,9 +1908,10 @@ InstallMethod( PermutationOp, "object on list", true,
             pnt := act( pnt, g );
             new := PositionCanonical( D, pnt );
 	    if new=fail then
+	      Info(InfoWarning,2,"PermutationOp: mapping does not leave the domain invariant");
 	      return fail;
 	    elif blist[new] then
-	      Info(InfoWarning,1,"PermutationOp: mapping is not a permutation");
+	      Info(InfoWarning,2,"PermutationOp: mapping is not injective");
 	      return fail;
 	    fi;
             blist[ new ] := true;

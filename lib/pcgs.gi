@@ -357,6 +357,24 @@ function( pcgs, elm )
     return PositionNot( ExponentsOfPcElement( pcgs, elm ), 0 );
 end );
 
+#############################################################################
+##
+#M  DepthAndLeadingExponentOfPcElement( <pcgs>, <elm> )
+##
+InstallMethod( DepthAndLeadingExponentOfPcElement,
+    "generic methods, ExponentsOfPcElement",
+    IsCollsElms, [ IsModuloPcgs, IsObject ], 0,
+function( pcgs, elm )
+local e,p;
+    e:=ExponentsOfPcElement( pcgs, elm );
+    p:=PositionNot( e, 0 );
+    if p>Length(e) then
+      return [p,0];
+    else
+      return [p,e[p]];
+    fi;
+end );
+
 
 #############################################################################
 ##
@@ -1632,6 +1650,53 @@ InstallMethod( PcgsElementaryAbelianSeries, "generic group", true, [ IsGroup ],
 
 InstallOtherMethod( PcgsElementaryAbelianSeries, "group list", true,
   [ IsList ], 0, DoPcgsElementaryAbelianSeries);
+
+
+#############################################################################
+##
+#R  IsPcgsByPcgsRep
+##
+##  representation for a pcgs that calculates exponents wrt. one pcgs and
+##  then determines the desired exponents in a shadowing pc group
+##
+DeclareRepresentation( "IsPcgsByPcgsRep",
+    IsPcgsDefaultRep and IsFiniteOrdersPcgs, [ "usePcgs",
+    "shadowFamilyPcgs", "shadowImagePcgs" ] );
+
+InstallGlobalFunction(PcgsByPcgs,function(gens,use,family,images)
+local pcgs;
+
+  pcgs:=PcgsByPcSequenceCons(IsPcgsDefaultRep,
+    IsPcgsByPcgsRep and IsPcgs and IsPrimeOrdersPcgs, 
+    FamilyObj(gens[1]),gens,[]);
+  pcgs!.usePcgs:=use;
+  pcgs!.shadowFamilyPcgs:=family;
+  pcgs!.shadowImagePcgs:=images;
+  SetRelativeOrders(pcgs,RelativeOrders(images));
+  return pcgs;
+end);
+
+InstallMethod(ExponentsOfPcElement,"pcgs by pcgs",IsCollsElms,
+  [IsPcgsByPcgsRep and IsPcgs,IsObject],
+function(pcgs,elm)
+local e;
+  e:=ExponentsOfPcElement(pcgs!.usePcgs,elm);
+  e:=PcElementByExponentsNC(pcgs!.shadowFamilyPcgs,e);
+  e:=ExponentsOfPcElement(pcgs!.shadowImagePcgs,e);
+  return e;
+end);
+
+InstallMethod(DepthOfPcElement,"pcgs by pcgs",IsCollsElms,
+  [IsPcgsByPcgsRep and IsPcgs,IsObject],
+function(pcgs,elm)
+local e;
+  e:=ExponentsOfPcElement(pcgs!.usePcgs,elm);
+  e:=PcElementByExponentsNC(pcgs!.shadowFamilyPcgs,e);
+  e:=DepthOfPcElement(pcgs!.shadowImagePcgs,e);
+  return e;
+end);
+
+
 
 
 #############################################################################

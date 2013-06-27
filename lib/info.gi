@@ -481,3 +481,14 @@ local out,w,w0,i;
     PrintTo(out,"|\c");
   fi;
 end);
+
+
+#############################################################################
+##
+#V  InfoObsolete
+##
+##  This info class has a default level of 0.
+##  Warnings can be switched on by setting its level to one.
+##
+DeclareInfoClass( "InfoObsolete" );
+SetInfoLevel(InfoObsolete,0);

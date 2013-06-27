@@ -585,6 +585,8 @@ InstallGlobalFunction( ExponentsOfPcElementPermGroup,
             
             if mode = 'l'  then
                 return e;
+            elif mode='s' then
+	      return [depth-1,e];
             fi;
             
             # Remove the appropriate  power  of the <depth>th  generator  and
@@ -597,6 +599,7 @@ InstallGlobalFunction( ExponentsOfPcElementPermGroup,
     od;
     if   mode = 'd'  then  return maxdepth + 1;
     elif mode = 'l'  then  return fail;
+    elif mode = 's'  then  return [maxdepth+1,0];
     else                   return exp;  fi;
 end );
 
@@ -971,6 +974,12 @@ InstallMethod( DepthOfPcElement,"permpcgs", true,
         [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs, IsPerm ], 0,
     function( pcgs, g )
     return ExponentsOfPcElementPermGroup( pcgs, g, 1, Length( pcgs ), 'd' );
+end );
+
+InstallMethod( DepthAndLeadingExponentOfPcElement,"permpcgs", true,
+        [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs, IsPerm ], 0,
+    function( pcgs, g )
+    return ExponentsOfPcElementPermGroup( pcgs, g, 1, Length( pcgs ), 's' );
 end );
 
 InstallOtherMethod( DepthOfPcElement,"permpcgs,start", true,

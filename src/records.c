@@ -105,10 +105,8 @@ UInt            RNamName (
         CountRNam++;
         rnam = INTOBJ_INT(CountRNam);
         SET_ELM_PLIST( HashRNam, pos, rnam );
-        namx[0] = '\0';
-        SyStrncat( namx, name, 1023 );
-        string = NEW_STRING( strlen(namx) );
-        SyStrncat( CSTR_STRING(string), namx, strlen(namx) );
+        strlcpy( namx, name, sizeof(namx) );
+        C_NEW_STRING_DYN(string, namx);
         GROW_PLIST(    NamesRNam,   CountRNam );
         SET_LEN_PLIST( NamesRNam,   CountRNam );
         SET_ELM_PLIST( NamesRNam,   CountRNam, string );
@@ -189,7 +187,7 @@ UInt            RNamObj (
     }
 
     /* convert string object (empty string may have type T_PLIST)          */
-    else if ( IsStringConv(obj) && MUTABLE_TNUM(TNUM_OBJ(obj))==T_STRING ) {
+    else if ( IsStringConv(obj) && IS_STRING_REP(obj) ) {
         return RNamName( CSTR_STRING(obj) );
     }
 
@@ -240,6 +238,7 @@ Obj             NameRNamHandler (
     Obj                 rnam )
 {
     Obj                 name;
+    Char                *cname;
     while ( ! IS_INTOBJ(rnam)
          || INT_INTOBJ(rnam) <= 0
         || CountRNam < INT_INTOBJ(rnam) ) {
@@ -248,10 +247,8 @@ Obj             NameRNamHandler (
             (Int)TNAM_OBJ(rnam), 0L,
             "you can replace <rnam> via 'return <rnam>;'" );
     }
-    name = NEW_STRING( strlen( NAME_RNAM( INT_INTOBJ(rnam) ) ) );
-    SyStrncat( CSTR_STRING(name),
-               NAME_RNAM( INT_INTOBJ(rnam) ),
-               strlen( NAME_RNAM( INT_INTOBJ(rnam) ) ) );
+    cname = NAME_RNAM( INT_INTOBJ(rnam) );
+    C_NEW_STRING_DYN( name, cname);
     return name;
 }
 
@@ -555,7 +552,7 @@ Obj FuncALL_RNAMES (
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, CountRNam );
     for ( i = 1;  i <= CountRNam;  i++ ) {
         name = NAME_RNAM( i );
-        C_NEW_STRING(s, strlen(name), name);
+        C_NEW_STRING_DYN(s, name);
         SET_ELM_PLIST( copy, i, s );
     }
     SET_LEN_PLIST( copy, CountRNam );

@@ -7,7 +7,15 @@
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
    [ <!ENTITY ATLAS "<Package>Atlas</Package>">
      <!ENTITY mdash "<Alt Only='HTML'>&#8212;</Alt><Alt Not='HTML'>---</Alt>">
-<#Include SYSTEM "../versiondata">
+     <#Include SYSTEM "../versiondata">
+     <!ENTITY H "<Alt Only='HTML'>\(\mathcal{H}\)</Alt><Alt
+      Only='Text'><E>H</E></Alt><Alt Only='LaTeX'><M>\mathcal{H}</M></Alt>">
+     <!ENTITY R "<Alt Only='HTML'>\(\mathcal{R}\)</Alt><Alt
+      Only='Text'><E>R</E></Alt><Alt Only='LaTeX'><M>\mathcal{R}</M></Alt>">
+     <!ENTITY L "<Alt Only='HTML'>\(\mathcal{L}\)</Alt><Alt
+      Only='Text'><E>L</E></Alt><Alt Only='LaTeX'><M>\mathcal{L}</M></Alt>">
+     <!ENTITY D "<Alt Only='HTML'>\(\mathcal{D}\)</Alt><Alt
+      Only='Text'><E>D</E></Alt><Alt Only='LaTeX'><M>\mathcal{D}</M></Alt>">
    ]>
 
 <!-- the 2.8em parameter causes that in the toc lines for sections more 
@@ -116,9 +124,9 @@
 <#Include SYSTEM "grplib.xml">
 
 <#Include SYSTEM "semigrp.xml">
-<#Include SYSTEM "monoid.xml">
 <#Include SYSTEM "fpsemi.xml">
 <#Include SYSTEM "trans.xml">
+<#Include SYSTEM "pperm.xml">
 
 <#Include SYSTEM "addmagma.xml">
 <#Include SYSTEM "rings.xml">

@@ -2511,12 +2511,7 @@ void PutLine2(
     }
 
     /* Space for the null is allowed for in GAP strings */
-    str = NEW_STRING( len );
-
-    /* But we have to allow for it in SyStrncat */
-    /*    XXX SyStrncat( CSTR_STRING(str), line, len + 1 );    */
-    /* this contains trailing zero character */
-    memcpy(CHARS_STRING(str),  line, len + 1 );
+    C_NEW_STRING( str, len, line );
 
     /* now delegate to library level */
     CALL_2ARGS( WriteAllFunc, output->stream, str );
@@ -2844,7 +2839,7 @@ Obj FuncToggleEcho( Obj self)
 Obj FuncCPROMPT( Obj self)
 {
   Obj p;
-  C_NEW_STRING( p, strlen( Prompt ), Prompt );
+  C_NEW_STRING_DYN( p, Prompt );
   return p;
 }
 
@@ -3211,7 +3206,7 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 
 Obj FuncINPUT_FILENAME( Obj self) {
   Obj s;
-  C_NEW_STRING( s, strlen(Input->name), Input->name );
+  C_NEW_STRING_DYN( s, Input->name );
   return s;
 }
 
@@ -3227,7 +3222,7 @@ Obj FuncALL_KEYWORDS(Obj self) {
   l = NEW_PLIST(T_PLIST_EMPTY, 0);
   SET_LEN_PLIST(l,0);
   for (i = 0; i < sizeof(AllKeywords)/sizeof(AllKeywords[0]); i++) {
-    C_NEW_STRING(s,strlen(AllKeywords[i].name),AllKeywords[i].name);
+    C_NEW_STRING_DYN(s,AllKeywords[i].name);
     ASS_LIST(l, i+1, s);
   }
   MakeImmutable(l);

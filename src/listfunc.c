@@ -35,6 +35,8 @@
 #include        "bool.h"                /* booleans                        */
 
 #include        "permutat.h"            /* permutations                    */
+#include        "trans.h"               /* transformations                 */
+#include        "pperm.h"               /* partial perms                   */
 
 #include        "listfunc.h"            /* functions for generic lists     */
 
@@ -138,6 +140,13 @@ Obj            RemList (
     Int                 pos; 
     Obj result;
     pos = LEN_LIST( list ) ;
+    if ( pos == 0L ) {
+        list = ErrorReturnObj(
+                "Remove: <list> must not be empty",
+                0L, 0L,
+                "you may replace <list> via 'return <list>;'" );
+        return RemList(list);
+    }
     result = ELM_LIST(list, pos);
     UNB_LIST(list, pos);
     return result;
@@ -155,12 +164,19 @@ Obj            RemPlist (
 
     if ( ! IS_MUTABLE_PLIST(list) ) {
         list = ErrorReturnObj(
-                "Lists Assignment: <list> must be a mutable list",
+                "Remove: <list> must be a mutable list",
                 0L, 0L,
                 "you may replace <list> via 'return <list>;'" );
         return FuncREM_LIST( 0, list);
     }
     pos = LEN_PLIST( list );
+    if ( pos == 0L ) {
+        list = ErrorReturnObj(
+                "Remove: <list> must not be empty",
+                0L, 0L,
+                "you may replace <list> via 'return <list>;'" );
+        return FuncREM_LIST( 0, list);
+    }
     removed = ELM_PLIST(list, pos);
     SET_ELM_PLIST(list, pos, (Obj)0L);
     SET_LEN_PLIST(list, pos-1);
@@ -1295,6 +1311,18 @@ Obj             FuncOnTuples (
         return OnTuplesPerm( tuple, elm );
     }
 
+    /* special case for transformations                                       */
+    if ( TNUM_OBJ(elm) == T_TRANS2 || TNUM_OBJ(elm) == T_TRANS4 ) {
+        PLAIN_LIST( tuple );
+        return OnTuplesTrans( tuple, elm );
+    }
+
+    /* special case for partial perms */
+    if ( TNUM_OBJ(elm) == T_PPERM2 || TNUM_OBJ(elm) == T_PPERM4 ) {
+        PLAIN_LIST( tuple );
+        return OnTuplesPPerm( tuple, elm );
+    }
+
     /* create a new bag for the result                                     */
     img = NEW_PLIST( IS_MUTABLE_OBJ(tuple) ? T_PLIST : T_PLIST+IMMUTABLE, LEN_LIST(tuple) );
     SET_LEN_PLIST( img, LEN_LIST(tuple) );
@@ -1350,12 +1378,22 @@ Obj             FuncOnSets (
       }
     }
         
-         
-
     /* special case for permutations                                       */
     if ( TNUM_OBJ(elm) == T_PERM2 || TNUM_OBJ(elm) == T_PERM4 ) {
         PLAIN_LIST( set );
         return OnSetsPerm( set, elm );
+    }
+
+    /* special case for transformations */
+    if ( TNUM_OBJ(elm)== T_TRANS2 || TNUM_OBJ(elm) == T_TRANS4 ){
+      PLAIN_LIST(set);
+      return OnSetsTrans( set, elm);
+    }
+    
+    /* special case for partial perms */
+    if ( TNUM_OBJ(elm)== T_PPERM2 || TNUM_OBJ(elm) == T_PPERM4 ){
+      PLAIN_LIST(set);
+      return OnSetsPPerm( set, elm);
     }
 
     /* compute the list of images                                          */

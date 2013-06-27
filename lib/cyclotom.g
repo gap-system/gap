@@ -1099,6 +1099,10 @@ InstallMethod( String,
     [ IsInfinity ],
     x -> "infinity" );
 
+InstallMethod( String,
+    "for -infinity",
+    [ IsNegInfinity ],
+    x -> "-infinity" );
 
 #############################################################################
 ##

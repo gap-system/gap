@@ -52,13 +52,21 @@
 ##
 #R  IsMagmaRingObjDefaultRep( <obj> )
 ##
-##  The default representation of an element object is a list of length 2,
+##  <#GAPDoc Label="IsMagmaRingObjDefaultRep">
+##  <ManSection>
+##  <Filt Name="IsMagmaRingObjDefaultRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  The default representation of a magma ring element is a list of length 2,
 ##  at first position the zero coefficient, at second position a list with
 ##  the coefficients at the even positions, and the magma elements at the
 ##  odd positions, with the ordering as defined for the magma elements.
-##
-##  It is assumed that the arithmetic operations of $M$ produce only
+##  <P/>
+##  It is assumed that arithmetic operations on magma rings produce only
 ##  normalized elements.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsPositionalObjectRep,
     [ 1, 2 ] );

@@ -6,8 +6,9 @@ mypath=`dirname  $0`/
 
 source ${mypath}setvarpkg
 
-echo "Marking all latest versions of packages as stable"
-echo "This should be done only once at the initialisation"
+echo "Marking all latest versions of packages as stable."
+echo "This should be done either at the initialisation"
+echo "or when all latest versions of packags are stable."
 read -n 1 -p "Are you sure to continue? (y/n)> " ANSWER
 echo
 

@@ -4428,7 +4428,7 @@ else
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_cflags" >&5
 $as_echo "$gp_cv_cflags" >&6; }
-CFLAGS="$CFLAGS $gp_cv_cflags"
+CFLAGS="$gp_cv_cflags $CFLAGS"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking Linker default flags" >&5
 $as_echo_n "checking Linker default flags... " >&6; }
 if ${gp_cv_ldflags+:} false; then :

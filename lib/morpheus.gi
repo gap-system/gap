@@ -16,6 +16,36 @@
 ##
 MORPHEUSELMS := 50000;
 
+InstallMethod(Order,"for automorphisms",true,[IsGroupHomomorphism],0,
+function(hom)
+local map,phi,o,lo,i,start,img;
+  o:=1;
+  phi:=hom;
+  map:=MappingGeneratorsImages(phi);
+  for i in [1..Length(map[1])] do
+    lo:=1;
+    start:=map[1][i];
+    img:=map[2][i];
+    while img<>start do
+      img:=ImagesRepresentative(phi,img);
+      lo:=lo+1;
+      # do the bijectivity test only if high local order, then it does not
+      # matter
+      if lo=1000 and not IsBijective(hom) then
+	Error("<hom> must be bijective");
+      fi;
+    od;
+    if lo>1 then
+      o:=o*lo;
+      if i<Length(map[1]) then
+	phi:=phi^lo;
+	map:=MappingGeneratorsImages(phi);
+      fi;
+    fi;
+  od;
+  return o;
+end);
+
 #############################################################################
 ##
 #M  AutomorphismDomain(<G>)

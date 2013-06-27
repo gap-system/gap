@@ -261,18 +261,11 @@ following values of the <A>type</A> argument.
 <Section Label="Introducing new Viewer for the Online Help">
 <Heading>Introducing new Viewer for the Online Help</Heading>
 
-There is a  record <C>HELP_VIEWER_INFO</C> which contains one  component for each
-help viewer. Such a record contains two components.
-<P/>
-The  component <C>.type</C>  refers  to  one of  the  <A>type</A>s  recognized by  the
-<C>HelpData</C> handler function explained in the previous section (currently one
-of <C>"text"</C>, <C>"url"</C>, <C>"dvi"</C>, or <C>"pdf"</C>).
-<P/>
-The component  <C>.show</C> is  a function which  gets as input  the result  of a
-corresponding <C>HelpData</C> handler  call, if it was not  <K>fail</K>. This function
-has to perform the actual display of  the data.
-(E.g., by calling a function like <Ref Func="Pager"/>
-or by starting up an external viewer program.)
+To introduce a new viewer for the online help, 
+one should extend the global record <Ref Var="HELP_VIEWER_INFO"/>,
+the structure of which is explained below.
+
+<#Include Label="HELP_VIEWER_INFO">
 
 </Section>
 </Chapter>

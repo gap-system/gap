@@ -99,3 +99,20 @@ DeclareGlobalFunction("SimpleGroupsIterator");
 ##  <#/GAPDoc>
 DeclareGlobalFunction("ClassicalIsomorphismTypeFiniteSimpleGroup");
 
+DeclareAttribute("DataAboutSimpleGroup",IsGroup);
+
+#############################################################################
+##
+#F  SufficientlySmallDegreeSimpleGroupOrder(n)
+##
+##  <#GAPDoc Label="SufficientlySmallDegreeSimpleGroupOrder">
+##  <ManSection>
+##  <Func Name="SufficientlySmallDegreeSimpleGroupOrder" Arg='n'/>
+##  For an order <M>n</M> this function returns a heuristic bound for a
+##  small permutation degree of a simple group of that exact order.
+##  This function
+##  can be used to decide whether it is woth to try the `SmallerDegree'
+##  reduction.
+##  <#/GAPDoc>
+DeclareGlobalFunction("SufficientlySmallDegreeSimpleGroupOrder");
+

@@ -966,25 +966,29 @@ InstallMethod( Enumerator, "for a magma congruence class", true,
 ##      transformation in a monoid, we use Greens relations and classes).
 ##
 InstallMethod(EquivalenceClassOfElementNC, 
-        "for magma congruence with no check", true,
-        [IsMagmaCongruence, IsObject], 0,
+"for magma congruence with no check", 
+[IsMagmaCongruence, IsObject],
 function(rel, rep)
-    local new;
+  local filts, new;
 
-    if IsMultiplicativeElementWithOne(rep) then
-         new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
-                   IsCongruenceClass and IsEquivalenceClassDefaultRep 
-                   and IsMultiplicativeElementWithOne), rec());
-    else
-         new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
-                   IsCongruenceClass and IsEquivalenceClassDefaultRep 
-                   and IsMultiplicativeElement), rec());
-    fi;
+  filts:= IsCongruenceClass and IsEquivalenceClassDefaultRep;
+  
+  if IsMultiplicativeElementWithOne(rep) then 
+    filts:=filts and IsMultiplicativeElementWithOne;
+  else
+    filts:=filts and IsMultiplicativeElement;
+  fi;
 
-    SetEquivalenceClassRelation(new, rel);
-    SetRepresentative(new, rep);
-    SetParent(new, UnderlyingDomainOfBinaryRelation(rel));
-    return new;
+  if IsAssociativeElement(rep) then 
+    filts:=filts and IsAssociativeElement;
+  fi;
+
+  new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)), filts), rec());
+
+  SetEquivalenceClassRelation(new, rel);
+  SetRepresentative(new, rep);
+  SetParent(new, UnderlyingDomainOfBinaryRelation(rel));
+  return new;
 end);
 
 InstallMethod(EquivalenceClassOfElementNC, 

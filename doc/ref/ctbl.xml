@@ -568,8 +568,8 @@ before feeding them in the machinery of the Dixon-algorithm.
 <P/>
 <Example><![CDATA[
 gap> l.irreducibles[1];
-Character( CharacterTable( PSL(4, 3) ), 
-[ 640, E(13)^7+E(13)^8+E(13)^11, E(13)^4+E(13)^10+E(13)^12, 
+Character( CharacterTable( PSL(4, 3) ),
+ [ 640, E(13)^7+E(13)^8+E(13)^11, E(13)^4+E(13)^10+E(13)^12, 
   E(13)^2+E(13)^5+E(13)^6, E(13)+E(13)^3+E(13)^9, 0, -8, 0, -8, 0, 0, 
   0, 0, 0, -8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1 ] )
 gap> l:=List(l.irreducibles,ValuesOfClassFunction);;

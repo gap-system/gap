@@ -67,7 +67,7 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory("IsGreensRelation", IsBinaryRelation);
+DeclareCategory("IsGreensRelation", IsEquivalenceRelation);
 DeclareCategory("IsGreensRRelation", IsGreensRelation);
 DeclareCategory("IsGreensLRelation", IsGreensRelation);
 DeclareCategory("IsGreensJRelation", IsGreensRelation);
@@ -140,8 +140,8 @@ DeclareOperation("GreensHClassOfElement", [IsSemigroup, IsObject]);
 #######################
 #######################
 
-DeclareOperation("FroidurePinSimpleAlg", [IsMonoid and HasIsFinite and IsFinite]);
-DeclareOperation("FroidurePinExtendedAlg", [IsSemigroup and HasIsFinite and IsFinite]);
+DeclareOperation("FroidurePinSimpleAlg", [IsMonoid]);
+DeclareOperation("FroidurePinExtendedAlg", [IsSemigroup]);
 
 DeclareAttribute("AssociatedConcreteSemigroup", IsFpSemigroup);
 DeclareAttribute("AssociatedFpSemigroup", IsSemigroup);
@@ -176,19 +176,12 @@ DeclareSynonymAttr("RightCayleyGraphSemigroup", CayleyGraphSemigroup);
 ##  <#/GAPDoc>
 ##
 
-DeclareProperty("IsGreensClass", IsEquivalenceClass);
-DeclareProperty("IsGreensRClass", IsEquivalenceClass);
-DeclareProperty("IsGreensLClass", IsEquivalenceClass);
-DeclareProperty("IsGreensJClass", IsEquivalenceClass);
-DeclareProperty("IsGreensHClass", IsEquivalenceClass);
-DeclareProperty("IsGreensDClass", IsEquivalenceClass);
-
-InstallTrueMethod(IsGreensClass, IsGreensRClass);
-InstallTrueMethod(IsGreensClass, IsGreensLClass);
-InstallTrueMethod(IsGreensClass, IsGreensJClass);
-InstallTrueMethod(IsGreensClass, IsGreensHClass);
-InstallTrueMethod(IsGreensClass, IsGreensDClass);
-
+DeclareCategory("IsGreensClass", IsEquivalenceClass);
+DeclareCategory("IsGreensRClass", IsGreensClass);
+DeclareCategory("IsGreensLClass", IsGreensClass);
+DeclareCategory("IsGreensJClass", IsGreensClass);
+DeclareCategory("IsGreensHClass", IsGreensClass);
+DeclareCategory("IsGreensDClass", IsGreensClass);
 
 #############################################################################
 ##

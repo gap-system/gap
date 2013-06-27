@@ -238,7 +238,7 @@ DeclareSynonymAttr( "TrivialSubmonoid", TrivialSubmagmaWithOne );
 ##  (see&nbsp;<Ref Sect="Representations for Associative Words"/>).
 ##  If no such filter is given, a letter representation is used.
 ##  <P/>
-##  Also see Chapter&nbsp;<Ref Chap="Monoids"/>.
+##  Also see Chapter&nbsp;<Ref Chap="Semigroups"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

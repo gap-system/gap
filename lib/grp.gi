@@ -792,6 +792,12 @@ InstallMethod( DerivedSubgroup,
     SUM_FLAGS, # this is better than everything else
     IdFunc );
 
+InstallMethod( DerivedSubgroup,
+    "for a group that knows it is abelian",
+    [ IsGroup and IsAbelian ],
+    SUM_FLAGS, # this is better than everything else
+    TrivialSubgroup );
+
 
 ##########################################################################
 ##
@@ -2845,16 +2851,7 @@ InstallMethod( Intersection2,
 ##
 #M  Enumerator( <G> ) . . . . . . . . . . . .  set of the elements of a group
 ##
-CallFuncList(function(enum)
-    InstallMethod( Enumerator, "generic method for a group",
-            [ IsGroup and IsAttributeStoringRep ],
-            enum );
-
-    # the element list is only stored in the locally created new group H
-    InstallMethod(AsSSortedListNonstored, "generic method for groups",
-            [ IsGroup ],
-            enum );
-end, [function( G )
+InstallGlobalFunction("GroupEnumeratorByClosure",function( G )
 
     local   H,          # subgroup of the first generators of <G>
             gen;        # generator of <G>
@@ -2877,7 +2874,18 @@ end, [function( G )
     # return the list of elements
     Assert( 2, HasAsSSortedList( H ) );
     return AsSSortedList( H );
-end]);
+end);
+
+CallFuncList(function(enum)
+    InstallMethod( Enumerator, "generic method for a group",
+            [ IsGroup and IsAttributeStoringRep ],
+            enum );
+
+    # the element list is only stored in the locally created new group H
+    InstallMethod(AsSSortedListNonstored, "generic method for groups",
+            [ IsGroup ],
+            enum );
+end, [GroupEnumeratorByClosure]);
 
 
 

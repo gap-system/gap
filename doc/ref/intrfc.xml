@@ -125,8 +125,8 @@ InParentFOA( "Normalizer", IsGroup, IsObject, NewAttribute );
 The full mechanism of <Ref Func="InParentFOA"/> is described in
 chapter&nbsp;<Ref Chap="Function-Operation-Attribute Triples"/>,
 however for our purposes it is sufficient to know that for such a function
-the actual work is done by an operation
-<C>NormalizerOp</C> (and all the
+the actual work is done by an operation <C>NormalizerOp</C>, an underlying 
+operation for <Ref Oper="Normalizer" Label="for two groups"/> (and all the
 complications are just there to be able to remember certain results) and that
 the declaration of this operation is given by the first arguments, it would
 be:
@@ -404,7 +404,7 @@ library).
 <P/>
 Now we can write a function to create our new objects. Usually it is helpful
 to look at functions from the library that are used in similar situations (for
-example <C>GroupByGenerators</C> in our case)
+example <Ref Oper="GroupByGenerators"/> in our case)
 to make sure we have not forgotten
 any further requirements in the declaration we might have to add here.
 However in most cases the function is straightforward:

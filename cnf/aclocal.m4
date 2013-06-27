@@ -148,7 +148,7 @@ AC_DEFUN(GP_CFLAGS,
         gp_cv_cflags="-O";;
    esac 
  ])
-CFLAGS="$CFLAGS $gp_cv_cflags"])
+CFLAGS="$gp_cv_cflags $CFLAGS"])
 
 dnl #########################################################################
 dnl ##

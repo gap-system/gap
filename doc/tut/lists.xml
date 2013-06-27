@@ -17,6 +17,7 @@
 <Chapter Label="Lists and Records">
 <Heading>Lists and Records</Heading>
 
+<Index>arrays, see lists</Index>
 Modern mathematics, especially algebra, is based on set theory. When sets
 are represented in a computer, they inadvertently turn into lists. That's
 why we start our  survey of the various  objects &GAP; can handle with a

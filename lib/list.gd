@@ -1272,7 +1272,11 @@ DeclareOperation( "Collected", [ IsList ] );
 ##  and will not sort the result.
 ##  Therefore <Ref Oper="DuplicateFreeList"/> can be used even if the
 ##  elements of <A>list</A> do not lie in the same family.
-##  <Ref Oper="Unique"/> is an alias for <Ref Oper="DuplicateFreeList"/>.
+##  Otherwise, if <A>list</A> contains objects that can be compared with
+##  <Ref Func="\&lt;"/> then it is much more efficient to use 
+##  <Ref Oper="Set"/> instead of <Ref Oper="DuplicateFreeList"/>.
+##  <P/>
+##  <Ref Oper="Unique"/> is a synonym for <Ref Oper="DuplicateFreeList"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> l:=[1,Z(3),1,"abc",Group((1,2,3),(1,2)),Z(3),Group((1,2),(2,3))];;

@@ -9,7 +9,7 @@
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="GAP Packages">
-<Heading>GAP Packages</Heading>
+<Heading>Using GAP Packages</Heading>
 
 <Index>package</Index>
 The  functionality  of  &GAP;  can  be  extended  by  loading  &GAP;

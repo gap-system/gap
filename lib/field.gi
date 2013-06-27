@@ -258,7 +258,8 @@ InstallMethod( PrintObj,
     "for a field with known generators",
     [ IsField and HasGeneratorsOfField ],
     function( F )
-    if IsPrimeField( LeftActingDomain( F ) ) then
+      if IsIdenticalObj(F,LeftActingDomain(F)) or
+	IsPrimeField( LeftActingDomain( F ) ) then
       Print( "Field( ", GeneratorsOfField( F ), " )" );
     elif F = LeftActingDomain( F ) then
       Print( "FieldOverItselfByGenerators( ",
@@ -488,14 +489,11 @@ InstallMethod( Representative,
 #M  Enumerator( <F> ) . . . . . . . . . .  elements of a (finite) prime field
 #M  EnumeratorSorted( <F> ) . . . . . . .  elements of a (finite) prime field
 ##
-##  We install a special method only for prime fields,
+##  We install a special method only for (finite) prime fields,
 ##  since the other cases are handled by the vector space methods.
 ##
 EnumeratorOfPrimeField := function( F )
     local one;
-    if   not IsFinite( F ) then
-      TryNextMethod();
-    fi;
     one:= One( F );
     if   Size( F ) <= MAXSIZE_GF_INTERNAL then
       return AsSSortedListList( List( [ 0 .. Size( F ) - 1 ], i -> i * one ) );
@@ -506,19 +504,19 @@ EnumeratorOfPrimeField := function( F )
 end;
 
 InstallMethod( Enumerator,
-    "for a prime field",
-    [ IsField and IsPrimeField ],
+    "for a finite prime field",
+    [ IsField and IsPrimeField and IsFinite ],
     EnumeratorOfPrimeField );
 
 InstallMethod( EnumeratorSorted,
-    "for a prime field",
-    [ IsField and IsPrimeField ],
+    "for a finite prime field",
+    [ IsField and IsPrimeField and IsFinite ],
     EnumeratorOfPrimeField );
 
 InstallMethod( AsList,
-    "for a prime field",
-    [ IsField and IsPrimeField ],
-    F -> AsList( EnumeratorOfPrimeField( F ) ) );
+    "for a finite prime field",
+    [ IsField and IsPrimeField and IsFinite ],
+    F -> AsList( Enumerator( F ) ) );
 
 
 #############################################################################

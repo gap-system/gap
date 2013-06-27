@@ -41,10 +41,10 @@ DeclareRepresentation( "IsExternalOrbitByStabilizerRep",
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsConjugacyClassGroupRep",
-    IsExternalOrbitByStabilizerRep, [  ] );
+    IsExternalOrbit, [  ] );
 
 DeclareRepresentation( "IsConjugacyClassPermGroupRep",
-    IsConjugacyClassGroupRep, [  ] );
+    IsExternalOrbitByStabilizerRep and IsConjugacyClassGroupRep, [  ] );
 
 #############################################################################
 ##

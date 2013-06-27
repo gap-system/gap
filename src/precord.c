@@ -771,7 +771,7 @@ Obj InnerRecNames( Obj rec )
     Obj                 list;           /* list of record names, result    */
     UInt                rnam;           /* one name of record              */
     Obj                 string;         /* one name as string              */
-    UInt                i, len;      
+    UInt                i;
 
     SortPRecRNam(rec,0);   /* Make sure rnams are sorted and thus negative */
 
@@ -782,9 +782,8 @@ Obj InnerRecNames( Obj rec )
     /* loop over the components                                            */
     for ( i = 1; i <= LEN_PREC(rec); i++ ) {
         rnam = -(Int)(GET_RNAM_PREC( rec, i ));
-        len = strlen(NAME_RNAM(rnam));
         /* could have been moved by garbage collection */
-        C_NEW_STRING( string, len, NAME_RNAM(rnam) );
+        C_NEW_STRING_DYN( string, NAME_RNAM(rnam) );
         SET_ELM_PLIST( list, i, string );
         CHANGED_BAG( list );
     }

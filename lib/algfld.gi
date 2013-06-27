@@ -28,10 +28,14 @@ DeclareRepresentation("IsAlgBFRep",
 
 #############################################################################
 ##
-#R  IsAlgExtRep       Representation for true extension elements
+#R  IsKroneckerConstRep       Representation for true extension elements
 ##
-DeclareRepresentation("IsAlgExtRep",
+##  This representation describes elements that are represented in a formal
+##  extension as polynomials modulo an ideal.
+DeclareRepresentation("IsKroneckerConstRep",
   IsPositionalObjectRep and IsAlgebraicElement,[]);
+
+DeclareSynonym("IsAlgExtRep",IsKroneckerConstRep);
 
 #############################################################################
 ##
@@ -82,7 +86,7 @@ local fam,i,cof,red,rchar,impattr,deg;
 
   # The two types
   fam!.baseType := NewType(fam,IsAlgBFRep);
-  fam!.extType := NewType(fam,IsAlgExtRep);
+  fam!.extType := NewType(fam,IsKroneckerConstRep);
 
   # Important trivia
   fam!.baseField:=f;
@@ -264,7 +268,7 @@ local f,l;
 end);
 
 InstallMethod(ExtRepOfObj,"ExtElm",true,
-  [IsAlgebraicElement and IsAlgExtRep],0,
+  [IsAlgebraicElement and IsKroneckerConstRep],0,
 function(e)
   return e![1];
 end);
@@ -327,7 +331,7 @@ function(a)
   Print("!",String(a![1]));
 end);
 
-InstallMethod(PrintObj,"AlgElm",true,[IsAlgExtRep],0,
+InstallMethod(PrintObj,"AlgElm",true,[IsKroneckerConstRep],0,
 function(a)
 local fam;
   fam:=FamilyObj(a);
@@ -343,7 +347,7 @@ function(a)
   return Concatenation("!",String(a![1]));
 end);
 
-InstallMethod(String,"AlgElm",true,[IsAlgExtRep],0,
+InstallMethod(String,"AlgElm",true,[IsKroneckerConstRep],0,
 function(a)
 local fam;
   fam:=FamilyObj(a);
@@ -354,7 +358,7 @@ end);
 ##
 #M  \+  for all combinations of A.E.Elms and base field elms.
 ##
-InstallMethod(\+,"AlgElm+AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\+,"AlgElm+AlgElm",IsIdenticalObj,[IsKroneckerConstRep,IsKroneckerConstRep],0,
 function(a,b)
   local e,i,fam;
   fam:=FamilyObj(a);
@@ -371,7 +375,7 @@ function(a,b)
   #return AlgExtElm(FamilyObj(a),a![1]+b![1]);
 end);
 
-InstallMethod(\+,"AlgElm+BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\+,"AlgElm+BFElm",IsIdenticalObj,[IsKroneckerConstRep,IsAlgBFRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -380,7 +384,7 @@ local fam;
   return Objectify(fam!.extType,[a]);
 end);
 
-InstallMethod(\+,"BFElm+AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\+,"BFElm+AlgElm",IsIdenticalObj,[IsAlgBFRep,IsKroneckerConstRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -399,7 +403,7 @@ local e,fam;
   #return ObjByExtRep(FamilyObj(a),a![1]+b![1]);
 end);
 
-InstallMethod(\+,"AlgElm+FElm",IsElmsCoeffs,[IsAlgExtRep,IsRingElement],0,
+InstallMethod(\+,"AlgElm+FElm",IsElmsCoeffs,[IsKroneckerConstRep,IsRingElement],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -409,7 +413,7 @@ local fam;
   #return ObjByExtRep(fam,a);
 end);
 
-InstallMethod(\+,"FElm+AlgElm",IsCoeffsElms,[IsRingElement,IsAlgExtRep],0,
+InstallMethod(\+,"FElm+AlgElm",IsCoeffsElms,[IsRingElement,IsKroneckerConstRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(b);
@@ -441,7 +445,7 @@ end);
 ##
 #M  AdditiveInverseOp
 ##
-InstallMethod( AdditiveInverseOp, "AlgElm",true,[IsAlgExtRep],0,
+InstallMethod( AdditiveInverseOp, "AlgElm",true,[IsKroneckerConstRep],0,
 function(a)
   return Objectify(FamilyObj(a)!.extType,[-a![1]]);
 end);
@@ -455,7 +459,7 @@ end);
 ##
 #M  \*  for all combinations of A.E.Elms and base field elms.
 ##
-InstallMethod(\*,"AlgElm*AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\*,"AlgElm*AlgElm",IsIdenticalObj,[IsKroneckerConstRep,IsKroneckerConstRep],0,
 function(x,y)
 local fam,b,d,i;
   fam:=FamilyObj(x);
@@ -486,7 +490,7 @@ local fam,b,d,i;
 
 end);
 
-InstallMethod(\*,"AlgElm*BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\*,"AlgElm*BFElm",IsIdenticalObj,[IsKroneckerConstRep,IsAlgBFRep],0,
 function(a,b)
   if IsZero(b![1]) then
     return b;
@@ -496,7 +500,7 @@ function(a,b)
   fi;
 end);
 
-InstallMethod(\*,"BFElm*AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\*,"BFElm*AlgElm",IsIdenticalObj,[IsAlgBFRep,IsKroneckerConstRep],0,
 function(a,b)
   if IsZero(a![1]) then
     return a;
@@ -527,12 +531,12 @@ local fam;
   return AlgExtElm(fam,a);
 end);
 
-InstallMethod(\*,"Alg*List",true,[IsAlgebraicElement,IsVector],0,
+InstallOtherMethod(\*,"Alg*List",true,[IsAlgebraicElement,IsList],0,
 function(a,b)
   return List(b,i->a*i);
 end);
 
-InstallMethod(\*,"List*Alg",true,[IsVector,IsAlgebraicElement],0,
+InstallOtherMethod(\*,"List*Alg",true,[IsList,IsAlgebraicElement],0,
 function(a,b)
   return List(a,i->i*b);
 end);
@@ -541,7 +545,7 @@ end);
 ##
 #M  InverseOp
 ##
-InstallMethod( InverseOp, "AlgElm",true,[IsAlgExtRep],0,
+InstallMethod( InverseOp, "AlgElm",true,[IsKroneckerConstRep],0,
 function(a)
 local i,fam,f,g,t,h,rf,rg,rh,z;
   fam:=FamilyObj(a);
@@ -595,12 +599,12 @@ end);
 ##      Comparison is by the coefficient lists of the External
 ##      representation. The base field is naturally embedded
 ##
-InstallMethod(\<,"AlgElm<AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\<,"AlgElm<AlgElm",IsIdenticalObj,[IsKroneckerConstRep,IsKroneckerConstRep],0,
 function(a,b)
   return a![1]<b![1];
 end);
 
-InstallMethod(\<,"AlgElm<BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\<,"AlgElm<BFElm",IsIdenticalObj,[IsKroneckerConstRep,IsAlgBFRep],0,
 function(a,b)
 local fam,i;
   fam:=FamilyObj(a);
@@ -619,7 +623,7 @@ local fam,i;
   fi;
 end);
 
-InstallMethod(\<,"BFElm<AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\<,"BFElm<AlgElm",IsIdenticalObj,[IsAlgBFRep,IsKroneckerConstRep],0,
 function(a,b)
 local fam,i;
   fam:=FamilyObj(b);
@@ -643,7 +647,7 @@ function(a,b)
   return a![1]<b![1];
 end);
 
-InstallMethod(\<,"AlgElm<FElm",true,[IsAlgExtRep,IsRingElement],0,
+InstallMethod(\<,"AlgElm<FElm",true,[IsKroneckerConstRep,IsRingElement],0,
 function(a,b)
 local fam,i;
   fam:=FamilyObj(a);
@@ -662,7 +666,7 @@ local fam,i;
   fi;
 end);
 
-InstallMethod(\<,"FElm<AlgElm",true,[IsRingElement,IsAlgExtRep],0,
+InstallMethod(\<,"FElm<AlgElm",true,[IsRingElement,IsKroneckerConstRep],0,
 function(a,b)
 local fam,i;
   fam:=FamilyObj(b);
@@ -697,12 +701,12 @@ end);
 ##      Comparison is by the coefficient lists of the External
 ##      representation. The base field is naturally embedded
 ##
-InstallMethod(\=,"AlgElm=AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\=,"AlgElm=AlgElm",IsIdenticalObj,[IsKroneckerConstRep,IsKroneckerConstRep],0,
 function(a,b)
   return a![1]=b![1];
 end);
 
-InstallMethod(\=,"AlgElm=BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\=,"AlgElm=BFElm",IsIdenticalObj,[IsKroneckerConstRep,IsAlgBFRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -714,7 +718,7 @@ local fam;
   fi;
 end);
 
-InstallMethod(\=,"BFElm<AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\=,"BFElm<AlgElm",IsIdenticalObj,[IsAlgBFRep,IsKroneckerConstRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(b);
@@ -731,7 +735,7 @@ function(a,b)
   return a![1]=b![1];
 end);
 
-InstallMethod(\=,"AlgElm=FElm",true,[IsAlgExtRep,IsRingElement],0,
+InstallMethod(\=,"AlgElm=FElm",true,[IsKroneckerConstRep,IsRingElement],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -743,7 +747,7 @@ local fam;
   fi;
 end);
 
-InstallMethod(\=,"FElm=AlgElm",true,[IsRingElement,IsAlgExtRep],0,
+InstallMethod(\=,"FElm=AlgElm",true,[IsRingElement,IsKroneckerConstRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(b);
@@ -899,7 +903,7 @@ function(e)
 end);
 
 InstallMethod(MaxNumeratorCoeffAlgElm,"algebraic element",true,
-  [IsAlgebraicElement and IsAlgExtRep],0,
+  [IsAlgebraicElement and IsKroneckerConstRep],0,
 function(e)
   return Maximum(List(e![1],MaxNumeratorCoeffAlgElm));
 end);
@@ -1204,7 +1208,7 @@ end);
 ##  mod p
 ##
 BindGlobal("ChaNuPol",function(f,alm,alz,coeffun,fam,inum)
-local b,p,r,nu,w,i,z;
+local b,p,r,nu,w,i,z,fnew;
   p:=Characteristic(alm);
   z:=Z(p);
   r:=PrimitiveRootMod(p);
@@ -1216,6 +1220,7 @@ local b,p,r,nu,w,i,z;
   else
     f:=[f];
   fi;
+  fnew:=[]; # f could be compressed vector, so we cannot assign to it.
   for i in [1..Length(f)] do
     w:=f[i];
     if w=nu then
@@ -1227,9 +1232,10 @@ local b,p,r,nu,w,i,z;
         w:=ValuePol(List(coeffun(w),IntFFE),alz);
       fi;
     fi;
-    f[i]:=w;
+    #f[i]:=w;
+    fnew[i]:=w;
   od;
-  return UnivariatePolynomialByCoefficients(fam,f,inum);
+  return UnivariatePolynomialByCoefficients(fam,fnew,inum);
 end);
 
 

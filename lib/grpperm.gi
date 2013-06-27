@@ -1058,6 +1058,8 @@ InstallMethod( DerivedSubgroup,"permgrps",true, [ IsPermGroup ], 0,
         D := DoNormalClosurePermGroup( G, D );
     fi;
 
+    if HasIsNaturalSymmetricGroup(G) and Size(D)<Size(G) then IsNaturalAlternatingGroup(D);fi;
+
     return D;
 end );
 
@@ -1989,28 +1991,30 @@ InstallMethod(KnowsHowToDecompose,
 ##
 #M  ViewObj( <G> )
 ##
-InstallMethod( ViewObj,
-    "for a permutation group",
-    true,
+InstallMethod( ViewString, "for a permutation group", true,
     [ IsPermGroup and HasGeneratorsOfGroup ], 0,
 function(G)
-  local gens;
+  local gens,str;
   gens:= GeneratorsOfGroup( G );
   if 30 < Length( gens ) * LargestMovedPoint( G ) / GAPInfo.ViewLength then
-    Print("<permutation group");
+    str:="<permutation group";
     if HasSize(G) then
-      Print(" of size ",Size(G));
+      Append(str," of size ");
+      Append(str,String(Size(G)));
     fi;
-    Print( " with ", Length( gens ), " generators>" );
+    Append(str," with ");
+    Append(str,String(Length( gens )));
+    Append(str," generators>");
   else
-    Print("Group(");
+    str:="Group(";
     if IsEmpty( gens ) or ForAll(gens,i->Order(i)=1) then
-      ViewObj( One( G ) );
+      Append(str,"()");
     else
-      ViewObj( gens );
+      Append(str,ViewString(gens));
     fi;
-    Print(")");
+    Append(str,")");
   fi;
+  return str;
 end);
 
 
@@ -2059,7 +2063,7 @@ local dom,s,cs,t,ts,o;
     # if the group is diagonal, the diagonal together with a maximal socle
     # normal subgroup generates the whole socle, so this normal subgroup
     # acts transitively. For product type this is not the case.
-    t:=cs[2];
+    t:=cs[Length(cs)-1];
     if IsTransitive(t,dom) then
       # type 3
       if Length(cs)=3 and IsNormal(G,t) then

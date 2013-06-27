@@ -437,14 +437,11 @@ Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
 {
   Char buf[50];
   Obj str;
-  UInt len;
   int prec = INT_INTOBJ(gapprec);
   if (prec > 40) /* too much anyways, and would risk buffer overrun */
     prec = 40;
   snprintf(buf, sizeof(buf), "%.*" PRINTFFORMAT, prec, (TOPRINTFFORMAT)VAL_MACFLOAT(f));
-  len = strlen(buf);
-  str = NEW_STRING(len);
-  SyStrncat(CSTR_STRING(str),buf,len);
+  C_NEW_STRING_DYN(str, buf);
   return str;
 }
 

@@ -1493,7 +1493,7 @@ end);
 ##
 #M  Discriminant(<pol>,<ind>)
 ##
-InstallOtherMethod(Discriminant,"poly,inum",true,
+InstallMethod(Discriminant,"poly,inum",true,
   [IsPolynomialFunction and IsPolynomial,IsPosInt],0,
 function(f,ind)
 local d,l;
@@ -1912,7 +1912,7 @@ end);
 ##
 #M  Factors(<R>,<f> ) . .  factors of polynomial
 ##
-InstallMethod(Factors,"reduce to univariate case",IsCollsElms,
+InstallMethod(Factors,"multivariate, reduce to univariate case",IsCollsElms,
   [IsPolynomialRing,IsPolynomial],0,
 function(R,f)
 local cr, irf, i, opt, r,cp;
@@ -1920,6 +1920,9 @@ local cr, irf, i, opt, r,cp;
   if not HasIsUnivariateRationalFunction(f) and
     IsUnivariateRationalFunction(f) then
     return Factors(R,f);
+  elif HasIsUnivariateRationalFunction(f) and
+    IsUnivariateRationalFunction(f) then
+    TryNextMethod(); # this is a multivariate method below
   fi;
   cr:=CoefficientsRing(R);
   irf:=IrrFacsPol(f);
@@ -1967,6 +1970,12 @@ local cr, irf, i, opt, r,cp;
   PopOptions();
   return r;
 
+end);
+
+InstallMethod(Factors,"fallback error message",IsCollsElms,
+  [IsPolynomialRing,IsPolynomial],-1,
+function(R,p)
+  Error("GAP currently cannot factor ",p," over ",R);
 end);
 
 #############################################################################

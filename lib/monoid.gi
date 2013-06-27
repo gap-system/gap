@@ -15,13 +15,6 @@
 ##
 #M  PrintObj( <M> ) . . . . . . . . . . . . . . . . . . . . .  print a monoid
 ##
-InstallMethod( PrintObj,
-    "for monoid",
-    true,
-    [ IsMonoid ], 0,
-    function( M )
-    Print( "Monoid( ... )" );
-    end );
 
 InstallMethod( String,
     "for monoid",
@@ -36,7 +29,7 @@ InstallMethod( PrintObj,
     true,
     [ IsMonoid and HasGeneratorsOfMonoid ], 0,
     function( M )
-    Print( "Monoid( ", GeneratorsOfMagmaWithOne( M ), ", ... )" );
+    Print( "Monoid( ", GeneratorsOfMagmaWithOne( M ), " )" );
     end );
 
 InstallMethod( String,
@@ -44,7 +37,7 @@ InstallMethod( String,
     true,
     [ IsMonoid and HasGeneratorsOfMonoid ], 0,
     function( M )
-    return STRINGIFY( "Monoid( ", GeneratorsOfMagmaWithOne( M ), ", ... )" );
+    return STRINGIFY( "Monoid( ", GeneratorsOfMagmaWithOne( M ), " )" );
     end );
 
 InstallMethod( PrintString,
@@ -52,34 +45,34 @@ InstallMethod( PrintString,
     true,
     [ IsMonoid and HasGeneratorsOfMonoid ], 0,
     function( M )
-    return PRINT_STRINGIFY( "Monoid( ", GeneratorsOfMagmaWithOne( M ), ", ... )" );
+    return PRINT_STRINGIFY( "Monoid( ", GeneratorsOfMagmaWithOne( M ), " )" );
     end );
 
 #############################################################################
 ##
 #M  ViewObj( <M> )  . . . . . . . . . . . . . . . . . . . . . . view a monoid
 ##
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a monoid",
     true,
     [ IsMonoid ], 0,
     function( M )
-    Print( "<monoid>" );
+    return "<monoid>" ;
     end );
 
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a monoid with generators",
     true,
     [ IsMonoid and HasGeneratorsOfMagmaWithOne ], 0,
     function( M )
     if IsEmpty( GeneratorsOfMagmaWithOne( M ) ) then
-      Print( "<trivial monoid>" );
+      return "<trivial monoid>" ;
     elif Length(GeneratorsOfMagmaWithOne(M)) = 1 then
-      Print( "<monoid with ", Length( GeneratorsOfMagmaWithOne( M ) ),
-             " generator>" );
-	else
-      Print( "<monoid with ", Length( GeneratorsOfMagmaWithOne( M ) ),
-             " generators>" );
+      return STRINGIFY( "<monoid with ", 
+       Length( GeneratorsOfMagmaWithOne( M ) ), " generator>" );
+    else
+       return STRINGIFY("<monoid with ", 
+       Length( GeneratorsOfMagmaWithOne( M ) ), " generators>" );
     fi;
     end );
 
@@ -132,9 +125,14 @@ InstallOtherMethod( MonoidByGenerators,
     end );
 
 InstallImmediateMethod( GeneratorsOfSemigroup,
-    IsMonoid and HasGeneratorsOfMonoid and IsAttributeStoringRep, 0,
-    M->Concatenation([One(M)],GeneratorsOfMonoid(M)));
+IsMonoid and HasGeneratorsOfMonoid and IsAttributeStoringRep, 0,
+function(M)
 
+  if CanEasilyCompareElements(One(M)) and One(M) in GeneratorsOfMonoid(M) then 
+    return GeneratorsOfMonoid(M);
+  fi;
+  return Concatenation([One(M)],GeneratorsOfMonoid(M));
+end);
 
 #############################################################################
 ##
@@ -145,6 +143,27 @@ InstallMethod( AsMonoid,
     true,
     [ IsMonoid ], 100,
     IdFunc );
+
+#
+
+InstallMethod(AsMonoid, "for a semigroup",
+[IsSemigroup],
+function(s)
+  local gens, pos;
+
+  if not One(s) in s then
+    return fail;
+  fi;
+
+  gens:=ShallowCopy(GeneratorsOfSemigroup(s));
+  pos:=Position(gens, One(s));
+  if pos<>fail then 
+    Remove(gens, pos);
+  fi;
+  return Monoid(gens);
+end);
+
+#
 
 InstallMethod( AsMonoid,
     "generic method for a collection",
@@ -221,34 +240,59 @@ InstallMethod( IsCommutative,
 #F  Monoid( <obj> )
 #F  Monoid( <gens>, <id> )
 ##
+
 InstallGlobalFunction( Monoid, function( arg )
+  local out, i;
+  # special case for matrices, because they may look like lists
+  if Length( arg ) = 1 and IsMatrix( arg[1] )  then
+    return MonoidByGenerators( [ arg[1] ] );
 
-    # special case for matrices, because they may look like lists
-    if Length( arg ) = 1 and IsMatrix( arg[1] ) then
-      return MonoidByGenerators( [ arg[1] ] );
+  # special case for matrices, because they look like lists
+  elif Length( arg ) = 2 and IsMatrix( arg[1] )  then
+    return MonoidByGenerators( arg );
 
-    # special case for matrices, because they look like lists
-    elif Length( arg ) = 2 and IsMatrix( arg[1] ) then
-      return MonoidByGenerators( arg );
+  # list of generators
+  elif Length( arg ) = 1 and IsList( arg[1] ) and 0 < Length( arg[1] )  then
+    return MonoidByGenerators( arg[1] );
 
-    # list of generators
-    elif Length( arg ) = 1 and IsList( arg[1] ) and 0 < Length( arg[1] ) then
-      return MonoidByGenerators( arg[1] );
+  # list of generators plus identity
+  elif Length( arg ) = 2 and IsList( arg[1] )  then
+    return MonoidByGenerators( arg[1], arg[2] );
 
-    # list of generators plus identity
-    elif Length( arg ) = 2 and IsList( arg[1] ) then
-      return MonoidByGenerators( arg[1], arg[2] );
+  # generators and collections of generators 
+  elif IsAssociativeElement(arg[1]) or IsAssociativeElementCollection(arg[1])
+   then
+    out:=[];
+    for i in [1..Length(arg)] do
+      if IsAssociativeElement(arg[i]) then
+        Add(out, arg[i]);
+      elif IsAssociativeElementCollection(arg[i]) then
+        if HasGeneratorsOfMonoid(arg[i]) then 
+          Append(out, GeneratorsOfMonoid(arg[i]));
+        elif HasGeneratorsOfSemigroup(arg[i]) then
+          Append(out, GeneratorsOfSemigroup(arg[i]));
+        else
+          Append(out, arg[i]);
+        fi;
+      #so that we can pass the options record in the Semigroups package 
+      elif i=Length(arg) and IsRecord(arg[i]) then
+        return MonoidByGenerators(out, arg[i]);
+      else
+        Error( "Usage: Monoid(<gen>,...), Monoid(<gens>), Monoid(<D>)," );
+        return;
+      fi;
+    od;
+    return MonoidByGenerators(out);
 
-    # generators
-    elif 0 < Length( arg ) then
-      return MonoidByGenerators( arg );
-
-    # no argument given, error
-    else
-      Error("usage: Monoid(<gen>,...), Monoid(<gens>), Monoid(<D>)");
-    fi;
-end );
-
+  # generators
+  elif 0 < Length( arg )  then
+    return MonoidByGenerators( arg );
+  # no argument given, error
+  else
+    Error( "Usage: Monoid(<gen>,...), Monoid(<gens>), Monoid(<D>)," );
+    return;
+  fi;
+end);
 
 #############################################################################
 ##

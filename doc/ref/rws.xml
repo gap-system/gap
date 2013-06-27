@@ -146,7 +146,7 @@ gap> mon:=Image(mhom);
 <fp monoid on the generators [ f1, f1^-1, f2, f2^-1, f3, f3^-1 ]>
 gap> k:=KnuthBendixRewritingSystem(mon);
 Knuth Bendix Rewriting System for Monoid( 
-[ f1, f1^-1, f2, f2^-1, f3, f3^-1 ], ... ) with rules 
+[ f1, f1^-1, f2, f2^-1, f3, f3^-1 ] ) with rules 
 [ [ f1*f1^-1, <identity ...> ], [ f1^-1*f1, <identity ...> ], 
   [ f2*f2^-1, <identity ...> ], [ f2^-1*f2, <identity ...> ], 
   [ f3*f3^-1, <identity ...> ], [ f3^-1*f3, <identity ...> ], 

@@ -175,7 +175,9 @@ InstallMethod(IsOne,"using `MappingGeneratorsImages'",true,
   [IsGroupHomomorphism and HasMappingGeneratorsImages],0,
 function(a)
   local m;
-  if Source(a)=Range(a) and IsBijective(a) then
+  # if a is total it is defined on all of the source, if gens and images are
+  # the same it automatically is bijective
+  if Source(a)=Range(a) and IsTotal(a) then
     m:=MappingGeneratorsImages(a);
     return ForAll([1..Length(m[1])],i->m[1][i]=m[2][i]);
   fi;
@@ -308,8 +310,6 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
   filter := IsGroupGeneralMappingByImages and HasSource and HasRange 
             and HasMappingGeneratorsImages;
 
-  if H=fail then H:=GroupWithGenerators(imgs);fi;
-
   if IsPermGroup( G )  then
       filter := filter and IsPermGroupGeneralMappingByImages;
   fi;
@@ -406,28 +406,30 @@ InstallMethod( GroupGeneralMappingByImagesNC, "for group, group, list, list",
 InstallMethod( GroupGeneralMappingByImagesNC, "make onto",
     true, [ IsGroup, IsList, IsList ], 0, 
 function( G, gens, imgs )
-    return DoGGMBINC(G,fail,gens,imgs);
+    return GroupGeneralMappingByImagesNC(G,GroupWithGenerators(imgs),gens,imgs);
 end);
 
-InstallMethod( GroupGeneralMappingByImages, "for group, group, list, list",
-    true, [ IsGroup, IsGroup, IsList, IsList ], 0,
-function( G, H, gens, imgs )
-    if not ForAll(gens,x->x in G) then
-      Error("generators must lie in source group");
-    elif not ForAll(imgs,x->x in H) then
-      Error("images must lie in range group");
-    fi;
-    return GroupGeneralMappingByImagesNC(G,H,gens,imgs);
-end);
-
-InstallMethod( GroupGeneralMappingByImages, "make onto",
-    true, [ IsGroup, IsList, IsList ], 0, 
-function( G, gens, imgs )
-    if not ForAll(gens,x->x in G) then
-      Error("generators must lie in source group");
-    fi;
-    return GroupGeneralMappingByImagesNC(G,gens,imgs);
-end);
+# temporarily disabled until we separate GroupGeneralMappingByImages from
+# its NC version.
+#InstallMethod( GroupGeneralMappingByImages, "for group, group, list, list",
+#    true, [ IsGroup, IsGroup, IsList, IsList ], 0,
+#function( G, H, gens, imgs )
+#    if not ForAll(gens,x->x in G) then
+#      Error("generators must lie in source group");
+#    elif not ForAll(imgs,x->x in H) then
+#      Error("images must lie in range group");
+#    fi;
+#    return GroupGeneralMappingByImagesNC(G,H,gens,imgs);
+#end);
+#
+#InstallMethod( GroupGeneralMappingByImages, "make onto",
+#    true, [ IsGroup, IsList, IsList ], 0, 
+#function( G, gens, imgs )
+#    if not ForAll(gens,x->x in G) then
+#      Error("generators must lie in source group");
+#    fi;
+#    return GroupGeneralMappingByImagesNC(G,gens,imgs);
+#end);
 
 InstallMethod( GroupHomomorphismByImagesNC, "for group, group, list, list",
     true, [ IsGroup, IsGroup, IsList, IsList ], 0,

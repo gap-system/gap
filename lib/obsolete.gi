@@ -774,5 +774,27 @@ InstallGlobalFunction( ConnectGroupAndCharacterTable, function( arg )
 
 #############################################################################
 ##
+#F  ViewLength( <len> )
+##
+##  <Ref Func="View"/> will usually display objects in short form if they 
+##  would need more than <A>len</A> lines. The default is 3.
+##  This function was moved to obsoletes before GAP 4.7 beta release,
+##  since there is now a user preference mechanism to specify it:
+##  GAPInfo.ViewLength:= UserPreference( "ViewLength" ) is the maximal
+##  number of lines that are reasonably printed in `ViewObj' methods.
+##
+BIND_GLOBAL( "ViewLength", function(arg)
+  Info (InfoWarning, 1, "The function `ViewLength' is no longer supported. ",
+                        "Please use user preference `ViewLength' instead.");
+  if LEN_LIST( arg ) = 0 then
+    return GAPInfo.ViewLength;
+  else
+    GAPInfo.ViewLength:= arg[1];
+  fi;
+end );
+
+
+#############################################################################
+##
 #E
 

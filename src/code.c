@@ -611,7 +611,6 @@ void CodeFuncExprBegin (
     Bag                 body;           /* function body                   */
     Bag                 old;            /* old frame                       */
     Stat                stat1;          /* first statement in body         */
-    UInt                len;
 
     /* remember the current offset                                         */
     PushOffsBody();
@@ -637,9 +636,7 @@ void CodeFuncExprBegin (
 
     /* record where we are reading from */
     if (!Input->gapname) {
-      len = strlen(Input->name);
-      Input->gapname = NEW_STRING(len);
-      SyStrncat(CSTR_STRING(Input->gapname),Input->name, len);
+      C_NEW_STRING_DYN(Input->gapname, Input->name);
     }
     FILENAME_BODY(body) = Input->gapname;
     STARTLINE_BODY(body) = INTOBJ_INT(startLine);
@@ -1783,8 +1780,8 @@ void CodeFloatExpr (
     }
   if (l1 < l)
     {
-      Obj s = NEW_STRING(l1);
-      memcpy((void *)CHARS_STRING(s), (void *)str, (size_t)l1 );
+      Obj s;
+      C_NEW_STRING(s, l1, str);
       CodeEagerFloatExpr(s,mark);
     } else {
     CodeLazyFloatExpr(str, l);

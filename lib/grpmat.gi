@@ -297,6 +297,13 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
 
     if not IsZero(v) then
       dict := NewDictionary( v, true , field ^ Length( One( G ) ) );
+      # force `img' over field
+      if (Size(field)=2 and not IsGF2VectorRep(img)) or
+	 (Size(field)>2 and Size(field)<=256 and not (Is8BitVectorRep(img)
+	 and Q_VEC8BIT(img)=Size(field))) then
+	img:=ShallowCopy(img);
+	ConvertToVectorRep(img,Size(field));
+      fi;
       Add(orb,img);
       p:=Length(orb);
       AddDictionary(dict,img,Length(orb));

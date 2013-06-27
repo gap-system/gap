@@ -20,13 +20,18 @@
     gap4r5p*.tar.gz
 
 (3) Copy archives to native i686 machine and call in that directory on that
-    machine  'gapsync/InstForRsync32'.
+    machine  'gapsync/InstForRsync32' (currently GAP is build in ~/build45
+    with the local script './inst').
 
 (4) Similarly, copy archives to x86_64 machine and call 
     'gapsync/InstForRsync64'.
 
 (5) Create $RSDIR/gap4 and in there call 'gapsync/CollectDistribution'
     (after checking/adjusting paths in CollectDistribution).
+    This first copies the new version into a subdirectory 'gap4r5XXX'.
+    One can start 'startrsyncserverXXX' and test the updated version.
+    If all is fine rename directories with local script 'swapwithXXX' and
+    stop the XXX rsync server.
 
 (6) Adjust index.html, rsyncserv.css, CHANGES and motd (in CVS and $RSDIR). 
 

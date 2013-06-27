@@ -702,8 +702,7 @@ void ReadLongNumber(
 
      /* string in which to accumulate number */
      len = strlen(Value);
-     string = NEW_STRING(len);
-     memcpy(CHARS_STRING(string), (void *)Value, len+1);
+     C_NEW_STRING( string, len, Value );
      done = 0;
 
      while (!done) {
@@ -912,9 +911,8 @@ void ReadString(
      Obj  string;
      UInt len;
 
-     string = NEW_STRING(ValueLen);
+     C_NEW_STRING( string, ValueLen, Value );
      len = ValueLen;
-     memcpy(CHARS_STRING(string), (void *)Value, ValueLen);
 
      while (Symbol == S_PARTIALSTRING) {
          Match(S_PARTIALSTRING, "", follow);
@@ -1113,8 +1111,7 @@ void ReadFuncExpr (
     CountNams += 1;
     ASS_LIST( StackNams, CountNams, nams );
     if ( Symbol != S_RPAREN ) {
-        name = NEW_STRING( strlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
+        C_NEW_STRING_DYN( name, Value );
         narg += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -1126,8 +1123,7 @@ void ReadFuncExpr (
                 SyntaxError("name used for two arguments");
             }
         }
-        name = NEW_STRING( strlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
+        C_NEW_STRING_DYN( name, Value );
         narg += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -1140,8 +1136,7 @@ void ReadFuncExpr (
                 SyntaxError("name used for argument and local");
             }
         }
-        name = NEW_STRING( strlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
+        C_NEW_STRING_DYN( name, Value );
         nloc += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1159,8 +1154,7 @@ void ReadFuncExpr (
                     SyntaxError("name used for two locals");
                 }
             }
-            name = NEW_STRING( strlen(Value) );
-            SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
+            C_NEW_STRING_DYN( name, Value );
             nloc += 1;
             ASS_LIST( nams, narg+nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1227,8 +1221,7 @@ void ReadFuncExpr1 (
     SET_LEN_PLIST( nams, 0 );
     CountNams++;
     ASS_LIST( StackNams, CountNams, nams );
-    name = NEW_STRING( strlen(Value) );
-    SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
+    C_NEW_STRING_DYN( name, Value );
     ASS_LIST( nams, 1, name );
 
     /* match away the '->'                                                 */
@@ -2385,8 +2378,7 @@ UInt ReadEvalFile ( void )
     ASS_LIST( StackNams, CountNams, nams );
     if ( Symbol == S_LOCAL ) {
         Match( S_LOCAL, "local", 0L );
-        name = NEW_STRING( strlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
+        C_NEW_STRING_DYN( name, Value );
         nloc += 1;
         ASS_LIST( nams, nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2398,8 +2390,7 @@ UInt ReadEvalFile ( void )
                     SyntaxError("name used for two locals");
                 }
             }
-            name = NEW_STRING( strlen(Value) );
-            SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
+            C_NEW_STRING_DYN( name, Value );
             nloc += 1;
             ASS_LIST( nams, nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END );

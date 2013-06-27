@@ -1,343 +1,519 @@
 ############################################################################
 ##
-#W  semitran.gi           GAP library         Isabel Araújo and Robert Arthur
+#W  semitran.gi           GAP library                         J. D. Mitchell
 ##
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  2013,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation of some basics for transformation
-##  semigroups
+##  semigroups and is based on earlier code of Isabel Araújo and Robert Arthur.
 ##
 
-#############################################################################
-##
-#M  IsTransformationMonoid( <M> )
-##
-##  If an object has IsMonoid, then it necessarily contains the identity
-##  transformation, and so is a submonoid of the full transformation
-##  monoid.
-##
-InstallTrueMethod(IsTransformationMonoid, IsMonoid and
-    IsTransformationCollection);
 
-#############################################################################
-##
-#M  IsTransformationMonoid( <S> )
-##
-##  A transformation semigroup is a transformation monoid iff at least
-##  one of the generators is of rank n, where n is the degree of the
-##  semigroup.
-##
-InstallMethod(IsTransformationMonoid, "for a transformation semigroup",
-    true, [IsTransformationSemigroup and HasGeneratorsOfSemigroup], 0,
-function( S )
-    if ForAny(GeneratorsOfSemigroup(S),
-           x->RankOfTransformation(x)=DegreeOfTransformationSemigroup(S)) then
+InstallMethod(IsGeneratorsOfMagmaWithInverses,
+ "for a transformation collection",
+[IsTransformationCollection],
+coll-> ForAll(coll, x-> RankOfTransformation(x)=DegreeOfTransformation(x)));
 
-        SetGeneratorsOfMonoid(S, GeneratorsOfSemigroup(S));
-        return true;
-    else
-        return false;
+InstallMethod(MovedPoints, "for a transformation semigroup",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
+s-> MovedPoints(GeneratorsOfSemigroup(s)));
+
+InstallMethod(NrMovedPoints, "for a transformation semigroup",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
+s-> NrMovedPoints(GeneratorsOfSemigroup(s)));
+
+InstallMethod(LargestMovedPoint, "for a transformation semigroup",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
+s-> LargestMovedPoint(GeneratorsOfSemigroup(s)));
+
+InstallMethod(SmallestMovedPoint, "for a transformation semigroup",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
+s-> SmallestMovedPoint(GeneratorsOfSemigroup(s)));
+
+InstallMethod(LargestImageOfMovedPoint, "for a transformation semigroup",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
+s-> LargestImageOfMovedPoint(GeneratorsOfSemigroup(s)));
+
+InstallMethod(SmallestImageOfMovedPoint, "for a transformation semigroup",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
+s-> SmallestImageOfMovedPoint(GeneratorsOfSemigroup(s)));
+
+#
+
+InstallMethod(DisplayString, "for a transformation semigroup with generators",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup], ViewString);
+
+#
+
+InstallMethod(ViewString, "for a transformation semigroup with generators",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
+function(s)
+  local str, nrgens;
+  
+  str:="\><";
+
+  if HasIsTrivial(s) and IsTrivial(s) then 
+    Append(str, "\>trivial\< ");
+  else 
+    if HasIsCommutative(s) and IsCommutative(s) then 
+      Append(str, "\>commutative\< ");
     fi;
+  fi;
+
+  if HasIsTrivial(s) and IsTrivial(s) then 
+  elif HasIsZeroSimpleSemigroup(s) and IsZeroSimpleSemigroup(s) then 
+    Append(str, "\>0-simple\< ");
+  elif HasIsSimpleSemigroup(s) and IsSimpleSemigroup(s) then 
+    Append(str, "\>simple\< ");
+  fi;
+
+  if HasIsInverseSemigroup(s) and IsInverseSemigroup(s) then 
+    Append(str, "\>inverse\< ");
+  elif HasIsRegularSemigroup(s) 
+   and not (HasIsSimpleSemigroup(s) and IsSimpleSemigroup(s)) then 
+    if IsRegularSemigroup(s) then 
+      Append(str, "\>regular\< ");
+    else
+      Append(str, "\>non-regular\< ");
+    fi;
+  fi;
+  
+  Append(str, "\>transformation\< ");
+ 
+  if HasIsMonoid(s) and IsMonoid(s) then 
+    Append(str, "\>monoid\< ");
+    nrgens:=Length(GeneratorsOfMonoid(s));
+  else 
+    Append(str, "\>semigroup\< ");
+    nrgens:=Length(GeneratorsOfSemigroup(s));
+  fi;
+  
+  if HasIsTrivial(s) and not IsTrivial(s) and HasSize(s) and Size(s)<2^64 then 
+    Append(str, "\>of size\> ");
+    Append(str, String(Size(s)));
+    Append(str, ",\<\< ");
+  fi;
+ 
+  Append(str, "\>on \>");
+  Append(str, ViewString(NormalizedDegreeOfTransformationSemigroup(s)));
+  Append(str, "\< pts with\> ");
+  Append(str, ViewString(nrgens));
+  Append(str, "\< generator");
+
+  if nrgens>1 or nrgens=0 then 
+    Append(str, "s\<");
+  else 
+    Append(str, "\<");
+  fi;
+  Append(str, ">\<");
+
+  return str;
 end);
 
-#############################################################################
-##
-#M  AsMonoid( <S> )
-##
-##  Given a Transformation semigroup with known generators
-##  for which IsTransformationMonoid is true, return it as a monoid.
-##
-InstallMethod(AsMonoid, "for transformation semigroup", true,
-    [IsTransformationSemigroup and HasGeneratorsOfSemigroup], 0,
+#
+
+InstallMethod(ViewString, "for a full transformation semigroup",
+[IsTransformationSemigroup and IsFullTransformationSemigroup and HasGeneratorsOfSemigroup],
+function(s)
+  return STRINGIFY("<full transformation semigroup on ", 
+  DegreeOfTransformationSemigroup(s), " pts>");
+end);
+
+
+#
+
+#InstallTrueMethod(IsTransformationMonoid, IsMonoid and
+#    IsTransformationCollection);
+
+#
+
+#InstallMethod(IsTransformationMonoid, 
+#"for a transformation semigroup with generators",
+#[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
+#function( S )
+#    if ForAny(GeneratorsOfSemigroup(S),
+#           x->RankOfTransformation(x)=DegreeOfTransformationSemigroup(S)) then
+#      SetGeneratorsOfMonoid(S, GeneratorsOfSemigroup(S));
+#      return true;
+#    else
+#      return false;
+#    fi;
+#end);
+
+#
+
+InstallMethod(AsMonoid, 
+"for transformation semigroup with generators",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 function(S)
-    if IsTransformationMonoid(S) then
-        return Monoid(GeneratorsOfSemigroup(S));
-    else
-        return fail;
-    fi;
+  if One(S)<>fail then
+    return Monoid(GeneratorsOfSemigroup(S));
+  else
+    return fail;
+  fi;
 end);
 
-##############################################################################
-##
-#M  IsFinite( <M> )
-##
-##  Transformation semigroups (considered in gap) are finite
-##
+#
+
 InstallTrueMethod(IsFinite, IsTransformationSemigroup);
 
-#############################################################################
-##
-#M  DegreeOfTransformationSemigroup( <S> )
-##
-##  Since we insist all elements must have the same degree, we may simply
-##  give the degree of one generator.
-##
-InstallMethod(DegreeOfTransformationSemigroup, "degree of a trans semigroup",
-true, [IsTransformationSemigroup],0,
+#
+
+InstallMethod(DegreeOfTransformationSemigroup, 
+"for a transformation semigroup",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 function(s)
-    return DegreeOfTransformation(AsList(GeneratorsOfSemigroup(s))[1]);
+  return DegreeOfTransformationCollection(GeneratorsOfSemigroup(s));
 end);
 
-###############################################################################
-##
-#M  IsomorphismPermGroup( <H> )
-##
-##  for a greens H class of a semigroup
-##  returns an isomorphism from the H class to an isomorphic Perm group
-##
-InstallOtherMethod( IsomorphismPermGroup,
-    "for a Green's group H class of a semigroup", true,
-    [ IsGreensHClass and IsEquivalenceClass], 0,
+#
+
+InstallMethod(NormalizedDegreeOfTransformationSemigroup, 
+"for a transformation semigroup",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
+function(s)
+  return NormalizedDegreeOfTransformationCollection(GeneratorsOfSemigroup(s));
+end);
+
+#
+
+InstallMethod(IsomorphismPermGroup,
+"for a group H-class of a semigroup",
+[IsGreensHClass],
 function( h )
+  local enum, permgroup, i, perm, j, elts;
 
-    local enum,      # enumerator of h
-          isgroup,   # is h a group
-          gens,      # the generators of the perm group
-          permgroup, # the perm group
-          perm,      # a permutation
-          i,j,       # loop variables
-          mapfun;    # the function that computes the mapping
+  if not(IsFinite(h)) then
+    TryNextMethod();
+  fi;
 
-    if not(IsFinite(h)) then
-       TryNextMethod();
-    fi;
+  if not( IsGroupHClass(h) ) then
+    Error("can only create isomorphisms of group H-classes");
+    return;
+  fi;
 
-
-     if not( IsGroupHClass(h) ) then
-        Error("can only create isomorphism of group H classes");
-    fi;
-
-#    i := 1;
-#    isgroup := false;
-#    while IsBound( enum[ i ] ) and not( isgroup ) do
-#        if enum[ i ]*enum[ i ] = enum[ i ] then
-#            isgroup := true;
-#        fi;
-#        i := i+1;
-#    od;
-
-
-    # now we build the Perm group
-
-    # For each element of h we build the permutation induced in h by itself
-    # These permutations are going to be the generators of the perm group
-    gens:=[]; enum := Enumerator( h );
-
-    i := 1;
-    while IsBound( enum[ i ] ) do
-        perm := [];
-        j := 1;
-        while IsBound( enum[ j ] ) do
-            Add( perm, Position( enum, enum[i] * enum[ j ] ) );
-            j := j+1;
-        od;
-        Add( gens, PermList(perm) );
-        i := i+1;
+  elts:=[]; 
+  enum := Enumerator( h );
+  permgroup:=Group(());
+  i := 1;
+  while IsBound( enum[ i ] ) do
+    perm := [];
+    j := 1;
+    while IsBound( enum[ j ] ) do
+      perm[j]:=Position( enum, enum[j] * enum[ i ] );
+      j := j+1;
     od;
-    # notice that gens now is a list of permutations, entry i of which
-    # is the permutation induced in H by the element enum[i]
+    elts[i]:=PermList(perm);
+    permgroup:=ClosureGroup(permgroup, elts[i]);
+    i := i+1;
+  od;
 
-    # now we build the group
-    permgroup := Group( gens );
-
-    mapfun := a -> gens[ Position( enum, a )];
-
-    return MappingByFunction( h, permgroup, mapfun );
-
+  return MappingByFunction( h, permgroup, a -> elts[Position( enum, a )]);
 end);
 
-###############################################################################
-##
-#M  IsomorphismTransformationSemigroup( <S> )
-##
-##  For a generic semigroup <S>  with MultiplicativeNeutralElement.
-##  Returns an isomorphism from <S> to a transformation semigroup
-##  It is the right regular representation of $S$.
-##
-##  This function could be much more space efficient if we knew how
-##  to factor elements of a semigroup into words in the generators!
-##
-InstallMethod( IsomorphismTransformationSemigroup,
-    "for a generic semigroup with multiplicative neutral element",
-    true,
-    [ IsSemigroup and HasMultiplicativeNeutralElement], 0,
+#
+
+InstallMethod(IsomorphismTransformationSemigroup,
+"for a semigroup of general mappings",
+[IsSemigroup and IsGeneralMappingCollection and HasGeneratorsOfSemigroup],
 function( s )
-    local
-        en,     #enumerator of the semigroup - this becomes part of the isomorphism
-        gens,   # the generators of the transformation semigroup
-        mapfun; # the function which describes the mapping
+  local egens, gens, mapfun;
 
-    if not(IsFinite(s)) then
-       Error("error, semigroup is infinite. Transformation semigroups in GAP are finite");
-    fi;
-    en := EnumeratorSorted(s);
+  egens := GeneratorsOfSemigroup(s);
+  if not ForAll(egens, g->IsMapping(g)) then
+    return fail;
+  fi;
+  
+  gens := List(egens, g->TransformationRepresentation(g)!.transformation);
+  mapfun := a -> TransformationRepresentation(a)!.transformation;
 
-    mapfun := a -> Transformation( List([1..Length(en)], i->Position(en, en[i]*a)));
-
-    gens := List(GeneratorsOfSemigroup(s),x->mapfun(x));
-
-    return MagmaHomomorphismByFunctionNC( s, Semigroup(gens), mapfun );
-
+  return MagmaHomomorphismByFunctionNC( s, Semigroup(gens), mapfun );
 end);
 
-##
-##  As above, but add an extra point for faithfulness
-##
-InstallMethod( IsomorphismTransformationSemigroup,
-    "for a generic semigroup",
-    true, [IsSemigroup], 0,
+#
 
-function( s )
-    local
-        en,     #enumerator of the semigroup - this becomes part of the isomorphism
-        gens,   # the generators of the transformation semigroup
-        mapfun; # the function which describes the mapping
-
-
-    if not(IsFinite(s)) then
-        Error("error, semigroup is infinite. Transformation semigroups in GAP are finite");
-    fi;
-
-    en := EnumeratorSorted(s);
-
-    mapfun := a -> Transformation(
-    Concatenation(List([1..Length(en)], i->Position(en, en[i]*a)),[Position(en,a)]));
-
-    gens := List(GeneratorsOfSemigroup(s),x->mapfun(x));
-
-    return MagmaHomomorphismByFunctionNC( s, Semigroup(gens), mapfun );
-
-end);
-
-
-#############################################################################
-##
-##  For semigroups of SingleValued GeneralMappings with a generating set.
-##  For the moment we resist the temptation to install it for a semigroup
-##  of general mappings without a generating set - this would be a
-##  highly suspicious object.
-##
-InstallMethod( IsomorphismTransformationSemigroup,
-    "for a semigroup of general mappings",
-    true,
-    [IsSemigroup and IsGeneralMappingCollection and HasGeneratorsOfSemigroup],
-    0,
-
-function( s )
-    local  gens,   # the generators of the transformation semigroup
-           egens,  # the generators of the endomorphism semigroup
-           mapfun; # the function which describes the mapping
-
-    egens := GeneratorsOfSemigroup(s);
-    if not ForAll(egens, g->IsMapping(g)) then
-        TryNextMethod();
-    fi;
-    gens := List(egens, g->TransformationRepresentation(g)!.transformation);
-
-    mapfun := a -> TransformationRepresentation(a)!.transformation;
-
-    return MagmaHomomorphismByFunctionNC( s, Semigroup(gens), mapfun );
-
-end);
-
-#############################################################################
-##
-#F  FullTransformationSemigroup(<degree>)
-##
-##
 InstallGlobalFunction(FullTransformationSemigroup,
-    function(d)
-        local s;  ## semigroup
+function(d)
+  local gens, s, i;
 
-        if not IsPosInt(d) then
-            Error("<d> must be a positive integer");
-        fi;
+  if not IsPosInt(d) then
+    Error("usage: the argument must be a positive integer,");
+  fi;
 
-        if d =1 then
-            return Monoid(Transformation([1]));
-        elif d=2 then
-            return Monoid(Transformation([2,1]),
-                             Transformation([1,1]),
-                             Transformation([2,2]) );
-        fi;
+  if d =1 then
+    gens:=[Transformation([1])];
+  elif d=2 then
+    gens:=[Transformation([2,1]), Transformation([1,1])];
+  else
+    gens:=List([1..3], x-> EmptyPlist(d));
+    gens[1][d]:=1; gens[2][1]:=2; gens[2][2]:=1; gens[3][d]:=1;
+    for i in [1..d-1] do 
+      gens[1][i]:=i+1;
+      gens[3][i]:=i;
+    od;
+    for i in [3..d] do 
+      gens[2][i]:=i;
+    od;
+    Apply(gens, Transformation);
+  fi;
 
-        s := Monoid(Transformation(Concatenation([2..d],[1])),
-                       Transformation(Concatenation([2,1],[3..d])),
-                       Transformation(Concatenation([1..d-1],[1])) );
+  s:=Monoid(gens);
+  
+  SetSize(s,d^d);
+  SetIsFullTransformationSemigroup(s,true);
+  SetIsRegularSemigroup(s, true);
+  return s;
+end);
 
-        SetSize(s,d^d);
-        SetIsTransformationMonoid(s,true);
-        SetIsFullTransformationSemigroup(s,true);
-        return s;
-    end);
+#
 
-#############################################################################
-##
-#A  IsFullTransformationSemigroup
-##
-##  implements simple checks to determine when a transformation semigroup is
-##  the full transformation semigroup
-##
-InstallMethod(IsFullTransformationSemigroup, "for semigroups", true,
-        [IsSemigroup],0,
-    function(s)
+InstallMethod(IsFullTransformationSemigroup, "for a semigroup", 
+[IsSemigroup], ReturnFalse);
 
-        local gens,      ## Generators of the semigroup
-              d,         ## degree of the semigroup
-              a, b, c;   ## 3 generators known to generate the full
-                         ## transformation semigroup
+#
 
-        ## Semigroup must be a transformation semigroup
-        ##
-        if not IsTransformationSemigroup(s) then
-            return false;
-        fi;
+InstallMethod(IsFullTransformationSemigroup, "for semigroups",
+[IsTransformationSemigroup],
+function(s)
+  local t;
 
-        ## Check size (if there is one)
-        ##
-        if HasSize(s) then
-             return Size(s)=DegreeOfTransformationSemigroup(s)^
+  if HasSize(s) then
+    return Size(s)=DegreeOfTransformationSemigroup(s)^
                  DegreeOfTransformationSemigroup(s);
-        fi;
+  fi;
 
-        ## Check small cases
-        ##
-        if DegreeOfTransformationSemigroup(s) < 5 then
-             return Size(s)=DegreeOfTransformationSemigroup(s)^
-                 DegreeOfTransformationSemigroup(s);
-        fi;
+  t:=FullTransformationSemigroup(DegreeOfTransformationSemigroup(s));
+  return ForAll(GeneratorsOfSemigroup(t), x-> x in s);
+end);
 
-        ## Lastly check to see if a set of generators known to generatate
-        ##     the whole semigroup is in the semigroup
-        ##     (This is a very crude test at the moment but a start)
-        ##
+#
 
-        d := DegreeOfTransformationSemigroup(s);
+InstallMethod(\in, 
+"for a transformation and a full transformation semigroup",
+[IsTransformation, IsFullTransformationSemigroup],
+function(e,tn)
+  return LargestMovedPoint(e)<=DegreeOfTransformationSemigroup(tn);
+end);
 
-        a := Transformation(Concatenation([2..d],[1]));
-        b := Transformation(Concatenation([2,1],[3..d]));
-        c := Transformation(Concatenation([1..d-1],[1]));
+# isomorphisms and anti-isomorphisms
 
-        return a in s and b in s and c in s;
+InstallMethod(IsomorphismTransformationMonoid, 
+"for a perm group with generators",
+[IsPermGroup and HasGeneratorsOfGroup], 
+function(g)
+  local s, conj;
+  
+  s:=Monoid(List(GeneratorsOfGroup(g), 
+   x-> TransformationOp(x, MovedPoints(g))));
+  
+  UseIsomorphismRelation(g, s);
 
-    end);
+  conj:=MappingPermListList([1..NrMovedPoints(g)], MovedPoints(g));
 
-#############################################################################
-##
-#M  \in   for full transformation semigroup
-##
-##  If the transformation and group have the same degree then return true
-##
-InstallMethod(\in, "for full transformation semigroups", true,
-        [IsObject,IsFullTransformationSemigroup],0,
-    function(e,tn)
-        return DegreeOfTransformation(e)=DegreeOfTransformationSemigroup(tn);
-    end);
+  return MagmaIsomorphismByFunctionsNC(g, s, 
+   x-> TransformationOp(x, MovedPoints(g)), 
+   x-> Permutation(x, [1..NrMovedPoints(g)])^conj);
+end);
 
-#############################################################################
-##
-#E
+#
 
+InstallMethod(IsomorphismTransformationSemigroup, 
+"for a perm group with generators",
+[IsPermGroup and HasGeneratorsOfGroup], 
+function(g)
+  local s, conj;
+  
+  s:=Semigroup(List(GeneratorsOfGroup(g), 
+   x-> TransformationOp(x, MovedPoints(g))));
+  UseIsomorphismRelation(g, s);
+  conj:=MappingPermListList([1..NrMovedPoints(g)], MovedPoints(g));
+
+  return MagmaIsomorphismByFunctionsNC(g, s, 
+   x-> TransformationOp(x, MovedPoints(g)), 
+   x-> Permutation(x, [1..NrMovedPoints(g)])^conj);
+end);
+
+#
+
+InstallMethod(IsomorphismTransformationSemigroup, 
+"for a semigroup with generators",
+[IsSemigroup and HasGeneratorsOfSemigroup],
+function( s )
+  local en, act, gens;
+
+  en:=EnumeratorSorted(s);
+  
+  act:=function(i, x)
+    if i<=Length(en) then 
+      return Position(en, en[i]*x);
+    fi;
+    return Position(en, x);
+  end;
+  
+  gens := List(GeneratorsOfSemigroup(s), 
+   x-> TransformationOp(x, [1..Length(en)+1], act));
+
+  return MagmaIsomorphismByFunctionsNC( s, Semigroup( gens ), 
+   x-> TransformationOp(x, [1..Length(en)+1], act), 
+   x-> en[(Length(en)+1)^x]);
+end);
+
+#
+
+InstallMethod( IsomorphismTransformationSemigroup,
+"for a semigroup with multiplicative neutral elt and generators",
+[ IsSemigroup and HasMultiplicativeNeutralElement and HasGeneratorsOfSemigroup],
+function(s)
+  local en, act, gens, pos;
+
+  en:=EnumeratorSorted(s);
+  
+  act:=function(i, x)
+    if i<=Length(en) then 
+      return Position(en, en[i]*x);
+    fi;
+    return Position(en, x);
+  end;
+  
+  gens := List(GeneratorsOfSemigroup(s), 
+   x-> TransformationOp(x, [1..Length(en)], act));
+  
+  pos:=Position(en, MultiplicativeNeutralElement(s));
+
+  return MagmaIsomorphismByFunctionsNC( s, Semigroup( gens ), 
+   x-> TransformationOp(x, [1..Length(en)], act), 
+   x-> en[pos^x]);
+end);
+
+#
+
+InstallMethod(IsomorphismTransformationSemigroup, "for a semigroup",
+[IsSemigroup],
+function( s )
+  local en, act, gens;
+
+  en:=EnumeratorSorted(s);
+  
+  act:=function(i, x)
+    if i<=Length(en) then 
+      return Position(en, en[i]*x);
+    fi;
+    return Position(en, x);
+  end;
+  
+  gens := List(en, x-> TransformationOp(x, [1..Length(en)+1], act));
+
+  return MagmaIsomorphismByFunctionsNC( s, Semigroup( gens ), 
+   x-> TransformationOp(x, [1..Length(en)+1], act), 
+   x-> en[(Length(en)+1)^x]);
+end);
+
+#
+
+InstallMethod( IsomorphismTransformationSemigroup,
+"for a semigroup with multiplicative neutral element",
+[ IsSemigroup and HasMultiplicativeNeutralElement],
+function(s)
+  local en, act, gens, pos;
+
+  en:=EnumeratorSorted(s);
+  
+  act:=function(i, x)
+    if i<=Length(en) then 
+      return Position(en, en[i]*x);
+    fi;
+    return Position(en, x);
+  end;
+  
+  gens := List(en, x-> TransformationOp(x, [1..Length(en)], act));
+  pos:=Position(en, MultiplicativeNeutralElement(s));
+
+  return MagmaIsomorphismByFunctionsNC( s, Semigroup( gens ), 
+   x-> TransformationOp(x, [1..Length(en)], act), 
+   x-> en[pos^x]);
+end);
+
+#
+
+InstallMethod(AntiIsomorphismTransformationSemigroup,
+"for a semigroup with generators",
+[IsSemigroup and HasGeneratorsOfSemigroup],
+function(s)
+  local en, act, gens;
+
+  en:=EnumeratorSorted(s);
+  
+  act:=function(i, x)
+    if i<=Length(en) then 
+      return Position(en, x*en[i]);
+    fi;
+    return Position(en, x);
+  end;
+  
+  gens := List( GeneratorsOfSemigroup( s ), x-> 
+   TransformationOp(x, [1..Length(en)+1], act));
+
+  return MagmaIsomorphismByFunctionsNC( s, Semigroup( gens ), 
+   x-> TransformationOp(x, [1..Length(en)+1], act), 
+   x-> en[(Length(en)+1)^x]);
+end);
+
+#
+
+InstallMethod(IsomorphismTransformationSemigroup, 
+"for partial perm semigroup",
+[IsPartialPermSemigroup],
+function(s)
+  local n, gens1, m, gens2, iso, u, i;
+ 
+  if DomainOfPartialPermCollection(s)=[] then 
+    # semigroup consisting of the empty set
+    return MagmaIsomorphismByFunctionsNC(s, Semigroup(Transformation([1])), 
+    x-> Transformation([1]), x-> PartialPermNC([]));
+  fi;
+
+  n:=Maximum(DegreeOfPartialPermCollection(s),
+   CodegreeOfPartialPermCollection(s))+1;
+  gens1:=GeneratorsOfSemigroup(s); 
+  m:=Length(gens1);
+  gens2:=EmptyPlist(m);
+
+  for i in [1..m] do 
+    gens2[i]:=AsTransformation(gens1[i], n);
+  od;
+
+  return MagmaIsomorphismByFunctionsNC(s, Semigroup(gens2), 
+   x-> AsTransformation(x, n), AsPartialPerm);
+end);
+
+#
+
+InstallMethod(IsomorphismTransformationMonoid, 
+"for partial perm semigroup",
+[IsPartialPermSemigroup],
+function(s)
+  local n, gens1, m, gens2, iso, u, i;
+  
+  if not (IsMonoid(s) or One(s)<>fail) then 
+    Error("usage: the argument should define a monoid,");
+    return;
+  fi;
+
+  n:=Maximum(DegreeOfPartialPermCollection(s),
+   CodegreeOfPartialPermCollection(s))+1;
+  gens1:=GeneratorsOfSemigroup(s); 
+  m:=Length(gens1);
+  gens2:=EmptyPlist(m);
+
+  for i in [1..m] do 
+    gens2[i]:=AsTransformation(gens1[i], n);
+  od;
+
+  return MagmaIsomorphismByFunctionsNC(s, Monoid(gens2), x->
+   AsTransformation(x, n), AsPartialPerm);
+end);
+
+#EOF

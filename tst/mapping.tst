@@ -10,7 +10,7 @@
 gap> START_TEST("mapping.tst");
 gap> M:= GF(3);
 GF(3)
-gap> tuples:= List( Tuples( AsList( M ), 2 ), Tuple );;
+gap> tuples:= List( Tuples( AsList( M ), 2 ), DirectProductElement );;
 gap> Print(tuples,"\n");
 [ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
     Z(3)^0 ] ), DirectProductElement( [ 0*Z(3), Z(3) ] ), 

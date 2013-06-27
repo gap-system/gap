@@ -495,7 +495,7 @@ DeclareAttribute( "TrivialSubmagmaWithOne", IsMagmaWithOne );
 ##  An associative magma is called a <E>semigroup</E>
 ##  (see&nbsp;<Ref Chap="Semigroups"/>),
 ##  an associative magma-with-one is called a <E>monoid</E>
-##  (see&nbsp;<Ref Chap="Monoids"/>),
+##  (see&nbsp;<Ref Chap="Semigroups"/>),
 ##  and an associative magma-with-inverses is called a <E>group</E>
 ##  (see&nbsp;<Ref Chap="Groups"/>).
 ##  </Description>

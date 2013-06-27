@@ -438,7 +438,6 @@ Obj FuncSTRING_SINTLIST (
        
     l=LEN_PLIST(val);
     n=NEW_STRING(l);
-    SET_LEN_STRING(n,l);
     p=CHARS_STRING(n);
     for (i=1;i<=l;i++) {
       *p++=CHAR_SINT(INT_INTOBJ(ELM_PLIST(val,i)));
@@ -449,7 +448,6 @@ Obj FuncSTRING_SINTLIST (
     low=GET_LOW_RANGE(val);
     inc=GET_INC_RANGE(val);
     n=NEW_STRING(l);
-    SET_LEN_STRING(n,l);
     p=CHARS_STRING(n);
     for (i=1;i<=l;i++) {
       *p++=CHAR_SINT(low);
@@ -484,7 +482,6 @@ Obj FuncREVNEG_STRING (
 
   l=GET_LEN_STRING(val);
   n=NEW_STRING(l);
-  SET_LEN_STRING(n,l);
   p=CHARS_STRING(val);
   q=CHARS_STRING(n);
   j=l-1;

@@ -533,6 +533,10 @@ Obj FuncIntHexString( Obj self,  Obj str )
     i = 0;
   }
 
+  while ((CHARS_STRING(str))[i] == '0' && i < len)
+    i++;
+    
+
   if ((len-i)*4 <= NR_SMALL_INT_BITS) {
     n = 0;
     p = CHARS_STRING(str);
@@ -1127,7 +1131,7 @@ be called directly */
       
       /* mpn_lshift is faster still than mpn_add_n for adding a TypLimb
          number to itself                                                  */
-      if ( EqInt( gmpL, gmpR ) ) {
+      if ( gmpL == gmpR ) {
         carry = mpn_lshift( ADDR_INT(res),
                             ADDR_INT(gmpL), SIZE_INT(gmpL),
                             1 );

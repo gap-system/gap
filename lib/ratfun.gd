@@ -1379,23 +1379,25 @@ DeclareOperation( "Resultant",[ IsPolynomial, IsPolynomial, IsPosInt]);
 ##  If <A>pol</A> is a univariate polynomial then
 ##  <Ref Func="Discriminant"/> returns the <E>discriminant</E> of <A>pol</A>
 ##  by its indeterminate.
-##  For a polynomial <A>pol</A>,
-##  the discriminant by the indeterminate <A>ind</A> is returned,
-##  regarding <A>pol</A> as univariate in <A>ind</A>.
-##  Instead of the desired indeterminate, also the number of this
-##  indeterminate can be given as <A>ind</A>.
+##  The two-argument form returns the discriminant of a polynomial <A>pol</A>
+##  by the indeterminate number <A>ind</A>, regarding <A>pol</A> as univariate
+##  in this indeterminate. Instead of the indeterminate number, the
+##  indeterminate itself can also be given as <A>ind</A>.
 ##  <Example><![CDATA[
 ##  gap> Discriminant(f,1);
 ##  20503125*y^28+262144*y^25+27337500*y^22+19208040*y^21+1474560*y^17+136\
 ##  68750*y^16+18225000*y^15+6075000*y^14+1105920*y^13+3037500*y^10+648972\
 ##  0*y^9+4050000*y^8+900000*y^7+62208*y^5+253125*y^4+675000*y^3+675000*y^\
 ##  2+300000*y+50000
+##  gap> Discriminant(f,1) = Discriminant(f,x);
+##  true
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation("Discriminant",[IsPolynomial]);
+DeclareAttribute( "Discriminant", IsPolynomial );
+DeclareOperation( "Discriminant", [ IsPolynomial, IsPosInt ] );
 
 
 ##  Technical functions for rational functions
@@ -1503,7 +1505,8 @@ DeclareGlobalFunction("QuotientPolynomialsExtRep");
 ##  takes two polynomials <A>left</A> and <A>right</A>
 ##  and computes their quotient. No test is performed whether the arguments
 ##  indeed  are polynomials.
-##  Depending on the integer variable <A>mode</A> it returns:
+##  Depending on the integer variable <A>mode</A>, which may take values in 
+##  a range from 1 to 4, it returns respectively:
 ##  <Enum>
 ##  <Item>
 ##    the quotient (there might be some remainder),
@@ -1547,15 +1550,36 @@ DeclareGlobalFunction("GcdCoeffs");
 ##  <Func Name="UnivariatenessTestRationalFunction" Arg='f'/>
 ##
 ##  <Description>
-##  takes a rational function <A>f</A> and tests whether it is univariate or even
-##  a Laurent polynomial. It returns a list
-##  <C>[<A>isunivariate</A>, <A>indet</A>, <A>islaurent</A>, <A>cofs</A>]</C> where <A>indet</A> is the
-##  indeterminate number and <A>cofs</A> (if applicable) the coefficients lists.
-##  The list <A>cofs</A> is the <C>CoefficientsOfLaurentPolynomial</C> if <A>islaurent</A>
-##  is <K>true</K> and the <C>CoefficientsOfUnivariateRationalFunction</C> if
-##  <A>islaurent</A> is <K>false</K> and <A>isunivariate</A> <K>true</K>.
-##  As there is no proper multivariate gcd, it might return <K>fail</K> for
-##  <A>isunivariate</A>.
+##  takes a rational function <A>f</A> and tests whether it is univariate 
+##  rational function (or even a Laurent polynomial). It returns a list
+##  <C>[isunivariate, indet, islaurent, cofs]</C>. 
+##  <P/>
+##  If <A>f</A> is a univariate rational function then <C>isunivariate</C> 
+##  is <K>true</K> and <C>indet</C> is the number of the appropriate 
+##  indeterminate.
+##  <P/>
+##  Furthermore, if <A>f</A> is a Laurent polynomial, then <C>islaurent</C>
+##  is also <K>true</K>. In this case the fourth entry, <C>cofs</C>, is 
+##  the value of the attribute <Ref Attr="CoefficientsOfLaurentPolynomial"/> 
+##  for <A>f</A>.
+##  <P/>
+##  If <C>isunivariate</C> is <K>true</K> but <C>islaurent</C> is 
+##  <K>false</K>, then <C>cofs</C> is the value of the attribute 
+##  <Ref Attr="CoefficientsOfUnivariateRationalFunction"/> for <A>f</A>.
+##  <P/>
+##  Otherwise, each entry of the returned list is equal to <K>fail</K>.
+##  As there is no proper multivariate gcd, this may also happen for the
+##  rational function which may be reduced to univariate (see example).
+##  <Example><![CDATA[
+##  gap> UnivariatenessTestRationalFunction( 50-45*x-6*x^2+x^3 );
+##  [ true, 1, true, [ [ 50, -45, -6, 1 ], 0 ] ]
+##  gap> UnivariatenessTestRationalFunction( (-6*y^2+y^3) / (y+1) );
+##  [ true, 2, false, [ [ -6, 1 ], [ 1, 1 ], 2 ] ]
+##  gap> UnivariatenessTestRationalFunction( (-6*y^2+y^3) / (x+1));
+##  [ fail, fail, fail, fail ]
+##  gap> UnivariatenessTestRationalFunction( ((y+2)*(x+1)) / ((y-1)*(x+1)) );
+##  [ fail, fail, fail, fail ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -3,6 +3,70 @@
     CHANGES of "GAP 4.5 on Linux via rsync"         (Frank Lübeck)
     ==============================================================
 
+---  Tue, 07 May 2013 17:28:02 +0200
+Upgraded to archive gap4r6p4_2013_05_04-16_36.tar.gz
+which means GAP is upgraded to 4.6.4 and the following packages
+are upgraded:
+  PolymakeInterface 2013.01.15 (-> 2013.03.06)
+  AutoDoc 2012.12.20 (-> 2013.01.16)
+  CRISP 1.3.5 (-> 1.3.6)
+  CTblLib 1.2.1 (-> 1.2.2)
+  Example 3.4.2 (-> 3.4.3)
+  Float 0.5.5 (-> 0.5.9)
+  Gauss 2012.10.22 (-> 2013.03.07)
+  GradedModules 2012.11.23 (-> 2013.02.07)
+  GradedRingForHomalg 2012.10.25 (-> 2013.02.07)
+  HAP 1.10.9.2 (-> 1.10.10.2)
+  HomalgToCAS 2013.01.10 (-> 2013.02.22)
+  MatricesForHomalg 2013.01.10 (-> 2013.04.16)
+  Modules 2013.01.05 (-> 2013.04.19)
+  OpenMath 11.1.3 (-> 11.1.4)
+  Polycyclic 2.10.1 (-> 2.11)
+  RingsForHomalg 2013.01.09 (-> 2013.04.19)
+  Smallsemi 0.6.5 (-> 0.6.6)
+  ToolsForHomalg 2012.12.20 (-> 2013.04.16)
+  Wedderga 4.5.3 (-> 4.5.4)
+  gpd 1.18 (-> 1.19)
+  orb 4.5 (-> 4.6)
+
+
+---  Tue, 05 Feb 2013 16:30:16 +0100
+Upgraded to archive gap4r6p2_2013_02_02-01_00.tar.gz
+which means GAP is upgraded to 4.6.2, there are new packages:
+  Congruence 1.0.3
+  Float 0.5.5
+  ToricVarieties 2012.12.22
+and the following packages are upgraded:
+  PolymakeInterface 2012.10.30 (-> 2013.01.15)
+  AutoDoc 2012.10.26 (-> 2012.12.20)
+  Circle 1.4.1 (-> 1.5.2)
+  Citrus 0.999 (-> 0.9999)
+  Convex 2012.10.30 (-> 2012.11.15)
+  Cryst 4.1.10 (-> 4.1.11)
+  Cubefree 1.11 (-> 1.13)
+  FGA 1.1.1 (-> 1.2.0)
+  FR 1.2.6.7 (-> 2.0.3)
+  GradedModules 2012.10.25 (-> 2012.11.23)
+  HAP 1.10.8 (-> 1.10.9.2)
+  HomalgToCAS 2012.10.22 (-> 2013.01.10)
+  LAGUNA 3.6.1 (-> 3.6.3)
+  MatricesForHomalg 2012.10.25 (-> 2013.01.10)
+  Modules 2012.10.27 (-> 2013.01.05)
+  OpenMath 11.1.2 (-> 11.1.3)
+  RCWA 3.4.0 (-> 3.5.1)
+  ResClasses 3.2.0 (-> 3.3.0)
+  RingsForHomalg 2012.10.22 (-> 2013.01.09)
+  SONATA 2.5.1 (-> 2.6)
+  ToolsForHomalg 2012.10.27 (-> 2012.12.20)
+  UnitLib 3.1.1 (-> 3.1.3)
+  Wedderga 4.4.3 (-> 4.5.3)
+  XMod 2.19 (-> 2.22)
+  gpd 1.15 (-> 1.18)
+  idrel 2.12 (-> 2.14)
+  kan 1.05 (-> 1.06)
+  simpcomp 1.5.4 (-> 1.6.1)
+
+
 ---  Wed, 07 Nov 2012 14:45:16 +0100
 Upgraded to archive gap4r5p6_2012_11_04-18_46.tar.gz
 which means the following package upgrades:

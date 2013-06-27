@@ -151,8 +151,9 @@ z2+z4+4z5+2z6+z8+3z9+4z10+3z12+z13+2z14+4z16+3z17+2z18+2z19
 <P/>
 This output format is always used for <Ref Func="Display" Label="for a ffe"/>.
 For <Ref Func="ViewObj" Label="for a ffe"/> it is used only if its length
-would not exceed <C>ViewLength()</C> lines. Longer output is replaced by 
-<C>&lt;&lt;an element of GF(<A>p</A>, <A>d</A>)>></C>.
+would not exceed the number of lines specified in the user preference 
+<C>ViewLength</C> (see <Ref Func="SetUserPreference"/>. Longer output is 
+replaced by <C>&lt;&lt;an element of GF(<A>p</A>, <A>d</A>)>></C>.
 <P/>
 <Example><![CDATA[
 gap> Z(2,409)^100000;

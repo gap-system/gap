@@ -8,6 +8,10 @@
 ##  This file contains functions using the trivial-fitting paradigm.
 ##
 
+BindGlobal("OVERRIDENICE",Maximum(NICE_FLAGS,
+	       RankFilter(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(IsMatrixGroup
+	       and IsFinite)))));
+
 #############################################################################
 ##
 #F  CanComputeFittingFree( <grp> ) . . . . .  TF approach is possible
@@ -54,7 +58,7 @@ InstallTrueMethod(CanComputeFittingFree, IsPermGroup);
 ##  <C>depths</C>
 ##  A list of indices in the pcgs, indicating the <M>G</M>-normal subgroups in
 ##  the series for the pcgs, including an entry for the trivial subgroup.
-##  <C>pcisom</C>  An effective isomorphism from <M>Rad(G)</M> to a pc group
+##  <C>pcisom</C>  An effective isomorphism from a supergroup of <M>Rad(G)</M> to a pc group
 ##  <C>factorhom</C> A epimorphism from <M>G</M> onto <M>G/Rad(G)</M>,
 ##  the image group being
 ##  represented in a way that decomposition into generators will work
@@ -106,7 +110,7 @@ DeclareGlobalFunction("FittingFreeSubgroupSetup");
 # This attribute is used for groups treated by constructive recognition and
 # a composition tree. It is declared in the library such that the function
 # FittingFreeSubgroupSetup can maintain it.
-DeclareAttribute("RecogDecompinfoHomomorphism",IsMapping);
+DeclareAttribute("RecogDecompinfoHomomorphism",IsMapping,"mutable");
 
 #############################################################################
 ##
@@ -126,6 +130,39 @@ DeclareAttribute("RecogDecompinfoHomomorphism",IsMapping);
 ##  the Pcgs stored in <A>ffs</A>. <A>imgs</A> are images of <A>gens</A>
 ##  under <A>ffs<C>.factorhom</C></A>.
 DeclareGlobalFunction("SubgroupByFittingFreeData");
+
+# Utility function: function(pcgs,gens,ignoredepths)
+# for forming an induced modulo pcgs after correction on the lowest level
+# We will be in the situation that an IGS has been corrected only on the
+# lowest level, i.e. the inly obstacle to being an IGS is on the lowest
+# level. Thus the situation is that of a vector space and we do not need to
+# consider commutators and powers, but simply do a Gaussian elimination.
+DeclareGlobalFunction("TFMakeInducedPcgsModulo");
+
+# Utility function: Orbit algorithms when acting with a GPCGS
+DeclareGlobalFunction("OrbitsRepsAndStabsVectorsMultistage");
+DeclareGlobalFunction("OrbitMinimumMultistage");
+
+# utility function: Evaluate the homomorphism to radical factor ``by hand''.
+DeclareGlobalFunction("TFEvalRFHom");
+
+#############################################################################
+##
+#F  FittingFreeElementarySeries( <G>, [<A>, <wholesocle>])
+##
+##  <#GAPDoc Label="FittingFreeElementarySeries">
+##  <ManSection>
+##  <Attr Name="FittingFreeElementarySeries" Arg='G,A,wholesocle'/>
+##
+##  <Description>
+##  For a finite group <A>G</A>, for which
+##  <Ref Func="FittingFreeLiftSetup"> <A>ffs</A> has been computed,
+##  this function returns a subgroup series with elementary factors, each
+##  invariant under action by <A>A</A> if given,
+##  compatible with radical, socle factor and pker.
+##  If <A>wholesocle</A> is given and set to true the socles are not split
+##  up according to isomorphism types, but are kept whole.
+DeclareGlobalFunction("FittingFreeElementarySeries");
 
 #############################################################################
 ##

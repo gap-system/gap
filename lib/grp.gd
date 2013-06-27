@@ -463,8 +463,12 @@ InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 ##  (see&nbsp;<Ref Func="IsPGroup"/>), <Ref Func="PrimePGroup"/> returns
 ##  the prime integer <M>p</M>;
 ##  if <A>G</A> is trivial then <Ref Func="PrimePGroup"/> returns
-##  <K>fail</K>.
+##  <K>fail</K>. 
 ##  Otherwise an error is issued.
+##  <P/>
+##  (One should avoid a common error of writing 
+##  <C>if IsPGroup(g) then ... PrimePGroup(g) ...</C> where the code 
+##  represented by dots assumes that <C>PrimePGroup(g)</C> is an integer.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1191,10 +1195,10 @@ DeclareAttribute( "PerfectResiduum", IsGroup );
 ##  gap> m11:=TransitiveGroup(11,6);
 ##  M(11)
 ##  gap> r:=RepresentativesPerfectSubgroups(m11);
-##  [ Group([ (2,3,4)(5,6,8)(7,11,9), (3,11)(4,5)(6,10)(7,8) ]), 
-##    Group([ (1,2,3)(5,9,6)(7,8,11), (3,11)(4,5)(6,10)(7,8) ]), 
-##    Group([ (2,3,4,11,6)(5,7,10,8,9), (3,11)(4,5)(6,10)(7,8) ]), 
-##    Group([ (1,2,3)(4,6,11)(7,9,10), (3,11)(4,5)(6,10)(7,8) ]), M(11), 
+##  [ Group([ (3,6,7)(4,5,9)(8,10,11), (1,11)(3,8)(5,6)(9,10) ]), 
+##    Group([ (2,3,4)(5,6,8)(7,11,9), (1,11)(3,8)(5,6)(9,10) ]), 
+##    Group([ (3,4,5,6)(7,10,9,11), (2,4,7)(3,10,6)(5,8,9) ]), 
+##    Group([ (2,3,7)(4,11,9)(5,8,10), (1,11)(3,8)(5,6)(9,10) ]), M(11), 
 ##    Group(()) ]
 ##  gap> List(r,Size);
 ##  [ 60, 60, 360, 660, 7920, 1 ]
@@ -1220,14 +1224,14 @@ DeclareAttribute( "RepresentativesSimpleSubgroups", IsGroup );
 ##  (see <Ref Func="RepresentativesPerfectSubgroups"/>.)
 ##  <Example><![CDATA[
 ##  gap> ConjugacyClassesPerfectSubgroups(m11);
-##  [ Group( [ ( 2, 3, 4)( 5, 6, 8)( 7,11, 9), 
-##        ( 3,11)( 4, 5)( 6,10)( 7, 8) ] )^G, 
-##    Group( [ ( 1, 2, 3)( 5, 9, 6)( 7, 8,11), 
-##        ( 3,11)( 4, 5)( 6,10)( 7, 8) ] )^G, 
-##    Group( [ ( 2, 3, 4,11, 6)( 5, 7,10, 8, 9), 
-##        ( 3,11)( 4, 5)( 6,10)( 7, 8) ] )^G, 
-##    Group( [ ( 1, 2, 3)( 4, 6,11)( 7, 9,10), 
-##        ( 3,11)( 4, 5)( 6,10)( 7, 8) ] )^G, M(11)^G, Group( () )^G ]
+##  [ Group( [ ( 3, 6, 7)( 4, 5, 9)( 8,10,11), 
+##        ( 1,11)( 3, 8)( 5, 6)( 9,10) ] )^G, 
+##    Group( [ ( 2, 3, 4)( 5, 6, 8)( 7,11, 9), 
+##        ( 1,11)( 3, 8)( 5, 6)( 9,10) ] )^G, 
+##    Group( [ ( 3, 4, 5, 6)( 7,10, 9,11), ( 2, 4, 7)( 3,10, 6)( 5, 8, 9) 
+##       ] )^G, 
+##    Group( [ ( 2, 3, 7)( 4,11, 9)( 5, 8,10), 
+##        ( 1,11)( 3, 8)( 5, 6)( 9,10) ] )^G, M(11)^G, Group( () )^G ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2901,8 +2905,8 @@ KeyDependentOperation( "IsPNilpotent", IsGroup, IsPosInt, "prime" );
 ##  <Func Name="IsPSolvable" Arg='G, p'/>
 ##
 ##  <Description>
-##  A finite group is <M>p</M>-solvable if every chief factor is either not 
-##  divisible by <M>p</M> or solvable.
+##  A finite group is <M>p</M>-solvable if every chief factor either has
+##  order not divisible by <M>p</M>, or is solvable.
 ##  <P/>
 ##  </Description>
 ##  </ManSection>
@@ -2980,11 +2984,13 @@ DeclareOperation( "IsSubnormal", [ IsGroup, IsGroup ] );
 ##  <Oper Name="NormalClosure" Arg='G, U'/>
 ##
 ##  <Description>
-##  The normal closure of <A>U</A> in <A>G</A> is the smallest normal subgroup of <A>G</A>
-##  which contains <A>U</A>.
+##  The normal closure of <A>U</A> in <A>G</A> is the smallest normal subgroup 
+##  of the closure of <A>G</A> and <A>U</A> which contains <A>U</A>.
 ##  <Example><![CDATA[
 ##  gap> NormalClosure(g,Subgroup(g,[(1,2,3)]));
 ##  Group([ (1,2,3), (1,3,4) ])
+##  gap> NormalClosure(g,Group((3,4,5)));
+##  Group([ (3,4,5), (1,5,4), (1,2,5) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3246,10 +3252,9 @@ KeyDependentOperation( "SylowComplement", IsGroup, IsPosInt, "prime" );
 ##  [ <permutation group of size 96 with 6 generators>, 
 ##    <permutation group of size 96 with 6 generators> ]
 ##  gap> HallSubgroup(h,[3,31]);
-##  Group(
-##  [ (2,18,11)(3,20,7)(4,19,9)(5,21,8)(6,17,10)(12,29,22)(13,27,26)(14,
-##      31,23)(15,30,24)(16,28,25), (1,6,18,3,16,10,9,28,8,21,2,30,26,20,
-##      5,7,12,23,22,11,25,13,14,31,15,17,4,24,29,27,19) ])
+##  Group([ (2,29,7)(3,30,11)(4,28,8)(5,27,9)(6,31,10)(12,24,21)(13,25,20)
+##  (14,23,17)(15,22,19)(16,26,18), (1,20,31,23,11,25,29,3,21,24,6,19,5,
+##  17,12,14,4,18,8,10,30,27,16,26,22,13,7,15,28,9,2) ])
 ##  gap> HallSubgroup(h,[5,31]);
 ##  fail
 ##  ]]></Example>
@@ -3288,7 +3293,7 @@ DeclareOperation( "NrConjugacyClassesInSupergroup", [ IsGroup, IsGroup ] );
 ##  The attribute <Ref Func="EpimorphismFromFreeGroup"/> of <A>G</A>
 ##  will contain a map from the group <A>G</A> to the free group
 ##  in which the word is expressed.
-##  The attribute <C>MappingGeneratorsImages</C> of this map gives a
+##  The attribute <Ref Attr="MappingGeneratorsImages"/> of this map gives a
 ##  list of generators and corresponding letters.
 ##  <P/>
 ##  The algorithm used computes all elements of the group to ensure a short
@@ -3321,20 +3326,23 @@ DeclareOperation( "Factorization",
 #O  GroupByGenerators( <gens> ) . . . . . . . . . . . . . group by generators
 #O  GroupByGenerators( <gens>, <id> ) . . . . . . . . . . group by generators
 ##
+##  <#GAPDoc Label="GroupByGenerators">
 ##  <ManSection>
 ##  <Oper Name="GroupByGenerators" Arg='gens'/>
-##  <Oper Name="GroupByGenerators" Arg='gens, id'/>
+##  <Oper Name="GroupByGenerators" Arg='gens, id'
+##   Label="with explicitly specified identity element"/>
 ##
 ##  <Description>
-##  <C>GroupByGenerators</C> returns the group <M>G</M> generated by the list <A>gens</A>.
+##  <Ref Oper="GroupByGenerators"/> returns the group <M>G</M> generated by the list <A>gens</A>.
 ##  If a second argument <A>id</A> is present then this is stored as the identity
 ##  element of the group.
 ##  <P/>
-##  The value of the attribute <C>GeneratorsOfGroup</C> of <M>G</M> need not be equal
+##  The value of the attribute <Ref Attr="GeneratorsOfGroup"/> of <M>G</M> need not be equal
 ##  to <A>gens</A>.
-##  <C>GroupByGenerators</C> is called by <C>Group</C>.
+##  <Ref Oper="GroupByGenerators"/> is the underlying operation called by <Ref Func="Group" Label="for several generators"/>.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "GroupByGenerators", [ IsCollection ] );
 DeclareOperation( "GroupByGenerators",
@@ -4053,7 +4061,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  #I  the image group has 3 gens and 11 rels of total length 92
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens : 
 ##  >                                           method := "fast" );;
-##  #I  the image group has 3 gens and 138 rels of total length 3149
+##  #I  the image group has 3 gens and 162 rels of total length 3737
 ##  ]]></Example>
 ##  <P/>
 ##  Though the option <C>method := "regular"</C> is only checked in the case
@@ -4075,7 +4083,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
 ##        [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens );;
-##  #I  the image group has 2 gens and 8 rels of total length 80
+##  #I  the image group has 2 gens and 9 rels of total length 94
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens : 
 ##  >                                           method := "regular");;
 ##  #I  the image group has 2 gens and 6 rels of total length 56
@@ -4087,15 +4095,15 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  , 0, 0, 0, 1 ] ] ]->[ F1, F2 ]>
 ##  gap> ConstituentsCompositionMapping(iso);
 ##  [ <action isomorphism>, 
-##    [ (2,3,5,9,16,29)(4,7,13,24,19,32)(6,11,20,34,40,57)(8,15,28,46,42,
-##          59)(10,18,25,41,49,67)(12,22,37,53,48,66)(14,26,31)(17,30,35,
-##          50,58,38)(21,36,33)(23,39,56)(27,44,61,72,43,60)(45,62,51,68,
-##          54,70)(47,64,73)(52,69)(55,71,75,78,77,76)(65,74), 
-##        (1,2,4,8)(3,6,12,23)(5,10,19,33)(7,14,27,45)(9,17,18,31)(11,21,
-##          16,28)(13,25,42,57)(20,35,51,67)(22,38,55,70)(24,40,26,43)(29,
-##          37,54,39)(30,47,65,68)(32,48)(34,49,36,52)(41,58,56,61)(44,50,
-##          53,64)(46,63,69,59)(60,66,75,79)(62,73,72,77)(71,76,80,74) 
-##       ] -> [ F1, F2 ] ]
+##   [ (2,3)(4,6,10,17,7,12)(5,8,13,19,26,24)(9,15,23,35,31,43)(14,21,
+##         32)(16,25,38)(18,27,39,33,45,57)(20,30,36,48,28,40)(22,34,44,
+##         55,66,74)(29,41,51,61,60,47)(37,49,54,52,46,58)(42,53,65)(50,
+##         62,63,72,56,67)(59,69,77,78,64,73)(68,71,75)(76,79), 
+##       (1,2,4,7)(3,5,9,16)(6,11,18,28)(8,14,22,30)(12,13,20,31)(15,24,
+##         37,50)(17,26,38,45)(19,29,42,27)(21,33,46,35)(23,36,25,39)(32,
+##         44,56,40)(34,47,59,70)(41,52,64,72)(43,54,65,66)(48,60)(49,61,
+##         71,55)(51,63,53,57)(58,68,76,62)(67,75,74,77)(73,78,80,79) 
+##      ] -> [ F1, F2 ] ]
 ##  ]]></Example>
 ##  <P/>
 ##  Since &GAP; cannot decompose elements of a matrix group into generators,
@@ -4285,6 +4293,7 @@ DeclareFilter("IsGroupOfFamily");
 ##
 DeclareGlobalFunction("Group_PseudoRandom");
 
+DeclareGlobalFunction("GroupEnumeratorByClosure");
 
 #############################################################################
 ##

@@ -327,6 +327,45 @@ InstallMethod( String,
     return str;
     end );
 
+InstallMethod( ViewString, "call ViewString and incorporate hints",
+  [ IsList and IsFinite],
+function ( list )
+local   str,ls, i;
+
+  # We cannot handle the case of an empty string in the method for strings
+  # because the type of the empty string need not satify the requirement
+  # `IsString'.
+  if IsEmptyString( list ) then
+    return "";
+  fi;
+
+  # make strings for objects in l
+  ls:=[];
+  for i in [1..Length(list)] do
+    if IsBound(list[i]) then
+      str:=ViewString(list[i]);
+      if str=DEFAULTVIEWSTRING then
+	# there might not be a method
+	str:=String(list[i]);
+      fi;
+      ls[i]:=str;
+    else
+      ls[i]:="";
+    fi;
+  od;
+
+  str := "[ ";
+  for i in [ 1 .. Length( list ) ]  do
+    Append(str,ls[i]);
+    if i<>Length(list)  then
+      Append(str,",\<\> ");
+    fi;
+  od;
+  Append( str, " ]" );
+  ConvertToStringRep( str );
+  return str;
+end );
+
 InstallMethod( String,
     "for a range",
     [ IsRange ],
@@ -1745,6 +1784,9 @@ InstallMethod(Remove, "one argument", [IsList and IsMutable],
         function(l)
     local x,len;
     len := Length(l);
+    if len = 0 then
+      Error("Remove: list <l> must not be empty.\n");
+    fi;
     x := l[len];
     Unbind(l[len]);
     return x;
@@ -2152,64 +2194,36 @@ InstallMethod( Sortex,
     "for a mutable list",
     [ IsList and IsMutable ],
     function ( list )
-    local   both, perm, i;
+    local   n,  index;
 
     # {\GAP} supports permutations only up to `MAX_SIZE_LIST_INTERNAL'.
     if not IsSmallList( list ) then
       Error( "<list> must have length at most ", MAX_SIZE_LIST_INTERNAL );
     fi;
-
-    # make a new list that contains the elements of <list> and their indices
-    both := [];
-    for i in [ 1 .. Length( list ) ] do
-        both[i] := [ list[i], i ];
-    od;
-
-    # Sort the new list according to the first item (stable).
-    SORT_LIST(both);
-
-    # Copy back and remember the permutation.
-    list{ [ 1 .. Length( list ) ] }:= both{ [ 1 .. Length( list ) ] }[1];
-    perm:= both{ [ 1 .. Length( list ) ] }[2];
-
-    # If the entries are immutable then store that the list is sorted.
-    IsSSortedList( list );
-
-    # return the permutation mapping old <list> onto the sorted list
-    return PermList( perm )^(-1);
+    
+    n := Length(list);
+    index := [1..n];
+    SortParallel(list, index);
+    return PermList(index)^-1;
+    
     end );
 
 InstallMethod( Sortex,
     "for a mutable list and a function",
     [ IsList and IsMutable, IsFunction ],
     function ( list, comp )
-    local   both, perm, i;
+    local   n,  index;
 
     # {\GAP} supports permutations only up to `MAX_SIZE_LIST_INTERNAL'.
     if not IsSmallList( list ) then
       Error( "<list> must have length at most ", MAX_SIZE_LIST_INTERNAL );
-    fi;
+  fi;
+  
+    n := Length(list);
+    index := [1..n];
+    SortParallel(list, index, comp);
+    return PermList(index)^-1;
 
-    # make a new list that contains the elements of <list> and their indices
-    both := [];
-    for i in [ 1 .. Length( list ) ] do
-        both[i] := [ list[i], i ];
-    od;
-
-    # Sort the new list according to the first item (stable).
-    SORT_LIST_COMP(both, function(p,q)
-        return comp(p[1],q[1]) or (p[1]=q[1] and p[2]<q[2]);
-    end);
-
-    # Copy back and remember the permutation.
-    list{ [ 1 .. Length( list ) ] }:= both{ [ 1 .. Length( list ) ] }[1];
-    perm:= both{ [ 1 .. Length( list ) ] }[2];
-
-    # If the entries are immutable then store that the list is sorted.
-    IsSSortedList( list );
-
-    # return the permutation mapping old <list> onto the sorted list
-    return PermList( perm )^(-1);
     end );
 
 InstallMethod( Sortex,

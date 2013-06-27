@@ -408,7 +408,11 @@ Obj  FuncIntHexString( Obj self,  Obj str )
        sign = 1;
        i = 0;
     }
-
+    
+    /* skip leading zeros */
+    while ((CHARS_STRING(str))[i] == '0' && i < len)
+        i++;
+    
     /* small int case */
     if ((len-i)*4 <= NR_SMALL_INT_BITS) {
        n = 0;

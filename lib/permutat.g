@@ -11,6 +11,9 @@
 ##  This file deals with permutations.
 ##
 
+DeclareCategory("IsAssociativeElementWithUniqueSemigroupInverse",
+IsAssociativeElement);
+DeclareCategoryCollections("IsAssociativeElementWithUniqueSemigroupInverse");
 
 #############################################################################
 ##
@@ -84,7 +87,7 @@
 ##
 DeclareCategoryKernel( "IsPerm",
     IsMultiplicativeElementWithInverse and IsAssociativeElement and
-        IsFiniteOrderElement,
+    IsAssociativeElementWithUniqueSemigroupInverse and IsFiniteOrderElement,
     IS_PERM );
 
 
@@ -684,35 +687,47 @@ end );
 ##
 #m  String( <perm> )  . . . . . . . . . . . . . . . . . . . for a permutation
 ##
-InstallMethod( String,
-    "for a permutation",
-    [ IsPerm ],
-    function( perm )
-    local   str,  i,  j;
+BIND_GLOBAL("DoStringPerm",function( perm,hint )
+local   str,  i,  j;
 
-    if IsOne( perm ) then
-        str := "()";
-    else
-        str := "";
-        for i  in [ 1 .. LargestMovedPoint( perm ) ]  do
-            j := i ^ perm;
-            while j > i  do j := j ^ perm;  od;
-            if j = i and i ^ perm <> i  then
-                Append( str, "(" );
-                Append( str, String( i ) );
-                j := i ^ perm;
-                while j > i do
-                    Append( str, "," );
-                    Append( str, String( j ) );
-                    j := j ^ perm;
-                od;
-                Append( str, ")" );
-            fi;
-        od;
-        ConvertToStringRep( str );
-    fi;
-    return str;
-    end );
+  if IsOne( perm ) then
+      str := "()";
+  else
+      str := "";
+      for i  in [ 1 .. LargestMovedPoint( perm ) ]  do
+	  j := i ^ perm;
+	  while j > i  do j := j ^ perm;  od;
+	  if j = i and i ^ perm <> i  then
+	      Append( str, "(" );
+	      Append( str, String( i ) );
+	      j := i ^ perm;
+	      while j > i do
+		  Append( str, "," );
+		  if hint then Append(str,"\<\>"); fi;
+		  Append( str, String( j ) );
+		  j := j ^ perm;
+	      od;
+	      Append( str, ")" );
+	      if hint then Append(str,"\<\<\>\>"); fi;
+	  fi;
+      od;
+      if Length(str)>4 and str{[Length(str)-3..Length(str)]}="\<\<\>\>" then
+	str:=str{[1..Length(str)-4]}; # remove tailing line breaker
+      fi;
+      ConvertToStringRep( str );
+  fi;
+  return str;
+end );
+
+InstallMethod( String, "for a permutation", [ IsPerm ],function(perm)
+  return DoStringPerm(perm,false);
+end);
+
+InstallMethod( ViewString, "for a permutation", [ IsPerm ],function(perm)
+  return DoStringPerm(perm,true);
+end);
+
+ 
 
 
 #############################################################################
@@ -723,6 +738,48 @@ InstallMethod( Order,
     "for a permutation",
     [ IsPerm ],
     ORDER_PERM );
+
+#############################################################################
+##
+#O  DistancePerms( <perm1>, <perm2> ) . returns NrMovedPoints( <perm1>/<perm2> )
+##        but possibly faster
+##
+##  <#GAPDoc Label="DistancePerms">
+##  <ManSection>
+##  <Oper Name="DistancePerms" Arg="perm1, perm2"/>
+##
+##  <Description>
+##  returns the number of points for which <A>perm1</A> and <A>perm2</A> 
+##  have different images. This should always produce the same result as
+##  <C>NrMovePoints(<A>perm1</A>/<A>perm2</A>)</C> but some methods may be
+##  much faster than this form, since no new permutation needs to be created.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+
+DeclareOperation( "DistancePerms", [IsPerm, IsPerm] );
+
+
+#############################################################################
+##
+#M  DistancePerms( <perm1>, <perm2> ) . returns NrMovedPoints( <perm1>/<perm2> )
+##    for kernel permutations
+##
+InstallMethod( DistancePerms, "for kernel permutations",
+        [ IsPerm and IsInternalRep, IsPerm and IsInternalRep ],
+        DISTANCE_PERMS);
+
+#############################################################################
+##
+#M  DistancePerms( <perm1>, <perm2> ) . returns NrMovedPoints( <perm1>/<perm2> )
+##    generic
+##
+
+InstallMethod( DistancePerms, "for general permutations",
+        [ IsPerm, IsPerm ],
+        function(x,y)
+    return NrMovedPoints(x/y); end);
+
 
 
 #############################################################################

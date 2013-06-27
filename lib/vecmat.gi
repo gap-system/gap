@@ -1228,7 +1228,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             if q = 2 then
                 CONV_GF2VEC(v);
                 return 2;
-            elif q < 256 then
+            elif q <= 256 then
                 CONV_VEC8BIT(v,q);
                 return q;
             else

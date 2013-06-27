@@ -3062,8 +3062,6 @@ end );
 ##
 #F  IdentityMat( <m>[, <F>] ) . . . . . . . . identity matrix of a given size
 ##
-#T change this to 2nd argument the identity of the field/ring?
-##
 InstallGlobalFunction( IdentityMat, function ( arg )
     local   id, m, zero, one, row, i, f;
 
@@ -3072,12 +3070,12 @@ InstallGlobalFunction( IdentityMat, function ( arg )
         m    := arg[1];
         zero := 0;
         one  := 1;
-        f := Rationals;
+        f    := Rationals;
     elif Length(arg) = 2  and IsRing(arg[2])  then
         m    := arg[1];
-        f := arg[2];
         zero := Zero( arg[2] );
-        one  := One(  arg[2] );
+        one  := One( arg[2] );
+        f    := arg[2];
         if one = fail then
             Error( "ring must be a ring-with-one" );
         fi;
@@ -3085,15 +3083,9 @@ InstallGlobalFunction( IdentityMat, function ( arg )
         m    := arg[1];
         zero := Zero( arg[2] );
         one  := One( arg[2] );
-        if IsFFE(arg[2]) then
-            f := Characteristic(arg[2]); # ConvertToVectorRep also takes the
-                                       # characteristic instead of the field
-        else
-            f := false;
-        fi;
-
+        f    := Ring( one, arg[2] );
     else
-        Error("usage: IdentityMat( <m>[, <F>] )");
+        Error("usage: IdentityMat( <m>[, <R>] )");
     fi;
 
     # special treatment for 0-dimensional spaces
@@ -3103,23 +3095,15 @@ InstallGlobalFunction( IdentityMat, function ( arg )
 
     # make an empty row
     row := ListWithIdenticalEntries(m,zero);
+    ConvertToVectorRepNC(row,f);
 
     # make the identity matrix
     id := [];
     for i  in [1..m]  do
         id[i] := ShallowCopy( row );
         id[i][i] := one;
-        if f <> false then
-           ConvertToVectorRepNC( id[i], f );
-        else
-            ConvertToVectorRepNC( id[i] );
-        fi;
     od;
-    if f <> false then
-        ConvertToMatrixRep(id,f);
-    else
-        ConvertToMatrixRep(id);
-    fi;
+    ConvertToMatrixRep(id,f);
 
     # return the identity matrix
     return id;
@@ -3136,23 +3120,22 @@ InstallGlobalFunction( NullMat, function ( arg )
     if Length(arg) = 2  then
         m    := arg[1];
         n    := arg[2];
-        f := Rationals;
+        f    := Rationals;
     elif Length(arg) = 3  and IsRing(arg[3])  then
         m    := arg[1];
         n    := arg[2];
-        f := arg[3];
+        f    := arg[3];
     elif Length(arg) = 3  then
         m    := arg[1];
         n    := arg[2];
-        f := Field(arg[3]);
+        f    := Ring(One(arg[3]), arg[3]);
     else
-        Error("usage: NullMat( <m>, <n> [, <F>] )");
+        Error("usage: NullMat( <m>, <n> [, <R>] )");
     fi;
     zero := Zero(f);
 
     # make an empty row
-    row := [];
-    for k  in [1..n]  do row[k] := zero;  od;
+    row := ListWithIdenticalEntries(n,zero);
     ConvertToVectorRepNC( row, f );
 
     # make the null matrix
@@ -3316,17 +3299,7 @@ InstallGlobalFunction( PermutationMat, function( arg )
 
     for i in [ 1 .. dim ] do
         mat[i][ i^perm ]:= One( F );
-       if IsFFECollection(F) and IsField(F) then
-           ConvertToVectorRepNC( mat[i], F );
-       elif IsFFE(F) or IsFFECollection(F) then
-           ConvertToVectorRepNC( mat[i], Field(F));
-       fi;
     od;
-    if IsFFECollection(F) and IsField(F) then
-        ConvertToMatrixRepNC( mat, F );
-    elif IsFFE(F) or IsFFECollection(F) then
-        ConvertToMatrixRepNC( mat, Field(F));
-    fi;
 
     return mat;
 end );

@@ -31,7 +31,7 @@
 ##  <#/GAPDoc>
 ##
 
-Print( "You should start GAP4 using `gap -N -A -x 80 -r -m 100m -o 512m'.\n",
+Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 512m'.\n",
        "The more GAP4stones you get, the faster your system is.\n",
        "The runtime of the following tests (in general) increases.\n",
        "******************************************************************\n",
@@ -87,6 +87,7 @@ RunStandardTests( [
   [ "onecohom.tst",50600000],
   [ "oprt.tst",2000000],
   [ "package.tst",100000],
+  [ "pperm.tst", 6000000],
   [ "primsan.tst",125486700000],
   [ "ratfun.tst",800000],
   [ "relation.tst",7700000],
@@ -96,6 +97,7 @@ RunStandardTests( [
   [ "semigrp.tst",11200000],
   [ "semirel.tst",10900000],
   [ "set.tst",5600000],
+  [ "trans.tst", 6000000],
   [ "unknown.tst",100000],
   [ "varnames.tst",3600000/1000],
   [ "vspchom.tst",10500000],

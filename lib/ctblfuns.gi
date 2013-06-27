@@ -1092,7 +1092,7 @@ InstallMethod( ViewObj,
     function( psi )
     Print( "ClassFunction( " );
     View( UnderlyingCharacterTable( psi ) );
-    Print( ", " );
+    Print( ",\<\<\<\>\>\> " );
     View( ValuesOfClassFunction( psi ) );
     Print( " )" );
     end );
@@ -1103,7 +1103,7 @@ InstallMethod( ViewObj,
     function( psi )
     Print( "VirtualCharacter( " );
     View( UnderlyingCharacterTable( psi ) );
-    Print( ", " );
+    Print( ",\<\<\<\>\>\> " );
     View( ValuesOfClassFunction( psi ) );
     Print( " )" );
     end );
@@ -1114,7 +1114,7 @@ InstallMethod( ViewObj,
     function( psi )
     Print( "Character( " );
     View( UnderlyingCharacterTable( psi ) );
-    Print( ", " );
+    Print( ",\<\<\<\>\>\> " );
     View( ValuesOfClassFunction( psi ) );
     Print( " )" );
     end );
@@ -1374,9 +1374,9 @@ InstallMethod( NaturalCharacter,
     local G, R, deg, tbl, chi;
     G:= Source( hom );
     R:= Range( hom );
+    tbl:= OrdinaryCharacterTable( G );
     if IsPermGroup( R ) then
       deg:= NrMovedPoints( R );
-      tbl:= OrdinaryCharacterTable( G );
       return Character( tbl,
                  List( ConjugacyClasses( tbl ),
                  C -> deg - NrMovedPoints( ImagesRepresentative( hom,

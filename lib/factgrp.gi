@@ -306,16 +306,20 @@ end);
 ##         operation kernels, don't continue anything which is smaller than N
 ##
 InstallGlobalFunction(CloseNaturalHomomorphismsPool,function(arg)
-local G,pool,p,comb,i,c,perm,l,isi,N,discard;
+local G,pool,p,comb,i,c,perm,l,isi,N,discard,ab;
   G:=arg[1];
   pool:=NaturalHomomorphismsPool(G);
   p:=[1..Length(pool.ker)];
+
   if Length(arg)>1 then
     N:=arg[2];
     p:=Filtered(p,i->IsSubset(pool.ker[i],N));
   else
     N:=fail;
   fi;
+
+  # do the abelians extra.
+  p:=Filtered(p,x->not HasAbelianFactorGroup(G,pool.ker[x]));
   
   discard:=[];
   repeat
@@ -448,7 +452,7 @@ InstallMethod(DoCheapActionImages,"generic",true,[IsGroup],0,Ignore);
 
 InstallMethod(DoCheapActionImages,"permutation",true,[IsPermGroup],0,
 function(G)
-local pool, dom, o, bl, op, Go, j, b, i;
+local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
 
   pool:=NaturalHomomorphismsPool(G);
   if pool.GopDone=false then
@@ -473,11 +477,20 @@ local pool, dom, o, bl, op, Go, j, b, i;
       fi;
 
       Go:=Image(op,G);
-      # all minimal blocks
-      for j in RepresentativesMinimalBlocks(Go,MovedPoints(Go)) do
-	j:=i{j}; # preimage
-	b:=Orbit(G,j,OnSets);
+      # all minimal and maximal blocks
+      mov:=MovedPoints(Go);
+      allb:=ShallowCopy(RepresentativesMinimalBlocks(Go,mov));
+      for j in allb do
+	b:=Orbit(G,i{j},OnSets);
 	Add(bl,Immutable(Set(b)));
+	# also one finer blocks (as we iterate only once)
+	newb:=Blocks(Go,Blocks(Go,mov,j),OnSets);
+	if Length(newb)>1 then
+	  newb:=Union(newb[1]);
+	  if not newb in allb then
+	    Add(allb,newb);
+	  fi;
+	fi;
       od;
 
       #if Length(i)<500 and Size(Go)>10*Length(i) then
@@ -681,8 +694,33 @@ end;
 #F  SmallerDegreePermutationRepresentation( <G> )
 ##
 InstallGlobalFunction(SmallerDegreePermutationRepresentation,function(G)
-local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop, i,cheap;
-  cheap:=ValueOption("cheap")=true;
+local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
+  i,cheap,first;
+  cheap:=ValueOption("cheap");
+  if cheap="skip" then
+    return IdentityMapping(G);
+  fi;
+
+  cheap:=cheap=true;
+
+  # deal with large abelian cases first (which could be direct)
+  hom:=MaximalAbelianQuotient(G);
+  i:=IndependentGeneratorsOfAbelianGroup(Image(hom));
+  o:=List(i,Order);
+  if ValueOption("norecurse")<>true and 
+    Product(o)>20 and Sum(o)*4<NrMovedPoints(G) then
+    Info(InfoFactor,2,"append abelian rep");
+    s:=AbelianGroup(IsPermGroup,o);
+    ihom:=GroupHomomorphismByImagesNC(Image(hom),s,i,GeneratorsOfGroup(s));
+    erg:=SubdirectDiagonalPerms(
+	  List(GeneratorsOfGroup(G),x->Image(ihom,Image(hom,x))),
+	  GeneratorsOfGroup(G));
+    k:=Group(erg);SetSize(k,Size(G));
+    hom:=GroupHomomorphismByImagesNC(G,k,GeneratorsOfGroup(G),erg);
+    return hom*SmallerDegreePermutationRepresentation(k:norecurse);
+  fi;
+
+
   if not IsTransitive(G,MovedPoints(G)) then
     o:=ShallowCopy(OrbitsDomain(G,MovedPoints(G)));
     Sort(o,function(a,b)return Length(a)<Length(b);end);
@@ -750,6 +788,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop, i,cheap;
   b.dotriv:=false;
   ihom:=H;
   improve:=false; # indicator for first run
+  first:=true;
   repeat
     if improve=false and NrMovedPoints(H)*5>Size(H) and
       IsTransitive(H,MovedPoints(H)) then
@@ -768,9 +807,12 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop, i,cheap;
     improve:=false;
     b:=NaturalHomomorphismsPool(H);
     b.dotriv:=true;
-    b.GopDone:=false;
-    DoCheapActionImages(H);
-    CloseNaturalHomomorphismsPool(H,TrivialSubgroup(H));
+    if first then # only once!
+      b.GopDone:=false;
+      DoCheapActionImages(H);
+      CloseNaturalHomomorphismsPool(H,TrivialSubgroup(H));
+      first:=false;
+    fi;
     b.dotriv:=false;
     map:=GetNaturalHomomorphismsPool(H,TrivialSubgroup(H));
     if map<>fail and Image(map)<>H then
@@ -1268,9 +1310,15 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp,
 function( G, N )
 local   map,  pcgs, A, filter;
     
-  map:=GetNaturalHomomorphismsPool(G,N);
-  if map<>fail then
-    return map;
+  if KnownNaturalHomomorphismsPool(G,N) then
+    A:=DegreeNaturalHomomorphismsPool(G,N);
+    if A<50 or (IsInt(A) and A<IndexNC(G,N)/LogInt(IndexNC(G,N),2)^2) then
+      map:=GetNaturalHomomorphismsPool(G,N);
+      if map<>fail then
+	Info(InfoFactor,2,"use stored map");
+	return map;
+      fi;
+    fi;
   fi;
 
   if Index(G,N)=1 or Size(N)=1

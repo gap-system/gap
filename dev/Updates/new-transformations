@@ -1,0 +1,107 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!! Date
+2013/06/04
+
+!! Changed by
+JDM
+
+% [Required] Choose one or more entries and/or add new ones;
+% but always use either the 'Fix:' or the 'New:' prefix
+!! Type of Change
+New: extended functionality, new functionality, improved documentation.
+
+% [Required] For the description use plain text
+!! Description
+The functionality in GAP for transformations and transformation semigroups has
+been rewritten and extended. Partial permutations and inverse semigroups have
+been newly implemented. The documentation for transformations and
+transformation semigroups has been improved. Transformations and partial
+permutations are implemented in the kernel of GAP. Methods for calculating
+attributes of transformations and partial permutations, and taking products,
+and so are also implemented in the kernel. The new implementations are largely
+backwards compatible; some exceptions are given below. 
+
+The degree of a transformation <C>f</C> is usually defined as the
+largest positive integer where <C>f</C> is defined.  In previous versions of
+&GAP;, transformations were only defined on positive integers less than their
+degree, it was only possible to multiply transformations of equal degree, and a
+transformation did not act on any point exceeding its degree.  Starting with
+version 4.7 of &GAP;, transformations behave more like permutations, in that
+they fix unspecified points and it is possible to multiply arbitrary
+transformations. 
+
+- in the display of a transformation, the trailing fixed points are no longer
+  printed. More precisely, in the display of a transformation <C>f</C> if
+  <C>n</C> is the largest value such that <C>n^f&lt;>n</C> or
+  <C>i^f=n</C> for some <C>i&lt;>n</C>, then the values exceeding <C>n</C>
+  are not printed.
+
+- the display for semigroups of transformations now includes more information,
+  for example <transformation semigroup on 10 pts with 10 generators> and 
+  <inverse partial perm semigroup on 10 pts with 10 generators>.
+
+- transformations which define a permutation can be inverted, and groups of
+  transformations can be created. 
+
+Further information regarding transformations and partial permutations, can be
+found in the relevant chapters of the reference manual. 
+
+The code for Rees matrix semigroups has been completely rewritten to fix the
+numerous bugs in the previous versions. The display of a Rees matrix semigroup
+has also been improved to include the numbers of rows and columns, and the
+underlying semigroup.  Again the new implementations should be backwards
+compatible with the exception that the display is different.  
+
+The code for magmas with a zero adjoined has been improved so that it is
+possible to access more information about the original magma. The display has
+also been changed to indicate that the created magma is a magma with zero
+adjoined (incorporating the display of the underlying magma). Elements of a
+magma with zero are also printed so that it is clear that they belong to a
+magma with zero. 
+
+If a semigroup is created by generators in the category
+IsMultiplicativeElementWithOneCollection and CanEasilyCompareElements, then it
+is now checked if the One of the generators is given as a generator. In this
+case, the semigroup is created as a monoid.  
+
+% [Optional, but highly desirable] If possible, provide some code
+% in test file format which allows to check if a change was applied
+% to an installation. Provide input and output, including prompts,
+% exactly as in a GAP session.
+! Test Code
+
+% [Optional] If possible, provide some information about a temporary fix,
+% workaround etc., maybe with a link to some longer description or a file
+% with some code. Use plain text here.
+! Prefetch
+
+% [Required] Describe here how to find out where the changes were made.
+%
+% - for immediate changes in the stable branch, it is sufficient to just 
+%   specify changed file(s) instead of the hexadecimal changeset id. Note
+%   thet adding the entry describing the change should be a part of the 
+%   same commit as the change itself, so that adding/merging/backing out 
+%   these changes will keep dev/Update in sync. If you will revisit this 
+%   change before the next GAP release, you may consider updating its entry
+%   in dev/Update file, specifying the full hexadecimal changeset id
+%   (160-bit identifier) of the previous change(s).
+%
+% - for changes made in feature branches, the change to dev/Update should
+%   be made in the same feature branch, so it will be merged into default
+%   or stable branch together with actual changes and reverting the merge
+%   will also revert the dev/Update file. It is sufficient to specify here 
+%   just the name of the feature branch. Instead of that, you may also put 
+%   there the full hexadecimal changeset id (160-bit identifier) of the 
+%   latest revision of the code in this branch before the merge (this is
+%   especially relevant to feature branches that were merged into release
+%   branches multiple times during their lifetime, so without changeset id
+%   it would be quite difficult to find corresponding changesets).
+%
+% Since by default, Mercurial displays only the first 12 characters of
+% the full hexadecimal changeset id, to see the full version, use --debug
+% option, e.g. 'hg --debug log'. Do not use the short revision number
+% since it makes sense only within your clone.
+!! Changeset
+
+% [Required] Finish your entry with this:
+!! End

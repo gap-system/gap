@@ -10,6 +10,106 @@
 ##  This file contains generic methods for semigroups.
 ##
 
+# Everything from here...
+
+#
+
+InstallMethod(InversesOfSemigroupElement, "for a semigroup and an element",
+[IsSemigroup, IsAssociativeElement],
+function(s, x)
+  if not x in s then 
+    Error("usage: the 2nd argument must be an element of the 1st,");
+    return;
+  fi;
+  return Filtered(Elements(s), y-> x*y*x=x and y*x*y=y);
+end);
+
+#
+
+InstallMethod(\.,"for a semigroup with generators and pos int",
+[IsSemigroup and HasGeneratorsOfSemigroup, IsPosInt],
+function(s, n)
+  s:=GeneratorsOfSemigroup(s);
+  n:=NameRNam(n);
+  n:=Int(n);
+  if n=fail or Length(s)<n then
+    Error("usage: the second argument should be a pos int not greater than",
+     " the number of generators of the semigroup in the first argument,");
+    return;
+  fi;
+  return s[n];
+end);
+
+#
+
+InstallMethod(\., "for a monoid with generators and pos int",
+[IsMonoid and HasGeneratorsOfMonoid, IsPosInt],
+function(s, n)
+  s:=GeneratorsOfMonoid(s);
+  n:=NameRNam(n);
+  n:=Int(n);
+  if n=fail or Length(s)<n then
+    Error("usage: the second argument should be a pos int not greater than",
+     " the number of generators of the semigroup in the first argument,");
+    return;
+  fi;
+  return s[n];
+end);
+
+#
+
+InstallMethod(IsSubsemigroup,
+"for semigroup and semigroup with generators",
+[IsSemigroup, IsSemigroup and HasGeneratorsOfSemigroup],
+function(s, t)
+  return ForAll(GeneratorsOfSemigroup(t), x-> x in s);
+end);
+
+#
+
+InstallMethod(IsSubsemigroup, "for a semigroup and semigroup",
+[IsSemigroup, IsSemigroup], IsSubset);
+
+#
+
+InstallMethod(\=,
+"for semigroup with generators and semigroup with generators",
+[IsSemigroup and HasGeneratorsOfSemigroup,
+ IsSemigroup and HasGeneratorsOfSemigroup],
+function(s, t)
+  return ForAll(GeneratorsOfSemigroup(s), x-> x in t) and
+   ForAll(GeneratorsOfSemigroup(t), x-> x in s);
+end);
+
+#
+
+InstallTrueMethod(IsRegularSemigroup, IsInverseSemigroup);
+
+#
+
+InstallMethod(IsInverseSemigroup, "for a semigroup", 
+[IsSemigroup],
+function(s)
+local F, e, f;
+
+  if not IsRegularSemigroup(s) then 
+    return false;
+  fi;
+
+  F:=Idempotents(s);
+
+  for e in F do 
+    for f in F do 
+      if e*f<>f*e then 
+        return false;
+      fi;
+    od;
+  od;
+
+  return true;
+end); 
+
+# to here was added by JDM.
 
 #############################################################################
 ##
@@ -52,12 +152,13 @@ InstallMethod(CayleyGraphDualSemigroup, "for generic finite semigroups",
 ##
 #M  PrintObj( <S> ) . . . . . . . . . . . . . . . . . . . . print a semigroup
 ##
-InstallMethod( PrintObj,
-    "for a semigroup",
-    [ IsSemigroup ],
-    function( S )
-    Print( "Semigroup( ... )" );
-    end );
+
+#InstallMethod( PrintObj, #JDM required?? Shouldn't the default call PrintString?
+#    "for a semigroup",
+#    [ IsSemigroup ],
+#    function( S )
+#    Print( "Semigroup( ... )" );
+#    end );
 
 InstallMethod( String,
     "for a semigroup",
@@ -72,6 +173,7 @@ InstallMethod( PrintObj,
     function( S )
     Print( "Semigroup( ", GeneratorsOfMagma( S ), " )" );
     end );
+
 
 InstallMethod( String,
     "for a semigroup with known generators",
@@ -89,24 +191,23 @@ InstallMethod( PrintString,
 
 #############################################################################
 ##
-#M  ViewObj( <S> )  . . . . . . . . . . . . . . . . . . . .  view a semigroup
+#M  ViewString( <S> )  . . . . . . . . . . . . . . . . . . . .  view a semigroup
 ##
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a semigroup",
     [ IsSemigroup ],
     function( S )
-    Print( "<semigroup>" );
+    return "<semigroup>";
     end );
 
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a semigroup with generators",
     [ IsSemigroup and HasGeneratorsOfMagma ],
     function( S )
     if Length(GeneratorsOfMagma(S)) = 1 then
-      Print( "<semigroup with ", Length( GeneratorsOfMagma( S ) ),
-           " generator>" );
+      return "<semigroup with 1 generator>";
     else
-      Print( "<semigroup with ", Length( GeneratorsOfMagma( S ) ),
+      return STRINGIFY("<semigroup with ", Length( GeneratorsOfMagma( S ) ),
            " generators>" );
     fi;
     end );
@@ -116,7 +217,7 @@ InstallMethod( ViewObj,
 #M  DisplaySemigroup( <S> )
 ##
 InstallMethod(DisplaySemigroup, "for finite semigroups",
-    [IsSemigroup],
+    [IsTransformationSemigroup],
 function(S)
 
     local dc, i, len, sh, D, layer, displayDClass;
@@ -177,11 +278,23 @@ InstallMethod( SemigroupByGenerators,
     "for a collection",
     [ IsCollection ],
     function( gens )
-    local S;
+      local S, pos;
+
     S:= Objectify( NewType( FamilyObj( gens ),
                             IsSemigroup and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagma( S, AsList( gens ) );
+    
+    if IsMultiplicativeElementWithOneCollection(gens) 
+      and CanEasilyCompareElements(gens) then 
+      pos:=Position(gens, One(gens));
+      if pos<>fail then 
+        SetFilterObj(S, IsMonoid);
+        gens:=ShallowCopy(gens);
+        Remove(gens, pos);
+        SetGeneratorsOfMonoid(S, gens);
+      fi;
+    fi;
 
     return S;
     end );
@@ -228,26 +341,51 @@ InstallMethod( AsSemigroup,
 #F  Semigroup( <gen>, ... ) . . . . . . . . semigroup generated by collection
 #F  Semigroup( <gens> ) . . . . . . . . . . semigroup generated by collection
 ##
+
 InstallGlobalFunction( Semigroup, function( arg )
+  local out, i;
+  
+  # special case for matrices, because they may look like lists
+  if Length( arg ) = 1 and IsMatrix( arg[1] )  then
+    return SemigroupByGenerators( [ arg[1] ] );
 
-    # special case for matrices, because they may look like lists
-    if Length( arg ) = 1 and IsMatrix( arg[1] ) then
-      return SemigroupByGenerators( [ arg[1] ] );
+  # list of generators
+  elif Length( arg ) = 1 and IsList( arg[1] ) and 0 < Length( arg[1] )  then
+    return SemigroupByGenerators( arg[1] );
 
-    # list of generators
-    elif Length( arg ) = 1 and IsList( arg[1] ) and 0 < Length( arg[1] ) then
-      return SemigroupByGenerators( arg[1] );
-
-    # generators
-    elif 0 < Length( arg ) then
-      return SemigroupByGenerators( arg );
-
-    # no argument given, error
-    else
-      Error("usage: Semigroup(<gen>,...),Semigroup(<gens>),Semigroup(<D>)");
-    fi;
-end );
-
+  # generators and collections of generators
+  elif IsAssociativeElement(arg[1]) or IsAssociativeElementCollection(arg[1])
+   then
+    out:=[];
+    for i in [1..Length(arg)] do
+      if IsAssociativeElement(arg[i]) then
+        Add(out, arg[i]);
+      elif IsAssociativeElementCollection(arg[i]) then
+        if HasGeneratorsOfSemigroup(arg[i]) then
+          Append(out,GeneratorsOfSemigroup(arg[i]));
+        else
+          Append(out, arg[i]);
+        fi;
+      #so that we can pass the options record in the Semigroups package 
+      elif i=Length(arg) and IsRecord(arg[i]) then
+        return SemigroupByGenerators(out, arg[i]);
+      else
+        Error( "Usage: Semigroup(<gen>,...), Semigroup(<gens>), ",
+          "Semigroup(<D>), " );
+        return;
+      fi;
+    od;
+    return SemigroupByGenerators(out);
+  
+  # generators
+  elif 0 < Length( arg )  then
+    return SemigroupByGenerators( arg );
+  # no argument given, error
+  else
+    Error( "Usage: Semigroup(<gen>,...),Semigroup(<gens>),Semigroup(<D>),");
+    return;
+  fi;
+end);
 
 #############################################################################
 ##
@@ -282,7 +420,7 @@ InstallMethod( AsSubsemigroup,
 ##
 #M  Enumerator( <S> )
 #M  Enumerator( <S> : Side:= "left" )
-#M  Enumerator( <S> : Size:= "right")
+#M  Enumerator( <S> : Side:= "right")
 ##
 ##  Creates a naive semigroup enumerator.   By default this enumerates the
 ##  right semigroup ideal of the set of generators.   This is the same as
@@ -551,145 +689,19 @@ InstallMethod(IsZeroSimpleSemigroup, "for a trivial semigroup",
 ##
 #M  IsZeroSimpleSemigroup( <S> ) . . . . for a semigroup which has generators
 ##
-##  In such a case if the semigroup has more than two elements it is
-##  0-simple iff
-##  (i) <S^2> is non equal to the singleton set consisting of zero; and
-##  (ii) all generators are Greens J less than or equal to any non zero
-##       element of the semigroup.
-##       If the semigroup has exactly two elements then it is simple
-##       iff the square of the nonzero element is nonzero
-##       Is the semigroup has only one element then it is not 0-simple.
-##
-##  Proof:
-##  The last sentence, about a semigroup with only two elements is obvious.
-##
-##  So suppose <S> has more than two elements.
-##  (->) Suppose <S> is 0-simple;
-##  Equivalently this means than for all non zero element <t> of <S>,
-##  <StS=S>.
-##  So let <t> be a nonzero arbitrary element of <S> and let <x> be
-##  any generator of <S>.
-##  Then $S^1xS^1 \subseteq S = StS \subseteq S^1tS^1$ and this
-##  means that <x> is J less than or equal to t.
-##  Condition (i) follows from the definition of being 0-simple.
-##
-##  (<-) Conversely.
-##  Recall that <S> 0-simple is equivalent to J
-##  having has equivalence classes <S\0> and 0 itself, and <S^2> nonzero.
-##  So that is what we have to proof.
-##  That <S^2> is not equal to zero is immediate.
-##  Now, all nonzero elements of the semigroup are J less than or equal
-##  the generators since they are products of generators.
-##  But since by condition (ii) all generators are J-less than or equal
-##  all other nonzero elements it follows that all non-zero elements of the
-##  semigroup are J related, and hence J has only two classes. QED
-##
-##  To check that (ii) holds is enough to show that one of the generators
-##  is J less than or equal to every other non zero element of <S>  and
-##  then show that all other generators are J-less than or equal to that
-##  generator.
-##
-InstallMethod(IsZeroSimpleSemigroup,
-  "for a semigroup with generators",
-  [ IsSemigroup and HasGeneratorsOfSemigroup ],
-function(s1)
-  local e,      # enumerator for the semigroup s1
-        s,              # isomorphic image as transformation semigroup
-        gens,# a set of generators of the semigroup
-        x,# a non zero generators of s
-        zero,# the multiplicative zero of the semigroup
-        nonzero,# nonzero element of s in case s has two elements
-        J,        # Greens J relation of the semigroup
-        a,        # a generator
-        i,j,# loop variables
-        jx,jt,ja; # J classes
 
-        s := Range(IsomorphismTransformationSemigroup(s1));
-   # the enumerator, the set of generators and the zero for s
-  e:=Enumerator(s);
+## A semigroup is 0-simple if and only if it is non-trivial, contains a
+## multiplicative zero, and has exactly two J-classe. 
 
-    # if e[2] is not bound then s is trivial, hence is not 0 simple
-    if not (IsBound(e[2])) then
-      return false;
-    fi;
+InstallMethod(IsZeroSimpleSemigroup, "for a semigroup with generators",
+[IsSemigroup and HasGeneratorsOfSemigroup],
+function(s)
 
-    zero:=MultiplicativeZero(s);
-    # next check that if S has two elements, whether the square of the
-    # nonzero one is nonzero
-    # If all squares are zero then the semigroup is not 0-simple
-    if not(IsBound(e[3])) then
-      if e[1]<>zero then
-        nonzero:=e[1];
-      else
-        nonzero:=e[2];
-      fi;
-      if nonzero^2=zero then
-        # then this means that S^2 is the zero set, and hence
-        # S is not 0-simple
-        return false;
-      else
-        # S is 0-simple
-        return true;
-      fi;
-    fi;
+  if IsTrivial(s) or MultiplicativeZero(s)=fail then
+    return false;
+  fi;
 
-    # otherwise if the semigroup has more than 2 els, start by
-    # fixing a generator;
-    # we know that there is a nonzero generator as there are at least
-    # three elements in S, so we look for such a generator
-    gens:=GeneratorsOfSemigroup(s);
-    x:=zero;
-    i:=1;
-    while ( x=zero and (i in [1..Length(gens)]) ) do
-      if gens[i]<>zero then
-        x:=gens[i];
-      fi;
-      i:=i+1;
-    od;
-
-    # and check that x is J less than or equal to every other nonzero
-    # element of the semigroup
-    # Notice that x is at this point gens[i-1]
-  #J:=GreensJRelation(s);
-  #jx:=EquivalenceClassOfElementNC(J,x);
-
-        jx := GreensJClassOfElement(s,x);
-
-    j:=1;
-    while IsBound(e[j]) do
-      if e[j]<>zero then
-      #jt:=EquivalenceClassOfElementNC(J,e[j]);
-        jt := GreensJClassOfElement(s,e[j]);
-        if not(IsGreensLessThanOrEqual(jx,jt)) then
-          return false;
-        fi;
-      fi;
-      j:=j+1;
-    od;
-
-    # notice that if we arrive here is because the semigroup is
-    # finite for otherwise the above cycle does not stop
-    # (unless the semigroup is not simple, when it ends returning false)
-
-    # the last thing we have to check is that all other
-    # nonzero generators are J less than or equal to x
-    # Recall that from the way we have found x, x is gen[i-1] and
-    # all previous gens are zero
-    # So we can start comparing x from gens[i] onwards
-    while i<=Length(gens) do
-      a:=gens[i];
-      if a<>zero then
-        #ja:=EquivalenceClassOfElementNC(J,a);
-            ja := GreensJClassOfElement(s,a);
-        if not(IsGreensLessThanOrEqual(ja,jx)) then
-          return false;
-        fi;
-      fi;
-      i:=i+1;
-    od;
-
-  return true;
-
+  return Length(GreensJClasses(s))=2;
 end);
 
 #############################################################################
@@ -1047,6 +1059,8 @@ end);
 InstallMethod(IsRegularSemigroup, "for generic semigroup",
     [ IsSemigroup ],
     S -> ForAll( GreensDClasses(S), IsRegularDClass ) );
+
+
 
 #############################################################################
 ##

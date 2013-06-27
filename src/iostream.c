@@ -21,10 +21,7 @@
 **
 */
 
-#define _GNU_SOURCE  /* is used for ptsname_r prototype etc. */
-
 #include        "system.h"              /* system dependent part           */
-
 
 #include        "iostream.h"            /* file input/output               */
 

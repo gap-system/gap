@@ -121,9 +121,9 @@ if mandatory then
   Print("SectionIn RO \n");
 fi;  
 Print("SetOutPath $INSTDIR\\pkg \n");
-Print("File gap4r5\\pkg\\README.", pkg, "\n");
+Print("File gap4r6\\pkg\\README.", pkg, "\n");
 Print("SetOutPath $INSTDIR\\pkg\\", dirname, "\n");
-Print("File /r gap4r5\\pkg\\", dirname, "\\*.* \n");
+Print("File /r gap4r6\\pkg\\", dirname, "\\*.* \n");
 Print("SetOutPath $INSTDIR \n");
 Print("SectionEnd \n\n");
 end;
@@ -164,7 +164,7 @@ Print("# Packages that do not work under Windows end here\n\n");
 
 Print("=============================================================\n\n");
 for pkg in pkgs do
-  Print("LangString DESC_SecGAPpkg_", pkg, " ${LANG_ENGLISH} \"", GAPInfo.PackagesInfo.(pkg)[1].Subtitle, "\"\n");
+  Print("LangString DESC_SecGAPpkg_", pkg, " ${LANG_ENGLISH} \"", NormalizedWhitespace(GAPInfo.PackagesInfo.(pkg)[1].Subtitle), "\"\n");
 od;
 Print("=============================================================\n\n");
 for pkg in pkgs do

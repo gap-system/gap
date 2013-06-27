@@ -15,43 +15,43 @@
 ##
 #M  PrintObj( <M> ) . . . . . . . . . . . . . . . . . . . . . . print a magma
 ##
-InstallMethod( PrintObj,
+InstallMethod( PrintString,
     "for a magma",
     true,
     [ IsMagma ], 0,
     function( M )
-    Print( "Magma( ... )" );
+    return "Magma( ... )";
     end );
 
-InstallMethod( PrintObj,
+InstallMethod( PrintString,
     "for a magma with generators",
     true,
     [ IsMagma and HasGeneratorsOfMagma ], 0,
     function( M )
-    Print( "Magma( ", GeneratorsOfMagma( M ), " )" );
+    return STRINGIFY( "Magma( ", GeneratorsOfMagma( M ), " )" );
     end );
 
-InstallMethod( PrintObj,
+InstallMethod( PrintString,
     "for a magma-with-one with generators",
     true,
     [ IsMagmaWithOne and HasGeneratorsOfMagmaWithOne ], 0,
     function( M )
     if IsEmpty( GeneratorsOfMagmaWithOne( M ) ) then
-      Print( "MagmaWithOne( ", One( M ), " )" );
+      return STRINGIFY("MagmaWithOne( ", One( M ), " )" );
     else
-      Print( "MagmaWithOne( ", GeneratorsOfMagmaWithOne( M ), " )" );
+      return STRINGIFY( "MagmaWithOne( ", GeneratorsOfMagmaWithOne( M ), " )" );
     fi;
     end );
 
-InstallMethod( PrintObj,
+InstallMethod( PrintString,
     "for a magma-with-inverses with generators",
     true,
     [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses ], 0,
     function( M )
     if IsEmpty( GeneratorsOfMagmaWithInverses( M ) ) then
-      Print( "MagmaWithInverses( ", One( M ), " )" );
+      return STRINGIFY("MagmaWithInverses( ", One( M ), " )" );
     else
-      Print( "MagmaWithInverses( ", GeneratorsOfMagmaWithInverses(M), " )" );
+      return STRINGIFY("MagmaWithInverses( ", GeneratorsOfMagmaWithInverses(M), " )" );
     fi;
     end );
 
@@ -60,44 +60,45 @@ InstallMethod( PrintObj,
 ##
 #M  ViewObj( <M> )  . . . . . . . . . . . . . . . . . . . . . .  view a magma
 ##
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a magma",
     true,
     [ IsMagma ], 0,
     function( M )
-    Print( "<magma>" );
+    return "<magma>";    
     end );
 
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a magma with generators",
     true,
     [ IsMagma and HasGeneratorsOfMagma ], 0,
     function( M )
-    Print( "<magma with ", Length( GeneratorsOfMagma(M) ), " generators>" );
+    return STRINGIFY("<magma with ", Length( GeneratorsOfMagma(M) ), 
+    " generators>" );
     end );
 
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a magma-with-one with generators",
     true,
     [ IsMagmaWithOne and HasGeneratorsOfMagmaWithOne ], 0,
     function( M )
     if IsEmpty( GeneratorsOfMagmaWithOne( M ) ) then
-      Print( "<trivial magma-with-one>" );
+      return "<trivial magma-with-one>" ;
     else
-      Print( "<magma-with-one with ", Length( GeneratorsOfMagmaWithOne(M) ),
-             " generators>" );
+      return STRINGIFY("<magma-with-one with ", 
+      Length( GeneratorsOfMagmaWithOne(M) ), " generators>" );
     fi;
     end );
 
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a magma-with-inverses with generators",
     true,
     [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses ], 0,
     function( M )
     if IsEmpty( GeneratorsOfMagmaWithInverses( M ) ) then
-      Print( "<trivial magma-with-inverses>" );
+      return "<trivial magma-with-inverses>";
     else
-      Print( "<magma-with-inverses with ",
+      STRINGIFY( "<magma-with-inverses with ",
              Length( GeneratorsOfMagmaWithInverses( M ) ),
              " generators>" );
     fi;

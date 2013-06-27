@@ -45,6 +45,8 @@ extern char * In;
 #include        "bool.h"                /* booleans                        */
 #include        "macfloat.h"            /* machine doubles                 */
 #include        "permutat.h"            /* permutations                    */
+#include        "trans.h"               /* transformations                 */
+#include        "pperm.h"               /* partial perms                   */
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -470,7 +472,7 @@ Obj FuncSHELL (Obj self, Obj args)
   if (!IsStringConv(prompt) || GET_LEN_STRING(prompt) > 80)
     ErrorMayQuit("SHELL: 6th argument (prompt) must be a string of length at most 80 characters",0,0);
   promptBuffer[0] = '\0';
-  SyStrncat(promptBuffer, CSTR_STRING(prompt), 80);
+  strlcat(promptBuffer, CSTR_STRING(prompt), sizeof(promptBuffer));
 
   preCommandHook = ELM_PLIST(args,7);
  
@@ -518,10 +520,7 @@ static void StrAppend(char **st, const char *st2)
         printf("Extremely unexpected out of memory error. Giving up.\n");
         exit(1);
     }
-    /* If *st was initially NULL, we must zero-terminate the
-       newly allocated string. */
-    if (len == 0) **st = 0;
-    SyStrncat(*st,st2,len2);
+    memcpy(*st + len, st2, len2);
 }
 
 static void DoFindMyself(char *myself, char **mypath, char **gappath)
@@ -1134,9 +1133,6 @@ Obj FuncWindowCmd (
       for ( n=0,m=1;  '0' <= *ptr && *ptr <= '9';  ptr++,m *= 10,len-- )
         n += (*ptr-'0') * m;
       ptr++; /* ignore the '+' */
-      /*CCC tmp = NEW_STRING(n);
-      *CSTR_STRING(tmp) = '\0';
-      SyStrncat( CSTR_STRING(tmp), ptr, n ); CCC*/
       C_NEW_STRING(tmp, n, ptr);
       ptr += n;
       len -= n+2;
@@ -1151,9 +1147,7 @@ Obj FuncWindowCmd (
 
   /* if the first entry is one signal an error */
   if ( ELM_LIST(list,1) == INTOBJ_INT(1) ) {
-    /*CCCtmp = NEW_STRING(15);
-      SyStrncat( CSTR_STRING(tmp), "window system: ", 15 );CCC*/
-    C_NEW_STRING(tmp, 15, "window system: ");  
+    C_NEW_STRING_CONST(tmp, "window system: ");
     SET_ELM_PLIST( list, 1, tmp );
     SET_LEN_PLIST( list, i-1 );
     return CALL_XARGS(Error,list);
@@ -1415,7 +1409,7 @@ static Obj ErrorMessageToGAPString(
   Obj Message;
   SPrTo(message, 120, msg, arg1, arg2);
   message[119] = '\0';
-  C_NEW_STRING(Message, strlen(message), message); 
+  C_NEW_STRING_DYN(Message, message);
   return Message;
 }
 
@@ -1583,7 +1577,7 @@ Obj ErrorReturnObj (
     const Char *        msg2 )
 {
   Obj LateMsg;
-  C_NEW_STRING(LateMsg, strlen(msg2), msg2);
+  C_NEW_STRING_DYN(LateMsg, msg2);
   return CallErrorInner(msg, arg1, arg2, 0, 0, 1, LateMsg, 1);
 }
 
@@ -1599,7 +1593,7 @@ void ErrorReturnVoid (
     const Char *        msg2 )
 {
   Obj LateMsg;
-  C_NEW_STRING(LateMsg, strlen(msg2), msg2);
+  C_NEW_STRING_DYN(LateMsg, msg2);
   CallErrorInner( msg, arg1, arg2, 0,1,0,LateMsg, 1);
   /*    ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' ); */
 }
@@ -1834,7 +1828,6 @@ Obj FuncSHOW_STAT (
     StructInitInfo *    info;
     Int                 k;
     Int                 im;
-    Int                 len;
 
     /* count the number of install modules                                 */
     for ( k = 0,  im = 0;  CompInitFuncs[k];  k++ ) {
@@ -1854,10 +1847,7 @@ Obj FuncSHOW_STAT (
         if ( info == 0 ) {
             continue;
         }
-        /*CCC name = NEW_STRING( strlen(info->name) );
-          SyStrncat( CSTR_STRING(name), info->name, strlen(info->name) );CCC*/
-        len = strlen(info->name);
-        C_NEW_STRING(name, len, info->name);
+        C_NEW_STRING_DYN(name, info->name);
 
         SET_ELM_PLIST( modules, im, name );
 
@@ -1890,26 +1880,26 @@ Obj FuncLoadedModules (
         if ( m->type == MODULE_BUILTIN ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'b'] );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, strlen(m->name), m->name );
+            C_NEW_STRING_DYN( str, m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             SET_ELM_PLIST( list, 3*i+3, INTOBJ_INT(m->version) );
         }
         else if ( m->type == MODULE_DYNAMIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, strlen(m->name), m->name );
+            C_NEW_STRING_DYN( str, m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, strlen(m->filename), m->filename );
+            C_NEW_STRING_DYN( str, m->filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
         else if ( m->type == MODULE_STATIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'s'] );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, strlen(m->name), m->name );
+            C_NEW_STRING_DYN( str, m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, strlen(m->filename), m->filename );
+            C_NEW_STRING_DYN( str, m->filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
     }
@@ -1939,7 +1929,7 @@ Obj FuncGASMAN (
 {
     Obj                 cmd;            /* argument                        */
     UInt                i,  k;          /* loop variables                  */
-    Char                buf[100];
+    Char                buf[41];
 
     /* check the argument                                                  */
     while ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
@@ -1970,7 +1960,7 @@ again:
             for ( k = 0; k < 256; k++ ) {
                 if ( InfoBags[k].name != 0 ) {
                     buf[0] = '\0';
-                    SyStrncat( buf, InfoBags[k].name, 40 );
+                    strlcat( buf, InfoBags[k].name, sizeof(buf) );
                     Pr("%40s ",    (Int)buf, 0L );
                     Pr("%8d %8d ", (Int)InfoBags[k].nrLive,
                                    (Int)(InfoBags[k].sizeLive/1024));
@@ -1992,7 +1982,7 @@ again:
                       InfoBags[k].nrAll != 0 ||
                       InfoBags[k].sizeAll != 0) ) {
                     buf[0] = '\0';
-                    SyStrncat( buf, InfoBags[k].name, 40 );
+                    strlcat( buf, InfoBags[k].name, sizeof(buf) );
                     Pr("%40s ",    (Int)buf, 0L );
                     Pr("%8d %8d ", (Int)InfoBags[k].nrLive,
                                    (Int)(InfoBags[k].sizeLive/1024));
@@ -2130,7 +2120,6 @@ Obj FuncTNUM_OBJ (
 {
     Obj                 res;
     Obj                 str;
-    Int                 len;
     const Char *        cst;
 
     res = NEW_PLIST( T_PLIST, 2 );
@@ -2139,10 +2128,7 @@ Obj FuncTNUM_OBJ (
     /* set the type                                                        */
     SET_ELM_PLIST( res, 1, INTOBJ_INT( TNUM_OBJ(obj) ) );
     cst = TNAM_OBJ(obj);
-    /*CCC    str = NEW_STRING( strlen(cst) );
-      SyStrncat( CSTR_STRING(str), cst, strlen(cst) );CCC*/
-    len = strlen(cst);
-    C_NEW_STRING(str, len, cst);
+    C_NEW_STRING_DYN(str, cst);
     SET_ELM_PLIST( res, 2, str );
 
     /* and return                                                          */
@@ -2172,7 +2158,7 @@ Obj FuncXTNUM_OBJ (
     res = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( res, 2 );
     SET_ELM_PLIST( res, 1, Fail );
-    C_NEW_STRING(str, 16, "xtnums abolished");
+    C_NEW_STRING_CONST(str, "xtnums abolished");
     SET_ELM_PLIST(res, 2,str);
     /* and return                                                          */
     return res;
@@ -2714,21 +2700,19 @@ Obj FuncQUIT_GAP( Obj self )
 
 Obj FuncKERNEL_INFO(Obj self) {
   Obj res = NEW_PREC(0);
-  UInt r,len,lenvec,lenstr,lenstr2;
+  UInt r,lenvec,lenstr,lenstr2;
   Char *p;
   Obj tmp,list,str;
   UInt i,j;
 
   /* GAP_ARCHITECTURE                                                    */
-  tmp = NEW_STRING(strlen(SyArchitecture));
+  C_NEW_STRING_DYN( tmp, SyArchitecture );
   RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-  SyStrncat( CSTR_STRING(tmp), SyArchitecture, strlen(SyArchitecture) );
   r = RNamName("GAP_ARCHITECTURE");
   AssPRec(res,r,tmp);
   /* KERNEL_VERSION */
-  tmp = NEW_STRING(strlen(SyKernelVersion));
+  C_NEW_STRING_DYN( tmp, SyKernelVersion );
   RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-  SyStrncat( CSTR_STRING(tmp), SyKernelVersion, strlen(SyKernelVersion) );
   r = RNamName("KERNEL_VERSION");
   AssPRec(res,r,tmp);
   /* GAP_ROOT_PATH                                                       */
@@ -2737,10 +2721,8 @@ Obj FuncKERNEL_INFO(Obj self) {
   list = NEW_PLIST( T_PLIST+IMMUTABLE, MAX_GAP_DIRS );
   for ( i = 0, j = 1;  i < MAX_GAP_DIRS;  i++ ) {
     if ( SyGapRootPaths[i][0] ) {
-      len = strlen(SyGapRootPaths[i]);
-      tmp = NEW_STRING(len);
+      C_NEW_STRING_DYN( tmp, SyGapRootPaths[i] );
       RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-      SyStrncat( CSTR_STRING(tmp), SyGapRootPaths[i], len );
       SET_ELM_PLIST( list, j, tmp );
       j++;
     }
@@ -2750,10 +2732,8 @@ Obj FuncKERNEL_INFO(Obj self) {
   AssPRec(res,r,list);
   /* And also the DotGapPath if available */
 #if HAVE_DOTGAPRC
-  len = strlen(DotGapPath);
-  tmp = NEW_STRING(len);
+  C_NEW_STRING_DYN( tmp, DotGapPath );
   RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-  SyStrncat( CSTR_STRING(tmp), DotGapPath, len );
   r = RNamName("DOT_GAP_PATH");
   AssPRec(res,r,tmp);
 #endif
@@ -2763,10 +2743,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   tmp = NEW_PLIST( T_PLIST+IMMUTABLE, lenvec );
   SET_LEN_PLIST( tmp, lenvec );
   for (i = 0; i<lenvec; i++) {
-    lenstr = strlen(SyOriginalArgv[i]);
-    str = NEW_STRING(lenstr);
-    SyStrncat(CSTR_STRING(str), SyOriginalArgv[i], lenstr);
-    SET_LEN_STRING(str, lenstr);
+    C_NEW_STRING_DYN( str, SyOriginalArgv[i] );
     SET_ELM_PLIST(tmp, i+1, str);
     CHANGED_BAG(tmp);
   }
@@ -2796,11 +2773,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   AssPRec(res,r, tmp);
 
   /* and also the CONFIGNAME of the running  GAP kernel  */
-  p = CONFIGNAME;
-  lenstr = strlen(p);
-  str = NEW_STRING(lenstr);
-  SyStrncat(CSTR_STRING(str), p, lenstr);
-  SET_LEN_STRING(str, lenstr);
+  C_NEW_STRING_DYN( str, CONFIGNAME );
   r = RNamName("CONFIGNAME");
   AssPRec(res, r, str);
   
@@ -3109,6 +3082,8 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoCyc,
     InitInfoFinfield,
     InitInfoPermutat,
+    InitInfoTrans,
+    InitInfoPPerm,
     InitInfoBool,
     InitInfoMacfloat,
 
@@ -3196,7 +3171,7 @@ void RecordLoadedModule (
     StructInitInfo *        info,
     Char *filename )
 {
-  UInt len;
+    UInt len;
     if ( NrModules == MAX_MODULES ) {
         Pr( "panic: no room to record module\n", 0L, 0L );
     }
@@ -3312,7 +3287,7 @@ void InitializeGap (
                     char    buf[41];
 
                     buf[0] = '\0';
-                    SyStrncat( buf, InfoBags[i].name, 40 );
+                    strlcat( buf, InfoBags[i].name, sizeof(buf) );
                     Pr("#W  %36s ",    (Int)buf, 0L );
                     Pr("%8d %8d ", (Int)InfoBags[i].nrLive,
                        (Int)(InfoBags[i].sizeLive/1024));

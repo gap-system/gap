@@ -1234,8 +1234,7 @@ Obj NewFunctionCT (
     }
 
     /* convert the name to an object                                       */
-    len = strlen( name_c );
-    C_NEW_STRING(name_o, len, name_c);
+    C_NEW_STRING_DYN(name_o, name_c);
     RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
 
     /* make the function                                                   */
@@ -1555,7 +1554,7 @@ Obj FuncNAME_FUNC (
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         name = NAME_FUNC(func);
         if ( name == 0 ) {
-            C_NEW_STRING(name, 7, "unknown");
+            C_NEW_STRING_CONST(name, "unknown");
             RESET_FILT_LIST( name, FN_IS_MUTABLE );
             NAME_FUNC(func) = name;
             CHANGED_BAG(func);
@@ -1857,7 +1856,6 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
   ObjFunc hdlr;
   const Char *cookie;
   Obj cookieStr;
-  UInt len;
   if (!IS_FUNC(func))
     return Fail;
   narg = NARG_FUNC(func);
@@ -1865,9 +1863,7 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
     narg = 7;
   hdlr = HDLR_FUNC(func, narg);
   cookie = CookieOfHandler(hdlr);
-  len = strlen(cookie);
-  cookieStr = NEW_STRING(len);
-  COPY_CHARS(cookieStr, cookie, len);
+  C_NEW_STRING_DYN(cookieStr, cookie);
   return cookieStr;
 }
 

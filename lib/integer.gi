@@ -419,9 +419,18 @@ end);
 ##
 #F  CoefficientsQadic( <i>, <q> ) . . . . . .  <q>-adic representation of <i>
 ##
-InstallGlobalFunction(CoefficientsQadic,function( i, q )
+InstallMethod( CoefficientsQadic, "for two integers", 
+    true, [ IsInt, IsInt ], 0,
+function( i, q )
     local   v;
-
+    if q <= 1 then
+        Error("2nd argument of CoefficientsQadic should be greater than 1\n");
+    fi;
+    if i < 0 then
+        # if FR package is loaded and supplies an implementation 
+        # to return a periodic list for negative i
+        TryNextMethod();
+    fi;
     # represent the integer <i> as <q>-adic number
     v := [];
     while i > 0  do
@@ -728,13 +737,14 @@ InstallGlobalFunction(FactorsInt,function ( n )
     return factors;
 end);
 
+
 #############################################################################
 ##
 #F  PrimeDivisors( <n> ) . . . . . . . . . . . . . . list of prime divisors
 ##  
 ##  delegating to FactorsInt
 ##  
-InstallGlobalFunction(PrimeDivisors, function(n)
+InstallMethod( PrimeDivisors, "for integer", [ IsInt ], function(n)
   if n = 0 then
     Error("PrimeDivisors: 0 has an infinite number of prime divisors.");
     return;
@@ -747,6 +757,7 @@ InstallGlobalFunction(PrimeDivisors, function(n)
   fi;
   return Set(FactorsInt(n));
 end);
+
 
 #############################################################################
 ##
@@ -1154,10 +1165,10 @@ InstallGlobalFunction(PowerModInt,function ( r, e, m )
     local   pow, f;
 
     # handle special cases
-    if e = 0  then
-        return 1;
-    elif m = 1 then
+    if m = 1  then
         return 0;
+    elif e = 0 then
+        return 1;
     fi;
 
     # reduce `r' initially
@@ -1668,13 +1679,15 @@ InstallMethod( QuotientMod,
     true,
     [ IsIntegers, IsInt, IsInt, IsInt ], 0,
     function ( Integers, r, s, m )
-    if s>m then s:=s mod m;fi;
-    if   m = 1 then
+    if s > m then 
+        s := s mod m;
+    fi;
+    if m = 1 then
         return 0;
-    elif r mod GcdInt( s, m ) = 0  then
-        return r/s mod m;
-    else
+    elif GcdInt( s, m ) <> 1 then
         return fail;
+    else
+        return r/s mod m;
     fi;
     end );
 

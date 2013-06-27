@@ -1463,7 +1463,7 @@ DeclareAttribute( "DegreeOfCharacter", IsClassFunction );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> der:= DerivedSubgroup( S4 );
-##  Group([ (1,3,2), (2,4,3) ])
+##  Alt( [ 1 .. 4 ] )
 ##  gap> List( Irr( der ), chi -> InertiaSubgroup( S4, chi ) );
 ##  [ S4, Alt( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ), S4 ]
 ##  ]]></Example>
@@ -1500,9 +1500,8 @@ DeclareOperation( "InertiaSubgroup",
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> List( Irr( S4 ), KernelOfCharacter );
-##  [ Group([ (), (1,2)(3,4), (1,2,3) ]), Group(()), 
-##    Group([ (1,2)(3,4), (1,3)(2,4) ]), Group(()), 
-##    Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
+##  [ Alt( [ 1 .. 4 ] ), Group(()), Group([ (1,2)(3,4), (1,3)(2,4) ]), 
+##    Group(()), Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

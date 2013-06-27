@@ -1,0 +1,18 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/02/28
+!! Changed by
+BH
+!! Type of Change
+New: extended functionality
+
+!! Description
+provide a default method for AbsolutIrreducibleModules/AbsolutelyIrreducibleModules
+! Test Code
+gap> Length(AbsolutIrreducibleModules (AlternatingGroup(5), GF(4), 120));
+2
+!! Changeset
+8cbc59161dc53895e20a571092bbf32390df7953
+921cf17b462c6a89529930e2cc9f1dd3519fe384
+!! End

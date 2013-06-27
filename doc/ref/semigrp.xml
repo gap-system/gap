@@ -7,24 +7,38 @@
 <!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
+
 <Chapter Label="Semigroups">
-<Heading>Semigroups</Heading>
+<Heading>Semigroups and Monoids</Heading>
 
-This chapter describes functions for creating semigroups
+This chapter describes functions for creating semigroups and monoids
 and determining information about them.
-
-<!-- %%  Support for algebraic semigroup theory in &GAP; was designed by Andrew -->
-<!-- %%  Solomon, based on code by Götz Pfeiffer, and was implemented by Isabel -->
-<!-- %%  Araújo, Robert Arthur, and Andrew Solomon. -->
-
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="sect:IsSemigroup">
-<Heading>IsSemigroup (Filter)</Heading>
+<Heading>Semigroups</Heading>
 
 <#Include Label="IsSemigroup">
 <#Include Label="Semigroup">
 <#Include Label="Subsemigroup">
+  <ManSection>
+    <Oper Name="IsSubsemigroup"  Arg="S, T"/>
+    <Returns><K>true</K> or <K>false</K>.</Returns>
+    <Description>
+      This operation returns <K>true</K> if the semigroup <A>T</A> is a
+      subsemigroup of the semigroup <A>S</A> and <K>false</K> if it is not. 
+      <Example>
+gap> f:=Transformation( [ 5, 6, 7, 1, 4, 3, 2, 7 ] );
+Transformation( [ 5, 6, 7, 1, 4, 3, 2, 7 ] )
+gap> T:=Semigroup(f);;
+gap> IsSubsemigroup(FullTransformationSemigroup(4), T);
+false
+gap> S:=Semigroup(f);; T:=Semigroup(f^2);;
+gap> IsSubsemigroup(S, T);                             
+true</Example>
+  </Description>
+  </ManSection>
+ 
 <#Include Label="SemigroupByGenerators">
 <#Include Label="AsSemigroup">
 <#Include Label="AsSubsemigroup">
@@ -34,6 +48,27 @@ and determining information about them.
 
 </Section>
 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+<Section Label="sect:IsMonoid">
+<Heading>Monoids</Heading>
+
+<#Include Label="IsMonoid">
+<#Include Label="Monoid">
+<#Include Label="Submonoid">
+<#Include Label="MonoidByGenerators">
+<#Include Label="AsMonoid">
+<#Include Label="AsSubmonoid">
+<#Include Label="GeneratorsOfMonoid">
+<#Include Label="TrivialSubmonoid">
+<#Include Label="FreeMonoid">
+<#Include Label="MonoidByMultiplicationTable">
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+<#Include SYSTEM "invsgp.xml">
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Properties of Semigroups">
@@ -49,26 +84,27 @@ about semigroups.
 <#Include Label="IsZeroGroup">
 <#Include Label="IsReesCongruenceSemigroup">
 
+<ManSection>
+  <Prop Name="IsInverseSemigroup" Arg="S"/>
+  <Prop Name="IsInverseMonoid" Arg="S"/>
+  <Returns><K>true</K> or <K>false</K>.</Returns>
+  <Description>
+    A semigroup is an <E>inverse semigroup</E> if every element
+    <C>x</C> has a unique semigroup inverse, that is, a unique
+    element <C>y</C> such that <C>x*y*x=x</C> and <C>y*x*y=y</C>.<P/>
+
+    A monoid that happens to be an inverse semigroup is called an <E>inverse
+      monoid</E>. 
+    <Example>
+gap> S:=Semigroup( Transformation( [ 1, 2, 4, 5, 6, 3, 7, 8 ] ),
+> Transformation( [ 3, 3, 4, 5, 6, 2, 7, 8 ] ),
+> Transformation( [ 1, 2, 5, 3, 6, 8, 4, 4 ] ) );;
+gap> IsInverseSemigroup(S);
+true</Example>
+  </Description>
+</ManSection>
+
 </Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Making transformation semigroups">
-<Heading>Making transformation semigroups</Heading>
-
-Cayley's Theorem gives special status to semigroups of
-transformations, and accordingly there are special functions
-to deal with them, and to create them from other finite
-semigroups.
-
-<#Include Label="IsTransformationSemigroup">
-<#Include Label="DegreeOfTransformationSemigroup">
-<#Include Label="IsomorphismTransformationSemigroup">
-<#Include Label="IsFullTransformationSemigroup">
-<#Include Label="FullTransformationSemigroup">
-
-</Section>
-
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Ideals of semigroups">
@@ -81,9 +117,7 @@ For documentation on ideals for magmas, see <Ref Func="Magma"/>.
 <#Include Label="SemigroupIdealByGenerators">
 <#Include Label="ReesCongruenceOfSemigroupIdeal">
 <#Include Label="IsLeftSemigroupIdeal">
-
 </Section>
-
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Congruences for semigroups">
@@ -100,7 +134,6 @@ see <Ref Func="Magma"/>.
 <#Include Label="IsReesCongruence">
 
 </Section>
-
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Quotients">
@@ -128,7 +161,6 @@ The following functions deal with quotient semigroups in &GAP;.
 <#Include Label="IsGreensClass">
 <#Include Label="IsGreensLessThanOrEqual">
 <#Include Label="RClassOfHClass">
-<!-- %Declaration{IsGreensRClassEnumerator} -->
 <#Include Label="EggBoxOfDClass">
 <#Include Label="DisplayEggBoxOfDClass">
 <#Include Label="GreensRClassOfElement">
@@ -139,25 +171,9 @@ The following functions deal with quotient semigroups in &GAP;.
 
 </Section>
 
+<#Include SYSTEM "reesmat.xml">
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Rees Matrix Semigroups">
-<Heading>Rees Matrix Semigroups</Heading>
-
-<#Include Label="[1]{reesmat}">
-<#Include Label="ReesMatrixSemigroup">
-<#Include Label="ReesZeroMatrixSemigroup">
-<#Include Label="IsReesMatrixSemigroup">
-<#Include Label="IsReesZeroMatrixSemigroup">
-<#Include Label="ReesMatrixSemigroupElement">
-<#Include Label="IsReesMatrixSemigroupElement">
-<#Include Label="SandwichMatrixOfReesMatrixSemigroup">
-<#Include Label="RowIndexOfReesMatrixSemigroupElement">
-<#Include Label="ReesZeroMatrixSemigroupElementIsZero">
-<#Include Label="AssociatedReesMatrixSemigroupOfDClass">
-<#Include Label="IsomorphismReesMatrixSemigroup">
-
-</Section>
 </Chapter>
 
 

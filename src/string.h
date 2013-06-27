@@ -256,22 +256,34 @@ extern Int IsStringConv (
 
 /****************************************************************************
 **
-
 *F  C_NEW_STRING( <string>, <len>, <cstring> )  . . . . . . create GAP string
 */
-/* ???
-#define C_NEW_STRING(string,len,cstr) \
-  do { \
-    string = NEW_STRING( len ); \
-    SyStrncat( CSTR_STRING(string), cstr, len ); \
-  } while ( 0 );
-???  */
 #define C_NEW_STRING(string,len,cstr) \
   do { \
     size_t tmp_len = (len); \
     string = NEW_STRING( tmp_len ); \
     memcpy( CHARS_STRING(string), (cstr), tmp_len ); \
   } while ( 0 );
+
+/****************************************************************************
+**
+*F  C_NEW_STRING_DYN( <string>, <cstring> ) . . . . . . . . create GAP string
+**
+** The cstring is assumed to be allocated on the heap, hence its length
+** is dynamic and must be computed during runtime using strlen.
+*/
+#define C_NEW_STRING_DYN(string,cstr) \
+  C_NEW_STRING(string, strlen(cstr), cstr)
+
+/****************************************************************************
+**
+*F  C_NEW_STRING_CONST( <string>, <cstring> ) . . . . . . . . create GAP string
+**
+** The cstring is assumed to be a literal constant (like this: "string").
+** Hence its length is constant and can be computed during compilation.
+*/
+#define C_NEW_STRING_CONST(string,cstr) \
+  C_NEW_STRING(string, sizeof(cstr)-1, cstr)
 
 /****************************************************************************
 **

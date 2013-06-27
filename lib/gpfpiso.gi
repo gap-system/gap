@@ -258,9 +258,13 @@ function(g,str,N)
       hom:=NaturalHomomorphismByNormalSubgroup(ser[i-1],ser[i]);
       IsOne(hom);
       f:=Image(hom);
-      IsSimpleGroup(f); # knowing simplicity makes it easy to test whether a
-                        # map is faithful
-      if IsPermGroup(f) then
+      # knowing simplicity makes it easy to test whether a map is faithful
+      if IsSimpleGroup(f) then
+	if IsPermGroup(f) and
+	  NrMovedPoints(f)>SufficientlySmallDegreeSimpleGroupOrder(Size(f)) then
+	  hom:=hom*SmallerDegreePermutationRepresentation(f);
+	fi;
+      elif IsPermGroup(f) then
 	hom:=hom*SmallerDegreePermutationRepresentation(f);
       fi;
 

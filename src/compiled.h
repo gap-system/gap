@@ -33,6 +33,8 @@
 
 #include        "bool.h"                /* booleans                        */
 #include        "permutat.h"            /* permutations                    */
+#include        "trans.h"               /* transformation                  */
+#include        "pperm.h"               /* partial perms                   */
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */

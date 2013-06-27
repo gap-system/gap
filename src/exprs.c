@@ -31,6 +31,8 @@
 #include        "integer.h"             /* integers                        */
 
 #include        "permutat.h"            /* permutations                    */
+#include        "trans.h"               /* transformations                 */
+#include        "pperm.h"               /* partial perms                   */
 
 #include        "precord.h"             /* plain records                   */
 

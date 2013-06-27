@@ -7,13 +7,15 @@
 
 # Frank Lübeck, Frank.Luebeck@Math.RWTH-Aachen.De for questions and complaints.
 
-export NAME="4r5"
+export NAME="4r6"
 #setenv COPTS ""
 #setenv LOPTS ""
 unset CFLAGS
 
-tar xzvpf gap${NAME}p*.tar.gz
+tar xzvpf gap4r*.tar.gz
 #unzip gap4r5p*.zip
+
+mv gap$NAME gap4r5
 
 cd gap4r5
 
@@ -40,12 +42,14 @@ cd ..
 ./configure
 make config
 make -j4
+source sysinfo.gap-default64
+
 # reduce dependencies
-cd bin/x86_64-unknown-linux-gnu-gcc-default64
+cd bin/$GAParch
 
 # with newer ld:
 #gcc -g  -export-dynamic  -o gap ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o -l:libreadline.a -l:libncurses.a  -l:libm.a  extern/gmp/lib/libgmp.a  -ldl 
-gcc -g  -export-dynamic  -o gap ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a /usr/lib/libutil.a  extern/gmp/lib/libgmp.a  -ldl 
+gcc -g  -export-dynamic  -o gap ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a  /usr/lib/libutil.a extern/gmp/lib/libgmp.a  -ldl 
 strip gap
 # store away until pargap is built
 cp gap gapnompi
@@ -53,15 +57,11 @@ cp gap.o gap.o.nompi
 cd ../..
 
 
-#unsetenv COPTS
-#unsetenv LOPTS
 # we collect all start scripts in 'bin'
-cp bin/`grep ^GAParch= sysinfo.gap | sed -e 's/GAParch=//'`/gac bin
+cp bin/$GAParch/gac bin
 
 # unpack tools
-cd ..
-tar xzf gap4r5/etc/tools.tar.gz
-cd gap4r5
+tar xzf etc/tools.tar.gz
 
 # now the packages
 cd pkg
@@ -163,6 +163,13 @@ make CC="gcc -O2 -Wall -static"
 strip bin/x8*/*
 cd ..
 
+cd float*
+./configure --with-mpfr=extern --with-mpfi=extern --with-mpc=extern --with-cxsc=extern
+make
+mkdir -p ../../bin/$GAParch/extern_libs
+cp bin/$GAParch/extern/lib/* ../../bin/$GAParch/extern_libs
+cd ..
+
 cd fplsa
 ./configure ../..
 make CC="gcc -static -O2 "
@@ -177,25 +184,25 @@ strip bin/x8*/*
 cd ..
 
 
-cd fr
-./configure 
-# we now compile and install locally the gsl and glscblas libs with -fPIC
-cd extern
-source GET_LIBRARIES
-tar xzf gsl*.tar.gz
-cd gsl-*
-export CFLAGS="-g -O2 -fPIC"
-./configure --prefix=`pwd`/../../bin/x86_64-unknown-linux-gnu-gcc-default64/extern
-make
-make install
-unset CFLAGS
-cd ../..
-
-# for the fr_dll.so we now use the .a libs just produced
-mv Makefile Makefile.orig
-sed -e "s/-L -lgsl -L -lgslcblas/-L bin\/x86_64-unknown-linux-gnu-gcc-default64\/extern\/lib\/libgsl.a -L bin\/x86_64-unknown-linux-gnu-gcc-default64\/extern\/lib\/libgslcblas.a -L -lm/" < Makefile.orig > Makefile
-make
-cd ..
+##  cd fr-*
+##  ./configure 
+##  # we now compile and install locally the gsl and glscblas libs with -fPIC
+##  cd extern
+##  source GET_LIBRARIES
+##  tar xzf gsl*.tar.gz
+##  cd gsl-*
+##  export CFLAGS="-g -O2 -fPIC"
+##  ./configure --prefix=`pwd`/../../bin/x86_64-unknown-linux-gnu-gcc-default64/extern
+##  make
+##  make install
+##  unset CFLAGS
+##  cd ../..
+##  
+##  # for the fr_dll.so we now use the .a libs just produced
+##  mv Makefile Makefile.orig
+##  sed -e "s/-L -lgsl -L -lgslcblas/-L bin\/x86_64-unknown-linux-gnu-gcc-default64\/extern\/lib\/libgsl.a -L bin\/x86_64-unknown-linux-gnu-gcc-default64\/extern\/lib\/libgslcblas.a -L -lm/" < Makefile.orig > Makefile
+##  make
+##  cd ..
 
 cd Gauss
 cp Makefile.linux.in Makefile.linux.in.orig
@@ -297,15 +304,16 @@ cd  ..
 cd bin/x86_64-unknown-linux-gnu-gcc-default64
 rm -f pargapmpi
 #gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/x86_64-unknown-linux-gnu-gcc-default64/libmpi.a -l:libreadline.a -l:libncurses.a  -l:libm.a  extern/gmp/lib/libgmp.a  -ldl 
-gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/x86_64-unknown-linux-gnu-gcc-default64/libmpi.a /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a  /usr/lib/libutil.a extern/gmp/lib/libgmp.a  -ldl 
+gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/x86_64-unknown-linux-gnu-gcc-default64/libmpi.a /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a /usr/lib/libutil.a  extern/gmp/lib/libgmp.a  -ldl 
 mv gapnompi gap
 mv gap.o.nompi gap.o
 
 cd ../../pkg
 
-# cleanup-don't need to distribute .o files from compiler
+# cleanup-don't need to distribute .o files from compiler 
 cd ..
-find . -name \*.o -exec file {} \; | grep ": ELF " | cut -f1 -d: | xargs rm -f 
+###  maybe better to distribute them?
+#find . -name \*.o -exec file {} \; | grep ": ELF " | cut -f1 -d: | xargs rm -f 
 
 # move some files to distinguish from 32 bit version
 cd bin

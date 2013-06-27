@@ -1303,7 +1303,7 @@ Obj FuncTmpName (
     tmp = SyTmpname();
     if ( tmp == 0 )
         return Fail;
-    C_NEW_STRING( name, strlen(tmp), tmp );
+    C_NEW_STRING_DYN( name, tmp );
     return name;
 }
 
@@ -1321,7 +1321,7 @@ Obj FuncTmpDirectory (
     tmp = SyTmpdir("tm");
     if ( tmp == 0 )
         return Fail;
-    C_NEW_STRING( name, strlen(tmp), tmp );
+    C_NEW_STRING_DYN( name, tmp );
     return name;
 }
 
@@ -1435,14 +1435,14 @@ Obj FuncLastSystemError (
     /* check if an errors has occured                                      */
     if ( SyLastErrorNo != 0 ) {
         ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(SyLastErrorNo) );
-        C_NEW_STRING(msg, strlen(SyLastErrorMessage), SyLastErrorMessage);
+        C_NEW_STRING_DYN(msg, SyLastErrorMessage);
         ASS_REC( err, ErrorMessageRNam, msg );
     }
 
     /* no error has occured                                                */
     else {
         ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(0) );
-        C_NEW_STRING( msg, 8, "no error" );
+        C_NEW_STRING_CONST( msg, "no error" );
         ASS_REC( err, ErrorMessageRNam, msg );
     }
 

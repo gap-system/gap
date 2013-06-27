@@ -1951,6 +1951,19 @@ void            ElmsListLevel (
     Obj                 elm;            /* selected elements from <list>   */
     Int                 i;              /* loop variable                   */
 
+    /* Workaround for issue #312: Accessing a two-level sublist
+       of a compressed FFE vector could lead to crashes because
+       FuncELMS_VEC8BIT and FuncELMS_GF2VEC may return lists which are
+       not plists. This boils down to a conflict between the documented
+       behavior and requirements of ElmsListLevel and ElmsListFuncs.
+       Resolving this properly requires some more discussion. But until
+       then, this change at least prevents hard crashes. */
+    if (!IS_PLIST(lists)) {
+        ErrorMayQuit(
+            "List Elements: <lists> must be a list (not a %s)",
+            (Int)TNAM_OBJ(lists), 0L );
+    }
+
     /* if <level> is one, perform the replacements                         */
     if ( level == 1 ) {
 

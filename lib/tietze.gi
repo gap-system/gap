@@ -3564,7 +3564,10 @@ InstallGlobalFunction( TzSort, function ( T )
         Error( "argument must be a Presentation" );
     fi;
 
-    if T!.tietze[TZ_NUMRELS] > 0 then  TzSortC( T!.tietze );  fi;
+    if T!.tietze[TZ_NUMRELS] > 0 then  
+      TzSortC( T!.tietze );  
+      T!.tietze[TZ_OCCUR]:=false;
+    fi;
 end );
 
 

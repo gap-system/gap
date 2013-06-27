@@ -2849,6 +2849,19 @@ RedispatchOnCondition(SylowComplementOp,true,[IsGroup,IsPosInt],
   [IsSolvableGroup and IsFinite,
   IsPosInt ],1);
 
+InstallMethod( FittingFreeLiftSetup, "pc group", true, [ IsPcGroup ],0,
+function( G )
+local   pcgs;
+  
+  pcgs:=PcgsElementaryAbelianSeries(G);
+  return rec(pcgs:=pcgs,
+             depths:=IndicesEANormalSteps(pcgs),
+	     radical:=G,
+	     pcisom:=IdentityMapping(G),
+	     factorhom:=NaturalHomomorphismByNormalSubgroupNC(G,G));
+
+end );
+
 
 #############################################################################
 ##

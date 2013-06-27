@@ -6831,6 +6831,8 @@ InstallGlobalFunction( NormalSubgroupClasses, function( tbl, classes )
 
       fi;
 
+      if HasIsNaturalSymmetricGroup(G) then IsNaturalAlternatingGroup(group);fi;
+
       MakeImmutable( classes );
       Add( info.nsgclasses, classes );
       Add( info.nsg       , group   );

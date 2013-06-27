@@ -4794,7 +4794,6 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
     Obj                 tester;
     Int                 flag2;
     Obj                  name;
-    Int i;
 
     /* Need to get the name from oper */
     name = NAME_FUNC(oper);
@@ -4808,8 +4807,7 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
     tester = MakeTester(name, flag2);
 
     /* Change the handlers */
-    for (i = 0; i <= 7; i++) 
-      HDLR_FUNC(oper, i) = hdlr ? hdlr : DoAttribute;
+    HDLR_FUNC(oper, 1) = hdlr ? hdlr : DoAttribute;
 
     SetupAttribute( oper, setter, tester, flag2);
 
@@ -4836,7 +4834,7 @@ Obj NewAttributeC (
     flag2 = ++CountFlags;
 
 
-    C_NEW_STRING(fname, strlen(name), name);
+    C_NEW_STRING_DYN(fname, name);
     setter = MakeSetter(fname, flag2);
     tester = MakeTester(fname, flag2);
     
@@ -5511,7 +5509,7 @@ Obj FuncNEW_OPERATION_ARGS (
     }
 
     /* make the new operation                                              */
-    C_NEW_STRING( args, 4, "args" )
+    C_NEW_STRING_CONST( args, "args" )
     list = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( list, 1 );
     SET_ELM_PLIST( list, 1, args );
@@ -6363,24 +6361,24 @@ static Int InitLibrary (
     Obj                 str;
 
     /* share between uncompleted functions                                 */
-    C_NEW_STRING( StringAndFilter, 14, "<<and-filter>>" );
+    C_NEW_STRING_CONST( StringAndFilter, "<<and-filter>>" );
     RESET_FILT_LIST( StringAndFilter, FN_IS_MUTABLE );
 
-    C_NEW_STRING( StringFilterSetter, 17, "<<filter-setter>>" );
+    C_NEW_STRING_CONST( StringFilterSetter, "<<filter-setter>>" );
     RESET_FILT_LIST( StringFilterSetter, FN_IS_MUTABLE );
 
     ArglistObj = NEW_PLIST( T_PLIST+IMMUTABLE, 1 );
     SET_LEN_PLIST( ArglistObj, 1 );
-    C_NEW_STRING( str, 3, "obj" );
+    C_NEW_STRING_CONST( str, "obj" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObj, 1, str );
 
     ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( ArglistObjVal, 2 );
-    C_NEW_STRING( str, 3, "obj" );
+    C_NEW_STRING_CONST( str, "obj" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObjVal, 1, str );
-    C_NEW_STRING( str, 3, "val" );
+    C_NEW_STRING_CONST( str, "val" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObjVal, 2, str );
 
@@ -6390,9 +6388,7 @@ static Int InitLibrary (
 
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
-    /*CCC TRY_NEXT_METHOD = NEW_STRING( 16 );
-      SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );CCC*/
-    C_NEW_STRING(TRY_NEXT_METHOD, 15, "TRY_NEXT_METHOD");
+    C_NEW_STRING_CONST(TRY_NEXT_METHOD, "TRY_NEXT_METHOD");
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
     /* init filters and functions                                          */

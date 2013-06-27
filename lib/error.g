@@ -16,8 +16,20 @@ CallAndInstallPostRestore( function()
 end);
 
 
-MakeReadWriteGlobal("OnQuit");
-OnQuit := fail;
+#############################################################################
+##
+#F  OnQuit( )                                   currently removes all options
+##
+Unbind(OnQuit);         # OnQuit is called from the kernel so we take great
+BIND_GLOBAL( "OnQuit",  # care to ensure it always has a definition. - GG
+        function()
+    if not IsEmpty(OptionsStack) then
+      repeat
+        PopOptions();
+      until IsEmpty(OptionsStack);
+      Info(InfoWarning,1,"Options stack has been reset");
+    fi;
+end);
 
 
 BIND_GLOBAL("AncestorLVars", function(lv, depth)

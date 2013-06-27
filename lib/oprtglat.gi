@@ -434,11 +434,14 @@ function( G, sub, U, V, op )
 end );
 
 InstallGlobalFunction(PermPreConjtestGroups,function(G,l)
-local pats,spats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,allco,panu,
-      gpcl,i,j,k,Gm,a,corbs;
+local pats,spats,lpats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,
+      allco,panu,gpcl,i,j,k,Gm,a,corbs,orbun,dict,norb,m,ornums,sornums,
+      ssornums,sel,sela,statra,lrep,gpcl2,je,lrep1,partimg,nobail,cnt,hpos;
+
   if not IsPermGroup(G) then
     return [[G,l]];
   fi;
+
   dom:=MovedPoints(G);
   pats:=List(l,x->Collected(List(Orbits(x,MovedPoints(x)),Length)));
   spats:=Set(pats);
@@ -522,13 +525,201 @@ local pats,spats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,allco,panu,
 #      fi;
 
     od;
-    Info(InfoLattice,3,Length(gpcl)," orbit classes ",
-      List(gpcl,x->Length(x[2])));
+    Info(InfoLattice,3,Length(gpcl)," orbit lengths classes ");
+    Info(InfoLattice,5,List(gpcl,x->Length(x[2])));
+
+    # split according to orbits. First orbits as they are orbits under j[1],
+    # then as partitions.
+    panu:=[];
+    for j in gpcl do
+      if Length(j[2])=1 then
+	Add(panu,j);
+      else
+	allorbs:=[];
+	lpats:=[];
+	cnt:=Minimum(1000,Binomial(Length(j[2]),2)); # pairs
+	nobail:=true;
+	dict:=NewDictionary(MovedPoints(j[1]),true);
+	norb:=0;
+	hpos:=1;
+	while nobail and hpos<=Length(j[2]) do
+	  h:=j[2][hpos];
+	  orbs:=Set(List(Orbits(h,MovedPoints(h)),Set));
+	  MakeImmutable(orbs);List(orbs,IsSet);IsSet(orbs);
+	  lp:=[];
+	  for k in orbs do
+	    rep:=LookupDictionary(dict,k);
+	    if nobail and rep=fail then
+	      a:=Orbit(j[1],k,OnSets);
+	      cnt:=cnt-Length(a);
+	      if cnt<0 then
+		nobail:=false; # stop this orbit listing as too expensive.
+	      else
+      #Print("orblen=",Length(a),"\n");
+		MakeImmutable(a);List(a,IsSet);
+		norb:=norb+1;
+		rep:=norb;
+		for m in a do
+		  AddDictionary(dict,m,norb);
+		od;
+	      fi;
+	    fi;
+	    Add(lp,rep);
+	  od;
+	  Sort(lp); # orbit pattern as numbers
+	  rep:=Position(allorbs,lp);
+	  if rep=fail then
+	    Add(allorbs,lp);
+	    Add(lpats,[j[1],[h]]);
+	  else
+	    Add(lpats[rep][2],h);
+	  fi;
+	  hpos:=hpos+1;
+	od;
+
+	if nobail then
+#Print("nobail\n");
+	  # now lpats are local patterns, but we still have the dictionary to
+	  # make the orbit conjugation tests cheaper.
+	  gpcl2:=lpats;
+
+	  for je in gpcl2 do
+	    if Length(je[2])=1 then
+	      Add(panu,je);
+	    else
+	      allorbs:=[];
+	      lpats:=[];
+	      for h in je[2] do
+		orbs:=Set(List(Orbits(h,MovedPoints(h)),Set));
+		MakeImmutable(orbs);List(orbs,IsSet);IsSet(orbs);
+		ornums:=List(orbs,x->LookupDictionary(dict,x));
+		sornums:=ShallowCopy(ornums);Sort(sornums);
+		ssornums:=Set(sornums);
+		a:=Filtered([1..Length(allorbs)],x->allorbs[x][2]=sornums);
+		rep:=fail;
+		k:=0;
+		while rep=fail and k<Length(a) do
+		  k:=k+1;
+		  lrep:=One(je[1]);
+		  m:=1;
+		  while lrep<>fail and m<=Length(ssornums) do
+		    sel:=Filtered([1..Length(ornums)],x->ornums[x]=ssornums[m]);
+		    sela:=Filtered([1..Length(ornums)],
+		      x->allorbs[k][4][x]=ssornums[m]);
+		    partimg:=OnSetsSets(orbs{sel},lrep^-1);
+		    # only try to map these indexed orbits
+		    if allorbs[k][1]{sela}=partimg then
+		      lrep1:=One(je[1]);
+		    elif Size(allorbs[k][5][m][1])/
+			  Size(allorbs[k][5][m+1][1])>50 then
+		      if allorbs[k][5][m][2]=0 then
+			# delayed transversal
+			allorbs[k][5][m][2]:=
+			  RightTransversal(allorbs[k][5][m][1],
+			    allorbs[k][5][m+1][1]);
+		      fi;
+		      lrep1:=First(allorbs[k][5][m][2],
+			x->OnSetsSets(allorbs[k][1]{sela},x)=partimg);
+		    else
+		      lrep1:=RepresentativeAction(allorbs[k][5][m][1],
+			allorbs[k][1]{sela},partimg,OnSetsSets);
+		    fi;
+		    if lrep1=fail then 
+  #if RepresentativeAction(je[1],allorbs[k][1],orbs,OnSetsSets)<>fail then Error("HEH");fi;
+		      lrep:=fail;
+		    else
+		      lrep:=lrep1*lrep;
+		    fi;
+
+		    m:=m+1;
+		  od;
+
+		  rep:=lrep;
+		od;
+		if rep=fail then
+
+		  a:=je[1];
+		  statra:=[];
+		  for m in ssornums do
+		    sel:=Filtered([1..Length(ornums)],x->ornums[x]=m);
+		    Add(statra,[a,0]); # 0 is delayed transversal
+		    a:=Stabilizer(a,orbs{sel},OnSetsSets);
+		  od;
+		  Add(statra,[a,0]);
+  #if a<>Stabilizer(je[1],orbs,OnSetsSets) then Error("STB");fi;
+
+		  Add(allorbs,[orbs,sornums,a,ornums,statra]);
+		  Add(lpats,[a,[h]]);
+		else
+		  Add(lpats[k][2],h^(rep^-1));
+		fi;
+	      od;
+	      Append(panu,lpats);
+	    fi;
+	  od;
+	else
+	  # if bailed
+#Print("bailed\n");
+	  Add(panu,j);
+	fi;
+      fi;
+    od;
+    gpcl:=panu;
+    Info(InfoLattice,3,Length(gpcl)," orbit classes ");
+    Info(InfoLattice,5,List(gpcl,x->Length(x[2])));
+
+# this is redundant now
+#    # now split according to actual orbit partition
+#    panu:=[];
+#    for j in gpcl do
+#      if Length(j[2])=1 then
+#	Add(panu,j);
+#      else
+#	allorbs:=[];
+#	lpats:=[];
+#	for h in j[2] do
+#	  orbs:=Set(List(Orbits(h,MovedPoints(h)),Set));
+#	  MakeImmutable(orbs);List(orbs,IsSet);IsSet(orbs);
+#	  lp:=Collected(List(orbs,Length));
+#	  a:=Filtered([1..Length(allorbs)],x->allorbs[x][2]=lp);
+#	  rep:=fail;
+#	  k:=0;
+#	  while rep=fail and k<Length(a) do
+#	    k:=k+1;
+#	    # there isn't yet a good method for RepresentativeAction, but
+#	    # short orbit is quick
+#	    if allorbs[k][1]=orbs then
+#	      rep:=One(j[1]);
+#	    elif Size(j[1])/Size(allorbs[k][3])>50 then
+#	      if allorbs[k][4]=0 then
+#		# delayed transversal
+##		allorbs[k][4]:=RightTransversal(j[1],allorbs[k][3]);
+#	      fi;
+#	      rep:=First(allorbs[k][4],x->OnSetsSets(allorbs[k][1],x)=orbs);
+#	    else
+#	      rep:=RepresentativeAction(j[1],allorbs[k][1],orbs,OnSetsSets);
+#	    fi;
+#	  od;
+#	  if rep=fail then
+#	    a:=Stabilizer(j[1],orbs,OnSetsSets);
+#	    Add(allorbs,[orbs,lp,a,0]);
+#	    Add(lpats,[a,[h]]);
+#	  else
+#	    Add(lpats[k][2],h^(rep^-1));
+#	  fi;
+#	od;
+#	Append(panu,lpats);
+#      fi;
+#    od;
+#    gpcl:=panu;
+#
+#    Info(InfoLattice,3,Length(gpcl)," orbit partition classes ");
+#    Info(InfoLattice,5,List(gpcl,x->Length(x[2])));
 
     # now split by cycle structures
     panu:=[];
     for j in gpcl do
-      if Size(j[2][1])<=10000 then
+      if Size(j[2][1])<1000 then
 	if Size(j[2][1])<=100 or IsAbelian(j[2][1]) then
 	  allorbs:=List(j[2],x->Collected(List(Enumerator(x),CycleStructurePerm)));
 	else
@@ -557,7 +748,7 @@ local pats,spats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,allco,panu,
       fi;
 
     od;
-    Info(InfoLattice,3," to ",Length(panu)," cyclestruct classes ",panu);
+    Info(InfoLattice,3," to ",Length(panu)," cyclestruct classes ");
 
     #Append(result,gpcl);
 

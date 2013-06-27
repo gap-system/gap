@@ -2165,6 +2165,15 @@ InstallMethod( \<, "for two equivalence classes", IsIdenticalObj,
         return RepresentativeSmallest(x1) < RepresentativeSmallest(x2);
     end );
 
+InstallMethod(AsPermutation, "for binary relations on points", true,
+        [IsBinaryRelation and IsBinaryRelationOnPointsRep], 0,
+function(rel)
+    if not IsMapping(rel) then
+             Error("error, <rel> must be a mapping");
+    fi;
+    return AsPermutation(Transformation(Flat(Successors(rel))));
+end);
+
 #############################################################################
 ##
 #E

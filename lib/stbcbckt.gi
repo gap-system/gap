@@ -2514,9 +2514,7 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
         pos:=pos+1;
 	if Sum(comb[pos],Length)<lc then
 	  dom:=Union(comb[pos]);
-	  if Size(Stabilizer(G,dom,OnTuples))=1 
-	    and Size(Stabilizer(E,dom,OnTuples))=1
-	    and Size(Stabilizer(F,dom,OnTuples))=1 then
+	  if Size(Stabilizer(P,dom,OnTuples))=1 then
 	    # found faithful
 	    found:=true;
 	  fi;

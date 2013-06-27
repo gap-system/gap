@@ -15,18 +15,19 @@ ReadLib( "domain.gi"   );
 ReadLib( "mapping.gi"  );
 ReadLib( "mapprep.gi"  );
 ReadLib( "mapphomo.gi" );
-ReadLib( "relation.gi");
+ReadLib( "relation.gi" );
 
 ReadLib( "magma.gi"    );
-ReadLib( "mgmideal.gi"    );
-ReadLib( "mgmhom.gi");
-ReadLib( "mgmadj.gi"    );
-ReadLib( "mgmcong.gi");
+ReadLib( "mgmideal.gi" );
+ReadLib( "mgmhom.gi"   );
+ReadLib( "mgmadj.gi"   );
+ReadLib( "mgmcong.gi"  );
 ReadLib( "semigrp.gi"  );
-ReadLib( "semicong.gi"  );
-ReadLib( "smgideal.gi"  );
+ReadLib( "semicong.gi" );
+ReadLib( "smgideal.gi" );
 ReadLib( "monoid.gi"   );
 ReadLib( "grp.gi"      );
+ReadLib( "invsgp.gi"   );
 
 ReadLib( "addmagma.gi" );
 ReadLib( "addcoset.gi" );
@@ -145,6 +146,10 @@ ReadLib( "grppcprp.gi" );
 ReadLib( "grppcatr.gi" );
 ReadLib( "grppcnrm.gi" );
 
+# files dealing with trees and hash tables
+ReadLib( "hash.gi"     );
+ReadLib( "dict.gi"  );
+
 ReadLib( "grptbl.gi"   );
 
 ReadLib( "ghom.gi"     );
@@ -165,9 +170,6 @@ ReadLib( "stbcrand.gi" );
 ReadLib( "clas.gi"     );
 ReadLib( "claspcgs.gi" );
 ReadLib( "clasperm.gi" );
-ReadLib( "clashom.gi"  );
-ReadLib( "fitfree.gi"  );
-ReadLib( "permdeco.gi"  );
 ReadLib( "csetgrp.gi"  );
 ReadLib( "csetperm.gi" );
 ReadLib( "csetpc.gi"   );
@@ -200,6 +202,12 @@ ReadLib( "grplatt.gi"  );
 ReadLib( "oprtglat.gi" );
 ReadLib( "grppclat.gi" );
 
+# fitting free library
+ReadLib( "fitfree.gi"  );
+ReadLib( "permdeco.gi" );
+ReadLib( "clashom.gi"  );
+ReadLib( "maxsub.gi"   );
+
 ReadLib( "grppcaut.gi" );
 
 # files dealing with matrix groups
@@ -217,12 +225,9 @@ ReadLib( "ghomfp.gi" );
 
 ReadLib( "addgphom.gi" );
 
-# files dealing with trees and hash tables
-ReadLib( "hash.gi"     );
-ReadLib( "dict.gi"  );
-
 # files dealing with semigroups - second layer
 ReadLib( "trans.gi");
+ReadLib("pperm.gi");
 ReadLib( "fastendo.gi");
 ReadLib( "fpsemi.gi");
 ReadLib( "fpmon.gi");
@@ -234,7 +239,7 @@ ReadLib( "semirel.gi");
 ReadLib( "semitran.gi");
 ReadLib( "reesmat.gi");
 ReadLib("semiquo.gi");
-
+ReadLib( "semipperm.gi");
 
 # prototyping utilities
 ReadLib( "proto.gi");
