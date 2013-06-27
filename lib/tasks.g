@@ -32,11 +32,14 @@ MakeReadWriteGVar("mainThreadChannels");
 
 
 GetWorkerInputChannel := function (worker)
+  local toReturn;
   while true do
     if IsBound(Tasks.InputChannels[worker+1]) then
-      return Tasks.InputChannels[worker+1];
+      toReturn := Tasks.InputChannels[worker+1];
+      break;
     fi;
   od;
+  return toReturn;
 end;
 
 RunningTasks := function()
@@ -55,6 +58,8 @@ end;
 Tasks.Worker := function(channels)
   local taskdata, result, toUnblock, resume,
         suspend, unSuspend, p, task, i;
+  
+  Tasks.InputChannels[ThreadID(CurrentThread())+1] := channels.toworker;
   
   while true do
     
@@ -152,7 +157,9 @@ end;
 # Function called when worker blocks on the result of a task.
 Tasks.BlockWorkerThread := function()
   local resume;
-
+  if not IsBound(Tasks.InputChannels[ThreadID(CurrentThread())+1]) then
+    Tasks.InputChannels[ThreadID(CurrentThread())+1] := CreateChannel(1);
+  fi;
   SendChannel (Tasks.TaskManagerRequests, rec (worker := ThreadID(CurrentThread()), type := TASK_MANAGER_REQUESTS.BLOCK_ME));
   resume := ReceiveChannel (GetWorkerInputChannel(ThreadID(CurrentThread())));
   if resume<>TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER then
@@ -168,7 +175,6 @@ Tasks.StartNewWorkerThread := function()
   channels := rec(toworker := toworker, fromworker := fromworker);
   MakeReadOnly(channels);
   worker := CreateThread(Tasks.Worker, channels);
-  Tasks.InputChannels[ThreadID(worker)+1] := channels.toworker;
   return worker;
 end;
 
