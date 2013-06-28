@@ -80,6 +80,32 @@ static Obj TypeObjMap(Obj obj) {
   return TYPE_OBJMAP;
 }
 
+/** Object sets and maps --------------------
+ *
+ *  Object sets and maps are hash tables where identity is determined
+ *  according to the IsIdenticalObj() relation. They are primarily intended
+ *  for code that needs to traverse object structures in order to remember if
+ *  an object has already been seen by the traversal algorithm. They can also
+ *  be used as sparse lists with integer keys and as proper sets and maps for
+ *  short integers and small finite field elements.
+ *
+ *  Object sets and object maps consist of four header words describing the
+ *  map layout, followed by a list of entries containing the actual set/map
+ *  data. The size of that list is always a power of 2.
+ *
+ *  The first header word contains the size of the data list, the second
+ *  header word contains the base 2 logarithm of that size, the third word
+ *  contains the number of entries actually in use, and the fourth word
+ *  contains the number of deleted but not reused entries.
+ *
+ *  Entries in the data list comprise either a single GAP object for sets or a
+ *  (key, value) pair of GAP objects for maps.
+ *
+ *  Unused entries contain a null pointer; deleted entries for sets and the
+ *  keys of deleted entries for sets contain the special boolean value
+ *  `Undefined`. Values of deleted entries contain a null pointer.
+ */
+
 
 #define DEFAULT_OBJSET_BITS 2
 #define DEFAULT_OBJSET_SIZE (1 << DEFAULT_OBJSET_BITS)
@@ -91,6 +117,11 @@ static Obj TypeObjMap(Obj obj) {
 #define OBJSET_HDRSIZE 4
 
 #define ADDR_WORD(obj) ((UInt *)(ADDR_OBJ(obj)))
+
+/**
+ *  Functions to print object maps and sets
+ *  ---------------------------------------
+ */
 
 static void PrintObjSet(Obj set) {
   UInt i, size = ADDR_WORD(set)[OBJSET_SIZE];
@@ -120,15 +151,41 @@ static void PrintObjMap(Obj map) {
   Pr("])", 0L, 0L);
 }
 
+/**
+ *  Garbage collector support for object maps and sets
+ *  --------------------------------------------------
+ *
+ *  These functions are not yet implemented.
+ */
+
 static void MarkObjSet(Obj obj) {
+  /* not yet implemented */
 }
 
 static void MarkObjMap(Obj obj) {
+  /* not yet implemented */
 }
+
+/**
+ *  The primary hash function
+ *  -------------------------
+ *
+ *  Hashing is done using Fibonacci hashing (Knuth) modulo the
+ *  size of the table.
+ */
+
 
 static inline UInt ObjHash(Obj set, Obj obj) {
   return FibHash((UInt) obj, ADDR_WORD(set)[OBJSET_BITS]);
 }
+
+
+/**
+ *  `NewObjSet()`
+ *  -------------
+ *
+ *  Create and return a new object set.
+ */
 
 Obj NewObjSet() {
   Obj result = NewBag(T_OBJSET,
@@ -139,6 +196,16 @@ Obj NewObjSet() {
   ADDR_WORD(result)[OBJSET_DIRTY] = 0;
   return result;
 }
+
+/**
+ *  `CheckObjSetForCleanUp()`
+ *  -------------------------
+ *
+ *  Determine if there is an excess number of deleted entries in `set` and
+ *  compact the set if necessary. The additional paramater `expand` can be
+ *  set to a non-zero value to reserve space for that many additional entries
+ *  that will be inserted right after compaction.
+ */
 
 static void ResizeObjSet(Obj set, UInt bits);
 
@@ -152,6 +219,15 @@ static void CheckObjSetForCleanUp(Obj set, UInt expand) {
   else if (dirty && dirty >= used)
     ResizeObjSet(set, bits);
 }
+
+/**
+ *  `FindObjSet()`
+ *  --------------
+ *
+ *  Locate `obj` within `set`. Return -1 if `obj` was not found, otherwise
+ *  return the position within the data, starting with zero for the first
+ *  entry.
+ */
 
 Int FindObjSet(Obj set, Obj obj) {
   UInt size = ADDR_WORD(set)[OBJSET_SIZE];
@@ -168,6 +244,15 @@ Int FindObjSet(Obj set, Obj obj) {
       hash = 0;
   }
 }
+
+/**
+ *  `AddObjSetNew()`
+ *  ----------------
+ *
+ *  Add `obj` to `set`.
+ *
+ *  Precondition: `set` must not already contain `obj`.
+ */
 
 static void AddObjSetNew(Obj set, Obj obj) {
   UInt size = ADDR_WORD(set)[OBJSET_SIZE];
@@ -194,12 +279,26 @@ static void AddObjSetNew(Obj set, Obj obj) {
   }
 }
 
+/**
+ *  `AddObjSet()`
+ *  -------------
+ *
+ *  This function adds `obj` to `set` if the set doesn't contain it already.
+ */
+
 void AddObjSet(Obj set, Obj obj) {
   if (FindObjSet(set, obj) >= 0)
     return;
   CheckObjSetForCleanUp(set, 1);
   AddObjSetNew(set, obj);
 }
+
+/**
+ *  `RemoveObjSet()`
+ *  ----------------
+ *
+ *  This function removes `obj` from `set` unless the set doesn't contain it.
+ */
 
 void RemoveObjSet(Obj set, Obj obj) {
   Int pos = FindObjSet(set, obj);
@@ -212,6 +311,13 @@ void RemoveObjSet(Obj set, Obj obj) {
   }
 }
 
+/**
+ *  `ClearObjSet()`
+ *  ---------------
+ *
+ *  This function removes all objects from `set`.
+ */
+
 void ClearObjSet(Obj set) {
   Obj *old = PTR_BAG(set);
   Obj new = NewObjSet();
@@ -220,6 +326,16 @@ void ClearObjSet(Obj set) {
   CHANGED_BAG(new);
   CHANGED_BAG(set);
 }
+
+/**
+ *  `ResizeObjSet()`
+ *  ----------------
+ *
+ *  This function resizes `set` to have room for `2^bits` entries.
+ *
+ *  Precondition: the number of entries in `set` must be less than
+ *  `2^bits`. There must be at least one free entry remaining.
+ */
 
 static void ResizeObjSet(Obj set, UInt bits) {
   UInt i, new_size = (1 << bits);
@@ -243,6 +359,13 @@ static void ResizeObjSet(Obj set, UInt bits) {
   CHANGED_BAG(new);
 }
 
+/**
+ *  `NewObjMap()`
+ *  -------------
+ *
+ *  Create a new object map.
+ */
+
 Obj NewObjMap() {
   Obj result = NewBag(T_OBJMAP, (4+2*DEFAULT_OBJSET_SIZE)*sizeof(Bag));
   ADDR_WORD(result)[OBJSET_SIZE] = DEFAULT_OBJSET_SIZE;
@@ -251,6 +374,16 @@ Obj NewObjMap() {
   ADDR_WORD(result)[OBJSET_DIRTY] = 0;
   return result;
 }
+
+/**
+ *  `CheckObjMapForCleanUp()`
+ *  -------------------------
+ *
+ *  Determine if there is an excess number of deleted entries in `map` and
+ *  compact the map if necessary. The additional paramater `expand` can be
+ *  set to a non-zero value to reserve space for that many additional entries
+ *  that will be inserted right after compaction.
+ */
 
 static void ResizeObjMap(Obj map, UInt bits);
 
@@ -264,6 +397,15 @@ static void CheckObjMapForCleanUp(Obj map, UInt expand) {
   else if (dirty && dirty >= used)
     ResizeObjMap(map, bits);
 }
+
+/**
+ *  `FindObjMap()`
+ *  --------------
+ *
+ *  Locate the data entry with key `obj` within `map`. Return -1 if such an
+ *  entry was not found, otherwise return the position within the data,
+ *  starting with zero for the first entry.
+ */
 
 Int FindObjMap(Obj map, Obj obj) {
   UInt size = ADDR_WORD(map)[OBJSET_SIZE];
@@ -281,12 +423,29 @@ Int FindObjMap(Obj map, Obj obj) {
   }
 }
 
+/**
+ *  `LookupObjMap()`
+ *  ----------------
+ *
+ *  Locate the data entry with key `obj` within `map`. Return a null pointer
+ *  if such an entry was not found, otherwise return the corresponding value.
+ */
+
 Obj LookupObjMap(Obj map, Obj obj) {
   Int index = FindObjMap(map, obj);
   if (index < 0)
     return (Obj) 0;
   return ADDR_OBJ(map)[OBJSET_HDRSIZE+index*2+1];
 }
+
+/**
+ *  `AddObjMapNew()`
+ *  ----------------
+ *
+ *  Add an entry `(key, value)` to `map`.
+ *  
+ *  Precondition: No other entry with key `key` exists within `map`.
+ */
 
 static void AddObjMapNew(Obj map, Obj key, Obj value) {
   UInt size = ADDR_WORD(map)[OBJSET_SIZE];
@@ -315,6 +474,14 @@ static void AddObjMapNew(Obj map, Obj key, Obj value) {
   }
 }
 
+/**
+ *  `AddObjMap()`
+ *  -------------
+ *
+ *  Add a data entry `(key, value)` to `map`. If `map` already contains an
+ *  entry with that key, its value will be replaced.
+ */
+
 void AddObjMap(Obj map, Obj key, Obj value) {
   Int pos;
   pos = FindObjMap(map, key);
@@ -326,6 +493,13 @@ void AddObjMap(Obj map, Obj key, Obj value) {
   CheckObjMapForCleanUp(map, 1);
   AddObjMapNew(map, key, value);
 }
+
+/**
+ *  `RemoveObjMap()`
+ *  ----------------
+ *
+ *  Remove the data entry with key `key` from `map` if such an entry exists.
+ */
 
 void RemoveObjMap(Obj map, Obj key) {
   Int pos = FindObjMap(map, key);
@@ -339,6 +513,13 @@ void RemoveObjMap(Obj map, Obj key) {
   }
 }
 
+/**
+ *  `ClearObjMap()`
+ *  ---------------
+ *
+ *  Remove all data entries from `map`.
+ */
+
 void ClearObjMap(Obj map) {
   Obj *old = PTR_BAG(map);
   Obj new = NewObjMap();
@@ -347,6 +528,15 @@ void ClearObjMap(Obj map) {
   CHANGED_BAG(new);
   CHANGED_BAG(map);
 }
+
+/**
+ *  `ResizeObjMap()`
+ *  ----------------
+ *
+ *  Resizes `map` so that it contains `2^bits` entries.
+ *
+ *  Precondition: The number of entries in `map` must be less than `2^bits`.
+ */
 
 static void ResizeObjMap(Obj map, UInt bits) {
   UInt i, new_size = (1 << bits);
@@ -371,6 +561,15 @@ static void ResizeObjMap(Obj map, UInt bits) {
   CHANGED_BAG(new);
 }
 
+/**
+ *  `FuncOBJ_SET()`
+ *  ---------------
+ *
+ *  GAP function to create a new object set.
+ *
+ *  It takes an optional argument that must be a list containing the elements
+ *  of the new set. If no argument is provided, an empty set is created.
+ */
 
 static Obj FuncOBJ_SET(Obj self, Obj arg) {
   Obj result;
@@ -397,6 +596,17 @@ static Obj FuncOBJ_SET(Obj self, Obj arg) {
   }
 }
 
+/**
+ *  `CheckArgument()`
+ *  -----------------
+ *
+ *  Utility function to check that an argument is an object set
+ *  or map. The parameters `t1` and `t2` are allowed TNUMs, usually
+ *  the mutable and immutable version. The parameter `t2` can also
+ *  be negative if only one `tnum` is allowed. In this case, `t1`
+ *  must be the mutable version.
+ */
+
 static void CheckArgument(char *func, Obj obj, Int t1, Int t2) {
   Int tnum = TNUM_OBJ(obj);
   if (t2 < 0 && tnum == t1+IMMUTABLE) {
@@ -411,17 +621,39 @@ static void CheckArgument(char *func, Obj obj, Int t1, Int t2) {
   }
 }
 
+/**
+ *  `FuncADD_OBJ_SET()`
+ *  -------------------
+ *
+ *  GAP function to add `obj` to `set`.
+ */
+
 static Obj FuncADD_OBJ_SET(Obj self, Obj set, Obj obj) {
   CheckArgument("ADD_OBJ_SET", set, T_OBJSET, -1);
   AddObjSet(set, obj);
   return (Obj) 0;
 }
 
+/**
+ *  `FuncREMOVE_OBJ_SET()`
+ *  ----------------------
+ *
+ *  GAP function to remove `obj` from `set`.
+ */
+
 static Obj FuncREMOVE_OBJ_SET(Obj self, Obj set, Obj obj) {
   CheckArgument("REMOVE_OBJ_SET", set, T_OBJSET, -1);
   RemoveObjSet(set, obj);
   return (Obj) 0;
 }
+
+/**
+ *  `FuncFIND_OBJ_SET()`
+ *  ----------------------
+ *
+ *  GAP function to test if `obj` is contained in `set`. Returns `true` or
+ *  `false`.
+ */
 
 static Obj FuncFIND_OBJ_SET(Obj self, Obj set, Obj obj) {
   Int pos;
@@ -430,11 +662,30 @@ static Obj FuncFIND_OBJ_SET(Obj self, Obj set, Obj obj) {
   return pos >= 0 ? True : False;
 }
 
+/**
+ *  `FuncCLEAR_OBJ_SET()`
+ *  ---------------------
+ *
+ *  GAP function to remove all objects from `set`.
+ */
+
 static Obj FuncCLEAR_OBJ_SET(Obj self, Obj set) {
   CheckArgument("CLEAR_OBJ_SET", set, T_OBJSET, -1);
   ClearObjSet(set);
   return (Obj) 0;
 }
+
+/**
+ *  `FuncOBJ_SET()`
+ *  ---------------
+ *
+ *  GAP function to create a new object map.
+ *
+ *  It takes an optional argument that must be a list containing the
+ *  keys and values for the new map. Keys and values must alternate and
+ *  there must be an equal number of keys and values. If no argument is
+ *  provided, an empty map is created.
+ */
 
 static Obj FuncOBJ_MAP(Obj self, Obj arg) {
   Obj result;
@@ -462,11 +713,27 @@ static Obj FuncOBJ_MAP(Obj self, Obj arg) {
   }
 }
 
+/**
+ *  `FuncADD_OBJ_MAP()`
+ *  -------------------
+ *
+ *  GAP function to add a (key, value) pair to an object map.
+ */
+
 static Obj FuncADD_OBJ_MAP(Obj self, Obj map, Obj key, Obj value) {
   CheckArgument("ADD_OBJ_MAP", map, T_OBJMAP, -1);
   AddObjMap(map, key, value);
   return (Obj) 0;
 }
+
+/**
+ *  `FuncFIND_OBJ_MAP()`
+ *  --------------------
+ *
+ *  GAP function to locate an entry with key `key` within `map`. The
+ *  function returns the corresponding value if found and `defvalue`
+ *  otherwise.
+ */
 
 static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue) {
   Int pos;
@@ -477,11 +744,26 @@ static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue) {
   return ADDR_OBJ(map)[OBJSET_HDRSIZE + 2 * pos + 1];
 }
 
+/**
+ *  `FuncREMOVE_OBJ_MAP()`
+ *  ----------------------
+ *
+ *  GAP function to remove the entry with key `key` from `map` if it
+ *  exists.
+ */
+
 static Obj FuncREMOVE_OBJ_MAP(Obj self, Obj map, Obj key) {
   CheckArgument("REMOVE_OBJ_MAP", map, T_OBJMAP, -1);
   RemoveObjMap(map, key);
   return (Obj) 0;
 }
+
+/**
+ *  `FuncCLEAR_OBJ_MAP()`
+ *  ---------------------
+ *
+ *  GAP function to remove all objects from `map`.
+ */
 
 static Obj FuncCLEAR_OBJ_MAP(Obj self, Obj map) {
   CheckArgument("CLEAR_OBJ_MAP", map, T_OBJMAP, -1);
