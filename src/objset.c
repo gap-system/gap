@@ -114,7 +114,6 @@ static Obj TypeObjMap(Obj obj) {
 #define OBJSET_BITS 1
 #define OBJSET_USED 2
 #define OBJSET_DIRTY 3
-#define OBJSET_HDRSIZE 4
 
 #define ADDR_WORD(obj) ((UInt *)(ADDR_OBJ(obj)))
 

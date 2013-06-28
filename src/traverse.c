@@ -23,6 +23,7 @@
 #include        "thread.h"
 #include        "traverse.h"
 #include	"fibhash.h"
+#include	"objset.h"
 
 #define LOG2_NUM_LOCKS 11
 #define NUM_LOCKS (1 << LOG2_NUM_LOCKS)
@@ -166,6 +167,49 @@ void CopyPRecord(Obj copy, Obj original)
     SET_ELM_PREC(copy, i, ReplaceByCopy(GET_ELM_PREC(original, i)));
 }
 
+void TraverseObjSet(Obj obj)
+{
+  UInt i, len = *(UInt *)(ADDR_OBJ(obj)+OBJSET_SIZE);
+  for (i=0; i<len; i++) {
+    Obj item = ADDR_OBJ(obj)[OBJSET_HDRSIZE+i];
+    if (item && item != Undefined)
+      QueueForTraversal(item);
+  }
+}
+
+void CopyObjSet(Obj copy, Obj original)
+{
+  UInt i, len = *(UInt *)(ADDR_OBJ(original)+OBJSET_SIZE);
+  for (i=0; i<len; i++) {
+    Obj item = ADDR_OBJ(original)[OBJSET_HDRSIZE+i];
+    ADDR_OBJ(copy)[OBJSET_HDRSIZE+i] = ReplaceByCopy(item);
+  }
+}
+
+void TraverseObjMap(Obj obj)
+{
+  UInt i, len = *(UInt *)(ADDR_OBJ(obj)+OBJSET_SIZE);
+  for (i=0; i<len; i++) {
+    Obj key = ADDR_OBJ(obj)[OBJSET_HDRSIZE+2*i];
+    Obj val = ADDR_OBJ(obj)[OBJSET_HDRSIZE+2*i+1];
+    if (key && key != Undefined) {
+      QueueForTraversal(key);
+      QueueForTraversal(val);
+    }
+  }
+}
+
+void CopyObjMap(Obj copy, Obj original)
+{
+  UInt i, len = *(UInt *)(ADDR_OBJ(original)+OBJSET_SIZE);
+  for (i=0; i<len; i++) {
+    Obj key = ADDR_OBJ(original)[OBJSET_HDRSIZE+2*i];
+    Obj val = ADDR_OBJ(original)[OBJSET_HDRSIZE+2*i+1];
+    ADDR_OBJ(copy)[OBJSET_HDRSIZE+2*i] = ReplaceByCopy(key);
+    ADDR_OBJ(copy)[OBJSET_HDRSIZE+2*i+1] = ReplaceByCopy(val);
+  }
+}
+
 void InitTraversalModule()
 {
   int i;
@@ -200,6 +244,12 @@ void InitTraversalModule()
   TraversalFunc[T_WPOBJ] = TraverseWPObj;
   TraversalCopyFunc[T_WPOBJ] = CopyWPObj;
   TraversalMask[T_DATOBJ] = TRAVERSE_NONE;
+  TraversalMask[T_OBJSET] = TRAVERSE_BY_FUNCTION;
+  TraversalFunc[T_OBJSET] = TraverseObjSet;
+  TraversalCopyFunc[T_OBJSET] = CopyObjSet;
+  TraversalMask[T_OBJMAP] = TRAVERSE_BY_FUNCTION;
+  TraversalFunc[T_OBJMAP] = TraverseObjMap;
+  TraversalCopyFunc[T_OBJMAP] = CopyObjMap;
   for (i=FIRST_SHARED_TNUM; i<=LAST_SHARED_TNUM; i++)
     TraversalMask[i] = TRAVERSE_NONE;
 }
