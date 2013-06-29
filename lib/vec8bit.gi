@@ -60,6 +60,8 @@ InstallGlobalFunction(TYPE_VEC8BIT,
     if mut then filts := filts and IsMutable; fi;
     type := NewType(FamilyObj(GF(q)),filts);
     if not IsBound(TYPES_VEC8BIT[col][q]) then
+      InstallTypeSerializationTag(type, SERIALIZATION_BASE_VEC8BIT +
+        SERIALIZATION_TAG_BASE * (q * 4 + col - 1));
       TYPES_VEC8BIT[col][q] := type;
     fi;
     return TYPES_VEC8BIT[col][q];
@@ -80,6 +82,8 @@ InstallGlobalFunction(TYPE_VEC8BIT_LOCKED,
     if mut then filts := filts and IsMutable; fi;
     type := NewType(FamilyObj(GF(q)),filts);
     if not IsBound(TYPES_VEC8BIT[col][q]) then
+      InstallTypeSerializationTag(type, SERIALIZATION_BASE_VEC8BIT +
+        SERIALIZATION_TAG_BASE * (q * 4 + col - 1));
       TYPES_VEC8BIT[col][q] := type;
     fi;
     return TYPES_VEC8BIT[col][q];

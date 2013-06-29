@@ -11,6 +11,7 @@
 #include "scanner.h"
 #include "string.h"
 #include "gap.h"
+#include "lists.h"
 #include "aobjects.h"
 #include "tls.h"
 #include "serialize.h"
@@ -24,6 +25,18 @@
 
 #define DESERIALIZER \
 	((DeserializerInterface *)(TLS->SerializationDispatcher))
+
+/**
+ *  `POS_NUMB_TYPE`
+ *  ---------------
+ *
+ *  The constant `POS_NUMB_TYPE` must match the definition in lib/type1.g; it
+ *  is the offset at which a type's unique numeric id is stored within the
+ *  type object.
+ */
+
+#define POS_NUMB_TYPE 4
+
 
 #ifndef WARD_ENABLED
 
@@ -583,6 +596,11 @@ Obj DeserializeRange(UInt tnum) {
 static GVarDescriptor SerializableRepresentationGVar;
 static GVarDescriptor TYPE_UNKNOWN_GVar;
 static GVarDescriptor DESERIALIZER_GVar;
+static GVarDescriptor SERIALIZATION_TAG_GVar;
+static GVarDescriptor DESERIALIZATION_TAG_INT_GVar;
+static GVarDescriptor DESERIALIZATION_TAG_STRING_GVar;
+static GVarDescriptor SERIALIZATION_UPDATE_TAGS_GVar;
+static GVarDescriptor SERIALIZATION_TAGS_NEED_UPDATE_GVar;
 
 static void SerRepError() {
   ErrorQuit("SerializableRepresentation must return a list prefixed by a string or integer and string", 0L, 0L);
@@ -597,11 +615,109 @@ static Obj PosObjToList(Obj obj) {
   return result;
 }
 
+/**
+ *  Serialization of Typed Objects
+ *  ------------------------------
+ *
+ *  Typed objects -- i.e., those with the T_DATOBJ, T_POSOBJ, or T_COMOBJ
+ *  types that contain a type object to guide method selection -- require a
+ *  special approach to serialization, as we cannot serialize the type objects
+ *  themselves. Not only would that add considerable overhead, type objects
+ *  are required to be unique for each type.
+ *
+ *  The easiest way is to associate a globally unique integer or string tag
+ *  with each type for which objects need to be serialized. The global
+ *  variable `SERIALIZATION_TAG` maps the unique numeric id of each type
+ *  object to its corresponding tag. The global variables
+ *  `DESERIALIZATION_TAG_INT` and `DESERIALIZATION_TAG_STRING` reverse this
+ *  mapping.
+ *
+ *  It is recommended to use this approach whenever possible, because it is
+ *  usually faster than the alternatives.
+ *
+ *  This mechanism is not always sufficient. For example, objects may contain
+ *  attributes that would add excessive extra payload to the serialization
+ *  process and may not be properly integrated with global data structures at
+ *  the receiving end.
+ *
+ *  Thus, we also support a more general process to convert an object into a
+ *  serializable representation. To that end, one needs to install a method
+ *  `SerializableRepresentation` for such a type. This method must return a
+ *  list using a specific format.
+ *
+ */
+
+Obj LookupIntTag(Obj tag) {
+  Obj map = GVarObj(&DESERIALIZATION_TAG_INT_GVar);
+  Obj func = (Obj) 0;
+  Obj result;
+  retry:
+  switch (map ? TNUM_OBJ(map):-1) {
+    case T_OBJMAP:
+    case T_OBJMAP+IMMUTABLE:
+      result = LookupObjMap(map, tag);
+      if (result || func)
+        return result;
+      if (GVarObj(&SERIALIZATION_TAGS_NEED_UPDATE_GVar) == False)
+        return (Obj) 0;
+      func = GVarFunc(&SERIALIZATION_UPDATE_TAGS_GVar);
+      if (!func)
+        return (Obj) 0;
+      CALL_0ARGS(func);
+      map = GVarObj(&DESERIALIZATION_TAG_INT_GVar);
+      goto retry; /* more readable than a loop around the switch */
+    default:
+      ErrorQuit("Deserialization tag map for int tags is corrupted", 0L, 0L);
+      return (Obj) 0; /* flow control hint */
+  }
+}
+
 Obj DeserializeTypedObj(UInt tnum) {
   UInt namelen, len, i;
-  Obj name, args, deserialization_rec, func;
+  Obj name, args, deserialization_rec, func, type, tag;
   Obj result;
-  UInt rnam;
+  UInt rnam, tagtnum;
+  tagtnum = ReadTNum();
+  switch (tagtnum) {
+    case T_INT:
+    case T_STRING:
+    case T_STRING+IMMUTABLE:
+      if (tagtnum == T_INT) {
+        tag = DeserializeInt();
+	type = LookupIntTag(tag);
+      } else {
+        tag = DeserializeString(T_STRING);
+        rnam = RNamObj(tag);
+	type = ELM_REC(GVarObj(&DESERIALIZATION_TAG_STRING_GVar), rnam);
+      }
+      if (!type || TNUM_OBJ(type) != T_POSOBJ)
+        DeserializationError();
+      switch (tnum) {
+	case T_DATOBJ:
+	  len = ReadByteBlockLength();
+	  result = NewBag(T_DATOBJ, len + sizeof(Obj));
+	  ReadByteBlockData(result, sizeof(Obj), len);
+	  break;
+	case T_POSOBJ:
+	  result = DeserializeObj();
+	  if (!IS_PLIST(result))
+	    DeserializationError();
+	  break;
+	case T_PREC:
+	  result = DeserializeObj();
+	  if (TNUM_OBJ(result) != T_COMOBJ)
+	    DeserializationError();
+	  break;
+      }
+      SET_TYPE_OBJ(result, type);
+      return result;
+    case T_PLIST:
+      /* continue on to the more general deserialization method */
+      break;
+    default:
+      DeserializationError();
+      return; /* flow control hint */
+  }
   namelen = ReadByteBlockLength();
   name = NEW_STRING(namelen);
   ReadByteBlockData(name, sizeof(UInt), namelen);
@@ -677,17 +793,67 @@ Obj DeserializeTypedObj(UInt tnum) {
   return result;
 }
 
+Obj LookupTypeTag(Obj type) {
+  Obj tags = GVarObj(&SERIALIZATION_TAG_GVar);
+  Obj func, result;
+  if (tags && TNUM_OBJ(tags) == T_OBJMAP) {
+    result = LookupObjMap(tags, type);
+    if (result)
+      return result;
+    if (GVarObj(&SERIALIZATION_TAGS_NEED_UPDATE_GVar) == False)
+      return (Obj) 0;
+    func = GVarFunc(&SERIALIZATION_UPDATE_TAGS_GVar);
+    if (func)
+      CALL_0ARGS(func);
+    tags = GVarObj(&SERIALIZATION_TAG_GVar);
+    result = LookupObjMap(tags, type);
+    return result;
+  }
+  return (Obj) 0;
+}
+
 void SerializeTypedObj(Obj obj) {
-  Obj rep, el1, el2, name;
+  Obj type, rep, el1, el2, name;
   Int skip, start, len;
+  static char typeerror[] =
+    "Serialization has encountered an object with a missing type";
   if (SerializedAlready(obj))
     return;
+  type = *(ADDR_OBJ(obj));
+  if (!type)
+    ErrorQuit(typeerror, 0L, 0L);
+  if ((rep = LookupTypeTag(type))) {
+    WriteTNum(TNUM_OBJ(obj));
+    switch (TNUM_OBJ(rep)) {
+      case T_INT:
+      case T_STRING:
+      case T_STRING+IMMUTABLE:
+        SerializeObj(rep);
+	UInt sp = LEN_PLIST(TLS->SerializationStack);
+	switch (TNUM_OBJ(obj)) {
+	  case T_DATOBJ:
+	    WriteByteBlock(obj, sizeof(Obj), SIZE_OBJ(obj) - sizeof(Obj));
+	    break;
+	  case T_POSOBJ:
+	    SerializeList(PosObjToList(obj));
+	    break;
+	  case T_COMOBJ:
+	    SerializeRecord(obj);
+	    break;
+	}
+	while (LEN_PLIST(TLS->SerializationStack) > sp) {
+	  SerializeObj(PopObj());
+	}
+	return;
+    }
+  }
   WriteTNum(TNUM_OBJ(obj));
   rep = CALL_1ARGS(GVarFunc(&SerializableRepresentationGVar), obj);
   if (!rep || !IS_PLIST(rep) || LEN_PLIST(rep) == 0) {
     SerRepError();
     return;
   }
+  WriteByte(T_PLIST);
   el1 = ELM_PLIST(rep, 1);
   len = LEN_PLIST(rep);
   if (len >= 2)
@@ -889,12 +1055,19 @@ static Int InitKernel (
   RegisterSerializerFunctions(T_BACKREF, SerializeError, DeserializeBackRef);
 
   /* gvars */
-  DeclareGVar(&SerializableRepresentationGVar,
-      "SerializableRepresentation");
+  DeclareGVar(&SerializableRepresentationGVar, "SerializableRepresentation");
   DeclareGVar(&TYPE_UNKNOWN_GVar, "TYPE_UNKNOWN");
   DeclareGVar(&DESERIALIZER_GVar, "DESERIALIZER");
-
-
+  DeclareGVar(&SERIALIZATION_TAG_GVar,
+    "SERIALIZATION_TAG");
+  DeclareGVar(&DESERIALIZATION_TAG_INT_GVar,
+    "DESERIALIZATION_TAG_INT");
+  DeclareGVar(&DESERIALIZATION_TAG_STRING_GVar,
+    "DESERIALIZATION_TAG_STRING");
+  DeclareGVar(&SERIALIZATION_UPDATE_TAGS_GVar,
+    "SERIALIZATION_UPDATE_TAGS");
+  DeclareGVar(&SERIALIZATION_TAGS_NEED_UPDATE_GVar,
+    "SERIALIZATION_TAGS_NEED_UPDATE");
 
   /* return success                                                      */
   return 0;

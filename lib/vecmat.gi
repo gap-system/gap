@@ -29,6 +29,8 @@ InstallValue( TYPE_LIST_GF2VEC,
            and IsMutable and IsCopyable and IsGF2VectorRep )
 );
 
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 1);
 
 #############################################################################
 ##
@@ -40,6 +42,9 @@ InstallValue( TYPE_LIST_GF2VEC_IMM,
            and IsCopyable and IsGF2VectorRep )
 );
 
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 2);
+
 #############################################################################
 ##
 #V  TYPE_LIST_GF2VEC_IMM_LOCKED  . . . . type of immutable locked GF2 vectors
@@ -49,6 +54,9 @@ InstallValue( TYPE_LIST_GF2VEC_IMM_LOCKED,
           IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject 
            and IsCopyable and IsGF2VectorRep and IsLockedRepresentationVector)
 );
+
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM_LOCKED,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 3);
 
 #############################################################################
 ##
@@ -62,6 +70,9 @@ InstallValue( TYPE_LIST_GF2VEC_LOCKED,
 );
 
 
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC_LOCKED,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 4);
+
 #############################################################################
 ##
 #V  TYPE_LIST_GF2MAT  . . . . . . . . . . . . .  type of mutable GF2 matrices
@@ -74,6 +85,8 @@ InstallValue( TYPE_LIST_GF2MAT,
           HasIsRectangularTable and IsRectangularTable )
 );
 
+InstallTypeSerializationTag(TYPE_LIST_GF2MAT,
+  SERIALIZATION_BASE_GF2MAT + SERIALIZATION_TAG_BASE * 1);
 
 #############################################################################
 ##
@@ -87,6 +100,8 @@ InstallValue( TYPE_LIST_GF2MAT_IMM,
           HasIsRectangularTable and IsRectangularTable)
 );
 
+InstallTypeSerializationTag(TYPE_LIST_GF2MAT_IMM,
+  SERIALIZATION_BASE_GF2MAT + SERIALIZATION_TAG_BASE * 2);
 
 #############################################################################
 ##
