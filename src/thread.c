@@ -160,14 +160,33 @@ static void GrowStack() __attribute__((noinline));
 #endif
 
 #ifndef HAVE_NATIVE_TLS
+
+/* In order to safely use thread-local memory on the main stack, we have
+ * to work around an idiosyncracy in some virtual memory systems. These
+ * VM implementations do not allow fully random access within the stack
+ * segment, but only quasi-linear access: a page can only be accessed if
+ * a nearby page was accessed before. If this pattern is not observed,
+ * but if we access memory within the stack segment randomly -- as in
+ * our TLS implementation, but also with very large stack frames -- a
+ * segmentation fault can arise. To avoid such segmentation faults, we
+ * traverse the stack segment of the main stack, touching each page in
+ * turn.
+ *
+ * Note that this is not necessary for thread stacks, which are
+ * allocated in private memory-mapped storage.
+ */
+
 static void GrowStack()
 {
   char *tls = (char *) TLS;
   size_t pagesize = getpagesize();
-  char *p = alloca(pagesize);
+  /* p needs to be a volatile pointer so that the memory writes are not
+   * removed by the optimizer */
+  volatile char *p = alloca(pagesize);
   while (p > tls)
   {
-    *p = '\0'; /* touch memory */
+    /* touch memory */
+    *p = '\0';
     p = alloca(pagesize);
   }
 }
