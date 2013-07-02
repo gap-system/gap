@@ -235,8 +235,25 @@ void RunThreadedMain(
 #ifdef STACK_GROWS_UP
 #error Upward growing stack not yet supported
 #else
+  /* We need to ensure that the stack pointer and frame pointer
+   * of the called function begin at the top end of a memory
+   * segment whose beginning and end address are a multiple of
+   * TLS_SIZE (which is a power of 2). To that end, we look at
+   * an approximation of the current stack pointer by taking
+   * the address of a local variable, then mask out the lowest
+   * bits and use alloca() to allocate at least that many bytes
+   * on the stack. We also need to touch the pages in that area;
+   * see the comments on GrowStack() for the reason why.
+   */
   volatile int dummy[1];
+  size_t amount;
+  amount = ((uintptr_t) dummy) & ~TLS_MASK;
   volatile void *p = alloca(((uintptr_t) dummy) &~TLS_MASK);
+  volatile char *q;
+  for (q = p + amount - 1; (void *)q >= (void *)p; q -= 1024) {
+    /* touch memory */
+    *q = '\0';
+  }
 #endif
 #endif
   RunThreadedMain2(mainFunction, argc, argv, environ);
