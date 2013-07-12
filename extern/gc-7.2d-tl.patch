@@ -1,6 +1,6 @@
 diff -cr gc-7.2d/include/private/gcconfig.h gc-7.2d/include/private/gcconfig.h
 *** gc-7.2d/include/private/gcconfig.h	2012-08-09 21:25:13.000000000 +0100
---- gc-7.2d/include/private/gcconfig.h	2013-06-11 18:00:00.822458991 +0100
+--- gc-7.2d/include/private/gcconfig.h	2013-06-12 23:39:43.000000000 +0100
 ***************
 *** 25,30 ****
 --- 25,37 ----
@@ -19,7 +19,7 @@ diff -cr gc-7.2d/include/private/gcconfig.h gc-7.2d/include/private/gcconfig.h
       /* This avoids many instances if "ifndef GC_PRIVATE_H" below.       */
 diff -cr gc-7.2d/include/private/gc_priv.h gc-7.2d/include/private/gc_priv.h
 *** gc-7.2d/include/private/gc_priv.h	2012-08-09 21:25:13.000000000 +0100
---- gc-7.2d/include/private/gc_priv.h	2013-06-11 17:24:39.445506248 +0100
+--- gc-7.2d/include/private/gc_priv.h	2013-06-12 23:39:43.000000000 +0100
 ***************
 *** 645,650 ****
 --- 645,658 ----
@@ -39,7 +39,7 @@ diff -cr gc-7.2d/include/private/gc_priv.h gc-7.2d/include/private/gc_priv.h
   # endif
 diff -cr gc-7.2d/os_dep.c gc-7.2d/os_dep.c
 *** gc-7.2d/os_dep.c	2012-08-09 21:25:13.000000000 +0100
---- gc-7.2d/os_dep.c	2013-06-11 17:15:06.501347295 +0100
+--- gc-7.2d/os_dep.c	2013-07-12 11:35:03.000000000 +0100
 ***************
 *** 727,732 ****
 --- 727,734 ----
@@ -62,3 +62,29 @@ diff -cr gc-7.2d/os_dep.c gc-7.2d/os_dep.c
   #   else
         /* It's acceptable to fake it.    */
         GC_page_size = HBLKSIZE;
+***************
+*** 2047,2058 ****
+--- 2052,2074 ----
+  #   endif
+  
+      if (bytes & (GC_page_size - 1)) ABORT("Bad GET_MEM arg");
++     bytes += GC_page_size;
+      result = mmap(last_addr, bytes, (PROT_READ | PROT_WRITE)
+                                      | (GC_pages_executable ? PROT_EXEC : 0),
+                    GC_MMAP_FLAGS | OPT_MAP_ANON, zero_fd, 0/* offset */);
+  #   undef IGNORE_PAGES_EXECUTABLE
+  
+      if (result == MAP_FAILED) return(0);
++ 
++     if ((word) result & (GC_page_size - 1)) {
++         word delta = (word) result & (GC_page_size - 1);
++         munmap(result, delta);
++         result = (char *) result + delta;
++         munmap((char *) result + bytes, GC_page_size - delta);
++     } else {
++         munmap((char *) result + bytes, GC_page_size);
++     }
++ 
+      last_addr = (ptr_t)result + bytes + GC_page_size - 1;
+      last_addr = (ptr_t)((word)last_addr & ~(GC_page_size - 1));
+  #   if !defined(LINUX)
