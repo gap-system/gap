@@ -86,7 +86,7 @@ Nilmat      http://larmor.nuigalway.ie/~dane/nilmat/PackageInfo.g
 nq          http://www.icm.tu-bs.de/ag_algebra/software/NQ/PackageInfo.g
 NumericalSgps http://www.fc.up.pt/cmup/mdelgado/numericalsgps/PackageInfo.g
 OpenMath    http://www.cs.st-andrews.ac.uk/~alexk/openmath/PackageInfo.g
-orb         http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/orbfor4.5/PackageInfo.g
+orb         http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/orb/PackageInfo.g
 ParGAP      http://www.gap-system.org/HostedGapPackages/pargap/PackageInfo.g
 Polenta     http://www.icm.tu-bs.de/ag_algebra/software/Polenta/PackageInfo.g
 Polycyclic  http://www.icm.tu-bs.de/ag_algebra/software/polycyclic/PackageInfo.g
@@ -104,6 +104,7 @@ ResClasses  http://www.gap-system.org/DevelopersPages/StefanKohl/resclasses/Pack
 RingsForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/RingsForHomalg/PackageInfo.g
 SCO         http://wwwb.math.rwth-aachen.de/goertzen/SCO/PackageInfo.g
 SCSCP       http://www.cs.st-andrews.ac.uk/~alexk/scscp/PackageInfo.g
+Semigroups  http://www-groups.mcs.st-andrews.ac.uk/~jamesm/semigroups/PackageInfo.g
 SgpViz      http://www.fc.up.pt/cmup/mdelgado/sgpviz/PackageInfo.g
 simpcomp    http://www.igt.uni-stuttgart.de/LstDiffgeo/simpcomp/PackageInfo.g
 singular    http://www.gap-system.org/HostedGapPackages/singular/PackageInfo.g

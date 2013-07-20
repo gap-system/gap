@@ -3215,7 +3215,7 @@ Obj FuncUNB_VEC8BIT (
     (Int)TNAM_OBJ(pos), 0L);
     p = INT_INTOBJ(pos);
     if (p <= 0)
-      ErrorQuit("UNB_VEC9BIT: position must be positive", 0L, 0L);
+      ErrorQuit("UNB_VEC8BIT: position must be positive", 0L, 0L);
 
     /* if we unbind the last position keep the representation              */
     if ( LEN_VEC8BIT(list) < p ) {

@@ -56,12 +56,12 @@ var StartMenuFolder
 # User variables and other general settings: adjust them here as needed
 # 
 Section
-StrCpy $GAP_VER "4.6.3"
+StrCpy $GAP_VER "4.6.4"
 SectionEnd
 
 #Name and file
-Name "GAP 4.6.3"
-OutFile "gap4r6p3_2013_03_18-17_40.exe"
+Name "GAP 4.6.4"
+OutFile "gap4r6p4_2013_05_04-16_36.exe"
 
 #Default installation folder
 InstallDir "C:\gap4r6"
@@ -1339,8 +1339,8 @@ SectionEnd
 Section "Smallsemi" SecGAPpkg_smallsemi 
 SetOutPath $INSTDIR\pkg 
 File gap4r6\pkg\README.smallsemi
-SetOutPath $INSTDIR\pkg\smallsemi-0.6.5
-File /r gap4r6\pkg\smallsemi-0.6.5\*.* 
+SetOutPath $INSTDIR\pkg\smallsemi-0.6.6
+File /r gap4r6\pkg\smallsemi-0.6.6\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 

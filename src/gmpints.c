@@ -533,6 +533,10 @@ Obj FuncIntHexString( Obj self,  Obj str )
     i = 0;
   }
 
+  while ((CHARS_STRING(str))[i] == '0' && i < len)
+    i++;
+    
+
   if ((len-i)*4 <= NR_SMALL_INT_BITS) {
     n = 0;
     p = CHARS_STRING(str);

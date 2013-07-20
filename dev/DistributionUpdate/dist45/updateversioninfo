@@ -8,7 +8,7 @@
 ##    Version := "4.dev",
 ##    Date := "today",
 ##    NeedKernelVersion := "4.dev",
-## 2) src/system.g: 'SyKernelVersion' in line
+## 2) src/system.c: 'SyKernelVersion' in line
 ##    const Char * SyKernelVersion = "4.dev";
 ##                  'SyWindowsPath' in line
 ##    const Char * SyWindowsPath = "/cygdrive/c/gap4dev";

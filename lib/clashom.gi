@@ -1806,14 +1806,22 @@ local r,	#radical
       r:=ConjugacyClass(G,i[1]);
       SetSize(r,Size(G)/i[2]);
     else
-      Assert(1,Centralizer(G,i[1])=i[2]);
+      #Assert(1,Centralizer(G,i[1])=i[2]);
       r:=ConjugacyClass(G,i[1],i[2]);
     fi;
     Add(ncl,r);
   od;
 
   cl:=ncl;
-  Assert(1,Sum(ncl,Size)=Size(G));
+
+  # temporary fix for wrong centralizers -- this code will go away anyhow
+  # in next release
+  if Sum(ncl,Size)<>Size(G) then
+    ncl:=List(ncl,x->ConjugacyClass(G,Representative(x)));
+    if Sum(ncl,Size)<>Size(G) then
+      Error("wrong classes");
+    fi;
+  fi;
 
   return ncl;
 end);

@@ -464,6 +464,58 @@ program contained unnecessary steps.
 </Section>
 
 
+<Section Label="fix465"> 
+<Heading>&GAP; 4.6.5 (July 2013)</Heading>
+
+Improved functionality:
+<List>
+<Item>
+<!-- #392 -->
+<Ref Func="TraceMethods" BookName="ref"/> and 
+<Ref Func="UntraceMethods" BookName="ref"/> now better check their 
+arguments and provide a sensible error message if being called without
+arguments. Also, both variants of calling them are now documented.
+</Item>
+<Item>
+<!-- #410 -->
+Library methods for <Ref Oper="Sortex" BookName="ref"/>  are now 
+replaced by faster ones using the kernel 
+<Ref Func="SortParallel" BookName="ref"/> functionality instead 
+of making expensive zipped lists.
+</Item>
+</List>
+
+Fixed bugs which could lead to incorrect results:
+
+<List>
+<Item>
+<!-- #409 -->
+<Ref Func="IntHexString" BookName="ref" /> wrongly produced a large 
+integer when there were too many leading zeros.
+[Reported by Joe Bohanon]
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+
+<List>
+<Item>
+<!-- #404 -->
+A bug that may occur in some cases while calling 
+<Ref Attr="TransitiveIdentification" BookName="ref"/>.
+[Reported by Izumi Miyamoto]
+</Item>
+<Item>
+<!-- #419 -->
+The new code for semidirect products of permutation groups, introduced 
+in &GAP; 4.6, had a bug which was causing problems for
+<Ref Oper="Projection" BookName="ref"/>.
+[Reported by Graham Ellis]
+</Item>
+</List>
+
+</Section>
+
 </Chapter>
 
 

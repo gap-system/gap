@@ -10,7 +10,7 @@ accompanying its release announcement.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
 <Section Label="Changes in the core GAP45 system"> 
-<Heading>Changes in the core &GAP; system</Heading>
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.5</Heading>
 
 In this section we list most important new features and bugfixes in the core 
 system introduced in &GAP; 4.5. For the list of changes in the interface 

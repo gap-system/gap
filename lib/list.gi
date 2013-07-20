@@ -2155,64 +2155,36 @@ InstallMethod( Sortex,
     "for a mutable list",
     [ IsList and IsMutable ],
     function ( list )
-    local   both, perm, i;
+    local   n,  index;
 
     # {\GAP} supports permutations only up to `MAX_SIZE_LIST_INTERNAL'.
     if not IsSmallList( list ) then
       Error( "<list> must have length at most ", MAX_SIZE_LIST_INTERNAL );
     fi;
-
-    # make a new list that contains the elements of <list> and their indices
-    both := [];
-    for i in [ 1 .. Length( list ) ] do
-        both[i] := [ list[i], i ];
-    od;
-
-    # Sort the new list according to the first item (stable).
-    SORT_LIST(both);
-
-    # Copy back and remember the permutation.
-    list{ [ 1 .. Length( list ) ] }:= both{ [ 1 .. Length( list ) ] }[1];
-    perm:= both{ [ 1 .. Length( list ) ] }[2];
-
-    # If the entries are immutable then store that the list is sorted.
-    IsSSortedList( list );
-
-    # return the permutation mapping old <list> onto the sorted list
-    return PermList( perm )^(-1);
+    
+    n := Length(list);
+    index := [1..n];
+    SortParallel(list, index);
+    return PermList(index)^-1;
+    
     end );
 
 InstallMethod( Sortex,
     "for a mutable list and a function",
     [ IsList and IsMutable, IsFunction ],
     function ( list, comp )
-    local   both, perm, i;
+    local   n,  index;
 
     # {\GAP} supports permutations only up to `MAX_SIZE_LIST_INTERNAL'.
     if not IsSmallList( list ) then
       Error( "<list> must have length at most ", MAX_SIZE_LIST_INTERNAL );
-    fi;
+  fi;
+  
+    n := Length(list);
+    index := [1..n];
+    SortParallel(list, index, comp);
+    return PermList(index)^-1;
 
-    # make a new list that contains the elements of <list> and their indices
-    both := [];
-    for i in [ 1 .. Length( list ) ] do
-        both[i] := [ list[i], i ];
-    od;
-
-    # Sort the new list according to the first item (stable).
-    SORT_LIST_COMP(both, function(p,q)
-        return comp(p[1],q[1]) or (p[1]=q[1] and p[2]<q[2]);
-    end);
-
-    # Copy back and remember the permutation.
-    list{ [ 1 .. Length( list ) ] }:= both{ [ 1 .. Length( list ) ] }[1];
-    perm:= both{ [ 1 .. Length( list ) ] }[2];
-
-    # If the entries are immutable then store that the list is sorted.
-    IsSSortedList( list );
-
-    # return the permutation mapping old <list> onto the sorted list
-    return PermList( perm )^(-1);
     end );
 
 InstallMethod( Sortex,

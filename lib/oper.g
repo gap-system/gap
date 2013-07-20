@@ -1499,19 +1499,24 @@ end );
 ##
 ##  <#GAPDoc Label="TraceMethods">
 ##  <ManSection>
-##  <Func Name="TraceMethods" Arg='oprs'/>
+##  <Func Name="TraceMethods" Arg='opr1, opr2, ...' Label ="for operations"/>
+##  <Func Name="TraceMethods" Arg='oprs' Label ="for a list of operations"/>
 ##
 ##  <Description>
-##  After the call of <C>TraceMethods</C> with a list <A>oprs</A> of operations,
-##  whenever a method of one of the operations in <A>oprs</A> is called the
+##  After the call of <C>TraceMethods</C>,  whenever a method of one of 
+##  the operations <A>opr1</A>, <A>opr2</A>, ... is called, the
 ##  information string used in the installation of the method is printed.
+##  The second form has the same effect for each operation from the list
+##  <A>oprs</A> of operations.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "TraceMethods", function( arg )
     local   fun;
-
+    if LEN_LIST( arg ) = 0 then
+      Error("`TraceMethods' require at least one argument");
+    fi;
     if IS_LIST(arg[1])  then
         arg := arg[1];
     fi;
@@ -1528,10 +1533,12 @@ end );
 ##
 ##  <#GAPDoc Label="UntraceMethods">
 ##  <ManSection>
-##  <Func Name="UntraceMethods" Arg='oprs'/>
+##  <Func Name="UntraceMethods" Arg='opr1, opr2, ...' Label ="for operations"/>
+##  <Func Name="UntraceMethods" Arg='oprs' Label ="for a list of operations"/>
 ##
 ##  <Description>
-##  turns the tracing off for all operations in <A>oprs</A>.
+##  turns the tracing off for all operations <A>opr1</A>, <A>opr2</A>, ... or
+##  in the second form, for all operations in the list <A>oprs</A>.
 ##  <Example><![CDATA[
 ##  gap> TraceMethods( [ Size ] );
 ##  gap> g:= Group( (1,2,3), (1,2) );;
@@ -1549,7 +1556,9 @@ end );
 ##
 BIND_GLOBAL( "UntraceMethods", function( arg )
     local   fun;
-
+    if LEN_LIST( arg ) = 0 then
+      Error("`TraceMethods' require at least one argument");
+    fi;
     if IS_LIST(arg[1])  then
         arg := arg[1];
     fi;

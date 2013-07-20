@@ -2508,6 +2508,31 @@ gap> slp := StraightLineProgram(
 gap> SlotUsagePattern(slp);;
 
 #############################################################################
+##
+## Changes 4.6.4 -> 4.6.5
+
+## For bugfixes
+
+# 2013/05/02 (BH)
+gap> a := IntHexString("0000000000000000000000");
+0
+gap> a = 0;
+true
+gap> IsSmallIntRep(a);
+true
+gap> a := IntHexString("0000000000000000000001");
+1
+gap> a = 1;
+true
+gap> IsSmallIntRep(a);
+true
+
+# 2013/05/16 (AH)
+gap>  TransitiveIdentification(TransitiveGroup(30,4064)^(1,4,5,2)
+> (6,20,15,21,7,16,12,24)(8,18,14,22,10,17,13,23,9,19,11,25)(26,30,29,28));
+4064
+
+#############################################################################
 #
 # Tests requiring loading some packages must be performed at the end.
 # Do not put tests that do not need any packages below this line.
