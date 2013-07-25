@@ -107,12 +107,14 @@ if not has_config or "config" in COMMAND_LINE_TARGETS or changed_abi:
     if GAP["abi"] != "auto":
       os.environ["CFLAGS"] = " -m" + GAP["abi"]
     os.environ["CONFIGNAME"] = "hpc"
+    os.environ["GAPARCH"] = build_dir[4:]
     os.system("./hpc/configure CC=\""+GAP["CC"]+"\"")
     os.system("cd "+build_dir+"; sh ../../cnf/configure.out")
     os.system("test -w bin/gap.sh && chmod ugo+x bin/gap.sh")
     if GAP["abi"] != "auto":
       del os.environ["CFLAGS"]
     del os.environ["CONFIGNAME"]
+    del os.environ["GAPARCH"]
 
 default_abi, has_config = abi_from_config(config_header_file)
 if not has_config and not GetOption("clean"):
@@ -210,7 +212,7 @@ elif GAP["gc"] == "fusion":
 else:
   defines.append("BOEHM_GC")
 if "gmp" in libs:
-  defines.append("USE_GMP")
+  defines.append("USE_GMP=1")
 
 if GAP["debugguards"]:
   defines.append("VERBOSE_GUARDS")
