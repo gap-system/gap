@@ -595,7 +595,7 @@ Region *GetRegionOf(Obj obj)
     return NULL;
   if (TNUM_OBJ(obj) == T_REGION)
     return *(Region **)(ADDR_OBJ(obj));
-  return DS_BAG(obj);
+  return REGION(obj);
 }
 
 void SetRegionName(Region *region, Obj name)
@@ -625,7 +625,7 @@ void GetLockStatus(int count, Obj *objects, int *status)
 {
   int i;
   for (i=0; i<count; i++)
-    status[i] = IsLocked(DS_BAG(objects[i]));
+    status[i] = IsLocked(REGION(objects[i]));
 }
 
 static Obj NewList(UInt size)
@@ -648,13 +648,13 @@ typedef struct
 
 static int LessThanLockRequest(const void *a, const void *b)
 {
-  Region *ds_a = ((LockRequest *)a)->region;
-  Region *ds_b = ((LockRequest *)b)->region;
+  Region *region_a = ((LockRequest *)a)->region;
+  Region *region_b = ((LockRequest *)b)->region;
   Int prec_diff;
-  if (ds_a == ds_b) /* prioritize writes */
+  if (region_a == region_b) /* prioritize writes */
     return ((LockRequest *)a)->mode>((LockRequest *)b)->mode;
-  prec_diff = ds_a->prec - ds_b->prec;
-  return prec_diff > 0 || (prec_diff == 0 && (char *)ds_a < (char *)ds_b);
+  prec_diff = region_a->prec - region_b->prec;
+  return prec_diff > 0 || (prec_diff == 0 && (char *)region_a < (char *)region_b);
 }
 
 void PushRegionLock(Region *region) {
@@ -1017,37 +1017,37 @@ int LockObjects(int count, Obj *objects, int *mode)
   curr_prec = CurrentRegionPrec();
   for (i=0; i<count; i++)
   {
-    Region *ds = order[i].region;
+    Region *region = order[i].region;
     /* If there are multiple lock requests with different modes,
      * they have been sorted for writes to occur first, so deadlock
      * cannot occur from doing readlocks before writelocks.
      */
-    if (i > 0 && ds == order[i-1].region)
+    if (i > 0 && region == order[i-1].region)
       continue; /* skip duplicates */
-    if (!ds)
+    if (!region)
       continue;
-    locked = IsLocked(ds);
+    locked = IsLocked(region);
     if (locked == 2 && order[i].mode) {
       /* trying to upgrade read lock to write lock */
       PopRegionLocks(result);
       return -1;
     }
     if (!locked) {
-      if (curr_prec >= 0 && ds->prec >= curr_prec) {
+      if (curr_prec >= 0 && region->prec >= curr_prec) {
 	PopRegionLocks(result);
 	return -1;
       }
-      if (ds->fixed_owner) {
+      if (region->fixed_owner) {
 	PopRegionLocks(result);
 	return -1;
       }
       if (order[i].mode)
-	RegionWriteLock(ds);
+	RegionWriteLock(region);
       else
-	RegionReadLock(ds);
-      PushRegionLock(ds);
+	RegionReadLock(region);
+      PushRegionLock(region);
     }
-    if (GetRegionOf(order[i].obj) != ds)
+    if (GetRegionOf(order[i].obj) != region)
     {
       /* Race condition, revert locks and fail */
       PopRegionLocks(result);
@@ -1076,18 +1076,18 @@ int TryLockObjects(int count, Obj *objects, int *mode)
   result = TLS->lockStackPointer;
   for (i=0; i<count; i++)
   {
-    Region *ds = order[i].region;
+    Region *region = order[i].region;
     /* If there are multiple lock requests with different modes,
      * they have been sorted for writes to occur first, so deadlock
      * cannot occur from doing readlocks before writelocks.
      */
-    if (i > 0 && ds == order[i-1].region)
+    if (i > 0 && region == order[i-1].region)
       continue; /* skip duplicates */
-    if (!ds || ds->fixed_owner) { /* public or thread-local region */
+    if (!region || region->fixed_owner) { /* public or thread-local region */
       PopRegionLocks(result);
       return -1;
     }
-    locked = IsLocked(ds);
+    locked = IsLocked(region);
     if (locked == 2 && order[i].mode) {
       /* trying to upgrade read lock to write lock */
       PopRegionLocks(result);
@@ -1095,19 +1095,19 @@ int TryLockObjects(int count, Obj *objects, int *mode)
     }
     if (!locked) {
       if (order[i].mode) {
-	if (!RegionTryWriteLock(ds)) {
+	if (!RegionTryWriteLock(region)) {
 	  PopRegionLocks(result);
 	  return -1;
 	}
       } else {
-	if (!RegionTryReadLock(ds)) {
+	if (!RegionTryReadLock(region)) {
 	  PopRegionLocks(result);
 	  return -1;
 	}
       }
-      PushRegionLock(ds);
+      PushRegionLock(region);
     }
-    if (GetRegionOf(order[i].obj) != ds)
+    if (GetRegionOf(order[i].obj) != region)
     {
       /* Race condition, revert locks and fail */
       PopRegionLocks(result);
@@ -1151,7 +1151,7 @@ void ReadGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
   char * buffer =
     alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
   ImpliedReadGuard(o);
-  if (DS_BAG(o)->autolock) {
+  if (REGION(o)->autolock) {
     if (AutoLockObj(o))
       return;
   }
@@ -1175,7 +1175,7 @@ void WriteGuardError(Obj o)
 void ReadGuardError(Obj o)
 {
   ImpliedReadGuard(o);
-  if (DS_BAG(o)->autolock) {
+  if (REGION(o)->autolock) {
     if (AutoLockObj(o))
       return;
   }

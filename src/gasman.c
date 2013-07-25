@@ -150,7 +150,7 @@
 /****************************************************************************
 **
 
-*F  WORDS_BAG( <size> ) . . . . . . . . . . words used by a bag of given size
+*F  WORREGION( <size> ) . . . . . . . . . . words used by a bag of given size
 **
 **  The structure of a bag is a follows{\:}
 **
@@ -202,7 +202,7 @@
 **
 **  The *padding* consists  of up to 'sizeof(Bag)-1' bytes  and pads the body
 **  so that the size of a  body is always  a multiple of 'sizeof(Bag)'.  This
-**  is to ensure that bags are always aligned.  The macro 'WORDS_BAG(<size>)'
+**  is to ensure that bags are always aligned.  The macro 'WORREGION(<size>)'
 **  returns the number  of words occupied  by the data  area and padding of a
 **  bag of size <size>.
 **
@@ -228,7 +228,7 @@
 #ifdef  C_PLUS_PLUS_BAGS
 #define SIZE_MPTR_BAGS  2
 #endif
-#define WORDS_BAG(size) (((size) + (sizeof(Bag)-1)) / sizeof(Bag))
+#define WORREGION(size) (((size) + (sizeof(Bag)-1)) / sizeof(Bag))
 
 #ifdef USE_NEWSHAPE
 #define HEADER_SIZE 2
@@ -289,7 +289,7 @@
 **  after garbage collections.   In   this case garbage  collections are only
 **  performed when no  free storage   is left.  If <cache-size> was  nonzero,
 **  'CollectBags' makes 'AllocSizeBags' bytes available by setting 'StopBags'
-**  to  'AllocBags   + 2+WORDS_BAG(<size>) +  WORDS_BAG(AllocSizeBags)' after
+**  to  'AllocBags   + 2+WORREGION(<size>) +  WORREGION(AllocSizeBags)' after
 **  garbage  collections, where <size>   is the  size  of the bag 'NewBag' is
 **  currently allocating.  'AllocSizeBags'  is  usually <cache-size>,  but is
 **  increased if only very few large bags have been  allocated since the last
@@ -490,20 +490,20 @@ void MakeBagTypeProtected(int type)
 Bag MakeBagPublic(Bag bag)
 {
     MEMBAR_WRITE();
-    DS_BAG(bag) = 0;
+    REGION(bag) = 0;
     return bag;
 }
 
 Bag MakeBagReadOnly(Bag bag)
 {
     MEMBAR_WRITE();
-    DS_BAG(bag) = ReadOnlyRegion;
+    REGION(bag) = ReadOnlyRegion;
     return bag;
 }
 
 Region *RegionBag(Bag bag)
 {
-    Region *result = DS_BAG(bag);
+    Region *result = REGION(bag);
     MEMBAR_READ();
     return result;
 }
@@ -1020,7 +1020,7 @@ Bag NextBagRestoring( UInt size, UInt type)
 #endif
   AllocBags += HEADER_SIZE;
   
-  for (i = 0; i < WORDS_BAG(size); i++)
+  for (i = 0; i < WORREGION(size); i++)
     *AllocBags++ = (Bag)0;
   
 #ifdef DEBUG_LOADING
@@ -1047,7 +1047,7 @@ void FinishedRestoringBags( void )
   Bag p;
 /*  Bag *ptr; */
   YoungBags = AllocBags;
-  StopBags = AllocBags + WORDS_BAG(AllocSizeBags);
+  StopBags = AllocBags + WORREGION(AllocSizeBags);
   if (StopBags > EndBags)
     StopBags = EndBags;
   FreeMptrBags = NextMptrRestoring;
@@ -1256,8 +1256,8 @@ void            InitBags (
     }
     else {
         AllocSizeBags = (CacheSizeBags+1023)/1024;
-        StopBags  = AllocBags + WORDS_BAG(1024*AllocSizeBags) <= EndBags ?
-                    AllocBags + WORDS_BAG(1024*AllocSizeBags) :  EndBags;
+        StopBags  = AllocBags + WORREGION(1024*AllocSizeBags) <= EndBags ?
+                    AllocBags + WORREGION(1024*AllocSizeBags) :  EndBags;
     }
 
     /* remember whether bags should be clean                               */
@@ -1400,7 +1400,7 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
 **  'AllocBags'.  Then  it writes the identifier,  i.e.,  the location of the
 **  masterpointer, into the next word.
 **
-**  Then it advances 'AllocBags' by '2 + WORDS_BAG(<size>)'.
+**  Then it advances 'AllocBags' by '2 + WORREGION(<size>)'.
 **
 **  Finally it returns the identifier of the new bag.
 **
@@ -1433,7 +1433,7 @@ Bag NewBag (
 #endif
     
     /* check that a masterpointer and enough storage are available         */
-    if ( (FreeMptrBags == 0 || SizeAllocationArea < HEADER_SIZE+WORDS_BAG(size))
+    if ( (FreeMptrBags == 0 || SizeAllocationArea < HEADER_SIZE+WORREGION(size))
       && CollectBags( size, 0 ) == 0 )
     {
         return 0;
@@ -1455,7 +1455,7 @@ Bag NewBag (
 
     /* allocate the storage for the bag                                    */
     dst       = AllocBags;
-    AllocBags = dst + HEADER_SIZE + WORDS_BAG(size);
+    AllocBags = dst + HEADER_SIZE + WORREGION(size);
 #else /* BOEHM_GC */
     alloc_size = HEADER_SIZE*sizeof(Bag) + size;
 #ifndef DISABLE_GC
@@ -1527,20 +1527,20 @@ Bag NewBag (
     PTR_BAG(bag) = dst;
     switch (DSInfoBags[type]) {
     case DSI_TL:
-      DS_BAG(bag) = CurrentRegion();
+      REGION(bag) = CurrentRegion();
       break;
     case DSI_PUBLIC:
-      DS_BAG(bag) = NULL;
+      REGION(bag) = NULL;
       break;
     case DSI_PROTECTED:
-      DS_BAG(bag) = ProtectedRegion;
+      REGION(bag) = ProtectedRegion;
       break;
     }
 #if 0
     {
       extern void * stderr;
       UInt i;
-      for (i = 0; i < WORDS_BAG(size); i++)
+      for (i = 0; i < WORREGION(size); i++)
         if (*dst++)
           fprintf(stderr, "dirty bag being returned\n");
     }
@@ -1615,10 +1615,10 @@ void            RetypeBag (
 #endif
     switch (DSInfoBags[new_type]) {
       case DSI_PUBLIC:
-        DS_BAG(bag) = NULL;
+        REGION(bag) = NULL;
 	break;
       case DSI_PROTECTED:
-        DS_BAG(bag) = ProtectedRegion;
+        REGION(bag) = ProtectedRegion;
 	break;
     }
 }
@@ -1737,7 +1737,7 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
 
     /* if the real size of the bag doesn't change                          */
 #ifndef BOEHM_GC
-    if ( WORDS_BAG(new_size) == WORDS_BAG(old_size) ) {
+    if ( WORREGION(new_size) == WORREGION(old_size) ) {
 #else
 #ifndef DISABLE_GC
     alloc_size = GC_size(PTR_BAG(bag)-HEADER_SIZE);
@@ -1773,20 +1773,20 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
     /* we must not shrink the last bag by moving 'AllocBags',              */
     /* since the remainder may not be zero filled                          */
 #ifndef BOEHM_GC
-    else if ( WORDS_BAG(new_size) < WORDS_BAG(old_size) ) {
+    else if ( WORREGION(new_size) < WORREGION(old_size) ) {
 
       /* leave magic size-type word for the sweeper, type must be 255    */
-        if ((WORDS_BAG(old_size)-WORDS_BAG(new_size) == 1))
-          *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = 1 << 8 | 255;
+        if ((WORREGION(old_size)-WORREGION(new_size) == 1))
+          *(UInt*)(PTR_BAG(bag) + WORREGION(new_size)) = 1 << 8 | 255;
         else
           {
 #ifdef USE_NEWSHAPE
-            *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = 
-              (WORDS_BAG(old_size)-WORDS_BAG(new_size)-1)*sizeof(Bag) << 16 | 255;
+            *(UInt*)(PTR_BAG(bag) + WORREGION(new_size)) = 
+              (WORREGION(old_size)-WORREGION(new_size)-1)*sizeof(Bag) << 16 | 255;
 #else
-            *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = 255;
-            *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size) + 1) =
-              (WORDS_BAG(old_size)-WORDS_BAG(new_size)-1)*sizeof(Bag);
+            *(UInt*)(PTR_BAG(bag) + WORREGION(new_size)) = 255;
+            *(UInt*)(PTR_BAG(bag) + WORREGION(new_size) + 1) =
+              (WORREGION(old_size)-WORREGION(new_size)-1)*sizeof(Bag);
 #endif
           }
 
@@ -1801,18 +1801,18 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
     }
 
     /* if the last bag is to be enlarged                                   */
-    else if ( PTR_BAG(bag) + WORDS_BAG(old_size) == AllocBags ) {
+    else if ( PTR_BAG(bag) + WORREGION(old_size) == AllocBags ) {
 
         /* check that enough storage for the new bag is available          */
-        if ( StopBags < PTR_BAG(bag)+WORDS_BAG(new_size)
+        if ( StopBags < PTR_BAG(bag)+WORREGION(new_size)
           && CollectBags( new_size-old_size, 0 ) == 0 ) {
             return 0;
         }
 
         /* simply increase the free pointer                                */
         if ( YoungBags == AllocBags )
-            YoungBags += WORDS_BAG(new_size) - WORDS_BAG(old_size);
-        AllocBags += WORDS_BAG(new_size) - WORDS_BAG(old_size);
+            YoungBags += WORREGION(new_size) - WORREGION(old_size);
+        AllocBags += WORREGION(new_size) - WORREGION(old_size);
 
         /* change the size-type word                                       */
 #ifdef USE_NEWSHAPE
@@ -1827,14 +1827,14 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
 
 #ifndef BOEHM_GC
         /* check that enough storage for the new bag is available          */
-        if ( SizeAllocationArea <  HEADER_SIZE+WORDS_BAG(new_size)
+        if ( SizeAllocationArea <  HEADER_SIZE+WORREGION(new_size)
           && CollectBags( new_size, 0 ) == 0 ) {
             return 0;
         }
 
         /* allocate the storage for the bag                                */
         dst       = AllocBags;
-        AllocBags = dst + HEADER_SIZE + WORDS_BAG(new_size);
+        AllocBags = dst + HEADER_SIZE + WORREGION(new_size);
 #else
 	alloc_size = HEADER_SIZE*sizeof(Bag) + new_size;
 	if (new_size == 0)
@@ -1850,13 +1850,13 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
         /* leave magic size-type word  for the sweeper, type must be 255   */
 #ifdef USE_NEWSHAPE
 #ifndef BOEHM_GC
-	*(*bag-2) = (((WORDS_BAG(old_size)+1) * sizeof(Bag))) << 16 | 255;
+	*(*bag-2) = (((WORREGION(old_size)+1) * sizeof(Bag))) << 16 | 255;
 #endif
 	*dst++ = (Bag)(new_size << 16 | type);
 #else
 #ifndef BOEHM_GC
 	*(*bag-3) = 255; 
-        *(*bag-2) = (((WORDS_BAG(old_size)+2) * sizeof(Bag)));
+        *(*bag-2) = (((WORREGION(old_size)+2) * sizeof(Bag)));
 #endif
 	
         /* enter the new size-type word                                    */
@@ -1887,7 +1887,7 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
         /* set the masterpointer                                           */
         src = PTR_BAG(bag);
 #ifndef BOEHM_GC
-        end = src + WORDS_BAG(old_size);
+        end = src + WORREGION(old_size);
 #endif
         PTR_BAG(bag) = dst;
 
@@ -2317,7 +2317,7 @@ again:
           if ((*(UInt*)p >> 16) == 1) 
             p++;
           else
-            p += 1 + WORDS_BAG( *(((UInt *)p)+1) );
+            p += 1 + WORREGION( *(((UInt *)p)+1) );
                 
         }
         else {
@@ -2341,7 +2341,7 @@ again:
                 PTR_BAG(MarkedBags)[-1] = MarkedBags;
                 MarkedBags = first;
             }
-            p += 3 + WORDS_BAG( ((UInt*)p)[1] );
+            p += 3 + WORREGION( ((UInt*)p)[1] );
         }
     }
 #endif
@@ -2382,7 +2382,7 @@ again:
                 if ((*(UInt *)src >> 16) == 1) 
                   src++;
                 else
-                  src += WORDS_BAG(((UInt *)src)[1]);
+                  src += WORREGION(((UInt *)src)[1]);
                 
 
             }
@@ -2415,7 +2415,7 @@ again:
                   (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[HEADER_SIZE-1] );
                 
                 /* advance src                                             */
-                src += HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1] ) ;
+                src += HEADER_SIZE + WORREGION( ((UInt*)src)[1] ) ;
                 
               }
             
@@ -2432,9 +2432,9 @@ again:
 
                 /* advance src                                             */
 #ifdef USE_NEWSHAPE
-                src += HEADER_SIZE + WORDS_BAG( ((UInt*)src)[0] >>16  );
+                src += HEADER_SIZE + WORREGION( ((UInt*)src)[0] >>16  );
 #else
-                src += HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1]  );
+                src += HEADER_SIZE + WORREGION( ((UInt*)src)[1]  );
 #endif
 
 
@@ -2466,9 +2466,9 @@ again:
               src++;
             else
 #ifdef USE_NEWSHAPE
-              src += 1 + WORDS_BAG(((UInt *)src)[0] >> 16);
+              src += 1 + WORREGION(((UInt *)src)[0] >> 16);
 #else
-              src += 1 + WORDS_BAG(((UInt *)src)[1]);
+              src += 1 + WORREGION(((UInt *)src)[1]);
 #endif
 
         }
@@ -2514,10 +2514,10 @@ again:
             /* advance src                                                 */
 #ifdef USE_NEWSHAPE
             src += HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[0] >> 16 ) ;
+              WORREGION( ((UInt*)src)[0] >> 16 ) ;
 #else
             src += HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[1] ) ;
+              WORREGION( ((UInt*)src)[1] ) ;
 #endif
 
         }
@@ -2563,10 +2563,10 @@ again:
             /* advance src                                                 */
 #ifdef USE_NEWSHAPE
             src += HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[0] >> 16 ) ;
+              WORREGION( ((UInt*)src)[0] >> 16 ) ;
 #else
             src += HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[1] ) ;
+              WORREGION( ((UInt*)src)[1] ) ;
 #endif
 
         }
@@ -2586,10 +2586,10 @@ again:
             PTR_BAG( UNMARKED_ALIVE(src[HEADER_SIZE-1])) = dst+HEADER_SIZE;
 #ifdef USE_NEWSHAPE
             end = src + HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[0] >>16 ) ;
+              WORREGION( ((UInt*)src)[0] >>16 ) ;
 #else
             end = src + HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[1] ) ;
+              WORREGION( ((UInt*)src)[1] ) ;
 #endif
             *dst++ = *src++;
 #ifndef USE_NEWSHAPE
@@ -2664,7 +2664,7 @@ again:
     /* * * * * * * * * * * * * * * check phase * * * * * * * * * * * * * * */
 
     /* temporarily store in 'StopBags' where this allocation takes us      */
-    StopBags = AllocBags + HEADER_SIZE + WORDS_BAG(size);
+    StopBags = AllocBags + HEADER_SIZE + WORREGION(size);
 
 
 
@@ -2677,7 +2677,7 @@ again:
                  
                  /* The test below should stop AllocSizeBags 
                     growing uncontrollably when all bags are big */
-                 && StopBags > OldBags + 4*1024*WORDS_BAG(AllocSizeBags))
+                 && StopBags > OldBags + 4*1024*WORREGION(AllocSizeBags))
                 AllocSizeBags += 256L;
             else if ( 4096 < nrLiveBags+nrDeadBags+nrHalfDeadBags
                    && 256 < AllocSizeBags )
@@ -2692,7 +2692,7 @@ again:
         }
 
         /* if we dont get enough free storage or masterpointers do full gc */
-        if ( EndBags < StopBags + WORDS_BAG(1024*AllocSizeBags)
+        if ( EndBags < StopBags + WORREGION(1024*AllocSizeBags)
           || SizeMptrsArea <
              
              /*      nrLiveBags+nrDeadBags+nrHalfDeadBags+ 4096 */
@@ -2704,7 +2704,7 @@ again:
 
              /* change the test to avoid subtracting unsigned integers */
              
-             WORDS_BAG(AllocSizeBags*1024)/7 +(NrLiveBags + NrHalfDeadBags) 
+             WORREGION(AllocSizeBags*1024)/7 +(NrLiveBags + NrHalfDeadBags) 
              ) {
             done = 0;
         }
@@ -2737,7 +2737,7 @@ again:
         /* get the storage we absolutly need                               */
         while ( EndBags < StopBags
              && (*AllocFuncBags)(512,1) )
-            EndBags += WORDS_BAG(512*1024L);
+            EndBags += WORREGION(512*1024L);
 
         /* if not enough storage is free, fail                             */
         if ( EndBags < StopBags )
@@ -2745,9 +2745,9 @@ again:
 
         /* if less than 1/8th is free, get more storage (in 1/2 MBytes)    */
         while ( ( SpaceBetweenPointers(EndBags, StopBags) <  SpaceBetweenPointers(StopBags, OldBags)/7 ||
-                  SpaceBetweenPointers(EndBags, StopBags) < WORDS_BAG(AllocSizeBags) )
+                  SpaceBetweenPointers(EndBags, StopBags) < WORREGION(AllocSizeBags) )
              && (*AllocFuncBags)(512,0) )
-            EndBags += WORDS_BAG(512*1024L);
+            EndBags += WORREGION(512*1024L);
 
         /* If we are having trouble, then cut our cap to fit our cloth *.
         if ( EndBags - StopBags < AllocSizeBags )
@@ -2760,10 +2760,10 @@ again:
         }
 
         /* if more than 1/8th is free, give back storage (in 1/2 MBytes)   */
-        while (SpaceBetweenPointers(StopBags,OldBags)/7 <= SpaceBetweenPointers(EndBags,StopBags)-WORDS_BAG(512*1024L)
-                && SpaceBetweenPointers(EndBags,StopBags) > WORDS_BAG(AllocSizeBags) + WORDS_BAG(512*1024L)
+        while (SpaceBetweenPointers(StopBags,OldBags)/7 <= SpaceBetweenPointers(EndBags,StopBags)-WORREGION(512*1024L)
+                && SpaceBetweenPointers(EndBags,StopBags) > WORREGION(AllocSizeBags) + WORREGION(512*1024L)
              && (*AllocFuncBags)(-512,0) )
-            EndBags -= WORDS_BAG(512*1024L);
+            EndBags -= WORREGION(512*1024L);
 
         /* if we want to increase the masterpointer area                   */
         if ( SpaceBetweenPointers(OldBags,MptrBags)-NrLiveBags < SpaceBetweenPointers(EndBags,StopBags)/7 ) {
@@ -2811,10 +2811,10 @@ again:
                          SpaceBetweenPointers(EndBags, MptrBags)/(1024/sizeof(Bag)));
 
     /* reset the stop pointer                                              */
-    if ( ! CacheSizeBags || EndBags < StopBags+WORDS_BAG(1024*AllocSizeBags) )
+    if ( ! CacheSizeBags || EndBags < StopBags+WORREGION(1024*AllocSizeBags) )
         StopBags = EndBags;
     else
-        StopBags = StopBags + WORDS_BAG(1024*AllocSizeBags);
+        StopBags = StopBags + WORREGION(1024*AllocSizeBags);
 
     /* if we are not done, then true again                                 */
     if ( ! done ) {

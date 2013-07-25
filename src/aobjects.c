@@ -1235,7 +1235,7 @@ static Obj NewTLRecord(Obj defaults, Obj constructors) {
   ADDR_OBJ(inner)[TLR_SIZE] = 0;
   ADDR_OBJ(inner)[TLR_DEFAULTS] = CreateTLDefaults(defaults);
   WriteGuard(constructors);
-  DS_BAG(constructors) = LimboRegion;
+  REGION(constructors) = LimboRegion;
   MEMBAR_WRITE();
   ADDR_OBJ(inner)[TLR_CONSTRUCTORS] = NewAtomicRecordFrom(constructors);
   ((AtomicObj *)(ADDR_OBJ(result)))->obj = inner;

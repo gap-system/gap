@@ -427,7 +427,7 @@ Obj FuncCreateThread(Obj self, Obj funcargs) {
   }
   templist = NEW_PLIST(T_PLIST, n);
   SET_LEN_PLIST(templist, n);
-  DS_BAG(templist) = NULL; /* make it public */
+  REGION(templist) = NULL; /* make it public */
   for (i=1; i<=n; i++)
     SET_ELM_PLIST(templist, i, ELM_PLIST(funcargs, i));
   thread = RunThread(ThreadedInterpreter, KeepAlive(templist));
@@ -614,8 +614,8 @@ Obj FuncResumeThread(Obj self, Obj thread) {
 
 
 Obj FuncRegionOf(Obj self, Obj obj) {
-  Region *ds = GetRegionOf(obj);
-  return ds == NULL ? PublicRegion : ds->obj;
+  Region *region = GetRegionOf(obj);
+  return region == NULL ? PublicRegion : region->obj;
 }
 
 /****************************************************************************
@@ -695,8 +695,8 @@ Obj FuncRegionName(Obj self, Obj obj) {
 */
 
 Obj FuncIsShared(Obj self, Obj obj) {
-  Region *ds = GetRegionOf(obj);
-  return (ds && !ds->fixed_owner) ? True : False;
+  Region *region = GetRegionOf(obj);
+  return (region && !region->fixed_owner) ? True : False;
 }
 
 /****************************************************************************
@@ -706,8 +706,8 @@ Obj FuncIsShared(Obj self, Obj obj) {
 */
 
 Obj FuncIsPublic(Obj self, Obj obj) {
-  Region *ds = GetRegionOf(obj);
-  return ds == NULL ? True : False;
+  Region *region = GetRegionOf(obj);
+  return region == NULL ? True : False;
 }
 
 /****************************************************************************
@@ -717,8 +717,8 @@ Obj FuncIsPublic(Obj self, Obj obj) {
 */
 
 Obj FuncIsThreadLocal(Obj self, Obj obj) {
-  Region *ds = GetRegionOf(obj);
-  return (ds && ds->fixed_owner && ds->owner == TLS) ? True : False;
+  Region *region = GetRegionOf(obj);
+  return (region && region->fixed_owner && region->owner == TLS) ? True : False;
 }
 
 /****************************************************************************
@@ -729,8 +729,8 @@ Obj FuncIsThreadLocal(Obj self, Obj obj) {
 
 Obj FuncHaveWriteAccess(Obj self, Obj obj)
 {
-  Region* ds = GetRegionOf(obj);
-  if (ds != NULL && (ds->owner == TLS || ds->alt_owner == TLS))
+  Region* region = GetRegionOf(obj);
+  if (region != NULL && (region->owner == TLS || region->alt_owner == TLS))
     return True;
   else
     return False;
@@ -744,8 +744,8 @@ Obj FuncHaveWriteAccess(Obj self, Obj obj)
 
 Obj FuncHaveReadAccess(Obj self, Obj obj)
 {
-  Region* ds = GetRegionOf(obj);
-  if (ds != NULL && CheckReadAccess(obj))
+  Region* region = GetRegionOf(obj);
+  if (region != NULL && CheckReadAccess(obj))
     return True;
   else
     return False;
@@ -1566,7 +1566,7 @@ static void ExpandChannel(Channel *channel)
     newCapacity+=2;
   newqueue = NEW_PLIST(T_PLIST, newCapacity);
   SET_LEN_PLIST(newqueue, newCapacity);
-  DS_BAG(newqueue) = DS_BAG(channel->queue);
+  REGION(newqueue) = REGION(channel->queue);
   channel->capacity = newCapacity;
   /* assert(channel->head == channel->tail); */
   for (i = channel->head; i < oldCapacity; i++)
@@ -1588,10 +1588,10 @@ static void ExpandChannel(Channel *channel)
 static void AddToChannel(Channel *channel, Obj obj, int migrate)
 {
   Obj children;
-  Region *ds = DS_BAG(channel->queue);
+  Region *region = REGION(channel->queue);
   UInt i, len;
   if (migrate && IS_BAG_REF(obj) &&
-      DS_BAG(obj) && DS_BAG(obj)->owner == TLS && DS_BAG(obj)->fixed_owner) {
+      REGION(obj) && REGION(obj)->owner == TLS && REGION(obj)->fixed_owner) {
     children = ReachableObjectsFrom(obj);
     len = children ? LEN_PLIST(children) : 0;
   } else {
@@ -1600,7 +1600,7 @@ static void AddToChannel(Channel *channel, Obj obj, int migrate)
   }
   for (i=1; i<= len; i++) {
     Obj item = ELM_PLIST(children, i);
-    DS_BAG(item) = ds;
+    REGION(item) = region;
   }
   ADDR_OBJ(channel->queue)[++channel->tail] = obj;
   ADDR_OBJ(channel->queue)[++channel->tail] = children;
@@ -1613,7 +1613,7 @@ static Obj RetrieveFromChannel(Channel *channel)
 {
   Obj obj = ADDR_OBJ(channel->queue)[++channel->head];
   Obj children = ADDR_OBJ(channel->queue)[++channel->head];
-  Region *ds = TLS->currentRegion;
+  Region *region = TLS->currentRegion;
   UInt i, len = children ? LEN_PLIST(children) : 0;
   ADDR_OBJ(channel->queue)[channel->head-1] = 0;
   ADDR_OBJ(channel->queue)[channel->head] = 0;
@@ -1621,7 +1621,7 @@ static Obj RetrieveFromChannel(Channel *channel)
     channel->head = 0;
   for (i=1; i<= len; i++) {
     Obj item = ELM_PLIST(children, i);
-    DS_BAG(item) = ds;
+    REGION(item) = region;
   }
   channel->size -= 2;
   return obj;
@@ -1917,7 +1917,7 @@ static Obj CreateChannel(int capacity)
   channel->dynamic = (capacity < 0);
   channel->waiting = 0;
   channel->queue = NEW_PLIST( T_PLIST, channel->capacity);
-  DS_BAG(channel->queue) = LimboRegion;
+  REGION(channel->queue) = LimboRegion;
   SET_LEN_PLIST(channel->queue, channel->capacity);
   return channelBag;
 }
@@ -2511,10 +2511,10 @@ static void PrintRegion(Obj obj)
 
 Obj FuncIS_LOCKED(Obj self, Obj obj)
 {
-  Region *ds = IS_BAG_REF(obj) ? DS_BAG(obj) : NULL;
-  if (!ds)
+  Region *region = IS_BAG_REF(obj) ? REGION(obj) : NULL;
+  if (!region)
     return INTOBJ_INT(0);
-  return INTOBJ_INT(IsLocked(ds));
+  return INTOBJ_INT(IsLocked(region));
 }
 
 void DoLockFunc(Obj args, int mode)
@@ -2676,13 +2676,13 @@ static int AutoRetyping = 0;
 static int MigrateObjects(int count, Obj *objects, Region *target, int retype)
 {
   int i;
-  if (retype && IS_BAG_REF(objects[0]) && DS_BAG(objects[0])->owner == TLS
+  if (retype && IS_BAG_REF(objects[0]) && REGION(objects[0])->owner == TLS
       && AutoRetyping) {
     for (i=0; i<count; i++)
-      if (DS_BAG(objects[i])->owner == TLS)
+      if (REGION(objects[i])->owner == TLS)
 	CLEAR_OBJ_FLAG(objects[i], TESTED);
     for (i=0; i<count; i++) {
-      if (DS_BAG(objects[i])->owner == TLS && IS_PLIST(objects[i])) {
+      if (REGION(objects[i])->owner == TLS && IS_PLIST(objects[i])) {
         if (!TEST_OBJ_FLAG(objects[i], TESTED))
 	  TYPE_OBJ(objects[i]);
 	if (retype >= 2)
@@ -2691,15 +2691,15 @@ static int MigrateObjects(int count, Obj *objects, Region *target, int retype)
     }
   }
   for (i=0; i<count; i++) {
-    Region *ds;
+    Region *region;
     if (IS_BAG_REF(objects[i])) {
-      ds = (Region *)(DS_BAG(objects[i]));
-      if (!ds || ds->owner != TLS || ds == ProtectedRegion)
+      region = (Region *)(REGION(objects[i]));
+      if (!region || region->owner != TLS || region == ProtectedRegion)
         return 0;
     }
   }
   for (i=0; i<count; i++)
-    DS_BAG(objects[i]) = target;
+    REGION(objects[i]) = target;
   return 1;
 }
 
@@ -2888,9 +2888,9 @@ Obj FuncMakeThreadLocal(Obj self, Obj var)
 
 Obj FuncMakeReadOnly(Obj self, Obj obj)
 {
-  Region *ds = GetRegionOf(obj);
+  Region *region = GetRegionOf(obj);
   Obj reachable;
-  if (!ds || ds == ReadOnlyRegion)
+  if (!region || region == ReadOnlyRegion)
     return obj;
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
@@ -2901,9 +2901,9 @@ Obj FuncMakeReadOnly(Obj self, Obj obj)
 
 Obj FuncMakeReadOnlyRaw(Obj self, Obj obj)
 {
-  Region *ds = GetRegionOf(obj);
+  Region *region = GetRegionOf(obj);
   Obj reachable;
-  if (!ds || ds == ReadOnlyRegion)
+  if (!region || region == ReadOnlyRegion)
     return obj;
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
@@ -2914,9 +2914,9 @@ Obj FuncMakeReadOnlyRaw(Obj self, Obj obj)
 
 Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
 {
-  Region *ds = GetRegionOf(obj);
+  Region *region = GetRegionOf(obj);
   Obj reachable;
-  if (!ds || ds == ReadOnlyRegion)
+  if (!region || region == ReadOnlyRegion)
     return obj;
   if (!MigrateObjects(1, &obj, ReadOnlyRegion, 0))
     ArgumentError("MakeReadOnlyObj: Thread does not have exclusive access to object");
@@ -2925,9 +2925,9 @@ Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
 
 Obj FuncMakeProtected(Obj self, Obj obj)
 {
-  Region *ds = GetRegionOf(obj);
+  Region *region = GetRegionOf(obj);
   Obj reachable;
-  if (ds == ProtectedRegion)
+  if (region == ProtectedRegion)
     return obj;
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
@@ -2938,8 +2938,8 @@ Obj FuncMakeProtected(Obj self, Obj obj)
 
 Obj FuncMakeProtectedObj(Obj self, Obj obj)
 {
-  Region *ds = GetRegionOf(obj);
-  if (ds == ProtectedRegion)
+  Region *region = GetRegionOf(obj);
+  if (region == ProtectedRegion)
     return obj;
   if (!MigrateObjects(1, &obj, ProtectedRegion, 0))
     ArgumentError("MakeProtectedObj: Thread does not have exclusive access to object");
@@ -2948,14 +2948,14 @@ Obj FuncMakeProtectedObj(Obj self, Obj obj)
 
 Obj FuncIsReadOnly(Obj self, Obj obj)
 {
-  Region *ds = GetRegionOf(obj);
-  return (ds == ReadOnlyRegion) ? True : False;
+  Region *region = GetRegionOf(obj);
+  return (region == ReadOnlyRegion) ? True : False;
 }
 
 Obj FuncIsProtected(Obj self, Obj obj)
 {
-  Region *ds = GetRegionOf(obj);
-  return (ds == ProtectedRegion) ? True : False;
+  Region *region = GetRegionOf(obj);
+  return (region == ProtectedRegion) ? True : False;
 }
 
 Obj FuncENABLE_AUTO_RETYPING(Obj self)

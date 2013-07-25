@@ -915,7 +915,7 @@ void PrintInaccessibleObject(Obj obj)
   Region *region;
   Obj nameobj;
   
-  region = DS_BAG(obj);
+  region = REGION(obj);
   if (!region)
     nameobj = PublicRegionName; /* this should not happen, but let's be safe */
   else
@@ -1719,15 +1719,15 @@ Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     }
     ptr1 = PTR_BAG(obj1);
     ptr2 = PTR_BAG(obj2);
-    ds1 = DS_BAG(obj1);
-    ds2 = DS_BAG(obj2);
+    ds1 = REGION(obj1);
+    ds2 = REGION(obj2);
     if (!ds1 || ds1->owner != TLS)
         ErrorQuit("SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
     if (!ds2 || ds2->owner != TLS)
         ErrorQuit("SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
-    DS_BAG(obj2) = ds1;
+    REGION(obj2) = ds1;
     PTR_BAG(obj2) = ptr1;
-    DS_BAG(obj1) = ds2;
+    REGION(obj1) = ds2;
     PTR_BAG(obj1) = ptr2;
     CHANGED_BAG(obj1);
     CHANGED_BAG(obj2);
@@ -1762,15 +1762,15 @@ Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     }
     ptr1 = PTR_BAG(obj1);
     ptr2 = PTR_BAG(obj2);
-    ds1 = DS_BAG(obj1);
-    ds2 = DS_BAG(obj2);
+    ds1 = REGION(obj1);
+    ds2 = REGION(obj2);
     if (ds1 && ds1->owner != TLS)
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
     if (ds2 && ds2->owner != TLS)
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
-    DS_BAG(obj2) = ds1;
+    REGION(obj2) = ds1;
     PTR_BAG(obj2) = ptr1;
-    DS_BAG(obj1) = ds2;
+    REGION(obj1) = ds2;
     PTR_BAG(obj1) = ptr2;
     CHANGED_BAG(obj1);
     CHANGED_BAG(obj2);

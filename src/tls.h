@@ -234,7 +234,7 @@ static ALWAYS_INLINE Bag WriteGuard(Bag bag)
   Region *region;
   if (!IS_BAG_REF(bag))
     return bag;
-  region = DS_BAG(bag);
+  region = REGION(bag);
   if (region && region->owner != TLS && region->alt_owner != TLS)
     WriteGuardError(bag
 #ifdef VERBOSE_GUARDS
@@ -256,7 +256,7 @@ static ALWAYS_INLINE Bag *WriteGuardByRef(Bag *bagref)
   Region *region;
   if (!IS_BAG_REF(bag))
     return bagref;
-  region = DS_BAG(bag);
+  region = REGION(bag);
   if (region && region->owner != TLS && region->alt_owner != TLS)
     WriteGuardError(bag
 #ifdef VERBOSE_GUARDS
@@ -278,7 +278,7 @@ static inline int CheckWriteAccess(Bag bag)
   Region *region;
   if (!IS_BAG_REF(bag))
     return 1;
-  region = DS_BAG(bag);
+  region = REGION(bag);
   return !(region && region->owner != TLS && region->alt_owner != TLS)
     || TLS->DisableGuards >= 2;
 }
@@ -288,7 +288,7 @@ static inline int CheckExclusiveWriteAccess(Bag bag)
   Region *region;
   if (!IS_BAG_REF(bag))
     return 1;
-  region = DS_BAG(bag);
+  region = REGION(bag);
   if (!region)
     return 0;
   return region->owner == TLS || region->alt_owner == TLS
@@ -306,7 +306,7 @@ static ALWAYS_INLINE Bag ReadGuard(Bag bag)
   Region *region;
   if (!IS_BAG_REF(bag))
     return bag;
-  region = DS_BAG(bag);
+  region = REGION(bag);
   if (region && region->owner != TLS &&
       !region->readers[TLS->threadID] && region->alt_owner != TLS)
     ReadGuardError(bag
@@ -329,7 +329,7 @@ static ALWAYS_INLINE Bag *ReadGuardByRef(Bag *bagref)
   Region *region;
   if (!IS_BAG_REF(bag))
     return bagref;
-  region = DS_BAG(bag);
+  region = REGION(bag);
   if (region && region->owner != TLS &&
       !region->readers[TLS->threadID] && region->alt_owner != TLS)
     ReadGuardError(bag
@@ -353,7 +353,7 @@ static ALWAYS_INLINE int CheckReadAccess(Bag bag)
   Region *region;
   if (!IS_BAG_REF(bag))
     return 1;
-  region = DS_BAG(bag);
+  region = REGION(bag);
   return !(region && region->owner != TLS &&
     !region->readers[TLS->threadID] && region->alt_owner != TLS)
     || TLS->DisableGuards >= 2;

@@ -2074,7 +2074,7 @@ Obj FuncNORMALIZE_NEWLINES(Obj self, Obj string)
 {
   UInt i, j, len;
   Char *s;
-  if (!IsStringConv(string) || !DS_BAG(string))
+  if (!IsStringConv(string) || !REGION(string))
     ErrorQuit("NORMALIZE_NEWLINES: Requires a mutable string argument", 0L, 0L);
   len = GET_LEN_STRING(string);
   s = CSTR_STRING(string);

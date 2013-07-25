@@ -276,7 +276,7 @@ void            AssGVar (
 
     /* if the value is a function, assign it to all the internal fopies    */
     cops = ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index );
-    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public region? */
+    if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
 	if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
 	    for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
 		copy  = (Obj*) ELM_PLIST(cops,i);
@@ -302,7 +302,7 @@ void            AssGVar (
     }
 
     /* assign name to a function                                           */
-    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public region? */
+    if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
 	if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
 	    name = NameGVar(gvar);
 	    /*CCC        onam = NEW_STRING(strlen(name));
@@ -1290,7 +1290,7 @@ Obj GVarFunc(GVarDescriptor *gvar)
   Obj result = *(gvar->ref);
   if (!result)
     ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0L);
-  if (DS_BAG(result))
+  if (REGION(result))
     ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0L);
   ImpliedWriteGuard(result);
   if (TNUM_OBJ(result) != T_FUNCTION)
@@ -1304,7 +1304,7 @@ Obj GVarOptFunc(GVarDescriptor *gvar)
   Obj result = *(gvar->ref);
   if (!result)
     return (Obj) 0;
-  if (DS_BAG(result))
+  if (REGION(result))
     return (Obj) 0;
   ImpliedWriteGuard(result);
   if (TNUM_OBJ(result) != T_FUNCTION)

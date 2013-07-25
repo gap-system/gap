@@ -1174,12 +1174,12 @@ Region *NewRegion(void);
 
 /****************************************************************************
 **
-*F  DS_BAG(<bag>)  . . . . . . . .  return the region containing the bag
+*F  REGION(<bag>)  . . . . . . . .  return the region containing the bag
 *F  RegionBag(<bag>)   . . . . . .  return the region containing the bag
 **
 **  RegionBag() also contains a memory barrier.
 */
-#define DS_BAG(bag) (((Region **)(bag))[1])
+#define REGION(bag) (((Region **)(bag))[1])
 
 Region *RegionBag(Bag bag);
 
@@ -1192,17 +1192,17 @@ Region *RegionBag(Bag bag);
 
 static inline void Migrate(Bag bag, Region *region)
 {
-  DS_BAG(bag) = region;
+  REGION(bag) = region;
 }
 
 static inline void Publish(Bag bag)
 {
-  DS_BAG(bag) = 0;
+  REGION(bag) = 0;
 }
 
 static inline void Share(Bag bag)
 {
-  DS_BAG(bag) = NewRegion();
+  REGION(bag) = NewRegion();
 }
 
 void *AllocateMemoryBlock(UInt size);
