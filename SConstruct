@@ -281,10 +281,10 @@ if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
   build_external("libatomic_ops-2012-03-02")
 
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
-  build_external("gc-7.2d",
-    confargs="CFLAGS=-DMAX_MARKERS=32 --disable-shared --disable-gcj-support" +
+  build_external("gc-7.3dev",
+    confargs="--disable-shared --disable-gcj-support --enable-large-config" +
       (GAP["gc"] == "boehm-par" and " --enable-parallel-mark" or ""),
-    patch=(GAP["gc"].startswith("boehm-") and ["gc-7.2d-tl.patch"] or []))
+    patch=(GAP["gc"].startswith("boehm-") and ["gc-7.3dev-tl.patch"] or []))
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
   os.environ["CXX"] = GAP["CXX"]+" -m"+GAP["abi"]
