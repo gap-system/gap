@@ -177,13 +177,20 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
     if IsPublic(value) then
       # TODO: We need to handle those cases more cleanly.
       if IS_ATOMIC_RECORD(value) then
-        value := AtomicRecord(CopyRegion(FromAtomicRecord(value)));
+        value := AtomicRecord(FromAtomicRecord(value));
       elif IS_ATOMIC_LIST(value) then
-        value := AtomicList(CopyRegion(FromAtomicList(value)));
+        value := AtomicList(FromAtomicList(value));
       elif IS_FIXED_ATOMIC_LIST(value) then
-        value := FixedAtomicList(CopyRegion(FromAtomicList(value)));
+        value := FixedAtomicList(FromAtomicList(value));
       else
-	if IS_MUTABLE_OBJ(value) then
+        if IS_COMOBJ(value) then
+	  # atomic component object
+	  value := Objectify(TypeObj(value), FromAtomicComObj(value));
+	elif IS_POSOBJ(value) then
+	  # atomic positional object
+	  CLONE_OBJ(gvar, value);
+	  return;
+	elif IS_MUTABLE_OBJ(value) then
 	  value := ShallowCopy(value);
 	else
 	  value := MakeImmutable(ShallowCopy(value));

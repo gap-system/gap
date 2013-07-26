@@ -1649,6 +1649,7 @@ Obj FuncCLONE_OBJ (
 {
     Obj *           psrc;
     Obj *           pdst;
+    Obj             tmp;
     Int             i;
 
     /* check <src>                                                         */
@@ -1659,6 +1660,26 @@ Obj FuncCLONE_OBJ (
     }
     if ( IS_FFE(src) ) {
         ErrorReturnVoid( "finite field elements cannot be cloned", 0, 0,
+                         "you can 'return;' to skip the cloning" );
+        return 0;
+    }
+    switch (TNUM_OBJ(src)) {
+        case T_AREC:
+	case T_ACOMOBJ:
+	case T_TLREC:
+	  ErrorReturnVoid( "cannot clone %ss",
+	                   (Int)(InfoBags[TNUM_OBJ(src)].name), 0,
+			   "you can 'return;' to skip the cloning" );
+	  return 0;
+    }
+    if (!REGION(dst)) {
+        ErrorReturnVoid( "CLONE_OBJ() cannot overwrite public objects", 0, 0,
+                         "you can 'return;' to skip the cloning" );
+        return 0;
+    }
+    if (REGION(src) != REGION(dst) && REGION(src)) {
+        ErrorReturnVoid( "objects can only be cloned to replace objects within"
+	                 "the same region or if the object is public", 0, 0,
                          "you can 'return;' to skip the cloning" );
         return 0;
     }
@@ -1680,13 +1701,16 @@ Obj FuncCLONE_OBJ (
     }
 
     /* now shallow clone the object                                        */
-    ResizeBag( dst, SIZE_OBJ(src) );
-    RetypeBag( dst, TNUM_OBJ(src) );
+    tmp = NewBag(TNUM_OBJ(src), SIZE_OBJ(src));
     psrc = ADDR_OBJ(src);
-    pdst = ADDR_OBJ(dst);
+    pdst = ADDR_OBJ(tmp);
     for ( i = (SIZE_OBJ(src)+sizeof(Obj) - 1)/sizeof(Obj);  0 < i;  i-- ) {
         *pdst++ = *psrc++;
     }
+    REGION(dst) = REGION(src);
+    MEMBAR_WRITE();
+    /* The following is a no-op unless the region is public */
+    PTR_BAG(dst) = PTR_BAG(tmp);
     CHANGED_BAG(dst);
 
     return 0;
