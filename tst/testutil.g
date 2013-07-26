@@ -162,7 +162,6 @@ BindGlobal( "RunStandardTests", function( arg )
 ##  <bookname> is either ref or tut. 
 ##  The function should be called EXACTLY from the GAP root directory.
 ## 
-LoadPackage("gapdoc");
 ExtractManualExamples:=function( bookname )
 local path, main, files, tst, i, s, name, output;
 if bookname="tut" then
