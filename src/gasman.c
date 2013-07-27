@@ -111,6 +111,8 @@
 **  already dead.
 */
 #include        <string.h>
+#include        <stdlib.h>
+#include        <stdio.h>
 #include        "system.h"              /* Ints, UInts                     */
 
 
@@ -1277,6 +1279,25 @@ void            InitBags (
 	TabMarkTypeBags[i] = -1;
     }
 #ifndef DISABLE_GC
+    if (!getenv("GC_MARKERS")) {
+      /* The Boehm GC does not have an API to set the number of
+       * markers for the parallel mark and sweep implementation,
+       * so we use the documented environment variable GC_MARKERS
+       * instead. However, we do not override it if it's already
+       * set.
+       */
+      static char marker_env_str[32];
+      unsigned num_markers = 2;
+      extern UInt SyNumProcessors;
+      if (SyNumProcessors) {
+        if (SyNumProcessors < 16)
+	  num_markers = (unsigned) SyNumProcessors;
+	else
+	  num_markers = 16;
+      }
+      sprintf(marker_env_str, "GC_MARKERS=%u", num_markers);
+      putenv(marker_env_str);
+    }
     GC_set_all_interior_pointers(0);
     GC_init();
     TLAllocatorInit();
