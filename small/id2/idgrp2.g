@@ -78,7 +78,7 @@ ID_GROUP_FUNCS[ 8 ] := function( arg )
     adesc := [ ];
 
     # main loop
-    while not IsInt( branch ) do
+    while not ( IsPublic(branch) and IsInt(branch) ) do
     
         lock := LOCK(false,ID_GROUP_TREE);
         
