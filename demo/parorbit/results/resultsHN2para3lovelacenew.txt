@@ -606,3 +606,20 @@ nrhash=3 nrwork=13 time=8.18024206161499
 nrhash=3 nrwork=14 time=6.405184030532837
 nrhash=3 nrwork=15 time=5.313500165939331
 nrhash=3 nrwork=16 time=5.274267196655273
+
+sequential:
+
+Read("HNdata2.g");
+Read("seqorbit.g");
+o := rec(hashlen := 2000001);
+MakeImmutable(o);
+DoManySeqOrbit(gens,v,OnRightRO,o,1);
+
+129.666
+128.28
+128.657
+128.737
+130.072
+128.658
+129.276
+130.43
