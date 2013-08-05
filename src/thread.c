@@ -974,7 +974,7 @@ static Int CurrentRegionPrecedence() {
     if (region_obj) {
       Int prec = ((Region *)(*ADDR_OBJ(region_obj)))->prec;
       if (prec >= 0)
-        return;
+        return prec;
     }
     sp--;
   }
