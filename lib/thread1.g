@@ -18,10 +18,11 @@ BIND_GLOBAL("HPCGAP", true);
 # Convenience aliases
 
 IsLockable := IsShared;
-BIND_GLOBAL("ApplicationRegion", 30000);
-BIND_GLOBAL("LibraryRegion", 20000);
-BIND_GLOBAL("KernelRegion", 10000);
-BIND_GLOBAL("InternalRegion", 0);
+BIND_GLOBAL("REGION_APP_PREC", 30000);
+BIND_GLOBAL("REGION_LIBRARY_PREC", 20000);
+BIND_GLOBAL("REGION_KERNEL_PREC", 10000);
+BIND_GLOBAL("REGION_INTERNAL_PREC", 0);
+BIND_GLOBAL("REGION_NO_PREC", -1);
 
 ShareObjWithPriority := function(arg, priority)
   local name;
@@ -38,19 +39,23 @@ ShareObjWithPriority := function(arg, priority)
 end;
 
 ShareObj := function(arg)
-  return ShareObjWithPriority(arg, ApplicationRegion);
+  return ShareObjWithPriority(arg, REGION_APP_PREC);
 end;
 
 ShareLibraryObj := function(arg)
-  return ShareObjWithPriority(arg, LibraryRegion);
+  return ShareObjWithPriority(arg, REGION_LIBRARY_PREC);
 end;
 
 ShareKernelObj := function(arg)
-  return ShareObjWithPriority(arg, KernelRegion);
+  return ShareObjWithPriority(arg, REGION_KERNEL_PREC);
 end;
 
 ShareInternalObj := function(arg)
-  return ShareObjWithPriority(arg, InternalRegion);
+  return ShareObjWithPriority(arg, REGION_INTERNAL_PREC);
+end;
+
+ShareSpecialObj := function(arg)
+  return ShareObjWithPriority(arg, REGION_NO_PREC);
 end;
 
 ShareSingleObjWithPriority := function(arg, priority)
@@ -68,19 +73,23 @@ ShareSingleObjWithPriority := function(arg, priority)
 end;
 
 ShareSingleObj := function(arg)
-  return ShareSingleObjWithPriority(arg, ApplicationRegion);
+  return ShareSingleObjWithPriority(arg, REGION_APP_PREC);
 end;
 
 ShareSingleLibraryObj := function(arg)
-  return ShareSingleObjWithPriority(arg, LibraryRegion);
+  return ShareSingleObjWithPriority(arg, REGION_LIBRARY_PREC);
 end;
 
 ShareSingleKernelObj := function(arg)
-  return ShareSingleObjWithPriority(arg, KernelRegion);
+  return ShareSingleObjWithPriority(arg, REGION_KERNEL_PREC);
 end;
 
 ShareSingleInternalObj := function(arg)
-  return ShareSingleObjWithPriority(arg, InternalRegion);
+  return ShareSingleObjWithPriority(arg, REGION_INTERNAL_PREC);
+end;
+
+ShareSingleSpecialObj := function(arg)
+  return ShareSingleObjWithPriority(arg, REGION_NO_PREC);
 end;
 
 MigrateObj := MIGRATE;
@@ -92,38 +101,46 @@ RegionSubObjects := REACHABLE;
 
 NewRegion := function(arg)
   if IsBound(arg[1]) then
-    return NEW_REGION(arg[1], ApplicationRegion);
+    return NEW_REGION(arg[1], REGION_APP_PREC);
   else
-    return NEW_REGION(fail, ApplicationRegion);
+    return NEW_REGION(fail, REGION_APP_PREC);
   fi;
 end;
 
 NewLibraryRegion := function(arg)
   if IsBound(arg[1]) then
-    return NEW_REGION(arg[1], LibraryRegion);
+    return NEW_REGION(arg[1], REGION_LIBRARY_PREC);
   else
-    return NEW_REGION(fail, LibraryRegion);
+    return NEW_REGION(fail, REGION_LIBRARY_PREC);
   fi;
 end;
 
 NewKernelRegion := function(arg)
   if IsBound(arg[1]) then
-    return NEW_REGION(arg[1], KernelRegion);
+    return NEW_REGION(arg[1], REGION_KERNEL_PREC);
   else
-    return NEW_REGION(fail, KernelRegion);
+    return NEW_REGION(fail, REGION_KERNEL_PREC);
   fi;
 end;
 
 NewInternalRegion := function(arg)
   if IsBound(arg[1]) then
-    return NEW_REGION(arg[1], InternalRegion);
+    return NEW_REGION(arg[1], REGION_INTERNAL_PREC);
   else
-    return NEW_REGION(fail, InternalRegion);
+    return NEW_REGION(fail, REGION_INTERNAL_PREC);
+  fi;
+end;
+
+NewSpecialRegion := function(arg)
+  if IsBound(arg[1]) then
+    return NEW_REGION(arg[1], REGION_NO_PREC);
+  else
+    return NEW_REGION(fail, REGION_NO_PREC);
   fi;
 end;
 
 ShareAutoReadObj := function(obj)
-  SHARE(obj, fail, InternalRegion);
+  SHARE(obj, fail, REGION_INTERNAL_PREC);
   SetAutoLockRegion(obj, true);
   return obj;
 end;

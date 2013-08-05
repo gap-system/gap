@@ -947,9 +947,24 @@ void ResumeAllThreads() {
   }
 }
 
+/**
+ *  Deadlock checks
+ *  ---------------
+ *
+ *  We use a scheme of numerical tiers to implement deadlock checking.
+ *  Each region is assigned a numerical precedence, and regions must
+ *  be locked in strictly descending numerical order. If this order
+ *  is inverted, or if two regions of the same precedence are locked
+ *  through separate actions, then this is an error.
+ *
+ *  Regions with negative precedence are ignored for these tests. This
+ *  is to facilitate more complex precedence schemes that cannot be
+ *  embedded in a total ordering.
+ */
+
 extern UInt DeadlockCheck;
 
-static Int CurrentRegionPrec() {
+static Int CurrentRegionPrecedence() {
   Int sp;
   if (!DeadlockCheck || !TLS->lockStack)
     return -1;
@@ -957,7 +972,9 @@ static Int CurrentRegionPrec() {
   while (sp > 0) {
     Obj region_obj = ELM_PLIST(TLS->lockStack, sp);
     if (region_obj) {
-      return ((Region *)(*ADDR_OBJ(region_obj)))->prec;
+      Int prec = ((Region *)(*ADDR_OBJ(region_obj)))->prec;
+      if (prec >= 0)
+        return;
     }
     sp--;
   }
@@ -974,8 +991,8 @@ int LockObject(Obj obj, int mode) {
   if (locked == 2 && mode)
     return -1;
   if (!locked) {
-    Int prec = CurrentRegionPrec();
-    if (prec >= 0 && region->prec >= prec)
+    Int prec = CurrentRegionPrecedence();
+    if (prec >= 0 && region->prec >= prec && region->prec >= 0)
       return -1;
     if (region->fixed_owner)
       return -1;
@@ -1014,7 +1031,7 @@ int LockObjects(int count, Obj *objects, int *mode)
   if (p > 1)
     MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
   result = TLS->lockStackPointer;
-  curr_prec = CurrentRegionPrec();
+  curr_prec = CurrentRegionPrecedence();
   for (i=0; i<count; i++)
   {
     Region *region = order[i].region;
@@ -1033,7 +1050,7 @@ int LockObjects(int count, Obj *objects, int *mode)
       return -1;
     }
     if (!locked) {
-      if (curr_prec >= 0 && region->prec >= curr_prec) {
+      if (curr_prec >= 0 && region->prec >= curr_prec && region->prec >= 0) {
 	PopRegionLocks(result);
 	return -1;
       }
