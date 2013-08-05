@@ -2785,8 +2785,8 @@ Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
   Region *region = NewRegion();
   if (name != Fail && !IsStringConv(name))
     ArgumentError("NEW_REGION: Second argument must be a string or fail");
-  if (!IS_INTOBJ(prec) || INT_INTOBJ(prec) < 0)
-    ArgumentError("NEW_REGION: Third argument must be a non-negative integer");
+  if (!IS_INTOBJ(prec))
+    ArgumentError("NEW_REGION: Third argument must be an integer");
   region->prec = INT_INTOBJ(prec);
   if (name != Fail)
     SetRegionName(region, name);
@@ -2799,8 +2799,8 @@ Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
   Obj reachable;
   if (name != Fail && !IsStringConv(name))
     ArgumentError("SHARE: Second argument must be a string or fail");
-  if (!IS_INTOBJ(prec) || INT_INTOBJ(prec) < 0)
-    ArgumentError("SHARE: Third argument must be a non-negative integer");
+  if (!IS_INTOBJ(prec))
+    ArgumentError("SHARE: Third argument must be an integer");
   region->prec = INT_INTOBJ(prec);
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
@@ -2817,8 +2817,8 @@ Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
   Obj reachable;
   if (name != Fail && !IsStringConv(name))
     ArgumentError("SHARE_RAW: Second argument must be a string or fail");
-  if (!IS_INTOBJ(prec) || INT_INTOBJ(prec) < 0)
-    ArgumentError("SHARE_RAW: Third argument must be a non-negative integer");
+  if (!IS_INTOBJ(prec))
+    ArgumentError("SHARE_RAW: Third argument must be an integer");
   region->prec = INT_INTOBJ(prec);
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
