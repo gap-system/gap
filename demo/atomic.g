@@ -2,7 +2,7 @@ z:=0;
 
 f:=function() 
 local l,k,t; 
-l:=ShareObj([]); 
+l:=ShareInternalObj([]); 
 k:=ShareObj([]);
 t:=LOCK(k);
 k[1]:=1;
@@ -113,7 +113,7 @@ s:=ShareObj([]); # list of sums over rows
 atomic readwrite l do
   for i in [1..nr] do
     # this will be changed when we will have full recursive support
-    row:=ShareObj([]); # create row
+    row:=ShareInternalObj([]); # create row
     atomic readonly row do
       l[i]:=row;
     od;
