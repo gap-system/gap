@@ -311,7 +311,7 @@ end );
 #V  ID_GROUP_TREE
 ##
 ##  Variable containing information for group identification
-ID_GROUP_TREE := ShareObj( rec( fp := [ 1 .. 50000 ], next := [ ] ) );
+ID_GROUP_TREE := ShareSpecialObj( rec( fp := [ 1 .. 50000 ], next := [ ] ) );
 
 #############################################################################
 ##
@@ -425,7 +425,7 @@ InstallGlobalFunction( UnloadSmallGroupsData, function( )
     SMALL_GROUP_LIB := AtomicList([ ]);
     PROPERTIES_SMALL_GROUPS := AtomicList([ ]);
     GAP3_CATALOGUE_ID_GROUP := fail;
-    ID_GROUP_TREE := ShareObj( rec( fp := [ 1 .. 50000 ], next := [ ] ) );
+    ID_GROUP_TREE := ShareSpecialObj( rec( fp := [ 1 .. 50000 ], next := [ ] ) );
 end );
 
 #############################################################################

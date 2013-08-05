@@ -41,5 +41,5 @@ SMALL_GROUP_LIB[ 6 ] := AtomicList( List( [
 rec( pos := [ 1, 26, 29, 44, 50, -51, 183 ], val := [ 1, 32768, -26, -26,
 8421376, -50, [ 256 ] ] ), 
 rec( pos := [ 1, 50 ], val := [ 1, [ 32 ] ] ), 
-[ 1 ] ], ShareObj) );
+[ 1 ] ], ShareSpecialObj) );
 

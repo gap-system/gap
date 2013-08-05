@@ -16,7 +16,7 @@
 #F  WITH_HIDDEN_IMPS_FLAGS( <flags> )
 ##
 
-HIDDEN_IMPS := ShareObj([]);
+HIDDEN_IMPS := ShareSpecialObj([]);
 WITH_HIDDEN_IMPS_FLAGS_CACHE      := LockAndMigrateObj([], HIDDEN_IMPS);
 WITH_HIDDEN_IMPS_FLAGS_COUNT      := 0;
 WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := 0;
@@ -82,7 +82,7 @@ end );
 #F  WITH_IMPS_FLAGS( <flags> )
 ##
 
-IMPLICATIONS := ShareObj([]);
+IMPLICATIONS := ShareSpecialObj([]);
 WITH_IMPS_FLAGS_CACHE      := LockAndMigrateObj([], IMPLICATIONS);
 WITH_IMPS_FLAGS_COUNT      := 0;
 WITH_IMPS_FLAGS_CACHE_HIT  := 0;

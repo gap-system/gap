@@ -7,4 +7,4 @@
 SMALL_GROUP_LIB[ 45 ] := AtomicList( List( [
 [ [ 1 ], [ 1, 3 ], -1, [ 1, -2, 3 ], -1 ], 
 [ [ 1 ], [ 9 ] ], 
-[ [ 1 ] ] ], ShareObj) );
+[ [ 1 ] ] ], ShareSpecialObj) );

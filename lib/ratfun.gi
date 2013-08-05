@@ -810,7 +810,7 @@ function( efam )
   fam!.univariateZeroPolynomials:=MakeWriteOnceAtomic([]);
 
   # assign a names list
-  fam!.namesIndets := ShareObj([]);
+  fam!.namesIndets := ShareSpecialObj([]);
 
   # and return
   return fam;

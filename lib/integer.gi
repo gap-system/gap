@@ -363,12 +363,12 @@ ADD_SET(Primes2, 4330075309599657322634371042967428373533799534566765522517);
 ADD_SET(Primes2, 549180361199324724418373466271912931710271534073773);
 ADD_SET(Primes2,  85411410016592864938535742262164288660754818699519364051241927961077872028620787589587608357877); 
 
-ShareObj(Primes2);
+ShareSpecialObj(Primes2);
 
 InstallFlushableValue(ProbablePrimes2, []);
 IsSSortedList( ProbablePrimes2 );
 
-ShareObj(ProbablePrimes2);
+ShareSpecialObj(ProbablePrimes2);
 #############################################################################
 ##
 #F  BestQuoInt( <n>, <m> )

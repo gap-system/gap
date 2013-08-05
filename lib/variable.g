@@ -161,7 +161,7 @@ end );
 ##     `DeclareOperation', `DeclareProperty' etc. would admit this already.
 ##
 
-BIND_GLOBAL( "FLUSHABLE_VALUE_REGION", NewRegion("FLUSHABLE_VALUE_REGION"));
+BIND_GLOBAL( "FLUSHABLE_VALUE_REGION", NewSpecialRegion("FLUSHABLE_VALUE_REGION"));
 
 BIND_GLOBAL( "InstallValue", function ( gvar, value )
     local tmp;
@@ -284,7 +284,7 @@ BIND_GLOBAL( "TYPE_LVARS", NewType(LVARS_FAMILY, IsLVarsBag));
 #
 # Namespaces:
 #
-BIND_GLOBAL( "NAMESPACES_STACK", ShareObj([]) );
+BIND_GLOBAL( "NAMESPACES_STACK", ShareSpecialObj([]) );
 
 BIND_GLOBAL( "ENTER_NAMESPACE",
   function( namesp )

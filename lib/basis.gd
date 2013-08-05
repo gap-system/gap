@@ -855,7 +855,7 @@ DeclareGlobalFunction( "InstallHandlingByNiceBasis" );
 ##  <#/GAPDoc>
 ##
 BindGlobal( "NiceBasisFiltersInfo", [] );
-ShareObj( NiceBasisFiltersInfo );
+ShareSpecialObj( NiceBasisFiltersInfo );
 
 #############################################################################
 ##

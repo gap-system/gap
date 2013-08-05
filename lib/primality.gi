@@ -105,7 +105,7 @@ MakeImmutable(CompositeSPP2);
 ##
 ##############################################################################
 InstallFlushableValue(PrimesProofs,[]);
-ShareObj(PrimesProofs);
+ShareSpecialObj(PrimesProofs);
 
 ##############################################################################
 ## 

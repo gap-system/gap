@@ -31,7 +31,7 @@ Prompt@ := fail;
 ShowBackgroundOutput@ := fail;
 ShownOutput@ := fail;
 PendingOutput@ := fail;
-BindGlobal("Region@", ShareObj("TextUI"));
+BindGlobal("Region@", ShareSpecialObj("TextUI"));
 
 BindGlobal("InitThreadTables@", function()
   ThreadControlChannel@TextUI := [];

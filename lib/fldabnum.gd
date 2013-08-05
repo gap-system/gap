@@ -311,7 +311,7 @@ DeclareGlobalVariable( "CYCLOTOMIC_FIELDS",
     "list, CYCLOTOMIC_FIELDS[n] = CF(n) if bound" );
 
 InstallFlushableValue( CYCLOTOMIC_FIELDS, [ ] );
-ShareObj(CYCLOTOMIC_FIELDS);
+ShareSpecialObj(CYCLOTOMIC_FIELDS);
 
 #############################################################################
 ##
@@ -385,7 +385,7 @@ DeclareSynonym( "CF", CyclotomicField );
 DeclareGlobalVariable( "ABELIAN_NUMBER_FIELDS",
     "list of lists, at position [1][n] stabilizers, at [2][n] the fields" );
 InstallFlushableValue( ABELIAN_NUMBER_FIELDS, [ [], [] ] );
-ShareObj(ABELIAN_NUMBER_FIELDS);
+ShareSpecialObj(ABELIAN_NUMBER_FIELDS);
 
 
 #############################################################################

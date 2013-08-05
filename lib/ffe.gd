@@ -323,7 +323,7 @@ DeclareGlobalFunction( "FFEFamily" );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "FAMS_FFE_LARGE", [ [], [] ] );
-ShareObj( FAMS_FFE_LARGE );
+ShareSpecialObj( FAMS_FFE_LARGE );
 
 #############################################################################
 ##

@@ -2606,7 +2606,7 @@ end);
 ##
 BindGlobal( "Bernoulli2",
     [-1/2,1/6,0,-1/30,0,1/42,0,-1/30,0,5/66,0,-691/2730,0,7/6] );
-ShareObj(Bernoulli2);
+ShareSpecialObj(Bernoulli2);
 
 InstallGlobalFunction(Bernoulli,function ( n )
     local   brn, bin, i, j;

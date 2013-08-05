@@ -132,7 +132,7 @@ DeclareGlobalVariable( "CYCLOTOMICPOLYNOMIALS",
     "list, at position n the coefficient list of the n-th cycl. pol." );
 InstallFlushableValue( CYCLOTOMICPOLYNOMIALS, [] );
 
-ShareObj(CYCLOTOMICPOLYNOMIALS);
+ShareSpecialObj(CYCLOTOMICPOLYNOMIALS);
 
 
 #############################################################################

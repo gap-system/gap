@@ -853,7 +853,7 @@ InputTextFileType := NewType(
 ##
 #V  InputTextFileStillOpen  . . . . . . . . . . . . . . .  list of open files
 ##
-InputTextFileStillOpen := ShareObj([]);
+InputTextFileStillOpen := ShareSpecialObj([]);
 
 
 #############################################################################
@@ -1460,7 +1460,7 @@ OutputTextFileType := NewType(
 ##
 #V  OutputTextFileStillOpen
 ##
-OutputTextFileStillOpen := ShareObj([]);
+OutputTextFileStillOpen := ShareSpecialObj([]);
 
 
 #############################################################################

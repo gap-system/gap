@@ -24,7 +24,7 @@ SetComponentsOfDirectProductElementsFamily( EmptyDirectProductElementsFamily,
 
 InstallValue( DIRECT_PRODUCT_ELEMENT_FAMILIES,
     [ [ EmptyDirectProductElementsFamily ] ] );
-ShareObj( DIRECT_PRODUCT_ELEMENT_FAMILIES );
+ShareSpecialObj( DIRECT_PRODUCT_ELEMENT_FAMILIES );
 
 
 #############################################################################

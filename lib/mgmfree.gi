@@ -81,7 +81,7 @@ InstallMethod( IsWholeFamily,
 ##  $q = (M'-1) \bmod C(l-1)$ and $p = (M'-q-1 ) / C(l-1)$.
 ##  
 BindGlobal( "SHIFTED_CATALAN", [ 1 ] );
-ShareObj( SHIFTED_CATALAN );
+ShareSpecialObj( SHIFTED_CATALAN );
 
 BindGlobal( "ShiftedCatalan", function( n )
     local res;

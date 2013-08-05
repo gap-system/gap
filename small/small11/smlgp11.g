@@ -224,7 +224,7 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
         od;
     fi;
 
-    ShareObj(sml.index);
+    ShareSpecialObj(sml.index);
     od; # atomic readwrite sml.index, sml.arraytails, sml.regtails
 
     # now fix_exps is reconstructed and we may create the group

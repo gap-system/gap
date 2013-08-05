@@ -34,7 +34,7 @@ BIND_GLOBAL("PICK_SMALL_OBJ_REGION", function()
   if not IsBound(SMALL_OBJ_REGION_LIST[region]) then
     name := "small region #";
     Append(name, String(region));
-    SMALL_OBJ_REGION_LIST[region] := NewRegion(name);
+    SMALL_OBJ_REGION_LIST[region] := NewSpecialRegion(name);
   fi;
   return SMALL_OBJ_REGION_LIST[region];
 end);

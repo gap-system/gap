@@ -61,7 +61,7 @@
 ##  the number is `INT_CHAR(<k>) + 256'.
 ##  
 
-BindGlobal("CommandLineRegion", NewRegion("command line region"));
+BindGlobal("CommandLineRegion", NewSpecialRegion("command line region"));
 
 BindGlobal("LineEditKeyHandlers", []);
 LockAndMigrateObj(LineEditKeyHandlers, CommandLineRegion);
@@ -333,7 +333,7 @@ od;
 if not IsBound(GAPInfo.History) then
   GAPInfo.History :=
     AtomicRecord(rec(MaxLines := -1, Lines := [], Pos := 0));
-  ShareObj(GAPInfo.History.Lines);
+  ShareSpecialObj(GAPInfo.History.Lines);
 fi;
 GAPInfo.History.AddLine := function(l)
   local hist, len;
@@ -393,7 +393,7 @@ end;
 # [] in lieu of Set([]); AddSet() and RemoveSet() accept the
 # empty list as a proper set because it is sorted.
 
-TERMINAL_REGION := ShareObj("TERMINAL_REGION");
+TERMINAL_REGION := ShareSpecialObj("TERMINAL_REGION");
 TERMINAL_FILE_IDS := LockAndMigrateObj([], TERMINAL_REGION);
 TERMINAL_EXITING := false;
 

@@ -26,9 +26,9 @@ BIND_GLOBAL( "MAXSIZE_GF_INTERNAL", 2^16 );
 ##
 #T TYPES_FFE := WeakPointerObj( [] );
 BIND_GLOBAL( "TYPES_FFE", [] );
-ShareObj( TYPES_FFE );
+ShareSpecialObj( TYPES_FFE );
 BIND_GLOBAL( "TYPES_FFE0", [] );
-ShareObj( TYPES_FFE0 );
+ShareSpecialObj( TYPES_FFE0 );
 
 #############################################################################
 ##

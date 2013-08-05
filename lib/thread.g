@@ -69,7 +69,7 @@ BindGlobal("FindGVarHolding", function(val)
   return fail;
 end);
 
-LAST_INTERRUPT := ShareObj(rec(id := 0));
+LAST_INTERRUPT := ShareSpecialObj(rec(id := 0));
 
 BindGlobal("NewInterruptID", function()
   atomic LAST_INTERRUPT do

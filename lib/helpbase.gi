@@ -11,7 +11,7 @@
 ## and the actual help books.
 ##  
 
-HELP_REGION:=NewRegion("HELP_REGION");
+HELP_REGION:=NewSpecialRegion("HELP_REGION");
 
 #############################################################################
 ##  

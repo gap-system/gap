@@ -66,7 +66,7 @@ FFECONWAY.SetUpConwayStuff := function(p,d)
     local   fam,  cp,  cps,  i, reducer;
     fam := FFEFamily(p);
     if not IsBound(fam!.ConwayPolCoeffs) then
-        fam!.ConwayPolCoeffs := ShareObj([]);
+        fam!.ConwayPolCoeffs := ShareSpecialObj([]);
         fam!.ConwayFldEltReducers := AtomicList([]);
     fi;
 
@@ -330,7 +330,7 @@ FFECONWAY.GetConwayPolCoeffs := function(f,d)
     # because MakeWriteOnceAtomic was applied to fam when it was created, 
     # it should be safe to assign fam!.ConwayPolCoeffs as below
     if not IsBound(f!.ConwayPolCoeffs) then
-        f!.ConwayPolCoeffs := ShareObj([]);
+        f!.ConwayPolCoeffs := ShareSpecialObj([]);
     fi;
     
     atomic readonly f!.ConwayPolCoeffs do

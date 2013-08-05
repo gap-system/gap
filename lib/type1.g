@@ -83,7 +83,7 @@ InstallAttributeFunction(
 ##  <#/GAPDoc>
 ##
 Subtype := "defined below";
-DS_TYPE_CACHE := ShareKernelObj([]);
+DS_TYPE_CACHE := ShareSpecialObj([]);
 
 
 BIND_GLOBAL( "NEW_FAMILY",

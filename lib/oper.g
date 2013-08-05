@@ -49,7 +49,7 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "CATS_AND_REPS", [] );
-ShareKernelObj(CATS_AND_REPS);
+ShareSpecialObj(CATS_AND_REPS);
 
 
 #############################################################################
@@ -64,7 +64,7 @@ ShareKernelObj(CATS_AND_REPS);
 ##  </ManSection>
 ##
 BIND_GLOBAL( "CONSTRUCTORS", [] );
-ShareKernelObj(CONSTRUCTORS);
+ShareSpecialObj(CONSTRUCTORS);
 
 BIND_GLOBAL( "IS_CONSTRUCTOR", function(op) 
     atomic readonly CONSTRUCTORS do
@@ -1615,7 +1615,7 @@ end );
 ##  global variables (see <C>variable.g</C>) because of the completion
 ##  mechanism.
 ##
-BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", ShareObj([], "GLOBAL_FUNCTION_NAMES") );
+BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", ShareSpecialObj([], "GLOBAL_FUNCTION_NAMES") );
 
 BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
     local   name;

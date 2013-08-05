@@ -493,7 +493,7 @@ MakeReadOnly(TypeOfTypes);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "CATEGORIES_FAMILY", [] );
-ShareObj(CATEGORIES_FAMILY);
+ShareSpecialObj(CATEGORIES_FAMILY);
 
 BIND_GLOBAL( "CategoryFamily", function ( elms_filter )
     local    pair, fam_filter, super, flags, name;

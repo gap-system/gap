@@ -37,7 +37,7 @@ end;
 #V  IRR_POLS_OVER_GF_CACHE:  a cache for the following function
 ##  
 IRR_POLS_OVER_GF_CACHE := [];
-ShareObj( IRR_POLS_OVER_GF_CACHE );
+ShareSpecialObj( IRR_POLS_OVER_GF_CACHE );
 ##  RedCoeffDirectFun := ApplicableMethod(ReduceCoeffs,[[Z(3)],1,[Z(3)],1]);
 AllIrreducibleMonicPolynomialCoeffsOfDegree := function(n, q)
   local   l,  zero,  i,  r,  p, new, neverdiv;

@@ -122,7 +122,7 @@ end );
 ## when loading a package, actual concurrent calls should be vanishingly
 ## rare.
 
-BIND_GLOBAL("METHODS_OPERATION_REGION", NewRegion("operation methods"));
+BIND_GLOBAL("METHODS_OPERATION_REGION", NewSpecialRegion("operation methods"));
 
 #############################################################################
 ##

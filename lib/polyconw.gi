@@ -98,7 +98,7 @@ ATOMIC_RECORD_REPLACEMENT(CONWAYPOLYNOMIALSINFO.cache, false);
 ##              num = a0 + a1 p + a2 p^2 + ... + a<n-1> p^(n-1).
 ##  
 BindGlobal("CONWAYPOLDATA", []);
-ShareObj(CONWAYPOLDATA);
+ShareSpecialObj(CONWAYPOLDATA);
 
 ##  a utility function, checks consistency of a polynomial with Conway
 ##  polynomials of proper subfield. (But  doesn't check that it is the
@@ -227,7 +227,7 @@ BIND_GLOBAL("PREPARE_CONWAY_DATA", function(list)
     for x in list do
         MakeImmutable(x);
     od;
-    return ShareObj(list);
+    return ShareSpecialObj(list);
 end);
 
 
@@ -294,14 +294,14 @@ InstallGlobalFunction( ConwayPol, function( p, n )
                 if IsBound( CONWAYPOLDATA[p] ) then
                     cachelist := CONWAYPOLDATA[p];
                 else
-                    cachelist := ShareObj([]);
+                    cachelist := ShareSpecialObj([]);
                     CONWAYPOLDATA[p] := cachelist;
                 fi;
             od;                
         fi;
     else
         if not IsBound( CONWAYPOLYNOMIALSINFO.cache.(String(p)) ) then
-            CONWAYPOLYNOMIALSINFO.cache.(String(p)) := ShareObj([]);
+            CONWAYPOLYNOMIALSINFO.cache.(String(p)) := ShareSpecialObj([]);
         fi;
         cachelist := CONWAYPOLYNOMIALSINFO.cache.(String(p));
     fi;

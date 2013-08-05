@@ -18,7 +18,7 @@ Tasks := AtomicRecord( rec ( Initial := GAPInfo.KernelInfo.NUM_CPUS ,    # initi
                  WorkerSuspensionRequests := CreateChannel(),
                  InputChannels := AtomicList([])));  # suspend requests from task manager
 
-TaskData := ShareObj( rec(
+TaskData := ShareSpecialObj( rec(
                     TaskPool := [],                               # task pool (list)
                     TaskPoolLen := 0,         # length of a task pool     
                     Running := 0));
@@ -201,7 +201,7 @@ Tasks.CreateTask := function(arglist)
     if IsThreadLocal(args[i]) then
       adopt[i] := true;
       if not adopted then
-        args[i] := ShareObj(CLONE_REACHABLE(args[i]));
+        args[i] := ShareSpecialObj(CLONE_REACHABLE(args[i]));
         ds := RegionOf(args[i]);
         p := LOCK(args[i]);
         adopted := true;
@@ -216,7 +216,7 @@ Tasks.CreateTask := function(arglist)
     UNLOCK(p);
   fi;
   
-  task :=  ShareObj (rec (
+  task :=  ShareSpecialObj (rec (
                    func := arglist[1],
                    args := args,
                    adopt := adopt,
@@ -304,7 +304,7 @@ ImmediateTask := function(arg)
   else
     result := result[2];
   fi;
-  task := ShareObj (rec( started := true, complete := true, async := false,
+  task := ShareSpecialObj (rec( started := true, complete := true, async := false,
                   result := result, adopt_result := false ));
   return task;
 end;

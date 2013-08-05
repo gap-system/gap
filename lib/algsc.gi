@@ -682,7 +682,7 @@ InstallAccessToGenerators( IsSCAlgebraObjCollection and IsFullSCAlgebra,
 #V  QuaternionAlgebraData
 ##
 InstallFlushableValue( QuaternionAlgebraData, [] );
-ShareObj( QuaternionAlgebraData );
+ShareSpecialObj( QuaternionAlgebraData );
 
 #############################################################################
 ##

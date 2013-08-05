@@ -3,7 +3,7 @@
 #
 # Triggers > Tasks/Milestones > TASK_QUEUE
 
-TASK_QUEUE := ShareObj( rec (
+TASK_QUEUE := ShareSpecialObj( rec (
   ready_tasks := [],
   workers := [],
   active_count := 0,
@@ -131,7 +131,7 @@ TASKS := AtomicRecord( rec (
       adopt := [],
       result := fail,
       adopt_result := fail,
-      region := NewRegion(),
+      region := NewSpecialRegion(),
       complete := false,
       started := false,
       async := false,
@@ -172,7 +172,7 @@ TASKS := AtomicRecord( rec (
   PseudoWorker := function()
     local context;
     context := MakeWriteOnceAtomic(rec(
-      region := NewRegion(),
+      region := NewSpecialRegion(),
       semaphore := CreateSemaphore(),
       thread := fail,
     ));
@@ -291,7 +291,7 @@ TASKS := AtomicRecord( rec (
     od;
     # We get here if we have a triggered task with
     # unmet conditions.
-    ShareObj(trigger);
+    ShareSpecialObj(trigger);
     TASKS.ActivateTrigger(trigger);
   end,
 ) );
@@ -305,7 +305,7 @@ NewMilestone := function(arg)
   else
     milestone := TASKS.NewMilestone(arg);
   fi;
-  return ShareObj(milestone);
+  return ShareSpecialObj(milestone);
 end;
 
 ContributeToMilestone := function(milestone, contribution)
@@ -351,7 +351,7 @@ RunTask := function(arg)
   local task;
   task := TASKS.NewTask(arg[1], arg{[2..Length(arg)]});
   task.started := true;
-  ShareObj(task);
+  ShareSpecialObj(task);
   TASKS.QueueTask(task);
   return task;
 end;
@@ -361,7 +361,7 @@ RunAsyncTask := function(arg)
   task := TASKS.NewTask(arg[1], arg{[2..Length(arg)]});
   task.async := true;
   task.started := true;
-  ShareObj(task);
+  ShareSpecialObj(task);
   TASKS.QueueTask(task);
   return task;
 end;
@@ -369,7 +369,7 @@ end;
 DelayTask := function(arg)
   local task;
   task := TASKS.NewTask(arg[1], arg{[2..Length(arg)]});
-  ShareObj(task);
+  ShareSpecialObj(task);
   return task;
 end;
 
@@ -398,7 +398,7 @@ ScheduleTask := function(arg)
   od;
   task := TASKS.NewTask(arg[2], arg{[3..Length(arg)]});
   task.conditions := MakeReadOnlyObj(cond);
-  ShareObj(task);
+  ShareSpecialObj(task);
   TASKS.QueueTask(task);
   return task;
 end;
@@ -414,7 +414,7 @@ ScheduleAsyncTask := function(arg)
   task := TASKS.NewTask(arg[2], arg{[3..Length(arg)]});
   task.async := true;
   task.conditions := MakeReadOnlyObj(cond);
-  ShareObj(task);
+  ShareSpecialObj(task);
   TASKS.QueueTask(task);
   return task;
 end;
@@ -434,7 +434,7 @@ WAIT_TASK := function(conditions, is_conjunction)
 	TASK_QUEUE.active_count := TASK_QUEUE.active_count - 1;
       od;
     fi;
-    ShareObj(trigger);
+    ShareSpecialObj(trigger);
     TASKS.ActivateTrigger(trigger);
     while true do
       TASKS.WakeWorker();
@@ -515,7 +515,7 @@ ImmediateTask := function(arg)
   else
     result := result[2];
   fi;
-  task := ShareObj (rec( started := true, complete := true, async := false,
+  task := ShareSpecialObj (rec( started := true, complete := true, async := false,
                   result := result, adopt_result := false ));
   return task;
 end;

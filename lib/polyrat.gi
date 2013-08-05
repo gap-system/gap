@@ -128,7 +128,7 @@ end);
 ##   numerically with a denominator of 'digits' digits.
 ##
 APPROXROOTS:=[];
-ShareObj(APPROXROOTS);
+ShareSpecialObj(APPROXROOTS);
 
 BindGlobal("ApproximateRoot",function(arg)
 local r,e,f,x,nf,lf,c,store;

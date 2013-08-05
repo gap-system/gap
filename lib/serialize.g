@@ -8,7 +8,7 @@ end);
 
 BindGlobal("SERIALIZATION_TAG_BASE", 1024);
 
-BindGlobal("SERIALIZATION_TAG_REGION", NewRegion("Serialization Tags"));
+BindGlobal("SERIALIZATION_TAG_REGION", NewSpecialRegion("Serialization Tags"));
 
 SERIALIZATION_TAG := MakeReadOnly(OBJ_MAP());
 BindGlobal("SERIALIZATION_TAG_NEW", OBJ_MAP());

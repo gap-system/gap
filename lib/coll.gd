@@ -193,7 +193,7 @@ DeclareAttribute( "ElementsFamily", IsFamily );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "CATEGORIES_COLLECTIONS", [] );
-ShareObj(CATEGORIES_COLLECTIONS);
+ShareSpecialObj(CATEGORIES_COLLECTIONS);
 
 #############################################################################
 ##
@@ -441,7 +441,7 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "SUBSET_MAINTAINED_INFO", ShareObj([ [], [] ],
+BIND_GLOBAL( "SUBSET_MAINTAINED_INFO", ShareSpecialObj([ [], [] ],
   "SUBSET_MAINTAINED_INFO") );
 
 
@@ -715,7 +715,7 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "ISOMORPHISM_MAINTAINED_INFO", ShareObj([],
+BIND_GLOBAL( "ISOMORPHISM_MAINTAINED_INFO", ShareSpecialObj([],
   "Isomorphism Maintained Info/Functions"));
 
 
@@ -913,7 +913,7 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "FACTOR_MAINTAINED_INFO", ShareObj([], "FACTOR_MAINTAINED_INFO") );
+BIND_GLOBAL( "FACTOR_MAINTAINED_INFO", ShareSpecialObj([], "FACTOR_MAINTAINED_INFO") );
 
 
 #############################################################################
