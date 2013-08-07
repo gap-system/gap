@@ -1215,7 +1215,7 @@ static Obj FuncATOMIC_RECORD_REPLACEMENT(Obj self, Obj record, Obj strat)
 }
 
 static Obj CreateTLDefaults(Obj defrec) {
-  Region *savedDS = TLS->currentRegion;
+  Region *saved_region = TLS->currentRegion;
   Obj result;
   UInt i;
   TLS->currentRegion = LimboRegion;
@@ -1225,7 +1225,7 @@ static Obj CreateTLDefaults(Obj defrec) {
     SET_ELM_PREC(result, i,
       CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1, 0));
   }
-  TLS->currentRegion = savedDS;
+  TLS->currentRegion = saved_region;
   return NewAtomicRecordFrom(result);
 }
 

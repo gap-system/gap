@@ -2744,10 +2744,10 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
 
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 {
-  Region *targetDS = GetRegionOf(target);
-  if (!targetDS || IsLocked(targetDS) != 1)
+  Region *target_region = GetRegionOf(target);
+  if (!target_region || IsLocked(target_region) != 1)
     ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to target region");
-  if (!MigrateObjects(1, &obj, targetDS, 0))
+  if (!MigrateObjects(1, &obj, target_region, 0))
     ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to object");
   return obj;
 }
@@ -2849,26 +2849,26 @@ Obj FuncMAKE_PUBLIC(Obj self, Obj obj)
 
 Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
 {
-  Region *targetDS = GetRegionOf(target);
+  Region *target_region = GetRegionOf(target);
   Obj reachable;
-  if (!targetDS || IsLocked(targetDS) != 1)
+  if (!target_region || IsLocked(target_region) != 1)
     ArgumentError("MIGRATE: Thread does not have exclusive access to target region");
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, targetDS, 1))
+       ADDR_OBJ(reachable)+1, target_region, 1))
     ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
   return obj;
 }
 
 Obj FuncMIGRATE_RAW(Obj self, Obj obj, Obj target)
 {
-  Region *targetDS = GetRegionOf(target);
+  Region *target_region = GetRegionOf(target);
   Obj reachable;
-  if (!targetDS || IsLocked(targetDS) != 1)
+  if (!target_region || IsLocked(target_region) != 1)
     ArgumentError("MIGRATE: Thread does not have exclusive access to target region");
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, targetDS, 0))
+       ADDR_OBJ(reachable)+1, target_region, 0))
     ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
   return obj;
 }
