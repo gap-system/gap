@@ -264,6 +264,13 @@ UInt SyNumProcessors = NUM_CPUS;
 UInt SyNumProcessors = 4;
 #endif
 
+/****************************************************************************
+**
+*V  SyNumGCThreads  . . . . . . . . . . . . . . . number of GC worker threads
+**
+*/
+UInt SyNumGCThreads = 0;
+
 
 
 /****************************************************************************
@@ -1778,6 +1785,7 @@ struct optInfo options[] = {
   { 'S',  toggle, &ThreadUI, 0 }, /* Thread UI */
   { 'Z',  toggle, &DeadlockCheck, 0 }, /* Thread UI */
   { 'P',  storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
+  { 'G',  storePosInteger, &SyNumGCThreads, 1 }, /* Thread UI */
   { '\0',0,0}};
 
 

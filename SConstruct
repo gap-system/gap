@@ -19,6 +19,9 @@ vars.Add(EnumVariable("gmp", "Use GMP", "yes",
   allowed_values=("yes", "no", "system")))
 vars.Add(EnumVariable("gc", "Use GC",
   "boehm-tl", allowed_values=("boehm", "boehm-tl", "boehm-par", "fusion", "no", "system")))
+vars.Add(EnumVariable("gcblksize", "Size of GC heap blocks",
+  "8192", allowed_values=("auto", "4096", "8192", "16384", "32768")))
+vars.Add("gcmaxthreads", "Maximum number of workers to be used by the GC", "32")
 vars.Add('preprocess', 'Use source preprocessor', "")
 vars.Add('ward', 'Specify Ward directory', "")
 vars.Add('cpus', "Number of logical CPUs", "auto")
@@ -26,6 +29,8 @@ vars.Add('cpus', "Number of logical CPUs", "auto")
 GAP = DefaultEnvironment(variables=vars, PATH=os.environ["PATH"])
 
 Help(vars.GenerateHelpText(GAP))
+
+# What compiler and platform are we dealing with?
 
 if GAP["compiler"] != "":
   GAP["CC"] = GAP["compiler"]
@@ -37,6 +42,9 @@ cpp_compiler = GAP["CXX"]
 platform_name = commands.getoutput("cnf/config.guess")
 build_dir = "bin/" + platform_name + "-" + compiler + "-hpc"
 
+# Figure out the number of processors. This is an estimate and works
+# only for Linux and OS X at the moment. For all other platforms, we
+# use a default, though that can be overridden with cpus=n.
 default_ncpus = 4
 
 if GAP["cpus"] == "auto":
@@ -78,7 +86,21 @@ except: pass
 try: os.symlink(build_dir[4:], "bin/current")
 except: pass
  
+# Calculate the maximum number of GC threads to use
+if GAP["gcmaxthreads"] in ("", "auto"):
+  gcmaxthreads = ncpus
+else:
+  try: gcmaxthreads = int(GAP["gcmaxthreads"])
+  except:
+    print "gcmaxthreads option is not an integer"
+    Exit(1)
+  if gcmaxthreads <= 0:
+    print "gcmaxthreads is not a positive integer"
+    Exit(1)
 
+
+# Routine to scan config.h and figure out whether we are targeting
+# a 32-bit or a 64-bit architecture.
 def abi_from_config(config_header_file):
   global GAP
   try:
@@ -106,6 +128,8 @@ if not has_config or "config" in COMMAND_LINE_TARGETS or changed_abi:
   if not GetOption("clean"):
     if GAP["abi"] != "auto":
       os.environ["CFLAGS"] = " -m" + GAP["abi"]
+    # Configuration name is currently forced to be "hpc". This is
+    # necessary because we are wrapping the GAP.dev build process.
     os.environ["CONFIGNAME"] = "hpc"
     os.environ["GAPARCH"] = build_dir[4:]
     os.system("./hpc/configure CC=\""+GAP["CC"]+"\"")
@@ -125,6 +149,8 @@ GAP["abi"] = default_abi
 GAP.Command("config", [], "") # Empty builder for the config target
 
 # Which external libraries do we need?
+# This code also sets compile_gmp and compile_gc so that we know
+# later which external libraries to build.
 
 libs = ["gmp", "gc", "atomic_ops"]
 conf = Configure(GAP)
@@ -234,7 +260,11 @@ GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags+linkflags)
 abi_path = "extern/"+GAP["abi"]+"bit"
 GAP.Append(RPATH=os.path.join(os.getcwd(), abi_path, "lib"))
 
-def build_external(libname, confargs="", makeargs="", cc="", patch=[]):
+
+# General routine to build an external library using gunzip,
+# tar, configure, and make.
+def build_external(libname, confargs="", makeargs="",
+                   cc="", cflags="", patch=[]):
   global abi_path
   if GetOption("help") or GetOption("clean"):
     return
@@ -247,30 +277,31 @@ def build_external(libname, confargs="", makeargs="", cc="", patch=[]):
     confargs = " " + confargs
   if makeargs:
     makeargs = " " + makeargs
-  if cc:
-    ccprefix = "CC=\"%s\"" % cc
-  else:
-    ccprefix = "CC=\"%(CC)s -m%(abi)s\"" % GAP
+  if not cc:
+    cc = "%(CC)s -m%(abi)s" % GAP
+  if cflags:
+    cc += " " + cflags
+  ccprefix = "CC=\"%s\"" % cc
   confargs = " " + ccprefix + confargs
   print "=== Extracting " + libname + " ==="
   if os.system("cd " + abi_path
           + " && tar xzf ../" + libname + ".tar.gz"):
     print("=== Missing or damaged " + libname + ".tar.gz")
-    sys.exit(1)
+    Exit(1)
   if patch:
     for p in patch:
       print "=== Patching " + libname + " with " + p + " ==="
       if os.system("cd " + abi_path + "/" + libname
                  + " && patch -p1 -f < ../../" + p) != 0:
 	print("=== Failed to patch " + libname);
-	sys.exit(1)
+	Exit(1)
   print "=== Building " + libname + " ==="
   if os.system("cd " + abi_path + "/" + libname
 	  + " && ./configure --prefix=$PWD/.." + confargs
 	  + " && make -j " + str(jobs) + makeargs
 	  + " && make" + makeargs + " install") != 0:
     print "=== Failed to build " + libname + " ==="
-    sys.exit(1)
+    Exit(1)
 
 if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
   os.environ["ABI"] = GAP["abi"]
@@ -280,10 +311,23 @@ if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
 if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
   build_external("libatomic_ops-2012-03-02")
 
+# Build the garbage collector
+gc_configuration = "%(gc)s:%(gcblksize)s:%(gcmaxthreads)s\n" % GAP
+new_gc = False
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
-  build_external("gc-7.3dev",
+  new_gc = True
+  gc_cflags = "-DMAX_MARKERS=" + str(gcmaxthreads)
+  if GAP["gcblksize"] != "auto":
+    import resource
+    if GAP["gc"].startswith("boehm-"):
+      if resource.getpagesize() > int(GAP["gcblksize"]):
+	gc_cflags += " -DHBLKSIZE=" + str(resource.getpagesize())
+      else:
+	gc_cflags += " -DHBLKSIZE=" + GAP["gcblksize"]
+  build_external("gc-7.3dev", cflags=gc_cflags,
     confargs="--disable-shared --disable-gcj-support --enable-large-config" +
-      (GAP["gc"] == "boehm-par" and " --enable-parallel-mark" or ""),
+      (GAP["gc"] == "boehm-par" and " --enable-parallel-mark" or
+                                    " --disable-parallel-mark"),
     patch=(GAP["gc"].startswith("boehm-") and ["gc-7.3dev-tl.patch"] or []))
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
@@ -315,28 +359,11 @@ include_path.append(abi_path + "/include")
 options["CPPPATH"] = ":".join(include_path)
 options["OBJPREFIX"] = "../build/obj/"
 
-# uname file generator
+# Store the compiler and linker flags in files in the build directory
+# so that GAP packages can access them.
 
-sysinfo_os, sysinfo_host, sysinfo_version, sysinfo_os_full, sysinfo_arch = \
-  os.uname()
-
-sysinfo_header = [
-  "#ifndef _SYSINFO_H",
-  "#define SYSINFO_OS " + sysinfo_os,
-  "#define SYSINFO_OS_"+ string.upper(sysinfo_os)+" 1",
-  "#define SYSINFO_VERSION " + sysinfo_version,
-  "#define SYSINFO_ARCH " + sysinfo_arch,
-  "#define SYSINFO_ARCH_"+ string.upper(sysinfo_arch)+" 1",
-  "#endif /* _SYSINFO_H */"
-]
-
-def SysInfoBuilder(target, source, env):
-  file = open(target[0].get_abspath(), "w")
-  for line in sysinfo_header:
-    file.write(line+"\n")
-  file.close()
-
-def WriteFlags(cflags, ldflags):
+def write_build_info(cflags, ldflags):
+  global gc_configuration, gcmaxthreads
   try: os.mkdir("build")
   except: pass
   arch = "-m" + GAP["abi"]
@@ -350,12 +377,25 @@ def WriteFlags(cflags, ldflags):
   file.write("extra_cflags=' " + arch + " " + cflags + "'")
   file.write("extra_ldflags=' " + arch + " " + ldflags + "'")
   file.close()
+  if new_gc:
+    file = open("build/gcconfig", "w")
+    file.write(gc_configuration)
+    file.close()
+  else:
+    # If the GC was already built, we retrieve the actual number
+    # of max GC threads, since we need that to compile the 
+    try:
+      file = open("build/gcconfig", "r")
+      gc_configuration = file.read()
+      gcmaxthreads = int((gc_configuration.rstrip().split(":"))[2])
+      file.close()
+    except:
+      file.close()
 
 # Building binary from source
 
 def make_cc_options(prefix, args):
   return (" " + prefix).join([""] + args)
-
 
 if GAP["mpi"]:
   if GAP["mpi"] == "system":
@@ -367,22 +407,39 @@ preprocess = string.replace(GAP["preprocess"], "%", " ")
 if GAP["ward"]:
   preprocess = GAP["ward"] + "/bin/addguards2c" + \
     make_cc_options("-I", include_path) + make_cc_options("-D", defines)
+
 if not GetOption("clean") and not GetOption("help"):
-  WriteFlags((make_cc_options("-I", map(os.path.abspath, include_path)) +
+  write_build_info((make_cc_options("-I", map(os.path.abspath, include_path)) +
     make_cc_options("-D", defines))[1:],
       "-L" + (os.path.abspath(abi_path+"/lib")))
 
+# We are setting -DMAX_GC_THREADS here so that (1) it does not get
+# added to the public build/cflags list and (2) does not force
+# rebuilding of GAP proper when the GC wasn't actually rebuilt.
+
+GAP.Append(CFLAGS=" -DMAX_GC_THREADS="+str(gcmaxthreads))
+
+# Get all the source files that we need to compile GAP.
+# We currently exclude the Win95 file and GAC-generated files.
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
 source = filter(lambda s: not s.startswith("src/c_"), source)
 
+# Generate src/debugmacro.c. It contains functions that wrap important
+# GAP macros to help with debugging on platforms that do not store
+# macros as part of the debugging information.
 if "src/dbgmacro.c" not in source:
   source.append("src/dbgmacro.c")
 GAP.Command("src/dbgmacro.c", "etc/dbgmacro.py",
   "python $SOURCE > $TARGET")
 
+# If we're not using MPI, don't use the MPI code.
 if not GAP["mpi"]:
   source.remove("src/gapmpi.c")
+
+# If there is a preprocessor defined, run all files through it,
+# generating matching files in the gen/ directory and make them
+# the actual source files instead.
 if preprocess:
   import os, stat
   try: os.mkdir("gen")
@@ -394,5 +451,5 @@ if preprocess:
         preprocess + " $SOURCE >$TARGET")
   source = map(lambda s: "gen/"+s[4:], source)
 
-GAP.Command("extern/include/sysinfo.h", [], SysInfoBuilder)
+# Build the HPC-GAP binary.
 GAP.Program(build_dir + "/gap", source, LIBS=libs, **options)

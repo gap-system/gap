@@ -1,6 +1,8 @@
 JOBS=4
 GMP=yes
 GC=boehm-tl
+GCBLKSIZE=8192
+GCMAXTHREADS=
 WARD=../ward
 SCONS=bin/scons
 CFLAGS=
@@ -9,6 +11,7 @@ ZMQ=no
 COMPILER=
 CPP_COMPILER=
 BUILD=$(SCONS) -j $(JOBS) ward=$(WARD) gc=$(GC) gmp=$(GMP) zmq=$(ZMQ) \
+	gcblksize=$(GCBLKSIZE) gcmaxthreads=$(GCMAXTHREADS) \
 	cflags=$(CFLAGS) compiler=$(COMPILER) cpp_compiler=$(CPP_COMPILER)
 
 all opt: $(WARD)/bin/ward

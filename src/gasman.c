@@ -1289,11 +1289,14 @@ void            InitBags (
       static char marker_env_str[32];
       unsigned num_markers = 2;
       extern UInt SyNumProcessors;
-      if (SyNumProcessors) {
-        if (SyNumProcessors < 16)
+      extern UInt SyNumGCThreads;
+      if (!SyNumGCThreads)
+        SyNumGCThreads = SyNumProcessors;
+      if (SyNumGCThreads) {
+        if (SyNumGCThreads <= MAX_GC_THREADS)
 	  num_markers = (unsigned) SyNumProcessors;
 	else
-	  num_markers = 16;
+	  num_markers = MAX_GC_THREADS;
       }
       sprintf(marker_env_str, "GC_MARKERS=%u", num_markers);
       putenv(marker_env_str);
