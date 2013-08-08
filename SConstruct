@@ -313,7 +313,7 @@ def add_library_path(path):
 add_library_path(abi_path + "/lib")
 include_path.append(abi_path + "/include")
 options["CPPPATH"] = ":".join(include_path)
-options["OBJPREFIX"] = "../obj/"
+options["OBJPREFIX"] = "../build/obj/"
 
 # uname file generator
 
@@ -337,14 +337,16 @@ def SysInfoBuilder(target, source, env):
   file.close()
 
 def WriteFlags(cflags, ldflags):
+  try: os.mkdir("build")
+  except: pass
   arch = "-m" + GAP["abi"]
-  file = open("bin/cflags", "w")
+  file = open("build/cflags", "w")
   file.write(cflags+"\n")
   file.close()
-  file = open("bin/ldflags", "w")
+  file = open("build/ldflags", "w")
   file.write(ldflags+"\n")
   file.close()
-  file = open(build_dir+"/buildflags.sh", "w")
+  file = open("build/buildenv.sh", "w")
   file.write("extra_cflags=' " + arch + " " + cflags + "'")
   file.write("extra_ldflags=' " + arch + " " + ldflags + "'")
   file.close()
@@ -365,9 +367,10 @@ preprocess = string.replace(GAP["preprocess"], "%", " ")
 if GAP["ward"]:
   preprocess = GAP["ward"] + "/bin/addguards2c" + \
     make_cc_options("-I", include_path) + make_cc_options("-D", defines)
-WriteFlags((make_cc_options("-I", map(os.path.abspath, include_path)) +
-  make_cc_options("-D", defines))[1:],
-    "-L" + (os.path.abspath(abi_path+"/lib")))
+if not GetOption("clean") and not GetOption("help"):
+  WriteFlags((make_cc_options("-I", map(os.path.abspath, include_path)) +
+    make_cc_options("-D", defines))[1:],
+      "-L" + (os.path.abspath(abi_path+"/lib")))
 
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")

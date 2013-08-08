@@ -51,7 +51,7 @@ clean:
 	$(SCONS) -c preprocess=dummy compiler=$(COMPILER)
 
 distclean:
-	-rm -rf bin/current/*
+	-rm -rf bin/current/* build
 	$(SCONS) -c preprocess=dummy compiler=$(COMPILER); rm -rf extern/lib/* extern/include/* extern/32bit extern/64bit bin/current/*
 
 $(WARD)/bin/ward:
