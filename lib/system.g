@@ -45,7 +45,7 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
     AtExitFuncs:= [],
     PostRestoreFuncs:= [],
 
-    TestData:= ThreadLocal( rec() ),
+    TestData:= ThreadLocalRecord( rec() ),
 
     # admissible command line options
     # (name of the option, default value, descr. strings for help page;

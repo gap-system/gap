@@ -475,7 +475,7 @@ end);
 ##
 #V  ThreadVar  . . . . . . . . . . . . . . . . . . . . thread-local variables
 
-BIND_GLOBAL("ThreadVar", ThreadLocal());
+BIND_GLOBAL("ThreadVar", ThreadLocalRecord());
 BIND_GLOBAL("BindThreadLocal", function(name, default)
   SetTLDefault(ThreadVar, name, default);
 end);

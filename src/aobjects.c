@@ -1266,7 +1266,7 @@ static int OnlyConstructors(Obj precord) {
   return 1;
 }
 
-static Obj FuncThreadLocal(Obj self, Obj args)
+static Obj FuncThreadLocalRecord(Obj self, Obj args)
 {
   Obj result;
   switch (LEN_PLIST(args)) {
@@ -1274,17 +1274,17 @@ static Obj FuncThreadLocal(Obj self, Obj args)
       return NewTLRecord(NEW_PREC(0), NEW_PREC(0));
     case 1:
       if (TNUM_OBJ(ELM_PLIST(args, 1)) != T_PREC)
-        ArgumentError("ThreadLocal: First argument must be a record");
+        ArgumentError("ThreadLocalRecord: First argument must be a record");
       return NewTLRecord(ELM_PLIST(args, 1), NEW_PREC(0));
     case 2:
       if (TNUM_OBJ(ELM_PLIST(args, 1)) != T_PREC)
-        ArgumentError("ThreadLocal: First argument must be a record");
+        ArgumentError("ThreadLocalRecord: First argument must be a record");
       if (TNUM_OBJ(ELM_PLIST(args, 2)) != T_PREC ||
           !OnlyConstructors(ELM_PLIST(args, 2)))
-        ArgumentError("ThreadLocal: Second argument must be a record containing parameterless functions");
+        ArgumentError("ThreadLocalRecord: Second argument must be a record containing parameterless functions");
       return NewTLRecord(ELM_PLIST(args, 1), ELM_PLIST(args, 2));
     default:
-      ArgumentError("ThreadLocal: Too many arguments");
+      ArgumentError("ThreadLocalRecord: Too many arguments");
       return (Obj) 0; /* flow control hint */
   }
 }
@@ -1864,8 +1864,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "FromAtomicComObj", 1, "record",
       FuncFromAtomicComObj, "src/aobjects.c:FromAtomicComObj" },
 
-    { "ThreadLocal", -1, "record [, record]",
-      FuncThreadLocal, "src/aobjects.c:ThreadLocal" },
+    { "ThreadLocalRecord", -1, "record [, record]",
+      FuncThreadLocalRecord, "src/aobjects.c:ThreadLocalRecord" },
 
     { "SetTLDefault", 3, "thread-local record, name, value",
       FuncSetTLDefault, "src/aobjects.c:SetTLDefault" },
