@@ -84,7 +84,7 @@ ReadLib( "thread.g" );
 ReadLib( "objset.g" );
 ReadLib( "smallrgn.g"  );
 
-if IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then
+if not IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
   ReadLib( "stdtasks.g" );
 fi;
 
@@ -92,7 +92,7 @@ ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
 ReadLib( "altview.g" );
 
-if not IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then
+if IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
   ReadLib( "tasks.g" );
 fi;
 
