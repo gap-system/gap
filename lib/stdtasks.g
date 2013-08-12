@@ -4,8 +4,8 @@
 # Triggers > Tasks/Milestones > TASK_QUEUE
 
 TASK_QUEUE := ShareSpecialObj( rec (
-  ready_tasks := [],
-  workers := [],
+  ready_tasks := NewQueue(),
+  workers := NewQueue(),
   active_count := 0,
   max_active := GAPInfo.KernelInfo.NUM_CPUS,
 ) );
@@ -29,7 +29,7 @@ TASKS := AtomicRecord( rec (
 	TASKS.ExecuteTask(task, context);
 	CURRENT_TASK := fail;
 	atomic TASK_QUEUE do
-	  Add(TASK_QUEUE.workers, context);
+	  PushQueue(TASK_QUEUE.workers, context);
 	  TASK_QUEUE.active_count := TASK_QUEUE.active_count - 1;
 	od;
 	TASKS.WakeWorker();
@@ -41,15 +41,12 @@ TASKS := AtomicRecord( rec (
     local task;
     atomic TASK_QUEUE do
       while TASK_QUEUE.active_count < TASK_QUEUE.max_active and
-            Length(TASK_QUEUE.ready_tasks) > 0 do
-	task := TASK_QUEUE.ready_tasks[1];
-	Remove(TASK_QUEUE.ready_tasks, 1);
-	MigrateSingleObj(TASK_QUEUE.ready_tasks, TASK_QUEUE);
+            not EmptyQueue(TASK_QUEUE.ready_tasks) do
+	task := PopQueue(TASK_QUEUE.ready_tasks);
 	atomic task do
 	  if IsIdenticalObj(task.worker, fail) then
-	    if Length(TASK_QUEUE.workers) > 0 then
-	      task.worker := TASK_QUEUE.workers[1];
-	      Remove(TASK_QUEUE.workers, 1);
+	    if not EmptyQueue(TASK_QUEUE.workers) then
+	      task.worker := PopQueue(TASK_QUEUE.workers);
 	    else
 	      task.worker := TASKS.NewWorker();
 	    fi;
@@ -246,12 +243,12 @@ TASKS := AtomicRecord( rec (
     od;
     atomic task, TASK_QUEUE do
       if IsIdenticalObj(task.worker, fail) then
-	Add(TASK_QUEUE.ready_tasks, task);
+	PushQueue(TASK_QUEUE.ready_tasks, task);
 	TASKS.WakeWorker();
       else
 	tasks := [ task ];
 	MigrateSingleObj(tasks, TASK_QUEUE);
-        Add(TASK_QUEUE.ready_tasks, task, 1);
+        PushQueueFront(TASK_QUEUE.ready_tasks, task);
 	TASKS.WakeWorker();
       fi;
     od;
@@ -277,13 +274,13 @@ TASKS := AtomicRecord( rec (
     local trigger;
     atomic task, TASK_QUEUE do
       if Length(task.conditions) = 0 then
-        Add(TASK_QUEUE.ready_tasks, task);
+        PushQueue(TASK_QUEUE.ready_tasks, task);
 	TASKS.WakeWorker();
 	return;
       else
         trigger := TASKS.BuildTrigger(task, true);
 	if trigger.done then
-	  Add(TASK_QUEUE.ready_tasks, task);
+	  PushQueue(TASK_QUEUE.ready_tasks, task);
 	  TASKS.WakeWorker();
 	  return;
 	fi;
