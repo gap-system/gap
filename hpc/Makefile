@@ -7,7 +7,7 @@ WARD=../ward
 SCONS=bin/scons
 CFLAGS=
 DEBUG=debugguards=1 cflags=-"DTRACK_CREATOR $(CFLAGS)"
-ZMQ=no
+ZMQ=yes
 COMPILER=
 CPP_COMPILER=
 BUILD=$(SCONS) -j $(JOBS) ward=$(WARD) gc=$(GC) gmp=$(GMP) zmq=$(ZMQ) \
