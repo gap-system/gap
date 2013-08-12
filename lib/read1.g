@@ -37,6 +37,7 @@ ReadLib( "set.gd"      );
 ReadLib( "record.g"    );
 
 ReadLib( "coll.gi"     );
+ReadLib( "queue.g"     );
 
 ReadLib( "flag.g"      );
 ReadLib( "boolean.g"   );
