@@ -39,6 +39,8 @@ if GAP["cpp_compiler"] != "":
 
 compiler = GAP["CC"]
 cpp_compiler = GAP["CXX"]
+if not cpp_compiler:
+  GAP["zmq"] = "no"
 platform_name = commands.getoutput("cnf/config.guess")
 build_dir = "bin/" + platform_name + "-" + compiler + "-hpc"
 
