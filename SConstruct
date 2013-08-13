@@ -226,7 +226,7 @@ if GAP["mpi"]:
 cflags += " -m"+GAP["abi"]
 if GAP["zmq"] != "no":
   defines.append("WITH_ZMQ")
-  linkflags += " -lzmq"
+  libs.append("zmq")
   if GAP["zmq"].startswith("/"):
     add_include_path(GAP["zmq"] + "/include")
     add_library_path(GAP["zmq"] + "/lib")
