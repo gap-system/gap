@@ -299,7 +299,7 @@ def build_external(libname, confargs="", makeargs="",
 	Exit(1)
   print "=== Building " + libname + " ==="
   if os.system("cd " + abi_path + "/" + libname
-	  + " && ./configure --prefix=$PWD/.." + confargs
+	  + " && ./configure --prefix=$PWD/.. --libdir=$PWD/../lib" + confargs
 	  + " && make -j " + str(jobs) + makeargs
 	  + " && make" + makeargs + " install") != 0:
     print "=== Failed to build " + libname + " ==="
