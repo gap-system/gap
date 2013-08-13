@@ -84,7 +84,7 @@ ReadLib( "thread.g" );
 ReadLib( "objset.g" );
 ReadLib( "smallrgn.g"  );
 
-if not IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
+if not IsBound(MPI_Initialized) and not IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
   ReadLib( "stdtasks.g" );
 fi;
 
@@ -92,8 +92,9 @@ ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
 ReadLib( "altview.g" );
 
-if IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
-  ReadLib( "tasks.g" );
+if IsBound(MPI_Initialized) or IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
+    ReadLib( "tasks.g" );
+
 fi;
 
 ReadLib( "actor.g" );

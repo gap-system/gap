@@ -14,7 +14,6 @@
 Revision := AtomicRecord( rec() );
 
 
-    
 #############################################################################
 ##
 #1 Temporary error handling until we are able to read error.g
@@ -79,7 +78,6 @@ end;
 ##
 
 MakeLiteral := MakeImmutable;
-
 #############################################################################
 ##
 #F  Ignore( <arg> ) . . . . . . . . . . . . ignore but evaluate the arguments
@@ -189,7 +187,6 @@ end;
 ##
 ReadGapRoot( "lib/kernel.g" );
 ReadGapRoot( "lib/global.g" );
-
 
 #############################################################################
 ##
@@ -711,6 +708,8 @@ BindGlobal( "ShowKernelInformation", function()
     fi;
 end );
 
+
+
 # delay printing the banner, if -L option was passed (LB)
 
 CallAndInstallPostRestore( function()
@@ -908,17 +907,6 @@ end );
 
 #############################################################################
 ##
-##  ParGAP/MPI slave hook
-##
-##  A ParGAP slave redefines this as a function if the GAP package ParGAP
-##  is loaded. It is called just once at  the  end  of  GAP's  initialisation
-##  process i.e. at the end of this file.
-##
-PAR_GAP_SLAVE_START := fail;
-
-
-#############################################################################
-##
 ##  Autoload packages (suppressing banners).
 ##  (If GAP was started with a workspace then the user may have given
 ##  additional directories, so more suggested packages may become available.
@@ -933,10 +921,9 @@ PAR_GAP_SLAVE_START := fail;
 ##  Load additional packages, such that their names appear in the banner.
 ##
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
-    Print ("and packages ...\n");
+  Print ("and packages ...\n");
 fi;
 CallAndInstallPostRestore( AutoloadPackages );
-
 
 ############################################################################
 ##
@@ -1210,12 +1197,11 @@ HELP_ADD_BOOK("Changes", "Changes from Earlier Versions", "doc/changes");
 
 #############################################################################
 ##
-##  ParGAP loading and switching into the slave mode hook
+##  MPIGAP loading 
 ##
 if IsBoundGlobal("MPI_Initialized") then
-    LoadPackage("mpigap");
+  ReadLib("distributed/distgap.g");
 fi;
-if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
 
 
 #############################################################################
@@ -1241,11 +1227,17 @@ InstallAndCallPostRestore( function()
     od;
 end );
 
-if THREAD_UI() then
-  ReadLib("textui.g");
-  MULTI_SESSION();
+if IsBoundGlobal("MPI_Initialized") and MPI_Comm_rank() <> 0 then
+  WaitThread(TaskManager);
+  WaitThread(MessageManager);
+  MPI_Finalize();
 else
-  SESSION();
+  if THREAD_UI() then
+    ReadLib("textui.g");
+    MULTI_SESSION();
+  else
+    SESSION();
+  fi; 
 fi;
 
 PROGRAM_CLEAN_UP();

@@ -61,48 +61,6 @@ const char * Revision_gapmpi_c =
 #include <sys/resource.h>
 
 /*====================================================================
- * GAP debugging utilities (It would be nice if they were already in GAP :-) )
- */
-#if 0
-int tnum_stat( int stat ) { return TNUM_STAT(stat); }
-int tnum_expr( int expr ) { return TNUM_EXPR(expr); }
-int tnum_obj( Obj obj ) { return TNUM_OBJ(obj); }
-const Char *tnam_obj( Obj obj ) { return TNAM_OBJ(obj); }
-Obj type_obj( Obj obj ) { return TYPE_OBJ(obj); }
-int is_reflvar( int expr ) { return IS_REFLVAR(expr); }
-int is_intexpr( int expr ) { return IS_INTEXPR(expr); }
-Obj curr_func() { return CURR_FUNC; }
-Obj obj_lvar( int lvar ) { return OBJ_LVAR(lvar); }
-const Char *name_lvar( int lvar ) { return NAMI_FUNC( CURR_FUNC, lvar ); }
-int narg_func(func) { return NARG_FUNC(func); } /* num arg's of func */
-int nloc_func(func) { return NLOC_FUNC(func); } /* num loc's of func */
-
-
-/* The GAP source uses many pre-processor constants:
-   These bash functions provided me with a quick lookup of constants.
-alias gap_const_table sed -e 's^#define ^define_^g' '!$' \| \
-                cat '!$' - \| /lib/cpp |grep define_ \| \
-                grep -v '^[a-zA-Z_]*('
-gap_const_table () { \
-                sed -e 's^#define ^define_^g' $1 | \
-                cat $1 - | /lib/cpp | \
-                grep define_ | \
-                sed -e 's^define_^#define ^g' | \
-                grep -v 'define *[a-zA-Z_]*(' }
-gap_fnc_table () { \
-                sed -e 's^#define ^define_^g' $1 | \
-                cat $1 - | /lib/cpp | \
-                grep define_ | \
-                sed -e 's^define_^#define ^g' | \
-                grep 'define *[a-zA-Z_]*(' }
-  IMPORTANT CASES:
-    gap_const_table code.h > code.const
-    gap_const_table objects.h > objects.const
-    gap_fnc_table exprs.h | grep EVAL_EXPR
-*/
-#endif
-
-/*====================================================================
  * Internal UNIX utilities
  * These utilities are provided to be used at GAP level, and are not
  *   easily duplicated with current GAP facilities.
@@ -112,11 +70,6 @@ Obj UNIX_MakeString( Obj self, Obj len )
 { return NEW_STRING( INT_INTOBJ(len) );
 }
 
-#if 0
-Obj ParGAP_Last( Obj self )
-{ return VAL_GVAR( Last );
-}
-#endif
 
 Obj UNIX_Chdir( Obj self, Obj string )
 { int result;
@@ -389,6 +342,7 @@ Obj MPIinit( Obj self )
       return False;
     }
   }
+
   MPI_Init(&MPIargc, &MPIargv);
   /* Init_MPIvars(); called from InitLibrary() */
   return True;

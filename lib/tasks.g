@@ -29,7 +29,7 @@ DeclareGlobalVariable ("TaskManager");
 MakeReadWriteGVar("TaskManager");
 DeclareGlobalVariable ("mainThreadChannels");
 MakeReadWriteGVar("mainThreadChannels");
-
+MakeThreadLocal("threadId");
 
 GetWorkerInputChannel := function (worker)
   local toReturn;
@@ -60,6 +60,7 @@ Tasks.Worker := function(channels)
         suspend, unSuspend, p, task, i;
   
   Tasks.InputChannels[ThreadID(CurrentThread())+1] := channels.toworker;
+  threadId := ThreadID(CurrentThread());
   
   while true do
     
