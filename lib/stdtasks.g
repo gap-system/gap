@@ -529,11 +529,11 @@ TaskFinished := atomic function(readonly task)
   return task.complete;
 end;
 
-TaskCancelled := atomic function(readonly task)
+TaskCancellationRequested := atomic function(readonly task)
   return task.cancel;
 end;
 
-TaskCancellationComplete := atomic function(readonly task)
+TaskCancelled := atomic function(readonly task)
   return task.cancelled;
 end;
 
