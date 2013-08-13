@@ -3,6 +3,7 @@
 #X  first read the very basic stuff that the kernel needs to function at all,
 #X  after this file is read an 'ExportToKernelFinished' is done.
 ##
+
 ReadLib( "thread1.g"   );
 ReadLib( "filter.g"    );
 ReadLib( "filter1.g"   );
@@ -93,11 +94,12 @@ ReadLib( "macfloat.g"  );
 ReadLib( "altview.g" );
 
 if IsBound(MPI_Initialized) or IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
-    ReadLib( "tasks.g" );
-
+  ReadLib( "tasks.g" );
 fi;
 
-ReadLib( "actor.g" );
+if not IsBound(MPI_Initialized) then
+  ReadLib( "actor.g" );
+fi;
 
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
