@@ -29,7 +29,7 @@ SendTask := function (task, dest)
                       async := task.async);
   od;
   # create a handle for result and create a wrapper for it
-  handle := GlobalObjHandles.CreateHandle(dest,dest,false,ACCESS_TYPES.READ_WRITE);
+  handle := GlobalObjHandles.CreateHandle(processId,dest,false,ACCESS_TYPES.READ_WRITE);
   handle!.localId := HANDLE_OBJ(handle);
   MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := handle!.pe, localId := handle!.localId)), handle);
   atomic task do
@@ -51,22 +51,34 @@ SendTask := function (task, dest)
   atomic TaskStats do
     TaskStats.tasksOffloaded := TaskStats.tasksOffloaded+1;
   od;
+  return handle;
 end;
 ###########
 
 ProcessScheduleMsg := function(message)
-  local source, taskdata, taskDataList, handle, task, taskArg, argHandleWrapper, argHandle, p;
+  local source, taskdata, taskDataList, handle, task, taskArg, argHandleWrapper, argHandle, p, maybeHandle;
   source := message.source;
   handle := message.content[1];
+  MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := handle!.pe, localId := handle!.localId )), handle);
+  if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
   ShareObj(handle);
   taskdata := message.content[2];
   # create a list of task arguments to be passed to CreateTask function
   taskDataList := [taskdata.func];
   for taskArg in taskdata.args do
     if IsGlobalObjectHandle(taskArg) then
-      ShareObj(taskArg);
+      maybeHandle := MyLookupHashTable(GAMap, rec ( pe := taskArg!.pe, localId := taskArg!.localId ));
+      if IsIdenticalObj(fail, maybeHandle) then
+        MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := taskArg!.pe, localId := taskArg!.localId )), taskArg);
+        if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
+        ShareObj(taskArg);
+        Add (taskDataList, taskArg);
+      else
+        Add (taskDataList, maybeHandle);
+      fi;
+    else
+      Add (taskDataList, taskArg);
     fi;
-    Add (taskDataList, taskArg);
   od;
   # create a task
   task := ShareObj(CreateTask (taskDataList));

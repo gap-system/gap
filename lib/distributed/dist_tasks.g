@@ -345,7 +345,7 @@ end;
 
 RunTask:= function(arg)
   local task;
-  task := Tasks.CreateTask(arg);
+  task := CreateTask(arg);
   ExecuteTask(task);
   return task;
 end;

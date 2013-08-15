@@ -164,9 +164,6 @@ GlobalObjHandles.CreateHandleFromMsg := function (pe, owner, localId, immediate,
   local handle;
   handle := GlobalObjHandles.CreateHandle (pe, owner, immediate, accessType);
   handle!.localId := localId;
-  atomic readwrite GAMap do 
-    MyInsertHashTable(GAMap, MakeReadOnly(rec ( pe := pe, localId := localId )), handle);
-  od;
   return handle;
 end;
 
@@ -198,7 +195,7 @@ InstallGlobalFunction (CreateHandleFromObj, function (arg)
                     objToStore);
   handle!.localId := HANDLE_OBJ(handle);
   atomic readwrite GAMap do
-    if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle); fi;
+    if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
     MyInsertHashTable(GAMap, MakeReadOnly(rec ( pe := processId, localId := handle!.localId )), handle);
   od;
   if MPI_DEBUG.HANDLE_CREATION then MPILog(MPI_DEBUG_OUTPUT.HANDLE_CREATION, handle); fi;

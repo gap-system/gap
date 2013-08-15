@@ -20,12 +20,15 @@ IO_Unpicklers.GLOH :=
   immediate := IO_Unpickle(f);
   accessType := IO_Unpickle(f);
   globalCount := IO_Unpickle(f);
-  handle :=  MyLookupHashTable (GAMap, rec (pe := pe, localId := localId));
-  if IsIdenticalObj (handle, fail) then
-    handle := GlobalObjHandles.CreateHandleFromMsg
-              (pe, owner, localId, immediate, accessType);
-    handle!.globalCount := globalCount;
-    MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := pe, localId := localId )), handle);
-  fi;
+  handle := GlobalObjHandles.CreateHandleFromMsg
+            (pe, owner, localId, immediate, accessType);
+  handle!.globalCount := globalCount;
+  #handle :=  MyLookupHashTable (GAMap, rec (pe := pe, localId := localId));
+  #if IsIdenticalObj (handle, fail) then
+    #handle := GlobalObjHandles.CreateHandleFromMsg
+     #         (pe, owner, localId, immediate, accessType);
+    #handle!.globalCount := globalCount;
+    #MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := pe, localId := localId )), handle);
+  #fi;
   return handle;
 end;

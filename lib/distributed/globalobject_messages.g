@@ -49,11 +49,13 @@ ProcessGlobalObjHandleMsg := function (message)
       handle := OBJ_HANDLE(localId);
     fi;
     if IsIdenticalObj(handle, fail) then
-      handle := ShareObj(GlobalObjHandles.CreateHandleFromMsg (pe, 
+      handle := GlobalObjHandles.CreateHandleFromMsg (pe, 
                         owner,
                         localId, 
                         immediate, 
-                        accessType));  
+                        accessType);  
+      if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
+      ShareObj(handle);
       MyInsertHashTable(GAMap, 
               MakeReadOnly (rec ( pe := pe, localId := localId )), 
                                         handle);
@@ -378,10 +380,11 @@ ProcessObjMsg := function (message)
                         localId,
                         immediate, 
                         accessType);
-    ShareObj(handle);
     atomic readwrite GAMap do
       MyInsertHashTable (GAMap, rec ( pe := pe, localId := localId ), handle );
+      if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
     od;
+    ShareObj(handle);
   fi;
   atomic readwrite handle do
     immediate := handle!.control.immediate;

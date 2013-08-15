@@ -40,7 +40,8 @@ MPILog := function(arg)
     msg := Concatenation (msg, " (", String(handle!.pe), ",", String(handle!.localId), ",", String(handle!.owner), ") created");
   elif debugType = MPI_DEBUG_OUTPUT.GA_MAP then
     handle := arg[2];
-    msg := Concatenation (msg, " (", String(handle!.pe), ",", String(handle!.localId), ",", String(handle!.owner), ") => GA map");
+    msg := Concatenation (msg, " (", String(handle!.pe), ",", String(handle!.localId), ",", String(handle!.owner), ") [l:",
+                   arg[3], "] => GA map");
   elif debugType = MPI_DEBUG_OUTPUT.CHANGE_COUNT then
     handle := arg[2];
     msg := Concatenation (msg, " (", String(handle!.pe), ",", String(handle!.localId), ",", String(handle!.owner), ") => new count (L=",
