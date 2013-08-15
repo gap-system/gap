@@ -251,7 +251,7 @@ UInt ThreadUI = 1;
 *V  DeadlockCheck  . . . . . . . . . . . . . . . . . .  check for deadlocks
 **
 */
-UInt DeadlockCheck = 0;
+UInt DeadlockCheck = 1;
 
 /****************************************************************************
 **
