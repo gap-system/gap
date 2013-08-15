@@ -780,7 +780,7 @@ Obj DeserializeTypedObj(UInt tnum) {
       break;
     default:
       DeserializationError();
-      return; /* flow control hint */
+      return (Obj) 0; /* flow control hint */
   }
   namelen = ReadByteBlockLength();
   name = NEW_STRING(namelen);
