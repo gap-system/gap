@@ -1,7 +1,7 @@
-DistTaskData := ShareObj ( rec ( outstandingMessages := 0,
+DistTaskData := ShareSpecialObj ( rec ( outstandingMessages := 0,
                         finishing := false ));
 
-ImportedTasks := ShareObj ([ [], [] ]);
+ImportedTasks := ShareSpecialObj ([ [], [] ]);
 
 #IsGlobalObjectHandle := function(foobar)
 #  return false;
@@ -24,7 +24,7 @@ SendTask := function (task, dest)
   local ind, i, taskdata, handle, handleWrapper, taskArg, p, toBlock, handleComplete;
   # create a taskdata struct that will be sent to the destination node
   atomic readonly task do
-    taskdata := rec ( func := task.func,
+    taskdata := rec ( func := String(task.func),
                       args := task.args,
                       async := task.async);
   od;
@@ -38,16 +38,18 @@ SendTask := function (task, dest)
     task.adopt_result := false;
   od;
   # send the task to the destination
+  if MPI_DEBUG.TASKS then MPILog(MPI_DEBUG_OUTPUT.TASKS, handle, String(HANDLE_OBJ(task)), " --> ", String(dest)); fi;
   atomic taskdata.args do
     for taskArg in taskdata.args do
       if RegionOf(taskArg)<>RegionOf(taskdata.args) then
         p := LOCK(taskArg, false);
       fi;
     od;
-    SendMessage (dest, MESSAGE_TYPES.SCHEDULE_MSG, handle, taskdata);
+    #SendMessage (dest, MESSAGE_TYPES.SCHEDULE_MSG, handle, taskdata);
+    SendMessage (dest, MESSAGE_TYPES.SCHEDULE_MSG, handle, taskdata.func, taskdata.args, taskdata.async);
     UNLOCK(p);
   od;
-  ShareObj(handle);
+  ShareSpecialObj(handle);
   atomic TaskStats do
     TaskStats.tasksOffloaded := TaskStats.tasksOffloaded+1;
   od;
@@ -61,8 +63,10 @@ ProcessScheduleMsg := function(message)
   handle := message.content[1];
   MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := handle!.pe, localId := handle!.localId )), handle);
   if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
-  ShareObj(handle);
-  taskdata := message.content[2];
+  ShareSpecialObj(handle);
+  taskdata := rec (func := message.content[2],
+                   args := message.content[3],
+                   async := message.content[4]);
   # create a list of task arguments to be passed to CreateTask function
   taskDataList := [taskdata.func];
   for taskArg in taskdata.args do
@@ -71,7 +75,7 @@ ProcessScheduleMsg := function(message)
       if IsIdenticalObj(fail, maybeHandle) then
         MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := taskArg!.pe, localId := taskArg!.localId )), taskArg);
         if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
-        ShareObj(taskArg);
+        ShareSpecialObj(taskArg);
         Add (taskDataList, taskArg);
       else
         Add (taskDataList, maybeHandle);
@@ -81,7 +85,7 @@ ProcessScheduleMsg := function(message)
     fi;
   od;
   # create a task
-  task := ShareObj(CreateTask (taskDataList));
+  task := ShareSpecialObj(CreateTask (taskDataList));
   atomic TaskStats do
     TaskStats.tasksCreated := TaskStats.tasksCreated-1;
   od;

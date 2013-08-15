@@ -51,7 +51,7 @@ Tasks := AtomicRecord( rec ( Initial := GAPInfo.KernelInfo.NUM_CPUS ,    # initi
 
 
 
-TaskPoolData := ShareObj( rec(
+TaskPoolData := ShareSpecialObj( rec(
                         TaskPool := [],                               # task pool (list)
                         TaskPoolLen := 0 ));         # length of a task pool     
 
@@ -59,7 +59,7 @@ MakeThreadLocal("threadId");
 
 #ReadLib ("logging.g");
 
-#TaskStats := ShareObj ( rec (tasksCreated := 0,
+#TaskStats := ShareSpecialObj ( rec (tasksCreated := 0,
 #	tasksStolen := 0,
 #	tasksExecuted := 0,
 #	tasksOffloaded := 0));
@@ -173,7 +173,7 @@ Tasks.Worker := function(channels)
           p := LOCK(task.result);
         fi;
         if IsBound(task.result) and IsGlobalObjectHandle(task.result) then
-          ShareObj(result);
+          ShareSpecialObj(result);
           task.result!.obj := result;
           task.result!.control.haveObject := true;
           ProcessHandleBlockedQueue(task.result, result);
@@ -270,7 +270,7 @@ CreateTask := function(arglist)
     if IsThreadLocal(args[i]) then
       adopt[i] := true;
       if not adopted then
-        args[i] := ShareObj(CLONE_REACHABLE(args[i]));
+        args[i] := ShareSpecialObj(CLONE_REACHABLE(args[i]));
         ds := RegionOf(args[i]);
         p := LOCK(args[i]);
         adopted := true;
@@ -284,7 +284,7 @@ CreateTask := function(arglist)
   if adopted then
     UNLOCK(p);
   fi;
-  task :=  ShareObj (rec (
+  task :=  ShareSpecialObj (rec (
                    func := arglist[1],
                    args := args,
                    adopt := adopt,
@@ -294,7 +294,7 @@ CreateTask := function(arglist)
                    async := false,
                    offloaded := false,
                    blockedWorkers := CreateChannel(),
-                   waitingOnMe := ShareObj([]),
+                   waitingOnMe := ShareSpecialObj([]),
                    ));
   atomic TaskStats do
     TaskStats.tasksCreated := TaskStats.tasksCreated+1;
@@ -320,8 +320,8 @@ ExecuteTask:= atomic function(readwrite task)
   
   task.started := true;
   task.complete := false;
-  
-  atomic TaskPoolData do
+  if IsString(task.func) then task.func := ValueGlobal(task.func); fi;
+  atomic readwrite TaskPoolData do
     TaskPoolData.TaskPoolLen := TaskPoolData.TaskPoolLen+1;
     TaskPoolData.TaskPool[TaskPoolData.TaskPoolLen] := task;
   od;
@@ -378,7 +378,7 @@ ImmediateTask := function(arg)
   else
     result := result[2];
   fi;
-  task := ShareObj (rec( started := true, complete := true, async := false,
+  task := ShareSpecialObj (rec( started := true, complete := true, async := false,
                   result := result, adopt_result := false ));
   return task;
 end;
@@ -555,11 +555,11 @@ end;
 #NewMilestone := function(contributions)
 #  local c;
 #  c := Set(contributions);
-#  return ShareObj(rec(
+#  return ShareSpecialObj(rec(
 #             achieved := Set([]),
 #             targets := Immutable(c),
 #             complete := Length(c) = 0,
-#             waitingOnMe := ShareObj([]),
+#             waitingOnMe := ShareSpecialObj([]),
 #             ));
 #end;
   

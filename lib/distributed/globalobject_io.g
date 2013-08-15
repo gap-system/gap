@@ -23,12 +23,19 @@ IO_Unpicklers.GLOH :=
   handle := GlobalObjHandles.CreateHandleFromMsg
             (pe, owner, localId, immediate, accessType);
   handle!.globalCount := globalCount;
-  #handle :=  MyLookupHashTable (GAMap, rec (pe := pe, localId := localId));
-  #if IsIdenticalObj (handle, fail) then
-    #handle := GlobalObjHandles.CreateHandleFromMsg
-     #         (pe, owner, localId, immediate, accessType);
-    #handle!.globalCount := globalCount;
-    #MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := pe, localId := localId )), handle);
-  #fi;
   return handle;
 end;
+
+InstallSerializer ("GloObH", [IsGlobalObjectHandle],
+        atomic function(readonly handle)
+  return [0, "GlObH", handle!.pe, handle!.owner, handle!.localId, handle!.control.immediate,
+          handle!.control.accessType,handle!.control.globalCount];
+end);
+
+InstallDeserializer ("GlObH", function (pe, owner, localId, immediate, accessType, globalCount)
+  local handle;
+  handle := GlobalObjHandles.CreateHandleFromMsg
+            (pe, owner, localId, immediate, accessType);
+  handle!.globalCount := globalCount;
+  return handle;
+end);

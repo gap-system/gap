@@ -85,7 +85,6 @@ ProcessMessage := function (message)
     Error ("Unknown message type ", message.type, "\n");
     return true;
   fi;
-
 end;
 
 MessageManagerFunc := function()

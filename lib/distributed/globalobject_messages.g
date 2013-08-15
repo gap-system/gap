@@ -55,7 +55,7 @@ ProcessGlobalObjHandleMsg := function (message)
                         immediate, 
                         accessType);  
       if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
-      ShareObj(handle);
+      ShareSpecialObj(handle);
       MyInsertHashTable(GAMap, 
               MakeReadOnly (rec ( pe := pe, localId := localId )), 
                                         handle);
@@ -123,7 +123,7 @@ ProcessSetByHandleMsg := function (message)
         fi;
         handle!.obj[ind] := obj;
       else
-        handle!.obj := ShareObj(obj);
+        handle!.obj := ShareSpecialObj(obj);
       fi;
     else
       forwardPE := handle!.owner;
@@ -367,7 +367,7 @@ ProcessObjMsg := function (message)
   
   pe := message.content[1];
   localId := message.content[2];
-  obj := ShareObj(message.content[3]);
+  obj := ShareSpecialObj(message.content[3]);
   storeObject := message.content[4];
   objPushed := message.content[5];
   handle := MyLookupHashTable( GAMap, rec ( pe := pe, localId := localId ));
@@ -384,12 +384,12 @@ ProcessObjMsg := function (message)
       MyInsertHashTable (GAMap, rec ( pe := pe, localId := localId ), handle );
       if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
     od;
-    ShareObj(handle);
+    ShareSpecialObj(handle);
   fi;
   atomic readwrite handle do
     immediate := handle!.control.immediate;
     if not immediate then
-      ShareObj(obj);
+      ShareSpecialObj(obj);
       handle!.obj := obj;
     else
       handle!.obj := [];

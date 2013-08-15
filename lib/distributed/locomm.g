@@ -30,21 +30,29 @@ UnpickleMsg := function (p)
   return l;
 end;
 
-SendMessage := function(arg)
+SendMessagePickle := function(arg)
   local content, i;
-  
   content := Concatenation(IO_Pickle(processId), IO_Pickle(arg[2])); # source, tag
   for i in [3..Length(arg)] do
     content := Concatenation(content, IO_Pickle(arg[i]));
   od;
-  
-  #atomic readwrite MPISendLock do
   MPI_Send (content, arg[1], arg[2]);
-  #od;
-  
 end;
 
-GetMessage := function ()
+SendMessageSerialize := function(arg)
+  local listArgs, content, i;
+  listArgs := [];
+  Add (listArgs, processId);
+  for i in [2..Length(arg)] do
+    Add (listArgs, arg[i]);
+  od;
+  content := SerializeToNativeString(listArgs);
+  MPI_Binsend (content, arg[1], Length(content), arg[2]);
+end;
+
+SendMessage := SendMessageSerialize;
+
+GetMessagePickle := function ()
   local raw, msg, strBuffer, tmp;
   
   strBuffer := UNIX_MakeString(MPI_Get_count());
@@ -67,3 +75,16 @@ GetMessage := function ()
   fi;
   
 end;
+
+GetMessageSerialize := function ()
+  local raw, msg, strBuffer, tmp;
+  strBuffer := UNIX_MakeString(MPI_Get_count());
+  MPI_Recv(strBuffer);
+  raw := DeserializeNativeString(strBuffer);
+  msg := rec ( source := raw[1],
+               type := raw[2],
+               content := raw{[3..Length(raw)]});
+  return msg;
+end;
+
+GetMessage := GetMessageSerialize;

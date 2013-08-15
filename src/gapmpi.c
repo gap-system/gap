@@ -369,7 +369,8 @@ Obj MPIcomm_rank( Obj self )
 Obj MPIget_count( Obj self )
 { int count;
   if (last_datatype == UNINITIALIZED) last_datatype = MPI_CHAR;
-  MPI_Get_count(&last_status, last_datatype, &count);
+  //MPI_Get_count(&last_status, last_datatype, &count);
+  MPI_Get_elements_x(&last_status, last_datatype, &count);
   return INTOBJ_INT( count );
 }
 Obj MPIget_source( Obj self )
@@ -440,6 +441,20 @@ Obj MPIsend( Obj self, Obj args )
 			SyStrlen((const Char*)CSTR_STRING(buf)), /* don't incl. \0 */
 			MPIdatatype_infer(buf), INT_INTOBJ(dest), INT_INTOBJ(tag),
 			MPI_COMM_WORLD);
+  return 0;
+}
+
+Obj MPIbinsend( Obj self, Obj args )
+{ Obj buf, dest, tag, size;
+  MPIARGCHK(3, 4, MPI_Binsend( <string buf>, <int dest>, <int size>, [, <opt int tag = 0> ] ));
+  buf = ELM_LIST( args, 1 );
+  dest = ELM_LIST( args, 2 );
+  size = ELM_LIST (args, 3);
+  tag = ( LEN_LIST(args) > 3 ? ELM_LIST( args, 4 ) : 0 );
+  MPI_Send( ((char*)CSTR_STRING(buf)),
+            INT_INTOBJ(size), /* don't incl. \0 */
+            MPI_CHAR, INT_INTOBJ(dest), INT_INTOBJ(tag),
+            MPI_COMM_WORLD);
   return 0;
 }
 
@@ -628,6 +643,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "MPI_Attr_get" , 1, "keyval", MPIattr_get, "src/gapmpi.c:MPI_Attr_get" },
     { "MPI_Abort" , 1, "errorcode", MPIabort, "src/gapmpi.c:MPI_Abort" },
     { "MPI_Send" , -1, "args", MPIsend, "src/gapmpi.c:MPI_Send" },
+    { "MPI_Binsend" , -1, "args", MPIbinsend, "src/gapmpi.c:MPI_Binsend" },
     { "MPI_Recv" , -1, "args", MPIrecv, "src/gapmpi.c:MPI_Recv" },
     { "MPI_Probe" , -1, "args", MPIprobe, "src/gapmpi.c:MPI_Probe" },
     { "MPI_Iprobe" , -1, "args", MPIiprobe, "src/gapmpi.c:MPI_Iprobe" },

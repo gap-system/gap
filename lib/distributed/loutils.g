@@ -15,7 +15,8 @@ MakeReadOnlyGVar("commSize");
 BindGlobal ("MPI_DEBUG", rec (
         HANDLE_CREATION := false,
                               GA_MAP := false,
-                              OBJECT_TRANSFER := false));
+                              OBJECT_TRANSFER := false,
+                              TASKS := false));
 MakeReadOnly(MPI_DEBUG);
                            
 BindGlobal ("MPI_DEBUG_OUTPUT", MakeReadOnly ( rec (
@@ -23,7 +24,8 @@ BindGlobal ("MPI_DEBUG_OUTPUT", MakeReadOnly ( rec (
                                    GA_MAP := 2,
                                    CHANGE_COUNT := 3,
                                    HANDLE_DELETION := 4,
-                                   OBJECT_TRANSFER := 5)));
+                                   OBJECT_TRANSFER := 5,
+                                   TASKS := 6)));
                            
 MSTime := function()
   local t;
@@ -52,6 +54,10 @@ MPILog := function(arg)
   elif debugType = MPI_DEBUG_OUTPUT.OBJECT_TRANSFER then
     handle := arg[2];
     msg := Concatenation (msg, " handle (", String(handle!.pe), ",", String(handle!.localId), ",", String(handle!.owner), ") ", Concatenation(arg{[3..Length(arg)]}));
+  elif debugType = MPI_DEBUG_OUTPUT.TASKS then
+    handle := arg[2];
+    msg := Concatenation (msg, " handle (", String(handle!.pe), ",",  String(handle!.localId), ",", String (handle!.owner), ") : T(", arg[3], ") ",
+                   Concatenation (arg{[4..Length(arg)]}));
   fi;
   msg := Concatenation (msg, "\n");
   Print (msg);

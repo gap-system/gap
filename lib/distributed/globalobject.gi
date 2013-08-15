@@ -3,14 +3,14 @@ GlobalObjHandles := AtomicRecord ( rec () );
 
 # the map of handles to the objects that the pe owns. used to prevent garbage collection
 # of handles and its associated objects
-HandlesMap := ShareObj ([ [], [] ]);
+HandlesMap := ShareSpecialObj ([ [], [] ]);
 
 # the map of global addresses to local addresses. used for handles that reside on
 # other nodes
-GAMap := ShareObj ( [ [], [] ] );
+GAMap := ShareSpecialObj ( [ [], [] ] );
 
 # the map of tasks to the handles that will hold their results
-TaskResultHandles := ShareObj ( [ [], [] ]);
+TaskResultHandles := ShareSpecialObj ( [ [], [] ]);
 
 # the list of handles that a thread has opened.
 # used for testing whether the thread has access to a handle it is trying to use
@@ -185,7 +185,7 @@ InstallGlobalFunction (CreateHandleFromObj, function (arg)
   if immediate or (not IsThreadLocal(obj)) then
     objToStore := obj;
   else
-    objToStore := ShareObj(obj);
+    objToStore := ShareSpecialObj(obj);
   fi;
   
   handle := GlobalObjHandles.CreateHandle (processId,
@@ -199,7 +199,7 @@ InstallGlobalFunction (CreateHandleFromObj, function (arg)
     MyInsertHashTable(GAMap, MakeReadOnly(rec ( pe := processId, localId := handle!.localId )), handle);
   od;
   if MPI_DEBUG.HANDLE_CREATION then MPILog(MPI_DEBUG_OUTPUT.HANDLE_CREATION, handle); fi;
-  ShareObj(handle);
+  ShareSpecialObj(handle);
   return handle;
   
 end);
@@ -207,7 +207,7 @@ end);
 InstallGlobalFunction (CreateTaskResultHandle, function (task)
   local handle;
   handle := GlobalObjHandles.CreateHandle(processId, processId, false, ACCESS_TYPES.READ_WRITE);
-  ShareObj (handle);
+  ShareSpecialObj (handle);
   atomic readwrite handle do
     handle!.localId := HANDLE_OBJ(handle);
   od;
