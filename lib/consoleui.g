@@ -1,6 +1,6 @@
 HaveMultiThreadedUI := true;
 
-ENTER_NAMESPACE("TextUI");
+ENTER_NAMESPACE("ConsoleUI");
 
 ControlThread@ := false;
 MakeThreadLocal("ControlThread@");
@@ -31,23 +31,23 @@ Prompt@ := fail;
 ShowBackgroundOutput@ := fail;
 ShownOutput@ := fail;
 PendingOutput@ := fail;
-BindGlobal("Region@", ShareSpecialObj("TextUI"));
+BindGlobal("Region@", ShareSpecialObj("ConsoleUI"));
 
 BindGlobal("InitThreadTables@", function()
-  ThreadControlChannel@TextUI := [];
-  ThreadInputChannel@TextUI := [];
-  WaitForThread@TextUI := [];
-  ThreadObject@TextUI := [];
-  OutputHistory@TextUI := [];
-  OutputHistoryIncompleteLine@TextUI := [];
-  OutputPrefix@TextUI := [];
-  OutputPrefixRaw@TextUI := [];
-  ThreadName@TextUI := [];
-  ThreadNameToID@TextUI := rec();
-  Prompt@TextUI := [];
-  ShowBackgroundOutput@TextUI := [];
-  ShownOutput@TextUI := [];
-  PendingOutput@TextUI := [];
+  ThreadControlChannel@ConsoleUI := [];
+  ThreadInputChannel@ConsoleUI := [];
+  WaitForThread@ConsoleUI := [];
+  ThreadObject@ConsoleUI := [];
+  OutputHistory@ConsoleUI := [];
+  OutputHistoryIncompleteLine@ConsoleUI := [];
+  OutputPrefix@ConsoleUI := [];
+  OutputPrefixRaw@ConsoleUI := [];
+  ThreadName@ConsoleUI := [];
+  ThreadNameToID@ConsoleUI := rec();
+  Prompt@ConsoleUI := [];
+  ShowBackgroundOutput@ConsoleUI := [];
+  ShownOutput@ConsoleUI := [];
+  PendingOutput@ConsoleUI := [];
 end);
 
 DefaultShowBackgroundOutput@ := false;
@@ -1054,25 +1054,25 @@ BindGlobal("MULTI_SESSION", function()
   QUIT_GAP();
 end);
 
-BindGlobal("TextUIRegisterCommand", function(name, func)
+BindGlobal("ConsoleUIRegisterCommand", function(name, func)
   atomic Region@ do
     AddDictionary(CommandTable@, name, func);
   od;
 end);
 
-BindGlobal("TextUIForegroundThread", function()
+BindGlobal("ConsoleUIForegroundThread", function()
   return ActiveThread@-1;
 end);
 
-BindGlobal("TextUIForegroundThreadName", function()
+BindGlobal("ConsoleUIForegroundThreadName", function()
   return ThreadName@[ActiveThread@];
 end);
 
-BindGlobal("TextUISelectThread", function(thread)
+BindGlobal("ConsoleUISelectThread", function(thread)
   SwitchToThread@(thread+1);
 end);
 
-BindGlobal("TextUIOutputHistory", function(thread, lines)
+BindGlobal("ConsoleUIOutputHistory", function(thread, lines)
   local history;
   if not IsBound(ThreadName@[thread+1]) then
     return fail;
@@ -1080,11 +1080,11 @@ BindGlobal("TextUIOutputHistory", function(thread, lines)
   return OutputContext@(lines, thread+1);
 end);
 
-BindGlobal("TextUISetOutputHistoryLength", function(lines)
+BindGlobal("ConsoleUISetOutputHistoryLength", function(lines)
   OutputHistoryLength@ := lines;
 end);
 
-BindGlobal("TextUINewSession", function(foreground, name)
+BindGlobal("ConsoleUINewSession", function(foreground, name)
   if foreground then
     CommandShell@(name);
   else
@@ -1092,11 +1092,11 @@ BindGlobal("TextUINewSession", function(foreground, name)
   fi;
 end);
 
-BindGlobal("TextUIRunCommand", function(command)
+BindGlobal("ConsoleUIRunCommand", function(command)
   RunCommandQuietly@(command);
 end);
 
-BindGlobal("TextUIWritePrompt", function()
+BindGlobal("ConsoleUIWritePrompt", function()
   WritePrompt@();
 end);
 

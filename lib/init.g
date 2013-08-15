@@ -1233,7 +1233,7 @@ if IsBoundGlobal("MPI_Initialized") and MPI_Comm_rank() <> 0 then
   MPI_Finalize();
 else
   if THREAD_UI() then
-    ReadLib("textui.g");
+    ReadLib("consoleui.g");
     MULTI_SESSION();
   else
     SESSION();
