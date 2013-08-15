@@ -36,9 +36,9 @@ ProcessMessage := function (message)
   if message.type = MESSAGE_TYPES.EVAL_MSG then
     ReadEvalFromString(message.content);
     return false;
-  #elif message.type = MESSAGE_TYPES.SCHEDULE_MSG then
-    #ProcessSchedule (message);
-    #return false;
+  elif message.type = MESSAGE_TYPES.SCHEDULE_MSG then
+    ProcessScheduleMsg (message);
+    return false;
   #elif message.type = MESSAGE_TYPES.STEAL_MSG then
     #ProcessSteal (message, source);
     #return false;

@@ -200,11 +200,20 @@ end;
 
 DoSendObj := fail;
 
-ProcessHandleBlockedQueue := atomic function (readwrite handle, obj)
+InstallGlobalFunction(ProcessHandleBlockedQueue, atomic function (readwrite handle, obj)
   local toRemove, thread, queue;
   queue := handle!.control.blockedOnHandle;
   handle!.control.blockedOnHandle := MigrateObj ([], handle);
   for toRemove in queue do
+    if MPI_DEBUG.OBJECT_TRANSFER then
+      if toRemove.pullObj then
+        MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ->-> ", String(toRemove.pe), " - ");
+      elif toRemove.storeObj then
+        MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ++ ", String(toRemove.pe), " - ");
+      else
+        MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ", String(toRemove.pe)," @@ - ");
+      fi;
+    fi;
     if toRemove.pe = processId then
       toRemove.obj := obj;
       toRemove.completed := true;
@@ -213,45 +222,7 @@ ProcessHandleBlockedQueue := atomic function (readwrite handle, obj)
       DoSendObj (toRemove.pe, toRemove.storeObj, toRemove.pullObj, handle);
     fi;
   od;
-end;
-  #  if toRemove.type = REQUEST_TYPES.PUSH_OBJ then
-  #    DoPushObj (handle, toRemove);
-  #  elif toRemove.type = REQUEST_TYPES.GET_OBJ  or toRemove.type = REQUEST_TYPES.CLONE_OBJ 
-  #    or toRemove.type = REQUEST_TYPES.PULL_OBJ then
-  #    # this is shabby
-  #    if handle!.control.haveObject then
-  #      toRemove.obj := obj;
-  #      toRemove.completed := true;
-  #      if IsBound(toRemove.blockedOnRequest) then UnblockWaitingThreads(toRemove); fi;
-  #    else
-  #      if not handle!.control.requested then
-  #        if toRemove.pe <> processId then
-  #          DoSendObj(toRemove.pe, toRemove.storeObj, toRemove.pullObj, handle);
-  #        else
-  #          SendGetObjMsg (handle, toRemove.storeObj, toRemove.pullObj);
-  #          handle!.control.requested := true;
-  #          Add (handle!.control.blockedOnHandle, toRemove);
-  #        fi;
-  #      fi;
-  #    fi;
-  #  else
-  #    toRemove.obj := obj;           # cannot use handle!.obj, since object might not be stored there
-  #                                   # (in case of GetHandleObj)
-  #    toRemove.completed := true;
-  #    if toRemove.type = 4 then
-  #      atomic readonly toRemove.obj do
-  #        SendMessage ( toRemove.dest, 
-  #                MESSAGE_TYPES.OBJ_MSG,
-  #                toRemove.pe,
-  #                toRemove.localId, 
-  #                toRemove.obj, 
-  #                toRemove.storeObj, 
-  #                toRemove.pullObj);
-  #      od;
-  #    fi;
-  #  fi;
-  #od;
-#end;
+end);
 
 DoSendObj := atomic function (sourceId, storeObj, pullObj, readwrite handle)
   if handle!.control.haveObject then
@@ -266,7 +237,7 @@ DoSendObj := atomic function (sourceId, storeObj, pullObj, readwrite handle)
           elif storeObj then
             MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ++ (", String(sourceId), ") --> ", String(sourceId)); 
           else
-            MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " @@ (", String(sourceId), ") --> ", String(sourceId)); 
+            MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ", String(sourceId), " @@ --> ", String(sourceId)); 
           fi;
         fi;
         SendMessage (sourceId, MESSAGE_TYPES.OBJ_MSG,
@@ -298,7 +269,7 @@ DoSendObj := atomic function (sourceId, storeObj, pullObj, readwrite handle)
         elif storeObj then
           MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ++ (", String(sourceId), ") ==> ", String(handle!.owner)); 
         else
-          MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " @@ (", String(sourceId), ") ==> ", String(handle!.owner)); 
+          MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ", sourceId, " @@ ==> ", String(handle!.owner)); 
         fi;
       fi;
       SendMessage (handle!.owner, MESSAGE_TYPES.GET_OBJ_MSG, sourceId, handle!.pe, handle!.localId,

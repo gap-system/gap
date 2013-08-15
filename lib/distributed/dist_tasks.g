@@ -1,4 +1,10 @@
 Revision.tasks_g := "2011-05-12 16:37:00 +0000";
+
+TaskStats := ShareObj ( rec (tasksCreated := 0,
+                     tasksStolen := 0,
+                     tasksExecuted := 0,
+                     tasksOffloaded := 0));
+
 BindGlobal ("BLOCK_TYPES", MakeReadOnly( rec (
         BLOCKED_FETCH := 1,
         BLOCKED_WORKER := 2 )));
@@ -20,10 +26,7 @@ BindGlobal ("TASK_MANAGER_REQUESTS", MakeReadOnly (rec (
                             #        GOT_TASK := 14 )));
                             
 
-#DeclareCategory ("IsGlobalObjectHandle", IsObject );
-
-#ProcessHandleBlockedQueue := function()
-#end;
+DeclareGlobalFunction("ProcessHandleBlockedQueue");
 
 #FetchTaskResult := function()
 #end;
@@ -169,13 +172,13 @@ Tasks.Worker := function(channels)
         if IsBound(task.result) and not IsThreadLocal(task.result) then
           p := LOCK(task.result);
         fi;
-        #if IsBound(task.result) and IsGlobalObjectHandle(task.result) then
-         # ShareObj(result);
-          #task.result!.obj := result;
-          #task.result!.control.haveObject := true;
-          #ProcessHandleBlockedQueue(task.result, result);
-          #UNLOCK(p);
-        #else
+        if IsBound(task.result) and IsGlobalObjectHandle(task.result) then
+          ShareObj(result);
+          task.result!.obj := result;
+          task.result!.control.haveObject := true;
+          ProcessHandleBlockedQueue(task.result, result);
+          UNLOCK(p);
+        else
           if IsThreadLocal(result) then
             task.result := MigrateObj (result, task);
             task.adopt_result := true;
@@ -184,7 +187,7 @@ Tasks.Worker := function(channels)
             task.adopt_result := false;
             #SetImportedTaskResult(task,result);
           fi;
-        #fi;
+        fi;
         #if IsBound(task.waitingOnMe) then
         #  SendChannel (Tasks.TaskManagerRequests, rec ( 
         #          type := TASK_MANAGER_REQUESTS.TRY_UNBLOCK_TASK,
@@ -257,10 +260,9 @@ Tasks.Initialize := function()
 end;
 
 # Creates a task without binding it to a worker
-Tasks.CreateTask := function(arglist)
+CreateTask := function(arglist)
   local i, channels, task, request, args, adopt, adopted, ds,p,
         addToTaskPool, q;
-
   args := arglist{[2..Length(arglist)]};
   adopt := AtomicList([]);
   adopted := false;
@@ -282,7 +284,6 @@ Tasks.CreateTask := function(arglist)
   if adopted then
     UNLOCK(p);
   fi;
-  
   task :=  ShareObj (rec (
                    func := arglist[1],
                    args := args,
@@ -291,15 +292,13 @@ Tasks.CreateTask := function(arglist)
                    complete := false,
                    started := false,
                    async := false,
-#                   offloaded := false,
+                   offloaded := false,
                    blockedWorkers := CreateChannel(),
-#                   waitingOnMe := ShareObj([]),
+                   waitingOnMe := ShareObj([]),
                    ));
-  
-#  atomic TaskStats do
-#    TaskStats.tasksCreated := TaskStats.tasksCreated+1;
-#  od;
-  
+  atomic TaskStats do
+    TaskStats.tasksCreated := TaskStats.tasksCreated+1;
+  od;
   return task;
 end;
 
@@ -407,7 +406,7 @@ WaitTask := function(arg)
   od;
   for task in arg do
     atomic readonly task do
-      if (not task.complete) and (not task.started) then #and (not task.offloaded) then
+      if (not task.complete) and (not task.started) and (not task.offloaded) then
         ExecuteTask(task);
       fi;
     od;
@@ -475,42 +474,42 @@ WaitAnyTask := function(arg)
 end;
 
 TaskResult := function(task)
-  local taskresult, toExecute, toWait;
-  
+  local taskresult, toExecute, toWait, toFetch;
   toExecute := false;
   toWait := false;
-
-  
+  toFetch := false;
   atomic readonly task do
     if task.async then
       Error("Cannot obtain the result of a asynchronous task");
     fi;
-    
-    #if (not task.started) and (not IsBound(task.offloaded)) then
-    if not task.started then
+    if task.offloaded then 
+      toFetch := true;
+    elif not task.started then
       toExecute := true;
     elif not task.complete then
       toWait := true;
     fi;
   od;
-  
   if toExecute then 
     ExecuteTask(task);
   elif toWait then
     WaitTask(task);
+  elif toFetch then
+    atomic readwrite task do
+      atomic readwrite task.result do 
+        Open(task.result);
+      od;
+      task.result := GetHandleObj(task.result);
+    od;
   fi;
-  
   atomic readonly task do
-
     if task.adopt_result then
       taskresult :=  CLONE_REACHABLE(task.result);
     else
       taskresult := task.result;
     fi;
   od;
-  
   return taskresult;
-  
 end;
 
 TaskStarted := atomic function(readonly task)

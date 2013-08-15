@@ -61,7 +61,7 @@ end);
 
 DoPushObj := fail;
 ReadLib ("distributed/globalobject_messages.g");
-#ReadLib ("distributed/globalobject_io.g");
+ReadLib ("distributed/globalobject_io.g");
 
 #################################################################################
 # functions that deal with requests (created via calls to <...>NonBlocking 
@@ -314,8 +314,7 @@ InstallGlobalFunction (GetHandleObjNonBlocking, atomic function (readwrite handl
   local objCopy, request;
   
   GlobalObjHandles.HaveAccessCheck(handle);
-  
-  request := rec ( completed := false, type := REQUEST_TYPES.GET_OBJ, pe := processId, pushObj := false, storeObj := false);
+  request := rec ( completed := false, type := REQUEST_TYPES.GET_OBJ, pe := processId, pullObj := false, storeObj := false);
   if not handle!.control.haveObject then
     if handle!.owner = processId then
       if MPI_DEBUG.OBJECT_TRANSFER then MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " obj under eval |"); fi;
@@ -346,7 +345,6 @@ end);
 
 InstallGlobalFunction (GetHandleObj, function (handle)
   local request;
-  
   request := GetHandleObjNonBlocking(handle);
   WaitRequest(request);
   atomic readwrite request do
@@ -412,24 +410,9 @@ InstallGlobalFunction (RemoteCopyObj, atomic function (readwrite handle, pe)
   if handle!.control.accessType = ACCESS_TYPES.READ_WRITE then
     Error ("Cannot call RemoteCopyObj on READ_WRITE handle!\n");
   fi;
-  if handle!.control.haveObject then
-    atomic readonly handle!.obj do 
-      SendMessage (pe, MESSAGE_TYPES.OBJ_MSG,
-              handle!.pe,
-              handle!.localId,
-              handle!.obj,           # object 
-              true,                 # store object?
-              false,                # object is being pushed?
-              handle!.owner,            
-              handle!.control.immediate,     # handle immediate  
-              handle!.control.accessType,    # handle access type
-              handle!.control.globalCount    # handle global count
-              );
-    od;
-  else
-    # todo : fix this NOW
-    Error ("RemoteCopyObj from node that doesn't have a copy of object still not supported\n");
-  fi;
+  atomic readonly handle!.obj do
+    DoSendObj (pe, true, false, handle);
+  od;
 end);
 
 # this is a bid dodgy...what if object is under evaluation or something?
@@ -466,7 +449,7 @@ end;
 InstallGlobalFunction (RemotePushObjNonBlocking, atomic function (readwrite handle, pe)
   local p, request;
   GlobalObjHandles.HaveAccessCheck(handle);
-  request := rec (completed := false, type := REQUEST_TYPES.PUSH_OBJ, pe := pe, pushObj := true, storeObj := true);
+  request := rec (completed := false, type := REQUEST_TYPES.PUSH_OBJ, pe := pe, pullObj := true, storeObj := true);
   DoPushObj(handle, request);
   return request;
 end);
@@ -486,7 +469,7 @@ end);
 InstallGlobalFunction (RemoteCloneObjNonBlocking, atomic function (readwrite handle)
   local objCopy, request;
   GlobalObjHandles.HaveAccessCheck(handle);
-  request := rec ( completed := false, type := REQUEST_TYPES.CLONE_OBJ, pe := processId, pushObj := false, storeObj := true );
+  request := rec ( completed := false, type := REQUEST_TYPES.CLONE_OBJ, pe := processId, pullObj := false, storeObj := true );
   if not handle!.control.haveObject then
     if not handle!.control.requested then
       SendGetObjMsg (handle, true, false);
@@ -518,7 +501,7 @@ end);
 InstallGlobalFunction (RemotePullObjNonBlocking, atomic function (readwrite handle)
   local objCopy, request;
   GlobalObjHandles.HaveAccessCheck(handle);
-  request := rec ( completed := false, type := REQUEST_TYPES.PULL_OBJ, pe := processId );
+  request := rec ( completed := false, type := REQUEST_TYPES.PULL_OBJ, pe := processId, storeObj := true, pullObj := true );
   if not handle!.control.haveObject then
     if not handle!.control.requested then
       SendGetObjMsg (handle, true, true);

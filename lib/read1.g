@@ -93,7 +93,7 @@ ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
 ReadLib( "altview.g" );
 
-if IsBound(MPI_Initialized) or IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
+if not IsBound(MPI_Initialized) and IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
   ReadLib( "tasks.g" );
 fi;
 
