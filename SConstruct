@@ -30,6 +30,12 @@ GAP = DefaultEnvironment(variables=vars, PATH=os.environ["PATH"])
 
 Help(vars.GenerateHelpText(GAP))
 
+# Allow environment to override settings
+
+for opt in ["CC", "CFLAGS", "CXX", "CXXFLAGS"]:
+  if os.environ.has_key(opt):
+    GAP[opt] = os.environ[opt]
+
 # What compiler and platform are we dealing with?
 
 if GAP["compiler"] != "":
@@ -127,7 +133,7 @@ if changed_abi:
   default_abi = GAP["abi"]
 
 if not has_config or "config" in COMMAND_LINE_TARGETS or changed_abi:
-  if not GetOption("clean"):
+  if not GetOption("clean") and not GetOption("help"):
     if GAP["abi"] != "auto":
       os.environ["CFLAGS"] = " -m" + GAP["abi"]
     # Configuration name is currently forced to be "hpc". This is
@@ -143,7 +149,7 @@ if not has_config or "config" in COMMAND_LINE_TARGETS or changed_abi:
     del os.environ["GAPARCH"]
 
 default_abi, has_config = abi_from_config(config_header_file)
-if not has_config and not GetOption("clean"):
+if not has_config and not GetOption("clean") and not GetOption("help"):
   print "=== Configuration file wasn't created ==="
   Exit(1)
 GAP["abi"] = default_abi
