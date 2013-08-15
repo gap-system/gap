@@ -3,12 +3,27 @@ import sys, os, subprocess, time, tempfile, shutil, re, glob
 
 args = sys.argv[1:]
 
-if len(args) < 2 or args[0] != "-N" or not re.match("^[0-9]+$", args[1]):
+if len(args) < 2 or args[0] != "-N":
   print("Usage: zgap -N <nodes> <gap arguments>")
   sys.exit(1)
 
-numnodes = int(args[1])
+conf = args[1]
 args = args[2:]
+
+if re.match(r"^[0-9]+$", conf):
+  numnodes = int(conf)
+  numa = False
+else:
+  numarel = False
+  m = re.match(r"^([0-9]+):([0-9]+)-([0-9]+)$", conf)
+  if not m:
+    m = re.match(r"^([0-9]+):\+([0-9]+)-([0-9]+)$", conf)
+    numarel = True
+  if not m:
+    print("Usage: zgap -N <nodes> <gap arguments>")
+    sys.exit(1)
+  numnodes, startnode, endnode = tuple(map(int, m.groups()))
+  numa = True
 
 dir = tempfile.mkdtemp()
 try: os.mkdir(dir)
@@ -18,8 +33,13 @@ print "[zgap] %s" % dir
 
 nodes = [ None ] * (numnodes + 1)
 
-gap = [ "bin/gap.sh" ]
+if numa:
+  gap = [ "numactl", "-N", None, "-l", "bin/gap.sh" ]
+else:
+  gap = [ "bin/gap.sh" ]
 
+if numa:
+  numanode = startnode
 for i in xrange(numnodes+1):
   node_file = "%s/setup%02d.g" % (dir, i)
   log = open("%s/log%02d.txt" % (dir, i), "w")
@@ -34,9 +54,15 @@ for i in xrange(numnodes+1):
   fp.write(init)
   fp.close()
   if i > 0:
+    if numa:
+      gap[2] = str(numanode)
     nodes[i] = subprocess.Popen(gap + [ "-S", "-T", node_file ] + args,
       stdin = subprocess.PIPE, stdout = log, stderr = log)
   log.close()
+  if numa:
+    numanode += 1
+    if numanode > endnode:
+      numanode = startnode
 
 main_file = "%s/setup00.g" % dir
 
