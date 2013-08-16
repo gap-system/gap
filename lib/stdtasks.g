@@ -419,8 +419,22 @@ BindGlobal("ScheduleAsyncTask", function(arg)
 end);
 
 BindGlobal("WAIT_TASK", function(conditions, is_conjunction)
-  local task, trigger, suspend, semaphore;
+  local task, trigger, suspend, semaphore, cond, pending;
   task := TASKS.CurrentTask();
+  pending := [];
+  for cond in conditions do
+    atomic cond do
+      # are we dealing with a delayed task?
+      if IsBound(cond.started) and not cond.started then
+        if Length(cond.conditions) = 0 then
+	  Add(pending, cond);
+	fi;
+      fi;
+    od;
+  od;
+  for cond in pending do
+    ExecuteTask(cond);
+  od;
   atomic task do
     suspend := not IsIdenticalObj(task.body, fail);
     task.conditions := MakeReadOnlyObj(conditions);
