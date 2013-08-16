@@ -113,7 +113,7 @@ TASKS := AtomicRecord( rec (
     local context, thread;
     context := MakeWriteOnceAtomic(rec(
       semaphore := CreateSemaphore(),
-      task_container := ShareSingleObj(rec(task := fail)),
+      task_container := ShareSingleSpecialObj(rec(task := fail)),
     ));
     thread := CreateThread(TASKS.WorkerThread, context);
     context.thread := thread;
