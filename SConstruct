@@ -50,6 +50,14 @@ if not cpp_compiler:
 platform_name = commands.getoutput("cnf/config.guess")
 build_dir = "bin/" + platform_name + "-" + compiler + "-hpc"
 
+# We're working around some cygwin compatibility issues.
+# Cygwin does not work with the recent Boehm GC development branch;
+
+cygwin = sys.platform.startswith("cygwin")
+if cygwin:
+  if GAP["gc"].startswith("boehm-"):
+    GAP["gc"] = "boehm"
+
 # Figure out the number of processors. This is an estimate and works
 # only for Linux and OS X at the moment. For all other platforms, we
 # use a default, though that can be overridden with cpus=n.
@@ -332,7 +340,7 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
 	gc_cflags += " -DHBLKSIZE=" + str(resource.getpagesize())
       else:
 	gc_cflags += " -DHBLKSIZE=" + GAP["gcblksize"]
-  build_external("gc-7.3dev", cflags=gc_cflags,
+  build_external(cygwin and "gc-7.2d" or "gc-7.3dev", cflags=gc_cflags,
     confargs="--disable-shared --disable-gcj-support --enable-large-config" +
       (GAP["gc"] == "boehm-par" and " --enable-parallel-mark" or
                                     " --disable-parallel-mark"),
@@ -458,6 +466,11 @@ if preprocess:
     GAP.Command(gen[i], pregen[i],
         preprocess + " $SOURCE >$TARGET")
   source = map(lambda s: "gen/"+s[4:], source)
+
+# Cygwin needs to be explicitly told to include libstdc++ when linking
+# against a C++ library (-lzmq).
+if cygwin and GAP["zmq"]:
+  libs.append("stdc++")
 
 # Build the HPC-GAP binary.
 GAP.Program(build_dir + "/gap", source, LIBS=libs, **options)
