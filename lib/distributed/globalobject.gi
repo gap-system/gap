@@ -347,6 +347,9 @@ InstallGlobalFunction (GetHandleObj, function (handle)
   atomic readwrite request do
     AdoptObj(request);
   od;
+  #atomic readwrite request.obj do
+    #AdoptObj(request.obj);
+  #od;
   return request.obj;
 end);
 

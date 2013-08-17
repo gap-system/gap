@@ -367,10 +367,11 @@ Obj MPIcomm_rank( Obj self )
 
 /* This assumes same datatype units as last receive, or MPI_CHAR if no recv */
 Obj MPIget_count( Obj self )
-{ int count;
+{ int count, b;
+  Obj bob;
   if (last_datatype == UNINITIALIZED) last_datatype = MPI_CHAR;
-  //MPI_Get_count(&last_status, last_datatype, &count);
-  MPI_Get_elements_x(&last_status, last_datatype, &count);
+  MPI_Comm_rank (MPI_COMM_WORLD, &b);
+  MPI_Get_count(&last_status, last_datatype, &count);
   return INTOBJ_INT( count );
 }
 Obj MPIget_source( Obj self )
@@ -446,17 +447,43 @@ Obj MPIsend( Obj self, Obj args )
 
 Obj MPIbinsend( Obj self, Obj args )
 { Obj buf, dest, tag, size;
+  int s,i;
   MPIARGCHK(3, 4, MPI_Binsend( <string buf>, <int dest>, <int size>, [, <opt int tag = 0> ] ));
   buf = ELM_LIST( args, 1 );
   dest = ELM_LIST( args, 2 );
   size = ELM_LIST (args, 3);
   tag = ( LEN_LIST(args) > 3 ? ELM_LIST( args, 4 ) : 0 );
-  MPI_Send( ((char*)CSTR_STRING(buf)),
+  s = MPI_Send( ((char*)CSTR_STRING(buf)),
             INT_INTOBJ(size), /* don't incl. \0 */
             MPI_CHAR, INT_INTOBJ(dest), INT_INTOBJ(tag),
             MPI_COMM_WORLD);
   return 0;
 }
+
+Obj MPIrecv2( Obj self, Obj args )
+{ volatile Obj buf, source, tag; /* volatile to satisfy gcc compiler */
+  int count, sranje;
+  MPI_Comm_rank(MPI_COMM_WORLD, &sranje);
+  MPIARGCHK( 0, 2, MPI_Recv( <opt int source = MPI_ANY_SOURCE>[, <opt int tag = MPI_ANY_TAG> ] ) );
+  source = ( LEN_LIST(args) > 0 ? ELM_LIST( args, 1 ) :
+             INTOBJ_INT(MPI_ANY_SOURCE) );
+  tag = ( LEN_LIST(args) > 1 ? ELM_LIST( args, 2 ) :
+          INTOBJ_INT(MPI_ANY_TAG) );
+  MPI_Probe(INT_INTOBJ(source), INT_INTOBJ(tag), MPI_COMM_WORLD, &last_status);
+  MPI_Get_count(&last_status, MPI_CHAR, &count);
+  buf = NEW_STRING( count);
+  ConvString( buf );
+  /* Note GET_LEN_STRING() returns GAP string length
+     and SyStrlen(CSTR_STRING()) returns C string length (up to '\0') */
+  MPI_Recv( CSTR_STRING(buf), GET_LEN_STRING(buf),
+            MPI_CHAR,
+            INT_INTOBJ(source), INT_INTOBJ(tag), MPI_COMM_WORLD, &last_status);
+  MPI_READ_DONE();
+  /* if (last_datatype != MPI_CHAR) {
+     MPI_Get_count(&last_status, last_datatype, &count); etc. } */
+  return buf;
+}
+
 
 Obj MPIrecv( Obj self, Obj args )
 { volatile Obj buf, source, tag; /* volatile to satisfy gcc compiler */
@@ -643,8 +670,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "MPI_Attr_get" , 1, "keyval", MPIattr_get, "src/gapmpi.c:MPI_Attr_get" },
     { "MPI_Abort" , 1, "errorcode", MPIabort, "src/gapmpi.c:MPI_Abort" },
     { "MPI_Send" , -1, "args", MPIsend, "src/gapmpi.c:MPI_Send" },
+
     { "MPI_Binsend" , -1, "args", MPIbinsend, "src/gapmpi.c:MPI_Binsend" },
     { "MPI_Recv" , -1, "args", MPIrecv, "src/gapmpi.c:MPI_Recv" },
+    { "MPI_Recv2" , -1, "args", MPIrecv2, "src/gapmpi.c:MPI_Recv2" },
     { "MPI_Probe" , -1, "args", MPIprobe, "src/gapmpi.c:MPI_Probe" },
     { "MPI_Iprobe" , -1, "args", MPIiprobe, "src/gapmpi.c:MPI_Iprobe" },
 

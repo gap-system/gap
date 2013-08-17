@@ -321,7 +321,7 @@ end;
 #  atomic readwrite handle do
 #    handle!.pe := remoteId;
 #    handle!.localAddr := remoteLocalAddr;
-#    Print (processId, " is updating the local addr of ", HANDLE_OBJ(handle), " to ", remoteLocalAddr, "\n");
+#    PrintKY10 3AQ (processId, " is updating the local addr of ", HANDLE_OBJ(handle), " to ", remoteLocalAddr, "\n");
 #    handle!.control.complete := true;
 #    if not IsEmpty(handle!.control.blockedOnHandle) then
 #      ProcessHandleBlockedQueue(handle, fail);
