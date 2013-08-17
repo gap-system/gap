@@ -340,7 +340,7 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
   os.environ["CXX"] = GAP["CXX"]+" -m"+GAP["abi"]
-  build_external("zeromq-3.2.0", makeargs="'SUBDIRS=src doc'")
+  build_external("zeromq-3.2.3", makeargs="'SUBDIRS=src doc'")
   del os.environ["CXX"]
 
 
