@@ -146,6 +146,9 @@ Tasks.Worker := function(channels)
       taskdata := rec (func := ADOPT(task.func), 
                        args := ADOPT(task.args),
                        async := ADOPT(task.async));
+      if MPI_DEBUG.TASKS then
+        MPILog(MPI_DEBUG_OUTPUT.LOCAL_TASKS, String(HANDLE_OBJ(task)), " EX");
+      fi;
     od;
     
     
@@ -156,6 +159,7 @@ Tasks.Worker := function(channels)
     if IsString(taskdata.func) then 
       taskdata.func := VALUE_GLOBAL(taskdata.func);
     fi;
+    
     
     if taskdata.async then
       CALL_WITH_CATCH(taskdata.func, taskdata.args);
@@ -399,16 +403,19 @@ WaitTask := function(arg)
     od;
   od;
   for task in arg do
-    p := LOCK(false, task);
-    if IsIdenticalObj (p, fail) then
-      Error("Could not obtain lock in WaitTask\n");
-    fi;
-    
+    p := LOCK(task, false);
     if not task.complete then
       SendChannel (task.blockedWorkers, rec (type := BLOCK_TYPES.BLOCKED_WORKER, worker := threadId));
       UNLOCK(p);
       Tasks.BlockWorkerThread();
-      UNLOCK(p);
+      atomic task do 
+        if task.offloaded then
+          atomic readwrite task.result do
+            Open(task.result);
+          od;
+          task.result := GetHandleObj(task.result);
+        fi;
+      od;
     else
       UNLOCK(p);
     fi;
@@ -601,6 +608,7 @@ Tasks.TaskManagerFunc := function()
         for i in [1..request.noWorkers] do
           worker := Tasks.StartNewWorkerThread();
           taskman.activeWorkers := taskman.activeWorkers+1;
+          taskman.startedWorkers := taskman.startedWorkers+1;
         od;
       fi;
     elif requestType = TASK_MANAGER_REQUESTS.BLOCK_ME then # request to block a worker
@@ -611,7 +619,7 @@ Tasks.TaskManagerFunc := function()
           toResume := Remove (taskman.suspendedWorkersList);
           taskman.suspendedWorkers := taskman.suspendedWorkers-1;
           SendChannel (GetWorkerInputChannel(toResume), TASK_MANAGER_REQUESTS.RESUME_SUSPENDED_WORKER);
-         else
+        else
           worker := Tasks.StartNewWorkerThread();
           Add (taskman.allWorkers, ThreadID(worker));
         fi;
@@ -674,6 +682,8 @@ Tasks.TaskManagerFunc := function()
         SendChannel (GetWorkerInputChannel(i), TASK_MANAGER_REQUESTS.FINISH);  
       od;  
       finishing := true;
+    else
+      Error("Task manager on ", processId, " received unknown request!\n");
     fi;
   od;
 end;

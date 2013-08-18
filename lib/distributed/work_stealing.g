@@ -13,23 +13,21 @@ end;
 ############
 
 
-SendTask := function (task, dest)
-  local ind, i, taskdata, handle, handleWrapper, taskArg, p, toBlock, handleComplete;
+SendTaskWithHandle := atomic function (readonly task, readonly handle, dest)
+  local toTempUnblock, ind, i, taskdata, handleWrapper, taskArg, p, toBlock, handleComplete, foo;
   # create a taskdata struct that will be sent to the destination node
-  atomic readonly task do
-    taskdata := rec ( func := String(task.func),
-                      args := task.args,
-                      async := task.async);
-  od;
+  taskdata := rec ( func := String(task.func),
+                    args := task.args,
+                    async := task.async);
   # create a handle for result and create a wrapper for it
-  handle := GlobalObjHandles.CreateHandle(processId,dest,false,ACCESS_TYPES.READ_WRITE);
-  handle!.localId := HANDLE_OBJ(handle);
-  MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := handle!.pe, localId := handle!.localId)), handle);
-  atomic task do
-    task.offloaded := true;
-    task.result := handle;
-    task.adopt_result := false;
-  od;
+  #handle := GlobalObjHandles.CreateHandle(processId,dest,false,ACCESS_TYPES.READ_WRITE);
+  #handle!.localId := HANDLE_OBJ(handle);
+  #MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := handle!.pe, localId := handle!.localId)), handle);
+  #atomic task do
+  #  task.offloaded := true;
+  #  task.result := handle;
+  #  task.adopt_result := false;
+  #od;
   # send the task to the destination
   if MPI_DEBUG.TASKS then MPILog(MPI_DEBUG_OUTPUT.TASKS, handle, String(HANDLE_OBJ(task)), " --> ", String(dest)); fi;
   atomic taskdata.args do
@@ -41,11 +39,29 @@ SendTask := function (task, dest)
     SendMessage (dest, MESSAGE_TYPES.SCHEDULE_MSG, handle, taskdata.func, taskdata.args, taskdata.async);
     UNLOCK(p);
   od;
-  ShareSpecialObj(handle);
   atomic TaskStats do
     TaskStats.tasksOffloaded := TaskStats.tasksOffloaded+1;
   od;
+  toTempUnblock := TryReceiveChannel (task.blockedWorkers, fail);
+  while not IsIdenticalObj(toTempUnblock, fail) do
+    SendChannel (Tasks.TaskManagerRequests, rec ( type := TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER, 
+                                                          worker := toTempUnblock.worker));
+    toTempUnblock := TryReceiveChannel (task.blockedWorkers, fail);
+  od;
   return handle;
+end;
+
+SendTask := function(task, dest)
+  local handle;
+  handle := GlobalObjHandles.CreateHandle(processId,dest,false,ACCESS_TYPES.READ_WRITE);
+  handle!.localId := HANDLE_OBJ(handle);
+  MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := handle!.pe, localId := handle!.localId)), handle);
+  atomic task do
+    task.offloaded := true;
+    task.result := ShareSpecialObj(handle);
+    task.adopt_result := false;
+  od;
+  SendTaskWithHandle (task, handle, dest);
 end;
 ###########
 
@@ -88,6 +104,11 @@ ProcessScheduleMsg := function(message)
   # notify the task manager that we got task
   SendChannel (Tasks.TaskManagerRequests, rec ( type := TASK_MANAGER_REQUESTS.GOT_TASK, worker := 0));
   # finally, execute task
+  if MPI_DEBUG.TASKS then
+    atomic readonly handle do
+      MPILog(MPI_DEBUG_OUTPUT.TASKS, handle, String(HANDLE_OBJ(task)), " R");
+    od;
+  fi;
   ExecuteTask(task);
   atomic TaskStats do
     TaskStats.tasksStolen := TaskStats.tasksStolen+1;
@@ -110,7 +131,7 @@ InstallGlobalFunction(SendSteal, function()
 end);
 
 ProcessSteal := function (msg, source)
-  local age, newTarget, myId, orig, task;
+  local age, newTarget, myId, orig, task, handle;
   # atomic readonly DistTaskData do
   #  if DistTaskData.finishing then
   #     return;
@@ -130,12 +151,19 @@ ProcessSteal := function (msg, source)
   atomic TaskPoolData do
     if TaskPoolData.TaskPoolLen>1 then
       task := TaskPoolData.TaskPool[TaskPoolData.TaskPoolLen];
+      atomic task do
+        handle := GlobalObjHandles.CreateHandle(processId,orig,false,ACCESS_TYPES.READ_WRITE);
+        handle!.localId := HANDLE_OBJ(handle);
+        MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := handle!.pe, localId := handle!.localId)), handle);
+        task.offloaded := true;
+        task.result := ShareSpecialObj(handle);
+        SendTaskWithHandle(task, handle, orig);
+        task.adopt_result := false;
+      od;
       TaskPoolData.TaskPoolLen := TaskPoolData.TaskPoolLen-1;
     fi;
   od;
-  if IsBound(task) then
-    SendTask(task,source);
-  else
+  if not IsBound(task) then
     if commSize>3 and age<commSize then
       repeat
         newTarget := Random ([0..commSize-1]);
