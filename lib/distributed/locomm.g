@@ -56,8 +56,6 @@ SendMessageSerialize := function(arg)
   SignalSemaphore(MPISendSem);
 end;
 
-SendMessage := SendMessageSerialize;
-
 GetMessagePickle := function ()
   local raw, msg, strBuffer, tmp;
   strBuffer := UNIX_MakeString(MPI_Get_count());
@@ -98,4 +96,10 @@ GetMessageSerialize := function ()
   return msg;
 end;
 
-GetMessage := GetMessageSerialize;
+if IsBound(MPIGAP_MARSHALLING) and MPIGAP_MARSHALLING="Pickle" then
+  GetMessage := GetMessagePickle;
+  SendMessage := SendMessageUnpickle;
+else
+  GetMessage := GetMessageSerialize;
+  SendMessage := SendMessageSerialize;
+fi;
