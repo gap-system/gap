@@ -528,8 +528,8 @@ BindGlobal("ImmediateTask", function(arg)
   else
     result := result[2];
   fi;
-  task := ShareSpecialObj (rec( started := true, complete := true, async := false,
-                  result := result, adopt_result := false ));
+  task := ShareSingleSpecialObj (rec( started := true, complete := true,
+                  async := false, result := result, adopt_result := false ));
   return task;
 end);
 
