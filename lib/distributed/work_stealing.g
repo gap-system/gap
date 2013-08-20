@@ -29,8 +29,8 @@ SendTaskWithHandle := atomic function (readonly task, readonly handle, dest)
   #  task.adopt_result := false;
   #od;
   # send the task to the destination
-  if MPI_DEBUG.TASKS then MPILog(MPI_DEBUG_OUTPUT.TASKS, handle, String(HANDLE_OBJ(task)), " --> ", String(dest)); fi;
-  atomic taskdata.args do
+  #if MPI_DEBUG.TASKS then MPILog(MPI_DEBUG_OUTPUT.TASKS, handle, String(HANDLE_OBJ(task)), " --> ", String(dest)); fi;
+  #atomic taskdata.args do
     for taskArg in taskdata.args do
       if RegionOf(taskArg)<>RegionOf(taskdata.args) then
         p := LOCK(taskArg, false);
@@ -38,7 +38,7 @@ SendTaskWithHandle := atomic function (readonly task, readonly handle, dest)
     od;
     SendMessage (dest, MESSAGE_TYPES.SCHEDULE_MSG, handle, taskdata.func, taskdata.args, taskdata.async);
     UNLOCK(p);
-  od;
+  #od;
   atomic TaskStats do
     TaskStats.tasksOffloaded := TaskStats.tasksOffloaded+1;
   od;
