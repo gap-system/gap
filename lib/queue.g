@@ -156,7 +156,7 @@ BIND_GLOBAL("LengthQueue", function(queue)
   if tail >= head then
     return tail - head;
   else
-    return Length(q) - 2 - (head - tail);
+    return Length(queue) - 2 - (head - tail);
   fi;
 end);
 
