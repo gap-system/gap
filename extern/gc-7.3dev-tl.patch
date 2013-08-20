@@ -1,6 +1,6 @@
-diff -r 07c0144bc7fd -r 17409744ba15 include/private/gc_priv.h
+diff -r 07c0144bc7fd include/private/gc_priv.h
 --- a/include/private/gc_priv.h	Fri Jul 26 22:53:18 2013 +0100
-+++ b/include/private/gc_priv.h	Fri Jul 26 23:14:41 2013 +0100
++++ b/include/private/gc_priv.h	Tue Aug 20 23:51:18 2013 +0100
 @@ -724,6 +724,14 @@
  #   define CPP_LOG_HBLKSIZE 13
  # elif HBLKSIZE == 16384
@@ -16,9 +16,26 @@ diff -r 07c0144bc7fd -r 17409744ba15 include/private/gc_priv.h
  # else
      --> fix HBLKSIZE
  # endif
-diff -r 07c0144bc7fd -r 17409744ba15 mark.c
+diff -r 07c0144bc7fd include/private/gcconfig.h
+--- a/include/private/gcconfig.h	Fri Jul 26 22:53:18 2013 +0100
++++ b/include/private/gcconfig.h	Tue Aug 20 23:51:18 2013 +0100
+@@ -25,6 +25,13 @@
+ #ifndef GCCONFIG_H
+ #define GCCONFIG_H
+ 
++/* Override system-specific block size so that thread-local allocations
++ * are more efficient.
++ */
++#ifndef HBLKSIZE
++#define HBLKSIZE 8192
++#endif
++
+ # ifndef GC_PRIVATE_H
+     /* Fake ptr_t declaration, just to avoid compilation errors.        */
+     /* This avoids many instances if "ifndef GC_PRIVATE_H" below.       */
+diff -r 07c0144bc7fd mark.c
 --- a/mark.c	Fri Jul 26 22:53:18 2013 +0100
-+++ b/mark.c	Fri Jul 26 23:14:41 2013 +0100
++++ b/mark.c	Tue Aug 20 23:51:18 2013 +0100
 @@ -16,6 +16,10 @@
  
  #include "private/gc_pmark.h"
@@ -30,12 +47,28 @@ diff -r 07c0144bc7fd -r 17409744ba15 mark.c
  #include <stdio.h>
  
  #if defined(MSWIN32) && defined(__GNUC__)
-@@ -1155,13 +1159,14 @@
+@@ -1116,13 +1120,15 @@
+     }
+ }
+ 
++GC_INNER mse GC_local_mark_stacks[MAX_MARKERS+1][LOCAL_MARK_STACK_SIZE];
++
+ /* Perform Parallel mark.                       */
+ /* We hold the GC lock, not the mark lock.      */
+ /* Currently runs until the mark stack is       */
+ /* empty.                                       */
+ STATIC void GC_do_parallel_mark(void)
+ {
+-    mse local_mark_stack[LOCAL_MARK_STACK_SIZE];
++    mse *local_mark_stack = &(GC_local_mark_stacks[0][0]);
+                 /* Note: local_mark_stack is quite big (up to 128 KiB). */
+ 
+     GC_acquire_mark_lock();
+@@ -1155,13 +1161,12 @@
      GC_notify_all_marker();
  }
  
-+GC_INNER mse GC_local_mark_stacks[MAX_MARKERS][LOCAL_MARK_STACK_SIZE];
- 
+-
  /* Try to help out the marker, if it's running.         */
  /* We do not hold the GC lock, but the requestor does.  */
  GC_INNER void GC_help_marker(word my_mark_no)
@@ -65,9 +98,9 @@ diff -r 07c0144bc7fd -r 17409744ba15 mark.c
  }
  
  /*
-diff -r 07c0144bc7fd -r 17409744ba15 os_dep.c
+diff -r 07c0144bc7fd os_dep.c
 --- a/os_dep.c	Fri Jul 26 22:53:18 2013 +0100
-+++ b/os_dep.c	Fri Jul 26 23:14:41 2013 +0100
++++ b/os_dep.c	Tue Aug 20 23:51:18 2013 +0100
 @@ -740,6 +740,8 @@
          }
        }
