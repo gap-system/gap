@@ -148,6 +148,18 @@ BIND_GLOBAL("EmptyQueue", function(queue)
   return queue[1] = queue[2];
 end);
 
+BIND_GLOBAL("LengthQueue", function(queue)
+  local head, tail;
+  head := queue[1];
+  tail := queue[2];
+
+  if tail >= head then
+    return tail - head;
+  else
+    return Length(q) - 2 - (head - tail);
+  fi;
+end);
+
 BIND_GLOBAL("QueueHead", function(queue)
   if queue[1] <> queue[2] then
     return queue[queue[1]];
