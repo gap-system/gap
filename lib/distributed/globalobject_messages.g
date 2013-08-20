@@ -112,7 +112,7 @@ ProcessSetByHandleMsg := function (message)
   fi;
   atomic readwrite handle do
     if handle!.owner = processId then
-      if handle!.immediate then
+      if handle!.control.immediate then
         handle!.obj[1] := obj;
       elif IsBound(ind) then
         if not IsThreadLocal(handle!.obj) then
