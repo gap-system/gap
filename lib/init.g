@@ -474,9 +474,11 @@ end);
 
 BIND_GLOBAL("ThreadVar", ThreadLocalRecord());
 BIND_GLOBAL("BindThreadLocal", function(name, default)
+  MakeThreadLocal(name);
   SetTLDefault(ThreadVar, name, default);
 end);
 BIND_GLOBAL("BindThreadLocalConstructor", function(name, default)
+  MakeThreadLocal(name);
   SetTLConstructor(ThreadVar, name, default);
 end);
 
