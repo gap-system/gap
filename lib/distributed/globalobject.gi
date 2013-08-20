@@ -347,6 +347,9 @@ InstallGlobalFunction (GetHandleObj, function (handle)
   atomic readwrite request do
     AdoptObj(request);
   od;
+  #atomic readwrite request.obj do
+    #AdoptObj(request.obj);
+  #od;
   return request.obj;
 end);
 
@@ -384,7 +387,7 @@ InstallGlobalFunction (SetHandleObjList, function (handle, ind, obj)
   local localCount, p, q, list;
   GlobalObjHandles.HaveAccessCheck(handle);
   q := LOCK(handle, true);
-  if handle!.accessType = ACCESS_TYPES.READ_ONLY then
+  if handle!.control.accessType = ACCESS_TYPES.READ_ONLY then
     Error("Cannot change object of a READ_ONLY handle\n");
   fi;
   if handle!.control.haveObject then

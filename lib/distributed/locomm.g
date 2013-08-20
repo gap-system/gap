@@ -1,3 +1,5 @@
+MPISendSem := CreateSemaphore(1);
+
 DeclareGlobalFunction("RecvStringMsg");
 DeclareGlobalVariable("MESSAGE_TYPES");
 
@@ -36,7 +38,9 @@ SendMessagePickle := function(arg)
   for i in [3..Length(arg)] do
     content := Concatenation(content, IO_Pickle(arg[i]));
   od;
+  WaitSemaphore(MPISendSem);
   MPI_Send (content, arg[1], arg[2]);
+  SignalSemaphore(MPISendSem);
 end;
 
 SendMessageSerialize := function(arg)
@@ -47,14 +51,13 @@ SendMessageSerialize := function(arg)
     Add (listArgs, arg[i]);
   od;
   content := SerializeToNativeString(listArgs);
+  WaitSemaphore(MPISendSem);
   MPI_Binsend (content, arg[1], Length(content), arg[2]);
+  SignalSemaphore(MPISendSem);
 end;
-
-SendMessage := SendMessageSerialize;
 
 GetMessagePickle := function ()
   local raw, msg, strBuffer, tmp;
-  
   strBuffer := UNIX_MakeString(MPI_Get_count());
   MPI_Recv(strBuffer);
   # peek into the message and see whether it is EVAL_MSG or not
@@ -77,14 +80,26 @@ GetMessagePickle := function ()
 end;
 
 GetMessageSerialize := function ()
-  local raw, msg, strBuffer, tmp;
-  strBuffer := UNIX_MakeString(MPI_Get_count());
-  MPI_Recv(strBuffer);
+  local raw, msg, strBuffer, tmp, sz;
+  #Print (processId, " Polka\n"); 
+  #sz := MPI_Get_count();
+  #strBuffer := UNIX_MakeString(sz);
+  #MPI_Recv(strBuffer);
+  strBuffer := MPI_Recv2();
+  #Print (processId, " Urukalo\n");
   raw := DeserializeNativeString(strBuffer);
+  
   msg := rec ( source := raw[1],
                type := raw[2],
                content := raw{[3..Length(raw)]});
+  #Print (processId, " Konjogriz\n");
   return msg;
 end;
 
-GetMessage := GetMessageSerialize;
+if IsBound(MPIGAP_MARSHALLING) and MPIGAP_MARSHALLING="Pickle" then
+  GetMessage := GetMessagePickle;
+  SendMessage := SendMessageUnpickle;
+else
+  GetMessage := GetMessageSerialize;
+  SendMessage := SendMessageSerialize;
+fi;

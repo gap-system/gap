@@ -25,7 +25,8 @@ BindGlobal ("MPI_DEBUG_OUTPUT", MakeReadOnly ( rec (
                                    CHANGE_COUNT := 3,
                                    HANDLE_DELETION := 4,
                                    OBJECT_TRANSFER := 5,
-                                   TASKS := 6)));
+                                   TASKS := 6,
+                                   LOCAL_TASKS := 7)));
                            
 MSTime := function()
   local t;
@@ -58,7 +59,10 @@ MPILog := function(arg)
     handle := arg[2];
     msg := Concatenation (msg, " handle (", String(handle!.pe), ",",  String(handle!.localId), ",", String (handle!.owner), ") : T(", arg[3], ") ",
                    Concatenation (arg{[4..Length(arg)]}));
+  elif debugType = MPI_DEBUG_OUTPUT.LOCAL_TASKS then
+    msg := Concatenation (msg, " T( ", arg[2], ") ", Concatenation (arg{[3..Length(arg)]}));
   fi;
+
   msg := Concatenation (msg, "\n");
   Print (msg);
 end;

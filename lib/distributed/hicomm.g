@@ -4,16 +4,16 @@ MakeReadWriteGVar("MESSAGE_TYPES");
 MESSAGE_TYPES := MakeReadOnly ( rec ( 
                          # global objects/handles messages
                          GLOBAL_OBJ_HANDLE_MSG := 1500,
-                         SET_BY_HANDLE_MSG := 1051,
-                         CHANGE_GLOBAL_COUNT_MSG := 1052,
-                         REMOTE_COPY_OBJ_MSG := 1053,
-                         REMOTE_PUSH_OBJ_MSG := 1054,
-                         REMOTE_CLONE_OBJ_MSG := 1055,
-                         PULL_OBJ_MSG := 1056,
-                         GET_OBJ_MSG := 1057,
-                         ACK_MSG := 1058,
-                         OBJ_MSG := 1059,
-                         # something else
+                         SET_BY_HANDLE_MSG := 1501,
+                         CHANGE_GLOBAL_COUNT_MSG := 1502,
+                         GET_OBJ_MSG := 1503,
+                         ACK_MSG := 1504,
+                         OBJ_MSG := 1505,
+                         # load balancing
+                         STEAL_MSG := 1600,
+                         SCHEDULE_MSG := 1601,
+                         STOP_STEALING_MSG := 1602,
+                         # distributed objects
                          DIST_OBJ_ACK := 1,
                          DIST_OBJ_RETURN_READ := 2,
                          UPDATE_DIST_OBJ := 3,
@@ -30,19 +30,10 @@ MESSAGE_TYPES := MakeReadOnly ( rec (
                          REPLY_WITH_RESULT := 14,
                          EVAL := 100,
                          EVAL_RES := 101,
-                         STEAL_MSG := 1000,
-                         SCHEDULE_MSG := 1001,
-                         UNSUCC_STEAL_MSG := 1002,
                          EVAL_MSG := 1003,
                          FINISH := 1004,
                          PROCESS_FINISHED := 1005,
-                         REMOTE_COPY_OBJ := 1006,
                                         ACK := 1007,
-                                        
-                         FETCH_OBJ := 1008,
-                                        REPLY_OBJ := 1009,
-                                        ACK_MSG := 1010,
-                                        REMOTE_PUSH_OBJ := 1011,
                                         STOP_MANAGERS := 1012
                          ));
 MakeReadOnlyGVar("MESSAGE_TYPES");

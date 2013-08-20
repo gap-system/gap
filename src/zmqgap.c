@@ -298,8 +298,12 @@ static Obj FuncZmqReceive(Obj self, Obj socketobj) {
     BadArgType(socketobj, "ZmqReceive", 1, "zmq socket");
   socket = Socket(socketobj);
   zmq_msg_init(&msg);
-  if (zmq_recvmsg(socket, &msg, 0) < 0)
+  restart:
+  if (zmq_recvmsg(socket, &msg, 0) < 0) {
+    if (zmq_errno() == EINTR)
+      goto restart;
     ZmqError("ZmqReceive");
+  }
   len = zmq_msg_size(&msg);
   result = NEW_STRING(len);
   memcpy(CSTR_STRING(result), zmq_msg_data(&msg), len);
@@ -319,8 +323,12 @@ static Obj FuncZmqReceiveList(Obj self, Obj socketobj) {
     BadArgType(socketobj, "ZmqReceiveList", 1, "zmq socket");
   socket = Socket(socketobj);
   zmq_msg_init(&msg);
-  if (zmq_recvmsg(socket, &msg, 0) < 0)
-    ZmqError("ZmqReceiveList");
+  restart:
+  if (zmq_recvmsg(socket, &msg, 0) < 0) {
+    if (zmq_errno() == EINTR)
+      goto restart;
+    ZmqError("ZmqReceive");
+  }
   result = NEW_PLIST(T_PLIST, 1);
   SET_LEN_PLIST(result, 1);
   elem = NEW_STRING(zmq_msg_size(&msg));
@@ -332,8 +340,12 @@ static Obj FuncZmqReceiveList(Obj self, Obj socketobj) {
     zmq_getsockopt(socket, ZMQ_RCVMORE, &more, &more_size);
     if (!more) break;
     zmq_msg_init(&msg);
-    if (zmq_recvmsg(socket, &msg, 0) < 0)
-      ZmqError("ZmqReceiveList");
+    restart2:
+    if (zmq_recvmsg(socket, &msg, 0) < 0) {
+      if (zmq_errno() == EINTR)
+	goto restart2;
+      ZmqError("ZmqReceive");
+    }
     elem = NEW_STRING(zmq_msg_size(&msg));
     memcpy(CSTR_STRING(elem), zmq_msg_data(&msg), zmq_msg_size(&msg));
     zmq_msg_close(&msg);

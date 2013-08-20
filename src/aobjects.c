@@ -938,7 +938,12 @@ Obj ElmARecord(Obj record, UInt rnam)
 
 void AssARecord(Obj record, UInt rnam, Obj value)
 {
-   SetARecordField(record, rnam, value);
+   Obj result = SetARecordField(record, rnam, value);
+   if (!result)
+     ErrorReturnVoid("Record: '<atomic record>.%s' already has an assigned value",
+       (UInt)NAME_RNAM(rnam), 0L,
+       "you can 'return';");
+
 }
 
 void UnbARecord(Obj record, UInt rnam) {
@@ -1634,7 +1639,7 @@ Obj FuncMakeStrictWriteOnceAtomic(Obj self, Obj obj) {
       break;
     case T_AREC:
     case T_ACOMOBJ:
-      SetARecordUpdateStrategy(obj, AREC_RW);
+      SetARecordUpdateStrategy(obj, AREC_WX);
       break;
     default:
       obj = MakeAtomic(obj);

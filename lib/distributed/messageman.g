@@ -38,9 +38,14 @@ ProcessMessage := function (message)
   elif message.type = MESSAGE_TYPES.SCHEDULE_MSG then
     ProcessScheduleMsg (message);
     return false;
-  #elif message.type = MESSAGE_TYPES.STEAL_MSG then
-    #ProcessSteal (message, source);
-    #return false;
+  elif message.type = MESSAGE_TYPES.STEAL_MSG then
+    ProcessSteal (message, source);
+    return false;
+  elif message.type = MESSAGE_TYPES.STOP_STEALING_MSG then
+    Tasks.doStealing := false;
+    Tasks.stealingStopped := true;
+    PrintTaskManStats();
+    return false;
   elif message.type = MESSAGE_TYPES.FINISH then
     ProcessFinish();
     return true;
@@ -75,9 +80,9 @@ ProcessMessage := function (message)
   elif message.type = MESSAGE_TYPES.GLOBAL_OBJ_HANDLE_MSG then
     ProcessGlobalObjHandleMsg (message);
     return false;
-  #elif message.type = MESSAGE_TYPES.SET_BY_HANDLE_MSG then
-    #ProcessSetByHandleMsg (message);
-    #return false;
+  elif message.type = MESSAGE_TYPES.SET_BY_HANDLE_MSG then
+    ProcessSetByHandleMsg (message);
+    return false;
   elif message.type = MESSAGE_TYPES.CHANGE_GLOBAL_COUNT_MSG then
     ProcessChangeGlobalCountMsg (message);
     return false;
@@ -91,7 +96,7 @@ MessageManagerFunc := function()
   local finished, msg;
   finished := false;
   while not finished do
-    MPI_Probe();
+    #MPI_Probe();
     msg := GetMessage();
     #Print (MSTime(), " :: ", processId, " got a new message of type ", msg.type, " from ", msg.source, "\n");
     finished := ProcessMessage(msg);

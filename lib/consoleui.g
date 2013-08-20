@@ -157,9 +157,12 @@ BindGlobal("ChannelInputStream@", function(channel)
 end);
 
 BindGlobal("ChannelOutputStream@", function()
-  return OutputTextCustom([ ], function(state, string)
+  local result;
+  result := OutputTextCustom([ ], function(state, string)
     SendControl@(HAVE_OUTPUT@, ShallowCopy(string));
   end, ReturnTrue);
+  result!.formatting := true;
+  return result;
 end);
 
 BindGlobal("DirectChannelOutputStream@", function()
