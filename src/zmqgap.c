@@ -266,7 +266,9 @@ static Obj FuncZmqSend(Obj self, Obj socketobj, Obj data) {
   if (is_string) {
     zmq_msg_init_size(&msg, GET_LEN_STRING(data));
     memcpy(zmq_msg_data(&msg), CSTR_STRING(data), GET_LEN_STRING(data));
-    error = (zmq_sendmsg(Socket(socketobj), &msg, 0) < 0);
+    do {
+      error = (zmq_sendmsg(Socket(socketobj), &msg, 0) < 0);
+    } while (error && zmq_errno() == EINTR);
     zmq_msg_close(&msg);
   } else {
     Int i = 1;
@@ -279,7 +281,9 @@ static Obj FuncZmqSend(Obj self, Obj socketobj, Obj data) {
       memcpy(zmq_msg_data(&msg), CSTR_STRING(elem), GET_LEN_STRING(elem));
       if (i == len)
         flags &= ~ZMQ_SNDMORE;
-      error = (zmq_sendmsg(socket, &msg, flags) < 0);
+      do {
+	error = (zmq_sendmsg(socket, &msg, flags) < 0);
+      } while (error && zmq_errno() == EINTR);
       zmq_msg_close(&msg);
       i++;
     } while (!error && i <= len);
