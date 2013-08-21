@@ -1880,9 +1880,9 @@ static Obj InspectChannel(Channel *channel)
   LockChannel(channel);
   result = NEW_PLIST(T_PLIST, channel->size/2);
   SET_LEN_PLIST(result, channel->size/2);
-  for (i = 0, p = channel->head; i < channel->size; i+=2) {
+  for (i = 0, p = channel->head; i < channel->size; i++) {
     SET_ELM_PLIST(result, i+1, ELM_PLIST(channel->queue, p+1));
-    p++;
+    p+=2;
     if (p == channel->capacity)
       p = 0;
   }
