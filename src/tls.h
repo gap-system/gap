@@ -166,13 +166,11 @@ extern ThreadLocalStorage *MainThreadTLS;
 
 typedef struct TLSHandler
 {
-  struct TLSHandler *nextHandler;
   void (*constructor)();
   void (*destructor)();
 } TLSHandler;
 
 void InstallTLSHandler(
-	TLSHandler *handler,
 	void (*constructor)(),
 	void (*destructor)()
 );

@@ -7,7 +7,10 @@
 
 #include	<string.h>
 
-static TLSHandler *firstHandler, *lastHandler;
+#define MAX_TLS_HANDLERS (TLS_NUM_EXTRA * 2)
+
+static TLSHandler TLSHandlers[MAX_TLS_HANDLERS];
+static Int TLSHandlerCount = 0;
 
 ThreadLocalStorage *MainThreadTLS;
 
@@ -23,36 +26,37 @@ void InitializeTLS()
 }
 
 void InstallTLSHandler(
-	TLSHandler *handler,
 	void (*constructor)(),
 	void (*destructor)() )
 {
+  TLSHandler *handler;
   if (!constructor && !destructor)
     return;
+  if (TLSHandlerCount >= MAX_TLS_HANDLERS)
+    abort();
+  handler = TLSHandlers + TLSHandlerCount++;
   handler->constructor = constructor;
   handler->destructor = destructor;
-  handler->nextHandler = 0;
-  if (!firstHandler)
-    firstHandler = lastHandler = handler;
-  else
-  {
-    lastHandler->nextHandler = handler;
-    lastHandler = handler;
-  }
 }
 
 void RunTLSConstructors()
 {
-   TLSHandler *handler;
-   for (handler = firstHandler; handler; handler = handler->nextHandler)
-     handler->constructor();
+  Int i;
+  for (i = 0; i < TLSHandlerCount; i++) {
+    TLSHandler *handler = TLSHandlers + i;
+    if (handler->constructor)
+      handler->constructor();
+  }
 }
 
 void RunTLSDestructors()
 {
-   TLSHandler *handler;
-   for (handler = firstHandler; handler; handler = handler->nextHandler)
-     handler->destructor();
+  Int i;
+  for (i = 0; i < TLSHandlerCount; i++) {
+    TLSHandler *handler = TLSHandlers + i;
+    if (handler->destructor)
+      handler->destructor();
+  }
 }
 
 static Int ExtraTLSSlot = 0;
@@ -105,4 +109,5 @@ void DestroyTLS()
   DestroyThreadAPITLS();
   DestroyOpersTLS();
   DestroyAObjectsTLS();
+  RunTLSDestructors();
 }
