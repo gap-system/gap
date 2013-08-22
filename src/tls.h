@@ -5,6 +5,7 @@
 
 #include "tlsconfig.h"
 
+#define TLS_NUM_EXTRA 256
 
 typedef struct ThreadLocalStorage
 {
@@ -155,6 +156,9 @@ typedef struct ThreadLocalStorage
 #define MAX_GC_PREFIX_DESC 4
   void **FreeList[MAX_GC_PREFIX_DESC+2];
 #endif
+
+  /* Extra storage */
+  void *Extra[TLS_NUM_EXTRA];
 
 } ThreadLocalStorage;
 
@@ -365,6 +369,8 @@ static inline int IsMainThread()
 };
 
 void InitializeTLS();
+
+Int AllocateExtraTLSSlot();
 
 void InitTLS();
 void DestroyTLS();

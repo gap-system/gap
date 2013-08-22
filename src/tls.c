@@ -55,6 +55,22 @@ void RunTLSDestructors()
      handler->destructor();
 }
 
+static Int ExtraTLSSlot = 0;
+
+Int AllocateExtraTLSSlot() {
+  Int result;
+  HashLock(0);
+  result = ExtraTLSSlot;
+  if (result < TLS_NUM_EXTRA) {
+    ExtraTLSSlot++;
+  }
+  HashUnlock(0);
+  if (result < ExtraTLSSlot)
+    return result;
+  else
+    return -1;
+}
+
 void InitTLS()
 {
   void InitScannerTLS();
