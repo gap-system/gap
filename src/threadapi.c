@@ -357,7 +357,7 @@ void SignalMonitor(Monitor *monitor)
   }
 }
 
-void ArgumentError(char *message)
+static void ArgumentError(char *message)
 {
   ErrorQuit(message, 0, 0);
 }
@@ -887,6 +887,7 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
 
 Obj FuncCreateChannel(Obj self, Obj args);
 Obj FuncDestroyChannel(Obj self, Obj channel);
+Obj FuncTallyChannel(Obj self, Obj channel);
 Obj FuncSendChannel(Obj self, Obj channel, Obj obj);
 Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj);
 Obj FuncReceiveChannel(Obj self, Obj channel);
@@ -1074,6 +1075,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "DestroyChannel", 1, "channel",
       FuncDestroyChannel, "src/threadapi.c:DestroyChannel" },
+
+    { "TallyChannel", 1, "channel",
+      FuncTallyChannel, "src/threadapi.c:TallyChannel" },
 
     { "SendChannel", 2, "channel, obj",
       FuncSendChannel, "src/threadapi.c:SendChannel" },
@@ -1637,6 +1641,15 @@ static void ContractChannel(Channel *channel)
   /* Not yet implemented */
 }
 
+static Int TallyChannel(Channel *channel)
+{
+  Int result;
+  LockChannel(channel);
+  result = channel->size/2;
+  UnlockChannel(channel);
+  return result;
+}
+
 static void SendChannel(Channel *channel, Obj obj)
 {
   LockChannel(channel);
@@ -1970,6 +1983,13 @@ Obj FuncDestroyChannel(Obj self, Obj channel)
   if (!DestroyChannel(ObjPtr(channel)))
     ArgumentError("DestroyChannel: Channel is in use");
   return (Obj) 0;
+}
+
+Obj FuncTallyChannel(Obj self, Obj channel)
+{
+  if (!IsChannel(channel))
+    ArgumentError("TallyChannel: First argument must be a channel");
+  return INTOBJ_INT(TallyChannel(ObjPtr(channel)));
 }
 
 Obj FuncSendChannel(Obj self, Obj channel, Obj obj)
