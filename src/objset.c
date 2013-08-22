@@ -327,6 +327,29 @@ void ClearObjSet(Obj set) {
 }
 
 /**
+ *  `ObjSetValues()`
+ *  ---------------
+ *
+ *  This function returns the elements of the set as a list.
+ */
+
+Obj ObjSetValues(Obj set) {
+  UInt len = ADDR_WORD(set)[OBJSET_USED];
+  UInt size = ADDR_WORD(set)[OBJSET_SIZE];
+  UInt p, i;
+  Obj result = NEW_PLIST(T_PLIST, len);
+  SET_LEN_PLIST(result, len);
+  for (i=0, p=1; i < size; i++) {
+    Obj el = ADDR_OBJ(set)[OBJSET_HDRSIZE + i];
+    if (el) {
+      SET_ELM_PLIST(result, p, el);
+      p++;
+    }
+  }
+  return result;
+}
+
+/**
  *  `ResizeObjSet()`
  *  ----------------
  *
@@ -529,6 +552,54 @@ void ClearObjMap(Obj map) {
 }
 
 /**
+ *  `ObjMapValues()`
+ *  ---------------
+ *
+ *  This function returns all values from the map.
+ */
+
+Obj ObjMapValues(Obj set) {
+  UInt len = ADDR_WORD(set)[OBJSET_USED];
+  UInt size = ADDR_WORD(set)[OBJSET_SIZE];
+  UInt p, i;
+  Obj result = NEW_PLIST(T_PLIST, len);
+  SET_LEN_PLIST(result, len);
+  for (i=0, p=1; i < size; i++) {
+    Obj el = ADDR_OBJ(set)[OBJSET_HDRSIZE + 2*i+1];
+    if (el) {
+      SET_ELM_PLIST(result, p, el);
+      p++;
+    }
+  }
+  return result;
+}
+
+/**
+ *  `ObjMapKeys()`
+ *  ---------------
+ *
+ *  This function returns all keys from the map.
+ */
+
+Obj ObjMapKeys(Obj set) {
+  UInt len = ADDR_WORD(set)[OBJSET_USED];
+  UInt size = ADDR_WORD(set)[OBJSET_SIZE];
+  UInt p, i;
+  Obj result = NEW_PLIST(T_PLIST, len);
+  SET_LEN_PLIST(result, len);
+  for (i=0, p=1; i < size; i++) {
+    Obj el = ADDR_OBJ(set)[OBJSET_HDRSIZE + 2*i];
+    if (el) {
+      SET_ELM_PLIST(result, p, el);
+      p++;
+    }
+  }
+  return result;
+}
+
+
+
+/**
  *  `ResizeObjMap()`
  *  ----------------
  *
@@ -675,7 +746,19 @@ static Obj FuncCLEAR_OBJ_SET(Obj self, Obj set) {
 }
 
 /**
- *  `FuncOBJ_SET()`
+ *  `FuncOBJ_SET_VALUES()`
+ *  ---------------------
+ *
+ *  GAP function to return values in set as a list.
+ */
+
+static Obj FuncOBJ_SET_VALUES(Obj self, Obj set) {
+  CheckArgument("OBJ_SET_VALUES", set, T_OBJSET, -1);
+  return ObjSetValues(set);
+}
+
+/**
+ *  `FuncOBJ_MAP()`
  *  ---------------
  *
  *  GAP function to create a new object map.
@@ -770,6 +853,31 @@ static Obj FuncCLEAR_OBJ_MAP(Obj self, Obj map) {
   return (Obj) 0;
 }
 
+/**
+ *  `FuncOBJ_MAP_VALUES()`
+ *  ---------------------
+ *
+ *  GAP function to return values in set as a list.
+ */
+
+static Obj FuncOBJ_MAP_VALUES(Obj self, Obj map) {
+  CheckArgument("OBJ_MAP_VALUES", map, T_OBJMAP, -1);
+  return ObjMapValues(map);
+}
+
+
+/**
+ *  `FuncOBJ_MAP_KEYS()`
+ *  ---------------------
+ *
+ *  GAP function to return keys in set as a list.
+ */
+
+static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map) {
+  CheckArgument("OBJ_MAP_KEYS", map, T_OBJMAP, -1);
+  return ObjMapKeys(map);
+}
+
 
 /****************************************************************************
 **
@@ -793,20 +901,29 @@ static StructGVarFunc GVarFuncs [] = {
     { "CLEAR_OBJ_SET", 1, "objset",
       FuncCLEAR_OBJ_SET, "src/objset.c:CLEAR_OBJ_SET" },
 
+    { "OBJ_SET_VALUES", 1, "objset",
+      FuncOBJ_SET_VALUES, "src/objset.c:OBJ_SET_VALUES" },
+
     { "OBJ_MAP", -1, "[list]",
       FuncOBJ_MAP, "src/objset.c:OBJ_MAP" },
 
-    { "ADD_OBJ_MAP", 3, "objset, key, value",
+    { "ADD_OBJ_MAP", 3, "objmap, key, value",
       FuncADD_OBJ_MAP, "src/objset.c:ADD_OBJ_MAP" },
 
-    { "REMOVE_OBJ_MAP", 2, "objset, obj",
+    { "REMOVE_OBJ_MAP", 2, "objmap, obj",
       FuncREMOVE_OBJ_MAP, "src/objset.c:REMOVE_OBJ_MAP" },
 
-    { "FIND_OBJ_MAP", 3, "objset, obj, default",
+    { "FIND_OBJ_MAP", 3, "objmap, obj, default",
       FuncFIND_OBJ_MAP, "src/objset.c:FIND_OBJ_MAP" },
 
-    { "CLEAR_OBJ_MAP", 1, "objset",
+    { "CLEAR_OBJ_MAP", 1, "objmap",
       FuncCLEAR_OBJ_MAP, "src/objset.c:CLEAR_OBJ_MAP" },
+
+    { "OBJ_MAP_VALUES", 1, "objmap",
+      FuncOBJ_MAP_VALUES, "src/objset.c:OBJ_MAP_VALUES" },
+
+    { "OBJ_MAP_KEYS", 1, "objmap",
+      FuncOBJ_MAP_KEYS, "src/objset.c:OBJ_MAP_KEYS" },
 
     { 0 }
 

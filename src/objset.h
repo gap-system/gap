@@ -13,6 +13,7 @@ Int FindObjSet(Obj set, Obj obj);
 void AddObjSet(Obj set, Obj obj);
 void RemoveObjSet(Obj set, Obj obj);
 void ClearObjSet(Obj set);
+Obj ObjSetValues(Obj set);
 
 Obj NewObjMap();
 Int FindObjMap(Obj map, Obj key);
@@ -20,6 +21,8 @@ Obj LookupObjMap(Obj map, Obj key);
 void AddObjMap(Obj map, Obj key, Obj value);
 void RemoveObjMap(Obj map, Obj obj);
 void ClearObjMap(Obj map);
+Obj ObjMapValues(Obj map);
+Obj ObjMapKeys(Obj map);
 
 StructInitInfo *InitInfoObjSets( void );
 
