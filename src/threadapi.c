@@ -934,6 +934,7 @@ Obj FuncCURRENT_LOCKS(Obj self);
 Obj FuncREFINE_TYPE(Obj self, Obj obj);
 Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec);
 Obj FuncNEW_REGION(Obj self, Obj name, Obj prec);
+Obj FuncREGION_PRECEDENCE(Obj self, Obj regobj);
 Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj);
 Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj);
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj);
@@ -1184,6 +1185,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "NEW_REGION", 2, "string, integer",
       FuncNEW_REGION, "src/threadapi.c:NEW_REGION" },
+
+    { "REGION_PRECEDENCE", 1, "obj",
+      FuncREGION_PRECEDENCE, "src/threadapi.c:REGION_PRECEDENCE" },
 
     { "SHARE", 3, "obj, string, integer",
       FuncSHARE, "src/threadapi.c:SHARE" },
@@ -2791,6 +2795,12 @@ Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
   if (name != Fail)
     SetRegionName(region, name);
   return region->obj;
+}
+
+Obj FuncREGION_PRECEDENCE(Obj self, Obj regobj)
+{
+  Region *region = GetRegionOf(regobj);
+  return region == NULL ? INTOBJ_INT(0) : INTOBJ_INT(region->prec);
 }
 
 Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
