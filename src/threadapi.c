@@ -2755,9 +2755,9 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
   Region *region = NewRegion();
   Obj reachable;
   if (name != Fail && !IsStringConv(name))
-    ArgumentError("SHARE_RAW: Second argument must be a string or fail");
+    ArgumentError("SHARE_NORECURSE: Second argument must be a string or fail");
   if (!IS_INTOBJ(prec))
-    ArgumentError("SHARE_RAW: Third argument must be an integer");
+    ArgumentError("SHARE_NORECURSE: Third argument must be an integer");
   region->prec = INT_INTOBJ(prec);
   if (!MigrateObjects(1, &obj, region, 0))
     ArgumentError("SHARE_NORECURSE: Thread does not have exclusive access to objects");
