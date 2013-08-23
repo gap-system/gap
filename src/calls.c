@@ -1772,8 +1772,13 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
 
     if (BODY_FUNC(func)) {
         Obj fn =  FILENAME_BODY(BODY_FUNC(func));
-        if (fn)
+#ifndef WARD_ENABLED
+        if (fn) {
+	    if (IS_BAG_REF(fn))
+	      MakeBagPublic(fn);
             return fn;
+	}
+#endif
     }
     return Fail;
 }
