@@ -87,7 +87,8 @@ TASKS := AtomicRecord( rec (
     fi;
     atomic task do
       task.complete := true;
-      if result = fail and task.result <> fail then
+      if IsIdenticalObj(result, fail) and
+          not IsIdenticalObj(task.result, fail) then
         result := task.result;
       fi;
       if not async then
