@@ -184,9 +184,9 @@ end;
 LockAndMigrateObj := function(obj, target)
   local lock;
   if IsShared(target) and not HaveWriteAccess(target) then
-    lock := LOCK(target);
-    MIGRATE(obj, target);
-    UNLOCK(lock);
+    atomic target do
+      MIGRATE(obj, target);
+    od;
   else
     MIGRATE(obj, target);
   fi;
