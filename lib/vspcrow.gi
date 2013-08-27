@@ -903,8 +903,8 @@ InstallMethod( NormedRowVectors,
           i,          # loop over field elements
           toadd,      # vector to add to known vectors
           k,          # loop over `elms2'
-          v;          # one normed row vector
-
+          v,          # one normed row vector
+          w;          # attempt to convert v to compressed representation
     if not IsFinite( V ) then
       Error( "sorry, cannot compute normed vectors of infinite domain <V>" );
     fi;
@@ -932,7 +932,12 @@ InstallMethod( NormedRowVectors,
         toadd:= base[j+1] + i * base[j];
         for k in [ 1 .. len ] do
           v:= elms2[k] + toadd;
-          v:=CopyToVectorRep( v, q );
+          if q <= 256 then
+            w:=CopyToVectorRep( v, q );
+            if w <> fail then
+              v:=w;
+            fi;
+          fi;
           new[ pos + k ]:= v;
         od;
         pos:= pos + len;
