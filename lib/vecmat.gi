@@ -1651,15 +1651,16 @@ local sf, rep, ind, ind2, row, i,big,l;
     od;
   else
     for i in ind2 do
-      row := ShallowCopy(matrix[i]);
-      ConvertToVectorRepNC(row, sf);
-      matrix[i] := row;
+      row := CopyToVectorRep(matrix[i], sf);
+      if row <> fail then
+        matrix[i] := row;
+      fi;
     od;
   fi;
 
   # this can only happen if not big
   for i in ind do
-    ConvertToVectorRepNC(matrix[i],sf);
+    matrix[i]:=CopyToVectorRep(matrix[i],sf);
   od;
 
   MakeImmutable(matrix);

@@ -375,7 +375,7 @@ end;
 ## matrices in the list are used.
 SMTX_SpinnedBasis:=function ( arg  )
    local   v, matrices, ngens, zero,  
-           ans, dim, subdim, leadpos, w, i, j, k, l, m,F;
+           ans, dim, subdim, leadpos, u, w, i, j, k, l, m,F;
 
    if Number (arg) < 3 or Number (arg) > 4 then
       Error ("Usage:  SpinnedBasis ( v, matrices, F, [ngens] )");
@@ -400,7 +400,12 @@ SMTX_SpinnedBasis:=function ( arg  )
    fi;
    zero:=Zero(matrices[1][1][1]);
    ans:=ShallowCopy(Basis(VectorSpace(F,v)));
-   for v in ans do ConvertToVectorRep(v,F); od;
+   for v in ans do 
+     u := CopyToVectorRep(v,Size(F)); 
+     if u <> fail then
+       v:=u;
+     fi;  
+   od;
    if Length(ans)=0 then
      return ans;
    fi;
@@ -431,10 +436,10 @@ SMTX_SpinnedBasis:=function ( arg  )
             subdim:=subdim + 1;
             leadpos[subdim]:=j;
             #w:=(w[j]^-1) * w;
-	    MultRowVector(w,w[j]^-1);
+	        MultRowVector(w,w[j]^-1);
             Add ( ans, w );
             if subdim = dim then
-	       ans:=ImmutableMatrix(F,ans);
+	           ans:=ImmutableMatrix(F,ans);
                return ans;
             fi;
          fi;
@@ -2458,7 +2463,7 @@ SMTX.MinimalSubGModule:=SMTX_MinimalSubGModule ;
 SMTX_IsomorphismComp:=function (module1, module2, action)
    local matrices, matrices1, matrices2, F, R, dim, swapmodule, genpair,
          swapped, orig_ngens, i, j, el, p, fac, ngens, M, mat, v1, v2, v, 
-         N, basis, basis1, basis2;
+         N, basis, basis1, basis2, tmp;
 
   #CCC:=[ShallowCopy(module1),ShallowCopy(module2),ShallowCopy(action)];
   #CCC[1].smashMeataxe:=ShallowCopy(CCC[1].smashMeataxe);
@@ -2540,7 +2545,7 @@ SMTX_IsomorphismComp:=function (module1, module2, action)
    fac:=SMTX.AlgElCharPolFac (module1);
    mat:=Value (fac, M,M^0);
    Info(InfoMeatAxe,2,"Calculating nullspace for second module.");
-   N:=NullspaceMat (mat);
+   N:=NullspaceMat(mat);
    if Length (N) <> SMTX.AlgElNullspaceDimension(module1) then
       Info(InfoMeatAxe,2,"Null space dimensions different.");
       return fail;
@@ -2551,8 +2556,11 @@ SMTX_IsomorphismComp:=function (module1, module2, action)
    Info(InfoMeatAxe,2,"Spinning up in direct sum.");
    matrices:=SMTX.MatrixSum (matrices1, matrices2);
    v1:=SMTX.AlgElNullspaceVec(module1);
-   ConvertToVectorRep(N[1],F);
    v2:=N[1];
+   tmp := CopyToVectorRep(v2,Size(F));
+   if tmp<>fail then
+     v2:=tmp;
+   fi;
    v:=Concatenation (v1, v2);
    basis:=SMTX.SpinnedBasis (v, matrices, F);
    if Length (basis) = dim then
