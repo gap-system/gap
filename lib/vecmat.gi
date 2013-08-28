@@ -1631,7 +1631,8 @@ local sf, rep, ind, ind2, row, i,big,l;
   od;
 
   # do we need to rebuild outer matrix layer?
-  if (IsMutable(matrix) and not change) # matrix was mutable
+  if not IsMutable(matrix) # matrix was immutable
+    or (IsMutable(matrix) and not change) # matrix was mutable
     or (Length(ind2)>0 and   # we want to change rows
       not IsMutable(matrix)) #but cannot change entries
     or (Is8BitMatrixRep(matrix) # matrix is be compact rep
