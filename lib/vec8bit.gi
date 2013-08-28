@@ -834,18 +834,29 @@ end);
 ##
 
 BindGlobal("ADJUST_FIELDS_VEC8BIT",
-        function(v,w) 
-    local p,e;
-    if Q_VEC8BIT(v)<>Q_VEC8BIT(w) then
-      p:=Characteristic(v);
-      e:=Lcm(LogInt(Q_VEC8BIT(v),p),LogInt(Q_VEC8BIT(w),p));
-      if p^e > 256 or
-         p^e <> ConvertToVectorRepNC(v,p^e) or
-         p^e <> ConvertToVectorRepNC(w,p^e) then
-          return fail;
+function(v,w) 
+  local p,e,v1,w1;
+  if Q_VEC8BIT(v)<>Q_VEC8BIT(w) then
+    p:=Characteristic(v);
+    e:=Lcm(LogInt(Q_VEC8BIT(v),p),LogInt(Q_VEC8BIT(w),p));
+    if p^e > 256 then
+      return [v,w];
+    else
+      v1:=CopyToVectorRep(v,p^e);
+      if v1<>fail then
+        w1:=CopyToVectorRepNC(w,p^e);
+        if w1<>fail then
+          return [v1,w1];
+        else
+          return [v,w];
+        fi;
+      else
+        return [v,w];
       fi;
+    fi;  
+  else
+    return [v,w];
   fi;
-  return true;
 end);
 
 
@@ -853,26 +864,35 @@ InstallMethod( ReduceCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
         [Is8BitVectorRep and IsRowVector and IsMutable, IsInt, Is8BitVectorRep and
          IsRowVector, IsInt ], 0,
         function(vl, ll, vr, lr)
-        local res;
-        if ADJUST_FIELDS_VEC8BIT(vl, vr) = fail then
+        local res, adjust;
+        adjust := ADJUST_FIELDS_VEC8BIT(vl,vr);   
+        if adjust = fail then
             TryNextMethod();
+        else
+            vl:=adjust[1];    
+            vr:=adjust[2];    
         fi;
     	res := REDUCE_COEFFS_VEC8BIT( vl, ll, 
 			MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
-	if res = fail then 
-		TryNextMethod();
-	else
-		return res;
-	fi;
+	    if res = fail then 
+		    TryNextMethod();
+	    else
+		    return res;
+	    fi;
 end);
 
 InstallOtherMethod( ReduceCoeffs, "8 bit vectors, kernel method (2 arg)", 
         IsIdenticalObj,
         [Is8BitVectorRep and IsRowVector and IsMutable, Is8BitVectorRep and
          IsRowVector ], 0,
-        function(v,w) 
-    if ADJUST_FIELDS_VEC8BIT(v, w) = fail then
+    function(v,w) 
+    local adjust;
+    adjust := ADJUST_FIELDS_VEC8BIT(v,w);   
+    if adjust = fail then
         TryNextMethod();
+    else
+        v:=adjust[1];    
+        w:=adjust[2];    
     fi;
     return REDUCE_COEFFS_VEC8BIT(v, Length(v),
                    MAKE_SHIFTED_COEFFS_VEC8BIT(w, Length(w)));
@@ -887,17 +907,21 @@ InstallMethod( QuotRemCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
         [Is8BitVectorRep and IsRowVector and IsMutable, IsInt, Is8BitVectorRep and
          IsRowVector, IsInt ], 0,
         function(vl, ll, vr, lr)
-        local res;
-        if ADJUST_FIELDS_VEC8BIT(vl, vr) = fail then
+        local res, adjust;
+        adjust := ADJUST_FIELDS_VEC8BIT(vl,vr);   
+        if adjust = fail then
             TryNextMethod();
+        else
+            vl:=adjust[1];    
+            vr:=adjust[2];    
         fi;
     	res := QUOTREM_COEFFS_VEC8BIT( vl, ll, 
 			MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
-	if res = fail then 
-		TryNextMethod();
-	else
-		return res;
-	fi;
+	    if res = fail then 
+		    TryNextMethod();
+	    else
+		    return res;
+	    fi;
 end);
 
 InstallOtherMethod( QuotRemCoeffs, "8 bit vectors, kernel method (2 arg)", 
@@ -905,8 +929,13 @@ InstallOtherMethod( QuotRemCoeffs, "8 bit vectors, kernel method (2 arg)",
         [Is8BitVectorRep and IsRowVector and IsMutable, Is8BitVectorRep and
          IsRowVector ], 0,
         function(v,w) 
-    if ADJUST_FIELDS_VEC8BIT(v, w) = fail then
+    local adjust;
+    adjust := ADJUST_FIELDS_VEC8BIT(v,w);   
+    if adjust = fail then
         TryNextMethod();
+    else
+        v:=adjust[1];    
+        w:=adjust[2];    
     fi;
     return QUOTREM_COEFFS_VEC8BIT(v, Length(v),
                    MAKE_SHIFTED_COEFFS_VEC8BIT(w, Length(w)));
@@ -928,11 +957,15 @@ InstallMethod( PowerModCoeffs,
           Is8BitVectorRep and IsRowVector, IsInt ],
         0,
         function( v, lv, exp, w, lw)
-    local wshifted, pow, lpow, bits, i,p,e;
+    local wshifted, pow, lpow, bits, i,p,e, adjust;
 
     # ensure both vectors are in the same field
-    if ADJUST_FIELDS_VEC8BIT(v, w) = fail then
+    adjust := ADJUST_FIELDS_VEC8BIT(v,w);
+    if adjust = fail then
         TryNextMethod();
+    else
+        v:=adjust[1];    
+        w:=adjust[2];    
     fi;
     
     if exp = 1 then
