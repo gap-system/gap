@@ -118,10 +118,21 @@ else:
 
 # Routine to scan config.h and figure out whether we are targeting
 # a 32-bit or a 64-bit architecture.
-def abi_from_config(config_header_file):
+def parse_config(config_header_file):
   global GAP
   try:
     config_file_contents = open(config_header_file).read()
+    # Because the configure script ignores --with-readline,
+    # we're also patching it here.
+    have_libreadline = "#define HAVE_LIBREADLINE 1"
+    if not GAP["readline"] and have_libreadline in config_file_contents:
+      config_file_contents = config_file_contents.replace(
+        have_libreadline,
+	"/* #undef HAVE_LIBREADLINE */")
+      try:
+	open(config_header_file, "w").write(config_file_contents)
+      except:
+        print "Could not update config file"
   except:
     config_file_contents = ""
 
@@ -136,7 +147,7 @@ def abi_from_config(config_header_file):
 # Create config.h if we don't have it and determine ABI
 
 config_header_file = build_dir + "/config.h"
-default_abi, has_config = abi_from_config(config_header_file)
+default_abi, has_config = parse_config(config_header_file)
 changed_abi = GAP["abi"] != "auto" and GAP["abi"] != default_abi
 if changed_abi:
   default_abi = GAP["abi"]
@@ -159,7 +170,7 @@ if not has_config or "config" in COMMAND_LINE_TARGETS or changed_abi:
     del os.environ["CONFIGNAME"]
     del os.environ["GAPARCH"]
 
-default_abi, has_config = abi_from_config(config_header_file)
+default_abi, has_config = parse_config(config_header_file)
 if not has_config and not GetOption("clean") and not GetOption("help"):
   print "=== Configuration file wasn't created ==="
   Exit(1)
