@@ -25,6 +25,7 @@ vars.Add("gcmaxthreads", "Maximum number of workers to be used by the GC", "32")
 vars.Add('preprocess', 'Use source preprocessor', "")
 vars.Add('ward', 'Specify Ward directory', "")
 vars.Add('cpus', "Number of logical CPUs", "auto")
+vars.Add(BoolVariable("readline", "Build with readline support", 0))
 
 GAP = DefaultEnvironment(variables=vars, PATH=os.environ["PATH"])
 
@@ -148,7 +149,9 @@ if not has_config or "config" in COMMAND_LINE_TARGETS or changed_abi:
     # necessary because we are wrapping the GAP.dev build process.
     os.environ["CONFIGNAME"] = "hpc"
     os.environ["GAPARCH"] = build_dir[4:]
-    os.system("./hpc/configure CC=\""+GAP["CC"]+"\"")
+    os.system("./hpc/configure --with-readline=" +
+      (GAP["readline"] and "yes" or "no") +
+      " CC=\""+GAP["CC"]+"\"")
     os.system("cd "+build_dir+"; sh ../../cnf/configure.out")
     os.system("test -w bin/gap.sh && chmod ugo+x bin/gap.sh")
     if GAP["abi"] != "auto":
@@ -179,10 +182,11 @@ if not GetOption("clean") and not GetOption("help"):
     libs.append("m")
   if conf.CheckLib("dl"):
     libs.append("dl")
-  if conf.CheckLib("ncurses"):
-    libs.append("ncurses")
-  if conf.CheckLib("readline"):
-    libs.append("readline")
+  if GAP["readline"]:
+    if conf.CheckLib("ncurses"):
+      libs.append("ncurses")
+    if conf.CheckLib("readline"):
+      libs.append("readline")
   if conf.CheckLib("util"):
     libs.append("util")
   if GAP["gc"] == "system":
