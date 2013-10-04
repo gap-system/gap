@@ -2435,6 +2435,28 @@ InstallMethod( MaximumList,
     return max;
     end );
 
+InstallMethod( MaximumList,
+    "for a list and a comparison function",
+    [ IsList, IsFunction ],
+    function( list, comp )
+        local m, i, len;
+
+        len := Length(list);
+
+        if Length(list) = 0 then
+            Error( "MaximumList: <list> must contain at least one element" );
+        else
+            m := list[1];
+
+            for i in [2 .. len] do
+                if comp(m, list[i]) = true then
+                    m := list[i];
+                fi;
+            od;
+        fi;
+ 
+        return m;
+end);
 
 #############################################################################
 ##
@@ -2541,6 +2563,29 @@ InstallMethod( MinimumList,
     fi;
     return min;
     end );
+
+InstallMethod( MinimumList,
+    "for a list and a comparison function",
+    [ IsList, IsFunction ],
+    function( list, comp )
+        local m, i, len;
+
+        len := Length(list);
+
+        if Length(list) = 0 then
+            Error( "MinimumList: <list> must contain at least one element" );
+        else
+            m := list[1];
+
+            for i in [2 .. len] do
+                if comp(list[i], m) = true then
+                    m := list[i];
+                fi;
+            od;
+        fi;
+ 
+        return m;
+    end);
 
 #############################################################################
 ##
