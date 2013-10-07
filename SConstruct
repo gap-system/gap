@@ -329,8 +329,8 @@ def build_external(libname, confargs="", makeargs="",
   print "=== Building " + libname + " ==="
   if os.system("cd " + abi_path + "/" + libname
 	  + " && ./configure --prefix=$PWD/.. --libdir=$PWD/../lib" + confargs
-	  + " && make -j " + str(jobs) + makeargs
-	  + " && make" + makeargs + " install") != 0:
+	  + " && gmake -j " + str(jobs) + makeargs
+	  + " && gmake" + makeargs + " install") != 0:
     print "=== Failed to build " + libname + " ==="
     Exit(1)
 
@@ -359,7 +359,7 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
     confargs="--disable-shared --disable-gcj-support --enable-large-config" +
       (GAP["gc"] == "boehm-par" and " --enable-parallel-mark" or
                                     " --disable-parallel-mark"),
-    patch=(GAP["gc"].startswith("boehm-") and ["gc-7.3dev-tl.patch"] or []))
+    patch=(GAP["gc"].startswith("boehm-") and ["gc-7.3dev-tl.patch", "gc-7.3dev-configure.patch"] or []))
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
   os.environ["CXX"] = GAP["CXX"]+" -m"+GAP["abi"]
@@ -436,7 +436,7 @@ if GAP["mpi"]:
 
 preprocess = string.replace(GAP["preprocess"], "%", " ")
 if GAP["ward"]:
-  preprocess = GAP["ward"] + "/bin/addguards2c" + \
+  preprocess = GAP["ward"] + "/bin/addguards2" + \
     make_cc_options("-I", include_path) + make_cc_options("-D", defines)
 
 if not GetOption("clean") and not GetOption("help"):
