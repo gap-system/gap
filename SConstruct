@@ -51,6 +51,29 @@ if not cpp_compiler:
 platform_name = commands.getoutput("cnf/config.guess")
 build_dir = "bin/" + platform_name + "-" + compiler + "-hpc"
 
+def which(program):
+  # This only works on UNIXes, but we don't call it on Windows.
+  def is_executable(path):
+    return os.path.isfile(path) and os.access(path, os.X_OK)
+  path = os.environ.get("PATH")
+  if not path:
+    return 0
+  path = path.split(":")
+  for p in path:
+    progpath = os.path.join(p, program)
+    if is_executable(progpath):
+      return progpath
+  return None
+
+makeprog = "make"
+for osprefix in ["freebsd", "openbsd", "netbsd", "dragonfly"]:
+  if sys.platform.startswith(osprefix):
+    if not which("gmake"):
+      print "=== gmake is needed to build HPC-GAP on BSD systems. ==="
+      Exit(1)
+    makeprog = "gmake"
+    break
+
 # We're working around some cygwin compatibility issues.
 # Cygwin does not work with the recent Boehm GC development branch;
 
@@ -329,8 +352,8 @@ def build_external(libname, confargs="", makeargs="",
   print "=== Building " + libname + " ==="
   if os.system("cd " + abi_path + "/" + libname
 	  + " && ./configure --prefix=$PWD/.. --libdir=$PWD/../lib" + confargs
-	  + " && gmake -j " + str(jobs) + makeargs
-	  + " && gmake" + makeargs + " install") != 0:
+	  + " && " + makeprog + " -j " + str(jobs) + makeargs
+	  + " && " + makeprog + makeargs + " install") != 0:
     print "=== Failed to build " + libname + " ==="
     Exit(1)
 
