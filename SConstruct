@@ -50,7 +50,7 @@ cpp_compiler = GAP["CXX"]
 if not cpp_compiler:
   GAP["zmq"] = "no"
 platform_name = commands.getoutput("cnf/config.guess")
-build_dir = "bin/" + platform_name + "-" + compiler + "-hpc"
+build_dir = "bin/" + platform_name + "-" + os.path.basename(compiler) + "-hpc"
 
 # We're working around some cygwin compatibility issues.
 # Cygwin does not work with the recent Boehm GC development branch;
