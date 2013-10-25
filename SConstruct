@@ -33,9 +33,10 @@ Help(vars.GenerateHelpText(GAP))
 
 # Allow environment to override settings
 
-for opt in ["CC", "CFLAGS", "CXX", "CXXFLAGS"]:
+for opt in ["CC", "CXX", "CFLAGS", "CXXFLAGS"]:
   if os.environ.has_key(opt):
     GAP[opt] = os.environ[opt]
+    del os.environ[opt]
 
 # What compiler and platform are we dealing with?
 
