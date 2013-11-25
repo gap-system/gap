@@ -16,22 +16,22 @@ DeclareOperation("IsInverseSubsemigroup", [IsSemigroup, IsSemigroup]);
 DeclareGlobalFunction("InverseMonoid");
 DeclareGlobalFunction("InverseSemigroup");
 
+DeclareProperty("IsGeneratorsOfInverseSemigroup", IsListOrCollection);
+
 DeclareAttribute("GeneratorsOfInverseMonoid", IsInverseSemigroup);
 DeclareAttribute("GeneratorsOfInverseSemigroup", IsInverseSemigroup);
 
-DeclareOperation("InverseMonoidByGenerators",
-[IsAssociativeElementWithUniqueSemigroupInverseCollection]);
-DeclareOperation("InverseSemigroupByGenerators",
-[IsAssociativeElementWithUniqueSemigroupInverseCollection]);
+DeclareOperation("InverseMonoidByGenerators", [IsAssociativeElementCollection]);
+DeclareOperation("InverseSemigroupByGenerators", [IsAssociativeElementCollection]);
 
 DeclareOperation("InverseSubsemigroup",
-[IsInverseSemigroup, IsAssociativeElementWithUniqueSemigroupInverseCollection]);
+[IsInverseSemigroup, IsAssociativeElementCollection]);
 DeclareOperation("InverseSubsemigroupNC",
-[IsInverseSemigroup, IsAssociativeElementWithUniqueSemigroupInverseCollection]);
+[IsInverseSemigroup, IsAssociativeElementCollection]);
 DeclareOperation("InverseSubmonoid",
-[IsInverseMonoid, IsAssociativeElementWithUniqueSemigroupInverseCollection]);
+[IsInverseMonoid, IsAssociativeElementCollection]);
 DeclareOperation("InverseSubmonoidNC",
-[IsInverseMonoid, IsAssociativeElementWithUniqueSemigroupInverseCollection]);
+[IsInverseMonoid, IsAssociativeElementCollection]);
 
 DeclareAttribute("AsInverseSemigroup", IsCollection);
 DeclareAttribute("AsInverseMonoid", IsCollection);

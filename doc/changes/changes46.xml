@@ -151,7 +151,6 @@ bind its components in &GAP; packages.
 <Subsection Label="New and updated packages since GAP 4.5.4"> 
 <Heading>New and updated packages since &GAP; 4.5.4</Heading>
 
-<Index>Packages, new</Index>
 At the time of the release of &GAP; 4.5 there were 99 packages redistributed with &GAP;. 
 The first public release of &GAP;&nbsp;4.6 contains 106 packages. 
 <P/>
@@ -202,7 +201,6 @@ commutative algebra structure and by their combinatorics.
 </Item>
 </List>
 
-<Index>Packages, upgraded</Index>
 Furthermore, some packages have been upgraded substantially 
 since the &GAP;&nbsp;4.5.4 release:
 <List>
@@ -465,7 +463,7 @@ program contained unnecessary steps.
 
 
 <Section Label="fix465"> 
-<Heading>&GAP; 4.6.5 (June 2013)</Heading>
+<Heading>&GAP; 4.6.5 (July 2013)</Heading>
 
 Improved functionality:
 <List>
@@ -504,6 +502,13 @@ Fixed bugs that could lead to break loops:
 A bug that may occur in some cases while calling 
 <Ref Attr="TransitiveIdentification" BookName="ref"/>.
 [Reported by Izumi Miyamoto]
+</Item>
+<Item>
+<!-- #419 -->
+The new code for semidirect products of permutation groups, introduced 
+in &GAP; 4.6, had a bug which was causing problems for
+<Ref Oper="Projection" BookName="ref"/>.
+[Reported by Graham Ellis]
 </Item>
 </List>
 

@@ -635,7 +635,7 @@ extern Obj CopyObj (
 **  structural copy of <obj> and marks <obj> as already copied.
 **
 **  Note that 'COPY_OBJ' and 'CLEAN_OBJ' are macros, so do not call them with
-**  arguments that have sideeffects.
+**  arguments that have side effects.
 */
 #define COPY_OBJ(obj,mut) \
                         ((*CopyObjFuncs[ TNUM_OBJ(obj) ])( obj, mut ))
@@ -649,7 +649,7 @@ extern Obj CopyObj (
 **  mark <obj>.
 **
 **  Note that 'COPY_OBJ' and 'CLEAN_OBJ' are macros, so do not call them with
-**  arguments that have sideeffects.
+**  arguments that have side effects.
 */
 #define CLEAN_OBJ(obj) \
                         ((*CleanObjFuncs[ TNUM_OBJ(obj) ])( obj ))

@@ -97,7 +97,11 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   sel:=Difference([1..Length(autos)],selin);
 
   # first try given rep
-  if not IsSubset(MovedPoints(G),[1..LargestMovedPoint(G)]) then
+  if NrMovedPoints(G)^3>Size(G) then
+    # likely too high degree. Try to reduce first
+    a:=SmallerDegreePermutationRepresentation(G);
+    a:=tryrep(a,4*NrMovedPoints(Image(a)));
+  elif not IsSubset(MovedPoints(G),[1..LargestMovedPoint(G)]) then
     a:=tryrep(ActionHomomorphism(G,MovedPoints(G),"surjective"),
 	        4*NrMovedPoints(G));
   else

@@ -65,9 +65,9 @@ DeclareRepresentation( "IsSlicedPerm", IsPerm,
 
 #############################################################################
 ##
-#F  AsPerm( <perm> )  . . . . . . . . . . . . . . . . . . . . . . . . . local
+#F  UnslicedPerm@( <perm> ) . . . . . . . . . . . . . . . . . . . . . . local
 ##
-InstallGlobalFunction( AsPerm, function( perm )
+InstallGlobalFunction( UnslicedPerm@, function( perm )
     local   prm,  i;
     
     if IsSlicedPerm( perm )  then
@@ -75,13 +75,14 @@ InstallGlobalFunction( AsPerm, function( perm )
         for i  in [ 1 .. perm!.length ]  do
             prm := LeftQuotient( perm!.word[ i ], prm );
         od;
-        perm := prm;
+        return prm;
+    else
+        return perm;
     fi;
-    return perm;
 end );
 
 InstallMethod( \^, "sliced perm",true, [ IsPerm, IsSlicedPerm ], 0,
-    function( p, perm )  return p ^ AsPerm( perm );  end );
+    function( p, perm )  return p ^ UnslicedPerm@( perm );  end );
 InstallMethod( \^, "sliced perm",true, [ IsInt, IsSlicedPerm ], 0,
     function( p, perm )
     local   i;
@@ -1210,14 +1211,14 @@ InstallGlobalFunction( PartitionBacktrack,
                         prm := image.perm;
                     fi;
                     if image.level2 <> false  then
-                        prm := AsPerm( prm );
+                        prm := UnslicedPerm@( prm );
                         if SiftedPermutation( image.level2,
-                                   prm / AsPerm( image.perm2 ) )
+                                   prm / UnslicedPerm@( image.perm2 ) )
                            = image.level2.identity  then
                             return prm;
                         fi;
                     elif Pr( prm )  then
-                        return AsPerm( prm );
+                        return UnslicedPerm@( prm );
                     fi;
                     return fail;
                 fi;
@@ -3152,7 +3153,7 @@ local   G,  merge,  n,  ran,  Omega,  Agemo,  opr,  S,
         Pr := function( gen )
             local   p,  i;
             
-            gen := AsPerm( gen );
+            gen := UnslicedPerm@( gen );
             for p  in ran  do
                 i := opr( p, gen );
                 if not ForAll( adj, bit -> bit[ i ] = bit[ p ] )  then

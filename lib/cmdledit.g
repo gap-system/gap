@@ -65,7 +65,7 @@ GAPInfo.UseReadline := true;
 ##  <P/>
 ##  
 ##  <Subsection Label="ssec:readlineCustom">
-##  <Index ><C>ReadlineInitLine</C></Index>
+##  <Index Key="ReadlineInitLine"><C>ReadlineInitLine</C></Index>
 ##  <Heading>Readline customization</Heading>
 ##  
 ##  You can use your readline  init file (by default <File>~/.inputrc</File>
@@ -167,8 +167,8 @@ GAPInfo.UseReadline := true;
 ##  </ManSection>
 ##  
 ##  <Subsection Label="ssec:readlineUserFuncs">
-##  <Index ><C>InstallReadlineMacro</C></Index>
-##  <Index ><C>InvocationReadlineMacro</C></Index>
+##  <Index Key="InstallReadlineMacro"><C>InstallReadlineMacro</C></Index>
+##  <Index Key="InvocationReadlineMacro"><C>InvocationReadlineMacro</C></Index>
 ##  
 ##  <Heading>Writing your own command line editing functions</Heading>
 ##  It is possible to write new command line editing functions in &GAP; as

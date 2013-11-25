@@ -2477,7 +2477,7 @@ Obj             PosPlistSort (
     istart = INT_INTOBJ(start);
 
     /* get a pointer to the set and the logical length of the set          */
-    lenList = LEN_PLIST( list );
+    lenList = LEN_PLIST(list);
 
     /* perform the binary search to find the position                      */
     i = istart;  k = lenList + 1;
@@ -2501,38 +2501,11 @@ Obj             PosPlistHomSort (
     Obj                 val,
     Obj                 start )
 {
-    UInt                lenList;        /* logical length of the set       */
-    UInt                i, j, k;        /* loop variables                  */
-    UInt                istart;
-
-    /* if the starting position is too big to be a small int
-       then there can't be anything to find */
-    if (!IS_INTOBJ(start))
-      return Fail;
-
-    istart = INT_INTOBJ(start);
-
     /* deal with the case which can be decided by the family relationship  */
     if (FAMILY_OBJ(val) != FAMILY_OBJ(ELM_PLIST(list,1)))
       return Fail;
     
-    /* get a pointer to the set and the logical length of the set          */
-    lenList = LEN_PLIST( list );
-
-    /* perform the binary search to find the position                      */
-    i = istart;  k = lenList + 1;
-    while ( i+1 < k ) {                 /* set[i] < elm && elm <= set[k]   */
-        j = (i + k) / 2;                /* i < j < k                       */
-        if ( LT( ELM_PLIST(list,j), val ) )  i = j;
-        else                                 k = j;
-    }
-
-    /* test if the element was found at position k                         */
-    if ( lenList < k || ! EQ( ELM_PLIST(list,k), val ) )
-        k = 0;
-
-    /* return the position                                                 */
-    return k == 0 ? Fail: INTOBJ_INT(k);
+    return PosPlistSort(list, val, start);
 }
 
 

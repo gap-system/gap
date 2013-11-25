@@ -527,11 +527,15 @@ BindGlobal( "NumberElement_PermGroup",
     while Length( S.genlabels ) <> 0  do
         img := S.orbit[ 1 ] ^ elm;
         #pos := pos + val * ( Position( S.orbit, img ) - 1 );
-        pos := pos + val * S.orbitpos[img];
-        #val := val * Length( S.orbit );
-        val := val * S.ol;
-        elm := elm * InverseRepresentative( S, img );
-        S := S.stabilizer;
+        if IsBound(S.orbitpos[img]) then 
+          pos := pos + val * S.orbitpos[img];
+          #val := val * Length( S.orbit );
+          val := val * S.ol;
+          elm := elm * InverseRepresentative( S, img );
+          S := S.stabilizer;
+        else
+          return fail;
+        fi;
     od;
     if elm <> S.identity  then
         return fail;

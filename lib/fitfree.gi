@@ -511,7 +511,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
 #if Length(orb)<>Length(Orbit(Group(pcgsimgs),orb[1],actfun)) then Error("HUH9");fi;
 
     subsz:=stabrsubsz;
-    if  solvsz<>subsz*Length(orb) then
+    if  solvsz>subsz*Length(orb) then
       Error("processing stabstack solvable ", Length(stabrad));
 
       s:=1;

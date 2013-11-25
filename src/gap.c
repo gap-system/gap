@@ -256,11 +256,13 @@ Obj Shell ( Obj context,
   Obj res;
   Obj oldShellContext;
   Obj oldBaseShellContext;
+  Int oldRecursionDepth;
   oldShellContext = ShellContext;
   ShellContext = context;
   oldBaseShellContext = BaseShellContext;
   BaseShellContext = context;
   ShellContextDepth = 0;
+  oldRecursionDepth = RecursionDepth;
   
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
@@ -288,6 +290,7 @@ Obj Shell ( Obj context,
     ClearError();
     PrintObjDepth = 0;
     Output->indent = 0;
+    RecursionDepth = 0;
       
     /* here is a hook: */
     if (preCommandHook) {
@@ -374,6 +377,7 @@ Obj Shell ( Obj context,
   CloseOutput();
   BaseShellContext = oldBaseShellContext;
   ShellContext = oldShellContext;
+  RecursionDepth = oldRecursionDepth;
   if (UserHasQUIT)
     {
       if (catchQUIT)
@@ -1309,6 +1313,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     Obj res;
     Obj currLVars;
     Obj result;
+    Int recursionDepth;
     Stat currStat;
     if (!IS_FUNC(func))
       ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <func> must be a function",0,0);
@@ -1324,6 +1329,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     memcpy((void *)&readJmpError, (void *)&ReadJmpError, sizeof(syJmp_buf));
     currLVars = CurrLVars;
     currStat = CurrStat;
+    recursionDepth = RecursionDepth;
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     if (sySetjmp(ReadJmpError)) {
       SET_LEN_PLIST(res,2);
@@ -1335,6 +1341,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       PtrLVars = PTR_BAG(CurrLVars);
       PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       CurrStat = currStat;
+      RecursionDepth = recursionDepth;
     } else {
       switch (LEN_PLIST(plain_args)) {
       case 0: result = CALL_0ARGS(func);

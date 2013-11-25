@@ -7,7 +7,7 @@ AH (with substantial contributions from BE)
 !! Type of Change
 New: extended functionality
 !! Description
-Maximal subgroup (excluding ONS type 5) for TF groups.
+Maximal subgroups (excluding ONS type 5) for TF groups.
 ! Test Code
 gap> g:=Image(IsomorphismPermGroup(GL(2,5)));;
 gap> w:=WreathProduct(g,SymmetricGroup(5));;

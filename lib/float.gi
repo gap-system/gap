@@ -202,7 +202,7 @@ BindGlobal("CONVERT_FLOAT_LITERAL", function(s)
         if f<>fail then return f; fi;
     fi;
     
-    Error("Conversion error: Badly formed number ",s);
+    return fail; # conversion failure; signal the kernel that something went wrong
 end);
 
 BindGlobal("CONVERT_FLOAT_LITERAL_EAGER", function(s,mark)

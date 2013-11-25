@@ -28,6 +28,10 @@ DeclareOperation("TransformationByImageAndKernel",
  [ IsCyclotomicCollection and IsDenseList, 
    IsCyclotomicCollection and IsDenseList]);
 
+DeclareOperation("NumberTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("NumberTransformation", [IsTransformation]);
+DeclareOperation("TransformationNumber", [IsPosInt, IsPosInt]);
+
 DeclareAttribute("MovedPoints",        IsTransformation);
 DeclareAttribute("NrMovedPoints",      IsTransformation);
 DeclareAttribute("LargestMovedPoint",  IsTransformation);
@@ -46,21 +50,19 @@ DeclareAttribute("RankOfTransformation", IsTransformation);
 DeclareOperation("RankOfTransformation", [IsTransformation, IsPosInt]);
 DeclareOperation("RankOfTransformation", [IsTransformation, IsList]);
 
-DeclareAttribute("NormalizedDegreeOfTransformation", IsTransformation);
-DeclareAttribute("NormalizedDegreeOfTransformationCollection",
-IsTransformationCollection);
-
 DeclareOperation("AsBinaryRelation", [IsTransformation]);
 DeclareAttribute("AsPermutation", IsAssociativeElement);
 
 DeclareAttribute("AsTransformation", IsAssociativeElement);
 DeclareOperation("AsTransformation", [IsAssociativeElement, IsInt]);
+DeclareAttribute("PermutationOfImage", IsTransformation);
 
 DeclareOperation("ConstantTransformation", [IsPosInt, IsPosInt]);
 DeclareAttribute("DegreeOfTransformationCollection",
 IsTransformationCollection);
 DeclareAttribute("FlatKernelOfTransformation", IsTransformation);
-DeclareGlobalFunction("IdentityTransformation");
+DeclareOperation("FlatKernelOfTransformation", [IsTransformation, IsPosInt]);
+
 DeclareOperation("ImageListOfTransformation", [IsTransformation, IsPosInt]);
 DeclareOperation("ImageListOfTransformation", [IsTransformation]);
 #ImageListOfTransformation(IsTransformation, IsList) is just OnTuples
@@ -119,6 +121,8 @@ DeclareOperation("CyclesOfTransformation", [IsTransformation, IsList]);
 DeclareAttribute("LeftOne", IsAssociativeElement);
 DeclareAttribute("RightOne", IsAssociativeElement);
 DeclareOperation("OnKernelAntiAction", [IsList, IsTransformation]);
+
+BindGlobal("IdentityTransformation", TransformationNC([]));
 
 # for legacy reasons only!
 DeclareSynonym("BinaryRelationTransformation", AsBinaryRelation);

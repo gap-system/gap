@@ -622,7 +622,7 @@ Int SyStrncmp (
     const Char *        str2,
     UInt                len )
 {
-    return SyStrncmp( str1, str2, len );
+    return strncmp( str1, str2, len );
 }
 
 /****************************************************************************
@@ -1329,7 +1329,7 @@ UInt * * * SyAllocBags (
 
 #include <mach/mach.h>
 
-#if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
+#if (defined(SYS_IS_DARWIN) && SYS_IS_DARWIN) || defined(__gnu_hurd__)
 #define task_self mach_task_self
 #endif
 

@@ -777,7 +777,7 @@ void AsssBlistImm (
 
 *F  PosBlist( <list>, <val>, <start> )   position of an elm in a boolean list
 **
-**  'PosBlist' returns the   position of  the first  occurence  of the  value
+**  'PosBlist' returns the   position of  the first  occurrence  of the  value
 **  <val>, which may be  an  object of  arbitrary  type, in the boolean  list
 **  <list> after <start> as a C  integer.  If <val> does  not occur in <list>
 **  after <start>, then 0 is returned.
@@ -1096,7 +1096,7 @@ Int IsBlist (
 **
 **  'IsBlistConv' returns 1 if  the list <list> is  a  boolean list, i.e.,  a
 **  list that   has no holes  and contains  only  'true' and  'false',  and 0
-**  otherwise.  As a  sideeffect 'IsBlistConv' changes the representation  of
+**  otherwise.  As a  side effect 'IsBlistConv' changes the representation  of
 **  boolean lists into the compact representation of type 'T_BLIST' described
 **  above.
 */
@@ -1362,7 +1362,7 @@ Obj FuncBLIST_LIST (
             "you can replace <sub> via 'return <sub>;'" );
     }
 
-    /* for a range as subset of a range, it is extremly easy               */
+    /* for a range as subset of a range, it is extremely easy               */
     if ( IS_RANGE(list) && IS_RANGE(sub) && GET_INC_RANGE( list ) == 1
           && GET_INC_RANGE( sub ) == 1) {
 
@@ -1630,7 +1630,7 @@ Obj FuncLIST_BLIST (
     /* compute the number of 'true'-s                                      */
     n = SizeBlist(blist);
 
-    /* make the sublist (we now know its size exactely)                    */
+    /* make the sublist (we now know its size exactly)                    */
     sub = NEW_PLIST( IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE, n );
     SET_LEN_PLIST( sub, n );
 
@@ -1689,7 +1689,7 @@ Obj FuncPositionsTrueBlist (
         n += m;
     }
 
-    /* make the sublist (we now know its size exactely)                    */
+    /* make the sublist (we now know its size exactly)                    */
     sub = NEW_PLIST( T_PLIST, n );
     SET_LEN_PLIST( sub, n );
 
@@ -1925,7 +1925,7 @@ Obj FuncUNITE_BLIST_LIST (
             "you can replace <sub> via 'return <sub>;'" );
     }
 
-    /* for a range as subset of a range, it is extremly easy               */
+    /* for a range as subset of a range, it is extremely easy               */
     if ( IS_RANGE(list) && IS_RANGE(sub) && GET_INC_RANGE( list ) == 1
           && GET_INC_RANGE( sub ) == 1) {
 
@@ -2164,7 +2164,7 @@ Obj FuncUNITE_BLIST_LIST (
 
 /****************************************************************************
 **
-*F  FuncINTER_BLIST( <self>, <list1>, <list2> ) .  <list1> interstion <list2>
+*F  FuncINTER_BLIST( <self>, <list1>, <list2> ) .  <list1> intersection <list2>
 **
 **  'FuncINTER_BLIST' implements the function 'IntersectBlist'.
 **

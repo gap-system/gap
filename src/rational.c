@@ -678,7 +678,7 @@ Obj             PowRat (
     Obj                 pow;            /* power                           */
 
     CHECK_RAT(opL);
-    /* raise numerator and denominator seperately                          */
+    /* raise numerator and denominator separately                          */
     numP = PowInt( NUM_RAT(opL), opR );
     denP = PowInt( DEN_RAT(opL), opR );
 

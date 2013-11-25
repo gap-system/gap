@@ -1032,6 +1032,7 @@ false
 
 # 2005/12/22 (Robert F. Morse)
 # 2011/09/13 (Updated by AK as suggested by JM)
+# 2013/09/04 (Updated by JM)
 gap> t:=Transformation([1,2,3,3]);;
 gap> s:=FullTransformationSemigroup(4);;
 gap> ld:=GreensDClassOfElement(FullTransformationSemigroup(4),
@@ -1041,10 +1042,10 @@ gap> mat:=MatrixOfReesZeroMatrixSemigroup(rs);;
 gap> Length(mat);
 4
 gap> t:=UnderlyingSemigroupOfReesMatrixSemigroup(rs);;
-gap> List(mat, x-> [Size(x), Number(x, y-> y=MultiplicativeZero(t))]);
+gap> List(mat, x-> [Size(x), Number(x, y-> y=0)]);
 [ [ 6, 3 ], [ 6, 3 ], [ 6, 3 ], [ 6, 3 ] ]
 gap> Size(UnderlyingSemigroupOfReesZeroMatrixSemigroup(rs));
-7
+6
 
 # 2006/01/11 (MC)
 gap> d := DirectoryCurrent();;
@@ -2532,6 +2533,114 @@ true
 gap>  TransitiveIdentification(TransitiveGroup(30,4064)^(1,4,5,2)
 > (6,20,15,21,7,16,12,24)(8,18,14,22,10,17,13,23,9,19,11,25)(26,30,29,28));
 4064
+
+#############################################################################
+##
+## Changes 4.6.5 -> 4.7.1
+
+## For bugfixes
+
+# 2013/02/20 (AK)
+gap> QuotientMod(4, 2, 6);
+fail
+gap> QuotientMod(2, 4, 6);
+fail
+gap> a := ZmodnZObj(2, 6);; b := ZmodnZObj(4, 6);;
+gap> a/b;
+fail
+gap> b/a;
+fail
+
+# 2013/08/20 (MH)
+gap> G:=SmallGroup(2^7*9,33);;
+gap> H:=DirectProduct(G, ElementaryAbelianGroup(2^10));;
+gap> Exponent(H); # should take at most a few milliseconds
+72
+gap> K := PerfectGroup(2688,3);;
+gap> Exponent(K); # should take at most a few seconds
+168
+
+# 2013/08/21 (MH)
+gap> IsStringRep("");
+true
+gap> RepresentationsOfObject("");
+[ "IsStringRep", "IsInternalRep" ]
+gap> DeclareOperation("TestOp",[IsStringRep]);
+gap> InstallMethod(TestOp,[IsStringRep], function(x) Print("Your string: '",x,"'\n"); end);
+gap> TestOp("");
+Your string: ''
+gap> PositionSublist("xyz", "");
+1
+
+# 2013/08/21 (MH)
+gap> . . . .
+Syntax error: Badly formed number, need a digit before or after the decimal po\
+int in stream line 1
+. . . .
+^
+
+# 2013/08/29 (MH)
+gap> record := rec( foo := "bar" );
+rec( foo := "bar" )
+gap> fooo := "fooo";
+"fooo"
+gap> Unbind( fooo[4] );
+gap> record.(fooo);
+"bar"
+
+# 2013/09/25 (AK, CJ)
+gap> L := List(Shuffle([1..1000]), x -> Set([x]));;
+
+# 2013/11/02 (AH)
+gap> f:=FreeGroup(2);; id:=Group(Identity(f));; Id:=TrivialSubgroup(f);;
+gap> LowIndexSubgroupsFpGroup(f,Id,2)=LowIndexSubgroupsFpGroup(f,id,2);
+true
+
+# 2013/11/19 (AK)
+gap> rel := BinaryRelationOnPoints([[2,3],[4,5],[4,5],[6],[6],[]]);
+Binary Relation on 6 points
+gap> rel := ReflexiveClosureBinaryRelation(TransitiveClosureBinaryRelation(rel));
+Binary Relation on 6 points
+gap> IsLatticeOrderBinaryRelation(rel);
+false
+gap> rel := BinaryRelationOnPoints([[2,3],[4,5],[4],[6],[6],[]]);
+Binary Relation on 6 points
+gap> rel := ReflexiveClosureBinaryRelation(TransitiveClosureBinaryRelation(rel));
+Binary Relation on 6 points
+gap> IsLatticeOrderBinaryRelation(rel);
+true
+
+## For new features
+
+# 2013/06/14 (AK, MH)
+gap> foo:=function() return 42; end;
+function(  ) ... end
+gap> DeclareObsoleteSynonym("bar","foo","4.8");
+gap> SetInfoLevel(InfoObsolete,1);
+gap> bar();
+#I  'bar' is obsolete.
+#I  It may be removed in the future release of GAP 4.8
+#I  Use foo instead.
+42
+gap> SetInfoLevel(InfoObsolete,0);
+
+# 2013/08/08 (AH)
+gap> free:=FreeGroup("a","b");
+<free group on the generators [ a, b ]>
+gap> product:=free/ParseRelators(free,"a2,b3");;
+gap> SetIsFinite(product,false);
+gap> GrowthFunctionOfGroup(product,12);
+[ 1, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128 ]
+gap> GrowthFunctionOfGroup(MathieuGroup(12));
+[ 1, 5, 19, 70, 255, 903, 3134, 9870, 25511, 38532, 16358, 382 ]
+
+# 2013/08/11 (MH)
+gap> F:=FreeAbelianGroup(3);
+<fp group on the generators [ f1, f2, f3 ]>
+gap> IsAbelian(F);
+true
+gap> Size(F);
+infinity
 
 #############################################################################
 #

@@ -927,7 +927,15 @@ InstallOtherMethod( ElementaryAbelianSeriesLargeSteps,
 InstallMethod( Exponent,
     "generic method for groups",
     [ IsGroup ],
-    G -> Lcm( List( ConjugacyClasses(G), x -> Order(Representative(x)) ) ) );
+function(G)
+  local exp, primes, p;
+  exp := 1;
+  primes := Set(FactorsInt(Size(G)));
+  for p in primes do
+    exp := exp * Exponent(SylowSubgroup(G, p));
+  od;
+  return exp;
+end);
 
 InstallMethod( Exponent,
     "method for abelian groups with generators",
@@ -4776,6 +4784,8 @@ function(G,elm)
     info.mygens:=gens;
     info.mylett:=letters;
     info.fam:=FamilyObj(One(Source(hom)));
+    info.rvalue:=rvalue;
+    info.setrvalue:=setrvalue;
 
     # initialize all lists
     rs:=List([1..QuoInt(2*Size(G),maxlist)],i->BlistList([1..maxlist],[]));
@@ -4951,6 +4961,54 @@ end);
 InstallMethod(Factorization,"generic method", true,
                [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
   GenericFactorizationGroup);
+
+InstallMethod(GrowthFunctionOfGroup,"finite groups",[IsGroup and
+  HasGeneratorsOfGroup and IsFinite],0,
+function(G)
+local s;
+  s:=GenericFactorizationGroup(G,fail);
+  return s;
+end);
+
+InstallMethod(GrowthFunctionOfGroup,"groups and orders",
+  [IsGroup and HasGeneratorsOfGroup,IsPosInt],0,
+function(G,r)
+local s,prev,old,sort,geni,new,a,i,j,g;
+  geni:=DuplicateFreeList(Concatenation(GeneratorsOfGroup(G),
+                          List(GeneratorsOfGroup(G),Inverse)));
+  if (IsFinite(G) and (CanEasilyTestMembership(G) or HasSize(G))
+   and Length(geni)^r>Size(G)/2) or HasGrowthFunctionOfGroup(G) then
+    s:=GrowthFunctionOfGroup(G);
+    return s{[1..Minimum(Length(s),r+1)]};
+  fi;
+
+  # enumerate the bubbles
+  s:=[1];
+  prev:=[One(G)];
+  old:=ShallowCopy(prev);
+  sort:=CanEasilySortElements(One(G));
+  for i in [1..r] do
+    new:=[];
+    for j in prev do
+      for g in geni do
+        a:=j*g;
+	if not a in old then
+	  Add(new,a);
+	  if sort then
+	    AddSet(old,a);
+	  else
+	    Add(old,a);
+	  fi;
+	fi;
+      od;
+    od;
+    if Length(new)>0 then
+      Add(s,Length(new));
+    fi;
+    prev:=new;
+  od;
+  return s;
+end);
 
 #############################################################################
 ##

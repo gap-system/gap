@@ -1452,7 +1452,7 @@ InstallMethod( OrbitsDomain, "for arbitrary domains", true,
 function( G, D, gens, acts, act )
 local   orbs, orb,sort,plist,pos,use,o;
   
-  if Length(D)>0 and not IsMutable(D) and IsSSortedList(D) 
+  if Length(D)>0 and not IsMutable(D) and HasIsSSortedList(D) and IsSSortedList(D) 
     and CanEasilySortElements(D[1]) then
     return OrbitsByPosOp( G, D, gens, acts, act );
   fi;

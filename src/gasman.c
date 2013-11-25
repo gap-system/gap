@@ -1644,31 +1644,6 @@ void            RetypeBag (
 
 syJmp_buf RegsBags;
 
-/* solaris */
-#ifdef __GNUC__
-#ifdef SPARC
-#if SPARC
-        asm("           .globl  SparcStackFuncBags              ");
-        asm("   SparcStackFuncBags:                             ");
-        asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
-        asm("           mov     %sp,%o0                         ");
-        asm("           retl                                    ");
-        asm("           nop                                     ");
-#endif
-#endif
-
-/* sunos */
-#ifdef SPARC
-#if SPARC
-        asm("           .globl  _SparcStackFuncBags             ");
-        asm("   _SparcStackFuncBags:                            ");
-        asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
-        asm("           mov     %sp,%o0                         ");
-        asm("           retl                                    ");
-        asm("           nop                                     ");
-#endif
-#endif
-#else
 #if defined(SPARC) && SPARC
 void SparcStackFuncBags( void )
 {
@@ -1676,7 +1651,6 @@ void SparcStackFuncBags( void )
   asm (" mov %sp,%o0" );
   return;
 }
-#endif
 #endif
 
 

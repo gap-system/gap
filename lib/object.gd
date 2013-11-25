@@ -748,8 +748,7 @@ DeclareOperation( "KnownTruePropertiesOfObject", [ IsObject ]  );
 ##    "CategoryCollections(IsMultiplicativeElementWithInverse)",
 ##    "CategoryCollections(IsAssociativeElement)",
 ##    "CategoryCollections(IsFiniteOrderElement)", "IsGeneralizedDomain",
-##    "CategoryCollections(IsAssociativeElementWithUniqueSemigroupInverse)\
-##   ", "CategoryCollections(IsPerm)", "IsMagma", "IsMagmaWithOne",
+##    "CategoryCollections(IsPerm)", "IsMagma", "IsMagmaWithOne",
 ##    "IsMagmaWithInversesIfNonzero", "IsMagmaWithInverses" ]
 ##  ]]></Example>
 ##  </Description>

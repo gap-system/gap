@@ -176,7 +176,7 @@ end);
 ##  '<comb>[[1..<i>-1]]'.  To do  this it finds  all elements of <mset>  that
 ##  can go at '<comb>[<i>]' and calls itself  recursively for each candidate.
 ##  <m>-1 is the position of '<comb>[<i>-1]' in <mset>, so the candidates for
-##  '<comb>[<i>]' are exactely the elements 'Set( <mset>[[<m>..<n>]] )'.
+##  '<comb>[<i>]' are exactly the elements 'Set( <mset>[[<m>..<n>]] )'.
 ##
 ##  'CombinationsK( <mset>, <m>, <n>, <k>, <comb>, <i>  )' returns the set of
 ##  all combinations  of the multiset <mset>,  which has size  <n>, that have
@@ -184,7 +184,7 @@ end);
 ##  it finds  all elements of  <mset> that can go  at '<comb>[<i>]' and calls
 ##  itself recursively  for   each candidate.    <m>-1 is   the  position  of
 ##  '<comb>[<i>-1]'  in <mset>,  so  the  candidates  for '<comb>[<i>]'   are
-##  exactely the elements 'Set( <mset>[<m>..<n>-<k>+1] )'.
+##  exactly the elements 'Set( <mset>[<m>..<n>-<k>+1] )'.
 ##
 ##  'Combinations' only calls 'CombinationsA' or 'CombinationsK' with initial
 ##  arguments.
@@ -563,7 +563,7 @@ end);
 ##  can go at '<comb>[<i>]' and calls itself  recursively for each candidate.
 ##  <m> is a boolean list of size <n> that contains  'true' for every element
 ##  of <mset> that we have not yet taken, so the candidates for '<comb>[<i>]'
-##  are exactely the elements '<mset>[<l>]' such that '<m>[<l>]'  is  'true'.
+##  are exactly the elements '<mset>[<l>]' such that '<m>[<l>]'  is  'true'.
 ##  Some care must be taken to take a candidate only once if it appears  more
 ##  than once in <mset>.
 ##
@@ -573,7 +573,7 @@ end);
 ##  it finds  all elements of  <mset> that can  go at '<comb>[<i>]' and calls
 ##  itself recursively for each candidate.  <m> is a boolean list of size <n>
 ##  that contains 'true' for every element  of <mset>  that we  have  not yet
-##  taken,  so  the candidates for   '<comb>[<i>]' are  exactely the elements
+##  taken,  so  the candidates for   '<comb>[<i>]' are  exactly the elements
 ##  '<mset>[<l>]' such that '<m>[<l>]' is 'true'.  Some care must be taken to
 ##  take a candidate only once if it appears more than once in <mset>.
 ##
@@ -765,7 +765,7 @@ end);
 ##  length '<i>+<k>-1', and that begin with  '<tup>[[1..<i>-1]]'.  To do this
 ##  it  finds all elements  of <set>  that  can go  at '<tup>[<i>]' and calls
 ##  itself   recursively  for   each  candidate.  <m>  is    the  position of
-##  '<tup>[<i>-1]' in <set>, so the  candidates for '<tup>[<i>]' are exactely
+##  '<tup>[<i>-1]' in <set>, so the  candidates for '<tup>[<i>]' are exactly
 ##  the elements '<set>[[<m>..<n>]]',  since we require that unordered tuples
 ##  be sorted.
 ##
@@ -893,9 +893,11 @@ function(enum, x)
 
   sum:=0;
   for i in [1..n-1] do 
-    pos:=Position(colls[i], x[i])-1;
+    pos:=Position(colls[i], x[i]);
     if pos=fail then 
       return fail;
+    else 
+      pos:=pos-1;
     fi;
     sum:=sum+pos*mults[i];
   od;
@@ -1180,7 +1182,7 @@ end);
 ##  <mset> that can go at '<perm>[<i>]' and calls itself recursively for each
 ##  candidate.  <m> is a  boolean  list of size  <n> that contains 'true' for
 ##  every element of <mset> that we have not yet taken, so the candidates for
-##  '<perm>[<i>]'  are    exactely the   elements   '<mset>[<l>]' such   that
+##  '<perm>[<i>]'  are    exactly the   elements   '<mset>[<l>]' such   that
 ##  '<m>[<l>]' is 'true'.  Some care must be taken to take a  candidate  only
 ##  once if it apears more than once in <mset>.
 ##
@@ -2149,13 +2151,13 @@ end);
 ##  'OrderedPartitionsA( <n>,  <part>, <i> )' returns  the set of all ordered
 ##  partitions  of  '<n>  +    Sum(<part>[[1..<i>-1]])'   that  begin    with
 ##  '<part>[[1..<i>-1]]'.   To do    so   it puts   all  possible  values  at
-##  '<part>[<i>]', which are of course exactely the elements of '[1..n]', and
+##  '<part>[<i>]', which are of course exactly the elements of '[1..n]', and
 ##  calls itself recursively.
 ##
 ##  'OrderedPartitionsK(  <n>,  <k>, <part>,  <i>  )' returns the set  of all
 ##  ordered partitions of   '<n> + Sum(<part>[[1..<i>-1]])'  that have length
 ##  '<k>+<i>-1', and that begin with '<part>[[1..<i>-1]]'.  To  do so it puts
-##  all possible  values at '<part>[<i>]', which are   of course exactely the
+##  all possible  values at '<part>[<i>]', which are   of course exactly the
 ##  elements of '[1..<n>-<k>+1]', and calls itself recursively.
 ##
 ##  'OrderedPartitions'      only       calls     'OrderedPartitionsA'     or

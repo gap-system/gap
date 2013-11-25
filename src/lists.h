@@ -34,7 +34,7 @@ extern  Obj             TYPE_LIST_HOM;
 **  otherwise.
 **
 **  Note that 'IS_LIST'  is a macro,  so do not  call it with arguments  that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package implementing  an ordinary list type <type>   must set the  flag
 **  'IsListFlag[<type>]'  for  this type to '1'.   A  package  implementing a
@@ -74,7 +74,7 @@ extern  Int                (*IsSmallListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 **  An error is signalled if <list> is not a small list.
 **
 **  Note that  'LEN_LIST' is a  macro, so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package  implementing a list type <type>  must  provide such a function
 **  and install it in 'LenListFuncs[<type>]'.
@@ -93,7 +93,7 @@ extern  Int             (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 **  An error is signalled if <list> is not a list.
 **
 **  Note that  'LENGTH' is a  macro, so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package  implementing a list type <type>  must  provide such a function
 **  and install it in 'LengthFuncs[<type>]'.
@@ -120,7 +120,7 @@ extern  Obj             (*LengthFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 **  of <list>.
 **
 **  Note that 'ISB_LIST' and 'ISBV_LIST are macros, so  do not call them with
-**  arguments that have sideeffects.
+**  arguments that have side effects.
 **
 **  A  package implementing a  list type <type>  must  provide a function for
 **  'ISB_LIST' and install it in 'IsbListFuncs[<type>]'.
@@ -175,7 +175,7 @@ extern Obj (*Elm0ListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  caller to ensure that <pos> is a positive integer.
 **
 **  Note that 'ELM0_LIST' is a  macro, so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define ELM0_LIST(list,pos)     ((*Elm0ListFuncs[TNUM_OBJ(list)])(list,pos))
 
@@ -201,7 +201,7 @@ extern  Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  of <list>.
 **
 **  Note that 'ELMV0_LIST' is a macro, so do not call  it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define ELMV0_LIST(list,pos)    ((*Elm0vListFuncs[TNUM_OBJ(list)])(list,pos))
 
@@ -229,7 +229,7 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  integer.
 **
 **  Note that 'ELM_LIST', 'ELMV_LIST', and  'ELMW_LIST' are macros, so do not
-**  call them with arguments that have sideeffects.
+**  call them with arguments that have side effects.
 **
 **  The difference between ELM_LIST and ELMB_LIST is that ELMB_LIST accepts
 **  an object as the second argument (which should be a positive large integer.
@@ -262,7 +262,7 @@ extern Obj (*ElmbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
 **  integer.
 **
 **  Note that 'ELM_LIST', 'ELMV_LIST', and  'ELMW_LIST' are macros, so do not
-**  call them with arguments that have sideeffects.
+**  call them with arguments that have side effects.
 **
 **  The difference between ELM_LIST and ELMB_LIST is that ELMB_LIST accepts
 **  an object as the second argument (which should be a positive large integer.
@@ -297,7 +297,7 @@ extern Obj (*ElmvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  of <list>.
 **
 **  Note that 'ELM_LIST', 'ELMV_LIST', and  'ELMW_LIST' are macros, so do not
-**  call them with arguments that have sideeffects.
+**  call them with arguments that have side effects.
 */
 #define ELMV_LIST(list,pos)     ((*ElmvListFuncs[TNUM_OBJ(list)])(list,pos))
 
@@ -322,7 +322,7 @@ extern Obj (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  that <list> has an assigned object at the position <pos>.
 **
 **  Note that 'ELM_LIST', 'ELMV_LIST', and  'ELMW_LIST' are macros, so do not
-**  call them with arguments that have sideeffects.
+**  call them with arguments that have side effects.
 */
 #define ELMW_LIST(list,pos)     ((*ElmwListFuncs[TNUM_OBJ(list)])(list,pos))
 
@@ -358,7 +358,7 @@ extern Obj (*ElmsListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss );
 **  list of positive integers.
 **
 **  Note that 'ELMS_LIST' is a  macro, so do not call it with arguments  that
-**  have sideeffects.
+**  have side effects.
 */
 #define ELMS_LIST(list,poss)    ((*ElmsListFuncs[TNUM_OBJ(list)])(list,poss))
 
@@ -404,7 +404,7 @@ extern void ElmsListLevelCheck (
 **  responsibility of the caller to ensure that <pos> is a positive integer.
 **
 **  Note that 'UNB_LIST' is a macro, so do not call it  with  arguments  that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package implementing a list type <type> must provide  such  a  function
 **  and install it in 'UnbListFuncs[<type>]'.  This function must change  the
@@ -434,7 +434,7 @@ extern void  UnbListDefault ( Obj list, Int  pos );
 **  and that <obj> is not 0.
 **
 **  Note that 'ASS_LIST' is a macro,  so do not  call it with arguments  that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package  implementing a list type  <type> must provide  such a function
 **  and   install it in  'AssListFuncs[<type>]'.   This  function must extend
@@ -458,7 +458,7 @@ extern  void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, O
 **  and that <obj> is not 0.
 **
 **  Note that 'ASSB_LIST' is a macro,  so do not  call it with arguments  that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package  implementing a list type  <type> must provide  such a function
 **  and   install it in  'AssbListFuncs[<type>]'.   This  function must extend
@@ -484,7 +484,7 @@ extern  void            (*AssbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos, 
 **  that <objs> is a dense list of the same length as <poss>.
 **
 **  Note that 'ASSS_LIST' is a macro, so do not call it with  arguments  that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package implementing  a list type <type> must  provide  such a function
 **  and install it in 'AsssListFuncs[<type>]'.  This function must extend the
@@ -523,7 +523,7 @@ extern void AssListObject (
 **  otherwise, i.e., if either <list> is not a list, or if it is not dense.
 **
 **  Note that  'IS_DENSE_LIST' is a macro, so  do not call it  with arguments
-**  that have sideeffects.
+**  that have side effects.
 **
 **  A package  implementing a list type  <type> must provide such  a function
 **  and  install it in  'IsDenseListFuncs[<type>]'.   This function must loop
@@ -549,7 +549,7 @@ extern  Int             IsDenseListDefault (
 **  homogeneous.
 **
 **  'IS_HOMOG_LIST' is a macro, so do not call it with  arguments  that  have
-**  sideeffects.
+**  side effects.
 **
 **  A  package implementing a list  type <type> must  provide such a function
 **  and install  it  in 'IsHomogListFuncs[<type>]'.  This function  must loop
@@ -575,7 +575,7 @@ extern  Int             IsHomogListDefault (
 **  homogeneous list of homogeneous lists of equal length, and 0 otherwise.
 **
 **  'IS_TABLE_LIST' is a macro, so do not call it with  arguments  that  have
-**  sideeffects.
+**  side effects.
 **
 **  A  package implementing a list  type <type> must  provide such a function
 **  and install it in  'IsTableListFuncs[<type>]'.   This function must  loop
@@ -602,7 +602,7 @@ extern  Int             IsTableListDefault (
 **  strictly sorted.
 **
 **  'IS_SSORT_LIST' is a macro, so do not call it  with arguments  that  have
-**  sideeffects.
+**  side effects.
 **
 **  A  package implementing a  list type <type>  must provide such a function
 **  and install it  in  'IsSSortListFuncs[<type>]'.  This function must  loop
@@ -643,7 +643,7 @@ extern Obj IsNSortListProp;
 **  positive integer.
 **
 **  Note that  'IS_POSS_LIST' is a macro,  so  do not  call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 **
 **  A package  implementing a list type  <type> must provide such  a function
 **  and install  it  in 'IsPossListFuncs[<type>]'.   This function  must loop
@@ -665,13 +665,13 @@ extern  Int             IsPossListDefault (
 *F  POS_LIST(<list>,<obj>,<start>)  . . . . . . . . find an element in a list
 *V  PosListFuncs[<type>]  . . . . . . . . . . .  table of searching functions
 **
-**  'POS_LIST' returns  the  position of the  first  occurence of  the object
+**  'POS_LIST' returns  the  position of the  first  occurrence of  the object
 **  <obj>,  which may be an object of any type, in the  list <list> after the
 **  position  <start> as GAP Integer.  Fail is returned if  <obj> is not in the
 **  list after <start>.  An error is signalled if <list> is not a list.
 **
 **  Note that 'POS_LIST'  is a macro,  so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package implementing a list  type <type> must  provide such a  function
 **  and install it in 'PosListFuncs[<type>]'.
@@ -808,7 +808,7 @@ extern  void            AsssListLevel (
 **  is not a list.
 **
 **  Note that 'PLAIN_LIST' is a macro, so do not call  it with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package implementing a  list type <type>  must provide such  a function
 **  and install it in 'PlainListFuncs[<type>]'.

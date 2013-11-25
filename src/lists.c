@@ -269,7 +269,7 @@ Int LenListObject (
 **  An error is signalled if <list> is not a list.
 **
 **  Note that  'LENGTH' is a  macro, so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package  implementing a list type <type>  must  provide such a function
 **  and install it in 'LengthFuncs[<type>]'.

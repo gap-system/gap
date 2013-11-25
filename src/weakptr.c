@@ -46,7 +46,7 @@
 **  ensure that it has room for at least <plen> elements.
 **
 **  Note that 'GROW_WPOBJ' is a macro, so do not call it with arguments that
-**  have sideeffects.  */
+**  have side effects.  */
 
 #define GROW_WPOBJ(wp,plen)   ((plen) < SIZE_OBJ(wp)/sizeof(Obj) ? \
                                  0L : GrowWPObj(wp,plen) )
@@ -80,7 +80,7 @@ Int GrowWPObj (
 **  'STORE_LEN_WPOBJ' sets the length of  the WP object  <wp> to <len>.
 **
 **  Note  that 'STORE_LEN_WPOBJ'  is a macro, so do not call it with  arguments
-**  that have sideeffects.
+**  that have side effects.
 ** 
 **  Objects at the end of wp may evaporate, so the stored length can only
 **  be regarded as an upper bound.
@@ -97,7 +97,7 @@ Int GrowWPObj (
 **  as a C integer.
 **
 **  Note that 'STORED_LEN_WPOBJ' is a  macro, so do  not call it 
-**  with arguments that have sideeffects.
+**  with arguments that have side effects.
 **
 **  Note that as the list can mutate under your feet, the length may be
 **  an overestimate
@@ -117,7 +117,7 @@ Int GrowWPObj (
 **  for which IS_WEAK_DEAD_BAG will return 1
 **
 **  Note that  'ELM_WPOBJ' is a macro, so do  not call it with arguments that
-**  have sideeffects.  
+**  have side effects.  
 **
 **  ELM_WPOBJ(<wp>,<pos>) is a valid lvalue and may be assigned to
 */

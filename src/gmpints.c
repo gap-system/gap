@@ -658,10 +658,6 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
   Char  c;
   Int neg;
 
-  /* findme - enough space for a 1000 limb gmp int on a 64 bit machine     */
-  /* change when 128 bit comes along!                                      */
-  Char buf[20000];
-
   
   /* handle a small integer                                                */
   if ( IS_INTOBJ(integer) ) {
@@ -713,16 +709,20 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
   /* handle a large integer                                                */
   else if ( SIZE_INT(integer) < 1000 ) {
 
+    /* findme - enough space for a 1000 limb gmp int on a 64 bit machine     */
+    /* change when 128 bit comes along!                                      */
+    Char buf[20000];
+
     if IS_INTNEG(integer) {
-    len = gmp_snprintf( buf, 19999, "-%Ni", (TypLimb *)ADDR_INT(integer),
+    len = gmp_snprintf( buf, sizeof(buf)-1, "-%Ni", (TypLimb *)ADDR_INT(integer),
           (TypGMPSize)SIZE_INT(integer) );
     }
     else {
-    len = gmp_snprintf( buf, 19999,  "%Ni", (TypLimb *)ADDR_INT(integer),
+    len = gmp_snprintf( buf, sizeof(buf)-1,  "%Ni", (TypLimb *)ADDR_INT(integer),
           (TypGMPSize)SIZE_INT(integer) );
     }
 
-    assert (len <= 19999);
+    assert(len < sizeof(buf));
     C_NEW_STRING( str, (TypGMPSize)len, buf );
 
     return str;
@@ -742,6 +742,8 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 *F  EqInt( <gmpL>, <gmpR> ) . . . . . . . . .  test if two integers are equal
 **
 **  
+**  'EqInt' returns 1  if  the two integer   arguments <intL> and  <intR> are
+**  equal and 0 otherwise.
 */
 
   /* findme - For comparisons, do we first normalize and, if possible,
@@ -877,14 +879,6 @@ Obj SumInt ( Obj gmpL, Obj gmpR )
 **
 *F  DiffInt( <gmpL>, <gmpR> ) . . . . . . . .  difference of two GMP integers
 **
-**  'DiffInt' returns the difference of the two GMP int arguments <gmpL>  and
-**  <gmpR>.  'DiffInt' handles  operands  of  type  'T_INT',  'T_INTPOS'  and
-**  'T_INTNEG'.
-**
-**  'DiffInt' is a little bit tricky since there are many different cases to
-**  handle, each operand can be positive or negative, small or large integer.
-**  If the operands have opposite sign 'DiffInt' calls 'SumInt',  this  helps
-**  reduce the total amount of code by a factor of two.
 */
 Obj DiffInt ( Obj gmpL, Obj gmpR )
 {
@@ -900,6 +894,13 @@ Obj DiffInt ( Obj gmpL, Obj gmpR )
 **
 *F  SumOrDiffInt( <gmpL>, <gmpR> ) . . . . .  sum or diff of two Int integers
 **
+**  'SumOrDiffInt' returns the sum or difference of the two GMP int arguments
+**  <gmpL> and  <gmpR>. 'SumOrDiffInt'  handles  operands  of  type  'T_INT',
+**  'T_INTPOS' and 'T_INTNEG'.
+**
+**  'SumOrDiffInt'  is a little  bit  tricky since  there are  many different
+**  cases to handle, each operand can be positive or negative, small or large
+**  integer.
 */
 Obj SumOrDiffInt ( Obj gmpL, Obj gmpR, Int sign )
 {
@@ -957,7 +958,6 @@ be called directly */
       res = NewBag( T_INTNEG, sizeof(TypLimb) );
       SET_VAL_LIMB0( res, (TypLimb)(-twosmall) );
     }
-
 
     return res;
   }
@@ -1240,21 +1240,19 @@ Obj FuncABS_INT(Obj self, Obj gmp)
 }
 
 
-/* findme - documentation: remove or fix all references to EvProd, EvMod,
-   etc., left from original integer.c (see the following preamble)         */
-
 /****************************************************************************
 **
+*F  ProdInt( <intL>, <intR> ) . . . . . . . . . . . . product of two integers
 **
-**  'ProdInt' returns the product of the two  integer  arguments  <intL>
-**  and <intR>.  'ProdInt' handles  operands  of  type 'T_INT', 'T_INTPOS'
-**  and 'T_INTNEG'.
+**  'ProdInt' returns the product of the two  integer  arguments  <intL>  and
+**  <intR>.  'ProdInt' handles  operands  of  type  'T_INT',  'T_INTPOS'  and
+**  'T_INTNEG'.
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvProd' for a better efficiency.
+**  This case is usually already handled in 'EvalProd' for a better efficiency.
 **
-**  Is called from the 'EvProd' binop so both operands are already evaluated.
+**  Is called from the 'EvalProd' binop so both operands are already evaluated.
 **
 **  The only difficulty about this function is the fact that is has to handle
 **  3 different situations, depending on how many arguments  are  small ints.
@@ -1480,17 +1478,16 @@ Obj OneInt ( Obj op )
 
 /****************************************************************************
 **
-*F  PowInt( <intL>, <intR> )  . . . . . . . . . . . .  power of an integer
+*F  PowInt( <intL>, <intR> )  . . . . . . . . . . . . . . power of an integer
 **
-**  'PowInt' returns the <intR>-th (an integer) power of the integer
-**  <intL>.
+**  'PowInt' returns the <intR>-th (an integer) power of the integer  <intL>.
 **  'PowInt' handles operands of type 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvPow' for a better  efficiency.
+**  This case is usually already handled in 'EvalPow' for a better  efficiency.
 **
-**  Is called from the 'EvPow'  binop so both operands are already evaluated.
+**  Is called from the 'EvalPow'  binop so both operands are already evaluated.
 */
 Obj PowInt ( Obj gmpL, Obj gmpR )
 {
@@ -1659,9 +1656,9 @@ Obj FuncPOW_OBJ_INT ( Obj self, Obj opL, Obj opR )
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvMod' for a better efficiency.
+**  This case is usually already handled in 'EvalMod' for a better efficiency.
 p**
-**  Is called from the 'EvMod'  binop so both operands are already evaluated.
+**  Is called from the 'EvalMod'  binop so both operands are already evaluated.
 */
 Obj ModInt ( Obj opL, Obj opR )
 {
@@ -1806,12 +1803,15 @@ Obj ModInt ( Obj opL, Obj opR )
 **
 *F  QuoInt( <intL>, <intR> )  . . . . . . . . . . . quotient of two integers
 **
-**  'QuoInt' returns the integer part of the two ints <gmpL> and  <gmpR>.
+**  'QuoInt' returns the integer part of the two integers <intL> and  <intR>.
 **  'QuoInt' handles operands of type  'T_INT',  'T_INTPOS'  and  'T_INTNEG'.
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
 **
+**  Note that this routine is not called from 'EvalQuo', the  division  of  two
+**  integers yields  a  rational  and  is  therefor  performed  in  'QuoRat'.
+**  This operation is however available through the internal function 'Quo'.
 */
 Obj QuoInt ( Obj opL, Obj opR )
 {
@@ -1928,7 +1928,7 @@ Obj QuoInt ( Obj opL, Obj opR )
 
 /****************************************************************************
 **
-*F  FuncQUO_INT(<self>,<opL>,<opR>) . . . . . . .  internal function 'QuoInt
+*F  FuncQUO_INT(<self>,<opL>,<opR>) . . . . . . .  internal function 'QuoInt'
 **
 **  'FuncQUO_INT' implements the internal function 'QuoInt'.
 **
@@ -2080,7 +2080,6 @@ Obj RemInt ( Obj opL, Obj opR )
   
   /* return the result                                                     */
   return rem;
-  
 }
 
 
@@ -2695,7 +2694,7 @@ static Int InitLibrary ( StructInitInfo *    module )
 */
 static StructInitInfo module = {
   MODULE_BUILTIN,                        /* type                           */
-  "gmpints",                            /* name                           */
+  "gmpints",                             /* name                           */
   0,                                     /* revision entry of c file       */
   0,                                     /* revision entry of h file       */
   0,                                     /* version                        */

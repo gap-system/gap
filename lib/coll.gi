@@ -2683,7 +2683,9 @@ InstallGlobalFunction( Union, function ( arg )
             U,          # union, result
             start,      # start position in `other'
 	    better,     # did pairwise join of ranges give improvement?
-            i,j;        # loop variable
+            i,j,        # loop variable
+            passes,     # attempts to merge passes
+            progress;   # inner loop finding matches
 
   # unravel the argument list if necessary
   if Length(arg) = 1  then
@@ -2727,42 +2729,48 @@ InstallGlobalFunction( Union, function ( arg )
 
     # try to merge smaller by considering all pairs of ranges
     better:=true; # in case of length 1
-    while Length(ranges)>1 do
+    passes:=3; # only going to try 3 passes
+    while Length(ranges)>1 and passes > 0 do
+      passes:=passes-1;
+      ranges:=Set(ranges);
       better:=false;
       i:=1;
-      while i<Length(ranges) and better=false do
-	j:=i+1;
-	while j<=Length(ranges) and better=false do
-	  # now try range i with range j
-	  U:=JoinRanges(ranges[i][1],ranges[i][2],ranges[i][3],
-			ranges[j][1],ranges[j][2],ranges[j][3]);
-	  if U<>fail then
-	    # worked, replace one and overwrite other
-	    ranges[i]:=U;
-	    ranges[j]:=ranges[Length(ranges)];
-	    Unbind(ranges[Length(ranges)]);
-	    better:=true;
-	  fi;
-	  j:=j+1;
-	od;
-	i:=i+1;
+      while i<Length(ranges) do
+        if IsBound(ranges[i]) then
+	      j:=i+1;
+          progress:=true;
+	      while IsBound(ranges[j]) and j<=Length(ranges) and progress do
+            progress:=false;
+	        # now try range i with range j
+	        U:=JoinRanges(ranges[i][1],ranges[i][2],ranges[i][3],
+	  		              ranges[j][1],ranges[j][2],ranges[j][3]);
+	        if U<>fail then
+	          # worked, replace one and overwrite other
+	          ranges[i]:=U;
+	          Unbind(ranges[j]);
+	          better:=true;
+              progress:=true;
+	        fi;
+	        j:=j+1;
+	      od;
+        fi;
+	    i:=i+1;
       od;
 
       if better=false then
-	# no join was possible -- need to go list way
-	for i in ranges do
-	  if i[2]= 0 then
-	    j:=[i[1]];
-	  else
-	    j:=[i[1],i[1]+i[2]..i[3]];
-	  fi;
-	  Append(lists,j);
-	od;
-	ranges:=[];
+	    # no join was possible -- need to go list way
+	    for i in ranges do
+	      if i[2]= 0 then
+	        j:=[i[1]];
+	      else
+	        j:=[i[1],i[1]+i[2]..i[3]];
+	      fi;
+	      Append(lists,j);
+	    od;
+	    ranges:=[];
       fi;
 
     od;
-
 
     if better then
       # we were able to join to a single range
@@ -2771,26 +2779,26 @@ InstallGlobalFunction( Union, function ( arg )
       i:=1;
       better:=true;
       while i<=Length(lists) and better do
-	U:=JoinRanges(ranges[1],ranges[2],ranges[3],lists[i],0,lists[i]);
-	if U<>fail then
-	  ranges:=U;
-	else
-	  better:=false;
-	fi;
-	i:=i+1;
+	    U:=JoinRanges(ranges[1],ranges[2],ranges[3],lists[i],0,lists[i]);
+	    if U<>fail then
+	      ranges:=U;
+	    else
+	      better:=false;
+	    fi;
+	    i:=i+1;
       od;
 
       if ranges[2]=0 then
-	ranges:=[ranges[1]];
+	    ranges:=[ranges[1]];
       else
-	ranges:=[ranges[1],ranges[1]+ranges[2]..ranges[3]];
+	    ranges:=[ranges[1],ranges[1]+ranges[2]..ranges[3]];
       fi;
 
       if better then
-	# all one range
-	lists:=ranges;
+	    # all one range
+	    lists:=ranges;
       else
-	Append(lists,ranges);
+	    Append(lists,ranges);
       fi;
       # now all ranges are merged in lists, but lists might be in range
       # rep.
@@ -2801,9 +2809,9 @@ InstallGlobalFunction( Union, function ( arg )
     # joining nonintegers or a lot of lists -- forget the ranges.
     for i in ranges do
       if i[2]= 0 then
-	Add(lists,i[1]);
+	    Add(lists,i[1]);
       else
-	Append(lists,[i[1],i[1]+i[2]..i[3]]);
+	    Append(lists,[i[1],i[1]+i[2]..i[3]]);
       fi;
     od;
 
@@ -2834,7 +2842,7 @@ InstallGlobalFunction( Union, function ( arg )
 
   # return the union
   if IsList( U ) and not IsSSortedList( U ) then
-      U := Set( U );
+    U := Set( U );
   fi;
   return U;
 end);

@@ -1114,7 +1114,7 @@ extern void SySleep( UInt secs );
 /****************************************************************************
 **
 *F  getOptionCount ( <key> ) . number of times a command line option was used
-*F  getOptionArg ( <key>, <which> ) get arguments used on <which>'th occurence
+*F  getOptionArg ( <key>, <which> ) get arguments used on <which>'th occurrence
 *F                             of <key> as a command line option NULL if none
 **
 */

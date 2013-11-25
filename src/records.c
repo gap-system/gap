@@ -54,7 +54,7 @@ UInt            CountRNam;
 **  'NAME_RNAM' returns the name (as a C string) for the record name <rnam>.
 **
 **  Note that 'NAME_RNAM' is a  macro, so do not call  it with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  'NAME_RNAM' is defined in the declaration part of this package as follows
 **
@@ -262,7 +262,7 @@ Obj             NameRNamHandler (
 **  otherwise.
 **
 **  Note that 'IS_REC' is a macro, so do not call  it  with  arguments  that
-**  have sideeffects.
+**  have side effects.
 **
 **  'IS_REC' is defined in the declaration part of this package as follows
 **
@@ -307,7 +307,7 @@ Int             IsRecObject (
 **  is not a record or if <rec> has no component with the record name <rnam>.
 **
 **  Note that 'ELM_REC' is  a macro, so do   not call it with arguments  that
-**  have sideeffects.
+**  have side effects.
 **
 **  'ELM_REC' is defined in the declaration part of this package as follows
 **
@@ -360,7 +360,7 @@ Obj             ElmRecObject (
 **  record.
 **
 **  Note  that 'ISB_REC'  is a macro,  so do not call  it with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  'ISB_REC' is defined in the declaration part of this package as follows
 **
@@ -454,7 +454,7 @@ void            AssRecObject (
 **  the record <rec>.
 **
 **  Note that 'UNB_REC' is  a macro, so  do  not call it with  arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  'UNB_REC' is defined in the declaration part of this package as follows
 **

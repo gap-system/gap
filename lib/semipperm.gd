@@ -26,5 +26,3 @@ DeclareSynonym("SymmetricInverseMonoid", SymmetricInverseSemigroup);
 
 DeclareAttribute("IsomorphismPartialPermSemigroup", IsSemigroup);
 DeclareAttribute("IsomorphismPartialPermMonoid", IsSemigroup);
-DeclareAttribute("IsomorphismPermGroup", 
-IsPartialPermSemigroup and HasGeneratorsOfSemigroup);

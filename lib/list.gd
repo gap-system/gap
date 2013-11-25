@@ -1485,9 +1485,10 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  <#GAPDoc Label="Sort">
 ##  <ManSection>
 ##  <Oper Name="Sort" Arg='list[, func]'/>
+##  <Oper Name="SortBy" Arg='list, func'/>
 ##
 ##  <Description>
-##  sorts the list <A>list</A> in increasing order.
+##  <Ref Oper="Sort"/> sorts the list <A>list</A> in increasing order.
 ##  In the one argument form <Ref Oper="Sort"/> uses the operator <C>&lt;</C>
 ##  to compare the elements.
 ##  (If the list is not homogeneous it is the users responsibility to ensure
@@ -1526,14 +1527,13 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  gap> list;
 ##  [ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
 ##  ]]></Example>
-##  </Description>
-##  <Oper Name="SortBy" Arg='list, func'/>
-##  <Description> sorts the list <A>list</A> into an order such that
+##  <Ref Oper="SortBy"/> sorts the list <A>list</A> into an order such that
 ##  <C>func(list[i]) &lt;= func(list[i+1])</C> for all relevant
 ##  <A>i</A>. <A>func</A> must thus be a function on one argument which returns
 ##  values that can be compared.  Each <C>func(list[i])</C> is computed just
 ##  once and stored, making this more efficient than using the two-argument
-##  version of <Ref Oper="Sort"/> in many cases.  </Description>
+##  version of <Ref Oper="Sort"/> in many cases.  
+##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##

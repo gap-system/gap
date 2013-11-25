@@ -1994,7 +1994,7 @@ look worse than others)
   used in the method selection is not mentioned.
   (And why do attributes need *two* filter bits?)
   AK: mentioned method selection, and changed to *one* filter bit
--5AK It should be stated which of the examples shown in the chapter are
++5AK It should be stated which of the examples shown in the chapter are
   ``ficticious'' (not part of the GAP library) and which are taken from
   the library.
   For example, there is an example which introduces a new property

@@ -74,8 +74,8 @@ endif
 GAPARCH=@GAPARCH@
 GAPARGS=
 
-TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 512m -A -N -q -x 80 -r $(GAPARGS)
-TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 512m -N -q -x 80 -r $(GAPARGS)
+TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -A -N -q -x 80 -r $(GAPARGS)
+TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -N -q -x 80 -r $(GAPARGS)
 
 default: compile
 

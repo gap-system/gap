@@ -323,7 +323,7 @@ Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     
     Obj         tmp;        /* temporary obj for power                     */
 
-    Int         resized = 0;/* indicates whether a Resize() happend        */
+    Int         resized = 0;/* indicates whether a Resize() happened       */
 
     /* <start> is the first non-trivial entry in <v>                       */
     start = SC_NUMBER_RWS_GENERATORS(sc);
@@ -412,7 +412,7 @@ Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     ro  = ADDR_OBJ( SC_RELATIVE_ORDERS(sc) );
     inv = ADDR_OBJ( SC_INVERSES(sc) );
 
-    /* initalize the stack with <w>                                        */
+    /* initialize the stack with <w>                                        */
     sp = 0;
     SC_PUSH_WORD( w, 1 );
 
@@ -904,7 +904,7 @@ Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     Obj         tmp;        /* temporary obj for power                     */
 
-    Int         resized = 0;/* indicates whether a Resize() happend        */
+    Int         resized = 0;/* indicates whether a Resize() happened       */
 
     /* <start> is the first non-trivial entry in <v>                       */
     start = SC_NUMBER_RWS_GENERATORS(sc);
@@ -993,7 +993,7 @@ Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     ro  = ADDR_OBJ( SC_RELATIVE_ORDERS(sc) );
     inv = ADDR_OBJ( SC_INVERSES(sc) );
 
-    /* initalize the stack with <w>                                        */
+    /* initialize the stack with <w>                                        */
     sp = 0;
     SC_PUSH_WORD( w, 1 );
 
@@ -1485,7 +1485,7 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     Obj         tmp;        /* temporary obj for power                     */
 
-    Int         resized = 0;/* indicates whether a Resize() happend        */
+    Int         resized = 0;/* indicates whether a Resize() happened       */
 
     /* <start> is the first non-trivial entry in <v>                       */
     start = SC_NUMBER_RWS_GENERATORS(sc);
@@ -1574,7 +1574,7 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     ro  = ADDR_OBJ( SC_RELATIVE_ORDERS(sc) );
     inv = ADDR_OBJ( SC_INVERSES(sc) );
 
-    /* initalize the stack with <w>                                        */
+    /* initialize the stack with <w>                                        */
     sp = 0;
     SC_PUSH_WORD( w, 1 );
 

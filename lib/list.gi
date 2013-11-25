@@ -268,7 +268,7 @@ InstallMethod( IN,
     IsElmsColls,
     [ IsObject, IsCollection and IsWholeFamily ],
     SUM_FLAGS, # can't do better
-    RETURN_TRUE );
+    ReturnTrue );
 
 
 #############################################################################
@@ -332,11 +332,19 @@ InstallMethod( ViewString, "call ViewString and incorporate hints",
 function ( list )
 local   str,ls, i;
 
-  # We cannot handle the case of an empty string in the method for strings
-  # because the type of the empty string need not satify the requirement
-  # `IsString'.
-  if IsEmptyString( list ) then
-    return "";
+  # We have to handle empty string and empty list specially because
+  # IsString( [ ] ) returns true
+
+  if Length(list) = 0 then
+    if IsEmptyString( list ) then
+      return "\"\"";
+    else
+      return "[  ]";
+    fi;
+  fi;
+
+  if IsString( list ) then
+    return Concatenation("\"", list, "\"");
   fi;
 
   # make strings for objects in l
@@ -1242,7 +1250,7 @@ InstallMethod( Position,
     [ IsHomogeneousList,
       IsObject,
       IsInt ],
-    RETURN_FAIL );
+    ReturnFail );
 
 InstallMethod( Position,
     "for a small sorted list, an object, and an integer",

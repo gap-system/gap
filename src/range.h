@@ -48,7 +48,7 @@
 **  whether a list is a range.
 **
 **  Note that  'IS_RANGE' is a  macro, so do not  call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define IS_RANGE(val)   (TNUM_OBJ(val)==T_RANGE_NSORT || TNUM_OBJ(val)==T_RANGE_SSORT)
 
@@ -61,7 +61,7 @@
 **  which must be a C integer larger than 1.
 **
 **  Note that 'SET_LEN_RANGE' is a macro,  so  do not  call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_LEN_RANGE(list,len)         (ADDR_OBJ(list)[0] = INTOBJ_INT(len))
 
@@ -74,7 +74,7 @@
 **  integer.
 **
 **  Note that  'GET_LEN_RANGE' is a macro, so  do not call  it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define GET_LEN_RANGE(list)             INT_INTOBJ( ADDR_OBJ(list)[0] )
 
@@ -87,7 +87,7 @@
 **  <low>, which must be a C integer.
 **
 **  Note  that 'SET_LOW_RANGE' is a macro, so do not call  it with  arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_LOW_RANGE(list,low)         (ADDR_OBJ(list)[1] = INTOBJ_INT(low))
 
@@ -100,7 +100,7 @@
 **  integer.
 **
 **  Note that 'GET_LOW_RANGE' is a  macro, so do not  call it with  arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define GET_LOW_RANGE(list)             INT_INTOBJ( ADDR_OBJ(list)[1] )
 
@@ -113,7 +113,7 @@
 **  <inc>, which must be a C integer.
 **
 **  Note that  'SET_INC_RANGE' is a macro,  so do  not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_INC_RANGE(list,inc)         (ADDR_OBJ(list)[2] = INTOBJ_INT(inc))
 
@@ -125,7 +125,7 @@
 **  'GET_INC_RANGE' returns the increment of the range <list> as a C integer.
 **
 **  Note  that 'GET_INC_RANGE' is  a macro, so  do not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define GET_INC_RANGE(list)             INT_INTOBJ( ADDR_OBJ(list)[2] )
 
@@ -138,7 +138,7 @@
 **  must be a positive integer less than or equal to the length of <list>.
 **
 **  Note that 'GET_ELM_RANGE'  is a macro, so do  not call  it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define GET_ELM_RANGE(list,pos)         INTOBJ_INT( GET_LOW_RANGE(list) \
                                           + ((pos)-1) * GET_INC_RANGE(list) )

@@ -260,8 +260,9 @@ InstallGlobalFunction( Monoid, function( arg )
     return MonoidByGenerators( arg[1], arg[2] );
 
   # generators and collections of generators 
-  elif IsAssociativeElement(arg[1]) or IsAssociativeElementCollection(arg[1])
-   then
+  elif (IsAssociativeElement(arg[1]) and IsMultiplicativeElementWithOne(arg[1]))
+   or (IsAssociativeElementCollection(arg[1]) 
+    and IsMultiplicativeElementWithOneCollection(arg[1])) then
     out:=[];
     for i in [1..Length(arg)] do
       if IsAssociativeElement(arg[i]) then
@@ -271,8 +272,10 @@ InstallGlobalFunction( Monoid, function( arg )
           Append(out, GeneratorsOfMonoid(arg[i]));
         elif HasGeneratorsOfSemigroup(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
-        else
+        elif IsList(arg[i]) then 
           Append(out, arg[i]);
+        else 
+          Append(out, AsList(arg[i]));
         fi;
       #so that we can pass the options record in the Semigroups package 
       elif i=Length(arg) and IsRecord(arg[i]) then

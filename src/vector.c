@@ -72,26 +72,26 @@ Obj             SumIntVector (
     UInt                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecR );
-    vecS = NEW_PLIST( TNUM_OBJ(vecR), len );
-    SET_LEN_PLIST( vecS, len );
+    len = LEN_PLIST(vecR);
+    vecS = NEW_PLIST(TNUM_OBJ(vecR), len);
+    SET_LEN_PLIST(vecS, len);
 
     /* loop over the elements and add                                      */
-    ptrR = ADDR_OBJ( vecR );
-    ptrS = ADDR_OBJ( vecS );
-    for ( i = 1; i <= len; i++ ) {
+    ptrR = ADDR_OBJ(vecR);
+    ptrS = ADDR_OBJ(vecS);
+    for (i = 1; i <= len; i++) {
         elmR = ptrR[i];
-        if ( ! ARE_INTOBJS(elmL,elmR) || ! SUM_INTOBJS(elmS,elmL,elmR) ) {
-            CHANGED_BAG( vecS );
-            elmS = SUM( elmL, elmR );
-            ptrR = ADDR_OBJ( vecR );
-            ptrS = ADDR_OBJ( vecS );
+        if (! ARE_INTOBJS(elmL, elmR) || ! SUM_INTOBJS(elmS, elmL, elmR)) {
+            CHANGED_BAG(vecS);
+            elmS = SUM(elmL, elmR);
+            ptrR = ADDR_OBJ(vecR);
+            ptrS = ADDR_OBJ(vecS);
         }
         ptrS[i] = elmS;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG( vecS );
+    CHANGED_BAG(vecS);
     return vecS;
 }
 
@@ -120,26 +120,26 @@ Obj             SumVectorInt (
     UInt                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecL );
-    vecS = NEW_PLIST( TNUM_OBJ(vecL), len );
-    SET_LEN_PLIST( vecS, len );
+    len = LEN_PLIST(vecL);
+    vecS = NEW_PLIST(TNUM_OBJ(vecL), len);
+    SET_LEN_PLIST(vecS, len);
 
     /* loop over the elements and add                                      */
-    ptrL = ADDR_OBJ( vecL );
-    ptrS = ADDR_OBJ( vecS );
-    for ( i = 1; i <= len; i++ ) {
+    ptrL = ADDR_OBJ(vecL);
+    ptrS = ADDR_OBJ(vecS);
+    for (i = 1; i <= len; i++) {
         elmL = ptrL[i];
-        if ( ! ARE_INTOBJS(elmL,elmR) || ! SUM_INTOBJS(elmS,elmL,elmR) ) {
-            CHANGED_BAG( vecS );
-            elmS = SUM( elmL, elmR );
-            ptrL = ADDR_OBJ( vecL );
-            ptrS = ADDR_OBJ( vecS );
+        if (! ARE_INTOBJS(elmL, elmR) || ! SUM_INTOBJS(elmS, elmL, elmR)) {
+            CHANGED_BAG(vecS);
+            elmS = SUM(elmL, elmR);
+            ptrL = ADDR_OBJ(vecL);
+            ptrS = ADDR_OBJ(vecS);
         }
         ptrS[i] = elmS;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG( vecS );
+    CHANGED_BAG(vecS);
     return vecS;
 }
 
@@ -170,46 +170,45 @@ Obj             SumVectorVector (
     UInt                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    lenL = LEN_PLIST( vecL );
-    lenR = LEN_PLIST( vecR );
-    if (lenL < lenR)
-      {
+    lenL = LEN_PLIST(vecL);
+    lenR = LEN_PLIST(vecR);
+    if (lenL < lenR) {
         lenmin = lenL;
         len = lenR;
-      } else {
+    } else {
         lenmin = lenR;
         len = lenL;
-      }
-    vecS = NEW_PLIST( (IS_IMM_PLIST(vecL) && IS_IMM_PLIST(vecR)) ?
-                      T_PLIST_CYC+IMMUTABLE : T_PLIST_CYC, len );
-    SET_LEN_PLIST( vecS, len );
+    }
+    vecS = NEW_PLIST((IS_IMM_PLIST(vecL) && IS_IMM_PLIST(vecR)) ?
+                      T_PLIST_CYC + IMMUTABLE : T_PLIST_CYC, len);
+    SET_LEN_PLIST(vecS, len);
 
     /* loop over the elements and add                                      */
-    ptrL = ADDR_OBJ( vecL );
-    ptrR = ADDR_OBJ( vecR );
-    ptrS = ADDR_OBJ( vecS );
-    for ( i = 1; i <= lenmin; i++ ) {
+    ptrL = ADDR_OBJ(vecL);
+    ptrR = ADDR_OBJ(vecR);
+    ptrS = ADDR_OBJ(vecS);
+    for (i = 1; i <= lenmin; i++) {
         elmL = ptrL[i];
         elmR = ptrR[i];
-        if ( ! ARE_INTOBJS(elmL,elmR) || ! SUM_INTOBJS(elmS,elmL,elmR) ) {
-            CHANGED_BAG( vecS );
-            elmS = SUM( elmL, elmR );
-            ptrL = ADDR_OBJ( vecL );
-            ptrR = ADDR_OBJ( vecR );
-            ptrS = ADDR_OBJ( vecS );
+        if (! ARE_INTOBJS(elmL, elmR) || ! SUM_INTOBJS(elmS, elmL, elmR)) {
+            CHANGED_BAG(vecS);
+            elmS = SUM(elmL, elmR);
+            ptrL = ADDR_OBJ(vecL);
+            ptrR = ADDR_OBJ(vecR);
+            ptrS = ADDR_OBJ(vecS);
         }
         ptrS[i] = elmS;
     }
     if (lenL < lenR)
-      for (;i <= lenR; i++) {
-        ptrS[i] = ptrR[i];
-      }
+        for (; i <= lenR; i++) {
+            ptrS[i] = ptrR[i];
+        }
     else
-      for (;i <= lenL; i++) {
-        ptrS[i] = ptrL[i];
-      }
+        for (; i <= lenL; i++) {
+            ptrS[i] = ptrL[i];
+        }
     /* return the result                                                   */
-    CHANGED_BAG( vecS );
+    CHANGED_BAG(vecS);
     return vecS;
 }
 
@@ -238,27 +237,27 @@ Obj             DiffIntVector (
     UInt                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecR );
-    vecD = NEW_PLIST( IS_MUTABLE_OBJ(vecR) ?
-                      T_PLIST_CYC :T_PLIST_CYC+IMMUTABLE, len );
-    SET_LEN_PLIST( vecD, len );
+    len = LEN_PLIST(vecR);
+    vecD = NEW_PLIST(IS_MUTABLE_OBJ(vecR) ?
+                     T_PLIST_CYC : T_PLIST_CYC + IMMUTABLE, len);
+    SET_LEN_PLIST(vecD, len);
 
     /* loop over the elements and subtract                                 */
-    ptrR = ADDR_OBJ( vecR );
-    ptrD = ADDR_OBJ( vecD );
-    for ( i = 1; i <= len; i++ ) {
+    ptrR = ADDR_OBJ(vecR);
+    ptrD = ADDR_OBJ(vecD);
+    for (i = 1; i <= len; i++) {
         elmR = ptrR[i];
-        if ( ! ARE_INTOBJS(elmL,elmR) || ! DIFF_INTOBJS(elmD,elmL,elmR) ) {
-            CHANGED_BAG( vecD );
-            elmD = DIFF( elmL, elmR );
-            ptrR = ADDR_OBJ( vecR );
-            ptrD = ADDR_OBJ( vecD );
+        if (! ARE_INTOBJS(elmL, elmR) || ! DIFF_INTOBJS(elmD, elmL, elmR)) {
+            CHANGED_BAG(vecD);
+            elmD = DIFF(elmL, elmR);
+            ptrR = ADDR_OBJ(vecR);
+            ptrD = ADDR_OBJ(vecD);
         }
         ptrD[i] = elmD;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG( vecD );
+    CHANGED_BAG(vecD);
     return vecD;
 }
 
@@ -287,26 +286,26 @@ Obj             DiffVectorInt (
     UInt                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecL );
-    vecD = NEW_PLIST( TNUM_OBJ(vecL), len );
-    SET_LEN_PLIST( vecD, len );
+    len = LEN_PLIST(vecL);
+    vecD = NEW_PLIST(TNUM_OBJ(vecL), len);
+    SET_LEN_PLIST(vecD, len);
 
     /* loop over the elements and subtract                                 */
-    ptrL = ADDR_OBJ( vecL );
-    ptrD = ADDR_OBJ( vecD );
-    for ( i = 1; i <= len; i++ ) {
+    ptrL = ADDR_OBJ(vecL);
+    ptrD = ADDR_OBJ(vecD);
+    for (i = 1; i <= len; i++) {
         elmL = ptrL[i];
-        if ( ! ARE_INTOBJS(elmL,elmR) || ! DIFF_INTOBJS(elmD,elmL,elmR) ) {
-            CHANGED_BAG( vecD );
-            elmD = DIFF( elmL, elmR );
-            ptrL = ADDR_OBJ( vecL );
-            ptrD = ADDR_OBJ( vecD );
+        if (! ARE_INTOBJS(elmL, elmR) || ! DIFF_INTOBJS(elmD, elmL, elmR)) {
+            CHANGED_BAG(vecD);
+            elmD = DIFF(elmL, elmR);
+            ptrL = ADDR_OBJ(vecL);
+            ptrD = ADDR_OBJ(vecD);
         }
         ptrD[i] = elmD;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG( vecD );
+    CHANGED_BAG(vecD);
     return vecD;
 }
 
@@ -337,8 +336,8 @@ Obj             DiffVectorVector (
     UInt                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    lenL = LEN_PLIST( vecL );
-    lenR = LEN_PLIST( vecR );
+    lenL = LEN_PLIST(vecL);
+    lenR = LEN_PLIST(vecR);
     if (lenL < lenR) {
         lenmin = lenL;
         len = lenR;
@@ -346,43 +345,43 @@ Obj             DiffVectorVector (
         lenmin = lenR;
         len = lenL;
     }
-    vecD = NEW_PLIST( (IS_IMM_PLIST(vecL) && IS_IMM_PLIST(vecR)) ?
-                      T_PLIST_CYC+IMMUTABLE : T_PLIST_CYC, len );
-    SET_LEN_PLIST( vecD, len );
+    vecD = NEW_PLIST((IS_IMM_PLIST(vecL) && IS_IMM_PLIST(vecR)) ?
+    T_PLIST_CYC + IMMUTABLE : T_PLIST_CYC, len);
+    SET_LEN_PLIST(vecD, len);
 
     /* loop over the elements and subtract                                   */
-    ptrL = ADDR_OBJ( vecL );
-    ptrR = ADDR_OBJ( vecR );
-    ptrD = ADDR_OBJ( vecD );
-    for ( i = 1; i <= lenmin; i++ ) {
+    ptrL = ADDR_OBJ(vecL);
+    ptrR = ADDR_OBJ(vecR);
+    ptrD = ADDR_OBJ(vecD);
+    for (i = 1; i <= lenmin; i++) {
         elmL = ptrL[i];
         elmR = ptrR[i];
-        if ( ! ARE_INTOBJS(elmL,elmR) || ! DIFF_INTOBJS(elmD,elmL,elmR) ) {
-            CHANGED_BAG( vecD );
-            elmD = DIFF( elmL, elmR );
-            ptrL = ADDR_OBJ( vecL );
-            ptrR = ADDR_OBJ( vecR );
-            ptrD = ADDR_OBJ( vecD );
+        if (! ARE_INTOBJS(elmL, elmR) || ! DIFF_INTOBJS(elmD, elmL, elmR)) {
+            CHANGED_BAG(vecD);
+            elmD = DIFF(elmL, elmR);
+            ptrL = ADDR_OBJ(vecL);
+            ptrR = ADDR_OBJ(vecR);
+            ptrD = ADDR_OBJ(vecD);
         }
         ptrD[i] = elmD;
     }
     if (lenL < lenR)
-      for (;i <= lenR; i++) {
-        elmR = ptrR[i];
-        if ( ! IS_INTOBJ(elmR) || ! DIFF_INTOBJS(elmD,INTOBJ_INT(0),elmR) ) {
-            CHANGED_BAG( vecD );
-            elmD = AINV( elmR );
-            ptrR = ADDR_OBJ( vecR );
-            ptrD = ADDR_OBJ( vecD );
+        for (; i <= lenR; i++) {
+            elmR = ptrR[i];
+            if (! IS_INTOBJ(elmR) || ! DIFF_INTOBJS(elmD, INTOBJ_INT(0), elmR)) {
+                CHANGED_BAG(vecD);
+                elmD = AINV(elmR);
+                ptrR = ADDR_OBJ(vecR);
+                ptrD = ADDR_OBJ(vecD);
+            }
+            ptrD[i] = elmD;
         }
-        ptrD[i] = elmD;
-      }
     else
-      for (;i <= lenL; i++) {
-        ptrD[i] = ptrL[i];
-      }
+        for (; i <= lenL; i++) {
+            ptrD[i] = ptrL[i];
+        }
     /* return the result                                                   */
-    CHANGED_BAG( vecD );
+    CHANGED_BAG(vecD);
     return vecD;
 }
 
@@ -411,27 +410,27 @@ Obj             ProdIntVector (
     UInt                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecR );
-    vecP = NEW_PLIST( IS_MUTABLE_OBJ(vecR) ?
-                      T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE, len );
-    SET_LEN_PLIST( vecP, len );
+    len = LEN_PLIST(vecR);
+    vecP = NEW_PLIST(IS_MUTABLE_OBJ(vecR) ?
+                     T_PLIST_CYC : T_PLIST_CYC + IMMUTABLE, len);
+    SET_LEN_PLIST(vecP, len);
 
     /* loop over the entries and multiply                                  */
-    ptrR = ADDR_OBJ( vecR );
-    ptrP = ADDR_OBJ( vecP );
-    for ( i = 1; i <= len; i++ ) {
+    ptrR = ADDR_OBJ(vecR);
+    ptrP = ADDR_OBJ(vecP);
+    for (i = 1; i <= len; i++) {
         elmR = ptrR[i];
-        if ( ! ARE_INTOBJS(elmL,elmR) || ! PROD_INTOBJS(elmP,elmL,elmR) ) {
-            CHANGED_BAG( vecP );
-            elmP = PROD( elmL, elmR );
-            ptrR = ADDR_OBJ( vecR );
-            ptrP = ADDR_OBJ( vecP );
+        if (! ARE_INTOBJS(elmL, elmR) || ! PROD_INTOBJS(elmP, elmL, elmR)) {
+            CHANGED_BAG(vecP);
+            elmP = PROD(elmL, elmR);
+            ptrR = ADDR_OBJ(vecR);
+            ptrP = ADDR_OBJ(vecP);
         }
         ptrP[i] = elmP;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG( vecP );
+    CHANGED_BAG(vecP);
     return vecP;
 }
 
@@ -460,27 +459,27 @@ Obj             ProdVectorInt (
     UInt                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecL );
-    vecP = NEW_PLIST( IS_MUTABLE_OBJ(vecL) ?
-                      T_PLIST_CYC :T_PLIST_CYC+IMMUTABLE, len );
-    SET_LEN_PLIST( vecP, len );
+    len = LEN_PLIST(vecL);
+    vecP = NEW_PLIST(IS_MUTABLE_OBJ(vecL) ?
+                     T_PLIST_CYC : T_PLIST_CYC + IMMUTABLE, len);
+    SET_LEN_PLIST(vecP, len);
 
     /* loop over the entries and multiply                                  */
-    ptrL = ADDR_OBJ( vecL );
-    ptrP = ADDR_OBJ( vecP );
-    for ( i = 1; i <= len; i++ ) {
+    ptrL = ADDR_OBJ(vecL);
+    ptrP = ADDR_OBJ(vecP);
+    for (i = 1; i <= len; i++) {
         elmL = ptrL[i];
-        if ( ! ARE_INTOBJS(elmL,elmR) || ! PROD_INTOBJS(elmP,elmL,elmR) ) {
-            CHANGED_BAG( vecP );
-            elmP = PROD( elmL, elmR );
-            ptrL = ADDR_OBJ( vecL );
-            ptrP = ADDR_OBJ( vecP );
+        if (! ARE_INTOBJS(elmL, elmR) || ! PROD_INTOBJS(elmP, elmL, elmR)) {
+            CHANGED_BAG(vecP);
+            elmP = PROD(elmL, elmR);
+            ptrL = ADDR_OBJ(vecL);
+            ptrP = ADDR_OBJ(vecP);
         }
         ptrP[i] = elmP;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG( vecP );
+    CHANGED_BAG(vecP);
     return vecP;
 }
 
@@ -507,37 +506,37 @@ Obj             ProdVectorVector (
     Obj                 elmL;           /* one element of left operand     */
     Obj *               ptrR;           /* pointer into the right operand  */
     Obj                 elmR;           /* one element of right operand    */
-    UInt                lenL,lenR,len;  /* length                          */
+    UInt                lenL, lenR, len; /* length                          */
     UInt                i;              /* loop variable                   */
 
     /* check that the lengths agree                                        */
-    lenL = LEN_PLIST( vecL );
-    lenR = LEN_PLIST( vecR );
+    lenL = LEN_PLIST(vecL);
+    lenR = LEN_PLIST(vecR);
     len = (lenL < lenR) ? lenL : lenR;
 
     /* loop over the entries and multiply                                  */
-    ptrL = ADDR_OBJ( vecL );
-    ptrR = ADDR_OBJ( vecR );
+    ptrL = ADDR_OBJ(vecL);
+    ptrR = ADDR_OBJ(vecR);
     elmL = ptrL[1];
     elmR = ptrR[1];
-    if ( ! ARE_INTOBJS(elmL,elmR) || ! PROD_INTOBJS(elmT,elmL,elmR) ) {
-        elmT = PROD( elmL, elmR );
-        ptrL = ADDR_OBJ( vecL );
-        ptrR = ADDR_OBJ( vecR );
+    if (! ARE_INTOBJS(elmL, elmR) || ! PROD_INTOBJS(elmT, elmL, elmR)) {
+        elmT = PROD(elmL, elmR);
+        ptrL = ADDR_OBJ(vecL);
+        ptrR = ADDR_OBJ(vecR);
     }
     elmP = elmT;
-    for ( i = 2; i <= len; i++ ) {
+    for (i = 2; i <= len; i++) {
         elmL = ptrL[i];
         elmR = ptrR[i];
-        if ( ! ARE_INTOBJS(elmL,elmR) || ! PROD_INTOBJS(elmT,elmL,elmR) ) {
-            elmT = PROD( elmL, elmR );
-            ptrL = ADDR_OBJ( vecL );
-            ptrR = ADDR_OBJ( vecR );
+        if (! ARE_INTOBJS(elmL, elmR) || ! PROD_INTOBJS(elmT, elmL, elmR)) {
+            elmT = PROD(elmL, elmR);
+            ptrL = ADDR_OBJ(vecL);
+            ptrR = ADDR_OBJ(vecR);
         }
-        if ( ! ARE_INTOBJS(elmP,elmT) || ! SUM_INTOBJS(elmS,elmP,elmT) ) {
-            elmS = SUM( elmP, elmT );
-            ptrL = ADDR_OBJ( vecL );
-            ptrR = ADDR_OBJ( vecR );
+        if (! ARE_INTOBJS(elmP, elmT) || ! SUM_INTOBJS(elmS, elmP, elmT)) {
+            elmS = SUM(elmP, elmT);
+            ptrL = ADDR_OBJ(vecL);
+            ptrR = ADDR_OBJ(vecR);
         }
         elmP = elmS;
     }
@@ -556,7 +555,7 @@ Obj             ProdVectorVector (
 **  the corresponding entry of <vecL>.
 **
 **  'ProdVectorMatrix'  is an improved version of 'ProdListList',  which does
-**  not  call 'PROD' and  also accummulates  the sum into  one  fixed  vector
+**  not  call 'PROD' and  also accumulates  the sum into  one  fixed  vector
 **  instead of allocating a new for each product and sum.
 **
 **  We now need to supply a handler for this and install it as a library method,
@@ -580,90 +579,87 @@ Obj             ProdVectorMatrix (
     UInt                i, k;           /* loop variables                  */
 
     /* check the lengths                                                   */
-    len = LEN_PLIST( vecL );
-    if (len > LEN_PLIST( matR))
-      len = LEN_PLIST( matR );
-    col = LEN_PLIST( ELM_PLIST( matR, 1 ) );
+    len = LEN_PLIST(vecL);
+    if (len > LEN_PLIST(matR))
+        len = LEN_PLIST(matR);
+    col = LEN_PLIST(ELM_PLIST(matR, 1));
 
     /* make the result list */
-    
-    vecP = NEW_PLIST( (IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(ELM_PLIST(matR,1))) ?
-                      T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE,
-                      col);
-    SET_LEN_PLIST( vecP, col);
-    for ( i = 1; i <= col; i++)
-      SET_ELM_PLIST( vecP, i, INTOBJ_INT(0));
+
+    vecP = NEW_PLIST((IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(ELM_PLIST(matR, 1))) ?
+                     T_PLIST_CYC : T_PLIST_CYC + IMMUTABLE,
+    col);
+    SET_LEN_PLIST(vecP, col);
+    for (i = 1; i <= col; i++)
+        SET_ELM_PLIST(vecP, i, INTOBJ_INT(0));
 
 
     /* loop over the entries and multiply                            */
-    for ( i = 1; i <= len; i++ ) {
-        elmL = ELM_PLIST( vecL, i );
-        vecR = ELM_PLIST( matR, i );
-        ptrR = ADDR_OBJ( vecR );
-        ptrP = ADDR_OBJ( vecP  );
-        if ( elmL == INTOBJ_INT( 1L ) ) {
-          for ( k = 1; k <= col; k++ ) {
-            elmT = ptrR[k];
-            elmP = ptrP[k];
-            if ( ! ARE_INTOBJS(elmP,elmT)
-                 || ! SUM_INTOBJS(elmS,elmP,elmT) ) {
-              CHANGED_BAG( vecP );
-              elmS = SUM( elmP, elmT );
-              ptrR = ADDR_OBJ( vecR );
-              ptrP = ADDR_OBJ( vecP );
+    for (i = 1; i <= len; i++) {
+        elmL = ELM_PLIST(vecL, i);
+        vecR = ELM_PLIST(matR, i);
+        ptrR = ADDR_OBJ(vecR);
+        ptrP = ADDR_OBJ(vecP);
+        if (elmL == INTOBJ_INT(1L)) {
+            for (k = 1; k <= col; k++) {
+                elmT = ptrR[k];
+                elmP = ptrP[k];
+                if (! ARE_INTOBJS(elmP, elmT)
+                || ! SUM_INTOBJS(elmS, elmP, elmT)) {
+                    CHANGED_BAG(vecP);
+                    elmS = SUM(elmP, elmT);
+                    ptrR = ADDR_OBJ(vecR);
+                    ptrP = ADDR_OBJ(vecP);
+                }
+                ptrP[k] = elmS;
             }
-            ptrP[k] = elmS;
-          }
-        }
-        else if ( elmL == INTOBJ_INT( -1L ) ) {
-            for ( k = 1; k <= col; k++ ) {
-              elmT = ptrR[k];
-              elmP = ptrP[k];
-              if ( ! ARE_INTOBJS(elmP,elmT)
-                   || ! DIFF_INTOBJS(elmS,elmP,elmT) ) {
-                CHANGED_BAG( vecP );
-                elmS = DIFF( elmP, elmT );
-                ptrR = ADDR_OBJ( vecR );
-                ptrP = ADDR_OBJ( vecP );
-              }
-                    ptrP[k] = elmS;
+        } else if (elmL == INTOBJ_INT(-1L)) {
+            for (k = 1; k <= col; k++) {
+                elmT = ptrR[k];
+                elmP = ptrP[k];
+                if (! ARE_INTOBJS(elmP, elmT)
+                        || ! DIFF_INTOBJS(elmS, elmP, elmT)) {
+                    CHANGED_BAG(vecP);
+                    elmS = DIFF(elmP, elmT);
+                    ptrR = ADDR_OBJ(vecR);
+                    ptrP = ADDR_OBJ(vecP);
+                }
+                ptrP[k] = elmS;
 
             }
-        }
-        else if ( elmL != INTOBJ_INT( 0L ) ) {
-            for ( k = 1; k <= col; k++ ) {
-              elmR = ptrR[k];
-              if (elmR != INTOBJ_INT(0L))
-                {
-                  if ( ! ARE_INTOBJS(elmL,elmR)
-                       || ! PROD_INTOBJS(elmT,elmL,elmR) ) {
-                    CHANGED_BAG( vecP );
-                    elmT = PROD( elmL, elmR );
-                    ptrR = ADDR_OBJ( vecR );
-                    ptrP = ADDR_OBJ( vecP );
-                  }
-                  elmP = ptrP[k];
-                  if ( ! ARE_INTOBJS(elmP,elmT)
-                       || ! SUM_INTOBJS(elmS,elmP,elmT) ) {
-                    CHANGED_BAG( vecP );
-                    elmS = SUM( elmP, elmT );
-                    ptrR = ADDR_OBJ( vecR );
-                    ptrP = ADDR_OBJ( vecP );
-                  }
-                  ptrP[k] = elmS;
+        } else if (elmL != INTOBJ_INT(0L)) {
+            for (k = 1; k <= col; k++) {
+                elmR = ptrR[k];
+                if (elmR != INTOBJ_INT(0L)) {
+                    if (! ARE_INTOBJS(elmL, elmR)
+                            || ! PROD_INTOBJS(elmT, elmL, elmR)) {
+                        CHANGED_BAG(vecP);
+                        elmT = PROD(elmL, elmR);
+                        ptrR = ADDR_OBJ(vecR);
+                        ptrP = ADDR_OBJ(vecP);
+                    }
+                    elmP = ptrP[k];
+                    if (! ARE_INTOBJS(elmP, elmT)
+                            || ! SUM_INTOBJS(elmS, elmP, elmT)) {
+                        CHANGED_BAG(vecP);
+                        elmS = SUM(elmP, elmT);
+                        ptrR = ADDR_OBJ(vecR);
+                        ptrP = ADDR_OBJ(vecP);
+                    }
+                    ptrP[k] = elmS;
                 }
             }
         }
     }
 
     /* return the result                                                   */
-    CHANGED_BAG( vecP );
+    CHANGED_BAG(vecP);
     return vecP;
 }
 
 Obj FuncPROD_VECTOR_MATRIX(Obj self, Obj vec, Obj mat)
 {
-  return ProdVectorMatrix(vec, mat);
+    return ProdVectorMatrix(vec, mat);
 }
 
 /****************************************************************************
@@ -678,30 +674,30 @@ Obj FuncPROD_VECTOR_MATRIX(Obj self, Obj vec, Obj mat)
 
 Obj ZeroVector( Obj vec )
 {
-  UInt i, len;
-  Obj res;
-  assert(TNUM_OBJ(vec) >= T_PLIST_CYC && \
-         TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT+IMMUTABLE);
-  len = LEN_PLIST(vec);
-  res = NEW_PLIST( IS_MUTABLE_OBJ(vec) ? T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE, len);
-  SET_LEN_PLIST(res, len);
-  for (i = 1; i <= len; i++)
-    SET_ELM_PLIST(res, i, INTOBJ_INT(0));
-  return res;
+    UInt i, len;
+    Obj res;
+    assert(TNUM_OBJ(vec) >= T_PLIST_CYC && \
+    TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT + IMMUTABLE);
+    len = LEN_PLIST(vec);
+    res = NEW_PLIST(IS_MUTABLE_OBJ(vec) ? T_PLIST_CYC : T_PLIST_CYC + IMMUTABLE, len);
+    SET_LEN_PLIST(res, len);
+    for (i = 1; i <= len; i++)
+        SET_ELM_PLIST(res, i, INTOBJ_INT(0));
+    return res;
 }
 
 Obj ZeroMutVector( Obj vec )
 {
-  UInt i, len;
-  Obj res;
-  assert(TNUM_OBJ(vec) >= T_PLIST_CYC && \
-         TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT+IMMUTABLE);
-  len = LEN_PLIST(vec);
-  res = NEW_PLIST( T_PLIST_CYC, len);
-  SET_LEN_PLIST(res, len);
-  for (i = 1; i <= len; i++)
-    SET_ELM_PLIST(res, i, INTOBJ_INT(0));
-  return res;
+    UInt i, len;
+    Obj res;
+    assert(TNUM_OBJ(vec) >= T_PLIST_CYC && \
+    TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT + IMMUTABLE);
+    len = LEN_PLIST(vec);
+    res = NEW_PLIST(T_PLIST_CYC, len);
+    SET_LEN_PLIST(res, len);
+    for (i = 1; i <= len; i++)
+        SET_ELM_PLIST(res, i, INTOBJ_INT(0));
+    return res;
 }
 
 
@@ -734,16 +730,15 @@ static Int InitKernel (
     Int                 t1;
     Int                 t2;
 
-
     /* init filters and functions                                          */
-    InitHdlrFuncsFromTable( GVarFuncs );
+    InitHdlrFuncsFromTable(GVarFuncs);
 
     /* install the arithmetic operation methods                            */
-    for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT+IMMUTABLE; t1++ ) {
-      ZeroFuncs[ t1 ] = ZeroVector;
-      ZeroMutFuncs[ t1 ] = ZeroMutVector;
-      
-        for ( t2 = T_PLIST_CYC; t2 <= T_PLIST_CYC_SSORT+IMMUTABLE; t2++ ) {
+    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT + IMMUTABLE; t1++) {
+        ZeroFuncs[ t1 ] = ZeroVector;
+        ZeroMutFuncs[ t1 ] = ZeroMutVector;
+
+        for (t2 = T_PLIST_CYC; t2 <= T_PLIST_CYC_SSORT + IMMUTABLE; t2++) {
             SumFuncs [ T_INT     ][ t2        ] = SumIntVector;
             SumFuncs [ t1        ][ T_INT     ] = SumVectorInt;
             SumFuncs [ t1        ][ t2        ] = SumVectorVector;
@@ -768,9 +763,8 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-
-  /* init filters and functions                                          */
-    InitGVarFuncsFromTable( GVarFuncs );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable(GVarFuncs);
 
     /* return success                                                      */
     return 0;

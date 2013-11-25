@@ -163,7 +163,8 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     local pcgs, spec, first, weights, m, max, i, gensG, f, n, p, w, field,
           pcgsN, pcgsM, pcgsF, modus, modu, oper, L, cl, K, R, I, hom, 
           V, W, new, index, pcgsT, gensK, pcgsL, pcgsML, M, H,ff,S,
-	  fphom,mgi,sel,words,wordgens,pcgp,homliftlevel,pcgrppcgs;
+	  fphom,mgi,sel,words,wordgens,pcgp,homliftlevel,pcgrppcgs,
+	  fam,wordfpgens,wordpre;
 
     # set up
     ff:=FittingFreeLiftSetup(G);
@@ -191,7 +192,16 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     words:=List(mgi[2]{sel},
       x->UnderlyingElement(ImagesRepresentative(fphom,x)));
     wordgens:=FreeGeneratorsOfFpGroup(Range(fphom));
+    fam:=FamilyObj(One(Range(fphom)));
+    # just in case the stored group generators differ...
+    wordfpgens:=List(wordgens,x->ElementOfFpGroup(fam,x));
+    wordpre:=List(wordfpgens,x->PreImagesRepresentative(ff.factorhom,
+	      PreImagesRepresentative(fphom,x)));
     fphom:=ff.factorhom*fphom;
+    f:=GroupHomomorphismByImagesNC(Range(fphom),Source(fphom),
+	wordfpgens,wordpre);
+    SetInverseGeneralMapping(fphom,f);
+
     homliftlevel:=0;
 
     # loop down LG series

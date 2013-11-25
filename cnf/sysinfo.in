@@ -24,13 +24,13 @@ gap_config_options="@gp_configure_options@"
 
 # These three should be filled in by the standard autoconf procedures 
 c_compiler="@CC@"
-c_options="@CFLAGS@"
+c_options="@CPPFLAGS@ @CFLAGS@ @GMP_CFLAGS@"
 c_linker="@CC@"
 c_link_options="@LDFLAGS@"
 c_libs="@LIBS@ @GMP_LIBS@"
 
-# These will need special care 
-c_dyn_options="@CDYNOPTIONS@"
+# These will need special care
+c_dyn_options="@CPPFLAGS@ @CDYNOPTIONS@ @GMP_CFLAGS@"
 c_dyn_linker="@CDYNLINKER@"
 c_dyn_linking="@CDYNLINKING@"
 c_dynlibs="@C_DYNLIBS@"

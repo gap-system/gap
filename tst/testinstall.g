@@ -24,14 +24,14 @@
 ##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "testinstall.g" ) );
 ##  ]]></Log>
 ##  <P/>
-##  The test requires about 512MB of memory and runs about one 
+##  The test requires about 750MB of memory and runs about one 
 ##  minute on an Intel Core 2 Duo / 2.53 GHz machine.
 ##  You will get a large number of lines with output about the progress
 ##  of the tests.
 ##  <#/GAPDoc>
 ##
 
-Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 512m'.\n",
+Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 750m'.\n",
        "The more GAP4stones you get, the faster your system is.\n",
        "The runtime of the following tests (in general) increases.\n",
        "You should expect the test to take about one minute and show about\n",
@@ -72,6 +72,7 @@ RunStandardTests( [
   [ "semicong.tst", 7800000 ],
   [ "semigrp.tst", 11200000 ],
   [ "semirel.tst", 10900000 ],
+  [ "strings.tst", 100000 ],
   [ "vspchom.tst", 10500000 ],
   [ "vspcmat.tst", 8400000 ],
   [ "vspcrow.tst", 47400000 ],

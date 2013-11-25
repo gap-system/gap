@@ -403,9 +403,9 @@ function(s)
   fi;
 
   iso:=function(f)
-    local dom, img;
-
-    dom:=ImageSetOfTransformation(InversesOfSemigroupElement(s, f)[1]);
+  local dom, img;
+    dom:=ImageSetOfTransformation(InversesOfSemigroupElement(s, f)[1], 
+      DegreeOfTransformationSemigroup(s));
     img:=List(dom, i-> i^f);
     return PartialPermNC(dom, img);
   end;
@@ -429,7 +429,8 @@ function(s)
 
   iso:=function(f)
     local dom, img;
-    dom:=ImageSetOfTransformation(InversesOfSemigroupElement(s, f)[1]);
+    dom:=ImageSetOfTransformation(InversesOfSemigroupElement(s, f)[1], 
+      DegreeOfTransformationSemigroup(s));
     img:=List(dom, i-> i^f);
     return PartialPermNC(dom, img);
   end;
@@ -473,7 +474,7 @@ end);
 #
 
 InstallMethod(IsomorphismPartialPermMonoid, 
-"for a part perm semigroup",
+"for a partial perm semigroup",
 [IsPartialPermSemigroup],
 function(s)
   local t;
@@ -487,17 +488,6 @@ function(s)
     return fail;
   fi;
   return MagmaIsomorphismByFunctionsNC(s, t, IdFunc, IdFunc); 
-end);
-
-#
-
-InstallMethod(IsomorphismPermGroup, 
-"for a partial perm semigroup with generators", 
-[IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
-function(s)
-  return MagmaIsomorphismByFunctionsNC(s, 
-   Group(List(GeneratorsOfSemigroup(s), AsPermutation)), 
-   AsPermutation, x-> AsPartialPerm(x, DomainOfPartialPermCollection(s)));
 end);
 
 #

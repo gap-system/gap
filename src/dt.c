@@ -478,7 +478,7 @@ Obj    Mark2(
         if ( AlmostEqual(tree, i, reftree, index2) )
         {
             DT_MARK(tree, i);
-            /*  if <list> is too small grow it appropiately               */
+            /*  if <list> is too small grow it appropriately               */
             if ( LEN_PLIST(list) < INT_INTOBJ( DT_POS(tree, i) )  )
             {
                 GROW_PLIST(list, INT_INTOBJ( DT_POS(tree, i) ) );
@@ -587,7 +587,7 @@ UInt    FindTree(
 **  header of this file ).
 **
 **  For the calculation of the coefficient c the top node of <tree> is ignored
-**  because it can happen that trees are equal exept for the top node.
+**  because it can happen that trees are equal except for the top node.
 **  Hence it suffices to compute the formula vector for one of these trees.
 **  Then we get the "correct" coefficient for the polynomial for each <tree'>
 **  of those trees by multiplying the coefficient given by the formula vector
@@ -617,7 +617,7 @@ Obj    MakeFormulaVector(
     SET_ELM_PLIST(vec, 2, INTOBJ_INT(1) );
     SET_ELM_PLIST(vec, 3, DT_GEN(tree, DT_LEFT(tree, 1) )  );
     SET_ELM_PLIST(vec, 4, DT_GEN(tree, DT_RIGHT(tree, 1) )  );
-    /*  loop over all almost equal classes of subtrees of <tree> exept for
+    /*  loop over all almost equal classes of subtrees of <tree> except for
     **  <tree> itself.                                                    */
     u = FindTree(tree, 1);
     while( u > 1 )
@@ -783,7 +783,7 @@ Int     Leftof(
 **  tree(<tree2>,index2)in the word being collected at the first instance,  
 **  that tree(<tree1>, index1) and tree(<tree2>, index2) both occur.  It is
 **  assumed that tree(<tree2>, index2) occurs earlier than 
-**  tree(<tree1>,index1).  Furthemore it is assumed that if both
+**  tree(<tree1>,index1).  Furthermore it is assumed that if both
 **  tree(<tree1>, index1) and tree(<tree2>, index2) are non-atoms,  then their
 **  right trees and their left trees are not equal. 
 */
@@ -845,7 +845,7 @@ Int    Earlier(
 **
 **  GetPols( <list>, <pr>, <pols> )
 **
-**  GetPols computes all representatives which are represented by thr
+**  GetPols computes all representatives which are represented by the
 **  pseudorepresentative <list>,  converts them all into the corresponding
 **  deep thought monomial and stores all these monomials in the list <pols>.
 */
@@ -1043,7 +1043,7 @@ void   FindNewReps1(
           llist,       /*  stores all elements of an almost equal class
                        **  of subtrees of left(<tree>)                   */
 
-          rlist;       /*  stores all elments of the same almost equal
+          rlist;       /*  stores all elements of the same almost equal
                        **  class of subtrees of right(<tree>)            */
     Int   a,           /*  stores a subtree of right((<tree>)            */
           n,           /*  Length of lsubs                               */
@@ -1138,7 +1138,7 @@ void   FindNewReps2(
           llist,       /*  stores all elements of an almost equal class
                        **  of subtrees of left(<tree>)                   */
 
-          rlist;       /*  stores all elments of the same almost equal
+          rlist;       /*  stores all elements of the same almost equal
                        **  class of subtrees of right(<tree>)            */
     Int   a,           /*  stores a subtree of right((<tree>)            */
           n,           /*  Length of lsubs                               */
@@ -1234,7 +1234,7 @@ void   FindNewReps(
           llist,       /*  stores all elements of an almost equal class
                        **  of subtrees of left(<tree>)                   */
 
-          rlist,       /*  stores all elments of the same almost equal
+          rlist,       /*  stores all elements of the same almost equal
                        **  class of subtrees of right(<tree>)            */
           list1,       /*  stores a sublist of <reps>                    */
           rel;         /*  stores a commutator relation from <pr>        */
@@ -1554,7 +1554,7 @@ void  FindSubs2(
                 Obj        a,     /*  list to change,  containing the
                                   **  pos-arguments of the trees in list1   */
 
-                Obj        b,     /*  list to change,  containing tthe
+                Obj        b,     /*  list to change,  containing the
                                   **  pos-arguments of the trees in list2   */
                 Int        al,
                 Int        ar,
@@ -1632,7 +1632,7 @@ void  FindSubs(
                 Obj        a,     /*  list to change,  containing the
                                   **  pos-arguments of the trees in list1   */
 
-                Obj        b,     /*  list to change,  containing tthe
+                Obj        b,     /*  list to change,  containing the
                                   **  pos-arguments of the trees in list2   */
                 Int        al,
                 Int        ar,
@@ -1817,7 +1817,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    InitFopyGVar( "dt_add" , &Dt_add );
+    InitFopyGVar( "Dt_add" , &Dt_add );
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );

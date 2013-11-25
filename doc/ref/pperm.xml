@@ -1191,8 +1191,9 @@ fail</Example>
     
     <Mark><C>LQUO(<A>g</A>, <A>f</A>)</C></Mark>
     <Item>
-      <Index Key="LQUO"><C>LQUO</C> (for a permutation or partial permutation
-        and partial permutation)</Index> returns <C><A>g</A>^-1*<A>f</A></C>
+      <Index Key="LQUO" Subkey="for a permutation or partial permutation
+        and partial permutation"><C>LQUO</C></Index>
+      returns <C><A>g</A>^-1*<A>f</A></C>
       when <A>f</A> is a partial permutation and
       <A>g</A> is a permutation or partial permutation. 
       This operation requires essentially the same number of steps 

@@ -314,7 +314,7 @@ Obj FuncTRUES_FLAGS (
         n += m;
     }
 
-    /* make the sublist (we now know its size exactely)                    */
+    /* make the sublist (we now know its size exactly)                    */
     sub = NEW_PLIST( T_PLIST+IMMUTABLE, n );
     SET_LEN_PLIST( sub, n );
 
@@ -1592,9 +1592,9 @@ static inline Obj CacheOper (
     UInt len;
     cache = CACHE_OPER( oper, i );
     if ( cache == 0 ) {
-      len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2)) ;
+        len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2));
         cache = NEW_PLIST( T_PLIST, len);
-        SET_LEN_PLIST(cache, len ); 
+        SET_LEN_PLIST( cache, len ); 
         CACHE_OPER( oper, i ) = cache;
         CHANGED_BAG( oper );
     }
@@ -2909,7 +2909,7 @@ Obj NewOperation (
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+2) : 4 * (1+2)) );
+        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2)) );
         CACHE_OPER( oper, i ) = cache;
         CHANGED_BAG(oper);
     }
@@ -2972,7 +2972,7 @@ Obj NewOperationC (
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+2) : 4 * (1+2)) );
+        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2)) );
         CACHE_OPER( oper, i ) = cache;
         CHANGED_BAG(oper);
     }
@@ -4405,7 +4405,7 @@ Obj NewConstructor (
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+1) : 4 * (1+1)) );
+        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+1) : CACHE_SIZE * (1+1)) );
         CACHE_OPER( oper, i ) = cache;
         CHANGED_BAG(oper);
     }
@@ -4460,7 +4460,7 @@ Obj NewConstructorC (
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+1) : 4 * (1+1)) );
+        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+1) : CACHE_SIZE * (1+1)) );
         CACHE_OPER( oper, i ) = cache;
         CHANGED_BAG(oper);
     }

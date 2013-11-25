@@ -1915,6 +1915,12 @@ function( hom )
   elif not ( IsGroupHomomorphism( hom ) and IsBijective( hom ) ) then
     return false;
   fi;
+  # trivial group
+  if Size(s)=1 then
+    SetConjugatorOfConjugatorIsomorphism(hom,One(s));
+    return true;
+  fi;
+
   genss:= GeneratorsOfGroup( s );
 
   if IsEndoGeneralMapping( hom ) then

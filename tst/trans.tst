@@ -16,24 +16,22 @@ gap> SetUserPreference("NotationForTransformations", "input");
 # MarkTrans2SubBags
 gap> f:=Transformation( [ 2, 2, 4, 2, 8, 5, 10, 10, 4, 3, 9, 9 ] );;
 gap> g:=One(f);
-IdentityTransformation()
+IdentityTransformation
 gap> ImageSetOfTransformation(g);
-[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
+[  ]
 gap> FlatKernelOfTransformation(g);
-[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
+[  ]
 gap> KernelOfTransformation(g);
-[ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ], [ 8 ], [ 9 ], [ 10 ], 
-  [ 11 ], [ 12 ] ]
+[  ]
 
 #provoke garbage collection
 gap> RandomTransformation(3000000);; 
 gap> KernelOfTransformation(g);
-[ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ], [ 8 ], [ 9 ], [ 10 ], 
-  [ 11 ], [ 12 ] ]
+[  ]
 gap> FlatKernelOfTransformation(g);
-[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
+[  ]
 gap> ImageSetOfTransformation(g);
-[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
+[  ]
 
 # MarkTrans4SubBags
 gap> f:=RandomTransformation(100000);;
@@ -92,14 +90,13 @@ gap> f:=RandomTransformation(100000);;
 gap> AsPermutation(f);
 fail
 gap> m:=IndexPeriodOfTransformation(f)[1];;
-gap> AsPermutation(f^m)=fail;
+gap> PermutationOfImage(f^m)=fail;
 false
-gap> g:=RestrictedTransformation(f^m, ImageSetOfTransformation(f^m));
-<transformation on 99821 pts with rank 99821>
-gap> g=AsTransformation(AsPermutation(f^m), 100000);
+gap> g:=RestrictedTransformation(f^m, ImageSetOfTransformation(f^m));;
+gap> g=AsTransformation(PermutationOfImage(f^m), 100000);
 true
-gap> g:=IdentityTransformation(12);
-IdentityTransformation()
+gap> g:=IdentityTransformation;
+IdentityTransformation
 gap> IsIdenticalObj(g, AsTransformation(g));
 true
 gap> p:=Random(SymmetricGroup(10000));;
@@ -113,25 +110,21 @@ gap> AsPermutation(g)=p;
 true
 gap> p:=();;
 gap> AsTransformation(p);
-IdentityTransformation()
+IdentityTransformation
 gap> g:=AsTransformation(p, 10);
-IdentityTransformation()
+IdentityTransformation
 gap> KernelOfTransformation(g);
-[ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ], [ 8 ], [ 9 ], [ 10 ] ]
+[  ]
 gap> FlatKernelOfTransformation(g);
-[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-gap> ImageSetOfTransformation(g);
-[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-gap> img:=last;
-[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-gap> img[1]=10;
-false
+[  ]
+gap> img:=ImageSetOfTransformation(g);
+[  ]
 gap> img[1]:=10;
 Error, Lists Assignment: <list> must be a mutable list
 gap> FlatKernelOfTransformation(g);
-[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+[  ]
 gap> ImageSetOfTransformation(g);
-[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+[  ]
 gap> p:=(1,4,3,8,10,7,2,6)(5,9);;
 gap> AsTransformation(p, 8);
 Transformation( [ 4, 6, 8, 3, 9, 1, 2, 10, 9, 10 ] )
@@ -145,9 +138,9 @@ Transformation( [ 2, 3, 1 ] )
 gap> g:=AsTransformation(p, 8);
 Transformation( [ 2, 3, 1 ] )
 gap> ImageSetOfTransformation(g);
-[ 1, 2, 3, 4, 5, 6, 7, 8 ]
+[ 1, 2, 3 ]
 gap> FlatKernelOfTransformation(g);
-[ 1, 2, 3, 4, 5, 6, 7, 8 ]
+[ 1, 2, 3 ]
 gap> g:=AsTransformation(p, 1);
 Transformation( [ 2, 2 ] )
 gap> g:=AsTransformation(p, 2);
@@ -165,8 +158,7 @@ gap> FlatKernelOfTransformation(g);
 [ 1, 2, 3 ]
 gap> f:=Transformation( [ 4, 12, 7, 9, 1, 2, 9, 1, 11, 3, 12, 7 ] );;
 gap> AsTransformation(f, 2);
-Error, usage: the first argument is not a transformation when
-restricted to [1..2],
+fail
 gap> f:=Transformation( [ 5, 5, 3, 10, 10, 10, 2, 12, 11, 9, 1, 6 ] );;
 gap> g:=AsTransformation(f, 20);
 Transformation( [ 5, 5, 3, 10, 10, 10, 2, 12, 11, 9, 1, 6 ] )
@@ -175,13 +167,13 @@ true
 gap> g;
 Transformation( [ 5, 5, 3, 10, 10, 10, 2, 12, 11, 9, 1, 6 ] )
 gap> ImageSetOfTransformation(g);
-[ 1, 2, 3, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]
+[ 1, 2, 3, 5, 6, 9, 10, 11, 12 ]
 gap> FlatKernelOfTransformation(g);
-[ 1, 1, 2, 3, 3, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 ]
+[ 1, 1, 2, 3, 3, 3, 4, 5, 6, 7, 8, 9 ]
 gap> RankOfTransformation(g);
-17
+9
 gap> DegreeOfTransformation(g);
-20
+12
 gap> g:=AsTransformation(f, 65536);
 Transformation( [ 5, 5, 3, 10, 10, 10, 2, 12, 11, 9, 1, 6 ] )
 gap> g:=AsTransformation(f, 65535);
@@ -195,7 +187,7 @@ Transformation( [ 5, 5, 3, 10, 10, 10, 2, 12, 11, 9, 1, 6 ] )
 gap> f:=RandomTransformation(70000);;
 gap> g:=AsTransformation(f, 100000);;
 gap> DegreeOfTransformation(g);
-100000
+70000
 gap> ForAll([70001..100000], i-> i^g=i);
 true
 gap> ForAll([1..70000], i-> i^g=i^f);
@@ -233,22 +225,16 @@ gap> f:=RandomTransformation(70000);;
 gap> RankOfTransformation(f);;
 gap> g:=AsTransformation(f, 100000);;
 gap> DegreeOfTransformation(g);
-100000
+70000
 gap> f=g; 
 true
-gap> NormalizedDegreeOfTransformation(g);
-70000
 gap> ImageSetOfTransformation(g)=Set(ImageListOfTransformation(g));
 true
-gap> FlatKernelOfTransformation(g){[1..70000]}=FlatKernelOfTransformation(f);
-true
-gap> FlatKernelOfTransformation(g){[70001..100000]}=
-> [RankOfTransformation(f)+1..RankOfTransformation(f)+30000];
+gap> FlatKernelOfTransformation(g)=FlatKernelOfTransformation(f);
 true
 gap> RankOfTransformation(g)=Length(ImageSetOfTransformation(g));
 true
-gap> ImageSetOfTransformation(g)=
-> Union(ImageSetOfTransformation(f), [70001..100000]);
+gap> ImageSetOfTransformation(g)=ImageSetOfTransformation(f);
 true
 gap> f=AsTransformation(g, 70000);       
 true
@@ -263,15 +249,11 @@ gap> ForAll([1..10000], i-> i^g=i^f);
 true
 gap> ImageSetOfTransformation(g)=Set(ImageListOfTransformation(g));
 true
-gap> FlatKernelOfTransformation(g){[1..10000]}=FlatKernelOfTransformation(f);
-true
-gap> FlatKernelOfTransformation(g){[10001..100000]}=
-> [RankOfTransformation(f)+1..RankOfTransformation(f)+90000];
+gap> FlatKernelOfTransformation(g)=FlatKernelOfTransformation(f);
 true
 gap> RankOfTransformation(g)=Length(ImageSetOfTransformation(g));
 true
-gap> ImageSetOfTransformation(g)=
-> Union(ImageSetOfTransformation(f), [10001..100000]);
+gap> ImageSetOfTransformation(g)=ImageSetOfTransformation(f);
 true
 gap> f=AsTransformation(g, 10000);       
 true
@@ -286,15 +268,11 @@ gap> ForAll([1..10000], i-> i^g=i^f);
 true
 gap> ImageSetOfTransformation(g)=Set(ImageListOfTransformation(g));
 true
-gap> FlatKernelOfTransformation(g){[1..10000]}=FlatKernelOfTransformation(f);
-true
-gap> FlatKernelOfTransformation(g){[10001..20000]}=
-> [RankOfTransformation(f)+1..RankOfTransformation(f)+10000];
+gap> FlatKernelOfTransformation(g)=FlatKernelOfTransformation(f);
 true
 gap> RankOfTransformation(g)=Length(ImageSetOfTransformation(g));
 true
-gap> ImageSetOfTransformation(g)=
-> Union(ImageSetOfTransformation(f), [10001..20000]);
+gap> ImageSetOfTransformation(g)=ImageSetOfTransformation(f);
 true
 gap> AsTransformation(g, 10000)=f;
 true
@@ -302,31 +280,31 @@ true
 # One, IsOne, IdentityTransformation
 gap> f:=Transformation( [ 11, 9, 10, 6, 7, 7, 10, 7, 10, 9, 7, 4 ] );;
 gap> One(f);
-IdentityTransformation()
-gap> IdentityTransformation(12);
-IdentityTransformation()
-gap> One(f)=IdentityTransformation(12);
+IdentityTransformation
+gap> IdentityTransformation;
+IdentityTransformation
+gap> One(f)=IdentityTransformation;
 true
 gap> f^0;
-IdentityTransformation()
+IdentityTransformation
 gap> IsOne(f^0);
 true
-gap> IsOne(IdentityTransformation(12));
+gap> IsOne(IdentityTransformation);
 true
 gap> IsOne(One(f));
 true
 gap> f:=RandomTransformation(70000);;
 gap> One(f);
-IdentityTransformation()
-gap> IdentityTransformation(70000);
-IdentityTransformation()
-gap> One(f)=IdentityTransformation(70000);
+IdentityTransformation
+gap> IdentityTransformation;
+IdentityTransformation
+gap> One(f)=IdentityTransformation;
 true
 gap> f^0;
-IdentityTransformation()
+IdentityTransformation
 gap> IsOne(f^0);
 true
-gap> IsOne(IdentityTransformation(70000));
+gap> IsOne(IdentityTransformation);
 true
 gap> IsOne(One(f));
 true
@@ -365,7 +343,7 @@ gap> f:=Transformation( [ 2, 2, 4, 2, 8, 5, 10, 10, 4, 3, 9, 9 ] );;
 gap> PreImagesOfTransformation(f, 12);
 [  ]
 gap> g:=One(f);
-IdentityTransformation()
+IdentityTransformation
 gap> PreImagesOfTransformation(g, 12);
 [ 12 ]
 
@@ -379,7 +357,7 @@ gap> ForAll([65535..70000], i-> i^f=i^g);
 true
 gap> g:=RestrictedTransformation(f, [11..DegreeOfTransformation(f)]);;
 gap> h:=AsTransformation(g, 10);
-IdentityTransformation()
+IdentityTransformation
 gap> IsOne(last);
 true
 gap> IsTrans2Rep(h);
@@ -586,34 +564,36 @@ gap> list:=[1..6];
 gap> IsInjectiveListTrans(list, f);
 true
 gap> g:=INV_LIST_TRANS(list, f);
-Transformation( [ 1, 1, 4, 1, 1, 3, 2, 1, 1, 6, 5, 1 ] )
+Transformation( [ 1, 2, 4, 4, 5, 3, 2, 8, 9, 6, 5, 1 ] )
 gap> ForAll(list, i-> ((i)^f)^g=i);
 true
 gap> f:=RandomTransformation(100000);;
-gap> g:=LeftOne(f);;
-gap> IsInjectiveListTrans(ImageSetOfTransformation(g), f);
+gap> e:=LeftOne(f);;
+gap> IsInjectiveListTrans(ImageSetOfTransformation(e), f);
 true
-gap> g:=INV_LIST_TRANS(ImageSetOfTransformation(g), f);;
-gap> ForAll(ImageSetOfTransformation(g), i-> ((i)^f)^g=i);
+gap> g:=INV_LIST_TRANS(ImageSetOfTransformation(e), f);;
+gap> ForAll(ImageSetOfTransformation(e), i-> ((i)^f)^g=i);
 true
 gap> f:=RandomTransformation(100000);;
-gap> g:=LeftOne(f);;                   
-gap> IsInjectiveListTrans(ImageSetOfTransformation(g), f);
+gap> e:=LeftOne(f);;                   
+gap> IsInjectiveListTrans(ImageSetOfTransformation(e), f);
 true
-gap> g:=INV_LIST_TRANS(ImageSetOfTransformation(g), f);;
-gap> ForAll(ImageSetOfTransformation(g), i-> ((i)^f)^g=i);
+gap> g:=INV_LIST_TRANS(ImageSetOfTransformation(e), f);;
+gap> ForAll(ImageSetOfTransformation(e), i-> ((i)^f)^g=i);
 true
 gap> g:=LeftOne(f);;                   
-gap> ForAll(ImageSetOfTransformation(g), i-> ((i)^f)^g=i);
+gap> ForAll(ImageSetOfTransformation(e), i-> ((i)^f)^g=i);
 false
 
 # TRANS_IMG_CONJ
 gap> f:=RandomTransformation(100000);;
 gap> g:=LeftOne(f);;
 gap> p:=TRANS_IMG_CONJ(f, g);;                                        
-gap> OnTuples(ImageListOfTransformation(f), p)=ImageListOfTransformation(g);
+gap> OnTuples(ImageListOfTransformation(f, 100000),p)
+> =ImageListOfTransformation(g, 100000);
 true
-gap> OnTuples(ImageListOfTransformation(g), p^-1)=ImageListOfTransformation(f);
+gap> OnTuples(ImageListOfTransformation(g, 100000), p^-1)
+> =ImageListOfTransformation(f, 100000);
 true
 gap> q:=TRANS_IMG_CONJ(g, f);;
 gap> q=p^-1;
@@ -621,9 +601,11 @@ true
 gap> f:=RandomTransformation(100000);;
 gap> g:=LeftOne(f);;
 gap> p:=TRANS_IMG_CONJ(f, g);;
-gap> OnTuples(ImageListOfTransformation(f), p)=ImageListOfTransformation(g);
+gap> OnTuples(ImageListOfTransformation(f, 100000), p)
+> =ImageListOfTransformation(g, 100000);
 true
-gap> OnTuples(ImageListOfTransformation(g), p^-1)=ImageListOfTransformation(f);
+gap> OnTuples(ImageListOfTransformation(g, 100000), p^-1)
+> =ImageListOfTransformation(f, 100000);
 true
 gap> q:=TRANS_IMG_CONJ(g, f);;
 gap> q=p^-1;
@@ -752,9 +734,11 @@ true
 gap> f:=Transformation( [ 9, 5, 3, 5, 10, 3, 1, 9, 6, 7 ] );;
 gap> g:=RightOne(f);                                   
 Transformation( [ 1, 1, 3, 3, 5, 6, 7, 7 ] )
-gap> g:=g*Random(SymmetricGroup(Maximum(ImageSetOfTransformation(g))));;
-gap> ker:=FlatKernelOfTransformation(g);;
-gap> h:=INV_KER_TRANS(ker, f);;
+gap> g:=g*Random(SymmetricGroup(7));;
+gap> ker:=FlatKernelOfTransformation(g, DegreeOfTransformation(f));
+[ 1, 1, 2, 2, 3, 4, 5, 5, 6, 7 ]
+gap> h:=INV_KER_TRANS(ker, f);
+Transformation( [ 7, 7, 6, 6, 4, 9, 10, 10, 8, 5 ] )
 gap> OnKernelAntiAction(OnKernelAntiAction(ker, f), h)=ker;
 true
 gap> h*f*g=g;
@@ -762,7 +746,7 @@ true
 gap> f:=RandomTransformation(1000);;
 gap> g:=RightOne(f);;
 gap> g:=g*Random(SymmetricGroup(Maximum(ImageSetOfTransformation(g))));;
-gap> ker:=FlatKernelOfTransformation(g);;
+gap> ker:=FlatKernelOfTransformation(g, DegreeOfTransformation(f));;
 gap> h:=INV_KER_TRANS(ker, f);;
 gap> OnKernelAntiAction(OnKernelAntiAction(ker, f), h)=ker;
 true
@@ -771,7 +755,7 @@ true
 gap> f:=RandomTransformation(100000);; 
 gap> g:=RightOne(f);;                                   
 gap> g:=g*Random(SymmetricGroup(Maximum(ImageSetOfTransformation(g))));;
-gap> ker:=FlatKernelOfTransformation(g);;
+gap> ker:=FlatKernelOfTransformation(g, DegreeOfTransformation(f));;
 gap> h:=INV_KER_TRANS(ker, f);;
 gap> OnKernelAntiAction(OnKernelAntiAction(ker, f), h)=ker;
 true
@@ -1205,6 +1189,10 @@ gap> f:=RandomTransformation(100000);;
 gap> OnTuples([1..100000], f)=ImageListOfTransformation(f);
 true
 gap> OnSets([1..100000], f)=ImageSetOfTransformation(f);
+true
+
+#
+gap> ConstantTransformation(4,1)<IdentityTransformation;
 true
 
 #

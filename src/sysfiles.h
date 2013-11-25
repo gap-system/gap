@@ -17,10 +17,7 @@
 #define GAP_SYSFILES_H
 
 
-#ifndef SYS_STDIO_H                     /* standard input/output functions */
-# include <stdio.h>
-# define SYS_STDIO_H
-#endif
+#include <stdio.h>
 
 
 /****************************************************************************

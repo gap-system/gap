@@ -143,11 +143,6 @@ InstallOtherMethod( DirectProductElement,
 #############################################################################
 ##
 #M  PrintObj( <dpelm> )  . . . . . . . . . . . print a direct product element
-#M  ViewObj( <dpelm> ) . . . . . . . . . . . .  view a direct product element
-##
-##  We install a special `ViewObj' method because as soon as a direct product
-##  element stores that it is finite (this happens for example in a call to
-##  `ShallowCopy'), the `ViewObj' method for finite lists would strike.
 ##
 InstallMethod( PrintObj,
     "for a direct product element",
@@ -164,10 +159,19 @@ InstallMethod( PrintObj,
     Print(" ] )");
     end );
 
+#############################################################################
+##
+#M  ViewObj( <dpelm> ) . . . . . . . . . . . .  view a direct product element
+##
 InstallMethod( ViewObj,
-    "for a direct product element (call `PrintObj')",
+    "for a direct product element",
     [ IsDirectProductElement ],
-    PrintObj );
+    function( dpelm )
+    local i;
+    Print( "DirectProductElement( " );
+    Print( ViewString( AsList( (dpelm) ) ) );
+    Print(" )");
+    end );
 
 
 #############################################################################

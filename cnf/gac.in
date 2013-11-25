@@ -72,34 +72,85 @@ stat_identifier="USER";
 
 # These three should be filled in by the standard autoconf procedures 
 c_compiler="@CC@"
-c_options="@CFLAGS@ @GMP_CFLAGS@"
+c_options="@CPPFLAGS@ @CFLAGS@ @GMP_CFLAGS@"
 c_linker="@CC@"
 c_link_options="@LDFLAGS@"
 c_libs="@LIBS@ @GMP_LIBS@"
 
-# These three will need special care 
-c_dyn_options="@CDYNOPTIONS@ @GMP_CFLAGS@"
+# These will need special care
+c_dyn_options="@CPPFLAGS@ @CDYNOPTIONS@ @GMP_CFLAGS@"
 c_dyn_linker="@CDYNLINKER@"
 c_dyn_linking="@CDYNLINKING@"
 c_dynlibs="@C_DYNLIBS@"
 c_addlibs=""
 
 # hardwire this for now. There is probably a nicer way 
+# note: compstat.o is omitted on purpose from this list
 
 OBJECTS="\
-    c_meths1.o  c_type1.o   c_oper1.o   c_filt1.o    c_random.o  \
-    ariths.o    blister.o   bool.o      calls.o      code.o      \
-    compiler.o  costab.o    cyclotom.o  dt.o         dteval.o    \
-    exprs.o     finfield.o  funcs.o     gap.o        gasman.o    \
-    gmpints.o   gvars.o     integer.o   intrprtr.o   listfunc.o  \
-    listoper.o  lists.o     objcftl.o   objects.o    objfgelm.o  \
-    objpcgel.o  objscoll.o  objccoll.o  opers.o      permutat.o  \
-    plist.o     precord.o   range.o     rational.o   read.o      \
-    records.o   saveload.o  scanner.o   sctable.o    set.o       \
-    stats.o     streams.o   string.o    sysfiles.o   system.o    \
-    tietze.o    vars.o      vecgf2.o    vecffe.o     vec8bit.o   \
-    vector.o    weakptr.o   iostream.o  macfloat.o   trans.o     \
-    pperm.o"
+    ariths.o \
+    blister.o \
+    bool.o \
+    c_filt1.o \
+    c_meths1.o \
+    c_oper1.o \
+    c_random.o \
+    c_type1.o \
+    calls.o \
+    code.o \
+    compiler.o \
+    costab.o \
+    cyclotom.o \
+    dt.o \
+    dteval.o \
+    exprs.o \
+    finfield.o \
+    funcs.o \
+    gap.o \
+    gasman.o \
+    gmpints.o \
+    gvars.o \
+    integer.o \
+    intfuncs.o \
+    intrprtr.o \
+    iostream.o \
+    listfunc.o \
+    listoper.o \
+    lists.o \
+    macfloat.o \
+    objccoll.o \
+    objcftl.o \
+    objects.o \
+    objfgelm.o \
+    objpcgel.o \
+    objscoll.o \
+    opers.o \
+    permutat.o \
+    plist.o \
+    pperm.o \
+    precord.o \
+    range.o \
+    rational.o \
+    read.o \
+    records.o \
+    saveload.o \
+    scanner.o \
+    sctable.o \
+    set.o \
+    stats.o \
+    streams.o \
+    string.o \
+    sysfiles.o \
+    system.o \
+    tietze.o \
+    trans.o \
+    vars.o \
+    vec8bit.o \
+    vecffe.o \
+    vecgf2.o \
+    vector.o \
+    weakptr.o \
+"
 
 EXTOBJS=
 
@@ -454,6 +505,7 @@ if [ $comp_howfar = "link" ]; then
         c_link ${output} "${objects}"
 
     else
+        if [ "X${output}" = "X" ]; then output="${name}.so"; fi
         c_link_dyn ${output} "${objects}"
     fi
     

@@ -54,6 +54,14 @@ extern Obj OnTuplesTrans ( Obj tup, Obj f );
 extern Obj OnSetsTrans ( Obj set, Obj f );
 
 /****************************************************************************
+**
+*V  IdentityTrans  . . . . . . . . . . . . . . . . .  identity transformation
+**
+**  'IdentityTrans' is an identity transformation.
+*/
+extern  Obj             IdentityTrans;
+
+/****************************************************************************
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * */
 

@@ -362,9 +362,11 @@ InstallGlobalFunction( Semigroup, function( arg )
         Add(out, arg[i]);
       elif IsAssociativeElementCollection(arg[i]) then
         if HasGeneratorsOfSemigroup(arg[i]) then
-          Append(out,GeneratorsOfSemigroup(arg[i]));
-        else
+          Append(out, GeneratorsOfSemigroup(arg[i]));
+        elif IsList(arg[i]) then 
           Append(out, arg[i]);
+        else
+          Append(out, AsList(arg[i]));
         fi;
       #so that we can pass the options record in the Semigroups package 
       elif i=Length(arg) and IsRecord(arg[i]) then
@@ -377,9 +379,6 @@ InstallGlobalFunction( Semigroup, function( arg )
     od;
     return SemigroupByGenerators(out);
   
-  # generators
-  elif 0 < Length( arg )  then
-    return SemigroupByGenerators( arg );
   # no argument given, error
   else
     Error( "Usage: Semigroup(<gen>,...),Semigroup(<gens>),Semigroup(<D>),");
@@ -690,8 +689,8 @@ InstallMethod(IsZeroSimpleSemigroup, "for a trivial semigroup",
 #M  IsZeroSimpleSemigroup( <S> ) . . . . for a semigroup which has generators
 ##
 
-## A semigroup is 0-simple if and only if it is non-trivial, contains a
-## multiplicative zero, and has exactly two J-classe. 
+## A semigroup <S> is 0-simple if and only if it is non-trivial, contains a
+## multiplicative zero, and has exactly two J-classes, and S^2<>{0}.
 
 InstallMethod(IsZeroSimpleSemigroup, "for a semigroup with generators",
 [IsSemigroup and HasGeneratorsOfSemigroup],
@@ -701,7 +700,7 @@ function(s)
     return false;
   fi;
 
-  return Length(GreensJClasses(s))=2;
+  return Length(GreensJClasses(s))=2 and IsRegularSemigroup(s);
 end);
 
 #############################################################################

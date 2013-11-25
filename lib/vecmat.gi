@@ -981,7 +981,7 @@ end );
 
 #############################################################################
 ##
-#M  ZEROOp( <gf2mat> )  . . . . . . . . . . . . . . . matching mutabilitt
+#M  ZEROOp( <gf2mat> )  . . . . . . . . . . . . . . . matching mutability
 ##
 ##
 
@@ -1667,7 +1667,7 @@ end);
 
 #############################################################################
 ##
-#M  NumberFFVector(<<vec>,<sz>)
+#M  NumberFFVector(<vec>,<sz>)
 ##
 InstallMethod(NumberFFVector,"uncompressed vecffe",
   [IsRowVector and IsFFECollection,IsPosInt],

@@ -200,7 +200,7 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
     *-hpux-gcc )
         gp_cv_prog_cc_cdynoptions="-fpic -Wall ${ABI_CFLAGS}";;
     *-gcc* | *-egcs )
-        gp_cv_prog_cc_cdynoptions="-fpic -Wall -O2 ${ABI_CFLAGS}";;
+        gp_cv_prog_cc_cdynoptions="-fPIC -Wall -O2 ${ABI_CFLAGS}";;
     *-clang* )
         gp_cv_prog_cc_cdynoptions="-fPIC -Wall ${ABI_CFLAGS} -Wno-unused-value";;
     *-icc* )
@@ -213,7 +213,7 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynoptions=" -O3 -woff 1110,1167,1174,1552";;
    
     * )    dnl ## if we don't recognise this compiler, guess some flags
-        gp_cv_prog_cc_cdynoptions="-fpic -O2 ${ABI_CFLAGS}";;
+        gp_cv_prog_cc_cdynoptions="-fPIC -O2 ${ABI_CFLAGS}";;
    esac 
  ])
  AC_CACHE_CHECK(dynamic linker, gp_cv_prog_cc_cdynlinker,

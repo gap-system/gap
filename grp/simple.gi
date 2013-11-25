@@ -742,16 +742,20 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     fi;
 
     if f>1 then
-      dd:=PrimitiveElement(GF(prime^f));
-      dd:=List([1..prime^f-1],x->dd^x); # nonzero elements
-      gal:=List(Elements(GaloisGroup(GF(prime^f))),x->Permutation(x,dd));
+      dd:=PrimitiveElement(GF(prime^f))^((prime^f-1)/d);
+      dd:=List([0..d-1],x->dd^x); # Powers;
+      gal:=GaloisGroup(GF(prime^f));
+      gal:=SmallGeneratingSet(gal);
+      if Length(gal)>1 then Error("not small generators");fi;
+      gal:=gal[1];
+      gal:=List([0..f-1],x->Permutation(gal^x,dd));
     fi;
 
     myprod:=function(c1,c2)
     local d2,g1,f1;
       d2:=c2[1];
       if c1[3]>0 and d2>0 then
-	d2:=d2^gal[c1[3]];
+	d2:=((d2+1)^gal[c1[3]+1])-1;
       fi;
 
       if c1[2]=1 then
@@ -770,7 +774,9 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
       else
 	f1:=(c1[3]+c2[3]) mod f;
       fi;
-      return [(c1[1]+d2) mod d,g1,f1];
+      f1:=[(c1[1]+d2) mod d,g1,f1];
+#Print(c1,"*",c2,"=",f1,"\n");
+      return f1;
 
     end;
 
@@ -778,9 +784,10 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     if Number([d,g,f],i->i>1)>1 then
       # form group
       dd:=Cartesian([0..d-1],[0..g-1],[0..f-1]);
-      dd:=List(dd,x->List(dd,y->Position(dd,myprod(x,y))));
+      dd:=List(dd,x->List(dd,y->Position(dd,myprod(y,x))));
       dd:=List(dd,PermList);
       dd:=Group(dd);
+      if Size(dd)<>d*f*g then Error("wrong automorphism order");fi;
       dd:=List(ConjugacyClassesSubgroups(dd),Representative);
       ddn:=[];
       for i in dd do

@@ -899,7 +899,11 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   cl:=ConjugacyClasses(G);
 
   if IsCyclic(H) then
-    k:=SmallGeneratingSet(H)[1];
+    if Size(H)=1 then
+      k:=One(H);
+    else
+      k:=SmallGeneratingSet(H)[1];
+    fi;
     c:=Order(k);
     Assert(1,Order(k)=Order(H));
     cl:=List(cl,Representative);

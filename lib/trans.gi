@@ -8,12 +8,80 @@
 #Y  Copyright (C) 2012 The GAP Group
 ##
 
-TestSectionExamples:=function(str)
-  local ex;
-  ex:=ExtractExamples("doc/ref", str, [str], "Section");
-  RunExamples(ex);
-  return;
-end;
+InstallMethod(NumberTransformation, "for a transformation", 
+[IsTransformation], 
+function(t) 
+  local l, n, a, i; 
+  n := DegreeOfTransformation(t); 
+  a := 0; 
+  for i in [1..n] do 
+      a := a*n + i^t-1; 
+  od; 
+  return a+1;   # to be in [1..n^n] 
+end); 
+ 
+InstallMethod(NumberTransformation, 
+"for a transformation and positive integer", 
+[IsTransformation, IsPosInt], 
+function(t, n) 
+  local l, a, i; 
+  a := 0; 
+  for i in [1..n] do 
+    a := a*n + i^t-1; 
+  od; 
+  return a+1;   # to be in [1..n^n] 
+end); 
+
+InstallMethod(TransformationNumber,  
+"for a positive integer and positive integer", 
+[IsPosInt, IsPosInt],
+function(a,n) 
+  local l, q, i; 
+  l := EmptyPlist(n); 
+  a := a - 1;   # to be in [0..n^n-1] 
+  for i in [n, n-1..1] do  
+      q := QuotientRemainder(Integers,a,n); 
+      l[i] := q[2]+1; 
+      a := q[1]; 
+  od; 
+  return TransformationNC(l); 
+end); 
+
+#
+
+InstallMethod(LT, "for a transformation and cyclotomic", 
+[IsTransformation, IsCyclotomic], ReturnFalse);
+
+InstallMethod(LT, "for a cyclotomic and transformation", 
+[IsCyclotomic, IsTransformation], ReturnTrue);
+
+InstallMethod(LT, "for a finite field element and transformation", 
+[IsFFE, IsTransformation], ReturnFalse);
+
+InstallMethod(LT, "for a transformation and finite field element", 
+[IsTransformation, IsFFE], ReturnTrue);
+
+#
+
+InstallMethod(IsGeneratorsOfInverseSemigroup, 
+"for a transformation collection", 
+[IsTransformationCollection], IsGeneratorsOfMagmaWithInverses);
+
+#
+#
+
+InstallMethod(IsGeneratorsOfInverseSemigroup, 
+"for a transformation collection", 
+[IsTransformationCollection], IsGeneratorsOfMagmaWithInverses);
+
+#
+
+InstallMethod(IsGeneratorsOfMagmaWithInverses,
+ "for a transformation collection",
+[IsTransformationCollection],
+coll-> ForAll(coll, x-> RankOfTransformation(x)=DegreeOfTransformation(x)));
+
+#
 
 InstallMethod(TransformationList, "for a list", [IsList], Transformation);
 
@@ -60,70 +128,56 @@ InstallMethod(TrimTransformation, "for a transformation and pos int",
 InstallMethod(TrimTransformation, "for a transformation",
 [IsTransformation], 
 function(f)
-  TRIM_TRANS(f, NormalizedDegreeOfTransformation(f));
+  TRIM_TRANS(f, DegreeOfTransformation(f));
   return;
 end);
 
-##  This file contains the implementation for transformations
+#
 
 InstallMethod(OnKernelAntiAction, "for a list and transformation", 
-[IsList, IsTransformation], 
+[IsDenseList and IsHomogeneousList, IsTransformation], 
 function(ker, f)
   local m, i;
-
-  if Length(ker)<>DegreeOfTransformation(f) then 
-    Error("usage: the 1st arg should be a list with length ",
-    "equal to the degree of the transformation given as the 2nd arg,");
+  
+  if Length(ker)=0 or not IsPosInt(ker[1]) then 
+    Error("usage: the first argument <ker> must be a non-empty dense\n", 
+    "list of positive integers,");
   fi;
-    
+  
   m:=1;
   for i in ker do 
-
-    if not IsPosInt(i) or i>DegreeOfTransformation(f) then 
-      Error("usage: the 1st arg should be a list of positive integers ",
-     "less than or equal to the degree of the transformation given as ", 
-     "the 2nd arg,"); 
-      return;
-    fi;
     if i>m then 
       if m+1<>i then 
-        Error("usage: the 1st arg does not describe the flat kernel of ",
-        " a transformation,");
+        Error("usage: the first argument <ker> does not describe the\n",
+        " flat kernel of a transformation,");
       fi;
       m:=m+1;
     fi;
   od;
-  return ON_KERNEL_ANTI_ACTION(ker, f);
+  return ON_KERNEL_ANTI_ACTION(ker, f, 0);
 end);
 
-InstallMethod(NormalizedDegreeOfTransformation, "for a transformation",
-[IsTransformation], 
-function(f)
-  return Maximum(LargestMovedPoint(f), LargestImageOfMovedPoint(f));
-end);
-
-InstallMethod(NormalizedDegreeOfTransformationCollection, 
-"for a transformation collection",
-[IsTransformationCollection], 
-function(coll)
-  return Maximum(LargestMovedPoint(coll), LargestImageOfMovedPoint(coll));
-end);
+#
 
 InstallMethod(RankOfTransformation, "for a transformation",
 [IsTransformation], RANK_TRANS);
 
-#JDM c method?
-InstallMethod(RankOfTransformation, "for a transformation and pos int",
-[IsTransformation, IsPosInt], 
-function(f, n)
-  return Length(IMAGE_SET_TRANS_INT(f, n));
-end);
+#InstallMethod(CoRankOfTransformation, "for a transformation",
+#[IsTransformation], CORANK_TRANS);
 
-#JDM c method?
 InstallMethod(RankOfTransformation, "for a transformation and pos int",
-[IsTransformation, IsList], 
+[IsTransformation, IsPosInt], RANK_TRANS_INT);
+
+#InstallMethod(CoRankOfTransformation, "for a transformation",
+#[IsTransformation], CORANK_TRANS_INT);
+
+InstallMethod(RankOfTransformation, "for a transformation and dense list",
+[IsTransformation, IsDenseList], 
 function(f, list)
-  return Length(OnSets(list, f));
+  if IsEmpty(list) then 
+    return 0;
+  fi;
+  return RANK_TRANS_LIST(f, list);
 end);
 
 InstallMethod(LargestMovedPoint, "for a transformation", 
@@ -223,6 +277,9 @@ InstallMethod(IsIdempotent, "for a transformation",
 InstallMethod(AsPermutation, "for a transformation", 
 [IsTransformation], AS_PERM_TRANS); 
 
+InstallMethod(PermutationOfImage, "for a transformation",
+[IsTransformation], PERM_IMG_TRANS);
+
 InstallMethod(AsTransformation, "for a permutation",
 [IsPerm], AS_TRANS_PERM);
 
@@ -236,7 +293,7 @@ function(f, n)
 end);
 
 InstallMethod(AsTransformation, "for a transformation",
-[IsTransformation], t->t); 
+[IsTransformation], IdFunc); 
 
 InstallMethod(AsTransformation, "for a transformation and degree", 
 [IsTransformation, IsInt], 
@@ -262,38 +319,27 @@ end);
 
 #
 
-InstallMethod(DegreeOfTransformationCollection, "for a trans. coll.", 
+InstallMethod(DegreeOfTransformationCollection, 
+"for a transformation collection",
 [IsTransformationCollection], 
 function(coll)
-
-  if IsTransformationSemigroup(coll) then 
-    return DegreeOfTransformationSemigroup(coll);
-  fi;
   return MaximumList(List(coll, DegreeOfTransformation));
 end);
 
 #
 
 InstallMethod(FlatKernelOfTransformation, "for a transformation", 
-[IsTransformation], FLAT_KERNEL_TRANS);
+[IsTransformation], x-> FLAT_KERNEL_TRANS_INT(x, DegreeOfTransformation(x)));
 
 #
 
-InstallGlobalFunction(IdentityTransformation,
-function(arg)
-
-  if Length(arg)=0 then 
-    return ID_TRANS(0);
-  elif Length(arg)=1 and IsPosInt(arg[1]) then 
-    return ID_TRANS(arg[1]);
-  fi;
-  return fail;
-end);
+InstallMethod(FlatKernelOfTransformation, "for a transformation and pos int", 
+[IsTransformation, IsPosInt], FLAT_KERNEL_TRANS_INT);
 
 #
 
 InstallMethod(ImageSetOfTransformation, "for a transformation",
-[IsTransformation], IMAGE_SET_TRANS);
+[IsTransformation], x-> IMAGE_SET_TRANS_INT(x, DegreeOfTransformation(x)));
 
 #
 
@@ -313,6 +359,11 @@ InstallMethod(ImageListOfTransformation, "for a transformation",
 
 InstallMethod(IndexPeriodOfTransformation, "for a transformation",
 [IsTransformation], INDEX_PERIOD_TRANS);
+
+#
+
+InstallMethod(Order, "for a transformation",
+[IsTransformation], x-> Sum(INDEX_PERIOD_TRANS(x))-1);
 
 #
 
@@ -358,8 +409,7 @@ end);
 #
 
 InstallOtherMethod(OneMutable, "for a transformation coll",
-[IsTransformationCollection], coll->
- ID_TRANS(DegreeOfTransformationCollection(coll)));
+[IsTransformationCollection], coll-> IdentityTransformation);
 
 #
 
@@ -371,11 +421,12 @@ PERM_LEFT_QUO_TRANS_NC);
 #
 
 InstallMethod(PermLeftQuoTransformation, 
-"for a transformation and transformation",
-[IsTransformation, IsTransformation],
+"for a transformation and transformation", [IsTransformation, IsTransformation],
 function(f, g)
-  if FlatKernelOfTransformation(f)<>FlatKernelOfTransformation(g) or
-    ImageSetOfTransformation(f)<>ImageSetOfTransformation(g) then 
+  local n;
+  n:=Maximum(DegreeOfTransformation(f), DegreeOfTransformation(g));
+  if FlatKernelOfTransformation(f, n)<>FlatKernelOfTransformation(g, n) or
+    ImageSetOfTransformation(f, n)<>ImageSetOfTransformation(g, n) then 
     Error("usage: the arguments must have equal image set and kernel,");
     return;
   fi;
@@ -403,7 +454,7 @@ function(f)
   if IsOne(f) then 
     return "<identity transformation>";
   fi;
-  img:=ImageListOfTransformation(f, NormalizedDegreeOfTransformation(f));
+  img:=ImageListOfTransformation(f, DegreeOfTransformation(f));
   str:=ShallowCopy(STRINGIFY("[ ", img[1]));
   for i in [2..Length(img)] do
     Append(str, ", ");
@@ -422,10 +473,10 @@ function(f)
   local img, str, i;
 
   if IsOne(f) then 
-    return "IdentityTransformation()";
+    return "\>IdentityTransformation\<";
   fi;
   
-  img:=ImageListOfTransformation(f, NormalizedDegreeOfTransformation(f));
+  img:=ImageListOfTransformation(f, DegreeOfTransformation(f));
   str:=PRINT_STRINGIFY("[ ", img[1]);
   for i in [2..Length(img)] do 
     Append(str, ",\> ");
@@ -465,7 +516,7 @@ function(f)
       return str;
     fi;
   fi; 
-  deg:=NormalizedDegreeOfTransformation(f);
+  deg:=DegreeOfTransformation(f);
   return STRINGIFY("\><transformation on ", deg, " pts with rank ",
     RankOfTransformation(f, deg), ">\<"); 
 end);
@@ -474,7 +525,15 @@ end);
 
 InstallMethod(RandomTransformation, "for a pos. int.", [IsPosInt],
 function(n)
-  return Transformation( List( [ 1 .. n ], i-> Random( [ 1 .. n ] )));
+  local out, i;
+
+  out:=EmptyPlist(n);
+  n:=[1..n];
+
+  for i in n do 
+    out[i]:=Random(n);
+  od;
+  return TransformationNC(out);
 end);
 
 #

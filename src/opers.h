@@ -210,7 +210,7 @@ extern Obj TRY_NEXT_METHOD;
 **  <list>.
 **
 **  Note that 'BLOCK_ELM_FLAGS' is a macro, so do not call it  with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define BLOCK_ELM_FLAGS(list, pos)      (BLOCKS_FLAGS(list)[((pos)-1)/BIPEB])
 
@@ -223,7 +223,7 @@ extern Obj TRY_NEXT_METHOD;
 **  (pos-1) % BIPEB, useful for accessing the pos'th element of a FLAGS
 **
 **  Note that 'MASK_POS_FLAGS'  is a macro, so  do not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define MASK_POS_FLAGS(pos)             (((UInt) 1)<<((pos)-1)%BIPEB)
 
@@ -237,7 +237,7 @@ extern Obj TRY_NEXT_METHOD;
 **  or equal to the length of <hdList>.
 **
 **  Note that 'ELM_FLAGS' is a macro, so do not call it  with arguments  that
-**  have sideeffects.
+**  have side effects.
 */
 #define ELM_FLAGS(list,pos) \
   ((BLOCK_ELM_FLAGS(list,pos) & MASK_POS_FLAGS(pos)) ?  True : False)
@@ -252,7 +252,7 @@ extern Obj TRY_NEXT_METHOD;
 **  equal to the length of <hdList>.  <val> must be either 'true' or 'false'.
 **
 **  Note that  'SET_ELM_FLAGS' is  a macro, so do not  call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_ELM_FLAGS(list,pos,val)  \
  ((val) == True ? \

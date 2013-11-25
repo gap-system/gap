@@ -55,6 +55,16 @@ extern UInt IntrIgnoring;
 */
 extern UInt IntrCoding;
 
+/****************************************************************************
+**
+*V  IntrReturning  . . . . . . . interpreter is currently exiting statements
+**                                 enclosing a return;
+**
+**  If 'IntrReturning' is non-zero, the interpreter is currently exiting
+**  statements enclosing a return statement. Actions from these statements
+**  are ignored.
+*/
+extern UInt IntrReturning;
 
 /****************************************************************************
 **

@@ -72,35 +72,35 @@ Obj             SumFFEVecFFE (
     FFV                 valL;           /* the value of elmL               */
 
     /* get the field and check that elmL and vecR have the same field      */
-    fld = FLD_FFE( ELM_PLIST( vecR, 1 ) );
-    if( FLD_FFE( elmL ) != fld ) {
-      /* check the characteristic                                          */
-      if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( elmL ) ) )
-          return SumSclList( elmL, vecR );
+    fld = FLD_FFE(ELM_PLIST(vecR, 1));
+    if (FLD_FFE(elmL) != fld) {
+        /* check the characteristic                                          */
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmL)))
+            return SumSclList(elmL, vecR);
 
         elmL = ErrorReturnObj(
-         "<elm>+<vec>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
-        return SUM( elmL, vecR );
+            "<elm>+<vec>: <elm> and <vec> must belong to the same finite field",
+            0L, 0L, "you can replace <elm> via 'return <elm>;'");
+        return SUM(elmL, vecR);
     }
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecR );
-    vecS = NEW_PLIST( IS_MUTABLE_OBJ(vecR) ?
-		      T_PLIST_FFE :T_PLIST_FFE+IMMUTABLE, len );
-    SET_LEN_PLIST( vecS, len );
+    len = LEN_PLIST(vecR);
+    vecS = NEW_PLIST(IS_MUTABLE_OBJ(vecR) ?
+                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    SET_LEN_PLIST(vecS, len);
 
     /* to add we need the successor table                                  */
-    succ = SUCC_FF( fld );
+    succ = SUCC_FF(fld);
 
     /* loop over the elements and add                                      */
-    valL = VAL_FFE( elmL );
-    ptrR = ADDR_OBJ( vecR );
-    ptrS = ADDR_OBJ( vecS );
-    for ( i = 1; i <= len; i++ ) {
-        valR = VAL_FFE( ptrR[i] );
-        valS = SUM_FFV( valL, valR, succ );
-        ptrS[i] = NEW_FFE( fld, valS );
+    valL = VAL_FFE(elmL);
+    ptrR = ADDR_OBJ(vecR);
+    ptrS = ADDR_OBJ(vecS);
+    for (i = 1; i <= len; i++) {
+        valR = VAL_FFE(ptrR[i]);
+        valS = SUM_FFV(valL, valR, succ);
+        ptrS[i] = NEW_FFE(fld, valS);
     }
 
     /* return the result                                                   */
@@ -135,35 +135,35 @@ Obj             SumVecFFEFFE (
     FFV                 valS;           /* the value of a sum              */
 
     /* get the field and check that vecL and elmR have the same field      */
-    fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
-    if( FLD_FFE( elmR ) != fld ) {
-      /* check the characteristic                                          */
-      if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( elmR ) ) )
-          return SumListScl( vecL, elmR );
+    fld = FLD_FFE(ELM_PLIST(vecL, 1));
+    if (FLD_FFE(elmR) != fld) {
+        /* check the characteristic                                          */
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmR)))
+            return SumListScl(vecL, elmR);
 
         elmR = ErrorReturnObj(
-         "<vec>+<elm>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
-        return SUM( vecL, elmR );
+            "<vec>+<elm>: <elm> and <vec> must belong to the same finite field",
+            0L, 0L, "you can replace <elm> via 'return <elm>;'");
+        return SUM(vecL, elmR);
     }
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecL );
-    vecS = NEW_PLIST( IS_MUTABLE_OBJ(vecL) ?
-		      T_PLIST_FFE :T_PLIST_FFE+IMMUTABLE, len );
-    SET_LEN_PLIST( vecS, len );
+    len = LEN_PLIST(vecL);
+    vecS = NEW_PLIST(IS_MUTABLE_OBJ(vecL) ?
+                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    SET_LEN_PLIST(vecS, len);
 
     /* to add we need the successor table                                  */
-    succ = SUCC_FF( fld );
+    succ = SUCC_FF(fld);
 
     /* loop over the elements and add                                      */
-    valR = VAL_FFE( elmR );
-    ptrL = ADDR_OBJ( vecL );
-    ptrS = ADDR_OBJ( vecS );
-    for ( i = 1; i <= len; i++ ) {
-        valL = VAL_FFE( ptrL[i] );
-        valS = SUM_FFV( valL, valR, succ );
-        ptrS[i] = NEW_FFE( fld, valS );
+    valR = VAL_FFE(elmR);
+    ptrL = ADDR_OBJ(vecL);
+    ptrS = ADDR_OBJ(vecS);
+    for (i = 1; i <= len; i++) {
+        valL = VAL_FFE(ptrL[i]);
+        valS = SUM_FFV(valL, valR, succ);
+        ptrS[i] = NEW_FFE(fld, valS);
     }
 
     /* return the result                                                   */
@@ -192,63 +192,60 @@ Obj             SumVecFFEVecFFE (
     FFV                 valL;           /* one element of left operand     */
     Obj *               ptrR;           /* pointer into the right operand  */
     FFV                 valR;           /* one element of right operand    */
-    UInt                lenL,lenR,len;  /* length                          */
+    UInt                lenL, lenR, len; /* length                          */
     UInt                lenmin;
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
 
     /* check the lengths                                                   */
-    lenL = LEN_PLIST( vecL );
-    lenR = LEN_PLIST( vecR );
-    if (lenR > lenL)
-      {
-	len = lenR;
-	lenmin = lenL;
-      }
-    else
-      {
-	len = lenL;
-	lenmin = lenR;
-      }
-      
+    lenL = LEN_PLIST(vecL);
+    lenR = LEN_PLIST(vecR);
+    if (lenR > lenL) {
+        len = lenR;
+        lenmin = lenL;
+    } else {
+        len = lenL;
+        lenmin = lenR;
+    }
+
     /* check the fields                                                    */
-    fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
-    if( FLD_FFE( ELM_PLIST( vecR, 1 ) ) != fld ) {
+    fld = FLD_FFE(ELM_PLIST(vecL, 1));
+    if (FLD_FFE(ELM_PLIST(vecR, 1)) != fld) {
         /* check the characteristic                                        */
-        if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( ELM_PLIST( vecR, 1 ) ) ) )
-            return SumListList( vecL, vecR );
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
+            return SumListList(vecL, vecR);
 
         vecR = ErrorReturnObj(
-             "Vector +: vectors have different fields",
-              0L, 0L, "you can replace vector <right> via 'return <right>;'" );
-        return SUM( vecL, vecR );
+            "Vector +: vectors have different fields",
+            0L, 0L, "you can replace vector <right> via 'return <right>;'");
+        return SUM(vecL, vecR);
     }
 
     /* make the result list                                                */
-    vecS = NEW_PLIST( (IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR)) ?
-		      T_PLIST_FFE : T_PLIST_FFE+IMMUTABLE, len );
-    SET_LEN_PLIST( vecS, len );
+    vecS = NEW_PLIST((IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR)) ?
+                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    SET_LEN_PLIST(vecS, len);
 
     /* to add we need the successor table                                  */
-    succ = SUCC_FF( fld );
+    succ = SUCC_FF(fld);
 
     /* loop over the elements and add                                      */
-    ptrL = ADDR_OBJ( vecL );
-    ptrR = ADDR_OBJ( vecR );
-    ptrS = ADDR_OBJ( vecS );
-    for ( i = 1; i <= lenmin; i++ ) {
-        valL = VAL_FFE( ptrL[i] );
-        valR = VAL_FFE( ptrR[i] );
-        valS = SUM_FFV( valL, valR, succ );
-        ptrS[i] = NEW_FFE( fld, valS );
+    ptrL = ADDR_OBJ(vecL);
+    ptrR = ADDR_OBJ(vecR);
+    ptrS = ADDR_OBJ(vecS);
+    for (i = 1; i <= lenmin; i++) {
+        valL = VAL_FFE(ptrL[i]);
+        valR = VAL_FFE(ptrR[i]);
+        valS = SUM_FFV(valL, valR, succ);
+        ptrS[i] = NEW_FFE(fld, valS);
     }
     if (lenL < lenR)
-      for (;i <= len; i++)
-	ptrS[i] = ptrR[i];
+        for (; i <= len; i++)
+            ptrS[i] = ptrR[i];
     else
-      for (; i <= len; i++)
-	ptrS[i] = ptrL[i];
+        for (; i <= len; i++)
+            ptrS[i] = ptrL[i];
 
     /* return the result                                                   */
     return vecS;
@@ -282,36 +279,36 @@ Obj             DiffFFEVecFFE (
     FFV                 valD;           /* the value of a difference       */
 
     /* check the fields                                                    */
-    fld = FLD_FFE( ELM_PLIST( vecR, 1 ) );
-    if( FLD_FFE( elmL ) != fld ) {
+    fld = FLD_FFE(ELM_PLIST(vecR, 1));
+    if (FLD_FFE(elmL) != fld) {
         /* check the characteristic                                        */
-        if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( elmL ) ) )
-            return DiffSclList( elmL, vecR );
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmL)))
+            return DiffSclList(elmL, vecR);
 
         elmL = ErrorReturnObj(
-         "<elm>-<vec>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
-        return DIFF( elmL, vecR );
+            "<elm>-<vec>: <elm> and <vec> must belong to the same finite field",
+            0L, 0L, "you can replace <elm> via 'return <elm>;'");
+        return DIFF(elmL, vecR);
     }
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecR );
-    vecD = NEW_PLIST( IS_MUTABLE_OBJ(vecR) ?
-		      T_PLIST_FFE :T_PLIST_FFE+IMMUTABLE, len );
-    SET_LEN_PLIST( vecD, len );
+    len = LEN_PLIST(vecR);
+    vecD = NEW_PLIST(IS_MUTABLE_OBJ(vecR) ?
+                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    SET_LEN_PLIST(vecD, len);
 
     /* to subtract we need the successor table                             */
-    succ = SUCC_FF( fld );
+    succ = SUCC_FF(fld);
 
     /* loop over the elements and subtract                                 */
-    valL = VAL_FFE( elmL );
-    ptrR = ADDR_OBJ( vecR );
-    ptrD = ADDR_OBJ( vecD );
-    for ( i = 1; i <= len; i++ ) {
-        valR = VAL_FFE( ptrR[i] );
-        valR = NEG_FFV( valR, succ );
-        valD = SUM_FFV( valL, valR, succ );
-        ptrD[i] = NEW_FFE( fld, valD );
+    valL = VAL_FFE(elmL);
+    ptrR = ADDR_OBJ(vecR);
+    ptrD = ADDR_OBJ(vecD);
+    for (i = 1; i <= len; i++) {
+        valR = VAL_FFE(ptrR[i]);
+        valR = NEG_FFV(valR, succ);
+        valD = SUM_FFV(valL, valR, succ);
+        ptrD[i] = NEW_FFE(fld, valD);
     }
     /* return the result                                                   */
     return vecD;
@@ -346,36 +343,36 @@ Obj             DiffVecFFEFFE (
     FFV                 valR;           /* the value of elmR               */
 
     /* get the field and check that vecL and elmR have the same field      */
-    fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
-    if( FLD_FFE( elmR ) != fld ) {
+    fld = FLD_FFE(ELM_PLIST(vecL, 1));
+    if (FLD_FFE(elmR) != fld) {
         /* check the characteristic                                        */
-        if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( elmR ) ) )
-            return DiffListScl( vecL, elmR );
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmR)))
+            return DiffListScl(vecL, elmR);
 
         elmR = ErrorReturnObj(
-         "<vec>-<elm>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
-        return DIFF( vecL, elmR );
+            "<vec>-<elm>: <elm> and <vec> must belong to the same finite field",
+            0L, 0L, "you can replace <elm> via 'return <elm>;'");
+        return DIFF(vecL, elmR);
     }
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecL );
-    vecD = NEW_PLIST( IS_MUTABLE_OBJ(vecL) ?
-		      T_PLIST_FFE :T_PLIST_FFE+IMMUTABLE, len );
-    SET_LEN_PLIST( vecD, len );
+    len = LEN_PLIST(vecL);
+    vecD = NEW_PLIST(IS_MUTABLE_OBJ(vecL) ?
+                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    SET_LEN_PLIST(vecD, len);
 
     /* to subtract we need the successor table                             */
-    succ = SUCC_FF( fld );
+    succ = SUCC_FF(fld);
 
     /* loop over the elements and subtract                                 */
-    valR = VAL_FFE( elmR );
-    valR = NEG_FFV( valR, succ );
-    ptrL = ADDR_OBJ( vecL );
-    ptrD = ADDR_OBJ( vecD );
-    for ( i = 1; i <= len; i++ ) {
-        valL = VAL_FFE( ptrL[i] );
-        valD = SUM_FFV( valL, valR, succ );
-        ptrD[i] = NEW_FFE( fld, valD );
+    valR = VAL_FFE(elmR);
+    valR = NEG_FFV(valR, succ);
+    ptrL = ADDR_OBJ(vecL);
+    ptrD = ADDR_OBJ(vecD);
+    for (i = 1; i <= len; i++) {
+        valL = VAL_FFE(ptrL[i]);
+        valD = SUM_FFV(valL, valR, succ);
+        ptrD[i] = NEW_FFE(fld, valD);
     }
 
     /* return the result                                                   */
@@ -405,69 +402,65 @@ Obj             DiffVecFFEVecFFE (
     FFV                 valL;           /* one element of left operand     */
     Obj *               ptrR;           /* pointer into the right operand  */
     FFV                 valR;           /* one element of right operand    */
-    UInt                len,lenL,lenR;  /* length                          */
-    UInt                lenmin;         
+    UInt                len, lenL, lenR; /* length                          */
+    UInt                lenmin;
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
 
     /* check the lengths                                                   */
-    lenL = LEN_PLIST( vecL );
-    lenR = LEN_PLIST( vecR );
-    if (lenR > lenL)
-      {
-	len = lenR;
-	lenmin = lenL;
-      }
-    else
-      {
-	len = lenL;
-	lenmin = lenR;
-      }
+    lenL = LEN_PLIST(vecL);
+    lenR = LEN_PLIST(vecR);
+    if (lenR > lenL) {
+        len = lenR;
+        lenmin = lenL;
+    } else {
+        len = lenL;
+        lenmin = lenR;
+    }
 
     /* check the fields                                                    */
-    fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
-    if( FLD_FFE( ELM_PLIST( vecR, 1 ) ) != fld ) {
+    fld = FLD_FFE(ELM_PLIST(vecL, 1));
+    if (FLD_FFE(ELM_PLIST(vecR, 1)) != fld) {
         /* check the characteristic                                        */
-        if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( ELM_PLIST( vecR, 1 ) ) ) )
-            return DiffListList( vecL, vecR );
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
+            return DiffListList(vecL, vecR);
 
         vecR = ErrorReturnObj(
-             "Vector -: vectors have different fields",
-              0L, 0L, "you can replace vector <right> via 'return <right>;'" );
-        return DIFF( vecL, vecR );
+            "Vector -: vectors have different fields",
+            0L, 0L, "you can replace vector <right> via 'return <right>;'");
+        return DIFF(vecL, vecR);
     }
 
     /* make the result list                                                */
-    vecD = NEW_PLIST( (IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR)) ?
-		      T_PLIST_FFE : T_PLIST_FFE+IMMUTABLE, len );
-    SET_LEN_PLIST( vecD, len );
+    vecD = NEW_PLIST((IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR)) ?
+                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    SET_LEN_PLIST(vecD, len);
 
     /* to subtract we need the successor table                             */
-    succ = SUCC_FF( fld );
+    succ = SUCC_FF(fld);
 
     /* loop over the elements and subtract                                 */
-    ptrL = ADDR_OBJ( vecL );
-    ptrR = ADDR_OBJ( vecR );
-    ptrD = ADDR_OBJ( vecD );
-    for ( i = 1; i <= lenmin; i++ ) {
-        valL = VAL_FFE( ptrL[i] );
-        valR = VAL_FFE( ptrR[i] );
-        valR = NEG_FFV( valR, succ );
-        valD = SUM_FFV( valL, valR, succ );
-        ptrD[i] = NEW_FFE( fld, valD );
+    ptrL = ADDR_OBJ(vecL);
+    ptrR = ADDR_OBJ(vecR);
+    ptrD = ADDR_OBJ(vecD);
+    for (i = 1; i <= lenmin; i++) {
+        valL = VAL_FFE(ptrL[i]);
+        valR = VAL_FFE(ptrR[i]);
+        valR = NEG_FFV(valR, succ);
+        valD = SUM_FFV(valL, valR, succ);
+        ptrD[i] = NEW_FFE(fld, valD);
     }
 
     if (lenL < lenR)
-      for (;i <= len; i++)
-	{
-	  valR = VAL_FFE( ptrR[i] );
-	  valD = NEG_FFV( valR, succ );
-	  ptrD[i] = NEW_FFE( fld, valD );
-	}
+        for (; i <= len; i++) {
+            valR = VAL_FFE(ptrR[i]);
+            valD = NEG_FFV(valR, succ);
+            ptrD[i] = NEW_FFE(fld, valD);
+        }
     else
-      for (; i <= len; i++)
-	ptrD[i] = ptrL[i];
+        for (; i <= len; i++)
+            ptrD[i] = ptrL[i];
 
     /* return the result                                                   */
     return vecD;
@@ -501,35 +494,35 @@ Obj             ProdFFEVecFFE (
     FFV                 valL;           /* the value of elmL               */
 
     /* get the field and check that elmL and vecR have the same field      */
-    fld = FLD_FFE( ELM_PLIST( vecR, 1 ) );
-    if( FLD_FFE( elmL ) != fld ) {
+    fld = FLD_FFE(ELM_PLIST(vecR, 1));
+    if (FLD_FFE(elmL) != fld) {
         /* check the characteristic                                        */
-        if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( elmL ) ) )
-            return ProdSclList( elmL, vecR );
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmL)))
+            return ProdSclList(elmL, vecR);
 
         elmL = ErrorReturnObj(
-         "<elm>*<vec>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
-        return PROD( elmL, vecR );
+            "<elm>*<vec>: <elm> and <vec> must belong to the same finite field",
+            0L, 0L, "you can replace <elm> via 'return <elm>;'");
+        return PROD(elmL, vecR);
     }
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecR );
-    vecP = NEW_PLIST( IS_MUTABLE_OBJ(vecR) ?
-		      T_PLIST_FFE :T_PLIST_FFE+IMMUTABLE, len );
-    SET_LEN_PLIST( vecP, len );
+    len = LEN_PLIST(vecR);
+    vecP = NEW_PLIST(IS_MUTABLE_OBJ(vecR) ?
+                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    SET_LEN_PLIST(vecP, len);
 
     /* to multiply we need the successor table                             */
-    succ = SUCC_FF( fld );
+    succ = SUCC_FF(fld);
 
     /* loop over the elements and multiply                                 */
-    valL = VAL_FFE( elmL );
-    ptrR = ADDR_OBJ( vecR );
-    ptrP = ADDR_OBJ( vecP );
-    for ( i = 1; i <= len; i++ ) {
-        valR = VAL_FFE( ptrR[i] );
-        valP = PROD_FFV( valL, valR, succ );
-        ptrP[i] = NEW_FFE( fld, valP );
+    valL = VAL_FFE(elmL);
+    ptrR = ADDR_OBJ(vecR);
+    ptrP = ADDR_OBJ(vecP);
+    for (i = 1; i <= len; i++) {
+        valR = VAL_FFE(ptrR[i]);
+        valP = PROD_FFV(valL, valR, succ);
+        ptrP[i] = NEW_FFE(fld, valP);
     }
 
     /* return the result                                                   */
@@ -563,35 +556,35 @@ Obj             ProdVecFFEFFE (
     FFV                 valR;           /* the value of elmR               */
 
     /* get the field and check that vecL and elmR have the same field      */
-    fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
-    if( FLD_FFE( elmR ) != fld ) {
+    fld = FLD_FFE(ELM_PLIST(vecL, 1));
+    if (FLD_FFE(elmR) != fld) {
         /* check the characteristic                                        */
-        if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( elmR ) ) )
-            return ProdListScl( vecL, elmR );
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmR)))
+            return ProdListScl(vecL, elmR);
 
         elmR = ErrorReturnObj(
-         "<vec>*<elm>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
-        return PROD( vecL, elmR );
+            "<vec>*<elm>: <elm> and <vec> must belong to the same finite field",
+            0L, 0L, "you can replace <elm> via 'return <elm>;'");
+        return PROD(vecL, elmR);
     }
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecL );
-    vecP = NEW_PLIST( IS_MUTABLE_OBJ(vecL) ?
-		      T_PLIST_FFE :T_PLIST_FFE+IMMUTABLE, len );
-    SET_LEN_PLIST( vecP, len );
+    len = LEN_PLIST(vecL);
+    vecP = NEW_PLIST(IS_MUTABLE_OBJ(vecL) ?
+                    T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    SET_LEN_PLIST(vecP, len);
 
     /* to multiply we need the successor table                             */
-    succ = SUCC_FF( fld );
+    succ = SUCC_FF(fld);
 
     /* loop over the elements and multiply                                 */
-    valR = VAL_FFE( elmR );
-    ptrL = ADDR_OBJ( vecL );
-    ptrP = ADDR_OBJ( vecP );
-    for ( i = 1; i <= len; i++ ) {
-        valL = VAL_FFE( ptrL[i] );
-        valP = PROD_FFV( valL, valR, succ );
-        ptrP[i] = NEW_FFE( fld, valP );
+    valR = VAL_FFE(elmR);
+    ptrL = ADDR_OBJ(vecL);
+    ptrP = ADDR_OBJ(vecP);
+    for (i = 1; i <= len; i++) {
+        valL = VAL_FFE(ptrL[i]);
+        valP = PROD_FFV(valL, valR, succ);
+        ptrP[i] = NEW_FFE(fld, valP);
     }
 
     /* return the result                                                   */
@@ -620,46 +613,46 @@ Obj             ProdVecFFEVecFFE (
     FFV                 valL;           /* one element of left operand     */
     Obj *               ptrR;           /* pointer into the right operand  */
     FFV                 valR;           /* one element of right operand    */
-    UInt                lenL,lenR,len; /* length                          */
+    UInt                lenL, lenR, len; /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
 
     /* check the lengths                                                   */
-    lenL = LEN_PLIST( vecL );
-    lenR = LEN_PLIST( vecR );
+    lenL = LEN_PLIST(vecL);
+    lenR = LEN_PLIST(vecR);
     len = (lenL < lenR) ? lenL : lenR;
 
     /* check the fields                                                    */
-    fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
-    if( FLD_FFE( ELM_PLIST( vecR, 1 ) ) != fld ) {
+    fld = FLD_FFE(ELM_PLIST(vecL, 1));
+    if (FLD_FFE(ELM_PLIST(vecR, 1)) != fld) {
         /* check the characteristic                                        */
-        if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( ELM_PLIST( vecR, 1 ) ) ) )
-            return ProdListList( vecL, vecR );
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
+            return ProdListList(vecL, vecR);
 
         vecR = ErrorReturnObj(
-             "Vector *: vectors have different fields",
-              0L, 0L, 
-              "you can replace vector <right> via 'return <right>;'" );
-        return PROD( vecL, vecR );
+            "Vector *: vectors have different fields",
+            0L, 0L,
+            "you can replace vector <right> via 'return <right>;'");
+        return PROD(vecL, vecR);
     }
 
     /* to add we need the successor table                                  */
-    succ = SUCC_FF( fld );
+    succ = SUCC_FF(fld);
 
     /* loop over the elements and add                                      */
     valS = (FFV)0;
-    ptrL = ADDR_OBJ( vecL );
-    ptrR = ADDR_OBJ( vecR );
-    for ( i = 1; i <= len; i++ ) {
-        valL = VAL_FFE( ptrL[i] );
-        valR = VAL_FFE( ptrR[i] );
-        valP = PROD_FFV( valL, valR, succ );
-        valS = SUM_FFV( valS, valP, succ );
+    ptrL = ADDR_OBJ(vecL);
+    ptrR = ADDR_OBJ(vecR);
+    for (i = 1; i <= len; i++) {
+        valL = VAL_FFE(ptrL[i]);
+        valR = VAL_FFE(ptrR[i]);
+        valP = PROD_FFV(valL, valR, succ);
+        valS = SUM_FFV(valS, valP, succ);
     }
 
     /* return the result                                                   */
-    return NEW_FFE( fld, valS );
+    return NEW_FFE(fld, valS);
 }
 
 /****************************************************************************
@@ -672,105 +665,101 @@ static Obj AddRowVectorOp;   /* BH changed to static */
 
 Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
 {
-  Obj *ptrL;
-  Obj *ptrR;
-  FFV  valM;
-  FFV  valS;
-  FFV  valL;
-  FFV  valR;
-  FF  fld;
-  FFV *succ;
-  UInt len;
-  UInt xtype;
-  UInt i;
+    Obj *ptrL;
+    Obj *ptrR;
+    FFV  valM;
+    FFV  valS;
+    FFV  valL;
+    FFV  valR;
+    FF  fld;
+    FFV *succ;
+    UInt len;
+    UInt xtype;
+    UInt i;
 
-  if (TNUM_OBJ(mult) != T_FFE)
-    return TRY_NEXT_METHOD;
+    if (TNUM_OBJ(mult) != T_FFE)
+        return TRY_NEXT_METHOD;
 
-   if (VAL_FFE(mult) == 0)
-     return (Obj) 0;
+    if (VAL_FFE(mult) == 0)
+        return (Obj) 0;
 
-   xtype = KTNumPlist(vecL, (Obj *) 0);
-   if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE+IMMUTABLE)
-     return TRY_NEXT_METHOD;
+    xtype = KTNumPlist(vecL, (Obj *) 0);
+    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE + IMMUTABLE)
+        return TRY_NEXT_METHOD;
 
-   xtype = KTNumPlist(vecR, (Obj *) 0);
-   if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE+IMMUTABLE)
-     return TRY_NEXT_METHOD;
+    xtype = KTNumPlist(vecR, (Obj *) 0);
+    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE + IMMUTABLE)
+        return TRY_NEXT_METHOD;
 
-   
-  /* check the lengths                                                   */
-  len = LEN_PLIST( vecL );
-  if ( len != LEN_PLIST( vecR ) ) {
-    vecR = ErrorReturnObj(
-			  "AddRowVector: vector lengths differ <left> %d,  <right> %d",
-			  (Int)len, (Int)LEN_PLIST( vecR ), 
-			  "you can replace vector <right> via 'return <right>;'" );
-    return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
-  }
 
-  /* check the fields                                                    */
-  fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
-  if( FLD_FFE( ELM_PLIST( vecR, 1 ) ) != fld ) {
-    /* check the characteristic                                        */
-    if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( ELM_PLIST( vecR, 1 ) ) ) )
-      return TRY_NEXT_METHOD;
-    
-    vecR = ErrorReturnObj(
-			  "AddRowVector: vectors have different fields",
-			  0L, 0L, 
-                          "you can replace vector <right> via 'return <right>;'" );
-    return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
-  }
+    /* check the lengths                                                   */
+    len = LEN_PLIST(vecL);
+    if (len != LEN_PLIST(vecR)) {
+        vecR = ErrorReturnObj(
+            "AddRowVector: vector lengths differ <left> %d,  <right> %d",
+            (Int)len, (Int)LEN_PLIST(vecR),
+            "you can replace vector <right> via 'return <right>;'");
+        return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
+    }
 
-  /* Now check the multiplier field */
-  if( FLD_FFE( mult ) != fld ) {
-    /* check the characteristic                                        */
-    if( CHAR_FF( fld ) != CHAR_FF( FLD_FFE( mult ) ) )
-      {
-	mult = ErrorReturnObj(
-			      "AddRowVector: <multiplier> has different field",
-			      0L, 0L, 
-                              "you can replace <multiplier> via 'return <multiplier>;'" );
-	return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
-      }
+    /* check the fields                                                    */
+    fld = FLD_FFE(ELM_PLIST(vecL, 1));
+    if (FLD_FFE(ELM_PLIST(vecR, 1)) != fld) {
+        /* check the characteristic                                        */
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
+            return TRY_NEXT_METHOD;
 
-    /* if the multiplier is over a non subfield then redispatch */
-    if ((DEGR_FF(fld) % DegreeFFE(mult)) != 0)
-      return TRY_NEXT_METHOD;
+        vecR = ErrorReturnObj(
+            "AddRowVector: vectors have different fields",
+            0L, 0L,
+            "you can replace vector <right> via 'return <right>;'");
+        return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
+    }
 
-    /* otherwise it's a subfield, so promote it */
-    valM = VAL_FFE(mult);
-    if (valM != 0)
-      valM = 1 + (valM-1)*(SIZE_FF(fld)-1)/(SIZE_FF(FLD_FFE(mult))-1);
-  }
-  else
-    valM = VAL_FFE(mult);
+    /* Now check the multiplier field */
+    if (FLD_FFE(mult) != fld) {
+        /* check the characteristic                                        */
+        if (CHAR_FF(fld) != CHAR_FF(FLD_FFE(mult))) {
+            mult = ErrorReturnObj(
+                "AddRowVector: <multiplier> has different field",
+                0L, 0L,
+                "you can replace <multiplier> via 'return <multiplier>;'");
+            return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
+        }
 
-  
-  succ = SUCC_FF(fld);
-  ptrL = ADDR_OBJ(vecL);
-  ptrR = ADDR_OBJ(vecR);
+        /* if the multiplier is over a non subfield then redispatch */
+        if ((DEGR_FF(fld) % DegreeFFE(mult)) != 0)
+            return TRY_NEXT_METHOD;
 
-  /* two versions of the loop to avoid multipling by 1 */
-  if (valM == 1)
-    for (i = 1; i <= len; i++)
-      {
-	valL = VAL_FFE(ptrL[i]);
-	valR = VAL_FFE(ptrR[i]);
-	valS = SUM_FFV(valL, valR, succ);
-	ptrL[i] = NEW_FFE(fld,valS);
-      }
-  else
-    for (i = 1; i <= len; i++)
-      {
-	valL = VAL_FFE(ptrL[i]);
-	valR = VAL_FFE(ptrR[i]);
-	valS = PROD_FFV(valR, valM, succ);
-	valS = SUM_FFV(valL, valS, succ);
-	ptrL[i] = NEW_FFE(fld,valS);
-      }
-  return (Obj) 0;
+        /* otherwise it's a subfield, so promote it */
+        valM = VAL_FFE(mult);
+        if (valM != 0)
+            valM = 1 + (valM - 1) * (SIZE_FF(fld) - 1) / (SIZE_FF(FLD_FFE(mult)) - 1);
+    } else
+        valM = VAL_FFE(mult);
+
+
+    succ = SUCC_FF(fld);
+    ptrL = ADDR_OBJ(vecL);
+    ptrR = ADDR_OBJ(vecR);
+
+    /* two versions of the loop to avoid multipling by 1 */
+    if (valM == 1)
+        for (i = 1; i <= len; i++) {
+            valL = VAL_FFE(ptrL[i]);
+            valR = VAL_FFE(ptrR[i]);
+            valS = SUM_FFV(valL, valR, succ);
+            ptrL[i] = NEW_FFE(fld, valS);
+        }
+    else
+        for (i = 1; i <= len; i++) {
+            valL = VAL_FFE(ptrL[i]);
+            valR = VAL_FFE(ptrR[i]);
+            valS = PROD_FFV(valR, valM, succ);
+            valS = SUM_FFV(valL, valS, succ);
+            ptrL[i] = NEW_FFE(fld, valS);
+        }
+    return (Obj) 0;
 }
 /****************************************************************************
 **
@@ -782,77 +771,71 @@ static Obj MultRowVectorOp;   /* BH changed to static */
 
 Obj FuncMultRowVectorVecFFEs( Obj self, Obj vec, Obj mult )
 {
-  Obj *ptr;
-  FFV  valM;
-  FFV  valS;
-  FFV  val;
-  FF  fld;
-  FFV *succ;
-  UInt len;
-  UInt xtype;
-  UInt i;
+    Obj *ptr;
+    FFV  valM;
+    FFV  valS;
+    FFV  val;
+    FF  fld;
+    FFV *succ;
+    UInt len;
+    UInt xtype;
+    UInt i;
 
-  if (TNUM_OBJ(mult) != T_FFE)
-    return TRY_NEXT_METHOD;
+    if (TNUM_OBJ(mult) != T_FFE)
+        return TRY_NEXT_METHOD;
 
-   if (VAL_FFE(mult) == 1)
-     return (Obj) 0;
+    if (VAL_FFE(mult) == 1)
+        return (Obj) 0;
 
-   xtype = KTNumPlist(vec, (Obj *) 0);
-   if (xtype != T_PLIST_FFE &&
-       xtype != T_PLIST_FFE+IMMUTABLE)
-     return TRY_NEXT_METHOD;
-   
-  /* check the lengths                                                   */
-  len = LEN_PLIST( vec );
+    xtype = KTNumPlist(vec, (Obj *) 0);
+    if (xtype != T_PLIST_FFE &&
+    xtype != T_PLIST_FFE + IMMUTABLE)
+        return TRY_NEXT_METHOD;
 
-  fld = FLD_FFE( ELM_PLIST(vec,1));
-  /* Now check the multiplier field */
-  if( FLD_FFE( mult ) != fld ) {
-    /* check the characteristic                                        */
-    if( CHAR_FF( fld ) != CHAR_FF( FLD_FFE( mult ) ) )
-      {
-	mult = ErrorReturnObj(
-			      "MultRowVector: <multiplier> has different field",
-			      0L, 0L, 
-                              "you can replace <multiplier> via 'return <multiplier>;'" );
-	return CALL_2ARGS(MultRowVectorOp, vec, mult);
-      }
+    /* check the lengths                                                   */
+    len = LEN_PLIST(vec);
 
-    /* if the multiplier is over a non subfield then redispatch */
-    if ((DEGR_FF(fld) % DegreeFFE(mult)) != 0)
-      return TRY_NEXT_METHOD;
+    fld = FLD_FFE(ELM_PLIST(vec, 1));
+    /* Now check the multiplier field */
+    if (FLD_FFE(mult) != fld) {
+        /* check the characteristic                                        */
+        if (CHAR_FF(fld) != CHAR_FF(FLD_FFE(mult))) {
+            mult = ErrorReturnObj(
+                "MultRowVector: <multiplier> has different field",
+                0L, 0L,
+                "you can replace <multiplier> via 'return <multiplier>;'");
+            return CALL_2ARGS(MultRowVectorOp, vec, mult);
+        }
 
-    /* otherwise it's a subfield, so promote it */
-    valM = VAL_FFE(mult);
-    if (valM != 0)
-      valM = 1 + (valM-1)*(SIZE_FF(fld)-1)/(SIZE_FF(FLD_FFE(mult))-1);
-  }
-  else
-    valM = VAL_FFE(mult);
+        /* if the multiplier is over a non subfield then redispatch */
+        if ((DEGR_FF(fld) % DegreeFFE(mult)) != 0)
+            return TRY_NEXT_METHOD;
 
-  
-  succ = SUCC_FF(fld);
-  ptr = ADDR_OBJ(vec);
+        /* otherwise it's a subfield, so promote it */
+        valM = VAL_FFE(mult);
+        if (valM != 0)
+            valM = 1 + (valM - 1) * (SIZE_FF(fld) - 1) / (SIZE_FF(FLD_FFE(mult)) - 1);
+    } else
+        valM = VAL_FFE(mult);
 
-  /* two versions of the loop to avoid multipling by 0 */
-  if (valM == 0)
-    {
-      Obj z;
-      z = NEW_FFE(fld,0);
-      for (i = 1; i <= len; i++)
-	{
-	  ptr[i] = z;
-	}
-    }
-  else
-    for (i = 1; i <= len; i++)
-      {
-	val = VAL_FFE(ptr[i]);
-	valS = PROD_FFV(val, valM, succ);
-	ptr[i] = NEW_FFE(fld,valS);
-      }
-  return (Obj) 0;
+
+    succ = SUCC_FF(fld);
+    ptr = ADDR_OBJ(vec);
+
+    /* two versions of the loop to avoid multipling by 0 */
+    if (valM == 0) {
+        Obj z;
+        z = NEW_FFE(fld, 0);
+        for (i = 1; i <= len; i++) {
+            ptr[i] = z;
+        }
+    } else
+        for (i = 1; i <= len; i++) {
+            val = VAL_FFE(ptr[i]);
+            valS = PROD_FFV(val, valM, succ);
+            ptr[i] = NEW_FFE(fld, valS);
+        }
+    return (Obj) 0;
 }
 
 /****************************************************************************
@@ -860,67 +843,62 @@ Obj FuncMultRowVectorVecFFEs( Obj self, Obj vec, Obj mult )
 *F  FuncAddRowVectorVecFFEs( <self>, <vecL>, <vecR> )
 **
 */
-
-
 Obj FuncAddRowVectorVecFFEs( Obj self, Obj vecL, Obj vecR )
 {
-  Obj *ptrL;
-  Obj *ptrR;
-  FFV  valS;
-  FFV  valL;
-  FFV  valR;
-  FF  fld;
-  FFV *succ;
-  UInt len;
-  UInt xtype;
-  UInt i;
+    Obj *ptrL;
+    Obj *ptrR;
+    FFV  valS;
+    FFV  valL;
+    FFV  valR;
+    FF  fld;
+    FFV *succ;
+    UInt len;
+    UInt xtype;
+    UInt i;
 
-  xtype = KTNumPlist(vecL, (Obj *) 0);
-   if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE+IMMUTABLE)
-     return TRY_NEXT_METHOD;
+    xtype = KTNumPlist(vecL, (Obj *) 0);
+    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE + IMMUTABLE)
+        return TRY_NEXT_METHOD;
 
-   xtype = KTNumPlist(vecR, (Obj *) 0);
-   if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE+IMMUTABLE)
-     return TRY_NEXT_METHOD;
+    xtype = KTNumPlist(vecR, (Obj *) 0);
+    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE + IMMUTABLE)
+        return TRY_NEXT_METHOD;
 
-  /* check the lengths                                                   */
-  len = LEN_PLIST( vecL );
-  if ( len != LEN_PLIST( vecR ) ) {
-    vecR = ErrorReturnObj(
-			  "Vector *: vector lengths differ <left> %d,  <right> %d",
-			  (Int)len, (Int)LEN_PLIST( vecR ), 
-			  "you can replace vector <right> via 'return <right>;'" );
-    return CALL_2ARGS(AddRowVectorOp, vecL, vecR);
-  }
-
-  /* check the fields                                                    */
-  fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
-  if( FLD_FFE( ELM_PLIST( vecR, 1 ) ) != fld ) {
-    /* check the characteristic                                        */
-    if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( ELM_PLIST( vecR, 1 ) ) ) )
-      return TRY_NEXT_METHOD;
-    
-    vecR = ErrorReturnObj(
-			  "AddRowVector: vectors have different fields",
-			  0L, 0L, 
-                          "you can replace vector <right> via 'return <right>;'" );
-    return CALL_2ARGS(AddRowVectorOp, vecL, vecR);
-  }
-
-
-  
-  succ = SUCC_FF(fld);
-  ptrL = ADDR_OBJ(vecL);
-  ptrR = ADDR_OBJ(vecR);
-
-  for (i = 1; i <= len; i++)
-    {
-      valL = VAL_FFE(ptrL[i]);
-      valR = VAL_FFE(ptrR[i]);
-      valS = SUM_FFV(valL, valR, succ);
-      ptrL[i] = NEW_FFE(fld,valS);
+    /* check the lengths                                                   */
+    len = LEN_PLIST(vecL);
+    if (len != LEN_PLIST(vecR)) {
+        vecR = ErrorReturnObj(
+            "Vector *: vector lengths differ <left> %d,  <right> %d",
+            (Int)len, (Int)LEN_PLIST(vecR),
+            "you can replace vector <right> via 'return <right>;'");
+        return CALL_2ARGS(AddRowVectorOp, vecL, vecR);
     }
-  return (Obj) 0;
+
+    /* check the fields                                                    */
+    fld = FLD_FFE(ELM_PLIST(vecL, 1));
+    if (FLD_FFE(ELM_PLIST(vecR, 1)) != fld) {
+        /* check the characteristic                                        */
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
+            return TRY_NEXT_METHOD;
+
+        vecR = ErrorReturnObj(
+            "AddRowVector: vectors have different fields",
+            0L, 0L,
+            "you can replace vector <right> via 'return <right>;'");
+        return CALL_2ARGS(AddRowVectorOp, vecL, vecR);
+    }
+
+    succ = SUCC_FF(fld);
+    ptrL = ADDR_OBJ(vecL);
+    ptrR = ADDR_OBJ(vecR);
+
+    for (i = 1; i <= len; i++) {
+        valL = VAL_FFE(ptrL[i]);
+        valR = VAL_FFE(ptrR[i]);
+        valS = SUM_FFV(valL, valR, succ);
+        ptrL[i] = NEW_FFE(fld, valS);
+    }
+    return (Obj) 0;
 }
 
 /****************************************************************************
@@ -932,97 +910,96 @@ Obj FuncAddRowVectorVecFFEs( Obj self, Obj vecL, Obj vecR )
 **  the corresponding entry of <vecL>.
 **
 **  'ProdVectorMatrix'  is an improved version of 'ProdListList',  which does
-**  not  call 'PROD' and  also accummulates  the sum into  one  fixed  vector
+**  not  call 'PROD' and  also accumulates  the sum into  one  fixed  vector
 **  instead of allocating a new for each product and sum.
 */
 Obj             ProdVecFFEMatFFE (
 				  Obj                 vecL,
 				  Obj                 matR )
 {
-  Obj                 vecP;           /* handle of the product           */
-  Obj *               ptrP;           /* pointer into the product        */
-  FFV *               ptrV;           /* value pointer into the product  */
-  FFV                 valP;           /* one value of the product        */
-  FFV                 valL;           /* one value of the left operand   */
-  Obj                 vecR;           /* one vector of the right operand */
-  Obj *               ptrR;           /* pointer into the right vector   */
-  FFV                 valR;           /* one value from the right vector */
-  UInt                len;            /* length                          */
-  UInt                col;            /* length of the rows in matR      */
-  UInt                i, k;           /* loop variables                  */
-  FF                  fld;            /* the common finite field         */
-  FF *                succ;           /* the successor table             */
+    Obj                 vecP;           /* handle of the product           */
+    Obj *               ptrP;           /* pointer into the product        */
+    FFV *               ptrV;           /* value pointer into the product  */
+    FFV                 valP;           /* one value of the product        */
+    FFV                 valL;           /* one value of the left operand   */
+    Obj                 vecR;           /* one vector of the right operand */
+    Obj *               ptrR;           /* pointer into the right vector   */
+    FFV                 valR;           /* one value from the right vector */
+    UInt                len;            /* length                          */
+    UInt                col;            /* length of the rows in matR      */
+    UInt                i, k;           /* loop variables                  */
+    FF                  fld;            /* the common finite field         */
+    FF *                succ;           /* the successor table             */
 
-  /* check the lengths                                                   */
-  len = LEN_PLIST( vecL );
-  col = LEN_PLIST( ELM_PLIST( matR, 1 ) );
-  if ( len != LEN_PLIST( matR ) ) {
-    matR = ErrorReturnObj(
-			  "<vec>*<mat>: <vec> (%d) must have the same length as <mat> (%d)",
-			  (Int)len, (Int)col,
-			  "you can replace matrix <mat> via 'return <mat>;'" );
-    return PROD( vecL, matR );
-  }
-
-  /* check the fields                                                    */
-  vecR = ELM_PLIST( matR, 1 );
-  fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
-  if( FLD_FFE( ELM_PLIST( vecR, 1 ) ) != fld ) {
-    /* check the characteristic                                        */
-    if( CHAR_FF( fld ) == CHAR_FF( FLD_FFE( ELM_PLIST( vecR, 1 ) ) ) )
-      return ProdListList( vecL, matR );
-
-    matR = ErrorReturnObj(
-			  "<vec>*<mat>: <vec> and <mat> have different fields",
-			  0L, 0L, 
-                          "you can replace matrix <mat> via 'return <mat>;'" );
-    return PROD( vecL, matR );
-  }
-
-  /* make the result list by multiplying the first entries               */
-  vecP = ProdFFEVecFFE( ELM_PLIST( vecL, 1 ), vecR );
-
-  /* to add we need the successor table                                  */
-  succ = SUCC_FF( fld );
-
-  /* convert vecP into a list of values                                  */
-  /*N 5Jul1998 werner: This only works if sizeof(FFV) <= sizeof(Obj)     */
-  /*N We have to be careful not to overwrite the length info             */
-  ptrP = ADDR_OBJ( vecP );
-  ptrV = ((FFV*)(ptrP+1))-1;
-  for ( k = 1; k <= col; k++ )
-    ptrV[k] = VAL_FFE( ptrP[k] );
-
-  /* loop over the other entries and multiply                            */
-  for ( i = 2; i <= len; i++ ) {
-    valL = VAL_FFE( ELM_PLIST( vecL, i ) );
-    vecR = ELM_PLIST( matR, i );
-    ptrR = ADDR_OBJ( vecR );
-    if( valL == (FFV)1 ) {
-      for ( k = 1; k <= col; k++ ) {
-	valR = VAL_FFE( ptrR[k] );
-	valP = ptrV[k];
-	ptrV[k] = SUM_FFV( valP, valR, succ );
-      }
+    /* check the lengths                                                   */
+    len = LEN_PLIST(vecL);
+    col = LEN_PLIST(ELM_PLIST(matR, 1));
+    if (len != LEN_PLIST(matR)) {
+        matR = ErrorReturnObj(
+            "<vec>*<mat>: <vec> (%d) must have the same length as <mat> (%d)",
+            (Int)len, (Int)col,
+            "you can replace matrix <mat> via 'return <mat>;'");
+        return PROD(vecL, matR);
     }
-    else if ( valL != (FFV)0 ) {
-      for ( k = 1; k <= col; k++ ) {
-	valR = VAL_FFE( ptrR[k] );
-	valR = PROD_FFV( valL, valR, succ );
-	valP = ptrV[k];
-	ptrV[k] = SUM_FFV( valP, valR, succ );
-      }
+
+    /* check the fields                                                    */
+    vecR = ELM_PLIST(matR, 1);
+    fld = FLD_FFE(ELM_PLIST(vecL, 1));
+    if (FLD_FFE(ELM_PLIST(vecR, 1)) != fld) {
+        /* check the characteristic                                        */
+        if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
+            return ProdListList(vecL, matR);
+
+        matR = ErrorReturnObj(
+            "<vec>*<mat>: <vec> and <mat> have different fields",
+            0L, 0L,
+            "you can replace matrix <mat> via 'return <mat>;'");
+        return PROD(vecL, matR);
     }
-  }
 
-  /* convert vecP back into a list of finite field elements              */
-  /*N 5Jul1998 werner: This only works if sizeof(FFV) <= sizeof(Obj)     */
-  /*N We have to be careful not to overwrite the length info             */
-  for ( k = col; k >= 1; k-- )
-    ptrP[k] = NEW_FFE( fld, ptrV[k] );
+    /* make the result list by multiplying the first entries               */
+    vecP = ProdFFEVecFFE(ELM_PLIST(vecL, 1), vecR);
 
-  /* return the result                                                   */
-  return vecP;
+    /* to add we need the successor table                                  */
+    succ = SUCC_FF(fld);
+
+    /* convert vecP into a list of values                                  */
+    /*N 5Jul1998 werner: This only works if sizeof(FFV) <= sizeof(Obj)     */
+    /*N We have to be careful not to overwrite the length info             */
+    ptrP = ADDR_OBJ(vecP);
+    ptrV = ((FFV*)(ptrP + 1)) - 1;
+    for (k = 1; k <= col; k++)
+        ptrV[k] = VAL_FFE(ptrP[k]);
+
+    /* loop over the other entries and multiply                            */
+    for (i = 2; i <= len; i++) {
+        valL = VAL_FFE(ELM_PLIST(vecL, i));
+        vecR = ELM_PLIST(matR, i);
+        ptrR = ADDR_OBJ(vecR);
+        if (valL == (FFV)1) {
+            for (k = 1; k <= col; k++) {
+                valR = VAL_FFE(ptrR[k]);
+                valP = ptrV[k];
+                ptrV[k] = SUM_FFV(valP, valR, succ);
+            }
+        } else if (valL != (FFV)0) {
+            for (k = 1; k <= col; k++) {
+                valR = VAL_FFE(ptrR[k]);
+                valR = PROD_FFV(valL, valR, succ);
+                valP = ptrV[k];
+                ptrV[k] = SUM_FFV(valP, valR, succ);
+            }
+        }
+    }
+
+    /* convert vecP back into a list of finite field elements              */
+    /*N 5Jul1998 werner: This only works if sizeof(FFV) <= sizeof(Obj)     */
+    /*N We have to be careful not to overwrite the length info             */
+    for (k = col; k >= 1; k--)
+        ptrP[k] = NEW_FFE(fld, ptrV[k]);
+
+    /* return the result                                                   */
+    return vecP;
 }
 
 
@@ -1038,93 +1015,92 @@ Obj             ProdVecFFEMatFFE (
 
 Obj ZeroMutVecFFE( Obj vec )
 {
-  UInt i, len;
-  Obj res;
-  Obj z;
-  assert(TNUM_OBJ(vec) >= T_PLIST_FFE && \
-	 TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
-  len = LEN_PLIST(vec);
-  assert(len);
-  res  = NEW_PLIST( T_PLIST_FFE, len);
-  SET_LEN_PLIST(res, len);
-  z = ZERO(ELM_PLIST(vec,1));
+    UInt i, len;
+    Obj res;
+    Obj z;
+    assert(TNUM_OBJ(vec) >= T_PLIST_FFE && \
+    TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
+    len = LEN_PLIST(vec);
+    assert(len);
+    res  = NEW_PLIST(T_PLIST_FFE, len);
+    SET_LEN_PLIST(res, len);
+    z = ZERO(ELM_PLIST(vec, 1));
     for (i = 1; i <= len; i++)
-      SET_ELM_PLIST(res, i, z);
-  return res;
+        SET_ELM_PLIST(res, i, z);
+    return res;
 }
 
 Obj ZeroVecFFE( Obj vec )
 {
-  UInt i, len;
-  Obj res;
-  Obj z;
-  assert(TNUM_OBJ(vec) >= T_PLIST_FFE && \
-	 TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
-  len = LEN_PLIST(vec);
-  assert(len);
-  res  = NEW_PLIST( TNUM_OBJ(vec), len);
-  SET_LEN_PLIST(res, len);
-  z = ZERO(ELM_PLIST(vec,1));
+    UInt i, len;
+    Obj res;
+    Obj z;
+    assert(TNUM_OBJ(vec) >= T_PLIST_FFE && \
+    TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
+    len = LEN_PLIST(vec);
+    assert(len);
+    res  = NEW_PLIST(TNUM_OBJ(vec), len);
+    SET_LEN_PLIST(res, len);
+    z = ZERO(ELM_PLIST(vec, 1));
     for (i = 1; i <= len; i++)
-      SET_ELM_PLIST(res, i, z);
-  return res;
+        SET_ELM_PLIST(res, i, z);
+    return res;
 }
 
 UInt IsVecFFE(Obj vec)
 {
-  UInt tn;
-  tn = TNUM_OBJ(vec);
-  if (tn >= T_PLIST_FFE && tn <= T_PLIST_FFE+IMMUTABLE)
-    return 1;
-  if (!IS_PLIST(vec))  
-    return 0;
-  TYPE_OBJ(vec); /* force a full inspection of the list */
-  tn = TNUM_OBJ(vec);
-  return tn >= T_PLIST_FFE && tn <= T_PLIST_FFE+IMMUTABLE;
+    UInt tn;
+    tn = TNUM_OBJ(vec);
+    if (tn >= T_PLIST_FFE && tn <= T_PLIST_FFE + IMMUTABLE)
+        return 1;
+    if (!IS_PLIST(vec))
+        return 0;
+    TYPE_OBJ(vec); /* force a full inspection of the list */
+    tn = TNUM_OBJ(vec);
+    return tn >= T_PLIST_FFE && tn <= T_PLIST_FFE + IMMUTABLE;
 }
 
 
 Obj FuncIS_VECFFE( Obj self, Obj vec)
 {
-  return IsVecFFE(vec) ? True : False;
+    return IsVecFFE(vec) ? True : False;
 }
 
 Obj FuncCOMMON_FIELD_VECFFE( Obj self, Obj vec)
 {
-  Obj elm;
-  if (!IsVecFFE(vec))
-    return Fail;
-  elm = ELM_PLIST(vec,1);
-  return INTOBJ_INT(SIZE_FF(FLD_FFE(elm)));
+    Obj elm;
+    if (!IsVecFFE(vec))
+        return Fail;
+    elm = ELM_PLIST(vec, 1);
+    return INTOBJ_INT(SIZE_FF(FLD_FFE(elm)));
 }
 
 Obj FuncSMALLEST_FIELD_VECFFE( Obj self, Obj vec)
 {
-  Obj elm;
-  UInt deg,deg1,deg2,i,len,p,q;
-  UInt isVecFFE =IsVecFFE(vec);
-  len  = LEN_PLIST(vec);
-  if (len == 0)
-    return Fail;
-  elm = ELM_PLIST(vec,1);
-  if (!isVecFFE && !IS_FFE(elm))
-    return Fail;
-  deg = DegreeFFE(elm);
-  p = CharFFE(elm);
-  for (i = 2; i <= len; i++)
-    {
-      elm =ELM_PLIST(vec,i);
-      if (!isVecFFE && (!IS_FFE(elm)|| CharFFE(elm) != p))
-	return Fail;
-      deg2 =  DegreeFFE(elm);
-      deg1 = deg;
-      while (deg % deg2 != 0)
-	deg += deg1;
+    Obj elm;
+    UInt deg, deg1, deg2, i, len, p, q;
+    UInt isVecFFE = IsVecFFE(vec);
+    len  = LEN_PLIST(vec);
+    if (len == 0)
+        return Fail;
+    elm = ELM_PLIST(vec, 1);
+    if (!isVecFFE && !IS_FFE(elm))
+        return Fail;
+    deg = DegreeFFE(elm);
+    p = CharFFE(elm);
+    for (i = 2; i <= len; i++) {
+        elm = ELM_PLIST(vec, i);
+        if (!isVecFFE && (!IS_FFE(elm) || CharFFE(elm) != p))
+            return Fail;
+        deg2 =  DegreeFFE(elm);
+        deg1 = deg;
+        while (deg % deg2 != 0)
+            deg += deg1;
     }
-  q = p;
-  for (i = 2; i <= deg; i++)
-    q *= p;
-  return INTOBJ_INT(q);
+    q = p;
+    for (i = 2; i <= deg; i++)
+        q *= p;
+    return INTOBJ_INT(q);
 }
 
 /****************************************************************************
@@ -1171,29 +1147,28 @@ static Int InitKernel (
     Int                 t1;
     Int                 t2;
 
-
     /* install the arithmetic operation methods                            */
-    for ( t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++ ) {
+    for (t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++) {
         SumFuncs[  T_FFE ][  t1   ] = SumFFEVecFFE;
         SumFuncs[   t1   ][ T_FFE ] = SumVecFFEFFE;
         DiffFuncs[ T_FFE ][  t1   ] = DiffFFEVecFFE;
         DiffFuncs[  t1   ][ T_FFE ] = DiffVecFFEFFE;
         ProdFuncs[ T_FFE ][  t1   ] = ProdFFEVecFFE;
         ProdFuncs[  t1   ][ T_FFE ] = ProdVecFFEFFE;
-	ZeroFuncs[  t1   ] = ZeroVecFFE;
-	ZeroMutFuncs[  t1   ] = ZeroMutVecFFE;
+        ZeroFuncs[  t1   ] = ZeroVecFFE;
+        ZeroMutFuncs[  t1   ] = ZeroMutVecFFE;
     }
 
-    for ( t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++ ) {
-        for ( t2 = T_PLIST_FFE; t2 <= T_PLIST_FFE + IMMUTABLE; t2++ ) {
+    for (t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++) {
+        for (t2 = T_PLIST_FFE; t2 <= T_PLIST_FFE + IMMUTABLE; t2++) {
             SumFuncs[  t1 ][ t2 ] =  SumVecFFEVecFFE;
             DiffFuncs[ t1 ][ t2 ] = DiffVecFFEVecFFE;
             ProdFuncs[ t1 ][ t2 ] = ProdVecFFEVecFFE;
         }
     }
 
-    
-    InitHdlrFuncsFromTable( GVarFuncs );
+
+    InitHdlrFuncsFromTable(GVarFuncs);
 
     InitFopyGVar("AddRowVector", &AddRowVectorOp);
     /* return success                                                      */
@@ -1207,9 +1182,8 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-
     /* init filters and functions                                          */
-  InitGVarFuncsFromTable( GVarFuncs );
+    InitGVarFuncsFromTable(GVarFuncs);
 
     /* return success                                                      */
     return 0;

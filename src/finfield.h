@@ -75,7 +75,7 @@ typedef UInt2       FF;
 **  'CHAR_FF' returns the characteristic of the small finite field <ff>.
 **
 **  Note that  'CHAR_FF' is a macro,  so do not call  it  with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define CHAR_FF(ff)             INT_INTOBJ( ELM_PLIST( CharFF, ff ) )
 
@@ -89,7 +89,7 @@ extern  Obj             CharFF;
 **  'DEGR_FF' returns the degree of the small finite field <ff>.
 **
 **  Note that 'DEGR_FF' is  a macro, so do   not call it with  arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define DEGR_FF(ff)             INT_INTOBJ( ELM_PLIST( DegrFF, ff ) )
 
@@ -103,7 +103,7 @@ extern  Obj             DegrFF;
 **  'SIZE_FF' returns the size of the small finite field <ff>.
 **
 **  Note that 'SIZE_FF' is a macro, so do not call  it  with  arguments  that
-**  have sideeffects.
+**  have side effects.
 */
 #define SIZE_FF(ff)             (*SUCC_FF(ff)+1)
 
@@ -116,7 +116,7 @@ extern  Obj             DegrFF;
 **  field <ff>.
 **
 **  Note that 'SUCC_FF' is a macro, so do not call  it  with  arguments  that
-**  sideeffects.
+**  side effects.
 */
 #define SUCC_FF(ff)             ((FFV*)ADDR_OBJ( ELM_PLIST( SuccFF, ff ) ))
 
@@ -131,7 +131,7 @@ extern  Obj             SuccFF;
 **  'TYPE_FF0' returns the kind of the zero of <ff>
 **
 **  Note that  'TYPE_FF' is a macro, so  do not call  it  with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define TYPE_FF(ff)             (ELM_PLIST( TypeFF, ff ))
 #define TYPE_FF0(ff)             (ELM_PLIST( TypeFF0, ff ))
@@ -178,7 +178,7 @@ typedef UInt2           FFV;
 **  a subfield of the other use 'SumFFEFFE'.
 **
 **  Use  'SUM_FFV' only with arguments  that are variables or array elements,
-**  because it is a macro and arguments with sideeffects will behave strange,
+**  because it is a macro and arguments with side effects will behave strange,
 **  and because it  is a complex macro  so most C  compilers will be upset by
 **  complex arguments.  Especially do not use 'SUM_FFV(a,NEG_FFV(b,f),f)'.
 **
@@ -201,7 +201,7 @@ typedef UInt2           FFV;
 **  finite field pointed to by the pointer <f>.
 **
 **  Use  'NEG_FFV' only with arguments  that are variables or array elements,
-**  because it is a macro and arguments with sideeffects will behave strange,
+**  because it is a macro and arguments with side effects will behave strange,
 **  and because it is  a complex macro so most  C compilers will be upset  by
 **  complex arguments.  Especially do not use 'NEG_FFV(PROD_FFV(a,b,f),f)'.
 **
@@ -229,7 +229,7 @@ typedef UInt2           FFV;
 **  lies in a subfield of the other use 'ProdFFEFFE'.
 **
 **  Use 'PROD_FFV' only with arguments that are  variables or array elements,
-**  because it is a macro and arguments with sideeffects will behave strange,
+**  because it is a macro and arguments with side effects will behave strange,
 **  and  because it is  a complex macro so most  C compilers will be upset by
 **  complex arguments.  Especially do not use 'NEG_FFV(PROD_FFV(a,b,f),f)'.
 **
@@ -253,7 +253,7 @@ typedef UInt2           FFV;
 **  in a subfield of the other use 'QuoFFEFFE'.
 **
 **  Use 'QUO_FFV' only with arguments  that are variables or array  elements,
-**  because it is a macro and arguments with sideeffects will behave strange,
+**  because it is a macro and arguments with side effects will behave strange,
 **  and  because it is  a complex macro so most  C compilers will be upset by
 **  complex arguments.  Especially do not use 'NEG_FFV(PROD_FFV(a,b,f),f)'.
 **
@@ -280,7 +280,7 @@ typedef UInt2           FFV;
 **  'unsigned short'.
 **
 **  Note  that 'POW_FFV' is a macro,  so do not call  it  with arguments that
-**  have sideeffects.  For optimal performance  put the operands in registers
+**  have side effects.  For optimal performance  put the operands in registers
 **  before calling 'POW_FFV'.
 **
 **  If the finite field element is 0 the power is also 0, otherwise  we  have
@@ -302,7 +302,7 @@ typedef UInt2           FFV;
 **  represented.
 **
 **  Note that 'FLD_FFE' is a macro, so do not call  it  with  arguments  that
-**  have sideeffects.
+**  have side effects.
 */
 #define FLD_FFE(ffe)            ((FF)((((UInt)(ffe)) & 0xFFFF) >> 3))
 
@@ -316,7 +316,7 @@ typedef UInt2           FFV;
 **  and otherwise if <ffe> is $z^i$, it returns $i+1$.
 **
 **  Note that 'VAL_FFE' is a macro, so do not call  it  with  arguments  that
-**  have sideeffects.
+**  have side effects.
 */
 #define VAL_FFE(ffe)            ((FFV)(((UInt)(ffe)) >> 16))
 
@@ -329,7 +329,7 @@ typedef UInt2           FFV;
 **  with the value <val>.
 **
 **  Note that 'NEW_FFE' is a macro, so do not  call  it  with  arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define NEW_FFE(fld,val)        ((Obj)(((UInt)(val) << 16) + \
                                 ((UInt)(fld) << 3) + (UInt)0x02))

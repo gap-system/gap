@@ -95,7 +95,7 @@ UInt ExecProccallOpts(
 **  'ARGI_CALL(<call>,<i>)'.  It returns the value returned by the function.
 */
 
-static Obj DispatchFuncCall( Obj func, Int nargs, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6) 
+static Obj DispatchFuncCall( Obj func, Int nargs, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 { 
   Obj arglist;
   if (nargs != -1) {
@@ -136,7 +136,7 @@ UInt            ExecProccall0args (
     /* call the function                                                   */
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 0, (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);    
+      DispatchFuncCall(func, 0, (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
     else {
       CALL_0ARGS( func );
     }
@@ -144,7 +144,6 @@ UInt            ExecProccall0args (
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
-
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
 }
@@ -159,13 +158,12 @@ UInt            ExecProccall1args (
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
   
-
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
  
     /* call the function                                                   */
     if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 1, (Obj) arg1,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);    
+      DispatchFuncCall(func, 1, (Obj) arg1,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
     else {
       SET_BRK_CALL_TO( call );
       CALL_1ARGS( func, arg1 );
@@ -174,7 +172,6 @@ UInt            ExecProccall1args (
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
-
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
 }
@@ -190,14 +187,13 @@ UInt            ExecProccall2args (
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
  
-
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
 
     /* call the function                                                   */
     if (TNUM_OBJ(func) != T_FUNCTION)
-       DispatchFuncCall(func, 2, (Obj) arg1,  (Obj) arg2,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);    
+      DispatchFuncCall(func, 2, (Obj) arg1,  (Obj) arg2,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
     else {
       SET_BRK_CALL_TO( call );
       CALL_2ARGS( func, arg1, arg2 );
@@ -229,7 +225,7 @@ UInt            ExecProccall3args (
 
     /* call the function                                                   */
     if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 3, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);    
+      DispatchFuncCall(func, 3, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
     else {
       SET_BRK_CALL_TO( call );
       CALL_3ARGS( func, arg1, arg2, arg3 );
@@ -255,7 +251,6 @@ UInt            ExecProccall4args (
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
  
-
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
@@ -264,7 +259,7 @@ UInt            ExecProccall4args (
 
     /* call the function                                                   */
     if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 4, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) 0,  (Obj) 0);    
+      DispatchFuncCall(func, 4, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) 0,  (Obj) 0);
     {
       SET_BRK_CALL_TO( call );
       CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
@@ -306,13 +301,13 @@ UInt            ExecProccall5args (
 
     /* call the function                                                   */
     if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 5, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) 0L);    
+      DispatchFuncCall(func, 5, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) 0L);
     else {
       SET_BRK_CALL_TO( call );
       CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
     }
     if (UserHasQuit || UserHasQUIT) /* the procedure must have called
-                                         READ() and the user quit from a break
+                                       READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -344,7 +339,7 @@ UInt            ExecProccall6args (
 
     /* call the function                                                   */
     if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 6, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) arg6);    
+      DispatchFuncCall(func, 6, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) arg6);
     else {
       SET_BRK_CALL_TO( call );
       CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
@@ -445,9 +440,11 @@ Obj             EvalFunccall0args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
+
     if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
+
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_0ARGS( func );
@@ -476,12 +473,11 @@ Obj             EvalFunccall1args (
       /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
 
- 
     if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 1, (Obj) arg1, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
-   /* call the function and return the result                             */
+    /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_1ARGS( func, arg1 );
     if (UserHasQuit || UserHasQUIT) /* the procedure must have called
@@ -716,7 +712,6 @@ Obj             EvalFunccallXargs (
       return DispatchFuncCall(func, -1, (Obj) args, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
-
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_XARGS( func, args );
@@ -814,13 +809,10 @@ Obj DoExecFunc0args (
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 0, NLOC_FUNC(func), oldLvars );
 
-    
-
     /* execute the statement sequence                                      */
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
-
 
    /* remove the link to the calling function, in case this values bag
        stays alive due to higher variable reference */
@@ -829,10 +821,9 @@ Obj DoExecFunc0args (
     /* Switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
-
     CHECK_RECURSION_AFTER
 
-      /* return the result                                                   */
+    /* return the result                                                   */
       {
         Obj                 returnObjStat;
         returnObjStat = ReturnObjStat;

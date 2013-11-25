@@ -2440,6 +2440,12 @@ gap> f:=PartialPermNC([]);;
 gap> f<f;
 false
 
+# Test for the bug in RestrictedPartialPerm
+gap> RestrictedPartialPerm(EmptyPartialPerm(), [1,2,3,4]);
+<empty partial perm>
+gap> RestrictedPartialPerm(PartialPerm([1],[1]), [2,3,4]);                     
+<empty partial perm>
+
 #
 #gap> S:=InverseSemigroup([ PartialPermNC( [ 1, 3 ], [ 1, 3 ] ),
 #> PartialPermNC( [ 1, 2 ], [ 3, 2 ] ) ] );;

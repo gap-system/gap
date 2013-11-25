@@ -166,7 +166,7 @@ dnl ##
 dnl ## check for functions dealing with strings and integers
 dnl ##
 
-AC_CHECK_FUNCS( atol strlcpy strlcmp )
+AC_CHECK_FUNCS( atol strlcpy strlcmp strlcat )
 
 
 dnl #########################################################################
@@ -272,8 +272,10 @@ if test "x$with_readline" != xno; then
   fi
 
   # TODO: Should also check for headers
-  AC_CHECK_LIB([ncurses], [initscr])
-  AC_CHECK_LIB([readline], [rl_gnu_readline_p], [], [with_readline=no], [-lncurses])
+  AC_CHECK_LIB([readline], [rl_gnu_readline_p], [], [
+    unset ac_cv_lib_readline_rl_gnu_readline_p
+    AC_CHECK_LIB([ncurses], [initscr])
+    AC_CHECK_LIB([readline], [rl_gnu_readline_p], [], [with_readline=no], [-lncurses])])
 
 fi
 
@@ -299,7 +301,21 @@ dnl ##
 dnl ## check for variants of setjmp, longjmp
 dnl ##
 
-AC_CHECK_FUNCS(_setjmp sigsetjmp)
+# sigsetjmp is a macro on some platforms, cannot use AC_CHECK_FUNCS
+AC_MSG_CHECKING(for sigsetjmp())
+AC_TRY_LINK([#include <setjmp.h>], [sigjmp_buf t; sigsetjmp(t, 0)],
+  [AC_MSG_RESULT(yes)
+   AC_DEFINE([HAVE_SIGSETJMP], 1, [Define to 1 if you have the `sigsetjmp' function.])],
+  [AC_MSG_RESULT(no)]
+)
+
+# _setjmp is a macro on some platforms, cannot use AC_CHECK_FUNCS
+AC_MSG_CHECKING(for _setjmp())
+AC_TRY_LINK([#include <setjmp.h>], [sigjmp_buf t; _setjmp(t, 0)],
+  [AC_MSG_RESULT(yes)
+   AC_DEFINE([HAVE__SETJMP], 1, [Define to 1 if you have the `_setjmp' function.])],
+  [AC_MSG_RESULT(no)]
+)
 
 dnl #########################################################################
 dnl ##

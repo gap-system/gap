@@ -1107,6 +1107,11 @@ local cs,	# chief series of G
 
 	# find a permutation rep. for S-action on T[1]
 	Thom:=NaturalHomomorphismByNormalSubgroupNC(T[1],N);
+	T1:=Image(Thom);
+	if not IsSubset([1..NrMovedPoints(T1)],
+	                 MovedPoints(T1)) then
+	  Thom:=Thom*ActionHomomorphism(T1,MovedPoints(T1),"surjective");
+	fi;
 	T1:=Image(Thom,T[1]);
 	autos:=List(GeneratorsOfGroup(S),
 		  i->GroupHomomorphismByImagesNC(T1,T1,GeneratorsOfGroup(T1),
@@ -2403,8 +2408,8 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
 
   mappingelm:=function(orb,pos)
   local mc,mcf,i;
-    mc:=One(orb.stabfacgens[1]);
-    mcf:=One(orb.stabfacimgs[1]);
+    mc:=One(Source(hom));
+    mcf:=One(Range(hom));
     for i in orb.repwords[pos] do
       mc:=mc*orb.gens[i];
       mcf:=mcf*orb.fgens[i];
@@ -2671,7 +2676,8 @@ local r,	#radical
     if not IsBound(f!.someClassReps) then
       f!.someClassReps:=[ConjugacyClass(f,One(f))]; # identity first
     fi;
-    if HasConjugacyClasses(f) then
+    if HasConjugacyClasses(f) and
+      Length(f!.someClassReps)<Length(ConjugacyClasses(f)) then
       # expand the list of stored factor classes for once.
       cl:=Filtered(ConjugacyClasses(f),x-> not ForAny(f!.someClassReps,
 	   y->Order(Representative(x))=Order(Representative(y))

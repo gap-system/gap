@@ -1,7 +1,6 @@
 #############################################################################
 ##
-#W  reesmat.gd                  GAP library                    Andrew Solomon
-##
+#W  reesmat.gd                  GAP library                    J. D. Mitchell
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -9,71 +8,111 @@
 ##
 ##  This file contains the declarations for Rees Matrix semigroups
 
+# Elements...
 
-DeclareGlobalFunction( "ReesMatrixSemigroup" );
-DeclareGlobalFunction( "ReesZeroMatrixSemigroup" );
-
-DeclareAttribute("IsomorphismReesMatrixSemigroup",IsSemigroup);
-
-DeclareCategory( "IsReesMatrixSemigroupElement", IsAssociativeElement );
-DeclareCategory( "IsReesZeroMatrixSemigroupElement", IsMultiplicativeElement );
+DeclareCategory( "IsReesMatrixSemigroupElement", IsAssociativeElement);
+DeclareCategory( "IsReesZeroMatrixSemigroupElement", IsAssociativeElement);
 
 DeclareCategoryCollections( "IsReesMatrixSemigroupElement");
 DeclareCategoryCollections( "IsReesZeroMatrixSemigroupElement");
 
-DeclareGlobalFunction("RMSElementNC");
 DeclareGlobalFunction( "RMSElement" );
 DeclareSynonym( "ReesMatrixSemigroupElement", RMSElement);
 DeclareSynonym( "ReesZeroMatrixSemigroupElement", RMSElement);
 
-DeclareSynonymAttr( "IsSubsemigroupReesMatrixSemigroup", 
-	IsSemigroup and IsReesMatrixSemigroupElementCollection);
-DeclareSynonymAttr( "IsSubsemigroupReesZeroMatrixSemigroup", 
-	IsSemigroup and IsReesZeroMatrixSemigroupElementCollection);
-DeclareSynonymAttr( "IsReesMatrixSemigroup", 
-	IsSubsemigroupReesMatrixSemigroup and IsWholeFamily);
-DeclareSynonymAttr( "IsReesZeroMatrixSemigroup", 
-	IsSubsemigroupReesZeroMatrixSemigroup and IsWholeFamily);
+DeclareOperation("ELM_LIST", [IsReesMatrixSemigroupElement, IsPosInt]);
+DeclareOperation("ELM_LIST", [IsReesZeroMatrixSemigroupElement, IsPosInt]);
 
-DeclareAttribute("MatrixOfRMS", IsSubsemigroupReesMatrixSemigroup);
-DeclareAttribute("MatrixOfRMS", IsSubsemigroupReesZeroMatrixSemigroup);
-DeclareSynonymAttr("MatrixOfReesMatrixSemigroup", MatrixOfRMS);
-DeclareSynonymAttr("MatrixOfReesZeroMatrixSemigroup", MatrixOfRMS);
+DeclareProperty("IsOne", IsReesMatrixSemigroupElement);
+DeclareProperty("IsOne", IsReesZeroMatrixSemigroupElement);
 
-DeclareAttribute("RowsOfRMS", IsSubsemigroupReesMatrixSemigroup);
-DeclareAttribute("RowsOfRMS", IsSubsemigroupReesZeroMatrixSemigroup);
-DeclareSynonymAttr("RowsOfReesMatrixSemigroup", RowsOfRMS);
-DeclareSynonymAttr("RowsOfReesZeroMatrixSemigroup", RowsOfRMS);
+# for backwards compatibility...
 
-DeclareAttribute("ColumnsOfRMS", IsSubsemigroupReesMatrixSemigroup);
-DeclareAttribute("ColumnsOfRMS", IsSubsemigroupReesZeroMatrixSemigroup);
-DeclareSynonymAttr("ColumnsOfReesMatrixSemigroup", ColumnsOfRMS);
-DeclareSynonymAttr("ColumnsOfReesZeroMatrixSemigroup", ColumnsOfRMS);
+DeclareOperation("RowOfReesMatrixSemigroupElement",
+  [IsReesMatrixSemigroupElement]);
+DeclareOperation("RowOfReesZeroMatrixSemigroupElement", 
+  [IsReesZeroMatrixSemigroupElement]);
 
-DeclareAttribute("UnderlyingSemigroup", IsSubsemigroupReesMatrixSemigroup);
-DeclareAttribute("UnderlyingSemigroup", IsSubsemigroupReesZeroMatrixSemigroup);
-DeclareSynonymAttr("UnderlyingSemigroupOfReesMatrixSemigroup",
-UnderlyingSemigroup);
-DeclareSynonymAttr("UnderlyingSemigroupOfReesZeroMatrixSemigroup",  UnderlyingSemigroup);
+DeclareOperation("ColumnOfReesMatrixSemigroupElement",
+  [IsReesMatrixSemigroupElement]);
+DeclareOperation("ColumnOfReesZeroMatrixSemigroupElement", 
+  [IsReesZeroMatrixSemigroupElement]);
 
-DeclareAttribute("RowOfRMSElement", IsReesMatrixSemigroupElement);
-DeclareAttribute("RowOfRMSElement", IsReesZeroMatrixSemigroupElement);
-DeclareSynonymAttr("RowOfReesMatrixSemigroupElement", RowOfRMSElement);
-DeclareSynonymAttr("RowOfReesZeroMatrixSemigroupElement", RowOfRMSElement);
+DeclareOperation("UnderlyingElementOfReesMatrixSemigroupElement",
+  [IsReesMatrixSemigroupElement]);
+DeclareOperation("UnderlyingElementOfReesZeroMatrixSemigroupElement",
+  [IsReesZeroMatrixSemigroupElement]);
 
-DeclareAttribute("ColumnOfRMSElement", IsReesMatrixSemigroupElement);
-DeclareAttribute("ColumnOfRMSElement", IsReesZeroMatrixSemigroupElement);
-DeclareSynonymAttr("ColumnOfReesMatrixSemigroupElement", ColumnOfRMSElement);
-DeclareSynonymAttr("ColumnOfReesZeroMatrixSemigroupElement",
-ColumnOfRMSElement);
+# Semigroups...
 
-DeclareAttribute("UnderlyingElementOfRMSElement", IsReesMatrixSemigroupElement);
-DeclareAttribute("UnderlyingElementOfRMSElement",
-IsReesZeroMatrixSemigroupElement);
-DeclareSynonymAttr("UnderlyingElementOfReesMatrixSemigroupElement",
-UnderlyingElementOfRMSElement);
-DeclareSynonymAttr("UnderlyingElementOfReesZeroMatrixSemigroupElement",
-UnderlyingElementOfRMSElement);
+DeclareSynonymAttr("IsReesMatrixSubsemigroup",
+  IsSemigroup and IsReesMatrixSemigroupElementCollection);
+DeclareSynonymAttr("IsReesZeroMatrixSubsemigroup",
+  IsSemigroup and IsReesZeroMatrixSemigroupElementCollection);
+
+DeclareProperty("IsReesMatrixSemigroup", IsSemigroup); 
+DeclareProperty("IsReesZeroMatrixSemigroup", IsSemigroup);
+
+InstallTrueMethod(IsReesMatrixSemigroup, 
+  IsReesMatrixSubsemigroup and IsWholeFamily);
+InstallTrueMethod(IsReesZeroMatrixSemigroup, 
+  IsReesZeroMatrixSubsemigroup and IsWholeFamily);
+
+DeclareOperation("ReesMatrixSemigroup", [IsSemigroup, IsRectangularTable]);
+DeclareOperation("ReesZeroMatrixSemigroup", [IsSemigroup, IsDenseList]);
+
+DeclareOperation( "GeneratorsOfReesMatrixSemigroup",
+  [IsReesMatrixSubsemigroup, IsList, IsSemigroup, IsList]);
+DeclareGlobalFunction( "GeneratorsOfReesMatrixSemigroupNC");
+
+DeclareOperation( "ReesMatrixSubsemigroup", 
+  [IsReesMatrixSubsemigroup, IsList, IsSemigroup, IsList]);
+DeclareGlobalFunction("ReesMatrixSubsemigroupNC");
+
+DeclareOperation( "GeneratorsOfReesZeroMatrixSemigroup", 
+  [IsReesZeroMatrixSubsemigroup, IsList, IsSemigroup, IsList]);
+DeclareGlobalFunction( "GeneratorsOfReesZeroMatrixSemigroupNC");
+
+DeclareOperation( "ReesZeroMatrixSubsemigroup", 
+  [IsReesZeroMatrixSubsemigroup, IsList, IsSemigroup, IsList]);
+DeclareGlobalFunction("ReesZeroMatrixSubsemigroupNC");
+
+DeclareAttribute("Matrix", IsReesMatrixSubsemigroup);
+DeclareAttribute("Matrix", IsReesZeroMatrixSubsemigroup);
+DeclareSynonymAttr("MatrixOfReesMatrixSemigroup", Matrix);
+DeclareSynonymAttr("MatrixOfReesZeroMatrixSemigroup", Matrix);
+
+DeclareAttribute("Rows", IsReesMatrixSubsemigroup);
+DeclareAttribute("Rows", IsReesZeroMatrixSubsemigroup);
+DeclareSynonymAttr("RowsOfReesMatrixSemigroup", Rows);
+DeclareSynonymAttr("RowsOfReesZeroMatrixSemigroup", Rows);
+
+DeclareAttribute("Columns", IsReesMatrixSubsemigroup);
+DeclareAttribute("Columns", IsReesZeroMatrixSubsemigroup);
+DeclareSynonymAttr("ColumnsOfReesMatrixSemigroup", Columns);
+DeclareSynonymAttr("ColumnsOfReesZeroMatrixSemigroup", Columns);
+
+DeclareAttribute("UnderlyingSemigroup", IsReesMatrixSubsemigroup);
+DeclareAttribute("UnderlyingSemigroup", IsReesZeroMatrixSubsemigroup);
+DeclareSynonym("UnderlyingSemigroupOfReesMatrixSemigroup",
+  UnderlyingSemigroup);
+DeclareSynonym("UnderlyingSemigroupOfReesZeroMatrixSemigroup",
+  UnderlyingSemigroup);
+
+# Other
 
 DeclareAttribute("AssociatedReesMatrixSemigroupOfDClass", IsGreensDClass);
+DeclareAttribute("IsomorphismReesMatrixSemigroup", IsSemigroup);
+
+# undocumented
+
+DeclareAttribute("ReesMatrixSemigroupOfFamily", IsFamily);
+DeclareAttribute("TypeReesMatrixSemigroupElements", 
+  IsReesMatrixSubsemigroup);
+DeclareAttribute("TypeReesMatrixSemigroupElements",
+  IsReesZeroMatrixSubsemigroup);
+
+DeclareOperation("ZeroOp", [IsReesMatrixSemigroupElement]);
+DeclareOperation("ZeroOp", [IsReesZeroMatrixSemigroupElement]);
+DeclareOperation("MultiplicativeZeroOp", [IsReesMatrixSemigroup]);
 

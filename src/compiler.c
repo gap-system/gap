@@ -180,7 +180,7 @@ Int CompCheckPosObjElements;
 **  The only difference between the  first pass and  the second pass is  that
 **  'Emit'  emits  no code  during the first  pass.   While  this causes many
 **  unneccessary  computations during the first pass,  the  advantage is that
-**  the two passes are guaranteed to do exactely the same computations.
+**  the two passes are guaranteed to do exactly the same computations.
 */
 Int CompPass;
 

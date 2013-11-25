@@ -1335,8 +1335,8 @@ Obj             DiffInt (
 **
 **  Is called from the 'EvalProd' binop so both operands are already evaluated.
 **
-**  The only difficult about this function is the fact that is has two handle
-**  3 different situation, depending on how many arguments  are  small  ints.
+**  The only difficulty about this function is the fact that is has to handle
+**  3 different situations, depending on how many arguments  are  small  ints.
 */
 Obj             ProdInt (
     Obj                 opL,
@@ -2642,7 +2642,7 @@ Obj             RemInt (
 **
 *F  FuncREM_INT(<self>,<opL>,<opR>)  . . . . . . .  internal function 'RemInt'
 **
-**  'FuncRem' implements the internal function 'RemInt'.
+**  'FuncREM_INT' implements the internal function 'RemInt'.
 **
 **  'RemInt( <i>, <k> )'
 **

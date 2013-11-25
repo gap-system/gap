@@ -1797,12 +1797,14 @@ Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set){
   codeg=0;
 
   if(TNUM_OBJ(f)==T_PPERM2){
-    ptf2=ADDR_PPERM2(f);
-    // find pos in list corresponding to degree of new pperm
     deg=DEG_PPERM2(f);
-    while(INT_INTOBJ(ELM_LIST(set, n))>deg) n--;
-    while(ptf2[INT_INTOBJ(ELM_LIST(set, n))-1]==0) n--;
+    ptf2=ADDR_PPERM2(f);
     
+    // find pos in list corresponding to degree of new pperm
+    while(n>0&&INT_INTOBJ(ELM_LIST(set, n))>deg) n--;
+    while(n>0&&ptf2[INT_INTOBJ(ELM_LIST(set, n))-1]==0) n--;
+    if(n==0) return EmptyPartialPerm;
+
     g=NEW_PPERM2(INT_INTOBJ(ELM_LIST(set, n)));
     ptf2=ADDR_PPERM2(f);
     ptg2=ADDR_PPERM2(g);
@@ -1813,11 +1815,14 @@ Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set){
       if(ptg2[j]>codeg) codeg=ptg2[j];
     }
     CODEG_PPERM2(g)=codeg;
-  } else {
-    ptf4=ADDR_PPERM4(f);
+    return g;
+  } else if (TNUM_OBJ(f)==T_PPERM4){
     deg=DEG_PPERM4(f);
-    while(INT_INTOBJ(ELM_LIST(set, n))>deg) n--;
-    while(ptf4[INT_INTOBJ(ELM_LIST(set, n))-1]==0) n--;
+    ptf4=ADDR_PPERM4(f);
+    
+    while(n>0&&INT_INTOBJ(ELM_LIST(set, n))>deg) n--;
+    while(n>0&&ptf4[INT_INTOBJ(ELM_LIST(set, n))-1]==0) n--;
+    if(n==0) return EmptyPartialPerm;
    
     g=NEW_PPERM4(INT_INTOBJ(ELM_LIST(set, n)));
     ptf4=ADDR_PPERM4(f);
@@ -1829,8 +1834,9 @@ Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set){
       if(ptg4[j]>codeg) codeg=ptg4[j];
     }
     CODEG_PPERM4(g)=codeg;
+    return g;
   }
-  return g;
+  return Fail;
 }
 
 // convert a permutation <p> to a partial perm on <set>, which is assumed to be

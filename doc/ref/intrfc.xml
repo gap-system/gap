@@ -23,8 +23,10 @@ any families.)
 Finally we show a simple way how to create new objects with an own
 arithmetic.
 <P/>
-The examples given are all very rudimentary &ndash;no particular error checks
-are performed and the user interface sometimes is quite clumsy.
+The examples given are all very rudimentary &ndash; no particular error checks
+are performed and the user interface sometimes is quite clumsy. These examples
+may be constructed for presentation purposes only and they do not necessarily
+constitute parts of the &GAP; library.
 <P/>
 
 Even more complex examples that create whole classes of objects anew will be
@@ -181,7 +183,8 @@ arguments and/or different filters for its arguments.
 <Section Label="Enforcing Property Tests">
 <Heading>Enforcing Property Tests</Heading>
 
-As mentioned above, &GAP; does not check unknown properties to test whether
+As mentioned in Section <Ref Sect="Applicable Methods and Method Selection"/>,
+&GAP; does not check unknown properties to test whether
 a method might be applicable. In some cases one wants to enforce this,
 however, because the gain from knowing the property outweighs the cost of
 its determination.
@@ -606,9 +609,10 @@ function(G)
   [... code omitted. The function must return `true' or `false' ...]
 end);
 ]]></Log>
-
+Note that this example of declaring the <C>IsMGroup</C> property for 
+solvable groups is not a part of the &GAP; library, which uses a 
+similar but different filter <Ref Prop="IsMonomialGroup"/>.
 </Subsection>
-
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Subsection Label="Example: Groups with a word length">
@@ -732,7 +736,9 @@ gap> PosetElementSpec :=rec(
 >   Multiplication := function(a, b) return Intersection(a, b); end,
 >   Addition := function(a, b) return Union(a, b); end,
 >   # Mathematical properties of the elements
->   MathInfo := IsCommutativeElement and IsAdditivelyCommutativeElement
+>   MathInfo := IsCommutativeElement and
+>               IsAssociativeElement and
+>               IsAdditivelyCommutativeElement
 > );;
 gap> mkposet := ArithmeticElementCreator(PosetElementSpec);
 function( x ) ... end
@@ -747,8 +753,9 @@ gap> CategoriesOfObject(a);
 [ "IsExtAElement", "IsNearAdditiveElement", 
   "IsNearAdditiveElementWithZero", "IsAdditiveElement", 
   "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement", 
-  "IsMultiplicativeElementWithOne", "IsAdditivelyCommutativeElement", 
-  "IsCommutativeElement", "IsPosetOn4" ]
+  "IsMultiplicativeElementWithOne", "IsAssociativeElement",
+  "IsAdditivelyCommutativeElement", "IsCommutativeElement",
+  "IsPosetOn4" ]
 gap> a=[1,2,3];
 false
 gap> UnderlyingElement(a)=[1,2,3];

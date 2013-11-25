@@ -54,7 +54,7 @@
 **
 **  'IsSet' returns 1 if the list <list> is a proper set and 0
 **  otherwise.  A proper set is a  list that has no holes,
-**  no duplicates, and is sorted.  As a sideeffect 'IsSet' changes the
+**  no duplicates, and is sorted.  As a side effect 'IsSet' changes the
 **  type of proper sets as appropriate.
 **
 **  A typical call in the set functions looks like this:
@@ -432,7 +432,7 @@ Obj             FuncIS_SUBSET_SET (
 **  the set <set>, then <set> is not changed.  Otherwise <obj> is inserted at
 **  the correct position such that <set> is again a set afterwards.
 **
-**  'AddSet' does not return  anything, it is only  called for the sideeffect
+**  'AddSet' does not return  anything, it is only  called for the side effect
 **  of changing <set>.
 */
 Obj FuncADD_SET (
@@ -569,7 +569,7 @@ Obj FuncADD_SET (
 **  changed.  No error is signalled in this case.
 **
 **  'RemoveSet'   does   not return anything,  it   is  only called  for  the
-**  sideeffect of changing <set>.
+**  side effect of changing <set>.
 */
 Obj FuncREM_SET (
     Obj                 self,

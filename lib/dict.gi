@@ -1106,6 +1106,6 @@ function(d,t)
 local n,l;
   n:=DegreeOfTransformation(t);
   l:=List([1..n],i->n^(i-1));
-  return x->ImageListOfTransformation(t,n)*l;
+  return x->ImageListOfTransformation(t)*l;
 end);
 

@@ -8,10 +8,11 @@ A <E>transformation</E> in &GAP; is simply a function from the positive
 integers to the positive integers. 
 Transformations are to semigroup theory what permutations are to group theory,
 in the sense that every semigroup can be realised as a semigroup of
-transformations.  In this way, transformations are the elements of
-transformation semigroups.  <P/>
+transformations. In &GAP; transformation semigroups are always finite, and so 
+only finite semigroups can be realised in this way. 
+<P/>
 
-A transformations in &GAP; acts on the positive integers (up to some
+A transformation in &GAP; acts on the positive integers (up to some
 architecture dependent limit) on the right. The image of a point
 <C>i</C> under a transformation <C>f</C> is expressed as <C>i^f</C> in &GAP;.
 This action is also implemented by the function <Ref Func="OnPoints"/>. 
@@ -28,11 +29,12 @@ degree, it was only possible to multiply transformations of equal degree, and a
 transformation did not act on any point exceeding its degree.  Starting with
 version 4.7 of &GAP;, transformations behave more like permutations, in that
 they fix unspecified points and it is possible to multiply arbitrary
-transformations; see Chapter <Ref Chap="Permutations"/>.  The definition of the
-degree of a transformation <C>f</C> in the current version of &GAP; is
-the number of points used in the internal representation of <C>f</C>; we will refer to this as the <E>internal degree</E> of <C>f</C>. 
-It should be noted that, in contrast to earlier versions of &GAP;, it is
-possible that transformations with different internal degrees are equal. <P/>
+transformations; see Chapter <Ref Chap="Permutations"/>.  
+The definition of the degree of a transformation <C>f</C> in the current
+version of &GAP; is the largest value <C>n</C> such that <C>n^f&lt;>n</C> or
+<C>i^f=n</C> for some <C>i&lt;>n</C>. Equivalently, the degree of a
+transformation is the least value <C>n</C> such that <C>[n+1,n+2,...]</C> is fixed
+pointwise by <C>f</C>.<P/>
 
 The transformations of a given degree belong to the full transformation
 semigroup of that degree; see <Ref Func="FullTransformationSemigroup"/>.
@@ -40,27 +42,23 @@ Transformation semigroups are hence subsemigroups of the full transformation
 semigroup. <P/>
 
 It is possible to use transformations in &GAP; without reference to the
-internal degree, much as it is possible to use permutations in this way.
+degree, much as it is possible to use permutations in this way.
 However, for backwards compatibility, and because it is sometimes useful, it is
-possible to access the internal degree of a transformation using 
+possible to access the degree of a transformation using 
 <Ref Attr="DegreeOfTransformation"/>. Certain attributes of transformations are
-also stored with reference to the internal degree, such as the rank, image set,
-or flat kernel (although all of these values can also be calculated with
-respect to any positive integer). So, it is possible to ignore the internal
+also calculated with respect to the degree, such as the rank, image set,
+or kernel (these values can also be calculated with
+respect to any positive integer). So, it is possible to ignore the 
 degree of a transformation if you prefer to think of transformations as acting
 on the positive integers in a similar way to permutations. For example, this
 approach is used in the <Package>FR</Package> package. It is also possible to
 think of transformations as only acting on the positive integers not exceeding
-their internal degree. For example, this was the approach formerly used in
-&GAP; and it is also useful in the <Package>Semigroups</Package>. In
-particular, it is guaranteed that the product, quotients, and conjugates of
-transformations of internal degree <C>n</C> have internal degree <C>n</C>.
+their degree. For example, this was the approach formerly used in
+&GAP; and it is also useful in the <Package>Semigroups</Package> package. 
 <P/>
 
 Transformations are displayed, by default, using the list <C>[1^f..n^f]</C>
-where <C>n</C> is the largest value such that <C>n^f&lt;>n</C> or 
-<C>i^f=n</C> for some <C>i&lt;>n</C>. We will refer to the value <C>n</C> 
-as the <E>normalized degree</E> of <C>f</C>. 
+where <C>n</C> is the degree of <C>f</C>.
 This behaviour differs from versions of &GAP; earlier than 4.7. 
 See Section <Ref Sect="sect:DisplayingTransformations"/> for more information.
 <P/>
@@ -91,24 +89,22 @@ component) of the corresponding functional digraph.  More specifically,
   v_n=i</M> such that either <M>v_{k+1}=v_{k}^f</M> or <M>v_{k}=v_{k+1}^f</M> for all <M>k</M>. <P/>
 <P/>
 
-Internally, &GAP; stores a transformation <C>f</C> as a list consisting
-of the images <C>i^f</C> of the points in <C>i</C> less than the internal
-degree of <C>f</C>, which is determined at the time of creation.
-The kernel and image set of <C>f</C>, relative to the internal degree of
-<C>f</C>, are also stored after either one is computed. When the degree of a
-transformation <C>f</C> is at most 65536, the images of points under <C>f</C>
-are stored as 16-bit integers, the kernel and image set are subobjects of
-<C>f</C> which are plain lists of &GAP; integers.  When the internal degree of
-<C>f</C> is greater than 65536, the images of points under <C>f</C>
-are stored as 32-bit integers; the kernel and image set are stored in the
-same way as before. A transformation belongs to <C>IsTrans2Rep</C> if it is
+Internally, &GAP; stores a transformation <C>f</C> as a list consisting of the
+images <C>i^f</C> of the points in <C>i</C> less than some value, which is at
+least the degree of <C>f</C> and which is determined at the time of creation.
+When the degree of a transformation <C>f</C> is at most 65536, the images of
+points under <C>f</C> are stored as 16-bit integers, the kernel and image set
+are subobjects of <C>f</C> which are plain lists of &GAP; integers.  When the
+degree of <C>f</C> is greater than 65536, the images of points under
+<C>f</C> are stored as 32-bit integers; the kernel and image set are stored in
+the same way as before. A transformation belongs to <C>IsTrans2Rep</C> if it is
 stored using 16-bit integers and to <C>IsTrans4Rep</C> if it is stored using
 32-bit integers.  <P/>
 
 <Section>
     <Heading>The family and categories of transformations</Heading>
   <ManSection>
-    <Filt Name="IsTransformation" Arg='obj' Type='Category'/>
+    <Filt Name="IsTransformation" Arg="obj" Type="Category"/>
     <Description>
     Every transformation in &GAP; belongs to the category
     <C>IsTransformation</C>. Basic operations for transformations are 
@@ -126,7 +122,7 @@ stored using 16-bit integers and to <C>IsTrans4Rep</C> if it is stored using
   </ManSection>
 
   <ManSection>
-    <Filt Name="IsTransformationCollection" Arg='obj' Type='Category'/>
+    <Filt Name="IsTransformationCollection" Arg="obj" Type="Category"/>
     <Description>
      Every collection of transformations belongs to the category
      <C>IsTransformationCollection</C>. For example, transformation semigroups
@@ -137,7 +133,7 @@ stored using 16-bit integers and to <C>IsTrans4Rep</C> if it is stored using
   <ManSection>
     <Fam Name="TransformationFamily"/>
     <Description>
-      The family of all transformations is <C>TransformationFamily</C>
+      The family of all transformations is <C>TransformationFamily</C>.
     </Description>
   </ManSection>
 </Section>
@@ -153,10 +149,10 @@ stored using 16-bit integers and to <C>IsTrans4Rep</C> if it is stored using
   <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name='Transformation' Arg='list' Label='for an image list'/>
-    <Oper Name='Transformation' Arg='list, func' 
-      Label='for a list and function'/>
-    <Func Name='TransformationList' Arg='list' Label='for an image list'/>
+    <Oper Name="Transformation" Arg="list" Label="for an image list"/>
+    <Oper Name="Transformation" Arg="list, func" 
+      Label="for a list and function"/>
+    <Func Name="TransformationList" Arg="list" Label="for an image list"/>
     <Returns>A transformation or <K>fail</K>.</Returns>
     <Description>
       <C>TransformationList</C> returns the transformation <C>f</C> such that
@@ -193,9 +189,9 @@ gap> SetUserPreference("NotationForTransformations", "input");</Example>
   <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="Transformation" Arg='src, dst' 
+    <Oper Name="Transformation" Arg="src, dst" 
       Label="for a source and destination"/>
-    <Func Name="TransformationListList" Arg='src, dst' 
+    <Func Name="TransformationListList" Arg="src, dst" 
       Label="for a source and destination"/>
     <Returns>A transformation or <K>fail</K>.</Returns>
     <Description>
@@ -222,7 +218,7 @@ Transformation( [ 4, 5, 6, 4, 5, 6 ] )</Example>
   <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="TransformationByImageAndKernel" Arg='im, ker' 
+    <Oper Name="TransformationByImageAndKernel" Arg="im, ker" 
       Label="for an image and kernel"/>
     <Returns>A transformation or <K>fail</K>.</Returns>
     <Description>
@@ -249,7 +245,7 @@ Transformation( [ 1, 3, 8, 1, 3, 1, 3, 4 ] )</Example>
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Func Name="Idempotent" Arg='im, ker'/>
+    <Func Name="Idempotent" Arg="im, ker"/>
     <Returns>A transformation or <K>fail</K>.</Returns>
     <Description>
       <C>Idempotent</C> returns the idempotent transformation with image set
@@ -278,8 +274,8 @@ Transformation( [ 2, 4, 2, 6, 6, 7, 8, 2, 10, 10, 11, 8 ] )</Example>
 <!-- *************************************************************** -->
   
   <ManSection>
-    <Func Name="TransformationOp" Arg='obj, list[, func]'/>
-    <Func Name="TransformationOpNC" Arg='obj, list[, func]'/>
+    <Func Name="TransformationOp" Arg="obj, list[, func]"/>
+    <Func Name="TransformationOpNC" Arg="obj, list[, func]"/>
     <Returns>A transformation or <K>fail</K>.</Returns>
     <Description>
       <C>TransformationOp</C> returns the transformation that corresponds to
@@ -305,7 +301,7 @@ Transformation( [ 2, 4, 2, 6, 6, 7, 8, 2, 10, 10, 11, 8 ] )</Example>
       <Example>
 gap> f:=Transformation( [ 10, 2, 3, 10, 5, 10, 7, 2, 5, 6 ] );;
 gap> TransformationOp(f, [ 2, 3 ] );
-IdentityTransformation()
+IdentityTransformation
 gap> TransformationOp(f, [ 1, 2, 3 ] );
 fail
 gap> S:=SemigroupByMultiplicationTable( [ [ 1, 1, 1 ], [ 1, 1, 1 ], 
@@ -317,15 +313,40 @@ Transformation( [ 1, 1, 2 ] )</Example>
     </Description>
   </ManSection>
 
+  <ManSection>
+    <Oper Name="TransformationNumber" Arg="m, n"/>
+    <Oper Name="NumberTransformation" Arg="f[, n]"/>
+    <Returns>A transformation or a number.</Returns>
+    <Description>
+      These functions implement a bijection from the transformations with
+      degree at most <A>n</A> to the numbers <C>[1..<A>n</A>^<A>n</A>]</C>.<P/>
+
+      More precisely, if <A>m</A> and <A>n</A> are positive integers such that
+      <A>m</A> is at most <C><A>n</A>^<A>n</A></C>, then
+      <C>TransformationNumber</C> returns the <A>m</A>th transformation with
+      degree at most <A>n</A>.<P/>
+
+      If <A>f</A> is a transformation and <A>n</A> is a positive integer, which
+      is greater than or equal to the degree of <A>f</A>, then
+      <C>NumberTransformation</C> returns the number in
+      <C>[1..<A>n</A>^<A>n</A>]</C> that corresponds to <A>f</A>. If the
+      optional second argument <A>n</A> is not specified, then the degree of
+      <A>f</A> is used by default. 
+      <Log>
+gap> RandomTransformation(6);             
+Transformation( [ 2, 1, 2, 1, 1, 2 ] )</Log> 
+    </Description>
+  </ManSection>
+
+
 <!-- *************************************************************** -->
 
   <ManSection><Heading>RandomTransformation</Heading>
     <Oper Name="RandomTransformation" Arg="n"/>
     <Returns>A random transformation.</Returns>
     <Description>
-      If <A>n</A> is a positive integer, then a random transformation is
-      returned where the largest moved point and the largest point in the image
-      are at most <A>n</A> and where the internal degree is <A>n</A>. 
+      If <A>n</A> is a positive integer, then <C>RandomTransformation</C>
+      returns a random transformation with degree at most <A>n</A>.
       <Log>
 gap> RandomTransformation(6);             
 Transformation( [ 2, 1, 2, 1, 1, 2 ] )</Log> 
@@ -335,22 +356,13 @@ Transformation( [ 2, 1, 2, 1, 1, 2 ] )</Log>
 <!-- *************************************************************** -->
 
  <ManSection>
-   <Oper Name="IdentityTransformation" Arg='n'/>
+   <Var Name="IdentityTransformation"/>
    <Returns>The identity transformation.</Returns>
    <Description>
-     Returns the identity transformation with internal degree <A>n</A>. 
-     If no argument is given, then the internal degree is <C>0</C>. 
+     Returns the identity transformation, which has degree <C>0</C>. 
      <Example>
-gap> f:=IdentityTransformation(10);
-IdentityTransformation()
-gap> DegreeOfTransformation(f);
-10
-gap> g:=IdentityTransformation();
-IdentityTransformation()
-gap> DegreeOfTransformation(g);
-0
-gap> f=g;
-true</Example>
+gap> f:=IdentityTransformation;
+IdentityTransformation</Example>
    </Description>
   </ManSection>
   
@@ -387,20 +399,19 @@ Transformation( [ 4, 4, 4, 4, 4, 4 ] )</Example>
   types of objects into transformations.
 
   <ManSection>
-  <Oper Name="AsTransformation" Arg='f[, n]'/>
+  <Oper Name="AsTransformation" Arg="f[, n]"/>
   <Returns>A transformation.</Returns>
   <Description>
   <C>AsTransformation</C> 
   returns the permutation, transformation, partial permutation or binary
-  relation <A>f</A> as a transformation. The transformation that is returned by
-  <C>AsTransformation</C> depends on the type of its argument.
+  relation <A>f</A> as a transformation. 
   <List>
     <Mark>for permutations</Mark>
     <Item>
       If <A>f</A> is a permutation and <A>n</A> is a non-negative integer, then 
       <C>AsTransformation(<A>f</A>, <A>n</A>)</C> returns the transformation
-      <C>g</C> with internal degree <A>n</A> such that <C>i^g=i^f</C> for all
-      <C>i</C> in the range <C>[1..<A>n</A>]</C>.<P/>
+      <C>g</C> such that <C>i^g=i^f</C> for all <C>i</C> in the range
+      <C>[1..<A>n</A>]</C>.<P/>
       
       If no non-negative integer <A>n</A> is specified, then
       the largest moved point of <A>f</A> is used as the value for <A>n</A>; see
@@ -409,18 +420,13 @@ Transformation( [ 4, 4, 4, 4, 4, 4 ] )</Example>
     <Mark>for transformations</Mark>      
     <Item>
       If <A>f</A> is a transformation and <A>n</A> is a non-negative integer
-      less than the internal degree of <A>f</A> such that <A>f</A> is a
-      transformation of <C>i^<A>f</A>&lt;=n</C> for <C>i</C> in the range
-      <C>[1..<A>n</A>]</C>, then <C>AsTransformation</C> returns the
-      restriction of <A>f</A> to <C>[1..<A>n</A>]</C>.<P/>
+      less than the degree of <A>f</A> such that <A>f</A> is a
+      transformation of <C>[1..<A>n</A>]</C>, then <C>AsTransformation</C>
+      returns the restriction of <A>f</A> to <C>[1..<A>n</A>]</C>.<P/>
 
-      If <A>f</A> is a transformation and <A>n</A> is a non-negative integer
-      greater than the internal degree of <A>f</A>, then
-      <C>AsTransformation</C> returns a new transformation <C>g</C> such that
-      <C>g=<A>f</A></C> and the internal degree of <C>g</C> is <A>n</A>.<P/>
-
-      If the non-negative integer <A>n</A> is not specified or equals the
-      internal degree of <A>f</A>, then <A>f</A> is returned. 
+      If <A>f</A> is a transformation and <A>n</A> is not specified or equals a
+      is greater than or equal to the degree of <A>f</A>, then <A>f</A> is
+      returned.<P/>
     </Item> 
     <Mark>for partial permutations</Mark>
     <Item>
@@ -470,13 +476,13 @@ gap> AsPartialPerm(last, DomainOfPartialPerm(f));
 gap> AsTransformation(f);
 Transformation( [ 6, 7, 1, 4, 3, 2, 8, 8 ] )
 gap> AsTransformation(Transformation( [ 1, 1, 2 ] ), 0);
-IdentityTransformation()</Example>
+IdentityTransformation</Example>
   </Description>
   </ManSection>
 
   <ManSection>
-  <Oper Name="RestrictedTransformation" Arg='f, list'/>
-  <Oper Name="RestrictedTransformationNC" Arg='f, list'/>
+  <Oper Name="RestrictedTransformation" Arg="f, list"/>
+  <Oper Name="RestrictedTransformationNC" Arg="f, list"/>
   <Returns>A transformation.</Returns>
   <Description>
     <C>RestrictedTransformation</C> returns the new transformation <C>g</C>
@@ -485,7 +491,7 @@ IdentityTransformation()</Example>
   
     <C>RestrictedTransformation</C> checks that <A>list</A> is a duplicate
     free dense list consisting of positive integers, whereas
-    <C>RestrictedTransformationNC</C> performs none of these checks.
+    <C>RestrictedTransformationNC</C> performs no checks.
 
     <Example>
 gap> f:=Transformation( [ 2, 10, 5, 9, 10, 9, 6, 3, 8, 4, 6, 5 ] );;
@@ -494,6 +500,33 @@ Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )</Example>
   </Description>
 </ManSection>
 
+  <ManSection>
+  <Attr Name="PermutationOfImage" Arg="f"/>
+  <Returns>A permutation or <K>fail</K>.</Returns>
+  <Description>
+    If the transformation <A>f</A> is a permutation of the points in its image,
+    then <C>PermutationOfImage</C> returns this permutation. If <A>f</A> does
+    not permute its image, then <K>fail</K> is returned. <P/> 
+
+    If <A>f</A> happens to be a permutation, then <C>PermutationOfImage</C>
+    with argument <A>f</A> returns the same value as <C>AsPermutation</C> with
+    argument <A>f</A>.
+
+  <Example>
+gap> f:=Transformation( [ 5, 8, 3, 5, 8, 6, 2, 2, 7, 8 ] );;
+gap> PermutationOfImage(f);
+fail
+gap> f:=Transformation( [ 8, 2, 10, 2, 4, 4, 7, 6, 9, 10 ] );; 
+gap> PermutationOfImage(f);
+fail
+gap> f:=Transformation( [ 1, 3, 6, 6, 2, 10, 2, 3, 10, 5 ] );;
+gap> PermutationOfImage(f);
+(2,3,6,10,5)
+gap> f:=Transformation( [ 5, 2, 8, 4, 1, 8, 10, 3, 5, 7 ] );;
+gap> PermutationOfImage(f);
+(1,5)(3,8)(7,10)</Example>
+  </Description>
+  </ManSection>
 </Section>
 
 <!-- *************************************************************** -->
@@ -504,16 +537,16 @@ Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )</Example>
     <List>
     <Mark><C><A>i</A> ^ <A>f</A></C></Mark>
     <Item>
-      <Index Key="^"><C>^</C> (for a pos int and a transformation)</Index>
+      <Index Key="\^" Subkey="for a positive integer and a transformation"><C>\^</C></Index>
       returns the image of the positive integer <A>i</A> under the
       transformation <A>f</A>.
     </Item>
     <Mark><C><A>f</A> ^ <A>g</A></C></Mark>
-    <Item><Index Key="^"><C>^</C> (for a transformation and a permutation)
-      </Index>
-    returns <C><A>g</A>^-1*<A>f</A>*<A>g</A></C> when
-     <A>f</A> is a transformation and <A>g</A> is a permutation
-     <Ref Oper="\^" BookName="ref"/>.  
+    <Item>
+      <Index Key="\^" Subkey="for a transformation and a permutation"><C>\^</C></Index>
+      returns <C><A>g</A>^-1*<A>f</A>*<A>g</A></C> when
+      <A>f</A> is a transformation and <A>g</A> is a permutation
+      <Ref Oper="\^" BookName="ref"/>.  
       This operation requires essentially the same number of steps 
       as multiplying a transformation by a permutation, which is approximately
       one third of the number required to first invert <A>g</A>, take the
@@ -522,14 +555,14 @@ Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )</Example>
      </Item>
      <Mark><C><A>f</A> * <A>g</A></C></Mark>
      <Item>
-       <Index Key="*"><C>*</C> (for transformations)</Index>
+       <Index Key="\*" Subkey="for transformations"><C>\*</C></Index>
        returns the composition of <A>f</A> and <A>g</A> when <A>f</A> and
        <A>g</A> are transformations or permutations. The product of a
        permutation and a transformation is returned as a transformation. 
      </Item>
      <Mark><C><A>f</A> / <A>g</A></C></Mark>
     <Item>
-      <Index Key="/"><C>/</C> (for a transformation and perm)</Index>
+      <Index Key="\/" Subkey="for a transformation and a permutation"><C>\/</C></Index>
       returns <C><A>f</A>*<A>g</A>^-1</C> when <A>f</A> is a transformation and
       <A>g</A> is a permutation. 
       This operation requires essentially the same number of steps 
@@ -539,7 +572,7 @@ Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )</Example>
     </Item>
      <Mark><C>LQUO(<A>g</A>, <A>f</A>)</C></Mark>
     <Item>
-      <Index Key="LQUO"><C>LQUO</C> (for a perm and transformation)</Index>
+      <Index Key="LQUO" Subkey="for a permutation and transformation"><C>LQUO</C></Index>
       returns <C><A>g</A>^-1*<A>f</A></C> when <A>f</A> is a transformation and
       <A>g</A> is a permutation. This operation uses essentially the same
       number of steps as multiplying a transformation by a permutation, which
@@ -548,14 +581,16 @@ Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )</Example>
     </Item>
     <Mark><C><A>f</A> &lt; <A>g</A></C></Mark>
     <Item>
-      <Index Key="&lt;"><C>&lt;</C> (for transformations)</Index>
+      <Index Key="\&lt;" Subkey="for transformations"><C>\&lt;</C></Index>
+      <Index Subkey="for transformations">smaller</Index>
       returns <K>true</K> if the image list of <A>f</A>
       is lexicographically less than the image list of <A>g</A>
       and <K>false</K> if it is not.
     </Item>
     <Mark><C><A>f</A> = <A>g</A></C></Mark>
     <Item>
-      <Index Key="="><C>=</C> (for transformations)</Index>
+      <Index Key="\=" Subkey="for transformations"><C>\=</C></Index>
+      <Index Subkey="for transformations">equality</Index>
       returns <K>true</K> if the transformation <A>f</A> equals the
       transformation <A>g</A> and returns <K>false</K> if it does not.
     </Item>
@@ -564,8 +599,8 @@ Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )</Example>
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="PermLeftQuoTransformation" Arg='f, g'/>
-    <Oper Name="PermLeftQuoTransformationNC" Arg='f, g'/>
+    <Oper Name="PermLeftQuoTransformation" Arg="f, g"/>
+    <Oper Name="PermLeftQuoTransformationNC" Arg="f, g"/>
     <Returns>A permutation.</Returns>
     <Description>
       Returns the permutation on the image set of <A>f</A> induced by 
@@ -641,7 +676,7 @@ gap> ComponentTransformationInt(f, 5);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
   <ManSection>
-    <Oper Name="PreImagesOfTransformation" Arg='f, n'/>
+    <Oper Name="PreImagesOfTransformation" Arg="f, n"/>
     <Returns>A set of positive integers.</Returns>
     <Description>
       Returns the preimages of the positive integer <A>n</A> under the
@@ -673,59 +708,33 @@ gap> PreImagesOfTransformation(f, 100);
     <Attr Name="DegreeOfTransformationCollection" Arg="coll"/>
     <Returns>A positive integer.</Returns>
     <Description>
-      The <E>internal degree</E> of a transformation <A>f</A> is the length of 
-      <Ref Oper="ImageListOfTransformation"/>, i.e. the number of 
-      points used to define  <A>f</A> when it was created, which is also the
-      number of points used in the internal representation of <A>f</A>. <P/>
-
-      The internal degree a collection of transformations <A>coll</A> is
-      the maximum internal degree of any transformation in <A>coll</A>. 
+      The <E>degree</E> of a transformation <C>f</C> is the largest value such
+      that <C>n^f&lt;>n</C> or <C>i^f=n</C> for some <C>i&lt;>n</C>.
+      Equivalently, the degree of a transformation is the least value <C>n</C>
+      such that <C>[1..n]</C> is fixed setwise by <C>f</C>.<P/> 
+      
+      The degree a collection of transformations <A>coll</A> is
+      the maximum degree of any transformation in <A>coll</A>. 
       <Example>
-gap> DegreeOfTransformation(IdentityTransformation(10000));
-10000
+gap> DegreeOfTransformation(IdentityTransformation);
+0
 gap> DegreeOfTransformationCollection([ Transformation( [ 1, 3, 4, 1 ] ), 
 > Transformation( [ 3, 1, 1, 3, 4 ]), Transformation( [ 2, 4, 1, 2 ] ) ]);
 5</Example>
     </Description>
   </ManSection>
   
-  <ManSection>
-    <Attr Name="NormalizedDegreeOfTransformation" Arg="f"/>
-    <Attr Name="NormalizedDegreeOfTransformationCollection" Arg="coll"/>
-    <Returns>A positive integer.</Returns>
-    <Description>
-      The <E>normalized degree</E> of a transformation <A>f</A> is 
-      the largest point <C>i</C> or <C>i^<A>f</A></C> such that 
-      <C>i^<A>f</A>&lt;>i</C>.  We refer to the largest such <C>i</C> as the 
-      <E>largest moved point</E> and the largest such <C>i^<A>f</A></C> as the
-      <E>largest image of a moved point</E> of
-      <A>f</A>, respectively. 
-      
-      The normalized degree a collection of transformations <A>coll</A> is
-      the maximum normalized degree of any transformation in <A>coll</A>. 
-      <Example>
-gap> NormalizedDegreeOfTransformation(IdentityTransformation(10000));
-0
-gap> NormalizedDegreeOfTransformation(
-> Transformation( [ 1, 1, 1, 1, 5, 6, 7, 8, 9 ] ) );
-4
-gap> DegreeOfTransformation(
-> Transformation( [ 1, 1, 1, 1, 5, 6, 7, 8, 9 ] ) );              
-9</Example>
-    </Description>
-  </ManSection>
-
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="ImageListOfTransformation" Arg='f[, n]'/>
-    <Oper Name="ListTransformation" Arg='f[, n]'/>
+    <Oper Name="ImageListOfTransformation" Arg="f[, n]"/>
+    <Oper Name="ListTransformation" Arg="f[, n]"/>
     <Returns>The list of images of a transformation.</Returns>
     <Description>
       Returns the list of images of <C>[1..<A>n</A>]</C> under the
       transformation <A>f</A>, which is <C>[1^<A>f</A>..<A>n</A>^<A>f</A>]</C>.
       If the optional second argument <A>n</A> is not present, then the
-      internal degree of <A>f</A> is used by default.<P/>
+      degree of <A>f</A> is used by default.<P/>
 
       This is the analogue for transformations of <Ref Func="ListPerm"/> for
       permutations.
@@ -741,20 +750,14 @@ gap> ImageListOfTransformation(f, 10);
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Attr Name="ImageSetOfTransformation" Arg='f[, n]'/>
+    <Attr Name="ImageSetOfTransformation" Arg="f[, n]"/>
     <Returns>The set of images of the transformation.</Returns>
     <Description>
       Returns the set of points in the list of images of <C>[1..<A>n</A>]</C>
       under <A>f</A>, i.e. the sorted list of images with duplicates removed.
       If the optional second argument <A>n</A> is not given, then the
-      internal degree of <A>f</A> is used. <P/>
+      degree of <A>f</A> is used. <P/>
 
-      Note that the set of images of a transformation <A>f</A> on
-      <C>[1..DegreeOfTransformation(<A>f</A>)]</C> is stored after it is
-      computed, and so the performance of
-      <C>ImageSetOfTransformation(<A>f</A>)</C> is better than 
-      <C>ImageSetOfTransformation(<A>f</A>, <A>n</A>)</C> when <A>n</A> is not
-      equal to the internal degree of <A>f</A>. 
       <Example>
 gap> f:=Transformation( [ 5, 6, 7, 1, 4, 3, 2, 7 ] );;
 gap> ImageSetOfTransformation(f);
@@ -777,18 +780,12 @@ gap> ImageSetOfTransformation(f, 10);
       <A>n</A>, <C>RankOfTransformation</C> returns the size of the set of
       images of the transformation <A>f</A> in the range <C>[1..<A>n</A>]</C>.
       If the optional second argument <A>n</A> is not specified, then the
-      internal degree of <A>f</A> is used. <P/>
+      degree of <A>f</A> is used. <P/>
 
      When the arguments are a transformation <A>f</A> and a list
       <A>list</A> of positive integers, this function returns the size of the
-      set of images of the transformation <A>f</A> on <A>list</A>.<P/>
+      set of images of the transformation <A>f</A> on <A>list</A>.
 
-      Note that the rank of a transformation <A>f</A> on
-      <C>[1..DegreeOfTransformation(<A>f</A>)]</C> is known after it is 
-      computed for the first time. Hence the performance of 
-      <C>RankOfTransformation(<A>f</A>)</C> is better than 
-      <C>RankOfTransformation(<A>f</A>, <A>n</A>)</C> when <A>n</A> is not 
-      equal to the internal degree of <A>f</A>.  
       <Example>
 gap> f:=Transformation( [ 8, 5, 8, 2, 2, 8, 4, 7, 3, 1 ] );;
 gap> ImageSetOfTransformation(f);
@@ -818,8 +815,8 @@ gap> RankOfTransformation(f, [ 2, 5, 8 ] );
 gap> f:=Transformation( [ 6, 10, 1, 4, 6, 5, 1, 2, 3, 3 ] );;
 gap> MovedPoints(f); 
 [ 1, 2, 3, 5, 6, 7, 8, 9, 10 ]
-gap> f:=IdentityTransformation();  
-IdentityTransformation()
+gap> f:=IdentityTransformation;  
+IdentityTransformation
 gap> MovedPoints(f);
 [  ]</Example>
     </Description>
@@ -841,7 +838,7 @@ gap> MovedPoints(f);
 gap> f:=Transformation( [ 7, 1, 4, 3, 2, 7, 7, 6, 6, 5 ] );;
 gap> NrMovedPoints(f);
 9
-gap> NrMovedPoints(IdentityTransformation());
+gap> NrMovedPoints(IdentityTransformation);
 0</Example>
     </Description>
   </ManSection>
@@ -866,7 +863,7 @@ gap> S:=FullTransformationSemigroup(5);
 &lt;full transformation semigroup on 5 pts>
 gap> SmallestMovedPoint(S);              
 1
-gap> S:=Semigroup(IdentityTransformation());;
+gap> S:=Semigroup(IdentityTransformation);;
 gap> SmallestMovedPoint(S);
 infinity
 gap> f:=Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
@@ -896,7 +893,7 @@ gap> S:=FullTransformationSemigroup(5);
 &lt;full transformation semigroup on 5 pts>
 gap> LargestMovedPoint(S);
 5
-gap> S:=Semigroup(IdentityTransformation());;
+gap> S:=Semigroup(IdentityTransformation);;
 gap> LargestMovedPoint(S);
 0
 gap> f:=Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
@@ -930,7 +927,7 @@ gap> S:=FullTransformationSemigroup(5);
 &lt;full transformation semigroup on 5 pts>
 gap> SmallestImageOfMovedPoint(S);              
 1
-gap> S:=Semigroup(IdentityTransformation());;
+gap> S:=Semigroup(IdentityTransformation);;
 gap> SmallestImageOfMovedPoint(S);
 infinity
 gap> f:=Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
@@ -962,7 +959,7 @@ gap> S:=FullTransformationSemigroup(5);
 &lt;full transformation semigroup on 5 pts>
 gap> LargestImageOfMovedPoint(S);
 5
-gap> S:=Semigroup(IdentityTransformation());;
+gap> S:=Semigroup(IdentityTransformation);;
 gap> LargestImageOfMovedPoint(S);
 0
 gap> f:=Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
@@ -974,19 +971,18 @@ gap> LargestImageOfMovedPoint(f);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
   <ManSection>
-    <Func Name="FlatKernelOfTransformation" Arg="f"/>
+    <Func Name="FlatKernelOfTransformation" Arg="f[, n]"/>
     <Returns>The flat kernel of a transformation.</Returns>
     <Description>
-      <C>FlatKernelOfTransformation</C> returns the list of images of a
-      transformation <C>g</C> such that the kernel of <C>g</C> equals the
-      kernel of <C>f</C> and <C>j^g=i</C> for all <C>j</C> in
-      <C>KernelOfTransformation(g)[i]</C>. For any given transformation,
-      there is a unique transformation with this property. The
-      returned transformation <C>g</C> has internal degree equal to that of
-      <A>f</A>.<P/>
+      If the kernel classes of the transformation <A>f</A> on
+      <C>[1..<A>n</A>]</C> are <M>K_1, \dots, K_r</M>, then
+      <C>FlatKernelOfTransformation</C> returns a list <C>L</C> such that
+      <C>L[i]=j</C> for all <C>i</C> in <M>K_j</M>. 
+      For a given transformation and positive integer <A>n</A>,
+      there is a unique such list.<P/>
 
-      The value of <C>FlatKernelOfTransformation</C> is stored after it is
-      first found.  
+      If the optional second argument <A>n</A> is not present, then the degree
+      of <A>f</A> is used by defualt. 
       <Example>
 gap> f:=Transformation( [ 10, 3, 7, 10, 1, 5, 9, 2, 6, 10 ] );;
 gap> FlatKernelOfTransformation(f);
@@ -997,7 +993,7 @@ gap> FlatKernelOfTransformation(f);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
   <ManSection>
-    <Attr Name="KernelOfTransformation" Arg='f[, n, bool]'/>
+    <Attr Name="KernelOfTransformation" Arg="f[, n, bool]"/>
     <Returns>The kernel of a transformation.</Returns>
     <Description>
       When the arguments are a transformation <A>f</A>, a positive integer
@@ -1008,7 +1004,7 @@ gap> FlatKernelOfTransformation(f);
       the non-singleton classes are returned. <P/>
 
       The second and third arguments are optional, the default values are the
-      internal degree of <A>f</A> and <K>true</K>.
+      degree of <A>f</A> and <K>true</K>.
       <Example>
 gap> f:=Transformation( [ 2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5 ] );;
 gap> KernelOfTransformation(f);
@@ -1033,15 +1029,12 @@ gap> KernelOfTransformation(f, false);
   <Returns>A transformation.</Returns>
   <Description>
     <C>InverseOfTransformation</C> returns a semigroup inverse of the
-    transformation <A>f</A> in the full transformation semigroup. An <E>
-      inverse</E> of <A>f</A> is any transformation <C>g</C>
+    transformation <A>f</A> in the full transformation semigroup. An 
+    <E>inverse</E> of <A>f</A> is any transformation <C>g</C>
     such that <C><A>f</A>*g*<A>f</A>=<A>f</A></C> and
     <C>g*<A>f</A>*g=g</C>. 
     Every transformation has at least one inverse in a full
-    transformation semigroup.<P/>
-
-    The transformation returned by this function will have internal degree
-    equal to that of <A>f</A>. 
+    transformation semigroup.
     <Example>
 gap> f:=Transformation( [ 2, 6, 7, 2, 6, 9, 9, 1, 1, 5 ] );;
 gap> g:=InverseOfTransformation(f);
@@ -1053,22 +1046,44 @@ Transformation( [ 8, 1, 1, 1, 10, 2, 3, 1, 6, 1 ] )</Example>
   </Description>
 </ManSection>
 
+<ManSection>
+  <Attr Name="Inverse" Arg="f" Label="for a transformation"/>
+  <Returns>A transformation.</Returns>
+  <Description>
+    If the transformation <A>f</A> is a bijection, then <C>Inverse</C> or 
+    <C><A>f</A>^-1</C> returns the inverse of <A>f</A>. 
+    If <A>f</A> is not a bijection, then <K>fail</K> is returned. 
+    <Example>
+gap> Transformation( [ 3, 8, 12, 1, 11, 9, 9, 4, 10, 5, 10, 6 ] )^-1;
+fail
+gap> Transformation( [ 2, 3, 1 ] )^-1;
+Transformation( [ 3, 1, 2 ] )</Example>
+  </Description>
+</ManSection>
+
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
   <ManSection> 
     <Attr Name="IndexPeriodOfTransformation" Arg="f"/> 
     <Returns>A pair of positive integers.</Returns> 
     <Description> 
-      Returns the least positive integers <C>m, r</C> such that 
-      <C><A>f</A>^(m+r)=<A>f</A>^m</C>, which are  
-      known as the <E>index</E> and <E>period</E> of the transformation 
-      <A>f</A>.  
+      Returns the least positive integers <C>m</C> and <C>r</C> such that
+      <C><A>f</A>^(m+r)=<A>f</A>^m</C>, which are  known as the <E>index</E>
+      and <E>period</E> of the transformation <A>f</A>.  
       <Example> 
 gap> f:=Transformation( [ 3, 4, 4, 6, 1, 3, 3, 7, 1 ] );; 
 gap> IndexPeriodOfTransformation(f); 
 [ 2, 3 ]
 gap> f^2=f^5; 
-true</Example>  
+true
+gap> IndexPeriodOfTransformation(IdentityTransformation);
+[ 1, 1 ]
+gap> IndexPeriodOfTransformation(Transformation([1,2,1]));
+[ 1, 1 ]
+gap> IndexPeriodOfTransformation(Transformation([1,2,3]));
+[ 1, 1 ]
+gap> IndexPeriodOfTransformation(Transformation([1,3,2]));
+[ 1, 2 ]</Example>  
     </Description> 
   </ManSection>
 
@@ -1219,12 +1234,12 @@ gap> CycleTransformationInt(f, 5);
   <Returns>A transformation.</Returns>
   <Description> 
     <C>LeftOne</C> returns an idempotent transformation <C>e</C> such that
-    the kernel (with respect to the internal degree of <A>f</A>) of <C>e</C>
+    the kernel (with respect to the degree of <A>f</A>) of <C>e</C>
     equals the kernel of the transformation <A>f</A> and <C>e*<A>f</A>=f</C>.
     <P/>
 
     <C>RightOne</C> returns an idempotent transformation <C>e</C> such that the
-    image set (with respect to the internal degree of <A>f</A>) of <C>e</C>
+    image set (with respect to the degree of <A>f</A>) of <C>e</C>
     equals the image set of <A>f</A> and <C><A>f</A>*e=f</C>. 
     
     <Example>
@@ -1264,7 +1279,7 @@ true</Example>
       <C>[1..<A>n</A>]</C> otherwise the resulting object will not define a
       transformation. <P/>
 
-      If the optional second argument is not included, then the normalized
+      If the optional second argument is not included, then the 
       degree of <A>f</A> is used by default.<P/>
 
       The transformation <A>f</A> is changed in-place, and
@@ -1301,7 +1316,7 @@ false
     <C>NotationForTransformations</C>; see Section <Ref Func="UserPreference"/>
     for more information about user preferences. <P/>
 
-    If <C>f</C> is a transformation where normalized degree <C>n</C> exceeds
+    If <C>f</C> is a transformation where degree <C>n</C> exceeds
     the value of the user preference <C>TransformationDisplayLimit</C>, then 
     <C>f</C> is displayed as:
     <Log>&lt;transformation on n pts with rank r></Log>
@@ -1309,8 +1324,7 @@ false
     abbreviate the display of transformations defined on many points. The
     default value for the <C>TransformationDisplayLimit</C> is <C>100</C>. <P/>
 
-
-    If the normalized degree of <C>f</C> does not exceed the value of 
+    If the degree of <C>f</C> does not exceed the value of 
     <C>TransformationDisplayLimit</C>, then how <C>f</C> is displayed depends
     on the value of the user preference <C>NotationForTransformations</C>.<P/>
 
@@ -1319,15 +1333,15 @@ false
       <Mark>input</Mark>
       <Item>With this option a transformation <A>f</A> is displayed in as:
         <C>Transformation(ImageListOfTransformation(<A>f</A>, n)</C>
-        where <C>n</C> is the normalized degree of <A>f</A>. The only except is
+        where <C>n</C> is the degree of <A>f</A>. The only exception is
         the identity transformation, which is displayed as:
         <C>IdentityTransformation</C>.  
       </Item>
       <Mark>fr</Mark>
       <Item>With this option a transformation <A>f</A> is displayed in as:
         <C>&lt;transformation: ImageListOfTransformation(<A>f</A>, n)></C>
-        where <C>n</C> is the largest moved point of <A>f</A>. The only except
-        is the identity transformation, which is displyed as:
+        where <C>n</C> is the largest moved point of <A>f</A>. The only
+        exception is the identity transformation, which is displayed as:
         <C>&lt;identity transformation></C>.
       </Item>
     </List>
@@ -1356,7 +1370,7 @@ The <Package>Semigroups</Package> package contains
 many additional functions and methods for computing with semigroups of
 transformations. In particular, <Package>Semigroups</Package> 
 contains more efficient methods than those available in the &GAP; library (and
-in many cases more efficient than any other software) for creating semigroups of transformations, calculating their Green's classes, size, elements,
+in many cases more efficient than any other software) for creating semigroups of transformations, calculating their Green"s classes, size, elements,
 group of units, minimal ideal, small generating sets, testing membership,
 finding the inverses of a regular element, factorizing elements over the
 generators, and more. 
@@ -1374,8 +1388,8 @@ when applied to a transformation semigroup.
 <!-- *************************************************************** -->
 
 <ManSection>
-<Prop Name="IsTransformationSemigroup" Arg='obj'/>
-<Prop Name="IsTransformationMonoid" Arg='obj'/>
+<Prop Name="IsTransformationSemigroup" Arg="obj"/>
+<Prop Name="IsTransformationMonoid" Arg="obj"/>
 <Returns><K>true</K> or <K>false</K>.</Returns>
 <Description>
 A <E>transformation semigroup</E> is simply a semigroup consisting of
@@ -1414,43 +1428,26 @@ For more details see <Ref Filt="IsMagmaWithOne"/>.
 </ManSection>
 
 <ManSection>
-<Attr Name="DegreeOfTransformationSemigroup" Arg='S'/>
+<Attr Name="DegreeOfTransformationSemigroup" Arg="S"/>
 <Returns>A positive integer.</Returns>
 <Description>
   The <E>degree</E> of a transformation semigroup <A>S</A> is just the
-  maximum of the internal degrees of the elements of <A>S</A>.
+  maximum of the degrees of the elements of <A>S</A>.
 
   <Example>
 gap> S:=Semigroup(Transformation( [ 3, 8, 1, 4, 5, 6, 7, 1, 10, 10, 11 ] ),
 > Transformation( [ 1, 2, 3, 4, 5, 6, 7, 8, 1, 1, 11 ] ) );
 &lt;transformation semigroup on 10 pts with 2 generators>
 gap> DegreeOfTransformationSemigroup(S);
-11
-gap> NormalizedDegreeOfTransformationSemigroup(S);
 10</Example>
 </Description>
 </ManSection>
 
-<ManSection>
-<Attr Name="NormalizedDegreeOfTransformationSemigroup" Arg='S'/>
-<Returns>A positive integer.</Returns>
-<Description>
-  The <E>normalized degree</E> of a transformation semigroup <A>S</A> is just
-  the maximum of the normalized degrees of the elements of <A>S</A>.
-
-  <Example>
-gap> S:=Semigroup( Transformation( [ 3, 8, 1, 4, 5, 6, 7, 1, 10, 10, 11 ] ),
-> Transformation( [ 1, 2, 3, 4, 5, 6, 7, 8, 1, 1, 11 ] ) );
-&lt;transformation semigroup on 10 pts with 2 generators>
-gap> NormalizedDegreeOfTransformationSemigroup(S);
-10</Example>
-</Description>
-</ManSection>
 <!-- *************************************************************** -->
 
 <ManSection>
-<Func Name="FullTransformationSemigroup" Arg='n'/>
-<Func Name="FullTransformationMonoid" Arg='n'/>
+<Func Name="FullTransformationSemigroup" Arg="n"/>
+<Func Name="FullTransformationMonoid" Arg="n"/>
 <Returns>The full transformation semigroup of degree <A>n</A>.</Returns>
 <Description>
   If <A>n</A> is a positive integer, then <C>FullTransformationSemigroup</C>
@@ -1474,14 +1471,14 @@ gap> FullTransformationSemigroup(1234);
 <!-- *************************************************************** -->
 
 <ManSection>
-<Prop Name="IsFullTransformationSemigroup" Arg='S'/>
-<Prop Name="IsFullTransformationMonoid" Arg='S'/>
+<Prop Name="IsFullTransformationSemigroup" Arg="S"/>
+<Prop Name="IsFullTransformationMonoid" Arg="S"/>
 <Returns><K>true</K> or <K>false</K>.</Returns>
 <Description>
-  If the transformation semigroup <A>S</A> of degree <C>n</C> equals the full
-  transformation semigroup on <C>n</C> points, then
+  If the transformation semigroup <A>S</A> of degree <C>n</C> contains every
+  transformation of degree at most <C>n</C>, then
   <C>IsFullTransformationSemigroup</C> return <K>true</K> and otherwise it
-  returns <K>false</K>.<P/>
+  returns <K>false</K>.  <P/>
 
   <C>IsFullTransformationMonoid</C> is a synonym of
   <C>IsFullTransformationSemigroup</C>. It is common in the literature 
@@ -1507,14 +1504,14 @@ true</Example>
 <!-- *************************************************************** -->
 
 <ManSection>
-<Attr Name="IsomorphismTransformationSemigroup" Arg='S'/>
-<Attr Name="IsomorphismTransformationMonoid" Arg='S'/>
-<Returns>An isomorphism or anti-isomorphism.</Returns>
+<Attr Name="IsomorphismTransformationSemigroup" Arg="S"/>
+<Attr Name="IsomorphismTransformationMonoid" Arg="S"/>
+<Returns>An isomorphism to a transformation semigroup or monoid.</Returns>
 <Description>
-  returns an isomorphism from the finite semigroup <A>S</A> onto a
-  transformation semigroup which is isomorphic to <A>S</A>. For most types of
-  objects in &GAP; the degree of this transformation semigroup will be equal to
-  the size of <A>S</A> plus <C>1</C>. <P/>
+  Returns an isomorphism from the finite semigroup <A>S</A> to a
+  transformation semigroup. For most types of objects in &GAP; the degree of
+  this transformation semigroup will be equal to the size of <A>S</A> plus
+  <C>1</C>. <P/>
   
   Let <C><A>S</A>^1</C> denote the monoid obtained from <A>S</A> by adjoining
   an identity element. Then  <A>S</A> acts faithfully on <C><A>S</A>^1</C> by
@@ -1535,10 +1532,10 @@ true</Example>
   
   <C>IsomorphismTransformationMonoid</C> differs from
   <C>IsomorphismTransformationSemigroup</C> 
-  only in that its range is a transformation monoids, and not only a semigroup,
+  only in that its range is a transformation monoid, and not only a semigroup,
   when the semigroup <A>S</A> is a monoid. 
 
-  <Example>
+  <Log>
 gap> gens:= [ [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ], 
 >  [ [ Z(3), Z(3)^0 ], [ Z(3), 0*Z(3) ] ], 
 >  [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] ];;
@@ -1550,14 +1547,14 @@ gap> S:=SymmetricInverseSemigroup(4);
 &lt;symmetric inverse semigroup on 4 pts>
 gap> IsomorphismTransformationMonoid(S);
 MappingByFunction( &lt;symmetric inverse semigroup on 4 pts>, 
-&lt;transformation monoid on 5 pts with 5 generators>
+&lt;transformation monoid on 5 pts with 4 generators>
  , function( x ) ... end, &lt;Operation "AsPartialPerm"> )
 gap> G:=Group((1,2,3));
 Group([ (1,2,3) ])
 gap> IsomorphismTransformationMonoid(G);
 MappingByFunction( Group([ (1,2,3) ]), &lt;commutative transformation 
  monoid on 3 pts with 1 generator>
- , function( x ) ... end, function( x ) ... end )</Example>
+ , function( x ) ... end, function( x ) ... end )</Log>
 </Description>
 </ManSection>
   

@@ -14,10 +14,11 @@
 # The URL must be started with "http". The option "MOVE" is used to enforce
 # the change of the URL in case if the stored URL is different.
 
+4ti2Interface http://wwwb.math.rwth-aachen.de/~gutsche/gap_packages/4ti2Interface/PackageInfo.g
 ACE         http://school.maths.uwa.edu.au/~gregg/ACE/PackageInfo.g
 AClib       http://www.icm.tu-bs.de/~beick/soft/aclib/PackageInfo.g
 Alnuth      http://www.icm.tu-bs.de/ag_algebra/software/Alnuth/PackageInfo.g
-ANUPQ       http://www.math.rwth-aachen.de/~Greg.Gamble/ANUPQ/PackageInfo.g
+ANUPQ       http://gap-system.github.io/anupq/PackageInfo.g
 AtlasRep    http://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep/PackageInfo.g
 AutoDoc     http://wwwb.math.rwth-aachen.de/~gutsche/gap_packages/AutoDoc/PackageInfo.g
 Automata    http://www.fc.up.pt/cmup/mdelgado/automata/PackageInfo.g
@@ -30,6 +31,7 @@ Citrus      http://www-groups.mcs.st-and.ac.uk/~jamesm/citrus/PackageInfo.g
 cohomolo    http://www.warwick.ac.uk/staff/D.F.Holt/cohomolo/PackageInfo.g
 Congruence  http://www.cs.st-andrews.ac.uk/~alexk/congruence/PackageInfo.g
 Convex      http://wwwb.math.rwth-aachen.de/~gutsche/gap_packages/Convex/PackageInfo.g
+CoReLG      http://science.unitn.it/~corelg/PackageInfo.g
 Crime       http://math.uic.edu/~marcus/Crime/PackageInfo.g
 CRISP       http://www.icm.tu-bs.de/~bhoeflin/crisp/PackageInfo.g
 Cryst       http://www.math.uni-bielefeld.de/~gaehler/gap45/Cryst/PackageInfo.g
@@ -68,6 +70,7 @@ hecke       http://home.in.tum.de/~traytel/hecke/PackageInfo.g
 homalg      http://homalg.math.rwth-aachen.de/~barakat/homalg-project/homalg/PackageInfo.g
 HomalgToCAS http://homalg.math.rwth-aachen.de/~barakat/homalg-project/HomalgToCAS/PackageInfo.g
 idrel       http://www.maths.bangor.ac.uk/chda/gap4/idrel/PackageInfo.g
+IntPic      http://www.fc.up.pt/cmup/mdelgado/intpic/PackageInfo.g
 IO          http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/iofor4.5/PackageInfo.g
 IO_ForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/IO_ForHomalg/PackageInfo.g
 IRREDSOL    http://www.icm.tu-bs.de/~bhoeflin/irredsol/PackageInfo.g
@@ -76,6 +79,8 @@ kan         http://www.maths.bangor.ac.uk/chda/gap4/kan/PackageInfo.g
 kbmag       http://www.warwick.ac.uk/~mareg/kbmag/PackageInfo.g
 LAGUNA      http://www.cs.st-andrews.ac.uk/~alexk/laguna/PackageInfo.g
 liealgdb    http://www.sztaki.hu/~schneider/Research/LieAlgDB/PackageInfo.g
+LiePRing    http://www.icm.tu-bs.de/~beick/soft/liepring/PackageInfo.g
+LieRing     http://www.science.unitn.it/~degraaf/liering/PackageInfo.g
 linboxing   http://www.cs.st-andrews.ac.uk/~pas/linboxing/PackageInfo.g
 LocalizeRingForHomalg http://homalg.math.rwth-aachen.de/~markus/LocalizeRingForHomalg/PackageInfo.g
 loops       http://www.math.du.edu/loops/PackageInfo.g
@@ -108,6 +113,7 @@ Semigroups  http://www-groups.mcs.st-andrews.ac.uk/~jamesm/semigroups/PackageInf
 SgpViz      http://www.fc.up.pt/cmup/mdelgado/sgpviz/PackageInfo.g
 simpcomp    http://www.igt.uni-stuttgart.de/LstDiffgeo/simpcomp/PackageInfo.g
 singular    http://www.gap-system.org/HostedGapPackages/singular/PackageInfo.g
+SLA         http://www.science.unitn.it/~degraaf/sla/PackageInfo.g
 Smallsemi   http://www-groups.mcs.st-andrews.ac.uk/~jamesm/smallsemi/PackageInfo.g
 SONATA      http://www.algebra.uni-linz.ac.at/Sonata/PackageInfo.g
 Sophus      http://www.sztaki.hu/~schneider/Research/Sophus/PackageInfo.g

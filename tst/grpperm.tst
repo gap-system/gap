@@ -67,8 +67,23 @@ gap> group:=
 gap> perf:=RepresentativesPerfectSubgroups(group);;
 gap> List(perf,Size);
 [ 1, 60, 960, 30720 ]
-
-# that's all, folks
+gap> g:=WreathProduct(MathieuGroup(11),Group((1,2)));
+<permutation group of size 125452800 with 5 generators>
+gap> Length(ConjugacyClassesSubgroups(g));
+2048
+gap> g:=SemidirectProduct(GL(3,5),GF(5)^3);
+<matrix group of size 186000000 with 3 generators>
+gap> g:=Image(IsomorphismPermGroup(g));
+<permutation group of size 186000000 with 3 generators>
+gap> List(MaximalSubgroupClassReps(g),Size);
+[ 93000000, 1488000, 6000000, 6000000, 60000, 48000, 46500 ]
+gap> g:=Image(IsomorphismPermGroup(GL(2,5)));;
+gap> w:=WreathProduct(g,SymmetricGroup(5));;
+gap> m:=MaximalSubgroupClassReps(w);;
+gap> Collected(List(m,x->Index(w,x)));
+[ [ 2, 3 ], [ 5, 1 ], [ 6, 1 ], [ 10, 1 ], [ 16, 1 ], [ 3125, 1 ], 
+  [ 7776, 1 ], [ 100000, 1 ] ]
+gap> Unbind(m);Unbind(w);Unbind(g);  
 gap> STOP_TEST( "grpperm.tst", 490500000 );
 
 #############################################################################
