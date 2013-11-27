@@ -304,8 +304,10 @@ if GAP["cflags"]:
 for define in defines:
   cflags += " -D" + define
 
-if os.uname()[0] == "Linux":
+if sys.platform.startswith("linux"):
   linkflags += " -Wl,-export-dynamic"
+elif sys.platform.startswith("dragonfly"):
+  linkflags += " -Xlinker -E"
 
 GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags+linkflags)
 
