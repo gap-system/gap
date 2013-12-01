@@ -838,6 +838,11 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     return Filtered(r,i->i[1]>1);
   end;
 
+  # fix O5 to SP4
+  if id.series="B" and id.parameter[1]=2 then
+    id:=rec(name:=id.name,series:="C",parameter:=id.parameter);
+  fi;
+
   if IsBound(id.parameter) then
     par:=id.parameter;
     if IsList(par) then
@@ -898,8 +903,7 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     nam:=Concatenation("U",String(par[1]+1),"(",String(par[2]),")");
     e:=EFactors(Gcd(par[1]+1,par[2]+1),2*expo,1);
   elif id.series="B" then
-    # prefer Sp4 over O5
-    nam:=Concatenation("S",String(2*par[1]),"(",String(par[2]),")");
+    nam:=Concatenation("O",String(2*par[1]+1),"(",String(par[2]),")");
     if par[1]=2 and par[2]=3 then
       nam:="U4(2)"; # library name
     fi;

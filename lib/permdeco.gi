@@ -12,7 +12,7 @@
 
 InstallMethod( FittingFreeLiftSetup, "permutation", true, [ IsPermGroup ],0,
 function( G )
-local   pcgs,r,hom,A,iso;
+local   pcgs,r,hom,A,iso,p,i;
   
   r:=RadicalGroup(G);
   hom:=NaturalHomomorphismByNormalSubgroup(G,r);
@@ -24,7 +24,9 @@ local   pcgs,r,hom,A,iso;
   if not HasPcgsElementaryAbelianSeries(r) then
     SetPcgsElementaryAbelianSeries(r,pcgs);
   fi;
-  A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), false );
+
+  A:=CreateIsomorphicPcGroup(pcgs,true,false);
+
   iso := GroupHomomorphismByImagesNC( G, A, pcgs, GeneratorsOfGroup( A ));
   SetIsBijective( iso, true );
   return rec(pcgs:=pcgs,

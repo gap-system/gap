@@ -90,6 +90,10 @@ local ffs,hom,U,rest,ker,r;
     ipcgs:=InducedPcgsByPcSequenceNC(ffs.pcgs,ipcgs);
   fi;
 
+  if not HasOneOfPcgs(ipcgs) then
+    SetOneOfPcgs(ipcgs,One(G));
+  fi;
+
   U:=SubgroupNC(G,Concatenation(gens,ipcgs));
 
   gens:=Concatenation(gens,ipcgs);

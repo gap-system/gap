@@ -132,8 +132,9 @@ local  hom,fg,fpi,fpg,nt,fam;
 
   else
     if (Index(ocr.group,nt)>Size(nt)^3
-	  or Index(ocr.group,nt)>500000) and not
-	  KnownNaturalHomomorphismsPool(ocr.group,nt) then
+	  or Index(ocr.group,nt)>500000) and 
+	  (not KnownNaturalHomomorphismsPool(ocr.group,nt) or 
+	  DegreeNaturalHomomorphismsPool(ocr.group,nt)>10000) then
       # computing a factor representation may be too hard
       hom:=false;
     else

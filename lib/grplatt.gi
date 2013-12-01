@@ -1864,7 +1864,7 @@ local G,	# group
 	      j!.lattfpres:=IsomorphismFpGroupByChiefSeriesFactor(j,"x",M);
 	    fi;
 	    ocr.factorfphom:=j!.lattfpres;
-	    Assert(2,KernelOfMultiplicativeGeneralMapping(ocr.factorfphom)=M);
+	    Assert(3,KernelOfMultiplicativeGeneralMapping(ocr.factorfphom)=M);
 
 	    # we want only normal complements. Therefore the 1-Coboundaries must
 	    # be trivial. We compute these first.
@@ -1896,7 +1896,7 @@ local G,	# group
 			if not IsPcGroup(k) then
 			  k!.lattfpres:=ComplementFactorFpHom(
 			    ocr.factorfphom,l,M,N,k,ocr.generators,comp);
-	    Assert(1,KernelOfMultiplicativeGeneralMapping(k!.lattfpres)=N);
+	    Assert(3,KernelOfMultiplicativeGeneralMapping(k!.lattfpres)=N);
 			fi;
                         k!.obtain:="compl";
 		      fi;
@@ -2080,7 +2080,7 @@ local G,	# group
       for i in [1..firsts] do
 	l:=nt[i];
 	if IsBound(l!.lattfpres) then
-	  Assert(1,KernelOfMultiplicativeGeneralMapping(l!.lattfpres)=M);
+	  Assert(3,KernelOfMultiplicativeGeneralMapping(l!.lattfpres)=M);
 	  # lift presentation
 	  # note: if notabelian mpcgs is an fp hom
 	  l!.lattfpres:=LiftFactorFpHom(l!.lattfpres,l,M,N,mpcgs);

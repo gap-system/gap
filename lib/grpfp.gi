@@ -1517,7 +1517,6 @@ function( G, elts )
     return F / rels;
 end );
 
-
 #############################################################################
 ##
 #M  FactorFreeGroupByRelators(<F>,<rels>) .  factor of free group by relators
@@ -6066,6 +6065,7 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup,
   [ IsFpGroup and IsAbelian ],
   IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup );
 
+InstallValue(TRIVIAL_FP_GROUP,FreeGroup(0,"TrivGp")/[]);
 
 #############################################################################
 ##

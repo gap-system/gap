@@ -7,13 +7,13 @@
 # integration : to test with the tip of the integration branch
 
 pkg-update:
-	./mergePackages tip 
+	./mergePackages tip citrus=no liepring=no
 
 pkg-minor:
-	./mergePackages tip
+	./mergePackages tip citrus=no liepring=no
 
 pkg-major:
-	./mergePackages tip
+	./mergePackages tip citrus=no liepring=no
 
 pkg-integration:
-	./mergePackages tip orb=no citrus=no
+	./mergePackages tip citrus=no liepring=no

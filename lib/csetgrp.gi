@@ -635,7 +635,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 
       Sort(r,function(a,b) return Size(a)<Size(b);end);
       for j in r do
-	Print("j=",Size(j),"\n");
+	#Print("j=",Size(j),"\n");
 	t:=AscendingChain(G,j:refineChainActionLimit:=actlimit);
 	if maxidx(t)<maxidx(c) and maxidx(t)<badlimit then
 	  c:=t;

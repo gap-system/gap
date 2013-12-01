@@ -86,6 +86,7 @@ LocalizeRingForHomalg http://homalg.math.rwth-aachen.de/~markus/LocalizeRingForH
 loops       http://www.math.du.edu/loops/PackageInfo.g
 MapClass    http://web.mat.bham.ac.uk/~jamesa/mapclass/PackageInfo.g 
 MatricesForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/MatricesForHomalg/PackageInfo.g
+ModIsom     http://www.icm.tu-bs.de/~beick/soft/modisom/PackageInfo.g
 Modules     http://homalg.math.rwth-aachen.de/~barakat/homalg-project/Modules/PackageInfo.g
 Nilmat      http://larmor.nuigalway.ie/~dane/nilmat/PackageInfo.g
 nq          http://www.icm.tu-bs.de/ag_algebra/software/NQ/PackageInfo.g

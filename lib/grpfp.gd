@@ -1335,6 +1335,9 @@ DeclareGlobalFunction("ParseRelators");
 ##
 DeclareGlobalFunction("StringFactorizationWord");
 
+# used in homomorphisms
+DeclareGlobalVariable("TRIVIAL_FP_GROUP");
+
 #############################################################################
 ##
 #E

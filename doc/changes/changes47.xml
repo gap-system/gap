@@ -2,14 +2,15 @@
 <Heading>Changes between &GAP; 4.6 and &GAP; 4.7</Heading>
 
 This chapter contains an overview of most important changes 
-introduced in &GAP; 4.7.1 release.
+introduced in &GAP; 4.7.2 release (the first public release
+of &GAP; 4.7).
 
 <!--
 It also contains information about subsequent update releases for &GAP; 4.7.
 -->
 
 <Section Label="fix470"> 
-<Heading>&GAP; 4.7.1 (November 2013)</Heading>
+<Heading>&GAP; 4.7.2 (December 2013)</Heading>
 
 <Subsection Label="Changes in the core GAP47 system"> 
 <Heading>Changes in the core &GAP; system introduced in &GAP; 4.7</Heading>
@@ -204,6 +205,13 @@ the identity element of the group.
 [Reported by Ignat Soroko]
 </Item>
 <Item>
+<!-- #454 -->
+Fixed regression in heuristics used by 
+<Ref Oper="NaturalHomomorphismByNormalSubgroup" BookName="ref"/> that
+could produce a permutation representation of an unreasonably large degree.
+[Reported by Izumi Miyamoto]
+</Item>
+<Item>
 <!-- #129 -->
 Fixed inconsistent behaviour of <C>QuotientMod( Integers, r, s, m )</C>
 in the case where <A>s</A> and <A>m</A> are not coprime. This fix also 
@@ -297,7 +305,7 @@ to specify this. The value of this preference is also accessible in
 <Index>Packages, new</Index>
 At the time of the release of &GAP; 4.6.5 there were 107 packages 
 redistributed with &GAP;. The first public release of &GAP;&nbsp;4.7 
-contains 112 packages.
+contains 114 packages.
 <P/>
 
 One of essential changes is that
@@ -306,6 +314,7 @@ to <Package>Semigroups</Package>. The package has been completely
 overhauled, the performance has been improved, and the code has been 
 generalized so that in the future the same code can be used to compute 
 with other types of semigroups.
+<P/>
 
 Furthermore, new packages that have been added to the redistribution 
 since the release of &GAP; 4.6.5 are: 
@@ -333,6 +342,23 @@ different colors for the cells containing them.
 constructing finitely-presented Lie rings and calculating the Lazard 
 correspondence. The package also provides a database of small 
 <M>n</M>-Engel Lie rings. 
+</Item>
+<Item>
+<Package>LiePRing</Package> package by Michael Vaughan-Lee and Bettina 
+Eick, introducing a new datastructure for nilpotent Lie rings of prime-power 
+order. This allows to define such Lie rings for specific primes as well 
+as for symbolic primes and other symbolic parameters. The package also 
+includes a database of nilpotent Lie rings of order at most <M>p^7</M> 
+for all primes <M>p > 3</M>.
+</Item>
+<Item>
+<Package>ModIsom</Package> by Bettina Eick, which contains various
+methods for computing with nilpotent associative algebras. In particular,
+it contains a method to determine the automorphism group and to test
+isomorphisms of such algebras over finite fields and of modular group
+algebras of finite <M>p</M>-groups. Further, it contains a nilpotent quotient
+algorithm for finitely presented associative algebras and a method
+to determine Kurosh algebras.
 </Item>
 <Item>
 <Package>SLA</Package> by Willem de Graaf for computations with 

@@ -4,9 +4,9 @@
 # version to wrap - adjust major and minor numbers as needed
 #
 # major release number (i.e. the last number in GAP 4.4, 4.5, 4.6)
-export MAJORVERSION="7"
+export MAJORVERSION="8"
 # minor release number (i.e. the last number in GAP 4.4.12, 4.5.5, 4.5.17)
-export MINORVERSION="1"
+export MINORVERSION="0"
 
 #-----------------------------------------------------------------------------
 # everything below normally need not to be changed.
@@ -19,7 +19,7 @@ export FULLVERSION="$MAJORVERSION.$MINORVERSION"
 #   the branch you need, e.g. "stable-4.5", "default" or "integration"
 # - to get the state used for the previous release (e.g. to merge with 
 #   the new packages archive, use corresponding tag, e.g. "v4.5.6" 
-export GAPHGVERSION="stable-4.7"
+export GAPHGVERSION="default"
 
 # directory name (e.g. "gap4r5")
 export DISTNAME="gap4r$MAJORVERSION"

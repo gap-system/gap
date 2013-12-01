@@ -469,6 +469,7 @@ local a,h,d;
     h:=StringHOMEPath();
     d:=List(DirectoryContents(h),LowercaseString);
     a:=First(["My Documents", #en
+          "Documents", #en-win8
 	      "Eigene Dateien", #de
 	      "Documenti", #it
 	      "Mes documents", #fr

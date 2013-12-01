@@ -523,7 +523,7 @@ end);
 BADINDEX:=1000; # the index that is too big
 GenericFindActionKernel:=function(arg)
 local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, bv, badi,
-totalcnt, interupt, u, nu, cor, zzz,bigperm,perm;
+totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
 
   G:=arg[1];
   N:=arg[2];
@@ -593,6 +593,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm;
     #cnt:=25;
   #fi;
 
+  badcores:=[];
   badi:=BADINDEX;
   totalcnt:=0;
   interupt:=false;
@@ -632,27 +633,35 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm;
 	# Abbruchkriterium: Bis kein Normalteiler, es sei denn, es ist N selber
 	# (das brauchen wir, um in einigen trivialen F"allen abbrechen zu
 	# k"onnen)
+#Print("nu=",Length(GeneratorsOfGroup(nu))," : ",Size(nu),"\n");
       until 
         
         # der Index ist nicht so klein, da"s wir keine Chance haben
-	((not bigperm or
+	not ForAny(badcores,x->IsSubset(nu,x)) and (((not bigperm or
 	Length(Orbit(nu,MovedPoints(G)[1]))<NrMovedPoints(G)) and 
 	(Index(G,nu)>50 or Factorial(Index(G,nu))>=Index(G,N)) and
-	not IsNormal(G,nu)) or IsSubset(u,nu) or interupt;
+	not IsNormal(G,nu)) or IsSubset(u,nu) or interupt);
+
       Info(InfoFactor,4,"Index ",Index(G,nu));
       u:=nu;
+
     until 
       # und die Gruppe ist nicht zuviel schlechter als der
       # beste bekannte Index. Daf"ur brauchen wir aber wom"oglich mehrfache
       # Erweiterungen.
-      interupt or (((Length(arg)=2 or Index(G,u)<=100*knowi)));
+      interupt or (((Length(arg)=2 or Index(G,u)<knowi)));
 
     if Index(G,u)<knowi then
+
+      #Print("Index:",Index(G,u),"\n");    
 
       if simple and u<>G then
 	cor:=TrivialSubgroup(G);
       else
 	cor:=Core(G,u);
+      fi;
+      if Size(cor)>Size(N) and IsSubset(cor,N) and not cor in badcores then
+	Add(badcores,cor);
       fi;
       # store known information(we do't act, just store the subgroup.
       # Thus this is fairly cheap
@@ -1308,7 +1317,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp,
   "test if known/try solvable factor for permutation groups",
   IsIdenticalObj, [ IsPermGroup, IsPermGroup ], 0,
 function( G, N )
-local   map,  pcgs, A, filter;
+local   map,  pcgs, A, filter,p,i;
     
   if KnownNaturalHomomorphismsPool(G,N) then
     A:=DegreeNaturalHomomorphismsPool(G,N);
@@ -1333,8 +1342,9 @@ local   map,  pcgs, A, filter;
       TryNextMethod();
   fi;
 
-  # Construct the pcp group <A>.
-  A := PermpcgsPcGroupPcgs( pcgs, pcgs!.permpcgsNormalSteps, false );
+  # Construct or look up the pcp group <A>.
+  A:=CreateIsomorphicPcGroup(pcgs,false,false);
+
   UseFactorRelation( G, N, A );
 
   # Construct the epimorphism from <G> onto <A>.

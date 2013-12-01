@@ -724,7 +724,7 @@ end;
 InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       mp,cen,i,j,imgs,ok,size,l,hom,cenis,reps,repspows,sortrels,genums,wert,p,
-      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond;
+      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond,oneouter;
 
   len:=Length(clali);
   if ForAny(clali,i->Length(i)=0) then
@@ -744,6 +744,13 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     result:=[];
     rig:=false;
   fi;
+
+  if IsBound(params.oneouter) then
+    oneouter:=params.oneouter;
+  else
+    oneouter:=false;
+  fi;
+
 
   # extra condition?
   if IsBound(params.condition) then
@@ -1039,6 +1046,9 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 	      else
 		Add(result,imgs);
 	      fi;
+	      if oneouter<>false and not IsInnerAutomorphism(imgs) then
+		return result;
+	      fi;
 	    else
 	      return imgs;
 	    fi;
@@ -1150,7 +1160,7 @@ end);
 ##       It needs, that both groups are not cyclic.
 ##
 InstallGlobalFunction(Morphium,function(G,H,DoAuto)
-local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,
+local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
       gens,i,c,hom,free,elms,price,result,rels,inns,bcl,vsu;
 
   IsSolvableGroup(G); # force knowledge
@@ -1300,7 +1310,24 @@ local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,
       elms:=false;
     fi;
 
-    result:=rec(aut:=MorClassLoop(H,combi,result,15));
+    # catch case of simple groups with prime order outers -- one outer
+    # automorphism suffices.
+    if IsSimpleGroup(H) then
+      dat:=DataAboutSimpleGroup(H);
+      if IsBound(dat.fullAutGroup) then
+	if dat.fullAutGroup[1]=1 then
+	  # all automs are inner.
+	  result:=rec(aut:=result.aut);
+	else
+	  if IsPrime(dat.fullAutGroup[1]) then
+	    result.oneouter:=dat.fullAutGroup[1];
+	  fi;
+	  result:=rec(aut:=MorClassLoop(H,combi,result,15));
+	fi;
+      fi;
+    else
+      result:=rec(aut:=MorClassLoop(H,combi,result,15));
+    fi;
 
     if elms<>false then
       result.elms:=elms;
