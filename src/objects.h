@@ -381,6 +381,7 @@ static inline Obj prod_intobjs(Int l, Int r)
 
 #define TESTING (1 << 8)
 #define TESTED (1 << 9)
+#define FIXED_REGION (1 << 10)
 
 /****************************************************************************
 **
