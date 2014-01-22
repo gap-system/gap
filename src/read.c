@@ -2028,8 +2028,8 @@ void ReadFor (
       TLS->currLVars = currLVars;
       TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
       TLS->ptrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
-      if (TLS->countNams > 0)
-	TLS->countNams--;
+/*      if (TLS->countNams > 0)
+	TLS->countNams--;*/
     }
 }
 
