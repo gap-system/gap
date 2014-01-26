@@ -1913,7 +1913,7 @@ static Int InitLibrary (
 static Int InitKernel (
     StructInitInfo *    module )
 {
-  RecursionTrapInterval = 5000;
+  RecursionTrapInterval = 1000;
   InitCopyGVar("STEVES_TRACING", &STEVES_TRACING);
   
     /* make the global variable known to Gasman                            */
