@@ -1,0 +1,11 @@
+--- gc-7.3dev/configure	2013-08-18 01:34:06.000000000 +0000
++++ gc-7.3dev-patch/configure	2013-10-03 13:29:22.000000000 +0000
+@@ -5124,7 +5124,7 @@
+         THREADDLLIBS=-pthread
+         INCLUDES="$INCLUDES -pthread"
+         ;;
+-     *-*-freebsd*)
++     *-*-freebsd*|*-*-dragonfly*)
+         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"FreeBSD does not yet fully support threads with Boehm GC.\"" >&5
+ $as_echo "$as_me: WARNING: \"FreeBSD does not yet fully support threads with Boehm GC.\"" >&2;}
+         $as_echo "#define GC_FREEBSD_THREADS 1" >>confdefs.h

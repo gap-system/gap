@@ -52,6 +52,29 @@ if not cpp_compiler:
 platform_name = commands.getoutput("cnf/config.guess")
 build_dir = "bin/" + platform_name + "-" + os.path.basename(compiler) + "-hpc"
 
+def which(program):
+  # This only works on UNIXes, but we don't call it on Windows.
+  def is_executable(path):
+    return os.path.isfile(path) and os.access(path, os.X_OK)
+  path = os.environ.get("PATH")
+  if not path:
+    return 0
+  path = path.split(":")
+  for p in path:
+    progpath = os.path.join(p, program)
+    if is_executable(progpath):
+      return progpath
+  return None
+
+makeprog = "make"
+for osprefix in ["freebsd", "openbsd", "netbsd", "dragonfly"]:
+  if sys.platform.startswith(osprefix):
+    if not which("gmake"):
+      print "=== gmake is needed to build HPC-GAP on BSD systems. ==="
+      Exit(1)
+    makeprog = "gmake"
+    break
+
 # We're working around some cygwin compatibility issues.
 # Cygwin does not work with the recent Boehm GC development branch;
 
@@ -282,8 +305,10 @@ if GAP["cflags"]:
 for define in defines:
   cflags += " -D" + define
 
-if os.uname()[0] == "Linux":
+if sys.platform.startswith("linux"):
   linkflags += " -Wl,-export-dynamic"
+elif sys.platform.startswith("dragonfly"):
+  linkflags += " -Xlinker -E"
 
 GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags+linkflags)
 
@@ -330,8 +355,8 @@ def build_external(libname, confargs="", makeargs="",
   print "=== Building " + libname + " ==="
   if os.system("cd " + abi_path + "/" + libname
 	  + " && ./configure --prefix=$PWD/.. --libdir=$PWD/../lib" + confargs
-	  + " && make -j " + str(jobs) + makeargs
-	  + " && make" + makeargs + " install") != 0:
+	  + " && " + makeprog + " -j " + str(jobs) + makeargs
+	  + " && " + makeprog + makeargs + " install") != 0:
     print "=== Failed to build " + libname + " ==="
     Exit(1)
 
@@ -360,7 +385,7 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
     confargs="--disable-shared --disable-gcj-support --enable-large-config" +
       (GAP["gc"] == "boehm-par" and " --enable-parallel-mark" or
                                     " --disable-parallel-mark"),
-    patch=(GAP["gc"].startswith("boehm-") and ["gc-7.3dev-tl.patch"] or []))
+    patch=(GAP["gc"].startswith("boehm-") and ["gc-7.3dev-tl.patch", "gc-7.3dev-configure.patch"] or []))
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
   os.environ["CXX"] = GAP["CXX"]+" -m"+GAP["abi"]
@@ -437,7 +462,7 @@ if GAP["mpi"]:
 
 preprocess = string.replace(GAP["preprocess"], "%", " ")
 if GAP["ward"]:
-  preprocess = GAP["ward"] + "/bin/addguards2c" + \
+  preprocess = GAP["ward"] + "/bin/addguards2" + \
     make_cc_options("-I", include_path) + make_cc_options("-D", defines)
 
 if not GetOption("clean") and not GetOption("help"):
