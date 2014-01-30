@@ -45,6 +45,8 @@ extern Obj PublicRegionName;
 
 void SetRegionName(Region *region, Obj name);
 Obj GetRegionName(Region *region);
+Obj GetRegionLockCounters(Region *region);
+void ResetRegionLockCounter(Region *region);
 
 void LockThreadControl(int modify);
 void UnlockThreadControl(void);

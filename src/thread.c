@@ -532,8 +532,15 @@ void HashUnlockShared(void *object) {
 
 void RegionWriteLock(Region *region)
 {
-  pthread_rwlock_wrlock(region->lock);
-  region->owner = TLS;
+  int result = !pthread_rwlock_trywrlock(region->lock);
+
+  if(result) {
+    ATOMIC_INC(&region->lock_count);
+    region->owner = TLS;
+  } else {
+    ATOMIC_INC(&region->contented_count);
+    pthread_rwlock_wrlock(region->lock);
+  }
 }
 
 int RegionTryWriteLock(Region *region)
@@ -636,6 +643,29 @@ static Obj NewList(UInt size)
   return list;
 }
 
+Obj GetRegionLockCounters(Region *region)
+{
+  Obj result = NewList(3);
+
+  if (region) {
+    SET_ELM_PLIST(result,1,INTOBJ_INT(region->lock_try_count));
+    SET_ELM_PLIST(result,2,INTOBJ_INT(region->lock_count));
+    SET_ELM_PLIST(result,3,INTOBJ_INT(region->contented_count));
+  }
+  MEMBAR_READ();
+  return result;
+}
+
+void ResetRegionLockCounters(Region *region)
+{
+  if (region) {
+    region->lock_try_count
+      = region->lock_count
+      = region->contented_count
+      = 0;
+  }
+  MEMBAR_WRITE();
+}
 
 #define MAX_LOCKS 1024
 
@@ -744,7 +774,7 @@ void PauseThread(int threadID) {
       break;
     case TSTATE_BLOCKED:
     case TSTATE_SYSCALL:
-      if (LockAndUpdateThreadState(threadID, 
+      if (LockAndUpdateThreadState(threadID,
           state, TSTATE_PAUSED|(TLS->threadID << TSTATE_SHIFT)))
 	return;
       break;
@@ -880,7 +910,7 @@ void InterruptThread(int threadID, int handler) {
     int state = GetThreadState(threadID);
     switch (state & TSTATE_MASK) {
     case TSTATE_RUNNING:
-      if (UpdateThreadState(threadID, TSTATE_RUNNING, 
+      if (UpdateThreadState(threadID, TSTATE_RUNNING,
         TSTATE_INTERRUPTED | (handler << TSTATE_SHIFT))) {
 	SetInterrupt(threadID);
         return;

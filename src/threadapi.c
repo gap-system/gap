@@ -775,7 +775,7 @@ Obj FuncHASH_UNLOCK(Obj self, Obj target) {
 Obj FuncHASH_LOCK_SHARED(Obj self, Obj target) {
   HashLockShared(target);
   return (Obj) 0;
-} 
+}
 Obj FuncHASH_UNLOCK_SHARED(Obj self, Obj target) {
   HashUnlockShared(target);
   return (Obj) 0;
@@ -971,7 +971,8 @@ Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self);
 Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func);
-Obj FuncREGION_LOCK_STATS(Obj regobj);
+Obj FuncREGION_LOCK_COUNTERS(Obj self, Obj regobj);
+Obj FuncRESET_REGION_LOCK_COUNTERS(Obj self, Obj regobj);
 
 /****************************************************************************
 **
@@ -1008,13 +1009,13 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "HASH_LOCK", 1, "object",
       FuncHASH_LOCK, "src/threadapi.c:HASH_LOCK" },
-    
+
     { "HASH_LOCK_SHARED", 1, "object",
       FuncHASH_LOCK_SHARED, "src/threadapi.c:HASH_LOCK_SHARED" },
-    
+
     { "HASH_UNLOCK", 1, "object",
       FuncHASH_UNLOCK, "src/threadapi.c:HASH_UNLOCK" },
-    
+
     { "HASH_UNLOCK_SHARED", 1, "object",
       FuncHASH_UNLOCK_SHARED, "src/threadapi.c:HASH_UNLOCK_SHARED" },
 
@@ -1110,7 +1111,7 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "TrySendChannel", 2, "channel, obj",
       FuncTrySendChannel, "src/threadapi.c:TrySendChannel" },
-    
+
     { "MultiTransmitChannel", 2, "channel, list",
       FuncMultiTransmitChannel, "src/threadapi:MultiTransmitChannel" },
 
@@ -1119,10 +1120,10 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "TryTransmitChannel", 2, "channel, obj",
       FuncTryTransmitChannel, "src/threadapi.c:TryTransmitChannel" },
-    
+
     { "InspectChannel", 1, "channel, obj",
       FuncInspectChannel, "src/threadapi.c:InspectChannel" },
-    
+
     { "CreateBarrier", 0, "",
       FuncCreateBarrier, "src/threadapi.c:CreateBarrier" },
 
@@ -1294,8 +1295,11 @@ static StructGVarFunc GVarFuncs [] = {
     { "PERIODIC_CHECK", 2, "count, function",
       FuncPERIODIC_CHECK, "src/threadapi.c:PERIODIC_CHECK" },
 
-    { "REGION_LOCK_STATS", 1, "region",
-      FuncREGION_LOCK_STATS", "src/threadapi.c:REGION_LOCK_STATS },
+    { "REGION_LOCK_COUNTERS", 1, "region",
+      FuncREGION_LOCK_COUNTERS, "src/threadapi.c:REGION_LOCK_COUNTERS" },
+
+    { "RESET_REGION_LOCK_COUNTERS", 1, "region",
+      FuncRESET_REGION_LOCK_COUNTERS, "src/threadapi.c:RESET_REGION_LOCK_COUNTERS" },
 
     { 0 }
 
@@ -1386,7 +1390,7 @@ static Int InitKernel (
   InfoBags[T_BARRIER].name = "barrier";
   InfoBags[T_SYNCVAR].name = "syncvar";
   InfoBags[T_REGION].name = "region";
-  
+
     /* install the kind methods */
     TypeObjFuncs[ T_THREAD ] = TypeThread;
     TypeObjFuncs[ T_SEMAPHORE ] = TypeSemaphore;
@@ -3142,8 +3146,17 @@ Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
   return (Obj) 0;
 }
 
-
-Obj FuncREGION_LOCK_STATS(Obj regobj)
+Obj FuncREGION_LOCK_COUNTERS(Obj self, Obj obj)
 {
+  Region *region = GetRegionOf(obj);
+
+  return GetRegionLockCounters(region);
+}
+
+Obj FuncRESET_REGION_LOCK_COUNTERS(Obj self, Obj obj)
+{
+  Region *region = GetRegionOf(obj);
+  ResetRegionLockCounters(region);
+
   return (Obj) 0;
 }

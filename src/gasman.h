@@ -47,6 +47,7 @@
 */
 #include "config.h"
 
+#include "atomic.h" 
 
 /* on 64 bit systems use only two words for bag header */
 
