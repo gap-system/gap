@@ -494,7 +494,17 @@ BindGlobal("CommandInfo@", function(line)
 end);
 
 BindGlobal("ThreadNumFromString@", function(str)
-  return SMALLINT_STR(str);
+  local i;
+  if str = "" then
+    return fail;
+  else
+    for i in [1..Length(str)] do
+      if str[i] < '0' or str[i] > '9' then
+        return fail;
+      fi;
+    od;
+    return SMALLINT_STR(str);
+  fi;
 end);
 
 BindGlobal("CommandKill@", function(line)
@@ -529,7 +539,11 @@ end);
 
 BindGlobal("CommandBreak@", function(line)
   local thread;
-  thread := ThreadNumFromString@(line);
+  if line = "" then
+    thread := ActiveThread@-1;
+  else
+    thread := ThreadNumFromString@(line);
+  fi;
   if thread = fail then
     SystemMessage@("Unknown thread ", line);
     return;

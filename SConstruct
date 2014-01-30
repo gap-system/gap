@@ -33,9 +33,10 @@ Help(vars.GenerateHelpText(GAP))
 
 # Allow environment to override settings
 
-for opt in ["CC", "CFLAGS", "CXX", "CXXFLAGS"]:
+for opt in ["CC", "CXX", "CFLAGS", "CXXFLAGS"]:
   if os.environ.has_key(opt):
     GAP[opt] = os.environ[opt]
+    del os.environ[opt]
 
 # What compiler and platform are we dealing with?
 
@@ -49,7 +50,7 @@ cpp_compiler = GAP["CXX"]
 if not cpp_compiler:
   GAP["zmq"] = "no"
 platform_name = commands.getoutput("cnf/config.guess")
-build_dir = "bin/" + platform_name + "-" + compiler + "-hpc"
+build_dir = "bin/" + platform_name + "-" + os.path.basename(compiler) + "-hpc"
 
 def which(program):
   # This only works on UNIXes, but we don't call it on Windows.

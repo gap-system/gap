@@ -217,6 +217,21 @@ RankFilter               := Error;      # defined in "filter.g"
 
 #############################################################################
 ##
+#V  ThreadVar  . . . . . . . . . . . . . . . . . . . . thread-local variables
+
+BIND_GLOBAL("ThreadVar", ThreadLocalRecord());
+BIND_GLOBAL("BindThreadLocal", function(name, default)
+  MakeThreadLocal(name);
+  SetTLDefault(ThreadVar, name, default);
+end);
+BIND_GLOBAL("BindThreadLocalConstructor", function(name, default)
+  MakeThreadLocal(name);
+  SetTLConstructor(ThreadVar, name, default);
+end);
+
+
+#############################################################################
+##
 ##  - Unbind `DEBUG_LOADING', since later the `-D' option can be checked.
 ##  - Set or disable break loop according to the `-T' option.
 ##
@@ -232,7 +247,7 @@ CallAndInstallPostRestore( function()
     MAKE_READ_WRITE_GLOBAL( "TEACHING_MODE" );
     UNBIND_GLOBAL( "TEACHING_MODE" );
     BIND_GLOBAL( "TEACHING_MODE", GAPInfo.CommandLineOptions.T );
-    ASS_GVAR( "BreakOnError", not GAPInfo.CommandLineOptions.T );
+    BindThreadLocal( "BreakOnError", not GAPInfo.CommandLineOptions.T );
 end);
 
 
@@ -467,21 +482,6 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
 
     end;
 end);
-
-#############################################################################
-##
-#V  ThreadVar  . . . . . . . . . . . . . . . . . . . . thread-local variables
-
-BIND_GLOBAL("ThreadVar", ThreadLocalRecord());
-BIND_GLOBAL("BindThreadLocal", function(name, default)
-  MakeThreadLocal(name);
-  SetTLDefault(ThreadVar, name, default);
-end);
-BIND_GLOBAL("BindThreadLocalConstructor", function(name, default)
-  MakeThreadLocal(name);
-  SetTLConstructor(ThreadVar, name, default);
-end);
-
 
 #############################################################################
 ##
