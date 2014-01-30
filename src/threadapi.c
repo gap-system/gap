@@ -971,6 +971,7 @@ Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self);
 Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func);
+Obj FuncREGION_LOCK_STATS(Obj regobj);
 
 /****************************************************************************
 **
@@ -1292,6 +1293,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "PERIODIC_CHECK", 2, "count, function",
       FuncPERIODIC_CHECK, "src/threadapi.c:PERIODIC_CHECK" },
+
+    { "REGION_LOCK_STATS", 1, "region",
+      FuncREGION_LOCK_STATS", "src/threadapi.c:REGION_LOCK_STATS },
 
     { 0 }
 
@@ -3135,5 +3139,11 @@ Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
     TLS->PeriodicCheckCount = SigVTALRMCounter;
     CALL_0ARGS(func);
   }
+  return (Obj) 0;
+}
+
+
+Obj FuncREGION_LOCK_STATS(Obj regobj)
+{
   return (Obj) 0;
 }

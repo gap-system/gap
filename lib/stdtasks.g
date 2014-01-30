@@ -392,7 +392,9 @@ BindGlobal("ScheduleTask", function(arg)
   local cond, task, trigger;
   cond := arg[1];
   atomic readonly cond do
-    if not IS_LIST(cond) then
+    if IS_LIST(cond) then
+      cond := ShallowCopy(cond);
+    else
       cond := [ cond ];
     fi;
   od;
@@ -407,7 +409,9 @@ BindGlobal("ScheduleAsyncTask", function(arg)
   local cond, task, trigger;
   cond := arg[1];
   atomic readonly cond do
-    if not IS_LIST(cond) then
+    if IS_LIST(cond) then
+      cond := ShallowCopy(cond);
+    else
       cond := [ cond ];
     fi;
   od;
@@ -464,7 +468,7 @@ end);
 
 BindGlobal("WaitTask", function(arg)
   if Length(arg) = 1 and IsThreadLocal(arg[1]) and IS_LIST(arg[1]) then
-    WAIT_TASK(arg[1], true);
+    WAIT_TASK(ShallowCopy(arg[1]), true);
   else
     WAIT_TASK(arg, true);
   fi;
@@ -475,7 +479,7 @@ BindGlobal("WaitTasks", WaitTask);
 BindGlobal("WaitAnyTask", function(arg)
   local which, task, tasks;
   if Length(arg) = 1 and IsThreadLocal(arg[1]) and IS_LIST(arg[1]) then
-    tasks := arg[1];
+    tasks := ShallowCopy(arg[1]);
   else
     tasks := arg;
   fi;

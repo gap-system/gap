@@ -156,6 +156,8 @@ typedef struct ThreadLocalStorage
 #define MAX_GC_PREFIX_DESC 4
   void **FreeList[MAX_GC_PREFIX_DESC+2];
 #endif
+  /* Profiling statistics */
+  UInt ContendedLocks;
 
   /* Extra storage */
   void *Extra[TLS_NUM_EXTRA];
