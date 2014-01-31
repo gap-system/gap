@@ -581,9 +581,9 @@ void RegionReadLock(Region *region)
     result = !pthread_rwlock_rdlock(region->lock);
 
     if(result) {
-      region->count_lock++;
+      ATOMIC_INC(&region->count_lock);
     } else {
-      region->count_contended++;
+      ATOMIC_INC(&region->count_contended);
       pthread_rwlock_rdlock(region->lock);
     }
   } else {
@@ -597,9 +597,9 @@ int RegionTryReadLock(Region *region)
   int result = !pthread_rwlock_rdlock(region->lock);
   if (region->count_active) {
     if (result) {
-      region->count_lock++;
+      ATOMIC_INC(&region->count_lock);
     } else {
-      region->count_contended++;
+      ATOMIC_INC(&region->count_contended);
     }
   }
   if (result) {

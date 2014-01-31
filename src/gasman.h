@@ -1164,8 +1164,8 @@ typedef struct
   void *owner; /* opaque thread descriptor */
   void *alt_owner; /* for paused threads */
   int count_active; /* whether we counts number of (contended) locks */
-  int count_lock; /* number of times the lock was acquired successfully */
-  int count_contended; /* number of failed attempts at acuiring the lock */
+  AtomicUInt count_lock; /* number of times the lock was acquired successfully */
+  AtomicUInt count_contended; /* number of failed attempts at acuiring the lock */
   unsigned char readers[0]; /* this field extends with number of threads
 			       don't add any fields after it */
 } Region;

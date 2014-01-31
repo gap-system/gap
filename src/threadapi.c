@@ -2545,12 +2545,19 @@ static void PrintRegion(Obj obj)
   char buffer[32];
   Region *region = GetRegionOf(obj);
   Obj name = GetRegionName(region);
+
   if (name) {
-    Pr("<region: %s>", (Int)(CSTR_STRING(name)), 0L);
+    Pr("<region: %s", (Int)(CSTR_STRING(name)), 0L);
   } else {
-    sprintf(buffer, "<region %p>", GetRegionOf(obj));
+    snprintf(buffer, 32, "<region %p", GetRegionOf(obj));
     Pr(buffer, 0L, 0L);
   }
+  if (region && region->count_active) {
+    snprintf(buffer, 32, " (locked %d/contended %d)"
+	     , region->count_lock, region->count_contended);
+    Pr(buffer, 0L, 0L);
+  }
+  Pr(">", 0L, 0L);
 }
 
 Obj FuncIS_LOCKED(Obj self, Obj obj)
@@ -3166,7 +3173,7 @@ Obj FuncREGION_COUNTERS_SET_STATE(Obj self, Obj obj, Obj state)
 
   if(region)
     region->count_active = INT_INTOBJ(state);
-  
+ 
   return (Obj) 0;
 }
 

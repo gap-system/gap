@@ -103,3 +103,22 @@ CreateThread(function()
     SIGWAIT(handlers);
   od;
 end);
+
+BindGlobal("ActivateLockCounters", function(r)
+    REGION_COUNTERS_SET_STATE(r, 1);
+end);
+
+BindGlobal("DeactivateLockCounters", function(r)
+    REGION_COUNTERS_SET_STATE(r, 0);
+end);
+
+BindGlobal("ResetLockCounters", function(r)
+    REGION_COUNTERS_RESET(r);
+end);
+
+BindGlobal("LockCounters", function(r)
+    local res;
+
+    res := REGION_COUNTERS_GET(r);
+    return rec( count_lock := res[1], count_contended := res[2] );
+end);
