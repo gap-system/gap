@@ -971,8 +971,10 @@ Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self);
 Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func);
-Obj FuncREGION_LOCK_COUNTERS(Obj self, Obj regobj);
-Obj FuncRESET_REGION_LOCK_COUNTERS(Obj self, Obj regobj);
+Obj FuncREGION_COUNTERS_SET_STATE(Obj self, Obj obj, Obj state);
+Obj FuncREGION_COUNTERS_GET_STATE(Obj self, Obj obj);
+Obj FuncREGION_COUNTERS_GET(Obj self, Obj regobj);
+Obj FuncREGION_COUNTERS_RESET(Obj self, Obj regobj);
 
 /****************************************************************************
 **
@@ -1295,11 +1297,17 @@ static StructGVarFunc GVarFuncs [] = {
     { "PERIODIC_CHECK", 2, "count, function",
       FuncPERIODIC_CHECK, "src/threadapi.c:PERIODIC_CHECK" },
 
-    { "REGION_LOCK_COUNTERS", 1, "region",
-      FuncREGION_LOCK_COUNTERS, "src/threadapi.c:REGION_LOCK_COUNTERS" },
+    { "REGION_COUNTERS_SET_STATE", 2, "region, state",
+      FuncREGION_COUNTERS_SET_STATE, "src/threadapi.c:REGION_COUNTERS_SET_STATE" },
 
-    { "RESET_REGION_LOCK_COUNTERS", 1, "region",
-      FuncRESET_REGION_LOCK_COUNTERS, "src/threadapi.c:RESET_REGION_LOCK_COUNTERS" },
+    { "REGION_COUNTERS_GET_STATE", 1, "region",
+      FuncREGION_COUNTERS_GET_STATE, "src/threadapi.c:REGION_COUNTERS_GET_STATE" },
+
+    { "REGION_COUNTERS_GET", 1, "region",
+      FuncREGION_COUNTERS_GET, "src/threadapi.c:REGION_COUNTERS_GET" },
+
+    { "REGION_COUNTERS_RESET", 1, "region",
+      FuncREGION_COUNTERS_RESET, "src/threadapi.c:REGION_COUNTERS_RESET" },
 
     { 0 }
 
@@ -3146,14 +3154,43 @@ Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
   return (Obj) 0;
 }
 
-Obj FuncREGION_LOCK_COUNTERS(Obj self, Obj obj)
+
+/*
+ * Region lock performance counters
+ */
+Obj FuncREGION_COUNTERS_SET_STATE(Obj self, Obj obj, Obj state)
+{
+  Region *region = GetRegionOf(obj);
+  if (!IS_INTOBJ(state))
+    ArgumentError("REGION_COUNTERS_SET_STATE: Second argument must be an integer");
+
+  if(region)
+    region->count_active = INT_INTOBJ(state);
+  
+  return (Obj) 0;
+}
+
+Obj FuncREGION_COUNTERS_GET_STATE(Obj self, Obj obj)
+{
+  Obj result;
+  Region *region = GetRegionOf(obj);
+
+  if(region)
+    result = INTOBJ_INT(region->count_active);
+  else
+    result = 0;
+
+  return result;
+}
+
+Obj FuncREGION_COUNTERS_GET(Obj self, Obj obj)
 {
   Region *region = GetRegionOf(obj);
 
   return GetRegionLockCounters(region);
 }
 
-Obj FuncRESET_REGION_LOCK_COUNTERS(Obj self, Obj obj)
+Obj FuncREGION_COUNTERS_RESET(Obj self, Obj obj)
 {
   Region *region = GetRegionOf(obj);
   ResetRegionLockCounters(region);

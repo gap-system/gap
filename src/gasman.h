@@ -1161,12 +1161,13 @@ typedef struct
   Int prec; /* locking precedence */
   int fixed_owner;
   int autolock;
-  AtomicUInt lock_try_count;  /* number of attempts at aquiring the lock */
-  AtomicUInt lock_count;      /* number of times the lock was acquired   */
-  AtomicUInt contented_count; /* number of failed attempts at acuiring the lock */
   void *owner; /* opaque thread descriptor */
   void *alt_owner; /* for paused threads */
-  unsigned char readers[0];
+  int count_active; /* whether we counts number of (contended) locks */
+  int count_lock; /* number of times the lock was acquired successfully */
+  int count_contended; /* number of failed attempts at acuiring the lock */
+  unsigned char readers[0]; /* this field extends with number of threads
+			       don't add any fields after it */
 } Region;
 
 /****************************************************************************

@@ -532,22 +532,38 @@ void HashUnlockShared(void *object) {
 
 void RegionWriteLock(Region *region)
 {
-  int result = !pthread_rwlock_trywrlock(region->lock);
+  int result = 0;
 
-  if(result) {
-    ATOMIC_INC(&region->lock_count);
-    region->owner = TLS;
+  if (region->count_active) {
+    result = !pthread_rwlock_trywrlock(region->lock);
+
+    if(result) {
+      region->count_lock++;
+    } else {
+      region->count_contended++;
+      pthread_rwlock_wrlock(region->lock);
+    }
   } else {
-    ATOMIC_INC(&region->contented_count);
     pthread_rwlock_wrlock(region->lock);
   }
+
+  region->owner = TLS;
 }
 
 int RegionTryWriteLock(Region *region)
 {
   int result = !pthread_rwlock_trywrlock(region->lock);
-  if (result)
+
+  if (region->count_active) {
+    if (result) {
+      region->count_lock++;
+    } else {
+      region->count_contended++;
+    }
+  }
+  if (result) {
     region->owner = TLS;
+  }
   return result;
 }
 
@@ -559,15 +575,36 @@ void RegionWriteUnlock(Region *region)
 
 void RegionReadLock(Region *region)
 {
-  pthread_rwlock_rdlock(region->lock);
+  int result = 0;
+
+  if(region->count_active) {
+    result = !pthread_rwlock_rdlock(region->lock);
+
+    if(result) {
+      region->count_lock++;
+    } else {
+      region->count_contended++;
+      pthread_rwlock_rdlock(region->lock);
+    }
+  } else {
+      pthread_rwlock_rdlock(region->lock);
+  }
   region->readers[TLS->threadID] = 1;
 }
 
 int RegionTryReadLock(Region *region)
 {
   int result = !pthread_rwlock_rdlock(region->lock);
-  if (result)
+  if (region->count_active) {
+    if (result) {
+      region->count_lock++;
+    } else {
+      region->count_contended++;
+    }
+  }
+  if (result) {
     region->readers[TLS->threadID] = 1;
+  }
   return result;
 }
 
@@ -645,12 +682,11 @@ static Obj NewList(UInt size)
 
 Obj GetRegionLockCounters(Region *region)
 {
-  Obj result = NewList(3);
+  Obj result = NewList(2);
 
   if (region) {
-    SET_ELM_PLIST(result,1,INTOBJ_INT(region->lock_try_count));
-    SET_ELM_PLIST(result,2,INTOBJ_INT(region->lock_count));
-    SET_ELM_PLIST(result,3,INTOBJ_INT(region->contented_count));
+    SET_ELM_PLIST(result,1,INTOBJ_INT(region->count_lock));
+    SET_ELM_PLIST(result,2,INTOBJ_INT(region->count_contended));
   }
   MEMBAR_READ();
   return result;
@@ -659,9 +695,8 @@ Obj GetRegionLockCounters(Region *region)
 void ResetRegionLockCounters(Region *region)
 {
   if (region) {
-    region->lock_try_count
-      = region->lock_count
-      = region->contented_count
+      region->count_lock
+      = region->count_contended
       = 0;
   }
   MEMBAR_WRITE();
