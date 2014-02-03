@@ -104,29 +104,41 @@ CreateThread(function()
   od;
 end);
 
-DeclareOperation("LockCountersEnable", [ IsRegion ]);
-DeclareOperation("LockCountersDisable", [ IsRegion ]);
-DeclareOperation("LockCountersReset", [ IsRegion ]);
-DeclareOperation("LockCountersRead", [ IsRegion ]);
+#
+# LockCounters are per region and per thread counters
+# that count how many times a read or write lock
+# has been acquired successfully and how many times
+# a lock has ben contended.
+#
+# for regions this means the region lock, for threads
+# any lock that the thread might have tried to acquire
+#
+
+# Note that these are defined for IsObject, but really
+# apply to the region in which the object is located
+DeclareOperation("LockCountersEnable", [ IsObject ]);
+DeclareOperation("LockCountersDisable", [ IsObject ]);
+DeclareOperation("LockCountersReset", [ IsObject ]);
+DeclareOperation("LockCountersRead", [ IsObject ]);
 
 InstallMethod(LockCountersEnable,
-        "for a region",
-        [ IsRegion ],
+        "for an object",
+        [ IsObject ],
         REGION_COUNTERS_ENABLE );
 
 InstallMethod(LockCountersDisable,
-        "for a region",
-        [ IsRegion ],
+        "for an object",
+        [ IsObject ],
         REGION_COUNTERS_DISABLE);
 
 InstallMethod(LockCountersReset,
-        "for a region",
-        [ IsRegion ],
+        "for an object",
+        [ IsObject ],
         REGION_COUNTERS_RESET);
 
 InstallMethod(LockCountersRead,
-        "for a region",
-        [ IsRegion ],
+        "for an object",
+        [ IsObject ],
   function(r)
     local res;
     res := REGION_COUNTERS_GET(r);
