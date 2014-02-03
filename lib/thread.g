@@ -104,21 +104,63 @@ CreateThread(function()
   od;
 end);
 
-BindGlobal("ActivateLockCounters", function(r)
-    REGION_COUNTERS_SET_STATE(r, 1);
-end);
+DeclareOperation("LockCountersEnable", [ IsRegion ]);
+DeclareOperation("LockCountersDisable", [ IsRegion ]);
+DeclareOperation("LockCountersReset", [ IsRegion ]);
+DeclareOperation("LockCountersRead", [ IsRegion ]);
 
-BindGlobal("DeactivateLockCounters", function(r)
-    REGION_COUNTERS_SET_STATE(r, 0);
-end);
+InstallMethod(LockCountersEnable,
+        "for a region",
+        [ IsRegion ],
+        REGION_COUNTERS_ENABLE );
 
-BindGlobal("ResetLockCounters", function(r)
-    REGION_COUNTERS_RESET(r);
-end);
+InstallMethod(LockCountersDisable,
+        "for a region",
+        [ IsRegion ],
+        REGION_COUNTERS_DISABLE);
 
-BindGlobal("LockCounters", function(r)
+InstallMethod(LockCountersReset,
+        "for a region",
+        [ IsRegion ],
+        REGION_COUNTERS_RESET);
+
+InstallMethod(LockCountersRead,
+        "for a region",
+        [ IsRegion ],
+  function(r)
     local res;
-
     res := REGION_COUNTERS_GET(r);
     return rec( count_lock := res[1], count_contended := res[2] );
-end);
+  end);
+
+DeclareOperation("LockCountersEnable", [ ] );
+DeclareOperation("LockCountersDisable", [ ]);
+DeclareOperation("LockCountersReset", [ ]);
+DeclareOperation("LockCountersRead", [ ]);
+
+
+InstallMethod(LockCountersEnable,
+        "for the current thread",
+        [ ],
+        THREAD_COUNTERS_ENABLE );
+
+InstallMethod(LockCountersDisable,
+        "for the current thread",
+        [ ],
+        THREAD_COUNTERS_DISABLE);
+
+InstallMethod(LockCountersReset,
+        "for the current thread",
+        [ ],
+        THREAD_COUNTERS_RESET);
+
+InstallMethod(LockCountersRead,
+        "for the current thread",
+        [ ],
+  function()
+    local res;
+
+    res := THREAD_COUNTERS_GET();
+
+    return rec( count_lock := res[1], count_contended := res[2] );
+  end);

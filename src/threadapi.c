@@ -971,10 +971,18 @@ Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self);
 Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func);
-Obj FuncREGION_COUNTERS_SET_STATE(Obj self, Obj obj, Obj state);
+Obj FuncREGION_COUNTERS_ENABLE(Obj self, Obj obj);
+Obj FuncREGION_COUNTERS_DISABLE(Obj self, Obj obj);
 Obj FuncREGION_COUNTERS_GET_STATE(Obj self, Obj obj);
 Obj FuncREGION_COUNTERS_GET(Obj self, Obj regobj);
 Obj FuncREGION_COUNTERS_RESET(Obj self, Obj regobj);
+Obj FuncTHREAD_COUNTERS_ENABLE(Obj self);
+Obj FuncTHREAD_COUNTERS_DISABLE(Obj self);
+Obj FuncTHREAD_COUNTERS_GET_STATE(Obj self);
+Obj FuncTHREAD_COUNTERS_GET(Obj self);
+Obj FuncTHREAD_COUNTERS_RESET(Obj self);
+
+
 
 /****************************************************************************
 **
@@ -1297,8 +1305,11 @@ static StructGVarFunc GVarFuncs [] = {
     { "PERIODIC_CHECK", 2, "count, function",
       FuncPERIODIC_CHECK, "src/threadapi.c:PERIODIC_CHECK" },
 
-    { "REGION_COUNTERS_SET_STATE", 2, "region, state",
-      FuncREGION_COUNTERS_SET_STATE, "src/threadapi.c:REGION_COUNTERS_SET_STATE" },
+    { "REGION_COUNTERS_ENABLE", 1, "region",
+      FuncREGION_COUNTERS_ENABLE, "src/threadapi.c:REGION_COUNTERS_ENABLE" },
+
+    { "REGION_COUNTERS_DISABLE", 1, "region",
+      FuncREGION_COUNTERS_DISABLE, "src/threadapi.c:REGION_COUNTERS_DISABLE" },
 
     { "REGION_COUNTERS_GET_STATE", 1, "region",
       FuncREGION_COUNTERS_GET_STATE, "src/threadapi.c:REGION_COUNTERS_GET_STATE" },
@@ -1308,6 +1319,21 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "REGION_COUNTERS_RESET", 1, "region",
       FuncREGION_COUNTERS_RESET, "src/threadapi.c:REGION_COUNTERS_RESET" },
+
+    { "THREAD_COUNTERS_ENABLE", 0, "",
+      FuncTHREAD_COUNTERS_ENABLE, "src/threadapi.c:THREAD_COUNTERS_ENABLE" },
+
+    { "THREAD_COUNTERS_DISABLE", 0, "",
+      FuncTHREAD_COUNTERS_DISABLE, "src/threadapi.c:THREAD_COUNTERS_DISABLE" },
+
+    { "THREAD_COUNTERS_GET_STATE", 0, "",
+      FuncTHREAD_COUNTERS_GET_STATE, "src/threadapi.c:THREAD_COUNTERS_GET_STATE" },
+
+    { "THREAD_COUNTERS_GET", 0, "",
+      FuncTHREAD_COUNTERS_GET, "src/threadapi.c:THREAD_COUNTERS_GET" },
+
+    { "THREAD_COUNTERS_RESET", 0, "",
+      FuncTHREAD_COUNTERS_RESET, "src/threadapi.c:THREAD_COUNTERS_RESET" },
 
     { 0 }
 
@@ -3165,16 +3191,25 @@ Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
 /*
  * Region lock performance counters
  */
-Obj FuncREGION_COUNTERS_SET_STATE(Obj self, Obj obj, Obj state)
+Obj FuncREGION_COUNTERS_ENABLE(Obj self, Obj obj)
 {
   Region *region = GetRegionOf(obj);
-  if (!IS_INTOBJ(state))
-    ArgumentError("REGION_COUNTERS_SET_STATE: Second argument must be an integer");
 
   if(!region)
-    ArgumentError("REGION_COUNTERS_SET_STATE: Cannot set counters for this region");
+    ArgumentError("REGION_COUNTERS_ENABLE: Cannot enable counters for this region");
 
-  region->count_active = INT_INTOBJ(state);
+  region->count_active = 1;
+  return (Obj) 0;
+}
+
+Obj FuncREGION_COUNTERS_DISABLE(Obj self, Obj obj)
+{
+  Region *region = GetRegionOf(obj);
+
+  if(!region)
+    ArgumentError("REGION_COUNTERS_DISABLE: Cannot disable counters for this region");
+
+  region->count_active = 0;
   return (Obj) 0;
 }
 
@@ -3211,4 +3246,46 @@ Obj FuncREGION_COUNTERS_RESET(Obj self, Obj obj)
   ResetRegionLockCounters(region);
 
   return (Obj) 0;
+}
+
+Obj FuncTHREAD_COUNTERS_ENABLE(Obj self)
+{
+  TLS->CountActive = 1;
+
+  return (Obj) 0;
+}
+
+Obj FuncTHREAD_COUNTERS_DISABLE(Obj self)
+{
+  TLS->CountActive = 0;
+
+  return (Obj) 0;
+}
+
+Obj FuncTHREAD_COUNTERS_GET_STATE(Obj self)
+{
+  Obj result;
+
+  result = INTOBJ_INT(TLS->CountActive);
+
+  return result;
+}
+
+Obj FuncTHREAD_COUNTERS_RESET(Obj self)
+{
+  TLS->LocksAcquired = TLS->LocksContended = 0;
+
+  return (Obj) 0;
+}
+
+Obj FuncTHREAD_COUNTERS_GET(Obj self)
+{
+  Obj result;
+
+  result = NEW_PLIST(T_PLIST, 2);
+  SET_LEN_PLIST(result, 2);
+  SET_ELM_PLIST(result, 1, INTOBJ_INT(TLS->LocksAcquired));
+  SET_ELM_PLIST(result, 2, INTOBJ_INT(TLS->LocksContended));
+
+  return result;
 }
