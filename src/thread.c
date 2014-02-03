@@ -534,13 +534,19 @@ void RegionWriteLock(Region *region)
 {
   int result = 0;
 
-  if (region->count_active) {
+  if (region->count_active || TLS->CountActive) {
     result = !pthread_rwlock_trywrlock(region->lock);
 
     if(result) {
-      region->count_lock++;
+      if(region->count_active)
+	region->locks_acquired++;
+      if(TLS->CountActive)
+	TLS->LocksAcquired++;
     } else {
-      region->count_contended++;
+      if(region->count_active)
+	region->locks_contended++;
+      if(TLS->CountActive)
+	TLS->LocksContended++;
       pthread_rwlock_wrlock(region->lock);
     }
   } else {
@@ -554,15 +560,17 @@ int RegionTryWriteLock(Region *region)
 {
   int result = !pthread_rwlock_trywrlock(region->lock);
 
-  if (region->count_active) {
-    if (result) {
-      region->count_lock++;
-    } else {
-      region->count_contended++;
-    }
-  }
   if (result) {
+    if(region->count_active)
+      region->locks_acquired++;
+    if(TLS->CountActive)
+      TLS->LocksAcquired++;
     region->owner = TLS;
+  } else {
+    if(region->count_active)
+      region->locks_contended++;
+    if(TLS->CountActive)
+      TLS->LocksContended++;
   }
   return result;
 }
@@ -577,13 +585,19 @@ void RegionReadLock(Region *region)
 {
   int result = 0;
 
-  if(region->count_active) {
+  if(region->count_active || TLS->CountActive) {
     result = !pthread_rwlock_rdlock(region->lock);
 
     if(result) {
-      ATOMIC_INC(&region->count_lock);
+      if(region->count_active)
+	ATOMIC_INC(&region->locks_acquired);
+      if(TLS->CountActive)
+	TLS->LocksAcquired++;
     } else {
-      ATOMIC_INC(&region->count_contended);
+      if(region->count_active)
+	ATOMIC_INC(&region->locks_contended);
+      if(TLS->CountActive)
+	TLS->LocksAcquired++;
       pthread_rwlock_rdlock(region->lock);
     }
   } else {
@@ -595,15 +609,18 @@ void RegionReadLock(Region *region)
 int RegionTryReadLock(Region *region)
 {
   int result = !pthread_rwlock_rdlock(region->lock);
-  if (region->count_active) {
-    if (result) {
-      ATOMIC_INC(&region->count_lock);
-    } else {
-      ATOMIC_INC(&region->count_contended);
-    }
-  }
+
   if (result) {
+    if(region->count_active)
+      ATOMIC_INC(&region->locks_acquired);
+    if(TLS->CountActive)
+      TLS->LocksAcquired++;
     region->readers[TLS->threadID] = 1;
+  } else {
+    if(region->count_active)
+      ATOMIC_INC(&region->locks_contended);
+    if(TLS->CountActive)
+      TLS->LocksContended++;
   }
   return result;
 }
@@ -685,8 +702,8 @@ Obj GetRegionLockCounters(Region *region)
   Obj result = NewList(2);
 
   if (region) {
-    SET_ELM_PLIST(result,1,INTOBJ_INT(region->count_lock));
-    SET_ELM_PLIST(result,2,INTOBJ_INT(region->count_contended));
+    SET_ELM_PLIST(result,1,INTOBJ_INT(region->locks_acquired));
+    SET_ELM_PLIST(result,2,INTOBJ_INT(region->locks_contended));
   }
   MEMBAR_READ();
   return result;
@@ -695,8 +712,8 @@ Obj GetRegionLockCounters(Region *region)
 void ResetRegionLockCounters(Region *region)
 {
   if (region) {
-      region->count_lock
-      = region->count_contended
+      region->locks_acquired
+      = region->locks_contended
       = 0;
   }
   MEMBAR_WRITE();

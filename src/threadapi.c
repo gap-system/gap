@@ -2554,7 +2554,7 @@ static void PrintRegion(Obj obj)
   }
   if (region && region->count_active) {
     snprintf(buffer, 32, " (locked %d/contended %d)"
-	     , region->count_lock, region->count_contended);
+	     , region->locks_acquired, region->locks_contended);
     Pr(buffer, 0L, 0L);
   }
   Pr(">", 0L, 0L);
@@ -3171,9 +3171,10 @@ Obj FuncREGION_COUNTERS_SET_STATE(Obj self, Obj obj, Obj state)
   if (!IS_INTOBJ(state))
     ArgumentError("REGION_COUNTERS_SET_STATE: Second argument must be an integer");
 
-  if(region)
-    region->count_active = INT_INTOBJ(state);
- 
+  if(!region)
+    ArgumentError("REGION_COUNTERS_SET_STATE: Cannot set counters for this region");
+
+  region->count_active = INT_INTOBJ(state);
   return (Obj) 0;
 }
 
@@ -3182,10 +3183,10 @@ Obj FuncREGION_COUNTERS_GET_STATE(Obj self, Obj obj)
   Obj result;
   Region *region = GetRegionOf(obj);
 
-  if(region)
-    result = INTOBJ_INT(region->count_active);
-  else
-    result = 0;
+  if(!region)
+    ArgumentError("REGION_COUNTERS_GET_STATE: Cannot get counters for this region");
+
+  result = INTOBJ_INT(region->count_active);
 
   return result;
 }
@@ -3194,12 +3195,19 @@ Obj FuncREGION_COUNTERS_GET(Obj self, Obj obj)
 {
   Region *region = GetRegionOf(obj);
 
+  if(!region)
+    ArgumentError("REGION_COUNTERS_GET: Cannot get counters for this region");
+
   return GetRegionLockCounters(region);
 }
 
 Obj FuncREGION_COUNTERS_RESET(Obj self, Obj obj)
 {
   Region *region = GetRegionOf(obj);
+
+  if(!region)
+    ArgumentError("REGION_COUNTERS_RESET: Cannot reset counters for this region");
+
   ResetRegionLockCounters(region);
 
   return (Obj) 0;
