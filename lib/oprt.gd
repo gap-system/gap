@@ -1536,12 +1536,6 @@ OrbitsishOperation( "ExternalOrbitsStabilizers", OrbitsishReq,
 ##  gap> Transitivity(g,[1..4]);
 ##  2
 ##  ]]></Example>
-##  <P/>
-##  <E>Note:</E>
-##  For permutation groups, the syntax <C>IsTransitive(<A>G</A>)</C> is also
-##  permitted and tests whether the group is transitive on the points moved
-##  by it, that is the group <M>\langle (2,3,4),(2,3) \rangle</M>
-##  is transitive (on 3 points).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1695,6 +1689,7 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 #############################################################################
 ##
 #O  IsTransitive( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#O  IsTransitive( <permgroup> )
 #P  IsTransitive( <xset> )
 ##
 ##  <#GAPDoc Label="IsTransitive:oprt">
@@ -1702,6 +1697,8 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 ##  <Heading>IsTransitive</Heading>
 ##  <Oper Name="IsTransitive" Arg='G, Omega[, gens, acts][, act]'
 ##   Label="for a group, an action domain, etc."/>
+##  <Prop Name="IsTransitive" Arg='G'
+##   Label="for a permutation group"/>
 ##  <Prop Name="IsTransitive" Arg='xset'
 ##   Label="for an external set"/>
 ##
@@ -1713,6 +1710,11 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 ##  We say that a  group <A>G</A> acts <E>transitively</E> on a domain
 ##  <M>D</M> if and only if for every pair of points <M>d, e \in D</M>
 ##  there is an element <M>g</M> in <A>G</A> such that <M>d^g = e</M>.
+##  <P/>
+##  For permutation groups, the syntax <C>IsTransitive(<A>G</A>)</C> is also
+##  permitted and tests whether the group is transitive on the points moved
+##  by it, that is the group <M>\langle (2,3,4),(2,3) \rangle</M>
+##  is transitive (on 3 points).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -191,7 +191,7 @@ SMALL_GROUPS_INFORMATION[ 17 ] := SMALL_GROUPS_INFORMATION[ 11 ];
 SMALL_GROUPS_INFORMATION[ 12 ] := function( size, smav, num )
 
     if size = 1152 then
-        Print("  There are sorted using Sylow subgroups. \n");
+        Print("  They are sorted using Sylow subgroups. \n");
         Print("     1 - 2328 are nilpotent with Sylow 3-subgroup c9.\n" );
         Print("     2329 - 4656 are nilpotent with Sylow 3-subgroup 3^2.\n");
         Print("     4657 - 153312 are non-nilpotent with normal ");
@@ -200,7 +200,7 @@ SMALL_GROUPS_INFORMATION[ 12 ] := function( size, smav, num )
         return;
     fi;
 
-    Print("  There are sorted using Hall subgroups. \n");
+    Print("  They are sorted using Hall subgroups. \n");
     Print( "     1 - 2328 are the nilpotent groups.\n" );
     Print( "     2329 - 236344 have a normal Hall (3,5)-subgroup.\n");
     Print( "     236345 - 240416 are solvable without normal Hall",

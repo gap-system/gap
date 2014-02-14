@@ -344,9 +344,13 @@ InstallMethod( AsSemigroup,
 
 InstallGlobalFunction( Semigroup, function( arg )
   local out, i;
-  
+
+  if Length(arg)=0 or (Length(arg)=1 and HasIsEmpty(arg[1]) and IsEmpty(arg[1])) then 
+    Error("usage: cannot create a semigroup with no generators,");
+    return;
+
   # special case for matrices, because they may look like lists
-  if Length( arg ) = 1 and IsMatrix( arg[1] )  then
+  elif Length( arg ) = 1 and IsMatrix( arg[1] )  then
     return SemigroupByGenerators( [ arg[1] ] );
 
   # list of generators
@@ -354,8 +358,8 @@ InstallGlobalFunction( Semigroup, function( arg )
     return SemigroupByGenerators( arg[1] );
 
   # generators and collections of generators
-  elif IsAssociativeElement(arg[1]) or IsAssociativeElementCollection(arg[1])
-   then
+  elif IsAssociativeElement(arg[1]) or IsAssociativeElementCollection(arg[1]) 
+   or (HasIsEmpty(arg[1]) and IsEmpty(arg[1])) then
     out:=[];
     for i in [1..Length(arg)] do
       if IsAssociativeElement(arg[i]) then
@@ -372,9 +376,11 @@ InstallGlobalFunction( Semigroup, function( arg )
       elif i=Length(arg) and IsRecord(arg[i]) then
         return SemigroupByGenerators(out, arg[i]);
       else
-        Error( "Usage: Semigroup(<gen>,...), Semigroup(<gens>), ",
-          "Semigroup(<D>), " );
-        return;
+        if not IsEmpty(arg[i]) then 
+          Error( "Usage: Semigroup(<gen>,...), Semigroup(<gens>), ",
+            "Semigroup(<D>), " );
+          return;
+        fi;
       fi;
     od;
     return SemigroupByGenerators(out);

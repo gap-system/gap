@@ -89,22 +89,55 @@ setconfig:
 	  echo "There is no config with name: "$(CONFIGNAME); \
 	fi;
 
-config: bin/$(GAPARCH)/configure  bin/$(GAPARCH)/Makefile bin/$(GAPARCH)/extern/Makefile 
+config: bin/$(GAPARCH)/configure  bin/$(GAPARCH)/config.status 
 
 bin/$(GAPARCH)/configure: cnf/configure.out 
 	mkdir -p bin/$(GAPARCH)
 	@rm -f bin/$(GAPARCH)/configure
 	cp cnf/configure.out bin/$(GAPARCH)/configure
 
-bin/$(GAPARCH)/Makefile bin/$(GAPARCH)/extern/Makefile : bin/$(GAPARCH)/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
+bin/$(GAPARCH)/extern/Makefile: bin/$(GAPARCH)/config.status
+	( cd bin/$(GAPARCH) ; ./config.status extern/Makefile )
+
+bin/$(GAPARCH)/Makefile : bin/$(GAPARCH)/config.status
+	( cd bin/$(GAPARCH) ; ./config.status Makefile )
+
+bin/$(GAPARCH)/config.status : bin/$(GAPARCH)/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
 	mkdir -p bin/$(GAPARCH)/extern
-	( cd bin/$(GAPARCH) ; CC='$(CC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' GMP_CFLAGS='$(GMP_CFLAGS)' CONFIGNAME='$(CONFIGNAME)' USE_GMP='$(USE_GMP)' GAPARCH='$(GAPARCH)' ./configure --target=@target@ @gp_configure_options@ )
+	( cd bin/$(GAPARCH) ; \
+		CC='$(CC)' \
+		ABI='$(ABI)' \
+		ABI_CFLAGS='$(ABI_CFLAGS)' \
+		GMP_LIBS='$(GMP_LIBS)' \
+		GMP_CFLAGS='$(GMP_CFLAGS)' \
+		CONFIGNAME='$(CONFIGNAME)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		USE_GMP='$(USE_GMP)' \
+		GAPARCH='$(GAPARCH)' \
+		./configure --target=@target@ @gp_configure_options@ )
 
 extern: config
-	( cd bin/$(GAPARCH)/extern ; $(MAKE) TARGET='$(TARGET)' BASECC='$(BASECC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' CC='$(CC)' GMP_VER='$(GMP_VER)' MAKE_GMP='$(MAKE_GMP)' CONFIGNAME='$(CONFIGNAME)' )
+	( cd bin/$(GAPARCH)/extern ; \
+		$(MAKE) \
+		TARGET='$(TARGET)' \
+		BASECC='$(BASECC)' \
+		ABI='$(ABI)' \
+		ABI_CFLAGS='$(ABI_CFLAGS)' \
+		CC='$(CC)' \
+		GMP_VER='$(GMP_VER)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		CONFIGNAME='$(CONFIGNAME)' )
 
 compile: extern
-	( cd bin/$(GAPARCH); $(MAKE) ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' CONFIGNAME='$(CONFIGNAME)' )
+	( cd bin/$(GAPARCH); \
+		$(MAKE) \
+		ABI='$(ABI)' \
+		CC='$(CC)' \
+		GMP_VER='$(GMP_VER)' \
+		GMP_CFLAGS='$(GMP_CFLAGS)' \
+		GMP_LIBS='$(GMP_LIBS)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		CONFIGNAME='$(CONFIGNAME)' )
 	chmod +x bin/gap-$(CONFIGNAME).sh
 
 static: extern

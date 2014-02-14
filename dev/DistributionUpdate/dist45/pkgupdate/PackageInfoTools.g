@@ -1709,19 +1709,19 @@ AddHTMLPackageInfo := function(arg)
     Append(res, ": ");
     manlink := "<tr><td>";
     if IsBound(a.HTMLStart) then
-      Append(res, Concatenation(" [<a href='{{GAPManualLink}}pkg/", 
+      Append(res, Concatenation(" [<a href='{{GAPManualLink}}/pkg/", 
               dname,  "/", a.HTMLStart, 
               "'> HTML</a>] version&nbsp;&nbsp;" ));
-      Append(manlink, Concatenation("<a href=\"{{GAPManualLink}}pkg/", 
+      Append(manlink, Concatenation("<a href=\"{{GAPManualLink}}/pkg/", 
         dname, "/", a.HTMLStart, "\">", a.BookName, "</a></td>"));
     else
       Append(manlink, Concatenation(a.BookName, "</td>"));
     fi;
     if IsBound(a.PDFFile) then
-      Append(res, Concatenation(" [<a href='{{GAPManualLink}}pkg/", 
+      Append(res, Concatenation(" [<a href='{{GAPManualLink}}/pkg/", 
               dname, "/", a.PDFFile, 
               "'> PDF</a>] version&nbsp;&nbsp;" ));
-      Append(manlink, Concatenation("<td>[<a href=\"{{GAPManualLink}}pkg/",
+      Append(manlink, Concatenation("<td>[<a href=\"{{GAPManualLink}}/pkg/",
         dname, "/", a.PDFFile, 
         "\">PDF</a>]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>"));
     else
@@ -1744,7 +1744,7 @@ AddHTMLPackageInfo := function(arg)
     info.ArchiveURL := "n.a.";
   fi;
   arch := Concatenation(nam, "/", bnam);
-  Append(res, Concatenation("[<a href='{{GAPManualLink}}pkg/", 
+  Append(res, Concatenation("[<a href='{{GAPManualLink}}/pkg/", 
           dname, "/README.", nam, 
           "'>README</a>]&nbsp;&nbsp;&nbsp;&nbsp;",bnam));
   for ext in [ ".tar.gz", ".tar.bz2", "-win.zip", ".zip" ] do # retired ".zoo",

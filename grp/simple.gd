@@ -45,6 +45,25 @@ DeclareGlobalFunction("SimpleGroup");
 
 #############################################################################
 ##
+#F  EpimorphismFromClassical( <G> )
+##
+##  <#GAPDoc Label="EpimorphismFromClassical">
+##  <ManSection>
+##  <Func Name="EpimorphismFromClassical" Arg='G'/>
+##
+##  <Description>
+##  For an (almost) simple group this homomorphsim will try to construct an
+##  epimorphism from a classical group onto it (or return fail if it does
+##  not work or is not yet implemented).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("EpimorphismFromClassical");
+
+
+#############################################################################
+##
 #F  SimpleGroupsIterator( [<start>,<end>] )
 ##
 ##  <#GAPDoc Label="SimpleGroupsIterator">

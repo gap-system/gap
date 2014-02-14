@@ -372,17 +372,6 @@ extern Obj DoTestAttribute( Obj self, Obj obj);
 
 /****************************************************************************
 **
-*F  NewFilterC( <name>, <narg>, <nams>, <hdlr> )  . . . . . make a new filter 
-*/
-extern Obj NewFilterC (
-    const Char *        name,
-    Int                 narg,
-    const Char *        nams,
-    ObjFunc             hdlr );
-
-
-/****************************************************************************
-**
 *F  NewAndFilter( <filt1>, <filt2> ) . . . . . make a new concatenated filter
 */
 extern Obj DoAndFilter (
@@ -512,12 +501,6 @@ extern Obj NewOperation (
             Obj                 nams,
             ObjFunc             hdlr );
 
-extern Obj NewOperationC (
-            const Char *        name,
-            Int                 narg,
-            const Char *        nams,
-            ObjFunc             hdlr );
-
 
 /****************************************************************************
 **
@@ -537,13 +520,6 @@ extern  Obj NewAttribute (
             Obj                 nams,
             ObjFunc             hdlr );
 
-extern  Obj NewAttributeC (
-            const Char *        name,
-            Int                 narg,
-            const Char *        nams,
-            ObjFunc             hdlr );
-
-
 /****************************************************************************
 **
 *F  NewProperty( <name> ) . . . . . . . . . . . . . . . . make a new property
@@ -557,13 +533,6 @@ extern Obj NewProperty (
             Int                 narg,
             Obj                 nams,
             ObjFunc             hdlr );
-
-extern Obj NewPropertyC (
-            const Char *        name,
-            Int                 narg,
-            const Char *        nams,
-            ObjFunc             hdlr );
-
 
 /****************************************************************************
 **

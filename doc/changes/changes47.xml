@@ -9,7 +9,7 @@ of &GAP; 4.7).
 It also contains information about subsequent update releases for &GAP; 4.7.
 -->
 
-<Section Label="fix470"> 
+<Section Label="fix472"> 
 <Heading>&GAP; 4.7.2 (December 2013)</Heading>
 
 <Subsection Label="Changes in the core GAP47 system"> 
@@ -388,6 +388,53 @@ quaternion algebras (contribution by Allen Herman).
 </List>
 
 </Subsection>
+
+</Section>
+
+<Section Label="fix473"> 
+<Heading>&GAP; 4.7.3 (February 2013)</Heading>
+
+Fixed bugs which could lead to incorrect results:
+<List>
+<Item>
+Incorrect result returned by <C>AutomorphismGroup(PSp(4,2^n))</C>.
+[Reported by Anvita]
+</Item>
+<Item>
+The <Ref Oper="Order" BookName="ref"/> method for group homomorphisms 
+newly introduced in &GAP;&nbsp;4.7 had a bug that caused it to 
+sometimes return incorrect results.
+[Reported by Benjamin Sambale]
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+Several bugs were fixed and missing methods were introduced in the 
+new code for transformations, partial permutations and semigroups 
+that was first included in &GAP;&nbsp;4.7. Some minor corrections 
+were made in the documentation for transformations.
+</Item>
+<Item>
+Break loop in <C>IsomorphismFpMonoid</C> when prefixes in
+generators names were longer than one letter.
+[Reported by Dmytro Savchuk and Yevgen Muntyan]
+</Item>
+<Item>
+Break loop while displaying the result of 
+<Ref Func="MagmaWithInversesByMultiplicationTable" BookName="ref"/>.
+[Reported by Grahame Erskine]
+</Item>
+</List>
+
+Improved functionality:
+<List>
+<Item>
+Better detection of UTF-8 terminal encoding on some systems.
+[Suggested by Andries Brouwer]
+</Item>
+</List>
 
 </Section>
 

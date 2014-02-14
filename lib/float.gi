@@ -31,7 +31,6 @@ MAX_FLOAT_LITERAL_CACHE_SIZE := 0; # cache all float literals by default.
 FLOAT_DEFAULT_REP := fail;
 FLOAT_STRING := fail;
 FLOAT := fail; # holds the constants
-FLOAT_OBJBYEXTREP := fail;
 BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", rec());
 
 InstallGlobalFunction(SetFloats, function(arg)
@@ -59,11 +58,6 @@ InstallGlobalFunction(SetFloats, function(arg)
     if install then
         if IsBound(r.filter) then
             FLOAT_DEFAULT_REP := r.filter;
-        fi;
-        if IsBound(r.objbyextrep) then
-            FLOAT_OBJBYEXTREP := r.objbyextrep;
-        else
-            FLOAT_OBJBYEXTREP := fail;
         fi;
         if IsBound(r.constants) then
             FLOAT := r.constants;
@@ -417,11 +411,8 @@ InstallMethod( ExtRepOfObj, "for floats", [ IsFloat ], -1,
     return [Int(v),p[2]];
 end);
     
-InstallMethod( ObjByExtRep, "for floats", [ IsFloatFamily, IsList ], -1,
+InstallMethod( ObjByExtRep, "for floats", [ IsFloatFamily, IsCyclotomicCollection ], -1,
         function(fam,obj)
-    if FLOAT_OBJBYEXTREP<>fail then
-        return FLOAT_OBJBYEXTREP(obj);
-    fi;
     if obj[1]=0 then
         if obj[2]=0 then
             return 0.0; # 0
@@ -439,7 +430,7 @@ InstallMethod( ObjByExtRep, "for floats", [ IsFloatFamily, IsList ], -1,
             Error("Unknown external float representation ",obj);
         fi;
     fi;
-    return LdExp(Float(obj[1]),obj[2]-LogInt(obj[1],2)-1);
+    return LdExp(Float(obj[1]),obj[2]-LogInt(AbsInt(obj[1]),2)-1);
 end);
 
 InstallMethod( ViewObj, "for floats", [ IsFloat ],
@@ -508,10 +499,10 @@ InstallOtherMethod( Rat, "for floats", [ IsFloat ],
     if x < Zero(x) then sign := -1; x := -x; else sign := 1; fi;
     repeat
       a_i := Int(x);
-      if i >= 2 and M[1][1] * a_i > maxpartial then break; fi;
+      if i >= 1 and a_i > maxpartial then break; fi;
       M := M * [[a_i,1],[1,0]];
       if x = Float(a_i) then break; fi;
-      x := 1 / (x - a_i);
+      x := One(x) / (x - a_i);
       i := i+1;
     until M[2][1] > maxdenom;
     return sign * M[1][1]/M[2][1];

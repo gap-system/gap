@@ -294,8 +294,12 @@ DeclareProperty("IsNaN", IsFloat);
 ##     it returns the most `reasonable' one given the precision of
 ##     <A>f</A>.
 ##
-##     <P/> If used in the form <C>Rat(f:maxdenom:=max)</C>, the rational returned is
-##     the first one with denominator at most <A>max</A>.
+##     <P/> Two options control the precision of the rational approximation:
+##     In the form <C>Rat(f:maxdenom:=md,maxpartial:=mp)</C>, the rational
+##     returned is such that the denominator is at most <A>md</A> and the
+##     partials in its continued fraction expansion are at most <A>mp</A>.
+##     The default values are <C>maxpartial:=10000</C> and
+##     <C>maxdenom:=2^(precision/2)</C>.
 ##   </Description>
 ## </ManSection>
 ##

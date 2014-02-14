@@ -98,7 +98,7 @@ InstallMethod( ViewString,
     if IsEmpty( GeneratorsOfMagmaWithInverses( M ) ) then
       return "<trivial magma-with-inverses>";
     else
-      STRINGIFY( "<magma-with-inverses with ",
+      return STRINGIFY( "<magma-with-inverses with ",
              Length( GeneratorsOfMagmaWithInverses( M ) ),
              " generators>" );
     fi;

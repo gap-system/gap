@@ -480,6 +480,18 @@ DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat", "4.8" );
 DeclareObsoleteSynonym( "MutableNullMat", "NullMat", "4.8" );
 
 
+
+
+#############################################################################
+##
+#F  CreateCompletionFiles( [<path>] ) . . . . . . create "lib/readX.co" files
+##
+##  NO LONGER SUPPORTED IN GAP >= 4.5 
+##
+BindGlobal( "CreateCompletionFiles", function()
+  Print("CreateCompletionFiles: Completion files are no longer supported by GAP.\n");
+end);
+
 #############################################################################
 ##
 #E

@@ -243,8 +243,14 @@ InstallMethod( IsCommutative,
 
 InstallGlobalFunction( Monoid, function( arg )
   local out, i;
+  
+  if Length(arg)=0 or (Length(arg)=1 and HasIsEmpty(arg[1]) and IsEmpty(arg[1]))
+   then 
+    Error("usage: cannot create a monoid with no generators,");
+    return;
+
   # special case for matrices, because they may look like lists
-  if Length( arg ) = 1 and IsMatrix( arg[1] )  then
+  elif Length( arg ) = 1 and IsMatrix( arg[1] )  then
     return MonoidByGenerators( [ arg[1] ] );
 
   # special case for matrices, because they look like lists
@@ -256,13 +262,14 @@ InstallGlobalFunction( Monoid, function( arg )
     return MonoidByGenerators( arg[1] );
 
   # list of generators plus identity
-  elif Length( arg ) = 2 and IsList( arg[1] )  then
+  elif Length( arg ) = 2 and IsList( arg[1] ) and not IsEmpty(arg[1]) then
     return MonoidByGenerators( arg[1], arg[2] );
 
   # generators and collections of generators 
-  elif (IsAssociativeElement(arg[1]) and IsMultiplicativeElementWithOne(arg[1]))
-   or (IsAssociativeElementCollection(arg[1]) 
-    and IsMultiplicativeElementWithOneCollection(arg[1])) then
+  elif  ( IsAssociativeElement(arg[1]) and IsMultiplicativeElementWithOne(arg[1]))
+    or  ( IsAssociativeElementCollection(arg[1]) and
+          IsMultiplicativeElementWithOneCollection(arg[1]) ) 
+    or  ( HasIsEmpty(arg[1]) and IsEmpty(arg[1]) ) then
     out:=[];
     for i in [1..Length(arg)] do
       if IsAssociativeElement(arg[i]) then
@@ -281,8 +288,10 @@ InstallGlobalFunction( Monoid, function( arg )
       elif i=Length(arg) and IsRecord(arg[i]) then
         return MonoidByGenerators(out, arg[i]);
       else
-        Error( "Usage: Monoid(<gen>,...), Monoid(<gens>), Monoid(<D>)," );
-        return;
+        if not IsEmpty(arg[i]) then 
+          Error( "Usage: Monoid(<gen>,...), Monoid(<gens>), Monoid(<D>)," );
+          return;
+        fi;
       fi;
     od;
     return MonoidByGenerators(out);

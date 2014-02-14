@@ -260,7 +260,7 @@ UInt            ExecProccall4args (
     /* call the function                                                   */
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 4, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) 0,  (Obj) 0);
-    {
+    else {
       SET_BRK_CALL_TO( call );
       CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
     }

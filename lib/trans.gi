@@ -19,7 +19,18 @@ function(t)
   od; 
   return a+1;   # to be in [1..n^n] 
 end); 
- 
+
+#
+
+InstallMethod(NumberTransformation, 
+"for a transformation and zero",
+[IsTransformation, IsZeroCyc], 
+function(t, n) 
+  return 1;  
+end);
+
+#
+
 InstallMethod(NumberTransformation, 
 "for a transformation and positive integer", 
 [IsTransformation, IsPosInt], 
@@ -167,6 +178,9 @@ InstallMethod(RankOfTransformation, "for a transformation",
 
 InstallMethod(RankOfTransformation, "for a transformation and pos int",
 [IsTransformation, IsPosInt], RANK_TRANS_INT);
+
+InstallMethod(RankOfTransformation, "for a transformation and zero",
+[IsTransformation, IsZeroCyc], function(x, y) return 0; end);
 
 #InstallMethod(CoRankOfTransformation, "for a transformation",
 #[IsTransformation], CORANK_TRANS_INT);
@@ -338,6 +352,11 @@ InstallMethod(FlatKernelOfTransformation, "for a transformation and pos int",
 
 #
 
+InstallMethod(FlatKernelOfTransformation, "for a transformation and zero", 
+[IsTransformation, IsZeroCyc], function(x, y) return []; end);
+
+#
+
 InstallMethod(ImageSetOfTransformation, "for a transformation",
 [IsTransformation], x-> IMAGE_SET_TRANS_INT(x, DegreeOfTransformation(x)));
 
@@ -347,8 +366,19 @@ InstallMethod(ImageSetOfTransformation, "for a transformation and pos int",
 [IsTransformation, IsPosInt], IMAGE_SET_TRANS_INT);
 
 #
+
+InstallMethod(ImageSetOfTransformation, "for a transformation and zero",
+[IsTransformation, IsZeroCyc], function(x, y) return []; end);
+
+#
+
 InstallMethod(ImageListOfTransformation, "for a transformation and pos int", 
 [IsTransformation, IsPosInt], IMAGE_TRANS);
+
+#
+
+InstallMethod(ImageListOfTransformation, "for a transformation and zero", 
+[IsTransformation, IsZeroCyc], function(x, y) return []; end);
 
 #
 

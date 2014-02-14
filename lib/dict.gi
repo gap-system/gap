@@ -1100,12 +1100,9 @@ local o,e;
          end;
 end);
 
-InstallMethod(SparseIntKey,"transformations, arbitrary domain",true,
-  [IsObject,IsTransformation],0,
-function(d,t)
-local n,l;
-  n:=DegreeOfTransformation(t);
-  l:=List([1..n],i->n^(i-1));
-  return x->ImageListOfTransformation(t)*l;
+InstallMethod(SparseIntKey, "for an object and transformation", 
+[IsObject, IsTransformation],
+function(d, t)
+  return x-> NumberTransformation(t, DegreeOfTransformation(t)); 
 end);
 

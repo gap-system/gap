@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -ex
 #############################################################################
 #
 # version to wrap - adjust major and minor numbers as needed

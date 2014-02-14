@@ -558,12 +558,30 @@ end );
 ##
 #F  NewConstructor( <name>, <filters> )
 ##
+##  <#GAPDoc Label="NewConstructor">
 ##  <ManSection>
-##  <Func Name="NewConstructor" Arg='name, filters'/>
+##  <Func Name="NewConstructor" Arg='name, args-filts'/>
 ##
 ##  <Description>
+##  <Ref Func="NewConstructor"/> returns a constructor <A>cons</A> with name
+##  <A>name</A>.
+##  The list <A>args-filts</A> describes requirements about the arguments
+##  of <A>constr</A>, namely the number of arguments must be equal to the length
+##  of <A>args-filts</A>, and the <M>i</M>-th argument must lie in the filter
+##  <A>args-filts</A><M>[i]</M>. Additionally a constructor expects the first
+##  argument to be a filter to then select a method to construct an object.
+##  <P/>
+##  Each method that is installed for <A>cons</A> via
+##  <Ref Func="InstallMethod"/> must require that the <M>i</M>-th argument
+##  lies in the filter <A>args-filts</A><M>[i]</M>.
+##  <P/>
+##  One can install methods for other arguments tuples via
+##  <Ref Func="InstallOtherMethod"/>,
+##  this way it is also possible to install methods for a different number
+##  of arguments than the length of <A>args-filts</A>.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "NewConstructor", function ( name, filters )
     local   oper,  filt,  filter;
@@ -720,12 +738,16 @@ end );
 ##
 #F  DeclareConstructor( <name>, <filters> )
 ##
+##  <#GAPDoc Label="DeclareConstructor">
 ##  <ManSection>
 ##  <Func Name="DeclareConstructor" Arg='name, filters'/>
 ##
 ##  <Description>
+##  does the same as <Ref Func="NewConstructor"/> and
+##  additionally makes the variable <A>name</A> read-only.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
 

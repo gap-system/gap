@@ -4435,16 +4435,10 @@ if ${gp_cv_ldflags+:} false; then :
   $as_echo_n "(cached) " >&6
 else
    case "$host-$CC" in
-    *-apple-darwin11*-gcc* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
-    *-apple-darwin12*-gcc* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
-    *-apple-darwin1*-mpicc* )
+    *-apple-* )
         gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-gcc* | *-egcs )
         gp_cv_ldflags="-g ${ABI_CFLAGS}";;
-    *-apple-darwin*-clang* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-clang* )
         gp_cv_ldflags="-g -rdynamic ${ABI_CFLAGS}";;
     *-icc* )
@@ -4478,7 +4472,7 @@ else
     *-hpux-gcc )
         gp_cv_prog_cc_cdynoptions="-fpic -Wall ${ABI_CFLAGS}";;
     *-gcc* | *-egcs )
-        gp_cv_prog_cc_cdynoptions="-fpic -Wall -O2 ${ABI_CFLAGS}";;
+        gp_cv_prog_cc_cdynoptions="-fPIC -Wall -O2 ${ABI_CFLAGS}";;
     *-clang* )
         gp_cv_prog_cc_cdynoptions="-fPIC -Wall ${ABI_CFLAGS} -Wno-unused-value";;
     *-icc* )
@@ -4490,7 +4484,7 @@ else
     *-irix* )
         gp_cv_prog_cc_cdynoptions=" -O3 -woff 1110,1167,1174,1552";;
 
-    * )            gp_cv_prog_cc_cdynoptions="-fpic -O2 ${ABI_CFLAGS}";;
+    * )            gp_cv_prog_cc_cdynoptions="-fPIC -O2 ${ABI_CFLAGS}";;
    esac
 
 fi

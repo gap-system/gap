@@ -26,17 +26,21 @@ else
 endif
 
 
+ifeq "$(MAKE_GMP)" "gmp"
+gap:  $(GMP_LIBS)
+gapdll:  $(GMP_LIBS)
+endif
 
 # OBJECTS are generated from SOURCE
 OBJECTS=ariths.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_random.o c_type1.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intfuncs.o intrprtr.o iostream.o listfunc.o listoper.o lists.o macfloat.o objccoll.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o opers.o permutat.o plist.o pperm.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o trans.o vars.o vec8bit.o vecffe.o vecgf2.o vector.o weakptr.o $(GAPMPI_OBJ)
 
 
 # compile and link GAP
-gap: $(OBJECTS) $(ITANIUMOBJ) $(EXTOBJS) $(GMP_LIBS)
+gap: $(OBJECTS) $(ITANIUMOBJ) $(EXTOBJS)
 	$(CC) $(LDFLAGS) -o gap $(OBJECTS) $(ITANIUMOBJ) -lm $(MPILIBS) $(EXTOBJS) $(GMP_LIBS) $(CONFLIBS)
 
 # compile and link gap.dll on cygwin
-gapdll: $(OBJECTS) $(ITANIUMOBJ) $(EXTOBJS) $(GMP_LIBS)
+gapdll: $(OBJECTS) $(ITANIUMOBJ) $(EXTOBJS)
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -DCOMPILECYGWINDLL -o gap.o -c ../../src/gap.c
 	$(CC) $(LDFLAGS) -o gap.dll -shared $(OBJECTS) $(ITANIUMOBJ) -lm $(MPILIBS) $(EXTOBJS) $(GMP_LIBS) $(CONFLIBS)
 	$(CC) $(LDFLAGS) -o gapw95 ../../src/gapw95.c $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -DCOMPILECYGWINDLL gap.dll

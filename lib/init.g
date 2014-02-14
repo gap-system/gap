@@ -583,10 +583,12 @@ CallAndInstallPostRestore( function()
     if enc = fail and IsBound(env.LANG) then
       enc := env.LANG;
     fi;
-    if enc <> fail and 
-                   (PositionSublist(enc, ".UTF-8") <> fail  or
-                    PositionSublist(enc, ".utf8") <> fail) then
-      GAPInfo.TermEncoding := "UTF-8";
+    if enc <> fail then
+      enc:=STRING_LOWER(enc);
+      if (PositionSublist(enc, ".utf-8") <> fail  or
+          PositionSublist(enc, ".utf8") <> fail) then
+        GAPInfo.TermEncoding := "UTF-8";
+      fi;
     fi;
     if not IsBound(GAPInfo.TermEncoding) then
       # default is latin1

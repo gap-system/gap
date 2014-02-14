@@ -22,7 +22,8 @@ local map,phi,o,lo,i,start,img;
   o:=1;
   phi:=hom;
   map:=MappingGeneratorsImages(phi);
-  for i in [1..Length(map[1])] do
+  i:=1;
+  while i<=Length(map[1]) do
     lo:=1;
     start:=map[1][i];
     img:=map[2][i];
@@ -40,8 +41,10 @@ local map,phi,o,lo,i,start,img;
       if i<Length(map[1]) then
 	phi:=phi^lo;
 	map:=MappingGeneratorsImages(phi);
+        i:=0; # restart search, as generator set may have changed.
       fi;
     fi;
+    i:=i+1;
   od;
   return o;
 end);
@@ -724,7 +727,7 @@ end;
 InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       mp,cen,i,j,imgs,ok,size,l,hom,cenis,reps,repspows,sortrels,genums,wert,p,
-      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond,oneouter;
+      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond,outerorder;
 
   len:=Length(clali);
   if ForAny(clali,i->Length(i)=0) then
@@ -745,10 +748,10 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     rig:=false;
   fi;
 
-  if IsBound(params.oneouter) then
-    oneouter:=params.oneouter;
+  if IsBound(params.outerorder) then
+    outerorder:=params.outerorder;
   else
-    oneouter:=false;
+    outerorder:=false;
   fi;
 
 
@@ -1045,9 +1048,15 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 		fi;
 	      else
 		Add(result,imgs);
-	      fi;
-	      if oneouter<>false and not IsInnerAutomorphism(imgs) then
-		return result;
+		# can we deduce we got all?
+		if outerorder<>false and Lcm(Concatenation([1],List(
+		  Filtered(result,x->not IsInnerAutomorphism(x)),
+		  x->First([2..outerorder],y->IsInnerAutomorphism(x^y)))))
+		    =outerorder
+		  then
+		    Info(InfoMorph,1,"early break");
+		    return result;
+		fi;
 	      fi;
 	    else
 	      return imgs;
@@ -1310,7 +1319,7 @@ local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
       elms:=false;
     fi;
 
-    # catch case of simple groups with prime order outers -- one outer
+    # catch case of simple groups to get outer automorphism orders
     # automorphism suffices.
     if IsSimpleGroup(H) then
       dat:=DataAboutSimpleGroup(H);
@@ -1319,9 +1328,7 @@ local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
 	  # all automs are inner.
 	  result:=rec(aut:=result.aut);
 	else
-	  if IsPrime(dat.fullAutGroup[1]) then
-	    result.oneouter:=dat.fullAutGroup[1];
-	  fi;
+	  result.outerorder:=dat.fullAutGroup[1];
 	  result:=rec(aut:=MorClassLoop(H,combi,result,15));
 	fi;
       fi;
@@ -1488,14 +1495,141 @@ local o,p,gens,hens;
   return o;
 end);
 
+BindGlobal("OuterAutomorphismGeneratorsSimple",function(G)
+local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
+  if not IsSimpleGroup(G) then
+    return fail;
+  fi;
+  gens:=GeneratorsOfGroup(G);
+  d:=DataAboutSimpleGroup(G);
+  id:=d.idSimple;
+  all:=false;
+  if id.series="A" then
+    if id.parameter=6 then
+      # A6 is easy enough
+      return fail;
+    else
+      H:=AlternatingGroup(id.parameter);
+      if G=H then 
+	iso:=IdentityMapping(G);
+      else
+	iso:=IsomorphismGroups(G,H);
+      fi;
+      aut:=GroupGeneralMappingByImages(G,G,gens,
+	    List(gens,
+	      x->PreImagesRepresentative(iso,Image(iso,x)^(1,2))));
+      auts:=[aut];
+      all:=true;
+    fi;
+
+  elif id.series in ["L","2A","C"] then
+    hom:=EpimorphismFromClassical(G);
+    if hom=fail then return fail;fi;
+    field:=FieldOfMatrixGroup(Source(hom));
+    dim:=DimensionOfMatrixGroup(Source(hom));
+    auts:=[];
+    if Size(field)>2 then
+      gal:=GaloisGroup(field);
+      # Diagonal automorphisms
+      if id.series="L" then
+        P:=GL(dim,field);
+      elif id.series="2A" then
+        P:=GU(dim,id.parameter[2]);
+	#gal:=GaloisGroup(GF(GF(id.parameter[2]),2));
+      elif id.series="C" then
+	if IsEvenInt(Size(field)) then
+	  P:=Source(hom);
+	else
+	  P:=List(One(Source(hom)),ShallowCopy);
+	  for i in [1..Length(P)/2] do
+	    P[i][i]:=PrimitiveRoot(field);
+	  od;
+	  P:=ImmutableMatrix(field,P);
+	  if not ForAll(GeneratorsOfGroup(Source(hom)),
+	             x->x^P in Source(hom)) then
+	    Error("changed shape!");
+	  fi;
+
+	  P:=Group(Concatenation([P],GeneratorsOfGroup(Source(hom))));
+	  SetSize(P,Size(Source(hom))*2);
+	fi;
+      else
+        Error("not yet done");
+      fi;
+      # Sufficiently many elements to get the mult. group
+      aut:=Size(P)/Size(Source(hom));
+      P:=GeneratorsOfGroup(P);
+      diag:=Group(One(field));
+      mats:=[];
+      while Size(diag)<aut do
+        if not DeterminantMat(P[1]) in diag then
+	  diag:=ClosureGroup(diag,DeterminantMat(P[1]));
+	  Add(mats,P[1]);
+	fi;
+        P:=P{[2..Length(P)]};
+      od;
+      auts:=Concatenation(auts,
+	List(mats,s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
+		  Image(hom,PreImagesRepresentative(hom,x)^s)))));
+      
+    fi;
+
+    if Size(gal)>1 then
+      # Galois
+      auts:=Concatenation(auts,
+	List(SmallGeneratingSet(gal),
+		s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
+		  Image(hom,
+		    List(PreImagesRepresentative(hom,x),r->List(r,y->Image(s,y))))))));
+    fi;
+
+    # graph
+    if id.series="L" and id.parameter[1]>2 then
+      Add(auts, GroupGeneralMappingByImages(G,G,gens,List(gens,x->
+		  Image(hom,Inverse(TransposedMat(PreImagesRepresentative(hom,x)))))));
+      all:=true;
+    elif id.series in ["2A","C"] then
+      # no graph
+      all:=true;
+    fi;
+
+  else
+    return fail;
+  fi;
+
+  for i in auts do
+    SetIsMapping(i,true);
+    SetIsBijective(i,true);
+  od;
+  return [auts,all];
+end);
+
 BindGlobal("AutomorphismGroupMorpheus",function(G)
 local a,b,c,p;
-  a:=Morphium(G,G,true);
+  if IsSimpleGroup(G) then
+    c:=DataAboutSimpleGroup(G);
+    b:=List(GeneratorsOfGroup(G),x->InnerAutomorphism(G,x));
+    a:=OuterAutomorphismGeneratorsSimple(G);
+    if a=fail then
+      a:=Morphium(G,G,true);
+    else
+      if a[2]=true then
+	a:=a[1];
+	a:=rec(aut:=a,inner:=b,sizeaut:=Size(G)*c.fullAutGroup[1]);
+      else
+	Info(InfoWarning,0,"Only partial list given");
+	a:=Morphium(G,G,true);
+      fi;
+    fi;
+  else
+    a:=Morphium(G,G,true);
+  fi;
   if IsList(a.aut) then
     a.aut:= GroupByGenerators( Concatenation( a.aut, a.inner ),
                                IdentityMapping( G ) );
+    if IsBound(a.sizeaut) then SetSize(a.aut,a.sizeaut);fi;
     a.inner:=SubgroupNC(a.aut,a.inner);
-  else
+  elif HasConjugacyClasses(G) then
     # test whether we really want to keep the stored nice monomorphism
     b:=Range(NiceMonomorphism(a.aut));
     p:=LargestMovedPoint(b); # degree of the nice rep.
@@ -1745,7 +1879,7 @@ local A;
     else
       A:=AutomorphismGroupSolvableGroup(G);
     fi;
-  elif Size(RadicalGroup(G))=1 then
+  elif Size(RadicalGroup(G))=1 and IsPermGroup(G) then
     # essentially a normalizer when suitably embedded 
     A:=AutomorphismGroupFittingFree(G);
   else

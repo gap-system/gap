@@ -692,7 +692,7 @@ Obj             PowRat (
         pow = opL;
     }
 
-    /* if <opR> is positive raise numberator and denominator seperately    */
+    /* if <opR> is positive raise numerator and denominator seperately    */
     else if ( (TNUM_OBJ(opR) == T_INT && 0 < INT_INTOBJ(opR))
            || TNUM_OBJ(opR) == T_INTPOS ) {
         numP = PowInt( NUM_RAT(opL), opR );

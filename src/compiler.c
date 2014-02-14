@@ -2770,7 +2770,7 @@ CVar CompStringExpr (
     string = CVAR_TEMP( NewTemp( "string" ) );
 
     /* create the string and copy the stuff                                */
-    Emit( "C_NEW_STRING( %c, %d, \"%C\" )\n",
+    Emit( "C_NEW_STRING( %c, %d, \"%C\" );\n",
 
           /* the sizeof(UInt) offset is to get past the length of the string
              which is now stored in the front of the literal */
@@ -5727,12 +5727,12 @@ Int CompileFunc (
         }
     }
     Emit( "\n/* information for the functions */\n" );
-    Emit( "C_NEW_STRING( DefaultName, 14, \"local function\" )\n" );
-    Emit( "C_NEW_STRING( FileName, %d, \"%s\" )\n", strlen(magic2), magic2 );
+    Emit( "C_NEW_STRING( DefaultName, 14, \"local function\" );\n" );
+    Emit( "C_NEW_STRING( FileName, %d, \"%s\" );\n", strlen(magic2), magic2 );
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
-            Emit( "C_NEW_STRING( NameFunc[%d], %d, \"%S\" )\n",
+            Emit( "C_NEW_STRING( NameFunc[%d], %d, \"%S\" );\n",
                   i, strlen(CSTR_STRING(n)), CSTR_STRING(n) );
         }
         else {

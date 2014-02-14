@@ -1029,45 +1029,6 @@ Obj NewFilter (
 
 /****************************************************************************
 **
-*F  NewFilterC( <name>, <narg>, <nams>, <hdlr> )  . . . . . make a new filter 
-*/
-Obj NewFilterC (
-    const Char *        name,
-    Int                 narg,
-    const Char *        nams,
-    ObjFunc             hdlr )
-{
-    Obj                 getter;
-    Obj                 setter;
-    Obj                 tester;
-    Int                 flag1;
-    Obj                 flags;
-    
-    flag1 = ++CountFlags;
-
-    getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoFilter) );
-    FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(getter)  = INTOBJ_INT( 0 );
-    NEW_FLAGS( flags, flag1 );
-    SET_LEN_FLAGS( flags, flag1 );
-    SET_ELM_FLAGS( flags, flag1, True );
-    FLAGS_FILT(getter)  = flags;
-    CHANGED_BAG(getter);
-
-    setter = NewSetterFilter( getter );
-    SETTR_FILT(getter)  = setter;
-    CHANGED_BAG(getter);
-    
-    tester = NewTesterFilter( getter );
-    TESTR_FILT(getter)  = tester;
-    CHANGED_BAG(getter);
-
-    return getter;    
-}
-
-
-/****************************************************************************
-**
 *F  NewAndFilter( <filt1>, <filt2> ) . . . . . make a new concatenated filter
 */
 Obj DoAndFilter (
@@ -2925,66 +2886,6 @@ Obj NewOperation (
 
 /****************************************************************************
 **
-*F  NewOperationC( <name>, <narg>, <nams>, <hdlr> )
-*/
-Obj NewOperationC (
-    const Char *        name,
-    Int                 narg,
-    const Char *        nams,
-    ObjFunc             hdlr )
-{
-    Obj                 oper;
-#ifdef  PREALLOCATE_TABLES
-    Obj                 cache;
-    Obj                 methods;
-    UInt                i;
-#endif
-
-    /* create the function                                                 */
-    oper = NewFunctionCT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
-
-    /* enter the handlers                                                  */
-    HDLR_FUNC(oper,0) = DoOperation0Args;
-    HDLR_FUNC(oper,1) = DoOperation1Args;
-    HDLR_FUNC(oper,2) = DoOperation2Args;
-    HDLR_FUNC(oper,3) = DoOperation3Args;
-    HDLR_FUNC(oper,4) = DoOperation4Args;
-    HDLR_FUNC(oper,5) = DoOperation5Args;
-    HDLR_FUNC(oper,6) = DoOperation6Args;
-    HDLR_FUNC(oper,7) = DoOperationXArgs;
-
-    /* reenter the given handler */
-    if (narg != -1)
-      HDLR_FUNC(oper,narg) = hdlr;
-
-    /*N 1996/06/06 mschoene this should not be done here                   */
-    FLAG1_FILT(oper) = INT_INTOBJ(0);
-    FLAG2_FILT(oper) = INT_INTOBJ(0);
-    FLAGS_FILT(oper) = False;
-    SETTR_FILT(oper) = False;
-    TESTR_FILT(oper) = False;
-
-    /* This isn't an attribute (yet) */
-    SET_ENABLED_ATTR(oper, 0);
-    
-    /* create caches and methods lists                                     */
-#ifdef  PREALLOCATE_TABLES
-    for ( i = 0; i <= 7; i++ ) {
-        methods = NEW_PLIST( T_PLIST, 0 );
-        METHS_OPER( oper, i ) = methods;
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2)) );
-        CACHE_OPER( oper, i ) = cache;
-        CHANGED_BAG(oper);
-    }
-#endif
-
-    /* return operation                                                    */
-    return oper;
-}
-
-
-/****************************************************************************
-**
 
 *F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
 */
@@ -4418,61 +4319,6 @@ Obj NewConstructor (
 
 /****************************************************************************
 **
-*F  NewConstructorC( <name>, <narg>, <nams>, <hdlr> )
-*/
-Obj NewConstructorC (
-    Char *              name,
-    Int                 narg,
-    Char *              nams,
-    ObjFunc             hdlr )
-{
-    Obj                 oper;
-#ifdef  PREALLOCATE_TABLES
-    Obj                 cache;
-    Obj                 methods;
-    UInt                i;
-#endif
-
-    /* create the function                                                 */
-    oper = NewFunctionCT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
-
-    /* enter the handlers                                                  */
-    if ( narg == -1 ) {
-        HDLR_FUNC(oper,0) = DoConstructor0Args;
-        HDLR_FUNC(oper,1) = DoConstructor1Args;
-        HDLR_FUNC(oper,2) = DoConstructor2Args;
-        HDLR_FUNC(oper,3) = DoConstructor3Args;
-        HDLR_FUNC(oper,4) = DoConstructor4Args;
-        HDLR_FUNC(oper,5) = DoConstructor5Args;
-        HDLR_FUNC(oper,6) = DoConstructor6Args;
-        HDLR_FUNC(oper,7) = DoConstructorXArgs;
-    }
-
-    /*N 1996/06/06 mschoene this should not be done here                   */
-    FLAG1_FILT(oper) = INT_INTOBJ(0);
-    FLAG2_FILT(oper) = INT_INTOBJ(0);
-    FLAGS_FILT(oper) = False;
-    SETTR_FILT(oper) = False;
-    TESTR_FILT(oper) = False;
-    
-#ifdef  PREALLOCATE_TABLES
-    /* create caches and methods lists                                     */
-    for ( i = 0; i <= 7; i++ ) {
-        methods = NEW_PLIST( T_PLIST, 0 );
-        METHS_OPER( oper, i ) = methods;
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+1) : CACHE_SIZE * (1+1)) );
-        CACHE_OPER( oper, i ) = cache;
-        CHANGED_BAG(oper);
-    }
-#endif
-
-    /* return constructor                                                  */
-    return oper;
-}
-
-
-/****************************************************************************
-**
 *F  DoAttribute( <name> ) . . . . . . . . . . . . . . .  make a new attribute
 */
 
@@ -4696,15 +4542,26 @@ Obj DoVerboseMutableAttribute (
 ** MakeSetter, MakeTester and SetupAttribute are support functions
 */
 
+#define WRAP_NAME(fname, name, addon) \
+    do { \
+        UInt name_len = GET_LEN_STRING(name); \
+        UInt addon_len = sizeof(addon) - 1; \
+        char *tmp; \
+        fname = NEW_STRING( name_len + addon_len + 2 ); \
+        tmp = CSTR_STRING(fname); \
+        memcpy( tmp, addon, addon_len ); tmp += addon_len; \
+        *tmp++ = '('; \
+        memcpy( tmp, CSTR_STRING(name), name_len ); tmp += name_len; \
+        *tmp++ = ')'; \
+        *tmp = 0; \
+        RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) ); \
+    } while(0)
+
 static Obj MakeSetter( Obj name, Int flag)
 {
   Obj fname;
   Obj setter;
-  fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
-  SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
-  SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-  SyStrncat( CSTR_STRING(fname), ")", 1 );
-  RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
+  WRAP_NAME(fname, name, "Setter");
   setter = NewOperation( fname, 2L, 0L, DoSetAttribute );
   FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
   FLAG2_FILT(setter)  = INTOBJ_INT( flag );
@@ -4714,14 +4571,10 @@ static Obj MakeSetter( Obj name, Int flag)
 
 static Obj MakeTester( Obj name, Int flag)
 {
-  Obj fname;
-  Obj tester;
-  Obj flags;
-    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
+    Obj fname;
+    Obj tester;
+    Obj flags;
+    WRAP_NAME(fname, name, "Tester");
     tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
                            DoTestAttribute );    
     FLAG1_FILT(tester)  = INTOBJ_INT( 0 );
@@ -4812,37 +4665,6 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
     SetupAttribute( oper, setter, tester, flag2);
 
     return;
-}
-    
-
-/****************************************************************************
-**
-*F  NewAttributeC( <name>, <narg>, <nams>, <hdlr> )
-*/
-Obj NewAttributeC (
-    const Char *        name,
-    Int                 narg,
-    const Char *        nams,
-    ObjFunc             hdlr )
-{
-    Obj                 getter;
-    Obj                 setter;
-    Obj                 tester;
-    Int                 flag2;
-    Obj                 fname;
-    
-    flag2 = ++CountFlags;
-
-
-    C_NEW_STRING_DYN(fname, name);
-    setter = MakeSetter(fname, flag2);
-    tester = MakeTester(fname, flag2);
-    
-    getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoAttribute) );
-
-    SetupAttribute(getter, setter, tester, flag2);
-    
-    return getter;    
 }
 
 
@@ -5077,21 +4899,13 @@ Obj NewProperty (
     flag1 = ++CountFlags;
     flag2 = ++CountFlags;
 
-    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
+    WRAP_NAME(fname, name, "Setter");
     setter = NewOperation( fname, 2L, 0L, DoSetProperty );
     FLAG1_FILT(setter)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
     CHANGED_BAG(setter);
 
-    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
+    WRAP_NAME(fname, name, "Tester");
     tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
                            DoTestProperty );    
     FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
@@ -5118,78 +4932,6 @@ Obj NewProperty (
     SET_ENABLED_ATTR(getter,1);
     CHANGED_BAG(getter);
 
-    /*N 1996/06/28 mschoene bad hack see comment in <setter>               */
-    FLAGS_FILT(setter)  = flags;
-    SETTR_FILT(setter)  = setter;
-    TESTR_FILT(setter)  = tester;
-
-    /* return the getter                                                   */
-    return getter;    
-}
-
-
-/****************************************************************************
-**
-*F  NewPropertyC( <name>, <narg>, <nams>, <hdlr> )
-*/
-Obj NewPropertyC (
-    const Char *        name,
-    Int                 narg,
-    const Char *        nams,
-    ObjFunc             hdlr )
-{
-    Obj                 getter;
-    Obj                 setter;
-    Obj                 tester;
-    Int                 flag1;
-    Int                 flag2;
-    Obj                 flags;
-    Obj                 fname;
-    
-    flag1 = ++CountFlags;
-    flag2 = ++CountFlags;
-
-    fname = NEW_STRING( strlen(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
-    SyStrncat( CSTR_STRING(fname), name, strlen(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    setter = NewOperation( fname, 2L, 0L, DoSetProperty );
-    FLAG1_FILT(setter)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
-    CHANGED_BAG(setter);
-
-    fname = NEW_STRING( strlen(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
-    SyStrncat( CSTR_STRING(fname), name, strlen(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
-                           DoTestProperty );    
-    FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    FLAGS_FILT(tester)  = flags;
-    SETTR_FILT(tester)  = 0;
-    TESTR_FILT(tester)  = ReturnTrueFilter;
-    CHANGED_BAG(tester);
-
-    getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoProperty) );
-
-    FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    SET_ELM_FLAGS( flags, flag1, True );
-    FLAGS_FILT(getter)  = flags;
-    SETTR_FILT(getter)  = setter;
-    TESTR_FILT(getter)  = tester;
-    SET_ENABLED_ATTR(getter,1);
-    CHANGED_BAG(getter);
-    
     /*N 1996/06/28 mschoene bad hack see comment in <setter>               */
     FLAGS_FILT(setter)  = flags;
     SETTR_FILT(setter)  = setter;
@@ -5721,11 +5463,7 @@ Obj FuncSETTER_FUNCTION (
     Obj                 fname;
     Obj                 tmp;
 
-    fname = NEW_STRING( GET_LEN_STRING(name) + 12 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "SetterFunc(", 11 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
+    WRAP_NAME(fname, name, "SetterFunc");
     func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, CSTR_STRING(fname), 2,
                          "object, value", DoSetterFunction );
     tmp = NEW_PLIST( T_PLIST, 2 );
@@ -5762,11 +5500,7 @@ Obj FuncGETTER_FUNCTION (
     Obj                 func;
     Obj                 fname;
 
-    fname = NEW_STRING( GET_LEN_STRING(name) + 12 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "GetterFunc(", 11 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
+    WRAP_NAME(fname, name, "GetterFunc");
     func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, CSTR_STRING(fname), 1,
                          "object, value", DoGetterFunction );
     ENVI_FUNC(func) = INTOBJ_INT( RNamObj(name) );

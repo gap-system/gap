@@ -4686,8 +4686,8 @@ local freegp, gens, mongens, s, t, p, freemon, gensmon, id, newrels,
 	  p:=Position(CHARS_UALPHA,s[j]);
 	  Add(t,CHARS_LALPHA[p]);
 	fi;
-	s:=t;
       od;
+      s:=t;
     else
       s:=Concatenation(s,"^-1");
     fi;

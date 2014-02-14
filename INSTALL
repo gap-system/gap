@@ -1,6 +1,6 @@
 ***************************************************************************
 *                                                                         *
-*                  GAP 4.6 INSTALLATION INSTRUCTIONS                      *
+*                  GAP 4.7 INSTALLATION INSTRUCTIONS                      *
 *                                                                         *
 *************************************************************************** 
 
@@ -88,7 +88,7 @@ archives. If you use Windows, then use the -win.zip archive.
 
 You need to download the installation archive 
 
-	gap4r6p<N>_<timestamp>
+	gap4r7p<N>_<timestamp>
 	
 of the right kind, according to your operating system. The <timestamp> 
 is updated whenever there is a change to the GAP system or any package.
@@ -102,7 +102,7 @@ operating system and the type of archive used.
 
 * Unix, Mac OS X
 
-Under Unix or Mac OS X unpack the archive gap4r6p<N>_<timestamp> 
+Under Unix or Mac OS X unpack the archive gap4r7p<N>_<timestamp> 
 in whatever place you want GAP to reside. 
 
 (If you unpack the archive as root user under UNIX, make sure that you
@@ -117,13 +117,13 @@ there, see the section "Expert Windows Installation" below).
 
 To use the -win.zip archive you will need an appropriate extractor. Make
 sure that you specify extraction to the C:\ folder (with no extra directory
-name -- the directory 'gap4r6' is part of the archive) to avoid extraction
+name -- the directory 'gap4r7' is part of the archive) to avoid extraction
 in a wrong place or in a separate directory. After extraction you can start
 GAP with one of the following files:
 
-C:\GAP4r6\bin\gap.bat
-C:\GAP4r6\bin\gaprxvt.bat
-C:\GAP4r6\bin\gapcmd.bat
+C:\gap4r7\bin\gap.bat
+C:\gap4r7\bin\gaprxvt.bat
+C:\gap4r7\bin\gapcmd.bat
 
 The most highly recommended shell to run GAP is 'mintty' started using
 gap.bat. It allows for convenient copying and pasting (e.g. using mouse)
@@ -143,7 +143,7 @@ binaries in place. Under Unix and Mac OS X you will have to compile such a
 binary yourself. (Mac OS X users please see section "GAP for Mac OS X"
 below for information about compilation)
 
-Change to the directory 'gap4r6' (which you just created by unpacking). To
+Change to the directory 'gap4r7' (which you just created by unpacking). To
 get started quickly you may simply build GAP with default settings by
 issuing the two commands
 
@@ -180,7 +180,7 @@ description of each is also available via
 
 * GMP
 
-By default, GAP 4.6 uses the external library GMP (see
+By default, GAP 4.7 uses the external library GMP (see
 http://www.gmplib.org) for large integer arithmetic, replacing the built-in
 code used in previous versions and achieving a significant speed-up in
 related computations. There is a version of GMP included with the GAP
@@ -282,7 +282,7 @@ Mac OS X users should type
 
 Windows users should start GAP with the batch file
 
-C:\GAP4r6\bin\gap.bat
+C:\gap4r7\bin\gap.bat
 
 GAP should start up with its banner and after a little while give you a
 command prompt 
@@ -337,9 +337,9 @@ gap> Read( Filename( DirectoriesLibrary( "tst" ), "testinstall.g" ) );
 
 test file         GAP4stones     time(msec)
 -------------------------------------------
-testing: ................/gap4r6/tst/zlattice.tst
+testing: ................/gap4r7/tst/zlattice.tst
 zlattice.tst               0              0
-testing: ................/gap4r6/tst/gaussian.tst
+testing: ................/gap4r7/tst/gaussian.tst
 gaussian.tst               0             10
 [ further lines deleted ]
 
@@ -363,7 +363,7 @@ start GAP instead of gapcmd.bat.
 ==========
 
 The GAP distribution already contains all the GAP packages which we
-redistribute in the gap4r6/pkg directory, and for packages that consist
+redistribute in the gap4r7/pkg directory, and for packages that consist
 only of GAP code no further installation is necessary.
 
 Some packages however contain external binaries that will require separate
@@ -437,7 +437,7 @@ GAP Reference manual. Some of these use unicode characters for mathematical
 formulae. (Firefox, Konqueror and Safari all support unicode characters.)
 
 The manual is also available in pdf format. In the full distribution these
-files are included in the directory 'gap4r6/doc' in the subdirectories
+files are included in the directory 'gap4r7/doc' in the subdirectories
 'tut' (a beginner's tutorial), 'ref' (the reference manual) and 'changes'
 (changes from earlier versions).
 
@@ -479,7 +479,7 @@ Line Options" of the GAP Reference manual).
 * When starting, GAP produces error messages about undefined variables.
 
 You might have a .gaprc file in your home directory that was intended for
-GAP 4.4 but is not compatible with GAP 4.6. See section "The gap.ini and
+GAP 4.4 but is not compatible with GAP 4.7. See section "The gap.ini and
 gaprc files" in Section "Running GAP" of the GAP Reference manual.
 
 * GAP stops with an error message "exceeded the permitted memory".
@@ -567,9 +567,9 @@ support@gap-system.org. Please give:
   UNIX/Linux) and version of GAP you are using (the line from the GAP 
   banner starting
 
-GAP, Version 4.6....
+GAP, Version 4.7....
 
-when your GAP 4.6 starts up, supplies the information required).
+when your GAP 4.7 starts up, supplies the information required).
 
 
 11 Known Problems of the Configure Process
@@ -665,8 +665,8 @@ files during the installation.
 
 Whenever you use a specialised Windows installer or install GAP from 
 the -win.zip archive, we recommend that you avoid paths with spaces, e.g.
-'C:\My Programs\gap4r6'. If you need to install GAP on another logical 
-disk, say E:, the easiest way would be just to use 'E:\gap4r6'.
+'C:\My Programs\gap4r7'. If you need to install GAP on another logical 
+disk, say E:, the easiest way would be just to use 'E:\gap4r7'.
 
 If you decide to install GAP in another directory than C: from the -win.zip
 archive, you will have to edit a batch file and use this file to start GAP.
@@ -675,7 +675,7 @@ First unpack the GAP distribution in the directory you want.
 
 Lets suppose you want GAP to reside in the directory
 
-E:\gap4r6
+E:\gap4r7
 
 Extract GAP (as described in the previous section for C:) in the root
 directory of the drive E: (alternatively, you can also first unpack it
@@ -687,23 +687,23 @@ library directories, but also allows for customisation of things like
 memory allocations. The file is called gap.bat and sits in the bin
 directory of the GAP distribution, so that in our case it is
 
-E:\gap4r6\bin\gap.bat
+E:\gap4r7\bin\gap.bat
 
 In its first line, 
 
-set TERMINFO=/cygdrive/c/GAP4R6/terminfo
+set TERMINFO=/cygdrive/c/gap4r7/terminfo
 
 replace '/c/' by '/e/', e.g.
 
-set TERMINFO=/cygdrive/e/GAP4R6/terminfo
+set TERMINFO=/cygdrive/e/gap4r7/terminfo
 
 Next, this file should contain the following single line
 
-start "GAP" C:\GAP4R6\bin\mintty.exe -s 120,40 /cygdrive/c/gap4r6/bin/gapw95.exe -l /cygdrive/c/GAP4R6 %*
+start "GAP" C:\gap4r7\bin\mintty.exe -s 120,40 /cygdrive/c/gap4r7/bin/gapw95.exe -l /cygdrive/c/gap4r7 %*
 
 in which you should replace 'C:\' by 'E:\' and '/c/' by '/e/', e.g.
 
-start "GAP" E:\GAP4R6\bin\mintty.exe -s 120,40 /cygdrive/e/gap4r6/bin/gapw95.exe -l /cygdrive/e/GAP4R6 %*
+start "GAP" E:\gap4r7\bin\mintty.exe -s 120,40 /cygdrive/e/gap4r7/bin/gapw95.exe -l /cygdrive/e/gap4r7 %*
 
 You now should be able to start GAP by clicking this gap.bat file.
 

@@ -28,6 +28,7 @@ DeclareOperation("TransformationByImageAndKernel",
  [ IsCyclotomicCollection and IsDenseList, 
    IsCyclotomicCollection and IsDenseList]);
 
+DeclareOperation("NumberTransformation", [IsTransformation, IsZeroCyc]);
 DeclareOperation("NumberTransformation", [IsTransformation, IsPosInt]);
 DeclareOperation("NumberTransformation", [IsTransformation]);
 DeclareOperation("TransformationNumber", [IsPosInt, IsPosInt]);
@@ -48,6 +49,7 @@ DeclareAttribute("SmallestMovedPoint", IsTransformationCollection);
 
 DeclareAttribute("RankOfTransformation", IsTransformation);
 DeclareOperation("RankOfTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("RankOfTransformation", [IsTransformation, IsZeroCyc]);
 DeclareOperation("RankOfTransformation", [IsTransformation, IsList]);
 
 DeclareOperation("AsBinaryRelation", [IsTransformation]);
@@ -62,13 +64,16 @@ DeclareAttribute("DegreeOfTransformationCollection",
 IsTransformationCollection);
 DeclareAttribute("FlatKernelOfTransformation", IsTransformation);
 DeclareOperation("FlatKernelOfTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("FlatKernelOfTransformation", [IsTransformation, IsZeroCyc]);
 
 DeclareOperation("ImageListOfTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("ImageListOfTransformation", [IsTransformation, IsZeroCyc]);
 DeclareOperation("ImageListOfTransformation", [IsTransformation]);
 #ImageListOfTransformation(IsTransformation, IsList) is just OnTuples
 DeclareSynonym("ListTransformation", ImageListOfTransformation);
 DeclareAttribute("ImageSetOfTransformation", IsTransformation);
 DeclareOperation("ImageSetOfTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("ImageSetOfTransformation", [IsTransformation, IsZeroCyc]);
 #ImageSetOfTransformation(IsTransformation, IsList) is just OnSets
 DeclareAttribute("IndexPeriodOfTransformation", IsTransformation);
 DeclareOperation("IsInjectiveListTrans", [IsList, IsTransformation]);
@@ -77,6 +82,7 @@ DeclareAttribute("KernelOfTransformation", IsTransformation);
 DeclareOperation("KernelOfTransformation", [IsTransformation, IsPosInt,
 IsBool]);
 DeclareOperation("KernelOfTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("KernelOfTransformation", [IsTransformation, IsZeroCyc]);
 DeclareOperation("KernelOfTransformation", [IsTransformation, IsBool]);
 
 DeclareOperation("PermLeftQuoTransformationNC",[IsTransformation,

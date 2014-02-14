@@ -57,6 +57,15 @@ Obj FuncHAS_IMG_TRANS( Obj self, Obj f ){
   return Fail;
 }
 
+Obj FuncINT_DEG_TRANS( Obj self, Obj f ){
+  if(TNUM_OBJ(f)==T_TRANS2){
+    return INTOBJ_INT(DEG_TRANS2(f));
+  } else if (TNUM_OBJ(f)==T_TRANS4){
+    return INTOBJ_INT(DEG_TRANS4(f));
+  }
+  return Fail;
+}
+
 // TmpTrans is the same as TmpPerm
 
 Obj TmpTrans;
@@ -1228,7 +1237,7 @@ Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m){
     def=DEG_TRANS4(f);
     if(def<=n) return f;
 
-    if(n>65535){            // g is T_TRANS4
+    if(n>65536){            // g is T_TRANS4
       g=NEW_TRANS4(n);
       ptf4=ADDR_TRANS4(f);
       ptg4=ADDR_TRANS4(g);
@@ -1236,7 +1245,7 @@ Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m){
         if(ptf4[i]>n-1) return Fail;
         ptg4[i]=ptf4[i];
       }
-    }else{  //  f is T_TRANS4 but n<65536<=def and so g will be T_TRANS2 */
+    }else{  //  f is T_TRANS4 but n<=65536<def and so g will be T_TRANS2 */
       g=NEW_TRANS2(n);
       ptf4=ADDR_TRANS4(f);
       ptg2=ADDR_TRANS2(g);
@@ -1302,7 +1311,7 @@ Obj FuncIS_INJECTIVE_LIST_TRANS( Obj self, Obj l, Obj t){
   n=(IS_TRANS(t)?DEG_TRANS(t):LEN_LIST(t));
   pttmp=ResizeInitTmpTrans(n);
 
-  if(TNUM_OBJ(t)==T_TRANS2){/* and LEN_LIST(l)<=deg(f)<65536 */
+  if(TNUM_OBJ(t)==T_TRANS2){/* and LEN_LIST(l)<=deg(f)<=65536 */
     ptt2=ADDR_TRANS2(t);
     for(i=LEN_LIST(l);i>=1;i--){
       j=(UInt) INT_INTOBJ(ELM_LIST(l, i));
@@ -1547,7 +1556,7 @@ Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f){
     for(j=0;j<deg;j++) ptg2[j]=j;
     for(j=1;j<=LEN_LIST(list);j++){
       i=INT_INTOBJ(ELM_LIST(list, j))-1;
-      ptg2[ptf2[i]]=i;
+      if(i<deg) ptg2[ptf2[i]]=i;
     }
     return g;
   }else if(TNUM_OBJ(f)==T_TRANS4){
@@ -1560,7 +1569,7 @@ Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f){
     for(j=0;j<deg;j++) ptg4[j]=j;
     for(j=1;j<=LEN_LIST(list);j++){
       i=INT_INTOBJ(ELM_LIST(list, j))-1;
-      ptg4[ptf4[i]]=i;
+      if(i<deg) ptg4[ptf4[i]]=i;
     }
     return g;
   }
@@ -1860,43 +1869,95 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
   return out; 
 }  
 
-// if f is a transformation and g is a transformation such that
-// g=Transformation(ker(g));, then INV_KER_TRANS(ker(g), f) returns a
-// transformation h such that h*f*g=g and so in particular, the following holds:
-// ON_KERNEL_ANTI_ACTION(ON_KERNEL_ANTI_ACTION(ker(g), f), h)=ker(g); only if
-// the rank(f*g)=rank(g), i.e. the # of classes of ker(g) equals the number
-// of classes of ker(f*g).
+/* Let <x> be a transformation with <ker(x)=X> and <ker(fx)=f^ker(x)> has the
+ * same number of classes as <ker(x)>. Then INV_KER_TRANS(X, f) returns a
+ * transformation <g> such that <gf^ker(x)=ker(x)=ker(gfx)> and the action of
+ * <gf> on <ker(x)> is the identity. 
+*/
 
-//unchanged
 Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f){
   Obj     g;
   UInt2   *ptf2, *ptg2;
   UInt4   *pttmp, *ptf4, *ptg4;
-  UInt    deg, i;
+  UInt    deg, i, len;
   
-  deg=DEG_TRANS(f);
-  ResizeTmpTrans(deg);
-
+  len=LEN_LIST(X);
+  ResizeTmpTrans(len);
+  
   if(TNUM_OBJ(f)==T_TRANS2){
-    g=NEW_TRANS2(deg);
-    pttmp=ADDR_TRANS4(TmpTrans);
-    ptf2=ADDR_TRANS2(f);
-    ptg2=ADDR_TRANS2(g);
-    
-    /* calculate a transversal of Y */
-    for(i=0;i<deg;i++) pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i]+1))-1]=i;
-    for(i=LEN_LIST(X);i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+    deg=DEG_TRANS2(f);
+    if(len<=65536){   // deg(g)<=65536 and g is T_TRANS2
+      g=NEW_TRANS2(len);
+      pttmp=ADDR_TRANS4(TmpTrans);
+      ptf2=ADDR_TRANS2(f);
+      ptg2=ADDR_TRANS2(g);
+      if(deg>=len){
+        // calculate a transversal of f^ker(x)=ker(fx)
+        for(i=0;i<len;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i]+1))-1]=i;
+        // install values in g
+        for(i=len;i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+      }else{
+        for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i]+1))-1]=i;
+        for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
+        for(i=len;i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+      }
+      return g;
+    } else {        // deg(g)>65536 and g is T_TRANS4
+      g=NEW_TRANS4(len);
+      pttmp=ADDR_TRANS4(TmpTrans);
+      ptf2=ADDR_TRANS2(f);
+      ptg4=ADDR_TRANS4(g);
+      if(deg>=len){
+        // calculate a transversal of f^ker(x)=ker(fx)
+        for(i=0;i<len;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i]+1))-1]=i;
+        // install values in g
+        for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+      }else{
+        for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i]+1))-1]=i;
+        for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
+        for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+      }
+      return g;
+    }
+  } else if(TNUM_OBJ(f)==T_TRANS4){
+    deg=DEG_TRANS4(f);
+    if(len<=65536){   // deg(g)<=65536 and g is T_TRANS2
+      g=NEW_TRANS2(len);
+      pttmp=ADDR_TRANS4(TmpTrans);
+      ptf4=ADDR_TRANS4(f);
+      ptg2=ADDR_TRANS2(g);
+      if(deg>=len){
+        // calculate a transversal of f^ker(x)=ker(fx)
+        for(i=0;i<len;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
+        // install values in g
+        for(i=len;i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+      }else{
+        for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
+        for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
+        for(i=len;i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+      }
+      return g;
+    } else {        // deg(g)>65536 and g is T_TRANS4
+      g=NEW_TRANS4(len);
+      pttmp=ADDR_TRANS4(TmpTrans);
+      ptf4=ADDR_TRANS4(f);
+      ptg4=ADDR_TRANS4(g);
+      if(deg>=len){
+        // calculate a transversal of f^ker(x)=ker(fx)
+        for(i=0;i<len;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
+        // install values in g
+        for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+      }else{
+        for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
+        for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
+        for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+      }
+      return g;
+    }
   } else {
-    g=NEW_TRANS4(deg);
-    pttmp=ADDR_TRANS4(TmpTrans);
-    ptf4=ADDR_TRANS4(f);
-    ptg4=ADDR_TRANS4(g);
-    
-    /* calculate a transversal of Y */
-    for(i=0;i<deg;i++) pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
-    for(i=LEN_LIST(X);i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+    ErrorQuit("usage: the second argument must be a transformation,", 0L, 0L);
   }
-  return g;
+  return Fail;
 }
 
 /* test if a transformation is an idempotent. */
@@ -2399,6 +2460,135 @@ Obj FuncRIGHT_ONE_TRANS( Obj self, Obj f){
   return FuncIDEM_IMG_KER_NC(self, img, ker);
 }
 
+//
+Obj FuncIsCommutingTransformation( Obj self, Obj f, Obj g ){
+  UInt    def, deg, i;
+  UInt2   *ptf2, *ptg2;
+  UInt4   *ptf4, *ptg4;
+
+  if(TNUM_OBJ(f)==T_TRANS2){
+    def=DEG_TRANS2(f);
+    ptf2=ADDR_TRANS2(f);
+    if(TNUM_OBJ(g)==T_TRANS2){
+      deg=DEG_TRANS2(g);
+      ptg2=ADDR_TRANS2(g);
+      if(def<deg){
+        for(i=0;i<def;i++){
+          if(ptf2[ptg2[i]]!=ptg2[ptf2[i]]){
+            return False;
+          }
+        }
+        for(;i<deg;i++){
+          if(IMAGE(ptg2[i], ptf2, def)!=ptg2[i]){
+            return False;
+          }
+        }
+        return True;
+      }else{
+        for(i=0;i<deg;i++){
+          if(ptf2[ptg2[i]]!=ptg2[ptf2[i]]){
+            return False;
+          }
+        }
+        for(;i<def;i++){
+          if(IMAGE(ptf2[i], ptg2, deg)!=ptf2[i]){
+            return False;
+          }
+        }
+      }
+    } else if(TNUM_OBJ(g)==T_TRANS4){
+      deg=DEG_TRANS4(g);
+      ptg4=ADDR_TRANS4(g);
+      if(def<deg){
+        for(i=0;i<def;i++){
+          if(ptf2[ptg4[i]]!=ptg4[ptf2[i]]){
+            return False;
+          }
+        }
+        for(;i<deg;i++){
+          if(IMAGE(ptg4[i], ptf2, def)!=ptg4[i]){
+            return False;
+          }
+        }
+        return True;
+      }else{
+        for(i=0;i<deg;i++){
+          if(ptf2[ptg4[i]]!=ptg4[ptf2[i]]){
+            return False;
+          }
+        }
+        for(;i<def;i++){
+          if(IMAGE(ptf2[i], ptg4, deg)!=ptf2[i]){
+            return False;
+          }
+        }
+      }
+    } else {
+      ErrorQuit("usage: the arguments must be transformations,", 0L, 0L);
+    }
+  } else if (TNUM_OBJ(f)==T_TRANS4){
+    def=DEG_TRANS4(f);
+    ptf4=ADDR_TRANS4(f);
+    if(TNUM_OBJ(g)==T_TRANS2){
+      deg=DEG_TRANS2(g);
+      ptg2=ADDR_TRANS2(g);
+      if(def<deg){
+        for(i=0;i<def;i++){
+          if(ptf4[ptg2[i]]!=ptg2[ptf4[i]]){
+            return False;
+          }
+        }
+        for(;i<deg;i++){
+          if(IMAGE(ptg2[i], ptf4, def)!=ptg2[i]){
+            return False;
+          }
+        }
+        return True;
+      }else{
+        for(i=0;i<deg;i++){
+          if(ptf4[ptg2[i]]!=ptg2[ptf4[i]]){
+            return False;
+          }
+        }
+        for(;i<def;i++){
+          if(IMAGE(ptf4[i], ptg2, deg)!=ptf4[i]){
+            return False;
+          }
+        }
+      }
+    } else if(TNUM_OBJ(g)==T_TRANS4){
+      deg=DEG_TRANS4(g);
+      ptg4=ADDR_TRANS4(g);
+      if(def<deg){
+        for(i=0;i<def;i++){
+          if(ptf4[ptg4[i]]!=ptg4[ptf4[i]]){
+            return False;
+          }
+        }
+        for(;i<deg;i++){
+          if(IMAGE(ptg4[i], ptf4, def)!=ptg4[i]){
+            return False;
+          }
+        }
+        return True;
+      }else{
+        for(i=0;i<deg;i++){
+          if(ptf4[ptg4[i]]!=ptg4[ptf4[i]]){
+            return False;
+          }
+        }
+        for(;i<def;i++){
+          if(IMAGE(ptf4[i], ptg4, deg)!=ptf4[i]){
+            return False;
+          }
+        }
+      }
+    }
+  } else {
+    ErrorQuit("usage: the arguments must be transformations,", 0L, 0L);
+  }
+  return True;
+}
 /****************************************************************************/
 
 /* GAP kernel functions */
@@ -3644,6 +3834,10 @@ static StructGVarFunc GVarFuncs [] = {
      FuncHAS_IMG_TRANS,
     "src/TRANS.c:FuncHAS_IMG_TRANS" },
 
+  { "INT_DEG_TRANS", 1, "f",
+     FuncINT_DEG_TRANS,
+    "src/TRANS.c:FuncINT_DEG_TRANS" },
+  
   { "NUMB_TRANS_INT", 2, "f, m",
      FuncNUMB_TRANS_INT,
     "src/trans.c:FuncNUMB_TRANS_INT" },
@@ -3844,6 +4038,10 @@ static StructGVarFunc GVarFuncs [] = {
     FuncOnPosIntSetsTrans, 
     "src/trans.c:FuncOnPosIntSetsTrans" },
 
+  { "IsCommutingTransformation", 2, "f, g", 
+    FuncIsCommutingTransformation, 
+    "src/trans.c:FuncIsCommutingTransformation" },
+  
   { 0 }
 
 };

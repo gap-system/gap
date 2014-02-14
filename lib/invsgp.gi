@@ -93,8 +93,14 @@ InstallGlobalFunction(InverseMonoid,
 function( arg )
   local out, i;
 
-  if IsAssociativeElement(arg[1]) 
-   or IsAssociativeElementCollection(arg[1]) then 
+  if Length(arg)=0 or (Length(arg)=1 and HasIsEmpty(arg[1]) and IsEmpty(arg[1]))
+   then 
+    Error("usage: cannot create an inverse monoid with no generators,");
+    return;
+  fi;
+  
+  if IsAssociativeElement(arg[1]) or IsAssociativeElementCollection(arg[1]) 
+   or (HasIsEmpty(arg[1]) and IsEmpty(arg[1])) then 
     out:=[]; 
     for i in [1..Length(arg)] do 
       if IsAssociativeElement(arg[i]) 
@@ -116,9 +122,11 @@ function( arg )
       elif i=Length(arg) and IsRecord(arg[i]) then 
         return InverseMonoidByGenerators(out, arg[i]);
       else
-        Error( "usage: InverseMonoid(<gen>,...), InverseMonoid(<gens>),"
-        ,  "InverseMonoid(<D>)," );
-        return;
+        if not IsEmpty(arg[i]) then 
+          Error( "usage: InverseMonoid(<gen>,...), InverseMonoid(<gens>),"
+           ,  "InverseMonoid(<D>)," );
+          return;
+        fi;
       fi;
     od;
     return InverseMonoidByGenerators(out);
@@ -134,8 +142,14 @@ InstallGlobalFunction(InverseSemigroup,
 function( arg )
   local out, i;
 
-  if IsAssociativeElement(arg[1]) 
-   or IsAssociativeElementCollection(arg[1]) then 
+  if Length(arg)=0 or (Length(arg)=1 and HasIsEmpty(arg[1]) and IsEmpty(arg[1]))
+   then 
+    Error("usage: cannot create an inverse semigroup with no generators,");
+    return;
+  fi;
+
+  if IsAssociativeElement(arg[1]) or IsAssociativeElementCollection(arg[1]) 
+    or (HasIsEmpty(arg[1]) and IsEmpty(arg[1])) then 
     out:=[]; 
     for i in [1..Length(arg)] do 
       if IsAssociativeElement(arg[i]) 
@@ -153,9 +167,11 @@ function( arg )
       elif i=Length(arg) and IsRecord(arg[i]) then 
         return InverseSemigroupByGenerators(out, arg[i]);
       else
-        Error( "usage: InverseSemigroup(<gen>,...), InverseSemigroup(<gens>),"
-        ,  "InverseSemigroup(<D>)," );
-        return;
+        if not IsEmpty(arg[i]) then 
+          Error( "usage: InverseSemigroup(<gen>,...), InverseSemigroup(<gens>),"
+          ,  "InverseSemigroup(<D>)," );
+          return;
+        fi;
       fi;
     od;
     return InverseSemigroupByGenerators(out);

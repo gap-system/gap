@@ -229,7 +229,7 @@ Obj FuncDensePartialPermNC( Obj self, Obj img ){
 
   //remove trailing 0s
   deg=LEN_LIST(img); 
-  while(INT_INTOBJ(ELM_LIST(img, deg))==0) deg--;
+  while(deg > 0 && INT_INTOBJ(ELM_LIST(img, deg))==0) deg--;
   
   if(deg==0) return EmptyPartialPerm;
 

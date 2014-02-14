@@ -402,9 +402,9 @@ end);
 
 #
 
-InstallMethod( IsomorphismTransformationSemigroup,
-"for a semigroup with multiplicative neutral elt and generators",
-[ IsSemigroup and HasMultiplicativeNeutralElement and HasGeneratorsOfSemigroup],
+InstallMethod(IsomorphismTransformationSemigroup,
+"for a semigroup with multiplicative neutral element and generators",
+[IsSemigroup and HasMultiplicativeNeutralElement and HasGeneratorsOfSemigroup],
 function(s)
   local en, act, gens, pos;
 
@@ -426,6 +426,13 @@ function(s)
    x-> TransformationOp(x, [1..Length(en)], act), 
    x-> en[pos^x]);
 end);
+
+#
+
+InstallMethod(IsomorphismTransformationMonoid, 
+"for a semigroup with multiplicative neutral element and generators",
+[IsSemigroup and HasMultiplicativeNeutralElement and HasGeneratorsOfSemigroup],
+IsomorphismTransformationSemigroup);
 
 #
 
@@ -452,9 +459,9 @@ end);
 
 #
 
-InstallMethod( IsomorphismTransformationSemigroup,
+InstallMethod(IsomorphismTransformationSemigroup,
 "for a semigroup with multiplicative neutral element",
-[ IsSemigroup and HasMultiplicativeNeutralElement],
+[IsSemigroup and HasMultiplicativeNeutralElement],
 function(s)
   local en, act, gens, pos;
 

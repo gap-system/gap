@@ -21,6 +21,8 @@
 #include        <sys/stat.h>
 #endif
 
+#include <unistd.h> /* move this and wrap execvp later */
+
 extern char * In;
 
 #include        "gasman.h"              /* garbage collector               */
@@ -64,7 +66,6 @@ extern char * In;
 #include        "vecgf2.h"              /* functions for GF2 vectors       */
 #include        "vec8bit.h"             /* functions for other compressed
                                            GF(q) vectors                   */
-
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
 #include        "objscoll.h"            /* single collector                */
@@ -72,7 +73,7 @@ extern char * In;
 #include        "objcftl.h"             /* from the left collect           */
 
 #include        "dt.h"                  /* deep thought                    */
-#include        "dteval.h"              /* deep though evaluation          */
+#include        "dteval.h"              /* deep thought evaluation          */
 
 #include        "sctable.h"             /* structure constant table        */
 #include        "costab.h"              /* coset table                     */
@@ -84,7 +85,6 @@ extern char * In;
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 #include        "funcs.h"               /* functions                       */
-
 
 #include        "intrprtr.h"            /* interpreter                     */
 
@@ -828,8 +828,6 @@ int main (
 
 Char *restart_argv_buffer[1000];
 
-#include <unistd.h> /* move this and wrap execvp later */
-
 Obj FuncRESTART_GAP( Obj self, Obj cmdline )
 {
   Char *s, *f,  **v;
@@ -1079,10 +1077,9 @@ Obj FuncWindowCmd (
 
   /* convert <args> into an argument string                              */
   ptr  = (Char*) CSTR_STRING(WindowCmdString);
-  *ptr = '\0';
 
   /* first the command name                                              */
-  SyStrncat( ptr, CSTR_STRING( ELM_LIST(args,1) ), 3 );
+  memcpy( ptr, CSTR_STRING( ELM_LIST(args,1) ), 3 + 1 );
   ptr += 3;
 
   /* and now the arguments                                               */
@@ -2388,9 +2385,10 @@ void InitGVarFiltsFromTable (
     Int                 i;
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
-        AssGVar( GVarName( tab[i].name ),
-            NewFilterC( tab[i].name, 1, tab[i].argument, tab[i].handler ) );
-        MakeReadOnlyGVar( GVarName( tab[i].name ) );
+        UInt gvar = GVarName( tab[i].name );
+        AssGVar( gvar,
+            NewFilter( NameGVarObj( gvar ), 1, ArgStringToList( tab[i].argument ), tab[i].handler ) );
+        MakeReadOnlyGVar( gvar );
     }
 }
 
@@ -2405,9 +2403,13 @@ void InitGVarAttrsFromTable (
     Int                 i;
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
-       AssGVar( GVarName( tab[i].name ),
-         NewAttributeC( tab[i].name, 1, tab[i].argument, tab[i].handler ) );
-       MakeReadOnlyGVar( GVarName( tab[i].name ) );
+        UInt gvar = GVarName( tab[i].name );
+        AssGVar( gvar,
+            NewAttribute( NameGVarObj( gvar ),
+                          1,
+                          ArgStringToList( tab[i].argument ),
+                          tab[i].handler ) );
+        MakeReadOnlyGVar( gvar );
     }
 }
 
@@ -2422,9 +2424,13 @@ void InitGVarPropsFromTable (
     Int                 i;
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
-       AssGVar( GVarName( tab[i].name ),
-         NewPropertyC( tab[i].name, 1, tab[i].argument, tab[i].handler ) );
-       MakeReadOnlyGVar( GVarName( tab[i].name ) );
+        UInt gvar = GVarName( tab[i].name );
+        AssGVar( gvar,
+            NewProperty( NameGVarObj( gvar ),
+                        1,
+                        ArgStringToList( tab[i].argument ),
+                        tab[i].handler ) );
+        MakeReadOnlyGVar( gvar );
     }
 }
 
@@ -2439,9 +2445,13 @@ void InitGVarOpersFromTable (
     Int                 i;
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
-        AssGVar( GVarName( tab[i].name ), NewOperationC( tab[i].name, 
-            tab[i].nargs, tab[i].args, tab[i].handler ) );
-        MakeReadOnlyGVar( GVarName( tab[i].name ) );
+        UInt gvar = GVarName( tab[i].name );
+        AssGVar( gvar,
+            NewOperation( NameGVarObj( gvar ),
+                          tab[i].nargs,
+                          ArgStringToList( tab[i].args ),
+                          tab[i].handler ) );
+        MakeReadOnlyGVar( gvar );
     }
 }
 
@@ -2456,9 +2466,13 @@ void InitGVarFuncsFromTable (
     Int                 i;
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
-        AssGVar( GVarName( tab[i].name ), NewFunctionC( tab[i].name, 
-            tab[i].nargs, tab[i].args, tab[i].handler ) );
-        MakeReadOnlyGVar( GVarName( tab[i].name ) );
+        UInt gvar = GVarName( tab[i].name );
+        AssGVar( gvar,
+            NewFunction( NameGVarObj( gvar ),
+                         tab[i].nargs,
+                         ArgStringToList( tab[i].args ),
+                         tab[i].handler ) );
+        MakeReadOnlyGVar( gvar );
     }
 }
 
@@ -3188,7 +3202,7 @@ void RecordLoadedModule (
       Pr( "panic: no room for module filename\n", 0L, 0L );
     }
     *NextLoadedModuleFilename = '\0';
-    SyStrncat(NextLoadedModuleFilename,filename, len);
+    memcpy(NextLoadedModuleFilename, filename, len+1);
     info->filename = NextLoadedModuleFilename;
     NextLoadedModuleFilename += len +1;
     Modules[NrModules++] = info;

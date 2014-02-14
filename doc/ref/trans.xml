@@ -115,7 +115,7 @@ stored using 16-bit integers and to <C>IsTrans4Rep</C> if it is stored using
     <Ref Attr="RankOfTransformation" Label="for a transformation and a list"/>,
     <Ref Attr="DegreeOfTransformation"/>, multiplication of two transformations
     via <K>*</K>, and exponentiation with the first argument
-    a positive integer <C>i</C> and second argument a partial permutation
+    a positive integer <C>i</C> and second argument a transformation
     <C>f</C> where the result is the image <C>i^f</C> of the point <C>i</C>
     under <C>f</C>.
     </Description>
@@ -332,9 +332,16 @@ Transformation( [ 1, 1, 2 ] )</Example>
       <C>[1..<A>n</A>^<A>n</A>]</C> that corresponds to <A>f</A>. If the
       optional second argument <A>n</A> is not specified, then the degree of
       <A>f</A> is used by default. 
-      <Log>
-gap> RandomTransformation(6);             
-Transformation( [ 2, 1, 2, 1, 1, 2 ] )</Log> 
+      <Example>
+gap> f:=Transformation( [ 3, 3, 5, 3, 3 ] );;
+gap> NumberTransformation(f, 5);
+1613
+gap> NumberTransformation(f, 10);
+2242256790
+gap> TransformationNumber(2242256790, 10);
+Transformation( [ 3, 3, 5, 3, 3 ] )
+gap> TransformationNumber(1613, 5); 
+Transformation( [ 3, 3, 5, 3, 3 ] )</Example> 
     </Description>
   </ManSection>
 
@@ -1429,7 +1436,7 @@ For more details see <Ref Filt="IsMagmaWithOne"/>.
 
 <ManSection>
 <Attr Name="DegreeOfTransformationSemigroup" Arg="S"/>
-<Returns>A positive integer.</Returns>
+<Returns>A non-negative integer.</Returns>
 <Description>
   The <E>degree</E> of a transformation semigroup <A>S</A> is just the
   maximum of the degrees of the elements of <A>S</A>.

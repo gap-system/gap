@@ -130,20 +130,20 @@ extern Char * SyWinCmd (
 **  otherwise confuse Gasman.
 */
 typedef struct {
-  int         fp;                     /* file descriptor for this file      */
-  int         echo;                   /* file descriptor for the echo       */
-  UInt        pipe;                   /* file is really a pipe           */
-  FILE       *pipehandle;             /* for pipes we need to remember the file handle */
-  UInt       ateof;                   /* set to 1 by any read operation that hits eof
-					 reset to 0 by a subsequent successful read */
-  UInt        crlast;                 /* records that last character read was \r for
-					 cygwin and othger systems that need end-of-line
-					 hackery */
-  Int        bufno;                   /* if non-negative then this file has a buffer in
-					 syBuffers[bufno]; If negative, this file may not
-					 be buffered */
-  UInt       isTTY;		      /* set in Fopen when this fid is a *stdin* or *errin*
-				       and really is a tty*/
+  int         fp;          /* file descriptor for this file */
+  int         echo;        /* file descriptor for the echo */
+  UInt        pipe;        /* file is really a pipe */
+  FILE       *pipehandle;  /* for pipes we need to remember the file handle */
+  UInt        ateof;       /* set to 1 by any read operation that hits eof
+                              reset to 0 by a subsequent successful read */
+  UInt        crlast;      /* records that last character read was \r for
+                              cygwin and othger systems that need end-of-line
+                              hackery */
+  Int         bufno;       /* if non-negative then this file has a buffer in
+                              syBuffers[bufno]; If negative, this file may not
+                              be buffered */
+  UInt        isTTY;       /* set in Fopen when this fid is a *stdin* or *errin*
+                              and really is a tty*/
 } SYS_SY_BUF;
 
 #define SYS_FILE_BUF_SIZE 20000

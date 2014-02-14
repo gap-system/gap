@@ -902,7 +902,7 @@ static Obj  HdlrFunc8 (
   
   /* Error( "corrupted completion file" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 25, "corrupted completion file" )
+  C_NEW_STRING( t_2, 25, "corrupted completion file" );
   CALL_1ARGS( t_1, t_2 );
   
  }
@@ -984,7 +984,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 22, "CLEAR_HIDDEN_IMP_CACHE" )
+ C_NEW_STRING( t_2, 22, "CLEAR_HIDDEN_IMP_CACHE" );
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -1021,7 +1021,7 @@ static Obj  HdlrFunc1 (
       return with;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 22, "WITH_HIDDEN_IMPS_FLAGS" )
+ C_NEW_STRING( t_2, 22, "WITH_HIDDEN_IMPS_FLAGS" );
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -1059,7 +1059,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 15, "CLEAR_IMP_CACHE" )
+ C_NEW_STRING( t_2, 15, "CLEAR_IMP_CACHE" );
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -1106,7 +1106,7 @@ static Obj  HdlrFunc1 (
       return with;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 15, "WITH_IMPS_FLAGS" )
+ C_NEW_STRING( t_2, 15, "WITH_IMPS_FLAGS" );
  t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -1119,7 +1119,7 @@ static Obj  HdlrFunc1 (
  
  /* UNBIND_GLOBAL( "RANK_FILTER" ); */
  t_1 = GF_UNBIND__GLOBAL;
- C_NEW_STRING( t_2, 11, "RANK_FILTER" )
+ C_NEW_STRING( t_2, 11, "RANK_FILTER" );
  CALL_1ARGS( t_1, t_2 );
  
  /* BIND_GLOBAL( "RANK_FILTER", function ( filter )
@@ -1140,7 +1140,7 @@ static Obj  HdlrFunc1 (
       return rank;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 11, "RANK_FILTER" )
+ C_NEW_STRING( t_2, 11, "RANK_FILTER" );
  t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -1158,7 +1158,7 @@ static Obj  HdlrFunc1 (
  
  /* UNBIND_GLOBAL( "RANK_FILTER_STORE" ); */
  t_1 = GF_UNBIND__GLOBAL;
- C_NEW_STRING( t_2, 17, "RANK_FILTER_STORE" )
+ C_NEW_STRING( t_2, 17, "RANK_FILTER_STORE" );
  CALL_1ARGS( t_1, t_2 );
  
  /* BIND_GLOBAL( "RANK_FILTER_STORE", function ( filter )
@@ -1175,7 +1175,7 @@ static Obj  HdlrFunc1 (
       return rank;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 17, "RANK_FILTER_STORE" )
+ C_NEW_STRING( t_2, 17, "RANK_FILTER_STORE" );
  t_3 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -1188,7 +1188,7 @@ static Obj  HdlrFunc1 (
  
  /* UNBIND_GLOBAL( "RANK_FILTER_COMPLETION" ); */
  t_1 = GF_UNBIND__GLOBAL;
- C_NEW_STRING( t_2, 22, "RANK_FILTER_COMPLETION" )
+ C_NEW_STRING( t_2, 22, "RANK_FILTER_COMPLETION" );
  CALL_1ARGS( t_1, t_2 );
  
  /* BIND_GLOBAL( "RANK_FILTER_COMPLETION", function ( filter )
@@ -1206,7 +1206,7 @@ static Obj  HdlrFunc1 (
       return RANK_FILTER_LIST[RANK_FILTER_COUNT - 1];
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 22, "RANK_FILTER_COMPLETION" )
+ C_NEW_STRING( t_2, 22, "RANK_FILTER_COMPLETION" );
  t_3 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -1332,8 +1332,8 @@ static Int InitLibrary ( StructInitInfo * module )
  /* record names used in handlers */
  
  /* information for the functions */
- C_NEW_STRING( DefaultName, 14, "local function" )
- C_NEW_STRING( FileName, 21, "GAPROOT/lib/filter1.g" )
+ C_NEW_STRING( DefaultName, 14, "local function" );
+ C_NEW_STRING( FileName, 21, "GAPROOT/lib/filter1.g" );
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;

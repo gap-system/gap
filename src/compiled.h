@@ -55,7 +55,7 @@
 #include        "objcftl.h"             /* from the left collect           */
 
 #include        "dt.h"                  /* deep thought                    */
-#include        "dteval.h"              /* deep though evaluation          */
+#include        "dteval.h"              /* deep thought evaluation          */
 
 #include        "sctable.h"             /* structure constant table        */
 #include        "costab.h"              /* coset table                     */

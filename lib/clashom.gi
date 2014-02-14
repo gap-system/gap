@@ -12,6 +12,36 @@
 ##  homomorphic images, MathComp, to appear.
 ##
 
+
+# get classes from classical group if possible.
+BindGlobal("ClassesFromClassical",function(G)
+local H,hom,d,cl;
+  if IsPermGroup(G) and (IsNaturalAlternatingGroup(G)  or
+    IsNaturalSymmetricGroup(G)) then
+    return ConjugacyClasses(G); # there is a method for this
+  fi;
+  if not IsSimpleGroup(PerfectResiduum(G)) then
+    return fail;
+  fi;
+  d:=DataAboutSimpleGroup(PerfectResiduum(G));
+  if d.idSimple.series<>"L" then
+    return fail;
+  fi;
+  hom:=EpimorphismFromClassical(G);
+  if hom=fail then
+    return fail;
+  fi;
+  # so far matrix classes only implemented for GL/SL
+  if not (IsNaturalGL(Source(hom)) or IsNaturalSL(Source(hom))) then
+    return fail;
+  fi;
+
+  cl:=ConjugacyClasses(Source(hom));
+  cl:=List(cl,x->Image(hom,Representative(x)));
+  cl:=ConjugacyClassesByRandomSearch(G:seed:=cl);
+  return cl;
+end);
+
 #############################################################################
 ##
 #F  ClassRepsPermutedTuples(<g>,<ran>)
@@ -147,11 +177,11 @@ local clT,	# classes T
   isdirprod:=Size(M)=Size(autT)^n;
 
   # classes of T
-  if IsNaturalSymmetricGroup(T) or IsNaturalAlternatingGroup(T) then
-    clT:=ConjugacyClasses(T);
-  else
+  clT:=ClassesFromClassical(T);
+  if clT=fail then
     clT:=ConjugacyClassesByRandomSearch(T);
   fi;
+
   clT:=List(clT,i->[Representative(i),Centralizer(i)]);
   lcl:=Length(clT);
   Info(InfoHomClass,1,"found ",lcl," classes in almost simple");
@@ -1076,11 +1106,12 @@ local cs,	# chief series of G
 
 	C:=KernelOfMultiplicativeGeneralMapping(Fhom);
 	F:=Image(Fhom,G);
-	if IsNaturalSymmetricGroup(F) or IsNaturalAlternatingGroup(F) then
-	  clF:=ConjugacyClasses(F);
-	else
+
+	clF:=ClassesFromClassical(F);
+	if clF=fail then
 	  clF:=ConjugacyClassesByRandomSearch(F);
 	fi;
+
 	clF:=List(clF,j->[Representative(j),StabilizerOfExternalSet(j)]);
 
       else
@@ -1190,11 +1221,12 @@ local cs,	# chief series of G
 	  FM:=Image(Fhom,M);
 	  Info(InfoHomClass,1,
 	      "classes by random search in almost simple group");
-	  if IsNaturalSymmetricGroup(F) or IsNaturalAlternatingGroup(F) then
-	    clF:=ConjugacyClasses(F);
-	  else
+
+	  clF:=ClassesFromClassical(F);
+	  if clF=fail then
 	    clF:=ConjugacyClassesByRandomSearch(F);
 	  fi;
+
 	  clF:=List(clF,j->[Representative(j),StabilizerOfExternalSet(j)]);
 	fi;
       fi; # true orbit of T.
@@ -2890,8 +2922,12 @@ local cl;
   cl:=ConjugacyClassesForSmallGroup(G);
   if cl<>fail then
     return cl;
-  elif IsSimpleGroup( G )  then
-    return ConjugacyClassesByRandomSearch( G );
+  elif IsSimpleGroup( G ) then
+    cl:=ClassesFromClassical(G);
+    if cl=fail then
+      cl:=ConjugacyClassesByRandomSearch( G );
+    fi;
+    return cl;
   else
     return ConjugacyClassesViaRadical(G);
   fi;

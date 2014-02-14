@@ -158,16 +158,10 @@ dnl ##
 AC_DEFUN(GP_LDFLAGS,
 [AC_CACHE_CHECK(Linker default flags, gp_cv_ldflags,
  [ case "$host-$CC" in
-    *-apple-darwin11*-gcc* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
-    *-apple-darwin12*-gcc* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
-    *-apple-darwin1*-mpicc* )
+    *-apple-* )
         gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-gcc* | *-egcs )
         gp_cv_ldflags="-g ${ABI_CFLAGS}";;
-    *-apple-darwin*-clang* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-clang* )
         gp_cv_ldflags="-g -rdynamic ${ABI_CFLAGS}";;
     *-icc* )

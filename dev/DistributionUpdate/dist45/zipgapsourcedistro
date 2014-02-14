@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -ex
 #############################################################################
 ##
 
@@ -61,7 +61,7 @@ echo 'Unpacking .zip archive to check for missing files ...'
 unzip -q ${ziparchive} -d tmpunpack
 mv tmpunpack/${DISTNAME} ${DISTNAME}tst
 rm -rf tmpunpack
-diff -rq ${DISTNAME} ${DISTNAME}tst
+diff -rq ${DISTNAME} ${DISTNAME}tst | cat
 rm -rf ${DISTNAME}tst
 
 echo '===================================================================='
@@ -72,7 +72,7 @@ tar xzf ../${targzarchive}
 cd ..
 mv tmpunpack/${DISTNAME} ${DISTNAME}tst
 rm -rf tmpunpack
-diff -rq ${DISTNAME} ${DISTNAME}tst
+diff -rq ${DISTNAME} ${DISTNAME}tst | cat
 rm -rf ${DISTNAME}tst
              
 exit 0

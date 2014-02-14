@@ -490,12 +490,12 @@ yielding smaller spaces and several irreducible characters.
 <P/>
 <Example><![CDATA[
 gap> DixonSplit( d );
-#I  Matrix 9,Representative of Order 3,Centralizer: 5832
+#I  Matrix 2,Representative of Order 3,Centralizer: 5832
 #I  Dimensions: [ 1, 2, 1, 4, 12, 1, 1, 2, 1, 2, 1 ]
 #I  Two-dim space split
 #I  Two-dim space split
 #I  Two-dim space split
-9
+2
 ]]></Example>
 <P/>
 In this case spaces of the listed dimensions are a result of the
@@ -569,9 +569,9 @@ before feeding them in the machinery of the Dixon-algorithm.
 <Example><![CDATA[
 gap> l.irreducibles[1];
 Character( CharacterTable( PSL(4, 3) ),
- [ 640, E(13)^7+E(13)^8+E(13)^11, E(13)^4+E(13)^10+E(13)^12, 
-  E(13)^2+E(13)^5+E(13)^6, E(13)+E(13)^3+E(13)^9, 0, -8, 0, -8, 0, 0, 
-  0, 0, 0, -8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1 ] )
+ [ 640, -8, -8, -8, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, 0, 0, 0, E(13)^7+E(13)^8+E(13)^11, E(13)^4+E(13)^10+E(13)^12, 
+  E(13)^2+E(13)^5+E(13)^6, E(13)+E(13)^3+E(13)^9, 0 ] )
 gap> l:=List(l.irreducibles,ValuesOfClassFunction);;
 gap> DxIncludeIrreducibles( d, l );
 gap> Length( d.irreducibles );
@@ -587,7 +587,7 @@ This makes them available also to the character table.
 <P/>
 <Example><![CDATA[
 gap> irrs:= DixontinI( d );;
-#I  Total:1 matrices,[ 9 ]
+#I  Total:1 matrices,[ 2 ]
 gap> SetIrr(g,irrs);
 gap> Length(Irr(c));
 29

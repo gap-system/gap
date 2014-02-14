@@ -2294,28 +2294,6 @@ Obj GcdInt ( Obj opL, Obj opR )
   return gcd;
 }
 
-Obj FuncIntDiv2( Obj self, Obj gmp )
-{
-  Obj res;
-  Int p,r;
-  TypLimb bmask;
-
-    p=r=0;
-    /*    gmp = NEW_INT(arg);*/
-
-    /* find highest power of 2 dividing gmp and divide out by this */
-    for ( p = 0 ; ADDR_INT(gmp)[p] == (TypLimb)0; p++ ) {
-      ;
-    }
-    for ( bmask = (TypLimb)1, r = 0 ;
-          ( (bmask & ADDR_INT(gmp)[p]) == 0 ) && bmask != (TypLimb)0 ;
-          bmask = bmask << 1, r++ ) {
-      ;
-    }
-    res = INTOBJ_INT( p*1000 + r );
-    return res;
-}
-
 /****************************************************************************
 **
 *F  FuncGCD_INT(<self>,<opL>,<opR>)  . . . . . . .  internal function 'GcdInt'
@@ -2521,9 +2499,6 @@ static StructGVarFunc GVarFuncs [] = {
   
   { "Log2Int", 1, "gmp",
     FuncLog2Int, "src/gmpints.c:Log2Int" },
-
-  { "IntDiv2", 1, "gmp",
-    FuncIntDiv2, "src/gmpints.c:IntDiv2" },
 
   { "STRING_INT", 1, "gmp",
     FuncSTRING_INT, "src/gmpints.c:STRING_INT" },

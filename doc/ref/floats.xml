@@ -118,7 +118,7 @@ using the usual commands <Ref Oper="Int"/>, <Ref Oper="Rat"/>,
 Exact conversion to and from floating-point format may be done using
 external representations. The "external representation" of a
 floating-point number <C>x</C> is a pair <C>[m,e]</C> of integers,
-such that <C>x=m*2^(1+e-LogInt(m,2))</C>. Conversion to and from
+such that <C>x=m*2^(-1+e-LogInt(AbsInt(m),2))</C>. Conversion to and from
 external representation is performed as usual using
 <Ref Oper="ExtRepOfObj"/> and <Ref Oper="ObjByExtRep"/>:
 <Example><![CDATA[

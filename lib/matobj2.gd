@@ -378,6 +378,8 @@ DeclareAttribute( "RowLength", IsMatrixObj );
 
 DeclareAttribute( "DimensionsMat", IsMatrixObj );   # returns [rows,cols]
 
+DeclareAttribute( "RankMat", IsMatrixObj );
+DeclareOperation( "RankMatDestructive", [ IsMatrixObj ] );
 
 ############################################################################
 # In the following sense matrices behave like lists:
@@ -640,7 +642,7 @@ DeclareOperation( "ChangedBaseDomain", [IsMatrixObj,IsRing] );
 DeclareGlobalFunction( "MakeMatrix" );
 # A convenience function for users to choose some appropriate representation
 # and guess the base domain if not supplied as second argument.
-# This is not guaranteed to be efficient and should never be used 
+# This is not guaranteed to be efficient and should never be used
 # in library or package code.
 
 

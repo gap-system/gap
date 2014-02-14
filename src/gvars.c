@@ -289,6 +289,11 @@ Char *          NameGVar (
     return CSTR_STRING( ELM_PLIST( NameGVars, gvar ) );
 }
 
+Obj NameGVarObj ( UInt gvar )
+{
+    return ELM_PLIST( NameGVars, gvar );
+}
+
 
 #define NSCHAR '@'
 

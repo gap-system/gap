@@ -374,7 +374,8 @@ SELECT_SMALL_GROUPS_FUNCS[ 11 ] := function( size, funcs, vals, inforec, all,
         range := idList;
     fi;
     for i in range do                         
-        g := SMALL_GROUP_FUNCS[ inforec.func ]( size, i, inforec );                     SetIdGroup( g, [ size, i ] );
+        g := SMALL_GROUP_FUNCS[ inforec.func ]( size, i, inforec );
+        SetIdGroup( g, [ size, i ] );
         ok := true;
         for j in [ 1 .. Length( funcs ) ] do
             ok := ok and funcs[ j ]( g ) in vals[ j ];

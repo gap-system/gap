@@ -165,7 +165,7 @@ local g;
 end);
 
 InstallGlobalFunction(SimpleGroup,function(arg)
-local brg,str,p,a,param,g,s,small,plus;
+local brg,str,p,a,param,g,s,small,plus,sets;
   if IsRecord(arg[1]) then
     p:=arg[1];
     if p.series="Spor" then
@@ -412,7 +412,14 @@ local brg,str,p,a,param,g,s,small,plus;
     if Length(param)=2 and IsOddInt(param[1]) then
       g:=SO(param[1],param[2]);
       g:=Action(g,NormedRowVectors(GF(param[2])^param[1]),OnLines);
-      g:=DerivedSubgroup(g);
+      s:=DerivedSubgroup(g);
+      if s<>g and IsBound(g!.actionHomomorphism) then
+	s!.actionHomomorphism:=ActionHomomorphism(
+	  PreImage(g!.actionHomomorphism,s),
+	  HomeEnumerator(UnderlyingExternalSet(g!.actionHomomorphism)),
+	  OnLines,"surjective");
+      fi;
+      g:=s;
       s:=Concatenation("O(",String(param[1]),",",String(param[2]),")");
       small:=true;
     elif Length(param)=3 and param[1]=1 and IsEvenInt(param[2]) then
@@ -496,14 +503,32 @@ local brg,str,p,a,param,g,s,small,plus;
     a:=ShallowCopy(Orbits(g,MovedPoints(g)));
     if Length(a)>1 then
       SortParallel(List(a,Length),a);
-      a:=Action(g,a[1]);
+      if IsBound(g!.actionHomomorphism) then
+	# pull back
+	p:=UnderlyingExternalSet(g!.actionHomomorphism);
+	a:=Action(Source(g!.actionHomomorphism),HomeEnumerator(p){a[1]},
+	     FunctionAction(p));
+      else
+	a:=Action(g,a[1]);
+      fi;
       SetSize(a,Size(g));
       g:=a;
     fi;
 
     a:=Blocks(g,MovedPoints(g));
     if Length(a)>1 then
-      a:=Action(g,a,OnSets);
+      if IsBound(g!.actionHomomorphism) then
+	# pull back
+	p:=UnderlyingExternalSet(g!.actionHomomorphism);
+	sets:=Set(List(a,x->HomeEnumerator(p){x}));
+	p:=FunctionAction(p);
+	a:=Action(Source(g!.actionHomomorphism),sets,
+	     function(set,g)
+	       return Set(List(set,x->p(x,g)));
+	     end);
+      else
+	a:=Action(g,a,OnSets);
+      fi;
       SetSize(a,Size(g));
       g:=a;
     fi;
@@ -917,7 +942,11 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     e:=EFactors(1,expo,1);
   elif id.series="C" then
     nam:=Concatenation("S",String(par[1]*2),"(",String(par[2]),")");
-    e:=EFactors(Gcd(2,par[2]-1),expo,1);
+    if par[1]=2 and prime=2 then
+      e:=EFactors(Gcd(2,par[2]-1),expo,2);
+    else
+      e:=EFactors(Gcd(2,par[2]-1),expo,1);
+    fi;
   elif id.series="D" then
     nam:=Concatenation("O",String(par[1]*2),"+(",String(par[2]),")");
     if par[1]=4 then
@@ -998,3 +1027,84 @@ local a;
   a:=2^Number(Factors(n),x->x=2);
   return n/a; # 2-Sylow index
 end);
+
+InstallGlobalFunction("EpimorphismFromClassical",function(G)
+local H,d,id,hom,field,C,dom,orbs;
+  if not IsSimpleGroup(G) then
+    H:=PerfectResiduum(G);
+  else
+    H:=G;
+  fi;
+  d:=DataAboutSimpleGroup(H);
+  id:=d.idSimple;
+  if not id.series in ["L","2A","C"] then
+    return fail;
+  fi;
+
+  # TODO: Recognize subgroups of almost 
+  if G<>H then 
+    return fail;
+  fi;
+
+  field:=id.parameter[2];
+  if id.series="2A" then
+    field:=field^2;
+  fi;
+
+  # the source group we are expecting
+  if id.series="L" then
+    C:=SL(id.parameter[1],id.parameter[2]);
+  elif id.series="C" then
+    C:=SP(2*id.parameter[1],id.parameter[2]);
+  elif id.series="2A" then
+    C:=SU(id.parameter[1]+1,id.parameter[2]);
+  else
+    Error("not yet done");
+  fi;
+
+  # was the fgroup created as ``P...''?
+  if IsBound(G!.actionHomomorphism) then
+    hom:=G!.actionHomomorphism;
+    if IsMatrixGroup(Source(hom)) and Image(hom)=G and Size(Source(hom))/Size(G)<field then
+      # test that the source is really the group we want
+      if Source(hom)=C then
+	return hom;
+      #else
+#	Print("different source -- ID\n");
+      fi;
+    fi;
+  fi;
+
+  # build isom
+  dom:=NormedRowVectors(DefaultFieldOfMatrixGroup(C)^DimensionOfMatrixGroup(C));
+  hom:=ActionHomomorphism(C,dom,OnLines,"surjective");
+  orbs:=Orbits(Image(hom),MovedPoints(Image(hom)));
+  if Length(orbs)>1 then
+    # reduce domain
+    orbs:=ShallowCopy(orbs);
+    Sort(orbs,function(a,b) return Length(a)<Length(b);end);
+    dom:=dom{Set(orbs[1])};
+    hom:=ActionHomomorphism(C,dom,OnLines,"surjective");
+  fi;
+
+  if Size(Image(hom))<>Size(G) then
+    Error("inconsistent image");
+  fi;
+
+  if Image(hom)=G then
+    d:=IdentityMapping(G);
+  else
+    # Image(hom) is the better group to search in, e.g. classes.
+    d:=Image(hom);
+    d!.actionHomomorphism:=hom;
+    return fail;
+    Error("QQQ");
+    d:=IsomorphismGroups(G,Image(hom));
+  fi;
+  if d=fail then
+    Error("inconsistent image 2");
+  fi;
+  return hom*InverseGeneralMapping(d);
+
+end);
+
