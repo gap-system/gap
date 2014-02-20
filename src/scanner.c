@@ -2303,9 +2303,7 @@ void GetChar ( void )
     }
     else                     Value[0] = *In;
   }
-  else if ( *In == '\n' ) {
-    SyntaxError("newline not allowed in character literal");
-  }
+
   /* put normal chars into 'Value'                                       */
   else {
     Value[0] = *In;
@@ -2314,7 +2312,6 @@ void GetChar ( void )
   /* read the next character                                             */
   GET_CHAR();
 
-  
   /* check for terminating single quote                                  */
   if ( *In != '\'' )
     SyntaxError("missing single quote in character constant");

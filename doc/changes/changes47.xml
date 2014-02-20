@@ -438,6 +438,14 @@ Better detection of UTF-8 terminal encoding on some systems.
 
 </Section>
 
+<Section Label="fix474">
+<Heading>&GAP; 4.7.4 (February 2013)</Heading>
+This release was prepared immediately after &GAP; 4.7.3 to revert
+the fix of the error handling for the single quote at the end of
+an input line, contained in &GAP; 4.7.3. It happened that (only
+on Windows) the fix caused error messages in one of the packages.
+</Section>
+
 </Chapter>
 
 
