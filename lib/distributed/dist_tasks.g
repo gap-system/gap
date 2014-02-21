@@ -81,6 +81,18 @@ GetWorkerInputChannel := function (worker)
   od;
 end;
 
+SubObjectRegions := function(obj)
+  local result, objs, subobj;
+  result := OBJ_SET();
+  objs := CLONE_DELIMITED(obj);
+  for subobj in objs do
+    if IsRegion(subobj) then
+      ADD_OBJ_SET(result, subobj);
+    fi;
+  od;
+  return OBJ_SET_VALUES(result);
+end;
+
 # Function executed by each worker thread
 Tasks.Worker := function(channels)
   local taskdata, result, toUnblock, resume,
@@ -182,7 +194,9 @@ Tasks.Worker := function(channels)
         fi;
         if IsBound(task.result) and IsGlobalObjectHandle(task.result) then
           ShareSpecialObj(result);
+          #Print(TNUM_OBJ(result), "\n");
           task.result!.obj := result;
+          #MigrateObj(result,task);
           task.result!.control.haveObject := true;
           ProcessHandleBlockedQueue(task.result, result);
           UNLOCK(p);

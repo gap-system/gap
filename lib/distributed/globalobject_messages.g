@@ -394,7 +394,10 @@ ProcessObjMsg := function (message)
     else
       handle!.obj := [];
       handle!.obj[1] := obj;
-      MigrateObj (handle!.obj, handle);
+      #MigrateObj (handle!.obj, handle);
+      atomic readonly obj do
+        MigrateObj (obj, handle);
+      od;
     fi;
     if storeObject then
       handle!.control.haveObject := true;
