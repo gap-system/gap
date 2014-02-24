@@ -91,7 +91,8 @@ static void SetSocketURI(Obj socket, Obj uri) {
    * a GAP 4.5 package instead.
    */
   char *uri_mem;
-  if (uri_mem = (char *) ADDR_OBJ(socket)[ZMQ_DAT_URI_OFF]) {
+  uri_mem = (char *) ADDR_OBJ(socket)[ZMQ_DAT_URI_OFF];
+  if (uri_mem) {
     /* FreeMemoryBlock(uri_mem); */
   }
   if (!uri)
