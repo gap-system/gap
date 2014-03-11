@@ -106,6 +106,9 @@ SMALL_GROUPS_INFORMATION[ 8 ] := function( size, smav, num )
     local ffid, prop, i, l;
 
     ffid := IdGroup( OneSmallGroup( size, FrattinifactorSize, size ) );
+    
+    atomic PROPERTIES_SMALL_GROUPS[ size ] do
+    
     prop := PROPERTIES_SMALL_GROUPS[ size ].frattFacs;
 
     if not IsPrimePowerInt( size ) then
@@ -153,6 +156,9 @@ SMALL_GROUPS_INFORMATION[ 8 ] := function( size, smav, num )
                " IsSupersolvableGroup, IsSolvableGroup, \n     LGLength,",
                " FrattinifactorSize and FrattinifactorId. \n");
     fi;
+    
+    od; # atomic PROPERTIES_SMALL_GROUPS[ size ] do
+    
 end;
 SMALL_GROUPS_INFORMATION[ 9 ] := SMALL_GROUPS_INFORMATION[ 8 ];
 SMALL_GROUPS_INFORMATION[ 10 ] := SMALL_GROUPS_INFORMATION[ 8 ];

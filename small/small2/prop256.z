@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 
-PROPERTIES_SMALL_GROUPS[ 256 ] := AtomicRecord( `rec(
+PROPERTIES_SMALL_GROUPS[ 256 ] := ShareObj( rec(
 isAbelian := [ 1, 39, 316, 497, 537, 826, 4384, 5525, 6534, 6723, 6732, 10298
 , 13313, 26308, 26959, 26973, 53038, 55608, 55626, 56059, 56082, 56092 ], 
 lgLength := rec( lgLength := [ 1, 2, 3, 4, 5, 6, 7, 8 ], pos := [ [ 56092 ],

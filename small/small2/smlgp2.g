@@ -311,6 +311,8 @@ SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs, vals, inforec, all,
         ReadSmallLib( "prop", inforec.lib, size, [ ] );
     fi;
     
+    atomic PROPERTIES_SMALL_GROUPS[ size ] do
+    
     cand := [ 1, -inforec.number ];
 
     evalfuncs := [ ];
@@ -474,6 +476,8 @@ SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs, vals, inforec, all,
     else
         return fail;
     fi;
+    
+    od; # atomic PROPERTIES_SMALL_GROUPS[ size ] do
 end;
 
 SELECT_SMALL_GROUPS_FUNCS[ 9 ] := SELECT_SMALL_GROUPS_FUNCS[ 8 ];

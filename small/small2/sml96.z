@@ -69,7 +69,7 @@ SMALL_GROUP_LIB[ 96 ] :=
 11579732487364612, 1457818756494362474969104, 13111394308, 120655027568656,
 67141633, 1 ]; 
 
-PROPERTIES_SMALL_GROUPS[ 96 ] := AtomicRecord( `rec(
+PROPERTIES_SMALL_GROUPS[ 96 ] := ShareObj( rec(
 isNilpotent := [ 2, 45, -63, 161, -184, 220, -225, 231 ], 
 isSupersolvable := [ 1, -2, 4, -63, 75, -184, 205, -225, 230, -231 ], 
 isAbelian := [ 2, 46, 59, 161, 176, 220, 231 ], 

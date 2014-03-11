@@ -73,7 +73,7 @@ SMALL_GROUP_LIB[ 64 ] :=
 1048577, 1048608, 4363124771, 68157476, 4363125920, 17871427077286,
 279241032880, 0 ];
 
-PROPERTIES_SMALL_GROUPS[ 64 ] := AtomicRecord( `rec(
+PROPERTIES_SMALL_GROUPS[ 64 ] := ShareObj( rec(
 isAbelian := [ 1, -2, 26, 50, 55, 83, 183, 192, 246, 260, 267 ], 
 lgLength := rec( lgLength := [ 1, 2, 3, 4, 5, 6 ], pos := [ [ 267 ], [ 55,
 -82, 192, -245, 260, -266 ], [ 2, -25, 83, -182, 246, -259 ], [ 26, -49, 183,

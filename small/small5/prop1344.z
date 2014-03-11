@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 
-PROPERTIES_SMALL_GROUPS[ 1344 ] := AtomicRecord( `rec(
+PROPERTIES_SMALL_GROUPS[ 1344 ] := ShareObj( rec(
 isNilpotent := [ 6, 761, -813, 6174, -6310, 11220, -11287, 11677, -11683,
 11720 ], 
 isSupersolvable := [ 1, -390, 395, -813, 835, -1436, 1474, -4330, 4368, -6310

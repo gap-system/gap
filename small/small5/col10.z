@@ -7,7 +7,7 @@
 SMALL_GROUP_LIB[ 1449 ] :=
 `[ 174639040119, 19310436111, 367325007, 11263 ]; 
 
-PROPERTIES_SMALL_GROUPS[ 1449 ] := AtomicRecord( `rec(
+PROPERTIES_SMALL_GROUPS[ 1449 ] := ShareObj( rec(
 isNilpotent := [ 2, 4 ], 
 isAbelian := [ 2, 4 ], 
 lgLength := rec( lgLength := [ 3, 4 ], pos := [ [ 3, -4 ], [ 1, -2 ] ] ),
@@ -18,7 +18,7 @@ SMALL_GROUP_LIB[ 1450 ] :=
 8516675999, 963783719, 12348065331615, 1373711926023, 17904788877820319, 2463
 ]; 
 
-PROPERTIES_SMALL_GROUPS[ 1450 ] := AtomicRecord( `rec(
+PROPERTIES_SMALL_GROUPS[ 1450 ] := ShareObj( rec(
 isNilpotent := [ 4, 10 ], 
 isAbelian := [ 4, 10 ], 
 lgLength := rec( lgLength := [ 3, 4 ], pos := [ [ 5, 8, -10 ], [ 1, -4, 6, -7
@@ -39,7 +39,7 @@ SMALL_GROUP_LIB[ 1452 ] :=
 7138528019900, 286129529295691210099, 14758400199, 21572832000199, 1651200991
 , 21428652800919, 31323922454400199, 199 ]; 
 
-PROPERTIES_SMALL_GROUPS[ 1452 ] := AtomicRecord( `rec(
+PROPERTIES_SMALL_GROUPS[ 1452 ] := ShareObj( rec(
 isNilpotent := [ 4, 10, 19, 40 ], 
 isSupersolvable := [ 1, -5, 7, -10, 14, -19, 27, -31, 35, -40 ], 
 isAbelian := [ 4, 10, 19, 40 ], 
@@ -127,7 +127,7 @@ SMALL_GROUP_LIB[ 1456 ] :=
 73045396116929876699, 106354331806968884072519, 296355243969478727,
 34442871570503, 15656684617865, 50350114357641287, 71 ]; 
 
-PROPERTIES_SMALL_GROUPS[ 1456 ] := AtomicRecord( `rec(
+PROPERTIES_SMALL_GROUPS[ 1456 ] := ShareObj( rec(
 isNilpotent := [ 4, 80, -87, 166, -169, 179 ], 
 isSupersolvable := [ 1, -169, 171, 173, -179 ], 
 isAbelian := [ 4, 80, 83, 166, 179 ], 
@@ -145,7 +145,7 @@ SMALL_GROUP_LIB[ 1460 ] :=
 4448220927578587190071583, 9379919771155705172255, 3041069936347233718559,
 4400414617633055, 977778376991, 42138211323, 1429315485106463, 287 ]; 
 
-PROPERTIES_SMALL_GROUPS[ 1460 ] := AtomicRecord( `rec(
+PROPERTIES_SMALL_GROUPS[ 1460 ] := ShareObj( rec(
 isNilpotent := [ 4, 15 ], 
 isAbelian := [ 4, 15 ], 
 lgLength := rec( lgLength := [ 3, 4 ], pos := [ [ 11, -15 ], [ 1, -10 ] ] ),
@@ -174,7 +174,7 @@ SMALL_GROUP_LIB[ 1464 ] :=
 55968885965228400, 331086225818419416059, 751771238400119, 12839731203541,
 1101224678400000119, 119 ]; 
 
-PROPERTIES_SMALL_GROUPS[ 1464 ] := AtomicRecord( `rec(
+PROPERTIES_SMALL_GROUPS[ 1464 ] := ShareObj( rec(
 isNilpotent := [ 6, 42, -44, 61 ], 
 isSupersolvable := [ 1, -24, 27, -46, 49, 52, -55, 58, -61 ], 
 isAbelian := [ 6, 42, 61 ], 

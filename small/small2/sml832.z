@@ -1011,7 +1011,7 @@ SMALL_GROUP_LIB[ 832 ] :=
 2773134198619933140320388, 36636036682911632769035, 52901975842357259, 11 ];
 
 
-PROPERTIES_SMALL_GROUPS[ 832 ] := AtomicRecord( `rec(
+PROPERTIES_SMALL_GROUPS[ 832 ] := ShareObj( rec(
 isNilpotent := [ 2, 126, -178, 875, -1011, 1512, -1579, 1621, -1627, 1630 ], 
 isAbelian := [ 2, 126, 150, 174, 875, 903, 1003, 1512, 1566, 1621, 1630 ], 
 lgLength := rec( lgLength := [ 2, 3, 4, 5, 6, 7 ], pos := [ [ 1629, -1630 ],
