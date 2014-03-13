@@ -103,3 +103,76 @@ CreateThread(function()
     SIGWAIT(handlers);
   od;
 end);
+
+#
+# LockCounters are per region and per thread counters
+# that count how many times a read or write lock
+# has been acquired successfully and how many times
+# a lock has ben contended.
+#
+# for regions this means the region lock, for threads
+# any lock that the thread might have tried to acquire
+#
+
+# Note that these are defined for IsObject, but really
+# apply to the region in which the object is located
+DeclareOperation("LockCountersEnable", [ IsObject ]);
+DeclareOperation("LockCountersDisable", [ IsObject ]);
+DeclareOperation("LockCountersReset", [ IsObject ]);
+DeclareOperation("LockCountersRead", [ IsObject ]);
+
+InstallMethod(LockCountersEnable,
+        "for an object",
+        [ IsObject ],
+        REGION_COUNTERS_ENABLE );
+
+InstallMethod(LockCountersDisable,
+        "for an object",
+        [ IsObject ],
+        REGION_COUNTERS_DISABLE);
+
+InstallMethod(LockCountersReset,
+        "for an object",
+        [ IsObject ],
+        REGION_COUNTERS_RESET);
+
+InstallMethod(LockCountersRead,
+        "for an object",
+        [ IsObject ],
+  function(r)
+    local res;
+    res := REGION_COUNTERS_GET(r);
+    return rec( count_lock := res[1], count_contended := res[2] );
+  end);
+
+DeclareOperation("LockCountersEnable", [ ] );
+DeclareOperation("LockCountersDisable", [ ]);
+DeclareOperation("LockCountersReset", [ ]);
+DeclareOperation("LockCountersRead", [ ]);
+
+
+InstallMethod(LockCountersEnable,
+        "for the current thread",
+        [ ],
+        THREAD_COUNTERS_ENABLE );
+
+InstallMethod(LockCountersDisable,
+        "for the current thread",
+        [ ],
+        THREAD_COUNTERS_DISABLE);
+
+InstallMethod(LockCountersReset,
+        "for the current thread",
+        [ ],
+        THREAD_COUNTERS_RESET);
+
+InstallMethod(LockCountersRead,
+        "for the current thread",
+        [ ],
+  function()
+    local res;
+
+    res := THREAD_COUNTERS_GET();
+
+    return rec( count_lock := res[1], count_contended := res[2] );
+  end);

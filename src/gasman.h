@@ -47,6 +47,7 @@
 */
 #include "config.h"
 
+#include "atomic.h" 
 
 /* on 64 bit systems use only two words for bag header */
 
@@ -1162,7 +1163,11 @@ typedef struct
   int autolock;
   void *owner; /* opaque thread descriptor */
   void *alt_owner; /* for paused threads */
-  unsigned char readers[0];
+  int count_active; /* whether we counts number of (contended) locks */
+  AtomicUInt locks_acquired; /* number of times the lock was acquired successfully */
+  AtomicUInt locks_contended; /* number of failed attempts at acuiring the lock */
+  unsigned char readers[0]; /* this field extends with number of threads
+			       don't add any fields after it */
 } Region;
 
 /****************************************************************************

@@ -532,15 +532,46 @@ void HashUnlockShared(void *object) {
 
 void RegionWriteLock(Region *region)
 {
-  pthread_rwlock_wrlock(region->lock);
+  int result = 0;
+
+  if (region->count_active || TLS->CountActive) {
+    result = !pthread_rwlock_trywrlock(region->lock);
+
+    if(result) {
+      if(region->count_active)
+	region->locks_acquired++;
+      if(TLS->CountActive)
+	TLS->LocksAcquired++;
+    } else {
+      if(region->count_active)
+	region->locks_contended++;
+      if(TLS->CountActive)
+	TLS->LocksContended++;
+      pthread_rwlock_wrlock(region->lock);
+    }
+  } else {
+    pthread_rwlock_wrlock(region->lock);
+  }
+
   region->owner = TLS;
 }
 
 int RegionTryWriteLock(Region *region)
 {
   int result = !pthread_rwlock_trywrlock(region->lock);
-  if (result)
+
+  if (result) {
+    if(region->count_active)
+      region->locks_acquired++;
+    if(TLS->CountActive)
+      TLS->LocksAcquired++;
     region->owner = TLS;
+  } else {
+    if(region->count_active)
+      region->locks_contended++;
+    if(TLS->CountActive)
+      TLS->LocksContended++;
+  }
   return result;
 }
 
@@ -552,15 +583,45 @@ void RegionWriteUnlock(Region *region)
 
 void RegionReadLock(Region *region)
 {
-  pthread_rwlock_rdlock(region->lock);
+  int result = 0;
+
+  if(region->count_active || TLS->CountActive) {
+    result = !pthread_rwlock_rdlock(region->lock);
+
+    if(result) {
+      if(region->count_active)
+	ATOMIC_INC(&region->locks_acquired);
+      if(TLS->CountActive)
+	TLS->LocksAcquired++;
+    } else {
+      if(region->count_active)
+	ATOMIC_INC(&region->locks_contended);
+      if(TLS->CountActive)
+	TLS->LocksAcquired++;
+      pthread_rwlock_rdlock(region->lock);
+    }
+  } else {
+      pthread_rwlock_rdlock(region->lock);
+  }
   region->readers[TLS->threadID] = 1;
 }
 
 int RegionTryReadLock(Region *region)
 {
   int result = !pthread_rwlock_rdlock(region->lock);
-  if (result)
+
+  if (result) {
+    if(region->count_active)
+      ATOMIC_INC(&region->locks_acquired);
+    if(TLS->CountActive)
+      TLS->LocksAcquired++;
     region->readers[TLS->threadID] = 1;
+  } else {
+    if(region->count_active)
+      ATOMIC_INC(&region->locks_contended);
+    if(TLS->CountActive)
+      TLS->LocksContended++;
+  }
   return result;
 }
 
@@ -636,6 +697,27 @@ static Obj NewList(UInt size)
   return list;
 }
 
+Obj GetRegionLockCounters(Region *region)
+{
+  Obj result = NewList(2);
+
+  if (region) {
+    SET_ELM_PLIST(result,1,INTOBJ_INT(region->locks_acquired));
+    SET_ELM_PLIST(result,2,INTOBJ_INT(region->locks_contended));
+  }
+  MEMBAR_READ();
+  return result;
+}
+
+void ResetRegionLockCounters(Region *region)
+{
+  if (region) {
+      region->locks_acquired
+      = region->locks_contended
+      = 0;
+  }
+  MEMBAR_WRITE();
+}
 
 #define MAX_LOCKS 1024
 
@@ -744,7 +826,7 @@ void PauseThread(int threadID) {
       break;
     case TSTATE_BLOCKED:
     case TSTATE_SYSCALL:
-      if (LockAndUpdateThreadState(threadID, 
+      if (LockAndUpdateThreadState(threadID,
           state, TSTATE_PAUSED|(TLS->threadID << TSTATE_SHIFT)))
 	return;
       break;
@@ -880,7 +962,7 @@ void InterruptThread(int threadID, int handler) {
     int state = GetThreadState(threadID);
     switch (state & TSTATE_MASK) {
     case TSTATE_RUNNING:
-      if (UpdateThreadState(threadID, TSTATE_RUNNING, 
+      if (UpdateThreadState(threadID, TSTATE_RUNNING,
         TSTATE_INTERRUPTED | (handler << TSTATE_SHIFT))) {
 	SetInterrupt(threadID);
         return;

@@ -775,7 +775,7 @@ Obj FuncHASH_UNLOCK(Obj self, Obj target) {
 Obj FuncHASH_LOCK_SHARED(Obj self, Obj target) {
   HashLockShared(target);
   return (Obj) 0;
-} 
+}
 Obj FuncHASH_UNLOCK_SHARED(Obj self, Obj target) {
   HashUnlockShared(target);
   return (Obj) 0;
@@ -971,6 +971,18 @@ Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self);
 Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func);
+Obj FuncREGION_COUNTERS_ENABLE(Obj self, Obj obj);
+Obj FuncREGION_COUNTERS_DISABLE(Obj self, Obj obj);
+Obj FuncREGION_COUNTERS_GET_STATE(Obj self, Obj obj);
+Obj FuncREGION_COUNTERS_GET(Obj self, Obj regobj);
+Obj FuncREGION_COUNTERS_RESET(Obj self, Obj regobj);
+Obj FuncTHREAD_COUNTERS_ENABLE(Obj self);
+Obj FuncTHREAD_COUNTERS_DISABLE(Obj self);
+Obj FuncTHREAD_COUNTERS_GET_STATE(Obj self);
+Obj FuncTHREAD_COUNTERS_GET(Obj self);
+Obj FuncTHREAD_COUNTERS_RESET(Obj self);
+
+
 
 /****************************************************************************
 **
@@ -1007,13 +1019,13 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "HASH_LOCK", 1, "object",
       FuncHASH_LOCK, "src/threadapi.c:HASH_LOCK" },
-    
+
     { "HASH_LOCK_SHARED", 1, "object",
       FuncHASH_LOCK_SHARED, "src/threadapi.c:HASH_LOCK_SHARED" },
-    
+
     { "HASH_UNLOCK", 1, "object",
       FuncHASH_UNLOCK, "src/threadapi.c:HASH_UNLOCK" },
-    
+
     { "HASH_UNLOCK_SHARED", 1, "object",
       FuncHASH_UNLOCK_SHARED, "src/threadapi.c:HASH_UNLOCK_SHARED" },
 
@@ -1109,7 +1121,7 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "TrySendChannel", 2, "channel, obj",
       FuncTrySendChannel, "src/threadapi.c:TrySendChannel" },
-    
+
     { "MultiTransmitChannel", 2, "channel, list",
       FuncMultiTransmitChannel, "src/threadapi:MultiTransmitChannel" },
 
@@ -1118,10 +1130,10 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "TryTransmitChannel", 2, "channel, obj",
       FuncTryTransmitChannel, "src/threadapi.c:TryTransmitChannel" },
-    
+
     { "InspectChannel", 1, "channel, obj",
       FuncInspectChannel, "src/threadapi.c:InspectChannel" },
-    
+
     { "CreateBarrier", 0, "",
       FuncCreateBarrier, "src/threadapi.c:CreateBarrier" },
 
@@ -1293,6 +1305,36 @@ static StructGVarFunc GVarFuncs [] = {
     { "PERIODIC_CHECK", 2, "count, function",
       FuncPERIODIC_CHECK, "src/threadapi.c:PERIODIC_CHECK" },
 
+    { "REGION_COUNTERS_ENABLE", 1, "region",
+      FuncREGION_COUNTERS_ENABLE, "src/threadapi.c:REGION_COUNTERS_ENABLE" },
+
+    { "REGION_COUNTERS_DISABLE", 1, "region",
+      FuncREGION_COUNTERS_DISABLE, "src/threadapi.c:REGION_COUNTERS_DISABLE" },
+
+    { "REGION_COUNTERS_GET_STATE", 1, "region",
+      FuncREGION_COUNTERS_GET_STATE, "src/threadapi.c:REGION_COUNTERS_GET_STATE" },
+
+    { "REGION_COUNTERS_GET", 1, "region",
+      FuncREGION_COUNTERS_GET, "src/threadapi.c:REGION_COUNTERS_GET" },
+
+    { "REGION_COUNTERS_RESET", 1, "region",
+      FuncREGION_COUNTERS_RESET, "src/threadapi.c:REGION_COUNTERS_RESET" },
+
+    { "THREAD_COUNTERS_ENABLE", 0, "",
+      FuncTHREAD_COUNTERS_ENABLE, "src/threadapi.c:THREAD_COUNTERS_ENABLE" },
+
+    { "THREAD_COUNTERS_DISABLE", 0, "",
+      FuncTHREAD_COUNTERS_DISABLE, "src/threadapi.c:THREAD_COUNTERS_DISABLE" },
+
+    { "THREAD_COUNTERS_GET_STATE", 0, "",
+      FuncTHREAD_COUNTERS_GET_STATE, "src/threadapi.c:THREAD_COUNTERS_GET_STATE" },
+
+    { "THREAD_COUNTERS_GET", 0, "",
+      FuncTHREAD_COUNTERS_GET, "src/threadapi.c:THREAD_COUNTERS_GET" },
+
+    { "THREAD_COUNTERS_RESET", 0, "",
+      FuncTHREAD_COUNTERS_RESET, "src/threadapi.c:THREAD_COUNTERS_RESET" },
+
     { 0 }
 
 };
@@ -1382,7 +1424,7 @@ static Int InitKernel (
   InfoBags[T_BARRIER].name = "barrier";
   InfoBags[T_SYNCVAR].name = "syncvar";
   InfoBags[T_REGION].name = "region";
-  
+
     /* install the kind methods */
     TypeObjFuncs[ T_THREAD ] = TypeThread;
     TypeObjFuncs[ T_SEMAPHORE ] = TypeSemaphore;
@@ -2529,12 +2571,19 @@ static void PrintRegion(Obj obj)
   char buffer[32];
   Region *region = GetRegionOf(obj);
   Obj name = GetRegionName(region);
+
   if (name) {
-    Pr("<region: %s>", (Int)(CSTR_STRING(name)), 0L);
+    Pr("<region: %s", (Int)(CSTR_STRING(name)), 0L);
   } else {
-    sprintf(buffer, "<region %p>", GetRegionOf(obj));
+    snprintf(buffer, 32, "<region %p", GetRegionOf(obj));
     Pr(buffer, 0L, 0L);
   }
+  if (region && region->count_active) {
+    snprintf(buffer, 32, " (locked %d/contended %d)"
+	     , region->locks_acquired, region->locks_contended);
+    Pr(buffer, 0L, 0L);
+  }
+  Pr(">", 0L, 0L);
 }
 
 Obj FuncIS_LOCKED(Obj self, Obj obj)
@@ -3136,4 +3185,107 @@ Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
     CALL_0ARGS(func);
   }
   return (Obj) 0;
+}
+
+
+/*
+ * Region lock performance counters
+ */
+Obj FuncREGION_COUNTERS_ENABLE(Obj self, Obj obj)
+{
+  Region *region = GetRegionOf(obj);
+
+  if(!region)
+    ArgumentError("REGION_COUNTERS_ENABLE: Cannot enable counters for this region");
+
+  region->count_active = 1;
+  return (Obj) 0;
+}
+
+Obj FuncREGION_COUNTERS_DISABLE(Obj self, Obj obj)
+{
+  Region *region = GetRegionOf(obj);
+
+  if(!region)
+    ArgumentError("REGION_COUNTERS_DISABLE: Cannot disable counters for this region");
+
+  region->count_active = 0;
+  return (Obj) 0;
+}
+
+Obj FuncREGION_COUNTERS_GET_STATE(Obj self, Obj obj)
+{
+  Obj result;
+  Region *region = GetRegionOf(obj);
+
+  if(!region)
+    ArgumentError("REGION_COUNTERS_GET_STATE: Cannot get counters for this region");
+
+  result = INTOBJ_INT(region->count_active);
+
+  return result;
+}
+
+Obj FuncREGION_COUNTERS_GET(Obj self, Obj obj)
+{
+  Region *region = GetRegionOf(obj);
+
+  if(!region)
+    ArgumentError("REGION_COUNTERS_GET: Cannot get counters for this region");
+
+  return GetRegionLockCounters(region);
+}
+
+Obj FuncREGION_COUNTERS_RESET(Obj self, Obj obj)
+{
+  Region *region = GetRegionOf(obj);
+
+  if(!region)
+    ArgumentError("REGION_COUNTERS_RESET: Cannot reset counters for this region");
+
+  ResetRegionLockCounters(region);
+
+  return (Obj) 0;
+}
+
+Obj FuncTHREAD_COUNTERS_ENABLE(Obj self)
+{
+  TLS->CountActive = 1;
+
+  return (Obj) 0;
+}
+
+Obj FuncTHREAD_COUNTERS_DISABLE(Obj self)
+{
+  TLS->CountActive = 0;
+
+  return (Obj) 0;
+}
+
+Obj FuncTHREAD_COUNTERS_GET_STATE(Obj self)
+{
+  Obj result;
+
+  result = INTOBJ_INT(TLS->CountActive);
+
+  return result;
+}
+
+Obj FuncTHREAD_COUNTERS_RESET(Obj self)
+{
+  TLS->LocksAcquired = TLS->LocksContended = 0;
+
+  return (Obj) 0;
+}
+
+Obj FuncTHREAD_COUNTERS_GET(Obj self)
+{
+  Obj result;
+
+  result = NEW_PLIST(T_PLIST, 2);
+  SET_LEN_PLIST(result, 2);
+  SET_ELM_PLIST(result, 1, INTOBJ_INT(TLS->LocksAcquired));
+  SET_ELM_PLIST(result, 2, INTOBJ_INT(TLS->LocksContended));
+
+  return result;
 }
