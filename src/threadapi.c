@@ -2579,7 +2579,7 @@ static void PrintRegion(Obj obj)
     Pr(buffer, 0L, 0L);
   }
   if (region && region->count_active) {
-    snprintf(buffer, 32, " (locked %d/contended %d)"
+    snprintf(buffer, 32, " (locked %zu/contended %zu)"
 	     , region->locks_acquired, region->locks_contended);
     Pr(buffer, 0L, 0L);
   }
