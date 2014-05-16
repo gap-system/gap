@@ -100,6 +100,9 @@
 #define S_RPAREN        ((1UL<< 8))
 #define S_COMMA         ((1UL<< 9)+0)
 #define S_DOTDOT        ((1UL<< 9)+1)
+#define S_COLON         ((1UL<< 9)+2)
+#define S_READWRITE     ((1UL<< 9)+3)
+#define S_READONLY      ((1UL<< 9)+4)
 
 #define S_PARTIALINT    ((1UL<<10)+0)
 #define S_INT           ((1UL<<10)+1)
@@ -145,6 +148,7 @@
 #define S_FOR           ((1UL<<22)+1)
 #define S_WHILE         ((1UL<<22)+2)
 #define S_REPEAT        ((1UL<<22)+3)
+#define S_ATOMIC        ((1UL<<22)+4)
 
 #define S_THEN          ((1UL<<23))
 #define S_ELIF          ((1UL<<24)+0)
@@ -1833,6 +1837,7 @@ typedef struct {const Char *name; UInt sym;} s_keyword;
 
 static const s_keyword AllKeywords[] = {
   {"and",       S_AND},
+  {"atomic",    S_ATOMIC},
   {"break",     S_BREAK},
   {"continue",  S_CONTINUE},
   {"do",        S_DO},
@@ -1850,6 +1855,8 @@ static const s_keyword AllKeywords[] = {
   {"not",       S_NOT},
   {"od",        S_OD},
   {"or",        S_OR},
+  {"readonly",  S_READONLY},
+  {"readwrite", S_READWRITE},
   {"rec",       S_REC},
   {"repeat",    S_REPEAT},
   {"return",    S_RETURN},
