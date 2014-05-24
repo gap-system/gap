@@ -459,6 +459,14 @@ end);
 
 #
 
+InstallMethod(IsomorphismTransformationSemigroup, "for a transformation semigroup", 
+[IsTransformationSemigroup], 
+function(S)
+  return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
+end);
+
+#
+
 InstallMethod(IsomorphismTransformationSemigroup,
 "for a semigroup with multiplicative neutral element",
 [IsSemigroup and HasMultiplicativeNeutralElement],

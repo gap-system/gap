@@ -662,14 +662,10 @@ try to find its supergroups.
 We use the function <Ref Func="Blocks" BookName="ref"/> to find a block
 system. The  (optional) third  argument  in the following   example tells
 <Ref Func="Blocks" BookName="ref"/> that we want a block system
-where 1 and 14 lie in one block.
+where 1 and 3 lie in one block.
 <P/>
 <Example><![CDATA[
-gap> blocks := Blocks( a8_56, [1..56], [1,14] );
-[ [ 1, 3, 4, 5, 6, 14, 31 ], [ 2, 13, 15, 16, 17, 23, 24 ], 
-  [ 7, 8, 22, 34, 37, 47, 49 ], [ 9, 11, 18, 20, 35, 38, 48 ], 
-  [ 10, 25, 26, 27, 32, 39, 50 ], [ 12, 28, 29, 30, 33, 36, 40 ], 
-  [ 19, 21, 42, 43, 45, 46, 55 ], [ 41, 44, 51, 52, 53, 54, 56 ] ]
+gap> blocks := Blocks( a8_56, [1..56], [1,3] );;
 ]]></Example>
 <P/>
 The result is a list  of sets, such that  <C>a8_56</C> acts on those sets.

@@ -326,6 +326,8 @@ function(G)
 local m,f,i;
   if IsTrivial(G) then
     return G;
+  elif Size(RadicalGroup(G))=1 then
+    return TrivialSubgroup(G);
   fi;
   m:=MaximalSubgroupClassesSol(G);
   f:=RadicalGroup(G);

@@ -1006,6 +1006,7 @@ InstallMethod( Randomize, "for a mutable 8bit vector",
     local f,i;
     f := GF(Q_VEC8BIT(v));
     for i in [1..Length(v)] do v[i] := Random(f); od;
+    return v;
   end );
 InstallMethod( Randomize, "for a mutable 8bit vector and a random source",
   [ Is8BitVectorRep and IsMutable, IsRandomSource ],

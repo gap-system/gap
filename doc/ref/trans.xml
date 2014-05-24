@@ -715,11 +715,11 @@ gap> PreImagesOfTransformation(f, 100);
     <Attr Name="DegreeOfTransformationCollection" Arg="coll"/>
     <Returns>A positive integer.</Returns>
     <Description>
-      The <E>degree</E> of a transformation <C>f</C> is the largest value such
-      that <C>n^f&lt;>n</C> or <C>i^f=n</C> for some <C>i&lt;>n</C>.
+      The <E>degree</E> of a transformation <A>f</A> is the largest value such
+      that <C>n^<A>f</A>&lt;>n</C> or <C>i^<A>f</A>=n</C> for some <C>i&lt;>n</C>.
       Equivalently, the degree of a transformation is the least value <C>n</C>
-      such that <C>[1..n]</C> is fixed setwise by <C>f</C>.<P/> 
-      
+      such that <C>[n+1,n+2,...]</C> is fixed pointwise by <A>f</A>.
+
       The degree a collection of transformations <A>coll</A> is
       the maximum degree of any transformation in <A>coll</A>. 
       <Example>

@@ -82,6 +82,7 @@ end );
 ##
 InstallGlobalFunction( NumberPerfectGroups, function ( size )
 
+    if IsOddInt(size) then return 0;fi;
     PerfGrpLoad(0);
 
     # get the number and return it.
@@ -106,6 +107,7 @@ end );
 InstallGlobalFunction( NumberPerfectLibraryGroups, function ( size )
 local sizenum;
 
+    if IsOddInt(size) then return 0;fi;
     # get the number and return it.
     sizenum := PerfGrpLoad( size );
     if sizenum = fail or size in PERFRec.notAvailable or size = 1 then

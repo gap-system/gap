@@ -1612,7 +1612,7 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
 
   # get a dictionary
 
-  if IsMatrix(start) and Length(start)>0 then
+  if IsMatrix(start) and Length(start)>0 and Length(start)=Length(start[1]) then
     # if we have matrices, we need to give a domain as well, to ensure the
     # right field
     D:=DomainForAction(start[1],acts,act);

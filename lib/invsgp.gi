@@ -108,12 +108,12 @@ function( arg )
         Add(out, arg[i]);
       elif IsAssociativeElementCollection(arg[i])
         and IsGeneratorsOfInverseSemigroup(arg[i]) then 
-        if HasGeneratorsOfInverseMonoid(arg[i]) then 
-          Append(out, GeneratorsOfInverseMonoid(arg[i]));
-        elif HasGeneratorsOfInverseSemigroup(arg[i]) then 
+        #if HasGeneratorsOfInverseMonoid(arg[i]) then 
+        #  Append(out, GeneratorsOfInverseMonoid(arg[i]));
+        if HasGeneratorsOfInverseSemigroup(arg[i]) then 
           Append(out, GeneratorsOfInverseSemigroup(arg[i]));
-        elif HasGeneratorsOfMonoid(arg[i]) then 
-          Append(out, GeneratorsOfMonoid(arg[i]));
+        #elif HasGeneratorsOfMonoid(arg[i]) then 
+        #  Append(out, GeneratorsOfMonoid(arg[i]));
         elif HasGeneratorsOfSemigroup(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
         else

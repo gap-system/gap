@@ -1617,7 +1617,7 @@ local a,b,c,p;
 	a:=a[1];
 	a:=rec(aut:=a,inner:=b,sizeaut:=Size(G)*c.fullAutGroup[1]);
       else
-	Info(InfoWarning,0,"Only partial list given");
+	Info(InfoWarning,1,"Only partial list given");
 	a:=Morphium(G,G,true);
       fi;
     fi;

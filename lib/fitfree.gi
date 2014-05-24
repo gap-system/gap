@@ -1244,7 +1244,7 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
     s:=HallSubgroup(Image(ser.pcisom),pi);
     sp:=List(Pcgs(s),x->PreImage(ser.pcisom,x));
     return [
-      SubgroupByFittingFreeData(G,[],[],InducedPcgsByPcSequenceNC(pcgs,sp))];
+      SubgroupByFittingFreeData(G,[],[],InducedPcgsByGeneratorsNC(pcgs,sp))];
   fi;
 
   all:=[];

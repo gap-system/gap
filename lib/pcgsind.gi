@@ -1310,6 +1310,8 @@ function( pcgs, elm, pos )
         d := DepthOfPcElement( pa, elm );
         if not IsBound(map[d])  then
             Error( "<elm> lies not in group defined by <pcgs>" );
+	elif map[d]>Length(pcgs) then
+	  return exp;
         fi;
         ll := LeadingExponentOfPcElement( pa, elm );
         #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
@@ -1350,6 +1352,8 @@ function( pcgs, elm )
         d := DepthOfPcElement( pa, elm );
         if not IsBound(map[d])  then
             Error( "<elm> lies not in group defined by <pcgs>" );
+	elif map[d]>Length(pcgs) then
+	  return exp;
         fi;
         ll := LeadingExponentOfPcElement( pa, elm );
         #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );

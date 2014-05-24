@@ -202,8 +202,7 @@ dnl ##
 dnl ## check for input/output functions
 dnl ##
 
-AC_CHECK_FUNCS( ttyname strerror select )
-GP_VAR_SYS_ERRLIST
+AC_CHECK_FUNCS( ttyname select )
 
 dnl #########################################################################
 dnl ##

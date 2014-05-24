@@ -275,9 +275,9 @@ InstallGlobalFunction( Monoid, function( arg )
       if IsAssociativeElement(arg[i]) then
         Add(out, arg[i]);
       elif IsAssociativeElementCollection(arg[i]) then
-        if HasGeneratorsOfMonoid(arg[i]) then 
-          Append(out, GeneratorsOfMonoid(arg[i]));
-        elif HasGeneratorsOfSemigroup(arg[i]) then
+        #if HasGeneratorsOfMonoid(arg[i]) then 
+        #  Append(out, GeneratorsOfMonoid(arg[i]));
+        if HasGeneratorsOfSemigroup(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
         elif IsList(arg[i]) then 
           Append(out, arg[i]);

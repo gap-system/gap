@@ -215,7 +215,7 @@ static inline Obj NEW_INTPOS( Obj gmp )
 *F  NEW_INTNEG( <gmp> )
 **
 **
-*/
+**
 static inline Obj NEW_INTNEG( Obj gmp )
 {
   Obj new;
@@ -225,7 +225,7 @@ static inline Obj NEW_INTNEG( Obj gmp )
 
   return new;
 }
-
+*/
 
 /****************************************************************************
 **

@@ -4435,7 +4435,9 @@ if ${gp_cv_ldflags+:} false; then :
   $as_echo_n "(cached) " >&6
 else
    case "$host-$CC" in
-    *-apple-* )
+    *-darwin[6-9].* | *-darwin10.* )
+        gp_cv_ldflags="-g ${ABI_CFLAGS}";;
+    *-darwin* )
         gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-gcc* | *-egcs )
         gp_cv_ldflags="-g ${ABI_CFLAGS}";;
@@ -4564,8 +4566,6 @@ else
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_prog_cc_cdynlinking" >&5
 $as_echo "$gp_cv_prog_cc_cdynlinking" >&6; }
-
-
 
 
 CDYNOPTIONS=$gp_cv_prog_cc_cdynoptions
@@ -5470,7 +5470,7 @@ done
 
 
 
-for ac_func in ttyname strerror select
+for ac_func in ttyname select
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -5482,37 +5482,6 @@ _ACEOF
 fi
 done
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for sys_errlist" >&5
-$as_echo_n "checking for sys_errlist... " >&6; }
-if ${gp_cv_var_sys_errlist+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-int *p;
-int
-main ()
-{
-extern int sys_errlist; p = &sys_errlist;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  gp_cv_var_sys_errlist=yes
-else
-  gp_cv_var_sys_errlist=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_var_sys_errlist" >&5
-$as_echo "$gp_cv_var_sys_errlist" >&6; }
-if test x"$gp_cv_var_sys_errlist" = xyes; then
-
-$as_echo "#define HAVE_SYS_ERRLIST 1" >>confdefs.h
-
-fi
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stat file-mode macros are broken" >&5

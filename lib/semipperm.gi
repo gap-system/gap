@@ -167,12 +167,12 @@ InstallMethod(DegreeOfPartialPermCollection,
 s-> DegreeOfPartialPermCollection(GeneratorsOfSemigroup(s)));
 
 InstallMethod(CodegreeOfPartialPermSemigroup,
-"for a partial perm semigroup",
+"for a partial perm semigroup with generators",
 [IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
 s-> CodegreeOfPartialPermCollection(GeneratorsOfSemigroup(s)));
 
 InstallMethod(CodegreeOfPartialPermCollection,
-"for a partial perm semigroup",
+"for a partial perm semigroup with generators",
 [IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
 s-> CodegreeOfPartialPermCollection(GeneratorsOfSemigroup(s)));
 
@@ -461,6 +461,14 @@ function(g)
   return MagmaIsomorphismByFunctionsNC(g,
    InverseSemigroup(List(GeneratorsOfGroup(g), p-> AsPartialPerm(p, dom))), 
    p-> AsPartialPerm(p, dom), f-> AsPermutation(f));
+end);
+
+#
+
+InstallMethod(IsomorphismPartialPermSemigroup, "for a partial perm semigroup",
+[IsPartialPermSemigroup],
+function(S)
+  return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
 end);
 
 #

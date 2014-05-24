@@ -926,7 +926,7 @@ InstallMethod(NaturalHomomorphismByNormalSubgroupOp,
   "for subgroups of fp groups",IsIdenticalObj,
     [IsSubgroupFpGroup, IsSubgroupFpGroup],0,
 function(G,N)
-local T;
+local T,m;
 
   # try to use rewriting if the index is not too big.
   if IndexInWholeGroup(G)>1 and IndexInWholeGroup(G)<=1000 
@@ -946,10 +946,11 @@ local T;
         TryNextMethod(); # can't do
       fi;
       # did not succeed - do the stupid thing
-      T:=FactorGroupNC( G, GeneratorsOfGroup( N ) );
-      T:=GroupHomomorphismByImagesNC(G,T,
-          GeneratorsOfGroup(G),GeneratorsOfGroup(T));
-      return T;
+      m:=CosetTableDefaultMaxLimit;
+      repeat
+        m:=m*1000;
+	T:=TryCosetTableInWholeGroup(N:silent:=true,max:=m);
+      until T<>fail;
     fi;
 
   fi;

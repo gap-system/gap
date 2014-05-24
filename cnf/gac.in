@@ -150,6 +150,7 @@ OBJECTS="\
     vecgf2.o \
     vector.o \
     weakptr.o \
+    @ITANIUMOBJ@
 "
 
 EXTOBJS=

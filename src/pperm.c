@@ -2,7 +2,7 @@
 **
 ** A partial perm is of the form: 
 **
-** [codegree, entries of image list, domain, image set]
+** [image set, domain, codegree, entries of image list]
 **
 ** An element of the internal rep of a partial perm in T_PPERM2 must be at
 ** most 65535 and be of UInt2. The <codegree> is just the degree of the inverse
@@ -15,29 +15,26 @@
 #define MAX(a,b)          (a<b?b:a)
 #define MIN(a,b)          (a<b?a:b)
 
+#define IMG_PPERM(f)      (*(Obj*)(ADDR_OBJ(f)))
+#define DOM_PPERM(f)      (*((Obj*)(ADDR_OBJ(f))+1))
+
 #define NEW_PPERM2(deg)   NewBag(T_PPERM2, (deg+1)*sizeof(UInt2)+2*sizeof(Obj))
-#define CODEG_PPERM2(f)   (*((UInt2*)(ADDR_OBJ(f))))
-#define ADDR_PPERM2(f)    ((UInt2*)(ADDR_OBJ(f))+1)
-#define IMG_PPERM2(f)     (*(Obj*)(ADDR_PPERM2(f)+DEG_PPERM2(f)))
-#define DOM_PPERM2(f)     (*((Obj*)(ADDR_PPERM2(f)+DEG_PPERM2(f))+1))
-#define DEG_PPERM2(f)     ((UInt)(SIZE_OBJ(f)-sizeof(UInt2)-2*sizeof(Obj))/sizeof(UInt2))
-#define RANK_PPERM2(f)    (IMG_PPERM2(f)==NULL?INIT_PPERM2(f):LEN_PLIST(IMG_PPERM2(f)))
+#define CODEG_PPERM2(f)   (*(UInt2*)((Obj*)(ADDR_OBJ(f))+2))
+#define ADDR_PPERM2(f)    ((UInt2*)((Obj*)(ADDR_OBJ(f))+2)+1)
+#define DEG_PPERM2(f)  ((UInt)(SIZE_OBJ(f)-sizeof(UInt2)-2*sizeof(Obj))/sizeof(UInt2))
+#define RANK_PPERM2(f) (IMG_PPERM(f)==NULL?INIT_PPERM2(f):LEN_PLIST(IMG_PPERM(f)))
 
 #define NEW_PPERM4(deg)   NewBag(T_PPERM4, (deg+1)*sizeof(UInt4)+2*sizeof(Obj))
-#define CODEG_PPERM4(f)   (*((UInt4*)(ADDR_OBJ(f))))
-#define ADDR_PPERM4(f)    ((UInt4*)(ADDR_OBJ(f))+1)
-#define IMG_PPERM4(f)     (*((Obj*)(ADDR_PPERM4(f)+DEG_PPERM4(f))))
-#define DOM_PPERM4(f)     (*((Obj*)(ADDR_PPERM4(f)+DEG_PPERM4(f))+1))
+#define CODEG_PPERM4(f)   (*(UInt4*)((Obj*)(ADDR_OBJ(f))+2))
+#define ADDR_PPERM4(f)    ((UInt4*)((Obj*)(ADDR_OBJ(f))+2)+1)
 #define DEG_PPERM4(f)     ((UInt)(SIZE_OBJ(f)-sizeof(UInt4)-2*sizeof(Obj))/sizeof(UInt4))
-#define RANK_PPERM4(f)    (IMG_PPERM4(f)==NULL?INIT_PPERM4(f):LEN_PLIST(IMG_PPERM4(f)))
+#define RANK_PPERM4(f) (IMG_PPERM(f)==NULL?INIT_PPERM4(f):LEN_PLIST(IMG_PPERM(f)))
 
 #define IMAGEPP(i, ptf, deg) (i<=deg?ptf[i-1]:0)
 #define IS_PPERM(f)   (TNUM_OBJ(f)==T_PPERM2||TNUM_OBJ(f)==T_PPERM4)
 #define RANK_PPERM(f) (TNUM_OBJ(f)==T_PPERM2?RANK_PPERM2(f):RANK_PPERM4(f))
 #define DEG_PPERM(f)  (TNUM_OBJ(f)==T_PPERM2?DEG_PPERM2(f):DEG_PPERM4(f))
 #define CODEG_PPERM(f)(TNUM_OBJ(f)==T_PPERM2?CODEG_PPERM2(f):CODEG_PPERM4(f))
-#define IMG_PPERM(f)  (TNUM_OBJ(f)==T_PPERM2?IMG_PPERM2(f):IMG_PPERM4(f))
-#define DOM_PPERM(f)  (TNUM_OBJ(f)==T_PPERM2?DOM_PPERM2(f):DOM_PPERM4(f))
 
 Obj   EmptyPartialPerm;
 
@@ -77,8 +74,8 @@ static UInt INIT_PPERM2(Obj f){
   if(deg==0){
     dom=NEW_PLIST(T_PLIST_EMPTY, 0);
     SET_LEN_PLIST(dom, 0);
-    DOM_PPERM2(f)=dom;
-    IMG_PPERM2(f)=dom;
+    DOM_PPERM(f)=dom;
+    IMG_PPERM(f)=dom;
     CHANGED_BAG(f);
     return deg;
   }
@@ -108,8 +105,8 @@ static UInt INIT_PPERM2(Obj f){
   SHRINK_PLIST(dom, (Int) rank);
   SET_LEN_PLIST(dom, (Int) rank);
   
-  DOM_PPERM2(f)=dom;
-  IMG_PPERM2(f)=img;
+  DOM_PPERM(f)=dom;
+  IMG_PPERM(f)=img;
   CHANGED_BAG(f);
   return rank;
 }
@@ -124,8 +121,8 @@ static UInt INIT_PPERM4(Obj f){
   if(deg==0){
     dom=NEW_PLIST(T_PLIST_EMPTY, 0);
     SET_LEN_PLIST(dom, 0);
-    DOM_PPERM2(f)=dom;
-    IMG_PPERM2(f)=dom;
+    DOM_PPERM(f)=dom;
+    IMG_PPERM(f)=dom;
     CHANGED_BAG(f);
     return deg;
   }
@@ -154,8 +151,8 @@ static UInt INIT_PPERM4(Obj f){
   SHRINK_PLIST(dom, (Int) rank);
   SET_LEN_PLIST(dom, (Int) rank);
   
-  DOM_PPERM4(f)=dom;
-  IMG_PPERM4(f)=img;
+  DOM_PPERM(f)=dom;
+  IMG_PPERM(f)=img;
   CHANGED_BAG(f);
   return rank;
 }
@@ -213,6 +210,7 @@ static Obj PreImagePPermInt (Obj pt, Obj f){
 /*******************************************************************************
 ** GAP functions for partial perms
 *******************************************************************************/
+
 
 Obj FuncEmptyPartialPerm( Obj self ){
   return EmptyPartialPerm;
@@ -292,8 +290,8 @@ Obj FuncSparsePartialPermNC( Obj self, Obj dom, Obj img ){
     for(i=1;i<=rank;i++){ 
       ptf2[INT_INTOBJ(ELM_PLIST(dom, i))-1]=INT_INTOBJ(ELM_PLIST(img, i));
     }
-    DOM_PPERM2(f)=dom;
-    IMG_PPERM2(f)=img;
+    DOM_PPERM(f)=dom;
+    IMG_PPERM(f)=img;
     CODEG_PPERM2(f)=codeg;
   } else {
     f=NEW_PPERM4(deg);
@@ -303,8 +301,8 @@ Obj FuncSparsePartialPermNC( Obj self, Obj dom, Obj img ){
       if(j>codeg) codeg=j;
       ptf4[INT_INTOBJ(ELM_PLIST(dom, i))-1]=j;
     }
-    DOM_PPERM4(f)=dom;
-    IMG_PPERM4(f)=img;
+    DOM_PPERM(f)=dom;
+    IMG_PPERM(f)=img;
     CODEG_PPERM4(f)=codeg;
   }
   CHANGED_BAG(f);
@@ -313,49 +311,47 @@ Obj FuncSparsePartialPermNC( Obj self, Obj dom, Obj img ){
 
 /* the degree of pperm is the maximum point where it is defined */
 Obj FuncDegreeOfPartialPerm(Obj self, Obj f){
-  if(!IS_PPERM(f)){
-    ErrorQuit("usage: the argument should be a partial perm,", 0L, 0L);
-  }
   if(TNUM_OBJ(f)==T_PPERM2){ 
     return INTOBJ_INT(DEG_PPERM2(f));
-  } else {
+  } else if(TNUM_OBJ(f)==T_PPERM4){
     return INTOBJ_INT(DEG_PPERM4(f));
   }
+  ErrorQuit("usage: the argument should be a partial perm,", 0L, 0L);
+  return Fail;
 }
 
 /* the codegree of pperm is the maximum point in its image */
 Obj FuncCoDegreeOfPartialPerm(Obj self, Obj f){
-  if(!IS_PPERM(f)){
-    ErrorQuit("usage: the argument should be a partial perm,", 0L, 0L);
-  }
   if(TNUM_OBJ(f)==T_PPERM2){ 
     return INTOBJ_INT(CODEG_PPERM2(f));
-  } else {
+  } else if(TNUM_OBJ(f)==T_PPERM4){
     return INTOBJ_INT(CODEG_PPERM4(f));
   }
+  ErrorQuit("usage: the argument should be a partial perm,", 0L, 0L);
+  return Fail;
 }
 
 /* the rank is the number of points where it is defined */
 Obj FuncRankOfPartialPerm (Obj self, Obj f){ 
-  if(!IS_PPERM(f)){
-    ErrorQuit("usage: the argument should be a partial perm,", 0L, 0L);
-  }
   if(TNUM_OBJ(f)==T_PPERM2){
     return INTOBJ_INT(RANK_PPERM2(f));
-  } else {
+  } else if(TNUM_OBJ(f)==T_PPERM4){
     return INTOBJ_INT(RANK_PPERM4(f));
   }
+  ErrorQuit("usage: the argument should be a partial perm,", 0L, 0L);
+  return Fail;
 }
 
 /* domain of a partial perm */
 Obj FuncDOMAIN_PPERM(Obj self, Obj f){ 
-  if(TNUM_OBJ(f)==T_PPERM2){
-    if(DOM_PPERM2(f)==NULL) INIT_PPERM2(f);
-    return DOM_PPERM2(f);
-  } else {
-    if(DOM_PPERM4(f)==NULL) INIT_PPERM4(f);
-    return DOM_PPERM4(f);
+  if(DOM_PPERM(f)==NULL){
+    if(TNUM_OBJ(f)==T_PPERM2){
+      INIT_PPERM2(f);
+    } else {
+      INIT_PPERM4(f);
+    }
   }
+  return DOM_PPERM(f);
 } 
 
 /* image list of pperm */
@@ -365,11 +361,11 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f ){
   UInt      i, rank;
   Obj       out, dom;
   if(TNUM_OBJ(f)==T_PPERM2){
-    if(IMG_PPERM2(f)==NULL){
+    if(IMG_PPERM(f)==NULL){
       INIT_PPERM2(f);
-      return IMG_PPERM2(f);
-    } else if(!IS_SSORT_LIST(IMG_PPERM2(f))){
-      return IMG_PPERM2(f);
+      return IMG_PPERM(f);
+    } else if(!IS_SSORT_LIST(IMG_PPERM(f))){
+      return IMG_PPERM(f);
     }
     rank=RANK_PPERM2(f);
     if(rank==0){
@@ -380,16 +376,16 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f ){
     out=NEW_PLIST(T_PLIST_CYC_NSORT+IMMUTABLE, rank);
     SET_LEN_PLIST(out, rank);
     ptf2=ADDR_PPERM2(f);
-    dom=DOM_PPERM2(f);
+    dom=DOM_PPERM(f);
     for(i=1;i<=rank;i++){ 
       SET_ELM_PLIST(out,i,INTOBJ_INT(ptf2[INT_INTOBJ(ELM_PLIST(dom, i))-1]));
     }
   } else {
-    if(IMG_PPERM4(f)==NULL){
+    if(IMG_PPERM(f)==NULL){
       INIT_PPERM4(f);
-      return IMG_PPERM4(f);
-    } else if(!IS_SSORT_LIST(IMG_PPERM4(f))){
-      return IMG_PPERM4(f);
+      return IMG_PPERM(f);
+    } else if(!IS_SSORT_LIST(IMG_PPERM(f))){
+      return IMG_PPERM(f);
     }
     rank=RANK_PPERM4(f);
     if(rank==0){
@@ -400,7 +396,7 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f ){
     out=NEW_PLIST(T_PLIST_CYC_NSORT+IMMUTABLE, rank);
     SET_LEN_PLIST(out, rank);
     ptf4=ADDR_PPERM4(f);
-    dom=DOM_PPERM4(f);
+    dom=DOM_PPERM(f);
     for(i=1;i<=rank;i++){ 
       SET_ELM_PLIST(out,i,INTOBJ_INT(ptf4[INT_INTOBJ(ELM_PLIST(dom, i))-1]));
     }
@@ -411,21 +407,21 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f ){
 /* image set of partial perm */
 Obj FuncIMAGE_SET_PPERM (Obj self, Obj f){ 
   if(TNUM_OBJ(f)==T_PPERM2){
-    if(IMG_PPERM2(f)==NULL){
+    if(IMG_PPERM(f)==NULL){
       INIT_PPERM2(f);
-      return SORT_PLIST_CYC(IMG_PPERM2(f));
-    } else if(!IS_SSORT_LIST(IMG_PPERM2(f))){
-      return SORT_PLIST_CYC(IMG_PPERM2(f));
+      return SORT_PLIST_CYC(IMG_PPERM(f));
+    } else if(!IS_SSORT_LIST(IMG_PPERM(f))){
+      return SORT_PLIST_CYC(IMG_PPERM(f));
     }
-    return IMG_PPERM2(f);  
+    return IMG_PPERM(f);  
   } else if (TNUM_OBJ(f)==T_PPERM4){
-   if(IMG_PPERM4(f)==NULL){
+   if(IMG_PPERM(f)==NULL){
       INIT_PPERM4(f);
-      return SORT_PLIST_CYC(IMG_PPERM4(f));
-    } else if(!IS_SSORT_LIST(IMG_PPERM4(f))){
-      return SORT_PLIST_CYC(IMG_PPERM4(f));
+      return SORT_PLIST_CYC(IMG_PPERM(f));
+    } else if(!IS_SSORT_LIST(IMG_PPERM(f))){
+      return SORT_PLIST_CYC(IMG_PPERM(f));
     }
-    return IMG_PPERM4(f);
+    return IMG_PPERM(f);
   } else {
     ErrorQuit("usage: the argument must be a partial perm,", 0L, 0L);
   }
@@ -459,7 +455,7 @@ Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f){
   if(TNUM_OBJ(f)==T_PPERM2){
     deg=DEG_PPERM2(f);
     ptf2=ADDR_PPERM2(f);
-    dom=DOM_PPERM2(f);
+    dom=DOM_PPERM(f);
     
     //find chains
     for(i=1;i<=rank;i++){
@@ -493,7 +489,7 @@ Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f){
   } else {
     deg=DEG_PPERM4(f);
     ptf4=ADDR_PPERM4(f);
-    dom=DOM_PPERM4(f);
+    dom=DOM_PPERM(f);
 
     //find chains
     for(i=1;i<=rank;i++){
@@ -568,7 +564,7 @@ Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f){
   ptseen=(UInt4*)(ADDR_OBJ(TmpPPerm));
 
   if(TNUM_OBJ(f)==T_PPERM2){  
-    dom=DOM_PPERM2(f);
+    dom=DOM_PPERM(f);
     ptf2=ADDR_PPERM2(f);
     
     //find chains
@@ -591,7 +587,7 @@ Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f){
       }
     }
   } else {
-    dom=DOM_PPERM4(f);
+    dom=DOM_PPERM(f);
     ptf4=ADDR_PPERM4(f);      
 
     //find chains
@@ -643,7 +639,7 @@ Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f){
   if(TNUM_OBJ(f)==T_PPERM2){
     deg=DEG_PPERM2(f);
     ptf2=ADDR_PPERM2(f);
-    dom=DOM_PPERM2(f);
+    dom=DOM_PPERM(f);
 
     //find chains
     for(i=1;i<=rank;i++){
@@ -667,7 +663,7 @@ Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f){
   } else {
     deg=DEG_PPERM4(f);
     ptf4=ADDR_PPERM4(f);
-    dom=DOM_PPERM4(f);
+    dom=DOM_PPERM(f);
 
     //find chains
     for(i=1;i<=rank;i++){
@@ -714,7 +710,7 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f){
   
   if(TNUM_OBJ(f)==T_PPERM2){  
     deg=DEG_PPERM2(f);
-    dom=DOM_PPERM2(f);
+    dom=DOM_PPERM(f);
     
     //find chains
     for(i=1;i<=rank;i++){
@@ -753,7 +749,7 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f){
     }
   } else {
     deg=DEG_PPERM4(f);
-    dom=DOM_PPERM4(f);
+    dom=DOM_PPERM(f);
 
     //find chains
     for(i=1;i<=rank;i++){
@@ -849,7 +845,7 @@ Obj FuncFIXED_PTS_PPERM(Obj self, Obj f){
   len=0;
   if(TNUM_OBJ(f)==T_PPERM2){
     deg=DEG_PPERM2(f);
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       out=NEW_PLIST(T_PLIST_CYC_SSORT, deg);
       ptf2=ADDR_PPERM2(f);
       for(i=0;i<deg;i++){
@@ -858,7 +854,7 @@ Obj FuncFIXED_PTS_PPERM(Obj self, Obj f){
         }
       }
     } else {
-      dom=DOM_PPERM2(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM2(f);
       out=NEW_PLIST(T_PLIST_CYC_SSORT, rank);
       ptf2=ADDR_PPERM2(f);
@@ -871,7 +867,7 @@ Obj FuncFIXED_PTS_PPERM(Obj self, Obj f){
     }
   } else {
     deg=DEG_PPERM4(f);
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       out=NEW_PLIST(T_PLIST_CYC_SSORT, deg);
       ptf4=ADDR_PPERM4(f);
       for(i=0;i<deg;i++){
@@ -880,7 +876,7 @@ Obj FuncFIXED_PTS_PPERM(Obj self, Obj f){
         }
       }
     } else {
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f); 
       out=NEW_PLIST(T_PLIST_CYC_SSORT, rank);
       ptf4=ADDR_PPERM4(f);
@@ -910,10 +906,10 @@ Obj FuncNR_FIXED_PTS_PPERM(Obj self, Obj f){
   if(TNUM_OBJ(f)==T_PPERM2){
     deg=DEG_PPERM2(f);
     ptf2=ADDR_PPERM2(f);
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<deg;i++) if(ptf2[i]==i+1) nr++;
     } else {
-      dom=DOM_PPERM2(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM2(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -923,10 +919,10 @@ Obj FuncNR_FIXED_PTS_PPERM(Obj self, Obj f){
   } else {
     deg=DEG_PPERM4(f);
     ptf4=ADDR_PPERM4(f);
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<deg;i++) if(ptf4[i]==i+1) nr++;
     } else {
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -947,7 +943,7 @@ Obj FuncMOVED_PTS_PPERM(Obj self, Obj f){
   len=0;
   if(TNUM_OBJ(f)==T_PPERM2){
     deg=DEG_PPERM2(f);
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       out=NEW_PLIST(T_PLIST_CYC_SSORT, deg);
       ptf2=ADDR_PPERM2(f);
       for(i=0;i<deg;i++){
@@ -956,7 +952,7 @@ Obj FuncMOVED_PTS_PPERM(Obj self, Obj f){
         }
       }
     } else {
-      dom=DOM_PPERM2(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM2(f);
       out=NEW_PLIST(T_PLIST_CYC_SSORT, rank);
       ptf2=ADDR_PPERM2(f);
@@ -969,7 +965,7 @@ Obj FuncMOVED_PTS_PPERM(Obj self, Obj f){
     }
   } else {
     deg=DEG_PPERM4(f);
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       out=NEW_PLIST(T_PLIST_CYC_SSORT, deg);
       ptf4=ADDR_PPERM4(f);
       for(i=0;i<deg;i++){
@@ -978,7 +974,7 @@ Obj FuncMOVED_PTS_PPERM(Obj self, Obj f){
         }
       }
     } else {
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       out=NEW_PLIST(T_PLIST_CYC_SSORT, rank);
       ptf4=ADDR_PPERM4(f);
@@ -1006,10 +1002,10 @@ Obj FuncNR_MOVED_PTS_PPERM(Obj self, Obj f){
   if(TNUM_OBJ(f)==T_PPERM2){
     deg=DEG_PPERM2(f);
     ptf2=ADDR_PPERM2(f);
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<deg;i++) if(ptf2[i]!=0&&ptf2[i]!=i+1) nr++;
     } else {
-      dom=DOM_PPERM2(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM2(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1019,10 +1015,10 @@ Obj FuncNR_MOVED_PTS_PPERM(Obj self, Obj f){
   } else {
     deg=DEG_PPERM4(f);
     ptf4=ADDR_PPERM4(f);
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<deg;i++) if(ptf4[i]!=0&&ptf4[i]!=i+1) nr++;
     } else {
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1042,12 +1038,12 @@ Obj FuncLARGEST_MOVED_PT_PPERM(Obj self, Obj f){
   if(TNUM_OBJ(f)==T_PPERM2){
     deg=DEG_PPERM2(f);
     ptf2=ADDR_PPERM2(f);
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=deg;i>0;i--){
         if(ptf2[i-1]!=0&&ptf2[i-1]!=i) return INTOBJ_INT(i);
       }
     } else {
-      dom=DOM_PPERM2(f);
+      dom=DOM_PPERM(f);
       for(i=RANK_PPERM2(f);i>=1;i--){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(ptf2[j]!=j+1) return INTOBJ_INT(j+1);
@@ -1056,12 +1052,12 @@ Obj FuncLARGEST_MOVED_PT_PPERM(Obj self, Obj f){
   } else {
     deg=DEG_PPERM4(f);
     ptf4=ADDR_PPERM4(f);
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=deg;i>0;i--){
         if(ptf4[i-1]!=0&&ptf4[i-1]!=i) return INTOBJ_INT(i);
       }
     } else {
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       for(i=RANK_PPERM4(f);i>=1;i--){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(ptf4[j]!=j+1) return INTOBJ_INT(j+1);
@@ -1080,12 +1076,12 @@ Obj FuncSMALLEST_MOVED_PT_PPERM(Obj self, Obj f){
   if(TNUM_OBJ(f)==T_PPERM2){
     deg=DEG_PPERM2(f);
     ptf2=ADDR_PPERM2(f);
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<deg;i++){
         if(ptf2[i]!=0&&ptf2[i]!=i+1) return INTOBJ_INT(i+1);
       }
     } else {
-      dom=DOM_PPERM2(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM2(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1095,12 +1091,12 @@ Obj FuncSMALLEST_MOVED_PT_PPERM(Obj self, Obj f){
   } else {
     deg=DEG_PPERM4(f);
     ptf4=ADDR_PPERM4(f);
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<deg;i++){
         if(ptf4[i]!=0&&ptf4[i]!=i+1) return INTOBJ_INT(i+1);
       }
     } else {
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1118,21 +1114,31 @@ Obj FuncTRIM_PPERM (Obj self, Obj f){
 
   if(TNUM_OBJ(f)!=T_PPERM4||CODEG_PPERM4(f)>65535) return f;
 
-  ptf=((UInt4*)(ADDR_OBJ(f)));
+  ptf=ADDR_PPERM4(f)-1;
   deg=DEG_PPERM4(f);
   for(i=0;i<deg+1;i++) ((UInt2*)ptf)[i]=(UInt2)ptf[i]; 
-  
-  if((*((Obj*)(ptf+deg+1)+1))!=NULL){
-    (*((Obj*)((UInt2*)ptf+deg+1)  ))=(*((Obj*)(ptf+deg+1)  ));
-    (*((Obj*)((UInt2*)ptf+deg+1)+1))=(*((Obj*)(ptf+deg+1)+1)); //dom
-  } else {
-    (*((Obj*)((UInt2*)ptf+deg+1)  ))=NULL;
-    (*((Obj*)((UInt2*)ptf+deg+1)+1))=NULL;
-  }
 
   RetypeBag(f, T_PPERM2);
   ResizeBag(f, (deg+1)*sizeof(UInt2)+2*sizeof(Obj));
   return (Obj)0;
+}
+
+Obj FuncHASH_FUNC_FOR_PPERM(Obj self, Obj f, Obj data){
+  UInt codeg;
+
+  if(TNUM_OBJ(f)==T_PPERM4){
+    codeg=CODEG_PPERM4(f);
+    if(codeg<65536){
+      FuncTRIM_PPERM(self, f);
+    } else {
+      return INTOBJ_INT((HASHKEY_BAG_NC(f, (UInt4) 255, 
+              2*sizeof(Obj)+sizeof(UInt4), (int) 4*DEG_PPERM4(f))
+              % (INT_INTOBJ(data)))+1); 
+    }
+  }
+  return INTOBJ_INT((HASHKEY_BAG_NC(f, (UInt4) 255, 
+              2*sizeof(Obj)+sizeof(UInt2), (int) 2*DEG_PPERM2(f))
+              % (INT_INTOBJ(data)))+1); 
 }
 
 // test if a partial perm is an idempotent
@@ -1144,13 +1150,13 @@ Obj FuncIS_IDEM_PPERM(Obj self, Obj f){
   
   if(TNUM_OBJ(f)==T_PPERM2){
     ptf2=ADDR_PPERM2(f);
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       deg=DEG_PPERM2(f);
       for(i=0;i<deg;i++){
         if(ptf2[i]!=0&&ptf2[i]!=i+1) return False;
       }
     } else {
-      dom=DOM_PPERM2(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM2(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1159,13 +1165,13 @@ Obj FuncIS_IDEM_PPERM(Obj self, Obj f){
     }
   } else {
     ptf4=ADDR_PPERM4(f);
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       deg=DEG_PPERM4(f);
       for(i=0;i<deg;i++){
         if(ptf4[i]!=0&&ptf4[i]!=i+1) return False;
       }
     } else {
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1185,11 +1191,11 @@ Obj FuncLEFT_ONE_PPERM( Obj self, Obj f){
 
   if(TNUM_OBJ(f)==T_PPERM2){
     rank=RANK_PPERM2(f);
-    dom=DOM_PPERM2(f);
+    dom=DOM_PPERM(f);
     deg=DEG_PPERM2(f);
   } else {
     rank=RANK_PPERM4(f);
-    dom=DOM_PPERM4(f);
+    dom=DOM_PPERM(f);
     deg=DEG_PPERM4(f);
   }
 
@@ -1201,8 +1207,8 @@ Obj FuncLEFT_ONE_PPERM( Obj self, Obj f){
       ptg2[j]=j+1;
     }
     CODEG_PPERM2(g)=deg;
-    DOM_PPERM2(g)=dom;
-    IMG_PPERM2(g)=dom;
+    DOM_PPERM(g)=dom;
+    IMG_PPERM(g)=dom;
   } else {
     g=NEW_PPERM4(deg);
     ptg4=ADDR_PPERM4(g);
@@ -1211,8 +1217,8 @@ Obj FuncLEFT_ONE_PPERM( Obj self, Obj f){
       ptg4[j]=j+1;
     }
     CODEG_PPERM4(g)=deg;
-    DOM_PPERM4(g)=dom;
-    IMG_PPERM4(g)=dom;
+    DOM_PPERM(g)=dom;
+    IMG_PPERM(g)=dom;
   }
   CHANGED_BAG(g);
   return g;
@@ -1228,11 +1234,11 @@ Obj FuncRIGHT_ONE_PPERM( Obj self, Obj f){
   if(TNUM_OBJ(f)==T_PPERM2){
     codeg=CODEG_PPERM2(f);
     rank=RANK_PPERM2(f);
-    img=IMG_PPERM2(f);
+    img=IMG_PPERM(f);
   }else{
     codeg=CODEG_PPERM4(f);
     rank=RANK_PPERM4(f);
-    img=IMG_PPERM4(f);
+    img=IMG_PPERM(f);
   }
 
   if(codeg<65536){ 
@@ -1243,8 +1249,8 @@ Obj FuncRIGHT_ONE_PPERM( Obj self, Obj f){
       ptg2[j]=j+1;
     }
     if(IS_SSORT_LIST(img)){
-      DOM_PPERM2(g)=img;
-      IMG_PPERM2(g)=img;
+      DOM_PPERM(g)=img;
+      IMG_PPERM(g)=img;
     }
     CODEG_PPERM2(g)=codeg;
   } else {
@@ -1255,8 +1261,8 @@ Obj FuncRIGHT_ONE_PPERM( Obj self, Obj f){
       ptg4[j]=j+1;
     }
     if(IS_SSORT_LIST(img)){
-      DOM_PPERM4(g)=img;
-      IMG_PPERM4(g)=img;
+      DOM_PPERM(g)=img;
+      IMG_PPERM(g)=img;
     }
     CODEG_PPERM4(g)=codeg;
   }
@@ -1279,12 +1285,12 @@ Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g){
     if(TNUM_OBJ(g)==T_PPERM2){
       deg=DEG_PPERM2(g);
       ptg2=ADDR_PPERM2(g);
-      if(DOM_PPERM2(f)==NULL){
+      if(DOM_PPERM(f)==NULL){
         for(i=0;i<def;i++){
           if(ptf2[i]!=0&&ptf2[i]!=IMAGEPP(i+1, ptg2, deg)) return False;
         }
       } else {
-        dom=DOM_PPERM2(f);
+        dom=DOM_PPERM(f);
         rank=RANK_PPERM2(f);
         for(i=1;i<=rank;i++){
           j=INT_INTOBJ(ELM_PLIST(dom, i));
@@ -1294,12 +1300,12 @@ Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g){
     } else if(TNUM_OBJ(g)==T_PPERM4){
       deg=DEG_PPERM4(g);
       ptg4=ADDR_PPERM4(g);
-      if(DOM_PPERM2(f)==NULL){
+      if(DOM_PPERM(f)==NULL){
         for(i=0;i<def;i++){
           if(ptf2[i]!=0&&ptf2[i]!=IMAGEPP(i+1, ptg4, deg)) return False;
         }
       } else {
-        dom=DOM_PPERM2(f);
+        dom=DOM_PPERM(f);
         rank=RANK_PPERM2(f);
         for(i=1;i<=rank;i++){
           j=INT_INTOBJ(ELM_PLIST(dom, i));
@@ -1317,12 +1323,12 @@ Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g){
     if(TNUM_OBJ(g)==T_PPERM2){
       deg=DEG_PPERM2(g);
       ptg2=ADDR_PPERM2(g);
-      if(DOM_PPERM4(f)==NULL){
+      if(DOM_PPERM(f)==NULL){
         for(i=0;i<def;i++){
           if(ptf4[i]!=0&&ptf4[i]!=IMAGEPP(i+1, ptg2, deg)) return False;
         }
       } else {
-        dom=DOM_PPERM4(f);
+        dom=DOM_PPERM(f);
         rank=RANK_PPERM4(f);
         for(i=1;i<=rank;i++){
           j=INT_INTOBJ(ELM_PLIST(dom, i));
@@ -1332,12 +1338,12 @@ Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g){
     } else if(TNUM_OBJ(g)==T_PPERM4){
       deg=DEG_PPERM4(g);
       ptg4=ADDR_PPERM4(g);
-      if(DOM_PPERM4(f)==NULL){
+      if(DOM_PPERM(f)==NULL){
         for(i=0;i<def;i++){
           if(ptf4[i]!=0&&ptf4[i]!=IMAGEPP(i+1, ptg4, deg)) return False;
         }
       } else {
-        dom=DOM_PPERM4(f);
+        dom=DOM_PPERM(f);
         rank=RANK_PPERM4(f);
         for(i=1;i<=rank;i++){
           j=INT_INTOBJ(ELM_PLIST(dom, i));
@@ -1462,8 +1468,8 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
     ptg4=ADDR_PPERM4(g);
     ptseen=(UInt4*)(ADDR_OBJ(TmpPPerm));
     
-    if(DOM_PPERM4(f)!=NULL){
-      dom=DOM_PPERM4(f);
+    if(DOM_PPERM(f)!=NULL){
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1472,8 +1478,8 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
       }
     }
  
-    if(DOM_PPERM4(g)!=NULL){
-      dom=DOM_PPERM4(g);
+    if(DOM_PPERM(g)!=NULL){
+      dom=DOM_PPERM(g);
       rank=RANK_PPERM4(g);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1490,7 +1496,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
       }
     }
 
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<degf;i++){
         if(ptf4[i]!=0){
           if(ptjoin4[i]==0){
@@ -1507,7 +1513,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
       }
     }
     
-    if(DOM_PPERM4(g)==NULL){
+    if(DOM_PPERM(g)==NULL){
       for(i=0;i<degg;i++){
         if(ptg4[i]!=0){
           if(ptjoin4[i]==0){
@@ -1533,10 +1539,10 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
     ptjoin4=ADDR_PPERM4(join);
     ptf4=ADDR_PPERM4(f);
     ptg2=ADDR_PPERM2(g);
-    ptseen=( UInt4*)(ADDR_OBJ(TmpPPerm));
+    ptseen=(UInt4*)(ADDR_OBJ(TmpPPerm));
 
-    if(DOM_PPERM4(f)!=NULL){
-      dom=DOM_PPERM4(f);
+    if(DOM_PPERM(f)!=NULL){
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1545,8 +1551,8 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
       }
     }
  
-    if(DOM_PPERM2(g)!=NULL){
-      dom=DOM_PPERM2(g);
+    if(DOM_PPERM(g)!=NULL){
+      dom=DOM_PPERM(g);
       rank=RANK_PPERM2(g);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1563,7 +1569,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
       }
     }
 
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<degf;i++){
         if(ptf4[i]!=0){
           if(ptjoin4[i]==0){
@@ -1580,7 +1586,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
       }
     }
     
-    if(DOM_PPERM2(g)==NULL){
+    if(DOM_PPERM(g)==NULL){
       for(i=0;i<degg;i++){
         if(ptg2[i]!=0){
           if(ptjoin4[i]==0){
@@ -1608,10 +1614,10 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
     ptjoin2=ADDR_PPERM2(join);
     ptf2=ADDR_PPERM2(f);
     ptg2=ADDR_PPERM2(g);
-    ptseen=( UInt4*)(ADDR_OBJ(TmpPPerm));
+    ptseen=(UInt4*)(ADDR_OBJ(TmpPPerm));
 
-    if(DOM_PPERM2(f)!=NULL){
-      dom=DOM_PPERM2(f);
+    if(DOM_PPERM(f)!=NULL){
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM2(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1620,8 +1626,8 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
       }
     }
  
-    if(DOM_PPERM2(g)!=NULL){
-      dom=DOM_PPERM2(g);
+    if(DOM_PPERM(g)!=NULL){
+      dom=DOM_PPERM(g);
       rank=RANK_PPERM2(g);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -1638,7 +1644,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
       }
     }
 
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<degf;i++){
         if(ptf2[i]!=0){
           if(ptjoin2[i]==0){
@@ -1655,7 +1661,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g){
       }
     }
     
-    if(DOM_PPERM2(g)==NULL){
+    if(DOM_PPERM(g)==NULL){
       for(i=0;i<degg;i++){
         if(ptg2[i]!=0){
           if(ptjoin2[i]==0){
@@ -1944,12 +1950,12 @@ Obj FuncAS_PERM_PPERM(Obj self, Obj f){
   Obj     p, dom;
 
   if(TNUM_OBJ(f)==T_PPERM2){
-    if(!EQ(FuncIMAGE_SET_PPERM(self, f), DOM_PPERM2(f))){
+    if(!EQ(FuncIMAGE_SET_PPERM(self, f), DOM_PPERM(f))){
       return Fail;
     }
     deg=DEG_PPERM2(f);
     p=NEW_PERM2(deg);
-    dom=DOM_PPERM2(f);
+    dom=DOM_PPERM(f);
     ptp2=ADDR_PERM2(p);
     ptf2=ADDR_PPERM2(f);
     for(i=0;i<deg;i++) ptp2[i]=i;
@@ -1959,12 +1965,12 @@ Obj FuncAS_PERM_PPERM(Obj self, Obj f){
       ptp2[j]=ptf2[j]-1;
     }
   } else {
-   if(!EQ(FuncIMAGE_SET_PPERM(self, f), DOM_PPERM4(f))){
+   if(!EQ(FuncIMAGE_SET_PPERM(self, f), DOM_PPERM(f))){
      return Fail;
     }
     deg=DEG_PPERM4(f);
     p=NEW_PERM4(deg);
-    dom=DOM_PPERM4(f);
+    dom=DOM_PPERM(f);
     ptp4=ADDR_PERM4(p);
     ptf4=ADDR_PPERM4(f);
     for(i=0;i<deg;i++) ptp4[i]=i;
@@ -1991,7 +1997,7 @@ Obj FuncPERM_LEFT_QUO_PPERM_NC(Obj self, Obj f, Obj g){
     ptp2=ADDR_PERM2(perm);
     for(i=0;i<deg;i++) ptp2[i]=i;
     rank=RANK_PPERM2(f);
-    dom=DOM_PPERM2(f);
+    dom=DOM_PPERM(f);
     //renew pointers since RANK_PPERM can trigger garbage collection
     ptp2=ADDR_PERM2(perm);
     ptf2=ADDR_PPERM2(f);
@@ -2014,7 +2020,7 @@ Obj FuncPERM_LEFT_QUO_PPERM_NC(Obj self, Obj f, Obj g){
     ptp4=ADDR_PERM4(perm);
     for(i=0;i<deg;i++) ptp4[i]=i;
     rank=RANK_PPERM4(f);
-    dom=DOM_PPERM4(f);
+    dom=DOM_PPERM(f);
     //renew pointers since RANK_PPERM can trigger garbage collection
     ptp4=ADDR_PERM4(perm);
     ptf4=ADDR_PPERM4(f);
@@ -2048,21 +2054,21 @@ Obj FuncShortLexLeqPartialPerm( Obj self, Obj f, Obj g){
   if(TNUM_OBJ(f)==T_PPERM2){
     if(DEG_PPERM2(f)==0) return True;
     rankf=RANK_PPERM2(f);
-    domf=DOM_PPERM2(f);
+    domf=DOM_PPERM(f);
   } else {
     if(DEG_PPERM4(f)==0) return True;
     rankf=RANK_PPERM4(f);
-    domf=DOM_PPERM4(f);
+    domf=DOM_PPERM(f);
   }
 
   if(TNUM_OBJ(g)==T_PPERM2){
     if(DEG_PPERM2(g)==0) return False;
     rankg=RANK_PPERM2(g);
-    domg=DOM_PPERM2(g);
+    domg=DOM_PPERM(g);
   } else {
     if(DEG_PPERM4(g)==0) return False;
     rankg=RANK_PPERM4(g);
-    domg=DOM_PPERM2(f);
+    domg=DOM_PPERM(f);
   }
   
   if(rankf!=rankg) return (rankf<rankg?True:False);
@@ -2112,18 +2118,18 @@ Obj FuncShortLexLeqPartialPerm( Obj self, Obj f, Obj g){
 
 Obj FuncHAS_DOM_PPERM( Obj self, Obj f ){
   if(TNUM_OBJ(f)==T_PPERM2){
-    return (DOM_PPERM2(f)==NULL?False:True);
+    return (DOM_PPERM(f)==NULL?False:True);
   } else if (TNUM_OBJ(f)==T_PPERM4){
-    return (DOM_PPERM4(f)==NULL?False:True);
+    return (DOM_PPERM(f)==NULL?False:True);
   }
   return Fail;
 }
 
 Obj FuncHAS_IMG_PPERM( Obj self, Obj f ){
   if(TNUM_OBJ(f)==T_PPERM2){
-    return (IMG_PPERM2(f)==NULL?False:True);
+    return (IMG_PPERM(f)==NULL?False:True);
   } else if (TNUM_OBJ(f)==T_PPERM4){
-    return (IMG_PPERM4(f)==NULL?False:True);
+    return (IMG_PPERM(f)==NULL?False:True);
   }
   return Fail;
 }
@@ -2146,13 +2152,13 @@ Obj OnePPerm( Obj f){
   if(TNUM_OBJ(f)==T_PPERM2){//this could be shortened
     deg=MAX(DEG_PPERM2(f),CODEG_PPERM2(f));
     rank=RANK_PPERM2(f);
-    dom=DOM_PPERM2(f);
-    img=IMG_PPERM2(f);
+    dom=DOM_PPERM(f);
+    img=IMG_PPERM(f);
   }else{
     deg=MAX(DEG_PPERM4(f),CODEG_PPERM4(f));
     rank=RANK_PPERM4(f);
-    dom=DOM_PPERM4(f);
-    img=IMG_PPERM4(f);
+    dom=DOM_PPERM(f);
+    img=IMG_PPERM(f);
   }
 
   if(deg<65536){ 
@@ -2195,8 +2201,8 @@ Obj PrintPPerm2(Obj self, Obj f){
   for(i=0;i<n;i++) ptseen[i]=0; 
   
   rank=RANK_PPERM2(f);//finds dom and img too
-  dom=DOM_PPERM2(f);
-  img=IMG_PPERM2(f);
+  dom=DOM_PPERM(f);
+  img=IMG_PPERM(f);
 
   ptf2=ADDR_PPERM2(f);
   ptseen=(UInt4*)(ADDR_OBJ(TmpPPerm));
@@ -2246,8 +2252,8 @@ Obj PrintPPerm4(Obj self, Obj f){
   for(i=0;i<n;i++) ptseen[i]=0; 
   
   rank=RANK_PPERM4(f);//finds dom and img too
-  dom=DOM_PPERM4(f);
-  img=IMG_PPERM4(f);
+  dom=DOM_PPERM(f);
+  img=IMG_PPERM(f);
 
   ptseen=(UInt4*)(ADDR_OBJ(TmpPPerm));
   ptf4=ADDR_PPERM4(f);
@@ -2294,13 +2300,13 @@ Int EqPPerm22 (Obj f, Obj g){
 
   if(deg!=DEG_PPERM2(g)||CODEG_PPERM2(f)!=CODEG_PPERM2(g)) return 0L;
      
-  if(DOM_PPERM2(f)==NULL||DOM_PPERM2(g)==NULL){ 
+  if(DOM_PPERM(f)==NULL||DOM_PPERM(g)==NULL){ 
     for(i=0;i<deg;i++) if(*ptf++!=*ptg++) return 0L;
     return 1L;
   }
 
   if(RANK_PPERM2(f)!=RANK_PPERM2(g)) return 0L;
-  dom=DOM_PPERM2(f);
+  dom=DOM_PPERM(f);
   rank=RANK_PPERM2(f);
   
   for(i=1;i<=rank;i++){
@@ -2321,13 +2327,13 @@ Int EqPPerm24 (Obj f, Obj g){
 
   if(deg!=DEG_PPERM4(g)||CODEG_PPERM2(f)!=CODEG_PPERM4(g)) return 0L;
      
-  if(DOM_PPERM2(f)==NULL||DOM_PPERM4(g)==NULL){ 
+  if(DOM_PPERM(f)==NULL||DOM_PPERM(g)==NULL){ 
     for(i=0;i<deg;i++) if(*(ptf++)!=*(ptg++)) return 0L;
     return 1L;
   }
 
   if(RANK_PPERM2(f)!=RANK_PPERM4(g)) return 0L;
-  dom=DOM_PPERM2(f);
+  dom=DOM_PPERM(f);
   rank=RANK_PPERM2(f);
   
   for(i=1;i<=rank;i++){
@@ -2346,13 +2352,13 @@ Int EqPPerm42 (Obj f, Obj g){
 
   if(deg!=DEG_PPERM2(g)||CODEG_PPERM4(f)!=CODEG_PPERM2(g)) return 0L;
      
-  if(DOM_PPERM4(f)==NULL||DOM_PPERM2(g)==NULL){ 
+  if(DOM_PPERM(f)==NULL||DOM_PPERM(g)==NULL){ 
     for(i=0;i<deg;i++) if(*(ptf++)!=*(ptg++)) return 0L;
     return 1L;
   }
 
   if(RANK_PPERM4(f)!=RANK_PPERM2(g)) return 0L;
-  dom=DOM_PPERM4(f);
+  dom=DOM_PPERM(f);
   rank=RANK_PPERM4(f);
   
   for(i=1;i<=rank;i++){
@@ -2371,13 +2377,13 @@ Int EqPPerm44 (Obj f, Obj g){
 
   if(deg!=DEG_PPERM4(g)||CODEG_PPERM4(f)!=CODEG_PPERM4(g)) return 0L;
      
-  if(DOM_PPERM4(f)==NULL||DOM_PPERM4(g)==NULL){ 
+  if(DOM_PPERM(f)==NULL||DOM_PPERM(g)==NULL){ 
     for(i=0;i<deg;i++) if(*(ptf++)!=*(ptg++)) return 0L;
     return 1L;
   }
 
   if(RANK_PPERM4(f)!=RANK_PPERM4(g)) return 0L;
-  dom=DOM_PPERM4(f);
+  dom=DOM_PPERM(f);
   rank=RANK_PPERM4(f);
   
   for(i=1;i<=rank;i++){
@@ -2505,8 +2511,8 @@ Obj ProdPPerm22(Obj f, Obj g){
   codeg=0;
  
   // compose in rank operations
-  if(DOM_PPERM2(f)!=NULL){
-    dom=DOM_PPERM2(f); 
+  if(DOM_PPERM(f)!=NULL){
+    dom=DOM_PPERM(f); 
     rank=RANK_PPERM2(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -2557,8 +2563,8 @@ Obj ProdPPerm42(Obj f, Obj g){
   codeg=0;
  
   // compose in rank operations
-  if(DOM_PPERM4(f)!=NULL){
-    dom=DOM_PPERM4(f); 
+  if(DOM_PPERM(f)!=NULL){
+    dom=DOM_PPERM(f); 
     rank=RANK_PPERM4(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -2604,8 +2610,8 @@ Obj ProdPPerm44(Obj f, Obj g){
   codeg=0;
  
   // compose in rank operations
-  if(DOM_PPERM4(f)!=NULL){
-    dom=DOM_PPERM4(f); 
+  if(DOM_PPERM(f)!=NULL){
+    dom=DOM_PPERM(f); 
     rank=RANK_PPERM4(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -2658,8 +2664,8 @@ Obj ProdPPerm24(Obj f, Obj g){
   codeg=0;
  
   // compose in rank operations
-  if(DOM_PPERM2(f)!=NULL){
-    dom=DOM_PPERM2(f); 
+  if(DOM_PPERM(f)!=NULL){
+    dom=DOM_PPERM(f); 
     rank=RANK_PPERM2(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -2705,7 +2711,7 @@ Obj ProdPPerm2Perm2( Obj f, Obj p){
     ptfp2=ADDR_PPERM2(fp);
     if(codeg<=dep){
       codeg=0;
-      if(DOM_PPERM2(f)==NULL){
+      if(DOM_PPERM(f)==NULL){
         //Pr("Case 2\n", 0L, 0L);
         for(i=0;i<deg;i++){ 
           if(ptf[i]!=0){
@@ -2715,7 +2721,7 @@ Obj ProdPPerm2Perm2( Obj f, Obj p){
         }
       } else {
         //Pr("Case 1\n", 0L, 0L);
-        dom=DOM_PPERM2(f);
+        dom=DOM_PPERM(f);
         rank=RANK_PPERM2(f);
         for(i=1;i<=rank;i++){
           j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -2724,7 +2730,7 @@ Obj ProdPPerm2Perm2( Obj f, Obj p){
         }
       }
     } else {
-      if(DOM_PPERM2(f)==NULL){
+      if(DOM_PPERM(f)==NULL){
        //Pr("Case 4\n", 0L, 0L);
         for(i=0;i<deg;i++){
           if(ptf[i]!=0){
@@ -2733,7 +2739,7 @@ Obj ProdPPerm2Perm2( Obj f, Obj p){
         }
       }else{
         //Pr("Case 3\n", 0L, 0L);
-        dom=DOM_PPERM2(f);
+        dom=DOM_PPERM(f);
         rank=RANK_PPERM2(f);
         for(i=1;i<=rank;i++){
           j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -2745,7 +2751,7 @@ Obj ProdPPerm2Perm2( Obj f, Obj p){
   } else {
     ptfp4=ADDR_PPERM4(fp);
     codeg=0;
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       //Pr("Case 6\n", 0L, 0L);
       for(i=0;i<deg;i++){
         if(ptf[i]!=0){
@@ -2755,7 +2761,7 @@ Obj ProdPPerm2Perm2( Obj f, Obj p){
       }
     } else {
       //Pr("Case 5\n", 0L, 0L);
-      dom=DOM_PPERM2(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM2(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -2785,7 +2791,7 @@ Obj ProdPPerm4Perm4( Obj f, Obj p){
   
   if(codeg<=dep){
     codeg=0;
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       //Pr("case 1\n", 0L, 0L);
       for(i=0;i<deg;i++){ 
         if(ptf[i]!=0){
@@ -2795,7 +2801,7 @@ Obj ProdPPerm4Perm4( Obj f, Obj p){
       }
     } else {
       //Pr("case 2\n", 0L, 0L);
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -2804,7 +2810,7 @@ Obj ProdPPerm4Perm4( Obj f, Obj p){
       }
     }
   } else {
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       //Pr("case 3\n", 0L, 0L);
       for(i=0;i<deg;i++){
         if(ptf[i]!=0){
@@ -2813,7 +2819,7 @@ Obj ProdPPerm4Perm4( Obj f, Obj p){
       }
     }else{
       //Pr("case 4\n", 0L, 0L);
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -2837,7 +2843,7 @@ Obj ProdPPerm2Perm4( Obj f, Obj p){
   ptfp=ADDR_PPERM4(fp);
   codeg=0;
   
-  if(DOM_PPERM2(f)==NULL){
+  if(DOM_PPERM(f)==NULL){
     deg=DEG_PPERM2(f);
     for(i=0;i<deg;i++){
       if(ptf[i]!=0){
@@ -2846,7 +2852,7 @@ Obj ProdPPerm2Perm4( Obj f, Obj p){
       }
     }
   } else {
-    dom=DOM_PPERM2(f);
+    dom=DOM_PPERM(f);
     rank=RANK_PPERM2(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -2874,7 +2880,7 @@ Obj ProdPPerm4Perm2( Obj f, Obj p){
   ptp=ADDR_PERM2(p);
   ptfp=ADDR_PPERM4(fp);
   
-  if(DOM_PPERM4(f)==NULL){
+  if(DOM_PPERM(f)==NULL){
     //Pr("case 1\n", 0L, 0L);
     for(i=0;i<deg;i++){
       if(ptf[i]!=0){
@@ -2883,7 +2889,7 @@ Obj ProdPPerm4Perm2( Obj f, Obj p){
     }
   }else{
     //Pr("case 2\n", 0L, 0L);
-    dom=DOM_PPERM4(f);
+    dom=DOM_PPERM(f);
     rank=RANK_PPERM4(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -3047,10 +3053,10 @@ Obj InvPPerm2 (Obj f){
     inv=NEW_PPERM2(codeg);
     ptf=ADDR_PPERM2(f);
     ptinv2=ADDR_PPERM2(inv);
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<deg;i++) if(ptf[i]!=0) ptinv2[ptf[i]-1]=i+1;
     } else {
-      dom=DOM_PPERM2(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM2(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -3062,10 +3068,10 @@ Obj InvPPerm2 (Obj f){
     inv=NEW_PPERM4(codeg);
     ptf=ADDR_PPERM2(f);
     ptinv4=ADDR_PPERM4(inv);
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<deg;i++) if(ptf[i]!=0) ptinv4[ptf[i]-1]=i+1;
     } else {
-      dom=DOM_PPERM2(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM2(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -3090,10 +3096,10 @@ Obj InvPPerm4 (Obj f){
     inv=NEW_PPERM2(codeg);
     ptf=ADDR_PPERM4(f);
     ptinv2=ADDR_PPERM2(inv);
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<deg;i++) if(ptf[i]!=0) ptinv2[ptf[i]-1]=i+1;
     } else {
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -3105,10 +3111,10 @@ Obj InvPPerm4 (Obj f){
     inv=NEW_PPERM4(codeg);
     ptf=ADDR_PPERM4(f);
     ptinv4=ADDR_PPERM4(inv);
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       for(i=0;i<deg;i++) if(ptf[i]!=0) ptinv4[ptf[i]-1]=i+1;
     } else {
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -3134,7 +3140,7 @@ Obj PowPPerm2Perm2(Obj f, Obj p){
   dep=DEG_PERM2(p); 
   rank=RANK_PPERM2(f);
   ptp=ADDR_PERM2(p);
-  dom=DOM_PPERM2(f); 
+  dom=DOM_PPERM(f); 
   
   //find deg of conjugate
   if(deg>dep){
@@ -3185,7 +3191,7 @@ Obj PowPPerm2Perm4(Obj f, Obj p){
   dep=DEG_PERM4(p); 
   rank=RANK_PPERM2(f);
   ptp=ADDR_PERM4(p);
-  dom=DOM_PPERM2(f); 
+  dom=DOM_PPERM(f); 
   //find deg of conjugate
   if(deg>dep){
     degconj=deg;
@@ -3226,7 +3232,7 @@ Obj PowPPerm4Perm2(Obj f, Obj p){
   dep=DEG_PERM2(p); 
   rank=RANK_PPERM4(f);
   ptp=ADDR_PERM2(p);
-  dom=DOM_PPERM4(f); 
+  dom=DOM_PPERM(f); 
   
   //find deg of conjugate
   if(deg>dep){
@@ -3275,7 +3281,7 @@ Obj PowPPerm4Perm4(Obj f, Obj p){
   dep=DEG_PERM4(p); 
   rank=RANK_PPERM4(f);
   ptp=ADDR_PERM4(p);
-  dom=DOM_PPERM4(f); 
+  dom=DOM_PPERM(f); 
   
   //find deg of conjugate
   if(deg>dep){
@@ -3329,7 +3335,7 @@ Obj PowPPerm22( Obj f, Obj g ){
  
   ptf=ADDR_PPERM2(f);
   ptg=ADDR_PPERM2(g);
-  dom=DOM_PPERM2(f);
+  dom=DOM_PPERM(f);
   codeg=CODEG_PPERM2(g); 
   dec=0;
   codec=0;
@@ -3513,7 +3519,7 @@ Obj PowPPerm24( Obj f, Obj g ){
  
   ptf=ADDR_PPERM2(f);
   ptg=ADDR_PPERM4(g);
-  dom=DOM_PPERM2(f);
+  dom=DOM_PPERM(f);
   codeg=CODEG_PPERM4(g); 
   dec=0;
   codec=0;
@@ -3697,7 +3703,7 @@ Obj PowPPerm42( Obj f, Obj g ){
  
   ptf=ADDR_PPERM4(f);
   ptg=ADDR_PPERM2(g);
-  dom=DOM_PPERM4(f);
+  dom=DOM_PPERM(f);
   codeg=CODEG_PPERM2(g); 
   dec=0;
   codec=0;
@@ -3880,7 +3886,7 @@ Obj PowPPerm44( Obj f, Obj g ){
  
   ptf=ADDR_PPERM4(f);
   ptg=ADDR_PPERM4(g);
-  dom=DOM_PPERM4(f);
+  dom=DOM_PPERM(f);
   codeg=CODEG_PPERM4(g); 
   dec=0;
   codec=0;
@@ -4084,7 +4090,7 @@ Obj QuoPPerm2Perm2(Obj f, Obj p){
     ptquo2=ADDR_PPERM2(quo);
     if(codeg<=lmp){
       codeg=0;
-      if(DOM_PPERM2(f)==NULL){
+      if(DOM_PPERM(f)==NULL){
         //Pr("Case 2\n", 0L, 0L);
         for(i=0;i<deg;i++){ 
           if(ptf[i]!=0){
@@ -4094,7 +4100,7 @@ Obj QuoPPerm2Perm2(Obj f, Obj p){
         }
       } else {
         //Pr("Case 1\n", 0L, 0L);
-        dom=DOM_PPERM2(f);
+        dom=DOM_PPERM(f);
         rank=RANK_PPERM2(f);
         for(i=1;i<=rank;i++){
           j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4103,7 +4109,7 @@ Obj QuoPPerm2Perm2(Obj f, Obj p){
         }
       }
     } else {
-      if(DOM_PPERM2(f)==NULL){
+      if(DOM_PPERM(f)==NULL){
        //Pr("Case 4\n", 0L, 0L);
         for(i=0;i<deg;i++){
           if(ptf[i]!=0){
@@ -4112,7 +4118,7 @@ Obj QuoPPerm2Perm2(Obj f, Obj p){
         }
       }else{
         //Pr("Case 3\n", 0L, 0L);
-        dom=DOM_PPERM2(f);
+        dom=DOM_PPERM(f);
         rank=RANK_PPERM2(f);
         for(i=1;i<=rank;i++){
           j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4128,7 +4134,7 @@ Obj QuoPPerm2Perm2(Obj f, Obj p){
     pttmp=((UInt4*)ADDR_OBJ(TmpPPerm));
     ptquo4=ADDR_PPERM4(quo);
     codeg=0;
-    if(DOM_PPERM2(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       //Pr("Case 6\n", 0L, 0L);
       for(i=0;i<deg;i++){
         if(ptf[i]!=0){
@@ -4138,7 +4144,7 @@ Obj QuoPPerm2Perm2(Obj f, Obj p){
       }
     } else {
       //Pr("Case 5\n", 0L, 0L);
-      dom=DOM_PPERM2(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM2(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4183,7 +4189,7 @@ Obj QuoPPerm4Perm4(Obj f, Obj p){
   //multiply the partial perm with the inverse
   if(codeg<=lmp){
     codeg=0;
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       //Pr("case 1\n", 0L, 0L);
       for(i=0;i<deg;i++){ 
         if(ptf[i]!=0){
@@ -4193,7 +4199,7 @@ Obj QuoPPerm4Perm4(Obj f, Obj p){
       }
     } else {
       //Pr("case 2\n", 0L, 0L);
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4202,7 +4208,7 @@ Obj QuoPPerm4Perm4(Obj f, Obj p){
       }
     }
   } else {
-    if(DOM_PPERM4(f)==NULL){
+    if(DOM_PPERM(f)==NULL){
       //Pr("case 3\n", 0L, 0L);
       for(i=0;i<deg;i++){
         if(ptf[i]!=0){
@@ -4211,7 +4217,7 @@ Obj QuoPPerm4Perm4(Obj f, Obj p){
       }
     }else{
       //Pr("case 4\n", 0L, 0L);
-      dom=DOM_PPERM4(f);
+      dom=DOM_PPERM(f);
       rank=RANK_PPERM4(f);
       for(i=1;i<=rank;i++){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4254,7 +4260,7 @@ Obj QuoPPerm2Perm4(Obj f, Obj p){
   
   //multiply the partial perm with the inverse
   codeg=0;
-  if(DOM_PPERM2(f)==NULL){
+  if(DOM_PPERM(f)==NULL){
     for(i=0;i<deg;i++){
       if(ptf[i]!=0){
         ptquo[i]=pttmp[ptf[i]-1]+1;
@@ -4262,7 +4268,7 @@ Obj QuoPPerm2Perm4(Obj f, Obj p){
       }
     }
   } else {
-    dom=DOM_PPERM2(f);
+    dom=DOM_PPERM(f);
     rank=RANK_PPERM2(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4304,7 +4310,7 @@ Obj QuoPPerm4Perm2( Obj f, Obj p){
   ptquo=ADDR_PPERM4(quo);
   
   //multiply the partial perm with the inverse
-  if(DOM_PPERM4(f)==NULL){
+  if(DOM_PPERM(f)==NULL){
     //Pr("case 1\n", 0L, 0L);
     for(i=0;i<deg;i++){
       if(ptf[i]!=0){
@@ -4313,7 +4319,7 @@ Obj QuoPPerm4Perm2( Obj f, Obj p){
     }
   }else{
     //Pr("case 2\n", 0L, 0L);
-    dom=DOM_PPERM4(f);
+    dom=DOM_PPERM(f);
     rank=RANK_PPERM4(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4342,11 +4348,11 @@ Obj QuoPPerm22(Obj f, Obj g){
 
   //invert g into the buffer bag
   ptg=ADDR_PPERM2(g);
-  if(DOM_PPERM2(g)==NULL){
+  if(DOM_PPERM(g)==NULL){
     deg=DEG_PPERM2(g);
     for(i=0;i<deg;i++) if(ptg[i]!=0) pttmp[ptg[i]-1]=i+1; 
   } else {
-    dom=DOM_PPERM2(g);
+    dom=DOM_PPERM(g);
     rank=RANK_PPERM2(g);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4368,8 +4374,8 @@ Obj QuoPPerm22(Obj f, Obj g){
   codeg=0;
  
   // compose f with g^-1 in rank operations
-  if(DOM_PPERM2(f)!=NULL){
-    dom=DOM_PPERM2(f);
+  if(DOM_PPERM(f)!=NULL){
+    dom=DOM_PPERM(f);
     rank=RANK_PPERM2(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4408,11 +4414,11 @@ Obj QuoPPerm24(Obj f, Obj g){
 
   //invert g into the buffer bag
   ptg=ADDR_PPERM4(g);
-  if(DOM_PPERM4(g)==NULL){
+  if(DOM_PPERM(g)==NULL){
     deg=DEG_PPERM4(g);
     for(i=0;i<deg;i++) if(ptg[i]!=0) pttmp[ptg[i]-1]=i+1; 
   } else {
-    dom=DOM_PPERM4(g);
+    dom=DOM_PPERM(g);
     rank=RANK_PPERM4(g);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4439,8 +4445,8 @@ Obj QuoPPerm24(Obj f, Obj g){
   codeg=0;
 
   // compose f with g^-1 in rank operations
-  if(DOM_PPERM2(f)!=NULL){
-    dom=DOM_PPERM2(f); 
+  if(DOM_PPERM(f)!=NULL){
+    dom=DOM_PPERM(f); 
     rank=RANK_PPERM2(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4479,11 +4485,11 @@ Obj QuoPPerm42(Obj f, Obj g){
 
   //invert g into the buffer bag
   ptg=ADDR_PPERM2(g);
-  if(DOM_PPERM2(g)==NULL){
+  if(DOM_PPERM(g)==NULL){
     deg=DEG_PPERM2(g);
     for(i=0;i<deg;i++) if(ptg[i]!=0) pttmp[ptg[i]-1]=i+1; 
   } else {
-    dom=DOM_PPERM2(g);
+    dom=DOM_PPERM(g);
     rank=RANK_PPERM2(g);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4510,8 +4516,8 @@ Obj QuoPPerm42(Obj f, Obj g){
   codeg=0;
 
   // compose f with g^-1 in rank operations
-  if(DOM_PPERM4(f)!=NULL){
-    dom=DOM_PPERM4(f); 
+  if(DOM_PPERM(f)!=NULL){
+    dom=DOM_PPERM(f); 
     rank=RANK_PPERM4(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4549,11 +4555,11 @@ Obj QuoPPerm44(Obj f, Obj g){
 
   //invert g into the buffer bag
   ptg=ADDR_PPERM4(g);
-  if(DOM_PPERM4(g)==NULL){
+  if(DOM_PPERM(g)==NULL){
     deg=DEG_PPERM4(g);
     for(i=0;i<deg;i++) if(ptg[i]!=0) pttmp[ptg[i]-1]=i+1; 
   } else {
-    dom=DOM_PPERM4(g);
+    dom=DOM_PPERM(g);
     rank=RANK_PPERM4(g);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4575,8 +4581,8 @@ Obj QuoPPerm44(Obj f, Obj g){
   codeg=0;
  
   // compose f with g^-1 in rank operations
-  if(DOM_PPERM4(f)!=NULL){
-    dom=DOM_PPERM4(f);
+  if(DOM_PPERM(f)!=NULL){
+    dom=DOM_PPERM(f);
     rank=RANK_PPERM4(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
@@ -4627,7 +4633,7 @@ Obj LQuoPerm2PPerm2( Obj p, Obj f ){
   if(def==0) return EmptyPartialPerm;
   
   dep=DEG_PERM2(p);
-  dom=DOM_PPERM2(f);
+  dom=DOM_PPERM(f);
 
   if(dep<def){
     lquo=NEW_PPERM2(def);
@@ -4698,7 +4704,7 @@ Obj LQuoPerm2PPerm4( Obj p, Obj f ){
   if(def==0) return EmptyPartialPerm;
   
   dep=DEG_PERM2(p);
-  dom=DOM_PPERM4(f);
+  dom=DOM_PPERM(f);
 
   if(dep<def){
     lquo=NEW_PPERM4(def);
@@ -4769,7 +4775,7 @@ Obj LQuoPerm4PPerm2( Obj p, Obj f ){
   if(def==0) return EmptyPartialPerm;
   
   dep=DEG_PERM4(p);
-  dom=DOM_PPERM2(f);
+  dom=DOM_PPERM(f);
 
   if(dep<def){
     lquo=NEW_PPERM2(def);
@@ -4839,7 +4845,7 @@ Obj LQuoPerm4PPerm4( Obj p, Obj f ){
   if(def==0) return EmptyPartialPerm;
   
   dep=DEG_PERM4(p);
-  dom=DOM_PPERM4(f);
+  dom=DOM_PPERM(f);
 
   if(dep<def){
     lquo=NEW_PPERM4(def);
@@ -4913,7 +4919,7 @@ Obj LQuoPPerm22( Obj f, Obj g ){
  
   ptf=ADDR_PPERM2(f);
   ptg=ADDR_PPERM2(g);
-  dom=DOM_PPERM2(g);
+  dom=DOM_PPERM(g);
   del=0;
   codef=CODEG_PPERM2(f); 
   codel=0;
@@ -5009,7 +5015,7 @@ Obj LQuoPPerm24( Obj f, Obj g ){
  
   ptf=ADDR_PPERM2(f);
   ptg=ADDR_PPERM4(g);
-  dom=DOM_PPERM4(g);
+  dom=DOM_PPERM(g);
   del=0;
   codef=CODEG_PPERM2(f); 
   codel=0;
@@ -5105,7 +5111,7 @@ Obj LQuoPPerm42( Obj f, Obj g ){
  
   ptf=ADDR_PPERM4(f);
   ptg=ADDR_PPERM2(g);
-  dom=DOM_PPERM2(g);
+  dom=DOM_PPERM(g);
   del=0;
   codef=CODEG_PPERM4(f); 
   codel=0;
@@ -5200,7 +5206,7 @@ Obj LQuoPPerm44( Obj f, Obj g ){
  
   ptf=ADDR_PPERM4(f);
   ptg=ADDR_PPERM4(g);
-  dom=DOM_PPERM4(g);
+  dom=DOM_PPERM(g);
   del=0;
   codef=CODEG_PPERM4(f); 
   codel=0;
@@ -5497,14 +5503,11 @@ Obj FuncOnPosIntSetsPPerm (Obj self, Obj set, Obj f){
 /* other internal things */
 
 /* so that domain and image set are preserved during garbage collection */
-void MarkPPerm2SubBags( Obj f ){
-  MARK_BAG(IMG_PPERM2(f));
-  MARK_BAG(DOM_PPERM2(f));
-}
-
-void MarkPPerm4SubBags( Obj f ){
-  MARK_BAG(IMG_PPERM4(f));
-  MARK_BAG(DOM_PPERM4(f));
+void MarkPPermSubBags( Obj f ){
+  if(IMG_PPERM(f)!=NULL){
+    MARK_BAG(IMG_PPERM(f));
+    MARK_BAG(DOM_PPERM(f));
+  }
 }
 
 /* Save and load */
@@ -5512,7 +5515,7 @@ void SavePPerm2( Obj f){
   UInt2 *ptr;
   UInt  len, i;
   len=DEG_PPERM2(f);
-  ptr=((UInt2*)(ADDR_OBJ(f)));
+  ptr=ADDR_PPERM2(f)-1;
   for (i = 0; i < len+1; i++) SaveUInt2(*ptr++);
 }
 
@@ -5520,7 +5523,7 @@ void LoadPPerm2( Obj f){
   UInt2 *ptr;
   UInt  len, i;
   len=DEG_PPERM2(f);
-  ptr=((UInt2*)(ADDR_OBJ(f)));
+  ptr=ADDR_PPERM2(f)-1;
   for (i = 0; i < len+1; i++) *ptr++=LoadUInt2();
 }
 
@@ -5528,7 +5531,7 @@ void SavePPerm4( Obj f){
   UInt4 *ptr;
   UInt  len, i;
   len=DEG_PPERM4(f);
-  ptr=((UInt4*)(ADDR_OBJ(f)));
+  ptr=ADDR_PPERM4(f)-1;
   for (i = 0; i < len+1; i++) SaveUInt4(*ptr++);
 }
 
@@ -5536,7 +5539,7 @@ void LoadPPerm4( Obj f){
   UInt4 *ptr;
   UInt  len, i;
   len=DEG_PPERM4(f);
-  ptr=((UInt4*)(ADDR_OBJ(f)));
+  ptr=ADDR_PPERM4(f)-1;
   for (i = 0; i < len+1; i++) *ptr++=LoadUInt4();
 }
 
@@ -5688,6 +5691,10 @@ static StructGVarFunc GVarFuncs [] = {
      FuncTRIM_PPERM,
     "src/pperm.c:FuncTRIM_PPERM" },
 
+  { "HASH_FUNC_FOR_PPERM", 2, "f, data",
+     FuncHASH_FUNC_FOR_PPERM,
+    "src/pperm.c:FuncHASH_FUNC_FOR_PPERM" },
+  
   { "IS_IDEM_PPERM", 1, "f",
      FuncIS_IDEM_PPERM,
     "src/pperm.c:FuncIS_IDEM_PPERM" },
@@ -5768,8 +5775,8 @@ static Int InitKernel ( StructInitInfo *module )
     /* install the marking function                                        */
     InfoBags[ T_PPERM2 ].name = "partial perm (small)";
     InfoBags[ T_PPERM4 ].name = "partial perm (large)";
-    InitMarkFuncBags( T_PPERM2, MarkPPerm2SubBags );
-    InitMarkFuncBags( T_PPERM4, MarkPPerm4SubBags );
+    InitMarkFuncBags( T_PPERM2, MarkPPermSubBags );
+    InitMarkFuncBags( T_PPERM4, MarkPPermSubBags );
     
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_PPERM2", &TYPE_PPERM2 );

@@ -6,6 +6,9 @@
 ##  Exclude from testinstall.g: why?
 ##
 gap> START_TEST("bugfixes test");
+gap> DeclareGlobalVariable("foo73");
+gap> InstallValue(foo73,true);
+Error, InstallValue: value cannot be immediate, boolean or character
 
 ##  Check if ConvertToMatrixRepNC works properly. BH
 ##

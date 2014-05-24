@@ -158,7 +158,9 @@ dnl ##
 AC_DEFUN(GP_LDFLAGS,
 [AC_CACHE_CHECK(Linker default flags, gp_cv_ldflags,
  [ case "$host-$CC" in
-    *-apple-* )
+    *-darwin[[6-9]].* | *-darwin10.* )
+        gp_cv_ldflags="-g ${ABI_CFLAGS}";;
+    *-darwin* )
         gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-gcc* | *-egcs )
         gp_cv_ldflags="-g ${ABI_CFLAGS}";;
@@ -272,16 +274,6 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
    esac 
  ])
-
-AC_DEFUN([GP_VAR_SYS_ERRLIST],
-[AC_CACHE_CHECK([for sys_errlist],
-gp_cv_var_sys_errlist,
-[AC_TRY_LINK([int *p;], [extern int sys_errlist; p = &sys_errlist;],
-            gp_cv_var_sys_errlist=yes, gp_cv_var_sys_errlist=no)])
-if test x"$gp_cv_var_sys_errlist" = xyes; then
-  AC_DEFINE(HAVE_SYS_ERRLIST, 1,
-    [Define if your system libraries have a sys_errlist variable.])
-fi])
 
 
 CDYNOPTIONS=$gp_cv_prog_cc_cdynoptions 

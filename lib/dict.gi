@@ -134,15 +134,19 @@ InstallMethod(KnowsDictionary,"for list lookup dictionaries",true,
   [IsListLookupDictionary,IsObject],0,
 function(d,x)
     local p;
-    p:=PositionFirstComponent(d!.entries,x);
-    return p <= Length(d!.entries) and d!.entries[p][1] = x;
+    for p in d!.entries do
+        if p[1] = x then
+            return true;
+        fi;
+    od;
+    return false;
 end);
 
 InstallMethod(KnowsDictionary,"for list dictionaries",true,
   [IsListDictionary,IsObject],0,
 function(d,x)
 local p;
-  return x in d!.list;
+    return x in d!.list;
 end);
 
 #############################################################################
@@ -152,13 +156,13 @@ end);
 InstallMethod(LookupDictionary,"for list dictionaries",true,
   [IsListLookupDictionary,IsObject],0,
 function(d,x)
-local p;
-  p:=PositionFirstComponent(d!.entries,x);
-  if p > Length(d!.entries) or d!.entries[p][1] <> x then
+    local p;
+    for p in d!.entries do
+        if p[1] = x then
+            return p[2];
+        fi;
+    od;
     return fail;
-  else
-    return d!.entries[p][2];
-  fi;
 end);
 
 ##

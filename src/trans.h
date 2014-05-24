@@ -17,6 +17,7 @@
 #include        "bool.h"                /* booleans                        */
 
 #include        "integer.h"             /* integers                        */
+#include        "intfuncs.h"            /* hashing                         */
 
 #include        "permutat.h"            /* permutations                    */
 

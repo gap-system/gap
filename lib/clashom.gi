@@ -2172,7 +2172,9 @@ BindGlobal("LiftClassesEATrivRep",
       od;
       i:=i+1;
     od;
-if miss<>1 then Error("HEH?");fi;
+if miss<>1 then 
+  # something is dodgy -- fallback to the default algorithm
+  return fail;Error("HEH?");fi;
     Info(InfoHomClass,3,"Fused ",Length(norb),"*",norb[1].len," ",
       Number(orb,x->IsBound(x))," left");
     Assert(0,ForAll(rsgens,x->norb[1].rep*bas*npcgsact(x)*basinv=norb[1].rep));

@@ -3066,21 +3066,13 @@ void SyClearErrorNo ( void )
 *F  SySetErrorNo()  . . . . . . . . . . . . . . . . . . . . set error message
 */
 
-#if  ! HAVE_SYS_ERRLIST
-extern char * sys_errlist[];
-#endif
-
 void SySetErrorNo ( void )
 {
     const Char *        err;
 
     if ( errno != 0 ) {
         SyLastErrorNo = errno;
-#if ! HAVE_STRERROR
-        err = sys_errlist[errno];
-#else
         err = strerror(errno);
-#endif
         strxcpy( SyLastErrorMessage, err, sizeof(SyLastErrorMessage) );
     }
     else {

@@ -392,7 +392,7 @@ quaternion algebras (contribution by Allen Herman).
 </Section>
 
 <Section Label="fix473"> 
-<Heading>&GAP; 4.7.3 (February 2013)</Heading>
+<Heading>&GAP; 4.7.3 (February 2014)</Heading>
 
 Fixed bugs which could lead to incorrect results:
 <List>
@@ -439,11 +439,89 @@ Better detection of UTF-8 terminal encoding on some systems.
 </Section>
 
 <Section Label="fix474">
-<Heading>&GAP; 4.7.4 (February 2013)</Heading>
+<Heading>&GAP; 4.7.4 (February 2014)</Heading>
 This release was prepared immediately after &GAP; 4.7.3 to revert
 the fix of the error handling for the single quote at the end of
 an input line, contained in &GAP; 4.7.3. It happened that (only
 on Windows) the fix caused error messages in one of the packages.
+</Section>
+
+<Section Label="fix475"> 
+<Heading>&GAP; 4.7.5 (May 2014)</Heading>
+
+Fixed bugs which could lead to incorrect results:
+<List>
+<Item>
+<Ref Func="InstallValue" BookName="ref" /> cannot handle immediate 
+values, characters or booleans for technical reasons. A check for 
+such values was introduced to trigger an error message and prevent
+incorrect results caused by this. [Reported by Sebastian Gutsche]
+</Item>
+<Item>
+<Ref Oper="KnowsDictionary" BookName="ref"/> and 
+<Ref Oper="LookupDictionary" BookName="ref" /> 
+methods for <C>IsListLookupDictionary</C> were using 
+<Ref Oper="PositionFirstComponent" BookName="ref" />;
+the latter is only valid on sorted lists, but in 
+<C>IsListLookupDictionary</C> the underlying 
+list is NOT sorted in general, leading to bogus results.
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+A bug in <C>DirectProductElementsFamily</C> which used 
+<Ref Prop="CanEasilyCompareElements" BookName="ref"/> instead of
+<Ref Prop="CanEasilySortElements" BookName="ref"/>.
+</Item>
+<Item>
+Fixed wrong <C>Infolevel</C> message that caused a break loop
+for some automorphism group computations.
+</Item>
+<Item>
+Fixed an error that sometimes caused a break loop in 
+<Ref Func="HallSubgroup" BookName="ref"/>.
+[Reported by Benjamin Sambale]
+</Item>
+<Item>
+Fixed a rare error in computation of conjugacy classes of a
+finite group by homomorphic images, providing fallback to a 
+default algorithm.
+</Item>
+<Item>
+Fixed an error in the calculation of Frattini subgroup in the
+case of the trivial radical.
+</Item>
+<Item>
+Several minor bugs were fixed in the documentation, kernel, and
+library code for transformations.
+</Item>
+<Item>
+Fixed errors in <Ref Func="NumberPerfectGroups" BookName="ref" />
+and <Ref Func="NumberPerfectLibraryGroups" BookName="ref" /> not
+being aware that there are no perfect groups of odd order.
+</Item>
+<Item>
+Restored the ability to build &GAP; on OS X 10.4 and 10.5 
+which was accidentally broken in the previous &GAP; release by
+using the build option not supported by these versions.
+</Item>
+<Item>
+Fixed some problems for ia64 and sparc architectures.
+[Reported by Bill Allombert and Volker Braun]
+</Item>
+</List>
+
+New package added for the redistribution with &GAP;:
+<List>
+<Item>
+<Package>permut</Package> package by A.Ballester-Bolinches, 
+E.Cosme-Llópez, and R.Esteban-Romero to deal with permutability 
+in finite groups.
+</Item>
+</List>
+
 </Section>
 
 </Chapter>

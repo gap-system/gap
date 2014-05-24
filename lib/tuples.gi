@@ -71,7 +71,7 @@ InstallMethod( DirectProductElementsFamily,
       filter2:=IsDirectProductElementFamily;
       # inherit positive element comparison from the families but do not
       # trigger the computation.
-      if ForAll(famlist,i->HasCanEasilyCompareElements(i) and
+      if ForAll(famlist,i->HasCanEasilySortElements(i) and
        CanEasilySortElements(i)) then
         filter:=filter and CanEasilySortElements;
         filter2:=filter2 and CanEasilySortElements;

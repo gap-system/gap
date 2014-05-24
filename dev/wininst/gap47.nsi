@@ -61,8 +61,8 @@ StrCpy $GAP_VER "4.7.2"
 SectionEnd
 
 #Name and file
-Name "GAP 4.7.2"
-OutFile "gap4r7p2_2013_12_01-10_17.exe"
+Name "GAP 4.7.4"
+OutFile "gap4r7p4_2014_02_20-01_21.exe"
 
 #Default installation folder
 InstallDir "C:\gap4r7"
@@ -860,8 +860,8 @@ SectionEnd
 Section "FR" SecGAPpkg_fr 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.fr
-SetOutPath $INSTDIR\pkg\fr-2.1.0
-File /r gap4r7\pkg\fr-2.1.0\*.* 
+SetOutPath $INSTDIR\pkg\fr-2.1.1
+File /r gap4r7\pkg\fr-2.1.1\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1589,8 +1589,8 @@ SectionEnd
 Section "Float" SecGAPpkg_float 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.float
-SetOutPath $INSTDIR\pkg\float-0.5.12
-File /r gap4r7\pkg\float-0.5.12\*.* 
+SetOutPath $INSTDIR\pkg\float-0.5.17
+File /r gap4r7\pkg\float-0.5.17\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
