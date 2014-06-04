@@ -1947,6 +1947,10 @@ static Int InitKernel (
         SetTypeObjFuncs [ t] = SetTypeObjError;
     }
 
+    TypeObjFuncs[ T_COMOBJ ] = TypeComObj;
+    TypeObjFuncs[ T_POSOBJ ] = TypePosObj;
+    TypeObjFuncs[ T_DATOBJ ] = TypeDatObj;
+
     SetTypeObjFuncs [ T_COMOBJ ] = SetTypeComObj;
     SetTypeObjFuncs [ T_POSOBJ ] = SetTypePosObj;
     SetTypeObjFuncs [ T_DATOBJ ] = SetTypeDatObj;
