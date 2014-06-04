@@ -4812,6 +4812,7 @@ Obj DoVerboseMutableAttribute (
         UInt addon_len = sizeof(addon) - 1; \
         char *tmp; \
         fname = NEW_STRING( name_len + addon_len + 2 ); \
+        ImpliedWriteGuard(fname); \
         tmp = CSTR_STRING(fname); \
         memcpy( tmp, addon, addon_len ); tmp += addon_len; \
         *tmp++ = '('; \
