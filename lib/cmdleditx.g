@@ -135,84 +135,83 @@ BindGlobal("CommandLineHistoryHandler", function(l)
       for i in [2..Length(hist)-1] do
         hist[i] := hist[i+1];
       od;
-	hist[Length(hist)] := l[1];
-	if hist[1] > 2 then
-	  hist[1] := hist[1]-1;
-	else
-	  hist[1] := Length(hist)+1;
-	fi;
+      hist[Length(hist)] := l[1];
+      if hist[1] > 2 then
+        hist[1] := hist[1]-1;
       else
-	Add(hist, l[1]);
+        hist[1] := Length(hist)+1;
       fi;
-      LastPosCLH := hist[1];
-      hist[1] := Length(hist)+1;
-      return [l[1], l[3], l[5]];
-    elif key = 16 then  # CTR('P')
-      # searching backward in history for line starting with input before 
-      # cursor
-      n := hist[1];
-      if n < 2 then return [l[1],l[3],l[5]]; fi; 
-      m := l[3]-1;
-      start := l[1]{[1..m]};
-      for i in [n-1,n-2..2] do
-	hist[1] := i;
-	if Length(hist[i]) >= m and hist[i]{[1..m]} = start then
-	  if hist[1] < 2 then
-	    hist[1] := Length(hist)+1;
-	  fi;
-	  return [hist[i], l[3], l[5]];
-	fi;
-      od;
-      # not found, point to last line
-      hist[1] := Length(hist)+1;
-      return [start, l[3], l[5]];
-    elif key = 14 then  # CTR('N')
-      # searching forward in history for line starting with input before 
-      # cursor; first time for current line we start at last history pointer
-      # from previous line   (so one can repeat a sequence of lines by
-      # repeated ctrl-N.
-      if Length(hist) = 1 then return [l[1],l[3],l[5]]; fi; 
-      if hist[1] = Length(hist)+1 then
-	if  LastPosCLH < hist[1]-1 then
-	  hist[1] := LastPosCLH;
-	  LastPosCLH := Length(hist)+1;
-	else
-	  hist[1] := 1;
-	fi;
-      fi;
-      m := l[3]-1;
-      start := l[1]{[1..m]};
-      for i in [hist[1]+1..Length(hist)] do
-	hist[1] := i;
-	if Length(hist[i]) >= m and hist[i]{[1..m]} = start then
-	  return [hist[i], l[3], l[5]];
-	fi;
-      od;
-      # not found, point after newest line
-      hist[1] := Length(hist)+1;
-      return [start, l[3], l[5]];
-    elif key = 12 then  # CTR('L')
-      if Length(hist) = 1 then return [l[1],l[3],l[5]]; fi; 
-      res := l[1]{[1..l[3]-1]};
-      Append(res, hist[Length(hist)]);
-      Append(res, l[1]{[l[3]..Length(l[1])]});
-      return [res, l[3] + Length(hist[Length(hist)]), l[5]];
-    elif key = 316 then  # ESC('<')
-      if hist[1] > 1 then
-	hist[1] := 2;
-	return [hist[2], 1, l[5]];
-      else
-	return ["", 1, l[5]];
-      fi;
-    elif key = 318 then  # ESC('>')
-      if hist[1] > 1 then
-	hist[1] := Length(hist)+1;
-      fi;
-      return ["", 1, l[5]];
     else
-      Error("Cannot handle command line history with key ", key);
+      Add(hist, l[1]);
     fi;
-  fi;
+    LastPosCLH := hist[1];
+    hist[1] := Length(hist)+1;
+    return [l[1], l[3], l[5]];
+  elif key = 16 then  # CTR('P')
+    # searching backward in history for line starting with input before 
+    # cursor
+    n := hist[1];
+    if n < 2 then n := Length(hist)+1; fi; 
+    m := l[3]-1;
+    start := l[1]{[1..m]};
+    for i in [n-1,n-2..2] do
+      hist[1] := i;
+      if Length(hist[i]) >= m and hist[i]{[1..m]} = start then
+        if hist[1] < 2 then
+          hist[1] := Length(hist)+1;
+        fi;
+        return [hist[i], l[3], l[5]];
+      fi;
+    od;
+    # not found, point to last line
+    hist[1] := Length(hist)+1;
+    return [start, l[3], l[5]];
+  elif key = 14 then  # CTR('N')
+    # searching forward in history for line starting with input before 
+    # cursor; first time for current line we start at last history pointer
+    # from previous line   (so one can repeat a sequence of lines by
+    # repeated ctrl-N.
+    if Length(hist) = 1 then return [l[1],l[3],l[5]]; fi; 
+    if hist[1] = Length(hist)+1 then
+      if  LastPosCLH < hist[1]-1 then
+        hist[1] := LastPosCLH;
+        LastPosCLH := Length(hist)+1;
+      else
+        hist[1] := 2;
+      fi;
+    fi;
+    m := l[3]-1;
+    start := l[1]{[1..m]};
+    for i in [hist[1]+1..Length(hist)] do
+      hist[1] := i;
+      if Length(hist[i]) >= m and hist[i]{[1..m]} = start then
+        return [hist[i], l[3], l[5]];
+      fi;
+    od;
+    # not found, point after newest line
+    hist[1] := Length(hist)+1;
+    return [start, l[3], l[5]];
+  elif key = 12 then  # CTR('L')
+    if Length(hist) = 1 then return [l[1],l[3],l[5]]; fi; 
+    res := l[1]{[1..l[3]-1]};
+    Append(res, hist[Length(hist)]);
+    Append(res, l[1]{[l[3]..Length(l[1])]});
+    return [res, l[3] + Length(hist[Length(hist)]), l[5]];
+  elif key = 316 then  # ESC('<')
+    if hist[1] > 1 then
+      hist[1] := 2;
+      return [hist[2], 1, l[5]];
+    else
+      return ["", 1, l[5]];
+    fi;
+  elif key = 318 then  # ESC('>')
+    if hist[1] > 1 then
+      hist[1] := Length(hist)+1;
+    fi;
+    return ["", 1, l[5]];
+  else
+    Error("Cannot handle command line history with key ", key);
+  fi;  
   od;
 end);
 
