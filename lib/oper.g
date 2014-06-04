@@ -225,7 +225,7 @@ IGNORE_IMMEDIATE_METHODS := false;
 ##  </ManSection>
 ##
 BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
-    function( oper, desc, filter, rank, method )
+    function( oper, name, filter, rank, method )
 
     local   flags,
             relev,
@@ -327,33 +327,33 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
 #T the property tester should remain in IMM_FLAGS.
 #T (This would make an if statement in `RunImmediateMethods' unnecessary!)
 
-      # Find the place to put the new method.
-      if not IsBound( IMMEDIATES[j] ) then
-          IMMEDIATES[j]:= [];
-      fi;
-      i := 0;
-      while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
-          i := i + 7;
-      od;
-      
-      # Now is a good time to see if the method is already there 
-      if REREADING then
-          replace := false;
-          k := i;
-          while k < LEN_LIST(IMMEDIATES[j]) and 
-            rank = IMMEDIATES[j][k+5] do
-              if desc = IMMEDIATES[j][k+7] and
-                 oper = IMMEDIATES[j][k+1] and
-                 FLAGS_FILTER( filter ) = IMMEDIATES[j][k+4] then
-                  replace := true;
-                  i := k;
-                  break;
-              fi;
-              k := k+7;
-          od;
-      fi;
-      
-      # push the other functions back
+	  # Find the place to put the new method.
+	  if not IsBound( IMMEDIATES[j] ) then
+	      IMMEDIATES[j]:= MakeImmutable([]);
+	  fi;
+	  i := 0;
+	  while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
+	      i := i + 7;
+	  od;
+	  
+	  # Now is a good time to see if the method is already there 
+	  if REREADING then
+	      replace := false;
+	      k := i;
+	      while k < LEN_LIST(IMMEDIATES[j]) and 
+		rank = IMMEDIATES[j][k+5] do
+		  if name = IMMEDIATES[j][k+7] and
+		     oper = IMMEDIATES[j][k+1] and
+		     FLAGS_FILTER( filter ) = IMMEDIATES[j][k+4] then
+		      replace := true;
+		      i := k;
+		      break;
+		  fi;
+		  k := k+7;
+	      od;
+	  fi;
+	  
+	  # push the other functions back
       
 	  # ShallowCopy is not bound yet, so we take a sublist
 	  imm:=IMMEDIATES[j]{[1..LEN_LIST(IMMEDIATES[j])]};
@@ -372,6 +372,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
 	  imm[i+7] := IMMUTABLE_COPY_OBJ(name);
 	 
 	  IMMEDIATES[j]:=MakeImmutable(imm);
+	od;
     od;
 end );
 
