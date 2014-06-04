@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -ex
 # (C) Frank Lübeck
 
 
@@ -14,7 +14,7 @@ Print("\n");
 ReadAllPackageInfos("${PkgReposDir}");
 WritePackageWebPageInfos("${PkgWebFtpDir}", 
                          "${PkgWebFtpDir}/Packages/pkgconf.py",
-                         "${PkgWebFtpDir}/Packages/pkgstaticlist.mixer" 
+                         "${PkgWebFtpDir}/Packages/pkgstaticlist" 
 );
 quit;
 EOI

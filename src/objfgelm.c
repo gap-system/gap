@@ -3298,7 +3298,7 @@ static StructGVarFunc GVarFuncs [] = {
       Func8Bits_AssocWord, "src/objfgelm.c:8Bits_AssocWord" },
 
     { "8Bits_NumberSyllables", 1, "8_bits_word",
-      FuncNBits_NumberSyllables, "src/objfgelm.c:NBits_NumberSyllables" },
+      FuncNBits_NumberSyllables, "src/objfgelm.c:8Bits_NumberSyllables" },
 
     { "8Bits_ObjByVector", 2, "kind, data",
       Func8Bits_ObjByVector, "src/objfgelm.c:8Bits_ObjByVector" },
@@ -3343,7 +3343,7 @@ static StructGVarFunc GVarFuncs [] = {
       Func16Bits_AssocWord, "src/objfgelm.c:16Bits_AssocWord" },
 
     { "16Bits_NumberSyllables", 1, "16_bits_word",
-      FuncNBits_NumberSyllables, "src/objfgelm.c:NBits_NumberSyllables" },
+      FuncNBits_NumberSyllables, "src/objfgelm.c:16Bits_NumberSyllables" },
 
     { "16Bits_ObjByVector", 2, "kind, data",
       Func16Bits_ObjByVector, "src/objfgelm.c:16Bits_ObjByVector" },
@@ -3388,7 +3388,7 @@ static StructGVarFunc GVarFuncs [] = {
       Func32Bits_AssocWord, "src/objfgelm.c:32Bits_AssocWord" },
 
     { "32Bits_NumberSyllables", 1, "32_bits_word",
-      FuncNBits_NumberSyllables, "src/objfgelm.c:NBits_NumberSyllables" },
+      FuncNBits_NumberSyllables, "src/objfgelm.c:32Bits_NumberSyllables" },
 
     { "32Bits_ObjByVector", 2, "kind, data",
       Func32Bits_ObjByVector, "src/objfgelm.c:32Bits_ObjByVector" },
@@ -3489,7 +3489,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoFreeGroupElements ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

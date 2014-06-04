@@ -189,7 +189,7 @@
 **  clever.  We  group some  symbols that  are syntactically  equivalent like
 **  '*', '/' in a class. We use the least significant 3 bits to differentiate
 **  between members in one class.  And now  every symbol class, many of which
-**  contain   just  one  symbol,  has exactely  one   of  the  remaining most
+**  contain   just  one  symbol,  has exactly  one   of  the  remaining most
 **  significant 29  bits  set.   Thus   sets  of symbols  are  represented as
 **  unsigned long integers, which is typedef-ed to 'TypSymbolSet'.
 **
@@ -1147,6 +1147,10 @@ UInt CloseInputLog ( void )
     if ( TLS->inputLog == 0 )
         return 0;
 
+    /* refuse to close a log opened with LogTo */
+    if (TLS->inputLog == TLS->outputLog)
+      return 0;
+    
     /* close the logfile                                                   */
     if ( ! TLS->inputLog->isstream ) {
         SyFclose( TLS->inputLog->file );
@@ -1242,6 +1246,10 @@ UInt CloseOutputLog ( void )
     /* refuse to close a non existent logfile                              */
     if ( TLS->outputLog == 0 )
         return 0;
+
+    /* refuse to close a log opened with LogTo */
+    if (TLS->outputLog == TLS->inputLog)
+      return 0;
 
     /* close the logfile                                                   */
     if ( ! TLS->outputLog->isstream ) {
@@ -1504,7 +1512,7 @@ UInt OpenAppendStream (
 **  'CloseAppend' will  first flush all   pending output and  then  close the
 **  current  output  file.   Subsequent output will  again go to the previous
 **  output file.  'CloseAppend' returns 1 to indicate success.  'CloseAppend'
-**  is exactely equal to 'CloseOutput' so its description applies.
+**  is exactly equal to 'CloseOutput' so its description applies.
 */
 UInt CloseAppend ( void )
 {
@@ -1874,7 +1882,7 @@ static const s_keyword AllKeywords[] = {
 
 
 static int IsIdent(char c) {
-    return IsAlpha(c) || c == '_' || c == '$' || c == '@';
+    return IsAlpha(c) || c == '_' || c == '@';
 }
 
 void GetIdent ( void )
@@ -2091,6 +2099,17 @@ void GetNumber ( UInt StartingStatus )
     /* Or maybe we saw a . which could indicate one of two things:
        a float literal or .. */
     if (c == '.'){
+      /* If the symbol before this integer was S_DOT then 
+	 we must be in a nested record element expression, so don't 
+	 look for a float.
+
+      This is a bit fragile  */
+      if (TLS->symbol == S_DOT || TLS->symbol == S_BDOT) {
+	TLS->value[i]  = '\0';
+	TLS->symbol = S_INT;
+	return;
+      }
+      
       /* peek ahead to decide which */
       GET_CHAR();
       if (*TLS->in == '.') {
@@ -2422,7 +2441,9 @@ void GetChar ( void )
     }
     else                     TLS->value[0] = *TLS->in;
   }
-
+  else if ( *TLS->in == '\n' ) {
+    SyntaxError("newline not allowed in character literal");
+  }
   /* put normal chars into 'TLS->value'                                       */
   else {
     TLS->value[0] = *TLS->in;
@@ -2431,6 +2452,7 @@ void GetChar ( void )
   /* read the next character                                             */
   GET_CHAR();
 
+  
   /* check for terminating single quote                                  */
   if ( *TLS->in != '\'' )
     SyntaxError("missing single quote in character constant");
@@ -2571,7 +2593,6 @@ void GetSymbol ( void )
   case '\'':                                          GetChar();   break;
   case '\\':                                          GetIdent();  break;
   case '_':                                           GetIdent();  break;
-  case '$':                                           GetIdent();  break;
   case '@':                                           GetIdent();  break;
   case '~':   TLS->value[0] = '~';  TLS->value[1] = '\0';
     TLS->symbol = S_IDENT;                       GET_CHAR();  break;
@@ -2634,12 +2655,7 @@ void PutLine2(
     }
 
     /* Space for the null is allowed for in GAP strings */
-    str = NEW_STRING( len );
-
-    /* But we have to allow for it in SyStrncat */
-    /*    XXX SyStrncat( CSTR_STRING(str), line, len + 1 );    */
-    /* this contains trailing zero character */
-    memcpy(CHARS_STRING(str),  line, len + 1 );
+    C_NEW_STRING( str, len, line );
 
     /* now delegate to library level */
     CALL_2ARGS( WriteAllFunc, output->stream, str );
@@ -2968,7 +2984,7 @@ Obj FuncToggleEcho( Obj self)
 Obj FuncCPROMPT( Obj self)
 {
   Obj p;
-  C_NEW_STRING( p, strlen( TLS->prompt ), TLS->prompt );
+  C_NEW_STRING_DYN( p, TLS->prompt );
   return p;
 }
 
@@ -3338,10 +3354,10 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 Obj FuncINPUT_FILENAME( Obj self) {
   Obj s;
   if (TLS->input && TLS->input->name) {
-    C_NEW_STRING( s, strlen(TLS->input->name), TLS->input->name );
+    C_NEW_STRING_DYN( s, TLS->input->name );
   } else {
     char *defin = "*defin*";
-    C_NEW_STRING( s, strlen(defin), defin);
+    C_NEW_STRING_DYN( s, defin );
   }
   return s;
 }
@@ -3358,7 +3374,7 @@ Obj FuncALL_KEYWORDS(Obj self) {
   l = NEW_PLIST(T_PLIST_EMPTY, 0);
   SET_LEN_PLIST(l,0);
   for (i = 0; i < sizeof(AllKeywords)/sizeof(AllKeywords[0]); i++) {
-    C_NEW_STRING(s,strlen(AllKeywords[i].name),AllKeywords[i].name);
+    C_NEW_STRING_DYN(s,AllKeywords[i].name);
     ASS_LIST(l, i+1, s);
   }
   MakeImmutable(l);
@@ -3520,7 +3536,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoScanner ( void )
 {
-  FillInVersion( &module );
   return &module;
 }
 

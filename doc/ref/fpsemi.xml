@@ -323,8 +323,8 @@ reduction ordering <A>wordord</A>.
 This procedure gives a standard way of finding a transformation
 representation of a finitely presented semigroup. Usually
 one does not explicitly call this procedure but uses
-<Ref Func="IsomorphismTransformationSemigroup"/>
-or <Ref Func="HomomorphismTransformationSemigroup"/>.
+<Ref Func="IsomorphismTransformationSemigroup"/>.
+<!--or <Ref Func="HomomorphismTransformationSemigroup"/>-->
 
 <#Include Label="CosetTableOfFpSemigroup">
 

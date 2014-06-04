@@ -387,14 +387,6 @@ InstallMethod( PrintObj,
     function ( obj )  Print( Name( obj ) ); end );
 
 
-InstallMethod( PrintObj,
-    "default for an object",
-    true,
-    [ IsObject ],
-    0,
-    function( obj ) Print( "<object>" ); end );
-
-
 #############################################################################
 ##
 #M  ViewObj( <obj> )  . . . . . . . . . . . . . . . . for an object with name

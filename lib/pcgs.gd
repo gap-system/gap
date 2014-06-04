@@ -948,6 +948,25 @@ DeclareOperation( "ExponentsOfCommutator",
 DeclareOperation( "LeadingExponentOfPcElement",
     [ IsModuloPcgs, IsObject ] );
 
+#############################################################################
+##
+#O  DepthAndLeadingExponentOfPcElement( <pcgs>, <elm> )
+##
+##  <#GAPDoc Label="DepthAndLeadingExponentOfPcElement">
+##  <ManSection>
+##  <Oper Name="DepthAndLeadingExponentOfPcElement" Arg='pcgs, elm'/>
+##
+##  <Description>
+##  returns a list containing the depth of <A>elm</A> and the leading
+##  exponent of <A>elm</A> with respect to <A>pcgs</A>. (This is sometimes
+##  faster than asking separately.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "DepthAndLeadingExponentOfPcElement",
+    [ IsModuloPcgs, IsObject ] );
+
 
 #############################################################################
 ##
@@ -1432,6 +1451,32 @@ DeclareGlobalFunction( "ProjectedInducedPcgs" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "LiftedInducedPcgs" );
+
+
+#############################################################################
+##
+#F  PcgsByPcgs( <pcgs>, <decomp>, <family>, <images> )
+##
+##  <#GAPDoc Label="PcgsByPcgs">
+##  <ManSection>
+##  <Func Name="PcgsByPcgs" Arg='pcgs, decomp, family, images'/>
+##
+##  <Description>
+##  Constructs a pcgs that will use another pcgs (via an isomorphism pc
+##  group) to determine exponents. The assumption is that exponents will be
+##  so expensive that a pc group collection is of neglegible cost.
+##  <A>pcgs</A> is the list of pc elements
+##  desired. <A>decomp</A> is another pcgs with respect to which we can
+##  compute exponents. It corresponds to the family pcgs <A>family</A> of an
+##  isomorphic pc group. In this pc group <A>images</A> are the images of
+##  <A>pcgs</A>. Exponents will be computed by forming exponents with
+##  respect to <A>decomp</A>, forming the image in the pc group, and then
+##  computing exponents of this image by <A>images</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "PcgsByPcgs" );
 
 
 #############################################################################

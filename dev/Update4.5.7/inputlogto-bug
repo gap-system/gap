@@ -1,0 +1,22 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/10/26
+! Changed by
+SL
+! Reported by
+MN
+! Type of Change
+Fix: crash
+! Description
+Closing with LogInputTo() (or LogOutputTo())
+a logfile opened with LogTo() left the data 
+structures corrupted, resulting in a crash.
+! Test Code
+gap> LogTo( Filename( DirectoryTemporary(), "foo" ) );
+gap> LogInputTo();
+Error, InputLogTo: can not close the logfile
+gap> LogTo();
+! Prefetch
+! Changeset
+31cc6abbcd77d8c5c48ef9ad08198fd7b3d85c90
+! End

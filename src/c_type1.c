@@ -263,7 +263,7 @@ static Obj  HdlrFunc2 (
  
  /* InstallOtherMethod( getter, "system getter", true, [ IsAttributeStoringRep and tester ], GETTER_FLAGS, GETTER_FUNCTION( name ) ); */
  t_1 = GF_InstallOtherMethod;
- C_NEW_STRING( t_2, 13, "system getter" )
+ C_NEW_STRING( t_2, 13, "system getter" );
  t_3 = True;
  t_4 = NEW_PLIST( T_PLIST, 1 );
  SET_LEN_PLIST( t_4, 1 );
@@ -383,7 +383,7 @@ static Obj  HdlrFunc3 (
       return;
   end ); */
   t_1 = GF_InstallOtherMethod;
-  C_NEW_STRING( t_2, 21, "system mutable setter" )
+  C_NEW_STRING( t_2, 21, "system mutable setter" );
   t_3 = True;
   t_4 = NEW_PLIST( T_PLIST, 2 );
   SET_LEN_PLIST( t_4, 2 );
@@ -412,7 +412,7 @@ static Obj  HdlrFunc3 (
   
   /* InstallOtherMethod( setter, "system setter", true, [ IsAttributeStoringRep, IS_OBJECT ], 0, SETTER_FUNCTION( name, tester ) ); */
   t_1 = GF_InstallOtherMethod;
-  C_NEW_STRING( t_2, 13, "system setter" )
+  C_NEW_STRING( t_2, 13, "system setter" );
   t_3 = True;
   t_4 = NEW_PLIST( T_PLIST, 2 );
   SET_LEN_PLIST( t_4, 2 );
@@ -916,7 +916,7 @@ static Obj  HdlrFunc10 (
      
      /* Error( "usage: NewFamily( <name>, [ <req> [, <imp> ]] )" ); */
      t_1 = GF_Error;
-     C_NEW_STRING( t_2, 47, "usage: NewFamily( <name>, [ <req> [, <imp> ]] )" )
+     C_NEW_STRING( t_2, 47, "usage: NewFamily( <name>, [ <req> [, <imp> ]] )" );
      CALL_1ARGS( t_1, t_2 );
      
     }
@@ -1091,7 +1091,7 @@ static Obj  HdlrFunc11 (
   
   /* GASMAN( "collect" ); */
   t_1 = GF_GASMAN;
-  C_NEW_STRING( t_2, 7, "collect" )
+  C_NEW_STRING( t_2, 7, "collect" );
   CALL_1ARGS( t_1, t_2 );
   
   /* FLUSH_ALL_METHOD_CACHES(  ); */
@@ -1541,7 +1541,7 @@ static Obj  HdlrFunc16 (
   
   /* Error( "<family> must be a family" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 25, "<family> must be a family" )
+  C_NEW_STRING( t_2, 25, "<family> must be a family" );
   CALL_1ARGS( t_1, t_2 );
   
  }
@@ -1633,7 +1633,7 @@ static Obj  HdlrFunc16 (
      
      /* Error( "usage: NewType( <family> [, <filter> [, <data> ]] )" ); */
      t_1 = GF_Error;
-     C_NEW_STRING( t_2, 51, "usage: NewType( <family> [, <filter> [, <data> ]] )" )
+     C_NEW_STRING( t_2, 51, "usage: NewType( <family> [, <filter> [, <data> ]] )" );
      CALL_1ARGS( t_1, t_2 );
      
     }
@@ -1873,7 +1873,7 @@ static Obj  HdlrFunc19 (
   
   /* Error( "<type> must be a type" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 21, "<type> must be a type" )
+  C_NEW_STRING( t_2, 21, "<type> must be a type" );
   CALL_1ARGS( t_1, t_2 );
   
  }
@@ -2135,7 +2135,7 @@ static Obj  HdlrFunc22 (
   
   /* Error( "<type> must be a type" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 21, "<type> must be a type" )
+  C_NEW_STRING( t_2, 21, "<type> must be a type" );
   CALL_1ARGS( t_1, t_2 );
   
  }
@@ -2463,7 +2463,7 @@ static Obj  HdlrFunc31 (
   
   /* Error( "<type> must be a type" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 21, "<type> must be a type" )
+  C_NEW_STRING( t_2, 21, "<type> must be a type" );
   CALL_1ARGS( t_1, t_2 );
   
  }
@@ -2557,7 +2557,7 @@ static Obj  HdlrFunc32 (
   
   /* Error( "<type> must be a type" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 21, "<type> must be a type" )
+  C_NEW_STRING( t_2, 21, "<type> must be a type" );
   CALL_1ARGS( t_1, t_2 );
   
  }
@@ -2892,7 +2892,7 @@ static Obj  HdlrFunc33 (
         
         /* Error( "cannot set filter for internal object" ); */
         t_1 = GF_Error;
-        C_NEW_STRING( t_2, 37, "cannot set filter for internal object" )
+        C_NEW_STRING( t_2, 37, "cannot set filter for internal object" );
         CALL_1ARGS( t_1, t_2 );
         
        }
@@ -2944,7 +2944,7 @@ static Obj  HdlrFunc34 (
   
   /* Error( "You can't reset an \"and-filter\". Reset components individually." ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 63, "You can't reset an \"and-filter\". Reset components individually." )
+  C_NEW_STRING( t_2, 63, "You can't reset an \"and-filter\". Reset components individually." );
   CALL_1ARGS( t_1, t_2 );
   
  }
@@ -3077,7 +3077,7 @@ static Obj  HdlrFunc34 (
         
         /* Error( "cannot reset filter for internal object" ); */
         t_1 = GF_Error;
-        C_NEW_STRING( t_2, 39, "cannot reset filter for internal object" )
+        C_NEW_STRING( t_2, 39, "cannot reset filter for internal object" );
         CALL_1ARGS( t_1, t_2 );
         
        }
@@ -3598,8 +3598,8 @@ static Obj  HdlrFunc37 (
   
   /* INFO_OWA( "#W ObjectifyWithAttributes called ", "for non-attribute storing rep\n" ); */
   t_1 = GF_INFO__OWA;
-  C_NEW_STRING( t_2, 34, "#W ObjectifyWithAttributes called " )
-  C_NEW_STRING( t_3, 30, "for non-attribute storing rep\n" )
+  C_NEW_STRING( t_2, 34, "#W ObjectifyWithAttributes called " );
+  C_NEW_STRING( t_3, 30, "for non-attribute storing rep\n" );
   CALL_2ARGS( t_1, t_2, t_3 );
   
   /* Objectify( type, obj ); */
@@ -3844,12 +3844,12 @@ static Obj  HdlrFunc37 (
    
    /* INFO_OWA( "#W  Supplied type has tester of ", NAME_FUNC( extra[i] ), "with non-standard setter\n" ); */
    t_5 = GF_INFO__OWA;
-   C_NEW_STRING( t_6, 32, "#W  Supplied type has tester of " )
+   C_NEW_STRING( t_6, 32, "#W  Supplied type has tester of " );
    t_8 = GF_NAME__FUNC;
    C_ELM_LIST_FPL( t_9, l_extra, l_i )
    t_7 = CALL_1ARGS( t_8, t_9 );
    CHECK_FUNC_RESULT( t_7 )
-   C_NEW_STRING( t_8, 25, "with non-standard setter\n" )
+   C_NEW_STRING( t_8, 25, "with non-standard setter\n" );
    CALL_3ARGS( t_5, t_6, t_7, t_8 );
    
    /* ResetFilterObj( obj, Tester( extra[i] ) ); */
@@ -3956,7 +3956,7 @@ static Obj  HdlrFunc1 (
  CALL_1ARGS( t_1, t_2 );
  
  /* Subtype := "defined below"; */
- C_NEW_STRING( t_1, 13, "defined below" )
+ C_NEW_STRING( t_1, 13, "defined below" );
  AssGVar( G_Subtype, t_1 );
  
  /* DS_TYPE_CACHE := SHARE( [  ] ); */
@@ -3990,7 +3990,7 @@ static Obj  HdlrFunc1 (
       return family;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 10, "NEW_FAMILY" )
+ C_NEW_STRING( t_2, 10, "NEW_FAMILY" );
  t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4005,7 +4005,7 @@ static Obj  HdlrFunc1 (
       return NEW_FAMILY( typeOfFamilies, name, EMPTY_FLAGS, EMPTY_FLAGS );
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 10, "NewFamily2" )
+ C_NEW_STRING( t_2, 10, "NewFamily2" );
  t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4020,7 +4020,7 @@ static Obj  HdlrFunc1 (
       return NEW_FAMILY( typeOfFamilies, name, FLAGS_FILTER( req ), EMPTY_FLAGS );
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 10, "NewFamily3" )
+ C_NEW_STRING( t_2, 10, "NewFamily3" );
  t_3 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4035,7 +4035,7 @@ static Obj  HdlrFunc1 (
       return NEW_FAMILY( typeOfFamilies, name, FLAGS_FILTER( req ), FLAGS_FILTER( imp ) );
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 10, "NewFamily4" )
+ C_NEW_STRING( t_2, 10, "NewFamily4" );
  t_3 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4050,7 +4050,7 @@ static Obj  HdlrFunc1 (
       return NEW_FAMILY( Subtype( typeOfFamilies, filter ), name, FLAGS_FILTER( req ), FLAGS_FILTER( imp ) );
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 10, "NewFamily5" )
+ C_NEW_STRING( t_2, 10, "NewFamily5" );
  t_3 = NewFunction( NameFunc[9], NargFunc[9], NamsFunc[9], HdlrFunc9 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4076,7 +4076,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 9, "NewFamily" )
+ C_NEW_STRING( t_2, 9, "NewFamily" );
  t_3 = NewFunction( NameFunc[10], NargFunc[10], NamsFunc[10], HdlrFunc10 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4148,7 +4148,7 @@ static Obj  HdlrFunc1 (
       return type;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "NEW_TYPE" )
+ C_NEW_STRING( t_2, 8, "NEW_TYPE" );
  t_3 = NewFunction( NameFunc[11], NargFunc[11], NamsFunc[11], HdlrFunc11 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4163,7 +4163,7 @@ static Obj  HdlrFunc1 (
       return NEW_TYPE( typeOfTypes, family, family!.IMP_FLAGS, false );
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "NewType2" )
+ C_NEW_STRING( t_2, 8, "NewType2" );
  t_3 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4178,7 +4178,7 @@ static Obj  HdlrFunc1 (
       return NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), false );
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "NewType3" )
+ C_NEW_STRING( t_2, 8, "NewType3" );
  t_3 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4193,7 +4193,7 @@ static Obj  HdlrFunc1 (
       return NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), data );
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "NewType4" )
+ C_NEW_STRING( t_2, 8, "NewType4" );
  t_3 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4211,7 +4211,7 @@ static Obj  HdlrFunc1 (
       return type;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "NewType5" )
+ C_NEW_STRING( t_2, 8, "NewType5" );
  t_3 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4241,7 +4241,7 @@ static Obj  HdlrFunc1 (
       return type;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 7, "NewType" )
+ C_NEW_STRING( t_2, 7, "NewType" );
  t_3 = NewFunction( NameFunc[16], NargFunc[16], NamsFunc[16], HdlrFunc16 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4263,7 +4263,7 @@ static Obj  HdlrFunc1 (
       return new;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "Subtype2" )
+ C_NEW_STRING( t_2, 8, "Subtype2" );
  t_3 = NewFunction( NameFunc[17], NargFunc[17], NamsFunc[17], HdlrFunc17 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4285,7 +4285,7 @@ static Obj  HdlrFunc1 (
       return new;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "Subtype3" )
+ C_NEW_STRING( t_2, 8, "Subtype3" );
  t_3 = NewFunction( NameFunc[18], NargFunc[18], NamsFunc[18], HdlrFunc18 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4311,7 +4311,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 7, "Subtype" )
+ C_NEW_STRING( t_2, 7, "Subtype" );
  t_3 = NewFunction( NameFunc[19], NargFunc[19], NamsFunc[19], HdlrFunc19 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4333,7 +4333,7 @@ static Obj  HdlrFunc1 (
       return new;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "SupType2" )
+ C_NEW_STRING( t_2, 8, "SupType2" );
  t_3 = NewFunction( NameFunc[20], NargFunc[20], NamsFunc[20], HdlrFunc20 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4355,7 +4355,7 @@ static Obj  HdlrFunc1 (
       return new;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "SupType3" )
+ C_NEW_STRING( t_2, 8, "SupType3" );
  t_3 = NewFunction( NameFunc[21], NargFunc[21], NamsFunc[21], HdlrFunc21 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4378,7 +4378,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 7, "SupType" )
+ C_NEW_STRING( t_2, 7, "SupType" );
  t_3 = NewFunction( NameFunc[22], NargFunc[22], NamsFunc[22], HdlrFunc22 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4393,7 +4393,7 @@ static Obj  HdlrFunc1 (
       return K![1];
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 10, "FamilyType" )
+ C_NEW_STRING( t_2, 10, "FamilyType" );
  t_3 = NewFunction( NameFunc[23], NargFunc[23], NamsFunc[23], HdlrFunc23 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4408,7 +4408,7 @@ static Obj  HdlrFunc1 (
       return K![2];
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 9, "FlagsType" )
+ C_NEW_STRING( t_2, 9, "FlagsType" );
  t_3 = NewFunction( NameFunc[24], NargFunc[24], NamsFunc[24], HdlrFunc24 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4423,7 +4423,7 @@ static Obj  HdlrFunc1 (
       return K![POS_DATA_TYPE];
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "DataType" )
+ C_NEW_STRING( t_2, 8, "DataType" );
  t_3 = NewFunction( NameFunc[25], NargFunc[25], NamsFunc[25], HdlrFunc25 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4439,7 +4439,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 11, "SetDataType" )
+ C_NEW_STRING( t_2, 11, "SetDataType" );
  t_3 = NewFunction( NameFunc[26], NargFunc[26], NamsFunc[26], HdlrFunc26 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4454,7 +4454,7 @@ static Obj  HdlrFunc1 (
       return K![POS_DATA_TYPE];
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 10, "SharedType" )
+ C_NEW_STRING( t_2, 10, "SharedType" );
  t_3 = NewFunction( NameFunc[27], NargFunc[27], NamsFunc[27], HdlrFunc27 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4467,14 +4467,14 @@ static Obj  HdlrFunc1 (
  
  /* BIND_GLOBAL( "TypeObj", TYPE_OBJ ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 7, "TypeObj" )
+ C_NEW_STRING( t_2, 7, "TypeObj" );
  t_3 = GC_TYPE__OBJ;
  CHECK_BOUND( t_3, "TYPE_OBJ" )
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "FamilyObj", FAMILY_OBJ ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 9, "FamilyObj" )
+ C_NEW_STRING( t_2, 9, "FamilyObj" );
  t_3 = GC_FAMILY__OBJ;
  CHECK_BOUND( t_3, "FAMILY_OBJ" )
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -4483,7 +4483,7 @@ static Obj  HdlrFunc1 (
       return FlagsType( TypeObj( obj ) );
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "FlagsObj" )
+ C_NEW_STRING( t_2, 8, "FlagsObj" );
  t_3 = NewFunction( NameFunc[28], NargFunc[28], NamsFunc[28], HdlrFunc28 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4498,7 +4498,7 @@ static Obj  HdlrFunc1 (
       return DataType( TypeObj( obj ) );
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 7, "DataObj" )
+ C_NEW_STRING( t_2, 7, "DataObj" );
  t_3 = NewFunction( NameFunc[29], NargFunc[29], NamsFunc[29], HdlrFunc29 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4513,7 +4513,7 @@ static Obj  HdlrFunc1 (
       return SharedType( TypeObj( obj ) );
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 9, "SharedObj" )
+ C_NEW_STRING( t_2, 9, "SharedObj" );
  t_3 = NewFunction( NameFunc[30], NargFunc[30], NamsFunc[30], HdlrFunc30 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4539,7 +4539,7 @@ static Obj  HdlrFunc1 (
       return obj;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 10, "SetTypeObj" )
+ C_NEW_STRING( t_2, 10, "SetTypeObj" );
  t_3 = NewFunction( NameFunc[31], NargFunc[31], NamsFunc[31], HdlrFunc31 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4552,7 +4552,7 @@ static Obj  HdlrFunc1 (
  
  /* BIND_GLOBAL( "Objectify", SetTypeObj ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 9, "Objectify" )
+ C_NEW_STRING( t_2, 9, "Objectify" );
  t_3 = GC_SetTypeObj;
  CHECK_BOUND( t_3, "SetTypeObj" )
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -4574,7 +4574,7 @@ static Obj  HdlrFunc1 (
       return obj;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 13, "ChangeTypeObj" )
+ C_NEW_STRING( t_2, 13, "ChangeTypeObj" );
  t_3 = NewFunction( NameFunc[32], NargFunc[32], NamsFunc[32], HdlrFunc32 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4587,7 +4587,7 @@ static Obj  HdlrFunc1 (
  
  /* BIND_GLOBAL( "ReObjectify", ChangeTypeObj ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 11, "ReObjectify" )
+ C_NEW_STRING( t_2, 11, "ReObjectify" );
  t_3 = GC_ChangeTypeObj;
  CHECK_BOUND( t_3, "ChangeTypeObj" )
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -4632,7 +4632,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 12, "SetFilterObj" )
+ C_NEW_STRING( t_2, 12, "SetFilterObj" );
  t_3 = NewFunction( NameFunc[33], NargFunc[33], NamsFunc[33], HdlrFunc33 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4645,7 +4645,7 @@ static Obj  HdlrFunc1 (
  
  /* BIND_GLOBAL( "SET_FILTER_OBJ", SetFilterObj ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 14, "SET_FILTER_OBJ" )
+ C_NEW_STRING( t_2, 14, "SET_FILTER_OBJ" );
  t_3 = GC_SetFilterObj;
  CHECK_BOUND( t_3, "SetFilterObj" )
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -4674,7 +4674,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 14, "ResetFilterObj" )
+ C_NEW_STRING( t_2, 14, "ResetFilterObj" );
  t_3 = NewFunction( NameFunc[34], NargFunc[34], NamsFunc[34], HdlrFunc34 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4687,7 +4687,7 @@ static Obj  HdlrFunc1 (
  
  /* BIND_GLOBAL( "RESET_FILTER_OBJ", ResetFilterObj ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 16, "RESET_FILTER_OBJ" )
+ C_NEW_STRING( t_2, 16, "RESET_FILTER_OBJ" );
  t_3 = GC_ResetFilterObj;
  CHECK_BOUND( t_3, "ResetFilterObj" )
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -4701,7 +4701,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 13, "SetFeatureObj" )
+ C_NEW_STRING( t_2, 13, "SetFeatureObj" );
  t_3 = NewFunction( NameFunc[35], NargFunc[35], NamsFunc[35], HdlrFunc35 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4754,7 +4754,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 21, "SetMultipleAttributes" )
+ C_NEW_STRING( t_2, 21, "SetMultipleAttributes" );
  t_3 = NewFunction( NameFunc[36], NargFunc[36], NamsFunc[36], HdlrFunc36 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -4767,7 +4767,7 @@ static Obj  HdlrFunc1 (
  
  /* BIND_GLOBAL( "IsAttributeStoringRepFlags", FLAGS_FILTER( IsAttributeStoringRep ) ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 26, "IsAttributeStoringRepFlags" )
+ C_NEW_STRING( t_2, 26, "IsAttributeStoringRepFlags" );
  t_4 = GF_FLAGS__FILTER;
  t_5 = GC_IsAttributeStoringRep;
  CHECK_BOUND( t_5, "IsAttributeStoringRep" )
@@ -4777,14 +4777,14 @@ static Obj  HdlrFunc1 (
  
  /* BIND_GLOBAL( "INFO_OWA", Ignore ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "INFO_OWA" )
+ C_NEW_STRING( t_2, 8, "INFO_OWA" );
  t_3 = GC_Ignore;
  CHECK_BOUND( t_3, "Ignore" )
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* MAKE_READ_WRITE_GLOBAL( "INFO_OWA" ); */
  t_1 = GF_MAKE__READ__WRITE__GLOBAL;
- C_NEW_STRING( t_2, 8, "INFO_OWA" )
+ C_NEW_STRING( t_2, 8, "INFO_OWA" );
  CALL_1ARGS( t_1, t_2 );
  
  /* BIND_GLOBAL( "ObjectifyWithAttributes", function ( arg )
@@ -4833,7 +4833,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 23, "ObjectifyWithAttributes" )
+ C_NEW_STRING( t_2, 23, "ObjectifyWithAttributes" );
  t_3 = NewFunction( NameFunc[37], NargFunc[37], NamsFunc[37], HdlrFunc37 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -5182,8 +5182,8 @@ static Int InitLibrary ( StructInitInfo * module )
  R_NEW__TYPE__READONLY = RNamName( "NEW_TYPE_READONLY" );
  
  /* information for the functions */
- C_NEW_STRING( DefaultName, 14, "local function" )
- C_NEW_STRING( FileName, 19, "GAPROOT/lib/type1.g" )
+ C_NEW_STRING( DefaultName, 14, "local function" );
+ C_NEW_STRING( FileName, 19, "GAPROOT/lib/type1.g" );
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;

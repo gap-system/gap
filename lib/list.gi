@@ -268,7 +268,7 @@ InstallMethod( IN,
     IsElmsColls,
     [ IsObject, IsCollection and IsWholeFamily ],
     SUM_FLAGS, # can't do better
-    RETURN_TRUE );
+    ReturnTrue );
 
 
 #############################################################################
@@ -326,6 +326,53 @@ InstallMethod( String,
     ConvertToStringRep( str );
     return str;
     end );
+
+InstallMethod( ViewString, "call ViewString and incorporate hints",
+  [ IsList and IsFinite],
+function ( list )
+local   str,ls, i;
+
+  # We have to handle empty string and empty list specially because
+  # IsString( [ ] ) returns true
+
+  if Length(list) = 0 then
+    if IsEmptyString( list ) then
+      return "\"\"";
+    else
+      return "[  ]";
+    fi;
+  fi;
+
+  if IsString( list ) then
+    return Concatenation("\"", list, "\"");
+  fi;
+
+  # make strings for objects in l
+  ls:=[];
+  for i in [1..Length(list)] do
+    if IsBound(list[i]) then
+      str:=ViewString(list[i]);
+      if str=DEFAULTVIEWSTRING then
+	# there might not be a method
+	str:=String(list[i]);
+      fi;
+      ls[i]:=str;
+    else
+      ls[i]:="";
+    fi;
+  od;
+
+  str := "[ ";
+  for i in [ 1 .. Length( list ) ]  do
+    Append(str,ls[i]);
+    if i<>Length(list)  then
+      Append(str,",\<\> ");
+    fi;
+  od;
+  Append( str, " ]" );
+  ConvertToStringRep( str );
+  return str;
+end );
 
 InstallMethod( String,
     "for a range",
@@ -648,12 +695,17 @@ InstallOtherMethod( SSortedList,
     "for a list, and a function",
     [ IsList, IsFunction ],
     function ( list, func )
-    local   res, i;
+    local   res, i, squashsize;
+    squashsize := 100;
     res := [];
     for i  in [ 1 .. Length( list ) ] do
-        AddSet( res, func( list[i] ) );
+        Add( res, func( list[i] ) );
+        if Length(res) > squashsize then
+            res := Set(res);
+            squashsize := Maximum(100, Size(res) * 2);
+        fi;
     od;
-    return res;
+    return Set(res);
     end );
 
 
@@ -1203,7 +1255,7 @@ InstallMethod( Position,
     [ IsHomogeneousList,
       IsObject,
       IsInt ],
-    RETURN_FAIL );
+    ReturnFail );
 
 InstallMethod( Position,
     "for a small sorted list, an object, and an integer",
@@ -1774,7 +1826,6 @@ InstallMethod(Remove, "two arguments, general", [IsList and IsMutable, IsPosInt]
         function(l,p)
     local ret,x,len;
     len := Length(l);
-    len := Length(l);
     ret := IsBound(l[p]);
     if ret then
         x := l[p];
@@ -2079,10 +2130,25 @@ InstallMethod( Sort,
       SORT_LIST_COMP( list, func );
     else
       TryNextMethod();
-    fi;
-    end );
+  fi;
+end );
+
+#############################################################################
+##
+#M  SortBy( <list>, <func> )
+##
+    
+InstallMethod( SortBy, "for a mutable list and a function",
+        [IsList and IsMutable, IsFunction ],
+        function(list, func)
+    local images;
+    images := List(list, func);
+    SortParallel(images, list);
+    return;
+end);
 
 
+    
 #############################################################################
 ##
 #F  SORT_MUTABILITY_ERROR_HANDLER( <list> )
@@ -2141,64 +2207,36 @@ InstallMethod( Sortex,
     "for a mutable list",
     [ IsList and IsMutable ],
     function ( list )
-    local   both, perm, i;
+    local   n,  index;
 
     # {\GAP} supports permutations only up to `MAX_SIZE_LIST_INTERNAL'.
     if not IsSmallList( list ) then
       Error( "<list> must have length at most ", MAX_SIZE_LIST_INTERNAL );
     fi;
-
-    # make a new list that contains the elements of <list> and their indices
-    both := [];
-    for i in [ 1 .. Length( list ) ] do
-        both[i] := [ list[i], i ];
-    od;
-
-    # Sort the new list according to the first item (stable).
-    SORT_LIST(both);
-
-    # Copy back and remember the permutation.
-    list{ [ 1 .. Length( list ) ] }:= both{ [ 1 .. Length( list ) ] }[1];
-    perm:= both{ [ 1 .. Length( list ) ] }[2];
-
-    # If the entries are immutable then store that the list is sorted.
-    IsSSortedList( list );
-
-    # return the permutation mapping old <list> onto the sorted list
-    return PermList( perm )^(-1);
+    
+    n := Length(list);
+    index := [1..n];
+    SortParallel(list, index);
+    return PermList(index)^-1;
+    
     end );
 
 InstallMethod( Sortex,
     "for a mutable list and a function",
     [ IsList and IsMutable, IsFunction ],
     function ( list, comp )
-    local   both, perm, i;
+    local   n,  index;
 
     # {\GAP} supports permutations only up to `MAX_SIZE_LIST_INTERNAL'.
     if not IsSmallList( list ) then
       Error( "<list> must have length at most ", MAX_SIZE_LIST_INTERNAL );
-    fi;
+  fi;
+  
+    n := Length(list);
+    index := [1..n];
+    SortParallel(list, index, comp);
+    return PermList(index)^-1;
 
-    # make a new list that contains the elements of <list> and their indices
-    both := [];
-    for i in [ 1 .. Length( list ) ] do
-        both[i] := [ list[i], i ];
-    od;
-
-    # Sort the new list according to the first item (stable).
-    SORT_LIST_COMP(both, function(p,q)
-        return comp(p[1],q[1]) or (p[1]=q[1] and p[2]<q[2]);
-    end);
-
-    # Copy back and remember the permutation.
-    list{ [ 1 .. Length( list ) ] }:= both{ [ 1 .. Length( list ) ] }[1];
-    perm:= both{ [ 1 .. Length( list ) ] }[2];
-
-    # If the entries are immutable then store that the list is sorted.
-    IsSSortedList( list );
-
-    # return the permutation mapping old <list> onto the sorted list
-    return PermList( perm )^(-1);
     end );
 
 InstallMethod( Sortex,
@@ -3694,62 +3732,6 @@ InstallMethod( PositionNonZero, "default method with start", [IsHomogeneousList,
     return PositionNot(l, Zero(l[1]), from);
 end);
 
-        
-        
-#############################################################################
-##
-#M  PositionFirstComponent( <list>, <obj>  ) . . . . . . various
-##
-##  kernel method will TRY_NEXT if any of the sublists are not 
-##  plain lists. 
-##    
-##  Note that we use PositionSorted rather than Position semantics
-##    
-    
-InstallMethod( PositionFirstComponent,"for dense plain list", true,
-    [ IsDenseList and IsSortedList and IsPlistRep, IsObject ], 0,
-    POSITION_FIRST_COMPONENT_SORTED);
-
-
-InstallMethod( PositionFirstComponent,"for dense list", true,
-    [ IsDenseList, IsObject ], 0,
-function ( list, obj )
-local i;
-  i:=1;
-  while i<=Length(list) do
-    if list[i][1]=obj then
-      return i;
-    fi;
-    i:=i+1;
-  od;
-  return i;
-end);
-
-InstallMethod( PositionFirstComponent,"for sorted list", true,
-    [ IsSSortedList, IsObject ], 0,
-function ( list, obj )
-local lo,up,s;
-  # simple binary search. The entry is in the range [lo..up]
-  lo:=1;
-  up:=Length(list);
-  while lo<up do
-      s := QuoInt(up+lo,2);
-      #s:=Int((up+lo)/2);# middle entry
-    if list[s][1]<obj then
-      lo:=s+1; # it's not in [lo..s], so take the upper part.
-    else
-      up:=s; # So obj<=list[s][1], so the new range is [1..s].
-    fi;
-  od;
-  # now lo=up
-  return lo;
-#  if list[lo][1]=obj then
-#    return lo;
-#  else
-#    return fail;
-#  fi;
-end );
-        
         
 #############################################################################
 ##

@@ -601,6 +601,7 @@ DeclareOperation( "Norm", [ IsField, IsField, IsScalar ] );
 ##
 ##  <#GAPDoc Label="Trace">
 ##  <ManSection>
+##  <Heading>Traces of field elements and matrices</Heading>
 ##  <Attr Name="Trace" Arg='[L, [K, ]]z' Label="for a field element"/>
 ##  <Attr Name="Trace" Arg='mat' Label="for a matrix"/>
 ##

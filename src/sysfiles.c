@@ -49,9 +49,11 @@
 #include        <readline/readline.h>   /* readline for interactive input  */
 #endif
 
+#include        "read.h"                /* reader                          */
+
+
 #if HAVE_SELECT
 /* Only for the Hook handler calls: */
-#include        "read.h"                /* reader                          */
 
 #include        <sys/time.h>
 #include        <sys/types.h>
@@ -1309,6 +1311,7 @@ void syAnswerIntr ( int signr )
 
     /* reinstall 'syAnswerIntr' as signal handler                          */
     signal( SIGINT, syAnswerIntr );
+    siginterrupt( SIGINT, 0 );
 
     /* remember time of this interrupt                                     */
     syLastIntr = nowIntr;
@@ -1323,7 +1326,10 @@ void syAnswerIntr ( int signr )
 void SyInstallAnswerIntr ( void )
 {
     if ( signal( SIGINT, SIG_IGN ) != SIG_IGN )
+    {
         signal( SIGINT, syAnswerIntr );
+        siginterrupt( SIGINT, 0 );
+    }
 }
 
 
@@ -2176,7 +2182,7 @@ int GAP_rl_func(int count, int key)
    Int   len, n, hook, dlen, max, i;
 
    /* we shift indices 0-based on C-level and 1-based on GAP level */
-   C_NEW_STRING(linestr, strlen(rl_line_buffer), rl_line_buffer);
+   C_NEW_STRING_DYN(linestr, rl_line_buffer);
    okey = INTOBJ_INT(key + 1000*GAPMacroNumber);
    GAPMacroNumber = 0;
    rldata = NEW_PLIST(T_PLIST, 6);
@@ -2574,8 +2580,8 @@ Char * syFgets (
                    [linestr, ppos, yankstr]
                or an integer, interpreted as number of Esc('N')
                calls for the next lines.                                  */
-            C_NEW_STRING(linestr,strlen(line),line);
-            C_NEW_STRING(yankstr,strlen(yank),yank);
+            C_NEW_STRING_DYN(linestr,line);
+            C_NEW_STRING_DYN(yankstr,yank);
             args = NEW_PLIST(T_PLIST, 5);
             SET_LEN_PLIST(args, 5);
             SET_ELM_PLIST(args,1,linestr);
@@ -2978,7 +2984,7 @@ Char * syFgets (
     if (line[1] != '\0') {
       /* Now we put the new string into the history,
          we use key handler with key 0 to update the command line history */
-        C_NEW_STRING(linestr,strlen(line),line);
+        C_NEW_STRING_DYN(linestr,line);
         args = NEW_PLIST(T_PLIST, 5);
         SET_LEN_PLIST(args, 5);
         SET_ELM_PLIST(args,1,linestr);
@@ -3082,21 +3088,13 @@ void SyClearErrorNo ( void )
 *F  SySetErrorNo()  . . . . . . . . . . . . . . . . . . . . set error message
 */
 
-#if  ! HAVE_STRERROR
-extern char * sys_errlist[];
-#endif
-
 void SySetErrorNo ( void )
 {
     const Char *        err;
 
     if ( errno != 0 ) {
         SyLastErrorNo = errno;
-#if ! HAVE_STRERROR
-        err = sys_errlist[errno];
-#else
         err = strerror(errno);
-#endif
         strxcpy( SyLastErrorMessage, err, sizeof(SyLastErrorMessage) );
     }
     else {
@@ -3894,7 +3892,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSysFiles ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

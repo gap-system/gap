@@ -132,7 +132,7 @@ DeclareGlobalFunction( "ResetOptionsStack");
 ##  execution of <Ref Func="Error"/>.
 ##  As &GAP; starts up, <Ref Func="OnQuit"/> is defined to do nothing,
 ##  in case an error is encountered during &GAP; start-up.
-##  Here we redefine <Ref Func="OnQuit"/> to do a variant of
+##  Later in the loading process we redefine <Ref Func="OnQuit"/> to do a variant of
 ##  <Ref Func="ResetOptionsStack"/> to ensure the options stack is empty
 ##  after a user quits an <Ref Func="Error"/>-induced break loop.
 ##  (<Ref Func="OnQuit"/> differs from <Ref Func="ResetOptionsStack"/>

@@ -615,7 +615,6 @@ void CodeFuncExprBegin (
     Bag                 body;           /* function body                   */
     Bag                 old;            /* old frame                       */
     Stat                stat1;          /* first statement in body         */
-    UInt                len;
 
     /* remember the current offset                                         */
     PushOffsBody();
@@ -642,9 +641,7 @@ void CodeFuncExprBegin (
 
     /* record where we are reading from */
     if (!TLS->input->gapname) {
-      len = strlen(TLS->input->name);
-      TLS->input->gapname = NEW_STRING(len);
-      SyStrncat(CSTR_STRING(TLS->input->gapname),TLS->input->name, len);
+      C_NEW_STRING_DYN(TLS->input->gapname, TLS->input->name);
     }
     FILENAME_BODY(body) = TLS->input->gapname;
     STARTLINE_BODY(body) = INTOBJ_INT(startLine);
@@ -1497,7 +1494,6 @@ void CodeIntExpr (
     }
 
     /* otherwise stuff the value into the values list                      */
-    /* Need to fix this up for GMP integers */
     else {
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
         ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
@@ -1574,11 +1570,9 @@ void CodeLongIntExpr (
     /* otherwise stuff the value into the values list                      */
     /* Need to fix this up for GMP integers */
     else {
-        expr = NewExpr( T_INT_EXPR, sizeof(UInt2) + SIZE_OBJ(val) );
-        ((UInt2*)ADDR_EXPR(expr))[0] = (Expr)sign;
-        for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
-            ((UInt2*)ADDR_EXPR(expr))[i] = ((UInt2*)ADDR_OBJ(val))[i-1];
-        }
+        expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
+        ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
+        memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), (void *)ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
     }
 
     /* push the expression                                                 */
@@ -1902,8 +1896,8 @@ void CodeFloatExpr (
     }
   if (l1 < l)
     {
-      Obj s = NEW_STRING(l1);
-      memcpy((void *)CHARS_STRING(s), (void *)str, (size_t)l1 );
+      Obj s;
+      C_NEW_STRING(s, l1, str);
       CodeEagerFloatExpr(s,mark);
     } else {
     CodeLazyFloatExpr(str, l);
@@ -3379,7 +3373,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCode ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

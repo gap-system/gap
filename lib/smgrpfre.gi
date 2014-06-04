@@ -303,8 +303,28 @@ InstallMethod( Size,
       return infinity;
     fi;
     end );
-
-
+    
+    
+    #
+    # I suspect this methos subsumes the one above SL
+    #
+    InstallImmediateMethod(Size, IsSemigroup and IsAssocWordCollection
+            and HasGeneratorsOfMagma, 0, function(s)
+        local x, gens;
+        gens := GeneratorsOfMagma(s);
+        if Length(gens) = 0 then
+            return 0;
+        fi;
+        for x in gens do
+            if Length(x) > 0 then
+                return infinity;
+            fi;
+        od;
+        return 1;
+    end);
+        
+    
+    
 #############################################################################
 ##
 #M  Random( <S> ) . . . . . . . . . . . .  random element of a free semigroup

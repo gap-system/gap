@@ -649,7 +649,14 @@ gap> DisplayProfile( [ StabChainOp, Centralizer ] );
 The global variable <C>GAPInfo.Version</C> (see <Ref Var="GAPInfo"/>)
 contains the version number of the version of &GAP;. Its value can be 
 checked other version number using <Ref Func="CompareVersionNumbers"/>.
-
+<P/>
+To produce sample citations for the used version of &GAP; or for a 
+package available in this &GAP; installation, use <Ref Func="Cite"/>.
+<P/>
+If you wish to report a problem to &GAP; Support or &GAP; Forum, it may
+be useful to not only report the version used, but also to include the 
+&GAP; banner displays the information about the architecture for which 
+the &GAP; binary is built, used libraries and loaded packages.
 </Section>
 
 

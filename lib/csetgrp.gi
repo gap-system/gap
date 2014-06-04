@@ -608,19 +608,16 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 	fi;
       end;
 
-      # are maxes known?
-      if HasMaximalSubgroupClassReps(G) then
-	for i in MaximalSubgroupClassReps(G) do
-	  if Index(G,i)<maxidx(c) and Index(G,i)<badlimit then
-	    p:=Intersection(a,i);
-	    if Index(a,p)<uplimit then
-              Info(InfoCoset,3,"Try maximal of Indices ",Index(G,i),":",
-		Index(a,p));
-	      tryfct("max",[i,p]);
-	    fi;
+      for i in MaximalSubgroupClassReps(G:cheap) do
+	if Index(G,i)<maxidx(c) and Index(G,i)<badlimit then
+	  p:=Intersection(a,i);
+	  if Index(a,p)<uplimit then
+	    Info(InfoCoset,3,"Try maximal of Indices ",Index(G,i),":",
+	      Index(a,p));
+	    tryfct("max",[i,p]);
 	  fi;
-	od;
-      fi;
+	fi;
+      od;
 
       p:=LargestMovedPoint(a);
       tryfct(p,OnPoints); 
@@ -631,32 +628,22 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 	  
     fi;
     
-    if maxidx(c)>badlimit or (Size(a)<badlimit and
-      10*(Size(a)/Size(c[1]))^2>Size(a)) or IsSolvableGroup(a) then
+    if maxidx(c)>badlimit then
 
-      if IsSolvableGroup(a) then
-        r:=ShallowCopy(MaximalSubgroupClassReps(a));
-      elif Index(a,RadicalGroup(a))<5*10^5 then
-	# avoid maxes at this point for whole group
-	j:=NaturalHomomorphismByNormalSubgroup(a,RadicalGroup(a));
-	r:=MaximalSubgroupClassReps(Image(j));
-	r:=List(r,x->PreImage(j,x));
-      else
-	r:=[];
-      fi;
+      r:=ShallowCopy(MaximalSubgroupClassReps(a:cheap));
       r:=Filtered(r,x->Index(a,x)<uplimit);
 
       Sort(r,function(a,b) return Size(a)<Size(b);end);
       for j in r do
-	if Size(j)>Size(c[1]) then
-	  t:=AscendingChain(G,j:refineChainActionLimit:=actlimit);
-	  if maxidx(t)<maxidx(c) and maxidx(t)<badlimit then
-	    c:=t;
-	    cano:=true;
-	    Info(InfoCoset,1,"improved chain with up step index:",
-	         Size(a)/Size(j));
-	  fi;
+	#Print("j=",Size(j),"\n");
+	t:=AscendingChain(G,j:refineChainActionLimit:=actlimit);
+	if maxidx(t)<maxidx(c) and maxidx(t)<badlimit then
+	  c:=t;
+	  cano:=true;
+	  Info(InfoCoset,1,"improved chain with up step index:",
+		Size(a)/Size(j));
 	fi;
+
       od;
 
     fi;

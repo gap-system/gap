@@ -107,39 +107,163 @@ BindGlobal( "InfBits_AssocWord", function( Type, list )
 end );
 
 
+# code for printing words in factored form. This pattern searching clearly
+# is improvable
+BindGlobal("FindSubstringPowers",function(l,n)
+local new,t,i,step,lstep,z,zz,j,a,k,good,bad,lim;
+  new:=0;
+  t:=[];
+  z:=Length(l);
+  # long matches first, we then treat the subpatterns themselves again
+  j:=QuoInt(z,2);
+  lstep:=j;
+  while lstep>=2 do
+    step:=lstep;
+    zz:=z-2*step+1;
+#Print(step," ",z," ",zz,"\n");
+    i:=1;
+    while i<=zz do
+      good:=true;
+      bad:=true;
+      k:=i;
+      lim:=i+step-1;
+      while good and k<=lim do
+	good:=l[k]=l[k+step];
+	if bad and l[k]<>l[i] then bad:=false;fi;
+	k:=k+1;
+      od;
+
+      if good and not bad then
+	# found # step match of nonidentity pattern
+
+	# did we recognize a power of a power only?
+	a:=First(Difference(DivisorsInt(step),[1,step]),
+	  d->ForAll([1..step/d],q->ForAll([0..d-1],x->
+	    l[i+x]=l[i+q*d+x])));
+
+        if a<>fail then
+#Print(i," ",a," ",step," ",z,"\n");
+	  # a is the length of the subpattern we should have recognized.
+	  step:=a;
+	  zz:=z-2*step+1;
+	fi;
+
+	# any further match?
+	j:=i+step;
+	while j<=zz and ForAll([j..j+step-1],x->l[x]=l[x+step]) do
+	  j:=j+step;
+	od;
+
+	new:=new+1;
+	t[new]:=l{[i..i+step-1]}; # new unit
+	zz:=1+(j-i)/step;
+
+	l:=Concatenation(l{[1..i-1]},ListWithIdenticalEntries(zz,new+n),
+			l{[j+step..z]});
+	i:=i+zz-1; # position after the repeat
+	z:=Length(l);
+	if step<>lstep then
+	  # we temporarily used a shorter length -- reset
+	  step:=lstep;
+	  i:=i;
+	fi;
+	# we only need to use the *rest* for pattern length. This will help
+	# for huge powers of short expressions.
+	lstep:=Minimum(lstep,QuoInt(z-zz,2));
+	zz:=z-2*step+1;
+
+      fi;
+      i:=i+1;
+    od;
+    lstep:=lstep-1;
+  od;
+
+  return [l,t];
+
+end);
+
+# should we try to find subword run lengths? Can be true, false, or a length
+# threshold up to which to try.
+PRINTWORDPOWERS:=true;
+
+DoNSAW:=function(l,names)
+local a,n,
+      word,
+      exp,
+      i,j,
+      str;
+
+  n:=Length(names);
+  if PRINTWORDPOWERS=true 
+   or (IsInt(PRINTWORDPOWERS) and Length(l)<PRINTWORDPOWERS) then
+    if Length(l)>0 and n=infinity then
+      n:=2*(AbsInt(Maximum(l))+1); 
+    fi;
+    a:=FindSubstringPowers(l,n);
+  else
+    a:=[l,[]];
+  fi;
+  word:=a[1];
+
+  i:= 1;
+  str:= "";
+  while i <= Length(word) do
+    if i>1 then
+      Add( str, '*' );
+    fi;
+    exp:=1;
+    if word[i]>n then
+      # decode longer word -- it will occur as power, so use ()
+      Add(str,'(');
+      Append(str,DoNSAW(a[2][word[i]-n],names));
+      Add(str,')');
+    elif word[i]<0 then
+      Append( str, names[ -word[i] ] );
+      exp:=-1;
+    else
+      Append( str, names[ word[i] ] );
+    fi;
+    if i<Length(word) and word[i]=word[i+1] then
+      j:=i;
+      i:=i+1;
+      while i<=Length(word) and word[j]=word[i] do
+	i:=i+1;
+      od;
+      Add( str, '^' );
+      Append( str, String(exp*(i-j)) );
+    elif exp=-1 then
+      Append(str,"^-1");
+      i:=i+1;
+    else
+      # no power -- just normal letter
+      i:=i+1;
+    fi;
+  od;
+  ConvertToStringRep( str );
+  return str;
+end;
+MakeReadOnlyGlobal("DoNSAW");
+
+BindGlobal("NiceStringAssocWord",function(elm)
+local names,word;
+  names:= FamilyObj( elm )!.names;
+  word:= LetterRepAssocWord( elm );
+  if Length(word)=0 then
+    return "<identity ...>";
+  fi;
+  word:=DoNSAW(word,names);
+  return word;
+end);
+
+
+
 #############################################################################
 ##
 #M  Print( <w> )
 ##
-InstallMethod( PrintObj, "for an associative word", true,
-    [ IsAssocWord ], 0,
+InstallMethod( PrintObj, "for an associative word", true, [ IsAssocWord ], 0,
 function( elm )
-
-    local names,
-          word,
-          len,
-          i;
-
-  names:= FamilyObj( elm )!.names;
-  word:= ExtRepOfObj( elm );
-  len:= Length( word ) - 1;
-  i:= 1;
-  if len < 0 then
-    Print( "<identity ...>" );
-  else
-    while i < len do
-      Print( names[ word[i] ] );
-      if word[ i+1 ] <> 1 then
-	Print( "^", word[ i+1 ] );
-      fi;
-      Print( "*" );
-      i:= i+2;
-    od;
-    Print( names[ word[i] ] );
-    if word[ i+1 ] <> 1 then
-      Print( "^", word[ i+1 ] );
-    fi;
-  fi;
+  Print(NiceStringAssocWord(elm));
 end );
 
 
@@ -147,45 +271,8 @@ end );
 ##
 #M  String( <w> )
 ##
-InstallMethod( String,
-    "for an associative word",
-    true,
-    [ IsAssocWord ], 0,
-    function( elm )
-
-    local names,
-          word,
-          len,
-          i,
-          str;
-
-    names:= FamilyObj( elm )!.names;
-    word:= ExtRepOfObj( elm );
-    len:= Length( word ) - 1;
-    i:= 1;
-    str:= "";
-    if len < 0 then
-      return "<identity ...>";
-#T ??
-    fi;
-    while i < len do
-      Append( str, names[ word[i] ] );
-      if word[ i+1 ] <> 1 then
-        Add( str, '^' );
-        Append( str, String(word[ i+1 ]) );
-      fi;
-      Add( str, '*' );
-      i:= i+2;
-    od;
-    Append( str, names[ word[i] ] );
-    if word[ i+1 ] <> 1 then
-      Add( str, '^' );
-      Append( str, String(word[ i+1 ]) );
-    fi;
-    ConvertToStringRep( str );
-    return str;
-    end );
-
+InstallMethod( String, "for an associative word", true, [ IsAssocWord ], 0,
+  NiceStringAssocWord);
 
 #############################################################################
 ##

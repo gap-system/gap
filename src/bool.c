@@ -518,7 +518,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoBool ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

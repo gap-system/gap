@@ -327,8 +327,6 @@ see&nbsp;<Ref Sect="Mutability and Copyability"/>.
 <#Include Label="KroneckerProduct">
 <#Include Label="ReflectionMat">
 <#Include Label="PrintArray">
-<#Include Label="MutableIdentityMat">
-<#Include Label="MutableNullMat">
 
 </Section>
 

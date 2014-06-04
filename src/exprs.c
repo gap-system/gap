@@ -31,6 +31,8 @@
 #include        "integer.h"             /* integers                        */
 
 #include        "permutat.h"            /* permutations                    */
+#include        "trans.h"               /* transformations                 */
+#include        "pperm.h"               /* partial perms                   */
 
 #include        "precord.h"             /* plain records                   */
 
@@ -1059,7 +1061,7 @@ Obj             EvalListExpr (
 **
 **  'EvalListTildeExpr' evaluates the     list  expression, i.e., not     yet
 **  evaluated list, <expr> to a list value.  The difference to 'EvalListExpr'
-**  is that  in <expr> there are   occurences of '~'  referring to  this list
+**  is that  in <expr> there are   occurrences of '~'  referring to  this list
 **  value.
 **
 **  'EvalListTildeExpr' just  calls 'ListExpr1' to  create  the list, assigns
@@ -1434,7 +1436,7 @@ Obj             EvalRecExpr (
 **
 **  'EvalRecTildeExpr'  evaluates  the    record expression,  i.e.,   not yet
 **  evaluated   record, <expr>  to  a   record   value.  The   difference  to
-**  'EvalRecExpr' is that in <expr> there are  occurences of '~' referring to
+**  'EvalRecExpr' is that in <expr> there are  occurrences of '~' referring to
 **  this record value.
 **
 **  'EvalRecTildeExpr' just  calls 'RecExpr1'  to create teh  record, assigns
@@ -2160,7 +2162,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoExprs ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

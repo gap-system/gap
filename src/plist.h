@@ -36,7 +36,7 @@
 **  'T_SET', 'T_VECTOR') that has room for at least <plen> elements.
 **
 **  Note that 'NEW_PLIST' is a  macro, so do not call  it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define NEW_PLIST(type,plen)            NewBag(type,((plen)+1)*sizeof(Obj))
 
@@ -49,7 +49,7 @@
 **  has room for at least <plen> elements.
 **
 **  Note that 'GROW_PLIST' is a macro, so do not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define GROW_PLIST(list,plen)   ((plen) < SIZE_OBJ(list)/sizeof(Obj) ? \
                                  0L : GrowPlist(list,plen) )
@@ -67,7 +67,7 @@ extern  Int             GrowPlist (
 **  still room for at least <plen> elements.
 **
 **  Note that 'SHRINK_PLIST' is a macro, so do not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define SHRINK_PLIST(list,plen)         ResizeBag(list,((plen)+1)*sizeof(Obj))
 
@@ -79,7 +79,7 @@ extern  Int             GrowPlist (
 **  'SET_LEN_PLIST' sets the length of  the plain list  <list> to <len>.
 **
 **  Note  that 'SET_LEN_PLIST'  is a macro, so do not call it with  arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_LEN_PLIST(list,len)         (ADDR_OBJ(list)[0] = (Obj)(len))
 
@@ -91,7 +91,7 @@ extern  Int             GrowPlist (
 **  'LEN_PLIST' returns the logical length of the list <list> as a C integer.
 **
 **  Note that 'LEN_PLIST' is a  macro, so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define LEN_PLIST(list)                 ((Int)(ADDR_OBJ(list)[0]))
 
@@ -105,7 +105,7 @@ extern  Int             GrowPlist (
 **  the length of <list>.
 **
 **  Note that 'SET_ELM_PLIST' is a  macro, so do not  call it  with arguments
-**  that have sideeffects.
+**  that have side effects.
 **
 ** old version that causes problems if val can trigger a garbage collection
 **
@@ -125,7 +125,7 @@ extern  Int             GrowPlist (
 **  returns 0.
 **
 **  Note that  'ELM_PLIST' is a macro, so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define ELM_PLIST(list,pos)             (ADDR_OBJ(list)[pos])
 

@@ -110,26 +110,31 @@ LockAndMigrateObj(CommandLineHistory, CommandLineRegion);
 MaxCommandLineHistory := 0;
 
 # history position from previous line
-LastPosCLH := 0;
+LastPosCLH := 1;
 # here we implement the command line handlers for the keys
 # Ctrl-P, Ctrl-N, Ctrl-L, Esc-<, Esc->
 # key number 0 is used as a hook for saving a new line in the history
 BindGlobal("CommandLineHistoryHandler", function(l)
   local key, hist, n, m, start, res, i;
   atomic CommandLineRegion do
-    key := l[2];
-    hist := CommandLineHistory;
-    if key = 0 then  # save line data
-      # no trailing white space
-      while Length(l[1]) > 0 and l[1][Length(l[1])] in "\n\r\t " do
-	Unbind(l[1][Length(l[1])]);
+
+  key := l[2];
+  hist := CommandLineHistory;
+  if key = 0 then  # save line data
+    # no trailing white space
+    while Length(l[1]) > 0 and l[1][Length(l[1])] in "\n\r\t " do
+      Unbind(l[1][Length(l[1])]);
+    od;
+    MaxCommandLineHistory := UserPreference("HistoryMaxLines");
+    if not IsInt(MaxCommandLineHistory) then 
+      MaxCommandLineHistory := 0;
+    fi;
+    if MaxCommandLineHistory > 0 and 
+       Length(hist) >= MaxCommandLineHistory+1 then
+      # overrun, throw oldest line away
+      for i in [2..Length(hist)-1] do
+        hist[i] := hist[i+1];
       od;
-      if MaxCommandLineHistory > 0 and 
-	 Length(hist) >= MaxCommandLineHistory+1 then
-	# overrun, throw oldest line away
-	for i in [2..Length(hist)-1] do
-	  hist[i] := hist[i+1];
-	od;
 	hist[Length(hist)] := l[1];
 	if hist[1] > 2 then
 	  hist[1] := hist[1]-1;
@@ -207,6 +212,7 @@ BindGlobal("CommandLineHistoryHandler", function(l)
     else
       Error("Cannot handle command line history with key ", key);
     fi;
+  fi;
   od;
 end);
 
@@ -229,41 +235,56 @@ Unbind(tmpclh);
 ##  command line history.
 ##  
 BindGlobal("SaveCommandLineHistory", function(arg)
-  local fnam, hist, i;
+  local fnam, hist, max, start, i;
   atomic CommandLineRegion do
-    if Length(arg) > 0 then
-      fnam := arg[1];
-    else
-      fnam := "~/.gap_hist";
-    fi;
-    hist := CommandLineHistory;
-    PrintTo(fnam,"");
-    for i in [2..Length(hist)] do
-      AppendTo(fnam, hist[i], "\n");
-    od;
+  
+  if Length(arg) > 0 then
+    fnam := arg[1];
+  else
+    fnam := "~/.gap_hist";
+  fi;
+  hist := CommandLineHistory;
+  max := UserPreference("HistoryMaxLines");
+  if IsInt(max) and max > 0 and Length(hist)+1 > max then
+    start := Length(hist)-max+1;
+  else
+    start := 2;
+  fi;
+  PrintTo(fnam,"");
+  for i in [start..Length(hist)] do
+    AppendTo(fnam, hist[i], "\n");
   od;
+  od;
+  
 end);
 
 BindGlobal("ReadCommandLineHistory", function(arg)
   local fnam, hist, s, n;
   atomic CommandLineRegion do
-    if Length(arg) > 0 then
-      fnam := arg[1];
-    else
-      fnam := "~/.gap_hist";
+
+  if Length(arg) > 0 then
+    fnam := arg[1];
+  else
+    fnam := "~/.gap_hist";
+  fi;
+  hist := CommandLineHistory;
+  s := StringFile(fnam);
+  if IsString(s) then
+    s := SplitString(s,"","\n");
+    MaxCommandLineHistory := UserPreference("HistoryMaxLines");
+    if not IsInt(MaxCommandLineHistory) then
+      MaxCommandLineHistory := 0;
     fi;
-    hist := CommandLineHistory;
-    s := StringFile(fnam);
-    if IsString(s) then
-      s := SplitString(s,"","\n");
-      if MaxCommandLineHistory > 0 and 
-	 Length(s) + Length(hist) - 1 > MaxCommandLineHistory then
-	n := MaxCommandLineHistory + 1 - Length(hist);
-	s := s{[Length(s)-n+1..Length(s)]};
-      fi;
-      hist{[Length(s)+2..Length(s)+Length(hist)]} := hist{[2..Length(hist)]};
-      hist{[2..Length(s)+1]} := s;
+    if MaxCommandLineHistory > 0 and
+       Length(s) + Length(hist) - 1 > MaxCommandLineHistory then
+      n := MaxCommandLineHistory + 1 - Length(hist);
+      s := s{[Length(s)-n+1..Length(s)]};
     fi;
+    hist{[Length(s)+2..Length(s)+Length(hist)]} := hist{[2..Length(hist)]};
+    hist{[2..Length(s)+1]} := s;
+  fi;
+  hist[1] := Length(hist) + 1;
+
   od;
 end);
 

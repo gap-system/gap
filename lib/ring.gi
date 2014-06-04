@@ -1064,10 +1064,7 @@ InstallOtherMethod( QuotientRemainder,
 ##
 InstallOtherMethod( QuotientMod,
     "for three ring elements",
-    function( F1, F2, F3 )
-    return IsIdenticalObj( F1, F2 ) and IsIdenticalObj( F2, F3 );
-    end,
-#T allow `IsIdenticalObj' for more than two arguments!!
+    IsFamFamFam,
     [ IsRingElement, IsRingElement, IsRingElement ], 0,
     function( r, s, m )
     return QuotientMod( DefaultRing( [ r, s, m ] ), r, s, m );

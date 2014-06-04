@@ -593,19 +593,6 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##      exhibit a little of it. Changing this would likely make the
 ##      output not essentially easier to read than a pc presentation.
 ##    </Item>
-##    <Mark>3.</Mark>
-##    <Item>
-##      The output of <Ref Func="StructureDescription"/> is guaranteed
-##      to depend only on the isomorphism type of the group, but neither
-##      on the choice of its generators nor on the choice of its
-##      representation. Therefore <Ref Func="StructureDescription"/>
-##      needs to determine <E>all</E> possible decompositions of the
-##      group, and choose the <Q>nicest</Q> from them. This is very time-
-##      and memory-consuming if the group has many normal subgroups.
-##      Therefore, <Ref Func="StructureDescription"/> is particularly
-##      unsuitable for solvable groups and in particular <M>p</M>-groups,
-##      unless they are very small, i.e. have order less than&nbsp;128.
-##    </Item>
 ##  </List>
 ##  <Example><![CDATA[
 ##  gap> l := AllSmallGroups(12);;

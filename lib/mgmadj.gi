@@ -10,334 +10,271 @@
 ##  This file contains generic methods for magmas with zero adjoined.
 ##
 
-
-#############################################################################
-##
-#M  IsMultiplicativeZero( <M>, <elt> )
-##
 InstallMethod( IsMultiplicativeZero,
-    "generic method for an element and a magma with multiplicative zero",
-    IsCollsElms,
-    [ IsMagma and HasMultiplicativeZero, IsMultiplicativeElement], 0,
+"for magma with multiplicative zero and multiplicative element",
+IsCollsElms,
+[ IsMagma and HasMultiplicativeZero, IsMultiplicativeElement],
 function( M, z )
-	return z = MultiplicativeZero(M);
+  return z = MultiplicativeZero(M);
 end);
 
-InstallMethod( IsMultiplicativeZero,
-    "generic method for an element and a magma",
-    IsCollsElms,
-    [ IsMagma, IsMultiplicativeElement], 0,
-function( M,z  )
-	local x,i,en;
+#
 
-	i := 1;
-	en := Enumerator(M);
-	while IsBound(en[i]) do
-		x := en[i];
-		if x*z <> z or z*x <> z then	
-			return false;
-		fi;
-		i := i +1;
-	od;
-	SetMultiplicativeZero(M,Immutable(z));
-	return true;
+InstallMethod( IsMultiplicativeZero,
+"for a magma and multiplicative element",
+IsCollsElms,
+[ IsMagma, IsMultiplicativeElement],
+function(M, z)
+  local i, en, x;
+
+  i := 1;
+  en := Enumerator(M);
+  while IsBound(en[i]) do
+    x := en[i];
+    if x*z <> z or z*x <> z then	
+      return false;
+    fi;
+    i := i +1;
+  od;
+  SetMultiplicativeZero(M,Immutable(z));
+  return true;
 end);
 
-#############################################################################
-##
-#M  IsMultiplicativeZero( <M>, <elt> )
-##
+#
+
 InstallMethod( IsMultiplicativeZero,
-	"generic method for an element of a semigroup, given generators",
-	IsCollsElms, [IsSemigroup and HasGeneratorsOfSemigroup, 
-					IsMultiplicativeElement], 0,
+"for a semigroup with generators and multiplicative element",
+IsCollsElms, 
+[IsSemigroup and HasGeneratorsOfSemigroup, IsMultiplicativeElement],
 function(S, z)
-	if ForAll(GeneratorsOfSemigroup(S), x->x*z=z and z*x=z) then
-		SetMultiplicativeZero(S, Immutable(z));
-		return true;
-	fi;
-	return false;
+  if HasMultiplicativeZero(S) then 
+    return z=MultiplicativeZero(S);
+  elif ForAll(GeneratorsOfSemigroup(S), x->x*z=z and z*x=z) then
+    SetMultiplicativeZero(S, Immutable(z));
+    return true;
+  fi;
+  return false;
 end);
 
-############################################################################
-##
-#R  IsMagmaWithMultiplicativeZeroAdjoinedElementRep(<obj>)
-##
-##  Representation of an element of this type is as record which 
-##  has a field "IsTheZero" and another, "UnderlyingElement" which
-##  has a value in case "IsTheZero" is false.
-##
-DeclareRepresentation("IsMagmaWithMultiplicativeZeroAdjoinedElementRep", 
-	IsComponentObjectRep and IsMultiplicativeElementWithZero,
-	["IsTheZero", "UnderlyingElement"]);
+#
 
-
-#############################################################################
-##
-#M  OneOp( <elm> )  
-##
-InstallMethod( OneOp,
-    "for an element of a magma with zero adjoined",
-    true,
-    [ IsMultiplicativeElementWithOne  and 
-		IsMagmaWithMultiplicativeZeroAdjoinedElementRep], 0,
-function( elm )
-	# has to be created "by hand" so to speak, since the family
-	# won't necessarily have the homomorphism to hand when it is created.
-	return Objectify(TypeObj(elm), rec( IsTheZero:= false, 
-					UnderlyingElement := One(FamilyObj(elm)!.underlyingMagma)));
-end );
-
-#############################################################################
-##
-#M  MultiplicativeZeroOp( <elm> )
-##
-##  This is a shortcut - the family of elements is the same as the 
-##  elements of the magma. It is really the *magma's* zero.
-##
-InstallMethod( MultiplicativeZeroOp,
-    "for an element of a magma with zero adjoined",
-    true,
-    [ IsMagmaWithMultiplicativeZeroAdjoinedElementRep], 0,
-function( elm )
-    return FamilyObj(elm)!.zero;
-end );
-
-
-#############################################################################
-##
-#M  MultiplicativeZero( <M> )
-##
-InstallOtherMethod( MultiplicativeZero,
-    "for a magma",
-    true,
-    [ IsMagma ], 0,
+InstallOtherMethod( MultiplicativeZero, "for a magma",
+[ IsMagma ],
 function( M )
-		local en, i;
+  local en, i;
 
-		en := Enumerator(M);
-		i := 1;
-		while (IsBound(en[i])) do
-			if IsMultiplicativeZero(M, en[i]) then
-				return en[i];
-			fi;
-			i := i +1;
-		od;
-		return fail;
+  en := Enumerator(M);
+  i := 1;
+  while (IsBound(en[i])) do
+    if IsMultiplicativeZero(M, en[i]) then
+      return en[i];
+    fi;
+    i := i +1;
+  od;
+  return fail;
 end );
 
+# MagmaWithZeroAdjoined
 
-
-#############################################################################
-##
-#A  InjectionZeroMagma( <M> )
-##  
-##  The canonical homomorphism from the 
-##  <M> into the magma formed from <M> with a single new element
-##  which is a multiplicative zero for the resulting magma.
-##  
-##  In order to be able to define multiplication, the elements of the
-##  new magma must be in  a new family.
-##
-InstallMethod(InjectionZeroMagma, 
-    "method for a magma",
-    true,
-    [IsMagma], 0,
-function(M)
-
-	local
-				Fam, Typ, 	# the new family and type
-				z, 					# the new zero
-				ZM,					# the new magma
-				ZMgens,			# generators of the new magma
-				filters,		# the new elements family's filters
-				coerce;			# coerce an element of the base magma into the zero magma
-
-
-  # Putting IsMultiplicativeElement in the NewFamily means that when you make,
-  # say [a] it picks up the Category from the Family object and makes
-  # sure that [a] has CollectionsCategory(IsMultiplicativeElement)
-
-	# Preserve all sensible properties
-	filters := IsMultiplicativeElementWithZero;
-
-	if IsMultiplicativeElementWithOne(Representative(M)) then
-		filters := filters and IsMultiplicativeElementWithOne;
-	fi;
-
-	if IsAssociativeElement(Representative(M)) then
-		filters := filters and IsAssociativeElement;
-	fi;
-
-  Fam := NewFamily( "TypeOfElementOfMagmaWithZeroAdjoined", filters);
-	Fam!.underlyingMagma := Immutable(M);
-
-	# put n in the type data so that we can find the position in the database
-	# without a search
-	Typ := NewType(Fam, filters and 
-			IsMagmaWithMultiplicativeZeroAdjoinedElementRep);
-
-	
-	coerce :=  g->Objectify(Typ, 
-		rec( IsTheZero:= false, UnderlyingElement := g));
-
-	# Now create the new magma and its zero element
-	z := Objectify(Typ, rec( IsTheZero:= true ) );
-
-	if Length(GeneratorsOfMagma(M))=0 then
-		# ZM := Magma(CollectionsFamily(Fam),[]);
-		Error("Can't adjoin a zero to a Magma without generators");
-	fi;
-
-	# make the list of generators into generators of ZM
-
-	ZMgens := List(GeneratorsOfMagma(M), g->coerce(g));
-
-	if IsSemigroup(M) then
-		if IsMonoid(M) then
-			# need to supply the identity as second argument
-			ZM :=  MonoidByGenerators(Concatenation(ZMgens, [z]));
-		else
-			ZM :=  Semigroup(Concatenation(ZMgens, [z]));
-		fi;
-	else
-		ZM :=  Magma(Concatenation(ZMgens, [z]));
-	fi;
-
-	if IsGroup(M) then
-		SetIsZeroGroup(ZM,true);
-	fi;
-
-	SetMultiplicativeZero(ZM,z);
-
-	Fam!.injection := Immutable(MagmaHomomorphismByFunctionNC(M, ZM, coerce));
-	Fam!.zero := Immutable(z);
-	return Fam!.injection;
+InstallMethod(MagmaWithZeroAdjoined, "for a magma with 0 adjoined element",
+[IsMagmaWithZeroAdjoinedElementRep],
+function( elm )
+  return FamilyObj(elm)!.MagmaWithZeroAdjoined;
 end);
 
-#############################################################################
-##
-#M  Size( <S> ) 
-##
-InstallMethod( Size,
-    "method for a magma with a zero adjoined",
-    true,
-    [ IsMagma and HasMultiplicativeZero ], 0,
-    function(s)
-      local sizeofs,m,fam,z;
+#
 
-			# if the magma has a zero, but it is not a magma with
-			# a zero adjoined then this method does not apply
-			z := MultiplicativeZero( s );
-			if not( IsMagmaWithMultiplicativeZeroAdjoinedElementRep( z ) ) then
-				TryNextMethod();
-			fi; 
+InstallMethod(MagmaWithZeroAdjoined, "for a magma", 
+[IsMagma], m-> Range(InjectionZeroMagma(m)));
 
-			# get the magma underlying s		
-			fam := ElementsFamily( FamilyObj (s ) );
-			m := fam!.underlyingMagma;
-	
-      sizeofs:=Size(m) + 1;
+#
 
-      return sizeofs;
-    end);
+InstallMethod( OneMutable, "for an element of a magma with zero adjoined",
+[IsMultiplicativeElementWithOne and IsMagmaWithZeroAdjoinedElementRep],
+x-> One(MagmaWithZeroAdjoined(x)));
 
-#############################################################################
-##
-#M  <elm> * <elm>
-##
-##  returns the product of two elements of a magma with a zero adjoined
-InstallMethod( \*,
-    "for two elements of a magma with zero adjoined",
-    IsIdenticalObj,
-    [ IsMagmaWithMultiplicativeZeroAdjoinedElementRep, 
-			IsMagmaWithMultiplicativeZeroAdjoinedElementRep ], 0,
-function ( elm1, elm2 )
+#
 
-	if elm1!.IsTheZero or elm2!.IsTheZero then	
-		return MultiplicativeZeroOp(elm1);
-	else
-		# compute the product in the underlying magma and then
-		# inject back into the zeromagma
-		return (elm1!.UnderlyingElement * elm2!.UnderlyingElement)^ 
-				(FamilyObj(elm1)!.injection);
-	fi;
-		
+InstallMethod( MultiplicativeZeroOp,
+"for an element of a magma with zero adjoined",
+[ IsMagmaWithZeroAdjoinedElementRep], 
+function( elm )
+  return MultiplicativeZero(MagmaWithZeroAdjoined(elm));  
 end );
 
+#
 
+InstallMethod(InjectionZeroMagma, "for a magma",
+[IsMagma],
+function(m)
+  local filts, fam, type, inj, zero, gens, out;
+  
+  if Length(GeneratorsOfMagma(m))=0 then
+    Error("usage: it is only possible to adjoin a zero to a magma",  
+    " with generators,");
+    return;
+  fi;
+ 
+  # filters for the elements
+  filts := IsMultiplicativeElementWithZero;
 
-#############################################################################
-##
-#M  <elm> = <elm>
-##
-##  decides equality of two elements of a magma with zero adjoined
-##
-InstallMethod( \=,
-    "for two elements of a magma with zero adjoined",
-    IsIdenticalObj,
-    [ IsMagmaWithMultiplicativeZeroAdjoinedElementRep, 
-			IsMagmaWithMultiplicativeZeroAdjoinedElementRep ], 0,
-function ( elm1, elm2 )
+  if IsMultiplicativeElementWithOne(Representative(m)) then
+    filts := filts and IsMultiplicativeElementWithOne;
+  fi;
 
-	if elm1!.IsTheZero and elm2!.IsTheZero then	
-		return true;
-	elif elm1!.IsTheZero or elm2!.IsTheZero  then 
-		# only one is zero
-		return false;
-	else
-		# compute in the underlying magma 
-		return (elm1!.UnderlyingElement = elm2!.UnderlyingElement);
-	fi;
-		
-end );
+  if IsAssociativeElement(Representative(m)) then
+    filts := filts and IsAssociativeElement;
+  fi;
 
-############################################################################
-##
-#M  <eltz> < <eltz> .. for magma with a zero adjoined
-##
-##  Ordering of the underlying magma with zero less than everything else
-## 
+  fam:=NewFamily( "FamilyOfElementOfMagmaWithZeroAdjoined", filts);
+  type:=NewType(fam, filts and IsMagmaWithZeroAdjoinedElementRep);
+  
+  #the injection
+  inj:=function(elt)
+    local new;
+    new:=Objectify(type, rec(elt:=elt));
+    return new;
+  end;
+  
+  # set the one
+  if IsMagmaWithOne(m) then
+    SetOne(fam, inj(One(m)));
+  fi;
+ 
+  #filters for the magma with 0 adjoined
+  filts:=IsAttributeStoringRep and IsMagmaWithZeroAdjoined;
 
-InstallMethod(\<, 
-"for elements of magmas with 0 adjoined", 
+  if IsSemigroup(m) then
+    filts:=filts and IsAssociative;
+  fi;
+
+  if IsMagmaWithOne(m) then 
+    filts:=filts and IsMagmaWithOne;
+  fi;
+
+  zero := Objectify(type, rec(elt:=fail));;
+  gens:=Concatenation(List(GeneratorsOfMagma(m), g-> inj(g)), [zero]);
+  out:=Objectify( NewType( FamilyObj( gens ), filts), rec());
+
+  # store the magma in the family so that it can be recovered from an element
+  fam!.MagmaWithZeroAdjoined:=out;
+
+  if IsGroup(m) then
+    SetIsZeroGroup(out, true);
+  fi;
+
+  SetMultiplicativeZero(out, zero); 
+  
+  if IsMagmaWithOne(out) then 
+    SetGeneratorsOfMagmaWithOne(out, gens);
+  fi;
+  SetGeneratorsOfMagma(out, gens);
+
+  inj:=MappingByFunction(m, out, inj, x-> x!.elt);
+  SetUnderlyingInjectionZeroMagma(out, inj);
+  
+  return inj;
+end);
+
+#
+
+InstallMethod(PrintObj, "for a magma with zero adjoined",
+[IsMagmaWithZeroAdjoined and IsMagma and HasGeneratorsOfMagma], 10 ,
+function(m) 
+  Print("<");
+  PrintObj(Source(UnderlyingInjectionZeroMagma(m)));
+  Print(" with 0 adjoined>");
+  return;
+end);  
+
+#
+
+InstallMethod(ViewObj, "for a zero group",
+[IsMagmaWithZeroAdjoined and IsMagma and HasGeneratorsOfMagma], 10, 
+function(m)  
+  Print("<");
+  ViewObj(Source(UnderlyingInjectionZeroMagma(m)));
+  Print(" with 0 adjoined>");
+  return; 
+end);
+
+#
+
+InstallMethod( Size, "for a magma with a zero adjoined",
+[IsMagmaWithZeroAdjoined], 
+function(m)
+  return Size(Source(UnderlyingInjectionZeroMagma(m)))+1;
+end);
+
+#
+
+InstallMethod( \*, "for two elements of a magma with zero adjoined",
 IsIdenticalObj,
-[ IsMagmaWithMultiplicativeZeroAdjoinedElementRep, 
-IsMagmaWithMultiplicativeZeroAdjoinedElementRep ], 0,
-function ( elm1, elm2 )
+[ IsMagmaWithZeroAdjoinedElementRep, IsMagmaWithZeroAdjoinedElementRep ],
+function(x, y)
 
-	if elm1!.IsTheZero and elm2!.IsTheZero then						# 0 0 
-		return false;
-	elif elm2!.IsTheZero then 														# 1 0
-		return false;
-	elif elm1!.IsTheZero and not(elm2!.IsTheZero)  then 	# 0 1
-		return true;
-	else
-		# compute in the underlying magma 
-		return (elm1!.UnderlyingElement < elm2!.UnderlyingElement);
-	fi;
-		
+  if x!.elt=fail then 
+    return x;
+  elif y!.elt=fail then	
+    return y;
+  fi;
+  return (x!.elt*y!.elt)^UnderlyingInjectionZeroMagma(
+   MagmaWithZeroAdjoined(x)); 
 end );
 
-############################################################################
-##
-#A  Print(<elz>)
-##
-##  Print the element 
-##
+#
 
-InstallMethod(PrintObj, "for elements of magmas with 0 adjoined", true,
-[IsMagmaWithMultiplicativeZeroAdjoinedElementRep], 0, 
-function(x) 
-				if x!.IsTheZero then
-					Print("0");
-				else
-					Print(x!.UnderlyingElement);
-				fi;
+InstallMethod( \=, "for two elements of a magma with zero adjoined",
+IsIdenticalObj,
+[IsMagmaWithZeroAdjoinedElementRep, IsMagmaWithZeroAdjoinedElementRep ],
+function(x, y)
+  return x!.elt=y!.elt;
 end);
 
+#  ordering of the underlying magma with zero less than everything else
 
-#############################################################################
-##
-#E
+InstallMethod(\<, "for two elements of magmas with zero adjoined", 
+IsIdenticalObj,
+[ IsMagmaWithZeroAdjoinedElementRep, IsMagmaWithZeroAdjoinedElementRep ],
+function(x, y)
+  local xx, yy;
+ 
+  xx:=x!.elt; yy:=y!.elt;
+    
+  if xx=fail then 
+    return not yy=fail;
+  elif yy=fail then 
+    return false;
+  fi;
+  return xx<yy;
+end);
+
+#
+
+InstallMethod(PrintObj, "for an element of a magma with zero adjoined", 
+[IsMagmaWithZeroAdjoinedElementRep],
+function(x) 
+  local m;
+ 
+  m:=FamilyObj(x)!.MagmaWithZeroAdjoined;
+  Print("<");
+  if IsGroup(Source(UnderlyingInjectionZeroMagma(m))) then 
+    Print("group ");
+  elif IsMonoid(Source(UnderlyingInjectionZeroMagma(m))) then
+    Print("monoid ");
+  elif IsSemigroup(Source(UnderlyingInjectionZeroMagma(m))) then 
+    Print("semigroup ");
+  else 
+    Print("magma ");
+  fi;
+
+  Print("with 0 adjoined elt: ");
+  if x!.elt=fail then 
+    Print("0");
+  else 
+    PrintObj(x!.elt);
+  fi;
+  Print(">");
+  return;
+end);
 

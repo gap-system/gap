@@ -475,7 +475,19 @@ InstallMethod( ExponentsConjugateLayer,"subset induced pcgs",
   [ IsTailInducedPcgsRep and IsParentPcgsFamilyPcgs,
   IsMultiplicativeElementWithInverse,IsMultiplicativeElementWithInverse],0,
 function(m,e,c)
-  return DoExponentsConjLayerFampcgs(ParentPcgs(m),m,e,c);
+local a,p;
+  p:=ParentPcgs(m);
+  # need to test whether pcgs is normal in parent -- otherwise fail
+  if not IsBound(m!.expConjNormalInParent) then
+    a:=Difference([1..Length(p)],m!.depthsInParent);
+    m!.expConjNormalInParent:=ForAll(p,x->ForAll(m,
+      y->ForAll(ExponentsOfPcElement(p,y^x){a},IsZero)));
+#Print("Tested eligibility for cheap test ",m!.expConjNormalInParent,"\n");
+  fi;
+  if m!.expConjNormalInParent=false then
+    TryNextMethod();
+  fi;
+  return DoExponentsConjLayerFampcgs(p,m,e,c);
 end);
 
 

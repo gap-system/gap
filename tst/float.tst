@@ -62,7 +62,7 @@ gap> Sqrt(2.0);
 gap> MinimalPolynomial(Rationals,last);
 -2*x_1^2+1
 gap> r:=Rat("2.7182818");; r:=Rat(Float(String(NumeratorRat(r)))/Float(String(DenominatorRat(r))));
-2721/1001
+2683788193/987310511
 gap> Float(String(NumeratorRat(r)))/Float(String(DenominatorRat(r)));
 2.71828
 gap> AbsoluteValue(Float("1")/Float("2"));

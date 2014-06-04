@@ -218,7 +218,7 @@ Int C8Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
 
     Obj         tmp;        /* temporary obj for power                     */
 
-    Int         resized = 0;/* indicates whether a Resize() happend        */
+    Int         resized = 0;/* indicates whether a Resize() happened       */
 
     /* if <w> is the identity return now                                   */
     if ( NPAIRS_WORD(w) == 0 ) {
@@ -309,7 +309,7 @@ Int C8Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
     p   = INT_INTOBJ(ro[1]);
     inv = ADDR_OBJ( SC_INVERSES(sc) );
 
-    /* initalize the stack with <w>                                        */
+    /* initialize the stack with <w>                                        */
     sp = 0;
     SC_PUSH_WORD( w, 1 );
 
@@ -680,7 +680,7 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
 
     Obj         tmp;        /* temporary obj for power                     */
 
-    Int         resized = 0;/* indicates whether a Resize() happend        */
+    Int         resized = 0;/* indicates whether a Resize() happened       */
 
     /* if <w> is the identity return now                                   */
     if ( NPAIRS_WORD(w) == 0 ) {
@@ -771,7 +771,7 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
     p   = INT_INTOBJ(ro[1]);
     inv = ADDR_OBJ( SC_INVERSES(sc) );
 
-    /* initalize the stack with <w>                                        */
+    /* initialize the stack with <w>                                        */
     sp = 0;
     SC_PUSH_WORD( w, 1 );
 
@@ -1142,7 +1142,7 @@ Int C32Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
 
     Obj         tmp;        /* temporary obj for power                     */
 
-    Int         resized = 0;/* indicates whether a Resize() happend        */
+    Int         resized = 0;/* indicates whether a Resize() happened       */
 
     /* if <w> is the identity return now                                   */
     if ( NPAIRS_WORD(w) == 0 ) {
@@ -1233,7 +1233,7 @@ Int C32Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
     p   = INT_INTOBJ(ro[1]);
     inv = ADDR_OBJ( SC_INVERSES(sc) );
 
-    /* initalize the stack with <w>                                        */
+    /* initialize the stack with <w>                                        */
     sp = 0;
     SC_PUSH_WORD( w, 1 );
 
@@ -1465,7 +1465,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCombiCollector ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

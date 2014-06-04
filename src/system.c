@@ -75,8 +75,10 @@ const Char * SyKernelVersion = "4.dev";
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
+** do not edit the following line. Occurences of `gap4dev'
+** will be replaced by string matching by distribution wrapping scripts.
 */
-const Char * SyWindowsPath = "/cygdrive/c/gap4r5";
+const Char * SyWindowsPath = "/cygdrive/c/gap4dev";
 
 /****************************************************************************
 **
@@ -647,7 +649,7 @@ Int SyStrncmp (
     const Char *        str2,
     UInt                len )
 {
-    return SyStrncmp( str1, str2, len );
+    return strncmp( str1, str2, len );
 }
 
 /****************************************************************************
@@ -1091,12 +1093,12 @@ void SyMAdviseFree() {
 #if SYS_IS_DARWIN
     if (mmap(from, size, PROT_NONE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
-        fputs("gap: OS/X trick to free pages did not work, bye!\n", stderr);
+        fputs("gap: OS X trick to free pages did not work, bye!\n", stderr);
         SyExit( 2 );
     }
     if (mmap(from, size, PROT_READ|PROT_WRITE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
-        fputs("gap: OS/X trick to free pages did not work, bye!\n", stderr);
+        fputs("gap: OS X trick to free pages did not work, bye!\n", stderr);
         SyExit( 2 );
     }
 #endif
@@ -1162,6 +1164,8 @@ int SyTryToIncreasePool(void)
 
 #endif
 
+int halvingsdone = 0;
+
 void SyInitialAllocPool( void )
 {
 #if HAVE_SYSCONF
@@ -1184,7 +1188,8 @@ void SyInitialAllocPool( void )
            break;
        }
        SyAllocPool = SyAllocPool / 2;
-       fputs("gap: halfing pool size.\n", stderr);
+       halvingsdone++;
+       if (SyDebugLoading) fputs("gap: halving pool size.\n", stderr);
        if (SyAllocPool < 16*1024*1024) {
          fputs("gap: cannot allocate initial memory, bye.\n", stderr);
          SyExit( 2 );
@@ -1351,7 +1356,7 @@ UInt * * * SyAllocBags (
 
 #include <mach/mach.h>
 
-#if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
+#if (defined(SYS_IS_DARWIN) && SYS_IS_DARWIN) || defined(__gnu_hurd__)
 #define task_self mach_task_self
 #endif
 
@@ -1643,7 +1648,7 @@ sizeMultiplier memoryUnits[]= {
 
 static UInt ParseMemory( Char * s)
 {
-  UInt size  = atoi(s);
+  UInt size  = atol(s);
   Char symbol =  s[strlen(s)-1];
   UInt i;
   UInt maxmem;
@@ -1804,7 +1809,6 @@ void InitSystem (
 
     /* Initialize global and static variables. Do it here rather than
        with initializers to allow for restart */
-    /* SyBanner = 1; */
     SyCTRD = 1;             
     SyCacheSize = 0;
     SyCheckCRCCompiledModule = 0;
@@ -1813,8 +1817,6 @@ void InitSystem (
     SyHasUserHome = 0;
     SyLineEdit = 1;
     SyUseReadline = 0;
-    /* SyAutoloadPackages = 1; */
-    /*  SyBreakSuppress = 0; */
     SyMsgsFlagBags = 0;
     SyNrCols = 0;
     SyNrColsLocked = 0;

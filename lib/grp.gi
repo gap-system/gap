@@ -792,6 +792,12 @@ InstallMethod( DerivedSubgroup,
     SUM_FLAGS, # this is better than everything else
     IdFunc );
 
+InstallMethod( DerivedSubgroup,
+    "for a group that knows it is abelian",
+    [ IsGroup and IsAbelian ],
+    SUM_FLAGS, # this is better than everything else
+    TrivialSubgroup );
+
 
 ##########################################################################
 ##
@@ -921,7 +927,15 @@ InstallOtherMethod( ElementaryAbelianSeriesLargeSteps,
 InstallMethod( Exponent,
     "generic method for groups",
     [ IsGroup ],
-    G -> Lcm( List( ConjugacyClasses(G), x -> Order(Representative(x)) ) ) );
+function(G)
+  local exp, primes, p;
+  exp := 1;
+  primes := Set(FactorsInt(Size(G)));
+  for p in primes do
+    exp := exp * Exponent(SylowSubgroup(G, p));
+  od;
+  return exp;
+end);
 
 InstallMethod( Exponent,
     "method for abelian groups with generators",
@@ -2091,10 +2105,19 @@ end);
 InstallMethod( FactorGroupNC, "generic method for two groups", IsIdenticalObj,
     [ IsGroup, IsGroup ],
 function( G, N )
-local hom,F;
+local hom,F,new;
   hom:=NaturalHomomorphismByNormalSubgroupNC( G, N );
   F:=ImagesSource(hom);
-  SetNaturalHomomorphism(F,hom);
+  if not HasNaturalHomomorphism(F) then
+    SetNaturalHomomorphism(F,hom);
+  else
+    # avoid cached homomorphisms
+    new:=Group(GeneratorsOfGroup(F),One(F));
+    hom:=hom*GroupHomomorphismByImagesNC(F,new,
+      GeneratorsOfGroup(F),GeneratorsOfGroup(F));
+    SetNaturalHomomorphism(new,hom);
+    F:=new;
+  fi;
   return F;
 end );
 
@@ -2227,15 +2250,11 @@ end );
 ##  except <p>, and check whether it is normal in <G>.
 ##
 InstallMethod( IsPNilpotentOp,
-    "generic method for a (finite) group and a prime integer",
-    [ IsGroup, IsPosInt ],
+    "for a group with special pcgs: test for normal Hall subgroup",
+    [ IsGroup and HasSpecialPcgs, IsPosInt ],
     function( G, p )
 
     local primes, S;
-
-    if not IsFinite( G ) then
-      TryNextMethod();
-    fi;
 
     primes:= Set( Factors( Size( G ) ) );
     RemoveSet( primes, p );
@@ -2244,11 +2263,50 @@ InstallMethod( IsPNilpotentOp,
     return S <> fail and IsNormal( G, S );
     end );
 
+InstallMethod( IsPNilpotentOp,
+    "check if p divides order of hypocentre",
+    [ IsGroup and IsFinite, IsPosInt ],
+    function( G, p )
+
+    local ser;
+
+    ser := LowerCentralSeriesOfGroup( G );
+    return Size ( ser[ Length( ser ) ] ) mod p <> 0;
+    end );
+
+RedispatchOnCondition (IsPNilpotentOp, ReturnTrue, [IsGroup, IsPosInt], [IsFinite], 0);
+
 
 #############################################################################
 ##
 #M  IsPSolvable( <G>, <p> )
 ##
+InstallMethod( IsPSolvableOp, 
+    "generic method: build descending series with abelian or p'-factors",
+    [ IsGroup and IsFinite, IsPosInt ],
+    function( G, p )
+
+    local N;
+    
+    while Size( G ) mod p = 0 do
+        N := PerfectResiduum( G );
+        N := NormalClosure (N, SylowSubgroup (N, p));
+        if IndexNC( G, N ) = 1 then
+            return false;
+        fi;
+        G := N;
+    od;
+    return true;
+    end);
+
+InstallMethod( IsPSolvableOp,
+    "for solvable groups: return true",
+    [ IsGroup and IsSolvableGroup and IsFinite, IsPosInt ],
+    SUM_FLAGS,
+    ReturnTrue);
+ 
+RedispatchOnCondition (IsPSolvableOp, ReturnTrue, [IsGroup, IsPosInt], [IsFinite], 0);
+
 
 #############################################################################
 ##
@@ -2810,16 +2868,7 @@ InstallMethod( Intersection2,
 ##
 #M  Enumerator( <G> ) . . . . . . . . . . . .  set of the elements of a group
 ##
-CallFuncList(function(enum)
-    InstallMethod( Enumerator, "generic method for a group",
-            [ IsGroup and IsAttributeStoringRep ],
-            enum );
-
-    # the element list is only stored in the locally created new group H
-    InstallMethod(AsSSortedListNonstored, "generic method for groups",
-            [ IsGroup ],
-            enum );
-end, [function( G )
+InstallGlobalFunction("GroupEnumeratorByClosure",function( G )
 
     local   H,          # subgroup of the first generators of <G>
             gen;        # generator of <G>
@@ -2842,7 +2891,18 @@ end, [function( G )
     # return the list of elements
     Assert( 2, HasAsSSortedList( H ) );
     return AsSSortedList( H );
-end]);
+end);
+
+CallFuncList(function(enum)
+    InstallMethod( Enumerator, "generic method for a group",
+            [ IsGroup and IsAttributeStoringRep ],
+            enum );
+
+    # the element list is only stored in the locally created new group H
+    InstallMethod(AsSSortedListNonstored, "generic method for groups",
+            [ IsGroup ],
+            enum );
+end, [GroupEnumeratorByClosure]);
 
 
 
@@ -4733,6 +4793,8 @@ function(G,elm)
     info.mygens:=gens;
     info.mylett:=letters;
     info.fam:=FamilyObj(One(Source(hom)));
+    info.rvalue:=rvalue;
+    info.setrvalue:=setrvalue;
 
     # initialize all lists
     rs:=List([1..QuoInt(2*Size(G),maxlist)],i->BlistList([1..maxlist],[]));
@@ -4908,6 +4970,54 @@ end);
 InstallMethod(Factorization,"generic method", true,
                [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
   GenericFactorizationGroup);
+
+InstallMethod(GrowthFunctionOfGroup,"finite groups",[IsGroup and
+  HasGeneratorsOfGroup and IsFinite],0,
+function(G)
+local s;
+  s:=GenericFactorizationGroup(G,fail);
+  return s;
+end);
+
+InstallMethod(GrowthFunctionOfGroup,"groups and orders",
+  [IsGroup and HasGeneratorsOfGroup,IsPosInt],0,
+function(G,r)
+local s,prev,old,sort,geni,new,a,i,j,g;
+  geni:=DuplicateFreeList(Concatenation(GeneratorsOfGroup(G),
+                          List(GeneratorsOfGroup(G),Inverse)));
+  if (IsFinite(G) and (CanEasilyTestMembership(G) or HasSize(G))
+   and Length(geni)^r>Size(G)/2) or HasGrowthFunctionOfGroup(G) then
+    s:=GrowthFunctionOfGroup(G);
+    return s{[1..Minimum(Length(s),r+1)]};
+  fi;
+
+  # enumerate the bubbles
+  s:=[1];
+  prev:=[One(G)];
+  old:=ShallowCopy(prev);
+  sort:=CanEasilySortElements(One(G));
+  for i in [1..r] do
+    new:=[];
+    for j in prev do
+      for g in geni do
+        a:=j*g;
+	if not a in old then
+	  Add(new,a);
+	  if sort then
+	    AddSet(old,a);
+	  else
+	    Add(old,a);
+	  fi;
+	fi;
+      od;
+    od;
+    if Length(new)>0 then
+      Add(s,Length(new));
+    fi;
+    prev:=new;
+  od;
+  return s;
+end);
 
 #############################################################################
 ##

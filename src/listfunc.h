@@ -22,7 +22,7 @@
 **  'AddList' adds the object <obj> to the end  of  the  list  <list>,  i.e.,
 **  it is equivalent to the assignment '<list>[ Length(<list>)+1 ] := <obj>'.
 **  The  list is  automatically extended to   make room for  the new element.
-**  'AddList' returns nothing, it is called only for its sideeffect.
+**  'AddList' returns nothing, it is called only for its side effect.
 */
 extern  void            AddList (
             Obj                 list,

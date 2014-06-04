@@ -161,7 +161,7 @@
 **  clever.  We  group some  symbols that  are syntactically  equivalent like
 **  '*', '/' in a class. We use the least significant 3 bits to differentiate
 **  between members in one class.  And now  every symbol class, many of which
-**  contain   just  one  symbol,  has exactely  one   of  the  remaining most
+**  contain   just  one  symbol,  has exactly  one   of  the  remaining most
 **  significant 29  bits  set.   Thus   sets  of symbols  are  represented as
 **  unsigned long integers, which is typedef-ed to 'TypSymbolSet'.
 **
@@ -778,7 +778,7 @@ extern UInt OpenAppendStream (
 **  'CloseAppend' will  first flush all   pending output and  then  close the
 **  current  output  file.   Subsequent output will  again go to the previous
 **  output file.  'CloseAppend' returns 1 to indicate success.  'CloseAppend'
-**  is exactely equal to 'CloseOutput' so its description applies.
+**  is exactly equal to 'CloseOutput' so its description applies.
 */
 extern UInt CloseAppend ( void );
 
@@ -1133,7 +1133,7 @@ extern  UInt            OpenAppend (
 **  'CloseAppend' will  first flush all   pending output and  then  close the
 **  current  output  file.   Subsequent output will  again go to the previous
 **  output file.  'CloseAppend' returns 1 to indicate success.  'CloseAppend'
-**  is exactely equal to 'CloseOutput' so its description applies.
+**  is exactly equal to 'CloseOutput' so its description applies.
 */
 extern  UInt            CloseAppend ( void );
 

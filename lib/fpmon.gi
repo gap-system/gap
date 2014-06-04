@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  fpmon .gi           GAP library          								Isabel Araújo
+#W  fpmon .gi               GAP library                         Isabel Araújo
 ##
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
@@ -201,8 +201,7 @@ function( F, rels )
 
     # Mark <s> to be the 'whole monoid' of its later submonoids.
     FamilyObj( s )!.wholeMonoid:= s;
-
-		SetOne(s,ElementOfFpMonoid(fam,One(F)));
+    SetOne(s,ElementOfFpMonoid(fam,One(F)));
     # Create generators of the monoid.
     gens:= List( GeneratorsOfMonoid( F ),
       s -> ElementOfFpMonoid( fam, s ) );

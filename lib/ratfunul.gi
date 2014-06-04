@@ -509,6 +509,18 @@ InstallMethod( \+, "laurent + coeff", IsElmsCoeffs,
     [ IsUnivariateRationalFunction and IsLaurentPolynomial, IsRingElement ], 0,
     function(l,c) return SumCoeffLaurpol(c,l); end);
 
+InstallMethod( \+, "coeff(embed) + laurent", true,
+    [ IsRingElement, IsUnivariateRationalFunction and IsLaurentPolynomial ], 0,
+function(c,l)
+  return SumCoeffLaurpol(c*FamilyObj(l)!.oneCoefficient,l);
+end);
+
+InstallMethod( \+, "laurent + coeff(embed)", true,
+    [ IsUnivariateRationalFunction and IsLaurentPolynomial, IsRingElement ], 0,
+function(l,c)
+  return SumCoeffLaurpol(c*FamilyObj(l)!.oneCoefficient,l);
+end);
+
 
 #############################################################################
 ##
@@ -1015,10 +1027,11 @@ end);
 InstallOtherMethod(Derivative,"Laurent Polynomials",true,
                 [IsLaurentPolynomial],0,
 function(f)
-local d,i,ind;
+local d,i,ind,one,iF;
 
   ind := [CoefficientsFamily(FamilyObj(f)),
            IndeterminateNumberOfUnivariateRationalFunction(f)];
+  one:=FamilyObj(f)!.oneCoefficient;
   d:=CoefficientsOfLaurentPolynomial(f);
   if Length(d[1])=0 then
     # special case: Derivative of 0-Polynomial
@@ -1026,8 +1039,15 @@ local d,i,ind;
   fi;
   f:=d;
   d:=[];
+  iF:=Zero(one);
+  if f[2]>0 then
+    for i in [1..f[2]] do iF:=iF+one; od;
+  elif f[2]<0 then
+    for i in [1..-f[2]] do iF:=iF+one; od;
+  fi;
   for i in [1..Length(f[1])]  do
-      d[i] := (i+f[2]-1)*f[1][i];
+    d[i] := iF*f[1][i];
+    iF:=iF+one;
   od;
   return LaurentPolynomialByCoefficients(ind[1],d,f[2]-1,ind[2]);
 end);
@@ -1051,7 +1071,7 @@ RedispatchOnCondition(Derivative,true,
 ##
 #F  Discriminant( <f> ) . . . . . . . . . . . . discriminant of polynomial f
 ##
-InstallOtherMethod(Discriminant,"univariate",true,[IsUnivariatePolynomial],0,
+InstallMethod( Discriminant, "univariate", true, [IsUnivariatePolynomial], 0,
 function(f)
 local d;
   # the discriminant is \prod_i\prod_{j\not= i}(\alpha_i-\alpha_j), but
@@ -1420,20 +1440,20 @@ function( obj )
 local   cofs,  indn;
 
   indn := IndeterminateNumberOfUnivariateRationalFunction(obj);
-
-  # if the numerator is a power of x, we can return a laurent polynomial
   cofs := CoefficientsOfUnivariateRationalFunction(obj);
-  if Length(cofs[1])=1 then
-    if IsZero(cofs[1][1]) then
-      Error("division by zero");
-    fi;
+  
+  if Length(cofs[1])=0 then
+    return fail;
+  elif Length(cofs[1])=1 then
+    # if the numerator is a power of x, we can return a laurent polynomial
     return LaurentPolynomialByExtRepNC(FamilyObj(obj),
-	cofs[2]*Inverse(cofs[1][1]), -cofs[3], indn );
-  fi;
-
-  # swap numerator and denominator and invert the valuation
-  return UnivariateRationalFunctionByExtRepNC(FamilyObj(obj),
-     cofs[2],cofs[1],-cofs[3],indn );
+	  cofs[2]*Inverse(cofs[1][1]), -cofs[3], indn );
+  else
+    # swap numerator and denominator and invert the valuation
+    return UnivariateRationalFunctionByExtRepNC(FamilyObj(obj),
+      cofs[2],cofs[1],-cofs[3],indn );
+  fi;   
+  
 end );
 
 #############################################################################

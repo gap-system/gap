@@ -1551,7 +1551,7 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
   rws:=SingleCollector(f,ord);
 
   # pseudo-Homomorphism to map in free group
-  hom:= GroupGeneralMappingByImages( k, f, gpcgs, fgens{[1..l]} );
+  hom:= GroupGeneralMappingByImagesNC( k, f, gpcgs, fgens{[1..l]} );
 
   # translate the gal-Relations:
   for i in [1..l] do

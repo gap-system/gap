@@ -440,7 +440,6 @@ Obj FuncSTRING_SINTLIST (
        
     l=LEN_PLIST(val);
     n=NEW_STRING(l);
-    SET_LEN_STRING(n,l);
     p=CHARS_STRING(n);
     for (i=1;i<=l;i++) {
       *p++=CHAR_SINT(INT_INTOBJ(ELM_PLIST(val,i)));
@@ -451,7 +450,6 @@ Obj FuncSTRING_SINTLIST (
     low=GET_LOW_RANGE(val);
     inc=GET_INC_RANGE(val);
     n=NEW_STRING(l);
-    SET_LEN_STRING(n,l);
     p=CHARS_STRING(n);
     for (i=1;i<=l;i++) {
       *p++=CHAR_SINT(low);
@@ -486,7 +484,6 @@ Obj FuncREVNEG_STRING (
 
   l=GET_LEN_STRING(val);
   n=NEW_STRING(l);
-  SET_LEN_STRING(n,l);
   p=CHARS_STRING(val);
   q=CHARS_STRING(n);
   j=l-1;
@@ -562,25 +559,12 @@ Int             GrowString (
 **
 **  'TypeString' is the function in 'TypeObjFuncs' for strings.
 */
-extern Obj TYPE_LIST_EMPTY_MUTABLE;
-extern Obj TYPE_LIST_EMPTY_IMMUTABLE;
 static Obj TYPES_STRING;
 
 
 Obj TypeString (
     Obj                 list )
 {
-
-    /* special case for the empty string                                   */
-    if ( GET_LEN_STRING(list) == 0 ) {
-        if ( IS_MUTABLE_OBJ(list) ) {
-            return TYPE_LIST_EMPTY_MUTABLE;
-        }
-        else {
-            return TYPE_LIST_EMPTY_IMMUTABLE;
-        }
-    }
-
     return ELM_PLIST(TYPES_STRING, TNUM_OBJ(list) - T_STRING + 1);
 }
 
@@ -1441,8 +1425,7 @@ void ConvString (
     Int                 i;              /* loop variable                   */
 
     /* do nothing if the string is already in the string representation    */
-    if ( T_STRING <= TNUM_OBJ(string)
-      && TNUM_OBJ(string) <= T_STRING_SSORT+IMMUTABLE )
+    if ( IS_STRING_REP(string) )
     {
         return;
     }
@@ -1662,32 +1645,35 @@ Obj FuncPOSITION_SUBSTRING(
   UInt1  *s, *ss, c;
 
   /* check whether <string> is a string                                  */
-  if ( ! IsStringConv( string ) ) {
+  while ( ! IsStringConv( string ) ) {
     string = ErrorReturnObj(
 	     "POSITION_SUBSTRING: <string> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(string), 0L,
 	     "you can replace <string> via 'return <string>;'" );
-    return FuncPOSITION_SUBSTRING( self, string, substr, off );
   }
   
-  /* check whether <substr> is a non-empty string                        */
-  if ( ! IsStringConv( substr ) || (lenss = GET_LEN_STRING(substr)) == 0) {
+  /* check whether <substr> is a string                        */
+  while ( ! IsStringConv( substr ) ) {
     substr = ErrorReturnObj(
-	  "POSITION_SUBSTRING: <substr> must be a non-empty string (not a %s)",
+	  "POSITION_SUBSTRING: <substr> must be a string (not a %s)",
 	  (Int)TNAM_OBJ(substr), 0L,
 	  "you can replace <substr> via 'return <substr>;'" );
-    return FuncPOSITION_SUBSTRING( self, string, substr, off );
   }
 
   /* check wether <off> is a non-negative integer  */
-  if ( ! IS_INTOBJ(off) || (ipos = INT_INTOBJ(off)) < 0 ) {
+  while ( ! IS_INTOBJ(off) || (ipos = INT_INTOBJ(off)) < 0 ) {
     off = ErrorReturnObj(
           "POSITION_SUBSTRING: <off> must be a non-negative integer (not a %s)",
           (Int)TNAM_OBJ(off), 0L,
           "you can replace <off> via 'return <off>;'");
-    return FuncPOSITION_SUBSTRING( self, string, substr, off );
   }
-  
+
+  /* special case for the empty string */
+  lenss = GET_LEN_STRING(substr);
+  if ( lenss == 0 ) {
+    return INTOBJ_INT(ipos + 1);
+  }
+
   lens = GET_LEN_STRING(string);
   max = lens - lenss + 1;
   s = CHARS_STRING(string);
@@ -1697,11 +1683,11 @@ Obj FuncPOSITION_SUBSTRING(
   for (i = ipos; i < max; i++) {
     if (c == s[i]) {
       for (j = 1; j < lenss; j++) {
-	if (! (s[i+j] == ss[j]))
-	  break;
+        if (! (s[i+j] == ss[j]))
+          break;
       }
       if (j == lenss) 
-	return INTOBJ_INT(i+1);
+        return INTOBJ_INT(i+1);
     }
   }
   return Fail;
@@ -2133,7 +2119,7 @@ void UnbString (
         }
         /* maybe the string becomes sorted */
         CLEAR_FILTS_LIST(string);
-        CHARS_STRING(string)[pos] = (UInt1)0;
+        CHARS_STRING(string)[pos-1] = (UInt1)0;
         SET_LEN_STRING(string, len-1);
 } 
             
@@ -2748,7 +2734,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoString ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

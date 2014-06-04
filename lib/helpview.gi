@@ -69,19 +69,16 @@ if ARCH_IS_WINDOWS() then
   HELP_VIEWER_INFO.browser := rec(
   type := "url",
   show := function( filename )
-    local winfilename, pos;
+    local pos;
     if not filename{[1..9]}="/cygdrive" then
       Error( "corrupted name of the help file ", filename );
     fi;
-    winfilename := filename{[10..11]}; # to get the name of the drive, e.g. "/c"
-    winfilename[3] := ':';
-    Append( winfilename, filename{[12..Length(filename)]});
     Print( "Opening help page in default windows browser ... \c" );
     Process( DirectoryCurrent(),
              Filename( DirectoriesLibrary( "bin" ), "cygstart.exe" ),
              InputTextNone(),
              OutputTextNone(),
-             [ Concatenation( "file:///", winfilename ) ] );
+             [ SplitString( filename, "#" )[1] ] );
     Print( "done! \n" );         
   end
   );

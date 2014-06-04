@@ -171,8 +171,8 @@ DeclareOperation( "EpimorphismQuotientSystem", [IsQuotientSystem] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> GQuotients(fp,Group((1,2,3),(1,2)));
-##  [ [ f1, f2 ] -> [ (2,3), (1,2) ], [ f1, f2 ] -> [ (2,3), (1,2,3) ], 
-##    [ f1, f2 ] -> [ (1,2,3), (1,2) ] ]
+##  [ [ f1, f2 ] -> [ (1,2), (2,3) ], [ f1, f2 ] -> [ (2,3), (1,2,3) ], 
+##    [ f1, f2 ] -> [ (1,2,3), (2,3) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

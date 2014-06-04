@@ -310,17 +310,22 @@ DeclareGlobalFunction( "ChineseRem" );
 ##
 ##  <#GAPDoc Label="CoefficientsQadic">
 ##  <ManSection>
-##  <Func Name="CoefficientsQadic" Arg='i, q'/>
+##  <Oper Name="CoefficientsQadic" Arg='i, q'/>
 ##
 ##  <Description>
 ##  returns the <A>q</A>-adic representation of the integer <A>i</A>
 ##  as a list <M>l</M> of coefficients satisfying the equality
-##  <M><A>i</A> = \sum_{{j = 0}} <A>q</A>^j \cdot l[j+1]</M>.
+##  <M><A>i</A> = \sum_{{j = 0}} <A>q</A>^j \cdot l[j+1]</M>
+##  for an integer <M><A>q</A> > 1</M>.
+##  <Example><![CDATA[
+##  gap> l:=CoefficientsQadic(462,3);
+##  [ 0, 1, 0, 2, 2, 1 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "CoefficientsQadic" );
+DeclareOperation( "CoefficientsQadic", [ IsInt, IsInt ] );
 
 
 #############################################################################
@@ -398,7 +403,7 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  entries will all be positive except for the first one in case of
 ##  a negative <A>n</A>.
 ##  <P/>
-##  See <Ref Func="PrimeDivisors"/> for a function that returns a set of
+##  See <Ref Attr="PrimeDivisors"/> for a function that returns a set of
 ##  (probable) primes dividing <A>n</A>.
 ##  <P/>
 ##  Note that <Ref Func="FactorsInt"/> uses a probable-primality test
@@ -462,12 +467,12 @@ DeclareGlobalFunction( "FactorsInt" );
 ##  
 ##  <#GAPDoc Label="PrimeDivisors">
 ##  <ManSection>
-##  <Func Name="PrimeDivisors" Arg='n'/>
+##  <Attr Name="PrimeDivisors" Arg='n'/>
 ##  <Description>
-##  This function returns for a non-zero integer <A>n</A> a set of its positive
-##  (probable) primes divisors. In rare cases the result could contain a
-##  composite number which passed certain primality tests, see <Ref
-##  Func="IsProbablyPrimeInt"/> and <Ref Func="FactorsInt"/> for more details.
+##  <Ref Attr="PrimeDivisors"/> returns for a non-zero integer <A>n</A> a set 
+##  of its positive (probable) primes divisors. In rare cases the result could 
+##  contain a composite number which passed certain primality tests, see 
+##  <Ref Func="IsProbablyPrimeInt"/> and <Ref Func="FactorsInt"/> for more details.
 ##  <Example>
 ##  gap> PrimeDivisors(-12);
 ##  [ 2, 3 ]
@@ -478,7 +483,7 @@ DeclareGlobalFunction( "FactorsInt" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##  
-DeclareGlobalFunction("PrimeDivisors");
+DeclareAttribute("PrimeDivisors", IsInt);
 
 #############################################################################
 ##

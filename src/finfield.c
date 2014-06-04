@@ -111,7 +111,7 @@ typedef UInt2       FF;
 **  'CHAR_FF' returns the characteristic of the small finite field <ff>.
 **
 **  Note that  'CHAR_FF' is a macro,  so do not call  it  with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  'CHAR_FF' is defined in the declaration part of this package as follows
 **
@@ -126,7 +126,7 @@ typedef UInt2       FF;
 **  'DEGR_FF' returns the degree of the small finite field <ff>.
 **
 **  Note that 'DEGR_FF' is  a macro, so do   not call it with  arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  'DEGR_FF' is defined in the declaration part of this package as follows
 **
@@ -141,7 +141,7 @@ typedef UInt2       FF;
 **  'SIZE_FF' returns the size of the small finite field <ff>.
 **
 **  Note that 'SIZE_FF' is a macro, so do not call  it  with  arguments  that
-**  have sideeffects.
+**  have side effects.
 **
 **  'SIZE_FF' is defined in the declaration part of this package as follows
 **
@@ -157,7 +157,7 @@ typedef UInt2       FF;
 **  field <ff>.
 **
 **  Note that 'SUCC_FF' is a macro, so do not call  it  with  arguments  that
-**  sideeffects.
+**  side effects.
 **
 **  'SUCC_FF' is defined in the declaration part of this package as follows
 **
@@ -173,7 +173,7 @@ Obj             SuccFF;
 **  'TYPE_FF' returns the kind of elements of the small finite field <ff>.
 **
 **  Note that  'TYPE_FF' is a macro, so  do not call  it  with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  'TYPE_FF' is defined in the declaration part of this package as follows
 **
@@ -224,7 +224,7 @@ typedef UInt2           FFV;
 **  a subfield of the other use 'SumFFEFFE'.
 **
 **  Use  'SUM_FFV' only with arguments  that are variables or array elements,
-**  because it is a macro and arguments with sideeffects will behave strange,
+**  because it is a macro and arguments with side effects will behave strange,
 **  and because it  is a complex macro  so most C  compilers will be upset by
 **  complex arguments.  Especially do not use 'SUM_FFV(a,NEG_FFV(b,f),f)'.
 **
@@ -250,7 +250,7 @@ typedef UInt2           FFV;
 **  finite field pointed to by the pointer <f>.
 **
 **  Use  'NEG_FFV' only with arguments  that are variables or array elements,
-**  because it is a macro and arguments with sideeffects will behave strange,
+**  because it is a macro and arguments with side effects will behave strange,
 **  and because it is  a complex macro so most  C compilers will be upset  by
 **  complex arguments.  Especially do not use 'NEG_FFV(PROD_FFV(a,b,f),f)'.
 **
@@ -281,7 +281,7 @@ typedef UInt2           FFV;
 **  lies in a subfield of the other use 'ProdFFEFFE'.
 **
 **  Use 'PROD_FFV' only with arguments that are  variables or array elements,
-**  because it is a macro and arguments with sideeffects will behave strange,
+**  because it is a macro and arguments with side effects will behave strange,
 **  and  because it is  a complex macro so most  C compilers will be upset by
 **  complex arguments.  Especially do not use 'NEG_FFV(PROD_FFV(a,b,f),f)'.
 **
@@ -308,7 +308,7 @@ typedef UInt2           FFV;
 **  in a subfield of the other use 'QuoFFEFFE'.
 **
 **  Use 'QUO_FFV' only with arguments  that are variables or array  elements,
-**  because it is a macro and arguments with sideeffects will behave strange,
+**  because it is a macro and arguments with side effects will behave strange,
 **  and  because it is  a complex macro so most  C compilers will be upset by
 **  complex arguments.  Especially do not use 'NEG_FFV(PROD_FFV(a,b,f),f)'.
 **
@@ -338,7 +338,7 @@ typedef UInt2           FFV;
 **  'unsigned short'.
 **
 **  Note  that 'POW_FFV' is a macro,  so do not call  it  with arguments that
-**  have sideeffects.  For optimal performance  put the operands in registers
+**  have side effects.  For optimal performance  put the operands in registers
 **  before calling 'POW_FFV'.
 **
 **  If the finite field element is 0 the power is also 0, otherwise  we  have
@@ -359,7 +359,7 @@ typedef UInt2           FFV;
 **  represented.
 **
 **  Note that 'FLD_FFE' is a macro, so do not call  it  with  arguments  that
-**  have sideeffects.
+**  have side effects.
 **
 **  'FLD_FFE' is defined in the declaration part of this package as follows
 **
@@ -376,7 +376,7 @@ typedef UInt2           FFV;
 **  and otherwise if <ffe> is $z^i$, it returns $i+1$.
 **
 **  Note that 'VAL_FFE' is a macro, so do not call  it  with  arguments  that
-**  have sideeffects.
+**  have side effects.
 **
 **  'VAL_FFE' is defined in the declaration part of this package as follows
 **
@@ -392,7 +392,7 @@ typedef UInt2           FFV;
 **  with the value <val>.
 **
 **  Note that 'NEW_FFE' is a macro, so do not  call  it  with  arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  'NEW_FFE' is defined in the declaration part of this package as follows
 **
@@ -1679,7 +1679,7 @@ Obj FuncIS_FFE (
     if ( TNUM_OBJ(obj) == T_FFE ) {
         return True;
     }
-    else if ( TNUM_OBJ(obj) <= FIRST_EXTERNAL_TNUM ) {
+    else if ( TNUM_OBJ(obj) < FIRST_EXTERNAL_TNUM ) {
         return False;
     }
     else {
@@ -2153,7 +2153,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoFinfield ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

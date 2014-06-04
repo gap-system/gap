@@ -1,0 +1,18 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/04/10
+!! Changed by
+AH (with substantial contributions from BE)
+!! Type of Change
+New: extended functionality
+!! Description
+Maximal subgroups (excluding ONS type 5) for TF groups.
+! Test Code
+gap> g:=Image(IsomorphismPermGroup(GL(2,5)));;
+gap> w:=WreathProduct(g,SymmetricGroup(5));;
+gap> m:=MaximalSubgroupClassReps(w);;
+gap> Collected(List(m,x->Index(w,x)));
+[ [ 2, 3 ], [ 5, 1 ], [ 6, 1 ], [ 10, 1 ], [ 16, 1 ], [ 3125, 1 ], 
+  [ 7776, 1 ], [ 100000, 1 ] ]
+!! End

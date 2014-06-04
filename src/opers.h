@@ -210,7 +210,7 @@ extern Obj TRY_NEXT_METHOD;
 **  <list>.
 **
 **  Note that 'BLOCK_ELM_FLAGS' is a macro, so do not call it  with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define BLOCK_ELM_FLAGS(list, pos)      (BLOCKS_FLAGS(list)[((pos)-1)/BIPEB])
 
@@ -223,7 +223,7 @@ extern Obj TRY_NEXT_METHOD;
 **  (pos-1) % BIPEB, useful for accessing the pos'th element of a FLAGS
 **
 **  Note that 'MASK_POS_FLAGS'  is a macro, so  do not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define MASK_POS_FLAGS(pos)             (((UInt) 1)<<((pos)-1)%BIPEB)
 
@@ -237,7 +237,7 @@ extern Obj TRY_NEXT_METHOD;
 **  or equal to the length of <hdList>.
 **
 **  Note that 'ELM_FLAGS' is a macro, so do not call it  with arguments  that
-**  have sideeffects.
+**  have side effects.
 */
 #define ELM_FLAGS(list,pos) \
   ((BLOCK_ELM_FLAGS(list,pos) & MASK_POS_FLAGS(pos)) ?  True : False)
@@ -252,7 +252,7 @@ extern Obj TRY_NEXT_METHOD;
 **  equal to the length of <hdList>.  <val> must be either 'true' or 'false'.
 **
 **  Note that  'SET_ELM_FLAGS' is  a macro, so do not  call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_ELM_FLAGS(list,pos,val)  \
  ((val) == True ? \
@@ -369,17 +369,6 @@ extern Obj NewFilter (
 
 
 extern Obj DoTestAttribute( Obj self, Obj obj);
-
-/****************************************************************************
-**
-*F  NewFilterC( <name>, <narg>, <nams>, <hdlr> )  . . . . . make a new filter 
-*/
-extern Obj NewFilterC (
-    const Char *        name,
-    Int                 narg,
-    const Char *        nams,
-    ObjFunc             hdlr );
-
 
 /****************************************************************************
 **
@@ -512,12 +501,6 @@ extern Obj NewOperation (
             Obj                 nams,
             ObjFunc             hdlr );
 
-extern Obj NewOperationC (
-            const Char *        name,
-            Int                 narg,
-            const Char *        nams,
-            ObjFunc             hdlr );
-
 
 /****************************************************************************
 **
@@ -537,13 +520,6 @@ extern  Obj NewAttribute (
             Obj                 nams,
             ObjFunc             hdlr );
 
-extern  Obj NewAttributeC (
-            const Char *        name,
-            Int                 narg,
-            const Char *        nams,
-            ObjFunc             hdlr );
-
-
 /****************************************************************************
 **
 *F  NewProperty( <name> ) . . . . . . . . . . . . . . . . make a new property
@@ -557,13 +533,6 @@ extern Obj NewProperty (
             Int                 narg,
             Obj                 nams,
             ObjFunc             hdlr );
-
-extern Obj NewPropertyC (
-            const Char *        name,
-            Int                 narg,
-            const Char *        nams,
-            ObjFunc             hdlr );
-
 
 /****************************************************************************
 **

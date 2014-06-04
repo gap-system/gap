@@ -1,0 +1,16 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/04/01
+!! Changed by
+AH
+!! Type of Change
+New: extended functionality
+!! Description
+Improved methods for calculating subgroups, in particular for large
+nonsolvable socle.
+! Test Code
+gap> g:=WreathProduct(MathieuGroup(11),Group((1,2)));;
+gap> Length(ConjugacyClassesSubgroups(g));
+2048
+!! End

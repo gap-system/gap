@@ -10,111 +10,102 @@
 ##  This file contains declarations for magmas with zero adjoined.
 ##
 
-#############################################################################
-##
-#C  IsMultiplicativeElementWithZero( <elt>)
-##
 ##  <#GAPDoc Label="IsMultiplicativeElementWithZero">
 ##  <ManSection>
 ##  <Filt Name="IsMultiplicativeElementWithZero" Arg='elt' Type='Category'/>
-##
+##  <Returns><K>true</K> or <K>false</K>.</Returns>
 ##  <Description>
-##  Elements in a family which can be the operands of the 
-##  <C>*</C> and the operation MultiplicativeZero.
+##  This is the category of elements in a family which can be the operands of 
+##  <C>*</C> (multiplication) and the operation 
+##  <Ref Attr="MultiplicativeZero"/>.
+##<Example>
+##gap> S:=Semigroup(Transformation( [ 1, 1, 1 ] ));;
+##gap> M:=MagmaWithZeroAdjoined(S);
+##&lt;&lt;commutative transformation semigroup on 3 pts with 1 generator>
+##  with 0 adjoined>
+##gap> x:=Representative(M);
+##&lt;semigroup with 0 adjoined elt: Transformation( [ 1, 1, 1 ] )>
+##gap> IsMultiplicativeElementWithZero(x);
+##true
+##gap> MultiplicativeZeroOp(x);
+##&lt;semigroup with 0 adjoined elt: 0>
+##</Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##
+
 DeclareCategory("IsMultiplicativeElementWithZero",IsMultiplicativeElement);
 DeclareCategoryCollections("IsMultiplicativeElementWithZero");
 
-
-#############################################################################
-##
-#O  MultiplicativeZeroOp( <elt> ) 
-##
 ##  <#GAPDoc Label="MultiplicativeZeroOp">
 ##  <ManSection>
 ##  <Oper Name="MultiplicativeZeroOp" Arg='elt'/>
-##
+##  <Returns>A multiplicative zero element.</Returns>
 ##  <Description>
 ##  for an element <A>elt</A> in the category 
 ##  <Ref Func="IsMultiplicativeElementWithZero"/>,
+##  <C>MultiplicativeZeroOp</C> 
 ##  returns the element <M>z</M> in the family <M>F</M> of <A>elt</A>
 ##  with the property that <M>z * m = z = m * z</M> holds for all
-##  <M>m \in F</M>, if such an element is known.
+##  <M>m \in F</M>, if such an element can be determined.
 ##  <P/>
+##
 ##  Families of elements in the category
 ##  <Ref Func="IsMultiplicativeElementWithZero"/>
 ##  often arise from adjoining a new zero to an existing magma. 
-##  See&nbsp;<Ref Func="InjectionZeroMagma"/> for details.
-##  <P/>
+##  See&nbsp;<Ref Attr="InjectionZeroMagma"/> or 
+##  <Ref Func="MagmaWithZeroAdjoined"/> for details.
+##<Example>
+##gap> G:=AlternatingGroup(5);;
+##gap> x:=Representative(MagmaWithZeroAdjoined(G));
+##&lt;group with 0 adjoined elt: ()>
+##gap> MultiplicativeZeroOp(x);
+##&lt;group with 0 adjoined elt: 0></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##
+
 DeclareOperation( "MultiplicativeZeroOp", [IsMultiplicativeElementWithZero] );
 
-
-#############################################################################
-##
-#A  MultiplicativeZero( <M> ) 
-##
 ##  <#GAPDoc Label="MultiplicativeZero">
 ##  <ManSection>
 ##  <Attr Name="MultiplicativeZero" Arg='M'/>
-##
-##  <Description>
-##  Returns the multiplicative zero of the magma which is the element
-##  <A>z</A> such that for all <A>m</A> in <A>M</A>, <C><A>z</A> * <A>m</A> = <A>m</A> * <A>z</A> = <A>z</A></C>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareAttribute( "MultiplicativeZero", IsMultiplicativeElementWithZero );
-
-
-#############################################################################
-##
-#O  IsMultiplicativeZero( <M>, <z> ) 
-##
-##  <#GAPDoc Label="IsMultiplicativeZero">
-##  <ManSection>
 ##  <Oper Name="IsMultiplicativeZero" Arg='M, z'/>
-##
 ##  <Description>
-##  returns true iff <C><A>z</A> * <A>m</A> = <A>m</A> * <A>z</A> = <A>z</A></C> for all <A>m</A> in <A>M</A>.
+##  <C>MultiplicativeZero</C> returns the multiplicative zero of the magma
+##  <A>M</A>  which is the element
+##  <C>z</C> in <A>M</A> such that <C><A>z</A> *  <A>m</A> = <A>m</A> *
+##  <A>z</A> = <A>z</A></C> for all <A>m</A> in <A>M</A>.<P/>
+##
+##  <C>IsMultiplicativeZero</C> returns <K>true</K> if the element <A>z</A> of
+##  the magma <A>M</A> equals the multiplicative zero of <A>M</A>. 
+##<Example>
+##gap> S:=Semigroup( Transformation( [ 1, 1, 1 ] ), 
+##> Transformation( [ 2, 3, 1 ] ) );
+##&lt;transformation semigroup on 3 pts with 2 generators>
+##gap> MultiplicativeZero(S);
+##fail
+##gap> S:=Semigroup( Transformation( [ 1, 1, 1 ] ), 
+##> Transformation( [ 1, 3, 2 ] ) );
+##&lt;transformation semigroup on 3 pts with 2 generators>
+##gap> MultiplicativeZero(S);
+##Transformation( [ 1, 1, 1 ] )</Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##
-DeclareOperation( "IsMultiplicativeZero", [ IsMagma, IsMultiplicativeElement ] );
 
+DeclareAttribute( "MultiplicativeZero", IsMultiplicativeElementWithZero );
+DeclareOperation("IsMultiplicativeZero", [ IsMagma, IsMultiplicativeElement ] );
 
-#############################################################################
-##
-#A  InjectionZeroMagma( <M> )
-##
-##  <#GAPDoc Label="InjectionZeroMagma">
-##  <ManSection>
-##  <Attr Name="InjectionZeroMagma" Arg='M'/>
-##
-##  <Description>
-##  The canonical homomorphism <A>i</A> from the  magma
-##  <A>M</A> into the magma formed from <A>M</A> with a single new element 
-##  which is a multiplicative zero for the resulting magma.
-##  <P/>
-##  The elements of the new magma form a family of elements in the 
-##  category IsMultiplicativeElementWithZero, and the
-##  new magma is obtained as Range(<A>i</A>).
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
+# the documentation for the functions below is in mgmadj.xml in doc/ref
+
+DeclareRepresentation("IsMagmaWithZeroAdjoinedElementRep",
+IsComponentObjectRep and IsMultiplicativeElementWithZero and
+IsAttributeStoringRep, []);
+
+DeclareCategory( "IsMagmaWithZeroAdjoined", IsMagma);
 DeclareAttribute( "InjectionZeroMagma", IsMagma );
-
-
-#############################################################################
-##
-#E
+DeclareAttribute("MagmaWithZeroAdjoined", IsMultiplicativeElementWithZero and IsMagmaWithZeroAdjoinedElementRep);
+DeclareAttribute("MagmaWithZeroAdjoined", IsMagma);
+DeclareAttribute( "UnderlyingInjectionZeroMagma", IsMagmaWithZeroAdjoined);
 

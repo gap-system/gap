@@ -2809,139 +2809,131 @@ end);
 InstallMethod( SlotUsagePattern, "for an slp",
   [ IsStraightLineProgram ],
   function( slp )
-    local addedun,cur,deletions,i,j,l,li,nr,res,slotusage,step,su,
-          unnecessary,used;
+    local deletions,i,j,l,len,li,maxslot,needed,nr,res,step,u,unnecessary,
+          uses,w,writes;
     l := LinesOfStraightLineProgram(slp);
+    len := Length(l);
     nr := NrInputsOfStraightLineProgram(slp);
 
-    unnecessary := [];
+    # First determine to which slot each line writes:
+    writes := EmptyPlist(len);
+    maxslot := nr;
+    res := 0;
+    for step in [1..len] do
+        li := l[step];
+        if not(IsEmpty(li)) and IsInt(li[1]) then # line without overwrite
+            maxslot := maxslot + 1;
+            writes[step] := maxslot;
+            res := maxslot;
+        elif Length(li) = 2 and IsInt(li[2]) then # line with overwrite
+            writes[step] := li[2];
+            maxslot := Maximum(maxslot,li[2]);
+            res := li[2];
+        else   # a return line
+            writes[step] := 0;
+            res := 0;
+        fi;
+    od;
 
-    repeat     # we repeat leaving out unused lines until it becomes stable
-        addedun := false;
-        # First compute what is when read and written:
-        slotusage := List([1..nr],i->[0]);   # means: written in step 0
-        cur := nr+1;  # the current slot
-        for step in [1..Length(l)] do
-            if step in unnecessary then continue; fi;
-            li := l[step];
-            if IsInt(li[1]) then     # standard line without write
-                # We write to cur and read from every second entry in li:
-                if not(IsBound(slotusage[cur])) then slotusage[cur] := []; fi;
-                used := Set(li{[1,3..Length(li)-1]});
-                for i in used do
-                    Add(slotusage[i],step);
-                od;
-                Add(slotusage[cur],-step);
-                res := cur;
-                cur := cur + 1;
-            elif Length(li) = 2 and IsInt(li[2]) then # a standard line with w.
-                if not(IsBound(slotusage[li[2]])) then 
-                    slotusage[li[2]] := []; 
-                fi;
-                used := Set(li[1]{[1,3..Length(li[1])-1]});
-                for i in used do
-                    Add(slotusage[i],step);
-                od;
-                Add(slotusage[li[2]],-step);
-                res := li[2];
-                cur := Maximum(cur,li[2]+1);
+    # Now go through the program from back to front and do 2 things:
+    #   (1) Determine unnecessary steps (because result is not needed later)
+    #   (2) Remember that a slot can be deleted after its last usage
+    needed := BlistList([1..maxslot],[]);
+    if res <> 0 then needed[res] := true; fi;
+    unnecessary := BlistList([1..step],[]);
+    deletions := EmptyPlist(step);
+    for step in [len,len-1..1] do
+        li := l[step];
+        w := writes[step];
+        if w <> 0 and not(needed[w]) then
+            unnecessary[step] := true;
+        else
+            # Determine needed slots for this step:
+            if not(IsEmpty(li)) and IsInt(li[1]) then # line without overwrite
+                uses := Set(li{[1,3..Length(li)-1]});
+            elif Length(li) = 2 and IsInt(li[2]) then # line with overwrite
+                uses := Set(li[1]{[1,3..Length(li[1])-1]});
             else   # a return line
-                used := [];
+                uses := [];
                 for i in [1..Length(li)] do
-                    for j in li[i]{[1,3..Length(li[i])-1]} do
-                        AddSet(used,j);
+                    for j in [1,3..Length(li[i])-1] do
+                        AddSet(uses,li[i][j]);
                     od;
                 od;
-                for i in used do
-                    Add(slotusage[i],step);
-                od;
-                res := 0;
             fi;
-        od;
-        # Note the reading of the result if needed:
-        if res <> 0 then
-            Add(slotusage[res],Length(l)+1);
-        fi;
-
-        # Compute possible deletions from the slotusage:
-        deletions := List([1..Length(l)],i->[]);
-        for i in [1..Length(slotusage)] do
-            su := slotusage[i];
-            for j in [1..Length(su)-1] do
-                if su[j] > 0 and su[j+1] < 0 and su[j] <> -su[j+1] then
-                    Add(deletions[su[j]],i);
+            for u in uses do
+                if needed[u] = false then
+                    if not(IsBound(deletions[step])) then
+                        deletions[step] := [u];
+                    else
+                        AddSet(deletions[step],u);
+                    fi;
+                    needed[u] := true;
                 fi;
             od;
-            if Length(su) > 0 then
-                if su[Length(su)] < 0 then
-                    Add(unnecessary,-su[Length(su)]);
-                    addedun := true;
-                elif su[Length(su)] > 0 and su[Length(su)] < Length(l) then
-                    Add(deletions[su[Length(su)]],i);
-                fi;
+            if w <> 0 and not(w in uses) then
+                needed[w] := false;
             fi;
-        od;
-        if addedun then
-            Info(InfoSLP,3,"#Warning: Unnecessary steps: ",unnecessary);
         fi;
-    until not(addedun);
-    if Length(unnecessary) > 0 then
-        Info(InfoSLP,1,"#Warning: Total unnecessary steps: ",
-             Length(unnecessary));
-    fi;
-    return rec( slotusage := slotusage, largestused := Length(slotusage),
-                unnecessary := unnecessary, deletions := deletions );
+    od;
+    return rec( largestused := maxslot, writes := writes,
+                unnecessary := unnecessary, deletions := deletions,
+                resultslot := res );
   end );
 
 InstallMethod( ResultOfStraightLineProgram,
   "for a straight line program with slot usage pattern, a list",
   [ IsStraightLineProgram and HasSlotUsagePattern, IsHomogeneousList ],
   function( prog, gens )
-    local cur,i,line,r,res,step,sup,nrslots,maxnrslots;
+    local i,li,line,maxnrslots,nrslots,r,res,step,sup,w;
 
     # Initialize the list of intermediate results.
     r:= ShallowCopy( gens );
     res:= false;
     sup := SlotUsagePattern(prog);
     step := 1;
-    cur := Length(r)+1;
     nrslots := Length(r);
     maxnrslots := nrslots;
 
     # Loop over the program.
     for line in LinesOfStraightLineProgram( prog ) do
-      if not(step in sup.unnecessary) then
+      if not(sup.unnecessary[step]) then
           if   not IsEmpty( line ) and IsInt( line[1] ) then
-            # The line describes a word to be appended.
-            r[cur] := ResultOfLineOfStraightLineProgram( line, r );
-            res:= r[cur];
-            cur := cur + 1;
-            nrslots := nrslots + 1;
-            if nrslots > maxnrslots then maxnrslots := nrslots; fi;
+            # Normal line without overwrite:
+            li := line;
           elif 2 <= Length( line ) and IsInt( line[2] ) then
-            # The line describes a word that shall replace.
-            if not(IsBound(r[line[2]])) then
-                nrslots := nrslots + 1;
-                if nrslots > maxnrslots then maxnrslots := nrslots; fi;
-            fi;
-            r[ line[2] ]:= ResultOfLineOfStraightLineProgram( line[1], r );
-            res:= r[line[2]];
-            cur := Maximum(cur,line[2]+1);
+            # Line with overwrite:
+            li := line[1];
           else
             # The line describes a list of words to be returned.
             res := 0*[1..Length(line)];
             for i in [1..Length(line)] do
                 res[i] := ResultOfLineOfStraightLineProgram(line[i],r);
+                if InfoLevel(InfoSLP) >= 2 and i = 1 then
+                    Print("\n");
+                fi;
                 Info(InfoSLP,2,"Have computed result ",i," of ",
                      Length(line),".");
             od;
             return res;
           fi;
+
+          # Do the current line li:
+          w := sup.writes[step];
+          if not(IsBound(r[w])) then
+              nrslots := nrslots + 1;
+              if nrslots > maxnrslots then maxnrslots := nrslots; fi;
+          fi;
+          res := ResultOfLineOfStraightLineProgram( li, r );
+          r[w] := res;
+
           # Delete unused stuff:
-          for i in sup.deletions[step] do 
-              Unbind(r[i]); 
-              nrslots := nrslots-1;
-          od;
+          if IsBound(sup.deletions[step]) then
+              for i in sup.deletions[step] do 
+                  Unbind(r[i]); 
+                  nrslots := nrslots-1;
+              od;
+          fi;
           if InfoLevel(InfoSLP) >= 2 then
               Print("Step ",step," of ",
                Length(LinesOfStraightLineProgram(prog))," done, used slots: ",
@@ -2961,6 +2953,7 @@ InstallMethod( ResultOfStraightLineProgram,
     return res;
   end );
 
+
 ##
 #A  LargestNrSlots( <s> )
 ##
@@ -2976,43 +2969,49 @@ InstallMethod( ResultOfStraightLineProgram,
 InstallMethod( LargestNrSlots, "for a straight line program",
   [ IsStraightLineProgram ],
   function( slp )
-    local cur,i,line,maxnrslots,nrslots,r,step,sup;
-    sup := SlotUsagePattern(slp);
+    local i,li,line,maxnrslots,nrslots,r,step,sup,w;
+
     nrslots := NrInputsOfStraightLineProgram(slp);
-    step := 1;
-    cur := nrslots+1;
     r := 0*[1..nrslots];
+    sup := SlotUsagePattern(slp);
+    step := 1;
     maxnrslots := nrslots;
 
     # Loop over the program.
     for line in LinesOfStraightLineProgram( slp ) do
-      if not(step in sup.unnecessary) then
+      if not(sup.unnecessary[step]) then
           if   not IsEmpty( line ) and IsInt( line[1] ) then
-            # The line describes a word to be appended.
-            r[cur] := 1;
-            nrslots := nrslots + 1;
-            if nrslots > maxnrslots then maxnrslots := nrslots; fi;
-            cur := cur + 1;
+            # Normal line without overwrite:
+            li := line;
           elif 2 <= Length( line ) and IsInt( line[2] ) then
-            # The line describes a word that shall replace.
-            if not(IsBound(r[line[2]])) then
-                r[line[2]] := 1;
-                nrslots := nrslots + 1;
-                if nrslots > maxnrslots then maxnrslots := nrslots; fi;
-            fi;
-            cur := Maximum(cur,line[2]+1);
+            # Line with overwrite:
+            li := line[1];
           else
             # The line describes a list of words to be returned.
             return maxnrslots;
           fi;
+
+          # Do the current line li:
+          w := sup.writes[step];
+          if not(IsBound(r[w])) then
+              nrslots := nrslots + 1;
+              if nrslots > maxnrslots then maxnrslots := nrslots; fi;
+          fi;
+          r[w] := 0;
+
           # Delete unused stuff:
-          for i in sup.deletions[step] do 
-              Unbind(r[i]); 
-              nrslots := nrslots - 1;
-          od;
+          if IsBound(sup.deletions[step]) then
+              for i in sup.deletions[step] do 
+                  Unbind(r[i]); 
+                  nrslots := nrslots-1;
+              od;
+          fi;
       fi;
+
       step := step + 1;
     od;
+
+    # Return the result.
     return maxnrslots;
   end );
 

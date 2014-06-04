@@ -1907,7 +1907,7 @@ InstallOtherMethod( IsConjugatorIsomorphism,
   1,
 function( hom )
   local s, genss, rep,dom,insn,stb,E,bpt,fix,pnt,idom,sliced,
-    o,oimgs,i,pi,sto,stbs,stbi, r, sym;
+    o,oimgs,i,pi,sto,stbs,stbi, r, sym,doms,gn,mapi,pos;
 
   s:= Source( hom );
   if not IsPermGroup( s ) then
@@ -1915,6 +1915,12 @@ function( hom )
   elif not ( IsGroupHomomorphism( hom ) and IsBijective( hom ) ) then
     return false;
   fi;
+  # trivial group
+  if Size(s)=1 then
+    SetConjugatorOfConjugatorIsomorphism(hom,One(s));
+    return true;
+  fi;
+
   genss:= GeneratorsOfGroup( s );
 
   if IsEndoGeneralMapping( hom ) then
@@ -2011,14 +2017,32 @@ function( hom )
           fix:=First(oimgs[i],p->ForAll(GeneratorsOfGroup(E),
                       gen -> p ^ gen = p ) );
   
-          # we could try to use stabilizer chains, but the homomorphism does
-          # not necessarily have one which acts in every orbit. So we use the
-          # time-homoured transversal
-          sliced:=RightTransversal(s,stb);
-          for pnt in sliced do
-            Add(dom,bpt^pnt);
-            Add(idom,fix^ImageElm(hom,pnt));
-          od;
+	  # parallel orbit algorithm
+	  mapi:=MappingGeneratorsImages(hom);
+	  Add(dom,bpt);
+	  Add(idom,fix);
+	  pos:=Length(dom);
+	  doms:=[bpt];
+	  while pos<=Length(dom) do
+	    for gn in [1..Length(mapi[1])] do
+	      bpt:=dom[pos]^mapi[1][gn];
+	      if not bpt in doms then
+	        Add(dom,bpt);
+		AddSet(doms,bpt);
+		Add(idom,idom[pos]^mapi[2][gn]);
+	      fi;
+	    od;
+	    pos:=pos+1;
+	  od;
+
+          # # we could try to use stabilizer chains, but the homomorphism does
+          # # not necessarily have one which acts in every orbit. So we use the
+          # # time-homoured transversal
+          # sliced:=RightTransversal(s,stb);
+          # for pnt in sliced do
+          #   Add(dom,bpt^pnt);
+          #   Add(idom,fix^ImageElm(hom,pnt));
+          # od;
           
         od;
         rep:=MappingPermListList( dom, idom );

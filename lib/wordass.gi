@@ -863,7 +863,7 @@ end );
 ##
 ## for a word u, a subword v of u, an integer i and a word z
 ##
-## it substitutes the first occurence of v in u, starting from
+## it substitutes the first occurrence of v in u, starting from
 ## position k, by z
 ##
 InstallOtherMethod(SubstitutedWord,

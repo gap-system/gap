@@ -959,7 +959,7 @@ end );
 
 InstallOtherMethod( SubAlgebraModule,
    "for algebra module, and a list of submodule generators, and string",
-   function(F1,F2,F3) return IsIdenticalObj( F1, F2 ); end,
+   IsFamFamX,
    [ IsFreeLeftModule and IsAlgebraModule,
      IsAlgebraModuleElementCollection and IsList,
      IsString ], 0,
@@ -1562,7 +1562,7 @@ TriangulizeMonomialElementList:= function( tt, zero, LM, LC )
                         # subtract `cf' times the k-th entry of basechange.
                         for b in basechange[k] do
                             b1:= [ b[1], -cf*b[2] ];
-                            pos := PositionFirstComponent( basechange[i], b[1]);
+                            pos := PositionSorted( basechange[i], [b[1]]);
                             if pos > Length( basechange[i] ) or
                                basechange[i][pos][1] <> b1[1] then
                                 Add(basechange[i],b1,pos);
@@ -3040,7 +3040,7 @@ BindGlobal( "BasisOfSparseRowSpace",
                         # subtract `cf' times the k-th entry of basechange.
                         for b in basechange[k] do
                             b1:= [ b[1], -cf*b[2] ];
-                            pos := PositionFirstComponent( basechange[i], b[1]);
+                            pos := PositionSorted( basechange[i], [b[1]]);
                             if pos > Length( basechange[i] ) or
                                basechange[i][pos][1] <> b1[1] then
                                 Add(basechange[i],b1,pos);

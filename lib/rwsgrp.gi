@@ -342,8 +342,6 @@ InstallMethod( GroupByRwsNC,"rewriting system", true,
 function( rws )
     local   pows,conjs,fam,  gens,  g,  id,  grp,defpcgs,i;
 
-    pows:=rws![SCP_POWERS];
-    conjs:=rws![SCP_CONJUGATES];
     # give the rewriting system a chance to optimise itself
     ReduceRules(rws);
 
@@ -374,39 +372,43 @@ function( rws )
       SetGroupOfPcgs(defpcgs,grp);
       if HasIsFiniteOrdersPcgs(defpcgs) and IsFiniteOrdersPcgs(defpcgs) then
         SetSize(grp,Product(RelativeOrders(defpcgs)));
-	if HasRelativeOrders(rws) 
-	   and not ForAll(RelativeOrders(rws),IsPrimeInt) then
-	   Info(InfoWarning,1,
-	    "You are creating a Pc group with non-prime relative orders.");
-	   Info(InfoWarning,1,
-       	    "Many algorithms require prime relative orders.");
+        if HasRelativeOrders(rws)
+           and not ForAll(RelativeOrders(rws),IsPrimeInt) then
+           Info(InfoWarning,1,
+            "You are creating a Pc group with non-prime relative orders.");
+           Info(InfoWarning,1,
+            "Many algorithms require prime relative orders.");
            Info(InfoWarning,1,"Use `RefinedPcGroup' to convert.");
-	fi;
+        fi;
       fi;
 
-      for i in [1..Length(pows)] do
-	if IsBound(pows[i]) then
-	  # this certainly could be done better, if one knew more about rws
-	  # than I do. AH
-	  defpcgs!.powers[i]:=ExponentsOfPcElement(defpcgs,
-	                        ElementByRws(fam,pows[i]));
-	else
-	  defpcgs!.powers[i]:=defpcgs!.zeroVector;
-        fi;
-      od;
-      for pows in [1..Length(conjs)] do
-	for i in [1..Length(conjs[pows])] do
-	  if IsBound(conjs[pows][i]) then
-	  # this certainly could be done better, if one knew more about rws
-	  # than I do. AH
-	    defpcgs!.conjugates[pows][i]:=ExponentsOfPcElement(defpcgs,
-					    ElementByRws(fam,conjs[pows][i]));
-	  else
-	    defpcgs!.conjugates[pows][i]:=ExponentsOfPcElement(defpcgs,
-					    defpcgs[pows]);
-	  fi;
-	od;
-      od;
+      if IsSingleCollectorRep(rws) then
+        pows:=rws![SCP_POWERS];
+        conjs:=rws![SCP_CONJUGATES];
+        for i in [1..Length(pows)] do
+          if IsBound(pows[i]) then
+            # this certainly could be done better, if one knew more about rws
+            # than I do. AH
+            defpcgs!.powers[i]:=ExponentsOfPcElement(defpcgs,
+                                  ElementByRws(fam,pows[i]));
+          else
+            defpcgs!.powers[i]:=defpcgs!.zeroVector;
+          fi;
+        od;
+        for pows in [1..Length(conjs)] do
+          for i in [1..Length(conjs[pows])] do
+            if IsBound(conjs[pows][i]) then
+            # this certainly could be done better, if one knew more about rws
+            # than I do. AH
+              defpcgs!.conjugates[pows][i]:=ExponentsOfPcElement(defpcgs,
+                                              ElementByRws(fam,conjs[pows][i]));
+            else
+              defpcgs!.conjugates[pows][i]:=ExponentsOfPcElement(defpcgs,
+                                              defpcgs[pows]);
+            fi;
+          od;
+        od;
+      fi;
 
     fi;
 

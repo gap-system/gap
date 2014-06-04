@@ -342,9 +342,9 @@ InstallGlobalFunction( GaloisField, function ( arg )
     if Length( arg ) = 1 and IsPosInt( arg[1] ) then
 
         if arg[1]=GFCACHE[1] then
-            return GFCACHE[2];
+          return GFCACHE[2];
         fi;
-    
+
         # `GF( p^d )'
         p := SmallestRootInt( arg[1] );
         d := LogInt( arg[1], p );
@@ -970,6 +970,12 @@ local   str, log,deg,char;
   return str;
 end );
 
+InstallMethod(ViewString, "for an internal FFE delegating to String",
+  [IsFFE and IsInternalRep], String );
+
+InstallMethod(DisplayString, "for an internal FFE via String",
+  [IsFFE and IsInternalRep], ffe -> Concatenation( String(ffe), "\n") );
+
 
 #############################################################################
 ##
@@ -1138,6 +1144,28 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
     "for a collection of FFEs",
     [ IsFFECollection ],
     ffelist -> ForAll( ffelist, x -> not IsZero( x ) ) );
+
+
+#############################################################################
+##
+#M  AsInternalFFE( <internal ffe> )
+##
+InstallMethod( AsInternalFFE, [IsFFE and IsInternalRep],
+        x->x);
+
+#############################################################################
+##
+#M  AsInternalFFE( <non-ffe> )
+##
+InstallOtherMethod( AsInternalFFE, [IsObject], 
+        function(x)
+    if not IsFFE(x) then
+        return fail;
+    else
+        TryNextMethod();
+    fi;
+end);
+
 
 
 #############################################################################

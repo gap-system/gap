@@ -433,6 +433,59 @@ end );
 
 #############################################################################
 ##
+#O  FreeAbelianGroupCons( <filter>, <rank> )
+##
+##  <ManSection>
+##  <Oper Name="FreeAbelianGroupCons" Arg='filter, rank'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+DeclareConstructor( "FreeAbelianGroupCons", [ IsGroup, IsInt ] );
+
+
+#############################################################################
+##
+#F  FreeAbelianGroup( [<filt>, ]<rank> ) . . . . . . . . . .  free abelian group
+##
+##  <#GAPDoc Label="FreeAbelianGroup">
+##  <ManSection>
+##  <Func Name="FreeAbelianGroup" Arg='[filt, ]rank'/>
+##
+##  <Description>
+##  constructs the free abelian group of rank <A>n</A> in the category
+##  given by the filter <A>filt</A>.
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsFpGroup"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> FreeAbelianGroup(4);
+##  <fp group on the generators [ f1, f2, f3, f4 ]>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BindGlobal( "FreeAbelianGroup", function ( arg )
+
+  if Length(arg) = 1  then
+    return FreeAbelianGroupCons( IsFpGroup, arg[1] );
+  elif IsOperation(arg[1]) then
+
+    if Length(arg) = 2  then
+      return FreeAbelianGroupCons( arg[1], arg[2] );
+
+    elif Length(arg) = 3  then
+      return FreeAbelianGroupCons( arg[1], arg[2], arg[3] );
+    fi;
+  fi;
+  Error( "usage: FreeAbelianGroup( [<filter>, ]<size> )" );
+
+end );
+
+
+#############################################################################
+##
 #O  ExtraspecialGroupCons( <filter>, <order>, <exponent> )
 ##
 ##  <ManSection>

@@ -161,6 +161,17 @@ extern  Char *          NameGVar (
 
 /****************************************************************************
 **
+*F  NameGVarObj(<gvar>)  . . . . . . . . . . . . .  name of a global variable
+**
+**  'NameGVarObj' returns the name of the global variable <gvar> as a GAP
+**  string.
+*/
+extern  Obj            NameGVarObj (
+            UInt                gvar );
+
+
+/****************************************************************************
+**
 *F  GVarName(<name>)  . . . . . . . . . . . . . .  global variable for a name
 **
 **  'GVarName' returns the global variable with the name <name>.
@@ -307,87 +318,6 @@ extern Obj GVarFunc(GVarDescriptor *gvar);
 extern Obj GVarOptFunc(GVarDescriptor *gvar);
 extern void SetGVar(GVarDescriptor *gvar, Obj obj);
 
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * * * * *  create a new gvars *  * * * * * * * * * * * * *
-*/
-
-/****************************************************************************
-**
-
-*F  C_NEW_GVAR_FUNC( <name>, <nargs>, <nams>, <hdlr>, <cookie> )
-*/
-#define C_NEW_GVAR_FUNC( name, nargs, nams, hdlr, cookie ) \
-  do { \
-    InitHandlerFunc( hdlr, cookie ); \
-    if ( ! SyRestoring ) \
-      AssGVar( GVarName(name), NewFunctionC( name, nargs, nams, hdlr ) ); \
-      MakeReadOnlyGVar( GVarName(name) ); \
-  } while (0)
-
-
-/****************************************************************************
-**
-*F  C_NEW_GVAR_ATTR( <name>, <nams>, <attr>, <hdlr>, <cookie> )
-**
-**  WARNING: <attr> must *always* be a global C variable never a local one.
-*/
-#define C_NEW_GVAR_ATTR( name, nams, attr, hdlr, cookie ) \
-  do { \
-    InitHandlerFunc( hdlr, cookie ); \
-    InitFopyGVar( name, &attr ); \
-    if ( ! SyRestoring ) \
-      AssGVar( GVarName(name), NewAttributeC( name, 1L, nams, hdlr ) ); \
-      MakeReadOnlyGVar( GVarName(name) ); \
-  } while (0)
-
-
-/****************************************************************************
-**
-*F  C_NEW_GVAR_PROP( <name>, <nams>, <prop>, <hdlr>, <cookie> )
-**
-**  WARNING: <prop> must *always* be a global C variable never a local one.
-*/
-#define C_NEW_GVAR_PROP( name, nams, attr, hdlr, cookie ) \
-  do { \
-    InitHandlerFunc( hdlr, cookie ); \
-    InitFopyGVar( name, &attr ); \
-    if ( ! SyRestoring ) \
-      AssGVar( GVarName(name), NewPropertyC( name, 1L, nams, hdlr ) ); \
-      MakeReadOnlyGVar( GVarName(name) ); \
-  } while (0)
-
-
-/****************************************************************************
-**
-*F  C_NEW_GVAR_OPER( <name>, <nargs>, <nams>, <oper>, <hdlr>, <cookie> )
-**
-**  WARNING: <oper> must *always* be a global C variable never a local one.
-*/
-#define C_NEW_GVAR_OPER( name, nargs, nams, oper, hdlr, cookie ) \
-  do { \
-    InitHandlerFunc( hdlr, cookie ); \
-    InitFopyGVar( name, &oper ); \
-    if ( ! SyRestoring ) \
-      AssGVar( GVarName(name), NewOperationC( name, nargs, nams, hdlr ) ); \
-      MakeReadOnlyGVar( GVarName(name) ); \
-  } while (0)
-
-
-/****************************************************************************
-**
-*F  C_NEW_GVAR_FILT( <name>, <nams>, <filt>, <hdlr>, <cookie> )
-*/
-#define C_NEW_GVAR_FILT( name, nams, filt, hdlr, cookie ) \
-  do { \
-    InitHandlerFunc( hdlr, cookie ); \
-    InitFopyGVar( name, &filt ); \
-    if ( ! SyRestoring ) \
-      AssGVar( GVarName(name), NewFilterC( name, 1L, nams, hdlr ) ); \
-      MakeReadOnlyGVar( GVarName(name) ); \
-  } while (0)
 
 
 /****************************************************************************

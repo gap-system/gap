@@ -63,6 +63,16 @@
 
 #include        "gmpints.h"             /* GMP integers                    */
 
+#ifdef SYS_IS_64_BIT
+#define SaveLimb SaveUInt8
+#define LoadLimb LoadUInt8
+#else
+#define SaveLimb SaveUInt4
+#define LoadLimb LoadUInt4
+#endif
+
+#define INTBASE            (1L << (GMP_LIMB_BITS/2))
+
 
 /* macros to save typing later :)                                          */
 #define VAL_LIMB0(obj)         ( *(TypLimb *)ADDR_OBJ(obj)                  )
@@ -135,7 +145,7 @@ Obj FuncIS_INT ( Obj self, Obj val )
        || TNUM_OBJ(val) == T_INTNEG ) {
     return True;
   }
-  else if ( TNUM_OBJ(val) <= FIRST_EXTERNAL_TNUM ) {
+  else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
     return False;
   }
   else {
@@ -217,7 +227,7 @@ static inline Obj NEW_INTPOS( Obj gmp )
 *F  NEW_INTNEG( <gmp> )
 **
 **
-*/
+**
 static inline Obj NEW_INTNEG( Obj gmp )
 {
   Obj new;
@@ -227,7 +237,7 @@ static inline Obj NEW_INTNEG( Obj gmp )
 
   return new;
 }
-
+*/
 
 /****************************************************************************
 **
@@ -439,7 +449,7 @@ Obj FuncHexStringInt( Obj self, Obj integer )
     }
     
     /* else we create a string big enough for any immediate integer        */
-    res = NEW_STRING(2 * NR_HEX_DIGITS + 1);
+    res = NEW_STRING(2 * INTEGER_UNIT_SIZE + 1);
     p = CHARS_STRING(res);
     /* handle sign */
     if (n<0) {
@@ -451,8 +461,8 @@ Obj FuncHexStringInt( Obj self, Obj integer )
       SET_LEN_STRING(res, GET_LEN_STRING(res)-1);
     /* collect digits, skipping leading zeros                              */
     j = 0;
-    nf = ((UInt)15) << (4*(2*NR_HEX_DIGITS-1));
-    for (i = 2*NR_HEX_DIGITS; i; i-- ) {
+    nf = ((UInt)15) << (4*(2*INTEGER_UNIT_SIZE-1));
+    for (i = 2*INTEGER_UNIT_SIZE; i; i-- ) {
       a = ((UInt)n & nf) >> (4*(i-1));
       if (j==0 && a==0) SET_LEN_STRING(res, GET_LEN_STRING(res)-1);
       else if (a<10) p[j++] = a + '0';
@@ -535,6 +545,10 @@ Obj FuncIntHexString( Obj self,  Obj str )
     i = 0;
   }
 
+  while ((CHARS_STRING(str))[i] == '0' && i < len)
+    i++;
+    
+
   if ((len-i)*4 <= NR_SMALL_INT_BITS) {
     n = 0;
     p = CHARS_STRING(str);
@@ -556,8 +570,8 @@ Obj FuncIntHexString( Obj self,  Obj str )
   }
 
   else {
-    nd = (len-i)/NR_HEX_DIGITS;
-    if (nd * NR_HEX_DIGITS < (len-i)) nd++;
+    nd = (len-i)/INTEGER_UNIT_SIZE;
+    if (nd * INTEGER_UNIT_SIZE < (len-i)) nd++;
     /*   nd += ((3*nd) % 4); */
     if (sign == 1)
       res = NewBag( T_INTPOS, nd*sizeof(TypLimb) );
@@ -599,7 +613,7 @@ Obj FuncIntHexString( Obj self,  Obj str )
 */
 Obj FuncLog2Int( Obj self, Obj integer)
 {
-  Int res;
+  Int res, d;
   Int a, len;
   Int mask;
   TypLimb dmask;
@@ -618,12 +632,17 @@ Obj FuncLog2Int( Obj self, Obj integer)
   /* case of long ints                                                     */
   if ( IS_LARGEINT(integer) ) {
     for (len = SIZE_INT(integer); ADDR_INT(integer)[len-1] == 0; len--);
-    res = len * GMP_LIMB_BITS - 1;
+    /* Instead of computing 
+          res = len * GMP_LIMB_BITS - d;
+       we keep len and d separate, because on 32 bit systems res may
+       not fit into an Int (and not into an immediate integer).            */
+    d = 1;
     a = (TypLimb)(ADDR_INT(integer)[len-1]); 
     for(dmask = (TypLimb)1 << (GMP_LIMB_BITS - 1);
         (dmask & a) == 0 && dmask != (TypLimb)0;
-        dmask = dmask >> 1, res--);
-    return INTOBJ_INT(res);
+        dmask = dmask >> 1, d++);
+    return DiffInt(ProdInt(INTOBJ_INT(len), INTOBJ_INT(GMP_LIMB_BITS)), 
+                   INTOBJ_INT(d));
   }
   else {
     ErrorReturnObj("Log2Int: argument must be a int, (not a %s)",
@@ -650,10 +669,6 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
   Int   i;
   Char  c;
   Int neg;
-
-  /* findme - enough space for a 1000 limb gmp int on a 64 bit machine     */
-  /* change when 128 bit comes along!                                      */
-  Char buf[20000];
 
   
   /* handle a small integer                                                */
@@ -706,16 +721,20 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
   /* handle a large integer                                                */
   else if ( SIZE_INT(integer) < 1000 ) {
 
+    /* findme - enough space for a 1000 limb gmp int on a 64 bit machine     */
+    /* change when 128 bit comes along!                                      */
+    Char buf[20000];
+
     if IS_INTNEG(integer) {
-    len = gmp_snprintf( buf, 19999, "-%Ni", (TypLimb *)ADDR_INT(integer),
+    len = gmp_snprintf( buf, sizeof(buf)-1, "-%Ni", (TypLimb *)ADDR_INT(integer),
           (TypGMPSize)SIZE_INT(integer) );
     }
     else {
-    len = gmp_snprintf( buf, 19999,  "%Ni", (TypLimb *)ADDR_INT(integer),
+    len = gmp_snprintf( buf, sizeof(buf)-1,  "%Ni", (TypLimb *)ADDR_INT(integer),
           (TypGMPSize)SIZE_INT(integer) );
     }
 
-    assert (len <= 19999);
+    assert(len < sizeof(buf));
     C_NEW_STRING( str, (TypGMPSize)len, buf );
 
     return str;
@@ -735,6 +754,8 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 *F  EqInt( <gmpL>, <gmpR> ) . . . . . . . . .  test if two integers are equal
 **
 **  
+**  'EqInt' returns 1  if  the two integer   arguments <intL> and  <intR> are
+**  equal and 0 otherwise.
 */
 
   /* findme - For comparisons, do we first normalize and, if possible,
@@ -870,14 +891,6 @@ Obj SumInt ( Obj gmpL, Obj gmpR )
 **
 *F  DiffInt( <gmpL>, <gmpR> ) . . . . . . . .  difference of two GMP integers
 **
-**  'DiffInt' returns the difference of the two GMP int arguments <gmpL>  and
-**  <gmpR>.  'DiffInt' handles  operands  of  type  'T_INT',  'T_INTPOS'  and
-**  'T_INTNEG'.
-**
-**  'DiffInt' is a little bit tricky since there are many different cases to
-**  handle, each operand can be positive or negative, small or large integer.
-**  If the operands have opposite sign 'DiffInt' calls 'SumInt',  this  helps
-**  reduce the total amount of code by a factor of two.
 */
 Obj DiffInt ( Obj gmpL, Obj gmpR )
 {
@@ -893,6 +906,13 @@ Obj DiffInt ( Obj gmpL, Obj gmpR )
 **
 *F  SumOrDiffInt( <gmpL>, <gmpR> ) . . . . .  sum or diff of two Int integers
 **
+**  'SumOrDiffInt' returns the sum or difference of the two GMP int arguments
+**  <gmpL> and  <gmpR>. 'SumOrDiffInt'  handles  operands  of  type  'T_INT',
+**  'T_INTPOS' and 'T_INTNEG'.
+**
+**  'SumOrDiffInt'  is a little  bit  tricky since  there are  many different
+**  cases to handle, each operand can be positive or negative, small or large
+**  integer.
 */
 Obj SumOrDiffInt ( Obj gmpL, Obj gmpR, Int sign )
 {
@@ -950,7 +970,6 @@ be called directly */
       res = NewBag( T_INTNEG, sizeof(TypLimb) );
       SET_VAL_LIMB0( res, (TypLimb)(-twosmall) );
     }
-
 
     return res;
   }
@@ -1124,7 +1143,7 @@ be called directly */
       
       /* mpn_lshift is faster still than mpn_add_n for adding a TypLimb
          number to itself                                                  */
-      if ( EqInt( gmpL, gmpR ) ) {
+      if ( gmpL == gmpR ) {
         carry = mpn_lshift( ADDR_INT(res),
                             ADDR_INT(gmpL), SIZE_INT(gmpL),
                             1 );
@@ -1233,21 +1252,19 @@ Obj FuncABS_INT(Obj self, Obj gmp)
 }
 
 
-/* findme - documentation: remove or fix all references to EvProd, EvMod,
-   etc., left from original integer.c (see the following preamble)         */
-
 /****************************************************************************
 **
+*F  ProdInt( <intL>, <intR> ) . . . . . . . . . . . . product of two integers
 **
-**  'ProdInt' returns the product of the two  integer  arguments  <intL>
-**  and <intR>.  'ProdInt' handles  operands  of  type 'T_INT', 'T_INTPOS'
-**  and 'T_INTNEG'.
+**  'ProdInt' returns the product of the two  integer  arguments  <intL>  and
+**  <intR>.  'ProdInt' handles  operands  of  type  'T_INT',  'T_INTPOS'  and
+**  'T_INTNEG'.
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvProd' for a better efficiency.
+**  This case is usually already handled in 'EvalProd' for a better efficiency.
 **
-**  Is called from the 'EvProd' binop so both operands are already evaluated.
+**  Is called from the 'EvalProd' binop so both operands are already evaluated.
 **
 **  The only difficulty about this function is the fact that is has to handle
 **  3 different situations, depending on how many arguments  are  small ints.
@@ -1258,6 +1275,7 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
   Int                   i;            /* hold small int value              */
   Int                   k;            /* hold small int value              */
   TypLimb           carry;            /* most significant limb             */
+  TypLimb      tmp1, tmp2;
   
   /* multiplying two small integers                                        */
   if ( ARE_INTOBJS( gmpL, gmpR ) ) {
@@ -1283,8 +1301,9 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
     if ( k < 0 )  k = -k;
     
     /* multiply                                                            */
-    mpn_mul_n( ADDR_INT( prd ), (TypLimb*)( &i ),
-               (TypLimb*)( &k ), (TypGMPSize)1 );
+    tmp1 = (TypLimb)i;
+    tmp2 = (TypLimb)k;
+    mpn_mul_n( ADDR_INT( prd ), &tmp1, &tmp2, 1 );
   }
   
   /* multiply a small and a large integer                                  */
@@ -1473,17 +1492,16 @@ Obj OneInt ( Obj op )
 
 /****************************************************************************
 **
-*F  PowInt( <intL>, <intR> )  . . . . . . . . . . . .  power of an integer
+*F  PowInt( <intL>, <intR> )  . . . . . . . . . . . . . . power of an integer
 **
-**  'PowInt' returns the <intR>-th (an integer) power of the integer
-**  <intL>.
+**  'PowInt' returns the <intR>-th (an integer) power of the integer  <intL>.
 **  'PowInt' handles operands of type 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvPow' for a better  efficiency.
+**  This case is usually already handled in 'EvalPow' for a better  efficiency.
 **
-**  Is called from the 'EvPow'  binop so both operands are already evaluated.
+**  Is called from the 'EvalPow'  binop so both operands are already evaluated.
 */
 Obj PowInt ( Obj gmpL, Obj gmpR )
 {
@@ -1652,9 +1670,9 @@ Obj FuncPOW_OBJ_INT ( Obj self, Obj opL, Obj opR )
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvMod' for a better efficiency.
+**  This case is usually already handled in 'EvalMod' for a better efficiency.
 p**
-**  Is called from the 'EvMod'  binop so both operands are already evaluated.
+**  Is called from the 'EvalMod'  binop so both operands are already evaluated.
 */
 Obj ModInt ( Obj opL, Obj opR )
 {
@@ -1799,12 +1817,15 @@ Obj ModInt ( Obj opL, Obj opR )
 **
 *F  QuoInt( <intL>, <intR> )  . . . . . . . . . . . quotient of two integers
 **
-**  'QuoInt' returns the integer part of the two ints <gmpL> and  <gmpR>.
+**  'QuoInt' returns the integer part of the two integers <intL> and  <intR>.
 **  'QuoInt' handles operands of type  'T_INT',  'T_INTPOS'  and  'T_INTNEG'.
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
 **
+**  Note that this routine is not called from 'EvalQuo', the  division  of  two
+**  integers yields  a  rational  and  is  therefor  performed  in  'QuoRat'.
+**  This operation is however available through the internal function 'Quo'.
 */
 Obj QuoInt ( Obj opL, Obj opR )
 {
@@ -1921,7 +1942,7 @@ Obj QuoInt ( Obj opL, Obj opR )
 
 /****************************************************************************
 **
-*F  FuncQUO_INT(<self>,<opL>,<opR>) . . . . . . .  internal function 'QuoInt
+*F  FuncQUO_INT(<self>,<opL>,<opR>) . . . . . . .  internal function 'QuoInt'
 **
 **  'FuncQUO_INT' implements the internal function 'QuoInt'.
 **
@@ -2073,7 +2094,6 @@ Obj RemInt ( Obj opL, Obj opR )
   
   /* return the result                                                     */
   return rem;
-  
 }
 
 
@@ -2288,28 +2308,6 @@ Obj GcdInt ( Obj opL, Obj opR )
   return gcd;
 }
 
-Obj FuncIntDiv2( Obj self, Obj gmp )
-{
-  Obj res;
-  Int p,r;
-  TypLimb bmask;
-
-    p=r=0;
-    /*    gmp = NEW_INT(arg);*/
-
-    /* find highest power of 2 dividing gmp and divide out by this */
-    for ( p = 0 ; ADDR_INT(gmp)[p] == (TypLimb)0; p++ ) {
-      ;
-    }
-    for ( bmask = (TypLimb)1, r = 0 ;
-          ( (bmask & ADDR_INT(gmp)[p]) == 0 ) && bmask != (TypLimb)0 ;
-          bmask = bmask << 1, r++ ) {
-      ;
-    }
-    res = INTOBJ_INT( p*1000 + r );
-    return res;
-}
-
 /****************************************************************************
 **
 *F  FuncGCD_INT(<self>,<opL>,<opR>)  . . . . . . .  internal function 'GcdInt'
@@ -2516,9 +2514,6 @@ static StructGVarFunc GVarFuncs [] = {
   { "Log2Int", 1, "gmp",
     FuncLog2Int, "src/gmpints.c:Log2Int" },
 
-  { "IntDiv2", 1, "gmp",
-    FuncIntDiv2, "src/gmpints.c:IntDiv2" },
-
   { "STRING_INT", 1, "gmp",
     FuncSTRING_INT, "src/gmpints.c:STRING_INT" },
   
@@ -2691,7 +2686,7 @@ static Int InitLibrary ( StructInitInfo *    module )
 */
 static StructInitInfo module = {
   MODULE_BUILTIN,                        /* type                           */
-  "gmpints",                            /* name                           */
+  "gmpints",                             /* name                           */
   0,                                     /* revision entry of c file       */
   0,                                     /* revision entry of h file       */
   0,                                     /* version                        */
@@ -2706,7 +2701,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoInt ( void )
 {
-  FillInVersion( &module );
   return &module;
 }
 

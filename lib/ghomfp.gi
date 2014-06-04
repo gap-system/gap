@@ -60,7 +60,9 @@ local s,sg,o,gi;
   fi;
   sg:=FreeGeneratorsOfFpGroup(s);
   o:=One(Range(hom));
-  gi:=MappingGeneratorsImages(hom)[2];
+  # take the images corresponding to the free gens in case of reordering or
+  # duplicates
+  gi:=MappingGeneratorsImages(hom)[2]{hom!.genpositions};
   return ForAll(RelatorsOfFpGroup(s),i->MappedWord(i,sg,gi)=o);
 end);
 
@@ -81,7 +83,9 @@ local s, bas, sg, o, gi, l, p, rel, start, i;
   bas:=BaseStabChain(StabChainMutable(Range(hom)));
   sg:=FreeGeneratorsOfFpGroup(s);
   o:=One(Range(hom));
-  gi:=MappingGeneratorsImages(hom)[2];
+  # take the images corresponding to the free gens in case of reordering or
+  # duplicates
+  gi:=MappingGeneratorsImages(hom)[2]{hom!.genpositions};
   for rel in RelatorsOfFpGroup(s) do
     l:=LetterRepAssocWord(rel);
     for start in bas do
@@ -663,7 +667,7 @@ local map,tab,tab2,i;
     TryNextMethod();
   fi;
   map:=MappingGeneratorsImages(hom2);
-  map:=GroupGeneralMappingByImages( Source( hom2 ), Range( hom1 ),
+  map:=GroupGeneralMappingByImagesNC( Source( hom2 ), Range( hom1 ),
          map[1], List( map[2], img ->
 	    ImagesRepresentative( hom1, img ) ) );
   SetIsMapping(map,true);
@@ -708,7 +712,12 @@ local mapi;
 	  i->Length(i)=1 and i[1]>0) ) then
     TryNextMethod();
   fi;
-  return MappedWord(elm,mapi[2],mapi[1]);
+  if Length(mapi[2])=0 then 
+    mapi:=One(Source(hom));
+  else
+    mapi:=MappedWord(elm,mapi[2],mapi[1]);
+  fi;
+  return mapi;
 end);
 
 #############################################################################
@@ -917,7 +926,7 @@ InstallMethod(NaturalHomomorphismByNormalSubgroupOp,
   "for subgroups of fp groups",IsIdenticalObj,
     [IsSubgroupFpGroup, IsSubgroupFpGroup],0,
 function(G,N)
-local T;
+local T,m;
 
   # try to use rewriting if the index is not too big.
   if IndexInWholeGroup(G)>1 and IndexInWholeGroup(G)<=1000 
@@ -937,10 +946,11 @@ local T;
         TryNextMethod(); # can't do
       fi;
       # did not succeed - do the stupid thing
-      T:=FactorGroupNC( G, GeneratorsOfGroup( N ) );
-      T:=GroupHomomorphismByImagesNC(G,T,
-          GeneratorsOfGroup(G),GeneratorsOfGroup(T));
-      return T;
+      m:=CosetTableDefaultMaxLimit;
+      repeat
+        m:=m*1000;
+	T:=TryCosetTableInWholeGroup(N:silent:=true,max:=m);
+      until T<>fail;
     fi;
 
   fi;

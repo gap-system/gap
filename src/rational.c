@@ -75,15 +75,6 @@
 #include	"tls.h"
 
 
-/****************************************************************************
-**
-
-*F  NUM_RAT(<rat>)  . . . . . . . . . . . . . . . . . numerator of a rational
-*F  DEN_RAT(<rat>)  . . . . . . . . . . . . . . . . denominator of a rational
-*/
-#define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
-#define DEN_RAT(rat)    ADDR_OBJ(rat)[1]
-
 #if 0
 #define CHECK_RAT(rat) if (TNUM_OBJ(rat) == T_RAT && \
                            GcdInt(NUM_RAT(rat),DEN_RAT(rat)) != INTOBJ_INT(1)) \
@@ -681,9 +672,6 @@ Obj             PowRat (
     Obj                 pow;            /* power                           */
 
     CHECK_RAT(opL);
-    /* raise numerator and denominator seperately                          */
-    numP = PowInt( NUM_RAT(opL), opR );
-    denP = PowInt( DEN_RAT(opL), opR );
 
     /* if <opR> == 0 return 1                                              */
     if ( opR == INTOBJ_INT( 0L ) ) {
@@ -695,7 +683,7 @@ Obj             PowRat (
         pow = opL;
     }
 
-    /* if <opR> is positive raise numberator and denominator seperately    */
+    /* if <opR> is positive raise numerator and denominator seperately    */
     else if ( (TNUM_OBJ(opR) == T_INT && 0 < INT_INTOBJ(opR))
            || TNUM_OBJ(opR) == T_INTPOS ) {
         numP = PowInt( NUM_RAT(opL), opR );
@@ -1051,7 +1039,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRat ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

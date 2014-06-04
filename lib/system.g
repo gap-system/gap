@@ -80,6 +80,7 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
       [ "D", false, "enable/disable debugging the loading of files" ],
       [ "M", false, "disable/enable loading of compiled modules" ],
       [ "N", false, "unused, for backward compatibility only" ],
+      [ "O", false, "disable/enable loading of obsolete files" ],
       [ "X", false, "enable/disable CRC checking for compiled modules" ],
       [ "T", false, "disable/enable break loop" ],
       [ "i", "", "<file>", "change the name of the init file" ],

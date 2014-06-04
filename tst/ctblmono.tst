@@ -58,8 +58,8 @@ gap> List( Irr( Sl23 ), IsInducedFromNormalSubgroup );
 gap> List( Irr( S4 ){ [ 1, 3, 4 ] },
 >          TestInducedFromNormalSubgroup );
 [ rec( comment := "linear character", isInduced := false ), 
-  rec( character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), 
-        [ 1, 1, E(3)^2, E(3) ] ), 
+  rec( character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ),
+      [ 1, 1, E(3)^2, E(3) ] ), 
       comment := "induced from component '.character'", isInduced := true ), 
   rec( comment := "all maximal normal subgroups checked", isInduced := false 
      ) ]

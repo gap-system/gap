@@ -13,19 +13,6 @@
 
 #############################################################################
 ##
-#F  SmithNormalFormSQ( mat )
-##
-InstallGlobalFunction( SmithNormalFormSQ, function( M )
-local r;
-  Info(InfoWarning,1,"Obsolete function  `SmithNormalFormSQ',\n",
-  "use `NormalFormIntMat' instead");
-  r:=NormalFormIntMat(M,15);
-  return rec(P:=r.rowtrans,Q:=r.coltrans,D:=r.normal,I:=r.coltrans^-1);
-end );
-
-
-#############################################################################
-##
 #F  DiagonalizeIntMatNormDriven(<mat>)  . . . . diagonalize an integer matrix
 ##
 #T  Should this test for mutability? SL
@@ -46,7 +33,7 @@ InstallGlobalFunction( DiagonalizeIntMatNormDriven, function ( mat )
             h,          # gap width in shell sort
             k, l,       # loop variables
             max, omax;  # maximal entry and overall maximal entry
-
+            
     # give some information
     Info( InfoMatrix, 1, "DiagonalizeMat called" );
     omax := 0;
@@ -367,6 +354,9 @@ end );
 InstallMethod( ShrinkCoeffs,"call `ShrinkRowVector'",
     [ IsList and IsMutable ],
 function( l1 )
+    Info( InfoWarning, 1,
+        "the operation `ShrinkCoeffs' is not supported anymore,\n",
+        "#I  use `ShrinkRowVector' instead" );
     ShrinkRowVector(l1);
     return Length(l1);
 end );
@@ -383,6 +373,9 @@ InstallMethod( ShrinkCoeffs, "8 bit vector",
         [IsMutable and IsRowVector and Is8BitVectorRep ],
         function(vec)
     local r;
+    Info( InfoWarning, 1,
+        "the operation `ShrinkCoeffs' is not supported anymore,\n",
+        "#I  use `ShrinkRowVector' instead" );
     r := RIGHTMOST_NONZERO_VEC8BIT(vec);
     RESIZE_VEC8BIT(vec, r);
     return r;
@@ -395,28 +388,12 @@ end);
 InstallMethod( ShrinkCoeffs,
     "for GF2 vector",
     [ IsMutable and IsRowVector and IsGF2VectorRep ],
-    SHRINKCOEFFS_GF2VEC );
-
-
-#############################################################################
-##
-#F  ProductPol( <coeffs_f>, <coeffs_g> )  . . . .  product of two polynomials
-##
-InstallGlobalFunction( ProductPol, function( f, g )
-    local  prod,  q,  m,  n,  i,  k;
-    m := Length(f);  while 1 < m  and f[m] = 0  do m := m-1;  od;
-    n := Length(g);  while 1 < n  and g[n] = 0  do n := n-1;  od;
-#T other zero elements are not allowed?
-    prod := [];
-    for i  in [ 2 .. m+n ]  do
-        q := 0;
-        for k  in [ Maximum(1,i-n) .. Minimum(m,i-1) ]  do
-            q := q + f[k] * g[i-k];
-        od;
-        prod[i-1] := q;
-    od;
-    return prod;
-end );
+function( l1 )
+    Info( InfoWarning, 1,
+        "the operation `ShrinkCoeffs' is not supported anymore,\n",
+        "#I  use `ShrinkRowVector' instead" );
+    return SHRINKCOEFFS_GF2VEC(l1);
+end ); 
 
 
 #############################################################################
@@ -723,6 +700,9 @@ end);
 ##
 BindGlobal( "CharacterTableDisplayPrintLegendDefault",
     function( data )
+    Info( InfoWarning, 1,
+        "the function `CharacterTableDisplayPrintLegendDefault' is no longer\n",
+        "#I  supported and may be removed from future versions of GAP" );
     Print( CharacterTableDisplayLegendDefault( data ) );
     end );
 
@@ -734,6 +714,10 @@ BindGlobal( "CharacterTableDisplayPrintLegendDefault",
 ##
 InstallGlobalFunction( ConnectGroupAndCharacterTable, function( arg )
     local G, tbl, arec, ccl, compat;
+    
+    Info( InfoWarning, 1,
+        "the function `ConnectGroupAndCharacterTable' is not supported anymore,\n",
+        "#I  use `CharacterTableWithStoredGroup' instead" );
 
     # Get and check the arguments.
     if   Length( arg ) = 2 and IsGroup( arg[1] )
@@ -786,6 +770,112 @@ InstallGlobalFunction( ConnectGroupAndCharacterTable, function( arg )
     fi;
 
     end );
+
+
+#############################################################################
+##
+#F  ViewLength( <len> )
+##
+##  <Ref Func="View"/> will usually display objects in short form if they 
+##  would need more than <A>len</A> lines. The default is 3.
+##  This function was moved to obsoletes before GAP 4.7 beta release,
+##  since there is now a user preference mechanism to specify it:
+##  GAPInfo.ViewLength:= UserPreference( "ViewLength" ) is the maximal
+##  number of lines that are reasonably printed in `ViewObj' methods.
+##
+BIND_GLOBAL( "ViewLength", function(arg)
+  Info (InfoWarning, 1, "The function `ViewLength' is no longer supported. ",
+                        "Please use user preference `ViewLength' instead.");
+  if LEN_LIST( arg ) = 0 then
+    return GAPInfo.ViewLength;
+  else
+    GAPInfo.ViewLength:= arg[1];
+  fi;
+end );
+
+
+
+#############################################################################
+##
+#M  PositionFirstComponent( <list>, <obj>  ) . . . . . . various
+##
+##  kernel method will TRY_NEXT if any of the sublists are not
+##  plain lists.
+##
+##  Note that we use PositionSorted rather than Position semantics
+##
+
+## This is deprecate because the following three methods each
+## compute differen things:
+## The first and third both use binary search, but one aborts
+## early on the first entry with first component equal to obj,
+## while the other aborts late, thus always finding the first
+## matching entry. Only the latter behavior matches PositionSorted
+## semantics.
+##
+## The second method on the other hand performs a linear search
+## from the start. This means that it also does not conform to
+## PositioSorted semantics (not even if the input list happens
+## to be sorted). For example, if an entry is not
+## found, it returns Length(list)+1, not the position it should
+## be inserted to ensure the list stays sorted.
+##
+## Fixing this could have broken private third-party code.
+## Since this operations is rather peculiar and can be replaced
+## by PositionSorted(list, [obj]), it was deemed
+## simples to declare it obsolete.
+
+InstallMethod( PositionFirstComponent,"for dense plain list", true,
+    [ IsDenseList and IsSortedList and IsPlistRep, IsObject ], 0,
+function ( list, obj )
+    Info( InfoObsolete, 1,
+        "the operation `PositionFirstComponent' is not supported anymore" );
+    return POSITION_FIRST_COMPONENT_SORTED(list, obj);
+end);
+
+
+InstallMethod( PositionFirstComponent,"for dense list", true,
+    [ IsDenseList, IsObject ], 0,
+function ( list, obj )
+local i;
+    Info( InfoObsolete, 1,
+        "the operation `PositionFirstComponent' is not supported anymore" );
+  i:=1;
+  while i<=Length(list) do
+    if list[i][1]=obj then
+      return i;
+    fi;
+    i:=i+1;
+  od;
+  return i;
+end);
+
+InstallMethod( PositionFirstComponent,"for sorted list", true,
+    [ IsSSortedList, IsObject ], 0,
+function ( list, obj )
+local lo,up,s;
+    Info( InfoObsolete, 1,
+        "the operation `PositionFirstComponent' is not supported anymore" );
+  # simple binary search. The entry is in the range [lo..up]
+  lo:=1;
+  up:=Length(list);
+  while lo<up do
+      s := QuoInt(up+lo,2);
+      #s:=Int((up+lo)/2);# middle entry
+    if list[s][1]<obj then
+      lo:=s+1; # it's not in [lo..s], so take the upper part.
+    else
+      up:=s; # So obj<=list[s][1], so the new range is [1..s].
+    fi;
+  od;
+  # now lo=up
+  return lo;
+#  if list[lo][1]=obj then
+#    return lo;
+#  else
+#    return fail;
+#  fi;
+end );
 
 
 #############################################################################

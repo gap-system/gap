@@ -235,16 +235,17 @@ InstallMethod( ClosureDivisionRing,
 
 #############################################################################
 ##
-#M  ViewObj( <F> )  . . . . . . . . . . . . . . . . . . . . . .  view a field
+#M  ViewString( <F> )  . . . . . . . . . . . . . . . . . . . . . .  view a field
 ##
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a field",
     [ IsField ],
     function( F )
     if HasSize( F ) and IsInt( Size( F ) ) then
-      Print( "<field of size ", Size( F ), ">" );
+      return Concatenation("<field of size ", String(Size( F )), ">" );
     else
-      Print( "<field in characteristic ", Characteristic( F ), ">" );
+      return Concatenation( "<field in characteristic ", 
+                            String(Characteristic( F )), ">" );
     fi;
     end );
 
@@ -257,7 +258,8 @@ InstallMethod( PrintObj,
     "for a field with known generators",
     [ IsField and HasGeneratorsOfField ],
     function( F )
-    if IsPrimeField( LeftActingDomain( F ) ) then
+      if IsIdenticalObj(F,LeftActingDomain(F)) or
+	IsPrimeField( LeftActingDomain( F ) ) then
       Print( "Field( ", GeneratorsOfField( F ), " )" );
     elif F = LeftActingDomain( F ) then
       Print( "FieldOverItselfByGenerators( ",
@@ -1069,6 +1071,53 @@ InstallMethod( PrimitiveRoot,
 
 #############################################################################
 ##
+#M  EuclideanDegree( Integers, <n> )  . . . . . . . . . . . . . absolut value
+##
+InstallMethod( EuclideanDegree,
+    "for a division ring and a ring element",
+    IsCollsElms,
+    [ IsDivisionRing, IsRingElement ],
+    function ( F, r )
+    if not r in F then
+      TryNextMethod(); # FIXME: or error?
+    fi;
+    return 0;
+    end );
+
+
+#############################################################################
+##
+#M  QuotientRemainder( Integers, <n>, <m> ) . . . . . . . . . . . quo and rem
+##
+InstallMethod( QuotientRemainder,
+    "for a division ring, and two ring elements",
+    IsCollsElmsElms,
+    [ IsDivisionRing, IsRingElement, IsRingElement ], 
+    function ( F, r, s )
+    if not r in F then
+      TryNextMethod(); # FIXME: or error?
+    fi;
+    return [ r/s, 0 ];
+    end );
+
+#############################################################################
+##
+#M  Factors( Integers, <n> )  . . . . . . . . . . factorization of an integer
+##
+InstallMethod( Factors,
+    "for a division ring and a ring element",
+    IsCollsElms,
+    [ IsDivisionRing, IsRingElement ],
+    function ( F, r )
+    if not r in F then
+      TryNextMethod(); # FIXME: or error?
+    fi;
+    return [ r ];
+    end );
+
+
+#############################################################################
+##
 #M  IsAssociated( <F>, <r>, <s> ) . . . . . . check associatedness in a field
 ##
 InstallMethod( IsAssociated,
@@ -1118,15 +1167,34 @@ InstallMethod( StandardAssociateUnit,
 ##
 #M  IsIrreducibleRingElement( <F>, <x> )
 ##
-InstallMethod(IsIrreducibleRingElement,"for field and ring element",
-    IsCollsElms, [ IsDivisionRing, IsScalar ],0,
-function ( F, r )
-  if not r in F then
-    TryNextMethod();
-  fi;
-  # field elements are either zero or a unit
-  return false;
-end );
+InstallMethod(IsIrreducibleRingElement,
+    "for a division ring and a ring element",
+    IsCollsElms,
+    [ IsDivisionRing, IsScalar ],
+    function ( F, r )
+    if not r in F then
+      TryNextMethod(); # FIXME: or error?
+    fi;
+    # field elements are either zero or a unit
+    return false;
+    end );
+
+
+#############################################################################
+##
+#M  IsPrime( <F>, <x> )
+##
+InstallMethod(IsPrime,
+    "for a division ring and a ring element",
+    IsCollsElms,
+    [ IsDivisionRing, IsScalar ],
+    function ( F, r )
+    if not r in F then
+      TryNextMethod(); # FIXME: or error?
+    fi;
+    # field elements are either zero or a unit
+    return false;
+    end );
 
 
 #############################################################################

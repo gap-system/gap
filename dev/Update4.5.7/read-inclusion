@@ -1,0 +1,22 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+24/11/12
+! Changed by
+SL
+! Reported by
+AK
+! Type of Change
+Fix: compile failure
+
+! Description
+
+GAP would not compile on some systems where HAVE_SELECT detects as 
+false. 
+
+! Test Code
+
+! Prefetch
+
+! Changeset
+
+! End

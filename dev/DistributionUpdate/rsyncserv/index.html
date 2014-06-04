@@ -24,11 +24,11 @@ commands!</p>
 
 <p class="changes">Last changes 
 <!--    !grep "^-" CHANGES | head -1     --> 
----  Mon, 25 Jun 2012 19:44:04 +0200
+---  Wed, 15 Jan 2014 17:16:30 +0100
 &nbsp;&nbsp;&nbsp;(<a href="CHANGES">Details</a>)
 </p>
 <p>
-This is a binary distribution of <span class="pkg">GAP</span>&nbsp;4.5
+This is a binary distribution of <span class="pkg">GAP</span>&nbsp;4.7
 on Linux PCs with i686 or x86_64 compatible processors (Pentium, Athlon, 
 Xeon, Opteron, ...). 
 It is maintained by <a
@@ -44,7 +44,7 @@ via the internet with a reference installation. Some features are:
 <ul>
 <li><span class="pkg">GAP</span> is already compiled with GMP and readline
 support. Binaries are linked such that only the C-library of any
-distribution from the last 5 years is needed at runtime.
+distribution from the last 5 years is needed at runtime.</li>
 <li>For 64-bit systems binaries in 32-bit mode and in 64-bit mode are
 provided.
 See <a href="#32versus64">below</a> for further
@@ -102,6 +102,11 @@ Everything is copied into a subdirectory <code>gap4r5</code> of this directory
 one in your standard path of executable programs, the scripts to start <span
 class="pkg">GAP</span> will be put there (the default is
 <code>/usr/local/bin</code>).
+<br />
+<strong>Note:</strong> We will use the directory name <code>gap4r5</code>
+also for the next <span
+class="pkg">GAP</span> releases (4.6.x, 4.7.x and so on) such that updates
+can be made more easily by calling the <code>gapsync</code> script.
 </p>
 <p>If some of these scripts exist already you will be asked if they can be
 deleted. Move them away first if you want to keep them.
@@ -134,6 +139,7 @@ class="pkg">GAP</span>&nbsp;4.4 installation with its <code>remove</code>
 script. Use the following command in a <span
 class="pkg">GAP</span>&nbsp;4.4 session to find out how this script can be
 called:
+</p>
 <pre>    Print(Concatenation(First(GAPInfo.RootPaths, p-&gt;
                     Filename([Directory(p)],"lib/init.g") <> fail), 
                     "/gapsync/remove\n"));
@@ -250,15 +256,16 @@ href="mailto:Frank.Luebeck@Math.RWTH-Aachen.De">Frank.Luebeck@Math.RWTH-Aachen.D
 </p>
 
 <h2>Notes on this installation, in particular packages</h2>
-<p>The <span class="pkg">GAP</span> version is 4.5.4.</p>
+<p>The <span class="pkg">GAP</span> version is 4.5.6.</p>
 <p>It is an installation of the archive <code>
-gap4r5p4_2012_06_04-23_02.tar.gz
+~/tmp/gap4r5p6_2012_09_16-01_02.tar.gz
 </code> plus version 1.4.5 of the <span class="pkg">homology</span> package.
 </p>
 <p>The packages 
 <span class="pkg">Alnuth</span>, 
 <span class="pkg">HAP</span>,
 <span class="pkg">polymaking</span>, 
+<span class="pkg">PolymakeInterface</span>
 <span class="pkg">qaos</span>,
 <span class="pkg">singular</span>,  
 and 
@@ -278,6 +285,10 @@ href="http://www.gap-system.org/Manuals/pkg/sgpviz/doc/chap1.html">graphviz</a>
 </p>
 <p>The package <span class="pkg">linboxing</span> currently doesn't work
 with this installation.
+</p>
+<p>
+The package <span class="pkg">PolymakeInterface</span> is currently only
+unpacked but not installed.
 </p>
 <p>Note that the <span class="pkg">AtlasRep</span> package contains
 directories <code>gap4r4/pkg/atlasrep/data*</code> which are world writable

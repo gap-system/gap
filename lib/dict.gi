@@ -136,7 +136,7 @@ InstallOtherMethod(AddDictionary,"for lookup sort dictionaries",true,
     local pair, p;
     pair:=[Immutable(x),val];
     MakeImmutable(pair); # to be able to store sortedness
-    p := PositionFirstComponent(d!.entries,x);
+    p := PositionSorted(d!.entries,[x]);
     if p <= Length(d!.entries) and d!.entries[p][1] = x then
         d!.entries[p] := pair;
     else
@@ -159,15 +159,19 @@ InstallMethod(KnowsDictionary,"for list lookup dictionaries",true,
   [IsListLookupDictionary,IsObject],0,
 function(d,x)
     local p;
-    p:=PositionFirstComponent(d!.entries,x);
-    return p <= Length(d!.entries) and d!.entries[p][1] = x;
+    for p in d!.entries do
+        if p[1] = x then
+            return true;
+        fi;
+    od;
+    return false;
 end);
 
 InstallMethod(KnowsDictionary,"for list dictionaries",true,
   [IsListDictionary,IsObject],0,
 function(d,x)
 local p;
-  return x in d!.list;
+    return x in d!.list;
 end);
 
 #############################################################################
@@ -177,13 +181,13 @@ end);
 InstallMethod(LookupDictionary,"for list dictionaries",true,
   [IsListLookupDictionary,IsObject],0,
 function(d,x)
-local p;
-  p:=PositionFirstComponent(d!.entries,x);
-  if p > Length(d!.entries) or d!.entries[p][1] <> x then
+    local p;
+    for p in d!.entries do
+        if p[1] = x then
+            return p[2];
+        fi;
+    od;
     return fail;
-  else
-    return d!.entries[p][2];
-  fi;
 end);
 
 ##
@@ -795,6 +799,7 @@ local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
   for i in HASH_RANGE do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
+
     if hash!.KeyArray[index] = fail then
       hash!.KeyArray[ index ] := key;
       hash!.ValueArray[ index ] := value;
@@ -959,7 +964,7 @@ local f,n,bytelen,data,qq,i;
                  Info(InfoWarning,1,"uncompressed vector");
                  x:=COPY_GF2VEC(x);
                fi;
-               return HASHKEY_BAG(x,101,data[1],data[2]);
+               return HashKeyBag(x,101,data[1],data[2]);
              end;
     fi;
   elif n < 256 then
@@ -977,13 +982,16 @@ local f,n,bytelen,data,qq,i;
     else
       # long 8 bit
       data:=[3*GAPInfo.BytesPerVariable,bytelen];
-      return x->HASHKEY_BAG(x,101,data[1],data[2]);
+      # must check type
+      #return x->HashKeyBag(x,101,data[1],data[2]); 
       return function(x)
-             if not Is8BitVectorRep(x) then
-                 Info(InfoWarning,1,"uncompressed vector");
-                 x:=CopyToVectorRepNC(x,n);
+             if not Is8BitVectorRep(x) or
+	       Q_VEC8BIT(x)<>n then
+                 Info(InfoWarning,1,"un- or miscompressed vector");
+                 x:=ShallowCopy(x);
+                 ConvertToVectorRep(x,n);
                fi;
-               return HASHKEY_BAG(x,101,data[1],data[2]);
+               return HashKeyBag(x,101,data[1],data[2]);
              end;
 
     fi;
@@ -1009,9 +1017,9 @@ end);
 SparseIntKeyVecListAndMatrix:=function(d,m)
 local f,n,pow,fct;
   if IsList(d) and Length(d)>0 and IsMatrix(d[1]) then
-    f:=FieldOfMatrixList(d);
+    f:=DefaultScalarDomainOfMatrixList(d);
   else
-    f:=FieldOfMatrixList([m]);
+    f:=DefaultScalarDomainOfMatrixList([m]);
   fi;
 
   fct:=SparseIntKey(f^Length(m[1]),m[1]);
@@ -1148,12 +1156,9 @@ local o,e;
          end;
 end);
 
-InstallMethod(SparseIntKey,"transformations, arbitrary domain",true,
-  [IsObject,IsTransformationRep],0,
-function(d,t)
-local n,l;
-  n:=DegreeOfTransformation(t);
-  l:=List([1..n],i->n^(i-1));
-  return x->x![1]*l;
+InstallMethod(SparseIntKey, "for an object and transformation", 
+[IsObject, IsTransformation],
+function(d, t)
+  return x-> NumberTransformation(t, DegreeOfTransformation(t)); 
 end);
 

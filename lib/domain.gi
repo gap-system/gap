@@ -346,8 +346,12 @@ InstallGlobalFunction( InstallAccessToGenerators,
         # If the component name stands for an integer,
         # return the generator at this position.
         nr:= Int( n );
-        if IsPosInt( nr ) and nr <= Length( gens ) then
-          return gens[ nr ];
+        if IsPosInt( nr ) then
+          if nr <= Length( gens ) then
+            return gens[ nr ];
+          else
+            Error("Generator number ", nr, " does not exist\n");
+          fi;
         fi;
 
         # I the component name is the name itself,

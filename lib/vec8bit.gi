@@ -947,9 +947,6 @@ end);
 #M PowerModCoeffs( <vec1>, <len1>, <exp>, <vec2>, <len2> )
 ##
 
-IsFamXYFamZ := function(F1, F2, F3, F4, F5) return
-  IsIdenticalObj(F1,F4); end;
-
 InstallMethod( PowerModCoeffs, 
         "for 8 bit vectors", 
         IsFamXYFamZ,
@@ -1050,6 +1047,7 @@ InstallMethod( Randomize, "for a mutable 8bit vector",
     local f,i;
     f := GF(Q_VEC8BIT(v));
     for i in [1..Length(v)] do v[i] := Random(f); od;
+    return v;
   end );
 InstallMethod( Randomize, "for a mutable 8bit vector and a random source",
   [ Is8BitVectorRep and IsMutable, IsRandomSource ],

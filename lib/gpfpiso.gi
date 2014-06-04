@@ -232,7 +232,14 @@ end );
 InstallGlobalFunction(IsomorphismFpGroupByChiefSeriesFactor,
 function(g,str,N)
   local ser, ab, homs, gens, idx, start, pcgs, hom, f, fgens, auts, sf, orb, tra, j, a, ad, lad, n, fg, free, rels, fp, vals, dec, still, lgens, ngens, nrels, nvals, p, dodecomp, decomp, hogens, di, i, k, l, m;
-  if IsTrivial(N) then
+  if Size(g)=1 then
+    # often occurs in induction base base
+    return GroupHomomorphismByFunction(g,TRIVIAL_FP_GROUP,x->One(TRIVIAL_FP_GROUP),x->One(g));
+  elif g=N then
+    # often occurs in induction base base
+    return GroupHomomorphismByImagesNC(g,TRIVIAL_FP_GROUP,GeneratorsOfGroup(g),
+             List(GeneratorsOfGroup(g),x->One(TRIVIAL_FP_GROUP)));
+  elif IsTrivial(N) then
     ser:=ChiefSeries(g);
   else
     if HasChiefSeries(g) and N in ChiefSeries(g) then
@@ -258,9 +265,13 @@ function(g,str,N)
       hom:=NaturalHomomorphismByNormalSubgroup(ser[i-1],ser[i]);
       IsOne(hom);
       f:=Image(hom);
-      IsSimpleGroup(f); # knowing simplicity makes it easy to test whether a
-                        # map is faithful
-      if IsPermGroup(f) then
+      # knowing simplicity makes it easy to test whether a map is faithful
+      if IsSimpleGroup(f) then
+	if IsPermGroup(f) and
+	  NrMovedPoints(f)>SufficientlySmallDegreeSimpleGroupOrder(Size(f)) then
+	  hom:=hom*SmallerDegreePermutationRepresentation(f);
+	fi;
+      elif IsPermGroup(f) then
 	hom:=hom*SmallerDegreePermutationRepresentation(f);
       fi;
 
@@ -708,7 +719,7 @@ InstallMethod( IsomorphismFpGroupByGeneratorsNC, "via cokernel", IsFamFamX,
 function( G, gens, str )
     local F, hom, rels, H, gensH, iso;
     F   := FreeGroup( Length(gens), str );
-    hom := GroupGeneralMappingByImages( G, F, gens, GeneratorsOfGroup(F) );
+    hom := GroupGeneralMappingByImagesNC( G, F, gens, GeneratorsOfGroup(F) );
     rels := GeneratorsOfGroup( CoKernelOfMultiplicativeGeneralMapping( hom ) );
     H := F /rels;
     gensH := GeneratorsOfGroup( H );

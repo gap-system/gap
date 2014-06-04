@@ -64,15 +64,23 @@ leave the 'Pager' and 'PagerOptions' preferences empty."
         pager:= sp[1];
         options:= sp{ [ 2 .. Length( sp ) ] };
         # 'less' could have options in variable 'LESS'
-        if sp[1] = "less" and IsBound(GAPInfo.KernelInfo.ENVIRONMENT.LESS) then
-          str := GAPInfo.KernelInfo.ENVIRONMENT.LESS;
-          sp := SplitStringInternal(str, "", " \n\t\r");
-          Append( options, sp );
-        elif sp[1]="more" and IsBound(GAPInfo.KernelInfo.ENVIRONMENT.MORE) then
-          # similarly for 'more'
-          str := GAPInfo.KernelInfo.ENVIRONMENT.MORE;
-          sp := SplitStringInternal(str, "", " \n\t\r");
-          Append( options, sp );
+        if "less" in SplitStringInternal(sp[1], "", "/\\") then
+          if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.LESS) then
+            str := GAPInfo.KernelInfo.ENVIRONMENT.LESS;
+            sp := SplitStringInternal(str, "", " \n\t\r");
+            Append( options, sp );
+          fi;
+          # make sure -r is used
+          Add( options, "-r" ); 
+        elif "more" in SplitStringInternal(sp[1], "", "/\\") then 
+          if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.MORE) then
+            # similarly for 'more'
+            str := GAPInfo.KernelInfo.ENVIRONMENT.MORE;
+            sp := SplitStringInternal(str, "", " \n\t\r");
+            Append( options, sp );
+          fi;
+          # make sure -f is used
+          Add( options, "-f" ); 
         fi;
         return [ pager, options ];
       fi;
@@ -213,8 +221,13 @@ end);
 
 BindGlobal("PAGER_EXTERNAL",  function( lines )
   local   path,  pager,  linepos,  str,  i,  cmdargs,  stream;
-  path := DirectoriesSystemPrograms();
-  pager := Filename( path, UserPreference("Pager") );
+
+  pager := UserPreference("Pager");
+  if not (Length(pager) > 0 and pager[1] = '/' and IsExecutableFile(pager))
+      then
+    path := DirectoriesSystemPrograms();
+    pager := Filename( path, UserPreference("Pager") );
+  fi;
   if pager=fail then
     Error( "Pager ", UserPreference("Pager"),
             " not found, reset with `SetUserPreference(\"Pager\", ...);'." );

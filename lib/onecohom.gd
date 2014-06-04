@@ -315,7 +315,7 @@ DeclareGlobalFunction( "OneCoboundaries" );
 ##  with respect to these generators (otherwise the routines try to select
 ##  suitable generators themselves).
 ##  The current version of the code assumes that <A>G</A> is a permutation
-##  group or a Pc group.
+##  group or a pc group.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

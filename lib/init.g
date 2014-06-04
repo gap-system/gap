@@ -609,10 +609,12 @@ CallAndInstallPostRestore( function()
     if enc = fail and IsBound(env.LANG) then
       enc := env.LANG;
     fi;
-    if enc <> fail and 
-                   (PositionSublist(enc, ".UTF-8") <> fail  or
-                    PositionSublist(enc, ".utf8") <> fail) then
-      GAPInfo.TermEncoding := "UTF-8";
+    if enc <> fail then
+      enc:=STRING_LOWER(enc);
+      if (PositionSublist(enc, "utf-8") <> fail  or
+          PositionSublist(enc, "utf8") <> fail) then
+        GAPInfo.TermEncoding := "UTF-8";
+      fi;
     fi;
     if not IsBound(GAPInfo.TermEncoding) then
       # default is latin1
@@ -623,6 +625,7 @@ CallAndInstallPostRestore( function()
   fi;
   MakeImmutable( GAPInfo.TermEncoding );
 end );
+
 
 
 BindGlobal( "ShowKernelInformation", function()
@@ -714,13 +717,16 @@ end );
 
 # delay printing the banner, if -L option was passed (LB)
 
+
+
 CallAndInstallPostRestore( function()
      if not ( GAPInfo.CommandLineOptions.q or
               GAPInfo.CommandLineOptions.b or GAPInfo.CommandLineOptions.L<>"" ) then
        ShowKernelInformation();
      fi;
      end );
-
+        
+     
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
     #Print (" Loading the library ... (see '?Saving and Loading' to start GAP faster)\n");
     Print (" Loading the library \c");
@@ -728,6 +734,12 @@ fi;
 
 ReadOrComplete( "lib/read2.g" );
 ReadOrComplete( "lib/read3.g" );
+
+#  Force population of GAPInfo.DirectoryCurrent
+#  Do it now so that Directory works, but it is available
+#  to package code.
+#
+CallAndInstallPostRestore(DirectoryCurrent);
 
 #############################################################################
 ##
@@ -899,7 +911,7 @@ which may vanish in a future version of GAP"
 # HACKUSERPREF temporary hack for AtlasRep and CTblLib:
 GAPInfo.UserPreferences.ReadObsolete := UserPreference("ReadObsolete");
 CallAndInstallPostRestore( function()
-    if UserPreference( "ReadObsolete" ) <> false and
+    if not GAPInfo.CommandLineOptions.O and UserPreference( "ReadObsolete" ) <> false and
        not IsBound( GAPInfo.Read_obsolete_gd ) then
       ReadLib( "obsolete.gd" );
       GAPInfo.Read_obsolete_gd:= true;
@@ -982,7 +994,7 @@ ReadLib("transatl.g");
 ##  (this value can be set in the `gap.ini' file)
 ##
 CallAndInstallPostRestore( function()
-    if UserPreference( "ReadObsolete" ) <> false and
+    if not GAPInfo.CommandLineOptions.O and UserPreference( "ReadObsolete" ) <> false and
        not IsBound( GAPInfo.Read_obsolete_gi ) then
       ReadLib( "obsolete.gi" );
       GAPInfo.Read_obsolete_gi:= true;

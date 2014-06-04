@@ -72,6 +72,7 @@ mentioned below may not be available on your installation.
 <#Include Label="CyclicGroup">
 <#Include Label="AbelianGroup">
 <#Include Label="ElementaryAbelianGroup">
+<#Include Label="FreeAbelianGroup">
 <#Include Label="DihedralGroup">
 <#Include Label="QuaternionGroup">
 <#Include Label="ExtraspecialGroup">
@@ -1370,8 +1371,8 @@ gap> phi := IsomorphismPermGroup( G );;
 gap> P := Image( phi );
 Group([ (1,7,6)(2,9)(4,5,10), (2,3,4,5)(6,9,8,7) ])
 gap> D := DerivedSubgroup( P );
-Group([ (1,2,10,9)(3,8)(4,5)(6,7), (1,6)(2,7,9,4)(3,8)(5,10), 
-  (1,9)(2,10)(3,6,8,5)(4,7) ])
+Group([ (1,2,10,9)(3,8)(4,5)(6,7), (1,6)(2,7,9,4)(3,8)(5,10), (1,9)
+(2,10)(3,6,8,5)(4,7) ])
 gap> Size( D );
 960
 gap> IsPerfectGroup( D );

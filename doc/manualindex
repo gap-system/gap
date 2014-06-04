@@ -1,4 +1,4 @@
-
+#!/bin/sh
 # lowercase all lines without an @ symbol
 awk '$0 !~ /@/ {$0=tolower($0)} {print}' $1.idx >$1.idl
 

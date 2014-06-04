@@ -109,6 +109,17 @@ InstallMethod( LieObject,
 
 #############################################################################
 ##
+#M  UnderlyingRingElement( <obj> )  . . . . . . . . . . . .   for a Lie object
+##
+InstallMethod( UnderlyingRingElement,
+    "for a Lie object in default representation",
+    true,
+    [ IsLieObject and IsPackedElementDefaultRep], 0,
+    obj -> obj![1] );
+
+
+#############################################################################
+##
 #M  PrintObj( <obj> ) . . . . . . . . . . . . . . . . . . .  for a Lie object
 ##
 InstallMethod( PrintObj,

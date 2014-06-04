@@ -76,6 +76,21 @@ end );
 
 #############################################################################
 ##
+#M  MinimalGeneratingSet( <group> )  .  get generators from nice obj
+##
+InstallMethod( MinimalGeneratingSet, true,
+    [ IsGroup and IsHandledByNiceMonomorphism ], 0,
+
+function( grp )
+    local   nice;
+    nice := NiceMonomorphism(grp);
+    return List( MinimalGeneratingSet(NiceObject(grp)),
+                 x -> PreImagesRepresentative(nice,x) );
+end );
+
+
+#############################################################################
+##
 #M  GroupByNiceMonomorphism( <nice>, <group> )  construct group with nice obj
 ##
 InstallMethod( GroupByNiceMonomorphism,
@@ -159,11 +174,15 @@ end );
 ##
 InstallMethod( NiceMonomorphism, "regular action", true,
         [ IsGroup and IsHandledByNiceMonomorphism ], 0,
-    function( G )
+function( G )
     if not HasGeneratorsOfGroup( G )  then
       TryNextMethod();
     elif not HasOne( G ) and Length(GeneratorsOfGroup(G))>0  then
       SetOne( G, One( GeneratorsOfGroup( G )[ 1 ] ) );
+    fi;
+
+    if not HasEnumerator(G) then
+      SetEnumerator(G,GroupEnumeratorByClosure(G));
     fi;
     return RegularActionHomomorphism( G );
 end );
@@ -258,8 +277,37 @@ GroupMethodByNiceMonomorphismCollColl( ClosureGroup,
 ##
 #M  ClosureGroup( <G>, <elm> )  . . . . . . . . closure of group with element
 ##
-GroupMethodByNiceMonomorphismCollElm( ClosureGroup,
-    [ IsGroup, IsMultiplicativeElementWithInverse ] );
+# don't use `GroupMethodByNiceMonomorphismCollElm' to treat case of element
+# contained in.
+#GroupMethodByNiceMonomorphismCollElm( ClosureGroup,
+#    [ IsGroup, IsMultiplicativeElementWithInverse ] );
+InstallMethod(ClosureGroup,"by niceo",
+  IsCollsElms,[IsGroup and IsHandledByNiceMonomorphism,
+               IsMultiplicativeElementWithInverse],0,
+function( obj1, obj2 )
+    local   nice,no,  img,  img1,pos1,pos2;;
+    nice := NiceMonomorphism(obj1);
+    img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
+    if img = fail or 
+      not (img in ImagesSource(nice) and
+	PreImagesRepresentative(nice,img)=obj2) then
+	TryNextMethod();
+    fi;
+    no:=NiceObject(obj1);
+    img1 := ClosureGroup( NiceObject(obj1), img );
+
+    # avoid recreating same object anew
+    if img1=no then
+      return obj1;
+    fi;
+
+    no:=GroupByNiceMonomorphism( nice, img1 );
+    if HasGeneratorsOfGroup(obj1) and not HasGeneratorsOfGroup(no) then
+      SetGeneratorsOfGroup(no,
+        Concatenation(GeneratorsOfGroup(obj1),[obj2]));
+    fi;
+    return no;
+end);
 
 
 #############################################################################
@@ -504,7 +552,7 @@ PropertyMethodByNiceMonomorphism( IsSupersolvableGroup,
 #M  IsomorphismPermGroup
 ##
 InstallMethod(IsomorphismPermGroup,"via niceomorphisms",true,
-  [IsGroup and IsHandledByNiceMonomorphism],
+  [IsGroup and IsFinite and IsHandledByNiceMonomorphism],
   # this is intended to be better than the generic ``action on element''
   # method. However for example for matrix groups there are better methods
   -NICE_FLAGS+5,
@@ -532,7 +580,7 @@ end);
 #M  IsomorphismPcGroup
 ##
 InstallMethod(IsomorphismPcGroup,"via niceomorphisms",true,
-  [IsGroup and IsHandledByNiceMonomorphism],0,
+  [IsGroup and IsFinite and IsHandledByNiceMonomorphism],0,
 function(g)
 local mon,iso;
   mon:=NiceMonomorphism(g);
@@ -611,11 +659,13 @@ GroupSeriesMethodByNiceMonomorphism( JenningsSeries,
 GroupSeriesMethodByNiceMonomorphism( LowerCentralSeriesOfGroup,
     [ IsGroup ] );
 
+
 #############################################################################
 ##
 #M  MaximalSubgroupClassReps( <G> )
 ##
 SubgroupsMethodByNiceMonomorphism( MaximalSubgroupClassReps, [ IsGroup ] );
+
 
 #############################################################################
 ##
@@ -838,9 +888,9 @@ end );
 
 #############################################################################
 ##
-#M  GroupGeneralMappingByImages( <G>, <H>, <gens>, <imgs> ) . . . . make GHBI
+#M  GroupGeneralMappingByImagesNC( <G>, <H>, <gens>, <imgs> ) . . . . make GHBI
 ##
-InstallMethod( GroupGeneralMappingByImages,
+InstallMethod( GroupGeneralMappingByImagesNC,
    "from a group handled by a niceomorphism",true,
     [ IsGroup and IsHandledByNiceMonomorphism, IsGroup, IsList, IsList ], 0,
 function( G, H, gens, imgs )
@@ -855,10 +905,17 @@ local nice,geni,map2,tmp;
     nice:=RestrictedNiceMonomorphism(nice,G);
   fi;
   geni:=List(gens,i->ImageElm(nice,i));
-  map2:=GroupGeneralMappingByImages(NiceObject(G),H,geni,imgs);
+  map2:=GroupGeneralMappingByImagesNC(NiceObject(G),H,geni,imgs);
   RUN_IN_GGMBI:=tmp;
   return CompositionMapping(map2,nice);
 end );
+
+InstallMethod( GroupGeneralMappingByImagesNC,
+   "from a group handled by a niceomorphism",true,
+    [ IsGroup and IsHandledByNiceMonomorphism, IsList, IsList ], 0,
+function( G, gens, imgs )
+  return GroupGeneralMappingByImagesNC(G,Group(imgs),gens,imgs);
+end);
 
 #############################################################################
 ##
@@ -947,6 +1004,79 @@ local b;
   fi;
   return MultiActionsHomomorphism(G,b.points,b.ops);
 end);
+
+
+#############################################################################
+##
+#R  IsEnumeratorByNiceomorphismRep
+##
+DeclareRepresentation( "IsEnumeratorByNiceomorphismRep",
+    IsAttributeStoringRep, [ "group", "morphism", "niceEnumerator" ] );
+
+#############################################################################
+##
+#M  Enumerator( <G> ) . . . . . . . . . . . . . . . . .  enumerator by niceo
+##
+InstallMethod( Enumerator,"use nice monomorphism",true,
+        [ IsGroup and IsHandledByNiceMonomorphism and IsFinite ], 0,
+function( G )
+    return Objectify(
+        NewType( FamilyObj(G), IsList and IsEnumeratorByNiceomorphismRep ),
+        rec( group:=G,
+	     morphism:=NiceMonomorphism(G),
+	     niceEnumerator:=Enumerator(NiceObject(G))));
+end );
+
+#############################################################################
+##
+#M  Length( <enum-by-niceo> )
+##
+InstallMethod( Length,"enum-by-niceomorphism", true,
+    [ IsList and IsEnumeratorByNiceomorphismRep ], 0,
+    enum -> Length(enum!.niceEnumerator));
+
+
+#############################################################################
+##
+#M  <enum-by-niceo> [ <pos> ]
+##
+InstallMethod( \[\],"enum-by-niceo", true,
+    [ IsList and IsEnumeratorByNiceomorphismRep, IsPosInt ], 0,
+function( enum, pos )
+local img;
+  img:=enum!.niceEnumerator[pos];
+  return PreImagesRepresentative(enum!.morphism,img);
+end);
+
+
+#############################################################################
+##
+#M  Position( <enum-by-niceo>, <elm>, <zero> )
+##
+InstallMethod( Position,"enum-by-niceo", IsCollsElmsX,
+    [ IsList and IsEnumeratorByNiceomorphismRep,
+      IsMultiplicativeElementWithInverse,
+      IsZeroCyc ], 0,
+function( enum, elm, zero )
+  elm:=ImageElm(enum!.morphism,elm);
+  return Position(enum!.niceEnumerator,elm,zero);
+end );
+
+
+#############################################################################
+##
+#M  PositionCanonical( <enum-by-niceo>, <elm> )
+##
+InstallMethod( PositionCanonical,"enum-by-niceo",
+    IsCollsElms,
+    [ IsList and IsEnumeratorByNiceomorphismRep,
+      IsMultiplicativeElementWithInverse ],
+    0,
+
+function( enum, elm )
+  elm:=ImageElm(enum!.morphism,elm);
+  return PositionCanonical(enum!.niceEnumerator,elm);
+end );
 
 #############################################################################
 ##

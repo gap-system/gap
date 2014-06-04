@@ -29,23 +29,27 @@
 typedef mp_limb_t      TypLimb;
 typedef mp_size_t   TypGMPSize;
 
+
+// TODO: Instead of hardcoding the values below, use
+//   GMP_LIMB_BITS etc. directly.
+//
+// To safeguard against bugs like compiling GAP against one version of
+// GMP and a plugin against another, we may want to add some safeguards.
+// E.g. add to config.h another #define GAP_GMP_LIMB_BITS and compare
+// that during compile time with GMP_LIMB_BITS.
+
+
 #ifdef SYS_IS_64_BIT
-typedef UInt4           TypDigit;
-#define NR_HEX_DIGITS         8
-#define SaveLimb SaveUInt8
-#define LoadLimb LoadUInt8
 #define INTEGER_UNIT_SIZE 8
 #define INTEGER_ALLOCATION_SIZE 8
+#define NR_SMALL_INT_BITS  (64 - 4)
 #else
-typedef UInt2           TypDigit;
-#define NR_HEX_DIGITS         4
-#define SaveLimb SaveUInt4
-#define LoadLimb LoadUInt4
 #define INTEGER_UNIT_SIZE 4
 #define INTEGER_ALLOCATION_SIZE 4
+#define NR_SMALL_INT_BITS  (32 - 4)
 #endif
 
-#if GMP_LIMB_BITS != NR_HEX_DIGITS * 8
+#if GMP_LIMB_BITS != INTEGER_UNIT_SIZE * 8
 #error Aborting compile: unexpected GMP limb size
 #endif
 #if GMP_NAIL_BITS != 0
@@ -57,9 +61,6 @@ typedef UInt2           TypDigit;
  #endif
 #endif
 
-#define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
-#define INTBASE            (1L << NR_DIGIT_BITS)
-#define NR_SMALL_INT_BITS  (2*NR_DIGIT_BITS - 4)
 
 #define ADDR_INT(obj)          (  (TypLimb *)ADDR_OBJ(obj)                  )
 #define SIZE_INT(obj)          (  (TypGMPSize)SIZE_OBJ(obj)/sizeof(TypLimb) )

@@ -18,8 +18,8 @@ pkgs:=SortedList(ShallowCopy(RecNames(pkgs)));
 recommended:=[ "atlasrep", "design", "grape", "guava", "example" ];
 
 # Hints for (some) packages that do not work under Windows 
-nowindows:=["ace", "anupq", "carat", "cohomolo", "fplsa", "gauss",
-"kbmag", "linboxing", "nq", "pargap", "xgap" ];
+nowindows:=["ace", "anupq", "carat", "cohomolo", "float", "fplsa", "gauss",
+"kbmag", "linboxing", "nq", "pargap", "polymakeinterface", "xgap" ];
 
 Print("=============================================================\n");
 # Packages needed by GAP
@@ -58,10 +58,7 @@ Print("=============================================================\n");
 # "laguna", "polenta", "polycyclic", "resclasses", "sophus" ]
 default:=SortedList(ShallowCopy( GAPInfo.UserPreferences.gap.PackagesToLoad ));
 
-# First those packages which are suggested for GAP are added to default.
-# As on Feb 18th 2012 in GAP.dev, this is ctbllib and tomlib
-default := Union( default, recommended, 
-             List( GAPInfo.Dependencies.SuggestedOtherPackages, pkg -> pkg[1] ) );
+default := Union( default, recommended ); 
      
 Print("Starting with the following list of default packages :\n", default, "\n"); 
 
@@ -124,9 +121,9 @@ if mandatory then
   Print("SectionIn RO \n");
 fi;  
 Print("SetOutPath $INSTDIR\\pkg \n");
-Print("File gap4r5\\pkg\\README.", pkg, "\n");
+Print("File gap4r7\\pkg\\README.", pkg, "\n");
 Print("SetOutPath $INSTDIR\\pkg\\", dirname, "\n");
-Print("File /r gap4r5\\pkg\\", dirname, "\\*.* \n");
+Print("File /r gap4r7\\pkg\\", dirname, "\\*.* \n");
 Print("SetOutPath $INSTDIR \n");
 Print("SectionEnd \n\n");
 end;
@@ -167,7 +164,7 @@ Print("# Packages that do not work under Windows end here\n\n");
 
 Print("=============================================================\n\n");
 for pkg in pkgs do
-  Print("LangString DESC_SecGAPpkg_", pkg, " ${LANG_ENGLISH} \"", GAPInfo.PackagesInfo.(pkg)[1].Subtitle, "\"\n");
+  Print("LangString DESC_SecGAPpkg_", pkg, " ${LANG_ENGLISH} \"", NormalizedWhitespace(GAPInfo.PackagesInfo.(pkg)[1].Subtitle), "\"\n");
 od;
 Print("=============================================================\n\n");
 for pkg in pkgs do

@@ -1460,18 +1460,20 @@ DeclareGlobalFunction( "CopyMappingAttributes" );
 ##
 #A  MappingGeneratorsImages(<map>)
 ##
+##  <#GAPDoc Label="MappingGeneratorsImages">
 ##  <ManSection>
 ##  <Attr Name="MappingGeneratorsImages" Arg='map'/>
 ##
 ##  <Description>
 ##  This attribute contains a list of length 2, the first entry being a list
 ##  of generators of the source of <A>map</A> and the second entry a list of
-##  their images. This attribute is used (for example) by
-##  <C>GroupHomomorphismByImages</C> to store generators and images.
-##  <!--  <C>MappingGeneratorsImages</C> is permitted to call <C>Source</C> and-->
-##  <!--  <C>ImagesRepresentative</C>. -->
+##  their images. This attribute is used, for example, by
+##  <Ref Func="GroupHomomorphismByImages"/> to store generators and images.
+##  <!--  <C>MappingGeneratorsImages</C> is permitted to call           -->
+##  <!--  <C>Source</C> and <C>ImagesRepresentative</C>.                -->
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "MappingGeneratorsImages", IsGeneralMapping );
 

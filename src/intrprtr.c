@@ -39,6 +39,8 @@
 #include        "integer.h"             /* integers                        */
 
 #include        "permutat.h"            /* permutations                    */
+#include        "trans.h"               /* transformations                 */
+#include        "pperm.h"               /* partial perms                   */
 
 #include        "precord.h"             /* plain records                   */
 
@@ -2119,16 +2121,13 @@ void            IntrFloatExpr (
     Char *              str )
 {
     Obj                 val;
-    UInt len;
 
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) {  CodeFloatExpr( str );   return; }
 
-    len = strlen(str)+1;
-    val = NEW_STRING(len-1);
-    memcpy(CHARS_STRING(val), (void *) str, len);
+    C_NEW_STRING_DYN(val, str);
     PushObj(ConvertFloatLiteralEager(val));
 }
 
@@ -4781,7 +4780,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoIntrprtr ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

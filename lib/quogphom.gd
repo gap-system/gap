@@ -170,7 +170,7 @@ DeclareRepresentation( "IsHomCosetToFpRep",
 ##
 #C  IsHomCosetToTuple(<obj>)
 ##
-DeclareCategory( "IsHomCosetToTuple",IsHomCoset and IsTuple);
+DeclareCategory( "IsHomCosetToTuple",IsHomCoset and IsDirectProductElement);
 DeclareCategoryCollections( "IsHomCosetToTuple" );  
 
 #############################################################################

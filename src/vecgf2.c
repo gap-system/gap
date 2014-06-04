@@ -3220,7 +3220,7 @@ Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
   UInt off,off2;		/* 0 based */
   Obj zahl;  /* the long number */
   UInt *num;
-  UInt *vp;
+  TypLimb *vp;
   len = LEN_GF2VEC(vec);
   num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
   off = (len -1) % BIPEB + 1; /* number of significant bits in last word */
@@ -3677,7 +3677,7 @@ UInt AClosVec(
 	bd=di;
 	bv = BLOCKS_GF2VEC(obv);
 	end = bv+((len+BIPEB-1)/BIPEB);
-	while (bv<=end) 
+	while (bv<end) 
 	  *bv++=*sum++;
 	sum = BLOCKS_GF2VEC(osum);
 	if (coords != (Obj) 0)
@@ -5026,7 +5026,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoGF2Vec ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

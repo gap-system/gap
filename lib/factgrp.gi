@@ -306,16 +306,20 @@ end);
 ##         operation kernels, don't continue anything which is smaller than N
 ##
 InstallGlobalFunction(CloseNaturalHomomorphismsPool,function(arg)
-local G,pool,p,comb,i,c,perm,l,isi,N,discard;
+local G,pool,p,comb,i,c,perm,l,isi,N,discard,ab;
   G:=arg[1];
   pool:=NaturalHomomorphismsPool(G);
   p:=[1..Length(pool.ker)];
+
   if Length(arg)>1 then
     N:=arg[2];
     p:=Filtered(p,i->IsSubset(pool.ker[i],N));
   else
     N:=fail;
   fi;
+
+  # do the abelians extra.
+  p:=Filtered(p,x->not HasAbelianFactorGroup(G,pool.ker[x]));
   
   discard:=[];
   repeat
@@ -448,7 +452,7 @@ InstallMethod(DoCheapActionImages,"generic",true,[IsGroup],0,Ignore);
 
 InstallMethod(DoCheapActionImages,"permutation",true,[IsPermGroup],0,
 function(G)
-local pool, dom, o, bl, op, Go, j, b, i;
+local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
 
   pool:=NaturalHomomorphismsPool(G);
   if pool.GopDone=false then
@@ -473,11 +477,20 @@ local pool, dom, o, bl, op, Go, j, b, i;
       fi;
 
       Go:=Image(op,G);
-      # all minimal blocks
-      for j in RepresentativesMinimalBlocks(Go,MovedPoints(Go)) do
-	j:=i{j}; # preimage
-	b:=Orbit(G,j,OnSets);
+      # all minimal and maximal blocks
+      mov:=MovedPoints(Go);
+      allb:=ShallowCopy(RepresentativesMinimalBlocks(Go,mov));
+      for j in allb do
+	b:=Orbit(G,i{j},OnSets);
 	Add(bl,Immutable(Set(b)));
+	# also one finer blocks (as we iterate only once)
+	newb:=Blocks(Go,Blocks(Go,mov,j),OnSets);
+	if Length(newb)>1 then
+	  newb:=Union(newb[1]);
+	  if not newb in allb then
+	    Add(allb,newb);
+	  fi;
+	fi;
       od;
 
       #if Length(i)<500 and Size(Go)>10*Length(i) then
@@ -510,7 +523,7 @@ end);
 BADINDEX:=1000; # the index that is too big
 GenericFindActionKernel:=function(arg)
 local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, bv, badi,
-totalcnt, interupt, u, nu, cor, zzz,bigperm,perm;
+totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
 
   G:=arg[1];
   N:=arg[2];
@@ -580,6 +593,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm;
     #cnt:=25;
   #fi;
 
+  badcores:=[];
   badi:=BADINDEX;
   totalcnt:=0;
   interupt:=false;
@@ -619,27 +633,35 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm;
 	# Abbruchkriterium: Bis kein Normalteiler, es sei denn, es ist N selber
 	# (das brauchen wir, um in einigen trivialen F"allen abbrechen zu
 	# k"onnen)
+#Print("nu=",Length(GeneratorsOfGroup(nu))," : ",Size(nu),"\n");
       until 
         
         # der Index ist nicht so klein, da"s wir keine Chance haben
-	((not bigperm or
+	not ForAny(badcores,x->IsSubset(nu,x)) and (((not bigperm or
 	Length(Orbit(nu,MovedPoints(G)[1]))<NrMovedPoints(G)) and 
 	(Index(G,nu)>50 or Factorial(Index(G,nu))>=Index(G,N)) and
-	not IsNormal(G,nu)) or IsSubset(u,nu) or interupt;
+	not IsNormal(G,nu)) or IsSubset(u,nu) or interupt);
+
       Info(InfoFactor,4,"Index ",Index(G,nu));
       u:=nu;
+
     until 
       # und die Gruppe ist nicht zuviel schlechter als der
       # beste bekannte Index. Daf"ur brauchen wir aber wom"oglich mehrfache
       # Erweiterungen.
-      interupt or (((Length(arg)=2 or Index(G,u)<=100*knowi)));
+      interupt or (((Length(arg)=2 or Index(G,u)<knowi)));
 
     if Index(G,u)<knowi then
+
+      #Print("Index:",Index(G,u),"\n");    
 
       if simple and u<>G then
 	cor:=TrivialSubgroup(G);
       else
 	cor:=Core(G,u);
+      fi;
+      if Size(cor)>Size(N) and IsSubset(cor,N) and not cor in badcores then
+	Add(badcores,cor);
       fi;
       # store known information(we do't act, just store the subgroup.
       # Thus this is fairly cheap
@@ -681,8 +703,33 @@ end;
 #F  SmallerDegreePermutationRepresentation( <G> )
 ##
 InstallGlobalFunction(SmallerDegreePermutationRepresentation,function(G)
-local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop, i,cheap;
-  cheap:=ValueOption("cheap")=true;
+local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
+  i,cheap,first;
+  cheap:=ValueOption("cheap");
+  if cheap="skip" then
+    return IdentityMapping(G);
+  fi;
+
+  cheap:=cheap=true;
+
+  # deal with large abelian cases first (which could be direct)
+  hom:=MaximalAbelianQuotient(G);
+  i:=IndependentGeneratorsOfAbelianGroup(Image(hom));
+  o:=List(i,Order);
+  if ValueOption("norecurse")<>true and 
+    Product(o)>20 and Sum(o)*4<NrMovedPoints(G) then
+    Info(InfoFactor,2,"append abelian rep");
+    s:=AbelianGroup(IsPermGroup,o);
+    ihom:=GroupHomomorphismByImagesNC(Image(hom),s,i,GeneratorsOfGroup(s));
+    erg:=SubdirectDiagonalPerms(
+	  List(GeneratorsOfGroup(G),x->Image(ihom,Image(hom,x))),
+	  GeneratorsOfGroup(G));
+    k:=Group(erg);SetSize(k,Size(G));
+    hom:=GroupHomomorphismByImagesNC(G,k,GeneratorsOfGroup(G),erg);
+    return hom*SmallerDegreePermutationRepresentation(k:norecurse);
+  fi;
+
+
   if not IsTransitive(G,MovedPoints(G)) then
     o:=ShallowCopy(OrbitsDomain(G,MovedPoints(G)));
     Sort(o,function(a,b)return Length(a)<Length(b);end);
@@ -750,6 +797,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop, i,cheap;
   b.dotriv:=false;
   ihom:=H;
   improve:=false; # indicator for first run
+  first:=true;
   repeat
     if improve=false and NrMovedPoints(H)*5>Size(H) and
       IsTransitive(H,MovedPoints(H)) then
@@ -768,9 +816,12 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop, i,cheap;
     improve:=false;
     b:=NaturalHomomorphismsPool(H);
     b.dotriv:=true;
-    b.GopDone:=false;
-    DoCheapActionImages(H);
-    CloseNaturalHomomorphismsPool(H,TrivialSubgroup(H));
+    if first then # only once!
+      b.GopDone:=false;
+      DoCheapActionImages(H);
+      CloseNaturalHomomorphismsPool(H,TrivialSubgroup(H));
+      first:=false;
+    fi;
     b.dotriv:=false;
     map:=GetNaturalHomomorphismsPool(H,TrivialSubgroup(H));
     if map<>fail and Image(map)<>H then
@@ -1233,7 +1284,9 @@ local h;
   # check, whether we already know a factormap
   DoCheapActionImages(G);
   h:=GetNaturalHomomorphismsPool(G,N);
-  if h=fail and HasIsSolvableGroup(N) and HasIsSolvableGroup(G) and IsSolvableGroup(N) and not IsSolvableGroup(G) and N=RadicalGroup(G)
+  if h=fail and HasIsSolvableGroup(N) and HasIsSolvableGroup(G) and
+    IsSolvableGroup(N) and not IsSolvableGroup(G) and HasRadicalGroup(G) 
+    and N=RadicalGroup(G)
     then
     # did we just compute it?
     h:=GetNaturalHomomorphismsPool(G,N);
@@ -1264,11 +1317,17 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp,
   "test if known/try solvable factor for permutation groups",
   IsIdenticalObj, [ IsPermGroup, IsPermGroup ], 0,
 function( G, N )
-local   map,  pcgs, A, filter;
+local   map,  pcgs, A, filter,p,i;
     
-  map:=GetNaturalHomomorphismsPool(G,N);
-  if map<>fail then
-    return map;
+  if KnownNaturalHomomorphismsPool(G,N) then
+    A:=DegreeNaturalHomomorphismsPool(G,N);
+    if A<50 or (IsInt(A) and A<IndexNC(G,N)/LogInt(IndexNC(G,N),2)^2) then
+      map:=GetNaturalHomomorphismsPool(G,N);
+      if map<>fail then
+	Info(InfoFactor,2,"use stored map");
+	return map;
+      fi;
+    fi;
   fi;
 
   if Index(G,N)=1 or Size(N)=1
@@ -1283,8 +1342,9 @@ local   map,  pcgs, A, filter;
       TryNextMethod();
   fi;
 
-  # Construct the pcp group <A>.
-  A := PermpcgsPcGroupPcgs( pcgs, pcgs!.permpcgsNormalSteps, false );
+  # Construct or look up the pcp group <A>.
+  A:=CreateIsomorphicPcGroup(pcgs,false,false);
+
   UseFactorRelation( G, N, A );
 
   # Construct the epimorphism from <G> onto <A>.

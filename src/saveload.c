@@ -29,6 +29,7 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "macfloat.h"            /* floating points */
 #include        "compstat.h"            /* statically compiled modules     */
+#include        "read.h"                /* to call function from library   */
 
 #include        "saveload.h"            /* saving and loading              */
 
@@ -47,6 +48,7 @@ static Int SaveFile;
 static UInt1 LoadBuffer[100000];
 static UInt1* LBPointer;
 static UInt1* LBEnd;
+static Obj userHomeExpand;
 
 static Int OpenForSave( Obj fname ) 
 {
@@ -528,7 +530,7 @@ static FILE *file;
 
 static void report( Bag bag)
 {
-  fprintf(file,"%li %li\n", (Int) TNUM_BAG(bag), (Int) SIZE_BAG(bag));
+  fprintf(file,"%li %li\n", (long) TNUM_BAG(bag), (long) SIZE_BAG(bag));
 }
 
 Obj BagStats(Obj self, Obj filename)
@@ -656,8 +658,12 @@ Obj SaveWorkspace( Obj fname )
 {
 
   Int i;
+  Obj fullname;
+
   if (!IsStringConv(fname))
     ErrorQuit("usage: SaveWorkspace( <filename> )",0,0);
+  /* maybe expand fname starting with ~/...   */
+  fullname = Call1ArgsInNewReader(userHomeExpand, fname);
   
   for (i = 0; i < NrModules; i++)
     if (Modules[i]->preSave != NULL &&
@@ -669,7 +675,7 @@ Obj SaveWorkspace( Obj fname )
           (*(Modules[i]->postSave))(Modules[i]);
         return Fail;
       }
-  
+
   /* Do a full garbage collection */
   CollectBags( 0, 1);
   
@@ -678,7 +684,7 @@ Obj SaveWorkspace( Obj fname )
   CallbackForAllBags( AddSaveIndex );
 
   /* Now do the work */
-  if (!OpenForSave( fname ))
+  if (!OpenForSave( fullname ))
     {
       WriteSaveHeader();
       SaveCStr("Bag data");
@@ -1018,12 +1024,14 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-  SaveFile = -1;
-  LBPointer = LoadBuffer;
-  LBEnd = LoadBuffer;
+    SaveFile = -1;
+    LBPointer = LoadBuffer;
+    LBEnd = LoadBuffer;
   
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
+    /* allow ~/... expansion in SaveWorkspace                              */ 
+    ImportFuncFromLibrary("USER_HOME_EXPAND", &userHomeExpand);
 
     /* return success                                                      */
     return 0;
@@ -1069,7 +1077,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSaveLoad ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

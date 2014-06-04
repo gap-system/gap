@@ -200,7 +200,7 @@ InstallMethod( Coefficients,
     n:= Length( v[1] );
     v:= List( v, ShallowCopy );
     for i in [ 1 .. Length( heads ) ] do
-      j:= PositionNot( v[i], zero );
+      j:= PositionNonZero( v[i] );
       while j <= n do
 
         val:= v[i][j];
@@ -217,10 +217,15 @@ InstallMethod( Coefficients,
           od;
 
         fi;
-        j:= PositionNot( v[i], zero );
+        j:= PositionNonZero( v[i] );
 
       od;
     od;
+
+    # Check whether the coefficients lie in the left acting domain.
+    if not IsSubset( LeftActingDomain( UnderlyingLeftModule( B ) ), coeff ) then
+      return fail;
+    fi;
 
     # Return the coefficients.
     return coeff;

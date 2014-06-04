@@ -231,6 +231,12 @@ This can be achieved via the following function:
 <Section Label="Immediate Methods">
 <Heading>Immediate Methods</Heading>
 
+Usually a method is called only if its operation has been called
+and if this method has been selected, see <Ref Func="InstallMethod"/>.
+<P/>
+For attributes and properties,
+one can install also <E>immediate methods</E>.
+
 <#Include Label="InstallImmediateMethod">
 
 </Section>

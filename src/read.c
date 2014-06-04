@@ -333,7 +333,7 @@ void ReadCallVarAss (
         nest++;
 	if (nest >= 65536)
 	  {
-	    Pr("Warning: abandoning search for %s at 1024th higher frame\n",
+	    Pr("Warning: abandoning search for %s at 65536th higher frame\n",
 	       (Int)TLS->value,0L);
 	    break;
 	  }
@@ -342,7 +342,7 @@ void ReadCallVarAss (
       nest0++;
 	if (nest0 >= 65536)
 	  {
-	    Pr("Warning: abandoning search for %s 4096 frames up stack\n",
+	    Pr("Warning: abandoning search for %s 65536 frames up stack\n",
 	       (Int)TLS->value,0L);
 	    break;
 	  }
@@ -580,6 +580,9 @@ void ReadCallVarAss (
 
     /*  if we need an unbind                                               */
     else if ( mode == 'u' ) {
+      if (TLS->symbol != S_RPAREN) {
+	SyntaxError("'Unbind': argument should be followed by ')'");
+      }
         if ( READ_ERROR() ) {}
         else if ( type == 'l' ) { IntrUnbLVar( var );             }
         else if ( type == 'h' ) { IntrUnbHVar( var );             }
@@ -712,8 +715,7 @@ void ReadLongNumber(
 
      /* string in which to accumulate number */
      len = strlen(TLS->value);
-     string = NEW_STRING(len);
-     memcpy(CHARS_STRING(string), (void *)TLS->value, len+1);
+     C_NEW_STRING( string, len, (void *)TLS->value);
      done = 0;
 
      while (!done) {
@@ -922,9 +924,8 @@ void ReadString(
      Obj  string;
      UInt len;
 
-     string = NEW_STRING(TLS->valueLen);
+     C_NEW_STRING( string, TLS->valueLen, (void *)TLS->value );
      len = TLS->valueLen;
-     memcpy(CHARS_STRING(string), (void *)TLS->value, TLS->valueLen);
 
      while (TLS->symbol == S_PARTIALSTRING) {
          Match(S_PARTIALSTRING, "", follow);
@@ -1268,6 +1269,7 @@ void ReadFuncExpr (
 }
 
 
+
 /****************************************************************************
 **
 *F  ReadFuncExpr1(<follow>) . . . . . . . . . . .  read a function expression
@@ -1290,8 +1292,7 @@ void ReadFuncExpr1 (
     SET_LEN_PLIST( nams, 0 );
     TLS->countNams++;
     ASS_LIST( TLS->stackNams, TLS->countNams, nams );
-    name = NEW_STRING( strlen(TLS->value) );
-    SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
+    C_NEW_STRING_DYN( name, TLS->value );
     MakeImmutableString( name );
     ASS_LIST( nams, 1, name );
 
@@ -1327,7 +1328,6 @@ void ReadFuncExpr1 (
     assert(TLS->countNams > 0);
     TLS->countNams--;
 }
-
 
 /****************************************************************************
 **
@@ -1489,6 +1489,10 @@ void ReadLiteral (
       TLS->value[1] = '\0';
       ReadLongNumber( follow );
     }
+    else if (TLS->symbol == S_MAPTO) {
+      ReadFuncExpr0( follow );
+    }
+
     else if (TLS->symbol == S_MAPTO) {
       ReadFuncExpr0( follow );
     }
@@ -2463,6 +2467,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     UInt                readTilde;
     UInt                currLHSGVar;
     Obj                 errorLVars;
+    Obj                 errorLVars0;
     syJmp_buf           readJmpError;
     int			lockSP;
 
@@ -2494,7 +2499,9 @@ ExecStatus ReadEvalCommand ( Obj context )
     TLS->currLHSGVar = 0;
     RecreateStackNams(context);
     errorLVars = TLS->errorLVars;
+    errorLVars0 = TLS->errorLVars0;
     TLS->errorLVars = context;
+    TLS->errorLVars0 = TLS->errorLVars;
     lockSP = RegionLockSP();
 
     IntrBegin( context );
@@ -2558,6 +2565,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     TLS->readTilde   = readTilde;
     TLS->currLHSGVar = currLHSGVar;
     TLS->errorLVars = errorLVars;
+    TLS->errorLVars0 = errorLVars0;
 
     /* copy the result (if any)                                            */
     TLS->readEvalResult = TLS->intrResult;
@@ -2629,8 +2637,7 @@ UInt ReadEvalFile ( void )
     ASS_LIST( TLS->stackNams, TLS->countNams, nams );
     if ( TLS->symbol == S_LOCAL ) {
         Match( S_LOCAL, "local", 0L );
-        name = NEW_STRING( strlen(TLS->value) );
-        SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
+        C_NEW_STRING_DYN( name, TLS->value );
         nloc += 1;
         ASS_LIST( nams, nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2642,8 +2649,7 @@ UInt ReadEvalFile ( void )
                     SyntaxError("name used for two locals");
                 }
             }
-            name = NEW_STRING( strlen(TLS->value) );
-            SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
+            C_NEW_STRING_DYN( name, TLS->value );
             nloc += 1;
             ASS_LIST( nams, nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2734,6 +2740,7 @@ Obj Call0ArgsInNewReader(Obj f)
   syJmp_buf             readJmpError;
   UInt                intrCoding;
   UInt                intrIgnoring;
+  UInt                intrReturning;
   UInt                nrError;
   Obj result;
 
@@ -2746,6 +2753,7 @@ Obj Call0ArgsInNewReader(Obj f)
   userHasQuit = TLS->UserHasQuit;
   intrCoding = TLS->intrCoding;
   intrIgnoring = TLS->intrIgnoring;
+  intrReturning = TLS->intrReturning;
   nrError = TLS->nrError;
   memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
 
@@ -2782,6 +2790,7 @@ Obj Call0ArgsInNewReader(Obj f)
   TLS->currLHSGVar = currLHSGVar;
   TLS->intrCoding = intrCoding;
   TLS->intrIgnoring = intrIgnoring;
+  TLS->intrReturning = intrReturning;
   TLS->nrError = nrError;
   return result;
 }
@@ -2805,6 +2814,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   UInt                userHasQuit;
   UInt                intrCoding;
   UInt                intrIgnoring;
+  UInt                intrReturning;
   syJmp_buf             readJmpError;
   Obj result;
   UInt                nrError;
@@ -2818,6 +2828,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   userHasQuit = TLS->UserHasQuit;
   intrCoding = TLS->intrCoding;
   intrIgnoring = TLS->intrIgnoring;
+  intrReturning = TLS->intrReturning;
   nrError = TLS->nrError;
   memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
 
@@ -2830,6 +2841,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   TLS->UserHasQuit = 0;
   TLS->intrCoding = 0;
   TLS->intrIgnoring = 0;
+  TLS->intrReturning = 0;
   TLS->nrError = 0;
   IntrBegin( TLS->bottomLVars );
 
@@ -2848,6 +2860,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
   TLS->intrCoding = intrCoding;
   TLS->intrIgnoring = intrIgnoring;
+  TLS->intrReturning = intrReturning;
   TLS->stackNams   = stackNams;
   TLS->countNams   = countNams;
   TLS->readTop     = readTop;
@@ -2903,7 +2916,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRead ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

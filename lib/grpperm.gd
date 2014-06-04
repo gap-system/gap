@@ -488,6 +488,9 @@ DeclareGlobalFunction( "ReducedPermdegree" );
 
 DeclareGlobalFunction("MovedPointsPerms");
 
+# use for pcgs conversion
+DeclareGlobalFunction("CreateIsomorphicPcGroup");
+
 #############################################################################
 ##
 #E

@@ -1,5 +1,5 @@
 #############################################################################
-# 
+#
 # matobjplist.gi
 #                                                        by Max Neunhöffer
 #
@@ -9,7 +9,6 @@
 # It stores matrices as dense lists of lists with wrapping.
 #
 ############################################################################
-
 
 ############################################################################
 # Constructors:
@@ -49,7 +48,7 @@ InstallMethod( NewZeroVector, "for IsPlistVectorRep, a ring, and an int",
     return v;
   end );
 
-InstallMethod( NewMatrix, 
+InstallMethod( NewMatrix,
   "for IsPlistMatrixRep, a ring, an int, and a list",
   [ IsPlistMatrixRep and IsCheckingMatrix, IsRing, IsInt, IsList ],
   function( filter, basedomain, rl, l )
@@ -226,7 +225,7 @@ InstallMethod( Vector, "for a plain list and a plist vector",
     if not(IsMutable(v)) then SetFilterObj(v,IsMutable); fi;
     return v;
   end );
-    
+
 InstallMethod( Vector, "for a list and a plist vector",
   [ IsList, IsPlistVectorRep ],
   function( l, t )
@@ -241,7 +240,6 @@ InstallMethod( Vector, "for a list and a plist vector",
     if not(IsMutable(v)) then SetFilterObj(v,IsMutable); fi;
     return v;
   end );
-    
 
 ############################################################################
 # A selection of list operations:
@@ -253,7 +251,7 @@ InstallMethod( \[\], "for a plist vector and a positive integer",
     return v![ELSPOS][p];
   end );
 
-InstallMethod( \[\]\:\=, 
+InstallMethod( \[\]\:\=,
   "for a checking plist vector, a positive integer, and an obj",
   [ IsPlistVectorRep and IsCheckingVector, IsPosInt, IsObject ],
   function( v, p, ob )
@@ -279,7 +277,7 @@ InstallMethod( \{\}, "for a plist vector and a list",
   function( v, l )
     return Objectify(TypeObj(v),[v![BDPOS],v![ELSPOS]{l}]);
   end );
-  
+
 InstallMethod( PositionNonZero, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
     return PositionNonZero( v![ELSPOS] );
@@ -354,7 +352,7 @@ InstallMethod( \+, "for two plist vectors",
   end );
 
 InstallMethod( \+, "for two checking plist vectors",
-  [ IsPlistVectorRep and IsCheckingVector, 
+  [ IsPlistVectorRep and IsCheckingVector,
     IsPlistVectorRep and IsCheckingVector],
   function( a, b )
     local ty;
@@ -389,7 +387,7 @@ InstallMethod( \-, "for two plist vectors",
   end );
 
 InstallMethod( \-, "for two checking plist vectors",
-  [ IsPlistVectorRep and IsCheckingVector, 
+  [ IsPlistVectorRep and IsCheckingVector,
     IsPlistVectorRep and IsCheckingVector],
   function( a, b )
     local ty;
@@ -429,7 +427,7 @@ InstallMethod( AddRowVector, "for two plist vectors",
   end );
 
 InstallMethod( AddRowVector, "for two checking plist vectors",
-  [ IsPlistVectorRep and IsCheckingVector and IsMutable, 
+  [ IsPlistVectorRep and IsCheckingVector and IsMutable,
     IsPlistVectorRep and IsCheckingVector ],
   function( a, b )
     if Length(a![ELSPOS]) <> Length(b![ELSPOS]) then
@@ -445,7 +443,7 @@ InstallMethod( AddRowVector, "for two checking plist vectors",
 
 # Better method for integer vectors:
 InstallMethod( AddRowVector, "for two plist vectors",
-  [ IsPlistVectorRep and IsMutable and IsIntVector, 
+  [ IsPlistVectorRep and IsMutable and IsIntVector,
     IsPlistVectorRep and IsIntVector ],
   function( a, b )
     ADD_ROW_VECTOR_2_FAST( a![ELSPOS], b![ELSPOS] );
@@ -458,7 +456,7 @@ InstallMethod( AddRowVector, "for two plist vectors, and a scalar",
   end );
 
 InstallMethod( AddRowVector, "for two checking plist vectors, and a scalar",
-  [ IsPlistVectorRep and IsCheckingVector and IsMutable, 
+  [ IsPlistVectorRep and IsCheckingVector and IsMutable,
     IsPlistVectorRep and IsCheckingVector, IsObject ],
   function( a, b, s )
     if Length(a![ELSPOS]) <> Length(b![ELSPOS]) then
@@ -474,7 +472,7 @@ InstallMethod( AddRowVector, "for two checking plist vectors, and a scalar",
 
 # Better method for integer vectors:
 InstallMethod( AddRowVector, "for two plist vectors, and a scalar",
-  [ IsPlistVectorRep and IsIntVector and IsMutable, 
+  [ IsPlistVectorRep and IsIntVector and IsMutable,
     IsPlistVectorRep and IsIntVector, IsObject ],
   function( a, b, s )
     if IsSmallIntRep(s) then
@@ -484,17 +482,17 @@ InstallMethod( AddRowVector, "for two plist vectors, and a scalar",
     fi;
   end );
 
-InstallMethod( AddRowVector, 
+InstallMethod( AddRowVector,
   "for two plist vectors, a scalar, and two positions",
-  [ IsPlistVectorRep and IsMutable, IsPlistVectorRep, 
+  [ IsPlistVectorRep and IsMutable, IsPlistVectorRep,
     IsObject, IsPosInt, IsPosInt ],
   function( a, b, s, from, to )
     ADD_ROW_VECTOR_5( a![ELSPOS], b![ELSPOS], s, from, to );
   end );
 
-InstallMethod( AddRowVector, 
+InstallMethod( AddRowVector,
   "for two checking plist vectors, a scalar, and two positions",
-  [ IsPlistVectorRep and IsCheckingVector and IsMutable, 
+  [ IsPlistVectorRep and IsCheckingVector and IsMutable,
     IsPlistVectorRep and IsCheckingVector, IsObject, IsPosInt, IsPosInt ],
   function( a, b, s, from, to )
     if Length(a![ELSPOS]) <> Length(b![ELSPOS]) then
@@ -509,9 +507,9 @@ InstallMethod( AddRowVector,
   end );
 
 # Better method for integer vectors:
-InstallMethod( AddRowVector, 
+InstallMethod( AddRowVector,
   "for two integer plist vectors, a scalar, and two positions",
-  [ IsPlistVectorRep and IsIntVector and IsMutable, 
+  [ IsPlistVectorRep and IsIntVector and IsMutable,
     IsPlistVectorRep and IsIntVector, IsObject, IsPosInt, IsPosInt ],
   function( a, b, s, from, to )
     if IsSmallIntRep(s) then
@@ -547,7 +545,7 @@ InstallMethod( MultRowVector, "for a plist vector, and a scalar",
     fi;
   end );
 
-InstallMethod( MultRowVector, 
+InstallMethod( MultRowVector,
   "for a plist vector, a list, a plist vector, a list, and a scalar",
   [ IsPlistVectorRep and IsMutable, IsList,
     IsPlistVectorRep, IsList, IsObject ],
@@ -555,7 +553,7 @@ InstallMethod( MultRowVector,
     a![ELSPOS]{pa} := b![ELSPOS]{pb} * s;
   end );
 
-InstallMethod( MultRowVector, 
+InstallMethod( MultRowVector,
   "for a checking plist vector, a list, a ch. plist vector, a list, a scalar",
   [ IsPlistVectorRep and IsCheckingVector and IsMutable, IsList,
     IsPlistVectorRep and IsCheckingVector, IsList, IsObject ],
@@ -640,7 +638,7 @@ InstallMethod( \/, "for a checking plist vector and a scalar",
 InstallMethod( AdditiveInverseSameMutability, "for a plist vector",
   [ IsPlistVectorRep ],
   function( v )
-    return Objectify( TypeObj(v), 
+    return Objectify( TypeObj(v),
        [v![BDPOS],AdditiveInverseSameMutability(v![ELSPOS])] );
   end );
 
@@ -648,7 +646,7 @@ InstallMethod( AdditiveInverseImmutable, "for a plist vector",
   [ IsPlistVectorRep ],
   function( v )
     local res;
-    res := Objectify( TypeObj(v), 
+    res := Objectify( TypeObj(v),
        [v![BDPOS],AdditiveInverseSameMutability(v![ELSPOS])] );
     MakeImmutable(res);
     return res;
@@ -691,7 +689,7 @@ InstallMethod( IsZero, "for a plist vector", [ IsPlistVectorRep ],
     return IsZero( v![ELSPOS] );
   end );
 
-InstallMethod( Randomize, "for a mutable plist vector", 
+InstallMethod( Randomize, "for a mutable plist vector",
   [ IsPlistVectorRep and IsMutable ],
   function( v )
     local bd,i;
@@ -709,7 +707,7 @@ InstallMethod( CopySubVector, "for two plist vectors and two lists",
   end );
 
 InstallMethod( CopySubVector, "for two plist vectors and two lists",
-  [ IsPlistVectorRep, IsPlistVectorRep and IsMutable and IsCheckingVector, 
+  [ IsPlistVectorRep, IsPlistVectorRep and IsMutable and IsCheckingVector,
     IsList, IsList ],
   function( a,b,pa,pb )
     if not(ForAll(pb,x->x <= Length(b![ELSPOS]))) then
@@ -840,16 +838,16 @@ InstallMethod( \[\], "for a plist matrix and a positive integer",
     return m![ROWSPOS][p];
   end );
 
-InstallMethod( \[\]\:\=, 
+InstallMethod( \[\]\:\=,
   "for a plist matrix, a positive integer, and a plist vector",
   [ IsPlistMatrixRep and IsMutable, IsPosInt, IsPlistVectorRep ],
   function( m, p, v )
     m![ROWSPOS][p] := v;
   end );
 
-InstallMethod( \[\]\:\=, 
+InstallMethod( \[\]\:\=,
   "for a checking plist matrix, a positive integer, and a plist vector",
-  [ IsPlistMatrixRep and IsCheckingMatrix and IsMutable, 
+  [ IsPlistMatrixRep and IsCheckingMatrix and IsMutable,
     IsPosInt, IsPlistVectorRep ],
   function( m, p, v )
     if p > Length(m![ROWSPOS])+1 then
@@ -882,7 +880,7 @@ InstallMethod( Add, "for a plist matrix and a plist vector",
   end );
 
 InstallMethod( Add, "for a checking plist matrix and a plist vector",
-  [ IsPlistMatrixRep and IsCheckingMatrix and IsMutable, 
+  [ IsPlistMatrixRep and IsCheckingMatrix and IsMutable,
     IsPlistVectorRep ],
   function( m, v )
     if not(IsIdenticalObj(m![BDPOS],v![BDPOS])) then
@@ -932,7 +930,7 @@ InstallMethod( Remove, "for a plist matrix, and a position",
   function( m, p )
     Remove( m![ROWSPOS],p );
   end );
-  
+
 InstallMethod( IsBound\[\], "for a plist matrix, and a position",
   [ IsPlistMatrixRep, IsPosInt ],
   function( m, p )
@@ -950,15 +948,15 @@ InstallMethod( Unbind\[\], "for a plist matrix, and a position",
   end );
 
 InstallMethod( \{\}\:\=, "for a plist matrix, a list, and a plist matrix",
-  [ IsPlistMatrixRep and IsMutable, IsList, 
+  [ IsPlistMatrixRep and IsMutable, IsList,
     IsPlistMatrixRep ],
   function( m, pp, n )
     m![ROWSPOS]{pp} := n![ROWSPOS];
   end );
 
-InstallMethod( \{\}\:\=, 
+InstallMethod( \{\}\:\=,
   "for a checking plist matrix, a list, and a plist matrix",
-  [ IsPlistMatrixRep and IsMutable and IsCheckingMatrix, IsList, 
+  [ IsPlistMatrixRep and IsMutable and IsCheckingMatrix, IsList,
     IsPlistMatrixRep ],
   function( m, pp, n )
     if not(ForAll(pp,x->x >= 1 and x <= Length(m![ROWSPOS])+1)) then
@@ -1009,7 +1007,7 @@ InstallMethod( ShallowCopy, "for a plist matrix",
     return res;
   end );
 
-InstallMethod( PostMakeImmutable, "for a plist matrix", 
+InstallMethod( PostMakeImmutable, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
     MakeImmutable( m![ROWSPOS] );
@@ -1058,7 +1056,7 @@ InstallMethod( PositionNonZero, "for a plist matrix, and a position",
         return i;
     fi;
   end );
-    
+
 InstallMethod( PositionLastNonZero, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
@@ -1084,7 +1082,7 @@ InstallMethod( PositionLastNonZero, "for a plist matrix, and a position",
         return i;
     fi;
   end );
-    
+
 InstallMethod( Position, "for a plist matrix, and a plist vector",
   [ IsPlistMatrixRep, IsPlistVectorRep ],
   function( m, v )
@@ -1099,7 +1097,7 @@ InstallMethod( Position, "for a plist matrix, and a plist vector",
         return i;
     fi;
   end );
-    
+
 InstallMethod( Position, "for a plist matrix, and a plist vector",
   [ IsPlistMatrixRep, IsPlistVectorRep, IsInt ],
   function( m, v, p )
@@ -1114,19 +1112,19 @@ InstallMethod( Position, "for a plist matrix, and a plist vector",
         return i;
     fi;
   end );
-    
+
 InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
   [ IsPlistMatrixRep, IsPlistVectorRep ],
   function( m, v )
     return POSITION_SORTED_LIST(m![ROWSPOS],v);
   end );
-    
+
 InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
   [ IsPlistMatrixRep, IsPlistVectorRep, IsFunction ],
   function( m, v, f )
     return POSITION_SORTED_LIST_COMP(m![ROWSPOS],v);
   end );
-    
+
 InstallMethod( MutableCopyMat, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
@@ -1158,14 +1156,14 @@ InstallMethod( CopySubMatrix, "for two plist matrices and four lists",
     # This eventually should go into the kernel without creating
     # a intermediate objects:
     for i in [1..Length(srcrows)] do
-        n![ROWSPOS][dstrows[i]]![ELSPOS]{dstcols} := 
+        n![ROWSPOS][dstrows[i]]![ELSPOS]{dstcols} :=
                   m![ROWSPOS][srcrows[i]]![ELSPOS]{srccols};
     od;
   end );
 
-InstallMethod( CopySubMatrix, 
+InstallMethod( CopySubMatrix,
   "for a plist matrix and a checking plist matrix and four lists",
-  [ IsPlistMatrixRep, 
+  [ IsPlistMatrixRep,
     IsPlistMatrixRep and IsCheckingMatrix and IsMutable,
     IsList, IsList, IsList, IsList ],
   function( m, n, srcrows, dstrows, srccols, dstcols )
@@ -1179,7 +1177,7 @@ InstallMethod( CopySubMatrix,
         return;
     fi;
     for i in [1..Length(srcrows)] do
-        n![ROWSPOS][dstrows[i]]![ELSPOS]{dstcols} := 
+        n![ROWSPOS][dstrows[i]]![ELSPOS]{dstcols} :=
                   m![ROWSPOS][srcrows[i]]![ELSPOS]{srccols};
     od;
   end );
@@ -1196,9 +1194,9 @@ InstallMethod( SetMatElm, "for a plist matrix, two positions, and an object",
     m![ROWSPOS][row]![ELSPOS][col] := ob;
   end );
 
-InstallMethod( SetMatElm, 
+InstallMethod( SetMatElm,
   "for a checking plist matrix, two positions, and an object",
-  [ IsPlistMatrixRep and IsCheckingMatrix and IsMutable, 
+  [ IsPlistMatrixRep and IsCheckingMatrix and IsMutable,
     IsPosInt, IsPosInt, IsObject ],
   function( m, row, col, ob )
     if row > Length( m![ROWSPOS] ) or col > m![RLPOS] then
@@ -1280,7 +1278,6 @@ InstallMethod( String, "for plist matrix", [ IsPlistMatrixRep ],
     return st;
   end );
 
-  
 ############################################################################
 # Arithmetical operations:
 ############################################################################
@@ -1320,7 +1317,7 @@ InstallMethod( \+, "for two checking plist matrices",
     return Objectify(ty,[a![BDPOS],a![EMPOS],a![RLPOS],
                          SUM_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS])]);
   end );
-    
+
 InstallMethod( \-, "for two plist matrices",
   [ IsPlistMatrixRep, IsPlistMatrixRep ],
   function( a, b )
@@ -1356,7 +1353,7 @@ InstallMethod( \-, "for two checking plist matrices",
     return Objectify(ty,[a![BDPOS],a![EMPOS],a![RLPOS],
                          DIFF_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS])]);
   end );
-    
+
 InstallMethod( \*, "for two plist matrices",
   [ IsPlistMatrixRep, IsPlistMatrixRep ],
   function( a, b )
@@ -1393,7 +1390,7 @@ InstallMethod( \*, "for two plist matrices",
     fi;
     return Objectify( ty, [a![BDPOS],a![EMPOS],b![RLPOS],l] );
   end );
-        
+
 InstallMethod( \=, "for two plist matrices",
   [ IsPlistMatrixRep, IsPlistMatrixRep ],
   function( a, b )
@@ -1603,6 +1600,16 @@ InstallMethod( InverseSameMutability, "for a plist matrix",
     return n;
   end );
 
+InstallMethod( RankMat, "for a plist matrix",
+  [ IsPlistMatrixRep ],
+  function( m )
+    local n;
+
+    n := List(m![ROWSPOS],x->x![ELSPOS]);
+    return RankMat(n);
+  end);
+
+
 InstallMethod( Randomize, "for a mutable plist matrix",
   [ IsPlistMatrixRep and IsMutable ],
   function( m )
@@ -1714,7 +1721,7 @@ InstallMethod( \*, "for a plist vector and a plist matrix",
     fi;
     return res;
   end );
-    
+
 InstallMethod( Unfold, "for a plist matrix",
   [ IsPlistMatrixRep, IsPlistVectorRep ],
   function( m, w )
@@ -1763,8 +1770,8 @@ InstallMethod( Fold, "for a plist vector, a positive int, and a plist matrix",
 #  end );
 
 InstallMethod( ConstructingFilter, "for a checking plist vector",
-  [ IsPlistVectorRep and IsCheckingVector ], 
-  function( v ) 
+  [ IsPlistVectorRep and IsCheckingVector ],
+  function( v )
     return IsPlistVectorRep and IsCheckingVector;
   end );
 
@@ -1775,8 +1782,8 @@ InstallMethod( ConstructingFilter, "for a checking plist matrix",
   end );
 
 InstallMethod( ConstructingFilter, "for a plist vector",
-  [ IsPlistVectorRep ], 
-  function( v ) 
+  [ IsPlistVectorRep ],
+  function( v )
     return IsPlistVectorRep;
   end );
 
@@ -1818,7 +1825,7 @@ InstallMethod( CompatibleVector, "for a plist matrix",
     return NewZeroVector(IsPlistVectorRep,BaseDomain(v),Length(v));
   end );
 
-InstallMethod( NewCompanionMatrix, 
+InstallMethod( NewCompanionMatrix,
   "for IsPlistMatrixRep, a polynomial and a ring",
   [ IsPlistMatrixRep, IsUnivariatePolynomial, IsRing ],
   function( ty, po, bd )
@@ -1840,7 +1847,7 @@ InstallMethod( NewCompanionMatrix,
     return ll;
   end );
 
-InstallMethod( NewCompanionMatrix, 
+InstallMethod( NewCompanionMatrix,
   "for IsPlistMatrixRep and IsCheckingMatrix, a polynomial and a ring",
   [ IsPlistMatrixRep and IsCheckingMatrix, IsUnivariatePolynomial, IsRing ],
   function( ty, po, bd )
@@ -1861,5 +1868,3 @@ InstallMethod( NewCompanionMatrix,
     Add(ll,l);
     return ll;
   end );
-
-

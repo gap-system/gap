@@ -1,0 +1,25 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/03/06
+
+!! Changed by
+MH
+
+! Reported by
+FL
+
+!! Type of Change
+Fix: inappropriate error message
+
+!! Description
+A bug has been fixed that caused PermutationMat to produce an error when
+called with a large finite field as third parameter.
+! Test Code
+gap> PermutationMat((1,2),2,GF(3^6));
+[ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, 0*Z(3) ] ]
+
+!! Changeset
+lib/matrix.gi
+
+!! End

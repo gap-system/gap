@@ -440,7 +440,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSCTable ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

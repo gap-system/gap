@@ -320,7 +320,7 @@ Obj FuncTRUES_FLAGS (
         n += m;
     }
 
-    /* make the sublist (we now know its size exactely)                    */
+    /* make the sublist (we now know its size exactly)                    */
     sub = NEW_PLIST( T_PLIST+IMMUTABLE, n );
     SET_LEN_PLIST( sub, n );
 
@@ -1061,45 +1061,6 @@ Obj NewFilter (
 
 /****************************************************************************
 **
-*F  NewFilterC( <name>, <narg>, <nams>, <hdlr> )  . . . . . make a new filter 
-*/
-Obj NewFilterC (
-    const Char *        name,
-    Int                 narg,
-    const Char *        nams,
-    ObjFunc             hdlr )
-{
-    Obj                 getter;
-    Obj                 setter;
-    Obj                 tester;
-    Int                 flag1;
-    Obj                 flags;
-    
-    flag1 = ++CountFlags;
-
-    getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoFilter) );
-    FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(getter)  = INTOBJ_INT( 0 );
-    NEW_FLAGS( flags, flag1 );
-    SET_LEN_FLAGS( flags, flag1 );
-    SET_ELM_FLAGS( flags, flag1, True );
-    FLAGS_FILT(getter)  = flags;
-    CHANGED_BAG(getter);
-
-    setter = NewSetterFilter( getter );
-    SETTR_FILT(getter)  = setter;
-    CHANGED_BAG(getter);
-    
-    tester = NewTesterFilter( getter );
-    TESTR_FILT(getter)  = tester;
-    CHANGED_BAG(getter);
-
-    return getter;    
-}
-
-
-/****************************************************************************
-**
 *F  NewAndFilter( <filt1>, <filt2> ) . . . . . make a new concatenated filter
 */
 Obj DoAndFilter (
@@ -1671,11 +1632,10 @@ static inline Obj CacheOper (
       TLS->methodCacheSize = len;
     }
     cache = ELM_PLIST(TLS->methodCache, cacheIndex);
-    if ( cache == 0)
-    {
-      len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2)) ;
+    if ( cache == 0 ) {
+        len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2));
         cache = NEW_PLIST( T_PLIST, len);
-        SET_LEN_PLIST(cache, len ); 
+        SET_LEN_PLIST( cache, len ); 
         SET_ELM_PLIST( TLS->methodCache, cacheIndex, cache );
         CHANGED_BAG( TLS->methodCache );
     }
@@ -4601,7 +4561,7 @@ Obj NewConstructorC (
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
 #if 0
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+1) : 4 * (1+1)) );
+        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+1) : CACHE_SIZE * (1+1)) );
         CACHE_OPER( oper, i ) = cache;
 #endif
         CHANGED_BAG(oper);
@@ -4842,7 +4802,81 @@ Obj DoVerboseMutableAttribute (
 /****************************************************************************
 **
 *F  NewAttribute( <name>, <narg>, <nams>, <hdlr> )
+**
+** MakeSetter, MakeTester and SetupAttribute are support functions
 */
+
+#define WRAP_NAME(fname, name, addon) \
+    do { \
+        UInt name_len = GET_LEN_STRING(name); \
+        UInt addon_len = sizeof(addon) - 1; \
+        char *tmp; \
+        fname = NEW_STRING( name_len + addon_len + 2 ); \
+        tmp = CSTR_STRING(fname); \
+        memcpy( tmp, addon, addon_len ); tmp += addon_len; \
+        *tmp++ = '('; \
+        memcpy( tmp, CSTR_STRING(name), name_len ); tmp += name_len; \
+        *tmp++ = ')'; \
+        *tmp = 0; \
+        RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) ); \
+    } while(0)
+
+static Obj MakeSetter( Obj name, Int flag)
+{
+  Obj fname;
+  Obj setter;
+  WRAP_NAME(fname, name, "Setter");
+  setter = NewOperation( fname, 2L, 0L, DoSetAttribute );
+  FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
+  FLAG2_FILT(setter)  = INTOBJ_INT( flag );
+  CHANGED_BAG(setter);
+  return setter;
+}
+
+static Obj MakeTester( Obj name, Int flag)
+{
+    Obj fname;
+    Obj tester;
+    Obj flags;
+    WRAP_NAME(fname, name, "Tester");
+    tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
+                           DoTestAttribute );    
+    FLAG1_FILT(tester)  = INTOBJ_INT( 0 );
+    FLAG2_FILT(tester)  = INTOBJ_INT( flag );
+    NEW_FLAGS( flags, flag );
+    SET_LEN_FLAGS( flags, flag );
+    SET_ELM_FLAGS( flags, flag, True );
+    FLAGS_FILT(tester)  = flags;
+    SETTR_FILT(tester)  = 0;
+    TESTR_FILT(tester)  = ReturnTrueFilter;
+    CHANGED_BAG(tester);
+    return tester;
+}
+
+
+static void SetupAttribute(Obj attr, Obj setter, Obj tester, Int flag2)
+{
+  Obj flags;
+
+    /* Install additional data */
+  FLAG1_FILT(attr)  = INTOBJ_INT( 0 );
+  FLAG2_FILT(attr)  = INTOBJ_INT( flag2 );
+  NEW_FLAGS( flags, flag2 );
+  SET_LEN_FLAGS( flags, flag2 );
+  SET_ELM_FLAGS( flags, flag2, True );
+  
+  /*    FLAGS_FILT(tester)  = flags; */
+  FLAGS_FILT(attr) = FLAGS_FILT(tester);
+  
+  SETTR_FILT(attr)  = setter;
+  TESTR_FILT(attr)  = tester;
+  SET_ENABLED_ATTR(attr,1);
+  CHANGED_BAG(attr);
+  return;
+}
+
+  
+
 Obj NewAttribute (
     Obj                 name,
     Int                 narg,
@@ -4853,121 +4887,48 @@ Obj NewAttribute (
     Obj                 setter;
     Obj                 tester;
     Int                 flag2;
-    Obj                 flags;
-    Obj                 fname;
     
     flag2 = ++CountFlags;
-
-    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    setter = NewOperation( fname, 2L, 0L, DoSetAttribute );
-    FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
-    CHANGED_BAG(setter);
-
-    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
-                           DoTestAttribute );    
-    FLAG1_FILT(tester)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    FLAGS_FILT(tester)  = flags;
-    SETTR_FILT(tester)  = 0;
-    TESTR_FILT(tester)  = ReturnTrueFilter;
-    CHANGED_BAG(tester);
+    setter = MakeSetter(name, flag2);
+    tester = MakeTester(name, flag2);
 
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoAttribute) ); 
     
-    FLAG1_FILT(getter)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
+    SetupAttribute(getter, setter, tester, flag2);
 
-    /*    FLAGS_FILT(tester)  = flags; */
-    FLAGS_FILT(getter) = FLAGS_FILT(tester);
-
-    SETTR_FILT(getter)  = setter;
-    TESTR_FILT(getter)  = tester;
-    SET_ENABLED_ATTR(getter,1);
-    CHANGED_BAG(getter);
-    
     return getter;    
 }
 
-
 /****************************************************************************
 **
-*F  NewAttributeC( <name>, <narg>, <nams>, <hdlr> )
+*F  ConvertOperationIntoAttribute( <oper> )  transform an operation (which 
+**  should not have any one-argument declarations) into an attribute
 */
-Obj NewAttributeC (
-    const Char *        name,
-    Int                 narg,
-    const Char *        nams,
-    ObjFunc             hdlr )
+
+void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr ) 
 {
-    Obj                 getter;
     Obj                 setter;
     Obj                 tester;
     Int                 flag2;
-    Obj                 flags;
-    Obj                 fname;
-    
+    Obj                  name;
+
+    /* Need to get the name from oper */
+    name = NAME_FUNC(oper);
+
     flag2 = ++CountFlags;
 
-    fname = NEW_STRING( strlen(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
-    SyStrncat( CSTR_STRING(fname), name, strlen(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    setter = NewOperation( fname, 2L, 0L, DoSetAttribute );
-    FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
-    CHANGED_BAG(setter);
+    /* Make the setter */
+    setter = MakeSetter(name, flag2);
 
-    fname = NEW_STRING( strlen(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
-    SyStrncat( CSTR_STRING(fname), name, strlen(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
-                           DoTestAttribute );    
-    FLAG1_FILT(tester)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    FLAGS_FILT(tester)  = flags;
-    SETTR_FILT(tester)  = 0;
-    TESTR_FILT(tester)  = ReturnTrueFilter;
-    CHANGED_BAG(tester);
+    /* and the tester */
+    tester = MakeTester(name, flag2);
 
-    getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoAttribute) );
+    /* Change the handlers */
+    HDLR_FUNC(oper, 1) = hdlr ? hdlr : DoAttribute;
 
-    FLAG1_FILT(getter)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
+    SetupAttribute( oper, setter, tester, flag2);
 
-    /*    FLAGS_FILT(tester)  = flags; */
-    FLAGS_FILT(getter) = FLAGS_FILT(tester);
-
-    SETTR_FILT(getter)  = setter;
-    TESTR_FILT(getter)  = tester;
-    SET_ENABLED_ATTR(getter,1);
-    CHANGED_BAG(getter);
-    
-    return getter;    
+    return;
 }
 
 
@@ -5200,21 +5161,13 @@ Obj NewProperty (
     flag1 = ++CountFlags;
     flag2 = ++CountFlags;
 
-    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
+    WRAP_NAME(fname, name, "Setter");
     setter = NewOperation( fname, 2L, 0L, DoSetProperty );
     FLAG1_FILT(setter)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
     CHANGED_BAG(setter);
 
-    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
+    WRAP_NAME(fname, name, "Tester");
     tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
                            DoTestProperty );    
     FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
@@ -5241,78 +5194,6 @@ Obj NewProperty (
     SET_ENABLED_ATTR(getter,1);
     CHANGED_BAG(getter);
 
-    /*N 1996/06/28 mschoene bad hack see comment in <setter>               */
-    FLAGS_FILT(setter)  = flags;
-    SETTR_FILT(setter)  = setter;
-    TESTR_FILT(setter)  = tester;
-
-    /* return the getter                                                   */
-    return getter;    
-}
-
-
-/****************************************************************************
-**
-*F  NewPropertyC( <name>, <narg>, <nams>, <hdlr> )
-*/
-Obj NewPropertyC (
-    const Char *        name,
-    Int                 narg,
-    const Char *        nams,
-    ObjFunc             hdlr )
-{
-    Obj                 getter;
-    Obj                 setter;
-    Obj                 tester;
-    Int                 flag1;
-    Int                 flag2;
-    Obj                 flags;
-    Obj                 fname;
-    
-    flag1 = ++CountFlags;
-    flag2 = ++CountFlags;
-
-    fname = NEW_STRING( strlen(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
-    SyStrncat( CSTR_STRING(fname), name, strlen(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    setter = NewOperation( fname, 2L, 0L, DoSetProperty );
-    FLAG1_FILT(setter)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
-    CHANGED_BAG(setter);
-
-    fname = NEW_STRING( strlen(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
-    SyStrncat( CSTR_STRING(fname), name, strlen(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
-                           DoTestProperty );    
-    FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    FLAGS_FILT(tester)  = flags;
-    SETTR_FILT(tester)  = 0;
-    TESTR_FILT(tester)  = ReturnTrueFilter;
-    CHANGED_BAG(tester);
-
-    getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoProperty) );
-
-    FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    SET_ELM_FLAGS( flags, flag1, True );
-    FLAGS_FILT(getter)  = flags;
-    SETTR_FILT(getter)  = setter;
-    TESTR_FILT(getter)  = tester;
-    SET_ENABLED_ATTR(getter,1);
-    CHANGED_BAG(getter);
-    
     /*N 1996/06/28 mschoene bad hack see comment in <setter>               */
     FLAGS_FILT(setter)  = flags;
     SETTR_FILT(setter)  = setter;
@@ -5543,6 +5424,43 @@ Obj FuncNEW_ATTRIBUTE (
     /* make the new operation                                              */
     return NewAttribute( name, -1L, (Obj)0, DoAttribute );
 }
+/****************************************************************************
+**
+*F  FuncOPER_TO_ATTRIBUTE( <self>, oper ) make existing operation into attribute
+*/
+Obj FuncOPER_TO_ATTRIBUTE (
+    Obj                 self,
+    Obj                 oper )
+{
+    /* check the argument                                                  */
+  if ( ! IS_OPERATION(oper) ) {
+        ErrorQuit("usage: OPER_TO_ATTRIBUTE( <oper> )",0L,0L);
+        return 0;
+    }
+
+    /* make the new operation                                              */
+  ConvertOperationIntoAttribute( oper, (ObjFunc) 0L );
+    return (Obj) 0L;
+}
+
+/****************************************************************************
+**
+*F  FuncOPER_TO_MUTABLE_ATTRIBUTE( <self>, oper ) make existing operation into attribute
+*/
+Obj FuncOPER_TO_MUTABLE_ATTRIBUTE (
+    Obj                 self,
+    Obj                 oper )
+{
+    /* check the argument                                                  */
+  if ( ! IS_OPERATION(oper) ) {
+        ErrorQuit("usage: OPER_TO_MUTABLE_ATTRIBUTE( <oper> )",0L,0L);
+        return 0;
+    }
+
+    /* make the new operation                                              */
+  ConvertOperationIntoAttribute( oper, DoMutableAttribute );
+  return (Obj) 0L;
+}
 
 
 /****************************************************************************
@@ -5601,7 +5519,7 @@ Obj FuncNEW_OPERATION_ARGS (
     }
 
     /* make the new operation                                              */
-    C_NEW_STRING( args, 4, "args" )
+    C_NEW_STRING_CONST( args, "args" )
     list = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( list, 1 );
     SET_ELM_PLIST( list, 1, args );
@@ -5832,11 +5750,7 @@ Obj FuncSETTER_FUNCTION (
     Obj                 fname;
     Obj                 tmp;
 
-    fname = NEW_STRING( GET_LEN_STRING(name) + 12 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "SetterFunc(", 11 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
+    WRAP_NAME(fname, name, "SetterFunc");
     func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, CSTR_STRING(fname), 2,
                          "object, value", DoSetterFunction );
     tmp = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
@@ -5877,11 +5791,7 @@ Obj FuncGETTER_FUNCTION (
     Obj                 func;
     Obj                 fname;
 
-    fname = NEW_STRING( GET_LEN_STRING(name) + 12 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "GetterFunc(", 11 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
+    WRAP_NAME(fname, name, "GetterFunc");
     func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, CSTR_STRING(fname), 1,
                          "object, value", DoGetterFunction );
     ENVI_FUNC(func) = INTOBJ_INT( RNamObj(name) );
@@ -6251,6 +6161,12 @@ static StructGVarFunc GVarFuncs [] = {
     { "COMPACT_TYPE_IDS", 0, "",
       FuncCompactTypeIDs, "src/opers.c:COMPACT_TYPE_IDS" },
 
+    { "OPER_TO_ATTRIBUTE", 1, "oper",
+      FuncOPER_TO_ATTRIBUTE, "src/opers.c:OPER_TO_ATTRIBUTE" },
+
+    { "OPER_TO_MUTABLE_ATTRIBUTE", 1, "oper",
+      FuncOPER_TO_MUTABLE_ATTRIBUTE, "src/opers.c:OPER_TO_MUTABLE_ATTRIBUTE" },
+
     { 0 }
 
 };
@@ -6477,24 +6393,24 @@ static Int InitLibrary (
     Obj                 str;
 
     /* share between uncompleted functions                                 */
-    C_NEW_STRING( StringAndFilter, 14, "<<and-filter>>" );
+    C_NEW_STRING_CONST( StringAndFilter, "<<and-filter>>" );
     RESET_FILT_LIST( StringAndFilter, FN_IS_MUTABLE );
 
-    C_NEW_STRING( StringFilterSetter, 17, "<<filter-setter>>" );
+    C_NEW_STRING_CONST( StringFilterSetter, "<<filter-setter>>" );
     RESET_FILT_LIST( StringFilterSetter, FN_IS_MUTABLE );
 
     ArglistObj = NEW_PLIST( T_PLIST+IMMUTABLE, 1 );
     SET_LEN_PLIST( ArglistObj, 1 );
-    C_NEW_STRING( str, 3, "obj" );
+    C_NEW_STRING_CONST( str, "obj" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObj, 1, str );
 
     ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( ArglistObjVal, 2 );
-    C_NEW_STRING( str, 3, "obj" );
+    C_NEW_STRING_CONST( str, "obj" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObjVal, 1, str );
-    C_NEW_STRING( str, 3, "val" );
+    C_NEW_STRING_CONST( str, "val" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObjVal, 2, str );
 
@@ -6506,7 +6422,7 @@ static Int InitLibrary (
     /* for the inside-out (kernel to library) interface                    */
     /*CCC TRY_NEXT_METHOD = NEW_STRING( 16 );
       SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );CCC*/
-    C_NEW_STRING(TRY_NEXT_METHOD, 15, "TRY_NEXT_METHOD");
+    C_NEW_STRING_CONST(TRY_NEXT_METHOD, "TRY_NEXT_METHOD");
     RetypeBag(TRY_NEXT_METHOD, T_STRING+IMMUTABLE);
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
@@ -6540,7 +6456,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoOpers ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

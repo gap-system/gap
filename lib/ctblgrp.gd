@@ -318,8 +318,8 @@ DeclareGlobalFunction( "DixonInit" );
 ##  <Ref Func="BestSplittingMatrix"/> and the options described for this
 ##  function apply here.
 ##  <P/>
-##  <Ref Func="DixonSplit"/> returns <K>true</K> if a split was performed,
-##  and <K>fail</K> otherwise.
+##  <Ref Func="DixonSplit"/> returns the number of the class that was 
+##  used for splitting if a split was performed, and <K>fail</K> otherwise.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

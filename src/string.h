@@ -69,7 +69,7 @@ extern Obj ObjsChar [256];
 **  first null character. Try to avoid this and use CHARS_STRING.
 **
 **  Note that 'CSTR_STRING' is a macro, so do not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define CSTR_STRING(list)            ((Char*)ADDR_OBJ(list) + sizeof(UInt))
 #define CHARS_STRING(list)           ((UChar*)ADDR_OBJ(list) + sizeof(UInt))
@@ -81,7 +81,7 @@ extern Obj ObjsChar [256];
 **  'GET_LEN_STRING' returns the length of the string <list>, as a C integer.
 **
 **  Note that  'GET_LEN_STRING' is a macro, so  do not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define GET_LEN_STRING(list)            (*((UInt*)ADDR_OBJ(list)))
 
@@ -92,7 +92,7 @@ extern Obj ObjsChar [256];
 **  'SET_LEN_STRING' sets length of the string <list> to C integer <len>.
 **
 **  Note that  'SET_LEN_STRING' is a macro, so  do not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_LEN_STRING(list,len)     (*((UInt*)ADDR_OBJ(list)) = (UInt)(len))
 
@@ -114,7 +114,7 @@ extern Obj NEW_STRING(Int len);
 **  has room for at least <len> elements.
 **
 **  Note that 'GROW_STRING' is a macro, so do not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define GROW_STRING(list,len)   ( ((len) + sizeof(UInt) < SIZE_OBJ(list)) ? \
                                  0L : GrowString(list,len) )
@@ -130,7 +130,7 @@ extern  Int             GrowString (
 **  'SHRINK_STRING' gives back not needed memory allocated by string.
 **
 **  Note that 'SHRINK_STRING' is a macro, so do not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define SHRINK_STRING(list)   ResizeBag((list),\
                             (SIZEBAG_STRINGLEN(GET_LEN_STRING((list)))));
@@ -144,7 +144,7 @@ extern  Int             GrowString (
 **  <list>.
 **
 **  Note that 'GET_ELM_STRING' is a  macro, so do not  call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define GET_ELM_STRING(list,pos)        (ObjsChar[ \
                          (((UInt1*)ADDR_OBJ(list))[(pos) + sizeof(UInt) - 1])])
@@ -157,7 +157,7 @@ extern  Int             GrowString (
 **  <val> must be a character and <list> stay a string after the assignment.
 **
 **  Note that 'SET_ELM_STRING' is a  macro, so do not  call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_ELM_STRING(list,pos,val)      (((UInt1*)ADDR_OBJ(list))\
 [(pos) + sizeof(UInt) - 1] = *((UInt1*)ADDR_OBJ(val)))
@@ -206,7 +206,7 @@ extern void PrintString1 (
 **  It does not change the representation of <obj>.
 **
 **  Note that 'IS_STRING' is a  macro, so do not call  it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define IS_STRING(obj)  ((*IsStringFuncs[ TNUM_OBJ( obj ) ])( obj ))
 
@@ -256,16 +256,8 @@ extern Int IsStringConv (
 
 /****************************************************************************
 **
-
 *F  C_NEW_STRING( <string>, <len>, <cstring> )  . . . . . . create GAP string
 */
-/* ???
-#define C_NEW_STRING(string,len,cstr) \
-  do { \
-    string = NEW_STRING( len ); \
-    SyStrncat( CSTR_STRING(string), cstr, len ); \
-  } while ( 0 );
-???  */
 #define C_NEW_STRING(string,len,cstr) \
   do { \
     size_t tmp_len = (len); \
@@ -290,6 +282,26 @@ Obj MakeImmString2(Char *cstr1, Char *cstr2);
 Obj MakeImmString3(Char *cstr1, Char *cstr2, Char *cstr3);
 Obj ConvImmString(Obj str);
 
+
+/****************************************************************************
+**
+*F  C_NEW_STRING_DYN( <string>, <cstring> ) . . . . . . . . create GAP string
+**
+** The cstring is assumed to be allocated on the heap, hence its length
+** is dynamic and must be computed during runtime using strlen.
+*/
+#define C_NEW_STRING_DYN(string,cstr) \
+  C_NEW_STRING(string, strlen(cstr), cstr)
+
+/****************************************************************************
+**
+*F  C_NEW_STRING_CONST( <string>, <cstring> ) . . . . . . . . create GAP string
+**
+** The cstring is assumed to be a literal constant (like this: "string").
+** Hence its length is constant and can be computed during compilation.
+*/
+#define C_NEW_STRING_CONST(string,cstr) \
+  C_NEW_STRING(string, sizeof(cstr)-1, cstr)
 
 /****************************************************************************
 **

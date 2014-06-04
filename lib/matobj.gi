@@ -1,5 +1,5 @@
 ############################################################################
-# 
+#
 # matobj.gi
 #                                                        by Max Neunhöffer
 #
@@ -17,8 +17,8 @@ InstallMethod( WeightOfVector, "generic method",
   function(v)
     local i,n;
     n := 0;
-    for i in [1..Length(v)] do 
-        if not(IsZero(v[i])) then 
+    for i in [1..Length(v)] do
+        if not(IsZero(v[i])) then
             n := n + 1;
         fi;
     od;
@@ -112,7 +112,7 @@ InstallMethod( Unfold, "for a matrix object, and a vector object",
         return v;
     fi;
   end );
-  
+
 InstallMethod( Fold, "for a vector, a positive int, and a matrix",
   [ IsRowVectorObj, IsPosInt, IsMatrixObj ],
   function( v, rl, t )
@@ -164,14 +164,15 @@ InstallMethod( KroneckerProduct, "for two matrices",
     colsB := RowLength(B);
 
     AxB := ZeroMatrix( rowsA * rowsB, colsA * colsB, A );
-  
+
     # Cache matrices
     # not implemented yet
 
     for i in [1..rowsA] do
       for j in [1..colsA] do
         CopySubMatrix( A[i][j] * B, AxB,
-                       [ 1 .. rowsB ], [ rowsB * (i-1) + 1 .. rowsB * i ],                             [ 1 .. colsB ], [ (j-1) * colsB + 1 .. j * colsB ] );
+                [ 1 .. rowsB ], [ rowsB * (i-1) + 1 .. rowsB * i ],
+                [ 1 .. colsB ], [ (j-1) * colsB + 1 .. j * colsB ] );
       od;
     od;
 

@@ -68,6 +68,9 @@ end);
 ##
 
 CheckGlobalName := function( name )
+    if not IsString( name ) then
+      Error("CheckGlobalName: the argument must be a string");
+    fi;
     if ForAny(name, l -> not l in IdentifierLetters) then
         Info(InfoWarning + InfoGlobal, 2, 
              "suspicious global variable name ", name);

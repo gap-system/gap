@@ -72,9 +72,10 @@ ifndef CONFIGNAME
  CONFIGNAME=@CONFIGNAME@
 endif
 GAPARCH=@GAPARCH@
+GAPARGS=
 
-TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 512m -A -N -q -x 80 -r
-TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 512m -N -q -x 80 -r
+TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -A -N -q -x 80 -r $(GAPARGS)
+TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -N -q -x 80 -r $(GAPARGS)
 
 default: compile
 
@@ -88,22 +89,55 @@ setconfig:
 	  echo "There is no config with name: "$(CONFIGNAME); \
 	fi;
 
-config: bin/$(GAPARCH)/configure  bin/$(GAPARCH)/Makefile bin/$(GAPARCH)/extern/Makefile 
+config: bin/$(GAPARCH)/configure  bin/$(GAPARCH)/config.status 
 
 bin/$(GAPARCH)/configure: cnf/configure.out 
 	mkdir -p bin/$(GAPARCH)
 	@rm -f bin/$(GAPARCH)/configure
 	cp cnf/configure.out bin/$(GAPARCH)/configure
 
-bin/$(GAPARCH)/Makefile bin/$(GAPARCH)/extern/Makefile : bin/$(GAPARCH)/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
+bin/$(GAPARCH)/extern/Makefile: bin/$(GAPARCH)/config.status
+	( cd bin/$(GAPARCH) ; ./config.status extern/Makefile )
+
+bin/$(GAPARCH)/Makefile : bin/$(GAPARCH)/config.status
+	( cd bin/$(GAPARCH) ; ./config.status Makefile )
+
+bin/$(GAPARCH)/config.status : bin/$(GAPARCH)/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
 	mkdir -p bin/$(GAPARCH)/extern
-	( cd bin/$(GAPARCH) ; CC='$(CC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' GMP_CFLAGS='$(GMP_CFLAGS)' CONFIGNAME='$(CONFIGNAME)' USE_GMP='$(USE_GMP)' GAPARCH='$(GAPARCH)' ./configure --target=@target@ @gp_configure_options@ )
+	( cd bin/$(GAPARCH) ; \
+		CC='$(CC)' \
+		ABI='$(ABI)' \
+		ABI_CFLAGS='$(ABI_CFLAGS)' \
+		GMP_LIBS='$(GMP_LIBS)' \
+		GMP_CFLAGS='$(GMP_CFLAGS)' \
+		CONFIGNAME='$(CONFIGNAME)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		USE_GMP='$(USE_GMP)' \
+		GAPARCH='$(GAPARCH)' \
+		./configure --target=@target@ @gp_configure_options@ )
 
 extern: config
-	( cd bin/$(GAPARCH)/extern ; $(MAKE) TARGET='$(TARGET)' BASECC='$(BASECC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' CC='$(CC)' GMP_VER='$(GMP_VER)' MAKE_GMP='$(MAKE_GMP)' CONFIGNAME='$(CONFIGNAME)' )
+	( cd bin/$(GAPARCH)/extern ; \
+		$(MAKE) \
+		TARGET='$(TARGET)' \
+		BASECC='$(BASECC)' \
+		ABI='$(ABI)' \
+		ABI_CFLAGS='$(ABI_CFLAGS)' \
+		CC='$(CC)' \
+		GMP_VER='$(GMP_VER)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		CONFIGNAME='$(CONFIGNAME)' )
 
 compile: extern
-	( cd bin/$(GAPARCH); $(MAKE) ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' CONFIGNAME='$(CONFIGNAME)' )
+	( cd bin/$(GAPARCH); \
+		$(MAKE) \
+		ABI='$(ABI)' \
+		CC='$(CC)' \
+		GMP_VER='$(GMP_VER)' \
+		GMP_CFLAGS='$(GMP_CFLAGS)' \
+		GMP_LIBS='$(GMP_LIBS)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		CONFIGNAME='$(CONFIGNAME)' )
 	chmod +x bin/gap-$(CONFIGNAME).sh
 
 static: extern
@@ -362,40 +396,38 @@ testmanuals:
 	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (ALL PACKAGES)"; fi ) \
 	  > `date -u +dev/log/testmanuals2_%Y-%m-%d-%H-%M` 2>&1 )
 	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
-			
-	
-testmanualsold:
+
+testupdates:
 	mkdir -p dev/log
-	mkdir -p doc/test/tut
-	mkdir -p doc/test/ref
-	( echo 'LoadPackage( "gapdoc" ); Read( "tst/testutil.g" ); \
-	  ExtractManualExamples( "tut" ); ExtractManualExamples( "ref" );' | $(TESTGAP) )
-	( echo 'SetAssertionLevel( 2 ); LoadPackage( "gapdoc" ); \
-	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAP) )
-	( cd doc/test/tut; ../mktestx.sh )
-	( cd doc/test/ref; ../mktestx.sh )
-	(  cd doc/test; \
-	  cat tut/diffs ref/diffs \
-	  > `date -u +../../dev/log/testmanuals1_%Y-%m-%d-%H-%M` )
-	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
-	( echo 'SetAssertionLevel( 2 );  \
-	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAPauto) )
-	( cd doc/test/tut; ../mktestx.sh )
-	( cd doc/test/ref; ../mktestx.sh )
-	(  cd doc/test; \
-	  cat tut/diffs ref/diffs \
-	  > `date -u +../../dev/log/testmanualsA_%Y-%m-%d-%H-%M` )
-	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
-	( echo 'SetAssertionLevel( 2 ); LoadAllPackages(); \
-	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAP) )
-	( cd doc/test/tut; ../mktestx.sh )
-	( cd doc/test/ref; ../mktestx.sh )
-	(  cd doc/test; \
-	  cat tut/diffs ref/diffs \
-	  > `date -u +../../dev/log/testmanuals2_%Y-%m-%d-%H-%M` )
-	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
-	( rm doc/test/tut/*.tst; rm doc/test/ref/*.tst )  
-	( rm doc/test/wsp.g )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+            ReadGapRoot( "tst/testutil.g" ); \
+            SetAssertionLevel( 2 ); RunDevUpdateTests();' | $(TESTGAP) > \
+            `date -u +dev/log/testupdates1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+            ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+            SetAssertionLevel( 2 ); RunDevUpdateTests();' | $(TESTGAP) > \
+            `date -u +dev/log/testupdates2_%Y-%m-%d-%H-%M` )
+            
+testobsoletes:
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
+	( echo 'CreatePackageLoadTestsInput( "testobsoletes1.in", \
+            "dev/log/testobsoletes1", \
+            "$(TESTGAP) -O -L wsp.g", false, false );'\
+            | $(TESTGAP) -O -L wsp.g > /dev/null )
+	( chmod 777 testobsoletes1.in; ./testobsoletes1.in > \
+            `date -u +dev/log/testobsoletes1_%Y-%m-%d-%H-%M`; rm testobsoletes1.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
+	( echo 'CreatePackageLoadTestsInput( "testobsoletesN1.in", \
+            "dev/log/testobsoletesN1", \
+            "$(TESTGAP) -O -L wsp.g", false, true );'\
+            | $(TESTGAP) -O -L wsp.g > /dev/null )
+	( chmod 777 testobsoletesN1.in; ./testobsoletesN1.in > \
+            `date -u +dev/log/testobsoletesN1_%Y-%m-%d-%H-%M`; rm testobsoletesN1.in )
+	( rm wsp.g )
 
 cygwin:	extern
 	( cd bin/$(GAPARCH) ; $(MAKE) gapdll ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' CONFIGNAME='$(CONFIGNAME)' )

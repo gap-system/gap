@@ -35,12 +35,13 @@ InstallGlobalFunction( IsomorphismFpGroupByPcgs, function( pcgs, str )
     local n, F, gens, rels, i, pis, exp, t, h, rel, comm, j, H, phi;
 
     n:=Length(pcgs);
-    F    := FreeGroup( n, str );
     if n=0 then
-      phi:=GroupHomomorphismByImagesNC(GroupOfPcgs(pcgs),F/[],[],[]);
+      phi:=GroupHomomorphismByImagesNC(GroupOfPcgs(pcgs),
+	      TRIVIAL_FP_GROUP,[],[]);
       SetIsBijective( phi, true );
       return phi;
     fi;
+    F    := FreeGroup( n, str );
     gens := GeneratorsOfGroup( F );
     pis  := RelativeOrders( pcgs );
     rels := [ ];

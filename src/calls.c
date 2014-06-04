@@ -1206,10 +1206,29 @@ Obj NewFunctionCT (
     ObjFunc             hdlr )
 {
     Obj                 name_o;         /* name as an object               */
-    Obj                 nams_o;         /* nams as an object               */
-    UInt                 len;            /* length                          */
-    UInt                 i, k, l;        /* loop variables                  */
 
+    /* convert the name to an object                                       */
+    C_NEW_STRING_DYN(name_o, name_c);
+    RetypeBag(name_o, T_STRING+IMMUTABLE);
+
+    /* make the function                                                   */
+    return NewFunctionT( type, size, name_o, narg, ArgStringToList( nams_c ), hdlr );
+}
+    
+
+/****************************************************************************
+**
+*F  ArgStringToList( <nams_c> )
+**
+** 'ArgStringToList' takes a C string <nams_c> containing a list of comma
+** separated argument names, and turns it into a plist of strings, ready
+** to be passed to 'NewFunction' as <nams>.
+*/
+Obj ArgStringToList(const Char *nams_c) {
+    Obj                 tmp;            /* argument name as an object      */
+    Obj                 nams_o;         /* nams as an object               */
+    UInt                len;            /* length                          */
+    UInt                i, k, l;        /* loop variables                  */
 
     /* convert the arguments list to an object                             */
     len = 0;
@@ -1227,24 +1246,18 @@ Obj NewFunctionCT (
             k++;
         }
         l = k;
-        while ( nams_c[l]!=' ' && nams_c[l]!=',' && nams_c[l]!='\0' ) {
+        while ( nams_c[l] != ' ' && nams_c[l] != ',' && nams_c[l] != '\0' ) {
             l++;
         }
-        C_NEW_STRING(name_o, l-k, nams_c+k);
-        RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
-        SET_ELM_PLIST( nams_o, i, name_o );
+        C_NEW_STRING( tmp, l - k, nams_c + k );
+        RetypeBag( tmp, T_STRING+IMMUTABLE );
+        SET_ELM_PLIST( nams_o, i, tmp );
         k = l;
     }
 
-    /* convert the name to an object                                       */
-    len = strlen( name_c );
-    C_NEW_STRING(name_o, len, name_c);
-    RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
-
-    /* make the function                                                   */
-    return NewFunctionT( type, size, name_o, narg, nams_o, hdlr );
+    return nams_o;
 }
-    
+
 
 /****************************************************************************
 **
@@ -1865,7 +1878,6 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
   ObjFunc hdlr;
   const Char *cookie;
   Obj cookieStr;
-  UInt len;
   if (!IS_FUNC(func))
     return Fail;
   narg = NARG_FUNC(func);
@@ -1873,9 +1885,7 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
     narg = 7;
   hdlr = HDLR_FUNC(func, narg);
   cookie = CookieOfHandler(hdlr);
-  len = strlen(cookie);
-  cookieStr = NEW_STRING(len);
-  COPY_CHARS(cookieStr, cookie, len);
+  C_NEW_STRING_DYN(cookieStr, cookie);
   return cookieStr;
 }
 
@@ -2118,7 +2128,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCalls ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

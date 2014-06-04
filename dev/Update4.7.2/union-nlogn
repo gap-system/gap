@@ -1,0 +1,21 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/09/25
+!! Changed by
+AK (just appied a patch suggested by CJ)
+! Reported by
+CJ
+!! Type of Change
+Fix: efficiency issue
+!! Description
+`Union' had O(n^3) behaviour when given many ranges (e.g. 10 seconds to 
+find a union of 1000 1-element sets). The new implementation reduces that 
+to O(n log n) (and 4ms for the 10 second example), at the cost of not 
+merging ranges as well as before in some rare cases.
+! Test Code
+# This should now return the result instantly:
+gap> L := List(Shuffle([1..1000]), x -> Set([x]));;
+!! Changeset
+170f54332dafe5878941c7ec3b28afa22ae0d32f
+!! End

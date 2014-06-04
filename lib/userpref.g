@@ -21,72 +21,103 @@
 ##
 ##  <#GAPDoc Label="UserPreferences">
 ##  <ManSection>
-##  <Heading>User preferences</Heading>
-##  <Func Name="DeclareUserPreference" Arg="record"/>
+##  <Heading>Configuring User preferences</Heading>
 ##  <Func Name="SetUserPreference" Arg="[package, ]name, value"/>
 ##  <Func Name="UserPreference" Arg="[package, ]name"/>
 ##  <Func Name="ShowUserPreferences" Arg="package1, package2, ..."/>
 ##  <Func Name="WriteGapIniFile" Arg="[dir][,][ignorecurrent]"/>
-##
+##  
 ##  <Description>
-##  These functions deal with user preferences, for example the way how
-##  &GAP;'s online help is shown.
-##  The idea is that such preferences are declared and get default values
-##  with <Ref Func="DeclareUserPreference"/>, the values can be set with
-##  <Ref Func="SetUserPreference"/>, and the values can be accessed with
-##  <Ref Func="UserPreference"/>.
+##  
+##  Some aspects of the behaviour of &GAP; can be customized by the user via
+##  <Emph>user preferences</Emph>.  Examples include  the way  help sections
+##  are displayed or the use of colors in the terminal. <P/>
+##  
+##  User preferences are  specified via a pair of strings,  the first is the
+##  (case insensitive) name of a package (or <C>"GAP"</C> for the core &GAP;
+##  library) and the second is some arbitrary case sensitive string. <P/>
+##  
+##  User   preferences  can   be  set   to  some   <A>value</A>  with   <Ref
+##  Func="SetUserPreference"/>. The  current value of a  user preference can
+##  be found with <Ref Func="UserPreference"/>. In both cases, if no package
+##  name is  given the default  <C>"GAP"</C> is  used. If a  user preference
+##  is  not  known or  not  set  then <Ref  Func="UserPreference"/>  returns
+##  <K>fail</K>. <P/>
+##  
+##  The function <Ref Func="ShowUserPreferences"/> with no argument shows in
+##  a  pager  an  overview  of  all known  user  preferences  together  with
+##  some  explanation  and  the  current  value.  If  one  or  more  strings
+##  <A>package1</A>, ... are given then  only the user preferences for these
+##  packages are shown. <P/>
+##  
+##  The easiest way to  make use of user preferences is  probably to use the
+##  function <Ref  Func="WriteGapIniFile"/>, usually without  argument. This
+##  function creates a file <F>gap.ini</F>  in your user specific &GAP; root
+##  directory (<C>GAPInfo.UserGapRoot</C>).  If such  a file  already exists
+##  the function  will make a  backup of it  first. This newly  created file
+##  contains  descriptions of  all  known user  preferences  and also  calls
+##  of  <Ref Func="SetUserPreference"/>  for  those  user preferences  which
+##  currently do not  have their default value. You can  then edit that file
+##  to customize (further)  the user preferences for  future &GAP; sessions.
 ##  <P/>
-##  The function <Ref Func="ShowUserPreferences"/> shows an overview of the
-##  currently available user preferences and their values in a pager.
-##  (The choice of this pager is determined by the user preference
-##  <C>"Pager"</C>.)
-##  If arguments <A>package1</A>, <A>package2</A> etc. are given then the
-##  overview is restricted to the packages with these names.
+##  
+##  Should a  later version  of &GAP;  or some  packages introduce  new user
+##  preferences then you can  call <Ref Func="WriteGapIniFile"/> again since
+##  it  will set  the previously  known  user preferences  to their  current
+##  values. <P/>
+##  
+##  Optionally,  a  different  directory for  the  resulting  <F>gap.ini</F>
+##  file    can   be    specified   as    argument   <A>dir</A>    to   <Ref
+##  Func="WriteGapIniFile"/>. Another optional argument is the boolean value
+##  <K>true</K>, if this  is given, the settings of all  user preferences in
+##  the current session are ignored. <P/>
+##  
+##  Note that  your <F>gap.ini</F> file is  read by &GAP; very  early during
+##  its startup process. A consequence  is that the <A>value</A> argument in
+##  a call of <Ref Func="SetUserPreference"/>  must be some very basic &GAP;
+##  object, usually a boolean, a number, a  string or a list of those. A few
+##  user  preferences support  more complicated  settings. For  example, the
+##  user  preference <C>"UseColorPrompt"</C>  admits a  record as  its value
+##  whose components are available  only after the <Package>GAPDoc</Package>
+##  package has been loaded, see&nbsp;<Ref Func="ColorPrompt"/>. If you want
+##  to specify such a complicated value, then move the corresponding call of
+##  <Ref Func="SetUserPreference"/> from your  <F>gap.ini</F> file into your
+##  <F>gaprc</F>  file (also  in the  directory <C>GAPInfo.UserGapRoot</C>).
+##  This file is read much later. <P/>
+##  
+##  <Example>
+##  gap> SetUserPreference( "Pager", "less" );
+##  gap> SetUserPreference("PagerOptions",
+##  >                      [ "-f", "-r", "-a", "-i", "-M", "-j2" ] );
+##  gap> UserPreference("Pager");
+##  "less"
+##  </Example>
+##  
+##  The first two lines of this example will cause &GAP; to use the programm
+##  <C>less</C> as  a pager.  This is highly  recommended if  <C>less</C> is
+##  available on  your system. The  last line displays the  current setting.
 ##  <P/>
-##  The calls to <Ref Func="SetUserPreference"/> may appear in the user's
-##  <F>gap.ini</F> file (see&nbsp;<Ref Sect="sect:gap.ini"/>).
-##  This file can be created or updated with <Ref Func="WriteGapIniFile"/>;
-##  optional arguments for this function are the directory path
-##  <A>dir</A> (a string or a directory object) where the file shall be
-##  written, and <A>ignorecurrent</A> (if the value is <K>true</K> then
-##  a file with assignments of the default values for the user preferences
-##  is written, not of their current values.
-##  <P/>
-##  Each user preference is identified by the case insensitive strings
-##  <A>package</A> (the name of a &GAP; package) and <A>name</A>.
-##  Thus several packages may declare independent user preferences with the
-##  same <A>name</A> part.
-##  The default for <A>package</A> is <C>"GAP"</C>.
-##  <Ref Func="SetUserPreference"/> sets the value of the given user
-##  preference to <A>value</A>, and 
-##  <Ref Func="UserPreference"/> returns the current value.
-##  Note that <Ref Func="UserPreference"/> returns <K>fail</K> if no user
-##  preference for <A>package</A> and <A>name</A> exists;
-##  thus the value <K>fail</K> of a user preference is equivalent to the
-##  situation that this user preference is not available.
-##  <P/>
-##  It is possible to use <Ref Func="SetUserPreference"/> and
-##  <Ref Func="UserPreference"/> for dealing with user preferences that have
-##  not been declared with <Ref Func="DeclareUserPreference"/>.
-##  (This is necessary in the situation that the <F>gap.ini</F> file sets
-##  values for preferences which are declared later in &GAP; packages.)
-##  Undeclared user preferences are ignored by <Ref Func="WriteGapIniFile"/>,
-##  and are mentioned only briefly in the overview shown by
-##  <Ref Func="ShowUserPreferences"/>.
-##  <P/>
-##  Note that the <Ref Func="SetUserPreference"/> calls in the <F>gap.ini</F>
-##  file can set only values which are avaliable at the time when the
-##  <F>gap.ini</F> is read.
-##  Integers, strings, and lists of them are admissible,
-##  but more involved objects may not be available.
-##  In such a situation, the <Ref Func="SetUserPreference"/> call should be
-##  placed in the <F>gaprc</F> file,
-##  see&nbsp;<Ref Sect="sect:gap.ini"/> for details.
-##  For example, the user preference <C>"UseColorPrompt"</C> admits a record
-##  as its value whose components are available only after the
-##  <Package>GAPDoc</Package> package has been loaded,
-##  see&nbsp;<Ref Func="ColorPrompt"/>.
-##  <P/>
+##  
+##  </Description> 
+##  </ManSection>
+##  
+##  <ManSection>
+##  <Func Name="DeclareUserPreference" Arg="record"/>
+##  
+##  <Description>
+##  
+##  This  function can  be used  (also in  packages) to  introduce new  user
+##  preferences. It declares  a user preference, determines  a default value
+##  and contains documentation  of the user preference.  After declaration a
+##  user preference will be shown with <Ref Func="ShowUserPreferences"/> and
+##  <Ref Func="WriteGapIniFile"/>. <P/>
+##  
+##  When  this  declaration  is  evaluated  it  is  checked,  if  this  user
+##  preference is  already set in the  current session. If not  the value of
+##  the user  preference is set to  its default. (Do not  use <K>fail</K> as
+##  default  value  since this  indicated  that  a  user preference  is  not
+##  set.)<P/>
+##  
 ##  The argument <A>record</A> of <Ref Func="DeclareUserPreference"/> must be
 ##  a record with the following components.
 ##  <P/>
@@ -168,7 +199,7 @@
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##
+##  
 #T Concerning the `values' lists in the declaration:
 #T - What shall happen if several preferences are declared together?
 #T   It may be that the admissible choices for the second preference depend

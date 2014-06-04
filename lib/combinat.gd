@@ -581,7 +581,7 @@ DeclareGlobalFunction("NrUnorderedTuples");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "IteratorOfCartesianProduct" );
-
+DeclareGlobalFunction("EnumeratorOfCartesianProduct");
 
 #############################################################################
 ##

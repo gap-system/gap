@@ -67,8 +67,6 @@
 /* define to create functions PTR_BAG, etc instead of macros               */
 /* #undef DEBUG_FUNCTIONS_BAGS */
 
-/* define to debug the generational aspect of gasman                       */
-/* #undef DEBUG_DEADSONS_BAGS */
 
 /* define to debug masterpointers errors                                   */
 /* #undef DEBUG_MASTERPOINTERS */
@@ -120,8 +118,32 @@
 **  '(U)Int' should be the same length as a bag identifier
 */
 
-/* 64 bit machines -- well alphas anyway                                   */
+
+#if HAVE_STDINT_H
+#include <stdint.h>
+typedef char              Char;
+
+typedef int8_t   Int1;
+typedef int16_t  Int2;
+typedef int32_t  Int4;
+typedef int64_t  Int8;
+
+typedef uint8_t  UChar;
+typedef uint8_t  UInt1;
+typedef uint16_t UInt2;
+typedef uint32_t UInt4;
+typedef uint64_t UInt8;
+
 #ifdef SYS_IS_64_BIT
+typedef Int8     Int;
+typedef UInt8    UInt;
+#else
+typedef Int4     Int;
+typedef UInt4    UInt;
+#endif
+
+/* 64 bit machines                                                         */
+#elif defined( SYS_IS_64_BIT )
 typedef char                    Char;
 typedef signed char             Int1;
 typedef short int               Int2;
@@ -135,7 +157,7 @@ typedef unsigned int            UInt4;
 typedef unsigned long int       UInt8;
 typedef unsigned long int       UInt;
 
-/* 32bit machines                                                          */
+/* 32 bit machines                                                         */
 #else
 typedef char                    Char;
 typedef signed char             Int1;
@@ -150,44 +172,6 @@ typedef unsigned long int       UInt4;
 typedef unsigned long int       UInt;
 typedef unsigned long long int  UInt8;
 
-#endif
-
-
-/****************************************************************************
-**
-*F  Macros to allow detection of dangerous assignments
-**
-**  NL makes its argument not a valid lvalue, but has no effect at runtime
-*/
-
-#ifdef __GNUC__ 
-static inline Char IDENT_Char(Char x)
-{
-     return x;
-}
-#define NL_Char(x) (IDENT_Char((x)))
-#else
-#define NL_Char(x) (x)
-#endif
-
-#ifdef __GNUC__ 
-static inline Int IDENT_Int(Int x)
-{
-     return x;
-}
-#define NL_Int(x) (IDENT_Int((x)))
-#else
-#define NL_Int(x) (x)
-#endif
-
-#ifdef __GNUC__ 
-static inline UInt IDENT_UInt(UInt x)
-{
-     return x;
-}
-#define NL_UInt(x) (IDENT_UInt((x)))
-#else
-#define NL_UInt(x) (x)
 #endif
 
 
@@ -258,38 +242,6 @@ extern const Char * SyArchitecture;
 *V  SyKernelVersion  . . . . . . . . . . . . . . . .  kernel version number
 */
 extern const Char * SyKernelVersion;
-
-/****************************************************************************
-**
-*V  SyAutoloadPackages  . . . . . . . . . .  automatically load packages
-**
-**  0: no 
-**  1: yes
-*/
-extern UInt SyAutoloadPackages;
-
-/****************************************************************************
-**
-*V  SyBreakSuppress  . . . . . . . . never enter a break loop
-**
-**  0: no 
-**  1: yes
-*/
-extern UInt SyBreakSuppress;
-
-
-/****************************************************************************
-**
-*V  SyBanner  . . . . . . . . . . . . . . . . . . . . . . . . surpress banner
-**
-**  'SyBanner' determines whether GAP should print the banner.
-**
-**  Per default it  is true,  i.e.,  GAP prints the  nice  banner.  It can be
-**  changed by the '-b' option to have GAP surpress the banner.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-extern UInt SyBanner;
 
 
 /****************************************************************************
@@ -1125,7 +1077,7 @@ extern void SySleep( UInt secs );
 /****************************************************************************
 **
 *F  getOptionCount ( <key> ) . number of times a command line option was used
-*F  getOptionArg ( <key>, <which> ) get arguments used on <which>'th occurence
+*F  getOptionArg ( <key>, <which> ) get arguments used on <which>'th occurrence
 *F                             of <key> as a command line option NULL if none
 **
 */

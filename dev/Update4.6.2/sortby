@@ -1,0 +1,27 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/11/10
+! Changed by
+SL
+! Reported by
+
+! Type of Change
+New: new functionality
+
+! Description
+Added an Operation SortBy( l, f)
+
+f is a function of one argument and 
+l is sorted so that l(f[i]) <= l(f[i+1])
+
+! Test Code
+gap> l :=  [ 2, 3, 4, 1, 5, 10, 9, 7, 8, 6, 11 ];;
+gap> SortBy(l,AINV);
+gap> l;
+[ 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
+
+! Prefetch
+
+! Changeset
+
+! End

@@ -637,5 +637,23 @@ DeclareOperation( "IntVecFFE", [ IsRowVector and IsFFECollection ] );
 
 #############################################################################
 ##
+#A  AsInternalFFE( <ffe> )  
+##
+##  <#GAPDoc Label="AsInternalFFE">
+##  <ManSection>
+##  <Attr Name="AsInternalFFE" Arg='ffe'/>
+##
+## <Description>
+## return an internal FFE equal to <A>ffe</A> if one exists, otherwise <C>fail</C>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "AsInternalFFE", IsFFE);
+
+
+
+#############################################################################
+##
 #E
 

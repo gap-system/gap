@@ -177,6 +177,8 @@ DeclareAttribute("Zuppos",IsGroup);
 ##  extension algorithm. Therefore the trivial subgroup will always be
 ##  included.) Also note, that for such a partial lattice
 ##  maximality/minimality inclusion relations cannot be computed.
+##  (If <A>func</A> is a list of length 2, its first entry is such a
+##  discarding function, the second a function for discarding zuppos.)
 ##  <P/>
 ##  The cyclic extension algorithm requires the perfect subgroups of <A>G</A>.
 ##  However &GAP; cannot analyze the function <A>func</A> for its implication
@@ -199,8 +201,7 @@ DeclareAttribute("Zuppos",IsGroup);
 ##  gap> LatticeSubgroups(g);
 ##  <subgroup lattice of <permutation group of size 5184 with 
 ##  9 generators>, 566 classes, 27134 subgroups>
-##  ]]></Example>
-##  </Description>
+##  ]]></Example> ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
@@ -348,6 +349,77 @@ DeclareAttribute("MinimalSupergroupsLattice",IsLatticeSubgroupsRep);
 ##
 DeclareGlobalFunction("DotFileLatticeSubgroups");
 
+#############################################################################
+##
+#F  ExtendSubgroupsOfNormal( <G>, <N>,<Nsubs> )
+##
+##  <#GAPDoc Label="ExtendSubgroupsOfNormal">
+##  <ManSection>
+##  <Func Name="ExtendSubgroupsOfNormal" Arg='G,N,Nsubs'/>
+##
+##  <Description>
+##  If $N$ is normal in $G$ and $Nsubs$ is a list of subgroups of $N$ up to
+##  conjugacy, this function extends this list to taht of all subgroups of $G$.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("ExtendSubgroupsOfNormal");
+
+#############################################################################
+##
+#F  SubdirectSubgroups( <D> )
+##
+##  <#GAPDoc Label="SubdirectSubgroups">
+##  <ManSection>
+##  <Func Name="SubdirectSubgroups" Arg='D'/>
+##
+##  <Description>
+##  If $D$ is created as a direct product, this function determines all
+##  subgroups of $D$ up to conjugacy, using subdirect products.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("SubdirectSubgroups");
+
+#############################################################################
+##
+#F  SubgroupsTrivialFitting( <G> )
+##
+##  <#GAPDoc Label="SubgroupsTrivialFitting">
+##  <ManSection>
+##  <Func Name="SubgroupsTrivialFitting" Arg='G'/>
+##
+##  <Description>
+##  Determines representatives of the conjugacy classes of subgroups of a
+##  trivial-fitting group $G$.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("SubgroupsTrivialFitting");
+
+#############################################################################
+##
+#A  TomDataAlmostSimpleRecognition(<G>) Tom Library Identification
+##
+##  <#GAPDoc Label="TomDataAlmostSimpleRecognition">
+##  <ManSection>
+##  <Attr Name="TomDataAlmostSimpleRecognition" Arg='G'/>
+##
+##  <Description>
+##  For an almost simple group, this returns a list: isomorphism, table of
+##  marks
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute("TomDataAlmostSimpleRecognition",IsGroup);
+
+# functions return list of (maximal/all) subgroups of almost simple fetched
+# from tom library, or `fail' if data is not there.
+DeclareGlobalFunction("TomDataMaxesAlmostSimple");
+DeclareGlobalFunction("TomDataSubgroupsAlmostSimple");
 
 #############################################################################
 ##

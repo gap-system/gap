@@ -45,6 +45,25 @@ DeclareGlobalFunction("SimpleGroup");
 
 #############################################################################
 ##
+#F  EpimorphismFromClassical( <G> )
+##
+##  <#GAPDoc Label="EpimorphismFromClassical">
+##  <ManSection>
+##  <Func Name="EpimorphismFromClassical" Arg='G'/>
+##
+##  <Description>
+##  For an (almost) simple group this homomorphsim will try to construct an
+##  epimorphism from a classical group onto it (or return fail if it does
+##  not work or is not yet implemented).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("EpimorphismFromClassical");
+
+
+#############################################################################
+##
 #F  SimpleGroupsIterator( [<start>,<end>] )
 ##
 ##  <#GAPDoc Label="SimpleGroupsIterator">
@@ -98,4 +117,21 @@ DeclareGlobalFunction("SimpleGroupsIterator");
 ##  </ManSection>
 ##  <#/GAPDoc>
 DeclareGlobalFunction("ClassicalIsomorphismTypeFiniteSimpleGroup");
+
+DeclareAttribute("DataAboutSimpleGroup",IsGroup);
+
+#############################################################################
+##
+#F  SufficientlySmallDegreeSimpleGroupOrder(n)
+##
+##  <#GAPDoc Label="SufficientlySmallDegreeSimpleGroupOrder">
+##  <ManSection>
+##  <Func Name="SufficientlySmallDegreeSimpleGroupOrder" Arg='n'/>
+##  For an order <M>n</M> this function returns a heuristic bound for a
+##  small permutation degree of a simple group of that exact order.
+##  This function
+##  can be used to decide whether it is woth to try the `SmallerDegree'
+##  reduction.
+##  <#/GAPDoc>
+DeclareGlobalFunction("SufficientlySmallDegreeSimpleGroupOrder");
 
