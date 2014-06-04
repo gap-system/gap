@@ -429,7 +429,10 @@ Obj NewGVarBucket() {
 
 Obj NameGVarObj ( UInt gvar )
 {
-    return ELM_PLIST( NameGVars, gvar );
+    UInt gvar_bucket = GVAR_BUCKET(gvar);
+    UInt gvar_index  = GVAR_INDEX(gvar);
+
+    return ELM_PLIST( NameGVars[gvar_bucket], gvar_index );
 }
 
 #define NSCHAR '@'
