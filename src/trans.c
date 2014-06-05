@@ -954,6 +954,8 @@ Obj FuncPREIMAGES_TRANS_INT (Obj self, Obj f, Obj pt){
 
   SET_LEN_PLIST(out, (Int) nr);
   SHRINK_PLIST(out, (Int) nr);
+  if (!nr)
+    RetypeBag(out, T_PLIST_EMPTY);
   return out;
 }
 
