@@ -76,9 +76,11 @@ static inline UInt4 * ResizeInitTmpTrans( UInt len ){
   UInt    i;
   UInt4   *pttmp;
 
-  if(SIZE_OBJ(TmpTrans)<len*sizeof(UInt4)){
-    ResizeBag(TmpTrans,len*sizeof(UInt4));
-  }
+  if (TmpTrans == (Obj)0)
+    TmpTrans = NewBag(T_TRANS4, len*sizeof(UInt4));
+  else if (SIZE_BAG(TmpTrans) < len*sizeof(UInt4))
+    ResizeBag(TmpTrans, len*sizeof(UInt4));
+
   pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
   for(i=0;i<len;i++) pttmp[i]=0;
   return pttmp;
@@ -4289,7 +4291,7 @@ static Int InitKernel ( StructInitInfo *module )
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* make the buffer bag                                                 */
-    InitGlobalBag( &TmpTrans, "src/trans.c:TmpTrans" );
+    /* InitGlobalBag( &TmpTrans, "src/trans.c:TmpTrans" );		   */
     
     // make the identity trans
     InitGlobalBag( &IdentityTrans, "src/trans.c:IdentityTrans" );
@@ -4356,7 +4358,7 @@ static Int InitLibrary ( StructInitInfo *module )
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
     InitGVarFiltsFromTable( GVarFilts );
-    TmpTrans = NEW_TRANS4(1000);
+    TmpTrans = 0;
     IdentityTrans = NEW_TRANS2(0);
 
     /* return success                                                      */

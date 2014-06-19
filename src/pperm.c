@@ -54,7 +54,9 @@ Obj   EmptyPartialPerm;
 #define  TmpPPerm TLS->TmpPPerm
 
 static inline void ResizeTmpPPerm( UInt len ){
-  if(SIZE_OBJ(TmpPPerm)<len*sizeof(UInt4))
+  if (TmpPPerm == (Obj)0) 
+    TmpPPerm = NewBag(T_PPERM4, len*sizeof(UInt4));
+  else if (SIZE_BAG(TmpPPerm) < len*sizeof(UInt4))
     ResizeBag(TmpPPerm,len*sizeof(UInt4));
 }
 
@@ -5785,7 +5787,7 @@ static Int InitKernel ( StructInitInfo *module )
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* make the buffer bag                                                 */
-    InitGlobalBag( &TmpPPerm, "src/pperm.c:TmpPPerm" );
+    /* InitGlobalBag( &TmpPPerm, "src/pperm.c:TmpPPerm" );		   */
     InitGlobalBag( &EmptyPartialPerm, "src/pperm.c:EmptyPartialPerm" );
 
     /* install the saving functions */
@@ -5876,7 +5878,7 @@ static Int InitLibrary ( StructInitInfo *module )
   /* init filters and functions                                          */
   InitGVarFuncsFromTable( GVarFuncs );
   InitGVarFiltsFromTable( GVarFilts );
-  TmpPPerm = NEW_PPERM4(1000);
+  TmpPPerm = 0;
 
   EmptyPartialPerm=NEW_PPERM2(0);
   
