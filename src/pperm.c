@@ -51,7 +51,7 @@ Obj   EmptyPartialPerm;
 **  that require a zero-initialization need to do this at the start.
 */
 
-Obj TmpPPerm;
+#define  TmpPPerm TLS->TmpPPerm
 
 static inline void ResizeTmpPPerm( UInt len ){
   if(SIZE_OBJ(TmpPPerm)<len*sizeof(UInt4))

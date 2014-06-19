@@ -57,8 +57,9 @@
 #define DEG_TRANS(f)      (TNUM_OBJ(f)==T_TRANS2?DEG_TRANS2(f):DEG_TRANS4(f))
 
 // TmpTrans is the same as TmpPerm
+#define  TmpTrans TLS->TmpTrans
 
-Obj TmpTrans;
+/* mp this will become a ReadOnly object? */
 Obj IdentityTrans;
 
 /*******************************************************************************

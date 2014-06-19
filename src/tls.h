@@ -123,6 +123,12 @@ typedef struct ThreadLocalStorage
   Obj  LastECyc;
   UInt LastNCyc;
 
+  /* From trans.c */
+  Obj TmpTrans;
+ 
+  /* From pperm.c */
+  Obj TmpPPerm; 
+
   /* From gap.c */
   Obj thrownObject;
   UInt UserHasQuit;
