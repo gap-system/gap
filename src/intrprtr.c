@@ -974,7 +974,6 @@ void IntrQualifiedExprEnd( void )
 */
 void            IntrAtomicBegin ( void )
 {
-    Obj                 nams;           /* (empty) list of names           */
 
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }

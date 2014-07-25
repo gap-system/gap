@@ -1153,8 +1153,7 @@ void ReadFuncExpr (
 		SET_LEN_STRING(locks, 1);
 	        GetSymbol();
 	    }
-	    name = NEW_STRING( strlen(TLS->value) );
-	    SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
+        C_NEW_STRING_DYN( name, TLS->value );
 	    MakeImmutableString(name);
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
@@ -1182,8 +1181,7 @@ void ReadFuncExpr (
 		    SyntaxError("name used for two arguments");
 		}
 	    }
-	    name = NEW_STRING( strlen(TLS->value) );
-	    SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
+        C_NEW_STRING_DYN( name, TLS->value );
 	    MakeImmutableString(name);
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
@@ -1532,7 +1530,7 @@ void ReadAtom (
     /* otherwise read a literal expression                                 */
     else if (IS_IN(TLS->symbol,S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
                           S_REC|S_FUNCTION|S_DO|S_ATOMIC| S_FLOAT | S_DOT |
-			  S_MAPTO))
+                         S_MAPTO))
     {
         ReadLiteral( follow );
     }

@@ -991,11 +991,9 @@ void CodeAtomicEndBody (
     UInt                nrstats )
 {
     Stat                stat;           /* atomic-statement, result         */
-    Expr                cond;           /* condition                       */
     Stat                stat1;          /* single statement of body        */
     UInt                i;              /* loop variable                   */
     UInt nrexprs;
-    UInt mode;
     Expr  e,qual;
 
 
