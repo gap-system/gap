@@ -1228,9 +1228,9 @@ extern GVarDescriptor LastInaccessibleGVar;
 static void PrintGuardError(char *buffer, char *mode,
   Obj obj, char *file, unsigned line, char *func, char *expr)
 {
-  sprintf(buffer, "No %s access to object %lu of type %s\n"
+  sprintf(buffer, "No %s access to object %llu of type %s\n"
     "in %s, line %u, function %s(), accessing %s",
-      mode, (UInt) obj, TNAM_OBJ(obj),
+      mode, (unsigned long long) obj, TNAM_OBJ(obj),
       file, line, func, expr);
 }
 void WriteGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
