@@ -1230,7 +1230,7 @@ static void PrintGuardError(char *buffer, char *mode,
 {
   sprintf(buffer, "No %s access to object %llu of type %s\n"
     "in %s, line %u, function %s(), accessing %s",
-      mode, (unsigned long long) obj, TNAM_OBJ(obj),
+      mode, (unsigned long long) (UInt) obj, TNAM_OBJ(obj),
       file, line, func, expr);
 }
 void WriteGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
