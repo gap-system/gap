@@ -2492,7 +2492,7 @@ static void PrintThread(Obj obj)
       status_message = "unknown status";
       break;
   }
-  sprintf(buf, "<thread #%ld: %s>", id, status_message);
+  sprintf(buf, "<thread #%ld: %s>", (long) id, status_message);
   UnlockThreadControl();
   Pr("%s", (Int) buf, 0L);
 }
