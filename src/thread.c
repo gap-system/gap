@@ -1233,7 +1233,8 @@ static void PrintGuardError(char *buffer, char *mode,
       mode, (unsigned long long) (UInt) obj, TNAM_OBJ(obj),
       file, line, func, expr);
 }
-void WriteGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
+void WriteGuardError(Obj o, const char *file, unsigned line,
+                     const char *func, const char *expr)
 {
   char * buffer =
     alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
@@ -1245,7 +1246,8 @@ void WriteGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
   ErrorMayQuit("%s", (UInt) buffer, 0L);
 }
 
-void ReadGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
+void ReadGuardError(Obj o, const char *file, unsigned line,
+                    const char *func, const char *expr)
 {
   char * buffer =
     alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
