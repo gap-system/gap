@@ -230,9 +230,9 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
 
 #ifdef VERBOSE_GUARDS
 void WriteGuardError(Bag bag,
-    char *file, unsigned line, char *func, char *expr);
+    const char *file, unsigned line, const char *func, const char *expr);
 void ReadGuardError(Bag bag,
-    char *file, unsigned line, char *func, char *expr);
+    const char *file, unsigned line, const char *func, const char *expr);
 #else
 void WriteGuardError(Bag bag);
 void ReadGuardError(Bag bag);
