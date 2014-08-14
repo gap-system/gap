@@ -1226,7 +1226,7 @@ extern GVarDescriptor LastInaccessibleGVar;
 #ifdef VERBOSE_GUARDS
 
 static void PrintGuardError(char *buffer, char *mode,
-  Obj obj, char *file, unsigned line, char *func, char *expr)
+  Obj obj, const char *file, unsigned line, const char *func, const char *expr)
 {
   sprintf(buffer, "No %s access to object %llu of type %s\n"
     "in %s, line %u, function %s(), accessing %s",
