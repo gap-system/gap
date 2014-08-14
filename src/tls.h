@@ -236,13 +236,22 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
 #endif
 
 #ifdef VERBOSE_GUARDS
+void WriteGuardError(Bag bag,
+    char *file, unsigned line, char *func, char *expr);
+void ReadGuardError(Bag bag,
+    char *file, unsigned line, char *func, char *expr);
+#else
+void WriteGuardError(Bag bag);
+void ReadGuardError(Bag bag);
+#endif
+
+#ifdef VERBOSE_GUARDS
 static ALWAYS_INLINE Bag WriteGuardFull(Bag bag,
   const char *file, unsigned line, const char *func, const char *expr)
 #else
 static ALWAYS_INLINE Bag WriteGuard(Bag bag)
 #endif
 {
-  extern void WriteGuardError();
   Region *region;
   if (!IS_BAG_REF(bag))
     return bag;
@@ -263,7 +272,6 @@ static ALWAYS_INLINE Bag *WriteGuardByRefFull(Bag *bagref,
 static ALWAYS_INLINE Bag *WriteGuardByRef(Bag *bagref)
 #endif
 {
-  extern void WriteGuardError();
   Bag bag = *bagref;
   Region *region;
   if (!IS_BAG_REF(bag))
@@ -314,7 +322,6 @@ static ALWAYS_INLINE Bag ReadGuardFull(Bag bag,
 static ALWAYS_INLINE Bag ReadGuard(Bag bag)
 #endif
 {
-  extern void ReadGuardError();
   Region *region;
   if (!IS_BAG_REF(bag))
     return bag;
@@ -336,7 +343,6 @@ static ALWAYS_INLINE Bag *ReadGuardByRefFull(Bag *bagref,
 static ALWAYS_INLINE Bag *ReadGuardByRef(Bag *bagref)
 #endif
 {
-  extern void ReadGuardError();
   Bag bag = *bagref;
   Region *region;
   if (!IS_BAG_REF(bag))
