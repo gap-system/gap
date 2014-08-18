@@ -29,14 +29,14 @@
 #include        "ariths.h"              /* basic arithmetic                */
 #include        "bool.h"                /* booleans                        */
 
+#include        "code.h"                /* coder                           */
+#include        "tls.h"                 /* thread-local storage            */
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objscoll.h"            /* single collector                */
 
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
 
-#include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
 
 
 /****************************************************************************

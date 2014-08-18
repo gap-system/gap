@@ -36,16 +36,15 @@
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
+#include        "code.h"                /* coder                           */
+#include        "thread.h"              /* threads                         */
+#include        "tls.h"                 /* thread-local storage            */
 
 #include        "objfgelm.h"            /* objects of free groups          */
 
 #include        "objscoll.h"            /* single collector                */
 
 #include        "objccoll.h"            /* combinatorial collector         */
-
-#include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
 
 /****************************************************************************
 **
