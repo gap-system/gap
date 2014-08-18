@@ -65,6 +65,9 @@
 #include        "vec8bit.h"             /* functions for other compressed
                                            GF(q) vectors                   */
 
+#include        "code.h"                /* coder                           */
+#include        "tls.h"
+
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
 #include        "objscoll.h"            /* single collector                */
@@ -77,8 +80,6 @@
 #include        "sctable.h"             /* structure constant table        */
 #include        "costab.h"              /* coset table                     */
 #include        "tietze.h"              /* tietze helper functions         */
-
-#include        "code.h"                /* coder                           */
 
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
@@ -108,7 +109,6 @@
 #endif
 
 #include        "thread.h"
-#include        "tls.h"
 #include        "threadapi.h"
 #include        "aobjects.h"
 #include        "objset.h"

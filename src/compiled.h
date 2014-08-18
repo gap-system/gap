@@ -47,6 +47,9 @@
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
 
+#include        "code.h"                /* coder                           */
+#include        "tls.h"                 /* thread-local storage            */
+
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
 #include        "objscoll.h"            /* single collector                */
@@ -58,8 +61,6 @@
 #include        "sctable.h"             /* structure constant table        */
 #include        "costab.h"              /* coset table                     */
 #include        "tietze.h"              /* tietze helper functions         */
-
-#include        "code.h"                /* coder                           */
 
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
@@ -77,7 +78,6 @@
 #include        "streams.h"             /* streams package                 */
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
-#include        "tls.h"                 /* thread-local storage            */
 
 #include        "vars.h"                /* variables                       */
 

@@ -44,6 +44,7 @@
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
+#include        "tls.h"
 
 #include        "objfgelm.h"            /* objects of free groups          */
 
@@ -51,7 +52,6 @@
 
 #include        "objccoll.h"            /* combinatorial collector         */
 #include        "thread.h"
-#include        "tls.h"
 
 /****************************************************************************
 **
