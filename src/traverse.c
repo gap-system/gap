@@ -280,7 +280,7 @@ static void EndTraversal()
 #endif
 #define TRAV_HASH_BITS (SIZEOF_VOID_P * 8)
 
-static void TraversalRehash();
+static void TraversalRehash(TraversalState *traversal);
 
 static int SeenDuringTraversal(Obj obj)
 {
