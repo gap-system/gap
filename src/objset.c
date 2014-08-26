@@ -827,6 +827,21 @@ static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue) {
 }
 
 /**
+ *  `FuncCONTAINS_OBJ_MAP()`
+ *  ------------------------
+ *
+ *  GAP function to locate an entry with key `key` within `map`. The
+ *  function returns true if such an entry exists, false otherwise.
+ */
+
+static Obj FuncCONTAINS_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue) {
+  Int pos;
+  CheckArgument("FIND_OBJ_MAP", map, T_OBJMAP, T_OBJMAP+IMMUTABLE);
+  pos = FindObjMap(map, key);
+  return pos >= 0 ? True : False;
+}
+
+/**
  *  `FuncREMOVE_OBJ_MAP()`
  *  ----------------------
  *
@@ -915,6 +930,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "FIND_OBJ_MAP", 3, "objmap, obj, default",
       FuncFIND_OBJ_MAP, "src/objset.c:FIND_OBJ_MAP" },
+
+    { "CONTAINS_OBJ_MAP", 2, "objmap, obj",
+      FuncCONTAINS_OBJ_MAP, "src/objset.c:CONTAINS_OBJ_MAP" },
 
     { "CLEAR_OBJ_MAP", 1, "objmap",
       FuncCLEAR_OBJ_MAP, "src/objset.c:CLEAR_OBJ_MAP" },
