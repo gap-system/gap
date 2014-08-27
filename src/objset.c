@@ -360,6 +360,7 @@ Obj ObjSetValues(Obj set) {
       p++;
     }
   }
+  CHANGED_BAG(result);
   return result;
 }
 
@@ -585,6 +586,7 @@ Obj ObjMapValues(Obj set) {
       p++;
     }
   }
+  CHANGED_BAG(result);
   return result;
 }
 
@@ -608,6 +610,7 @@ Obj ObjMapKeys(Obj set) {
       p++;
     }
   }
+  CHANGED_BAG(result);
   return result;
 }
 
