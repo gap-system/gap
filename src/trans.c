@@ -4279,6 +4279,9 @@ static Int InitKernel ( StructInitInfo *module )
     InitMarkFuncBags( T_TRANS2, MarkTransSubBags );
     InitMarkFuncBags( T_TRANS4, MarkTransSubBags );
     
+    MakeBagTypePublic( T_TRANS2);
+    MakeBagTypePublic( T_TRANS4);
+
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_TRANS2", &TYPE_TRANS2 );
     ImportGVarFromLibrary( "TYPE_TRANS4", &TYPE_TRANS4 );
