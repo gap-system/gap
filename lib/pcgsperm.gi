@@ -1055,29 +1055,35 @@ function( G, d, e, opr )
     fi;
 end );
 
-CYCLICACHE:=[];
+BIND_GLOBAL( "CYCLICACHE", []);
+ShareSpecialObj(CYCLICACHE);
+
 InstallGlobalFunction(CreateIsomorphicPcGroup,function(pcgs,needindices,flag)
 local r,i,p,A,f,a;
   r:=RelativeOrders(pcgs);
   if Length(r)<=1 then
     p:=Product(r);
     i:=1;
-    while i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])<p do
-      i:=i+1;
+    atomic readonly CYCLICACHE do
+        while i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])<p do
+          i:=i+1;
+        od;
+        # do we have it?
+        if i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])=p then
+          return CYCLICACHE[i];
+        fi;
     od;
-    # do we have it?
-    if i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])=p then
-      return CYCLICACHE[i];
-    fi;
 
-    # make space
-    p:=i;
-    for i in [Length(CYCLICACHE),Length(CYCLICACHE)-1..p] do
-      CYCLICACHE[i+1]:=CYCLICACHE[i];
+    atomic readwrite CYCLICACHE do
+        # make space
+        p:=i;
+        for i in [Length(CYCLICACHE),Length(CYCLICACHE)-1..p] do
+          CYCLICACHE[i+1]:=CYCLICACHE[i];
+        od;
+        A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), flag );
+        CYCLICACHE[p]:=A;
+        return A;
     od;
-    A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), flag );
-    CYCLICACHE[p]:=A;
-    return A;
   fi;
 
   # is the group in the mappings families cache?
