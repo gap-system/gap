@@ -158,11 +158,25 @@ static void PrintObjMap(Obj map) {
  */
 
 static void MarkObjSet(Obj obj) {
-  /* not yet implemented */
+  UInt size = ADDR_WORD(obj)[OBJSET_SIZE];
+  UInt i;
+  for (i=0; i < size; i++) {
+    Obj el = ADDR_OBJ(obj)[OBJSET_HDRSIZE + i];
+    if (el)
+      MARK_BAG(el);
+  }
 }
 
 static void MarkObjMap(Obj obj) {
-  /* not yet implemented */
+  UInt size = ADDR_WORD(obj)[OBJSET_SIZE];
+  UInt i;
+  for (i=0; i < size; i++) {
+    Obj el = ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2*i];
+    if (el) {
+      MARK_BAG(el);
+      MARK_BAG(ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2*i + 1]);
+    }
+  }
 }
 
 /**
