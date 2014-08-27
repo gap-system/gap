@@ -524,8 +524,9 @@ InstallMethod( RandomHashKey, "for dense hash tables", true,
 ##
 ##  Default starting hash table size
 ##
-DefaultHashLength := 2^7; 
-BindGlobal("HASH_RANGE",[0..DefaultHashLength-2]);
+DefaultHashLength := 2^7;
+MakeThreadLocal("DefaultHashLength");
+
 
 #############################################################################
 ##
@@ -536,7 +537,9 @@ function(arg)
       local Rec,T;
 
   Rec := rec( KeyArray := ListWithIdenticalEntries( DefaultHashLength, fail ), 
-          ValueArray := [], LengthArray := DefaultHashLength, NumberKeys := 0 );
+          ValueArray := [], LengthArray := DefaultHashLength, 
+          HashRange := DefaultHashLength - 2,
+          NumberKeys := 0 );
     
   if Length(arg)>0 then
     T:=Objectify( DefaultSparseHashWithIKRepType, Rec );
@@ -723,7 +726,7 @@ end);
 #     [ IsHash and IsMutable, IsObject, IsObject ], 0,
 # function( hash, intkey, value )
 # local index, i;
-#   for i in HASH_RANGE do
+#   for i in [0..hash!.HashRange] do
 #     index := IntegerHashFunction( intkey, i, hash!.LengthArray );
 #     if hash!.KeyArray[index] = fail then
 #       hash!.ValueArray[ LastHashIndex ] := value;
@@ -758,8 +761,9 @@ local index,intkey,i,cnt;
   intkey := hash!.intKeyFun(key);
 #  cnt:=0;
   repeat
-    for i in HASH_RANGE do
+    for i in [0..hash!.HashRange] do
       index:=HashClashFct(intkey,i,hash!.LengthArray);
+      # Print(intkey,":",i,":",hash!.LengthArray);
       if hash!.KeyArray[index] = fail then
 #if cnt>MAXCLASH then MAXCLASH:=cnt;
 #Print("found after ",cnt," clashes, ", Length(Set(
@@ -779,10 +783,8 @@ local index,intkey,i,cnt;
 #      cnt:=cnt+1;
     od;
     # failed: Double size
-    #Error("Failed/double ",intkey," ",key," ",Maximum(HASH_RANGE),"\n");
-    MakeReadWriteGlobal("HASH_RANGE");
-    HASH_RANGE:=[1..2*Maximum(HASH_RANGE)];
-    MakeReadOnlyGlobal("HASH_RANGE");
+    #Error("Failed/double ",intkey," ",key," ",Maximum(hash!.HashRange),"\n");
+    hash!.HashRange := hash!.HashRange * 2;
     DoubleHashDictSize( hash );
   until false;
 end );
@@ -797,7 +799,7 @@ InstallOtherMethod(AddDictionary,"for hash tables",true,
 function(hash,key,value)
 local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
-  for i in HASH_RANGE do
+  for i in [0..hash!.HashRange] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
 
     if hash!.KeyArray[index] = fail then
@@ -897,7 +899,7 @@ InstallMethod(LookupDictionary,"for hash tables that know their int key",true,
 function( hash, key )
 local index,intkey,i,cnt;
   intkey := hash!.intKeyFun(key);
-  for i in HASH_RANGE do
+  for i in [0..hash!.HashRange] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = key then
       #LastHashIndex := index;
@@ -919,7 +921,7 @@ InstallMethod(LookupDictionary,"for hash tables",true,
 function( hash, key )
 local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
-  for i in HASH_RANGE do
+  for i in [0..hash!.HashRange] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = key then
         #LastHashIndex := index;
