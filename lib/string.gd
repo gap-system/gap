@@ -758,7 +758,7 @@ DeclareGlobalFunction("ReadCSV");
 ##
 DeclareGlobalFunction("PrintCSV");
 
-BindGlobal("BHINT", "\>\<");
+BindGlobal("BHINT", `"\>\<");
 
 #############################################################################
 ##
