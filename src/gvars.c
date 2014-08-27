@@ -597,7 +597,7 @@ void MakeReadOnlyGVar (
     UInt gvar_bucket = GVAR_BUCKET(gvar);
     UInt gvar_index = GVAR_INDEX(gvar);
     SET_ELM_PLIST( WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(0) );
-    CHANGED_BAG(WriteGVars[gvar_bucket])
+    CHANGED_BAG(WriteGVars[gvar_bucket]);
 }
 
 /****************************************************************************
@@ -664,7 +664,7 @@ void MakeReadWriteGVar (
     UInt gvar_bucket = GVAR_BUCKET(gvar);
     UInt gvar_index = GVAR_INDEX(gvar);
     SET_ELM_PLIST( WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(1) );
-    CHANGED_BAG(WriteGVars[gvar_bucket])
+    CHANGED_BAG(WriteGVars[gvar_bucket]);
 }
 
 
