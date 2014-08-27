@@ -282,8 +282,8 @@ Obj FuncSparsePartialPermNC( Obj self, Obj dom, Obj img ){
   if(!IS_PLIST(img)) PLAIN_LIST(img);
 
   // make dom and img immutable
-  if(IS_MUTABLE_OBJ(dom)) RetypeBag(dom, TNUM_OBJ(dom)+IMMUTABLE);
-  if(IS_MUTABLE_OBJ(img)) RetypeBag(img, TNUM_OBJ(img)+IMMUTABLE);
+  MakeImmutable(dom);
+  MakeImmutable(img);
   
   // create the pperm
   if(codeg<65536){ 
