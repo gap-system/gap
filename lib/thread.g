@@ -22,7 +22,7 @@ DeclareFilter("IsChannel", IsObject and IsInternalRep);
 DeclareFilter("IsBarrier", IsObject and IsInternalRep);
 DeclareFilter("IsSyncVar", IsObject and IsInternalRep);
 DeclareFilter("IsRegion", IsObject and IsInternalRep);
-DeclareFilter("IsAtomicList", IsObject and IsInternalRep);
+DeclareFilter("IsAtomicList", IsList and IsInternalRep);
 DeclareFilter("IsAtomicRecord", IsObject and IsInternalRep);
 DeclareFilter("IsThreadLocalRecord", IsObject and IsInternalRep);
 
