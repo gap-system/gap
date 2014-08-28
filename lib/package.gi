@@ -148,7 +148,7 @@ InstallGlobalFunction( RECORDS_FILE, function( name )
 ##
 InstallGlobalFunction( SetPackageInfo, function( record )
     local rnam, info;
-    info := AtomicRecord();
+    info := rec();
     for rnam in REC_NAMES(record) do
       info.(rnam) := Immutable(record.(rnam));
     od;
@@ -183,7 +183,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
       LogPackageLoadingMessage( PACKAGE_DEBUG,
           "exit InitializePackagesInfoRecords (no pkg directories found)",
           "GAP" );
-      GAPInfo.PackagesInfo:= rec();
+      GAPInfo.PackagesInfo:= `rec();
       return;
     fi;
 
@@ -293,14 +293,14 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     # Turn the lists into records.
     record:= rec();
     for r in GAPInfo.PackagesInfo do
-      name:= LowercaseString( r.PackageName );
+      name:= `LowercaseString( r.PackageName );
       if IsBound( record.( name ) ) then
         Add( record.( name ), r );
       else
         record.( name ):= [ r ];
       fi;
     od;
-    GAPInfo.PackagesInfo:= record;
+    GAPInfo.PackagesInfo:= `record;
 
     GAPInfo.PackagesInfoInitialized:= true;
     LogPackageLoadingMessage( PACKAGE_DEBUG,
