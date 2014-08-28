@@ -244,6 +244,7 @@ end);
 BindGlobal( "FindMultiSpelledHelpEntries", function( )
 local report, pair, word, book, matches, a, match, patterns, i, j, w, pos, nr, hits;
 report:=[];               
+atomic readwrite HELP_REGION do
 for pair in TRANSATL do
   word := pair[1];
   for book in HELP_KNOWN_BOOKS[1] do
@@ -276,6 +277,7 @@ for pair in TRANSATL do
   od;
 od;
 return report;
+od;
 end);
 
 if StripEscapeSequences = 0 then
