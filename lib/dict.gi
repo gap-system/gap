@@ -527,7 +527,6 @@ InstallMethod( RandomHashKey, "for dense hash tables", true,
 DefaultHashLength := 2^7;
 MakeThreadLocal("DefaultHashLength");
 
-
 #############################################################################
 ##
 #F  SparseHashTable( )

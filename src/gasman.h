@@ -316,7 +316,7 @@ extern  Bag                     ChangedBags;
                     PTR_BAG(bag)[-1] = ChangedBags; ChangedBags = (bag);    }
 #else
 
-#define CHANGED_BAG(bag)
+#define CHANGED_BAG(bag) ((void) 0)
 
 #endif
 

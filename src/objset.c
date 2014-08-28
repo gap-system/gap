@@ -158,11 +158,25 @@ static void PrintObjMap(Obj map) {
  */
 
 static void MarkObjSet(Obj obj) {
-  /* not yet implemented */
+  UInt size = ADDR_WORD(obj)[OBJSET_SIZE];
+  UInt i;
+  for (i=0; i < size; i++) {
+    Obj el = ADDR_OBJ(obj)[OBJSET_HDRSIZE + i];
+    if (el)
+      MARK_BAG(el);
+  }
 }
 
 static void MarkObjMap(Obj obj) {
-  /* not yet implemented */
+  UInt size = ADDR_WORD(obj)[OBJSET_SIZE];
+  UInt i;
+  for (i=0; i < size; i++) {
+    Obj el = ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2*i];
+    if (el) {
+      MARK_BAG(el);
+      MARK_BAG(ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2*i + 1]);
+    }
+  }
 }
 
 /**
@@ -346,6 +360,7 @@ Obj ObjSetValues(Obj set) {
       p++;
     }
   }
+  CHANGED_BAG(result);
   return result;
 }
 
@@ -571,6 +586,7 @@ Obj ObjMapValues(Obj set) {
       p++;
     }
   }
+  CHANGED_BAG(result);
   return result;
 }
 
@@ -594,6 +610,7 @@ Obj ObjMapKeys(Obj set) {
       p++;
     }
   }
+  CHANGED_BAG(result);
   return result;
 }
 
@@ -827,6 +844,21 @@ static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue) {
 }
 
 /**
+ *  `FuncCONTAINS_OBJ_MAP()`
+ *  ------------------------
+ *
+ *  GAP function to locate an entry with key `key` within `map`. The
+ *  function returns true if such an entry exists, false otherwise.
+ */
+
+static Obj FuncCONTAINS_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue) {
+  Int pos;
+  CheckArgument("FIND_OBJ_MAP", map, T_OBJMAP, T_OBJMAP+IMMUTABLE);
+  pos = FindObjMap(map, key);
+  return pos >= 0 ? True : False;
+}
+
+/**
  *  `FuncREMOVE_OBJ_MAP()`
  *  ----------------------
  *
@@ -915,6 +947,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "FIND_OBJ_MAP", 3, "objmap, obj, default",
       FuncFIND_OBJ_MAP, "src/objset.c:FIND_OBJ_MAP" },
+
+    { "CONTAINS_OBJ_MAP", 2, "objmap, obj",
+      FuncCONTAINS_OBJ_MAP, "src/objset.c:CONTAINS_OBJ_MAP" },
 
     { "CLEAR_OBJ_MAP", 1, "objmap",
       FuncCLEAR_OBJ_MAP, "src/objset.c:CLEAR_OBJ_MAP" },

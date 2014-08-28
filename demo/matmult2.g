@@ -3,7 +3,7 @@ Read("demo/bench.g");
 ParMatrixMultiplyRow := function(m1, m2, i)
   local result, j, k, n, s;
   result := [];
-  atomic readonly m1 do
+  atomic readonly m1, readonly m2 do
     n := Length(m1);
     for j in [1..n] do
       s := 0;
@@ -33,14 +33,13 @@ end;
 
 ParMatrixMultiply := function(m1, m2)
   local tasks, result;
-  ShareObj(m1);
-  LockAndMigrateObj(m2, m1);
-  atomic readonly m1 do
+  ShareObj([m1, m2]);
+  atomic readonly m1, readonly m2 do
     tasks :=
       List([1..Length(m1)], i -> RunTask(ParMatrixMultiplyRow, m1, m2, i));
     result := List(tasks, TaskResult);
   od;
-  atomic m1 do
+  atomic m1, m2 do
     AdoptObj(m1);
     AdoptObj(m2);
   od;
@@ -97,7 +96,7 @@ end;
 #m1 := ConstantMatrix(N, p);
 #m2 := ConstantMatrix(N, p);
 
-N := 50;
+N := 70;
 MT := RandomSource(IsMersenneTwister, 1);
 
 m1 := PopulateMatrix(N, -> RandomPolynomial(MT, R, I, 5, 3));
