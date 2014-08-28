@@ -864,7 +864,7 @@ BindGlobal( "SetUserPreferences", function( arg )
 
 # Here are a few general user preferences which may be useful for 
 # various purposes. They are self-explaining.
-DeclareUserPreference( AtomicRecord( rec(
+DeclareUserPreference( rec(
   name:= "UseColorsInTerminal",
   description:= [
     "Almost all current terminal emulations support color display, \
@@ -874,7 +874,7 @@ color markup. It may influence the display of other things in the future."
   default:= true,
   values:= [ true, false ],
   multi:= false,
-  ) ) );
+  ) );
 DeclareUserPreference( rec(
   name:= "ViewLength",
   description:= [

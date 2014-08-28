@@ -267,6 +267,7 @@ DeclareUserPreference:= function( record )
     record.package:= package;
     record.omitFromGapIniFile:= IsBound( record.omitFromGapIniFile )
                                 and record.omitFromGapIniFile = true;
+    MakeImmutable( record );
     Add( GAPInfo.DeclarationsOfUserPreferences, record );
 
     # Set the default value, if not yet set.
@@ -321,11 +322,11 @@ BindGlobal( "SetUserPreference", function( arg )
     pref:= GAPInfo.UserPreferences;
     if not IsBound( pref.( package ) ) then
       # We may set a preference now that will become declared later.
-      pref.( package ):= rec();;
+      pref.( package ):= AtomicRecord( rec() );
     fi;
     pref:= pref.( package );
 #T First check whether the desired value is admissible?
-    pref.( name ):= value;
+    pref.( name ):= MakeImmutable(value);
     end );
 
 
