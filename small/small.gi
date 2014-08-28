@@ -478,5 +478,6 @@ InstallGlobalFunction( FinalizeSmallGroupData,
     MakeImmutable(ID_AVAILABLE_FUNCS);
     MakeImmutable(READ_SMALL_FUNCS);
     MakeImmutable(READ_IDLIB_FUNCS);
+    MakeImmutable(ID_GROUP_FUNCS);
 end);
 
