@@ -521,7 +521,7 @@ InstallMethod( RandomHashKey, "for dense hash tables", true,
 ##  Default starting hash table size
 ##
 DefaultHashLength := 2^7; 
-BindGlobal("HASH_RANGE",[0..DefaultHashLength-2]);
+BindGlobal("HASH_RANGE",`[0..DefaultHashLength-2]);
 
 #############################################################################
 ##
@@ -777,7 +777,7 @@ local index,intkey,i,cnt;
     # failed: Double size
     #Error("Failed/double ",intkey," ",key," ",Maximum(HASH_RANGE),"\n");
     MakeReadWriteGlobal("HASH_RANGE");
-    HASH_RANGE:=[1..2*Maximum(HASH_RANGE)];
+    HASH_RANGE:=`[1..2*Maximum(HASH_RANGE)];
     MakeReadOnlyGlobal("HASH_RANGE");
     DoubleHashDictSize( hash );
   until false;
