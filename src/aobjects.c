@@ -127,12 +127,14 @@ void SetTypeAList(Obj obj, Obj kind)
     case T_FIXALIST:
       HashLock(obj);
       ADDR_OBJ(obj)[1] = kind;
+      CHANGED_BAG(obj);
       RetypeBag(obj, T_APOSOBJ);
       HashUnlock(obj);
       break;
     case T_APOSOBJ:
       HashLock(obj);
       ADDR_OBJ(obj)[1] = kind;
+      CHANGED_BAG(obj);
       HashUnlock(obj);
       break;
   }
@@ -142,6 +144,7 @@ void SetTypeAList(Obj obj, Obj kind)
 void SetTypeARecord(Obj obj, Obj kind)
 {
   ADDR_OBJ(obj)[0] = kind;
+  CHANGED_BAG(obj);
   RetypeBag(obj, T_ACOMOBJ);
   MEMBAR_WRITE();
 }
@@ -184,6 +187,7 @@ static Obj NewAtomicListFrom(Obj list)
   for (i=1; i<= len; i++)
     data++->obj = ELM0_LIST(list, i);
   MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
+  CHANGED_BAG(result);
   return result;
 }
 
@@ -208,6 +212,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
 	data++->obj = NULL;
 	for (i=1; i<= len; i++)
 	  data++->obj = (Obj) 0;
+	CHANGED_BAG(result);
 	MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
 	return result;
       }
@@ -224,6 +229,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
       data++->obj = NULL;
       for (i=1; i<=len; i++)
         data++->obj = init;
+      CHANGED_BAG(result);
       MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
       return result;
     default:
@@ -251,6 +257,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
 	data++->obj = NULL;
 	for (i=1; i<= len; i++)
 	  data++->obj = ELM0_LIST(init, i);
+	CHANGED_BAG(result);
 	MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
 	return result;
       } else {
@@ -261,6 +268,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
 	data++->obj = NULL;
 	for (i=1; i<= len; i++)
 	  data++->obj = (Obj) 0;
+	CHANGED_BAG(result);
 	MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
 	return result;
       }
@@ -277,6 +285,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
       data++->obj = NULL;
       for (i=1; i<=len; i++)
         data++->obj = init;
+      CHANGED_BAG(result);
       MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
       return result;
     default:
@@ -359,6 +368,7 @@ static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
   if (n <= 0 || n > len)
     ArgumentError("SET_ATOMIC_LIST: Index out of range");
   addr[n+1].obj = value;
+  CHANGED_BAG(list);
   MEMBAR_WRITE(); /* write barrier */
   return (Obj) 0;
 }
@@ -369,6 +379,7 @@ static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
   UInt len;
   AtomicObj aold, anew;
   AtomicObj *addr;
+  Obj result;
   switch (TNUM_OBJ(list)) {
     case T_FIXALIST:
     case T_APOSOBJ:
@@ -385,8 +396,11 @@ static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
     ArgumentError("COMPARE_AND_SWAP: Index out of range");
   aold.obj = old;
   anew.obj = new;
-  return COMPARE_AND_SWAP(&(addr[n+1].atom), aold.atom, anew.atom) ?
+  result = COMPARE_AND_SWAP(&(addr[n+1].atom), aold.atom, anew.atom) ?
     True : False;
+  if (result == True)
+    CHANGED_BAG(list);
+  return result;
 }
 
 static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
@@ -423,7 +437,6 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
 
 static Obj FuncAddAtomicList(Obj self, Obj list, Obj obj)
 {
-  Obj result;
   AtomicObj *data;
   UInt i, len;
   if (TNUM_OBJ(list) != T_ALIST)
@@ -443,6 +456,7 @@ Obj FromAtomicList(Obj list)
   MEMBAR_READ();
   for (i=1; i<=len; i++)
     SET_ELM_PLIST(result, i, data[i].obj);
+  CHANGED_BAG(result);
   return result;
 }
 
@@ -468,14 +482,14 @@ static void MarkAtomicList(Bag bag)
  * ADDR_OBJ(rec)[0] == capacity, must be a power of 2.
  * ADDR_OBJ(rec)[1] == log2(capacity).
  * ADDR_OBJ(rec)[2] == estimated size (occupied slots).
- * ADDR_OBJ(rec)[3] == update strategy.
+ * ADDR_OBJ(rec)[3] == update policy.
  * ADDR_OBJ(rec)[4..] == hash table of pairs of objects
  */
 
 #define AR_CAP 0
 #define AR_BITS 1
 #define AR_SIZE 2
-#define AR_STRAT 3
+#define AR_POL 3
 #define AR_DATA 4
 
 /* T_TLREC_INNER substructure:
@@ -494,7 +508,7 @@ static void MarkTLRecordInner(Bag bag)
 {
   Bag *ptr, *ptrend;
   UInt n;
-  ptr = PTR_BAG(ptr);
+  ptr = PTR_BAG(bag);
   n = (UInt) *ptr;
   ptrend = ptr + n + TLR_DATA;
   ptr++;
@@ -554,6 +568,8 @@ static void ExpandTLRecord(Obj obj)
       (UInt)table[TLR_SIZE] * sizeof(Obj));
   } while (!COMPARE_AND_SWAP(&(ADDR_ATOM(obj)->atom),
     contents.atom, newcontents.atom));
+  CHANGED_BAG(obj);
+  CHANGED_BAG(newcontents.obj);
 }
 
 static void PrintAtomicList(Obj obj)
@@ -695,16 +711,17 @@ static UInt ARecordFastInsert(AtomicObj *table, AtomicUInt field)
 Obj SetARecordField(Obj record, UInt field, Obj obj)
 {
   AtomicObj *table, *data, *newtable, *newdata;
-  Obj newarec, result;
+  Obj inner, result;
   UInt cap, bits, hash, i, n, size;
-  Int strat;
+  Int policy;
   int have_room;
   HashLockShared(record);
-  table = ARecordTable(record);
+  inner = ARecordObj(record);
+  table = ADDR_ATOM(inner);
   data = table + AR_DATA;
   cap = table[AR_CAP].atom;
   bits = table[AR_BITS].atom;
-  strat = table[AR_STRAT].atom;
+  policy = table[AR_POL].atom;
   hash = FibHash(field, bits);
   n = cap;
   /* case 1: key exists, we can replace it */
@@ -716,11 +733,11 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
     if (key == field)
     {
       MEMBAR_FULL(); /* memory barrier */
-      if (strat < 0) {
+      if (policy < 0) {
         HashUnlockShared(record);
 	return 0;
       }
-      if (strat) {
+      if (policy) {
         AtomicObj old;
 	AtomicObj new;
 	new.obj = obj;
@@ -728,6 +745,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
 	  old = data[hash*2+1];
 	} while (!COMPARE_AND_SWAP(&data[hash*2+1].atom,
 	          old.atom, new.atom));
+	CHANGED_BAG(inner);
 	HashUnlockShared(record);
 	return obj;
       } else {
@@ -735,6 +753,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
 	do {
 	  result = data[hash*2+1].obj;
 	} while (!result);
+	CHANGED_BAG(inner);
 	HashUnlockShared(record);
 	return result;
       }
@@ -774,11 +793,11 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
     for (;;) { /* CAS loop */
       old = data[hash*2+1];
       if (old.obj) {
-        if (strat < 0) {
+        if (policy < 0) {
 	  result = 0;
 	  break;
 	}
-	if (strat) {
+	if (policy) {
 	  AtomicObj new;
 	  new.obj = obj;
 	  if (COMPARE_AND_SWAP(&data[hash*2+1].atom,
@@ -800,19 +819,20 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
 	}
       }
     } /* end CAS loop */
+    CHANGED_BAG(inner);
     HashUnlockShared(record);
     return result;
   } /* end hash iteration loop */
   /* have_room is false at this point */
   HashUnlockShared(record);
   HashLock(record);
-  newarec = NewBag(T_AREC_INNER, sizeof(AtomicObj) * (AR_DATA + cap * 2 * 2));
-  newtable = ADDR_ATOM(newarec);
+  inner = NewBag(T_AREC_INNER, sizeof(AtomicObj) * (AR_DATA + cap * 2 * 2));
+  newtable = ADDR_ATOM(inner);
   newdata = newtable + AR_DATA;
   newtable[AR_CAP].atom = cap * 2;
   newtable[AR_BITS].atom = bits+1;
   newtable[AR_SIZE].atom = 0; /* size */
-  newtable[AR_STRAT] = table[AR_STRAT]; /* strategy */
+  newtable[AR_POL] = table[AR_POL]; /* policy */
   for (i=0; i<cap; i++) {
     UInt key = data[2*i].atom;
     Obj value = data[2*i+1].obj;
@@ -824,10 +844,10 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   n = ARecordFastInsert(newtable, field);
   if (newdata[2*n+1].obj)
   {
-    if (strat < 0)
+    if (policy < 0)
       result = (Obj) 0;
     else {
-      if (strat)
+      if (policy)
         newdata[2*n+1].obj = result = obj;
       else
         result = newdata[2*n+1].obj;
@@ -836,7 +856,9 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   else
     newdata[2*n+1].obj = result = obj;
   MEMBAR_WRITE(); /* memory barrier */
-  ADDR_OBJ(record)[1] = newarec;
+  ADDR_OBJ(record)[1] = inner;
+  CHANGED_BAG(inner);
+  CHANGED_BAG(record);
   HashUnlock(record);
   return result;
 }
@@ -892,8 +914,10 @@ Obj NewAtomicRecord(UInt capacity)
   table[AR_CAP].atom = capacity;
   table[AR_BITS].atom = bits;
   table[AR_SIZE].atom = 0;
-  table[AR_STRAT].atom = 1;
+  table[AR_POL].atom = 1;
   ADDR_OBJ(result)[1] = arec;
+  CHANGED_BAG(arec);
+  CHANGED_BAG(result);
   return result;
 }
 
@@ -911,20 +935,22 @@ static Obj NewAtomicRecordFrom(Obj precord)
     pos = ARecordFastInsert(table, field);
     table[AR_DATA+2*pos+1].obj = GET_ELM_PREC(precord, i);
   }
+  CHANGED_BAG(ARecordObj(result));
+  CHANGED_BAG(result);
   MEMBAR_WRITE();
   return result;
 }
 
-static void SetARecordUpdateStrategy(Obj record, UInt strat)
+static void SetARecordUpdatePolicy(Obj record, UInt policy)
 {
   AtomicObj *table = ARecordTable(record);
-  table[AR_STRAT].atom = strat;
+  table[AR_POL].atom = policy;
 }
 
-static UInt GetARecordUpdateStrategy(Obj record)
+static UInt GetARecordUpdatePolicy(Obj record)
 {
   AtomicObj *table = ARecordTable(record);
-  return table[AR_STRAT].atom;
+  return table[AR_POL].atom;
 }
 
 Obj ElmARecord(Obj record, UInt rnam)
@@ -970,6 +996,8 @@ Obj ShallowCopyARecord(Obj obj)
   memcpy(ADDR_OBJ(innerCopy), ADDR_OBJ(inner), SIZE_BAG(inner));
   ADDR_OBJ(copy)[1] = innerCopy;
   HashUnlock(obj);
+  CHANGED_BAG(innerCopy);
+  CHANGED_BAG(copy);
   return copy;
 }
 
@@ -1029,6 +1057,7 @@ static void UpdateThreadRecord(Obj record, Obj tlrecord)
       TLS->tlRecords = NEW_PLIST(T_PLIST, 1);
       SET_LEN_PLIST(TLS->tlRecords, 1);
       SET_ELM_PLIST(TLS->tlRecords, 1, record);
+      CHANGED_BAG(TLS->tlRecords);
     }
   }
 }
@@ -1199,7 +1228,7 @@ static Obj FuncUNBIND_ATOMIC_RECORD(Obj self, Obj record, Obj field)
   if (!IsStringConv(field))
     ArgumentError("UNBIND_ATOMIC_RECORD: Second argument must be a string");
   fieldname = RNamName(CSTR_STRING(field));
-  if (GetARecordUpdateStrategy(record) <= 0)
+  if (GetARecordUpdatePolicy(record) <= 0)
     ErrorQuit("UNBIND_ATOMIC_RECORD: Record elements cannot be changed",
       (UInt) CSTR_STRING(field), 0L);
   exists = GetARecordField(record, fieldname);
@@ -1208,16 +1237,16 @@ static Obj FuncUNBIND_ATOMIC_RECORD(Obj self, Obj record, Obj field)
   return (Obj) 0;
 }
 
-static Obj FuncATOMIC_RECORD_REPLACEMENT(Obj self, Obj record, Obj strat)
+static Obj FuncATOMIC_RECORD_REPLACEMENT(Obj self, Obj record, Obj policy)
 {
   if (TNUM_OBJ(record) != T_AREC)
     ArgumentError("ATOMIC_RECORD_REPLACEMENT: First argument must be an atomic record");
-  if (strat == Fail)
-    SetARecordUpdateStrategy(record, -1);
-  else if (strat == False)
-    SetARecordUpdateStrategy(record, 0);
-  else if (strat == True)
-    SetARecordUpdateStrategy(record, 1);
+  if (policy == Fail)
+    SetARecordUpdatePolicy(record, -1);
+  else if (policy == False)
+    SetARecordUpdatePolicy(record, 0);
+  else if (policy == True)
+    SetARecordUpdatePolicy(record, 1);
   else
     ArgumentError("ATOMIC_RECORD_REPLACEMENT: Second argument must be true, false, or fail");
   return (Obj) 0;
@@ -1234,6 +1263,7 @@ static Obj CreateTLDefaults(Obj defrec) {
     SET_ELM_PREC(result, i,
       CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1, 0));
   }
+  CHANGED_BAG(result);
   TLS->currentRegion = saved_region;
   return NewAtomicRecordFrom(result);
 }
@@ -1248,6 +1278,7 @@ static Obj NewTLRecord(Obj defaults, Obj constructors) {
   MEMBAR_WRITE();
   ADDR_OBJ(inner)[TLR_CONSTRUCTORS] = NewAtomicRecordFrom(constructors);
   ((AtomicObj *)(ADDR_OBJ(result)))->obj = inner;
+  CHANGED_BAG(result);
   return result;
 }
 
@@ -1421,6 +1452,7 @@ void AssFixAList(Obj list, Int pos, Obj obj)
       }
       break;
   }
+  CHANGED_BAG(list);
   MEMBAR_WRITE();
 }
 
@@ -1464,6 +1496,7 @@ void AssAList(Obj list, Int pos, Obj obj)
       addr = ADDR_ATOM(newlist);
       addr[0].atom = CHANGE_ALIST_LEN(pol, pos);
       MEMBAR_WRITE();
+      /* TODO: Won't work with GASMAN */
       PTR_BAG(list) = PTR_BAG(newlist);
       MEMBAR_WRITE();
     } else {
@@ -1487,6 +1520,7 @@ void AssAList(Obj list, Int pos, Obj obj)
       }
       break;
   }
+  CHANGED_BAG(list);
   MEMBAR_WRITE();
   HashUnlock(list);
 }
@@ -1535,6 +1569,7 @@ UInt AddAList(Obj list, Obj obj)
       }
       break;
   }
+  CHANGED_BAG(list);
   MEMBAR_WRITE();
   HashUnlock(list);
   return len+1;
@@ -1597,7 +1632,7 @@ Obj FuncMakeWriteOnceAtomic(Obj self, Obj obj) {
       break;
     case T_AREC:
     case T_ACOMOBJ:
-      SetARecordUpdateStrategy(obj, AREC_W1);
+      SetARecordUpdatePolicy(obj, AREC_W1);
       break;
     default:
       obj = MakeAtomic(obj);
@@ -1620,7 +1655,7 @@ Obj FuncMakeReadWriteAtomic(Obj self, Obj obj) {
       break;
     case T_AREC:
     case T_ACOMOBJ:
-      SetARecordUpdateStrategy(obj, AREC_RW);
+      SetARecordUpdatePolicy(obj, AREC_RW);
       break;
     default:
       obj = MakeAtomic(obj);
@@ -1643,7 +1678,7 @@ Obj FuncMakeStrictWriteOnceAtomic(Obj self, Obj obj) {
       break;
     case T_AREC:
     case T_ACOMOBJ:
-      SetARecordUpdateStrategy(obj, AREC_WX);
+      SetARecordUpdatePolicy(obj, AREC_WX);
       break;
     default:
       obj = MakeAtomic(obj);
@@ -1706,6 +1741,7 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
       (AtomicUInt) result, (AtomicUInt) *new))
       break;
   }
+  CHANGED_BAG(obj);
   HashUnlockShared(obj);
   return result == Fail ? (Obj) 0 : result;
 #endif
@@ -1740,6 +1776,7 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval) {
     if (COMPARE_AND_SWAP(&(addr[n+1].atom), (AtomicUInt) result, anew.atom))
       break;
   }
+  CHANGED_BAG(obj);
   return result == Fail ? (Obj) 0 : result;
 }
 
@@ -1865,7 +1902,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "UNBIND_ATOMIC_RECORD", 2, "record, field",
       FuncUNBIND_ATOMIC_RECORD, "src/aobjects.c:UNBIND_ATOMIC_RECORD" },
 
-    { "ATOMIC_RECORD_REPLACEMENT", 2, "record, strategy",
+    { "ATOMIC_RECORD_REPLACEMENT", 2, "record, policy",
       FuncATOMIC_RECORD_REPLACEMENT, "src/aobjects.c:ATOMIC_RECORD_REPLACEMENT" },
     { "FromAtomicRecord", 1, "record",
       FuncFromAtomicRecord, "src/aobjects.c:FromAtomicRecord" },
