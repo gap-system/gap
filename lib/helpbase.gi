@@ -67,7 +67,7 @@ BindGlobal( "IsDocumentedWord", function( arg )
   fi;
   simple:= SIMPLE_STRING( word );
   cword:= case( word );
-  atomic readonly HELP_REGION do
+  atomic readwrite HELP_REGION do
     for book in HELP_KNOWN_BOOKS[1] do
       matches:= HELP_GET_MATCHES( [ book ], simple, true );
       for a in Concatenation( matches ) do
@@ -933,7 +933,7 @@ end);
 ##
 InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
 local exact, match, em, b, x, topics, transatl, pair, newtopic;
-atomic readonly HELP_REGION do
+atomic readwrite HELP_REGION do
 
   # First we try to produce some suggestions for possible different spellings
   # (see the global variable 'TRANSATL' for the list of spelling patterns).
@@ -985,7 +985,7 @@ end);
 ##  
 InstallGlobalFunction(HELP_SHOW_MATCHES, function( books, topic, frombegin )
 local   exact,  match,  x,  lines,  cnt,  i,  str,  n;
-atomic readonly HELP_REGION do
+atomic readwrite HELP_REGION do
 
   # first get lists of exact and other matches
   x := HELP_GET_MATCHES( books, topic, frombegin );
