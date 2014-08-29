@@ -27,7 +27,7 @@ vars.Add('ward', 'Specify Ward directory', "")
 vars.Add('cpus', "Number of logical CPUs", "auto")
 vars.Add(BoolVariable("readline", "Build with readline support", 0))
 
-GAP = DefaultEnvironment(variables=vars, PATH=os.environ["PATH"])
+GAP = DefaultEnvironment(variables=vars, ENV={"PATH": os.environ["PATH"]})
 
 Help(vars.GenerateHelpText(GAP))
 
