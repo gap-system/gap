@@ -141,35 +141,47 @@ parorb := function( seeds, gens, action, dict, addOrLookup, record)
     seeds := Immutable(seeds);
     seedids := `List(seeds, s-> AbsoluteValue(addOrLookup(dict,s)));
     ATOMIC_ADDITION(l, 1, 1);
-    Print(2,"\n");    
     RunAsyncTask(actorTask, seeds, seedids, gens, action, dict, addOrLookup, record, l, sem);
-    Print(3,"\n");
     WaitSemaphore(sem);
     return;
 end;
 
-    
+
+keysOfSHT := function(d)
+    local  keys, i, ka, x;
+    keys := [];
+    for i in [1..d.npieces] do
+        atomic readwrite d.tables[i] do
+           ka := d.tables[i].table!.KeyArray;
+           for x in ka do
+               if x <> fail then
+                   Add(keys, Immutable(x));
+               fi;
+           od;
+       od;
+    od;
+    return keys;
+end;
+
         
 m24trial := function()
     local  d, gens, orb;
     orb := AtomicList([]);
     d := newSplitHashTableDict(x->x, x->x, 4, 100);
     gens := GeneratorsOfGroup(MathieuGroup(24));
-    Print("1\n");
     parorb([1], gens, OnPoints, d, SHTaddOrLookup, function(a,b,c) 
         end);
-        return d;
+        return keysOfSHT(d);
         
 end;
 
-m24trial2 := function()
+m24trialn := function(n)
     local  d, gens, orb;
     orb := AtomicList([]);
-    d := newSplitHashTableDict(x->x[1]+x[2], x->x[1]+2*x[2], 4, 100);
+    d := newSplitHashTableDict(Sum, Product, 8, 100);
     gens := GeneratorsOfGroup(MathieuGroup(24));
-    Print("1\n");
-    parorb([`[1,2]], gens, OnPairs, d, SHTaddOrLookup, function(a,b,c) 
+    parorb([`[1..n]], gens, OnSets, d, SHTaddOrLookup, function(a,b,c) 
         end);
-        return d;
+        return keysOfSHT(d);
         
 end;
