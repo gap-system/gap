@@ -400,10 +400,10 @@ SMTX_SpinnedBasis:=function ( arg  )
    fi;
    zero:=Zero(matrices[1][1][1]);
    ans:=ShallowCopy(Basis(VectorSpace(F,v)));
-   for v in ans do 
-     u := CopyToVectorRep(v,Size(F)); 
+   for v in [1..Length(ans)] do
+     u := CopyToVectorRep(ans[v],Size(F));
      if u <> fail then
-       v:=u;
+       ans[v]:=u;
      fi;  
    od;
    if Length(ans)=0 then
