@@ -68,28 +68,31 @@ InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
 end);
 
 InstallGlobalFunction( "DefaultInfoHandler", function( infoclass, level, list )
-  local cl, out, fun, s;
-  cl := InfoData.LastClass![1];
-  if IsBound(InfoData.Output[cl]) then
-    out := InfoData.Output[cl];
-  else
-    out := DefaultInfoOutput;
-  fi;
-  if out = "*Print*" then
-    if IsBoundGlobal( "PrintFormattedString" ) then
-      fun := function(s)
-        if IsString(s) and 
-          #XXX this is a temporary hack, we would need a 
-          # IsInstalledGlobal instead of IsBoundGlobal here
-                 NARG_FUNC(ValueGlobal("PrintFormattedString")) <> -1 then
-          ValueGlobal( "PrintFormattedString" )(s); 
-        else
-          Print(s);
-        fi;
-      end;
+    local cl, out, fun, s;
+    atomic readonly InfoData do
+    cl := InfoData.LastClass![1];
+    if IsBound(InfoData.Output[cl]) then
+        out := InfoData.Output[cl];
     else
-      fun := Print;
+        out := DefaultInfoOutput;
     fi;
+    od;
+
+    if out = "*Print*" then
+        if IsBoundGlobal( "PrintFormattedString" ) then
+            fun := function(s)
+                if IsString(s) and 
+            #XXX this is a temporary hack, we would need a 
+            # IsInstalledGlobal instead of IsBoundGlobal here
+                   NARG_FUNC(ValueGlobal("PrintFormattedString")) <> -1 then
+                    ValueGlobal( "PrintFormattedString" )(s); 
+                else
+                    Print(s);
+                fi;
+            end;
+        else
+            fun := Print;
+        fi;
     fun("#I  ");
     for s in list do
       fun(s);
@@ -171,7 +174,10 @@ end );
 #F  SetInfoOutput( <class>, <handler> )
 ##
 InstallGlobalFunction( SetInfoOutput, function(class, out)
-  InfoData.Output[class![1]] := out;
+    atomic readwrite InfoData do
+    InfoData.Output[class![1]] := out;
+od;
+
 end);
 
 #############################################################################
