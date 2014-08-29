@@ -5775,6 +5775,9 @@ static Int InitKernel ( StructInitInfo *module )
     InitMarkFuncBags( T_PPERM2, MarkPPermSubBags );
     InitMarkFuncBags( T_PPERM4, MarkPPermSubBags );
     
+    MakeBagTypePublic( T_PPERM2);
+    MakeBagTypePublic( T_PPERM4);
+
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_PPERM2", &TYPE_PPERM2 );
     ImportGVarFromLibrary( "TYPE_PPERM4", &TYPE_PPERM4 );
