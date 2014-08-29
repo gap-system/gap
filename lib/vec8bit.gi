@@ -842,20 +842,21 @@ function(v,w)
     p:=Characteristic(v);
     e:=Lcm(LogInt(Q_VEC8BIT(v),p),LogInt(Q_VEC8BIT(w),p));
     if p^e > 256 then
-      return [v,w];
-    else
-      v1:=CopyToVectorRep(v,p^e);
-      if v1<>fail then
-        w1:=CopyToVectorRepNC(w,p^e);
-        if w1<>fail then
-          return [v1,w1];
-        else
-          return [v,w];
-        fi;
-      else
-        return [v,w];
-      fi;
-    fi;  
+      return fail;
+    fi;
+
+    v1 := CopyToVectorRep(v, p^e);
+    if v1 = fail then
+        return fail;
+    fi;
+
+    w1 := CopyToVectorRepNC(w, p^e);
+    if w1 = fail then
+        return fail;
+    fi;
+    
+    return [v1, w1];
+
   else
     return [v,w];
   fi;
@@ -871,7 +872,7 @@ InstallMethod( ReduceCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
         if adjust = fail then
             TryNextMethod();
         else
-            vl:=adjust[1];    
+            SWITCH_OBJ(vl, adjust[1]);
             vr:=adjust[2];    
         fi;
     	res := REDUCE_COEFFS_VEC8BIT( vl, ll, 
@@ -893,7 +894,7 @@ InstallOtherMethod( ReduceCoeffs, "8 bit vectors, kernel method (2 arg)",
     if adjust = fail then
         TryNextMethod();
     else
-        v:=adjust[1];    
+        SWITCH_OBJ(v,adjust[1]);
         w:=adjust[2];    
     fi;
     return REDUCE_COEFFS_VEC8BIT(v, Length(v),
@@ -914,7 +915,7 @@ InstallMethod( QuotRemCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
         if adjust = fail then
             TryNextMethod();
         else
-            vl:=adjust[1];    
+            SWITCH_OBJ(vl,adjust[1]);
             vr:=adjust[2];    
         fi;
     	res := QUOTREM_COEFFS_VEC8BIT( vl, ll, 
@@ -936,7 +937,7 @@ InstallOtherMethod( QuotRemCoeffs, "8 bit vectors, kernel method (2 arg)",
     if adjust = fail then
         TryNextMethod();
     else
-        v:=adjust[1];    
+        SWITCH_OBJ(v,adjust[1]);
         w:=adjust[2];    
     fi;
     return QUOTREM_COEFFS_VEC8BIT(v, Length(v),
