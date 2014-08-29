@@ -99,7 +99,9 @@ typedef struct ThreadLocalStorage
   UInt (**CurrExecStatFuncs)(Stat);
   /* From code.c */
   Stat *ptrBody;
-  Stat offsBody;
+  Stat OffsBody;
+  Stat *OffsBodyStack;
+  UInt OffsBodyCount;
   Obj codeResult;
   Bag stackStat;
   Int countStat;

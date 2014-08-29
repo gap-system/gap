@@ -71,22 +71,23 @@
 */
 /* TL: Stat OffsBody; */
 
-Stat OffsBodyStack[1024];
-UInt OffsBodyCount = 0;
+/* TL: Stat OffsBodyStack[1024]; */
+/* TL: UInt OffsBodyCount = 0; */
 
 static inline void PushOffsBody( void ) {
-  HashLock(&OffsBodyCount);
-  assert(OffsBodyCount <= 1023);
-  OffsBodyStack[OffsBodyCount++] = TLS->offsBody;
-  HashUnlock(&OffsBodyCount);
+  assert(TLS->OffsBodyCount <= 1023);
+  TLS->OffsBodyStack[TLS->OffsBodyCount++] = TLS->OffsBody;
 }
 
 static inline void PopOffsBody( void ) {
-  HashLock(&OffsBodyCount);
-  assert(OffsBodyCount);
-  TLS->offsBody = OffsBodyStack[--OffsBodyCount];
-  HashUnlock(&OffsBodyCount);
+  assert(TLS->OffsBodyCount);
+  TLS->OffsBody = TLS->OffsBodyStack[--TLS->OffsBodyCount];
 }
+
+static void SetupOffsBodyStack() {
+  TLS->OffsBodyStack = AllocateMemoryBlock(1024*sizeof(Stat));
+}
+
 
 /****************************************************************************
 **
@@ -102,17 +103,17 @@ Stat NewStat (
     Stat                stat;           /* result                          */
 
     /* this is where the new statement goes                                */
-    stat = TLS->offsBody + FIRST_STAT_CURR_FUNC;
+    stat = TLS->OffsBody + FIRST_STAT_CURR_FUNC;
 
     /* increase the offset                                                 */
-    TLS->offsBody = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
+    TLS->OffsBody = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
 
     /* make certain that the current body bag is large enough              */
     if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
-      ResizeBag( BODY_FUNC(CURR_FUNC), TLS->offsBody + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+      ResizeBag( BODY_FUNC(CURR_FUNC), TLS->OffsBody + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
         TLS->ptrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
-    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < TLS->offsBody + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj)  ) {
+    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < TLS->OffsBody + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj)  ) {
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
         TLS->ptrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
@@ -139,17 +140,17 @@ Expr            NewExpr (
     Expr                expr;           /* result                          */
 
     /* this is where the new expression goes                               */
-    expr = TLS->offsBody + FIRST_STAT_CURR_FUNC;
+    expr = TLS->OffsBody + FIRST_STAT_CURR_FUNC;
 
     /* increase the offset                                                 */
-    TLS->offsBody = expr + ((size+sizeof(Expr)-1) / sizeof(Expr)) * sizeof(Expr);
+    TLS->OffsBody = expr + ((size+sizeof(Expr)-1) / sizeof(Expr)) * sizeof(Expr);
 
     /* make certain that the current body bag is large enough              */
     if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
-        ResizeBag( BODY_FUNC(CURR_FUNC), TLS->offsBody );
+        ResizeBag( BODY_FUNC(CURR_FUNC), TLS->OffsBody );
         TLS->ptrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
-    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < TLS->offsBody ) {
+    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < TLS->OffsBody ) {
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
         TLS->ptrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
@@ -651,7 +652,7 @@ void CodeFuncExprBegin (
     STARTLINE_BODY(body) = INTOBJ_INT(startLine);
     /*    Pr("Coding begin at %s:%d ",(Int)(TLS->input->name),TLS->input->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
-    TLS->offsBody = 0;
+    TLS->OffsBody = 0;
 
     /* give it an environment                                              */
     ENVI_FUNC( fexp ) = TLS->currLVars;
@@ -719,7 +720,7 @@ void CodeFuncExprEnd (
     }
 
     /* make the body smaller                                               */
-    ResizeBag( BODY_FUNC(fexp), TLS->offsBody+NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+    ResizeBag( BODY_FUNC(fexp), TLS->OffsBody+NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
     ENDLINE_BODY(BODY_FUNC(fexp)) = INTOBJ_INT(TLS->input->number);
     /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), TLS->input->number); */
 
@@ -727,7 +728,7 @@ void CodeFuncExprEnd (
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
 
     /* restore the remembered offset                                       */
-    TLS->offsBody = BRK_CALL_TO();
+    TLS->OffsBody = BRK_CALL_TO();
     PopOffsBody();
 
     /* if this was inside another function definition, make the expression */
@@ -3292,6 +3293,7 @@ static Int InitKernel (
     /* some functions and globals needed for float conversion */
     InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
+    InstallTLSHandler(SetupOffsBodyStack, NULL);
 
     /* return success                                                      */
     return 0;
