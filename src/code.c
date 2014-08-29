@@ -75,13 +75,17 @@ Stat OffsBodyStack[1024];
 UInt OffsBodyCount = 0;
 
 static inline void PushOffsBody( void ) {
+  HashLock(&OffsBodyCount);
   assert(OffsBodyCount <= 1023);
   OffsBodyStack[OffsBodyCount++] = TLS->offsBody;
+  HashUnlock(&OffsBodyCount);
 }
 
 static inline void PopOffsBody( void ) {
+  HashLock(&OffsBodyCount);
   assert(OffsBodyCount);
   TLS->offsBody = OffsBodyStack[--OffsBodyCount];
+  HashUnlock(&OffsBodyCount);
 }
 
 /****************************************************************************
