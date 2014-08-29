@@ -847,7 +847,9 @@ function( hash )
   hash!.LengthArrayHalf := QuoInt(hash!.LengthArray,2);
   hash!.KeyArray:=0; # old one away
   hash!.KeyArray := ListWithIdenticalEntries( hash!.LengthArray, fail );
+  MigrateObj(hash!.KeyArray, hash);
   hash!.ValueArray := [];
+  MigrateObj(hash!.ValueArray, hash);
   hash!.NumberKeys := 0;
   l:=Length(oldKeyArray);
   if IsBound(hash!.intKeyFun) then
