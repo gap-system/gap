@@ -161,13 +161,16 @@ end );
 #M  ProjectiveActionOnFullSpace(<G>,<f>,<n>)
 ##
 InstallGlobalFunction(ProjectiveActionOnFullSpace,function(g,f,n)
-local o,i,s;
+local o,i,s,nrv;
   # as the groups are large, we can take all normed vectors
-  o:=NormedRowVectors(f^n);
+  nrv:=NormedRowVectors(f^n);
   s:=Size(f);
-  for i in o do
+  o := [];
+  for i in nrv do
     if s <= 256 then
-      i := CopyToVectorRep(i,s);
+      Add(o, CopyToVectorRep(i,s));
+    else
+      Add(o, i);
     fi;  
     MakeImmutable(i);
   od;
