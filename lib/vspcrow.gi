@@ -1747,7 +1747,7 @@ BindGlobal( "NumberElement_ExtendedVectorsFF", function( enum, elt )
     local elm;
     # test whether the vector is indeed compact over the right finite field
     if not IsDataObjectRep( elt ) then
-      elm := CopyToVectorRep( elm, enum!.q );
+      elm := CopyToVectorRep( elt, enum!.q );
       if elm = fail then
         return NumberElement_ExtendedVectors( enum, elt );
       fi;
