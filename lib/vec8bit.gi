@@ -706,7 +706,7 @@ InstallOtherMethod( AddCoeffs, "GF2 vector and 8 bit vector", IsCollsCollsElms,
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        SWITCH_OBJ(v, CopyToVectorRep(v, Q_VEC8BIT(w));
+        SWITCH_OBJ(v, CopyToVectorRep(v, Q_VEC8BIT(w)));
         return ADD_COEFFS_VEC8BIT_3(v,w,x);
     fi;
 end);
@@ -738,7 +738,7 @@ InstallOtherMethod( AddCoeffs, "GF2 vector and 8 bit vector", IsIdenticalObj,
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        SWITCH_OBJ(v, CopyToVectorRep(v, Q_VEC8BIT(w));
+        SWITCH_OBJ(v, CopyToVectorRep(v, Q_VEC8BIT(w)));
         return ADD_COEFFS_VEC8BIT_2(v,w);
     fi;
 end);
