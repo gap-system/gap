@@ -2843,9 +2843,9 @@ SMTX_Homomorphisms:= function (m1, m2)
    else
       rels:=TransposedMat (rels);
    fi;
-   N:=NullspaceMat (rels);
-   for k in N do
-     ConvertToVectorRep(k,F);
+   N:=ShallowCopy(NullspaceMat (rels)); # TODO - is this compressed????
+   for k in [1..Length(N)] do
+     N[k]:=CopyToVectorRep(N[k],Size(F));
    od;
    ans:=[];
    for k in [1..Length (N)] do
