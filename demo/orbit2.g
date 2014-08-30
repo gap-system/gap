@@ -22,6 +22,8 @@
 
 
 BLOCKING := 100;
+NHASHTABLES := 17;
+
 
 newSplitHashTableDict := function(hash1, hash2, npieces, magic)
     local  r, tables, t, i;
@@ -175,7 +177,7 @@ end;
 
 actionViaParOrb := function(seeds, gens, action, hash)
     local  d, ngens, acts, n0, map, imap, n, a, i, realacts;
-    d := newSplitHashTableDict(hash, hash, 17, 100);
+    d := newSplitHashTableDict(hash, hash, NHASHTABLES, 100);
     ngens := Length(gens);
     acts := List([1..ngens], i->MakeWriteOnceAtomic([]));
     MakeReadOnly(acts);
@@ -207,7 +209,7 @@ end;
 m24trial := function()
     local  d, gens, orb;
     orb := AtomicList([]);
-    d := newSplitHashTableDict(x->x, x->x, 4, 100);
+    d := newSplitHashTableDict(x->x, x->x, NHASHTABLES, 100);
     gens := GeneratorsOfGroup(MathieuGroup(24));
     parorb([1], gens, OnPoints, d, SHTaddOrLookup, function(a,b,c) 
         end);
@@ -218,7 +220,7 @@ end;
 m24trialn := function(n)
     local  d, gens, orb;
     orb := AtomicList([]);
-    d := newSplitHashTableDict(hash, hash, 17, 100);
+    d := newSplitHashTableDict(hash, hash, NHASHTABLES, 100);
     gens := GeneratorsOfGroup(MathieuGroup(24));
     parorb([`[1..n]], gens, OnSets, d, SHTaddOrLookup, function(a,b,c) 
         end);
