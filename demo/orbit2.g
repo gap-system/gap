@@ -4,13 +4,12 @@
 
 
 # Basic task
-# 1. Take a list of points and a matching list of  ids, act on them by all the generators
+# . Take a list of triples (parent, genno, point), hash the points and look up. If it is new assign an id
+#    Call the record function on each (parent id, gen, new id) triple (parent and gen are fail for the seeds)
+#     For the actually new points and their ids act on them by all the generators
 #     make a list of triples: pt, parent id, gen used and cut it into blocks of
-#       some suitable size. Run task 2 on each block
+#       some suitable size. Run task  on each block
        
-# 2. Take a list of triples, hash the points and look up. If it is new assign an id
-#    Call the record function on each (parent id, gen, new id) triple
-#    Call task 1 on the new ones.
 #
 
 #
@@ -40,7 +39,7 @@ newSplitHashTableDict := function(hash1, hash2, npieces, magic)
     return r;
 end;
 
-SHTaddOrLookup := function(dict, obj)
+SHTaddOrLookup1 := function(dict, obj)
     local  h, t, ht;
     h := dict.hash1(obj) mod dict.npieces+1;
     t := dict.tables[h];
@@ -60,29 +59,69 @@ SHTaddOrLookup := function(dict, obj)
    return ht;
 end;
 
+SHTaddOrLookup2 := function(dict, obj)
+    local  h, t, ht;
+    h := dict.hash1(obj) mod dict.npieces+1;
+    t := dict.tables[h];
+    atomic readonly t do
+        ht := GetHashEntry(t.table,obj);
+    od;
+    if ht = fail then
+        atomic readwrite t do
+           ht := GetHashEntry(t.table,obj);
+           if ht = fail then 
+               ht := t.next;
+               t.next := t.next+1;
+               if  t.next > t.top then
+                   t.next := t.next + (dict.npieces-1)*dict.magic;
+                   t.top := t.next + dict.magic -1;
+               fi;
+               AddHashEntry(t.table, obj, ht);
+               return -ht;
+           fi;
+       od;
+       
+   fi;
+   return ht;
+end;
+
+SHTaddOrLookup := SHTaddOrLookup1;
 
 
-actorTask := fail;
+task := function( points, parentids, gennos, gens, action, dict, addOrLookup, record, l, sem)
+    local  emit, npts, parents, ngennos, i, res, j;
 
-
-filerTask := function( points, parentids, gennos, gens, action, dict, addOrLookup, record, l, sem)
-    local  newpts, newids, i, res;
-    newpts := [];
-    newids := [];
+    emit := function()
+        MakeImmutable(npts);
+        MakeImmutable(parents);
+        MakeImmutable(ngennos);
+        ATOMIC_ADDITION(l,1,1);
+        ATOMIC_ADDITION(l,2,1);        
+        RunAsyncTask(task, npts, parents, ngennos, gens, action, dict, addOrLookup, record, l, sem);
+    end;
+    npts := [];
+    parents := [];
+    ngennos := [];
     for i in [1..Length(points)] do
         res := addOrLookup(dict, points[i]);
         record(parentids[i], gennos[i], AbsoluteValue(res));
         if res < 0 then
-            Add(newpts, points[i]);
-            Add(newids, -res);
+            for j in [1..Length(gens)] do
+                Add(parents, -res);
+                Add(ngennos, j);
+                Add(npts, action(points[i], gens[j]));
+            od;
+            if Length(parents) >= BLOCKING then
+                emit();
+                npts := [];
+                parents := [];
+                ngennos := [];
+            fi;
         fi;
     od;
-    if Length(newpts) > 0 then
-        MakeImmutable(newpts);
-        MakeImmutable(newids);
-        ATOMIC_ADDITION(l,1,1);
-        RunAsyncTask(actorTask, newpts, newids, gens, action, dict, addOrLookup, record, l, sem);
-    fi;
+    if Length(parents) > 0 then
+        emit();
+    fi;   
     
    ATOMIC_ADDITION(l,1,-1);
    if l[1] = 0 then
@@ -91,67 +130,37 @@ filerTask := function( points, parentids, gennos, gens, action, dict, addOrLooku
 end;
 
         
-            
-
-
-actorTask := function( points, ids, gens, action, dict, addOrLookup, record, l, sem)
-    local  npts, parents, gennos, emit, i, j;
-    npts := [];
-    parents := [];
-    gennos := [];
-    emit := function()
-        MakeImmutable(npts);
-        MakeImmutable(parents);
-        MakeImmutable(gennos);
-        ATOMIC_ADDITION(l,1,1);
-        RunAsyncTask(filerTask, npts, parents, gennos, gens, action, dict, addOrLookup, record, l, sem);
-    end;
-        
-        
-    for i in [1..Length(points)] do
-        for j in [1..Length(gens)] do
-            Add(parents, ids[i]);
-            Add(gennos, j);
-            Add(npts, action(points[i], gens[j]));
-        od;
-        if Length(parents) >= BLOCKING then
-            emit();
-            npts := [];
-            parents := [];
-            gennos := [];
-        fi;
-    od;
-    if Length(parents) >= 0 then
-        emit();
-    fi;
-    ATOMIC_ADDITION(l,1,-1);
-    if l[1] = 0 then
-        SignalSemaphore(sem);
-    fi;
-end;
-
-    
-        
-
-
 parorb := function( seeds, gens, action, dict, addOrLookup, record)
-    local  l, sem, seedids;
-    l := FixedAtomicList([0]);
+    local  l, sem, fakes;
+    l := FixedAtomicList([0,0]);
     sem := CreateSemaphore(0);
     seeds := Immutable(seeds);
-    seedids := `List(seeds, s-> AbsoluteValue(addOrLookup(dict,s)));
+    fakes := `List(seeds, s->fail);
     ATOMIC_ADDITION(l, 1, 1);
-    RunAsyncTask(actorTask, seeds, seedids, gens, action, dict, addOrLookup, record, l, sem);
-    WaitSemaphore(sem);
-    return;
+    ATOMIC_ADDITION(l,2,1);        
+    RunAsyncTask(task, seeds, fakes, fakes,  gens, action, dict, addOrLookup, record, l, sem);
+#    while true do Print(l[1]," ",l[2],"\n");
+ #   od;
+    if l[1] > 0 then
+        WaitSemaphore(sem);
+    fi;
+    
+    return l[2];
 end;
+
+hash := function(s) 
+    local sp;
+    sp := AsPlist(s);
+    return HashKeyBag(sp, 0,0,SIZE_OBJ(sp));
+end;
+
 
 
 keysOfSHT := function(d)
     local  keys, i, ka, x;
     keys := [];
     for i in [1..d.npieces] do
-        atomic readwrite d.tables[i] do
+        atomic readonly d.tables[i] do
            ka := d.tables[i].table!.KeyArray;
            for x in ka do
                if x <> fail then
@@ -163,7 +172,38 @@ keysOfSHT := function(d)
     return keys;
 end;
 
-        
+
+actionViaParOrb := function(seeds, gens, action, hash)
+    local  d, ngens, acts, n0, map, imap, n, a, i, realacts;
+    d := newSplitHashTableDict(hash, hash, 17, 100);
+    ngens := Length(gens);
+    acts := List([1..ngens], i->MakeWriteOnceAtomic([]));
+    MakeReadOnly(acts);
+    Print("Task count ",parorb(seeds, gens, action, d, SHTaddOrLookup, function(parentid, genno, id)
+        if parentid <> fail then
+            acts[genno][parentid] := id;
+        fi;
+    end),"\n");
+    acts := List(acts, FromAtomicList);
+    n0 := Length(acts[1]);
+    map := [];
+    imap := [];
+    n := 0;
+    a := acts[1];
+    for i in [1..n0] do
+        if IsBound(a[i]) then
+            n := n+1;
+            map[i] := n;
+            imap[n] := i;
+        fi;
+    od;
+    realacts := List(acts, a->
+                     List([1..n], i-> map[a[imap[i]]]));
+    return realacts;
+end;
+
+    
+
 m24trial := function()
     local  d, gens, orb;
     orb := AtomicList([]);
@@ -178,10 +218,19 @@ end;
 m24trialn := function(n)
     local  d, gens, orb;
     orb := AtomicList([]);
-    d := newSplitHashTableDict(Sum, Product, 8, 100);
+    d := newSplitHashTableDict(hash, hash, 17, 100);
     gens := GeneratorsOfGroup(MathieuGroup(24));
     parorb([`[1..n]], gens, OnSets, d, SHTaddOrLookup, function(a,b,c) 
         end);
         return keysOfSHT(d);
         
 end;
+
+m24act := function(n)
+    local gens;
+    gens := GeneratorsOfGroup(MathieuGroup(24));
+    return actionViaParOrb([`AsPlist([1..n])], gens, OnSets, hash);
+end;
+
+    
+    
