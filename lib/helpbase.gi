@@ -97,7 +97,7 @@ end);
 ##    `SuggestedSpellings'.
 
 BindGlobal( "TRANSATL", 
-            [ [ "atalogue", "atalog" ],
+           `[ [ "atalogue", "atalog" ],
               [ "olour", "olor" ],
               [ "entre", "enter" ],
               [ "isation", "ization" ],
