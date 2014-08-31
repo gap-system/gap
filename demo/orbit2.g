@@ -157,22 +157,23 @@ end;
         
 
 seqorb := function( seeds, gens, action, dict, addOrLookup, record)
-    local  queue, qids, i, ngens, pt, npt, newid;
+    local  queue, qids, i, ngens, pt, npt, newid,j ;
     queue := ShallowCopy(seeds);
-    qids :=  List(seeds, fail);
+    qids :=  List(seeds, x->fail);
     i := 1;
     ngens := Length(gens);
-    while i < Length(queue) do
+    while i <= Length(queue) do
         pt := queue[i];
-        for i in [1..ngens] do
+        for j in [1..ngens] do
             npt := action(pt,gens[j]);
             newid := addOrLookup(dict, npt);
-            record(qids[i], j, AbsoluteValiue(newid));
+            record(qids[i], j, AbsoluteValue(newid));
             if newid < 0 then
                 Add(queue, npt);
                 Add(qids, newid);
             fi;
         od;
+        i := i+1;
     od;
 end;
 
@@ -273,6 +274,16 @@ m24trialn := function(n)
         end);
         return keysOfSHT(d);
         
+end;
+
+m24seqtrialn := function(n)
+    local  d, gens, orb;
+    orb := [];
+    d := SeqDict(hash);    
+    gens := GeneratorsOfGroup(MathieuGroup(24));
+    seqorb([AsPlist([1..n])], gens, OnSets, d, HTaddOrLookup, function(a,b,c) 
+    end);
+    return Filtered(d.table!.KeyArray, x->x<>fail);
 end;
 
 m24act := function(n)
