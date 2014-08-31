@@ -17,7 +17,7 @@
 #  it supports AddOrLookup(dict, obj) 
 #  if obj is in dict already, it returns the id assigned when obj was added
 #  if  obj is not already in dict, it returns -(a new id)
-#  the IDs are small positive ints, and while they may not be contiguous they shouldn't be too huge.
+#  The IDs are small positive ints, and while they may not be contiguous they shouldn't be too huge.
 #
 
 
@@ -40,6 +40,13 @@ newSplitHashTableDict := function(hash1, hash2, npieces, magic)
     MakeReadOnly(r);
     return r;
 end;
+
+#
+# Two approaches to managing the hash tables. 
+# optimum might well be to switch from 1 to 2
+# once the rediscovery rate gets high enough.
+#
+
 
 SHTaddOrLookup1 := function(dict, obj)
     local  h, t, ht;
@@ -131,6 +138,46 @@ task := function( points, parentids, gennos, gens, action, dict, addOrLookup, re
    fi;
 end;
 
+SeqDict := function(hash)
+    return rec( nextid := 1, table := SparseHashTable(hash));
+end;
+
+
+HTaddOrLookup := function(ht, obj)
+    local  res, ht.nextid;
+    res := GetHashEntry(ht.table, obj);
+    if res = fail then
+        AddHashEntry(ht.table, obj, ht.nextid);
+        res := -ht.nextid;
+        ht.nextid := ht.nextid+1;
+    fi;
+    return res;
+end;
+
+        
+
+seqorb := function( seeds, gens, action, dict, addOrLookup, record)
+    local  queue, qids, i, ngens, pt, npt, newid;
+    queue := ShallowCopy(seeds);
+    qids :=  List(seeds, fail);
+    i := 1;
+    ngens := Length(gens);
+    while i < Length(queue) do
+        pt := queue[i];
+        for i in [1..ngens] do
+            npt := action(pt,gens[j]);
+            newid := addOrLookup(dict, npt);
+            record(qids[i], j, AbsoluteValiue(newid));
+            if newid < 0 then
+                Add(queue, npt);
+                Add(qids, newid);
+            fi;
+        od;
+    od;
+end;
+
+      
+             
         
 parorb := function( seeds, gens, action, dict, addOrLookup, record)
     local  l, sem, fakes;
