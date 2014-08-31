@@ -144,7 +144,7 @@ end;
 
 
 HTaddOrLookup := function(ht, obj)
-    local  res, ht.nextid;
+    local  res, nextid;
     res := GetHashEntry(ht.table, obj);
     if res = fail then
         AddHashEntry(ht.table, obj, ht.nextid);
