@@ -1300,6 +1300,7 @@ void PrintFunction (
     Int                 nloc;           /* number of locals                */
     Obj                 oldLVars;       /* terrible hack                   */
     UInt                i;              /* loop variable                   */
+    UChar               *locks = 0L;
 
 
     if ( IS_OPERATION(func) ) {
@@ -1307,12 +1308,27 @@ void PrintFunction (
       return;
     }
 
-    /* print 'function ('                                                  */
-    Pr("%5>function%< ( %>",0L,0L);
+    
+    /* print 'function (' or 'atomic function ('                          */
+    if (LCKS_FUNC(func)) {
+      locks = CHARS_STRING(LCKS_FUNC(func));
+      Pr("%5>atomic function%< ( %>",0L,0L);
+    } else
+      Pr("%5>function%< ( %>",0L,0L);
 
     /* print the arguments                                                 */
     narg = (NARG_FUNC(func) == -1 ? 1 : NARG_FUNC(func));
     for ( i = 1; i <= narg; i++ ) {
+      if (locks) {
+	switch(locks[i-1]) {
+	case 1:
+	  Pr("%>readonly %<", 0L, 0L);
+	  break;
+	case 2:
+	  Pr("%>readwrite %<", 0L, 0L);
+	  break;
+	}
+      }
         if ( NAMS_FUNC(func) != 0 )
             Pr( "%I", (Int)NAMI_FUNC( func, (Int)i ), 0L );
         else

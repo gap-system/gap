@@ -1100,7 +1100,8 @@ void ReadRecExpr (
 
 
 void ReadFuncExpr (
-    TypSymbolSet        follow )
+		   TypSymbolSet        follow,
+		   Char mode )
 {
     volatile Obj        nams;           /* list of local variables names   */
     volatile Obj        name;           /* one local variable name         */
@@ -1117,6 +1118,7 @@ void ReadFuncExpr (
     volatile Bag        locks = 0;      /* locks of the function */
 
     /* begin the function               */
+
     startLine = TLS->input->number;
     if (TLS->symbol == S_DO) {
 	Match( S_DO, "do", follow );
@@ -1125,8 +1127,13 @@ void ReadFuncExpr (
 	if (TLS->symbol == S_ATOMIC) {
 	    Match(S_ATOMIC, "atomic", follow);
 	    is_atomic = 1;
-	    locks = NEW_STRING(4);
-	}
+	} else if (mode == 'a') { /* in this case the atomic keyword
+				     was matched away by ReadAtomic before
+				     we realised we were reading an atomic function */
+	    is_atomic = 1;
+	}	  
+	if (is_atomic)
+	  locks = NEW_STRING(4);
 	Match( S_FUNCTION, "function", follow );
 	Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
     }
@@ -1383,7 +1390,7 @@ void ReadFuncExpr0 (
 
 /****************************************************************************
 **
-*F  ReadLiteral( <follow> ) . . . . . . . . . . . . . . . . . .  read an atom
+*F  ReadLiteral( <follow>, <mode> ) . . . . . . . . . . . . . .  read an atom
 **
 **  'ReadLiteral' reads a  literal expression.  In  case of an error it skips
 **  all symbols up to one contained in <follow>.
@@ -1405,7 +1412,8 @@ void ReadFuncExpr0 (
 **  <String>  := " { <any character> } "
 */
 void ReadLiteral (
-    TypSymbolSet        follow )
+		  TypSymbolSet        follow,
+		  Char mode)
 {
     /* <Int>                                                               */
     if ( TLS->symbol == S_INT ) {
@@ -1474,7 +1482,7 @@ void ReadLiteral (
     /* <Function>                                                          */
     else if ( TLS->symbol == S_FUNCTION || TLS->symbol == S_ATOMIC ||
               TLS->symbol == S_DO) {
-        ReadFuncExpr( follow );
+      ReadFuncExpr( follow, mode  );
     }
 
     else if (TLS->symbol == S_DOT ) {
@@ -1532,7 +1540,7 @@ void ReadAtom (
                           S_REC|S_FUNCTION|S_DO|S_ATOMIC| S_FLOAT | S_DOT |
                          S_MAPTO))
     {
-        ReadLiteral( follow );
+      ReadLiteral( follow, mode );
     }
 
     /* '(' <Expr> ')'                                                      */
@@ -1798,6 +1806,17 @@ void ReadQualifiedExpr (
 **  up to one contained in <follow>.
 **
 **  <Expr> := <And> { 'or' <And> }
+**
+**  The <mode> is either 'r' indicating that the expression should be 
+**  evaluated as usual, 'x' indicating that it may be the left-hand-side of an
+**  assignment or 'a' indicating that it is a function expression following
+**  an "atomic" keyword and that the function should be made atomic.
+**
+**  This last case exists because when reading "atomic function" in statement 
+**  context the atomic has been matched away before we can see that it is an
+**  atomic function literal, not an atomic statement.
+**
+**
 */
 void ReadExpr (
     TypSymbolSet        follow,
@@ -2110,9 +2129,15 @@ void ReadAtomic (
     nrError   = TLS->nrError;
     lockSP    = RegionLockSP();
 
-    /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'                                                */    
-    if ( ! READ_ERROR() ) { IntrAtomicBegin(); }
+
     Match( S_ATOMIC, "atomic", follow );
+    /* Might just be an atomic function literal as an expression */
+    if (TLS->symbol == S_FUNCTION) {
+      ReadExpr(follow, 'a');
+      return; }
+    
+    /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'                                                */        if ( ! READ_ERROR() ) { IntrAtomicBegin(); }
+
     ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
     nexprs = 1;
     while (TLS->symbol == S_COMMA) {
@@ -2360,7 +2385,7 @@ void            ReadQUIT (
 **              |  'repeat' <Statments>  'until' <Expr> ';'
 **              |  'break' ';'
 **              |  'return' [ <Expr> ] ';'
-**              |  'atomic' <QualifiedExpression> { ',' <QualifiedExpression } 'do' <Statements> 'od' ';'
+**              |  'atomic' <QualifiedExpression> { ',' <QualifiedExpression> } 'do' <Statements> 'od' ';'
 **              |  ';'
 */
 UInt ReadStats (
@@ -2528,7 +2553,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     /* Unless the statement is empty, in which case do nothing             */
     else                           { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
 
-    /* every statement must be terminated by a semicolon  \                 */
+    /* every statement must be terminated by a semicolon                  */
     if ( TLS->symbol != S_SEMICOLON ) {
         SyntaxError( "; expected");
     }
