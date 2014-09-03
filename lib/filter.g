@@ -345,7 +345,7 @@ BIND_GLOBAL( "IsFilter",
 ##
 ##  Is an ``infinity'' value for method installations. It is more than can
 ##  be reached by any filter arrangement.
-BIND_GLOBAL( "SUM_FLAGS", 2000 );
+BIND_GLOBAL( "SUM_FLAGS", 10000 );
 
 
 #############################################################################
@@ -361,7 +361,7 @@ BIND_GLOBAL( "GETTER_FLAGS", 2*SUM_FLAGS );
 #V  NICE_FLAGS
 ##
 ##  is the rank of `IsHandledByNiceMonomorphism'.
-BIND_GLOBAL("NICE_FLAGS",QUO_INT(SUM_FLAGS,10));
+BIND_GLOBAL("NICE_FLAGS",QUO_INT(SUM_FLAGS,30));
 
 
 #############################################################################
@@ -371,7 +371,7 @@ BIND_GLOBAL("NICE_FLAGS",QUO_INT(SUM_FLAGS,10));
 ##  is the incremental rank used for `Basis' methods that delegate to
 ##  `CanonicalBasis'.
 ##
-BIND_GLOBAL( "CANONICAL_BASIS_FLAGS", 2 * NICE_FLAGS );
+BIND_GLOBAL( "CANONICAL_BASIS_FLAGS", QUO_INT(SUM_FLAGS,5) );
 
 
 #############################################################################

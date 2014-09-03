@@ -750,7 +750,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPcElements ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

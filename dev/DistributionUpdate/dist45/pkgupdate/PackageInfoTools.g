@@ -906,152 +906,12 @@ Exec ( Concatenation( "cd ", pkgreposdir, "/", pkgdirname, " ; ",
 end;
 
  
-# OLD CODE, KEEP IT AROUND FOR A WHILE
-MergePackageArchives := function(pkgdir, tmpdir, archdir, webdir, inmerge)
-# This function is called from the 'mergePackageArchives' script 
-# with the following arguments: 
-# PkgCacheDir, PkgMergeTmpDir, PkgMergedArchiveDir, PkgWebFtpDir, true
-  local mergedir, pkgs, textfilesmerge, nam, info, d, tf, 
-        fname, fun, allfiles, pkg, str, fmt,fn_targzArch;
-  if tmpdir[Length(tmpdir)] <> '/' then
-    tmpdir := Concatenation(tmpdir, "/");
-  fi;
-  if pkgdir[Length(pkgdir)] <> '/' then
-    pkgdir := Concatenation(pkgdir, "/");
-  fi;
-  mergedir := Concatenation(tmpdir, "merge/");
-  Exec(Concatenation("rm -rf ", mergedir));
-  Exec(Concatenation("mkdir -p ", mergedir));
-  pkgs := Difference(FilesDir(pkgdir, "d", 1), [pkgdir]);
-  textfilesmerge := [];
-  for pkg in pkgs do
-    # try to read info file
-    ClearPACKAGE_INFOS();
-    READPackageInfo(Concatenation(pkg, "/", "PackageInfo.g"));
-    nam := NamesOfComponents(PACKAGE_INFOS);
-    if Length(nam) = 0 then
-      continue;
-    fi;
-    nam := nam[1];
-    info := PACKAGE_INFOS.(nam);
-    # decide the corresponding merged archive, currently only one archive
-    if info.Status = "accepted" and inmerge = true then
-      d := mergedir;
-      tf := textfilesmerge;
-    elif info.Status in ["submitted","deposited"] and inmerge = true then
-      d := mergedir;
-      tf := textfilesmerge;
-    else
-      Print("WARNING (", info.PackageName, "): has status ", info.Status, 
-            "\nwhich is is not one of accepted/submitted/deposited\n");
-      # for now do the same for others
-      d := mergedir;
-      tf := textfilesmerge;
-      #continue;
-    fi;
-    if not IsBound(info.ArchiveURL) then
-      continue;
-    fi;
-    fname := Basename(info.ArchiveURL);
-    # unpack from .tar.gz file
-    Exec(Concatenation("cat ", pkg, "/", fname, ".tar.gz | (cd ", d, 
-                       "; tar xzpf - )" ) );
-    # and copy the README file
-    Exec(Concatenation("cp ", pkg, "/README.", nam, " ", d));
-    # and copy files with lists of text files and binary files
-    Exec( Concatenation("cp ", pkg, "/", fname, ".txtfiles ", d));
-    Exec( Concatenation("cp ", pkg, "/", fname, ".binfiles ", d));
-  od;
-
-  # now create the merged tar.gz archive
-  # (just this, no others any more)
-  fun := function(pkgdir, dir, fn, textfiles)
-    local a;
-    ## local allfiles;
-    Exec(Concatenation("cd ", dir, "; tar cpf ../", fn, ".tar * ; cd .. ; ",
-         " gzip -9 ", fn, ".tar ; " ));
-    #Exec(Concatenation("cd ", dir, "; tar cpf ../", fn, ".tar * ; cd .. ; ",
-    #     "cp ", fn, ".tar ", fn, ".tar.X; gzip -9 ", fn, ".tar ; ",
-    #     "mv -f ", fn, ".tar.X ", fn, ".tar; bzip2 -9 ", fn, ".tar ; "
-    #     ));
-    # then zoo it
-    #Exec(Concatenation("cd ", dir, "; ",
-    #     "find * -print | zoo ahIq ../", fn, ".zoo "));
-    # add !TEXT! comments to zoo archive
-    #for a in textfiles do
-    #  Exec(Concatenation("cd ", dir, "/.. ; (echo '!TEXT!'; echo '/END')", 
-    #       "| zoo c ", fn, ".zoo \"", a, "\""));
-    #od;
-    # adjust time stamp
-    #Exec(Concatenation("cd ", dir, "/.. ; zoo Tq ", fn, ".zoo"));
-
-    # and finally zip it 
-    #FileString(Concatenation(dir, "/../tmptfiles"),
-    #                          JoinStringsWithSeparator(textfiles, "\n"));
-    #Exec(Concatenation("cd ", dir,"; find * ", " -print > ../allfiles"));
-    #allfiles := SplitString(StringFile(Concatenation(dir, "/../allfiles")), 
-    #                        "", "\n");
-    #FileString(Concatenation(dir, "/../tmpbfiles"), 
-    #        JoinStringsWithSeparator(Difference(allfiles, textfiles), "\n"));
-    #Exec(Concatenation("cd ", dir,"; ",
-    #     "cat ../tmpbfiles | zip -9 ../", fn, "-win.zip -@ > /dev/null ; ",
-    #     "cat ../tmptfiles | zip -9 -l ../", fn, "-win.zip -@ > /dev/null "));
-  end; 
-
-  str := StringCurrentTime();
-  while Length(str) > 0 and str[Length(str)] = '\n' do
-    Unbind(str[Length(str)]);
-  od;
-  
-  Exec( Concatenation( 
-    "cd ", d, " ; ", 
-    "cat *.txtfiles > metainfotxtfiles-", str, ".txt ; ",
-    "cat *.binfiles > metainfobinfiles-", str, ".txt ; ",
-    "rm *.txtfiles ; ",
-    "rm *.binfiles ; ",
-    "ls README.* >> metainfotxtfiles-", str, ".txt ; ",
-    "ls metainfo* | zip -q metainfopackages", str, " -@" ) );  
-
-  # move metainfo archive to the archive collection and then cleanup
-  Exec(Concatenation("cd ", archdir, "; mkdir -p old; ",
-       "touch metainfopackages*; mv metainfopackages* old ; ",
-       "cp -f ", tmpdir, "/merge/metainfopackages*.zip ", archdir, 
-       "; rm -f ", tmpdir, "/merge/metainfo*",
-       "; rm -f ", webdir, "/ftpdir/*/metainfo*"));
- 
-  fun(pkgdir, mergedir, Concatenation("packages-", str), textfilesmerge);
-
-  # cp merged to archive collection and ftp directory
-##    Exec(Concatenation("cd ", pkgdir, "/../archives; mkdir -p old; ",
-##         "touch packages-*; mv packages-* old; cp -f ", tmpdir, "/packages-* ",
-##         pkgdir, "/../archives; rm -f ", pkgdir, "/../web/ftpdir/*/packages-*"));
-##    for fmt in [".zoo", ".tar.gz", ".tar.bz2", "-win.zip"] do
-##      Exec(Concatenation("mv -f ", tmpdir, "/packages-*", fmt, " ", pkgdir, 
-##           "/../web/ftpdir/", fmt{[2..Length(fmt)]}, "/"));
-##    od;
-  Exec(Concatenation("cd ", archdir, "; mkdir -p old; ",
-       "touch packages-*; mv packages-* old; cp -f ", tmpdir, "/packages-* ",
-       archdir, "; rm -f ", webdir, "/ftpdir/*/packages-*"));
-  for fmt in [ ".tar.gz" ] do # no merged ".tar.bz2", "-win.zip", and retired ".zoo"
-    Exec(Concatenation("mv -f ", tmpdir, "/packages-*", fmt, " ", webdir, 
-         "/ftpdir/", fmt{[2..Length(fmt)]}, "/"));
-  od;
-
-  # repack archives with Frank's script repack.py
-  #fn_targzArch := Concatenation("packages-", str, ".tar.gz");
-  #Exec(Concatenation("cd ", archdir, 
-  #"; /Users/alexk/CVSREPS/GAPDEV/dev/DistributionUpdate/dist45/repack.py ",
-  #fn_targzArch, " -all ;" )); 
-       
-end;
-
-
 MergePackages := function(pkgdir, pkgreposdir, tmpdir, archdir, webdir, parameters)
 # This function is called from the 'mergePackages' script 
 # with the following arguments: 
 # PkgCacheDir, PkgReposDir, PkgMergeTmpDir, PkgMergedArchiveDir, PkgWebFtpDir, true
   local mergedir, pkgs, basepkgs, textfilesmerge, nam, info, tf, 
-        fname, fun, allfiles, allformats, pkg, str, fmt, fn_targzArch,
+        fname, fun, allfiles, allformats, pkg, timestamp, fmt, fn_targzArch,
         default, specific, t, s, revision, tag, old, fn;
 
   # Parsing parameters of packages combination to be assembled
@@ -1196,6 +1056,11 @@ MergePackages := function(pkgdir, pkgreposdir, tmpdir, archdir, webdir, paramete
     if allformats then 
     # wrap indvidual package arhives in all redistributed formats
       fname  := Basename( info.ArchiveURL );
+      # if the package provides archives named 'version.format',
+      # we rename them to 'packagename-version.format'
+      if fname[1] in "0123456789" then
+        fname:=Concatenation( info.PackageName, "-", fname );
+      fi;
       Exec(Concatenation("cd ", mergedir, " ; ",
             "cat ", nam, ".txtfiles ", nam, ".binfiles > ", nam, ".allfiles"));
       Print("  creating ",fname,".zip\n");
@@ -1282,31 +1147,31 @@ MergePackages := function(pkgdir, pkgreposdir, tmpdir, archdir, webdir, paramete
     #     "cat ../tmptfiles | zip -9 -l ../", fn, "-win.zip -@ > /dev/null "));
   end; 
 
-  str := StringCurrentTime();
-  while Length(str) > 0 and str[Length(str)] = '\n' do
-    Unbind(str[Length(str)]);
+  timestamp := StringCurrentTime();
+  while Length(timestamp) > 0 and timestamp[Length(timestamp)] = '\n' do
+    Unbind(timestamp[Length(timestamp)]);
   od;
 
    
   Exec( Concatenation( 
     "cd ", mergedir, " ; ", 
-    "cat *.txtfiles > metainfotxtfiles-", str, ".txt ; ",
-    "cat *.binfiles > metainfobinfiles-", str, ".txt ; ",
+    "cat *.txtfiles > metainfotxtfiles-", timestamp, ".txt ; ",
+    "cat *.binfiles > metainfobinfiles-", timestamp, ".txt ; ",
     "rm *.txtfiles ; ",
     "rm *.binfiles ; ",
     "rm -rf *.tar.gz *.tar.bz2 *.zip ; ",
-    "ls README.* >> metainfotxtfiles-", str, ".txt ; ",
-    "ls metainfo* | zip -q metainfopackages", str, " -@" ) );  
+    "ls README.* >> metainfotxtfiles-", timestamp, ".txt ; ",
+    "ls metainfo* | zip -q metainfopackages", timestamp, " -@" ) );  
     
   # move metainfo archive to the archive collection and then cleanup
-  Exec(Concatenation("cd ", archdir, "; mkdir -p old; ",
+  Exec(Concatenation("cd ", archdir, "; mkdir -p old; rm -rf old/* ; ",
        "touch metainfopackages*; mv metainfopackages* old ; ",
        "cp -f ", tmpdir, "/merge/metainfopackages*.zip ", archdir, 
        "; rm -f ", tmpdir, "/merge/metainfo*",
        "; rm -f ", webdir, "/ftpdir/*/metainfo*"));
  
   Print("Wrapping merged packages archive ...\n");
-  fun(pkgdir, mergedir, Concatenation("packages-", str), textfilesmerge);
+  fun(pkgdir, mergedir, Concatenation("packages-", timestamp), textfilesmerge);
 
   # cp merged to archive collection and ftp directory
 ##    Exec(Concatenation("cd ", pkgdir, "/../archives; mkdir -p old; ",
@@ -1824,8 +1689,13 @@ AddHTMLPackageInfo := function(arg)
     books := info.PackageDoc;
   fi;
   # directory name of unpacked archive
-  arch := Concatenation(webdir, "/ftpdir/tar.gz/packages/",
-                        Basename(info.ArchiveURL),".tar.gz");
+  bnam := Basename(info.ArchiveURL);
+  # if the package provides archives named 'version.format',
+  # we rename them to 'packagename-version.format'
+  if bnam[1] in "0123456789" then
+      bnam:=Concatenation( info.PackageName, "-", bnam );
+  fi;  
+  arch := Concatenation(webdir, "/ftpdir/tar.gz/packages/", bnam,".tar.gz");
   dname := StringSystem("sh", "-c", Concatenation("tar tzf ", arch,
            "| head -2| tail -1"));
   if '/' in dname then
@@ -1839,19 +1709,19 @@ AddHTMLPackageInfo := function(arg)
     Append(res, ": ");
     manlink := "<tr><td>";
     if IsBound(a.HTMLStart) then
-      Append(res, Concatenation(" [<a href='{{GAPManualLink}}pkg/", 
+      Append(res, Concatenation(" [<a href='{{GAPManualLink}}/pkg/", 
               dname,  "/", a.HTMLStart, 
               "'> HTML</a>] version&nbsp;&nbsp;" ));
-      Append(manlink, Concatenation("<a href=\"{{GAPManualLink}}pkg/", 
+      Append(manlink, Concatenation("<a href=\"{{GAPManualLink}}/pkg/", 
         dname, "/", a.HTMLStart, "\">", a.BookName, "</a></td>"));
     else
       Append(manlink, Concatenation(a.BookName, "</td>"));
     fi;
     if IsBound(a.PDFFile) then
-      Append(res, Concatenation(" [<a href='{{GAPManualLink}}pkg/", 
+      Append(res, Concatenation(" [<a href='{{GAPManualLink}}/pkg/", 
               dname, "/", a.PDFFile, 
               "'> PDF</a>] version&nbsp;&nbsp;" ));
-      Append(manlink, Concatenation("<td>[<a href=\"{{GAPManualLink}}pkg/",
+      Append(manlink, Concatenation("<td>[<a href=\"{{GAPManualLink}}/pkg/",
         dname, "/", a.PDFFile, 
         "\">PDF</a>]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>"));
     else
@@ -1873,9 +1743,8 @@ AddHTMLPackageInfo := function(arg)
   if not IsBound(info.ArchiveURL) then
     info.ArchiveURL := "n.a.";
   fi;
-  bnam := Basename(info.ArchiveURL);
   arch := Concatenation(nam, "/", bnam);
-  Append(res, Concatenation("[<a href='{{GAPManualLink}}pkg/", 
+  Append(res, Concatenation("[<a href='{{GAPManualLink}}/pkg/", 
           dname, "/README.", nam, 
           "'>README</a>]&nbsp;&nbsp;&nbsp;&nbsp;",bnam));
   for ext in [ ".tar.gz", ".tar.bz2", "-win.zip", ".zip" ] do # retired ".zoo",
@@ -2136,6 +2005,7 @@ end;
 
 # some general utilities using the above functions
 UpdateAllPackages := function(pkgdir)
+  # NOT USED SINCE GAP 4.5, not guaranteed to work
   local addpackagelines, newinfo, newarch, fun, inmerge, newdoc, pkgdocdir;
   # first save the current setup with a time stamp
   addpackagelines := AddpackageLinesCurrent(pkgdir);
@@ -2155,7 +2025,7 @@ UpdateAllPackages := function(pkgdir)
     inmerge := false;
   fi;
   if inmerge then
-    MergePackageArchives(pkgdir, Concatenation(pkgdir, "/../tmp/tmpmerge"), 
+    MergePackages(pkgdir, Concatenation(pkgdir, "/../tmp/tmpmerge"), 
                        inmerge);
   fi;
   pkgdocdir := Concatenation(pkgdir, "/../web/Packages/pkg");

@@ -145,7 +145,7 @@ BindGlobal( "GeneralLinearGroup", function ( arg )
       return GeneralLinearGroupCons( IsMatrixGroup, arg[1], GF( arg[2] ) );
     fi;
   elif Length( arg ) = 3 and IsOperation( arg[1] ) then
-    if IsRing( arg[2] ) then
+    if IsRing( arg[3] ) then
       return GeneralLinearGroupCons( arg[1], arg[2], arg[3] );
     elif IsPrimePowerInt( arg[3] ) then
       return GeneralLinearGroupCons( arg[1], arg[2], GF( arg[3] ) );
@@ -364,7 +364,7 @@ BindGlobal( "SpecialLinearGroup", function ( arg )
       return SpecialLinearGroupCons( IsMatrixGroup, arg[1], GF( arg[2] ) );
     fi;
   elif Length( arg ) = 3 and IsOperation( arg[1] ) then
-    if IsRing( arg[2] ) then
+    if IsRing( arg[3] ) then
       return SpecialLinearGroupCons( arg[1], arg[2], arg[3] );
     elif IsPrimePowerInt( arg[3] ) then
       return SpecialLinearGroupCons( arg[1], arg[2], GF( arg[3] ) );

@@ -104,14 +104,14 @@ Int             GrowPlist (
 **
 **  'TypePlist' is the function in 'TypeObjFuncs' for plain lists.
 **
-**  TypePlist works with KTnumPlist to determine the type of a plain list
+**  TypePlist works with KTNumPlist to determine the type of a plain list
 **  Considerable care is needed to deal with self-referential lists. This is
-**  basically achieved with the TESTING flag in the Tnum. This must be set in
-**  the "current" list before triggering determination of the Type (or KTnum)
+**  basically achieved with the TESTING flag in the TNum. This must be set in
+**  the "current" list before triggering determination of the Type (or KTNum)
 **  of any sublist.
 **
-**  KTnumPlist determined the "true" Tnum of the list, taking account of such
-**  factors as denseness, homogeneity and so on. It modifies the stored Tnum
+**  KTNumPlist determined the "true" TNum of the list, taking account of such
+**  factors as denseness, homogeneity and so on. It modifies the stored TNum
 **  of the list to the most informative "safe" value, allowing for the
 **  mutability of the list entries (and preserving TESTING).
 **
@@ -174,7 +174,7 @@ Int             GrowPlist (
 **     elements in the list. If we didn't do this, a lot of matrix stuff
 **     wouldn't work
 **
-**     8 is the simpler. It calls KTnumHomPlist, which checks whether we
+**     8 is the simpler. It calls KTNumHomPlist, which checks whether we
 **     should really be in T_PLIST_CYC, T_PLIST_FFE or T_PLIST_TAB and if so,
 **     changes the TNUM appropriately and returns the new tnum.  The only
 **     time this is slow is a homogenous list of lists which looks like a
@@ -185,10 +185,10 @@ Int             GrowPlist (
 **     lists, lists with mutable subobjects, etc.  We now concentrate on this
 **     case.
 **
-**     The entry point is the function TypePlistWithKTnum, which returns both
+**     The entry point is the function TypePlistWithKTNum, which returns both
 **     the type and the ktnum of the list. This must be done in one function
 **     to avoid an exponential slowdown for deeply nested lists. This
-**     function is mutually recursive with KTnumPlist, which also returns two
+**     function is mutually recursive with KTNumPlist, which also returns two
 **     pieces of information: the ktnum of the list and, if it is homogenous,
 **     the family of the elements.
 **
@@ -218,8 +218,7 @@ Obj TYPE_LIST_HOM;
     (IS_BAG_REF(list) && TEST_OBJ_FLAG(list, TESTING))
 
 
-extern Obj TypePlistWithKTnum( Obj list,
-			       UInt *ktnum );
+static Obj TypePlistWithKTNum( Obj list, UInt *ktnum );
 
 Int KTNumPlist (
     Obj                 list,
@@ -284,7 +283,7 @@ Int KTNumPlist (
 	if (!testing) SET_OBJ_FLAG(list, TESTING|TESTED);
 
 	if (IS_PLIST(elm))
-	  family = FAMILY_TYPE( TypePlistWithKTnum(elm, &ktnumFirst));
+	  family = FAMILY_TYPE( TypePlistWithKTNum(elm, &ktnumFirst));
 	else
 	  {
 	    family  = FAMILY_TYPE( TYPE_OBJ(elm) );
@@ -545,10 +544,10 @@ Int KTNumHomPlist (
 
 Obj TypePlist( Obj list)
 {
-  return TypePlistWithKTnum( list, (UInt *) 0);
+  return TypePlistWithKTNum( list, (UInt *) 0);
 }
 
-Obj TypePlistWithKTnum (
+static Obj TypePlistWithKTNum (
     Obj                 list,
     UInt                *ktnum )
 {
@@ -2551,7 +2550,7 @@ Obj             PosPlistSort (
     istart = INT_INTOBJ(start);
 
     /* get a pointer to the set and the logical length of the set          */
-    lenList = LEN_PLIST( list );
+    lenList = LEN_PLIST(list);
 
     /* perform the binary search to find the position                      */
     i = istart;  k = lenList + 1;
@@ -2575,38 +2574,11 @@ Obj             PosPlistHomSort (
     Obj                 val,
     Obj                 start )
 {
-    UInt                lenList;        /* logical length of the set       */
-    UInt                i, j, k;        /* loop variables                  */
-    UInt                istart;
-
-    /* if the starting position is too big to be a small int
-       then there can't be anything to find */
-    if (!IS_INTOBJ(start))
-      return Fail;
-
-    istart = INT_INTOBJ(start);
-
     /* deal with the case which can be decided by the family relationship  */
     if (FAMILY_OBJ(val) != FAMILY_OBJ(ELM_PLIST(list,1)))
       return Fail;
     
-    /* get a pointer to the set and the logical length of the set          */
-    lenList = LEN_PLIST( list );
-
-    /* perform the binary search to find the position                      */
-    i = istart;  k = lenList + 1;
-    while ( i+1 < k ) {                 /* set[i] < elm && elm <= set[k]   */
-        j = (i + k) / 2;                /* i < j < k                       */
-        if ( LT( ELM_PLIST(list,j), val ) )  i = j;
-        else                                 k = j;
-    }
-
-    /* test if the element was found at position k                         */
-    if ( lenList < k || ! EQ( ELM_PLIST(list,k), val ) )
-        k = 0;
-
-    /* return the position                                                 */
-    return k == 0 ? Fail: INTOBJ_INT(k);
+    return PosPlistSort(list, val, start);
 }
 
 
@@ -4987,7 +4959,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPlist ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

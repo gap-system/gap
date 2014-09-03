@@ -102,7 +102,7 @@ case "$with_gmp" in
     GMP_VER="$with_gmp"
     ;;
   system)
-    GMP_CFLAGS="-m${ABI}"
+    GMP_CFLAGS="${ABI_CFLAGS}"
     GMP_LIBS="-lgmp"
     MAKE_GMP=""
     ;;

@@ -683,7 +683,7 @@ Obj FuncTzOccurrences (
     Obj                 res;            /* handle of the result            */
     Obj                 cnts;           /* list of the counts              */
     Obj *               ptCnts;         /* pointer to the counts list      */
-    Obj                 mins;           /* list of minimal occurence list  */
+    Obj                 mins;           /* list of minimal occurrence list  */
     Obj *               ptMins;         /* pointer to the minimals list    */
     Obj                 lens;           /* list of lengths of those        */
     Obj *               ptLens;         /* pointer to the lengths list     */
@@ -1785,7 +1785,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoTietze ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

@@ -1170,7 +1170,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoDTEvaluation ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

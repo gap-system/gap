@@ -351,33 +351,43 @@ InstallMethod(IsPartialOrderBinaryRelation,
 
 #############################################################################
 ##
-#P
+#P  IsPartialOrderBinaryRelation(<rel>)                                
 ##
 InstallMethod(IsLatticeOrderBinaryRelation,
         "test for whether a binary relation is a lattice order", true,
         [IsBinaryRelation],0,
-    function(rel)
-       local a,b;  ## Elements of the relation
-             
-       ## A lattice order is defined on a Partial order
-       ##
-       if not IsPartialOrderBinaryRelation(rel) then
-           return false;
-       fi;
+function(rel)
+  local a,b,  # elements of the relation
+        intersection, # intersection of downsets of a and b
+        nrel; # new relation defined on the intersection
+        
+  # a lattice order is defined on a partial order
+  if not IsPartialOrderBinaryRelation(rel) then
+    return false;
+  fi;
+  
+  # checking the existence of a top element (unique maximal)
+  if not Number(Source(rel), x->[x]=Images(rel,x)) = 1 then
+    return false;
+  fi;
 
-       ## See that each pair of elements of the source has an infinum and
-       ##    a supremum
-       ##
-       for a in Source(rel) do
-          for b in Source(rel) do
-               if IsEmpty(Intersection(PreImages(rel,b),PreImages(rel,a))) or
-                  IsEmpty(Intersection(Images(rel,b),Images(rel,a))) then
-                   return false;
-               fi;    
-           od;
-       od;   
-       return true;
-    end);   
+  ## checking the existence of a meet for each pair
+  for a in Source(rel) do
+    for b in Source(rel) do
+      # intersecting downsets
+      intersection := Intersection(PreImages(rel,b),PreImages(rel,a));
+      # new relation on the intersection induced by the original relation
+      nrel := PartialOrderByOrderingFunction(
+                      Domain(intersection),
+                      function(x,y) return y in Images(rel,x);end);
+      # if this new order does not have a top, then a meet b does not exist
+      if not Number(Source(nrel), x->[x]=Images(nrel,x)) = 1 then
+        return false;
+      fi;
+    od;
+  od;
+  return true;
+end);
 
 ############################################################################
 ##
@@ -2164,6 +2174,15 @@ InstallMethod( \<, "for two equivalence classes", IsIdenticalObj,
     function( x1, x2 )
         return RepresentativeSmallest(x1) < RepresentativeSmallest(x2);
     end );
+
+InstallMethod(AsPermutation, "for binary relations on points", true,
+        [IsBinaryRelation and IsBinaryRelationOnPointsRep], 0,
+function(rel)
+    if not IsMapping(rel) then
+             Error("error, <rel> must be a mapping");
+    fi;
+    return AsPermutation(Transformation(Flat(Successors(rel))));
+end);
 
 #############################################################################
 ##

@@ -49,9 +49,11 @@
 #include        <readline/readline.h>   /* readline for interactive input  */
 #endif
 
+#include        "read.h"                /* reader                          */
+
+
 #if HAVE_SELECT
 /* Only for the Hook handler calls: */
-#include        "read.h"                /* reader                          */
 
 #include        <sys/time.h>
 #include        <sys/types.h>
@@ -871,13 +873,18 @@ Int SyFopen (
           return 3;
     }
 
+    HashLock(&syBuf);
     /* try to find an unused file identifier                               */
     for ( fid = 4; fid < sizeof(syBuf)/sizeof(syBuf[0]); ++fid )
         if ( syBuf[fid].fp == -1 )
           break;
+    
     if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) )
+    {
+        HashUnlock(&syBuf);
         return (Int)-1;
-
+    }
+    
     /* set up <namegz> and <cmd> for pipe command                          */
     namegz[0] = '\0';
     if (strlen(name) <= 1018) {
@@ -926,14 +933,17 @@ Int SyFopen (
     }
 #endif
     else {
+        HashUnlock(&syBuf);
         return (Int)-1;
     }
 
-
+    HashUnlock(&syBuf);
+    
     /* return file identifier                                              */
     return fid;
 }
 
+// Lock on SyBuf for both SyBuf and SyBuffers
 
 UInt SySetBuffering( UInt fid )
 {
@@ -945,16 +955,20 @@ UInt SySetBuffering( UInt fid )
     return 1;
 
   bufno = 0;
+  HashLock(&syBuf);
   while (bufno < sizeof(syBuffers)/sizeof(syBuffers[0]) &&
          syBuffers[bufno].inuse != 0)
     bufno++;
   if (bufno >= sizeof(syBuffers)/sizeof(syBuffers[0]))
-    return 0;
+  {
+      HashUnlock(&syBuf);
+      return 0;
+  }
   syBuf[fid].bufno = bufno;
   syBuffers[bufno].inuse = 1;
   syBuffers[bufno].bufstart = 0;
   syBuffers[bufno].buflen = 0;
-
+  HashUnlock(&syBuf);
   return 1;
 }
 
@@ -982,7 +996,7 @@ Int SyFclose (
     if ( fid == 0 || fid == 1 || fid == 2 || fid == 3 ) {
         return -1;
     }
-
+    HashLock(&syBuf);
     /* try to close the file                                               */
     if ( (syBuf[fid].pipe == 0 && close( syBuf[fid].fp ) == EOF)
       || (syBuf[fid].pipe == 1 && pclose( syBuf[fid].pipehandle ) == -1
@@ -994,6 +1008,7 @@ Int SyFclose (
         fputs("gap: 'SyFclose' cannot close file, ",stderr);
         fputs("maybe your file system is full?\n",stderr);
         syBuf[fid].fp = -1;
+        HashUnlock(&syBuf);
         return -1;
     }
 
@@ -1001,6 +1016,7 @@ Int SyFclose (
     if (syBuf[fid].bufno >= 0)
       syBuffers[syBuf[fid].bufno].inuse = 0;
     syBuf[fid].fp = -1;
+    HashUnlock(&syBuf);
     return 0;
 }
 
@@ -1309,6 +1325,7 @@ void syAnswerIntr ( int signr )
 
     /* reinstall 'syAnswerIntr' as signal handler                          */
     signal( SIGINT, syAnswerIntr );
+    siginterrupt( SIGINT, 0 );
 
     /* remember time of this interrupt                                     */
     syLastIntr = nowIntr;
@@ -1323,7 +1340,10 @@ void syAnswerIntr ( int signr )
 void SyInstallAnswerIntr ( void )
 {
     if ( signal( SIGINT, SIG_IGN ) != SIG_IGN )
+    {
         signal( SIGINT, syAnswerIntr );
+        siginterrupt( SIGINT, 0 );
+    }
 }
 
 
@@ -2176,7 +2196,7 @@ int GAP_rl_func(int count, int key)
    Int   len, n, hook, dlen, max, i;
 
    /* we shift indices 0-based on C-level and 1-based on GAP level */
-   C_NEW_STRING(linestr, strlen(rl_line_buffer), rl_line_buffer);
+   C_NEW_STRING_DYN(linestr, rl_line_buffer);
    okey = INTOBJ_INT(key + 1000*GAPMacroNumber);
    GAPMacroNumber = 0;
    rldata = NEW_PLIST(T_PLIST, 6);
@@ -2574,8 +2594,8 @@ Char * syFgets (
                    [linestr, ppos, yankstr]
                or an integer, interpreted as number of Esc('N')
                calls for the next lines.                                  */
-            C_NEW_STRING(linestr,strlen(line),line);
-            C_NEW_STRING(yankstr,strlen(yank),yank);
+            C_NEW_STRING_DYN(linestr,line);
+            C_NEW_STRING_DYN(yankstr,yank);
             args = NEW_PLIST(T_PLIST, 5);
             SET_LEN_PLIST(args, 5);
             SET_ELM_PLIST(args,1,linestr);
@@ -2978,7 +2998,7 @@ Char * syFgets (
     if (line[1] != '\0') {
       /* Now we put the new string into the history,
          we use key handler with key 0 to update the command line history */
-        C_NEW_STRING(linestr,strlen(line),line);
+        C_NEW_STRING_DYN(linestr,line);
         args = NEW_PLIST(T_PLIST, 5);
         SET_LEN_PLIST(args, 5);
         SET_ELM_PLIST(args,1,linestr);
@@ -3082,21 +3102,13 @@ void SyClearErrorNo ( void )
 *F  SySetErrorNo()  . . . . . . . . . . . . . . . . . . . . set error message
 */
 
-#if  ! HAVE_STRERROR
-extern char * sys_errlist[];
-#endif
-
 void SySetErrorNo ( void )
 {
     const Char *        err;
 
     if ( errno != 0 ) {
         SyLastErrorNo = errno;
-#if ! HAVE_STRERROR
-        err = sys_errlist[errno];
-#else
         err = strerror(errno);
-#endif
         strxcpy( SyLastErrorMessage, err, sizeof(SyLastErrorMessage) );
     }
     else {
@@ -3894,7 +3906,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSysFiles ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

@@ -1115,7 +1115,8 @@ InstallGlobalFunction( FullMatrixAlgebraCentralizer, function( F, lst )
     len:= Length( lst );
     if len = 0 then
       Error( "cannot compute the centralizer of an empty set" );
-    elif not IsSubset( F, FieldOfMatrixList( lst ) ) then
+    elif not (IsSubset( F, DefaultScalarDomainOfMatrixList( lst ) ) or
+	      IsSubset( F, FieldOfMatrixList( lst ) ) ) then
       Error( "not all entries of the matrices in <lst> lie in <F>" );
     fi;
 

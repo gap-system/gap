@@ -9,6 +9,7 @@
 **
 **  This file declares the functions for the macfloating point package
 */
+#include <string.h>
 
 #ifndef GAP_MACFLOAT_H
 #define GAP_MACFLOAT_H
@@ -30,8 +31,11 @@ typedef double Double;
 #define MATH(name) name
 #endif
 
-#define VAL_MACFLOAT(obj) (*(Double *)ADDR_OBJ(obj))
-#define SET_VAL_MACFLOAT(obj, val) (*(Double *)ADDR_OBJ(obj) = val)
+static inline Double VAL_MACFLOAT(Obj obj)
+{ Double __val; memcpy(&__val,ADDR_OBJ(obj),sizeof(Double)); return __val; }
+static inline void SET_VAL_MACFLOAT(Obj obj, Double val)
+{ Double __val = (val); memcpy(ADDR_OBJ(obj),&__val,sizeof(Double)); }
+
 #define IS_MACFLOAT(obj) (TNUM_OBJ(obj) == T_MACFLOAT)
 
 extern Obj NEW_MACFLOAT( Double val);

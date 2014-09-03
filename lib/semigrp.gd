@@ -10,7 +10,6 @@
 ##  This file contains the declaration of operations for semigroups.
 ##
 
-
 #############################################################################
 ##
 #P  IsSemigroup( <D> )
@@ -30,7 +29,8 @@
 ##
 DeclareSynonymAttr( "IsSemigroup", IsMagma and IsAssociative );
 
-
+DeclareOperation("InversesOfSemigroupElement", 
+[IsSemigroup, IsAssociativeElement]);
 
 #############################################################################
 ##
@@ -60,12 +60,12 @@ DeclareSynonymAttr( "IsSemigroup", IsMagma and IsAssociative );
 ##  if you want to check whether a magma is in fact a semigroup.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> a:= Transformation([2, 3, 4, 1]);
+##  gap> a:= Transformation( [ 2, 3, 4, 1 ] );
 ##  Transformation( [ 2, 3, 4, 1 ] )
-##  gap> b:= Transformation([2, 2, 3, 4]);
-##  Transformation( [ 2, 2, 3, 4 ] )
+##  gap> b:= Transformation( [ 2, 2, 3, 4 ] );
+##  Transformation( [ 2, 2 ] )
 ##  gap> s:= Semigroup(a, b);
-##  <semigroup with 2 generators>
+##  <transformation semigroup on 4 pts with 2 generators>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -92,7 +92,7 @@ DeclareGlobalFunction( "Semigroup" );
 ##  gap> a:=GeneratorsOfSemigroup(s)[1];
 ##  Transformation( [ 2, 3, 4, 1 ] )
 ##  gap> t:=Subsemigroup(s,[a]);
-##  <semigroup with 1 generator>
+##  <commutative transformation semigroup on 4 pts with 1 generator>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -175,7 +175,7 @@ DeclareOperation( "AsSubsemigroup", [ IsDomain, IsCollection ] );
 ##  generators, see&nbsp;<Ref Func="GeneratorsOfMagma"/>.
 ##  <Example><![CDATA[
 ##  gap> GeneratorsOfSemigroup(s);
-##  [ Transformation( [ 2, 3, 4, 1 ] ), Transformation( [ 2, 2, 3, 4 ] ) ]
+##  [ Transformation( [ 2, 3, 4, 1 ] ), Transformation( [ 2, 2 ] ) ]
 ##  gap> GeneratorsOfSemigroup(t);
 ##  [ Transformation( [ 2, 3, 4, 1 ] ) ]
 ##  ]]></Example>
@@ -478,7 +478,7 @@ DeclareOperation("IsRegularSemigroupElement", [IsSemigroup,
 ##
 ##  <Description>
 ##  returns <K>true</K> if <A>S</A> is regular, i.e.,
-##  if every D class of <A>S</A> is regular.
+##  if every &D;-class of <A>S</A> is regular.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -524,6 +524,52 @@ DeclareProperty("IsInverseSemigroup", IsSemigroup);
 ##
 DeclareOperation("DisplaySemigroup", 
     [IsSemigroup]);
+
+# Everything from here...
+
+DeclareOperation("IsSubsemigroup", [IsSemigroup, IsSemigroup]);
+
+DeclareProperty("IsBand", IsSemigroup);
+DeclareProperty("IsBrandtSemigroup", IsSemigroup);
+DeclareProperty("IsCliffordSemigroup", IsSemigroup);
+DeclareProperty("IsCommutativeSemigroup", IsSemigroup);
+DeclareProperty("IsCompletelyRegularSemigroup", IsSemigroup);
+DeclareProperty("IsCompletelySimpleSemigroup", IsSemigroup);
+DeclareProperty("IsGroupAsSemigroup", IsSemigroup);
+DeclareProperty("IsIdempotentGenerated", IsSemigroup);
+DeclareProperty("IsLeftZeroSemigroup", IsSemigroup);
+DeclareProperty("IsMonogenicSemigroup", IsSemigroup);
+DeclareProperty("IsMonoidAsSemigroup", IsSemigroup);
+DeclareProperty("IsOrthodoxSemigroup", IsSemigroup);
+DeclareProperty("IsRectangularBand", IsSemigroup);
+DeclareProperty("IsRightZeroSemigroup", IsSemigroup);
+DeclareProperty("IsSemiband", IsSemigroup);
+DeclareProperty("IsSemilatticeAsSemigroup", IsSemigroup);
+DeclareProperty("IsZeroSemigroup", IsSemigroup);
+
+InstallTrueMethod(IsBand, IsSemilatticeAsSemigroup);
+InstallTrueMethod(IsBrandtSemigroup, IsInverseSemigroup and                     IsZeroSimpleSemigroup);
+InstallTrueMethod(IsCliffordSemigroup, IsSemilatticeAsSemigroup);
+InstallTrueMethod(IsCompletelyRegularSemigroup, IsCliffordSemigroup);
+InstallTrueMethod(IsCompletelyRegularSemigroup, IsSimpleSemigroup);
+InstallTrueMethod(IsCompletelySimpleSemigroup, IsSimpleSemigroup and IsFinite);
+InstallTrueMethod(IsGroupAsSemigroup, IsInverseSemigroup and IsSimpleSemigroup);
+InstallTrueMethod(IsIdempotentGenerated, IsSemilatticeAsSemigroup);
+InstallTrueMethod(IsInverseSemigroup, IsSemilatticeAsSemigroup);
+InstallTrueMethod(IsInverseSemigroup, IsCliffordSemigroup);
+InstallTrueMethod(IsLeftZeroSemigroup, IsInverseSemigroup and IsTrivial);
+InstallTrueMethod(IsRegularSemigroup, IsInverseSemigroup);
+InstallTrueMethod(IsRegularSemigroup, IsSimpleSemigroup);
+InstallTrueMethod(IsMonoidAsSemigroup, IsGroupAsSemigroup);
+InstallTrueMethod(IsOrthodoxSemigroup, IsInverseSemigroup);
+InstallTrueMethod(IsRightZeroSemigroup, IsInverseSemigroup and IsTrivial);
+InstallTrueMethod(IsSemiband, IsIdempotentGenerated);
+InstallTrueMethod(IsSemilatticeAsSemigroup, IsCommutative and IsBand);
+InstallTrueMethod(IsSimpleSemigroup, IsGroupAsSemigroup);
+InstallTrueMethod(IsZeroSemigroup, IsInverseSemigroup and IsTrivial);
+InstallTrueMethod(IsGroupAsSemigroup, IsCommutative and IsSimpleSemigroup);
+
+# to here was added by JDM.
 
 
 #############################################################################

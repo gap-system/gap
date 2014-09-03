@@ -9,20 +9,70 @@
 ##
 CC=cc
 
-SOURCE=\
-ariths		blister		bool		c_meths1	c_type1	\
-c_oper1         c_filt1   	c_random \
-calls		code		compiler	compstat	costab	\
-cyclotom	dt		dteval		exprs		finfield\
-funcs		gap		gasman		gmpints		gvars	\
-integer		intrprtr	listfunc	listoper	lists	\
-objcftl		objects		objfgelm	objpcgel	objscoll\
-objccoll	opers		permutat	plist		precord	\
-range		rational	read		records		saveload\
-scanner		sctable		set		stats		streams	\
-string		sysfiles	system		tietze		vars	\
-vecgf2		vec8bit         vector		vecffe		weakptr	\
-iostream	macfloat	intfuncs
+SOURCE= \
+    ariths \
+    blister \
+    bool \
+    c_filt1 \
+    c_meths1 \
+    c_oper1 \
+    c_random \
+    c_type1 \
+    calls \
+    code \
+    compiler \
+    compstat \
+    costab \
+    cyclotom \
+    dt \
+    dteval \
+    exprs \
+    finfield \
+    funcs \
+    gap \
+    gasman \
+    gmpints \
+    gvars \
+    integer \
+    intfuncs \
+    intrprtr \
+    iostream \
+    listfunc \
+    listoper \
+    lists \
+    macfloat \
+    objccoll \
+    objcftl \
+    objects \
+    objfgelm \
+    objpcgel \
+    objscoll \
+    opers \
+    permutat \
+    plist \
+    pperm \
+    precord \
+    range \
+    rational \
+    read \
+    records \
+    saveload \
+    scanner \
+    sctable \
+    set \
+    stats \
+    streams \
+    string \
+    sysfiles \
+    system \
+    tietze \
+    trans \
+    vars \
+    vec8bit \
+    vecffe \
+    vecgf2 \
+    vector \
+    weakptr \
 
 
 default: configure.out ../configure Makegap.in

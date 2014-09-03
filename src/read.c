@@ -333,7 +333,7 @@ void ReadCallVarAss (
         nest++;
 	if (nest >= 65536)
 	  {
-	    Pr("Warning: abandoning search for %s at 1024th higher frame\n",
+	    Pr("Warning: abandoning search for %s at 65536th higher frame\n",
 	       (Int)TLS->value,0L);
 	    break;
 	  }
@@ -342,7 +342,7 @@ void ReadCallVarAss (
       nest0++;
 	if (nest0 >= 65536)
 	  {
-	    Pr("Warning: abandoning search for %s 4096 frames up stack\n",
+	    Pr("Warning: abandoning search for %s 65536 frames up stack\n",
 	       (Int)TLS->value,0L);
 	    break;
 	  }
@@ -580,6 +580,9 @@ void ReadCallVarAss (
 
     /*  if we need an unbind                                               */
     else if ( mode == 'u' ) {
+      if (TLS->symbol != S_RPAREN) {
+	SyntaxError("'Unbind': argument should be followed by ')'");
+      }
         if ( READ_ERROR() ) {}
         else if ( type == 'l' ) { IntrUnbLVar( var );             }
         else if ( type == 'h' ) { IntrUnbHVar( var );             }
@@ -712,8 +715,7 @@ void ReadLongNumber(
 
      /* string in which to accumulate number */
      len = strlen(TLS->value);
-     string = NEW_STRING(len);
-     memcpy(CHARS_STRING(string), (void *)TLS->value, len+1);
+     C_NEW_STRING( string, len, (void *)TLS->value);
      done = 0;
 
      while (!done) {
@@ -922,9 +924,8 @@ void ReadString(
      Obj  string;
      UInt len;
 
-     string = NEW_STRING(TLS->valueLen);
+     C_NEW_STRING( string, TLS->valueLen, (void *)TLS->value );
      len = TLS->valueLen;
-     memcpy(CHARS_STRING(string), (void *)TLS->value, TLS->valueLen);
 
      while (TLS->symbol == S_PARTIALSTRING) {
          Match(S_PARTIALSTRING, "", follow);
@@ -1099,7 +1100,8 @@ void ReadRecExpr (
 
 
 void ReadFuncExpr (
-    TypSymbolSet        follow )
+		   TypSymbolSet        follow,
+		   Char mode )
 {
     volatile Obj        nams;           /* list of local variables names   */
     volatile Obj        name;           /* one local variable name         */
@@ -1116,6 +1118,7 @@ void ReadFuncExpr (
     volatile Bag        locks = 0;      /* locks of the function */
 
     /* begin the function               */
+
     startLine = TLS->input->number;
     if (TLS->symbol == S_DO) {
 	Match( S_DO, "do", follow );
@@ -1124,8 +1127,13 @@ void ReadFuncExpr (
 	if (TLS->symbol == S_ATOMIC) {
 	    Match(S_ATOMIC, "atomic", follow);
 	    is_atomic = 1;
-	    locks = NEW_STRING(4);
-	}
+	} else if (mode == 'a') { /* in this case the atomic keyword
+				     was matched away by ReadAtomic before
+				     we realised we were reading an atomic function */
+	    is_atomic = 1;
+	}	  
+	if (is_atomic)
+	  locks = NEW_STRING(4);
 	Match( S_FUNCTION, "function", follow );
 	Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
     }
@@ -1152,8 +1160,7 @@ void ReadFuncExpr (
 		SET_LEN_STRING(locks, 1);
 	        GetSymbol();
 	    }
-	    name = NEW_STRING( strlen(TLS->value) );
-	    SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
+        C_NEW_STRING_DYN( name, TLS->value );
 	    MakeImmutableString(name);
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
@@ -1181,8 +1188,7 @@ void ReadFuncExpr (
 		    SyntaxError("name used for two arguments");
 		}
 	    }
-	    name = NEW_STRING( strlen(TLS->value) );
-	    SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
+        C_NEW_STRING_DYN( name, TLS->value );
 	    MakeImmutableString(name);
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
@@ -1268,6 +1274,7 @@ void ReadFuncExpr (
 }
 
 
+
 /****************************************************************************
 **
 *F  ReadFuncExpr1(<follow>) . . . . . . . . . . .  read a function expression
@@ -1290,8 +1297,7 @@ void ReadFuncExpr1 (
     SET_LEN_PLIST( nams, 0 );
     TLS->countNams++;
     ASS_LIST( TLS->stackNams, TLS->countNams, nams );
-    name = NEW_STRING( strlen(TLS->value) );
-    SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
+    C_NEW_STRING_DYN( name, TLS->value );
     MakeImmutableString( name );
     ASS_LIST( nams, 1, name );
 
@@ -1327,7 +1333,6 @@ void ReadFuncExpr1 (
     assert(TLS->countNams > 0);
     TLS->countNams--;
 }
-
 
 /****************************************************************************
 **
@@ -1385,7 +1390,7 @@ void ReadFuncExpr0 (
 
 /****************************************************************************
 **
-*F  ReadLiteral( <follow> ) . . . . . . . . . . . . . . . . . .  read an atom
+*F  ReadLiteral( <follow>, <mode> ) . . . . . . . . . . . . . .  read an atom
 **
 **  'ReadLiteral' reads a  literal expression.  In  case of an error it skips
 **  all symbols up to one contained in <follow>.
@@ -1407,7 +1412,8 @@ void ReadFuncExpr0 (
 **  <String>  := " { <any character> } "
 */
 void ReadLiteral (
-    TypSymbolSet        follow )
+		  TypSymbolSet        follow,
+		  Char mode)
 {
     /* <Int>                                                               */
     if ( TLS->symbol == S_INT ) {
@@ -1476,7 +1482,7 @@ void ReadLiteral (
     /* <Function>                                                          */
     else if ( TLS->symbol == S_FUNCTION || TLS->symbol == S_ATOMIC ||
               TLS->symbol == S_DO) {
-        ReadFuncExpr( follow );
+      ReadFuncExpr( follow, mode  );
     }
 
     else if (TLS->symbol == S_DOT ) {
@@ -1489,6 +1495,10 @@ void ReadLiteral (
       TLS->value[1] = '\0';
       ReadLongNumber( follow );
     }
+    else if (TLS->symbol == S_MAPTO) {
+      ReadFuncExpr0( follow );
+    }
+
     else if (TLS->symbol == S_MAPTO) {
       ReadFuncExpr0( follow );
     }
@@ -1528,9 +1538,9 @@ void ReadAtom (
     /* otherwise read a literal expression                                 */
     else if (IS_IN(TLS->symbol,S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
                           S_REC|S_FUNCTION|S_DO|S_ATOMIC| S_FLOAT | S_DOT |
-			  S_MAPTO))
+                         S_MAPTO))
     {
-        ReadLiteral( follow );
+      ReadLiteral( follow, mode );
     }
 
     /* '(' <Expr> ')'                                                      */
@@ -1796,6 +1806,17 @@ void ReadQualifiedExpr (
 **  up to one contained in <follow>.
 **
 **  <Expr> := <And> { 'or' <And> }
+**
+**  The <mode> is either 'r' indicating that the expression should be 
+**  evaluated as usual, 'x' indicating that it may be the left-hand-side of an
+**  assignment or 'a' indicating that it is a function expression following
+**  an "atomic" keyword and that the function should be made atomic.
+**
+**  This last case exists because when reading "atomic function" in statement 
+**  context the atomic has been matched away before we can see that it is an
+**  atomic function literal, not an atomic statement.
+**
+**
 */
 void ReadExpr (
     TypSymbolSet        follow,
@@ -2108,9 +2129,15 @@ void ReadAtomic (
     nrError   = TLS->nrError;
     lockSP    = RegionLockSP();
 
-    /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'                                                */    
-    if ( ! READ_ERROR() ) { IntrAtomicBegin(); }
+
     Match( S_ATOMIC, "atomic", follow );
+    /* Might just be an atomic function literal as an expression */
+    if (TLS->symbol == S_FUNCTION) {
+      ReadExpr(follow, 'a');
+      return; }
+    
+    /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'                                                */        if ( ! READ_ERROR() ) { IntrAtomicBegin(); }
+
     ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
     nexprs = 1;
     while (TLS->symbol == S_COMMA) {
@@ -2358,7 +2385,7 @@ void            ReadQUIT (
 **              |  'repeat' <Statments>  'until' <Expr> ';'
 **              |  'break' ';'
 **              |  'return' [ <Expr> ] ';'
-**              |  'atomic' <QualifiedExpression> { ',' <QualifiedExpression } 'do' <Statements> 'od' ';'
+**              |  'atomic' <QualifiedExpression> { ',' <QualifiedExpression> } 'do' <Statements> 'od' ';'
 **              |  ';'
 */
 UInt ReadStats (
@@ -2463,6 +2490,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     UInt                readTilde;
     UInt                currLHSGVar;
     Obj                 errorLVars;
+    Obj                 errorLVars0;
     syJmp_buf           readJmpError;
     int			lockSP;
 
@@ -2494,7 +2522,9 @@ ExecStatus ReadEvalCommand ( Obj context )
     TLS->currLHSGVar = 0;
     RecreateStackNams(context);
     errorLVars = TLS->errorLVars;
+    errorLVars0 = TLS->errorLVars0;
     TLS->errorLVars = context;
+    TLS->errorLVars0 = TLS->errorLVars;
     lockSP = RegionLockSP();
 
     IntrBegin( context );
@@ -2523,7 +2553,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     /* Unless the statement is empty, in which case do nothing             */
     else                           { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
 
-    /* every statement must be terminated by a semicolon  \                 */
+    /* every statement must be terminated by a semicolon                  */
     if ( TLS->symbol != S_SEMICOLON ) {
         SyntaxError( "; expected");
     }
@@ -2558,6 +2588,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     TLS->readTilde   = readTilde;
     TLS->currLHSGVar = currLHSGVar;
     TLS->errorLVars = errorLVars;
+    TLS->errorLVars0 = errorLVars0;
 
     /* copy the result (if any)                                            */
     TLS->readEvalResult = TLS->intrResult;
@@ -2629,8 +2660,7 @@ UInt ReadEvalFile ( void )
     ASS_LIST( TLS->stackNams, TLS->countNams, nams );
     if ( TLS->symbol == S_LOCAL ) {
         Match( S_LOCAL, "local", 0L );
-        name = NEW_STRING( strlen(TLS->value) );
-        SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
+        C_NEW_STRING_DYN( name, TLS->value );
         nloc += 1;
         ASS_LIST( nams, nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2642,8 +2672,7 @@ UInt ReadEvalFile ( void )
                     SyntaxError("name used for two locals");
                 }
             }
-            name = NEW_STRING( strlen(TLS->value) );
-            SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
+            C_NEW_STRING_DYN( name, TLS->value );
             nloc += 1;
             ASS_LIST( nams, nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2734,6 +2763,7 @@ Obj Call0ArgsInNewReader(Obj f)
   syJmp_buf             readJmpError;
   UInt                intrCoding;
   UInt                intrIgnoring;
+  UInt                intrReturning;
   UInt                nrError;
   Obj result;
 
@@ -2746,6 +2776,7 @@ Obj Call0ArgsInNewReader(Obj f)
   userHasQuit = TLS->UserHasQuit;
   intrCoding = TLS->intrCoding;
   intrIgnoring = TLS->intrIgnoring;
+  intrReturning = TLS->intrReturning;
   nrError = TLS->nrError;
   memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
 
@@ -2782,6 +2813,7 @@ Obj Call0ArgsInNewReader(Obj f)
   TLS->currLHSGVar = currLHSGVar;
   TLS->intrCoding = intrCoding;
   TLS->intrIgnoring = intrIgnoring;
+  TLS->intrReturning = intrReturning;
   TLS->nrError = nrError;
   return result;
 }
@@ -2805,6 +2837,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   UInt                userHasQuit;
   UInt                intrCoding;
   UInt                intrIgnoring;
+  UInt                intrReturning;
   syJmp_buf             readJmpError;
   Obj result;
   UInt                nrError;
@@ -2818,6 +2851,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   userHasQuit = TLS->UserHasQuit;
   intrCoding = TLS->intrCoding;
   intrIgnoring = TLS->intrIgnoring;
+  intrReturning = TLS->intrReturning;
   nrError = TLS->nrError;
   memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
 
@@ -2830,6 +2864,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   TLS->UserHasQuit = 0;
   TLS->intrCoding = 0;
   TLS->intrIgnoring = 0;
+  TLS->intrReturning = 0;
   TLS->nrError = 0;
   IntrBegin( TLS->bottomLVars );
 
@@ -2848,6 +2883,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
   TLS->intrCoding = intrCoding;
   TLS->intrIgnoring = intrIgnoring;
+  TLS->intrReturning = intrReturning;
   TLS->stackNams   = stackNams;
   TLS->countNams   = countNams;
   TLS->readTop     = readTop;
@@ -2903,7 +2939,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRead ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

@@ -54,8 +54,31 @@ function( G, F, dim )
     modu:=modu[2];
     modus := List( MTX.CollectedFactors( modu ), x -> x[1] );
     if dim > 0 then
-        modus := Filtered( modus, x -> x.dimension <= dim );
+        modus := Filtered( modus, x -> MTX.Dimension(x) <= dim );
     fi;
     return [gens,modus];
 end);
+
+
+#############################################################################
+##
+#M AbsolutelyIrreducibleModules( <G>, <F>, <dim> ). . . .constituents of regular module
+##
+InstallMethod( AbsolutelyIrreducibleModules,
+    "generic method for groups and finite field",
+    true, 
+    [ IsGroup, IsField and IsFinite, IsInt ],
+    0,
+function( G, F, dim )
+    local modu, modus,gens;
+    modu := RegularModule( G, F );
+    gens:=modu[1];
+    modu:=modu[2];
+    modus := List( MTX.CollectedFactors( modu ), x -> x[1] );
+    if dim > 0 then
+        modus := Filtered( modus, x -> MTX.Dimension(x) <= dim and MTX.IsAbsolutelyIrreducible (x));
+    fi;
+    return [gens,modus];
+end);
+
 

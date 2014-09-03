@@ -24,7 +24,6 @@
 ## The relation knows nothing about itself except its source, range, and what
 ## type of congruence it is.
 
-## JDM *no* new MONOID method
 
 InstallMethod(GreensRRelation, "for a semigroup", true, [IsSemigroup], 0,
 function(X)
@@ -41,15 +40,9 @@ function(X)
     SetSource(rel, X);
     SetRange(rel, X);
     SetIsLeftSemigroupCongruence(rel,true);
+    
     if HasIsFinite(X) and IsFinite(X) then
        SetIsFiniteSemigroupGreensRelation(rel, true);
-    fi;
-
-    if HasIsCommutative(X) and IsCommutative(X) then
-       SetGreensLRelation(X, rel);
-       SetGreensDRelation(X, rel);
-       SetGreensHRelation(X, rel);
-       SetGreensJRelation(X, rel);
     fi;
 
     return rel;
@@ -74,12 +67,6 @@ function(X)
       SetIsFiniteSemigroupGreensRelation(rel, true);
     fi;
 
-    if HasIsCommutative(X) and IsCommutative(X) then
-       SetGreensRRelation(X, rel);
-       SetGreensDRelation(X, rel);
-       SetGreensHRelation(X, rel);
-       SetGreensJRelation(X, rel);
-    fi;
     return rel;
 end);
 
@@ -101,12 +88,6 @@ function(X)
       SetIsFiniteSemigroupGreensRelation(rel, true);
     fi;
 
-    if HasIsCommutative(X) and IsCommutative(X) then
-       SetGreensLRelation(X, rel);
-       SetGreensRRelation(X, rel);
-       SetGreensDRelation(X, rel);
-       SetGreensHRelation(X, rel);
-    fi;
     return rel;
 end);
 
@@ -129,12 +110,6 @@ function(X)
       SetIsFiniteSemigroupGreensRelation(rel, true);
     fi;
 
-    if HasIsCommutative(X) and IsCommutative(X) then
-       SetGreensLRelation(X, rel);
-       SetGreensRRelation(X, rel);
-       SetGreensHRelation(X, rel);
-       SetGreensJRelation(X, rel);
-    fi;
     return rel;
 end);
 
@@ -157,12 +132,6 @@ function(X)
       SetIsFiniteSemigroupGreensRelation(rel, true);
     fi;
 
-    if HasIsCommutative(X) and IsCommutative(X) then
-       SetGreensLRelation(X, rel);
-       SetGreensRRelation(X, rel);
-       SetGreensDRelation(X, rel);
-       SetGreensJRelation(X, rel);
-    fi;
     return rel;
 end);
 
@@ -220,79 +189,62 @@ end);
 #O  GreensHClassOfElement(<semigroup>, <representative>)
 ##
 
-#JDM *no* new MONOID method
-
-InstallMethod(GreensRClassOfElement, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
-    function(s,e)
-        local ec;
-
-        ec := EquivalenceClassOfElementNC( GreensRRelation(s), e );
-        SetIsGreensClass(ec,true);
-        SetIsGreensRClass(ec,true);
-        return ec;
+InstallMethod(GreensRClassOfElement, "for a semigroup and object",
+[IsSemigroup and HasIsFinite and IsFinite, IsObject],
+function(s,e)
+  return EquivalenceClassOfElementNC( GreensRRelation(s), e );
 end);
 
-InstallMethod(GreensLClassOfElement, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
-    function(s,e)
-        local ec;
-
-        ec := EquivalenceClassOfElementNC( GreensLRelation(s), e );
-        SetIsGreensClass(ec,true);
-        SetIsGreensLClass(ec,true);
-        return ec;
+InstallMethod(GreensLClassOfElement, "for a semigroup and object",
+[IsSemigroup and HasIsFinite and IsFinite, IsObject],
+function(s,e)
+  return EquivalenceClassOfElementNC( GreensLRelation(s), e );
 end);
 
-InstallMethod(GreensHClassOfElement, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
-    function(s,e)
-        local ec;
 
-        ec := EquivalenceClassOfElementNC( GreensHRelation(s), e );
-        SetIsGreensClass(ec,true);
-        SetIsGreensHClass(ec,true);
-        return ec;
+InstallMethod(GreensHClassOfElement, "for a semigroup and object",
+[IsSemigroup and HasIsFinite and IsFinite, IsObject],
+function(s,e)
+  return EquivalenceClassOfElementNC( GreensHRelation(s), e );
 end);
 
-InstallMethod(GreensDClassOfElement, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
-    function(s,e)
-        local ec;
 
-        ec := EquivalenceClassOfElementNC( GreensDRelation(s), e );
-        SetIsGreensClass(ec,true);
-        SetIsGreensDClass(ec,true);
-        return ec;
+InstallMethod(GreensDClassOfElement, "for a semigroup and object", 
+[IsSemigroup and HasIsFinite and IsFinite, IsObject],
+function(s,e)
+  return EquivalenceClassOfElementNC( GreensDRelation(s), e );
 end);
 
-InstallMethod(GreensJClassOfElement, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
-    function(s,e)
-        local ec;
-
-        ec := EquivalenceClassOfElementNC( GreensJRelation(s), e );
-        SetIsGreensClass(ec,true);
-        SetIsGreensJClass(ec,true);
-        return ec;
+InstallMethod(GreensJClassOfElement, "for a semigroup and object", 
+[IsSemigroup and HasIsFinite and IsFinite, IsObject],
+function(s,e)
+  return EquivalenceClassOfElementNC( GreensJRelation(s), e );
 end);
 
-InstallMethod(CanonicalGreensClass, "for a Green's class", true, [IsGreensClass], 0,
+#
+
+InstallMethod(CanonicalGreensClass, "for a Green's class", 
+[IsGreensClass],
 function(class)
   local x, canon;
 
-  if HasIsGreensRClass(class) and IsGreensRClass(class) then
+  if IsGreensRClass(class) then
     x:=GreensRClasses(ParentAttr(class));
     canon:=First(x, y-> Representative(class) in y);
     SetCanonicalGreensClass(class, canon);
-  elif HasIsGreensLClass(class) and IsGreensLClass(class) then
+  elif IsGreensLClass(class) then
      x:=GreensLClasses(ParentAttr(class));
     canon:=First(x, y-> Representative(class) in y);
     SetCanonicalGreensClass(class, canon);
-  elif HasIsGreensHClass(class) and IsGreensHClass(class) then
+  elif IsGreensHClass(class) then
      x:=GreensHClasses(ParentAttr(class));
     canon:=First(x, y-> Representative(class) in y);
     SetCanonicalGreensClass(class, canon);
-  elif HasIsGreensDClass(class) and IsGreensDClass(class) then
+  elif IsGreensDClass(class) then
      x:=GreensDClasses(ParentAttr(class));
     canon:=First(x, y-> Representative(class) in y);
     SetCanonicalGreensClass(class, canon);
-  elif HasIsGreensJClass(class) and IsGreensJClass(class) then
+  elif IsGreensJClass(class) then
      x:=GreensJClasses(ParentAttr(class));
     canon:=First(x, y-> Representative(class) in y);
     SetCanonicalGreensClass(class, canon);
@@ -309,8 +261,6 @@ end);
 ## method to find the images under a GreensRelation of an
 ## element of a semigroup.
 ##
-
-#JDM *no* new MONOID method
 
 InstallMethod(ImagesElm, "for a Green's equivalence", true, [IsGreensRelation, IsObject], 0,
     function(rel, elm)
@@ -341,8 +291,6 @@ InstallMethod(ImagesElm, "for a Green's equivalence", true, [IsGreensRelation, I
 ## returns ImagesElm for one element in each class of <grelation>
 ##
 
-#JDM *no* new MONOID method
-
 InstallMethod(Successors, "for a Green's equivalence", true, [IsGreensRelation], 0,
     function( rel )
     return List(EquivalenceClasses(rel), AsSSortedList);
@@ -356,8 +304,6 @@ end);
 ## returns the elements of the Greens class <gclass>
 ##
 
-#JDM new MONOID method
-
 InstallMethod(AsSSortedList, "for a Green's class", true, [IsGreensClass], 0,
 	x-> AsSSortedList(CanonicalGreensClass(x)));
 
@@ -367,9 +313,8 @@ InstallMethod(AsSSortedList, "for a Green's class", true, [IsGreensClass], 0,
 #M \= (<class1>,<class2>)
 ##
 
-#JDM *no* new MONOID method
-
-InstallMethod(\=, "for Green's classes",  true, [IsGreensClass, IsGreensClass], 0,
+InstallMethod(\=, "for Green's classes",  true, [IsGreensClass, IsGreensClass],
+0,
 function(class1,class2)
   if not ParentAttr(class1)=ParentAttr(class2) then
     Error("Green's classes do not belong to the same semigroup");
@@ -388,8 +333,6 @@ end);
 ## size of a Greens class
 ##
 
-#JDM *no* new MONOID method
-
 InstallMethod(Size, "for Green's classes", true, [IsGreensClass], 0,
 function(class)
    return Size(Elements(class));
@@ -402,8 +345,6 @@ end);
 ##
 ## membership test for a Greens class
 ##
-
-# JDM new MONOID method
 
 InstallMethod(\in, "membership test of Green's class", true, [IsObject, IsGreensClass], 0,
 function(elm, class)
@@ -420,8 +361,6 @@ end);
 ##
 ##
 
-#JDM *no* new MONOID method
-
 InstallMethod(EquivalenceRelationPartition, "for a Green's equivalence", true, [IsEquivalenceRelation and IsGreensRelation], 0,
 function(rel)
   return Filtered(Successors(rel), x-> not Length(x)=1);
@@ -433,31 +372,34 @@ end);
 #M EquivalenceClassOfElementNC(<grelation>, <elt>)
 ##
 ## new methods required so that what is returned by this function
-## is the appropriate type of Green's classs
+## is the appropriate type of Green's class
 
-InstallOtherMethod(EquivalenceClassOfElementNC, "no check", true,
-        [IsEquivalenceRelation and IsGreensRelation, IsObject], 0,
+#JDM this should be 5 methods
+
+InstallOtherMethod(EquivalenceClassOfElementNC, 
+"for a Green's relation and object", 
+[IsEquivalenceRelation and IsGreensRelation, IsObject],
 function(rel, rep)
-
-  local new;
-
-  new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
-	    IsEquivalenceClass and IsEquivalenceClassDefaultRep), rec());
+  local filts, new;
+  
+  filts:=IsEquivalenceClass and IsEquivalenceClassDefaultRep;
+  if IsGreensRRelation(rel) then
+    filts:=filts and IsGreensRClass;
+  elif IsGreensLRelation(rel) then
+    filts:=filts and IsGreensLClass;
+  elif IsGreensHRelation(rel) then
+    filts:=filts and IsGreensHClass;
+  elif IsGreensDRelation(rel) then
+    filts:=filts and IsGreensDClass;
+  elif IsGreensJRelation(rel) then
+    filts:=filts and IsGreensJClass;
+  fi;
+  
+  new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)), filts), rec());
 
   SetEquivalenceClassRelation(new, rel);
   SetRepresentative(new, rep);
   SetParent(new, UnderlyingDomainOfBinaryRelation(rel));
-  if IsGreensRRelation(rel) then
-    SetIsGreensRClass(new, true);
-  elif IsGreensLRelation(rel) then
-    SetIsGreensLClass(new, true);
-  elif IsGreensHRelation(rel) then
-    SetIsGreensHClass(new, true);
-  elif IsGreensDRelation(rel) then
-    SetIsGreensDClass(new, true);
-  elif IsGreensJRelation(rel) then
-    SetIsGreensJClass(new, true);
-  fi;
 
   return new;
 end);
@@ -468,8 +410,6 @@ end);
 #M EquivalenceClasses(<grelation>)
 ##
 ##
-
-#JDM *no* new MONOID method
 
 InstallMethod(EquivalenceClasses, "for a Green's R-relation", true, [IsEquivalenceRelation and IsGreensRRelation], 0,
 x->GreensRClasses(Source(x)));
@@ -530,8 +470,6 @@ InstallMethod(DClassOfRClass, "for a Green's R-class", true, [IsGreensRClass], 0
 #M  GreensHClasses(<semigroup>)
 ##
 ##  find all the classes of a particular type
-
-# JDM new MONOID method
 
 InstallMethod(GreensRClasses, "for a semigroup", true, [IsSemigroup], 0,
 function( semi )
@@ -595,132 +533,122 @@ end);
 InstallOtherMethod(GreensLClasses, "for a Green's D-class", true, [IsGreensDClass], 0,
 x-> GreensLClasses(CanonicalGreensClass(x)));
 
-InstallOtherMethod(GreensJClasses, "for a semigroup", true, [IsSemigroup and IsFinite], 0,
-    function(semi)
-
-    ## Since we are in the finite case compute the Green's D relation
-    ## and set the GreensJRelation property to the returned equivalence
-
-    return GreensDClasses(semi);
-end);
+InstallOtherMethod(GreensJClasses, "for a semigroup",
+[IsSemigroup and IsFinite], GreensDClasses);
 
 InstallMethod(GreensDClasses, "for a semigroup", true, [IsSemigroup], 0,
-    function(semi)
-    local lrel, rrel, INT_L, INT_R, elts, INT_Rclasses, INT_Lclasses, INT_Dclasses,
-          index, pos, INT_rc, INT_hc, INT_lc, new, newINT, Dclasses, Lclasses, Rclasses,
-          Hclasses, LHclasses, RHclasses, i, j, positions, R, L;
+function(semi)
+  local lrel, rrel, INT_L, INT_R, elts, INT_Rclasses, INT_Lclasses,
+  INT_Dclasses, index, pos, INT_rc, INT_hc, INT_lc, new, newINT, Dclasses,
+  Lclasses, Rclasses, Hclasses, LHclasses, RHclasses, i, j, positions, R, L; 
 
-     ## compute the join of the R- and L-relations
+  ## compute the join of the R- and L-relations
 
-     L:=GreensLClasses(semi); R:=GreensRClasses(semi);
-     lrel:=GreensLRelation(semi); rrel:=GreensRRelation(semi);
-     INT_L:=InternalRepGreensRelation(lrel);
-     INT_R:=InternalRepGreensRelation(rrel);
-     elts:=Elements(semi);
+  L:=GreensLClasses(semi); R:=GreensRClasses(semi);
+  lrel:=GreensLRelation(semi); rrel:=GreensRRelation(semi);
+  INT_L:=InternalRepGreensRelation(lrel);
+  INT_R:=InternalRepGreensRelation(rrel);
+  elts:=Elements(semi);
 
-     #these are to collect the R and L-classes that comprise the D-class
-     INT_Rclasses:=[]; INT_Lclasses:=[]; INT_Dclasses:=[];
-     Dclasses:=[]; Lclasses:=[]; Rclasses:=[]; Hclasses:=[];
-     RHclasses:=List(INT_R, x-> []); LHclasses:=List(INT_L, x->[]); positions:=[];
+  #these are to collect the R and L-classes that comprise the D-class
+  INT_Rclasses:=[]; INT_Lclasses:=[]; INT_Dclasses:=[];
+  Dclasses:=[]; Lclasses:=[]; Rclasses:=[]; Hclasses:=[];
+  RHclasses:=List(INT_R, x-> []); LHclasses:=List(INT_L, x->[]); positions:=[];
 
-     index:=0;
+  index:=0;
 
-     for i in [1..Length(INT_L)] do
-       INT_lc:=INT_L[i];
-       pos:=PositionProperty(INT_Dclasses, x->IsSubset(x, INT_lc));
-	#JDM isn't it enough that INT_lc contains a single element in
- 	#JDM INT_Dclasses[something].
-       if pos=fail then
+  for i in [1..Length(INT_L)] do
+    INT_lc:=INT_L[i];
+    pos:=PositionProperty(INT_Dclasses, x->IsSubset(x, INT_lc));
+    #JDM isn't it enough that INT_lc contains a single element in
+    #JDM INT_Dclasses[something].
+    if pos=fail then
+      index:=index+1; Add(Rclasses, []); 
+      Add(Hclasses, []); Add(positions, []);
+      Add(INT_Rclasses, []);
 
-          index:=index+1; Add(Rclasses, []); Add(Hclasses, []); Add(positions, []);
-          Add(INT_Rclasses, []);
+      for j in [1..Length(INT_R)] do
+        INT_rc:=INT_R[j];
+        INT_hc:=Intersection(INT_rc, INT_lc);
+        if INT_hc<>[] then
+          new:=GreensHClassOfElement(semi, elts[INT_hc[1]]);
+          SetAsSSortedList(new, elts{INT_hc});
+          SetSize(new, Length(INT_hc));
+          Add(Hclasses[index], new);
+          Add(RHclasses[j], new); Add(LHclasses[i], new);
 
-          for j in [1..Length(INT_R)] do
-            INT_rc:=INT_R[j];
-            INT_hc:=Intersection(INT_rc, INT_lc);
-            if INT_hc<>[] then
-	      new:=GreensHClassOfElement(semi, elts[INT_hc[1]]);
-              SetAsSSortedList(new, elts{INT_hc});
-       	      SetSize(new, Length(INT_hc));
-              Add(Hclasses[index], new);
-              Add(RHclasses[j], new); Add(LHclasses[i], new);
+          Add(INT_Rclasses[index], INT_rc);
 
-	      Add(INT_Rclasses[index], INT_rc);
+          new:=R[j];
+          Add(Rclasses[index], new);
+          Add(positions[index], j);
 
-              new:=R[j];
-              Add(Rclasses[index], new);
-              Add(positions[index], j);
+        fi;
+      od;
 
-  	    fi;
-          od;
+      newINT:=Concatenation(INT_Rclasses[index]);
+      Add(INT_Dclasses, newINT);
 
-	  newINT:=Concatenation(INT_Rclasses[index]);
- 	  Add(INT_Dclasses, newINT);
+      new:=GreensDClassOfElement(semi, elts[newINT[1]]);
+      SetAsSSortedList(new, elts{newINT});
+      SetSize(new, Length(newINT));
+      SetGreensRClasses(new, Rclasses[index]);
+      Add(Dclasses, new);
 
-	  new:=GreensDClassOfElement(semi, elts[newINT[1]]);
-          SetAsSSortedList(new, elts{newINT});
-	  SetSize(new, Length(newINT));
-          SetGreensRClasses(new, Rclasses[index]);
-          Add(Dclasses, new);
+      Add(INT_Lclasses, [INT_lc]);
 
-	  Add(INT_Lclasses, [INT_lc]);
+      SetDClassOfLClass(L[i], Dclasses[index]);
+      Add(Lclasses, [L[i]]);
+    else
+      Add(INT_Lclasses[pos], INT_lc);
 
-          SetDClassOfLClass(L[i], Dclasses[index]);
-          Add(Lclasses, [L[i]]);
+      SetDClassOfLClass(L[i], Dclasses[pos]);
+      Add(Lclasses[pos], L[i]);
 
-       else
-         Add(INT_Lclasses[pos], INT_lc);
+      for j in [1..Length(INT_Rclasses[pos])] do
+        INT_rc:=INT_Rclasses[pos][j];
+        INT_hc:=Intersection(INT_rc, INT_lc);
 
-         SetDClassOfLClass(L[i], Dclasses[pos]);
-         Add(Lclasses[pos], L[i]);
+        new:=GreensHClassOfElement(semi, elts[INT_hc[1]]);
+        SetAsSSortedList(new, elts{INT_hc});
+        SetSize(new, Length(INT_hc));
+        Add(Hclasses[pos], new);
+        SetLClassOfHClass(new, GreensLClasses(semi)[i]);
+        Add(LHclasses[i], new);
+        SetRClassOfHClass(new, GreensRClasses(semi)[positions[pos][j]]);
+        Add(RHclasses[positions[pos][j]], new);
+      od;
+    fi;
+  od;
 
- 	 for j in [1..Length(INT_Rclasses[pos])] do
-           INT_rc:=INT_Rclasses[pos][j];
-           INT_hc:=Intersection(INT_rc, INT_lc);
+  SetGreensDClasses(semi, Dclasses);
+  SetGreensHClasses(semi, Concatenation(Hclasses));
 
-           new:=GreensHClassOfElement(semi, elts[INT_hc[1]]);
-	   SetAsSSortedList(new, elts{INT_hc});
-       	   SetSize(new, Length(INT_hc));
-           Add(Hclasses[pos], new);
-           SetLClassOfHClass(new, GreensLClasses(semi)[i]);
-           Add(LHclasses[i], new);
-           SetRClassOfHClass(new, GreensRClasses(semi)[positions[pos][j]]);
-           Add(RHclasses[positions[pos][j]], new);
-         od;
-       fi;
-     od;
+  for i in [1..index] do
+    for j in [1..Length(Rclasses[i])] do
+      SetDClassOfRClass(Rclasses[i][j], Dclasses[i]);
+    od;
+    for j in [1..Length(Hclasses[i])] do
+      SetDClassOfHClass(Hclasses[i][j], Dclasses[i]);
+    od;
+    SetGreensLClasses(Dclasses[i], Lclasses[i]);
+    SetGreensHClasses(Dclasses[i], Hclasses[i]);
+  od;
 
-     SetGreensDClasses(semi, Dclasses);
-     SetGreensHClasses(semi, Concatenation(Hclasses));
+  for i in [1..Length(INT_R)] do
+    SetGreensHClasses(GreensRClasses(semi)[i],  RHclasses[i]);
+  od;
+  for i in [1..Length(INT_L)] do
+    SetGreensHClasses(GreensLClasses(semi)[i],  LHclasses[i]);
+  od;
 
-     for i in [1..index] do
-       for j in [1..Length(Rclasses[i])] do
-         SetDClassOfRClass(Rclasses[i][j], Dclasses[i]);
-       od;
-       for j in [1..Length(Hclasses[i])] do
-         SetDClassOfHClass(Hclasses[i][j], Dclasses[i]);
-       od;
-       SetGreensLClasses(Dclasses[i], Lclasses[i]);
-       SetGreensHClasses(Dclasses[i], Hclasses[i]);
-     od;
-
-     for i in [1..Length(INT_R)] do
-       SetGreensHClasses(GreensRClasses(semi)[i],  RHclasses[i]);
-     od;
-     for i in [1..Length(INT_L)] do
-       SetGreensHClasses(GreensLClasses(semi)[i],  LHclasses[i]);
-     od;
-
-      return Dclasses;
-
+   return Dclasses;
 end);
 
 InstallMethod(GreensHClasses, "for a semigroup", true, [IsSemigroup], 0,
 function(semi)
-
-GreensDClasses(semi);
-return GreensHClasses(semi);
-
+  GreensDClasses(semi);
+  return GreensHClasses(semi);
 end);
 
 InstallOtherMethod(GreensHClasses, "for a Green's Class", true, [IsGreensDClass], 0,
@@ -744,35 +672,27 @@ InstallMethod(IsRegularDClass, "for a Green's D class", true,
         x-> ForAny(GreensRClassOfElement(ParentAttr(x), Representative(x)),
 		    IsIdempotent));
 
-InstallMethod(IsGreensLessThanOrEqual, "for two Green's  classes",
-        true, [IsGreensClass, IsGreensClass], 0,
-    function(gcL,gcR)
-        local a,b;
+InstallMethod(IsGreensLessThanOrEqual, "for two Green's classes",
+[IsGreensClass, IsGreensClass],
+function(gcL,gcR)
+  local a,b;
 
-        a := Representative(gcL);
-        b := Representative(gcR);
+  a := Representative(gcL);
+  b := Representative(gcR);
 
-        if HasIsGreensRClass(gcL) and IsGreensRClass(gcL)
-         and HasIsGreensRClass(gcR) and IsGreensRClass(gcR) then
-           return a in
-                RightMagmaIdealByGenerators(ParentAttr(gcR),[b]);
-        fi;
-        if HasIsGreensLClass(gcL) and IsGreensLClass(gcL)
-         and HasIsGreensLClass(gcL) and IsGreensLClass(gcR) then
-            return a in
-                LeftMagmaIdealByGenerators(ParentAttr(gcR),[b]);
-        fi;
-        if (HasIsGreensJClass(gcL) and IsGreensJClass(gcL)
-         and HasIsGreensJClass(gcL) and IsGreensJClass(gcR)) or
-           (HasIsGreensDClass(gcL) and IsGreensDClass(gcL)
-         and HasIsGreensDClass(gcL) and IsGreensDClass(gcR) and
-              IsFinite(ParentAttr(gcL))) then
-            return a in
-                MagmaIdealByGenerators(ParentAttr(gcR),[b]);
-        fi;
+  if IsGreensRClass(gcL) and IsGreensRClass(gcR) then
+    return a in RightMagmaIdealByGenerators(ParentAttr(gcR),[b]);
+  elif IsGreensLClass(gcL) and IsGreensLClass(gcR) then
+    return a in LeftMagmaIdealByGenerators(ParentAttr(gcR),[b]);
+  elif (IsGreensJClass(gcL) and IsGreensJClass(gcR)) or
+    (IsGreensDClass(gcL) and IsGreensDClass(gcR) and
+      IsFinite(ParentAttr(gcL))) then
+    return a in MagmaIdealByGenerators(ParentAttr(gcR),[b]);
+  fi;
 
-        Error("Green's classes are not of the same type or not L, R, or J classes");
-    end);
+  Error("Green's classes are not of the same type or not L-, R-, or J-classes");
+  return;
+end);
 
 #############################################################################
 ##
@@ -900,56 +820,57 @@ end );
 ## Foundations of computational mathematics (Rio de Janeiro, 1997), 112-126,
 ## Springer, Berlin,  1997.
 ##
-## this function returns [elements of <semigroup>, set of defining relations for
-## <semigroup>, the fp semigroup isomorphic to <semigroup>]. This is only included
-## because it may give a quicker way of finding a presentation for <semigroup>
-## than the extended algorithm
-##
+## this function returns [elements of <semigroup>, set of defining relations
+## for <semigroup>, the fp semigroup isomorphic to <semigroup>]. This is only
+## included because it may give a quicker way of finding a presentation for
+## <semigroup> than the extended algorithm.
 
-InstallMethod(FroidurePinSimpleAlg, true, [IsMonoid and HasIsFinite and IsFinite], 0,
- function(semi)
- local  gens, concreteelts, free, freegens, fpelts, rules, Last, upos, u, i, newelt, newword, j, new;
+InstallMethod(FroidurePinSimpleAlg, "for a finite monoid", 
+[IsMonoid and HasIsFinite and IsFinite and HasGeneratorsOfMonoid],
+function(semi)
+  local  gens, concreteelts, free, freegens, fpelts, rules, Last, upos, u, i,
+   newelt, newword, j, new;
 
-gens:=GeneratorsOfMonoid(semi);
-concreteelts:=[One(semi)];
+  gens:=GeneratorsOfMonoid(semi);
+  concreteelts:=[One(semi)];
 
-free:=FreeMonoid(Size(gens));
-freegens:=GeneratorsOfMonoid(free);
-fpelts:=[One(free)];
-rules:=[];
+  free:=FreeMonoid(Size(gens));
+  freegens:=GeneratorsOfMonoid(free);
+  fpelts:=[One(free)];
+  rules:=[];
 
-Last:=1;
-upos:=0;
+  Last:=1;
+  upos:=0;
 
-repeat
-  upos:=upos+1;
-  u:=concreteelts[upos];
+  repeat
+    upos:=upos+1;
+    u:=concreteelts[upos];
 
-  for i in [1..Length(gens)] do
-    newelt:=u*gens[i];
-    newword:=fpelts[upos]*freegens[i];
+    for i in [1..Length(gens)] do
+      newelt:=u*gens[i];
+      newword:=fpelts[upos]*freegens[i];
 
-    j:=0;
-    new:=true;
+      j:=0;
+      new:=true;
 
-    repeat
-      j:=j+1;
-      if newelt=concreteelts[j] then
-        Add(rules, [newword, fpelts[j]]);
-        new:=false;
+      repeat#hmmm.... JDM
+        j:=j+1;
+        if newelt=concreteelts[j] then
+          Add(rules, [newword, fpelts[j]]);
+          new:=false;
+        fi;
+      until j=Last or not new;
+
+      if new then
+        Add(concreteelts, newelt);
+        Add(fpelts, newword);
+        Last:=Last+1;
       fi;
-    until j=Last or not new;
+    od;
 
-    if new then
-      Add(concreteelts, newelt);
-      Add(fpelts, newword);
-      Last:=Last+1;
-    fi;
-  od;
+  until upos=Last;
 
-until upos=Last;
-
-return [concreteelts, rules, free/rules];
+  return [concreteelts, rules, free/rules];
 
 end);
 
@@ -970,21 +891,25 @@ end);
 ##  JDM shouldn't produce fp representation if input is fp semigroup!
 ##
 
-InstallMethod(FroidurePinExtendedAlg, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite], 0,
-function(mono)
-
+InstallMethod(FroidurePinExtendedAlg, "for a finite semigroup",
+[IsSemigroup], 
+function(m)
   local gens, k, free, freegens, actualelts, fpelts, rules, i, u, v, Last,
         currentlength, b, s, r, newelt, j, p, new, length, newword, first,
         final, prefix, suffix, next, postmult, reducedflags, premult, fpsemi,
         old, sortedelts, pos, semi, perm, free2;
 
-  if not IsMonoid(mono) then
-      semi := MonoidByAdjoiningIdentity(mono);
-  else
-      semi:=mono;
+  if not IsFinite(m) then 
+    return fail;
   fi;
 
-  #JDM gens:=Set(GeneratorsOfMonoid(semi));
+  if not IsMonoid(m) then
+      semi := MonoidByAdjoiningIdentity(m);
+  else
+      semi:=m;
+  fi;
+
+  #gens:=Set(GeneratorsOfMonoid(semi));
   gens:=Set(Filtered(GeneratorsOfMonoid(semi), x-> not IsOne(x)));
   k:=Length(gens);
   free:=FreeMonoid(k);
@@ -1021,9 +946,9 @@ function(mono)
 
   # initialize loop
 
-  u:=2;                           # position of the first generator
-  v:=u;                           # place holder
-  Last:=k+1;              # the current position of the last element in <fpelts>
+  u:=2;               # position of the first generator
+  v:=u;               # place holder
+  Last:=k+1;          # the current position of the last element in <fpelts>
   currentlength:=1;   # current length of words under consideration
 
   # loop
@@ -1035,45 +960,50 @@ function(mono)
       b:=first[u];
       s:=suffix[u];
 
-      for i in [1..k] do                      #loop over generators
+      for i in [1..k] do #loop over generators
 
-	newword:=fpelts[u]*freegens[i];               # newword=u*a_i
+	newword:=fpelts[u]*freegens[i]; # newword=u*a_i
 
-	if not reducedflags[s][i] then                # if s*a_i is not reduced
-	  r:=postmult[s][i];                          # r=s*a_i
-	  if fpelts[r]=One(free) then             # r=1
-	    postmult[u][i]:=b+1; reducedflags[u][i]:=true;    # u*a_i=b and it is reduced
+	if not reducedflags[s][i] then  # if s*a_i is not reduced
+	  r:=postmult[s][i];            # r=s*a_i
+	  if fpelts[r]=One(free) then   # r=1
+	    postmult[u][i]:=b+1; 
+            reducedflags[u][i]:=true;   # u*a_i=b and it is reduced
 	  else
 	    postmult[u][i]:=postmult[premult[prefix[r]][b]][final[r]];
-				  #\rho(u*a_i)=\rho(\rho(b*r)*l(r))
-	    reducedflags[u][i]:=(newword=fpelts[postmult[u][i]]); # if \rho(u*a_i)=u*a_i then true
-	 fi;
-
-	else
+            #\rho(u*a_i)=\rho(\rho(b*r)*l(r))
+	    reducedflags[u][i]:=(newword=fpelts[postmult[u][i]]); 
+            # if \rho(u*a_i)=u*a_i then true
+	  fi;
+        else
 
 	  newelt:=actualelts[u]*gens[i];      # newelt=nu(u*a_i)
-      old:=PositionSorted(sortedelts, newelt);
-      if old<=Last and newelt=sortedelts[old] then
-	old:=pos[old];
+          old:=PositionSorted(sortedelts, newelt);
+          if old<=Last and newelt=sortedelts[old] then
+            old:=pos[old];
 	    Add(rules, [newword, fpelts[old]]);
-	    postmult[u][i]:=old; reducedflags[u][i]:=false;  # u*a_i represents the same elt as
-				 # fpelts[j] and is (hence) not reduced
+	    postmult[u][i]:=old; 
+            reducedflags[u][i]:=false;  # u*a_i represents the same elt as
+                                        # fpelts[j] and is (hence) not reduced
 	  else
-	Add(fpelts, newword); Add(first, b); Add(final, i);   # add all its info to the table
-	Add(prefix,u); Add(suffix, postmult[suffix[u]][i]);   # u=b*suffix(u)*a_i
-	Add(postmult, []); Add(reducedflags, []); Add(premult, []);
-	Add(length, length[u]+1); Add(actualelts, newelt);
+            Add(fpelts, newword); Add(first, b); Add(final, i);   
+            # add all its info to the table
+            Add(prefix,u); Add(suffix, postmult[suffix[u]][i]);   
+            # u=b*suffix(u)*a_i
+            Add(postmult, []); Add(reducedflags, []); Add(premult, []);
+            Add(length, length[u]+1); Add(actualelts, newelt);
 
 	    Last:=Last+1;
-	    postmult[u][i]:=Last; reducedflags[u][i]:=true;   # the word u*a_i is a new elt
-				  # and is hence reduced
+	    postmult[u][i]:=Last; reducedflags[u][i]:=true;   
+            # the word u*a_i is a new elt
+            # and is hence reduced
 
-	AddSet(sortedelts, newelt);
+            AddSet(sortedelts, newelt);
 
-	    CopyListEntries( pos, old, 1, pos, old+1, 1, Last-old );
-	pos[old] := Last;
+            CopyListEntries( pos, old, 1, pos, old+1, 1, Last-old );
+            pos[old] := Last;
 
-	 fi;
+	  fi;
        fi;
      od;
 
@@ -1086,7 +1016,7 @@ function(mono)
       p:=prefix[u];
       for i in [1..k] do
 	premult[u][i]:=postmult[premult[p][i]][final[u]];
-	  # \rho(a_i*u)=\rho(\rho(a_i*p)*final(u))
+        # \rho(a_i*u)=\rho(\rho(a_i*p)*final(u))
       od;
       u:=u+1;
     od;
@@ -1097,107 +1027,101 @@ function(mono)
 
   until u=Last+1;
 
-  if IsMonoid(mono) then
+  if IsMonoid(m) then
 
-     fpsemi:=free/rules;
-     fpelts:=List(fpelts, function(x)
-			  local new;
-			      new:=MappedWord(x, FreeGeneratorsOfFpMonoid(fpsemi), GeneratorsOfMonoid(fpsemi));
+    fpsemi:=free/rules;
+    fpelts:=List(fpelts, function(x)
+      local new;
+      new:=MappedWord(x, FreeGeneratorsOfFpMonoid(fpsemi),
+       GeneratorsOfMonoid(fpsemi));
 
-			      SetIsFpMonoidReducedElt(new, true);
-			      return new;
-			      end);
+      SetIsFpMonoidReducedElt(new, true);
+      return new;
+    end);
 
-     SetAsSSortedList(fpsemi, fpelts);
-     SetSize(fpsemi, Last);
-     SetLeftCayleyGraphSemigroup(fpsemi, premult);
-     SetRightCayleyGraphSemigroup(fpsemi, postmult);
-     SetAssociatedConcreteSemigroup(fpsemi, semi);
+    SetAsSSortedList(fpsemi, fpelts);
+    SetSize(fpsemi, Last);
+    SetLeftCayleyGraphSemigroup(fpsemi, premult);
+    SetRightCayleyGraphSemigroup(fpsemi, postmult);
+    SetAssociatedConcreteSemigroup(fpsemi, semi);
 
-  #JDM if KnuthBendixRewritingSystem was an attribute and not an operation
-  #JDM it would be possible to set that it is confluent at this point
+    #JDM if KnuthBendixRewritingSystem was an attribute and not an operation
+    #JDM it would be possible to set that it is confluent at this point
 
-     perm:=PermListList(pos, [1..Last]);
-     premult:=Permuted(OnTuplesTuples(premult, perm), perm);
-     postmult:=Permuted(OnTuplesTuples(postmult, perm), perm);
+    perm:=PermListList(pos, [1..Last]);
+    premult:=Permuted(OnTuplesTuples(premult, perm), perm);
+    postmult:=Permuted(OnTuplesTuples(postmult, perm), perm);
 
-  #JDM this step runs GreensRClasses somehow when MONOID is loaded!
+    SetAsSSortedList(m, sortedelts);
+    SetSize(m, Last);
+    SetLeftCayleyGraphSemigroup(m, premult);
+    SetRightCayleyGraphSemigroup(m, postmult);
+    SetAssociatedFpSemigroup(m, fpsemi);
 
-     SetAsSSortedList(mono, sortedelts);
-     SetSize(mono, Last);
-     SetLeftCayleyGraphSemigroup(mono, premult);
-     SetRightCayleyGraphSemigroup(mono, postmult);
-     SetAssociatedFpSemigroup(mono, fpsemi);
-
-     u:=SemigroupHomomorphismByImagesNC(mono, fpsemi,
-	  List(pos, x-> fpelts[x]));
-     SetInverseGeneralMapping(u, SemigroupHomomorphismByImagesNC(fpsemi, mono,
-     actualelts));
-     SetIsTotal(u, true); SetIsInjective(u, true);
-     SetIsSurjective(u, true); SetIsSingleValued(u, true);
-     SetIsomorphismFpMonoid(mono, u);
+    u:=SemigroupHomomorphismByImagesNC(m, fpsemi,
+         List(pos, x-> fpelts[x]));
+    SetInverseGeneralMapping(u, SemigroupHomomorphismByImagesNC(fpsemi, m,
+    actualelts));
+    SetIsTotal(u, true); SetIsInjective(u, true);
+    SetIsSurjective(u, true); SetIsSingleValued(u, true);
+    SetIsomorphismFpMonoid(m, u);
 
   else
 
-  #get rid of the identity! JDM better to do this online?
+    #get rid of the identity! JDM better to do this online?
 
-      free2:=FreeSemigroup(k);
+    free2:=FreeSemigroup(k);
 
-      rules:=List(rules, x-> [MappedWord(x[1], GeneratorsOfMonoid(free),
-	     GeneratorsOfSemigroup(free2)),
-	     MappedWord(x[2], GeneratorsOfMonoid(free),
-	     GeneratorsOfSemigroup(free2))]);
+    rules:=List(rules, x-> [MappedWord(x[1], GeneratorsOfMonoid(free),
+     GeneratorsOfSemigroup(free2)), MappedWord(x[2], GeneratorsOfMonoid(free),
+     GeneratorsOfSemigroup(free2))]);
 
-     fpsemi:=free2/rules;
+    fpsemi:=free2/rules;
 
-      fpelts:=List(fpelts{[2..Last]}, function(x)
-			  local new;
-			      new:=MappedWord(x, GeneratorsOfMonoid(free), GeneratorsOfSemigroup(fpsemi));
-			      SetIsFpSemigpReducedElt(new, true);
-			      return new;
-			      end);
-     #fpelts:=List(fpelts, x-> MappedWord(x,
-     #         FreeGeneratorsOfFpSemigroup(fpsemi),
-     #         GeneratorsOfSemigroup(fpsemi)));
+    fpelts:=List(fpelts{[2..Last]}, function(x)
+      local new;
+      new:=MappedWord(x, GeneratorsOfMonoid(free),
+       GeneratorsOfSemigroup(fpsemi));
+      SetIsFpSemigpReducedElt(new, true);
+      return new;
+    end);
+    SetAsSSortedList(fpsemi, fpelts);
+    SetSize(fpsemi, Last-1);
 
-     SetAsSSortedList(fpsemi, fpelts);
-     SetSize(fpsemi, Last-1);
+    premult:=premult{[2..Length(premult)]}-1;
+    postmult:=postmult{[2..Length(postmult)]}-1;
 
-     premult:=premult{[2..Length(premult)]}-1;
-     postmult:=postmult{[2..Length(postmult)]}-1;
+    SetLeftCayleyGraphSemigroup(fpsemi, premult);
+    SetRightCayleyGraphSemigroup(fpsemi, postmult);
+    SetAssociatedConcreteSemigroup(fpsemi, m);
 
-     SetLeftCayleyGraphSemigroup(fpsemi, premult);
-     SetRightCayleyGraphSemigroup(fpsemi, postmult);
-     SetAssociatedConcreteSemigroup(fpsemi, mono);
+    sortedelts:=sortedelts{[2..Last]};
+    actualelts:=actualelts{[2..Length(actualelts)]};
+    pos:=pos{[2..Last]}-1;
+    perm:=PermListList(pos, [1..Last-1]);
+    sortedelts := List(sortedelts,
+    UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt);
+    actualelts:=List(actualelts,
+     UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt); 
 
-     sortedelts:=sortedelts{[2..Last]};
-     actualelts:=actualelts{[2..Length(actualelts)]};
-     pos:=pos{[2..Last]}-1;
-     perm:=PermListList(pos, [1..Last-1]);
-     sortedelts := List(sortedelts,
-     UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt);
-      actualelts:=List(actualelts,UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt);
+    premult:=Permuted(OnTuplesTuples(premult, perm), perm);
+    postmult:=Permuted(OnTuplesTuples(postmult, perm), perm);
 
+    SetAsSSortedList(m, sortedelts);
+    SetSize(m, Last-1);
+    SetLeftCayleyGraphSemigroup(m, premult);
+    SetRightCayleyGraphSemigroup(m, postmult);
+    SetAssociatedFpSemigroup(m, fpsemi);
 
-     premult:=Permuted(OnTuplesTuples(premult, perm), perm);
-     postmult:=Permuted(OnTuplesTuples(postmult, perm), perm);
+    u:=SemigroupHomomorphismByImagesNC(m, fpsemi,
+        List(pos, x-> fpelts[x]));
 
-     SetAsSSortedList(mono, sortedelts);
-     SetSize(mono, Last-1);
-     SetLeftCayleyGraphSemigroup(mono, premult);
-     SetRightCayleyGraphSemigroup(mono, postmult);
-     SetAssociatedFpSemigroup(mono, fpsemi);
+    SetInverseGeneralMapping(u, SemigroupHomomorphismByImagesNC(fpsemi, m,
+    actualelts));
 
-     u:=SemigroupHomomorphismByImagesNC(mono, fpsemi,
-	 List(pos, x-> fpelts[x]));
-
-     SetInverseGeneralMapping(u, SemigroupHomomorphismByImagesNC(fpsemi, mono,
-     actualelts));
-
-
-     SetIsTotal(u, true); SetIsInjective(u, true);
-     SetIsSurjective(u, true); SetIsSingleValued(u, true);
-     SetIsomorphismFpSemigroup(mono, u);
+    SetIsTotal(u, true); SetIsInjective(u, true);
+    SetIsSurjective(u, true); SetIsSingleValued(u, true);
+    SetIsomorphismFpSemigroup(m, u);
   fi;
 
 end);

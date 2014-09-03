@@ -140,7 +140,7 @@ end );
 ##  <P/>
 ##  <Ref Func="InstallValue"/> does <E>not</E> work if <A>value</A> is an
 ##  <Q>immediate object</Q>, i.e., an internally represented small integer or
-##  finite field element.
+##  finite field element. It also fails for booleans.
 ##  Furthermore, <Ref Func="InstallFlushableValue"/> works only if
 ##  <A>value</A> is a list or a record.
 ##  (Note that <Ref Func="InstallFlushableValue"/> makes sense only for
@@ -163,6 +163,8 @@ end );
 
 BIND_GLOBAL( "FLUSHABLE_VALUE_REGION", NewSpecialRegion("FLUSHABLE_VALUE_REGION"));
 
+BIND_GLOBAL("UNCLONEABLE_TNUMS",MakeImmutable([0,5,8]));
+
 BIND_GLOBAL( "InstallValue", function ( gvar, value )
     local tmp;
     if (not IsBound(REREADING) or REREADING = false) and not
@@ -173,6 +175,9 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
       INFO_DEBUG( 1,
           "please use `BindGlobal' for the family object ",
           value!.NAME, ", not `InstallValue'" );
+    fi;
+    if TNUM_OBJ_INT(value) in UNCLONEABLE_TNUMS then
+       Error("InstallValue: value cannot be immediate, boolean or character");
     fi;
     if IsPublic(value) then
       # TODO: We need to handle those cases more cleanly.

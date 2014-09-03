@@ -176,7 +176,7 @@ end);
 ##  '<comb>[[1..<i>-1]]'.  To do  this it finds  all elements of <mset>  that
 ##  can go at '<comb>[<i>]' and calls itself  recursively for each candidate.
 ##  <m>-1 is the position of '<comb>[<i>-1]' in <mset>, so the candidates for
-##  '<comb>[<i>]' are exactely the elements 'Set( <mset>[[<m>..<n>]] )'.
+##  '<comb>[<i>]' are exactly the elements 'Set( <mset>[[<m>..<n>]] )'.
 ##
 ##  'CombinationsK( <mset>, <m>, <n>, <k>, <comb>, <i>  )' returns the set of
 ##  all combinations  of the multiset <mset>,  which has size  <n>, that have
@@ -184,7 +184,7 @@ end);
 ##  it finds  all elements of  <mset> that can go  at '<comb>[<i>]' and calls
 ##  itself recursively  for   each candidate.    <m>-1 is   the  position  of
 ##  '<comb>[<i>-1]'  in <mset>,  so  the  candidates  for '<comb>[<i>]'   are
-##  exactely the elements 'Set( <mset>[<m>..<n>-<k>+1] )'.
+##  exactly the elements 'Set( <mset>[<m>..<n>-<k>+1] )'.
 ##
 ##  'Combinations' only calls 'CombinationsA' or 'CombinationsK' with initial
 ##  arguments.
@@ -563,7 +563,7 @@ end);
 ##  can go at '<comb>[<i>]' and calls itself  recursively for each candidate.
 ##  <m> is a boolean list of size <n> that contains  'true' for every element
 ##  of <mset> that we have not yet taken, so the candidates for '<comb>[<i>]'
-##  are exactely the elements '<mset>[<l>]' such that '<m>[<l>]'  is  'true'.
+##  are exactly the elements '<mset>[<l>]' such that '<m>[<l>]'  is  'true'.
 ##  Some care must be taken to take a candidate only once if it appears  more
 ##  than once in <mset>.
 ##
@@ -573,7 +573,7 @@ end);
 ##  it finds  all elements of  <mset> that can  go at '<comb>[<i>]' and calls
 ##  itself recursively for each candidate.  <m> is a boolean list of size <n>
 ##  that contains 'true' for every element  of <mset>  that we  have  not yet
-##  taken,  so  the candidates for   '<comb>[<i>]' are  exactely the elements
+##  taken,  so  the candidates for   '<comb>[<i>]' are  exactly the elements
 ##  '<mset>[<l>]' such that '<m>[<l>]' is 'true'.  Some care must be taken to
 ##  take a candidate only once if it appears more than once in <mset>.
 ##
@@ -765,7 +765,7 @@ end);
 ##  length '<i>+<k>-1', and that begin with  '<tup>[[1..<i>-1]]'.  To do this
 ##  it  finds all elements  of <set>  that  can go  at '<tup>[<i>]' and calls
 ##  itself   recursively  for   each  candidate.  <m>  is    the  position of
-##  '<tup>[<i>-1]' in <set>, so the  candidates for '<tup>[<i>]' are exactely
+##  '<tup>[<i>-1]' in <set>, so the  candidates for '<tup>[<i>]' are exactly
 ##  the elements '<set>[[<m>..<n>]]',  since we require that unordered tuples
 ##  be sorted.
 ##
@@ -878,7 +878,116 @@ InstallGlobalFunction( "IteratorOfCartesianProduct",
     fi;
     return;
     end);
+
+BindGlobal( "NumberElement_Cartesian", 
+function(enum, x)    
+  local n, mults, colls, sum, pos, i;
+
+  n:=enum!.n;
+  mults:=enum!.mults;
+  colls:=enum!.colls;
+
+  if Length(x)<>n then 
+    return fail;
+  fi;
+
+  sum:=0;
+  for i in [1..n-1] do 
+    pos:=Position(colls[i], x[i]);
+    if pos=fail then 
+      return fail;
+    else 
+      pos:=pos-1;
+    fi;
+    sum:=sum+pos*mults[i];
+  od;
+  
+  pos:=Position(colls[n], x[n]);
+  
+  if pos=fail then 
+    return fail;
+  fi;
+
+  return sum+pos;
+end);
+
+BindGlobal( "ElementNumber_Cartesian", 
+function(enum, x)
+  local n, mults, out, i, colls;
+
+  if x>Length(enum) then 
+    return fail;
+  fi;
+
+  x:=x-1;
+
+  n:=enum!.n;
+  mults:=enum!.mults;
+  colls:=enum!.colls;
+  out:=EmptyPlist(n);
+
+  for i in [1..n-1] do
+    out[i]:=QuoInt(x, mults[i]);
+    x:=x-out[i]*mults[i];
+    out[i]:=colls[i][out[i]+1];
+  od;
+  out[n]:=colls[n][x+1];
+
+  return out;
+end);
+
+BindGlobal( "EnumeratorOfCartesianProduct2",
+  function(colls)
+  local new_colls, mults, k, out, i, j;
     
+    if (not ForAll(colls, IsFinite)) or not (ForAll(colls, IsCollection) or 
+     ForAll(colls, IsEnumeratorByFunctions)) then
+      Error("usage: each argument must be a finite collection or enumerator,");
+      return;
+    fi;
+
+    new_colls:=[]; 
+    for i in [1..Length(colls)] do 
+      if IsDomain(colls[i]) then 
+        new_colls[i]:=Enumerator(colls[i]);
+      else
+        new_colls[i]:=colls[i];
+      fi;
+    od;
+
+    mults:=List(new_colls, Length);
+    for i in [1..Length(new_colls)-1] do 
+      k:=1;
+      for j in [i+1..Length(new_colls)] do 
+        k:=k*Length(new_colls[j]);
+      od;
+      mults[i]:=k;
+    od;
+    mults[Length(new_colls)]:=0;
+
+    out:=EnumeratorByFunctions(ListsFamily, 
+      rec( NumberElement := NumberElement_Cartesian,
+           ElementNumber := ElementNumber_Cartesian,
+           mults:=mults,
+           n:=Length(colls),
+           colls:=new_colls,
+           Length:=enum-> Maximum([mults[1],1])*Length(new_colls[1])));
+    SetIsFinite(out, true);
+    return out;
+end);
+    
+InstallGlobalFunction( "EnumeratorOfCartesianProduct",
+    function( arg )
+    # this mimics usage of functions Cartesian and Cartesian2
+    if IsEmpty(arg) or ForAny(arg, IsEmpty) then 
+      return EmptyPlist(0);
+    elif Length( arg ) = 1  then
+        return EnumeratorOfCartesianProduct2( arg[1] );
+    else
+        return EnumeratorOfCartesianProduct2( arg );
+    fi;
+    return;
+end);
 
 #############################################################################
 ##
@@ -1073,7 +1182,7 @@ end);
 ##  <mset> that can go at '<perm>[<i>]' and calls itself recursively for each
 ##  candidate.  <m> is a  boolean  list of size  <n> that contains 'true' for
 ##  every element of <mset> that we have not yet taken, so the candidates for
-##  '<perm>[<i>]'  are    exactely the   elements   '<mset>[<l>]' such   that
+##  '<perm>[<i>]'  are    exactly the   elements   '<mset>[<l>]' such   that
 ##  '<m>[<l>]' is 'true'.  Some care must be taken to take a  candidate  only
 ##  once if it apears more than once in <mset>.
 ##
@@ -2042,13 +2151,13 @@ end);
 ##  'OrderedPartitionsA( <n>,  <part>, <i> )' returns  the set of all ordered
 ##  partitions  of  '<n>  +    Sum(<part>[[1..<i>-1]])'   that  begin    with
 ##  '<part>[[1..<i>-1]]'.   To do    so   it puts   all  possible  values  at
-##  '<part>[<i>]', which are of course exactely the elements of '[1..n]', and
+##  '<part>[<i>]', which are of course exactly the elements of '[1..n]', and
 ##  calls itself recursively.
 ##
 ##  'OrderedPartitionsK(  <n>,  <k>, <part>,  <i>  )' returns the set  of all
 ##  ordered partitions of   '<n> + Sum(<part>[[1..<i>-1]])'  that have length
 ##  '<k>+<i>-1', and that begin with '<part>[[1..<i>-1]]'.  To  do so it puts
-##  all possible  values at '<part>[<i>]', which are   of course exactely the
+##  all possible  values at '<part>[<i>]', which are   of course exactly the
 ##  elements of '[1..<n>-<k>+1]', and calls itself recursively.
 ##
 ##  'OrderedPartitions'      only       calls     'OrderedPartitionsA'     or

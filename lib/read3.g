@@ -26,6 +26,7 @@ ReadLib( "semigrp.gd"  );
 ReadLib( "smgideal.gd" );
 ReadLib( "monoid.gd"   );
 ReadLib( "grp.gd"      );
+ReadLib( "invsgp.gd"   );
 
 ReadLib( "addmagma.gd" );
 ReadLib( "addcoset.gd" );
@@ -188,6 +189,7 @@ ReadLib( "morpheus.gd" );
 
 # files dealing with matrix groups (grpffmat.gd needs grpnice.gd)
 ReadLib( "grpmat.gd"   );
+ReadLib( "fitfree.gd"  );
 ReadLib( "grpffmat.gd" );
 ReadLib( "grpramat.gd" );
 
@@ -205,6 +207,7 @@ ReadLib( "orders.gd"  );
 
 # files dealing with semigroups - second layer
 ReadLib( "trans.gd");
+ReadLib("pperm.gd");
 ReadLib( "fastendo.gd");
 ReadLib( "fpsemi.gd");
 ReadLib( "fpmon.gd");
@@ -216,6 +219,7 @@ ReadLib( "semirel.gd");
 ReadLib( "semitran.gd");
 ReadLib( "reesmat.gd");
 ReadLib( "semiquo.gd");
+ReadLib( "semipperm.gd");
 
 # the help system
 ReadLib( "pager.gd"    );

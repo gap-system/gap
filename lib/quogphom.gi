@@ -35,7 +35,7 @@ local fam,filt;
       filt:=IsHomCosetToMatrixRep;
   elif IsFpGroup( Range( hom ) ) then
       filt:=IsHomCosetToFpRep;
-  elif IsTupleCollection( Range( hom ) ) then
+  elif IsDirectProductElementCollection( Range( hom ) ) then
       filt:=IsHomCosetToTupleRep;
   else 
       filt:=IsHomCosetToObjectRep;
@@ -49,7 +49,7 @@ local fam,filt;
     filt:=filt and IsHomCosetOfFp;
   elif IsAdditiveGroup(Source(hom)) then
     filt:=filt and IsHomCosetOfAdditiveElt;
-  elif IsTupleCollection(Source(hom)) then
+  elif IsDirectProductElementCollection(Source(hom)) then
     filt:=filt and IsHomCosetOfTuple;
   fi;
 
@@ -938,7 +938,7 @@ InstallMethod( Length, "for hom coset to matrix", true,
 #M  Length( <hcoset> ) for hom coset to tuple
 ##
 InstallMethod( Length, "for hom coset to tuple", true,
-    [ IsTuple and IsHomCosetToTuple ], 0,
+    [ IsDirectProductElement and IsHomCosetToTuple ], 0,
     function( hcoset )
 	return Length( ImageElt( hcoset ) );
     end );

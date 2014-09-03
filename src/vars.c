@@ -3183,7 +3183,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoVars ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

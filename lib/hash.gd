@@ -183,11 +183,11 @@ DeclareOperation("ShrinkableSingleValuedHashTable",
 
 #############################################################################
 ##
-#F  HashKeyBag(<obj>,<factor>,<skip>,<maxread>)
+#F  HashKeyBag(<obj>,<seed>,<skip>,<maxread>)
 ##
-##  returns a hash key which is given by the bytes in the bag storing <obj>
-##  in <factor>-adic representation. The result is reduced modulo $2^{28}$
-##  to obtain a small integer.
+##  returns a hash key which is given by the bytes in the bag storing <obj>.
+##  The result is reduced modulo $2^{28}$ (on 32 bit systems) resp. modulo
+##  $2^{60}$ (on 64 bit systems) to obtain a small integer.
 ##  As some objects carry excess data in their bag, the first <skip> bytes
 ##  will be skipped and <maxread> bytes (a value of -1 represents infinity)
 ##  will be read at most. (The proper values for these numbers might depend on
@@ -196,7 +196,7 @@ DeclareOperation("ShrinkableSingleValuedHashTable",
 ##  `HashKeyBag' to ensure identical key values for equal objects.)
 ##
 ##  The values returned by `HashKeyBag' are not guaranteed to be portable
-##  between different runs of {\GAP} and no reference to their absolure
+##  between different runs of {\GAP} and no reference to their absolute
 ##  values ought to be made.
 ##
 BindGlobal("HashKeyBag",HASHKEY_BAG);

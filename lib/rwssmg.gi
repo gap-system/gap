@@ -206,9 +206,9 @@ function(rws)
           # check the equality of the reduced forms of
           # the words v=ar[2]d and w=p[2]e
 
-          # so in p[1] we substitute the first occurence of u in b by r[2]
+          # so in p[1] we substitute the first occurrence of u in b by r[2]
           v := SubstitutedWord(p[1],u,Length(p[1])-i+1,r[2]);
-          # and in r[1] we substitute the first occurence of u by p[2]
+          # and in r[1] we substitute the first occurrence of u by p[2]
           w := SubstitutedWord(r[1],u,1,p[2]);
           # the reduced form of v and w must be equal if the rws is confluent
           if ReducedForm(rws,v)<>ReducedForm(rws,w) then

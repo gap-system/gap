@@ -689,7 +689,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
       orbs,GetResolvent,norb,act,repro,minpol,ext,ncand,pos,step,lens,gudeg,
       typ,pkt,fun,factors,stabs,stanr,nostanr,degs,GetProperty,
       GrabCodedLengths,UnParOrbits,cnt,polring,basring,indet,indnum,
-      extring;
+      extring,lpos;
 
   GetProperty := function(l,prop)
   local i;
@@ -750,6 +750,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
         orbs[nr]:=MinimizedBombieriNorm(orbs[nr])[1];
       fi;
     fi;
+    Info(InfoGalois,5,"Resolvent is =",orbs[nr],"\n");
     return orbs[nr];
   end;
 
@@ -814,14 +815,15 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   co:=List([1..TRANSLENGTHS[n]],i->TRANSProperties(n,i)[6]);
   if Length(Set(co{cand}))>1 then
     Info(InfoGalois,1,"2-Set Resolvent");
-    degs:=List(co,GrabCodedLengths);
+    #degs:=List(co,GrabCodedLengths);
 
     dco:=[];
     for i in cand do
       dco[i]:=UnParOrbits(co[i]);
     od;
+    degs:=Set(Flat(List(dco,x->List(x,y->y[1]))));
     res:=GetResolvent(f,2);
-    resf:=Factors(polring,res:factoroptions:=rec(onlydegs:=Union(degs)));
+    resf:=Factors(polring,res:factoroptions:=rec(onlydegs:=degs));
     StoreFactorsPol(polring,res,resf);
     pat:=Collected(List(resf,DegreeOfUnivariateLaurentPolynomial));
 
@@ -839,14 +841,15 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   co:=List([1..TRANSLENGTHS[n]],i->TRANSProperties(n,i)[7]);
   if Length(Set(co{cand}))>1 then
     Info(InfoGalois,1,"2-Seq Resolvent");
-    degs:=List(co,GrabCodedLengths);
+    #degs:=List(co,GrabCodedLengths);
 
     dco:=[];
     for i in cand do
       dco[i]:=UnParOrbits(co[i]);
     od;
+    degs:=Set(Flat(List(dco,x->List(x,y->y[1]))));
     res:=GetResolvent(f,9);
-    resf:=Factors(polring,res:factoroptions:=rec(onlydegs:=Union(degs)));
+    resf:=Factors(polring,res:factoroptions:=rec(onlydegs:=degs));
     StoreFactorsPol(polring,res,resf);
     pat:=Collected(List(resf,DegreeOfUnivariateLaurentPolynomial));
 
@@ -864,14 +867,14 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   co:=List([1..TRANSLENGTHS[n]],i->TRANSProperties(n,i)[8]);
   if n>=5 and Length(Set(co{cand}))>1 then
     Info(InfoGalois,1,"3-Set Resolvent");
-    degs:=List(co,GrabCodedLengths);
 
     dco:=[];
     for i in cand do
       dco[i]:=UnParOrbits(co[i]);
     od;
+    degs:=Set(Flat(List(dco,x->List(x,y->y[1]))));
     res:=GetResolvent(f,3);
-    resf:=Factors(polring,res:factoroptions:=rec(onlydegs:=Union(degs)));
+    resf:=Factors(polring,res:factoroptions:=rec(onlydegs:=degs));
     StoreFactorsPol(polring,res,resf);
     pat:=Collected(List(resf,DegreeOfUnivariateLaurentPolynomial));
 
@@ -1155,15 +1158,19 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
                 for j in cand do
                   pos:=Filtered([1..Length(dco[j])],i->pat in dco[j][i]);
                   if pos<>[] then
-                    # we found an occurence: Note the possible stabilizers
+                    # we found an occurrence: Note the possible stabilizers
                     stanr:=stanr{pos};
                     # and update the patterns accordingly.
                     dco:=List(dco,i->i{pos});
                     Add(ncand,j);
-                    # mark occurence as found
+                    # mark occurrence as found
                     for k in dco[j] do
                       # we may not unbind, since sublist will fail otherwise
-                      k[Position(dco[j],pat)]:="weg";
+                      lpos:=Position(dco[j],pat);
+		      if lpos=fail then
+			lpos:=Position(dco[j],[pat]);
+		      fi;
+                      k[lpos]:="weg";
                     od;
                   fi;
                 od;

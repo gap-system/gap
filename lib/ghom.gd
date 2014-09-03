@@ -29,10 +29,16 @@
 ##  <#GAPDoc Label="GroupGeneralMappingByImages">
 ##  <ManSection>
 ##  <Oper Name="GroupGeneralMappingByImages" Arg='G, H, gens, imgs'/>
+##  <Oper Name="GroupGeneralMappingByImages" Arg='G, gens, imgs' Label="from group to itself"/>
+##  <Oper Name="GroupGeneralMappingByImagesNC" Arg='G, H, gens, imgs'/>
+##  <Oper Name="GroupGeneralMappingByImagesNC" Arg='G, gens, imgs' Label="from group to itself"/>
 ##
 ##  <Description>
 ##  returns a general mapping defined by extending the mapping from
-##  <A>gens</A> to <A>imgs</A> homomorphically.
+##  <A>gens</A> to <A>imgs</A> homomorphically. If the range <A>H</A> is not
+##  given the mapping will be made automatically surjective. The NC version
+##  does not test whether <A>gens</A> are contained in <A>G</A> or <A>imgs</A>
+##  are contained in <A>H</A>.
 ##  (<Ref Func="GroupHomomorphismByImages"/> creates
 ##  a group general mapping by images and
 ##  tests whether it is in <Ref Func="IsMapping"/>.)
@@ -46,13 +52,23 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "GroupGeneralMappingByImages",
+
+# for future use:
+#DeclareOperation( "GroupGeneralMappingByImages",
+#    [ IsGroup, IsGroup, IsList, IsList ] );
+#DeclareOperation( "GroupGeneralMappingByImages",
+#    [ IsGroup, IsList, IsList ] );
+
+DeclareOperation( "GroupGeneralMappingByImagesNC",
     [ IsGroup, IsGroup, IsList, IsList ] );
+DeclareOperation( "GroupGeneralMappingByImagesNC",
+    [ IsGroup, IsList, IsList ] );
+DeclareSynonym("GroupGeneralMappingByImages",GroupGeneralMappingByImagesNC);
 
 
 #############################################################################
 ##
-#F  GroupHomomorphismByImages( <G>, <H>[[, <gens>], <imgs>] )
+#F  GroupHomomorphismByImages( <G>[, <H>][[, <gens>], <imgs>] )
 ##
 ##  <#GAPDoc Label="GroupHomomorphismByImages">
 ##  <ManSection>
@@ -66,7 +82,8 @@ DeclareOperation( "GroupGeneralMappingByImages",
 ##  <P/>
 ##  If omitted, the arguments <A>gens</A> and <A>imgs</A> default to
 ##  the <Ref Func="GeneratorsOfGroup"/> value of <A>G</A> and <A>H</A>,
-##  respectively.
+##  respectively. If <A>H</A> is not given the maopping is automatically
+##  considered as surjective.
 ##  <P/>
 ##  If <A>gens</A> does not generate <A>G</A> or if the mapping of the
 ##  generators does not extend to a homomorphism
@@ -142,6 +159,8 @@ DeclareGlobalFunction( "GroupHomomorphismByImages" );
 ##
 DeclareOperation( "GroupHomomorphismByImagesNC",
     [ IsGroup, IsGroup, IsList, IsList ] );
+DeclareOperation( "GroupHomomorphismByImagesNC",
+    [ IsGroup, IsList, IsList ] );
 
 
 #############################################################################
@@ -157,7 +176,7 @@ DeclareOperation( "GroupHomomorphismByImagesNC",
 ##  Representation for mappings from one group to another that are defined
 ##  by extending a mapping of group generators homomorphically.
 ##  Instead of record components,
-##  the attribute <C>MappingGeneratorsImages</C> is
+##  the attribute <Ref Attr="MappingGeneratorsImages"/> is
 ##  used to store generators and their images.
 ##  </Description>
 ##  </ManSection>

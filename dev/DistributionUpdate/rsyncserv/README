@@ -16,19 +16,27 @@
     startrsyncserver to RSDIR, and adjust the paths in 'rsyncd.conf' 
     (search 'home2').
 
-(2) Fetch newest archives from ftp://ftp.gap-system.org/pub/{gappre or gap/gap}:
-    gap4r4*.tar.gz, tools4r4*.tar.gz, xtom*.tar.gz, packages*.tar.gz
+(2) Fetch newest archive from ftp://ftp.gap-system.org/pub/{gappre or gap/gap}:
+    gap4r*p*.tar.gz
 
 (3) Copy archives to native i686 machine and call in that directory on that
-    machine  'gapsync/InstForRsync32'.
+    machine  'gapsync/InstForRsync32' (currently GAP is build in ~/build45
+    with the local script './inst').
 
-(4) Similarly, copy archives to x86_64 machine and call 
-    'gapsync/InstForRsync64'.
+(4) Similarly, copy archives to x86_64 machine. For 'homology' package also 
+    copy the archive homology.1.4.5.staticbin.tgz to the same place.
+    Then call 'gapsync/InstForRsync64' (also currently in ~/build45 via
+    local script './inst').
 
-(5) Create $RSDIR/gap4 and in there call 'gapsync/CollectDistribution'
+(5) Create $RSDIR/gap/linux and in there call 'gapsync/CollectDistribution'
     (after checking/adjusting paths in CollectDistribution).
+    This first copies the new version into a subdirectory 'gap4r5XXX'.
+    One can start 'startrsyncserverXXX' and test the updated version.
+    If all is fine rename directories with local script 'swapwithXXX' and
+    stop the XXX rsync server.
 
-(6) Adjust index.html, rsyncserv.css, CHANGES and motd (in CVS and $RSDIR). 
+(6) Adjust index.html, rsyncserv.css, CHANGES and motd (in repository 
+    and $RSDIR). 
 
 (7) Copy index.html, rsyncserv.css, CHANGES to website. 
  cp index.html rsyncserv.css CHANGES ~/MyWWWHome/web/~Frank.Luebeck/gap/rsync/

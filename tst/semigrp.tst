@@ -23,8 +23,8 @@ gap> g := Group(a);;
 gap> 
 gap> u := TransformationRepresentation(
 > GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^1]), 
-> Tuple([a^3, a^3]), Tuple([a^4, a^4])]));;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^1]), 
+>  DirectProductElement([a^3, a^3]), DirectProductElement([a^4, a^4])]));;
 gap> 
 gap> u*u;;
 gap> ()^u;;
@@ -35,33 +35,33 @@ gap> a := (1,2,3,4);;
 gap> g := Group(a);;
 gap> 
 gap> s1 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^1]), 
-> Tuple([a^3, a^3]), Tuple([a^4, a^4])]);;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^1]), 
+> DirectProductElement([a^3, a^3]), DirectProductElement([a^4, a^4])]);;
 gap> s1 := TransformationRepresentation(s1);;
 gap> 
 gap> t1 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^2]), Tuple([a^2, a^2]), 
-> Tuple([a^3, a^3]), Tuple([a^4, a^4])]);;
+> [DirectProductElement([a^1, a^2]), DirectProductElement([a^2, a^2]), 
+> DirectProductElement([a^3, a^3]), DirectProductElement([a^4, a^4])]);;
 gap> t1 := TransformationRepresentation(t1);;
 gap> 
 gap> s2 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^2]), 
-> Tuple([a^3, a^2]), Tuple([a^4, a^4])]);;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^2]), 
+> DirectProductElement([a^3, a^2]), DirectProductElement([a^4, a^4])]);;
 gap> s2 := TransformationRepresentation(s2);;
 gap> 
 gap> t2 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^3]), 
-> Tuple([a^3, a^3]), Tuple([a^4, a^4])]);;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^3]), 
+> DirectProductElement([a^3, a^3]), DirectProductElement([a^4, a^4])]);;
 gap> t2 := TransformationRepresentation(t2);;
 gap> 
 gap> s3 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^2]), 
-> Tuple([a^3, a^3]), Tuple([a^4, a^3])]);;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^2]), 
+> DirectProductElement([a^3, a^3]), DirectProductElement([a^4, a^3])]);;
 gap> s3 := TransformationRepresentation(s3);;
 gap> 
 gap> t3 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^2]),
-> Tuple([a^3, a^4]), Tuple([a^4, a^4])]);;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^2]),
+> DirectProductElement([a^3, a^4]), DirectProductElement([a^4, a^4])]);;
 gap> t3 := TransformationRepresentation(t3);;
 gap> 
 gap> o4 := Semigroup([s1,s2,s3,t1,t2,t3]);;
@@ -129,21 +129,24 @@ gap> ########################
 gap> f := FreeGroup("a");;
 gap> g := f/[f.1^4];;
 gap> phi := InjectionZeroMagma(g);
-MappingByFunction( <fp group of size 4 on the generators [ a ]>, <monoid with 
-4 generators>, function( g ) ... end )
+MappingByFunction( <fp group of size 4 on the generators 
+[ a ]>, <<fp group of size 4 on the generators 
+[ a ]> with 0 adjoined>, function( elt ) ... end, function( x ) ... end )
 gap> m := Range(phi);
-<monoid with 4 generators>
+<<fp group of size 4 on the generators [ a ]> with 0 adjoined>
 gap> el := Elements(m);;
 gap> Size(m)=5;
 true
 gap> c := MagmaCongruenceByGeneratingPairs(m,[[el[2],el[3]]]);
 <semigroup congruence with 1 generating pairs>
 gap> EquivalenceRelationPartition(c);
-[ [ <identity ...>, a, a^2, a^-1 ] ]
+[ [ <group with 0 adjoined elt: <identity ...>>, 
+      <group with 0 adjoined elt: a>, <group with 0 adjoined elt: a^2>, 
+      <group with 0 adjoined elt: a^-1> ] ]
 gap> IsReesCongruence(c);
 false
 gap> MagmaIdealByGenerators(m,EquivalenceRelationPartition(c)[1]);
-<SemigroupIdeal with 4 generators>
+<semigroup ideal with 4 generators>
 gap> Size(last);
 5
 gap> ###############################
@@ -274,7 +277,7 @@ gap> IsMonoid(G0);
 true
 gap> g := AsSSortedList(G0);;
 gap> g[1]*g[2];
-0
+<group with 0 adjoined elt: 0>
 gap> g[3]*g[2];;
 gap> g[3]*g[4];;
 gap> IsZeroGroup(G0);

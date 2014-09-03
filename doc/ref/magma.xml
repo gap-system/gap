@@ -17,8 +17,8 @@ Following&nbsp;<Cite Key="Bourbaki70"/>, we call them <E>magmas</E> in &GAP;.
 Together with the domains closed under addition <C>+</C>
 (see&nbsp;<Ref Chap="Additive Magmas"/>),
 they are the basic algebraic structures;
-every semigroup (see&nbsp;<Ref Chap="Semigroups"/>),
-monoid (see&nbsp;<Ref Chap="Monoids"/>),
+every semigroup,
+monoid (see&nbsp;<Ref Chap="Semigroups"/>),
 group (see&nbsp;<Ref Chap="Groups"/>),
 ring (see&nbsp;<Ref Chap="Rings"/>),
 or field (see&nbsp;<Ref Chap="Fields and Division Rings"/>) is a magma.
@@ -71,8 +71,7 @@ magma with a zero adjoined.
 <#Include Label="SubmagmaWithInverses">
 <#Include Label="AsMagma">
 <#Include Label="AsSubmagma">
-<#Include Label="InjectionZeroMagma">
-
+<#Include SYSTEM="mgmadj.xml">
 </Section>
 
 
@@ -115,7 +114,6 @@ see&nbsp;<Ref Sect="Arithmetic Operations for Elements"/>.
 <#Include Label="IsCommutative">
 <#Include Label="MultiplicativeNeutralElement">
 <#Include Label="MultiplicativeZero">
-<#Include Label="IsMultiplicativeZero">
 <#Include Label="SquareRoots">
 <#Include Label="TrivialSubmagmaWithOne">
 
@@ -126,4 +124,5 @@ see&nbsp;<Ref Sect="Arithmetic Operations for Elements"/>.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
+
 

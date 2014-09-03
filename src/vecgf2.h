@@ -39,7 +39,7 @@
 **  integer.
 **
 **  Note that 'LEN_GF2VEC' is a macro, so do not call it with  arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define LEN_GF2VEC(list)         ((Int)(ADDR_OBJ(list)[1]))
 
@@ -70,7 +70,7 @@
 **  of <list>.
 **
 **  Note that 'BLOCK_ELM_GF2VEC' is a macro, so do not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define BLOCK_ELM_GF2VEC(list, pos)    (BLOCKS_GF2VEC(list)[((pos)-1)/BIPEB])
 
@@ -83,7 +83,7 @@
 **  <len>, which must be a positive C integer.
 **
 **  Note that 'SET_LEN_GF2VEC' is a macro, so do  not  call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_LEN_GF2VEC(list,len)        (ADDR_OBJ(list)[1] = (Obj)(len))
 
@@ -104,7 +104,7 @@
 **  (pos-1) % BIPEB, useful for accessing the pos'th element of a blist
 **
 **  Note that 'MASK_POS_GF2VEC' is a  macro, so do not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define MASK_POS_GF2VEC( pos ) (((UInt) 1)<<((pos)-1)%BIPEB)
 
@@ -118,7 +118,7 @@
 **  or equal to the length of <list>.
 **
 **  Note that 'ELM_GF2VEC' is a macro, so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define ELM_GF2VEC(list,pos) \
   ((BLOCK_ELM_GF2VEC(list,pos) & MASK_POS_GF2VEC(pos)) ?  GF2One : GF2Zero)
@@ -132,7 +132,7 @@
 **  integer.
 **
 **  Note that 'LEN_GF2MAT' is a macro, so do not call it with  arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define LEN_GF2MAT(list)         (INT_INTOBJ(ADDR_OBJ(list)[1]))
 
@@ -145,7 +145,7 @@
 **  integer.
 **
 **  Note that 'SET_LEN_GF2MAT' is a  macro, so do not  call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_LEN_GF2MAT(list,len)    (ADDR_OBJ(list)[1]=INTOBJ_INT(len))
 
@@ -159,7 +159,7 @@
 **  the length of <list>.
 **
 **  Note that 'ELM_GF2MAT' is a macro, so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define ELM_GF2MAT(list,pos)    (ADDR_OBJ(list)[pos+1])
 
@@ -173,7 +173,7 @@
 **  or equal to the length of <list>.
 **
 **  Note that 'ELM_GF2MAT' is a macro, so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define SET_ELM_GF2MAT(list,pos,elm)    (ADDR_OBJ(list)[pos+1]=elm)
 

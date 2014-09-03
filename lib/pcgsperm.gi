@@ -424,6 +424,7 @@ step:="W";
     if whole  then
         SetIsSolvableGroup( grp, true );
         SetPcgs( grp, pcgs );
+        SetHomePcgs( grp, pcgs );
         SetGroupOfPcgs (pcgs, grp);
         if cent  then
             SetIsNilpotentGroup( grp, true );
@@ -479,17 +480,16 @@ function(filter,G,series,oldlen,iselab)
 end );
 
 BindGlobal("NorSerPermPcgs",function(pcgs)
-local ppcgs,series,G,i;
+local ppcgs,series,stbc,G,i;
   ppcgs := ParentPcgs (pcgs);
   G:=GroupOfPcgs(pcgs);
-  series:=pcgs!.generatingSeries;
-  for i  in [ 1 .. Length( series ) ]  do
-        Unbind( series[ i ].relativeOrders );
-        Unbind( series[ i ].base           );
-        series[ i ] := GroupStabChain( G, series[ i ], true );
-	if (not HasHomePcgs(series[i]) ) or
-	  HomePcgs(series[i])!.permpcgsNormalSteps=
-	  ppcgs!.permpcgsNormalSteps then
+  series:=EmptyPlist( Length(pcgs!.generatingSeries) );
+  for i  in [ 1 .. Length( pcgs!.generatingSeries ) ]  do
+    stbc := ShallowCopy (pcgs!.generatingSeries[i]);
+    Unbind( stbc.relativeOrders );
+    Unbind( stbc.base           );
+    series[ i ] := GroupStabChain( G, stbc, true );
+	if (not HasHomePcgs(series[i]) ) or HomePcgs(series[i]) = ppcgs then
 	  SetHomePcgs ( series[ i ], ppcgs );
 	  SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
 	  series[ i ]!.noInSeries := i;
@@ -585,6 +585,8 @@ InstallGlobalFunction( ExponentsOfPcElementPermGroup,
             
             if mode = 'l'  then
                 return e;
+            elif mode='s' then
+	      return [depth-1,e];
             fi;
             
             # Remove the appropriate  power  of the <depth>th  generator  and
@@ -597,6 +599,7 @@ InstallGlobalFunction( ExponentsOfPcElementPermGroup,
     od;
     if   mode = 'd'  then  return maxdepth + 1;
     elif mode = 'l'  then  return fail;
+    elif mode = 's'  then  return [maxdepth+1,0];
     else                   return exp;  fi;
 end );
 
@@ -755,6 +758,47 @@ end );
 InstallMethod( Pcgs, "tail of perm pcgs", true,
         [ IsMemberPcSeriesPermGroup ], 100,
         PcgsMemberPcSeriesPermGroup );
+
+
+#############################################################################
+##
+#M  HomePcgs( <G> ) . . . . . . . . . . . . . . . . home pcgs for perm groups
+##
+InstallMethod( HomePcgs, "use a perm pcgs if possible", true,
+    [ IsPermGroup and HasPcgs ],
+    function( G )
+    local   pcgs;
+    
+    pcgs := Pcgs( G );
+    if IsPcgsPermGroupRep( pcgs ) then
+        if HasParentPcgs( pcgs ) then
+            return ParentPcgs( pcgs );
+        else
+            return pcgs;
+        fi;
+    else
+        TryNextMethod();
+    fi;
+end);
+
+
+InstallMethod( HomePcgs, "try to compute a perm pcgs", true,
+    [ IsPermGroup ],
+    function( G )
+    local   pcgs;
+    
+    pcgs := TryPcgsPermGroup( G, false, false, true );
+
+    if not IsPcgs( pcgs )  then
+        TryNextMethod();
+    else
+      if not HasPcgsElementaryAbelianSeries(G) then
+        SetPcgsElementaryAbelianSeries(G,pcgs);
+      fi;
+      return pcgs;
+    fi;
+end );
+
 
 #############################################################################
 ##
@@ -932,6 +976,12 @@ InstallMethod( DepthOfPcElement,"permpcgs", true,
     return ExponentsOfPcElementPermGroup( pcgs, g, 1, Length( pcgs ), 'd' );
 end );
 
+InstallMethod( DepthAndLeadingExponentOfPcElement,"permpcgs", true,
+        [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs, IsPerm ], 0,
+    function( pcgs, g )
+    return ExponentsOfPcElementPermGroup( pcgs, g, 1, Length( pcgs ), 's' );
+end );
+
 InstallOtherMethod( DepthOfPcElement,"permpcgs,start", true,
         [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs, IsPerm,
           IsPosInt ], 0,
@@ -1005,13 +1055,78 @@ function( G, d, e, opr )
     fi;
 end );
 
+BIND_GLOBAL( "CYCLICACHE", []);
+ShareSpecialObj(CYCLICACHE);
+
+InstallGlobalFunction(CreateIsomorphicPcGroup,function(pcgs,needindices,flag)
+local r,i,p,A,f,a;
+  r:=RelativeOrders(pcgs);
+  if Length(r)<=1 then
+    p:=Product(r);
+    i:=1;
+    atomic readonly CYCLICACHE do
+        while i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])<p do
+          i:=i+1;
+        od;
+        # do we have it?
+        if i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])=p then
+          return CYCLICACHE[i];
+        fi;
+    od;
+
+    atomic readwrite CYCLICACHE do
+        # make space
+        p:=i;
+        for i in [Length(CYCLICACHE),Length(CYCLICACHE)-1..p] do
+          CYCLICACHE[i+1]:=CYCLICACHE[i];
+        od;
+        A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), flag );
+        CYCLICACHE[p]:=A;
+        return A;
+    od;
+  fi;
+
+  # is the group in the mappings families cache?
+  f:=FamiliesOfGeneralMappingsAndRanges(FamilyObj(OneOfPcgs(pcgs)));
+  i:=1;
+  while i<=Length(f) do
+    a:=ElmWPObj(f,i);
+    if a<>fail and IsBound(a!.DefiningPcgs) 
+       and RelativeOrders(a!.DefiningPcgs)=r then
+      # right type PCGS -- test relations
+      a:=a!.DefiningPcgs;
+      if (needindices=false or  (not HasIndicesEANormalSteps(a)) or
+	IndicesEANormalSteps(a)=IndicesEANormalSteps(pcgs)) and
+	ForAll([1..Length(r)-1],x->
+        ExponentsOfPcElement(a,a[x]^r[x])
+        =ExponentsOfPcElement(pcgs,pcgs[x]^r[x])) and
+	ForAll([1..Length(r)],x->ForAll([x+1..Length(r)],y->
+	  ExponentsOfPcElement(a,a[y]^a[x])
+	  =ExponentsOfPcElement(pcgs,pcgs[y]^pcgs[x]))) then
+
+	# indeed the group is OK
+	if not HasIndicesEANormalSteps(a) then
+	  SetIndicesEANormalSteps(a,IndicesEANormalSteps(pcgs));
+	fi;
+        A:=GroupOfPcgs(a);
+	return A;
+      fi;
+    fi;
+    i:=i+2;
+  od;
+  A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), flag );
+  return A;
+end);
+
+
+
 #############################################################################
 ##
 #M  IsomorphismPcGroup( <G> ) . . . . . . . . . . . .  perm group as pc group
 ##
 InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     function( G )
-    local   iso,  A,  pcgs;
+    local   iso,  A,  pcgs,p,i;
     
     # Make  a pcgs   based on  an  elementary   abelian series (good  for  ag
     # routines).
@@ -1021,7 +1136,8 @@ InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     fi;
 
     # Construct the pcp group <A> and the bijection between <A> and <G>.
-    A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), false );
+    A:=CreateIsomorphicPcGroup(pcgs,false,false);
+
     iso := GroupHomomorphismByImagesNC( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsBijective( iso, true );
     

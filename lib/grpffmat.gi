@@ -41,15 +41,41 @@ InstallMethod(FieldOfMatrixList,"finite field matrices",true,
   [IsListOrCollection and IsFFECollCollColl],0,
 function(l)
 local   deg,  i,  j,  char;
+  if Length(l)=0 then Error("list must be nonempty");fi;
   deg  := 1;
   for i  in l  do
     for j  in i  do
       deg := LcmInt( deg, DegreeFFE(j) );
     od;
   od;
-  if 0 < Length(l)  then
-    char := Characteristic(l[1][1]);
-  fi;
+  char := Characteristic(l[1][1]);
+  return GF(char^deg);
+end);
+
+#############################################################################
+##
+#M  DefaultScalarDomainOfMatrixList
+##
+InstallMethod(DefaultScalarDomainOfMatrixList,"finite field matrices",true,
+  [IsListOrCollection and IsFFECollCollColl],0,
+function(l)
+local   deg,  i,  j,  char,m;
+if Length(l)=0 then Error("list must be nonempty");fi;
+  deg  := 1;
+  for i in l  do
+    # treat compact matrices quickly
+    if IsGF2MatrixRep(i) then
+      deg:=deg; # always in
+    elif Is8BitMatrixRep(i) then
+      j:=Q_VEC8BIT(i![2]);
+      deg:=LcmInt( deg, Length(Factors(j)));
+    else
+      for j  in i  do
+	deg := LcmInt( deg, DegreeFFE(j) );
+      od;
+    fi;
+  od;
+  char := Characteristic(l[1][1]);
   return GF(char^deg);
 end);
 
@@ -135,13 +161,16 @@ end );
 #M  ProjectiveActionOnFullSpace(<G>,<f>,<n>)
 ##
 InstallGlobalFunction(ProjectiveActionOnFullSpace,function(g,f,n)
-local o,i,s;
+local o,i,s,nrv;
   # as the groups are large, we can take all normed vectors
-  o:=NormedRowVectors(f^n);
+  nrv:=NormedRowVectors(f^n);
   s:=Size(f);
-  for i in o do
+  o := [];
+  for i in nrv do
     if s <= 256 then
-      i := CopyToVectorRep(i,s);
+      Add(o, CopyToVectorRep(i,s));
+    else
+      Add(o, i);
     fi;  
     MakeImmutable(i);
   od;
@@ -424,6 +453,22 @@ InstallMethod( ConjugacyClasses, "for natural sl", true,
                [IsFFEMatrixGroup and IsFinite and IsNaturalSL],
                0,
     G -> ConjugacyClassesOfNaturalGroup( G, true ) );
+
+#############################################################################
+##
+#M  ConjugacyClasses
+##
+InstallMethod(ConjugacyClasses,"matrix groups: test naturality",true,
+  [IsFFEMatrixGroup and IsFinite and IsHandledByNiceMonomorphism],0,
+function(g)
+local mon,cl,clg,c,i;
+  if (((not HasIsNaturalGL(g)) and IsNaturalGL(g))
+      or ((not HasIsNaturalSL(g)) and IsNaturalSL(g))) then
+    # redispatch as we found something out
+    return ConjugacyClasses(g);
+  fi;
+  TryNextMethod();
+end);
 
 
 #############################################################################

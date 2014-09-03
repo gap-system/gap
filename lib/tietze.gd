@@ -593,9 +593,9 @@ DeclareGlobalFunction("PresentationRegularPermutationGroupNC");
 ##  gap> TzPrintRelators( P );
 ##  #I  1. f2^3
 ##  #I  2. f1^6
-##  #I  3. f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1
+##  #I  3. (f1^-1*f2^-1)^6
 ##  #I  4. f1*f2*f1^-1*f2^-1*f1*f2^-1*f1^-1*f2*f1*f2^-1*f1^-1*f2^-1
-##  #I  5. f1^-3*f2*f1*f2*f1^-1*f2^-1*f1^-1*f2^-1*f1^-2*f2
+##  #I  5. f1^-3*f2*f1*f2*(f1^-1*f2^-1)^2*f1^-2*f2
 ##  ]]></Example>
 ##  <P/>
 ##  The two stage algorithm saves an essential amount of space by
@@ -617,10 +617,11 @@ DeclareGlobalFunction("PresentationRegularPermutationGroupNC");
 ##  gap> G := FpGroupPresentation( P );
 ##  <fp group on the generators [ a, b, c ]>
 ##  gap> RelatorsOfFpGroup( G );
-##  [ c^2, b^4, a*c*a*c*a*c, a*b^-2*a*b^-2*a*b^-2, a^11,
-##    a^2*b*a^-2*b^-2*a*b^-1*a^2*b^-1, a*b*a^-1*b*a^-1*b^-1*a*b*a^-1*b*a^-1*b^-1,
-##    a^2*b*a^2*b^-2*a^-1*b*a^-1*b^-1*a^-1*b^-1,
-##    a*b*a*b*a^2*b^-1*a^-1*b^-1*a*c*b*c, a^4*b*a^2*b*a^-2*c*a*b*a^-1*c ]
+##  [ c^2, b^4, (a*c)^3, (a*b^-2)^3, a^11, 
+##    a^2*b*a^-2*b^-1*(b^-1*a)^2*a*b^-1, (a*(b*a^-1)^2*b^-1)^2, 
+##    a^2*b*a^2*b^-2*a^-1*b*(a^-1*b^-1)^2, 
+##    (a*b)^2*a^2*b^-1*a^-1*b^-1*a*c*b*c, a^2*(a^2*b)^2*a^-2*c*a*b*a^-1*c 
+##   ]
 ##  ]]></Example>
 ##  <P/>
 ##  Before it is returned, the resulting presentation is being simplified by
@@ -727,7 +728,7 @@ DeclareGlobalFunction("RemoveRelator");
 ##  gap> H := SimplifiedFpGroup( G );
 ##  <fp group on the generators [ G1, G3 ]>
 ##  gap> RelatorsOfFpGroup( H );
-##  [ G1^2, G1*G3^-1*G1*G3^-1, G3^4 ]
+##  [ G1^2, (G1*G3^-1)^2, G3^4 ]
 ##  ]]></Example>
 ##  <P/>
 ##  In fact, the command
@@ -1037,7 +1038,7 @@ DeclareGlobalFunction("TzGo");
 ##  gap> TzPrintRelators( P );
 ##  #I  1. _x1^2
 ##  #I  2. _x2^3
-##  #I  3. _x2*_x1*_x2*_x1
+##  #I  3. (_x2*_x1)^2
 ##  ]]></Example>
 ##  <P/>
 ##  Roughly speaking, <Ref Func="TzGo"/> consists of a loop over a
@@ -1714,7 +1715,7 @@ DeclareGlobalFunction("TzPrintPresentation");
 ##  gap> TzPrintRelators( P );
 ##  #I  1. f3^2
 ##  #I  2. f2^4
-##  #I  3. f2^-1*f3*f2^-1*f3
+##  #I  3. (f2^-1*f3)^2
 ##  #I  4. f1^5
 ##  #I  5. f1^2*f2*f1*f2^-1
 ##  #I  6. f1^-1*f3*f1*f3*f1^-1*f2^2*f3
@@ -2183,9 +2184,9 @@ DeclareGlobalFunction("TzSort");
 ##  gap> TzPrintRelators( P );
 ##  #I  1. _x32^5
 ##  #I  2. _x31^5
-##  #I  3. _x31^-1*_x32^-1*_x31^-1*_x32^-1*_x31^-1*_x32^-1
-##  #I  4. _x31*_x32*_x31^-1*_x32*_x31^-1*_x32*_x31*_x32^-2
-##  #I  5. _x31^-1*_x32^2*_x31*_x32^-1*_x31^2*_x32^-1*_x31*_x32^2
+##  #I  3. (_x31^-1*_x32^-1)^3
+##  #I  4. _x31*(_x32*_x31^-1)^2*_x32*_x31*_x32^-2
+##  #I  5. _x31^-1*_x32^2*(_x31*_x32^-1*_x31)^2*_x32^2
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

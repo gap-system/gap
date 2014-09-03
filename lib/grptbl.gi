@@ -179,45 +179,58 @@ end );
 #F  MagmaByMultiplicationTableCreator( <A>, <domconst> )
 ##
 InstallGlobalFunction( MagmaByMultiplicationTableCreator,
-    function( A, domconst )
+    function( arg )
     local F,      # the family of objects
           n,      # dimension of `A'
           range,  # the range `[ 1 .. n ]'
           elms,   # sorted list of elements
-          M;      # the magma, result
+          M,      # the magma, result
+          filts;
 
-    # Check that `A' is a valid multiplication table.
-    if IsMatrix( A ) then
-      n:= Length( A );
+    if IsBound(arg[3]) then 
+      filts:=IsMagmaByMultiplicationTableObj and arg[3];
+    else
+      filts:=IsMagmaByMultiplicationTableObj;
+    fi;
+
+    # Check that `arg[1]' is a valid multiplication table.
+    if IsMatrix( arg[1] ) then
+      n:= Length( arg[1] );
       range:= [ 1 .. n ];
-      if     Length( A[1] ) = n
-         and ForAll( A, row -> ForAll( row, x -> x in range ) ) then
-
-        # Construct the family of objects.
-        F:= NewFamily( "MagmaByMultTableObj",
-                       IsMagmaByMultiplicationTableObj );
-        F!.n:= n;
-        SetMultiplicationTable( F, A );
-        elms:= Immutable( List( range,
-                   i -> Objectify( NewType( F,
-                            IsMagmaByMultiplicationTableObj ), [ i ] ) ) );
-        SetIsSSortedList( elms, true );
-        F!.set:= elms;
-        F!.inverse:= [];
-
-        # Construct the magma.
-        M:= domconst( CollectionsFamily( F ), elms );
-        SetSize( M, n );
-        SetAsSSortedList( M, elms );
-        SetMultiplicationTable( M, MultiplicationTable( F ) );
-
-        # Return the result.
-        return M;
+      if     Length( arg[1][1] ) = n
+         and ForAll( arg[1], row -> ForAll( row, x -> x in range ) ) then
+        return MagmaByMultiplicationTableCreatorNC(arg[1], arg[2], filts);
       fi;
     fi;
-    Error( "<A> must be a square matrix with entries in `[ 1 .. n ]'" );
+    Error( "<arg[1]> must be a square matrix with entries in `[ 1 .. n ]'" );
 end );
 
+#
+
+InstallGlobalFunction( MagmaByMultiplicationTableCreatorNC,
+function( A, domconst, filts )
+  local n, F, elms, M;
+
+  n:=Length(A);
+  # Construct the family of objects.
+  F:= NewFamily( "MagmaByMultTableObj", filts );
+  F!.n:=n;
+  SetMultiplicationTable( F, A );
+  elms:= Immutable( List( [1..n],
+             i -> Objectify( NewType( F, filts), [ i ] ) ) );
+  SetIsSSortedList( elms, true );
+  F!.set:= elms;
+  F!.inverse:= [];
+
+  # Construct the magma.
+  M:= domconst( CollectionsFamily( F ), elms );
+  SetSize( M, n );
+  SetAsSSortedList( M, elms );
+  SetMultiplicationTable( M, MultiplicationTable( F ) );
+
+  # Return the result.
+  return M;
+end );
 
 #############################################################################
 ##
@@ -305,12 +318,34 @@ end );
 ##
 #F  SemigroupByMultiplicationTable( <A> )
 ##
-InstallGlobalFunction( SemigroupByMultiplicationTable, function( A )
-    A:= MagmaByMultiplicationTable( A );
-    if not IsAssociative( A ) then
-      return fail;
+InstallGlobalFunction( SemigroupByMultiplicationTable, 
+function( A )
+  local n, range, i, j, k;
+
+    # Check that `A' is a valid multiplication table.
+    if IsMatrix( A ) then
+      n := Length( A );
+      range := [ 1 .. n ];
+
+      if     Length( A[1] ) = n
+         and ForAll( A, row -> ForAll( row, x -> x in range ) ) then
+
+        # check associativity
+        for i in range do 
+          for j in range do 
+            for k in range do 
+              if A[A[i][j]][k]<>A[i][A[j][k]] then 
+                return fail;
+              fi;
+            od;
+          od;
+        od;
+        
+        return MagmaByMultiplicationTableCreatorNC(A, MagmaByGenerators,
+         IsAssociativeElement and IsMagmaByMultiplicationTableObj);
+      fi;
     fi;
-    return A;
+    Error( "<A> must be a square matrix with entries in `[ 1 .. n ]'" ); 
 end );
 
 
@@ -318,12 +353,45 @@ end );
 ##
 #F  MonoidByMultiplicationTable( <A> )
 ##
-InstallGlobalFunction( MonoidByMultiplicationTable, function( A )
-    A:= MagmaWithOneByMultiplicationTable( A );
-    if A = fail or not IsAssociative( A ) then
-      return fail;
+InstallGlobalFunction( MonoidByMultiplicationTable, 
+function( A )
+  local n, range, onepos, M, i, j, k;
+
+  if IsMatrix( A ) then
+    n := Length( A );
+    range := [ 1 .. n ];
+
+    if     Length( A[1] ) = n
+       and ForAll( A, row -> ForAll( row, x -> x in range ) ) then
+    
+      # Check that `A' admits a left and right identity element.
+      onepos:= Position( A, [ 1 .. n ] );
+      if onepos = fail or A{ [ 1 .. n ] }[ onepos ] <> [ 1 .. n ] then
+        return fail;
+      fi;
+
+      # check associativity
+      for i in range do 
+        for j in range do 
+          for k in range do 
+            if A[A[i][j]][k]<>A[i][A[j][k]] then 
+              return fail;
+            fi;
+          od;
+        od;
+      od;
+      M:=MagmaByMultiplicationTableCreatorNC(A, MagmaWithOneByGenerators,
+         IsAssociativeElement and IsMagmaByMultiplicationTableObj);
+
+      # Store the identity in the family.
+      SetOne( ElementsFamily( FamilyObj( M ) ), AsSSortedList( M )[ onepos ] );
+      SetGeneratorsOfMagma( M, AsSSortedList( M ) );
+
+      # Return the result.
+      return M;
     fi;
-    return A;
+  fi;
+  Error( "<A> must be a square matrix with entries in `[ 1 .. n ]'" ); 
 end );
 
 

@@ -262,34 +262,35 @@ which calculates the centralizer of an element <M>g</M> in the group <M>G</M>.
 (The real code is more general and has a few more subtleties.)
 <P/>
 <Listing><![CDATA[
- 1 Pi_0 := TrivialPartition( omega );
- 2 R := EmptyRBase( G, omega, Pi_0 );
- 3 R.nextLevel := function( Pi, rbase )
- 4 local  fix, p, q, where;
- 5 NextRBasePoint( Pi, rbase );
- 6 fix := Fixcells( Pi );
- 7 for p  in fix  do
- 8   q := p ^ g;
- 9   where := IsolatePoint( Pi, q );
-10   if where <> false  then
-12     Add( fix, q );
-13     ProcessFixpoint( R, q );
-14     AddRefinement( R, "Centralizer", [ Pi.cellno[ p ], q, where ] );
-15     if Pi.lengths[ where ] = 1  then
-16       p := FixpointCellNo( Pi, where );
-17       ProcessFixpoint( R, p );
-18       AddRefinement( R, "ProcessFixpoint", [ p, where ] );
-19     fi;
-20   fi;
-21 od;
-22 end;
-23 return PartitionBacktrack(
-24   G,
-25   c -> g ^ c = g,
-26   false,
-27   R,
-28   [ Pi_0, g ],
-29   L, R );
+Pi_0 := TrivialPartition( omega );
+R := EmptyRBase( G, omega, Pi_0 );
+R.nextLevel := function( Pi, rbase )
+local  fix, p, q, where;
+NextRBasePoint( Pi, rbase );
+fix := Fixcells( Pi );
+for p  in fix  do
+  q := p ^ g;
+  where := IsolatePoint( Pi, q );
+  if where <> false  then
+    Add( fix, q );
+    ProcessFixpoint( R, q );
+    AddRefinement( R, "Centralizer", [ Pi.cellno[ p ], q, where ] );
+    if Pi.lengths[ where ] = 1  then
+      p := FixpointCellNo( Pi, where );
+      ProcessFixpoint( R, p );
+      AddRefinement( R, "ProcessFixpoint", [ p, where ] );
+    fi;
+  fi;
+od;
+end;
+
+return PartitionBacktrack(
+  G,
+  c -> g ^ c = g,
+  false,
+  R,
+  [ Pi_0, g ],
+  L, R );
 ]]></Listing>
 <P/>
 The list numbers below refer to the line numbers of the code above.
@@ -518,12 +519,12 @@ cell   sizes from  <M>\Pi_{{i+1}}</M>)  and  <K>true</K>  otherwise.
 Our particular function looks like this.
 <P/>
 <Listing><![CDATA[
-1 Refinements.Centralizer := function( R, I, cellno, p, where )
-2 local  Sigma, q;
-3   Sigma := I.partition;
-4   q := FixpointCellNo( Sigma, cellno ) ^ I.data[ 2 ];
-5   return IsolatePoint( Sigma, q ) = where and ProcessFixpoint( I, p, q );
-6 end;
+Refinements.Centralizer := function( R, I, cellno, p, where )
+local  Sigma, q;
+Sigma := I.partition;
+q := FixpointCellNo( Sigma, cellno ) ^ I.data[ 2 ];
+return IsolatePoint( Sigma, q ) = where and ProcessFixpoint( I, p, q );
+end;
 ]]></Listing>
 <P/>
 The list numbers below refer to the line numbers of the code immediately
@@ -728,11 +729,11 @@ alternative excerpt from the code for
 <Ref Func="Centralizer" Label="for a magma and a submagma"/>.
 <P/>
 <Listing><![CDATA[
-1 return PartitionBacktrack( G,
-2   [ g, g,
-3   OnPoints,
-4   c -> c!.lftObj = c!.rgtObj ],
-5   false, R, [ Pi_0, g ], L, R );
+return PartitionBacktrack( G,
+  [ g, g,
+  OnPoints,
+  c -> c!.lftObj = c!.rgtObj ],
+  false, R, [ Pi_0, g ], L, R );
 ]]></Listing>
 <P/>
 The test for <M>c</M> to have the property in question is of the form

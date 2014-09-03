@@ -89,6 +89,7 @@ false
 </Description>
 </ManSection>
 
+<#Include Label="DistancePerms">
 <#Include Label="SmallestGeneratorPerm">
 
 </Section>
@@ -124,6 +125,60 @@ false
 <#Include Label="PermList">
 <#Include Label="MappingPermListList">
 <#Include Label="RestrictedPerm">
+
+<ManSection>
+  <Oper Name="AsPermutation" Arg="f"/>
+  <Returns>A permutation or <K>fail</K>.</Returns>
+  <Description>
+    Partial permutations and transformations which define permutations
+    (mathematically) can be converted into &GAP; permutations using
+    <C>AsPermutation</C>; see Chapters <Ref Chap="Transformations"/> and 
+    <Ref Chap="Partial permutations"/> for more details about transformations
+    and partial permutations.
+
+    <List>
+      <Mark>for partial permutations</Mark>
+      <Item>
+        If the partial permutation <A>f</A> is a permutation of its image, then
+        <C>AsPermutation</C> returns this permutation.  If <A>f</A> does not
+        permute its image, then <K>fail</K> is returned. <P/>
+      </Item>
+    
+      <Mark>for transformations</Mark>
+      <Item>
+        A transformation is a permutation if and only if its rank equals its
+        degree. If a transformation in &GAP; is a permutation, then
+        <C>AsPermutation</C> returns this permutation.  If <A>f</A> is not a
+        permutation, then <K>fail</K> is returned. 
+      </Item>
+    </List>
+
+    The function 
+    <Ref Func="Permutation" Label="for a group, an action domain, etc."/> can
+    also be used to convert partial permutations and transformations into
+    permutations where appropriate.
+    <Example>
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
+> [ 2, 7, 9, 4, 1, 10, 5, 6, 3, 8 ] );
+(1,2,7,5)(3,9)(4)(6,10,8)
+gap> AsPermutation(f);
+(1,2,7,5)(3,9)(6,10,8)
+gap> f:= PartialPerm( [ 1, 2, 3, 4, 5, 7, 8 ], [ 5, 3, 8, 1, 9, 4, 10 ] );
+[2,3,8,10][7,4,1,5,9]
+gap> AsPermutation(f);
+fail
+gap> f:=Transformation( [ 5, 8, 3, 5, 8, 6, 2, 2, 7, 8 ] );;
+gap> AsPermutation(f);
+fail  
+gap> f:=Transformation( [ 1, 3, 6, 6, 2, 10, 2, 3, 10, 5 ] );;
+gap> AsPermutation(f);
+fail
+gap> f:=Transformation( [ 2, 7, 9, 4, 1, 10, 5, 6, 3, 8 ] );
+Transformation( [ 2, 7, 9, 4, 1, 10, 5, 6, 3, 8 ] )
+gap> AsPermutation(f);
+(1,2,7,5)(3,9)(6,10,8)</Example>
+    </Description>
+  </ManSection>
 
 </Section>
 </Chapter>

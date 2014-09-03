@@ -156,7 +156,8 @@ DeclareSynonymAttr( "IsDivisionRing",
     and IsLeftOperatorRingWithOne
     and IsLeftVectorSpace
     and IsNonTrivial
-    and IsAssociative );
+    and IsAssociative
+    and IsEuclideanRing );
 
 
 #############################################################################

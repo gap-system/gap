@@ -1185,7 +1185,8 @@ DeclareOperation( "QuotientRemainder",
 ##  <P/>
 ##  <A>R</A> must be a Euclidean ring (see <Ref Func="IsEuclideanRing"/>)
 ##  so that <Ref Func="EuclideanRemainder"/> can be applied.
-##  If the modular quotient does not exist, <K>fail</K> is returned.
+##  If the modular quotient does not exist (i.e. when <A>s</A> and <A>m</A>
+##  are not coprime), <K>fail</K> is returned.
 ##  <P/>
 ##  The quotient <M>q</M> of <A>r</A> and <A>s</A> modulo <A>m</A> is
 ##  an element of <A>R</A>

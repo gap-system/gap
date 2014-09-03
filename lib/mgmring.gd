@@ -45,8 +45,10 @@
 ##      or a free magma-with-one or a free monoid, respectively.
 ##  </Item>
 ##  </List>
+##  Note that formally, polynomial rings in &GAP; are not constructed 
+##  as free magma rings.
 ##  <P/>
-##  Note that a free Lie algebra is <E>not</E> a magma ring,
+##  Furthermore, a free Lie algebra is <E>not</E> a magma ring,
 ##  because of the additional relations given by the Jacobi identity;
 ##  see&nbsp;<Ref Sect="Magma Rings modulo Relations"/> for a generalization
 ##  of magma rings that covers such structures.
@@ -220,7 +222,7 @@
 ##  As the above examples show, there are several possible representations
 ##  of magma ring elements, the representations used for polynomials
 ##  (see Chapter &nbsp;<Ref Sect="Polynomials and Rational Functions"/>)
-##  as well as the default representation <C>IsMagmaRingObjDefaultRep</C>
+##  as well as the default representation <Ref Filt="IsMagmaRingObjDefaultRep"/>
 ##  of magma ring elements.
 ##  The latter simply stores the zero coefficient and a list containing
 ##  the coefficients of the element at the even positions

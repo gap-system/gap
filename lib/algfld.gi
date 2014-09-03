@@ -28,10 +28,14 @@ DeclareRepresentation("IsAlgBFRep",
 
 #############################################################################
 ##
-#R  IsAlgExtRep       Representation for true extension elements
+#R  IsKroneckerConstRep       Representation for true extension elements
 ##
-DeclareRepresentation("IsAlgExtRep",
+##  This representation describes elements that are represented in a formal
+##  extension as polynomials modulo an ideal.
+DeclareRepresentation("IsKroneckerConstRep",
   IsPositionalObjectRep and IsAlgebraicElement,[]);
+
+DeclareSynonym("IsAlgExtRep",IsKroneckerConstRep);
 
 #############################################################################
 ##
@@ -82,7 +86,7 @@ local fam,i,cof,red,rchar,impattr,deg;
 
   # The two types
   fam!.baseType := NewType(fam,IsAlgBFRep);
-  fam!.extType := NewType(fam,IsAlgExtRep);
+  fam!.extType := NewType(fam,IsKroneckerConstRep);
 
   # Important trivia
   fam!.baseField:=f;
@@ -264,7 +268,7 @@ local f,l;
 end);
 
 InstallMethod(ExtRepOfObj,"ExtElm",true,
-  [IsAlgebraicElement and IsAlgExtRep],0,
+  [IsAlgebraicElement and IsKroneckerConstRep],0,
 function(e)
   return e![1];
 end);
@@ -327,7 +331,7 @@ function(a)
   Print("!",String(a![1]));
 end);
 
-InstallMethod(PrintObj,"AlgElm",true,[IsAlgExtRep],0,
+InstallMethod(PrintObj,"AlgElm",true,[IsKroneckerConstRep],0,
 function(a)
 local fam;
   fam:=FamilyObj(a);
@@ -343,7 +347,7 @@ function(a)
   return Concatenation("!",String(a![1]));
 end);
 
-InstallMethod(String,"AlgElm",true,[IsAlgExtRep],0,
+InstallMethod(String,"AlgElm",true,[IsKroneckerConstRep],0,
 function(a)
 local fam;
   fam:=FamilyObj(a);
@@ -354,7 +358,7 @@ end);
 ##
 #M  \+  for all combinations of A.E.Elms and base field elms.
 ##
-InstallMethod(\+,"AlgElm+AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\+,"AlgElm+AlgElm",IsIdenticalObj,[IsKroneckerConstRep,IsKroneckerConstRep],0,
 function(a,b)
   local e,i,fam;
   fam:=FamilyObj(a);
@@ -371,7 +375,7 @@ function(a,b)
   #return AlgExtElm(FamilyObj(a),a![1]+b![1]);
 end);
 
-InstallMethod(\+,"AlgElm+BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\+,"AlgElm+BFElm",IsIdenticalObj,[IsKroneckerConstRep,IsAlgBFRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -380,7 +384,7 @@ local fam;
   return Objectify(fam!.extType,[a]);
 end);
 
-InstallMethod(\+,"BFElm+AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\+,"BFElm+AlgElm",IsIdenticalObj,[IsAlgBFRep,IsKroneckerConstRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -399,7 +403,7 @@ local e,fam;
   #return ObjByExtRep(FamilyObj(a),a![1]+b![1]);
 end);
 
-InstallMethod(\+,"AlgElm+FElm",IsElmsCoeffs,[IsAlgExtRep,IsRingElement],0,
+InstallMethod(\+,"AlgElm+FElm",IsElmsCoeffs,[IsKroneckerConstRep,IsRingElement],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -409,7 +413,7 @@ local fam;
   #return ObjByExtRep(fam,a);
 end);
 
-InstallMethod(\+,"FElm+AlgElm",IsCoeffsElms,[IsRingElement,IsAlgExtRep],0,
+InstallMethod(\+,"FElm+AlgElm",IsCoeffsElms,[IsRingElement,IsKroneckerConstRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(b);
@@ -441,7 +445,7 @@ end);
 ##
 #M  AdditiveInverseOp
 ##
-InstallMethod( AdditiveInverseOp, "AlgElm",true,[IsAlgExtRep],0,
+InstallMethod( AdditiveInverseOp, "AlgElm",true,[IsKroneckerConstRep],0,
 function(a)
   return Objectify(FamilyObj(a)!.extType,[-a![1]]);
 end);
@@ -455,7 +459,7 @@ end);
 ##
 #M  \*  for all combinations of A.E.Elms and base field elms.
 ##
-InstallMethod(\*,"AlgElm*AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\*,"AlgElm*AlgElm",IsIdenticalObj,[IsKroneckerConstRep,IsKroneckerConstRep],0,
 function(x,y)
 local fam,b,d,i;
   fam:=FamilyObj(x);
@@ -486,7 +490,7 @@ local fam,b,d,i;
 
 end);
 
-InstallMethod(\*,"AlgElm*BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\*,"AlgElm*BFElm",IsIdenticalObj,[IsKroneckerConstRep,IsAlgBFRep],0,
 function(a,b)
   if IsZero(b![1]) then
     return b;
@@ -496,7 +500,7 @@ function(a,b)
   fi;
 end);
 
-InstallMethod(\*,"BFElm*AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\*,"BFElm*AlgElm",IsIdenticalObj,[IsAlgBFRep,IsKroneckerConstRep],0,
 function(a,b)
   if IsZero(a![1]) then
     return a;
@@ -527,12 +531,12 @@ local fam;
   return AlgExtElm(fam,a);
 end);
 
-InstallMethod(\*,"Alg*List",true,[IsAlgebraicElement,IsVector],0,
+InstallOtherMethod(\*,"Alg*List",true,[IsAlgebraicElement,IsList],0,
 function(a,b)
   return List(b,i->a*i);
 end);
 
-InstallMethod(\*,"List*Alg",true,[IsVector,IsAlgebraicElement],0,
+InstallOtherMethod(\*,"List*Alg",true,[IsList,IsAlgebraicElement],0,
 function(a,b)
   return List(a,i->i*b);
 end);
@@ -541,7 +545,7 @@ end);
 ##
 #M  InverseOp
 ##
-InstallMethod( InverseOp, "AlgElm",true,[IsAlgExtRep],0,
+InstallMethod( InverseOp, "AlgElm",true,[IsKroneckerConstRep],0,
 function(a)
 local i,fam,f,g,t,h,rf,rg,rh,z;
   fam:=FamilyObj(a);
@@ -595,12 +599,12 @@ end);
 ##      Comparison is by the coefficient lists of the External
 ##      representation. The base field is naturally embedded
 ##
-InstallMethod(\<,"AlgElm<AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\<,"AlgElm<AlgElm",IsIdenticalObj,[IsKroneckerConstRep,IsKroneckerConstRep],0,
 function(a,b)
   return a![1]<b![1];
 end);
 
-InstallMethod(\<,"AlgElm<BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\<,"AlgElm<BFElm",IsIdenticalObj,[IsKroneckerConstRep,IsAlgBFRep],0,
 function(a,b)
 local fam,i;
   fam:=FamilyObj(a);
@@ -619,7 +623,7 @@ local fam,i;
   fi;
 end);
 
-InstallMethod(\<,"BFElm<AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\<,"BFElm<AlgElm",IsIdenticalObj,[IsAlgBFRep,IsKroneckerConstRep],0,
 function(a,b)
 local fam,i;
   fam:=FamilyObj(b);
@@ -643,7 +647,7 @@ function(a,b)
   return a![1]<b![1];
 end);
 
-InstallMethod(\<,"AlgElm<FElm",true,[IsAlgExtRep,IsRingElement],0,
+InstallMethod(\<,"AlgElm<FElm",true,[IsKroneckerConstRep,IsRingElement],0,
 function(a,b)
 local fam,i;
   fam:=FamilyObj(a);
@@ -662,7 +666,7 @@ local fam,i;
   fi;
 end);
 
-InstallMethod(\<,"FElm<AlgElm",true,[IsRingElement,IsAlgExtRep],0,
+InstallMethod(\<,"FElm<AlgElm",true,[IsRingElement,IsKroneckerConstRep],0,
 function(a,b)
 local fam,i;
   fam:=FamilyObj(b);
@@ -697,12 +701,12 @@ end);
 ##      Comparison is by the coefficient lists of the External
 ##      representation. The base field is naturally embedded
 ##
-InstallMethod(\=,"AlgElm=AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\=,"AlgElm=AlgElm",IsIdenticalObj,[IsKroneckerConstRep,IsKroneckerConstRep],0,
 function(a,b)
   return a![1]=b![1];
 end);
 
-InstallMethod(\=,"AlgElm=BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\=,"AlgElm=BFElm",IsIdenticalObj,[IsKroneckerConstRep,IsAlgBFRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -714,7 +718,7 @@ local fam;
   fi;
 end);
 
-InstallMethod(\=,"BFElm<AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\=,"BFElm<AlgElm",IsIdenticalObj,[IsAlgBFRep,IsKroneckerConstRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(b);
@@ -731,7 +735,7 @@ function(a,b)
   return a![1]=b![1];
 end);
 
-InstallMethod(\=,"AlgElm=FElm",true,[IsAlgExtRep,IsRingElement],0,
+InstallMethod(\=,"AlgElm=FElm",true,[IsKroneckerConstRep,IsRingElement],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -743,7 +747,7 @@ local fam;
   fi;
 end);
 
-InstallMethod(\=,"FElm=AlgElm",true,[IsRingElement,IsAlgExtRep],0,
+InstallMethod(\=,"FElm=AlgElm",true,[IsRingElement,IsKroneckerConstRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(b);
@@ -899,7 +903,7 @@ function(e)
 end);
 
 InstallMethod(MaxNumeratorCoeffAlgElm,"algebraic element",true,
-  [IsAlgebraicElement and IsAlgExtRep],0,
+  [IsAlgebraicElement and IsKroneckerConstRep],0,
 function(e)
   return Maximum(List(e![1],MaxNumeratorCoeffAlgElm));
 end);
@@ -1063,12 +1067,13 @@ end);
 BindGlobal("AlgExtFactSQFree",
 function( R, U, opt )
 local coeffring, basring, theta, xind, yind, x, y, coeffs, G, c, val, k, T,
-      N, factors, i, j,xe,Re;
+      N, factors, i, j,xe,Re,one,kone;
 
     # Let $K = \Q(\theta)$ be a number field,
     # $T \in \Q[X]$ the minimal monic polynomial of $\theta$.
     # Let $U(X) be a monic squarefree polynomial in $K[x]$.
     coeffring:= CoefficientsRing( R );
+    one:=One(coeffring);
     basring:=LeftActingDomain(coeffring);
     theta:= PrimitiveElement( coeffring );
 
@@ -1122,7 +1127,10 @@ local coeffring, basring, theta, xind, yind, x, y, coeffs, G, c, val, k, T,
     # The desired factorization of $U(X)$ is $\prod_{i=1}^g A_i$.
     factors:= Factors( PolynomialRing( basring, [ xind ] ), N );
     factors:= List( factors,f -> AlgExtEmbeddedPol(coeffring,f));
-    factors:= List( factors,f -> Value( f, xe + k*theta ) );
+
+    # over finite field alg ext we cannot multiply with Integers
+    kone:=Zero(one); for j in [1..k] do kone:=kone+one; od;
+    factors:= List( factors,f -> Value( f, xe + kone*theta ),one );
     factors:= List( factors,f -> Gcd( Re, U, f ) );
     factors:=Filtered( factors,
                      x -> DegreeOfUnivariateLaurentPolynomial( x ) <> 0 );
@@ -1200,7 +1208,7 @@ end);
 ##  mod p
 ##
 BindGlobal("ChaNuPol",function(f,alm,alz,coeffun,fam,inum)
-local b,p,r,nu,w,i,z;
+local b,p,r,nu,w,i,z,fnew;
   p:=Characteristic(alm);
   z:=Z(p);
   r:=PrimitiveRootMod(p);
@@ -1212,6 +1220,7 @@ local b,p,r,nu,w,i,z;
   else
     f:=[f];
   fi;
+  fnew:=[]; # f could be compressed vector, so we cannot assign to it.
   for i in [1..Length(f)] do
     w:=f[i];
     if w=nu then
@@ -1223,9 +1232,10 @@ local b,p,r,nu,w,i,z;
         w:=ValuePol(List(coeffun(w),IntFFE),alz);
       fi;
     fi;
-    f[i]:=w;
+    #f[i]:=w;
+    fnew[i]:=w;
   od;
-  return UnivariatePolynomialByCoefficients(fam,f,inum);
+  return UnivariatePolynomialByCoefficients(fam,fnew,inum);
 end);
 
 
@@ -1994,9 +2004,15 @@ InstallMethod( FactorsSquarefree, "polynomial/alg. ext.",IsCollsElmsX,
     [ IsAlgebraicExtensionPolynomialRing, IsUnivariatePolynomial, IsRecord ],
 function(r,pol,opt)
 
-  if Characteristic(r)=0 and DegreeOverPrimeField(CoefficientsRing(r))<=4
+  # the second algorithm seem to have problems -- temp. disable
+  if true or
+ ( 
+  (Characteristic(r)=0 and DegreeOverPrimeField(CoefficientsRing(r))<=4
     and DegreeOfLaurentPolynomial(pol)
-          *DegreeOverPrimeField(CoefficientsRing(r))<=20 then
+          *DegreeOverPrimeField(CoefficientsRing(r))<=20) 
+     or Characteristic(r)>0)
+     
+     then
      return AlgExtFactSQFree(r,pol,opt);
   else
     return AlgExtSquareHensel(r,pol,opt);
@@ -2154,6 +2170,154 @@ local irrfacs, coeffring, i, ind, coeffs, der, g;
     return false;
   fi;
 end);
+
+
+#############################################################################
+##
+#F  DecomPoly( <f> [,"all"] )  finds (all) ideal decompositions of rational f
+##                       This is equivalent to finding subfields of K(alpha).
+##
+DecomPoly := function(arg)
+local f,n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
+      gut,avoid,blocks,g,m,decom,z,R,scale,allowed,hp,hpc,a,kfam;
+  f:=arg[1];
+  n:=DegreeOfUnivariateLaurentPolynomial(f);
+  if IsPrime(n) then
+    return [];
+  fi;
+  if Length(Factors(f))>1 then
+    Error("<f> must be irreducible");
+  fi;
+  allowed:=Difference(DivisorsInt(n),[1,n]);
+  avoid:=Discriminant(f);
+  p:=1;
+  fm:=[];
+  repeat
+    p:=NextPrimeInt(p);
+    if avoid mod p<>0 then
+      fm:=Factors(PolynomialModP(f,p));
+      ffd:=List(fm,DegreeOfUnivariateLaurentPolynomial);
+      Sort(ffd);
+      if ffd[1]=1 then
+        allowed:=Intersection(allowed,List(Combinations(ffd{[2..Length(ffd)]}),
+                                           i->Sum(i)+1));
+      fi;
+    fi;
+  until Length(fm)=n or Length(allowed)=0;
+  if Length(allowed)=0 then
+    return [];
+  fi;
+  Info(InfoPoly,2,"Possible sizes: ",allowed);
+  e:=AlgebraicExtension(Rationals,f);
+  a:=PrimitiveElement(e);
+  # lin. faktor weg
+  ff:=Value(f,X(e))/(X(e)-a);
+  ff:=Factors(ff);
+  ffd:=List(ff,DegreeOfUnivariateLaurentPolynomial);
+  Info(InfoPoly,2,Length(ff)," factors, degrees: ",ffd);
+  #avoid:=Lcm(Union([avoid],
+#            List(ff,i->Lcm(List(i.coefficients,NewDenominator)))));
+  h:=f;
+  allowed:=allowed-1;
+  comb:=Filtered(Combinations([1..Length(ff)]),i->Sum(ffd{i}) in allowed);
+  Info(InfoPoly,2,Length(comb)," combinations");
+  k:=GF(p);
+  kfam:=FamilyObj(One(k));
+  Info(InfoPoly,2,"selecting prime ",p);
+  #zeros;
+  fm:=List(fm,i->RootsOfUPol(i)[1]);
+  # now search for block:
+  blocks:=[];
+  gut:=false;
+  h:=1;
+  while h<=Length(comb) and gut=false do
+    combi:=comb[h];
+    Info(InfoPoly,2,"testing combination ",combi,": ");
+    fft:=ff{combi};
+    ffp:=List(fft,i->AlgebraicPolynomialModP(kfam,i,fm[1],p));
+    roots:=Filtered(fm,i->ForAny(ffp,j->Value(j,i)=Zero(k)));
+  if Length(roots)<>Sum(ffd{combi}) then
+    Error("serious error");
+  fi;
+    allroots:=Union(roots,[fm[1]]);
+    gut:=true;
+    j:=1;
+    while j<=Length(roots) and gut do
+      ffp:=List(fft,i->AlgebraicPolynomialModP(kfam,i,roots[j],p));
+      nowroots:=Filtered(allroots,i->ForAny(ffp,j->Value(j,i)=Zero(k)));
+      gut := Length(nowroots)=Sum(ffd{combi});
+      j:=j+1; 
+    od;
+    if gut then
+      Info(InfoPoly,2,"block found");
+      Add(blocks,combi);
+      if Length(arg)>1 then
+        gut:=false;
+      fi;
+    fi;
+    h:=h+1;
+  od;
+
+  if Length(blocks)>0  then
+    if Length(blocks)=1 then
+      Info(InfoPoly,2,"Block of Length ",Sum(ffd{blocks[1]})+1," found");
+    else
+      Info(InfoPoly,2,"Blocks of Lengths ",List(blocks,i->Sum(ffd{i})+1),
+                " found");
+    fi;
+    decom:=[];
+    # compute decompositions
+    for i in blocks do
+      # compute h 
+      hp:=(X(e)-a)*Product(ff{i});
+      hpc:=Filtered(CoefficientsOfUnivariatePolynomial(hp),i->not IsAlgBFRep(i));
+      gut:=0;
+      repeat
+        if gut=0 then
+          h:=hpc[1];
+        else
+          h:=List(hpc,i->RandomList([-2^20..2^20]));
+          Info(InfoPoly,2,"combining ",h);
+          h:=h*hpc;
+        fi;
+        h:=UnivariatePolynomial(Rationals,h![1]);
+        h:=h*Lcm(List(CoefficientsOfUnivariatePolynomial(h),DenominatorRat));
+        if LeadingCoefficient(h)<0 then
+          h:=-h;
+        fi;
+        # compute g
+        j:=0;
+        m:=[];
+        repeat
+          z:=PowerMod(h,j,f);
+          z:=ShallowCopy(CoefficientsOfUnivariatePolynomial(z));
+          while Length(z)<Length(CoefficientsOfUnivariatePolynomial(f))-1 do
+            Add(z,0);
+          od;
+          Add(m,z);
+          j:=j+1;
+        until RankMat(m)<Length(m);
+        g:=UnivariatePolynomial(Rationals,NullspaceMat(m)[1]);
+        g:=g*Lcm(List(CoefficientsOfUnivariatePolynomial(g),DenominatorRat));
+        if LeadingCoefficient(g)<0 then
+          g:=-g;
+        fi;
+        gut:=gut+1;
+      until DegreeOfUnivariateLaurentPolynomial(g)*DegreeOfUnivariateLaurentPolynomial(hp)=n;
+      #z:=f.integerTransformation;
+      #z:=f;
+      #h:=Value(h,X(Rationals)*z);
+      Add(decom,[g,h]);
+    od;
+    if Length(arg)=1 then
+      decom:=decom[1];
+    fi;
+    return decom;
+  else
+    Info(InfoPoly,2,"primitive");
+    return [];
+  fi;
+end;
 
 #############################################################################
 ##

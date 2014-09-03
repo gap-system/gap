@@ -4592,7 +4592,7 @@ local ReductionModuloTable,   #
 
    RemoveEntry:= function( k )
 
-     # Removes all occurences of the variable xk in the commutators 
+     # Removes all occurrences of the variable xk in the commutators 
      # of the table.
 
      local i;

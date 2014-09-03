@@ -1206,10 +1206,29 @@ Obj NewFunctionCT (
     ObjFunc             hdlr )
 {
     Obj                 name_o;         /* name as an object               */
-    Obj                 nams_o;         /* nams as an object               */
-    UInt                 len;            /* length                          */
-    UInt                 i, k, l;        /* loop variables                  */
 
+    /* convert the name to an object                                       */
+    C_NEW_STRING_DYN(name_o, name_c);
+    RetypeBag(name_o, T_STRING+IMMUTABLE);
+
+    /* make the function                                                   */
+    return NewFunctionT( type, size, name_o, narg, ArgStringToList( nams_c ), hdlr );
+}
+    
+
+/****************************************************************************
+**
+*F  ArgStringToList( <nams_c> )
+**
+** 'ArgStringToList' takes a C string <nams_c> containing a list of comma
+** separated argument names, and turns it into a plist of strings, ready
+** to be passed to 'NewFunction' as <nams>.
+*/
+Obj ArgStringToList(const Char *nams_c) {
+    Obj                 tmp;            /* argument name as an object      */
+    Obj                 nams_o;         /* nams as an object               */
+    UInt                len;            /* length                          */
+    UInt                i, k, l;        /* loop variables                  */
 
     /* convert the arguments list to an object                             */
     len = 0;
@@ -1227,24 +1246,18 @@ Obj NewFunctionCT (
             k++;
         }
         l = k;
-        while ( nams_c[l]!=' ' && nams_c[l]!=',' && nams_c[l]!='\0' ) {
+        while ( nams_c[l] != ' ' && nams_c[l] != ',' && nams_c[l] != '\0' ) {
             l++;
         }
-        C_NEW_STRING(name_o, l-k, nams_c+k);
-        RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
-        SET_ELM_PLIST( nams_o, i, name_o );
+        C_NEW_STRING( tmp, l - k, nams_c + k );
+        RetypeBag( tmp, T_STRING+IMMUTABLE );
+        SET_ELM_PLIST( nams_o, i, tmp );
         k = l;
     }
 
-    /* convert the name to an object                                       */
-    len = strlen( name_c );
-    C_NEW_STRING(name_o, len, name_c);
-    RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
-
-    /* make the function                                                   */
-    return NewFunctionT( type, size, name_o, narg, nams_o, hdlr );
+    return nams_o;
 }
-    
+
 
 /****************************************************************************
 **
@@ -1287,6 +1300,7 @@ void PrintFunction (
     Int                 nloc;           /* number of locals                */
     Obj                 oldLVars;       /* terrible hack                   */
     UInt                i;              /* loop variable                   */
+    UChar               *locks = 0L;
 
 
     if ( IS_OPERATION(func) ) {
@@ -1294,12 +1308,27 @@ void PrintFunction (
       return;
     }
 
-    /* print 'function ('                                                  */
-    Pr("%5>function%< ( %>",0L,0L);
+    
+    /* print 'function (' or 'atomic function ('                          */
+    if (LCKS_FUNC(func)) {
+      locks = CHARS_STRING(LCKS_FUNC(func));
+      Pr("%5>atomic function%< ( %>",0L,0L);
+    } else
+      Pr("%5>function%< ( %>",0L,0L);
 
     /* print the arguments                                                 */
     narg = (NARG_FUNC(func) == -1 ? 1 : NARG_FUNC(func));
     for ( i = 1; i <= narg; i++ ) {
+      if (locks) {
+	switch(locks[i-1]) {
+	case 1:
+	  Pr("%>readonly %<", 0L, 0L);
+	  break;
+	case 2:
+	  Pr("%>readwrite %<", 0L, 0L);
+	  break;
+	}
+      }
         if ( NAMS_FUNC(func) != 0 )
             Pr( "%I", (Int)NAMI_FUNC( func, (Int)i ), 0L );
         else
@@ -1626,6 +1655,30 @@ Obj FuncNAMS_FUNC (
     }
 }
 
+/****************************************************************************
+**
+*F  FuncLOCKS_FUNC( <self>, <func> ) . . . . locking status of a possibly
+**                                           atomic function
+*/
+Obj LOCKS_FUNC_Oper;
+
+Obj FuncLOCKS_FUNC (
+    Obj                 self,
+    Obj                 func )
+{
+  Obj locks;
+    if ( TNUM_OBJ(func) == T_FUNCTION ) {
+      locks = LCKS_FUNC(func);
+      if ( locks == (Obj)0) 
+	return Fail;
+      else
+	return locks;
+    }
+    else {
+        return DoOperation1Args( self, func );
+    }
+}
+
 
 /****************************************************************************
 **
@@ -1865,7 +1918,6 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
   ObjFunc hdlr;
   const Char *cookie;
   Obj cookieStr;
-  UInt len;
   if (!IS_FUNC(func))
     return Fail;
   narg = NARG_FUNC(func);
@@ -1873,9 +1925,7 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
     narg = 7;
   hdlr = HDLR_FUNC(func, narg);
   cookie = CookieOfHandler(hdlr);
-  len = strlen(cookie);
-  cookieStr = NEW_STRING(len);
-  COPY_CHARS(cookieStr, cookie, len);
+  C_NEW_STRING_DYN(cookieStr, cookie);
   return cookieStr;
 }
 
@@ -1969,6 +2019,9 @@ static StructGVarOper GVarOpers [] = {
 
     { "NAMS_FUNC", 1, "func", &NAMS_FUNC_Oper,
       FuncNAMS_FUNC, "src/calls.c:NAMS_FUNC" },
+
+    { "LOCKS_FUNC", 1, "func", &LOCKS_FUNC_Oper,
+      FuncLOCKS_FUNC, "src/calls.c:LOCKS_FUNC" },
 
     { "PROF_FUNC", 1, "func", &PROF_FUNC_Oper,
       FuncPROF_FUNC, "src/calls.c:PROF_FUNC" },
@@ -2118,7 +2171,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCalls ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

@@ -348,8 +348,8 @@ For  details,  see
 <P/>
 <Index Key="TraceMethods"><C>TraceMethods</C></Index>
 If you want to see which methods  are chosen for certain operations while
-&GAP;  code is being executed,
-you can call the function <Ref Func="TraceMethods" BookName="ref"/>
+&GAP;  code is being executed, you can call the function 
+<Ref Func="TraceMethods" BookName="ref" Label="for a list of operations"/>
 with a list of these operations as arguments.
 <P/>
 <Example><![CDATA[

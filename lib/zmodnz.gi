@@ -456,32 +456,50 @@ InstallMethod( \/,
     "for two elements in Z/nZ (ModulusRep)",
     IsIdenticalObj,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
-    function( x, y )
-    # Avoid to touch the rational arithmetics.
-    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-               [ QuotientMod( Integers, x![1], y![1],
-                              DataType( TypeObj( x ) ) ) ] );
+        function( x, y )
+    local q;
+    q := QuotientMod( Integers, x![1], y![1],
+                 DataType( TypeObj( x ) ) );
+    if q = fail then
+        return fail;
+    else
+        # Avoid to touch the rational arithmetics.
+        return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                       [ q ] );
+    fi;
     end );
 
 InstallMethod( \/,
     "for element in Z/nZ (ModulusRep) and integer",
     [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
-    # Avoid to touch the rational arithmetics.
-    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-               [ QuotientMod( Integers, x![1], y,
-                              DataType( TypeObj( x ) ) ) ] );
-    end );
+    local q;
+    q := QuotientMod( Integers, x![1], y,
+                 DataType( TypeObj( x ) ) );
+    if q = fail then
+        return fail;
+    else
+        # Avoid to touch the rational arithmetics.
+        return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                       [ q ] );
+    fi;
+end );
 
 InstallMethod( \/,
     "for integer and element in Z/nZ (ModulusRep)",
     [ IsInt, IsZmodnZObj and IsModulusRep ],
-    function( x, y )
-    # Avoid to touch the rational arithmetics.
-    return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
-               [ QuotientMod( x, y![1],
-                              DataType( TypeObj( y ) ) ) ] );
-    end );
+        function( x, y )
+    local q;
+    q := QuotientMod( Integers, x, y![1],
+                 DataType( TypeObj( y ) ) );
+    if q = fail then
+        return fail;
+    else
+        # Avoid to touch the rational arithmetics.
+        return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
+                       [ q ] );
+    fi;
+end );
 
 InstallMethod( \/,
     "for element in Z/nZ (ModulusRep) and rational",
@@ -1009,9 +1027,14 @@ InstallGlobalFunction( ZmodnZ, function( n )
           F,
           R;
 
-    if not IsInt( n ) or n <= 0 then
-      Error( "<n> must be a positive integer" );
-    elif IsPrimeInt( n ) then
+    if not IsInt( n ) then
+      Error( "<n> must be an integer" );
+    elif n = 0 then
+      return Integers;
+    elif n < 0 then
+      n := -n;
+    fi;
+    if IsPrimeInt( n ) then
       return ZmodpZNC( n );
     fi;
     
@@ -1067,8 +1090,8 @@ end );
 #M  \mod( Integers, <n> )
 ##
 InstallMethod( \mod,
-    "for `Integers', and positive integers",
-    [ IsIntegers, IsPosInt ],
+    "for `Integers', and integer",
+    [ IsIntegers, IsInt ],
     function( Integers, n ) return ZmodnZ( n ); end );
 
 
@@ -1130,6 +1153,16 @@ InstallMethod( DefaultFieldOfMatrixGroup,
     "for a matrix group over a ring Z/nZ",
     [ IsMatrixGroup and IsZmodnZObjNonprimeCollCollColl ],
     G -> ZmodnZ( ModulusOfZmodnZObj( Representative( G )[1][1] ) ) );
+
+
+#############################################################################
+##
+#M  AsInternalFFE( <zmodpzobj> )
+##
+##  A ZmodpZ object can be a finite field element, but is never equal to
+##  an internal FFE, so this method just returns fail
+##
+InstallMethod(AsInternalFFE, [IsZmodpZObj], ReturnFail);
 
 
 #############################################################################

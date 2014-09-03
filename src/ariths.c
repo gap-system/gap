@@ -2011,7 +2011,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoAriths ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

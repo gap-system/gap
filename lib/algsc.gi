@@ -728,7 +728,7 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
         if IsNegRat( a ) and IsNegRat( b ) and IsCyclotomicCollection( F ) and 
            IsField( F ) and ForAll( GeneratorsOfDivisionRing( F ),
                                   x -> x = ComplexConjugate( x ) ) then
-          SetFilterObj( A, IsMagmaWithInversesIfNonzero );
+          SetFilterObj( A, IsDivisionRing );
           #T better use `DivisionRingByGenerators'?
           SetGeneratorsOfDivisionRing( A, GeneratorsOfAlgebraWithOne( A ) );
         fi;
@@ -779,11 +779,12 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
 
     # A quaternion algebra with negative parameters over a real field
     # is a division ring.
-    if IsNegRat( a ) and IsNegRat( b ) and IsCyclotomicCollection( F ) and 
-       IsField( F ) and ForAll( GeneratorsOfDivisionRing( F ),
-                                x -> x = ComplexConjugate( x ) ) then
-      SetFilterObj( A, IsMagmaWithInversesIfNonzero );
-      #T better use `DivisionRingByGenerators'?
+    if     IsNegRat( a ) and IsNegRat( b )
+       and IsCyclotomicCollection( F ) and IsField( F )
+       and ForAll( GeneratorsOfDivisionRing( F ),
+                   x -> x = ComplexConjugate( x ) ) then
+      SetFilterObj( A, IsDivisionRing );
+#T better use `DivisionRingByGenerators'?
       SetGeneratorsOfDivisionRing( A, GeneratorsOfAlgebraWithOne( A ) );
     fi;
 

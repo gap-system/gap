@@ -2507,36 +2507,13 @@ function(G,bound)
         return monic(LGLayers(pcgs),PrimePGroup(G),a->Order(PcElementByExponents(pcgs,a)));
 end);
 
-InstallMethod( Exponent,"solvable group: does obvious bound work?",
+InstallMethod( Exponent,"solvable group",
   true,[IsGroup and IsSolvableGroup],0,
-#based on code by Jack Schmidt
 function(G)
-local L, upper, lower, cnts, cnt, a, i;
+local exp, primes, p;
   if IsPGroup(G) then 
     return ExponentOfPGroupAndElm(G,Size(G))[1];
   fi;
-
-  L:=DerivedSeriesOfGroup(G);
-  upper:=1;
-  for i in [1..Length(L)-1] do
-    upper:=upper*Lcm(AbelianInvariants(L[i]));
-  od;
-  lower:=Lcm(List(Pcgs(G),Order));
-  cnts:=LogInt(Size(G),2);
-  cnt:=cnts;
-  repeat
-    a:=Lcm(lower,Order(Random(G)));
-    if a>lower then
-      if a=upper then 
-        return upper;
-      fi;
-      lower:=a;
-      cnt:=cnts;
-    else
-      cnt:=cnt-1;
-    fi;
-  until cnt<1;
-  # fails
   TryNextMethod();
 end);
 
@@ -2848,6 +2825,19 @@ InstallMethod (SylowComplementOp, "via IsomoprhismPcGroup", true,
 RedispatchOnCondition(SylowComplementOp,true,[IsGroup,IsPosInt],
   [IsSolvableGroup and IsFinite,
   IsPosInt ],1);
+
+InstallMethod( FittingFreeLiftSetup, "pc group", true, [ IsPcGroup ],0,
+function( G )
+local   pcgs;
+  
+  pcgs:=PcgsElementaryAbelianSeries(G);
+  return rec(pcgs:=pcgs,
+             depths:=IndicesEANormalSteps(pcgs),
+	     radical:=G,
+	     pcisom:=IdentityMapping(G),
+	     factorhom:=NaturalHomomorphismByNormalSubgroupNC(G,G));
+
+end );
 
 
 #############################################################################

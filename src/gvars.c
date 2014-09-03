@@ -308,11 +308,18 @@ void            AssGVar (
 	    /*CCC        onam = NEW_STRING(strlen(name));
 	      SyStrncat( CSTR_STRING(onam), name, strlen(name) ); CCC*/
 	    len = strlen(name);
-	    C_NEW_STRING(onam, len, name);
+	    C_NEW_STRING_DYN(onam, name);
 	    RESET_FILT_LIST( onam, FN_IS_MUTABLE );
 	    NAME_FUNC(val) = onam;
 	    CHANGED_BAG(val);
 	}
+    if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
+        name = NameGVar(gvar);
+        C_NEW_STRING_DYN(onam, name);
+        RESET_FILT_LIST( onam, FN_IS_MUTABLE );
+        NAME_FUNC(val) = onam;
+        CHANGED_BAG(val);
+    }
     }
 }
 
@@ -420,6 +427,14 @@ Obj NewGVarBucket() {
     return result;
 }
 
+Obj NameGVarObj ( UInt gvar )
+{
+    UInt gvar_bucket = GVAR_BUCKET(gvar);
+    UInt gvar_index  = GVAR_INDEX(gvar);
+
+    return ELM_PLIST( NameGVars[gvar_bucket], gvar_index );
+}
+
 #define NSCHAR '@'
 
 /* TL: Obj CurrNamespace = 0; */
@@ -455,19 +470,14 @@ UInt GVarName (
     const Char *        p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
     Int                 len;            /* length of name                  */
-    Int                 len2;           /* length of namespace name        */
 
     /* First see whether it could be namespace-local: */
     cns = TLS->currNamespace ? CSTR_STRING(TLS->currNamespace) : "";
     if (*cns) {   /* only if a namespace is set */
         len = strlen(name);
         if (name[len-1] == NSCHAR) {
-            gvarbuf[0] = 0;
-            if (len > 512) len = 512;
-            SyStrncat(gvarbuf,name,len);
-            len2 = GET_LEN_STRING(TLS->currNamespace);
-            if (len2 > 511) len2 = 511;
-            SyStrncat(gvarbuf+len,cns,GET_LEN_STRING(TLS->currNamespace));
+            strlcpy(gvarbuf, name, 512);
+            strlcat(gvarbuf, cns, sizeof(gvarbuf));
             name = gvarbuf;
         }
     }
@@ -502,20 +512,16 @@ UInt GVarName (
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
     if ( gvar == 0 ) {
-	pos = i;
         UInt gvar_bucket, gvar_index;
+	pos = i;
         CountGVars++;
 	gvar_bucket = GVAR_BUCKET(CountGVars);
 	gvar_index = GVAR_INDEX(CountGVars);
         gvar = INTOBJ_INT(CountGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
-        /*CCC        namx[0] = '\0';
-        SyStrncat( namx, name, 1023 );
-        string = NEW_STRING( strlen(namx) );
-        SyStrncat( CSTR_STRING(string), namx, strlen(namx) );CCC*/
-        len = strlen(name);
-        memcpy(namx, name, len+1);
-        C_NEW_STRING(string, len, namx);
+        strlcpy(namx, name, sizeof(namx));
+        C_NEW_STRING_DYN(string, namx);
+
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
 	if (!ValGVars[gvar_bucket]) {
 	   ValGVars[gvar_bucket] = NewGVarBucket();
@@ -1560,7 +1566,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoGVars ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

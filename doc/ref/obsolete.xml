@@ -81,7 +81,9 @@ see <Ref Sect="The PackageInfo.g File"/>.
 <P/>
 Furthermore, the global variable <C>PACKAGES_VERSIONS</C> is no longer needed,
 since this information is now contained in the <C>GAPInfo.PackagesInfo</C> record
-(see <Ref Subsect="GAPInfo"/>).
+(see <Ref Subsect="GAPInfo"/>). The global variable <C>Revisions</C> is also
+no longer needed, since the function <C>DisplayRevision</C> was made obsolete in
+&GAP;&nbsp;4.5.
 <P/>
 
 The following function names were changed.
@@ -148,6 +150,8 @@ Here are some further name changes.
 <P/>
 <Index Key="MonomialTotalDegreeLess"><C>MonomialTotalDegreeLess</C></Index>
 <Index Key="NormedVectors"><C>NormedVectors</C></Index>
+<Index Key="MutableIdentityMat"><C>MutableIdentityMat</C></Index>
+<Index Key="MutableNullMat"><C>MutableNullMat</C></Index>
 <Table Align="l|l">
 <Row>
   <Item><E>OLD</E></Item>
@@ -162,7 +166,42 @@ Here are some further name changes.
   <Item><C>NormedVectors</C></Item>
   <Item><Ref Func="NormedRowVectors"/></Item>
 </Row>
+<Row>
+  <Item><C>MutableIdentityMat</C></Item>
+  <Item><Ref Func="IdentityMat"/></Item>
+</Row>
+<Row>
+  <Item><C>MutableNullMat</C></Item>
+  <Item><Ref Func="NullMat"/></Item>
+</Row>
 </Table>
+
+
+<Index Key="PositionFirstComponent"><C>PositionFirstComponent</C></Index>
+The operation <C>PositionFirstComponent</C> has been deprecated in GAP
+4.8 and later due to issues with its documentation and implementation.
+Instead of <C>PositionFirstComponent(list,obj)</C>, you may use
+<C>PositionSorted(list,[obj])</C> or
+<C>PositionProperty(list,x->x[1]=obj)</C> as a replacement, depending on
+your specific use case.
+
+
+<ManSection>
+<Var Name="InfoObsolete"/>
+<Description>
+is an info class to display warnings when an obsolete variable is used.
+By default, these warnings are switched off since the info level for 
+this class is 0. Setting it to 1 will trigger warnings if &GAP; will 
+detect that an obsolete variable is used at runtime (this detection is
+possible, however, only for obsolete variables declared using 
+<C>DeclareObsoleteSynonym</C>). 
+<P/>
+To check that the &GAP; code does not use obsolete variables at the 
+parsing time, and not at a runtime, use <C>-O</C> command line option,
+see <Ref Sect="Command Line Options"/>. 
+</Description>
+</ManSection>
+
 
 </Section>
 

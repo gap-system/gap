@@ -77,11 +77,11 @@ InstallGlobalFunction( ExtensionSQ, function( C, G, M, c )
     # construct module generators
     field := M.field;
     Mgens := M.generators;
+    d := M.dimension;
+    orders := List([1..d], x -> Characteristic(M.field));
     if Length(Mgens) = 0 then
-        return AbelianGroup( List([1..M.dimension], 
-                              x -> Characteristic(M.field)));
+        return AbelianGroup( orders );
     fi;
-    d := Length(Mgens[1]);
     n := Length(Pcgs( G ));
 
     # add tails to presentation
@@ -100,7 +100,7 @@ InstallGlobalFunction( ExtensionSQ, function( C, G, M, c )
                 p := (i^2-i)/2 + j - 1;
                 for k  in [ 1 .. d ]  do
                     l := c[p*d+k];
-                    if l <> Zero( field ) then
+                    if not IsZero( l ) then
                         Add( w, n+k );
                         Add( w, IntFFE(l) );
                     fi;
@@ -129,7 +129,7 @@ InstallGlobalFunction( ExtensionSQ, function( C, G, M, c )
             w := [];
             for k  in [ 1 .. d ]  do
                 l := v[k];
-                if l <> Zero( field ) then
+                if not IsZero( l ) then
                     Add( w, n+k );
                     Add( w, IntFFE(l) );
                 fi;
@@ -138,8 +138,7 @@ InstallGlobalFunction( ExtensionSQ, function( C, G, M, c )
         od;
     od;
 
-    orders := Concatenation( C.orders, List( [1..d], 
-                                       x -> Characteristic( field ) ) );
+    orders := Concatenation( C.orders, orders );
 
     # create extension as fp group
     F := FreeGroup(IsSyllableWordsFamily, n+d );

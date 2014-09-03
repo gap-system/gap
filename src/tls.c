@@ -92,7 +92,7 @@ void InitTLS()
   InitThreadAPITLS();
   InitOpersTLS();
   InitAObjectsTLS();
-
+  RunTLSConstructors();
   TLS->CountActive = 1;
 }
 

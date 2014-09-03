@@ -3400,7 +3400,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCosetTable ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

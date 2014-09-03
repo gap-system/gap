@@ -1049,9 +1049,7 @@ end );
 InstallMethod( IsEndOfStream,
     "input text none",
     [ IsInputTextNone and IsInputTextNoneRep ],
-function( stream )
-    return true;
-end );
+ReturnTrue );
 
 
 #############################################################################
@@ -1128,7 +1126,7 @@ InstallMethod( ReadLine,
 InstallMethod( RewindStream,
     "input text none",
     [ IsInputTextNone and IsInputTextNoneRep ],
-    RETURN_TRUE );
+    ReturnTrue );
 
 
 #############################################################################
@@ -1139,7 +1137,7 @@ InstallMethod( SeekPositionStream,
     "input text none",
     [ IsInputTextNone and IsInputTextNoneRep,
       IsInt ],
-    RETURN_TRUE );
+    ReturnTrue );
 
 
 #############################################################################

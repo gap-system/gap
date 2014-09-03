@@ -410,7 +410,7 @@ DeclareProperty( "IsTranslationInvariantOrdering" ,IsOrdering and
 ##  for an ordering <A>ord</A> on a family of associative words,
 ##  returns <K>true</K> if and only if the ordering is a reduction ordering.
 ##  An ordering <A>ord</A> is a reduction ordering
-##  if it is founded and translation invariant.
+##  if it is well founded and translation invariant.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

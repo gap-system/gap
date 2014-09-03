@@ -1143,6 +1143,36 @@ DeclareGlobalFunction( "BibEntry" );
 
 #############################################################################
 ##
+#F  Cite()
+##
+##  <#GAPDoc Label="Cite">
+##  <ManSection>
+##  <Func Name="Cite" Arg='[pkgname[, key]]'/>
+##
+##  <Description>
+##  Used with no arguments or with argument <C>"GAP"</C> (case-insensitive), 
+##  <Ref Func="Cite"/> displays instructions on citing the version of &GAP; 
+##  that is being used. Suggestions are given in plain text, HTML, BibXML 
+##  and BibTeX formats. The same instructions are also contained in the 
+##  <F>CITATION</F> file in the &GAP; root directory.
+##  <P/>
+##  If <A>pkgname</A> is the name of a &GAP; package, instructions on 
+##  citing this package will be displayed. They will be produced from the 
+##  <F>PackageInfo.g</F> file of the working version of this package that
+##  must be available in the &GAP; installation being used. Otherwise, one
+##  will get a warning that no working version of the package is available.
+##  <P/>
+##  The optional 2nd argument <A>key</A> has the same meaning as in
+##  <Ref Func="BibEntry"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "Cite" );
+
+
+#############################################################################
+##
 #F  ShowPackageVariables( <pkgname>[, <version>][, <arec>] )
 #F  PackageVariablesInfo( <pkgname>, <version> )
 ##

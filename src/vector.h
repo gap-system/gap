@@ -17,7 +17,7 @@
 **  vector flag and the compact representation of vectors over finite fields.
 **
 **  A list that  is known to   be a vector is  represented  by a bag of  type
-**  'T_VECTOR',  which has exactely the  same  representation as bags of type
+**  'T_VECTOR',  which has exactly the  same  representation as bags of type
 **  'T_PLIST'.  As a matter of fact the functions  in this file do not really
 **  know  how this  representation  looks, they  use  the macros 'NEW_PLIST',
 **  'GROW_PLIST',      'SHRINK_PLIST',      'SET_LEN_PLIST',     'LEN_PLIST',

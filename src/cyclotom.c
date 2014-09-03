@@ -2284,7 +2284,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCyc ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

@@ -826,8 +826,10 @@ local ord,i,vec,v,o;
     od;
 
     # raise the matrix to this length (new mat will fix basis vector)
-    mat := mat ^ o;
-    ord := ord * o;
+    if o>1 then
+      mat := mat ^ o;
+      ord := ord * o;
+    fi;
   od;
   if IsOne(mat) then return ord; else return fail; fi;
 end);
@@ -3064,8 +3066,6 @@ end );
 ##
 #F  IdentityMat( <m>[, <F>] ) . . . . . . . . identity matrix of a given size
 ##
-#T change this to 2nd argument the identity of the field/ring?
-##
 InstallGlobalFunction( IdentityMat, function ( arg )
     local   id, m, zero, one, row, i, f;
 
@@ -3074,12 +3074,12 @@ InstallGlobalFunction( IdentityMat, function ( arg )
         m    := arg[1];
         zero := 0;
         one  := 1;
-        f := Rationals;
+        f    := Rationals;
     elif Length(arg) = 2  and IsRing(arg[2])  then
         m    := arg[1];
-        f := arg[2];
         zero := Zero( arg[2] );
-        one  := One(  arg[2] );
+        one  := One( arg[2] );
+        f    := arg[2];
         if one = fail then
             Error( "ring must be a ring-with-one" );
         fi;
@@ -3087,15 +3087,9 @@ InstallGlobalFunction( IdentityMat, function ( arg )
         m    := arg[1];
         zero := Zero( arg[2] );
         one  := One( arg[2] );
-        if IsFFE(arg[2]) then
-            f := Characteristic(arg[2]); # ConvertToVectorRep also takes the
-                                       # characteristic instead of the field
-        else
-            f := false;
-        fi;
-
+        f    := Ring( one, arg[2] );
     else
-        Error("usage: IdentityMat( <m>[, <F>] )");
+        Error("usage: IdentityMat( <m>[, <R>] )");
     fi;
 
     # special treatment for 0-dimensional spaces
@@ -3105,25 +3099,19 @@ InstallGlobalFunction( IdentityMat, function ( arg )
 
     # make an empty row
     row := ListWithIdenticalEntries(m,zero);
+    ConvertToVectorRepNC(row,f);
 
     # make the identity matrix
     id := [];
     for i  in [1..m]  do
         id[i] := ShallowCopy( row );
         id[i][i] := one;
-        if f <> false then
-           ConvertToVectorRepNC( id[i], f );
-        else
-            ConvertToVectorRepNC( id[i] );
-        fi;
     od;
-    if f <> false then
-        ConvertToMatrixRep(id,f);
-    else
-        ConvertToMatrixRep(id);
-    fi;
 
-    # return the identity matrix
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return id;
 end );
 
@@ -3138,23 +3126,22 @@ InstallGlobalFunction( NullMat, function ( arg )
     if Length(arg) = 2  then
         m    := arg[1];
         n    := arg[2];
-        f := Rationals;
+        f    := Rationals;
     elif Length(arg) = 3  and IsRing(arg[3])  then
         m    := arg[1];
         n    := arg[2];
-        f := arg[3];
+        f    := arg[3];
     elif Length(arg) = 3  then
         m    := arg[1];
         n    := arg[2];
-        f := Field(arg[3]);
+        f    := Ring(One(arg[3]), arg[3]);
     else
-        Error("usage: NullMat( <m>, <n> [, <F>] )");
+        Error("usage: NullMat( <m>, <n> [, <R>] )");
     fi;
     zero := Zero(f);
 
     # make an empty row
-    row := [];
-    for k  in [1..n]  do row[k] := zero;  od;
+    row := ListWithIdenticalEntries(n,zero);
     ConvertToVectorRepNC( row, f );
 
     # make the null matrix
@@ -3162,9 +3149,11 @@ InstallGlobalFunction( NullMat, function ( arg )
     for i  in [1..m]  do
         null[i] := ShallowCopy( row );
     od;
-    ConvertToMatrixRep(null,f);
 
-    # return the null matrix
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return null;
 end );
 
@@ -3318,17 +3307,7 @@ InstallGlobalFunction( PermutationMat, function( arg )
 
     for i in [ 1 .. dim ] do
         mat[i][ i^perm ]:= One( F );
-       if IsFFECollection(F) and IsField(F) then
-           ConvertToVectorRepNC( mat[i], F );
-       elif IsFFE(F) or IsFFECollection(F) then
-           ConvertToVectorRepNC( mat[i], Field(F));
-       fi;
     od;
-    if IsFFECollection(F) and IsField(F) then
-        ConvertToMatrixRepNC( mat, F );
-    elif IsFFE(F) or IsFFECollection(F) then
-        ConvertToMatrixRepNC( mat, Field(F));
-    fi;
 
     return mat;
 end );
@@ -3352,7 +3331,11 @@ InstallGlobalFunction( DiagonalMat, function( vector )
       M[i][i]:= vector[i];
       ConvertToVectorRepNC(M[i]);
     od;
-    ConvertToMatrixRep( M );
+
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return M;
 end );
 
@@ -3421,9 +3404,11 @@ InstallGlobalFunction( ReflectionMat, function( arg )
       ConvertToVectorRepNC( row );
       M[i]:= row;
     od;
-    ConvertToMatrixRep( M );
 
-    # Return the result.
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return M;
 end );
 
@@ -3462,7 +3447,11 @@ InstallGlobalFunction( RandomInvertibleMat, function ( arg )
             mat[i] := row;
         until NullspaceMat( mat ) = [];
     od;
-    ConvertToMatrixRep( mat, R );
+
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return mat;
 end );
 
@@ -3501,8 +3490,10 @@ InstallGlobalFunction( RandomMat, function ( arg )
         mat[i] := row;
     od;
 
-    # put into optimal form
-    ConvertToMatrixRep(mat);
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return mat;
 end );
 
@@ -3836,13 +3827,12 @@ function( bvec, obj )
   TriangulizeMat(mat);
   return Concatenation(mat);
 end);
-  
+
 #############################################################################
 ##
 #M  FieldOfMatrixList
 ##
-InstallMethod(FieldOfMatrixList,
-    "generic: form field",
+InstallMethod(FieldOfMatrixList,"generic: form field",
   [IsListOrCollection],
 function(l)
 local i,j,k,fg,f;
@@ -3858,6 +3848,37 @@ local i,j,k,fg,f;
         if not k in f then
           Add(fg,k);
           f:=Field(fg);
+        fi;
+      od;
+    od;
+  od;
+  return f;
+end);
+
+#############################################################################
+##
+#M  DefaultScalarDomainOfMatrixList
+##
+InstallMethod(DefaultScalarDomainOfMatrixList, "generic: form ring",
+  [IsListOrCollection],
+function(l)
+local i,j,k,fg,f;
+  # try to find out the field
+  if Length(l)=0 or ForAny(l,i->not IsMatrix(i)) then
+    Error("<l> must be a list of matrices");
+  fi;
+  fg:=[l[1][1][1]];
+  if Characteristic(fg)=0 then
+    f:=DefaultField(fg);
+  else
+    f:=DefaultRing(fg);
+  fi;
+  for i in l do
+    for j in i do
+      for k in j do
+        if not k in f then
+          Add(fg,k);
+          f:=DefaultRing(fg);
         fi;
       od;
     od;

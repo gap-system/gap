@@ -25,6 +25,12 @@ gap> for i in [1..Length(HELP_LAST.TOPICS)] do HELP(String(i)); od;
 gap> PAGER_EXTERNAL:=savepager;;
 gap> MakeReadOnlyGlobal("PAGER_EXTERNAL");
 gap> SetUserPreference("Pager",savepagerprefs);
+gap> ForAll(FindMultiSpelledHelpEntries(), i -> 
+>    Length( Set( List( SuggestedSpellings( i[3] ), 
+>                       j -> SuggestedSpellings(j) ) ) ) = 1 );
+true
+gap> Length(SuggestedSpellings("AnalyseMetacatalogOfCataloguesOfColourizationLabelingsOfCentreBySolvableNormalisersInNormalizerCentralizersInCentre"));
+4096
 gap> STOP_TEST( "helpsys.tst", 58077900000 );
 
 

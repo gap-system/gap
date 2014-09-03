@@ -462,7 +462,7 @@ DeclareGlobalFunction( "ShortestVectors" );
 ##  Gram matrix <A>gram</A>, which must be a regular matrix.
 ##  In other words, all solutions <M>X</M> of the problem
 ##  <Display Mode="M">
-##  X^{tr} \cdot X = <A>gram</A>
+##  X^{tr} \cdot X = gram
 ##  </Display>
 ##  are calculated (see&nbsp;<Cite Key="Ple90"/>).
 ##  Usually there are many solutions <M>X</M>

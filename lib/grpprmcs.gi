@@ -2566,6 +2566,84 @@ InstallGlobalFunction( ImageOnAbelianCSPG, function(g,actionlist)
 end );
 
 
+# ser is descending subnormal series, nt a descending series of normal subs
+BindGlobal("ChangeSeriesThrough",function(ser,nt)
+local new,start,n,i,tail, up,u,v;
+
+  new:=Reversed(ser); # we step up (closure is easier than intersection)
+
+  # make nt also increasing
+  nt:=ShallowCopy(nt);
+  Sort(nt,function(a,b) return Size(a)<Size(b);end);
+#Print(List(nt,Size),"\n");
+
+  start:=1;
+  while Length(nt)>0 do
+    n:=nt[1];
+    nt:=nt{[2..Length(nt)]};
+    ser:=new;
+    new:=ser{[1..start-1]};
+    i:=start;
+    while i<=Length(ser) and IsSubset(n,ser[i]) do
+      Add(new,ser[i]);
+      i:=i+1;
+    od;
+    # now n does not contain ser[i]
+
+    # was n actually in the series?
+    if new[Length(new)]=n then
+      # yes, go on and add the rest of the series
+      start:=i; # next time start from next step
+    else
+      # no generate/intersect
+
+      # in each step either we ascend in intersection with n or in closure with
+      # n
+      tail:=[];
+      up:=[n];
+      u:=ClosureGroup(n,ser[i]);
+      Add(up,u);
+      i:=i+1;
+      while not IsSubset(ser[i],n) do
+	v:=ClosureSubgroup(n,ser[i]);
+	if Size(v)=Size(u) then
+	  # no increase, need for tail
+	  Add(tail,i);
+	else
+	  Add(up,v);
+	  u:=v;
+	fi;
+	i:=i+1;
+      od;
+#Print("A",List([1..Length(new)-1],x->Size(new[x+1])/Size(new[x])),"\n");
+
+      # now ser[i] contains n. 
+      for i in tail do
+	Add(new,NormalIntersection(n,ser[i]));
+      od;
+#Print("B",List([1..Length(new)-1],x->Size(new[x+1])/Size(new[x])),"\n");
+      start:=Length(new)+1;
+      Append(new,up);
+#Print("C",List([1..Length(new)-1],x->Size(new[x+1])/Size(new[x])),"\n");
+      i:=i+1;
+      while i<=Length(ser) and Size(new[Length(new)])>=Size(ser[i]) do
+	i:=i+1;
+      od;
+
+    fi;
+
+    # add the rest
+    while i<=Length(ser) do
+      Add(new,ser[i]);
+      i:=i+1;
+    od;
+#Print("D",List([1..Length(new)-1],x->Size(new[x+1])/Size(new[x])),"\n");
+
+  od;
+  return Reversed(new);
+end);
+
+
 #############################################################################
 ##
 #F  ChiefSeriesOfGroup( [<H>, ]<G>[, <through>] )
@@ -2588,6 +2666,13 @@ local G,H,nser,U,i,j,k,cs,n,mat,mats,row,p,one,m,v,ser,gens,r,dim,im,
     G:=arg[2];
     through:=arg[3];
   fi;
+
+  if Length(through)>0 then
+    nser:=ChiefSeriesOfGroup(G,H);
+    nser:=ChangeSeriesThrough(nser,through);
+    return nser;
+  fi;
+
   nser:=[G];
   U:=G;
   while Size(U)>1 do

@@ -781,7 +781,7 @@ void AsssBlistImm (
 
 *F  PosBlist( <list>, <val>, <start> )   position of an elm in a boolean list
 **
-**  'PosBlist' returns the   position of  the first  occurence  of the  value
+**  'PosBlist' returns the   position of  the first  occurrence  of the  value
 **  <val>, which may be  an  object of  arbitrary  type, in the boolean  list
 **  <list> after <start> as a C  integer.  If <val> does  not occur in <list>
 **  after <start>, then 0 is returned.
@@ -1100,7 +1100,7 @@ Int IsBlist (
 **
 **  'IsBlistConv' returns 1 if  the list <list> is  a  boolean list, i.e.,  a
 **  list that   has no holes  and contains  only  'true' and  'false',  and 0
-**  otherwise.  As a  sideeffect 'IsBlistConv' changes the representation  of
+**  otherwise.  As a  side effect 'IsBlistConv' changes the representation  of
 **  boolean lists into the compact representation of type 'T_BLIST' described
 **  above.
 */
@@ -1366,7 +1366,7 @@ Obj FuncBLIST_LIST (
             "you can replace <sub> via 'return <sub>;'" );
     }
 
-    /* for a range as subset of a range, it is extremly easy               */
+    /* for a range as subset of a range, it is extremely easy               */
     if ( IS_RANGE(list) && IS_RANGE(sub) && GET_INC_RANGE( list ) == 1
           && GET_INC_RANGE( sub ) == 1) {
 
@@ -1634,7 +1634,7 @@ Obj FuncLIST_BLIST (
     /* compute the number of 'true'-s                                      */
     n = SizeBlist(blist);
 
-    /* make the sublist (we now know its size exactely)                    */
+    /* make the sublist (we now know its size exactly)                    */
     sub = NEW_PLIST( IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE, n );
     SET_LEN_PLIST( sub, n );
 
@@ -1693,7 +1693,7 @@ Obj FuncPositionsTrueBlist (
         n += m;
     }
 
-    /* make the sublist (we now know its size exactely)                    */
+    /* make the sublist (we now know its size exactly)                    */
     sub = NEW_PLIST( T_PLIST, n );
     SET_LEN_PLIST( sub, n );
 
@@ -1929,7 +1929,7 @@ Obj FuncUNITE_BLIST_LIST (
             "you can replace <sub> via 'return <sub>;'" );
     }
 
-    /* for a range as subset of a range, it is extremly easy               */
+    /* for a range as subset of a range, it is extremely easy               */
     if ( IS_RANGE(list) && IS_RANGE(sub) && GET_INC_RANGE( list ) == 1
           && GET_INC_RANGE( sub ) == 1) {
 
@@ -2168,7 +2168,7 @@ Obj FuncUNITE_BLIST_LIST (
 
 /****************************************************************************
 **
-*F  FuncINTER_BLIST( <self>, <list1>, <list2> ) .  <list1> interstion <list2>
+*F  FuncINTER_BLIST( <self>, <list1>, <list2> ) .  <list1> intersection <list2>
 **
 **  'FuncINTER_BLIST' implements the function 'IntersectBlist'.
 **
@@ -2269,6 +2269,60 @@ Obj FuncSUBTR_BLIST (
       }
 
     /* return nothing, this function is a procedure */ return 0; }
+
+/****************************************************************************
+**
+*F  FuncMEET_BLIST( <self>, <list1>, <list2> ) . . . 
+**
+**  'FuncSUBTR_BLIST' implements the internal function 'MeetBlist'.
+**
+**  'MeetBlist( <list1>, <list2> )'
+**
+**  'MeetBlist' returns true if list1 and list2 have true in the same
+**  position and false otherwise. It is equivalent to, but faster than
+**  SizeBlist(IntersectionBlist(list1, list2)) <> 0
+**  The lists must have the same length.
+*/
+
+Obj FuncMEET_BLIST (
+    Obj                 self,
+    Obj                 list1,
+    Obj                 list2 )
+{
+    UInt *              ptr1;           /* pointer to the first argument   */
+    UInt *              ptr2;           /* pointer to the second argument  */
+    UInt                i;              /* loop variable                   */
+
+    /* get and check the arguments                                         */
+    while ( ! IsBlistConv( list1 ) ) {
+        list1 = ErrorReturnObj(
+            "MeetBlist: <blist1> must be a boolean list (not a %s)",
+            (Int)TNAM_OBJ(list1), 0L,
+            "you can replace <blist1> via 'return <blist1>;'" );
+    }
+    while ( ! IsBlistConv( list2 ) ) {
+        list2 = ErrorReturnObj(
+            "MeetBlist: <blist2> must be a boolean list (not a %s)",
+            (Int)TNAM_OBJ(list2), 0L,
+            "you can replace <blist2> via 'return <blist2>;'" );
+    }
+    while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
+        list2 = ErrorReturnObj(
+        "MeetBlist: <blist2> must have the same length as <blist1> (%d)",
+            LEN_BLIST(list1), 0L,
+            "you can replace <blist2> via 'return <blist2>;'" );
+    }
+
+    /* compute the difference by operating blockwise                       */
+    ptr1 = BLOCKS_BLIST(list1);
+    ptr2 = BLOCKS_BLIST(list2); 
+    for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) 
+      { 
+	if (*ptr1++ & *ptr2++) return True;
+      }
+
+    return False;
+}
 
 
 /****************************************************************************
@@ -2609,6 +2663,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "SUBTR_BLIST", 2, "blist1, blist2",
       FuncSUBTR_BLIST, "src/blister.c:SUBTR_BLIST" },
 
+    { "MEET_BLIST", 2, "blist1, blist2",
+      FuncMEET_BLIST, "src/blister.c:MEET_BLIST" },
+
     { "PositionNthTrueBlist", 2, "blist, nth",
       FuncPositionNthTrueBlist, "src/blister.c:PositionNthTrueBlist" },
 
@@ -2789,7 +2846,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoBlist ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

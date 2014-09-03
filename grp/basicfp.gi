@@ -19,7 +19,7 @@ InstallMethod( AbelianGroupCons, "fp group", true,
 function( filter, ints )
 local   f,g,i,j,rels,gfam,fam;
 
-  if Length(ints)=0 or not ForAll( ints, IsInt )  then
+  if Length(ints)=0 or not ForAll( ints, x -> IsInfinity(x) or (IsInt(x) and x >= 0) )  then
       Error( "<ints> must be a list of integers" );
   fi;
 
@@ -30,7 +30,7 @@ local   f,g,i,j,rels,gfam,fam;
     for j in [1..i-1] do
       Add(rels,Comm(g[i],g[j]));
     od;
-    if ints[i]<>0 then
+    if IsPosInt(ints[i]) then
       Add(rels,g[i]^ints[i]);
     fi;
   od;
@@ -53,7 +53,7 @@ local   f,g,i,j,rels,gfam,fam;
     n:=ListWithIdenticalEntries(Length(gfam!.redorders),0);
     for i in [1,3..Length(e)-1] do
       j:=e[i];
-      if gfam!.redorders[j]<infinity then
+      if IsPosInt(gfam!.redorders[j]) then
 	n[j]:=n[j]+e[i+1] mod gfam!.redorders[j];
       else
 	n[j]:=n[j]+e[i+1];
@@ -62,7 +62,7 @@ local   f,g,i,j,rels,gfam,fam;
 
     e:=[];
     for i in [1..Length(gfam!.redorders)] do
-      if n[i]>0 then
+      if n[i]<>0 then
 	Add(e,i);
 	Add(e,n[i]);
       fi;
@@ -187,5 +187,23 @@ function( filter, n )
     n:= AbelianGroupCons( IsFpGroup, Factors(n) );
     SetIsElementaryAbelian( n, true );
     return n;
+end );
+
+
+#############################################################################
+##
+#M  FreeAbelianGroupCons( <IsFpGroup>, <rank> )
+##
+InstallMethod( FreeAbelianGroupCons,
+    "fp group",
+    true,
+    [ IsFpGroup,
+      IsInt and IsPosRat ],
+    0,
+
+function( filter, rank )
+    return AbelianGroupCons( filter, ListWithIdenticalEntries(rank, 0) );
+    # TODO: Add the following if it ever moves from Polycyclic to the GAP core:
+    #SetIsFreeAbelian( G, true );
 end );
 

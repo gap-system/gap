@@ -81,39 +81,39 @@ true
 ##  are of the proper form
 ##
 gap> ForAll(GreensRClasses(t3), 
-> i->ForAll(AsSSortedList(i),j->KernelOfTransformation(j)
-> = KernelOfTransformation(Representative(i))));
+> i->ForAll(AsSSortedList(i),j->KernelOfTransformation(j,3)
+> = KernelOfTransformation(Representative(i),3)));
 true
 gap> ForAll(GreensLClasses(t3), 
-> i->ForAll(AsSSortedList(i),j->ImageSetOfTransformation(j)
-> = ImageSetOfTransformation(Representative(i))));
+> i->ForAll(AsSSortedList(i),j->ImageSetOfTransformation(j,3)
+> = ImageSetOfTransformation(Representative(i),3)));
 true
 gap> ForAll(GreensJClasses(t3), 
-> i->ForAll(AsSSortedList(i),j->RankOfTransformation(j)
-> = RankOfTransformation(Representative(i))));
+> i->ForAll(AsSSortedList(i),j->RankOfTransformation(j,3)
+> = RankOfTransformation(Representative(i),3)));
 true
 gap> ForAll(GreensHClasses(t3),
-> i->ForAll(AsSSortedList(i),j->ImageSetOfTransformation(j)
-> = ImageSetOfTransformation(Representative(i))   
-> and KernelOfTransformation(j) = KernelOfTransformation(Representative(i))
+> i->ForAll(AsSSortedList(i),j->ImageSetOfTransformation(j,3)
+> = ImageSetOfTransformation(Representative(i),3)   
+> and KernelOfTransformation(j,3) = KernelOfTransformation(Representative(i),3)
 > ));
 true
 gap> ForAll(GreensRClasses(t4),
-> i->ForAll(AsSSortedList(i),j->KernelOfTransformation(j)
-> = KernelOfTransformation(Representative(i))));
+> i->ForAll(AsSSortedList(i),j->KernelOfTransformation(j,4)
+> = KernelOfTransformation(Representative(i),4)));
 true
 gap> ForAll(GreensLClasses(t4),
-> i->ForAll(AsSSortedList(i),j->ImageSetOfTransformation(j)
-> = ImageSetOfTransformation(Representative(i))));
+> i->ForAll(AsSSortedList(i),j->ImageSetOfTransformation(j,4)
+> = ImageSetOfTransformation(Representative(i),4)));
 true
 gap> ForAll(GreensJClasses(t4),
-> i->ForAll(AsSSortedList(i),j->RankOfTransformation(j)
-> = RankOfTransformation(Representative(i))));
+> i->ForAll(AsSSortedList(i),j->RankOfTransformation(j,4)
+> = RankOfTransformation(Representative(i),4)));
 true
 gap> ForAll(GreensHClasses(t4),
-> i->ForAll(AsSSortedList(i),j->ImageSetOfTransformation(j)
-> = ImageSetOfTransformation(Representative(i))   
-> and KernelOfTransformation(j) = KernelOfTransformation(Representative(i))
+> i->ForAll(AsSSortedList(i),j->ImageSetOfTransformation(j,4)
+> = ImageSetOfTransformation(Representative(i),4)   
+> and KernelOfTransformation(j,4) = KernelOfTransformation(Representative(i),4)
 > ));
 true
 gap> STOP_TEST( "semirel.tst", 10900000 );

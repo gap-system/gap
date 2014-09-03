@@ -12,6 +12,12 @@
 ##
 
 
+InstallOtherMethod(One, "for a multiplicative element with one collection", 
+[IsMultiplicativeElementWithOneCollection], 
+function(coll)
+  return One(Representative(coll));
+end);
+
 #############################################################################
 ##
 #M  IsImpossible( <matrix> )
@@ -444,7 +450,7 @@ InstallOtherMethod( \/,
 #T
 #T  This is there to handle some mgrvs, like [,2] which might not
 #T  be IsExtRElement. In fact, plain lists will be caught by the
-#T  kernel and x/y turned into  x*InverseSM(y). This method is thuse
+#T  kernel and x/y turned into  x*InverseSM(y). This method is thus
 #T  needed only for compressed matrices and other external objects
 #T
 #T  It isn't clear that this is the right long-term solution. It might

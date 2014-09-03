@@ -10,32 +10,34 @@
 ##  This file defines all family predicates
 ##
 
-IsFamFamX := function(a,b,c)
-  return IsIdenticalObj(a,b);
+IsFamFamX := function( F1, F2, F3 )
+    return IsIdenticalObj( F1, F2 );
 end;
 
-IsFamXFam := function(a,b,c)
-  return IsIdenticalObj(a,c);
+IsFamXFam := function( F1, F2, F3 )
+    return IsIdenticalObj( F1, F3 );
 end;
 
-IsFamFamXY := function(a,b,c,d)
-  return IsIdenticalObj(a,b);
+IsFamFamXY := function( F1, F2, F3, F4 )
+    return IsIdenticalObj( F1, F2 );
 end;
 
-IsFamXYFamZ := function(F1, F2, F3, F4, F5) return
-  IsIdenticalObj(F1,F4); end;
+IsFamXYFamZ := function( F1, F2, F3, F4, F5 )
+    return IsIdenticalObj( F1, F4 );
+end;
 
+IsFamXFamY := function( F1, F2, F3, F4 )
+    return IsIdenticalObj( F1, F3 );
+end;
 
-#############################################################################
-##
-#O  IsFamFamFam(<F1>,<F2>,<F3>)  test whether F1=F2=F3
-##
-IsFamFamFam := function(F1,F2,F3)
-  return IsIdenticalObj(F1,F2) and IsIdenticalObj(F2,F3);
+IsFamFamFam := function( F1, F2, F3 )
+    return IsIdenticalObj( F1, F2 )
+       and IsIdenticalObj( F2, F3 );
 end;
 
 IsFamFamFamX := function( F1, F2, F3, F4 )
-    return IsIdenticalObj( F1, F2 ) and IsIdenticalObj( F1, F3 );
+    return IsIdenticalObj( F1, F2 )
+       and IsIdenticalObj( F1, F3 );
 end;
 
 
@@ -60,8 +62,8 @@ IsElmsCollColls := function ( F1, F2 )
 end;
 
 IsElmsCollsX := function( F1, F2, F3 )
-    return     HasElementsFamily( F2 )
-           and IsIdenticalObj( F1, ElementsFamily( F2 ) );
+    return HasElementsFamily( F2 )
+       and IsIdenticalObj( F1, ElementsFamily( F2 ) );
 end;
 
 IsElmsCollCollsX := function ( F1, F2, F3 )
@@ -87,10 +89,10 @@ IsCollCollsElms := function ( F1, F2 )
 end;
 
 IsCollCollsElmsElmsX := function ( F1, F2, F3, F4 )
-    return     HasElementsFamily( F1 )
-           and HasElementsFamily( ElementsFamily( F1 ) )
-           and IsIdenticalObj( ElementsFamily( ElementsFamily( F1 ) ), F2 )
-           and IsIdenticalObj( F2, F3 );
+    return HasElementsFamily( F1 )
+       and HasElementsFamily( ElementsFamily( F1 ) )
+       and IsIdenticalObj( ElementsFamily( ElementsFamily( F1 ) ), F2 )
+       and IsIdenticalObj( F2, F3 );
 end;
 
 
@@ -153,20 +155,21 @@ IsCollsCollsElmsXX := function( F1, F2, F3, F4, F5 )
        and IsIdenticalObj( ElementsFamily( F1 ), F3 );
 end;
 
-IsCollsElmsColls := function(a,b,c)
-  return IsIdenticalObj(a,c) and HasElementsFamily(a) and
-    IsIdenticalObj(b,ElementsFamily(a));
+IsCollsElmsColls := function( F1, F2, F3 )
+    return IsIdenticalObj(F1, F3)
+       and HasElementsFamily(F1)
+       and IsIdenticalObj(F2, ElementsFamily(F1));
 end;
 
 
 IsCollsXElms := function( F1, F2, F3 )
-    return     HasElementsFamily( F1 )
-           and IsIdenticalObj( F3, ElementsFamily( F1 ) );
+    return HasElementsFamily( F1 )
+       and IsIdenticalObj( F3, ElementsFamily( F1 ) );
 end;
 
 IsCollsXElmsX := function( F1, F2, F3, F4 )
-    return     HasElementsFamily( F1 )
-           and IsIdenticalObj( F3, ElementsFamily( F1 ) );
+    return HasElementsFamily( F1 )
+       and IsIdenticalObj( F3, ElementsFamily( F1 ) );
 end;
 
 IsElmsCollsXX := function( F1, F2, F3, F4)
@@ -438,24 +441,5 @@ end;
 
 #############################################################################
 ##
-#f  IsIdenticalObjObjXObj( <F1>, <F2>, <F3> )
-IsIdenticalObjObjXObj := function( F1, F2, F3 )
-    return IsIdenticalObj( F1, F3 );
-end;                                            
-
-#############################################################################
-##
-#O  IsFamXFamY( <F1>, <F2>, <F3>, <F4> )
-##
-IsFamXFamY := function( F1, F2, F3, F4 )
-    return IsIdenticalObj(F1, F3);
-end;
-
-
-#############################################################################
-##
 #E  fampred.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
-

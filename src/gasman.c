@@ -225,12 +225,7 @@
 ** 
 */
 
-#ifndef C_PLUS_PLUS_BAGS
 #define SIZE_MPTR_BAGS  1
-#endif
-#ifdef  C_PLUS_PLUS_BAGS
-#define SIZE_MPTR_BAGS  2
-#endif
 #define WORDS_BAG(size) (((size) + (sizeof(Bag)-1)) / sizeof(Bag))
 
 #ifdef USE_NEWSHAPE
@@ -2140,31 +2135,6 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
 
 syJmp_buf RegsBags;
 
-/* solaris */
-#ifdef __GNUC__
-#ifdef SPARC
-#if SPARC
-        asm("           .globl  SparcStackFuncBags              ");
-        asm("   SparcStackFuncBags:                             ");
-        asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
-        asm("           mov     %sp,%o0                         ");
-        asm("           retl                                    ");
-        asm("           nop                                     ");
-#endif
-#endif
-
-/* sunos */
-#ifdef SPARC
-#if SPARC
-        asm("           .globl  _SparcStackFuncBags             ");
-        asm("   _SparcStackFuncBags:                            ");
-        asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
-        asm("           mov     %sp,%o0                         ");
-        asm("           retl                                    ");
-        asm("           nop                                     ");
-#endif
-#endif
-#else
 #if defined(SPARC) && SPARC
 void SparcStackFuncBags( void )
 {
@@ -2172,7 +2142,6 @@ void SparcStackFuncBags( void )
   asm (" mov %sp,%o0" );
   return;
 }
-#endif
 #endif
 
 
@@ -2213,10 +2182,6 @@ void GenStackFuncBags ( void )
 }
 UInt FullBags;
 
-#ifdef  DEBUG_DEADSONS_BAGS
-Bag OldMarkedBags;
-#endif
-
 /*  These are used to overwrite masterpointers which may still be
 linked from weak pointer objects but whose bag bodies have been
 collected.  Two values are used so that old masterpointers of this
@@ -2250,9 +2215,6 @@ UInt CollectBags (
 
     /*     Bag *               last;
            Char                type; */
-#ifdef DEBUG_DEADSONS_BAGS
-    UInt                pos;
-#endif
 
 #ifdef DEBUG_MASTERPOINTERS
     CheckMasterPointers();
@@ -2333,43 +2295,6 @@ again:
             MARK_BAG(first);
     }
 
-#ifdef  DEBUG_DEADSONS_BAGS
-    /* check for old bags pointing to new unmarked bags                    */
-    p = OldBags;
-    OldMarkedBags = MarkedBags;
-    while ( p < YoungBags ) {
-        if ( (*(UInt*)p & 0xFFL) == 255 ) {
-          if ((*(UInt*)p >> 16) == 1) 
-            p++;
-          else
-            p += 1 + WORDS_BAG( *(((UInt *)p)+1) );
-                
-        }
-        else {
-            (*TabMarkFuncBags[TNUM_BAG(p[2])])( p[2] );
-            pos = 0;
-            while ( MarkedBags != OldMarkedBags ) {
-                Pr( "#W  Old bag (type %s, size %d, ",
-                    (Int)InfoBags[ TNUM_BAG(p[2]) ].name,
-                    (Int)SIZE_BAG(p[2]) );
-                Pr( "handle %d, pos %d) points to\n",
-                    (Int)p[2],
-                    (Int)pos );
-                Pr( "#W    new bag (type %s, size %d, ",
-                    (Int)InfoBags[ TNUM_BAG(MarkedBags) ].name,
-                    (Int)SIZE_BAG(MarkedBags) );
-                Pr( "handle %d)\n",
-                    (Int)MarkedBags,
-                    (Int)0 );
-                pos++;
-                first = PTR_BAG(MarkedBags)[-1];
-                PTR_BAG(MarkedBags)[-1] = MarkedBags;
-                MarkedBags = first;
-            }
-            p += 3 + WORDS_BAG( ((UInt*)p)[1] );
-        }
-    }
-#endif
 
     /* tag all marked bags and mark their subbags                          */
     nrLiveBags = 0;

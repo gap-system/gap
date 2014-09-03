@@ -280,7 +280,7 @@ Int LenListObject (
 **  An error is signalled if <list> is not a list.
 **
 **  Note that  'LENGTH' is a  macro, so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package  implementing a list type <type>  must  provide such a function
 **  and install it in 'LengthFuncs[<type>]'.
@@ -1962,6 +1962,19 @@ void            ElmsListLevel (
     Obj                 elm;            /* selected elements from <list>   */
     Int                 i;              /* loop variable                   */
 
+    /* Workaround for issue #312: Accessing a two-level sublist
+       of a compressed FFE vector could lead to crashes because
+       FuncELMS_VEC8BIT and FuncELMS_GF2VEC may return lists which are
+       not plists. This boils down to a conflict between the documented
+       behavior and requirements of ElmsListLevel and ElmsListFuncs.
+       Resolving this properly requires some more discussion. But until
+       then, this change at least prevents hard crashes. */
+    if (!IS_PLIST(lists)) {
+        ErrorMayQuit(
+            "List Elements: <lists> must be a list (not a %s)",
+            (Int)TNAM_OBJ(lists), 0L );
+    }
+
     /* if <level> is one, perform the replacements                         */
     if ( level == 1 ) {
 
@@ -2725,6 +2738,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         LenListFuncs[ type ] = LenListObject;
     }
+    LenListFuncs[ T_SINGULAR ] = LenListObject;
 
     /* make and install the 'LENGTH' function                            */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2736,6 +2750,7 @@ static Int InitKernel (
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         LengthFuncs[ type ] = LengthInternal;
     }
+    LengthFuncs[ T_SINGULAR ] = LengthObject;
 
 
     /* make and install the 'ISB_LIST' operation                           */
@@ -2747,6 +2762,8 @@ static Int InitKernel (
         IsbListFuncs[  type ] = IsbListObject;
         IsbvListFuncs[ type ] = IsbListObject;
     }
+    IsbListFuncs[ T_SINGULAR ] = IsbListObject;
+    IsbvListFuncs[ T_SINGULAR ] = IsbListObject;
 
     /* make and install the 'ISBB_LIST' operation                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2760,6 +2777,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsbbListFuncs[  type ] = IsbbListObject;
     }
+    IsbbListFuncs[ T_SINGULAR ] = IsbbListObject;
 
     /* make and install the 'ELM0_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2770,6 +2788,8 @@ static Int InitKernel (
         Elm0ListFuncs[  type ] = Elm0ListObject;
         Elm0vListFuncs[ type ] = Elm0ListObject;
     }
+    Elm0ListFuncs[ T_SINGULAR ] = Elm0ListObject;
+    Elm0vListFuncs[ T_SINGULAR ] = Elm0ListObject;
 
 
     /* make and install the 'ELM_LIST' operation                           */
@@ -2783,7 +2803,9 @@ static Int InitKernel (
         ElmvListFuncs[ type ] = ElmListObject;
         ElmwListFuncs[ type ] = ElmListObject;
     }
-
+    ElmListFuncs[  T_SINGULAR ] = ElmListObject;
+    ElmvListFuncs[ T_SINGULAR ] = ElmListObject;
+    ElmwListFuncs[ T_SINGULAR ] = ElmListObject;
 
     /* make and install the 'ELMB_LIST' operation                           
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2810,6 +2832,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         ElmsListFuncs[ type ] = ElmsListObject;
     }
+    ElmsListFuncs[ T_SINGULAR ] = ElmsListObject;
 
 
     /* make and install the 'UNB_LIST' operation                           */
@@ -2822,6 +2845,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         UnbListFuncs[ type ] = UnbListObject;
     }
+    UnbListFuncs[ T_SINGULAR ] = UnbListObject;
 
     /* make and install the 'UNBB_LIST' operation                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2835,6 +2859,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         UnbbListFuncs[  type ] = UnbbListObject;
     }
+    UnbbListFuncs[ T_SINGULAR ] = UnbbListObject;
 
     /* make and install the 'ASS_LIST' operation                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2846,6 +2871,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         AssListFuncs[ type ] = AssListObject;
     }
+    AssListFuncs[ T_SINGULAR ] = AssListObject;
 
 
     /* make and install the 'ASSB_LIST' operation                           */
@@ -2860,6 +2886,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         AssbListFuncs[  type ] = AssbListObject;
     }
+    AssbListFuncs[ T_SINGULAR ] = AssbListObject;
 
     /* make and install the 'ASSS_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2871,6 +2898,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         AsssListFuncs[ type ] = AsssListObject;
     }
+    AsssListFuncs[ T_SINGULAR ] = AsssListObject;
     
 
     /* make and install the 'IS_DENSE_LIST' filter                         */
@@ -2883,6 +2911,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsDenseListFuncs[ type ] = IsDenseListObject;
     }
+    IsDenseListFuncs[ T_SINGULAR ] = IsDenseListObject;
 
 
     /* make and install the 'IS_HOMOG_LIST' filter                         */
@@ -2895,6 +2924,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsHomogListFuncs[ type ] = IsHomogListObject;
     }
+    IsHomogListFuncs[ T_SINGULAR ] = IsHomogListObject;
 
 
     /* make and install the 'IS_TABLE_LIST' filter                         */
@@ -2907,6 +2937,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsTableListFuncs[ type ] = IsTableListObject;
     }
+    IsTableListFuncs[ T_SINGULAR ] = IsTableListObject;
 
 
     /* make and install the 'IS_SSORT_LIST' property                       */
@@ -2919,6 +2950,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsSSortListFuncs[ type ] = IsSSortListObject;
     }
+    IsSSortListFuncs[ T_SINGULAR ] = IsSSortListObject;
 
 
     /* make and install the 'IS_POSS_LIST' property                        */
@@ -2931,6 +2963,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsPossListFuncs[ type ] = IsPossListObject;
     }
+    IsPossListFuncs[ T_SINGULAR ] = IsPossListObject;
 
 
     /* make and install the 'POS_LIST' operation                           */
@@ -2943,6 +2976,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         PosListFuncs[ type ] = PosListObject;
     }
+    PosListFuncs[ T_SINGULAR ] = PosListObject;
 
 
     /* install the error functions into the other tables                   */
@@ -3287,7 +3321,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoLists ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

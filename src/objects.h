@@ -191,16 +191,29 @@ static inline Obj prod_intobjs(Int l, Int r)
     return (Obj)r;
   if (r == (Int)INTOBJ_INT(1))
     return (Obj)l;
-  prod = (Int)(LSR_INT(l, 2) * ((UInt)r-1)+1);
-  if (OVERFLOW_INT(prod))
+  prod = ((Int)((UInt)l >> 2) * ((UInt)r-1)+1);
+
+#if HAVE_ARITHRIGHTSHIFT
+  if ((prod << 1)>> 1 !=  prod)
     return (Obj) 0;
-  if (ASR_INT(ASL_INT(l, HALF_A_WORD), HALF_A_WORD) == l &&
-      ASR_INT(ASL_INT(r, HALF_A_WORD), HALF_A_WORD) == r)
-    return (Obj) prod;
-  if ((prod -1) / ASR_INT(l, 2) == r-1)
-    return (Obj) prod;
-  else
+#else
+  if (((((UInt) (prod)) >> (sizeof(UInt)*8-2))-1) <= 1)
     return (Obj) 0;
+#endif
+
+  if ((((Int)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
+      (((Int)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
+    return (Obj) prod;
+
+#if HAVE_ARITHRIGHTSHIFT
+  if ((prod -1) / (l >> 2) == r-1)
+    return (Obj) prod;
+#else
+  if ((prod-1) / ((l-1)/4) == r-1)
+    return (Obj) prod;
+#endif
+
+  return (Obj) 0;
 }
 
 #define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)), \
@@ -279,10 +292,14 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define T_HVARS                 (FIRST_CONSTANT_TNUM+14)   
 #define T_SINGULAR              (FIRST_CONSTANT_TNUM+15)   
 #define T_POLYMAKE              (FIRST_CONSTANT_TNUM+16)
-#define T_SPARE1                (FIRST_CONSTANT_TNUM+17)
-#define T_SPARE2                (FIRST_CONSTANT_TNUM+18)
-#define T_SPARE3                (FIRST_CONSTANT_TNUM+19)
-#define T_SPARE4                (FIRST_CONSTANT_TNUM+20)
+#define T_TRANS2                (FIRST_CONSTANT_TNUM+17)
+#define T_TRANS4                (FIRST_CONSTANT_TNUM+18)
+#define T_PPERM2                (FIRST_CONSTANT_TNUM+19)
+#define T_PPERM4                (FIRST_CONSTANT_TNUM+20)
+#define T_SPARE1                (FIRST_CONSTANT_TNUM+21)
+#define T_SPARE2                (FIRST_CONSTANT_TNUM+22)
+#define T_SPARE3                (FIRST_CONSTANT_TNUM+23)
+#define T_SPARE4                (FIRST_CONSTANT_TNUM+24)
 #define LAST_CONSTANT_TNUM      (T_SPARE4)
 
 #define IMMUTABLE               1
@@ -707,7 +724,7 @@ extern Obj CopyObj (
 **  structural copy of <obj> and marks <obj> as already copied.
 **
 **  Note that 'COPY_OBJ' and 'CLEAN_OBJ' are macros, so do not call them with
-**  arguments that have sideeffects.
+**  arguments that have side effects.
 */
 #define COPY_OBJ(obj,mut) \
                         ((*CopyObjFuncs[ TNUM_OBJ(obj) ])( obj, mut ))
@@ -721,7 +738,7 @@ extern Obj CopyObj (
 **  mark <obj>.
 **
 **  Note that 'COPY_OBJ' and 'CLEAN_OBJ' are macros, so do not call them with
-**  arguments that have sideeffects.
+**  arguments that have side effects.
 */
 #define CLEAN_OBJ(obj) \
                         ((*CleanObjFuncs[ TNUM_OBJ(obj) ])( obj ))

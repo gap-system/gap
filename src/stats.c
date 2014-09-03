@@ -2263,7 +2263,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoStats ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

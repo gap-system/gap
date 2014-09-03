@@ -248,7 +248,7 @@ function ( G, p )
     # add the stabilizer chain
     #MakeStabChainStrongGenerators( S, Reversed([1..G.degree]), sgs );
 
-    if GcdInt( deg, p ) > 1 then
+    if Size( S ) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
     fi;
@@ -1336,7 +1336,7 @@ local   S,          # <p>-Sylow subgroup of <G>, result
     # make the Sylow subgroup
     S := Subgroup(  G , sgs );
 
-    if GcdInt( deg, p ) > 1 then
+    if Size( S ) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
     fi;
@@ -1458,6 +1458,7 @@ InstallMethod( ViewString,
     [ IsNaturalAlternatingGroup ], 0,
 function(alt)
     alt:=MovedPoints(alt);
+    if Length(alt)=0 then TryNextMethod();fi;
     IsRange(alt);
     return Concatenation( "Alt( ", String(alt), " )" );
 end );
@@ -1468,6 +1469,7 @@ InstallMethod( ViewString,
     [ IsNaturalSymmetricGroup ], 0,
 function(sym)
     sym:=MovedPoints(sym);
+    if Length(sym)=0 then TryNextMethod();fi;
     IsRange(sym);
     return Concatenation( "Sym( ",String(sym), " )" );
 end );
@@ -1498,6 +1500,7 @@ InstallMethod( String,
     [ IsNaturalSymmetricGroup ], 0,
 function(sym)
     sym:=MovedPoints(sym);
+    if Length(sym)=0 then TryNextMethod();fi;
     IsRange(sym);
     return Concatenation( "SymmetricGroup( ",String(sym), " )" );
 end );
@@ -1508,6 +1511,7 @@ InstallMethod( String,
     [ IsNaturalAlternatingGroup ], 0,
 function(alt)
     alt:=MovedPoints(alt);
+    if Length(alt)=0 then TryNextMethod();fi;
     IsRange(alt);
     return Concatenation( "AlternatingGroup( ",String(alt), " )" );
 end );

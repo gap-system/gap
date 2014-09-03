@@ -338,11 +338,11 @@ DeclareAttribute( "NrInputsOfStraightLineProgram", IsStraightLineProgram );
 ##  gap> prg1:= StraightLineProgram( [ [1,1,2,2], [3,3,1,1] ], 2 );;
 ##  gap> prg2:= StraightLineProgram( [ [ [1,1,2,2], 2 ], [2,3,1,1] ] );;
 ##  gap> res1:= ResultOfStraightLineProgram( prg1, gens );
-##  x*y^2*x*y^2*x*y^2*x
+##  (x*y^2)^3*x
 ##  gap> res1 = (x*y^2)^3*x;
 ##  true
 ##  gap> res2:= ResultOfStraightLineProgram( prg2, gens );
-##  x*y^2*x*y^2*x*y^2*x
+##  (x*y^2)^3*x
 ##  gap> res2 = (x*y^2)^3*x;
 ##  true
 ##  gap> prg:= StraightLineProgram( [ [2,3], [ [3,1,1,4], [1,2,3,1] ] ], 2 );;

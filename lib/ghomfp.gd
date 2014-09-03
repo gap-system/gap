@@ -224,9 +224,9 @@ DeclareGlobalFunction("KuKGenerators");
 ##  gap> Range(hom);
 ##  <fp group on the generators [ f1, f2 ]>
 ##  gap> RelatorsOfFpGroup(Range(hom));
-##  [ f1^2, f2^3, f1*f2*f1*f2*f1*f2*f1*f2*f1*f2 ]
+##  [ f1^2, f2^3, (f1*f2)^5 ]
 ##  gap> RelatorsOfFpGroup(g);
-##  [ f1^2, f2^3, f1*f2*f1*f2*f1*f2*f1*f2*f1*f2, f1*f3^-1 ]
+##  [ f1^2, f2^3, (f1*f2)^5, f1*f3^-1 ]
 ##  ]]></Example>
 ##  <P/>
 ##  <Ref Func="IsomorphismSimplifiedFpGroup"/> uses Tietze transformations
@@ -262,7 +262,7 @@ DeclareAttribute("IsomorphismSimplifiedFpGroup",IsSubgroupFpGroup);
 ##  gap> hom:=EpimorphismFromFreeGroup(g:names:=["x","y"]);
 ##  [ x, y ] -> [ (1,2,3,4), (1,2) ]
 ##  gap> PreImagesRepresentative(hom,(1,4));
-##  y^-1*x^-2*y^-1*x^-1*y^-1*x
+##  y^-1*x^-1*(x^-1*y^-1)^2*x
 ##  ]]></Example>
 ##  <P/>
 ##  The following example stems from a real request to the &GAP; Forum.

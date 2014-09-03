@@ -400,10 +400,10 @@ SMTX_SpinnedBasis:=function ( arg  )
    fi;
    zero:=Zero(matrices[1][1][1]);
    ans:=ShallowCopy(Basis(VectorSpace(F,v)));
-   for v in ans do 
-     u := CopyToVectorRep(v,Size(F)); 
+   for v in [1..Length(ans)] do
+     u := CopyToVectorRep(ans[v],Size(F));
      if u <> fail then
-       v:=u;
+       ans[v]:=u;
      fi;  
    od;
    if Length(ans)=0 then
@@ -2843,9 +2843,9 @@ SMTX_Homomorphisms:= function (m1, m2)
    else
       rels:=TransposedMat (rels);
    fi;
-   N:=NullspaceMat (rels);
-   for k in N do
-     ConvertToVectorRep(k,F);
+   N:=ShallowCopy(NullspaceMat (rels)); # TODO - is this compressed????
+   for k in [1..Length(N)] do
+     N[k]:=CopyToVectorRep(N[k],Size(F));
    od;
    ans:=[];
    for k in [1..Length (N)] do

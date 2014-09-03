@@ -1,22 +1,22 @@
-#!/bin/csh
+#!/bin/csh -ex
 #############################################################################
 ##
 
 # STAGE 1 - checkout and archive the release branch
 ./setvar
-./checkoutcvs
+./checkouthg
 ./classifyfiles
 ./zipreleasebranch
 ./zipmetainfo
 
-# STAGE 2 - make preprations in the GAP core
+# STAGE 2 - make preparations in the GAP core
 # (note that the next script also unpacks the meta-information archive)
 ./unpackreleasebranch
-# Version number and release date are inserted here, and they will never go 
-# into the repository; instead, we will use the checkout time to tag what
-# was released based on that timestamp
+# Insert version number, release date and other depending information 
+# (so these adjustments will never appear in the repository; instead, 
+#after the release we will find the parent revision used to wrap the 
+# release and will tag it with an appropriate tag).
 ./updateversioninfo
-# TODO: generate the release-specific documentation (i.e. info about update)
 ./fixpermissions
 ./zipgapcore
 ./updatemetainfo

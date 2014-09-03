@@ -599,7 +599,7 @@ end;
 ##
 PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     local   ns,  us,  gf,  one,  data,  u,  ui,  mats,  t,  l,  i,  b,  
-            nb,  c,  heads,  k,  ln1,  ln2,  op,  stab,  s,  j,  v;
+            nb,  c,  heads,  k,  ln1,  ln2,  op,  stab,  s,  j,  v, tmpvec;
 
     # The situtation is as follows:
     #
@@ -644,8 +644,11 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     nb := b[1];
     b  := b[2];
     if Size(gf) <= 256 then
-      for i in b do
-        i := CopyToVectorRep(i,Size(gf));
+      for i in [1..Length(b)] do
+        tmpvec := CopyToVectorRep(b[i], Size(gf));
+        if tmpvec <> fail then
+          b[i] := tmpvec;
+        fi;
       od;
     fi;
     

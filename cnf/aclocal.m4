@@ -148,7 +148,7 @@ AC_DEFUN(GP_CFLAGS,
         gp_cv_cflags="-O";;
    esac 
  ])
-CFLAGS="$CFLAGS $gp_cv_cflags"])
+CFLAGS="$gp_cv_cflags $CFLAGS"])
 
 dnl #########################################################################
 dnl ##
@@ -158,14 +158,12 @@ dnl ##
 AC_DEFUN(GP_LDFLAGS,
 [AC_CACHE_CHECK(Linker default flags, gp_cv_ldflags,
  [ case "$host-$CC" in
-    *-apple-darwin11*-gcc* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
-    *-apple-darwin11*-mpicc* )
+    *-darwin[[6-9]].* | *-darwin10.* )
+        gp_cv_ldflags="-g ${ABI_CFLAGS}";;
+    *-darwin* )
         gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-gcc* | *-egcs )
         gp_cv_ldflags="-g ${ABI_CFLAGS}";;
-    *-apple-darwin*-clang* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-clang* )
         gp_cv_ldflags="-g -rdynamic ${ABI_CFLAGS}";;
     *-icc* )
@@ -198,7 +196,7 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
     *-hpux-gcc )
         gp_cv_prog_cc_cdynoptions="-fpic -Wall ${ABI_CFLAGS}";;
     *-gcc* | *-egcs )
-        gp_cv_prog_cc_cdynoptions="-fpic -Wall -O2 ${ABI_CFLAGS}";;
+        gp_cv_prog_cc_cdynoptions="-fPIC -Wall -O2 ${ABI_CFLAGS}";;
     *-clang* )
         gp_cv_prog_cc_cdynoptions="-fPIC -Wall ${ABI_CFLAGS} -Wno-unused-value";;
     *-icc* )
@@ -211,27 +209,13 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynoptions=" -O3 -woff 1110,1167,1174,1552";;
    
     * )    dnl ## if we don't recognise this compiler, guess some flags
-        gp_cv_prog_cc_cdynoptions="-fpic -O2 ${ABI_CFLAGS}";;
+        gp_cv_prog_cc_cdynoptions="-fPIC -O2 ${ABI_CFLAGS}";;
    esac 
  ])
  AC_CACHE_CHECK(dynamic linker, gp_cv_prog_cc_cdynlinker,
  [ case "$host-$CC" in
-    i686-pc-cygwin-gcc* )
+    *-gcc* | *-clang* | *-egcs | *-icc* )
         gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-apple-darwin*gcc* )
-        gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-gcc* )
-        gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-clang* )
-        gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-egcs )
-        gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-icc* )
-        gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-next-nextstep-cc )
-        gp_cv_prog_cc_cdynlinker="cc";;
-    *-osf*-cc )
-        gp_cv_prog_cc_cdynlinker="cc";;
     *-irix* )
         gp_cv_prog_cc_cdynlinker="ld";;
 
@@ -276,6 +260,7 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
    esac 
  ])
+
 
 CDYNOPTIONS=$gp_cv_prog_cc_cdynoptions 
 CDYNLINKER=$gp_cv_prog_cc_cdynlinker

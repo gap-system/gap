@@ -272,23 +272,21 @@ DeclareOperation( "SemidirectProduct",
 ##  <#GAPDoc Label="WreathProduct">
 ##  <ManSection>
 ##  <Oper Name="WreathProduct" Arg='G, H[, hom]'/>
+##  <Oper Name="StandardWreathProduct" Arg='G, H'/>
 ##
 ##  <Description>
+##  <C>WreathProduct</C>
 ##  constructs the wreath product of the group <A>G</A> with the group
-##  <A>H</A>.
+##  <A>H</A>, acting as a permutation group.
 ##  <P/>
 ##  If a third argument <A>hom</A> is given, it must be
 ##  a homomorphism from <A>H</A> into a permutation group,
 ##  and the action of this group on its moved points is considered.
 ##  <P/>
-##  If only two arguments are given and <A>H</A> is a permutation group,
-##  the action on its moved points is considered,
-##  see
-##  <Ref Func="MovedPoints" Label="for a list or collection of permutations"/>.
-##  The result of <Ref Func="IsomorphismPermGroup"/> applied to
-##  <A>H</A> is used as the default for <A>hom</A>.
-##  Note that the degree of the permutation image may depend on the
-##  method chosen and thus is not well-defined.
+##  If only two arguments are given, <A>H</A> must be a permutation group.
+##  <P/>
+##  <C>StandardWreathProduct</C> returns the wreath product for the (right
+##  regular) permutation action of <A>H</A> on its elements.
 ##  <P/>
 ##  <Index Key="Embedding" Subkey="example for wreath products">
 ##  <C>Embedding</C></Index>
@@ -331,7 +329,8 @@ DeclareOperation( "SemidirectProduct",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "WreathProduct", [ IsObject, IsObject ] );
+DeclareOperation( "WreathProduct", [ IsGroup, IsGroup ] );
+DeclareOperation( "StandardWreathProduct", [ IsGroup, IsGroup ] );
 
 
 #############################################################################

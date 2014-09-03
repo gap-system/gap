@@ -36,6 +36,8 @@
 
 #include        "permutat.h"            /* permutations                    */
 #include        "finfield.h"            /* finite fields                   */
+#include        "trans.h"               /* transformations                 */
+#include        "pperm.h"               /* partial perms                   */
 
 #include        "listfunc.h"            /* functions for generic lists     */
 
@@ -58,7 +60,7 @@
 **  'AddList' adds the object <obj> to the end  of  the  list  <list>,  i.e.,
 **  it is equivalent to the assignment '<list>[ Length(<list>)+1 ] := <obj>'.
 **  The  list is  automatically extended to   make room for  the new element.
-**  'AddList' returns nothing, it is called only for its sideeffect.
+**  'AddList' returns nothing, it is called only for its side effect.
 */
 void            AddList (
     Obj                 list,
@@ -1317,6 +1319,18 @@ Obj             FuncOnTuples (
         return OnTuplesPerm( tuple, elm );
     }
 
+    /* special case for transformations                                       */
+    if ( TNUM_OBJ(elm) == T_TRANS2 || TNUM_OBJ(elm) == T_TRANS4 ) {
+        PLAIN_LIST( tuple );
+        return OnTuplesTrans( tuple, elm );
+    }
+
+    /* special case for partial perms */
+    if ( TNUM_OBJ(elm) == T_PPERM2 || TNUM_OBJ(elm) == T_PPERM4 ) {
+        PLAIN_LIST( tuple );
+        return OnTuplesPPerm( tuple, elm );
+    }
+
     /* create a new bag for the result                                     */
     img = NEW_PLIST( IS_MUTABLE_OBJ(tuple) ? T_PLIST : T_PLIST+IMMUTABLE, LEN_LIST(tuple) );
     SET_LEN_PLIST( img, LEN_LIST(tuple) );
@@ -1372,12 +1386,22 @@ Obj             FuncOnSets (
       }
     }
         
-         
-
     /* special case for permutations                                       */
     if ( TNUM_OBJ(elm) == T_PERM2 || TNUM_OBJ(elm) == T_PERM4 ) {
         PLAIN_LIST( set );
         return OnSetsPerm( set, elm );
+    }
+
+    /* special case for transformations */
+    if ( TNUM_OBJ(elm)== T_TRANS2 || TNUM_OBJ(elm) == T_TRANS4 ){
+      PLAIN_LIST(set);
+      return OnSetsTrans( set, elm);
+    }
+    
+    /* special case for partial perms */
+    if ( TNUM_OBJ(elm)== T_PPERM2 || TNUM_OBJ(elm) == T_PPERM4 ){
+      PLAIN_LIST(set);
+      return OnSetsPPerm( set, elm);
     }
 
     /* compute the list of images                                          */
@@ -2047,7 +2071,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoListFunc ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

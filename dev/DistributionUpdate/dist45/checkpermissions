@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -ex
 
 #############################################################################
 ##
@@ -26,11 +26,11 @@ then
 echo "======================================================================"
 echo "Directories not having 755 permissions:"
 echo "trying Mac OS X find ..."
-find . -type d -exec stat -f "%p %N" \{\} \; | grep -v "755"
+find . -type d -exec stat -f "%p %N" \{\} \; | grep -v "755" | cat
 echo "======================================================================"
 echo "Files not having 644 or 755 permissions:"
 echo "trying Mac OS X find ..."
-find . -type f -exec stat -f "%p %N" \{\} \; | grep -v "644" | grep -v "755"
+find . -type f -exec stat -f "%p %N" \{\} \; | grep -v "644" | grep -v "755" | cat
 else
 #############################################################################
 #
@@ -39,11 +39,11 @@ else
 echo "======================================================================"
 echo "Directories not having 755 permissions:"
 echo "trying GNU find ..."
-find . -type d -printf "%m %p\n" | grep -v "^755"
+find . -type d -printf "%m %p\n" | grep -v "^755" | cat
 echo "======================================================================"
 echo "Files not having 644 or 755 permissions:"
 echo "trying GNU find ..."
-find . -type f -printf "%m %p\n" | grep -v "^644" | grep -v "^755"
+find . -type f -printf "%m %p\n" | grep -v "^644" | grep -v "^755" | cat
 fi
 
 #############################################################################
@@ -52,7 +52,7 @@ fi
 #
 echo "======================================================================"
 echo "Files with 755 permission, not recognized as executables by 'file':"
-find . -type f -perm 755 -exec file \{\} \; | grep -v executable
+find . -type f -perm 755 -exec file \{\} \; | grep -v executable | cat
 echo "======================================================================"
 
 exit 0

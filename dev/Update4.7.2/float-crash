@@ -1,0 +1,35 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/08/21
+
+!! Changed by
+MH
+
+! Reported by
+Dmitrii Pasechnik
+ 
+!! Type of Change
+Fix: crash
+
+!! Description
+The parser for floating point numbers contained a bug that could cause GAP to
+crash or to get into a state where the only action left to the user was to
+exit GAP via Ctrl-D. For example, entering four dots with spaces between them
+on the GAP prompt and then pressing the return key caused GAP to exit.
+
+The reason was (ironically) an error check in the innards of the float
+parser code which invoked the GAP Error() function at a point where
+it should not have.
+
+! Test Code
+gap> . . . .
+Syntax error: Badly formed number, need a digit before or after the decimal po\
+int in stream line 1
+. . . .
+^
+
+!! Changeset
+lib/float.gi
+
+!! End

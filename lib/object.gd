@@ -279,20 +279,14 @@ BIND_GLOBAL( "Immutable", IMMUTABLE_COPY_OBJ );
 ##  <Oper Name="ShallowCopy" Arg='obj'/>
 ##
 ##  <Description>
-##  If &GAP; supports a mutable form of the object <A>obj</A>
-##  (see&nbsp;<Ref Sect="Mutability and Copyability"/>) then this is obtained
-##  by <Ref Func="ShallowCopy"/>.
-##  Otherwise <Ref Func="ShallowCopy"/> returns <A>obj</A> itself.
-##  <P/>
+##  <Ref Func="ShallowCopy"/> returns a <E>new mutable</E> object <E>equal</E> 
+##  to its argument, if this is possible.
 ##  The subobjects of <C>ShallowCopy( <A>obj</A> )</C> are <E>identical</E>
 ##  to the subobjects of <A>obj</A>.
-##  Note that if the object returned by <Ref Func="ShallowCopy"/> is mutable
-##  then it is always a <E>new</E> object.
-##  In particular, if the return value is mutable, then it is not
-##  <E>identical</E> with the argument <A>obj</A>,
-##  no matter whether <A>obj</A> is mutable or immutable.
-##  But of course the object returned by <Ref Func="ShallowCopy"/> is
-##  <E>equal</E> to <A>obj</A> w.r.t.&nbsp;the equality operator <C>=</C>.
+##  <P/>
+##  If &GAP; does not support a mutable form of the immutable object <A>obj</A>
+##  (see&nbsp;<Ref Sect="Mutability and Copyability"/>) then 
+##  <Ref Func="ShallowCopy"/> returns <A>obj</A> itself.
 ##  <P/>
 ##  Since <Ref Func="ShallowCopy"/> is an operation, the concrete meaning of
 ##  <Q>subobject</Q> depends on the type of <A>obj</A>.
@@ -466,7 +460,7 @@ end);
 ##
 ##  <#GAPDoc Label="PrintString">
 ##  <ManSection>
-##  <Oper Name="PrintString" Arg='obj'/>
+##  <Oper Name="PrintString" Arg='obj[, length]'/>
 ##
 ##  <Description>
 ##  <Ref Oper="PrintString"/> returns a representation of <A>obj</A>,
@@ -682,7 +676,8 @@ DeclareOperation( "ObjByExtRep", [ IsFamily, IsObject ] );
 ##  gap> KnownAttributesOfObject(g);
 ##  [ "Size", "OneImmutable", "NrMovedPoints", "MovedPoints", 
 ##    "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
-##    "Pcgs", "GeneralizedPcgs", "StabChainMutable", "StabChainOptions" ]
+##    "HomePcgs", "Pcgs", "GeneralizedPcgs", "StabChainMutable", 
+##    "StabChainOptions" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -725,26 +720,31 @@ DeclareOperation( "KnownPropertiesOfObject", [ IsObject ] );
 ##  gap> KnownPropertiesOfObject(g);
 ##  [ "IsFinite", "CanEasilyCompareElements", "CanEasilySortElements", 
 ##    "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", 
-##    "IsAssociative", "IsSimpleSemigroup", "IsFinitelyGeneratedGroup", 
-##    "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", 
-##    "IsNilpotentByFinite" ]
+##    "IsAssociative", "IsSimpleSemigroup", "IsRegularSemigroup", 
+##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup", 
+##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
+##    "KnowsHowToDecompose", "IsNilpotentByFinite" ]
 ##  gap> Size(g);
 ##  6
 ##  gap> KnownPropertiesOfObject(g);
 ##  [ "IsEmpty", "IsTrivial", "IsNonTrivial", "IsFinite", 
 ##    "CanEasilyCompareElements", "CanEasilySortElements", 
 ##    "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", 
-##    "IsAssociative", "IsSimpleSemigroup", "IsFinitelyGeneratedGroup", 
-##    "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", 
-##    "IsPerfectGroup", "IsSolvableGroup", "IsPolycyclicGroup", 
-##    "IsNilpotentByFinite", "IsTorsionFree", "IsFreeAbelian" ]
+##    "IsAssociative", "IsSimpleSemigroup", "IsRegularSemigroup", 
+##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup", 
+##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
+##    "KnowsHowToDecompose", "IsPerfectGroup", "IsSolvableGroup", 
+##    "IsPolycyclicGroup", "IsNilpotentByFinite", "IsTorsionFree", 
+##    "IsFreeAbelian" ]
 ##  gap> KnownTruePropertiesOfObject(g);
 ##  [ "IsNonTrivial", "IsFinite", "CanEasilyCompareElements", 
 ##    "CanEasilySortElements", "IsDuplicateFree", 
 ##    "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
-##    "IsSimpleSemigroup", "IsFinitelyGeneratedGroup", 
-##    "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", 
-##    "IsSolvableGroup", "IsPolycyclicGroup", "IsNilpotentByFinite" ]
+##    "IsSimpleSemigroup", "IsRegularSemigroup", 
+##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup", 
+##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
+##    "KnowsHowToDecompose", "IsSolvableGroup", "IsPolycyclicGroup", 
+##    "IsNilpotentByFinite" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -766,15 +766,15 @@ DeclareOperation( "KnownTruePropertiesOfObject", [ IsObject ]  );
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2),(1,2,3));;
 ##  gap> CategoriesOfObject(g);
-##  [ "IsListOrCollection", "IsCollection", "IsExtLElement", 
-##    "CategoryCollections(IsExtLElement)", "IsExtRElement", 
-##    "CategoryCollections(IsExtRElement)", 
-##    "CategoryCollections(IsMultiplicativeElement)", 
-##    "CategoryCollections(IsMultiplicativeElementWithOne)", 
-##    "CategoryCollections(IsMultiplicativeElementWithInverse)", 
-##    "CategoryCollections(IsAssociativeElement)", 
-##    "CategoryCollections(IsFiniteOrderElement)", "IsGeneralizedDomain", 
-##    "CategoryCollections(IsPerm)", "IsMagma", "IsMagmaWithOne", 
+##  [ "IsListOrCollection", "IsCollection", "IsExtLElement",
+##    "CategoryCollections(IsExtLElement)", "IsExtRElement",
+##    "CategoryCollections(IsExtRElement)",
+##    "CategoryCollections(IsMultiplicativeElement)",
+##    "CategoryCollections(IsMultiplicativeElementWithOne)",
+##    "CategoryCollections(IsMultiplicativeElementWithInverse)",
+##    "CategoryCollections(IsAssociativeElement)",
+##    "CategoryCollections(IsFiniteOrderElement)", "IsGeneralizedDomain",
+##    "CategoryCollections(IsPerm)", "IsMagma", "IsMagmaWithOne",
 ##    "IsMagmaWithInversesIfNonzero", "IsMagmaWithInverses" ]
 ##  ]]></Example>
 ##  </Description>

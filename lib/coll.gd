@@ -963,10 +963,6 @@ BIND_GLOBAL( "FACTOR_MAINTAINED_INFO", ShareSpecialObj([], "FACTOR_MAINTAINED_IN
 DeclareOperation( "UseFactorRelation",
     [ IsCollection, IsObject, IsCollection ] );
 
-IsIdenticalObjObjObjX := function( F1, F2, F3 )
-    return IsIdenticalObj( F1, F2 );
-end;
-
 InstallMethod( UseFactorRelation,
     "default method that checks maintenances and then returns `true'",
     true,
@@ -1055,7 +1051,7 @@ BIND_GLOBAL( "InstallFactorMaintenance",
 #     if     FLAGS_FILTER( opr ) <> false
 #        and IS_EQUAL_FLAGS( FLAGS_FILTER( opr and factor_req ),
 #                            FLAGS_FILTER( numer_req ) )  then
-#         InstallMethod( UseFactorRelation, infostring, IsIdenticalObjObjObjX,
+#         InstallMethod( UseFactorRelation, infostring, IsFamFamX,
 #                 [ factor_req, denom_req, factor_req ], 0,
 #             function( numer, denom, factor )
 #             if tester( factor )  and  not opr( factor )  then

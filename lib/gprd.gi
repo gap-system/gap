@@ -774,16 +774,24 @@ end);
 # wreath products: generic code
 #
 
-InstallOtherMethod( WreathProduct,"generic groups", true,
+InstallOtherMethod( WreathProduct,"generic groups, no perm", true,
+ [ IsGroup, IsGroup ], 0,
+function(G,H)
+  if IsPermGroup(H) then TryNextMethod();fi;
+  Error("WreathProduct requires permgroup or group and permrep");
+end);
+
+InstallMethod( WreathProduct,"generic groups with perm", true,
+ [ IsGroup, IsPermGroup ], 0,
+function(G,H)
+  return WreathProduct(G,H,IdentityMapping(H));
+end);
+
+InstallMethod( StandardWreathProduct,"generic groups", true,
  [ IsGroup, IsGroup ], 0,
 function(G,H)
 local iso;
-  # take the regular action, unless permutation group
-  if IsPermGroup(H) then
-    iso:=IdentityMapping(H);
-  else
-    iso:=ActionHomomorphism(H,Elements(H),OnRight,"surjective");
-  fi;
+  iso:=ActionHomomorphism(H,Elements(H),OnRight,"surjective");
   return WreathProduct(G,H,iso);
 end);
 
@@ -797,14 +805,19 @@ function(G,H,alpha)
 local I,n,fam,typ,gens,hgens,id,i,e,info,W,p,dom;
   I:=Image(alpha,H);
 
-  # avoid sparse points.
+  # avoid sparse first points.
   dom:=MovedPoints(I);
-  if Maximum(dom)>Length(dom) then
+  if Length(dom)=0 then
+    dom:=[1];
+    n:=1;
+  elif Maximum(dom)>Length(dom) then
     alpha:=alpha*ActionHomomorphism(I,dom);
     I:=Image(alpha,H);
+    n:=LargestMovedPoint(I);
+  else
+    n:=LargestMovedPoint(I);
   fi;
 
-  n:=LargestMovedPoint(I);
   fam:=NewFamily("WreathProductElemFamily",IsWreathProductElement);
   typ:=NewType(fam,IsWreathProductElementDefaultRep);
   fam!.defaultType:=typ;
@@ -1208,14 +1221,14 @@ local pm,F,d,b,s,t,pos,i,j,img,m,P,info,Go,bnt,N,pcgs,auts,mapi,ag,phi,imgs;
   m:=[];
   # build affine matrices from group generators
   for i in GeneratorsOfGroup(G) do
-    b:=MutableIdentityMat(d+1,F);
+    b:=IdentityMat(d+1,F);
     b{[1..d]}{[1..d]}:=i;
     Add(m,ImmutableMatrix(F,b));
   od;
   # and from basis vectors
   bnt:=[];
   for i in t do
-    b:=MutableIdentityMat(d+1,F);
+    b:=IdentityMat(d+1,F);
     b[d+1]{[1..d]}:=i;
     b:=ImmutableMatrix(F,b);
     Add(m,b);
@@ -1274,14 +1287,14 @@ function( S, i )
       od;
 
       for j in w do
-	m:=MutableIdentityMat(d+1,info.field);
+	m:=IdentityMat(d+1,info.field);
 	m[d+1]{[1..d]}:=j;
 	Add(n,ImmutableMatrix(info.field,m));
       od;
       n:=SubgroupNC(S,n);
       hom:=MappingByFunction(info.vectorspace,n,function(v)
         local m;
-	m:=MutableIdentityMat(d+1,info.field);
+	m:=IdentityMat(d+1,info.field);
 	m[d+1]{[1..d]}:=v;
         return ImmutableMatrix(info.field,m);
       end,

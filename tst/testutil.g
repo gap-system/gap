@@ -86,7 +86,7 @@ BindGlobal( "RunStandardTests", function( arg )
                  "' in the `STOP_TEST' command of `", name, "'!\n" );
         fi;
         time:= info[3];
-        if 500 < time and IsPosRat(info[2]) then
+        if 100 < time and IsPosRat(info[2]) then
           count:= count + 1;
           totaltime:= totaltime + time;
           totalprev:= totalprev + info[2];
@@ -95,9 +95,9 @@ BindGlobal( "RunStandardTests", function( arg )
         else
           stone := 0;
         fi;
-        Print( FormattedString( testfiles[i][1], -20 ),
-               FormattedString( stone, 8 ),
-               FormattedString( time, 15 ) );
+        Print( String( testfiles[i][1], -20 ),
+               String( stone, 8 ),
+               String( time, 15 ) );
         if i < Length( testfiles ) and IsPosRat( testfiles[i+1][2] )
            and totalprev <> 0  then
           Print( "    (next ~ ",
@@ -144,8 +144,8 @@ BindGlobal( "RunStandardTests", function( arg )
       count:= 1;
     fi;
     Print( "total",
-           FormattedString( RootInt( prod, count ), 23 ),
-           FormattedString( totaltime, 15 ), "\n\n" );
+           String( RootInt( prod, count ), 23 ),
+           String( totaltime, 15 ), "\n\n" );
 
     # Reset the changed globals.
     InfoRead1 := infoRead1;
@@ -365,7 +365,7 @@ BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
     local file, PKGTSTHDR, str;
 
     if LoadPackage( pkgname, Concatenation( "=", version ) ) = fail then
-      Print( "#E  RunPackageTests: package `",
+      Print( "#I  RunPackageTests: package `",
              pkgname, "' (version ", version, ") not loadable\n" );
       return;
     fi;
@@ -379,19 +379,22 @@ BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
     file:= Filename( DirectoriesPackageLibrary( pkgname, "" ), testfile );
     str:= StringFile( file );
     if not IsString( str ) then
-      Print( "#E  RunPackageTests: file `", testfile, "' for package `",
+      Print( "#I  RunPackageTests: file `", testfile, "' for package `",
              pkgname, "' (version ", version, ") not readable\n" );
       return;
     fi;
     if PositionSublist( str, "gap> START_TEST(" ) = fail then
       if not READ( file ) then
-        Print( "#E  RunPackageTests: file `", testfile, "' for package `",
+        Print( "#I  RunPackageTests: file `", testfile, "' for package `",
                pkgname, "' (version ", version, ") not readable\n" );
       fi;
     else
       if not Test( file, rec(compareFunction := "uptowhitespace") ) then
-        Print( "#E  RunPackageTests reports errors for package ", pkgname, " ", version, "\n",
-              "in the test file `", testfile, "'\n");
+        Print( "#I  Errors detected while testing package ", pkgname, " ", version, "\n",
+               "#I  using the test file `", testfile, "'\n");
+      else
+        Print( "#I  No errors detected while testing package ", pkgname, " ", version, "\n",
+               "#I  using the test file `", testfile, "'\n");
       fi;
     fi;
 
@@ -547,7 +550,162 @@ BindGlobal( "CreatePackageVarsTestsInput",
     PrintTo( scriptfile, result );
     end );
     
-    
+
+#############################################################################
+##
+#F  CreateDevUpdateTestInput( )
+#F  RunDevUpdateTests( )
+##
+##  RunDevUpdateTests() extracts test from dev/Update files and runs them
+##  in the current GAP session. CreateDevUpdateTestInput() is an auxiliary
+##  function which returns the string with the tests. It may be used to
+##  view the tests or print them to a file.
+##
+BindGlobal( "CreateDevUpdateTestInput",
+    function()
+    local dirname, file, f, filename, content, alltests, output, nr, line, teststart, testlines;
+    dirname:= DirectoriesLibrary( "dev/Updates" );
+    if dirname = fail then
+      Error("Can not find the 'dev/Updates' directory. Note that it is a part of the\n",
+            "development version of GAP and is not included in the GAP distribution\n");
+    fi;
+
+    alltests := [ ];
+   
+    # Exclude hidden files and directories. Sort to ensure the order is not system-dependent
+    for file in SortedList( Filtered( DirectoryContents(dirname[1]), f -> f[1] <> '.' ) ) do
+    filename := Filename( dirname, file );
+    content := SplitString( StringFile( filename ), "\r\n");
+    output := [ ];
+    nr:=0;
+    repeat
+        nr := nr+1;
+        if nr > Length(content) then
+            break;
+        fi;
+        line := content[nr];
+        if Length(line) > 0 then
+            if line[1]='!' then
+                if LowercaseString( ReplacedString( line, " ","")) = "!testcode" then
+                    teststart := nr;
+                    testlines := [];
+                    repeat
+                        nr := nr+1;
+                        line := content[nr];
+                        if Length(line) > 0 then
+                            if line[1]='!' then
+                                break;
+                            elif not line[1]='%' then
+                                Add( testlines, Concatenation(line,"\n") );
+                            fi;
+                        fi;
+                    until false;
+                    if Length( testlines ) > 0 then
+                        Add(output, Concatenation( "# ", filename, ", line ", String(teststart), "\n") );
+                        Append(output, testlines );
+                        Add( output, "\n" );
+                    fi;
+                fi;
+            fi;
+        fi;
+    until false;
+    if Length(output) > 0 then 
+      Add( output, "#######################\n#END\n");
+      Add( alltests, [ filename, Concatenation( output ) ] );
+    fi;  
+    od;
+    return alltests;
+end);
+
+
+BindGlobal( "RunDevUpdateTests",
+    function()
+    local tests, t, resfile, str;
+    tests := CreateDevUpdateTestInput();
+    SaveWorkspace("testdevupdate.wsp");    
+    for t in tests do
+        Print("Checking " , t[1],"\n");
+        resfile := "TESTDEVUPDATEOUTPUT";
+        FileString( "TESTDEVUPDATE", t[2] );
+        Exec( Concatenation(
+        "echo 'Test(\"TESTDEVUPDATE\");' | bin/gap.sh -b -r -A -q -L testdevupdate.wsp > ", resfile ));
+        str := StringFile(resfile);
+        Print(str);
+    od;
+    RemoveFile("testdevupdate.wsp");
+    RemoveFile("TESTDEVUPDATE");
+    RemoveFile(resfile);
+end);
+
+#############################################################################
+##
+#F  CheckOutputDelegations
+##
+##  A method to output an object may only delegate to another operation
+##  which appears further right in the following list: Display, ViewObj,
+##  PrintObj, DisplayString, ViewString, PrintString, String.
+##
+##  This function parses the code of all installed methods for these
+##  operations and checks whether this rule is followed, and shortlists
+##  methods that require further inspection. Since it may still report
+##  some cases where it is safe to call a predecessor of an operations
+##  for a subobject of the original object, the check cannot be fully
+##  automated.
+##
+BindGlobal( "CheckOutputDelegations",
+function()
+local rules, name, f, str, ots, met, pos, nargs, r, i,
+      report, line, m, n, illegal_delegations, checklist;
+
+rules := [ "Display", "ViewObj", "PrintObj", "DisplayString",
+           "ViewString", "PrintString", "String" ];
+
+for name in rules do
+
+  pos:=Position( rules, name );
+  report:=[];
+
+  for nargs in [1..2] do
+    f:=METHODS_OPERATION( EvalString(name), nargs );
+    for m in [1..Length(f)/(4+nargs)] do
+      met := f[(m-1)*(4+nargs)+2+nargs];
+      str := "";
+      ots := OutputTextString(str,true);;
+      PrintTo( ots, met );
+      CloseStream(ots);
+      illegal_delegations:=[];
+      checklist:=rules{[1..pos-1]};
+      for r in checklist do
+        n := POSITION_SUBSTRING(str, r, 0);
+        if n <> fail then
+          if Length(str) >= n + Length(r) then
+            if not str[n + Length(r)] in LETTERS then
+              Add( illegal_delegations, r );
+            fi;
+          fi;
+        fi;
+      od;
+      if Length(illegal_delegations) > 0 then
+        Add( report, [ FILENAME_FUNC( met ), STARTLINE_FUNC( met ),
+                       f[(m-1)*(4+nargs)+4+nargs], illegal_delegations, met ] );
+      fi;
+    od;
+  od;
+
+  if Length(report) > 0 then
+    Print("\nDetected incorrect delegations for ", name, "\n");
+    for line in report do
+      Print("---------------------------------------------------------------\n");
+      Print( line[3], "\n", " delegates to ", line[4], "\n",
+             "Filename: ", line[1], ", line : ", line[2], "\n", line[5], "\n");
+    od;
+    Print("---------------------------------------------------------------\n");
+  else
+    Print("All delegations correct for ", name, "\n");
+  fi;
+
+od;
+end);
 
 #############################################################################
 ##

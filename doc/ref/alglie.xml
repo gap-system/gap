@@ -24,6 +24,7 @@
 <#Include Label="IsLieObject">
 <#Include Label="LieFamily">
 <#Include Label="UnderlyingFamily">
+<#Include Label="UnderlyingRingElement">
 
 </Section>
 

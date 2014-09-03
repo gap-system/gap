@@ -1955,6 +1955,13 @@ static Int InitKernel (
     SetTypeObjFuncs [ T_POSOBJ ] = SetTypePosObj;
     SetTypeObjFuncs [ T_DATOBJ ] = SetTypeDatObj;
 
+    /* SPARE TNUMs install placeholder entries for easier
+       debugging. Packages that use these should overwrite the entries */
+    InfoBags[T_SPARE1].name = "spare tnum 1 (overwrite this)";
+    InfoBags[T_SPARE2].name = "spare tnum 2 (overwrite this)";
+    InfoBags[T_SPARE3].name = "spare tnum 3 (overwrite this)";
+    InfoBags[T_SPARE4].name = "spare tnum 4 (overwrite this)";
+
     /* functions for 'to-be-defined' objects                               */
     ImportFuncFromLibrary( "IsToBeDefinedObj", &IsToBeDefinedObj );
     ImportFuncFromLibrary( "PostMakeImmutable", &PostMakeImmutableOp );
@@ -2136,7 +2143,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoObjects ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

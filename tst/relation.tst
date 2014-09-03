@@ -16,7 +16,7 @@ gap> ##      IsEquivalenceClass
 gap> ##
 gap> ##################################################
 gap> dom := Domain([1..10]);;  
-gap> m := GeneralMappingByElements(dom,dom,List(dom,x->Tuple([x,x])));;
+gap> m := GeneralMappingByElements(dom,dom,List(dom,x->DirectProductElement([x,x])));;
 gap> IsBinaryRelation(m);
 true
 gap> IsEndoGeneralMapping(m);
@@ -45,8 +45,8 @@ gap> ##      IsTransitiveBinaryRelation
 gap> ##      IsReflexiveBinaryRelation (implies IsTotal)
 gap> ##
 gap> ##################################################
-gap> dom := Domain([1..10]);; tup:=[Tuple([2,4])];;
-gap> m := GeneralMappingByElements(dom,dom,Concatenation(List(dom,x->Tuple([x,x])),tup));;
+gap> dom := Domain([1..10]);; tup:=[DirectProductElement([2,4])];;
+gap> m := GeneralMappingByElements(dom,dom,Concatenation(List(dom,x->DirectProductElement([x,x])),tup));;
 gap> IsReflexiveBinaryRelation(m);
 true
 gap> HasIsTotal(m);
@@ -57,8 +57,8 @@ gap> IsSymmetricBinaryRelation(m);
 false
 gap> IsTransitiveBinaryRelation(m);
 true
-gap> tup := [Tuple([3,4]),Tuple([4,3])];;
-gap> m := GeneralMappingByElements(dom,dom,Concatenation(List(dom,x->Tuple([x,x])),tup));;
+gap> tup := [DirectProductElement([3,4]),DirectProductElement([4,3])];;
+gap> m := GeneralMappingByElements(dom,dom,Concatenation(List(dom,x->DirectProductElement([x,x])),tup));;
 gap> IsTransitiveBinaryRelation(m);
 true
 gap> IsReflexiveBinaryRelation(m);
@@ -67,7 +67,7 @@ gap> IsSymmetricBinaryRelation(m);
 true
 gap> IsEquivalenceRelation(m);
 true
-gap> m := GeneralMappingByElements(dom,dom,Concatenation(List(dom,x->Tuple([x,x])),tup));;
+gap> m := GeneralMappingByElements(dom,dom,Concatenation(List(dom,x->DirectProductElement([x,x])),tup));;
 gap> IsEquivalenceRelation(m);
 true
 gap> e := EquivalenceRelationByPairs(dom,[[3,4]]);;
@@ -85,8 +85,8 @@ gap> ##      EquivalenceClasses
 gap> ##      ImagesListOfBinaryRelation
 gap> ##     
 gap> ##################################################
-gap> dom := Domain([1..10]);; tup:=[Tuple([2,4]),Tuple([4,2])];;
-gap> m := GeneralMappingByElements(dom,dom,Concatenation(List(dom,x->Tuple([x,x])),tup));;
+gap> dom := Domain([1..10]);; tup:=[DirectProductElement([2,4]),DirectProductElement([4,2])];;
+gap> m := GeneralMappingByElements(dom,dom,Concatenation(List(dom,x->DirectProductElement([x,x])),tup));;
 gap> IsReflexiveBinaryRelation(m);; IsSymmetricBinaryRelation(m);; 
 gap> IsTransitiveBinaryRelation(m);; IsEquivalenceRelation(m);;
 gap> e := EquivalenceRelationByPairs(dom,[[2,4]]);;
@@ -167,7 +167,7 @@ gap> ##      EquivalenceRelationByPairs
 gap> ##
 gap> ##################################################
 gap> n:=10;; dom := Domain([1..n]);;
-gap> el := List([1..n-1],x->Tuple([x,x+1]));;
+gap> el := List([1..n-1],x->DirectProductElement([x,x+1]));;
 gap> e := EquivalenceRelationByRelation(IdentityMapping(dom));;
 gap> EquivalenceRelationPartition(e)=[];
 true
@@ -180,12 +180,12 @@ true
 gap> g := SymmetricGroup(4);;
 gap> sgs := Domain(NormalSubgroups(g));;
 gap> d := Size(sgs);;
-gap> el :=  List([1..d-1],x->Tuple([AsList(sgs)[x],AsList(sgs)[x+1]]));;
+gap> el :=  List([1..d-1],x->DirectProductElement([AsList(sgs)[x],AsList(sgs)[x+1]]));;
 gap> er1 := EquivalenceRelationByRelation(GeneralMappingByElements(sgs,sgs,el));;
 gap> er := EquivalenceRelationByPairs(sgs,el);;
 gap> er=er1;
 true
-gap> el := List([1..n-1],x->Tuple([x,x+1]));;
+gap> el := List([1..n-1],x->DirectProductElement([x,x+1]));;
 gap> rel := TransitiveClosureBinaryRelation(GeneralMappingByElements(dom,dom,el));;
 gap> Size(UnderlyingRelation(rel));
 45

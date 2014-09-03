@@ -3005,7 +3005,7 @@ InstallMethod( RepresentativeTomByGenerators,
 
     # test <group>
     gr:= UnderlyingGroup( tom );
-    iso:= GroupGeneralMappingByImages( gr, GroupByGenerators( gens ),
+    iso:= GroupGeneralMappingByImagesNC( gr, GroupByGenerators( gens ),
                                        GeneratorsOfGroup( gr ), gens );
     if not ( IsGroupHomomorphism( iso ) and IsBijective( iso ) ) then
       Info( InfoWarning, 1,

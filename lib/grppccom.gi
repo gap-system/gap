@@ -942,7 +942,7 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
   K:=ClosureGroup(M,Intersection(H,N));
   f:=Size(H)/Size(K);
   
-  # find prime that gives normal subgroup
+  # find prime that gives normal characteristic subgroup
   primes:=Set(Factors(f));
   if Length(primes)=1 then
     p:=primes[1];
@@ -1135,7 +1135,14 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
   c:=List(c,x->PreImage(hom,x));
   #c:=SubgroupsOrbitsAndNormalizers(K,c,false);
   #c:=List(c,x->x.representative);
-  nc:=PermPreConjtestGroups(K,c);
+
+  # only if not cyclic
+  if Length(c)>1 and not IsCyclic(c[1]) then
+    nc:=PermPreConjtestGroups(K,c);
+  else
+    nc:=[[K,c]];
+  fi;
+
   Info(InfoComplement,2,Length(c)," Preimages in ",Length(nc)," clusters ");
   c:=[];
   for i in nc do

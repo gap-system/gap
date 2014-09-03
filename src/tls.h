@@ -54,6 +54,7 @@ typedef struct ThreadLocalStorage
   UInt currentGlobalForLoopDepth;
   Obj exprGVars;
   Obj errorLVars;
+  Obj errorLVars0;
   Obj readEvalResult;
   /* From scanner.c */
   Char value[MAX_VALUE_LEN];
@@ -98,7 +99,9 @@ typedef struct ThreadLocalStorage
   UInt (**CurrExecStatFuncs)(Stat);
   /* From code.c */
   Stat *ptrBody;
-  Stat offsBody;
+  Stat OffsBody;
+  Stat *OffsBodyStack;
+  UInt OffsBodyCount;
   Obj codeResult;
   Bag stackStat;
   Int countStat;
@@ -121,6 +124,12 @@ typedef struct ThreadLocalStorage
   Obj ResultCyc;
   Obj  LastECyc;
   UInt LastNCyc;
+
+  /* From trans.c */
+  Obj TmpTrans;
+ 
+  /* From pperm.c */
+  Obj TmpPPerm; 
 
   /* From gap.c */
   Obj thrownObject;

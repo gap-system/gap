@@ -57,6 +57,11 @@ IdentificationPermGroup := function(D,el)
     Add(s,-FingerprintPerm(D,el,D.p1,D.p2,D.fingerprintOrbitStabilizer,
                                     D.fingerprintRepresentatives));
   fi;
+  if IsBound(D.usefitfree) and not s in D.nocanonize then
+    l:=First(D.faclaimg,x->x[1]=s);
+    l:=TFCanonicalClassRepresentative(D.group,[el]:candidatenums:=l[2]);
+    Add(s,l[1][2]);
+  fi;
   return s;
 end;
 
@@ -213,6 +218,24 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
     D.rids[i]:=
      D.rationalidentification(D,D.classreps[i]);
   od;
+
+  # use canonical reps?
+  if Size(RadicalGroup(D.group))>1 then
+    D.usefitfree:=true;
+    D.nocanonize:=[];
+    D.faclaimg:=[];
+    fs:=List(D.ids,ShallowCopy);
+    for i in [1..D.klanz] do
+      f:=Filtered([1..D.klanz],x->fs[x]=fs[i]);
+      if Length(f)=1 then
+	Add(D.nocanonize,fs[i]);
+      else
+	Add(D.faclaimg,[fs[i],f]); # store which classes images could be
+	f:=TFCanonicalClassRepresentative(D.group,[D.classreps[i]]);
+	Add(D.ids[i],f[1][2]);
+      fi;
+    od;
+  fi;
 
   return D;
 

@@ -43,6 +43,9 @@
 ##  corresponding to the elements <C>f1</C> and <C>f2</C> in <C>F</C>, 
 ##  we have <C>l1 * l2</C> equal to the Lie element corresponding to 
 ##  <C>f1 * f2 - f2 * f1</C>.
+##  Furthermore, the product of Lie elements <C>l1</C>, <C>l2</C> and
+##  <C>l3</C> is left-normed, that is <C>l1*l2*l3</C> is equal to
+##  <C>(l1*l2)*l3</C>.  
 ##  <P/>
 ##  The main reason to distinguish elements and Lie elements on the family
 ##  level is that this helps to avoid forming domains that contain
@@ -192,6 +195,39 @@ DeclareAttribute( "UnderlyingFamily", IsObject );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "LieObject", IsRingElement );
+
+
+#############################################################################
+##
+#A  UnderlyingRingElement( <obj> )
+##
+##  <#GAPDoc Label="UnderlyingRingElement">
+##  <ManSection>
+##  <Attr Name="UnderlyingRingElement" Arg='obj'/>
+##
+##  <Description>
+##  Let <A>obj</A> be a Lie object constructed from a ring element
+##  <C>r</C> by calling <C>LieObject( r )</C>.
+##  Then <C>UnderlyingRingElement( <A>obj</A> )</C> returns
+##  the ring element <C>r</C> used to construct <A>obj</A>.
+##  If <C>r</C> lies in the family <C>F</C>, then <A>obj</A>
+##  lies in the family <C>LieFamily( F )</C>
+##  (see&nbsp;<Ref Func="LieFamily"/>).
+##  <Example><![CDATA[
+##  gap> lo:= LieObject( [ [ 1, 0 ], [ 0, 1 ] ] );
+##  LieObject( [ [ 1, 0 ], [ 0, 1 ] ] )
+##  gap> m:=UnderlyingRingElement(lo);
+##  [ [ 1, 0 ], [ 0, 1 ] ]
+##  gap> lo*lo;
+##  LieObject( [ [ 0, 0 ], [ 0, 0 ] ] )
+##  gap> m*m;
+##  [ [ 1, 0 ], [ 0, 1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "UnderlyingRingElement", IsLieObject );
 
 
 #############################################################################

@@ -540,7 +540,7 @@ InstallMethod( EnumeratorByBasis,
         enum!.NumberElement:= PosVecEnumFF;
         SetFilterObj( enum, IsQuickPositionList );
       fi;
-#T SetFilterObj( enum, IsSSortedList ) ?
+      SetFilterObj( enum, IsSSortedList );
 
       return enum;
 

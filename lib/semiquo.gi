@@ -10,8 +10,6 @@
 ##  This file contains the implementation for quotient semigroups.
 ##
 
-
-
 #############################################################################
 ##
 #F  HomomorphismQuotientSemigroup(<cong>) 
@@ -19,55 +17,48 @@
 ##
 InstallGlobalFunction(HomomorphismQuotientSemigroup, 
 function(cong)
+  local S, Qrep, efam, filters, Q, Qgens;
 
-	local
-			S, 			# the preimage
-			Q, 			# the quotient semigroup
-			Qrep,		# a representative element of Q
-			Qgens,	# the generators of Q
-			filters, # the filters of the object's type
-			efam; 	# elements family of Q
-			
+  if not IsSemigroupCongruence(cong) then
+    Error("usage: the argument should be a semigroup congruence,");
+    return;
+  fi;
 
-	# Check that cong is a congruence on S
-	if not IsSemigroupCongruence(cong) then
-		Error("usage: HomomorphismQuotientSemigroup(<cong>)");
-	fi;
+  S := Source(cong);
+  Qrep := EquivalenceClassOfElementNC(cong, Representative(S));
+  efam := FamilyObj(Qrep);
+  
+  filters := IsSemigroup and IsQuotientSemigroup and IsAttributeStoringRep;
+  
+  if IsMonoid(S) then
+    filters := filters and IsMagmaWithOne;
+  fi;
+  
+  if HasIsFinite(S) and IsFinite(S) then 
+    filters := filters and IsFinite;
+  fi;
 
-	S := Source(cong);
-		
-	Qrep := EquivalenceClassOfElementNC(cong, Representative(S));
+  Q:=Objectify(NewType( CollectionsFamily( efam ), filters), rec() );
 
-	# Create a new family.
-	efam := FamilyObj(Qrep);
+  SetRepresentative(Q, Qrep);
+  SetQuotientSemigroupPreimage(Q, S);
+  SetQuotientSemigroupCongruence(Q, cong);
+  SetQuotientSemigroupHomomorphism(Q, MagmaHomomorphismByFunctionNC(S, Q, 
+   x->EquivalenceClassOfElementNC(cong,x)));
 
-	# Create the semigroup.
-	filters := IsSemigroup and IsQuotientSemigroup and IsAttributeStoringRep;
-	if IsMonoid(S) then
-		filters := filters and IsMagmaWithOne;
-	fi;
-	Q := Objectify( NewType( CollectionsFamily( efam ), filters), rec() );
+  efam!.quotient := Q;
 
-	SetRepresentative(Q, Qrep);
-	SetQuotientSemigroupPreimage(Q, S);
-	SetQuotientSemigroupCongruence(Q, cong);
-	SetQuotientSemigroupHomomorphism(Q, 
-		MagmaHomomorphismByFunctionNC(S, Q, x->EquivalenceClassOfElementNC(cong,x)));
+  if IsMonoid(Q) and HasOne(S) then
+    SetOne(Q, One(S)^QuotientSemigroupHomomorphism(Q));
+  fi;
 
-	efam!.quotient := Q;
-
-	if IsMonoid(Q) and HasOne(S) then
-		SetOne(Q, One(S)^QuotientSemigroupHomomorphism(Q));
-	fi;
-
-	# Create generators of the semigroup.
-	if HasGeneratorsOfSemigroup(S) then
-		Qgens:= List( GeneratorsOfSemigroup( S ),
-      s -> s^QuotientSemigroupHomomorphism(Q));
+  if HasGeneratorsOfSemigroup(S) then
+    Qgens:= List( GeneratorsOfSemigroup( S ),
+     s -> s^QuotientSemigroupHomomorphism(Q));
     SetGeneratorsOfSemigroup( Q, Qgens );
-	fi;
+  fi;
 
-	return QuotientSemigroupHomomorphism(Q);
+  return QuotientSemigroupHomomorphism(Q);
 end);
 
 

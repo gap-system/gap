@@ -45,6 +45,9 @@
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include        "code.h"                /* coder                           */
+#include        "thread.h"              /* threads                         */
+#include        "tls.h"                 /* thread-local storage            */
 
 
 #include <stdio.h>
@@ -230,11 +233,11 @@ Obj FuncRandomListMT(Obj self, Obj mtstr, Obj list)
 
 /****************************************************************************
 **
-*F  FuncHASHKEY_BAG(<self>,<obj>,<factor>,<offset>,<maxlen>)
+*F  FuncHASHKEY_BAG(<self>,<obj>,<seed>,<offset>,<maxlen>)
 **
 **  'FuncHASHKEY_BAG' implements the internal function 'HASHKEY_BAG'.
 **
-**  'HASHKEY_BAG( <obj>, <factor>,<offset>,<maxlen> )'
+**  'HASHKEY_BAG( <obj>, <seed>, <offset>, <maxlen> )'
 **
 **  takes an non-immediate object and a small integer <int> and computes a
 **  hash value for the contents of the bag from these. (For this to be
@@ -581,72 +584,66 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 }
 
 
-Obj             FuncHASHKEY_BAG (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR,
-    Obj                 opO,
-    Obj			opM)
+Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
 {
   Int n;
   Int offs;
 
   /* check the arguments                                                 */
-  while ( TNUM_OBJ(opR) != T_INT ) {
-      opR = ErrorReturnObj(
+  while ( TNUM_OBJ(opSeed) != T_INT ) {
+      opSeed = ErrorReturnObj(
 	  "HASHKEY_BAG: <seed> must be a small integer (not a %s)",
-	  (Int)TNAM_OBJ(opR), 0L,
+	  (Int)TNAM_OBJ(opSeed), 0L,
 	  "you can replace <seed> via 'return <seed>;'" );
   }
   
   do {
     offs = -1;
 
-    while ( TNUM_OBJ(opO) != T_INT  ) {
-      opO = ErrorReturnObj(
-			   "HASHKEY_BAG: <offset> must be a small integer (not a %s)",
-			   (Int)TNAM_OBJ(opO), 0L,
-			   "you can replace <offset> via 'return <offset>;'" );      
+    while ( TNUM_OBJ(opOffset) != T_INT  ) {
+      opOffset = ErrorReturnObj(
+       "HASHKEY_BAG: <offset> must be a small integer (not a %s)",
+       (Int)TNAM_OBJ(opOffset), 0L,
+       "you can replace <offset> via 'return <offset>;'" );      
     }
-    offs = INT_INTOBJ(opO);
-    if ( offs < 0 || offs > SIZE_OBJ(opL)) {
-      opO = ErrorReturnObj(
-			   "HashKeyBag: <offset> must be non-negative and less than the bag size",
-			   0L, 0L,
-			   "you can replace <offset> via 'return <offset>;'" );      
+    offs = INT_INTOBJ(opOffset);
+    if ( offs < 0 || offs > SIZE_OBJ(obj)) {
+      opOffset = ErrorReturnObj(
+        "HashKeyBag: <offset> must be non-negative and less than the bag size",
+        0L, 0L,
+        "you can replace <offset> via 'return <offset>;'" );      
       offs = -1; 
     }
   } while (offs < 0);
-    
 
-
-  while ( TNUM_OBJ(opM) != T_INT ) {
-      opM = ErrorReturnObj(
-	  "HASHKEY_BAG: <maxlen> must be a small integer (not a %s)",
-	  (Int)TNAM_OBJ(opM), 0L,
-	  "you can replace <maxlen> via 'return <maxlen>;'" );
+  while ( TNUM_OBJ(opMaxLen) != T_INT ) {
+      opMaxLen = ErrorReturnObj(
+        "HASHKEY_BAG: <maxlen> must be a small integer (not a %s)",
+        (Int)TNAM_OBJ(opMaxLen), 0L,
+        "you can replace <maxlen> via 'return <maxlen>;'" );
   }
 
-  n=SIZE_OBJ(opL)-offs;
+  n=SIZE_OBJ(obj)-offs;
 
   /* maximal number of bytes to read */
-  Int maxlen=INT_INTOBJ(opM);
+  Int maxlen=INT_INTOBJ(opMaxLen);
   if ((n>maxlen)&&(maxlen!=-1)) {n=maxlen;}; 
   
-#ifdef SYS_IS_64_BIT
-  UInt8 hashout[2];
-  MurmurHash3_x64_128 ( (const void *)((UChar *)ADDR_OBJ(opL)+offs), 
-			(int) n,
-			(UInt4)INT_INTOBJ(opR), (void *) hashout);
-  return INTOBJ_INT(hashout[0] % (1UL << 60));
-#else
-  UInt4 hashout;
-  MurmurHash3_x86_32 ( (const void *)((UChar *)ADDR_OBJ(opL)+offs), 
-			(int) n,
-			(UInt4)INT_INTOBJ(opR), (void *) &hashout);
-  return INTOBJ_INT(hashout % (1UL << 28));
-#endif
+  return INTOBJ_INT(HASHKEY_BAG_NC( obj, (UInt4)INT_INTOBJ(opSeed), offs, (int) n));
+}
 
+Int HASHKEY_BAG_NC (Obj obj, UInt4 seed, Int skip, int maxread){
+  #ifdef SYS_IS_64_BIT
+    UInt8 hashout[2];
+    MurmurHash3_x64_128 ( (const void *)((UChar *)ADDR_OBJ(obj)+skip), 
+                           maxread, seed, (void *) hashout);
+    return hashout[0] % (1UL << 60);
+  #else
+    UInt4 hashout;
+    MurmurHash3_x86_32 ( (const void *)((UChar *)ADDR_OBJ(obj)+skip), 
+                          maxread, seed, (void *) &hashout);
+    return hashout % (1UL << 28);
+  #endif
 }
 
 Obj FuncJenkinsHash(Obj self, Obj op, Obj size)
@@ -740,7 +737,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoIntFuncs ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

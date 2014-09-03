@@ -14,10 +14,8 @@
 #ifndef GAP_PERMUTAT_H
 #define GAP_PERMUTAT_H
 
-
 /****************************************************************************
 **
-
 *F  NEW_PERM2(<deg>)  . . . . . . . . . . . .  make a new (small) permutation
 *F  DEG_PERM2(<perm>) . . . . . . . . . . . . . degree of (small) permutation
 *F  ADDR_PERM2(<perm>)  . . . . . . . absolute address of (small) permutation
@@ -32,6 +30,7 @@
 #define DEG_PERM4(perm)         (SIZE_OBJ(perm) / sizeof(UInt4))
 #define ADDR_PERM4(perm)        ((UInt4*)ADDR_OBJ(perm))
 
+#define IMAGE(i,pt,dg)  (((i) < (dg)) ? (pt)[(i)] : (i))
 
 /****************************************************************************
 **
