@@ -266,8 +266,7 @@ m24trial := function()
 end;
 
 m24trialn := function(n)
-    local  d, gens, orb;
-    orb := AtomicList([]);
+    local  d, gens;
     d := newSplitHashTableDict(hash, hash, NHASHTABLES, 100);
     gens := GeneratorsOfGroup(MathieuGroup(24));
     parorb([`[1..n]], gens, OnSets, d, SHTaddOrLookup, function(a,b,c) 
