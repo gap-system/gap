@@ -512,8 +512,8 @@ UInt GVarName (
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
     if ( gvar == 0 ) {
-	pos = i;
         UInt gvar_bucket, gvar_index;
+	pos = i;
         CountGVars++;
 	gvar_bucket = GVAR_BUCKET(CountGVars);
 	gvar_index = GVAR_INDEX(CountGVars);
