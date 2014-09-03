@@ -850,7 +850,7 @@ function(v,w)
         return fail;
     fi;
 
-    w1 := CopyToVectorRepNC(w, p^e);
+    w1 := CopyToVectorRep(w, p^e);
     if w1 = fail then
         return fail;
     fi;
