@@ -1655,6 +1655,30 @@ Obj FuncNAMS_FUNC (
     }
 }
 
+/****************************************************************************
+**
+*F  FuncLOCKS_FUNC( <self>, <func> ) . . . . locking status of a possibly
+**                                           atomic function
+*/
+Obj LOCKS_FUNC_Oper;
+
+Obj FuncLOCKS_FUNC (
+    Obj                 self,
+    Obj                 func )
+{
+  Obj locks;
+    if ( TNUM_OBJ(func) == T_FUNCTION ) {
+      locks = LCKS_FUNC(func);
+      if ( locks == (Obj)0) 
+	return Fail;
+      else
+	return locks;
+    }
+    else {
+        return DoOperation1Args( self, func );
+    }
+}
+
 
 /****************************************************************************
 **
@@ -1995,6 +2019,9 @@ static StructGVarOper GVarOpers [] = {
 
     { "NAMS_FUNC", 1, "func", &NAMS_FUNC_Oper,
       FuncNAMS_FUNC, "src/calls.c:NAMS_FUNC" },
+
+    { "LOCKS_FUNC", 1, "func", &LOCKS_FUNC_Oper,
+      FuncLOCKS_FUNC, "src/calls.c:LOCKS_FUNC" },
 
     { "PROF_FUNC", 1, "func", &PROF_FUNC_Oper,
       FuncPROF_FUNC, "src/calls.c:PROF_FUNC" },
