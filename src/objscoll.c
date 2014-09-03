@@ -46,6 +46,7 @@
 #include        "code.h"                /* coder                           */
 #include        "tls.h"
 
+#include        "tls.h"                 /* thread-local storage            */
 #include        "objfgelm.h"            /* objects of free groups          */
 
 #include        "objscoll.h"            /* single collector                */

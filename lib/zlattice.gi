@@ -1300,7 +1300,7 @@ InstallGlobalFunction( ShortestVectors, function( arg )
           repeat
              i := i + 1;
              k := k + 1;
-          until k * k > q and k > 0;
+          until k * k >= q and k > 0;
           i := i - 1;
           k := k - 1;
           while k * k < q and con do

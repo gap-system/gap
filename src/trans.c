@@ -954,7 +954,9 @@ Obj FuncPREIMAGES_TRANS_INT (Obj self, Obj f, Obj pt){
     ptf4=ADDR_TRANS4(f);
     for(j=0;j<deg;j++) if(ptf4[j]==i) SET_ELM_PLIST(out, ++nr, INTOBJ_INT(j+1));
   }
-
+  if(nr==0){
+    RetypeBag(out, T_PLIST_EMPTY);
+  }
   SET_LEN_PLIST(out, (Int) nr);
   SHRINK_PLIST(out, (Int) nr);
   if (!nr)
@@ -1934,10 +1936,16 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p){
   Obj     out;
   UInt4   *ptcnj, *ptlkp, *ptp4;
   UInt2   *ptp2;
-
+  
   len=LEN_LIST(ker);
-  out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
-  SET_LEN_PLIST(out, len);
+  if(len==0){
+    out=NEW_PLIST(T_PLIST_EMPTY, len);
+    SET_LEN_PLIST(out, len);
+    return out;
+  } else {
+    out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
+    SET_LEN_PLIST(out, len);
+  }
   
   ResizeTmpTrans(2*len);
   ptcnj = (UInt4*) ADDR_OBJ(TmpTrans);

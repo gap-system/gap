@@ -1092,7 +1092,10 @@ local H,d,id,hom,field,C,dom,orbs;
     Error("inconsistent image");
   fi;
 
-  if Image(hom)=G then
+  if # catch if one group is with memory
+     RepresentationsOfObject(One(Image(hom)))=
+     RepresentationsOfObject(One(G)) 
+     and Image(hom)=G then
     d:=IdentityMapping(G);
   else
     # Image(hom) is the better group to search in, e.g. classes.

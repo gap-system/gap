@@ -16,6 +16,7 @@
 
 #include        "gvars.h"               /* global variables                */
 #include        "gap.h"                 /* error handling, initialisation  */
+#include        "tls.h"                 /* thread-local storage            */
 
 #include        "calls.h"               /* generic call mechanism          */
 

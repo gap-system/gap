@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#include "code.h"
 #include "tlsconfig.h"
 
 #define TLS_NUM_EXTRA 256

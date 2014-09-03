@@ -2108,18 +2108,28 @@ function( G, N )
 local hom,F,new;
   hom:=NaturalHomomorphismByNormalSubgroupNC( G, N );
   F:=ImagesSource(hom);
-  if not HasNaturalHomomorphism(F) then
-    SetNaturalHomomorphism(F,hom);
+  if not IsBound(F!.nathom) then
+    F!.nathom:=hom;
   else
     # avoid cached homomorphisms
     new:=Group(GeneratorsOfGroup(F),One(F));
     hom:=hom*GroupHomomorphismByImagesNC(F,new,
       GeneratorsOfGroup(F),GeneratorsOfGroup(F));
-    SetNaturalHomomorphism(new,hom);
     F:=new;
+    F!.nathom:=hom;
   fi;
   return F;
 end );
+
+InstallMethod( NaturalHomomorphism, "for a group with natural homomorphism stored",
+    [ IsGroup ],
+function(G)
+  if IsBound(G!.nathom) then
+    return G!.nathom;
+  else
+    Error("no natural homomorphism stored");
+  fi;
+end);
 
 InstallOtherMethod( \/,
     "generic method for two groups",

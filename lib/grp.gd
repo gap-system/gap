@@ -2645,8 +2645,8 @@ DeclareOperation( "CosetTableNormalClosure", [ IsGroup, IsGroup ] );
 ##
 ##  <Description>
 ##  returns the image of the <C>NaturalHomomorphismByNormalSubgroup(<A>G</A>,<A>N</A>)</C>.
-##  The homomorphism will be stored in the attribute
-##  <C>NaturalHomomorphism</C> of the result.
+##  The homomorphism will be returned by calling the function
+##  <C>NaturalHomomorphism</C> on the result.
 ##  The <C>NC</C> version does not test whether <A>N</A> is normal in <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;n:=Subgroup(g,[(1,2)(3,4),(1,3)(2,4)]);;
@@ -2670,16 +2670,16 @@ DeclareOperation( "FactorGroupNC", [ IsGroup, IsGroup ] );
 ##
 ##  <#GAPDoc Label="NaturalHomomorphism">
 ##  <ManSection>
-##  <Attr Name="NaturalHomomorphism" Arg='F'/>
+##  <Oper Name="NaturalHomomorphism" Arg='F'/>
 ##
 ##  <Description>
-##  For a group <A>F</A> obtained via <C>FactorGroup</C>, this attribute
-##  holds the natural homomorphism onto <A>F</A>
+##  For a group <A>F</A> obtained via <C>FactorGroup</C>, this operation
+##  returns the natural homomorphism onto <A>F</A>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "NaturalHomomorphism", IsGroup );
+DeclareOperation( "NaturalHomomorphism", [ IsGroup ] );
 
 
 

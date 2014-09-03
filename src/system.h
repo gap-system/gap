@@ -20,6 +20,8 @@
 #ifndef GAP_SYSTEM_H
 #define GAP_SYSTEM_H
 
+#define NOOP ((void) 0)
+
 /****************************************************************************
 **
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"

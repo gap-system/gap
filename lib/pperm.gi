@@ -216,6 +216,14 @@ function(p, n)
   return AS_PPERM_PERM(p, [1..n]);
 end);
 
+#
+
+InstallMethod(AsPartialPerm, "for a perm and zero",
+[IsPerm, IsZeroCyc], 
+function(p, n)
+  return PartialPerm([]);
+end);
+
 # c method? JDM
 
 InstallMethod(AsPartialPerm, "for a transformation and list",

@@ -2648,6 +2648,16 @@ gap> Size(F);
 infinity
 
 #############################################################################
+##
+## Changes 4.7.5 -> 4.7.6
+
+## For bugfixes
+
+# 2014/08/21 (AK, CJ)
+gap> (13*10^18) + (-3*10^18) = (10^19);
+true
+
+#############################################################################
 #
 # Tests requiring loading some packages must be performed at the end.
 # Do not put tests that do not need any packages below this line.

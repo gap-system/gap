@@ -31,6 +31,7 @@
 #include        "scanner.h"             /* scanner                         */
 
 #include        "gap.h"                 /* error handling, initialisation  */
+#include        "tls.h"                 /* thread-local storage            */
 
 #include        "read.h"                /* reader                          */
 

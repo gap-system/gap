@@ -2050,6 +2050,14 @@ void InitSystem (
 
         strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
 # if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
+        /* On Darwin, add .gap to the sys roots, but leave */
+        /* DotGapPath at $HOME/Library/Preferences/GAP     */
+        strxcat(DotGapPath, "/.gap;", sizeof(DotGapPath));
+        if (!IgnoreGapRC) {
+          SySetGapRootPath(DotGapPath);
+        }
+		
+        strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
         strxcat(DotGapPath, "/Library/Preferences/GAP;", sizeof(DotGapPath));
 # elif defined(__CYGWIN__)
         strxcat(DotGapPath, "/_gap;", sizeof(DotGapPath));

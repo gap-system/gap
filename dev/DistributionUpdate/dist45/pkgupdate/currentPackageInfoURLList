@@ -56,8 +56,8 @@ GaussForHomalg http://wwwb.math.rwth-aachen.de/goertzen/GaussForHomalg/PackageIn
 GBNP        http://mathdox.org/products/gbnp/PackageInfo.g
 genss       http://neunhoef.github.io/genss/PackageInfo.g
 gpd         http://www.maths.bangor.ac.uk/chda/gap4/gpd/PackageInfo.g
-GradedModules http://homalg.math.rwth-aachen.de/~markus/GradedModules/PackageInfo.g
-GradedRingForHomalg http://homalg.math.rwth-aachen.de/~markus/GradedRingForHomalg/PackageInfo.g
+GradedModules http://homalg.math.rwth-aachen.de/~barakat/homalg-project/GradedModules/PackageInfo.g
+GradedRingForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/GradedRingForHomalg/PackageInfo.g
 GRAPE       http://www.maths.qmul.ac.uk/~leonard/grape/grape4r6/PackageInfo.g
 GrpConst    http://www.icm.tu-bs.de/~beick/soft/grpconst/PackageInfo.g
 Guarana     http://www-circa.mcs.st-andrews.ac.uk/~jjm/software/Guarana/PackageInfo.g
@@ -81,7 +81,7 @@ liealgdb    http://www.sztaki.hu/~schneider/Research/LieAlgDB/PackageInfo.g
 LiePRing    http://www.icm.tu-bs.de/~beick/soft/liepring/PackageInfo.g
 LieRing     http://www.science.unitn.it/~degraaf/liering/PackageInfo.g
 linboxing   http://www.cs.st-andrews.ac.uk/~pas/linboxing/PackageInfo.g
-LocalizeRingForHomalg http://homalg.math.rwth-aachen.de/~markus/LocalizeRingForHomalg/PackageInfo.g
+LocalizeRingForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/LocalizeRingForHomalg/PackageInfo.g
 loops       http://www.math.du.edu/loops/PackageInfo.g
 MapClass    http://web.mat.bham.ac.uk/~jamesa/mapclass/PackageInfo.g 
 MatricesForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/MatricesForHomalg/PackageInfo.g

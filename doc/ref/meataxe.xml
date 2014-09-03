@@ -13,10 +13,14 @@
 
 The MeatAxe <Cite Key="Par84"/> is a tool for the examination of submodules of a
 group algebra. It is a basic tool for the examination of group actions on
-finite-dimensional modules.
+finite-dimensional modules. 
 <P/>
 &GAP; uses the improved MeatAxe of Derek Holt and Sarah Rees, and
 also incorporates further improvements of Ivanyos and Lux.
+<P/>
+Please note that, consistently with the convention for group actions, the action of the &GAP; MeatAxe is always that of matrices
+on row vectors by multiplication on the right. If you want to investigate
+left modules you will have to transpose the matrices.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->

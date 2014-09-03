@@ -914,19 +914,46 @@ function ( G, g )
 end);
 
 BindGlobal("OneNormalizerfixedBlockSystem",function(G,dom)
-local b, bl;
+local b, bl,prop;
+
+  # what properties can we find easily
+  prop:=function(s)
+  local p;
+  s:=Set(dom{s});
+    p:=[Length(s)];
+
+    # type of action on blocks
+    if TRANS_AVAILABLE=true and Length(dom)/Length(s)<=TRANSDEGREES then
+      Add(p,TransitiveIdentification(Action(G,Orbit(G,s,OnSets),OnSets)));
+    fi;
+
+    # type of action on blocks
+    if TRANS_AVAILABLE=true and Length(s)<=TRANSDEGREES then
+      Add(p,TransitiveIdentification(Action(Stabilizer(G,s,OnSets),s)));
+    fi;
+
+    if Length(p)=1 then
+      return p[1];
+    else
+      return p;
+    fi;
+  end;
+
   if IsPrimeInt(Length(dom)) then
     # no need trying
     return fail;
   fi;
   b:=AllBlocks(Action(G,dom));
-  bl:=Collected(List(b,Length));
+  b:=ShallowCopy(b);
+
+  #Print(List(b,Length),"\n");
+  bl:=Collected(List(b,prop));
   bl:=Filtered(bl,i->i[2]=1);
   if Length(bl)=0 then
     Info(InfoGroup,3,"No normalizerfixed block found");
     return fail;
   fi;
-  b:=First(b,i->Length(i)=bl[1][1]);
+  b:=First(b,i->prop(i)=bl[1][1]);
   Info(InfoGroup,3,"Normalizerfixed block system blocksize ",Length(b));
   return Set(Orbit(G,Set(dom{b}),OnSets));
 end);

@@ -674,7 +674,7 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
         #fi;
 
 
-    # test for action on disjoint sets of numbers-> blocks homomorphism
+    # test for action on disjoint sets of numbers, preserved by group -> blocks homomorphism
     elif not IsExternalSubset( xset )
          and IsPermGroup( G )
          and IsList( D )
@@ -683,6 +683,8 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
          and act = OnSets
 	 # disjointness test
 	 and Length(Set(Flat(D)))=Sum(List(D,Length))
+	 # preserved test
+	 and ForAll(D,b->ForAll(GeneratorsOfGroup(G),g->OnSets(b,g) in D))
 	 then
         filter := IsBlocksHomomorphism;
         hom.reps := [  ];
@@ -2183,7 +2185,8 @@ InstallMethod( BlocksOp,
     
     if Length(D)=1 then return Immutable([D]);fi;
     hom := ActionHomomorphism( G, D, gens, acts, act );
-    B := Blocks( ImagesSource( hom ), [ 1 .. Length( D ) ] );
+    B := Blocks( ImagesSource( hom ), [ 1 .. Length( D ) ],
+      Set(List(seed,x->Position(D,x))) );
     B:=List( B, b -> D{ b } );
     # force sortedness
     if Length(B[1])>0 and CanEasilySortElements(B[1][1]) then

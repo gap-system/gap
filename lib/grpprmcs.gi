@@ -2605,7 +2605,7 @@ local new,start,n,i,tail, up,u,v;
       Add(up,u);
       i:=i+1;
       while not IsSubset(ser[i],n) do
-	v:=ClosureSubgroup(n,ser[i]);
+	v:=ClosureGroup(n,ser[i]);
 	if Size(v)=Size(u) then
 	  # no increase, need for tail
 	  Add(tail,i);
