@@ -144,6 +144,7 @@ patterns:=[];
 
 # Loop through all spelling patterns to check if there are any matches.
 # Record starting positions and data about matching patters.
+atomic readonly HELP_REGION do
 
 for pattern in TRANSATL do
   # for each pattern we record starting positions and data separately
@@ -219,6 +220,8 @@ fi;
 topics := List( Cartesian(chop), Concatenation );
 Sort( topics );
 return( topics );
+
+od;
 
 end);
 
