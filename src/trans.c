@@ -935,7 +935,7 @@ Obj FuncPREIMAGES_TRANS_INT (Obj self, Obj f, Obj pt){
 
   deg=DEG_TRANS(f);
 
-  if(INT_INTOBJ(pt)>deg){
+  if((UInt) INT_INTOBJ(pt)>deg){
     out=NEW_PLIST(T_PLIST_CYC, 1);
     SET_LEN_PLIST(out, 1);
     SET_ELM_PLIST(out, 1, pt);
@@ -971,8 +971,7 @@ Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg){
   UInt2   *ptp2, *ptf2;
   UInt4   *ptp4, *ptf4;
   Obj     f, img, *ptimg;
-  UInt    def, dep, i, min;
-  Int     n;
+  UInt    def, dep, i, min, n;
   
   n=INT_INTOBJ(deg);
   if(n==0) return IdentityTrans;
@@ -1560,7 +1559,7 @@ Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f){
     ptg2=ADDR_TRANS2(g);
     
     for(j=0;j<deg;j++) ptg2[j]=j;
-    for(j=1;j<=LEN_LIST(list);j++){
+    for(j=1;j<=(UInt) LEN_LIST(list);j++){
       i=INT_INTOBJ(ELM_LIST(list, j))-1;
       if(i<deg) ptg2[ptf2[i]]=i;
     }
@@ -1573,7 +1572,7 @@ Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f){
     
     i=INT_INTOBJ(ELM_LIST(list, 1))-1;
     for(j=0;j<deg;j++) ptg4[j]=j;
-    for(j=1;j<=LEN_LIST(list);j++){
+    for(j=1;j<=(UInt) LEN_LIST(list);j++){
       i=INT_INTOBJ(ELM_LIST(list, j))-1;
       if(i<deg) ptg4[ptf4[i]]=i;
     }
@@ -1964,7 +1963,7 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p){
         ptlkp[i]=0;
       }
       for(;i<len;i++){
-        ptcnj[i]=IMAGE(INT_INTOBJ(ELM_LIST(ker, i+1))-1, ptp2, dep);
+        ptcnj[i]=IMAGE((UInt) INT_INTOBJ(ELM_LIST(ker, i+1))-1, ptp2, dep);
         ptlkp[i]=0;
       }
 
@@ -1994,7 +1993,7 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p){
         ptlkp[i]=0;
       }
       for(;i<len;i++){
-        ptcnj[i]=IMAGE(INT_INTOBJ(ELM_LIST(ker, i+1))-1, ptp4, dep);
+        ptcnj[i]=IMAGE((UInt) INT_INTOBJ(ELM_LIST(ker, i+1))-1, ptp4, dep);
         ptlkp[i]=0;
       }
 
@@ -2653,7 +2652,7 @@ Obj FuncLEFT_ONE_TRANS( Obj self, Obj f){
   n=1;
 
   for(i=1;n<=rank;i++){
-    if(INT_INTOBJ(ELM_PLIST(ker, i))==n){
+    if((UInt) INT_INTOBJ(ELM_PLIST(ker, i))==n){
       SET_ELM_PLIST(img, n++, INTOBJ_INT(i));
     }
   }
@@ -2680,7 +2679,7 @@ Obj FuncRIGHT_ONE_TRANS( Obj self, Obj f){
   j=1; n=0;
 
   for(i=0;i<deg;i++){
-    if(j<len&&i+1==INT_INTOBJ(ELM_PLIST(img, j+1))) j++;
+    if(j<len&&i+1==(UInt) INT_INTOBJ(ELM_PLIST(img, j+1))) j++;
     SET_ELM_PLIST(ker, ++n, INTOBJ_INT(j));
   }
   return FuncIDEM_IMG_KER_NC(self, img, ker);
@@ -3693,7 +3692,7 @@ Obj LQuoPerm4Trans4(Obj opL, Obj opR){
 
 /* i^f */
 Obj PowIntTrans2(Obj i, Obj f){
-  Int    img;
+  UInt    img;
  
   if(TNUM_OBJ(i)==T_INTPOS) return i; 
 
@@ -3715,7 +3714,7 @@ Obj PowIntTrans2(Obj i, Obj f){
 }
 
 Obj PowIntTrans4(Obj i, Obj f){
-  Int    img;
+  UInt    img;
  
   if(TNUM_OBJ(i)==T_INTPOS) return i; 
 
@@ -4392,7 +4391,9 @@ static StructInitInfo module = {
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    0                                   /* postRestore                    */
+    0,                                  /* postRestore                    */
+    "src/trans.c",                      /* filename                       */
+    1                                   /* isGapRootRelative              */
 };
 
 StructInitInfo * InitInfoTrans ( void )

@@ -533,7 +533,7 @@ Obj FuncIntHexString( Obj self,  Obj str )
 
   len = GET_LEN_STRING(str);
   if (len == 0) {
-    res = INT_INTOBJ(0);
+    res = INTOBJ_INT(0);
     return res;
   }
   if (*(CHARS_STRING(str)) == '-') {

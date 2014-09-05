@@ -90,14 +90,16 @@ InstallOtherMethod(AddDictionary,"for lookup list dictionaries",true,
   [IsListLookupDictionary and IsMutable,IsObject,IsObject],0,
 function(d, x, val)
   x:=[Immutable(x),val];
-  MakeImmutable(x); # to be able to store sortedness
+  #  MakeImmutable(x); # to be able to store sortedness
+  # We don't actually need to do that and we don't want to modify val
+  #
   Add(d!.entries,x);
 end);
 
 InstallMethod(AddDictionary,"for list dictionaries",true,
   [IsListDictionary and IsMutable,IsObject],0,
 function(d, x)
-  x:=Immutable(x); # to be able to store sortedness
+    x:=Immutable(x); # to be able to store sortedness
   Add(d!.list,x);
 end);
 
@@ -135,12 +137,13 @@ InstallOtherMethod(AddDictionary,"for lookup sort dictionaries",true,
         function(d, x, val)
     local pair, p;
     pair:=[Immutable(x),val];
-    MakeImmutable(pair); # to be able to store sortedness
+    #    MakeImmutable(pair); # to be able to store sortedness
+   
     p := PositionSorted(d!.entries,[x]);
     if p <= Length(d!.entries) and d!.entries[p][1] = x then
         d!.entries[p] := pair;
     else
-        AddSet(d!.entries, pair);
+        Add(d!.entries, pair, p);
     fi;
 end);
 

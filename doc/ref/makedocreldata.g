@@ -154,6 +154,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/ring.gd",
     "../../lib/ringhom.gd",
     "../../lib/ringpoly.gd",
+    "../../lib/ringsc.gd",
     "../../lib/rws.gd",
     "../../lib/rwsgrp.gd",
     "../../lib/rwspcclt.gd",

@@ -177,6 +177,21 @@ see <Ref Sect="Homomorphisms of Algebras"/>.
 <#Include Label="RingHomomorphismByImagesNC">
 <!-- Are ring-with-one homomorphisms not supported? -->
 <#Include Label="NaturalHomomorphismByIdeal">
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Small Rings">
+<Heading>Small Rings</Heading>
+
+&GAP; contains a library of small (order up to 15) rings.
+
+<#Include Label="SmallRing">
+<#Include Label="NumberSmallRings">
+<#Include Label="Subrings">
+<#Include Label="Ideals">
+<#Include Label="DirectSum">
+<#Include Label="RingByStructureConstants">
+
 
 </Section>
 </Chapter>
