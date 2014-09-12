@@ -21,6 +21,29 @@ Obj LengthAList(Obj list);
 
 /*****************************************************************************
 **
+*F  CompareAndSwapObj(<addr>, <old>, <new>)
+**
+**  Atomically compare *<addr> with <old> and exchange for <new>.
+**
+**  The function implements the usual compare-and-swap semantics for
+**  objects. It atomically does the following:
+**
+**    (1) Compare *<addr> with <old>.
+**    (2) Exchange *<addr> with <new> if the comparison succeeded.
+** 
+**  It returns a non-zero value if the comparison in (1) succeeded, zero
+**  otherwise.
+*/
+
+static inline int CompareAndSwapObj(Obj *addr, Obj old, Obj new) {
+#ifndef WARD_ENABLED
+  return COMPARE_AND_SWAP((AtomicUInt *) addr,
+    (AtomicUInt) old, (AtomicUInt) new);
+#endif
+}
+
+/*****************************************************************************
+**
 *F  ATOMIC_SET_ELM_PLIST(<list>, <index>, <value>)
 *F  ATOMIC_SET_ELM_PLIST_ONCE(<list>, <index>, <value>)
 *F  ATOMIC_ELM_PLIST(<list>, <index>)
