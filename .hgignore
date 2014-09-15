@@ -36,7 +36,45 @@ doc/*/manual.six
 
 pkg/
 extern/gmp*/
+dev/log
 
 # switch to regexp syntax.
-dev/log
 syntax: regexp
+
+~$
+^CVS/
+/CVS$
+/CVS/
+/NONE$
+\.\#.*$
+^\.cvsignore$
+^\.DS_Store$
+/\.DS_Store$
+^\.DS_Store/
+\.orig$
+\.o$
+\.so$
+\.lo$
+\.la$
+\.so\*$
+^extern/gmp-4.2.2/*
+^config\.log$
+^config\.status$
+^bin/gap\.sh$
+^bin/cflags$
+^bin/ldflags$
+^sysinfo\.gap$
+^bin/i686-
+^bin/x86_
+^Makefile$
+^extern/include/
+^extern/lib/
+^extern/32bit/
+^extern/64bit/
+^bin/scons-local-[^/]*/.*\.pyc$
+^\.scon
+^\.scon
+^gen/
+^bin/current$
+^tags$
+
