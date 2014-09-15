@@ -397,7 +397,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
       else
 	failcnt:=failcnt+1;
 	if IsInt(failcnt/50) then
-	  Info(InfoHomClass,5,"failed ",failcnt," times, ratio ",EvalF(ratio),
+	  Info(InfoFitFree,5,"failed ",failcnt," times, ratio ",EvalF(ratio),
 		", ",Length(stabrad)," gens\n");
 	fi;
       fi;
@@ -558,14 +558,14 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
 	stabilizergen();
 	s:=s+1;
       od;
-      Info(InfoHomClass,5,"processed solvable ",s," from ",Length(stabstack));
+      Info(InfoFitFree,5,"processed solvable ",s," from ",Length(stabstack));
     fi;
 
     subsz:=stabrsubsz;
     solsubsz:=subsz;
 
     orblock:=Length(orb);
-    Info(InfoHomClass,5,"solvob=",orblock);
+    Info(InfoFitFree,5,"solvob=",orblock);
 
     # nonsolvable iteration: We act on orbits
     stage:=2;
@@ -624,7 +624,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
     fi;
 
 
-    Info(InfoHomClass,4,"orblen=",Length(orb)," blocked ",orblock," left:",
+    Info(InfoFitFree,4,"orblen=",Length(orb)," blocked ",orblock," left:",
       sz," len=", Length(stabrad)," ",Length(stabfacgens));
 
     #Assert(2,ForAll(GeneratorsOfGroup(stabsub),i->Comm(i,h*rep) in NT));
@@ -707,7 +707,7 @@ local sel,orb,dict,reps,repwords,vp,img,cont,minpo,genum,rep,repword,p,
   od;
 #if Length(orb)>Length(Set(orb)) then Error("EH");fi;
   orblock:=Length(orb);
-  Info(InfoHomClass,5,"solvob=",orblock);
+  Info(InfoFitFree,5,"solvob=",orblock);
 
   # nonsolvable iteration: We act on orbits
 

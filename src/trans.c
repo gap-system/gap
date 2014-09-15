@@ -96,7 +96,7 @@ static UInt INIT_TRANS2(Obj f){
   deg=DEG_TRANS2(f);
   
   if(deg==0){//special case for degree 0
-    img=NEW_PLIST(T_PLIST_EMPTY, 0);
+    img=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, 0);
     SET_LEN_PLIST(img, 0);
     IMG_TRANS(f)=img;
     KER_TRANS(f)=img;
@@ -140,7 +140,7 @@ static UInt INIT_TRANS4(Obj f){
   deg=DEG_TRANS4(f);
   
   if(deg==0){//special case for degree 0
-    img=NEW_PLIST(T_PLIST_EMPTY, 0);
+    img=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, 0);
     SET_LEN_PLIST(img, 0);
     IMG_TRANS(f)=img;
     KER_TRANS(f)=img;
@@ -782,7 +782,7 @@ Obj FuncIMAGE_SET_TRANS_INT (Obj self, Obj f, Obj n){
   if(m==deg){
     return FuncIMAGE_SET_TRANS(self, f);
   } else if(m==0){
-    new=NEW_PLIST(T_PLIST_EMPTY, 0);
+    new=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, 0);
     SET_LEN_PLIST(new, 0);
     return new;
   } else if(m<deg){
@@ -843,7 +843,7 @@ Obj FuncIMAGE_TRANS (Obj self, Obj f, Obj n ){
   m=INT_INTOBJ(n);
 
   if(m==0){
-    out=NEW_PLIST(T_PLIST_EMPTY, 0);
+    out=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, 0);
     SET_LEN_PLIST(out, 0);
     return out;
   }
@@ -1938,7 +1938,7 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p){
   
   len=LEN_LIST(ker);
   if(len==0){
-    out=NEW_PLIST(T_PLIST_EMPTY, len);
+    out=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, len);
     SET_LEN_PLIST(out, len);
     return out;
   } else {

@@ -557,6 +557,10 @@ Other fixed bugs:
 Eliminated a number of compiler warnings detected with some newer 
 versions of <Package>C</Package> compilers.
 </Item>
+<Item>
+Some minor bugs in the transformation and partial permutation code 
+and documentation were resolved. 
+</Item>
 </List>
 
 </Section>

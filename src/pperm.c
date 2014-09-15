@@ -74,7 +74,7 @@ static UInt INIT_PPERM2(Obj f){
   deg=DEG_PPERM2(f);
   
   if(deg==0){
-    dom=NEW_PLIST(T_PLIST_EMPTY, 0);
+    dom=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, 0);
     SET_LEN_PLIST(dom, 0);
     DOM_PPERM(f)=dom;
     IMG_PPERM(f)=dom;
@@ -98,8 +98,8 @@ static UInt INIT_PPERM2(Obj f){
   }
   
   if(rank==0){
-    RetypeBag(img, T_PLIST_EMPTY);
-    RetypeBag(dom, T_PLIST_EMPTY);
+    RetypeBag(img, T_PLIST_EMPTY+IMMUTABLE);
+    RetypeBag(dom, T_PLIST_EMPTY+IMMUTABLE);
   }
 
   SHRINK_PLIST(img, (Int) rank);
@@ -121,7 +121,7 @@ static UInt INIT_PPERM4(Obj f){
   deg=DEG_PPERM4(f);
   
   if(deg==0){
-    dom=NEW_PLIST(T_PLIST_EMPTY, 0);
+    dom=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, 0);
     SET_LEN_PLIST(dom, 0);
     DOM_PPERM(f)=dom;
     IMG_PPERM(f)=dom;
@@ -144,8 +144,8 @@ static UInt INIT_PPERM4(Obj f){
   }
 
   if(rank==0){
-    RetypeBag(img, T_PLIST_EMPTY);
-    RetypeBag(dom, T_PLIST_EMPTY);
+    RetypeBag(img, T_PLIST_EMPTY+IMMUTABLE);
+    RetypeBag(dom, T_PLIST_EMPTY+IMMUTABLE);
   }
   
   SHRINK_PLIST(img, (Int) rank);
@@ -371,7 +371,7 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f ){
     }
     rank=RANK_PPERM2(f);
     if(rank==0){
-      out=NEW_PLIST(T_PLIST_EMPTY, 0);
+      out=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, 0);
       SET_LEN_PLIST(out, 0);
       return out;
     }
@@ -391,7 +391,7 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f ){
     }
     rank=RANK_PPERM4(f);
     if(rank==0){
-      out=NEW_PLIST(T_PLIST_EMPTY, 0);
+      out=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, 0);
       SET_LEN_PLIST(out, 0);
       return out;
     }
@@ -5503,7 +5503,7 @@ Obj FuncOnPosIntSetsPPerm (Obj self, Obj set, Obj f){
   SET_LEN_PLIST(res, len);
 
   if(len==0){ 
-    RetypeBag(res, T_PLIST_EMPTY);
+    RetypeBag(res, IS_MUTABLE_PLIST(set)?T_PLIST_EMPTY:T_PLIST_EMPTY+IMMUTABLE);
     return res;
   }
   

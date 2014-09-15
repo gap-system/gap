@@ -48,6 +48,7 @@ RunStandardTests( [
   [ "alghom.tst",6000000],
   [ "algmat.tst",180800000],
   [ "algsc.tst",59000000],
+  [ "atomic_basic.tst", 100000],
   [ "arithlst.tst",52558700000],
   [ "boolean.tst",100000],
   [ "bugfix.tst",15319000000*10],

@@ -181,6 +181,10 @@ DeclareGlobalFunction("SmallRing");
 ##  arguments, namely a nonempty list of rings and one of these rings.
 ##  (This somewhat strange syntax allows the method selection to choose
 ##  a reasonable method for special cases.)
+##  <Example><![CDATA[
+##  gap> DirectSum(SmallRing(5,1),SmallRing(5,1));
+##  <ring with 2 generators>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
