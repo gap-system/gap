@@ -3032,8 +3032,8 @@ Obj NewOperationC (
       HDLR_FUNC(oper,narg) = hdlr;
 
     /*N 1996/06/06 mschoene this should not be done here                   */
-    FLAG1_FILT(oper) = INT_INTOBJ(0);
-    FLAG2_FILT(oper) = INT_INTOBJ(0);
+    FLAG1_FILT(oper) = INTOBJ_INT(0);
+    FLAG2_FILT(oper) = INTOBJ_INT(0);
     FLAGS_FILT(oper) = False;
     SETTR_FILT(oper) = False;
     TESTR_FILT(oper) = False;
@@ -4549,8 +4549,8 @@ Obj NewConstructorC (
     }
 
     /*N 1996/06/06 mschoene this should not be done here                   */
-    FLAG1_FILT(oper) = INT_INTOBJ(0);
-    FLAG2_FILT(oper) = INT_INTOBJ(0);
+    FLAG1_FILT(oper) = INTOBJ_INT(0);
+    FLAG2_FILT(oper) = INTOBJ_INT(0);
     FLAGS_FILT(oper) = False;
     SETTR_FILT(oper) = False;
     TESTR_FILT(oper) = False;
