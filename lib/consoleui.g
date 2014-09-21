@@ -764,7 +764,9 @@ BindGlobal("CommandAlias@", function(line)
       fi;
     else
       RemoveDictionary(AliasTable@, values[1]);
-      AddDictionary(AliasTable@, values[1], MakeImmutable(values[2]));
+      WITH_TARGET_REGION(AliasTable@, do
+	AddDictionary(AliasTable@, values[1], MakeImmutable(values[2]));
+      od);
       SystemMessage@("Alias: ", values[1], " = ", values[2]);
     fi;
   od;
@@ -840,7 +842,9 @@ BindGlobal("InitializeCommands@", function()
 end);
 
 atomic Region@ do
-  InitializeCommands@();
+  WITH_TARGET_REGION(CommandTable@, do
+    InitializeCommands@();
+  od);
 od;
 
 DeclareGlobalFunction("RunCommandWithAliases@"); # Needed for recursion
