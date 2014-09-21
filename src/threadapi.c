@@ -2681,7 +2681,8 @@ Obj FuncWRITE_LOCK(Obj self, Obj obj)
   result = LockObjects(1, &obj, modes);
   if (result >= 0)
     return INTOBJ_INT(result);
-  return Fail;
+  ErrorMayQuit("Cannot lock required regions", 0L, 0L);
+  return (Obj) 0; /* flow control hint */
 }
 
 Obj FuncREAD_LOCK(Obj self, Obj obj)
@@ -2691,7 +2692,8 @@ Obj FuncREAD_LOCK(Obj self, Obj obj)
   result = LockObjects(1, &obj, modes);
   if (result >= 0)
     return INTOBJ_INT(result);
-  return Fail;
+  ErrorMayQuit("Cannot lock required regions", 0L, 0L);
+  return (Obj) 0; /* flow control hint */
 }
 
 Obj FuncTRYLOCK(Obj self, Obj args)

@@ -80,7 +80,7 @@ Tasks.Worker := function(channels)
         fi;
       fi;
       
-      p := LOCK(TaskData);
+      p := WRITE_LOCK(TaskData);
       if IsIdenticalObj (p,fail) then
          Error("Failed to obtain lock for TaskData inside Worker function\n");
       fi;
@@ -206,7 +206,7 @@ Tasks.CreateTask := function(arglist)
       if not adopted then
         args[i] := ShareSpecialObj(CLONE_REACHABLE(args[i]));
         ds := RegionOf(args[i]);
-        p := LOCK(args[i]);
+        p := WRITE_LOCK(args[i]);
         adopted := true;
       else
         args[i] := MIGRATE(CLONE_REACHABLE(args[i]), ds);
@@ -341,7 +341,7 @@ WaitTask := function(arg)
     od;
   od;
   for task in arg do
-    p := LOCK(false, task);
+    p := WRITE_LOCK(false, task);
     if IsIdenticalObj (p, fail) then
       Error("Could not obtain lock in WaitTask\n");
     fi;
@@ -371,7 +371,7 @@ WaitAnyTask := function(arg)
   len := Length(arg);
   
   for task in arg do
-    LOCK(task,false);
+    WRITE_LOCK(task,false);
     if task.async then
       UNLOCK(task);
       Error("Cannot wait for a async task");

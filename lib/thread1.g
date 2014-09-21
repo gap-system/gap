@@ -196,7 +196,7 @@ end;
 LockAndAdoptObj := function(obj)
   local lock;
   if IsShared(obj) and not HaveWriteAccess(obj) then
-    lock := LOCK(obj);
+    lock := WRITE_LOCK(obj);
     ADOPT(obj);
     UNLOCK(lock);
   else

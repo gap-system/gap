@@ -108,7 +108,7 @@ BIND_GLOBAL( "NEW_FAMILY",
     family!.NAME            := MakeImmutable(name);
     family!.REQ_FLAGS       := req_filter;
     family!.IMP_FLAGS       := imp_filter;
-    lock := LOCK(DS_TYPE_CACHE);
+    lock := WRITE_LOCK(DS_TYPE_CACHE);
     family!.TYPES           := MIGRATE_RAW([], DS_TYPE_CACHE);
     UNLOCK(lock);
     family!.nTYPES          := 0;
@@ -219,7 +219,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     local   lock, hash,  cache,  cached,  type, ncache, ncl, t;
 
     # maybe it is in the type cache
-    lock := LOCK(DS_TYPE_CACHE);
+    lock := WRITE_LOCK(DS_TYPE_CACHE);
     cache := family!.TYPES;
     hash  := HASH_FLAGS(flags) mod family!.HASH_SIZE + 1;
     if IsBound( cache[hash] ) and NEW_TYPE_READONLY then
@@ -411,7 +411,8 @@ end );
 
 Unbind( Subtype );
 BIND_GLOBAL( "Subtype", function ( arg )
-atomic readonly arg do
+    local p;
+    p := READ_LOCK(arg);
     # check argument
     if not IsType( arg[1] )  then
         Error("<type> must be a type");
@@ -423,7 +424,7 @@ atomic readonly arg do
     else
         return Subtype3( arg[1], arg[2], arg[3] );
     fi;
-od;
+    UNLOCK(p);
 end );
 
 

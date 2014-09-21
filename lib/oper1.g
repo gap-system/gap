@@ -134,9 +134,9 @@ BIND_GLOBAL("METHODS_OPERATION_REGION", NewSpecialRegion("operation methods"));
 ##
 BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     function( opr, info, rel, flags, rank, method )
-    local   methods,  narg,  i,  k,  tmp, replace, match, j;
+    local   methods,  narg,  i,  k,  tmp, replace, match, j, lk;
 
-    atomic METHODS_OPERATION_REGION do
+    lk := WRITE_LOCK(METHODS_OPERATION_REGION);
     # add the number of filters required for each argument
     if IS_CONSTRUCTOR(opr) then
         if 0 < LEN_LIST(flags)  then
@@ -246,7 +246,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
 
     # flush the cache
     SET_METHODS_OPERATION( opr, narg, MakeReadOnlyObj(methods) );
-    od;
+    UNLOCK(lk);
 end );
 
 
@@ -559,7 +559,7 @@ LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + 6;  # one method
 InstallAttributeFunction(
     function ( name, filter, getter, setter, tester, mutflag )
 
-    local flags, rank, cats, props, i;
+    local flags, rank, cats, props, i, lk;
 
     if not IS_IDENTICAL_OBJ( filter, IS_OBJECT ) then
 
@@ -567,18 +567,18 @@ InstallAttributeFunction(
         rank  := 0;
         cats  := IS_OBJECT;
         props := [];
-        atomic readwrite FILTER_REGION, readonly CATS_AND_REPS do
-            for i in [ 1 .. LEN_FLAGS( flags ) ] do
-                if ELM_FLAGS( flags, i ) then
-                    if i in CATS_AND_REPS  then
-                        cats := cats and FILTERS[i];
-                        rank := rank - RankFilter( FILTERS[i] );
-                    elif i in NUMBERS_PROPERTY_GETTERS  then
-                        ADD_LIST( props, FILTERS[i] );
-                    fi;
-                fi;
-            od;
-        od;
+	lk := DO_LOCK(FILTER_REGION, false, CATS_AND_REPS);
+	for i in [ 1 .. LEN_FLAGS( flags ) ] do
+	    if ELM_FLAGS( flags, i ) then
+		if i in CATS_AND_REPS  then
+		    cats := cats and FILTERS[i];
+		    rank := rank - RankFilter( FILTERS[i] );
+		elif i in NUMBERS_PROPERTY_GETTERS  then
+		    ADD_LIST( props, FILTERS[i] );
+		fi;
+	    fi;
+	od;
+        UNLOCK(lk);
 
 	# Because the getter function may be called from other
 	# threads, <props> needs to be immutable or atomic.
