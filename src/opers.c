@@ -1460,6 +1460,9 @@ Obj CallHandleMethodNotFound( Obj oper,
   Obj r;
   Obj arglist;
   UInt i;
+  Region *savedRegion = TLS->currentRegion;
+  TLS->currentRegion = TLS->threadRegion;
+
   r = NEW_PREC(5);
   if (RNamOperation == 0)
     {
@@ -1482,7 +1485,9 @@ Obj CallHandleMethodNotFound( Obj oper,
   AssPRec(r,RNamIsConstructor,constructor ? True : False);
   AssPRec(r,RNamPrecedence,precedence);
   SortPRecRNam(r,0);
-  return CALL_1ARGS(HandleMethodNotFound, r);
+  r = CALL_1ARGS(HandleMethodNotFound, r);
+  TLS->currentRegion = savedRegion;
+  return r;
 }
 
 /****************************************************************************
