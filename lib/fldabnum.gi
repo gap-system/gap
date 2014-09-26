@@ -1534,7 +1534,7 @@ InstallMethod( CanonicalBasis,
       SetIsIntegralBasis( B, true );
 
       # Construct the Zumbroich basis.
-      B!.zumbroichbase := ZumbroichBase( n, Conductor( subfield ) );
+      B!.zumbroichbase := `ZumbroichBase( n, Conductor( subfield ) );
 
     else
 
@@ -1579,8 +1579,8 @@ InstallMethod( CanonicalBasis,
       SetBasisVectors( B, vectors );
       SetIsNormalBasis( B, true );
 
-      B!.zumbroichbase := zumb - 1;
-      B!.coeffsmat     := coeffsmat;
+      B!.zumbroichbase := `(zumb - 1);
+      B!.coeffsmat     := `coeffsmat;
 
     fi;
 
