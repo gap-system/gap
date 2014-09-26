@@ -2974,7 +2974,7 @@ Obj FuncMakeThreadLocal(Obj self, Obj var)
 {
   char *name;
   UInt gvar;
-  if (!IS_STRING(var))
+  if (!IsStringConv(var) || GET_LEN_STRING(var) == 0)
     ArgumentError("MakeThreadLocal: Argument must be a variable name");
   name = CSTR_STRING(var);
   gvar = GVarName(name);
