@@ -266,7 +266,7 @@ InstallGlobalFunction( TemporaryGlobalVarName,
 end );
 
 
-HIDDEN_GVARS:=[];
+BindThreadLocal("HIDDEN_GVARS",[]);
 
 InstallGlobalFunction(HideGlobalVariables,function(arg)
 local p,i;
