@@ -521,10 +521,11 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
     Error("Group must operate transitively");
   fi;
   deg:=Length(dom);
+atomic TRANSREGION do
   if not IsBound(TRANSLENGTHS[deg]) then
     TransGrpLoad(deg,0);
   fi;
-atomic readonly TRANSREGION do
+
   s:=Size(grp);
   if deg>15 then
     cand:=Filtered([1..TRANSLENGTHS[deg]],i->TRANSSIZES[deg][i]=s);
