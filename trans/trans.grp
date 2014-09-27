@@ -361,7 +361,7 @@ end);
 
 InstallGlobalFunction( TransitiveGroup, function(deg,num)
   local gens,i,l,g,s;
-atomic readonly TRANSREGION do
+atomic TRANSREGION do
   if not(deg in [1..TRANSDEGREES]) then
     Error("degree must be in [1..",TRANSDEGREES,"]");
   fi;
@@ -372,8 +372,7 @@ atomic readonly TRANSREGION do
     Error("maximal number of groups of degree ",deg," is ",
            TRANSLENGTHS[deg]);
   fi;
-od;
-atomic TRANSREGION do
+
   # special case: Symmetric and Alternating Group
   s:=Factorial(deg);
   if TRANSProperties(deg,num)[1]=s then
