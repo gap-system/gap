@@ -938,10 +938,11 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     local rank,
           rbits,
           K,
-          expB;
+          expB,
+          typesList;
 
   # Store the names, initialize the types list.
-  F!.types := [];
+  typesList := [];
   F!.names := Immutable( names );
 
   # for letter word families we do not need these types
@@ -988,7 +989,7 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     StrictBindOnce(K, AWP_NR_BITS_PAIR     , 8);
     StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 8Bits_ObjByVector);
     StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 8Bits_AssocWord);
-    F!.types[1]:= K;
+    typesList[1]:= K;
     
     K:= NewType( F, Is16BitsAssocWord and req );
     StrictBindOnce(K, AWP_PURE_TYPE        , K);
@@ -997,7 +998,7 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     StrictBindOnce(K, AWP_NR_BITS_PAIR     , 16);
     StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 16Bits_ObjByVector);
     StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 16Bits_AssocWord);
-    F!.types[2]:= K;
+    typesList[2]:= K;
 
     K:= NewType( F, Is32BitsAssocWord and req );
     StrictBindOnce(K, AWP_PURE_TYPE        , K);
@@ -1006,7 +1007,7 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     StrictBindOnce(K, AWP_NR_BITS_PAIR     , 32);
     StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 32Bits_ObjByVector);
     StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 32Bits_AssocWord);
-    F!.types[3]:= K;
+    typesList[3]:= K;
 
   fi;
 
@@ -1017,7 +1018,9 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
   StrictBindOnce(K, AWP_NR_BITS_PAIR      , infinity);
   StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR , InfBits_ObjByVector);
   StrictBindOnce(K, AWP_FUN_ASSOC_WORD    , InfBits_AssocWord);
-  F!.types[4]:= K;
+  typesList[4]:= K;
+
+  F!.types := `typesList;
 
   if IsBLetterWordsFamily(F) then
     K:= NewType( F, IsBLetterAssocWordRep and req );
