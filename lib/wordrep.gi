@@ -937,7 +937,8 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
 
     local rank,
           rbits,
-          K;
+          K,
+          expB;
 
   # Store the names, initialize the types list.
   F!.types := [];
@@ -959,22 +960,25 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     while 2^rbits < rank do
       rbits:= rbits + 1;
     od;
-    F!.expBits:= [  8 - rbits,
-		    16 - rbits,
-		    Minimum( 32 - rbits, 28 ),
-		    infinity ];
+
+    expB := [  8 - rbits,
+	       16 - rbits,
+	       Minimum( 32 - rbits, 28 ),
+	       infinity ];
 
     # Note that one bit of the exponents is needed for the sign,
     # and we disallow the use of a representation if at most two
     # additional bits would be available.
-    if F!.expBits[1] <= 3 then F!.expBits[1]:= 0; fi;
-    if F!.expBits[2] <= 3 then F!.expBits[2]:= 0; fi;
-    if F!.expBits[3] <= 3 then F!.expBits[3]:= 0; fi;
+    if expB[1] <= 3 then expB[1]:= 0; fi;
+    if expB[2] <= 3 then expB[2]:= 0; fi;
+    if expB[3] <= 3 then expB[3]:= 0; fi;
 
-    F!.expBitsInfo := [ 2^( F!.expBits[1] - 1 ),
-			2^( F!.expBits[2] - 1 ),
-			2^( F!.expBits[3] - 1 ),
-			infinity          ];
+    F!.expBits := `expB;
+
+    F!.expBitsInfo := `[ 2^( F!.expBits[1] - 1 ),
+			 2^( F!.expBits[2] - 1 ),
+			 2^( F!.expBits[3] - 1 ),
+			 infinity          ];
 
     # Store the internal types.
     K:= NewType( F, Is8BitsAssocWord and req );
