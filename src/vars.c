@@ -53,6 +53,8 @@
 #include        "aobjects.h"            /* atomic objects                  */
 #include        "saveload.h"            /* saving and loading              */
 
+#include	    "thread.h"		        /* threads                         */
+
 
 /****************************************************************************
 **
@@ -2353,7 +2355,20 @@ UInt            ExecAssComObjName (
         AssPRec( record, rnam, rhs );
 	break;
       case T_ACOMOBJ:
+      {
+#ifdef CHECK_TL_ASSIGNS
+          if(GetRegionOf(rhs) == TLS->threadRegion)
+          {
+              if(strcmp("buffer",NAME_RNAM(rnam)) != 0 && strcmp("state", NAME_RNAM(rnam)) != 0)
+              { 
+                  ErrorReturnObj("Warning: thread local assignment of '%s'", (Int)NAME_RNAM(rnam), 0L,
+                                           "type 'return <value>; to continue'");
+               }
+
+          }
+#endif
         SetARecordField( record, rnam, rhs);
+      }
 	break;
       default:
         ASS_REC( record, rnam, rhs );
