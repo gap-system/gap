@@ -108,8 +108,8 @@ local fam,i,cof,red,rchar,impattr,deg;
   if rchar > 0 then # rchar is <= 256
     i := CopyToVectorRepNC(i,rchar);
   fi;
-  fam!.primitiveElm:=ObjByExtRep(fam,i);
-  fam!.indeterminateName:="a";
+  fam!.primitiveElm:=`ObjByExtRep(fam,i);
+  fam!.indeterminateName:=`"a";
 
   # reductions
   #red:=IdentityMat(deg,fam!.oneCoefficient);
@@ -129,13 +129,13 @@ local fam,i,cof,red,rchar,impattr,deg;
   red:=ImmutableMatrix(fam!.baseField,red);
   fam!.reductionMat:=red;
   fam!.prodlen:=Length(red);
-  fam!.entryrange:=[1..deg];
+  fam!.entryrange:=`[1..deg];
 
   red:=[];
   for i in [deg..2*deg-1] do
     red[i]:=[deg+1..i];
   od;
-  fam!.mulrange:=red;
+  fam!.mulrange:=`red;
 
   SetIsUFDFamily(fam,true);
   SetCoefficientsFamily(fam,FamilyObj(One(f)));
