@@ -913,7 +913,7 @@ InstallMethod( CanonicalBasis,
       SetBasisVectors( B,
           List( EnumeratorSorted( UnderlyingMagma( RM ) ),
                 x -> ElementOfMagmaRing( F, zero, [ one ], [ x ] ) ) );
-      B!.zerovector:= List( BasisVectors( B ), x -> zero );
+      B!.zerovector:= `List( BasisVectors( B ), x -> zero );
     fi;
 
     return B;
@@ -1443,10 +1443,10 @@ InstallHandlingByNiceBasis( "IsSpaceOfElementsOfMagmaRing", rec(
 
       # For the zero row vector, catch the case of empty `monomials' list.
       if IsEmpty( monomials ) then
-        info.zerovector := [ Zero( LeftActingDomain( V ) ) ];
+        info.zerovector := `[ Zero( LeftActingDomain( V ) ) ];
       else
-        info.zerovector := ListWithIdenticalEntries( Length( monomials ),
-                                                     zero );
+        info.zerovector := `ListWithIdenticalEntries( Length( monomials ),
+                                                      zero );
       fi;
 
       return info;
