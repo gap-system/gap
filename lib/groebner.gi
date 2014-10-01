@@ -64,15 +64,15 @@ BindGlobal("InstallMonomialOrdering",function(ord,ordfun,idxord,
 	  # for each variable give its index position.
 	  return idxord(a,b,List([1..Maximum(idx)],i->Position(idx,i)));
 	end);
-      neword!.idxarrangement:=idx;
-      neword!.type:=type;
+      neword!.idxarrangement:=`idx;
+      neword!.type:=`type;
       SetOccuringVariableIndices(neword,ov);
       return neword;
     else
       nam:=Concatenation(ordname,"()");
       neword:=MakeMonomialOrdering(nam,ordfun);
-      neword!.idxarrangement:=idx;
-      neword!.type:=type;
+      neword!.idxarrangement:=`idx;
+      neword!.type:=`type;
       SetOccuringVariableIndices(neword,ov);
       return neword;
     fi;
