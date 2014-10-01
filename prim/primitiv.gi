@@ -524,15 +524,15 @@ local arglis,i,j,a,b,l,p,deg,gut,g,grp,nr,f,RFL,ind,it;
   it:=Objectify(NewType(IteratorsFamily,
                         IsIterator and IsPrimGrpIterRep and IsMutable),rec());
 
-  it!.deg:=deg;
+  it!.deg:=`deg;
   i:=1;
   while i<=Length(deg) and Length(gut[deg[i]])=0 do
     i:=i+1;
   od;
   it!.degi:=i;
   it!.nr:=1;
-  it!.prop:=p;
-  it!.gut:=gut;
+  it!.prop:=`p;
+  it!.gut:=`gut;
   PriGroItNext(it);
   return it;
 
