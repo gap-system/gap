@@ -3,6 +3,43 @@
     CHANGES of "GAP 4.5 on Linux via rsync"         (Frank Lübeck)
     ==============================================================
 
+---  Mon, 29 Sep 2014 11:31:34 +0200
+Upgraded to archive gap4r7p5_2014_05_24-20_02.tar.gz
+which means GAP is upgraded to version 4.7.5,
+the following new package is added:
+  permut 1.01
+and the following packages are upgraded:
+  AutPGrp 1.5 (-> 1.6)
+  AutoDoc 2013.09.20 (-> 2014.03.27)
+  AutomGrp 1.1.4.1 (-> 1.2.4)
+  Browse 1.8.3 (-> 1.8.5)
+  CRISP 1.3.7 (-> 1.3.8)
+  CoReLG 0.2 (-> 1.02)
+  FR 2.1.0 (-> 2.1.1)
+  GradedModules 2013.10.27 (-> 2014.02.25)
+  GradedRingForHomalg 2013.10.27 (-> 2014.02.04)
+  HAP 1.10.14.3 (-> 1.10.15)
+  IO 4.2 (-> 4.3.1)
+  IRREDSOL 1.2.3 (-> 1.2.4)
+  LieRing 2.1 (-> 2.2)
+  MatricesForHomalg 2013.11.20 (-> 2014.04.08)
+  Polenta 1.3.1 (-> 1.3.2)
+  RadiRoot 2.6 (-> 2.7)
+  RingsForHomalg 2013.11.01 (-> 2014.01.17)
+  Semigroups 1.4 (-> 2.0)
+  Smallsemi 0.6.7 (-> 0.6.8)
+  ToolsForHomalg 2013.04.16 (-> 2014.04.10)
+  cvec 2.4 (-> 2.5.1)
+  genss 1.5 (-> 1.6.1)
+  homalg 2013.10.10 (-> 2014.04.07)
+  nq 2.4 (-> 2.5.1)
+  orb 4.6 (-> 4.7.1)
+  recog 1.2 (-> 1.2.2)
+  recogbase 1.2 (-> 1.2.2)
+  simpcomp 1.6.1 (-> 2.0.0)
+Note that the package "float" was not upgraded, version is still 0.5.12
+
+
 ---  Wed, 15 Jan 2014 17:16:30 +0100
 Upgraded to archive gap4r7p2_2013_12_01-10_17.tar.gz
 which means GAP is upgraded to version 4.7.2,

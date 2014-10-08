@@ -448,7 +448,6 @@ DeclareGlobalFunction( "LLLReducedGramMat" );
 ##
 DeclareGlobalFunction( "ShortestVectors" );
 
-
 #############################################################################
 ##
 #F  OrthogonalEmbeddings( <gram>[, "positive"][, <maxdim>] )
@@ -459,37 +458,40 @@ DeclareGlobalFunction( "ShortestVectors" );
 ##
 ##  <Description>
 ##  computes all possible orthogonal embeddings of a lattice given by its
-##  Gram matrix <A>gram</A>, which must be a regular matrix.
-##  In other words, all solutions <M>X</M> of the problem
-##  <Display Mode="M">
-##  X^{tr} \cdot X = gram
-##  </Display>
-##  are calculated (see&nbsp;<Cite Key="Ple90"/>).
+##  Gram matrix <A>gram</A>, which must be a regular symmetric matrix of
+##  integers.
+##  In other words, all integral solutions <M>X</M> of the equation
+##  <M>X^{tr} \cdot X = </M><A>gram</A>
+##  are calculated.
+##  The implementation follows the description in&nbsp;<Cite Key="Ple90"/>.
+##  <P/>
 ##  Usually there are many solutions <M>X</M>
-##  but all their rows are chosen from a small set of vectors,
+##  but all their rows belong to a small set of vectors,
 ##  so <Ref Func="OrthogonalEmbeddings"/> returns the solutions
-##  in an encoded form, namely as a record with the following components.
+##  encoded by a record with the following components.
+##  <P/>
 ##  <List>
 ##  <Mark><C>vectors</C></Mark>
 ##  <Item>
 ##     the list <M>L = [ x_1, x_2, \ldots, x_n ]</M> of vectors
-##     that may be rows of a solution;
-##     these are exactly those vectors that fulfill the condition
-##     <M>x_i \cdot <A>gram</A>^{{-1}} \cdot x_i^{tr} \leq 1</M>
-##     (see&nbsp;<Ref Func="ShortestVectors"/>),
-##     and we have <M><A>gram</A> = \sum_{{i = 1}}^n x_i^{tr} \cdot x_i</M>,
+##     that may be rows of a solution, up to sign;
+##     these are exactly the vectors with the property
+##     <M>x_i \cdot </M><A>gram</A><M>^{{-1}} \cdot x_i^{tr} \leq 1</M>,
+##     see&nbsp;<Ref Func="ShortestVectors"/>,
 ##  </Item>
 ##  <Mark><C>norms</C></Mark>
 ##  <Item>
-##     the list of values <M>x_i \cdot <A>gram</A>^{{-1}} \cdot x_i^{tr}</M>,
+##     the list of values
+##     <M>x_i \cdot </M><A>gram</A><M>^{{-1}} \cdot x_i^{tr}</M>,
 ##     and
 ##  </Item>
 ##  <Mark><C>solutions</C></Mark>
 ##  <Item>
-##     a list <A>S</A> of lists; the <A>i</A>-th solution matrix is
-##     <C><A>L</A>{ <A>S</A>[<A>i</A>] }</C>,
+##     a list <M>S</M> of index lists; the <M>i</M>-th solution matrix is
+##     <M>L</M><C>{ </C><M>S[i]</M><C> }</C>,
 ##     so the dimension of the <A>i</A>-th solution is the length of
-##     <C><A>S</A>[<A>i</A>]</C>.
+##     <M>S[i]</M>, and we have
+##     <A>gram</A><M> = \sum_{{j \in S[i]}} x_j^{tr} \cdot x_j</M>,
 ##  </Item>
 ##  </List>
 ##  <P/>
@@ -502,15 +504,16 @@ DeclareGlobalFunction( "ShortestVectors" );
 ##  When <Ref Func="OrthogonalEmbeddings"/> is called with the optional
 ##  argument <A>maxdim</A> (a positive integer),
 ##  only solutions up to dimension <A>maxdim</A> are computed;
-##  this will accelerate the algorithm in some cases.
+##  this may accelerate the algorithm.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> b:= [ [ 3, -1, -1 ], [ -1, 3, -1 ], [ -1, -1, 3 ] ];;
 ##  gap> c:=OrthogonalEmbeddings( b );
-##  rec( norms := [ 1, 1, 1, 1/2, 1/2, 1/2, 1/2, 1/2, 1/2 ], 
-##    solutions := [ [ 1, 2, 3 ], [ 1, 6, 6, 7, 7 ], [ 2, 5, 5, 8, 8 ], 
-##        [ 3, 4, 4, 9, 9 ], [ 4, 5, 6, 7, 8, 9 ] ], 
-##    vectors := [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ], 
-##        [ -1, 1, 0 ], [ -1, 0, 1 ], [ 1, 0, 0 ], [ 0, -1, 1 ], 
+##  rec( norms := [ 1, 1, 1, 1/2, 1/2, 1/2, 1/2, 1/2, 1/2 ],
+##    solutions := [ [ 1, 2, 3 ], [ 1, 6, 6, 7, 7 ], [ 2, 5, 5, 8, 8 ],
+##        [ 3, 4, 4, 9, 9 ], [ 4, 5, 6, 7, 8, 9 ] ],
+##    vectors := [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ],
+##        [ -1, 1, 0 ], [ -1, 0, 1 ], [ 1, 0, 0 ], [ 0, -1, 1 ],
 ##        [ 0, 1, 0 ], [ 0, 0, 1 ] ] )
 ##  gap> c.vectors{ c.solutions[1] };
 ##  [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ] ]
@@ -523,7 +526,6 @@ DeclareGlobalFunction( "ShortestVectors" );
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##
 DeclareGlobalFunction( "OrthogonalEmbeddings" );
 
 

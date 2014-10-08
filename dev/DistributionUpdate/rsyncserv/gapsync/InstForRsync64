@@ -152,7 +152,7 @@ make
 strip bin/x8*/*
 cd ..
 
-cd cvec
+cd cvec-*
 ./configure
 make
 strip bin/*/*
@@ -164,7 +164,15 @@ make CC="gcc -O2 -Wall -static"
 strip bin/x8*/*
 cd ..
 
+# float-5.0.18 has no configure!!!
+# we saved a copy of float-0.5.12 from GAP 4.7.2
+rm -rf float-0.5.18/
+cp -a ../../float-0.5.12 .
+
 cd float*
+
+make clean
+
 ./configure --with-mpfr=extern --with-mpfi=extern --with-mpc=extern --with-cxsc=extern
 make
 mkdir -p ../../bin/$GAParch/extern_libs
@@ -232,7 +240,7 @@ make install
 strip bin/x8*/*
 cd ..
 
-cd io
+cd io-*
 ./configure
 make
 strip bin/x8*/*
@@ -258,12 +266,13 @@ cd ..
 # for nq use the GMP version which comes with Carat
 cd nq-*
 ./configure
-make CFLAGS=-O3 LDFLAGS=-static
+# (nq_CFLAGS adds -W flags which are not available with old compiler)
+make nq_CFLAGS="" LDFLAGS=-static CFLAGS="-O3"
 strip bin/*/*
 cd ..
 
 # orb
-cd orb
+cd orb-*
 ./configure 
 make
 strip bin/*/*.so

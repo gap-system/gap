@@ -3432,8 +3432,10 @@ Obj PowPPerm22( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(IMAGEPP(j+1, ptg, deg)!=0){
           img=ptg[ptf[j]-1];
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     } else { //codeg(f)>deg(g)
@@ -3458,8 +3460,10 @@ Obj PowPPerm22( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(IMAGEPP(j+1, ptg, deg)!=0){
           img=IMAGEPP(ptf[j], ptg, deg);
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     }
@@ -3486,8 +3490,10 @@ Obj PowPPerm22( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(ptg[j]!=0){
           img=ptg[ptf[j]-1];
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     } else {//codeg(f)>deg(g)
@@ -3512,8 +3518,10 @@ Obj PowPPerm22( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(ptg[j]!=0){
           img=IMAGEPP(ptf[j], ptg, deg);
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     }
@@ -3620,8 +3628,10 @@ Obj PowPPerm24( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(IMAGEPP(j+1, ptg, deg)!=0){
           img=ptg[ptf[j]-1];
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     } else { //codeg(f)>deg(g)
@@ -3646,8 +3656,10 @@ Obj PowPPerm24( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(IMAGEPP(j+1, ptg, deg)!=0){
           img=IMAGEPP(ptf[j], ptg, deg);
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     }
@@ -3674,8 +3686,10 @@ Obj PowPPerm24( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(ptg[j]!=0){
           img=ptg[ptf[j]-1];
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     } else {//codeg(f)>deg(g)
@@ -3700,8 +3714,10 @@ Obj PowPPerm24( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(ptg[j]!=0){
           img=IMAGEPP(ptf[j], ptg, deg);
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     }
@@ -3808,8 +3824,10 @@ Obj PowPPerm42( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(IMAGEPP(j+1, ptg, deg)!=0){
           img=ptg[ptf[j]-1];
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     } else { //codeg(f)>deg(g)
@@ -3834,8 +3852,10 @@ Obj PowPPerm42( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(IMAGEPP(j+1, ptg, deg)!=0){
           img=IMAGEPP(ptf[j], ptg, deg);
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     }
@@ -3862,8 +3882,10 @@ Obj PowPPerm42( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(ptg[j]!=0){
           img=ptg[ptf[j]-1];
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     } else {//codeg(f)>deg(g)
@@ -3888,8 +3910,10 @@ Obj PowPPerm42( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(ptg[j]!=0){
           img=IMAGEPP(ptf[j], ptg, deg);
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     }
@@ -3995,8 +4019,10 @@ Obj PowPPerm44( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(IMAGEPP(j+1, ptg, deg)!=0){
           img=ptg[ptf[j]-1];
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     } else { //codeg(f)>deg(g)
@@ -4021,8 +4047,10 @@ Obj PowPPerm44( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(IMAGEPP(j+1, ptg, deg)!=0){
           img=IMAGEPP(ptf[j], ptg, deg);
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     }
@@ -4049,8 +4077,10 @@ Obj PowPPerm44( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(ptg[j]!=0){
           img=ptg[ptf[j]-1];
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     } else {//codeg(f)>deg(g)
@@ -4075,8 +4105,10 @@ Obj PowPPerm44( Obj f, Obj g ){
         j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
         if(ptg[j]!=0){
           img=IMAGEPP(ptf[j], ptg, deg);
-          ptconj[ptg[j]-1]=img;
-          if(img>codec) codec=img;
+          if(img!=0){
+            ptconj[ptg[j]-1]=img;
+            if(img>codec) codec=img;
+          }
         }
       }
     }

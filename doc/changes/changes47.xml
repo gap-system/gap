@@ -549,6 +549,15 @@ group, otherwise some calculations such as e.g.
 <Ref Oper="NormalSubgroups" BookName="ref"/> may fail.
 [Reported by Dmitrii Pasechnik]
 </Item>
+<Item>
+Fixed a line in the code that used a hard-coded identity permutation,
+not a generic identity element of a group. [Reported by Toshio Sumi]
+</Item>
+<Item>
+Fixed a problem in the new code for calculating maximal subgroups
+that caused a break loop for some groups from the transitive groups
+library. [Reported by Petr Savicky]
+</Item>
 </List>
 
 Other fixed bugs:

@@ -1744,12 +1744,15 @@ local gens, one, dom,DoBlocks,pool,subo;
     return bl;
   end;
 
-    one:= One( g );
+  one:= One( g );
   gens:= Filtered( GeneratorsOfGroup(g), i -> i <> one );
   if Length(gens)=0 then return []; fi;
   subo:=ApproximateSuborbitsStabilizerPermGroup(g,
           Minimum(List(gens,SmallestMovedPoint)));
   dom:=Union(subo);
+  if not IsTransitive(g,dom) then
+    Error("AllBlocks, must be transitive");
+  fi;
   pool:=[];
   return DoBlocks(subo[1]);
 end);

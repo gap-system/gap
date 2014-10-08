@@ -4,12 +4,12 @@
 ##
 ##
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
-#Y  Copyright (C) 2002 The GAP Group
+#Y  Copyright (C) 2002,2013 The GAP Group
 ##
 ##  This file contains functions that compute the conjugacy classes of a
 ##  finite group by homomorphic images.
 ##  Literature: A.H: Conjugacy classes in finite permutation groups via
-##  homomorphic images, MathComp, to appear.
+##  homomorphic images, MathComp
 ##
 
 
