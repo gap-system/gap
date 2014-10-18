@@ -705,7 +705,7 @@ UpdatePackageArchives := function(pkgdir, pkgreposdir, webdir)
       # create 'pkg' subdirectory where the package will be stored
       Exec( Concatenation( "mkdir -p ", pkgreposdir, "/", pkgdirname, "/pkg" ) );
       # copy the PackageInfo.g file to the top level of the repository
-      Exec( Concatenation( "cp -r ", pkgtmp, dnam, "/PackageInfo.g", " ", pkgreposdir, "/", pkgdirname, "/" ) );
+      Exec( Concatenation( "cp -p -r ", pkgtmp, dnam, "/PackageInfo.g", " ", pkgreposdir, "/", pkgdirname, "/" ) );
       # get the lists of text/binary files
       Exec(Concatenation( "cp ", pkgtmp, "/listtextfiles.txt ", pkgreposdir, "/", pkgdirname, "/" ));
       Exec(Concatenation( "cp ", pkgtmp, "/listbinaryfiles.txt ", pkgreposdir, "/", pkgdirname, "/" ));
@@ -718,11 +718,11 @@ UpdatePackageArchives := function(pkgdir, pkgreposdir, webdir)
         Exec(Concatenation("cd ", pkgtmp,"; rm -f ", bname, 
              "; wget --timeout=60 --tries=1 ", info.README_URL, " 2>> wgetlog"));
         if IsExistingFile(Concatenation(pkgtmp, "/", bname)) then
-          Exec( Concatenation( "cp -r ", pkgtmp, "/", bname, " ", 
+          Exec( Concatenation( "cp -p -r ", pkgtmp, "/", bname, " ", 
                                 pkgreposdir, "/", pkgdirname, "/README.", nam ) );
 #        Exec(Concatenation("cd ", pkgtmp,"; mkdir -p ", webdir,
 #               "/Packages/pkg/",
-#               nam, "; cp -f ", bname, 
+#               nam, "; cp -p -f ", bname, 
 #               " ", webdir, "/Packages/pkg/", nam, "/README.", nam, "; mv -f ", 
 #               bname, " ../README.", nam));
         else
@@ -732,7 +732,7 @@ UpdatePackageArchives := function(pkgdir, pkgreposdir, webdir)
       
       # copy the package directory to the 'pkg' subdirectory of the repository
       # instead of doing this like in the next line
-      # Exec( Concatenation( "cp -r ", pkgtmp, dnam, " ", pkgreposdir, "/", pkgdirname, "/pkg/" ) );
+      # Exec( Concatenation( "cp -p -r ", pkgtmp, dnam, " ", pkgreposdir, "/", pkgdirname, "/pkg/" ) );
       # we are copying over the tar archive only those files which were selected 
       # during text/binary classification (to exclude files that should be ignored, e.g.
       # VCS files that may be occasionally wrapped into the package archive)
@@ -877,14 +877,14 @@ Exec( Concatenation( "rm -rf ", pkgreposdir, "/", pkgdirname, "/*" ) );
 # create 'pkg' subdirectory where the package will be stored
 Exec( Concatenation( "mkdir -p ", pkgreposdir, "/", pkgdirname, "/pkg" ) );
 # copy the PackageInfo.g file to the top level of the repository
-Exec( Concatenation( "cp -r ", pkgtmp, dnam, "/PackageInfo.g", " ", pkgreposdir, "/", pkgdirname, "/" ) );
+Exec( Concatenation( "cp -p -r ", pkgtmp, dnam, "/PackageInfo.g", " ", pkgreposdir, "/", pkgdirname, "/" ) );
 # get the lists of text/binary files
 Exec(Concatenation( "cp ", pkgtmp, "/listtextfiles.txt ", pkgreposdir, "/", pkgdirname, "/" ));
 Exec(Concatenation( "cp ", pkgtmp, "/listbinaryfiles.txt ", pkgreposdir, "/", pkgdirname, "/" ));
 
 # copy the package directory to the 'pkg' subdirectory of the repository
 # instead of doing this like in the next line
-# Exec( Concatenation( "cp -r ", pkgtmp, dnam, " ", pkgreposdir, "/", pkgdirname, "/pkg/" ) );
+# Exec( Concatenation( "cp -p -r ", pkgtmp, dnam, " ", pkgreposdir, "/", pkgdirname, "/pkg/" ) );
 # we are copying over the tar archive only those files which were selected 
 # during text/binary classification (to exclude files that should be ignored, e.g.
 # VCS files that may be occasionally wrapped into the package archive)
@@ -1041,14 +1041,14 @@ MergePackages := function(pkgdir, pkgreposdir, tmpdir, archdir, webdir, paramete
     fi;
 
     # To copy the package from the repository to the destination, use
-    Exec(Concatenation("cd ", pkg, " ; cp -r pkg/* ", mergedir ));
+    Exec(Concatenation("cd ", pkg, " ; cp -p -r pkg/* ", mergedir ));
     # TODO: on Linux, use hard links instead of copying all files
     
     # and copy the README file
-    Exec(Concatenation("cp ", pkg, "/README.", nam, " ", mergedir ));
+    Exec(Concatenation("cp -p ", pkg, "/README.", nam, " ", mergedir ));
     # and copy files with lists of text files and binary files
-    Exec( Concatenation("cp ", pkg, "/listtextfiles.txt ", mergedir, nam, ".txtfiles"));
-    Exec( Concatenation("cp ", pkg, "/listbinaryfiles.txt ", mergedir, nam, ".binfiles"));
+    Exec( Concatenation("cp -p ", pkg, "/listtextfiles.txt ", mergedir, nam, ".txtfiles"));
+    Exec( Concatenation("cp -p ", pkg, "/listbinaryfiles.txt ", mergedir, nam, ".binfiles"));
     
     # if called with 'all', will also wrap individual archives for redistribution, 
     # otherwise will only wrap the merged archive
@@ -1415,7 +1415,7 @@ UpdatePackageDoc := function(pkgdir, pkgdocdir)
     dname := NormalizedWhitespace(
                StringSystem("sh", "-c", Concatenation("cd ", pkgtmp, "; ls")));
     Exec( Concatenation( "mkdir -p ", pkgdocdir, "/", dname )); 
-    Exec(Concatenation("cp ", pkg, "/README.* ", pkgdocdir, "/", dname, "/" ));
+    Exec(Concatenation("cp -p ", pkg, "/README.* ", pkgdocdir, "/", dname, "/" ));
                                
     if not IsBound(info.PackageDoc) then
       Print("# Warning (", info.PackageName, "): no PackageDoc component!\n");
@@ -1439,11 +1439,11 @@ UpdatePackageDoc := function(pkgdir, pkgdocdir)
             if Basename(a)=a then
             # directory name or a file in the current directory
             Exec(Concatenation("cd ", pkgtmp, "/", dname, " ; ",
-                               "cp -fr ", a, " ", pkgdocdir, "/", dname ));
+                               "cp -p -fr ", a, " ", pkgdocdir, "/", dname ));
             else
             Exec(Concatenation("cd ", pkgtmp, "/", dname, " ; ",
                                "mkdir -p ", pkgdocdir, "/", dname, "/", Dirname(a), " ; ",
-                               "cp -fr ", a, " ", pkgdocdir, "/", dname, "/", Dirname(a), "/" ));
+                               "cp -p -fr ", a, " ", pkgdocdir, "/", dname, "/", Dirname(a), "/" ));
             fi;
           else
             Print("WARNING: package ", info.PackageName, ", book ", b.BookName, 
@@ -1507,8 +1507,8 @@ UpdatePackageDoc := function(pkgdir, pkgdocdir)
         # move to web dir and to archives
         Exec(Concatenation("cd ", pkgtmp, "; rm -f wgetlog ; ",
                            "mkdir -p ", pkgdocdir, "/", dname, 
-                           "; cp -fr * ", pkgdocdir, "/", dname,  
-                           "; cp -fr * ..; rm -rf *"));
+                           "; cp -p -fr * ", pkgdocdir, "/", dname,  
+                           "; cp -p -fr * ..; rm -rf *"));
         else
         dname := nam;
         Print("   WARNING (", info.PackageName, "): No package documentation specified!\n");

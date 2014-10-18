@@ -538,6 +538,10 @@ return an incomplete list. [Reported by Florian Beye]
 A bug that may lead to incorrect results and infinite loops when &GAP;
 is compiled without GMP support using gcc 4.9.
 </Item>
+<Item>
+A bug that may cause <Ref Func="OrthogonalEmbeddings" BookName="ref"/> to
+return an incomplete result. [Reported by Benjamin Sambale]
+</Item>
 </List>
 
 Fixed bugs that could lead to break loops:

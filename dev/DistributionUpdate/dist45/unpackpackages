@@ -69,7 +69,7 @@ echo 'Deleting packages to be used from GAP.dev or replaced by newer versions'
 echo 'Moving packages to the GAP root directory'
 mkdir -p ${GAPSOURCE}/${DISTNAME}/pkg
 cd ${GAPSOURCE}/${DISTNAME}/pkg
-mv ${GAPSOURCE}/pkgnow/${DISTNAME}/pkg/* .
+cp -p -r ${GAPSOURCE}/pkgnow/${DISTNAME}/pkg/* .
 rm -rf ${GAPSOURCE}/pkgnow/
 
 # that's it

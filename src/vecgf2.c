@@ -1091,7 +1091,7 @@ Obj FuncProdGF2VecAnyMat ( Obj self, Obj vec, Obj mat )
 
   /* create the result space */
   NEW_GF2VEC( res,
-	      (IS_MUTABLE_OBJ(vec) || IS_MUTABLE_OBJ(mat)) ? TYPE_LIST_GF2VEC : TYPE_LIST_GF2VEC_IMM,
+	      (IS_MUTABLE_OBJ(vec) || IS_MUTABLE_OBJ(row1)) ? TYPE_LIST_GF2VEC : TYPE_LIST_GF2VEC_IMM,
 	      len1);
   SET_LEN_GF2VEC(res,len1);
 

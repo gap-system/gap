@@ -1242,8 +1242,9 @@ gap> l:=List([1..100000],i->[i]);;
 gap> for i in [1..100000] do a := PositionSorted(l,[i]); od; time1 := time;;
 gap> l := Immutable(l);;
 gap> for i in [1..100000] do a := PositionSorted(l,[i]); od; time2 := time;;
-gap> time1 < 2*time2; # time1 and time2 should be about the same
-true
+gap> if time1 >= 2*time2 then
+> Print("Bad timings for bugfix 2006/08/28 (FL): ", time1, " >= 2*", time2, "\n"); 
+> fi; # time1 and time2 should be about the same
 
 # 2006/08/29 (FL (and AH))
 gap> IsBound(ITER_POLY_WARN);
@@ -2720,6 +2721,11 @@ true
 # 2014/08/21 (AK, CJ)
 gap> (13*10^18) + (-3*10^18) = (10^19);
 true
+
+# 2014/09/05 (TB, reported by Benjamin Sambale)
+gap> OrthogonalEmbeddings([[4]]);
+rec( norms := [ 1, 1/4 ], solutions := [ [ 1 ], [ 2, 2, 2, 2 ] ], 
+  vectors := [ [ 2 ], [ 1 ] ] )
 
 #############################################################################
 #
