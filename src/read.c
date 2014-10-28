@@ -1473,9 +1473,9 @@ void ReadLiteral (
 	if (!READ_ERROR()) {
 	  IntrRefGVar(GVarName("MakeLiteral"));
 	  IntrFuncCallBegin();
-	  ReadAtom( follow, 'r' );
-	  IntrFuncCallEnd(1, 0, 1);
 	}
+	ReadAtom( follow, 'r' );
+	if (!READ_ERROR()) { IntrFuncCallEnd(1, 0, 1); }
     }
 
 
