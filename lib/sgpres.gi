@@ -148,7 +148,7 @@ function( H )
     SetAugmentedCosetTableMtcInWholeGroup(H,aug);
     gens := aug.primaryGeneratorWords;
     # do we need to wrap?
-    if not IsWord( One( G ) ) then
+    if not IsFreeGroup( G ) then
       fam := ElementsFamily( FamilyObj( H ) );
       gens := List( gens, i -> ElementOfFpGroup( fam, i ) );
     fi;

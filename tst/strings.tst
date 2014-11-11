@@ -115,4 +115,35 @@ gap> PrintString(x);
 "'a'"
 gap> String(x);
 "'a'"
+
+# RemoveCharacters
+gap> s := "I love pies pies pies";;
+gap> RemoveCharacters(s, "ie");
+gap> s;
+"I lov ps ps ps"
+gap> RemoveCharacters(s, "ie");
+gap> s;
+"I lov ps ps ps"
+gap> RemoveCharacters(s, [' ']);
+gap> s;
+"Ilovpspsps"
+gap> RemoveCharacters(s, []);
+gap> s;
+"Ilovpspsps"
+gap> RemoveCharacters(s, "oooooppppp");
+gap> s;
+"Ilvsss"
+gap> RemoveCharacters(s,s);
+gap> s;
+""
+gap> RemoveCharacters(s,s);
+gap> s;
+""
+gap> s := "I love pies pies pies";;
+gap> RemoveCharacters(s, "");
+gap> s;
+"I love pies pies pies"
+gap> RemoveCharacters(s, " ");
+gap> s;
+"Ilovepiespiespies"
 gap> STOP_TEST( "strings.tst", 100000 );

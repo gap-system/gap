@@ -2752,9 +2752,10 @@ Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
 **
 */
 
-Obj FuncQUIT_GAP( Obj self )
+Obj FuncQUIT_GAP( Obj self, Obj args )
 {
   TLS->UserHasQUIT = 1;
+
   ReadEvalError();
   return (Obj)0; 
 }

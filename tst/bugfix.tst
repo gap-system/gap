@@ -1238,10 +1238,18 @@ gap> "IsBlistRep" in NamesFilter(TypeObj(BlistList([1,2],[2]))![2]);
 true
 
 # 2006/08/28 (FL)
-gap> l:=List([1..100000],i->[i]);;
-gap> for i in [1..100000] do a := PositionSorted(l,[i]); od; time1 := time;;
-gap> l := Immutable(l);;
-gap> for i in [1..100000] do a := PositionSorted(l,[i]); od; time2 := time;;
+gap> time1 := 0;;
+gap> for j in [1..10] do
+> l:=List([1..100000],i->[i]);
+> t1:=Runtime(); for i in [1..100000] do a := PositionSorted(l,[i]); od; t2:=Runtime();
+> time1 := time1 + (t2-t1);
+> od;
+gap> time2 := 0;;
+gap> for j in [1..10] do
+> l := Immutable( List([1..100000],i->[i]) );
+> t1:=Runtime(); for i in [1..100000] do a := PositionSorted(l,[i]); od; t2:=Runtime();
+> time2 := time2 + (t2-t1);
+> od;
 gap> if time1 >= 2*time2 then
 > Print("Bad timings for bugfix 2006/08/28 (FL): ", time1, " >= 2*", time2, "\n"); 
 > fi; # time1 and time2 should be about the same
@@ -2726,6 +2734,10 @@ true
 gap> OrthogonalEmbeddings([[4]]);
 rec( norms := [ 1, 1/4 ], solutions := [ [ 1 ], [ 2, 2, 2, 2 ] ], 
   vectors := [ [ 2 ], [ 1 ] ] )
+
+# 2014/10/22 (CJ)
+gap> Stabilizer(SymmetricGroup(5), [1,2,1,2,1], OnTuples) = Group([(3,5),(4,5)]);
+true
 
 #############################################################################
 #

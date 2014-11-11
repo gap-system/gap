@@ -1756,7 +1756,7 @@ Obj FuncNormalizeWhitespace (
 **  from <rem> in <string> in place 
 **    
 */ 
-UInt1 REMCHARLIST[257];
+
 Obj FuncRemoveCharacters (
 			      Obj     self,
 			      Obj     string,
@@ -1764,6 +1764,7 @@ Obj FuncRemoveCharacters (
 {
   UInt1  *s;
   Int i, j, len;
+  UInt1 REMCHARLIST[257] = {0};
 
   /* check whether <string> is a string                                  */
   if ( ! IsStringConv( string ) ) {
@@ -1781,11 +1782,6 @@ Obj FuncRemoveCharacters (
 	     (Int)TNAM_OBJ(rem), 0L,
 	     "you can replace <rem> via 'return <rem>;'" );
     return FuncRemoveCharacters( self, string, rem );
-  }
-  
-  /* reset REMCHARLIST (in case of previous error) */
-  if (REMCHARLIST[256] != 0) {
-    for(i=0; i<257; i++) REMCHARLIST[i] = 0;
   }
   
   /* set REMCHARLIST by setting positions of characters in rem to 1 */
@@ -1808,12 +1804,6 @@ Obj FuncRemoveCharacters (
   s[i] = '\0';
   SET_LEN_STRING(string, i);
   SHRINK_STRING(string);
-
-  /* unset REMCHARLIST  */
-  len = GET_LEN_STRING(rem);
-  s = CHARS_STRING(rem);
-  for(i=0; i<len; i++) REMCHARLIST[s[i]] = 0;
-  REMCHARLIST[256] = 0;
 
   return (Obj)0;
 }

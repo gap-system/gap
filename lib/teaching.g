@@ -925,47 +925,54 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   bw:=infinity;
   bo:=[0,0];
   cnt:=0;
-  repeat
-    if cnt=0 then
-      # first the small gen syst.
-      gens:=SmallGeneratingSet(H);
-      sg:=Length(gens);
-    else
-      # then something random
-      repeat
-	if Length(gens)>2 and Random([1,2])=1 then
-	  # try to get down to 2 gens
-	  gens:=List([1,2],i->Random(H));
-	else
-	  gens:=List([1..sg],i->Random(H));
-	fi;
-	# try to get small orders
-	for k in [1..Length(gens)] do
-	  go:=Order(gens[k]);
-	  # try a p-element
-	  if Random([1..3*Length(gens)])=1 then
-	    gens[k]:=gens[k]^(go/(Random(Factors(go))));
+  if IsFinite(H) then
+    repeat
+      if cnt=0 then
+	# first the small gen syst.
+	gens:=SmallGeneratingSet(H);
+	sg:=Length(gens);
+      else
+	# then something random
+	repeat
+	  if Length(gens)>2 and Random([1,2])=1 then
+	    # try to get down to 2 gens
+	    gens:=List([1,2],i->Random(H));
+	  else
+	    gens:=List([1..sg],i->Random(H));
 	  fi;
-	od;
+	  # try to get small orders
+	  for k in [1..Length(gens)] do
+	    go:=Order(gens[k]);
+	    # try a p-element
+	    if Random([1..3*Length(gens)])=1 then
+	      gens[k]:=gens[k]^(go/(Random(Factors(go))));
+	    fi;
+	  od;
 
-      until Index(H,SubgroupNC(H,gens))=1;
-    fi;
+	until Index(H,SubgroupNC(H,gens))=1;
+      fi;
 
-    go:=List(gens,Order);
-    imgs:=List(go,i->Filtered(cl,j->IsInt(i/Order(Representative(j)))));
-    Info(InfoMorph,3,go,":",Product(imgs,i->Sum(i,Size)));
-    if Product(imgs,i->Sum(i,Size))<bw then
-      bg:=gens;
-      bo:=go;
-      bi:=imgs;
-      bw:=Product(imgs,i->Sum(i,Size));
-    elif Set(go)=Set(bo) then
-      # we hit the orders again -> sign that we can't be
-      # completely off track
-      cnt:=cnt+Int(bw/Size(G)*3);
-    fi;
-    cnt:=cnt+1;
-  until bw/Size(G)*3<cnt;
+      go:=List(gens,Order);
+      imgs:=List(go,i->Filtered(cl,j->IsInt(i/Order(Representative(j)))));
+      Info(InfoMorph,3,go,":",Product(imgs,i->Sum(i,Size)));
+      if Product(imgs,i->Sum(i,Size))<bw then
+	bg:=gens;
+	bo:=go;
+	bi:=imgs;
+	bw:=Product(imgs,i->Sum(i,Size));
+      elif Set(go)=Set(bo) then
+	# we hit the orders again -> sign that we can't be
+	# completely off track
+	cnt:=cnt+Int(bw/Size(G)*3);
+      fi;
+      cnt:=cnt+1;
+    until bw/Size(G)*3<cnt;
+  else
+    gens:=GeneratorsOfGroup(H);
+    bg:=gens;
+    imgs:=List(gens,x->cl);
+    bi:=imgs;
+  fi;
 
   if bw=0 then
     Error("trivial homomorphism not found");
@@ -975,7 +982,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
 
   Info(InfoMorph,2,"find ",bw," from ",cnt);
 
-  if Length(bg)>2 and cnt>Size(H)^2 and Size(G)<bw then
+  if IsFinite(H) and Length(bg)>2 and cnt>Size(H)^2 and Size(G)<bw then
     Info(InfoPerformance,1,
 "The group tested requires many generators. `AllHomomorphismClasses' often\n",
 "#I  does not perform well for such groups -- see the documentation.");

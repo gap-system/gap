@@ -59,7 +59,14 @@
 /* TODO: Remove after Ward2 */
 #ifndef WARD_ENABLED
 
+// GMP must be included outside of 'extern C'
+#ifdef GAP_IN_EXTERN_C
+}
+#endif
 #include <gmp.h>
+#ifdef GAP_IN_EXTERN_C
+extern "C" {
+#endif
 
 #include        "gmpints.h"             /* GMP integers                    */
 

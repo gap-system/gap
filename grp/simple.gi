@@ -170,7 +170,14 @@ local brg,str,p,a,param,g,s,small,plus,sets;
   if IsRecord(arg[1]) then
     p:=arg[1];
     if p.series="Spor" then
-      brg:=p.parameter;
+      brg:=p.parameter[1];
+      if '=' in brg then
+	brg:=brg{[1..Position(brg,'=')-1]};
+      fi;
+      while brg[Length(brg)]=' ' do
+	brg:=brg{[1..Length(brg)-1]};
+      od;
+      brg:=[brg];
     else
       brg:=Concatenation([p.series],p.parameter);
     fi;

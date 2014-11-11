@@ -61,7 +61,7 @@ InstallMethod( NewMatrix,
     m := 0*[1..Length(l)];
     e := NewRowVector(filter2, basedomain, []);
     for i in [1..Length(l)] do
-        if IsRowVectorObj(l[i]) then
+        if IsRowVectorObj(l[i]) and IsPlistVectorRep(l[i]) then
             m[i] := ShallowCopy(l[i]);
         else
             m[i] := Vector( l[i], e );

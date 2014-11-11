@@ -140,7 +140,7 @@ static inline Obj NewWord(Obj kind, UInt npairs) {
 **
 *F  RESIZE_WORD( <word>, <npairs> )
 */
-static inline Obj RESIZE_WORD( Obj word, UInt bits, UInt npairs )
+static inline Obj RESIZE_WORD( Obj word, UInt npairs )
 {
   WriteGuard(word);
   ResizeBag( (word), 2*sizeof(Obj)+((npairs)*BITS_WORD((word))/8L));

@@ -17,7 +17,14 @@
 
 #ifdef USE_GMP
 
+// GMP must be included outside of 'extern C'
+#ifdef GAP_IN_EXTERN_C
+}
+#endif
 #include <gmp.h>
+#ifdef GAP_IN_EXTERN_C
+extern "C" {
+#endif
 
 /****************************************************************************
 **

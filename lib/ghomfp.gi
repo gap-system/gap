@@ -381,10 +381,14 @@ local so,fp,isofp,rels,mapi;
   # relators in the generators on the genimages and take the normal closure.
   so:=Source(map);
   mapi:=MappingGeneratorsImages(map);
-  isofp:=IsomorphismFpGroupByGeneratorsNC(so,mapi[1],"F");
-  fp:=Range(isofp);
-  rels:=RelatorsOfFpGroup(fp);
-  rels:=List(rels,i->MappedWord(i,FreeGeneratorsOfFpGroup(fp),mapi[2]));
+  if Length(GeneratorsOfGroup(so))=0 then
+    rels:=ShallowCopy(mapi[2]);
+  else
+    isofp:=IsomorphismFpGroupByGeneratorsNC(so,mapi[1],"F");
+    fp:=Range(isofp);
+    rels:=RelatorsOfFpGroup(fp);
+    rels:=List(rels,i->MappedWord(i,FreeGeneratorsOfFpGroup(fp),mapi[2]));
+  fi;
   return NormalClosure(Range(map),SubgroupNC(Range(map),rels));
 end);
 

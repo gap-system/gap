@@ -1877,10 +1877,18 @@ end );
 ##
 #F  LLLint(<lat>) . . . . . . . . . . . . . . . . . . . .. . integer only LLL
 ##
-InstallGlobalFunction( LLLint, function( lat )
-    local b,mu,i,j,k,dim,l,d,dkp,n,r,za,ne,nne,dkm,dkma,mue,muea,muk,mum,
-          ca1,ca2,cb1,cb2,tw,sel,s,dkpv;
+InstallGlobalFunction( LLLint, function( arg )
+  local lat,b,mu,i,j,k,dim,l,d,dkp,n,r,za,ne,nne,dkm,dkma,mue,muea,muk,mum,
+          ca1,ca2,cb1,cb2,tw,sel,s,dkpv,cn,cd;
 
+  lat:=arg[1];
+  if Length(arg)>1 then
+    cn:=arg[2];
+  else
+    cn:=3/4;
+  fi;
+  cd:=DenominatorRat(cn);
+  cn:=NumeratorRat(cn);
   b:= List( lat, ShallowCopy );
   mu:=[];
   d:=[1,b[1]*b[1]];
@@ -1914,6 +1922,7 @@ InstallGlobalFunction( LLLint, function( lat )
       ne:=ne*nne;
     od;
     d[k+1]:=za/ne;
+    if d[k+1]=0 then Error("notbas");fi;
 
     dim:=dim+1;
 
@@ -1951,7 +1960,7 @@ InstallGlobalFunction( LLLint, function( lat )
       dkp:=d[k+1]*d[k-1];
       dkpv:=dkp*4;
 
-      if d[k]*d[k]*3-mue*mue*4>dkpv then
+      if d[k]*d[k]*cn-mue*mue*cd>dkpv then
 
 	#(2)
 	Info( InfoZLattice, 2, "swap ", k-1, " <-> ", k );
@@ -1997,7 +2006,7 @@ InstallGlobalFunction( LLLint, function( lat )
 	    cb2:=cb2-r*ca2;
 	    mue:=mue-r*dkm;
           fi;
-	until dkm*dkm*3-mue*mue*4<=dkpv;
+	until dkm*dkm*cn-mue*mue*cd<=dkpv;
 
 	d[k]:=dkm;
         mu[k][k-1]:=mue;

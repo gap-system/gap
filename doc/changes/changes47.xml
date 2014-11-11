@@ -526,7 +526,7 @@ in finite groups.
 
 
 <Section Label="fix476"> 
-<Heading>&GAP; 4.7.6 (September 2014)</Heading>
+<Heading>&GAP; 4.7.6 (November 2014)</Heading>
 
 Fixed bugs which could lead to incorrect results:
 <List>
@@ -561,6 +561,11 @@ not a generic identity element of a group. [Reported by Toshio Sumi]
 Fixed a problem in the new code for calculating maximal subgroups
 that caused a break loop for some groups from the transitive groups
 library. [Reported by Petr Savicky]
+</Item>
+<Item>
+Fixed a problem in <Ref Oper="ClosureSubgroup" BookName="ref"/> not
+accepting some groups without <Ref Oper="Parent" BookName="ref"/>.
+[Reported by Inneke van Gelder]
 </Item>
 </List>
 

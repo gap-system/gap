@@ -2565,6 +2565,35 @@ function ( mat1, mat2 )
     return kroneckerproduct;
 end );
 
+## symmetric and alternating parts of the kronecker product
+## code is due to Jean Michel
+
+#############################################################################
+##
+#M  ExteriorPower( <mat1>, <mat2> )
+##
+InstallOtherMethod(ExteriorPower,
+  "for matrices", true,[IsMatrix,IsPosInt],
+function ( A, m )
+local  basis;
+  basis := Combinations( [ 1 .. Length( A ) ], m );
+  return List( basis, i->List( basis, j->DeterminantMat( A{i}{j} )));
+end);
+
+#############################################################################
+##
+#M  SymmetricPower( <mat1>, <mat2> )
+##
+InstallOtherMethod(SymmetricPower,
+  "for matrices", true,[IsMatrix,IsPosInt],
+function ( A, m )
+local  basis, f;
+  f := j->Product( List( Collected( j ), x->x[2]), Factorial );
+  basis := UnorderedTuples( [ 1 .. Length( A ) ], m );
+  return List( basis, i-> List( basis, j->Permanent( A{i}{j}) / f( i )));
+end);
+
+
 
 #############################################################################
 ##
