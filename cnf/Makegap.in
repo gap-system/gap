@@ -71,15 +71,15 @@ c_filt1.o: ../../Makefile @srcdir@/c_filt1.c @srcdir@/compiled.h @srcdir@/system
   @srcdir@/read.h @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h \
   @srcdir@/ariths.h @srcdir@/integer.h @srcdir@/rational.h @srcdir@/cyclotom.h \
   @srcdir@/finfield.h @srcdir@/macfloat.h @srcdir@/bool.h @srcdir@/permutat.h \
-  @srcdir@/trans.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
-  @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h \
-  @srcdir@/set.h @srcdir@/pperm.h @srcdir@/listoper.h @srcdir@/listfunc.h \
-  @srcdir@/vector.h @srcdir@/blister.h @srcdir@/objfgelm.h @srcdir@/objpcgel.h \
-  @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h @srcdir@/dteval.h \
-  @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h @srcdir@/code.h \
-  @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/funcs.h \
-  @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h @srcdir@/streams.h \
-  @srcdir@/sysfiles.h @srcdir@/weakptr.h
+  @srcdir@/trans.h @srcdir@/intfuncs.h @srcdir@/records.h @srcdir@/precord.h \
+  @srcdir@/lists.h @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h \
+  @srcdir@/saveload.h @srcdir@/set.h @srcdir@/pperm.h @srcdir@/listoper.h \
+  @srcdir@/listfunc.h @srcdir@/vector.h @srcdir@/blister.h @srcdir@/objfgelm.h \
+  @srcdir@/objpcgel.h @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h \
+  @srcdir@/dteval.h @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h \
+  @srcdir@/code.h @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h \
+  @srcdir@/funcs.h @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h \
+  @srcdir@/streams.h @srcdir@/sysfiles.h @srcdir@/weakptr.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o c_filt1.o -c @srcdir@/c_filt1.c
 
 c_meths1.o: ../../Makefile @srcdir@/c_meths1.c @srcdir@/compiled.h @srcdir@/system.h config.h \
@@ -87,15 +87,15 @@ c_meths1.o: ../../Makefile @srcdir@/c_meths1.c @srcdir@/compiled.h @srcdir@/syst
   @srcdir@/read.h @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h \
   @srcdir@/ariths.h @srcdir@/integer.h @srcdir@/rational.h @srcdir@/cyclotom.h \
   @srcdir@/finfield.h @srcdir@/macfloat.h @srcdir@/bool.h @srcdir@/permutat.h \
-  @srcdir@/trans.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
-  @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h \
-  @srcdir@/set.h @srcdir@/pperm.h @srcdir@/listoper.h @srcdir@/listfunc.h \
-  @srcdir@/vector.h @srcdir@/blister.h @srcdir@/objfgelm.h @srcdir@/objpcgel.h \
-  @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h @srcdir@/dteval.h \
-  @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h @srcdir@/code.h \
-  @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/funcs.h \
-  @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h @srcdir@/streams.h \
-  @srcdir@/sysfiles.h @srcdir@/weakptr.h
+  @srcdir@/trans.h @srcdir@/intfuncs.h @srcdir@/records.h @srcdir@/precord.h \
+  @srcdir@/lists.h @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h \
+  @srcdir@/saveload.h @srcdir@/set.h @srcdir@/pperm.h @srcdir@/listoper.h \
+  @srcdir@/listfunc.h @srcdir@/vector.h @srcdir@/blister.h @srcdir@/objfgelm.h \
+  @srcdir@/objpcgel.h @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h \
+  @srcdir@/dteval.h @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h \
+  @srcdir@/code.h @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h \
+  @srcdir@/funcs.h @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h \
+  @srcdir@/streams.h @srcdir@/sysfiles.h @srcdir@/weakptr.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o c_meths1.o -c @srcdir@/c_meths1.c
 
 c_oper1.o: ../../Makefile @srcdir@/c_oper1.c @srcdir@/compiled.h @srcdir@/system.h config.h \
@@ -103,15 +103,15 @@ c_oper1.o: ../../Makefile @srcdir@/c_oper1.c @srcdir@/compiled.h @srcdir@/system
   @srcdir@/read.h @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h \
   @srcdir@/ariths.h @srcdir@/integer.h @srcdir@/rational.h @srcdir@/cyclotom.h \
   @srcdir@/finfield.h @srcdir@/macfloat.h @srcdir@/bool.h @srcdir@/permutat.h \
-  @srcdir@/trans.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
-  @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h \
-  @srcdir@/set.h @srcdir@/pperm.h @srcdir@/listoper.h @srcdir@/listfunc.h \
-  @srcdir@/vector.h @srcdir@/blister.h @srcdir@/objfgelm.h @srcdir@/objpcgel.h \
-  @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h @srcdir@/dteval.h \
-  @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h @srcdir@/code.h \
-  @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/funcs.h \
-  @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h @srcdir@/streams.h \
-  @srcdir@/sysfiles.h @srcdir@/weakptr.h
+  @srcdir@/trans.h @srcdir@/intfuncs.h @srcdir@/records.h @srcdir@/precord.h \
+  @srcdir@/lists.h @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h \
+  @srcdir@/saveload.h @srcdir@/set.h @srcdir@/pperm.h @srcdir@/listoper.h \
+  @srcdir@/listfunc.h @srcdir@/vector.h @srcdir@/blister.h @srcdir@/objfgelm.h \
+  @srcdir@/objpcgel.h @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h \
+  @srcdir@/dteval.h @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h \
+  @srcdir@/code.h @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h \
+  @srcdir@/funcs.h @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h \
+  @srcdir@/streams.h @srcdir@/sysfiles.h @srcdir@/weakptr.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o c_oper1.o -c @srcdir@/c_oper1.c
 
 c_random.o: ../../Makefile @srcdir@/c_random.c @srcdir@/compiled.h @srcdir@/system.h config.h \
@@ -119,15 +119,15 @@ c_random.o: ../../Makefile @srcdir@/c_random.c @srcdir@/compiled.h @srcdir@/syst
   @srcdir@/read.h @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h \
   @srcdir@/ariths.h @srcdir@/integer.h @srcdir@/rational.h @srcdir@/cyclotom.h \
   @srcdir@/finfield.h @srcdir@/macfloat.h @srcdir@/bool.h @srcdir@/permutat.h \
-  @srcdir@/trans.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
-  @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h \
-  @srcdir@/set.h @srcdir@/pperm.h @srcdir@/listoper.h @srcdir@/listfunc.h \
-  @srcdir@/vector.h @srcdir@/blister.h @srcdir@/objfgelm.h @srcdir@/objpcgel.h \
-  @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h @srcdir@/dteval.h \
-  @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h @srcdir@/code.h \
-  @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/funcs.h \
-  @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h @srcdir@/streams.h \
-  @srcdir@/sysfiles.h @srcdir@/weakptr.h
+  @srcdir@/trans.h @srcdir@/intfuncs.h @srcdir@/records.h @srcdir@/precord.h \
+  @srcdir@/lists.h @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h \
+  @srcdir@/saveload.h @srcdir@/set.h @srcdir@/pperm.h @srcdir@/listoper.h \
+  @srcdir@/listfunc.h @srcdir@/vector.h @srcdir@/blister.h @srcdir@/objfgelm.h \
+  @srcdir@/objpcgel.h @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h \
+  @srcdir@/dteval.h @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h \
+  @srcdir@/code.h @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h \
+  @srcdir@/funcs.h @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h \
+  @srcdir@/streams.h @srcdir@/sysfiles.h @srcdir@/weakptr.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o c_random.o -c @srcdir@/c_random.c
 
 c_type1.o: ../../Makefile @srcdir@/c_type1.c @srcdir@/compiled.h @srcdir@/system.h config.h \
@@ -135,15 +135,15 @@ c_type1.o: ../../Makefile @srcdir@/c_type1.c @srcdir@/compiled.h @srcdir@/system
   @srcdir@/read.h @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h \
   @srcdir@/ariths.h @srcdir@/integer.h @srcdir@/rational.h @srcdir@/cyclotom.h \
   @srcdir@/finfield.h @srcdir@/macfloat.h @srcdir@/bool.h @srcdir@/permutat.h \
-  @srcdir@/trans.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
-  @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h \
-  @srcdir@/set.h @srcdir@/pperm.h @srcdir@/listoper.h @srcdir@/listfunc.h \
-  @srcdir@/vector.h @srcdir@/blister.h @srcdir@/objfgelm.h @srcdir@/objpcgel.h \
-  @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h @srcdir@/dteval.h \
-  @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h @srcdir@/code.h \
-  @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/funcs.h \
-  @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h @srcdir@/streams.h \
-  @srcdir@/sysfiles.h @srcdir@/weakptr.h
+  @srcdir@/trans.h @srcdir@/intfuncs.h @srcdir@/records.h @srcdir@/precord.h \
+  @srcdir@/lists.h @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h \
+  @srcdir@/saveload.h @srcdir@/set.h @srcdir@/pperm.h @srcdir@/listoper.h \
+  @srcdir@/listfunc.h @srcdir@/vector.h @srcdir@/blister.h @srcdir@/objfgelm.h \
+  @srcdir@/objpcgel.h @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h \
+  @srcdir@/dteval.h @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h \
+  @srcdir@/code.h @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h \
+  @srcdir@/funcs.h @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h \
+  @srcdir@/streams.h @srcdir@/sysfiles.h @srcdir@/weakptr.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o c_type1.o -c @srcdir@/c_type1.c
 
 calls.o: ../../Makefile @srcdir@/calls.c @srcdir@/system.h config.h @srcdir@/gasman.h \
@@ -203,9 +203,10 @@ exprs.o: ../../Makefile @srcdir@/exprs.c @srcdir@/system.h config.h @srcdir@/gas
   @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
   @srcdir@/ariths.h @srcdir@/records.h @srcdir@/lists.h @srcdir@/bool.h \
   @srcdir@/integer.h @srcdir@/permutat.h @srcdir@/trans.h @srcdir@/calls.h \
-  @srcdir@/opers.h @srcdir@/precord.h @srcdir@/plist.h @srcdir@/range.h \
-  @srcdir@/string.h @srcdir@/saveload.h @srcdir@/set.h @srcdir@/pperm.h \
-  @srcdir@/code.h @srcdir@/vars.h @srcdir@/stats.h @srcdir@/exprs.h
+  @srcdir@/opers.h @srcdir@/intfuncs.h @srcdir@/precord.h @srcdir@/plist.h \
+  @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h @srcdir@/set.h \
+  @srcdir@/pperm.h @srcdir@/code.h @srcdir@/vars.h @srcdir@/stats.h \
+  @srcdir@/exprs.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o exprs.o -c @srcdir@/exprs.c
 
 finfield.o: ../../Makefile @srcdir@/finfield.c @srcdir@/system.h config.h @srcdir@/gasman.h \
@@ -228,16 +229,16 @@ gap.o: ../../Makefile @srcdir@/gap.c @srcdir@/system.h config.h @srcdir@/gasman.
   @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h \
   @srcdir@/integer.h @srcdir@/rational.h @srcdir@/cyclotom.h @srcdir@/finfield.h \
   @srcdir@/bool.h @srcdir@/macfloat.h @srcdir@/permutat.h @srcdir@/trans.h \
-  @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
-  @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h @srcdir@/set.h \
-  @srcdir@/pperm.h @srcdir@/listoper.h @srcdir@/listfunc.h @srcdir@/vector.h \
-  @srcdir@/vecffe.h @srcdir@/blister.h @srcdir@/vecgf2.h @srcdir@/vec8bit.h \
-  @srcdir@/objfgelm.h @srcdir@/objpcgel.h @srcdir@/objscoll.h \
+  @srcdir@/intfuncs.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
+  @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h \
+  @srcdir@/set.h @srcdir@/pperm.h @srcdir@/listoper.h @srcdir@/listfunc.h \
+  @srcdir@/vector.h @srcdir@/vecffe.h @srcdir@/blister.h @srcdir@/vecgf2.h \
+  @srcdir@/vec8bit.h @srcdir@/objfgelm.h @srcdir@/objpcgel.h @srcdir@/objscoll.h \
   @srcdir@/objccoll.h @srcdir@/objcftl.h @srcdir@/dt.h @srcdir@/dteval.h \
   @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h @srcdir@/code.h \
   @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/funcs.h \
   @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h @srcdir@/streams.h \
-  @srcdir@/sysfiles.h @srcdir@/weakptr.h @srcdir@/intfuncs.h @srcdir@/iostream.h
+  @srcdir@/sysfiles.h @srcdir@/weakptr.h @srcdir@/iostream.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o gap.o -c @srcdir@/gap.c
 
 gasman.o: ../../Makefile @srcdir@/gasman.c @srcdir@/system.h config.h @srcdir@/gasman.h \
@@ -275,9 +276,9 @@ intrprtr.o: ../../Makefile @srcdir@/intrprtr.c @srcdir@/system.h config.h @srcdi
   @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/read.h \
   @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h \
   @srcdir@/records.h @srcdir@/lists.h @srcdir@/bool.h @srcdir@/integer.h \
-  @srcdir@/permutat.h @srcdir@/trans.h @srcdir@/precord.h @srcdir@/plist.h \
-  @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h @srcdir@/set.h \
-  @srcdir@/pperm.h @srcdir@/code.h @srcdir@/vars.h @srcdir@/funcs.h \
+  @srcdir@/permutat.h @srcdir@/trans.h @srcdir@/intfuncs.h @srcdir@/precord.h \
+  @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h \
+  @srcdir@/set.h @srcdir@/pperm.h @srcdir@/code.h @srcdir@/vars.h @srcdir@/funcs.h \
   @srcdir@/intrprtr.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o intrprtr.o -c @srcdir@/intrprtr.c
 
@@ -291,9 +292,9 @@ listfunc.o: ../../Makefile @srcdir@/listfunc.c @srcdir@/system.h config.h @srcdi
   @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
   @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/records.h \
   @srcdir@/precord.h @srcdir@/lists.h @srcdir@/string.h @srcdir@/bool.h \
-  @srcdir@/permutat.h @srcdir@/trans.h @srcdir@/integer.h @srcdir@/plist.h \
-  @srcdir@/range.h @srcdir@/saveload.h @srcdir@/set.h @srcdir@/pperm.h \
-  @srcdir@/listfunc.h
+  @srcdir@/permutat.h @srcdir@/trans.h @srcdir@/integer.h @srcdir@/intfuncs.h \
+  @srcdir@/plist.h @srcdir@/range.h @srcdir@/saveload.h @srcdir@/set.h \
+  @srcdir@/pperm.h @srcdir@/listfunc.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o listfunc.o -c @srcdir@/listfunc.c
 
 listoper.o: ../../Makefile @srcdir@/listoper.c @srcdir@/system.h config.h @srcdir@/sysfiles.h \
@@ -386,9 +387,9 @@ plist.o: ../../Makefile @srcdir@/plist.c @srcdir@/system.h config.h @srcdir@/gas
 pperm.o: ../../Makefile @srcdir@/pperm.c @srcdir@/pperm.h @srcdir@/system.h config.h \
   @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
   @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h \
-  @srcdir@/bool.h @srcdir@/integer.h @srcdir@/permutat.h @srcdir@/records.h \
-  @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h @srcdir@/range.h \
-  @srcdir@/string.h @srcdir@/saveload.h @srcdir@/set.h
+  @srcdir@/bool.h @srcdir@/integer.h @srcdir@/intfuncs.h @srcdir@/permutat.h \
+  @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
+  @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h @srcdir@/set.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o pperm.o -c @srcdir@/pperm.c
 
 precord.o: ../../Makefile @srcdir@/precord.c @srcdir@/system.h config.h @srcdir@/gasman.h \
@@ -496,9 +497,9 @@ tietze.o: ../../Makefile @srcdir@/tietze.c @srcdir@/system.h config.h @srcdir@/c
 trans.o: ../../Makefile @srcdir@/trans.c @srcdir@/trans.h @srcdir@/system.h config.h \
   @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
   @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h \
-  @srcdir@/bool.h @srcdir@/integer.h @srcdir@/permutat.h @srcdir@/records.h \
-  @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h @srcdir@/range.h \
-  @srcdir@/string.h @srcdir@/saveload.h @srcdir@/set.h
+  @srcdir@/bool.h @srcdir@/integer.h @srcdir@/intfuncs.h @srcdir@/permutat.h \
+  @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
+  @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h @srcdir@/set.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o trans.o -c @srcdir@/trans.c
 
 vars.o: ../../Makefile @srcdir@/vars.c @srcdir@/system.h config.h @srcdir@/gasman.h \

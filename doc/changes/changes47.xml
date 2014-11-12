@@ -524,6 +524,66 @@ in finite groups.
 
 </Section>
 
+
+<Section Label="fix476"> 
+<Heading>&GAP; 4.7.6 (November 2014)</Heading>
+
+Fixed bugs which could lead to incorrect results:
+<List>
+<Item>
+A bug that may cause <Ref Func="ShortestVectors" BookName="ref"/> to
+return an incomplete list. [Reported by Florian Beye]
+</Item>
+<Item>
+A bug that may lead to incorrect results and infinite loops when &GAP;
+is compiled without GMP support using gcc 4.9.
+</Item>
+<Item>
+A bug that may cause <Ref Func="OrthogonalEmbeddings" BookName="ref"/> to
+return an incomplete result. [Reported by Benjamin Sambale]
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+<Ref Oper="ClosureGroup" BookName="ref"/> should be used instead of
+<Ref Func="ClosureSubgroup" BookName="ref"/> in case there is no parent
+group, otherwise some calculations such as e.g. 
+<Ref Oper="NormalSubgroups" BookName="ref"/> may fail.
+[Reported by Dmitrii Pasechnik]
+</Item>
+<Item>
+Fixed a line in the code that used a hard-coded identity permutation,
+not a generic identity element of a group. [Reported by Toshio Sumi]
+</Item>
+<Item>
+Fixed a problem in the new code for calculating maximal subgroups
+that caused a break loop for some groups from the transitive groups
+library. [Reported by Petr Savicky]
+</Item>
+<Item>
+Fixed a problem in <Ref Oper="ClosureSubgroup" BookName="ref"/> not
+accepting some groups without <Ref Oper="Parent" BookName="ref"/>.
+[Reported by Inneke van Gelder]
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+Eliminated a number of compiler warnings detected with some newer 
+versions of <Package>C</Package> compilers.
+</Item>
+<Item>
+Some minor bugs in the transformation and partial permutation code 
+and documentation were resolved. 
+</Item>
+</List>
+
+</Section>
+
+
 </Chapter>
 
 

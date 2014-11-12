@@ -9,6 +9,11 @@
 #ifndef GAP_COMPILED_H
 #define GAP_COMPILED_H
 
+#ifdef __cplusplus
+extern "C" {
+#define GAP_IN_EXTERN_C
+#endif
+
 #include        "system.h"              /* system dependent part           */
 
 #include        "gasman.h"              /* garbage collector               */
@@ -456,6 +461,11 @@ static inline Obj C_NORMALIZE_64BIT( Obj o) {
 
 #endif
 
+#ifdef __cplusplus
+}
+#undef GAP_IN_EXTERN_C
+#endif
+    
 #endif // GAP_COMPILED_H
 
 /****************************************************************************

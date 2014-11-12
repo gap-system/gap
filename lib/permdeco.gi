@@ -57,6 +57,10 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   tryrep:=function(rep,bound)
   local Gi,repi,maps,v,w,cen,hom;
      Gi:=Image(rep,G);
+     if not IsSubset(MovedPoints(Gi),[1..LargestMovedPoint(Gi)]) then
+       rep:=rep*ActionHomomorphism(Gi,MovedPoints(Gi),"surjective");
+       Gi:=Image(rep,G);
+     fi;
      Info(InfoGroup,2,"Trying degree ",NrMovedPoints(Gi));
      repi:=InverseGeneralMapping(rep);
      maps:=List(sel,x->repi*autos[x]*rep);
@@ -271,7 +275,7 @@ end);
 InstallGlobalFunction(WreathActionChiefFactor,
 function(G,M,N)
 local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
-      n,w,embs,reps,act,img,gimg;
+      n,w,embs,reps,act,img,gimg,gens;
   # get the simple factor(s)
   cs:=CompositionSeries(M);
   # the cs with N gives a cs for M/N.
@@ -306,6 +310,7 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
 
   # now embed into wreath
   w:=WreathProduct(a,Q);
+
   embs:=List([1..n+1],i->Embedding(w,i));
 
   # define isomorphisms between the components
@@ -331,11 +336,14 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
   od;
 
   E:=Subgroup(w,genimages);
+  # allow also mapping of `a' by enlarging
+  gens:=GeneratorsOfGroup(G);
+
   if AssertionLevel()>0 then
-    Ehom:=GroupHomomorphismByImages(G,E,GeneratorsOfGroup(G),genimages);
+    Ehom:=GroupHomomorphismByImages(G,w,gens,genimages);
     Assert(1,fail<>Ehom);
   else
-    Ehom:=GroupHomomorphismByImagesNC(G,E,GeneratorsOfGroup(G),genimages);
+    Ehom:=GroupHomomorphismByImagesNC(G,w,gens,genimages);
   fi;
 
   return [w,Ehom,a,Image(Thom,u),n];

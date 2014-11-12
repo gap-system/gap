@@ -123,7 +123,7 @@ Obj C8Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     }
 
     /* correct the size of <obj>                                           */
-    RESIZE_WORD( obj, 8L, j );
+    RESIZE_WORD( obj, j );
     return obj;
 }
 
@@ -703,7 +703,7 @@ Obj C16Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     }
 
     /* correct the size of <obj>                                           */
-    RESIZE_WORD( obj, 16L, j );
+    RESIZE_WORD( obj, j );
     return obj;
 }
 
@@ -1285,7 +1285,7 @@ Obj C32Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     }
 
     /* correct the size of <obj>                                           */
-    RESIZE_WORD( obj, 32L, j );
+    RESIZE_WORD( obj, j );
     return obj;
 }
 

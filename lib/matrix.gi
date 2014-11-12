@@ -824,8 +824,10 @@ local ord,i,vec,v,o;
     od;
 
     # raise the matrix to this length (new mat will fix basis vector)
-    mat := mat ^ o;
-    ord := ord * o;
+    if o>1 then
+      mat := mat ^ o;
+      ord := ord * o;
+    fi;
   od;
   if IsOne(mat) then return ord; else return fail; fi;
 end);

@@ -123,20 +123,28 @@
 **  <npairs> pairs of generator number/exponent.  The new  word is return  in
 **  <word>.
 */
-#define NEW_WORD( word, kind, npairs ) \
- ((word)=NewBag(T_DATOBJ,2*sizeof(Obj)+((npairs)*BITS_WORDTYPE((kind))/8L)),\
-  (ADDR_OBJ((word))[1] = INTOBJ_INT((npairs))),\
-  SET_TYPE_DATOBJ( (word), (kind) ), (word) )
+static inline Obj NewWord(Obj kind, UInt npairs) {
+  Obj word;
+  word = NewBag(T_DATOBJ,2*sizeof(Obj)+npairs*BITS_WORDTYPE(kind)/8L);
+  (ADDR_OBJ(word)[1] = INTOBJ_INT(npairs));
+  SET_TYPE_DATOBJ( word, kind);
+  return word;
+}
+
+#define NEW_WORD(word, kind, npairs) \
+  (word) = NewWord((kind), (npairs));
 
 
 /****************************************************************************
 **
 *F  RESIZE_WORD( <word>, <npairs> )
 */
-#define RESIZE_WORD( word, bits, npairs ) \
-  (ResizeBag( (word), 2*sizeof(Obj)+((npairs)*BITS_WORD((word))/8L)), \
-   (ADDR_OBJ((word))[1] = INTOBJ_INT((npairs))), \
-   (word) )
+static inline Obj RESIZE_WORD( Obj word, UInt npairs )
+{
+  ResizeBag( (word), 2*sizeof(Obj)+((npairs)*BITS_WORD((word))/8L));
+  (ADDR_OBJ((word))[1] = INTOBJ_INT((npairs)));
+  return word;
+}
 
 
 /****************************************************************************

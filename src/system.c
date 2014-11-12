@@ -33,7 +33,7 @@
 
 #include        "system.h"              /* system dependent part           */
 
-
+#include        "gap.h"                 /* get UserHasQUIT                 */
 
 #include        "sysfiles.h"            /* file input/output               */
 #include        "gasman.h"            
@@ -1466,6 +1466,11 @@ void SySleep ( UInt secs )
 **  The function 'SyExit' must perform all the neccessary cleanup operations.
 **  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
+**
+**  If the user calls 'QUIT_GAP' with a value, then the global variable
+**  'UserHasQUIT' will be set, and their requested return value will be
+**  in 'UserHasQUITReturnValue'. If the return value would be 0, we check
+**  this calue and use it instead.
 */
 void SyExit (
     UInt                ret )
@@ -1480,8 +1485,12 @@ void SyExit (
   }
 
 #endif
-
-    exit( (int)ret );
+    if(ret == 0) {
+        exit(UserHasQUITReturnValue);
+    }
+    else {
+        exit( (int)ret );
+    }
 }
 
 /****************************************************************************

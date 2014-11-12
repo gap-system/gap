@@ -57,12 +57,12 @@ var StartMenuFolder
 # User variables and other general settings: adjust them here as needed
 # 
 Section
-StrCpy $GAP_VER "4.7.2"
+StrCpy $GAP_VER "4.7.5"
 SectionEnd
 
 #Name and file
-Name "GAP 4.7.4"
-OutFile "gap4r7p4_2014_02_20-01_21.exe"
+Name "GAP 4.7.5"
+OutFile "gap4r7p5_2014_05_24-20_02.exe"
 
 #Default installation folder
 InstallDir "C:\gap4r7"
@@ -323,7 +323,6 @@ Section "Core GAP system" SecGAPcore
 
 SectionEnd
 
-
 #######################################################################
 #
 # Needed packages
@@ -539,8 +538,8 @@ SectionEnd
 Section "IO" SecGAPpkg_io 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.io
-SetOutPath $INSTDIR\pkg\io
-File /r gap4r7\pkg\io\*.* 
+SetOutPath $INSTDIR\pkg\io-4.3.1
+File /r gap4r7\pkg\io-4.3.1\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -575,8 +574,8 @@ SectionEnd
 Section "Polenta" SecGAPpkg_polenta 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.polenta
-SetOutPath $INSTDIR\pkg\polenta-1.3.1
-File /r gap4r7\pkg\polenta-1.3.1\*.* 
+SetOutPath $INSTDIR\pkg\polenta-1.3.2
+File /r gap4r7\pkg\polenta-1.3.2\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -800,8 +799,8 @@ SectionEnd
 Section "cvec" SecGAPpkg_cvec 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.cvec
-SetOutPath $INSTDIR\pkg\cvec
-File /r gap4r7\pkg\cvec\*.* 
+SetOutPath $INSTDIR\pkg\cvec-2.5.1
+File /r gap4r7\pkg\cvec-2.5.1\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -884,8 +883,8 @@ SectionEnd
 Section "genss" SecGAPpkg_genss 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.genss
-SetOutPath $INSTDIR\pkg\genss
-File /r gap4r7\pkg\genss\*.* 
+SetOutPath $INSTDIR\pkg\genss-1.6.1
+File /r gap4r7\pkg\genss-1.6.1\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1220,8 +1219,20 @@ SectionEnd
 Section "orb" SecGAPpkg_orb 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.orb
-SetOutPath $INSTDIR\pkg\orb
-File /r gap4r7\pkg\orb\*.* 
+SetOutPath $INSTDIR\pkg\orb-4.7.1
+File /r gap4r7\pkg\orb-4.7.1\*.* 
+SetOutPath $INSTDIR 
+SectionEnd 
+
+#######################################################################
+#
+# permut
+#
+Section "permut" SecGAPpkg_permut 
+SetOutPath $INSTDIR\pkg 
+File gap4r7\pkg\README.permut
+SetOutPath $INSTDIR\pkg\permut
+File /r gap4r7\pkg\permut\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1292,8 +1303,8 @@ SectionEnd
 Section "recog" SecGAPpkg_recog 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.recog
-SetOutPath $INSTDIR\pkg\recog
-File /r gap4r7\pkg\recog\*.* 
+SetOutPath $INSTDIR\pkg\recog-1.2.2
+File /r gap4r7\pkg\recog-1.2.2\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1304,8 +1315,8 @@ SectionEnd
 Section "recogbase" SecGAPpkg_recogbase 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.recogbase
-SetOutPath $INSTDIR\pkg\recogbase
-File /r gap4r7\pkg\recogbase\*.* 
+SetOutPath $INSTDIR\pkg\recogbase-1.2.2
+File /r gap4r7\pkg\recogbase-1.2.2\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1364,8 +1375,8 @@ SectionEnd
 Section "Semigroups" SecGAPpkg_semigroups 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.semigroups
-SetOutPath $INSTDIR\pkg\semigroups-1.4
-File /r gap4r7\pkg\semigroups-1.4\*.* 
+SetOutPath $INSTDIR\pkg\semigroups-2.0
+File /r gap4r7\pkg\semigroups-2.0\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1424,8 +1435,8 @@ SectionEnd
 Section "Smallsemi" SecGAPpkg_smallsemi 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.smallsemi
-SetOutPath $INSTDIR\pkg\smallsemi-0.6.7
-File /r gap4r7\pkg\smallsemi-0.6.7\*.* 
+SetOutPath $INSTDIR\pkg\smallsemi-0.6.8
+File /r gap4r7\pkg\smallsemi-0.6.8\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1589,8 +1600,8 @@ SectionEnd
 Section "Float" SecGAPpkg_float 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.float
-SetOutPath $INSTDIR\pkg\float-0.5.17
-File /r gap4r7\pkg\float-0.5.17\*.* 
+SetOutPath $INSTDIR\pkg\float-0.5.18
+File /r gap4r7\pkg\float-0.5.18\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1685,8 +1696,8 @@ SectionEnd
 Section "nq" SecGAPpkg_nq 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.nq
-SetOutPath $INSTDIR\pkg\nq-2.4
-File /r gap4r7\pkg\nq-2.4\*.* 
+SetOutPath $INSTDIR\pkg\nq-2.5.1
+File /r gap4r7\pkg\nq-2.5.1\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1728,7 +1739,6 @@ SectionEnd
 
 SectionGroupEnd 
 # Packages that do not work under Windows end here
-
 
 #######################################################################
 # Descriptions
@@ -1781,7 +1791,7 @@ LangString DESC_SecGAPpkg_gapdoc ${LANG_ENGLISH} "A Meta Package for GAP Documen
 LangString DESC_SecGAPpkg_gauss ${LANG_ENGLISH} "Extended Gauss functionality for GAP"
 LangString DESC_SecGAPpkg_gaussforhomalg ${LANG_ENGLISH} "Gauss functionality for the homalg project"
 LangString DESC_SecGAPpkg_gbnp ${LANG_ENGLISH} "computing Groebner bases of noncommutative polynomials"
-LangString DESC_SecGAPpkg_genss ${LANG_ENGLISH} "genss - generic Schreier-Sims"
+LangString DESC_SecGAPpkg_genss ${LANG_ENGLISH} "Generic Schreier-Sims"
 LangString DESC_SecGAPpkg_gpd ${LANG_ENGLISH} "Groupoids, graphs of groups, and graphs of groupoids"
 LangString DESC_SecGAPpkg_gradedmodules ${LANG_ENGLISH} "A homalg based package for the Abelian category of finitely presented graded modules over computable graded rings"
 LangString DESC_SecGAPpkg_gradedringforhomalg ${LANG_ENGLISH} "Endow Commutative Rings with an Abelian Grading"
@@ -1818,8 +1828,9 @@ LangString DESC_SecGAPpkg_nilmat ${LANG_ENGLISH} "Computing with nilpotent matri
 LangString DESC_SecGAPpkg_nq ${LANG_ENGLISH} "Nilpotent Quotients of Finitely Presented Groups"
 LangString DESC_SecGAPpkg_numericalsgps ${LANG_ENGLISH} "A package for numerical semigroups"
 LangString DESC_SecGAPpkg_openmath ${LANG_ENGLISH} "OpenMath functionality in GAP"
-LangString DESC_SecGAPpkg_orb ${LANG_ENGLISH} "orb - Methods to enumerate Orbits"
+LangString DESC_SecGAPpkg_orb ${LANG_ENGLISH} "Methods to enumerate Orbits"
 LangString DESC_SecGAPpkg_pargap ${LANG_ENGLISH} "Parallel GAP"
+LangString DESC_SecGAPpkg_permut ${LANG_ENGLISH} "A package to deal with permutability in finite groups"
 LangString DESC_SecGAPpkg_polenta ${LANG_ENGLISH} "Polycyclic presentations for matrix groups"
 LangString DESC_SecGAPpkg_polycyclic ${LANG_ENGLISH} "Computation with polycyclic groups"
 LangString DESC_SecGAPpkg_polymakeinterface ${LANG_ENGLISH} "A package to provide algorithms for fans and cones of polymake to other packages"
@@ -1944,6 +1955,7 @@ LangString DESC_SecGAPpkg_xmod ${LANG_ENGLISH} "Crossed Modules and Cat1-Groups"
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_openmath} $(DESC_SecGAPpkg_openmath)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_orb} $(DESC_SecGAPpkg_orb)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_pargap} $(DESC_SecGAPpkg_pargap)
+!insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_permut} $(DESC_SecGAPpkg_permut)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_polenta} $(DESC_SecGAPpkg_polenta)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_polycyclic} $(DESC_SecGAPpkg_polycyclic)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_polymakeinterface} $(DESC_SecGAPpkg_polymakeinterface)

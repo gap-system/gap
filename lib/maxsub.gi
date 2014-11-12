@@ -820,10 +820,10 @@ for mm in lmax do mm!.type:="3b";od;
 	if "4" in types or "4b" in types or "4c" in types then
 	  # Product action with the first factor primitive of type 3b. (CD)
 	  # Product action with the first factor primitive of type 2. (PA)
-	  lmax:=MaxesType4bc(act[1],Image(act[2],q),act[3],act[4],act[5]);
+	  lmax:=MaxesType4bc(act[1],Image(act[2],q),act[3], act[4],act[5]);
 	  Info(InfoLattice,1,Length(lmax)," type 4bc maxes");
 	  lmax:=List(lmax,x->PreImage(act[2],x));
-for mm in lmax do mm!.type:="4bc";od;
+	  for mm in lmax do mm!.type:="4bc";od;
 	  Append(maxes,lmax);
 	fi;
 

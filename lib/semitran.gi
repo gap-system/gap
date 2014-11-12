@@ -163,7 +163,7 @@ InstallTrueMethod(IsFinite, IsTransformationSemigroup);
 #
 
 InstallMethod(DegreeOfTransformationSemigroup, 
-"for a transformation semigroup",
+"for a transformation semigroup with generators",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 function(s)
   return DegreeOfTransformationCollection(GeneratorsOfSemigroup(s));
@@ -172,10 +172,14 @@ end);
 #
 
 InstallMethod(DegreeOfTransformationSemigroup, 
-"for a transformation group",
+"for a transformation group with generators",
 [IsTransformationSemigroup and HasGeneratorsOfGroup],
-function(s)
-  return DegreeOfTransformationCollection(GeneratorsOfGroup(s));
+function(S)
+  if not IsEmpty(GeneratorsOfGroup(S)) then 
+    return DegreeOfTransformationCollection(GeneratorsOfGroup(S));
+  else 
+    return DegreeOfTransformationCollection(GeneratorsOfSemigroup(S));
+  fi;
 end);
 
 #

@@ -181,7 +181,7 @@ clean_gap_$(CLEANME): rebuild
 	          sed -e "s/sysinfo.gap-//g"`; \
 	  if [ "x$$nextconf" != "x" ]; then \
 	    echo "changing config to "$$nextconf; \
-	    make setconfig CONFIGNAME=$$nextconf; \
+	    $(MAKE) setconfig CONFIGNAME=$$nextconf; \
 	  else \
 	    rm -f Makefile sysinfo.gap bin/gap.sh; \
 	  fi; \
@@ -197,10 +197,10 @@ clean_gmp_$(CLEANME):
 	 rm -f bin/$(GAPARCH)/extern/gmp; fi
 	if test -d extern/gmp-$(GMP_VER); then \
 	 (cd extern/gmp-$(GMP_VER); rm -f LASTBUILD.*; \
-	  if test -r Makefile; then make distclean; fi ); fi
+	  if test -r Makefile; then $(MAKE) distclean; fi ); fi
 
 distclean:
-	while test -e Makefile; do make clean; done
+	while test -e Makefile; do $(MAKE) clean; done
 
 manuals:
 	( echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAPauto) )
@@ -347,7 +347,7 @@ testmanuals:
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (NO PACKAGES)"; fi ; \
 	  echo '============================================================';\
@@ -355,7 +355,7 @@ testmanuals:
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (NO PACKAGES)"; fi ) \
 	  > `date -u +dev/log/testmanuals1_%Y-%m-%d-%H-%M` 2>&1 )
@@ -364,7 +364,7 @@ testmanuals:
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAPauto);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (DEFAULT PACKAGES)"; fi ; \
 	  echo '============================================================';\
@@ -372,7 +372,7 @@ testmanuals:
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAPauto);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (DEFAULT PACKAGES)"; fi ) \
 	  > `date -u +dev/log/testmanualsA_%Y-%m-%d-%H-%M` 2>&1 )
@@ -382,7 +382,7 @@ testmanuals:
 	  LoadAllPackages() ; \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (ALL PACKAGES)"; fi ; \
 	  echo '============================================================';\
@@ -391,7 +391,7 @@ testmanuals:
 	  LoadAllPackages() ; \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (ALL PACKAGES)"; fi ) \
 	  > `date -u +dev/log/testmanuals2_%Y-%m-%d-%H-%M` 2>&1 )

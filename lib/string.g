@@ -150,6 +150,26 @@ DeclareRepresentationKernel( "IsStringRep",
 ##
 BIND_GLOBAL( "ConvertToStringRep", CONV_STRING );
 
+#############################################################################
+##
+#F  CopyToStringRep( <obj> ) . . . . . . . . . . . . . . .  copy conversion
+##
+##  <#GAPDoc Label="CopyToStringRep">
+##  <ManSection>
+##  <Func Name="CopyToStringRep" Arg='obj'/>
+##
+##  <Description>
+##  If <A>obj</A> is a dense internally represented list of characters then
+##  <Ref Func="CopyToStringRep"/> copies <A>obj</A> to a new object with
+##  representation 
+##  <Ref Func="IsStringRep"/>.
+##  If <A>obj</A> is not a string then <Ref Func="CopyToStringRep"/>
+##  signals an error.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "CopyToStringRep", COPY_TO_STRING_REP );
 
 #############################################################################
 ##

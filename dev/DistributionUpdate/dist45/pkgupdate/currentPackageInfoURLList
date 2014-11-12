@@ -37,7 +37,7 @@ Cryst       http://www.math.uni-bielefeld.de/~gaehler/gap45/Cryst/PackageInfo.g
 CrystCat    http://www.math.uni-bielefeld.de/~gaehler/gap45/CrystCat/PackageInfo.g
 CTblLib     http://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib/PackageInfo.g
 Cubefree    http://users.monash.edu.au/~heikod/cubefree/PackageInfo.g
-cvec        http://neunhoef.github.io/cvec/PackageInfo.g
+cvec MOVE       http://gap-system.github.io/cvec/PackageInfo.g
 DESIGN      http://www.maths.qmul.ac.uk/~leonard/design/design1r6/PackageInfo.g
 EDIM        http://www.math.rwth-aachen.de/~Frank.Luebeck/EDIM/PackageInfo.g
 Example     http://www.cs.st-andrews.ac.uk/~alexk/example/PackageInfo.g
@@ -54,10 +54,10 @@ GAPDoc      http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/PackageInfo.g
 Gauss       http://wwwb.math.rwth-aachen.de/goertzen/Gauss/PackageInfo.g
 GaussForHomalg http://wwwb.math.rwth-aachen.de/goertzen/GaussForHomalg/PackageInfo.g
 GBNP        http://mathdox.org/products/gbnp/PackageInfo.g
-genss       http://neunhoef.github.io/genss/PackageInfo.g
+genss MOVE      http://gap-system.github.io/genss/PackageInfo.g
 gpd         http://www.maths.bangor.ac.uk/chda/gap4/gpd/PackageInfo.g
-GradedModules http://homalg.math.rwth-aachen.de/~markus/GradedModules/PackageInfo.g
-GradedRingForHomalg http://homalg.math.rwth-aachen.de/~markus/GradedRingForHomalg/PackageInfo.g
+GradedModules http://homalg.math.rwth-aachen.de/~barakat/homalg-project/GradedModules/PackageInfo.g
+GradedRingForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/GradedRingForHomalg/PackageInfo.g
 GRAPE       http://www.maths.qmul.ac.uk/~leonard/grape/grape4r6/PackageInfo.g
 GrpConst    http://www.icm.tu-bs.de/~beick/soft/grpconst/PackageInfo.g
 Guarana     http://www-circa.mcs.st-andrews.ac.uk/~jjm/software/Guarana/PackageInfo.g
@@ -70,7 +70,7 @@ homalg      http://homalg.math.rwth-aachen.de/~barakat/homalg-project/homalg/Pac
 HomalgToCAS http://homalg.math.rwth-aachen.de/~barakat/homalg-project/HomalgToCAS/PackageInfo.g
 idrel       http://www.maths.bangor.ac.uk/chda/gap4/idrel/PackageInfo.g
 IntPic      http://www.fc.up.pt/cmup/mdelgado/intpic/PackageInfo.g
-IO          http://neunhoef.github.io/io/PackageInfo.g
+IO MOVE         http://gap-system.github.io/io/PackageInfo.g
 IO_ForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/IO_ForHomalg/PackageInfo.g
 IRREDSOL    http://www.icm.tu-bs.de/~bhoeflin/irredsol/PackageInfo.g
 ITC         http://www.math.rwth-aachen.de/~Volkmar.Felsch/itc/PackageInfo.g
@@ -81,9 +81,10 @@ liealgdb    http://www.sztaki.hu/~schneider/Research/LieAlgDB/PackageInfo.g
 LiePRing    http://www.icm.tu-bs.de/~beick/soft/liepring/PackageInfo.g
 LieRing     http://www.science.unitn.it/~degraaf/liering/PackageInfo.g
 linboxing   http://www.cs.st-andrews.ac.uk/~pas/linboxing/PackageInfo.g
-LocalizeRingForHomalg http://homalg.math.rwth-aachen.de/~markus/LocalizeRingForHomalg/PackageInfo.g
+LocalizeRingForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/LocalizeRingForHomalg/PackageInfo.g
 loops       http://www.math.du.edu/loops/PackageInfo.g
 MapClass    http://web.mat.bham.ac.uk/~jamesa/mapclass/PackageInfo.g 
+Matgrp      http://www.math.colostate.edu/~hulpke/matgrp/PackageInfo.g
 MatricesForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/MatricesForHomalg/PackageInfo.g
 ModIsom     http://www.icm.tu-bs.de/~beick/soft/modisom/PackageInfo.g
 Modules     http://homalg.math.rwth-aachen.de/~barakat/homalg-project/Modules/PackageInfo.g
@@ -91,7 +92,7 @@ Nilmat      http://larmor.nuigalway.ie/~dane/nilmat/PackageInfo.g
 nq          http://gap-system.github.io/nq/PackageInfo.g
 NumericalSgps http://www.fc.up.pt/cmup/mdelgado/numericalsgps/PackageInfo.g
 OpenMath    http://www.cs.st-andrews.ac.uk/~alexk/openmath/PackageInfo.g
-orb         http://neunhoef.github.io/orb/PackageInfo.g
+orb MOVE        http://gap-system.github.io/orb/PackageInfo.g
 ParGAP      http://www.gap-system.org/HostedGapPackages/pargap/PackageInfo.g
 permut      http://www.uv.es/permut/gap/permut/PackageInfo.g
 Polenta     http://gap-system.github.io/polenta/PackageInfo.g
@@ -103,8 +104,8 @@ QuaGroup    http://www.science.unitn.it/~degraaf/PackageInfo.g
 RadiRoot    http://www.icm.tu-bs.de/ag_algebra/software/radiroot/PackageInfo.g
 RCWA        http://www.gap-system.org/DevelopersPages/StefanKohl/rcwa/PackageInfo.g
 RDS         http://csserver.evansville.edu/~mroeder/rds/gap4_5/PackageInfo.g
-recog       http://neunhoef.github.io/recog/PackageInfo.g
-recogbase   http://neunhoef.github.io/recogbase/PackageInfo.g
+recog MOVE      http://gap-system.github.io/recog/PackageInfo.g
+recogbase MOVE  http://gap-system.github.io/recogbase/PackageInfo.g
 Repsn       http://www.sfu.ca/~vdabbagh/gap/PackageInfo.g
 ResClasses  http://www.gap-system.org/DevelopersPages/StefanKohl/resclasses/PackageInfo.g
 RingsForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/RingsForHomalg/PackageInfo.g

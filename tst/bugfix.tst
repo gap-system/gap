@@ -1238,12 +1238,21 @@ gap> "IsBlistRep" in NamesFilter(TypeObj(BlistList([1,2],[2]))![2]);
 true
 
 # 2006/08/28 (FL)
-gap> l:=List([1..100000],i->[i]);;
-gap> for i in [1..100000] do a := PositionSorted(l,[i]); od; time1 := time;;
-gap> l := Immutable(l);;
-gap> for i in [1..100000] do a := PositionSorted(l,[i]); od; time2 := time;;
-gap> time1 < 2*time2; # time1 and time2 should be about the same
-true
+gap> time1 := 0;;
+gap> for j in [1..10] do
+> l:=List([1..100000],i->[i]);
+> t1:=Runtime(); for i in [1..100000] do a := PositionSorted(l,[i]); od; t2:=Runtime();
+> time1 := time1 + (t2-t1);
+> od;
+gap> time2 := 0;;
+gap> for j in [1..10] do
+> l := Immutable( List([1..100000],i->[i]) );
+> t1:=Runtime(); for i in [1..100000] do a := PositionSorted(l,[i]); od; t2:=Runtime();
+> time2 := time2 + (t2-t1);
+> od;
+gap> if time1 >= 2*time2 then
+> Print("Bad timings for bugfix 2006/08/28 (FL): ", time1, " >= 2*", time2, "\n"); 
+> fi; # time1 and time2 should be about the same
 
 # 2006/08/29 (FL (and AH))
 gap> IsBound(ITER_POLY_WARN);
@@ -2644,6 +2653,70 @@ gap> IsAbelian(F);
 true
 gap> Size(F);
 infinity
+
+#############################################################################
+##
+## Changes 4.7.5 -> 4.7.6
+
+## For bugfixes
+
+# 2014/08/11 (AH)
+gap> eij:=function(i,j)
+> local I;
+> I:=Z(2)*IdentityMat(5);
+> I[i][j]:=Z(2);
+> return I;
+> end;;
+gap> G2:=Group([eij(1,2),eij(2,3),eij(3,4),eij(4,5),eij(2,1),eij(4,3)]);;
+gap> Length(NormalSubgroups(G2));
+16
+
+# 2014/08/13 (TB, AK). A bug that may cause ShortestVectors 
+# to return an incomplete list (reported by Florian Beye).
+gap> M:=[[4,-1,-2,1,2,-1,0,0,0,0,1,-1,2,-2,0,0,0,-2,2,-3,3,0],
+> [-1,4,1,0,-1,2,0,3,3,-1,1,1,1,1,-1,1,3,1,-3,2,1,0],
+> [-2,1,4,-1,-2,1,0,1,1,0,1,0,0,2,0,0,0,2,-2,4,-2,0],
+> [1,0,-1,2,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+> [2,-1,-2,-1,6,-2,0,0,0,1,0,0,2,-2,0,0,0,-3,4,-4,4,-1],
+> [-1,2,1,0,-2,4,0,2,2,0,0,0,1,2,-1,2,4,0,-1,2,-2,1],
+> [0,0,0,0,0,0,2,0,-1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+> [0,3,1,0,0,2,0,6,4,-1,2,0,3,1,-1,2,4,0,-2,2,2,-1],
+> [0,3,1,0,0,2,-1,4,6,-1,2,0,3,1,-1,2,4,0,-2,2,2,-1],
+> [0,-1,0,0,1,0,0,-1,-1,2,-1,0,1,0,0,0,0,-1,3,0,-1,0],
+> [1,1,1,0,0,0,0,2,2,-1,4,-1,1,1,0,0,0,1,-2,2,2,-1],
+> [-1,1,0,0,0,0,0,0,0,0,-1,2,-1,0,0,0,0,0,0,0,0,0],
+> [2,1,0,0,2,1,0,3,3,1,1,-1,6,-1,-1,2,4,-2,2,0,2,-1],
+> [-2,1,2,0,-2,2,0,1,1,0,1,0,-1,4,0,0,0,2,-2,4,-2,0],
+> [0,-1,0,0,0,-1,0,-1,-1,0,0,0,-1,0,2,-1,-2,0,0,0,0,0],
+> [0,1,0,0,0,2,0,2,2,0,0,0,2,0,-1,4,4,-2,0,0,0,0],
+> [0,3,0,0,0,4,0,4,4,0,0,0,4,0,-2,4,8,-2,0,0,0,0],
+> [-2,1,2,0,-3,0,0,0,0,-1,1,0,-2,2,0,-2,-2,4,-4,4,-2,0],
+> [2,-3,-2,0,4,-1,0,-2,-2,3,-2,0,2,-2,0,0,0,-4,8,-4,0,0],
+> [-3,2,4,0,-4,2,0,2,2,0,2,0,0,4,0,0,0,4,-4,8,-4,0],
+> [3,1,-2,0,4,-2,0,2,2,-1,2,0,2,-2,0,0,0,-2,0,-4,8,-2],
+> [0,0,0,0,-1,1,0,-1,-1,0,-1,0,-1,0,0,0,0,0,0,0,-2,2]];;
+gap> IsZero(M - TransposedMat(M));
+true
+gap> sv := ShortestVectors(M, 2).vectors;;
+gap> s2 := Set(Concatenation(sv, -sv));;
+gap> v := [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,2,1,0,1,1];;
+gap> v * M * v - 2 = 0;
+true
+gap> v in s2;
+true
+
+# 2014/08/21 (AK, CJ)
+gap> (13*10^18) + (-3*10^18) = (10^19);
+true
+
+# 2014/09/05 (TB, reported by Benjamin Sambale)
+gap> OrthogonalEmbeddings([[4]]);
+rec( norms := [ 1, 1/4 ], solutions := [ [ 1 ], [ 2, 2, 2, 2 ] ], 
+  vectors := [ [ 2 ], [ 1 ] ] )
+
+# 2014/10/22 (CJ)
+gap> Stabilizer(SymmetricGroup(5), [1,2,1,2,1], OnTuples) = Group([(3,5),(4,5)]);
+true
 
 #############################################################################
 #

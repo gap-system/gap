@@ -57,6 +57,7 @@ DeclareOperation("ComponentPartialPermInt", [IsPartialPerm, IsPosInt]);
 DeclareOperation("AsPartialPerm", [IsAssociativeElement, IsList]);
 DeclareOperation("AsPartialPerm", [IsAssociativeElement]);
 DeclareOperation("AsPartialPerm", [IsAssociativeElement, IsPosInt]);
+DeclareOperation("AsPartialPerm", [IsAssociativeElement, IsZeroCyc]);
 DeclareGlobalFunction("JoinOfPartialPerms");
 DeclareGlobalFunction("JoinOfIdempotentPartialPermsNC");
 DeclareGlobalFunction("MeetOfPartialPerms");

@@ -119,31 +119,6 @@
 /* for fallbacks to library */
 Obj String;
 
-/****************************************************************************
-**
-
-*T  TypDigit  . . . . . . . . . . . . . . . . . . . .  type of a single digit
-**
-**  'TypDigit' is the type of a single digit of an  arbitrary  size  integer.
-**  This is of course unsigned short int, which gives us the 16 bits we want.
-**
-**  'TypDigit' is defined in the declaration file of the package as follows:
-**
-#ifdef SYS_IS_64_BIT
-typedef UInt4           TypDigit;
-#else
-typedef UInt2           TypDigit;
-#endif
-#define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
-#define INTBASE            (1L << NR_DIGIT_BITS)
-#define NR_SMALL_INT_BITS  (2*NR_DIGIT_BITS - 4)
-#define SIZE_INT(op)    (SIZE_OBJ(op) / sizeof(TypDigit))
-#define ADDR_INT(op)    ((TypDigit*)ADDR_OBJ(op))
-*/
-
-
-
-
 
 /****************************************************************************
 **
@@ -397,7 +372,7 @@ Obj  FuncIntHexString( Obj self,  Obj str )
     /* number of hex digits and sign */
     len = GET_LEN_STRING(str);
     if (len == 0) {
-       res = INT_INTOBJ(0);
+       res = INTOBJ_INT(0);
        return res;
     }
     if (*(CHARS_STRING(str)) == '-') {

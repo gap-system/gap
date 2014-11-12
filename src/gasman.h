@@ -251,11 +251,27 @@ extern  Bag *                   YoungBags;
 
 extern  Bag                     ChangedBags;
 
+/*****
+**  MEMORY_CANARY provides (basic) support for catching out-of-bounds memory
+**  problems in GAP. This is done through the excellent 'valgrind' program.
+**  valgrind is of limited use in GAP normally, because it doesn't understand
+**  GAP's memory manager. Enabling MEMORY_CANARY will make an executable where
+**  valgrind will detect memory issues.
+**
+**  At the moment the detection is limited to only writing off the last allocated
+**  block.
+*/
+
+#ifdef MEMORY_CANARY
+extern void CHANGED_BAG_IMPL(Bag b);
+#define CHANGED_BAG(bag) CHANGED_BAG_IMPL(bag);
+#else
 #define CHANGED_BAG(bag)                                                    \
                 if (   PTR_BAG(bag) <= YoungBags                              \
                   && PTR_BAG(bag)[-1] == (bag) ) {                          \
                     PTR_BAG(bag)[-1] = ChangedBags; ChangedBags = (bag);    }
 
+#endif
 
 /****************************************************************************
 **

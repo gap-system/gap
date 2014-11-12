@@ -809,9 +809,9 @@ local s, m, dim, p, field, one, bas, I, l, avoid, li, gens, act, actfun,
 	    if IsAbelian(stb) and
 	      p^Length(GeneratorsOfGroup(stb))=j then
 	      # don't waste too much time
-	      stb:=Group(GeneratorsOfGroup(stb),());
+	      stb:=Group(GeneratorsOfGroup(stb),One(stb));
 	    else
-	      stb:=Group(SmallGeneratingSet(stb),());
+	      stb:=Group(SmallGeneratingSet(stb),One(stb));
 	    fi;
 	    SetSize(stb,j);
 	    Add(rep,rec(representative:=s,normalizer:=stb));

@@ -1590,7 +1590,7 @@ end);
 InstallOtherMethod( StabChainOp, "symmetric group", true,
     [ IsNaturalSymmetricGroup,IsRecord ], 0,
 function(G,r)
-local dom, l, sgs;
+local dom, l, sgs, nondupbase;
 
   # test for internal rep
   if HasGeneratorsOfGroup(G) and 
@@ -1604,7 +1604,8 @@ local dom, l, sgs;
   dom:=Set(MovedPoints(G));
   l:=Length(dom);
   if IsBound(r.base) then
-    dom:=Concatenation(Filtered(r.base,i->i in dom),Difference(dom,r.base));
+    nondupbase:=DuplicateFreeList(r.base);
+    dom:=Concatenation(Filtered(nondupbase,i->i in dom),Difference(dom,nondupbase));
   fi;
   sgs:=List([1..l-1],i->(dom[i],dom[l]));
   return StabChainBaseStrongGenerators(dom{[1..Length(dom)-1]},sgs,());

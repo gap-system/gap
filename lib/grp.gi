@@ -1955,13 +1955,15 @@ InstallGlobalFunction( ClosureSubgroup, function( G, obj )
     local famG, famobj, P;
 
     if not HasParent( G ) then
-      Error( "<G> must have a parent" );
+      #Error( "<G> must have a parent" );
+      P:= G;
+    else
+      P:= Parent( G );
     fi;
 
     # Check that we may set the parent of the closure.
     famG:= FamilyObj( G );
     famobj:= FamilyObj( obj );
-    P:= Parent( G );
     # refer to `ClosureGroup' instead of issuing errors -- `ClosureSubgroup'
     # is only used to transfer information
     if   IsIdenticalObj( famG, famobj ) and not IsSubset( P, obj ) then

@@ -629,7 +629,6 @@ Obj CopyString (
     return copy;
 }
 
-
 /****************************************************************************
 **
 *F  CopyStringCopy( <list>, <mut> ) . . . . . . . . . .  copy a copied string
@@ -1407,6 +1406,39 @@ Int IsStringObject (
 
 /****************************************************************************
 **
+*F  CopyToStringRep( <string> )  . . copy a string to the string representation
+**
+**  'CopyToStringRep' copies the string <string> to a new string in string
+**  representation.
+*/
+Obj CopyToStringRep(
+    Obj                 string )
+{
+    Int                 lenString;      /* length of the string            */
+    Obj                 elm;            /* one element of the string       */
+    Obj                 copy;           /* temporary string                */
+    Int                 i;              /* loop variable                   */
+
+    lenString = LEN_LIST(string);
+    copy = NEW_STRING(lenString);
+
+    if ( IS_STRING_REP(string) ) {
+        memcpy(ADDR_OBJ(copy), ADDR_OBJ(string), SIZE_OBJ(string));
+        /* XXX no error checks? */
+    } else {
+        /* copy the string to the string representation                     */
+        for ( i = 1; i <= lenString; i++ ) {
+            elm = ELMW_LIST( string, i );
+            CHARS_STRING(copy)[i-1] = *((UChar*)ADDR_OBJ(elm));
+        } 
+        CHARS_STRING(copy)[lenString] = '\0';
+    }
+    CHANGED_BAG(copy);
+    return (copy);
+}
+
+/****************************************************************************
+**
 *F  ConvString( <string> )  . . convert a string to the string representation
 **
 **  'ConvString' converts the string <list> to the string representation.
@@ -1559,6 +1591,25 @@ Obj FuncIS_STRING_REP (
 
 /****************************************************************************
 **
+*F  FuncCOPY_TO_STRING_REP( <self>, <obj> ) . copy a string into string rep
+*/
+Obj FuncCOPY_TO_STRING_REP (
+    Obj                 self,
+    Obj                 obj )
+{
+    /* check whether <obj> is a string                                  */
+    if (!IS_STRING(obj)) {
+        obj = ErrorReturnObj(
+            "ConvString: <string> must be a string (not a %s)",
+            (Int)TNAM_OBJ(obj), 0L,
+            "you can replace <string> via 'return <string>;'" );
+        return FuncCOPY_TO_STRING_REP( self, obj );
+    }
+    return CopyToStringRep(obj);
+}
+
+/****************************************************************************
+**
 *F  FuncPOSITION_SUBSTRING( <self>,  <string>, <substr>, <off> ) .  position of
 **  substring
 **  
@@ -1688,7 +1739,7 @@ Obj FuncNormalizeWhitespace (
 **  from <rem> in <string> in place 
 **    
 */ 
-UInt1 REMCHARLIST[257];
+
 Obj FuncRemoveCharacters (
 			      Obj     self,
 			      Obj     string,
@@ -1696,6 +1747,7 @@ Obj FuncRemoveCharacters (
 {
   UInt1  *s;
   Int i, j, len;
+  UInt1 REMCHARLIST[257] = {0};
 
   /* check whether <string> is a string                                  */
   if ( ! IsStringConv( string ) ) {
@@ -1713,11 +1765,6 @@ Obj FuncRemoveCharacters (
 	     (Int)TNAM_OBJ(rem), 0L,
 	     "you can replace <rem> via 'return <rem>;'" );
     return FuncRemoveCharacters( self, string, rem );
-  }
-  
-  /* reset REMCHARLIST (in case of previous error) */
-  if (REMCHARLIST[256] != 0) {
-    for(i=0; i<257; i++) REMCHARLIST[i] = 0;
   }
   
   /* set REMCHARLIST by setting positions of characters in rem to 1 */
@@ -1740,12 +1787,6 @@ Obj FuncRemoveCharacters (
   s[i] = '\0';
   SET_LEN_STRING(string, i);
   SHRINK_STRING(string);
-
-  /* unset REMCHARLIST  */
-  len = GET_LEN_STRING(rem);
-  s = CHARS_STRING(rem);
-  for(i=0; i<len; i++) REMCHARLIST[s[i]] = 0;
-  REMCHARLIST[256] = 0;
 
   return (Obj)0;
 }
@@ -2308,6 +2349,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CONV_STRING", 1, "string",
       FuncCONV_STRING, "src/string.c:CONV_STRING" },
+
+    { "COPY_TO_STRING_REP", 1, "string",
+      FuncCOPY_TO_STRING_REP, "src/string.c:COPY_TO_STRING_REP" },
 
     { "CHAR_INT", 1, "integer",
       FuncCHAR_INT, "src/string.c:CHAR_INT" },

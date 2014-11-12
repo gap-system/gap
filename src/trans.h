@@ -36,6 +36,27 @@
 #ifndef GAP_TRANS_H
 #define GAP_TRANS_H
 
+extern UInt INIT_TRANS2(Obj f);
+extern UInt INIT_TRANS4(Obj f);
+
+#define IMG_TRANS(f)      (*(Obj*)(ADDR_OBJ(f)))
+#define KER_TRANS(f)      (*((Obj*)(ADDR_OBJ(f))+1))
+#define EXT_TRANS(f)      (*((Obj*)(ADDR_OBJ(f))+2))
+
+#define NEW_TRANS2(deg)   NewBag(T_TRANS2, deg*sizeof(UInt2)+3*sizeof(Obj))
+#define ADDR_TRANS2(f)    ((UInt2*)((Obj*)(ADDR_OBJ(f))+3))
+#define DEG_TRANS2(f)     ((UInt)(SIZE_OBJ(f)-3*sizeof(Obj))/sizeof(UInt2))
+#define RANK_TRANS2(f)    (IMG_TRANS(f)==NULL?INIT_TRANS2(f):LEN_PLIST(IMG_TRANS(f)))
+
+#define NEW_TRANS4(deg)   NewBag(T_TRANS4, deg*sizeof(UInt4)+3*sizeof(Obj))
+#define ADDR_TRANS4(f)    ((UInt4*)((Obj*)(ADDR_OBJ(f))+3))
+#define DEG_TRANS4(f)     ((UInt)(SIZE_OBJ(f)-3*sizeof(Obj))/sizeof(UInt4))
+#define RANK_TRANS4(f)    (IMG_TRANS(f)==NULL?INIT_TRANS4(f):LEN_PLIST(IMG_TRANS(f)))
+
+#define IS_TRANS(f)       (TNUM_OBJ(f)==T_TRANS2||TNUM_OBJ(f)==T_TRANS4)
+#define RANK_TRANS(f)     (TNUM_OBJ(f)==T_TRANS2?RANK_TRANS2(f):RANK_TRANS4(f))
+#define DEG_TRANS(f)      (TNUM_OBJ(f)==T_TRANS2?DEG_TRANS2(f):DEG_TRANS4(f))
+
 /****************************************************************************
 **
 *F  OnTuplesTrans( <tup>, <f> )  . . . .  operations on tuples of points

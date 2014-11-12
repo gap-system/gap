@@ -790,6 +790,7 @@ int main (
   NrImportedFuncs = 0;
   ErrorHandler = (Obj) 0;
   UserHasQUIT = 0;
+  UserHasQUITReturnValue = 0;
   UserHasQuit = 0;
     
   /* initialize everything and read init.g which runs the GAP session */
@@ -1389,7 +1390,8 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
   
 
 UInt UserHasQuit;
-UInt UserHasQUIT; 
+UInt UserHasQUIT;
+UInt UserHasQUITReturnValue;
 
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
 {
@@ -2703,9 +2705,20 @@ Obj FuncSleep( Obj self, Obj secs )
 **
 */
 
-Obj FuncQUIT_GAP( Obj self )
+Obj FuncQUIT_GAP( Obj self, Obj args )
 {
+  if ( LEN_LIST(args) == 0 ) {
+    UserHasQUITReturnValue = 0;
+  }
+  else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
+    UserHasQUITReturnValue = INT_INTOBJ( ELM_PLIST( args, 1 ) );
+  }
+  else {
+    ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0L, 0L );
+    return 0;
+  }
   UserHasQUIT = 1;
+  
   ReadEvalError();
   return (Obj)0; 
 }
@@ -2906,7 +2919,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "Sleep", 1, "secs",
       FuncSleep, "src/gap.c:Sleep" },
 
-    { "QUIT_GAP", 0, "",
+    { "QUIT_GAP", -1, "args",
       FuncQUIT_GAP, "src/gap.c:QUIT_GAP" },
 
 
