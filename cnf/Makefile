@@ -52,6 +52,7 @@ SOURCE= \
     plist \
     pperm \
     precord \
+		profile \
     range \
     rational \
     read \

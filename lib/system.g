@@ -93,6 +93,10 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
       [ "U", "" ],     # -C -U undocumented options to the compiler
       [ "s", "4g" ],
       [ "z", "20" ],
+      [ "w", "", "<filename>", "Run ProfileLineByLine(<filename>,\"w\", true) on GAP start" ],
+      [ "W", "", "<filename>", "Run ProfileLineByLine(<filename>,\"w\", false) on GAP start" ],
+      [ "p", false, "enable/disable package output mode" ],
+      
           ],
     ) ));
   

@@ -66,6 +66,14 @@
 #endif
 
 /****************************************************************************
+**  The following function is from profile.c. We put a prototype here
+**  Rather than #include "profile.h" to avoid pulling in large chunks
+**  of the GAP type system
+*/    
+Int enableProfilingAtStartup( Char **argv, void * dummy);
+Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
+
+/****************************************************************************
 **
 *V  SyKernelVersion  . . . . . . . . . . . . . . . . name of the architecture
 ** do not edit the following line. Occurences of `4.dev' and `today'
@@ -1789,6 +1797,8 @@ struct optInfo options[] = {
   { 'q',  toggle, &SyQuiet, 0 }, /* ?? */
   { 'S',  toggle, &ThreadUI, 0 }, /* Thread UI */
   { 'Z',  toggle, &DeadlockCheck, 0 }, /* Thread UI */
+  { 'w',  enableProfilingAtStartup, 0, 1},    /* enable profiling at startup, has to be kernel to start early enough */
+  { 'W',  enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup, has to be kernel to start early enough */
   { 'P',  storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
   { 'G',  storePosInteger, &SyNumGCThreads, 1 }, /* Thread UI */
   { '\0',0,0}};

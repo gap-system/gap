@@ -32,7 +32,7 @@ gapdll:  $(GMP_LIBS)
 endif
 
 # OBJECTS are generated from SOURCE
-OBJECTS=ariths.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_random.o c_type1.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intfuncs.o intrprtr.o iostream.o listfunc.o listoper.o lists.o macfloat.o objccoll.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o opers.o permutat.o plist.o pperm.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o trans.o vars.o vec8bit.o vecffe.o vecgf2.o vector.o weakptr.o $(GAPMPI_OBJ)
+OBJECTS=ariths.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_random.o c_type1.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intfuncs.o intrprtr.o iostream.o listfunc.o listoper.o lists.o macfloat.o objccoll.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o opers.o permutat.o plist.o pperm.o precord.o profile.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o trans.o vars.o vec8bit.o vecffe.o vecgf2.o vector.o weakptr.o $(GAPMPI_OBJ)
 
 
 # compile and link GAP
@@ -238,7 +238,8 @@ gap.o: ../../Makefile @srcdir@/gap.c @srcdir@/system.h config.h @srcdir@/gasman.
   @srcdir@/dteval.h @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h \
   @srcdir@/code.h @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h \
   @srcdir@/funcs.h @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h \
-  @srcdir@/streams.h @srcdir@/sysfiles.h @srcdir@/weakptr.h @srcdir@/iostream.h
+  @srcdir@/streams.h @srcdir@/sysfiles.h @srcdir@/weakptr.h @srcdir@/profile.h \
+  @srcdir@/iostream.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o gap.o -c @srcdir@/gap.c
 
 gasman.o: ../../Makefile @srcdir@/gasman.c @srcdir@/system.h config.h @srcdir@/gasman.h \
@@ -398,6 +399,14 @@ precord.o: ../../Makefile @srcdir@/precord.c @srcdir@/system.h config.h @srcdir@
   @srcdir@/lists.h @srcdir@/bool.h @srcdir@/precord.h @srcdir@/plist.h \
   @srcdir@/string.h @srcdir@/saveload.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o precord.o -c @srcdir@/precord.c
+
+profile.o: ../../Makefile @srcdir@/profile.c @srcdir@/system.h config.h @srcdir@/sysfiles.h \
+  @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
+  @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/records.h @srcdir@/precord.h \
+  @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h @srcdir@/bool.h \
+  @srcdir@/code.h @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/intrprtr.h \
+  @srcdir@/ariths.h @srcdir@/stats.h
+	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o profile.o -c @srcdir@/profile.c
 
 range.o: ../../Makefile @srcdir@/range.c @srcdir@/system.h config.h @srcdir@/gasman.h \
   @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \

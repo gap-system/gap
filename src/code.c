@@ -52,6 +52,8 @@
 #include        "vars.h"                /* variables                       */
 
 
+#include        "profile.h"             /* access to stat register function*/
+
 /****************************************************************************
 **
 
@@ -61,6 +63,14 @@
 */
 /* TL: Stat * PtrBody; */
 
+/****************************************************************************
+**
+
+*V  FilenameCache . . . . . . . . . . . . . . . . . . list of filenames
+**
+**  'FilenameCache' is a list of previously opened filenames.
+*/
+Obj FilenameCache;
 
 /****************************************************************************
 **
@@ -89,16 +99,44 @@ static void SetupOffsBodyStack() {
 }
 
 
+static inline void setup_gapname(TypInputFile* i)
+{
+  UInt len;
+  if(!i->gapname) {
+    C_NEW_STRING_DYN(i->gapname, i->name);
+    i->gapnameid = AddAList(FilenameCache, i->gapname);
+  }
+}
+
+Obj FILENAME_STAT(Stat stat)
+{
+  Obj filename;
+  UInt filenameid = FILENAMEID_STAT(stat);
+  if(filenameid == 0)
+    return NEW_STRING(0);
+  else
+  {
+    filename = ELM_LIST(FilenameCache, filenameid);
+    return filename;
+  }
+}
+    
+    
 /****************************************************************************
 **
 *F  NewStat( <type>, <size> ) . . . . . . . . . . .  allocate a new statement
 **
 **  'NewStat'   allocates a new   statement memory block  of  type <type> and
 **  <size> bytes.  'NewStat' returns the identifier of the new statement.
+**
+**  NewStat( <type>, <size>, <line> ) allows the line number of the statement
+**  to also be specified (else the current line when NewStat is called is
+**  used).
 */
-Stat NewStat (
+Stat NewStatWithLine (
     UInt                type,
-    UInt                size )
+    UInt                size,
+    UInt                line)
 {
     Stat                stat;           /* result                          */
 
@@ -117,12 +155,21 @@ Stat NewStat (
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
         TLS->ptrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
-
+    setup_gapname(TLS->input);
+    
     /* enter type and size                                                 */
-    ADDR_STAT(stat)[-1] = (size << 8) + type;
-
+    ADDR_STAT(stat)[-1] = ((Stat)TLS->input->gapnameid << 48) + ((Stat)line << 32) +
+                          ((Stat)size << 8) + (Stat)type;
+    RegisterStatWithProfiling(stat);
     /* return the new statement                                            */
     return stat;
+}
+
+Stat NewStat (
+    UInt                type,
+    UInt                size)
+{
+    return NewStatWithLine(type, size, TLS->input->number);
 }
 
 
@@ -156,8 +203,10 @@ Expr            NewExpr (
     }
 
     /* enter type and size                                                 */
-    ADDR_EXPR(expr)[-1] = (size << 8) + type;
-
+    ADDR_EXPR(expr)[-1] = ((Stat)TLS->input->gapnameid << 48) +
+                          ((Stat)TLS->input->number << 32) +
+                          ((Stat)size << 8) + type;
+    RegisterStatWithProfiling(expr);
     /* return the new expression                                           */
     return expr;
 }
@@ -645,9 +694,7 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    if (!TLS->input->gapname) {
-      C_NEW_STRING_DYN(TLS->input->gapname, TLS->input->name);
-    }
+    setup_gapname(TLS->input);
     FILENAME_BODY(body) = TLS->input->gapname;
     STARTLINE_BODY(body) = INTOBJ_INT(startLine);
     /*    Pr("Coding begin at %s:%d ",(Int)(TLS->input->name),TLS->input->number);
@@ -712,8 +759,11 @@ void CodeFuncExprEnd (
     }
 
     /* stuff the first statements into the first statement sequence       */
+    /* Making sure to preserve the line number and file name              */
     ADDR_STAT(FIRST_STAT_CURR_FUNC)[-1]
-        = ((nr*sizeof(Stat)) << 8) + T_SEQ_STAT+nr-1;
+        = ((Stat)FILENAMEID_STAT(FIRST_STAT_CURR_FUNC) << 48) +
+          ((Stat)LINE_STAT(FIRST_STAT_CURR_FUNC) << 32) +
+          ((nr*sizeof(Stat)) << 8) + T_SEQ_STAT+nr-1;
     for ( i = 1; i <= nr; i++ ) {
         stat1 = PopStat();
         ADDR_STAT(FIRST_STAT_CURR_FUNC)[nr-i] = stat1;
@@ -3285,6 +3335,8 @@ static Int InitKernel (
 
     /* make the result variable known to Gasman                            */
     /* TL: InitGlobalBag( &CodeResult, "CodeResult" ); */
+    
+    InitGlobalBag( &FilenameCache, "FilenameCache" );
 
     /* allocate the statements and expressions stacks                      */
     InitGlobalBag( &TLS->stackStat, "TLS->stackStat" );
@@ -3305,6 +3357,7 @@ static Int InitLibrary (
   UInt gv;
   Obj cache;
     /* allocate the statements and expressions stacks                      */
+    FilenameCache = NewAtomicList(0);
 
     GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
     

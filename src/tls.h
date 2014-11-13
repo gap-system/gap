@@ -5,6 +5,8 @@
 
 #include "code.h"
 #include "tlsconfig.h"
+#include "scanner.h"
+#include "gasman.h"
 
 #define TLS_NUM_EXTRA 256
 

@@ -400,6 +400,16 @@ In the read-eval-print loop,
 Profiling of code can be used to determine in which parts of a program
 how much time has been spent and how much memory has been allocated
 during runtime.
+
+GAP has two different methods of profiling. GAP can either profile by
+function, or line-by-line. Line by line profiling is currently only
+used for code coverage, while function profiling tracks memory and time
+usage.
+
+<Subsection Label="FunctionProfiling">
+<Heading>Function Profiling</Heading>
+
+This section describes how to profiling at the function level.
 The idea is that
 <List>
 <Item>
@@ -438,7 +448,7 @@ together with all their methods, respectively,
 and for showing profile information about these functions.
 <P/>
 Note that &GAP; will perform more slowly when profiling than when not.
-
+</Subsection>
 <#Include Label="ProfileGlobalFunctions">
 <#Include Label="ProfileOperations">
 <#Include Label="ProfileOperationsAndMethods">
@@ -451,12 +461,11 @@ Note that &GAP; will perform more slowly when profiling than when not.
 <#Include Label="DisplayProfile">
 <#Include Label="ClearProfile">
 
-
 <!-- The source of the following subsection is not stored in lib/profile.g
      because the GAP output has to be adjusted from time to time,
      and this is easier if there is no indentation. -->
 <Subsection Label="subsect:profiling_example">
-<Heading>An Example of Profiling</Heading>
+<Heading>An Example of Function Profiling</Heading>
 
 Let us suppose we want to get information about the computation of the
 conjugacy classes of a certain permutation group.
@@ -632,6 +641,17 @@ gap> DisplayProfile( [ StabChainOp, Centralizer ] );
 <!-- extend this example by changing the thresholds, and call ClearProfile -->
 
 </Subsection>
+<Subsection Label="linebylineprofiling">
+<Heading>Line By Line Profiling</Heading>
+Line By Line profiling tracks which lines have been executed in a piece
+of GAP code. See XXX for an example of how to use these methods.
+
+</Subsection> 
+
+<#Include Label="ProfileLineByLine">
+<#Include Label="UnprofileLineByLine">
+<#Include Label="ActivateProfileColour">
+<#Include Label="OutputAnnotatedFiles">
 
 
 <#Include Label="DisplayCacheStats">

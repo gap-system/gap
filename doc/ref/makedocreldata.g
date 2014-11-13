@@ -119,6 +119,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/monoid.gd",
     "../../lib/morpheus.gd",
     "../../lib/numtheor.gd",
+    "../../lib/newprofile.g",
     "../../lib/object.gd",
     "../../lib/object.gi",
     "../../lib/obsolete.gd",

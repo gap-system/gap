@@ -3,6 +3,7 @@
 #X  now read profiling functions, help system
 ##
 ReadLib( "profile.g"   );
+ReadLib( "newprofile.g");
 ReadLib( "methwhy.g"   );
 
 ##  the help system

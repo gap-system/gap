@@ -816,6 +816,7 @@ typedef struct {
   Int         file;
   Char        name [256];
   Obj         gapname;
+  UInt        gapnameid;
   Char        line [32768];
   Char *      ptr;
   UInt        symbol;

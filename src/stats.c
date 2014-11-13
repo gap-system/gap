@@ -45,6 +45,8 @@
 
 #include        "stats.h"               /* statements                      */
 
+#include        "profile.h"             /* installing methods              */
+
 #include        <assert.h>
 
 #include	"tls.h"
@@ -1740,7 +1742,6 @@ void ClearError ( void )
     TLS->nrError = 0;
 }
 
-
 /****************************************************************************
 **
 *F  PrintStat(<stat>) . . . . . . . . . . . . . . . . . . . print a statement
@@ -2121,9 +2122,21 @@ void            PrintReturnVoid (
 */
 
 
+
 /****************************************************************************
 **
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
+static Int InitLibrary (
+    StructInitInfo *    module )
+{
 
+    /* return success                                                      */
+    return 0;
+}
+
+/****************************************************************************
+**
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2146,80 +2159,80 @@ static Int InitKernel (
 
     /* install executors for non-statements                                */
     for ( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-        ExecStatFuncs[i] = ExecUnknownStat;
+        InstallExecStatFunc(i, ExecUnknownStat);
     }
 
     /* install executors for compound statements                           */
-    ExecStatFuncs [ T_SEQ_STAT       ] = ExecSeqStat;
-    ExecStatFuncs [ T_SEQ_STAT2      ] = ExecSeqStat2;
-    ExecStatFuncs [ T_SEQ_STAT3      ] = ExecSeqStat3;
-    ExecStatFuncs [ T_SEQ_STAT4      ] = ExecSeqStat4;
-    ExecStatFuncs [ T_SEQ_STAT5      ] = ExecSeqStat5;
-    ExecStatFuncs [ T_SEQ_STAT6      ] = ExecSeqStat6;
-    ExecStatFuncs [ T_SEQ_STAT7      ] = ExecSeqStat7;
-    ExecStatFuncs [ T_IF             ] = ExecIf;
-    ExecStatFuncs [ T_IF_ELSE        ] = ExecIfElse;
-    ExecStatFuncs [ T_IF_ELIF        ] = ExecIfElif;
-    ExecStatFuncs [ T_IF_ELIF_ELSE   ] = ExecIfElifElse;
-    ExecStatFuncs [ T_FOR            ] = ExecFor;
-    ExecStatFuncs [ T_FOR2           ] = ExecFor2;
-    ExecStatFuncs [ T_FOR3           ] = ExecFor3;
-    ExecStatFuncs [ T_FOR_RANGE      ] = ExecForRange;
-    ExecStatFuncs [ T_FOR_RANGE2     ] = ExecForRange2;
-    ExecStatFuncs [ T_FOR_RANGE3     ] = ExecForRange3;
-    ExecStatFuncs [ T_WHILE          ] = ExecWhile;
-    ExecStatFuncs [ T_WHILE2         ] = ExecWhile2;
-    ExecStatFuncs [ T_WHILE3         ] = ExecWhile3;
-    ExecStatFuncs [ T_REPEAT         ] = ExecRepeat;
-    ExecStatFuncs [ T_REPEAT2        ] = ExecRepeat2;
-    ExecStatFuncs [ T_REPEAT3        ] = ExecRepeat3;
-    ExecStatFuncs [ T_BREAK          ] = ExecBreak;
-    ExecStatFuncs [ T_CONTINUE       ] = ExecContinue;
-    ExecStatFuncs [ T_INFO           ] = ExecInfo;
-    ExecStatFuncs [ T_ASSERT_2ARGS   ] = ExecAssert2Args;
-    ExecStatFuncs [ T_ASSERT_3ARGS   ] = ExecAssert3Args;
-    ExecStatFuncs [ T_RETURN_OBJ     ] = ExecReturnObj;
-    ExecStatFuncs [ T_RETURN_VOID    ] = ExecReturnVoid;
-    ExecStatFuncs [ T_EMPTY          ] = ExecEmpty;
-    ExecStatFuncs [ T_ATOMIC         ] = ExecAtomic;
+    InstallExecStatFunc( T_SEQ_STAT       , ExecSeqStat);
+    InstallExecStatFunc( T_SEQ_STAT2      , ExecSeqStat2);
+    InstallExecStatFunc( T_SEQ_STAT3      , ExecSeqStat3);
+    InstallExecStatFunc( T_SEQ_STAT4      , ExecSeqStat4);
+    InstallExecStatFunc( T_SEQ_STAT5      , ExecSeqStat5);
+    InstallExecStatFunc( T_SEQ_STAT6      , ExecSeqStat6);
+    InstallExecStatFunc( T_SEQ_STAT7      , ExecSeqStat7);
+    InstallExecStatFunc( T_IF             , ExecIf);
+    InstallExecStatFunc( T_IF_ELSE        , ExecIfElse);
+    InstallExecStatFunc( T_IF_ELIF        , ExecIfElif);
+    InstallExecStatFunc( T_IF_ELIF_ELSE   , ExecIfElifElse);
+    InstallExecStatFunc( T_FOR            , ExecFor);
+    InstallExecStatFunc( T_FOR2           , ExecFor2);
+    InstallExecStatFunc( T_FOR3           , ExecFor3);
+    InstallExecStatFunc( T_FOR_RANGE      , ExecForRange);
+    InstallExecStatFunc( T_FOR_RANGE2     , ExecForRange2);
+    InstallExecStatFunc( T_FOR_RANGE3     , ExecForRange3);
+    InstallExecStatFunc( T_WHILE          , ExecWhile);
+    InstallExecStatFunc( T_WHILE2         , ExecWhile2);
+    InstallExecStatFunc( T_WHILE3         , ExecWhile3);
+    InstallExecStatFunc( T_REPEAT         , ExecRepeat);
+    InstallExecStatFunc( T_REPEAT2        , ExecRepeat2);
+    InstallExecStatFunc( T_REPEAT3        , ExecRepeat3);
+    InstallExecStatFunc( T_BREAK          , ExecBreak);
+    InstallExecStatFunc( T_CONTINUE       , ExecContinue);
+    InstallExecStatFunc( T_INFO           , ExecInfo);
+    InstallExecStatFunc( T_ASSERT_2ARGS   , ExecAssert2Args);
+    InstallExecStatFunc( T_ASSERT_3ARGS   , ExecAssert3Args);
+    InstallExecStatFunc( T_RETURN_OBJ     , ExecReturnObj);
+    InstallExecStatFunc( T_RETURN_VOID    , ExecReturnVoid);
+    InstallExecStatFunc( T_EMPTY          , ExecEmpty);
+    InstallExecStatFunc( T_ATOMIC         , ExecAtomic);
 
     /* install printers for non-statements                                */
     for ( i = 0; i < sizeof(PrintStatFuncs)/sizeof(PrintStatFuncs[0]); i++ ) {
-        PrintStatFuncs[i] = PrintUnknownStat;
+        InstallPrintStatFunc(i, PrintUnknownStat);
     }
     /* install printing functions for compound statements                  */
-    PrintStatFuncs[ T_SEQ_STAT       ] = PrintSeqStat;
-    PrintStatFuncs[ T_SEQ_STAT2      ] = PrintSeqStat;
-    PrintStatFuncs[ T_SEQ_STAT3      ] = PrintSeqStat;
-    PrintStatFuncs[ T_SEQ_STAT4      ] = PrintSeqStat;
-    PrintStatFuncs[ T_SEQ_STAT5      ] = PrintSeqStat;
-    PrintStatFuncs[ T_SEQ_STAT6      ] = PrintSeqStat;
-    PrintStatFuncs[ T_SEQ_STAT7      ] = PrintSeqStat;
-    PrintStatFuncs[ T_IF             ] = PrintIf;
-    PrintStatFuncs[ T_IF_ELSE        ] = PrintIf;
-    PrintStatFuncs[ T_IF_ELIF        ] = PrintIf;
-    PrintStatFuncs[ T_IF_ELIF_ELSE   ] = PrintIf;
-    PrintStatFuncs[ T_FOR            ] = PrintFor;
-    PrintStatFuncs[ T_FOR2           ] = PrintFor;
-    PrintStatFuncs[ T_FOR3           ] = PrintFor;
-    PrintStatFuncs[ T_FOR_RANGE      ] = PrintFor;
-    PrintStatFuncs[ T_FOR_RANGE2     ] = PrintFor;
-    PrintStatFuncs[ T_FOR_RANGE3     ] = PrintFor;
-    PrintStatFuncs[ T_WHILE          ] = PrintWhile;
-    PrintStatFuncs[ T_WHILE2         ] = PrintWhile;
-    PrintStatFuncs[ T_WHILE3         ] = PrintWhile;
-    PrintStatFuncs[ T_REPEAT         ] = PrintRepeat;
-    PrintStatFuncs[ T_REPEAT2        ] = PrintRepeat;
-    PrintStatFuncs[ T_REPEAT3        ] = PrintRepeat;
-    PrintStatFuncs[ T_BREAK          ] = PrintBreak;
-    PrintStatFuncs[ T_CONTINUE       ] = PrintContinue;
-    PrintStatFuncs[ T_INFO           ] = PrintInfo;
-    PrintStatFuncs[ T_ASSERT_2ARGS   ] = PrintAssert2Args;
-    PrintStatFuncs[ T_ASSERT_3ARGS   ] = PrintAssert3Args;
-    PrintStatFuncs[ T_RETURN_OBJ     ] = PrintReturnObj;
-    PrintStatFuncs[ T_RETURN_VOID    ] = PrintReturnVoid;
-    PrintStatFuncs[ T_EMPTY          ] = PrintEmpty;
-    PrintStatFuncs[ T_ATOMIC         ] = PrintAtomic;
+    InstallPrintStatFunc( T_SEQ_STAT       , PrintSeqStat);
+    InstallPrintStatFunc( T_SEQ_STAT2      , PrintSeqStat);
+    InstallPrintStatFunc( T_SEQ_STAT3      , PrintSeqStat);
+    InstallPrintStatFunc( T_SEQ_STAT4      , PrintSeqStat);
+    InstallPrintStatFunc( T_SEQ_STAT5      , PrintSeqStat);
+    InstallPrintStatFunc( T_SEQ_STAT6      , PrintSeqStat);
+    InstallPrintStatFunc( T_SEQ_STAT7      , PrintSeqStat);
+    InstallPrintStatFunc( T_IF             , PrintIf);
+    InstallPrintStatFunc( T_IF_ELSE        , PrintIf);
+    InstallPrintStatFunc( T_IF_ELIF        , PrintIf);
+    InstallPrintStatFunc( T_IF_ELIF_ELSE   , PrintIf);
+    InstallPrintStatFunc( T_FOR            , PrintFor);
+    InstallPrintStatFunc( T_FOR2           , PrintFor);
+    InstallPrintStatFunc( T_FOR3           , PrintFor);
+    InstallPrintStatFunc( T_FOR_RANGE      , PrintFor);
+    InstallPrintStatFunc( T_FOR_RANGE2     , PrintFor);
+    InstallPrintStatFunc( T_FOR_RANGE3     , PrintFor);
+    InstallPrintStatFunc( T_WHILE          , PrintWhile);
+    InstallPrintStatFunc( T_WHILE2         , PrintWhile);
+    InstallPrintStatFunc( T_WHILE3         , PrintWhile);
+    InstallPrintStatFunc( T_REPEAT         , PrintRepeat);
+    InstallPrintStatFunc( T_REPEAT2        , PrintRepeat);
+    InstallPrintStatFunc( T_REPEAT3        , PrintRepeat);
+    InstallPrintStatFunc( T_BREAK          , PrintBreak);
+    InstallPrintStatFunc( T_CONTINUE       , PrintContinue);
+    InstallPrintStatFunc( T_INFO           , PrintInfo);
+    InstallPrintStatFunc( T_ASSERT_2ARGS   , PrintAssert2Args);
+    InstallPrintStatFunc( T_ASSERT_3ARGS   , PrintAssert3Args);
+    InstallPrintStatFunc( T_RETURN_OBJ     , PrintReturnObj);
+    InstallPrintStatFunc( T_RETURN_VOID    , PrintReturnVoid);
+    InstallPrintStatFunc( T_EMPTY          , PrintEmpty);
+    InstallPrintStatFunc( T_ATOMIC         , PrintAtomic);
 
     InitIntrExecStats();
 
@@ -2254,7 +2267,7 @@ static StructInitInfo module = {
     0,                                  /* version                        */
     0,                                  /* crc                            */
     InitKernel,                         /* initKernel                     */
-    0,                                  /* initLibrary                    */
+    InitLibrary,                        /* initLibrary                    */
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
