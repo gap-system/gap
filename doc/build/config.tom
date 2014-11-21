@@ -1,4 +1,0 @@
-@msfiles = ("tom");
-@gdfiles = ("../pkg/tomlib/gap/stdgen","tom","../pkg/tomlib/gap/tmadmin.tmd");
-$DIR = "../ref";
-$LIB = "../../lib"; 

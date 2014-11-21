@@ -1,4 +1,0 @@
-@msfiles = ("streams");
-@gdfiles = ("streams");
-$DIR = "../ref";
-$LIB = "../../lib"; 
