@@ -337,7 +337,7 @@ InstallOtherMethod( CharacteristicPolynomial,
     [ IsField, IsOrdinaryMatrix, IsPosInt ],
 function( F, mat, inum )
         if IsSubset (F, DefaultFieldOfMatrix (mat)) then
-            Info (InfoWarning, 1, "This usage of `CharacteristicPolynomial' is no longer supported. ",
+            Info (InfoObsolete, 1, "This usage of `CharacteristicPolynomial' is no longer supported. ",
                 "Please specify two fields instead.");
             return CharacteristicPolynomial (F, F, mat, inum);
         else
@@ -354,7 +354,7 @@ end );
 InstallMethod( ShrinkCoeffs,"call `ShrinkRowVector'",
     [ IsList and IsMutable ],
 function( l1 )
-    Info( InfoWarning, 1,
+    Info( InfoObsolete, 1,
         "the operation `ShrinkCoeffs' is not supported anymore,\n",
         "#I  use `ShrinkRowVector' instead" );
     ShrinkRowVector(l1);
@@ -373,7 +373,7 @@ InstallMethod( ShrinkCoeffs, "8 bit vector",
         [IsMutable and IsRowVector and Is8BitVectorRep ],
         function(vec)
     local r;
-    Info( InfoWarning, 1,
+    Info( InfoObsolete, 1,
         "the operation `ShrinkCoeffs' is not supported anymore,\n",
         "#I  use `ShrinkRowVector' instead" );
     r := RIGHTMOST_NONZERO_VEC8BIT(vec);
@@ -389,7 +389,7 @@ InstallMethod( ShrinkCoeffs,
     "for GF2 vector",
     [ IsMutable and IsRowVector and IsGF2VectorRep ],
 function( l1 )
-    Info( InfoWarning, 1,
+    Info( InfoObsolete, 1,
         "the operation `ShrinkCoeffs' is not supported anymore,\n",
         "#I  use `ShrinkRowVector' instead" );
     return SHRINKCOEFFS_GF2VEC(l1);
@@ -700,7 +700,7 @@ end);
 ##
 BindGlobal( "CharacterTableDisplayPrintLegendDefault",
     function( data )
-    Info( InfoWarning, 1,
+    Info( InfoObsolete, 1,
         "the function `CharacterTableDisplayPrintLegendDefault' is no longer\n",
         "#I  supported and may be removed from future versions of GAP" );
     Print( CharacterTableDisplayLegendDefault( data ) );
@@ -715,7 +715,7 @@ BindGlobal( "CharacterTableDisplayPrintLegendDefault",
 InstallGlobalFunction( ConnectGroupAndCharacterTable, function( arg )
     local G, tbl, arec, ccl, compat;
     
-    Info( InfoWarning, 1,
+    Info( InfoObsolete, 1,
         "the function `ConnectGroupAndCharacterTable' is not supported anymore,\n",
         "#I  use `CharacterTableWithStoredGroup' instead" );
 
@@ -784,7 +784,7 @@ InstallGlobalFunction( ConnectGroupAndCharacterTable, function( arg )
 ##  number of lines that are reasonably printed in `ViewObj' methods.
 ##
 BIND_GLOBAL( "ViewLength", function(arg)
-  Info (InfoWarning, 1, "The function `ViewLength' is no longer supported. ",
+  Info (InfoObsolete, 1, "The function `ViewLength' is no longer supported. ",
                         "Please use user preference `ViewLength' instead.");
   if LEN_LIST( arg ) = 0 then
     return GAPInfo.ViewLength;

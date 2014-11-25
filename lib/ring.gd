@@ -707,6 +707,15 @@ InstallFactorMaintenance( IsZeroSquaredRing,
 ##
 DeclareProperty( "IsZeroMultiplicationRing", IsRing );
 
+# FIXME: the following implication is correct, but triggers a bug in
+# the Sophus package. Until that is fixed, we disable it. To reproduce
+# the bug, load Sophus, and enter this command:
+#   f:= FullMatrixAlgebra( Rationals, 2 );
+# If the bug is still present, this will trigger an error due to
+# LeftActingDomain being called on an object which does not (yet)
+# have LeftActingDomain set.
+#InstallTrueMethod( IsZeroMultiplicationRing, IsRing and IsTrivial );
+
 InstallTrueMethod( IsZeroSquaredRing, IsRing and IsZeroMultiplicationRing );
 InstallTrueMethod( IsAssociative, IsRing and IsZeroMultiplicationRing );
 InstallTrueMethod( IsCommutative, IsRing and IsZeroMultiplicationRing );

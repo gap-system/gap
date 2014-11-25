@@ -54,9 +54,9 @@ extern void SaveDouble( Double d);
 
 /****************************************************************************
 **
-*F  TypeMacfloat( <macfloat> )  . . . . . . . . . . . . . . . kind of a macfloat value
+*F  TypeMacfloat( <macfloat> )  . . . . . . . . . .  type of a macfloat value
 **
-**  'TypeMacfloat' returns the kind of macfloatean values.
+**  'TypeMacfloat' returns the type of macfloatean values.
 **
 **  'TypeMacfloat' is the function in 'TypeObjFuncs' for macfloatean values.
 */
@@ -580,7 +580,7 @@ static Int InitKernel (
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* install the kind function                                           */
+    /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_MACFLOAT", &TYPE_MACFLOAT );
     TypeObjFuncs[ T_MACFLOAT ] = TypeMacfloat;
 

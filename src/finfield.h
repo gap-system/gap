@@ -123,10 +123,10 @@ extern  Obj             SuccFF;
 
 /****************************************************************************
 **
-*F  TYPE_FF(<ff>) . . . . . . . . . . . . . . .  kind of a small finite field
+*F  TYPE_FF(<ff>) . . . . . . . . . . . . . . .  type of a small finite field
 **
-**  'TYPE_FF' returns the kind of elements of the small finite field <ff>.
-**  'TYPE_FF0' returns the kind of the zero of <ff>
+**  'TYPE_FF' returns the type of elements of the small finite field <ff>.
+**  'TYPE_FF0' returns the type of the zero of <ff>
 **
 **  Note that  'TYPE_FF' is a macro, so  do not call  it  with arguments that
 **  have side effects.
@@ -385,9 +385,9 @@ extern  UInt            DegreeFFE (
 
 /****************************************************************************
 **
-*F  TypeFFE(<ffe>)  . . . . . . . . . . kind of element of small finite field
+*F  TypeFFE(<ffe>)  . . . . . . . . . . type of element of small finite field
 **
-**  'TypeFFE' returns the kind of the element <ffe> of a small finite field.
+**  'TypeFFE' returns the type of the element <ffe> of a small finite field.
 **
 **  'TypeFFE' is the function in 'TypeObjFuncs' for  elements in small finite
 **  fields.

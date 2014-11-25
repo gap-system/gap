@@ -70,14 +70,21 @@
 #define S_PARTIALINT    ((1UL<<10)+0) /* Some digits */
 #define S_INT           ((1UL<<10)+1)
 #define S_FLOAT         ((1UL<<10)+2)
-#define S_PARTIALFLOAT1  ((1UL<<10)+3) /* A decimal point only, but in a context where
-					we know it's the start of a number */
-#define S_PARTIALFLOAT2  ((1UL<<10)+4) /* Some digits and a decimal point */
-#define S_PARTIALFLOAT3  ((1UL<<10)+5) /* Some digits and a decimal point  and an 
-					  exponent indicator and maybe a sign, but no digits*/
-#define S_PARTIALFLOAT4  ((1UL<<10)+6) /* Some digits and a decimal point  and an 
-					  exponent indicator and maybe a sign, and at 
-					  least one digit*/
+
+/* A decimal point only, but in a context where we know it's the start of a
+   number */
+#define S_PARTIALFLOAT1  ((1UL<<10)+3)
+
+/* Some digits and a decimal point */
+#define S_PARTIALFLOAT2  ((1UL<<10)+4)
+
+/* Some digits and a decimal point and an exponent indicator and maybe a
+   sign, but no digits*/
+#define S_PARTIALFLOAT3  ((1UL<<10)+5)
+
+/* Some digits and a decimal point and an exponent indicator and maybe a
+   sign, and at least one digit*/
+#define S_PARTIALFLOAT4  ((1UL<<10)+6)
 
 #define S_TRUE          ((1UL<<11)+0)
 #define S_FALSE         ((1UL<<11)+1)
@@ -215,18 +222,28 @@ typedef UInt            TypSymbolSet;
 **
 *V  Value . . . . . . . . . . . .  value of the identifier, integer or string
 **
-**  If 'Symbol' is 'S_IDENT', 'S_INT' or 'S_TRING' the variable 'Value' holds
+**  If 'Symbol' is 'S_IDENT', 'S_INT' or 'S_STRING' the variable 'Value' holds
 **  the name of the identifier, the digits of the integer or the value of the
 **  string constant.
 **
-**  Note that the size of  'Value' limits the  maximal number of  significant
-**  characters  of an identifier,   the maximal size  of  an  integer and the
-**  maximal length of a  string.   'GetIdent', 'GetInt' and 'GetStr' truncate
-**  identifier, integers or strings after that many characters.
+**  Note  that  the  size  of  'Value'  limits  the  maximal  number  of
+**  significant  characters of  an identifier.  'GetIdent' truncates  an
+**  identifier after that many characters.
+**
+**  The  only other  symbols  which  may not  fit  into  Value are  long
+**  integers  or strings.  Therefore we  have  to check  in 'GetInt'  and
+**  'GetStr' if  the symbols is  not yet  completely read when  Value is
+**  filled.
+**
+**  We only fill Value up to SAFE_VALUE_SIZE normally. The last few
+**  bytes are used in the floating point parsing code to ensure that we don't
+**  stop the scan just before a non-digit (., E, +,-, etc.) which would make
+**  it hard for the scanner to carry on correctly.
 */
 /* TL: extern  Char            Value [1030]; */
 /* TL: extern  UInt            ValueLen; */
 
+#define         SAFE_VALUE_SIZE 1024
 #define MAX_VALUE_LEN 1025
 
 /****************************************************************************
@@ -368,8 +385,6 @@ extern  void            SyntaxError (
 **  If 'Match' needs to  read a  new line from  '*stdin*' or '*errin*' to get
 **  the next symbol it prints the string pointed to by 'Prompt'.
 */
-/* TL: extern Int DualSemicolon; */
-
 extern void Match (
             UInt                symbol,
             const Char *        msg,
@@ -752,7 +767,7 @@ extern UInt CloseOutput ( void );
 **
 **  'OpenAppend' opens the file  with the name  <filename> as current output.
 **  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseAppend' or  another  file is  opened with 'OpenOutput'.
+**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
 **  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
 **  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
 **  description applies to 'OpenAppend' too.
@@ -773,19 +788,6 @@ extern UInt OpenAppendStream (
 
 /****************************************************************************
 **
-*F  CloseAppend() . . . . . . . . . . . . . . . . . close current output file
-**
-**  'CloseAppend' will  first flush all   pending output and  then  close the
-**  current  output  file.   Subsequent output will  again go to the previous
-**  output file.  'CloseAppend' returns 1 to indicate success.  'CloseAppend'
-**  is exactly equal to 'CloseOutput' so its description applies.
-*/
-extern UInt CloseAppend ( void );
-
-
-/****************************************************************************
-**
-
 *T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
 **
 **  'TypInputFile' describes the  information stored  for  open input  files:
@@ -937,7 +939,7 @@ extern  void            Pr (
 
 
 extern  void            PrTo (
-            KOutputStream   stream,			      
+            KOutputStream   stream,
             const Char *    format,
             Int                 arg1,
             Int                 arg2 );
@@ -971,32 +973,6 @@ extern  void            SPrTo (
 **  '*errout*' to this file.
 */
 /* TL: extern TypOutputFile * OutputLog; */
-
-
-/****************************************************************************
-**
-*V  TestInput . . . . . . . . . . . . .  file identifier of test input, local
-*V  TestOutput  . . . . . . . . . . . . file identifier of test output, local
-*V  TestLine  . . . . . . . . . . . . . . . . one line from test input, local
-**
-**  'TestInput' is the file  identifier of the  file for test input.  If this
-**  is not -1 and 'GetLine'  reads a line  from  'TestInput' that begins with
-**  '#>' 'GetLine'  assumes that this  was  expected as   output that did not
-**  appear and echoes this input line to 'TestOutput'.
-**
-**  'TestOutput' is the current output file  for test output.  If 'TestInput'
-**  is not -1 then 'PutLine' compares every line that is about to  be printed
-**  to 'TestOutput' with the next line from 'TestInput'.  If this line starts
-**  with '#>' and the rest of it  matches the output  line the output line is
-**  not printed and the input comment line is discarded.  Otherwise 'PutLine'
-**  prints the output line and does not discard the input line.
-**
-**  'TestLine' holds the one line that is read from 'TestInput' to compare it
-**  with a line that is about to be printed to 'TestOutput'.
-*/
-/* TL: extern TypInputFile *  TestInput; */
-/* TL: extern TypOutputFile * TestOutput; */
-/* TL: extern Char            TestLine [256]; */
 
 
 /****************************************************************************
@@ -1118,25 +1094,13 @@ extern  UInt            CloseOutput ( void );
 **
 **  'OpenAppend' opens the file  with the name  <filename> as current output.
 **  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseAppend' or  another  file is  opened with 'OpenOutput'.
+**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
 **  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
 **  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
 **  description applies to 'OpenAppend' too.
 */
 extern  UInt            OpenAppend (
             const Char *              filename );
-
-
-/****************************************************************************
-**
-*F  CloseAppend() . . . . . . . . . . . . . . . . . close current output file
-**
-**  'CloseAppend' will  first flush all   pending output and  then  close the
-**  current  output  file.   Subsequent output will  again go to the previous
-**  output file.  'CloseAppend' returns 1 to indicate success.  'CloseAppend'
-**  is exactly equal to 'CloseOutput' so its description applies.
-*/
-extern  UInt            CloseAppend ( void );
 
 
 /****************************************************************************
@@ -1218,32 +1182,37 @@ extern  UInt            CloseInputLog ( void );
 **  <filename> is  closed again, input will be  taken again from  the current
 **  input file.
 **
-**  Test mode works as follows.  If the scanner  is about to  print a line to
-**  the  current output file  (or to be more precise  to the output file that
-**  was current when  'OpenTest' was called) this line  is  compared with the
-**  next line from the test input  file, i.e., the  one opened by 'OpenTest'.
-**  If this line starts with '#>' and the rest of it  matches the output line
-**  the output line is  not printed and the input  comment line is discarded.
-**  Otherwise the  scanner prints the output line   and does not  discard the
-**  input line.
+**  Test mode works as follows.  If the  scanner is about  to print a line to
+**  the current output  file (or to be  more precise to  the output file that
+**  was current when  'OpenTest' was called) this  line is compared with  the
+**  next line from the test  input file, i.e.,  the one opened by 'OpenTest'.
+**  If this line does not start  with  'gap>' and the rest  of it matches the
+**  output line the output line is not printed and the  input comment line is
+**  discarded.   Otherwise the scanner  prints the  output  line and does not
+**  discard the input line.
 **
 **  On the other hand if an input line is encountered on  the test input that
-**  starts with '#>' the scanner assumes that this is an expected output line
-**  that did not appear and echoes this line to the current output file.
+**  does not start with 'gap>'  the scanner assumes that  this is an expected
+**  output  line that  did not appear  and  echoes  this line  to the current
+**  output file.
 **
-**  The upshot is that  you can write  test files that consist of alternating
-**  input and,  as  '#>' test  comment  lines the  expected  output.   If GAP
-**  behaves normal and produces the expected  output then nothing is printed.
-**  But if something  goes wrong you see  what actually was printed  and what
-**  was expected instead.
+**  The upshot is that you  can write test files  that consist of alternating
+**  input starting with 'gap>' and lines the expected output.  If GAP behaves
+**  normal and produces the expected output then  nothing is printed.  But if
+**  something  goes wrong  you  see what actually   was printed and what  was
+**  expected instead.
 **
-**  As a convention GAP test files should end with a  print  statement  like:
+**  As a convention GAP test files should start with:
 **
-**    Print("prime   3.002   06-Jul-90 ",417000000/Runtime()," GAPstones\n");
+**    gap> START_TEST("%Id%");
 **
-**  without a matching '#>' comment line.  This tells the user that the  test
-**  file completed and also how much time it took.  The  constant  should  be
-**  such that a VAX 11/780 gets roughly 1000 GAPstones.
+**  where the '%' is to be replaced by '$' and end with
+**
+**    gap> STOP_TEST( "filename.tst", 123456789 );
+**
+**  This tells the user that the  test file completed  and also how much time
+**  it took.  The constant should be such that a P5-133MHz gets roughly 10000
+**  GAPstones.
 **
 **  'OpenTest' returns 1 if it could successfully open <filename> for reading
 **  and  0 to indicate failure.  'OpenTest'  will fail if   the file does not

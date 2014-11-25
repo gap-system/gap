@@ -2650,7 +2650,7 @@ static Int InitKernel ( StructInitInfo * module )
   ImportFuncFromLibrary( "String", &String );
   ImportFuncFromLibrary( "One", &OneAttr);
 
-  /* install the kind functions                                          */
+  /* install the type functions                                          */
   TypeObjFuncs[ T_INT    ] = TypeIntSmall;
   TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
   TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;

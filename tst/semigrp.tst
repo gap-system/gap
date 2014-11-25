@@ -129,11 +129,11 @@ gap> ########################
 gap> f := FreeGroup("a");;
 gap> g := f/[f.1^4];;
 gap> phi := InjectionZeroMagma(g);
-MappingByFunction( <fp group of size 4 on the generators 
-[ a ]>, <<fp group of size 4 on the generators 
+MappingByFunction( <fp group on the generators 
+[ a ]>, <<fp group on the generators 
 [ a ]> with 0 adjoined>, function( elt ) ... end, function( x ) ... end )
 gap> m := Range(phi);
-<<fp group of size 4 on the generators [ a ]> with 0 adjoined>
+<<fp group on the generators [ a ]> with 0 adjoined>
 gap> el := Elements(m);;
 gap> Size(m)=5;
 true

@@ -340,6 +340,7 @@ Obj             FuncAPPEND_LIST (
     return (Obj)0;
 }
 
+
 /****************************************************************************
 **
 *F  POSITION_SORTED_LIST(<list>,<obj>)  . . . . find an object in a sorted list
@@ -500,7 +501,7 @@ Obj             FuncPOSITION_SORTED_COMP (
     /* check the first argument                                            */
     while ( ! IS_SMALL_LIST(list) ) {
         list = ErrorReturnObj(
-            "POSITION_SORTED_LISTComp: <list> must be a small list (not a %s)",
+            "POSITION_SORTED_COMP: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
             "you can replace <list> via 'return <list>;'" );
     }
@@ -508,7 +509,7 @@ Obj             FuncPOSITION_SORTED_COMP (
     /* check the third argument                                            */
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
-            "POSITION_SORTED_LISTComp: <func> must be a function (not a %s)",
+            "POSITION_SORTED_COMP: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
             "you can replace <func> via 'return <func>;'" );
     }

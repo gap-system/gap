@@ -67,325 +67,32 @@
 #include <limits.h>
 
 #include <assert.h>
+/* the following global variables are documented in scanner.h */
 #include <stdlib.h>
 
-/****************************************************************************
-**
 
-*V  Symbol  . . . . . . . . . . . . . . . . .  current symbol read from input
-**
-**  The  variable 'Symbol' contains the current  symbol read from  the input.
-**  It is represented as an unsigned long integer.
-**
-**  The possible values for 'Symbol' are defined in the  definition  file  of
-**  this package as follows:
-**
-#define S_ILLEGAL       (0UL)
-
-#define S_IDENT         ((1UL<< 3))
-#define S_UNBIND        ((1UL<< 3)+1)
-#define S_ISBOUND       ((1UL<< 3)+2)
-#define S_TRYNEXT       ((1UL<< 3)+3)
-#define S_INFO          ((1UL<< 3)+4)
-#define S_ASSERT        ((1UL<< 3)+5)
-#define S_LBRACK        ((1UL<< 4)+0)
-#define S_LBRACE        ((1UL<< 4)+1)
-#define S_BLBRACK       ((1UL<< 4)+2)
-#define S_BLBRACE       ((1UL<< 4)+3)
-#define S_RBRACK        ((1UL<< 5)+0)
-#define S_RBRACE        ((1UL<< 5)+1)
-#define S_DOT           ((1UL<< 6)+0)
-#define S_BDOT          ((1UL<< 6)+1)
-#define S_LPAREN        ((1UL<< 7))
-#define S_RPAREN        ((1UL<< 8))
-#define S_COMMA         ((1UL<< 9)+0)
-#define S_DOTDOT        ((1UL<< 9)+1)
-#define S_COLON         ((1UL<< 9)+2)
-#define S_READWRITE     ((1UL<< 9)+3)
-#define S_READONLY      ((1UL<< 9)+4)
-
-#define S_PARTIALINT    ((1UL<<10)+0)
-#define S_INT           ((1UL<<10)+1)
-
-#define S_TRUE          ((1UL<<11)+0)
-#define S_FALSE         ((1UL<<11)+1)
-#define S_CHAR          ((1UL<<11)+2)
-#define S_STRING        ((1UL<<11)+3)
-#define S_PARTIALSTRING ((1UL<<11)+4)
-
-#define S_REC           ((1UL<<12)+0)
-#define S_BACKQUOTE     ((1UL<<12)+1)
-
-#define S_FUNCTION      ((1UL<<13))
-#define S_LOCAL         ((1UL<<14))
-#define S_END           ((1UL<<15))
-#define S_MAPTO         ((1UL<<16))
-
-#define S_MULT          ((1UL<<17)+0)
-#define S_DIV           ((1UL<<17)+1)
-#define S_MOD           ((1UL<<17)+2)
-#define S_POW           ((1UL<<17)+3)
-
-#define S_PLUS          ((1UL<<18)+0)
-#define S_MINUS         ((1UL<<18)+1)
-
-#define S_EQ            ((1UL<<19)+0)
-#define S_LT            ((1UL<<19)+1)
-#define S_GT            ((1UL<<19)+2)
-#define S_NE            ((1UL<<19)+3)
-#define S_LE            ((1UL<<19)+4)
-#define S_GE            ((1UL<<19)+5)
-#define S_IN            ((1UL<<19)+6)
-
-#define S_NOT           ((1UL<<20)+0)
-#define S_AND           ((1UL<<20)+1)
-#define S_OR            ((1UL<<20)+2)
-
-#define S_ASSIGN        ((1UL<<21)+0)
-#define S_INCORPORATE   ((1UL<<21)+1)
-
-#define S_IF            ((1UL<<22)+0)
-#define S_FOR           ((1UL<<22)+1)
-#define S_WHILE         ((1UL<<22)+2)
-#define S_REPEAT        ((1UL<<22)+3)
-#define S_ATOMIC        ((1UL<<22)+4)
-
-#define S_THEN          ((1UL<<23))
-#define S_ELIF          ((1UL<<24)+0)
-#define S_ELSE          ((1UL<<24)+1)
-#define S_FI            ((1UL<<25))
-#define S_DO            ((1UL<<26))
-#define S_OD            ((1UL<<27))
-#define S_UNTIL         ((1UL<<28))
-
-#define S_BREAK         ((1UL<<29)+0)
-#define S_RETURN        ((1UL<<29)+1)
-#define S_QUIT          ((1UL<<29)+2)
-#define S_QQUIT         ((1UL<<29)+3)
-#define S_CONTINUE      ((1UL<<29)+4)
-
-#define S_SEMICOLON     ((1UL<<30))
-
-#define S_EOF           ((1UL<<31))
-*/
 /* TL: UInt            Symbol; */
 
-
-/****************************************************************************
-**
-*T  TypSymbolSet  . . . . . . . . . . . . . . . . . . type of sets of symbols
-**
-**  'TypSymbolSet' is the type of sets of symbols.  Sets  of symbols are used
-**  in the error recovery of the  parser  to specify that 'Match' should skip
-**  all symbols until finding one in a specified set.
-**
-**  If there were less than 32 different symbols  things would be  very easy.
-**  We could  simply assign   the  symbolic constants   that are the possible
-**  values for 'Symbol' values 1, 2, 4, 8, 16, ...  and so on.  Then making a
-**  set  would  simply mean  or-ing the  values, as in  'S_IN|TS_STRING', and
-**  checking whether a symbol is in a set would be '(<symbol> & <set>) != 0'.
-**
-**  There  are however more  than 32 different  symbols, so  we must  be more
-**  clever.  We  group some  symbols that  are syntactically  equivalent like
-**  '*', '/' in a class. We use the least significant 3 bits to differentiate
-**  between members in one class.  And now  every symbol class, many of which
-**  contain   just  one  symbol,  has exactly  one   of  the  remaining most
-**  significant 29  bits  set.   Thus   sets  of symbols  are  represented as
-**  unsigned long integers, which is typedef-ed to 'TypSymbolSet'.
-**
-**  The classes are as follows, all other symbols are in a class themself:
-**      identifiers, IsBound, UnBind, Info, Assert
-**      if, for, repeat, while, return
-**      elif, else
-**      not, and, or
-**      =, <>, <, >=, <=, >, in
-**      +, -
-**      *, /, mod, ^
-**
-**  'TypSymbolSet'  is defined in the   definition  file of  this  package as
-**  follows:
-**
-typedef UInt            TypSymbolSet;
-*/
-
-
-/****************************************************************************
-**
-*F  IS_IN( <symbol>, <set> )  . . . . . . . . is a symbol in a set of symbols
-**
-**  'IS_IN' returns non-zero if the symbol <symbol> is in the symbol set
-**  <set> and 0
-**  otherwise.  Due to the grouping into classes some symbol sets may contain
-**  more than mentioned, for  example 'IS_IN(S_POW,S_MULT|S_DIV|S_MOD)' is 1.
-**
-**  'IS_IN' is defined in the definition file of this package as follows:
-**
-#define IS_IN(symbol,set)       ((symbol) & ((set) & ~7))
-*/
-
-
-/****************************************************************************
-**
-*V  EXPRBEGIN . . . . . . . . . . . . set of symbols that start an expression
-*V  STATBEGIN . . . . . . . . . . . . . set of symbols that start a statement
-**
-**  'EXPRBEGIN' is  the set   of symbols   that might  start   an expression.
-**  'STATBEGIN' is the set of symbols that might  start a stament, this  is a
-**  superset of 'EXPRBEGIN', since expressions are themselfs statments.
-**
-**  'EXPRBEGIN' and 'STATBEGIN'  are defined in  the definition  file of this
-**  package as follows:
-**
-#define EXPRBEGIN  (S_IDENT|S_INT|S_STRING|S_LPAREN|S_FUNCTION)
-#define STATBEGIN  (EXPRBEGIN|S_IF|S_FOR|S_WHILE|S_REPEAT|S_RETURN)
-*/
-
-
-/****************************************************************************
-**
-*V  Value . . . . . . . . . . . .  value of the identifier, integer or string
-**
-**  If 'Symbol' is 'S_IDENT','S_INT' or 'S_STRING' the variable 'Value' holds
-**  the name of the identifier, the digits of the integer or the value of the
-**  string constant.
-**
-**  Note  that  the  size  of  'Value'  limits  the  maximal  number  of
-**  significant  characters of  an identifier.  'GetIdent' truncates  an
-**  identifier after that many characters.
-**
-**  The  only other  symbols  which  may not  fit  into  Value are  long
-**  integers  or strings.  Therefor we  have  to check  in 'GetInt'  and
-**  'GetStr' if  the symbols is  not yet  completely read when  Value is
-**  filled.
-**
-**  We only fill Value up to SAFE_VALUE_SIZE normally. The last few
-**  bytes are used in the floating point parsing code to ensure that we don't
-**  stop the scan just before a non-digit (., E, +,-, etc.) which would make
-**  it hard for the scanner to carry on correctly.
-*/
 /* TL: Char            Value [1030]; */
 /* TL: UInt            ValueLen; */
-#define         SAFE_VALUE_SIZE 1024
 
-/****************************************************************************
-**
-*V  NrError . . . . . . . . . . . . . . . .  number of errors in current expr
-*V  NrErrLine . . . . . . . . . . . . . . .  number of errors on current line
-**
-**  'NrError' is an integer whose value is the number of errors already found
-**  in the current expression.  It is set to 0 at the beginning of 'Read' and
-**  incremented with each 'SyntaxError' call, including those  from  'Match'.
-**
-**  If 'NrError' is greater than zero the parser functions  will  not  create
-**  new bags.  This prevents the parser from creating new bags after an error
-**  occured.
-**
-**  'NrErrLine' is an integer whose value is the number of  errors  found  on
-**  the current line.  It is set to 0 in 'GetLine' and incremented with  each
-**  'SyntaxError' call, including those from 'Match'.
-**
-**  If 'NrErrLine' is greater  than  zero  'SyntaxError' will  not  print  an
-**  error message.  This prevents the printing of multiple error messages for
-**  one line, since they  probabely  just reflect  the  fact that the  parser
-**  has not resynchronized yet.
-*/
 /* TL: UInt            NrError; */
 /* TL: UInt            NrErrLine; */
 
-
-/****************************************************************************
-**
-*V  Prompt  . . . . . . . . . . . . . . . . . . . . . .  prompt to be printed
-**
-**  'Prompt' holds the string that is to be printed if a  new  line  is  read
-**  from the interactive files '*stdin*' or '*errin*'.
-**
-**  It is set to 'gap> ' or 'brk> ' in the  read-eval-print loops and changed
-**  to the partial prompt '> ' in 'Read' after the first symbol is read.
-*/
 /* TL: Char *          Prompt; */
 
-/* see scanner.h */
-Obj  PrintPromptHook = 0;
-Obj  EndLineHook = 0;
+Obj             PrintPromptHook = 0;
+Obj             EndLineHook = 0;
 
-
-
-/****************************************************************************
-**
-
-*T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
-*V  InputFiles[]  . . . . . . . . . . . . .  stack of open input files, local
-*V  Input . . . . . . . . . . . . . . .  pointer to current input file, local
-*V  In  . . . . . . . . . . . . . . . . . pointer to current character, local
-**
-**  'TypInputFile' describes the  information stored  for  open input  files:
-**  'file' holds the file  identifier which is received  from   'SyFopen' and
-**  which  is  passed to 'SyFgets'   and  'SyFclose' to identify  this  file.
-**  'name' is the name of  the file, this   is only used  in error  messages.
-**  'line' is a buffer  that  holds the current  input  line.  This is always
-**  terminated by the character '\0'.  Because 'line' holds  only part of the
-**  line for very  long lines  the last character   need not be  a <newline>.
-**  'ptr' points to the current character within that line.  This is not used
-**  for the current input file, where 'In' points to the  current  character.
-**  'number' is the number of the current line, is used in error messages.
-**
-**  'InputFiles' is the stack of the open input  files.  It is represented as
-**  an array of structures of type 'TypInputFile'.
-**
-**  'Input' is a pointer to the current input file.   It points to the top of
-**  the stack 'InputFiles'.
-**
-**  'In' is a  pointer to  the current  input character, i.e.,  '*In' is  the
-**  current input  character.  It points  into the buffer 'Input->line'.
-*/
 /* TL: TypInputFile    InputFiles [16]; */
 /* TL: TypInputFile *  Input; */
 /* TL: Char *          In; */
 
-
-/****************************************************************************
-**
-
-*T  TypOutputFiles  . . . . . . . . . structure of an open output file, local
-*V  OutputFiles . . . . . . . . . . . . . . stack of open output files, local
-*V  Output  . . . . . . . . . . . . . . pointer to current output file, local
-**
-**  'TypOutputFile' describes the information stored for open  output  files:
-**  'file' holds the file identifier which is  received  from  'SyFopen'  and
-**  which is passed to  'SyFputs'  and  'SyFclose'  to  identify  this  file.
-**  'line' is a buffer that holds the current output line.
-**  'pos' is the position of the current character on that line.
-**
-**  'OutputFiles' is the stack of open output files.  It  is  represented  as
-**  an array of structures of type 'TypOutputFile'.
-**
-**  'Output' is a pointer to the current output file.  It points to  the  top
-**  of the stack 'OutputFiles'.
-*/
 /* TL: TypOutputFile   OutputFiles [16]; */
 /* TL: TypOutputFile * Output; */
 
-
-/****************************************************************************
-**
-*V  InputLog  . . . . . . . . . . . . . . . file identifier of logfile, local
-**
-**  'InputLog' is the file identifier of the current input logfile.  If it is
-**  not 0  the    scanner echoes all input   from  the files  '*stdin*'   and
-**  '*errin*' to this file.
-*/
 /* TL: TypOutputFile * InputLog; */
 
-
-/****************************************************************************
-**
-*V  OutputLog . . . . . . . . . . . . . . . file identifier of logfile, local
-**
-**  'OutputLog' is the file identifier of  the current output logfile.  If it
-**  is  not  0  the  scanner echoes  all output  to  the files '*stdout*' and
-**  '*errout*' to this file.
-*/
 /* TL: TypOutputFile * OutputLog; */
 
 
@@ -418,31 +125,8 @@ Obj  EndLineHook = 0;
 
 /****************************************************************************
 **
-
 *F  SyntaxError( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
 **
-**  'SyntaxError' prints the current line, followed by the error message:
-**
-**      ^ syntax error, <msg> in <current file name>
-**
-**  with the '^' pointing to the current symbol on the current line.  If  the
-**  <current file name> is '*stdin*' it is not printed.
-**
-**  'SyntaxError' is called from the parser to print error messages for those
-**  errors that are not cought by 'Match',  for example if the left hand side
-**  of an assignment is not a variable, a list element or a record component,
-**  or if two formal arguments of a function have the same identifier.  It is
-**  also called for warnings, for example if a statement has no effect.
-**
-**  'SyntaxError' first increments 'NrError' by   1.  If 'NrError' is greater
-**  than zero the parser functions  will not create  new bags.  This prevents
-**  the parser from creating new bags after an error occured.
-**
-**  'SyntaxError' also  increments  'NrErrLine'  by   1.  If  'NrErrLine'  is
-**  greater than zero  'SyntaxError' will not print an  error  message.  This
-**  prevents the printing of multiple error messages for one line, since they
-**  probabely  just reflect the  fact  that the parser has not resynchronized
-**  yet.  'NrErrLine' is reset to 0 if a new line is read in 'GetLine'.
 */
 void            SyntaxError (
     const Char *        msg )
@@ -806,8 +490,6 @@ UInt CloseInput ( void )
     TLS->in     = TLS->input->ptr;
     TLS->symbol = TLS->input->symbol;
 
-
-
     /* indicate success                                                    */
     return 1;
 }
@@ -831,54 +513,6 @@ void FlushRestOfInputLine( void )
 **
 *F  OpenTest( <filename> )  . . . . . . . .  open an input file for test mode
 **
-**  'OpenTest'  opens the file with the  name <filename> as current input for
-**  test mode.  All subsequent input will  be taken  from that file, until it
-**  is closed   again with  'CloseTest'   or another  file is   opened   with
-**  'OpenInput'.   'OpenTest' will  not  close the   current file,  i.e.,  if
-**  <filename> is  closed again, input will be  taken again from  the current
-**  input file.
-**
-**  Test mode works as follows.  If the  scanner is about  to print a line to
-**  the current output  file (or to be  more precise to  the output file that
-**  was current when  'OpenTest' was called) this  line is compared with  the
-**  next line from the test  input file, i.e.,  the one opened by 'OpenTest'.
-**  If this line does not start  with  'gap>' and the rest  of it matches the
-**  output line the output line is not printed and the  input comment line is
-**  discarded.   Otherwise the scanner  prints the  output  line and does not
-**  discard the input line.
-**
-**  On the other hand if an input line is encountered on  the test input that
-**  does not start with 'gap>'  the scanner assumes that  this is an expected
-**  output  line that  did not appear  and  echoes  this line  to the current
-**  output file.
-**
-**  The upshot is that you  can write test files  that consist of alternating
-**  input starting with 'gap>' and lines the expected output.  If GAP behaves
-**  normal and produces the expected output then  nothing is printed.  But if
-**  something  goes wrong  you  see what actually   was printed and what  was
-**  expected instead.
-**
-**  As a convention GAP test files should start with:
-**
-**    gap> START_TEST("%Id%");
-**
-**  where the '%' is to be replaced by '$' and end with
-**
-**    gap> STOP_TEST( "filename.tst", 123456789 );
-**
-**  This tells the user that the  test file completed  and also how much time
-**  it took.  The constant should be such that a P5-133MHz gets roughly 10000
-**  GAPstones.
-**
-**  'OpenTest' returns 1 if it could successfully open <filename> for reading
-**  and  0 to indicate failure.  'OpenTest'  will fail if   the file does not
-**  exist or if you have no permissions to read it.  'OpenTest' may also fail
-**  if you have too many files open at once.  It is system dependent how many
-**  are too may, but 16 files shoule work everywhere.
-**
-**  Directely after the 'OpenTest'  call the variable  'Symbol' has the value
-**  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
-**  The first symbol is read by 'Read' in the first call to 'Match' call.
 */
 UInt OpenTest (
     const Char *        filename )
@@ -905,7 +539,6 @@ UInt OpenTest (
 **
 *F  OpenTestStream( <stream> )  . . . . .  open an input stream for test mode
 **
-**  The same as 'OpenTest' but for streams.
 */
 UInt OpenTestStream (
     Obj                 stream )
@@ -932,13 +565,6 @@ UInt OpenTestStream (
 **
 *F  CloseTest() . . . . . . . . . . . . . . . . . . close the test input file
 **
-**  'CloseTest'  closes the  current test  input  file and ends  test   mode.
-**  Subsequent  input   will again be taken   from  the previous  input file.
-**  Output will no longer be compared with  comment lines from the test input
-**  file.  'CloseTest' will return 1 to indicate success.
-**
-**  'CloseTest' will not close a non test input file and returns 0 if such an
-**  attempt is made.
 */
 UInt CloseTest ( void )
 {
@@ -950,6 +576,10 @@ UInt CloseTest ( void )
     if ( ! TLS->input->isstream ) {
         SyFclose( TLS->input->file );
     }
+
+    /* don't keep GAP objects alive unnecessarily */
+    TLS->input->gapname = 0;
+    TLS->input->sline = 0;
 
     /* revert to last file                                                 */
     TLS->input = TLS->inputFiles[--TLS->inputFilesSP-1];
@@ -1405,7 +1035,6 @@ UInt OpenOutputStream (
 */
 UInt CloseOutput ( void )
 {
-
     /* silently refuse to close the test output file this is probably
          an attempt to close *errout* which is silently not opened, so
          lets silently not close it  */
@@ -1443,7 +1072,7 @@ UInt CloseOutput ( void )
 **
 **  'OpenAppend' opens the file  with the name  <filename> as current output.
 **  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseAppend' or  another  file is  opened with 'OpenOutput'.
+**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
 **  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
 **  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
 **  description applies to 'OpenAppend' too.
@@ -1502,37 +1131,6 @@ UInt OpenAppendStream (
     Obj                 stream )
 {
     return OpenOutputStream(stream);
-}
-
-
-/****************************************************************************
-**
-*F  CloseAppend() . . . . . . . . . . . . . . . . . close current output file
-**
-**  'CloseAppend' will  first flush all   pending output and  then  close the
-**  current  output  file.   Subsequent output will  again go to the previous
-**  output file.  'CloseAppend' returns 1 to indicate success.  'CloseAppend'
-**  is exactly equal to 'CloseOutput' so its description applies.
-*/
-UInt CloseAppend ( void )
-{
-    /* refuse to close the initial output file '*stdout*'                  */
-    if ( TLS->outputFilesSP <= 1)
-        return 0;
-
-    /* refuse to close the test output file                                */
-    if ( TLS->output == TLS->testOutput )
-        return 0;
-
-    /* flush output and close the file                                     */
-    Pr( "%c", (Int)'\03', 0L );
-    if ( ! TLS->output->isstream ) {
-        SyFclose( TLS->output->file );
-    }
-
-    /* revert to previous output file and indicate success                 */
-    TLS->output = TLS->outputFiles[--TLS->outputFilesSP];
-    return 1;
 }
 
 
@@ -2100,14 +1698,14 @@ void GetNumber ( UInt StartingStatus )
        a float literal or .. */
     if (c == '.'){
       /* If the symbol before this integer was S_DOT then 
-	 we must be in a nested record element expression, so don't 
-	 look for a float.
+         we must be in a nested record element expression, so don't 
+         look for a float.
 
       This is a bit fragile  */
       if (TLS->symbol == S_DOT || TLS->symbol == S_BDOT) {
 	TLS->value[i]  = '\0';
 	TLS->symbol = S_INT;
-	return;
+        return;
       }
       
       /* peek ahead to decide which */
@@ -2477,7 +2075,6 @@ void GetChar ( void )
  **  beyond that symbol.
  */
 /* TL: Int DualSemicolon = 0; */
-
 void GetSymbol ( void )
 {
   /* special case if reading of a long token is not finished */

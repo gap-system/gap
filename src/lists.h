@@ -821,7 +821,7 @@ extern  void            (*PlainListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 /****************************************************************************
 **
-*F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of kinds of lists over a family
+*F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of types of lists over a family
 */
 extern  Obj             TYPES_LIST_FAM (
             Obj                 fam );

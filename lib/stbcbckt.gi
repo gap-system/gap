@@ -2694,7 +2694,7 @@ Eh, Lh, Nh,G0;
       and not IsNormal(G,E) do
 
       orb:=ShallowCopy(Orbits(P,Omega));
-      Sort(orb,LengthComparison);
+      SortBy(orb,Length);
       i:=1;
       while i<=Length(orb) and Length(orb[i])=1 do
 	Omega:=Difference(Omega,orb[i]);

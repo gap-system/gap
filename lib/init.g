@@ -354,9 +354,7 @@ CallAndInstallPostRestore( function()
        ( IS_STRING(GAPInfo.NeedKernelVersion) and
          GAPInfo.KernelVersion <> GAPInfo.NeedKernelVersion ) then
       Print( "\n\n",
-        "You are running a GAP kernel which does not fit with the library.\n",
-        "Probably you forgot to apply the kernel part or the library part\n",
-        "of a bugfix?\n\n" );
+        "You are running a GAP kernel which does not fit with the library.\n\n" );
 
       # Get the number parts of the two version numbers.
       # (Version numbers are defined in "ext:Version Numbers".)
@@ -384,20 +382,10 @@ CallAndInstallPostRestore( function()
 
       if haveint > needint then
         # kernel newer
-        Print( "You only installed a new kernel.\n",
-               "You must also install the most recent library bugfix,\n",
-               "this is fix", have[1], "r", have[2], "n", have[3],
-               ".zoo (or .zip) or newer.\n\n" );
+        Print( "The GAP kernel is newer than the library.\n\n" );
       else
         # kernel older
-        Print( "If you are using Windows, make sure you installed the file\n",
-               "wbin", need[1], "r", need[2], "n", need[3],
-               ".zoo (or .zip),\n",
-               "Macintosh users make sure the file\n",
-               "bin", need[1], "r", need[2], "n", need[3],
-               "-PPC.sit (or -68k.sit) is installed,\n",
-               "Unix users please recompile.\n\n" );
-#T can't we give an architecture dependent message here?
+        Print( "The GAP kernel is older than the library. Perhaps you forgot to recompile?\n\n" );
       fi;
       Error( "Update to correct kernel version!\n\n" );
     fi;

@@ -94,9 +94,9 @@ Obj Undefined;
 /****************************************************************************
 **
 
-*F  TypeBool( <bool> )  . . . . . . . . . . . . . . . kind of a boolean value
+*F  TypeBool( <bool> )  . . . . . . . . . . . . . . . type of a boolean value
 **
-**  'TypeBool' returns the kind of boolean values.
+**  'TypeBool' returns the type of boolean values.
 **
 **  'TypeBool' is the function in 'TypeObjFuncs' for boolean values.
 */
@@ -409,7 +409,7 @@ static Int InitKernel (
     InitHandlerFunc( ReturnFail2, "src/bool.c:ReturnFail2" );
     InitHandlerFunc( ReturnFail3, "src/bool.c:ReturnFail3" );
 
-    /* install the kind function                                           */
+    /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_BOOL", &TYPE_BOOL );
     TypeObjFuncs[ T_BOOL ] = TypeBool;
 

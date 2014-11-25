@@ -106,11 +106,11 @@
 /****************************************************************************
 **
 
-*F  TypeBlist( <list> )  . . . . . . . . . . . . . . . kind of a boolean list
+*F  TypeBlist( <list> )  . . . . . . . . . . . . . . . type of a boolean list
 **
-**  'TypeBlist' returns the kind of a boolean list.
+**  'TypeBlist' returns the type of a boolean list.
 **
-**  'TypeBlist' is the function in 'KindObjFuncs' for boolean lists.
+**  'TypeBlist' is the function in 'TypeObjFuncs' for boolean lists.
 */
 
 /* The following are imported from the GAP level, we have one type for

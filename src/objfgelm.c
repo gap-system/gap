@@ -24,15 +24,15 @@
 **    | FAMILY | FLAGS | SHARED | PURETYPE | EBITS | RANK | BITS |
 **    +--------+-------+--------+----------+-------+------+------+
 **
-**  <PURETYPE> is the kind  of a result, <EBITS>  is the number of  bits used
+**  <PURETYPE> is the type  of a result, <EBITS>  is the number of  bits used
 **  for the exponent, <RANK> is number of free group generators.  But instead
 **  of accessing these entries directly you should use the following macros.
 **
 **
 **  The file "objects.h" defines the following macros:
 **
-**  NEW_WORD( <result>, <kind>, <npairs> )
-**    creates   a  new  objects   of   kind  <kind>  with  room  for <npairs>
+**  NEW_WORD( <result>, <type>, <npairs> )
+**    creates   a  new  objects   of   type  <type>  with  room  for <npairs>
 **    generator/exponent pairs.
 **
 **  RESIZE_WORD( <word>, <npairs> ) 
@@ -56,20 +56,20 @@
 **    returns the rank as C integer
 **
 **  PURETYPE_WORD( <word> )
-**    returns the result kind
+**    returns the result type
 **
 **
-**  BITS_WORDTYPE( <kind> )
+**  BITS_WORDTYPE( <type> )
 **    returns the number of bits as C integers
 **
-**  EBITS_WORDTYPE( <kind> )
+**  EBITS_WORDTYPE( <type> )
 **    returns the ebits as C integer
 **
-**  RANK_WORDTYPE( <kind> )
+**  RANK_WORDTYPE( <type> )
 **    returns the rank as C integer
 **
-**  PURETYPE_WORDTYPE( <kind> )
-**    returns the result kind
+**  PURETYPE_WORDTYPE( <type> )
+**    returns the result type
 */
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
@@ -291,15 +291,15 @@ Obj Func8Bits_ExtRepOfObj (
     UInt        exps;           /* sign exponent mask                      */
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* loop variable for gen/exp pairs         */
-    Obj         kind;           /* kind of <obj>                           */
+    Obj         type;           /* type of <obj>                           */
     UInt1 *     ptr;            /* pointer into the data area of <obj>     */
     Obj         lst;            /* result                                  */
 
-    /* get the kind of <obj>                                               */
-    kind = TYPE_DATOBJ(obj);
+    /* get the type of <obj>                                               */
+    type = TYPE_DATOBJ(obj);
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent masks                                              */
     exps = 1UL << (ebits-1);
@@ -540,11 +540,11 @@ Obj Func8Bits_Less (
 
 /****************************************************************************
 **
-*F  Func8Bits_AssocWord( <self>, <kind>, <data> )
+*F  Func8Bits_AssocWord( <self>, <type>, <data> )
 */
 Obj Func8Bits_AssocWord (
     Obj         self,
-    Obj         kind,
+    Obj         type,
     Obj         data )
 {
     Int         ebits;          /* number of bits in the exponent          */
@@ -559,14 +559,14 @@ Obj Func8Bits_AssocWord (
     UInt1 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* construct a new object                                              */
     num = LEN_LIST(data)/2;
-    NEW_WORD( obj, kind, num );
+    NEW_WORD( obj, type, num );
 
     /* use UInt1 pointer for eight bits                                    */
     ptr = (UInt1*)DATA_WORD(obj);
@@ -596,11 +596,11 @@ Obj Func8Bits_AssocWord (
 
 /****************************************************************************
 **
-*F  Func8Bits_ObjByVector( <self>, <kind>, <data> )
+*F  Func8Bits_ObjByVector( <self>, <type>, <data> )
 */
 Obj Func8Bits_ObjByVector (
     Obj         self,
-    Obj         kind,
+    Obj         type,
     Obj         data )
 {
     Int         ebits;          /* number of bits in the exponent          */
@@ -614,7 +614,7 @@ Obj Func8Bits_ObjByVector (
     UInt1 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -635,7 +635,7 @@ Obj Func8Bits_ObjByVector (
     }
 
     /* construct a new object                                              */
-    NEW_WORD( obj, kind, num );
+    NEW_WORD( obj, type, num );
 
     /* use UInt1 pointer for eight bits                                    */
     ptr = (UInt1*)DATA_WORD(obj);
@@ -1274,15 +1274,15 @@ Obj Func16Bits_ExtRepOfObj (
     UInt        exps;           /* sign exponent mask                      */
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* loop variable for gen/exp pairs         */
-    Obj         kind;           /* kind of <obj>                           */
+    Obj         type;           /* type of <obj>                           */
     UInt2 *     ptr;            /* pointer into the data area of <obj>     */
     Obj         lst;            /* result                                  */
 
-    /* get the kind of <obj>                                               */
-    kind = TYPE_DATOBJ(obj);
+    /* get the type of <obj>                                               */
+    type = TYPE_DATOBJ(obj);
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent masks                                              */
     exps = 1UL << (ebits-1);
@@ -1501,11 +1501,11 @@ Obj Func16Bits_Less (
 
 /****************************************************************************
 **
-*F  Func16Bits_AssocWord( <self>, <kind>, <data> )
+*F  Func16Bits_AssocWord( <self>, <type>, <data> )
 */
 Obj Func16Bits_AssocWord (
     Obj         self,
-    Obj         kind,
+    Obj         type,
     Obj         data )
 {
     Int         ebits;          /* number of bits in the exponent          */
@@ -1520,14 +1520,14 @@ Obj Func16Bits_AssocWord (
     UInt2 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* construct a new object                                              */
     num = LEN_LIST(data)/2;
-    NEW_WORD( obj, kind, num );
+    NEW_WORD( obj, type, num );
 
     /* use UInt2 pointer for sixteen bits                                  */
     ptr = (UInt2*)DATA_WORD(obj);
@@ -1557,11 +1557,11 @@ Obj Func16Bits_AssocWord (
 
 /****************************************************************************
 **
-*F  Func16Bits_ObjByVector( <self>, <kind>, <data> )
+*F  Func16Bits_ObjByVector( <self>, <type>, <data> )
 */
 Obj Func16Bits_ObjByVector (
     Obj         self,
-    Obj         kind,
+    Obj         type,
     Obj         data )
 {
     Int         ebits;          /* number of bits in the exponent          */
@@ -1575,7 +1575,7 @@ Obj Func16Bits_ObjByVector (
     UInt2 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -1596,7 +1596,7 @@ Obj Func16Bits_ObjByVector (
     }
 
     /* construct a new object                                              */
-    NEW_WORD( obj, kind, num );
+    NEW_WORD( obj, type, num );
 
     /* use UInt2 pointer for sixteen bits                                  */
     ptr = (UInt2*)DATA_WORD(obj);
@@ -2237,15 +2237,15 @@ Obj Func32Bits_ExtRepOfObj (
     UInt        exps;           /* sign exponent mask                      */
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* loop variable for gen/exp pairs         */
-    Obj         kind;           /* kind of <obj>                           */
+    Obj         type;           /* type of <obj>                           */
     UInt4 *     ptr;            /* pointer into the data area of <obj>     */
     Obj         lst;            /* result                                  */
 
-    /* get the kind of <obj>                                               */
-    kind = TYPE_DATOBJ(obj);
+    /* get the type of <obj>                                               */
+    type = TYPE_DATOBJ(obj);
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent masks                                              */
     exps = 1UL << (ebits-1);
@@ -2464,11 +2464,11 @@ Obj Func32Bits_Less (
 
 /****************************************************************************
 **
-*F  Func32Bits_AssocWord( <self>, <kind>, <data> )
+*F  Func32Bits_AssocWord( <self>, <type>, <data> )
 */
 Obj Func32Bits_AssocWord (
     Obj         self,
-    Obj         kind,
+    Obj         type,
     Obj         data )
 {
     Int         ebits;          /* number of bits in the exponent          */
@@ -2483,14 +2483,14 @@ Obj Func32Bits_AssocWord (
     UInt4 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* construct a new object                                              */
     num = LEN_LIST(data)/2;
-    NEW_WORD( obj, kind, num );
+    NEW_WORD( obj, type, num );
 
     /* use UInt4 pointer for eight bits                                    */
     ptr = (UInt4*)DATA_WORD(obj);
@@ -2520,11 +2520,11 @@ Obj Func32Bits_AssocWord (
 
 /****************************************************************************
 **
-*F  Func32Bits_ObjByVector( <self>, <kind>, <data> )
+*F  Func32Bits_ObjByVector( <self>, <type>, <data> )
 */
 Obj Func32Bits_ObjByVector (
     Obj         self,
-    Obj         kind,
+    Obj         type,
     Obj         data )
 {
     Int         ebits;          /* number of bits in the exponent          */
@@ -2538,7 +2538,7 @@ Obj Func32Bits_ObjByVector (
     UInt4 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -2559,7 +2559,7 @@ Obj Func32Bits_ObjByVector (
     }
 
     /* construct a new object                                              */
-    NEW_WORD( obj, kind, num );
+    NEW_WORD( obj, type, num );
 
     /* use UInt4 pointer for thirteen bits                                 */
     ptr = (UInt4*)DATA_WORD(obj);
@@ -3294,13 +3294,13 @@ static StructGVarFunc GVarFuncs [] = {
     { "8Bits_Less", 2, "8_bits_word, 8_bits_word",
       Func8Bits_Less, "src/objfgelm.c:8Bits_Less" },
 
-    { "8Bits_AssocWord", 2, "kind, data",
+    { "8Bits_AssocWord", 2, "type, data",
       Func8Bits_AssocWord, "src/objfgelm.c:8Bits_AssocWord" },
 
     { "8Bits_NumberSyllables", 1, "8_bits_word",
       FuncNBits_NumberSyllables, "src/objfgelm.c:8Bits_NumberSyllables" },
 
-    { "8Bits_ObjByVector", 2, "kind, data",
+    { "8Bits_ObjByVector", 2, "type, data",
       Func8Bits_ObjByVector, "src/objfgelm.c:8Bits_ObjByVector" },
 
     { "8Bits_HeadByNumber", 2, "16_bits_word, gen_num",
@@ -3339,13 +3339,13 @@ static StructGVarFunc GVarFuncs [] = {
     { "16Bits_Less", 2, "16_bits_word, 16_bits_word",
       Func16Bits_Less, "src/objfgelm.c:16Bits_Less" },
 
-    { "16Bits_AssocWord", 2, "kind, data",
+    { "16Bits_AssocWord", 2, "type, data",
       Func16Bits_AssocWord, "src/objfgelm.c:16Bits_AssocWord" },
 
     { "16Bits_NumberSyllables", 1, "16_bits_word",
       FuncNBits_NumberSyllables, "src/objfgelm.c:16Bits_NumberSyllables" },
 
-    { "16Bits_ObjByVector", 2, "kind, data",
+    { "16Bits_ObjByVector", 2, "type, data",
       Func16Bits_ObjByVector, "src/objfgelm.c:16Bits_ObjByVector" },
 
     { "16Bits_HeadByNumber", 2, "16_bits_word, gen_num",
@@ -3384,13 +3384,13 @@ static StructGVarFunc GVarFuncs [] = {
     { "32Bits_Less", 2, "32_bits_word, 32_bits_word",
       Func32Bits_Less, "src/objfgelm.c:32Bits_Less" },
 
-    { "32Bits_AssocWord", 2, "kind, data",
+    { "32Bits_AssocWord", 2, "type, data",
       Func32Bits_AssocWord, "src/objfgelm.c:32Bits_AssocWord" },
 
     { "32Bits_NumberSyllables", 1, "32_bits_word",
       FuncNBits_NumberSyllables, "src/objfgelm.c:32Bits_NumberSyllables" },
 
-    { "32Bits_ObjByVector", 2, "kind, data",
+    { "32Bits_ObjByVector", 2, "type, data",
       Func32Bits_ObjByVector, "src/objfgelm.c:32Bits_ObjByVector" },
 
     { "32Bits_HeadByNumber", 2, "16_bits_word, gen_num",

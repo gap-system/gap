@@ -5836,7 +5836,7 @@ static Int InitKernel ( StructInitInfo *module )
     MakeBagTypePublic( T_PPERM2);
     MakeBagTypePublic( T_PPERM4);
 
-    /* install the kind function                                           */
+    /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_PPERM2", &TYPE_PPERM2 );
     ImportGVarFromLibrary( "TYPE_PPERM4", &TYPE_PPERM4 );
 

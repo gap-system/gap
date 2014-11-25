@@ -278,6 +278,7 @@ integers, see&nbsp;<Ref Sect="Special Rules for Input Lines"/>.
 <Index Subkey="to a string">convert</Index>
 <#Include Label="IsStringRep">
 <#Include Label="ConvertToStringRep">
+<#Include Label="CopyToStringRep">
 <#Include Label="IsEmptyString">
 
 <ManSection>

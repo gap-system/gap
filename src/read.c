@@ -1415,60 +1415,63 @@ void ReadLiteral (
 		  TypSymbolSet        follow,
 		  Char mode)
 {
+    switch (TLS->symbol) {
+
     /* <Int>                                                               */
-    if ( TLS->symbol == S_INT ) {
+    case S_INT:
         if ( ! READ_ERROR() ) { IntrIntExpr( TLS->value ); }
         Match( S_INT, "integer", follow );
-    }
+        break;
 
     /* <Float> */
-    else if ( TLS->symbol == S_FLOAT ) {
+    case S_FLOAT:
         if ( ! READ_ERROR() ) { IntrFloatExpr( TLS->value ); }
         Match( S_FLOAT, "float", follow );
-    }
-
+        break;
 
     /* partial Int */
-    else if ( TLS->symbol == S_PARTIALINT || TLS->symbol == S_PARTIALFLOAT1 ||
-	      TLS->symbol == S_PARTIALFLOAT2 ) {
-         ReadLongNumber( follow );
-    }
+    case S_PARTIALINT:
+    case S_PARTIALFLOAT1:
+    case S_PARTIALFLOAT2:
+        ReadLongNumber( follow );
+        break;
 
     /* 'true'                                                              */
-    else if ( TLS->symbol == S_TRUE ) {
+    case S_TRUE:
         Match( S_TRUE, "true", follow );
         IntrTrueExpr();
-    }
+        break;
 
 
     /* 'false'                                                             */
-    else if ( TLS->symbol == S_FALSE ) {
+    case S_FALSE:
         Match( S_FALSE, "false", follow );
         IntrFalseExpr();
-    }
+        break;
 
     /* <Char>                                                              */
-    else if ( TLS->symbol == S_CHAR ) {
+    case S_CHAR:
         if ( ! READ_ERROR() ) { IntrCharExpr( TLS->value[0] ); }
         Match( S_CHAR, "character", follow );
-    }
+        break;
 
     /* (partial) string */
-    else if ( TLS->symbol == S_STRING || TLS->symbol == S_PARTIALSTRING ) {
+    case S_STRING:
+    case S_PARTIALSTRING:
         ReadString( follow );
-    }
+        break;
 
     /* <List>                                                              */
-    else if ( TLS->symbol == S_LBRACK ) {
+    case S_LBRACK:
         ReadListExpr( follow );
-    }
+        break;
 
     /* <Rec>                                                               */
-    else if ( TLS->symbol == S_REC ) {
+    case S_REC:
         ReadRecExpr( follow );
-    }
+        break;
     /* `Literal								   */
-    else if ( TLS->symbol == S_BACKQUOTE ) {
+    case S_BACKQUOTE:
         Match( S_BACKQUOTE, "`", follow );
 	if (!READ_ERROR()) {
 	  IntrRefGVar(GVarName("MakeLiteral"));
@@ -1476,35 +1479,34 @@ void ReadLiteral (
 	}
 	ReadAtom( follow, 'r' );
 	if (!READ_ERROR()) { IntrFuncCallEnd(1, 0, 1); }
-    }
+        break;
 
 
     /* <Function>                                                          */
-    else if ( TLS->symbol == S_FUNCTION || TLS->symbol == S_ATOMIC ||
-              TLS->symbol == S_DO) {
-      ReadFuncExpr( follow, mode  );
-    }
+    case S_FUNCTION:
+    case S_ATOMIC:
+    case S_DO:
+        ReadFuncExpr( follow, mode );
+        break;
 
-    else if (TLS->symbol == S_DOT ) {
-      /* Hack The only way a dot could turn up here is in
-       a floating point literal that starts with .. So, change the token
-      to  a partial float of the right kind to end with a . and an
-      associated value and dive into the long float literal handler in the parser*/
+    case S_DOT:
+        /* HACK: The only way a dot could turn up here is in a floating point
+           literal that starts with .. So, change the token to a partial float
+           of the right kind to end with a . and an associated value and dive
+           into the long float literal handler in the parser
+         */
       TLS->symbol = S_PARTIALFLOAT1;
       TLS->value[0] = '.';
       TLS->value[1] = '\0';
-      ReadLongNumber( follow );
-    }
-    else if (TLS->symbol == S_MAPTO) {
-      ReadFuncExpr0( follow );
-    }
+        ReadLongNumber( follow );
+        break;
 
-    else if (TLS->symbol == S_MAPTO) {
-      ReadFuncExpr0( follow );
-    }
+    case S_MAPTO:
+        ReadFuncExpr0( follow );
+        break;
 
     /* signal an error, we want to see a literal                           */
-    else {
+    default:
         Match( S_INT, "literal", follow );
     }
 
@@ -2481,7 +2483,7 @@ void RecreateStackNams( Obj context )
 }
 
 
-ExecStatus ReadEvalCommand ( Obj context )
+ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
 {
     ExecStatus          type;
     Obj                 stackNams;
@@ -2551,7 +2553,7 @@ ExecStatus ReadEvalCommand ( Obj context )
 
     /* otherwise try to read an expression                                 */
     /* Unless the statement is empty, in which case do nothing             */
-    else                           { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
+    else                           { ReadExpr(    S_SEMICOLON|S_EOF, 'r' ); }
 
     /* every statement must be terminated by a semicolon                  */
     if ( TLS->symbol != S_SEMICOLON ) {
@@ -2561,10 +2563,10 @@ ExecStatus ReadEvalCommand ( Obj context )
     /* check for dual semicolon                                            */
     if ( *TLS->in == ';' ) {
         GetSymbol();
-        TLS->dualSemicolon = 1;
+        if (dualSemicolon) *dualSemicolon = 1;
     }
     else {
-        TLS->dualSemicolon = 0;
+        if (dualSemicolon) *dualSemicolon = 0;
     }
 
     /* end the interpreter                                                 */
@@ -2615,7 +2617,7 @@ UInt ReadEvalFile ( void )
     volatile UInt       readTop;
     volatile UInt       readTilde;
     volatile UInt       currLHSGVar;
-    syJmp_buf             readJmpError;
+    syJmp_buf           readJmpError;
     volatile UInt       nr;
     volatile Obj        name;
     volatile Obj        nams;
@@ -2760,7 +2762,7 @@ Obj Call0ArgsInNewReader(Obj f)
   UInt                readTilde;
   UInt                currLHSGVar;
   UInt                userHasQuit;
-  syJmp_buf             readJmpError;
+  syJmp_buf           readJmpError;
   UInt                intrCoding;
   UInt                intrIgnoring;
   UInt                intrReturning;

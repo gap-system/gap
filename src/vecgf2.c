@@ -4966,7 +4966,7 @@ static Int InitKernel (
   RNcoeffs = 0;
   RNrelns = 0;
 
-    /* import kind functions                                               */
+    /* import type functions                                               */
     ImportGVarFromLibrary( "TYPE_LIST_GF2VEC",     &TYPE_LIST_GF2VEC     );
     ImportGVarFromLibrary( "TYPE_LIST_GF2VEC_IMM", &TYPE_LIST_GF2VEC_IMM );
     ImportGVarFromLibrary( "TYPE_LIST_GF2VEC_IMM_LOCKED", &TYPE_LIST_GF2VEC_IMM_LOCKED );

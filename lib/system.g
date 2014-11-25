@@ -93,8 +93,8 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
       [ "U", "" ],     # -C -U undocumented options to the compiler
       [ "s", "4g" ],
       [ "z", "20" ],
-      [ "w", "", "<filename>", "Run ProfileLineByLine(<filename>,\"w\", true) on GAP start" ],
-      [ "W", "", "<filename>", "Run ProfileLineByLine(<filename>,\"w\", false) on GAP start" ],
+      [ "-prof", "", "<file>", "Run ProfileLineByLine(<filename>,\"w\", true) on GAP start" ],
+      [ "-cover", "", "<file>", "Run ProfileLineByLine(<filename>,\"w\", false) on GAP start" ],
       [ "p", false, "enable/disable package output mode" ],
       
           ],
@@ -261,10 +261,10 @@ CallAndInstallPostRestore( function()
     while i <= LENGTH( line ) do
       word:= line[i];
       i:= i+1;
-      if word[1] = '-' and LENGTH( word ) = 2 then
-        opt:= word{[2]};
+      if word[1] = '-' and (LENGTH( word ) = 2 or word[2] = '-') then
+        opt:= word{[2..LENGTH(word)]};
         if not IsBound( CommandLineOptions.( opt ) ) then
-          PRINT_TO( "*errout*", "Unrecognised command line option: -",
+          PRINT_TO( "*errout*", "Unrecognised command line option: ",
                     word, "\n" );
         else
           value:= CommandLineOptions.( opt );
@@ -283,7 +283,7 @@ CallAndInstallPostRestore( function()
               i := i+1;
             fi;
           else
-            PRINT_TO( "*errout*", "Command line option -", word, " needs an argument.\n" );
+            PRINT_TO( "*errout*", "Command line option ", word, " needs an argument.\n" );
           fi;
         fi;
       else
@@ -325,7 +325,10 @@ CallAndInstallPostRestore( function()
         if IsBound( GAPInfo.CommandLineOptionData[i] ) then
           opt:= GAPInfo.CommandLineOptionData[i];
           if LENGTH( opt ) > 2 then
-            PRINT_TO( "*errout*", "  -", opt[1], " " );
+            PRINT_TO( "*errout*", "  -", opt[1]);
+            for j in [1.. 7 - LENGTH(opt[1])] do
+              PRINT_TO("*errout*", " ");
+            od;
             if LENGTH( opt )  = 3 then
               PRINT_TO( "*errout*", "         ", opt[3], "\n" );
             else
@@ -433,19 +436,13 @@ end);
 #############################################################################
 ##
 #V  GAPInfo.InitFiles
-#V  GAPInfo.CommandLineArguments
 ##
 ##  <ManSection>
 ##  <Var Name="GAPInfo.InitFiles"/>
-##  <Var Name="GAPInfo.CommandLineArguments"/>
 ##
 ##  <Description>
 ##  <C>GAPInfo.InitFiles</C> is a list of strings containing the filenames
 ##  specified on the command line to be read initially.
-##  <P/>
-##  <C>GAPInfo.CommandLineArguments</C> is a single string containing all
-##  the options and arguments passed to GAP at runtime (although not
-##  necessarily in the original order).
 ##  </Description>
 ##  </ManSection>
 ##

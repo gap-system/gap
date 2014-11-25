@@ -70,9 +70,9 @@
 /****************************************************************************
 **
 
-*F  TypePRec( <rec> ) . . . . . . . . . . . . . . . .  kind of a plain record
+*F  TypePRec( <rec> ) . . . . . . . . . . . . . . . .  type of a plain record
 **
-**  'TypePRec' returns the kind of the plain record <rec>.
+**  'TypePRec' returns the type of the plain record <rec>.
 **
 **  'TypePRec' is the function in 'TypeObjFuncs' for plain records.
 */
@@ -1097,7 +1097,7 @@ static Int InitKernel (
     PrintPathFuncs[ T_PREC            ] = PrintPathPRec;
     PrintPathFuncs[ T_PREC +IMMUTABLE ] = PrintPathPRec;
 
-    /* install the kind function                                           */
+    /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_PREC_MUTABLE",   &TYPE_PREC_MUTABLE   );
     ImportGVarFromLibrary( "TYPE_PREC_IMMUTABLE", &TYPE_PREC_IMMUTABLE );
 

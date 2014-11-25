@@ -254,6 +254,7 @@ Obj Shell ( Obj context,
 {
   UInt time = 0;
   UInt status;
+  UInt dualSemicolon;
   UInt oldindent;
   UInt oldPrintDepth;
   Obj res;
@@ -311,7 +312,7 @@ Obj Shell ( Obj context,
     }
 
     /* now  read and evaluate and view one command  */
-    status = ReadEvalCommand(TLS->ShellContext);
+    status = ReadEvalCommand(TLS->ShellContext, &dualSemicolon);
     if (TLS->UserHasQUIT)
       break;
 
@@ -328,7 +329,7 @@ Obj Shell ( Obj context,
         AssGVar( Last,  TLS->readEvalResult   );
 
       /* print the result                                            */
-      if ( ! TLS->dualSemicolon ) {
+      if ( ! dualSemicolon ) {
         ViewObjHandler( TLS->readEvalResult );
       }
             
@@ -631,7 +632,7 @@ int DoCreateWorkspace(char *myself)
     printf("Creating workspace...\n");
     command = NULL;
     StrAppend(&command,mypath);
-    StrAppend(&command," -N -r");
+    StrAppend(&command," -r");
     StrAppend(&command," -l ");
     StrAppend(&command,gappath);
 
@@ -837,42 +838,6 @@ int main (
   SyExit(SystemErrorCode);
   return 0;
 }
-
-/****************************************************************************
-**
-*F  FuncRESTART_GAP( <self>, <cmdline> ) . . . . . . . .  restart gap
-**
-*/
-
-Char *restart_argv_buffer[1000];
-
-Obj FuncRESTART_GAP( Obj self, Obj cmdline )
-{
-  Char *s, *f,  **v;
-  while (!IsStringConv(cmdline))
-    {
-      cmdline = ErrorReturnObj("RESTART_GAP: <cmdline> must be a string, not a %s",
-                               (Int) TNAM_OBJ(cmdline), (Int) 0,
-                               "You can resturn a string to continue");
-    }
-  s = CSTR_STRING(cmdline);
-  /* Pr("%s\n",(Int)s, 0); */
-  f = s;
-  v = restart_argv_buffer;
-  while (*s) {
-    *v++ = s;
-    while (*s && !IsSpace(*s))
-      s++;
-    while (IsSpace(*s))
-      *s++ = '\0';
-  }
-  *v = (Char *)0;
-  /* FinishBags(); */
-  execvp(f,restart_argv_buffer);
-  return Fail; /* shouldn't normally get here */
-}
-
-
 
 /****************************************************************************
 **
@@ -2984,9 +2949,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ID_FUNC", 1, "object",
       FuncID_FUNC, "src/gap.c:ID_FUNC" },
-
-    { "RESTART_GAP", 1, "cmdline",
-      FuncRESTART_GAP, "src/gap.c:RESTART_GAP" },
 
     { "ExportToKernelFinished", 0, "",
       FuncExportToKernelFinished, "src/gap.c:ExportToKernelFinished" },

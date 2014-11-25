@@ -105,22 +105,13 @@ InstallMethod( ViewObj,
 InstallImmediateMethod( IsTrivial,
     IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero, 0,
     function( A )
-    if IsEmpty( GeneratorsOfAdditiveMagmaWithZero( A ) ) then
-      return true;
-    else
-      TryNextMethod();
-    fi;
+    return ForAll( GeneratorsOfAdditiveMagmaWithZero( A ), IsZero );
     end );
 
 InstallImmediateMethod( IsTrivial,
-    IsAdditiveGroup
-    and HasGeneratorsOfAdditiveGroup, 0,
+    IsAdditiveGroup and HasGeneratorsOfAdditiveGroup, 0,
     function( A )
-    if IsEmpty( GeneratorsOfAdditiveGroup( A ) ) then
-      return true;
-    else
-      TryNextMethod();
-    fi;
+    return ForAll( GeneratorsOfAdditiveGroup( A ), IsZero );
     end );
 
 

@@ -237,7 +237,7 @@
 /****************************************************************************
 **
 
-*F  TypeRangeNSortImmutable( <range> )  . . . . . . . . . . . kind of a range
+*F  TypeRangeNSortImmutable( <range> )  . . . . . . . . . . . type of a range
 **
 **  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for immutable
 **  ranges which are not strictly sorted.
@@ -252,7 +252,7 @@ Obj TypeRangeNSortImmutable (
     
 /****************************************************************************
 **
-*F  TypeRangeNSortMutable( <range> )  . . . . . . . . . . . . kind of a range
+*F  TypeRangeNSortMutable( <range> )  . . . . . . . . . . . . type of a range
 **
 **  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for   mutable
 **  ranges which are not strictly sorted.
@@ -267,7 +267,7 @@ Obj TypeRangeNSortMutable (
     
 /****************************************************************************
 **
-*F  TypeRangeSSortImmutable( <range> )  . . . . . . . . . . . kind of a range
+*F  TypeRangeSSortImmutable( <range> )  . . . . . . . . . . . type of a range
 **
 **  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for immutable
 **  ranges which are strictly sorted.
@@ -283,7 +283,7 @@ Obj TypeRangeSSortImmutable (
 
 /****************************************************************************
 **
-*F  TypeRangeSSortMutable( <range> )  . . . . . . . . . . . . kind of a range
+*F  TypeRangeSSortMutable( <range> )  . . . . . . . . . . . . type of a range
 **
 **  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for   mutable
 **  ranges which are strictly sorted.
@@ -1603,7 +1603,7 @@ static Int InitKernel (
     MakeBagTypePublic( T_RANGE_NSORT + IMMUTABLE );
     MakeBagTypePublic( T_RANGE_SSORT + IMMUTABLE );
 
-    /* install the kind function                                           */
+    /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_RANGE_NSORT_MUTABLE",
                            &TYPE_RANGE_NSORT_MUTABLE );
 

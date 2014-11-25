@@ -2355,14 +2355,6 @@ InstallOtherMethod( SortParallel,
     [IsList,IsList,IsFunction],
     SORT_MUTABILITY_ERROR_HANDLER);
 
-#############################################################################
-##
-#F  LengthComparison(<list1>,<list2>)
-##
-InstallGlobalFunction(LengthComparison,function(a,b)
-  return Length(a)<Length(b);
-end);
-
 
 #############################################################################
 ##

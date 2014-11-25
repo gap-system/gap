@@ -1008,7 +1008,7 @@ InstallMethod(MaximalAbelianQuotient,"whole fp group",
 function(f)
 local m,s,g,i,j,rel,gen,img,fin,hom,gens;
 
-  # since f is the full group, exponent susm are in respect to its
+  # since f is the full group, exponent sums are with respect to its
   # generators.
   m:=List(RelatorsOfFpGroup(f),w->ExponentSums(w));
 

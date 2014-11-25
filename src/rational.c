@@ -86,9 +86,9 @@
 
 /****************************************************************************
 **
-*F  TypeRat( <rat> )  . . . . . . . . . . . . . . . . . .  kind of a rational
+*F  TypeRat( <rat> )  . . . . . . . . . . . . . . . . . .  type of a rational
 **
-**  'TypeRat' returns the kind of the rational <rat>.
+**  'TypeRat' returns the type of the rational <rat>.
 **
 **  'TypeRat' is the function in 'TypeObjFuncs' for rationals.
 */
@@ -902,7 +902,7 @@ static Int InitKernel (
     InitMarkFuncBags( T_RAT, MarkAllSubBags );
 #endif
 
-    /* install the kind function                                           */
+    /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_RAT_POS", &TYPE_RAT_POS );
     ImportGVarFromLibrary( "TYPE_RAT_NEG", &TYPE_RAT_NEG );
 
@@ -912,7 +912,7 @@ static Int InitKernel (
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* install a saving function */
+    /* install a saving functions */
     SaveObjFuncs[ T_RAT ] = SaveRat;
     LoadObjFuncs[ T_RAT ] = LoadRat;
 

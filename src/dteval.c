@@ -308,29 +308,6 @@ Obj       Multiplybound(
 
 /****************************************************************************
 **
-*F  FuncMultiply( <self>, <x>, <y>, <dtpols> )
-**
-**  FuncMultiply implements the internal function
-**
-*F  Multiply( <x>, <y>, <dtpols> ).
-**
-**  Multiply returns the product of the words <x> and <y> as ordered word
-**  by evaluating the deep thought polynomials <dtpols>.
-*/
-
-Obj      FuncMultiply(
-                       Obj      self,
-                       Obj      x,
-                       Obj      y,
-                       Obj      dtpols      )
-{
-    return Multiplybound(x, y, 1, LEN_PLIST(y), dtpols);
-}
-
-
-
-/****************************************************************************
-**
 *F  Power( <x>, <n>, <dtpols> )
 **
 **  Power returns the <n>-th power of the word <x> as ordered word by
@@ -390,29 +367,6 @@ Obj      Power(
         n = QuoInt(n, INTOBJ_INT(2) );
     }
     return res;
-}
-
-
-
-/****************************************************************************
-**
-*F  FuncPower( <self>, <x>, <n>, <dtpols> )
-**
-**  FuncPower implements the internal function
-**
-*F  Pover( <x>, <n>, <dtpols> )
-**
-**  Pover returns the <n>-th power of the word <x> by evaluating the deep
-**  thought pols <dtpols>. The result is an oredered word.
-*/
-
-Obj        FuncPower(
-                      Obj     self,
-                      Obj     x,
-                      Obj     n,
-                      Obj     dtpols     )
-{
-    return Power(x, n, dtpols);
 }
 
 
@@ -799,12 +753,12 @@ void     compress( Obj        list )
 
 /****************************************************************************
 **
-*F  Funccompress( <self>, <list> )
+*F  FuncDTCompress( <self>, <list> )
 **
-**  Funccompress implements the internal function Compress.
+**  FuncDTCompress implements the internal function DTCompress.
 */
 
-Obj      Funccompress( Obj         self, 
+Obj      FuncDTCompress( Obj         self, 
                        Obj         list  )
 {
     compress(list);
@@ -1071,14 +1025,8 @@ Obj       FuncDTQuotient( Obj      self,
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "Compress", 1, "list",
-      Funccompress, "src/dteval.c:Compress" },
-
-    { "Multiply", 3, "lword, rword, representatives",
-      FuncMultiply, "src/dteval.c:Multiply" },
-
-    { "Pover", 3, "word, exponent, representatives",
-      FuncPower, "src/dteval.c:Pover" },
+    { "DTCompress", 1, "list",
+      FuncDTCompress, "src/dteval.c:DTCompress" },
 
     { "DTMultiply", 3, "lword, rword, rws",
       FuncDTMultiply, "src/dteval.c:DTMultiply" },

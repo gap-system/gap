@@ -19,16 +19,6 @@
 
 /****************************************************************************
 **
-
-*S  T_BODY  . . . . . . . . . . . . . . . . . . . . type of function body bag
-**
-**  'T_BODY' is the type of the function body bags.
-*/
-#define T_BODY                  175
-
-
-/****************************************************************************
-**
 *T  Stat  . . . . . . . . . . . . . . . . . . . . . . . .  type of statements
 **
 **  'Stat' is the type of statements.

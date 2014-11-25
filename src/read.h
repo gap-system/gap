@@ -64,8 +64,13 @@
 **  It does not expect the  first symbol of its input  already read and  wont
 **  read the  first symbol of the  next  input.
 **
+**  The if pointer dualSemicolon is non-zero, then the integer it
+**  it points to will be set to 1 if the command was followed by
+**  a double semi-colon, otherwise it is set to 0. It is safe to
+**  pass 0 for dualSemicolon, in this case it is ignore.
+**
 */
-extern UInt ReadEvalCommand ( Obj context );
+extern UInt ReadEvalCommand ( Obj context, UInt *dualSemicolon );
 
 
 /****************************************************************************

@@ -2167,7 +2167,7 @@ static Int InitKernel (
     InfoBags[ T_CYC ].name = "cyclotomic";
     InitMarkFuncBags( T_CYC, MarkCycSubBags );
 
-    /* install the kind function                                           */
+    /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_CYC", &TYPE_CYC );
     TypeObjFuncs[ T_CYC ] = TypeCyc;
 

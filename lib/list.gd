@@ -1656,23 +1656,6 @@ DeclareOperation( "SortParallel",
 
 #############################################################################
 ##
-#F  LengthComparison( <list1>, <list2> )
-##
-##  <ManSection>
-##  <Func Name="LengthComparison" Arg='list1, list2'/>
-##
-##  <Description>
-##  This function returns <K>true</K> if the length of <A>list1</A>
-##  is smaller than the length of <A>list2</A>.
-##  It can be used to sort according to length of lists.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction("LengthComparison");
-
-
-#############################################################################
-##
 #F  Maximum( <obj1>, <obj2> ... ) . . . . . . . . . . . .  maximum of objects
 #F  Maximum( <list> )
 ##

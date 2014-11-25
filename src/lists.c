@@ -2228,7 +2228,7 @@ void            PlainListError (
 
 /****************************************************************************
 **
-*F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of kinds of lists over a family
+*F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of types of lists over a family
 */
 UInt            TYPES_LIST_FAM_RNam;
 

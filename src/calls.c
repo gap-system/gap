@@ -1268,9 +1268,9 @@ Obj ArgStringToList(const Char *nams_c) {
 /****************************************************************************
 **
 
-*F  TypeFunction( <func> )  . . . . . . . . . . . . . . .  kind of a function
+*F  TypeFunction( <func> )  . . . . . . . . . . . . . . .  type of a function
 **
-**  'TypeFunction' returns the kind of the function <func>.
+**  'TypeFunction' returns the type of the function <func>.
 **
 **  'TypeFunction' is the function in 'TypeObjFuncs' for functions.
 */
@@ -2082,7 +2082,7 @@ static Int InitKernel (
     InfoBags[ T_FUNCTION ].name = "function";
     InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
 
-    /* install the kind function                                           */
+    /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_FUNCTION",  &TYPE_FUNCTION  );
     ImportGVarFromLibrary( "TYPE_OPERATION", &TYPE_OPERATION );
     TypeObjFuncs[ T_FUNCTION ] = TypeFunction;

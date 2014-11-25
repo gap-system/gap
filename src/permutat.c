@@ -153,9 +153,9 @@ static void UseTmpPerm( UInt size) {
 
 /****************************************************************************
 **
-*F  TypePerm( <perm> )  . . . . . . . . . . . . . . . . kind of a permutation
+*F  TypePerm( <perm> )  . . . . . . . . . . . . . . . . type of a permutation
 **
-**  'TypePerm' returns the kind of permutations.
+**  'TypePerm' returns the type of permutations.
 **
 **  'TypePerm' is the function in 'TypeObjFuncs' for permutations.
 */
@@ -4756,7 +4756,7 @@ static Int InitKernel (
     MakeBagTypePublic( T_PERM4);
 
 
-    /* install the kind function                                           */
+    /* install the type functions                                           */
     ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
     ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
 

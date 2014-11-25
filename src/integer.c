@@ -126,9 +126,9 @@ Obj String;
 
 /****************************************************************************
 **
-*F  TypeInt(<int>)  . . . . . . . . . . . . . . . . . . . . . kind of integer
+*F  TypeInt(<int>)  . . . . . . . . . . . . . . . . . . . . . type of integer
 **
-**  'TypeInt' returns the kind of the integer <int>.
+**  'TypeInt' returns the type of the integer <int>.
 **
 **  'TypeInt' is the function in 'TypeObjFuncs' for integers.
 */
@@ -3334,7 +3334,7 @@ static Int InitKernel (
     ImportFuncFromLibrary( "String", &String );
     ImportFuncFromLibrary( "One", &OneAttr);
 
-    /* install the kind functions                                          */
+    /* install the type functions                                          */
     TypeObjFuncs[ T_INT    ] = TypeIntSmall;
     TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
     TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;

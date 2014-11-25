@@ -30,34 +30,34 @@
 /****************************************************************************
 **
 
-*F  BITS_WORDTYPE( <kind> )
+*F  BITS_WORDTYPE( <type> )
 */
-#define BITS_WORDTYPE( kind ) \
-    ( INT_INTOBJ( ELM_PLIST( (kind), AWP_NR_BITS_PAIR ) ) )
+#define BITS_WORDTYPE( type ) \
+    ( INT_INTOBJ( ELM_PLIST( (type), AWP_NR_BITS_PAIR ) ) )
 
 
 /****************************************************************************
 **
-*F  EBITS_WORDTYPE( <kind> )
+*F  EBITS_WORDTYPE( <type> )
 */
-#define EBITS_WORDTYPE( kind ) \
-    ( INT_INTOBJ( ELM_PLIST( (kind), AWP_NR_BITS_EXP ) ) )
+#define EBITS_WORDTYPE( type ) \
+    ( INT_INTOBJ( ELM_PLIST( (type), AWP_NR_BITS_EXP ) ) )
 
 
 /****************************************************************************
 **
-*F  RANK_WORDTYPE( <kind> )
+*F  RANK_WORDTYPE( <type> )
 */
-#define RANK_WORDTYPE( kind ) \
-    ( INT_INTOBJ( ELM_PLIST( (kind), AWP_NR_GENS ) ) )
+#define RANK_WORDTYPE( type ) \
+    ( INT_INTOBJ( ELM_PLIST( (type), AWP_NR_GENS ) ) )
 
 
 /****************************************************************************
 **
-*F  PURETYPE_WORDTYPE( <kind> )
+*F  PURETYPE_WORDTYPE( <type> )
 */
-#define PURETYPE_WORDTYPE( kind ) \
-    ( ELM_PLIST( (kind), AWP_PURE_TYPE ) )
+#define PURETYPE_WORDTYPE( type ) \
+    ( ELM_PLIST( (type), AWP_PURE_TYPE ) )
 
 
 /****************************************************************************
@@ -117,23 +117,23 @@
 /****************************************************************************
 **
 
-*F  NEW_WORD( <word>, <kind>, <npairs> )
+*F  NEW_WORD( <word>, <type>, <npairs> )
 **
-**  'NEW_WORD' creates  a new object which has  the given <kind> and room for
+**  'NEW_WORD' creates  a new object which has  the given <type> and room for
 **  <npairs> pairs of generator number/exponent.  The new  word is return  in
 **  <word>.
 */
-static inline Obj NewWord(Obj kind, UInt npairs) {
+static inline Obj NewWord(Obj type, UInt npairs) {
   Obj word;
-  word = NewBag(T_DATOBJ,2*sizeof(Obj)+npairs*BITS_WORDTYPE(kind)/8L);
+  word = NewBag(T_DATOBJ,2*sizeof(Obj)+npairs*BITS_WORDTYPE(type)/8L);
   (ADDR_OBJ(word)[1] = INTOBJ_INT(npairs));
-  SET_TYPE_DATOBJ( word, kind);
+  SET_TYPE_DATOBJ( word, type);
   return word;
 }
 
-#define NEW_WORD(word, kind, npairs) \
-  ReadGuard(kind), \
-  (word) = NewWord((kind), (npairs));
+#define NEW_WORD(word, type, npairs) \
+  ReadGuard(type), \
+  (word) = NewWord((type), (npairs));
 
 
 /****************************************************************************

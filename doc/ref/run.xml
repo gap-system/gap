@@ -446,10 +446,6 @@ internally by the <Package>gac</Package> script (see <Ref Label="Kernel modules"
 and/or on specific operating systems.
 
 
-<!-- was removed again before public release 
-<#Include Label="Restart">
--->
-
 </Section>
 
 
@@ -654,7 +650,6 @@ try the input <C>??GAPInfo</C> for getting an overview of these components.
 GAPInfo.Architecture (has an index entry)
 GAPInfo.AtExitFuncs
 GAPInfo.BytesPerVariable
-GAPInfo.CommandLineArguments
 GAPInfo.CommandLineEditFunctions
 GAPInfo.CommandLineOptions (has an index entry)
 GAPInfo.CommandLineOptionData

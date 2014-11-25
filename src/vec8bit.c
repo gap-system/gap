@@ -6048,7 +6048,7 @@ static Int InitKernel (
     RNcoeffs = 0;
     RNrelns = 0;
 
-    /* import kind functions                                               */
+    /* import type functions                                               */
     ImportFuncFromLibrary("TYPE_VEC8BIT",        &TYPE_VEC8BIT);
     ImportFuncFromLibrary("TYPE_VEC8BIT_LOCKED", &TYPE_VEC8BIT_LOCKED);
     ImportGVarFromLibrary("TYPES_VEC8BIT",       &TYPES_VEC8BIT);

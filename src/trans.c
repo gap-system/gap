@@ -4264,7 +4264,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel ( StructInitInfo *module )
 {
 
-    /* install the marking function                                        */
+    /* install the marking functions                                       */
     InfoBags[ T_TRANS2 ].name = "transformation (small)";
     InfoBags[ T_TRANS4 ].name = "transformation (large)";
     InitMarkFuncBags( T_TRANS2, MarkTransSubBags );
@@ -4273,7 +4273,7 @@ static Int InitKernel ( StructInitInfo *module )
     MakeBagTypePublic( T_TRANS2);
     MakeBagTypePublic( T_TRANS4);
 
-    /* install the kind function                                           */
+    /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_TRANS2", &TYPE_TRANS2 );
     ImportGVarFromLibrary( "TYPE_TRANS4", &TYPE_TRANS4 );
 
