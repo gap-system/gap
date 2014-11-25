@@ -88,7 +88,6 @@ typedef struct ThreadLocalStorage
   TypOutputFile outputLogFile;
   TypOutputFile outputLogStream;
   Int helpSubsOn;
-  Int dualSemicolon;
   Int noSplitLine;
   KOutputStream theStream;
   Char *theBuffer;
