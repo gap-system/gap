@@ -132,6 +132,16 @@ UInt            ExecUnknownStat (
     return 0;
 }
 
+/****************************************************************************
+**
+*F  UInt HaveInterrupt() . . . . . . . . check for user interrupts
+**
+*/
+
+UInt HaveInterrupt( void ) {
+  return TLS->CurrExecStatFuncs == IntrExecStatFuncs;
+}
+
 
 /****************************************************************************
 **
@@ -469,7 +479,7 @@ UInt            ExecFor (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -502,7 +512,7 @@ UInt            ExecFor (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -578,7 +588,7 @@ UInt            ExecFor2 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -616,7 +626,7 @@ UInt            ExecFor2 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -699,7 +709,7 @@ UInt            ExecFor3 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -743,7 +753,7 @@ UInt            ExecFor3 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -843,7 +853,7 @@ UInt            ExecForRange (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -908,7 +918,7 @@ UInt            ExecForRange2 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -980,7 +990,7 @@ UInt            ExecForRange3 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1108,7 +1118,7 @@ UInt ExecWhile (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1146,7 +1156,7 @@ UInt ExecWhile2 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1191,7 +1201,7 @@ UInt ExecWhile3 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1257,7 +1267,7 @@ UInt ExecRepeat (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1295,7 +1305,7 @@ UInt ExecRepeat2 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1340,7 +1350,7 @@ UInt ExecRepeat3 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1571,7 +1581,7 @@ UInt            ExecReturnObj (
 {
 #if ! HAVE_SIGNAL
     /* test for an interrupt                                               */
-    if ( SyIsIntr() ) {
+    if ( HaveInterrupt() ) {
         ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
     }
 #endif
@@ -1603,7 +1613,7 @@ UInt            ExecReturnVoid (
 {
 #if ! HAVE_SIGNAL
     /* test for an interrupt                                               */
-    if ( SyIsIntr() ) {
+    if ( HaveInterrupt() ) {
         ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
     }
 #endif
@@ -1634,7 +1644,7 @@ UInt (* IntrExecStatFuncs[256]) ( Stat stat );
 
 UInt TakeInterrupt( void ) {
   UInt i;
-  if (SyIsIntr()) {
+  if (TLS->CurrExecStatFuncs == IntrExecStatFuncs) {
       assert(TLS->CurrExecStatFuncs != ExecStatFuncs);
       TLS->CurrExecStatFuncs = ExecStatFuncs;
       ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -1642,7 +1652,6 @@ UInt TakeInterrupt( void ) {
   }
   return 0;
 }
-
 
 /****************************************************************************
 **
@@ -1726,7 +1735,7 @@ void ClearError ( void )
     if ( TLS->CurrExecStatFuncs == IntrExecStatFuncs ) {
         TLS->CurrExecStatFuncs = ExecStatFuncs;
         /* check for user interrupt */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
               0L, 0L);
         }
