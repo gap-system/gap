@@ -1797,6 +1797,8 @@ struct optInfo options[] = {
   { "q",  toggle, &SyQuiet, 0 }, /* ?? */
   { "-prof",  enableProfilingAtStartup, 0, 1},    /* enable profiling at startup, has to be kernel to start early enough */
   { "-cover",  enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup, has to be kernel to start early enough */
+  { "S",  toggle, &ThreadUI, 0 }, /* Thread UI */
+  { "Z",  toggle, &DeadlockCheck, 0 }, /* Thread UI */
   { "P",  storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
   { "G",  storePosInteger, &SyNumGCThreads, 1 }, /* Thread UI */
   { "",0,0}};
