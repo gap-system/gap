@@ -59,6 +59,41 @@ od;
 return s;
 end;
 
+# Sum of the number of prime factors
+SumNrPrimeFactors:=function(t) 
+local s, i;
+s:=0;
+for i in [ t[1] .. t[2] ] do
+  s := s + Length(FactorsInt(i));
+od;
+return s;
+end;
+
+# Counting primes
+NumberOfPrimes:=function(t) 
+local s, i;
+s:=0;
+for i in [ t[1] .. t[2] ] do
+  if IsPrimeInt( i ) then
+     s := s + 1;
+  fi;
+od;
+return s;
+end;
+
+# Counting probable primes
+NumberOfProbablePrimes:=function(t) 
+local s, i;
+s:=0;
+for i in [ t[1] .. t[2] ] do
+  if IsProbablyPrimeInt( i ) then
+     s := s + 1;
+  fi;
+od;
+return s;
+end;
+
+
 # Compare parallel and sequential 'FoldSkeleton'
 Compare:=function( func, a, b, c )
 local r1, r2;
@@ -73,10 +108,22 @@ else
 fi;
 end;
 
-
+# Plausible speedups
 Compare( SumIntegers, 1, 10^8, 10^5);
-Compare( SumEulerByFormula, 1, 10^4, 10^2);
+Compare( SumIntegers, 1, 10^9, 10^6);
 Compare( SumEulerByDefinition, 1, 10^4, 10^2);
-Compare( SumEulerByFormula, 1, 10^5, 10^2);
 Compare( SumEulerByDefinition, 1, 10^5, 10^2); 
 
+# Tolerable, but could be expected to be better
+Compare( SumEulerByFormula, 1, 10^4, 10^2);
+Compare( SumEulerByFormula, 1, 10^5, 10^2);
+Compare( SumNrPrimeFactors, 1, 10^6, 10^3);
+
+# Needs tuning
+# TODO: shuffle list of arguments, or try in reverse order, or shift the range to have same magnitude
+Compare( SumEulerByFormula, 1, 10^7, 10^4);
+Compare( SumNrPrimeFactors, 1, 10^7, 10^4);
+
+# Parallel slower than sequential!
+Compare( NumberOfPrimes, 1, 10^7, 10^4);
+Compare( NumberOfProbablePrimes, 1, 10^7, 10^4);
