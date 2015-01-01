@@ -14,7 +14,7 @@ while b2 < n2 do
   b2 := Minimum(b2+chunksize,n2);
   Add( chunks, [b1,b2] );
 od;
-chunks := Reversed(chunks);
+# chunks := Reversed(chunks);
 curtime1:=CurrentTime();
 if not par then
    partialsums:=List( chunks, func );
@@ -149,17 +149,19 @@ end;
 #
 # Examples
 #
-Compare( SumIntegers, 1, 10^8, 10^5); # 26.5 on 64 cores
-Compare( SumIntegers, 1, 10^9, 10^6); # 31.2 on 64 cores
-Compare( SumEulerByDefinition, 1, 10^4, 10^2); # 30.1 on 64 cores
-Compare( SumEulerByDefinition, 1, 10^5, 10^2); # 38x on 64 cores
-Compare( SummatoryLiouvilleFunction, 1, 10^7, 10^4); # 20x on 64 cores
-Compare( SummatoryLiouvilleFunction, 1, 10^7, 10^5); # 18x on 64 cores (24x speedup with with SCSCP)
-Compare( SummatoryLiouvilleFunction, 1, 10^6, 10^3); # 16x on 64 cores
-Compare( SumEulerByFormula, 1, 10^7, 10^4); # 26x on 64 cores
+Compare( SumIntegers, 1, 10^8, 10^5); # 21.1 on 32 cores, 26.5 on 64 cores
+Compare( SumIntegers, 1, 10^9, 10^6); # 24.2 on 32 cores, 31.2 on 64 cores
+Compare( SumEulerByDefinition, 1, 10^4, 10^2); # 7.1 on 8 cores, 12.5 on 16, 19.5 on 32, 30.1 on 64
+Compare( SumEulerByDefinition, 1, 10^5, 10^2); # 7.62 on 8 cores, 13.3 on 16, 25.2 on 32 cores, 38x on 64 cores
+Compare( SummatoryLiouvilleFunction, 1, 10^7, 10^4); # 6.8 on 8 cores, 20x on 64 cores
+Compare( SummatoryLiouvilleFunction, 1, 10^7, 10^5); # 18x on 64 cores (24x speedup with with SCSCP on 64 cores)
+Compare( SummatoryLiouvilleFunction, 1, 10^6, 10^3); # 6.1 on 8 cores, 16x on 64 cores
+Compare( SumEulerByFormula, 1, 10^7, 10^4); # 6.3 on 8 cores, 26x on 64 cores
 Compare( SumNrPrimeFactors, 1, 10^6, 10^3); # 28x on 64 cores
 Compare( SumNrPrimeFactors, 1, 10^7, 10^4); # 26x on 64 cores
 
+List([1..10],i->Compare( SumEulerByDefinition, 1, 10^4, 10^2));Sum(last)/10;
+ 
 # Compare HPC-GAP and SCSCP performance: 1765s with HPC-GAP, 1135 with SCSCP
 curtime1:=CurrentTime();FoldSkeleton( SummatoryLiouvilleFunction, 1, 906180359, 10^5, true  );curtime2:=CurrentTime();
 duration:=runtime(curtime1,curtime2);
