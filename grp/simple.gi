@@ -165,6 +165,71 @@ local g;
   return g;
 end);
 
+BindGlobal("ChevalleyG",function(q)
+local p,f,z,G,o;
+  # Generators probably due to Don Taylor, communicated by Derek Holt
+  p:=Factors(q);
+  if Length(Set(p))>1 then Error("<q> must be prime power");fi;
+  p:=p[1];
+  f:=GF(q);
+  z:=PrimitiveRoot(f);
+  o:=One(f);
+
+  # first generator differs for q=2,p=3
+  if q=2 then 
+    G:=Group(
+	o*[[1,1,0,0,0,0,0],
+	[0,1,0,0,0,0,0],
+	[0,0,1,1,1,0,0],
+	[0,0,0,1,0,0,0],
+	[0,0,0,0,1,0,0],
+	[0,0,0,0,0,1,1],
+	[0,0,0,0,0,0,1]],
+	o*[[0,0,1,0,0,0,0],
+	[1,0,0,0,0,0,0],
+	[0,0,0,0,0,1,0],
+	[0,0,0,1,0,0,0],
+	[0,1,0,0,0,0,0],
+	[0,0,0,0,0,0,1],
+	[0,0,0,0,1,0,0]]);
+  elif p=3 then 
+    G:=Group(
+    o*[[z^2,0,0,0,0,0,0],
+      [0,z,0,0,0,0,0],
+      [0,0,z,0,0,0,0],
+      [0,0,0,1,0,0,0],
+      [0,0,0,0,z^(q-2),0,0],
+      [0,0,0,0,0,z^(q-2),0],
+      [0,0,0,0,0,0,z^(q-3)]],
+      o*[[0,0,1,0,0,0,0],
+      [2,0,1,0,0,1,0],
+      [0,0,0,0,0,1,0],
+      [0,0,0,2,0,2,0],
+      [0,2,0,2,0,1,1],
+      [0,0,0,0,0,0,1],
+      [0,0,0,0,1,0,1]]
+    );
+  else
+    G:=Group(
+     o*[[z,0,0,0,0,0,0],
+      [0,z^(q-2),0,0,0,0,0],
+      [0,0,z^2,0,0,0,0],
+      [0,0,0,1,0,0,0],
+      [0,0,0,0,z^(q-3),0,0],
+      [0,0,0,0,0,z,0],
+      [0,0,0,0,0,0,z^(q-2)]],
+      o*[[p-1,0,1,0,0,0,0],
+      [p-1,0,0,0,0,0,0],
+      [0,p-1,0,p-1,0,1,0],
+      [0,p-2,0,p-1,0,0,0],
+      [0,p-1,0,0,0,0,0],
+      [0,0,0,0,1,0,1],
+      [0,0,0,0,1,0,0]]);
+  fi;
+
+  return G; 
+end);
+
 InstallGlobalFunction(SimpleGroup,function(arg)
 local brg,str,p,a,param,g,s,small,plus,sets;
   if IsRecord(arg[1]) then
@@ -475,10 +540,12 @@ local brg,str,p,a,param,g,s,small,plus,sets;
       g:=PrimitiveGroup(351,7);
     elif a=4 then
       g:=PrimitiveGroup(416,7);
-    elif a=5 then
-      g:=DoAtlasrepGroup(["G2(5)"]);
     else
-      Error("Can't do yet");
+      g:=ChevalleyG(a);
+      g:=Action(g,
+	   Set(Orbit(g,One(DefaultFieldOfMatrixGroup(g))*[1,0,0,0,0,0,0],
+	     OnLines)),
+	  OnLines);
     fi;
     s:=Concatenation("G_2(",String(a),")");
 
@@ -1075,8 +1142,9 @@ local H,d,id,hom,field,C,dom,orbs;
     hom:=G!.actionHomomorphism;
     if IsMatrixGroup(Source(hom)) and Image(hom)=G and Size(Source(hom))/Size(G)<field then
       # test that the source is really the group we want
-      if Source(hom)=C then
-	return hom;
+      if GeneratorsOfGroup(C)=GeneratorsOfGroup(Source(hom)) 
+	or Source(hom)=C then
+	  return hom;
       #else
 #	Print("different source -- ID\n");
       fi;

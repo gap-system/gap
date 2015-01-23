@@ -651,7 +651,9 @@ of GAP code. See XXX for an example of how to use these methods.
 <#Include Label="ProfileLineByLine">
 <#Include Label="UnprofileLineByLine">
 <#Include Label="ActivateProfileColour">
-<#Include Label="OutputAnnotatedFiles">
+<#Include Label="ReadLineByLineProfile">
+<#Include Label="OutputAnnotatedCodeCoverageFiles">
+<#Include Label="OutputFlameGraph">
 
 
 <#Include Label="DisplayCacheStats">

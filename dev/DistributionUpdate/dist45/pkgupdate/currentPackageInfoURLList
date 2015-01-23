@@ -30,7 +30,7 @@ Circle      http://www.cs.st-andrews.ac.uk/~alexk/circle/PackageInfo.g
 cohomolo    http://www.warwick.ac.uk/staff/D.F.Holt/cohomolo/PackageInfo.g
 Congruence  http://www.cs.st-andrews.ac.uk/~alexk/congruence/PackageInfo.g
 Convex      http://wwwb.math.rwth-aachen.de/~gutsche/gap_packages/Convex/PackageInfo.g
-CoReLG      http://science.unitn.it/~corelg/PackageInfo.g
+CoReLG      http://users.monash.edu/~heikod/corelg/PackageInfo.g
 Crime       http://math.uic.edu/~marcus/Crime/PackageInfo.g
 CRISP       http://www.icm.tu-bs.de/~bhoeflin/crisp/PackageInfo.g
 Cryst       http://www.math.uni-bielefeld.de/~gaehler/gap45/Cryst/PackageInfo.g
@@ -74,6 +74,7 @@ IO MOVE         http://gap-system.github.io/io/PackageInfo.g
 IO_ForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/IO_ForHomalg/PackageInfo.g
 IRREDSOL    http://www.icm.tu-bs.de/~bhoeflin/irredsol/PackageInfo.g
 ITC         http://www.math.rwth-aachen.de/~Volkmar.Felsch/itc/PackageInfo.g
+json        http://gap-system.github.io/json/PackageInfo.g
 kan         http://www.maths.bangor.ac.uk/chda/gap4/kan/PackageInfo.g
 kbmag       http://www.warwick.ac.uk/~mareg/kbmag/PackageInfo.g
 LAGUNA      http://www.cs.st-andrews.ac.uk/~alexk/laguna/PackageInfo.g
@@ -112,6 +113,7 @@ RingsForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/RingsFo
 SCO         http://wwwb.math.rwth-aachen.de/goertzen/SCO/PackageInfo.g
 SCSCP       http://www.cs.st-andrews.ac.uk/~alexk/scscp/PackageInfo.g
 Semigroups  http://www-groups.mcs.st-andrews.ac.uk/~jamesm/semigroups/PackageInfo.g
+SglPPow     http://www.icm.tu-bs.de/~beick/soft/sglppow/PackageInfo.g
 SgpViz      http://www.fc.up.pt/cmup/mdelgado/sgpviz/PackageInfo.g
 simpcomp    http://simpcomp.googlecode.com/git/web/PackageInfo.g
 singular    http://www.gap-system.org/HostedGapPackages/singular/PackageInfo.g

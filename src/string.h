@@ -234,6 +234,17 @@ extern Int IsString (
 
 /****************************************************************************
 **
+*F  CopyToStringRep( <string> )  . . copy a string to the string representation
+**
+**  'CopyToStringRep' copies the string <string> to a new string in string
+**  representation.
+*/
+extern Obj CopyToStringRep(
+            Obj                 string );
+
+
+/****************************************************************************
+**
 *F  ConvString( <string> )  . . convert a string to the string representation
 **
 **  'ConvString' converts the string <list> to the string representation.

@@ -59,8 +59,8 @@ see&nbsp;<Ref Func="DefaultRing" Label="for ring elements"/>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Ideals in Rings">
-<Heading>Ideals in Rings</Heading>
+<Section Label="Ideals of Rings">
+<Heading>Ideals of Rings</Heading>
 
 <#Include Label="[1]{ideal}">
 <#Include Label="TwoSidedIdeal">

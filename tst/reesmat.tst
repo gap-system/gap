@@ -47,7 +47,7 @@ gap> Size(R);
 gap> ForAll(R, x-> x in R);
 true
 gap> Representative(R);
-(1,(),1)
+(1,(1,2)(3,5)(4,6),6)
 gap> Representative(R) in R;
 true
 gap> RMSElement(R, 25, (), 10);

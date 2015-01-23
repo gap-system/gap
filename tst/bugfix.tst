@@ -2740,6 +2740,17 @@ gap> Stabilizer(SymmetricGroup(5), [1,2,1,2,1], OnTuples) = Group([(3,5),(4,5)])
 true
 
 #############################################################################
+##
+## Changes 4.7.6 -> 4.7.7
+
+## For bugfixes
+gap> x:= rec( qq:= "unused", r:= rec() );;
+gap> y:= x.r;;
+gap> y.entries:= rec( parent:= y );;
+gap> x;
+rec( qq := "unused", r := rec( entries := rec( parent := ~.r ) ) )
+
+#############################################################################
 #
 # Tests requiring loading some packages must be performed at the end.
 # Do not put tests that do not need any packages below this line.

@@ -28,8 +28,16 @@ InstallMethod(Zero,
 #F  PrintArray( <array> ) . . . . . . . . . . . . . . . . pretty print matrix
 ##
 InstallGlobalFunction(PrintArray,function( array )
-    local   arr,  max,  l,  k;
+    local   arr,  max,  l,  k,maxp,compact,bl;
 
+    compact:=ValueOption("compact")=true;
+    if compact then 
+      maxp:=0;
+      bl:="";
+    else 
+      maxp:=1;
+      bl:=" ";
+    fi;
     if not IsDenseList( array ) then
         Error( "<array> must be a dense list" );
     elif Length( array ) = 0  then
@@ -39,14 +47,18 @@ InstallGlobalFunction(PrintArray,function( array )
     elif not ForAll( array, IsList )  then
         arr := List( array, String );
         max := Maximum( List( arr, Length ) );
-        Print( "[ ", String( arr[ 1 ], max + 1 ) );
+        Print( "[ ", String( arr[ 1 ], max + maxp ) );
         for l  in [ 2 .. Length( arr ) ]  do
             Print( ", ", String( arr[ l ], max + 1 ) );
         od;
         Print( " ]\n" );
     else
         arr := List( array, x -> List( x, String ) );
-        max := Maximum( List( arr, 
+	if compact then
+	  max:=List([1..Length(arr[1])],
+	    x->Maximum(List([1..Length(arr)],y->Length(arr[y][x]))));
+	else
+	  max := Maximum( List( arr, 
                     function(x)
                          if Length(x) = 0 then
                              return 1;
@@ -54,26 +66,32 @@ InstallGlobalFunction(PrintArray,function( array )
                              return Maximum( List(x,Length) );
                          fi;
                          end) );
-        Print( "[ " );
+	fi;
+
+        Print( "[",bl );
         for l in [ 1 .. Length( arr ) ] do
             if l > 1 then
-                Print( "  " );
+                Print(bl," ");
             fi;
-            Print( "[ " );
+            Print( "[",bl );
             if Length(arr[ l ]) = 0 then
-                Print("  ]" );
+                Print(bl,bl,"]" );
             else
                 for k  in [ 1 .. Length( arr[ l ] ) ]  do
-                    Print( String( arr[ l ][ k ], max + 1 ) );
-                    if k = Length( arr[ l ] )  then
-                        Print( " ]" );
-                    else
-                        Print( ", " );
-                    fi;
+		  if compact then
+		    Print( String( arr[ l ][ k ], max[k] + maxp ) );
+		  else
+		    Print( String( arr[ l ][ k ], max + maxp ) );
+		  fi;
+		  if k = Length( arr[ l ] )  then
+		      Print( bl,"]" );
+		  else
+		      Print( ", " );
+		  fi;
                 od;
             fi;
             if l = Length( arr )  then
-                Print( " ]\n" );
+                Print( bl,"]\n" );
             else
                 Print( ",\n" );
             fi;

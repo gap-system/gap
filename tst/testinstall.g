@@ -74,6 +74,7 @@ RunStandardTests( [
   [ "semigrp.tst", 11200000 ],
   [ "semirel.tst", 10900000 ],
   [ "strings.tst", 100000 ],
+  [ "read.tst", 10000 ],
   [ "vspchom.tst", 10500000 ],
   [ "vspcmat.tst", 8400000 ],
   [ "vspcrow.tst", 47400000 ],

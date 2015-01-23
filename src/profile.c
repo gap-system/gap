@@ -102,13 +102,110 @@
 ** Store the current state of the profiler
 */
 
+#ifdef HAVE_GETRUSAGE
+#if HAVE_SYS_TIME_H
+# include       <sys/time.h>            /* definition of 'struct timeval'  */
+#endif
+#if HAVE_SYS_RESOURCE_H
+# include       <sys/resource.h>        /* definition of 'struct rusage'   */
+#endif
+#endif
+
 struct ProfileState
 {
   UInt Active;
   FILE* Stream;
+  int StreamWasPopened;
   Int OutputRepeats;
   Int ColouringOutput;
+
+  int lastOutputtedFileID;
+  int lastOutputtedLine;
+  int lastOutputtedExec;  
+
+#ifdef HAVE_GETRUSAGE
+  struct timeval lastOutputtedTime;
+#endif
+  
 } profileState;
+
+void ProfileLineByLineIntoFunction(Obj func)
+{ 
+  if(profileState.Active)
+  {
+    Obj n = NAME_FUNC(func);
+    Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
+    fprintf(profileState.Stream, "I %s\n", s);
+  }
+}
+
+void ProfileLineByLineOutFunction(Obj func)
+{
+  if(profileState.Active)
+  {
+    Obj n = NAME_FUNC(func);
+    Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
+    fprintf(profileState.Stream, "O %s\n", s);
+  }
+}
+
+/****************************************************************************
+**
+** Functionality to store streams compressed.
+** If we could rely on the existence of the IO package, we would use that here.
+** however, we want to be able to start compressing files right at the start
+** of GAP's execution, before anything else is done.
+*/
+
+static int endsWithgz(char* s)
+{
+  s = strrchr(s, '.');
+  if(s)
+    return strcmp(s, ".gz") == 0;
+  else
+    return 0;
+}
+
+static void fopenMaybeCompressed(char* name, char* mode, struct ProfileState* ps)
+{
+  char popen_buf[4096];
+#if HAVE_POPEN
+  if(endsWithgz(name) && strlen(name) < 3000)
+  {
+    if(mode[0] == 'r')
+      strcpy(popen_buf, "gunzip < ");
+    else if(mode[0] == 'w')
+      strcpy(popen_buf, "gzip > ");
+    else if(mode[0] == 'a')
+      strcpy(popen_buf, "gzip >> ");
+    else
+    {
+      return;
+    }
+    strcat(popen_buf, name);
+    ps->Stream = popen(popen_buf, mode);
+    ps->StreamWasPopened = 1;
+    return;
+  }
+#endif
+  
+  ps->Stream = fopen(name, mode);
+  ps->StreamWasPopened = 0;
+}
+
+static void fcloseMaybeCompressed(struct ProfileState* ps)
+{
+#if HAVE_POPEN
+  if(ps->StreamWasPopened)
+  {
+    pclose(ps->Stream);
+    ps->Stream = 0;
+    return;
+  }
+#endif
+  fclose(ps->Stream);
+  ps->Stream = 0;
+}
 
 /****************************************************************************
 **
@@ -182,27 +279,71 @@ void InstallPrintExprFunc(Int pos, void(*expr)(Expr)) {
 ** as approriate, and then pass through to the true function
 */
 
-UInt ProfileStatPassthrough(Stat stat)
+
+
+static inline void outputStat(Stat stat, int exec)
 {
   HashLock(&profileState);
-  if(profileState.OutputRepeats || !(VISITED_STAT(stat))) {
-    ADDR_STAT(stat)[-1] |= (Stat)1 << 63;
-    fprintf(profileState.Stream, "rec(exec:=true,file:=\"%s\",line:=%d)\n",
-              CSTR_STRING(FILENAME_STAT(stat)), (int)LINE_STAT(stat));
+  char* name;
+  int line;
+  int nameid;
+  
+  int ticks = 0;
+#ifdef HAVE_GETRUSAGE
+  struct rusage buf;
+#endif
+    
+  name = CSTR_STRING(FILENAME_STAT(stat));
+  nameid = FILENAMEID_STAT(stat);
+  line = LINE_STAT(stat);
+  if(profileState.lastOutputtedLine != line ||
+     profileState.lastOutputtedFileID != nameid || 
+     profileState.lastOutputtedExec != exec)
+  {
+#ifdef HAVE_GETRUSAGE
+    getrusage( RUSAGE_SELF, &buf );
+    ticks = (buf.ru_utime.tv_sec - profileState.lastOutputtedTime.tv_sec) * 1000000 +
+            (buf.ru_utime.tv_usec - profileState.lastOutputtedTime.tv_usec);
+    // Basic sanity check:
+    if(ticks < 0)
+      ticks = 0;
+#endif
+    
+    fprintf(profileState.Stream, "%c %d %d %s\n",
+            exec ? 'E' : 'R', ticks, line, name);
+    profileState.lastOutputtedLine = line;
+    profileState.lastOutputtedFileID = nameid;
+    profileState.lastOutputtedExec = exec;
+#ifdef HAVE_GETRUSAGE
+    profileState.lastOutputtedTime = buf.ru_utime;
+#endif
   }
+  
   HashUnlock(&profileState);
+}
+
+static inline void visitStat(Stat stat)
+{
+  int visited = VISITED_STAT(stat);
+ 
+  if(!visited) {
+    ADDR_STAT(stat)[-1] |= (Stat)1 << 63;
+  }
+  
+  if(profileState.OutputRepeats || !visited) {
+    outputStat(stat, 1);
+  }
+}
+
+UInt ProfileStatPassthrough(Stat stat)
+{
+  visitStat(stat);
   return RealExecStatFuncs[TNUM_STAT(stat)](stat);
 }
 
 Obj ProfileEvalExprPassthrough(Expr stat)
 {
-  HashLock(&profileState);
-  if(profileState.OutputRepeats || !(VISITED_STAT(stat))) {
-    ADDR_STAT(stat)[-1] |= (Stat)1 << 63;
-    fprintf(profileState.Stream, "rec(exec:=true,file:=\"%s\",line:=%d)\n",
-              CSTR_STRING(FILENAME_STAT(stat)), (int)LINE_STAT(stat));
-  }
-  HashUnlock(&profileState);
+  visitStat(stat);
   return RealEvalExprFuncs[TNUM_STAT(stat)](stat);
 }
 
@@ -216,13 +357,7 @@ Obj ProfileEvalBoolPassthrough(Expr stat)
   if(IS_INTEXPR(stat)) {
     return RealEvalBoolFuncs[T_INTEXPR](stat);
   }
-  HashLock(&profileState);
-  if(profileState.OutputRepeats || !(VISITED_STAT(stat))) {
-    ADDR_STAT(stat)[-1] |= (Stat)1 << 63;
-    fprintf(profileState.Stream, "rec(exec:=true,file:=\"%s\",line:=%d)\n",
-             CSTR_STRING(FILENAME_STAT(stat)), (int)LINE_STAT(stat));
-  }
-  HashUnlock(&profileState);
+  visitStat(stat);
   return RealEvalBoolFuncs[TNUM_STAT(stat)](stat);
 }
 
@@ -242,7 +377,7 @@ void enableAtStartup(char* filename, Int repeats)
     
     profileState.OutputRepeats = repeats;
     
-    profileState.Stream = fopen(filename, "w");
+    fopenMaybeCompressed(filename, "w", &profileState);
     if(!profileState.Stream) {
         fprintf(stderr, "Failed to open '%s' for profiling output.\n", filename);
         fprintf(stderr, "Abandoning starting GAP.\n");
@@ -256,6 +391,11 @@ void enableAtStartup(char* filename, Int repeats)
     }
     
     profileState.Active = 1;
+#ifdef HAVE_GETRUSAGE
+    struct rusage buf;
+    getrusage( RUSAGE_SELF, &buf );
+    profileState.lastOutputtedTime = buf.ru_utime;
+#endif    
 }
 
 // This function is for when GAP is started with -c, and
@@ -318,7 +458,7 @@ Obj FuncACTIVATE_PROFILING (
       profileState.OutputRepeats = 0;
     }
     
-    profileState.Stream = fopen(CSTR_STRING(filename), CSTR_STRING(mode));
+    fopenMaybeCompressed(CSTR_STRING(filename), CSTR_STRING(mode), &profileState);
     
     if(profileState.Stream == 0)
     {
@@ -333,6 +473,12 @@ Obj FuncACTIVATE_PROFILING (
     }
     
     profileState.Active = 1;
+    
+#ifdef HAVE_GETRUSAGE
+    struct rusage buf;
+    getrusage( RUSAGE_SELF, &buf );
+    profileState.lastOutputtedTime = buf.ru_utime;
+#endif
     
     HashUnlock(&profileState);
     
@@ -351,8 +497,7 @@ Obj FuncDEACTIVATE_PROFILING (
     return Fail; 
   }
   
-  fclose(profileState.Stream);
-  profileState.Stream = 0;
+  fcloseMaybeCompressed(&profileState);
   
   for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
     ExecStatFuncs[i] = RealExecStatFuncs[i];
@@ -507,8 +652,7 @@ void RegisterStatWithProfiling(Stat stat)
 {
     HashLock(&profileState);
     if(profileState.Active) {
-        fprintf(profileState.Stream, "rec(exec:=false,file:=\"%s\",line:=%d)\n",
-                  CSTR_STRING(FILENAME_STAT(stat)), (int)LINE_STAT(stat));
+      outputStat(stat, 0);
     }
     HashUnlock(&profileState);
     

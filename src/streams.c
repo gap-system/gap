@@ -1931,6 +1931,11 @@ Obj FuncSEEK_POSITION_FILE (
             "you can replace <pos> via 'return <pos>;'" );
     }
     
+    if (syBuf[INT_INTOBJ(fid)].bufno >= 0)
+    {
+            syBuffers[syBuf[INT_INTOBJ(fid)].bufno].buflen = 0;
+            syBuffers[syBuf[INT_INTOBJ(fid)].bufno].bufstart = 0;
+    }
     ret = SyFseek( INT_INTOBJ(fid), INT_INTOBJ(pos) );
     return ret == -1 ? Fail : True;
 }

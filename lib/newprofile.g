@@ -95,36 +95,155 @@ end);
 ##  and converts it into a pair [l,readd,execd] where l is a list of all the files
 ##  which were access, and readd and execd are dictionaries, which map each
 ##  element of l to the lines in l which have statements on, and where
-##  statements were executed, respectively.
+##  statements were executed, respectively, for use in code coverage
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ReadLineByLineProfile",function(filename)
-    local stream, line, eval, readdict, execdict, filelist;
+    local stream, line,
+          linedict, funcdict, stackdict, filelist, funclist, stacklist,
+          lasttime, parts, prevparts,
+          gatherline, recursive_gen, LookupWithDefault, makefullfuncname;
+    prevparts := [];
     filelist := Set([]);
+    funclist := Set([]);
+    stacklist := Set([]);
     
-    readdict := NewDictionary(false, true, IsString);
-    execdict := NewDictionary(false, true, IsString);
+    linedict := NewDictionary("", true, IsString);
+    funcdict := NewDictionary("", true, IsString);
+    stackdict := NewDictionary("", true, IsString);
+    
+    LookupWithDefault := function(dict, val, default)
+        local v;
+        v := LookupDictionary(dict, val);
+        if v = fail then
+            return default;
+        else
+            return v;
+        fi;
+    end;
+    
+    # parts[1] = R/E, parts[2] = time, parts[3] = line, parts[4] = name.
+    gatherline := function(str)
+      local split;
+      if str[Length(line)] = '\n' then
+        str := str{[1..Length(str)-1]};
+      fi;
+      split := SplitString(str, " ");
+      if Length(split) > 4 then
+          # The file name had spaces! Chop it out manually
+          split[4] := str{[Sum(split{[1..3]}, Length)+4..Length(str)]};
+      fi;
+      split[2] := Int(split[2]);
+      split[3] := Int(split[3]);
+      return split;
+    end;
+    
+    makefullfuncname := function(shortname, line, file)
+      return rec(shortname := shortname,
+                 longname := Concatenation(shortname, "@", String(line), ":", file),
+                 line := String(line),
+                 file := file);
+    end;
+    
+    # This function is recursive, so whenever we hit a new function we can collect
+    # the runtime within that function.
+    recursive_gen := function(funcname, stack)
+      local fullfuncname, funcnestedtime, totaltime, infunctime,
+            fullstack, funcreturn, localprevparts,
+            ld, prevld, calledfns, lastrecursetime, newfuncname;
+      totaltime := 0;
+      infunctime := 0;
+      funcnestedtime := 0;
+      while line <> fail do
+          if line[1] = 'R' or line[1] = 'E' then
+              parts := gatherline(line);
+              if not(IsBound(fullfuncname)) and line[1] = 'E' then
+                  fullfuncname := makefullfuncname(funcname, parts[3], parts[4]);
+                  AddSet(funclist, fullfuncname.longname);
+                  funcnestedtime := LookupWithDefault(funcdict, fullfuncname.longname, 0);
+              fi;
+              
+              totaltime := totaltime + parts[2];
+              infunctime := infunctime + parts[2];
+              
+              if not(parts[4] in filelist) then
+                  AddSet(filelist, parts[4]);
+                  AddDictionary(linedict, parts[4], 
+                    rec(read := Set([]), exec := Set([]),
+                        time := NewDictionary(0, true, IsInt),
+                        recursetime := NewDictionary(0, true, IsInt),
+                        calledfuncs := NewDictionary(0, true, IsInt)));
+              fi;
+              
+              ld := LookupDictionary(linedict, parts[4]);
+              if line[1] = 'E' then
+                  AddSet(ld.exec, parts[3]);
+              else
+                  AddSet(ld.read, parts[3]);
+              fi;
+
+              if prevparts <> [] then
+                  prevld := LookupDictionary(linedict, prevparts[4]);
+                  lasttime := LookupWithDefault(prevld.time, prevparts[3], 0);
+                  AddDictionary(prevld.time, prevparts[3], lasttime + parts[2]);
+              fi;
+          
+              prevparts := parts;
+          fi;
+          if line[1] = 'I' then
+              localprevparts := prevparts;
+              if Length(localprevparts) > 1 and localprevparts[1] = "E" then
+                ld := LookupDictionary(linedict, localprevparts[4]);
+                lastrecursetime := LookupWithDefault(ld.recursetime, localprevparts[3], 0);
+              fi;
+              if not(IsBound(fullfuncname)) then
+                fullfuncname := makefullfuncname(funcname, "?", "?");
+              fi;
+              newfuncname := line{[3..Length(line)-1]};
+              line := ReadLine(stream);
+              funcreturn := recursive_gen(newfuncname, Concatenation(stack,";",fullfuncname.longname));
+              totaltime := totaltime + funcreturn[2];
+              
+              if Length(localprevparts) > 1 and localprevparts[1] = "E" then
+                ld := LookupDictionary(linedict, localprevparts[4]);
+                AddDictionary(ld.recursetime, localprevparts[3], lastrecursetime + funcreturn[2]);
+                calledfns := LookupWithDefault(ld.calledfuncs, localprevparts[3], Set([]));
+                AddSet(calledfns, funcreturn[1]);
+                AddDictionary(ld.calledfuncs, localprevparts[3], calledfns);
+              fi;
+              
+          elif line[1] = 'O' then
+              if not(IsBound(fullfuncname)) then
+                fullfuncname := makefullfuncname(funcname,"?","?");
+              fi;
+              AddDictionary(funcdict, fullfuncname.longname, funcnestedtime + totaltime);
+              fullstack := Concatenation(stack,";",fullfuncname.longname);
+              AddSet(stacklist, fullstack);
+              AddDictionary(stackdict, fullstack, 
+                            LookupWithDefault(stackdict, fullstack, 0) + infunctime);
+              return [fullfuncname, totaltime];
+          fi;
+          line := ReadLine(stream);
+      od;
+      
+      if not(IsBound(fullfuncname)) then
+        fullfuncname := makefullfuncname(funcname,"?","?");
+      fi;
+      return [fullfuncname, totaltime];
+    end;
+    
     stream := InputTextFile(filename);
     line := ReadLine(stream);
-    while line <> fail do
-        eval := EvalString(line);
-        if not(eval.file in filelist) then
-            AddSet(filelist, eval.file);
-            AddDictionary(readdict, eval.file, Set([]));
-            AddDictionary(execdict, eval.file, Set([]));
-        fi;
-        
-        if eval.exec then
-            AddSet(LookupDictionary(execdict, eval.file), eval.line);
-        else
-            AddSet(LookupDictionary(readdict, eval.file), eval.line);
-        fi;
+    while(line <> fail) do
+        recursive_gen("root","");
         line := ReadLine(stream);
     od;
+    
     CloseStream(stream);
-    return [filelist, readdict, execdict];
+    return rec(filelist := filelist, funclist := funclist, stacklist := stacklist,
+               linedict := linedict, funcdict := funcdict, stackdict := stackdict);
 end);
 
 
@@ -132,12 +251,38 @@ end);
 #############################################################################
 ##
 ##
-##  <#GAPDoc Label="OutputAnnotatedFiles">
+##  <#GAPDoc Label="OutputFlameGraph">
 ##  <ManSection>
-##  <Func Name="OutputAnnotatedFiles" Arg="cover, indir, outdir"/>
+##  <Func Name="OutputFlameGraph" Arg="cover, filename"/>
 ##
 ##  <Description>
-##  <Ref Func="OutputAnnotatedFiles"/> takes <A>cover</A> (an output of
+##  <Ref Func="OutputFlameGraph"/> takes <A>cover</A> (an output of
+##  <Ref Func="ReadLineByLineProfile"/>), and a file name. It translates
+##  profiling information in <A>cover</A> into a suitable format to
+##  generate flame graphs.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("OutputFlameGraph",function(data, filename)
+  local outstream, i;
+  outstream := OutputTextFile(filename, false);
+  SetPrintFormattingStatus(outstream, false);
+  for i in data.stacklist do
+    PrintTo(outstream, i, " ", LookupDictionary(data.stackdict, i), "\n");
+  od;
+  CloseStream(outstream);
+end);
+
+#############################################################################
+##
+##
+##  <#GAPDoc Label="OutputAnnotatedCodeCoverageFiles">
+##  <ManSection>
+##  <Func Name="OutputAnnotatedCodeCoverageFiles" Arg="cover, indir, outdir"/>
+##
+##  <Description>
+##  <Ref Func="OutputAnnotatedCodeCoverageFiles"/> takes <A>cover</A> (an output of
 ##  <Ref Func="ReadLineByLineProfile"/>), and two directory names. It outputs a copy
 ##  of each file in <A>cover</A> which is contained in <A>indir</A>
 ##  into <A>outdir</A>, annotated with which lines were executed.
@@ -147,11 +292,21 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL("OutputAnnotatedFiles",function(data, indir, outdir)
+BIND_GLOBAL("OutputAnnotatedCodeCoverageFiles",function(data, indir, outdir)
     local infile, outname, instream, outstream, line, allLines, 
           coverage, counter, overview, i,
           readlineset, execlineset, outchar, outputtext, 
-          outputhtml, outputoverviewhtml;
+          outputhtml, outputoverviewhtml, LookupWithDefault;
+    
+    LookupWithDefault := function(dict, val, default)
+        local v;
+        v := LookupDictionary(dict, val);
+        if v = fail then
+            return default;
+        else
+            return v;
+        fi;
+    end;
     
     outputtext := function(lines, coverage, outstream)
       local i, outchar;
@@ -171,14 +326,15 @@ BIND_GLOBAL("OutputAnnotatedFiles",function(data, indir, outdir)
       od;
     end;
     
-    outputhtml := function(lines, coverage, outstream)
-      local i, outchar, str;
+    outputhtml := function(lines, coverage, linedict, outstream)
+      local i, outchar, str, time, totaltime, calledfns, linkname, fn, name;
       PrintTo(outstream, "<html><body>\n",
         "<style>\n",
         ".linenum { text-align: right; border-right: 3px solid #FFFFFF; }\n",
         ".exec { border-right: 3px solid #2EFE2E; }\n",
         ".missed { border-right: 3px solid #FE2E64; }\n",
         ".ignore { border-right: 3px solid #BDBDBD; }\n",
+        " td {border-right: 5px solid #FFFFFF;}\n",
         "}\n",
         "</style>\n",
         "<table cellspacing='0' cellpadding='0'>\n");
@@ -200,9 +356,24 @@ BIND_GLOBAL("OutputAnnotatedFiles",function(data, indir, outdir)
         str := ReplacedString(str, "&", "&amp;");
         str := ReplacedString(str, "<", "&lt;");
         str := ReplacedString(str, " ", "&nbsp;");
-        PrintTo(outstream, "<tr>");
+        PrintTo(outstream, "<a name=\"line",i,"\"></a><tr>");
+        time := LookupWithDefault(linedict.time, i, "");
+        totaltime := LookupWithDefault(linedict.recursetime, i, "");
+        calledfns := "";
+        for fn in LookupWithDefault(linedict.calledfuncs, i, []) do
+          linkname := ReplacedString(fn.file, "/", "_");
+          Append(linkname, ".html");
+          name := fn.shortname;
+          if name = "nameless" then
+            name := fn.longname;
+          fi;
+          Append(calledfns, Concatenation("<a href=\"",linkname,"#line",fn.line,"\">",name,"</a> "));
+        od;
+        
         PrintTo(outstream, "<td><p class='linenum ",outchar,"'>",i,"</p></td>");
+        PrintTo(outstream, "<td>",time,"</td><td>",totaltime,"</td>");
         PrintTo(outstream, "<td><span><tt>",str,"</tt></span></td>");
+        PrintTo(outstream, "<td><span>",calledfns,"</span></td");
         PrintTo(outstream, "</tr>");
       od;
             
@@ -243,11 +414,11 @@ BIND_GLOBAL("OutputAnnotatedFiles",function(data, indir, outdir)
     end;
     
     overview := [];
-    for infile in data[1] do
+    for infile in data.filelist do
         if Length(indir) <= Length(infile)
                 and indir = infile{[1..Length(indir)]} then
-            readlineset := LookupDictionary(data[2], infile);
-            execlineset := LookupDictionary(data[3], infile);
+            readlineset := LookupDictionary(data.linedict, infile).read;
+            execlineset := LookupDictionary(data.linedict, infile).exec;
             outname := ReplacedString(infile, "/", "_");
             outname := Concatenation(outdir, "/", outname);
             outname := Concatenation(outname, ".html");
@@ -273,7 +444,8 @@ BIND_GLOBAL("OutputAnnotatedFiles",function(data, indir, outdir)
             Add(overview, rec(outname := outname, inname := infile,
             execlines := Length(Filtered(coverage, x -> x = 1)),
             readnotexeclines := Length(Filtered(coverage, x -> x = 2))));
-            outputhtml(allLines, coverage, outstream);
+            outputhtml(allLines, coverage, LookupDictionary(data.linedict, infile),
+                                           outstream);
 
             CloseStream(outstream);
         fi;

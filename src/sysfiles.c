@@ -937,6 +937,9 @@ Int SyFopen (
         return (Int)-1;
     }
 
+    if(strncmp(mode, "r", 1) == 0)
+        SySetBuffering(fid);
+
     HashUnlock(&syBuf);
     
     /* return file identifier                                              */

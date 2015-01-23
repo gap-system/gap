@@ -36,6 +36,17 @@ void InstallExecStatFunc( Int, UInt(*)(Stat));
 void InstallPrintStatFunc(Int, void(*)(Stat));
 void InstallPrintExprFunc(Int, void(*)(Expr)); 
 
+#define PROFILE_EVERYTHING
+#ifdef PROFILE_EVERYTHING
+void ProfileLineByLineIntoFunction(Obj o);
+void ProfileLineByLineOutFunction(Obj o);
+#define PROF_IN_FUNCTION(x) ProfileLineByLineIntoFunction(x)
+#define PROF_OUT_FUNCTION(x) ProfileLineByLineOutFunction(x)
+#else
+#define PROF_IN_FUNCTION(x)
+#define PROF_OUT_FUNCTION(x)
+#endif
+
 #endif // GAP_STATS_H
 
 /****************************************************************************

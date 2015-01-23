@@ -128,10 +128,14 @@ InstallImmediateMethod( GeneratorsOfSemigroup,
 IsMonoid and HasGeneratorsOfMonoid and IsAttributeStoringRep, 0,
 function(M)
 
+  if Length(GeneratorsOfMonoid(M)) = infinity then 
+    TryNextMethod();
+  fi;
+
   if CanEasilyCompareElements(One(M)) and One(M) in GeneratorsOfMonoid(M) then 
     return GeneratorsOfMonoid(M);
   fi;
-  return Concatenation([One(M)],GeneratorsOfMonoid(M));
+  return Concatenation([One(M)], GeneratorsOfMonoid(M));
 end);
 
 #############################################################################

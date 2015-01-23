@@ -498,6 +498,9 @@ end);
 BindGlobal("ShapeFrequencies",function(n,i)
 local g,fu,j,k,ps,pps,sh;
   TransGrpLoad(n,0);
+  if not IsBound(TRANSSHAPEFREQS[n]) then
+    TRANSSHAPEFREQS[n]:=[];
+  fi;
   if not IsBound(TRANSSHAPEFREQS[n][i]) then
     sh:=Partitions(n);
     g:=TransitiveGroup(n,i);
