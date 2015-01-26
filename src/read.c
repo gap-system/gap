@@ -1470,6 +1470,7 @@ void ReadLiteral (
     case S_REC:
         ReadRecExpr( follow );
         break;
+
     /* `Literal								   */
     case S_BACKQUOTE:
         Match( S_BACKQUOTE, "`", follow );
@@ -1480,7 +1481,6 @@ void ReadLiteral (
 	ReadAtom( follow, 'r' );
 	if (!READ_ERROR()) { IntrFuncCallEnd(1, 0, 1); }
         break;
-
 
     /* <Function>                                                          */
     case S_FUNCTION:

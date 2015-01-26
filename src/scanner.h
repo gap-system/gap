@@ -93,7 +93,7 @@
 #define S_PARTIALSTRING ((1UL<<11)+4)
 
 #define S_REC           ((1UL<<12)+0)
-#define S_BACKQUOTE	((1UL<<12)+1)
+#define S_BACKQUOTE     ((1UL<<12)+1)
 
 #define S_FUNCTION      ((1UL<<13))
 #define S_LOCAL         ((1UL<<14))
