@@ -60,10 +60,10 @@ DefaultPrompt@ := MakeImmutable("[%name%] gap> ");
 #V InputChannel@ - channel to receive input from the input thread
 #V PromptChannel@ - channel to send prompts to the input thread
 
-BindGlobal("ControlChannel@", CreateChannel());
-BindGlobal("OutputChannel@", CreateChannel());
-BindGlobal("InputChannel@", CreateChannel());
-BindGlobal("PromptChannel@", CreateChannel());
+BindGlobal("ControlChannel@", CreateChannel(10000));
+BindGlobal("OutputChannel@", CreateChannel(10000));
+BindGlobal("InputChannel@", CreateChannel(10000));
+BindGlobal("PromptChannel@", CreateChannel(10000));
 
 # define constants for the main control channel
 
