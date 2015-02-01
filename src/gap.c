@@ -2696,6 +2696,36 @@ Obj FuncSleep( Obj self, Obj secs )
 
 /****************************************************************************
 **
+*F  FuncMicroSleep( <self>, <secs> )
+**
+*/
+
+Obj FuncMicroSleep( Obj self, Obj msecs )
+{
+  extern UInt HaveInterrupt();
+  Int  s;
+
+  while( ! IS_INTOBJ(msecs) )
+    msecs = ErrorReturnObj( "<usecs> must be a small integer", 0L, 0L, 
+                           "you can replace <usecs> via 'return <usecs>;'" );
+
+  
+  if ( (s = INT_INTOBJ(msecs)) > 0)
+    SyUSleep((UInt)s);
+  
+  /* either we used up the time, or we were interrupted. */
+  if (HaveInterrupt())
+    {
+      ClearError(); /* The interrupt may still be pending */
+      ErrorReturnVoid("user interrupt in microsleep", 0L, 0L,
+                    "you can 'return;' as if the microsleep was finished");
+    }
+  
+  return (Obj) 0;
+}
+
+/****************************************************************************
+**
 *F  FuncGAP_EXIT_CODE() . . . . . . . . Set the code with which GAP exits.
 **
 */
@@ -3008,6 +3038,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "WindowCmd", 1, "arg-list",
       FuncWindowCmd, "src/gap.c:WindowCmd" },
 
+    { "MicroSleep", 1, "msecs",
+      FuncMicroSleep, "src/gap.c:MicroSleep" },
 
     { "Sleep", 1, "secs",
       FuncSleep, "src/gap.c:Sleep" },

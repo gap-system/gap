@@ -1487,6 +1487,18 @@ void SySleep ( UInt secs )
 
 /****************************************************************************
 **
+*F  SyUSleep( <msecs> ) . . . . . . . . . .sleep GAP for <msecs> microseconds
+**
+**  NB Various OS events (like signals) might wake us up
+**
+*/
+void SyUSleep ( UInt msecs )
+{
+  usleep( (unsigned int) msecs );
+}
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
