@@ -328,6 +328,7 @@ BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfile, gap, other
                     " > ", outfile, "$TIMESTAMP.", name, "\n" ) );
             Append( result, Concatenation(
                     "echo 'SetUserPreference(\"UseColorsInTerminal\",false); ",
+                    "ReadGapRoot( \"tst/testutil.g\" ); ",
                     "RunPackageTests( \"", name,
                     "\", \"", entry.Version, "\", \"", entry.TestFile,
                     "\", \"", other, "\" );' | ", gap, 
