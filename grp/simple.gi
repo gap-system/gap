@@ -793,7 +793,7 @@ local t,r;
   elif t.series="2F" then
     if t.parameter=2 then
       r.series:="Spor";
-      r.parameter:="T";
+      r.parameter:=["T"];
     else
       r.series:="2F";
       r.parameter:=[t.parameter];
