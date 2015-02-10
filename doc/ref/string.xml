@@ -268,6 +268,34 @@ string.
 Note that the same continuation mechanism is available for identifiers and
 integers, see&nbsp;<Ref Sect="Special Rules for Input Lines"/>.
 
+The rules on escaping are ignored in a triple quoted string, see <Ref
+Sect="Triple Quoted String"/>
+
+</Section>
+
+<Section Label="Triple Quoted String">
+<Heading>Triple Quoted Strings</Heading>
+
+
+Another method of entering strings in GAP is triple quoted strings.
+Triple quoted strings ignore the rules on escaping given in <Ref
+Sect="Special Characters"/>. Triple quoted strings begin an end with
+three doublequotes. Inside the triple quotes no escaping is done,
+and the string continues, including newlines, until three doublequotes
+are found.
+<P/>
+<Example><![CDATA[
+gap> """Print("\n")""";
+Print(\"\\n\")
+]]></Example>
+
+Triple quoted strings are represented internally identically to all other
+strings, they only provide an alternative method of giving strings to GAP.
+
+Triple quoted strings still follow GAP's line editing rules 
+(<Ref Sect="Special Rules for Input Lines"/>), which state that in normal
+line editing mode, lines starting <C>gap> </C>, <C>> </C> or <C>brk> </C> will
+have this beginning part removed.
 </Section>
 
 

@@ -756,7 +756,7 @@ gap> RMSElement(V, 1, (), 10);
 Error, the arguments do not describe an element of <R>,
 gap> RMSElement(V, 1, (), 1);
 (1,(),1)
-gap> x:=Random(GeneratorsOfSemigroup(V));; y:=RMSElement(V, x[1], x[2], x[3]);;
+gap> x:=RMSElement(V, 7, (), 4);; y:=RMSElement(V, x[1], x[2], x[3]);;
 gap> x in V; y in V;
 true
 true

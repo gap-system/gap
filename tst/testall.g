@@ -76,6 +76,7 @@ RunStandardTests( [
   [ "grpprmcs.tst",4153600000],
   [ "hash2.tst",3702400000],
   [ "helpsys.tst",58077900000],
+  [ "intarith.tst,2300000],
   [ "listgen.tst",1000000],
   [ "longnumber.tst",100000],
   [ "mapphomo.tst",4800000],

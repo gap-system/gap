@@ -19,7 +19,8 @@ DeclareAttribute("DegreeOfPartialPermSemigroup", IsPartialPermSemigroup);
 DeclareAttribute("CodegreeOfPartialPermSemigroup", IsPartialPermSemigroup);
 DeclareAttribute("RankOfPartialPermSemigroup", IsPartialPermSemigroup);
 
-DeclareProperty("IsSymmetricInverseSemigroup", IsSemigroup);
+DeclareProperty("IsSymmetricInverseSemigroup", IsPartialPermSemigroup);
+InstallTrueMethod(IsInverseSemigroup, IsSymmetricInverseSemigroup);
 DeclareSynonym("IsSymmetricInverseMonoid", IsSymmetricInverseSemigroup);
 DeclareOperation("SymmetricInverseSemigroup", [IsInt]);
 DeclareSynonym("SymmetricInverseMonoid", SymmetricInverseSemigroup);

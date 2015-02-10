@@ -321,7 +321,7 @@ end);
 #
 
 InstallMethod(ViewObj, "for a Rees matrix semigroup",
-[IsReesMatrixSemigroup], 2, #to beat the next method
+[IsReesMatrixSemigroup], 3, #to beat the next method
 function(R)
   Print("\>\><Rees matrix semigroup \>", Length(Rows(R)), "x",
       Length(Columns(R)), "\< over \<");
@@ -354,7 +354,7 @@ end);
 #
 
 InstallMethod(ViewObj, "for a Rees 0-matrix semigroup",
-[IsReesZeroMatrixSemigroup], 2, #to beat the next method
+[IsReesZeroMatrixSemigroup], 3, #to beat the next method
 function(R)
   Print("\>\><Rees 0-matrix semigroup \>", Length(Rows(R)), "x",
       Length(Columns(R)), "\< over \<");

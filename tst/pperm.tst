@@ -72,7 +72,8 @@ gap> f^6;
 <empty partial perm>
 gap> f^4;                                                    
 [12,9]
-gap> f:=RandomPartialPerm(100000);; DomainOfPartialPerm(f);;
+gap> f := PartialPerm( [ 1, 2, 3 ], [ 70000, 3, 4 ] );
+[1,70000][2,3,4]
 gap> IsIdempotent(f);
 false
 gap> f:=PartialPermNC([1..10]);;   
@@ -82,7 +83,7 @@ gap> f:=PartialPermNC([1..10]);
 <identity partial perm on [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]>
 gap> IsIdempotent(f);
 true
-gap> f:=RandomPartialPerm(1000);;  
+gap> f:=PartialPerm( [ 1, 2 ], [ 3, 1 ] );;
 gap> IsIdempotent(f);
 false
 gap> f:=PartialPermNC([1..100000]); 
@@ -380,14 +381,19 @@ gap> g:=PartialPermNC([1,2], [10,4]);
 [1,10][2,4]
 gap> NaturalLeqPartialPerm(f,g);
 true
-gap> g:=RandomPartialPerm(10);; DomainOfPartialPerm(g);;
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 6, 7, 8, 10 ], 
+> [ 3, 8, 1, 9, 4, 10, 5, 6 ] );; 
+gap> DomainOfPartialPerm(g);;
 gap> NaturalLeqPartialPerm(f,g);
 false
 gap> g:=PartialPermNC([1,2], [10,100000]);
 [1,10][2,100000]
 gap> NaturalLeqPartialPerm(f,g);
 true
-gap> g:=RandomPartialPerm(100000);;       
+gap> g:=       
+> PartialPerm( [ 1, 2, 4, 6, 8, 9 ], 
+> [ 42760, 64197, 33426, 57309, 17780, 69833 ] );
+[1,42760][2,64197][4,33426][6,57309][8,17780][9,69833]
 gap> NaturalLeqPartialPerm(f,g);
 false
 gap> f:=PartialPermNC([1,0,0,0,0,10]);;
@@ -405,7 +411,15 @@ gap> g:=PartialPermNC([1,6,7], [1,10,1000]);
 [6,10][7,1000](1)
 gap> NaturalLeqPartialPerm(f,g);
 true
-gap> g:=RandomPartialPerm(100);;              
+gap> g:= 
+> PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 
+>    19, 20, 21, 22, 23, 25, 26, 27, 29, 30, 32, 33, 34, 35, 37, 40, 42, 47, 
+>    48, 49, 50, 51, 52, 53, 56, 57, 59, 62, 63, 66, 67, 69, 70, 75, 76, 78, 
+>    80, 84, 87, 88, 89, 93, 96 ], 
+> [ 66, 52, 4, 5, 62, 49, 97, 86, 41, 48, 28, 2, 60, 69, 77, 96, 47, 67, 1, 
+>    88, 100, 32, 16, 71, 63, 64, 94, 29, 46, 22, 51, 3, 31, 9, 38, 81, 30, 
+>    87, 98, 17, 82, 85, 90, 33, 89, 74, 50, 80, 35, 36, 27, 54, 73, 20, 40, 
+>    57, 92, 34, 8, 99, 25 ] );;
 gap> NaturalLeqPartialPerm(f,g);
 false
 gap> f:=PartialPermNC([1],[100000]);;  
@@ -423,7 +437,15 @@ gap> g:=PartialPermNC([1,2],[2,3]);
 [1,2,3]
 gap> NaturalLeqPartialPerm(f,g);
 true
-gap> g:=RandomPartialPerm(100);;     
+gap> g:=
+> PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 
+>     20, 21, 22, 23, 27, 28, 29, 30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42, 
+>     45, 46, 49, 52, 53, 54, 56, 58, 59, 60, 66, 71, 72, 73, 74, 75, 77, 79, 
+>     80, 85, 86, 92, 93, 96 ], 
+>  [ 26, 38, 18, 89, 41, 54, 85, 59, 24, 95, 35, 64, 25, 32, 21, 23, 94, 28, 
+>     79, 31, 46, 22, 75, 27, 42, 20, 73, 3, 7, 37, 14, 65, 78, 1, 76, 15, 57, 
+>     66, 49, 16, 19, 74, 52, 71, 72, 2, 86, 80, 40, 44, 4, 62, 47, 81, 58, 50, 
+>     9, 61, 43, 10 ] );;
 gap> NaturalLeqPartialPerm(f,g);
 false
 gap> f:=PartialPermNC([1],[100000]);                                      
@@ -433,14 +455,33 @@ gap> g;
 [1,100000][2,4][3,5]
 gap> NaturalLeqPartialPerm(f,g);
 true
-gap> g:=RandomPartialPerm(100000);;              
+gap> g:=
+> PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 
+>     20, 21, 22, 25, 26, 27, 28, 29, 31, 32, 34, 35, 37, 40, 43, 44, 46, 48, 
+>     50, 51, 52, 54, 55, 56, 57, 59, 60, 61, 63, 64, 65, 66, 67, 69, 71, 76, 
+>     78, 79, 80, 81, 83, 85, 86, 88, 89, 90, 92, 93, 95, 96, 97, 99 ], 
+>  [ 12, 67, 52, 69, 96, 43, 38, 58, 72, 99, 87, 33, 22, 7, 35, 89, 15, 42, 77, 
+>     3, 70, 39, 34, 25, 81, 83, 88, 30, 97, 64, 36, 17, 14, 26, 51, 55, 11, 
+>     10, 1, 59, 75, 71, 93, 44, 74, 4, 5, 63, 31, 32, 85, 53, 66, 94, 46, 27, 
+>     68, 100, 86, 8, 90, 65, 47, 48, 45, 29, 57, 82, 92, 24 ] );;
 gap> NaturalLeqPartialPerm(f,g);   
 false
 gap> f:=PartialPermNC([100000]);;   
 gap> g:=PartialPermNC([1,2,3], [100000,4,5]);;;
 gap> NaturalLeqPartialPerm(f,g);
 true
-gap> g:=RandomPartialPerm(100000);;             
+gap> g:=
+> PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 
+>     21, 22, 24, 25, 26, 27, 28, 29, 31, 34, 36, 37, 38, 39, 41, 44, 46, 47, 
+>     48, 51, 55, 56, 57, 58, 61, 62, 63, 64, 66, 67, 68, 69, 71, 72, 73, 74, 
+>     75, 76, 77, 81, 82, 83, 94, 96, 98 ], 
+>  [ 86243, 24019, 92473, 44160, 93892, 22630, 39783, 61399, 99288, 31825, 
+>     60250, 46007, 6674, 24575, 47097, 15055, 21177, 64280, 53747, 63362, 
+>     9651, 76666, 33684, 42123, 38956, 87858, 92587, 4775, 38450, 95306, 
+>     48164, 84693, 59170, 65070, 24314, 31294, 54766, 39401, 76714, 86853, 
+>     80503, 6128, 29087, 32355, 40641, 62259, 86547, 68053, 36450, 15562, 
+>     44576, 37896, 62646, 55753, 21232, 56275, 32817, 52357, 64985, 82822, 
+>     78412, 65577, 68433 ] );;
 gap> NaturalLeqPartialPerm(f,g);    
 false
 gap> f:=PartialPermNC([1],[100000])*PartialPermNC([1,100000], [100000,2]);
@@ -454,7 +495,7 @@ gap> IsPPerm4Rep(f);
 true
 gap> NaturalLeqPartialPerm(f,g);
 true
-gap> g:=RandomPartialPerm(4);;     
+gap> g:=PartialPerm( [ 1, 3 ], [ 3, 1 ] );;     
 gap> NaturalLeqPartialPerm(f,g);
 false
 
@@ -609,10 +650,6 @@ gap> g:=RandomPartialPerm(1000);;
 gap> f:=JoinOfPartialPerms(g, PartialPermNC([1001..100000], [1001..100000]));;
 gap> g=MeetOfPartialPerms(f, g);
 true
-gap> f:=RandomPartialPerm(100000);;
-gap> g:=RandomPartialPerm(100000);;
-gap> MeetOfPartialPerms(f,g);
-<empty partial perm>
 gap> f:=PartialPermNC([100000,2,3,4,5]); 
 [1,100000](2)(3)(4)(5)
 gap> g:=PartialPermNC([100001,2,3,4,5]);                                       
@@ -685,7 +722,19 @@ gap> IsPPerm4Rep(g);
 true
 gap> p=PermLeftQuoPartialPerm(f, g);
 true
-gap> f:=RandomPartialPerm(100000);;
+gap> f:=
+> PartialPerm(
+>  [ 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 23, 
+>     24, 25, 26, 28, 29, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 41, 43, 46, 
+>     48, 50, 51, 56, 57, 59, 63, 66, 68, 70, 71, 74, 76, 77, 78, 79, 83, 84, 
+>     85, 87, 90, 92, 94, 97, 100 ], 
+>  [ 81741, 47535, 89543, 7647, 6928, 97188, 75189, 75720, 16656, 19809, 59830, 
+>     16417, 72882, 82179, 79601, 83154, 17509, 84845, 47064, 83836, 71322, 
+>     16135, 20341, 76275, 83899, 31052, 74445, 62658, 89822, 77308, 51562, 
+>     39893, 31166, 28666, 71421, 60942, 85356, 37758, 73004, 85900, 7741, 
+>     60975, 67112, 21368, 84588, 64899, 13092, 33817, 85063, 22848, 98767, 
+>     36015, 82759, 4951, 10858, 31285, 49208, 60946, 33562, 4467, 52041, 
+>     75960, 83945 ] );;
 gap> PermLeftQuoPartialPerm(f, f);
 ()
 gap> IsPerm4Rep(last);
@@ -1877,8 +1926,6 @@ gap> f^g;
 [1,12][4,2,11][13,8,21](5,25)(22)(24)
 gap> g^-1*f*g;
 [1,12][4,2,11][13,8,21](5,25)(22)(24)
-gap> last=last2;
-true
 gap> f:=RandomPartialPerm(20000);; 
 gap> g:=RandomPartialPerm(30000);;
 gap> f^g=g^-1*f*g;
@@ -1928,20 +1975,14 @@ true
 # PowPPerm22, Case 5 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)<=deg(g)
 gap> f:=
 > PartialPermNC( [ 1, 2, 3, 4, 5, 9, 10 ], [ 3, 6, 4, 2, 1, 10, 7 ] );;
-gap> g:= 
-> PartialPermNC( [ 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 16 ], 
-> [ 8, 2, 12, 17, 9, 3, 5, 11, 18, 4, 16 ] );;
 gap> g:=
 > PartialPermNC( [ 1, 2, 3, 5, 7, 9, 11, 14, 15, 16, 17, 18 ], 
-> [ 4, 14, 2, 3, 17, 7, 9, 16, 15, 10, 11, 1 ] );;
-gap> g:=RandomPartialPerm(20);
-[1,4,11][6,5,20,3,14,18][13,2,7,19][15,10,16](8)(12)
+> [ 4, 14, 2, 3, 17, 7, 9, 16, 15, 10, 11, 1 ] );
+[5,3,2,14,16,10][18,1,4](7,17,11,9)(15)
 gap> f^g;
-[16,19][20,4,14,11,7,5]
+[3,4,2]
 gap> g^-1*f*g;
-[16,19][20,4,14,11,7,5]
-gap> last=last2;
-true
+[3,4,2]
 
 # PowPPerm22, Case 6 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)> deg(g)
 gap> f:=
@@ -1953,8 +1994,6 @@ gap> f^g;
 [4,6][10,1][17,13](19)
 gap> g^-1*f*g;
 [4,6][10,1][17,13](19)
-gap> last=last2;
-true
 
 # PowPPerm24, Case 1 of 6, dom(f) not known, codeg(f)<=deg(g)
 gap> f:=RandomPartialPerm(10);;                           
@@ -1971,7 +2010,7 @@ gap> f^g=g^-1*f*g;
 true
 
 # PowPPerm24, Case 3 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)<=deg(g)
-gap> f:=RandomPartialPerm(10);;                            
+gap> f:=PartialPerm( [ 1, 2, 4, 6, 7 ], [ 6, 9, 8, 5, 7 ] );;                            
 gap> f:=JoinOfPartialPerms(f, PartialPermNC([11], [100]));;
 gap> f:=f^-1;; DomainOfPartialPerm(f);;
 gap> g:=PartialPermNC([20], [65536]);;              
@@ -1981,11 +2020,9 @@ true
 gap> CodegreeOfPartialPerm(f)<=DegreeOfPartialPerm(g);
 true
 gap> f^g;
-[7,8,1][9,2]
+[4,3][7,2][9,5,1](6)
 gap> g^-1*f*g;
-[7,8,1][9,2]
-gap> last=last2;
-true
+[4,3][7,2][9,5,1](6)
 
 # PowPPerm24, Case 4 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)> deg(g)
 gap> f:=RandomPartialPerm(30);; DomainOfPartialPerm(f);;
@@ -2004,13 +2041,13 @@ true
 
 # PowPPerm24, Case 6 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)> deg(g)
 gap> g:=PartialPermNC([20], [65536]);;              
-gap> g:=JoinOfPartialPerms(g, RandomPartialPerm(9));;
+gap> g:=JoinOfPartialPerms(g, PartialPerm( [ 1, 2, 6, 7, 9 ], [ 6, 3, 9, 1, 8 ] ));;
 gap> f:=PartialPermNC( [ 10] , [22]);;
 gap> f^g;
 <empty partial perm>
 gap> g^-1*f*g;
 <empty partial perm>
-gap> f:=JoinOfPartialPerms(f, RandomPartialPerm(8));; 
+gap> f:=JoinOfPartialPerms(f, PartialPerm( [ 1, 2, 3, 4 ], [ 7, 6, 4, 5 ] ));; 
 gap> DomainOfPartialPerm(f);;
 gap> f^g=g^-1*f*g;
 true
@@ -2185,48 +2222,12 @@ gap> f[4]^10;
 gap> f[4]^-4; 
 [8,3](2)(7)
 gap> 
-
-#
-#gap> file:=Concatenation(SemigroupsDir(), "/examples/inverse.semigroups.gz");;
-#gap> f:=ReadSemigroups(file, 1)[1];
-#<partial perm on 6326 pts>
-#gap> f^6*f^-6=LeftOne(f);
-#false
-#gap> f^6*f^-6=LeftOne(f^6);
-#true
-#gap> (f^-1)^6=f^-6;
-#true
-#gap> (f^-1)^16=f^-16;
-#true
-#gap> i:=7541;;
-#gap> i in DomainOfPartialPerm(f);
-#false
-#gap> i^f;
-#fail
-#gap> i:=9912;;
-#gap> i in DomainOfPartialPerm(f);
-#true
-#gap> i^f;
-#3545
-#gap> i^f in ImageListOfPartialPerm(f);
-#true
-#gap> (i^f)^(f^-1);
-#9912
-#gap> g:=f^-1;;
-#gap> ForAll(DomainOfPartialPerm(f), i-> (i^f)^g=i);
-#true
 gap> f:=RandomPartialPerm(10000);;
 gap> g:=f^-1;;
 gap> ForAll(DomainOfPartialPerm(f), i-> (i^f)^g=i);
 true
 gap> ForAll(ImageSetOfPartialPerm(f), i-> (i^g)^f=i);     
 true
-
-#gap> f:=ReadSemigroups(file, 3)[1];
-#<partial perm on 6317 pts>
-#gap> g:=f^-1;;
-#gap> ForAll(ImageSetOfPartialPerm(f), i-> (i^g)^f=i);
-#true
 gap> p:=(1,3,2)(4,5);;
 gap> f:=PartialPermNC([ 1, 3, 4, 5, 6, 7, 9, 10 ], [ 6, 1, 4, 9, 2, 3, 7, 5 ]);
 [10,5,9,7,3,1,6,2](4)
@@ -2236,24 +2237,6 @@ gap> f*p;
 [10,4,5,9,7,2](1,6)(3)
 gap> FixedPointsOfPartialPerm(f*p);
 [ 3 ]
-
-#gap> f:=ReadSemigroups(file, 4)[1];
-#<partial perm on 12675 pts>
-#gap> p:=Random(SymmetricGroup(65000));;
-#gap> f*p;
-#<partial perm on 12675 pts>
-#gap> p*f;  
-#<partial perm on 12675 pts>
-#gap> f*p*p^-1=f;
-#true
-#gap> p^2*p^-2*f*p*p^-1*f=f^2;
-#true
-#gap> f<f;
-#false
-#gap> f/p;
-#<partial perm on 12675 pts>
-#gap> f/p*p=f;
-#true
 gap> f:=PartialPermNC([ 1, 2, 3, 5, 6, 7, 8, 10 ],
 > [ 6, 2, 5, 4, 7, 8, 9, 10 ]);
 [1,6,7,8,9][3,5,4](2)(10)
@@ -2304,7 +2287,6 @@ gap> FixedPointsOfPartialPerm(f^-1);
 [  ]
 gap> FixedPointsOfPartialPerm(g);   
 [  ]
-gap> f:=RandomPartialPerm(100000);;
 gap> f:=PartialPermNC([ 1, 3, 4, 5, 6, 9 ], [ 9, 10, 5, 7, 2, 8 ]);;
 gap> ImageSetOfPartialPerm(g);
 [ 1, 2, 3, 4, 6, 8, 9, 12, 13, 15, 16, 17, 20 ]
@@ -2356,59 +2338,6 @@ gap> ImageSetOfPartialPerm(f);
 [ 1, 2, 3, 2039, 2149, 13431, 21443 ]
 gap> RankOfPartialPerm(f);
 7
-
-#gap> f:=ReadSemigroups(file, 4)[1];
-#<partial perm on 12675 pts>
-#gap> RestrictedPP(f, [1..100]);
-#<partial perm on 100 pts>
-#gap> g:=last;
-#<partial perm on 100 pts>
-#gap> DomainOfPartialPerm(g);
-#[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 
-#  22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 
-#  41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 
-#  60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 
-#  79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 
-#  98, 99, 100 ]
-#gap> ImageSetOfPartialPerm(g);
-#[ 308, 382, 730, 999, 1469, 1488, 1628, 1715, 1759, 1908, 2062, 2149, 2192, 
-#  2339, 2427, 2778, 2971, 3137, 3364, 3369, 3412, 3622, 3811, 4445, 4522, 
-#  4874, 5058, 5191, 5706, 5856, 6322, 6532, 6759, 7182, 7282, 7590, 7989, 
-#  8151, 8357, 8362, 8562, 8611, 8795, 8829, 9042, 9371, 9760, 9946, 10435, 
-#  10601, 10689, 10701, 10743, 11117, 11192, 11284, 11743, 11798, 12164, 
-#  12190, 12263, 12323, 12421, 13061, 13110, 13339, 13344, 13529, 13542, 
-#  13869, 13974, 14325, 14326, 14410, 14904, 14955, 15581, 15782, 15977, 
-#  16047, 16189, 16381, 16525, 16754, 17197, 17458, 17717, 17770, 17835, 
-#  17895, 17957, 18166, 18456, 18483, 18788, 19090, 19456, 19522, 19745, 19795 
-# ]
-#gap> g^2;
-#<empty partial perm>
-#gap> g^-1;
-#<partial perm on 100 pts>
-#gap> g*g^-1=LeftOne(g);
-#true
-#gap> g^-1*g=RightOne(g);  
-#true
-#gap> ImageListOfPartialPerm(g);
-#[ 2192, 11284, 13542, 3622, 10601, 18166, 16754, 1628, 1469, 9042, 5058, 
-#  14904, 1488, 17895, 16525, 7182, 19745, 9371, 18788, 12164, 13110, 999, 
-#  8151, 4522, 3137, 13869, 12323, 10701, 11743, 8795, 13061, 1715, 13529, 
-#  17835, 6759, 2149, 18456, 8357, 17717, 19522, 17458, 10435, 4445, 15977, 
-#  7282, 10689, 8362, 19090, 14326, 16047, 16381, 12421, 8829, 17957, 730, 
-#  17770, 4874, 382, 6532, 2778, 9946, 2062, 1759, 12263, 1908, 14325, 10743, 
-#  2427, 15581, 6322, 13974, 9760, 15782, 5191, 8562, 14410, 11192, 3412, 
-#  3369, 13344, 16189, 14955, 2971, 19795, 2339, 7590, 7989, 13339, 11117, 
-#  17197, 18483, 308, 5856, 12190, 11798, 3364, 3811, 5706, 19456, 8611 ]
-#gap> f<f^-1;                                             
-#true
-#gap> g<g^-1; 
-#true
-#gap> g^-1<g;   
-#false
-#gap> NaturalLeqPartialPerm(g, f);
-#true
-#gap> NaturalLeqPartialPerm(f, g);
-#false
 gap> f:=PartialPermNC(
 > [ 9, 45, 53, 15, 42, 97, 71, 66, 7, 88, 6, 98, 95, 36, 20, 59, 94, 0, 81, 70,
 >  65, 29, 78, 37, 74, 48, 52, 4, 32, 93, 18, 13, 55, 0, 49, 0, 99, 46, 35,
@@ -2445,66 +2374,6 @@ gap> RestrictedPartialPerm(EmptyPartialPerm(), [1,2,3,4]);
 <empty partial perm>
 gap> RestrictedPartialPerm(PartialPerm([1],[1]), [2,3,4]);                     
 <empty partial perm>
-
-#
-#gap> S:=InverseSemigroup([ PartialPermNC( [ 1, 3 ], [ 1, 3 ] ),
-#> PartialPermNC( [ 1, 2 ], [ 3, 2 ] ) ] );;
-#gap> Size(S);
-#11
-#gap> NaturalLeqPartialPerm(Elements(S)[4], Elements(S)[10]);
-#true
-#gap> NaturalLeqPartialPerm(Elements(S)[4], Elements(S)[9]);
-#false
-#gap> List(Elements(S), x-> NaturalLeqPartialPerm(Elements(S)[1], x));
-#[ true, true, true, true, true, true, true, true, true, true, true ]
-#gap> List(Elements(S), x-> NaturalLeqPartialPerm(Elements(S)[2], x));
-#[ false, true, false, false, false, false, true, false, true, false, false ]
-#gap> PositionsProperty([1..11], x-> NaturalLeqPartialPerm(Elements(S)[4], 
-#> Elements(S)[x]));
-#[ 4, 7, 8, 10, 11 ]
-#gap> PositionsProperty([1..11], x-> NaturalLeqPartialPerm(Elements(S)[2],
-#> Elements(S)[x]));
-#[ 2, 7, 9 ]
-
-#
-#gap> s:=InverseSemigroup( 
-#> PartialPermNC( [ 1, 2, 3, 6, 8, 10 ], [ 2, 6, 7, 9, 1, 5 ] ),
-#> PartialPermNC( [ 1, 2, 4, 5, 8, 10 ], [ 6, 2, 7, 8, 10, 4 ] ),
-#> PartialPermNC( [ 1, 2, 4, 6, 8, 9 ], [ 7, 10, 1, 9, 4, 2 ] ),
-#> PartialPermNC( [ 1, 2, 4, 7, 8, 9 ], [ 10, 7, 8, 5, 9, 1 ] ),
-#> PartialPermNC( [ 1, 2, 3, 4, 5, 6, 8 ], [ 6, 2, 8, 4, 7, 5, 3 ] ),
-#> PartialPermNC( [ 1, 2, 3, 4, 5, 8, 10 ], [ 3, 1, 4, 2, 5, 6, 7 ] ),
-#> PartialPermNC( [ 1, 2, 3, 4, 5, 8, 10 ], [ 7, 1, 4, 3, 2, 6, 5 ] ),
-#> PartialPermNC( [ 1, 2, 3, 5, 6, 7, 8 ], [ 5, 9, 10, 6, 3, 8, 4 ] ),
-#> PartialPermNC( [ 1, 2, 3, 4, 5, 6, 7, 10 ], [ 4, 7, 6, 9, 10, 1, 3, 2 ] ),
-#> PartialPermNC( [ 1, 2, 3, 4, 6, 7, 8, 10 ], [ 3, 8, 1, 9, 4, 10, 5, 6 ] ) );;
-#gap> NrMovedPoints(s);
-#10
-#gap> MovedPoints(s);
-#[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-#gap> LargestMovedPoint(s);
-#10
-#gap> SmallestMovedPoint(s); 
-#1
-#gap> f:=PartialPermNC([ 9 ], [ 3 ]);;
-#gap> NrMovedPoints(f);
-#1
-#gap> MovedPoints(f);
-#[ 9 ]
-#gap> SmallestMovedPoint(f);
-#9
-#gap> LargestMovedPoint(f);
-#9
-#gap> coll:=[ PartialPermNC([]), PartialPermNC([ 2, 3, 6 ], [ 2, 4, 5 ]), 
-#> PartialPermNC([ 9, 10 ], [ 7, 8 ]), PartialPermNC([ 6, 9 ], [ 5, 4 ]) ];;
-#gap> NrMovedPoints(coll);
-#4
-#gap> MovedPoints(coll);
-#[ 3, 6, 9, 10 ]
-#gap> LargestMovedPoint(coll);
-#10
-#gap> SmallestMovedPoint(coll);
-#3
 
 #
 gap> SetUserPreference("PartialPermDisplayLimit", display);;

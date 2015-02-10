@@ -183,5 +183,21 @@ gap> cp1 = cp2;
 true
 gap> cp2 = cp3;
 true
+
+# Trip String
+gap> """x""" = "x";
+true
+gap> """""" = "";
+true
+gap> """\n""" = "\\n";
+true
+gap> """("\n")""" = "(\"\\n\")";
+true
+gap> """
+> """ = "\n";
+true
+gap> """x
+> x""" = "x\nx";
+true
 gap> STOP_TEST( "strings.tst", 100000 );
 

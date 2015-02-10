@@ -1889,8 +1889,6 @@ void GetNumber ( UInt StartingStatus )
 }
 
 
-
-
 /****************************************************************************
  **
  *F  GetStr()  . . . . . . . . . . . . . . . . . . . . . . get a string, local
@@ -1994,6 +1992,112 @@ void GetStr ( void )
   TLS->helpSubsOn = 1;
 }
 
+/****************************************************************************
+ **
+ *F  GetTripStr()  . . . . . . . . . . . . .get a triple quoted string, local
+ **
+ **  'GetTripStr' reads a triple-quoted string from the  current input file
+ **  into  the variable 'Value' and sets 'Symbol'   to  'S_STRING'.
+ **  The last member of the opening triple quote '"'
+ **  of the string is the current character pointed to by 'In'.
+ **
+ **  A triple quoted string is any sequence of characters which is terminated
+ **  by """. No escaping is performed.
+ **
+ **  An error is raised if the file ends before the closing """.
+ **
+ **  When Value is  completely filled we have to check  if the reading of
+ **  the string is  complete or not to decide  between Symbol=S_STRING or
+ **  S_PARTIALTRIPLESTRING.
+ */
+void GetTripStr ( void )
+{
+  Int                 i = 0, triplefound = 0;
+
+  /* Avoid substitution of '?' in beginning of GetLine chunks */
+  TLS->helpSubsOn = 0;
+  
+  /* read all characters into 'Value'                                    */
+  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS->in != '\377'; i++ ) {
+    // Only thing to check for is a triple quote.
+    
+    if ( *TLS->in == '"') {
+        GET_CHAR();
+        if (*TLS->in == '"') {
+            GET_CHAR();
+            if(*TLS->in == '"' ) {
+                triplefound = 1;
+                break;
+            }
+            TLS->value[i] = '"';
+            i++;
+        }
+        TLS->value[i] = '"';
+        i++;
+    }
+    TLS->value[i] = *TLS->in;
+
+
+    /* read the next character                                         */
+    GET_CHAR();
+  }
+
+  /* XXX although we have ValueLen we need trailing \000 here,
+     in gap.c, function FuncMAKE_INIT this is still used as C-string
+     and long integers and strings are not yet supported!    */
+  TLS->value[i] = '\0';
+
+  /* check for error conditions                                          */
+  if ( *TLS->in == '\377' )
+    SyntaxError("string must end with \" before end of file");
+
+  /* set length of string, set 'Symbol' and skip trailing '"'            */
+  TLS->valueLen = i;
+  if ( i < SAFE_VALUE_SIZE-1 )  {
+    TLS->symbol = S_STRING;
+    if ( *TLS->in == '"' )  GET_CHAR();
+  }
+  else
+    TLS->symbol = S_PARTIALTRIPSTRING;
+
+  /* switching on substitution of '?' */
+  TLS->helpSubsOn = 1;
+}
+
+/****************************************************************************
+ **
+ *F  GetMaybeTripStr()  . . . . . . . . . . . . . . . . . get a string, local
+ **
+ **  'GetMaybeTripStr' decides if we are reading a single quoted string,
+ **  or a triple quoted string.
+ */
+
+void GetMaybeTripStr ( void )
+{
+    /* Avoid substitution of '?' in beginning of GetLine chunks */
+    TLS->helpSubsOn = 0;
+    
+    /* This is just a normal string! */
+    if ( *TLS->in != '"' ) {
+        GetStr();
+        return;
+    }
+    
+    GET_CHAR();
+    /* This was just an empty string! */
+    if ( *TLS->in != '"' ) {
+        TLS->value[0] = '\0';
+        TLS->valueLen = 0;
+        TLS->symbol = S_STRING;
+        TLS->helpSubsOn = 1;
+        return;
+    }
+    
+    GET_CHAR();
+    /* Now we know we are reading a triple string */
+    GetTripStr();
+}
+
 
 /****************************************************************************
  **
@@ -2082,6 +2186,12 @@ void GetSymbol ( void )
     GetStr();
     return;
   }
+  
+  if (TLS->symbol == S_PARTIALTRIPSTRING) {
+      GetTripStr();
+      return;
+  }
+  
   if (TLS->symbol == S_PARTIALINT) {
     if (TLS->value[0] == '\0')
       GetNumber(0);
@@ -2186,7 +2296,7 @@ void GetSymbol ( void )
   case '^':   TLS->symbol = S_POW;                         GET_CHAR();  break;
   case '`':   TLS->symbol = S_BACKQUOTE;                   GET_CHAR();  break;
 
-  case '"':                               GET_CHAR(); GetStr();    break;
+  case '"':                        GET_CHAR(); GetMaybeTripStr();  break;
   case '\'':                                          GetChar();   break;
   case '\\':                                          GetIdent();  break;
   case '_':                                           GetIdent();  break;

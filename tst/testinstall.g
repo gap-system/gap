@@ -60,6 +60,8 @@ RunStandardTests( [
   [ "grpmat.tst", 481000000 ],
   [ "grppc.tst", 45300000 ],
   [ "grppcnrm.tst", 2333400000 ],
+  [ "infinity.tst", 1000 ], 
+  [ "intarith.tst", 2300000 ],
   [ "listgen.tst", 1000000 ],
   [ "mapping.tst", 37300000 ],
   [ "mgmring.tst", 1800000 ],

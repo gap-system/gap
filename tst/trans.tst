@@ -50,12 +50,10 @@ true
 
 # AsTransformation, AsPermutation
 gap> p:=Random(SymmetricGroup(100));;   
-gap> AsTransformation(p, 100);
-<transformation on 100 pts with rank 100>
+gap> AsTransformation(p, 100);;
 gap> p=AsPermutation(last);
 true
-gap> AsTransformation(p, 100000);
-<transformation on 100 pts with rank 100>
+gap> AsTransformation(p, 100000);;
 gap> p=AsPermutation(last);
 true
 gap> p:=Random(SymmetricGroup(10));;  
@@ -65,22 +63,18 @@ gap> IsPerm4Rep(p);
 true
 gap> p=AsPermutation(AsTransformation(p, 10));
 true
-gap> AsTransformation(p, 100000);
-Transformation( [ 2, 1, 6, 7, 8, 4, 5, 9, 10, 3 ] )
-gap> p=AsPermutation(last);
+gap> p=AsPermutation(AsTransformation(p, 100000));
 true
 gap> p=AsPermutation(AsTransformation(p, 11));
 true
 gap> p=AsPermutation(AsTransformation(p, 12));
 true
 gap> p:=Random(SymmetricGroup(100));;
-gap> AsTransformation(p);    
-<transformation on 100 pts with rank 100>
+gap> AsTransformation(p);;
 gap> p=AsPermutation(last);
 true
 gap> p:=Random(SymmetricGroup(1000000));;
-gap> AsTransformation(p);     
-<transformation on 1000000 pts with rank 1000000>
+gap> AsTransformation(p);;
 gap> p=AsPermutation(last);
 true
 gap> f:=RandomTransformation(100);;
@@ -100,11 +94,10 @@ IdentityTransformation
 gap> IsIdenticalObj(g, AsTransformation(g));
 true
 gap> p:=Random(SymmetricGroup(10000));;
-gap> g:=AsTransformation(p);
-<transformation on 10000 pts with rank 10000>
-gap> ImageSetOfTransformation(g)=[1..10000];
+gap> g:=AsTransformation(p);;
+gap> ImageSetOfTransformation(g, 10000)=[1..10000];
 true
-gap> FlatKernelOfTransformation(g)=[1..10000];
+gap> FlatKernelOfTransformation(g, 10000)=[1..10000];
 true
 gap> AsPermutation(g)=p;
 true
@@ -184,15 +177,15 @@ gap> f;
 Transformation( [ 5, 5, 3, 10, 10, 10, 2, 12, 11, 9, 1, 6 ] )
 
 # TRANS4 to TRANS4 without knowing rank, flat kernel or image set
-gap> f:=RandomTransformation(70000);;
+gap> f:=RandomTransformation(70000) * (70001, 70002);;
 gap> g:=AsTransformation(f, 100000);;
 gap> DegreeOfTransformation(g);
-70000
-gap> ForAll([70001..100000], i-> i^g=i);
+70002
+gap> ForAll([70003..100000], i-> i^g=i);
 true
-gap> ForAll([1..70000], i-> i^g=i^f);
+gap> ForAll([1..70002], i-> i^g=i^f);
 true
-gap> f=AsTransformation(g, 70000);       
+gap> f=AsTransformation(g, 70002);       
 true
 
 # TRANS2 to TRANS4 without knowing rank, flat kernel or image set
@@ -526,14 +519,14 @@ gap> last=f^0;
 true
 gap> f:=RandomTransformation(100);;
 gap> e:=LeftOne(f);;
-gap> KernelOfTransformation(e)=KernelOfTransformation(f);
+gap> KernelOfTransformation(e, 100)=KernelOfTransformation(f, 100);
 true
 gap> f:=RandomTransformation(100000);;
 gap> e:=LeftOne(f);;
-gap> KernelOfTransformation(e)=KernelOfTransformation(f);
+gap> KernelOfTransformation(e, 100000)=KernelOfTransformation(f, 100000);
 true
 gap> e:=RightOne(f);;
-gap> ImageSetOfTransformation(e)=ImageSetOfTransformation(f);
+gap> ImageSetOfTransformation(e, 100000)=ImageSetOfTransformation(f, 100000);
 true
 
 # INV_TRANS
@@ -1040,8 +1033,8 @@ Transformation( [ 5, 4, 3, 8, 7, 3, 6, 7, 10, 3 ] )
 gap> f^p=p^-1*f*p;
 true
 gap> p:=Random(SymmetricGroup(65537));;
-gap> f^p;
-<transformation on 64585 pts with rank 64582>
+gap> f ^ p = p^-1 * f * p;
+true
 
 # conjugation of IsTrans4Rep by IsPerm2Rep
 gap> f:=RandomTransformation(65536);;

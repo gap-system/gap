@@ -91,6 +91,7 @@
 #define S_CHAR          ((1UL<<11)+2)
 #define S_STRING        ((1UL<<11)+3)
 #define S_PARTIALSTRING ((1UL<<11)+4)
+#define S_PARTIALTRIPSTRING   ((1UL<<11)+5)
 
 #define S_REC           ((1UL<<12)+0)
 #define S_BACKQUOTE     ((1UL<<12)+1)

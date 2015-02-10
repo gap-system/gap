@@ -927,8 +927,8 @@ void ReadString(
      C_NEW_STRING( string, TLS->valueLen, (void *)TLS->value );
      len = TLS->valueLen;
 
-     while (TLS->symbol == S_PARTIALSTRING) {
-         Match(S_PARTIALSTRING, "", follow);
+     while (TLS->symbol == S_PARTIALSTRING || TLS->symbol == S_PARTIALTRIPSTRING) {
+         Match(TLS->symbol, "", follow);
          GROW_STRING(string, len + TLS->valueLen);
          memcpy(CHARS_STRING(string) + len, (void *)TLS->value,
                                         TLS->valueLen);
@@ -1458,6 +1458,7 @@ void ReadLiteral (
     /* (partial) string */
     case S_STRING:
     case S_PARTIALSTRING:
+    case S_PARTIALTRIPSTRING:
         ReadString( follow );
         break;
 
