@@ -5,9 +5,7 @@ This chapter contains an overview of most important changes
 introduced in &GAP; 4.7.2 release (the first public release
 of &GAP; 4.7).
 
-<!--
 It also contains information about subsequent update releases for &GAP; 4.7.
--->
 
 <Section Label="fix472"> 
 <Heading>&GAP; 4.7.2 (December 2013)</Heading>
@@ -578,6 +576,102 @@ versions of <Package>C</Package> compilers.
 <Item>
 Some minor bugs in the transformation and partial permutation code 
 and documentation were resolved. 
+</Item>
+</List>
+
+</Section>
+
+
+<Section Label="fix477"> 
+<Heading>&GAP; 4.7.7 (February 2015)</Heading>
+
+New features:
+<List>
+<Item>
+Introduced some arithmetic operations for infinity and negative infinity,
+see <Ref Label="Infinity" BookName="ref"/>.
+</Item>
+<Item>
+Introduced new property <Ref Prop="IsGeneratorsOfSemigroup" BookName="ref"/>
+which reflects wheter the list or collection generates a semigroup.
+</Item>
+</List>
+
+Fixed bugs which could lead to incorrect results:
+<List>
+<Item>
+Fixed a bug in <Ref Func="Union" BookName="ref"/> (actually,
+in the internal library function <C>JoinRanges</C>) caused by 
+downward running ranges. [Reported by Matt Fayers]
+</Item>
+<Item>
+Fixed a bug where recursive records might be printed with the wrong 
+component name, coming from component names being ordered differently
+in two different pieces of code. [Reported by Thomas Breuer]
+</Item>
+<Item> 
+The usage of <C>abs</C> in <File>src/gmpints.c</File> was replaced by 
+<C>AbsInt</C>. The former is defined to operate on 32-bit integers
+even if &GAP; is compiled in 64-bit mode. That lead to truncating
+&GAP; integers and caused a crash in <Ref Func="RemInt" BookName="ref"/>, 
+reported by Willem De Graaf and Heiko Dietrich. Using <C>AbsInt</C> fixes 
+the crash, and ensures the correct behaviour on 32-bit and 64-bit builds.
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+A problem with <Ref Func="ProbabilityShapes" BookName="ref"/> not setting
+frequencies list for small degrees. [Reported by Daniel Błażewicz and
+independently by Mathieu Gagne]
+</Item>
+<Item>
+An error when generating a free monoid of rank infinity. 
+[Reported by Nick Loughlin]
+</Item>
+<Item>
+Several bugs with the code for Rees matrix semigroups not handling
+trivial cases properly. 
+</Item>
+<Item>
+A bug in <Ref Attr="IsomorphismTypeInfoFiniteSimpleGroup" BookName="ref"/>
+affecting one particular group due to a misformatting in a routine that 
+translates between the Chevalley type and the name used in the table 
+(in this case, <C>"T"</C> was used instead of <C>["T"]</C>).
+[Reported by Petr Savicky]
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+The <Ref Oper="Basis" BookName="ref"/> method for full homomorphism
+spaces of linear mappings did not set basis vectors which could be
+obtained by <Ref Attr="GeneratorsOfLeftModule" BookName="ref"/>.
+</Item>
+<Item>
+A problem with <Ref Attr="GaloisType" BookName="ref"/> entering an
+infinite loop in the routine for approximating a root. [Reported by Daniel Błażewicz]
+</Item>
+<Item>
+Fixed the crash when &GAP; is called when the environment variables
+<C>HOME</C> or <C>PATH</C> are unset. [Reported by Bill Allombert]
+</Item>
+</List>
+
+Furthermore, new packages that have been added to the redistribution 
+since the release of &GAP; 4.7.6 are: 
+
+<List>
+<Item>
+<Package>json</Package> package by Christopher Jefferson, providing
+a mapping between the <Package>JSON</Package> markup language and &GAP;
+</Item>
+<Item>
+<Package>SglPPow</Package> package by Bettina Eick and Michael Vaughan-Lee, 
+providing the database of <M>p</M>-groups of order <M>p^7</M> for 
+<M>p &gt; 11</M>, and of order <M>3^8</M>.
 </Item>
 </List>
 

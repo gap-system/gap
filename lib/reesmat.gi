@@ -57,7 +57,15 @@ end);
 InstallMethod(IsIdempotent, "for a Rees 0-matrix semigroup element",
 [IsReesZeroMatrixSemigroupElement], 
 function(x)
-  return x![1]=0 or x![2]^-1=x![4][x![3]][x![1]];
+  local R;
+
+  R:=ReesMatrixSemigroupOfFamily(FamilyObj(x));
+  if IsGroup(UnderlyingSemigroup(R)) then 
+    # only for RZMS over groups!
+    return x![1]=0 or x![2]^-1=x![4][x![3]][x![1]];
+  else 
+    return x ^ 2 = x;
+  fi;
 end);
 
 #
@@ -153,7 +161,7 @@ InstallMethod(IsReesMatrixSemigroup,
 [IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup], 
 function(R) 
   local gens, I, J;
-
+  
   if IsWholeFamily(R) then 
     return true;
   elif IsSimpleSemigroup(UnderlyingSemigroup(ParentAttr(R))) 
@@ -200,6 +208,9 @@ function(R)
   gens:=GeneratorsOfSemigroup(R);
   pos:=Position(gens, MultiplicativeZero(R));
   if pos<>fail then 
+    if Size(gens) = 1 then
+      return Size(ParentAttr(R)) = 1;
+    fi;
     gens:=ShallowCopy(gens);
     Remove(gens, pos);
   fi;
@@ -302,7 +313,7 @@ function(S, mat)
   if HasIsFinite(S) then 
     SetIsFinite(R, IsFinite(S));
   fi;
-  
+  GeneratorsOfSemigroup(R); 
   SetIsSimpleSemigroup(R, false);
   return R;
 end);
@@ -310,7 +321,7 @@ end);
 #
 
 InstallMethod(ViewObj, "for a Rees matrix semigroup",
-[IsReesMatrixSemigroup], 2, #to beat the next method
+[IsReesMatrixSemigroup], 3, #to beat the next method
 function(R)
   Print("\>\><Rees matrix semigroup \>", Length(Rows(R)), "x",
       Length(Columns(R)), "\< over \<");
@@ -343,7 +354,7 @@ end);
 #
 
 InstallMethod(ViewObj, "for a Rees 0-matrix semigroup",
-[IsReesZeroMatrixSemigroup], 2, #to beat the next method
+[IsReesZeroMatrixSemigroup], 3, #to beat the next method
 function(R)
   Print("\>\><Rees 0-matrix semigroup \>", Length(Rows(R)), "x",
       Length(Columns(R)), "\< over \<");

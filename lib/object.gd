@@ -693,32 +693,33 @@ DeclareOperation( "KnownPropertiesOfObject", [ IsObject ] );
 ##  gap> g:=Group((1,2),(1,2,3));;
 ##  gap> KnownPropertiesOfObject(g);
 ##  [ "IsFinite", "CanEasilyCompareElements", "CanEasilySortElements", 
-##    "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", 
-##    "IsAssociative", "IsSimpleSemigroup", "IsRegularSemigroup", 
-##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup", 
-##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
-##    "KnowsHowToDecompose", "IsNilpotentByFinite" ]
+##   "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", 
+##   "IsAssociative", "IsGeneratorsOfSemigroup", "IsSimpleSemigroup", 
+##   "IsRegularSemigroup", "IsCompletelyRegularSemigroup", 
+##   "IsCompletelySimpleSemigroup", "IsFinitelyGeneratedGroup", 
+##   "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", 
+##   "IsNilpotentByFinite" ]
 ##  gap> Size(g);
 ##  6
 ##  gap> KnownPropertiesOfObject(g);
 ##  [ "IsEmpty", "IsTrivial", "IsNonTrivial", "IsFinite", 
-##    "CanEasilyCompareElements", "CanEasilySortElements", 
-##    "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", 
-##    "IsAssociative", "IsSimpleSemigroup", "IsRegularSemigroup", 
-##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup", 
-##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
-##    "KnowsHowToDecompose", "IsPerfectGroup", "IsSolvableGroup", 
-##    "IsPolycyclicGroup", "IsNilpotentByFinite", "IsTorsionFree", 
-##    "IsFreeAbelian" ]
+##   "CanEasilyCompareElements", "CanEasilySortElements", 
+##   "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", 
+##   "IsAssociative", "IsGeneratorsOfSemigroup", "IsSimpleSemigroup", 
+##   "IsRegularSemigroup", "IsCompletelyRegularSemigroup", 
+##   "IsCompletelySimpleSemigroup", "IsFinitelyGeneratedGroup", 
+##   "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", 
+##   "IsPerfectGroup", "IsSolvableGroup", "IsPolycyclicGroup", 
+##   "IsNilpotentByFinite", "IsTorsionFree", "IsFreeAbelian" ]
 ##  gap> KnownTruePropertiesOfObject(g);
 ##  [ "IsNonTrivial", "IsFinite", "CanEasilyCompareElements", 
-##    "CanEasilySortElements", "IsDuplicateFree", 
-##    "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
-##    "IsSimpleSemigroup", "IsRegularSemigroup", 
-##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup", 
-##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
-##    "KnowsHowToDecompose", "IsSolvableGroup", "IsPolycyclicGroup", 
-##    "IsNilpotentByFinite" ]
+##   "CanEasilySortElements", "IsDuplicateFree", 
+##   "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
+##   "IsGeneratorsOfSemigroup", "IsSimpleSemigroup", 
+##   "IsRegularSemigroup", "IsCompletelyRegularSemigroup", 
+##   "IsCompletelySimpleSemigroup", "IsFinitelyGeneratedGroup", 
+##   "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", 
+##   "IsSolvableGroup", "IsPolycyclicGroup", "IsNilpotentByFinite" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

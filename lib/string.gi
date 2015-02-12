@@ -1000,12 +1000,15 @@ InstallGlobalFunction(PrintCSV,function(arg)
   fi;
 
   PrintTo(file);
-  printEntry(rf[1]);
-  for j in [2..Length(rf)] do
-    AppendTo(file,",");
-    printEntry(ReplacedString(rf[j],"_"," "));
-  od;
-  AppendTo(file,"\n");
+
+  if ValueOption("noheader")<>true then
+    printEntry(rf[1]);
+    for j in [2..Length(rf)] do
+      AppendTo(file,",");
+      printEntry(ReplacedString(rf[j],"_"," "));
+    od;
+    AppendTo(file,"\n");
+  fi;
 
   for  i in l do
     for j in [1..Length(rf)] do

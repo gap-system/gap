@@ -12,6 +12,9 @@
 
 # Everything from here...
 
+InstallMethod(IsGeneratorsOfSemigroup, "for an empty list",
+[IsList and IsEmpty], ReturnFalse);
+
 #
 
 InstallMethod(InversesOfSemigroupElement, "for a semigroup and an element",
@@ -358,13 +361,19 @@ InstallGlobalFunction( Semigroup, function( arg )
     return SemigroupByGenerators( arg[1] );
 
   # generators and collections of generators
-  elif IsAssociativeElement(arg[1]) or IsAssociativeElementCollection(arg[1]) 
-   or (HasIsEmpty(arg[1]) and IsEmpty(arg[1])) then
+  elif (IsMultiplicativeElement(arg[1])
+        and IsGeneratorsOfSemigroup([arg[1]]))
+    or (IsMultiplicativeElementCollection(arg[1])
+        and IsGeneratorsOfSemigroup(arg[1])) 
+    or (HasIsEmpty(arg[1]) and IsEmpty(arg[1])) then
     out:=[];
     for i in [1..Length(arg)] do
-      if IsAssociativeElement(arg[i]) then
+      #so that we can pass the options record in the Semigroups package 
+      if i=Length(arg) and IsRecord(arg[i]) then
+        return SemigroupByGenerators(out, arg[i]);
+      elif IsMultiplicativeElement(arg[i]) and IsGeneratorsOfSemigroup([arg[i]]) then
         Add(out, arg[i]);
-      elif IsAssociativeElementCollection(arg[i]) then
+      elif IsGeneratorsOfSemigroup(arg[i]) then
         if HasGeneratorsOfSemigroup(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
         elif IsList(arg[i]) then 
@@ -372,9 +381,6 @@ InstallGlobalFunction( Semigroup, function( arg )
         else
           Append(out, AsList(arg[i]));
         fi;
-      #so that we can pass the options record in the Semigroups package 
-      elif i=Length(arg) and IsRecord(arg[i]) then
-        return SemigroupByGenerators(out, arg[i]);
       else
         if not IsEmpty(arg[i]) then 
           Error( "Usage: Semigroup(<gen>,...), Semigroup(<gens>), ",

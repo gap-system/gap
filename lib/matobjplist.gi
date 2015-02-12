@@ -16,16 +16,22 @@
 
 InstallGlobalFunction( MakePlistVectorType,
   function( basedomain, filter )
-    if IsIdenticalObj(basedomain,Integers) then
-        return NewType(FamilyObj(basedomain),
-                       filter and IsMutable and IsIntVector);
-    elif IsFinite(basedomain) and IsField(basedomain) then
-        return NewType(FamilyObj(basedomain),
-                       filter and IsMutable and IsFFEVector);
-    else
-        return NewType(FamilyObj(basedomain),
-                       filter and IsMutable);
+    local T, filter2;
+    if HasCanEasilyCompareElements(Representative(basedomain)) and
+       CanEasilyCompareElements(Representative(basedomain)) then
+        filter2 := filter and IsMutable and CanEasilyCompareElements;
     fi;
+    if IsIdenticalObj(basedomain,Integers) then
+        T := NewType(FamilyObj(basedomain),
+                       filter2 and IsIntVector);
+    elif IsFinite(basedomain) and IsField(basedomain) then
+        T := NewType(FamilyObj(basedomain),
+                       filter2 and IsFFEVector);
+    else
+        T := NewType(FamilyObj(basedomain),
+                       filter2);
+    fi;
+    return T;
   end);
 
 InstallMethod( NewRowVector, "for IsPlistVectorRep, a ring, and a list",
@@ -68,8 +74,13 @@ InstallMethod( NewMatrix,
         fi;
     od;
     m := [basedomain,e,rl,m];
+    filter2 := filter and IsMutable;
+    if HasCanEasilyCompareElements(Representative(basedomain)) and
+       CanEasilyCompareElements(Representative(basedomain)) then
+        filter2 := filter2 and CanEasilyCompareElements;
+    fi;
     Objectify( NewType(CollectionsFamily(FamilyObj(basedomain)),
-                       filter and IsMutable), m );
+                       filter2), m );
     return m;
   end );
 

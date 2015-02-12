@@ -44,6 +44,7 @@ true</Example>
 <#Include Label="AsSemigroup">
 <#Include Label="AsSubsemigroup">
 <#Include Label="GeneratorsOfSemigroup">
+<#Include Label="IsGeneratorsOfSemigroup">
 <#Include Label="FreeSemigroup">
 <#Include Label="SemigroupByMultiplicationTable">
 

@@ -1,0 +1,325 @@
+# GAP 4.7 Installer for Windows
+#
+# Script written by Alexander Konovalov 
+#
+# Based on the previous NSIS scripts by A.Konovalov for GAP 4.4, 4.5, 4.6
+# 
+# Updated to use NSISModern User Interface using example scripts 
+# from "NSIS\Examples\Modern UI" of NSIS 2.46 by Joost Verburg
+#
+# To make the GAP installer for Windows:
+# - put gapicon.ico in the same folder with this script
+# - copy etc/CPL to copyright.txt in the same folder with this script
+# - unpack GAP source distribution to the subdirectory 'gap4r7'
+#   in the place where this script is located
+# - remove bin/regtool.exe and bin/usemem.bat
+# - compile the script
+# - perform test installation with various components and compare it 
+#   with the content of source directories
+#
+# TO-DO: 
+# - improve icons (and add another one for mintty) and place them in 
+#   'bin' to get from there instead of copying them to the script folder
+# - suggest user feedback
+# - suggest to remove manually GAP root directory after uninstall
+# - trace dependencies between packages?
+# - add to packages descriptions whether they work under Windows
+# - detect Cygwin installation and at least display a warning?
+# - check user's permissions?
+# - cleanup start menu and desktop shortcuts during uninstall
+
+#######################################################################
+#
+# include headers
+#
+!include "WordFunc.nsh"
+!insertmacro WordReplace
+!include Sections.nsh
+
+# Include Modern UI
+
+  !include "MUI2.nsh"
+
+#######################################################################
+#
+# Declaring user variables - 
+#
+var GAP_VER       # GAP version in format 4.7.2
+var RXVT_PATH     # Install path in the form C/gap4r7
+var GAP_BAT       # to write gap.bat file
+var GAPRXVT_BAT   # to write gaprxvt.bat file
+var GAPCMD_BAT   # to write gapmintty.bat file
+var IndependentSectionState
+var StartMenuFolder
+
+#######################################################################
+#
+# User variables and other general settings: adjust them here as needed
+# 
+Section
+StrCpy $GAP_VER "4.7.6"
+SectionEnd
+
+#Name and file
+Name "GAP 4.7.6"
+OutFile "gap4r7p6_2014_11_15-20_02.exe"
+
+#Default installation folder
+InstallDir "C:\gap4r7"
+
+#######################################################################
+# Get installation folder from registry if available
+InstallDirRegKey HKCU "Software\GAP" ""
+
+# Request application privileges for Windows Vista
+RequestExecutionLevel user
+
+# Set compressing method (for test compiling may be commented out)
+# and /SOLID can be removed (The best ratio is with /SOLID lzma,
+# but it takes several times more to pack it, so we may be happy
+# with the default compressor)
+# SetCompressor /SOLID lzma
+# SetCompressor lzma
+# SetCompressor /SOLID zlib
+# SetCompressor bzip2
+
+#######################################################################
+# Interface Settings
+
+  !define MUI_ABORTWARNING
+
+#######################################################################
+# Pages
+
+  !insertmacro MUI_PAGE_WELCOME
+  !insertmacro MUI_PAGE_LICENSE "copyright.txt"
+  !insertmacro MUI_PAGE_COMPONENTS
+  !insertmacro MUI_PAGE_DIRECTORY
+
+  ;Start Menu Folder Page Configuration
+  !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\GAP" 
+  !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
+  
+  !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
+
+  !insertmacro MUI_PAGE_INSTFILES
+  !insertmacro MUI_PAGE_FINISH
+
+  !insertmacro MUI_UNPAGE_WELCOME
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_INSTFILES
+  !insertmacro MUI_UNPAGE_FINISH
+
+#######################################################################
+# Languages
+
+  !insertmacro MUI_LANGUAGE "English"
+
+#######################################################################
+#
+# Installer Sections
+#
+
+#######################################################################
+#
+# The core GAP system - required component
+#
+Section "Core GAP system" SecGAPcore
+
+  SectionIn RO
+
+  # Set output path to the installation directory
+  SetOutPath $INSTDIR
+  # Put files there
+  File gap4r7\*.*
+
+  SetOutPath $INSTDIR\bin
+  File /r gap4r7\bin\*.*
+  File gapicon.ico
+
+  SetOutPath $INSTDIR\cnf
+  File /r gap4r7\cnf\*.*
+
+  SetOutPath $INSTDIR\doc
+  File /r gap4r7\doc\*.*
+
+  SetOutPath $INSTDIR\etc
+  File /r gap4r7\etc\*.*
+
+  SetOutPath $INSTDIR\extern
+  File /r gap4r7\extern\*.*
+
+  SetOutPath $INSTDIR\grp
+  File /r gap4r7\grp\*.*
+
+  SetOutPath $INSTDIR\lib
+  File /r gap4r7\lib\*.*
+
+  SetOutPath $INSTDIR\prim
+  File /r gap4r7\prim\*.*
+
+  SetOutPath $INSTDIR\small
+  File /r gap4r7\small\*.*
+
+  SetOutPath $INSTDIR\src
+  File /r gap4r7\src\*.*
+
+  SetOutPath $INSTDIR\trans
+  File /r gap4r7\trans\*.*
+
+  SetOutPath $INSTDIR\terminfo
+  File /r gap4r7\terminfo\*.*
+
+  SetOutPath $INSTDIR\tst
+  File /r gap4r7\tst\*.*
+
+  # restore initial output path
+  SetOutPath $INSTDIR 
+
+  # Store installation folder
+  WriteRegStr HKCU "Software\GAP" "" $INSTDIR
+
+  # Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall.exe"
+
+  # rewriting install path in format /cygdrive/c/gap4r7
+  StrCpy $RXVT_PATH $INSTDIR
+  ${WordReplace} $RXVT_PATH ":" ""  "+" $RXVT_PATH
+  ${WordReplace} $RXVT_PATH "\" "/" "+" $RXVT_PATH
+
+  # Write gap.bat file as follows:
+  # set TERMINFO=/cygdrive/c/gap4r7/terminfo
+  # set CYGWIN=nodosfilewarning
+  # set LANG=en_US.UTF-8
+  # set HOME=%HOMEDRIVE%%HOMEPATH%
+  # cd %HOME%
+  # start "GAP" C:\gap4r7\bin\mintty.exe -s 120,40 /cygdrive/c/gap4r7/bin/gapw95.exe -l /cygdrive/c/gap4r7 %*
+  # exit
+
+  FileOpen $GAP_BAT $INSTDIR\bin\gap.bat w
+  FileWrite $GAP_BAT "set TERMINFO=/cygdrive/"
+  FileWrite $GAP_BAT $RXVT_PATH
+  FileWrite $GAP_BAT "/terminfo"
+    FileWriteByte $GAP_BAT "13"
+    FileWriteByte $GAP_BAT "10"
+  FileWrite $GAP_BAT "set CYGWIN=nodosfilewarning"
+    FileWriteByte $GAP_BAT "13"
+    FileWriteByte $GAP_BAT "10"
+  FileWrite $GAP_BAT "set LANG=en_US.UTF-8"
+    FileWriteByte $GAP_BAT "13"
+    FileWriteByte $GAP_BAT "10"    
+  FileWrite $GAP_BAT "set HOME=%HOMEDRIVE%%HOMEPATH%"
+    FileWriteByte $GAP_BAT "13"
+    FileWriteByte $GAP_BAT "10"
+  FileWrite $GAP_BAT "cd %HOME%"
+    FileWriteByte $GAP_BAT "13"
+    FileWriteByte $GAP_BAT "10"
+  FileWrite $GAP_BAT "start $\"GAP$\" " 
+  FileWrite $GAP_BAT $INSTDIR
+  FileWrite $GAP_BAT "\bin\mintty.exe -s 120,40 /cygdrive/"
+  FileWrite $GAP_BAT $RXVT_PATH
+  FileWrite $GAP_BAT "/bin/gapw95.exe -l /cygdrive/"
+  FileWrite $GAP_BAT $RXVT_PATH
+  FileWrite $GAP_BAT " %*"
+    FileWriteByte $GAP_BAT "13"
+    FileWriteByte $GAP_BAT "10"
+  FileWrite $GAP_BAT "exit"
+    FileWriteByte $GAP_BAT "13"
+    FileWriteByte $GAP_BAT "10"
+  FileClose $GAP_BAT
+
+
+  # Write gaprxvt.bat file as follows:
+  # set TERMINFO=/cygdrive/c/gap4r7/terminfo
+  # set CYGWIN=nodosfilewarning
+  # set LANG=en_US.ISO-8859-1
+  # set HOME=%HOMEDRIVE%%HOMEPATH%
+  # cd %HOME%
+  # start "GAP" C:\gap4r7\bin\rxvt.exe -fn fixedsys -sl 1000 -e /cygdrive/c/gap4r7/bin/gapw95.exe -l /cygdrive/c/gap4r7 %*
+  # exit
+
+  FileOpen $GAPRXVT_BAT $INSTDIR\bin\gaprxvt.bat w
+  FileWrite $GAPRXVT_BAT "set TERMINFO=/cygdrive/"
+  FileWrite $GAPRXVT_BAT $RXVT_PATH
+  FileWrite $GAPRXVT_BAT "/terminfo"
+    FileWriteByte $GAPRXVT_BAT "13"
+    FileWriteByte $GAPRXVT_BAT "10"
+  FileWrite $GAPRXVT_BAT "set CYGWIN=nodosfilewarning"
+    FileWriteByte $GAPRXVT_BAT "13"
+    FileWriteByte $GAPRXVT_BAT "10"
+  FileWrite $GAP_BAT "set LANG=en_US.ISO-8859-1"
+    FileWriteByte $GAP_BAT "13"
+    FileWriteByte $GAP_BAT "10"     
+  FileWrite $GAPRXVT_BAT "set HOME=%HOMEDRIVE%%HOMEPATH%"
+    FileWriteByte $GAPRXVT_BAT "13"
+    FileWriteByte $GAPRXVT_BAT "10"
+  FileWrite $GAPRXVT_BAT "cd %HOME%"
+    FileWriteByte $GAPRXVT_BAT "13"
+    FileWriteByte $GAPRXVT_BAT "10"
+  FileWrite $GAPRXVT_BAT "start $\"GAP$\" " 
+  FileWrite $GAPRXVT_BAT $INSTDIR
+  FileWrite $GAPRXVT_BAT "\bin\rxvt.exe -fn fixedsys -sl 1000 -e /cygdrive/"
+  FileWrite $GAPRXVT_BAT $RXVT_PATH
+  FileWrite $GAPRXVT_BAT "/BIN/gapw95.exe -l /cygdrive/"
+  FileWrite $GAPRXVT_BAT $RXVT_PATH
+  FileWrite $GAPRXVT_BAT " %*"
+    FileWriteByte $GAPRXVT_BAT "13"
+    FileWriteByte $GAPRXVT_BAT "10"
+  FileWrite $GAPRXVT_BAT "exit"
+    FileWriteByte $GAPRXVT_BAT "13"
+    FileWriteByte $GAPRXVT_BAT "10"
+  FileClose $GAPRXVT_BAT
+
+
+  # Write gapcmd.bat file as follows:
+  # set TERMINFO=/cygdrive/c/gap4r7/terminfo
+  # set CYGWIN=nodosfilewarning
+  # set LANG=en_US.UTF-8
+  # set HOME=%HOMEDRIVE%%HOMEPATH%
+  # cd %HOME%
+  # C:\gap4r7\bin\gapw95.exe -l /cygdrive/c/gap4r7 %*
+  # exit
+
+  FileOpen $GAPCMD_BAT $INSTDIR\bin\gapcmd.bat w
+  FileWrite $GAPCMD_BAT "set TERMINFO=/cygdrive/"
+  FileWrite $GAPCMD_BAT $RXVT_PATH
+  FileWrite $GAPCMD_BAT "/terminfo"
+    FileWriteByte $GAPCMD_BAT "13"
+    FileWriteByte $GAPCMD_BAT "10"
+  FileWrite $GAPCMD_BAT "set CYGWIN=nodosfilewarning"
+    FileWriteByte $GAPCMD_BAT "13"
+    FileWriteByte $GAPCMD_BAT "10"
+  FileWrite $GAP_BAT "set LANG=en_US.UTF-8"
+    FileWriteByte $GAP_BAT "13"
+    FileWriteByte $GAP_BAT "10"   
+  FileWrite $GAPCMD_BAT "set HOME=%HOMEDRIVE%%HOMEPATH%"
+    FileWriteByte $GAPCMD_BAT "13"
+    FileWriteByte $GAPCMD_BAT "10"
+  FileWrite $GAPCMD_BAT "cd %HOME%"
+    FileWriteByte $GAPCMD_BAT "13"
+    FileWriteByte $GAPCMD_BAT "10"
+  FileWrite $GAPCMD_BAT $INSTDIR
+  FileWrite $GAPCMD_BAT "\bin\gapw95.exe -l /cygdrive/"
+  FileWrite $GAPCMD_BAT $RXVT_PATH 
+  FileWrite $GAPCMD_BAT " %*"
+    FileWriteByte $GAPCMD_BAT "13"
+    FileWriteByte $GAPCMD_BAT "10"
+  FileWrite $GAPCMD_BAT "exit"
+    FileWriteByte $GAPCMD_BAT "13"
+    FileWriteByte $GAPCMD_BAT "10"
+  FileClose $GAPCMD_BAT
+
+
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+    
+  CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\GAP $GAP_VER.lnk" "$INSTDIR\bin\gap.bat" "" "$INSTDIR\bin\gapicon.ico" 0
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\GAP Tutorial.lnk" "$INSTDIR\doc\tut\chap0.html" "" "$INSTDIR\doc\tut\chap0.html" 0
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\GAP Reference Manual.lnk" "$INSTDIR\doc\ref\chap0.html" "" "$INSTDIR\doc\ref\chap0.html" 0
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall GAP $GAP_VER.lnk" "$INSTDIR\Uninstall.exe"
+
+  !insertmacro MUI_STARTMENU_WRITE_END
+
+SectionEnd
+

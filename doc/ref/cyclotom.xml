@@ -64,7 +64,7 @@ see Chapter&nbsp;<Ref Chap="Fields and Division Rings"/>.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Infinity">
-<Heading>Infinity</Heading>
+<Heading>Infinity and negative Infinity</Heading>
 
 <#Include Label="IsInfinity">
 

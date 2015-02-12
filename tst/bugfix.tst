@@ -2719,6 +2719,49 @@ gap> Stabilizer(SymmetricGroup(5), [1,2,1,2,1], OnTuples) = Group([(3,5),(4,5)])
 true
 
 #############################################################################
+##
+## Changes 4.7.6 -> 4.7.7
+
+## For bugfixes
+# 2014/12/05 (CJ, reported by Matt Fayers; see also tst/union.tst)
+gap> Union([2],[3],[5,1..1]);
+[ 1, 2, 3, 5 ]
+
+# 2014/12/31 (AH, reported by Daniel Błażewicz)
+gap> x := Indeterminate( Rationals, "x" );;
+gap> ProbabilityShapes(x^5+5*x^2+3);
+[ 2 ]
+gap> GaloisType(x^12+63*x-450); # this was causing an infinite loop
+301
+
+# 2015/01/11 (CJ, reported by TB)
+gap> x:= rec( qq:= "unused", r:= rec() );;
+gap> y:= x.r;;
+gap> y.entries:= rec( parent:= y );;
+gap> x;
+rec( qq := "unused", r := rec( entries := rec( parent := ~.r ) ) )
+
+# 2015/01/08 (JM, reported by Nick Loughlin)
+gap> FreeMonoid( infinity, "m", [  ] );
+<free monoid with infinity generators>
+
+# 2015/02/01 (MP, reported by WdG and HD )
+gap> a:= 1494186269970473680896;
+1494186269970473680896
+gap> b:= 72057594037927936;
+72057594037927936
+gap> RemInt(a,b);
+0
+
+# 2015/02/02 (AH, reported by Petr Savicky)
+gap> it := SimpleGroupsIterator(17971200);
+<iterator>
+gap> G := NextIterator(it); # 2F(4,2)'
+2F(4,2)'
+gap> ClassicalIsomorphismTypeFiniteSimpleGroup(G);
+rec( parameter := [ "T" ], series := "Spor" )
+
+#############################################################################
 #
 # Tests requiring loading some packages must be performed at the end.
 # Do not put tests that do not need any packages below this line.

@@ -2044,8 +2044,8 @@ Obj RemInt ( Obj opL, Obj opR )
     }
     
     /* maybe it's trivial                                                   */
-    if ( INTBASE % abs(INT_INTOBJ(opR)) == 0 ) {
-      c = ADDR_INT(opL)[0] % abs(INT_INTOBJ(opR));
+    if ( INTBASE % INT_INTOBJ(AbsInt(opR)) == 0 ) {
+      c = ADDR_INT(opL)[0] % INT_INTOBJ(AbsInt(opR));
     }
     
     /* otherwise run through the left operand and divide digitwise         */

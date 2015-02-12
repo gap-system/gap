@@ -21,17 +21,17 @@ DeclareProperty("IsGeneratorsOfInverseSemigroup", IsListOrCollection);
 DeclareAttribute("GeneratorsOfInverseMonoid", IsInverseSemigroup);
 DeclareAttribute("GeneratorsOfInverseSemigroup", IsInverseSemigroup);
 
-DeclareOperation("InverseMonoidByGenerators", [IsAssociativeElementCollection]);
-DeclareOperation("InverseSemigroupByGenerators", [IsAssociativeElementCollection]);
+DeclareOperation("InverseMonoidByGenerators", [IsGeneratorsOfSemigroup]);
+DeclareOperation("InverseSemigroupByGenerators", [IsGeneratorsOfSemigroup]);
 
 DeclareOperation("InverseSubsemigroup",
-[IsInverseSemigroup, IsAssociativeElementCollection]);
+[IsInverseSemigroup, IsGeneratorsOfSemigroup]);
 DeclareOperation("InverseSubsemigroupNC",
-[IsInverseSemigroup, IsAssociativeElementCollection]);
+[IsInverseSemigroup, IsGeneratorsOfSemigroup]);
 DeclareOperation("InverseSubmonoid",
-[IsInverseMonoid, IsAssociativeElementCollection]);
+[IsInverseMonoid, IsGeneratorsOfSemigroup]);
 DeclareOperation("InverseSubmonoidNC",
-[IsInverseMonoid, IsAssociativeElementCollection]);
+[IsInverseMonoid, IsGeneratorsOfSemigroup]);
 
 DeclareAttribute("AsInverseSemigroup", IsCollection);
 DeclareAttribute("AsInverseMonoid", IsCollection);

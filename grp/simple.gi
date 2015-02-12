@@ -718,7 +718,7 @@ local t,r;
   elif t.series="2F" then
     if t.parameter=2 then
       r.series:="Spor";
-      r.parameter:="T";
+      r.parameter:=["T"];
     else
       r.series:="2F";
       r.parameter:=[t.parameter];
@@ -1067,8 +1067,9 @@ local H,d,id,hom,field,C,dom,orbs;
     hom:=G!.actionHomomorphism;
     if IsMatrixGroup(Source(hom)) and Image(hom)=G and Size(Source(hom))/Size(G)<field then
       # test that the source is really the group we want
-      if Source(hom)=C then
-	return hom;
+      if GeneratorsOfGroup(C)=GeneratorsOfGroup(Source(hom)) 
+	or Source(hom)=C then
+	  return hom;
       #else
 #	Print("different source -- ID\n");
       fi;

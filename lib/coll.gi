@@ -2535,6 +2535,16 @@ AbsInt:="2b defined";
 InstallGlobalFunction(JoinRanges,function(a0,da,a1,b0,db,b1)
 local x;
 
+  # Make ranges run upwards
+  if da < 0 then
+    x:=a1;a1:=a0;a0:=x;da:=-da;
+  fi;
+  
+  if db < 0 then
+    x:=b1;b1:=b0;b0:=x;db:=-db;
+  fi;
+  
+  
   # ensure a0<=b0
   if a0>b0 then
     x:=a0;a0:=b0;b0:=x;

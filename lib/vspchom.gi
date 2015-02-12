@@ -2136,6 +2136,9 @@ InstallMethod( Basis,
     SetUnderlyingLeftModule( B, V );
     if IsFiniteDimensional( V ) then
       SetIsFinite( B, true );
+      #T Check whether its is a) correct and even if so
+      #T b) sometimes to expensive
+      SetBasisVectors( B, GeneratorsOfLeftModule(V) );
     fi;
     return B;
     end );

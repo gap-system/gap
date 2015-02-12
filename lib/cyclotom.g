@@ -414,26 +414,34 @@ SetIsUFDFamily( CyclotomicsFamily, true );
 ##
 #C  IsInfinity( <obj> ) . . . . . . . . . . . . . . . .  category of infinity
 #V  infinity  . . . . . . . . . . . . . . . . . . . . . .  the value infinity
-##
+#C  IsNegInfinity( <obj> ) . . . . . . . . . .  category of negative infinity
+#V  -infinity . . . . . . . . . . . . . . . . . . . . . . the value -infinity
 ##  <#GAPDoc Label="IsInfinity">
 ##  <ManSection>
 ##  <Filt Name="IsInfinity" Arg='obj' Type='Category'/>
+##  <Filt Name="IsNegInfinity" Arg='obj' Type='Category'/>
 ##  <Var Name="infinity"/>
+##  <Var Name="-infinity"/>
 ##
 ##  <Description>
-##  <Ref Var="infinity"/> is a special &GAP; object that lies in
-##  <C>CyclotomicsFamily</C>.
-##  It is larger than all other objects in this family.
+##  <Ref Var="infinity"/> and <Ref Var="-infinity"/> are special &GAP; objects
+##  that lie in <C>CyclotomicsFamily</C>.
+##  They are larger or smaller than all other objects in this family
+##  respectively.
 ##  <Ref Var="infinity"/> is mainly used as return value of operations such
 ##  as <Ref Func="Size"/>
 ##  and <Ref Func="Dimension"/> for infinite and infinite dimensional domains,
 ##  respectively.
 ##  <P/>
-##  Note that <E>no</E> arithmetic operations are provided for
-##  <Ref Var="infinity"/>,
-##  in particular there is no problem to define what <C>0 * infinity</C> or
-##  <C>infinity - infinity</C> means.
-##  <P/>
+##  Some arithmetic operations are provided for convenience when using
+##  <Ref Var="infinity"/> and <Ref Var="-infinity"/> as top and bottom element
+##  respectively.
+##  <Example><![CDATA[
+##  gap> -infinity + 1;
+##  -infinity
+##  gap> infinity + infinity;
+##  infinity
+##  ]]></Example>
 ##  Often it is useful to distinguish <Ref Var="infinity"/>
 ##  from <Q>proper</Q> cyclotomics.
 ##  For that, <Ref Var="infinity"/> lies in the category
@@ -553,6 +561,29 @@ InstallMethod( AdditiveInverseOp,
     "for `-infinity'",
     [ IsNegInfinity ], x -> infinity  );
 
+InstallMethod( \+,
+    "for `infinity' and cyclotomic",
+    IsIdenticalObj, [ IsInfinity, IsCyc ], function(x,y) return infinity; end );
+
+InstallMethod( \+,
+    "for cyclotomic and `infinity'",
+    IsIdenticalObj, [ IsCyc, IsInfinity ], function(x,y) return infinity; end );
+
+InstallMethod( \+,
+    "for `infinity' and `infinity'",
+    IsIdenticalObj, [ IsInfinity, IsInfinity ], function(x,y) return infinity; end );
+
+InstallMethod( \+,
+    "for `-infinity' and cyclotomic",
+    IsIdenticalObj, [ IsNegInfinity, IsCyc ], function(x,y) return -infinity; end );
+
+InstallMethod( \+,
+    "for cyclotomic and `-infinity'",
+    IsIdenticalObj, [ IsCyc, IsNegInfinity ], function(x,y) return -infinity; end );
+
+InstallMethod( \+,
+    "for `-infinity' and `-infinity'",
+    IsIdenticalObj, [ IsNegInfinity, IsNegInfinity ], function(x,y) return -infinity; end );
 
 #############################################################################
 ##

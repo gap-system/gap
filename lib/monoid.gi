@@ -128,10 +128,14 @@ InstallImmediateMethod( GeneratorsOfSemigroup,
 IsMonoid and HasGeneratorsOfMonoid and IsAttributeStoringRep, 0,
 function(M)
 
+  if Length(GeneratorsOfMonoid(M)) = infinity then 
+    TryNextMethod();
+  fi;
+
   if CanEasilyCompareElements(One(M)) and One(M) in GeneratorsOfMonoid(M) then 
     return GeneratorsOfMonoid(M);
   fi;
-  return Concatenation([One(M)],GeneratorsOfMonoid(M));
+  return Concatenation([One(M)], GeneratorsOfMonoid(M));
 end);
 
 #############################################################################
@@ -266,17 +270,19 @@ InstallGlobalFunction( Monoid, function( arg )
     return MonoidByGenerators( arg[1], arg[2] );
 
   # generators and collections of generators 
-  elif  ( IsAssociativeElement(arg[1]) and IsMultiplicativeElementWithOne(arg[1]))
-    or  ( IsAssociativeElementCollection(arg[1]) and
-          IsMultiplicativeElementWithOneCollection(arg[1]) ) 
-    or  ( HasIsEmpty(arg[1]) and IsEmpty(arg[1]) ) then
+  elif (IsMultiplicativeElementWithOne(arg[1]) 
+        and IsGeneratorsOfSemigroup([arg[1]]))
+    or (IsMultiplicativeElementWithOneCollection(arg[1])
+        and IsGeneratorsOfSemigroup(arg[1])) 
+    or (HasIsEmpty(arg[1]) and IsEmpty(arg[1])) then
     out:=[];
     for i in [1..Length(arg)] do
-      if IsAssociativeElement(arg[i]) then
+      #so that we can pass the options record in the Semigroups package 
+      if i=Length(arg) and IsRecord(arg[i]) then
+        return MonoidByGenerators(out, arg[i]);
+      elif IsMultiplicativeElementWithOne(arg[i]) and IsGeneratorsOfSemigroup([arg[i]]) then
         Add(out, arg[i]);
-      elif IsAssociativeElementCollection(arg[i]) then
-        #if HasGeneratorsOfMonoid(arg[i]) then 
-        #  Append(out, GeneratorsOfMonoid(arg[i]));
+      elif IsGeneratorsOfSemigroup(arg[i]) then
         if HasGeneratorsOfSemigroup(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
         elif IsList(arg[i]) then 
@@ -284,9 +290,6 @@ InstallGlobalFunction( Monoid, function( arg )
         else 
           Append(out, AsList(arg[i]));
         fi;
-      #so that we can pass the options record in the Semigroups package 
-      elif i=Length(arg) and IsRecord(arg[i]) then
-        return MonoidByGenerators(out, arg[i]);
       else
         if not IsEmpty(arg[i]) then 
           Error( "Usage: Monoid(<gen>,...), Monoid(<gens>), Monoid(<D>)," );

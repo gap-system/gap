@@ -734,6 +734,8 @@ DeclareGlobalFunction("ReadCSV");
 ##  If the argument <A>fields</A> is given only the record fields listed in
 ##  this list will be printed
 ##  and they will be printed in the same arrangement as given in this list.
+##  If the option noheader is set to true the line with the record field
+##  names will not be printed.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

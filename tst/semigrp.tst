@@ -137,8 +137,7 @@ gap> m := Range(phi);
 gap> el := Elements(m);;
 gap> Size(m)=5;
 true
-gap> c := MagmaCongruenceByGeneratingPairs(m,[[el[2],el[3]]]);
-<semigroup congruence with 1 generating pairs>
+gap> c := MagmaCongruenceByGeneratingPairs(m,[[el[2],el[3]]]);;
 gap> EquivalenceRelationPartition(c);
 [ [ <group with 0 adjoined elt: <identity ...>>, 
       <group with 0 adjoined elt: a>, <group with 0 adjoined elt: a^2>, 

@@ -1126,7 +1126,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
   stabsub:=ClosureSubgroupNC(stabsub,gens{Filtered([1..Length(acts)],
 	    i->act(d,acts[i])=d)});
 
-  if IsBool(D) then
+  if IsBool(D) or IsRecord(D) then
     doml:=Size(G);
   else
     if blist<>false then

@@ -998,11 +998,13 @@ CallAndInstallPostRestore( function()
       if not ( GAPInfo.CommandLineOptions.r or GAPInfo.HasReadGAPRC ) then
         if ARCH_IS_UNIX() then
           GAPInfo.gaprc:= SHALLOW_COPY_OBJ( GAPInfo.UserHome );
-          APPEND_LIST_INTR( GAPInfo.gaprc, "/.gaprc" );
+          if IsString(GAPInfo.gaprc) then
+            APPEND_LIST_INTR( GAPInfo.gaprc, "/.gaprc" );
+          fi;
         else
           GAPInfo.gaprc:= "gap.rc";
         fi;
-        if READ( GAPInfo.gaprc ) then
+        if IsString(GAPInfo.gaprc) and READ( GAPInfo.gaprc ) then
           Info(InfoWarning, 1, 
             "You are using an old ",GAPInfo.gaprc, " file. ");
           Info(InfoWarning, 1, 

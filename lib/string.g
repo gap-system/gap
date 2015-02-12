@@ -338,7 +338,8 @@ InstallMethod( String,
 ##  </ManSection>
 ##  
 BIND_GLOBAL("USER_HOME_EXPAND", function(str)
-  if Length(str) > 0 and str[1] = '~' and Length( GAPInfo.UserHome ) > 0 then
+  if Length(str) > 0 and str[1] = '~' and IsString(GAPInfo.UserHome) and
+     Length( GAPInfo.UserHome ) > 0 then
     return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
   else
     return str;

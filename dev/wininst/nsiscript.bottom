@@ -1,0 +1,82 @@
+#######################################################################
+#
+# Make impossible installing special packages without default packages
+#
+Function .onInit
+ 
+  # This is necessary otherwise Sec3 won't be selectable for the first time you click it.
+  SectionGetFlags ${SecGAPpkgsDefault} $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  StrCpy $IndependentSectionState $R0
+ 
+FunctionEnd
+ 
+Function .onSelChange
+Push $R0
+Push $R1
+ 
+  # Check if SecGAPpkgsDefault was just selected then select SecGAPpkgsSpecial
+  SectionGetFlags ${SecGAPpkgsDefault} $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  StrCmp $R0 $IndependentSectionState +3
+    StrCpy $IndependentSectionState $R0
+  Goto UnselectDependentSections
+    StrCpy $IndependentSectionState $R0
+ 
+  Goto CheckDependentSections
+ 
+  # Select SecGAPpkgsDefault if SecGAPpkgsSpecial was selected.
+  SelectIndependentSection:
+ 
+    SectionGetFlags ${SecGAPpkgsDefault} $R0
+    IntOp $R1 $R0 & ${SF_SELECTED}
+    StrCmp $R1 ${SF_SELECTED} +3
+ 
+    IntOp $R0 $R0 | ${SF_SELECTED}
+    SectionSetFlags ${SecGAPpkgsDefault} $R0
+ 
+    StrCpy $IndependentSectionState ${SF_SELECTED}
+ 
+  Goto End
+ 
+  # Were SecGAPpkgsSpecial just unselected?
+  CheckDependentSections:
+ 
+  SectionGetFlags ${SecGAPpkgsSpecial} $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  StrCmp $R0 ${SF_SELECTED} SelectIndependentSection
+  
+  Goto End
+ 
+  # Unselect SecGAPpkgsSpecial if SecGAPpkgsDefault was unselected.
+  UnselectDependentSections:
+ 
+    SectionGetFlags ${SecGAPpkgsSpecial} $R0
+    IntOp $R1 $R0 & ${SF_SELECTED}
+    StrCmp $R1 ${SF_SELECTED} 0 +3
+ 
+    IntOp $R0 $R0 ^ ${SF_SELECTED}
+    SectionSetFlags ${SecGAPpkgsSpecial} $R0
+ 
+  End:
+ 
+Pop $R1
+Pop $R0
+FunctionEnd
+
+
+#######################################################################
+#
+# Uninstaller Section
+#
+Section "Uninstall"
+
+  RMDir /r "$INSTDIR"
+
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
+  Delete "$SMPROGRAMS\$StartMenuFolder\*.*"
+  RMDir /r "$SMPROGRAMS\$StartMenuFolder"
+
+  DeleteRegKey /ifempty HKCU "Software\GAP"
+
+SectionEnd

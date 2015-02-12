@@ -24,14 +24,8 @@ gap> iter:= Iterator( g );;
 gap> for i in [ 1 .. 50 ] do
 >   Add( firstfifty, NextIterator( iter ) );
 > od;
-gap> firstfifty;     
-[ <identity ...>, a, a^-1, b, b^-1, a^2, a^-2, b*a, b^-1*a, b*a^-1, 
-  b^-1*a^-1, a*b, a^-1*b, a*b^-1, a^-1*b^-1, b^2, b^-2, a^3, a^-3, b*a^2, 
-  b^-1*a^2, b*a^-2, b^-1*a^-2, a*b*a, a^-1*b*a, a*b^-1*a, a^-1*b^-1*a, 
-  a*b*a^-1, a^-1*b*a^-1, a*b^-1*a^-1, a^-1*b^-1*a^-1, b^2*a, b^-2*a, 
-  b^2*a^-1, b^-2*a^-1, a^2*b, a^-2*b, a^2*b^-1, a^-2*b^-1, b*a*b, b^-1*a*b, 
-  b*a^-1*b, b^-1*a^-1*b, b*a*b^-1, b^-1*a*b^-1, b*a^-1*b^-1, b^-1*a^-1*b^-1, 
-  a*b^2, a^-1*b^2, a*b^-2 ]
+gap> Collected(List(firstfifty,Length));
+[ [ 0, 1 ], [ 1, 4 ], [ 2, 12 ], [ 3, 33 ] ]
 gap> IsDoneIterator( iter );
 false
 gap> enum:= Enumerator( g );;
