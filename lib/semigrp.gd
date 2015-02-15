@@ -201,7 +201,7 @@ DeclareSynonymAttr( "GeneratorsOfSemigroup", GeneratorsOfMagma );
 ##  with matrices.
 ##  
 ##  <Example><![CDATA[
-##  gap> IsGeneratorsOfSemigroup([Transformation([2,3]));
+##  gap> IsGeneratorsOfSemigroup([Transformation([2,3,1])]);
 ##  true
 ##  ]]></Example>
 ##  </Description>

@@ -286,7 +286,7 @@ are found.
 <P/>
 <Example><![CDATA[
 gap> """Print("\n")""";
-Print(\"\\n\")
+"Print(\"\\n\")"
 ]]></Example>
 
 Triple quoted strings are represented internally identically to all other

@@ -585,6 +585,18 @@ and documentation were resolved.
 <Section Label="fix477"> 
 <Heading>&GAP; 4.7.7 (February 2015)</Heading>
 
+New features:
+<List>
+<Item>
+Introduced some arithmetic operations for infinity and negative infinity,
+see <Ref Label="Infinity" BookName="ref"/>.
+</Item>
+<Item>
+Introduced new property <Ref Prop="IsGeneratorsOfSemigroup" BookName="ref"/>
+which reflects wheter the list or collection generates a semigroup.
+</Item>
+</List>
+
 Fixed bugs which could lead to incorrect results:
 <List>
 <Item>
@@ -633,6 +645,11 @@ translates between the Chevalley type and the name used in the table
 
 Other fixed bugs:
 <List>
+<Item>
+The <Ref Oper="Basis" BookName="ref"/> method for full homomorphism
+spaces of linear mappings did not set basis vectors which could be
+obtained by <Ref Attr="GeneratorsOfLeftModule" BookName="ref"/>.
+</Item>
 <Item>
 A problem with <Ref Attr="GaloisType" BookName="ref"/> entering an
 infinite loop in the routine for approximating a root. [Reported by Daniel Błażewicz]

@@ -22,7 +22,7 @@ DeclareGlobalFunction("GModuleByMats");
 ##
 #F  TrivialGModule ( g, F ) . . . trivial G-module
 ##
-##  g is a finite group, F a finite field, trivial smash G-module computed.
+##  g is a finite group, F a field, trivial smash G-module computed.
 DeclareGlobalFunction("TrivialGModule");
 
 #############################################################################
@@ -38,7 +38,7 @@ DeclareGlobalFunction("InducedGModule");
 ##
 #F PermutationGModule ( g, F) . permutation module
 ##
-## g is a permutation group, F a finite field.
+## g is a permutation group, F a field.
 ## The corresponding permutation module is output.
 DeclareGlobalFunction("PermutationGModule");
 

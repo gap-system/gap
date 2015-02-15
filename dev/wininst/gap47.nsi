@@ -57,12 +57,12 @@ var StartMenuFolder
 # User variables and other general settings: adjust them here as needed
 # 
 Section
-StrCpy $GAP_VER "4.7.6"
+StrCpy $GAP_VER "4.7.7"
 SectionEnd
 
 #Name and file
-Name "GAP 4.7.6"
-OutFile "gap4r7p6_2014_11_15-20_02.exe"
+Name "GAP 4.7.7"
+OutFile "gap4r7p7_2015_02_13-15_29.exe"
 
 #Default installation folder
 InstallDir "C:\gap4r7"
@@ -896,8 +896,8 @@ SectionEnd
 Section "gpd" SecGAPpkg_gpd 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.gpd
-SetOutPath $INSTDIR\pkg\gpd-1.22
-File /r gap4r7\pkg\gpd-1.22\*.* 
+SetOutPath $INSTDIR\pkg\gpd-1.31
+File /r gap4r7\pkg\gpd-1.31\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1028,8 +1028,8 @@ SectionEnd
 Section "idrel" SecGAPpkg_idrel 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.idrel
-SetOutPath $INSTDIR\pkg\idrel-2.14
-File /r gap4r7\pkg\idrel-2.14\*.* 
+SetOutPath $INSTDIR\pkg\idrel-2.21
+File /r gap4r7\pkg\idrel-2.21\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1059,13 +1059,25 @@ SectionEnd
 
 #######################################################################
 #
+# json
+#
+Section "json" SecGAPpkg_json 
+SetOutPath $INSTDIR\pkg 
+File gap4r7\pkg\README.json
+SetOutPath $INSTDIR\pkg\json-0.8.2
+File /r gap4r7\pkg\json-0.8.2\*.* 
+SetOutPath $INSTDIR 
+SectionEnd 
+
+#######################################################################
+#
 # kan
 #
 Section "kan" SecGAPpkg_kan 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.kan
-SetOutPath $INSTDIR\pkg\kan-1.07
-File /r gap4r7\pkg\kan-1.07\*.* 
+SetOutPath $INSTDIR\pkg\kan-1.11
+File /r gap4r7\pkg\kan-1.11\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1376,8 +1388,20 @@ SectionEnd
 Section "Semigroups" SecGAPpkg_semigroups 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.semigroups
-SetOutPath $INSTDIR\pkg\semigroups-2.1.1
-File /r gap4r7\pkg\semigroups-2.1.1\*.* 
+SetOutPath $INSTDIR\pkg\semigroups-2.2
+File /r gap4r7\pkg\semigroups-2.2\*.* 
+SetOutPath $INSTDIR 
+SectionEnd 
+
+#######################################################################
+#
+# SglPPow
+#
+Section "SglPPow" SecGAPpkg_sglppow 
+SetOutPath $INSTDIR\pkg 
+File gap4r7\pkg\README.sglppow
+SetOutPath $INSTDIR\pkg\sglppow
+File /r gap4r7\pkg\sglppow\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1532,8 +1556,8 @@ SectionEnd
 Section "XMod" SecGAPpkg_xmod 
 SetOutPath $INSTDIR\pkg 
 File gap4r7\pkg\README.xmod
-SetOutPath $INSTDIR\pkg\xmod-2.26
-File /r gap4r7\pkg\xmod-2.26\*.* 
+SetOutPath $INSTDIR\pkg\xmod-2.31
+File /r gap4r7\pkg\xmod-2.31\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1812,6 +1836,7 @@ LangString DESC_SecGAPpkg_io ${LANG_ENGLISH} "Bindings for low level C library I
 LangString DESC_SecGAPpkg_io_forhomalg ${LANG_ENGLISH} "IO capabilities for the homalg project"
 LangString DESC_SecGAPpkg_irredsol ${LANG_ENGLISH} "A Library of irreducible solvable linear groups over finite fields and of finite primivite soluble groups"
 LangString DESC_SecGAPpkg_itc ${LANG_ENGLISH} "Interactive Todd-Coxeter"
+LangString DESC_SecGAPpkg_json ${LANG_ENGLISH} "Reading and Writing JSON"
 LangString DESC_SecGAPpkg_kan ${LANG_ENGLISH} "including double coset rewriting systems"
 LangString DESC_SecGAPpkg_kbmag ${LANG_ENGLISH} "Knuth-Bendix on Monoids and Automatic Groups"
 LangString DESC_SecGAPpkg_laguna ${LANG_ENGLISH} "Lie AlGebras and UNits of group Algebras"
@@ -1849,6 +1874,7 @@ LangString DESC_SecGAPpkg_ringsforhomalg ${LANG_ENGLISH} "Dictionaries of extern
 LangString DESC_SecGAPpkg_sco ${LANG_ENGLISH} "SCO - Simplicial Cohomology of Orbifolds"
 LangString DESC_SecGAPpkg_scscp ${LANG_ENGLISH} "Symbolic Computation Software Composability Protocol in GAP"
 LangString DESC_SecGAPpkg_semigroups ${LANG_ENGLISH} "Methods for Semigroups"
+LangString DESC_SecGAPpkg_sglppow ${LANG_ENGLISH} "Database of groups of prime-power order for some prime-powers"
 LangString DESC_SecGAPpkg_sgpviz ${LANG_ENGLISH} "A package for semigroup visualization"
 LangString DESC_SecGAPpkg_simpcomp ${LANG_ENGLISH} "A GAP toolbox for simplicial complexes"
 LangString DESC_SecGAPpkg_singular ${LANG_ENGLISH} "The GAP interface to Singular"
@@ -1937,6 +1963,7 @@ LangString DESC_SecGAPpkg_xmod ${LANG_ENGLISH} "Crossed Modules and Cat1-Groups"
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_io_forhomalg} $(DESC_SecGAPpkg_io_forhomalg)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_irredsol} $(DESC_SecGAPpkg_irredsol)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_itc} $(DESC_SecGAPpkg_itc)
+!insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_json} $(DESC_SecGAPpkg_json)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_kan} $(DESC_SecGAPpkg_kan)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_kbmag} $(DESC_SecGAPpkg_kbmag)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_laguna} $(DESC_SecGAPpkg_laguna)
@@ -1974,6 +2001,7 @@ LangString DESC_SecGAPpkg_xmod ${LANG_ENGLISH} "Crossed Modules and Cat1-Groups"
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_sco} $(DESC_SecGAPpkg_sco)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_scscp} $(DESC_SecGAPpkg_scscp)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_semigroups} $(DESC_SecGAPpkg_semigroups)
+!insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_sglppow} $(DESC_SecGAPpkg_sglppow)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_sgpviz} $(DESC_SecGAPpkg_sgpviz)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_simpcomp} $(DESC_SecGAPpkg_simpcomp)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_singular} $(DESC_SecGAPpkg_singular)

@@ -137,7 +137,7 @@ InstallOtherMethod(AddDictionary,"for lookup sort dictionaries",true,
         function(d, x, val)
     local pair, p;
     pair:=[Immutable(x),val];
-    #    MakeImmutable(pair); # to be able to store sortedness
+    MakeImmutable(pair); # to be able to store sortedness
    
     p := PositionSorted(d!.entries,[x]);
     if p <= Length(d!.entries) and d!.entries[p][1] = x then
@@ -161,13 +161,25 @@ end);
 InstallMethod(KnowsDictionary,"for list lookup dictionaries",true,
   [IsListLookupDictionary,IsObject],0,
 function(d,x)
-    local p;
-    for p in d!.entries do
-        if p[1] = x then
-            return true;
-        fi;
-    od;
+local p;
+  for p in d!.entries do
+    if p[1] = x then
+      return true;
+    fi;
+  od;
+  return false;
+end);
+
+InstallMethod(KnowsDictionary,"for lookup sort dictionaries",true,
+  [IsSortLookupDictionary,IsObject],0,
+function(d,x)
+local p;
+  p := PositionSorted(d!.entries,[x]);
+  if p <= Length(d!.entries) and d!.entries[p][1] = x then
+    return true;
+  else
     return false;
+  fi;
 end);
 
 InstallMethod(KnowsDictionary,"for list dictionaries",true,
@@ -191,6 +203,17 @@ function(d,x)
         fi;
     od;
     return fail;
+end);
+
+InstallMethod(LookupDictionary,"for lookup sort dictionaries",true,
+  [IsSortLookupDictionary,IsObject],0,
+function(d,x)
+local p;
+  p := PositionSorted(d!.entries,[x]);
+  if p <= Length(d!.entries) and d!.entries[p][1] = x then
+    return d!.entries[p][2];
+  fi;
+  return fail;
 end);
 
 ##

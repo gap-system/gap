@@ -36,9 +36,15 @@ local H,hom,d,cl;
     return fail;
   fi;
 
-  cl:=ConjugacyClasses(Source(hom));
-  cl:=List(cl,x->Image(hom,Representative(x)));
-  cl:=ConjugacyClassesByRandomSearch(G:seed:=cl);
+  cl:=ClassesProjectiveImage(hom);
+  if HasConjugacyClasses(G) then
+    cl:=ConjugacyClasses(G); # will have been set
+  elif G=Image(hom) then
+    cl:=ConjugacyClasses(Image(hom)); # will have been set
+  else
+    Info(InfoWarning,1,"Weird class storage");
+    return fail;
+  fi;
   return cl;
 end);
 
