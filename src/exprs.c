@@ -1629,9 +1629,19 @@ void            PrintNot (
 
     oldPrec = PrintPreceedence;
     PrintPreceedence = 6;
+    
+    /* if necessary print the opening parenthesis                          */
+    if ( oldPrec >= PrintPreceedence ) Pr("%>(%>",0L,0L);
+    else Pr("%2>",0L,0L);
+    
     Pr("not%> ",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<",0L,0L);
+    
+    /* if necessary print the closing parenthesis                          */
+    if ( oldPrec >= PrintPreceedence ) Pr("%2<)",0L,0L);
+    else Pr("%2<",0L,0L);
+    
     PrintPreceedence = oldPrec;
 }
 

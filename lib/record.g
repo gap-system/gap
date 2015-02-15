@@ -230,7 +230,7 @@ InstallMethod( PrintObj,
         fi;
         SET_PRINT_OBJ_INDEX(order[i]);
         # easy if nam is integer or valid identifier:
-        if ForAll(nam, x-> x in okchars) then
+        if ForAll(nam, x-> x in okchars) and Size(nam) > 0 then
           Print(nam, "\< := \>");
         else 
           # otherwise we use (...) syntax:
@@ -306,7 +306,7 @@ InstallMethod( ViewObj,
         fi;
         SET_PRINT_OBJ_INDEX(order[i]);
         # easy if nam is integer or valid identifier:
-        if ForAll(nam, x-> x in okchars) then
+        if ForAll(nam, x-> x in okchars) and Size(nam) > 0 then
           Print(nam, " := ");
         else 
           # otherwise we use (...) syntax:
