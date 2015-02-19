@@ -57,8 +57,8 @@ IdentifierLetters :=
 
 InstallGlobalFunction( IsValidIdentifier, function(str)
     return ForAll(str, c -> c in IdentifierLetters) and
-           ForAny(str, c -> not (c in "0123456789") and
-           not str in ALL_KEYWORDS() );
+           ForAny(str, c -> not (c in "0123456789")) and
+           not str in ALL_KEYWORDS();
 end);
 
 #############################################################################
@@ -68,6 +68,9 @@ end);
 ##
 
 CheckGlobalName := function( name )
+    if not IsString( name ) then
+      Error("CheckGlobalName: the argument must be a string");
+    fi;
     if ForAny(name, l -> not l in IdentifierLetters) then
         Info(InfoWarning + InfoGlobal, 2, 
              "suspicious global variable name ", name);

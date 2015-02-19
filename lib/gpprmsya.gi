@@ -914,26 +914,54 @@ function ( G, g )
   return C;
 end);
 
-BindGlobal("OneNormalizerfixedBlockSystem",function(G,dom)
-local b, bl;
+BindGlobal("AllNormalizerfixedBlockSystem",function(G,dom)
+local b, bl,prop;
+
+  # what properties can we find easily
+  prop:=function(s)
+  local p;
+  s:=Set(dom{s});
+    p:=[Length(s)];
+
+    # type of action on blocks
+    if TRANS_AVAILABLE=true and Length(dom)/Length(s)<=TRANSDEGREES then
+      Add(p,TransitiveIdentification(Action(G,Orbit(G,s,OnSets),OnSets)));
+    fi;
+
+    # type of action on blocks
+    if TRANS_AVAILABLE=true and Length(s)<=TRANSDEGREES then
+      Add(p,TransitiveIdentification(Action(Stabilizer(G,s,OnSets),s)));
+    fi;
+
+    if Length(p)=1 then
+      return p[1];
+    else
+      return p;
+    fi;
+  end;
+
   if IsPrimeInt(Length(dom)) then
     # no need trying
     return fail;
   fi;
   b:=AllBlocks(Action(G,dom));
-  bl:=Collected(List(b,Length));
+  b:=ShallowCopy(b);
+
+  #Print(List(b,Length),"\n");
+  bl:=Collected(List(b,prop));
   bl:=Filtered(bl,i->i[2]=1);
   if Length(bl)=0 then
     Info(InfoGroup,3,"No normalizerfixed block found");
     return fail;
   fi;
-  b:=First(b,i->Length(i)=bl[1][1]);
-  Info(InfoGroup,3,"Normalizerfixed block system blocksize ",Length(b));
-  return Set(Orbit(G,Set(dom{b}),OnSets));
+  b:=Filtered(b,i->prop(i)=bl[1][1]);
+  Info(InfoGroup,3,"Normalizerfixed block system blocksize ",List(b,Length));
+  return List(b,x->Set(Orbit(G,Set(dom{x}),OnSets)));
 end);
 
 BindGlobal("NormalizerParentSA",function(s,u)
-  local dom, issym, o, b, beta, alpha, emb, nb, na, w, perm, pg, l, is, ie, ll, syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j;
+local dom, issym, o, b, beta, alpha, emb, nb, na, w, perm, pg, l, is, ie, ll,
+syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
 
   dom:=Set(MovedPoints(s));
   issym:=IsNaturalSymmetricGroup(s);
@@ -947,33 +975,46 @@ BindGlobal("NormalizerParentSA",function(s,u)
 
   # transitive?
   if Length(o)=1 then
-    b:=OneNormalizerfixedBlockSystem(u,o[1]);
-    if b=fail then
+    b0:=AllNormalizerfixedBlockSystem(u,o[1]);
+    if b0=fail then
       # none -- no improvement
       return s;
     fi;
-    # the normalizer must fix this block system
+    # the normalizer must fix these block system
+    opg:=fail;
+    for b in b0 do
+      beta:=ActionHomomorphism(u,b,OnSets,"surjective");
+      alpha:=ActionHomomorphism(Stabilizer(u,b[1],OnSets),b[1],"surjective");
+      emb:=KuKGenerators(u,beta,alpha);
+      nb:=Normalizer(SymmetricGroup(Length(b)),Image(beta));
+      na:=Normalizer(SymmetricGroup(Length(b[1])),Image(alpha));
+      w:=WreathProduct(na,nb);
+      if issym then
+	perm:=s;
+      else
+	perm:=SymmetricGroup(MovedPoints(s));
+      fi;
+      perm:=RepresentativeAction(perm,emb,GeneratorsOfGroup(u),OnTuples);
+      if perm<>fail then
+	pg:=w^perm;
+      else
+	#Print("Embedding Problem!\n");
+	w:=WreathProduct(SymmetricGroup(Length(b[1])),SymmetricGroup(Length(b)));
+	perm:=MappingPermListList([1..Length(o[1])],Concatenation(b));
+	pg:=w^perm;
+      fi;
+      if opg<>fail then
+	pg:=Intersection(pg,opg);
 
-    beta:=ActionHomomorphism(u,b,OnSets,"surjective");
-    alpha:=ActionHomomorphism(Stabilizer(u,b[1],OnSets),b[1],"surjective");
-    emb:=KuKGenerators(u,beta,alpha);
-    nb:=Normalizer(SymmetricGroup(Length(b)),Image(beta));
-    na:=Normalizer(SymmetricGroup(Length(b[1])),Image(alpha));
-    w:=WreathProduct(na,nb);
-    if issym then
-      perm:=s;
-    else
-      perm:=SymmetricGroup(MovedPoints(s));
+      fi;
+      opg:=pg;
+    od;
+    if Length(GeneratorsOfGroup(pg))>5 then
+      opg:=Group(SmallGeneratingSet(pg));
+      SetSize(opg,Size(pg));
+      pg:=opg;
     fi;
-    perm:=RepresentativeAction(perm,emb,GeneratorsOfGroup(u),OnTuples);
-    if perm<>fail then
-      pg:=w^perm;
-    else
-      #Print("Embedding Problem!\n");
-      w:=WreathProduct(SymmetricGroup(Length(b[1])),SymmetricGroup(Length(b)));
-      perm:=MappingPermListList([1..Length(o[1])],Concatenation(b));
-      pg:=w^perm;
-    fi;
+
   else
 
     # first sort by Length
@@ -1093,6 +1134,12 @@ local og,oh,cb,cc,cac,perm1,perm2,
 
   og:=Orbits(g,p1);
   oh:=Orbits(h,p2);
+
+  # different orbits lengths -- cannot be conjugate
+  if Collected(List(og,Length))<>Collected(List(oh,Length)) then
+    return fail;
+  fi;
+
   if Length(og)>1 or p1<>p2 or p1<>dom then
     # intransitive
     if not (IsSubset(dom,p1) and IsSubset(dom,p2)) then
@@ -1590,7 +1637,7 @@ end);
 InstallOtherMethod( StabChainOp, "symmetric group", true,
     [ IsNaturalSymmetricGroup,IsRecord ], 0,
 function(G,r)
-local dom, l, sgs;
+local dom, l, sgs, nondupbase;
 
   # test for internal rep
   if HasGeneratorsOfGroup(G) and 
@@ -1604,7 +1651,8 @@ local dom, l, sgs;
   dom:=Set(MovedPoints(G));
   l:=Length(dom);
   if IsBound(r.base) then
-    dom:=Concatenation(Filtered(r.base,i->i in dom),Difference(dom,r.base));
+    nondupbase:=DuplicateFreeList(r.base);
+    dom:=Concatenation(Filtered(nondupbase,i->i in dom),Difference(dom,nondupbase));
   fi;
   sgs:=List([1..l-1],i->(dom[i],dom[l]));
   return StabChainBaseStrongGenerators(dom{[1..Length(dom)-1]},sgs,());

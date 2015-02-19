@@ -269,7 +269,7 @@ Int LenListObject (
 **  An error is signalled if <list> is not a list.
 **
 **  Note that  'LENGTH' is a  macro, so do  not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  A package  implementing a list type <type>  must  provide such a function
 **  and install it in 'LengthFuncs[<type>]'.
@@ -2211,7 +2211,7 @@ void            PlainListError (
 
 /****************************************************************************
 **
-*F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of kinds of lists over a family
+*F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of types of lists over a family
 */
 UInt            TYPES_LIST_FAM_RNam;
 
@@ -3295,7 +3295,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoLists ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

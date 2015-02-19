@@ -25,6 +25,15 @@
 /****************************************************************************
 **
 
+*F  NUM_RAT(<rat>)  . . . . . . . . . . . . . . . . . numerator of a rational
+*F  DEN_RAT(<rat>)  . . . . . . . . . . . . . . . . denominator of a rational
+*/
+#define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
+#define DEN_RAT(rat)    ADDR_OBJ(rat)[1]
+
+/****************************************************************************
+**
+
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 

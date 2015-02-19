@@ -57,9 +57,9 @@ for the attribute are required either.
 <Section Label="Operation Functions">
 <Heading>Operation Functions</Heading>
 
-<Index Subkey="computing orbits"><C>ExternalSet</C></Index>
-<Index Subkey="computing orbits"><M>G</M>-sets</Index>
-<Index Subkey="as attributes for external sets"><C>Orbits</C></Index>
+<Index Key="ExternalSet" Subkey="computing orbits"><C>ExternalSet</C></Index>
+<Index Key="G-sets" Subkey="computing orbits"><M>G</M>-sets</Index>
+<Index Key="Orbits" Subkey="as attributes for external sets"><C>Orbits</C></Index>
 Chapter&nbsp;<Ref Chap="Group Actions"/>
 and, in particular,
 the Section&nbsp;<Ref Sect="About Group Actions"/>

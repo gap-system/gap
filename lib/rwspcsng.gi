@@ -762,14 +762,46 @@ SingleCollector_MakeAvector := function( sc )
 end;
 
 SingleCollector_MakeInverses := function( sc )
-    local   n,  gn,  id,  i;
+    local   n,  gn,  id,  i,invhint,j,ih,av;
 
     # start at the bottom
     n  := sc![SCP_NUMBER_RWS_GENERATORS];
     gn := sc![SCP_RWS_GENERATORS];
     id := One(sc![SCP_UNDERLYING_FAMILY]);
+    invhint:=ValueOption("inversehints");
     for i  in [ n, n-1 .. 1 ]  do
-        sc![SCP_INVERSES][i] := SingleCollector_Solution( sc, gn[i], id );
+      if invhint<>fail then
+	ih:=[];
+	for j in [1..Length(invhint[i])] do
+	  if invhint[i][j]<>0 then
+	    Add(ih,j);
+	    Add(ih,invhint[i][j]);
+	  fi;
+	od;
+	ih:=AssocWord(sc![SCP_DEFAULT_TYPE],ih); # claimed inverse
+	# test that the inverses work. This can be abysmally slow for larger
+	# primes.
+	if AssertionLevel()>0 then
+	  av:=ExponentSums(gn[i],1,sc![SCP_NUMBER_RWS_GENERATORS]);
+	  CollectWord(sc,av,ih);
+	  if ForAny(av,x->not IsZero(x)) then 
+	    Error("failed inverse hint");
+	    ih:=fail;
+	  fi;
+	fi;
+      else
+	ih:=fail;
+      fi;
+      if ih<>fail then
+	#if ih<>SingleCollector_Solution( sc, gn[i], id ) then
+	#  Error("ugh!");
+	#else
+	#  Print("inversehint worked\n");
+	#fi;
+	sc![SCP_INVERSES][i] := ih;
+      else
+	sc![SCP_INVERSES][i] := SingleCollector_Solution( sc, gn[i], id );
+      fi;
     od;
 end;
 

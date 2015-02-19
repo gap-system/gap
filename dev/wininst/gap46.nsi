@@ -9,6 +9,7 @@
 #
 # To make the GAP installer for Windows:
 # - put gapicon.ico in the same folder with this script
+# - copy etc/CPL to copyright.txt in the same folder with this script
 # - unpack GAP source distribution to the subdirectory 'gap4r6'
 #   in the place where this script is located
 # - remove bin/regtool.exe and bin/usemem.bat
@@ -56,12 +57,12 @@ var StartMenuFolder
 # User variables and other general settings: adjust them here as needed
 # 
 Section
-StrCpy $GAP_VER "4.6.4"
+StrCpy $GAP_VER "4.6.5"
 SectionEnd
 
 #Name and file
-Name "GAP 4.6.4"
-OutFile "gap4r6p4_2013_05_04-16_36.exe"
+Name "GAP 4.6.5"
+OutFile "gap4r6p5_2013_07_20-20_02.exe"
 
 #Default installation folder
 InstallDir "C:\gap4r6"
@@ -1504,8 +1505,8 @@ SectionEnd
 Section "Float" SecGAPpkg_float 
 SetOutPath $INSTDIR\pkg 
 File gap4r6\pkg\README.float
-SetOutPath $INSTDIR\pkg\float-0.5.9
-File /r gap4r6\pkg\float-0.5.9\*.* 
+SetOutPath $INSTDIR\pkg\float-0.5.10
+File /r gap4r6\pkg\float-0.5.10\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1754,7 +1755,7 @@ LangString DESC_SecGAPpkg_sophus ${LANG_ENGLISH} "Computing in nilpotent Lie alg
 LangString DESC_SecGAPpkg_spinsym ${LANG_ENGLISH} "Brauer tables of spin-symmetric groups"
 LangString DESC_SecGAPpkg_symbcompcc ${LANG_ENGLISH} "Computing with parametrised presentations for p-groups of fixed coclass"
 LangString DESC_SecGAPpkg_tomlib ${LANG_ENGLISH} "The GAP Library of Tables of Marks"
-LangString DESC_SecGAPpkg_toolsforhomalg ${LANG_ENGLISH} "GAP extensions for the homalg project"
+LangString DESC_SecGAPpkg_toolsforhomalg ${LANG_ENGLISH} "Special methods and knowledge propagation tools"
 LangString DESC_SecGAPpkg_toric ${LANG_ENGLISH} "toric varieties and some combinatorial geometry computations"
 LangString DESC_SecGAPpkg_toricvarieties ${LANG_ENGLISH} "A package to handle toric varieties"
 LangString DESC_SecGAPpkg_unipot ${LANG_ENGLISH} "Computing with elements of unipotent subgroups of Chevalley groups"

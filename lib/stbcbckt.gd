@@ -25,7 +25,7 @@
 ##
 DeclareInfoClass( "InfoBckt" );
 
-DeclareGlobalFunction( "AsPerm" );
+DeclareGlobalFunction( "UnslicedPerm@" );
 DeclareGlobalFunction( "PreImageWord" );
 DeclareGlobalFunction( "ExtendedT" );
 DeclareGlobalFunction( "MeetPartitionStrat" );

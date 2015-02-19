@@ -172,6 +172,17 @@ InstallMethod( IsZeroSquaredRing,
 
 #############################################################################
 ##
+#M  IsZeroMultiplicationRing(<R>)
+##
+InstallImmediateMethod( IsZeroMultiplicationRing,
+    IsRingWithOne and HasIsTrivial, 0,
+    function( R )
+    return IsTrivial(R);
+    end );
+
+
+#############################################################################
+##
 #M  IsCentral( <R>, <U> )  . . . . . . . .  test if <U> is centralized by <R>
 ##
 ##  For associative rings, we have to check $u a = a u$ only for ring
@@ -1064,10 +1075,7 @@ InstallOtherMethod( QuotientRemainder,
 ##
 InstallOtherMethod( QuotientMod,
     "for three ring elements",
-    function( F1, F2, F3 )
-    return IsIdenticalObj( F1, F2 ) and IsIdenticalObj( F2, F3 );
-    end,
-#T allow `IsIdenticalObj' for more than two arguments!!
+    IsFamFamFam,
     [ IsRingElement, IsRingElement, IsRingElement ], 0,
     function( r, s, m )
     return QuotientMod( DefaultRing( [ r, s, m ] ), r, s, m );
@@ -1116,7 +1124,7 @@ InstallOtherMethod( PowerMod,
 InstallMethod( PowerMod,
     "for Euclidean ring, ring element, integer, and ring element",
     true,
-    [ IsRing, IsRingElement, IsInt, IsRingElement ], 0,
+    [ IsEuclideanRing, IsRingElement, IsInt, IsRingElement ], 0,
     function( R, r, e, m )
     local   pow, f;
 

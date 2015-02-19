@@ -1329,117 +1329,6 @@ Obj FuncINV_MATRIX_IMMUTABLE( Obj self, Obj mat)
 
 /****************************************************************************
 **
-*F  PowList(<listL>,<listR>)  . . . . . . . . . . . . . . . .  power of lists
-**
-**  'PowList' is the extended dispatcher  for  powers involving lists.   That
-**  is, whenever two operands  are  powered and at  least  one is a list  and
-**  'PowFuncs' does not    point to a  special function,    then 'PowList' is
-**  called.   'PowList' determines the  extended types of the operands (e.g.,
-**  'T_INT', 'T_VECTOR', 'T_MATRIX',  'T_LISTX') and then  dispatches through
-**  'PowFuncs' again.
-**
-**  'PowMatrixInt' is a specialization   of 'PowObjInt', which  avoids  going
-**  through the extended dispatchers again and again.
-**
-*N  1996/08/28 M.Schönert is this function really worth the trouble?
-*N  2002/01/21 S. Linton It's not used, and I'm not sure it works
-*/
-
-Obj             PowMatrixInt (
-    Obj                 mat,
-    Obj                 n )
-{
-    Obj                 res = 0;        /* result                          */
-    UInt                i, k, l;        /* loop variables                  */
-
-    /* if the integer is zero, return the neutral element of the operand   */
-    if      ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  0 ) {
-        res = OneMatrix( mat, 1 );
-    }
-
-    /* if the integer is one, return a copy of the operand                 */
-    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  1 ) {
-        res = CopyObj( mat, 0 );
-    }
-
-    /* if the integer is minus one, return the inverse of the operand      */
-    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) == -1 ) {
-        res = INV( mat );
-    }
-
-    /* if the integer is negative, invert the operand and the integer      */
-    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) <  -1 ) {
-        res = INV( mat );
-        if ( res == Fail ) {
-            return ErrorReturnObj(
-                "Operations: <mat> must have an inverse",
-                0L, 0L,
-                "you can supply a matrix <inverse> via 'return <inverse>;'" );
-        }
-        res = PowMatrixInt( res, AINV( n ) );
-    }
-
-    /* if the integer is negative, invert the operand and the integer      */
-    else if ( TNUM_OBJ(n) == T_INTNEG ) {
-        res = INV( mat );
-        if ( res == Fail ) {
-            return ErrorReturnObj(
-                "Operations: <mat> must have an inverse",
-                0L, 0L,
-                "you can supply a matrix <inverse> via 'return <inverse>;'" );
-        }
-        res = PowMatrixInt( res, AINV( n ) );
-    }
-
-    /* if the integer is small, compute the power by repeated squaring     */
-    /* the loop invariant is <result> = <res>^<k> * <op>^<l>, <l> < <k>    */
-    /* <res> = 0 means that <res> is the neutral element                   */
-    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) >   1 ) {
-        res = 0;
-        k = ((UInt)1L) << 31;
-        l = INT_INTOBJ(n);
-        while ( 1 < k ) {
-            res = (res == 0 ? res : ProdListScl( res, res ));
-            k = k / 2;
-            if ( k <= l ) {
-                res = (res == 0 ? mat : ProdListScl( res, mat ));
-                l = l - k;
-            }
-        }
-    }
-
-    /* if the integer is large, compute the power by repeated squaring     */
-    else if ( TNUM_OBJ(n) == T_INTPOS ) {
-        res = 0;
-        for ( i = SIZE_OBJ(n)/sizeof(TypDigit); 0 < i; i-- ) {
-            k = 1L << (8*sizeof(TypDigit));
-            l = ((TypDigit*) ADDR_OBJ(n))[i-1];
-            while ( 1 < k ) {
-                res = (res == 0 ? res : ProdListScl( res, res ));
-                k = k / 2;
-                if ( k <= l ) {
-                    res = (res == 0 ? mat : ProdListScl( res, mat ));
-                    l = l - k;
-                }
-            }
-        }
-    }
-
-    /* return the result                                                   */
-    return res;
-}
-
-Obj             PowMatrixIntHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return PowMatrixInt( opL, opR );
-}
-
-
-/****************************************************************************
-**
 *F  FuncADD_ROW_VECTOR_5( <self>, <list1>, <list2>, <mult>, <from>, <to> )
 **
 **  This function adds <mult>*<list2>[i] destructively to <list1>[i] for
@@ -2396,9 +2285,6 @@ static StructGVarFunc GVarFuncs [] = {
     { "INV_MATRIX_IMMUTABLE", 1, "list",
       FuncINV_MATRIX_IMMUTABLE, "src/listoper.c:INV_MATRIX_IMMUTABLE" },
 
-    { "POW_MATRIX_INT", 2, "list, int",
-      PowMatrixIntHandler, "src/listoper.c:POW_MATRIX_INT" },
-
     { "ADD_ROW_VECTOR_5", 5, "list1, list2, mult, from, to",
       FuncADD_ROW_VECTOR_5, "src/listoper.c:ADD_ROW_VECTOR_5" },
 
@@ -2616,7 +2502,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoListOper ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

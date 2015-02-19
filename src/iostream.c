@@ -21,6 +21,8 @@
 **
 */
 
+#define _GNU_SOURCE  /* is used for getpt(), ptsname_r prototype etc. */
+
 #include        "system.h"              /* system dependent part           */
 
 #include        "iostream.h"            /* file input/output               */
@@ -253,7 +255,8 @@ static UInt GetMasterPty ( int *pty, Char *nametty, Char *namepty )
 #elif HAVE_GETPT && HAVE_PTSNAME_R
     /* Attempt to use glibc specific APIs, for compatibility with older
        glibc versions (before 2.2.1, release January 2001). */
-    if ((*pty = getpt()) > 0 ) {
+    *pty = getpt();
+    if (*pty > 0) {
         if (grantpt(*pty) || unlockpt(*pty)) {
             close(*pty);
             return 1;
@@ -268,14 +271,16 @@ static UInt GetMasterPty ( int *pty, Char *nametty, Char *namepty )
        getpt or openpty, but do have ptsname.
        Platforms *missing* ptsname include:
        Mac OS X 10.3, OpenBSD 3.8, Minix 3.1.8, mingw, MSVC 9, BeOS. */
-    if ( (*pty = open( "/dev/ptmx", O_RDWR )) < 0 )
+    *pty = open( "/dev/ptmx", O_RDWR );
+    if ( *pty < 0 )
         return 1;
     strxcpy(nametty, ptsname(*pty), 32);
     return 0;
 
 #elif HAVE_GETPSEUDOTTY
     /* TODO: From which system(s) does getpseudotty originate? */
-    return (*pty = getpseudotty( nametty, namepty )) >= 0 ? 0 : 1;
+    *pty = getpseudotty( nametty, namepty );
+    return *pty < 0 ? 1 : 0;
 
 #elif HAVE__GETPTY
     /* Available on SGI IRIX >= 4.0 (released September 1991).
@@ -287,28 +292,7 @@ static UInt GetMasterPty ( int *pty, Char *nametty, Char *namepty )
     strcpy( nametty, line );
     return 0;
 
-#elif defined(sgi) || (defined(umips) && defined(USG))
-    /* FIXME: Is this code still usable? A bit later it access an
-       undefined variable 'tty', so for non-sgi systems this won't
-       even compile.
-       */
-    struct stat fstat_buf;
-
-    /* TODO: AIX has /dev/ptc, what else? */
-    *pty = open( "/dev/ptc", O_RDWR );
-    if ( *pty < 0 || (fstat (*pty, &fstat_buf)) < 0 )
-        return 1;
-    snprintf( nametty, 32, "/dev/ttyq%d", minor(fstat_buf.st_rdev) );
-  #if !defined(sgi)
-    snprintf( namepty, 32, "/dev/ptyq%d", minor(fstat_buf.st_rdev) );
-    if ( (*tty = open (nametty, O_RDWR)) < 0 ) {
-        close (*pty);
-        return 1;
-    }
-  #endif
-    return 0;
-
-# else
+#else
     /* fallback to old-style BSD pseudoterminals, doing a brute force
        search over all pty device files. */
     int devindex;
@@ -919,7 +903,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoIOStream ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

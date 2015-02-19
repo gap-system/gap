@@ -43,6 +43,9 @@
 ##  corresponding to the elements <C>f1</C> and <C>f2</C> in <C>F</C>, 
 ##  we have <C>l1 * l2</C> equal to the Lie element corresponding to 
 ##  <C>f1 * f2 - f2 * f1</C>.
+##  Furthermore, the product of Lie elements <C>l1</C>, <C>l2</C> and
+##  <C>l3</C> is left-normed, that is <C>l1*l2*l3</C> is equal to
+##  <C>(l1*l2)*l3</C>.  
 ##  <P/>
 ##  The main reason to distinguish elements and Lie elements on the family
 ##  level is that this helps to avoid forming domains that contain

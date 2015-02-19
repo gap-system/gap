@@ -369,8 +369,8 @@ static Int InitLibrary ( StructInitInfo * module )
  /* record names used in handlers */
  
  /* information for the functions */
- C_NEW_STRING( DefaultName, 14, "local function" )
- C_NEW_STRING( FileName, 20, "GAPROOT/lib/random.g" )
+ C_NEW_STRING( DefaultName, 14, "local function" );
+ C_NEW_STRING( FileName, 20, "GAPROOT/lib/random.g" );
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;

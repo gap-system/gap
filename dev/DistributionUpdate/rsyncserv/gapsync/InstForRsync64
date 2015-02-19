@@ -2,18 +2,17 @@
 
 
 # You need 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
-# And the files: gap4r4.tar.gz, packages-XXX.tar.gz, tools4r4.tar.gz,
-#                xtom1r1.tar.gz
+# And the files: current gap4rXXX.tar.gz, homology.1.4.5.staticbin.tgz
 
 # Frank Lübeck, Frank.Luebeck@Math.RWTH-Aachen.De for questions and complaints.
 
-export NAME="4r6"
+export NAME="4r7"
 #setenv COPTS ""
 #setenv LOPTS ""
 unset CFLAGS
 
+# we stick to old installation directory
 tar xzvpf gap4r*.tar.gz
-#unzip gap4r5p*.zip
 
 mv gap$NAME gap4r5
 
@@ -49,7 +48,7 @@ cd bin/$GAParch
 
 # with newer ld:
 #gcc -g  -export-dynamic  -o gap ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o -l:libreadline.a -l:libncurses.a  -l:libm.a  extern/gmp/lib/libgmp.a  -ldl 
-gcc -g  -export-dynamic  -o gap ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a  /usr/lib/libutil.a extern/gmp/lib/libgmp.a  -ldl 
+gcc -g  -export-dynamic  -o gap ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o pperm.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o trans.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a  /usr/lib/libutil.a extern/gmp/lib/libgmp.a  -ldl 
 strip gap
 # store away until pargap is built
 cp gap gapnompi
@@ -73,9 +72,10 @@ strip bin/*/ace
 cd ..
 
 ### program is not 64-bit clean but we can compile a 32-bit binary
-cd anupq
+cd anupq-*
 ./configure 
-make linux-iX86-gcc2 COPTS="-m32 -g" LOPTS="-m32 -g -static"
+# old versions?: make linux-iX86-gcc2 COPTS="-m32 -g" LOPTS="-m32 -g -static"
+make LOPTS=-static
 strip bin/*/pq
 cd ..
 
@@ -133,10 +133,11 @@ rm -rf carat-2.1b1
 ln -s ../../local/pkg/CaratStandalone/carat-2.1b1/bin bin
 cd ..
 
-cd citrus*
-./configure 
-make
-cd ..
+# is substituted by "semigroups" package
+#cd citrus
+#./configure 
+#make
+#cd ..
 
 cd cohomolo
 #make clean
@@ -151,7 +152,7 @@ make
 strip bin/x8*/*
 cd ..
 
-cd cvec
+cd cvec-*
 ./configure
 make
 strip bin/*/*
@@ -163,7 +164,15 @@ make CC="gcc -O2 -Wall -static"
 strip bin/x8*/*
 cd ..
 
+# float-5.0.18 has no configure!!!
+# we saved a copy of float-0.5.12 from GAP 4.7.2
+rm -rf float-0.5.18/
+cp -a ../../float-0.5.12 .
+
 cd float*
+
+make clean
+
 ./configure --with-mpfr=extern --with-mpfi=extern --with-mpc=extern --with-cxsc=extern
 make
 mkdir -p ../../bin/$GAParch/extern_libs
@@ -231,7 +240,7 @@ make install
 strip bin/x8*/*
 cd ..
 
-cd io
+cd io-*
 ./configure
 make
 strip bin/x8*/*
@@ -257,12 +266,13 @@ cd ..
 # for nq use the GMP version which comes with Carat
 cd nq-*
 ./configure
-make CFLAGS=-O3 LDFLAGS=-static
+# (nq_CFLAGS adds -W flags which are not available with old compiler)
+make nq_CFLAGS="" LDFLAGS=-static CFLAGS="-O3"
 strip bin/*/*
 cd ..
 
 # orb
-cd orb
+cd orb-*
 ./configure 
 make
 strip bin/*/*.so
@@ -304,7 +314,7 @@ cd  ..
 cd bin/x86_64-unknown-linux-gnu-gcc-default64
 rm -f pargapmpi
 #gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/x86_64-unknown-linux-gnu-gcc-default64/libmpi.a -l:libreadline.a -l:libncurses.a  -l:libm.a  extern/gmp/lib/libgmp.a  -ldl 
-gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/x86_64-unknown-linux-gnu-gcc-default64/libmpi.a /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a /usr/lib/libutil.a  extern/gmp/lib/libgmp.a  -ldl 
+gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o pperm.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o trans.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/x86_64-unknown-linux-gnu-gcc-default64/libmpi.a /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a /usr/lib/libutil.a  extern/gmp/lib/libgmp.a  -ldl 
 mv gapnompi gap
 mv gap.o.nompi gap.o
 

@@ -28,6 +28,11 @@ DeclareOperation("TransformationByImageAndKernel",
  [ IsCyclotomicCollection and IsDenseList, 
    IsCyclotomicCollection and IsDenseList]);
 
+DeclareOperation("NumberTransformation", [IsTransformation, IsZeroCyc]);
+DeclareOperation("NumberTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("NumberTransformation", [IsTransformation]);
+DeclareOperation("TransformationNumber", [IsPosInt, IsPosInt]);
+
 DeclareAttribute("MovedPoints",        IsTransformation);
 DeclareAttribute("NrMovedPoints",      IsTransformation);
 DeclareAttribute("LargestMovedPoint",  IsTransformation);
@@ -44,29 +49,31 @@ DeclareAttribute("SmallestMovedPoint", IsTransformationCollection);
 
 DeclareAttribute("RankOfTransformation", IsTransformation);
 DeclareOperation("RankOfTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("RankOfTransformation", [IsTransformation, IsZeroCyc]);
 DeclareOperation("RankOfTransformation", [IsTransformation, IsList]);
-
-DeclareAttribute("NormalizedDegreeOfTransformation", IsTransformation);
-DeclareAttribute("NormalizedDegreeOfTransformationCollection",
-IsTransformationCollection);
 
 DeclareOperation("AsBinaryRelation", [IsTransformation]);
 DeclareAttribute("AsPermutation", IsAssociativeElement);
 
 DeclareAttribute("AsTransformation", IsAssociativeElement);
 DeclareOperation("AsTransformation", [IsAssociativeElement, IsInt]);
+DeclareAttribute("PermutationOfImage", IsTransformation);
 
 DeclareOperation("ConstantTransformation", [IsPosInt, IsPosInt]);
 DeclareAttribute("DegreeOfTransformationCollection",
 IsTransformationCollection);
 DeclareAttribute("FlatKernelOfTransformation", IsTransformation);
-DeclareGlobalFunction("IdentityTransformation");
+DeclareOperation("FlatKernelOfTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("FlatKernelOfTransformation", [IsTransformation, IsZeroCyc]);
+
 DeclareOperation("ImageListOfTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("ImageListOfTransformation", [IsTransformation, IsZeroCyc]);
 DeclareOperation("ImageListOfTransformation", [IsTransformation]);
 #ImageListOfTransformation(IsTransformation, IsList) is just OnTuples
 DeclareSynonym("ListTransformation", ImageListOfTransformation);
 DeclareAttribute("ImageSetOfTransformation", IsTransformation);
 DeclareOperation("ImageSetOfTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("ImageSetOfTransformation", [IsTransformation, IsZeroCyc]);
 #ImageSetOfTransformation(IsTransformation, IsList) is just OnSets
 DeclareAttribute("IndexPeriodOfTransformation", IsTransformation);
 DeclareOperation("IsInjectiveListTrans", [IsList, IsTransformation]);
@@ -75,6 +82,7 @@ DeclareAttribute("KernelOfTransformation", IsTransformation);
 DeclareOperation("KernelOfTransformation", [IsTransformation, IsPosInt,
 IsBool]);
 DeclareOperation("KernelOfTransformation", [IsTransformation, IsPosInt]);
+DeclareOperation("KernelOfTransformation", [IsTransformation, IsZeroCyc]);
 DeclareOperation("KernelOfTransformation", [IsTransformation, IsBool]);
 
 DeclareOperation("PermLeftQuoTransformationNC",[IsTransformation,
@@ -119,6 +127,8 @@ DeclareOperation("CyclesOfTransformation", [IsTransformation, IsList]);
 DeclareAttribute("LeftOne", IsAssociativeElement);
 DeclareAttribute("RightOne", IsAssociativeElement);
 DeclareOperation("OnKernelAntiAction", [IsList, IsTransformation]);
+
+BindGlobal("IdentityTransformation", TransformationNC([]));
 
 # for legacy reasons only!
 DeclareSynonym("BinaryRelationTransformation", AsBinaryRelation);

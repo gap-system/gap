@@ -184,6 +184,8 @@ DeclareGlobalFunction("NrConjugacyClassesPSU");
 DeclareGlobalFunction("NrConjugacyClassesSLIsogeneous");
 DeclareGlobalFunction("NrConjugacyClassesSUIsogeneous");
 
+DeclareGlobalFunction("ClassesProjectiveImage");
+
 
 #############################################################################
 ##

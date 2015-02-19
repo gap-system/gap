@@ -1085,7 +1085,7 @@ Obj FuncProdGF2VecAnyMat ( Obj self, Obj vec, Obj mat )
 
   /* create the result space */
   NEW_GF2VEC( res,
-	      (IS_MUTABLE_OBJ(vec) || IS_MUTABLE_OBJ(mat)) ? TYPE_LIST_GF2VEC : TYPE_LIST_GF2VEC_IMM,
+	      (IS_MUTABLE_OBJ(vec) || IS_MUTABLE_OBJ(row1)) ? TYPE_LIST_GF2VEC : TYPE_LIST_GF2VEC_IMM,
 	      len1);
   SET_LEN_GF2VEC(res,len1);
 
@@ -3116,7 +3116,7 @@ Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
   UInt off,off2;		/* 0 based */
   Obj zahl;  /* the long number */
   UInt *num;
-  UInt *vp;
+  TypLimb *vp;
   len = LEN_GF2VEC(vec);
   num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
   off = (len -1) % BIPEB + 1; /* number of significant bits in last word */
@@ -4854,7 +4854,7 @@ static Int InitKernel (
   RNcoeffs = 0;
   RNrelns = 0;
 
-    /* import kind functions                                               */
+    /* import type functions                                               */
     ImportGVarFromLibrary( "TYPE_LIST_GF2VEC",     &TYPE_LIST_GF2VEC     );
     ImportGVarFromLibrary( "TYPE_LIST_GF2VEC_IMM", &TYPE_LIST_GF2VEC_IMM );
     ImportGVarFromLibrary( "TYPE_LIST_GF2VEC_IMM_LOCKED", &TYPE_LIST_GF2VEC_IMM_LOCKED );
@@ -4914,7 +4914,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoGF2Vec ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

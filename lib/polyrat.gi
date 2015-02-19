@@ -130,7 +130,7 @@ end);
 APPROXROOTS:=[];
 
 BindGlobal("ApproximateRoot",function(arg)
-local r,e,f,x,nf,lf,c,store;
+local r,e,f,x,nf,lf,c,store,letzt;
   r:=arg[1];
   e:=arg[2];
 
@@ -147,8 +147,10 @@ local r,e,f,x,nf,lf,c,store;
   x:=RootInt(NumeratorRat(r),e)/RootInt(DenominatorRat(r),e);
   nf:=r;
   c:=0;
+  letzt:=[];
   repeat
     lf:=nf;
+    Add(letzt,x);
     x:=ApproxRational(1/e*((e-1)*x+r/(x^(e-1))),f+6);
     nf:=AbsInt(x^e-r);
     if nf=0 then
@@ -166,7 +168,7 @@ local r,e,f,x,nf,lf,c,store;
       fi;
     fi;
   # until 3 times no improvement
-  until c>2;
+  until c>2 or x in letzt;
   if store then
     if not IsBound(APPROXROOTS[e]) then
       APPROXROOTS[e]:=[];
@@ -661,8 +663,7 @@ local G, P, l, m, i;
       l[i] := G[1][i];
     fi;
   od;
-  G := LaurentPolynomialByExtRepNC(CoefficientsFamily(FamilyObj(f)),
-                                 l,G[2],t.brci);
+  G := LaurentPolynomialByExtRepNC(FamilyObj(f),l,G[2],t.brci);
   Info(InfoPoly,3,"gcd mod ",t.modulo," = ",G);
 
   # check if <G> is correct but return 'true' in any case

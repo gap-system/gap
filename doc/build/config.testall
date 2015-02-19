@@ -30,7 +30,7 @@
   "trans","tietze","tom","tuples","twocohom","unknown","upoly","vec8bit",
   "vecmat","vspc","vspchom","word","wordass","wpobj","zlattice","zmodnz",
   "boolean.g","compiler.g","cyclotom.g","demo.g","dt.g","fampred.g","ffe.g",
-  "filter.g","flag.g","function.g","global.g","kernel.g","list.g",
+  "filter.g","flag.g","function.g","global.g","kernel.g","list.g","newprofile.g",
   "methwhy.g","methsel2.g","oper.g","overload.g","package.g","permutat.g",
   "profile.g","record.g","reread.g","string.g","system.g","type.g",
   "variable.g","version.g","wpobj.g",

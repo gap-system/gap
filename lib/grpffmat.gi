@@ -716,6 +716,113 @@ function ( G )
   return NrConjugacyClassesSU(n,q);
 end );
 
+
+InstallGlobalFunction(ClassesProjectiveImage,function(act)
+local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
+      real,goal,good,e;
+
+  G:=Source(act);
+
+  # elementary divisors for GL-class identification
+  x:=X(DefaultFieldOfMatrixGroup(G),1);
+  prop:=y->Set(Filtered(ElementaryDivisorsMat(y-x*y^0),
+	       y->DegreeOfUnivariateLaurentPolynomial(y)>0));
+
+  # compute real fusion
+  real:=function(set)
+  local new,i,a,b;
+    new:=[];
+    for i in set do
+      if i in set then # might have been removed by now
+	b:=ConjugacyClass(PG,repi[i]);
+	a:=Filtered(set,x->x<>i and repi[x] in b);
+        a:=Union(a,[i]);
+	fcl[a[1]]:=b;
+	Add(new,a);
+	set:=Difference(set,a);
+      fi;
+    od;
+    return new;
+  end;
+
+  #dom:=NormedVectors(DefaultFieldOfMatrixGroup(G)^Length(One(G)));
+  #act:=ActionHomomorphism(G,dom,OnLines,"surjective");
+  PG:=Image(act); # this will be PSL etc.
+
+  StabChainMutable(PG);; # needed anyhow and will speed up images under act
+  z:=Size(Centre(G));
+  zel:=Filtered(Elements(Centre(G)),x->Order(x)>1);
+  cl:=ConjugacyClasses(G);
+  if IsNaturalGL(G) then
+    goal:=NrConjugacyClassesPGL(Length(One(G)),
+	   Size(DefaultFieldOfMatrixGroup(G)));
+  elif IsNaturalSL(G) then
+    goal:=NrConjugacyClassesPSL(Length(One(G)),
+	   Size(DefaultFieldOfMatrixGroup(G)));
+  else
+    goal:=Length(cl); # this is too loose, but upper limit
+  fi;
+
+  s:=[]; # count how much of pre-images we still need to account for
+  sel:=[];
+  reps:=List(cl,Representative);
+  repi:=List(reps,x->ImagesRepresentative(act,x));
+  repo:=List(repi,Order);
+  e:=List(reps,prop);
+
+  sel:=[1..Length(cl)];
+  fcl:=[]; # cached factor group classes
+  if z=1 then 
+    fus:=List(sel,x->[x]);
+  else
+    # fuse maximally under centre multiplication
+    fus:=[];
+    while Length(sel)>0 do
+      a:=sel[1]; sel:=sel{[2..Length(sel)]};
+      p:=Union(e{[a]},List(zel,x->prop(reps[a]*x)));
+      f:=Filtered(sel,x->e[x] in p and repo[a]=repo[x]);
+      sel:=Difference(sel,f);
+      AddSet(f,a);
+      Add(fus,f);
+    od;
+
+    # separate those that clearly cannot fuse fully
+    good:=[];
+    for i in Filtered(fus,x->Length(x)>z or z mod Length(x)<>0) do
+      a:=real(i);
+      fus:=Union(Filtered(fus,x->x<>i),a);
+      good:=Union(good,a); # record that we properly tested
+    od;
+
+
+    # now go through and test properly and fuse, unless we reached the
+    # proper class number
+    for i in fus do
+      if not i in good and Length(fus)<goal then
+	# fusion could split up -- test
+	a:=real(i);
+	fus:=Union(Filtered(fus,x->x<>i),a);
+      fi;
+    od;
+  fi;
+
+  # now fusion is good -- form classes
+  c:=[];
+  for i in fus do
+    if IsBound(fcl[i[1]]) then
+      a:=fcl[i[1]];
+    else
+      a:=ConjugacyClass(PG,repi[i[1]]);
+    fi;
+    Add(c,a);
+    f:=Sum(cl{i},Size)/z;
+    SetSize(a,f);
+  od;
+
+  SetConjugacyClasses(PG,c);
+  return [act,PG,c];
+end);
+
 #############################################################################
 ##
 #E

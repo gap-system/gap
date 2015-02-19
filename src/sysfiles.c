@@ -927,7 +927,8 @@ Int SyFopen (
         return (Int)-1;
     }
 
-
+    if(strncmp(mode, "r", 1) == 0)
+        SySetBuffering(fid);
     /* return file identifier                                              */
     return fid;
 }
@@ -3066,21 +3067,13 @@ void SyClearErrorNo ( void )
 *F  SySetErrorNo()  . . . . . . . . . . . . . . . . . . . . set error message
 */
 
-#if  ! HAVE_SYS_ERRLIST
-extern char * sys_errlist[];
-#endif
-
 void SySetErrorNo ( void )
 {
     const Char *        err;
 
     if ( errno != 0 ) {
         SyLastErrorNo = errno;
-#if ! HAVE_STRERROR
-        err = sys_errlist[errno];
-#else
         err = strerror(errno);
-#endif
         strxcpy( SyLastErrorMessage, err, sizeof(SyLastErrorMessage) );
     }
     else {
@@ -3876,7 +3869,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSysFiles ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

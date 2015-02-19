@@ -320,6 +320,7 @@ InstallGlobalFunction( ConjugacyClassesByRandomSearch, function ( G )
 local   classes,    # conjugacy classes of <G>, result
 	class,      # one class of <G>
 	cent,	# centralizer from which to take random elements
+	seed,   # possible seed
 	elms;       # elements of <G>
 
     # initialize the conjugacy class list
@@ -330,14 +331,22 @@ local   classes,    # conjugacy classes of <G>, result
       return ConjugacyClassesByOrbits(G);
     # otherwise use probabilistic algorithm
     else
+	seed:=ValueOption("seed");
+	if not IsList(seed) then seed:=[];fi;
 	classes := [ ConjugacyClass( G, One( G ) ) ];
 
 	cent:=G;
         # while we have not found all conjugacy classes
         while Sum( List( classes, Size ) ) <> Size( G )  do
 
-            # try random elements
-            cent:=ConjugacyClassesTry( G, classes, Random(cent), 0, 1 );
+	    if Length(seed)>0 then
+	      # try random elements
+	      cent:=ConjugacyClassesTry( G, classes, seed[1], 0, 1 );
+	      seed:=seed{[2..Length(seed)]};
+	    else
+	      # try random elements
+	      cent:=ConjugacyClassesTry( G, classes, Random(cent), 0, 1 );
+	    fi;
 
         od;
 

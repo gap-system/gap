@@ -115,7 +115,7 @@ typedef UInt * *        Bag;
 **  Apart from that {\Gasman} does not care at all about types.
 **
 **  Note  that 'TNUM_BAG' is a macro, so do not call  it with arguments  that
-**  have sideeffects.
+**  have side effects.
 */
 
 #ifdef USE_NEWSHAPE
@@ -139,7 +139,7 @@ typedef UInt * *        Bag;
 **  later change it with 'ResizeBag' (see "NewBag" and "ResizeBag").
 **
 **  Note that  'SIZE_BAG' is  a macro,  so do not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #ifdef USE_NEWSHAPE
 #define SIZE_BAG(bag)   (*(*(bag)-2) >> 16)
@@ -202,7 +202,7 @@ typedef UInt * *        Bag;
 **  calling 'CHANGED_BAG(old)' in the above example (see "CHANGED_BAG").
 **
 **  Note that 'PTR_BAG' is a macro, so  do  not call it with  arguments  that
-**  have sideeffects.
+**  have side effects.
 */
 #define PTR_BAG(bag)    (*(Bag**)(bag))
 
@@ -245,17 +245,33 @@ typedef UInt * *        Bag;
 **  is incorrect as mentioned in the section for 'PTR_BAG' (see "PTR_BAG").
 **
 **  Note that 'CHANGED_BAG' is a macro, so do not call it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 extern  Bag *                   YoungBags;
 
 extern  Bag                     ChangedBags;
 
+/*****
+**  MEMORY_CANARY provides (basic) support for catching out-of-bounds memory
+**  problems in GAP. This is done through the excellent 'valgrind' program.
+**  valgrind is of limited use in GAP normally, because it doesn't understand
+**  GAP's memory manager. Enabling MEMORY_CANARY will make an executable where
+**  valgrind will detect memory issues.
+**
+**  At the moment the detection is limited to only writing off the last allocated
+**  block.
+*/
+
+#ifdef MEMORY_CANARY
+extern void CHANGED_BAG_IMPL(Bag b);
+#define CHANGED_BAG(bag) CHANGED_BAG_IMPL(bag);
+#else
 #define CHANGED_BAG(bag)                                                    \
                 if (   PTR_BAG(bag) <= YoungBags                              \
                   && PTR_BAG(bag)[-1] == (bag) ) {                          \
                     PTR_BAG(bag)[-1] = ChangedBags; ChangedBags = (bag);    }
 
+#endif
 
 /****************************************************************************
 **
@@ -636,7 +652,7 @@ extern  void            InitMsgsFuncBags (
 **  identifier.
 **
 **  Note that 'MARK_BAG' is a macro, so do not call it with an argument that
-**  has sideeffects.
+**  has side effects.
 **
 **  'MarkBagWeakly( <bag> )'
 **
@@ -776,7 +792,7 @@ extern void MarkAllSubBagsDefault ( Bag );
 **  new  position. The  intended  use is  for  weak  pointer bags, which must
 **  remove references to identifiers of  any half-dead objects. 
 **
-**  If no function  is installed for a Tnum,  then the data is  simply copied
+**  If no function  is installed for a TNum,  then the data is  simply copied
 **  unchanged and this is done particularly quickly 
 */
 

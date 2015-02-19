@@ -74,8 +74,8 @@ endif
 GAPARCH=@GAPARCH@
 GAPARGS=
 
-TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 512m -A -N -q -x 80 -r $(GAPARGS)
-TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 512m -N -q -x 80 -r $(GAPARGS)
+TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -A -q -x 80 -r $(GAPARGS)
+TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -q -x 80 -r $(GAPARGS)
 
 default: compile
 
@@ -89,22 +89,55 @@ setconfig:
 	  echo "There is no config with name: "$(CONFIGNAME); \
 	fi;
 
-config: bin/$(GAPARCH)/configure  bin/$(GAPARCH)/Makefile bin/$(GAPARCH)/extern/Makefile 
+config: bin/$(GAPARCH)/configure  bin/$(GAPARCH)/config.status 
 
 bin/$(GAPARCH)/configure: cnf/configure.out 
 	mkdir -p bin/$(GAPARCH)
 	@rm -f bin/$(GAPARCH)/configure
 	cp cnf/configure.out bin/$(GAPARCH)/configure
 
-bin/$(GAPARCH)/Makefile bin/$(GAPARCH)/extern/Makefile : bin/$(GAPARCH)/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
+bin/$(GAPARCH)/extern/Makefile: bin/$(GAPARCH)/config.status
+	( cd bin/$(GAPARCH) ; ./config.status extern/Makefile )
+
+bin/$(GAPARCH)/Makefile : bin/$(GAPARCH)/config.status
+	( cd bin/$(GAPARCH) ; ./config.status Makefile )
+
+bin/$(GAPARCH)/config.status : bin/$(GAPARCH)/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
 	mkdir -p bin/$(GAPARCH)/extern
-	( cd bin/$(GAPARCH) ; CC='$(CC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' GMP_CFLAGS='$(GMP_CFLAGS)' CONFIGNAME='$(CONFIGNAME)' USE_GMP='$(USE_GMP)' GAPARCH='$(GAPARCH)' ./configure --target=@target@ @gp_configure_options@ )
+	( cd bin/$(GAPARCH) ; \
+		CC='$(CC)' \
+		ABI='$(ABI)' \
+		ABI_CFLAGS='$(ABI_CFLAGS)' \
+		GMP_LIBS='$(GMP_LIBS)' \
+		GMP_CFLAGS='$(GMP_CFLAGS)' \
+		CONFIGNAME='$(CONFIGNAME)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		USE_GMP='$(USE_GMP)' \
+		GAPARCH='$(GAPARCH)' \
+		./configure --target=@target@ @gp_configure_options@ )
 
 extern: config
-	( cd bin/$(GAPARCH)/extern ; $(MAKE) TARGET='$(TARGET)' BASECC='$(BASECC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' CC='$(CC)' GMP_VER='$(GMP_VER)' MAKE_GMP='$(MAKE_GMP)' CONFIGNAME='$(CONFIGNAME)' )
+	( cd bin/$(GAPARCH)/extern ; \
+		$(MAKE) \
+		TARGET='$(TARGET)' \
+		BASECC='$(BASECC)' \
+		ABI='$(ABI)' \
+		ABI_CFLAGS='$(ABI_CFLAGS)' \
+		CC='$(CC)' \
+		GMP_VER='$(GMP_VER)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		CONFIGNAME='$(CONFIGNAME)' )
 
 compile: extern
-	( cd bin/$(GAPARCH); $(MAKE) ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' CONFIGNAME='$(CONFIGNAME)' )
+	( cd bin/$(GAPARCH); \
+		$(MAKE) \
+		ABI='$(ABI)' \
+		CC='$(CC)' \
+		GMP_VER='$(GMP_VER)' \
+		GMP_CFLAGS='$(GMP_CFLAGS)' \
+		GMP_LIBS='$(GMP_LIBS)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		CONFIGNAME='$(CONFIGNAME)' )
 	chmod +x bin/gap-$(CONFIGNAME).sh
 
 static: extern
@@ -148,7 +181,7 @@ clean_gap_$(CLEANME): rebuild
 	          sed -e "s/sysinfo.gap-//g"`; \
 	  if [ "x$$nextconf" != "x" ]; then \
 	    echo "changing config to "$$nextconf; \
-	    make setconfig CONFIGNAME=$$nextconf; \
+	    $(MAKE) setconfig CONFIGNAME=$$nextconf; \
 	  else \
 	    rm -f Makefile sysinfo.gap bin/gap.sh; \
 	  fi; \
@@ -164,10 +197,10 @@ clean_gmp_$(CLEANME):
 	 rm -f bin/$(GAPARCH)/extern/gmp; fi
 	if test -d extern/gmp-$(GMP_VER); then \
 	 (cd extern/gmp-$(GMP_VER); rm -f LASTBUILD.*; \
-	  if test -r Makefile; then make distclean; fi ); fi
+	  if test -r Makefile; then $(MAKE) distclean; fi ); fi
 
 distclean:
-	while test -e Makefile; do make clean; done
+	while test -e Makefile; do $(MAKE) clean; done
 
 manuals:
 	( echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAPauto) )
@@ -314,7 +347,7 @@ testmanuals:
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (NO PACKAGES)"; fi ; \
 	  echo '============================================================';\
@@ -322,7 +355,7 @@ testmanuals:
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (NO PACKAGES)"; fi ) \
 	  > `date -u +dev/log/testmanuals1_%Y-%m-%d-%H-%M` 2>&1 )
@@ -331,7 +364,7 @@ testmanuals:
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAPauto);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (DEFAULT PACKAGES)"; fi ; \
 	  echo '============================================================';\
@@ -339,7 +372,7 @@ testmanuals:
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAPauto);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (DEFAULT PACKAGES)"; fi ) \
 	  > `date -u +dev/log/testmanualsA_%Y-%m-%d-%H-%M` 2>&1 )
@@ -349,7 +382,7 @@ testmanuals:
 	  LoadAllPackages() ; \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (ALL PACKAGES)"; fi ; \
 	  echo '============================================================';\
@@ -358,7 +391,7 @@ testmanuals:
 	  LoadAllPackages() ; \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
 	  echo '============================================================';\
-	  cd ../.. ; ff=(`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
 	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
 	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (ALL PACKAGES)"; fi ) \
 	  > `date -u +dev/log/testmanuals2_%Y-%m-%d-%H-%M` 2>&1 )

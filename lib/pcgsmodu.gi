@@ -59,6 +59,18 @@ DeclareRepresentation( "IsNumeratorParentForExponentsRep",
 
 #############################################################################
 ##
+#R  IsNumeratorParentLayersForExponentsRep(<obj>)
+##
+##  modulo pcgs in this representation can use the numerator parent for
+##  computing exponents by working in elementary abelian layers (but not in
+##  one chunk, as there are cofactors).
+DeclareRepresentation( "IsNumeratorParentLayersForExponentsRep",
+    IsModuloPcgsRep,
+    [ "moduloDepths", "moduloMap", "numerator", "denominator",
+      "depthMap","depthsInParent","numeratorParent","parentZeroVector" ] );
+
+#############################################################################
+##
 #M  IsBound[ <pos> ]
 ##
 InstallMethod( IsBound\[\],
@@ -207,7 +219,9 @@ InstallMethod( ModuloPcgsByPcSequenceNC, "generic method for pcgs mod pcgs",
     true, [ IsPcgs, IsList, IsPcgs ], 0,
 
 function( home, list, modulo )
-    local   pcgs,  wm,  wp,  wd,  pcs,  filter,  new,  i,depthsInParent;
+    local   pcgs,  wm,  wp,  wd,  pcs,  filter,  new,
+    i,depthsInParent,dd,par,
+    pcsexp,denexp,bascha,idx,sep,sed,mat;
 
     # <list> is a pcgs for the sum of <list> and <modulo>
     if IsPcgs(list) and (ParentPcgs(modulo) = list or IsSubset(list,modulo)) 
@@ -239,13 +253,14 @@ function( home, list, modulo )
 	      HasDenominatorOfModuloPcgs and HasNumeratorOfModuloPcgs;
 
     depthsInParent:=fail; # do not set by default
+    dd:=fail; # do not set by default
     if IsEmpty(wd) or wd[Length(wd)] = Length(wd)  then
         filter := filter and IsModuloTailPcgsRep;
 	# are we even: tail mod further tail?
         if IsSubsetInducedPcgsRep(pcgs) and IsModuloTailPcgsRep(pcgs)
 	  and IsBound(pcgs!.depthsInParent) then
 	  filter:=filter and IsSubsetInducedNumeratorModuloTailPcgsRep;
-	  depthsInParent:=pcgs!.depthsInParent;
+	  depthsInParent:=pcgs!.depthsInParent{wd};
 	  # is everything even family induced?
 	  if HasIsParentPcgsFamilyPcgs(pcgs) 
 	     and IsParentPcgsFamilyPcgs(pcgs) then
@@ -257,6 +272,7 @@ function( home, list, modulo )
 	  filter:=filter and IsSubsetInducedNumeratorModuloTailPcgsRep
 		  and IsNumeratorParentPcgsFamilyPcgs;
 	  depthsInParent:=[1..Length(pcgs)]; # not stored in FamilyPcgs
+	  depthsInParent:=depthsInParent{wd};
 	fi;
     else
       if Length(wd)=Length(Set(wd)) and IsSubset(list,modulo) then
@@ -266,8 +282,25 @@ function( home, list, modulo )
 	if not IsBound(pcgs!.depthsInParent) then
 	  pcgs!.depthsInParent:=List(pcgs,i->DepthOfPcElement(Parent(pcgs),i));
 	fi;
-	depthsInParent:=pcgs!.depthsInParent;
+	depthsInParent:=pcgs!.depthsInParent{wd};
       else
+	if HasParentPcgs(pcgs) and
+	  IsPcgsElementaryAbelianSeries(ParentPcgs(pcgs)) then
+	  par:=ParentPcgs(pcgs);
+	  depthsInParent:=List(pcs,x->DepthOfPcElement(par,x));
+	  dd:=List(modulo,x->DepthOfPcElement(par,x));
+	  if
+	    Length(Union(depthsInParent,dd))=Length(depthsInParent)+Length(dd)
+	    then
+           
+	    # we can use the parent layers to calculate exponents
+	    filter:=filter and IsNumeratorParentLayersForExponentsRep;
+	  else
+	    depthsInParent:=fail;
+	  fi;
+
+	fi;
+
 	filter := filter and IsModuloPcgsRep;
       fi;
     fi;
@@ -305,8 +338,55 @@ function( home, list, modulo )
 
     if depthsInParent<>fail then
       new!.numeratorParent:=ParentPcgs(pcgs);
-      new!.depthsInParent:=depthsInParent{wd};
+      new!.depthsInParent:=depthsInParent;
       new!.parentZeroVector:=ParentPcgs(pcgs)!.zeroVector;
+    fi;
+
+    if dd<>fail then
+      new!.denpardepths:=dd;
+      wm:=[];
+      for i in [1..Length(dd)] do
+	wm[dd[i]]:=i;
+      od;
+      new!.parentDenomMap:=wm;
+
+      wm:=[];
+      for i in [1..Length(depthsInParent)] do
+	wm[depthsInParent[i]]:=i;
+      od;
+      new!.parentDepthMap:=wm;
+
+      i:=IndicesNormalSteps(par);
+      new!.layranges:=List([1..Length(i)-1],x->[i[x]..i[x+1]-1]);
+
+      pcsexp:=List(pcs,x->ExponentsOfPcElement(par,x));
+      denexp:=List(modulo,x->ExponentsOfPcElement(par,x));
+      bascha:=List(new!.layranges,x->fail);
+      new!.basechange:=bascha;
+      idx:=[];
+      new!.indices:=idx;
+      for i in [1..Length(new!.layranges)] do
+	if new!.layranges[i][1]<=Length(wm) then
+	  dd:=GF(RelativeOrders(par)[new!.layranges[i][1]]);
+	  sep:=Filtered([1..Length(pcs)],
+	    x->PositionNonZero(pcsexp[x]) in new!.layranges[i]);
+	  sed:=Filtered([1..Length(modulo)],
+	    x->PositionNonZero(denexp[x]) in new!.layranges[i]);
+	  if Length(sep)>0 or Length(sed)>0 then
+	    mat:=Concatenation(pcsexp{sep}{new!.layranges[i]},
+		  denexp{sed}{new!.layranges[i]})*One(dd);
+	    mat:=ImmutableMatrix(dd,mat);
+	    while Length(mat)<Length(mat[1]) do
+	      mat:=Concatenation(mat,[First(IdentityMat(Length(mat[1]),dd),
+		x->SolutionMat(mat,x)=fail)]);
+	      mat:=ImmutableMatrix(dd,mat);
+	    od;
+	    bascha[i]:=mat^-1;
+	    idx[i]:=[sep,sed];
+	  fi;
+	fi;
+      od;
+
     fi;
 
     # and return
@@ -647,10 +727,12 @@ end );
 InstallOtherMethod( ExponentsOfPcElement, "pcgs modulo pcgs", IsCollsElms,
     [ IsModuloPcgs and IsModuloPcgsRep, IsObject ], 0,
 function( pcgs, elm )
-    local   id,  exp,  ros,  den,  num,  wm,  mm,  pm,  d,  ll,  lr;
+    local   id,  exp,  ros,  den,  num,  wm,  mm,  pm,  d,  ll,  lr,lede;
 
     id  := OneOfPcgs(pcgs);
     exp := ListWithIdenticalEntries(Length(pcgs),0);
+    if not IsBound(pcgs!.lede) then pcgs!.lede:=[];fi;
+    lede:=pcgs!.lede;
     den := DenominatorOfModuloPcgs(pcgs);
     num := NumeratorOfModuloPcgs(pcgs);
     if not IsPrimeOrdersPcgs(num)  then TryNextMethod();  fi;
@@ -662,14 +744,24 @@ function( pcgs, elm )
 
     while elm <> id  do
         d := DepthOfPcElement( num, elm );
+	if d>Length(pm) then
+	  # all lower will only be in denominator
+	  return exp;
+	fi;
 
+	ll  := LeadingExponentOfPcElement( num, elm );
         if IsBound(mm[d])  then
-            ll  := LeadingExponentOfPcElement( num, elm );
-            lr  := LeadingExponentOfPcElement( num, den[mm[d]] );
+	    if not IsBound(lede[d]) then
+	      lede[d]:=LeadingExponentOfPcElement( num, den[mm[d]] );
+	    fi;
+            lr  := lede[d];
             elm := LeftQuotient( den[mm[d]]^(ll / lr mod ros[d]), elm );
         else
-            ll := LeadingExponentOfPcElement( num, elm );
-            lr := LeadingExponentOfPcElement( num, pcgs[pm[d]] );
+            #ll := LeadingExponentOfPcElement( num, elm );
+	    if not IsBound(lede[d]) then
+              lede[d]:=LeadingExponentOfPcElement( num, pcgs[pm[d]] );
+	    fi;
+            lr := lede[d];
             exp[pm[d]] := ll / lr mod ros[d];
             elm := LeftQuotient( pcgs[pm[d]]^exp[pm[d]], elm );
         fi;
@@ -679,13 +771,86 @@ end );
 
 #############################################################################
 ##
+#M  ExponentsOfPcElement( <modulo-pcgs>, <elm> )
+##
+InstallOtherMethod( ExponentsOfPcElement, "modpcgs numerator parent layers",
+   IsCollsElms,
+    [ IsModuloPcgs and IsModuloPcgsRep and
+      IsNumeratorParentLayersForExponentsRep, IsObject ], 0,
+function( pcgs, elm )
+local   id,exp,den,par,ll,lr,idx,bascha,e,ee,prd,i,la,lap,pm;
+
+    #elm0:=elm;
+    id  := OneOfPcgs(pcgs);
+    exp := ListWithIdenticalEntries(Length(pcgs),0);
+    if not IsBound(pcgs!.lede) then pcgs!.lede:=[];fi;
+    den := DenominatorOfModuloPcgs(pcgs);
+    par := ParentPcgs(NumeratorOfModuloPcgs(pcgs));
+    if not IsPrimeOrdersPcgs(par)  then TryNextMethod();  fi;
+
+    idx:=pcgs!.indices;
+    bascha:=pcgs!.basechange;
+    pm:=Length(pcgs!.parentDepthMap);
+
+    for lap in [1..Length(pcgs!.layranges)] do
+      if bascha[lap]<>fail then
+	la:=pcgs!.layranges[lap];
+	ee:=ExponentsOfPcElement(par,elm,la);
+	ee:=ee*bascha[lap]; # coefficients as needed
+
+	if lap<Length(pcgs!.layranges) and pcgs!.layranges[lap+1][1]<=pm then
+	  prd:=id;
+	else
+	  prd:=fail;
+	fi;
+	ll:=idx[lap][1];
+	for i in [1..Length(ll)] do
+	  e:=Int(ee[i]);
+	  exp[ll[i]]:=e;
+	  if prd<>fail and not IsZero(e) then
+	    prd:=prd*pcgs[ll[i]]^e;
+	  fi;
+	od;
+
+	if prd<>fail then
+	  ll:=Length(ll);
+	  lr:=idx[lap][2];
+	  for i in [1..Length(lr)] do
+	    e:=Int(ee[i+ll]);
+	    if not IsZero(e) then;
+	      prd:=prd*den[lr[i]]^e;
+	    fi;
+	  od;
+	fi;
+
+	if prd<>fail and not IsIdenticalObj(prd,id) then
+	  # divide off
+	  elm:=LeftQuotient(prd,elm);
+	fi;
+	if prd=fail then
+  #if exp<>basiccmp(pcgs,elm0) then Error("err1");fi;
+	  return exp;
+	fi;
+      fi;
+
+    od;
+  #if exp<>basiccmp(pcgs,elm0) then Error("err2");fi;
+    return exp;
+
+end );
+
+#############################################################################
+##
 #M  ExponentsOfPcElement( <modulo-pcgs>, <elm>, <subrange> )
 ##
+
+# this methoid ought to be obsolete
 InstallOtherMethod( ExponentsOfPcElement, "pcgs modulo pcgs, subrange",
     IsCollsElmsX, [ IsModuloPcgs and IsModuloPcgsRep, IsObject,IsList ], 0,
 function( pcgs, elm,range )
     local   id,  exp,  ros,  den,  num,  wm,  mm,  pm,  d,  ll,  lr,max;
 
+    Info(InfoWarning,1,"Obsolete exponents method");
     if not IsSSortedList(range) then
       TryNextMethod(); # the range may be unsorted or contain duplicates,
       # then we would have to be more clever.

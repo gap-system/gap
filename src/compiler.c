@@ -180,7 +180,7 @@ Int CompCheckPosObjElements;
 **  The only difference between the  first pass and  the second pass is  that
 **  'Emit'  emits  no code  during the first  pass.   While  this causes many
 **  unneccessary  computations during the first pass,  the  advantage is that
-**  the two passes are guaranteed to do exactely the same computations.
+**  the two passes are guaranteed to do exactly the same computations.
 */
 Int CompPass;
 
@@ -2770,7 +2770,7 @@ CVar CompStringExpr (
     string = CVAR_TEMP( NewTemp( "string" ) );
 
     /* create the string and copy the stuff                                */
-    Emit( "C_NEW_STRING( %c, %d, \"%C\" )\n",
+    Emit( "C_NEW_STRING( %c, %d, \"%C\" );\n",
 
           /* the sizeof(UInt) offset is to get past the length of the string
              which is now stored in the front of the literal */
@@ -5727,12 +5727,12 @@ Int CompileFunc (
         }
     }
     Emit( "\n/* information for the functions */\n" );
-    Emit( "C_NEW_STRING( DefaultName, 14, \"local function\" )\n" );
-    Emit( "C_NEW_STRING( FileName, %d, \"%s\" )\n", strlen(magic2), magic2 );
+    Emit( "C_NEW_STRING( DefaultName, 14, \"local function\" );\n" );
+    Emit( "C_NEW_STRING( FileName, %d, \"%s\" );\n", strlen(magic2), magic2 );
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
-            Emit( "C_NEW_STRING( NameFunc[%d], %d, \"%S\" )\n",
+            Emit( "C_NEW_STRING( NameFunc[%d], %d, \"%S\" );\n",
                   i, strlen(CSTR_STRING(n)), CSTR_STRING(n) );
         }
         else {
@@ -6211,7 +6211,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCompiler ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

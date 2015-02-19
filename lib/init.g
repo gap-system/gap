@@ -79,6 +79,12 @@ end;
 
 #############################################################################
 ##
+#F  MakeLiteral(<obj>) . . . . . . make the argument a literal and return it.
+##
+
+MakeLiteral := MakeImmutable;
+#############################################################################
+##
 #F  Ignore( <arg> ) . . . . . . . . . . . . ignore but evaluate the arguments
 ##
 #T  1996/08/07 M.Schönert 'Ignore' should be in the kernel
@@ -331,9 +337,7 @@ CallAndInstallPostRestore( function()
        ( IS_STRING(GAPInfo.NeedKernelVersion) and
          GAPInfo.KernelVersion <> GAPInfo.NeedKernelVersion ) then
       Print( "\n\n",
-        "You are running a GAP kernel which does not fit with the library.\n",
-        "Probably you forgot to apply the kernel part or the library part\n",
-        "of a bugfix?\n\n" );
+        "You are running a GAP kernel which does not fit with the library.\n\n" );
 
       # Get the number parts of the two version numbers.
       # (Version numbers are defined in "ext:Version Numbers".)
@@ -361,20 +365,10 @@ CallAndInstallPostRestore( function()
 
       if haveint > needint then
         # kernel newer
-        Print( "You only installed a new kernel.\n",
-               "You must also install the most recent library bugfix,\n",
-               "this is fix", have[1], "r", have[2], "n", have[3],
-               ".zoo (or .zip) or newer.\n\n" );
+        Print( "The GAP kernel is newer than the library.\n\n" );
       else
         # kernel older
-        Print( "If you are using Windows, make sure you installed the file\n",
-               "wbin", need[1], "r", need[2], "n", need[3],
-               ".zoo (or .zip),\n",
-               "Macintosh users make sure the file\n",
-               "bin", need[1], "r", need[2], "n", need[3],
-               "-PPC.sit (or -68k.sit) is installed,\n",
-               "Unix users please recompile.\n\n" );
-#T can't we give an architecture dependent message here?
+        Print( "The GAP kernel is older than the library. Perhaps you forgot to recompile?\n\n" );
       fi;
       Error( "Update to correct kernel version!\n\n" );
     fi;
@@ -583,10 +577,12 @@ CallAndInstallPostRestore( function()
     if enc = fail and IsBound(env.LANG) then
       enc := env.LANG;
     fi;
-    if enc <> fail and 
-                   (PositionSublist(enc, ".UTF-8") <> fail  or
-                    PositionSublist(enc, ".utf8") <> fail) then
-      GAPInfo.TermEncoding := "UTF-8";
+    if enc <> fail then
+      enc:=STRING_LOWER(enc);
+      if (PositionSublist(enc, "utf-8") <> fail  or
+          PositionSublist(enc, "utf8") <> fail) then
+        GAPInfo.TermEncoding := "UTF-8";
+      fi;
     fi;
     if not IsBound(GAPInfo.TermEncoding) then
       # default is latin1
@@ -996,11 +992,13 @@ CallAndInstallPostRestore( function()
       if not ( GAPInfo.CommandLineOptions.r or GAPInfo.HasReadGAPRC ) then
         if ARCH_IS_UNIX() then
           GAPInfo.gaprc:= SHALLOW_COPY_OBJ( GAPInfo.UserHome );
-          APPEND_LIST_INTR( GAPInfo.gaprc, "/.gaprc" );
+          if IsString(GAPInfo.gaprc) then
+            APPEND_LIST_INTR( GAPInfo.gaprc, "/.gaprc" );
+          fi;
         else
           GAPInfo.gaprc:= "gap.rc";
         fi;
-        if READ( GAPInfo.gaprc ) then
+        if IsString(GAPInfo.gaprc) and READ( GAPInfo.gaprc ) then
           Info(InfoWarning, 1, 
             "You are using an old ",GAPInfo.gaprc, " file. ");
           Info(InfoWarning, 1, 

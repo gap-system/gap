@@ -39,7 +39,7 @@ typedef UInt2           TypDigit;
 #endif
 
 #define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
-#define INTBASE            (1L << NR_DIGIT_BITS)
+#define INTBASE            (1UL << NR_DIGIT_BITS)
 #define NR_SMALL_INT_BITS  (2*NR_DIGIT_BITS - 4)
 #define SIZE_INT(op)    (SIZE_OBJ(op) / sizeof(TypDigit))
 #define ADDR_INT(op)    ((TypDigit*)ADDR_OBJ(op))

@@ -63,13 +63,15 @@ InstallOtherMethod( \^,
 #M  IsRowModule .  return `false' for objects which are not free left modules 
 ##
 InstallOtherMethod( IsRowModule,
-                    Concatenation("return `false' for objects which are ",
-                                  "not free left modules"),
-                    true, [ IsObject ], 0,
-
-  function ( obj )
-    if not IsFreeLeftModule(obj) then return false; else TryNextMethod(); fi;
-  end );
+    "return `false' for objects which are not free left modules",
+    true, [ IsObject ], 0,
+    function ( obj )
+    if not IsFreeLeftModule(obj) then
+        return false;
+    else
+        TryNextMethod();
+    fi;
+    end );
 
 
 #############################################################################
@@ -531,7 +533,7 @@ InstallMethod( EnumeratorByBasis,
         enum!.NumberElement:= PosVecEnumFF;
         SetFilterObj( enum, IsQuickPositionList );
       fi;
-#T SetFilterObj( enum, IsSSortedList ) ?
+      SetFilterObj( enum, IsSSortedList );
 
       return enum;
 

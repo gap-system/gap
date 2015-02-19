@@ -256,6 +256,8 @@ MakeFpGroupCompMethod:=function(CMP)
       f:=FpElementNFFunction(fam);
       com:=x->f(UnderlyingElement(x));
     fi;
+    SetCanEasilyCompareElements(fam,true);
+    SetCanEasilySortElements(fam,true);
     # now build the comparison function
     return function(left,right)
              return CMP(com(left),com(right));
@@ -1515,7 +1517,6 @@ function( G, elts )
     return F / rels;
 end );
 
-
 #############################################################################
 ##
 #M  FactorFreeGroupByRelators(<F>,<rels>) .  factor of free group by relators
@@ -2701,7 +2702,8 @@ BindGlobal( "DoLowIndexSubgroupsFpGroupIteratorWithSubgroupAndExclude",
 
     # make the rows for the subgroup generators
     subgroup := [];
-    for rel  in List( GeneratorsOfGroup( H ), UnderlyingElement ) do
+    for rel  in Filtered(List( GeneratorsOfGroup( H ), UnderlyingElement ),
+                         x->not IsOne(x)) do
       length := Length( rel );
       length2 := 2 * length;
       nums := [ ]; nums[length2] := 0;
@@ -4027,6 +4029,7 @@ function(arg)
   p:=SmallerDegreePermutationRepresentation(H);
   # tell the family that we can now compare elements
   SetCanEasilyCompareElements(FamilyObj(One(G)),true);
+  SetCanEasilySortElements(FamilyObj(One(G)),true);
 
   r:=Range(p);
   SetSize(r,Size(H));
@@ -4683,8 +4686,8 @@ local freegp, gens, mongens, s, t, p, freemon, gensmon, id, newrels,
 	  p:=Position(CHARS_UALPHA,s[j]);
 	  Add(t,CHARS_LALPHA[p]);
 	fi;
-	s:=t;
       od;
+      s:=t;
     else
       s:=Concatenation(s,"^-1");
     fi;
@@ -6035,7 +6038,7 @@ IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup := function( G )
   cti := snf.coltrans^-1;
   for i in [ 1 .. Length(cti) ] do
     row := cti[i];
-    if i < Length( snf.normal ) then o := snf.normal[i][i]; else o := 0; fi;
+    if i <= Length( snf.normal ) then o := snf.normal[i][i]; else o := 0; fi;
     if o <> 1 then
       # get the involved prime factors
       g := LinearCombinationPcgs( gens, row, One(G) );
@@ -6062,6 +6065,7 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup,
   [ IsFpGroup and IsAbelian ],
   IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup );
 
+InstallValue(TRIVIAL_FP_GROUP,FreeGroup(0,"TrivGp")/[]);
 
 #############################################################################
 ##

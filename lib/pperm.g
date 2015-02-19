@@ -1,8 +1,6 @@
 
-DeclareCategoryKernel("IsPartialPerm", IsMultiplicativeElementWithInverse and
- IsAssociativeElementWithAction and
- IsAssociativeElementWithUniqueSemigroupInverse,
-IS_PPERM);
+DeclareCategoryKernel("IsPartialPerm", IsMultiplicativeElementWithInverse 
+and IsAssociativeElement, IS_PPERM);
 
 DeclareCategoryCollections( "IsPartialPerm" );
 DeclareCategoryCollections( "IsPartialPermCollection" );

@@ -674,7 +674,7 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
         #fi;
 
 
-    # test for action on disjoint sets of numbers-> blocks homomorphism
+    # test for action on disjoint sets of numbers, preserved by group -> blocks homomorphism
     elif not IsExternalSubset( xset )
          and IsPermGroup( G )
          and IsList( D )
@@ -683,6 +683,8 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
          and act = OnSets
 	 # disjointness test
 	 and Length(Set(Flat(D)))=Sum(List(D,Length))
+	 # preserved test
+	 and ForAll(D,b->ForAll(GeneratorsOfGroup(G),g->OnSets(b,g) in D))
 	 then
         filter := IsBlocksHomomorphism;
         hom.reps := [  ];
@@ -1126,7 +1128,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
   stabsub:=ClosureSubgroupNC(stabsub,gens{Filtered([1..Length(acts)],
 	    i->act(d,acts[i])=d)});
 
-  if IsBool(D) then
+  if IsBool(D) or IsRecord(D) then
     doml:=Size(G);
   else
     if blist<>false then
@@ -1452,7 +1454,7 @@ InstallMethod( OrbitsDomain, "for arbitrary domains", true,
 function( G, D, gens, acts, act )
 local   orbs, orb,sort,plist,pos,use,o;
   
-  if Length(D)>0 and not IsMutable(D) and IsSSortedList(D) 
+  if Length(D)>0 and not IsMutable(D) and HasIsSSortedList(D) and IsSSortedList(D) 
     and CanEasilySortElements(D[1]) then
     return OrbitsByPosOp( G, D, gens, acts, act );
   fi;
@@ -1612,7 +1614,7 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
 
   # get a dictionary
 
-  if IsMatrix(start) and Length(start)>0 then
+  if IsMatrix(start) and Length(start)>0 and Length(start)=Length(start[1]) then
     # if we have matrices, we need to give a domain as well, to ensure the
     # right field
     D:=DomainForAction(start[1],acts,act);
@@ -2183,7 +2185,8 @@ InstallMethod( BlocksOp,
     
     if Length(D)=1 then return Immutable([D]);fi;
     hom := ActionHomomorphism( G, D, gens, acts, act );
-    B := Blocks( ImagesSource( hom ), [ 1 .. Length( D ) ] );
+    B := Blocks( ImagesSource( hom ), [ 1 .. Length( D ) ],
+      Set(List(seed,x->Position(D,x))) );
     B:=List( B, b -> D{ b } );
     # force sortedness
     if Length(B[1])>0 and CanEasilySortElements(B[1][1]) then

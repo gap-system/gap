@@ -28,8 +28,16 @@ InstallMethod(Zero,
 #F  PrintArray( <array> ) . . . . . . . . . . . . . . . . pretty print matrix
 ##
 InstallGlobalFunction(PrintArray,function( array )
-    local   arr,  max,  l,  k;
+    local   arr,  max,  l,  k,maxp,compact,bl;
 
+    compact:=ValueOption("compact")=true;
+    if compact then 
+      maxp:=0;
+      bl:="";
+    else 
+      maxp:=1;
+      bl:=" ";
+    fi;
     if not IsDenseList( array ) then
         Error( "<array> must be a dense list" );
     elif Length( array ) = 0  then
@@ -39,14 +47,18 @@ InstallGlobalFunction(PrintArray,function( array )
     elif not ForAll( array, IsList )  then
         arr := List( array, String );
         max := Maximum( List( arr, Length ) );
-        Print( "[ ", String( arr[ 1 ], max + 1 ) );
+        Print( "[ ", String( arr[ 1 ], max + maxp ) );
         for l  in [ 2 .. Length( arr ) ]  do
             Print( ", ", String( arr[ l ], max + 1 ) );
         od;
         Print( " ]\n" );
     else
         arr := List( array, x -> List( x, String ) );
-        max := Maximum( List( arr, 
+	if compact then
+	  max:=List([1..Length(arr[1])],
+	    x->Maximum(List([1..Length(arr)],y->Length(arr[y][x]))));
+	else
+	  max := Maximum( List( arr, 
                     function(x)
                          if Length(x) = 0 then
                              return 1;
@@ -54,26 +66,32 @@ InstallGlobalFunction(PrintArray,function( array )
                              return Maximum( List(x,Length) );
                          fi;
                          end) );
-        Print( "[ " );
+	fi;
+
+        Print( "[",bl );
         for l in [ 1 .. Length( arr ) ] do
             if l > 1 then
-                Print( "  " );
+                Print(bl," ");
             fi;
-            Print( "[ " );
+            Print( "[",bl );
             if Length(arr[ l ]) = 0 then
-                Print("  ]" );
+                Print(bl,bl,"]" );
             else
                 for k  in [ 1 .. Length( arr[ l ] ) ]  do
-                    Print( String( arr[ l ][ k ], max + 1 ) );
-                    if k = Length( arr[ l ] )  then
-                        Print( " ]" );
-                    else
-                        Print( ", " );
-                    fi;
+		  if compact then
+		    Print( String( arr[ l ][ k ], max[k] + maxp ) );
+		  else
+		    Print( String( arr[ l ][ k ], max + maxp ) );
+		  fi;
+		  if k = Length( arr[ l ] )  then
+		      Print( bl,"]" );
+		  else
+		      Print( ", " );
+		  fi;
                 od;
             fi;
             if l = Length( arr )  then
-                Print( " ]\n" );
+                Print( bl,"]\n" );
             else
                 Print( ",\n" );
             fi;
@@ -824,8 +842,10 @@ local ord,i,vec,v,o;
     od;
 
     # raise the matrix to this length (new mat will fix basis vector)
-    mat := mat ^ o;
-    ord := ord * o;
+    if o>1 then
+      mat := mat ^ o;
+      ord := ord * o;
+    fi;
   od;
   if IsOne(mat) then return ord; else return fail; fi;
 end);
@@ -2561,6 +2581,35 @@ function ( mat1, mat2 )
     return kroneckerproduct;
 end );
 
+## symmetric and alternating parts of the kronecker product
+## code is due to Jean Michel
+
+#############################################################################
+##
+#M  ExteriorPower( <mat1>, <mat2> )
+##
+InstallOtherMethod(ExteriorPower,
+  "for matrices", true,[IsMatrix,IsPosInt],
+function ( A, m )
+local  basis;
+  basis := Combinations( [ 1 .. Length( A ) ], m );
+  return List( basis, i->List( basis, j->DeterminantMat( A{i}{j} )));
+end);
+
+#############################################################################
+##
+#M  SymmetricPower( <mat1>, <mat2> )
+##
+InstallOtherMethod(SymmetricPower,
+  "for matrices", true,[IsMatrix,IsPosInt],
+function ( A, m )
+local  basis, f;
+  f := j->Product( List( Collected( j ), x->x[2]), Factorial );
+  basis := UnorderedTuples( [ 1 .. Length( A ) ], m );
+  return List( basis, i-> List( basis, j->Permanent( A{i}{j}) / f( i )));
+end);
+
+
 
 #############################################################################
 ##
@@ -3103,9 +3152,11 @@ InstallGlobalFunction( IdentityMat, function ( arg )
         id[i] := ShallowCopy( row );
         id[i][i] := one;
     od;
-    ConvertToMatrixRep(id,f);
 
-    # return the identity matrix
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return id;
 end );
 
@@ -3143,9 +3194,11 @@ InstallGlobalFunction( NullMat, function ( arg )
     for i  in [1..m]  do
         null[i] := ShallowCopy( row );
     od;
-    ConvertToMatrixRep(null,f);
 
-    # return the null matrix
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return null;
 end );
 
@@ -3323,7 +3376,11 @@ InstallGlobalFunction( DiagonalMat, function( vector )
       M[i][i]:= vector[i];
       ConvertToVectorRepNC(M[i]);
     od;
-    ConvertToMatrixRep( M );
+
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return M;
 end );
 
@@ -3392,9 +3449,11 @@ InstallGlobalFunction( ReflectionMat, function( arg )
       ConvertToVectorRepNC( row );
       M[i]:= row;
     od;
-    ConvertToMatrixRep( M );
 
-    # Return the result.
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return M;
 end );
 
@@ -3433,7 +3492,11 @@ InstallGlobalFunction( RandomInvertibleMat, function ( arg )
             mat[i] := row;
         until NullspaceMat( mat ) = [];
     od;
-    ConvertToMatrixRep( mat, R );
+
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return mat;
 end );
 
@@ -3472,8 +3535,10 @@ InstallGlobalFunction( RandomMat, function ( arg )
         mat[i] := row;
     od;
 
-    # put into optimal form
-    ConvertToMatrixRep(mat);
+    # We do *not* call ConvertToMatrixRep here, as that can cause
+    # unexpected problems for the user (e.g. if a matrix over GF(2) is
+    # created, and the user then tries to change an entry to Z(4),
+
     return mat;
 end );
 

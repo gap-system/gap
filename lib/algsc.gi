@@ -763,7 +763,7 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
        and IsCyclotomicCollection( F ) and IsField( F )
        and ForAll( GeneratorsOfDivisionRing( F ),
                    x -> x = ComplexConjugate( x ) ) then
-      SetFilterObj( A, IsMagmaWithInversesIfNonzero );
+      SetFilterObj( A, IsDivisionRing );
 #T better use `DivisionRingByGenerators'?
       SetGeneratorsOfDivisionRing( A, GeneratorsOfAlgebraWithOne( A ) );
     fi;

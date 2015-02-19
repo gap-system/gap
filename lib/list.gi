@@ -268,7 +268,7 @@ InstallMethod( IN,
     IsElmsColls,
     [ IsObject, IsCollection and IsWholeFamily ],
     SUM_FLAGS, # can't do better
-    RETURN_TRUE );
+    ReturnTrue );
 
 
 #############################################################################
@@ -332,11 +332,19 @@ InstallMethod( ViewString, "call ViewString and incorporate hints",
 function ( list )
 local   str,ls, i;
 
-  # We cannot handle the case of an empty string in the method for strings
-  # because the type of the empty string need not satify the requirement
-  # `IsString'.
-  if IsEmptyString( list ) then
-    return "";
+  # We have to handle empty string and empty list specially because
+  # IsString( [ ] ) returns true
+
+  if Length(list) = 0 then
+    if IsEmptyString( list ) then
+      return "\"\"";
+    else
+      return "[  ]";
+    fi;
+  fi;
+
+  if IsString( list ) then
+    return Concatenation("\"", list, "\"");
   fi;
 
   # make strings for objects in l
@@ -687,12 +695,17 @@ InstallOtherMethod( SSortedList,
     "for a list, and a function",
     [ IsList, IsFunction ],
     function ( list, func )
-    local   res, i;
+    local   res, i, squashsize;
+    squashsize := 100;
     res := [];
     for i  in [ 1 .. Length( list ) ] do
-        AddSet( res, func( list[i] ) );
+        Add( res, func( list[i] ) );
+        if Length(res) > squashsize then
+            res := Set(res);
+            squashsize := Maximum(100, Size(res) * 2);
+        fi;
     od;
-    return res;
+    return Set(res);
     end );
 
 
@@ -1242,7 +1255,7 @@ InstallMethod( Position,
     [ IsHomogeneousList,
       IsObject,
       IsInt ],
-    RETURN_FAIL );
+    ReturnFail );
 
 InstallMethod( Position,
     "for a small sorted list, an object, and an integer",
@@ -2341,14 +2354,6 @@ InstallOtherMethod( SortParallel,
     "for two immutable lists and function",
     [IsList,IsList,IsFunction],
     SORT_MUTABILITY_ERROR_HANDLER);
-
-#############################################################################
-##
-#F  LengthComparison(<list1>,<list2>)
-##
-InstallGlobalFunction(LengthComparison,function(a,b)
-  return Length(a)<Length(b);
-end);
 
 
 #############################################################################
@@ -3674,62 +3679,6 @@ InstallMethod( PositionNonZero, "default method with start", [IsHomogeneousList,
     return PositionNot(l, Zero(l[1]), from);
 end);
 
-        
-        
-#############################################################################
-##
-#M  PositionFirstComponent( <list>, <obj>  ) . . . . . . various
-##
-##  kernel method will TRY_NEXT if any of the sublists are not 
-##  plain lists. 
-##    
-##  Note that we use PositionSorted rather than Position semantics
-##    
-    
-InstallMethod( PositionFirstComponent,"for dense plain list", true,
-    [ IsDenseList and IsSortedList and IsPlistRep, IsObject ], 0,
-    POSITION_FIRST_COMPONENT_SORTED);
-
-
-InstallMethod( PositionFirstComponent,"for dense list", true,
-    [ IsDenseList, IsObject ], 0,
-function ( list, obj )
-local i;
-  i:=1;
-  while i<=Length(list) do
-    if list[i][1]=obj then
-      return i;
-    fi;
-    i:=i+1;
-  od;
-  return i;
-end);
-
-InstallMethod( PositionFirstComponent,"for sorted list", true,
-    [ IsSSortedList, IsObject ], 0,
-function ( list, obj )
-local lo,up,s;
-  # simple binary search. The entry is in the range [lo..up]
-  lo:=1;
-  up:=Length(list);
-  while lo<up do
-      s := QuoInt(up+lo,2);
-      #s:=Int((up+lo)/2);# middle entry
-    if list[s][1]<obj then
-      lo:=s+1; # it's not in [lo..s], so take the upper part.
-    else
-      up:=s; # So obj<=list[s][1], so the new range is [1..s].
-    fi;
-  od;
-  # now lo=up
-  return lo;
-#  if list[lo][1]=obj then
-#    return lo;
-#  else
-#    return fail;
-#  fi;
-end );
-        
         
 #############################################################################
 ##

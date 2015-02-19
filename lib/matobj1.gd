@@ -6,7 +6,7 @@
 ##  Copyright (C) 2007  Max Neunhöffer, Lehrstuhl D f. Math., RWTH Aachen
 ##  This file is free software, see license information at the end.
 #
-# This file together with matobj2.gd formally define the interface to the 
+# This file together with matobj2.gd formally define the interface to the
 # new style vectors and matrices in GAP.
 # In this file the categories are defined, it is read earlier in the
 # GAP library reading process.
@@ -23,7 +23,7 @@
 
 DeclareCategory( "IsRowVectorObj", IsVector and IsCopyable );
 # All the arithmetical filters come from IsVector.
-# RowVectors are no longer necessarily lists, since they do not promise all 
+# RowVectors are no longer necessarily lists, since they do not promise all
 # list operations. Of course, in specific implementations the objects
 # may still be lists. But beware: Some matrix representations might
 # rely on the fact that vectors cannot change their length!
@@ -42,6 +42,9 @@ DeclareCategory( "IsMatrixObj", IsVector and IsScalar and IsCopyable );
 # still be lists.
 # The family of an object in IsMatrixObj is the collections family of
 # the family of its base domain.
+
+InstallTrueMethod(IsAssociativeElement,
+	 IsMatrixObj and IsAssociativeElementCollColl);
 
 DeclareCategory( "IsRowListMatrix", IsMatrixObj );
 # The category of matrices behaving like lists of rows which are GAP objects.

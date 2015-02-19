@@ -211,22 +211,26 @@ InstallMethod( PrintObj,
 ## first used). Except for the sorting of components this does the same as 
 ## the former (now removed) kernel function FuncPRINT_PREC_DEFAULT.
     function( record )
-    local okchars, com, i, snam, nam;
+    local okchars, com, i, snam, nam, names, order;
     okchars :=
           "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
     Print("\>\>rec(\n\>\>");
     com := false;
-    i := 1;
-    for nam in Set(RecNames( record )) do
+
+    names := List(RecNames(record));
+    order := [1..Length(names)];
+    SortParallel(names, order);
+
+    for i in [1..Length(names)] do
+        nam := names[i];
         if com then
             Print("\<\<,\n\>\>");
         else
             com := true;
         fi;
-        SET_PRINT_OBJ_INDEX(i);
-        i := i+1;
+        SET_PRINT_OBJ_INDEX(order[i]);
         # easy if nam is integer or valid identifier:
-        if ForAll(nam, x-> x in okchars) then
+        if ForAll(nam, x-> x in okchars) and Size(nam) > 0 then
           Print(nam, "\< := \>");
         else 
           # otherwise we use (...) syntax:
@@ -283,22 +287,26 @@ InstallMethod( ViewObj,
     "record",
     [ IsRecord ],
     function( record )
-    local nam, com, i, snam, okchars;
+    local nam, com, i, snam, okchars, names, order;
     okchars :=
           "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
     Print("\>\>rec( \>\>");
     com := false;
-    i := 1;
-    for nam in Set(RecNames( record )) do
+
+    names := List(RecNames(record));
+    order := [1..Length(names)];
+    SortParallel(names, order);
+
+    for i in [1..Length(names)] do
+        nam := names[i];
         if com then
             Print("\<,\< \>\>");
         else
             com := true;
         fi;
-        SET_PRINT_OBJ_INDEX(i);
-        i := i+1;
+        SET_PRINT_OBJ_INDEX(order[i]);
         # easy if nam is integer or valid identifier:
-        if ForAll(nam, x-> x in okchars) then
+        if ForAll(nam, x-> x in okchars) and Size(nam) > 0 then
           Print(nam, " := ");
         else 
           # otherwise we use (...) syntax:

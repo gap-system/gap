@@ -490,6 +490,52 @@ end);
 
 #############################################################################
 ##
+#M  ViewString(<char>)
+## 
+InstallMethod(ViewString, "IsChar", true, [IsChar], 0,
+function(s)
+  local r;
+  r:=[ ''', s, ''' ];
+  ConvertToStringRep(r);
+  return r;
+end);
+
+
+#############################################################################
+##
+#M  DisplayString(<char>)
+##
+InstallMethod(DisplayString, "IsChar", true, [IsChar], 0,
+function(s)
+  local r;
+  r:=[ ''', s, ''', '\n' ];
+  ConvertToStringRep(r);
+  return r;
+end);
+
+
+#############################################################################
+##
+#M  DisplayString(<list>)
+##
+InstallMethod(DisplayString, "IsList", true, [IsList and IsFinite], 0,
+function( list )
+  if Length(list) = 0 then
+    if IsEmptyString( list ) then
+      return "\n";
+    else
+      return "[  ]\n";
+    fi;
+  elif IsString( list ) then
+    return Concatenation( list, "\n");
+  else
+    TryNextMethod();
+  fi;
+end);
+
+
+#############################################################################
+##
 #M  SplitString( <string>, <seps>, <wspace> ) . . . . . . . .  split a string
 ##
 InstallMethod( SplitString,
@@ -954,12 +1000,15 @@ InstallGlobalFunction(PrintCSV,function(arg)
   fi;
 
   PrintTo(file);
-  printEntry(rf[1]);
-  for j in [2..Length(rf)] do
-    AppendTo(file,",");
-    printEntry(ReplacedString(rf[j],"_"," "));
-  od;
-  AppendTo(file,"\n");
+
+  if ValueOption("noheader")<>true then
+    printEntry(rf[1]);
+    for j in [2..Length(rf)] do
+      AppendTo(file,",");
+      printEntry(ReplacedString(rf[j],"_"," "));
+    od;
+    AppendTo(file,"\n");
+  fi;
 
   for  i in l do
     for j in [1..Length(rf)] do

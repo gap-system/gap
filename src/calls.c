@@ -1203,10 +1203,29 @@ Obj NewFunctionCT (
     ObjFunc             hdlr )
 {
     Obj                 name_o;         /* name as an object               */
-    Obj                 nams_o;         /* nams as an object               */
-    UInt                 len;            /* length                          */
-    UInt                 i, k, l;        /* loop variables                  */
 
+    /* convert the name to an object                                       */
+    C_NEW_STRING_DYN(name_o, name_c);
+    RetypeBag(name_o, T_STRING+IMMUTABLE);
+
+    /* make the function                                                   */
+    return NewFunctionT( type, size, name_o, narg, ArgStringToList( nams_c ), hdlr );
+}
+    
+
+/****************************************************************************
+**
+*F  ArgStringToList( <nams_c> )
+**
+** 'ArgStringToList' takes a C string <nams_c> containing a list of comma
+** separated argument names, and turns it into a plist of strings, ready
+** to be passed to 'NewFunction' as <nams>.
+*/
+Obj ArgStringToList(const Char *nams_c) {
+    Obj                 tmp;            /* argument name as an object      */
+    Obj                 nams_o;         /* nams as an object               */
+    UInt                len;            /* length                          */
+    UInt                i, k, l;        /* loop variables                  */
 
     /* convert the arguments list to an object                             */
     len = 0;
@@ -1224,23 +1243,18 @@ Obj NewFunctionCT (
             k++;
         }
         l = k;
-        while ( nams_c[l]!=' ' && nams_c[l]!=',' && nams_c[l]!='\0' ) {
+        while ( nams_c[l] != ' ' && nams_c[l] != ',' && nams_c[l] != '\0' ) {
             l++;
         }
-        C_NEW_STRING(name_o, l-k, nams_c+k);
-        RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
-        SET_ELM_PLIST( nams_o, i, name_o );
+        C_NEW_STRING( tmp, l - k, nams_c + k );
+        RetypeBag( tmp, T_STRING+IMMUTABLE );
+        SET_ELM_PLIST( nams_o, i, tmp );
         k = l;
     }
 
-    /* convert the name to an object                                       */
-    C_NEW_STRING_DYN(name_o, name_c);
-    RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
-
-    /* make the function                                                   */
-    return NewFunctionT( type, size, name_o, narg, nams_o, hdlr );
+    return nams_o;
 }
-    
+
 
 /****************************************************************************
 **
@@ -1251,9 +1265,9 @@ Obj NewFunctionCT (
 /****************************************************************************
 **
 
-*F  TypeFunction( <func> )  . . . . . . . . . . . . . . .  kind of a function
+*F  TypeFunction( <func> )  . . . . . . . . . . . . . . .  type of a function
 **
-**  'TypeFunction' returns the kind of the function <func>.
+**  'TypeFunction' returns the type of the function <func>.
 **
 **  'TypeFunction' is the function in 'TypeObjFuncs' for functions.
 */
@@ -1555,7 +1569,7 @@ Obj FuncNAME_FUNC (
         name = NAME_FUNC(func);
         if ( name == 0 ) {
             C_NEW_STRING_CONST(name, "unknown");
-            RESET_FILT_LIST( name, FN_IS_MUTABLE );
+            RetypeBag(name, T_STRING+IMMUTABLE);
             NAME_FUNC(func) = name;
             CHANGED_BAG(func);
         }
@@ -2017,7 +2031,7 @@ static Int InitKernel (
     InfoBags[ T_FUNCTION ].name = "function";
     InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
 
-    /* install the kind function                                           */
+    /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_FUNCTION",  &TYPE_FUNCTION  );
     ImportGVarFromLibrary( "TYPE_OPERATION", &TYPE_OPERATION );
     TypeObjFuncs[ T_FUNCTION ] = TypeFunction;
@@ -2106,7 +2120,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCalls ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

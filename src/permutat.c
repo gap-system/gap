@@ -141,9 +141,9 @@ Obj                     TmpPerm;
 
 /****************************************************************************
 **
-*F  TypePerm( <perm> )  . . . . . . . . . . . . . . . . kind of a permutation
+*F  TypePerm( <perm> )  . . . . . . . . . . . . . . . . type of a permutation
 **
-**  'TypePerm' returns the kind of permutations.
+**  'TypePerm' returns the type of permutations.
 **
 **  'TypePerm' is the function in 'TypeObjFuncs' for permutations.
 */
@@ -2516,19 +2516,14 @@ Obj IsPermHandler (
     Obj                 val )
 {
     /* return 'true' if <val> is a permutation and 'false' otherwise       */
-    switch ( TNUM_OBJ(val) ) {
-
-        case T_PERM2:
-        case T_PERM4:
-            return True;
-
-        case T_COMOBJ:
-        case T_POSOBJ:
-        case T_DATOBJ:
-            return DoFilter( self, val );
-
-        default:
-            return False;
+    if ( TNUM_OBJ(val) == T_PERM2 || TNUM_OBJ(val) == T_PERM4 ) {
+        return True;
+    }
+    else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
+        return False;
+    }
+    else {
+        return DoFilter( self, val );
     }
 }
 
@@ -3130,7 +3125,7 @@ Obj             FuncCycleStructurePerm (
 	list=NEW_PLIST(T_PLIST,max-1);
 	SET_LEN_PLIST(list,max-1);
         ptList = ADDR_OBJ(list);
-	for (pnt=1;pnt<=max;pnt++) { ptList[pnt]=0; } /* clean out */
+	for (pnt=1;pnt<max;pnt++) { ptList[pnt]=0; } /* clean out */
 
 	for (cnt=0; cnt<ende;cnt++) {
 	  pnt=(UInt)offset4[cnt];
@@ -4705,7 +4700,7 @@ static Int InitKernel (
     InfoBags[           T_PERM4         ].name = "permutation (large)";
     InitMarkFuncBags(   T_PERM4         , MarkNoSubBags );
 
-    /* install the kind function                                           */
+    /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
     ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
 
@@ -4838,7 +4833,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPermutat ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

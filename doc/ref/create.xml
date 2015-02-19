@@ -117,6 +117,14 @@ one can use logical implications
 
 </Section>
 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Creating Constructors">
+<Heading>Creating Constructors</Heading>
+
+<#Include Label="NewConstructor">
+
+</Section>
+
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Creating Families">

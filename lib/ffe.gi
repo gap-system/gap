@@ -333,9 +333,9 @@ InstallGlobalFunction( GaloisField, function ( arg )
     # if necessary split the arguments
     if Length( arg ) = 1 and IsPosInt( arg[1] ) then
 
-	if arg[1]=GFCACHE[1] then
-	  return GFCACHE[2];
-	fi;
+        if arg[1]=GFCACHE[1] then
+          return GFCACHE[2];
+        fi;
 
         # `GF( p^d )'
         p := SmallestRootInt( arg[1] );
@@ -479,9 +479,9 @@ InstallGlobalFunction( GaloisField, function ( arg )
       if not IsBound( GALOIS_FIELDS[p] ) then
         GALOIS_FIELDS[p]:= [];
       elif IsBound( GALOIS_FIELDS[p][d] ) then
-	if Length(arg)=1 then
-	  GFCACHE:=[arg[1],GALOIS_FIELDS[p][d]];
-	fi;
+        if Length(arg)=1 then
+          GFCACHE:=[arg[1],GALOIS_FIELDS[p][d]];
+        fi;
         return GALOIS_FIELDS[p][d];
       fi;
 
@@ -950,6 +950,12 @@ local   str, log,deg,char;
   ConvertToStringRep( str );
   return str;
 end );
+
+InstallMethod(ViewString, "for an internal FFE delegating to String",
+  [IsFFE and IsInternalRep], String );
+
+InstallMethod(DisplayString, "for an internal FFE via String",
+  [IsFFE and IsInternalRep], ffe -> Concatenation( String(ffe), "\n") );
 
 
 #############################################################################

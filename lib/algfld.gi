@@ -2004,10 +2004,15 @@ InstallMethod( FactorsSquarefree, "polynomial/alg. ext.",IsCollsElmsX,
     [ IsAlgebraicExtensionPolynomialRing, IsUnivariatePolynomial, IsRecord ],
 function(r,pol,opt)
 
-  if (Characteristic(r)=0 and DegreeOverPrimeField(CoefficientsRing(r))<=4
+  # the second algorithm seem to have problems -- temp. disable
+  if true or
+ ( 
+  (Characteristic(r)=0 and DegreeOverPrimeField(CoefficientsRing(r))<=4
     and DegreeOfLaurentPolynomial(pol)
           *DegreeOverPrimeField(CoefficientsRing(r))<=20) 
-     or Characteristic(r)>0 then
+     or Characteristic(r)>0)
+     
+     then
      return AlgExtFactSQFree(r,pol,opt);
   else
     return AlgExtSquareHensel(r,pol,opt);
@@ -2165,6 +2170,154 @@ local irrfacs, coeffring, i, ind, coeffs, der, g;
     return false;
   fi;
 end);
+
+
+#############################################################################
+##
+#F  DecomPoly( <f> [,"all"] )  finds (all) ideal decompositions of rational f
+##                       This is equivalent to finding subfields of K(alpha).
+##
+DecomPoly := function(arg)
+local f,n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
+      gut,avoid,blocks,g,m,decom,z,R,scale,allowed,hp,hpc,a,kfam;
+  f:=arg[1];
+  n:=DegreeOfUnivariateLaurentPolynomial(f);
+  if IsPrime(n) then
+    return [];
+  fi;
+  if Length(Factors(f))>1 then
+    Error("<f> must be irreducible");
+  fi;
+  allowed:=Difference(DivisorsInt(n),[1,n]);
+  avoid:=Discriminant(f);
+  p:=1;
+  fm:=[];
+  repeat
+    p:=NextPrimeInt(p);
+    if avoid mod p<>0 then
+      fm:=Factors(PolynomialModP(f,p));
+      ffd:=List(fm,DegreeOfUnivariateLaurentPolynomial);
+      Sort(ffd);
+      if ffd[1]=1 then
+        allowed:=Intersection(allowed,List(Combinations(ffd{[2..Length(ffd)]}),
+                                           i->Sum(i)+1));
+      fi;
+    fi;
+  until Length(fm)=n or Length(allowed)=0;
+  if Length(allowed)=0 then
+    return [];
+  fi;
+  Info(InfoPoly,2,"Possible sizes: ",allowed);
+  e:=AlgebraicExtension(Rationals,f);
+  a:=PrimitiveElement(e);
+  # lin. faktor weg
+  ff:=Value(f,X(e))/(X(e)-a);
+  ff:=Factors(ff);
+  ffd:=List(ff,DegreeOfUnivariateLaurentPolynomial);
+  Info(InfoPoly,2,Length(ff)," factors, degrees: ",ffd);
+  #avoid:=Lcm(Union([avoid],
+#            List(ff,i->Lcm(List(i.coefficients,NewDenominator)))));
+  h:=f;
+  allowed:=allowed-1;
+  comb:=Filtered(Combinations([1..Length(ff)]),i->Sum(ffd{i}) in allowed);
+  Info(InfoPoly,2,Length(comb)," combinations");
+  k:=GF(p);
+  kfam:=FamilyObj(One(k));
+  Info(InfoPoly,2,"selecting prime ",p);
+  #zeros;
+  fm:=List(fm,i->RootsOfUPol(i)[1]);
+  # now search for block:
+  blocks:=[];
+  gut:=false;
+  h:=1;
+  while h<=Length(comb) and gut=false do
+    combi:=comb[h];
+    Info(InfoPoly,2,"testing combination ",combi,": ");
+    fft:=ff{combi};
+    ffp:=List(fft,i->AlgebraicPolynomialModP(kfam,i,fm[1],p));
+    roots:=Filtered(fm,i->ForAny(ffp,j->Value(j,i)=Zero(k)));
+  if Length(roots)<>Sum(ffd{combi}) then
+    Error("serious error");
+  fi;
+    allroots:=Union(roots,[fm[1]]);
+    gut:=true;
+    j:=1;
+    while j<=Length(roots) and gut do
+      ffp:=List(fft,i->AlgebraicPolynomialModP(kfam,i,roots[j],p));
+      nowroots:=Filtered(allroots,i->ForAny(ffp,j->Value(j,i)=Zero(k)));
+      gut := Length(nowroots)=Sum(ffd{combi});
+      j:=j+1; 
+    od;
+    if gut then
+      Info(InfoPoly,2,"block found");
+      Add(blocks,combi);
+      if Length(arg)>1 then
+        gut:=false;
+      fi;
+    fi;
+    h:=h+1;
+  od;
+
+  if Length(blocks)>0  then
+    if Length(blocks)=1 then
+      Info(InfoPoly,2,"Block of Length ",Sum(ffd{blocks[1]})+1," found");
+    else
+      Info(InfoPoly,2,"Blocks of Lengths ",List(blocks,i->Sum(ffd{i})+1),
+                " found");
+    fi;
+    decom:=[];
+    # compute decompositions
+    for i in blocks do
+      # compute h 
+      hp:=(X(e)-a)*Product(ff{i});
+      hpc:=Filtered(CoefficientsOfUnivariatePolynomial(hp),i->not IsAlgBFRep(i));
+      gut:=0;
+      repeat
+        if gut=0 then
+          h:=hpc[1];
+        else
+          h:=List(hpc,i->RandomList([-2^20..2^20]));
+          Info(InfoPoly,2,"combining ",h);
+          h:=h*hpc;
+        fi;
+        h:=UnivariatePolynomial(Rationals,h![1]);
+        h:=h*Lcm(List(CoefficientsOfUnivariatePolynomial(h),DenominatorRat));
+        if LeadingCoefficient(h)<0 then
+          h:=-h;
+        fi;
+        # compute g
+        j:=0;
+        m:=[];
+        repeat
+          z:=PowerMod(h,j,f);
+          z:=ShallowCopy(CoefficientsOfUnivariatePolynomial(z));
+          while Length(z)<Length(CoefficientsOfUnivariatePolynomial(f))-1 do
+            Add(z,0);
+          od;
+          Add(m,z);
+          j:=j+1;
+        until RankMat(m)<Length(m);
+        g:=UnivariatePolynomial(Rationals,NullspaceMat(m)[1]);
+        g:=g*Lcm(List(CoefficientsOfUnivariatePolynomial(g),DenominatorRat));
+        if LeadingCoefficient(g)<0 then
+          g:=-g;
+        fi;
+        gut:=gut+1;
+      until DegreeOfUnivariateLaurentPolynomial(g)*DegreeOfUnivariateLaurentPolynomial(hp)=n;
+      #z:=f.integerTransformation;
+      #z:=f;
+      #h:=Value(h,X(Rationals)*z);
+      Add(decom,[g,h]);
+    od;
+    if Length(arg)=1 then
+      decom:=decom[1];
+    fi;
+    return decom;
+  else
+    Info(InfoPoly,2,"primitive");
+    return [];
+  fi;
+end;
 
 #############################################################################
 ##

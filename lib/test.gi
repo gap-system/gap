@@ -116,10 +116,10 @@ InstallGlobalFunction(RunTests, function(arg)
     s := InputTextString(inp[i]);
     res := "";
     fres := OutputTextString(res, false);
-    SetOutput(fres, true);
+    SET_OUTPUT(fres, true);
     t := Runtime();
     READ_STREAM_LOOP(s, true);
-    SetPreviousOutput();
+    SET_PREVIOUS_OUTPUT();
     CloseStream(fres);
     CloseStream(s);
     Add(cmp, res);

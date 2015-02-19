@@ -762,7 +762,7 @@ InstallMethod( One, "8 bit matrix", true,
 
 InstallGlobalFunction( RepresentationsOfMatrix,
         function( m )
-    if not IsRowVector(m) then
+    if not IsRowVector(m) and not IsMatrix(m) then
         Print("Argument is not a matrix or vector\n");
     fi;
     if IsMutable(m) then

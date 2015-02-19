@@ -151,6 +151,7 @@ free generators, that will map on this element again.
 <#Include Label="EpimorphismFromFreeGroup">
 <!-- % randomization effect is now gone. -->
 <#Include Label="Factorization">
+<#Include Label="GrowthFunctionOfGroup">
 
 </Section>
 

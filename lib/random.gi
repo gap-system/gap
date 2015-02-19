@@ -13,7 +13,7 @@
 ###########################################################################
 ##  Generic methods for random sources.
 ##  
-# The generic initalizer of a random source creates a dummy object of the
+# The generic initializer of a random source creates a dummy object of the
 # right type and then calls 'Init'.
 InstallMethod(RandomSource, [IsOperation, IsObject], function(rep, seed)
   local res;

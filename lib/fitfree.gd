@@ -14,6 +14,13 @@ BindGlobal("OVERRIDENICE",Maximum(NICE_FLAGS,
 
 #############################################################################
 ##
+#V  InfoFitFree
+##
+##  the info class for fitting free calculations
+DeclareInfoClass("InfoFitFree");
+
+#############################################################################
+##
 #F  CanComputeFittingFree( <grp> ) . . . . .  TF approach is possible
 ##
 ##  <#GAPDoc Label="CanComputeFittingFree">

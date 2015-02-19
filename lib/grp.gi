@@ -927,7 +927,15 @@ InstallOtherMethod( ElementaryAbelianSeriesLargeSteps,
 InstallMethod( Exponent,
     "generic method for groups",
     [ IsGroup ],
-    G -> Lcm( List( ConjugacyClasses(G), x -> Order(Representative(x)) ) ) );
+function(G)
+  local exp, primes, p;
+  exp := 1;
+  primes := Set(FactorsInt(Size(G)));
+  for p in primes do
+    exp := exp * Exponent(SylowSubgroup(G, p));
+  od;
+  return exp;
+end);
 
 InstallMethod( Exponent,
     "method for abelian groups with generators",
@@ -1947,13 +1955,15 @@ InstallGlobalFunction( ClosureSubgroup, function( G, obj )
     local famG, famobj, P;
 
     if not HasParent( G ) then
-      Error( "<G> must have a parent" );
+      #Error( "<G> must have a parent" );
+      P:= G;
+    else
+      P:= Parent( G );
     fi;
 
     # Check that we may set the parent of the closure.
     famG:= FamilyObj( G );
     famobj:= FamilyObj( obj );
-    P:= Parent( G );
     # refer to `ClosureGroup' instead of issuing errors -- `ClosureSubgroup'
     # is only used to transfer information
     if   IsIdenticalObj( famG, famobj ) and not IsSubset( P, obj ) then
@@ -2097,12 +2107,31 @@ end);
 InstallMethod( FactorGroupNC, "generic method for two groups", IsIdenticalObj,
     [ IsGroup, IsGroup ],
 function( G, N )
-local hom,F;
+local hom,F,new;
   hom:=NaturalHomomorphismByNormalSubgroupNC( G, N );
   F:=ImagesSource(hom);
-  SetNaturalHomomorphism(F,hom);
+  if not IsBound(F!.nathom) then
+    F!.nathom:=hom;
+  else
+    # avoid cached homomorphisms
+    new:=Group(GeneratorsOfGroup(F),One(F));
+    hom:=hom*GroupHomomorphismByImagesNC(F,new,
+      GeneratorsOfGroup(F),GeneratorsOfGroup(F));
+    F:=new;
+    F!.nathom:=hom;
+  fi;
   return F;
 end );
+
+InstallMethod( NaturalHomomorphism, "for a group with natural homomorphism stored",
+    [ IsGroup ],
+function(G)
+  if IsBound(G!.nathom) then
+    return G!.nathom;
+  else
+    Error("no natural homomorphism stored");
+  fi;
+end);
 
 InstallOtherMethod( \/,
     "generic method for two groups",
@@ -4776,6 +4805,8 @@ function(G,elm)
     info.mygens:=gens;
     info.mylett:=letters;
     info.fam:=FamilyObj(One(Source(hom)));
+    info.rvalue:=rvalue;
+    info.setrvalue:=setrvalue;
 
     # initialize all lists
     rs:=List([1..QuoInt(2*Size(G),maxlist)],i->BlistList([1..maxlist],[]));
@@ -4951,6 +4982,54 @@ end);
 InstallMethod(Factorization,"generic method", true,
                [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
   GenericFactorizationGroup);
+
+InstallMethod(GrowthFunctionOfGroup,"finite groups",[IsGroup and
+  HasGeneratorsOfGroup and IsFinite],0,
+function(G)
+local s;
+  s:=GenericFactorizationGroup(G,fail);
+  return s;
+end);
+
+InstallMethod(GrowthFunctionOfGroup,"groups and orders",
+  [IsGroup and HasGeneratorsOfGroup,IsPosInt],0,
+function(G,r)
+local s,prev,old,sort,geni,new,a,i,j,g;
+  geni:=DuplicateFreeList(Concatenation(GeneratorsOfGroup(G),
+                          List(GeneratorsOfGroup(G),Inverse)));
+  if (IsFinite(G) and (CanEasilyTestMembership(G) or HasSize(G))
+   and Length(geni)^r>Size(G)/2) or HasGrowthFunctionOfGroup(G) then
+    s:=GrowthFunctionOfGroup(G);
+    return s{[1..Minimum(Length(s),r+1)]};
+  fi;
+
+  # enumerate the bubbles
+  s:=[1];
+  prev:=[One(G)];
+  old:=ShallowCopy(prev);
+  sort:=CanEasilySortElements(One(G));
+  for i in [1..r] do
+    new:=[];
+    for j in prev do
+      for g in geni do
+        a:=j*g;
+	if not a in old then
+	  Add(new,a);
+	  if sort then
+	    AddSet(old,a);
+	  else
+	    Add(old,a);
+	  fi;
+	fi;
+      od;
+    od;
+    if Length(new)>0 then
+      Add(s,Length(new));
+    fi;
+    prev:=new;
+  od;
+  return s;
+end);
 
 #############################################################################
 ##

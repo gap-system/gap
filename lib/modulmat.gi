@@ -106,6 +106,22 @@ InstallMethod( IsMatrixModule,
 
 #############################################################################
 ##
+#M  IsMatrixModule .  return `false' for objects which are not free left modules 
+##
+InstallOtherMethod( IsMatrixModule,
+    "return `false' for objects which are not free left modules",
+    true, [ IsObject ], 0,
+    function ( obj )
+    if not IsFreeLeftModule(obj) then
+        return false;
+    else
+        TryNextMethod();
+    fi;
+    end );
+
+
+#############################################################################
+##
 #M  IsFullMatrixModule( M )
 ##
 InstallMethod( IsFullMatrixModule,

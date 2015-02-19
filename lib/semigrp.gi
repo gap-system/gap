@@ -12,6 +12,9 @@
 
 # Everything from here...
 
+InstallMethod(IsGeneratorsOfSemigroup, "for an empty list",
+[IsList and IsEmpty], ReturnFalse);
+
 #
 
 InstallMethod(InversesOfSemigroupElement, "for a semigroup and an element",
@@ -344,9 +347,13 @@ InstallMethod( AsSemigroup,
 
 InstallGlobalFunction( Semigroup, function( arg )
   local out, i;
-  
+
+  if Length(arg)=0 or (Length(arg)=1 and HasIsEmpty(arg[1]) and IsEmpty(arg[1])) then 
+    Error("usage: cannot create a semigroup with no generators,");
+    return;
+
   # special case for matrices, because they may look like lists
-  if Length( arg ) = 1 and IsMatrix( arg[1] )  then
+  elif Length( arg ) = 1 and IsMatrix( arg[1] )  then
     return SemigroupByGenerators( [ arg[1] ] );
 
   # list of generators
@@ -354,32 +361,36 @@ InstallGlobalFunction( Semigroup, function( arg )
     return SemigroupByGenerators( arg[1] );
 
   # generators and collections of generators
-  elif IsAssociativeElement(arg[1]) or IsAssociativeElementCollection(arg[1])
-   then
+  elif (IsMultiplicativeElement(arg[1])
+        and IsGeneratorsOfSemigroup([arg[1]]))
+    or (IsMultiplicativeElementCollection(arg[1])
+        and IsGeneratorsOfSemigroup(arg[1])) 
+    or (HasIsEmpty(arg[1]) and IsEmpty(arg[1])) then
     out:=[];
     for i in [1..Length(arg)] do
-      if IsAssociativeElement(arg[i]) then
-        Add(out, arg[i]);
-      elif IsAssociativeElementCollection(arg[i]) then
-        if HasGeneratorsOfSemigroup(arg[i]) then
-          Append(out,GeneratorsOfSemigroup(arg[i]));
-        else
-          Append(out, arg[i]);
-        fi;
       #so that we can pass the options record in the Semigroups package 
-      elif i=Length(arg) and IsRecord(arg[i]) then
+      if i=Length(arg) and IsRecord(arg[i]) then
         return SemigroupByGenerators(out, arg[i]);
+      elif IsMultiplicativeElement(arg[i]) and IsGeneratorsOfSemigroup([arg[i]]) then
+        Add(out, arg[i]);
+      elif IsGeneratorsOfSemigroup(arg[i]) then
+        if HasGeneratorsOfSemigroup(arg[i]) then
+          Append(out, GeneratorsOfSemigroup(arg[i]));
+        elif IsList(arg[i]) then 
+          Append(out, arg[i]);
+        else
+          Append(out, AsList(arg[i]));
+        fi;
       else
-        Error( "Usage: Semigroup(<gen>,...), Semigroup(<gens>), ",
-          "Semigroup(<D>), " );
-        return;
+        if not IsEmpty(arg[i]) then 
+          Error( "Usage: Semigroup(<gen>,...), Semigroup(<gens>), ",
+            "Semigroup(<D>), " );
+          return;
+        fi;
       fi;
     od;
     return SemigroupByGenerators(out);
   
-  # generators
-  elif 0 < Length( arg )  then
-    return SemigroupByGenerators( arg );
   # no argument given, error
   else
     Error( "Usage: Semigroup(<gen>,...),Semigroup(<gens>),Semigroup(<D>),");
@@ -690,8 +701,8 @@ InstallMethod(IsZeroSimpleSemigroup, "for a trivial semigroup",
 #M  IsZeroSimpleSemigroup( <S> ) . . . . for a semigroup which has generators
 ##
 
-## A semigroup is 0-simple if and only if it is non-trivial, contains a
-## multiplicative zero, and has exactly two J-classe. 
+## A semigroup <S> is 0-simple if and only if it is non-trivial, contains a
+## multiplicative zero, and has exactly two J-classes, and S^2<>{0}.
 
 InstallMethod(IsZeroSimpleSemigroup, "for a semigroup with generators",
 [IsSemigroup and HasGeneratorsOfSemigroup],
@@ -701,7 +712,7 @@ function(s)
     return false;
   fi;
 
-  return Length(GreensJClasses(s))=2;
+  return Length(GreensJClasses(s))=2 and IsRegularSemigroup(s);
 end);
 
 #############################################################################

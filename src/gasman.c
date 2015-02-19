@@ -198,12 +198,7 @@
 ** 
 */
 
-#ifndef C_PLUS_PLUS_BAGS
 #define SIZE_MPTR_BAGS  1
-#endif
-#ifdef  C_PLUS_PLUS_BAGS
-#define SIZE_MPTR_BAGS  2
-#endif
 #define WORDS_BAG(size) (((size) + (sizeof(Bag)-1)) / sizeof(Bag))
 
 #ifdef USE_NEWSHAPE
@@ -285,6 +280,39 @@ Bag *                   AllocBags;
 UInt                    AllocSizeBags;
 Bag *                   StopBags;
 Bag *                   EndBags;
+
+#ifdef MEMORY_CANARY
+
+#include <valgrind/valgrind.h>
+#include <valgrind/memcheck.h>
+Int canary_size() {
+  Int bufsize = (Int)StopBags - (Int)AllocBags;
+  return bufsize<4096?bufsize:4096;
+}
+
+void ADD_CANARY() {
+  VALGRIND_MAKE_MEM_NOACCESS(AllocBags, canary_size());
+}
+void CLEAR_CANARY() {
+  VALGRIND_MAKE_MEM_DEFINED(AllocBags, canary_size());
+}
+#define CANARY_DISABLE_VALGRIND()  VALGRIND_DISABLE_ERROR_REPORTING
+#define CANARY_ENABLE_VALGRIND() VALGRIND_ENABLE_ERROR_REPORTING
+
+void CHANGED_BAG_IMPL(Bag bag) {
+    CANARY_DISABLE_VALGRIND();
+    if ( PTR_BAG(bag) <= YoungBags && PTR_BAG(bag)[-1] == (bag) ) {                          
+        PTR_BAG(bag)[-1] = ChangedBags;
+        ChangedBags = (bag);    
+    }
+    CANARY_ENABLE_VALGRIND();
+}
+#else
+#define ADD_CANARY()
+#define CLEAR_CANARY()
+#define CANARY_DISABLE_VALGRIND()
+#define CANARY_ENABLE_VALGRIND()
+#endif
 
 
 /* These macros, are (a) for more readable code, but more importantly
@@ -1138,11 +1166,11 @@ Bag NewBag (
     /* get the identifier of the bag and set 'FreeMptrBags' to the next    */
     bag          = FreeMptrBags;
     FreeMptrBags = *(Bag*)bag;
-
+    CLEAR_CANARY();
     /* allocate the storage for the bag                                    */
     dst       = AllocBags;
     AllocBags = dst + HEADER_SIZE + WORDS_BAG(size);
-
+    ADD_CANARY();
 
     /* enter size-type words                                               */
 #ifdef USE_NEWSHAPE
@@ -1361,7 +1389,7 @@ void            RetypeBag (
 
     /* if the last bag is to be enlarged                                   */
     else if ( PTR_BAG(bag) + WORDS_BAG(old_size) == AllocBags ) {
-
+        CLEAR_CANARY();
         /* check that enough storage for the new bag is available          */
         if ( StopBags < PTR_BAG(bag)+WORDS_BAG(new_size)
           && CollectBags( new_size-old_size, 0 ) == 0 ) {
@@ -1373,6 +1401,7 @@ void            RetypeBag (
             YoungBags += WORDS_BAG(new_size) - WORDS_BAG(old_size);
         AllocBags += WORDS_BAG(new_size) - WORDS_BAG(old_size);
 
+        ADD_CANARY();
         /* change the size-type word                                       */
 #ifdef USE_NEWSHAPE
       *(*bag-2) = (new_size << 16 | type);
@@ -1389,11 +1418,11 @@ void            RetypeBag (
           && CollectBags( new_size, 0 ) == 0 ) {
             return 0;
         }
-
+        CLEAR_CANARY();
         /* allocate the storage for the bag                                */
         dst       = AllocBags;
         AllocBags = dst + HEADER_SIZE + WORDS_BAG(new_size);
-        
+        ADD_CANARY();
         /* leave magic size-type word  for the sweeper, type must be 255   */
 #ifdef USE_NEWSHAPE
         *(*bag-2) = (((WORDS_BAG(old_size)+1) * sizeof(Bag))) << 16 | 255;
@@ -1408,11 +1437,12 @@ void            RetypeBag (
         *dst++ = (Bag)new_size;
 #endif
         
-
+        CANARY_DISABLE_VALGRIND();
         /* if the bag is already on the changed bags list, keep it there   */
         if ( PTR_BAG(bag)[-1] != bag ) {
             *dst++ = PTR_BAG(bag)[-1];
         }
+
 
         /* if the bag is old, put it onto the changed bags list            */
         else if ( PTR_BAG(bag) <= YoungBags ) {
@@ -1423,6 +1453,7 @@ void            RetypeBag (
         else {
             *dst++ = bag;
         }
+	CANARY_ENABLE_VALGRIND();
 
         /* set the masterpointer                                           */
         src = PTR_BAG(bag);
@@ -1644,31 +1675,6 @@ void            RetypeBag (
 
 syJmp_buf RegsBags;
 
-/* solaris */
-#ifdef __GNUC__
-#ifdef SPARC
-#if SPARC
-        asm("           .globl  SparcStackFuncBags              ");
-        asm("   SparcStackFuncBags:                             ");
-        asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
-        asm("           mov     %sp,%o0                         ");
-        asm("           retl                                    ");
-        asm("           nop                                     ");
-#endif
-#endif
-
-/* sunos */
-#ifdef SPARC
-#if SPARC
-        asm("           .globl  _SparcStackFuncBags             ");
-        asm("   _SparcStackFuncBags:                            ");
-        asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
-        asm("           mov     %sp,%o0                         ");
-        asm("           retl                                    ");
-        asm("           nop                                     ");
-#endif
-#endif
-#else
 #if defined(SPARC) && SPARC
 void SparcStackFuncBags( void )
 {
@@ -1676,7 +1682,6 @@ void SparcStackFuncBags( void )
   asm (" mov %sp,%o0" );
   return;
 }
-#endif
 #endif
 
 
@@ -1749,6 +1754,8 @@ UInt CollectBags (
     /*     Bag *               last;
            Char                type; */
 
+    CANARY_DISABLE_VALGRIND();
+    CLEAR_CANARY();
 #ifdef DEBUG_MASTERPOINTERS
     CheckMasterPointers();
 #endif
@@ -2316,6 +2323,8 @@ again:
     
     /* Possibly advise the operating system about unused pages:            */
     SyMAdviseFree();
+
+    CANARY_ENABLE_VALGRIND();
 
     /* return success                                                      */
     return 1;

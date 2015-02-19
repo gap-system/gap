@@ -263,15 +263,16 @@ gap> keys:=SortedList( GAPInfo.Keywords );; l:=Length( keys );;
 gap> arr:= List( [ 0 .. Int( l/4 )-1 ], i-> keys{ 4*i + [ 1 .. 4 ] } );;
 gap> if l mod 4 <> 0 then Add( arr, keys{[ 4*Int(l/4) + 1 .. l ]} ); fi;
 gap> Length( keys ); PrintArray( arr );
-32
+35
 [ [         Assert,           Info,        IsBound,           QUIT ],
-  [  TryNextMethod,         Unbind,            and,          break ],
-  [       continue,             do,           elif,           else ],
-  [            end,          false,             fi,            for ],
-  [       function,             if,             in,          local ],
-  [            mod,            not,             od,             or ],
-  [           quit,            rec,         repeat,         return ],
-  [           then,           true,          until,          while ] ]
+  [  TryNextMethod,         Unbind,            and,         atomic ],
+  [          break,       continue,             do,           elif ],
+  [           else,            end,          false,             fi ],
+  [            for,       function,             if,             in ],
+  [          local,            mod,            not,             od ],
+  [             or,           quit,       readonly,      readwrite ],
+  [            rec,         repeat,         return,           then ],
+  [           true,          until,          while ] ]
 ]]></Example>
 <P/>
 Note that (almost) all keywords are written in lowercase and that they
@@ -292,7 +293,10 @@ assigned to other variables or passed to functions. These keywords are
 <Ref Func="IsBound" Label="for a global variable"/>,
 <Ref Func="Unbind" Label="unbind a variable"/>, 
 <Ref Func="Info"/> and <Ref Func="TryNextMethod"/>.
-
+<P/>
+Keywords <C>atomic</C>, <C>readonly</C>, <C>readwrite</C> are not used
+at the moment. They are reserved for the future version of GAP to prevent
+their accidental use as identifiers.
 </Section>
 
 

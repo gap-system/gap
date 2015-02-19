@@ -1300,7 +1300,7 @@ InstallGlobalFunction( ShortestVectors, function( arg )
           repeat
              i := i + 1;
              k := k + 1;
-          until k * k > q and k > 0;
+          until k * k >= q and k > 0;
           i := i - 1;
           k := k - 1;
           while k * k < q and con do
@@ -1392,13 +1392,13 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
     local
     # sonstige prozeduren
           Symmatinv,
-    # variablen für Embed
+    # variablen fuer Embed
           maxdim, M, D, s, phi, mult, m, x, t, x2, sumg, sumh,
           f, invg, sol, solcount, out,
           l, g, i, j, k, n, a, IdMat, chpo,
     # booleans
           checkpositiv, checkdim,
-    # prozeduren für Embed
+    # prozeduren fuer Embed
           comp1, comp2, scp2, multiples, solvevDMtr,
           Dextend, Mextend, inca, rnew,
           deca;
@@ -1685,9 +1685,11 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
     #  uses    x2, t, M,
     #  changes l, k, s, a, sumg,
     local   i;
-    if l <> 1 then
-       l := l - 1;
-       if l = t - 1 then
+if l = 0 then return l; fi;
+#   if l <> 1 then
+#      l := l - 1;
+#      if l = t - 1 then
+if l = t then
           while a[l] > 0 do
              s := s -1;
              if M[s][Length( M[s] )] = 1 then
@@ -1698,7 +1700,8 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
                 sumg[i] := sumg[i] - x2[l][i];
              od;
           od;
-          l := deca( l );
+#         l := deca( l );
+l:= deca( t-1 );
        else
           if a[l] <> 0 then
              s := s - 1;
@@ -1711,10 +1714,11 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
              od;
              l := l + 1;
           else
-             l := deca( l );
+#            l := deca( l );
+l := deca( l-1 );
           fi;
        fi;
-    fi;
+#   fi;
     return l;
     end;
 
@@ -1833,6 +1837,7 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
        # (former call of `tracecond')
        if ForAll( [ 1 .. n ], i -> g[i][i] - sumg[i] <= sumh[i] ) then
           l := inca( l );
+# Here we have l = t+1.
           if s-k = n then
              solcount := solcount + 1;
              Info( InfoZLattice, 2,
@@ -1844,6 +1849,7 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
              sol[solcount][t+1]  := s - 1;
           fi;
        fi;
+l:= t;
        l := deca( l );
     until l <= 1;
     out := rec( vectors := [], norms := [], solutions := [] );
@@ -1871,10 +1877,18 @@ end );
 ##
 #F  LLLint(<lat>) . . . . . . . . . . . . . . . . . . . .. . integer only LLL
 ##
-InstallGlobalFunction( LLLint, function( lat )
-    local b,mu,i,j,k,dim,l,d,dkp,n,r,za,ne,nne,dkm,dkma,mue,muea,muk,mum,
-          ca1,ca2,cb1,cb2,tw,sel,s,dkpv;
+InstallGlobalFunction( LLLint, function( arg )
+  local lat,b,mu,i,j,k,dim,l,d,dkp,n,r,za,ne,nne,dkm,dkma,mue,muea,muk,mum,
+          ca1,ca2,cb1,cb2,tw,sel,s,dkpv,cn,cd;
 
+  lat:=arg[1];
+  if Length(arg)>1 then
+    cn:=arg[2];
+  else
+    cn:=3/4;
+  fi;
+  cd:=DenominatorRat(cn);
+  cn:=NumeratorRat(cn);
   b:= List( lat, ShallowCopy );
   mu:=[];
   d:=[1,b[1]*b[1]];
@@ -1908,6 +1922,7 @@ InstallGlobalFunction( LLLint, function( lat )
       ne:=ne*nne;
     od;
     d[k+1]:=za/ne;
+    if d[k+1]=0 then Error("notbas");fi;
 
     dim:=dim+1;
 
@@ -1945,7 +1960,7 @@ InstallGlobalFunction( LLLint, function( lat )
       dkp:=d[k+1]*d[k-1];
       dkpv:=dkp*4;
 
-      if d[k]*d[k]*3-mue*mue*4>dkpv then
+      if d[k]*d[k]*cn-mue*mue*cd>dkpv then
 
 	#(2)
 	Info( InfoZLattice, 2, "swap ", k-1, " <-> ", k );
@@ -1991,7 +2006,7 @@ InstallGlobalFunction( LLLint, function( lat )
 	    cb2:=cb2-r*ca2;
 	    mue:=mue-r*dkm;
           fi;
-	until dkm*dkm*3-mue*mue*4<=dkpv;
+	until dkm*dkm*cn-mue*mue*cd<=dkpv;
 
 	d[k]:=dkm;
         mu[k][k-1]:=mue;

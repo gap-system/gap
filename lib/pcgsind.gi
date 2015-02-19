@@ -1310,6 +1310,8 @@ function( pcgs, elm, pos )
         d := DepthOfPcElement( pa, elm );
         if not IsBound(map[d])  then
             Error( "<elm> lies not in group defined by <pcgs>" );
+	elif map[d]>Length(pcgs) then
+	  return exp;
         fi;
         ll := LeadingExponentOfPcElement( pa, elm );
         #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
@@ -1350,6 +1352,8 @@ function( pcgs, elm )
         d := DepthOfPcElement( pa, elm );
         if not IsBound(map[d])  then
             Error( "<elm> lies not in group defined by <pcgs>" );
+	elif map[d]>Length(pcgs) then
+	  return exp;
         fi;
         ll := LeadingExponentOfPcElement( pa, elm );
         #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
@@ -1685,6 +1689,33 @@ local e,s,d,o,j,bj,bjo,ro,max,id,seen,wseen,igs,chain,new,old,u,up,uw,cw,x,c;
   od;
   return igs{[1..s]};
 end );
+
+#############################################################################
+##
+#M  IndicesNormalSteps( <ipcgs> )
+##
+InstallMethod(IndicesNormalSteps,"inherit from parent",true,
+  [IsInducedPcgs and HasParentPcgs],0,
+function(pcgs)
+local l,i,p,ind,a,b,d;
+  p:=ParentPcgs(pcgs);
+  if not HasIndicesNormalSteps(p) then
+    TryNextMethod();
+  fi;
+  d:=pcgs!.depthsInParent;
+  ind:=[];
+  a:=1;
+  for i in IndicesNormalSteps(p) do
+    b:=First([a..Length(d)],x->d[x]>=i);
+    if b<>fail then
+      if not b in ind then
+	Add(ind,b);
+      fi;
+      a:=b;
+    fi;
+  od;
+  return ind;
+end);
 
 #############################################################################
 ##

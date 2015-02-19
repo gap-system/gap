@@ -55,6 +55,16 @@ extern UInt IntrIgnoring;
 */
 extern UInt IntrCoding;
 
+/****************************************************************************
+**
+*V  IntrReturning  . . . . . . . interpreter is currently exiting statements
+**                                 enclosing a return;
+**
+**  If 'IntrReturning' is non-zero, the interpreter is currently exiting
+**  statements enclosing a return statement. Actions from these statements
+**  are ignored.
+*/
+extern UInt IntrReturning;
 
 /****************************************************************************
 **
@@ -278,6 +288,47 @@ extern  void            IntrWhileEndBody (
             UInt                nr );
 
 extern  void            IntrWhileEnd ( void );
+
+extern void IntrQualifiedExprBegin( UInt access);
+
+extern void IntrQualifiedExprEnd( void);
+
+
+/****************************************************************************
+**
+*F  IntrAtomicBegin()  . . . . . interpret atomic-statement, begin of statement
+*F  IntrAtomicBeginBody()  . . . . .  interpret atomic-statement, begin of body
+*F  IntrAtomicEndBody(<nr>)  . . . . .  interpret atomic-statement, end of body
+*F  IntrAtomicEnd()  . . . . . . . interpret atomic-statement, end of statement
+**
+**  'IntrAtomicBegin' is   an action to  interpret   a atomic-statement.  It is
+**  called when the    reader encounters the    'atomic', i.e., *before*   the
+**  condition is read.
+**
+**  'IntrAtomicBeginBody' is an action  to interpret a atomic-statement.  It is
+**  called when the reader encounters  the  beginning of the statement  body,
+**  i.e., *after* the expressions to be locked have been read. <nrexprs> is the number of such 
+**  expressions
+**
+**  'IntrAtomicEndBody' is  an action to interpret   a atomic-statement.  It is
+**  called when the reader encounters the end of the statement body.  <nr> is
+**  the number of statements in the body.
+**
+**  'IntrAtomicEnd' is an action to interpret a atomic-statement.  It is called
+**  when  the reader encounters  the  end of  the  statement, i.e., immediate
+**  after 'IntrAtomicEndBody'.
+**
+**  These functions are just placeholders for future HPC-GAP code
+*/
+
+extern  void            IntrAtomicBegin ( void );
+
+extern  void            IntrAtomicBeginBody ( UInt nrexprs );
+
+extern  void            IntrAtomicEndBody (
+            Int                nrstats );
+
+extern  void            IntrAtomicEnd ( void );
 
 
 /****************************************************************************

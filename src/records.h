@@ -25,7 +25,7 @@
 **  'NAME_RNAM' returns the name (as a C string) for the record name <rnam>.
 **
 **  Note that 'NAME_RNAM' is a  macro, so do not call  it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define NAME_RNAM(rnam) CSTR_STRING( ELM_PLIST( NamesRNam, rnam ) )
 
@@ -73,7 +73,7 @@ extern  UInt            RNamObj (
 **  otherwise.
 **
 **  Note that 'IS_REC' is a record, so do not call  it  with  arguments  that
-**  sideeffects.
+**  side effects.
 */
 #define IS_REC(obj)     ((*IsRecFuncs[ TNUM_OBJ(obj) ])( obj ))
 
@@ -89,7 +89,7 @@ extern  Int             (*IsRecFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 **  is not a record or if <rec> has no component with the record name <rnam>.
 **
 **  Note that 'ELM_REC' is  a macro, so do   not call it with arguments  that
-**  have sideeffects.
+**  have side effects.
 */
 #define ELM_REC(rec,rnam) \
                         ((*ElmRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
@@ -106,7 +106,7 @@ extern  Obj             (*ElmRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 **  record.
 **
 **  Note  that 'ISB_REC'  is a macro,  so do not call  it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define ISB_REC(rec,rnam) \
                         ((*IsbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
@@ -123,7 +123,7 @@ extern  Int             (*IsbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 **  is not a record.
 **
 **  Note that  'ASS_REC' is a  macro, so do not call   it with arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define ASS_REC(rec,rnam,obj) \
                         ((*AssRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam, obj ))
@@ -139,7 +139,7 @@ extern  void            (*AssRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam, O
 **  the record <rec>.
 **
 **  Note that 'UNB_REC' is  a macro, so  do  not call it with  arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define UNB_REC(rec,rnam) \
                         ((*UnbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))

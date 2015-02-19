@@ -446,7 +446,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPcc ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

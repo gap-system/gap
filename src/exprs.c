@@ -48,6 +48,7 @@
 
 #include        "exprs.h"               /* expressions                     */
 
+#include        "profile.h"             /* installing methods              */
 #include <assert.h>
 
 /****************************************************************************
@@ -1056,7 +1057,7 @@ Obj             EvalListExpr (
 **
 **  'EvalListTildeExpr' evaluates the     list  expression, i.e., not     yet
 **  evaluated list, <expr> to a list value.  The difference to 'EvalListExpr'
-**  is that  in <expr> there are   occurences of '~'  referring to  this list
+**  is that  in <expr> there are   occurrences of '~'  referring to  this list
 **  value.
 **
 **  'EvalListTildeExpr' just  calls 'ListExpr1' to  create  the list, assigns
@@ -1430,7 +1431,7 @@ Obj             EvalRecExpr (
 **
 **  'EvalRecTildeExpr'  evaluates  the    record expression,  i.e.,   not yet
 **  evaluated   record, <expr>  to  a   record   value.  The   difference  to
-**  'EvalRecExpr' is that in <expr> there are  occurences of '~' referring to
+**  'EvalRecExpr' is that in <expr> there are  occurrences of '~' referring to
 **  this record value.
 **
 **  'EvalRecTildeExpr' just  calls 'RecExpr1'  to create teh  record, assigns
@@ -1629,9 +1630,19 @@ void            PrintNot (
 
     oldPrec = PrintPreceedence;
     PrintPreceedence = 6;
+    
+    /* if necessary print the opening parenthesis                          */
+    if ( oldPrec >= PrintPreceedence ) Pr("%>(%>",0L,0L);
+    else Pr("%2>",0L,0L);
+    
     Pr("not%> ",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<",0L,0L);
+    
+    /* if necessary print the closing parenthesis                          */
+    if ( oldPrec >= PrintPreceedence ) Pr("%2<)",0L,0L);
+    else Pr("%2<",0L,0L);
+    
     PrintPreceedence = oldPrec;
 }
 
@@ -2008,111 +2019,111 @@ static Int InitKernel (
     
     /* clear the evaluation dispatch table                                 */
     for ( type = 0; type < 256; type++ ) {
-        EvalExprFuncs[ type ] = EvalUnknownExpr;
-        EvalBoolFuncs[ type ] = EvalUnknownBool;
+        InstallEvalExprFunc( type , EvalUnknownExpr);
+        InstallEvalBoolFunc( type , EvalUnknownBool);
     }
 
     /* install the evaluators for logical operations                       */
-    EvalExprFuncs [ T_OR             ] = EvalOr;   
-    EvalExprFuncs [ T_AND            ] = EvalAnd;  
-    EvalExprFuncs [ T_NOT            ] = EvalNot;  
+    InstallEvalExprFunc( T_OR             , EvalOr);   
+    InstallEvalExprFunc( T_AND            , EvalAnd);  
+    InstallEvalExprFunc( T_NOT            , EvalNot);  
 
     /* the logical operations are guaranteed to return booleans            */
-    EvalBoolFuncs [ T_OR             ] = EvalOr;
-    EvalBoolFuncs [ T_AND            ] = EvalAnd;
-    EvalBoolFuncs [ T_NOT            ] = EvalNot;
+    InstallEvalBoolFunc( T_OR             , EvalOr);
+    InstallEvalBoolFunc( T_AND            , EvalAnd);
+    InstallEvalBoolFunc( T_NOT            , EvalNot);
 
     /* install the evaluators for comparison operations                    */
-    EvalExprFuncs [ T_EQ             ] = EvalEq;   
-    EvalExprFuncs [ T_NE             ] = EvalNe;   
-    EvalExprFuncs [ T_LT             ] = EvalLt;   
-    EvalExprFuncs [ T_GE             ] = EvalGe;   
-    EvalExprFuncs [ T_GT             ] = EvalGt;   
-    EvalExprFuncs [ T_LE             ] = EvalLe;   
-    EvalExprFuncs [ T_IN             ] = EvalIn;     
+    InstallEvalExprFunc( T_EQ             , EvalEq);   
+    InstallEvalExprFunc( T_NE             , EvalNe);   
+    InstallEvalExprFunc( T_LT             , EvalLt);   
+    InstallEvalExprFunc( T_GE             , EvalGe);   
+    InstallEvalExprFunc( T_GT             , EvalGt);   
+    InstallEvalExprFunc( T_LE             , EvalLe);   
+    InstallEvalExprFunc( T_IN             , EvalIn);     
 
     /* the comparison operations are guaranteed to return booleans         */
-    EvalBoolFuncs [ T_EQ             ] = EvalEq;
-    EvalBoolFuncs [ T_NE             ] = EvalNe;
-    EvalBoolFuncs [ T_LT             ] = EvalLt;
-    EvalBoolFuncs [ T_GE             ] = EvalGe;
-    EvalBoolFuncs [ T_GT             ] = EvalGt;
-    EvalBoolFuncs [ T_LE             ] = EvalLe;
-    EvalBoolFuncs [ T_IN             ] = EvalIn;
+    InstallEvalBoolFunc( T_EQ             , EvalEq);
+    InstallEvalBoolFunc( T_NE             , EvalNe);
+    InstallEvalBoolFunc( T_LT             , EvalLt);
+    InstallEvalBoolFunc( T_GE             , EvalGe);
+    InstallEvalBoolFunc( T_GT             , EvalGt);
+    InstallEvalBoolFunc( T_LE             , EvalLe);
+    InstallEvalBoolFunc( T_IN             , EvalIn);
 
     /* install the evaluators for binary operations                        */
-    EvalExprFuncs [ T_SUM            ] = EvalSum;
-    EvalExprFuncs [ T_AINV           ] = EvalAInv;
-    EvalExprFuncs [ T_DIFF           ] = EvalDiff;
-    EvalExprFuncs [ T_PROD           ] = EvalProd;
-    EvalExprFuncs [ T_INV            ] = EvalInv;
-    EvalExprFuncs [ T_QUO            ] = EvalQuo;
-    EvalExprFuncs [ T_MOD            ] = EvalMod;
-    EvalExprFuncs [ T_POW            ] = EvalPow;
+    InstallEvalExprFunc( T_SUM            , EvalSum);
+    InstallEvalExprFunc( T_AINV           , EvalAInv);
+    InstallEvalExprFunc( T_DIFF           , EvalDiff);
+    InstallEvalExprFunc( T_PROD           , EvalProd);
+    InstallEvalExprFunc( T_INV            , EvalInv);
+    InstallEvalExprFunc( T_QUO            , EvalQuo);
+    InstallEvalExprFunc( T_MOD            , EvalMod);
+    InstallEvalExprFunc( T_POW            , EvalPow);
 
     /* install the evaluators for literal expressions                      */
-    EvalExprFuncs [ T_INT_EXPR       ] = EvalIntExpr;
-    EvalExprFuncs [ T_TRUE_EXPR      ] = EvalTrueExpr;
-    EvalExprFuncs [ T_FALSE_EXPR     ] = EvalFalseExpr;
-    EvalExprFuncs [ T_CHAR_EXPR      ] = EvalCharExpr;
-    EvalExprFuncs [ T_PERM_EXPR      ] = EvalPermExpr;
+    InstallEvalExprFunc( T_INT_EXPR       , EvalIntExpr);
+    InstallEvalExprFunc( T_TRUE_EXPR      , EvalTrueExpr);
+    InstallEvalExprFunc( T_FALSE_EXPR     , EvalFalseExpr);
+    InstallEvalExprFunc( T_CHAR_EXPR      , EvalCharExpr);
+    InstallEvalExprFunc( T_PERM_EXPR      , EvalPermExpr);
 
     /* install the evaluators for list and record expressions              */
-    EvalExprFuncs [ T_LIST_EXPR      ] = EvalListExpr;
-    EvalExprFuncs [ T_LIST_TILD_EXPR ] = EvalListTildeExpr;
-    EvalExprFuncs [ T_RANGE_EXPR     ] = EvalRangeExpr;
-    EvalExprFuncs [ T_STRING_EXPR    ] = EvalStringExpr;
-    EvalExprFuncs [ T_REC_EXPR       ] = EvalRecExpr;
-    EvalExprFuncs [ T_REC_TILD_EXPR  ] = EvalRecTildeExpr;
-    EvalExprFuncs [ T_FLOAT_EXPR_LAZY  ] = EvalFloatExprLazy;
-    EvalExprFuncs [ T_FLOAT_EXPR_EAGER  ] = EvalFloatExprEager;
+    InstallEvalExprFunc( T_LIST_EXPR      , EvalListExpr);
+    InstallEvalExprFunc( T_LIST_TILD_EXPR , EvalListTildeExpr);
+    InstallEvalExprFunc( T_RANGE_EXPR     , EvalRangeExpr);
+    InstallEvalExprFunc( T_STRING_EXPR    , EvalStringExpr);
+    InstallEvalExprFunc( T_REC_EXPR       , EvalRecExpr);
+    InstallEvalExprFunc( T_REC_TILD_EXPR  , EvalRecTildeExpr);
+    InstallEvalExprFunc( T_FLOAT_EXPR_LAZY  , EvalFloatExprLazy);
+    InstallEvalExprFunc( T_FLOAT_EXPR_EAGER  , EvalFloatExprEager);
 
     /* clear the tables for the printing dispatching                       */
     for ( type = 0; type < 256; type++ ) {
-        PrintExprFuncs[ type ] = PrintUnknownExpr;
+        InstallPrintExprFunc( type , PrintUnknownExpr);
     }
 
     /* install the printers for logical operations                         */
-    PrintExprFuncs[ T_OR             ] = PrintBinop;
-    PrintExprFuncs[ T_AND            ] = PrintBinop;
-    PrintExprFuncs[ T_NOT            ] = PrintNot;
+    InstallPrintExprFunc( T_OR             , PrintBinop);
+    InstallPrintExprFunc( T_AND            , PrintBinop);
+    InstallPrintExprFunc( T_NOT            , PrintNot);
 
     /* install the printers for comparison operations                      */
-    PrintExprFuncs[ T_EQ             ] = PrintBinop;
-    PrintExprFuncs[ T_LT             ] = PrintBinop;
-    PrintExprFuncs[ T_NE             ] = PrintBinop;
-    PrintExprFuncs[ T_GE             ] = PrintBinop;
-    PrintExprFuncs[ T_GT             ] = PrintBinop;
-    PrintExprFuncs[ T_LE             ] = PrintBinop;
-    PrintExprFuncs[ T_IN             ] = PrintBinop;
+    InstallPrintExprFunc( T_EQ             , PrintBinop);
+    InstallPrintExprFunc( T_LT             , PrintBinop);
+    InstallPrintExprFunc( T_NE             , PrintBinop);
+    InstallPrintExprFunc( T_GE             , PrintBinop);
+    InstallPrintExprFunc( T_GT             , PrintBinop);
+    InstallPrintExprFunc( T_LE             , PrintBinop);
+    InstallPrintExprFunc( T_IN             , PrintBinop);
 
     /* install the printers for binary operations                          */
-    PrintExprFuncs[ T_SUM            ] = PrintBinop;
-    PrintExprFuncs[ T_AINV           ] = PrintAInv;
-    PrintExprFuncs[ T_DIFF           ] = PrintBinop;
-    PrintExprFuncs[ T_PROD           ] = PrintBinop;
-    PrintExprFuncs[ T_INV            ] = PrintInv;
-    PrintExprFuncs[ T_QUO            ] = PrintBinop;
-    PrintExprFuncs[ T_MOD            ] = PrintBinop;
-    PrintExprFuncs[ T_POW            ] = PrintBinop;
+    InstallPrintExprFunc( T_SUM            , PrintBinop);
+    InstallPrintExprFunc( T_AINV           , PrintAInv);
+    InstallPrintExprFunc( T_DIFF           , PrintBinop);
+    InstallPrintExprFunc( T_PROD           , PrintBinop);
+    InstallPrintExprFunc( T_INV            , PrintInv);
+    InstallPrintExprFunc( T_QUO            , PrintBinop);
+    InstallPrintExprFunc( T_MOD            , PrintBinop);
+    InstallPrintExprFunc( T_POW            , PrintBinop);
 
     /* install the printers for literal expressions                        */
-    PrintExprFuncs[ T_INTEXPR        ] = PrintIntExpr;
-    PrintExprFuncs[ T_INT_EXPR       ] = PrintIntExpr;
-    PrintExprFuncs[ T_TRUE_EXPR      ] = PrintTrueExpr;
-    PrintExprFuncs[ T_FALSE_EXPR     ] = PrintFalseExpr;
-    PrintExprFuncs[ T_CHAR_EXPR      ] = PrintCharExpr;
-    PrintExprFuncs[ T_PERM_EXPR      ] = PrintPermExpr;
+    InstallPrintExprFunc( T_INTEXPR        , PrintIntExpr);
+    InstallPrintExprFunc( T_INT_EXPR       , PrintIntExpr);
+    InstallPrintExprFunc( T_TRUE_EXPR      , PrintTrueExpr);
+    InstallPrintExprFunc( T_FALSE_EXPR     , PrintFalseExpr);
+    InstallPrintExprFunc( T_CHAR_EXPR      , PrintCharExpr);
+    InstallPrintExprFunc( T_PERM_EXPR      , PrintPermExpr);
 
     /* install the printers for list and record expressions                */
-    PrintExprFuncs[ T_LIST_EXPR      ] = PrintListExpr;
-    PrintExprFuncs[ T_LIST_TILD_EXPR ] = PrintListExpr;
-    PrintExprFuncs[ T_RANGE_EXPR     ] = PrintRangeExpr;
-    PrintExprFuncs[ T_STRING_EXPR    ] = PrintStringExpr;
-    PrintExprFuncs[ T_FLOAT_EXPR_LAZY    ] = PrintFloatExprLazy;
-    PrintExprFuncs[ T_FLOAT_EXPR_EAGER    ] = PrintFloatExprEager;
-    PrintExprFuncs[ T_REC_EXPR       ] = PrintRecExpr;
-    PrintExprFuncs[ T_REC_TILD_EXPR  ] = PrintRecExpr;
+    InstallPrintExprFunc( T_LIST_EXPR      , PrintListExpr);
+    InstallPrintExprFunc( T_LIST_TILD_EXPR , PrintListExpr);
+    InstallPrintExprFunc( T_RANGE_EXPR     , PrintRangeExpr);
+    InstallPrintExprFunc( T_STRING_EXPR    , PrintStringExpr);
+    InstallPrintExprFunc( T_FLOAT_EXPR_LAZY    , PrintFloatExprLazy);
+    InstallPrintExprFunc( T_FLOAT_EXPR_EAGER    , PrintFloatExprEager);
+    InstallPrintExprFunc( T_REC_EXPR       , PrintRecExpr);
+    InstallPrintExprFunc( T_REC_TILD_EXPR  , PrintRecExpr);
 
     /* return success                                                      */
     return 0;
@@ -2147,7 +2158,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoExprs ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

@@ -45,6 +45,7 @@
 
 #include        "code.h"                /* coder                           */
 
+#include        "tls.h"                 /* thread-local storage            */
 #include        "objfgelm.h"            /* objects of free groups          */
 
 #include        "objscoll.h"            /* single collector                */
@@ -90,9 +91,9 @@ typedef struct {
 /****************************************************************************
 **
 
-*F  C8Bits_WordVectorAndClear( <kind>, <vv>, <num> )
+*F  C8Bits_WordVectorAndClear( <type>, <vv>, <num> )
 */
-Obj C8Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
+Obj C8Bits_WordVectorAndClear ( Obj type, Obj vv, Int num )
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -103,13 +104,13 @@ Obj C8Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     Obj         obj;            /* result                                  */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* construct a new object                                              */
-    NEW_WORD( obj, kind, num );
+    NEW_WORD( obj, type, num );
 
     /* use UInt1 pointer for eight bits, clear <vv>                        */
     ptr = (UInt1*)DATA_WORD(obj);
@@ -123,7 +124,7 @@ Obj C8Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     }
 
     /* correct the size of <obj>                                           */
-    RESIZE_WORD( obj, 8L, j );
+    RESIZE_WORD( obj, j );
     return obj;
 }
 
@@ -323,7 +324,7 @@ Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     
     Obj         tmp;        /* temporary obj for power                     */
 
-    Int         resized = 0;/* indicates whether a Resize() happend        */
+    Int         resized = 0;/* indicates whether a Resize() happened       */
 
     /* <start> is the first non-trivial entry in <v>                       */
     start = SC_NUMBER_RWS_GENERATORS(sc);
@@ -412,7 +413,7 @@ Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     ro  = ADDR_OBJ( SC_RELATIVE_ORDERS(sc) );
     inv = ADDR_OBJ( SC_INVERSES(sc) );
 
-    /* initalize the stack with <w>                                        */
+    /* initialize the stack with <w>                                        */
     sp = 0;
     SC_PUSH_WORD( w, 1 );
 
@@ -670,9 +671,9 @@ FinPowConjCol C8Bits_SingleCollector = {
 /****************************************************************************
 **
 
-*F  C16Bits_WordVectorAndClear( <kind>, <vv>, <num> )
+*F  C16Bits_WordVectorAndClear( <type>, <vv>, <num> )
 */
-Obj C16Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
+Obj C16Bits_WordVectorAndClear ( Obj type, Obj vv, Int num )
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -683,13 +684,13 @@ Obj C16Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     Obj         obj;            /* result                                  */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* construct a new object                                              */
-    NEW_WORD( obj, kind, num );
+    NEW_WORD( obj, type, num );
 
     /* use UInt2 pointer for sixteen bits, clear <vv>                      */
     ptr = (UInt2*)DATA_WORD(obj);
@@ -703,7 +704,7 @@ Obj C16Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     }
 
     /* correct the size of <obj>                                           */
-    RESIZE_WORD( obj, 16L, j );
+    RESIZE_WORD( obj, j );
     return obj;
 }
 
@@ -904,7 +905,7 @@ Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     Obj         tmp;        /* temporary obj for power                     */
 
-    Int         resized = 0;/* indicates whether a Resize() happend        */
+    Int         resized = 0;/* indicates whether a Resize() happened       */
 
     /* <start> is the first non-trivial entry in <v>                       */
     start = SC_NUMBER_RWS_GENERATORS(sc);
@@ -993,7 +994,7 @@ Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     ro  = ADDR_OBJ( SC_RELATIVE_ORDERS(sc) );
     inv = ADDR_OBJ( SC_INVERSES(sc) );
 
-    /* initalize the stack with <w>                                        */
+    /* initialize the stack with <w>                                        */
     sp = 0;
     SC_PUSH_WORD( w, 1 );
 
@@ -1252,9 +1253,9 @@ FinPowConjCol C16Bits_SingleCollector = {
 /****************************************************************************
 **
 
-*F  C32Bits_WordVectorAndClear( <kind>, <vv>, <num> )
+*F  C32Bits_WordVectorAndClear( <type>, <vv>, <num> )
 */
-Obj C32Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
+Obj C32Bits_WordVectorAndClear ( Obj type, Obj vv, Int num )
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -1265,13 +1266,13 @@ Obj C32Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     Obj         obj;            /* result                                  */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDTYPE(kind);
+    ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* construct a new object                                              */
-    NEW_WORD( obj, kind, num );
+    NEW_WORD( obj, type, num );
 
     /* use UInt4 pointer for 32 bits, clear <vv>                           */
     ptr = (UInt4*)DATA_WORD(obj);
@@ -1285,7 +1286,7 @@ Obj C32Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     }
 
     /* correct the size of <obj>                                           */
-    RESIZE_WORD( obj, 32L, j );
+    RESIZE_WORD( obj, j );
     return obj;
 }
 
@@ -1485,7 +1486,7 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     Obj         tmp;        /* temporary obj for power                     */
 
-    Int         resized = 0;/* indicates whether a Resize() happend        */
+    Int         resized = 0;/* indicates whether a Resize() happened       */
 
     /* <start> is the first non-trivial entry in <v>                       */
     start = SC_NUMBER_RWS_GENERATORS(sc);
@@ -1574,7 +1575,7 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     ro  = ADDR_OBJ( SC_RELATIVE_ORDERS(sc) );
     inv = ADDR_OBJ( SC_INVERSES(sc) );
 
-    /* initalize the stack with <w>                                        */
+    /* initialize the stack with <w>                                        */
     sp = 0;
     SC_PUSH_WORD( w, 1 );
 
@@ -1948,7 +1949,7 @@ Obj ReducedComm (
     Obj                 w,
     Obj                 u )
 {
-    Obj                 kind;       /* kind of the returned object         */
+    Obj                 type;       /* type of the returned object         */
     Int                 num;        /* number of gen/exp pairs in <data>   */
     Int                 i;          /* loop variable for gen/exp pairs     */
     Obj                 vcw;        /* collect vector                      */
@@ -2005,8 +2006,8 @@ Obj ReducedComm (
     }
 
     /* convert the vector <vc2> into a word and clear <vc2>                */
-    kind = SC_DEFAULT_TYPE(sc);
-    return fc->wordVectorAndClear( kind, vc2, num );
+    type = SC_DEFAULT_TYPE(sc);
+    return fc->wordVectorAndClear( type, vc2, num );
 }
 
 
@@ -2022,7 +2023,7 @@ Obj ReducedForm (
     Int                 num;    /* number of gen/exp pairs in <data>       */
     Int                 i;      /* loop variable for gen/exp pairs         */
     Obj                 vcw;    /* collect vector                          */
-    Obj                 kind;   /* kind of the return objue                */
+    Obj                 type;   /* type of the return objue                */
     Int *               qtr;    /* pointer into the collect vector         */
 
     /* use 'cwVector' to collect word <w> to                               */
@@ -2040,11 +2041,11 @@ Obj ReducedForm (
     }
     num = i;
 
-    /* get the default kind                                                */
-    kind = SC_DEFAULT_TYPE(sc);
+    /* get the default type                                                */
+    type = SC_DEFAULT_TYPE(sc);
 
     /* convert the vector <cvw> into a word and clear <vcw>                */
-    return fc->wordVectorAndClear( kind, vcw, num );
+    return fc->wordVectorAndClear( type, vcw, num );
 }
 
 
@@ -2058,7 +2059,7 @@ Obj ReducedLeftQuotient (
     Obj                 w,
     Obj                 u )
 {
-    Obj                 kind;       /* kind of the return objue            */
+    Obj                 type;       /* type of the return objue            */
     Int                 num;        /* number of gen/exp pairs in <data>   */
     Int                 i;          /* loop variable for gen/exp pairs     */
     Obj                 vcw;        /* collect vector                      */
@@ -2099,8 +2100,8 @@ Obj ReducedLeftQuotient (
     }
 
     /* convert the vector <vc2> into a word and clear <vc2>                */
-    kind = SC_DEFAULT_TYPE(sc);
-    return fc->wordVectorAndClear( kind, vc2, num );
+    type = SC_DEFAULT_TYPE(sc);
+    return fc->wordVectorAndClear( type, vc2, num );
 }
 
 
@@ -2114,7 +2115,7 @@ Obj ReducedProduct (
     Obj                 w,
     Obj                 u )
 {
-    Obj                 kind;       /* kind of the return objue            */
+    Obj                 type;       /* type of the return objue            */
     Int                 num;        /* number of gen/exp pairs in <data>   */
     Int                 i;          /* loop variable for gen/exp pairs     */
     Obj                 vcw;        /* collect vector                      */
@@ -2139,8 +2140,8 @@ Obj ReducedProduct (
     }
 
     /* convert the vector <vcw> into a word and clear <vcw>                */
-    kind = SC_DEFAULT_TYPE(sc);
-    return fc->wordVectorAndClear( kind, vcw, num );
+    type = SC_DEFAULT_TYPE(sc);
+    return fc->wordVectorAndClear( type, vcw, num );
 }
 
 
@@ -2154,7 +2155,7 @@ Obj ReducedPowerSmallInt (
     Obj                 w,
     Obj                 vpow )
 {
-    Obj                 kind;       /* kind of the return objue            */
+    Obj                 type;       /* type of the return objue            */
     Int                 num;        /* number of gen/exp pairs in <data>   */
     Int                 i;          /* loop variable for gen/exp pairs     */
     Obj                 vcw;        /* collect vector                      */
@@ -2170,11 +2171,11 @@ Obj ReducedPowerSmallInt (
     vcw  = SC_CW_VECTOR(sc);
     vc2  = SC_CW2_VECTOR(sc);
     num  = SC_NUMBER_RWS_GENERATORS(sc);
-    kind = SC_DEFAULT_TYPE(sc);
+    type = SC_DEFAULT_TYPE(sc);
 
     /* return the trivial word if <pow> is zero                            */
     if ( pow == 0 ) {
-        NEW_WORD( res, kind, 0 );
+        NEW_WORD( res, type, 0 );
         return res;
     }
 
@@ -2200,7 +2201,7 @@ Obj ReducedPowerSmallInt (
         /* and replace <pow> and <w> by its inverse                        */
         pow  = -pow;
         vpow = INTOBJ_INT(pow);
-        w    = fc->wordVectorAndClear( kind, vc2, num );
+        w    = fc->wordVectorAndClear( type, vc2, num );
 
     }
 
@@ -2229,7 +2230,7 @@ Obj ReducedPowerSmallInt (
         }
 
         /* convert it back, this will clear <vcw>                          */
-        return fc->wordVectorAndClear( kind, vcw, num );
+        return fc->wordVectorAndClear( type, vcw, num );
 
     }
 
@@ -2257,7 +2258,7 @@ Obj ReducedQuotient (
     Obj                 w,
     Obj                 u )
 {
-    Obj                 kind;       /* kind of the return objue            */
+    Obj                 type;       /* type of the return objue            */
     Int                 num;        /* number of gen/exp pairs in <data>   */
     Int                 i;          /* loop variable for gen/exp pairs     */
     Obj                 vcw;        /* collect vector                      */
@@ -2268,7 +2269,7 @@ Obj ReducedQuotient (
     vcw  = SC_CW_VECTOR(sc);
     vc2  = SC_CW2_VECTOR(sc);
     num  = SC_NUMBER_RWS_GENERATORS(sc);
-    kind = SC_DEFAULT_TYPE(sc);
+    type = SC_DEFAULT_TYPE(sc);
 
     /* check that it has the correct length, unpack <u> into it            */
     if ( fc->vectorWord( vcw, u, num ) == -1 )  {
@@ -2287,7 +2288,7 @@ Obj ReducedQuotient (
     }
 
     /* and replace <u> by its inverse                                      */
-    u = fc->wordVectorAndClear( kind, vc2, num );
+    u = fc->wordVectorAndClear( type, vc2, num );
 
     /* check that it has the correct length, unpack <w> into it            */
     if ( fc->vectorWord( vcw, w, num ) == -1 )  {
@@ -2304,7 +2305,7 @@ Obj ReducedQuotient (
     }
 
     /* convert the vector <vcw> into a word and clear <vcw>                */
-    return fc->wordVectorAndClear( kind, vcw, num );
+    return fc->wordVectorAndClear( type, vcw, num );
 }
 
 
@@ -2545,7 +2546,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSingleCollector ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

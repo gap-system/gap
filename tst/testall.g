@@ -25,13 +25,13 @@
 ##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "testall.g" ) );
 ##  ]]></Log>
 ##  <P/>
-##  The test requires about 512MB of memory and runs about one hour on an 
+##  The test requires about 750MB of memory and runs about one hour on an 
 ##  Intel Core 2 Duo / 2.53 GHz machine, and produces an output similar 
 ##  to the <File>testinstall.g</File> test.
 ##  <#/GAPDoc>
 ##
 
-Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 512m'.\n",
+Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 750m'.\n",
        "The more GAP4stones you get, the faster your system is.\n",
        "The runtime of the following tests (in general) increases.\n",
        "******************************************************************\n",
@@ -48,6 +48,7 @@ RunStandardTests( [
   [ "alghom.tst",6000000],
   [ "algmat.tst",180800000],
   [ "algsc.tst",59000000],
+  [ "atomic_basic.tst", 100000],
   [ "arithlst.tst",52558700000],
   [ "boolean.tst",100000],
   [ "bugfix.tst",15319000000*10],
@@ -75,6 +76,7 @@ RunStandardTests( [
   [ "grpprmcs.tst",4153600000],
   [ "hash2.tst",3702400000],
   [ "helpsys.tst",58077900000],
+  [ "intarith.tst",2300000],
   [ "listgen.tst",1000000],
   [ "longnumber.tst",100000],
   [ "mapphomo.tst",4800000],
@@ -90,6 +92,7 @@ RunStandardTests( [
   [ "pperm.tst", 6000000],
   [ "primsan.tst",125486700000],
   [ "ratfun.tst",800000],
+  [ "reesmat.tst",6000000],
   [ "relation.tst",7700000],
   [ "rwspcgrp.tst",59400000],
   [ "rwspcsng.tst",81100000],
@@ -97,7 +100,10 @@ RunStandardTests( [
   [ "semigrp.tst",11200000],
   [ "semirel.tst",10900000],
   [ "set.tst",5600000],
+  [ "strings.tst", 100000],
+  [ "read.tst", 10000 ],
   [ "trans.tst", 6000000],
+  [ "union.tst", 100000],
   [ "unknown.tst",100000],
   [ "varnames.tst",3600000/1000],
   [ "vspchom.tst",10500000],

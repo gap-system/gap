@@ -2781,7 +2781,7 @@ InstallMethod(\+,
         # See whether in `lu' there is a vector with the same number as
         # `lv[k]'. If not, then insert...
         
-#        p := PositionFirstComponent(vecs, lv[k]);
+#        p := PositionSorted(vecs, [lv[k]]);
         p:= PositionSorted( vecs, lv[k], function( a, b ) return a[1] < b[1];
                                                                 end );
         if p > Length( vecs ) or vecs[p][1] <> lv[k][1] then
@@ -3081,7 +3081,7 @@ TriangulizeWeightRepElementList:= function( ww )
                     ww[i]:= ww[i] - cf*ww[k];
                     for b in basechange[k] do
                         b1:= [ b[1], -cf*b[2] ];
-                        pos := PositionFirstComponent( basechange[i], b1[1]);
+                        pos := PositionSorted( basechange[i], [b1[1]]);
                         if Length( basechange[i] ) < pos or 
                            basechange[i][pos][1] <> b1[1] then
                             Add(basechange[i], b1, pos);

@@ -21,13 +21,14 @@
 #include        <sys/stat.h>
 #endif
 
-extern char * In;
+#include <unistd.h> /* move this and wrap execvp later */
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
 #include        "gap.h"                 /* error handling, initialisation  */
+#include        "tls.h"                 /* thread-local storage            */
 
 #include        "read.h"                /* reader                          */
 
@@ -64,7 +65,6 @@ extern char * In;
 #include        "vecgf2.h"              /* functions for GF2 vectors       */
 #include        "vec8bit.h"             /* functions for other compressed
                                            GF(q) vectors                   */
-
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
 #include        "objscoll.h"            /* single collector                */
@@ -72,7 +72,7 @@ extern char * In;
 #include        "objcftl.h"             /* from the left collect           */
 
 #include        "dt.h"                  /* deep thought                    */
-#include        "dteval.h"              /* deep though evaluation          */
+#include        "dteval.h"              /* deep thought evaluation          */
 
 #include        "sctable.h"             /* structure constant table        */
 #include        "costab.h"              /* coset table                     */
@@ -85,7 +85,6 @@ extern char * In;
 #include        "stats.h"               /* statements                      */
 #include        "funcs.h"               /* functions                       */
 
-
 #include        "intrprtr.h"            /* interpreter                     */
 
 #include        "compiler.h"            /* compiler                        */
@@ -97,7 +96,7 @@ extern char * In;
 #include        "streams.h"             /* streams package                 */
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
-
+#include        "profile.h"             /* profiling                       */
 #ifdef GAPMPI
 #include        "gapmpi.h"              /* ParGAP/MPI                      */
 #endif
@@ -194,17 +193,7 @@ void ViewObjHandler ( Obj obj )
 **
 *F  main( <argc>, <argv> )  . . . . . . .  main program, read-eval-print loop
 */
-Obj AtExitFunctions;
-
-Obj AlternativeMainLoop;
-
-UInt SaveOnExitFileGVar;
-
 UInt QUITTINGGVar;
-
-Obj OnGapPromptHook;
-
-Obj ErrorHandler;               /* not yet settable from GAP level */
 
 
 typedef struct {
@@ -222,16 +211,9 @@ static Int NrImportedGVars;
 static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
 static Int NrImportedFuncs;
 
-/* int restart_argc; 
-   char **restart_argv; */
-
 char *original_argv0;
 static char **sysargv;
 static char **sysenviron;
-
-/* 
-syJmp_buf SyRestartBuf;
-*/
 
 Obj ShellContext = 0;
 Obj BaseShellContext = 0;
@@ -251,16 +233,19 @@ Obj Shell ( Obj context,
 {
   UInt time = 0;
   UInt status;
+  UInt dualSemicolon;
   UInt oldindent;
   UInt oldPrintDepth;
   Obj res;
   Obj oldShellContext;
   Obj oldBaseShellContext;
+  Int oldRecursionDepth;
   oldShellContext = ShellContext;
   ShellContext = context;
   oldBaseShellContext = BaseShellContext;
   BaseShellContext = context;
   ShellContextDepth = 0;
+  oldRecursionDepth = RecursionDepth;
   
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
@@ -288,6 +273,7 @@ Obj Shell ( Obj context,
     ClearError();
     PrintObjDepth = 0;
     Output->indent = 0;
+    RecursionDepth = 0;
       
     /* here is a hook: */
     if (preCommandHook) {
@@ -305,7 +291,7 @@ Obj Shell ( Obj context,
     }
 
     /* now  read and evaluate and view one command  */
-    status = ReadEvalCommand(ShellContext);
+    status = ReadEvalCommand(ShellContext, &dualSemicolon);
     if (UserHasQUIT)
       break;
 
@@ -322,7 +308,7 @@ Obj Shell ( Obj context,
         AssGVar( Last,  ReadEvalResult   );
 
       /* print the result                                            */
-      if ( ! DualSemicolon ) {
+      if ( ! dualSemicolon ) {
         ViewObjHandler( ReadEvalResult );
       }
             
@@ -374,6 +360,7 @@ Obj Shell ( Obj context,
   CloseOutput();
   BaseShellContext = oldBaseShellContext;
   ShellContext = oldShellContext;
+  RecursionDepth = oldRecursionDepth;
   if (UserHasQUIT)
     {
       if (catchQUIT)
@@ -625,7 +612,7 @@ int DoCreateWorkspace(char *myself)
     printf("Creating workspace...\n");
     command = NULL;
     StrAppend(&command,mypath);
-    StrAppend(&command," -N -r");
+    StrAppend(&command," -r");
     StrAppend(&command," -l ");
     StrAppend(&command,gappath);
 
@@ -771,21 +758,13 @@ int main (
   sysargv = argv;
   sysenviron = environ;
   
-  /* prepare for a possible restart 
-  if (setjmp(SyRestartBuf))
-    {
-      argc = restart_argc;
-      argv = restart_argv;
-    }
-    `*/
-
   /* Initialize assorted variables in this file */
   /*   BreakOnError = 1;
        ErrorCount = 0; */
   NrImportedGVars = 0;
   NrImportedFuncs = 0;
-  ErrorHandler = (Obj) 0;
   UserHasQUIT = 0;
+  UserHasQUITReturnValue = 0;
   UserHasQuit = 0;
     
   /* initialize everything and read init.g which runs the GAP session */
@@ -815,47 +794,6 @@ int main (
   SyExit(0);
   return 0;
 }
-
-/****************************************************************************
-**
-*F  FuncRESTART_GAP( <self>, <cmdline> ) . . . . . . . .  restart gap
-**
-*/
-
-Char *restart_argv_buffer[1000];
-
-#include <unistd.h> /* move this and wrap execvp later */
-
-Obj FuncRESTART_GAP( Obj self, Obj cmdline )
-{
-  Char *s, *f,  **v;
-  while (!IsStringConv(cmdline))
-    {
-      cmdline = ErrorReturnObj("RESTART_GAP: <cmdline> must be a string, not a %s",
-                               (Int) TNAM_OBJ(cmdline), (Int) 0,
-                               "You can resturn a string to continue");
-    }
-  s = CSTR_STRING(cmdline);
-  /* Pr("%s\n",(Int)s, 0); */
-  f = s;
-  v = restart_argv_buffer;
-  while (*s) {
-    *v++ = s;
-    while (*s && !IsSpace(*s))
-      s++;
-    while (IsSpace(*s))
-      *s++ = '\0';
-  }
-  *v = (Char *)0;
-  /*  restart_argc = ct;
-      restart_argv = restart_argv_buffer; */
-  /* FinishBags(); */
-  execvp(f,restart_argv_buffer);
-  /*  longjmp(SyRestartBuf,1); */
-  return Fail; /* shouldn't normally get here */
-}
-
-
 
 /****************************************************************************
 **
@@ -1075,10 +1013,9 @@ Obj FuncWindowCmd (
 
   /* convert <args> into an argument string                              */
   ptr  = (Char*) CSTR_STRING(WindowCmdString);
-  *ptr = '\0';
 
   /* first the command name                                              */
-  SyStrncat( ptr, CSTR_STRING( ELM_LIST(args,1) ), 3 );
+  memcpy( ptr, CSTR_STRING( ELM_LIST(args,1) ), 3 + 1 );
   ptr += 3;
 
   /* and now the arguments                                               */
@@ -1284,10 +1221,12 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
      else if ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
 #endif
       PrintStat( call );
+      Pr(" on line %d of file %s",LINE_STAT(call),(UInt)CSTR_STRING(FILENAME_STAT(call)));
     }
     else if ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
               && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) {
       PrintExpr( call );
+      Pr(" on line %d of file %s",LINE_STAT(call),(UInt)CSTR_STRING(FILENAME_STAT(call)));
     }
     SWITCH_TO_OLD_LVARS( currLVars );
     return (Obj) 0;
@@ -1309,6 +1248,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     Obj res;
     Obj currLVars;
     Obj result;
+    Int recursionDepth;
     Stat currStat;
     if (!IS_FUNC(func))
       ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <func> must be a function",0,0);
@@ -1324,6 +1264,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     memcpy((void *)&readJmpError, (void *)&ReadJmpError, sizeof(syJmp_buf));
     currLVars = CurrLVars;
     currStat = CurrStat;
+    recursionDepth = RecursionDepth;
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     if (sySetjmp(ReadJmpError)) {
       SET_LEN_PLIST(res,2);
@@ -1335,6 +1276,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       PtrLVars = PTR_BAG(CurrLVars);
       PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       CurrStat = currStat;
+      RecursionDepth = recursionDepth;
     } else {
       switch (LEN_PLIST(plain_args)) {
       case 0: result = CALL_0ARGS(func);
@@ -1385,7 +1327,8 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
   
 
 UInt UserHasQuit;
-UInt UserHasQUIT; 
+UInt UserHasQUIT;
+UInt UserHasQUITReturnValue;
 
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
 {
@@ -2146,27 +2089,6 @@ Obj FuncTNUM_OBJ_INT (
 
 /****************************************************************************
 **
-*F  FuncXTNUM_OBJ( <self>, <obj> )  . . . . . . . expert function 'XTNUM_OBJ'
-*/
-Obj FuncXTNUM_OBJ (
-    Obj                 self,
-    Obj                 obj )
-{
-    Obj                 res;
-    Obj                 str;
-
-    res = NEW_PLIST( T_PLIST, 2 );
-    SET_LEN_PLIST( res, 2 );
-    SET_ELM_PLIST( res, 1, Fail );
-    C_NEW_STRING_CONST(str, "xtnums abolished");
-    SET_ELM_PLIST(res, 2,str);
-    /* and return                                                          */
-    return res;
-}
-
-
-/****************************************************************************
-**
 *F  FuncOBJ_HANDLE( <self>, <obj> ) . . . . . .  expert function 'OBJ_HANDLE'
 */
 Obj FuncOBJ_HANDLE (
@@ -2381,9 +2303,10 @@ void InitGVarFiltsFromTable (
     Int                 i;
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
-        AssGVar( GVarName( tab[i].name ),
-            NewFilterC( tab[i].name, 1, tab[i].argument, tab[i].handler ) );
-        MakeReadOnlyGVar( GVarName( tab[i].name ) );
+        UInt gvar = GVarName( tab[i].name );
+        AssGVar( gvar,
+            NewFilter( NameGVarObj( gvar ), 1, ArgStringToList( tab[i].argument ), tab[i].handler ) );
+        MakeReadOnlyGVar( gvar );
     }
 }
 
@@ -2398,9 +2321,13 @@ void InitGVarAttrsFromTable (
     Int                 i;
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
-       AssGVar( GVarName( tab[i].name ),
-         NewAttributeC( tab[i].name, 1, tab[i].argument, tab[i].handler ) );
-       MakeReadOnlyGVar( GVarName( tab[i].name ) );
+        UInt gvar = GVarName( tab[i].name );
+        AssGVar( gvar,
+            NewAttribute( NameGVarObj( gvar ),
+                          1,
+                          ArgStringToList( tab[i].argument ),
+                          tab[i].handler ) );
+        MakeReadOnlyGVar( gvar );
     }
 }
 
@@ -2415,9 +2342,13 @@ void InitGVarPropsFromTable (
     Int                 i;
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
-       AssGVar( GVarName( tab[i].name ),
-         NewPropertyC( tab[i].name, 1, tab[i].argument, tab[i].handler ) );
-       MakeReadOnlyGVar( GVarName( tab[i].name ) );
+        UInt gvar = GVarName( tab[i].name );
+        AssGVar( gvar,
+            NewProperty( NameGVarObj( gvar ),
+                        1,
+                        ArgStringToList( tab[i].argument ),
+                        tab[i].handler ) );
+        MakeReadOnlyGVar( gvar );
     }
 }
 
@@ -2432,9 +2363,13 @@ void InitGVarOpersFromTable (
     Int                 i;
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
-        AssGVar( GVarName( tab[i].name ), NewOperationC( tab[i].name, 
-            tab[i].nargs, tab[i].args, tab[i].handler ) );
-        MakeReadOnlyGVar( GVarName( tab[i].name ) );
+        UInt gvar = GVarName( tab[i].name );
+        AssGVar( gvar,
+            NewOperation( NameGVarObj( gvar ),
+                          tab[i].nargs,
+                          ArgStringToList( tab[i].args ),
+                          tab[i].handler ) );
+        MakeReadOnlyGVar( gvar );
     }
 }
 
@@ -2449,9 +2384,13 @@ void InitGVarFuncsFromTable (
     Int                 i;
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
-        AssGVar( GVarName( tab[i].name ), NewFunctionC( tab[i].name, 
-            tab[i].nargs, tab[i].args, tab[i].handler ) );
-        MakeReadOnlyGVar( GVarName( tab[i].name ) );
+        UInt gvar = GVarName( tab[i].name );
+        AssGVar( gvar,
+            NewFunction( NameGVarObj( gvar ),
+                         tab[i].nargs,
+                         ArgStringToList( tab[i].args ),
+                         tab[i].handler ) );
+        MakeReadOnlyGVar( gvar );
     }
 }
 
@@ -2682,9 +2621,20 @@ Obj FuncSleep( Obj self, Obj secs )
 **
 */
 
-Obj FuncQUIT_GAP( Obj self )
+Obj FuncQUIT_GAP( Obj self, Obj args )
 {
+  if ( LEN_LIST(args) == 0 ) {
+    UserHasQUITReturnValue = 0;
+  }
+  else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
+    UserHasQUITReturnValue = INT_INTOBJ( ELM_PLIST( args, 1 ) );
+  }
+  else {
+    ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0L, 0L );
+    return 0;
+  }
   UserHasQUIT = 1;
+  
   ReadEvalError();
   return (Obj)0; 
 }
@@ -2791,17 +2741,6 @@ Obj FuncKERNEL_INFO(Obj self) {
 
 /****************************************************************************
 **
-*F FuncGETPID  ... export UNIX getpid to GAP level
-**
-*/
-
-Obj FuncGETPID(Obj self) {
-  return INTOBJ_INT(getpid());
-}
-
-
-/****************************************************************************
-**
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -2817,9 +2756,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ID_FUNC", 1, "object",
       FuncID_FUNC, "src/gap.c:ID_FUNC" },
-
-    { "RESTART_GAP", 1, "cmdline",
-      FuncRESTART_GAP, "src/gap.c:RESTART_GAP" },
 
     { "ExportToKernelFinished", 0, "",
       FuncExportToKernelFinished, "src/gap.c:ExportToKernelFinished" },
@@ -2863,9 +2799,6 @@ static StructGVarFunc GVarFuncs [] = {
     { "TNUM_OBJ_INT", 1, "object",
       FuncTNUM_OBJ_INT, "src/gap.c:TNUM_OBJ_INT" },
 
-    { "XTNUM_OBJ", 1, "object",
-      FuncXTNUM_OBJ, "src/gap.c:XTNUM_OBJ" },
-
     { "OBJ_HANDLE", 1, "object",
       FuncOBJ_HANDLE, "src/gap.c:OBJ_HANDLE" },
 
@@ -2885,7 +2818,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "Sleep", 1, "secs",
       FuncSleep, "src/gap.c:Sleep" },
 
-    { "QUIT_GAP", 0, "",
+    { "QUIT_GAP", -1, "args",
       FuncQUIT_GAP, "src/gap.c:QUIT_GAP" },
 
 
@@ -2904,9 +2837,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SetUserHasQuit", 1, "value",
       FuncSetUserHasQuit, "src/gap.c:SetUserHasQuit" },
-
-    { "GETPID", 0, "",
-      FuncGETPID, "src/gap.c:GETPID" },
 
     { "MASTER_POINTER_NUMBER", 1, "ob",
       FuncMASTER_POINTER_NUMBER, "src/gap.c:MASTER_POINTER_NUMBER" },
@@ -2935,7 +2865,6 @@ static Int InitKernel (
     InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      );
 
     /* list of exit functions                                              */
-    InitGlobalBag( &AtExitFunctions, "src/gap.c:AtExitFunctions" );
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
 
     /* init filters and functions                                          */
@@ -2958,12 +2887,6 @@ static Int InitKernel (
     InitCopyGVar("OnCharReadHookExcFds",&OnCharReadHookExcFds);
     InitCopyGVar("OnCharReadHookExcFuncs",&OnCharReadHookExcFuncs);
 #endif
-
-    /* If a package or .gaprc or file read from the command line
-       sets this to a function, then we want to know                       */
-    InitCopyGVar(  "AlternativeMainLoop", &AlternativeMainLoop );
-
-    InitGlobalBag(&ErrorHandler, "gap.c: ErrorHandler");
 
     /* return success                                                      */
     return 0;
@@ -2994,7 +2917,6 @@ static Int PostRestore (
     Last2             = GVarName( "last2" );
     Last3             = GVarName( "last3" );
     Time              = GVarName( "time"  );
-    SaveOnExitFileGVar= GVarName( "SaveOnExitFile" );
     QUITTINGGVar      = GVarName( "QUITTING" );
     
     /* return success                                                      */
@@ -3060,6 +2982,9 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
 
     /* objects                                                             */
     InitInfoObjects,
+
+    /* profiling information */
+    InitInfoProfile,
 
     /* scanner, reader, interpreter, coder, caller, compiler               */
     InitInfoScanner,
@@ -3181,7 +3106,7 @@ void RecordLoadedModule (
       Pr( "panic: no room for module filename\n", 0L, 0L );
     }
     *NextLoadedModuleFilename = '\0';
-    SyStrncat(NextLoadedModuleFilename,filename, len);
+    memcpy(NextLoadedModuleFilename, filename, len+1);
     info->filename = NextLoadedModuleFilename;
     NextLoadedModuleFilename += len +1;
     Modules[NrModules++] = info;

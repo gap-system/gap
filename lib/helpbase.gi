@@ -77,6 +77,203 @@ BindGlobal( "IsDocumentedWord", function( arg )
   return false;
 end);
 
+#############################################################################
+## 
+##  TRANSATL . . . . . . . . . . list of pairs of different spelling patterns
+##
+##  One could add more patterns following the following rules:
+##  - Each element of `TRANSATL' should be a list of length two.
+##  - Do not use capital letters; instead, truncate the first letter 
+##    of the word if might or might not be capitalised.
+##  - Usage of patterns where one of spelling variants is an initial 
+##    substring of another is permitted.
+##  - Modification of these rules (or using the patterns where one of
+##    spelling variants is the trailing substring of another) may require
+##    changing algorithms used in `FindMultiSpelledHelpEntries' and
+##    `SuggestedSpellings'.
+
+BindGlobal( "TRANSATL", 
+            [ [ "atalogue", "atalog" ],
+              [ "olour", "olor" ],
+              [ "entre", "enter" ],
+              [ "isation", "ization" ],
+              [ "ise", "ize" ],
+              [ "abeling", "abelling" ],
+              [ "olvable", "oluble" ],
+              [ "yse", "yze" ] ] );
+
+
+#############################################################################
+##
+##  SuggestedSpellings
+## 
+##  This function is used by HELP_GET_MATCHES to check if the search topic
+##  might have different spellings, lookign for patterns from `TRANSATL'.
+##  
+##  It returns a list of suggested spellings of a string, for example:
+##
+##  gap> SuggestedSpellings("TriangulizeMat");
+##  [ "TrianguliseMat", "TriangulizeMat" ]
+##  gap> SuggestedSpellings("CentralizerSolvableGroup");
+##  [ "CentraliserSolubleGroup", "CentraliserSolvableGroup", 
+##    "CentralizerSolubleGroup", "CentralizerSolvableGroup" ]
+##
+##  This approach may suggest wrong spellings for topics containing the 
+##  substring "Size" or "size", since it's not possible to detect whether 
+##  "size" is a part of another word or a word itselg (e.g. both spellings 
+##  "emphasize" and  "emphasise" may be used). However, this only creates 
+##  a tiny and really neglectible overhead (try e.g. `??SizesCentralisers'
+##  or `??Centralizers, Normalizers and Intersections'); however it ensures 
+##  that help searches may be successfull even if they use inconsistent 
+##  spelling. In practice, we expect that the majority of help searches 
+##  will match no more than one pattern. One could use the utility function 
+##  `FindMultiSpelledHelpEntries' below to see that the help system contains 
+##  about a dozen of entries which contains two occurrences of some patterns, 
+##  and none with three or more of them.
+##
+BindGlobal( "SuggestedSpellings", function( topic )
+local positions, patterns, pattern, where, what, variant, pos,
+      newwhere, newwhat, i, chop, begin, topics;
+
+positions:=[];
+patterns:=[];
+
+# Loop through all spelling patterns to check if there are any matches.
+# Record starting positions and data about matching patters.
+
+for pattern in TRANSATL do
+  # for each pattern we record starting positions and data separately
+  # to deal with double matches where one variant is a subset of another
+  where := [];
+  what := [];
+  for variant in pattern do
+    pos  := POSITION_SUBSTRING( topic, variant, 0 );
+    while pos <> fail do
+      Add( where, pos );
+      Add( what, rec( start   := pos, 
+                      finish  := pos+Length(variant)-1,
+                      variant := variant, 
+                      pattern := pattern ) );   
+      pos := POSITION_SUBSTRING( topic, variant, pos+Length(variant) );
+    od;
+  od;   
+  if Length(where) > 0 then # we have at least one match 
+    # now check if we have a double match ( like in "catalogue" and "catalog" )
+    if Length( Set( where ) ) = Length( where ) then
+      # no double matches, just store the data (SortParallel will be applied later)
+      Append( positions, where );
+      Append( patterns, what );
+    else
+      # we have double match - create the new list, taking only the
+      # match with the longer substring
+      SortParallel( where, what );
+      newwhere:=[ where[1] ];
+      newwhat:=[ what[1] ];
+      for i in [ 2..Length(where)] do
+        if where[i]<>where[i-1] then
+          Add(newwhere,where[i]);
+          Add(newwhat,what[i]);
+        else
+          if Length( what[i].variant ) > Length( what[i-1].variant ) then
+            newwhat[Length(newwhat)]:=what[i];
+          fi;
+        fi;
+      od;
+      Append( positions, newwhere );
+      Append( patterns, newwhat );
+    fi;
+  fi;
+od;
+
+if Length(positions) = 0 then # no matches - return immeditely
+  return [ topic ];
+fi;  
+
+# sort data about matches accordingly to their positions in `topic'.
+SortParallel( positions, patterns );
+
+# Now chop the string 'topic' into a list of lists, each of them either
+# a list of all variants from the respective spelling pattern or just
+# a one-element list with the "glueing" string between two pattersn or
+# a pattern and the beginning or end of the string. 
+
+chop:=[];
+begin:=1;
+for i in [1..Length(positions)] do
+  Add( chop, [ topic{[begin..patterns[i].start-1 ]} ] );
+  Add( chop, patterns[i].pattern );
+  begin := Minimum( patterns[i].finish+1, Length(topic) );
+od;
+
+if begin < Length( topic ) then
+  Add( chop, [ topic{[begin..Length(topic)]} ] );
+fi;
+
+# Take the cartesian product of 'chop' and form spelling suggestions 
+# as concatenations of its elements. 
+
+topics := List( Cartesian(chop), Concatenation );
+Sort( topics );
+return( topics );
+
+end);
+
+
+#############################################################################
+##
+#F  FindMultiSpelledHelpEntries() . . . . . . check documentation for entries 
+##                             which might have 2 or more different spellings
+##
+##  This utility may be used in checks of the help system by GAP developers.
+##
+##  `HELP_GET_MATCHES' uses `SuggestedSpellings' to look for other possible
+##  spellings, e.g. Normaliser/Normalizer, Center/Centre, Solvable/Soluble, 
+##  Analyse/Analyze, Factorisation/Factorization etc. 
+##
+##  "FindMultiSpelledHelpEntries" reports help entries that contains more
+##  than one occurence of spelling patterns from the `TRANSATL' list.
+##  It may falsely report entries containing the substring "Size" or "size",
+##  since it's not possible to detect whether "size" is a part of another 
+##  word or a word itselg (e.g. both spellings "emphasize" and  "emphasise" 
+##  may be used).
+##
+BindGlobal( "FindMultiSpelledHelpEntries", function( )
+local report, pair, word, book, matches, a, match, patterns, i, j, w, pos, nr, hits;
+report:=[];               
+for pair in TRANSATL do
+  word := pair[1];
+  for book in HELP_KNOWN_BOOKS[1] do
+    matches:= HELP_GET_MATCHES( [ book ], word, false );
+    for a in Concatenation( matches ) do
+      match:= StripEscapeSequences( a[1].entries[ a[2] ][1] );
+      patterns:=[];
+      for i in [1..Length(TRANSATL)] do
+        patterns[i]:=[];
+        for j in [1..Length(TRANSATL[i])] do
+          w:=TRANSATL[i][j];               
+          nr:=0;
+          pos := POSITION_SUBSTRING( match, w, 0 );
+          while pos <> fail do
+            nr:=nr+1;
+            pos := POSITION_SUBSTRING( match, w, pos+Length(w) );
+          od;
+        patterns[i][j]:=nr;
+        od;
+      od;
+      # we just check that there are two or more matches, but in principle
+      # we calculated all to distinguish between different cases: different
+      # patterns; different spellings of same pattern; same spelling of 
+      # same pattern appears more than once.
+      hits := Sum(Flat(patterns));
+      if hits >= 1 then
+        AddSet( report, [ hits, book, match ] );
+      fi;
+    od;
+  od;
+od;
+return report;
+end);
+
 if StripEscapeSequences = 0 then
   Unbind(StripEscapeSequences);
 fi;
@@ -700,7 +897,8 @@ InstallGlobalFunction(HELP_SHOW_WELCOME, function( book )
     Pager(lines);
     return true;
 end);
-  
+
+
 #############################################################################
 ##
 #F  HELP_GET_MATCHES( <book>, <topic>, <frombegin> )  . . .  search through 
@@ -713,8 +911,16 @@ end);
 ##  remaining ones.
 ##
 InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
-  local exact, match, em, b, x;
-  
+  local exact, match, em, b, x, topics, transatl, pair, newtopic;
+
+  # First we try to produce some suggestions for possible different spellings
+  # (see the global variable 'TRANSATL' for the list of spelling patterns).
+  if topic = "size" then # "size" is a notable exception (lowercase is guaranteed)
+    topics:=[ topic ];
+  else
+    topics:=SuggestedSpellings( topic );
+  fi;
+
   # <exact> and <match> contain the topics matching
   exact := [];
   match := [];
@@ -726,16 +932,18 @@ InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
   # collect the matches (by number)
   books := List(books, HELP_BOOK_INFO);
   for b in books do
-    # now delegate the work to the handler functions
-    if b<>fail then
-      em := HELP_BOOK_HANDLER.(b.handler).SearchMatches(b, topic, frombegin);
-      for x in em[1] do 
-	Add(exact, [b, x]);
-      od;
-      for x in em[2] do
-	Add(match, [b, x]);
-      od;
-    fi;
+    for topic in topics do
+      # now delegate the work to the handler functions
+      if b<>fail then
+        em := HELP_BOOK_HANDLER.(b.handler).SearchMatches(b, topic, frombegin);
+        for x in em[1] do
+	      Add(exact, [b, x]);
+        od;
+        for x in em[2] do
+	      Add(match, [b, x]);
+        od;
+      fi;
+    od;
   od;
   
   # we now join the two lists, this way the exact matches are displayed

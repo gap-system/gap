@@ -64,12 +64,12 @@
 *F * * * * * * * * * streams and files related functions  * * * * * * * * * *
 */
 
-Int READ_COMMAND ( void ) {
-
+Int READ_COMMAND ( void )
+{
     ExecStatus    status;
 
     ClearError();
-    status = ReadEvalCommand(BottomLVars);
+    status = ReadEvalCommand(BottomLVars, 0);
     if( status == STATUS_EOF )
         return 0;
 
@@ -94,8 +94,8 @@ Int READ_COMMAND ( void ) {
     return 1;
 }
 
-Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo ) {
-
+Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
+{
     Int status;
 
     /* try to open the file                                                */
@@ -141,17 +141,15 @@ static Int READ_INNER ( UInt UseUHQ )
 {
     ExecStatus                status;
 
-
-
     if (UserHasQuit)
       {
-	Pr("Warning: Entering READ with UserHasQuit set, this should never happen, resetting",0,0);
-	UserHasQuit = 0;
+        Pr("Warning: Entering READ with UserHasQuit set, this should never happen, resetting",0,0);
+        UserHasQuit = 0;
       }
     if (UserHasQUIT)
       {
-	Pr("Warning: Entering READ with UserHasQUIT set, this should never happen, resetting",0,0);
-	UserHasQUIT = 0;
+        Pr("Warning: Entering READ with UserHasQUIT set, this should never happen, resetting",0,0);
+        UserHasQUIT = 0;
       }
     MakeReadWriteGVar(LastReadValueGVar);
     AssGVar( LastReadValueGVar, 0);
@@ -159,11 +157,11 @@ static Int READ_INNER ( UInt UseUHQ )
     /* now do the reading                                                  */
     while ( 1 ) {
         ClearError();
-        status = ReadEvalCommand(BottomLVars);
+        status = ReadEvalCommand(BottomLVars, 0);
 	if (UserHasQuit || UserHasQUIT)
 	  break;
         /* handle return-value or return-void command                      */
-        if ( status &(STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
+        if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
             Pr(
                 "'return' must not be used in file read-eval loop",
                 0L, 0L );
@@ -171,23 +169,23 @@ static Int READ_INNER ( UInt UseUHQ )
 
         /* handle quit command or <end-of-file>                            */
         else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
-	  break;
-	else if (status == STATUS_QUIT) {
+          break;
+        else if (status == STATUS_QUIT) {
           RecursionDepth = 0;
-	  UserHasQuit = 1;
-	  break;
-	}
-	else if (status == STATUS_QQUIT) {
-	  UserHasQUIT = 1;
-	  break;
-	}
-	if (ReadEvalResult)
-	  {
-	    MakeReadWriteGVar(LastReadValueGVar);
-	    AssGVar( LastReadValueGVar, ReadEvalResult);
-	    MakeReadOnlyGVar(LastReadValueGVar);
-	  }
-	
+          UserHasQuit = 1;
+          break;
+        }
+        else if (status == STATUS_QQUIT) {
+          UserHasQUIT = 1;
+          break;
+        }
+        if (ReadEvalResult)
+          {
+            MakeReadWriteGVar(LastReadValueGVar);
+            AssGVar( LastReadValueGVar, ReadEvalResult);
+            MakeReadOnlyGVar(LastReadValueGVar);
+          }
+        
     }
 
 
@@ -208,11 +206,11 @@ static Int READ_INNER ( UInt UseUHQ )
 }
 
 
-Int READ( void ) {
+static Int READ( void ) {
   return READ_INNER(1);
 }
 
-Int READ_NORECOVERY( void ) {
+static Int READ_NORECOVERY( void ) {
   return READ_INNER(0);
 }
 
@@ -252,16 +250,11 @@ Obj READ_AS_FUNC ( void )
 }
 
 
-/****************************************************************************
-**
-*F  READ_TEST() . . . . . . . . . . . . . . . . .  read current input as test
-**
-**  Read the current input as test and close the input stream.
-*/
-Int READ_TEST ( void )
+static void READ_TEST_OR_LOOP(void)
 {
     UInt                type;
     UInt                oldtime;
+    UInt                dualSemicolon;
 
     /* get the starting time                                               */
     oldtime = SyTime();
@@ -271,7 +264,7 @@ Int READ_TEST ( void )
 
         /* read and evaluate the command                                   */
         ClearError();
-        type = ReadEvalCommand(BottomLVars);
+        type = ReadEvalCommand(BottomLVars, &dualSemicolon);
 
         /* stop the stopwatch                                              */
         AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
@@ -285,7 +278,7 @@ Int READ_TEST ( void )
             AssGVar( Last,  ReadEvalResult   );
 
             /* print the result                                            */
-            if ( ! DualSemicolon ) {
+            if ( ! dualSemicolon ) {
                 Bag currLVars = CurrLVars; /* in case view runs into error */
                 ViewObjHandler( ReadEvalResult );
                 SWITCH_TO_OLD_LVARS(currLVars);
@@ -293,17 +286,29 @@ Int READ_TEST ( void )
         }
 
         /* handle return-value or return-void command                      */
-        else if ( type == 1 || type == 2 ) {
+        else if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
             Pr( "'return' must not be used in file read-eval loop",
                 0L, 0L );
         }
 
         /* handle quit command or <end-of-file>                            */
-        else if ( type == 8 || type == 16 ) {
+        else if ( type & (STATUS_QUIT | STATUS_EOF) ) {
             break;
         }
+        // FIXME: what about other types? e.g. STATUS_ERROR and STATUS_QQUIT
 
     }
+}
+
+/****************************************************************************
+**
+*F  READ_TEST() . . . . . . . . . . . . . . . . .  read current input as test
+**
+**  Read the current input as test and close the input stream.
+*/
+static void READ_TEST ( void )
+{
+    READ_TEST_OR_LOOP();
 
     /* close the input file again, and return 'true'                       */
     if ( ! CloseTest() ) {
@@ -312,8 +317,6 @@ Int READ_TEST ( void )
             0L, 0L );
     }
     ClearError();
-
-    return 1;
 }
 
 /****************************************************************************
@@ -322,52 +325,9 @@ Int READ_TEST ( void )
 **
 **  Read the current input as read-eval-view loop and close the input stream.
 */
-Int READ_LOOP ( void )
+static void READ_LOOP ( void )
 {
-    UInt                type;
-    UInt                oldtime;
-
-    /* get the starting time                                               */
-    oldtime = SyTime();
-
-    /* now do the reading                                                  */
-    while ( 1 ) {
-
-        /* read and evaluate the command                                   */
-        ClearError();
-        type = ReadEvalCommand(BottomLVars);
-
-        /* stop the stopwatch                                              */
-        AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
-
-        /* handle ordinary command                                         */
-        if ( type == 0 && ReadEvalResult != 0 ) {
-
-            /* remember the value in 'last' and the time in 'time'         */
-            AssGVar( Last3, VAL_GVAR( Last2 ) );
-            AssGVar( Last2, VAL_GVAR( Last  ) );
-            AssGVar( Last,  ReadEvalResult   );
-
-            /* print the result                                            */
-            if ( ! DualSemicolon ) {
-                Bag currLVars = CurrLVars; /* in case view runs into error */
-                ViewObjHandler( ReadEvalResult );
-                SWITCH_TO_OLD_LVARS(currLVars);
-            }
-        }
-
-        /* handle return-value or return-void command                      */
-        else if ( type == 1 || type == 2 ) {
-            Pr( "'return' must not be used in file read-eval loop",
-                0L, 0L );
-        }
-
-        /* handle quit command or <end-of-file>                            */
-        else if ( type == 8 || type == 16 ) {
-            break;
-        }
-
-    }
+    READ_TEST_OR_LOOP();
 
     /* close the input file again, and return 'true'                       */
     if ( ! CloseInput() ) {
@@ -376,8 +336,6 @@ Int READ_LOOP ( void )
             0L, 0L );
     }
     ClearError();
-
-    return 1;
 }
 
 
@@ -393,7 +351,7 @@ Int READ_LOOP ( void )
 
 Int READ_GAP_ROOT ( Char * filename )
 {
-  TypGRF_Data           result;
+    TypGRF_Data         result;
     Int                 res;
     UInt                type;
     StructInitInfo *    info;
@@ -413,16 +371,16 @@ Int READ_GAP_ROOT ( Char * filename )
                 (Int)filename, 0L );
         }
         info = result.module_info;
-	res  = info->initKernel(info);
-	if (!SyRestoring) {
-	  UpdateCopyFopyInfo();
-	  res  = res || info->initLibrary(info);
-	}
-	if ( res ) {
-	    Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
-	}
-	
-	info->isGapRootRelative = 1;
+        res  = info->initKernel(info);
+        if (!SyRestoring) {
+          UpdateCopyFopyInfo();
+          res  = res || info->initLibrary(info);
+        }
+        if ( res ) {
+            Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
+        }
+        
+        info->isGapRootRelative = 1;
         RecordLoadedModule(info, filename);
         return 1;
     }
@@ -434,15 +392,15 @@ Int READ_GAP_ROOT ( Char * filename )
                 (Int)filename, 0L );
         }
         info = result.module_info;
-	res  = info->initKernel(info);
-	if (!SyRestoring) {
-	  UpdateCopyFopyInfo();
-	  res  = res || info->initLibrary(info);
-	}
-	if ( res ) {
-	    Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
-	}
-	info->isGapRootRelative = 1;
+        res  = info->initKernel(info);
+        if (!SyRestoring) {
+          UpdateCopyFopyInfo();
+          res  = res || info->initLibrary(info);
+        }
+        if ( res ) {
+            Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
+        }
+        info->isGapRootRelative = 1;
         RecordLoadedModule(info, filename);
         return 1;
     }
@@ -451,15 +409,15 @@ Int READ_GAP_ROOT ( Char * filename )
        modules needed for a saved workspace ErrorQuit is not available */
     else if (SyRestoring)
       {
-	if (res == 3 || res == 4)
-	  {
-	    Pr("Can't find compiled module '%s' needed by saved workspace\n",
-	       (Int) filename, 0L);
-	    return 0;
-	  }
-	else
-	  Pr("unknown result code %d from 'SyFindGapRoot'", res, 0L );
-	SyExit(1);
+        if (res == 3 || res == 4)
+          {
+            Pr("Can't find compiled module '%s' needed by saved workspace\n",
+               (Int) filename, 0L);
+            return 0;
+          }
+        else
+          Pr("unknown result code %d from 'SyFindGapRoot'", res, 0L );
+        SyExit(1);
       }
     
     /* ordinary gap file                                                   */
@@ -469,16 +427,16 @@ Int READ_GAP_ROOT ( Char * filename )
                 (Int)filename, 0L );
         }
         if ( OpenInput(result.pathname) ) {
-	  SySetBuffering(Input->file);
+          SySetBuffering(Input->file);
             while ( 1 ) {
                 ClearError();
-                type = ReadEvalCommand(BottomLVars);
-		if (UserHasQuit || UserHasQUIT)
-		  break;
-                if ( type == 1 || type == 2 ) {
+                type = ReadEvalCommand(BottomLVars, 0);
+                if (UserHasQuit || UserHasQUIT)
+                  break;
+                if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
                     Pr( "'return' must not be used in file", 0L, 0L );
                 }
-                else if ( type == 8 || type == 16 ) {
+                else if ( type & (STATUS_QUIT | STATUS_EOF) ) {
                     break;
                 }
             }
@@ -728,7 +686,7 @@ Obj FuncPrint (
 {
     volatile Obj        arg;
     volatile UInt       i;
-syJmp_buf           readJmpError;
+    syJmp_buf           readJmpError;
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 1;  i <= LEN_PLIST(args);  i++ ) {
@@ -740,69 +698,7 @@ syJmp_buf           readJmpError;
             PrintString1(arg);
         }
         else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-	  PrintFunction( arg );
-        }
-        else {
-            memcpy( readJmpError, ReadJmpError, sizeof(syJmp_buf) );
-
-            /* if an error occurs stop printing                            */
-            if ( ! READ_ERROR() ) {
-                PrintObj( arg );
-            }
-            else {
-                memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
-                ReadEvalError();
-            }
-            memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
-        }
-    }
-
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*F  FuncPRINT_TO( <self>, <args> )  . . . . . . . . . . . . . .  print <args>
-*/
-Obj FuncPRINT_TO (
-    Obj                 self,
-    Obj                 args )
-{
-    volatile Obj        arg;
-    volatile Obj        filename;
-    volatile UInt       i;
-syJmp_buf           readJmpError;
-
-    /* first entry is the filename                                         */
-    filename = ELM_LIST(args,1);
-    while ( ! IsStringConv(filename) ) {
-        filename = ErrorReturnObj(
-            "PrintTo: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
-
-    /* try to open the file for output                                     */
-    if ( ! OpenOutput( CSTR_STRING(filename) ) ) {
-        ErrorQuit( "PrintTo: cannot open '%s' for output",
-                   (Int)CSTR_STRING(filename), 0L );
-        return 0;
-    }
-
-    /* print all the arguments, take care of strings and functions         */
-    for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
-        arg = ELM_LIST(args,i);
-        if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
-            PrintString1(arg);
-        }
-        else if ( IS_STRING_REP(arg) ) {
-            PrintString1(arg);
-        }
-        else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-            PrintObjFull = 1;
             PrintFunction( arg );
-            PrintObjFull = 0;
         }
         else {
             memcpy( readJmpError, ReadJmpError, sizeof(syJmp_buf) );
@@ -812,7 +708,6 @@ syJmp_buf           readJmpError;
                 PrintObj( arg );
             }
             else {
-                CloseOutput();
                 memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
@@ -820,104 +715,32 @@ syJmp_buf           readJmpError;
         }
     }
 
-    /* close the output file again, and return nothing                     */
-    if ( ! CloseOutput() ) {
-        ErrorQuit( "PrintTo: cannot close output", 0L, 0L );
-        return 0;
-    }
-
     return 0;
 }
 
-
-/****************************************************************************
-**
-*F  FuncPRINT_TO_STREAM( <self>, <args> ) . . . . . . . . . . .  print <args>
-*/
-Obj FuncPRINT_TO_STREAM (
-    Obj                 self,
-    Obj                 args )
+static Obj PRINT_OR_APPEND_TO(Obj args, int append)
 {
-    volatile Obj        arg;
-    volatile Obj        stream;
-    volatile UInt       i;
-    syJmp_buf             readJmpError;
-
-    /* first entry is the stream                                           */
-    stream = ELM_LIST(args,1);
-
-    /* try to open the file for output                                     */
-    if ( ! OpenOutputStream(stream) ) {
-        ErrorQuit( "PrintTo: cannot open stream for output", 0L, 0L );
-        return 0;
-    }
-
-    /* print all the arguments, take care of strings and functions         */
-    for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
-        arg = ELM_LIST(args,i);
-
-        /* if an error occurs stop printing                                */
-        memcpy( readJmpError, ReadJmpError, sizeof(syJmp_buf) );
-        if ( ! READ_ERROR() ) {
-            if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
-                PrintString1(arg);
-            }
-            else if ( IS_STRING_REP(arg) ) {
-                PrintString1(arg);
-            }
-            else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-                PrintObjFull = 1;
-                PrintFunction( arg );
-                PrintObjFull = 0;
-            }
-            else {
-                PrintObj( arg );
-            }
-        }
-        else {
-            CloseOutput();
-            memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
-            ReadEvalError();
-        }
-        memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
-    }
-
-    /* close the output file again, and return nothing                     */
-    if ( ! CloseOutput() ) {
-        ErrorQuit( "PrintTo: cannot close output", 0L, 0L );
-        return 0;
-    }
-
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*F  FuncAPPEND_TO( <self>, <args> ) . . . . . . . . . . . . . . append <args>
-*/
-Obj FuncAPPEND_TO (
-    Obj                 self,
-    Obj                 args )
-{
+    const char          *funcname = append ? "AppendTo" : "PrintTo";
     volatile Obj        arg;
     volatile Obj        filename;
     volatile UInt       i;
-    syJmp_buf             readJmpError;
+    syJmp_buf           readJmpError;
 
     /* first entry is the filename                                         */
     filename = ELM_LIST(args,1);
     while ( ! IsStringConv(filename) ) {
         filename = ErrorReturnObj(
-            "AppendTo: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
+            "%s: <filename> must be a string (not a %s)",
+            (Int)funcname, (Int)TNAM_OBJ(filename),
             "you can replace <filename> via 'return <filename>;'" );
     }
 
     /* try to open the file for output                                     */
-    if ( ! OpenAppend( CSTR_STRING(filename) ) ) {
-        ErrorQuit( "AppendTo: cannot open '%s' for output",
-                   (Int)CSTR_STRING(filename), 0L );
+    i = append ? OpenAppend( CSTR_STRING(filename) )
+               : OpenOutput( CSTR_STRING(filename) );
+    if ( ! i ) {
+        ErrorQuit( "%s: cannot open '%s' for output",
+                   (Int)funcname, (Int)CSTR_STRING(filename) );
         return 0;
     }
 
@@ -953,7 +776,7 @@ Obj FuncAPPEND_TO (
 
     /* close the output file again, and return nothing                     */
     if ( ! CloseOutput() ) {
-        ErrorQuit( "AppendTo: cannot close output", 0L, 0L );
+        ErrorQuit( "%s: cannot close output", (Int)funcname, 0L );
         return 0;
     }
 
@@ -961,25 +784,22 @@ Obj FuncAPPEND_TO (
 }
 
 
-/****************************************************************************
-**
-*F  FuncAPPEND_TO_STREAM( <self>, <args> )  . . . . . . . . . . append <args>
-*/
-Obj FuncAPPEND_TO_STREAM (
-    Obj                 self,
-    Obj                 args )
+static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
 {
+    const char          *funcname = append ? "AppendTo" : "PrintTo";
     volatile Obj        arg;
     volatile Obj        stream;
     volatile UInt       i;
-    syJmp_buf             readJmpError;
+    syJmp_buf           readJmpError;
 
     /* first entry is the stream                                           */
     stream = ELM_LIST(args,1);
 
     /* try to open the file for output                                     */
-    if ( ! OpenAppendStream(stream) ) {
-        ErrorQuit( "AppendTo: cannot open stream for output", 0L, 0L );
+    i = append ? OpenAppendStream(stream)
+               : OpenOutputStream(stream);
+    if ( ! i ) {
+        ErrorQuit( "%s: cannot open stream for output", (Int)funcname, 0L );
         return 0;
     }
 
@@ -1015,14 +835,61 @@ Obj FuncAPPEND_TO_STREAM (
 
     /* close the output file again, and return nothing                     */
     if ( ! CloseOutput() ) {
-        ErrorQuit( "AppendTo: cannot close output", 0L, 0L );
+        ErrorQuit( "%s: cannot close output", (Int)funcname, 0L );
         return 0;
     }
 
     return 0;
 }
 
-Obj FuncSetOutput (
+/****************************************************************************
+**
+*F  FuncPRINT_TO( <self>, <args> )  . . . . . . . . . . . . . .  print <args>
+*/
+Obj FuncPRINT_TO (
+    Obj                 self,
+    Obj                 args )
+{
+    return PRINT_OR_APPEND_TO(args, 0);
+}
+
+
+/****************************************************************************
+**
+*F  FuncPRINT_TO_STREAM( <self>, <args> ) . . . . . . . . . . .  print <args>
+*/
+Obj FuncPRINT_TO_STREAM (
+    Obj                 self,
+    Obj                 args )
+{
+    return PRINT_OR_APPEND_TO_STREAM(args, 0);
+}
+
+
+/****************************************************************************
+**
+*F  FuncAPPEND_TO( <self>, <args> ) . . . . . . . . . . . . . . append <args>
+*/
+Obj FuncAPPEND_TO (
+    Obj                 self,
+    Obj                 args )
+{
+    return PRINT_OR_APPEND_TO(args, 1);
+}
+
+
+/****************************************************************************
+**
+*F  FuncAPPEND_TO_STREAM( <self>, <args> )  . . . . . . . . . . append <args>
+*/
+Obj FuncAPPEND_TO_STREAM (
+    Obj                 self,
+    Obj                 args )
+{
+    return PRINT_OR_APPEND_TO_STREAM(args, 1);
+}
+
+Obj FuncSET_OUTPUT (
     Obj                 self,
     Obj                 file,
     Obj                 append    )
@@ -1031,14 +898,14 @@ Obj FuncSetOutput (
     if ( IsStringConv(file) ) {
         if ( append != False ) {
           if ( ! OpenAppend( CSTR_STRING(file) ) ) {
-             ErrorQuit( "SetOutput: cannot open '%s' for appending",
+             ErrorQuit( "SET_OUTPUT: cannot open '%s' for appending",
                                   (Int)CSTR_STRING(file), 0L );
           } else {
              return 0;
           }
         } else {
           if ( ! OpenOutput( CSTR_STRING(file) ) ) {
-             ErrorQuit( "SetOutput: cannot open '%s' for output",
+             ErrorQuit( "SET_OUTPUT: cannot open '%s' for output",
                                   (Int)CSTR_STRING(file), 0L );
           } else {
             return 0;
@@ -1047,13 +914,13 @@ Obj FuncSetOutput (
     } else {  /* an open stream */
         if ( append != False ) {
           if ( ! OpenAppendStream( file ) ) {
-             ErrorQuit( "SetOutput: cannot open stream for appending", 0L, 0L );
+             ErrorQuit( "SET_OUTPUT: cannot open stream for appending", 0L, 0L );
           } else {
              return 0;
           }
         } else {
           if ( ! OpenOutputStream( file ) ) {
-             ErrorQuit( "SetOutput: cannot open stream for output", 0L, 0L );
+             ErrorQuit( "SET_OUTPUT: cannot open stream for output", 0L, 0L );
           } else {
             return 0;
           }
@@ -1061,11 +928,12 @@ Obj FuncSetOutput (
     }
     return 0;
 }
-     
-Obj FuncSetPreviousOutput( Obj self ) {
+
+Obj FuncSET_PREVIOUS_OUTPUT( Obj self ) {
     /* close the current output stream, and return nothing  */
+
     if ( ! CloseOutput() ) {
-        ErrorQuit( "SetPreviousOutput: cannot close output", 0L, 0L );
+        ErrorQuit( "SET_PREVIOUS_OUTPUT: cannot close output", 0L, 0L );
         return 0;
     }
     return 0;
@@ -1074,12 +942,14 @@ Obj FuncSetPreviousOutput( Obj self ) {
 /****************************************************************************
 **
 *F  FuncREAD( <self>, <filename> )  . . . . . . . . . . . . . . . read a file
+**
+**  Read the current input and close the input stream.
 */
 Obj FuncREAD (
     Obj                 self,
     Obj                 filename )
 {
-    /* check the argument                                                  */
+   /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "READ: <filename> must be a string (not a %s)",
@@ -1101,7 +971,11 @@ Obj FuncREAD (
 /****************************************************************************
 **
 *F  FuncREAD_NORECOVERY( <self>, <filename> )  . . .  . . . . . . read a file
-**  disabling the automatic recovery to a live prompt after quit.
+**
+** Read the current input and close the input stream. Disable the normal 
+** mechanism which ensures that quitting from a break loop gets you back to a 
+** live prompt. This is initially designed for the files read from the command 
+** line
 */
 Obj FuncREAD_NORECOVERY (
     Obj                 self,
@@ -1122,8 +996,7 @@ Obj FuncREAD_NORECOVERY (
 
     SySetBuffering(Input->file);
    
-    /* read the  file 
-     */
+    /* read the file */
     switch (READ_NORECOVERY()) {
     case 0: return False;
     case 1: return True;
@@ -1159,8 +1032,6 @@ Obj FuncREAD_STREAM_LOOP (
     Obj                 stream,
     Obj                 catcherrstdout )
 {
-    Obj ret;
-
     /* try to open the file                                                */
     if ( ! OpenInputStream(stream) ) {
         return False;
@@ -1172,9 +1043,9 @@ Obj FuncREAD_STREAM_LOOP (
 
 
     /* read the test file                                                  */
-    ret = READ_LOOP() ? True : False;
+    READ_LOOP();
     IgnoreStdoutErrout = NULL;
-    return ret;
+    return True;
 }
 
 
@@ -1200,7 +1071,8 @@ Obj FuncREAD_TEST (
     }
 
     /* read the test file                                                  */
-    return READ_TEST() ? True : False;
+    READ_TEST();
+    return True;
 }
 
 
@@ -1218,7 +1090,8 @@ Obj FuncREAD_TEST_STREAM (
     }
 
     /* read the test file                                                  */
-    return READ_TEST() ? True : False;
+    READ_TEST();
+    return True;
 }
 
 
@@ -1827,17 +1700,17 @@ Obj FuncREAD_LINE_FILE (
     while (1) {
       c = SyGetc(fidc);
       if (i == len) {
-	len = GrowString(str, len+1);
-	p = CHARS_STRING(str);
+        len = GrowString(str, len+1);
+        p = CHARS_STRING(str);
       }
       if (c == '\n') {
-	p[i++] = (UInt1)c;
-	break;
+        p[i++] = (UInt1)c;
+        break;
       }
       else if (c == EOF) 
-	break;
+        break;
       else {
-	p[i++] = (UInt1)c;
+        p[i++] = (UInt1)c;
       }
     }
     ResizeBag( str, SIZEBAG_STRINGLEN(i) );
@@ -1871,18 +1744,18 @@ Obj FuncREAD_LINE_FILE (
     len = 0;
     while (1) {
       if ( len > 0 && !HasAvailableBytes(ifid))
-	break;
+        break;
       len += 255;
       GROW_STRING( str, len );
       if ( SyFgetsSemiBlock( buf, 256, ifid ) == 0 )
-	break;
+        break;
       buflen = strlen(buf);
       lstr = GET_LEN_STRING(str);
       cstr = CSTR_STRING(str) + lstr;
       memcpy( cstr, buf, buflen+1 );
       SET_LEN_STRING(str, lstr+buflen);
       if ( buf[buflen-1] == '\n' )
-	break;
+        break;
     }
 
     /* fix the length of <str>                                             */
@@ -2054,6 +1927,11 @@ Obj FuncSEEK_POSITION_FILE (
             "you can replace <pos> via 'return <pos>;'" );
     }
     
+    if (syBuf[INT_INTOBJ(fid)].bufno >= 0)
+    {
+            syBuffers[syBuf[INT_INTOBJ(fid)].bufno].buflen = 0;
+            syBuffers[syBuf[INT_INTOBJ(fid)].bufno].bufstart = 0;
+    }
     ret = SyFseek( INT_INTOBJ(fid), INT_INTOBJ(pos) );
     return ret == -1 ? Fail : True;
 }
@@ -2476,11 +2354,11 @@ static StructGVarFunc GVarFuncs [] = {
     { "APPEND_TO_STREAM", -1L, "args",
       FuncAPPEND_TO_STREAM, "src/streams.c:APPEND_TO_STREAM" },
 
-    { "SetOutput", 2, "file, app",
-      FuncSetOutput, "src/streams.c:SetOutput" },
+    { "SET_OUTPUT", 2, "file, app",
+      FuncSET_OUTPUT, "src/streams.c:SET_OUTPUT" },
 
-    { "SetPreviousOutput", 0, "",
-      FuncSetPreviousOutput, "src/streams.c:SetPreviousOutput" },
+    { "SET_PREVIOUS_OUTPUT", 0, "",
+      FuncSET_PREVIOUS_OUTPUT, "src/streams.c:SET_PREVIOUS_OUTPUT" },
 
     { "TmpName", 0L, "",
       FuncTmpName, "src/streams.c:TmpName" },
@@ -2645,7 +2523,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoStreams ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

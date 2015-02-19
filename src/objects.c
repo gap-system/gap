@@ -42,13 +42,13 @@
 /****************************************************************************
 **
 
-*F  FamilyTypeHandler( <self>, <kind> ) . . . . . . handler for 'FAMILY_TYPE'
+*F  FamilyTypeHandler( <self>, <type> ) . . . . . . handler for 'FAMILY_TYPE'
 */
 Obj FamilyTypeHandler (
     Obj                 self,
-    Obj                 kind )
+    Obj                 type )
 {
-    return FAMILY_TYPE( kind );
+    return FAMILY_TYPE( type );
 }
 
 
@@ -67,13 +67,13 @@ Obj FamilyObjHandler (
 /****************************************************************************
 **
 
-*F  TYPE_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . kind of an object
+*F  TYPE_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . type of an object
 **
-**  'TYPE_OBJ' returns the kind of the object <obj>.
+**  'TYPE_OBJ' returns the type of the object <obj>.
 **
 **  'TYPE_OBJ' is defined in the declaration part of this package.
 */
-Obj (*TypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
+Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 Obj TypeObjError (
     Obj                 obj )
@@ -106,7 +106,7 @@ Obj TypeObjHandler (
 **
 **  'IS_MUTABLE_OBJ' is defined in the declaration part of this package.
 */
-Int (*IsMutableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
+Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 Obj IsMutableObjFilt;
 
@@ -153,7 +153,7 @@ Obj IsMutableObjHandler (
 **
 **  'IS_COPYABLE_OBJ' is defined in the declaration part of this package.
 */
-Int (*IsCopyableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
+Int (*IsCopyableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 Obj IsCopyableObjFilt;
 
@@ -196,7 +196,7 @@ Obj IsCopyableObjHandler (
 
 *V  ShallowCopyObjFuncs[<type>] . . . . . . . . . .  shallow copier functions
 */
-Obj (*ShallowCopyObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
+Obj (*ShallowCopyObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 Obj ShallowCopyObjOper;
 
@@ -1087,14 +1087,14 @@ Obj             IS_COMOBJ_Handler (
 
 /****************************************************************************
 **
-*F  SET_TYPE_COMOBJ_Handler( <self>, <obj>, <kind> ) . . .  'SET_TYPE_COMOBJ'
+*F  SET_TYPE_COMOBJ_Handler( <self>, <obj>, <type> ) . . .  'SET_TYPE_COMOBJ'
 */
 Obj SET_TYPE_COMOBJ_Handler (
     Obj                 self,
     Obj                 obj,
-    Obj                 kind )
+    Obj                 type )
 {
-    TYPE_COMOBJ( obj ) = kind;
+    TYPE_COMOBJ( obj ) = type;
     RetypeBag( obj, T_COMOBJ );
     CHANGED_BAG( obj );
     return obj;
@@ -1127,14 +1127,14 @@ Obj IS_POSOBJ_Handler (
 
 /****************************************************************************
 **
-*F  SET_TYPE_POSOBJ_Handler( <self>, <obj>, <kind> )  . . .  'SET_TYPE_POSOB'
+*F  SET_TYPE_POSOBJ_Handler( <self>, <obj>, <type> )  . . .  'SET_TYPE_POSOB'
 */
 Obj SET_TYPE_POSOBJ_Handler (
     Obj                 self,
     Obj                 obj,
-    Obj                 kind )
+    Obj                 type )
 {
-    TYPE_POSOBJ( obj ) = kind;
+    TYPE_POSOBJ( obj ) = type;
     RetypeBag( obj, T_POSOBJ );
     CHANGED_BAG( obj );
     return obj;
@@ -1179,14 +1179,14 @@ Obj             IS_DATOBJ_Handler (
 
 /****************************************************************************
 **
-*F  SET_TYPE_DATOBJ_Handler( <self>, <obj>, <kind> ) . . .  'SET_TYPE_DATOBJ'
+*F  SET_TYPE_DATOBJ_Handler( <self>, <obj>, <type> ) . . .  'SET_TYPE_DATOBJ'
 */
 Obj SET_TYPE_DATOBJ_Handler (
     Obj                 self,
     Obj                 obj,
-    Obj                 kind )
+    Obj                 type )
 {
-    TYPE_DATOBJ( obj ) = kind;
+    TYPE_DATOBJ( obj ) = type;
     RetypeBag( obj, T_DATOBJ );
     CHANGED_BAG( obj );
     return obj;
@@ -1223,11 +1223,9 @@ Obj IsIdenticalHandler (
 **  No saving function may allocate any bag
 */
 
-void (*SaveObjFuncs[ 256 ]) (Obj obj);
+void (*SaveObjFuncs[256]) ( Obj obj );
 
-void SaveObjError (
-                   Obj obj
-                   )
+void SaveObjError( Obj obj )
 {
   ErrorQuit(
             "Panic: tried to save an object of unknown type '%d'",
@@ -1252,11 +1250,9 @@ void SaveObjError (
 **  No loading function may allocate any bag
 */
 
-void (*LoadObjFuncs[ 256 ]) (Bag bag);
+void (*LoadObjFuncs[256]) ( Obj obj );
 
-void LoadObjError (
-                   Obj obj
-                   )
+void LoadObjError( Obj obj )
 {
   ErrorQuit(
             "Panic: tried to load an object of unknown type '%d'",
@@ -1512,7 +1508,7 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "FAMILY_TYPE", 1, "kind",
+    { "FAMILY_TYPE", 1, "type",
       FamilyTypeHandler, "src/objects.c:FAMILY_TYPE" },
 
     { "TYPE_OBJ", 1, "obj",
@@ -1784,7 +1780,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoObjects ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

@@ -1269,10 +1269,14 @@ BindGlobal("SMALL_RINGS_DATA",
 );
 
 InstallGlobalFunction(NumberSmallRings,function(x)
-  if not (IsPosInt(x) and IsBound(NUMBER_SMALL_RINGS[x])) then
-    return 0;
+  if IsPosInt(x) then
+    if IsBound(NUMBER_SMALL_RINGS[x]) then
+      return NUMBER_SMALL_RINGS[x];
+    else
+      Error("the library of rings of size ", x, " is not available");
+    fi;
   else
-    return NUMBER_SMALL_RINGS[x];
+    Error("NumberSmallRings: the argument should be a positive integer");
   fi;
 end);
 

@@ -19,7 +19,7 @@ cat $input - > $input0 <<EOF
 LogTo();
 quit;
 EOF
-gap -N -A -x 80 < $input0 > /dev/null
+gap -A -x 80 < $input0 > /dev/null
 cat > $sedscript <<EOF
 s/^gap> #/#/
 s/^gap> \+$//

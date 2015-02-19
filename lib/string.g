@@ -150,6 +150,26 @@ DeclareRepresentationKernel( "IsStringRep",
 ##
 BIND_GLOBAL( "ConvertToStringRep", CONV_STRING );
 
+#############################################################################
+##
+#F  CopyToStringRep( <obj> ) . . . . . . . . . . . . . . .  copy conversion
+##
+##  <#GAPDoc Label="CopyToStringRep">
+##  <ManSection>
+##  <Func Name="CopyToStringRep" Arg='obj'/>
+##
+##  <Description>
+##  If <A>obj</A> is a dense internally represented list of characters then
+##  <Ref Func="CopyToStringRep"/> copies <A>obj</A> to a new object with
+##  representation 
+##  <Ref Func="IsStringRep"/>.
+##  If <A>obj</A> is not a string then <Ref Func="CopyToStringRep"/>
+##  signals an error.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "CopyToStringRep", COPY_TO_STRING_REP );
 
 #############################################################################
 ##
@@ -318,7 +338,8 @@ InstallMethod( String,
 ##  </ManSection>
 ##  
 BIND_GLOBAL("USER_HOME_EXPAND", function(str)
-  if Length(str) > 0 and str[1] = '~' and Length( GAPInfo.UserHome ) > 0 then
+  if Length(str) > 0 and str[1] = '~' and IsString(GAPInfo.UserHome) and
+     Length( GAPInfo.UserHome ) > 0 then
     return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
   else
     return str;

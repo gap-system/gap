@@ -59,8 +59,8 @@ see&nbsp;<Ref Func="DefaultRing" Label="for ring elements"/>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Ideals in Rings">
-<Heading>Ideals in Rings</Heading>
+<Section Label="Ideals of Rings">
+<Heading>Ideals of Rings</Heading>
 
 <#Include Label="[1]{ideal}">
 <#Include Label="TwoSidedIdeal">
@@ -177,6 +177,21 @@ see <Ref Sect="Homomorphisms of Algebras"/>.
 <#Include Label="RingHomomorphismByImagesNC">
 <!-- Are ring-with-one homomorphisms not supported? -->
 <#Include Label="NaturalHomomorphismByIdeal">
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Small Rings">
+<Heading>Small Rings</Heading>
+
+&GAP; contains a library of small (order up to 15) rings.
+
+<#Include Label="SmallRing">
+<#Include Label="NumberSmallRings">
+<#Include Label="Subrings">
+<#Include Label="Ideals">
+<#Include Label="DirectSum">
+<#Include Label="RingByStructureConstants">
+
 
 </Section>
 </Chapter>

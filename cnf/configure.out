@@ -4435,16 +4435,12 @@ if ${gp_cv_ldflags+:} false; then :
   $as_echo_n "(cached) " >&6
 else
    case "$host-$CC" in
-    *-apple-darwin11*-gcc* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
-    *-apple-darwin12*-gcc* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
-    *-apple-darwin1*-mpicc* )
+    *-darwin[6-9].* | *-darwin10.* )
+        gp_cv_ldflags="-g ${ABI_CFLAGS}";;
+    *-darwin* )
         gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-gcc* | *-egcs )
         gp_cv_ldflags="-g ${ABI_CFLAGS}";;
-    *-apple-darwin*-clang* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-clang* )
         gp_cv_ldflags="-g -rdynamic ${ABI_CFLAGS}";;
     *-icc* )
@@ -4478,7 +4474,7 @@ else
     *-hpux-gcc )
         gp_cv_prog_cc_cdynoptions="-fpic -Wall ${ABI_CFLAGS}";;
     *-gcc* | *-egcs )
-        gp_cv_prog_cc_cdynoptions="-fpic -Wall -O2 ${ABI_CFLAGS}";;
+        gp_cv_prog_cc_cdynoptions="-fPIC -Wall -O2 ${ABI_CFLAGS}";;
     *-clang* )
         gp_cv_prog_cc_cdynoptions="-fPIC -Wall ${ABI_CFLAGS} -Wno-unused-value";;
     *-icc* )
@@ -4490,7 +4486,7 @@ else
     *-irix* )
         gp_cv_prog_cc_cdynoptions=" -O3 -woff 1110,1167,1174,1552";;
 
-    * )            gp_cv_prog_cc_cdynoptions="-fpic -O2 ${ABI_CFLAGS}";;
+    * )            gp_cv_prog_cc_cdynoptions="-fPIC -O2 ${ABI_CFLAGS}";;
    esac
 
 fi
@@ -4502,22 +4498,8 @@ if ${gp_cv_prog_cc_cdynlinker+:} false; then :
   $as_echo_n "(cached) " >&6
 else
    case "$host-$CC" in
-    i686-pc-cygwin-gcc* )
+    *-gcc* | *-clang* | *-egcs | *-icc* )
         gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-apple-darwin*gcc* )
-        gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-gcc* )
-        gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-clang* )
-        gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-egcs )
-        gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-icc* )
-        gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-next-nextstep-cc )
-        gp_cv_prog_cc_cdynlinker="cc";;
-    *-osf*-cc )
-        gp_cv_prog_cc_cdynlinker="cc";;
     *-irix* )
         gp_cv_prog_cc_cdynlinker="ld";;
 
@@ -4570,8 +4552,6 @@ else
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_prog_cc_cdynlinking" >&5
 $as_echo "$gp_cv_prog_cc_cdynlinking" >&6; }
-
-
 
 
 CDYNOPTIONS=$gp_cv_prog_cc_cdynoptions
@@ -5134,7 +5114,7 @@ done
 
 
 
-for ac_func in atol strlcpy strlcmp
+for ac_func in atol strlcpy strlcmp strlcat
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -5476,7 +5456,7 @@ done
 
 
 
-for ac_func in ttyname strerror select
+for ac_func in ttyname select
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -5488,37 +5468,6 @@ _ACEOF
 fi
 done
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for sys_errlist" >&5
-$as_echo_n "checking for sys_errlist... " >&6; }
-if ${gp_cv_var_sys_errlist+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-int *p;
-int
-main ()
-{
-extern int sys_errlist; p = &sys_errlist;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  gp_cv_var_sys_errlist=yes
-else
-  gp_cv_var_sys_errlist=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_var_sys_errlist" >&5
-$as_echo "$gp_cv_var_sys_errlist" >&6; }
-if test x"$gp_cv_var_sys_errlist" = xyes; then
-
-$as_echo "#define HAVE_SYS_ERRLIST 1" >>confdefs.h
-
-fi
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stat file-mode macros are broken" >&5
@@ -5809,7 +5758,53 @@ if test "x$with_readline" != xno; then
   fi
 
   # TODO: Should also check for headers
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for initscr in -lncurses" >&5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for rl_gnu_readline_p in -lreadline" >&5
+$as_echo_n "checking for rl_gnu_readline_p in -lreadline... " >&6; }
+if ${ac_cv_lib_readline_rl_gnu_readline_p+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lreadline  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char rl_gnu_readline_p ();
+int
+main ()
+{
+return rl_gnu_readline_p ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_readline_rl_gnu_readline_p=yes
+else
+  ac_cv_lib_readline_rl_gnu_readline_p=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_readline_rl_gnu_readline_p" >&5
+$as_echo "$ac_cv_lib_readline_rl_gnu_readline_p" >&6; }
+if test "x$ac_cv_lib_readline_rl_gnu_readline_p" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBREADLINE 1
+_ACEOF
+
+  LIBS="-lreadline $LIBS"
+
+else
+
+    unset ac_cv_lib_readline_rl_gnu_readline_p
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for initscr in -lncurses" >&5
 $as_echo_n "checking for initscr in -lncurses... " >&6; }
 if ${ac_cv_lib_ncurses_initscr+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -5854,7 +5849,7 @@ _ACEOF
 
 fi
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for rl_gnu_readline_p in -lreadline" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for rl_gnu_readline_p in -lreadline" >&5
 $as_echo_n "checking for rl_gnu_readline_p in -lreadline... " >&6; }
 if ${ac_cv_lib_readline_rl_gnu_readline_p+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -5901,6 +5896,8 @@ else
   with_readline=no
 fi
 
+fi
+
 
 fi
 
@@ -5920,18 +5917,61 @@ $as_echo "#define USE_GMP 1" >>confdefs.h
 fi
 
 
-for ac_func in _setjmp sigsetjmp
-do :
-  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
-if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+# sigsetjmp is a macro on some platforms, cannot use AC_CHECK_FUNCS
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for sigsetjmp()" >&5
+$as_echo_n "checking for sigsetjmp()... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <setjmp.h>
+int
+main ()
+{
+sigjmp_buf t; sigsetjmp(t, 0)
+  ;
+  return 0;
+}
 _ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+$as_echo "#define HAVE_SIGSETJMP 1" >>confdefs.h
+
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 
 fi
-done
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
 
+# _setjmp is a macro on some platforms, cannot use AC_CHECK_FUNCS
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for _setjmp()" >&5
+$as_echo_n "checking for _setjmp()... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <setjmp.h>
+int
+main ()
+{
+sigjmp_buf t; _setjmp(t, 0)
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+$as_echo "#define HAVE__SETJMP 1" >>confdefs.h
+
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
 
 
 case "$host" in

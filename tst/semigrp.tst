@@ -129,16 +129,15 @@ gap> ########################
 gap> f := FreeGroup("a");;
 gap> g := f/[f.1^4];;
 gap> phi := InjectionZeroMagma(g);
-MappingByFunction( <fp group of size 4 on the generators 
-[ a ]>, <<fp group of size 4 on the generators 
+MappingByFunction( <fp group on the generators 
+[ a ]>, <<fp group on the generators 
 [ a ]> with 0 adjoined>, function( elt ) ... end, function( x ) ... end )
 gap> m := Range(phi);
-<<fp group of size 4 on the generators [ a ]> with 0 adjoined>
+<<fp group on the generators [ a ]> with 0 adjoined>
 gap> el := Elements(m);;
 gap> Size(m)=5;
 true
-gap> c := MagmaCongruenceByGeneratingPairs(m,[[el[2],el[3]]]);
-<semigroup congruence with 1 generating pairs>
+gap> c := MagmaCongruenceByGeneratingPairs(m,[[el[2],el[3]]]);;
 gap> EquivalenceRelationPartition(c);
 [ [ <group with 0 adjoined elt: <identity ...>>, 
       <group with 0 adjoined elt: a>, <group with 0 adjoined elt: a^2>, 

@@ -665,60 +665,6 @@ end );
 DeclareGlobalFunction( "Edit" );
 
 
-#############################################################################
-##
-#F  CreateCompletionFiles( [<path>] ) . . . . . . create "lib/readX.co" files
-##
-##  NO LONGER SUPPORTED IN GAP >= 4.5 
-##  <#GAPDoc Label="CreateCompletionFiles">
-##  <ManSection>
-##  <Func Name="CreateCompletionFiles" Arg='[path]'/>
-##
-##  <Description>
-##  To create completion files you must have write permissions to
-##  <A>path</A>, which defaults to the first &GAP; root directory.
-##  Start &GAP; with the <C>-N</C> option (to suppress the reading of any
-##  existing completion files),
-##  then execute the command <C>CreateCompletionFiles( <A>path</A> );</C>,
-##  where <A>path</A> is a string giving a path to the home directory of
-##  &GAP; (the  directory containing the <F>lib</F> directory).
-##  <P/>
-##  If you want to call <Ref Func="CreateCompletionFiles"/> without arguments
-##  then you should start &GAP; with the <C>-r</C> option,
-##  since otherwise &GAP; will try to create the completion files in the
-##  directory <F>~/.gap/lib</F>, see <Ref Sect="sect:gap.ini"/>.
-##  <P/>
-##  This produces, in addition to lots of informational output,
-##  the completion files.
-##  <P/>
-##  <Log><![CDATA[
-##  $ gap4 -N -r
-##  gap> CreateCompletionFiles();
-##  #I  converting "gap4/lib/read2.g" to "gap4/lib/read2.co"
-##  #I    parsing "gap4/lib/process.gd"
-##  #I    parsing "gap4/lib/listcoef.gi"
-##  ...
-##  ]]></Log>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareGlobalFunction( "CreateCompletionFiles" );
-
-
-#############################################################################
-##
-#O  CheckCompletionFiles()  . . . . . . . . . . .  check the completion files
-##
-##  <ManSection>
-##  <Oper Name="CheckCompletionFiles" Arg=''/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-## DeclareGlobalFunction("CheckCompletionFiles");
-
 # the character set definitions might be needed when processing files, thus
 # they must come earlier.
 BIND_GLOBAL("CHARS_DIGITS",Immutable(SSortedList("0123456789")));

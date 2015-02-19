@@ -4,13 +4,49 @@
 ##
 ##
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
-#Y  Copyright (C) 2002 The GAP Group
+#Y  Copyright (C) 2002,2013 The GAP Group
 ##
 ##  This file contains functions that compute the conjugacy classes of a
 ##  finite group by homomorphic images.
 ##  Literature: A.H: Conjugacy classes in finite permutation groups via
-##  homomorphic images, MathComp, to appear.
+##  homomorphic images, MathComp
 ##
+
+
+# get classes from classical group if possible.
+BindGlobal("ClassesFromClassical",function(G)
+local H,hom,d,cl;
+  if IsPermGroup(G) and (IsNaturalAlternatingGroup(G)  or
+    IsNaturalSymmetricGroup(G)) then
+    return ConjugacyClasses(G); # there is a method for this
+  fi;
+  if not IsSimpleGroup(PerfectResiduum(G)) then
+    return fail;
+  fi;
+  d:=DataAboutSimpleGroup(PerfectResiduum(G));
+  if d.idSimple.series<>"L" then
+    return fail;
+  fi;
+  hom:=EpimorphismFromClassical(G);
+  if hom=fail then
+    return fail;
+  fi;
+  # so far matrix classes only implemented for GL/SL
+  if not (IsNaturalGL(Source(hom)) or IsNaturalSL(Source(hom))) then
+    return fail;
+  fi;
+
+  cl:=ClassesProjectiveImage(hom);
+  if HasConjugacyClasses(G) then
+    cl:=ConjugacyClasses(G); # will have been set
+  elif G=Image(hom) then
+    cl:=ConjugacyClasses(Image(hom)); # will have been set
+  else
+    Info(InfoWarning,1,"Weird class storage");
+    return fail;
+  fi;
+  return cl;
+end);
 
 #############################################################################
 ##
@@ -147,11 +183,11 @@ local clT,	# classes T
   isdirprod:=Size(M)=Size(autT)^n;
 
   # classes of T
-  if IsNaturalSymmetricGroup(T) or IsNaturalAlternatingGroup(T) then
-    clT:=ConjugacyClasses(T);
-  else
+  clT:=ClassesFromClassical(T);
+  if clT=fail then
     clT:=ConjugacyClassesByRandomSearch(T);
   fi;
+
   clT:=List(clT,i->[Representative(i),Centralizer(i)]);
   lcl:=Length(clT);
   Info(InfoHomClass,1,"found ",lcl," classes in almost simple");
@@ -1076,11 +1112,12 @@ local cs,	# chief series of G
 
 	C:=KernelOfMultiplicativeGeneralMapping(Fhom);
 	F:=Image(Fhom,G);
-	if IsNaturalSymmetricGroup(F) or IsNaturalAlternatingGroup(F) then
-	  clF:=ConjugacyClasses(F);
-	else
+
+	clF:=ClassesFromClassical(F);
+	if clF=fail then
 	  clF:=ConjugacyClassesByRandomSearch(F);
 	fi;
+
 	clF:=List(clF,j->[Representative(j),StabilizerOfExternalSet(j)]);
 
       else
@@ -1107,6 +1144,11 @@ local cs,	# chief series of G
 
 	# find a permutation rep. for S-action on T[1]
 	Thom:=NaturalHomomorphismByNormalSubgroupNC(T[1],N);
+	T1:=Image(Thom);
+	if not IsSubset([1..NrMovedPoints(T1)],
+	                 MovedPoints(T1)) then
+	  Thom:=Thom*ActionHomomorphism(T1,MovedPoints(T1),"surjective");
+	fi;
 	T1:=Image(Thom,T[1]);
 	autos:=List(GeneratorsOfGroup(S),
 		  i->GroupHomomorphismByImagesNC(T1,T1,GeneratorsOfGroup(T1),
@@ -1185,11 +1227,12 @@ local cs,	# chief series of G
 	  FM:=Image(Fhom,M);
 	  Info(InfoHomClass,1,
 	      "classes by random search in almost simple group");
-	  if IsNaturalSymmetricGroup(F) or IsNaturalAlternatingGroup(F) then
-	    clF:=ConjugacyClasses(F);
-	  else
+
+	  clF:=ClassesFromClassical(F);
+	  if clF=fail then
 	    clF:=ConjugacyClassesByRandomSearch(F);
 	  fi;
+
 	  clF:=List(clF,j->[Representative(j),StabilizerOfExternalSet(j)]);
 	fi;
       fi; # true orbit of T.
@@ -2135,7 +2178,9 @@ BindGlobal("LiftClassesEATrivRep",
       od;
       i:=i+1;
     od;
-if miss<>1 then Error("HEH?");fi;
+if miss<>1 then 
+  # something is dodgy -- fallback to the default algorithm
+  return fail;Error("HEH?");fi;
     Info(InfoHomClass,3,"Fused ",Length(norb),"*",norb[1].len," ",
       Number(orb,x->IsBound(x))," left");
     Assert(0,ForAll(rsgens,x->norb[1].rep*bas*npcgsact(x)*basinv=norb[1].rep));
@@ -2403,8 +2448,8 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
 
   mappingelm:=function(orb,pos)
   local mc,mcf,i;
-    mc:=One(orb.stabfacgens[1]);
-    mcf:=One(orb.stabfacimgs[1]);
+    mc:=One(Source(hom));
+    mcf:=One(Range(hom));
     for i in orb.repwords[pos] do
       mc:=mc*orb.gens[i];
       mcf:=mcf*orb.fgens[i];
@@ -2671,7 +2716,8 @@ local r,	#radical
     if not IsBound(f!.someClassReps) then
       f!.someClassReps:=[ConjugacyClass(f,One(f))]; # identity first
     fi;
-    if HasConjugacyClasses(f) then
+    if HasConjugacyClasses(f) and
+      Length(f!.someClassReps)<Length(ConjugacyClasses(f)) then
       # expand the list of stored factor classes for once.
       cl:=Filtered(ConjugacyClasses(f),x-> not ForAny(f!.someClassReps,
 	   y->Order(Representative(x))=Order(Representative(y))
@@ -2884,8 +2930,12 @@ local cl;
   cl:=ConjugacyClassesForSmallGroup(G);
   if cl<>fail then
     return cl;
-  elif IsSimpleGroup( G )  then
-    return ConjugacyClassesByRandomSearch( G );
+  elif IsSimpleGroup( G ) then
+    cl:=ClassesFromClassical(G);
+    if cl=fail then
+      cl:=ConjugacyClassesByRandomSearch( G );
+    fi;
+    return cl;
   else
     return ConjugacyClassesViaRadical(G);
   fi;

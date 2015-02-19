@@ -98,7 +98,7 @@ InstallMethod( ViewString,
     if IsEmpty( GeneratorsOfMagmaWithInverses( M ) ) then
       return "<trivial magma-with-inverses>";
     else
-      STRINGIFY( "<magma-with-inverses with ",
+      return STRINGIFY( "<magma-with-inverses with ",
              Length( GeneratorsOfMagmaWithInverses( M ) ),
              " generators>" );
     fi;
@@ -727,11 +727,12 @@ InstallMethod( GeneratorsOfMagma,
 function(M)
 local c;
   c:=Concatenation( GeneratorsOfMagmaWithOne( M ), [ One(M) ] );
-  if CanEasilyCompareElements(One(M)) then
+  if CanEasilySortElements(One(M)) then
     return Set(c);
-  else
+  elif CanEasilyCompareElements(One(M)) then
     return Unique(c);
   fi;
+  return c;
 end);
 
 InstallMethod( GeneratorsOfMagma,
@@ -743,11 +744,12 @@ local c;
   c:=Concatenation( GeneratorsOfMagmaWithInverses( M ),
               [ One( M ) ],
               List( GeneratorsOfMagmaWithInverses( M ), Inverse ) );
-  if CanEasilyCompareElements(One(M)) then
+  if CanEasilySortElements(One(M)) then
     return Set(c);
-  else
+  elif CanEasilyCompareElements(One(M)) then
     return Unique(c);
   fi;
+  return c;
 end);
 
 InstallMethod( GeneratorsOfMagma,
@@ -810,11 +812,12 @@ function(M)
 local c;
   c:=Concatenation( GeneratorsOfMagmaWithInverses( M ),
               List( GeneratorsOfMagmaWithInverses( M ), Inverse ) );
-  if CanEasilyCompareElements(One(M)) then
+  if CanEasilySortElements(One(M)) then
     return Set(c);
-  else
+  elif CanEasilyCompareElements(One(M)) then
     return Unique(c);
   fi;
+  return c;
 end);
 
 InstallMethod( GeneratorsOfMagmaWithOne,

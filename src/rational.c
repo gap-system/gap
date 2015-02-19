@@ -72,15 +72,6 @@
 #include        "saveload.h"            /* saving and loading              */
 
 
-/****************************************************************************
-**
-
-*F  NUM_RAT(<rat>)  . . . . . . . . . . . . . . . . . numerator of a rational
-*F  DEN_RAT(<rat>)  . . . . . . . . . . . . . . . . denominator of a rational
-*/
-#define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
-#define DEN_RAT(rat)    ADDR_OBJ(rat)[1]
-
 #if 0
 #define CHECK_RAT(rat) if (TNUM_OBJ(rat) == T_RAT && \
                            GcdInt(NUM_RAT(rat),DEN_RAT(rat)) != INTOBJ_INT(1)) \
@@ -92,9 +83,9 @@
 
 /****************************************************************************
 **
-*F  TypeRat( <rat> )  . . . . . . . . . . . . . . . . . .  kind of a rational
+*F  TypeRat( <rat> )  . . . . . . . . . . . . . . . . . .  type of a rational
 **
-**  'TypeRat' returns the kind of the rational <rat>.
+**  'TypeRat' returns the type of the rational <rat>.
 **
 **  'TypeRat' is the function in 'TypeObjFuncs' for rationals.
 */
@@ -678,9 +669,6 @@ Obj             PowRat (
     Obj                 pow;            /* power                           */
 
     CHECK_RAT(opL);
-    /* raise numerator and denominator seperately                          */
-    numP = PowInt( NUM_RAT(opL), opR );
-    denP = PowInt( DEN_RAT(opL), opR );
 
     /* if <opR> == 0 return 1                                              */
     if ( opR == INTOBJ_INT( 0L ) ) {
@@ -692,7 +680,7 @@ Obj             PowRat (
         pow = opL;
     }
 
-    /* if <opR> is positive raise numberator and denominator seperately    */
+    /* if <opR> is positive raise numerator and denominator seperately    */
     else if ( (TNUM_OBJ(opR) == T_INT && 0 < INT_INTOBJ(opR))
            || TNUM_OBJ(opR) == T_INTPOS ) {
         numP = PowInt( NUM_RAT(opL), opR );
@@ -907,7 +895,7 @@ static Int InitKernel (
     InfoBags[         T_RAT ].name = "rational";
     InitMarkFuncBags( T_RAT, MarkTwoSubBags );
 
-    /* install the kind function                                           */
+    /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_RAT_POS", &TYPE_RAT_POS );
     ImportGVarFromLibrary( "TYPE_RAT_NEG", &TYPE_RAT_NEG );
 
@@ -917,7 +905,7 @@ static Int InitKernel (
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* install a saving function */
+    /* install a saving functions */
     SaveObjFuncs[ T_RAT ] = SaveRat;
     LoadObjFuncs[ T_RAT ] = LoadRat;
 
@@ -1042,7 +1030,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRat ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

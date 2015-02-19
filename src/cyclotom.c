@@ -2163,7 +2163,7 @@ static Int InitKernel (
     /* tell Gasman about the place were we remember the primitive root     */
     InitGlobalBag( &LastECyc, "src/cyclotom.c:LastECyc" );
 
-    /* install the kind function                                           */
+    /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_CYC", &TYPE_CYC );
     TypeObjFuncs[ T_CYC ] = TypeCyc;
 
@@ -2284,7 +2284,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCyc ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

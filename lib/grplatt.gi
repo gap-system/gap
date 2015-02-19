@@ -809,9 +809,9 @@ local s, m, dim, p, field, one, bas, I, l, avoid, li, gens, act, actfun,
 	    if IsAbelian(stb) and
 	      p^Length(GeneratorsOfGroup(stb))=j then
 	      # don't waste too much time
-	      stb:=Group(GeneratorsOfGroup(stb),());
+	      stb:=Group(GeneratorsOfGroup(stb),One(stb));
 	    else
-	      stb:=Group(SmallGeneratingSet(stb),());
+	      stb:=Group(SmallGeneratingSet(stb),One(stb));
 	    fi;
 	    SetSize(stb,j);
 	    Add(rep,rec(representative:=s,normalizer:=stb));
@@ -1798,6 +1798,7 @@ local G,	# group
       firsts,
       still,
       ab,
+      idx,
       T,S,C,A,ji,orb,orbi,cllen,r,o,c,inv,cnt,
       ii,i,j,k;	# loop
 
@@ -1864,7 +1865,7 @@ local G,	# group
 	      j!.lattfpres:=IsomorphismFpGroupByChiefSeriesFactor(j,"x",M);
 	    fi;
 	    ocr.factorfphom:=j!.lattfpres;
-	    Assert(2,KernelOfMultiplicativeGeneralMapping(ocr.factorfphom)=M);
+	    Assert(3,KernelOfMultiplicativeGeneralMapping(ocr.factorfphom)=M);
 
 	    # we want only normal complements. Therefore the 1-Coboundaries must
 	    # be trivial. We compute these first.
@@ -1896,7 +1897,7 @@ local G,	# group
 			if not IsPcGroup(k) then
 			  k!.lattfpres:=ComplementFactorFpHom(
 			    ocr.factorfphom,l,M,N,k,ocr.generators,comp);
-	    Assert(1,KernelOfMultiplicativeGeneralMapping(k!.lattfpres)=N);
+	    Assert(3,KernelOfMultiplicativeGeneralMapping(k!.lattfpres)=N);
 			fi;
                         k!.obtain:="compl";
 		      fi;
@@ -1918,6 +1919,7 @@ local G,	# group
 	      l:=[];
 	    else
 	      Info(InfoLattice,1,"using invariant subgroups");
+	      idx:=Index(j,M);
 	      # the factor is abelian, we therefore find this homomorphism
 	      # quick.
 	      hom:=NaturalHomomorphismByNormalSubgroup(j,N);
@@ -1927,14 +1929,22 @@ local G,	# group
 	      auts:=List(GeneratorsOfGroup(G),
 		i->GroupHomomorphismByImagesNC(r,r,jg,
 		  List(GeneratorsOfGroup(j),k->Image(hom,k^i))));
+	      C:=Image(hom,M);
+	      C:=Group(SmallGeneratingSet(C));
 	      l:=SubgroupsSolvableGroup(r,rec(
 		  actions:=auts,
 		  funcnorm:=r,
-		  consider:=ExactSizeConsiderFunction(Index(j,M)),
+		  consider:=function(c,a,n,b,m)
+			    local cs;
+			      cs:=Size(a)/Size(n)*Size(b);
+			      return IsInt(cs*Size(m)/idx)
+				      and not cs>idx
+				      and (Size(m)>1 
+				          or Size(Intersection(C,b))=1);
+			      end,
 		  normal:=true));
 	      Info(InfoLattice,2,"found ",Length(l)," invariant subgroups");
-	      C:=Image(hom,M);
-	      l:=Filtered(l,i->Size(i)=Index(j,M) and Size(Intersection(i,C))=1);
+	      l:=Filtered(l,i->Size(i)=idx and Size(Intersection(i,C))=1);
 	      l:=List(l,i->PreImage(hom,i));
 	      l:=Filtered(l,i->IsNormal(G,i));
 	      Info(InfoLattice,1,Length(l)," of these normal");
@@ -2080,7 +2090,7 @@ local G,	# group
       for i in [1..firsts] do
 	l:=nt[i];
 	if IsBound(l!.lattfpres) then
-	  Assert(1,KernelOfMultiplicativeGeneralMapping(l!.lattfpres)=M);
+	  Assert(3,KernelOfMultiplicativeGeneralMapping(l!.lattfpres)=M);
 	  # lift presentation
 	  # note: if notabelian mpcgs is an fp hom
 	  l!.lattfpres:=LiftFactorFpHom(l!.lattfpres,l,M,N,mpcgs);

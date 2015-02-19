@@ -6,6 +6,9 @@
 ##  Exclude from testinstall.g: why?
 ##
 gap> START_TEST("bugfixes test");
+gap> DeclareGlobalVariable("foo73");
+gap> InstallValue(foo73,true);
+Error, InstallValue: value cannot be immediate, boolean or character
 
 ##  Check if ConvertToMatrixRepNC works properly. BH
 ##
@@ -1032,6 +1035,7 @@ false
 
 # 2005/12/22 (Robert F. Morse)
 # 2011/09/13 (Updated by AK as suggested by JM)
+# 2013/09/04 (Updated by JM)
 gap> t:=Transformation([1,2,3,3]);;
 gap> s:=FullTransformationSemigroup(4);;
 gap> ld:=GreensDClassOfElement(FullTransformationSemigroup(4),
@@ -1041,10 +1045,10 @@ gap> mat:=MatrixOfReesZeroMatrixSemigroup(rs);;
 gap> Length(mat);
 4
 gap> t:=UnderlyingSemigroupOfReesMatrixSemigroup(rs);;
-gap> List(mat, x-> [Size(x), Number(x, y-> y=MultiplicativeZero(t))]);
+gap> List(mat, x-> [Size(x), Number(x, y-> y=0)]);
 [ [ 6, 3 ], [ 6, 3 ], [ 6, 3 ], [ 6, 3 ] ]
 gap> Size(UnderlyingSemigroupOfReesZeroMatrixSemigroup(rs));
-7
+6
 
 # 2006/01/11 (MC)
 gap> d := DirectoryCurrent();;
@@ -1234,12 +1238,21 @@ gap> "IsBlistRep" in NamesFilter(TypeObj(BlistList([1,2],[2]))![2]);
 true
 
 # 2006/08/28 (FL)
-gap> l:=List([1..100000],i->[i]);;
-gap> for i in [1..100000] do a := PositionSorted(l,[i]); od; time1 := time;;
-gap> l := Immutable(l);;
-gap> for i in [1..100000] do a := PositionSorted(l,[i]); od; time2 := time;;
-gap> time1 < 2*time2; # time1 and time2 should be about the same
-true
+gap> time1 := 0;;
+gap> for j in [1..10] do
+> l:=List([1..100000],i->[i]);
+> t1:=Runtime(); for i in [1..100000] do a := PositionSorted(l,[i]); od; t2:=Runtime();
+> time1 := time1 + (t2-t1);
+> od;
+gap> time2 := 0;;
+gap> for j in [1..10] do
+> l := Immutable( List([1..100000],i->[i]) );
+> t1:=Runtime(); for i in [1..100000] do a := PositionSorted(l,[i]); od; t2:=Runtime();
+> time2 := time2 + (t2-t1);
+> od;
+gap> if time1 >= 2*time2 then
+> Print("Bad timings for bugfix 2006/08/28 (FL): ", time1, " >= 2*", time2, "\n"); 
+> fi; # time1 and time2 should be about the same
 
 # 2006/08/29 (FL (and AH))
 gap> IsBound(ITER_POLY_WARN);
@@ -2485,7 +2498,26 @@ Group([  ])
 gap> NullMat(2,1,ZmodnZObj(1,15));
 [ [ ZmodnZObj( 0, 15 ) ], [ ZmodnZObj( 0, 15 ) ] ]
 gap> IdentityMat(10,Z(4));
-< mutable compressed matrix 10x10 over GF(4) >
+[ [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2),
+       0*Z(2) ], 
+  [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2),
+       0*Z(2) ], 
+  [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2),
+       0*Z(2) ], 
+  [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2),
+       0*Z(2) ], 
+  [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2),
+       0*Z(2) ], 
+  [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2),
+       0*Z(2) ], 
+  [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2),
+       0*Z(2) ], 
+  [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2),
+       0*Z(2) ], 
+  [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0,
+       0*Z(2) ], 
+  [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2),
+       Z(2)^0 ] ]
 
 #############################################################################
 ##
@@ -2532,6 +2564,242 @@ true
 gap>  TransitiveIdentification(TransitiveGroup(30,4064)^(1,4,5,2)
 > (6,20,15,21,7,16,12,24)(8,18,14,22,10,17,13,23,9,19,11,25)(26,30,29,28));
 4064
+
+#############################################################################
+##
+## Changes 4.6.5 -> 4.7.1
+
+## For bugfixes
+
+# 2013/02/20 (AK)
+gap> QuotientMod(4, 2, 6);
+fail
+gap> QuotientMod(2, 4, 6);
+fail
+gap> a := ZmodnZObj(2, 6);; b := ZmodnZObj(4, 6);;
+gap> a/b;
+fail
+gap> b/a;
+fail
+
+# 2013/08/20 (MH)
+gap> G:=SmallGroup(2^7*9,33);;
+gap> H:=DirectProduct(G, ElementaryAbelianGroup(2^10));;
+gap> Exponent(H); # should take at most a few milliseconds
+72
+gap> K := PerfectGroup(2688,3);;
+gap> Exponent(K); # should take at most a few seconds
+168
+
+# 2013/08/21 (MH)
+gap> IsStringRep("");
+true
+gap> RepresentationsOfObject("");
+[ "IsStringRep", "IsInternalRep" ]
+gap> DeclareOperation("TestOp",[IsStringRep]);
+gap> InstallMethod(TestOp,[IsStringRep], function(x) Print("Your string: '",x,"'\n"); end);
+gap> TestOp("");
+Your string: ''
+gap> PositionSublist("xyz", "");
+1
+
+# 2013/08/21 (MH)
+gap> . . . .
+Syntax error: Badly formed number, need a digit before or after the decimal po\
+int in stream line 1
+. . . .
+^
+
+# 2013/08/29 (MH)
+gap> record := rec( foo := "bar" );
+rec( foo := "bar" )
+gap> fooo := "fooo";
+"fooo"
+gap> Unbind( fooo[4] );
+gap> record.(fooo);
+"bar"
+
+# 2013/09/25 (AK, CJ)
+gap> L := List(Shuffle([1..1000]), x -> Set([x]));;
+
+# 2013/11/02 (AH)
+gap> f:=FreeGroup(2);; id:=Group(Identity(f));; Id:=TrivialSubgroup(f);;
+gap> LowIndexSubgroupsFpGroup(f,Id,2)=LowIndexSubgroupsFpGroup(f,id,2);
+true
+
+# 2013/11/19 (AK)
+gap> rel := BinaryRelationOnPoints([[2,3],[4,5],[4,5],[6],[6],[]]);
+Binary Relation on 6 points
+gap> rel := ReflexiveClosureBinaryRelation(TransitiveClosureBinaryRelation(rel));
+Binary Relation on 6 points
+gap> IsLatticeOrderBinaryRelation(rel);
+false
+gap> rel := BinaryRelationOnPoints([[2,3],[4,5],[4],[6],[6],[]]);
+Binary Relation on 6 points
+gap> rel := ReflexiveClosureBinaryRelation(TransitiveClosureBinaryRelation(rel));
+Binary Relation on 6 points
+gap> IsLatticeOrderBinaryRelation(rel);
+true
+
+## For new features
+
+# 2013/06/14 (AK, MH)
+gap> foo:=function() return 42; end;
+function(  ) ... end
+gap> DeclareObsoleteSynonym("bar","foo","4.8");
+gap> SetInfoLevel(InfoObsolete,1);
+gap> bar();
+#I  'bar' is obsolete.
+#I  It may be removed in the future release of GAP 4.8
+#I  Use foo instead.
+42
+gap> SetInfoLevel(InfoObsolete,0);
+
+# 2013/08/08 (AH)
+gap> free:=FreeGroup("a","b");
+<free group on the generators [ a, b ]>
+gap> product:=free/ParseRelators(free,"a2,b3");;
+gap> SetIsFinite(product,false);
+gap> GrowthFunctionOfGroup(product,12);
+[ 1, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128 ]
+gap> GrowthFunctionOfGroup(MathieuGroup(12));
+[ 1, 5, 19, 70, 255, 903, 3134, 9870, 25511, 38532, 16358, 382 ]
+
+# 2013/08/11 (MH)
+gap> F:=FreeAbelianGroup(3);
+<fp group on the generators [ f1, f2, f3 ]>
+gap> IsAbelian(F);
+true
+gap> Size(F);
+infinity
+
+#############################################################################
+##
+## Changes 4.7.5 -> 4.7.6
+
+## For bugfixes
+
+# 2014/08/11 (AH)
+gap> eij:=function(i,j)
+> local I;
+> I:=Z(2)*IdentityMat(5);
+> I[i][j]:=Z(2);
+> return I;
+> end;;
+gap> G2:=Group([eij(1,2),eij(2,3),eij(3,4),eij(4,5),eij(2,1),eij(4,3)]);;
+gap> Length(NormalSubgroups(G2));
+16
+
+# 2014/08/13 (TB, AK). A bug that may cause ShortestVectors 
+# to return an incomplete list (reported by Florian Beye).
+gap> M:=[[4,-1,-2,1,2,-1,0,0,0,0,1,-1,2,-2,0,0,0,-2,2,-3,3,0],
+> [-1,4,1,0,-1,2,0,3,3,-1,1,1,1,1,-1,1,3,1,-3,2,1,0],
+> [-2,1,4,-1,-2,1,0,1,1,0,1,0,0,2,0,0,0,2,-2,4,-2,0],
+> [1,0,-1,2,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+> [2,-1,-2,-1,6,-2,0,0,0,1,0,0,2,-2,0,0,0,-3,4,-4,4,-1],
+> [-1,2,1,0,-2,4,0,2,2,0,0,0,1,2,-1,2,4,0,-1,2,-2,1],
+> [0,0,0,0,0,0,2,0,-1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+> [0,3,1,0,0,2,0,6,4,-1,2,0,3,1,-1,2,4,0,-2,2,2,-1],
+> [0,3,1,0,0,2,-1,4,6,-1,2,0,3,1,-1,2,4,0,-2,2,2,-1],
+> [0,-1,0,0,1,0,0,-1,-1,2,-1,0,1,0,0,0,0,-1,3,0,-1,0],
+> [1,1,1,0,0,0,0,2,2,-1,4,-1,1,1,0,0,0,1,-2,2,2,-1],
+> [-1,1,0,0,0,0,0,0,0,0,-1,2,-1,0,0,0,0,0,0,0,0,0],
+> [2,1,0,0,2,1,0,3,3,1,1,-1,6,-1,-1,2,4,-2,2,0,2,-1],
+> [-2,1,2,0,-2,2,0,1,1,0,1,0,-1,4,0,0,0,2,-2,4,-2,0],
+> [0,-1,0,0,0,-1,0,-1,-1,0,0,0,-1,0,2,-1,-2,0,0,0,0,0],
+> [0,1,0,0,0,2,0,2,2,0,0,0,2,0,-1,4,4,-2,0,0,0,0],
+> [0,3,0,0,0,4,0,4,4,0,0,0,4,0,-2,4,8,-2,0,0,0,0],
+> [-2,1,2,0,-3,0,0,0,0,-1,1,0,-2,2,0,-2,-2,4,-4,4,-2,0],
+> [2,-3,-2,0,4,-1,0,-2,-2,3,-2,0,2,-2,0,0,0,-4,8,-4,0,0],
+> [-3,2,4,0,-4,2,0,2,2,0,2,0,0,4,0,0,0,4,-4,8,-4,0],
+> [3,1,-2,0,4,-2,0,2,2,-1,2,0,2,-2,0,0,0,-2,0,-4,8,-2],
+> [0,0,0,0,-1,1,0,-1,-1,0,-1,0,-1,0,0,0,0,0,0,0,-2,2]];;
+gap> IsZero(M - TransposedMat(M));
+true
+gap> sv := ShortestVectors(M, 2).vectors;;
+gap> s2 := Set(Concatenation(sv, -sv));;
+gap> v := [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,2,1,0,1,1];;
+gap> v * M * v - 2 = 0;
+true
+gap> v in s2;
+true
+
+# 2014/08/21 (AK, CJ)
+gap> (13*10^18) + (-3*10^18) = (10^19);
+true
+
+# 2014/09/05 (TB, reported by Benjamin Sambale)
+gap> OrthogonalEmbeddings([[4]]);
+rec( norms := [ 1, 1/4 ], solutions := [ [ 1 ], [ 2, 2, 2, 2 ] ], 
+  vectors := [ [ 2 ], [ 1 ] ] )
+
+# 2014/10/22 (CJ)
+gap> Stabilizer(SymmetricGroup(5), [1,2,1,2,1], OnTuples) = Group([(3,5),(4,5)]);
+true
+
+#############################################################################
+##
+## Changes 4.7.6 -> 4.7.7
+
+## For bugfixes
+# 2014/12/05 (CJ, reported by Matt Fayers; see also tst/union.tst)
+gap> Union([2],[3],[5,1..1]);
+[ 1, 2, 3, 5 ]
+
+# 2014/12/31 (AH, reported by Daniel Błażewicz)
+gap> x := Indeterminate( Rationals, "x" );;
+gap> ProbabilityShapes(x^5+5*x^2+3);
+[ 2 ]
+gap> GaloisType(x^12+63*x-450); # this was causing an infinite loop
+301
+
+# 2015/01/11 (CJ, reported by TB)
+gap> x:= rec( qq:= "unused", r:= rec() );;
+gap> y:= x.r;;
+gap> y.entries:= rec( parent:= y );;
+gap> x;
+rec( qq := "unused", r := rec( entries := rec( parent := ~.r ) ) )
+
+# 2015/01/08 (JM, reported by Nick Loughlin)
+gap> FreeMonoid( infinity, "m", [  ] );
+<free monoid with infinity generators>
+
+# 2015/02/01 (MP, reported by WdG and HD )
+gap> a:= 1494186269970473680896;
+1494186269970473680896
+gap> b:= 72057594037927936;
+72057594037927936
+gap> RemInt(a,b);
+0
+
+# 2015/02/02 (AH, reported by Petr Savicky)
+gap> it := SimpleGroupsIterator(17971200);
+<iterator>
+gap> G := NextIterator(it); # 2F(4,2)'
+2F(4,2)'
+gap> ClassicalIsomorphismTypeFiniteSimpleGroup(G);
+rec( parameter := [ "T" ], series := "Spor" )
+
+# 2015/02/16 (CJ, Reported by TB)
+gap> a:= rec();; a.( "" ):= 1;; a; Print( a,"\n" );
+rec( ("") := 1 )
+rec(
+  ("") := 1 )
+
+#2015/02/16 (CJ, reported by TB)
+gap> f1:= function( x, l ) return ( not x ) in l; end;;
+gap> f2:= function( x, l ) return not ( x in l ); end;;
+gap> f3:= function( x, l ) return not x in l;     end;;
+gap> [f1(true,[]), f2(true,[]), f3(true,[])];
+[ false, true, true ]
+gap> Print([f1,f2,f3],"\n");
+[ function ( x, l )
+        return (not x) in l;
+    end, function ( x, l )
+        return not x in l;
+    end, function ( x, l )
+        return not x in l;
+    end ]
 
 #############################################################################
 #

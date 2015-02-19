@@ -90,14 +90,16 @@ InstallOtherMethod(AddDictionary,"for lookup list dictionaries",true,
   [IsListLookupDictionary and IsMutable,IsObject,IsObject],0,
 function(d, x, val)
   x:=[Immutable(x),val];
-  MakeImmutable(x); # to be able to store sortedness
+  #  MakeImmutable(x); # to be able to store sortedness
+  # We don't actually need to do that and we don't want to modify val
+  #
   Add(d!.entries,x);
 end);
 
 InstallMethod(AddDictionary,"for list dictionaries",true,
   [IsListDictionary and IsMutable,IsObject],0,
 function(d, x)
-  x:=Immutable(x); # to be able to store sortedness
+    x:=Immutable(x); # to be able to store sortedness
   Add(d!.list,x);
 end);
 
@@ -110,12 +112,13 @@ InstallOtherMethod(AddDictionary,"for lookup sort dictionaries",true,
         function(d, x, val)
     local pair, p;
     pair:=[Immutable(x),val];
-    MakeImmutable(pair); # to be able to store sortedness
-    p := PositionFirstComponent(d!.entries,x);
+    # MakeImmutable(pair); # to be able to store sortedness
+   
+    p := PositionSorted(d!.entries,[x]);
     if p <= Length(d!.entries) and d!.entries[p][1] = x then
         d!.entries[p] := pair;
     else
-        AddSet(d!.entries, pair);
+        Add(d!.entries, pair, p);
     fi;
 end);
 
@@ -133,16 +136,32 @@ end);
 InstallMethod(KnowsDictionary,"for list lookup dictionaries",true,
   [IsListLookupDictionary,IsObject],0,
 function(d,x)
-    local p;
-    p:=PositionFirstComponent(d!.entries,x);
-    return p <= Length(d!.entries) and d!.entries[p][1] = x;
+local p;
+  for p in d!.entries do
+    if p[1] = x then
+      return true;
+    fi;
+  od;
+  return false;
+end);
+
+InstallMethod(KnowsDictionary,"for lookup sort dictionaries",true,
+  [IsSortLookupDictionary,IsObject],0,
+function(d,x)
+local p;
+  p := PositionSorted(d!.entries,[x]);
+  if p <= Length(d!.entries) and d!.entries[p][1] = x then
+    return true;
+  else
+    return false;
+  fi;
 end);
 
 InstallMethod(KnowsDictionary,"for list dictionaries",true,
   [IsListDictionary,IsObject],0,
 function(d,x)
 local p;
-  return x in d!.list;
+    return x in d!.list;
 end);
 
 #############################################################################
@@ -152,13 +171,24 @@ end);
 InstallMethod(LookupDictionary,"for list dictionaries",true,
   [IsListLookupDictionary,IsObject],0,
 function(d,x)
-local p;
-  p:=PositionFirstComponent(d!.entries,x);
-  if p > Length(d!.entries) or d!.entries[p][1] <> x then
+    local p;
+    for p in d!.entries do
+        if p[1] = x then
+            return p[2];
+        fi;
+    od;
     return fail;
-  else
+end);
+
+InstallMethod(LookupDictionary,"for lookup sort dictionaries",true,
+  [IsSortLookupDictionary,IsObject],0,
+function(d,x)
+local p;
+  p := PositionSorted(d!.entries,[x]);
+  if p <= Length(d!.entries) and d!.entries[p][1] = x then
     return d!.entries[p][2];
   fi;
+  return fail;
 end);
 
 ##
@@ -908,7 +938,7 @@ local f,n,bytelen,data,qq,i;
                  x:=ShallowCopy(x);
                  ConvertToGF2VectorRep(x);
                fi;
-               return HASHKEY_BAG(x,101,data[1],data[2]);
+               return HashKeyBag(x,101,data[1],data[2]);
              end;
     fi;
   elif n < 256 then
@@ -927,7 +957,7 @@ local f,n,bytelen,data,qq,i;
       # long 8 bit
       data:=[3*GAPInfo.BytesPerVariable,bytelen];
       # must check type
-      #return x->HASHKEY_BAG(x,101,data[1],data[2]); 
+      #return x->HashKeyBag(x,101,data[1],data[2]); 
       return function(x)
              if not Is8BitVectorRep(x) or
 	       Q_VEC8BIT(x)<>n then
@@ -935,7 +965,7 @@ local f,n,bytelen,data,qq,i;
                  x:=ShallowCopy(x);
                  ConvertToVectorRep(x,n);
                fi;
-               return HASHKEY_BAG(x,101,data[1],data[2]);
+               return HashKeyBag(x,101,data[1],data[2]);
              end;
 
     fi;
@@ -1100,12 +1130,9 @@ local o,e;
          end;
 end);
 
-InstallMethod(SparseIntKey,"transformations, arbitrary domain",true,
-  [IsObject,IsTransformation],0,
-function(d,t)
-local n,l;
-  n:=DegreeOfTransformation(t);
-  l:=List([1..n],i->n^(i-1));
-  return x->ImageListOfTransformation(t,n)*l;
+InstallMethod(SparseIntKey, "for an object and transformation", 
+[IsObject, IsTransformation],
+function(d, t)
+  return x-> NumberTransformation(t, DegreeOfTransformation(t)); 
 end);
 

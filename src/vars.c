@@ -49,6 +49,7 @@
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include        "profile.h"             /* installing methods              */
 
 /****************************************************************************
 **
@@ -2879,145 +2880,145 @@ static Int InitKernel (
    
 
     /* install executors, evaluators, and printers for local variables     */
-    ExecStatFuncs [ T_ASS_LVAR       ] = ExecAssLVar;
-    ExecStatFuncs [ T_ASS_LVAR_01    ] = ExecAssLVar01;
-    ExecStatFuncs [ T_ASS_LVAR_02    ] = ExecAssLVar02;
-    ExecStatFuncs [ T_ASS_LVAR_03    ] = ExecAssLVar03;
-    ExecStatFuncs [ T_ASS_LVAR_04    ] = ExecAssLVar04;
-    ExecStatFuncs [ T_ASS_LVAR_05    ] = ExecAssLVar05;
-    ExecStatFuncs [ T_ASS_LVAR_06    ] = ExecAssLVar06;
-    ExecStatFuncs [ T_ASS_LVAR_07    ] = ExecAssLVar07;
-    ExecStatFuncs [ T_ASS_LVAR_08    ] = ExecAssLVar08;
-    ExecStatFuncs [ T_ASS_LVAR_09    ] = ExecAssLVar09;
-    ExecStatFuncs [ T_ASS_LVAR_10    ] = ExecAssLVar10;
-    ExecStatFuncs [ T_ASS_LVAR_11    ] = ExecAssLVar11;
-    ExecStatFuncs [ T_ASS_LVAR_12    ] = ExecAssLVar12;
-    ExecStatFuncs [ T_ASS_LVAR_13    ] = ExecAssLVar13;
-    ExecStatFuncs [ T_ASS_LVAR_14    ] = ExecAssLVar14;
-    ExecStatFuncs [ T_ASS_LVAR_15    ] = ExecAssLVar15;
-    ExecStatFuncs [ T_ASS_LVAR_16    ] = ExecAssLVar16;
-    ExecStatFuncs [ T_UNB_LVAR       ] = ExecUnbLVar;
-    EvalExprFuncs [ T_REF_LVAR       ] = EvalRefLVar;
-    EvalExprFuncs [ T_REF_LVAR_01    ] = EvalRefLVar01;
-    EvalExprFuncs [ T_REF_LVAR_02    ] = EvalRefLVar02;
-    EvalExprFuncs [ T_REF_LVAR_03    ] = EvalRefLVar03;
-    EvalExprFuncs [ T_REF_LVAR_04    ] = EvalRefLVar04;
-    EvalExprFuncs [ T_REF_LVAR_05    ] = EvalRefLVar05;
-    EvalExprFuncs [ T_REF_LVAR_06    ] = EvalRefLVar06;
-    EvalExprFuncs [ T_REF_LVAR_07    ] = EvalRefLVar07;
-    EvalExprFuncs [ T_REF_LVAR_08    ] = EvalRefLVar08;
-    EvalExprFuncs [ T_REF_LVAR_09    ] = EvalRefLVar09;
-    EvalExprFuncs [ T_REF_LVAR_10    ] = EvalRefLVar10;
-    EvalExprFuncs [ T_REF_LVAR_11    ] = EvalRefLVar11;
-    EvalExprFuncs [ T_REF_LVAR_12    ] = EvalRefLVar12;
-    EvalExprFuncs [ T_REF_LVAR_13    ] = EvalRefLVar13;
-    EvalExprFuncs [ T_REF_LVAR_14    ] = EvalRefLVar14;
-    EvalExprFuncs [ T_REF_LVAR_15    ] = EvalRefLVar15;
-    EvalExprFuncs [ T_REF_LVAR_16    ] = EvalRefLVar16;
-    EvalExprFuncs [ T_ISB_LVAR       ] = EvalIsbLVar;
-    PrintStatFuncs[ T_ASS_LVAR       ] = PrintAssLVar;
+    InstallExecStatFunc( T_ASS_LVAR       , ExecAssLVar);
+    InstallExecStatFunc( T_ASS_LVAR_01    , ExecAssLVar01);
+    InstallExecStatFunc( T_ASS_LVAR_02    , ExecAssLVar02);
+    InstallExecStatFunc( T_ASS_LVAR_03    , ExecAssLVar03);
+    InstallExecStatFunc( T_ASS_LVAR_04    , ExecAssLVar04);
+    InstallExecStatFunc( T_ASS_LVAR_05    , ExecAssLVar05);
+    InstallExecStatFunc( T_ASS_LVAR_06    , ExecAssLVar06);
+    InstallExecStatFunc( T_ASS_LVAR_07    , ExecAssLVar07);
+    InstallExecStatFunc( T_ASS_LVAR_08    , ExecAssLVar08);
+    InstallExecStatFunc( T_ASS_LVAR_09    , ExecAssLVar09);
+    InstallExecStatFunc( T_ASS_LVAR_10    , ExecAssLVar10);
+    InstallExecStatFunc( T_ASS_LVAR_11    , ExecAssLVar11);
+    InstallExecStatFunc( T_ASS_LVAR_12    , ExecAssLVar12);
+    InstallExecStatFunc( T_ASS_LVAR_13    , ExecAssLVar13);
+    InstallExecStatFunc( T_ASS_LVAR_14    , ExecAssLVar14);
+    InstallExecStatFunc( T_ASS_LVAR_15    , ExecAssLVar15);
+    InstallExecStatFunc( T_ASS_LVAR_16    , ExecAssLVar16);
+    InstallExecStatFunc( T_UNB_LVAR       , ExecUnbLVar);
+    InstallEvalExprFunc( T_REF_LVAR       , EvalRefLVar);
+    InstallEvalExprFunc( T_REF_LVAR_01    , EvalRefLVar01);
+    InstallEvalExprFunc( T_REF_LVAR_02    , EvalRefLVar02);
+    InstallEvalExprFunc( T_REF_LVAR_03    , EvalRefLVar03);
+    InstallEvalExprFunc( T_REF_LVAR_04    , EvalRefLVar04);
+    InstallEvalExprFunc( T_REF_LVAR_05    , EvalRefLVar05);
+    InstallEvalExprFunc( T_REF_LVAR_06    , EvalRefLVar06);
+    InstallEvalExprFunc( T_REF_LVAR_07    , EvalRefLVar07);
+    InstallEvalExprFunc( T_REF_LVAR_08    , EvalRefLVar08);
+    InstallEvalExprFunc( T_REF_LVAR_09    , EvalRefLVar09);
+    InstallEvalExprFunc( T_REF_LVAR_10    , EvalRefLVar10);
+    InstallEvalExprFunc( T_REF_LVAR_11    , EvalRefLVar11);
+    InstallEvalExprFunc( T_REF_LVAR_12    , EvalRefLVar12);
+    InstallEvalExprFunc( T_REF_LVAR_13    , EvalRefLVar13);
+    InstallEvalExprFunc( T_REF_LVAR_14    , EvalRefLVar14);
+    InstallEvalExprFunc( T_REF_LVAR_15    , EvalRefLVar15);
+    InstallEvalExprFunc( T_REF_LVAR_16    , EvalRefLVar16);
+    InstallEvalExprFunc( T_ISB_LVAR       , EvalIsbLVar);
+    InstallPrintStatFunc( T_ASS_LVAR       , PrintAssLVar);
 
     for ( i = T_ASS_LVAR_01; i <= T_ASS_LVAR_16; i++ ) {
-        PrintStatFuncs[ i ] = PrintAssLVar;
+        InstallPrintStatFunc( i , PrintAssLVar);
     }
 
-    PrintStatFuncs[ T_UNB_LVAR       ] = PrintUnbLVar;
-    PrintExprFuncs[ T_REFLVAR        ] = PrintRefLVar;
-    PrintExprFuncs[ T_REF_LVAR       ] = PrintRefLVar;
+    InstallPrintStatFunc( T_UNB_LVAR       , PrintUnbLVar);
+    InstallPrintExprFunc( T_REFLVAR        , PrintRefLVar);
+    InstallPrintExprFunc( T_REF_LVAR       , PrintRefLVar);
 
     for ( i = T_REF_LVAR_01; i <= T_REF_LVAR_16; i++ ) {
-        PrintExprFuncs[ i ] = PrintRefLVar;
+        InstallPrintExprFunc( i , PrintRefLVar);
     }
 
-    PrintExprFuncs[ T_ISB_LVAR       ] = PrintIsbLVar;
+    InstallPrintExprFunc( T_ISB_LVAR       , PrintIsbLVar);
 
     /* install executors, evaluators, and printers for higher variables    */
-    ExecStatFuncs [ T_ASS_HVAR       ] = ExecAssHVar;
-    ExecStatFuncs [ T_UNB_HVAR       ] = ExecUnbHVar;
-    EvalExprFuncs [ T_REF_HVAR       ] = EvalRefHVar;
-    EvalExprFuncs [ T_ISB_HVAR       ] = EvalIsbHVar;
-    PrintStatFuncs[ T_ASS_HVAR       ] = PrintAssHVar;
-    PrintStatFuncs[ T_UNB_HVAR       ] = PrintUnbHVar;
-    PrintExprFuncs[ T_REF_HVAR       ] = PrintRefHVar;
-    PrintExprFuncs[ T_ISB_HVAR       ] = PrintIsbHVar;
+    InstallExecStatFunc( T_ASS_HVAR       , ExecAssHVar);
+    InstallExecStatFunc( T_UNB_HVAR       , ExecUnbHVar);
+    InstallEvalExprFunc( T_REF_HVAR       , EvalRefHVar);
+    InstallEvalExprFunc( T_ISB_HVAR       , EvalIsbHVar);
+    InstallPrintStatFunc( T_ASS_HVAR       , PrintAssHVar);
+    InstallPrintStatFunc( T_UNB_HVAR       , PrintUnbHVar);
+    InstallPrintExprFunc( T_REF_HVAR       , PrintRefHVar);
+    InstallPrintExprFunc( T_ISB_HVAR       , PrintIsbHVar);
 
     /* install executors, evaluators, and printers for global variables    */
-    ExecStatFuncs [ T_ASS_GVAR       ] = ExecAssGVar;
-    ExecStatFuncs [ T_UNB_GVAR       ] = ExecUnbGVar;
-    EvalExprFuncs [ T_REF_GVAR       ] = EvalRefGVar;
-    EvalExprFuncs [ T_ISB_GVAR       ] = EvalIsbGVar;
-    PrintStatFuncs[ T_ASS_GVAR       ] = PrintAssGVar;
-    PrintStatFuncs[ T_UNB_GVAR       ] = PrintUnbGVar;
-    PrintExprFuncs[ T_REF_GVAR       ] = PrintRefGVar;
-    PrintExprFuncs[ T_ISB_GVAR       ] = PrintIsbGVar;
+    InstallExecStatFunc( T_ASS_GVAR       , ExecAssGVar);
+    InstallExecStatFunc( T_UNB_GVAR       , ExecUnbGVar);
+    InstallEvalExprFunc( T_REF_GVAR       , EvalRefGVar);
+    InstallEvalExprFunc( T_ISB_GVAR       , EvalIsbGVar);
+    InstallPrintStatFunc( T_ASS_GVAR       , PrintAssGVar);
+    InstallPrintStatFunc( T_UNB_GVAR       , PrintUnbGVar);
+    InstallPrintExprFunc( T_REF_GVAR       , PrintRefGVar);
+    InstallPrintExprFunc( T_ISB_GVAR       , PrintIsbGVar);
 
     /* install executors, evaluators, and printers for list elements       */
-    ExecStatFuncs [ T_ASS_LIST       ] = ExecAssList;
-    ExecStatFuncs [ T_ASSS_LIST      ] = ExecAsssList;
-    ExecStatFuncs [ T_ASS_LIST_LEV   ] = ExecAssListLevel;
-    ExecStatFuncs [ T_ASSS_LIST_LEV  ] = ExecAsssListLevel;
-    ExecStatFuncs [ T_UNB_LIST       ] = ExecUnbList;
-    EvalExprFuncs [ T_ELM_LIST       ] = EvalElmList;
-    EvalExprFuncs [ T_ELMS_LIST      ] = EvalElmsList;
-    EvalExprFuncs [ T_ELM_LIST_LEV   ] = EvalElmListLevel;
-    EvalExprFuncs [ T_ELMS_LIST_LEV  ] = EvalElmsListLevel;
-    EvalExprFuncs [ T_ISB_LIST       ] = EvalIsbList;
-    PrintStatFuncs[ T_ASS_LIST       ] = PrintAssList;
-    PrintStatFuncs[ T_ASSS_LIST      ] = PrintAsssList;
-    PrintStatFuncs[ T_ASS_LIST_LEV   ] = PrintAssList;
-    PrintStatFuncs[ T_ASSS_LIST_LEV  ] = PrintAsssList;
-    PrintStatFuncs[ T_UNB_LIST       ] = PrintUnbList;
-    PrintExprFuncs[ T_ELM_LIST       ] = PrintElmList;
-    PrintExprFuncs[ T_ELMS_LIST      ] = PrintElmsList;
-    PrintExprFuncs[ T_ELM_LIST_LEV   ] = PrintElmList;
-    PrintExprFuncs[ T_ELMS_LIST_LEV  ] = PrintElmsList;
-    PrintExprFuncs[ T_ISB_LIST       ] = PrintIsbList;
+    InstallExecStatFunc( T_ASS_LIST       , ExecAssList);
+    InstallExecStatFunc( T_ASSS_LIST      , ExecAsssList);
+    InstallExecStatFunc( T_ASS_LIST_LEV   , ExecAssListLevel);
+    InstallExecStatFunc( T_ASSS_LIST_LEV  , ExecAsssListLevel);
+    InstallExecStatFunc( T_UNB_LIST       , ExecUnbList);
+    InstallEvalExprFunc( T_ELM_LIST       , EvalElmList);
+    InstallEvalExprFunc( T_ELMS_LIST      , EvalElmsList);
+    InstallEvalExprFunc( T_ELM_LIST_LEV   , EvalElmListLevel);
+    InstallEvalExprFunc( T_ELMS_LIST_LEV  , EvalElmsListLevel);
+    InstallEvalExprFunc( T_ISB_LIST       , EvalIsbList);
+    InstallPrintStatFunc( T_ASS_LIST       , PrintAssList);
+    InstallPrintStatFunc( T_ASSS_LIST      , PrintAsssList);
+    InstallPrintStatFunc( T_ASS_LIST_LEV   , PrintAssList);
+    InstallPrintStatFunc( T_ASSS_LIST_LEV  , PrintAsssList);
+    InstallPrintStatFunc( T_UNB_LIST       , PrintUnbList);
+    InstallPrintExprFunc( T_ELM_LIST       , PrintElmList);
+    InstallPrintExprFunc( T_ELMS_LIST      , PrintElmsList);
+    InstallPrintExprFunc( T_ELM_LIST_LEV   , PrintElmList);
+    InstallPrintExprFunc( T_ELMS_LIST_LEV  , PrintElmsList);
+    InstallPrintExprFunc( T_ISB_LIST       , PrintIsbList);
 
     /* install executors, evaluators, and printers for record elements     */
-    ExecStatFuncs [ T_ASS_REC_NAME   ] = ExecAssRecName;
-    ExecStatFuncs [ T_ASS_REC_EXPR   ] = ExecAssRecExpr;
-    ExecStatFuncs [ T_UNB_REC_NAME   ] = ExecUnbRecName;
-    ExecStatFuncs [ T_UNB_REC_EXPR   ] = ExecUnbRecExpr;
-    EvalExprFuncs [ T_ELM_REC_NAME   ] = EvalElmRecName;
-    EvalExprFuncs [ T_ELM_REC_EXPR   ] = EvalElmRecExpr;
-    EvalExprFuncs [ T_ISB_REC_NAME   ] = EvalIsbRecName;
-    EvalExprFuncs [ T_ISB_REC_EXPR   ] = EvalIsbRecExpr;
-    PrintStatFuncs[ T_ASS_REC_NAME   ] = PrintAssRecName;
-    PrintStatFuncs[ T_ASS_REC_EXPR   ] = PrintAssRecExpr;
-    PrintStatFuncs[ T_UNB_REC_NAME   ] = PrintUnbRecName;
-    PrintStatFuncs[ T_UNB_REC_EXPR   ] = PrintUnbRecExpr;
-    PrintExprFuncs[ T_ELM_REC_NAME   ] = PrintElmRecName;
-    PrintExprFuncs[ T_ELM_REC_EXPR   ] = PrintElmRecExpr;
-    PrintExprFuncs[ T_ISB_REC_NAME   ] = PrintIsbRecName;
-    PrintExprFuncs[ T_ISB_REC_EXPR   ] = PrintIsbRecExpr;
+    InstallExecStatFunc( T_ASS_REC_NAME   , ExecAssRecName);
+    InstallExecStatFunc( T_ASS_REC_EXPR   , ExecAssRecExpr);
+    InstallExecStatFunc( T_UNB_REC_NAME   , ExecUnbRecName);
+    InstallExecStatFunc( T_UNB_REC_EXPR   , ExecUnbRecExpr);
+    InstallEvalExprFunc( T_ELM_REC_NAME   , EvalElmRecName);
+    InstallEvalExprFunc( T_ELM_REC_EXPR   , EvalElmRecExpr);
+    InstallEvalExprFunc( T_ISB_REC_NAME   , EvalIsbRecName);
+    InstallEvalExprFunc( T_ISB_REC_EXPR   , EvalIsbRecExpr);
+    InstallPrintStatFunc( T_ASS_REC_NAME   , PrintAssRecName);
+    InstallPrintStatFunc( T_ASS_REC_EXPR   , PrintAssRecExpr);
+    InstallPrintStatFunc( T_UNB_REC_NAME   , PrintUnbRecName);
+    InstallPrintStatFunc( T_UNB_REC_EXPR   , PrintUnbRecExpr);
+    InstallPrintExprFunc( T_ELM_REC_NAME   , PrintElmRecName);
+    InstallPrintExprFunc( T_ELM_REC_EXPR   , PrintElmRecExpr);
+    InstallPrintExprFunc( T_ISB_REC_NAME   , PrintIsbRecName);
+    InstallPrintExprFunc( T_ISB_REC_EXPR   , PrintIsbRecExpr);
 
     /* install executors, evaluators, and printers for list elements       */
-    ExecStatFuncs [ T_ASS_POSOBJ       ] = ExecAssPosObj;
-    ExecStatFuncs [ T_UNB_POSOBJ       ] = ExecUnbPosObj;
-    EvalExprFuncs [ T_ELM_POSOBJ       ] = EvalElmPosObj;
-    EvalExprFuncs [ T_ISB_POSOBJ       ] = EvalIsbPosObj;
-    PrintStatFuncs[ T_ASS_POSOBJ       ] = PrintAssPosObj;
-    PrintStatFuncs[ T_UNB_POSOBJ       ] = PrintUnbPosObj;
-    PrintExprFuncs[ T_ELM_POSOBJ       ] = PrintElmPosObj;
-    PrintExprFuncs[ T_ISB_POSOBJ       ] = PrintIsbPosObj;
+    InstallExecStatFunc( T_ASS_POSOBJ       , ExecAssPosObj);
+    InstallExecStatFunc( T_UNB_POSOBJ       , ExecUnbPosObj);
+    InstallEvalExprFunc( T_ELM_POSOBJ       , EvalElmPosObj);
+    InstallEvalExprFunc( T_ISB_POSOBJ       , EvalIsbPosObj);
+    InstallPrintStatFunc( T_ASS_POSOBJ       , PrintAssPosObj);
+    InstallPrintStatFunc( T_UNB_POSOBJ       , PrintUnbPosObj);
+    InstallPrintExprFunc( T_ELM_POSOBJ       , PrintElmPosObj);
+    InstallPrintExprFunc( T_ISB_POSOBJ       , PrintIsbPosObj);
 
     /* install executors, evaluators, and printers for record elements     */
-    ExecStatFuncs [ T_ASS_COMOBJ_NAME  ] = ExecAssComObjName;
-    ExecStatFuncs [ T_ASS_COMOBJ_EXPR  ] = ExecAssComObjExpr;
-    ExecStatFuncs [ T_UNB_COMOBJ_NAME  ] = ExecUnbComObjName;
-    ExecStatFuncs [ T_UNB_COMOBJ_EXPR  ] = ExecUnbComObjExpr;
-    EvalExprFuncs [ T_ELM_COMOBJ_NAME  ] = EvalElmComObjName;
-    EvalExprFuncs [ T_ELM_COMOBJ_EXPR  ] = EvalElmComObjExpr;
-    EvalExprFuncs [ T_ISB_COMOBJ_NAME  ] = EvalIsbComObjName;
-    EvalExprFuncs [ T_ISB_COMOBJ_EXPR  ] = EvalIsbComObjExpr;
-    PrintStatFuncs[ T_ASS_COMOBJ_NAME  ] = PrintAssComObjName;
-    PrintStatFuncs[ T_ASS_COMOBJ_EXPR  ] = PrintAssComObjExpr;
-    PrintStatFuncs[ T_UNB_COMOBJ_NAME  ] = PrintUnbComObjName;
-    PrintStatFuncs[ T_UNB_COMOBJ_EXPR  ] = PrintUnbComObjExpr;
-    PrintExprFuncs[ T_ELM_COMOBJ_NAME  ] = PrintElmComObjName;
-    PrintExprFuncs[ T_ELM_COMOBJ_EXPR  ] = PrintElmComObjExpr;
-    PrintExprFuncs[ T_ISB_COMOBJ_NAME  ] = PrintIsbComObjName;
-    PrintExprFuncs[ T_ISB_COMOBJ_EXPR  ] = PrintIsbComObjExpr;
+    InstallExecStatFunc( T_ASS_COMOBJ_NAME  , ExecAssComObjName);
+    InstallExecStatFunc( T_ASS_COMOBJ_EXPR  , ExecAssComObjExpr);
+    InstallExecStatFunc( T_UNB_COMOBJ_NAME  , ExecUnbComObjName);
+    InstallExecStatFunc( T_UNB_COMOBJ_EXPR  , ExecUnbComObjExpr);
+    InstallEvalExprFunc( T_ELM_COMOBJ_NAME  , EvalElmComObjName);
+    InstallEvalExprFunc( T_ELM_COMOBJ_EXPR  , EvalElmComObjExpr);
+    InstallEvalExprFunc( T_ISB_COMOBJ_NAME  , EvalIsbComObjName);
+    InstallEvalExprFunc( T_ISB_COMOBJ_EXPR  , EvalIsbComObjExpr);
+    InstallPrintStatFunc( T_ASS_COMOBJ_NAME  , PrintAssComObjName);
+    InstallPrintStatFunc( T_ASS_COMOBJ_EXPR  , PrintAssComObjExpr);
+    InstallPrintStatFunc( T_UNB_COMOBJ_NAME  , PrintUnbComObjName);
+    InstallPrintStatFunc( T_UNB_COMOBJ_EXPR  , PrintUnbComObjExpr);
+    InstallPrintExprFunc( T_ELM_COMOBJ_NAME  , PrintElmComObjName);
+    InstallPrintExprFunc( T_ELM_COMOBJ_EXPR  , PrintElmComObjExpr);
+    InstallPrintExprFunc( T_ISB_COMOBJ_NAME  , PrintIsbComObjName);
+    InstallPrintExprFunc( T_ISB_COMOBJ_EXPR  , PrintIsbComObjExpr);
 
     /* install before and after actions for garbage collections            */
     InitCollectFuncBags( VarsBeforeCollectBags, VarsAfterCollectBags );
@@ -3092,7 +3093,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoVars ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

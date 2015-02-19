@@ -43,7 +43,7 @@
 **  'SIZE') for a boolean list.
 **
 **  Note that 'PLEN_SIZE_BLIST' is a macro, so  do not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define PLEN_SIZE_BLIST(size) \
                         ((((size)-sizeof(Obj))/sizeof(UInt)) * BIPEB)
@@ -57,7 +57,7 @@
 **  <plen> elements must at least have.
 **
 **  Note that 'SIZE_PLEN_BLIST' is a macro, so do not call it with  arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SIZE_PLEN_BLIST(plen) \
                         (sizeof(Obj)+((plen)+BIPEB-1)/BIPEB*sizeof(UInt))
@@ -71,7 +71,7 @@
 **  integer.
 **
 **  Note that 'LEN_BLIST' is a macro, so do not call it  with  arguments that
-**  have sideeffects.
+**  have side effects.
 */
 #define LEN_BLIST(list)         (INT_INTOBJ(ADDR_OBJ(list)[0]))
 
@@ -92,7 +92,7 @@
 **  <len>, which must be a positive C integer.
 **
 **  Note that 'SET_LEN_BLIST' is a macro, so do  not  call it with  arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_LEN_BLIST(list,len) \
                         (ADDR_OBJ(list)[0] = INTOBJ_INT(len))
@@ -118,7 +118,7 @@
 **  of <list>.
 **
 **  Note that 'BLOCK_ELM_BLIST' is a macro, so do not call it  with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define BLOCK_ELM_BLIST(list, pos) (BLOCKS_BLIST( list )[((pos)-1)/BIPEB])
 
@@ -131,7 +131,7 @@
 **  (pos-1) % BIPEB, useful for accessing the pos'th element of a blist
 **
 **  Note that 'MASK_POS_BLIST' is a  macro, so do  not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define MASK_POS_BLIST( pos ) (((UInt) 1)<<((pos)-1)%BIPEB)
 
@@ -145,7 +145,7 @@
 **  or equal to the length of <list>.
 **
 **  Note that 'ELM_BLIST' is a macro, so do not call it  with arguments  that
-**  have sideeffects.
+**  have side effects.
 */
 #define ELM_BLIST(list,pos) \
   ((BLOCK_ELM_BLIST(list,pos) & MASK_POS_BLIST(pos)) ?  True : False)
@@ -160,7 +160,7 @@
 **  equal to the length of <list>.  <val> must be either 'true' or 'false'.
 **
 **  Note that  'SET_ELM_BLIST' is  a macro, so do not  call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 */
 #define SET_ELM_BLIST(list,pos,val)  \
  ((val) == True ? \

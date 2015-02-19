@@ -56,38 +56,38 @@
 
 #############################################################################
 ##
-#F  Mkavec(<pr>) . . . . . . . . . . . . . . . . . . compute the avec for <pr>
+#F  Dt_Mkavec(<pr>)
 ##
-##  'Mkavec' returns the avec for the pc-presentation <pr>.
+##  'Dt_Mkavec' returns the avec for the pc-presentation <pr>.
 ##
-BindGlobal( "Mkavec", function(pr)
+BindGlobal( "Dt_Mkavec", function(pr)
     local  i,j,vec;
 
     vec := [];
     vec[Length(pr)] := 1;
     for  i in [Length(pr)-1,Length(pr)-2..1]  do
-	j := Length(pr);
-	while  j >= 1  do
-	    if  j = vec[i+1]  then
-	   	vec[i] := j;
-		j := 0;
- 	    else
-		j := j-1;
-     		if  j < i  and  IsBound(pr[i][j])  then
-		    vec[i] := j+1;
-		    j := 0;
-		fi;
-		if  j > i  and  IsBound(pr[j][i])  then
-		    vec[i] := j+1;
-		    j := 0;
-		fi;
-	    fi;
-	od;
+        j := Length(pr);
+        while  j >= 1  do
+            if  j = vec[i+1]  then
+                vec[i] := j;
+                j := 0;
+            else
+                j := j-1;
+                if  j < i  and  IsBound(pr[i][j])  then
+                    vec[i] := j+1;
+                    j := 0;
+                fi;
+                if  j > i  and  IsBound(pr[j][i])  then
+                    vec[i] := j+1;
+                    j := 0;
+                fi;
+            fi;
+        od;
     od;
     for  i in [1..Length(pr)]  do
-	if  vec[i] < i+1  then
-	    vec[i] := i+1;
-	fi;
+        if  vec[i] < i+1  then
+            vec[i] := i+1;
+        fi;
     od;
     return vec;
 end );
@@ -96,24 +96,24 @@ end );
 
 #############################################################################
 ##
-#F  IsEqualMonomial(<vec1>, <vec2>) . . . . . . . . test if <vec1> and <vec2> 
+#F  Dt_IsEqualMonomial(<vec1>, <vec2>) . . . . . .  test if <vec1> and <vec2> 
 ##                                                represent the same monomial
 ##
-##  'IsEqualMonomial' returns "true" if <vec1> and <vec2> represent the same 
-##  monomial, and "false" otherwise.
-BindGlobal( "IsEqualMonomial", function(vec1,vec2)
+##  'Dt_IsEqualMonomial' returns "true" if <vec1> and <vec2> represent the
+##  same  monomial, and "false" otherwise.
+BindGlobal( "Dt_IsEqualMonomial", function(vec1,vec2)
     local  i,j;
   
     if  Length(vec1) <> Length(vec2)  then
-	return false;
+        return false;
     fi;
     #  Since the first four entries of a formula vector doesn't contain
     #  any information about the monomial it represents,  it suffices to
     #  compare the remaining entries.
     for  i in [5..Length(vec1)]  do
-	if  not vec1[i] = vec2[i]  then
-	    return false;
-	fi;
+        if  not vec1[i] = vec2[i]  then
+            return false;
+        fi;
     od;
     return true;
 end );
@@ -123,14 +123,14 @@ end );
 
 #############################################################################
 ##
-#F  Ordne2(<vector>) . . . . . . . . . . . . . . . . . sort a formula vector
+#F  Dt_Sort2(<vector>) . . . . . . . . . . . . . . . .  sort a formula vector
 ##
-##  'Ordne2' sorts the pairs of integers in the formula vector <vector>
+##  'Dt_Sort2' sorts the pairs of integers in the formula vector <vector>
 ##  representing the binomial coefficients such that 
 ##  <vector>[5] < <vector>[7] < .. < vector[m-1],  where m is the length
 ##  of <vector>.  This is done for a easier comparison of formula vectors.
 ##
-BindGlobal( "Ordne2", function(vector)
+BindGlobal( "Dt_Sort2", function(vector)
     local  i,list1,list2;
     
     list1 := vector{[5,7..Length(vector)-1]};
@@ -145,20 +145,19 @@ end );
 
 #############################################################################
 ##
-#F  Fueghinzu(<evlist>,<evlistvec>,<formvec>,<pr>) . . . add a formula vector 
-##                                                       to a list
+#F  Dt_AddVecToList(<evlist>,<evlistvec>,<formvec>,<pr>)
 ##
-##  'Fueghinzu' adds the formula vector <formvec> to the list <evlist>,
+##  'Dt_AddVecToList' adds the formula vector <formvec> to the list <evlist>,
 ##  computes the corresponding coefficient vector and adds the latter to
 ##  the list <evlistvec>.
 ##
-BindGlobal( "Fueghinzu", function(evlist, evlistvec, formvec, pr)
+BindGlobal( "Dt_AddVecToList", function(evlist, evlistvec, formvec, pr)
     local    i,j,k;
 
     Add(evlist, formvec);
     k := [];
     for  i in [1..Length(pr)]  do
-	k[i] := 0;
+        k[i] := 0;
     od;
     j := pr[ formvec[3] ][ formvec[4] ];
     #  the coefficient that the monomial represented by <formvec> has
@@ -167,7 +166,7 @@ BindGlobal( "Fueghinzu", function(evlist, evlistvec, formvec, pr)
     #  in the word representing the commutator of g_(formvec[3]) and
     #  g_(formvec[4]) in the presentation <pr>.
     for  i in [3,5..Length(j)-1]  do
-	k[ j[i] ] := formvec[2]*j[i+1];
+        k[ j[i] ] := formvec[2]*j[i+1];
     od;
     Add(evlistvec, k);
 end );
@@ -177,7 +176,7 @@ end );
 ##
 #F  Dt_add( <pol>, <pols>, <pr> )
 ##
-##  Dt_add adds the deep thought monomial <pol> to the list of polynomials
+##  'Dt_add' adds the deep thought monomial <pol> to the list of polynomials
 ##  <pols>,  such that afterwards <pols> represents a simplified polynomial.
 ##
 BindGlobal( "Dt_add", function(pol, pols, pr)
@@ -185,21 +184,21 @@ BindGlobal( "Dt_add", function(pol, pols, pr)
     
     # first sort the deep thought monomial <pol> to compare it with the
     # monomials contained in <pols>.
-    Ordne2(pol);
+    Dt_Sort2(pol);
     # then look which component of <pols> contains <pol> in case that
     # <pol> is contained in <pols>.
     pos := DT_evaluation(pol);
     if  not IsBound( pols[pos] )  then
         # create the component <pols>[<pos>] and add <pol> to it
         pols[pos] := rec( evlist := [], evlistvec := [] );
-        Fueghinzu( pols[pos].evlist, pols[pos].evlistvec, pol, pr );
+        Dt_AddVecToList( pols[pos].evlist, pols[pos].evlistvec, pol, pr );
         return;
     fi;
     flag := 0;
     for  k in [1..Length( pols[pos].evlist ) ]  do
         # look for <pol> in <pols>[<pos>] and if <pol> is contained in
         # <pols>[<pos>] then adjust the corresponding coefficient vector.
-        if  IsEqualMonomial( pol, pols[pos].evlist[k] )  then
+        if  Dt_IsEqualMonomial( pol, pols[pos].evlist[k] )  then
             rel := pr[ pol[3] ][ pol[4] ];
             for  j in [3,5..Length(rel)-1]  do
                 pols[pos].evlistvec[k][ rel[j] ] := 
@@ -211,24 +210,24 @@ BindGlobal( "Dt_add", function(pol, pols, pr)
     od;
     if  flag = 0  then
         # <pol> is not contained in <pols>[<pos>] so add it to <pols>[<pos>]
-        Fueghinzu(pols[pos].evlist, pols[pos].evlistvec, pol, pr);
+        Dt_AddVecToList(pols[pos].evlist, pols[pos].evlistvec, pol, pr);
     fi;
 end );
 
 
 #############################################################################
 ##
-#F  Konvertiere(<sortedpols>)
+#F  Dt_Convert(<sortedpols>)
 ##
-##  'Konvertiere' converts the list of formula vectors <sortedpols>. Before
-##  applying <Konvertiere> <sortedpols> is a list of records with the
+##  'Dt_Convert' converts the list of formula vectors <sortedpols>. Before
+##  applying <Dt_Convert> <sortedpols> is a list of records with the
 ##  components <evlist> and <evlistvec> where <evlist> contains deep thought
 ##  monomials and <evlistvec> contains the corresponding coefficient vectors.
-##  <Konvertiere> merges the <evlist>-compondents of the records contained
+##  <Dt_Convert> merges the <evlist>-compondents of the records contained
 ##  in <sortedpols> into one component <evlist> and the <evlistvec>-coponents
 ##  into one component <evlistvec>.
 ##
-BindGlobal( "Konvertiere", function(sortedpols)
+BindGlobal( "Dt_Convert", function(sortedpols)
     local  k,res;
     
     if  Length(sortedpols) = 0  then
@@ -246,25 +245,26 @@ end );
 
 #############################################################################
 ##
-#F  Konvert2(<evlistvec>) . . . . . . . . . . . . convert coefficient vectors
+#F  Dt_ConvertCoeffVecs(<evlistvec>)
 ##
-##  'Konvert2' converts the coefficient vectors in the list <evlistvec>.
-##  Before applying <Konvert2> an entry <evlistvec>[i][j] = k means that
-##  the deep thought monomial <evlist>[i] occurs in the polynomial f_j with
-##  coefficient k. After applying <Konvert2> a pair [j, k] occuring in
-##  <eclistvec>[i] means that <evlist>[i] occurs in f_j with coefficient k.
+##  'Dt_ConvertCoeffVecs' converts the coefficient vectors in the list
+##  <evlistvec>. Before applying <Dt_ConvertCoeffVecs>, an entry
+##  <evlistvec>[i][j] = k means that the deep thought monomial <evlist>[i]
+##  occurs in the polynomial f_j with coefficient k. After applying
+##  <Dt_ConvertCoeffVecs> a pair [j, k] occuring in <eclistvec>[i] means that
+##  <evlist>[i] occurs in f_j with coefficient k.
 ##
-BindGlobal( "Konvert2", function(evlistvec, pr)
+BindGlobal( "Dt_ConvertCoeffVecs", function(evlistvec, pr)
     local i,j,res;
 
     for  i in [1..Length(evlistvec)]  do
-	res := [];
+        res := [];
         for  j in [1..Length(evlistvec[i])]  do
             if  evlistvec[i][j] <> 0  then
                 Append(res, [j, evlistvec[i][j] ]);
             fi;
         od;
-	evlistvec[i] := res;
+        evlistvec[i] := res;
     od;
 end );
 
@@ -324,11 +324,12 @@ end );
 
 #############################################################################
 ##
-#F  Redkomprimiere( <list> )
+#F  Dt_RemoveHoles( <list> )
 ##
-##  Redkomprimiere removes all empty entries from <list>
+##  Dt_RemoveHoles removes all empty entries from <list>
+##  It is similar to Compacted(), but works in-place
 ##
-BindGlobal( "Redkomprimiere", function( list )
+BindGlobal( "Dt_RemoveHoles", function( list )
     local  skip, i;
     
     skip := 0;
@@ -373,14 +374,14 @@ BindGlobal( "ReduceCoefficientsOfRws", function(dtrws)
                       dtrws![PC_ORDERS][ pseudoreps[i].evlistvec[j][k-1] ];
                 fi;
             od;
-            Compress( pseudoreps[i].evlistvec[j] );
+            DTCompress( pseudoreps[i].evlistvec[j] );
             if  Length( pseudoreps[i].evlistvec[j] ) = 0  then
                 Unbind( pseudoreps[i].evlistvec[j] );
                 Unbind( pseudoreps[i].evlist[j] );
             fi;
         od;
-        Redkomprimiere( pseudoreps[i].evlistvec );
-        Redkomprimiere( pseudoreps[i].evlist );
+        Dt_RemoveHoles( pseudoreps[i].evlistvec );
+        Dt_RemoveHoles( pseudoreps[i].evlist );
         i := i+1;
     od;
 end );
@@ -388,11 +389,11 @@ end );
 
 #############################################################################
 ##
-##  GetMax( <tree>, <number>, <pr> )
+##  Dt_GetMax( <tree>, <number>, <pr> )
 ##  
-##  GetMax returns the maximal value for pos(tree) if num(tree) = <number>.  
+##  Dt_GetMax returns the maximal value for pos(tree) if num(tree) = <number>.  
 ##
-BindGlobal( "GetMax", function(tree, number, pr)
+BindGlobal( "Dt_GetMax", function(tree, number, pr)
     local rel, max, position;
     
     if  Length(tree) = 5  then
@@ -427,11 +428,11 @@ end );
 
 #############################################################################
 ##
-#F  GetNumRight( <tree> )
+#F  Dt_GetNumRight( <tree> )
 ##  
-##  GetNumRight  returns num( right( tree ) ).
+##  Dt_GetNumRight  returns num( right( tree ) ).
 ##
-BindGlobal( "GetNumRight", function(tree)
+BindGlobal( "Dt_GetNumRight", function(tree)
     
     if Length(tree) <> 4  then
         return  tree[ 5*(tree[9]+1)+2 ];
@@ -510,8 +511,8 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                             if Length(reps[j][x]) = 5  
                                or  k >= reps[j][x][ 5*(reps[j][x][9]+1)+2 ]  
                                then
-                                max1 := GetMax(reps[j][x], j, pr);
-                                max2 := GetMax(y, k, pr);
+                                max1 := Dt_GetMax(reps[j][x], j, pr);
+                                max2 := Dt_GetMax(y, k, pr);
                                 z := [1,i,0, reps[j][x][4]+y[4]+1, 0];
                                 Append(z,reps[j][x]);
                                 Append(z,y);
@@ -553,14 +554,14 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                     for x in [start..Length(reps[j])]  do
                         for y in reps[k]  do
                             if Length(reps[j][x]) = 5  
-                               or  k >= GetNumRight(reps[j][x])  then
+                               or  k >= Dt_GetNumRight(reps[j][x])  then
                                 # since reps[j] and reps[k] may contain
                                 # pseudorepresentatives which are trees
                                 # as well as "real" pseudorepresentatives
                                 # it is necessary to take several cases into
                                 # consideration.
-                                max1 := GetMax(reps[j][x], j, pr);
-                                max2 := GetMax(y, k, pr);
+                                max1 := Dt_GetMax(reps[j][x], j, pr);
+                                max2 := Dt_GetMax(y, k, pr);
                                 if  Length(reps[j][x]) <> 4  then
                                     if  reps[j][x][2] <> j  then
                                         # we have to ensure that 
@@ -654,9 +655,9 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
        Unbind(reps[i]);
    od;
    # finally convert the polynomials to the final state
-   pols := Konvertiere(pols);
+   pols := Dt_Convert(pols);
    if  pols <> 0  then
-      Konvert2(pols.evlistvec, pr);
+      Dt_ConvertCoeffVecs(pols.evlistvec, pr);
    fi;
    return(pols);
 end );
@@ -674,7 +675,7 @@ BindGlobal( "Calcreps2", function(pr, max, dtbound)
     local  i,reps,avec,max2, max1;
     
     reps := [];
-    avec := Mkavec(pr);
+    avec := Dt_Mkavec(pr);
     if  max >= Length(pr)  then
         max1 := Length(pr);
     else

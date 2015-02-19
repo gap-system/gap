@@ -1,9 +1,6 @@
 
-DeclareCategory("IsAssociativeElementWithAction", IsAssociativeElement);
-DeclareCategoryCollections("IsAssociativeElementWithAction");
-
 DeclareCategoryKernel("IsTransformation",
-        IsMultiplicativeElementWithInverse and IsAssociativeElementWithAction,
+        IsMultiplicativeElementWithInverse and IsAssociativeElement,
         IS_TRANS);
 
 DeclareCategoryCollections( "IsTransformation" );
@@ -20,5 +17,4 @@ BIND_GLOBAL("TYPE_TRANS2", NewType(TransformationFamily,
 
 BIND_GLOBAL("TYPE_TRANS4", NewType(TransformationFamily,
  IsTransformation and IsTrans4Rep));
-
 

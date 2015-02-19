@@ -22,8 +22,6 @@ DeclareGlobalFunction("FullTransformationSemigroup");
 DeclareSynonym("FullTransformationMonoid", FullTransformationSemigroup);
 
 DeclareAttribute("DegreeOfTransformationSemigroup", IsTransformationSemigroup);
-DeclareAttribute("NormalizedDegreeOfTransformationSemigroup",
-IsTransformationSemigroup);
 
 DeclareAttribute("IsomorphismPermGroup", IsGreensHClass);
 DeclareAttribute("IsomorphismTransformationSemigroup", IsSemigroup);

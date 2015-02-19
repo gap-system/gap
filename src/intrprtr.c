@@ -138,11 +138,11 @@ UInt IntrCoding;
 **  'CountObj' there were active when the current interpreter was started and
 **  which will be made active again when the current interpreter will stop.
 */
-Obj             IntrState;
+static Obj             IntrState;
 
-Obj             StackObj;
+static Obj             StackObj;
 
-Int             CountObj;
+static Int             CountObj;
 
 void            PushObj (
     Obj                 val )
@@ -907,6 +907,175 @@ void            IntrWhileEnd ( void )
 
     /* call the function                                                   */
     CALL_0ARGS( func );
+
+    /* push void                                                           */
+    PushVoidObj();
+}
+
+
+/****************************************************************************
+**
+*F  IntrQualifiedExprBegin( UInt qual ) . . . . . . interpret expression guarded
+**                                       by readwrite or readonlu
+*F  IntrQualifiedExprEnd( ) 
+**                                       by readwrite or readonlu
+**
+*/
+
+void IntrQualifiedExprBegin(UInt qual) 
+{
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { IntrIgnoring++; return; }
+    if ( IntrCoding    > 0 ) { CodeQualifiedExprBegin(qual); return; }
+    PushObj(INTOBJ_INT(qual));
+    return;
+}
+
+void IntrQualifiedExprEnd( void ) 
+{
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { IntrIgnoring--; return; }
+    if ( IntrCoding    > 0 ) { CodeQualifiedExprEnd(); return; }
+    return;
+}
+
+/****************************************************************************
+**
+*F  IntrAtomicBegin()  . . . . . interpret atomic-statement, begin of statement
+*F  IntrAtomicBeginBody(<nrexprs>)  . . . . .  interpret atomic-statement, begin of body
+*F  IntrAtomicEndBody(<nrstats>)  . . . . .  interpret atomic-statement, end of body
+*F  IntrAtomicEnd()  . . . . . . . interpret atomic-statement, end of statement
+**
+**  'IntrAtomicBegin' is   an action to  interpret   a atomic-statement.  It is
+**  called when the    reader encounters the    'atomic', i.e., *before*   the
+**  expressions to be locked are read.
+**
+**  'IntrAtomicBeginBody' is an action  to interpret a atomic-statement.  It is
+**  called when the reader encounters  the  beginning of the statement  body,
+**  i.e., *after* the expressions to be locked are read. <nrexprs> is the number
+** of expressions to be locked
+**
+**  'IntrAtomicEndBody' is  an action to interpret   a atomic-statement.  It is
+**  called when the reader encounters the end of the statement body.  <nrstats> is
+**  the number of statements in the body.
+**
+**  'IntrAtomicEnd' is an action to interpret a atomic-statement.  It is called
+**  when  the reader encounters  the  end of  the  statement, i.e., immediate
+**  after 'IntrAtomicEndBody'.
+**
+**  These functions are just placeholders for the future HPC-GAP code
+**
+*/
+void            IntrAtomicBegin ( void )
+{
+
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { CodeAtomicBegin(); return; }
+    /* nothing to do here */
+    return;
+  
+}
+
+void            IntrAtomicBeginBody ( UInt nrexprs )
+{
+  Obj nams;
+
+    /* ignore    or code                                                          */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { IntrCoding++; CodeAtomicBeginBody(nrexprs); return; }
+
+
+    /* leave the expressions and qualifiers on the stack, switch to coding to process the body
+       of the Atomic expression */
+    PushObj(INTOBJ_INT(nrexprs));
+    CodeBegin();
+    IntrCoding = 1;
+    
+    
+    /* code a function expression (with no arguments and locals)           */
+    
+    nams = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( nams, 0 );
+    
+    /* If we are in the break loop, then a local variable context may well exist,
+       and we have to create an empty local variable names list to match the
+       function expression that we are creating.
+       
+       If we are not in a break loop, then this would be a waste of time and effort */
+    
+    if (CountNams > 0)
+      {
+	GROW_PLIST(StackNams, ++CountNams);
+	SET_ELM_PLIST(StackNams, CountNams, nams);
+	SET_LEN_PLIST(StackNams, CountNams);
+      }
+    
+    CodeFuncExprBegin( 0, 0, nams, Input->number );
+}
+
+void            IntrAtomicEndBody (
+    Int                nrstats )
+{
+  Obj body;
+
+    /* ignore                                                              */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+
+    if (IntrCoding == 1) {
+      /* This is the case where we are really immediately interpreting an atomic
+	 statement, but we switched to coding to store the body until we have it all */
+
+    /* If we are in a break loop, then we will have created a "dummy" local
+       variable names list to get the counts right. Remove it */
+      if (CountNams > 0)
+	CountNams--;
+
+      /* Code the body as a function expression */
+      CodeFuncExprEnd( nrstats, 0UL );
+    
+
+      /* switch back to immediate mode, get the function                     */
+      IntrCoding = 0;
+      CodeEnd( 0 );
+      body = CodeResult;
+      PushObj(body);
+      return;
+    } else {
+      
+        assert( IntrCoding > 0 );
+        CodeAtomicEndBody( nrstats );
+    }
+}
+
+
+void            IntrAtomicEnd ( void )
+{
+    Obj                 body;           /* the function, result            */
+    UInt                nrexprs;
+    UInt                i;
+
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { IntrCoding--; CodeAtomicEnd(); return; }
+    /* Now we need to recover the objects to lock, and go to work */
+
+    body = PopObj();
+
+    nrexprs = INT_INTOBJ(PopObj());
+
+    for (i = 0; i < nrexprs; i++) {
+      PopObj(); /* pop object */
+      PopObj(); /* pop mode */
+    }
+    
+      CALL_0ARGS( body );
 
     /* push void                                                           */
     PushVoidObj();
@@ -4490,7 +4659,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoIntrprtr ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

@@ -72,6 +72,7 @@ mentioned below may not be available on your installation.
 <#Include Label="CyclicGroup">
 <#Include Label="AbelianGroup">
 <#Include Label="ElementaryAbelianGroup">
+<#Include Label="FreeAbelianGroup">
 <#Include Label="DihedralGroup">
 <#Include Label="QuaternionGroup">
 <#Include Label="ExtraspecialGroup">

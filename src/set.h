@@ -41,7 +41,7 @@ extern  Obj             SetList (
 **
 **  'IsSet' returns 1 if the list <list> is a proper set  and 0 otherwise.  A
 **  proper set is a list that has no holes, no duplicates, and is sorted.  As
-**  a sideeffect 'IsSet' changes the type of proper sets to 'T_SET'.
+**  a side effect 'IsSet' changes the type of proper sets to 'T_SET'.
 **
 **  A typical call in the set functions looks like this:                   \\
 **  |    if ( ! IsSet(list) )  list = SetList(list); |                     \\

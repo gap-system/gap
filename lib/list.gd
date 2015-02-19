@@ -941,26 +941,6 @@ DeclareOperation( "PositionSublist", [ IsList,IsList,IS_INT ] );
 
 #############################################################################
 ##
-#O  PositionFirstComponent( <list>, <obj> )
-##
-##  <#GAPDoc Label="PositionFirstComponent">
-##  <ManSection>
-##  <Oper Name="PositionFirstComponent" Arg='list, obj'/>
-##
-##  <Description>
-##  returns the index <A>i</A> in <A>list</A> such that
-##  <A>list</A><C>[</C><A>i</A><C>][1] = </C><A>obj</A>
-##  or the  place where such an entry should be added
-##  (cf. <Ref Oper="PositionSorted"/>).
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation("PositionFirstComponent",[IsList,IsObject]);
-
-
-#############################################################################
-##
 #O  IsMatchingSublist( <list>, <sub>[, <at>] )
 ##
 ##  <#GAPDoc Label="IsMatchingSublist">
@@ -1485,9 +1465,10 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  <#GAPDoc Label="Sort">
 ##  <ManSection>
 ##  <Oper Name="Sort" Arg='list[, func]'/>
+##  <Oper Name="SortBy" Arg='list, func'/>
 ##
 ##  <Description>
-##  sorts the list <A>list</A> in increasing order.
+##  <Ref Oper="Sort"/> sorts the list <A>list</A> in increasing order.
 ##  In the one argument form <Ref Oper="Sort"/> uses the operator <C>&lt;</C>
 ##  to compare the elements.
 ##  (If the list is not homogeneous it is the users responsibility to ensure
@@ -1526,14 +1507,13 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  gap> list;
 ##  [ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
 ##  ]]></Example>
-##  </Description>
-##  <Oper Name="SortBy" Arg='list, func'/>
-##  <Description> sorts the list <A>list</A> into an order such that
+##  <Ref Oper="SortBy"/> sorts the list <A>list</A> into an order such that
 ##  <C>func(list[i]) &lt;= func(list[i+1])</C> for all relevant
 ##  <A>i</A>. <A>func</A> must thus be a function on one argument which returns
 ##  values that can be compared.  Each <C>func(list[i])</C> is computed just
 ##  once and stored, making this more efficient than using the two-argument
-##  version of <Ref Oper="Sort"/> in many cases.  </Description>
+##  version of <Ref Oper="Sort"/> in many cases.  
+##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
@@ -1672,23 +1652,6 @@ DeclareOperation( "SortParallel",
     [ IsDenseList and IsMutable, IsDenseList and IsMutable ] );
 DeclareOperation( "SortParallel",
     [ IsDenseList and IsMutable, IsDenseList and IsMutable, IsFunction ] );
-
-
-#############################################################################
-##
-#F  LengthComparison( <list1>, <list2> )
-##
-##  <ManSection>
-##  <Func Name="LengthComparison" Arg='list1, list2'/>
-##
-##  <Description>
-##  This function returns <K>true</K> if the length of <A>list1</A>
-##  is smaller than the length of <A>list2</A>.
-##  It can be used to sort according to length of lists.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction("LengthComparison");
 
 
 #############################################################################

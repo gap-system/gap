@@ -55,15 +55,28 @@
 **  'AddList' adds the object <obj> to the end  of  the  list  <list>,  i.e.,
 **  it is equivalent to the assignment '<list>[ Length(<list>)+1 ] := <obj>'.
 **  The  list is  automatically extended to   make room for  the new element.
-**  'AddList' returns nothing, it is called only for its sideeffect.
+**  'AddList' returns nothing, it is called only for its side effect.
 */
+void            AddList3 (
+    Obj                 list,
+    Obj                 obj,
+    Int                 pos)
+{
+    Int                 len;
+    Int                 i;
+    len = LEN_LIST(list);
+    if (pos == (Int) -1)
+      pos = len + 1;
+    for (i = len +1; i > pos; i--)
+      ASS_LIST(list, i, ELM_LIST(list, i-1));
+    ASS_LIST( list, pos, obj );
+}
+
 void            AddList (
     Obj                 list,
-    Obj                 obj )
+    Obj                 obj)
 {
-    Int                 pos;            /* position to assign to           */
-    pos = LEN_LIST( list ) + 1;
-    ASS_LIST( list, pos, obj );
+  AddList3(list, obj, -1);
 }
 
 extern Obj FuncADD_LIST(
@@ -71,11 +84,19 @@ extern Obj FuncADD_LIST(
     Obj                 list,
     Obj                 obj );
 
-void            AddPlist (
+extern Obj FuncADD_LIST3(
+    Obj                 self,
     Obj                 list,
-    Obj                 obj )
+    Obj                 obj,
+    Obj			pos );
+
+
+void            AddPlist3 (
+    Obj                 list,
+    Obj                 obj,
+    Int 		pos )
 {
-    Int                 pos;            /* position to assign to           */
+  UInt len;
 
     if ( ! IS_MUTABLE_PLIST(list) ) {
         list = ErrorReturnObj(
@@ -86,46 +107,75 @@ void            AddPlist (
         return;
     }
     /* in order to be optimistic when building list call assignment        */
-    pos = LEN_PLIST( list ) + 1;
-    if ( pos == 1 ) {
+    len = LEN_PLIST( list );
+    if (pos == (Int)-1)
+      pos = len + 1;
+    if ( len == 0) {
         AssPlistEmpty( list, pos, obj );
+	return;
     }
-    else {
-      ASS_LIST( list, pos, obj);
-      /*  The code below is commented out and replaced by the line above, so
-          as, at the cost of one extra dispatch, to take advantage of the
-          special code in AssPlist<things> which maintain as much information
-          about denseness homogeneity, etc as possible */
-      /*        RetypeBag( list, T_PLIST );
-                GROW_PLIST( list, pos );
-                SET_LEN_PLIST( list, pos );
-                SET_ELM_PLIST( list, pos, obj );
-                CHANGED_BAG( list ); */
+    if (pos <= len) {
+      GROW_PLIST(list, len+1);
+      SET_LEN_PLIST(list, len+1);
+      memmove((void *)(ADDR_OBJ(list) + pos+1),
+	      (const void *)(ADDR_OBJ(list) + pos),
+	      (size_t)(sizeof(Obj)*(len - pos + 1)));
     }
+    ASS_LIST( list, pos, obj);
+}
+void            AddPlist (
+    Obj                 list,
+    Obj                 obj)
+{
+
+  AddPlist3(list, obj, -1);
 }
 
 Obj AddListOper;
 
-Obj FuncADD_LIST (
+Obj FuncADD_LIST3 (
     Obj                 self,
     Obj                 list,
-    Obj                 obj )
+    Obj                 obj,
+    Obj                 pos)
 {
-    /* dispatch                                                            */
-    if ( IS_PLIST( list ) ) {
-        AddPlist( list, obj );
-    }
-    else if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
-        AddList( list, obj );
-    }
-    else {
-        DoOperation2Args( self, list, obj );
-    }
+    /* dispatch                */
+  Int ipos;
+  if (pos == (Obj)0)
+    ipos = -1;
+  else if (IS_INTOBJ(pos))
+    ipos = INT_INTOBJ(pos);
+  else {
+    DoOperation3Args( self, list,  obj, pos);
+    return (Obj) 0;
+  }
+  if ( IS_PLIST( list ) ) {
+    AddPlist3( list, obj, ipos );
+  }
+  else if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
+    AddList3( list, obj, ipos );
+  }
+  else {
+    if (pos == 0)
+      DoOperation2Args( self, list, obj );
+    else
+      DoOperation3Args( self, list,  obj, pos);
+  }
 
     /* return nothing                                                      */
     return (Obj)0;
 }
 
+
+Obj FuncADD_LIST (
+		  Obj self,
+		  Obj list,
+		  Obj obj)
+{
+  FuncADD_LIST3(self, list, obj, (Obj)0);
+  return (Obj) 0;
+}
+		   
 
 /****************************************************************************
 **
@@ -332,6 +382,7 @@ Obj             FuncAPPEND_LIST (
     return (Obj)0;
 }
 
+
 /****************************************************************************
 **
 *F  POSITION_SORTED_LIST(<list>,<obj>)  . . . . find an object in a sorted list
@@ -492,7 +543,7 @@ Obj             FuncPOSITION_SORTED_COMP (
     /* check the first argument                                            */
     while ( ! IS_SMALL_LIST(list) ) {
         list = ErrorReturnObj(
-            "POSITION_SORTED_LISTComp: <list> must be a small list (not a %s)",
+            "POSITION_SORTED_COMP: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
             "you can replace <list> via 'return <list>;'" );
     }
@@ -500,7 +551,7 @@ Obj             FuncPOSITION_SORTED_COMP (
     /* check the third argument                                            */
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
-            "POSITION_SORTED_LISTComp: <func> must be a function (not a %s)",
+            "POSITION_SORTED_COMP: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
             "you can replace <func> via 'return <func>;'" );
     }
@@ -1924,8 +1975,11 @@ Obj FuncHORSPOOL_LISTS(Obj self,Obj wrep, Obj subrep, Obj pre)
 */
 static StructGVarOper GVarOpers [] = {
 
-    { "ADD_LIST", 2, "list, val", &AddListOper,
-      FuncADD_LIST, "src/listfunc.c:ADD_LIST" },
+  /*    { "ADD_LIST", 2, "list, val", &AddListOper,
+	FuncADD_LIST, "src/listfunc.c:ADD_LIST" }, */
+
+    { "ADD_LIST", -1, "list, obj", &AddListOper,
+      DoOperation0Args, "src/listfunc.c:ADD_LIST" },
 
     { "REM_LIST", 1, "list", &RemListOper,
       FuncREM_LIST, "src/listfunc.c:REM_LIST" },
@@ -2018,9 +2072,16 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* init filters and functions                                          */
+    /* ADD_LIST needs special consideration because we want distinct kernel
+       handlers for 2 and 3 arguments */
+    InitHandlerFunc( FuncADD_LIST, "src/listfunc.c:FuncADD_LIST" );
+    InitHandlerFunc( FuncADD_LIST3, "src/listfunc.c:FuncADD_LIST3" );
+
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
+
+    
     /* return success                                                      */
     return 0;
 }
@@ -2036,6 +2097,10 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
+
+    /* make and install the 'ADD_LIST' operation                           */
+    HDLR_FUNC( AddListOper, 2 ) = FuncADD_LIST;
+    HDLR_FUNC( AddListOper, 3 ) = FuncADD_LIST3;
 
     /* return success                                                      */
     return 0;
@@ -2063,7 +2128,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoListFunc ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

@@ -1430,7 +1430,7 @@ InstallMethod( MutableBasis,
 
 InstallOtherMethod( MutableBasis,
     "method to construct mutable bases of row spaces",
-    IsIdenticalObjObjXObj,
+    IsFamXFam,
     [ IsRing, IsList, IsRowVector ],
     function( R, vectors, zero )
     local B;

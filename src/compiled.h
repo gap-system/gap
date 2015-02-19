@@ -9,6 +9,11 @@
 #ifndef GAP_COMPILED_H
 #define GAP_COMPILED_H
 
+#ifdef __cplusplus
+extern "C" {
+#define GAP_IN_EXTERN_C
+#endif
+
 #include        "system.h"              /* system dependent part           */
 
 #include        "gasman.h"              /* garbage collector               */
@@ -49,13 +54,14 @@
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
 
+#include        "tls.h"                 /* thread-local storage            */
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
 #include        "objscoll.h"            /* single collector                */
 #include        "objcftl.h"             /* from the left collect           */
 
 #include        "dt.h"                  /* deep thought                    */
-#include        "dteval.h"              /* deep though evaluation          */
+#include        "dteval.h"              /* deep thought evaluation          */
 
 #include        "sctable.h"             /* structure constant table        */
 #include        "costab.h"              /* coset table                     */
@@ -336,8 +342,7 @@ static inline void C_SET_LIMB2(Obj bag, UInt limbnumber, UInt2 value)  {
 
 #if INTEGER_UNIT_SIZE == 2
   ((UInt2 *)ADDR_OBJ(bag))[limbnumber] = value;
-#else
-#if INTEGER_UNIT_SIZE == 4
+#elif INTEGER_UNIT_SIZE == 4
   UInt4 *p;
   if (limbnumber % 2) {
     p = ((UInt4 *)ADDR_OBJ(bag)) + (limbnumber-1) / 2;
@@ -349,7 +354,7 @@ static inline void C_SET_LIMB2(Obj bag, UInt limbnumber, UInt2 value)  {
 #else
   UInt8 *p;
     p  = ((UInt8 *)ADDR_OBJ(bag)) + limbnumber/4;
-    switch(limbnumber %4) {
+    switch(limbnumber % 4) {
     case 0: 
       *p = (*p & 0xFFFFFFFFFFFF0000UL) | (UInt8)value;
       break;
@@ -360,10 +365,9 @@ static inline void C_SET_LIMB2(Obj bag, UInt limbnumber, UInt2 value)  {
       *p = (*p & 0xFFFF0000FFFFFFFFUL) | ((UInt8)value << 32);
       break;
     case 3:
-      *p = (*p & 0xFFFFFFFFFFFFUL) | ((UInt8)value << 48);
+      *p = (*p & 0x0000FFFFFFFFFFFFUL) | ((UInt8)value << 48);
       break;
     }
-#endif
 #endif  
 }
 
@@ -371,8 +375,7 @@ static inline void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)  {
 
 #if INTEGER_UNIT_SIZE == 4
   ((UInt4 *)ADDR_OBJ(bag))[limbnumber] = value;
-#else
-#if INTEGER_UNIT_SIZE == 8
+#elif INTEGER_UNIT_SIZE == 8
   UInt8 *p;
   if (limbnumber % 2) {
     p = ((UInt8*)ADDR_OBJ(bag)) + (limbnumber-1) / 2;
@@ -384,7 +387,6 @@ static inline void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)  {
 #else
   ((UInt2 *)ADDR_OBJ(bag))[2*limbnumber] = (UInt2)(value & 0xFFFFUL);
   ((UInt2 *)ADDR_OBJ(bag))[2*limbnumber+1] = (UInt2)(value >>16);
-#endif
 #endif  
 }
 
@@ -393,8 +395,7 @@ static inline void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)  {
 static inline void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value)  { 
 #if INTEGER_UNIT_SIZE == 8
   ((UInt8 *)ADDR_OBJ(bag))[limbnumber] = value;
-#else
-#if INTEGER_UNIT_SIZE == 4
+#elif INTEGER_UNIT_SIZE == 4
   ((UInt4 *)ADDR_OBJ(bag))[2*limbnumber] = (UInt4)(value & 0xFFFFFFFFUL);
   ((UInt4 *)ADDR_OBJ(bag))[2*limbnumber+1] = (UInt4)(value >>32);
 #else
@@ -402,7 +403,6 @@ static inline void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value)  {
   ((UInt2 *)ADDR_OBJ(bag))[4*limbnumber+1] = (UInt2)((value & 0xFFFF0000ULL) >>16);
   ((UInt2 *)ADDR_OBJ(bag))[4*limbnumber+2] = (UInt2)((value & 0xFFFF00000000ULL) >>32);
   ((UInt2 *)ADDR_OBJ(bag))[4*limbnumber+3] = (UInt2)(value >>48);
-#endif
 #endif
 }
 
@@ -456,6 +456,11 @@ static inline Obj C_NORMALIZE_64BIT( Obj o) {
 
 #endif
 
+#ifdef __cplusplus
+}
+#undef GAP_IN_EXTERN_C
+#endif
+    
 #endif // GAP_COMPILED_H
 
 /****************************************************************************

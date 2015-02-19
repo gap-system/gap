@@ -381,10 +381,14 @@ local so,fp,isofp,rels,mapi;
   # relators in the generators on the genimages and take the normal closure.
   so:=Source(map);
   mapi:=MappingGeneratorsImages(map);
-  isofp:=IsomorphismFpGroupByGeneratorsNC(so,mapi[1],"F");
-  fp:=Range(isofp);
-  rels:=RelatorsOfFpGroup(fp);
-  rels:=List(rels,i->MappedWord(i,FreeGeneratorsOfFpGroup(fp),mapi[2]));
+  if Length(GeneratorsOfGroup(so))=0 then
+    rels:=ShallowCopy(mapi[2]);
+  else
+    isofp:=IsomorphismFpGroupByGeneratorsNC(so,mapi[1],"F");
+    fp:=Range(isofp);
+    rels:=RelatorsOfFpGroup(fp);
+    rels:=List(rels,i->MappedWord(i,FreeGeneratorsOfFpGroup(fp),mapi[2]));
+  fi;
   return NormalClosure(Range(map),SubgroupNC(Range(map),rels));
 end);
 
@@ -773,6 +777,7 @@ local aug,w,p,pres,f,fam,opt;
   fi;
 
   TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup); 
+  #Error("hier");
   TzGoGo(pres); # cleanup
 
   # new free group
@@ -926,7 +931,7 @@ InstallMethod(NaturalHomomorphismByNormalSubgroupOp,
   "for subgroups of fp groups",IsIdenticalObj,
     [IsSubgroupFpGroup, IsSubgroupFpGroup],0,
 function(G,N)
-local T;
+local T,m;
 
   # try to use rewriting if the index is not too big.
   if IndexInWholeGroup(G)>1 and IndexInWholeGroup(G)<=1000 
@@ -946,10 +951,11 @@ local T;
         TryNextMethod(); # can't do
       fi;
       # did not succeed - do the stupid thing
-      T:=FactorGroupNC( G, GeneratorsOfGroup( N ) );
-      T:=GroupHomomorphismByImagesNC(G,T,
-          GeneratorsOfGroup(G),GeneratorsOfGroup(T));
-      return T;
+      m:=CosetTableDefaultMaxLimit;
+      repeat
+        m:=m*1000;
+	T:=TryCosetTableInWholeGroup(N:silent:=true,max:=m);
+      until T<>fail;
     fi;
 
   fi;
@@ -1003,7 +1009,7 @@ InstallMethod(MaximalAbelianQuotient,"whole fp group",
 function(f)
 local m,s,g,i,j,rel,gen,img,fin,hom,gens;
 
-  # since f is the full group, exponent susm are in respect to its
+  # since f is the full group, exponent sums are with respect to its
   # generators.
   m:=List(RelatorsOfFpGroup(f),w->ExponentSums(w));
 

@@ -983,7 +983,7 @@ local Ugens,imgs,conj,cg,auc,cghom,d,embn,embs,l,u,P,info;
       embs:=GroupHomomorphismByImagesNC(U,P,Ugens,l);
       info := rec( groups := [ U, N ],
 		  embeddings := [embs,RestrictedMapping(embn,N) ],
-		  projections := RestrictedMapping(Projection(d,2),P));
+		  projections := RestrictedMapping(Projection(d,1),P));
       SetSemidirectProductInfo( P, info );
       return P;
     fi;

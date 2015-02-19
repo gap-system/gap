@@ -164,12 +164,84 @@ local g;
   return g;
 end);
 
+BindGlobal("ChevalleyG",function(q)
+local p,f,z,G,o;
+  # Generators probably due to Don Taylor, communicated by Derek Holt
+  p:=Factors(q);
+  if Length(Set(p))>1 then Error("<q> must be prime power");fi;
+  p:=p[1];
+  f:=GF(q);
+  z:=PrimitiveRoot(f);
+  o:=One(f);
+
+  # first generator differs for q=2,p=3
+  if q=2 then 
+    G:=Group(
+	o*[[1,1,0,0,0,0,0],
+	[0,1,0,0,0,0,0],
+	[0,0,1,1,1,0,0],
+	[0,0,0,1,0,0,0],
+	[0,0,0,0,1,0,0],
+	[0,0,0,0,0,1,1],
+	[0,0,0,0,0,0,1]],
+	o*[[0,0,1,0,0,0,0],
+	[1,0,0,0,0,0,0],
+	[0,0,0,0,0,1,0],
+	[0,0,0,1,0,0,0],
+	[0,1,0,0,0,0,0],
+	[0,0,0,0,0,0,1],
+	[0,0,0,0,1,0,0]]);
+  elif p=3 then 
+    G:=Group(
+    o*[[z^2,0,0,0,0,0,0],
+      [0,z,0,0,0,0,0],
+      [0,0,z,0,0,0,0],
+      [0,0,0,1,0,0,0],
+      [0,0,0,0,z^(q-2),0,0],
+      [0,0,0,0,0,z^(q-2),0],
+      [0,0,0,0,0,0,z^(q-3)]],
+      o*[[0,0,1,0,0,0,0],
+      [2,0,1,0,0,1,0],
+      [0,0,0,0,0,1,0],
+      [0,0,0,2,0,2,0],
+      [0,2,0,2,0,1,1],
+      [0,0,0,0,0,0,1],
+      [0,0,0,0,1,0,1]]
+    );
+  else
+    G:=Group(
+     o*[[z,0,0,0,0,0,0],
+      [0,z^(q-2),0,0,0,0,0],
+      [0,0,z^2,0,0,0,0],
+      [0,0,0,1,0,0,0],
+      [0,0,0,0,z^(q-3),0,0],
+      [0,0,0,0,0,z,0],
+      [0,0,0,0,0,0,z^(q-2)]],
+      o*[[p-1,0,1,0,0,0,0],
+      [p-1,0,0,0,0,0,0],
+      [0,p-1,0,p-1,0,1,0],
+      [0,p-2,0,p-1,0,0,0],
+      [0,p-1,0,0,0,0,0],
+      [0,0,0,0,1,0,1],
+      [0,0,0,0,1,0,0]]);
+  fi;
+
+  return G; 
+end);
+
 InstallGlobalFunction(SimpleGroup,function(arg)
-local brg,str,p,a,param,g,s,small,plus;
+local brg,str,p,a,param,g,s,small,plus,sets;
   if IsRecord(arg[1]) then
     p:=arg[1];
     if p.series="Spor" then
-      brg:=p.parameter;
+      brg:=p.parameter[1];
+      if '=' in brg then
+	brg:=brg{[1..Position(brg,'=')-1]};
+      fi;
+      while brg[Length(brg)]=' ' do
+	brg:=brg{[1..Length(brg)-1]};
+      od;
+      brg:=[brg];
     else
       brg:=Concatenation([p.series],p.parameter);
     fi;
@@ -412,7 +484,14 @@ local brg,str,p,a,param,g,s,small,plus;
     if Length(param)=2 and IsOddInt(param[1]) then
       g:=SO(param[1],param[2]);
       g:=Action(g,NormedRowVectors(GF(param[2])^param[1]),OnLines);
-      g:=DerivedSubgroup(g);
+      s:=DerivedSubgroup(g);
+      if s<>g and IsBound(g!.actionHomomorphism) then
+	s!.actionHomomorphism:=ActionHomomorphism(
+	  PreImage(g!.actionHomomorphism,s),
+	  HomeEnumerator(UnderlyingExternalSet(g!.actionHomomorphism)),
+	  OnLines,"surjective");
+      fi;
+      g:=s;
       s:=Concatenation("O(",String(param[1]),",",String(param[2]),")");
       small:=true;
     elif Length(param)=3 and param[1]=1 and IsEvenInt(param[2]) then
@@ -460,10 +539,12 @@ local brg,str,p,a,param,g,s,small,plus;
       g:=PrimitiveGroup(351,7);
     elif a=4 then
       g:=PrimitiveGroup(416,7);
-    elif a=5 then
-      g:=DoAtlasrepGroup(["G2(5)"]);
     else
-      Error("Can't do yet");
+      g:=ChevalleyG(a);
+      g:=Action(g,
+	   Set(Orbit(g,One(DefaultFieldOfMatrixGroup(g))*[1,0,0,0,0,0,0],
+	     OnLines)),
+	  OnLines);
     fi;
     s:=Concatenation("G_2(",String(a),")");
 
@@ -496,14 +577,32 @@ local brg,str,p,a,param,g,s,small,plus;
     a:=ShallowCopy(Orbits(g,MovedPoints(g)));
     if Length(a)>1 then
       SortParallel(List(a,Length),a);
-      a:=Action(g,a[1]);
+      if IsBound(g!.actionHomomorphism) then
+	# pull back
+	p:=UnderlyingExternalSet(g!.actionHomomorphism);
+	a:=Action(Source(g!.actionHomomorphism),HomeEnumerator(p){a[1]},
+	     FunctionAction(p));
+      else
+	a:=Action(g,a[1]);
+      fi;
       SetSize(a,Size(g));
       g:=a;
     fi;
 
     a:=Blocks(g,MovedPoints(g));
     if Length(a)>1 then
-      a:=Action(g,a,OnSets);
+      if IsBound(g!.actionHomomorphism) then
+	# pull back
+	p:=UnderlyingExternalSet(g!.actionHomomorphism);
+	sets:=Set(List(a,x->HomeEnumerator(p){x}));
+	p:=FunctionAction(p);
+	a:=Action(Source(g!.actionHomomorphism),sets,
+	     function(set,g)
+	       return Set(List(set,x->p(x,g)));
+	     end);
+      else
+	a:=Action(g,a,OnSets);
+      fi;
       SetSize(a,Size(g));
       g:=a;
     fi;
@@ -693,7 +792,7 @@ local t,r;
   elif t.series="2F" then
     if t.parameter=2 then
       r.series:="Spor";
-      r.parameter:="T";
+      r.parameter:=["T"];
     else
       r.series:="2F";
       r.parameter:=[t.parameter];
@@ -742,16 +841,20 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     fi;
 
     if f>1 then
-      dd:=PrimitiveElement(GF(prime^f));
-      dd:=List([1..prime^f-1],x->dd^x); # nonzero elements
-      gal:=List(Elements(GaloisGroup(GF(prime^f))),x->Permutation(x,dd));
+      dd:=PrimitiveElement(GF(prime^f))^((prime^f-1)/d);
+      dd:=List([0..d-1],x->dd^x); # Powers;
+      gal:=GaloisGroup(GF(prime^f));
+      gal:=SmallGeneratingSet(gal);
+      if Length(gal)>1 then Error("not small generators");fi;
+      gal:=gal[1];
+      gal:=List([0..f-1],x->Permutation(gal^x,dd));
     fi;
 
     myprod:=function(c1,c2)
     local d2,g1,f1;
       d2:=c2[1];
       if c1[3]>0 and d2>0 then
-	d2:=d2^gal[c1[3]];
+	d2:=((d2+1)^gal[c1[3]+1])-1;
       fi;
 
       if c1[2]=1 then
@@ -770,7 +873,9 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
       else
 	f1:=(c1[3]+c2[3]) mod f;
       fi;
-      return [(c1[1]+d2) mod d,g1,f1];
+      f1:=[(c1[1]+d2) mod d,g1,f1];
+#Print(c1,"*",c2,"=",f1,"\n");
+      return f1;
 
     end;
 
@@ -778,9 +883,10 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     if Number([d,g,f],i->i>1)>1 then
       # form group
       dd:=Cartesian([0..d-1],[0..g-1],[0..f-1]);
-      dd:=List(dd,x->List(dd,y->Position(dd,myprod(x,y))));
+      dd:=List(dd,x->List(dd,y->Position(dd,myprod(y,x))));
       dd:=List(dd,PermList);
       dd:=Group(dd);
+      if Size(dd)<>d*f*g then Error("wrong automorphism order");fi;
       dd:=List(ConjugacyClassesSubgroups(dd),Representative);
       ddn:=[];
       for i in dd do
@@ -830,6 +936,11 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     fi;
     return Filtered(r,i->i[1]>1);
   end;
+
+  # fix O5 to SP4
+  if id.series="B" and id.parameter[1]=2 then
+    id:=rec(name:=id.name,series:="C",parameter:=id.parameter);
+  fi;
 
   if IsBound(id.parameter) then
     par:=id.parameter;
@@ -891,8 +1002,7 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     nam:=Concatenation("U",String(par[1]+1),"(",String(par[2]),")");
     e:=EFactors(Gcd(par[1]+1,par[2]+1),2*expo,1);
   elif id.series="B" then
-    # prefer Sp4 over O5
-    nam:=Concatenation("S",String(2*par[1]),"(",String(par[2]),")");
+    nam:=Concatenation("O",String(2*par[1]+1),"(",String(par[2]),")");
     if par[1]=2 and par[2]=3 then
       nam:="U4(2)"; # library name
     fi;
@@ -906,7 +1016,11 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     e:=EFactors(1,expo,1);
   elif id.series="C" then
     nam:=Concatenation("S",String(par[1]*2),"(",String(par[2]),")");
-    e:=EFactors(Gcd(2,par[2]-1),expo,1);
+    if par[1]=2 and prime=2 then
+      e:=EFactors(Gcd(2,par[2]-1),expo,2);
+    else
+      e:=EFactors(Gcd(2,par[2]-1),expo,1);
+    fi;
   elif id.series="D" then
     nam:=Concatenation("O",String(par[1]*2),"+(",String(par[2]),")");
     if par[1]=4 then
@@ -987,3 +1101,88 @@ local a;
   a:=2^Number(Factors(n),x->x=2);
   return n/a; # 2-Sylow index
 end);
+
+InstallGlobalFunction("EpimorphismFromClassical",function(G)
+local H,d,id,hom,field,C,dom,orbs;
+  if not IsSimpleGroup(G) then
+    H:=PerfectResiduum(G);
+  else
+    H:=G;
+  fi;
+  d:=DataAboutSimpleGroup(H);
+  id:=d.idSimple;
+  if not id.series in ["L","2A","C"] then
+    return fail;
+  fi;
+
+  # TODO: Recognize subgroups of almost 
+  if G<>H then 
+    return fail;
+  fi;
+
+  field:=id.parameter[2];
+  if id.series="2A" then
+    field:=field^2;
+  fi;
+
+  # the source group we are expecting
+  if id.series="L" then
+    C:=SL(id.parameter[1],id.parameter[2]);
+  elif id.series="C" then
+    C:=SP(2*id.parameter[1],id.parameter[2]);
+  elif id.series="2A" then
+    C:=SU(id.parameter[1]+1,id.parameter[2]);
+  else
+    Error("not yet done");
+  fi;
+
+  # was the fgroup created as ``P...''?
+  if IsBound(G!.actionHomomorphism) then
+    hom:=G!.actionHomomorphism;
+    if IsMatrixGroup(Source(hom)) and Image(hom)=G and Size(Source(hom))/Size(G)<field then
+      # test that the source is really the group we want
+      if GeneratorsOfGroup(C)=GeneratorsOfGroup(Source(hom)) 
+	or Source(hom)=C then
+	  return hom;
+      #else
+#	Print("different source -- ID\n");
+      fi;
+    fi;
+  fi;
+
+  # build isom
+  dom:=NormedRowVectors(DefaultFieldOfMatrixGroup(C)^DimensionOfMatrixGroup(C));
+  hom:=ActionHomomorphism(C,dom,OnLines,"surjective");
+  orbs:=Orbits(Image(hom),MovedPoints(Image(hom)));
+  if Length(orbs)>1 then
+    # reduce domain
+    orbs:=ShallowCopy(orbs);
+    Sort(orbs,function(a,b) return Length(a)<Length(b);end);
+    dom:=dom{Set(orbs[1])};
+    hom:=ActionHomomorphism(C,dom,OnLines,"surjective");
+  fi;
+
+  if Size(Image(hom))<>Size(G) then
+    Error("inconsistent image");
+  fi;
+
+  if # catch if one group is with memory
+     RepresentationsOfObject(One(Image(hom)))=
+     RepresentationsOfObject(One(G)) 
+     and Image(hom)=G then
+    d:=IdentityMapping(G);
+  else
+    # Image(hom) is the better group to search in, e.g. classes.
+    d:=Image(hom);
+    d!.actionHomomorphism:=hom;
+    return fail;
+    Error("QQQ");
+    d:=IsomorphismGroups(G,Image(hom));
+  fi;
+  if d=fail then
+    Error("inconsistent image 2");
+  fi;
+  return hom*InverseGeneralMapping(d);
+
+end);
+

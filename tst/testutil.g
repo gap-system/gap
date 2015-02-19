@@ -640,5 +640,75 @@ end);
 
 #############################################################################
 ##
+#F  CheckOutputDelegations
+##
+##  A method to output an object may only delegate to another operation
+##  which appears further right in the following list: Display, ViewObj,
+##  PrintObj, DisplayString, ViewString, PrintString, String.
+##
+##  This function parses the code of all installed methods for these
+##  operations and checks whether this rule is followed, and shortlists
+##  methods that require further inspection. Since it may still report
+##  some cases where it is safe to call a predecessor of an operations
+##  for a subobject of the original object, the check cannot be fully
+##  automated.
+##
+BindGlobal( "CheckOutputDelegations",
+function()
+local rules, name, f, str, ots, met, pos, nargs, r, i,
+      report, line, m, n, illegal_delegations, checklist;
+
+rules := [ "Display", "ViewObj", "PrintObj", "DisplayString",
+           "ViewString", "PrintString", "String" ];
+
+for name in rules do
+
+  pos:=Position( rules, name );
+  report:=[];
+
+  for nargs in [1..2] do
+    f:=METHODS_OPERATION( EvalString(name), nargs );
+    for m in [1..Length(f)/(4+nargs)] do
+      met := f[(m-1)*(4+nargs)+2+nargs];
+      str := "";
+      ots := OutputTextString(str,true);;
+      PrintTo( ots, met );
+      CloseStream(ots);
+      illegal_delegations:=[];
+      checklist:=rules{[1..pos-1]};
+      for r in checklist do
+        n := POSITION_SUBSTRING(str, r, 0);
+        if n <> fail then
+          if Length(str) >= n + Length(r) then
+            if not str[n + Length(r)] in LETTERS then
+              Add( illegal_delegations, r );
+            fi;
+          fi;
+        fi;
+      od;
+      if Length(illegal_delegations) > 0 then
+        Add( report, [ FILENAME_FUNC( met ), STARTLINE_FUNC( met ),
+                       f[(m-1)*(4+nargs)+4+nargs], illegal_delegations, met ] );
+      fi;
+    od;
+  od;
+
+  if Length(report) > 0 then
+    Print("\nDetected incorrect delegations for ", name, "\n");
+    for line in report do
+      Print("---------------------------------------------------------------\n");
+      Print( line[3], "\n", " delegates to ", line[4], "\n",
+             "Filename: ", line[1], ", line : ", line[2], "\n", line[5], "\n");
+    od;
+    Print("---------------------------------------------------------------\n");
+  else
+    Print("All delegations correct for ", name, "\n");
+  fi;
+
+od;
+end);
+
+#############################################################################
+##
 #E
 

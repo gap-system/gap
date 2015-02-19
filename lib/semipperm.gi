@@ -13,62 +13,63 @@
 #
 
 InstallMethod(DisplayString, "for a partial perm semigroup with generators",
-[IsPartialPermSemigroup and HasGeneratorsOfSemigroup], 4, ViewString);
+[IsPartialPermSemigroup and HasGeneratorsOfSemigroup], ViewString);
 
-#
+# the following is used to produce the view string for every type of partial
+# perm semigroup, in particular it is required so that it is used in preference
+# to the method for inverse semigroups/monoids
 
-InstallMethod(ViewString, "for a partial perm semigroup with generators",
-[IsPartialPermSemigroup and HasGeneratorsOfSemigroup], 4, #beat the method for inverse semigroups
-function(s)
+BindGlobal("ViewStringForPartialPermSemigroups", 
+function(S)
   local str, nrgens;
   
   str:="<";
 
-  if HasIsTrivial(s) and IsTrivial(s) then 
+  if HasIsTrivial(S) and IsTrivial(S) then 
     Append(str, "trivial ");
   else 
-    if HasIsCommutative(s) and IsCommutative(s) then 
+    if HasIsCommutative(S) and IsCommutative(S) then 
       Append(str, "commutative ");
     fi;
   fi;
 
-  if HasIsTrivial(s) and IsTrivial(s) then 
-  elif HasIsZeroSimpleSemigroup(s) and IsZeroSimpleSemigroup(s) then 
+  if HasIsTrivial(S) and IsTrivial(S) then 
+  elif HasIsZeroSimpleSemigroup(S) and IsZeroSimpleSemigroup(S) then 
     Append(str, "0-simple ");
-  elif HasIsSimpleSemigroup(s) and IsSimpleSemigroup(s) then 
+  elif HasIsSimpleSemigroup(S) and IsSimpleSemigroup(S) then 
     Append(str, "simple ");
   fi;
 
-  if HasIsInverseSemigroup(s) and IsInverseSemigroup(s) then 
+  if HasIsInverseSemigroup(S) and IsInverseSemigroup(S) then 
     Append(str, "inverse ");
   fi;
 
   Append(str, "partial perm ");
  
-  if HasIsMonoid(s) and IsMonoid(s) then 
+  if HasIsMonoid(S) and IsMonoid(S) then 
     Append(str, "monoid ");
-    if HasIsInverseSemigroup(s) and IsInverseSemigroup(s) then 
-      nrgens:=Length(GeneratorsOfInverseMonoid(s));
+    if HasIsInverseSemigroup(S) and IsInverseSemigroup(S) then 
+      nrgens:=Length(GeneratorsOfInverseMonoid(S));
     else 
-      nrgens:=Length(GeneratorsOfMonoid(s));
+      nrgens:=Length(GeneratorsOfMonoid(S));
     fi;
   else 
     Append(str, "semigroup ");
-    if HasIsInverseSemigroup(s) and IsInverseSemigroup(s) then 
-      nrgens:=Length(GeneratorsOfInverseSemigroup(s));
+    if HasIsInverseSemigroup(S) and IsInverseSemigroup(S) then 
+      nrgens:=Length(GeneratorsOfInverseSemigroup(S));
     else
-      nrgens:=Length(GeneratorsOfSemigroup(s));
+      nrgens:=Length(GeneratorsOfSemigroup(S));
     fi;
   fi;
  
- if HasIsTrivial(s) and not IsTrivial(s) and HasSize(s) and Size(s)<2^64 then 
+ if HasIsTrivial(S) and not IsTrivial(S) and HasSize(S) and Size(S)<2^64 then 
     Append(str, "\<\>of size ");
-    Append(str, String(Size(s)));
+    Append(str, String(Size(S)));
     Append(str, ", ");
   fi;
  
   Append(str, "\<\>on ");
-  Append(str, String(RankOfPartialPermSemigroup(s)));
+  Append(str, String(RankOfPartialPermSemigroup(S)));
   Append(str, " pts\<\> with ");
 
   Append(str, String(nrgens));
@@ -81,6 +82,26 @@ function(s)
 
   return str;
 end);
+
+# the following method is required so that the view string method for partial
+# perm semigroup (immediately below) is used in preference to the method for
+# inverse semigroups
+
+InstallMethod(ViewString, "for a partial perm inverse semigroup",
+[IsPartialPermSemigroup and IsInverseSemigroup],
+ViewStringForPartialPermSemigroups);
+
+InstallMethod(ViewString, "for a partial perm inverse semigroup",
+[IsPartialPermSemigroup and IsInverseMonoid],
+ViewStringForPartialPermSemigroups);
+
+InstallMethod(ViewString, "for a partial perm semigroup with generators",
+[IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
+ViewStringForPartialPermSemigroups);
+
+InstallMethod(ViewString, "for a partial perm monoid with generators",
+[IsPartialPermMonoid and HasGeneratorsOfMonoid],
+ViewStringForPartialPermSemigroups);
 
 InstallMethod(ViewString, 
 "for a simple inverse partial perm semigroup with generators",
@@ -167,12 +188,12 @@ InstallMethod(DegreeOfPartialPermCollection,
 s-> DegreeOfPartialPermCollection(GeneratorsOfSemigroup(s)));
 
 InstallMethod(CodegreeOfPartialPermSemigroup,
-"for a partial perm semigroup",
+"for a partial perm semigroup with generators",
 [IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
 s-> CodegreeOfPartialPermCollection(GeneratorsOfSemigroup(s)));
 
 InstallMethod(CodegreeOfPartialPermCollection,
-"for a partial perm semigroup",
+"for a partial perm semigroup with generators",
 [IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
 s-> CodegreeOfPartialPermCollection(GeneratorsOfSemigroup(s)));
 
@@ -403,9 +424,9 @@ function(s)
   fi;
 
   iso:=function(f)
-    local dom, img;
-
-    dom:=ImageSetOfTransformation(InversesOfSemigroupElement(s, f)[1]);
+  local dom, img;
+    dom:=ImageSetOfTransformation(InversesOfSemigroupElement(s, f)[1], 
+      DegreeOfTransformationSemigroup(s));
     img:=List(dom, i-> i^f);
     return PartialPermNC(dom, img);
   end;
@@ -429,7 +450,8 @@ function(s)
 
   iso:=function(f)
     local dom, img;
-    dom:=ImageSetOfTransformation(InversesOfSemigroupElement(s, f)[1]);
+    dom:=ImageSetOfTransformation(InversesOfSemigroupElement(s, f)[1], 
+      DegreeOfTransformationSemigroup(s));
     img:=List(dom, i-> i^f);
     return PartialPermNC(dom, img);
   end;
@@ -464,6 +486,14 @@ end);
 
 #
 
+InstallMethod(IsomorphismPartialPermSemigroup, "for a partial perm semigroup",
+[IsPartialPermSemigroup],
+function(S)
+  return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
+end);
+
+#
+
 InstallMethod(IsomorphismPartialPermMonoid, "for a partial perm monoid", 
 [IsPartialPermMonoid], 
 function(s)
@@ -473,7 +503,7 @@ end);
 #
 
 InstallMethod(IsomorphismPartialPermMonoid, 
-"for a part perm semigroup",
+"for a partial perm semigroup",
 [IsPartialPermSemigroup],
 function(s)
   local t;
@@ -487,17 +517,6 @@ function(s)
     return fail;
   fi;
   return MagmaIsomorphismByFunctionsNC(s, t, IdFunc, IdFunc); 
-end);
-
-#
-
-InstallMethod(IsomorphismPermGroup, 
-"for a partial perm semigroup with generators", 
-[IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
-function(s)
-  return MagmaIsomorphismByFunctionsNC(s, 
-   Group(List(GeneratorsOfSemigroup(s), AsPermutation)), 
-   AsPermutation, x-> AsPartialPerm(x, DomainOfPartialPermCollection(s)));
 end);
 
 #
@@ -528,14 +547,14 @@ end);
 #
 
 InstallMethod(ViewString, "for a symmetric inverse semigroup",
-[IsSymmetricInverseSemigroup], 10,
+[IsSymmetricInverseSemigroup and IsPartialPermSemigroup], 
 function(s)
   return STRINGIFY("<symmetric inverse semigroup on ",
    DegreeOfPartialPermSemigroup(s), " pts>");
 end);
 
-InstallMethod(IsSymmetricInverseSemigroup, 
-"for a semigroup", [IsSemigroup], ReturnFalse);
+#InstallMethod(IsSymmetricInverseSemigroup, 
+#"for a semigroup", [IsSemigroup], ReturnFalse);
 
 #
 

@@ -65,30 +65,102 @@ DeclareAttribute("StandardGeneratorsSubringSCRing",IsSubringSCRing);
 ##
 #A  Subrings( <R> )
 ##
-##  for a finite ring <R> this function returns a list of all subrings of <R>.
+##  <#GAPDoc Label="Subrings">
+##  <ManSection>
+##  <Func Name="Subrings" Arg='R'/>
+##
+##  <Description>
+##  for a finite ring <A>R</A> this function returns a list of all 
+##  subrings of <A>R</A>.
+##  <Example><![CDATA[
+##  gap> Subrings(SmallRing(8,37));     
+##  [ <ring with 1 generators>, <ring with 1 generators>, 
+##    <ring with 1 generators>, <ring with 1 generators>, 
+##    <ring with 1 generators>, <ring with 1 generators>, 
+##    <ring with 2 generators>, <ring with 2 generators>, 
+##    <ring with 2 generators>, <ring with 2 generators>, 
+##    <ring with 3 generators> ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute("Subrings",IsRing);
 
 #############################################################################
 ##
 #A  Ideals( <R> )
 ##
-##  for a finite ring <R> this function returns a list of all ideals of <R>.
+##  <#GAPDoc Label="Ideals">
+##  <ManSection>
+##  <Func Name="Ideals" Arg='R'/>
+##
+##  <Description>
+##  for a finite ring <A>R</A> this function returns a list of all
+##  ideals of <A>R</A>.
+##  <Example><![CDATA[
+##  gap> Ideals(SmallRing(8,37));
+##  [ <ring with 1 generators>, <ring with 1 generators>, 
+##    <ring with 1 generators>, <ring with 2 generators>, 
+##    <ring with 3 generators> ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute("Ideals",IsRing);
 
 #############################################################################
 ##
 #F  NumberSmallRings( <s> )
 ##
-##  returns the number of (nonisomorphic) rings of order <s> stored in the
-##  library of small rings.
+##  <#GAPDoc Label="NumberSmallRings">
+##  <ManSection>
+##  <Func Name="NumberSmallRings" Arg='s'/>
+##
+##  <Description>
+##  returns the number of (nonisomorphic) rings of order <M>s</M> 
+##  stored in the library of small rings.
+##  <Example><![CDATA[
+##  gap> List([1..15],NumberSmallRings);
+##  [ 1, 2, 2, 11, 2, 4, 2, 52, 11, 4, 2, 22, 2, 4, 4 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction("NumberSmallRings");
 
 #############################################################################
 ##
 #F  SmallRing( <s>,<n> )
 ##
-##  returns the <n>-th ring of order <s> from a library of rings of small
-##  order (up to isomorphism).
+##  <#GAPDoc Label="SmallRing">
+##  <ManSection>
+##  <Func Name="SmallRing" Arg='s n'/>
+##
+##  <Description>
+##  returns the <M>n</M>-th ring of order <M>s</M> from a library of 
+##  rings of small order (up to isomorphism).
+##  <Example><![CDATA[
+##  gap> R:=SmallRing(8,37);
+##  <ring with 3 generators>
+##  gap> ShowMultiplicationTable(R);                 
+##  *     | 0*a   c     b     b+c   a     a+c   a+b   a+b+c
+##  ------+------------------------------------------------
+##  0*a   | 0*a   0*a   0*a   0*a   0*a   0*a   0*a   0*a  
+##  c     | 0*a   0*a   0*a   0*a   0*a   0*a   0*a   0*a  
+##  b     | 0*a   0*a   0*a   0*a   b     b     b     b    
+##  b+c   | 0*a   0*a   0*a   0*a   b     b     b     b    
+##  a     | 0*a   c     b     b+c   a+b   a+b+c a     a+c  
+##  a+c   | 0*a   c     b     b+c   a+b   a+b+c a     a+c  
+##  a+b   | 0*a   c     b     b+c   a     a+c   a+b   a+b+c
+##  a+b+c | 0*a   c     b     b+c   a     a+c   a+b   a+b+c
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction("SmallRing");
 
 #############################################################################
@@ -109,6 +181,10 @@ DeclareGlobalFunction("SmallRing");
 ##  arguments, namely a nonempty list of rings and one of these rings.
 ##  (This somewhat strange syntax allows the method selection to choose
 ##  a reasonable method for special cases.)
+##  <Example><![CDATA[
+##  gap> DirectSum(SmallRing(5,1),SmallRing(5,1));
+##  <ring with 2 generators>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

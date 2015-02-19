@@ -575,7 +575,7 @@ local g,	# group
   if IsBound(opt.actions) then
     func:=opt.actions;
     hom2:= Filtered( func,     HasIsConjugatorAutomorphism
-			   and IsConjugatorAutomorphism );
+			   and IsInnerAutomorphism );
     hom2:= List( hom2, ConjugatorOfConjugatorIsomorphism );
 
     if IsBound(opt.funcnorm) then
@@ -585,7 +585,7 @@ local g,	# group
     else
       funcs:= GroupByGenerators( Filtered( func,
                   i -> not ( HasIsConjugatorAutomorphism( i ) and
-                             IsConjugatorAutomorphism( i ) ) ),
+                             IsInnerAutomorphism( i ) ) ),
 		   IdentityMapping(g));
       IsGroupOfAutomorphismsFiniteGroup(funcs); # set filter
       if IsTrivial( funcs ) then
@@ -1006,102 +1006,128 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 		    Info(InfoPcSubgroup,3,"already conjugate");
 		  else
 
-		    k:=z.cocycleToComplement(com[kp]);
+		    l:=z.cocycleToComplement(com[kp]);
 		    # the projection on the complement
-		    comproj:= GroupHomomorphismByImagesNC(a,a,fghom,
-			       Concatenation(GeneratorsOfGroup(k),bgids));
-		    k:=ClosureSubgroup(b,k);
-		    
-		    # now run through the conjugating elements
-		    conjnr:=1;
-		    found:=false;
-		    while conjnr<=Length(s) and found=false do
-		      if not IsBound(smats[conjnr]) then
-			# compute the matrix action for the induced, jugated
-			# morphisms
-			m:=s[conjnr];
-			smats[conjnr]:=[];
-			shoms[conjnr]:=[];
-			for l in efunc do
-			  # the induced, jugated morphism
-			  shom:= GroupHomomorphismByImagesNC(a,a,
-				  GeneratorsOfGroup(a),
-				  List(GeneratorsOfGroup(a),
-				   i->Image(l,i^m)^Inverse(m)));
-
-			  mat:=List(nag,
-				i->One(field)*ExponentsOfPcElement(nag,
-				 Image(shom,i)));
-			  Add(smats[conjnr],mat);
-			  Add(shoms[conjnr],shom);
-			od;
-		      fi;
-
-		      mats:=smats[conjnr];
-		      # now test whether the complement k can be conjugated to
-		      # be invariant under the morphisms to mats
-		      glsyl:=List(nag,i->[]);
-		      glsyr:=[];
-		      for l in [1..Length(efunc)] do
-			kgens:=GeneratorsOfGroup(k);
-			for kgnr in [1..Length(kgens)] do
-
-			  kgn:=Image(shoms[conjnr][l],kgens[kgnr]);
-			  kgim:=Image(comproj,kgn);
-			  Assert(2,kgim^-1*kgn in n);
-			  # nt part
-			  kgn:=kgim^-1*kgn;
-
-			  # translate into matrix terms
-			  kgim:=Image(chom,kgim);
-			  kgn:=One(field)*ExponentsOfPcElement(nag,kgn);
-
-			  # the matrix action
-			  mat:=idmat+(mats[l]-idmat)*kgim-mats[l];
-			  
-			  # store action and vector
-			  for m in [1..Length(glsyl)] do
-			    glsyl[m]:=Concatenation(glsyl[m],mat[m]);
-			  od;
-			  glsyr:=Concatenation(glsyr,kgn);
-
-			od;
-		      od;
-
-		      # a possible conjugating element is a solution of the
-		      # large LGS
-		      l:= SolutionMat(glsyl,glsyr);
-		      if l <> fail then
-			m:=Product([1..Length(l)],
-				   i->nag[i]^IntFFE(l[i]));
-			# note that we found one!
-			found:=[s[conjnr],m];
-		      fi;
-
-		      conjnr:=conjnr+1;
-		    od;
-
-		    # there is an invariant complement?
-		    if found<>false then
-		      found:=found[2]*found[1];
-		      l:=ConjugateSubgroup(ClosureSubgroup(b,k),found);
-		      Assert(1,ForAll(efunc,i->Image(i,l)=l));
-		      l:=rec(representative:=l);
-		      if comnorms<>fail then
-			if IsBound(comnorms[kp]) then
-			  l.normalizer:=ConjugateSubgroup(comnorms[kp],found);
-			else
-			  l.normalizer:=ConjugateSubgroup(
-			                  Normalizer(bsnorms[bpos],
-				  ClosureSubgroup(b,k)), found);
+		    k:=ClosureSubgroup(b,l);
+		    if Length(s)=1 and IsOne(s[1]) then
+		      # special case -- no conjugates
+		      if ForAll(efunc,x->ForAll(GeneratorsOfGroup(l),
+			   y->ImagesRepresentative(x,y) in k)) then
+			l:=rec(representative:=k);
+			if comnorms<>fail then
+			  if IsBound(comnorms[kp]) then
+			    l.normalizer:=comnorms[kp];
+			  else
+			    l.normalizer:=Normalizer(bsnorms[bpos],
+				    ClosureSubgroup(b,k));
+			  fi;
 			fi;
-		      fi;
-		      Add(ncom,l);
+			Add(ncom,l);
 
-		      # tag all conjugates
-		      for l in kconh[kp] do
-		        kconh[l]:=fail;
+			# tag all conjugates
+			for l in kconh[kp] do
+			  kconh[l]:=fail;
+			od;
+		      fi;
+                        
+		    else
+		      # generic case
+
+		      comproj:= GroupHomomorphismByImagesNC(a,a,fghom,
+				Concatenation(GeneratorsOfGroup(l),bgids));
+		      
+		      # now run through the conjugating elements
+		      conjnr:=1;
+		      found:=false;
+		      while conjnr<=Length(s) and found=false do
+			if not IsBound(smats[conjnr]) then
+			  # compute the matrix action for the induced, jugated
+			  # morphisms
+			  m:=s[conjnr];
+			  smats[conjnr]:=[];
+			  shoms[conjnr]:=[];
+			  for l in efunc do
+			    # the induced, jugated morphism
+			    shom:= GroupHomomorphismByImagesNC(a,a,
+				    GeneratorsOfGroup(a),
+				    List(GeneratorsOfGroup(a),
+				    i->Image(l,i^m)^Inverse(m)));
+
+			    mat:=List(nag,
+				  i->One(field)*ExponentsOfPcElement(nag,
+				  Image(shom,i)));
+			    Add(smats[conjnr],mat);
+			    Add(shoms[conjnr],shom);
+			  od;
+			fi;
+
+			mats:=smats[conjnr];
+			# now test whether the complement k can be conjugated to
+			# be invariant under the morphisms to mats
+			glsyl:=List(nag,i->[]);
+			glsyr:=[];
+			for l in [1..Length(efunc)] do
+			  kgens:=GeneratorsOfGroup(k);
+			  for kgnr in [1..Length(kgens)] do
+
+			    kgn:=Image(shoms[conjnr][l],kgens[kgnr]);
+			    kgim:=Image(comproj,kgn);
+			    Assert(2,kgim^-1*kgn in n);
+			    # nt part
+			    kgn:=kgim^-1*kgn;
+
+			    # translate into matrix terms
+			    kgim:=Image(chom,kgim);
+			    kgn:=One(field)*ExponentsOfPcElement(nag,kgn);
+
+			    # the matrix action
+			    mat:=idmat+(mats[l]-idmat)*kgim-mats[l];
+			    
+			    # store action and vector
+			    for m in [1..Length(glsyl)] do
+			      glsyl[m]:=Concatenation(glsyl[m],mat[m]);
+			    od;
+			    glsyr:=Concatenation(glsyr,kgn);
+
+			  od;
+			od;
+
+			# a possible conjugating element is a solution of the
+			# large LGS
+			l:= SolutionMat(glsyl,glsyr);
+			if l <> fail then
+			  m:=Product([1..Length(l)],
+				    i->nag[i]^IntFFE(l[i]));
+			  # note that we found one!
+			  found:=[s[conjnr],m];
+			fi;
+
+			conjnr:=conjnr+1;
 		      od;
+
+		      # there is an invariant complement?
+		      if found<>false then
+			found:=found[2]*found[1];
+			l:=ConjugateSubgroup(ClosureSubgroup(b,k),found);
+			Assert(1,ForAll(efunc,i->Image(i,l)=l));
+			l:=rec(representative:=l);
+			if comnorms<>fail then
+			  if IsBound(comnorms[kp]) then
+			    l.normalizer:=ConjugateSubgroup(comnorms[kp],found);
+			  else
+			    l.normalizer:=ConjugateSubgroup(
+					    Normalizer(bsnorms[bpos],
+				    ClosureSubgroup(b,k)), found);
+			  fi;
+			fi;
+			Add(ncom,l);
+
+			# tag all conjugates
+			for l in kconh[kp] do
+			  kconh[l]:=fail;
+			od;
+
+		      fi;
 
 		    fi;
 
@@ -1253,8 +1279,10 @@ end);
 ##
 InstallGlobalFunction(ExactSizeConsiderFunction,function(size)
   return function(c,a,n,b,m)
-	   return IsInt(Size(a)/Size(n)*Size(b)*Size(m)/size)
+           local result;
+	   result:=IsInt(Size(a)/Size(n)*Size(b)*Size(m)/size)
 	      and not (Size(a)/Size(n)*Size(b))>size;
+	   return result;
          end;
 end);
 

@@ -71,12 +71,13 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r;
 	    serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
 	    );
   Add(cache,[ffs,r]); # keep
+  SetSize(U,Product(RelativeOrders(k))*Size(Image(rest)));
   return r;
 
 end);
 
 InstallGlobalFunction(SubgroupByFittingFreeData,function(G,gens,imgs,ipcgs)
-local ffs,hom,U,rest,ker,r;
+local ffs,hom,U,rest,ker,r,p,l,i,depths;
 
   ffs:=FittingFreeLiftSetup(G);
   # get back to initial group -- dont induce of induce
@@ -86,8 +87,37 @@ local ffs,hom,U,rest,ker,r;
 
   hom:=ffs.factorhom;
 
-  if not IsGeneralPcgs(ipcgs) then
+  if Length(ffs.pcgs)=0 then
+    if Length(ipcgs)>0 then
+      Error("pc elements arise suddenly");
+    fi;
+    depths:=[];
+  elif not IsGeneralPcgs(ipcgs) then
     ipcgs:=InducedPcgsByPcSequenceNC(ffs.pcgs,ipcgs);
+  fi;
+
+  if Length(ipcgs)>0 then
+    if not HasOneOfPcgs(ipcgs) then
+      SetOneOfPcgs(ipcgs,One(G));
+    fi;
+    depths:=IndicesNormalSteps(ipcgs);
+  else
+    depths:=[];
+  fi;
+
+  # transfer the IndicesNormalSteps
+  if ffs.pcgs<>ipcgs and HasIndicesNormalSteps(ffs.pcgs) then
+    U:=IndicesNormalSteps(ffs.pcgs);
+    r:=ipcgs!.depthsInParent;
+    l:=[];
+    for i in U{[1..Length(U)-1]} do # last one is length+1
+      p:=PositionProperty(r,x->x>=i);
+      if p<>fail and p<=Length(ipcgs) and not p in l then
+	Add(l,p);
+      fi;
+    od;
+    Add(l,Length(ipcgs)+1);
+    SetIndicesNormalSteps(ipcgs,l);
   fi;
 
   U:=SubgroupNC(G,Concatenation(gens,ipcgs));
@@ -109,10 +139,10 @@ local ffs,hom,U,rest,ker,r;
   fi;
 
   ker:=SubgroupNC(G,ipcgs);
-  SetPcgs(ker,ipcgs);
   if Length(ipcgs)=0 then
     SetSize(ker,1);
   else
+    SetPcgs(ker,ipcgs);
     SetSize(ker,Product(RelativeOrders(ipcgs)));
   fi;
   SetKernelOfMultiplicativeGeneralMapping(rest,ker);
@@ -139,7 +169,7 @@ local ffs,hom,U,rest,ker,r;
   # FittingFreeLiftSetup for U
   r:=rec(inducedfrom:=ffs,
          pcgs:=ipcgs,
-         depths:=IndicesNormalSteps(ipcgs),
+	 depths:=depths,
          pcisom:=ffs.pcisom,
          radical:=ker,
          factorhom:=rest
@@ -344,7 +374,7 @@ InstallGlobalFunction(OrbitsRepsAndStabsVectorsMultistage,
 
 local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
       stabfacgens,s,orblock,orb,rep,b,p,repwords,orpo,i,j,k,repword,
-      img,stabfac,reps,stage,genum,orbstabs,stabfacimg,
+      imgsinv,img,stabfac,reps,stage,genum,orbstabs,stabfacimg,
       fgrp,solsubsz,failcnt,stabstack,relo,orbitseed;
 
   orbitseed:=ValueOption("orbitseed");
@@ -368,7 +398,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
       else
 	failcnt:=failcnt+1;
 	if IsInt(failcnt/50) then
-	  Info(InfoHomClass,5,"failed ",failcnt," times, ratio ",EvalF(ratio),
+	  Info(InfoFitFree,5,"failed ",failcnt," times, ratio ",EvalF(ratio),
 		", ",Length(stabrad)," gens\n");
 	fi;
       fi;
@@ -405,11 +435,11 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
 	      # vector image under st
 	      im:=orb[1];
 	      for i in repwords[st.vp] do
-		im:=im*imgs[i];
+		im:=actfun(im,imgs[i]);
 	      od;
-	      im:=im*imgs[st.genumr];
+	      im:=actfun(im,imgs[st.genumr]);
 	      for i in Reversed(repwords[st.right]) do
-		im:=im/imgs[i];
+		im:=actfun(im,imgsinv[i]);
 	      od;
 	    fi;
 
@@ -433,6 +463,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
   end;
 
   fgrp:=Group(fgens,One(Range(factorhom)));
+  imgsinv:=List(imgs,Inverse);
 
   # now compute orbits, being careful to get stabilizers in steps
   orbstabs:=[];
@@ -453,7 +484,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
     orpo[p]:=1;
     b[p]:=true;
     sz:=sz-1;
-    reps:=[One(pcgs[1])];
+    reps:=[One(Source(factorhom))];
     stabstack:=[];
     stabrad:=[];
     stabrsub:=solvtriv;
@@ -479,7 +510,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
       img:=actfun(orb[1],pcgsimgs[genum]);
       repword:=repwords[1];
       p:=Position(domain,img);
-      if not b[p] then
+      if p>Length(b) or not b[p] then
 	# new orbit images
 	vp:=Length(orb)*(relo-1);
 	sz:=sz-vp;
@@ -511,7 +542,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
 #if Length(orb)<>Length(Orbit(Group(pcgsimgs),orb[1],actfun)) then Error("HUH9");fi;
 
     subsz:=stabrsubsz;
-    if  solvsz<>subsz*Length(orb) then
+    if  solvsz>subsz*Length(orb) then
       Error("processing stabstack solvable ", Length(stabrad));
 
       s:=1;
@@ -528,14 +559,14 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
 	stabilizergen();
 	s:=s+1;
       od;
-      Info(InfoHomClass,5,"processed solvable ",s," from ",Length(stabstack));
+      Info(InfoFitFree,5,"processed solvable ",s," from ",Length(stabstack));
     fi;
 
     subsz:=stabrsubsz;
     solsubsz:=subsz;
 
     orblock:=Length(orb);
-    Info(InfoHomClass,5,"solvob=",orblock);
+    Info(InfoFitFree,5,"solvob=",orblock);
 
     # nonsolvable iteration: We act on orbits
     stage:=2;
@@ -554,7 +585,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
 	  # new orbit image
 	  Add(orb,img);
 	  orpo[p]:=Length(orb);
-	  if rep<>fail then Add(reps,rep); fi;
+	  #if rep<>fail then Add(reps,rep); fi;
 	  Add(repwords,repword);
 	  b[p]:=true;
 	  for j in [1..orblock-1] do
@@ -594,7 +625,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
     fi;
 
 
-    Info(InfoHomClass,4,"orblen=",Length(orb)," blocked ",orblock," left:",
+    Info(InfoFitFree,4,"orblen=",Length(orb)," blocked ",orblock," left:",
       sz," len=", Length(stabrad)," ",Length(stabfacgens));
 
     #Assert(2,ForAll(GeneratorsOfGroup(stabsub),i->Comm(i,h*rep) in NT));
@@ -677,7 +708,7 @@ local sel,orb,dict,reps,repwords,vp,img,cont,minpo,genum,rep,repword,p,
   od;
 #if Length(orb)>Length(Set(orb)) then Error("EH");fi;
   orblock:=Length(orb);
-  Info(InfoHomClass,5,"solvob=",orblock);
+  Info(InfoFitFree,5,"solvob=",orblock);
 
   # nonsolvable iteration: We act on orbits
 
@@ -1240,7 +1271,7 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
     s:=HallSubgroup(Image(ser.pcisom),pi);
     sp:=List(Pcgs(s),x->PreImage(ser.pcisom,x));
     return [
-      SubgroupByFittingFreeData(G,[],[],InducedPcgsByPcSequenceNC(pcgs,sp))];
+      SubgroupByFittingFreeData(G,[],[],InducedPcgsByGeneratorsNC(pcgs,sp))];
   fi;
 
   all:=[];

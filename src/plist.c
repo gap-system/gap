@@ -95,20 +95,20 @@ Int             GrowPlist (
 
 /****************************************************************************
 **
-*F  TypePlist(<list>) . . . . . . . . . . . . . . . . .  kind of a plain list
+*F  TypePlist(<list>) . . . . . . . . . . . . . . . . .  type of a plain list
 **
-**  'TypePlist' returns the kind of the plain list <list>.
+**  'TypePlist' returns the type of the plain list <list>.
 **
 **  'TypePlist' is the function in 'TypeObjFuncs' for plain lists.
 **
-**  TypePlist works with KTnumPlist to determine the type of a plain list
+**  TypePlist works with KTNumPlist to determine the type of a plain list
 **  Considerable care is needed to deal with self-referential lists. This is
-**  basically achieved with the TESTING flag in the Tnum. This must be set in
-**  the "current" list before triggering determination of the Type (or KTnum)
+**  basically achieved with the TESTING flag in the TNum. This must be set in
+**  the "current" list before triggering determination of the Type (or KTNum)
 **  of any sublist.
 **
-**  KTnumPlist determined the "true" Tnum of the list, taking account of such
-**  factors as denseness, homogeneity and so on. It modifies the stored Tnum
+**  KTNumPlist determined the "true" TNum of the list, taking account of such
+**  factors as denseness, homogeneity and so on. It modifies the stored TNum
 **  of the list to the most informative "safe" value, allowing for the
 **  mutability of the list entries (and preserving TESTING).
 **
@@ -171,7 +171,7 @@ Int             GrowPlist (
 **     elements in the list. If we didn't do this, a lot of matrix stuff
 **     wouldn't work
 **
-**     8 is the simpler. It calls KTnumHomPlist, which checks whether we
+**     8 is the simpler. It calls KTNumHomPlist, which checks whether we
 **     should really be in T_PLIST_CYC, T_PLIST_FFE or T_PLIST_TAB and if so,
 **     changes the TNUM appropriately and returns the new tnum.  The only
 **     time this is slow is a homogenous list of lists which looks like a
@@ -182,10 +182,10 @@ Int             GrowPlist (
 **     lists, lists with mutable subobjects, etc.  We now concentrate on this
 **     case.
 **
-**     The entry point is the function TypePlistWithKTnum, which returns both
+**     The entry point is the function TypePlistWithKTNum, which returns both
 **     the type and the ktnum of the list. This must be done in one function
 **     to avoid an exponential slowdown for deeply nested lists. This
-**     function is mutually recursive with KTnumPlist, which also returns two
+**     function is mutually recursive with KTNumPlist, which also returns two
 **     pieces of information: the ktnum of the list and, if it is homogenous,
 **     the family of the elements.
 **
@@ -214,8 +214,7 @@ Obj TYPE_LIST_HOM;
   && TNUM_OBJ(list) <= LAST_TESTING_TNUM)
 
 
-extern Obj TypePlistWithKTnum( Obj list,
-			       UInt *ktnum );
+static Obj TypePlistWithKTNum( Obj list, UInt *ktnum );
 
 Int KTNumPlist (
     Obj                 list,
@@ -276,7 +275,7 @@ Int KTNumPlist (
 	if (!testing) MARK_LIST(list, TESTING);
 
 	if (IS_PLIST(elm))
-	  family = FAMILY_TYPE( TypePlistWithKTnum(elm, &ktnumFirst));
+	  family = FAMILY_TYPE( TypePlistWithKTNum(elm, &ktnumFirst));
 	else
 	  {
 	    family  = FAMILY_TYPE( TYPE_OBJ(elm) );
@@ -531,27 +530,27 @@ Int KTNumHomPlist (
 
 Obj TypePlist( Obj list)
 {
-  return TypePlistWithKTnum( list, (UInt *) 0);
+  return TypePlistWithKTNum( list, (UInt *) 0);
 }
 
-Obj TypePlistWithKTnum (
+static Obj TypePlistWithKTNum (
     Obj                 list,
     UInt                *ktnum )
 {
-    Obj                 kind;           /* kind, result                    */
-    Int                 ktype;          /* kind type of <list>             */
+    Obj                 type;           /* type, result                    */
+    Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
-    Obj                 kinds;          /* kinds list of <family>          */
+    Obj                 types;          /* types list of <family>          */
 
     /* recursion is possible for this type of list                         */
     MARK_LIST( list, TESTING );
-    ktype = KTNumPlist( list, &family);
+    tnum = KTNumPlist( list, &family);
     UNMARK_LIST( list, TESTING );
     if (ktnum != (UInt *) 0)
-      *ktnum = ktype;
+      *ktnum = tnum;
 
     /* handle special cases                                                */
-    switch (ktype)
+    switch (tnum)
       {
       case T_PLIST_NDENSE:
         return TYPE_LIST_NDENSE_MUTABLE;	
@@ -577,27 +576,27 @@ Obj TypePlistWithKTnum (
     }
 
     /* handle homogeneous list                                             */
-    if ( HasFiltListTNums[ktype][FN_IS_HOMOG] ) {
+    if ( HasFiltListTNums[tnum][FN_IS_HOMOG] ) {
 
-        /* get the list kinds of the elements family */
-        kinds  = TYPES_LIST_FAM( family );
+        /* get the list types of the elements family */
+        types  = TYPES_LIST_FAM( family );
 
-        /* if the kind is not yet known, compute it                        */
-        kind = ELM0_LIST( kinds, ktype-T_PLIST_HOM+1 );
-        if ( kind == 0 ) {
-            kind = CALL_2ARGS( TYPE_LIST_HOM,
-                family, INTOBJ_INT(ktype-T_PLIST_HOM+1) );
-            ASS_LIST( kinds, ktype-T_PLIST_HOM+1, kind );
+        /* if the type is not yet known, compute it                        */
+        type = ELM0_LIST( types, tnum-T_PLIST_HOM+1 );
+        if ( type == 0 ) {
+            type = CALL_2ARGS( TYPE_LIST_HOM,
+                family, INTOBJ_INT(tnum-T_PLIST_HOM+1) );
+            ASS_LIST( types, tnum-T_PLIST_HOM+1, type );
         }
 
-        /* return the kind                                                 */
-        return kind;
+        /* return the type                                                 */
+        return type;
     }
 
     /* whats going on here?                                                */
     else {
         ErrorQuit(
-            "Panic: strange kind type '%s' ('%d')",
+            "Panic: strange type tnum '%s' ('%d')",
             (Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
         return 0;
     }
@@ -668,84 +667,84 @@ Obj TypePlistEmptyImm (
 Obj TypePlistHom (
     Obj                 list )
 {
-    Obj                 kind;           /* kind, result                    */
-    Int                 ktype;          /* kind type of <list>             */
+    Obj                 type;           /* type, result                    */
+    Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
-    Obj                 kinds;          /* kinds list of <family>          */
+    Obj                 types;          /* types list of <family>          */
 
-    /* get the kind type and the family of the elements                    */
-    ktype  = KTNumHomPlist( list );
+    /* get the tnum and the family of the elements                         */
+    tnum   = KTNumHomPlist( list );
     family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
 
-    /* get the list kinds of that family                                   */
-    kinds  = TYPES_LIST_FAM( family );
+    /* get the list types of that family                                   */
+    types  = TYPES_LIST_FAM( family );
 
-    /* if the kind is not yet known, compute it                            */
-    kind = ELM0_LIST( kinds, ktype-T_PLIST_HOM+1 );
-    if ( kind == 0 ) {
-        kind = CALL_2ARGS( TYPE_LIST_HOM,
-            family, INTOBJ_INT(ktype-T_PLIST_HOM+1) );
-        ASS_LIST( kinds, ktype-T_PLIST_HOM+1, kind );
+    /* if the type is not yet known, compute it                            */
+    type = ELM0_LIST( types, tnum-T_PLIST_HOM+1 );
+    if ( type == 0 ) {
+        type = CALL_2ARGS( TYPE_LIST_HOM,
+            family, INTOBJ_INT(tnum-T_PLIST_HOM+1) );
+        ASS_LIST( types, tnum-T_PLIST_HOM+1, type );
     }
 
-    /* return the kind                                                     */
-    return kind;
+    /* return the type                                                     */
+    return type;
 }
 
 Obj TypePlistCyc (
     Obj                 list )
 {
-    Obj                 kind;           /* kind, result                    */
-    Int                 ktype;          /* kind type of <list>             */
+    Obj                 type;           /* type, result                    */
+    Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
-    Obj                 kinds;          /* kinds list of <family>          */
+    Obj                 types;          /* types list of <family>          */
 
-    /* get the kind type and the family of the elements                    */
-    ktype  = TNUM_OBJ( list );
+    /* get the tnum and the family of the elements                         */
+    tnum   = TNUM_OBJ( list );
 
     /* This had better return the cyclotomics family, could be speeded up */
     family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
 
-    /* get the list kinds of that family                                   */
-    kinds  = TYPES_LIST_FAM( family );
+    /* get the list types of that family                                   */
+    types  = TYPES_LIST_FAM( family );
 
-    /* if the kind is not yet known, compute it                            */
-    kind = ELM0_LIST( kinds, ktype-T_PLIST_CYC+1 );
-    if ( kind == 0 ) {
-        kind = CALL_2ARGS( TYPE_LIST_HOM,
-            family, INTOBJ_INT(ktype-T_PLIST_CYC+1) );
-        ASS_LIST( kinds, ktype-T_PLIST_CYC+1, kind );
+    /* if the type is not yet known, compute it                            */
+    type = ELM0_LIST( types, tnum-T_PLIST_CYC+1 );
+    if ( type == 0 ) {
+        type = CALL_2ARGS( TYPE_LIST_HOM,
+            family, INTOBJ_INT(tnum-T_PLIST_CYC+1) );
+        ASS_LIST( types, tnum-T_PLIST_CYC+1, type );
     }
 
-    /* return the kind                                                     */
-    return kind;
+    /* return the type                                                     */
+    return type;
 }
 
 Obj TypePlistFfe (
     Obj                 list )
 {
-    Obj                 kind;           /* kind, result                    */
-    Int                 ktype;          /* kind type of <list>             */
+    Obj                 type;           /* type, result                    */
+    Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
-    Obj                 kinds;          /* kinds list of <family>          */
+    Obj                 types;          /* types list of <family>          */
 
-    /* get the kind type and the family of the elements                    */
-    ktype  = TNUM_OBJ( list );
+    /* get the tnum and the family of the elements                         */
+    tnum   = TNUM_OBJ( list );
     family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
 
-    /* get the list kinds of that family                                   */
-    kinds  = TYPES_LIST_FAM( family );
+    /* get the list types of that family                                   */
+    types  = TYPES_LIST_FAM( family );
 
-    /* if the kind is not yet known, compute it                            */
-    kind = ELM0_LIST( kinds, ktype-T_PLIST_FFE+1 );
-    if ( kind == 0 ) {
-        kind = CALL_2ARGS( TYPE_LIST_HOM,
-            family, INTOBJ_INT(ktype-T_PLIST_FFE+1) );
-        ASS_LIST( kinds, ktype-T_PLIST_FFE+1, kind );
+    /* if the type is not yet known, compute it                            */
+    type = ELM0_LIST( types, tnum-T_PLIST_FFE+1 );
+    if ( type == 0 ) {
+        type = CALL_2ARGS( TYPE_LIST_HOM,
+            family, INTOBJ_INT(tnum-T_PLIST_FFE+1) );
+        ASS_LIST( types, tnum-T_PLIST_FFE+1, type );
     }
 
-    /* return the kind                                                     */
-    return kind;
+    /* return the type                                                     */
+    return type;
 }
 
 
@@ -2077,9 +2076,9 @@ Int             IsDensePlistYes (
 Int             IsHomogPlist (
     Obj                 list )
 {
-    Int                 ktype;
-    ktype = KTNumPlist( list, (Obj *)0 );
-    return (T_PLIST_HOM <= ktype);
+    Int                 tnum;
+    tnum = KTNumPlist( list, (Obj *)0 );
+    return (T_PLIST_HOM <= tnum);
 }
 
 Int             IsHomogPlistNot (
@@ -2107,9 +2106,9 @@ Int             IsHomogPlistYes (
 Int             IsTablePlist (
     Obj                 list )
 {
-    Int                 ktype;
-    ktype = KTNumPlist( list, (Obj *)0 );
-    return (T_PLIST_TAB <= ktype && ktype <= T_PLIST_TAB_RECT_SSORT);
+    Int                 tnum;
+    tnum = KTNumPlist( list, (Obj *)0 );
+    return (T_PLIST_TAB <= tnum && tnum <= T_PLIST_TAB_RECT_SSORT);
 }
 
 Int             IsTablePlistNot (
@@ -2448,7 +2447,7 @@ Obj             PosPlistDense (
 
         /* select one element from <list>                                  */
         elm = ELM_PLIST( list, i );
-	assert(elm);
+        assert(elm);
 
         /* compare with <val>                                              */
         if ( EQ( elm, val ) )
@@ -2477,7 +2476,7 @@ Obj             PosPlistSort (
     istart = INT_INTOBJ(start);
 
     /* get a pointer to the set and the logical length of the set          */
-    lenList = LEN_PLIST( list );
+    lenList = LEN_PLIST(list);
 
     /* perform the binary search to find the position                      */
     i = istart;  k = lenList + 1;
@@ -2501,38 +2500,11 @@ Obj             PosPlistHomSort (
     Obj                 val,
     Obj                 start )
 {
-    UInt                lenList;        /* logical length of the set       */
-    UInt                i, j, k;        /* loop variables                  */
-    UInt                istart;
-
-    /* if the starting position is too big to be a small int
-       then there can't be anything to find */
-    if (!IS_INTOBJ(start))
-      return Fail;
-
-    istart = INT_INTOBJ(start);
-
     /* deal with the case which can be decided by the family relationship  */
     if (FAMILY_OBJ(val) != FAMILY_OBJ(ELM_PLIST(list,1)))
       return Fail;
     
-    /* get a pointer to the set and the logical length of the set          */
-    lenList = LEN_PLIST( list );
-
-    /* perform the binary search to find the position                      */
-    i = istart;  k = lenList + 1;
-    while ( i+1 < k ) {                 /* set[i] < elm && elm <= set[k]   */
-        j = (i + k) / 2;                /* i < j < k                       */
-        if ( LT( ELM_PLIST(list,j), val ) )  i = j;
-        else                                 k = j;
-    }
-
-    /* test if the element was found at position k                         */
-    if ( lenList < k || ! EQ( ELM_PLIST(list,k), val ) )
-        k = 0;
-
-    /* return the position                                                 */
-    return k == 0 ? Fail: INTOBJ_INT(k);
+    return PosPlistSort(list, val, start);
 }
 
 
@@ -4469,7 +4441,7 @@ static Int InitKernel (
         LoadObjFuncs[ t1 + IMMUTABLE ] = LoadPlist; 
     }
 
-    /* get the kinds (resp. kind functions)                                */
+    /* get the types (resp. type functions)                                */
     ImportGVarFromLibrary( "TYPE_LIST_NDENSE_MUTABLE", 
                            &TYPE_LIST_NDENSE_MUTABLE );
 
@@ -4503,7 +4475,7 @@ static Int InitKernel (
     ImportFuncFromLibrary( "TYPE_LIST_HOM",
                            &TYPE_LIST_HOM );
 
-    /* install the kind methods                                            */
+    /* install the type methods                                            */
     TypeObjFuncs[ T_PLIST                       ] = TypePlist;
     TypeObjFuncs[ T_PLIST            +IMMUTABLE ] = TypePlist;
     TypeObjFuncs[ T_PLIST_NDENSE                ] = TypePlistNDenseMut;
@@ -4901,7 +4873,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPlist ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

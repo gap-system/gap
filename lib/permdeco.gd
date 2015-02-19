@@ -22,6 +22,7 @@
 ##  list of permutations corresponding to <autos> that induce the same
 ##  automorphisms of $H$. Finally $H2=\left\langle H,a\right\rangle$.
 ##  The algorithm may fail if <G> is not almost simple.
+##  The group $H$ is guaranteed to act on points [1..n] without fixedpoints.
 DeclareGlobalFunction("AutomorphismRepresentingGroup");
 
 #############################################################################

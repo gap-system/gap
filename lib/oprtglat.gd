@@ -17,6 +17,8 @@
 ##  `.list' which is a list of groups. In the latter case, groups are removed
 ##  from the list as long as they are not needed any longer to save space.
 ##  if all is true, the full orbits are kept, otherwise only representatives.
+##  The input list needs to be free of duplicates (e.g. using Unique),
+##  otherwise the result might not be duplicate-free either.
 ##
 DeclareOperation( "SubgroupsOrbitsAndNormalizers",[IsGroup,IsObject,IsBool]);
 

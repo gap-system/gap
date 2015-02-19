@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -ex
 # (C) Frank Lübeck
 
 # path to the directory which will contain directories needed by the 
@@ -31,7 +31,7 @@ export WWW2Dir=${PREFIX}"/WWW2"
 
 # destination of the ftp server directory (can be remote), the one
 # containing the directories 'tar.gz', 'tar.bz2' and 'win.zip'
-export FtpServer="/ftp/pub/gap/gap46"
+export FtpServer="/ftp/pub/gap/gap47"
 
 # destination of the directory containing package release repositories 
 # (that is, repositories to store released versions of the package to

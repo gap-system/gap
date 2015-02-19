@@ -1020,9 +1020,14 @@ InstallGlobalFunction( ZmodnZ, function( n )
           F,
           R;
 
-    if not IsInt( n ) or n <= 0 then
-      Error( "<n> must be a positive integer" );
-    elif IsPrimeInt( n ) then
+    if not IsInt( n ) then
+      Error( "<n> must be an integer" );
+    elif n = 0 then
+      return Integers;
+    elif n < 0 then
+      n := -n;
+    fi;
+    if IsPrimeInt( n ) then
       return ZmodpZNC( n );
     fi;
 
@@ -1076,8 +1081,8 @@ end );
 #M  \mod( Integers, <n> )
 ##
 InstallMethod( \mod,
-    "for `Integers', and positive integers",
-    [ IsIntegers, IsPosInt ],
+    "for `Integers', and integer",
+    [ IsIntegers, IsInt ],
     function( Integers, n ) return ZmodnZ( n ); end );
 
 

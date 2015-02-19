@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -ex
 #############################################################################
 ##
 ##
@@ -31,7 +31,11 @@ $line
 
 source ./core_checkout_time.txt
 
-cd ${DISTNAME}/lib/
+cd ${DISTNAME}
+sed -i -e "s/4.dev/4.$FULLVERSION/g" CITATION
+sed -i -e "s/this year/$COREYEAR/g" CITATION
+
+cd lib/
 sed -i -e "s/4.dev/4.$FULLVERSION/g" system.g
 sed -i -e "s/today/$COREDATE/g" system.g
 

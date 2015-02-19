@@ -123,7 +123,7 @@ false
 gap> inv:= InverseGeneralMapping( map );
 InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > )
 gap> AsList( UnderlyingRelation( inv ) );
-[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3),
     Z(3)^0 ] ) ]
 gap> IsInjective( inv );
 true

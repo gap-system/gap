@@ -119,37 +119,12 @@
 /* for fallbacks to library */
 Obj String;
 
-/****************************************************************************
-**
-
-*T  TypDigit  . . . . . . . . . . . . . . . . . . . .  type of a single digit
-**
-**  'TypDigit' is the type of a single digit of an  arbitrary  size  integer.
-**  This is of course unsigned short int, which gives us the 16 bits we want.
-**
-**  'TypDigit' is defined in the declaration file of the package as follows:
-**
-#ifdef SYS_IS_64_BIT
-typedef UInt4           TypDigit;
-#else
-typedef UInt2           TypDigit;
-#endif
-#define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
-#define INTBASE            (1L << NR_DIGIT_BITS)
-#define NR_SMALL_INT_BITS  (2*NR_DIGIT_BITS - 4)
-#define SIZE_INT(op)    (SIZE_OBJ(op) / sizeof(TypDigit))
-#define ADDR_INT(op)    ((TypDigit*)ADDR_OBJ(op))
-*/
-
-
-
-
 
 /****************************************************************************
 **
-*F  TypeInt(<int>)  . . . . . . . . . . . . . . . . . . . . . kind of integer
+*F  TypeInt(<int>)  . . . . . . . . . . . . . . . . . . . . . type of integer
 **
-**  'TypeInt' returns the kind of the integer <int>.
+**  'TypeInt' returns the type of the integer <int>.
 **
 **  'TypeInt' is the function in 'TypeObjFuncs' for integers.
 */
@@ -397,7 +372,7 @@ Obj  FuncIntHexString( Obj self,  Obj str )
     /* number of hex digits and sign */
     len = GET_LEN_STRING(str);
     if (len == 0) {
-       res = INT_INTOBJ(0);
+       res = INTOBJ_INT(0);
        return res;
     }
     if (*(CHARS_STRING(str)) == '-') {
@@ -1335,8 +1310,8 @@ Obj             DiffInt (
 **
 **  Is called from the 'EvalProd' binop so both operands are already evaluated.
 **
-**  The only difficult about this function is the fact that is has two handle
-**  3 different situation, depending on how many arguments  are  small  ints.
+**  The only difficulty about this function is the fact that is has to handle
+**  3 different situations, depending on how many arguments  are  small  ints.
 */
 Obj             ProdInt (
     Obj                 opL,
@@ -2096,7 +2071,7 @@ Obj FuncIS_INT (
       || TNUM_OBJ(val) == T_INTNEG ) {
         return True;
     }
-    else if ( TNUM_OBJ(val) <= FIRST_EXTERNAL_TNUM ) {
+    else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
         return False;
     }
     else {
@@ -2642,7 +2617,7 @@ Obj             RemInt (
 **
 *F  FuncREM_INT(<self>,<opL>,<opR>)  . . . . . . .  internal function 'RemInt'
 **
-**  'FuncRem' implements the internal function 'RemInt'.
+**  'FuncREM_INT' implements the internal function 'RemInt'.
 **
 **  'RemInt( <i>, <k> )'
 **
@@ -3353,7 +3328,7 @@ static Int InitKernel (
     ImportFuncFromLibrary( "String", &String );
     ImportFuncFromLibrary( "One", &OneAttr);
 
-    /* install the kind functions                                          */
+    /* install the type functions                                          */
     TypeObjFuncs[ T_INT    ] = TypeIntSmall;
     TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
     TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;
@@ -3410,7 +3385,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoInt ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

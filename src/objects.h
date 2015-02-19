@@ -137,11 +137,11 @@
 */
 #if HAVE_ARITHRIGHTSHIFT
 #define DIFF_INTOBJS(o,l,r)            \
-    ((o) = (Bag)((Int)(l)-(Int)(r)+1), \
+    ((o) = (Obj)((Int)(l)-(Int)(r)+1), \
      (((Int)(o) << 1) >> 1) == (Int)(o) )
 #else
 #define DIFF_INTOBJS(o,l,r)            \
-    ((o) = (Bag)((Int)(l)-(Int)(r)+1), \
+    ((o) = (Obj)((Int)(l)-(Int)(r)+1), \
      ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
 #endif
 
@@ -161,7 +161,6 @@
 #define HALF_A_WORD 16
 #endif
 
-#if HAVE_ARITHRIGHTSHIFT
 static inline Obj prod_intobjs(Int l, Int r)
 {
   Int prod;
@@ -172,38 +171,29 @@ static inline Obj prod_intobjs(Int l, Int r)
   if (r == (Int)INTOBJ_INT(1))
     return (Obj)l;
   prod = ((Int)((UInt)l >> 2) * ((UInt)r-1)+1);
+
+#if HAVE_ARITHRIGHTSHIFT
   if ((prod << 1)>> 1 !=  prod)
     return (Obj) 0;
-  if ((((Int)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
-      (((Int)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
-    return (Obj) prod;
-  if ((prod -1) / (l >> 2) == r-1)
-    return (Obj) prod;
-  else
-    return (Obj) 0;
-}
 #else
-static inline Obj prod_intobjs(Int l, Int r)
-{
-  Int prod;
-  if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
-    return INTOBJ_INT(0);
-  if (l == (Int)INTOBJ_INT(1))
-    return (Obj)r;
-  if (r == (Int)INTOBJ_INT(1))
-    return (Obj)l;
-  prod = ((Int)((UInt)l >> 2) * ((UInt)r-1)+1);
   if (((((UInt) (prod)) >> (sizeof(UInt)*8-2))-1) <= 1)
     return (Obj) 0;
+#endif
+
   if ((((Int)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
       (((Int)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
     return (Obj) prod;
+
+#if HAVE_ARITHRIGHTSHIFT
+  if ((prod -1) / (l >> 2) == r-1)
+    return (Obj) prod;
+#else
   if ((prod-1) / ((l-1)/4) == r-1)
     return (Obj) prod;
-  else
-    return (Obj) 0;
-}
 #endif
+
+  return (Obj) 0;
+}
 
 #define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)), \
                                   (o) != (Obj) 0)
@@ -353,60 +343,13 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define LAST_TESTING_TNUM       LAST_COPYING_TNUM
 
 
-
 /****************************************************************************
 **
-
-*F  F_MUTABLE . . . . . . . . . . . . . . . . . . . . . . .  IsMutableObjFilt
-*/
-#define F_MUTABLE       1
-
-
-/****************************************************************************
+*S  T_BODY  . . . . . . . . . . . . . . . . . . . . type of function body bag
 **
-*F  F_EMPTY . . . . . . . . . . . . . . . . . . . . . . . . . . . IsEmptyProp
+**  'T_BODY' is the type of the function body bags.
 */
-#define F_EMPTY         2
-#define F_NOT_EMPTY     3
-
-
-/****************************************************************************
-**
-*F  F_SSORT . . . . . . . . . . . . . . . . . . . . . . . . . . . IsSSortProp
-*/
-#define F_SSORT         4
-#define F_NOT_SSORT     5
-
-
-/****************************************************************************
-**
-*F  F_DENSE . . . . . . . . . . . . . . . . . . . . . . . . . . . IsDenseProp
-*/
-#define F_DENSE         6
-#define F_NOT_DENSE     7
-
-
-/****************************************************************************
-**
-*F  F_HOMOG . . . . . . . . . . . . . . . . . . . . . . . . . . . IsHomogProp
-*/
-#define F_HOMOG         8
-#define F_NOT_HOMOG     9
-
-
-/****************************************************************************
-**
-*F  F_TABLE . . . . . . . . . . . . . . . . . . . . . . . . . . . IsTableProp
-*/
-#define F_TABLE         10
-#define F_NOT_TABLE     11
-
-/****************************************************************************
-**
-*F  F_RECT . . . . . . . . . . . . . . . . . . . . . . IsRectangularTableProp
-*/
-#define F_RECT         12
-#define F_NOT_RECT     13
+#define T_BODY                  175
 
 
 /****************************************************************************
@@ -449,11 +392,11 @@ static inline Obj prod_intobjs(Int l, Int r)
 /****************************************************************************
 **
 
-*F  FAMILY_TYPE( <kind> ) . . . . . . . . . . . . . . . . .  family of a kind
+*F  FAMILY_TYPE( <type> ) . . . . . . . . . . . . . . . . .  family of a type
 **
-**  'FAMILY_TYPE' returns the family of the kind <kind>.
+**  'FAMILY_TYPE' returns the family of the type <type>.
 */
-#define FAMILY_TYPE(kind)       ELM_PLIST( kind, 1 )
+#define FAMILY_TYPE(type)       ELM_PLIST( type, 1 )
 
 
 /****************************************************************************
@@ -465,43 +408,43 @@ static inline Obj prod_intobjs(Int l, Int r)
 
 /****************************************************************************
 **
-*F  FLAGS_TYPE( <kind> )  . . . . . . . . . . .  flags boolean list of a kind
+*F  FLAGS_TYPE( <type> )  . . . . . . . . . . .  flags boolean list of a type
 **
-**  'FLAGS_TYPE' returns the flags boolean list of the kind <kind>.
+**  'FLAGS_TYPE' returns the flags boolean list of the type <type>.
 */
-#define FLAGS_TYPE(kind)        ELM_PLIST( kind, 2 )
+#define FLAGS_TYPE(type)        ELM_PLIST( type, 2 )
 
 
 /****************************************************************************
 **
-*F  SHARED_TYPE( <kind> ) . . . . . . . . . . . . . . . shared data of a kind
+*F  SHARED_TYPE( <type> ) . . . . . . . . . . . . . . . shared data of a type
 **
-**  'SHARED_TYPE' returns the shared data of the kind <kind>.
+**  'SHARED_TYPE' returns the shared data of the type <type>.
 XXX nowhere used, throw away??? (FL)
 */
-/* #define SHARED_TYPE(kind)       ELM_PLIST( kind, 3 )
+/* #define SHARED_TYPE(type)       ELM_PLIST( type, 3 )
 */                        
                         
 /****************************************************************************
 **
-*F  ID_TYPE( <kind> ) . . . . . . . . . . . . . . . . . . . . .  id of a kind
+*F  ID_TYPE( <type> ) . . . . . . . . . . . . . . . . . . . . .  id of a type
 **
-**  'ID_TYPE' returns the ID of  a kind.  Warning: if  GAP runs out of ID  it
+**  'ID_TYPE' returns the ID of  a type.  Warning: if  GAP runs out of ID  it
 **  will renumber all IDs.  Therefore the  corresponding routine must excatly
 **  know where such numbers are stored.
 */
-#define ID_TYPE(kind)           ELM_PLIST( kind, 4 )
+#define ID_TYPE(type)           ELM_PLIST( type, 4 )
 
 
 /****************************************************************************
 **
-*F  TYPE_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . kind of an object
+*F  TYPE_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . type of an object
 **
-**  'TYPE_OBJ' returns the kind of the object <obj>.
+**  'TYPE_OBJ' returns the type of the object <obj>.
 */
 #define TYPE_OBJ(obj)   ((*TypeObjFuncs[ TNUM_OBJ(obj) ])( obj ))
 
-extern Obj (*TypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
+extern Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 
 /****************************************************************************
@@ -540,7 +483,7 @@ extern void MakeImmutable( Obj obj );
 #define IS_MUTABLE_OBJ(obj) \
                         ((*IsMutableObjFuncs[ TNUM_OBJ(obj) ])( obj ))
 
-extern Int (*IsMutableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
+extern Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 /****************************************************************************
 **
@@ -557,9 +500,9 @@ extern Int (*IsMutableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
 **  No saving function may allocate any bag
 */
 
-extern void (*SaveObjFuncs[ 256 ]) (Obj obj);
+extern void (*SaveObjFuncs[256]) ( Obj obj );
 
-extern void SaveObjError ( Obj obj );
+extern void SaveObjError( Obj obj );
 
 
 /****************************************************************************
@@ -577,11 +520,9 @@ extern void SaveObjError ( Obj obj );
 **  No loading function may allocate any bag
 */
 
-extern void (*LoadObjFuncs[ 256 ]) (Bag bag);
+extern void (*LoadObjFuncs[256]) ( Obj obj );
 
-extern void LoadObjError (
-                   Bag bag
-                   );
+extern void LoadObjError( Obj obj );
 
 /****************************************************************************
 **
@@ -593,7 +534,7 @@ extern void LoadObjError (
 #define IS_COPYABLE_OBJ(obj) \
                         ((IsCopyableObjFuncs[ TNUM_OBJ(obj) ])( obj ))
 
-extern Int (*IsCopyableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
+extern Int (*IsCopyableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 
 /****************************************************************************
@@ -611,7 +552,7 @@ extern Int (*IsCopyableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
 **
 *V  ShallowCopyObjFuncs[<type>] . . . . . . . . . .  shallow copier functions
 */
-extern Obj (*ShallowCopyObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
+extern Obj (*ShallowCopyObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 
 /****************************************************************************
@@ -635,7 +576,7 @@ extern Obj CopyObj (
 **  structural copy of <obj> and marks <obj> as already copied.
 **
 **  Note that 'COPY_OBJ' and 'CLEAN_OBJ' are macros, so do not call them with
-**  arguments that have sideeffects.
+**  arguments that have side effects.
 */
 #define COPY_OBJ(obj,mut) \
                         ((*CopyObjFuncs[ TNUM_OBJ(obj) ])( obj, mut ))
@@ -649,7 +590,7 @@ extern Obj CopyObj (
 **  mark <obj>.
 **
 **  Note that 'COPY_OBJ' and 'CLEAN_OBJ' are macros, so do not call them with
-**  arguments that have sideeffects.
+**  arguments that have side effects.
 */
 #define CLEAN_OBJ(obj) \
                         ((*CleanObjFuncs[ TNUM_OBJ(obj) ])( obj ))
@@ -676,7 +617,7 @@ extern Obj CopyObj (
 **  then call 'CLEAN_OBJ'  for all subobjects recursively.  If called for an
 **  already unmarked object, it should simply return.
 */
-extern Obj (*CopyObjFuncs[ LAST_REAL_TNUM+COPYING+1 ]) ( Obj obj, Int mut );
+extern Obj (*CopyObjFuncs[LAST_REAL_TNUM+COPYING+1]) ( Obj obj, Int mut );
 
 
 
@@ -684,10 +625,10 @@ extern Obj (*CopyObjFuncs[ LAST_REAL_TNUM+COPYING+1 ]) ( Obj obj, Int mut );
 **
 *V  CleanObjFuncs[<type>] . . . . . . . . . . . . table of cleaning functions
 */
-extern void (*CleanObjFuncs[ LAST_REAL_TNUM+COPYING+1 ]) ( Obj obj );
+extern void (*CleanObjFuncs[LAST_REAL_TNUM+COPYING+1]) ( Obj obj );
 
 
-extern void (*MakeImmutableObjFuncs[ LAST_REAL_TNUM+1 ]) (Obj obj );
+extern void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 /****************************************************************************
 **
@@ -715,7 +656,7 @@ extern Int  PrintObjDepth;
 
 extern Int  PrintObjFull;
 
-extern void (* PrintObjFuncs [ LAST_REAL_TNUM  +1 ]) ( Obj obj );
+extern void (* PrintObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 
 /****************************************************************************
@@ -742,7 +683,7 @@ extern void ViewObj (
 **
 **  These are also used for viewing
 */
-extern void (* PrintPathFuncs [ LAST_REAL_TNUM  +1 ]) (
+extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
     Obj                 obj,
     Int                 indx );
 
@@ -757,14 +698,14 @@ extern void (* PrintPathFuncs [ LAST_REAL_TNUM  +1 ]) (
 
 /****************************************************************************
 **
-*F  TYPE_COMOBJ( <obj> )  . . . . . . . . . . . .  kind of a component object
+*F  TYPE_COMOBJ( <obj> )  . . . . . . . . . . . .  type of a component object
 */
 #define TYPE_COMOBJ(obj)          ADDR_OBJ(obj)[0]
 
 
 /****************************************************************************
 **
-*F  SET_TYPE_COMOBJ( <obj>, <val> ) . . .  set the kind of a component object
+*F  SET_TYPE_COMOBJ( <obj>, <val> ) . . .  set the type of a component object
 */
 #define SET_TYPE_COMOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
 
@@ -779,14 +720,14 @@ extern void (* PrintPathFuncs [ LAST_REAL_TNUM  +1 ]) (
 
 /****************************************************************************
 **
-*F  TYPE_POSOBJ( <obj> )  . . . . . . . . . . . . kind of a positional object
+*F  TYPE_POSOBJ( <obj> )  . . . . . . . . . . . . type of a positional object
 */
 #define TYPE_POSOBJ(obj)          ADDR_OBJ(obj)[0]
 
 
 /****************************************************************************
 **
-*F  SET_TYPE_POSOBJ( <obj>, <val> ) . . . set the kind of a positional object
+*F  SET_TYPE_POSOBJ( <obj>, <val> ) . . . set the type of a positional object
 */
 #define SET_TYPE_POSOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
  
@@ -801,25 +742,14 @@ extern void (* PrintPathFuncs [ LAST_REAL_TNUM  +1 ]) (
 
 /****************************************************************************
 **
-*F  TYPE_DATOBJ( <obj> )  . . . . . . . . . . . . . . . kind of a data object
+*F  TYPE_DATOBJ( <obj> )  . . . . . . . . . . . . . . . type of a data object
 */
 #define TYPE_DATOBJ(obj)          ADDR_OBJ(obj)[0]
 
 
 /****************************************************************************
 **
-*F  TYPE_ANYOBJ( <obj> )  . . . . . . . . . . . . .kind of an external object
-**
-** This is a hack which relies on the fact that TYPE_COMOBJ, TYPE_DATOBJ and
-** TYPE_POSOBJ are actually the same
-*/
-
-#define TYPE_ANYOBJ(obj)          ADDR_OBJ(obj)[0]
-
-
-/****************************************************************************
-**
-*F  SET_TYPE_DATOBJ( <obj>, <val> )  . . . . .  set the kind of a data object
+*F  SET_TYPE_DATOBJ( <obj>, <val> )  . . . . .  set the type of a data object
 */
 #define SET_TYPE_DATOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
 

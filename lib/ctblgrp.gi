@@ -2253,6 +2253,32 @@ end );
 # DIMACS Ser. Discrete Math. Theoret. Comput. Sci., 11, 
 # Amer. Math. Soc., Providence, RI, 1993. 
 
+
+BindGlobal("CholeskyDecomp",function(A)
+local n,i,j,aii,Li,L;
+  n:=Length(A);
+  L:=One(A);
+  for i in [1..n] do
+    aii:=A[i][i];
+    if IsInt(aii) then
+      aii:=ER(aii);
+    elif IsRat(aii) then
+      aii:=ER(NumeratorRat(aii))/ER(DenominatorRat(aii));
+    else
+      return fail; 
+      Error("huch");
+    fi;
+    Li:=MutableIdentityMat(n);
+    Li[i][i]:=aii;
+    for j in [i+1..n] do
+      Li[j][i]:=1/aii*A[j][i];
+    od;
+    L:=L*Li;
+    A:=Li^-1*A*TransposedMat(GaloisCyc(Li,-1))^-1;
+  od;
+  return L;
+end);
+
 BindGlobal("DixonRepGHchi",function(G,H,chi)
 local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
       sum, A, x, ra, l, rt, rti, rtl, r, alonin, wert, bx, mats, hom, i;
@@ -2374,6 +2400,15 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
   x:=bx;
 
   mats:=List(GeneratorsOfGroup(G),i->AF(i)*alonin);
+
+  if ValueOption("unitary")=true then
+    r:=CholeskyDecomp(alonin^-1);
+    if r=fail then
+      Error("cannot guarantee unitary");
+    else
+      mats:=List(mats,x->x^r);
+    fi;
+  fi;
 
   hom:=GroupHomomorphismByImagesNC(G,Group(mats),
     GeneratorsOfGroup(G),mats);

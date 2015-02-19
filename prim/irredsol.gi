@@ -8,7 +8,7 @@
 #Y  Copyright (C) 2001, Technische Universität, Braunschweig, Germany
 ##
 ##  This file contains the  functions and  data for the  irreducible solvable
-##  matrix group library.  It contains  exactely one member  for each of  the
+##  matrix group library.  It contains  exactly one member  for each of  the
 ##  372  conjugacy  classes of  irreducible  solvable subgroups of  $GL(n,p)$
 ##  where $1 < n$, $p$ is a prime, and $p^n < 256$.  
 ##

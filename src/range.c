@@ -103,7 +103,7 @@
 **  whether a list is a range.
 **
 **  Note that  'IS_RANGE' is a  macro, so do not  call it with arguments that
-**  have sideeffects.
+**  have side effects.
 **
 **  'IS_RANGE' is defined in the declaration part of this package as follows
 **
@@ -119,7 +119,7 @@
 **  which must be a C integer larger than 1.
 **
 **  Note that 'SET_LEN_RANGE' is a macro,  so  do not  call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 **
 **  'SET_LEN_RANGE' is  defined in  the declaration part  of  this package as
 **  follows
@@ -136,7 +136,7 @@
 **  integer.
 **
 **  Note that  'GET_LEN_RANGE' is a macro, so  do not call  it with arguments
-**  that have sideeffects.
+**  that have side effects.
 **
 **  'GET_LEN_RANGE' is  defined in  the declaration part  of this  package as
 **  follows
@@ -153,7 +153,7 @@
 **  <low>, which must be a C integer.
 **
 **  Note  that 'SET_LOW_RANGE' is a macro, so do not call  it with  arguments
-**  that have sideeffects.
+**  that have side effects.
 **
 **  'SET_LOW_RANGE' is defined  in the declaration  part  of this package  as
 **  follows
@@ -170,7 +170,7 @@
 **  integer.
 **
 **  Note that 'GET_LOW_RANGE' is a  macro, so do not  call it with  arguments
-**  that have sideeffects.
+**  that have side effects.
 **
 **  'GET_LOW_RANGE'  is defined in  the declaration  part  of this package as
 **  follows
@@ -187,7 +187,7 @@
 **  <inc>, which must be a C integer.
 **
 **  Note that  'SET_INC_RANGE' is a macro,  so do  not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 **
 **  'SET_INC_RANGE' is  defined  in the  declaration part of  this package as
 **  follows
@@ -203,7 +203,7 @@
 **  'GET_INC_RANGE' returns the increment of the range <list> as a C integer.
 **
 **  Note  that 'GET_INC_RANGE' is  a macro, so  do not call it with arguments
-**  that have sideeffects.
+**  that have side effects.
 **
 **  'GET_INC_RANGE' is  defined  in the  declaration part  of this package as
 **  follows
@@ -220,7 +220,7 @@
 **  must be a positive integer less than or equal to the length of <list>.
 **
 **  Note that 'GET_ELM_RANGE'  is a macro, so do  not call  it with arguments
-**  that have sideeffects.
+**  that have side effects.
 **
 **  'GET_ELM_RANGE'  is  defined in the  declaration part  of this package as
 **  follows
@@ -233,7 +233,7 @@
 /****************************************************************************
 **
 
-*F  TypeRangeNSortImmutable( <range> )  . . . . . . . . . . . kind of a range
+*F  TypeRangeNSortImmutable( <range> )  . . . . . . . . . . . type of a range
 **
 **  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for immutable
 **  ranges which are not strictly sorted.
@@ -248,7 +248,7 @@ Obj TypeRangeNSortImmutable (
     
 /****************************************************************************
 **
-*F  TypeRangeNSortMutable( <range> )  . . . . . . . . . . . . kind of a range
+*F  TypeRangeNSortMutable( <range> )  . . . . . . . . . . . . type of a range
 **
 **  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for   mutable
 **  ranges which are not strictly sorted.
@@ -263,7 +263,7 @@ Obj TypeRangeNSortMutable (
     
 /****************************************************************************
 **
-*F  TypeRangeSSortImmutable( <range> )  . . . . . . . . . . . kind of a range
+*F  TypeRangeSSortImmutable( <range> )  . . . . . . . . . . . type of a range
 **
 **  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for immutable
 **  ranges which are strictly sorted.
@@ -279,7 +279,7 @@ Obj TypeRangeSSortImmutable (
 
 /****************************************************************************
 **
-*F  TypeRangeSSortMutable( <range> )  . . . . . . . . . . . . kind of a range
+*F  TypeRangeSSortMutable( <range> )  . . . . . . . . . . . . type of a range
 **
 **  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for   mutable
 **  ranges which are strictly sorted.
@@ -950,7 +950,7 @@ void            PlainRange (
 *F  IsRange(<list>) . . . . . . . . . . . . . . . . test if a list is a range
 **
 **  'IsRange' returns 1 if the list  with the handle <list>  is a range and 0
-**  otherwise.  As a  sideeffect 'IsRange' converts proper ranges represented
+**  otherwise.  As a  side effect 'IsRange' converts proper ranges represented
 **  the ordinary way to the compact representation.
 */
 Obj IsRangeFilt;
@@ -1595,7 +1595,7 @@ static Int InitKernel (
     InitMarkFuncBags(   T_RANGE_SSORT            +COPYING , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE +COPYING , MarkAllSubBags );
 
-    /* install the kind function                                           */
+    /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_RANGE_NSORT_MUTABLE",
                            &TYPE_RANGE_NSORT_MUTABLE );
 
@@ -1789,7 +1789,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRange ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

@@ -11,10 +11,6 @@
 ##  This file deals with permutations.
 ##
 
-DeclareCategory("IsAssociativeElementWithUniqueSemigroupInverse",
-IsAssociativeElement);
-DeclareCategoryCollections("IsAssociativeElementWithUniqueSemigroupInverse");
-
 #############################################################################
 ##
 ##  <#GAPDoc Label="[1]{permutat}">
@@ -87,7 +83,7 @@ DeclareCategoryCollections("IsAssociativeElementWithUniqueSemigroupInverse");
 ##
 DeclareCategoryKernel( "IsPerm",
     IsMultiplicativeElementWithInverse and IsAssociativeElement and
-    IsAssociativeElementWithUniqueSemigroupInverse and IsFiniteOrderElement,
+    IsFiniteOrderElement,
     IS_PERM );
 
 

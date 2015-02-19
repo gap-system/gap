@@ -99,6 +99,7 @@ TRANSGRP := [[[(),"1 = C(1)"]],
 ##      6               i/2-Diff (only possible with even number of points)
 ##      8               Blocks
 ##      9               2Seq
+##      0               Blockfingerprint
 ##
 ##           20+b       alternating Subgroup on b
 ##

@@ -3,7 +3,7 @@
 ## 
 ## The script to test all *.tst files in the current directory 
 ##
-TESTGAP="../../../bin/gap.sh -L ../wsp.g -b -m 100m -o 500m -A -N -x 80 -r -T" 
+TESTGAP="../../../bin/gap.sh -L ../wsp.g -b -m 100m -o 500m -A -x 80 -r -T"
 ls *.tst > list.files
   ed - list.files << \%
     1,$s/^.*\///

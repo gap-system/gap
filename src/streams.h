@@ -25,40 +25,11 @@
 
 /****************************************************************************
 **
-*F  READ()  . . . . . . . . . . . . . . . . . . . . . . .  read current input
-**
-**  Read the current input and close the input stream.
-*/
-extern Int READ ( void );
-
-/****************************************************************************
-**
-*F  READ()  . . . . . . . . . . . . . . . . . . . . . . .  read current input
-**
-**  Read the current input and close the input stream. Disable the normal 
-** mechanism which ensures that quitting from a break loop gets you back to a 
-** live prompt. This is initially designed for the files read from the command 
-** line
-*/
-extern Int READ_NORECOVERY ( void );
-
-
-/****************************************************************************
-**
 *F  READ_AS_FUNC()  . . . . . . . . . . . . .  read current input as function
 **
 **  Read the current input as function and close the input stream.
 */
 extern Obj READ_AS_FUNC ( void );
-
-
-/****************************************************************************
-**
-*F  READ_TEST() . . . . . . . . . . . . . . . . .  read current input as test
-**
-**  Read the current input as test and close the input stream.
-*/
-extern Int READ_TEST ( void );
 
 
 /****************************************************************************

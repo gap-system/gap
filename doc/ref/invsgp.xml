@@ -60,9 +60,9 @@ gap> S:=InverseMonoid(
 gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 8, 10 ], 
 > [ 7, 1, 4, 3, 2, 6, 5 ] );;
 gap> S:=InverseMonoid(S, f, Idempotents(SymmetricInverseSemigroup(5)));
-&lt;inverse partial perm monoid on 10 pts with 34 generators>
+&lt;inverse partial perm monoid on 10 pts with 35 generators>
 gap> Size(S);
-1234</Example>
+1243</Example>
   </Description>
   </ManSection>
 

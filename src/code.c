@@ -48,6 +48,8 @@
 #include        "read.h"                /* to access stack of for loop globals */
 #include        "gvars.h"
 
+#include        "profile.h"             /* access to stat register function*/
+
 /****************************************************************************
 **
 
@@ -57,6 +59,14 @@
 */
 Stat * PtrBody;
 
+/****************************************************************************
+**
+
+*V  FilenameCache . . . . . . . . . . . . . . . . . . list of filenames
+**
+**  'FilenameCache' is a list of previously opened filenames.
+*/
+Obj FilenameCache;
 
 /****************************************************************************
 **
@@ -80,16 +90,45 @@ static inline void PopOffsBody( void ) {
   OffsBody = OffsBodyStack[--OffsBodyCount];
 }
 
+static inline void setup_gapname(TypInputFile* i)
+{
+  UInt len;
+  if(!i->gapname) {
+    C_NEW_STRING_DYN(i->gapname, i->name);
+    len = LEN_PLIST( FilenameCache );
+    GROW_PLIST(      FilenameCache, len+1 );
+    SET_LEN_PLIST(   FilenameCache, len+1 );
+    SET_ELM_PLIST(   FilenameCache, len+1, i->gapname );
+    CHANGED_BAG(     FilenameCache );
+    i->gapnameid = len+1;
+  }
+}
+
+Obj FILENAME_STAT(Stat stat)
+{
+  UInt filenameid = FILENAMEID_STAT(stat);
+  if(filenameid == 0)
+    return NEW_STRING(0);
+  else
+    return ELM_PLIST(FilenameCache, filenameid);
+}
+    
+    
 /****************************************************************************
 **
 *F  NewStat( <type>, <size> ) . . . . . . . . . . .  allocate a new statement
 **
 **  'NewStat'   allocates a new   statement memory block  of  type <type> and
 **  <size> bytes.  'NewStat' returns the identifier of the new statement.
+**
+**  NewStat( <type>, <size>, <line> ) allows the line number of the statement
+**  to also be specified (else the current line when NewStat is called is
+**  used).
 */
-Stat NewStat (
+Stat NewStatWithLine (
     UInt                type,
-    UInt                size )
+    UInt                size,
+    UInt                line)
 {
     Stat                stat;           /* result                          */
 
@@ -108,12 +147,21 @@ Stat NewStat (
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
         PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
-
+    setup_gapname(Input);
+    
     /* enter type and size                                                 */
-    ADDR_STAT(stat)[-1] = (size << 8) + type;
-
+    ADDR_STAT(stat)[-1] = ((Stat)Input->gapnameid << 48) + ((Stat)line << 32) +
+                          ((Stat)size << 8) + (Stat)type;
+    RegisterStatWithProfiling(stat);
     /* return the new statement                                            */
     return stat;
+}
+
+Stat NewStat (
+    UInt                type,
+    UInt                size)
+{
+    return NewStatWithLine(type, size, Input->number);
 }
 
 
@@ -147,8 +195,10 @@ Expr            NewExpr (
     }
 
     /* enter type and size                                                 */
-    ADDR_EXPR(expr)[-1] = (size << 8) + type;
-
+    ADDR_EXPR(expr)[-1] = ((Stat)Input->gapnameid << 48) +
+                          ((Stat)Input->number << 32) +
+                          ((Stat)size << 8) + type;
+    RegisterStatWithProfiling(expr);
     /* return the new expression                                           */
     return expr;
 }
@@ -635,9 +685,7 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    if (!Input->gapname) {
-      C_NEW_STRING_DYN(Input->gapname, Input->name);
-    }
+    setup_gapname(Input);
     FILENAME_BODY(body) = Input->gapname;
     STARTLINE_BODY(body) = INTOBJ_INT(startLine);
     /*    Pr("Coding begin at %s:%d ",(Int)(Input->name),Input->number);
@@ -697,8 +745,11 @@ void CodeFuncExprEnd (
     }
 
     /* stuff the first statements into the first statement sequence       */
+    /* Making sure to preserve the line number and file name              */
     ADDR_STAT(FIRST_STAT_CURR_FUNC)[-1]
-        = ((nr*sizeof(Stat)) << 8) + T_SEQ_STAT+nr-1;
+        = ((Stat)FILENAMEID_STAT(FIRST_STAT_CURR_FUNC) << 48) +
+          ((Stat)LINE_STAT(FIRST_STAT_CURR_FUNC) << 32) +
+          ((nr*sizeof(Stat)) << 8) + T_SEQ_STAT+nr-1;
     for ( i = 1; i <= nr; i++ ) {
         stat1 = PopStat();
         ADDR_STAT(FIRST_STAT_CURR_FUNC)[nr-i] = stat1;
@@ -941,6 +992,112 @@ void CodeForEndBody (
 void CodeForEnd ( void )
 {
 }
+
+
+/****************************************************************************
+**
+*F  CodeAtomicBegin()  . . . . . . .  code atomic-statement, begin of statement
+*F  CodeAtomicBeginBody()  . . . . . . . . code atomic-statement, begin of body
+*F  CodeAtomicEndBody( <nr> )  . . . . . . . code atomic-statement, end of body
+*F  CodeAtomicEnd()  . . . . . . . . .  code atomic-statement, end of statement
+**
+**  'CodeAtomicBegin'  is an action to  code a atomic-statement.   It is called
+**  when the  reader encounters the 'atomic',  i.e., *before* the condition is
+**  read.
+**
+**  'CodeAtomicBeginBody'  is  an action   to code a  atomic-statement.   It is
+**  called when  the reader encounters  the beginning  of the statement body,
+**  i.e., *after* the condition is read.
+**
+**  'CodeAtomicEndBody' is an action to  code a atomic-statement.  It is called
+**  when the reader encounters  the end of  the statement body.  <nr> is  the
+**  number of statements in the body.
+**
+**  'CodeAtomicEnd' is an action to code a atomic-statement.  It is called when
+**  the reader encounters  the end  of the  statement, i.e., immediate  after
+**  'CodeAtomicEndBody'.
+**
+**  These functions are just placeholders for the future HPC-GAP code.
+*/
+
+void CodeAtomicBegin ( void )
+{
+}
+
+void CodeAtomicBeginBody ( UInt nrexprs )
+{
+  PushExpr(INTEXPR_INT(nrexprs)); 
+  return;
+}
+
+void CodeAtomicEndBody (
+    UInt                nrstats )
+{
+    Stat                stat;           /* atomic-statement, result         */
+    Stat                stat1;          /* single statement of body        */
+    UInt                i;              /* loop variable                   */
+    UInt nrexprs;
+    Expr  e,qual;
+
+
+    /* fix up the case of no statements */
+    if ( 0 == nrstats ) {
+       PushStat( NewStat( T_EMPTY, 0) );
+       nrstats = 1;
+    }
+    
+    /* collect the statements into a statement sequence   */
+    if ( 1 < nrstats ) {
+      stat1 = PopSeqStat( nrstats );
+    } else {
+      stat1 = PopStat();
+    }
+    nrexprs = INT_INTEXPR(PopExpr());
+    
+    /* allocate the atomic-statement                                        */
+    stat = NewStat( T_ATOMIC, sizeof(Stat) + nrexprs*2*sizeof(Stat) );
+    
+
+    /* enter the statement sequence */
+    ADDR_STAT(stat)[0] = stat1;
+
+    
+    /* enter the expressions                                                */
+    for ( i = 2*nrexprs; 1 <= i; i -= 2 ) {
+        e = PopExpr();
+        qual = PopExpr();
+        ADDR_STAT(stat)[i] = e;
+        ADDR_STAT(stat)[i-1] = qual;
+    }
+
+
+    /* push the atomic-statement                                            */
+    PushStat( stat );
+}
+
+void CodeAtomicEnd ( void )
+{
+}
+
+/****************************************************************************
+**
+*F  CodeQualifiedExprBegin()  . . . code readonly/readwrite expression start
+*F  CodeQualifiedExprEnd()  . . . . . code readonly/readwrite expression end
+**
+**  These functions code the beginning and end of the readonly/readwrite
+**  qualified expressions of an atomic statement.
+*/
+
+void CodeQualifiedExprBegin(UInt qual) 
+{
+  PushExpr(INTEXPR_INT(qual));
+}
+
+void CodeQualifiedExprEnd() 
+{
+}
+
+
 
 
 /****************************************************************************
@@ -3161,6 +3318,8 @@ static Int InitKernel (
 
     /* make the result variable known to Gasman                            */
     InitGlobalBag( &CodeResult, "CodeResult" );
+    
+    InitGlobalBag( &FilenameCache, "FilenameCache" );
 
     /* allocate the statements and expressions stacks                      */
     InitGlobalBag( &StackStat, "StackStat" );
@@ -3187,6 +3346,7 @@ static Int InitLibrary (
     /* allocate the statements and expressions stacks                      */
     StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
     StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
+    FilenameCache = NEW_PLIST(T_PLIST, 0);
 
     GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
     
@@ -3260,7 +3420,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCode ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

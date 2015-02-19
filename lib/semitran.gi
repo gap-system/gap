@@ -11,11 +11,11 @@
 ##  semigroups and is based on earlier code of Isabel Araújo and Robert Arthur.
 ##
 
-
-InstallMethod(IsGeneratorsOfMagmaWithInverses,
- "for a transformation collection",
-[IsTransformationCollection],
-coll-> ForAll(coll, x-> RankOfTransformation(x)=DegreeOfTransformation(x)));
+InstallMethod(\<, "for transformation semigroups",
+[IsTransformationSemigroup, IsTransformationSemigroup],
+function(S, T)
+  return Elements(S)<Elements(T);
+end);
 
 InstallMethod(MovedPoints, "for a transformation semigroup",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
@@ -98,7 +98,7 @@ function(s)
   fi;
  
   Append(str, "\>on \>");
-  Append(str, ViewString(NormalizedDegreeOfTransformationSemigroup(s)));
+  Append(str, ViewString(DegreeOfTransformationSemigroup(s)));
   Append(str, "\< pts with\> ");
   Append(str, ViewString(nrgens));
   Append(str, "\< generator");
@@ -163,7 +163,7 @@ InstallTrueMethod(IsFinite, IsTransformationSemigroup);
 #
 
 InstallMethod(DegreeOfTransformationSemigroup, 
-"for a transformation semigroup",
+"for a transformation semigroup with generators",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 function(s)
   return DegreeOfTransformationCollection(GeneratorsOfSemigroup(s));
@@ -171,11 +171,15 @@ end);
 
 #
 
-InstallMethod(NormalizedDegreeOfTransformationSemigroup, 
-"for a transformation semigroup",
-[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
-function(s)
-  return NormalizedDegreeOfTransformationCollection(GeneratorsOfSemigroup(s));
+InstallMethod(DegreeOfTransformationSemigroup, 
+"for a transformation group with generators",
+[IsTransformationSemigroup and HasGeneratorsOfGroup],
+function(S)
+  if not IsEmpty(GeneratorsOfGroup(S)) then 
+    return DegreeOfTransformationCollection(GeneratorsOfGroup(S));
+  else 
+    return DegreeOfTransformationCollection(GeneratorsOfSemigroup(S));
+  fi;
 end);
 
 #
@@ -275,17 +279,17 @@ InstallMethod(IsFullTransformationSemigroup, "for a semigroup",
 
 #
 
-InstallMethod(IsFullTransformationSemigroup, "for semigroups",
+InstallMethod(IsFullTransformationSemigroup, "for a transformation semigroup",
 [IsTransformationSemigroup],
 function(s)
-  local t;
+  local n, t;
 
+  n:=DegreeOfTransformationSemigroup(s);
   if HasSize(s) then
-    return Size(s)=DegreeOfTransformationSemigroup(s)^
-                 DegreeOfTransformationSemigroup(s);
+    return Size(s)=n^n;
   fi;
 
-  t:=FullTransformationSemigroup(DegreeOfTransformationSemigroup(s));
+  t:=FullTransformationSemigroup(n);
   return ForAll(GeneratorsOfSemigroup(t), x-> x in s);
 end);
 
@@ -295,7 +299,46 @@ InstallMethod(\in,
 "for a transformation and a full transformation semigroup",
 [IsTransformation, IsFullTransformationSemigroup],
 function(e,tn)
-  return LargestMovedPoint(e)<=DegreeOfTransformationSemigroup(tn);
+  return DegreeOfTransformation(e)<=DegreeOfTransformationSemigroup(tn);
+end);
+
+#
+
+InstallMethod(Enumerator, "for a full transformation semigroup",
+[IsFullTransformationSemigroup], 5, 
+#to beat the method for an acting semigroup with generators
+function(S)
+  local n, Membership, PrintObj;
+  
+  n:=DegreeOfTransformationSemigroup(S);
+  
+  return EnumeratorByFunctions(S, rec(
+    
+    ElementNumber:=function(enum, pos)
+      if pos>n^n then 
+        return fail;
+      fi;
+      return TransformationNumber(pos, n);
+    end,
+
+    NumberElement:=function(enum, elt)
+      if DegreeOfTransformation(elt)>n then 
+        return fail;
+      fi;
+      return NumberTransformation(elt, n);
+    end,
+
+    Length:=function(enum);
+      return Size(S);
+    end,
+
+    Membership:=function(elt, enum)
+      return elt in S;
+    end,
+
+    PrintObj:=function(enum)
+      Print("<enumerator of full transformation semigroup on ", n," pts>");
+    end));
 end);
 
 # isomorphisms and anti-isomorphisms
@@ -363,9 +406,9 @@ end);
 
 #
 
-InstallMethod( IsomorphismTransformationSemigroup,
-"for a semigroup with multiplicative neutral elt and generators",
-[ IsSemigroup and HasMultiplicativeNeutralElement and HasGeneratorsOfSemigroup],
+InstallMethod(IsomorphismTransformationSemigroup,
+"for a semigroup with multiplicative neutral element and generators",
+[IsSemigroup and HasMultiplicativeNeutralElement and HasGeneratorsOfSemigroup],
 function(s)
   local en, act, gens, pos;
 
@@ -387,6 +430,13 @@ function(s)
    x-> TransformationOp(x, [1..Length(en)], act), 
    x-> en[pos^x]);
 end);
+
+#
+
+InstallMethod(IsomorphismTransformationMonoid, 
+"for a semigroup with multiplicative neutral element and generators",
+[IsSemigroup and HasMultiplicativeNeutralElement and HasGeneratorsOfSemigroup],
+IsomorphismTransformationSemigroup);
 
 #
 
@@ -413,9 +463,17 @@ end);
 
 #
 
-InstallMethod( IsomorphismTransformationSemigroup,
+InstallMethod(IsomorphismTransformationSemigroup, "for a transformation semigroup", 
+[IsTransformationSemigroup], 
+function(S)
+  return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
+end);
+
+#
+
+InstallMethod(IsomorphismTransformationSemigroup,
 "for a semigroup with multiplicative neutral element",
-[ IsSemigroup and HasMultiplicativeNeutralElement],
+[IsSemigroup and HasMultiplicativeNeutralElement],
 function(s)
   local en, act, gens, pos;
 

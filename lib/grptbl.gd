@@ -26,6 +26,7 @@
 ##  </ManSection>
 ##
 DeclareGlobalFunction( "MagmaByMultiplicationTableCreator" );
+DeclareGlobalFunction( "MagmaByMultiplicationTableCreatorNC" );
 
 
 #############################################################################
@@ -49,6 +50,10 @@ DeclareGlobalFunction( "MagmaByMultiplicationTableCreator" );
 ##  so <M>m_i</M> can be accessed as
 ##  <C>MagmaElement( <A>M</A>, <A>i</A> )</C>,
 ##  see&nbsp;<Ref Func="MagmaElement"/>.
+##  <Example><![CDATA[
+##  gap> MagmaByMultiplicationTable([[1,2,3],[2,3,1],[1,1,1]]);
+##  <magma with 3 generators>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -70,6 +75,12 @@ DeclareGlobalFunction( "MagmaByMultiplicationTable" );
 ##  returns a magma-with-one (see&nbsp;<Ref Func="MagmaWithOne"/>)
 ##  if the magma described by the matrix <A>A</A> has an identity,
 ##  and returns <K>fail</K> if not.
+##  <Example><![CDATA[
+##  gap> MagmaWithOneByMultiplicationTable([[1,2,3],[2,3,1],[3,1,1]]);
+##  <magma-with-one with 3 generators>
+##  gap> MagmaWithOneByMultiplicationTable([[1,2,3],[2,3,1],[1,1,1]]);
+##  fail
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -93,6 +104,12 @@ DeclareGlobalFunction( "MagmaWithOneByMultiplicationTable" );
 ##  if each element in the magma described by the matrix <A>A</A>
 ##  has an inverse,
 ##  and returns <K>fail</K> if not.
+##  <Example><![CDATA[
+##  gap> MagmaWithInversesByMultiplicationTable([[1,2,3],[2,3,1],[3,1,2]]);
+##  <magma-with-inverses with 3 generators>
+##  gap> MagmaWithInversesByMultiplicationTable([[1,2,3],[2,3,1],[3,2,1]]);
+##  fail
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -133,6 +150,12 @@ DeclareGlobalFunction( "MagmaElement" );
 ##  matrix <A>A</A> (see&nbsp;<Ref Func="MagmaByMultiplicationTable"/>)
 ##  if such a semigroup exists.
 ##  Otherwise <K>fail</K> is returned.
+##  <Example><![CDATA[
+##  gap> SemigroupByMultiplicationTable([[1,2,3],[2,3,1],[3,1,2]]);
+##  <semigroup with 3 generators>
+##  gap> SemigroupByMultiplicationTable([[1,2,3],[2,3,1],[3,2,1]]);
+##  fail
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -153,6 +176,12 @@ DeclareGlobalFunction( "SemigroupByMultiplicationTable" );
 ##  matrix <A>A</A> (see&nbsp;<Ref Func="MagmaByMultiplicationTable"/>)
 ##  if such a monoid exists.
 ##  Otherwise <K>fail</K> is returned.
+##  <Example><![CDATA[
+##  gap> MonoidByMultiplicationTable([[1,2,3],[2,3,1],[3,1,2]]);
+##  <monoid with 3 generators>
+##  gap> MonoidByMultiplicationTable([[1,2,3],[2,3,1],[1,3,2]]);
+##  fail
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -172,6 +201,12 @@ DeclareGlobalFunction( "MonoidByMultiplicationTable" );
 ##  matrix <A>A</A> (see&nbsp;<Ref Func="MagmaByMultiplicationTable"/>)
 ##  if such a group exists.
 ##  Otherwise <K>fail</K> is returned.
+##  <Example><![CDATA[
+##  gap> GroupByMultiplicationTable([[1,2,3],[2,3,1],[3,1,2]]);
+##  <group of size 3 with 3 generators>
+##  gap> GroupByMultiplicationTable([[1,2,3],[2,3,1],[3,2,1]]);
+##  fail
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##

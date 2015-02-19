@@ -94,8 +94,8 @@
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Ideals">
-<Heading>Ideals</Heading>
+<Section Label="Ideals of Algebras">
+<Heading>Ideals of Algebras</Heading>
 
 For constructing and working with ideals in algebras the same functions
 are available as for ideals in rings. So for the precise description of

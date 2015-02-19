@@ -33,7 +33,7 @@
 
 #include        "system.h"              /* system dependent part           */
 
-
+#include        "gap.h"                 /* get UserHasQUIT                 */
 
 #include        "sysfiles.h"            /* file input/output               */
 #include        "gasman.h"            
@@ -64,6 +64,14 @@
 #if HAVE_MADVISE
 #include        <sys/mman.h>
 #endif
+
+/****************************************************************************
+**  The following function is from profile.c. We put a prototype here
+**  Rather than #include "profile.h" to avoid pulling in large chunks
+**  of the GAP type system
+*/    
+Int enableProfilingAtStartup( Char **argv, void * dummy);
+Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
 
 /****************************************************************************
 **
@@ -622,7 +630,7 @@ Int SyStrncmp (
     const Char *        str2,
     UInt                len )
 {
-    return SyStrncmp( str1, str2, len );
+    return strncmp( str1, str2, len );
 }
 
 /****************************************************************************
@@ -1329,7 +1337,7 @@ UInt * * * SyAllocBags (
 
 #include <mach/mach.h>
 
-#if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
+#if (defined(SYS_IS_DARWIN) && SYS_IS_DARWIN) || defined(__gnu_hurd__)
 #define task_self mach_task_self
 #endif
 
@@ -1466,6 +1474,11 @@ void SySleep ( UInt secs )
 **  The function 'SyExit' must perform all the neccessary cleanup operations.
 **  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
+**
+**  If the user calls 'QUIT_GAP' with a value, then the global variable
+**  'UserHasQUIT' will be set, and their requested return value will be
+**  in 'UserHasQUITReturnValue'. If the return value would be 0, we check
+**  this calue and use it instead.
 */
 void SyExit (
     UInt                ret )
@@ -1480,8 +1493,12 @@ void SyExit (
   }
 
 #endif
-
-    exit( (int)ret );
+    if(ret == 0) {
+        exit(UserHasQUITReturnValue);
+    }
+    else {
+        exit( (int)ret );
+    }
 }
 
 /****************************************************************************
@@ -1648,7 +1665,7 @@ static UInt ParseMemory( Char * s)
 
 
 struct optInfo {
-  Char key;
+  Char key[50];
   Int (*handler)(Char **, void *);
   void *otherArg;
   UInt minargs;
@@ -1719,32 +1736,34 @@ static Int preAllocAmount;
    recognised and handled in the library */
 
 struct optInfo options[] = {
-  { 'B',  storeString, &SyArchitecture, 1}, /* default architecture needs to be passed from kernel 
+  { "B",  storeString, &SyArchitecture, 1}, /* default architecture needs to be passed from kernel 
                                                to library. Might be needed for autoload of compiled files */
-  { 'C',  processCompilerArgs, 0, 4}, /* must handle in kernel */
-  { 'D',  toggle, &SyDebugLoading, 0}, /* must handle in kernel */
-  { 'K',  storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
-  { 'L',  storeString, &SyRestoring, 1}, /* must be handled in kernel  */
-  { 'M',  toggle, &SyUseModule, 0}, /* must be handled in kernel */
-  { 'X',  toggle, &SyCheckCRCCompiledModule, 0}, /* must be handled in kernel */
-  { 'R',  unsetString, &SyRestoring, 0}, /* kernel */
-  { 'U',  storeString, SyCompileOptions, 1}, /* kernel */
-  { 'a',  storeMemory, &preAllocAmount, 1 }, /* kernel -- is this still useful */
-  { 'c',  storeMemory, &SyCacheSize, 1 }, /* kernel, unless we provided a hook to set it from library, 
+  { "C",  processCompilerArgs, 0, 4}, /* must handle in kernel */
+  { "D",  toggle, &SyDebugLoading, 0}, /* must handle in kernel */
+  { "K",  storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
+  { "L",  storeString, &SyRestoring, 1}, /* must be handled in kernel  */
+  { "M",  toggle, &SyUseModule, 0}, /* must be handled in kernel */
+  { "X",  toggle, &SyCheckCRCCompiledModule, 0}, /* must be handled in kernel */
+  { "R",  unsetString, &SyRestoring, 0}, /* kernel */
+  { "U",  storeString, SyCompileOptions, 1}, /* kernel */
+  { "a",  storeMemory, &preAllocAmount, 1 }, /* kernel -- is this still useful */
+  { "c",  storeMemory, &SyCacheSize, 1 }, /* kernel, unless we provided a hook to set it from library, 
                                            never seems to be useful */
-  { 'e',  toggle, &SyCTRD, 0 }, /* kernel */
-  { 'f',  forceLineEditing, (void *)2, 0 }, /* probably library now */
-  { 'E',  toggle, &SyUseReadline, 0 }, /* kernel */
-  { 'i',  storeString, SySystemInitFile, 1}, /* kernel */
-  { 'l',  setGapRootPath, 0, 1}, /* kernel */
-  { 'm',  storeMemory2, &SyStorMin, 1 }, /* kernel */
-  { 'r',  toggle, &IgnoreGapRC, 0 }, /* kernel */
-  { 's',  storeMemory, &SyAllocPool, 1 }, /* kernel */
-  { 'n',  forceLineEditing, 0, 0}, /* prob library */
-  { 'o',  storeMemory2, &SyStorMax, 1 }, /* library with new interface */
-  { 'p',  toggle, &SyWindow, 0 }, /* ?? */
-  { 'q',  toggle, &SyQuiet, 0 }, /* ?? */
-  { '\0',0,0}};
+  { "e",  toggle, &SyCTRD, 0 }, /* kernel */
+  { "f",  forceLineEditing, (void *)2, 0 }, /* probably library now */
+  { "E",  toggle, &SyUseReadline, 0 }, /* kernel */
+  { "i",  storeString, SySystemInitFile, 1}, /* kernel */
+  { "l",  setGapRootPath, 0, 1}, /* kernel */
+  { "m",  storeMemory2, &SyStorMin, 1 }, /* kernel */
+  { "r",  toggle, &IgnoreGapRC, 0 }, /* kernel */
+  { "s",  storeMemory, &SyAllocPool, 1 }, /* kernel */
+  { "n",  forceLineEditing, 0, 0}, /* prob library */
+  { "o",  storeMemory2, &SyStorMax, 1 }, /* library with new interface */
+  { "p",  toggle, &SyWindow, 0 }, /* ?? */
+  { "q",  toggle, &SyQuiet, 0 }, /* ?? */
+  { "-prof",  enableProfilingAtStartup, 0, 1},    /* enable profiling at startup, has to be kernel to start early enough */
+  { "-cover",  enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup, has to be kernel to start early enough */
+  { "",0,0}};
 
 
 Char ** SyOriginalArgv;
@@ -1762,7 +1781,6 @@ void InitSystem (
 
     /* Initialize global and static variables. Do it here rather than
        with initializers to allow for restart */
-    /* SyBanner = 1; */
     SyCTRD = 1;             
     SyCacheSize = 0;
     SyCheckCRCCompiledModule = 0;
@@ -1771,8 +1789,6 @@ void InitSystem (
     SyHasUserHome = 0;
     SyLineEdit = 1;
     SyUseReadline = 1;
-    /* SyAutoloadPackages = 1; */
-    /*  SyBreakSuppress = 0; */
     SyMsgsFlagBags = 0;
     SyNrCols = 0;
     SyNrColsLocked = 0;
@@ -1891,14 +1907,14 @@ void InitSystem (
       {
         if (argv[1][0] == '-' ) {
 
-          if ( strlen(argv[1]) != 2 ) {
+          if ( strlen(argv[1]) != 2 && argv[1][1] != '-') {
             FPUTS_TO_STDERR("gap: sorry, options must not be grouped '");
             FPUTS_TO_STDERR(argv[1]);  FPUTS_TO_STDERR("'.\n");
             goto usage;
           }
 
 
-          for (i = 0; options[i].key != argv[1][1] && options[i].key; i++)
+          for (i = 0; strcmp(options[i].key, argv[1] + 1) && options[i].key[0]; i++)
             ;
 
         
@@ -2006,6 +2022,14 @@ void InitSystem (
 
         strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
 # if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
+        /* On Darwin, add .gap to the sys roots, but leave */
+        /* DotGapPath at $HOME/Library/Preferences/GAP     */
+        strxcat(DotGapPath, "/.gap;", sizeof(DotGapPath));
+        if (!IgnoreGapRC) {
+          SySetGapRootPath(DotGapPath);
+        }
+		
+        strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
         strxcat(DotGapPath, "/Library/Preferences/GAP;", sizeof(DotGapPath));
 # elif defined(__CYGWIN__)
         strxcat(DotGapPath, "/_gap;", sizeof(DotGapPath));
