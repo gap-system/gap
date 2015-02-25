@@ -2012,7 +2012,7 @@ void GetStr ( void )
  */
 void GetTripStr ( void )
 {
-  Int                 i = 0, triplefound = 0;
+  Int                 i = 0;
 
   /* Avoid substitution of '?' in beginning of GetLine chunks */
   TLS->helpSubsOn = 0;
@@ -2026,7 +2026,6 @@ void GetTripStr ( void )
         if (*TLS->in == '"') {
             GET_CHAR();
             if(*TLS->in == '"' ) {
-                triplefound = 1;
                 break;
             }
             TLS->value[i] = '"';

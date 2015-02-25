@@ -164,7 +164,7 @@ DeclareOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
 ##  gap> mats := List( Pcgs( G ), x -> IdentityMat( 1, GF(2) ) );
 ##  [ [ <a GF2 vector of length 1> ], [ <a GF2 vector of length 1> ] ]
 ##  gap> M := GModuleByMats( mats, GF(2) );
-##  rec( dimension := 1, field := GF(2), 
+##  rec( IsOverFiniteField := true, dimension := 1, field := GF(2), 
 ##    generators := [ <an immutable 1x1 matrix over GF2>, 
 ##        <an immutable 1x1 matrix over GF2> ], isMTXModule := true )
 ##  gap> TwoCoboundaries( G, M );

@@ -137,7 +137,7 @@ InstallOtherMethod(AddDictionary,"for lookup sort dictionaries",true,
         function(d, x, val)
     local pair, p;
     pair:=[Immutable(x),val];
-    MakeImmutable(pair); # to be able to store sortedness
+    # MakeImmutable(pair); # to be able to store sortedness
    
     p := PositionSorted(d!.entries,[x]);
     if p <= Length(d!.entries) and d!.entries[p][1] = x then

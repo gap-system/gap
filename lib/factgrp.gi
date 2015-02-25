@@ -541,6 +541,16 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
     return perm;
   fi;
 
+  # special treatment for abelian factor
+  if HasAbelianFactorGroup(G,N) then
+    if IsPermGroup(G) and Size(N)=1 then
+      return IdentityMapping(G);
+    else
+      perm:=ActionHomomorphism(G,RightCosets(G,N),OnRight,"surjective");
+    fi;
+    return perm;
+  fi;
+
   bigperm:=IsPermGroup(G) and NrMovedPoints(G)>10000;
 
   # what is a good degree:
