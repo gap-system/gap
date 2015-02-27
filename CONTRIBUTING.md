@@ -1,8 +1,8 @@
 # Contributing to gap-git
 
 The GAP Community welcomes pull requests, bug reporting, and bug squashing!
-However, we cannot do it all ourself, and want to make it as easy as possible to contribute changes to get things working.
-Here are a few guidelines that we would like contributors to follow so that we can have a chance of keeping on top of things.
+However, we cannot do it all ourselves, and want to make it as easy as
+possible to contribute changes.
 
 ## Getting Started
 
@@ -13,34 +13,39 @@ Here are a few guidelines that we would like contributors to follow so that we c
 
 ## Issue Reporting
 
-Before you report an issue, or wish to add cool functionality please try and check to see if there are existing [issues](https://github.com/gap-system/gap-git/issues) and [pull requests](https://github.com/gap-system/gap-git/pulls).
+Before you report an issue, or wish to add cool functionality please try
+and check to see if there are existing
+[issues](https://github.com/gap-system/gap-git/issues) and
+[pull requests](https://github.com/gap-system/gap-git/pulls).
 We do not want you wasting your time duplicating somebody's work!
 
 ## The Campsite Rule
 
-A basic rule when contributing to GAP is the **campsite rule**: leave the codebase in better condition than you found it.
-Please clean up any messes that you find, and don't leave behind new messes for the next contributor.
+A basic rule when contributing to GAP is the **campsite rule**:
+leave the codebase in better condition than you found it.
+Please clean up any messes that you find, and don't
+leave behind new messes for the next contributor.
 
 ## Contributing to the library.
 
 We do not want you wasting your time nor duplicating somebody's work!
 
-Developers should be prepared to wait until their PR has been discussed and authorized prior to the PRs inclusion.
+Developers should be prepared to wait until their PR has been discussed
+and authorized prior to the PRs inclusion.
 
 ## Making Changes
 
-GAP developers adhere to something similar to the [successful git branching model](http://nvie.com/posts/a-successful-git-branching-model/).
-The steps are straightforward.
+GAP development follows a straightforward branching model.
 
- * Fork our [main development repository](https://github.com/gap-system/gap-git) `gap-git` on github
+ * Fork our [main development repository](https://github.com/gap-system/gap) on github
  * Clone your fork to your local machine:
 
 ```
-$ git clone git@github.com/<your github user name>/gap-git.git
+$ git clone git@github.com/<your github user name>/gap.git
 ```
- * Add `gap-system/gap-git` as a remote upstream
+ * Add `gap-system/gap` as a remote upstream
 ```
-$ git remote add upstream git@github.com:gap-system/gap-git.git
+$ git remote add upstream git@github.com:gap-system/gap.git
 ```
  * Ensure your existing clone is up-to-date with current `HEAD` e.g.
 ```
@@ -87,10 +92,10 @@ $ make testall
 ```
 $ git push origin fix/master/my_contrib
 ```
- * Go to GitHub and submit a pull request to `gap-git`
+ * Go to GitHub and submit a pull request to GAP
 
-From there you will have to wait on one of the `gap-git` committers to respond to the request.
-This response might be an accept or some changes/improvements/alternatives will be suggest.
+From there you will have to wait on one of the GAP committers to respond to the request.
+This response might be an accept or some changes/improvements/alternatives will be suggested.
 We do not guarantee that all requests will be accepted.
 
 ## Increasing chances of acceptance.
@@ -100,7 +105,7 @@ To help increase the chance of your pull request being accepted:
 * Run the tests.
 * Update the documentation, tests, examples, guides, and whatever
   else is affected by your contribution
-* Use appropriate code formatting for both `C` and `GAP`.
+* Use appropriate code formatting for both C and GAP.
 
 ## Additional Resources
 
@@ -111,5 +116,5 @@ To help increase the chance of your pull request being accepted:
 * [General GitHub Documentation](https://help.github.com/).
 
 Adapted from the most excellent contributing files from the [Puppet project](https://github.com/puppetlabs/puppet),
-[Factroy Girl Rails](https://github.com/thoughtbot/factory_girl_rails/blob/master/CONTRIBUTING.md),
+[Factory Girl Rails](https://github.com/thoughtbot/factory_girl_rails/blob/master/CONTRIBUTING.md),
 and [Idris](https://github.com/idris-lang/Idris-dev)
