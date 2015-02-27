@@ -1,7 +1,7 @@
 env:
   - TEST_SUITE=testinstall
-  - TEST_SUITE=testall
-  - TEST_SUITE=bugfix
+  - TEST_SUITE=testtravis
+  - TEST_SUITE=testbugfix
 language: c
 compiler:
   - gcc
@@ -27,6 +27,4 @@ script:
   - tar xvzf irredsol-1r2n4.tar.gz
   - tar xvzf tomlib1r2p4.tar.gz
   - cd ..
-  - if [[ "$TEST_SUITE" == "testinstall" ]]; then echo "Read(\"tst/testinstall.g\"); quit;" | sh bin/gap.sh ; fi
-  - if [[ "$TEST_SUITE" == "testall" ]]; then echo "Read(\"tst/testall.g\"); quit;" | sh bin/gap.sh ; fi
-  - if [[ "$TEST_SUITE" == "bugfix" ]]; then echo "Test(\"tst/bugfix.tst\"); quit;" | sh bin/gap.sh -q ; fi
+  - echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh
