@@ -1,3 +1,6 @@
+os:
+  - linux
+  - osx
 env:
   - TEST_SUITE=testinstall
   - TEST_SUITE=testtravis
