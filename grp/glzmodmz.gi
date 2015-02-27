@@ -126,6 +126,53 @@ local f,M2,o,e,MM,i;
   return o;
 end);
 
+BindGlobal("SPRingGeneric",function(n,ring)
+local t,geni,m,slmats,gens,f,rels,i,j,k,l,mat,mat1,mats,id,nh;
+  nh:=n;
+  n:=2*n;
+  t:=function(i,j)
+    return slmats[geni[i][j]];
+  end;
+  geni:=List([1..n],x->[]);
+  mats:=[];
+  slmats:=[];
+  id:=IdentityMat(n,One(ring));
+  m:=0;
+  for i in [1..nh] do
+    #t_{i,n+i}
+    mat:=List(id,ShallowCopy);
+    mat[i][nh+i]:=One(ring);
+    Add(slmats,mat);
+    #t_{n+i,i}
+    mat:=List(id,ShallowCopy);
+    mat[nh+i][i]:=One(ring);
+    Add(slmats,mat);
+  od;
+
+  for i in [1..nh] do
+    for j in [i+1..nh] do
+      # t_{i,n+j}
+      mat:=List(id,ShallowCopy);
+      mat[i][nh+j]:=One(ring);
+      mat1:=mat;
+      # t_{j,n+i}
+      mat:=List(id,ShallowCopy);
+      mat[j][nh+i]:=One(ring);
+      Add(slmats,mat1*mat);
+      # t_{n+i,j}
+      mat:=List(id,ShallowCopy);
+      mat[nh+i][j]:=One(ring);
+      mat1:=mat;
+      # t_{n+j,i}
+      mat:=List(id,ShallowCopy);
+      mat[nh+j][i]:=One(ring);
+      Add(slmats,mat1*mat);
+    od;
+  od;
+
+  return Group(slmats);
+end);
+
 InstallGlobalFunction("ConstructFormPreservingGroup",function(arg)
 local oper,n,R,o,nrit,
   q,p,field,zero,one,oner,a,f,pp,b,d,fb,btf,eq,r,i,j,e,k,ogens,gens,gensi,
@@ -140,7 +187,13 @@ local oper,n,R,o,nrit,
     TryNextMethod();
   fi;
   p:=Factors(q)[1];
-  if p=2 then return fail;fi;
+  if p=2 then 
+    if oper=SP then
+      return SPRingGeneric(n/2,R);
+    else
+      return fail;
+    fi;
+  fi;
   field:=GF(p);
   zero:=Zero(field);
   one:=One(field);
