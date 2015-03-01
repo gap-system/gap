@@ -42,3 +42,4 @@ script:
   - if [[ $? != 0 ]] ; then exit 1 ; fi
   - grep "########> Diff" testlog.txt
   - if [[ $? == 0 ]] ; then exit 1 ; fi
+  - exit 0
