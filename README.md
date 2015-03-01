@@ -54,11 +54,11 @@ bug fixes), you can subscribe to the
 [GAP development](https://mail.gap-system.org/mailman/listinfo/gap) mailing lists,
 notifications on github, and follow us on [Twitter](https://twitter.com/gap_system).
 
-If you have any questions about working with GAP usage, you may send them by email to
+If you have any questions about working with GAP, you can ask them on
 [GAP forum](http://www.gap-system.org/Contacts/Forum/forum.html) (requires subscription)
-or to [GAP Support](http://www.gap-system.org/Contacts/People/supportgroup.html).
+or [GAP Support](http://www.gap-system.org/Contacts/People/supportgroup.html) mailing lists.
 
-Please tell us about use of GAP in your research or teaching. We maintain a
+Please tell us about your use of GAP in research or teaching. We maintain a
 [bibliography of publications citing GAP](http://www.gap-system.org/Doc/Bib/bib.html).
 Please [help us](http://gap-system.org/Contacts/publicationfeedback.html)
 keeping it up to date.
