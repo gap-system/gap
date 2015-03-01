@@ -9,6 +9,10 @@ language: c
 compiler:
   - gcc
   - clang
+branches:
+  only:
+    - master
+    - hpcgap
 # Change this to your needs
 script:
   - ./configure
