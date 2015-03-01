@@ -37,6 +37,6 @@ script:
   - cd ..
   - echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh | tee testlog.txt
   - cat testlog.txt | tail -n 2 | grep "total"
-  - if [[ $? != 0 ]] ; exit 1 ; fi
+  - if [[ $? != 0 ]] ; then exit 1 ; fi
   - grep "########> Diff" testlog.txt
-  - if [[ $? == 0 ]] ; exit 1 ; fi
+  - if [[ $? == 0 ]] ; then exit 1 ; fi
