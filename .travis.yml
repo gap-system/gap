@@ -12,7 +12,7 @@ compiler:
 branches:
   only:
     - master
-    - hpcgap
+    - hpcgap-default
 # Change this to your needs
 script:
   - ./configure
