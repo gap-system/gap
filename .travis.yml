@@ -15,7 +15,8 @@ branches:
     - hpcgap-default
 # Change this to your needs
 script:
-  - ./configure
+  - sudo apt-get install libgmp3-dev
+  - ./configure --with-gmp=system
   - make 
   - mkdir pkg
   - cd pkg
