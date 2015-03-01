@@ -39,4 +39,4 @@ script:
   - cd ..
   - echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh | tee testlog.txt
   - cat testlog.txt | tail -n 2 | grep "total"
-  - ( ! grep "########> Diff" testlog.txt )
+  - ( ! grep --colour=always -E "########> Diff|$" testlog.txt )
