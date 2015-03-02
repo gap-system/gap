@@ -359,6 +359,8 @@ resp. <Ref Func="IsExecutableFile"/> to check such permissions.
 
 <#Include Label="Read">
 <#Include Label="ReadAsFunction">
+<#Include Label="ReadAsExpression">
+<#Include Label="ReadAsList">
 
 <ManSection>
 <Heading>PrintTo and AppendTo</Heading>
