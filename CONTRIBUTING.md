@@ -41,7 +41,7 @@ GAP development follows a straightforward branching model.
  * Clone your fork to your local machine:
 
 ```
-$ git clone git@github.com/<your github user name>/gap.git
+$ git clone git@github.com:<your github user name>/gap.git
 ```
  * Add `gap-system/gap` as a remote upstream
 ```
