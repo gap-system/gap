@@ -2042,8 +2042,6 @@ gap> Factors( pol );
 gap> IsDocumentedWord( "d" );
 false
 gap> # "d_N" is documented
-gap> IsDocumentedWord( "last2" );
-true
 
 #############################################################################
 ##
