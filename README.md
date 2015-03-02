@@ -17,11 +17,13 @@ for Excellence in Software Engineering applied to Computer Algebra.
 
 # How to obtain GAP?
 
-The current release is GAP 4.7.7 and it can be obtained from our
+The latest stable release of the GAP system together with all currently redistributed
+[GAP packages](http://www.gap-system.org/Packages/packages.html) can be obtained from our
 [downloads page](http://www.gap-system.org/Releases/index.html).
+For installation instructions see [here](http://www.gap-system.org/Download/install.html).
 
 You can compile the current development version of GAP from this repository
-by the follwing two commands
+by the following two commands
 ```
 # ./configure
 # make
@@ -31,6 +33,15 @@ If everything goes well, you should be able to start GAP by executing
 # sh bin/gap.sh
 ```
 
+Note that this repository does not contain the `pkg` subdirectory for GAP packages, so
+you will have to create it manually and install the
+[GAPDoc package](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/index.html) there
+to be able to start GAP). If you're interested in trying the GAP development version with
+more packages, you may install them in addition or perhaps put into the `pkg` directory
+symlinks pointing to their locations in your installation of the latest stable GAP release.
+You may also find development versions of some of the GAP packages
+on [GitHub](https://github.com/gap-system) and [Bitbucket](https://bitbucket.org/gap-system).
+
 # We welcome contributions
 
 The GAP Project welcomes contributions from everyone, in the shape of code,
@@ -39,12 +50,16 @@ please read the [guidelines](CONTRIBUTING.md).
 
 To keep up to date on GAP news (discussion of problems, release announcements,
 bug fixes), you can subscribe to the
-[GAP forum](http://www.gap-system.org/Contacts/Forum/forum.html), [GAP support](), and
+[GAP forum](http://www.gap-system.org/Contacts/Forum/forum.html) and
 [GAP development](https://mail.gap-system.org/mailman/listinfo/gap) mailing lists,
 notifications on github, and follow us on [Twitter](https://twitter.com/gap_system).
 
-Please tell us about use of GAP in your research or teaching.
-We maintain a bibliography of publications citing GAP. Please
-[help us](http://gap-system.org/Contacts/publicationfeedback.html)
+If you have any questions about working with GAP, you can ask them on
+[GAP forum](http://www.gap-system.org/Contacts/Forum/forum.html) (requires subscription)
+or [GAP Support](http://www.gap-system.org/Contacts/People/supportgroup.html) mailing lists.
+
+Please tell us about your use of GAP in research or teaching. We maintain a
+[bibliography of publications citing GAP](http://www.gap-system.org/Doc/Bib/bib.html).
+Please [help us](http://gap-system.org/Contacts/publicationfeedback.html)
 keeping it up to date.
 

@@ -8,7 +8,7 @@ possible to contribute changes.
 
 1. Make sure you are familiar with [Git](http://git-scm.com/book).
 1. Make sure you have a [GitHub account](https://github.com/signup/free).
-1. Make sure you are familiar with: [GAP](http://www.gap-system.org/).
+1. Make sure you are familiar with [GAP](http://www.gap-system.org/).
 1. Make sure you can install GAP.
 
 ## Issue Reporting
@@ -104,16 +104,16 @@ To help increase the chance of your pull request being accepted:
 
 * Run the tests.
 * Update the documentation, tests, examples, guides, and whatever
-  else is affected by your contribution
+  else is affected by your contribution.
 * Use appropriate code formatting for both C and GAP.
 
 ## Additional Resources
 
 * [GAP Tutorial](http://gap-system.org/Manuals/doc/tut/chap0.html)
-* [GAP Manual](http://gap-system.org/Manuals/doc/ref/chap0.html);
-* [GAP Homepage](http://www.gap-system.org/);
+* [GAP Manual](http://gap-system.org/Manuals/doc/ref/chap0.html)
+* [GAP Homepage](http://www.gap-system.org/)
 * [Using Pull Requests](https://help.github.com/articles/using-pull-requests)
-* [General GitHub Documentation](https://help.github.com/).
+* [General GitHub Documentation](https://help.github.com/)
 
 Adapted from the most excellent contributing files from the [Puppet project](https://github.com/puppetlabs/puppet),
 [Factory Girl Rails](https://github.com/thoughtbot/factory_girl_rails/blob/master/CONTRIBUTING.md),
