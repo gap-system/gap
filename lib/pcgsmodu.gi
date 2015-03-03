@@ -672,6 +672,10 @@ InstallOtherMethod( ReducedPcElement,
     0,
 
 function( pcgs, left, right )
+    # Avoid infinite recursion
+    if IsIdenticalObj(NumeratorOfModuloPcgs(pcgs),pcgs) then
+      TryNextMethod();
+    fi;
     return ReducedPcElement( NumeratorOfModuloPcgs(pcgs), left, right );
 end );
 
@@ -691,6 +695,10 @@ InstallOtherMethod( RelativeOrderOfPcElement,
     -RankFilter(IsModuloPcgs and IsPrimeOrdersPcgs),
 
 function( pcgs, elm )
+    # Avoid infinite recursion
+    if IsIdenticalObj(NumeratorOfModuloPcgs(pcgs),pcgs) then
+      TryNextMethod();
+    fi;
     return RelativeOrderOfPcElement( NumeratorOfModuloPcgs(pcgs), elm );
 end );
 
@@ -708,6 +716,10 @@ InstallOtherMethod( DepthOfPcElement,
 
 function( pcgs, elm )
     local   d,  num;
+    # Avoid infinite recursion
+    if IsIdenticalObj(NumeratorOfModuloPcgs(pcgs),pcgs) then
+      TryNextMethod();
+    fi;
 
     num := NumeratorOfModuloPcgs(pcgs);
     d := DepthOfPcElement( num, elm );
@@ -728,6 +740,11 @@ InstallOtherMethod( ExponentsOfPcElement, "pcgs modulo pcgs", IsCollsElms,
     [ IsModuloPcgs and IsModuloPcgsRep, IsObject ], 0,
 function( pcgs, elm )
     local   id,  exp,  ros,  den,  num,  wm,  mm,  pm,  d,  ll,  lr,lede;
+
+    # Avoid infinite recursion
+    if IsIdenticalObj(NumeratorOfModuloPcgs(pcgs),pcgs) then
+      TryNextMethod();
+    fi;
 
     id  := OneOfPcgs(pcgs);
     exp := ListWithIdenticalEntries(Length(pcgs),0);
@@ -849,6 +866,11 @@ InstallOtherMethod( ExponentsOfPcElement, "pcgs modulo pcgs, subrange",
     IsCollsElmsX, [ IsModuloPcgs and IsModuloPcgsRep, IsObject,IsList ], 0,
 function( pcgs, elm,range )
     local   id,  exp,  ros,  den,  num,  wm,  mm,  pm,  d,  ll,  lr,max;
+
+    # Avoid infinite recursion
+    if IsIdenticalObj(NumeratorOfModuloPcgs(pcgs),pcgs) then
+      TryNextMethod();
+    fi;
 
     Info(InfoWarning,1,"Obsolete exponents method");
     if not IsSSortedList(range) then
