@@ -35,7 +35,9 @@ and authorized prior to the PRs inclusion.
 
 ## Making Changes
 
-GAP development follows a straightforward branching model.
+GAP development follows a straightforward branching model. We prefer using the github
+infrastructure. If you would like to contribute, but not open a github account, see below
+for an alternative.
 
  * Fork our [main development repository](https://github.com/gap-system/gap) on github
  * Clone your fork to your local machine:
@@ -97,6 +99,17 @@ $ git push origin fix/master/my_contrib
 From there you will have to wait on one of the GAP committers to respond to the request.
 This response might be an accept or some changes/improvements/alternatives will be suggested.
 We do not guarantee that all requests will be accepted.
+
+## Making changes without github account
+
+If you do not want to open a github account you can still clone the GAP repository
+like so:
+```
+https://github.com/gap-system/gap.git
+```
+
+Make your changes and commits, and use git's `send-email` feature to send us patches to
+gap@gap-system.org.
 
 ## Increasing chances of acceptance.
 
