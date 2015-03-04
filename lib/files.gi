@@ -238,6 +238,20 @@ InstallMethod( ReadAsFunction,
     [ IsString ],
     name -> READ_AS_FUNC( USER_HOME_EXPAND( name ) ) );  
 
+#############################################################################
+##
+#M  ReadAsExpression( <filename> )  . . . . . . . . read a file as expression
+##
+InstallMethod( ReadAsExpression,
+    "string",
+    [ IsString ],
+    function( name )
+       local f, e;
+       f := InputTextFile(name);
+       e := ReadAll(f);
+       CloseStream(f); 
+       return EvalString(e);
+    end);
 
 #############################################################################
 ##

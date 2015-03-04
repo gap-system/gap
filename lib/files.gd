@@ -197,17 +197,17 @@ DeclareOperation( "ExternalFilename", [ IsList, IsString ] );
 
 #############################################################################
 ##
-#O  Read( <name-file> ) . . . . . . . . . . . . . . . . . . . . . read a file
+#O  Read( <filename> ) . . . . . . . . . . . . . . . . . . . . . read a file
 ##
 ##  <#GAPDoc Label="Read">
 ##  <ManSection>
-##  <Oper Name="Read" Arg='name-file'/>
+##  <Oper Name="Read" Arg='filename'/>
 ##
 ##  <Description>
-##  reads the input from the file with the filename <A>name-file</A>,
+##  reads the input from the file with the filename <A>filename</A>,
 ##  which must be given as a string.
 ##  <P/>
-##  <Ref Func="Read"/> first opens the file <A>name-file</A>.
+##  <Ref Func="Read"/> first opens the file <A>filename</A>.
 ##  If the file does not exist, or if &GAP; cannot open it,
 ##  e.g., because of access restrictions, an error is signalled.
 ##  <P/>
@@ -279,14 +279,14 @@ DeclareOperation( "ReadTest", [ IsString ] );
 
 #############################################################################
 ##
-#O  ReadAsFunction( <name-file> ) . . . . . . . . . . read a file as function
+#O  ReadAsFunction( <filename> ) . . . . . . . . . . read a file as function
 ##
 ##  <#GAPDoc Label="ReadAsFunction">
 ##  <ManSection>
-##  <Oper Name="ReadAsFunction" Arg='name-file'/>
+##  <Oper Name="ReadAsFunction" Arg='filename'/>
 ##
 ##  <Description>
-##  reads the file with filename <A>name-file</A> as a function
+##  reads the file with filename <A>filename</A> as a function
 ##  and returns this function.
 ##  <P/>
 ##  <E>Example</E>
@@ -300,7 +300,8 @@ DeclareOperation( "ReadTest", [ IsString ] );
 ##  return a*10;
 ##  ]]></Log>
 ##  <P/>
-##  Reading the file as a function will not affect a global variable <C>a</C>.
+##  Reading the file as a function will not affect a global variable
+##  <C>a</C>.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> a := 1;
@@ -316,6 +317,34 @@ DeclareOperation( "ReadTest", [ IsString ] );
 ##
 DeclareOperation( "ReadAsFunction", [ IsString ] );
 
+#############################################################################
+##
+#O  ReadAsExpression( <filename> ) . . . . . . . . read a file as expression
+##
+##  <#GAPDoc Label="ReadAsExpression">
+##  <ManSection>
+##  <Oper Name="ReadAsExpression" Arg='filename'/>
+##
+##  <Description>
+##  reads the file with filename <A>filename</A> as a GAP expression.
+##  <P/>
+##  <E>Example</E>
+##  <P/>
+##  Suppose that the file <F>/tmp/example.g</F> contains the following
+##  <P/>
+##  <Log><![CDATA[
+##  (1,2,3)
+##  ]]></Log>
+##  <P/>
+##  <Log><![CDATA[
+##  gap> a := ReadAsExpression("/tmp/example.g");
+##  (1,2,3)
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "ReadAsExpression", [ IsString ] );
 
 #############################################################################
 ##
@@ -531,11 +560,11 @@ end );
 
 #############################################################################
 ##
-#F  CrcFile( <name-file> )  . . . . . . . . . . . . . . . .  create crc value
+#F  CrcFile( <filename> )  . . . . . . . . . . . . . . . .  create crc value
 ##
 ##  <#GAPDoc Label="CrcFile">
 ##  <ManSection>
-##  <Func Name="CrcFile" Arg='name-file'/>
+##  <Func Name="CrcFile" Arg='filename'/>
 ##
 ##  <Description>
 ##  CRC (cyclic redundancy check) numbers provide a certain method of doing
@@ -543,9 +572,9 @@ end );
 ##  files have changed.
 ##  <P/>
 ##  <Ref Func="CrcFile"/> computes a checksum value for the file with
-##  filename <A>name-file</A> and returns this value as an integer.
+##  filename <A>filename</A> and returns this value as an integer.
 ##  The function returns <K>fail</K> if a system error occurred, say,
-##  for example, if <A>name-file</A> does not exist.
+##  for example, if <A>filename</A> does not exist.
 ##  In this case the function <Ref Func="LastSystemError"/>
 ##  can be used to get information about the error.
 ##  <P/>
