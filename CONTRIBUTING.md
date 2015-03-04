@@ -105,7 +105,7 @@ We do not guarantee that all requests will be accepted.
 If you do not want to open a github account you can still clone the GAP repository
 like so:
 ```
-https://github.com/gap-system/gap.git
+git clone https://github.com/gap-system/gap.git
 ```
 
 Make your changes and commits, and use git's `send-email` feature to send us patches to
