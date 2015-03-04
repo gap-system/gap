@@ -1,7 +1,0 @@
-#!/bin/sh
-awk 'BEGIN{cnt=0}\
-{print $0}\
-/;$/{cnt=cnt+1;\
-print "Print(\"\\rDbg" cnt "       \\c\"); #!@+DbGt%&";}' $1 > $1.temporary
-cp $1 $1.original
-mv $1.temporary $1

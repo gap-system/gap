@@ -1,7 +1,0 @@
-@msfiles = ("integers","numtheor","rational","padics","cyclotom",
-            "fldabnum","unknown");
-@gdfiles = ("integer","numtheor","contfrac","domain","arith","padics",
-            "primality","random",
-            "cyclotom.g","cyclotom","field","fldabnum","unknown","zmodnz");
-$DIR = "../ref";
-$LIB = "../../lib";
