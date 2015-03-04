@@ -617,16 +617,16 @@ DeclareOperation( "InputTextString", [ IsString ] );
 
 #############################################################################
 ##
-#O  InputTextFile( <name-file> )  . . . .  create input text stream from file
+#O  InputTextFile( <filename> )  . . . .  create input text stream from file
 ##
 ##  <#GAPDoc Label="InputTextFile">
 ##  <ManSection>
-##  <Oper Name="InputTextFile" Arg='name-file'/>
+##  <Oper Name="InputTextFile" Arg='filename'/>
 ##
 ##  <Description>
-##  <C>InputTextFile( <A>name-file</A> )</C> returns an input stream in the category
+##  <C>InputTextFile( <A>filename</A> )</C> returns an input stream in the category
 ##  <Ref Filt="IsInputTextStream"/> that delivers the characters from the file
-##  <A>name-file</A>.
+##  <A>filename</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -714,16 +714,16 @@ DeclareOperation( "OutputTextString", [ IsList, IsBool ] );
 
 #############################################################################
 ##
-#O  OutputTextFile( <name-file>, <append> )  . . . create output text stream
+#O  OutputTextFile( <filename>, <append> )  . . . create output text stream
 ##
 ##  <#GAPDoc Label="OutputTextFile">
 ##  <ManSection>
-##  <Oper Name="OutputTextFile" Arg='name-file, append'/>
+##  <Oper Name="OutputTextFile" Arg='filename, append'/>
 ##
 ##  <Description>
-##  <C>OutputTextFile( <A>name-file</A>, <A>append</A> )</C> returns an output stream in the
+##  <C>OutputTextFile( <A>filename</A>, <A>append</A> )</C> returns an output stream in the
 ##  category <C>IsOutputTextFile</C> that writes received characters to the file
-##  <A>name-file</A>.  If <A>append</A> is <K>false</K>, then the file is emptied first,
+##  <A>filename</A>.  If <A>append</A> is <K>false</K>, then the file is emptied first,
 ##  otherwise received characters are added at the end of the file.
 ##  <P/>
 ##  <Example><![CDATA[
