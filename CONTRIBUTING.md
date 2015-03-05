@@ -19,19 +19,19 @@ and check to see if there are existing
 [pull requests](https://github.com/gap-system/gap-git/pulls).
 We do not want you wasting your time duplicating somebody's work!
 
+## Contributing to the library
+
+We do not want you wasting your time nor duplicating somebody's work!
+
+Developers should be prepared to wait until their PR has been discussed
+and authorized prior to the PRs inclusion.
+
 ## The Campsite Rule
 
 A basic rule when contributing to GAP is the **campsite rule**:
 leave the codebase in better condition than you found it.
 Please clean up any messes that you find, and don't
 leave behind new messes for the next contributor.
-
-## Contributing to the library.
-
-We do not want you wasting your time nor duplicating somebody's work!
-
-Developers should be prepared to wait until their PR has been discussed
-and authorized prior to the PRs inclusion.
 
 ## Making Changes
 
