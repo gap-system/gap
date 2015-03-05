@@ -1,42 +1,42 @@
-# Contributing to gap-git
+# Contributing to GAP
 
-The GAP Community welcomes pull requests, bug reporting, and bug squashing!
-However, we cannot do it all ourselves, and want to make it as easy as
-possible to contribute changes.
+We invite everyone to contribute by submitting patches,
+pull requests, and bug reports. We would like to make the contributing
+process as easy as possible.
 
-## Getting Started
+## Issue reporting and code contributions
 
-1. Make sure you are familiar with [Git](http://git-scm.com/book).
-2. Make sure you have a [GitHub account](https://github.com/signup/free).
-3. Make sure you are familiar with [GAP](http://www.gap-system.org/).
-4. Make sure you can install GAP.
-
-## Issue Reporting
-
-Before you report an issue, or wish to add cool functionality please try
-and check to see if there are existing
-[issues](https://github.com/gap-system/gap-git/issues) and
-[pull requests](https://github.com/gap-system/gap-git/pulls).
-We do not want you wasting your time duplicating somebody's work!
-
-## Contributing to the library
-
-We do not want you wasting your time nor duplicating somebody's work!
-
-Developers should be prepared to wait until their PR has been discussed
-and authorized prior to the PRs inclusion.
-
-## The Campsite Rule
-
-A basic rule when contributing to GAP is the **campsite rule**:
-leave the codebase in better condition than you found it.
-Please clean up any messes that you find, and don't
-leave behind new messes for the next contributor.
+* Before you report an issue, or wish to add functionality, please try
+  and check to see if there are existing
+  [issues](https://github.com/gap-system/gap-git/issues) or
+  [pull requests](https://github.com/gap-system/gap-git/pulls).
+  We do not want you wasting your time duplicating somebody else's work.
+* For substantial changes it is also advisable to contact us before
+  you start work to discuss your ideas.
+* You should be prepared to wait until your pull request or patch
+  has been discussed and authorized prior to its inclusion. We might
+  also ask for you to adapt your changes to make them suitable for
+  inclusion.
+* To help increase the chance of your pull request being accepted:
+  * Run the tests.
+  * Update the documentation, tests, examples, guides, and whatever
+    else is affected by your contribution.
+  * Use appropriate code formatting for both C and GAP.
+* *The Campsite Rule*
+  A basic rule when contributing to GAP is the **campsite rule**:
+  leave the codebase in better condition than you found it.
+  Please clean up any messes that you find, and don't
+  leave behind new messes for the next contributor.
 
 ## Making Changes
 
-GAP development follows a straightforward branching model.
+GAP development follows a straightforward branching model. We prefer using the GitHub
+infrastructure. If you would like to contribute, but do not want to create a GitHub
+account, see below for an alternative.
 
+ * Make sure you are familiar with [Git](http://git-scm.com/book) - see the [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials/) for an excellent introduction to Git.
+ * Make sure you have a [GitHub account](https://github.com/signup/free).
+ * Make sure you are familiar with [GAP](http://www.gap-system.org/).
  * Fork our [main development repository](https://github.com/gap-system/gap) on github
  * Clone your fork to a chosen directory on your local machine using HTTPS:
 ```
@@ -56,13 +56,13 @@ $ git fetch upstream
 $ git merge upstream/master
 ```
  * Create, and checkout onto, a topic (or feature) branch on which to base your work.
-   * This is typically done from your local `master` branch.
+   * This is typically done from the local `master` branch.
    * For your own sanity, please avoid working on the local `master` branch.
  ```
  $ git branch fix/master/my_contrib master
  $ git checkout fix/master/my_contrib
  ```
- A shorter way of doing the above is
+  A shorter way of doing the above is
  ```
  $ git checkout -b fix/master/my_contrib master
  ```
@@ -106,14 +106,16 @@ From there you will have to wait on one of the GAP committers to respond to the 
 This response might be an accept or some changes/improvements/alternatives will be suggested.
 We do not guarantee that all requests will be accepted.
 
-## Increasing chances of acceptance.
+## Making changes without Github account
 
-To help increase the chance of your pull request being accepted:
+If you do not want to open a GitHub account you can still clone the GAP repository
+like so:
+```
+git clone https://github.com/gap-system/gap.git
+```
 
-* Run the tests.
-* Update the documentation, tests, examples, guides, and whatever
-  else is affected by your contribution.
-* Use appropriate code formatting for both C and GAP.
+Make your changes and commits, create a patch containing the commits you want to send, and use git's [`send-email` feature](http://git-scm.com/docs/git-send-email) to email the patch to
+gap@gap-system.org.  You can refer to [this tutorial](https://burzalodowa.wordpress.com/2013/10/05/how-to-send-patches-with-git-send-email/) on how to do this.
 
 ## Additional Resources
 
@@ -123,6 +125,6 @@ To help increase the chance of your pull request being accepted:
 * [Using Pull Requests](https://help.github.com/articles/using-pull-requests)
 * [General GitHub Documentation](https://help.github.com/)
 
-Adapted from the most excellent contributing files from the [Puppet project](https://github.com/puppetlabs/puppet),
+Heavily adapted from the contributing files from the [Puppet project](https://github.com/puppetlabs/puppet),
 [Factory Girl Rails](https://github.com/thoughtbot/factory_girl_rails/blob/master/CONTRIBUTING.md),
 and [Idris](https://github.com/idris-lang/Idris-dev)
