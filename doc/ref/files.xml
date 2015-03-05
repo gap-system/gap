@@ -256,11 +256,11 @@ When the following functions return <K>false</K> one can use
 operating system), see the examples.
 
 <ManSection>
-<Func Name="IsExistingFile" Arg='name-file'/>
+<Func Name="IsExistingFile" Arg='filename'/>
 
 <Description>
 <Ref Func="IsExistingFile"/>
-returns <K>true</K> if a file with the filename <A>name-file</A> exists
+returns <K>true</K> if a file with the filename <A>filename</A> exists
 and can be seen by the &GAP; process. Otherwise <K>false</K> is returned.
 <P/>
 <Example><![CDATA[
@@ -278,11 +278,11 @@ gap> LastSystemError().message;
 
 
 <ManSection>
-<Func Name="IsReadableFile" Arg='name-file'/>
+<Func Name="IsReadableFile" Arg='filename'/>
 
 <Description>
 <Ref Func="IsReadableFile"/>
-returns <K>true</K> if a file with the filename <A>name-file</A> exists
+returns <K>true</K> if a file with the filename <A>filename</A> exists
 <E>and</E> the &GAP; process has read permissions for the file,
 or <K>false</K> if this is not the case.
 <P/>
@@ -299,11 +299,11 @@ gap> LastSystemError().message;
 
 
 <ManSection>
-<Func Name="IsWritableFile" Arg='name-file'/>
+<Func Name="IsWritableFile" Arg='filename'/>
 
 <Description>
 <Ref Func="IsWritableFile"/>
-returns <K>true</K> if a file with the filename <A>name-file</A> exists
+returns <K>true</K> if a file with the filename <A>filename</A> exists
 <E>and</E> the &GAP; process has write permissions for the file,
 or <K>false</K> if this is not the case.
 <P/>
@@ -317,11 +317,11 @@ false
 
 
 <ManSection>
-<Func Name="IsExecutableFile" Arg='name-file'/>
+<Func Name="IsExecutableFile" Arg='filename'/>
 
 <Description>
 <Ref Func="IsExecutableFile"/>
-returns <K>true</K> if a file with the filename <A>name-file</A> exists
+returns <K>true</K> if a file with the filename <A>filename</A> exists
 <E>and</E> the &GAP; process has execute permissions for the file,
 or <K>false</K> if this is not the case.
 Note that execute permissions do not imply that it is possible
@@ -336,11 +336,11 @@ true
 
 
 <ManSection>
-<Func Name="IsDirectoryPath" Arg='name-file'/>
+<Func Name="IsDirectoryPath" Arg='filename'/>
 
 <Description>
 <Ref Func="IsDirectoryPath"/>
-returns <K>true</K> if the file with the filename <A>name-file</A> exists
+returns <K>true</K> if the file with the filename <A>filename</A> exists
 <E>and</E> is a directory,
 and <K>false</K> otherwise.
 Note that this function does not check if the &GAP; process actually has
@@ -362,18 +362,18 @@ resp. <Ref Func="IsExecutableFile"/> to check such permissions.
 
 <ManSection>
 <Heading>PrintTo and AppendTo</Heading>
-<Func Name="PrintTo" Arg='name-file[, obj1, ...]'/>
-<Func Name="AppendTo" Arg='name-file[, obj1, ...]'/>
+<Func Name="PrintTo" Arg='filename[, obj1, ...]'/>
+<Func Name="AppendTo" Arg='filename[, obj1, ...]'/>
 
 <Description>
 <Ref Func="PrintTo"/> works like <Ref Func="Print"/>,
 except that the arguments <A>obj1</A>, <M>\ldots</M> (if present) are printed
-to the file with the name <A>name-file</A> instead of the standard output.
+to the file with the name <A>filename</A> instead of the standard output.
 This file must of course be writable by &GAP;.
 Otherwise an error is signalled.
 Note that <Ref Func="PrintTo"/> will <E>overwrite</E> the previous contents
 of this file if it already existed;
-in particular, <Ref Func="PrintTo"/> with just the <A>name-file</A> argument
+in particular, <Ref Func="PrintTo"/> with just the <A>filename</A> argument
 empties that file.
 <P/>
 <Ref Func="AppendTo"/> works like <Ref Func="PrintTo"/>,
@@ -393,13 +393,13 @@ that may be open simultaneously.
 
 <ManSection>
 <Heading>LogTo</Heading>
-<Oper Name="LogTo" Arg='name-file' Label="for a filename"/>
+<Oper Name="LogTo" Arg='filename' Label="for a filename"/>
 <Oper Name="LogTo" Arg='' Label="stop logging"/>
 
 <Description>
 Calling <Ref Func="LogTo" Label="for a filename"/> with a string
-<A>name-file</A> causes the subsequent interaction to be logged to the file
-with the name <A>name-file</A>,
+<A>filename</A> causes the subsequent interaction to be logged to the file
+with the name <A>filename</A>,
 i.e., everything you see on your terminal will also appear in this file.
 (<Ref Func="LogTo" Label="for streams"/> may also be used to log to a stream.)
 This file must of course be writable by &GAP;, otherwise an error is
@@ -415,13 +415,13 @@ Called without arguments,
 
 <ManSection>
 <Heading>InputLogTo</Heading>
-<Oper Name="InputLogTo" Arg='name-file' Label="for a filename"/>
+<Oper Name="InputLogTo" Arg='filename' Label="for a filename"/>
 <Oper Name="InputLogTo" Arg='' Label="stop logging input"/>
 
 <Description>
 Calling <Ref Func="InputLogTo" Label="for a filename"/> with a string
-<A>name-file</A> causes the subsequent input to be logged to the file
-with the name <A>name-file</A>,
+<A>filename</A> causes the subsequent input to be logged to the file
+with the name <A>filename</A>,
 i.e., everything you type on your terminal will also appear in this file.
 Note that <Ref Func="InputLogTo" Label="for a filename"/> and
 <Ref Func="LogTo" Label="for a filename"/> cannot be used at the same time
@@ -439,13 +439,13 @@ or stream.
 
 <ManSection>
 <Heading>OutputLogTo</Heading>
-<Oper Name="OutputLogTo" Arg='name-file' Label="for a filename"/>
+<Oper Name="OutputLogTo" Arg='filename' Label="for a filename"/>
 <Oper Name="OutputLogTo" Arg='' Label="stop logging output"/>
 
 <Description>
 Calling <Ref Func="OutputLogTo" Label="for a filename"/> with a string
-<A>name-file</A> causes the subsequent output to be logged to the file
-with the name <A>name-file</A>,
+<A>filename</A> causes the subsequent output to be logged to the file
+with the name <A>filename</A>,
 i.e., everything &GAP; prints on your terminal will also appear in this file.
 Note that <Ref Func="OutputLogTo" Label="for a filename"/> and
 <Ref Func="LogTo" Label="for a filename"/> cannot be used at the same time
@@ -464,12 +464,12 @@ or stream.
 
 
 <ManSection>
-<Func Name="RemoveFile" Arg='name-file'/>
+<Func Name="RemoveFile" Arg='filename'/>
 
 <Description>
-will remove the file with filename <A>name-file</A> and returns <K>true</K> in case
+will remove the file with filename <A>filename</A> and returns <K>true</K> in case
 of  success.  The function returns <K>fail</K> if a system error occurred, for
-example, if your permissions do not allow the removal of <A>name-file</A>.
+example, if your permissions do not allow the removal of <A>filename</A>.
 In this case the function <Ref Func="LastSystemError"/>
 can be used to get information about the error.
 </Description>
