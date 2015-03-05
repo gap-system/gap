@@ -20,7 +20,7 @@
 ##  <#GAPDoc Label="Reread">
 ##
 ##  <ManSection>
-##  <Func Name="Reread" Arg='name-file'/>
+##  <Func Name="Reread" Arg='filename'/>
 ##  <Var Name="REREADING"/>
 ##
 ##  <Description>
@@ -32,9 +32,9 @@
 ##  <P/>
 ##  A partial solution to this problem is provided by the function
 ##  <Ref Func="Reread"/> (and related functions <C>RereadLib</C> etc.).
-##  <C>Reread( <A>name-file</A> )</C> sets the global variable
+##  <C>Reread( <A>filename</A> )</C> sets the global variable
 ##  <Ref Var="REREADING"/> to <K>true</K>,
-##  reads the file named by <A>name-file</A> and then resets
+##  reads the file named by <A>filename</A> and then resets
 ##  <Ref Var="REREADING"/>.
 ##  Various system functions behave differently when <Ref Var="REREADING"/>
 ##  is set to <K>true</K>.

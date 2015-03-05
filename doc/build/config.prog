@@ -1,4 +1,0 @@
-@msfiles = ("intrfc");
-@gdfiles = ("proto");
-$DIR = "../prg";
-$LIB = "../../lib"; 

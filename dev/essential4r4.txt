@@ -1,9 +1,0 @@
-
-                  Essential features for GAP 4.4
-   No release will be started without these features being realized.
-
----------------------------------------------------------------------------
-
-
-
-

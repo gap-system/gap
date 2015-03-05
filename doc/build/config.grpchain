@@ -1,4 +1,0 @@
-@msfiles = ("quogphom","gptransv","grpchain");
-@gdfiles = ("eigen","quogphom","gptransv","grpchain","rss","solmxgrp");
-$DIR = "../new";
-$LIB = "../../lib"; 

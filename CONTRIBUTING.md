@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Contributing to GAP
+=======
+# Contributing to GAP 
+>>>>>>> master
 
 We invite everyone to contribute by submitting patches,
 pull requests, and bug reports. We would like to make the contributing
@@ -15,7 +19,11 @@ process as easy as possible.
   you start work to discuss your ideas.
 * You should be prepared to wait until your pull request or patch
   has been discussed and authorized prior to its inclusion. We might
+<<<<<<< HEAD
   also ask for you to adapt your changes to make them suitable for
+=======
+  also ask for you to adapt your changes to make them suitable for 
+>>>>>>> master
   inclusion.
 * To help increase the chance of your pull request being accepted:
   * Run the tests.
@@ -28,6 +36,7 @@ process as easy as possible.
   Please clean up any messes that you find, and don't
   leave behind new messes for the next contributor.
 
+<<<<<<< HEAD
 ## Making Changes
 
 GAP development follows a straightforward branching model. We prefer using the GitHub
@@ -35,6 +44,15 @@ infrastructure. If you would like to contribute, but do not want to create a Git
 account, see below for an alternative.
 
  * Make sure you are familiar with [Git](http://git-scm.com/book) - see the [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials/) for an excellent introduction to Git.
+=======
+## Making Changes 
+
+GAP development follows a straightforward branching model. We prefer using the github
+infrastructure. If you would like to contribute, but do not want to create a github
+account, see below for an alternative.
+
+ * Make sure you are familiar with [Git](http://git-scm.com/book).
+>>>>>>> master
  * Make sure you have a [GitHub account](https://github.com/signup/free).
  * Make sure you are familiar with [GAP](http://www.gap-system.org/).
  * Fork our [main development repository](https://github.com/gap-system/gap) on github
@@ -108,14 +126,23 @@ We do not guarantee that all requests will be accepted.
 
 ## Making changes without Github account
 
+<<<<<<< HEAD
 If you do not want to open a GitHub account you can still clone the GAP repository
+=======
+If you do not want to open a github account you can still clone the GAP repository
+>>>>>>> master
 like so:
 ```
 git clone https://github.com/gap-system/gap.git
 ```
 
+<<<<<<< HEAD
 Make your changes and commits, create a patch containing the commits you want to send, and use git's [`send-email` feature](http://git-scm.com/docs/git-send-email) to email the patch to
 gap@gap-system.org.  You can refer to [this tutorial](https://burzalodowa.wordpress.com/2013/10/05/how-to-send-patches-with-git-send-email/) on how to do this.
+=======
+Make your changes and commits, and use git's `send-email` feature to send us patches to
+gap@gap-system.org.
+>>>>>>> master
 
 ## Additional Resources
 
