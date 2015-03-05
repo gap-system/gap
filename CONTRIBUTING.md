@@ -7,9 +7,9 @@ possible to contribute changes.
 ## Getting Started
 
 1. Make sure you are familiar with [Git](http://git-scm.com/book).
-1. Make sure you have a [GitHub account](https://github.com/signup/free).
-1. Make sure you are familiar with [GAP](http://www.gap-system.org/).
-1. Make sure you can install GAP.
+2. Make sure you have a [GitHub account](https://github.com/signup/free).
+3. Make sure you are familiar with [GAP](http://www.gap-system.org/).
+4. Make sure you can install GAP.
 
 ## Issue Reporting
 
@@ -38,13 +38,11 @@ and authorized prior to the PRs inclusion.
 GAP development follows a straightforward branching model.
 
  * Fork our [main development repository](https://github.com/gap-system/gap) on github
- * Clone your fork to a chosen directory on your local machine using HTTPS (GitHub's recommended cloning protocol):
+ * Clone your fork to a chosen directory on your local machine using HTTPS:
 ```
 $ git clone https://github.com/<your github user name>/gap.git
 ```
-This will create a folder called `gap` (in the location where you ran `git clone`) containing the source files, folders and the Git repository.  See [Cloning with HTTPS](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-with-https-recommended) for more information.  You can also clone with plain Git (not recommended as it is insecure) or SSH as well (as [described here](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-with-ssh)).
-
-The clone automatically sets up a remote alias named `origin` pointing to your fork on GitHub, which you can verify with:
+This will create a folder called `gap` (in the location where you ran `git clone`) containing the source files, folders and the Git repository.  The clone automatically sets up a remote alias named `origin` pointing to your fork on GitHub, which you can verify with:
 ```
 $ git remote -v
 ```
@@ -59,7 +57,7 @@ $ git merge upstream/master
 ```
  * Create, and checkout onto, a topic (or feature) branch on which to base your work.
    * This is typically done from your local `master` branch.
-   * For your own sanity, please avoid working on the `master` branch.
+   * For your own sanity, please avoid working on the local `master` branch.
  ```
  $ git branch fix/master/my_contrib master
  $ git checkout fix/master/my_contrib
