@@ -38,27 +38,37 @@ and authorized prior to the PRs inclusion.
 GAP development follows a straightforward branching model.
 
  * Fork our [main development repository](https://github.com/gap-system/gap) on github
- * Clone your fork to your local machine:
-
+ * Clone your fork to a chosen directory on your local machine using HTTPS (GitHub's recommended cloning protocol):
 ```
-$ git clone git@github.com:<your github user name>/gap.git
+$ git clone https://github.com/<your github user name>/gap.git
+```
+This will create a folder called `gap` (in the location where you ran `git clone`) containing the source files, folders and the Git repository.  See [Cloning with HTTPS](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-with-https-recommended) for more information.  You can also clone with plain Git (not recommended as it is insecure) or SSH as well (as [described here](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-with-ssh)).
+
+The clone automatically sets up a remote alias named `origin` pointing to your fork on GitHub, which you can verify with:
+```
+$ git remote -v
 ```
  * Add `gap-system/gap` as a remote upstream
 ```
-$ git remote add upstream git@github.com:gap-system/gap.git
+$ git remote add upstream https://github.com/gap-system/gap.git
 ```
  * Ensure your existing clone is up-to-date with current `HEAD` e.g.
 ```
 $ git fetch upstream
 $ git merge upstream/master
 ```
- * Create, and checkout onto, a topic branch on which to base you work.
-   * This is typically done from the master branch.
+ * Create, and checkout onto, a topic (or feature) branch on which to base your work.
+   * This is typically done from your local `master` branch.
    * For your own sanity, please avoid working on the `master` branch.
  ```
  $ git branch fix/master/my_contrib master
  $ git checkout fix/master/my_contrib
  ```
+ A shorter way of doing the above is
+ ```
+ $ git checkout -b fix/master/my_contrib master
+ ```
+ which creates the topic branch and checks out that branch immediately after.
  * Make commits of logical units.
  * Check for unnecessary whitespace with
 ```
