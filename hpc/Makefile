@@ -69,7 +69,7 @@ distclean:
 
 $(WARD)/bin/ward:
 	@test -z "$(WARD)" || echo "Building Ward."
-	@test -z "$(WARD)" || (cd $(WARD); sh build.sh >/dev/null 2>/dev/null)
+	@test -z "$(WARD)" || (cd $(WARD); sh build.sh)
 	@test -z "$(WARD)" || echo "Ward build completed."
 
 .PHONY: all opt gapdebug debug
