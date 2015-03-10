@@ -498,6 +498,7 @@ end);
 BindGlobal("ShapeFrequencies",function(n,i)
 local g,fu,j,k,ps,pps,sh;
   TransGrpLoad(n,0);
+ atomic TRANSREGION do
   if not IsBound(TRANSSHAPEFREQS[n]) then
     TRANSSHAPEFREQS[n]:=[];
   fi;
@@ -530,6 +531,7 @@ local g,fu,j,k,ps,pps,sh;
     TRANSSHAPEFREQS[n][i]:=fu;
   fi;
   return TRANSSHAPEFREQS[n][i];
+ od;
 end);
 
 #############################################################################
@@ -551,7 +553,7 @@ local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,k,a,anz,pm,
   elif n>7 then
     fac:=5;
   fi;
-
+ atomic TRANSREGION do
   cand:=[1..TRANSLENGTHS[n]];
   if Length(arg)=2 then
     weg:=arg[2];
@@ -634,6 +636,7 @@ local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,k,a,anz,pm,
   od;
   bk:=Difference(bk,weg);
   return bk;
+ od;
 end);
 
 #############################################################################
@@ -652,6 +655,7 @@ local n,i,sh,fu,ps,pps,ind,keineu,avoid,cf;
   sh:=Partitions(n);
   fu:=List([1..Length(sh)-1],i->false);
   keineu:=0;
+ atomic TRANSREGION do 
   repeat
     repeat
       p:=NextPrimeInt(p);
@@ -679,6 +683,7 @@ local n,i,sh,fu,ps,pps,ind,keineu,avoid,cf;
   until Length(cand)=1 or keineu>3*n or p>500*n;
   Info(InfoGalois,2,"cands:",cand);
   return [p,cand];
+ od;
 end);
 
 
@@ -797,7 +802,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
     Error("f must be irreducible");
   fi;
   n:=DegreeOfUnivariateLaurentPolynomial(f);
-
+ atomic TRANSREGION do
   if Length(arg)=1 then
     cand:=[1..TRANSLENGTHS[n]];
   else
@@ -1228,6 +1233,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   fi;
 
   return cand[1];
+ od;
 end); 
 
 InstallMethod(GaloisType,"for polynomials",true,
