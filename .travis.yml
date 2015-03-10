@@ -18,7 +18,9 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq libgmp3-dev
 script:
-  - git clone --depth=50 https://github.com/gap-system/ward extern/ward
+  - cd extern
+  - tar xvzf ward.tar.gz
+  - cd ..
   - ./make.hpc WARD="extern/ward"
   - cd pkg
   - wget ftp://ftp.gap-system.org/pub/gap/gap47/tar.gz/packages/GAPDoc-1.5.1.tar.gz
