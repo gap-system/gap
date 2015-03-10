@@ -1,4 +1,4 @@
-# Contributing to GAP 
+# Contributing to GAP
 
 We invite everyone to contribute by submitting patches,
 pull requests, and bug reports. We would like to make the contributing
@@ -15,7 +15,7 @@ process as easy as possible.
   you start work to discuss your ideas.
 * You should be prepared to wait until your pull request or patch
   has been discussed and authorized prior to its inclusion. We might
-  also ask for you to adapt your changes to make them suitable for 
+  also ask for you to adapt your changes to make them suitable for
   inclusion.
 * To help increase the chance of your pull request being accepted:
   * Run the tests.
@@ -28,37 +28,45 @@ process as easy as possible.
   Please clean up any messes that you find, and don't
   leave behind new messes for the next contributor.
 
-## Making Changes 
+## Making Changes
 
-GAP development follows a straightforward branching model. We prefer using the github
-infrastructure. If you would like to contribute, but do not want to create a github
+GAP development follows a straightforward branching model. We prefer using the GitHub
+infrastructure. If you would like to contribute, but do not want to create a GitHub
 account, see below for an alternative.
 
- * Make sure you are familiar with [Git](http://git-scm.com/book).
+ * Make sure you are familiar with [Git](http://git-scm.com/book) - see the [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials/) for an excellent introduction to Git.
  * Make sure you have a [GitHub account](https://github.com/signup/free).
  * Make sure you are familiar with [GAP](http://www.gap-system.org/).
  * Fork our [main development repository](https://github.com/gap-system/gap) on github
- * Clone your fork to your local machine:
-
+ * Clone your fork to a chosen directory on your local machine using HTTPS:
 ```
-$ git clone git@github.com:<your github user name>/gap.git
+$ git clone https://github.com/<your github user name>/gap.git
+```
+This will create a folder called `gap` (in the location where you ran `git clone`) containing the source files, folders and the Git repository.  The clone automatically sets up a remote alias named `origin` pointing to your fork on GitHub, which you can verify with:
+```
+$ git remote -v
 ```
  * Add `gap-system/gap` as a remote upstream
 ```
-$ git remote add upstream git@github.com:gap-system/gap.git
+$ git remote add upstream https://github.com/gap-system/gap.git
 ```
  * Ensure your existing clone is up-to-date with current `HEAD` e.g.
 ```
 $ git fetch upstream
 $ git merge upstream/master
 ```
- * Create, and checkout onto, a topic branch on which to base you work.
-   * This is typically done from the master branch.
-   * For your own sanity, please avoid working on the `master` branch.
+ * Create, and checkout onto, a topic (or feature) branch on which to base your work.
+   * This is typically done from the local `master` branch.
+   * For your own sanity, please avoid working on the local `master` branch.
  ```
  $ git branch fix/master/my_contrib master
  $ git checkout fix/master/my_contrib
  ```
+  A shorter way of doing the above is
+ ```
+ $ git checkout -b fix/master/my_contrib master
+ ```
+ which creates the topic branch and checks out that branch immediately after.
  * Make commits of logical units.
  * Check for unnecessary whitespace with
 ```
@@ -92,22 +100,21 @@ $ make testall
 ```
 $ git push origin fix/master/my_contrib
 ```
- * Go to GitHub and submit a pull request to GAP
+ * Go to GitHub and submit a pull request to GAP.
 
 From there you will have to wait on one of the GAP committers to respond to the request.
-This response might be an accept or some changes/improvements/alternatives will be suggested.
-We do not guarantee that all requests will be accepted.
+This response might be an accept or some changes/improvements/alternatives will be suggested.  We do not guarantee that all requests will be accepted.
 
 ## Making changes without Github account
 
-If you do not want to open a github account you can still clone the GAP repository
+If you do not want to open a GitHub account you can still clone the GAP repository
 like so:
 ```
 git clone https://github.com/gap-system/gap.git
 ```
 
-Make your changes and commits, and use git's `send-email` feature to send us patches to
-gap@gap-system.org.
+Make your changes and commits, create a patch containing the commits you want to send, and use git's [`send-email` feature](http://git-scm.com/docs/git-send-email) to email the patch to
+gap@gap-system.org.  You can refer to [this tutorial](https://burzalodowa.wordpress.com/2013/10/05/how-to-send-patches-with-git-send-email/) on how to do this.
 
 ## Additional Resources
 
