@@ -232,24 +232,12 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  call them with arguments that have side effects.
 **
 **  The difference between ELM_LIST and ELMB_LIST is that ELMB_LIST accepts
-**  an object as the second argument (which should be a positive large integer.
+**  an object as the second argument
 **  It is intended as an interface for access to elements of large external
 **  lists, on the rare occasions when the kernel needs to do this.
 */
 #define ELM_LIST(list,pos)      ((*ElmListFuncs[TNUM_OBJ(list)])(list,pos))
 
-/****************************************************************************
-**
-*V  ElmbListFuncs[ <type> ]  . . . . . . . . . .  table of selection functions
-**
-**  A package implementing a  list  type <type> may  provide a  function for
-**  'ELMB_LIST' and install it  in 'ElmbListFuncs[<type>]'.  This function must
-**  signal an error if <pos> is larger than the length of <list> or if <list>
-**  has no assigned object at <pos>.
-
-extern Obj (*ElmbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
-
-*/
 
 /****************************************************************************
 **
@@ -265,7 +253,7 @@ extern Obj (*ElmbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
 **  call them with arguments that have side effects.
 **
 **  The difference between ELM_LIST and ELMB_LIST is that ELMB_LIST accepts
-**  an object as the second argument (which should be a positive large integer.
+**  an object as the second argument
 **  It is intended as an interface for access to elements of large external
 **  lists, on the rare occasions when the kernel needs to do this.
 */
@@ -465,10 +453,8 @@ extern  void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, O
 **  <list> if <pos> is larger than the length of  <list> and must also change
 **  the representation of <list> to that of a plain list if necessary.
 */
-#define ASSB_LIST(list,pos,obj) \
-                        ((*AssbListFuncs[TNUM_OBJ(list)])(list,pos,obj))
 
-extern  void            (*AssbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos, Obj obj );
+extern void ASSB_LIST(Obj list, Obj pos, Obj obj);
 
 
 /****************************************************************************

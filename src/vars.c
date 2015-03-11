@@ -1138,21 +1138,15 @@ UInt            ExecAssList (
     SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
-    /* evaluate and check the position                                     */
+    /* evaluate  the position                                     */
     pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 )) {
-        pos = ErrorReturnObj(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
-    }
 
     /* evaluate the right hand side                                        */
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
-    if (IS_INTOBJ(pos))
+    if (IS_INTOBJ(pos) && (p = INT_INTOBJ(pos)) > 0)
         {
-          p = INT_INTOBJ(pos);
+
           
           /* special case for plain list                                         */
           if ( TNUM_OBJ(list) == T_PLIST ) {
