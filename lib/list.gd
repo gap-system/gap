@@ -164,7 +164,7 @@ DeclareAttributeKernel( "Length", IsList, LENGTH );
 ##  <#/GAPDoc>
 ##
 DeclareOperationKernel( "IsBound[]",
-    [ IsList, IS_INT ],
+    [ IsList, IsObject ],
     ISB_LIST );
 
 
@@ -173,7 +173,7 @@ DeclareOperationKernel( "IsBound[]",
 #o  <list>[<pos>] . . . . . . . . . . . . . . . select an element from a list
 ##
 DeclareOperationKernel( "[]",
-    [ IsList, IS_INT ],
+    [ IsList, IsObject ],
     ELM_LIST );
 
 
@@ -234,7 +234,7 @@ DeclareOperationKernel( "Elm0List",
 ##  <#/GAPDoc>
 ##
 DeclareOperationKernel( "Unbind[]",
-    [ IsList and IsMutable, IS_INT ],
+    [ IsList and IsMutable, IsObject ],
     UNB_LIST );
 
 
