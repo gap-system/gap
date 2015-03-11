@@ -140,11 +140,7 @@ extern  Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 extern  Int             (*IsbvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-#define ISBB_LIST(list,pos) \
-                        ((*IsbbListFuncs[TNUM_OBJ(list)])(list,pos))
-
-extern  Int             (*IsbbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
-
+extern Int ISBB_LIST( Obj list, Obj pos );
 
 
 /****************************************************************************
@@ -221,6 +217,7 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 /****************************************************************************
 **
 *F  ELM_LIST( <list>, <pos> ) . . . . . . . . . select an element from a list
+*F  ELMB_LIST( <list>, <pos> ) . . . . . . . . . select an element from a list
 **
 **  'ELM_LIST' returns the element at the position  <pos> in the list <list>.
 **  An  error is signalled if  <list> is not a list,  if <pos> is larger than
@@ -238,29 +235,7 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 */
 #define ELM_LIST(list,pos)      ((*ElmListFuncs[TNUM_OBJ(list)])(list,pos))
 
-
-/****************************************************************************
-**
-*F  ELMB_LIST( <list>, <pos> ) . . . . . . . . . select an element from a list
-**
-**  'ELM_LIST' returns the element at the position  <pos> in the list <list>.
-**  An  error is signalled if  <list> is not a list,  if <pos> is larger than
-**  the length of <list>, or if <list>  has no assigned  object at <pos>.  It
-**  is the responsibility  of the caller to  ensure that <pos>  is a positive
-**  integer.
-**
-**  Note that 'ELM_LIST', 'ELMV_LIST', and  'ELMW_LIST' are macros, so do not
-**  call them with arguments that have side effects.
-**
-**  The difference between ELM_LIST and ELMB_LIST is that ELMB_LIST accepts
-**  an object as the second argument
-**  It is intended as an interface for access to elements of large external
-**  lists, on the rare occasions when the kernel needs to do this.
-*/
-extern Obj ELMB_LIST( Obj list, Obj pos);
-
-
-
+extern Obj ELMB_LIST( Obj list, Obj pos );
 
 
 /****************************************************************************
@@ -403,12 +378,10 @@ extern void ElmsListLevelCheck (
 
 extern void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-#define UNBB_LIST(list,pos) \
-                        ((*UnbbListFuncs[TNUM_OBJ(list)])(list,pos))
+extern void UNBB_LIST( Obj list, Obj pos );
 
-extern void             (*UnbbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
+extern void UnbListDefault( Obj list, Int  pos );
 
-extern void  UnbListDefault ( Obj list, Int  pos );
 
 /****************************************************************************
 **
@@ -434,27 +407,7 @@ extern void  UnbListDefault ( Obj list, Int  pos );
 
 extern  void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj );
 
-/****************************************************************************
-**
-*F  ASSB_LIST(<list>,<pos>,<obj>)  . . . . . . . . assign an element to a list
-*V  AssbListFuncs[<type>]  . . . . . . . . . . . table of assignment functions
-**
-**  'ASSB_LIST' assigns the object <obj> to the list <list> at position <pos>.
-**  Note that  the assignment may change  the length or the representation of
-**  <list>.  An error   is signalled if  <list>  is not a  list.    It is the
-**  responsibility of the caller to ensure that <pos>  is a positive integer,
-**  and that <obj> is not 0.
-**
-**  Note that 'ASSB_LIST' is a macro,  so do not  call it with arguments  that
-**  have side effects.
-**
-**  A package  implementing a list type  <type> must provide  such a function
-**  and   install it in  'AssbListFuncs[<type>]'.   This  function must extend
-**  <list> if <pos> is larger than the length of  <list> and must also change
-**  the representation of <list> to that of a plain list if necessary.
-*/
-
-extern void ASSB_LIST(Obj list, Obj pos, Obj obj);
+extern void ASSB_LIST( Obj list, Obj pos, Obj obj );
 
 
 /****************************************************************************
