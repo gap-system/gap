@@ -535,23 +535,6 @@ Obj FuncELM0_LIST (
 */
 Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-/****************************************************************************
-**
-*V  ElmbListFuncs[<type>]  . . . . . . . . . . .  table of selection functions
-**
-**  'ELMB_LIST' returns the element at the position  <pos> in the list <list>.
-**  An  error is signalled if  <list> is not a list,  if <pos> is larger than
-**  the length of <list>, or if <list>  has no assigned  object at <pos>.  It
-**  is the responsibility  of the caller to  ensure that <pos>  is a positive
-**  integer.
-**
-**  'ELMB_LIST' only calls the functions  pointed to by 'ElmbListFuncs[<type>]'
-**  passing <list> and <pos>  as arguments.  If  <type> is not  the type of a
-**  list, then 'ElmbListFuncs[<type>]' points to 'ElmbListError', which signals
-**  the error.
-*/
-Obj (*ElmbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
-
 
 /****************************************************************************
 **
@@ -617,67 +600,6 @@ Obj ElmListObject (
     return elm;
 }
 
-#if 0
-/****************************************************************************
-**
-*F  ElmbListError( <list>, <pos> ) . . . . . . . . . . . . . . . error message
-*/
-Obj ElmbListError (
-    Obj                 list,
-    Obj                 pos )
-{
-    list = ErrorReturnObj(
-        "List Element: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    return ELMB_LIST( list, pos );
-}
-
-/****************************************************************************
-**
-*F  ElmbListInternal( <list>, <pos> ) . . . . . . . . . . . . . error message
-*/
-Obj ElmbListInternal (
-    Obj                 list,
-    Obj                 pos )
-{
-  do {
-    pos = ErrorReturnObj(
-        "List Element: an internal list cannot have an element in such a position",
-        0L, 0L,
-        "you can supply a new position <pos> via 'return <pos>;'" );
-  } while (!IS_INTOBJ(pos) || INT_INTOBJ(pos) < 0);
-  return ELM_LIST( list, INT_INTOBJ(pos) );
-}
-
-
-/****************************************************************************
-**
-*F  ElmbListObject( <list>, <pos>  . . . . . . . select an element from a list
-**
-**  `ElmbListObject' is the `ELMB_LIST',  function
-**  for objects.   'ElmbListObjects' selects the  element at position <pos> of
-**  list  object <list>.   It is the  responsibility  of the caller to ensure
-**  that <pos> is a positive integer.  The methods have to signal an error if
-**  <pos> is larger than the length of <list> or if the entry is not bound.
-*/
-
-Obj ElmbListObject (
-    Obj                 list,
-    Obj                 pos )
-{
-    Obj                 elm;
-
-    elm = DoOperation2Args( ElmListOper, list, pos );
-    while ( elm == 0 ) {
-        elm = ErrorReturnObj(
-            "List access method must return a value", 0L, 0L,
-            "you can supply a value <val> via 'return <val>;'" );
-    }
-    return elm;
-}
-
-#endif
 
 Obj ELMB_LIST(Obj list, Obj pos)     {
    Obj                 elm;
@@ -1091,8 +1013,11 @@ Obj             FuncASS_LIST (
     Obj                 pos,
     Obj                 obj )
 {
+  if (IS_INTOBJ(pos)) 
     ASS_LIST( list, INT_INTOBJ(pos), obj );
-    return 0;
+  else
+    ASSB_LIST(list, pos, obj);
+  return 0;
 }
 
 void            AssListError (
@@ -1121,6 +1046,7 @@ void            AssListDefault (
 **
 *F  AssListObject( <list>, <pos>, <obj> ) . . . . . . . assign to list object
 */
+
 Obj AssListOper;
 
 void AssListObject (
@@ -1128,74 +1054,17 @@ void AssListObject (
     Int                 pos,
     Obj                 obj )
 {
-    DoOperation3Args( AssListOper, list, INTOBJ_INT(pos), obj );
-}
-/****************************************************************************
-**
-*F  ASSB_LIST(<list>,<pos>,<obj>)  . . . . . . . . assign an element to a list
-*V  AssbListFuncs[<type>]  . . . . . . . . . . . table of assignment functions
-*F  AssbListError(<list>,<pos>,<obj>)  . . . . . . . error assignment function
-**
-**  'ASSB_LIST' only calls the  function pointed to by 'AssbListFuncs[<type>]',
-**  passing <list>, <pos>, and <obj> as arguments.  If <type> is not the type
-**  of  a list, then 'AssbListFuncs[<type>]'  points to 'AssbListError',  which
-**  just signals an error.
-**
-**  'ASSB_LIST' is defined in the declaration part of this package as follows.
-**
-#define ASSB_LIST(list,pos,obj) \
-                        ((*AssbListFuncs[TNUM_OBJ(list)])(list,pos,obj))
-*/
-void            (*AssbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos, Obj obj );
-
-Obj             FuncASSB_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj                 pos,
-    Obj                 obj )
-{
-    ASSB_LIST( list, pos, obj );
-    return 0;
+  DoOperation3Args( AssListOper, list, INTOBJ_INT(pos), obj );
 }
 
-void            AssbListError (
-    Obj                 list,
-    Obj                 pos,
-    Obj                 obj )
-{
-    list = ErrorReturnObj(
-        "List Assignment: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    ASSB_LIST( list, pos, obj );
-}
-
-void            AssbListInternal (
-    Obj                 list,
-    Obj                 pos,
-    Obj                 obj )
-{
-  do {
-    pos = ErrorReturnObj( "List assignment: you cannot assign to such a large position in an internal list",
-                          0, 0, 
-                          "you can supply a new position <pos> via 'return <pos>;'" );
-  } while (!IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0);
-  ASS_LIST(list, INT_INTOBJ(pos), obj);
-}
-
-
-/****************************************************************************
-**
-*F  AssbListObject( <list>, <pos>, <obj> ) . . . . . . . assign to list object
-*/
-
-void AssbListObject (
+void ASSB_LIST (
     Obj                 list,
     Obj                 pos,
     Obj                 obj )
 {
     DoOperation3Args( AssListOper, list, pos, obj );
 }
+
 
 
 /****************************************************************************
@@ -2781,20 +2650,6 @@ static Int InitKernel (
     ElmvListFuncs[ T_SINGULAR ] = ElmListObject;
     ElmwListFuncs[ T_SINGULAR ] = ElmListObject;
 
-    /* make and install the 'ELMB_LIST' operation                           
-    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        ElmbListFuncs[  type ] = ElmbListError;
-    }
-
-    for (type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-      ElmbListFuncs[ type ] = ElmbListInternal;
-    }
-    
-    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
-        ElmbListFuncs[  type ] = ElmbListObject;
-    }
-
-    */
 
     /* make and install the 'ELMS_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2848,19 +2703,6 @@ static Int InitKernel (
     AssListFuncs[ T_SINGULAR ] = AssListObject;
 
 
-    /* make and install the 'ASSB_LIST' operation                           */
-    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        AssbListFuncs[  type ] = AssbListError;
-    }
-
-    for (type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-      AssbListFuncs[ type ] = AssbListInternal;
-    }
-    
-    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
-        AssbListFuncs[  type ] = AssbListObject;
-    }
-    AssbListFuncs[ T_SINGULAR ] = AssbListObject;
 
     /* make and install the 'ASSS_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {

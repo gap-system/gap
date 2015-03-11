@@ -3177,20 +3177,12 @@ void            IntrAssList ( void )
     /* get the right hand side                                             */
     rhs = PopObj();
 
-    /* get and check the position                                          */
+    /* get the position                                          */
     pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
-        ErrorQuit(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
-
     /* get the list (checking is done by 'ASS_LIST' or 'ASSB_LIST')         */
     list = PopObj();
 
-    if (IS_INTOBJ(pos)) {
-        p = INT_INTOBJ(pos);
-
+    if (IS_INTOBJ(pos) && (p = INT_INTOBJ(pos)) > 0) {
         /* assign to the element of the list                                   */
         ASS_LIST( list, p, rhs );
     } else
