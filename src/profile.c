@@ -133,7 +133,7 @@ void ProfileLineByLineIntoFunction(Obj func)
   {
     Obj n = NAME_FUNC(func);
     Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
-    fprintf(profileState.Stream, "I %s\n", s);
+    fprintf(profileState.Stream, "{\"Type\":\"I\",\"Fun\":\"%s\"}\n", s);
   }
 }
 
@@ -143,7 +143,7 @@ void ProfileLineByLineOutFunction(Obj func)
   {
     Obj n = NAME_FUNC(func);
     Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
-    fprintf(profileState.Stream, "O %s\n", s);
+    fprintf(profileState.Stream, "{\"Type\":\"O\",\"Fun\":\"%s\"}\n", s);
   }
 }
 
@@ -295,7 +295,7 @@ static inline void outputStat(Stat stat, int exec)
       ticks = 0;
 #endif
     
-    fprintf(profileState.Stream, "%c %d %d %s\n",
+    fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"File\":\"%s\"}\n",
             exec ? 'E' : 'R', ticks, line, name);
     profileState.lastOutputtedLine = line;
     profileState.lastOutputtedFileID = nameid;
