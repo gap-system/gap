@@ -266,12 +266,6 @@ function(d)
                    RightActingGroup(d),")"));
 end);
 
-#InstallMethod(PrintObj,"DoubleCoset",true,[IsDoubleCoset],0,
-#function(d)
-#  Print("DoubleCoset(",LeftActingGroup(d),",",Representative(d),",",
-#        RightActingGroup(d),")");
-#end);
-
 InstallMethod(Random,"double coset",true,[IsDoubleCoset],0,
 function(d)
   return Random(LeftActingGroup(d))*Representative(d)
