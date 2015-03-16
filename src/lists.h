@@ -237,6 +237,16 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 extern Obj ELMB_LIST( Obj list, Obj pos );
 
+/****************************************************************************
+**
+*F  ELM2_LIST( <list>, <pos1>, <pos2> ) . . . . select an element from a list
+*/
+
+extern Obj Elm2List(Obj list, Obj pos1, Obj pos2);
+
+#define ELM2_LIST(list, pos1, pos2) Elm2List(list, pos1, pos2)
+
+
 
 /****************************************************************************
 **

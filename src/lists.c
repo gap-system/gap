@@ -90,6 +90,15 @@ Int             IsListObject (
     return (DoFilter( IsListFilt, obj ) == True);
 }
 
+
+Obj Elm2List(Obj list, Obj pos1, Obj pos2) {
+  Obj ixs = NEW_PLIST(T_PLIST,2);
+  SET_ELM_PLIST(ixs,1,pos1);
+  SET_ELM_PLIST(ixs,2,pos2);
+  SET_LEN_PLIST(ixs,2);
+  return ELMB_LIST(list, ixs);
+}
+
 /****************************************************************************
 **
 *F  IS_SMALL_LIST(<obj>)  . . . . . . . . . . . . . . . . . . . is an object a list
