@@ -2459,14 +2459,19 @@ void CodeUnbList ( void )
 *F  CodeElmsListLevel( <level> )  .  code multiple selection of several lists
 */
 void CodeElmListUniv (
-    Expr                ref )
+		      Expr                ref,
+		      Int narg)
 {
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */
+    Int                i;
 
     /* enter the position expression                                       */
-    pos = PopExpr();
-    ADDR_EXPR(ref)[1] = pos;
+
+    for (i = narg; i > 0; i--) {
+      pos = PopExpr();
+      ADDR_EXPR(ref)[i] = pos;
+    }
 
     /* enter the list expression                                           */
     list = PopExpr();
@@ -2476,15 +2481,21 @@ void CodeElmListUniv (
     PushExpr( ref );
 }
 
-void CodeElmList ( void )
+void CodeElmList ( Int narg )
 {
     Expr                ref;            /* reference, result               */
 
-    /* allocate the reference                                              */
-    ref = NewExpr( T_ELM_LIST, 2 * sizeof(Expr) );
-
-    /* let 'CodeElmListUniv' to the rest                                   */
-    CodeElmListUniv( ref );
+      /* allocate the reference                                              */
+    if (narg == 1)
+      ref = NewExpr( T_ELM_LIST, 2 * sizeof(Expr) );
+    else if (narg == 2)
+      ref = NewExpr( T_ELM2_LIST, 3 * sizeof(Expr) );
+    else
+      ref = NewExpr( T_ELMX_LIST, (narg + 1) *sizeof(Expr));
+      
+      /* let 'CodeElmListUniv' to the rest                                   */
+    CodeElmListUniv( ref, narg );
+      
 }
 
 void CodeElmsList ( void )
@@ -2495,20 +2506,22 @@ void CodeElmsList ( void )
     ref = NewExpr( T_ELMS_LIST, 2 * sizeof(Expr) );
 
     /* let 'CodeElmListUniv' to the rest                                   */
-    CodeElmListUniv( ref );
+    CodeElmListUniv( ref, 1 );
 }
 
-void CodeElmListLevel (
+void CodeElmListLevel ( Int narg,
     UInt                level )
 {
     Expr                ref;            /* reference, result               */
 
     /* allocate the reference and enter the level                          */
+    if (narg != 1)
+      SyntaxError("Not supported");
     ref = NewExpr( T_ELM_LIST_LEV, 3 * sizeof(Expr) );
     ADDR_EXPR(ref)[2] = (Stat)level;
 
     /* let 'CodeElmListUniv' do the rest                                   */
-    CodeElmListUniv( ref );
+    CodeElmListUniv( ref, 1 );
 }
 
 void CodeElmsListLevel (
@@ -2521,7 +2534,7 @@ void CodeElmsListLevel (
     ADDR_EXPR(ref)[2] = (Stat)level;
 
     /* let 'CodeElmListUniv' do the rest                                   */
-    CodeElmListUniv( ref );
+    CodeElmListUniv( ref, 1 );
 }
 
 

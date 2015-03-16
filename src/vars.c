@@ -1403,6 +1403,72 @@ Obj             EvalElmList (
     return elm;
 }
 
+/****************************************************************************
+**
+*F  EvalElm2List(<expr>) . . . . . . . . . . . . select an element of a list
+**
+**  'EvalElm2List' evaluates the list  element expression  <expr> of the  form
+**  '<list>[<pos1>,<pos2>]'.
+*/
+Obj             EvalElm2List (
+    Expr                expr )
+{
+    Obj                 elm;            /* element, result                 */
+    Obj                 list;           /* list, left operand              */
+    Obj                 pos1;            /* position, right operand         */
+    Obj                 pos2;            /* position, right operand         */
+
+    /* evaluate the list (checking is done by 'ELM2_LIST')                  */
+    list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+
+    /* evaluate and check the positions                                     */
+    pos1 = EVAL_EXPR( ADDR_EXPR(expr)[1] ); 
+    pos2 = EVAL_EXPR( ADDR_EXPR(expr)[2] ); 
+   
+    elm = ELM2_LIST(list, pos1, pos2);
+
+
+    /* return the element                                                  */
+    return elm;
+}
+
+/****************************************************************************
+**
+*F  EvalElm2List(<expr>) . . . . . . . . . . . . select an element of a list
+**
+**  'EvalElm2List' evaluates the list  element expression  <expr> of the  form
+**  '<list>[<pos1>,<pos2>,<pos3>,....]'.
+*/
+Obj             EvalElmXList (
+    Expr                expr )
+{
+    Obj                 elm;            /* element, result                 */
+    Obj                 list;           /* list, left operand              */
+    Obj                 pos;            /* position, right operand         */
+    Obj ixs;
+    Int narg;
+    Int i;
+     
+
+    /* evaluate the list (checking is done by 'ELM2_LIST')                  */
+    list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+
+    /* evaluate and check the positions                                     */
+    narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
+    ixs = NEW_PLIST(T_PLIST,narg);
+    for (i = 1; i <= narg; i++) {
+      pos = EVAL_EXPR( ADDR_EXPR(expr)[i] );
+      SET_ELM_PLIST(ixs,i,pos);
+      CHANGED_BAG(ixs);
+    }
+    SET_LEN_PLIST(ixs,narg);
+   
+    elm = ELMB_LIST(list,ixs);
+
+    /* return the element                                                  */
+    return elm;
+}
+
 
 /****************************************************************************
 **
@@ -2948,6 +3014,9 @@ static Int InitKernel (
     InstallEvalExprFunc( T_ELM_LIST_LEV   , EvalElmListLevel);
     InstallEvalExprFunc( T_ELMS_LIST_LEV  , EvalElmsListLevel);
     InstallEvalExprFunc( T_ISB_LIST       , EvalIsbList);
+    InstallEvalExprFunc( T_ELM2_LIST      , EvalElm2List);
+    InstallEvalExprFunc( T_ELMX_LIST      , EvalElmXList);
+    
     InstallPrintStatFunc( T_ASS_LIST       , PrintAssList);
     InstallPrintStatFunc( T_ASSS_LIST      , PrintAsssList);
     InstallPrintStatFunc( T_ASS_LIST_LEV   , PrintAssList);
@@ -2958,6 +3027,7 @@ static Int InitKernel (
     InstallPrintExprFunc( T_ELM_LIST_LEV   , PrintElmList);
     InstallPrintExprFunc( T_ELMS_LIST_LEV  , PrintElmsList);
     InstallPrintExprFunc( T_ISB_LIST       , PrintIsbList);
+
 
     /* install executors, evaluators, and printers for record elements     */
     InstallExecStatFunc( T_ASS_REC_NAME   , ExecAssRecName);

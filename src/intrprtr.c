@@ -3342,34 +3342,59 @@ void            IntrUnbList ( void )
 *F  IntrElmListLevel(<level>) . . . . .  interpret selection of several lists
 *F  IntrElmsListLevel(<level>)  . .  intr multiple selection of several lists
 */
-void            IntrElmList ( void )
+void            IntrElmList ( Int narg )
 {
-    Obj                 elm;            /* element, result                 */
+  Obj                 elm = (Obj) 0;            /* element, result                 */
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
     Int                 p;              /* position, as C integer          */
+    Int                 i;
+    Obj                 ixs;
+    Obj                 pos1;
+    Obj                 pos2;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmList(); return; }
+    if ( IntrCoding    > 0 ) { CodeElmList( narg ); return; }
 
+    if (narg <= 0)
+      SyntaxError("This should never happen");
 
-
-    /* get  the position                                                   */
-    pos = PopObj();
-    /* get the list (checking is done by 'ELM_LIST')                       */
-    list = PopObj();
-
-
-    if ( ! IS_INTOBJ(pos)  || (p = INT_INTOBJ(pos)) <= 0) {
+    if (narg == 1) {
+      /* get  the position                                                   */
+      pos = PopObj();
+      /* get the list (checking is done by 'ELM_LIST')                       */
+      list = PopObj();
+      
+      
+      if ( ! IS_INTOBJ(pos)  || (p = INT_INTOBJ(pos)) <= 0) {
         /* This mostly dispatches to the library */
         elm = ELMB_LIST( list, pos);
-    } else {
+      } else {
         /* get the element of the list                                         */
         elm = ELM_LIST( list, p );
+      }
     }
-
+    if (narg == 2) {
+      pos2 = PopObj();
+      pos1 = PopObj();
+      list = PopObj();
+      /* leave open space for a fastpath for 2 */
+      elm = ELM2_LIST(list, pos1, pos2);
+    }
+    
+    if (narg > 2) {
+      ixs = NEW_PLIST(T_PLIST,narg);
+      for (i = narg; i > 0; i--) {
+	SET_ELM_PLIST(ixs,i,PopObj());
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      list = PopObj();
+      elm = ELMB_LIST(list, ixs);
+    }
+      
     /* push the element                                                    */
     PushObj( elm );
 }
@@ -3404,7 +3429,7 @@ void            IntrElmsList ( void )
     PushObj( elms );
 }
 
-void            IntrElmListLevel (
+void            IntrElmListLevel ( Int narg,
     UInt                level )
 {
     Obj                 lists;          /* lists, left operand             */
@@ -3413,7 +3438,7 @@ void            IntrElmListLevel (
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmListLevel( level ); return; }
+    if ( IntrCoding    > 0 ) { CodeElmListLevel( narg, level ); return; }
 
 
     /* get and check the position                                          */
