@@ -677,6 +677,14 @@ BIND_GLOBAL( "SetTypeObj", function ( type, obj )
     return obj;
 end );
 
+
+BIND_GLOBAL( "IsNonAtomicComponentObjectRepFlags", 
+        FLAGS_FILTER(IsNonAtomicComponentObjectRep));
+BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags", 
+        FLAGS_FILTER(IsAtomicPositionalObjectRep));
+BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags", 
+        FLAGS_FILTER(IsReadOnlyPositionalObjectRep));
+
 BIND_GLOBAL( "Objectify", SetTypeObj );
 
 
