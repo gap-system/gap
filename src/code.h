@@ -387,7 +387,10 @@ Obj FILENAME_STAT(Stat stat);
 #define T_FLOAT_EXPR_EAGER      (FIRST_EXPR_TNUM+82)
 #define T_FLOAT_EXPR_LAZY       (FIRST_EXPR_TNUM+83)
 
-#define LAST_EXPR_TNUM          T_FLOAT_EXPR_LAZY
+#define T_ELM2_LIST             (FIRST_EXPR_TNUM+84)
+#define T_ELMX_LIST             (FIRST_EXPR_TNUM+85)
+
+#define LAST_EXPR_TNUM          T_ELMX_LIST
 
 
 /****************************************************************************
@@ -1173,12 +1176,13 @@ extern  void            CodeUnbList ( void );
 *F  CodeElmListLevel(<level>) . . . . . . . . code selection of several lists
 *F  CodeElmsListLevel(<level>)  . .  code multiple selection of several lists
 */
-extern  void            CodeElmList ( void );
+extern  void            CodeElmList ( Int narg );
 
 extern  void            CodeElmsList ( void );
 
 extern  void            CodeElmListLevel (
-            UInt                level );
+					  Int narg,
+					  UInt level);
 
 extern  void            CodeElmsListLevel (
             UInt                level );

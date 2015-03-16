@@ -773,11 +773,11 @@ extern  void            IntrUnbList ( void );
 *F  IntrElmListLevel(<level>) . . . . .  interpret selection of several lists
 *F  IntrElmsListLevel(<level>)  . .  intr multiple selection of several lists
 */
-extern  void            IntrElmList ( void );
+extern  void            IntrElmList ( Int narg);
 
 extern  void            IntrElmsList ( void );
 
-extern  void            IntrElmListLevel (
+extern  void            IntrElmListLevel ( Int narg,
             UInt                level );
 
 extern  void            IntrElmsListLevel (
