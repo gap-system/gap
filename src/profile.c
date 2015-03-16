@@ -279,24 +279,30 @@ static inline void outputStat(Stat stat, int exec)
   struct rusage buf;
 #endif
     
-  name = CSTR_STRING(FILENAME_STAT(stat));
   nameid = FILENAMEID_STAT(stat);
   line = LINE_STAT(stat);
   if(profileState.lastOutputtedLine != line ||
      profileState.lastOutputtedFileID != nameid || 
      profileState.lastOutputtedExec != exec)
   {
+    name = CSTR_STRING(FILENAME_STAT(stat));
+
+    if(profileState.OutputRepeats) {
 #ifdef HAVE_GETRUSAGE
-    getrusage( RUSAGE_SELF, &buf );
-    ticks = (buf.ru_utime.tv_sec - profileState.lastOutputtedTime.tv_sec) * 1000000 +
-            (buf.ru_utime.tv_usec - profileState.lastOutputtedTime.tv_usec);
-    // Basic sanity check:
-    if(ticks < 0)
-      ticks = 0;
+      getrusage( RUSAGE_SELF, &buf );
+      ticks = (buf.ru_utime.tv_sec - profileState.lastOutputtedTime.tv_sec) * 1000000 +
+              (buf.ru_utime.tv_usec - profileState.lastOutputtedTime.tv_usec);
+      // Basic sanity check:
+      if(ticks < 0)
+        ticks = 0;
 #endif
-    
-    fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"File\":\"%s\"}\n",
-            exec ? 'E' : 'R', ticks, line, name);
+      fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"File\":\"%s\"}\n",
+              exec ? 'E' : 'R', ticks, line, name);
+    }
+    else {
+      fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Line\":%d,\"File\":\"%s\"}\n",
+              exec ? 'E' : 'R', line, name);
+    }
     profileState.lastOutputtedLine = line;
     profileState.lastOutputtedFileID = nameid;
     profileState.lastOutputtedExec = exec;
