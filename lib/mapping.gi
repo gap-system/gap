@@ -30,8 +30,9 @@ InstallMethod( FamiliesOfGeneralMappingsAndRanges,
     "for a family (return empty list)",
     true,
     [ IsFamily ], 0,
-    Fam -> WeakPointerObj( [] ) );
-
+    function(fam)
+  return LockAndMigrateObj(WeakPointerObj( [] ), GENERAL_MAPPING_REGION);
+end);
 
 #############################################################################
 ##
@@ -41,6 +42,7 @@ InstallGlobalFunction( GeneralMappingsFamily, function( FS, FR )
 
     local info, i, len, entry, Fam,first,test;
 
+  atomic readwrite GENERAL_MAPPING_REGION do
     # Check whether this family was already constructed.
     info:= FamiliesOfGeneralMappingsAndRanges( FS );
     len:= LengthWPObj( info );
@@ -89,6 +91,7 @@ InstallGlobalFunction( GeneralMappingsFamily, function( FS, FR )
 
     # Return the family.
     return Fam;
+  od;
 end );
 
 
