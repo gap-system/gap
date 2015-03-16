@@ -5,7 +5,7 @@ MPI_GC=boehm
 GCBLKSIZE=8192
 GCMAXTHREADS=
 WARD=../ward
-SCONS=bin/scons
+SCONS=bin/run-python bin/scons
 CFLAGS=
 DEBUG=debugguards=1 cflags=-"DTRACK_CREATOR $(CFLAGS)"
 ZMQ=yes
