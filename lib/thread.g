@@ -23,8 +23,8 @@ DeclareFilter("IsBarrier", IsObject and IsInternalRep);
 DeclareFilter("IsSyncVar", IsObject and IsInternalRep);
 DeclareFilter("IsRegion", IsObject and IsInternalRep);
 DeclareFilter("IsAtomicList", IsList and IsInternalRep);
-DeclareFilter("IsAtomicRecord", IsObject and IsInternalRep);
-DeclareFilter("IsThreadLocalRecord", IsObject and IsInternalRep);
+DeclareFilter("IsAtomicRecord", IsRecord and IsInternalRep);
+DeclareFilter("IsThreadLocalRecord", IsRecord and IsInternalRep);
 
 BindGlobal("TYPE_THREAD", NewType(ThreadFamily, IsThread));
 BindGlobal("TYPE_SEMAPHORE", NewType(SynchronizationFamily, IsSemaphore));
