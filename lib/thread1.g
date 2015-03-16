@@ -12,6 +12,8 @@
 
 
 AtomicList := function(l) return l; end;
+FixedAtomicList := function(l) return l; end;
+MakeWriteOnceAtomic := function(obj) return obj; end;
 AtomicRecord := function(r) return r; end;
 
 # Convenience aliases
