@@ -81,12 +81,6 @@ BindGlobal("NewInterruptID", function()
   od;
 end);
 
-DeclareAttribute( "RecNames", IsAtomicRecord);
-InstallMethod( RecNames,
-    "for an atomic record in internal representation",
-    [ IsAtomicRecord and IsInternalRep],
-    REC_NAMES );
-
 if IsBound(ZmqSocket) then
   ReadLib("zmq.g");
 fi;
