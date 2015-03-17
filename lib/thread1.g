@@ -273,5 +273,10 @@ BIND_GLOBAL("THREAD_INIT", function()
 end);
 
 MakeThreadLocal("~");
+MakeThreadLocal("last");
+MakeThreadLocal("last2");
+MakeThreadLocal("last3");
+MakeThreadLocal("time");
+
 
 HaveMultiThreadedUI := false;
