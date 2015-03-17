@@ -203,6 +203,9 @@
 ##  <#/GAPDoc>
 ##
 
+## Shared region for storing results of FamiliesOfGeneralMappingsAndRanges
+BindGlobal("GENERAL_MAPPING_REGION",
+        NewLibraryRegion("FamiliesOfGeneralMappingsAndRanges region"));
 
 #############################################################################
 ##
