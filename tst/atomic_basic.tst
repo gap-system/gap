@@ -57,4 +57,23 @@ function ( x )
     od;
     return;
 end
+gap> h3 := atomic function(x) end;;
+gap> # We do not preserve atomic functions in non-HPC gap, just want them to parse
+gap> Print(h3, "\n");
+function ( x )
+    return;
+end
+gap> h4 := atomic function(readwrite x, readonly y, z) end;;
+gap> Print(h4, "\n");
+function ( x, y, z )
+    return;
+end
+gap> h5 := function(readwrite x, readonly y, z) end;;
+Syntax error: 'readwrite' argument of non-atomic function in stream line 1
+h5 := function(readwrite x, readonly y, z) end;;
+                       ^
+gap> h5 := function(readonly x, readonly y, z) end;;
+Syntax error: 'readonly' argument of non-atomic function in stream line 1
+h5 := function(readonly x, readonly y, z) end;;
+                      ^
 gap> STOP_TEST("atomic_basic.tst", 100000);
