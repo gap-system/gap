@@ -965,7 +965,7 @@ function( efam, gens, orders )
     # construct a single collector as list object
     sc := [];
 
-    # we need the the family
+    # we need the family
     sc[SCP_UNDERLYING_FAMILY] := efam;
 
     # and the relative orders
@@ -1173,7 +1173,7 @@ ShallowCopy_SingleCollector := function( sc )
     # construct new single collector as list object
     copy := [];
 
-    # we need the the family
+    # we need the family
     copy[SCP_UNDERLYING_FAMILY] := sc![SCP_UNDERLYING_FAMILY];
 
     # and the relative orders

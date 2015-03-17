@@ -1164,7 +1164,7 @@ Obj NewFunctionT (
         HDLR_FUNC(func,7) = hdlr;
     }
 
-    /* enter the the arguments and the names                               */
+    /* enter the arguments and the names                               */
     NAME_FUNC(func) = name;
     NARG_FUNC(func) = narg;
     NAMS_FUNC(func) = nams;
