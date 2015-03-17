@@ -322,9 +322,9 @@ Obj Shell ( Obj context,
 
       /* remember the value in 'last'    */
       if (lastDepth >= 3)
-        AssGVar( Last3, ValGVar( Last2 ) );
+        AssGVar( Last3, ValGVarTL( Last2 ) );
       if (lastDepth >= 2)
-        AssGVar( Last2, ValGVar( Last  ) );
+        AssGVar( Last2, ValGVarTL( Last  ) );
       if (lastDepth >= 1)
         AssGVar( Last,  TLS->readEvalResult   );
 
