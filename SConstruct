@@ -494,7 +494,7 @@ source = filter(lambda s: not s.startswith("src/c_"), source)
 if "src/dbgmacro.c" not in source:
   source.append("src/dbgmacro.c")
 GAP.Command("src/dbgmacro.c", "etc/dbgmacro.py",
-  "python $SOURCE > $TARGET")
+  "bin/run-python $SOURCE > $TARGET")
 
 # If we're not using MPI, don't use the MPI code.
 if not GAP["mpi"]:
