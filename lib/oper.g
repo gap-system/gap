@@ -875,9 +875,9 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "ATTRIBUTES", [] );
+BIND_GLOBAL( "ATTRIBUTES", MakeStrictWriteOnceAtomic([]) );
 
-BIND_GLOBAL( "ATTR_FUNCS", [] );
+BIND_GLOBAL( "ATTR_FUNCS", MakeStrictWriteOnceAtomic([]) );
 
 BIND_GLOBAL( "InstallAttributeFunction", function ( func )
     local   attr;
@@ -894,7 +894,7 @@ BIND_GLOBAL( "RUN_ATTR_FUNCS",
     for func in ATTR_FUNCS do
         func( name, filter, getter, setter, tester, mutflag );
     od;
-    ADD_LIST( ATTRIBUTES, [ name, filter, getter, setter, tester, mutflag ] );
+    ADD_LIST( ATTRIBUTES, `[ name, filter, getter, setter, tester, mutflag ] );
 end );
 
 
