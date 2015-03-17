@@ -1661,13 +1661,17 @@ Obj FuncPOS_LIST_DEFAULT (
 */
 void            ElmListLevel (
     Obj                 lists,
-    Obj                 pos,
+    Obj                 ixs,
     Int                 level )
 {
     Int                 len;            /* length of <lists>               */
     Obj                 list;           /* one list from <lists>           */
     Obj                 elm;            /* selected element from <list>    */
     Int                 i;              /* loop variable                   */
+    Obj pos;
+    Obj pos1;
+    Obj pos2;
+      
 
     /* if <level> is one, perform the replacements                         */
     if ( level == 1 ) {
@@ -1680,10 +1684,25 @@ void            ElmListLevel (
             list = ELM_PLIST( lists, i );
 
             /* select the element                                          */
-            if (IS_INTOBJ(pos))
-              elm = ELM_LIST( list, INT_INTOBJ(pos) );
-            else
-              elm = ELMB_LIST(list, pos);
+	    switch(LEN_PLIST(ixs)) {
+	    case 1:
+	      pos = ELM_PLIST(ixs,1);
+	      if (IS_INTOBJ(pos))
+		elm = ELM_LIST( list, INT_INTOBJ(pos) );
+	      else
+		elm = ELMB_LIST(list, pos);
+	      break;
+	      
+	    case 2:
+	      pos1 = ELM_PLIST(ixs,1);
+	      pos2 = ELM_PLIST(ixs,2);
+	      elm = ELM2_LIST(list, pos1, pos2);
+	      break;
+
+	    default:
+	      elm = ELMB_LIST(list, ixs);
+	      
+	    }
 
             /* replace the list with the element                           */
             SET_ELM_PLIST( lists, i, elm );
@@ -1707,7 +1726,7 @@ void            ElmListLevel (
             list = ELM_PLIST( lists, i );
 
             /* recurse                                                     */
-            ElmListLevel( list, pos, level-1 );
+            ElmListLevel( list, ixs, level-1 );
 
         }
 
