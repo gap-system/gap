@@ -59,7 +59,7 @@ extern Obj SFail;
 **  where the kernel cannot handle a null reference easily. This object is
 **  never exposed to GAP code and only used within the kernel.
 */
-Obj Undefined;
+extern Obj Undefined;
 
 
 /****************************************************************************
