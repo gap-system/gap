@@ -1695,6 +1695,35 @@ void            PrintElmList (
     Pr("%<]",0L,0L);
 }
 
+void PrintElm2List (
+		     Expr expr )
+{
+    Pr("%2>",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[0] );
+    Pr("%<[",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[1] );
+    Pr("%<, %<",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[2] );
+    Pr("%<]",0L,0L);
+}
+
+void PrintElmXList (
+		     Expr expr )
+{
+  Int i;
+  Int narg = SIZE_EXPR(expr)/sizeof(Expr) -1 ;
+    Pr("%2>",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[0] );
+    Pr("%<[",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[1] );
+    for (i = 2; i <= narg; i++) {
+      Pr("%<, %<",0L,0L);
+      PrintExpr( ADDR_EXPR(expr)[2] );
+    }
+    Pr("%<]",0L,0L);
+}
+
+
 void            PrintIsbList (
     Expr                expr )
 {
@@ -3016,6 +3045,8 @@ static Int InitKernel (
     InstallEvalExprFunc( T_ISB_LIST       , EvalIsbList);
     InstallEvalExprFunc( T_ELM2_LIST      , EvalElm2List);
     InstallEvalExprFunc( T_ELMX_LIST      , EvalElmXList);
+    InstallPrintExprFunc( T_ELM2_LIST     , PrintElm2List);
+    InstallPrintExprFunc( T_ELMX_LIST     , PrintElmXList);
     
     InstallPrintStatFunc( T_ASS_LIST       , PrintAssList);
     InstallPrintStatFunc( T_ASSS_LIST      , PrintAsssList);
