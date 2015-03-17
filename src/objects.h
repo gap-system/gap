@@ -238,6 +238,19 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define IS_FFE(o)               \
                         ((Int)(o) & 0x02)
 
+/**************************************************************************
+ * **
+ * **
+ * *F  RegisterPackageTNUM( <name>, <typeObjFunc> )
+ * **
+ * **  Allocates a TNUM for use by a package. The parameters <name> and
+ * **  <typeObjFunc> are used to initialize the relevant entries in the
+ * **  InfoBags and TypeObjFuncs arrays.
+ * **
+ * **  If allocation fails (e.g. because no more TNUMs are available),
+ * **  a negative value is returned.
+ * */
+Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
@@ -369,7 +382,11 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define FIRST_SHARED_TNUM	(T_WPOBJ+1)
 #define T_APOSOBJ 		(FIRST_SHARED_TNUM+ 0)
 #define T_ACOMOBJ 		(FIRST_SHARED_TNUM+ 1)
-#define LAST_EXTERNAL_TNUM      T_ACOMOBJ
+
+#define FIRST_PACKAGE_TNUM      T_ACOMOBJ
+#define LAST_PACKAGE_TNUM       (FIRST_PACKAGE_TNUM+49)
+
+#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
 
 /* Primitive types */
 #define T_THREAD		(FIRST_SHARED_TNUM+ 2)
