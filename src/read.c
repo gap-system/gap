@@ -1149,12 +1149,18 @@ void ReadFuncExpr (
 	    lockmode = 0;
 	    switch (TLS->symbol) {
 	      case S_READWRITE:
-	        if (!is_atomic)
+	        if (!is_atomic) {
 		  SyntaxError("'readwrite' argument of non-atomic function");
+                  GetSymbol();
+                  break;
+                }
 	        lockmode++;
 	      case S_READONLY:
-	        if (!is_atomic)
+	        if (!is_atomic) {
 		  SyntaxError("'readonly' argument of non-atomic function");
+                  GetSymbol();
+                  break;
+                }
 	        lockmode++;
 		CHARS_STRING(locks)[0] = lockmode;
 		SET_LEN_STRING(locks, 1);
@@ -1171,12 +1177,18 @@ void ReadFuncExpr (
 	    lockmode = 0;
 	    switch (TLS->symbol) {
 	      case S_READWRITE:
-	        if (!is_atomic)
+	        if (!is_atomic) {
 		  SyntaxError("'readwrite' argument of non-atomic function");
+                  GetSymbol();
+                  break;
+                }
 	        lockmode++;
 	      case S_READONLY:
-	        if (!is_atomic)
+	        if (!is_atomic) {
 		  SyntaxError("'readonly' argument of non-atomic function");
+                  GetSymbol();
+                  break;
+                }
 	        lockmode++;
 		GrowString(locks, narg+1);
 		SET_LEN_STRING(locks, narg+1);
