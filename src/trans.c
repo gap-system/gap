@@ -49,7 +49,9 @@ Obj IdentityTrans;
 *******************************************************************************/
 
 static inline void ResizeTmpTrans( UInt len ){
-  if(SIZE_OBJ(TmpTrans)<len*sizeof(UInt4)){
+  if (TmpTrans == (Obj)0) {
+    TmpTrans = NewBag(T_TRANS4, len*sizeof(UInt4));
+  } else if(SIZE_OBJ(TmpTrans)<len*sizeof(UInt4)) {
     ResizeBag(TmpTrans,len*sizeof(UInt4));
   }
 }
