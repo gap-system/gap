@@ -383,11 +383,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_APOSOBJ 		(FIRST_SHARED_TNUM+ 0)
 #define T_ACOMOBJ 		(FIRST_SHARED_TNUM+ 1)
 
-#define FIRST_PACKAGE_TNUM      T_ACOMOBJ
-#define LAST_PACKAGE_TNUM       (FIRST_PACKAGE_TNUM+49)
-
-#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
-
 /* Primitive types */
 #define T_THREAD		(FIRST_SHARED_TNUM+ 2)
 #define T_MUTEX			(FIRST_SHARED_TNUM+ 3)
@@ -407,7 +402,12 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_AREC_INNER 		(FIRST_SHARED_TNUM+ 16)
 #define T_TLREC 		(FIRST_SHARED_TNUM+ 17)
 #define T_TLREC_INNER 		(FIRST_SHARED_TNUM+ 18)
-#define LAST_SHARED_TNUM	(T_TLREC_INNER)
+
+#define FIRST_PACKAGE_TNUM      (T_TLREC_INNER+1)
+#define LAST_PACKAGE_TNUM       (FIRST_PACKAGE_TNUM+29)
+#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
+
+#define LAST_SHARED_TNUM	(LAST_EXTERNAL_TNUM)
 
 #define LAST_REAL_TNUM          LAST_SHARED_TNUM
 #define LAST_VIRTUAL_TNUM 	LAST_SHARED_TNUM
