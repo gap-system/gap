@@ -125,6 +125,7 @@ struct ProfileState
   struct timeval lastOutputtedTime;
 #endif
   
+  int minimumProfileTick;
 } profileState;
 
 void ProfileLineByLineIntoFunction(Obj func)
@@ -133,7 +134,7 @@ void ProfileLineByLineIntoFunction(Obj func)
   {
     Obj n = NAME_FUNC(func);
     Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
-    fprintf(profileState.Stream, "I %s\n", s);
+    fprintf(profileState.Stream, "{\"Type\":\"I\",\"Fun\":\"%s\"}\n", s);
   }
 }
 
@@ -143,7 +144,7 @@ void ProfileLineByLineOutFunction(Obj func)
   {
     Obj n = NAME_FUNC(func);
     Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
-    fprintf(profileState.Stream, "O %s\n", s);
+    fprintf(profileState.Stream, "{\"Type\":\"O\",\"Fun\":\"%s\"}\n", s);
   }
 }
 
@@ -267,8 +268,9 @@ void InstallPrintExprFunc(Int pos, void(*expr)(Expr)) {
 */
 
 
-
-static inline void outputStat(Stat stat, int exec)
+// exec : are we executing this statement
+// visit: Was this statement previously visited (that is, executed)
+static inline void outputStat(Stat stat, int exec, int visited)
 {
   char* name;
   int line;
@@ -279,30 +281,40 @@ static inline void outputStat(Stat stat, int exec)
   struct rusage buf;
 #endif
     
-  name = CSTR_STRING(FILENAME_STAT(stat));
   nameid = FILENAMEID_STAT(stat);
   line = LINE_STAT(stat);
   if(profileState.lastOutputtedLine != line ||
      profileState.lastOutputtedFileID != nameid || 
      profileState.lastOutputtedExec != exec)
   {
+    name = CSTR_STRING(FILENAME_STAT(stat));
+
+    if(profileState.OutputRepeats) {
 #ifdef HAVE_GETRUSAGE
-    getrusage( RUSAGE_SELF, &buf );
-    ticks = (buf.ru_utime.tv_sec - profileState.lastOutputtedTime.tv_sec) * 1000000 +
-            (buf.ru_utime.tv_usec - profileState.lastOutputtedTime.tv_usec);
-    // Basic sanity check:
-    if(ticks < 0)
-      ticks = 0;
+      getrusage( RUSAGE_SELF, &buf );
+      ticks = (buf.ru_utime.tv_sec - profileState.lastOutputtedTime.tv_sec) * 1000000 +
+              (buf.ru_utime.tv_usec - profileState.lastOutputtedTime.tv_usec);
+      // Basic sanity check, and also don't output statements which we have already outputted
+      // if no more ticks occurred
+      if(ticks < 0)
+        ticks = 0;
 #endif
-    
-    fprintf(profileState.Stream, "%c %d %d %s\n",
-            exec ? 'E' : 'R', ticks, line, name);
+      if(ticks > profileState.minimumProfileTick || (!visited)) {
+        fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"File\":\"%s\"}\n",
+                exec ? 'E' : 'R', ticks, line, name);
+#ifdef HAVE_GETRUSAGE
+        profileState.lastOutputtedTime = buf.ru_utime;
+#endif
+      }
+    }
+    else {
+      fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Line\":%d,\"File\":\"%s\"}\n",
+              exec ? 'E' : 'R', line, name);
+    }
     profileState.lastOutputtedLine = line;
     profileState.lastOutputtedFileID = nameid;
     profileState.lastOutputtedExec = exec;
-#ifdef HAVE_GETRUSAGE
-    profileState.lastOutputtedTime = buf.ru_utime;
-#endif
+
   }
 }
 
@@ -315,7 +327,7 @@ static inline void visitStat(Stat stat)
   }
   
   if(profileState.OutputRepeats || !visited) {
-    outputStat(stat, 1);
+    outputStat(stat, 1, visited);
   }
 }
 
@@ -440,7 +452,7 @@ Obj FuncACTIVATE_PROFILING (
     else {
       profileState.OutputRepeats = 0;
     }
-    
+  
     fopenMaybeCompressed(CSTR_STRING(filename), CSTR_STRING(mode), &profileState);
     
     if(profileState.Stream == 0)
@@ -482,6 +494,23 @@ Obj FuncDEACTIVATE_PROFILING (
 
   profileState.Active = 0;
   return True;
+}
+
+Obj FuncMINIMUM_PROFILE_TICK(
+  Obj self,
+  Obj ticksize)
+{
+  (void)self;
+  int tick;
+  if(!IS_INTOBJ(ticksize)) {
+    return Fail;
+  }
+  tick = INT_INTOBJ(ticksize);
+  if(tick < 0) {
+    return Fail;
+  }
+  profileState.minimumProfileTick = tick;
+  return True; 
 }
 
 
@@ -610,7 +639,7 @@ Obj FuncACTIVATE_COLOR_PROFILING(Obj self, Obj arg)
 void RegisterStatWithProfiling(Stat stat)
 {
     if(profileState.Active) {
-      outputStat(stat, 0);
+      outputStat(stat, 0, 0);
     }
 }
 
@@ -633,6 +662,8 @@ static StructGVarFunc GVarFuncs [] = {
       FuncDEACTIVATE_PROFILING, "src/profile.c:DEACTIVATE_PROFILING" },
     { "ACTIVATE_COLOR_PROFILING", 1, "bool",
         FuncACTIVATE_COLOR_PROFILING, "src/profile.c:ACTIVATE_COLOR_PROFILING" },
+    { "MINIMUM_PROFILE_TICK", 1, "int",
+        FuncMINIMUM_PROFILE_TICK, "src/profile.c:FuncMINIMUM_PROFILE_TICK" },
     { 0 }
 };
 
