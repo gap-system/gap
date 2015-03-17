@@ -17,7 +17,7 @@ tried to changed one of the entries to a value from a larger extension
 field, this resulted in an error. (This is now fixed).
 
 Unfortunately, the C code catching this error had a bug and allowed
-users to type "return" to continue while ignoring the the conversion
+users to type "return" to continue while ignoring the conversion
 error. This was a bad idea, as the C code would be in an inconsistent
 state at this point, subsequently leading to a crash.
 

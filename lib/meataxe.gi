@@ -3347,7 +3347,7 @@ SMTX_SpanOfMinimalSubGModules:=function (m1, m2)
    if Length(homs) = 1 then
      return homs[1];
    fi;
-   #The span of the the images of homs is what we want!
+   #The span of the images of homs is what we want!
    mat:=homs[1];
    for i in [2..Length(homs)] do
      mat:=Concatenation(mat,homs[i]);

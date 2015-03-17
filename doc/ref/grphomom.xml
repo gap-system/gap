@@ -335,7 +335,7 @@ For this mechanism to work, of course there must be effective methods to
 evaluate the <Ref Func="NiceMonomorphism"/> value on elements and to take
 preimages under it.
 As by definition no good algorithms exist for the source group,
-normally this can only be achieved by using the the result of a call to
+normally this can only be achieved by using the result of a call to
 <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>
 or <Ref Func="GroupHomomorphismByFunction" Label="by function (and inverse function) between two domains"/>
 (see also section&nbsp;<Ref Sect="Efficiency of Homomorphisms"/>).

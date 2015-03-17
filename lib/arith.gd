@@ -18,7 +18,7 @@
 ##  Note that the arithmetical operations are usually only partial functions.
 ##  This  means that  a  multiplicative  element is  simply an  element whose
 ##  family allows a multiplication of *some* of its  elements.  It does *not*
-##  mean that the the product of *any* two elements in the family is defined,
+##  mean that the product of *any* two elements in the family is defined,
 ##
 
 
