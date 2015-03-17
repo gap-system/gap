@@ -556,34 +556,6 @@ void InitSweepFuncBags (
 #endif
 }
 
-/****************************************************************************
-**
-*F  InitFinalizerFuncBags(<type>,<finalizer-func>)  . . . . install finalizer
-*/
-
-FinalizerFunction TabFinalizerFuncBags [ NTYPES ];
-
-void InitFinalizerFuncBags(
-    UInt		type,
-    FinalizerFunction   finalizer_func)
-{
-  TabFinalizerFuncBags[type] = finalizer_func;
-}
-
-#ifndef WARD_ENABLED
-
-void StandardFinalizer( void * bagContents, void * data )
-{
-  Bag bag;
-  void *bagContents2;
-  bagContents2 = ((char *) bagContents) + HEADER_SIZE * sizeof (Bag *);
-  bag = (Bag) &bagContents2;
-  TabFinalizerFuncBags[TNUM_BAG(bag)](bag);
-}
-
-#endif
-
-
 #if ITANIUM
 extern void * ItaniumRegisterStackTop();
 
@@ -1063,7 +1035,6 @@ void FinishedRestoringBags( void )
 }
 
 
-#ifndef BOEHM_GC
 /****************************************************************************
 **
 *F  InitFreeFuncBag(<type>,<free-func>) . . . . . .  install freeing function
@@ -1086,7 +1057,21 @@ void            InitFreeFuncBag (
     }
     TabFreeFuncBags[type] = free_func;
 }
+
+#ifndef WARD_ENABLED
+
+void StandardFinalizer( void * bagContents, void * data )
+{
+  Bag bag;
+  void *bagContents2;
+  bagContents2 = ((char *) bagContents) + HEADER_SIZE * sizeof (Bag *);
+  bag = (Bag) &bagContents2;
+  TabFreeFuncBags[TNUM_BAG(bag)](bag);
+}
+
 #endif
+
+
 
 
 /****************************************************************************
@@ -1392,7 +1377,7 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
       else
         result = GC_malloc(size);
     }
-    if (TabFinalizerFuncBags[type])
+    if (TabFreeFuncBags[type])
       GC_register_finalizer_no_order(result, StandardFinalizer,
 	NULL, NULL, NULL);
     return result;
