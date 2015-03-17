@@ -1034,6 +1034,7 @@ UInt ExecAtomic(
   UInt mode, nrexprs,i,j,status;
   Obj o;
   
+  SET_BRK_CURR_STAT( stat );
   nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
   
   j = 0;
