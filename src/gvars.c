@@ -404,6 +404,20 @@ Obj             ValGVarTL (
     return val;
 }
 
+Obj FuncIsThreadLocalGvar( Obj self, Obj name) {
+  UInt gvar, gvar_bucket, gvar_index;
+  if (!IsStringConv(name))
+    ErrorMayQuit("IsThreadLocalGVar: argument must be a string (not a %s)",
+		 (Int)TNAM_OBJ(name), 0L);
+
+  gvar = GVarName(CSTR_STRING(name));
+  gvar_bucket = GVAR_BUCKET(gvar);
+  gvar_index = GVAR_INDEX(gvar);
+  return (VAL_GVAR(gvar) == 0 && IS_INTOBJ(ELM_PLIST(ExprGVars[gvar_bucket], gvar_index))) ?
+    True: False;
+}
+  
+
 
 /****************************************************************************
 **
@@ -1378,6 +1392,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "GET_NAMESPACE", 0L, "",
       FuncGET_NAMESPACE, "src/gvars.c:GET_NAMESPACE" },
+
+    { "IsThreadLocalGVar", 1L, "name",
+      FuncIsThreadLocalGvar, "src/gvars.c:IsThreadLocalGvar"},
 
     { 0 }
 
