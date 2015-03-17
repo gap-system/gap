@@ -1520,30 +1520,31 @@ Obj             EvalElmListLevel (
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, right operand         */
+    Obj                 ixs;
     Int                 level;          /* level                           */
+    Int narg;
+    Int i;
 
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'ElmListLevel')     */
     lists = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-
-    /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    while ( TNUM_OBJ(pos) != T_INTPOS && (! IS_POS_INTOBJ(pos) )) {
-        pos = ErrorReturnObj(
-            "List Element: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
+    narg = SIZE_EXPR(expr)/sizeof(Expr) -2;
+    ixs = NEW_PLIST(T_PLIST, narg);
+    for (i = 1; i <= narg; i++) {
+      pos = EVAL_EXPR( ADDR_EXPR(expr)[i]);
+      SET_ELM_PLIST(ixs, i, pos);
+      CHANGED_BAG(ixs);
     }
+    SET_LEN_PLIST(ixs, narg);
     /* get the level                                                       */
-    level = (Int)(ADDR_EXPR(expr)[2]);
+    level = (Int)(ADDR_EXPR(expr)[narg+1]);
     
     /* select the elements from several lists (store them in <lists>)      */
-    ElmListLevel( lists, pos, level );
+    ElmListLevel( lists, ixs, level );
 
     /* return the elements                                                 */
     return lists;
 }
-
 
 /****************************************************************************
 **

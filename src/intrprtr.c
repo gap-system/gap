@@ -3434,6 +3434,8 @@ void            IntrElmListLevel ( Int narg,
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, right operand         */
+    Obj ixs;
+    Int i;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
@@ -3441,20 +3443,29 @@ void            IntrElmListLevel ( Int narg,
     if ( IntrCoding    > 0 ) { CodeElmListLevel( narg, level ); return; }
 
 
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_POS_INTOBJ(pos) )) {
-        ErrorQuit(
-            "List Element: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
+    /* get the positions */
+    ixs = NEW_PLIST(T_PLIST, narg);
+    for (i = narg; i > 0; i--) {
+      pos = PopObj();
+      SET_ELM_PLIST(ixs,i,pos);
+      CHANGED_BAG(ixs);
     }
+    SET_LEN_PLIST(ixs, narg);
+      
+    /* /\* get and check the position                                          *\/ */
+    /* pos = PopObj(); */
+    /* if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_POS_INTOBJ(pos) )) { */
+    /*     ErrorQuit( */
+    /*         "List Element: <position> must be a positive integer (not a %s)", */
+    /*         (Int)TNAM_OBJ(pos), 0L ); */
+    /* } */
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'ElmListLevel')     */
     lists = PopObj();
 
     /* select the elements from several lists (store them in <lists>)      */
-    ElmListLevel( lists, pos, level );
+    ElmListLevel( lists, ixs, level );
 
     /* push the elements                                                   */
     PushObj( lists );

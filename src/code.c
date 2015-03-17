@@ -2514,14 +2514,12 @@ void CodeElmListLevel ( Int narg,
 {
     Expr                ref;            /* reference, result               */
 
-    /* allocate the reference and enter the level                          */
-    if (narg != 1)
-      SyntaxError("Not supported");
-    ref = NewExpr( T_ELM_LIST_LEV, 3 * sizeof(Expr) );
-    ADDR_EXPR(ref)[2] = (Stat)level;
+    ref = NewExpr( T_ELM_LIST_LEV, (narg+2)*sizeof(Expr));
+    ADDR_EXPR(ref)[narg+1] = (Stat)level;
+      
 
     /* let 'CodeElmListUniv' do the rest                                   */
-    CodeElmListUniv( ref, 1 );
+    CodeElmListUniv( ref, narg );
 }
 
 void CodeElmsListLevel (
