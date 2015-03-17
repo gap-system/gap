@@ -2563,8 +2563,9 @@ Obj             EvalElmComObjExpr (
         return ElmPRec( record, rnam );
       case T_ACOMOBJ:
         return ElmARecord( record, rnam );
+      default:
+        return ELM_REC( record, rnam);
     }
-    return 0;
 }
 
 
