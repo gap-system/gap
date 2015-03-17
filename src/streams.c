@@ -277,8 +277,8 @@ static void READ_TEST_OR_LOOP(void)
         if ( type == 0 && TLS->readEvalResult != 0 ) {
 
             /* remember the value in 'last' and the time in 'time'         */
-            AssGVar( Last3, ValGVar( Last2 ) );
-            AssGVar( Last2, ValGVar( Last  ) );
+            AssGVar( Last3, ValGVarTL( Last2 ) );
+            AssGVar( Last2, ValGVarTL( Last  ) );
             AssGVar( Last,  TLS->readEvalResult   );
 
             /* print the result                                            */
