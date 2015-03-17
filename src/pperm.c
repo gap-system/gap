@@ -5401,6 +5401,10 @@ Obj OnSetsPPerm (Obj set, Obj f){
   }
   //maybe a problem here if the result <res> has length 0, this certainly
   //caused a problem in OnPosIntSetsPPerm...
+  if (len == 0) { 
+    RetypeBag(res, IS_MUTABLE_PLIST(set)?T_PLIST_EMPTY:T_PLIST_EMPTY+IMMUTABLE);
+    return res;
+  }
   ResizeBag(res, (len+1)*sizeof(Obj));
   SET_LEN_PLIST(res, len);
 
