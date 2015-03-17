@@ -283,7 +283,7 @@ static inline Obj prod_intobjs(Int l, Int r)
 */
 #define FIRST_REAL_TNUM         0
 
-#define FIRST_CONSTANT_TNUM     ((UInt)0)
+#define FIRST_CONSTANT_TNUM     (0UL)
 #define T_INT                   (FIRST_CONSTANT_TNUM+ 0)    /* immediate */
 #define T_INTPOS                (FIRST_CONSTANT_TNUM+ 1)
 #define T_INTNEG                (FIRST_CONSTANT_TNUM+ 2)
@@ -399,6 +399,10 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)
 #define LAST_COPYING_TNUM       (LAST_REAL_TNUM + COPYING)
 
+#if LAST_COPYING_TNUM > 254
+#error LAST_COPYING_TNUM out of range
+#endif
+
 /****************************************************************************
 **
 ** Object flags for use with SET_OBJ_FLAG() etc.
@@ -415,8 +419,11 @@ static inline Obj prod_intobjs(Int l, Int r)
 **
 **  'T_BODY' is the type of the function body bags.
 */
-#define T_BODY                  175
+#define T_BODY                  254
 
+#if T_BODY <= LAST_COPYING_TNUM
+#error T_BODY out of range
+#endif
 
 /****************************************************************************
 **
