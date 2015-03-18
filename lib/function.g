@@ -501,16 +501,19 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
     Print("function( ");
     nams := NAMS_FUNC(func);
     narg := NARG_FUNC(func);
-    if nams = fail then
-        Print( "<",narg," unnamed arguments>" );
-    elif narg = -1 then
-        Print("arg");
-    elif narg > 0 then
-        Print(nams[1]);
-        for i in [2..narg] do
-            Print(", ",nams[i]);
-        od;
+    if narg < 0 then
+        narg := -narg;
     fi;
+    if narg <> 0 then
+        if nams = fail then
+            Print( "<",narg," unnamed arguments>" );
+        else
+            Print(nams[1]);
+            for i in [2..narg] do
+                Print(", ",nams[i]);
+            od;
+        fi;
+    fi;    
     Print(" ) ... end");
 end);
 
