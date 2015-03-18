@@ -753,17 +753,17 @@ extern  void            IntrIsbGVar (
 *F  IntrAssListLevel(<level>) . . . . . interpret assignment to several lists
 *F  IntrAsssListLevel(<level>)  . . intr multiple assignment to several lists
 */
-extern  void            IntrAssList ( void );
+extern  void            IntrAssList ( Int narg );
 
 extern  void            IntrAsssList ( void );
 
-extern  void            IntrAssListLevel (
+extern  void            IntrAssListLevel ( Int narg,
             UInt                level );
 
 extern  void            IntrAsssListLevel (
             UInt                level );
 
-extern  void            IntrUnbList ( void );
+extern  void            IntrUnbList (Int narg );
 
 
 /****************************************************************************
@@ -783,7 +783,7 @@ extern  void            IntrElmListLevel ( Int narg,
 extern  void            IntrElmsListLevel (
             UInt                level );
 
-extern  void            IntrIsbList ( void );
+extern  void            IntrIsbList ( Int narg );
 
 
 /****************************************************************************
