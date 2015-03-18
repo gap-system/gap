@@ -2418,8 +2418,8 @@ void CodeAssListLevel ( Int narg,
     Stat                ass;            /* assignment, result              */
 
     /* allocate the assignment and enter the level                         */
-    ass = NewStat( T_ASS_LIST_LEV, 4 * sizeof(Stat) );
-    ADDR_STAT(ass)[3] = (Stat)level;
+    ass = NewStat( T_ASS_LIST_LEV, (narg +3) * sizeof(Stat) );
+    ADDR_STAT(ass)[narg+2] = (Stat)level;
 
     /* let 'CodeAssListUniv' do the rest                                   */
     CodeAssListUniv( ass, narg );
