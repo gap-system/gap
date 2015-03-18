@@ -108,6 +108,9 @@
 # include       <sys/resource.h>        /* definition of 'struct rusage'   */
 #endif
 #endif
+#ifdef HAVE_GETTIMEOFDAY
+# include       <sys/time.h>            /* for gettimeofday                */
+#endif
 
 struct ProfileState
 {
@@ -121,7 +124,7 @@ struct ProfileState
   int lastOutputtedLine;
   int lastOutputtedExec;  
 
-#ifdef HAVE_GETRUSAGE
+#if defined(HAVE_GETRUSAGE) || defined(HAVE_GETTIMEOFDAY)
   struct timeval lastOutputtedTime;
 #endif
   
@@ -277,8 +280,13 @@ static inline void outputStat(Stat stat, int exec, int visited)
   int nameid;
   
   int ticks = 0;
-#ifdef HAVE_GETRUSAGE
+#if defined(HAVE_GETTIMEOFDAY)
+  struct timeval timebuf;
+#else
+#if defined(HAVE_GETRUSAGE)
+  struct timeval timebuf;
   struct rusage buf;
+#endif
 #endif
     
   nameid = FILENAMEID_STAT(stat);
@@ -290,20 +298,26 @@ static inline void outputStat(Stat stat, int exec, int visited)
     name = CSTR_STRING(FILENAME_STAT(stat));
 
     if(profileState.OutputRepeats) {
-#ifdef HAVE_GETRUSAGE
+#if defined(HAVE_GETTIMEOFDAY)
+      gettimeofday(&timebuf, 0);
+#else
+#if defined(HAVE_GETRUSAGE)
       getrusage( RUSAGE_SELF, &buf );
-      ticks = (buf.ru_utime.tv_sec - profileState.lastOutputtedTime.tv_sec) * 1000000 +
-              (buf.ru_utime.tv_usec - profileState.lastOutputtedTime.tv_usec);
-      // Basic sanity check, and also don't output statements which we have already outputted
-      // if no more ticks occurred
+      timebuf = buf.ru_utime;
+#endif
+#endif
+#if defined(HAVE_GETTIMEOFDAY) || defined(HAVE_GETRUSAGE)
+      ticks = (timebuf.tv_sec - profileState.lastOutputtedTime.tv_sec) * 1000000 +
+              (timebuf.tv_usec - profileState.lastOutputtedTime.tv_usec);
+#endif
+      // Basic sanity check
       if(ticks < 0)
         ticks = 0;
-#endif
       if(ticks > profileState.minimumProfileTick || (!visited)) {
         fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"File\":\"%s\"}\n",
                 exec ? 'E' : 'R', ticks, line, name);
-#ifdef HAVE_GETRUSAGE
-        profileState.lastOutputtedTime = buf.ru_utime;
+#if defined(HAVE_GETRUSAGE) || defined(HAVE_GETTIMEOFDAY)
+        profileState.lastOutputtedTime = timebuf;
 #endif
       }
     }
@@ -387,11 +401,15 @@ void enableAtStartup(char* filename, Int repeats)
     }
     
     profileState.Active = 1;
+#ifdef HAVE_GETTIMEOFDAY
+    gettimeofday(&(profileState.lastOutputtedTime), 0);
+#else
 #ifdef HAVE_GETRUSAGE
     struct rusage buf;
     getrusage( RUSAGE_SELF, &buf );
     profileState.lastOutputtedTime = buf.ru_utime;
-#endif    
+#endif
+#endif
 }
 
 // This function is for when GAP is started with -c, and
@@ -466,10 +484,14 @@ Obj FuncACTIVATE_PROFILING (
     
     profileState.Active = 1;
     
+#ifdef HAVE_GETTIMEOFDAY
+    gettimeofday(&(profileState.lastOutputtedTime), 0);
+#else
 #ifdef HAVE_GETRUSAGE
     struct rusage buf;
     getrusage( RUSAGE_SELF, &buf );
     profileState.lastOutputtedTime = buf.ru_utime;
+#endif
 #endif
     
     return True;
