@@ -1140,7 +1140,7 @@ Obj NewFunctionT (
     func = NewBag( type, size );
 
     /* create a function with a fixed number of arguments                  */
-    if ( narg != -1 ) {
+    if ( narg >= 0 ) {
         HDLR_FUNC(func,0) = DoFail0args;
         HDLR_FUNC(func,1) = DoFail1args;
         HDLR_FUNC(func,2) = DoFail2args;
@@ -1154,14 +1154,14 @@ Obj NewFunctionT (
 
     /* create a function with a variable number of arguments               */
     else {
-        HDLR_FUNC(func,0) = DoWrap0args;
-        HDLR_FUNC(func,1) = DoWrap1args;
-        HDLR_FUNC(func,2) = DoWrap2args;
-        HDLR_FUNC(func,3) = DoWrap3args;
-        HDLR_FUNC(func,4) = DoWrap4args;
-        HDLR_FUNC(func,5) = DoWrap5args;
-        HDLR_FUNC(func,6) = DoWrap6args;
-        HDLR_FUNC(func,7) = hdlr;
+      HDLR_FUNC(func,0) = (narg >= -1) ? DoWrap0args : DoFail0args;
+      HDLR_FUNC(func,1) = (narg >= -2) ? DoWrap1args : DoFail1args;
+      HDLR_FUNC(func,2) = (narg >= -3) ? DoWrap2args : DoFail2args;
+      HDLR_FUNC(func,3) = (narg >= -4) ? DoWrap3args : DoFail3args;
+      HDLR_FUNC(func,4) = (narg >= -5) ? DoWrap4args : DoFail4args;
+      HDLR_FUNC(func,5) = (narg >= -6) ? DoWrap5args : DoFail5args;
+      HDLR_FUNC(func,6) = (narg >= -7) ? DoWrap6args : DoFail6args;
+      HDLR_FUNC(func,7) = hdlr;
     }
 
     /* enter the arguments and the names                               */
@@ -1308,7 +1308,9 @@ void PrintFunction (
     Pr("%5>function%< ( %>",0L,0L);
 
     /* print the arguments                                                 */
-    narg = (NARG_FUNC(func) == -1 ? 1 : NARG_FUNC(func));
+    narg = NARG_FUNC(func);
+    if (narg < 0)
+      narg = -narg;
     for ( i = 1; i <= narg; i++ ) {
         if ( NAMS_FUNC(func) != 0 )
             Pr( "%I", (Int)NAMI_FUNC( func, (Int)i ), 0L );
