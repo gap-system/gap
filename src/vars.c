@@ -1548,6 +1548,7 @@ Obj             EvalElmListLevel (
     return lists;
 }
 
+
 /****************************************************************************
 **
 *F  EvalElmsListLevel(<expr>) . . .  select several elements of several lists
@@ -1713,6 +1714,22 @@ void PrintElmXList (
 {
   Int i;
   Int narg = SIZE_EXPR(expr)/sizeof(Expr) -1 ;
+    Pr("%2>",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[0] );
+    Pr("%<[",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[1] );
+    for (i = 2; i <= narg; i++) {
+      Pr("%<, %<",0L,0L);
+      PrintExpr( ADDR_EXPR(expr)[2] );
+    }
+    Pr("%<]",0L,0L);
+}
+
+void PrintElmListLevel (
+		     Expr expr )
+{
+  Int i;
+  Int narg = SIZE_EXPR(expr)/sizeof(Expr) -2 ;
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<[",0L,0L);
@@ -3056,7 +3073,7 @@ static Int InitKernel (
     InstallPrintStatFunc( T_UNB_LIST       , PrintUnbList);
     InstallPrintExprFunc( T_ELM_LIST       , PrintElmList);
     InstallPrintExprFunc( T_ELMS_LIST      , PrintElmsList);
-    InstallPrintExprFunc( T_ELM_LIST_LEV   , PrintElmList);
+    InstallPrintExprFunc( T_ELM_LIST_LEV   , PrintElmListLevel);
     InstallPrintExprFunc( T_ELMS_LIST_LEV  , PrintElmsList);
     InstallPrintExprFunc( T_ISB_LIST       , PrintIsbList);
 
