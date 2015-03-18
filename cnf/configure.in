@@ -144,7 +144,7 @@ dnl ## check for timing functions
 dnl ##
 
 AC_CHECK_HEADERS( sys/times.h sys/param.h )
-AC_CHECK_FUNCS( times getrusage )
+AC_CHECK_FUNCS( times getrusage gettimeofday )
 
 
 dnl #########################################################################
