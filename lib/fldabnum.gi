@@ -1271,8 +1271,10 @@ InstallMethod( CanonicalBasis,
       # Fill in additional components.
       SetBasisVectors( B, List( lenst,
                                 x -> Sum( List( x, y -> E(N)^y ) ) ) );
-      B!.coeffslist  := List( lenst, x -> x[1] + 1 );
-      B!.lenstrabase := lenst;
+      atomic readwrite CYCLOTOMIC_FIELDS do                          
+        B!.coeffslist  := MigrateObj(List( lenst, x -> x[1] + 1 ), CYCLOTOMIC_FIELDS);
+        B!.lenstrabase := MigrateObj(lenst, CYCLOTOMIC_FIELDS);
+      od;
       B!.conductor   := N;
 #T better compute basis vectors only if necessary
 #T (in the case of a normal basis the vectors are of course known ...)
@@ -1386,7 +1388,9 @@ InstallMethod( Coefficients,
 
       # Take the relevant sublist, this suffices for extensions
       # of the rationals.
-      coeffs:= CoeffsCyc( z, B!.conductor ){ B!.coeffslist };
+      atomic readonly CYCLOTOMIC_FIELDS do
+        coeffs:= CoeffsCyc( z, B!.conductor ){ B!.coeffslist };
+      od;  
 
     elif IsCyclotomicField( F ) then
 
