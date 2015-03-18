@@ -200,7 +200,8 @@ Obj FuncWeakPointerObj( Obj self, Obj list ) {
 **  trailing items may evaporate.
 **   
 **  Any identifiers of trailing objects that have evaporated in a garbage
-**  collection are cleaned up by this function
+**  collection are cleaned up by this function, if we have exclusive
+**  write access, otherwise they stay around.
 */
 
 Int LengthWPObj(Obj wp)
@@ -208,24 +209,25 @@ Int LengthWPObj(Obj wp)
   Int len;
   Obj elm;
   Int changed = 0;
-#ifndef BOEHM_GC
-  for (len = STORED_LEN_WPOBJ(wp); 
-       len > 0 && 
-         (!(elm = ELM_WPOBJ(wp,len)) ||
-          IS_WEAK_DEAD_BAG(elm)); 
-       len --)
-    {
-      changed = 1;
-      if (elm)
-        ELM_WPOBJ(wp,len) = 0;
-    }
-#else
   len = STORED_LEN_WPOBJ(wp);
-  while (len > 0 && !ELM_WPOBJ(wp, len)) {
-    changed = 1;
-    len--;
-  }
+  if (CheckExclusiveWriteAccess(wp)) {
+#ifndef BOEHM_GC
+    for (; len > 0 && 
+           (!(elm = ELM_WPOBJ(wp,len)) ||
+            IS_WEAK_DEAD_BAG(elm)); 
+         len --)
+      {
+        changed = 1;
+        if (elm)
+          ELM_WPOBJ(wp,len) = 0;
+      }
+#else
+    while (len > 0 && !ELM_WPOBJ(wp, len)) {
+      changed = 1;
+      len--;
+    }
 #endif
+  }
   if (changed)
     STORE_LEN_WPOBJ(wp,len);
   return len;
