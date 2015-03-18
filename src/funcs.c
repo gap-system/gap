@@ -1156,7 +1156,8 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args) {
   Obj argx;
 
 
-      named = ((UInt)-NARG_FUNC(func))-1;
+    CHECK_RECURSION_BEFORE
+    named = ((UInt)-NARG_FUNC(func))-1;
     len = LEN_PLIST(args);
 
     if (named > len) { /* Can happen for > 6 arguments */
@@ -1164,7 +1165,7 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args) {
       return DoOperation2Args(CallFuncListOper, func, argx);
     }
 
-    CHECK_RECURSION_BEFORE    
+
     SWITCH_TO_NEW_LVARS( func, named+1, NLOC_FUNC(func), oldLvars );
 
     for (i = 1; i <= named; i++) {
