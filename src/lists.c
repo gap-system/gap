@@ -1819,7 +1819,7 @@ void            ElmsListLevel (
 
 /****************************************************************************
 **
-*F  AssListLevel(<lists>,<pos>,<objs>,<level>)  . . . . . . . . . . . . . . .
+*F  AssListLevel(<lists>,<ixs>,<objs>,<level>)  . . . . . . . . . . . . . . .
 *F  . . . . . . . . . . . . .  assign an element to several lists in parallel
 **
 **  'AssListLevel'  either assigns an  element  to all  lists in parallel  if

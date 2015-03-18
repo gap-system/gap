@@ -1168,6 +1168,77 @@ UInt            ExecAssList (
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
 }
+/****************************************************************************
+**
+*F  ExecAss2List(<ass>)  . . . . . . . . . . .  assign to an element of a list
+**
+**  'ExexAss2List'  executes the list  assignment statement <stat> of the form
+**  '<list>[<position>,<position>] := <rhs>;'.
+*/
+UInt            ExecAss2List (
+    Expr                stat )
+{
+    Obj                 list;           /* list, left operand              */
+    Obj                 pos1;            /* position, left operand          */
+    Obj                 pos2;            /* position, left operand          */
+    Obj                 rhs;            /* right hand side, right operand  */
+
+    /* evaluate the list (checking is done by 'ASS_LIST')                  */
+    SET_BRK_CURR_STAT( stat );
+    list = EVAL_EXPR( ADDR_STAT(stat)[0] );
+
+    /* evaluate the position                                               */
+    pos1 = EVAL_EXPR( ADDR_STAT(stat)[1] );
+    pos2 = EVAL_EXPR( ADDR_STAT(stat)[2] );
+
+    /* evaluate the right hand side                                        */
+    rhs = EVAL_EXPR( ADDR_STAT(stat)[3] );
+
+    ASS2_LIST( list, pos1, pos2, rhs );
+
+    /* return 0 (to indicate that no leave-statement was executed)         */
+    return 0;
+}
+/****************************************************************************
+**
+*F  ExecAssXList(<ass>)  . . . . . . . . . . .  assign to an element of a list
+**
+**  'ExexAssXList'  executes the list  assignment statement <stat> of the form
+**  '<list>[<position>,<position>,<position>[,<position>]*] := <rhs>;'.
+*/
+UInt            ExecAssXList (
+    Expr                stat )
+{
+    Obj                 list;           /* list, left operand              */
+    Obj                 pos;            /* position, left operand          */
+    Obj                 rhs;            /* right hand side, right operand  */
+    Obj ixs;
+    Int i;
+    Int narg;
+
+    /* evaluate the list (checking is done by 'ASS_LIST')                  */
+    SET_BRK_CURR_STAT( stat );
+    list = EVAL_EXPR( ADDR_STAT(stat)[0] );
+
+    narg = SIZE_STAT(stat)/sizeof(Stat) - 2;
+    ixs = NEW_PLIST(T_PLIST,narg);
+
+    for (i = 1; i <= narg; i++) {
+      /* evaluate the position                                               */
+      pos = EVAL_EXPR( ADDR_STAT(stat)[i] );
+      SET_ELM_PLIST(ixs,i,pos);
+      CHANGED_BAG(ixs);
+    }
+    SET_LEN_PLIST(ixs,narg);
+
+    /* evaluate the right hand side                                        */
+    rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
+
+    ASSB_LIST(list, ixs, rhs);
+
+    /* return 0 (to indicate that no leave-statement was executed)         */
+    return 0;
+}
 
 
 /****************************************************************************
@@ -1244,29 +1315,30 @@ UInt            ExecAssListLevel (
     Obj                 pos;            /* position, left operand          */
     Obj                 rhss;           /* right hand sides, right operand */
     Int                 level;          /* level                           */
+    Int narg,i;
+    Obj ixs;
 
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'AssListLevel')     */
     SET_BRK_CURR_STAT( stat );
     lists = EVAL_EXPR( ADDR_STAT(stat)[0] );
-
-    /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( TNUM_OBJ(pos) != T_INTPOS && (! IS_POS_INTOBJ(pos)) ) {
-        pos = ErrorReturnObj(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
+    narg = SIZE_STAT(stat)/sizeof(Stat) -3;
+    ixs = NEW_PLIST(T_PLIST, narg);
+    for (i = 1; i <= narg; i++) {
+      pos = EVAL_EXPR(ADDR_STAT(stat)[i]);
+      SET_ELM_PLIST(ixs,i,pos);
+      CHANGED_BAG(ixs);
     }
+    SET_LEN_PLIST(ixs, narg);
 
     /* evaluate right hand sides (checking is done by 'AssListLevel')      */
-    rhss = EVAL_EXPR( ADDR_STAT(stat)[2] );
-
+    rhss = EVAL_EXPR( ADDR_STAT(stat)[narg+1] );
+      
     /* get the level                                                       */
-    level = (Int)(ADDR_STAT(stat)[3]);
+    level = (Int)(ADDR_STAT(stat)[narg+2]);
 
     /* assign the right hand sides to the elements of several lists        */
-    AssListLevel( lists, pos, rhss, level );
+    AssListLevel( lists, ixs, rhss, level );
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -1335,20 +1407,34 @@ UInt            ExecUnbList (
 {
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, left operand          */
+    Obj ixs;
+    Int narg;
+    Int i;
 
     /* evaluate the list (checking is done by 'LEN_LIST')                  */
     SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR( ADDR_STAT(stat)[0] );
-
-    /* evaluate the position                                               */
-    pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-
-    /* unbind the element                                                  */
-    if (IS_POS_INTOBJ(pos)) {
+    narg = SIZE_STAT(stat)/sizeof(Stat) - 1;
+    if (narg == 1) {
+      pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
+      /* unbind the element                                                  */
+      if (IS_POS_INTOBJ(pos)) {
         UNB_LIST( list, INT_INTOBJ(pos) );
-    } else {
+      } else {
         UNBB_LIST( list, pos );
+      }
+    } else {
+      ixs = NEW_PLIST(T_PLIST, narg);
+      for (i = 1; i <= narg; i++) {
+	/* evaluate the position                                               */
+	pos = EVAL_EXPR( ADDR_STAT(stat)[i] );
+	SET_ELM_PLIST(ixs,i,pos);
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      UNBB_LIST(list, ixs);
     }
+    
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -1604,17 +1690,31 @@ Obj             EvalIsbList (
 {
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
+    Obj ixs;
+    Int narg, i;
 
     /* evaluate the list (checking is done by 'ISB_LIST')                  */
     list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-
-    /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-
-    if (IS_POS_INTOBJ(pos))
+    narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
+    if (narg == 1) {
+      /* evaluate and check the position                                     */
+      pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+      
+      if (IS_POS_INTOBJ(pos))
         return ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
-    else
+      else
         return ISBB_LIST(list, pos) ? True : False;
+    } else {
+      ixs = NEW_PLIST(T_PLIST, narg);
+      for (i = 1; i <= narg; i++) {
+	pos = EVAL_EXPR( ADDR_EXPR(expr)[i] );
+	SET_ELM_PLIST(ixs,i,pos);
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      return ISBB_LIST(list, ixs) ? True : False;
+    }
+	
 }
 
 
@@ -1640,14 +1740,54 @@ void            PrintAssList (
     Pr("%2<;",0L,0L);
 }
 
+void            PrintAss2List (
+    Stat                stat )
+{
+    Pr("%4>",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[0] );
+    Pr("%<[",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[1] );
+    Pr("%<, %>",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[2] );
+    Pr("%<]",0L,0L);
+    Pr("%< %>:= ",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[3] );
+    Pr("%2<;",0L,0L);
+}
+
+void            PrintAssXList (
+    Stat                stat )
+{
+  Int narg = SIZE_STAT(stat)/sizeof(stat) - 2;
+  Int i;
+    Pr("%4>",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[0] );
+    Pr("%<[",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[1] );
+    for (i = 2; i <= narg; i++) {
+      Pr("%<, %>",0L,0L);
+      PrintExpr( ADDR_STAT(stat)[i] );
+    }
+    Pr("%<]",0L,0L);
+    Pr("%< %>:= ",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[narg + 1] );
+    Pr("%2<;",0L,0L);
+}
+
 void            PrintUnbList (
     Stat                stat )
 {
+  Int narg = SIZE_STAT(stat)/sizeof(Stat) -1;
+  Int i;
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_STAT(stat)[0] );
     Pr("%<[",0L,0L);
     PrintExpr( ADDR_STAT(stat)[1] );
+    for (i = 2; i <= narg; i++) {
+      Pr("%<, %>",0L,0L);
+      PrintExpr(ADDR_STAT(stat)[i]);
+    }
     Pr("%<]",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1743,11 +1883,17 @@ void PrintElmListLevel (
 void            PrintIsbList (
     Expr                expr )
 {
+  Int narg = SIZE_EXPR(expr)/sizeof(Expr) - 1;
+  Int i;
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<[",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[1] );
+    for (i = 2; i <= narg; i++) {
+      Pr("%<, %>", 0L, 0L);
+      PrintExpr(ADDR_EXPR(expr)[i] );
+    }
     Pr("%<]",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -3053,6 +3199,11 @@ static Int InitKernel (
     InstallExecStatFunc( T_ASSS_LIST      , ExecAsssList);
     InstallExecStatFunc( T_ASS_LIST_LEV   , ExecAssListLevel);
     InstallExecStatFunc( T_ASSS_LIST_LEV  , ExecAsssListLevel);
+    InstallExecStatFunc( T_ASS2_LIST  , ExecAss2List);
+    InstallExecStatFunc( T_ASSX_LIST  , ExecAssXList);
+    InstallPrintStatFunc( T_ASS2_LIST  , PrintAss2List);
+    InstallPrintStatFunc( T_ASSX_LIST  , PrintAssXList);
+    
     InstallExecStatFunc( T_UNB_LIST       , ExecUnbList);
     InstallEvalExprFunc( T_ELM_LIST       , EvalElmList);
     InstallEvalExprFunc( T_ELMS_LIST      , EvalElmsList);
