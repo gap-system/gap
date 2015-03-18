@@ -73,8 +73,8 @@ gap> g:=Group([
 > (4,27,22)(6,9)(7,8)(11,18,35,13,16,31,12,17,33,15,19,32)(14,20,34) ]);;
 gap> h:=Group([ (31,32,33,34,35), (26,27,28,29,30), (21,22,23,24,25),
 > (16,17,18,19,20), (11,12,13,14,15), (6,7,8,9,10), (1,2,3,4,5) ] );;
-gap> NrMovedPoints(g/h);
-168
+gap> Size(g/h);
+2752512
 gap> g:=WreathProduct(MathieuGroup(11),Group((1,2)));
 <permutation group of size 125452800 with 5 generators>
 gap> Length(ConjugacyClassesSubgroups(g));
