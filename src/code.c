@@ -2353,20 +2353,24 @@ void CodeIsbGVar (
 *F  CodeAssListLevel( <level> ) . . . . . .  code assignment to several lists
 *F  CodeAsssListLevel( <level> )  . code multiple assignment to several lists
 */
-void CodeAssListUniv (
-    Stat                ass )
+void CodeAssListUniv ( 
+		      Stat                ass,
+		       Int narg)
 {
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */
     Expr                rhsx;           /* right hand side expression      */
+    Int i;
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
-    ADDR_STAT(ass)[2] = (Stat)rhsx;
+    ADDR_STAT(ass)[narg+1] = (Stat)rhsx;
 
     /* enter the position expression                                       */
-    pos = PopExpr();
-    ADDR_STAT(ass)[1] = (Stat)pos;
+    for (i = narg; i > 0; i--) {
+      pos = PopExpr();
+      ADDR_STAT(ass)[i] = (Stat)pos;
+    }
 
     /* enter the list expression                                           */
     list = PopExpr();
@@ -2376,15 +2380,25 @@ void CodeAssListUniv (
     PushStat( ass );
 }
 
-void CodeAssList ( void )
+void CodeAssList ( Int narg )
 {
     Stat                ass;            /* assignment, result              */
 
     /* allocate the assignment                                             */
-    ass = NewStat( T_ASS_LIST, 3 * sizeof(Stat) );
+    switch (narg) {
+    case 1:
+      ass = NewStat( T_ASS_LIST, 3 * sizeof(Stat) );
+      break;
+
+    case 2:
+      ass = NewStat(T_ASS2_LIST, 4* sizeof(Stat));
+      break;
+    default:
+      ass  = NewStat(T_ASSX_LIST, (narg + 2)*sizeof(Stat));
+    }
 
     /* let 'CodeAssListUniv' do the rest                                   */
-    CodeAssListUniv( ass );
+    CodeAssListUniv( ass, narg );
 }
 
 void CodeAsssList ( void )
@@ -2395,10 +2409,10 @@ void CodeAsssList ( void )
     ass = NewStat( T_ASSS_LIST, 3 * sizeof(Stat) );
 
     /* let 'CodeAssListUniv' do the rest                                   */
-    CodeAssListUniv( ass );
+    CodeAssListUniv( ass, 1 );
 }
 
-void CodeAssListLevel (
+void CodeAssListLevel ( Int narg,
     UInt                level )
 {
     Stat                ass;            /* assignment, result              */
@@ -2408,7 +2422,7 @@ void CodeAssListLevel (
     ADDR_STAT(ass)[3] = (Stat)level;
 
     /* let 'CodeAssListUniv' do the rest                                   */
-    CodeAssListUniv( ass );
+    CodeAssListUniv( ass, narg );
 }
 
 void CodeAsssListLevel (
@@ -2421,7 +2435,7 @@ void CodeAsssListLevel (
     ADDR_STAT(ass)[3] = (Stat)level;
 
     /* let 'CodeAssListUniv' do the rest                                   */
-    CodeAssListUniv( ass );
+    CodeAssListUniv( ass, 1 );
 }
 
 
@@ -2429,18 +2443,21 @@ void CodeAsssListLevel (
 **
 *F  CodeUnbList() . . . . . . . . . . . . . . .  code unbind of list position
 */
-void CodeUnbList ( void )
+void CodeUnbList ( Int narg )
 {
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */
     Stat                ass;            /* unbind, result                  */
+    Int i;
 
     /* allocate the unbind                                                 */
-    ass = NewStat( T_UNB_LIST, 2 * sizeof(Stat) );
+    ass = NewStat( T_UNB_LIST, (narg+1) * sizeof(Stat) );
 
-    /* enter the position expression                                       */
-    pos = PopExpr();
-    ADDR_STAT(ass)[1] = (Stat)pos;
+    /* enter the position expressions                                       */
+    for (i = narg; i > 0; i--) {
+      pos = PopExpr();
+      ADDR_STAT(ass)[i] = (Stat)pos;
+    }
 
     /* enter the list expression                                           */
     list = PopExpr();
@@ -2540,18 +2557,21 @@ void CodeElmsListLevel (
 **
 *F  CodeIsbList() . . . . . . . . . . . . . .  code bound list position check
 */
-void CodeIsbList ( void )
+void CodeIsbList ( Int narg )
 {
     Expr                ref;            /* isbound, result                 */
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */
+    Int i;
 
     /* allocate the isbound                                                */
-    ref = NewExpr( T_ISB_LIST, 2 * sizeof(Expr) );
+    ref = NewExpr( T_ISB_LIST, (narg + 1) * sizeof(Expr) );
 
     /* enter the position expression                                       */
-    pos = PopExpr();
-    ADDR_EXPR(ref)[1] = pos;
+    for (i = narg; i > 0; i--) {
+      pos = PopExpr();
+      ADDR_EXPR(ref)[i] = pos;
+    }
 
     /* enter the list expression                                           */
     list = PopExpr();

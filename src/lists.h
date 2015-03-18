@@ -246,6 +246,9 @@ extern Obj Elm2List(Obj list, Obj pos1, Obj pos2);
 
 #define ELM2_LIST(list, pos1, pos2) Elm2List(list, pos1, pos2)
 
+extern void Ass2List(Obj list, Obj pos1, Obj pos2, Obj obj);
+
+#define ASS2_LIST(list, pos1, pos2, obj) Ass2List(list, pos1, pos2, obj)
 
 
 /****************************************************************************

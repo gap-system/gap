@@ -565,8 +565,8 @@ void ReadCallVarAss (
         else if ( type == 'h' ) { IntrAssHVar( var );             }
         else if ( type == 'd' ) { IntrAssDVar( var, nest0 - 1 );  }
         else if ( type == 'g' ) { IntrAssGVar( var );             }
-        else if ( type == '[' ) { IntrAssList();                  }
-        else if ( type == ']' ) { IntrAssListLevel( level );      }
+        else if ( type == '[' ) { IntrAssList( narg );                  }
+        else if ( type == ']' ) { IntrAssListLevel( narg, level );      }
         else if ( type == '{' ) { IntrAsssList();                 }
         else if ( type == '}' ) { IntrAsssListLevel( level );     }
         else if ( type == '<' ) { IntrAssPosObj();                }
@@ -591,7 +591,7 @@ void ReadCallVarAss (
         else if ( type == 'h' ) { IntrUnbHVar( var );             }
         else if ( type == 'd' ) { IntrUnbDVar( var, nest0 - 1 );  }
         else if ( type == 'g' ) { IntrUnbGVar( var );             }
-        else if ( type == '[' ) { IntrUnbList();                  }
+        else if ( type == '[' ) { IntrUnbList( narg );            }
         else if ( type == '<' ) { IntrUnbPosObj();                }
         else if ( type == '.' ) { IntrUnbRecName( rnam );         }
         else if ( type == ':' ) { IntrUnbRecExpr();               }
@@ -608,7 +608,7 @@ void ReadCallVarAss (
         else if ( type == 'h' ) { IntrIsbHVar( var );             }
         else if ( type == 'd' ) { IntrIsbDVar( var, nest0 - 1 );  }
         else if ( type == 'g' ) { IntrIsbGVar( var );             }
-        else if ( type == '[' ) { IntrIsbList();                  }
+        else if ( type == '[' ) { IntrIsbList( narg );            }
         else if ( type == '<' ) { IntrIsbPosObj();                }
         else if ( type == '.' ) { IntrIsbRecName( rnam );         }
         else if ( type == ':' ) { IntrIsbRecExpr();               }
