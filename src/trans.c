@@ -699,8 +699,10 @@ Obj FuncFLAT_KERNEL_TRANS_INT (Obj self, Obj f, Obj n){
         for(i=0;i<m;i++)      *ptnew++=*ptker++;
       } else { //m>deg
         for(i=0;i<deg;i++)    *ptnew++=*ptker++;
-        //add new points
-        for(i=RANK_TRANS2(f)+1;i<=m;i++) *ptnew++=INTOBJ_INT(i);
+        //we must now add another (m-deg) points,
+        //starting with the class number (rank+1)
+        for(i=1; i<=m-deg; i++)
+          *ptnew++=INTOBJ_INT(i+RANK_TRANS2(f));
       }
       return new;
     }
@@ -725,8 +727,10 @@ Obj FuncFLAT_KERNEL_TRANS_INT (Obj self, Obj f, Obj n){
         for(i=0;i<m;i++)      *ptnew++=*ptker++;
       } else { //m>deg
         for(i=0;i<deg;i++)    *ptnew++=*ptker++;
-        //add new points
-        for(i=RANK_TRANS4(f)+1;i<=m;i++) *ptnew++=INTOBJ_INT(i);
+        //we must now add another (m-deg) points,
+        //starting with the class number (rank+1)
+        for(i=1; i<=m-deg; i++)
+          *ptnew++=INTOBJ_INT(i+RANK_TRANS4(f));
       }
       return new;
     }
