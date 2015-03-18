@@ -233,23 +233,23 @@ CallAndInstallPostRestore( function()
     # directory caches
     GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
     GAPInfo.DirectoriesPrograms:= false;
-    GAPInfo.DirectoriesTemporary:= [];
+    GAPInfo.DirectoriesTemporary:= AtomicList([]);
     GAPInfo.DirectoryCurrent:= false;
-    GAPInfo.DirectoriesSystemPrograms:= [];
+    GAPInfo.DirectoriesSystemPrograms:= AtomicList([]);
     if IsBound(GAPInfo.SystemEnvironment.PATH) then
       j:= 1;
       for i in [1..LENGTH(GAPInfo.SystemEnvironment.PATH)] do
         if GAPInfo.SystemEnvironment.PATH[i] = ':' then
           if i > j then
             ADD_LIST_DEFAULT(GAPInfo.DirectoriesSystemPrograms, 
-                  GAPInfo.SystemEnvironment.PATH{[j..i-1]});
+                  `GAPInfo.SystemEnvironment.PATH{[j..i-1]});
           fi;
           j := i+1;
         fi;
       od;
       if j <= LENGTH( GAPInfo.SystemEnvironment.PATH ) then
         ADD_LIST_DEFAULT( GAPInfo.DirectoriesSystemPrograms, 
-            GAPInfo.SystemEnvironment.PATH{ [ j ..
+            `GAPInfo.SystemEnvironment.PATH{ [ j ..
                 LENGTH( GAPInfo.SystemEnvironment.PATH ) ] } );
       fi;
     fi;
