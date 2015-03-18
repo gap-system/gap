@@ -1271,8 +1271,8 @@ InstallMethod( CanonicalBasis,
       # Fill in additional components.
       SetBasisVectors( B, List( lenst,
                                 x -> Sum( List( x, y -> E(N)^y ) ) ) );
-      B!.coeffslist  := List( lenst, x -> x[1] + 1 );
-      B!.lenstrabase := lenst;
+      B!.coeffslist  := `List( lenst, x -> x[1] + 1 );
+      B!.lenstrabase := `lenst;
       B!.conductor   := N;
 #T better compute basis vectors only if necessary
 #T (in the case of a normal basis the vectors are of course known ...)
