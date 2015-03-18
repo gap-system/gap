@@ -1389,6 +1389,8 @@ Obj             EvalElmList (
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
     
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+
     if (IS_INTOBJ(pos) && (p = INT_INTOBJ( pos )) > 0)
       {
         
