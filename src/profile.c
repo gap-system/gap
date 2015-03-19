@@ -343,7 +343,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
       // Basic sanity check
       if(ticks < 0)
         ticks = 0;
-      if((profileState.minimumProfileTick > 0 && ticks > profileState.minimumProfileTick)
+      if((profileState.minimumProfileTick == 0) || (ticks > profileState.minimumProfileTick)
          || (!visited)) {
         fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"FileId\":%d}\n",
                 exec ? 'E' : 'R', ticks, (int)line, (int)nameid);
