@@ -407,7 +407,8 @@ FFECONWAY.FiniteFieldEmbeddingRecord := function(p, d1,d2)
             fi;
         od;
         Assert(2,d1 = 1 or res.relations = []);
-        fam!.embeddingRecords[d2][d1] := `r;
+        MakeReadOnly(r);
+        fam!.embeddingRecords[d2][d1] := r;
     fi;
     return fam!.embeddingRecords[d2][d1];
 end;
@@ -1016,12 +1017,12 @@ FFECONWAY.Zero := function(x)
     local   fam,  d;
     fam := FamilyObj(x);
     if not IsBound(fam!.ZeroConwayFFEs) then
-        fam!.ZeroConwayFFEs := [];
+        fam!.ZeroConwayFFEs := MakeWriteOnceAtomic([]);
     fi;
     d := x![2];
     if not IsBound(fam!.ZeroConwayFFEs[d]) then
-        fam!.ZeroConwayFFEs[d] := Objectify(fam!.ConwayFldEltDefaultType,[ZeroMutable(x![1]),d, 
-                                          0*Z(fam!.Characteristic)]);
+        fam!.ZeroConwayFFEs[d] := MakeReadOnly(Objectify(fam!.ConwayFldEltDefaultType,[ZeroMutable(x![1]),d, 
+                                          0*Z(fam!.Characteristic)]));
     fi;
     return fam!.ZeroConwayFFEs[d];
 end;
@@ -1046,14 +1047,14 @@ FFECONWAY.One := function(x)
     local   fam,  d,  v;
     fam := FamilyObj(x);
     if not IsBound(fam!.OneConwayFFEs) then
-        fam!.OneConwayFFEs := [];
+        fam!.OneConwayFFEs := MakeWriteOnceAtomic([]);
     fi;
     d := x![2];
     if not IsBound(fam!.OneConwayFFEs[d]) then
         v := ZeroMutable(x![1]);
         v[1] := Z(fam!.Characteristic)^0;
-        fam!.OneConwayFFEs[d] := Objectify(fam!.ConwayFldEltDefaultType,[v,d, 
-                                         Z(fam!.Characteristic)^0]);
+        fam!.OneConwayFFEs[d] := MakeReadOnly(Objectify(fam!.ConwayFldEltDefaultType,[v,d, 
+                                         Z(fam!.Characteristic)^0]));
     fi;
     return fam!.OneConwayFFEs[d];
 end;
