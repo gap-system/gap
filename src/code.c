@@ -697,7 +697,7 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* switch to this function                                             */
-    SWITCH_TO_NEW_LVARS( fexp, (narg != -1 ? narg : 1), nloc, old );
+    SWITCH_TO_NEW_LVARS( fexp, (narg >0 ? narg : -narg), nloc, old );
     (void) old; /* please picky compilers. */
 
     /* allocate the top level statement sequence                           */
