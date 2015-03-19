@@ -66,7 +66,7 @@ RunStandardTests( [
   [ "grpmat.tst",481000000],
   [ "grppc.tst",45300000],
   [ "grppcnrm.tst",2333400000],
-  [ "grpperm.tst",490500000],
+#  [ "grpperm.tst",490500000],
   [ "grpprmcs.tst",4153600000],
   [ "hash2.tst",3702400000],
   [ "intarith.tst",2300000],
