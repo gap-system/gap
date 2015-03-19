@@ -2023,13 +2023,12 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
   rank=1;
   
   if(TNUM_OBJ(f)==T_TRANS2){
-    deg=DEG_TRANS2(f);
+    deg=INT_INTOBJ(FuncDegreeOfTransformation(self,f));
     if(len>=deg){
-      pttmp=ResizeInitTmpTrans(len);
-      ptf2=ADDR_TRANS2(f);
       out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
       SET_LEN_PLIST(out, len);
-    
+      pttmp=ResizeInitTmpTrans(len);
+      ptf2=ADDR_TRANS2(f);
       for(i=0;i<deg;i++){ //<f> then <g> with ker(<g>)=<ker>
         j=INT_INTOBJ(ELM_LIST(ker, ptf2[i]+1))-1; // f first!
         if(pttmp[j]==0) pttmp[j]=rank++;
@@ -2042,10 +2041,10 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
         SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
       }
     } else {//len<deg
-      pttmp=ResizeInitTmpTrans(deg);
-      ptf2=ADDR_TRANS2(f);
       out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, deg);
       SET_LEN_PLIST(out, deg);
+      pttmp=ResizeInitTmpTrans(deg);
+      ptf2=ADDR_TRANS2(f);
       for(i=0;i<len;i++){  //<f> then <g> with ker(<g>)=<ker>
         j=INT_INTOBJ(ELM_LIST(ker, ptf2[i]+1))-1; // f first!
         if(pttmp[j]==0) pttmp[j]=rank++;
@@ -2063,13 +2062,12 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
       }
     }
   } else { 
-    deg=DEG_TRANS4(f);
+    deg=INT_INTOBJ(FuncDegreeOfTransformation(self,f));
     if(len>=deg){
-      pttmp=ResizeInitTmpTrans(len);
-      ptf4=ADDR_TRANS4(f);
       out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
       SET_LEN_PLIST(out, len);
-    
+      pttmp=ResizeInitTmpTrans(len);
+      ptf4=ADDR_TRANS4(f);
       for(i=0;i<deg;i++){ //<f> then <g> with ker(<g>)=<ker>
         j=INT_INTOBJ(ELM_LIST(ker, ptf4[i]+1))-1; // f first!
         if(pttmp[j]==0) pttmp[j]=rank++;
@@ -2082,10 +2080,10 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
         SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
       }
     } else {//len<deg
-      pttmp=ResizeInitTmpTrans(deg);
-      ptf4=ADDR_TRANS4(f);
       out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, deg);
       SET_LEN_PLIST(out, deg);
+      pttmp=ResizeInitTmpTrans(deg);
+      ptf4=ADDR_TRANS4(f);
       for(i=0;i<len;i++){  //<f> then <g> with ker(<g>)=<ker>
         j=INT_INTOBJ(ELM_LIST(ker, ptf4[i]+1))-1; // f first!
         if(pttmp[j]==0) pttmp[j]=rank++;
