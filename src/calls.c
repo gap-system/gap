@@ -284,7 +284,7 @@ Obj DoWrap6args (
 /* Pull this out to avoid repetition, since it gets a little more complex in 
    the presence of partially variadic functions */
 
-static Obj NargError( Obj func, Int actual) {
+Obj NargError( Obj func, Int actual) {
   Int narg = NARG_FUNC(func);
 
   if (narg >= 0) {
