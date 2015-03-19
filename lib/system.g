@@ -22,13 +22,13 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
 
 # do not edit the following three lines. Occurences of `4.dev' and `today' 
 # will be replaced by string matching by distribution wrapping scripts.
-    Version := "4.dev",
-    Date := "today",
-    NeedKernelVersion := "4.dev",
+    Version := `"4.dev",
+    Date := `"today",
+    NeedKernelVersion := `"4.dev",
 
 # Without the needed packages, GAP does not start.
     Dependencies := rec(
-      NeededOtherPackages := [
+      NeededOtherPackages := `[
         [ "gapdoc", ">= 1.2" ],
       ],
     ),
@@ -36,21 +36,21 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
     HasReadGAPRC:= false,
     
     # list of all reserved keywords
-    Keywords:=ALL_KEYWORDS(),
+    Keywords:=MakeImmutable(ALL_KEYWORDS()),
 
     # the maximal number of arguments a method can have
     MaxNrArgsMethod:= 6,
 
     # caches of functions that are needed also with a workspace
-    AtExitFuncs:= [],
-    PostRestoreFuncs:= [],
+    AtExitFuncs:= AtomicList([]),
+    PostRestoreFuncs:= AtomicList([]),
 
     TestData:= ThreadLocalRecord( rec() ),
 
     # admissible command line options
     # (name of the option, default value, descr. strings for help page;
     # if no help string appears then option is not advertised in the help)
-    CommandLineOptionData := [
+    CommandLineOptionData := `[
       [ "h", false, "print this help and exit" ],
       [ "b", false, "disable/enable the banner" ],
       [ "q", false, "enable/disable quiet mode" ],

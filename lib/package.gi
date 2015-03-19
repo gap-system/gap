@@ -2333,8 +2333,8 @@ InstallGlobalFunction( CheckPackageLoading, function( pkgname )
 ##  </Description>
 ##  </ManSection>
 ##
-GAPInfo.PackagesRestrictions := rec(
-  anupq := rec(
+GAPInfo.PackagesRestrictions := AtomicRecord(rec(
+  anupq := `rec(
     OnInitialization := function( pkginfo )
         if CompareVersionNumbers( pkginfo.Version, "1.3" ) = false then
           return false;
@@ -2354,7 +2354,7 @@ GAPInfo.PackagesRestrictions := rec(
         fi;
         end ),
 
-  autpgrp := rec(
+  autpgrp := `rec(
     OnInitialization := function( pkginfo )
         return true;
         end,
@@ -2369,7 +2369,7 @@ GAPInfo.PackagesRestrictions := rec(
               "most recent version, see URL\n",
               "      http://www.gap-system.org/Packages/autpgrp.html\n" );
         fi;
-        end ) );
+        end ) ));
 
 
 #############################################################################
