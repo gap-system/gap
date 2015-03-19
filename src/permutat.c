@@ -4639,6 +4639,15 @@ Obj Array2Perm (
     return perm;
 }
 
+static inline Int myquo( Obj pt, Obj perm) {
+  if (TNUM_OBJ(perm) == T_PERM2)
+    return INT_INTOBJ(QuoIntPerm2(pt, perm));
+  else if (TNUM_OBJ(perm) == T_PERM4)
+    return INT_INTOBJ(QuoIntPerm4(pt, perm));
+  else
+    return INT_INTOBJ(QUO(pt,perm ));
+}
+  
 
 /* Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop */
 Obj FuncAGESTC( Obj self, Obj args)
@@ -4664,7 +4673,7 @@ Obj FuncAGESTC( Obj self, Obj args)
     for (j = 1; j <= lenn; j++) {
       oj = ELM_PLIST(newlabs,j);
       lj = ELM_PLIST(labels, INT_INTOBJ(oj));
-      img = INT_INTOBJ(QUO(pt,lj ));
+      img = myquo(pt, lj);
       if (img <= LEN_PLIST(translabels) && (Obj)0 != ELM_PLIST(translabels,img)) 
 	ASS_LIST(cycles, i, True);
       else {
@@ -4680,7 +4689,7 @@ Obj FuncAGESTC( Obj self, Obj args)
     for (j = 1; j <= lenl; j++) {
       oj = ELM_PLIST(genlabels, j);
       lj = ELM_PLIST(labels, INT_INTOBJ(oj));
-      img = INT_INTOBJ(QUO(pt,lj ));
+      img = myquo(pt, lj);
       if (img <= LEN_PLIST(translabels) && (Obj)0 != ELM_PLIST(translabels,img)) 
 	ASS_LIST(cycles, i, True);
       else {
@@ -4711,7 +4720,7 @@ Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, O
     for (j = 1; j <= lenn; j++) {
       oj = ELM_PLIST(newlabs,j);
       lj = ELM_PLIST(labels, INT_INTOBJ(oj));
-      img = INT_INTOBJ(QUO(pt,lj ));
+      img = myquo(pt,lj);
       if (img > LEN_PLIST(translabels) || (Obj)0 == ELM_PLIST(translabels,img)) {
 	ASS_LIST(translabels, img, oj);
 	ASS_LIST(transversal, img, lj);
@@ -4724,7 +4733,7 @@ Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, O
     for (j = 1; j <= lenl; j++) {
       oj = ELM_PLIST(genlabels, j);
       lj = ELM_PLIST(labels, INT_INTOBJ(oj));
-	img = INT_INTOBJ(QUO(pt,lj ));
+      img = myquo(pt, lj);
 	if (img > LEN_PLIST(translabels) || (Obj)0 == ELM_PLIST(translabels,img)) {
 	  ASS_LIST(translabels, img, oj);
 	  ASS_LIST(transversal, img, lj);
