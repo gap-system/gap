@@ -1340,7 +1340,7 @@ void PrintFunction (
             Pr("<<kernel or compiled code>>",0L,0L);
         }
         else {
-            SWITCH_TO_NEW_LVARS( func, NARG_FUNC(func), NLOC_FUNC(func),
+            SWITCH_TO_NEW_LVARS( func, narg, NLOC_FUNC(func),
                                  oldLVars );
             PrintStat( FIRST_STAT_CURR_FUNC );
             SWITCH_TO_OLD_LVARS( oldLVars );
