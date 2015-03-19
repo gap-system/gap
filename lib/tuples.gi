@@ -45,7 +45,7 @@ InstallMethod( DirectProductElementsFamily,
     n := Length(famlist);
     if not IsBound(DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1]) then
       tupfams:= WeakPointerObj( [] );
-      DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1]:= tupfams;
+      DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1]:= MigrateObj( tupfams, DIRECT_PRODUCT_ELEMENT_FAMILIES );
       freepos:= 1;
     else
       tupfams:= DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1];
