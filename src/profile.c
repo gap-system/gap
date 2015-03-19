@@ -133,7 +133,7 @@ struct ProfileState
 
 void ProfileLineByLineIntoFunction(Obj func)
 { 
-  if(profileState.Active)
+  if(profileState.Active && profileState.OutputRepeats)
   {
     Obj n = NAME_FUNC(func);
     Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
@@ -143,7 +143,7 @@ void ProfileLineByLineIntoFunction(Obj func)
 
 void ProfileLineByLineOutFunction(Obj func)
 {
-  if(profileState.Active)
+  if(profileState.Active && profileState.OutputRepeats)
   {
     Obj n = NAME_FUNC(func);
     Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
