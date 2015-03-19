@@ -470,6 +470,7 @@ InstallGlobalFunction( AddGeneratorsExtendSchreierTree, function( S, new )
     old := BlistList( [ 1 .. Length( S.labels ) ], S.genlabels );
     old[ 1 ] := true;
     ald := StructuralCopy( old );
+    newlabs := [];
     for gen  in new  do
         pos := Position( S.labels, gen );
         if pos = fail  then
@@ -477,8 +478,10 @@ InstallGlobalFunction( AddGeneratorsExtendSchreierTree, function( S, new )
             Add( old, false );
             Add( ald, true );
             Add( S.genlabels, Length( S.labels ) );
+            Add( newlabs, Length(S.labels));            
         elif not ald[ pos ]  then
             Add( S.genlabels, pos );
+            Add( newlabs, pos);            
         fi;
         if     IsBound( S.generators )
            and pos <> 1 and not gen in S.generators  then
@@ -492,16 +495,14 @@ InstallGlobalFunction( AddGeneratorsExtendSchreierTree, function( S, new )
     
     
     
-    # move tests outside loops as much as possible
-    newlabs := Filtered(S.genlabels, j->not old[j]);
-    
     #
     # New kernel functions take over from the GAP code in comments here.
     # the speedup is considerable. 
     #
     
     # move tests outside loops as much as possible
-    newlabs := Filtered(S.genlabels, j->not old[j]);
+    Assert(1,newlabs = Filtered(S.genlabels, j->not old[j]));
+    
     if IsBound( S.cycles )  then
         AGESTC(S.orbit, newlabs, S.cycles, S.labels, S.translabels, S.transversal, S.genlabels);
         
