@@ -487,70 +487,84 @@ InstallGlobalFunction( AddGeneratorsExtendSchreierTree, function( S, new )
     od;
                           
     # Extend the orbit and the transversal with the new labels.
-    len := Length( S.orbit );
-    i := 1;
+#    len := Length( S.orbit );
+ #   i := 1;
+    
+    
+    
+    # move tests outside loops as much as possible
+    newlabs := Filtered(S.genlabels, j->not old[j]);
+    
+    #
+    # New kernel functions take over from the GAP code in comments here.
+    # the speedup is considerable. 
+    #
     
     # move tests outside loops as much as possible
     newlabs := Filtered(S.genlabels, j->not old[j]);
     if IsBound( S.cycles )  then
-        for i in [1..len] do
-            for j in newlabs do
-                img := S.orbit[ i ] / S.labels[ j ];
-                if IsBound( S.translabels[ img ] )  then
-                    S.cycles[i] := true;
-                else
-                    S.translabels[ img ] := j;
-                    S.transversal[ img ] := S.labels[ j ];
-                    Add( S.orbit, img );
-                    Add( S.cycles, false);
+        AGESTC(S.orbit, newlabs, S.cycles, S.labels, S.translabels, S.transversal, S.genlabels);
+        
+        # for i in [1..len] do
+        #     for j in newlabs do
+        #         img := S.orbit[ i ] / S.labels[ j ];
+        #         if IsBound( S.translabels[ img ] )  then
+        #             S.cycles[i] := true;
+        #         else
+        #             S.translabels[ img ] := j;
+        #             S.transversal[ img ] := S.labels[ j ];
+        #             Add( S.orbit, img );
+        #             Add( S.cycles, false);
                     
-                fi;
-            od;
-        od;
+        #         fi;
+        #     od;
+        # od;
         
                 
-        while i <= Length( S.orbit )  do
-            for j  in S.genlabels  do
-                img := S.orbit[ i ] / S.labels[ j ];
-                if  IsBound( S.translabels[ img ] )  then
-                    S.cycles[i] := true;
-                else
-                    S.translabels[ img ] := j;
-                    S.transversal[ img ] := S.labels[ j ];
-                    Add( S.orbit, img );
-                    Add( S.cycles, false);
+        # while i <= Length( S.orbit )  do
+        #     for j  in S.genlabels  do
+        #         img := S.orbit[ i ] / S.labels[ j ];
+        #         if  IsBound( S.translabels[ img ] )  then
+        #             S.cycles[i] := true;
+        #         else
+        #             S.translabels[ img ] := j;
+        #             S.transversal[ img ] := S.labels[ j ];
+        #             Add( S.orbit, img );
+        #             Add( S.cycles, false);
                     
-                fi;
-            od;
-            i := i + 1;
-        od;
+        #         fi;
+        #     od;
+        #     i := i + 1;
+        # od;
         
     else
 
+        AGEST(S.orbit, newlabs,  S.labels, S.translabels, S.transversal, S.genlabels);
         
-        for i in [1..len] do
-            for j in newlabs do
-                img := S.orbit[ i ] / S.labels[ j ];
-                if not IsBound( S.translabels[ img ] )  then
-                    S.translabels[ img ] := j;
-                    S.transversal[ img ] := S.labels[ j ];
-                    Add( S.orbit, img );
-                fi;
-            od;
-        od;
+        # for i in [1..len] do
+        #     for j in newlabs do
+        #         img := S.orbit[ i ] / S.labels[ j ];
+        #         if not IsBound( S.translabels[ img ] )  then
+        #             S.translabels[ img ] := j;
+        #             S.transversal[ img ] := S.labels[ j ];
+        #             Add( S.orbit, img );
+        #         fi;
+        #     od;
+        # od;
         
                 
-        while i <= Length( S.orbit )  do
-            for j  in S.genlabels  do
-                img := S.orbit[ i ] / S.labels[ j ];
-                    if not IsBound( S.translabels[ img ] )  then
-                        S.translabels[ img ] := j;
-                        S.transversal[ img ] := S.labels[ j ];
-                        Add( S.orbit, img );
-                    fi;
-                od;
-            i := i + 1;
-        od;
+        # while i <= Length( S.orbit )  do
+        #     for j  in S.genlabels  do
+        #         img := S.orbit[ i ] / S.labels[ j ];
+        #             if not IsBound( S.translabels[ img ] )  then
+        #                 S.translabels[ img ] := j;
+        #                 S.transversal[ img ] := S.labels[ j ];
+        #                 Add( S.orbit, img );
+        #             fi;
+        #         od;
+        #     i := i + 1;
+        # od;
+
     fi;
 end );
 
