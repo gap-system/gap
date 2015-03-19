@@ -48,7 +48,7 @@ DeclareSynonym( "ZNZ_PURE_TYPE", POS_FIRST_FREE_TYPE );
 ##  Objects in this representation are defined by a single data entry, an
 ##  integer at first position.
 ##
-DeclareRepresentation( "IsModulusRep", IsPositionalObjectRep, [ 1 ] );
+DeclareRepresentation( "IsModulusRep", IsReadOnlyPositionalObjectRep, [ 1 ] );
 
 
 #############################################################################
