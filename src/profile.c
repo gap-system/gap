@@ -46,6 +46,7 @@
 
 #include        "profile.h"
 
+#include        "calls.h"               /* function filename, line number  */
 
 /****************************************************************************
 **
@@ -112,6 +113,8 @@
 # include       <sys/time.h>            /* for gettimeofday                */
 #endif
 
+Obj OutputtedFilenameList;
+
 struct ProfileState
 {
   UInt Active;
@@ -131,25 +134,40 @@ struct ProfileState
   int minimumProfileTick;
 } profileState;
 
-void ProfileLineByLineIntoFunction(Obj func)
+void ProfileLineByLineOutput(Obj func, char type)
 { 
   if(profileState.Active && profileState.OutputRepeats)
   {
-    Obj n = NAME_FUNC(func);
-    Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
-    fprintf(profileState.Stream, "{\"Type\":\"I\",\"Fun\":\"%s\"}\n", s);
+    int startline_i = 0, endline_i = 0;
+    Obj startline = FuncSTARTLINE_FUNC(0, func);
+    Obj endline = FuncENDLINE_FUNC(0, func);
+    if(IS_INTOBJ(startline)) {
+      startline_i = INT_INTOBJ(startline);
+    }
+    if(IS_INTOBJ(endline)) {
+      endline_i = INT_INTOBJ(endline);
+    }
+    
+    Obj name = NAME_FUNC(func);
+    Char *name_c = ((UInt)name) ? (Char *)CHARS_STRING(name) : (Char *)"nameless";
+    
+    Obj filename = FuncFILENAME_FUNC(0, func);
+    Char *filename_c = (Char*)"<missing filename>";
+    if(filename != Fail && filename != NULL)
+      filename_c = (Char *)CHARS_STRING(filename);
+    
+    fprintf(profileState.Stream,
+            "{\"Type\":\"%c\",\"Fun\":\"%s\",\"Line\":%d,\"EndLine\":%d,\"File\":\"%s\"}\n",
+            type, name_c, startline_i, endline_i, filename_c);
   }
 }
 
+void ProfileLineByLineIntoFunction(Obj func)
+{ ProfileLineByLineOutput(func, 'I'); }
+
+          
 void ProfileLineByLineOutFunction(Obj func)
-{
-  if(profileState.Active && profileState.OutputRepeats)
-  {
-    Obj n = NAME_FUNC(func);
-    Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
-    fprintf(profileState.Stream, "{\"Type\":\"O\",\"Fun\":\"%s\"}\n", s);
-  }
-}
+{ ProfileLineByLineOutput(func, 'O'); }
 
 /****************************************************************************
 **
@@ -270,13 +288,26 @@ void InstallPrintExprFunc(Int pos, void(*expr)(Expr)) {
 ** as approriate, and then pass through to the true function
 */
 
+// This function checks if we have ever printed out the id of stat
+static inline UInt getFilenameId(stat)
+{
+  UInt id = FILENAMEID_STAT(stat);
+  if(LEN_PLIST(OutputtedFilenameList) < id || !ELM_PLIST(OutputtedFilenameList,id))
+  {
+    GROW_PLIST(OutputtedFilenameList, id);
+    SET_LEN_PLIST(OutputtedFilenameList, id);
+    SET_ELM_PLIST(OutputtedFilenameList, id, True);
+    fprintf(profileState.Stream, "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
+                                  CSTR_STRING(FILENAME_STAT(stat)), (int)id);
+  }
+  return id;
+}
 
 // exec : are we executing this statement
 // visit: Was this statement previously visited (that is, executed)
 static inline void outputStat(Stat stat, int exec, int visited)
 {
-  char* name;
-  int line;
+  UInt line;
   int nameid;
   
   int ticks = 0;
@@ -289,13 +320,12 @@ static inline void outputStat(Stat stat, int exec, int visited)
 #endif
 #endif
     
-  nameid = FILENAMEID_STAT(stat);
+  nameid = getFilenameId(stat);
   line = LINE_STAT(stat);
   if(profileState.lastOutputtedLine != line ||
      profileState.lastOutputtedFileID != nameid || 
      profileState.lastOutputtedExec != exec)
   {
-    name = CSTR_STRING(FILENAME_STAT(stat));
 
     if(profileState.OutputRepeats) {
 #if defined(HAVE_GETTIMEOFDAY)
@@ -313,17 +343,18 @@ static inline void outputStat(Stat stat, int exec, int visited)
       // Basic sanity check
       if(ticks < 0)
         ticks = 0;
-      if(ticks > profileState.minimumProfileTick || (!visited)) {
-        fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"File\":\"%s\"}\n",
-                exec ? 'E' : 'R', ticks, line, name);
+      if((profileState.minimumProfileTick > 0 && ticks > profileState.minimumProfileTick)
+         || (!visited)) {
+        fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"FileId\":%d}\n",
+                exec ? 'E' : 'R', ticks, (int)line, (int)nameid);
 #if defined(HAVE_GETRUSAGE) || defined(HAVE_GETTIMEOFDAY)
         profileState.lastOutputtedTime = timebuf;
 #endif
       }
     }
     else {
-      fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Line\":%d,\"File\":\"%s\"}\n",
-              exec ? 'E' : 'R', line, name);
+      fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Line\":%d,\"FileId\":%d}\n",
+              exec ? 'E' : 'R', (int)line, (int)nameid);
     }
     profileState.lastOutputtedLine = line;
     profileState.lastOutputtedFileID = nameid;
@@ -441,6 +472,8 @@ Obj FuncACTIVATE_PROFILING (
     if(profileState.Active) {
       return Fail;
     }
+    
+    OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
 
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
@@ -700,7 +733,7 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
-
+    OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
     /* return success                                                      */
     return 0;
 }
@@ -713,7 +746,7 @@ static Int InitKernel (
     StructInitInfo *    module )
 {   
     InitHdlrFuncsFromTable( GVarFuncs );
-    
+    InitGlobalBag(&OutputtedFilenameList, "src/profile.c:OutputtedFileList");
     return 0;
 }
 
