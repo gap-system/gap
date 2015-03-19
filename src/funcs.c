@@ -1156,6 +1156,7 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args) {
   Obj argx;
 
 
+
     CHECK_RECURSION_BEFORE
     named = ((UInt)-NARG_FUNC(func))-1;
     len = LEN_PLIST(args);
@@ -1164,7 +1165,6 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args) {
       argx = NargError(func, len);
       return DoOperation2Args(CallFuncListOper, func, argx);
     }
-
 
     SWITCH_TO_NEW_LVARS( func, named+1, NLOC_FUNC(func), oldLvars );
 
