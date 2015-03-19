@@ -2019,8 +2019,6 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
   }
 
   len=LEN_LIST(ker);
-  out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
-  SET_LEN_PLIST(out, len);
   
   rank=1;
   
@@ -2029,6 +2027,8 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
     if(len>=deg){
       pttmp=ResizeInitTmpTrans(len);
       ptf2=ADDR_TRANS2(f);
+      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
+      SET_LEN_PLIST(out, len);
     
       for(i=0;i<deg;i++){ //<f> then <g> with ker(<g>)=<ker>
         j=INT_INTOBJ(ELM_LIST(ker, ptf2[i]+1))-1; // f first!
@@ -2044,14 +2044,22 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
     } else {//len<deg
       pttmp=ResizeInitTmpTrans(deg);
       ptf2=ADDR_TRANS2(f);
+      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, deg);
+      SET_LEN_PLIST(out, deg);
       for(i=0;i<len;i++){  //<f> then <g> with ker(<g>)=<ker>
         j=INT_INTOBJ(ELM_LIST(ker, ptf2[i]+1))-1; // f first!
         if(pttmp[j]==0) pttmp[j]=rank++;
         SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
       }
-      for(;i<deg;i++){     //just <f>
-        if(pttmp[ptf2[i]]==0) pttmp[ptf2[i]]=rank++;
-        SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[ptf2[i]]));
+      for(;i<deg;i++){//assume g acts as identity on i
+	if(ptf2[i]+1<=len) {  //refers to a class in ker
+	  j=INT_INTOBJ(ELM_LIST(ker, ptf2[i]+1))-1;
+	  if(pttmp[j]==0) pttmp[j]=rank++;
+	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
+	} else {  //refers to a class outside ker
+	  if(pttmp[ptf2[i]]==0) pttmp[ptf2[i]]=rank++;
+	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[ptf2[i]]));
+	}
       }
     }
   } else { 
@@ -2059,6 +2067,8 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
     if(len>=deg){
       pttmp=ResizeInitTmpTrans(len);
       ptf4=ADDR_TRANS4(f);
+      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
+      SET_LEN_PLIST(out, len);
     
       for(i=0;i<deg;i++){ //<f> then <g> with ker(<g>)=<ker>
         j=INT_INTOBJ(ELM_LIST(ker, ptf4[i]+1))-1; // f first!
@@ -2074,14 +2084,22 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
     } else {//len<deg
       pttmp=ResizeInitTmpTrans(deg);
       ptf4=ADDR_TRANS4(f);
+      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, deg);
+      SET_LEN_PLIST(out, deg);
       for(i=0;i<len;i++){  //<f> then <g> with ker(<g>)=<ker>
         j=INT_INTOBJ(ELM_LIST(ker, ptf4[i]+1))-1; // f first!
         if(pttmp[j]==0) pttmp[j]=rank++;
         SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
       }
       for(;i<deg;i++){     //just <f>
-        if(pttmp[ptf4[i]]==0) pttmp[ptf4[i]]=rank++;
-        SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[ptf4[i]]));
+	if(ptf4[i]+1<=len) {
+	  j=INT_INTOBJ(ELM_LIST(ker, ptf4[i]+1))-1;
+	  if(pttmp[j]==0) pttmp[j]=rank++;
+	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
+	} else {
+	  if(pttmp[ptf4[i]]==0) pttmp[ptf4[i]]=rank++;
+	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[ptf4[i]]));
+	}
       }
     }
   }
