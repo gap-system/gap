@@ -925,8 +925,10 @@ void PrintInaccessibleObject(Obj obj)
   } else {
     sprintf(buffer, "%p", region);
     name = buffer;
+    Pr("<protected object in shared region %s (id: %d)>", (Int) name, (Int) obj);
+    return;
   }
-  Pr("<obj %d inaccessible in region: %s>", (Int) obj, (Int)name);
+  Pr("<protected '%s' object (id: %d)>", (Int) name, (Int) obj);
 }
      
 #define MARK(obj)     do {} while (0)

@@ -351,7 +351,7 @@ BindGlobal("RunTask", function(arg)
   local task;
   task := TASKS.NewTask(arg[1], arg{[2..Length(arg)]});
   task.started := true;
-  ShareSpecialObj(task);
+  ShareSpecialObj(task, "task descriptor");
   TASKS.QueueTask(task);
   return task;
 end);
