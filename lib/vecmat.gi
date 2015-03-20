@@ -1514,8 +1514,12 @@ InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
     # Calling COMMON_FIELD_VECFFE may force a full inspection of the list.
     common := COMMON_FIELD_VECFFE(v);
     if common = fail then
-        Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,").\n",
-              "You may try to use ConvertToVectorRep instead\n");
+        common := SMALLEST_FIELD_VECFFE(v);
+        if common = fail then
+            Error("CopyToVectorRepNC: Vector cannot be written over GF(",q,").\n",
+                  "You may try to use CopyToVectorRep instead\n");
+        fi;
+        
     fi;
     
     if q = 2 then
