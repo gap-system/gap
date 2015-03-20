@@ -48,15 +48,24 @@
 #include        "objccoll.h"            /* combinatorial collector         */
 
 
-#define CB(x)       C8Bits_ ## x
+#define AddWordIntoExpVec   C8Bits_AddWordIntoExpVec
+#define AddCommIntoExpVec   C8Bits_AddCommIntoExpVec
+#define AddPartIntoExpVec   C8Bits_AddPartIntoExpVec
+#define CombiCollectWord    C8Bits_CombiCollectWord
 #define UIntN       UInt1
 #include "objccoll-impl.h"
 
-#define CB(x)       C16Bits_ ## x
+#define AddWordIntoExpVec   C16Bits_AddWordIntoExpVec
+#define AddCommIntoExpVec   C16Bits_AddCommIntoExpVec
+#define AddPartIntoExpVec   C16Bits_AddPartIntoExpVec
+#define CombiCollectWord    C16Bits_CombiCollectWord
 #define UIntN       UInt2
 #include "objccoll-impl.h"
 
-#define CB(x)       C32Bits_ ## x
+#define AddWordIntoExpVec   C32Bits_AddWordIntoExpVec
+#define AddCommIntoExpVec   C32Bits_AddCommIntoExpVec
+#define AddPartIntoExpVec   C32Bits_AddPartIntoExpVec
+#define CombiCollectWord    C32Bits_CombiCollectWord
 #define UIntN       UInt4
 #include "objccoll-impl.h"
 

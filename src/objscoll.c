@@ -89,8 +89,14 @@ typedef struct {
 *F * * * * * * * * * * * internal collector functions * * * * * * * * * * * *
 */
 
-#define CB(x)       C8Bits_ ## x
-#define UIntN       UInt1
+#define WordVectorAndClear  C8Bits_WordVectorAndClear
+#define VectorWord          C8Bits_VectorWord
+#define SingleCollectWord   C8Bits_SingleCollectWord
+#define SAddWordIntoExpVec  C8Bits_SAddWordIntoExpVec
+#define SAddPartIntoExpVec  C8Bits_SAddPartIntoExpVec
+#define SingleCollectWord   C8Bits_SingleCollectWord
+#define Solution            C8Bits_Solution
+#define UIntN               UInt1
 #include "src/objscoll-impl.h"
 
 /****************************************************************************
@@ -105,8 +111,14 @@ FinPowConjCol C8Bits_SingleCollector = {
 };
 
 
-#define CB(x)       C16Bits_ ## x
-#define UIntN       UInt2
+#define WordVectorAndClear  C16Bits_WordVectorAndClear
+#define VectorWord          C16Bits_VectorWord
+#define SingleCollectWord   C16Bits_SingleCollectWord
+#define SAddWordIntoExpVec  C16Bits_SAddWordIntoExpVec
+#define SAddPartIntoExpVec  C16Bits_SAddPartIntoExpVec
+#define SingleCollectWord   C16Bits_SingleCollectWord
+#define Solution            C16Bits_Solution
+#define UIntN               UInt2
 #include "src/objscoll-impl.h"
 
 /****************************************************************************
@@ -121,8 +133,14 @@ FinPowConjCol C16Bits_SingleCollector = {
 };
 
 
-#define CB(x)       C32Bits_ ## x
-#define UIntN       UInt4
+#define WordVectorAndClear  C32Bits_WordVectorAndClear
+#define VectorWord          C32Bits_VectorWord
+#define SingleCollectWord   C32Bits_SingleCollectWord
+#define SAddWordIntoExpVec  C32Bits_SAddWordIntoExpVec
+#define SAddPartIntoExpVec  C32Bits_SAddPartIntoExpVec
+#define SingleCollectWord   C32Bits_SingleCollectWord
+#define Solution            C32Bits_Solution
+#define UIntN               UInt4
 #include "src/objscoll-impl.h"
 
 /****************************************************************************
