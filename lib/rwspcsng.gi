@@ -16,14 +16,14 @@
 ##
 
 
-SCOBJ_NW_STACK := [];
-SCOBJ_LW_STACK := [];
-SCOBJ_PW_STACK := [];
-SCOBJ_EW_STACK := [];
-SCOBJ_GE_STACK := [];
-SCOBJ_CW_VECTOR := "";
-SCOBJ_CW2_VECTOR := "";
-SCOBJ_MAX_STACK_SIZE := 256;
+BindThreadLocalConstructor("SCOBJ_NW_STACK", ->[]);
+BindThreadLocalConstructor("SCOBJ_LW_STACK", ->[]);
+BindThreadLocalConstructor("SCOBJ_PW_STACK", ->[]);
+BindThreadLocalConstructor("SCOBJ_EW_STACK", ->[]);
+BindThreadLocalConstructor("SCOBJ_GE_STACK", ->[]);
+BindThreadLocalConstructor("SCOBJ_CW_VECTOR", ->"");
+BindThreadLocalConstructor("SCOBJ_CW2_VECTOR", ->"");
+BindThreadLocalConstructor("SCOBJ_MAX_STACK_SIZE", ->256);
 
 
 #############################################################################
