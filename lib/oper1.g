@@ -745,7 +745,7 @@ InstallAttributeFunction(
 ##  <#/GAPDoc>
 ##
 IsPrimeInt := "2b defined";
-
+MakeWriteOnceAtomic := "2b defined";
 BIND_GLOBAL( "KeyDependentOperation",
     function( name, domreq, keyreq, keytest )
     local str, oper, attr;
@@ -772,7 +772,11 @@ BIND_GLOBAL( "KeyDependentOperation",
     DeclareAttribute( str, domreq, "mutable" );
     attr:= VALUE_GLOBAL( str );
 
-    InstallMethod( attr, "default method", true, [ domreq ], 0, D -> [] );
+
+    InstallMethod( attr, "default method", true, [ domreq ], 0, 
+      function(D) 
+        return MakeWriteOnceAtomic([]);
+      end );
 
     # Create the wrapper operation that mainly calls the operation.
     DeclareOperation( name, [ domreq, keyreq ] );
@@ -791,19 +795,17 @@ BIND_GLOBAL( "KeyDependentOperation",
         keytest( key );
         known:= attr( D );
         i:= 1;
-        while i < LEN_LIST( known ) and known[i] < key do
+        while i < LEN_LIST( known ) and known[i] <> key do
           i:= i + 2;
         od;
 
 	# Start storing only after the result has been computed.
         # This avoids errors if a calculation had been interrupted.
 
-        if LEN_LIST( known ) < i or known[i] <> key then
+        if i >= LEN_LIST( known ) then
 	  erg := oper( D, key );
-          known{ [ i + 2 .. LEN_LIST( known ) + 2 ] }:=
-            known{ [ i .. LEN_LIST( known ) ] };
-          known[  i  ]:= key;
-          known[ i+1 ]:= erg;
+            known[  i  ]:= key;
+            known[ i+1 ]:= erg;
         fi;
         return known[ i+1 ];
         end );
