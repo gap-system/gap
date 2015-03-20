@@ -323,7 +323,8 @@ objccoll.o: ../../Makefile @srcdir@/objccoll.c @srcdir@/system.h config.h @srcdi
   @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gvars.h @srcdir@/gap.h \
   @srcdir@/tls.h @srcdir@/calls.h @srcdir@/records.h @srcdir@/lists.h \
   @srcdir@/bool.h @srcdir@/precord.h @srcdir@/plist.h @srcdir@/string.h \
-  @srcdir@/code.h @srcdir@/objfgelm.h @srcdir@/objscoll.h @srcdir@/objccoll.h
+  @srcdir@/code.h @srcdir@/objfgelm.h @srcdir@/objscoll.h @srcdir@/objccoll.h \
+  @srcdir@/objccoll-8bit.h @srcdir@/objccoll-16bit.h @srcdir@/objccoll-32bit.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o objccoll.o -c @srcdir@/objccoll.c
 
 objcftl.o: ../../Makefile @srcdir@/objcftl.c @srcdir@/system.h config.h @srcdir@/gasman.h \
@@ -358,7 +359,8 @@ objscoll.o: ../../Makefile @srcdir@/objscoll.c @srcdir@/system.h config.h @srcdi
   @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gvars.h @srcdir@/gap.h \
   @srcdir@/calls.h @srcdir@/records.h @srcdir@/lists.h @srcdir@/bool.h \
   @srcdir@/precord.h @srcdir@/plist.h @srcdir@/string.h @srcdir@/code.h \
-  @srcdir@/tls.h @srcdir@/objfgelm.h @srcdir@/objscoll.h @srcdir@/objccoll.h
+  @srcdir@/tls.h @srcdir@/objfgelm.h @srcdir@/objscoll.h @srcdir@/objccoll.h \
+  @srcdir@/objscoll-8bit.h @srcdir@/objscoll-16bit.h @srcdir@/objscoll-32bit.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o objscoll.o -c @srcdir@/objscoll.c
 
 opers.o: ../../Makefile @srcdir@/opers.c @srcdir@/system.h config.h @srcdir@/gasman.h \
