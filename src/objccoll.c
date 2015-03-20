@@ -48,11 +48,16 @@
 #include        "objccoll.h"            /* combinatorial collector         */
 
 
-
+#define CB(x)       C8Bits_ ## x
+#define UIntN       UInt1
 #include "objccoll-8bit.h"
 
+#define CB(x)       C16Bits_ ## x
+#define UIntN       UInt2
 #include "objccoll-16bit.h"
 
+#define CB(x)       C32Bits_ ## x
+#define UIntN       UInt4
 #include "objccoll-32bit.h"
 
 

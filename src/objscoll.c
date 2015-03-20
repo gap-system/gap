@@ -89,6 +89,8 @@ typedef struct {
 *F * * * * * * * * * * * internal collector functions * * * * * * * * * * * *
 */
 
+#define CB(x)       C8Bits_ ## x
+#define UIntN       UInt1
 #include "src/objscoll-8bit.h"
 
 /****************************************************************************
@@ -102,6 +104,9 @@ FinPowConjCol C8Bits_SingleCollector = {
     C8Bits_Solution
 };
 
+
+#define CB(x)       C16Bits_ ## x
+#define UIntN       UInt2
 #include "src/objscoll-16bit.h"
 
 /****************************************************************************
@@ -115,6 +120,9 @@ FinPowConjCol C16Bits_SingleCollector = {
     C16Bits_Solution
 };
 
+
+#define CB(x)       C32Bits_ ## x
+#define UIntN       UInt4
 #include "src/objscoll-32bit.h"
 
 /****************************************************************************

@@ -1,15 +1,15 @@
 /****************************************************************************
 **
-*F  C32Bits_WordVectorAndClear( <type>, <vv>, <num> )
+*F  CB(WordVectorAndClear)( <type>, <vv>, <num> )
 */
-Obj C32Bits_WordVectorAndClear ( Obj type, Obj vv, Int num )
+Obj CB(WordVectorAndClear) ( Obj type, Obj vv, Int num )
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
     Int         i;              /* loop variable for gen/exp pairs         */
     Int         j;              /* loop variable for exponent vector       */
     Int *       qtr;            /* pointer into the collect vector         */
-    UInt4 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
     Obj         obj;            /* result                                  */
 
     /* get the number of bits for exponents                                */
@@ -21,8 +21,8 @@ Obj C32Bits_WordVectorAndClear ( Obj type, Obj vv, Int num )
     /* construct a new object                                              */
     NEW_WORD( obj, type, num );
 
-    /* use UInt4 pointer for 32 bits, clear <vv>                           */
-    ptr = (UInt4*)DATA_WORD(obj);
+    /* use UIntN pointer for 32 bits, clear <vv>                           */
+    ptr = (UIntN*)DATA_WORD(obj);
     qtr = (Int*)(ADDR_OBJ(vv)+1);
     for ( i = 1, j = 0;  i <= num;  i++,  qtr++ ) {
         if ( *qtr != 0 ) {
@@ -40,11 +40,11 @@ Obj C32Bits_WordVectorAndClear ( Obj type, Obj vv, Int num )
 
 /****************************************************************************
 **
-*F  C32Bits_VectorWord( <vv>, <v>, <num> )
+*F  CB(VectorWord)( <vv>, <v>, <num> )
 **
 **  WARNING: This function assumes that <vv> is cleared!
 */
-Int C32Bits_VectorWord ( Obj vv, Obj v, Int num )
+Int CB(VectorWord) ( Obj vv, Obj v, Int num )
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -52,7 +52,7 @@ Int C32Bits_VectorWord ( Obj vv, Obj v, Int num )
     Int         i;              /* loop variable for gen/exp pairs         */
     Int         pos;            /* generator number                        */
     Int *       qtr;            /* pointer into the collect vector         */
-    UInt4 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
 
     /* <vv> must be a string                                               */
     if ( TNUM_OBJ(vv) != T_STRING ) {
@@ -85,7 +85,7 @@ Int C32Bits_VectorWord ( Obj vv, Obj v, Int num )
     expm = exps - 1;
 
     /* unfold <v> into <vv>                                                */
-    ptr = (UInt4*)DATA_WORD(v);
+    ptr = (UIntN*)DATA_WORD(v);
     qtr = (Int*)ADDR_OBJ(vv);
     for ( i = NPAIRS_WORD(v);  0 < i;  i--, ptr++ ) {
         pos = ((*ptr) >> ebits)+1;
@@ -103,7 +103,7 @@ Int C32Bits_VectorWord ( Obj vv, Obj v, Int num )
 
 /****************************************************************************
 **
-*F  C32Bits_SingleCollectWord( <sc>, <vv>, <w> )
+*F  CB(SingleCollectWord)( <sc>, <vv>, <w> )
 **
 **  If a stack overflow occurs, we simply stop and return false.
 **
@@ -141,11 +141,11 @@ Int C32Bits_VectorWord ( Obj vv, Obj v, Int num )
 **  global exponent because the beginning of  the word might not commute with
 **  the rest.
 **/
-static Int C32Bits_SAddWordIntoExpVec( Int *v, UInt4 *w, Int e, 
+static Int CB(SAddWordIntoExpVec)( Int *v, UIntN *w, Int e, 
                            Int ebits, UInt expm, 
                            Obj *ro, Obj *pow, Int lpow ) {
 
-    UInt4 *    wend = w + (INT_INTOBJ((((Obj*)(w))[-1])) - 1);
+    UIntN *    wend = w + (INT_INTOBJ((((Obj*)(w))[-1])) - 1);
     Int        i;
     Int        ex;
     Int        start = 0;
@@ -157,8 +157,8 @@ static Int C32Bits_SAddWordIntoExpVec( Int *v, UInt4 *w, Int e,
             ex = v[i] / INT_INTOBJ(ro[i]);
             v[i] -= ex * INT_INTOBJ(ro[i]);
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
-                start = C32Bits_SAddWordIntoExpVec( 
-                    v, (UInt4*)DATA_WORD(pow[i]), ex,
+                start = CB(SAddWordIntoExpVec)( 
+                    v, (UIntN*)DATA_WORD(pow[i]), ex,
                     ebits, expm, ro, pow, lpow  );
             }
         }
@@ -167,7 +167,7 @@ static Int C32Bits_SAddWordIntoExpVec( Int *v, UInt4 *w, Int e,
     return start;
 }
 
-static Int C32Bits_SAddPartIntoExpVec( Int *v, UInt4 *w, UInt4 *wend,
+static Int CB(SAddPartIntoExpVec)( Int *v, UIntN *w, UIntN *wend,
                            Int ebits, UInt expm, 
                            Obj* ro, Obj *pow, Int lpow ) {
 
@@ -182,8 +182,8 @@ static Int C32Bits_SAddPartIntoExpVec( Int *v, UInt4 *w, UInt4 *wend,
             ex = v[i] / INT_INTOBJ(ro[i]);
             v[i] -= ex * INT_INTOBJ(ro[i]);
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
-                start = C32Bits_SAddWordIntoExpVec( 
-                    v, (UInt4*)DATA_WORD(pow[i]), ex,
+                start = CB(SAddWordIntoExpVec)( 
+                    v, (UIntN*)DATA_WORD(pow[i]), ex,
                     ebits, expm, ro, pow, lpow  );
             }
         }
@@ -192,20 +192,20 @@ static Int C32Bits_SAddPartIntoExpVec( Int *v, UInt4 *w, UInt4 *wend,
     return start;
 }
 
-Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
+Int CB(SingleCollectWord) ( Obj sc, Obj vv, Obj w )
 {
     Int         ebits;      /* number of bits in the exponent              */
     UInt        expm;       /* unsigned exponent mask                      */
     UInt        exps;       /* sign exponent mask                          */
 
     Obj         vnw;        /* word stack                                  */
-    UInt4 **    nw;         /* address of <vnw>                            */
+    UIntN **    nw;         /* address of <vnw>                            */
     Obj         vlw;        /* last syllable stack                         */
-    UInt4 **    lw;         /* address of <vlw>                            */
+    UIntN **    lw;         /* address of <vlw>                            */
     Obj         vpw;        /* current syllable stack                      */
-    UInt4 **    pw;         /* address of <vpw>                            */
+    UIntN **    pw;         /* address of <vpw>                            */
     Obj         vew;        /* unprocessed exponent stack                  */
-    UInt4 *     ew;         /* address of <vew>                            */
+    UIntN *     ew;         /* address of <vew>                            */
     Obj         vge;        /* global exponent stack                       */
     Int *       ge;         /* address of <vge>                            */
 
@@ -300,10 +300,10 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     /* from now on we use addresses instead of handles most of the time    */
     v  = (Int*)ADDR_OBJ(vv);
-    nw = (UInt4**)ADDR_OBJ(vnw);
-    lw = (UInt4**)ADDR_OBJ(vlw);
-    pw = (UInt4**)ADDR_OBJ(vpw);
-    ew = (UInt4*)ADDR_OBJ(vew);
+    nw = (UIntN**)ADDR_OBJ(vnw);
+    lw = (UIntN**)ADDR_OBJ(vlw);
+    pw = (UIntN**)ADDR_OBJ(vpw);
+    ew = (UIntN*)ADDR_OBJ(vew);
     ge = (Int*)ADDR_OBJ(vge);
 
     /* conjujagtes, powers, order, generators, avector, inverses           */
@@ -386,7 +386,7 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
             /* collect a whole word exponent pair                          */
             else if( *pw == *nw && INT_INTOBJ(avc[gn]) == gn ) {
-              gn = C32Bits_SAddWordIntoExpVec( 
+              gn = CB(SAddWordIntoExpVec)( 
                    v, *pw, *ge, ebits, expm, ro, pow, lpow  );
               *pw = *lw;
               *ew = *ge = 0;
@@ -397,7 +397,7 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
             /* move the rest of a word directly into the correct positions */
             else if( INT_INTOBJ(avc[gn]) == gn ) {
-              gn = C32Bits_SAddPartIntoExpVec( 
+              gn = CB(SAddPartIntoExpVec)( 
                    v, *pw, *lw, ebits, expm, ro, pow, lpow  );
               *pw = *lw;
               *ew = 0;
@@ -473,9 +473,9 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
 /****************************************************************************
 **
-*F  C32Bits_Solution( <sc>, <ww>, <uu>, <func> )
+*F  CB(Solution)( <sc>, <ww>, <uu>, <func> )
 */
-Int C32Bits_Solution( 
+Int CB(Solution)( 
     Obj         sc,
     Obj         ww,
     Obj         uu,
@@ -488,7 +488,7 @@ Int C32Bits_Solution(
     Int         ro;             /* relative order                          */
     Obj         rod;            /* relative orders                         */
     Obj         g;              /* one generator word                      */
-    UInt4 *     gtr;            /* pointer into the data area of <g>       */
+    UIntN *     gtr;            /* pointer into the data area of <g>       */
     Int *       ptr;            /* pointer into the collect vector         */
     Int *       qtr;            /* pointer into the collect vector         */
 
@@ -550,7 +550,7 @@ Int C32Bits_Solution(
     /* start clearing <ww>, storing the result in <uu>                     */
     ptr = (Int*)(ADDR_OBJ(ww)+1);
     qtr = (Int*)(ADDR_OBJ(uu)+1);
-    gtr = (UInt4*)DATA_WORD(g);
+    gtr = (UIntN*)DATA_WORD(g);
     for ( i = num;  0 < i;  i--, ptr++, qtr++ ) {
         ro = INT_INTOBJ(ELMW_LIST(rod,num-i+1));
         *qtr = ( *qtr - *ptr ) % ro;
@@ -564,3 +564,6 @@ Int C32Bits_Solution(
     }
     return 0;
 }
+
+#undef UIntN
+#undef CB
