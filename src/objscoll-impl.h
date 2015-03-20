@@ -551,12 +551,12 @@ Int Solution(
     ptr = (Int*)(ADDR_OBJ(ww)+1);
     qtr = (Int*)(ADDR_OBJ(uu)+1);
     gtr = (UIntN*)DATA_WORD(g);
-    for ( i = num;  0 < i;  i--, ptr++, qtr++ ) {
-        ro = INT_INTOBJ(ELMW_LIST(rod,num-i+1));
+    for ( i = 0;  i < num; i++, ptr++, qtr++ ) {
+        ro = INT_INTOBJ(ELMW_LIST(rod,i+1));
         *qtr = ( *qtr - *ptr ) % ro;
         if ( *qtr < 0 )  *qtr += ro;
         if ( *qtr != 0 ) {
-            *gtr = ( (num-i) << ebits ) | ( *qtr & expm );
+            *gtr = ( i << ebits ) | ( *qtr & expm );
             if ( func(sc,ww,g) == -1 )
                 return -1;
         }
