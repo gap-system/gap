@@ -520,8 +520,9 @@ Int CB(Solution)(
     /* <uu> must be a string                                               */
     if ( TNUM_OBJ(uu) != T_STRING ) {
         if ( TNUM_OBJ(uu) == IMMUTABLE_TNUM(T_STRING) ) {
-            RetypeBag( ww, T_STRING );
-        } else {
+            RetypeBag( uu, T_STRING );
+        }
+        else {
             ErrorQuit( "collect vector must be a string not a %s", 
                        (Int)TNAM_OBJ(uu), 0L );
             return -1;
