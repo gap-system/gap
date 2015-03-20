@@ -21,7 +21,7 @@ Obj CB(WordVectorAndClear) ( Obj type, Obj vv, Int num )
     /* construct a new object                                              */
     NEW_WORD( obj, type, num );
 
-    /* use UIntN pointer for eight bits, clear <vv>                        */
+    /* clear <vv>                                                          */
     ptr = (UIntN*)DATA_WORD(obj);
     qtr = (Int*)(ADDR_OBJ(vv)+1);
     for ( i = 1, j = 0;  i <= num;  i++,  qtr++ ) {
