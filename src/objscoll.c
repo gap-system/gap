@@ -54,13 +54,11 @@
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * local defines and typedefs * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *T  FinPowConjCol
 **
 **  'FinPowConjCol' is a structure containing  all the functions depending on
@@ -797,22 +795,6 @@ static Int InitLibrary (
              INTOBJ_INT(SCP_CONJUGATES) );
     AssGVar( GVarName( "SCP_INVERSES" ),
              INTOBJ_INT(SCP_INVERSES) );
-    AssGVar( GVarName( "SCP_NW_STACK" ),
-             INTOBJ_INT(SCP_NW_STACK) );
-    AssGVar( GVarName( "SCP_LW_STACK" ),
-             INTOBJ_INT(SCP_LW_STACK) );
-    AssGVar( GVarName( "SCP_PW_STACK" ),
-             INTOBJ_INT(SCP_PW_STACK) );
-    AssGVar( GVarName( "SCP_EW_STACK" ),
-             INTOBJ_INT(SCP_EW_STACK) );
-    AssGVar( GVarName( "SCP_GE_STACK" ),
-             INTOBJ_INT(SCP_GE_STACK) );
-    AssGVar( GVarName( "SCP_CW_VECTOR" ),
-             INTOBJ_INT(SCP_CW_VECTOR) );
-    AssGVar( GVarName( "SCP_CW2_VECTOR" ),
-             INTOBJ_INT(SCP_CW2_VECTOR) );
-    AssGVar( GVarName( "SCP_MAX_STACK_SIZE" ),
-             INTOBJ_INT(SCP_MAX_STACK_SIZE) );
     AssGVar( GVarName( "SCP_COLLECTOR" ),
              INTOBJ_INT(SCP_COLLECTOR) );
     AssGVar( GVarName( "SCP_AVECTOR" ),
@@ -823,6 +805,15 @@ static Int InitLibrary (
              INTOBJ_INT(SCP_CLASS) );
     AssGVar( GVarName( "SCP_AVECTOR2" ),
              INTOBJ_INT(SCP_AVECTOR2) );
+
+    SCOBJ_NW_STACK_GVAR = GVarName( "SCOBJ_NW_STACK" );
+    SCOBJ_LW_STACK_GVAR = GVarName( "SCOBJ_LW_STACK" );
+    SCOBJ_PW_STACK_GVAR = GVarName( "SCOBJ_PW_STACK" );
+    SCOBJ_EW_STACK_GVAR = GVarName( "SCOBJ_EW_STACK" );
+    SCOBJ_GE_STACK_GVAR = GVarName( "SCOBJ_GE_STACK" );
+    SCOBJ_CW_VECTOR_GVAR = GVarName( "SCOBJ_CW_VECTOR" );
+    SCOBJ_CW2_VECTOR_GVAR = GVarName( "SCOBJ_CW2_VECTOR" );
+    SCOBJ_MAX_STACK_SIZE_GVAR = GVarName( "SCOBJ_MAX_STACK_SIZE" );
 
     /* export collector number                                             */
     AssGVar( GVarName( "8Bits_SingleCollector" ),
