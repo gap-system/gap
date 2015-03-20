@@ -1168,6 +1168,8 @@ void ReadFuncExpr (
 	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
 	}
 	while ( Symbol == S_COMMA ) {
+	    if (narg > 0 && !strcmp(CSTR_STRING(ELM_LIST(nams,narg)),"arg"))
+	      SyntaxError("arg can only be the last argument");
 	    Match( S_COMMA, ",", follow );
 	    lockmode = 0;
 	    switch (Symbol) {
