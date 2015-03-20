@@ -190,8 +190,9 @@ DeclareOperationKernel( "SetNameFunction", [IS_OBJECT, IS_STRING], SET_NAME_FUNC
 ##
 ##  <Description>
 ##  returns the number of arguments the function <A>func</A> accepts.
+##  -1 is returned for all operations.
 ##  For functions that use <C>arg</C> to take a variable number of arguments,
-##  as well as for operations, -1 is returned.
+##  the number returned is - the total number of parameters including the <C>arg</C>.
 ##  For attributes, 1 is returned.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -203,6 +204,8 @@ DeclareOperationKernel( "SetNameFunction", [IS_OBJECT, IS_STRING], SET_NAME_FUNC
 ##  3
 ##  gap> NumberArgumentsFunction(Sum);
 ##  -1
+##  gap> NumberArgumentsFunction(function(a,arg) return 1; end);
+##  -2
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
