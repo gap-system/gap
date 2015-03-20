@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*F  C16Bits_CombiCollectWord( <sc>, <vv>, <w> )
+*F  CB(CombiCollectWord)( <sc>, <vv>, <w> )
 **
 **  If a stack overflow occurs, we simply stop and return false.
 **
@@ -55,11 +55,11 @@
 **  global exponent because the beginning of  the word might not commute with
 **  the rest.
 **/
-static void C16Bits_AddWordIntoExpVec( Int *v, UInt2 *w, Int e, 
+static void CB(AddWordIntoExpVec)( Int *v, UIntN *w, Int e, 
                            Int ebits, UInt expm, 
                            Int p, Obj *pow, Int lpow ) {
 
-    UInt2 *    wend = w + (INT_INTOBJ((((Obj*)(w))[-1])) - 1);
+    UIntN *    wend = w + (INT_INTOBJ((((Obj*)(w))[-1])) - 1);
     Int        i;
     Int        ex;
 
@@ -70,19 +70,19 @@ static void C16Bits_AddWordIntoExpVec( Int *v, UInt2 *w, Int e,
             ex = v[i] / p;
             v[i] -= ex * p;
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
-                C16Bits_AddWordIntoExpVec( 
-                    v, (UInt2*)DATA_WORD(pow[i]), ex,
+                CB(AddWordIntoExpVec)( 
+                    v, (UIntN*)DATA_WORD(pow[i]), ex,
                     ebits, expm, p, pow, lpow  );
             }
         }
     }
 }
 
-static void C16Bits_AddCommIntoExpVec( Int *v, UInt2 *w, Int e, 
+static void CB(AddCommIntoExpVec)( Int *v, UIntN *w, Int e, 
                            Int ebits, UInt expm, 
                            Int p, Obj *pow, Int lpow ) {
 
-    UInt2 *    wend = w + (INT_INTOBJ((((Obj*)(w))[-1])) - 1);
+    UIntN *    wend = w + (INT_INTOBJ((((Obj*)(w))[-1])) - 1);
     Int        i;
     Int        ex;
 
@@ -95,15 +95,15 @@ static void C16Bits_AddCommIntoExpVec( Int *v, UInt2 *w, Int e,
             ex = v[i] / p;
             v[i] -= ex * p;
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
-                C16Bits_AddWordIntoExpVec( 
-                    v, (UInt2*)DATA_WORD(pow[i]), ex,
+                CB(AddWordIntoExpVec)( 
+                    v, (UIntN*)DATA_WORD(pow[i]), ex,
                     ebits, expm, p, pow, lpow  );
             }
         }
     }
 }
 
-static void C16Bits_AddPartIntoExpVec( Int *v, UInt2 *w, UInt2 *wend,
+static void CB(AddPartIntoExpVec)( Int *v, UIntN *w, UIntN *wend,
                            Int ebits, UInt expm, 
                            Int p, Obj *pow, Int lpow ) {
 
@@ -117,28 +117,28 @@ static void C16Bits_AddPartIntoExpVec( Int *v, UInt2 *w, UInt2 *wend,
             ex = v[i] / p;
             v[i] -= ex * p;
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
-                C16Bits_AddWordIntoExpVec( 
-                    v, (UInt2*)DATA_WORD(pow[i]), ex,
+                CB(AddWordIntoExpVec)( 
+                    v, (UIntN*)DATA_WORD(pow[i]), ex,
                     ebits, expm, p, pow, lpow  );
             }
         }
     }
 }
 
-Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
+Int CB(CombiCollectWord) ( Obj sc, Obj vv, Obj w )
 {
     Int         ebits;      /* number of bits in the exponent              */
     UInt        expm;       /* unsigned exponent mask                      */
     UInt        exps;       /* sign exponent mask                          */
 
     Obj         vnw;        /* word stack                                  */
-    UInt2 **    nw;         /* address of <vnw>                            */
+    UIntN **    nw;         /* address of <vnw>                            */
     Obj         vlw;        /* last syllable stack                         */
-    UInt2 **    lw;         /* address of <vlw>                            */
+    UIntN **    lw;         /* address of <vlw>                            */
     Obj         vpw;        /* current syllable stack                      */
-    UInt2 **    pw;         /* address of <vpw>                            */
+    UIntN **    pw;         /* address of <vpw>                            */
     Obj         vew;        /* unprocessed exponent stack                  */
-    UInt2 *     ew;         /* address of <vew>                            */
+    UIntN *     ew;         /* address of <vew>                            */
     Obj         vge;        /* global exponent stack                       */
     Int *       ge;         /* address of <vge>                            */
 
@@ -233,10 +233,10 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
 
     /* from now on we use addresses instead of handles most of the time    */
     v  = (Int*)ADDR_OBJ(vv);
-    nw = (UInt2**)ADDR_OBJ(vnw);
-    lw = (UInt2**)ADDR_OBJ(vlw);
-    pw = (UInt2**)ADDR_OBJ(vpw);
-    ew = (UInt2*)ADDR_OBJ(vew);
+    nw = (UIntN**)ADDR_OBJ(vnw);
+    lw = (UIntN**)ADDR_OBJ(vlw);
+    pw = (UIntN**)ADDR_OBJ(vpw);
+    ew = (UIntN*)ADDR_OBJ(vew);
     ge = (Int*)ADDR_OBJ(vge);
 
     /* conjugates, powers, order, generators, avector, inverses            */
@@ -316,8 +316,8 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
                 ex = v[gn] / p;
                 v[gn] -= ex * p;
                 if ( gn <= lpow && pow[gn] && 0 < NPAIRS_WORD(pow[gn]) ) {
-                    C16Bits_AddWordIntoExpVec( 
-                      v, (UInt2*)DATA_WORD(pow[gn]), ex, 
+                    CB(AddWordIntoExpVec)( 
+                      v, (UIntN*)DATA_WORD(pow[gn]), ex, 
                       ebits, expm, p, pow, lpow  );
                 }
               }
@@ -327,7 +327,7 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
 
             /* collect a whole word exponent pair                          */
             else if( sp > 1 && *pw == *nw && INT_INTOBJ(avc[gn]) == gn ) {
-              C16Bits_AddWordIntoExpVec( 
+              CB(AddWordIntoExpVec)( 
                    v, *pw, *ge, ebits, expm, p, pow, lpow  );
               *pw = *lw;
               *ew = *ge = 0;
@@ -337,7 +337,7 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
 
             /* collect the rest of a word                                  */
             else if( sp > 1 && INT_INTOBJ(avc[gn]) == gn ) {
-              C16Bits_AddPartIntoExpVec( 
+              CB(AddPartIntoExpVec)( 
                    v, *pw, *lw, ebits, expm, p, pow, lpow  );
               *pw = *lw;
               *ew = 0;
@@ -353,8 +353,8 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
                     if ( v[i] && gn <= LEN_PLIST(cnj[i]) ) {
                         tmp = ELM_PLIST( cnj[i], gn );
                         if ( tmp != 0 && 0 < NPAIRS_WORD(tmp) ) {
-                            C16Bits_AddCommIntoExpVec( 
-                                v, (UInt2*)DATA_WORD(tmp), v[i] * (*ew),
+                            CB(AddCommIntoExpVec)( 
+                                v, (UIntN*)DATA_WORD(tmp), v[i] * (*ew),
                                 ebits, expm, p, pow, lpow );
                         }
                     }
@@ -377,8 +377,8 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
                                 v[i] = 0;
                             }
                         }
-                        C16Bits_AddWordIntoExpVec( 
-                             v, (UInt2*)DATA_WORD(pow[i]), ex,
+                        CB(AddWordIntoExpVec)( 
+                             v, (UIntN*)DATA_WORD(pow[i]), ex,
                              ebits, expm, p, pow, lpow  );
                     }
                 }
@@ -397,8 +397,8 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
                       if( v[i] && gn <= LEN_PLIST(cnj[i]) ) {
                           tmp = ELM_PLIST( cnj[i], gn );
                           if ( tmp != 0 && 0 < NPAIRS_WORD(tmp) )
-                              C16Bits_AddCommIntoExpVec( 
-                                  v, (UInt2*)DATA_WORD(tmp), v[i],
+                              CB(AddCommIntoExpVec)( 
+                                  v, (UIntN*)DATA_WORD(tmp), v[i],
                                   ebits, expm, p, pow, lpow );
                       }
               }
@@ -459,3 +459,6 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
 #undef SC_PUSH_WORD
 #undef SC_PUSH_GEN
 #undef SC_POP_WORD
+
+#undef UIntN
+#undef CB
