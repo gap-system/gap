@@ -1803,7 +1803,7 @@ an initial element (which zero should the sum of an empty list return?).
 <P/>
 Note that if a function <A>f</A> is defined as above with its last formal
 argument <C>arg</C> then <C>NumberArgumentsFunction(<A>f</A>)</C> returns
-<M>-</M> the number of formal arguments (including the <C>arg</C>
+minus the number of formal arguments (including the <C>arg</C>
 (see&nbsp;<Ref Func="NumberArgumentsFunction"/>).
 <P/>
 The argument <C>arg</C> when used as the single argument name of some function
