@@ -78,28 +78,6 @@ static void CB(AddWordIntoExpVec)( Int *v, UIntN *w, Int e,
     }
 }
 
-static void CB(AddPartIntoExpVec)( Int *v, UIntN *w, UIntN *wend,
-                           Int ebits, UInt expm, 
-                           Int p, Obj *pow, Int lpow ) {
-
-    Int        i;
-    Int        ex;
-
-    for( ; w <= wend; w++ ) {
-        i = ((*w) >> ebits) + 1; 
-        v[ i ] += ((*w) & expm);     /* overflow check necessary? */
-        if ( p <= v[i] ) {
-            ex = v[i] / p;
-            v[i] -= ex * p;
-            if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
-                CB(AddWordIntoExpVec)( 
-                    v, (UIntN*)DATA_WORD(pow[i]), ex,
-                    ebits, expm, p, pow, lpow  );
-            }
-        }
-    }
-}
-
 static void CB(AddCommIntoExpVec)( Int *v, UIntN *w, Int e, 
                            Int ebits, UInt expm, 
                            Int p, Obj *pow, Int lpow ) {
@@ -113,6 +91,28 @@ static void CB(AddCommIntoExpVec)( Int *v, UIntN *w, Int e,
     for( ; w <= wend; w++ ) {
         i = ((*w) >> ebits) + 1; 
         v[ i ] += ((*w) & expm) * e;      /* overflow check necessary? */
+        if ( p <= v[i] ) {
+            ex = v[i] / p;
+            v[i] -= ex * p;
+            if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                CB(AddWordIntoExpVec)( 
+                    v, (UIntN*)DATA_WORD(pow[i]), ex,
+                    ebits, expm, p, pow, lpow  );
+            }
+        }
+    }
+}
+
+static void CB(AddPartIntoExpVec)( Int *v, UIntN *w, UIntN *wend,
+                           Int ebits, UInt expm, 
+                           Int p, Obj *pow, Int lpow ) {
+
+    Int        i;
+    Int        ex;
+
+    for( ; w <= wend; w++ ) {
+        i = ((*w) >> ebits) + 1; 
+        v[ i ] += ((*w) & expm);     /* overflow check necessary? */
         if ( p <= v[i] ) {
             ex = v[i] / p;
             v[i] -= ex * p;
@@ -354,7 +354,7 @@ Int CB(CombiCollectWord) ( Obj sc, Obj vv, Obj w )
                         tmp = ELM_PLIST( cnj[i], gn );
                         if ( tmp != 0 && 0 < NPAIRS_WORD(tmp) ) {
                             CB(AddCommIntoExpVec)( 
-                                v, (UIntN*)DATA_WORD(tmp), (Int)(v[i] * (*ew)),
+                                v, (UIntN*)DATA_WORD(tmp), v[i] * (*ew),
                                 ebits, expm, p, pow, lpow );
                         }
                     }
@@ -398,8 +398,8 @@ Int CB(CombiCollectWord) ( Obj sc, Obj vv, Obj w )
                           tmp = ELM_PLIST( cnj[i], gn );
                           if ( tmp != 0 && 0 < NPAIRS_WORD(tmp) )
                               CB(AddCommIntoExpVec)( 
-                                 v, (UIntN*)DATA_WORD(tmp), v[i],
-                                 ebits, expm, p, pow, lpow );
+                                  v, (UIntN*)DATA_WORD(tmp), v[i],
+                                  ebits, expm, p, pow, lpow );
                       }
               }
 
