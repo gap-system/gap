@@ -372,9 +372,9 @@ Int SingleCollectWord ( Obj sc, Obj vv, Obj w )
             /* we can move <gn> directly to the correct position           */
             if ( INT_INTOBJ(avc[gn]) == gn ) {
               /*
-              *T  This if-statemant implies that the next two cases are never
+              *T  This if-statement implies that the next two cases are never
               *T  executed.  This is intended for the time being because we 
-              *T  need the single collector to work with pc-presentation
+              *T  need the single collector to work with pc-presentations
               *T  whose rhs are not reduced while the next two if-case need
               *T  reduced rhs.  This will be fixed at a later stage.
               */
