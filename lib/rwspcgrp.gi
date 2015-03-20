@@ -392,7 +392,7 @@ function( sc )
       CanEasilySortElements);
 
     # store the rewriting system
-    fam!.rewritingSystem := Immutable(sc);
+    fam!.rewritingSystem := MakeReadOnly(sc);
 
     # create the default type for the elements
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
@@ -402,27 +402,27 @@ function( sc )
 
     # copy the assoc word type
     for i  in [ AWP_FIRST_ENTRY+1 .. AWP_FIRST_FREE-1 ]  do
-      StrictBindOnce(fam!.8BitsType, i, sc![SCP_DEFAULT_TYPE]![i]);
+      StrictBindOnce( fam!.8BitsType, i, sc![SCP_DEFAULT_TYPE]![i] );
     od;
 
     # default type to use
-    StrictBindOnce(fam!.8BitsType, AWP_PURE_TYPE, fam!.8BitsType);
+    StrictBindOnce( fam!.8BitsType, AWP_PURE_TYPE, fam!.8BitsType );
 
     # store the names
-    StrictBindOnce(fam!.8BitsType, PCWP_NAMES, FamilyObj(ReducedOne(sc))!.names);
+    StrictBindOnce( fam!.8BitsType, PCWP_NAMES, FamilyObj(ReducedOne(sc))!.names );
 
     # force the single collector to return elements of that type
     sc := ShallowCopy(sc);
     sc![SCP_DEFAULT_TYPE] := fam!.8BitsType;
-    StrictBindOnce(fam!.8BitsType, PCWP_COLLECTOR, sc);
+    MakeReadOnly(sc);
+    StrictBindOnce( fam!.8BitsType, PCWP_COLLECTOR, sc );
 
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );
 
     # this family has a defining pcgs
     pcs := List( GeneratorsOfRws(sc), x -> ElementByRws(fam,x) );
-    pcs:=PcgsByPcSequenceNC( fam, pcs ) ;
-    SetDefiningPcgs( fam, pcs);
+    SetDefiningPcgs( fam, PcgsByPcSequenceNC( fam, pcs ) );
 
     # that's it
     return fam;
@@ -564,7 +564,7 @@ function( sc )
       CanEasilySortElements);
 
     # store the rewriting system
-    fam!.rewritingSystem := Immutable(sc);
+    fam!.rewritingSystem := MakeReadOnly(sc);
 
     # create the default type for the elements
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
@@ -586,6 +586,7 @@ function( sc )
     # force the single collector to return elements of that type
     sc := ShallowCopy(sc);
     sc![SCP_DEFAULT_TYPE] := fam!.16BitsType;
+    MakeReadOnly(sc);
     StrictBindOnce( fam!.16BitsType, PCWP_COLLECTOR, sc );
     
     # store the identity
@@ -735,7 +736,7 @@ function( sc )
       CanEasilySortElements);
 
     # store the rewriting system
-    fam!.rewritingSystem := Immutable(sc);
+    fam!.rewritingSystem := MakeReadOnly(sc);
 
     # create the default type for the elements
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
@@ -757,6 +758,7 @@ function( sc )
     # force the single collector to return elements of that type
     sc := ShallowCopy(sc);
     sc![SCP_DEFAULT_TYPE] := fam!.32BitsType;
+    MakeReadOnly(sc);
     StrictBindOnce( fam!.32BitsType, PCWP_COLLECTOR, sc );
 
     # store the identity
