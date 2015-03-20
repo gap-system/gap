@@ -16,6 +16,16 @@
 ##
 
 
+SCOBJ_NW_STACK := [];
+SCOBJ_LW_STACK := [];
+SCOBJ_PW_STACK := [];
+SCOBJ_EW_STACK := [];
+SCOBJ_GE_STACK := [];
+SCOBJ_CW_VECTOR := "";
+SCOBJ_CW2_VECTOR := "";
+SCOBJ_MAX_STACK_SIZE := 256;
+
+
 #############################################################################
 ##
 #R  IsSingleCollectorRep( <obj> )
@@ -1022,18 +1032,6 @@ function( efam, gens, orders )
     # and the rhs of the conjugates
     sc[SCP_CONJUGATES] := List( sc[SCP_RWS_GENERATORS], x -> [] );
 
-    # add the various stacks
-    sc[SCP_NW_STACK]   := [];
-    sc[SCP_LW_STACK]   := [];
-    sc[SCP_PW_STACK]   := [];
-    sc[SCP_EW_STACK]   := [];
-    sc[SCP_GE_STACK]   := [];
-    sc[SCP_CW_VECTOR]  := "";
-    sc[SCP_CW2_VECTOR] := "";
-
-    # and the maximal stack size
-    sc[SCP_MAX_STACK_SIZE] := 256;
-
     # convert into a list object and set number of bits
     type := NewType( fam, IsSingleCollectorRep and bits and IsFinite
                           and IsMutable );
@@ -1200,18 +1198,6 @@ ShallowCopy_SingleCollector := function( sc )
     if IsBound(sc![SCP_AVECTOR])  then
         copy[SCP_AVECTOR] := ShallowCopy(sc![SCP_AVECTOR]);
     fi;
-
-    # add the various stacks
-    copy[SCP_NW_STACK]   := [];
-    copy[SCP_LW_STACK]   := [];
-    copy[SCP_PW_STACK]   := [];
-    copy[SCP_EW_STACK]   := [];
-    copy[SCP_GE_STACK]   := [];
-    copy[SCP_CW_VECTOR]  := "";
-    copy[SCP_CW2_VECTOR] := "";
-
-    # and the maximal stack size
-    copy[SCP_MAX_STACK_SIZE] := sc![SCP_MAX_STACK_SIZE];
 
     # and the collector to use
     copy[SCP_COLLECTOR] := sc![SCP_COLLECTOR];
