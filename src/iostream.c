@@ -116,6 +116,10 @@
 #endif
 
 
+/* LOCKING */
+/* Be sure to HashLock PtyIOStreams before accessing any of the IOStream related
+ * variables, including FreeptyIOStreams */
+
 typedef struct {
   int childPID;    /* Also used as a link to make a linked free list */
   int ptyFD;       /* GAP reading from external prog */
@@ -137,18 +141,22 @@ static Int FreePtyIOStreams;
 Int NewStream( void )
 {
   Int stream = -1;
+  HashLock(PtyIOStreams);
   if ( FreePtyIOStreams != -1 )
   {
       stream = FreePtyIOStreams;
       FreePtyIOStreams = PtyIOStreams[stream].childPID;
   }
+  HashUnlock(PtyIOStreams);
   return stream;
 }
 
 void FreeStream( UInt stream)
 {
+   HashLock(PtyIOStreams);
    PtyIOStreams[stream].childPID = FreePtyIOStreams;
    FreePtyIOStreams = stream;
+   HashUnlock(PtyIOStreams);
 }
 
 /****************************************************************************
@@ -157,10 +165,12 @@ void FreeStream( UInt stream)
 */
 void SignalChild (UInt stream, UInt sig)
 {
+    HashLock(PtyIOStreams);
     if ( PtyIOStreams[stream].childPID != -1 )
     {
         kill( PtyIOStreams[stream].childPID, sig );
     }
+    HashUnlock(PtyIOStreams);
 }
 
 /****************************************************************************
@@ -169,11 +179,13 @@ void SignalChild (UInt stream, UInt sig)
 */
 void KillChild (UInt stream)
 {
+    HashLock(PtyIOStreams);
     if ( PtyIOStreams[stream].childPID != -1 )
     {
         close(PtyIOStreams[stream].ptyFD);
         SignalChild( stream, SIGKILL );
     }
+    HashUnlock(PtyIOStreams);
 }
 
 
@@ -374,6 +386,7 @@ void ChildStatusChanged( int whichsig )
   int status;
   int retcode;
   assert(whichsig == SIGCHLD);
+  HashLock(PtyIOStreams);
   for (i = 0; i < MAX_PTYS; i++) {
       if (PtyIOStreams[i].inuse) {
           retcode = waitpid( PtyIOStreams[i].childPID, &status, WNOHANG | WUNTRACED );
@@ -384,14 +397,7 @@ void ChildStatusChanged( int whichsig )
           }
       }
   }
-  /* Collect up any other zombie children */
-  do {
-      retcode = waitpid( -1, &status, WNOHANG);
-      if (retcode == -1 && errno != ECHILD)
-          Pr("#E Unexpected waitpid error %d\n",errno, 0);
-  } while (retcode != 0 && retcode != -1);
-  
-  signal(SIGCHLD, ChildStatusChanged);
+  HashUnlock(PtyIOStreams);
 }
 
 Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
@@ -544,24 +550,33 @@ void HandleChildStatusChanges( UInt pty)
 {
   /* common error handling, when we are asked to read or write to a stopped
      or dead child */
+  HashLock(PtyIOStreams);
   if (PtyIOStreams[pty].alive == 0)
   {
       PtyIOStreams[pty].changed = 0;
       PtyIOStreams[pty].blocked = 0;
+      HashUnlock(PtyIOStreams);
       ErrorQuit("Child Process is unexpectedly dead", (Int) 0L, (Int) 0L);
+      return;
   }
   if (PtyIOStreams[pty].blocked)
   {
+      HashUnlock(PtyIOStreams);
       ErrorQuit("Child Process is still dead", (Int)0L,(Int)0L);
+      return;
   }
   if (PtyIOStreams[pty].changed)
   {
       PtyIOStreams[pty].blocked = 1;
       PtyIOStreams[pty].changed = 0;
+      Int cPID = PtyIOStreams[pty].childPID;
+      Int status = PtyIOStreams[pty].status;
+      HashUnlock(PtyIOStreams);
       ErrorQuit("Child Process %d has stopped or died, status %d",
-                (Int) PtyIOStreams[pty].childPID,
-                (Int) PtyIOStreams[pty].status);
+                cPID, status);
+      return;
   }
+  HashUnlock(PtyIOStreams);
 }
 
 #define MAX_ARGS 1000
@@ -684,9 +699,15 @@ Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
 {
   UInt pty = INT_INTOBJ(stream);
   ConvString(string);
-  while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  HashLock(PtyIOStreams);
+  if (!PtyIOStreams[pty].inuse)
+  {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+
+  HashUnlock(PtyIOStreams);
   HandleChildStatusChanges(pty);
   return INTOBJ_INT(WriteToPty(pty, CSTR_STRING(string), INT_INTOBJ(len)));
 }
@@ -697,9 +718,15 @@ Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj len )
   Int ret;
   Obj string;
   string = NEW_STRING(INT_INTOBJ(len));
+  HashLock(PtyIOStreams);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
   ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 1);
   if (ret == -1)
@@ -715,9 +742,15 @@ Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
   UInt pty = INT_INTOBJ(stream);
   Int ret;
   string = NEW_STRING(INT_INTOBJ(len));
+  HashLock(PtyIOStreams);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
   ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 0);
   if (ret == -1)
@@ -731,9 +764,15 @@ Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
 Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
+  HashLock(PtyIOStreams);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   /* Don't check for child having changes status */
   KillChild( pty );
   return 0;
@@ -742,9 +781,15 @@ Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
 Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj sig)
 {
   UInt pty = INT_INTOBJ(stream);
+  HashLock(PtyIOStreams);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   /* Don't check for child having changes status */
   SignalChild( pty, INT_INTOBJ(sig) );
   return 0;
@@ -756,12 +801,15 @@ Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
   int status;
   int retcode;
 /*UInt count; */
+  HashLock(PtyIOStreams);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
-
+  {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
   PtyIOStreams[pty].inuse = 0;
-  
+  HashUnlock(PtyIOStreams);  
   /* Close down the child */
   retcode = close(PtyIOStreams[pty].ptyFD);
   if (retcode)
@@ -775,18 +823,30 @@ Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
 Obj FuncIS_BLOCKED_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
+  HashLock(PtyIOStreams);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   return (PtyIOStreams[pty].blocked || PtyIOStreams[pty].changed || !PtyIOStreams[pty].alive) ? True : False;
 }
 
 Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
+  HashLock(PtyIOStreams);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   return INTOBJ_INT(PtyIOStreams[pty].ptyFD);
 }
 
@@ -865,9 +925,6 @@ static Int InitKernel(
 
   /* init filters and functions                                          */
   InitHdlrFuncsFromTable( GVarFuncs );
-  
-  /* Set up the trap to detect future dying children */
-  signal( SIGCHLD, ChildStatusChanged );
 
   return 0;
 }
