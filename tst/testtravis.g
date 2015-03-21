@@ -106,6 +106,7 @@ RunStandardTests( [
   [ "xgap.tst",1206600000],
   [ "zlattice.tst",100000],
   [ "zmodnz.tst",2300000],
+  [ "simplegrpit.tst",1000]
 ] ); 
 
 
