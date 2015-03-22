@@ -436,6 +436,69 @@ end);
 
 #############################################################################
 ##
+#M  CopyToMatrixRepNC( <list>, <fieldsize )
+#M  CopyToMatrixRep( <list>[, <fieldsize> | <field>])
+##
+
+
+InstallGlobalFunction(CopyToMatrixRep,
+        function( m,q )
+    local  newm;
+
+    
+    
+    
+    if not IsInt(q) then
+        if IsField(q) then
+            if Characteristic(q) = 0 then
+                return fail;
+            fi;
+            q := Size(q);
+        else
+	    return; # not a field -- exit
+        fi;
+    fi;
+    
+    if Length(m) = 0 then
+        return [];
+    fi;
+    
+    #
+    # If we are already compressed, then our rows are certainly
+    #  locked, so we will not be able to change representation
+    #
+    
+    newm := List(m, v->CopyToVectorRep(v,q));
+    
+    ConvertToMatrixRepNC(newm,q);
+    
+    return newm;
+    
+end);    
+
+
+InstallGlobalFunction(CopyToMatrixRepNC, function(m , q )    
+    local  newm;
+    
+    
+    if Length(m) = 0 then
+        return [];
+    fi;
+    
+    #
+    # If we are already compressed, then our rows are certainly
+    #  locked, so we will not be able to change representation
+    #
+    
+    newm := List(m, v->CopyToVectorRepNC(v,q));
+    
+    ConvertToMatrixRepNC(newm,q);
+    
+    return newm;
+end);
+
+#############################################################################
+##
 #M <vec> * <mat>
 ##
 

@@ -1090,15 +1090,16 @@ InstallMethod(DistanceVecFFE,"gf2 vectors",
 InstallMethod(DistancesDistributionVecFFEsVecFFE,"generic",IsCollsElms,
   [IsList, IsList],0,
 function(vecs,vec)
-local d,i;
-  ConvertToMatrixRep(vecs);
-  ConvertToVectorRep(vec);
-  d:=ListWithIdenticalEntries(Length(vec)+1,0);
-  for i in vecs do
-    i:=DistanceVecFFE(i,vec);
-    d[i+1]:=d[i+1]+1;
-  od;
-  return d;
+    local d,i,q;
+    q := DefaultField(vecs);
+    vecs := CopyToMatrixRep(vecs,q);
+    vec := CopyToVectorRep(vec,q);
+    d:=ListWithIdenticalEntries(Length(vec)+1,0);
+    for i in vecs do
+        i:=DistanceVecFFE(i,vec);
+        d[i+1]:=d[i+1]+1;
+    od;
+    return d;
 end);
 
 
@@ -1125,8 +1126,8 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
         [IsMatrix,IsFFECollection and IsField, IsList],0,
         function(mat,f,vec)
     local d,fdi,i,j,veclis,mult,mults,fdip,q, ok8;
-    ConvertToMatrixRepNC(mat,f);
-    ConvertToVectorRepNC(vec,f);
+    mat := CopyToMatrixRepNC(mat,f);
+    vec := CopyToVectorRepNC(vec,f);
     # build the data structures
     f:=AsSSortedList(f);
     Assert(1,f[1]=Zero(f[1]));
@@ -1285,8 +1286,8 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
       Error("First list needs at least ", cnt, " vectors . . .\n");
     fi;
     
-    ConvertToMatrixRepNC(mat,Size(f));
-    ConvertToVectorRepNC(vec,f);
+    mat := CopyToMatrixRepNC(mat,Size(f));
+    vec := CopyToVectorRepNC(vec,f);
     
     # build the data structures
     f:=AsSSortedList(f);
