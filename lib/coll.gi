@@ -83,7 +83,7 @@ InstallMethod( PrintObj,
     fi;
     if IsBound( iter!.description ) then
       Append(msg, " ");
-      if IsFunction(iter!.description(iter)) then
+      if IsFunction(iter!.description) then
         Append(msg, iter!.description(iter));
       elif IsString(iter!.description(iter)) then
         Append(msg, iter!.description);
