@@ -1,8 +1,0 @@
-@msfiles = ();
-@gdfiles = ();
-$DIR = "../new";
-$LIB = "../../lib"; 
-versionnumber=4.4
-versionsuffix=4r4
-gapdirname=gap4r4
-ucgapdirname=GAP4R4

@@ -49,6 +49,8 @@
 
 #include        "thread.h"
 
+#include        "calls.h"               /* function filename, line number  */
+
 /****************************************************************************
 **
 ** Overview of GAP profiling
@@ -110,6 +112,11 @@
 # include       <sys/resource.h>        /* definition of 'struct rusage'   */
 #endif
 #endif
+#ifdef HAVE_GETTIMEOFDAY
+# include       <sys/time.h>            /* for gettimeofday                */
+#endif
+
+Obj OutputtedFilenameList;
 
 struct ProfileState
 {
@@ -123,31 +130,47 @@ struct ProfileState
   int lastOutputtedLine;
   int lastOutputtedExec;  
 
-#ifdef HAVE_GETRUSAGE
+#if defined(HAVE_GETRUSAGE) || defined(HAVE_GETTIMEOFDAY)
   struct timeval lastOutputtedTime;
 #endif
   
+  int minimumProfileTick;
 } profileState;
 
-void ProfileLineByLineIntoFunction(Obj func)
+void ProfileLineByLineOutput(Obj func, char type)
 { 
-  if(profileState.Active)
+  if(profileState.Active && profileState.OutputRepeats)
   {
-    Obj n = NAME_FUNC(func);
-    Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
-    fprintf(profileState.Stream, "I %s\n", s);
+    int startline_i = 0, endline_i = 0;
+    Obj startline = FuncSTARTLINE_FUNC(0, func);
+    Obj endline = FuncENDLINE_FUNC(0, func);
+    if(IS_INTOBJ(startline)) {
+      startline_i = INT_INTOBJ(startline);
+    }
+    if(IS_INTOBJ(endline)) {
+      endline_i = INT_INTOBJ(endline);
+    }
+    
+    Obj name = NAME_FUNC(func);
+    Char *name_c = ((UInt)name) ? (Char *)CHARS_STRING(name) : (Char *)"nameless";
+    
+    Obj filename = FuncFILENAME_FUNC(0, func);
+    Char *filename_c = (Char*)"<missing filename>";
+    if(filename != Fail && filename != NULL)
+      filename_c = (Char *)CHARS_STRING(filename);
+    
+    fprintf(profileState.Stream,
+            "{\"Type\":\"%c\",\"Fun\":\"%s\",\"Line\":%d,\"EndLine\":%d,\"File\":\"%s\"}\n",
+            type, name_c, startline_i, endline_i, filename_c);
   }
 }
 
+void ProfileLineByLineIntoFunction(Obj func)
+{ ProfileLineByLineOutput(func, 'I'); }
+
+          
 void ProfileLineByLineOutFunction(Obj func)
-{
-  if(profileState.Active)
-  {
-    Obj n = NAME_FUNC(func);
-    Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
-    fprintf(profileState.Stream, "O %s\n", s);
-  }
-}
+{ ProfileLineByLineOutput(func, 'O'); }
 
 /****************************************************************************
 **
@@ -279,44 +302,81 @@ void InstallPrintExprFunc(Int pos, void(*expr)(Expr)) {
 ** as approriate, and then pass through to the true function
 */
 
+// This function checks if we have ever printed out the id of stat
+static inline UInt getFilenameId(stat)
+{
+  UInt id = FILENAMEID_STAT(stat);
+  if(LEN_PLIST(OutputtedFilenameList) < id || !ELM_PLIST(OutputtedFilenameList,id))
+  {
+    GROW_PLIST(OutputtedFilenameList, id);
+    SET_LEN_PLIST(OutputtedFilenameList, id);
+    SET_ELM_PLIST(OutputtedFilenameList, id, True);
+    fprintf(profileState.Stream, "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
+                                  CSTR_STRING(FILENAME_STAT(stat)), (int)id);
+  }
+  return id;
+}
 
-
-static inline void outputStat(Stat stat, int exec)
+// exec : are we executing this statement
+// visit: Was this statement previously visited (that is, executed)
+static inline void outputStat(Stat stat, int exec, int visited)
 {
   HashLock(&profileState);
   char* name;
-  int line;
+  UInt line;
   int nameid;
   
   int ticks = 0;
-#ifdef HAVE_GETRUSAGE
+#if defined(HAVE_GETTIMEOFDAY)
+  struct timeval timebuf;
+#else
+#if defined(HAVE_GETRUSAGE)
+  struct timeval timebuf;
   struct rusage buf;
 #endif
+#endif
     
-  name = CSTR_STRING(FILENAME_STAT(stat));
-  nameid = FILENAMEID_STAT(stat);
+  nameid = getFilenameId(stat);
   line = LINE_STAT(stat);
   if(profileState.lastOutputtedLine != line ||
      profileState.lastOutputtedFileID != nameid || 
      profileState.lastOutputtedExec != exec)
   {
-#ifdef HAVE_GETRUSAGE
-    getrusage( RUSAGE_SELF, &buf );
-    ticks = (buf.ru_utime.tv_sec - profileState.lastOutputtedTime.tv_sec) * 1000000 +
-            (buf.ru_utime.tv_usec - profileState.lastOutputtedTime.tv_usec);
-    // Basic sanity check:
-    if(ticks < 0)
-      ticks = 0;
+
+    if(profileState.OutputRepeats) {
+#if defined(HAVE_GETTIMEOFDAY)
+      gettimeofday(&timebuf, 0);
+#else
+#if defined(HAVE_GETRUSAGE)
+      getrusage( RUSAGE_SELF, &buf );
+      timebuf = buf.ru_utime;
 #endif
-    
-    fprintf(profileState.Stream, "%c %d %d %s\n",
-            exec ? 'E' : 'R', ticks, line, name);
+#endif
+#if defined(HAVE_GETTIMEOFDAY) || defined(HAVE_GETRUSAGE)
+      ticks = (timebuf.tv_sec - profileState.lastOutputtedTime.tv_sec) * 1000000 +
+              (timebuf.tv_usec - profileState.lastOutputtedTime.tv_usec);
+#endif
+      // Basic sanity check
+      if(ticks < 0)
+        ticks = 0;
+      if((profileState.minimumProfileTick == 0)
+         || (ticks > profileState.minimumProfileTick)
+         || (!visited)) {
+        fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"FileId\":%d}\n",
+                exec ? 'E' : 'R', ticks, (int)line, (int)nameid);
+#if defined(HAVE_GETRUSAGE) || defined(HAVE_GETTIMEOFDAY)
+        profileState.lastOutputtedTime = timebuf;
+#endif
+      }
+    }
+    else {
+      fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Line\":%d,\"FileId\":%d}\n",
+              exec ? 'E' : 'R', (int)line, (int)nameid);
+    }
     profileState.lastOutputtedLine = line;
     profileState.lastOutputtedFileID = nameid;
     profileState.lastOutputtedExec = exec;
-#ifdef HAVE_GETRUSAGE
-    profileState.lastOutputtedTime = buf.ru_utime;
-#endif
+
   }
   
   HashUnlock(&profileState);
@@ -331,7 +391,7 @@ static inline void visitStat(Stat stat)
   }
   
   if(profileState.OutputRepeats || !visited) {
-    outputStat(stat, 1);
+    outputStat(stat, 1, visited);
   }
 }
 
@@ -391,11 +451,15 @@ void enableAtStartup(char* filename, Int repeats)
     }
     
     profileState.Active = 1;
+#ifdef HAVE_GETTIMEOFDAY
+    gettimeofday(&(profileState.lastOutputtedTime), 0);
+#else
 #ifdef HAVE_GETRUSAGE
     struct rusage buf;
     getrusage( RUSAGE_SELF, &buf );
     profileState.lastOutputtedTime = buf.ru_utime;
-#endif    
+#endif
+#endif
 }
 
 // This function is for when GAP is started with -c, and
@@ -427,6 +491,8 @@ Obj FuncACTIVATE_PROFILING (
     if(profileState.Active) {
       return Fail;
     }
+    
+    OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
 
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
@@ -457,7 +523,7 @@ Obj FuncACTIVATE_PROFILING (
     else {
       profileState.OutputRepeats = 0;
     }
-    
+  
     fopenMaybeCompressed(CSTR_STRING(filename), CSTR_STRING(mode), &profileState);
     
     if(profileState.Stream == 0)
@@ -474,10 +540,14 @@ Obj FuncACTIVATE_PROFILING (
     
     profileState.Active = 1;
     
+#ifdef HAVE_GETTIMEOFDAY
+    gettimeofday(&(profileState.lastOutputtedTime), 0);
+#else
 #ifdef HAVE_GETRUSAGE
     struct rusage buf;
     getrusage( RUSAGE_SELF, &buf );
     profileState.lastOutputtedTime = buf.ru_utime;
+#endif
 #endif
     
     HashUnlock(&profileState);
@@ -510,6 +580,23 @@ Obj FuncDEACTIVATE_PROFILING (
   HashUnlock(&profileState);
   
   return True;
+}
+
+Obj FuncMINIMUM_PROFILE_TICK(
+  Obj self,
+  Obj ticksize)
+{
+  (void)self;
+  int tick;
+  if(!IS_INTOBJ(ticksize)) {
+    return Fail;
+  }
+  tick = INT_INTOBJ(ticksize);
+  if(tick < 0) {
+    return Fail;
+  }
+  profileState.minimumProfileTick = tick;
+  return True; 
 }
 
 
@@ -652,7 +739,7 @@ void RegisterStatWithProfiling(Stat stat)
 {
     HashLock(&profileState);
     if(profileState.Active) {
-      outputStat(stat, 0);
+      outputStat(stat, 0, 0);
     }
     HashUnlock(&profileState);
     
@@ -677,6 +764,8 @@ static StructGVarFunc GVarFuncs [] = {
       FuncDEACTIVATE_PROFILING, "src/profile.c:DEACTIVATE_PROFILING" },
     { "ACTIVATE_COLOR_PROFILING", 1, "bool",
         FuncACTIVATE_COLOR_PROFILING, "src/profile.c:ACTIVATE_COLOR_PROFILING" },
+    { "MINIMUM_PROFILE_TICK", 1, "int",
+        FuncMINIMUM_PROFILE_TICK, "src/profile.c:FuncMINIMUM_PROFILE_TICK" },
     { 0 }
 };
 
@@ -691,7 +780,7 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
-
+    OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
     /* return success                                                      */
     return 0;
 }
@@ -704,7 +793,7 @@ static Int InitKernel (
     StructInitInfo *    module )
 {   
     InitHdlrFuncsFromTable( GVarFuncs );
-    
+    InitGlobalBag(&OutputtedFilenameList, "src/profile.c:OutputtedFileList");
     return 0;
 }
 

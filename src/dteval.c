@@ -550,7 +550,7 @@ Obj       Conjugate( Obj     x,
 **
 **  Multiplyboundred returns the product of the words <x> and <y>. The result
 **  is an ordered word with the additional property that all word exponents
-**  are reduced modulo the the corresponding generator orders given by the
+**  are reduced modulo the corresponding generator orders given by the
 **  deep thought rewriting system <pcp>..
 */
 

@@ -632,7 +632,7 @@ UInt            GetIndxHVar (
 **  code is actually run).
 **
 **  If '<mode> & COMP_USE_GVAR_COPY' is nonzero, then the produced code shall
-**  define  and initialize 'GC_<name>' as a  copy of  the the global variable
+**  define  and initialize 'GC_<name>' as a  copy of  the global variable
 **  (see 'InitCopyGVar' in 'gvars.h').
 **
 **  If '<mode> & COMP_USE_GVAR_FOPY' is nonzero, then the produced code shall

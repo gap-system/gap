@@ -71,6 +71,7 @@ RunStandardTests( [
   [ "oprt.tst", 2000000 ],
   [ "ratfun.tst", 800000 ],
   [ "relation.tst", 7700000 ],
+  [ "recordname.tst", 100000 ],
   [ "rwspcgrp.tst", 59400000 ],
   [ "semicong.tst", 7800000 ],
   [ "semigrp.tst", 11200000 ],

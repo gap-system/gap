@@ -1,4 +1,0 @@
-@msfiles = ("rws");
-@gdfiles  = ("rws");
-$DIR = "../ref";
-$LIB = "../../lib";

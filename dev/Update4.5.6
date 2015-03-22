@@ -342,7 +342,7 @@ Fix: crash
 ! Description
 GAP would crash when parsing certain syntactically invalid code. This crash
 was introduced by commit a5b5807c964d, which this fix simply reverts.
-Note that the the bad commit was meant to "Get rid of one break loop related bug."
+Note that the bad commit was meant to "Get rid of one break loop related bug."
 However, it is unclear what that bug might have been. So it seems better
 to fix the known crash; and then fix the original bug, if it reappears.
 ! Test Code

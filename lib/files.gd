@@ -88,7 +88,7 @@ DeclareOperation( "Directory", [ IsString ] );
 ##  directory that is easily accessible by the user.
 ##
 ##  Under Unix systems (including Mac OS X) this will be the
-##  usual user home directory. Under Windows it will the the users 
+##  usual user home directory. Under Windows it will the users 
 ##  <C>My Documents</C> folder (or the appropriate name under different
 ##  languages).
 ##  </Description>
@@ -114,7 +114,7 @@ DeclareGlobalFunction( "DirectoryHome" );
 ##  Under Unix systems (including Mac OS X) this will be the
 ##  <C>Desktop</C> directory in the users home directory if it exists, and
 ##  the users home directory otherwise. 
-##  Under Windows it will the the users <C>Desktop</C> folder
+##  Under Windows it will the users <C>Desktop</C> folder
 ##  (or the appropriate name under different
 ##  languages).
 ##  </Description>
@@ -197,17 +197,17 @@ DeclareOperation( "ExternalFilename", [ IsList, IsString ] );
 
 #############################################################################
 ##
-#O  Read( <name-file> ) . . . . . . . . . . . . . . . . . . . . . read a file
+#O  Read( <filename> ) . . . . . . . . . . . . . . . . . . . . . read a file
 ##
 ##  <#GAPDoc Label="Read">
 ##  <ManSection>
-##  <Oper Name="Read" Arg='name-file'/>
+##  <Oper Name="Read" Arg='filename'/>
 ##
 ##  <Description>
-##  reads the input from the file with the filename <A>name-file</A>,
+##  reads the input from the file with the filename <A>filename</A>,
 ##  which must be given as a string.
 ##  <P/>
-##  <Ref Func="Read"/> first opens the file <A>name-file</A>.
+##  <Ref Func="Read"/> first opens the file <A>filename</A>.
 ##  If the file does not exist, or if &GAP; cannot open it,
 ##  e.g., because of access restrictions, an error is signalled.
 ##  <P/>
@@ -279,14 +279,14 @@ DeclareOperation( "ReadTest", [ IsString ] );
 
 #############################################################################
 ##
-#O  ReadAsFunction( <name-file> ) . . . . . . . . . . read a file as function
+#O  ReadAsFunction( <filename> ) . . . . . . . . . . read a file as function
 ##
 ##  <#GAPDoc Label="ReadAsFunction">
 ##  <ManSection>
-##  <Oper Name="ReadAsFunction" Arg='name-file'/>
+##  <Oper Name="ReadAsFunction" Arg='filename'/>
 ##
 ##  <Description>
-##  reads the file with filename <A>name-file</A> as a function
+##  reads the file with filename <A>filename</A> as a function
 ##  and returns this function.
 ##  <P/>
 ##  <E>Example</E>
@@ -531,11 +531,11 @@ end );
 
 #############################################################################
 ##
-#F  CrcFile( <name-file> )  . . . . . . . . . . . . . . . .  create crc value
+#F  CrcFile( <filename> )  . . . . . . . . . . . . . . . .  create crc value
 ##
 ##  <#GAPDoc Label="CrcFile">
 ##  <ManSection>
-##  <Func Name="CrcFile" Arg='name-file'/>
+##  <Func Name="CrcFile" Arg='filename'/>
 ##
 ##  <Description>
 ##  CRC (cyclic redundancy check) numbers provide a certain method of doing
@@ -543,9 +543,9 @@ end );
 ##  files have changed.
 ##  <P/>
 ##  <Ref Func="CrcFile"/> computes a checksum value for the file with
-##  filename <A>name-file</A> and returns this value as an integer.
+##  filename <A>filename</A> and returns this value as an integer.
 ##  The function returns <K>fail</K> if a system error occurred, say,
-##  for example, if <A>name-file</A> does not exist.
+##  for example, if <A>filename</A> does not exist.
 ##  In this case the function <Ref Func="LastSystemError"/>
 ##  can be used to get information about the error.
 ##  <P/>

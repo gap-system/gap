@@ -1,3 +1,4 @@
+#ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "src/compiled.h"
 
@@ -10,14 +11,10 @@ static GVar G_LEN__LIST;
 static Obj  GF_LEN__LIST;
 static GVar G_MakeThreadLocal;
 static Obj  GF_MakeThreadLocal;
-static GVar G_AtomicList;
-static Obj  GF_AtomicList;
+static GVar G_FixedAtomicList;
+static Obj  GF_FixedAtomicList;
 static GVar G_ATOMIC__ADDITION;
 static Obj  GF_ATOMIC__ADDITION;
-static GVar G_Revision;
-static Obj  GC_Revision;
-static GVar G_BindThreadLocal;
-static Obj  GF_BindThreadLocal;
 static GVar G_BIND__GLOBAL;
 static Obj  GF_BIND__GLOBAL;
 static GVar G_RANDOM__SEED__COUNTER;
@@ -30,16 +27,19 @@ static GVar G_RANDOM__SEED;
 static Obj  GF_RANDOM__SEED;
 static GVar G_GET__RANDOM__SEED__COUNTER;
 static Obj  GF_GET__RANDOM__SEED__COUNTER;
+static GVar G_BindThreadLocalConstructor;
+static Obj  GF_BindThreadLocalConstructor;
+static GVar G_RANDOM__SEED__CONSTRUCTOR;
+static Obj  GC_RANDOM__SEED__CONSTRUCTOR;
 
 /* record names used in handlers */
-static RNam R_random__g;
 static RNam R_R__N;
 static RNam R_R__X;
 
 /* information for the functions */
-static Obj  NameFunc[5];
-static Obj  NamsFunc[5];
-static Int  NargFunc[5];
+static Obj  NameFunc[6];
+static Obj  NamsFunc[6];
+static Int  NargFunc[6];
 static Obj  DefaultName;
 static Obj FileName;
 
@@ -268,6 +268,42 @@ static Obj  HdlrFunc4 (
  return 0;
 }
 
+/* handler for function 5 */
+static Obj  HdlrFunc5 (
+ Obj  self )
+{
+ Obj t_1 = 0;
+ Obj t_2 = 0;
+ Obj t_3 = 0;
+ Bag oldFrame;
+ OLD_BRK_CURR_STAT
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ REM_BRK_CURR_STAT();
+ SET_BRK_CURR_STAT(0);
+ 
+ /* R_N := 1; */
+ AssGVar( G_R__N, INTOBJ_INT(1) );
+ 
+ /* RANDOM_SEED( GET_RANDOM_SEED_COUNTER(  ) ); */
+ t_1 = GF_RANDOM__SEED;
+ t_3 = GF_GET__RANDOM__SEED__COUNTER;
+ t_2 = CALL_0ARGS( t_3 );
+ CHECK_FUNC_RESULT( t_2 )
+ CALL_1ARGS( t_1, t_2 );
+ 
+ /* return; */
+ RES_BRK_CURR_STAT();
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+ 
+ /* return; */
+ RES_BRK_CURR_STAT();
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
 /* handler for function 1 */
 static Obj  HdlrFunc1 (
  Obj  self )
@@ -284,38 +320,20 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* Revision.random_g := "@(#)$Id: random.g,v 4.5 2010/02/23 15:13:25 gap Exp $"; */
- t_1 = GC_Revision;
- CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 53, "@(#)$Id: random.g,v 4.5 2010/02/23 15:13:25 gap Exp $" )
- ASS_REC( t_1, R_random__g, t_2 );
- 
  /* MakeThreadLocal( "R_N" ); */
  t_1 = GF_MakeThreadLocal;
- C_NEW_STRING( t_2, 3, "R_N" )
+ C_NEW_STRING( t_2, 3, "R_N" );
  CALL_1ARGS( t_1, t_2 );
  
  /* MakeThreadLocal( "R_X" ); */
  t_1 = GF_MakeThreadLocal;
- C_NEW_STRING( t_2, 3, "R_X" )
+ C_NEW_STRING( t_2, 3, "R_X" );
  CALL_1ARGS( t_1, t_2 );
  
- /* BindThreadLocal( "R_N", 1 ); */
- t_1 = GF_BindThreadLocal;
- C_NEW_STRING( t_2, 3, "R_N" )
- CALL_2ARGS( t_1, t_2, INTOBJ_INT(1) );
- 
- /* BindThreadLocal( "R_X", [  ] ); */
- t_1 = GF_BindThreadLocal;
- C_NEW_STRING( t_2, 3, "R_X" )
- t_3 = NEW_PLIST( T_PLIST, 0 );
- SET_LEN_PLIST( t_3, 0 );
- CALL_2ARGS( t_1, t_2, t_3 );
- 
- /* BIND_GLOBAL( "RANDOM_SEED_COUNTER", AtomicList( 1, 0 ) ); */
+ /* BIND_GLOBAL( "RANDOM_SEED_COUNTER", FixedAtomicList( 1, 0 ) ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 19, "RANDOM_SEED_COUNTER" )
- t_4 = GF_AtomicList;
+ C_NEW_STRING( t_2, 19, "RANDOM_SEED_COUNTER" );
+ t_4 = GF_FixedAtomicList;
  t_3 = CALL_2ARGS( t_4, INTOBJ_INT(1), INTOBJ_INT(0) );
  CHECK_FUNC_RESULT( t_3 )
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -326,12 +344,12 @@ static Obj  HdlrFunc1 (
       return r;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 23, "GET_RANDOM_SEED_COUNTER" )
+ C_NEW_STRING( t_2, 23, "GET_RANDOM_SEED_COUNTER" );
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(26);
- ENDLINE_BODY(t_4) = INTOBJ_INT(30);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(22);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(26);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -352,8 +370,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_1 ) = TLS->currLVars;
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_2) = INTOBJ_INT(35);
- ENDLINE_BODY(t_2) = INTOBJ_INT(42);
+ STARTLINE_BODY(t_2) = INTOBJ_INT(31);
+ ENDLINE_BODY(t_2) = INTOBJ_INT(38);
  FILENAME_BODY(t_2) = FileName;
  BODY_FUNC(t_1) = t_2;
  CHANGED_BAG( TLS->currLVars );
@@ -377,31 +395,43 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
  ENVI_FUNC( t_1 ) = TLS->currLVars;
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_2) = INTOBJ_INT(44);
- ENDLINE_BODY(t_2) = INTOBJ_INT(55);
+ STARTLINE_BODY(t_2) = INTOBJ_INT(40);
+ ENDLINE_BODY(t_2) = INTOBJ_INT(51);
  FILENAME_BODY(t_2) = FileName;
  BODY_FUNC(t_1) = t_2;
  CHANGED_BAG( TLS->currLVars );
  AssGVar( G_RANDOM__SEED, t_1 );
  
- /* if ThreadVar.R_X = [  ] then */
- t_3 = GC_ThreadVar;
- CHECK_BOUND( t_3, "ThreadVar" )
- t_2 = ELM_REC( t_3, R_R__X );
- t_3 = NEW_PLIST( T_PLIST, 0 );
- SET_LEN_PLIST( t_3, 0 );
- t_1 = (Obj)(UInt)(EQ( t_2, t_3 ));
- if ( t_1 ) {
-  
-  /* RANDOM_SEED( GET_RANDOM_SEED_COUNTER(  ) ); */
-  t_1 = GF_RANDOM__SEED;
-  t_3 = GF_GET__RANDOM__SEED__COUNTER;
-  t_2 = CALL_0ARGS( t_3 );
-  CHECK_FUNC_RESULT( t_2 )
-  CALL_1ARGS( t_1, t_2 );
-  
- }
- /* fi */
+ /* BIND_GLOBAL( "RANDOM_SEED_CONSTRUCTOR", function (  )
+      R_N := 1;
+      RANDOM_SEED( GET_RANDOM_SEED_COUNTER(  ) );
+      return;
+  end ); */
+ t_1 = GF_BIND__GLOBAL;
+ C_NEW_STRING( t_2, 23, "RANDOM_SEED_CONSTRUCTOR" );
+ t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
+ ENVI_FUNC( t_3 ) = TLS->currLVars;
+ t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ STARTLINE_BODY(t_4) = INTOBJ_INT(53);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(56);
+ FILENAME_BODY(t_4) = FileName;
+ BODY_FUNC(t_3) = t_4;
+ CHANGED_BAG( TLS->currLVars );
+ CALL_2ARGS( t_1, t_2, t_3 );
+ 
+ /* BindThreadLocalConstructor( "R_N", RANDOM_SEED_CONSTRUCTOR ); */
+ t_1 = GF_BindThreadLocalConstructor;
+ C_NEW_STRING( t_2, 3, "R_N" );
+ t_3 = GC_RANDOM__SEED__CONSTRUCTOR;
+ CHECK_BOUND( t_3, "RANDOM_SEED_CONSTRUCTOR" )
+ CALL_2ARGS( t_1, t_2, t_3 );
+ 
+ /* BindThreadLocalConstructor( "R_X", RANDOM_SEED_CONSTRUCTOR ); */
+ t_1 = GF_BindThreadLocalConstructor;
+ C_NEW_STRING( t_2, 3, "R_X" );
+ t_3 = GC_RANDOM__SEED__CONSTRUCTOR;
+ CHECK_BOUND( t_3, "RANDOM_SEED_CONSTRUCTOR" )
+ CALL_2ARGS( t_1, t_2, t_3 );
  
  /* return; */
  RES_BRK_CURR_STAT();
@@ -423,27 +453,29 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "QUO_INT", &GF_QUO__INT );
  InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
  InitFopyGVar( "MakeThreadLocal", &GF_MakeThreadLocal );
- InitFopyGVar( "AtomicList", &GF_AtomicList );
+ InitFopyGVar( "FixedAtomicList", &GF_FixedAtomicList );
  InitFopyGVar( "ATOMIC_ADDITION", &GF_ATOMIC__ADDITION );
- InitCopyGVar( "Revision", &GC_Revision );
- InitFopyGVar( "BindThreadLocal", &GF_BindThreadLocal );
  InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
  InitCopyGVar( "RANDOM_SEED_COUNTER", &GC_RANDOM__SEED__COUNTER );
  InitCopyGVar( "R_228", &GC_R__228 );
  InitFopyGVar( "RANDOM_SEED", &GF_RANDOM__SEED );
  InitFopyGVar( "GET_RANDOM_SEED_COUNTER", &GF_GET__RANDOM__SEED__COUNTER );
+ InitFopyGVar( "BindThreadLocalConstructor", &GF_BindThreadLocalConstructor );
+ InitCopyGVar( "RANDOM_SEED_CONSTRUCTOR", &GC_RANDOM__SEED__CONSTRUCTOR );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(90859557)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(90859557)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(90859557)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](90859557)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(90859557)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](90859557)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(90859557)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](90859557)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/random.g:HdlrFunc4(90859557)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/random.g:NameFunc[4](90859557)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(-107679317)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(-107679317)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(-107679317)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](-107679317)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(-107679317)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](-107679317)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(-107679317)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](-107679317)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/random.g:HdlrFunc4(-107679317)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/random.g:NameFunc[4](-107679317)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/random.g:HdlrFunc5(-107679317)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/random.g:NameFunc[5](-107679317)" );
  
  /* return success */
  return 0;
@@ -464,10 +496,8 @@ static Int InitLibrary ( StructInitInfo * module )
  G_QUO__INT = GVarName( "QUO_INT" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
  G_MakeThreadLocal = GVarName( "MakeThreadLocal" );
- G_AtomicList = GVarName( "AtomicList" );
+ G_FixedAtomicList = GVarName( "FixedAtomicList" );
  G_ATOMIC__ADDITION = GVarName( "ATOMIC_ADDITION" );
- G_Revision = GVarName( "Revision" );
- G_BindThreadLocal = GVarName( "BindThreadLocal" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
  G_RANDOM__SEED__COUNTER = GVarName( "RANDOM_SEED_COUNTER" );
  G_R__228 = GVarName( "R_228" );
@@ -475,9 +505,10 @@ static Int InitLibrary ( StructInitInfo * module )
  G_R__N = GVarName( "R_N" );
  G_RANDOM__SEED = GVarName( "RANDOM_SEED" );
  G_GET__RANDOM__SEED__COUNTER = GVarName( "GET_RANDOM_SEED_COUNTER" );
+ G_BindThreadLocalConstructor = GVarName( "BindThreadLocalConstructor" );
+ G_RANDOM__SEED__CONSTRUCTOR = GVarName( "RANDOM_SEED_CONSTRUCTOR" );
  
  /* record names used in handlers */
- R_random__g = RNamName( "random_g" );
  R_R__N = RNamName( "R_N" );
  R_R__X = RNamName( "R_X" );
  
@@ -496,6 +527,9 @@ static Int InitLibrary ( StructInitInfo * module )
  NameFunc[4] = DefaultName;
  NamsFunc[4] = 0;
  NargFunc[4] = 1;
+ NameFunc[5] = DefaultName;
+ NamsFunc[5] = 0;
+ NargFunc[5] = 0;
  
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
@@ -520,10 +554,8 @@ static Int PostRestore ( StructInitInfo * module )
  G_QUO__INT = GVarName( "QUO_INT" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
  G_MakeThreadLocal = GVarName( "MakeThreadLocal" );
- G_AtomicList = GVarName( "AtomicList" );
+ G_FixedAtomicList = GVarName( "FixedAtomicList" );
  G_ATOMIC__ADDITION = GVarName( "ATOMIC_ADDITION" );
- G_Revision = GVarName( "Revision" );
- G_BindThreadLocal = GVarName( "BindThreadLocal" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
  G_RANDOM__SEED__COUNTER = GVarName( "RANDOM_SEED_COUNTER" );
  G_R__228 = GVarName( "R_228" );
@@ -531,9 +563,10 @@ static Int PostRestore ( StructInitInfo * module )
  G_R__N = GVarName( "R_N" );
  G_RANDOM__SEED = GVarName( "RANDOM_SEED" );
  G_GET__RANDOM__SEED__COUNTER = GVarName( "GET_RANDOM_SEED_COUNTER" );
+ G_BindThreadLocalConstructor = GVarName( "BindThreadLocalConstructor" );
+ G_RANDOM__SEED__CONSTRUCTOR = GVarName( "RANDOM_SEED_CONSTRUCTOR" );
  
  /* record names used in handlers */
- R_random__g = RNamName( "random_g" );
  R_R__N = RNamName( "R_N" );
  R_R__X = RNamName( "R_X" );
  
@@ -550,6 +583,9 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[4] = DefaultName;
  NamsFunc[4] = 0;
  NargFunc[4] = 1;
+ NameFunc[5] = DefaultName;
+ NamsFunc[5] = 0;
+ NargFunc[5] = 0;
  
  /* return success */
  return 0;
@@ -564,7 +600,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 90859557,
+ /* crc         = */ -107679317,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,
@@ -579,3 +615,4 @@ StructInitInfo * Init__random ( void )
 }
 
 /* compiled code ends here */
+#endif

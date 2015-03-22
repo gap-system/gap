@@ -543,7 +543,7 @@ local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
       alpha := 3/4;
    fi;
 
-   # sort rows according the the position of the leading nonzero
+   # sort rows according the position of the leading nonzero
    SortParallel(b, P, function(x, y) return PositionNot(x,0) > PositionNot(y,0); end);
 
    s := 0; # counts the rows of quotient space

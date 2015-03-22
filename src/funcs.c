@@ -796,10 +796,10 @@ static inline void CheckRecursionBefore( void )
 
  Obj STEVES_TRACING;
 
-#define CHECK_RECURSION_BEFORE CheckRecursionBefore();
+#define CHECK_RECURSION_BEFORE CheckRecursionBefore(); PROF_IN_FUNCTION(func);
 
 
-#define CHECK_RECURSION_AFTER     TLS->recursionDepth--;       
+#define CHECK_RECURSION_AFTER     TLS->recursionDepth--;  PROF_OUT_FUNCTION(func);
 
 #define REMEMBER_LOCKSTACK() \
     int			lockSP = TLS->lockStackPointer
@@ -817,7 +817,7 @@ Obj DoExecFunc0args (
     OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
-    PROF_IN_FUNCTION(func);
+    
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 0, NLOC_FUNC(func), oldLvars );
@@ -836,7 +836,7 @@ Obj DoExecFunc0args (
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
-    PROF_OUT_FUNCTION(func);
+    
     /* return the result                                                   */
       {
         Obj                 returnObjStat;

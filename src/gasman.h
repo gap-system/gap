@@ -109,7 +109,7 @@ typedef UInt * *        Bag;
 **
 **  'TNUM_BAG( <bag> )'
 **
-**  'TNUM_BAG' returns the type of the the bag with the identifier <bag>.
+**  'TNUM_BAG' returns the type of the bag with the identifier <bag>.
 **
 **  Each bag has a certain type that identifies its structure.  The type is a
 **  integer between 0  and  253.  The types 254   and  255 are  reserved  for
