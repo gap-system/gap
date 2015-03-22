@@ -210,6 +210,18 @@ DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 DeclareGlobalFunction( "CopyToVectorRep");
 DeclareGlobalFunction( "CopyToVectorRepNC");
 
+
+#############################################################################
+##
+#F  CopyToMatrixRep( <list>, <field> )
+#F  CopyToMatrixRep( <list>, <fieldsize> )
+#F  CopyToMatrixRepNC( <list>, <fieldsize> )
+##
+
+DeclareGlobalFunction( "CopyToMatrixRepNC" );
+DeclareGlobalFunction( "CopyToMatrixRep" );
+
+
 #############################################################################
 ##
 #F  ConvertToMatrixRep( <list>[, <field>] )
