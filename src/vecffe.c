@@ -1122,7 +1122,7 @@ UInt ChooseFieldVecFFE(Obj vec) {
 Obj FuncSMALLEST_FIELD_VECFFE( Obj self, Obj vec)
 {
   UInt smallest = SmallestFieldVecFFE(vec);
-  return smallest ? INTOBJ_INT(smallest) : 0;
+  return smallest ? INTOBJ_INT(smallest) : Fail;
 }
 
 /****************************************************************************
