@@ -639,8 +639,8 @@ void RewriteVec8Bit( Obj vec, UInt q)
         return;
     assert(q > q1);
 
-    if (DoFilter(IsLockedRepresentationVector, vec) == True) {
-        ErrorMayQuit("You cannot convert a locked vector compressed over GF(%i) to GF(%i)",
+    if (REGION(vec) == 0 || DoFilter(IsLockedRepresentationVector, vec) == True) {
+        ErrorMayQuit("You cannot convert an atomic or  locked vector compressed over GF(%i) to GF(%i)",
         q1, q);
         return;
     }
@@ -791,12 +791,12 @@ void ConvVec8Bit (
     if (q == 2)
         ErrorQuit("GF2 has its own representation\n", 0L, 0L);
 
+    if (REGION(list) == 0)
+      ErrorMayQuit("CONV_VEC8BIT: In-place conversion of object in the public region",0L,0L);
+
     /* already in the correct representation                               */
     if (IS_VEC8BIT_REP(list) && FIELD_VEC8BIT(list) == q) 
             return;
-
-    if (REGION(list) == 0)
-      ErrorMayQuit("CONV_VEC8BIT: In-place conversion of object in the public region",0L,0L);
     
     if (IS_VEC8BIT_REP(list) && FIELD_VEC8BIT(list) < q) {
       RewriteVec8Bit(list, q);
@@ -1357,8 +1357,8 @@ Obj FuncSUM_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
 
         /* if the exponent is bigger than 31, overflow changes the value to 0 */
         if (newd > 8 || newq > 256 ||
-            (ql != newq && True == CALL_1ARGS(IsLockedRepresentationVector, vl)) ||
-            (qr != newq && True == CALL_1ARGS(IsLockedRepresentationVector, vr))) {
+            (ql != newq && (!REGION(vl) || True == CALL_1ARGS(IsLockedRepresentationVector, vl))) ||
+            (qr != newq && (!REGION(vr) || True == CALL_1ARGS(IsLockedRepresentationVector, vr))) ) {
             sum = SumListList(vl, vr);
             return sum;
         } else {
@@ -1521,7 +1521,7 @@ Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
     UInt d;
 
     if (VAL_FFE(ffe) == 1) { /* ffe is the one */
-        prod = CopyVec8Bit(vec, IS_MUTABLE_OBJ(vec));
+        return CopyVec8Bit(vec, IS_MUTABLE_OBJ(vec));
     } else if (VAL_FFE(ffe) == 0)
         return ZeroVec8Bit(FIELD_VEC8BIT(vec), LEN_VEC8BIT(vec), IS_MUTABLE_OBJ(vec));
 
@@ -1538,7 +1538,7 @@ Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
 	  CALL_1ARGS(ConvertToVectorRep, prod);
 	else {
 	  q = ChooseFieldVecFFE(prod);
-	  if (q) {
+	  if (q && q <= 256) {
 	    prod = CALL_2ARGS(CopyToVectorRep,prod,INTOBJ_INT(q));
 	    MakeImmutable(prod);
 	  }
@@ -4308,8 +4308,8 @@ void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
     if (len == newlen)
         return;
 
-    if (True == DoFilter(IsLockedRepresentationVector, vec)) {
-        ErrorReturnVoid("Resize of locked compressed vector is forbidden", 0, 0,
+    if (REGION(vec) == 0 || True == DoFilter(IsLockedRepresentationVector, vec)) {
+        ErrorReturnVoid("Resize of atomic or locked compressed vector is forbidden", 0, 0,
         "You can `return;' to ignore the operation");
         return;
     }
@@ -4650,6 +4650,7 @@ Obj FuncRESIZE_VEC8BIT( Obj self, Obj vec, Obj newsize )
         ErrorReturnVoid("RESIZE_VEC8BIT: vector must be mutable",
                         0, 0,
                         "you can 'return;'");
+
     while (IS_INTOBJ(newsize) && INT_INTOBJ(newsize) < 0) {
         newsize = ErrorReturnObj("RESIZE_VEC8BIT: <amount> must be a non-negative integer, not %d",
                                  INT_INTOBJ(newsize), 0,
