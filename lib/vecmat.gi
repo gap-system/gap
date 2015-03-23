@@ -1589,13 +1589,7 @@ end);
 #F  ImmutableMatrix( <field>, <matrix> [,<change>] ) 
 ##
 DoImmutableMatrix := function(field,matrix,change)
-    if not IsField(field) or Size(field) > 256 then
-        return Immutable(matrix);
-    else
-        
-        return `CopyToMatrixRep(matrix, field);
-    fi;
-    
+    return `CopyToMatrixRep(matrix, field);
 end;
 
 

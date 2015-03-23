@@ -797,6 +797,9 @@ void ConvVec8Bit (
     /* already in the correct representation                               */
     if (IS_VEC8BIT_REP(list) && FIELD_VEC8BIT(list) == q) 
             return;
+
+    if (REGION(list) == 0)
+      ErrorMayQuit("CONV_VEC8BIT: In-place conversion of object in the public region",0L,0L);
     
     if (IS_VEC8BIT_REP(list) && FIELD_VEC8BIT(list) < q) {
       RewriteVec8Bit(list, q);
@@ -1538,7 +1541,8 @@ Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
 	  CALL_1ARGS(ConvertToVectorRep, prod);
 	else {
 	  q = ChooseFieldVecFFE(prod);
-	  if (q && q <= 256) {
+
+	  if (q) {
 	    prod = CALL_2ARGS(CopyToVectorRep,prod,INTOBJ_INT(q));
 	    MakeImmutable(prod);
 	  }

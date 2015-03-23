@@ -1616,6 +1616,15 @@ void ConvGF2Vec (
         return;
     }
 
+    /* fail now if the object is in the public region. If it's shared
+       and we don't have write access, or it's readonly we will fail
+       later anyway, but any obect in the public region is a
+       problem here */
+
+    if (REGION(list) == 0) 
+      ErrorMayQuit("In place format conversion on object in the public region",0L,0L);
+    
+    
     /* Otherwise make it a plain list so that we will know where it keeps
        its data -- could do much better in the case of GF(2^n) vectors that actually
        lie over GF(2) */
