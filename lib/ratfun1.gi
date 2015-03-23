@@ -46,10 +46,9 @@ local f,typ,lc,q;
   if IS_PLIST_REP(coeff) and IsFFECollection(coeff) then
       q := COMMON_FIELD_VECFFE(coeff);
       if q = fail then
-          q := SMALLEST_FIELD_VECFFE(coeff);
-          
+          q := SMALLEST_FIELD_VECFFE(coeff);          
       fi;
-      if q <= 256 then
+      if q <> fail and q <= 256 then
           coeff := `CopyToVectorRep(coeff,q);
       fi;
       Assert(1, coeff <> fail);
