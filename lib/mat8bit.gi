@@ -456,7 +456,6 @@ InstallGlobalFunction(CopyToMatrixRep,
             q := Size(q);
         else
 	    return fail ; # not a field -- exit
-
         fi;
     fi;
     
