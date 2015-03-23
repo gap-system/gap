@@ -649,8 +649,9 @@ InstallMethod( SemiEchelonBasis,
       SetIsRectangularTable( B, true );
     fi;
     SetUnderlyingLeftModule( B, V );
-    gensi := Immutable(gens);
-    ConvertToMatrixRep(gensi, LeftActingDomain(V));
+    gensi := CopyToMatrixRep(gens, LeftActingDomain(V));
+    MakeImmutable(gensi);
+    
     SetBasisVectors( B, gensi );
 
     B!.heads:= heads;
@@ -685,8 +686,8 @@ InstallMethod( SemiEchelonBasisNC,
       SetIsRectangularTable( B, true );
     fi;
     SetUnderlyingLeftModule( B, V );
-    gensi := Immutable(gens);
-    ConvertToMatrixRep(gensi, LeftActingDomain(V));
+    gensi := CopyToMatrixRep(gens, LeftActingDomain(V));
+    MakeImmutable(gensi);
     SetBasisVectors( B, gens );
 
     # Provide the `heads' information.

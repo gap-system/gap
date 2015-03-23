@@ -1588,94 +1588,99 @@ end);
 ##
 #F  ImmutableMatrix( <field>, <matrix> [,<change>] ) 
 ##
-DoImmutableMatrix:=function(field,matrix,change)
-local sf, rep, ind, ind2, row, i,big,l;
-  if not (IsPlistRep(matrix) or IsGF2MatrixRep(matrix) or
-    Is8BitMatrixRep(matrix)) then
-    # if empty of not list based, simply return `Immutable'.
-    return Immutable(matrix);
-  fi;
-  if IsInt(field) then
-    sf:=field;
-  else
-    if not IsField(field) then
-      # not a field
-      return matrix;
-    fi;
-    sf:=Size(field);
-  fi;
-
-  big:=sf>256 or sf=0;
-
-  # the representation we want the rows to be in
-  if sf=2 then
-    rep:=IsGF2VectorRep;
-  elif not big then
-    rep:=function(v) return Is8BitVectorRep(v) and Q_VEC8BIT(v) = sf; end;
-  else
-    rep:=IsPlistRep;
-  fi;
-
-  # get the indices of the rows that need changing the representation.
-  ind:=[]; # rows to convert
-  ind2:=[]; # rows to rebuild 
-  for i in [1..Length(matrix)] do
-    if not rep(matrix[i]) then
-      if big or IsLockedRepresentationVector(matrix[i]) 
-	or (IsMutable(matrix[i]) and not change) then
-        Add(ind2,i);
-      else
-	# wrong rep, but can be converted
-	Add(ind,i);
-      fi;
-    elif (IsMutable(matrix[i]) and not change) then
-      # right rep but wrong mutability
-      Add(ind2,i);
-    fi;
-  od;
-
-  # do we need to rebuild outer matrix layer?
-  if not IsMutable(matrix) # matrix was immutable
-    or (IsMutable(matrix) and not change) # matrix was mutable
-    or (Length(ind2)>0 and   # we want to change rows
-      not IsMutable(matrix)) #but cannot change entries
-    or (Is8BitMatrixRep(matrix) # matrix is be compact rep
-       and (Length(ind)>0 or Length(ind2)>0) ) # and we change rows
-       then
-    l:=matrix;
-    matrix:=[];
-    for i in l do
-      Add(matrix,i);
-    od;
-  fi;
-
-  # rebuild some rows
-  if big then
-    for i in ind2 do
-      matrix[i]:=List(matrix[i],j->j); # plist conversion
-    od;
-  else
-    for i in ind2 do
-      row := CopyToVectorRep(matrix[i], sf);
-      if row <> fail then
-        matrix[i] := row;
-      fi;
-    od;
-  fi;
-
-  # this can only happen if not big
-  for i in ind do
-    matrix[i]:=CopyToVectorRep(matrix[i],sf);
-  od;
-
-  MakeImmutable(matrix);
-  if sf=2 and not IsGF2MatrixRep(matrix) then
-    CONV_GF2MAT(matrix);
-  elif sf>2 and sf<=256 and not Is8BitMatrixRep(matrix) then
-    CONV_MAT8BIT(matrix,sf);
-  fi;
-  return matrix;
+DoImmutableMatrix := function(field,matrix,change)
+    return `CopyToMatrixRep(matrix, field);
 end;
+
+
+# DoImmutableMatrix:=function(field,matrix,change)
+# local sf, rep, ind, ind2, row, i,big,l;
+#   if not (IsPlistRep(matrix) or IsGF2MatrixRep(matrix) or
+#     Is8BitMatrixRep(matrix)) then
+#     # if empty of not list based, simply return `Immutable'.
+#     return Immutable(matrix);
+#   fi;
+#   if IsInt(field) then
+#     sf:=field;
+#   else
+#     if not IsField(field) then
+#       # not a field
+#       return matrix;
+#     fi;
+#     sf:=Size(field);
+#   fi;
+
+#   big:=sf>256 or sf=0;
+
+#   # the representation we want the rows to be in
+#   if sf=2 then
+#     rep:=IsGF2VectorRep;
+#   elif not big then
+#     rep:=function(v) return Is8BitVectorRep(v) and Q_VEC8BIT(v) = sf; end;
+#   else
+#     rep:=IsPlistRep;
+#   fi;
+
+#   # get the indices of the rows that need changing the representation.
+#   ind:=[]; # rows to convert
+#   ind2:=[]; # rows to rebuild 
+#   for i in [1..Length(matrix)] do
+#     if not rep(matrix[i]) then
+#       if big or IsLockedRepresentationVector(matrix[i]) 
+# 	or (IsMutable(matrix[i]) and not change) then
+#         Add(ind2,i);
+#       else
+# 	# wrong rep, but can be converted
+# 	Add(ind,i);
+#       fi;
+#     elif (IsMutable(matrix[i]) and not change) then
+#       # right rep but wrong mutability
+#       Add(ind2,i);
+#     fi;
+#   od;
+
+#   # do we need to rebuild outer matrix layer?
+#   if not IsMutable(matrix) # matrix was immutable
+#     or (IsMutable(matrix) and not change) # matrix was mutable
+#     or (Length(ind2)>0 and   # we want to change rows
+#       not IsMutable(matrix)) #but cannot change entries
+#     or (Is8BitMatrixRep(matrix) # matrix is be compact rep
+#        and (Length(ind)>0 or Length(ind2)>0) ) # and we change rows
+#        then
+#     l:=matrix;
+#     matrix:=[];
+#     for i in l do
+#       Add(matrix,i);
+#     od;
+#   fi;
+
+#   # rebuild some rows
+#   if big then
+#     for i in ind2 do
+#       matrix[i]:=List(matrix[i],j->j); # plist conversion
+#     od;
+#   else
+#     for i in ind2 do
+#       row := CopyToVectorRep(matrix[i], sf);
+#       if row <> fail then
+#         matrix[i] := row;
+#       fi;
+#     od;
+#   fi;
+
+#   # this can only happen if not big
+#   for i in ind do
+#     matrix[i]:=CopyToVectorRep(matrix[i],sf);
+#   od;
+
+#   MakeImmutable(matrix);
+#   if sf=2 and not IsGF2MatrixRep(matrix) then
+#     CONV_GF2MAT(matrix);
+#   elif sf>2 and sf<=256 and not Is8BitMatrixRep(matrix) then
+#     CONV_MAT8BIT(matrix,sf);
+#   fi;
+#   return matrix;
+# end;
 
 InstallMethod( ImmutableMatrix,"general,2",[IsObject,IsMatrix],0,
 function(f,m)
