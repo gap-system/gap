@@ -516,7 +516,13 @@ Obj FuncACTIVATE_PROFILING (
     }
 
     HashLock(&profileState);
-        
+    
+    // Recheck inside lock
+    if(profileState.Active) {
+      HashUnlock(&profileState);
+      return Fail;
+    }
+    
     if(fulldump == True) {
       profileState.OutputRepeats = 1;
     }
@@ -737,11 +743,13 @@ Obj FuncACTIVATE_COLOR_PROFILING(Obj self, Obj arg)
 
 void RegisterStatWithProfiling(Stat stat)
 {
+    int active;
     HashLock(&profileState);
-    if(profileState.Active) {
+    active = profileState.Active;
+    HashUnlock(&profileState);
+    if(active) {
       outputStat(stat, 0, 0);
     }
-    HashUnlock(&profileState);
     
 }
 
