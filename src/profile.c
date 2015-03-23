@@ -135,6 +135,7 @@ struct ProfileState
 #endif
   
   int minimumProfileTick;
+  int profiledThread;
 } profileState;
 
 void ProfileLineByLineOutput(Obj func, char type)
@@ -384,6 +385,9 @@ static inline void outputStat(Stat stat, int exec, int visited)
 
 static inline void visitStat(Stat stat)
 {
+  if(profileState.profiledThread != TLS->threadID)
+    return;
+  
   int visited = VISITED_STAT(stat);
  
   if(!visited) {
@@ -451,6 +455,8 @@ void enableAtStartup(char* filename, Int repeats)
     }
     
     profileState.Active = 1;
+    profileState.profiledThread = TLS->threadID;
+    
 #ifdef HAVE_GETTIMEOFDAY
     gettimeofday(&(profileState.lastOutputtedTime), 0);
 #else
@@ -545,6 +551,7 @@ Obj FuncACTIVATE_PROFILING (
     }
     
     profileState.Active = 1;
+    profileState.profiledThread = TLS->threadID;
     
 #ifdef HAVE_GETTIMEOFDAY
     gettimeofday(&(profileState.lastOutputtedTime), 0);
