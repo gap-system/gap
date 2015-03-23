@@ -455,7 +455,7 @@ InstallGlobalFunction(CopyToMatrixRep,
             fi;
             q := Size(q);
         else
-	    return; # not a field -- exit
+	    return fail ; # not a field -- exit
         fi;
     fi;
     
@@ -766,6 +766,7 @@ InstallMethod( OneSameMutability, "8 bit matrix", true,
         w[i] := one;
         Add(o,w);
     od;
+    ConvertToMatrixRepNC(o, Q_VEC8BIT(v));
     if not IsMutable(m![2]) then
         for i in [1..m![1]] do
             MakeImmutable(o[i]);
@@ -774,7 +775,7 @@ InstallMethod( OneSameMutability, "8 bit matrix", true,
     if not IsMutable(m) then
         MakeImmutable(o);
     fi;
-    ConvertToMatrixRepNC(o, Q_VEC8BIT(v));
+
     return o;
 end);
 
