@@ -2814,7 +2814,7 @@ end );
 ##  which the generator images and preimages under the Tietze transformations
 ##  applied to <T> are being traced. It displays the preimages of the current
 ##  generators as  Tietze words in the old generators,  and the images of the
-##  old generators as Tietze words in the the current generators.
+##  old generators as Tietze words in the current generators.
 ##
 InstallGlobalFunction( TzPrintGeneratorImages, function ( T )
 

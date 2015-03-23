@@ -1,7 +1,0 @@
-  \centerline{\titlefont GAP}\bigskip
-  \centerline{\secfont Release {{versionnumber}}}\medskip
-  \centerline{\secfont {{releaseday}}}\bigskip\bigskip
-  \centerline{\titlefont Programming in GAP 4}\vfill
-%  \centerline{\secfont by}\vfill
-  \centerline{\secfont The GAP Group}\bigskip
-  \centerline{\secfont http://www.gap-system.org}

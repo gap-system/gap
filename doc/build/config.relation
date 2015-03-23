@@ -1,4 +1,0 @@
-@msfiles = ("relation");
-@gdfiles  = ("relation");
-$DIR = "../ref";
-$LIB = "../../lib";

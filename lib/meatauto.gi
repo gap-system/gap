@@ -655,7 +655,7 @@ end);
 # some comments of Klaus Lux on my earlier version. This is a combination
 # of the suggestions of Klaus and Alice and my own ideas.
 #
-# Note: This provides an enormous speed-up on the the default GAP routine,
+# Note: This provides an enormous speed-up on the default GAP routine,
 # and on my own naive intertwining routine, especially when the module is
 # large enough and/or it is irreducible. However, this routine is nowhere
 # near as good as the Magma algorithm, and I do not know how to improve it.

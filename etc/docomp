@@ -1,6 +1,6 @@
 #!/bin/sh
 
-GAC=bin/`sed -e s/GAParch=// sysinfo.gap`/gac
+GAC=bin/`grep GAParch= sysinfo.gap | sed -e s/GAParch=//`/gac
 
 echo Assuming to be in the GAP root directory . . .
 

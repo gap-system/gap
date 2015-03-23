@@ -262,8 +262,10 @@ end);
 
 InstallMethod(ViewString,"DoubleCoset",true,[IsDoubleCoset],0,
 function(d)
-  return(STRINGIFY("DoubleCoset(",LeftActingGroup(d),",",Representative(d),",",
-                   RightActingGroup(d),")"));
+  return(STRINGIFY("DoubleCoset(\<",
+                   ViewString(LeftActingGroup(d)),",\>",
+                   ViewString(Representative(d)),",\>",
+                   ViewString(RightActingGroup(d)),")"));
 end);
 
 InstallMethod(Random,"double coset",true,[IsDoubleCoset],0,
@@ -407,12 +409,16 @@ end);
 
 InstallMethod(ViewString,"RightCoset",true,[IsRightCoset],0,
 function(d)
-  return PrintString(d);
+  return STRINGIFY("RightCoset(\<",
+                    ViewString(ActingDomain(d)),",\>",
+                    ViewString(Representative(d)),")");
 end);
 
 InstallMethod(PrintString,"RightCoset",true,[IsRightCoset],0,
 function(d)
-  return STRINGIFY("RightCoset(",ActingDomain(d),",",Representative(d),")");
+  return STRINGIFY("RightCoset(\<",
+                    PrintString(ActingDomain(d)),",\>",
+                    PrintString(Representative(d)),")");
 end);
 
 InstallMethod(PrintObj,"RightCoset",true,[IsRightCoset],0,

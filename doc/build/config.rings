@@ -1,6 +1,0 @@
-@msfiles = ("rings","module","fields","fieldfin");
-@gdfiles = ("integer","numtheor","semiring","ring","field","module",
-            "magma","domain","arith","ffe","vspc","ideal","polyconw",
-            "extlset");
-$DIR = "../ref";
-$LIB = "../../lib"; 
