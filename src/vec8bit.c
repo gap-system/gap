@@ -792,19 +792,22 @@ void ConvVec8Bit (
         ErrorQuit("GF2 has its own representation\n", 0L, 0L);
 
     /* already in the correct representation                               */
-    if (IS_VEC8BIT_REP(list)) {
-        if (FIELD_VEC8BIT(list) == q)
+    if (IS_VEC8BIT_REP(list) && FIELD_VEC8BIT(list) == q) 
             return;
-        else if (FIELD_VEC8BIT(list) < q) {
-            RewriteVec8Bit(list, q);
-            return;
-        }
-        /* remaining case is list is written over too large a field
-           pass through to the generic code */
 
-    } else if (IS_GF2VEC_REP(list)) {
-        RewriteGF2Vec(list, q);
-        return;
+    if (REGION(list) == 0)
+      ErrorMayQuit("CONV_VEC8BIT: In-place conversion of object in the public region",0L,0L);
+    
+    if (IS_VEC8BIT_REP(list) && FIELD_VEC8BIT(list) < q) {
+      RewriteVec8Bit(list, q);
+      return;
+    }
+    /* remaining case is list is written over too large a field
+       pass through to the generic code */
+    
+    if (IS_GF2VEC_REP(list)) {
+      RewriteGF2Vec(list, q);
+      return;
     }
 
     len = LEN_LIST(list);
@@ -1334,6 +1337,7 @@ Obj SumVec8BitVec8Bit( Obj vl, Obj vr )
 */
 
 static Obj ConvertToVectorRep;  /* BH: changed to static */
+static Obj CopyToVectorRep;  /* BH: changed to static */
 
 
 Obj FuncSUM_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
@@ -1512,6 +1516,7 @@ Obj ZeroVec8Bit ( UInt q, UInt len, UInt mut )
 Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
 {
     Obj prod;
+    UInt q;
     Obj info;
     UInt d;
 
@@ -1529,7 +1534,15 @@ Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
     /* check for field compatibility */
     if (d % DEGR_FF(FLD_FFE(ffe))) {
         prod = ProdListScl(vec, ffe);
-        CALL_1ARGS(ConvertToVectorRep, prod);
+	if (IS_MUTABLE_OBJ(prod))
+	  CALL_1ARGS(ConvertToVectorRep, prod);
+	else {
+	  q = ChooseFieldVecFFE(prod);
+	  if (q) {
+	    prod = CALL_2ARGS(CopyToVectorRep,prod,INTOBJ_INT(q));
+	    MakeImmutable(prod);
+	  }
+	}
         return prod;
     }
 
@@ -2059,6 +2072,7 @@ Obj FuncDIFF_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
         UInt newd = LcmDegree(D_FIELDINFO_8BIT(infol), D_FIELDINFO_8BIT(infor));
         UInt p, newq;
         UInt i;
+	UInt q;
         p = P_FIELDINFO_8BIT(infol);
         assert(p == P_FIELDINFO_8BIT(infor));
         newq = 1;
@@ -2069,7 +2083,15 @@ Obj FuncDIFF_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
         (ql != newq && True == CALL_1ARGS(IsLockedRepresentationVector, vl)) ||
         (qr != newq && True == CALL_1ARGS(IsLockedRepresentationVector, vr))) {
             diff = DiffListList(vl, vr);
-            CALL_1ARGS(ConvertToVectorRep, diff);
+	    if (IS_MUTABLE_OBJ(diff)) 
+	      CALL_1ARGS(ConvertToVectorRep, diff);
+	    else {
+	      q = ChooseFieldVecFFE(diff);
+	      if (q) {
+		diff = CALL_2ARGS(CopyToVectorRep,diff,INTOBJ_INT(q));
+		MakeImmutable(diff);
+	      }
+	    }
             return diff;
         } else {
             RewriteVec8Bit(vl, newq);
@@ -3481,6 +3503,8 @@ Obj FuncCONV_MAT8BIT( Obj self, Obj list, Obj q )
     if (!IS_INTOBJ(q))
         ErrorQuit("CONV_MAT8BIT: q must be a small integer, not a %s",
         (Int)TNAM_OBJ(q), (Int)0L);
+    if (!REGION(list))
+      ErrorMayQuit("CONV_MAT8BIT: in-place conversion of object in the public region",0L,0L);
     PLAIN_LIST(list);
     len = LEN_PLIST(list);
     mut = IS_MUTABLE_OBJ(list);
@@ -6063,6 +6087,7 @@ static Int InitKernel (
     InitGlobalBag(&FieldInfo8Bit, "src/vec8bit.c:FieldInfo8Bit");
 
     InitFopyGVar("ConvertToVectorRep", &ConvertToVectorRep);
+    InitFopyGVar("CopyToVectorRep", &CopyToVectorRep);
     InitFopyGVar("AddRowVector", &AddRowVector);
     InitFopyGVar("IsLockedRepresentationVector", &IsLockedRepresentationVector);
     InitFopyGVar("AsInternalFFE", &AsInternalFFE);
