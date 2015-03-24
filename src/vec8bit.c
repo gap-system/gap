@@ -4320,6 +4320,7 @@ void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
     if (len == newlen)
         return;
 
+
     if (!MayRewrite(vec)) {
         ErrorReturnVoid("Resize of atomic or locked compressed vector is forbidden", 0, 0,
         "You can `return;' to ignore the operation");
