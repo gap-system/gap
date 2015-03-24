@@ -10,7 +10,7 @@
 #include        "system.h"
 #include        "compstat.h"            /* statically linked modules       */
 
-#define AVOID_PRECOMPILED
+// #define AVOID_PRECOMPILED
 
 
 /****************************************************************************

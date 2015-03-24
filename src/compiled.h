@@ -88,6 +88,7 @@ extern "C" {
 
 #include        "vars.h"                /* variables                       */
 
+#include        "aobjects.h"            /* atomic variables                */
 extern Obj InfoDecision;
 extern Obj InfoDoPrint;
 extern Obj CurrentAssertionLevel;
@@ -196,6 +197,8 @@ typedef UInt    RNam;
     if ( TNUM_OBJ(list) == T_POSOBJ ) { \
         elm = ELM_PLIST( list, pos ); \
     } \
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) \
+        elm = ElmAList( list, pos ); \
     else { \
         elm = ELMW_LIST( list, pos ); \
     }
@@ -206,8 +209,9 @@ typedef UInt    RNam;
             ResizeBag( list, (pos+1)*sizeof(Obj) ); \
         } \
         SET_ELM_PLIST( list, pos, elm ); \
-    } \
-    else { \
+    } else if (TNUM_OBJ(list) == T_APOSOBJ) { \
+    AssAList( list, pos, elm ); \
+    } else { \
         ASS_LIST( list, pos, elm ); \
     }
 
@@ -218,8 +222,9 @@ typedef UInt    RNam;
         } \
         SET_ELM_PLIST( list, pos, elm ); \
         CHANGED_BAG(list); \
-    } \
-    else { \
+    } else if (TNUM_OBJ(list) == T_APOSOBJ) { \
+    AssAList( list, pos, elm ); \
+    } else { \
         ASS_LIST( list, pos, elm ); \
     }
 
