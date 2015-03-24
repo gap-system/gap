@@ -764,7 +764,7 @@ int main (
   NrImportedGVars = 0;
   NrImportedFuncs = 0;
   UserHasQUIT = 0;
-  UserHasQUITReturnValue = 0;
+  SystemErrorCode = 0;
   UserHasQuit = 0;
     
   /* initialize everything and read init.g which runs the GAP session */
@@ -791,7 +791,7 @@ int main (
       SyExit( 0 );
     }
   }
-  SyExit(0);
+  SyExit(SystemErrorCode);
   return 0;
 }
 
@@ -1328,7 +1328,7 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
 
 UInt UserHasQuit;
 UInt UserHasQUIT;
-UInt UserHasQUITReturnValue;
+UInt SystemErrorCode;
 
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
 {
@@ -2617,6 +2617,25 @@ Obj FuncSleep( Obj self, Obj secs )
 
 /****************************************************************************
 **
+*F  FuncGAP_EXIT_CODE() . . . . . . . . Set the code with which GAP exits.
+**
+*/
+
+Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
+{
+  if (code == False || code == Fail)
+    SystemErrorCode = 1;
+  else if (code == True)
+    SystemErrorCode = 0;
+  else if (IS_INTOBJ(code))
+    SystemErrorCode = INT_INTOBJ(code);
+  else
+    ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0L, 0L);
+  return (Obj) 0;
+}
+
+/****************************************************************************
+**
 *F  FuncQUIT_GAP()
 **
 */
@@ -2624,10 +2643,10 @@ Obj FuncSleep( Obj self, Obj secs )
 Obj FuncQUIT_GAP( Obj self, Obj args )
 {
   if ( LEN_LIST(args) == 0 ) {
-    UserHasQUITReturnValue = 0;
+    SystemErrorCode = 0;
   }
   else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
-    UserHasQUITReturnValue = INT_INTOBJ( ELM_PLIST( args, 1 ) );
+    SystemErrorCode = INT_INTOBJ( ELM_PLIST( args, 1 ) );
   }
   else {
     ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0L, 0L );
@@ -2637,6 +2656,27 @@ Obj FuncQUIT_GAP( Obj self, Obj args )
   
   ReadEvalError();
   return (Obj)0; 
+}
+
+/****************************************************************************
+**
+*F  FuncFORCE_QUIT_GAP()
+**
+*/
+
+Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
+{
+  if ( LEN_LIST(args) == 0 )
+  {
+    SyExit(SystemErrorCode);
+  }
+  else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args, 1) ) ) {
+    SyExit(INT_INTOBJ(ELM_PLIST( args, 1 ) ) );
+  }
+  else {
+    ErrorQuit( "usage: FORCE_QUIT_GAP( [ <return value> ] )", 0L, 0L );
+  }
+  return (Obj) 0; /* should never get here */
 }
 
 
@@ -2818,9 +2858,14 @@ static StructGVarFunc GVarFuncs [] = {
     { "Sleep", 1, "secs",
       FuncSleep, "src/gap.c:Sleep" },
 
+    { "GAP_EXIT_CODE", 1, "exit code",
+      FuncGAP_EXIT_CODE, "src/gap.c:GAP_EXIT_CODE" },
+        
     { "QUIT_GAP", -1, "args",
       FuncQUIT_GAP, "src/gap.c:QUIT_GAP" },
 
+    { "FORCE_QUIT_GAP", -1, "args",
+      FuncFORCE_QUIT_GAP, "src/gap.c:FORCE_QUIT_GAP" },
 
     { "SHELL", -1, "context, canReturnVoid, canReturnObj, lastDepth, setTime, prompt, promptHook, infile, outfile",
       FuncSHELL, "src/gap.c:FuncSHELL" },
