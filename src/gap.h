@@ -229,7 +229,7 @@ typedef UInt ExecStatus;
 
 extern UInt UserHasQuit;
 extern UInt UserHasQUIT;
-extern UInt UserHasQUITReturnValue;
+extern UInt SystemErrorCode;
 
 #if 0
 /****************************************************************************
