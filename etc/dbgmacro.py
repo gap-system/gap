@@ -35,7 +35,6 @@ def emit_redef(return_type, name, arg_types):
   emit("")
   emit("#ifdef " + name)
   emit("")
-  emit("static inline")
   emit(return_type + "DBG_" + name + "(" + ", ".join(args) + ")")
   emit("{")
   if len(args):
