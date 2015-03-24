@@ -1386,93 +1386,122 @@ end);
 #F  CopyToVectorRep( <v>, <q> )
 ##
 InstallGlobalFunction(CopyToVectorRep,function( v, q )
-    local vc, common, field, res;
-
-    # Handle fast, certain cases where there is no work. Microseconds count here
+    local  primeAndDegree, pd, p, d, q1, pd1, p1, d1;
+    
+    primeAndDegree := function(q)
+        local  f;
+        f := FactorsInt(q);
+        return [f[1],Length(f)];
+    end;
+    
+    pd := primeAndDegree(q);
+    p := pd[1];
+    d := pd[2];
+    
     
     if Length(v) = 0 then
-        return v;
+        return ShallowCopy(v);
     fi;    
     
-    if IsGF2VectorRep(v) and q=2 then
-        if IsMutable(v) then
-          return(ShallowCopy(v));
+    if IsGF2VectorRep(v) then
+        if q = 2 then
+            return ShallowCopy(v);
+        elif q mod 2 = 0 then
+            if q <= 256 then
+                v := ShallowCopy(v);
+                CONV_VEC8BIT(v,q);
+                return v;
+            else
+                return PlainListCopy(v);
+            fi;
         else
-          return v;
-        fi;  
+            return fail;
+        fi;
     fi;
     
     if Is8BitVectorRep(v) then
-        if q = Q_VEC8BIT(v) then
-            if IsMutable(v) then
-                return(ShallowCopy(v));
-            else
-                return v;
-            fi; 
+        q1 := Q_VEC8BIT(v);
+        
+        if q = q1 then
+            return ShallowCopy(v);
         fi;
+        
+        pd1 := primeAndDegree(q1);
+        p1 := pd1[1];
+        d1 := pd1[2];
+        
+        if p <> p1 then
+            return fail;
+        fi;
+        if d mod d1 <> 0 and ForAny(v, x-> d mod DegreeFFE(x) <> 0) then
+            return fail;
+        fi;
+        
+        if q > 256 then
+            return PlainListCopy(v);
+        fi;
+        v := ShallowCopy(v);
+        if q = 2 then
+            CONV_GF2VEC(v);
+        else
+            CONV_VEC8BIT(v,q);
+        fi;
+        return v;
     fi;
     
-    # Ask the kernel to check the list for us.
-    # We have to do this, even in an NC version because the list might contain
-    # elements of large finite fields.
-    # Calling IS_VECFFE may force a full inspection of the list.
-        
-    if not IS_VECFFE(v) then
-        # TODO: no need of the next 'if' block in the NC-version
+    #
+    # So now we're left with the possibility that v is a plain list.
+    #
+    
+    #
+    # If it isn't a list of small finite field elements already then we 
+    # will need to see if we can write it as one.
+    #
+
+    v := ShallowCopy(v);
+    if  IS_VECFFE(v) then
+        q1 := COMMON_FIELD_VECFFE(v);
+        pd1 := primeAndDegree(q1);
+        p1 := pd1[1];
+        d1 := pd1[2];
+        if p1 <> p then
+            return fail;
+        fi;
+        if d mod d1 <> 0 and ForAny(v, x-> d mod DegreeFFE(x) <> 0) then
+            return fail;
+        fi;
+    else        
         if IsFFECollection(v) then
-            # Now we might have some elements in a large field representation
-            # or possibly a totally bad list. We will examine the shallow copy 
-            # of v to avoid side effects when CopyToVectorRep modifies v and 
-            # then returns fail 
-            vc := ShallowCopy(v);
-            common := FFECONWAY.WriteOverSmallestCommonField(vc);
+            #
+            # It contains some Conway field elements
+            #
+            q1 := FFECONWAY.WriteOverSmallestCommonField(v);
             #
             # FFECONWAY.WriteOverSmallestCommonField returns an integer or fail.
-            # When it resturns an integer, it may modify individual entries of vc
+            # When it resturns an integer, it may modify individual entries of v
             #
-            if common = fail or common  > 256 then
-                #
-                # vector needs a field > 256, so can't be compressed
-                # or vector contains non-ffes or no common characteristic
-                #
-                return fail; # v can not be written over GF(q)
+            if q1 = fail  then
+                return fail; # v can not be written over any finite field
             fi;
-            # CLONE_OBJ(v,vc); # commented out the hack used in in-place conversion
         else
-            return fail; # v can not be written over GF(q)
+            return fail; # v can not be written over any finite field
         fi;
-    else
-        common := COMMON_FIELD_VECFFE(v);
-        vc := v;
+        pd1 := primeAndDegree(q1);
+        p1 := pd1[1];
+        d1 := pd1[2];
+        if p <> p1 or d mod d1 <> 0 then
+            return fail;
+        fi;
     fi;
-    
     if q = 2 then
-        Assert(2, ForAll(vc, elm -> elm in GF(2)));
-        if common > 2 and common mod 2 = 0 then
-            common := SMALLEST_FIELD_VECFFE(vc);
-        fi;
-        if common <> 2 then
-            Error("CopyToVectorRep: Vector cannot be written over GF(2)");
-        fi;
-        res := COPY_GF2VEC(vc);
-        if not IsMutable(v) then MakeImmutable(res); fi;
-        return res;
+        CONV_GF2VEC(v);
     elif q <= 256 then
-        if common <> q then 
-            Assert(2, ForAll(vc, elm -> elm in GF(q)));
-            if IsPlistRep(vc) and  GcdInt(common,q) > 1  then
-                common := SMALLEST_FIELD_VECFFE(vc);
-            fi;
-            if common ^ LogInt(q, common) <> q then
-                Error("CopyToVectorRep: Vector cannot be written over GF(",q,")");
-            fi;
-        fi;
-        res := COPY_VEC8BIT(vc,q);
-        if not IsMutable(v) then MakeImmutable(res); fi;
-        return res;
-    else    
-        return fail; # vector can not be written over GF(q)
+        CONV_VEC8BIT(v,q);
+    elif not IsPlistRep(v) then
+        v := PlainListCopy(v);
     fi;
+
+    return v;
 end);
 
 
@@ -1485,71 +1514,62 @@ end);
 ##  finite field, and all elements of v lie in this field. 
 ##
 InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
-    local common, field, res;
-
-    # Handle fast, certain cases where there is no work. Microseconds count here
+    local q1;
+    
+    Assert(1, q <= 256);
+    Assert(2, ForAll(v, x-> x in GF(q)));
+    
     
     if Length(v) = 0 then
+        return ShallowCopy(v);
+    fi;    
+    
+    if IsGF2VectorRep(v) then
+        v := ShallowCopy(v);
+        if q > 2 then
+            CONV_VEC8BIT(v,q);
+        fi;
+        return v;
+    fi;
+        
+    if Is8BitVectorRep(v) then
+        q1 := Q_VEC8BIT(v);
+        v := ShallowCopy(v);
+        if q = 2 then
+            CONV_GF2VEC(v);
+        elif q <> q1 then
+            CONV_VEC8BIT(v,q);
+        fi;
         return v;
     fi;
     
-    if IsGF2VectorRep(v) and q=2 then
-        if IsMutable(v) then
-          return(ShallowCopy(v));
-        else
-          return v;
-        fi;  
-    fi;
+    #
+    # So now we're left with the possibility that v is a plain list.
+    #
     
-    if Is8BitVectorRep(v) then
-        if q = Q_VEC8BIT(v) then
-            if IsMutable(v) then
-                return(ShallowCopy(v));
-            else
-                return v;
-            fi; 
-        fi;
+    #
+    # If it isn't a list of small finite field elements already then we 
+    # will need to  write it as one.
+    #
+
+    v := ShallowCopy(v);
+    if not IS_VECFFE(v) then
+        #
+        # It contains some Conway field elements
+        #
+        FFECONWAY.WriteOverSmallestCommonField(v);
     fi;
-    
-    # Calling COMMON_FIELD_VECFFE may force a full inspection of the list.
-    common := COMMON_FIELD_VECFFE(v);
-    if common = fail then
-        common := SMALLEST_FIELD_VECFFE(v);
-        if common = fail then
-            Error("CopyToVectorRepNC: Vector cannot be written over GF(",q,").\n",
-                  "You may try to use CopyToVectorRep instead\n");
-        fi;
-        
-    fi;
-    
+    Assert(2, IS_VECFFE(v));
     if q = 2 then
-        Assert(2, ForAll(v, elm -> elm in GF(2)));
-        if common > 2 and common mod 2 = 0 then
-            common := SMALLEST_FIELD_VECFFE(v);
-        fi;
-        if common <> 2 then
-            Error("ConvertToVectorRepNC: Vector cannot be written over GF(2)");
-        fi;
-        res := COPY_GF2VEC(v);
-        if not IsMutable(v) then MakeImmutable(res); fi;
-        return res;
+        CONV_GF2VEC(v);
     elif q <= 256 then
-        if common <> q then 
-            Assert(2, ForAll(v, elm -> elm in GF(q)));
-            if IsPlistRep(v) and  GcdInt(common,q) > 1  then
-                common := SMALLEST_FIELD_VECFFE(v);
-            fi;
-            if common ^ LogInt(q, common) <> q then
-                Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
-            fi;
-        fi;
-        res :=COPY_VEC8BIT(v,q);
-        if not IsMutable(v) then MakeImmutable(res); fi;
-        return res;
-    else    
-        Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
+        CONV_VEC8BIT(v,q);
+    elif not IsPlistRep(v) then
+        v := PlainListCopy(v);
     fi;
+    return v;
 end);
+
 
 
 #############################################################################
