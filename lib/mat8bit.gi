@@ -1112,6 +1112,7 @@ InstallMethod(PostMakeImmutable, [Is8BitMatrixRep],
     for i in [2..m![1]] do
         MakeImmutable(m![i]);
     od;
+    MakeReadOnly(m);
 end);
 
 

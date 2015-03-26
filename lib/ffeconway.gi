@@ -31,7 +31,7 @@
 ##  
 
 BindGlobal("IsCoeffsModConwayPolRep", 
-        NewRepresentation( "IsCoeffsModConwayPolRep", IsPositionalObjectRep,3));
+        NewRepresentation( "IsCoeffsModConwayPolRep", IsAtomicPositionalObjectRep,3));
 
 #############################################################################
 ##
