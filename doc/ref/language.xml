@@ -782,9 +782,11 @@ If it is not, &GAP; signals an error.
 Next &GAP; checks that the number of actual arguments <A>arg-expr</A>s agrees
 with the number of <E>formal arguments</E> as given in the function definition.
 If they do not agree &GAP; signals an error.
-An exception is the case when there is exactly one formal argument
-with the name <C>arg</C>, in which case any number of actual arguments is
-allowed (see&nbsp;<Ref Sect="Function"/> for examples).
+An exception is the case when the last formal argument
+has the name <C>arg</C>. In this case there must be at least as many
+actual arguments as there are formal arguments <E>before the
+<C>arg</C></E> and can be any larger number
+(see&nbsp;<Ref Sect="Function"/> for examples).
 <P/>
 Now &GAP; allocates for each formal argument and for each <E>formal local</E>
 (that is, the identifiers in the <K>local</K> declaration) a new variable.
@@ -800,8 +802,9 @@ variable corresponding  to  the second  formal argument, and  so on.
 However, &GAP; does not make any guarantee about the order in which the
 arguments are evaluated. They might be evaluated left to right, right to
 left, or in any other order, but each argument is evaluated once. An
-exception again occurs if the function has only one formal argument with
-the name <C>arg</C>. In this case the values of all the actual arguments are
+exception again occurs if the last formal argument has
+the name <C>arg</C>. In this case the values of all the actual
+arguments not assigned to the other formal parameters are
 stored in  a list and this  list is assigned to the  new variable
 corresponding to the formal argument <C>arg</C>.
 <P/>
@@ -1732,10 +1735,13 @@ only needs about <C>Log(<A>n</A>)</C> steps.
 <Index Subkey="with a variable number of arguments">functions</Index>
 <Index Key="arg" Subkey="special function argument"><C>arg</C></Index>
 As noted in Section&nbsp;<Ref Sect="Function Calls"/>,
-the case where a function is
-defined with exactly one formal argument with the name <C>arg</C>, is special.
+the case where a functions last formal argument has the name
+<C>arg</C>, is special.
 It provides a way of defining  a  function  with  a  variable  number  of
-arguments; the values of all the actual arguments are stored  in  a  list
+arguments. The values of the actual arguments are computed and the
+first ones are assigned to the new variables corresponding to the
+formal arguments before the <C>arg</C> if any. The values of all the
+remaining actual arguments are stored  in  a  list
 and this list is assigned to the new variable corresponding to the formal
 argument <C>arg</C>. There are  two  typical  scenarios  for  wanting  such  a
 possibility:  having  optional  arguments  and  having  any   number   of
@@ -1746,14 +1752,12 @@ The  following  example  shows  one  way  that  the  function
 <Q>optional argument</Q> scenario.
 <P/>
 <Example><![CDATA[
-gap> position := function ( arg )    
->     local list, obj, pos;
->     list := arg[1];
->     obj  := arg[2];
->     if 2 = Length(arg) then
+gap> position := function ( list, obj, arg )    
+>     local pos;
+>     if 0 = Length(arg) then
 >       pos := 0;
 >     else
->       pos := arg[3];
+>       pos := arg[1];
 >     fi;
 >     repeat
 >       pos := pos + 1;
@@ -1763,7 +1767,7 @@ gap> position := function ( arg )
 >     until list[pos] = obj;
 >     return pos;
 >    end;
-function( arg ) ... end
+function( list, obj, arg ) ... end
 gap> position([1, 4, 2], 4);
 2
 gap> position([1, 4, 2], 3);
@@ -1797,9 +1801,10 @@ The user should compare the above with the  &GAP; function <Ref Func="Sum"/>
 which, for example, may take a list argument and optionally
 an initial element (which zero should the sum of an empty list return?).
 <P/>
-Note that if a function <A>f</A> is defined as above with the single formal
+Note that if a function <A>f</A> is defined as above with its last formal
 argument <C>arg</C> then <C>NumberArgumentsFunction(<A>f</A>)</C> returns
-<M>-1</M> (see&nbsp;<Ref Func="NumberArgumentsFunction"/>).
+minus the number of formal arguments (including the <C>arg</C>
+(see&nbsp;<Ref Func="NumberArgumentsFunction"/>).
 <P/>
 The argument <C>arg</C> when used as the single argument name of some function
 <A>f</A> tells &GAP; that when it encounters <A>f</A> that it should form  a  list

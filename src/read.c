@@ -180,7 +180,7 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 **  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
 **
 **  <Var> := <Ident>
-**        |  <Var> '[' <Expr> ']'
+**        |  <Var> '[' <Expr> ]'
 **        |  <Var> '{' <Expr> '}'
 **        |  <Var> '.' <Ident>
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
@@ -1168,6 +1168,8 @@ void ReadFuncExpr (
 	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
 	}
 	while ( Symbol == S_COMMA ) {
+	    if (narg > 0 && !strcmp(CSTR_STRING(ELM_LIST(nams,narg)),"arg"))
+	      SyntaxError("arg can only be the last argument");
 	    Match( S_COMMA, ",", follow );
 	    lockmode = 0;
 	    switch (Symbol) {
@@ -1236,8 +1238,10 @@ void ReadFuncExpr (
     }
 
     /* 'function( arg )' takes a variable number of arguments              */
-    if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
-        narg = -1;
+    if (narg >= 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) ) )
+      narg = -narg;
+    /*     if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
+	   narg = -1; */
 
     /* remember the current variables in case of an error                  */
     currLVars = CurrLVars;
