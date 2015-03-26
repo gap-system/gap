@@ -2615,13 +2615,8 @@ Obj FuncSleep( Obj self, Obj secs )
   return (Obj) 0;
 }
 
-/****************************************************************************
-**
-*F  FuncGAP_EXIT_CODE() . . . . . . . . Set the code with which GAP exits.
-**
-*/
-
-Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
+// Common code in the next 3 methods.
+int static SetExitValue(Obj code)
 {
   if (code == False || code == Fail)
     SystemErrorCode = 1;
@@ -2630,6 +2625,18 @@ Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
   else if (IS_INTOBJ(code))
     SystemErrorCode = INT_INTOBJ(code);
   else
+    return 0;
+  return 1;
+}
+
+/****************************************************************************
+**
+*F  FuncGAP_EXIT_CODE() . . . . . . . . Set the code with which GAP exits.
+**
+*/
+Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
+{
+  if(!SetExitValue(code))
     ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0L, 0L);
   return (Obj) 0;
 }
@@ -2645,15 +2652,12 @@ Obj FuncQUIT_GAP( Obj self, Obj args )
   if ( LEN_LIST(args) == 0 ) {
     SystemErrorCode = 0;
   }
-  else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
-    SystemErrorCode = INT_INTOBJ( ELM_PLIST( args, 1 ) );
-  }
-  else {
+  else if ( LEN_LIST(args) != 1 
+            || !SetExitValue(ELM_PLIST(args, 1) ) ) {
     ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0L, 0L );
     return 0;
   }
   UserHasQUIT = 1;
-  
   ReadEvalError();
   return (Obj)0; 
 }
@@ -2670,12 +2674,12 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
   {
     SyExit(SystemErrorCode);
   }
-  else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args, 1) ) ) {
-    SyExit(INT_INTOBJ(ELM_PLIST( args, 1 ) ) );
-  }
-  else {
+  else if ( LEN_LIST(args) != 1 
+            || !SetExitValue(ELM_PLIST(args, 1) ) ) {
     ErrorQuit( "usage: FORCE_QUIT_GAP( [ <return value> ] )", 0L, 0L );
+    return 0;
   }
+  SyExit(0);
   return (Obj) 0; /* should never get here */
 }
 
