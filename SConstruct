@@ -486,7 +486,7 @@ GAP.Append(CFLAGS=" -DMAX_GC_THREADS="+str(gcmaxthreads))
 # We currently exclude the Win95 file and GAC-generated files.
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
-source = filter(lambda s: not s.startswith("src/c_"), source)
+# source = filter(lambda s: not s.startswith("src/c_"), source)
 
 # Generate src/debugmacro.c. It contains functions that wrap important
 # GAP macros to help with debugging on platforms that do not store
