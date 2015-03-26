@@ -484,7 +484,7 @@ InstallGlobalFunction("Test", function(arg)
 end);
 
 TestDirectory := function(arg)
-  local basedir, nopts, opts, files, filestones,
+  local basedirs, nopts, opts, files, newfiles, filestones,
         f, c, i, recurseFiles, StringEnd, getStones,
         startTime, time, stones, testResult, testTotal,
         totalTime, totalStones, STOP_TEST_CPY;
@@ -519,8 +519,11 @@ TestDirectory := function(arg)
   end;
     
   
-  basedir := arg[1];
-  
+  if IsString(arg[1]) then
+    basedirs := [arg[1]];
+  else
+    basedirs := arg[1];
+
   if Length(arg) > 1 and IsRecord(arg[2]) then
     nopts := arg[2];
   else
@@ -531,12 +534,18 @@ TestDirectory := function(arg)
     testOptions := rec(),
     earlyStop := false,
     showProgress := true,
-    recursive := true
+    recursive := true,
+    exitGAP := false;
   );
   
   for c in RecFields(nopts) do
     opts.(c) := nopts.(c);
   od;
+  
+  
+  if opts.exitGAP then
+    GAP_EXIT_CODE(1);
+  fi;
   
   files := [];
   
@@ -553,10 +562,20 @@ TestDirectory := function(arg)
   
   if opts.recursive then
     files := [];
-    recurseFiles(basedir);
+    for f in basedirs do
+      if IsDirectoryPath(f) then
+        recurseFiles(f);
+      else
+        Append(files, f);
+      fi;
+    od;
   else
-    files := DirectoryContents(basedir);
-    files := Filtered(files, x -> Length(x) > 4 and StringEnd(x,".tst"));
+    for f in basedirs do
+      if IsDirectoryPath(f) then
+        newfiles := DirectoryContents(basedir);
+        Append(files, Filtered(newfiles, x -> Length(x) > 4 and StringEnd(x,".tst"));
+      fi;
+    od;
   fi;
   
   Print(files);
@@ -581,6 +600,9 @@ TestDirectory := function(arg)
     testResult := Test(files[i], opts.testOptions);
     if not(testResult) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
+      if opts.exitGAP then
+        FORCE_QUIT_GAP(1);
+      fi;
       return false;
     fi;
     testTotal := testTotal and testResult;
@@ -605,5 +627,10 @@ TestDirectory := function(arg)
   od;       
   
   STOP_TEST := STOP_TEST_CPY;
+  
+  if opt.exitGAP then
+    FORCE_QUIT_GAP(testTotal = 0);
+  fi;
+  
   return testTotal;
 end;
