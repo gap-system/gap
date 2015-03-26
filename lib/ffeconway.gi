@@ -1506,14 +1506,16 @@ InstallMethod(Coefficients,
         IsCollsElms,
         [IsCanonicalBasis and IsBasisFiniteFieldRep, IsFFE and IsCoeffsModConwayPolRep],
         function(cb,x)
+    local  y;
     if not IsPrimeField(LeftActingDomain(UnderlyingLeftModule(cb))) then
         TryNextMethod();
     fi;
     if DegreeOverPrimeField(UnderlyingLeftModule(cb)) <> x![2] then
         TryNextMethod();
     fi;
-    PadCoeffs(x![1],x![2]);
-    return Immutable(x![1]);
+    y := ShallowCopy(x![1]);
+    PadCoeffs(y,x![2]);
+    return Immutable(y);
 end);
 
 #############################################################################

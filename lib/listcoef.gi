@@ -1287,7 +1287,7 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
     fi;
     
     mat := CopyToMatrixRepNC(mat,Size(f));
-    vec := CopyToVectorRepNC(vec,f);
+    vec := CopyToVectorRepNC(vec,Size(f));
     
     # build the data structures
     f:=AsSSortedList(f);
@@ -1534,23 +1534,15 @@ InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
     if 2 <= q and q < 256 then
         
         # 8 bit case, need to get all vectors over the right field
-        ok8 := true;
-        if q <> ConvertToVectorRepNC(v,q) then
-            v := PlainListCopy(v);
-            ok8 := ok8 and q = ConvertToVectorRepNC(v,q);
-        fi;
-        if ok8 and q <> ConvertToVectorRepNC(w,q) then
-            w := PlainListCopy(w);
-            ok8 := ok8 and q = ConvertToVectorRepNC(w,q);
-        fi;
+        v := CopyToVectorRepNC(v,q);
+        w := CopyToVectorRepNC(w,q);
         for x in vl{[1..n]} do
             for i in [1..q+1] do
-                if ok8 and q <> ConvertToVectorRepNC(x[i],q) then
-                    x[i] := PlainListCopy(x[i]);
-                    ok8 := ok8 and q = ConvertToVectorRepNC(x[i],q);
-                fi;
+                x[i] := CopyToVectorRepNC(x[i],q);
             od;
         od;
+        ok8 := true;
+        
     else
         ok8 := false;
     fi;
