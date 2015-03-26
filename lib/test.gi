@@ -483,3 +483,127 @@ InstallGlobalFunction("Test", function(arg)
   return ret;
 end);
 
+TestDirectory := function(arg)
+  local basedir, nopts, opts, files, filestones,
+        f, c, i, recurseFiles, StringEnd, getStones,
+        startTime, time, stones, testResult, testTotal,
+        totalTime, totalStones, STOP_TEST_CPY;
+  
+  testTotal := true;
+  totalTime := 0;
+  totalStones := 0;
+  
+  STOP_TEST_CPY := STOP_TEST;
+  STOP_TEST := function(arg) end;
+  
+  StringEnd := function(str, postfix)
+    return Length(str) >= Length(postfix) and str{[Length(str)-Length(postfix)+1..Length(str)]} = postfix;
+  end;
+  
+  getStones := function(file)
+    local lines, l, start, finish, stones;
+    
+    lines := SplitString(StringFile(file),"\n");
+    for l in lines do
+      if PositionSublist(l, "STOP_TEST") <> fail then
+        # Try out best to get the stones out!
+        start := PositionSublist(l, ",");
+        finish := PositionSublist(l, ")");
+        stones := EvalString(l{[start+1..finish-1]});
+        if IsInt(stones) then
+          return stones;
+        fi;
+      fi;
+    od;
+    return 0;
+  end;
+    
+  
+  basedir := arg[1];
+  
+  if Length(arg) > 1 and IsRecord(arg[2]) then
+    nopts := arg[2];
+  else
+    nopts := rec();
+  fi;
+  
+  opts := rec(
+    testOptions := rec(),
+    earlyStop := false,
+    showProgress := true,
+    recursive := true
+  );
+  
+  for c in RecFields(nopts) do
+    opts.(c) := nopts.(c);
+  od;
+  
+  files := [];
+  
+  recurseFiles := function(dir)
+    local dircontents, tests, recursedirs, d;
+    dircontents := List(DirectoryContents(dir), x -> Filename(Directory(dir), x));
+    tests := Filtered(dircontents, x -> Length(x) > 4 and x{[Length(x)-3..Length(x)]} = ".tst");
+    Append(files, tests);
+    recursedirs := Filtered(dircontents, x -> IsDirectoryPath(x) and not(StringEnd(x,"/.")) and not(StringEnd(x,"/..")));
+    for d in recursedirs do
+      recurseFiles(d);
+    od;
+  end;
+  
+  if opts.recursive then
+    files := [];
+    recurseFiles(basedir);
+  else
+    files := DirectoryContents(basedir);
+    files := Filtered(files, x -> Length(x) > 4 and StringEnd(x,".tst"));
+  fi;
+  
+  Print(files);
+  
+  filestones := List(files, getStones);
+  
+  # Sort fastest to slowest
+  SortParallel(filestones, files);
+  
+  if opts.showProgress then
+    Print( "Architecture: ", GAPInfo.Architecture, "\n\n",
+           "test file         GAP4stones     time(msec)\n",
+           "-------------------------------------------\n" );
+  fi;
+  
+  for i in [1..Length(files)] do
+    if opts.showProgress then
+      Print("testing: ", files[i], "\n");
+    fi;
+    
+    startTime := Runtime();
+    testResult := Test(files[i], opts.testOptions);
+    if not(testResult) and opts.earlyStop then
+      STOP_TEST := STOP_TEST_CPY;
+      return false;
+    fi;
+    testTotal := testTotal and testResult;
+    
+    time := Runtime() - startTime;
+    stones := QuoInt(filestones[i], time);
+    if time > 300 and stones > 3000 then
+      totalTime := totalTime + time;
+      totalStones := totalStones + filestones[i];
+    fi;
+    
+    if opts.showProgress then
+      Print( String( filestones[i], -20 ),
+             String( stones, 8 ),
+             String( time, 15 ) );
+      if i < Length(filestones) and filestones[i+1] > 0 and totalTime > 0 then
+      #Print(totalTime,":", filestones[i+1],":" ,10^3,":",totalStones,":" );
+        Print("   ( next ~", Int( (totalTime * filestones[i+1] )/10^3/totalStones), " sec )" );
+      fi;
+      Print("\n");
+    fi;
+  od;       
+  
+  STOP_TEST := STOP_TEST_CPY;
+  return testTotal;
+end;
