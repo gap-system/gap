@@ -483,11 +483,26 @@ InstallGlobalFunction("Test", function(arg)
   return ret;
 end);
 
+###################################
+##
+## TestDirectory(<files> [, <options> ])
+## <files>: A directory (or filename) or list of filenames and directories
+## <options>: Optional record of options (with defaults)
+## 
+##    testOptions := rec()   : Options to pass on to Test
+##    earlyStop := false     : Stop once one test fails
+##    showProgress := true   : Show progress
+##    recursive := true      : Search through directories recursively
+##    exitGAP := false       : Exit GAP, setting exit value depending on if tests succeeded
+##    stonesLimit := infinity: Set limit (in GAPstones) on longest test to be run.
+##
+##
+
 TestDirectory := function(arg)
   local basedirs, nopts, opts, files, newfiles, filestones,
         f, c, i, recurseFiles, StringEnd, getStones,
         startTime, time, stones, testResult, testTotal,
-        totalTime, totalStones, STOP_TEST_CPY;
+        totalTime, totalStones, STOP_TEST_CPY, stopPos;
   
   testTotal := true;
   totalTime := 0;
@@ -523,7 +538,8 @@ TestDirectory := function(arg)
     basedirs := [arg[1]];
   else
     basedirs := arg[1];
-
+  fi;
+    
   if Length(arg) > 1 and IsRecord(arg[2]) then
     nopts := arg[2];
   else
@@ -535,7 +551,8 @@ TestDirectory := function(arg)
     earlyStop := false,
     showProgress := true,
     recursive := true,
-    exitGAP := false;
+    exitGAP := false,
+    stonesLimit := infinity
   );
   
   for c in RecFields(nopts) do
@@ -572,18 +589,23 @@ TestDirectory := function(arg)
   else
     for f in basedirs do
       if IsDirectoryPath(f) then
-        newfiles := DirectoryContents(basedir);
-        Append(files, Filtered(newfiles, x -> Length(x) > 4 and StringEnd(x,".tst"));
+        newfiles := DirectoryContents(f);
+        Append(files, Filtered(newfiles, x -> Length(x) > 4 and StringEnd(x,".tst")));
       fi;
     od;
   fi;
-  
-  Print(files);
-  
+
   filestones := List(files, getStones);
   
   # Sort fastest to slowest
   SortParallel(filestones, files);
+  
+  stopPos := PositionProperty(filestones, x -> x >= opts.stonesLimit);
+  if stopPos <> fail then
+    filestones := filestones{[1..stopPos-1]};
+    files := files{[1..stopPos-1]};
+  fi;
+    
   
   if opts.showProgress then
     Print( "Architecture: ", GAPInfo.Architecture, "\n\n",
@@ -628,7 +650,7 @@ TestDirectory := function(arg)
   
   STOP_TEST := STOP_TEST_CPY;
   
-  if opt.exitGAP then
+  if opts.exitGAP then
     FORCE_QUIT_GAP(testTotal = 0);
   fi;
   

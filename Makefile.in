@@ -232,14 +232,13 @@ testinstall:
 
 teststandard:
 	mkdir -p dev/log
-	( echo 'ShowSystemInformation(); RunStandardTests( [' > test.tmp; \
-          grep -h "STOP_TEST" tst/*.tst | sed -e 's/^gap> STOP_TEST(/[/;s/);/],/' >> test.tmp; \
-          echo '] ); ' >> test.tmp )
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); Read( "test.tmp" );' | $(TESTGAP) > \
+	        ReadGapRoot( "tst/testutil.g" ); \
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) > \
             `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); Read( "test.tmp" );' | $(TESTGAP) > \
+	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) > \
             `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
 	( rm test.tmp )
 
@@ -254,10 +253,6 @@ teststandardrenormalize:
             CreateTestinstallFile(); Runtime();' | $(TESTGAP) > \
             `date -u +dev/log/teststandardrenormalize_%Y-%m-%d-%H-%M` )
 	( rm test.tmp )
-
-testinstall.g:
-	( echo 'ReadGapRoot( "tst/testutil.g" ); \
-            CreateTestinstallFile();' | $(TESTGAP) )            
 
 testpackages:
 	mkdir -p dev/log
