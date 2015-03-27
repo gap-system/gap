@@ -160,6 +160,47 @@ void            SyntaxError (
     assert(Output);
 }
 
+/****************************************************************************
+**
+*F  SyntaxWarning( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
+**
+*/
+void            SyntaxWarning (
+    const Char *        msg )
+{
+    Int                 i;
+
+    /* open error output                                                   */
+    OpenOutput( "*errout*" );
+    assert(Output);
+
+
+    /* do not print a message if we found one already on the current line  */
+    if ( NrErrLine == 0 )
+
+      {
+        /* print the message and the filename, unless it is '*stdin*'          */
+        Pr( "Syntax warning: %s", (Int)msg, 0L );
+        if ( strcmp( "*stdin*", Input->name ) != 0 )
+          Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
+        Pr( "\n", 0L, 0L );
+
+        /* print the current line                                              */
+        Pr( "%s", (Int)Input->line, 0L );
+
+        /* print a '^' pointing to the current position                        */
+        for ( i = 0; i < In - Input->line - 1; i++ ) {
+          if ( Input->line[i] == '\t' )  Pr("\t",0L,0L);
+          else  Pr(" ",0L,0L);
+        }
+        Pr( "^\n", 0L, 0L );
+      }
+    /* close error output                                                  */
+    assert(Output);
+    CloseOutput();
+    assert(Output);
+}
+
 
 /****************************************************************************
 **
