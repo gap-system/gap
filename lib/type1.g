@@ -1089,7 +1089,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
             Objectify( NEW_TYPE(TypeOfTypes, 
                     FamilyType(type), 
                     flags , 
-                    DataType(type)), obj, fail);
+                    DataType(type), fail), obj);
         else
             Objectify( type, obj );
         fi;
