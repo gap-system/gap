@@ -768,6 +768,24 @@ static Int InitKernel (
     return 0;
 }
 
+/****************************************************************************
+**
+*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
+*/
+static Int PostRestore (
+    StructInitInfo *    module )
+{
+  SCOBJ_NW_STACK_GVAR = GVarName( "SCOBJ_NW_STACK" );
+  SCOBJ_LW_STACK_GVAR = GVarName( "SCOBJ_LW_STACK" );
+  SCOBJ_PW_STACK_GVAR = GVarName( "SCOBJ_PW_STACK" );
+  SCOBJ_EW_STACK_GVAR = GVarName( "SCOBJ_EW_STACK" );
+  SCOBJ_GE_STACK_GVAR = GVarName( "SCOBJ_GE_STACK" );
+  SCOBJ_CW_VECTOR_GVAR = GVarName( "SCOBJ_CW_VECTOR" );
+  SCOBJ_CW2_VECTOR_GVAR = GVarName( "SCOBJ_CW2_VECTOR" );
+  SCOBJ_MAX_STACK_SIZE_GVAR = GVarName( "SCOBJ_MAX_STACK_SIZE" );
+
+  return 0;
+}
 
 /****************************************************************************
 **
@@ -806,15 +824,6 @@ static Int InitLibrary (
     AssGVar( GVarName( "SCP_AVECTOR2" ),
              INTOBJ_INT(SCP_AVECTOR2) );
 
-    SCOBJ_NW_STACK_GVAR = GVarName( "SCOBJ_NW_STACK" );
-    SCOBJ_LW_STACK_GVAR = GVarName( "SCOBJ_LW_STACK" );
-    SCOBJ_PW_STACK_GVAR = GVarName( "SCOBJ_PW_STACK" );
-    SCOBJ_EW_STACK_GVAR = GVarName( "SCOBJ_EW_STACK" );
-    SCOBJ_GE_STACK_GVAR = GVarName( "SCOBJ_GE_STACK" );
-    SCOBJ_CW_VECTOR_GVAR = GVarName( "SCOBJ_CW_VECTOR" );
-    SCOBJ_CW2_VECTOR_GVAR = GVarName( "SCOBJ_CW2_VECTOR" );
-    SCOBJ_MAX_STACK_SIZE_GVAR = GVarName( "SCOBJ_MAX_STACK_SIZE" );
-
     /* export collector number                                             */
     AssGVar( GVarName( "8Bits_SingleCollector" ),
              INTOBJ_INT(C8Bits_SingleCollectorNo) );
@@ -834,7 +843,7 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* return success                                                      */
-    return 0;
+    return PostRestore( module );
 }
 
 
@@ -854,7 +863,7 @@ static StructInitInfo module = {
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    0                                   /* postRestore                    */
+    PostRestore                         /* postRestore                    */
 };
 
 StructInitInfo * InitInfoSingleCollector ( void )
