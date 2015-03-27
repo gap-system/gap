@@ -382,9 +382,7 @@ void ReadCallVarAss (
              ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
       && ! SyCompilePlease )
     {
-        SyntaxError("warning: unbound global variable");
-        NrError--;
-        NrErrLine--;
+        SyntaxWarning("unbound global variable");
     }
 
     /* check whether this is a reference to the global variable '~'        */
@@ -1169,7 +1167,10 @@ void ReadFuncExpr (
 	}
 	while ( Symbol == S_COMMA ) {
 	    if (narg > 0 && !strcmp(CSTR_STRING(ELM_LIST(nams,narg)),"arg"))
-	      SyntaxError("arg can only be the last argument");
+	      {
+		SyntaxWarning("arg used not as the last argument");
+	      }
+
 	    Match( S_COMMA, ",", follow );
 	    lockmode = 0;
 	    switch (Symbol) {
@@ -1237,9 +1238,14 @@ void ReadFuncExpr (
         Match( S_SEMICOLON, ";", STATBEGIN|S_END|follow );
     }
 
-    /* 'function( arg )' takes a variable number of arguments              */
+    /* 'function( ... arg )' takes a variable number of arguments              */
     if (narg >= 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) ) )
-      narg = -narg;
+      {
+	if (narg > 1)
+	  SyntaxWarning("New syntax used -- intentional?");
+	narg = -narg;
+      }
+	
     /*     if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
 	   narg = -1; */
 
