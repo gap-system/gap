@@ -469,7 +469,7 @@ local s,r;
   s:=ActingDomain(a);
   r:=Representative(a);
   if ForAny(GeneratorsOfGroup(s),x->not x^r in s) then
-    Error("Inversion only works for cosetss of normal subgroups");
+    Error("Inversion only works for cosets of normal subgroups");
   fi;
   return RightCoset(s,Inverse(r));
 end);
