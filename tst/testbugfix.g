@@ -41,10 +41,8 @@ Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 750m'.\n",
 
 Reread( Filename( DirectoriesLibrary( "tst" ), "testutil.g" ) );
 
-RunStandardTests( [
-  [ "bugfix.tst",6000000],
-] ); 
-
+TestDirectory(Filename(DirectoriesLibrary("tst/testall"), "bugfix.tst"),
+              rec(exitGAP := true));
 
 #############################################################################
 ##
