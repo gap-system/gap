@@ -502,11 +502,14 @@ TestDirectory := function(arg)
   local basedirs, nopts, opts, files, newfiles, filestones,
         f, c, i, recurseFiles, StringEnd, getStones,
         startTime, time, stones, testResult, testTotal,
-        totalTime, totalStones, STOP_TEST_CPY, stopPos;
+        totalTime, totalStones, STOP_TEST_CPY, stopPos,
+        count, prod;
   
   testTotal := true;
   totalTime := 0;
   totalStones := 0;
+  count := 0;
+  prod := 1;
   
   STOP_TEST_CPY := STOP_TEST;
   STOP_TEST := function(arg) end;
@@ -630,10 +633,14 @@ TestDirectory := function(arg)
     testTotal := testTotal and testResult;
     
     time := Runtime() - startTime;
-    stones := QuoInt(filestones[i], time);
-    if time > 300 and stones > 3000 then
+    if time > 100 and filestones[i] > 1000 then
+      stones := QuoInt(filestones[i], time);
       totalTime := totalTime + time;
       totalStones := totalStones + filestones[i];
+      prod := prod * stones;
+      count := count + 1;
+    else
+      stones := 0;
     fi;
     
     if opts.showProgress then
@@ -650,6 +657,14 @@ TestDirectory := function(arg)
   
   STOP_TEST := STOP_TEST_CPY;
   
+  Print("-------------------------------------------\n");
+  if count = 0 then
+    count:= 1;
+  fi;
+  Print( "total",
+         String( RootInt( prod, count ), 23 ),
+         String( totalTime, 15 ), "\n\n" );
+         
   if opts.exitGAP then
     FORCE_QUIT_GAP(testTotal = 0);
   fi;
