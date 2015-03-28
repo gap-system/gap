@@ -247,6 +247,11 @@ InstallMethod( Length,
     [ IsNullMapMatrix ],
     null -> 0 );
 
+InstallMethod( IsZero,
+    "for null map matrix",
+    [ IsNullMapMatrix ],
+    x -> true);
+
 InstallMethod( ZERO,
     "for null map matrix",
     [ IsNullMapMatrix ],
@@ -1124,8 +1129,6 @@ InstallMethod( IsZero,
     od;
     return true;
     end );
-
-
 
 #############################################################################
 ##
