@@ -724,7 +724,11 @@ InstallGlobalFunction(SimpleGroupsIterator,function(arg)
   return IteratorByFunctions(rec(
     IsDoneIterator:=IsDoneIterator_SimGp,
     NextIterator:=NextIterator_SimGp,
-    ShallowCopy:=ShallowCopy,
+    ShallowCopy:=iter -> rec( a:=iter!.a,
+      b:=iter!.b, ende:=iter!.ende,
+      stack:=iter!.stack, pos:=iter!.pos,
+      nopsl2:=iter!.nopsl2,
+      done:=iter!.done),
     a:=a,
     b:=b,
     ende:=ende,
