@@ -505,6 +505,7 @@ TestDirectory := function(arg)
         totalTime, totalStones, STOP_TEST_CPY, stopPos,
         count, prod;
   
+
   testTotal := true;
   totalTime := 0;
   totalStones := 0;
@@ -586,7 +587,7 @@ TestDirectory := function(arg)
       if IsDirectoryPath(f) then
         recurseFiles(f);
       else
-        Append(files, f);
+        Add(files, f);
       fi;
     od;
   else
