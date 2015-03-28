@@ -483,3 +483,192 @@ InstallGlobalFunction("Test", function(arg)
   return ret;
 end);
 
+###################################
+##
+## TestDirectory(<files> [, <options> ])
+## <files>: A directory (or filename) or list of filenames and directories
+## <options>: Optional record of options (with defaults)
+## 
+##    testOptions := rec()   : Options to pass on to Test
+##    earlyStop := false     : Stop once one test fails
+##    showProgress := true   : Show progress
+##    recursive := true      : Search through directories recursively
+##    exitGAP := false       : Exit GAP, setting exit value depending on if tests succeeded
+##    stonesLimit := infinity: Set limit (in GAPstones) on longest test to be run.
+##
+##
+
+TestDirectory := function(arg)
+  local basedirs, nopts, opts, files, newfiles, filestones,
+        f, c, i, recurseFiles, StringEnd, getStones,
+        startTime, time, stones, testResult, testTotal,
+        totalTime, totalStones, STOP_TEST_CPY, stopPos,
+        count, prod;
+  
+
+  testTotal := true;
+  totalTime := 0;
+  totalStones := 0;
+  count := 0;
+  prod := 1;
+  
+  STOP_TEST_CPY := STOP_TEST;
+  STOP_TEST := function(arg) end;
+  
+  StringEnd := function(str, postfix)
+    return Length(str) >= Length(postfix) and str{[Length(str)-Length(postfix)+1..Length(str)]} = postfix;
+  end;
+  
+  getStones := function(file)
+    local lines, l, start, finish, stones;
+    
+    lines := SplitString(StringFile(file),"\n");
+    for l in lines do
+      if PositionSublist(l, "STOP_TEST") <> fail then
+        # Try out best to get the stones out!
+        start := PositionSublist(l, ",");
+        finish := PositionSublist(l, ")");
+        stones := EvalString(l{[start+1..finish-1]});
+        if IsInt(stones) then
+          return stones;
+        fi;
+      fi;
+    od;
+    return 0;
+  end;
+    
+  
+  if IsString(arg[1]) then
+    basedirs := [arg[1]];
+  else
+    basedirs := arg[1];
+  fi;
+    
+  if Length(arg) > 1 and IsRecord(arg[2]) then
+    nopts := arg[2];
+  else
+    nopts := rec();
+  fi;
+  
+  opts := rec(
+    testOptions := rec(),
+    earlyStop := false,
+    showProgress := true,
+    recursive := true,
+    exitGAP := false,
+    stonesLimit := infinity
+  );
+  
+  for c in RecFields(nopts) do
+    opts.(c) := nopts.(c);
+  od;
+  
+  
+  if opts.exitGAP then
+    GAP_EXIT_CODE(1);
+  fi;
+  
+  files := [];
+  
+  recurseFiles := function(dir)
+    local dircontents, tests, recursedirs, d;
+    dircontents := List(DirectoryContents(dir), x -> Filename(Directory(dir), x));
+    tests := Filtered(dircontents, x -> Length(x) > 4 and x{[Length(x)-3..Length(x)]} = ".tst");
+    Append(files, tests);
+    recursedirs := Filtered(dircontents, x -> IsDirectoryPath(x) and not(StringEnd(x,"/.")) and not(StringEnd(x,"/..")));
+    for d in recursedirs do
+      recurseFiles(d);
+    od;
+  end;
+  
+  if opts.recursive then
+    files := [];
+    for f in basedirs do
+      if IsDirectoryPath(f) then
+        recurseFiles(f);
+      else
+        Add(files, f);
+      fi;
+    od;
+  else
+    for f in basedirs do
+      if IsDirectoryPath(f) then
+        newfiles := DirectoryContents(f);
+        Append(files, Filtered(newfiles, x -> Length(x) > 4 and StringEnd(x,".tst")));
+      fi;
+    od;
+  fi;
+
+  filestones := List(files, getStones);
+  
+  # Sort fastest to slowest
+  SortParallel(filestones, files);
+  
+  stopPos := PositionProperty(filestones, x -> x >= opts.stonesLimit);
+  if stopPos <> fail then
+    filestones := filestones{[1..stopPos-1]};
+    files := files{[1..stopPos-1]};
+  fi;
+    
+  
+  if opts.showProgress then
+    Print( "Architecture: ", GAPInfo.Architecture, "\n\n",
+           "test file         GAP4stones     time(msec)\n",
+           "-------------------------------------------\n" );
+  fi;
+  
+  for i in [1..Length(files)] do
+    if opts.showProgress then
+      Print("testing: ", files[i], "\n");
+    fi;
+    
+    startTime := Runtime();
+    testResult := Test(files[i], opts.testOptions);
+    if not(testResult) and opts.earlyStop then
+      STOP_TEST := STOP_TEST_CPY;
+      if opts.exitGAP then
+        FORCE_QUIT_GAP(1);
+      fi;
+      return false;
+    fi;
+    testTotal := testTotal and testResult;
+    
+    time := Runtime() - startTime;
+    if time > 100 and filestones[i] > 1000 then
+      stones := QuoInt(filestones[i], time);
+      totalTime := totalTime + time;
+      totalStones := totalStones + filestones[i];
+      prod := prod * stones;
+      count := count + 1;
+    else
+      stones := 0;
+    fi;
+    
+    if opts.showProgress then
+      Print( String( filestones[i], -20 ),
+             String( stones, 8 ),
+             String( time, 15 ) );
+      if i < Length(filestones) and filestones[i+1] > 0 and totalTime > 0 then
+      #Print(totalTime,":", filestones[i+1],":" ,10^3,":",totalStones,":" );
+        Print("   ( next ~", Int( (totalTime * filestones[i+1] )/10^3/totalStones), " sec )" );
+      fi;
+      Print("\n");
+    fi;
+  od;       
+  
+  STOP_TEST := STOP_TEST_CPY;
+  
+  Print("-------------------------------------------\n");
+  if count = 0 then
+    count:= 1;
+  fi;
+  Print( "total",
+         String( RootInt( prod, count ), 23 ),
+         String( totalTime, 15 ), "\n\n" );
+         
+  if opts.exitGAP then
+    FORCE_QUIT_GAP(testTotal = 0);
+  fi;
+  
+  return testTotal;
+end;
