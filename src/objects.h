@@ -33,7 +33,6 @@
 
 /****************************************************************************
 **
-
 *F  IS_INTOBJ( <o> )  . . . . . . . .  test if an object is an integer object
 **
 **  'IS_INTOBJ' returns 1 if the object <o> is an (immediate) integer object,
@@ -42,6 +41,16 @@
 #define IS_INTOBJ(o) \
     ((Int)(o) & 0x01)
 
+
+/****************************************************************************
+**
+*F  IS_POS_INTOBJ( <o> )  . .  test if an object is a positive integer object
+**
+**  'IS_POS_INTOBJ' returns 1 if the object <o> is an (immediate) integer
+**  object encoding a positive integer, and 0 otherwise.
+*/
+#define IS_POS_INTOBJ(o) \
+    (((Int)(o) & 0x01) && ((Int)(o) > 0x01))
 
 
 /****************************************************************************
