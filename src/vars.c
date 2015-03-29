@@ -1138,35 +1138,32 @@ UInt            ExecAssList (
     SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
-    /* evaluate  the position                                     */
+    /* evaluate the position                                               */
     pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
 
     /* evaluate the right hand side                                        */
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
-    if (IS_INTOBJ(pos) && (p = INT_INTOBJ(pos)) > 0)
-        {
+    if (IS_POS_INTOBJ(pos)) {
+        p = INT_INTOBJ(pos);
 
-          
-          /* special case for plain list                                         */
-          if ( TNUM_OBJ(list) == T_PLIST ) {
+        /* special case for plain list                                     */
+        if ( TNUM_OBJ(list) == T_PLIST ) {
             if ( LEN_PLIST(list) < p ) {
-              GROW_PLIST( list, p );
-              SET_LEN_PLIST( list, p );
+                GROW_PLIST( list, p );
+                SET_LEN_PLIST( list, p );
             }
             SET_ELM_PLIST( list, p, rhs );
             CHANGED_BAG( list );
-          }
-          
-          /* generic case                                                        */
-          else
-            {
-              ASS_LIST( list, p, rhs );
-            }
         }
-    else
-      ASSB_LIST(list, pos, rhs);
-          
+
+        /* generic case                                                    */
+        else {
+            ASS_LIST( list, p, rhs );
+        }
+    } else {
+        ASSB_LIST(list, pos, rhs);
+    }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -1255,7 +1252,7 @@ UInt            ExecAssListLevel (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
+    while ( TNUM_OBJ(pos) != T_INTPOS && (! IS_POS_INTOBJ(pos)) ) {
         pos = ErrorReturnObj(
          "List Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
@@ -1338,24 +1335,20 @@ UInt            ExecUnbList (
 {
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, left operand          */
-    Int                 p;              /* position, as a C integer        */
 
     /* evaluate the list (checking is done by 'LEN_LIST')                  */
     SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
-    /* evaluate and check the position                                     */
+    /* evaluate the position                                               */
     pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
-        pos = ErrorReturnObj(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
-    }
-    p = INT_INTOBJ(pos);
 
     /* unbind the element                                                  */
-    UNB_LIST( list, p );
+    if (IS_POS_INTOBJ(pos)) {
+        UNB_LIST( list, INT_INTOBJ(pos) );
+    } else {
+        UNBB_LIST( list, pos );
+    }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -1385,28 +1378,27 @@ Obj             EvalElmList (
     
     SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
 
-    if (IS_INTOBJ(pos) && (p = INT_INTOBJ( pos )) > 0)
-      {
-        
-        /* special case for plain lists (use generic code to signal errors)    */
-        if ( IS_PLIST( list ) )
-          {
+    if (IS_POS_INTOBJ(pos)) {
+        p = INT_INTOBJ( pos );
+
+        /* special case for plain lists (use generic code to signal errors) */
+        if ( IS_PLIST( list ) ) {
             if ( LEN_PLIST(list) < p ) {
-              return ELM_LIST( list, p );
+                return ELM_LIST( list, p );
             }
             elm = ELM_PLIST( list, p );
             if ( elm == 0 ) {
-              return ELM_LIST( list, p );
+                return ELM_LIST( list, p );
             }
-          }
-        /* generic case                                                        */
-        else
-          {
+        }
+        /* generic case                                                    */
+        else {
             elm = ELM_LIST( list, p );
-          }
-      }
-    else
-      elm = ELMB_LIST(list, pos);
+        }
+    } else {
+        elm = ELMB_LIST(list, pos);
+    }
+
     /* return the element                                                  */
     return elm;
 }
@@ -1472,7 +1464,7 @@ Obj             EvalElmListLevel (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    while ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 )) {
+    while ( TNUM_OBJ(pos) != T_INTPOS && (! IS_POS_INTOBJ(pos) )) {
         pos = ErrorReturnObj(
             "List Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
@@ -1546,20 +1538,17 @@ Obj             EvalIsbList (
 {
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
 
     /* evaluate the list (checking is done by 'ISB_LIST')                  */
     list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    if (IS_INTOBJ(pos))
-      {
-        p = INT_INTOBJ( pos );
-        return (ISB_LIST( list, p ) ? True : False);
-      }
+
+    if (IS_POS_INTOBJ(pos))
+        return ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
     else
-      return ISBB_LIST(list, pos) ? True : False;
+        return ISBB_LIST(list, pos) ? True : False;
 }
 
 
@@ -2044,7 +2033,7 @@ UInt            ExecAssPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
@@ -2094,7 +2083,7 @@ UInt            ExecUnbPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
@@ -2137,7 +2126,7 @@ Obj             EvalElmPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
@@ -2192,7 +2181,7 @@ Obj             EvalIsbPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
