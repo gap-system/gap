@@ -16,16 +16,6 @@
 ##
 
 
-SCOBJ_NW_STACK := [];
-SCOBJ_LW_STACK := [];
-SCOBJ_PW_STACK := [];
-SCOBJ_EW_STACK := [];
-SCOBJ_GE_STACK := [];
-SCOBJ_CW_VECTOR := "";
-SCOBJ_CW2_VECTOR := "";
-SCOBJ_MAX_STACK_SIZE := 256;
-
-
 #############################################################################
 ##
 #R  IsSingleCollectorRep( <obj> )

@@ -57,6 +57,15 @@
 *F * * * * * * * * * * * * local defines and typedefs * * * * * * * * * * * *
 */
 
+Obj SC_NW_STACK;
+Obj SC_LW_STACK;
+Obj SC_PW_STACK;
+Obj SC_EW_STACK;
+Obj SC_GE_STACK;
+Obj SC_CW_VECTOR;
+Obj SC_CW2_VECTOR;
+UInt SC_MAX_STACK_SIZE;
+
 /****************************************************************************
 **
 *T  FinPowConjCol
@@ -277,7 +286,7 @@ Obj ReducedComm (
     Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <u>*<w> to                           */
-    vcw = SC_CW_VECTOR(sc);
+    vcw = SC_CW_VECTOR;
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     /* check that it has the correct length, unpack <u> into it            */
@@ -295,7 +304,7 @@ Obj ReducedComm (
     }
 
     /* use 'cw2Vector' to collect word <w>*<u> to                          */
-    vc2 = SC_CW2_VECTOR(sc);
+    vc2 = SC_CW2_VECTOR;
 
     /* check that it has the correct length, unpack <w> into it            */
     if ( fc->vectorWord( vc2, w, num ) == -1 ) {
@@ -347,7 +356,7 @@ Obj ReducedForm (
     Int *               qtr;    /* pointer into the collect vector         */
 
     /* use 'cwVector' to collect word <w> to                               */
-    vcw = SC_CW_VECTOR(sc);
+    vcw = SC_CW_VECTOR;
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     /* check that it has the correct length                                */
@@ -387,7 +396,7 @@ Obj ReducedLeftQuotient (
     Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <w> to                               */
-    vcw = SC_CW_VECTOR(sc);
+    vcw = SC_CW_VECTOR;
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     /* check that it has the correct length, unpack <w> into it            */
@@ -398,7 +407,7 @@ Obj ReducedLeftQuotient (
     }
 
     /* use 'cw2Vector' to collect word <u> to                              */
-    vc2 = SC_CW2_VECTOR(sc);
+    vc2 = SC_CW2_VECTOR;
 
     /* check that it has the correct length, unpack <u> into it            */
     if ( fc->vectorWord( vc2, u, num ) == -1 ) {
@@ -442,7 +451,7 @@ Obj ReducedProduct (
     Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <w> to                               */
-    vcw = SC_CW_VECTOR(sc);
+    vcw = SC_CW_VECTOR;
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     /* check that it has the correct length, unpack <w> into it            */
@@ -488,8 +497,8 @@ Obj ReducedPowerSmallInt (
     pow = INT_INTOBJ(vpow);
 
     /* use 'cwVector' and 'cw2Vector to collect words to                   */
-    vcw  = SC_CW_VECTOR(sc);
-    vc2  = SC_CW2_VECTOR(sc);
+    vcw  = SC_CW_VECTOR;
+    vc2  = SC_CW2_VECTOR;
     num  = SC_NUMBER_RWS_GENERATORS(sc);
     type = SC_DEFAULT_TYPE(sc);
 
@@ -586,8 +595,8 @@ Obj ReducedQuotient (
     Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <w> to                               */
-    vcw  = SC_CW_VECTOR(sc);
-    vc2  = SC_CW2_VECTOR(sc);
+    vcw  = SC_CW_VECTOR;
+    vc2  = SC_CW2_VECTOR;
     num  = SC_NUMBER_RWS_GENERATORS(sc);
     type = SC_DEFAULT_TYPE(sc);
 
@@ -706,6 +715,22 @@ Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 }
 
 
+/****************************************************************************
+**
+*F  SET_SCOBJ_MAX_STACK_SIZE( <self>, <size> )
+*/
+Obj FuncSET_SCOBJ_MAX_STACK_SIZE ( Obj self, Obj size )
+{
+    if (IS_INTOBJ(size) && INT_INTOBJ(size) > 0)
+        SC_MAX_STACK_SIZE = INT_INTOBJ(size);
+    else
+        ErrorQuit( "collect vector must be a positive small integer not a %s",
+                   (Int)TNAM_OBJ(size), 0L );
+
+    return 0;
+}
+
+
 
 
 /****************************************************************************
@@ -748,14 +773,46 @@ static StructGVarFunc GVarFuncs [] = {
       FuncFinPowConjCol_ReducedQuotient,
       "src/objscoll.c:FinPowConjCol_ReducedQuotient" },
 
+    { "SET_SCOBJ_MAX_STACK_SIZE", 1, "size",
+      FuncSET_SCOBJ_MAX_STACK_SIZE,
+      "src/objscoll.c:SET_SCOBJ_MAX_STACK_SIZE" },
+
     { 0 }
 
 };
 
 
+/*
+ * Allocate a Plist of the given length, pre-allocating
+ * the number of entries given by 'reserved'.
+ */
+static inline Obj NewPlist( UInt tnum, UInt len, UInt reserved )
+{
+    Obj obj;
+    obj = NEW_PLIST( tnum, reserved );
+    SET_LEN_PLIST( obj, len );
+    return obj;
+}
+
+/*
+ * Setup the collector stacks etc.
+ */
+static void SetupCollectorStacks()
+{
+    const UInt maxStackSize = 256;
+    SC_NW_STACK = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
+    SC_LW_STACK = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
+    SC_PW_STACK = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
+    SC_EW_STACK = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
+    SC_GE_STACK = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
+    SC_CW_VECTOR = NEW_STRING( 0 );
+    SC_CW2_VECTOR = NEW_STRING( 0 );
+    SC_MAX_STACK_SIZE = maxStackSize;
+}
+
+
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -764,28 +821,18 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
+    InitGlobalBag( &SC_NW_STACK, "SC_NW_STACK" );
+    InitGlobalBag( &SC_LW_STACK, "SC_LW_STACK" );
+    InitGlobalBag( &SC_PW_STACK, "SC_PW_STACK" );
+    InitGlobalBag( &SC_EW_STACK, "SC_EW_STACK" );
+    InitGlobalBag( &SC_GE_STACK, "SC_GE_STACK" );
+    InitGlobalBag( &SC_CW_VECTOR, "SC_CW_VECTOR" );
+    InitGlobalBag( &SC_CW2_VECTOR, "SC_CW2_VECTOR" );
+
     /* return success                                                      */
     return 0;
 }
 
-/****************************************************************************
-**
-*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
-*/
-static Int PostRestore (
-    StructInitInfo *    module )
-{
-  SCOBJ_NW_STACK_GVAR = GVarName( "SCOBJ_NW_STACK" );
-  SCOBJ_LW_STACK_GVAR = GVarName( "SCOBJ_LW_STACK" );
-  SCOBJ_PW_STACK_GVAR = GVarName( "SCOBJ_PW_STACK" );
-  SCOBJ_EW_STACK_GVAR = GVarName( "SCOBJ_EW_STACK" );
-  SCOBJ_GE_STACK_GVAR = GVarName( "SCOBJ_GE_STACK" );
-  SCOBJ_CW_VECTOR_GVAR = GVarName( "SCOBJ_CW_VECTOR" );
-  SCOBJ_CW2_VECTOR_GVAR = GVarName( "SCOBJ_CW2_VECTOR" );
-  SCOBJ_MAX_STACK_SIZE_GVAR = GVarName( "SCOBJ_MAX_STACK_SIZE" );
-
-  return 0;
-}
 
 /****************************************************************************
 **
@@ -824,6 +871,8 @@ static Int InitLibrary (
     AssGVar( GVarName( "SCP_AVECTOR2" ),
              INTOBJ_INT(SCP_AVECTOR2) );
 
+    SetupCollectorStacks();
+
     /* export collector number                                             */
     AssGVar( GVarName( "8Bits_SingleCollector" ),
              INTOBJ_INT(C8Bits_SingleCollectorNo) );
@@ -843,7 +892,7 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* return success                                                      */
-    return PostRestore( module );
+    return 0;
 }
 
 
@@ -863,7 +912,7 @@ static StructInitInfo module = {
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    PostRestore                         /* postRestore                    */
+    0                                   /* postRestore                    */
 };
 
 StructInitInfo * InitInfoSingleCollector ( void )
