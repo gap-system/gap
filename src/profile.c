@@ -140,6 +140,7 @@ struct ProfileState
 
 void ProfileLineByLineOutput(Obj func, char type)
 { 
+  HashLock(&profileState);
   if(profileState.Active && profileState.OutputRepeats)
   {
     int startline_i = 0, endline_i = 0;
@@ -164,6 +165,7 @@ void ProfileLineByLineOutput(Obj func, char type)
             "{\"Type\":\"%c\",\"Fun\":\"%s\",\"Line\":%d,\"EndLine\":%d,\"File\":\"%s\"}\n",
             type, name_c, startline_i, endline_i, filename_c);
   }
+  HashUnlock(&profileState);
 }
 
 void ProfileLineByLineIntoFunction(Obj func)
@@ -323,6 +325,14 @@ static inline UInt getFilenameId(Stat stat)
 static inline void outputStat(Stat stat, int exec, int visited)
 {
   HashLock(&profileState);
+  
+  // Catch the case we arrive here and profiling is already disabled
+  if(!profileState.Active)
+  {
+    HashUnlock(&profileState);
+    return;
+  }
+  
   char* name;
   UInt line;
   int nameid;
