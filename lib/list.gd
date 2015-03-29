@@ -243,7 +243,7 @@ DeclareOperationKernel( "Unbind[]",
 #o  <list>[<pos>] := <obj>
 ##
 DeclareOperationKernel( "[]:=",
-    [ IsList and IsMutable, IS_INT, IsObject ],
+    [ IsList and IsMutable, IsObject, IsObject ],
     ASS_LIST );
 
 
