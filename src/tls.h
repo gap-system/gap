@@ -162,6 +162,16 @@ typedef struct ThreadLocalStorage
   Obj SerializationRegistry;
   Obj SerializationStack;
 
+  /* For objscoll*, objccoll* */
+  Obj SC_NW_STACK;
+  Obj SC_LW_STACK;
+  Obj SC_PW_STACK;
+  Obj SC_EW_STACK;
+  Obj SC_GE_STACK;
+  Obj SC_CW_VECTOR;
+  Obj SC_CW2_VECTOR;
+  UInt SC_MAX_STACK_SIZE;
+
   /* Profiling */
   UInt CountActive;
   UInt LocksAcquired;
