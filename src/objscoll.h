@@ -46,44 +46,17 @@
 #define SC_CONJUGATES(sc) \
     (ADDR_OBJ(sc)[SCP_CONJUGATES])
 
-#define SC_CW_VECTOR(sc) \
-    VAL_GVAR( SCOBJ_CW_VECTOR_GVAR )
-
-#define SC_CW2_VECTOR(sc) \
-    VAL_GVAR( SCOBJ_CW2_VECTOR_GVAR )
-
 #define SC_DEFAULT_TYPE(sc) \
     (ADDR_OBJ(sc)[SCP_DEFAULT_TYPE])
-
-#define SC_EW_STACK(sc) \
-    VAL_GVAR( SCOBJ_EW_STACK_GVAR )
-
-#define SC_GE_STACK(sc) \
-    VAL_GVAR( SCOBJ_GE_STACK_GVAR )
 
 #define SC_INVERSES(sc) \
     (ADDR_OBJ(sc)[SCP_INVERSES])
 
-#define SC_LW_STACK(sc) \
-    VAL_GVAR( SCOBJ_LW_STACK_GVAR )
-
-#define SC_MAX_STACK_SIZE(sc) \
-    INT_INTOBJ(VAL_GVAR( SCOBJ_MAX_STACK_SIZE_GVAR ) )
-
-#define SC_SET_MAX_STACK_SIZE(sc,obj) \
-    AssGVar( SCOBJ_MAX_STACK_SIZE_GVAR, INTOBJ_INT(obj) )
-
 #define SC_NUMBER_RWS_GENERATORS(sc) \
     (INT_INTOBJ((ADDR_OBJ(sc)[SCP_NUMBER_RWS_GENERATORS])))
 
-#define SC_NW_STACK(sc) \
-    VAL_GVAR( SCOBJ_NW_STACK_GVAR )
-
 #define SC_POWERS(sc) \
     (ADDR_OBJ(sc)[SCP_POWERS])
-
-#define SC_PW_STACK(sc) \
-    VAL_GVAR( SCOBJ_PW_STACK_GVAR )
 
 #define SC_RELATIVE_ORDERS(sc) \
     (ADDR_OBJ(sc)[SCP_RELATIVE_ORDERS])
@@ -91,14 +64,14 @@
 #define SC_RWS_GENERATORS(sc) \
     (ADDR_OBJ(sc)[SCP_RWS_GENERATORS])
 
-UInt SCOBJ_NW_STACK_GVAR;
-UInt SCOBJ_LW_STACK_GVAR;
-UInt SCOBJ_PW_STACK_GVAR;
-UInt SCOBJ_EW_STACK_GVAR;
-UInt SCOBJ_GE_STACK_GVAR;
-UInt SCOBJ_CW_VECTOR_GVAR;
-UInt SCOBJ_CW2_VECTOR_GVAR;
-UInt SCOBJ_MAX_STACK_SIZE_GVAR;
+extern Obj SC_NW_STACK;
+extern Obj SC_LW_STACK;
+extern Obj SC_PW_STACK;
+extern Obj SC_EW_STACK;
+extern Obj SC_GE_STACK;
+extern Obj SC_CW_VECTOR;
+extern Obj SC_CW2_VECTOR;
+extern UInt SC_MAX_STACK_SIZE;
 
 /****************************************************************************
 **
