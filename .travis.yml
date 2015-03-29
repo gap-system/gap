@@ -19,7 +19,7 @@ addons:
   - libgmp3-dev
 script:
   - git clone --depth=50 https://github.com/gap-system/ward extern/ward
-  - ./make.hpc WARD="extern/ward" GMP=system
+  - ./make.hpc WARD="extern/ward" GMP=system ZMQ=no
   - cd pkg
   - wget ftp://ftp.gap-system.org/pub/gap/gap47/tar.gz/packages/GAPDoc-1.5.1.tar.gz
   - wget ftp://ftp.gap-system.org/pub/gap/gap47/tar.gz/packages/autpgrp-1.5.tar.gz
