@@ -116,7 +116,7 @@ Int VectorWord ( Obj vv, Obj v, Int num )
 */
 #define SC_PUSH_WORD( word, exp ) \
     if ( ++sp == max ) { \
-        SC_SET_MAX_STACK_SIZE( sc, 2 * SC_MAX_STACK_SIZE(sc) ); \
+        SC_MAX_STACK_SIZE *= 2; \
         return -1; \
     } \
     *++nw = (void*)DATA_WORD(word); \
@@ -253,22 +253,22 @@ Int SingleCollectWord ( Obj sc, Obj vv, Obj w )
     exps = 1UL << (ebits-1);
 
     /* <nw> contains the stack of words to insert                          */
-    vnw = SC_NW_STACK(sc);
+    vnw = SC_NW_STACK;
 
     /* <lw> contains the word end of the word in <nw>                      */
-    vlw = SC_LW_STACK(sc);
+    vlw = SC_LW_STACK;
 
     /* <pw> contains the position of the word in <nw> to look at           */
-    vpw = SC_PW_STACK(sc);
+    vpw = SC_PW_STACK;
 
     /* <ew> contains the unprocessed exponents at position <pw>            */
-    vew = SC_EW_STACK(sc);
+    vew = SC_EW_STACK;
 
     /* <ge> contains the global exponent of the word                       */
-    vge = SC_GE_STACK(sc);
+    vge = SC_GE_STACK;
 
     /* get the maximal stack size                                          */
-    max = SC_MAX_STACK_SIZE(sc);
+    max = SC_MAX_STACK_SIZE;
 
     /* ensure that the stacks are large enough                             */
     if ( SIZE_OBJ(vnw)/sizeof(Obj) < max+1 ) {

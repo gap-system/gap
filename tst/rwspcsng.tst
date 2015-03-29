@@ -62,10 +62,10 @@ gap> rws;
 <<up-to-date single collector, 8 Bits>>
 
 # force stack overflow
-gap> SCOBJ_MAX_STACK_SIZE := 1;;
+gap> SET_SCOBJ_MAX_STACK_SIZE(1);
 gap> IsConfluent(rws);
 true
-gap> SCOBJ_MAX_STACK_SIZE := 1;;
+gap> SET_SCOBJ_MAX_STACK_SIZE(1);
 
 # construct the maximal word
 gap> l := [1..11]*0;;
@@ -416,10 +416,10 @@ gap> Print(List( rws![SCP_INVERSES], ExtRepOfObj ),"\n");
   [ 56, 30 ], [ 57, 1, 58, 1 ], [ 58, 1 ], [ 59, 4 ], [ 60, 4 ], [ 61, 4 ] ]
 
 # force stack overflow
-gap> SCOBJ_MAX_STACK_SIZE := 1;;
+gap> SET_SCOBJ_MAX_STACK_SIZE(1);
 gap> IsConfluent(rws);
 true
-gap> SCOBJ_MAX_STACK_SIZE := 1;;
+gap> SET_SCOBJ_MAX_STACK_SIZE(1);
 
 # construct the maximal word
 gap> l := [1..61]*0;;
@@ -797,10 +797,10 @@ gap> Print(List( rws![SCP_INVERSES], ExtRepOfObj ),"\n");
   [ 56, 30 ], [ 57, 1, 58, 1 ], [ 58, 1 ], [ 59, 4 ], [ 60, 4 ], [ 61, 4 ] ]
 
 # force stack overflow
-gap> SCOBJ_MAX_STACK_SIZE := 1;;
+gap> SET_SCOBJ_MAX_STACK_SIZE(1);
 gap> IsConfluent(rws);
 true
-gap> SCOBJ_MAX_STACK_SIZE := 1;;
+gap> SET_SCOBJ_MAX_STACK_SIZE(1);
 
 # construct the maximal word
 gap> l := [1..61]*0;;
