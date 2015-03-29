@@ -726,7 +726,7 @@ InstallGlobalFunction(SimpleGroupsIterator,function(arg)
     NextIterator:=NextIterator_SimGp,
     ShallowCopy:=iter -> rec( a:=iter!.a,
       b:=iter!.b, ende:=iter!.ende,
-      stack:=iter!.stack, pos:=iter!.pos,
+      stack:=ShallowCopy(iter!.stack), pos:=iter!.pos,
       nopsl2:=iter!.nopsl2,
       done:=iter!.done),
     a:=a,
