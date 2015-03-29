@@ -1593,7 +1593,16 @@ InstallMethod( Iterator,
             end,
         IsDoneIterator := ReturnFalse,
         ShallowCopy := iter -> rec( counter:= iter!.counter ),
-
+        DescIterator := function( iter )
+            local msg;
+            msg := "of Integers at ";
+            if iter!.counter mod 2 = 0 then
+              Append(msg, String(iter!.counter / 2));
+            else
+              Append(msg, String((1 - iter!.counter) / 2));
+            fi;
+            return msg;
+          end,
         counter := 0 ) ) );
 
         
