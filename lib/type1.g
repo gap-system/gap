@@ -211,14 +211,14 @@ ASS_GVAR(_NEW_TYPE_READONLY, true);
 MakeThreadLocal(_NEW_TYPE_READONLY);
 
 
-BIND_GLOBAL("ConstructExtendedType", function(body)
-    local type, save_flag;
-    save_flag := VAL_GVAR(_NEW_TYPE_READONLY);
-    ASS_GVAR(_NEW_TYPE_READONLY, false);
-    type := body();
-    ASS_GVAR(_NEW_TYPE_READONLY, save_flag);
-    return MakeReadOnlyObj(type);
-end);
+# BIND_GLOBAL("ConstructExtendedType", function(body)
+#     local type, save_flag;
+#     save_flag := VAL_GVAR(_NEW_TYPE_READONLY);
+#     ASS_GVAR(_NEW_TYPE_READONLY, false);
+#     type := body();
+#     ASS_GVAR(_NEW_TYPE_READONLY, save_flag);
+#     return MakeReadOnlyObj(type);
+# end);
 
 BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent)
     local   lock, hash,  cache,  cached,  type, ncache, ncl, t,i;
@@ -258,7 +258,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent)
     type[POS_DATA_TYPE] := MakeReadOnly(data);
     type[POS_NUMB_TYPE] := NEW_TYPE_NEXT_ID;
     
-    if IS_IDENTICAL_OBJ(parent,fail) then
+    if not IS_IDENTICAL_OBJ(parent,fail) then
         for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
             if IsBound( parent![i] ) and not IsBound(type[i]) then
                 type[i] := parent![i];
