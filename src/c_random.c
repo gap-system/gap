@@ -19,6 +19,8 @@ static GVar G_ATOMIC__ADDITION;
 static Obj  GF_ATOMIC__ADDITION;
 static GVar G_BIND__GLOBAL;
 static Obj  GF_BIND__GLOBAL;
+static GVar G_MakeLiteral;
+static Obj  GF_MakeLiteral;
 static GVar G___R__N;
 static Obj  GC___R__N;
 static GVar G___R__X;
@@ -334,6 +336,7 @@ static Obj  HdlrFunc1 (
  Obj t_2 = 0;
  Obj t_3 = 0;
  Obj t_4 = 0;
+ Obj t_5 = 0;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -342,16 +345,22 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* BIND_GLOBAL( "_R_N", "R_N" ); */
+ /* BIND_GLOBAL( "_R_N", MakeLiteral( "R_N" ) ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 4, "_R_N" );
- C_NEW_STRING( t_3, 3, "R_N" );
+ t_4 = GF_MakeLiteral;
+ C_NEW_STRING( t_5, 3, "R_N" );
+ t_3 = CALL_1ARGS( t_4, t_5 );
+ CHECK_FUNC_RESULT( t_3 )
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "_R_X", "R_X" ); */
+ /* BIND_GLOBAL( "_R_X", MakeLiteral( "R_X" ) ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 4, "_R_X" );
- C_NEW_STRING( t_3, 3, "R_X" );
+ t_4 = GF_MakeLiteral;
+ C_NEW_STRING( t_5, 3, "R_X" );
+ t_3 = CALL_1ARGS( t_4, t_5 );
+ CHECK_FUNC_RESULT( t_3 )
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* MakeThreadLocal( _R_N ); */
@@ -495,6 +504,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "FixedAtomicList", &GF_FixedAtomicList );
  InitFopyGVar( "ATOMIC_ADDITION", &GF_ATOMIC__ADDITION );
  InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
+ InitFopyGVar( "MakeLiteral", &GF_MakeLiteral );
  InitCopyGVar( "_R_N", &GC___R__N );
  InitCopyGVar( "_R_X", &GC___R__X );
  InitCopyGVar( "RANDOM_SEED_COUNTER", &GC_RANDOM__SEED__COUNTER );
@@ -505,18 +515,18 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "RANDOM_SEED_CONSTRUCTOR", &GC_RANDOM__SEED__CONSTRUCTOR );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(47862768)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(47862768)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(47862768)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](47862768)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(47862768)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](47862768)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(47862768)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](47862768)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/random.g:HdlrFunc4(47862768)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/random.g:NameFunc[4](47862768)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/random.g:HdlrFunc5(47862768)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/random.g:NameFunc[5](47862768)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(-107735305)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(-107735305)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(-107735305)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](-107735305)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(-107735305)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](-107735305)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(-107735305)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](-107735305)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/random.g:HdlrFunc4(-107735305)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/random.g:NameFunc[4](-107735305)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/random.g:HdlrFunc5(-107735305)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/random.g:NameFunc[5](-107735305)" );
  
  /* return success */
  return 0;
@@ -541,6 +551,7 @@ static Int InitLibrary ( StructInitInfo * module )
  G_FixedAtomicList = GVarName( "FixedAtomicList" );
  G_ATOMIC__ADDITION = GVarName( "ATOMIC_ADDITION" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
+ G_MakeLiteral = GVarName( "MakeLiteral" );
  G___R__N = GVarName( "_R_N" );
  G___R__X = GVarName( "_R_X" );
  G_RANDOM__SEED__COUNTER = GVarName( "RANDOM_SEED_COUNTER" );
@@ -599,6 +610,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_FixedAtomicList = GVarName( "FixedAtomicList" );
  G_ATOMIC__ADDITION = GVarName( "ATOMIC_ADDITION" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
+ G_MakeLiteral = GVarName( "MakeLiteral" );
  G___R__N = GVarName( "_R_N" );
  G___R__X = GVarName( "_R_X" );
  G_RANDOM__SEED__COUNTER = GVarName( "RANDOM_SEED_COUNTER" );
@@ -641,7 +653,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 47862768,
+ /* crc         = */ -107735305,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,
