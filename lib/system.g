@@ -182,7 +182,8 @@ end );
 ##    In case of `-h' print a help screen and exit.
 ##
 CallAndInstallPostRestore( function()
-    local j, i, CommandLineOptions, opt, InitFiles, line, word, value;
+    local j, i, CommandLineOptions, CommandLineOptionData,
+          opt, InitFiles, line, word, value;
 
     GAPInfo.KernelInfo:= KERNEL_INFO();    
     GAPInfo.KernelVersion:= GAPInfo.KernelInfo.KERNEL_VERSION;
@@ -196,18 +197,23 @@ CallAndInstallPostRestore( function()
     od;
     # On 32-bit we have to adjust some values:
     if GAPInfo.BytesPerVariable = 4 then
+      CommandLineOptionData := SHALLOW_COPY_OBJ( GAPInfo.CommandLineOptionData );
       i := 1;
-      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
-            GAPInfo.CommandLineOptionData[i][1] <> "m" do i := i + 1; od;
-      GAPInfo.CommandLineOptionData[i][2] := "64m";
+      while not(IsBound(CommandLineOptionData[i])) or
+            CommandLineOptionData[i][1] <> "m" do i := i + 1; od;
+      CommandLineOptionData[i] := SHALLOW_COPY_OBJ( CommandLineOptionData[i] );
+      CommandLineOptionData[i][2] := "64m";
       i := 1;
-      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
-            GAPInfo.CommandLineOptionData[i][1] <> "o" do i := i + 1; od;
-      GAPInfo.CommandLineOptionData[i][2] := "1g";
+      while not(IsBound(CommandLineOptionData[i])) or
+            CommandLineOptionData[i][1] <> "o" do i := i + 1; od;
+      CommandLineOptionData[i] := SHALLOW_COPY_OBJ( CommandLineOptionData[i] );
+      CommandLineOptionData[i][2] := "1g";
       i := 1;
-      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
-            GAPInfo.CommandLineOptionData[i][1] <> "s" do i := i + 1; od;
-      GAPInfo.CommandLineOptionData[i][2] := "1500m";
+      while not(IsBound(CommandLineOptionData[i])) or
+            CommandLineOptionData[i][1] <> "s" do i := i + 1; od;
+      CommandLineOptionData[i] := SHALLOW_COPY_OBJ( CommandLineOptionData[i] );
+      CommandLineOptionData[i][2] := "1500m";
+      GAPInfo.CommandLineOptionData := `CommandLineOptionData;
     fi;
 
     # The exact command line which called GAP as list of strings;
