@@ -205,6 +205,9 @@ DeclareOperationKernel( "SetNameFunction", [IS_OBJECT, IS_STRING], SET_NAME_FUNC
 ##  gap> NumberArgumentsFunction(Sum);
 ##  -1
 ##  gap> NumberArgumentsFunction(function(a,arg) return 1; end);
+##  Syntax warning: New syntax used -- intentional? in stream line 1
+##  NumberArgumentsFunction(function(a,arg) return 1; end);
+##                                               ^
 ##  -2
 ##  ]]></Example>
 ##  </Description>
