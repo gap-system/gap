@@ -1767,6 +1767,9 @@ gap> position := function ( list, obj, arg )
 >     until list[pos] = obj;
 >     return pos;
 >    end;
+Syntax warning: New syntax used -- intentional? in stream line 3
+    if 0 = Length(arg) then
+     ^
 function( list, obj, arg ) ... end
 gap> position([1, 4, 2], 4);
 2
