@@ -206,7 +206,7 @@ NEW_TYPE_CACHE_HIT   := 0;
 
 # We must access this through ASS_GVAR / VAL_GVAR as the compiler does not understand
 # thread local variables
-BIND_GLOBAL("_NEW_TYPE_READONLY", "NEW_TYPE_READONLY");
+BIND_GLOBAL("_NEW_TYPE_READONLY", `"NEW_TYPE_READONLY");
 ASS_GVAR(_NEW_TYPE_READONLY, true);
 MakeThreadLocal(_NEW_TYPE_READONLY);
 
