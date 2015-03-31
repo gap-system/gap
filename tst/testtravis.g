@@ -42,6 +42,7 @@ Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 750m'.\n",
 Reread( Filename( DirectoriesLibrary( "tst" ), "testutil.g" ) );
 
 RunStandardTests( [
+  [ "access.tst", 100000 ],
   [ "alghom.tst",6000000],
   [ "algmat.tst",180800000],
   [ "algsc.tst",59000000],
