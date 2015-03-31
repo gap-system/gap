@@ -2923,6 +2923,11 @@ gap> if LoadPackage("cvec",false) <> fail then mat := [[Z(2)]];
 gap> if LoadPackage("anupq",false) <> fail then
 > for i in [1..192] do Q:=Pq( FreeGroup(2) : Prime:=3, ClassBound:=1 ); od; fi;
 
+# 2015/04/01 (SL)
+gap> p := 227;; x := X(GF(p), "x");; f := x^(7^2) - x;;
+gap> PowerMod(x, p, f);
+x^35
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 15319000000*10 );
 
