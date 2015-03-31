@@ -4026,7 +4026,8 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
             goto cando;
         } else {
             TYPE_POSOBJ(mat) = IS_MUTABLE_OBJ(mat) ? TYPE_LIST_GF2MAT : TYPE_LIST_GF2MAT_IMM;
-	  SetTypeDatObj(obj, IS_MUTABLE_OBJ(obj) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
+	    if (CheckWriteAccess(obj))
+	      SetTypeDatObj(obj, IS_MUTABLE_OBJ(obj) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
             SET_ELM_GF2MAT(mat, 1, obj);
             return (Obj) 0;
         }

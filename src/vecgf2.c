@@ -2287,7 +2287,8 @@ Obj FuncASS_GF2MAT (
     }
     else if ( p == 1 && 1 >= LEN_GF2MAT(list) ) {
         ResizeBag( list, SIZE_PLEN_GF2MAT(p) );
-	SetTypeDatObj(elm, IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
+	if (CheckWriteAccess(elm))
+	  SetTypeDatObj(elm, IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
         SET_ELM_GF2MAT( list, p, elm );
 	CHANGED_BAG(list);
     }
