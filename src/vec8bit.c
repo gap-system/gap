@@ -4076,8 +4076,10 @@ cando:
         ResizeBag(mat, sizeof(Obj) * (pos + 2));
         SET_LEN_MAT8BIT(mat, pos);
     }
-    type = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(obj));
-  SetTypeDatObj(obj, type);
+    if (CheckWriteAccess(obj)) {
+	type = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(obj));
+	SetTypeDatObj(obj, type);
+      }
     SET_ELM_MAT8BIT(mat, pos, obj);
     CHANGED_BAG(mat);
     return (Obj) 0;
