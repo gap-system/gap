@@ -13,7 +13,7 @@ Fix: wrong result
 
 !! Description
 
-PowerMod produced wrong resulys for univariate Laurent polynomials when
+PowerMod produced wrong results for univariate Laurent polynomials when
 the two polynomial arguments are stored with the same non-zero shift.
 
 ! Test Code
