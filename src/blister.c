@@ -257,45 +257,48 @@ void LoadBlist (
 **
 **  'CleanBlist' is the function in 'CleanObjFuncs' for boolean lists.
 */
+
+Obj DoCopyBlist(Obj list, Int mut) {
+  Obj copy;
+  UInt *l;
+  UInt *c;
+    /* make a copy                                                         */
+    if ( mut ) {
+      copy = NewBag( MUTABLE_TNUM(TNUM_OBJ(list)), SIZE_OBJ(list) );
+    }
+    else {
+      copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
+    }
+
+
+    /* copy the subvalues                                                  */
+    l = (UInt*)(ADDR_OBJ(list));
+    c = (UInt*)(ADDR_OBJ(copy));
+    memcpy((void *)c, (void *)l, sizeof(UInt)*(1+NUMBER_BLOCKS_BLIST(list)));
+
+    /* return the copy                                                     */
+    return copy;
+  
+}
+
 Obj CopyBlist (
     Obj                 list,
     Int                 mut )
 {
-    Obj                 copy;           /* handle of the copy, result      */
-    UInt *              l;              /* pointer into the list           */
-    UInt *              c;              /* pointer into the copy           */
-    UInt                i;              /* loop variable                   */
 
     /* don't change immutable objects                                      */
     if ( ! IS_MUTABLE_OBJ(list) ) {
         return list;
     }
 
-    /* make a copy                                                         */
-    if ( mut ) {
-        copy = NewBag( TNUM_OBJ(list), SIZE_OBJ(list) );
-    }
-    else {
-        copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
-    }
-    ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
-
-    /* leave a forwarding pointer                                          */
-    ADDR_OBJ(list)[0] = copy;
-    CHANGED_BAG( list );
-
-    /* now it is copied                                                    */
-    MARK_LIST( list, COPYING );
-
-    /* copy the subvalues                                                  */
-    l = (UInt*)(ADDR_OBJ(list)+1);
-    c = (UInt*)(ADDR_OBJ(copy)+1);
-    for ( i = 1; i <= NUMBER_BLOCKS_BLIST(copy); i++ )
-        *c++ = *l++;
-
-    /* return the copy                                                     */
-    return copy;
+    return DoCopyBlist(list, mut);
 }
+
+Obj ShallowCopyBlist ( Obj list)
+{
+  return DoCopyBlist(list, 1);
+}
+
 
 
 /****************************************************************************
@@ -2733,6 +2736,8 @@ static Int InitKernel (
         CleanObjFuncs[ t1 +IMMUTABLE          ] = CleanBlist;
         CleanObjFuncs[ t1            +COPYING ] = CleanBlistCopy;
         CleanObjFuncs[ t1 +IMMUTABLE +COPYING ] = CleanBlistCopy;
+	ShallowCopyObjFuncs[ t1 ] = ShallowCopyBlist;
+	ShallowCopyObjFuncs[ t1 +IMMUTABLE ] = ShallowCopyBlist;
     }
 
     /* install the comparison methods                                      */
