@@ -693,76 +693,26 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  loads the &GAP; package with name <A>name</A>.
 ## <P/>
 ##  As an example, the following loads the &GAP; package
-## <Package>Sonata</Package> (case insensitive) which provides methods for the construction and analysis of finite nearrings:
+## <Package>Sonata</Package> (case insensitive) which provides methods for the
+##  construction and analysis of finite nearrings:
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> LoadPackage( "sonata" );
-##  #I  You may wish to install the xgap package
-##  #I  and enjoy the graphic capabilities of SONATA.
-##
-##   ___________________________________________________________________________
-##  /        ___
-## ||       /   \                 /\    Version 2.6
-## ||      ||   ||  |\    |      /  \               /\       Erhard Aichinger
-##  \___   ||   ||  |\\   |     /____\_____________/__\      Franz Binder
-##      \  ||   ||  | \\  |    /      \     ||    /    \     Juergen Ecker
-##      ||  \___/   |  \\ |   /        \    ||   /      \    Peter Mayr
-##      ||          |   \\|  /          \   ||               Christof Noebauer
-##  \___/           |    \|                 ||
-##
-##  System    Of   Nearrings     And      Their Applications
-##  Info: http://www.algebra.uni-linz.ac.at/Sonata/
-##
+##  ... some more lines with package banner(s) ...
 ##  true
 ##  ]]></Log>
 ##  <P/>
 ##  The package name may be appropriately abbreviated as shown in the following
 ##  two examples with the &GAP; packages <Package>Semigroups</Package>, for
 ##  working with semigroups, monoids and associated structures, and
-##  <Package>Design</Package>, for working with block designs:
+##  <Package>DESIGN</Package>, for working with block designs:
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> LoadPackage( "semi" );
-##  ────────────────────────────────────────────────────────────────────────────
-##  Loading  orb 4.7.3 (Methods to enumerate orbits)
-##  by Juergen Mueller (http://www.math.rwth-aachen.de/~Juergen.Mueller),
-##     Max Neunhöffer (http://www-groups.mcs.st-and.ac.uk/~neunhoef), and
-##     Felix Noeske (http://www.math.rwth-aachen.de/~Felix.Noeske).
-##  Homepage: http://gap-system.github.io/orb/
-##  ────────────────────────────────────────────────────────────────────────────
-##  ────────────────────────────────────────────────────────────────────────────
-##  Loading  genss 1.6.2 (Generic Schreier-Sims)
-##  by Max Neunhöffer (http://www-groups.mcs.st-and.ac.uk/~neunhoef) and
-##     Felix Noeske (http://www.math.rwth-aachen.de/~Felix.Noeske).
-##  Homepage: http://gap-system.github.io/genss/
-##  ────────────────────────────────────────────────────────────────────────────
-##  ────────────────────────────────────────────────────────────────────────────
-##  Loading  GRAPE 4.6.1 (GRaph Algorithms using PErmutation groups)
-##  by Leonard H. Soicher (http://www.maths.qmul.ac.uk/~leonard/).
-##  Homepage: http://www.maths.qmul.ac.uk/~leonard/grape/
-##  ────────────────────────────────────────────────────────────────────────────
-##  ----------------------------------------------------------------------------
-##  Loading  Semigroups 2.1.1 - methods for semigroups
-##  by J. D. Mitchell (tinyurl.com/jdmitchell)
-##  with contributions by:
-##       Manuel Delgado (http://cmup.fc.up.pt/cmup/mdelgado/),
-##       J. East
-##       (http://www.uws.edu.au/staff_profiles/uws_profiles/doctor_james_east),
-##       Attila Egri-Nagy (http://www.egri-nagy.hu),
-##       J. Jonusas,
-##       Markus Pfeiffer (http://www.morphism.de/~markusp/),
-##       B. Steinberg (http://www.sci.ccny.cuny.edu/~benjamin/),
-##       J. Smith (http://math.sci.ccny.cuny.edu/people?name=Jhevon_Smith),
-##       M. Torpey,
-##   and W. Wilson (http://wilf-wilson.net).
-##  ----------------------------------------------------------------------------
+##  .... some more lines with package banner(s) ...
 ##  true
 ##  gap> LoadPackage( "d" );
-##  ────────────────────────────────────────────────────────────────────────────
-##  Loading  DESIGN 1.6 (The Design Package for GAP)
-##  by Leonard H. Soicher (http://www.maths.qmul.ac.uk/~leonard/).
-##  Homepage: http://www.designtheory.org/software/gap_design/
-##  ────────────────────────────────────────────────────────────────────────────
+##  .... some more lines with package banner(s) ...
 ##  true
 ##  ]]></Log>
 ##  <P/>
