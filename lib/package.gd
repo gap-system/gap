@@ -716,7 +716,8 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  true
 ##  ]]></Log>
 ##  <P/>
-##  The package name may be appropriately abbreviated as shown in the following ##  two examples with the &GAP; packages <Package>Semigroups</Package>, for
+##  The package name may be appropriately abbreviated as shown in the following
+##  two examples with the &GAP; packages <Package>Semigroups</Package>, for
 ##  working with semigroups, monoids and associated structures, and
 ##  <Package>Design</Package>, for working with block designs:
 ##  <P/>
