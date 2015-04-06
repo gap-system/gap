@@ -5,6 +5,7 @@ env:
   - TEST_SUITE=testinstall
   - TEST_SUITE=testtravis
   - TEST_SUITE=testbugfix
+  - TEST_SUITE=makemanuals
 language: c
 compiler:
   - gcc
@@ -17,6 +18,12 @@ branches:
 addons:
   apt_packages:
   - libgmp3-dev
+  - texlive-latex-base
+  - texlive-latex-recommended
+  - texlive-latex-extra
+  - texlive-extra-utils
+  - texlive-fonts-recommended
+  - texlive-fonts-extra
 script:
   - ./configure --with-gmp=system
   - make 
@@ -37,6 +44,6 @@ script:
   - tar xvzf irredsol-1r2n4.tar.gz
   - tar xvzf tomlib1r2p4.tar.gz
   - cd ..
-  - echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh | tee testlog.txt | grep --colour=always -E "########> Diff|$"
-  - cat testlog.txt | tail -n 2 | grep "total"
-  - ( ! grep "########> Diff" testlog.txt )
+  - if [ $TEST_SUITE = 'makemanuals' ]; then make manuals ; cat doc/*/make_manuals.out ; fi
+  - if [ $TEST_SUITE != 'makemanuals' ]; then echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh | tee testlog.txt | grep --colour=always -E "########> Diff|$"; cat testlog.txt | tail -n 2 | grep "total"; ( ! grep "########> Diff" testlog.txt ); fi
+
