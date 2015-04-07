@@ -13,7 +13,7 @@ compiler:
 branches:
   only:
     - master
-    - hpcgap-default
+    - stable-4.7
 # Change this to your needs
 addons:
   apt_packages:
