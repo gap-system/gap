@@ -691,30 +691,22 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##
 ##  <Description>
 ##  loads the &GAP; package with name <A>name</A>.
-## <P/>
+##  <P/>
 ##  As an example, the following loads the &GAP; package
-## <Package>Sonata</Package> (case insensitive) which provides methods for the
+##  <Package>SONATA</Package> (case insensitive) which provides methods for the
 ##  construction and analysis of finite nearrings:
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> LoadPackage( "sonata" );
+##  gap> LoadPackage("sonata");
 ##  ... some more lines with package banner(s) ...
 ##  true
 ##  ]]></Log>
 ##  <P/>
-##  The package name may be appropriately abbreviated as shown in the following
-##  two examples with the &GAP; packages <Package>Semigroups</Package>, for
-##  working with semigroups, monoids and associated structures, and
-##  <Package>DESIGN</Package>, for working with block designs:
-##  <P/>
-##  <Log><![CDATA[
-##  gap> LoadPackage( "semi" );
-##  .... some more lines with package banner(s) ...
-##  true
-##  gap> LoadPackage( "d" );
-##  .... some more lines with package banner(s) ...
-##  true
-##  ]]></Log>
+##  The package name may be appropriately abbreviated. For example,
+##  <C>LoadPackage("semi");</C> will load the <Package>Semigroups</Package>
+##  package, and <C>LoadPackage("d");</C> will load the
+##  <Package>DESIGN</Package> package. If the abbreviation can not be uniquely
+##  completed, further suggestions will be offered.
 ##  <P/>
 ##  If the optional version string <A>version</A> is given,
 ##  the package will only be loaded in a version number at least as large as
