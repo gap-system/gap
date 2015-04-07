@@ -1,0 +1,49 @@
+os:
+  - linux
+  - osx
+env:
+  - TEST_SUITE=testinstall
+  - TEST_SUITE=testtravis
+  - TEST_SUITE=testbugfix
+  - TEST_SUITE=makemanuals
+language: c
+compiler:
+  - gcc
+  - clang
+branches:
+  only:
+    - master
+    - hpcgap-default
+# Change this to your needs
+addons:
+  apt_packages:
+  - libgmp3-dev
+  - texlive-latex-base
+  - texlive-latex-recommended
+  - texlive-latex-extra
+  - texlive-extra-utils
+  - texlive-fonts-recommended
+  - texlive-fonts-extra
+script:
+  - ./configure --with-gmp=system
+  - make 
+  - mkdir pkg
+  - cd pkg
+  - wget ftp://ftp.gap-system.org/pub/gap/gap47/tar.gz/packages/GAPDoc-1.5.1.tar.gz
+  - wget ftp://ftp.gap-system.org/pub/gap/gap47/tar.gz/packages/autpgrp-1.5.tar.gz
+  - wget ftp://ftp.gap-system.org/pub/gap/gap47/tar.gz/packages/atlasrep1r5p0.tar.gz
+  - wget ftp://ftp.gap-system.org/pub/gap/gap47/tar.gz/packages/ctbllib-1r2p2.tar.gz
+  - wget ftp://ftp.gap-system.org/pub/gap/gap47/tar.gz/packages/grpconst-2.3.tar.gz
+  - wget ftp://ftp.gap-system.org/pub/gap/gap47/tar.gz/packages/irredsol-1r2n4.tar.gz
+  - wget ftp://ftp.gap-system.org/pub/gap/gap47/tar.gz/packages/tomlib1r2p4.tar.gz 
+  - tar xvzf GAPDoc-1.5.1.tar.gz
+  - tar xvzf autpgrp-1.5.tar.gz
+  - tar xvzf atlasrep1r5p0.tar.gz
+  - tar xvzf ctbllib-1r2p2.tar.gz
+  - tar xvzf grpconst-2.3.tar.gz
+  - tar xvzf irredsol-1r2n4.tar.gz
+  - tar xvzf tomlib1r2p4.tar.gz
+  - cd ..
+  - if [ $TEST_SUITE = 'makemanuals' ]; then make manuals ; cat doc/*/make_manuals.out ; fi
+  - if [ $TEST_SUITE != 'makemanuals' ]; then echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh | tee testlog.txt | grep --colour=always -E "########> Diff|$"; cat testlog.txt | tail -n 2 | grep "total"; ( ! grep "########> Diff" testlog.txt ); fi
+
