@@ -566,7 +566,7 @@ function( m )
       Print("ZmodnZ matrix:\n");
       t:=List(m,i->List(i,i->i![1]));
       Display(t);
-      Print("modulo ",ModulusOfZmodnZObj(m[1][1]),"\n");
+      Print("modulo ",Characteristic(m[1][1]),"\n");
     else
       # get the degree and characteristic
       deg  := Lcm( List( m, DegreeFFE ) );
@@ -644,7 +644,7 @@ InstallMethod( Display,
     "for matrix over Integers mod n",
     [ IsZmodnZObjNonprimeCollColl and IsMatrix ],
     function( m )
-    Print( "matrix over Integers mod ", ModulusOfZmodnZObj( m[1][1] ),
+    Print( "matrix over Integers mod ", Characteristic( m[1][1] ),
            ":\n" );
     Display( List( m, i -> List( i, i -> i![1] ) ) );
     end );
