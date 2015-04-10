@@ -62,7 +62,7 @@ BIND_GLOBAL( "BooleanFamily",
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_BOOL",
-    NewType( BooleanFamily, IS_BOOL and IsInternalRep ) );
+    NewType3( TypeOfTypes, BooleanFamily, IS_BOOL and IsInternalRep ) );
 
 
 #############################################################################

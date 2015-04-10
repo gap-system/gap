@@ -15,7 +15,7 @@
 ##
 #V  TYPE_WPOBJ  . . . . . . . . . . . . . . . . . . . . type of all wp object
 ##
-TYPE_WPOBJ := NewType( ListsFamily,
+TYPE_WPOBJ := NewType3( TypeOfTypes, ListsFamily,
     IsWeakPointerObject and IsInternalRep and IsSmallList and IsMutable );
 
 

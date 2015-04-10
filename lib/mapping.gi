@@ -1272,7 +1272,7 @@ InstallMethod( UnderlyingRelation,
     [ IsGeneralMapping ], 0,
     function( map )
     local rel;
-    rel:= Objectify( NewType( CollectionsFamily(
+    rel:= Objectify( NewType3( TypeOfTypes, CollectionsFamily(
           DirectProductElementsFamily( [ ElementsFamily( FamilyObj( Source( map ) ) ),
                           ElementsFamily( FamilyObj( Range( map  ) ) ) ] ) ),
                               IsDomain and IsAttributeStoringRep ),

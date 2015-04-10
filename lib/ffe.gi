@@ -196,7 +196,7 @@ InstallGlobalFunction( FFEFamily, function( p )
 
         # Store the type for the representation of prime field elements
         # via residues.
-        F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge 
+        F!.typeOfZmodnZObj:= NewType3( TypeOfTypes, F, IsZmodpZObjLarge 
 	  and IsModulusRep and IsZDFRE);
         SetDataType( F!.typeOfZmodnZObj, p );
         F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
@@ -969,7 +969,7 @@ InstallMethod( FieldOverItselfByGenerators,
 
     local F, d, q;
 
-    F:= Objectify( NewType( FamilyObj( elms ),
+    F:= Objectify( NewType3( TypeOfTypes, FamilyObj( elms ),
                             IsField and IsAttributeStoringRep ),
                    rec() );
     d:= DegreeFFE( elms );
@@ -1004,7 +1004,7 @@ InstallMethod( FieldByGenerators,
 
     local F, d, subd, q, z;
 
-    F := Objectify( NewType( FamilyObj( gens ),
+    F := Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                              IsField and IsAttributeStoringRep ),
                     rec() );
 

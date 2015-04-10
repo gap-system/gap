@@ -60,7 +60,7 @@ function( fam, fun, list)
     fi;
     
     ord := Objectify( 
-            NewType( OrderingsFamily( fam ), 
+            NewType3( TypeOfTypes, OrderingsFamily( fam ), 
             IsAttributeStoringRep),rec());
 
     SetFamilyForOrdering(ord, fam);
@@ -92,7 +92,7 @@ function( fam, fun, list)
     fi;
    
     ord := Objectify(
-            NewType( OrderingsFamily( fam ),
+            NewType3( TypeOfTypes, OrderingsFamily( fam ),
             IsAttributeStoringRep),rec());
 
     SetFamilyForOrdering(ord, fam);

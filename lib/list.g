@@ -99,7 +99,7 @@ InstallTrueMethod( IsTable, IsRectangularTable );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_LIST_NDENSE_MUTABLE", NewType( ListsFamily,
+BIND_GLOBAL( "TYPE_LIST_NDENSE_MUTABLE", NewType3( TypeOfTypes, ListsFamily,
     IsMutable and IsList and IsPlistRep ) );
 
 
@@ -114,7 +114,7 @@ BIND_GLOBAL( "TYPE_LIST_NDENSE_MUTABLE", NewType( ListsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_LIST_NDENSE_IMMUTABLE", NewType( ListsFamily,
+BIND_GLOBAL( "TYPE_LIST_NDENSE_IMMUTABLE", NewType3( TypeOfTypes, ListsFamily,
     IsList and IsPlistRep ) );
 
 
@@ -129,7 +129,7 @@ BIND_GLOBAL( "TYPE_LIST_NDENSE_IMMUTABLE", NewType( ListsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_MUTABLE", NewType( ListsFamily,
+BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_MUTABLE", NewType3( TypeOfTypes, ListsFamily,
     IsMutable and IsList and IsDenseList and IsPlistRep ) );
 
 
@@ -144,7 +144,7 @@ BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_MUTABLE", NewType( ListsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_IMMUTABLE", NewType( ListsFamily,
+BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_IMMUTABLE", NewType3( TypeOfTypes, ListsFamily,
         IsList and IsDenseList and IsPlistRep ) );
 
 #############################################################################
@@ -158,7 +158,7 @@ BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_IMMUTABLE", NewType( ListsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE", NewType( ListsFamily,
+BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE", NewType3( TypeOfTypes, ListsFamily,
     IsMutable and IsList and IsDenseList and IsPlistRep and IsSSortedList ) );
 
 #############################################################################
@@ -172,7 +172,7 @@ BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE", NewType( ListsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE", NewType( ListsFamily,
+BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE", NewType3( TypeOfTypes, ListsFamily,
     IsMutable and IsList and IsDenseList and IsPlistRep ) );
 
 
@@ -187,7 +187,7 @@ BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE", NewType( ListsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE", NewType( ListsFamily,
+BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE", NewType3( TypeOfTypes, ListsFamily,
         IsList and IsDenseList and IsPlistRep and IsSSortedList ) );
 
 #############################################################################
@@ -201,7 +201,7 @@ BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE", NewType( ListsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE", NewType( ListsFamily,
+BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE", NewType3( TypeOfTypes, ListsFamily,
         IsList and IsDenseList and IsPlistRep ) );
 
 #############################################################################
@@ -215,7 +215,7 @@ BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE", NewType( ListsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_LIST_EMPTY_MUTABLE", NewType( ListsFamily,
+BIND_GLOBAL( "TYPE_LIST_EMPTY_MUTABLE", NewType3( TypeOfTypes, ListsFamily,
     IsMutable and IsList and IsDenseList and IsHomogeneousList
     and IsEmpty and IsString and IsPlistRep ) );
 
@@ -231,7 +231,7 @@ BIND_GLOBAL( "TYPE_LIST_EMPTY_MUTABLE", NewType( ListsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_LIST_EMPTY_IMMUTABLE", NewType( ListsFamily,
+BIND_GLOBAL( "TYPE_LIST_EMPTY_IMMUTABLE", NewType3( TypeOfTypes, ListsFamily,
     IsList and IsDenseList and IsHomogeneousList
     and IsEmpty and IsString and IsPlistRep ) );
 
@@ -248,11 +248,11 @@ BIND_GLOBAL( "TYPE_LIST_EMPTY_IMMUTABLE", NewType( ListsFamily,
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_BLIST_MUT", 
-  NewType( CollectionsFamily(BooleanFamily),
+  NewType3( TypeOfTypes, CollectionsFamily(BooleanFamily),
     IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
     IS_BLIST_REP ) );
 BIND_GLOBAL( "TYPE_BLIST_IMM", 
-  NewType( CollectionsFamily(BooleanFamily),
+  NewType3( TypeOfTypes, CollectionsFamily(BooleanFamily),
     IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
     IS_BLIST_REP ) );
 BIND_GLOBAL( "TYPE_BLIST_NSORT_MUT", 
@@ -339,14 +339,14 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_HOM
     if   knr = 1  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         IsPlistRep );
 
     # T_PLIST_HOM + IMMUTABLE
     elif knr = 2  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         IsPlistRep );
@@ -387,14 +387,14 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_TAB
     elif knr = 7  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         IsTable and IsPlistRep );
 
     # T_PLIST_TAB + IMMUTABLE
     elif knr = 8  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         IsTable and IsPlistRep );
@@ -433,14 +433,14 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_TAB_RECT
     elif knr = 13  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         IsTable and HasIsRectangularTable and IsRectangularTable and IsPlistRep );
 
     # T_PLIST_TAB_RECT + IMMUTABLE
     elif knr = 14  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         IsTable and HasIsRectangularTable and IsRectangularTable and IsPlistRep );

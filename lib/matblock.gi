@@ -112,7 +112,7 @@ InstallGlobalFunction( BlockMatrix, function( arg )
     od;
 
     # Construct and return the block matrix.
-    return Objectify( NewType( CollectionsFamily( CollectionsFamily(
+    return Objectify( NewType3( TypeOfTypes, CollectionsFamily( CollectionsFamily(
                                    FamilyObj( zero ) ) ),
                                    IsOrdinaryMatrix
                                and IsMultiplicativeGeneralizedRowVector

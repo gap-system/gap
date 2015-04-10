@@ -301,7 +301,7 @@ function( rws )
     fam!.rewritingSystem := Immutable(rws);
 
     # create the default type for the elements
-    fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
+    fam!.defaultType := NewType3( TypeOfTypes, fam, IsPackedElementDefaultRep );
 
     # that's it
     return fam;

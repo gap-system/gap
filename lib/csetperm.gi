@@ -98,7 +98,7 @@ BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
     AddCosetInfoStabChain(GC,UC,LargestMovedPoint(G));
     MinimizeExplicitTransversal(UC,LargestMovedPoint(G));
 
-    enum := Objectify( NewType( FamilyObj( G ),
+    enum := Objectify( NewType3( TypeOfTypes, FamilyObj( G ),
                            filter and IsList and IsDuplicateFreeList
                            and IsAttributeStoringRep ),
           rec( group := G,

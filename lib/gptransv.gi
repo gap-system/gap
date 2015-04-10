@@ -86,7 +86,7 @@ InstallGlobalFunction( SchreierTransversal,
 	fi;
 	AddHashEntry( hashTable, basePoint, "at base point" );
         AddHashEntry( hashDepth, basePoint, 0 );
-	Type := NewType( TransvBySchreierTreeFamily,
+	Type := NewType3( TypeOfTypes, TransvBySchreierTreeFamily,
                          IsRightTransversal and IsTransvBySchreierTree );
 	Rec := rec( OrbitGenerators := [],
                     StrongGenerators := strongGens,
@@ -627,7 +627,7 @@ InstallGlobalFunction( HomTransversal,
     function( h )
     local quo, Type, Rec, obj;
     quo := QuotientGroupByHomomorphism( h );
-    Type := NewType( TransvByHomomorphismFamily, IsRightTransversal 
+    Type := NewType3( TypeOfTypes, TransvByHomomorphismFamily, IsRightTransversal 
                     and IsTransvByHomomorphism );
     Rec := rec( Homomorphism := h,
                 NumberSifted := 0 );
@@ -757,7 +757,7 @@ function( proj, inj )
     if Source( proj ) <> Range( inj ) or Range( proj ) <> Source( inj ) then
 	Error("incorrect proj and inj");
     fi;
-    Type := NewType( TransvByDirProdFamily, IsRightTransversal 
+    Type := NewType3( TypeOfTypes, TransvByDirProdFamily, IsRightTransversal 
                     and IsTransvByDirProd );
     Rec := rec( Projection := proj,
                 Injection := inj,
@@ -874,7 +874,7 @@ function( G )
 #    if not HasSize(G) then Print("WARNING:  creating transversal by",
 #        " trivial group\n  without knowing size of original group\n");
 #    fi;
-    Type := NewType( TransvByTrivSubgrpFamily, IsRightTransversal 
+    Type := NewType3( TypeOfTypes, TransvByTrivSubgrpFamily, IsRightTransversal 
                     and IsTransvByTrivSubgrp );
     Rec := rec( Group := G, NumberSifted := 0 );
     return Objectify( Type, Rec );
@@ -968,7 +968,7 @@ InstallMethod( SiftOneLevel, "for transversal by trivial subgroup", true,
 InstallGlobalFunction( TransversalBySiftFunction,
 function( supergroup, subgroup, sift )
     local Type, Rec;
-    Type := NewType( TransvBySiftFunctFamily, IsRightTransversal 
+    Type := NewType3( TypeOfTypes, TransvBySiftFunctFamily, IsRightTransversal 
                     and IsTransvBySiftFunct );
     Rec := rec( Sift := sift, ParentGroup := supergroup,
                 Subgroup := subgroup, NumberSifted := 0 );

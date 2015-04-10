@@ -601,7 +601,7 @@ BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
 
     # Construct the default type of the family.
     Fam!.defaultTypeDenseCoeffVectorRep :=
-        NewType( Fam, IsSCAlgebraObj and IsDenseCoeffVectorRep );
+        NewType3( TypeOfTypes, Fam, IsSCAlgebraObj and IsDenseCoeffVectorRep );
 
     SetCharacteristic( Fam, Characteristic( R ) );
     SetCoefficientsFamily( Fam, ElementsFamily( FamilyObj( R ) ) );
@@ -1042,7 +1042,7 @@ InstallMethod( CanonicalBasis,
     [ IsFreeLeftModule and IsSCAlgebraObjCollection and IsFullSCAlgebra ],
     function( A )
     local B;
-    B:= Objectify( NewType( FamilyObj( A ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( A ),
                                 IsCanonicalBasisFullSCAlgebra
                             and IsAttributeStoringRep
                             and IsFiniteBasisDefault

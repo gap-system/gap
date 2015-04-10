@@ -46,7 +46,7 @@ InstallGlobalFunction( ExternalSetByFilterConstructor,
       D:= EmptyRowVector( CyclotomicsFamily );
     fi;
 
-    Objectify( NewType( FamilyObj( D ), filter ), xset );
+    Objectify( NewType3( TypeOfTypes, FamilyObj( D ), filter ), xset );
     SetActingDomain  ( xset, G );
     SetHomeEnumerator( xset, D );
     if not IsExternalSetByActorsRep( xset )  then
@@ -713,7 +713,7 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
     if surj  then
         filter := filter and IsSurjective;
     fi;
-    Objectify( NewType( fam, filter ), hom );
+    Objectify( NewType3( TypeOfTypes, fam, filter ), hom );
     SetUnderlyingExternalSet( hom, xset );
     return hom;
 end );

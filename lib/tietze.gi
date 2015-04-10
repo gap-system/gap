@@ -300,7 +300,7 @@ InstallGlobalFunction( PresentationFpGroup, function ( arg )
     fi;
 
     # Create the Presentation.
-    T := Objectify( NewType( PresentationsFamily, 
+    T := Objectify( NewType3( TypeOfTypes, PresentationsFamily, 
                                  IsPresentationDefaultRep
                              and IsPresentation                            
                              and IsMutable ),

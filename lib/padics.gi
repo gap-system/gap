@@ -394,7 +394,7 @@ InstallGlobalFunction( PurePadicNumberFamily, function( p, precision )
         fam!.precision:= precision;
         fam!.modulus:= p^precision;
         fam!.printPadicSeries:= true;
-        fam!.defaultType := NewType( fam, IsPurePadicNumber );
+        fam!.defaultType := NewType3( TypeOfTypes, fam, IsPurePadicNumber );
         PADICS_FAMILIES[p][precision] := fam;
     fi;
     return PADICS_FAMILIES[p][precision];
@@ -759,7 +759,7 @@ InstallGlobalFunction( PadicExtensionNumberFamily,
     Append( str, String(precision) );
     Append( str, ",...)" );
     fam := NewFamily( str, IsPadicExtensionNumber );
-    fam!.defaultType := NewType( fam, IsPadicExtensionNumber );
+    fam!.defaultType := NewType3( TypeOfTypes, fam, IsPadicExtensionNumber );
     fam!.prime       := p;
     fam!.precision   := precision;
     fam!.modulus     := p^precision;

@@ -1088,7 +1088,7 @@ InstallMethod( OperationAlgebraHomomorphism,
     local ophom, image;
 
     # Make the general mapping.
-    ophom:= Objectify( NewType( GeneralMappingsFamily(
+    ophom:= Objectify( NewType3( TypeOfTypes, GeneralMappingsFamily(
                                   ElementsFamily( FamilyObj( A ) ),
                                   CollectionsFamily( FamilyObj(
                                       LeftActingDomain( A ) ) ) ),
@@ -1531,7 +1531,7 @@ InstallMethod( IsomorphismMatrixFLMLOR,
       UseIsomorphismRelation( A, I );
 
       # Make an operation algebra homomorphism.
-      map:= Objectify( NewType( GeneralMappingsFamily(
+      map:= Objectify( NewType3( TypeOfTypes, GeneralMappingsFamily(
                                     ElementsFamily( FamilyObj( A ) ),
                                     ElementsFamily( FamilyObj( imgs ) ) ),
                                   IsSPGeneralMapping
@@ -1709,7 +1709,7 @@ InstallMethod( IsomorphismFpFLMLOR,
 
     # Set the info to compute with a basis of the f.p. algebra.
     SetNiceAlgebraMonomorphism( Fp,
-        Objectify( NewType( GeneralMappingsFamily(
+        Objectify( NewType3( TypeOfTypes, GeneralMappingsFamily(
                               ElementsFamily( FamilyObj( Fp ) ),
                               ElementsFamily( FamilyObj( A ) ) ),
                                 IsSPGeneralMapping

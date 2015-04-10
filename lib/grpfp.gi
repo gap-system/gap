@@ -399,7 +399,7 @@ end);
 ##
 InstallGlobalFunction(SubgroupOfWholeGroupByCosetTable,function(fam,tab)
 local S;
-  S := Objectify(NewType(fam,IsGroup and IsAttributeStoringRep ),
+  S := Objectify(NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep ),
         rec() ); 
   SetParent(S,fam!.wholeGroup);
   SetCosetTableInWholeGroup(S,tab);
@@ -423,7 +423,7 @@ local S;
 #    return S;
 #  fi;
 
-  S := Objectify(NewType(fam, IsGroup and
+  S := Objectify(NewType3( TypeOfTypes,fam, IsGroup and
     IsSubgroupOfWholeGroupByQuotientRep and IsAttributeStoringRep ),
         rec(quot:=Q,sub:=U) ); 
   SetParent(S,fam!.wholeGroup);
@@ -1528,14 +1528,14 @@ BindGlobal( "FactorFreeGroupByRelators", function( F, rels )
     fam := NewFamily( "FamilyElementsFpGroup", IsElementOfFpGroup );
 
     # Create the default type for the elements.
-    fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
+    fam!.defaultType := NewType3( TypeOfTypes, fam, IsPackedElementDefaultRep );
 
     fam!.freeGroup := F;
     fam!.relators := Immutable( rels );
 
     # Create the group.
     G := Objectify(
-        NewType( CollectionsFamily( fam ),
+        NewType3( TypeOfTypes, CollectionsFamily( fam ),
             IsSubgroupFpGroup and IsWholeFamily and IsAttributeStoringRep ),
         rec() );
 
@@ -5124,7 +5124,7 @@ local G,T,gens,g,reps,ng,index,i,j,ndef,n,iso;
 
   if index=1 then
     # trivial case
-    return Objectify( NewType( FamilyObj( OG ),
+    return Objectify( NewType3( TypeOfTypes, FamilyObj( OG ),
 		      IsRightTransversalFpGroupRep and IsList and 
 		      IsDuplicateFreeList and IsAttributeStoringRep ),
       rec( group := OG,
@@ -5144,7 +5144,7 @@ local G,T,gens,g,reps,ng,index,i,j,ndef,n,iso;
         #this is true because T is 'standardized' 
         ndef := ndef+1;
 	if ndef=index then 
-	  return Objectify( NewType( FamilyObj( OG ),
+	  return Objectify( NewType3( TypeOfTypes, FamilyObj( OG ),
 			    IsRightTransversalFpGroupRep and IsList and 
 			    IsDuplicateFreeList and IsAttributeStoringRep ),
 	    rec( group := OG,

@@ -1371,7 +1371,7 @@ local   map,  pcgs, A, filter,p,i;
   map.sourcePcgsImages := GeneratorsOfGroup( A );
 
   ObjectifyWithAttributes( map,
-  NewType( GeneralMappingsFamily
+  NewType3( TypeOfTypes, GeneralMappingsFamily
 	  ( ElementsFamily( FamilyObj( G ) ),
 	    ElementsFamily( FamilyObj( A ) ) ), filter ), 
 	    Source,G,

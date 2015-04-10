@@ -57,12 +57,12 @@ InstallMethod( LeftModuleByGenerators,
     local V;
 
     if ForAll( mat, row -> IsSubset( F, row ) ) then
-      V:= Objectify( NewType( FamilyObj( mat ),
+      V:= Objectify( NewType3( TypeOfTypes, FamilyObj( mat ),
                                   IsGaussianRowSpace
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      V:= Objectify( NewType( FamilyObj( mat ),
+      V:= Objectify( NewType3( TypeOfTypes, FamilyObj( mat ),
                                   IsVectorSpace
                               and IsNonGaussianRowSpace
                               and IsRowModule
@@ -89,7 +89,7 @@ InstallMethod( LeftModuleByGenerators,
     fi;
 #T explicit 2nd argument above!
 
-    V:= Objectify( NewType( CollectionsFamily( FamilyObj( F ) ),
+    V:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( F ) ),
                                 IsGaussianRowSpace
                             and IsAttributeStoringRep ),
                    rec() );
@@ -114,12 +114,12 @@ InstallMethod( LeftModuleByGenerators,
 #T explicit 2nd argument above!
 
     if ForAll( mat, row -> IsSubset( F, row ) ) then
-      V:= Objectify( NewType( FamilyObj( mat ),
+      V:= Objectify( NewType3( TypeOfTypes, FamilyObj( mat ),
                                   IsGaussianRowSpace
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      V:= Objectify( NewType( FamilyObj( mat ),
+      V:= Objectify( NewType3( TypeOfTypes, FamilyObj( mat ),
                                   IsVectorSpace
                               and IsNonGaussianRowSpace
                               and IsRowModule
@@ -525,7 +525,7 @@ InstallMethod( Basis,
     fi;
 
     # Construct the basis.
-    B:= Objectify( NewType( FamilyObj( gens ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
@@ -568,7 +568,7 @@ InstallMethod( BasisNC,
     fi;
 
     # Construct the basis.
-    B:= Objectify( NewType( FamilyObj( gens ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
@@ -604,7 +604,7 @@ InstallMethod( SemiEchelonBasis,
     function( V )
     local B, gens;
 
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
@@ -638,7 +638,7 @@ InstallMethod( SemiEchelonBasis,
     fi;
 
     # Construct the basis.
-    B:= Objectify( NewType( FamilyObj( gens ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
@@ -674,7 +674,7 @@ InstallMethod( SemiEchelonBasisNC,
     function( V, gens )
     local B,  # the basis, result
           gensi; # immutable copy
-    B:= Objectify( NewType( FamilyObj( gens ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
@@ -1011,7 +1011,7 @@ InstallMethod( CanonicalBasis,
       fi;
     od;
 
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep
@@ -1068,7 +1068,7 @@ InstallMethod( CanonicalBasis,
 
     fi;
 
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep
@@ -1142,7 +1142,7 @@ InstallMethod( CanonicalBasis,
     [ IsFullRowModule and IsVectorSpace ],
     function( V )
     local B;
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsSemiEchelonized
@@ -1336,7 +1336,7 @@ InstallMethod( Subspaces,
     "for (Gaussian) full row space",
     [ IsFullRowModule and IsVectorSpace, IsInt ],
     function( V, dim )
-    return Objectify( NewType( CollectionsFamily( FamilyObj( V ) ),
+    return Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( V ) ),
                                    IsSubspacesVectorSpace
                                and IsSubspacesFullRowSpaceDefaultRep ),
                       rec(
@@ -1360,7 +1360,7 @@ InstallOtherMethod( Subspaces,
 ##
 InstallMethod( Subspaces,
     [ IsFullRowModule and IsVectorSpace ],
-    V -> Objectify( NewType( CollectionsFamily( FamilyObj( V ) ),
+    V -> Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( V ) ),
                                  IsSubspacesVectorSpace
                              and IsSubspacesFullRowSpaceDefaultRep ),
                     rec(
@@ -1412,7 +1412,7 @@ InstallMethod( MutableBasis,
       # Note that `vectors' is not empty.
       newvectors:= SemiEchelonMat( vectors );
 
-      B:= Objectify( NewType( FamilyObj( vectors ),
+      B:= Objectify( NewType3( TypeOfTypes, FamilyObj( vectors ),
                                   IsMutableBasis
                               and IsMutable
                               and IsMutableBasisOfGaussianRowSpaceRep ),
@@ -1443,7 +1443,7 @@ InstallOtherMethod( MutableBasis,
 
     else
 
-      B:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
+      B:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( zero ) ),
                                   IsMutableBasis
                               and IsMutable
                               and IsMutableBasisOfGaussianRowSpaceRep ),

@@ -103,7 +103,7 @@ InstallGlobalFunction(SparseListBySortedListNC, function(poss, vals, length, def
         filt := filt and IsTable;
     fi;
     fam := CollectionsFamily(FamilyObj(default));
-    type :=  NewType( fam, filt);
+    type :=  NewType3( TypeOfTypes, fam, filt);
     l := [];
     l[SL_LENGTH]  := length;
     l[SL_DEFAULT] := default;

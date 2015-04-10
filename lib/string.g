@@ -202,7 +202,7 @@ BIND_GLOBAL( "CharsFamily", NewFamily( "CharsFamily", IsChar ) );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_CHAR", NewType( CharsFamily, IsChar and IsInternalRep ) );
+BIND_GLOBAL( "TYPE_CHAR", NewType3( TypeOfTypes, CharsFamily, IsChar and IsInternalRep ) );
 
 
 #############################################################################
@@ -219,10 +219,10 @@ BIND_GLOBAL( "TYPE_CHAR", NewType( CharsFamily, IsChar and IsInternalRep ) );
 BIND_GLOBAL( "StringFamily", NewFamily( "StringsFamily", IsCharCollection ) );
 
 BIND_GLOBAL( "TYPES_STRING", 
-        [ NewType( StringFamily, IsString and IsStringRep and
+        [ NewType3( TypeOfTypes, StringFamily, IsString and IsStringRep and
                 IsMutable ), # T_STRING
           
-          NewType( StringFamily, IsString and IsStringRep ), 
+          NewType3( TypeOfTypes, StringFamily, IsString and IsStringRep ), 
           # T_STRING + IMMUTABLE
           
           ~[1], # T_STRING_NSORT

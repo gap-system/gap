@@ -38,7 +38,7 @@ DeclareRepresentation( "IsUnknownDefaultRep",
 ##
 #V  UnknownsType
 ##
-BindGlobal( "UnknownsType", NewType( CyclotomicsFamily,
+BindGlobal( "UnknownsType", NewType3( TypeOfTypes, CyclotomicsFamily,
     IsUnknown and IsUnknownDefaultRep ) );
 
 

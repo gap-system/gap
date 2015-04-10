@@ -26,7 +26,7 @@ DeclareRepresentation(
 ##
 #V  DirectoryType . . . . . . . . . . . . . . . . default type of a directory
 ##
-BindGlobal( "DirectoryType", NewType(
+BindGlobal( "DirectoryType", NewType3( TypeOfTypes,
     DirectoriesFamily,
     IsDirectory and IsDirectoryRep ) );
 

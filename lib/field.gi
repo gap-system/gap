@@ -29,7 +29,7 @@ InstallMethod( DivisionRingByGenerators,
     [ IsDivisionRing, IsCollection ],
     function( F, gens )
     local D;
-    D:= Objectify( NewType( FamilyObj( gens ),
+    D:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsField and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( D, F );
@@ -50,7 +50,7 @@ InstallMethod( FieldOverItselfByGenerators,
     if IsEmpty( gens ) then
       Error( "need at least one element" );
     fi;
-    F:= Objectify( NewType( FamilyObj( gens ),
+    F:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsField and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( F, F );
@@ -151,7 +151,7 @@ end );
 InstallGlobalFunction( SubfieldNC, function( F, gens )
     local S;
     if IsEmpty( gens ) then
-      S:= Objectify( NewType( FamilyObj( F ),
+      S:= Objectify( NewType3( TypeOfTypes, FamilyObj( F ),
                               IsDivisionRing and IsAttributeStoringRep ),
                      rec() );
       SetLeftActingDomain( S, F );

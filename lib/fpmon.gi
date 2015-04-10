@@ -190,12 +190,12 @@ function( F, rels )
     fam!.freeMonoid:= F;
     fam!.relations := Immutable( rels );
 
-    fam!.defaultType := NewType( fam, IsElementOfFpMonoid
+    fam!.defaultType := NewType3( TypeOfTypes, fam, IsElementOfFpMonoid
       and IsPackedElementDefaultRep );
 
     # Create the monoid
     s := Objectify(
-        NewType( CollectionsFamily( fam ),
+        NewType3( TypeOfTypes, CollectionsFamily( fam ),
         IsMonoid and IsFpMonoid and IsAttributeStoringRep),
         rec() );
 

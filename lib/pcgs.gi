@@ -200,10 +200,10 @@ function( filter, imp, efam, pcs,attl )
       one:=fail;
     fi;
     if one<>fail then
-      attl:=Concatenation([pcgs, NewType( fam, imp and HasOneOfPcgs),
+      attl:=Concatenation([pcgs, NewType3( TypeOfTypes, fam, imp and HasOneOfPcgs),
 			  Length,Length(pcs),OneOfPcgs,one],attl);
     else
-      attl:=Concatenation([pcgs, NewType( fam, imp ),
+      attl:=Concatenation([pcgs, NewType3( TypeOfTypes, fam, imp ),
 			  Length,Length(pcs)],attl);
     fi;
 
@@ -1260,7 +1260,7 @@ DeclareRepresentation( "IsEnumeratorByPcgsRep",
 InstallMethod( EnumeratorByPcgs,"pcgs", true, [ IsPcgs ], 0,
 function( pcgs )
     return Objectify(
-        NewType( FamilyObj(pcgs), IsList and IsEnumeratorByPcgsRep ),
+        NewType3( TypeOfTypes, FamilyObj(pcgs), IsList and IsEnumeratorByPcgsRep ),
         rec( pcgs := pcgs, sublist := [ 1 .. Length(pcgs) ],
              relativeOrders := RelativeOrders(pcgs),
              complementList := [] ) );
@@ -1274,7 +1274,7 @@ end );
 InstallOtherMethod( EnumeratorByPcgs,"pcgs, sublist",true,[IsPcgs,IsList],0,
 function( pcgs, sublist )
     return Objectify(
-        NewType( FamilyObj(pcgs), IsList and IsEnumeratorByPcgsRep ),
+        NewType3( TypeOfTypes, FamilyObj(pcgs), IsList and IsEnumeratorByPcgsRep ),
         rec( pcgs := pcgs, sublist := sublist,
              relativeOrders := RelativeOrders(pcgs),
              complementList := Difference([1..Length(pcgs)],sublist) ) );

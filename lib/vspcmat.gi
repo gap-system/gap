@@ -443,7 +443,7 @@ InstallMethod( Basis,
     fi;
 
     # Construct a semi-echelonized basis.
-    B:= Objectify( NewType( FamilyObj( gens ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep ),
@@ -483,7 +483,7 @@ InstallMethod( BasisNC,
     fi;
 
     # Construct a semi-echelonized basis.
-    B:= Objectify( NewType( FamilyObj( gens ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep ),
@@ -515,7 +515,7 @@ InstallMethod( SemiEchelonBasis,
     [ IsGaussianMatrixSpace ],
     function( V )
     local B;
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep ),
@@ -541,7 +541,7 @@ InstallMethod( SemiEchelonBasis,
     fi;
 
     # Construct the basis.
-    B:= Objectify( NewType( FamilyObj( gens ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep ),
@@ -572,7 +572,7 @@ InstallMethod( SemiEchelonBasisNC,
 
     local B;  # the basis, result
 
-    B:= Objectify( NewType( FamilyObj( gens ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep ),
@@ -713,7 +713,7 @@ InstallMethod( CanonicalBasis,
     fi;
 
     # Make the basis.
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep
@@ -784,7 +784,7 @@ InstallMethod( CanonicalBasis,
     [ IsFullMatrixModule ],
     function( V )
     local B, dims, m, n;
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsSemiEchelonized
@@ -847,7 +847,7 @@ InstallMethod( MutableBasis,
       # Note that `mats' is not empty.
       newmats:= SemiEchelonMats( mats );
 
-      B:= Objectify( NewType( FamilyObj( mats ),
+      B:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsMutableBasis
                               and IsMutable
                               and IsMutableBasisOfGaussianMatrixSpaceRep ),
@@ -886,7 +886,7 @@ InstallMethod( MutableBasis,
       # Note that `mats' is not empty.
       newmats:= SemiEchelonMats( mats );
 
-      B:= Objectify( NewType( FamilyObj( mats ),
+      B:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsMutableBasis
                               and IsMutable
                               and IsMutableBasisOfGaussianMatrixSpaceRep ),
@@ -925,7 +925,7 @@ InstallOtherMethod( MutableBasis,
 
     else
 
-      B:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
+      B:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( zero ) ),
                                   IsMutableBasis
                               and IsMutable
                               and IsMutableBasisOfGaussianMatrixSpaceRep ),

@@ -27,7 +27,7 @@ InstallMethod( EmptyRowVector,
     true,
     [ IsFamily ], 0,
     function( F )
-    return Objectify( NewType( CollectionsFamily( F ),
+    return Objectify( NewType3( TypeOfTypes, CollectionsFamily( F ),
                                    IsRowVector
                                and IsEmpty
                                and IsEmptyRowVectorRep ),

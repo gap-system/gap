@@ -223,7 +223,7 @@ function(U,g,V)
 local d,fam;
   fam:=FamilyObj(U);
   if not IsBound(fam!.doubleCosetsDefaultType) then
-    fam!.doubleCosetsDefaultType:=NewType(fam,IsDoubleCosetDefaultRep
+    fam!.doubleCosetsDefaultType:=NewType3( TypeOfTypes,fam,IsDoubleCosetDefaultRep
           and HasLeftActingGroup and HasRightActingGroup
 	  and HasRepresentative);
   fi;
@@ -240,7 +240,7 @@ function(U,g,V,sz)
 local d,fam;
   fam:=FamilyObj(U);
   if not IsBound(fam!.doubleCosetsDefaultSizeType) then
-    fam!.doubleCosetsDefaultSizeType:=NewType(fam,IsDoubleCosetDefaultRep
+    fam!.doubleCosetsDefaultSizeType:=NewType3( TypeOfTypes,fam,IsDoubleCosetDefaultRep
 	  and HasSize and HasIsFinite and IsFinite
           and HasLeftActingGroup and HasRightActingGroup
 	  and HasRepresentative);
@@ -367,7 +367,7 @@ local d,fam;
 
   fam:=FamilyObj(U);
   if not IsBound(fam!.rightCosetsDefaultType) then
-    fam!.rightCosetsDefaultType:=NewType(fam,IsRightCosetDefaultRep and
+    fam!.rightCosetsDefaultType:=NewType3( TypeOfTypes,fam,IsRightCosetDefaultRep and
           HasActingDomain and HasFunctionAction and HasRepresentative and
 	  HasCanonicalRepresentativeDeterminatorOfExternalSet);
   fi;
@@ -388,7 +388,7 @@ local d,fam;
 
   fam:=FamilyObj(U);
   if not IsBound(fam!.rightCosetsDefaultSizeType) then
-    fam!.rightCosetsDefaultSizeType:=NewType(fam,IsRightCosetDefaultRep and
+    fam!.rightCosetsDefaultSizeType:=NewType3( TypeOfTypes,fam,IsRightCosetDefaultRep and
           HasActingDomain and HasFunctionAction and HasRepresentative and
 	  HasSize and HasCanonicalRepresentativeDeterminatorOfExternalSet);
   fi;
@@ -1080,7 +1080,7 @@ DeclareRepresentation( "IsRightTransversalViaCosetsRep",
 InstallMethod(RightTransversalOp, "generic, use RightCosets",
   IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,U)
-  return Objectify( NewType( FamilyObj( G ),
+  return Objectify( NewType3( TypeOfTypes, FamilyObj( G ),
 		    IsRightTransversalViaCosetsRep and IsList and 
 		    IsDuplicateFreeList and IsAttributeStoringRep ),
           rec( group := G,
@@ -1177,7 +1177,7 @@ local trans,m,i;
     Add(m,m[Length(m)]*Length(t[i]));
   od;
   m:=Reversed(m);
-  trans:=Objectify(NewType(FamilyObj(G),
+  trans:=Objectify(NewType3( TypeOfTypes,FamilyObj(G),
 			IsFactoredTransversalRep and IsList 
 			and IsDuplicateFreeList and IsAttributeStoringRep),
           rec(group:=G,

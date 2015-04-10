@@ -217,7 +217,7 @@ function( A, domconst, filts )
   F!.n:=n;
   SetMultiplicationTable( F, A );
   elms:= Immutable( List( [1..n],
-             i -> Objectify( NewType( F, filts), [ i ] ) ) );
+             i -> Objectify( NewType3( TypeOfTypes, F, filts), [ i ] ) ) );
   SetIsSSortedList( elms, true );
   F!.set:= elms;
   F!.inverse:= [];

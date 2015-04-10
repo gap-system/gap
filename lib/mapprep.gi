@@ -57,7 +57,7 @@ InstallGlobalFunction( TypeOfDefaultGeneralMapping,
     fi;
 
     # Construct the type.
-    Type:= NewType( GeneralMappingsFamily(
+    Type:= NewType3( TypeOfTypes, GeneralMappingsFamily(
                           ElementsFamily( FamilyObj( source ) ),
                           ElementsFamily( FamilyObj( range  ) ) ),
                     IsDefaultGeneralMappingRep and filter );

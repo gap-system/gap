@@ -183,7 +183,7 @@ function( r, n )
           type:= type and IsAlgebraicExtensionPolynomialRing;
         fi;
     fi;
-    prng := Objectify( NewType( CollectionsFamily(rfun), type ), rec() );
+    prng := Objectify( NewType3( TypeOfTypes, CollectionsFamily(rfun), type ), rec() );
 
     # set the left acting domain
     SetLeftActingDomain( prng, r );
@@ -672,7 +672,7 @@ function(r,n)
     type:= type and IsField;
   fi;
 
-  fcfl := Objectify(NewType(CollectionsFamily(rfun),type),rec());;
+  fcfl := Objectify(NewType3( TypeOfTypes,CollectionsFamily(rfun),type),rec());;
 
   # The function field is commutative if and only if the coefficient ring is.
   if HasIsCommutative(r) then

@@ -42,7 +42,7 @@ InstallMethod( FLMLORByGenerators,
     [ IsRing, IsCollection ],
     function( R, gens )
     local A;
-    A:= Objectify( NewType( FamilyObj( gens ),
+    A:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsFLMLOR and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( A, R );
@@ -57,7 +57,7 @@ InstallOtherMethod( FLMLORByGenerators,
     [ IsRing, IsHomogeneousList, IsRingElement ],
     function( R, gens, zero )
     local A;
-    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( zero ) ),
                             IsFLMLOR and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( A, R );
@@ -84,7 +84,7 @@ InstallMethod( FLMLORWithOneByGenerators,
     [ IsRing, IsCollection ],
     function( R, gens )
     local A;
-    A:= Objectify( NewType( FamilyObj( gens ),
+    A:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsFLMLORWithOne and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( A, R );
@@ -99,7 +99,7 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
     [ IsRing, IsHomogeneousList, IsRingElement ],
     function( R, gens, zero )
     local A;
-    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( zero ) ),
                             IsFLMLORWithOne and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( A, R );
@@ -195,7 +195,7 @@ end );
 InstallGlobalFunction( SubFLMLORNC, function( arg )
     local S;
     if IsEmpty( arg[2] ) then
-      S:= Objectify( NewType( FamilyObj( arg[1] ),
+      S:= Objectify( NewType3( TypeOfTypes, FamilyObj( arg[1] ),
                                   IsFLMLOR
                               and IsTrivial
                               and IsTwoSidedIdealInParent
@@ -3103,7 +3103,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
                         CanonicalBasis(L){[1..Dimension(A1)]} );
            f2:= LeftModuleGeneralMappingByImages( A2, L, CanonicalBasis(A2),
                         CanonicalBasis(L){[Dimension(A1)+1..Dimension(L)]} );
-           R:= Objectify( NewType( NewFamily( "RootSystemFam", IsObject ),
+           R:= Objectify( NewType3( TypeOfTypes, NewFamily( "RootSystemFam", IsObject ),
                        IsAttributeStoringRep and IsRootSystemFromLieAlgebra ),
                        rec() );
            RV:= List( PositiveRootVectors( R1 ), x -> Image( f1, x ) );

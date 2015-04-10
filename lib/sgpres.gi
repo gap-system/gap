@@ -2437,7 +2437,7 @@ InstallGlobalFunction( PresentationAugmentedCosetTable,
     numgens := Length( gens );
 
     # create the Tietze object.
-    T := Objectify( NewType( PresentationsFamily,
+    T := Objectify( NewType3( TypeOfTypes, PresentationsFamily,
                                  IsPresentationDefaultRep
                              and IsPresentation
                              and IsMutable ),

@@ -19,7 +19,7 @@ end);
 
 BindGlobal("MakeMonomialOrdering",function(name,ercomp)
 local obj;
-  obj:=Objectify(NewType(MonomialOrderingsFamily,IsMonomialOrderingDefaultRep),
+  obj:=Objectify(NewType3( TypeOfTypes,MonomialOrderingsFamily,IsMonomialOrderingDefaultRep),
                  rec());
   SetName(obj,name);
   SetMonomialExtrepComparisonFun(obj,ercomp);

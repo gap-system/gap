@@ -210,7 +210,7 @@ InstallMethod( TwoSidedIdealByGenerators,
     [ IsFLMLOR, IsCollection ], 0,
     function( A, gens )
     local I, lad;
-    I:= Objectify( NewType( FamilyObj( A ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( A ),
                                 IsFLMLOR
                             and IsAttributeStoringRep ),
                    rec() );
@@ -230,7 +230,7 @@ InstallMethod( LeftIdealByGenerators,
     [ IsFLMLOR, IsCollection ], 0,
     function( A, gens )
     local I, lad;
-    I:= Objectify( NewType( FamilyObj( A ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( A ),
                                 IsFLMLOR
                             and IsAttributeStoringRep ),
                    rec() );
@@ -249,7 +249,7 @@ InstallMethod( RightIdealByGenerators,
     [ IsFLMLOR, IsCollection ], 0,
     function( A, gens )
     local I, lad;
-    I:= Objectify( NewType( FamilyObj( A ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( A ),
                                 IsFLMLOR
                             and IsAttributeStoringRep ),
                    rec() );
@@ -269,7 +269,7 @@ InstallMethod( TwoSidedIdealByGenerators,
     [ IsFLMLOR, IsList and IsEmpty ], 0,
     function( A, gens )
     local I, lad;
-    I:= Objectify( NewType( FamilyObj( A ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( A ),
                                 IsFLMLOR
                             and IsTrivial
                             and IsAttributeStoringRep ),
@@ -291,7 +291,7 @@ InstallMethod( LeftIdealByGenerators,
     [ IsFLMLOR, IsList and IsEmpty ], 0,
     function( A, gens )
     local I, lad;
-    I:= Objectify( NewType( FamilyObj( A ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( A ),
                                 IsFLMLOR
                             and IsTrivial
                             and IsAttributeStoringRep ),
@@ -312,7 +312,7 @@ InstallMethod( RightIdealByGenerators,
     [ IsFLMLOR, IsList and IsEmpty ], 0,
     function( A, gens )
     local I, lad;
-    I:= Objectify( NewType( FamilyObj( A ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( A ),
                                 IsFLMLOR
                             and IsTrivial
                             and IsAttributeStoringRep ),

@@ -87,7 +87,7 @@ InstallOtherMethod( MonoidByGenerators,
     [ IsCollection ] , 0,
     function( gens )
     local M;
-    M:= Objectify( NewType( FamilyObj( gens ),
+    M:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsMonoid and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithOne( M, AsList( gens ) );
@@ -100,7 +100,7 @@ InstallOtherMethod( MonoidByGenerators,
     [ IsCollection, IsMultiplicativeElementWithOne ], 0,
     function( gens, id )
     local M;
-    M:= Objectify( NewType( FamilyObj( gens ),
+    M:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsMonoid and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithOne( M, AsList( gens ) );
@@ -114,7 +114,7 @@ InstallOtherMethod( MonoidByGenerators,
     [ IsEmpty, IsMultiplicativeElementWithOne ], 0,
     function( gens, id )
     local M;
-    M:= Objectify( NewType( CollectionsFamily( FamilyObj( id ) ),
+    M:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( id ) ),
                                 IsMonoid
                             and IsTrivial
                             and IsAttributeStoringRep ),

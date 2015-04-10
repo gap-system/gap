@@ -3067,7 +3067,7 @@ InstallMethod( RootSystem,
     # ,\alpha(h_l)], where the h_i form the `Cartan' part of the canonical
     # generators.
     
-    R:= Objectify( NewType( NewFamily( "RootSystemFam", IsObject ),
+    R:= Objectify( NewType3( TypeOfTypes, NewFamily( "RootSystemFam", IsObject ),
                 IsAttributeStoringRep and IsRootSystemFromLieAlgebra ), 
                 rec() );
     SetCanonicalGenerators( R, [ x, y, h ] );
@@ -3478,7 +3478,7 @@ InstallOtherMethod( UniversalEnvelopingAlgebra,
 
     # Enter data to handle elements.
     Fam:= ElementsFamily( FamilyObj( U ) );
-    Fam!.normalizedType:= NewType( Fam,
+    Fam!.normalizedType:= NewType3( TypeOfTypes, Fam,
                                        IsElementOfFpAlgebra
                                    and IsPackedElementDefaultRep
                                    and IsNormalForm );
@@ -3699,7 +3699,7 @@ InstallGlobalFunction( FreeLieAlgebra, function( arg )
     one:= One( R );
     zero:= Zero( R );
 
-    F!.defaultType := NewType( F, IsMagmaRingObjDefaultRep );
+    F!.defaultType := NewType3( TypeOfTypes, F, IsMagmaRingObjDefaultRep );
     F!.familyRing  := FamilyObj( R );
     F!.familyMagma := FamilyObj( M );
     F!.zeroRing    := zero;
@@ -3713,7 +3713,7 @@ InstallGlobalFunction( FreeLieAlgebra, function( arg )
 
 
     # Make the magma ring object.
-    L:= Objectify( NewType( CollectionsFamily( F ),
+    L:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( F ),
                                 IsMagmaRingModuloRelations
                             and IsAttributeStoringRep ),
                    rec() );

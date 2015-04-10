@@ -115,7 +115,7 @@ local fam,  filter,  cl;
       fi;
       filter:=filter and HasActingDomain and HasRepresentative and
 	      HasFunctionAction;
-      fam!.defaultClassType:=NewType( FamilyObj( G ), filter );
+      fam!.defaultClassType:=NewType3( TypeOfTypes, FamilyObj( G ), filter );
     fi;
 
     cl:=rec( start := [ g ] );
@@ -140,7 +140,7 @@ local fam,  filter,  cl;
       fi;
       filter:=filter and HasActingDomain and HasRepresentative and
 	      HasFunctionAction and HasStabilizerOfExternalSet;
-      fam!.defaultClassCentType:=NewType( FamilyObj( G ), filter );
+      fam!.defaultClassCentType:=NewType3( TypeOfTypes, FamilyObj( G ), filter );
     fi;
 
     cl:=rec( start := [ g ]);

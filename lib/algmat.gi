@@ -182,13 +182,13 @@ InstallMethod( FLMLORByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLOR
                               and IsGaussianMatrixSpace
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLOR
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpace
@@ -224,7 +224,7 @@ InstallOtherMethod( FLMLORByGenerators,
       Error( "<zero> must be a square matrix" );
     fi;
 
-    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( zero ) ),
                                 IsFLMLOR
                             and IsGaussianMatrixSpace
                             and IsTrivial
@@ -260,13 +260,13 @@ InstallOtherMethod( FLMLORByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLOR
                               and IsGaussianMatrixSpace
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLOR
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpace
@@ -314,13 +314,13 @@ InstallMethod( FLMLORByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLOR
                               and IsGaussianMatrixSpace
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLOR
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpace
@@ -354,7 +354,7 @@ InstallOtherMethod( FLMLORByGenerators,
       Error( "<zero> must be a square matrix" );
     fi;
 
-    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( zero ) ),
                                 IsFLMLOR
                             and IsGaussianMatrixSpace
                             and IsTrivial
@@ -391,13 +391,13 @@ InstallOtherMethod( FLMLORByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLOR
                               and IsGaussianMatrixSpace
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLOR
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpace
@@ -443,13 +443,13 @@ InstallMethod( FLMLORWithOneByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLORWithOne
                               and IsGaussianMatrixSpace
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLORWithOne
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpace
@@ -484,7 +484,7 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
       Error( "<zero> must be a square matrix" );
     fi;
 
-    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( zero ) ),
                                 IsFLMLORWithOne
                             and IsGaussianMatrixSpace
                             and IsAssociative
@@ -521,13 +521,13 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLORWithOne
                               and IsGaussianMatrixSpace
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      A:= Objectify( NewType( FamilyObj( mats ),
+      A:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                   IsFLMLORWithOne
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpace
@@ -569,7 +569,7 @@ InstallMethod( TwoSidedIdealByGenerators,
       Error( "entries of <mats> do not have the right dimension" );
     fi;
 
-    I:= Objectify( NewType( FamilyObj( mats ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                 IsFLMLOR
                             and IsGaussianMatrixSpace
                             and IsAttributeStoringRep ),
@@ -601,7 +601,7 @@ InstallMethod( TwoSidedIdealByGenerators,
       Error( "entries of <mats> do not have the right dimension" );
     fi;
 
-    I:= Objectify( NewType( FamilyObj( mats ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                 IsFLMLOR
                             and IsVectorSpace
                             and IsNonGaussianMatrixSpace
@@ -626,7 +626,7 @@ InstallMethod( TwoSidedIdealByGenerators,
     function( A, mats )
     local I;
 
-    I:= Objectify( NewType( FamilyObj( mats ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                 IsFLMLOR
                             and IsGaussianMatrixSpace
                             and IsTrivial
@@ -665,7 +665,7 @@ InstallMethod( LeftIdealByGenerators,
       Error( "entries of <mats> do not have the right dimension" );
     fi;
 
-    I:= Objectify( NewType( FamilyObj( mats ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                 IsFLMLOR
                             and IsGaussianMatrixSpace
                             and IsAttributeStoringRep ),
@@ -696,7 +696,7 @@ InstallMethod( LeftIdealByGenerators,
       Error( "entries of <mats> do not have the right dimension" );
     fi;
 
-    I:= Objectify( NewType( FamilyObj( mats ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                 IsFLMLOR
                             and IsVectorSpace
                             and IsNonGaussianMatrixSpace
@@ -720,7 +720,7 @@ InstallMethod( LeftIdealByGenerators,
     function( A, mats )
     local I;
 
-    I:= Objectify( NewType( FamilyObj( mats ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                 IsFLMLOR
                             and IsGaussianMatrixSpace
                             and IsTrivial
@@ -758,7 +758,7 @@ InstallMethod( RightIdealByGenerators,
       Error( "entries of <mats> do not have the right dimension" );
     fi;
 
-    I:= Objectify( NewType( FamilyObj( mats ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                 IsFLMLOR
                             and IsGaussianMatrixSpace
                             and IsAttributeStoringRep ),
@@ -789,7 +789,7 @@ InstallMethod( RightIdealByGenerators,
       Error( "entries of <mats> do not have the right dimension" );
     fi;
 
-    I:= Objectify( NewType( FamilyObj( mats ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                 IsFLMLOR
                             and IsVectorSpace
                             and IsNonGaussianMatrixSpace
@@ -813,7 +813,7 @@ InstallMethod( RightIdealByGenerators,
     function( A, mats )
     local I;
 
-    I:= Objectify( NewType( FamilyObj( mats ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( mats ),
                                 IsFLMLOR
                             and IsGaussianMatrixSpace
                             and IsTrivial
@@ -1469,7 +1469,7 @@ InstallGlobalFunction( EmptyMatrix, function( char )
     fi;
 
     # Construct the matrix.
-    mat:= Objectify( NewType( Fam,
+    mat:= Objectify( NewType3( TypeOfTypes, Fam,
                                   IsList
                               and IsEmpty
                               and IsOrdinaryMatrix

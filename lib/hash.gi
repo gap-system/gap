@@ -226,7 +226,7 @@ InstallMethod(ShrinkableHashTable,
     rangefam := ElementsFamily(FamilyObj(source));
     Info(InfoHashTables, 1, "Creating a list hash table");
     Info(InfoHashTables, 2, "Source: ", source, " Range: ",range);
-    return Objectify(NewType(GeneralMappingsFamily(sourcefam, rangefam), 
+    return Objectify(NewType3( TypeOfTypes,GeneralMappingsFamily(sourcefam, rangefam), 
                    IsFlexibleGeneralMapping and IsListHashTable and
                    HasSource and HasRange and IsMutable),
                    rec(
@@ -531,7 +531,7 @@ InstallMethod( ShallowCopy, true, [ IsListHashTable ], 0,
     end;
     Info(InfoHashTables,2,"Copying list hash table ",ht!.entries," entries");
 
-    return Objectify(NewType(FamilyObj(ht),
+    return Objectify(NewType3( TypeOfTypes,FamilyObj(ht),
                    IsFlexibleGeneralMapping and IsListHashTable and
                    HasSource and HasRange and IsMutable),
                    rec(
@@ -606,7 +606,7 @@ InstallMethod(SingleValuedHashTable, true, [IsCollection, IsCollection, IsFuncti
     Info(InfoHashTables, 2, "Source: ", source, " Range: ",range);
     sourcefam := ElementsFamily(FamilyObj(source));
     rangefam := ElementsFamily(FamilyObj(range));
-    obj := Objectify(NewType(GeneralMappingsFamily(sourcefam, rangefam), 
+    obj := Objectify(NewType3( TypeOfTypes,GeneralMappingsFamily(sourcefam, rangefam), 
                    IsExtensiblePartialMapping and IsFlatHashTable and
                    HasSource and HasRange and IsMutable),
                    rec(
@@ -858,7 +858,7 @@ end);
 InstallMethod(ShallowCopy, true, [IsFlatHashTable and IsSingleValued], 0,
         function(ht)
     
-    return Objectify(NewType(FamilyObj(ht),
+    return Objectify(NewType3( TypeOfTypes,FamilyObj(ht),
                    IsExtensiblePartialMapping and IsFlatHashTable and
                    HasSource and HasRange and IsMutable),
                    rec(

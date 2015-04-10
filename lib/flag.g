@@ -25,7 +25,7 @@ BIND_GLOBAL( "FlagsFamily", NewFamily( "FlagsFamily", IsObject ) );
 ##
 #V  TYPE_FLAGS  . . . . . . . . . . . . . . . . . . . . . . . . type of flags
 ##
-BIND_GLOBAL( "TYPE_FLAGS", NewType( FlagsFamily,  IsInternalRep ) );
+BIND_GLOBAL( "TYPE_FLAGS", NewType3( TypeOfTypes, FlagsFamily,  IsInternalRep ) );
 
 
 #############################################################################

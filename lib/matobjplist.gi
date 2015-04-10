@@ -22,13 +22,13 @@ InstallGlobalFunction( MakePlistVectorType,
         filter2 := filter and IsMutable and CanEasilyCompareElements;
     fi;
     if IsIdenticalObj(basedomain,Integers) then
-        T := NewType(FamilyObj(basedomain),
+        T := NewType3( TypeOfTypes,FamilyObj(basedomain),
                        filter2 and IsIntVector);
     elif IsFinite(basedomain) and IsField(basedomain) then
-        T := NewType(FamilyObj(basedomain),
+        T := NewType3( TypeOfTypes,FamilyObj(basedomain),
                        filter2 and IsFFEVector);
     else
-        T := NewType(FamilyObj(basedomain),
+        T := NewType3( TypeOfTypes,FamilyObj(basedomain),
                        filter2);
     fi;
     return T;
@@ -79,7 +79,7 @@ InstallMethod( NewMatrix,
        CanEasilyCompareElements(Representative(basedomain)) then
         filter2 := filter2 and CanEasilyCompareElements;
     fi;
-    Objectify( NewType(CollectionsFamily(FamilyObj(basedomain)),
+    Objectify( NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(basedomain)),
                        filter2), m );
     return m;
   end );
@@ -100,7 +100,7 @@ InstallMethod( NewZeroMatrix,
         m[i] := ZeroVector( cols, e );
     od;
     m := [basedomain,e,cols,m];
-    Objectify( NewType(CollectionsFamily(FamilyObj(basedomain)),
+    Objectify( NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(basedomain)),
                        filter and IsMutable), m );
     return m;
   end );
@@ -122,7 +122,7 @@ InstallMethod( NewIdentityMatrix,
         m[i][i] := One(basedomain);
     od;
     m := [basedomain,e,rows,m];
-    Objectify( NewType(CollectionsFamily(FamilyObj(basedomain)),
+    Objectify( NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(basedomain)),
                        filter and IsMutable), m );
     return m;
   end );

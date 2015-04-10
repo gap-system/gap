@@ -31,7 +31,7 @@ BindGlobal( "StraightLineProgramsFamily",
     NewFamily( "StraightLineProgramsFamily", IsStraightLineProgram ) );
 
 BindGlobal( "StraightLineProgramsDefaultType",
-    NewType( StraightLineProgramsFamily,
+    NewType3( TypeOfTypes, StraightLineProgramsFamily,
              IsStraightLineProgram and IsAttributeStoringRep
                                    and HasLinesOfStraightLineProgram ) );
 
@@ -950,7 +950,7 @@ InstallGlobalFunction( "IntegratedStraightLineProgram",
 ##
 InstallMethod(StraightLineProgElmType,"generic",true,[IsFamily],0,
 function(fam)
-  return NewType(fam,IsStraightLineProgElm);
+  return NewType3( TypeOfTypes,fam,IsStraightLineProgElm);
 end);
 
 #############################################################################

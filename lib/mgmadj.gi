@@ -127,7 +127,7 @@ function(m)
   fi;
 
   fam:=NewFamily( "FamilyOfElementOfMagmaWithZeroAdjoined", filts);
-  type:=NewType(fam, filts and IsMagmaWithZeroAdjoinedElementRep);
+  type:=NewType3( TypeOfTypes,fam, filts and IsMagmaWithZeroAdjoinedElementRep);
   
   #the injection
   inj:=function(elt)
@@ -154,7 +154,7 @@ function(m)
 
   zero := Objectify(type, rec(elt:=fail));;
   gens:=Concatenation(List(GeneratorsOfMagma(m), g-> inj(g)), [zero]);
-  out:=Objectify( NewType( FamilyObj( gens ), filts), rec());
+  out:=Objectify( NewType3( TypeOfTypes, FamilyObj( gens ), filts), rec());
 
   # store the magma in the family so that it can be recovered from an element
   fam!.MagmaWithZeroAdjoined:=out;

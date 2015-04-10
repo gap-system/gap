@@ -321,7 +321,7 @@ InstallGlobalFunction( FreeMagma,
 
     # Store the names and the default type.
     F!.names:= names;
-    F!.defaultType:= NewType( F, IsNonassocWord and IsBracketRep );
+    F!.defaultType:= NewType3( TypeOfTypes, F, IsNonassocWord and IsBracketRep );
 
     # Make the magma.
     if IsFinite( names ) then
@@ -386,7 +386,7 @@ InstallGlobalFunction( FreeMagmaWithOne,
 
     # Store the names and the default type.
     F!.names:= names;
-    F!.defaultType:= NewType( F, IsNonassocWordWithOne and IsBracketRep );
+    F!.defaultType:= NewType3( TypeOfTypes, F, IsNonassocWordWithOne and IsBracketRep );
 
     # Make the magma.
     if IsFinite( names ) then

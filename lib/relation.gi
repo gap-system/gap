@@ -884,7 +884,7 @@ InstallGlobalFunction(BinaryRelationOnPointsNC,
 
         d:= Length(lst);
         fam:= GeneralMappingsFamily(FamilyObj(1), FamilyObj(1));
-        rel:= Objectify(NewType(fam, IsBinaryRelation and 
+        rel:= Objectify(NewType3( TypeOfTypes,fam, IsBinaryRelation and 
                   IsBinaryRelationOnPointsRep and
                       IsNonSPGeneralMapping), rec());
 
@@ -1435,7 +1435,7 @@ InstallGlobalFunction(EquivalenceRelationByPartition,
         subsX := Filtered(subsX, i->Length(i)>1);
 
 	# Create the default type for the elements.
-        rel :=  Objectify(NewType(fam, 
+        rel :=  Objectify(NewType3( TypeOfTypes,fam, 
 		IsEquivalenceRelation and IsEquivalenceRelationDefaultRep), rec());
 	SetEquivalenceRelationPartition(rel, subsX);
 	SetSource(rel, X);
@@ -1459,7 +1459,7 @@ InstallGlobalFunction(EquivalenceRelationByPartitionNC,
 		ElementsFamily(FamilyObj(X)) );
 
 	# Create the default type for the elements.
-        rel :=  Objectify(NewType(fam, 
+        rel :=  Objectify(NewType3( TypeOfTypes,fam, 
 		IsEquivalenceRelation and IsEquivalenceRelationDefaultRep), rec());
 
         ## The only assurance is singletons and empty blocks are removed
@@ -1524,7 +1524,7 @@ InstallGlobalFunction(EquivalenceRelationByProperty,
         ElementsFamily(FamilyObj(X)) );
 
         # Create the default type for the elements.
-        rel :=  Objectify(NewType(fam, IsEquivalenceRelation 
+        rel :=  Objectify(NewType3( TypeOfTypes,fam, IsEquivalenceRelation 
             and IsEquivalenceRelationDefaultRep and IsNonSPGeneralMapping), rec());
         SetSource(rel, X);
         SetRange(rel, X);
@@ -2054,7 +2054,7 @@ InstallMethod(EquivalenceClassOfElementNC, "no check", true,
  
        local new;
 
-       new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
+       new:= Objectify(NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(rep)),
                  IsEquivalenceClass and IsEquivalenceClassDefaultRep), rec());
 
        SetEquivalenceClassRelation(new, rel);

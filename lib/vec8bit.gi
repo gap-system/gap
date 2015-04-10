@@ -49,7 +49,7 @@ InstallGlobalFunction(TYPE_VEC8BIT,
                  IsNoImmediateMethodsObject and
                  IsRingElementList and HasLength;
         if mut then filts := filts and IsMutable; fi;
-        TYPES_VEC8BIT[col][q] := NewType(FamilyObj(GF(q)),filts);
+        TYPES_VEC8BIT[col][q] := NewType3( TypeOfTypes,FamilyObj(GF(q)),filts);
     fi;
     return TYPES_VEC8BIT[col][q];
 end);
@@ -65,7 +65,7 @@ InstallGlobalFunction(TYPE_VEC8BIT_LOCKED,
                  IsLockedRepresentationVector and
                  IsRingElementList and HasLength;
         if mut then filts := filts and IsMutable; fi;
-        TYPES_VEC8BIT[col][q] := NewType(FamilyObj(GF(q)),filts);
+        TYPES_VEC8BIT[col][q] := NewType3( TypeOfTypes,FamilyObj(GF(q)),filts);
     fi;
     return TYPES_VEC8BIT[col][q];
 end);
@@ -79,7 +79,7 @@ end);
 ##
 
 InstallValue( TYPE_FIELDINFO_8BIT,
-  NewType(NewFamily("FieldInfo8BitFamily", IsObject),
+  NewType3( TypeOfTypes,NewFamily("FieldInfo8BitFamily", IsObject),
           IsObject and IsDataObjectRep));
 
 #############################################################################

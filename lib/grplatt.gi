@@ -87,7 +87,7 @@ local filter,cl;
     else
       filter:=IsConjugacyClassSubgroupsRep;
     fi;
-    cl:=Objectify(NewType(CollectionsFamily(FamilyObj(G)),
+    cl:=Objectify(NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(G)),
       filter),rec());
     SetActingDomain(cl,G);
     SetRepresentative(cl,U);
@@ -219,7 +219,7 @@ local lattice;
 	end);
 
   # create the lattice
-  lattice:=Objectify(NewType(FamilyObj(classes),IsLatticeSubgroupsRep),
+  lattice:=Objectify(NewType3( TypeOfTypes,FamilyObj(classes),IsLatticeSubgroupsRep),
     rec(conjugacyClassesSubgroups:=classes,
         group:=G));
 

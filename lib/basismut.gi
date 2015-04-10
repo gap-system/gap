@@ -113,7 +113,7 @@ InstallMethod( MutableBasis,
              leftActingDomain := R
             );
 
-    return Objectify( NewType( FamilyObj( vectors ),
+    return Objectify( NewType3( TypeOfTypes, FamilyObj( vectors ),
                                    IsMutableBasis
                                and IsMutable
                                and IsMutableBasisByImmutableBasisRep ),
@@ -134,7 +134,7 @@ InstallOtherMethod( MutableBasis,
              leftActingDomain := R
             );
 
-    return Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
+    return Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( zero ) ),
                                    IsMutableBasis
                                and IsMutable
                                and IsMutableBasisByImmutableBasisRep ),
@@ -270,7 +270,7 @@ InstallGlobalFunction( MutableBasisViaNiceMutableBasisMethod2,
              leftModule := M
             );
 
-    return Objectify( NewType( FamilyObj( vectors ),
+    return Objectify( NewType3( TypeOfTypes, FamilyObj( vectors ),
                                    IsMutableBasis
                                and IsMutable
                                and IsMutableBasisViaNiceMutableBasisRep ),
@@ -307,7 +307,7 @@ InstallGlobalFunction( MutableBasisViaNiceMutableBasisMethod3,
       Error( "<M> is not handled via nice bases" );
     fi;
 
-    return Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
+    return Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( zero ) ),
                                    IsMutableBasis
                                and IsMutable
                                and IsMutableBasisViaNiceMutableBasisRep ),

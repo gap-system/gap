@@ -125,7 +125,7 @@ function( efam, gens, orders )
     dt[ PC_CONJUGATES ] := List( gens, g -> [] );
 
     # convert into a positional object
-    type := NewType( fam, IsDeepThoughtCollectorRep and IsMutable );
+    type := NewType3( TypeOfTypes, fam, IsDeepThoughtCollectorRep and IsMutable );
     Objectify( type, dt );
 
     # underlying family vermutlich nicht n"otig

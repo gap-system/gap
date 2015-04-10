@@ -154,7 +154,7 @@ InstallMethod( LeftMagmaIdealByGenerators,
     function( M, gens )
     local S;
 
-		S:= Objectify( NewType( FamilyObj( gens ),
+		S:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsLeftMagmaIdeal and IsAttributeStoringRep ),
                    rec() );
 
@@ -178,7 +178,7 @@ InstallMethod( RightMagmaIdealByGenerators,
     function( M, gens )
     local S;
 
-    S:= Objectify( NewType( FamilyObj( gens ),
+    S:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsRightMagmaIdeal and IsAttributeStoringRep ),
                    rec() );
 
@@ -204,7 +204,7 @@ InstallMethod( MagmaIdealByGenerators,
     function( M, gens )
     local S;
 
-    S:= Objectify( NewType( FamilyObj( gens ),
+    S:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsMagmaIdeal and IsAttributeStoringRep ),
                    rec() );
 

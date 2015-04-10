@@ -565,7 +565,7 @@ function ( type )
     family := type![1];
     flags  := type![2];
     data   := type![ POS_DATA_TYPE ];
-    Print( "NewType( ", family );
+    Print( "NewType3( TypeOfTypes, ", family );
     if flags <> [] or data <> false then
         Print( ", " );
         Print( TRUES_FLAGS( flags ) );

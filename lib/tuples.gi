@@ -16,7 +16,7 @@
 #V  DIRECT_PRODUCT_ELEMENT_FAMILIES . . . list of all direct product elements
 #V                                                                   families
 ##
-EmptyDirectProductElementsFamily!.defaultTupleType:= NewType(
+EmptyDirectProductElementsFamily!.defaultTupleType:= NewType3( TypeOfTypes,
     EmptyDirectProductElementsFamily, IsDefaultDirectProductElementRep );
 
 SetComponentsOfDirectProductElementsFamily( EmptyDirectProductElementsFamily,
@@ -85,7 +85,7 @@ InstallMethod( DirectProductElementsFamily,
       SetComponentsOfDirectProductElementsFamily( tuplesfam,
           Immutable( famlist ) );
       SetElmWPObj( tupfams, freepos, tuplesfam );
-      tuplesfam!.defaultTupleType:= NewType( tuplesfam,
+      tuplesfam!.defaultTupleType:= NewType3( TypeOfTypes, tuplesfam,
                                         IsDefaultDirectProductElementRep );
     fi;
 

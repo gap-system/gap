@@ -269,7 +269,7 @@ InstallGlobalFunction( FactorFreeAlgebraByRelators, function( F, rels )
     fam := NewFamily( "FamilyElementsFpAlgebra", IsElementOfFpAlgebra );
 
     # Create the default type for the elements.
-    fam!.defaultType := NewType( fam,
+    fam!.defaultType := NewType3( TypeOfTypes, fam,
                        IsElementOfFpAlgebra and IsPackedElementDefaultRep );
 
     fam!.freeAlgebra := F;
@@ -283,7 +283,7 @@ InstallGlobalFunction( FactorFreeAlgebraByRelators, function( F, rels )
     if IsAlgebraWithOne( F ) then
 
       A := Objectify(
-          NewType( CollectionsFamily( fam ),
+          NewType3( TypeOfTypes, CollectionsFamily( fam ),
                        IsSubalgebraFpAlgebra
                    and IsAlgebraWithOne
                    and IsWholeFamily
@@ -298,7 +298,7 @@ InstallGlobalFunction( FactorFreeAlgebraByRelators, function( F, rels )
     else
 
       A := Objectify(
-          NewType( CollectionsFamily( fam ),
+          NewType3( TypeOfTypes, CollectionsFamily( fam ),
                        IsSubalgebraFpAlgebra
                    and IsWholeFamily
                    and IsAttributeStoringRep ),

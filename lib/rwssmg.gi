@@ -25,7 +25,7 @@ function(kbrws)
 
   fam := NewFamily("Family of reduced confluent rewriting systems",
           IsReducedConfluentRewritingSystem);
-  rws:= Objectify(NewType(fam,IsAttributeStoringRep and
+  rws:= Objectify(NewType3( TypeOfTypes,fam,IsAttributeStoringRep and
           IsReducedConfluentRewritingSystem), rec());
   SetRules(rws,StructuralCopy(Rules(kbrws)));
   rws!.tzrules:=StructuralCopy(kbrws!.tzrules);

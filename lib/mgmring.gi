@@ -717,7 +717,7 @@ InstallGlobalFunction( FreeMagmaRing, function( R, M )
     one:= One( R );
     zero:= Zero( R );
 
-    F!.defaultType := NewType( F, IsMagmaRingObjDefaultRep );
+    F!.defaultType := NewType3( TypeOfTypes, F, IsMagmaRingObjDefaultRep );
     F!.familyRing  := FamilyObj( R );
     F!.familyMagma := FamilyObj( M );
     F!.zeroRing    := zero;
@@ -743,12 +743,12 @@ InstallGlobalFunction( FreeMagmaRing, function( R, M )
 
     # Make the magma ring object.
     if IsMagmaWithOne( M ) then
-      RM:= Objectify( NewType( CollectionsFamily( F ),
+      RM:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( F ),
                                    IsFreeMagmaRingWithOne
                                and IsAttributeStoringRep ),
                       rec() );
     else
-      RM:= Objectify( NewType( CollectionsFamily( F ),
+      RM:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( F ),
                                    IsFreeMagmaRing
                                and IsAttributeStoringRep ),
                       rec() );
@@ -903,7 +903,7 @@ InstallMethod( CanonicalBasis,
     one  := One(  LeftActingDomain( RM ) );
     zero := Zero( LeftActingDomain( RM ) );
 
-    B:= Objectify( NewType( FamilyObj( RM ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( RM ),
                                 IsFiniteBasisDefault
                             and IsCanonicalBasisFreeMagmaRingRep ),
                    rec() );
@@ -1508,7 +1508,7 @@ InstallGlobalFunction( MagmaRingModuloSpanOfZero, function( R, M, z )
     one:= One( R );
     zero:= Zero( R );
 
-    F!.defaultType := NewType( F, IsMagmaRingObjDefaultRep );
+    F!.defaultType := NewType3( TypeOfTypes, F, IsMagmaRingObjDefaultRep );
     F!.familyRing  := FamilyObj( R );
     F!.familyMagma := FamilyObj( M );
     F!.zeroRing    := zero;
@@ -1519,7 +1519,7 @@ InstallGlobalFunction( MagmaRingModuloSpanOfZero, function( R, M, z )
     # 0-dimensional and the characteristic would then be 0.
 
     # Make the magma ring object.
-    RM:= Objectify( NewType( CollectionsFamily( F ),
+    RM:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( F ),
                                  IsMagmaRingModuloSpanOfZero
                              and IsAttributeStoringRep ),
                     rec() );

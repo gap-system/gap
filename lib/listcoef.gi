@@ -1601,7 +1601,7 @@ InstallMethod( AddToListEntries, "fast kernel method", true,
 # data types for low index memory blocks. Created here to avoid having to
 # read the fp group stuff early
 InstallValue(TYPE_LOWINDEX_DATA,
-  NewType(NewFamily("LowIndexDataFamily",IsObject),
+  NewType3( TypeOfTypes,NewFamily("LowIndexDataFamily",IsObject),
     IsObject and IsDataObjectRep));
 
 #############################################################################

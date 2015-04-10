@@ -36,7 +36,7 @@ BIND_GLOBAL( "ToBeDefinedObjFamily",
 ##
 #V  ToBeDefinedObjType  . . . . . . . . . . . type of "to be defined" objects
 ##
-BIND_GLOBAL( "ToBeDefinedObjType", NewType(
+BIND_GLOBAL( "ToBeDefinedObjType", NewType3( TypeOfTypes,
     ToBeDefinedObjFamily, IsPositionalObjectRep ) );
 
 
@@ -230,7 +230,7 @@ BIND_GLOBAL( "Assert", 0 );
 
 DeclareCategory("IsLVarsBag", IsObject);
 BIND_GLOBAL( "LVARS_FAMILY", NewFamily(IsLVarsBag, IsLVarsBag));
-BIND_GLOBAL( "TYPE_LVARS", NewType(LVARS_FAMILY, IsLVarsBag));
+BIND_GLOBAL( "TYPE_LVARS", NewType3( TypeOfTypes,LVARS_FAMILY, IsLVarsBag));
 
 #############################################################################
 #

@@ -57,7 +57,7 @@ BIND_GLOBAL( "TYPE_FFE", function ( p )
     IS_FFE,CanEasilySortElements,CanEasilySortElements );
     SetIsUFDFamily( fam, true );
     SetCharacteristic( fam, p );
-    type:= NewType( fam, IS_FFE and IsInternalRep and HasDegreeFFE);
+    type:= NewType3( TypeOfTypes, fam, IS_FFE and IsInternalRep and HasDegreeFFE);
     TYPES_FFE[p]:= type;
 #T     SetElmWPObj( TYPES_FFE, p, type );
     return type;
@@ -82,7 +82,7 @@ BIND_GLOBAL( "TYPE_FFE0", function ( p )
 #T       fi;
 #T     fi;
     fam:= FamilyType(TYPE_FFE(p));
-    type:= NewType( fam, IS_FFE and IsInternalRep and IsZero and HasIsZero 
+    type:= NewType3( TypeOfTypes, fam, IS_FFE and IsInternalRep and IsZero and HasIsZero 
                    and HasDegreeFFE );
     TYPES_FFE0[p]:= type;
 #T     SetElmWPObj( TYPES_FFE, p, type );

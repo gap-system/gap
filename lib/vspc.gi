@@ -578,7 +578,7 @@ InstallMethod( Subspaces,
     [ IsVectorSpace, IsInt ],
     function( V, dim )
     if IsFinite( V ) then
-      return Objectify( NewType( CollectionsFamily( FamilyObj( V ) ),
+      return Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( V ) ),
                                      IsSubspacesVectorSpace
                                  and IsSubspacesVectorSpaceDefaultRep ),
                         rec(
@@ -601,7 +601,7 @@ InstallMethod( Subspaces,
     [ IsVectorSpace ],
     function( V )
     if IsFinite( V ) then
-      return Objectify( NewType( CollectionsFamily( FamilyObj( V ) ),
+      return Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( V ) ),
                                      IsSubspacesVectorSpace
                                  and IsSubspacesVectorSpaceDefaultRep ),
                         rec(
