@@ -67,7 +67,7 @@ InstallMethod( ZmodnZObj,
     [ IsZmodnZObjNonprimeFamily, IsInt ],
     function( Fam, residue )
     return Objectify( Fam!.typeOfZmodnZObj,
-                   [ residue mod Characteristic(Fam) ] );
+                   [ residue mod Fam!.Characteristic ] );
     end );
 
 InstallOtherMethod( ZmodnZObj,
@@ -75,7 +75,7 @@ InstallOtherMethod( ZmodnZObj,
     [ IsFFEFamily, IsInt ],
     function( Fam, residue )
     local p;
-    p:= Characteristic( Fam );
+    p:= Fam!.Characteristic;
     if not IsBound( Fam!.typeOfZmodnZObj ) then
 
       # Store the type for the representation of prime field elements
@@ -111,7 +111,7 @@ InstallMethod( ObjByExtRep,
     "for family of elements in Z/nZ (nonprime), and integer",
     [ IsZmodnZObjNonprimeFamily, IsInt ],
     function( Fam, residue )
-    return ZmodnZObj( Fam, residue mod Characteristic(Fam) );
+    return ZmodnZObj( Fam, residue mod Fam!.Characteristic );
     end );
 
 
@@ -134,14 +134,14 @@ InstallMethod( PrintObj,
     IsZmodnZObjNonprimeFamily,
     [ IsZmodnZObj and IsModulusRep ],
     function( x )
-    Print( "ZmodnZObj( ", x![1], ", ", Characteristic( FamilyObj( x ) ), " )" );
+    Print( "ZmodnZObj( ", x![1], ", ", FamilyObj( x )!.Characteristic, " )" );
     end );
 
 InstallMethod( PrintObj,
     "for element in Z/pZ (ModulusRep)",
     [ IsZmodpZObj and IsModulusRep ],
     function( x )
-    Print( "ZmodpZObj( ", x![1], ", ", Characteristic( x ), " )" );
+    Print( "ZmodpZObj( ", x![1], ", ", FamilyObj( x )!.Characteristic, " )" );
     end );
 
 InstallMethod( String,
@@ -150,7 +150,7 @@ InstallMethod( String,
     [ IsZmodnZObj and IsModulusRep ],
     function( x )
       return Concatenation( "ZmodnZObj(", String(x![1]), ",", 
-      String(Characteristic( FamilyObj( x ) )), ")" );
+      String(FamilyObj( x )!.Characteristic), ")" );
     end );
 
 InstallMethod( String,
@@ -158,7 +158,7 @@ InstallMethod( String,
     [ IsZmodpZObj and IsModulusRep ],
     function( x )
       return Concatenation( "ZmodpZObj(", String(x![1]), ",", 
-      String(Characteristic( x )), ")" );
+      String(FamilyObj( x )!.Characteristic), ")" );
     end );
 
 
@@ -259,7 +259,7 @@ InstallMethod( \+,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-                      [ ( x![1] + y![1] ) mod Characteristic( FamilyObj( x ) ) ] );
+                      [ ( x![1] + y![1] ) mod FamilyObj( x )!.Characteristic ] );
     end );
 
 InstallMethod( \+,
@@ -267,7 +267,7 @@ InstallMethod( \+,
     [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-                      [ ( x![1] + y ) mod Characteristic( FamilyObj( x ) ) ] );
+                      [ ( x![1] + y ) mod FamilyObj( x )!.Characteristic ] );
     end );
 
 InstallMethod( \+,
@@ -275,7 +275,7 @@ InstallMethod( \+,
     [ IsInt, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
-                      [ ( x + y![1] ) mod Characteristic( FamilyObj( y ) ) ] );
+                      [ ( x + y![1] ) mod FamilyObj( y )!.Characteristic ] );
     end );
 
 InstallMethod( \+,
@@ -283,7 +283,7 @@ InstallMethod( \+,
     [ IsZmodnZObj and IsModulusRep, IsRat ],
     function( x, y )
     local m;
-    m:= Characteristic( FamilyObj( x ) );
+    m:= FamilyObj( x )!.Characteristic;
     if GcdInt( DenominatorRat( y ), m ) = 1 then
       return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
                         [ ( x![1] + y ) mod m ] );
@@ -297,7 +297,7 @@ InstallMethod( \+,
     [ IsRat, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     local m;
-    m:= Characteristic( FamilyObj( y ) );
+    m:= FamilyObj( y )!.Characteristic;
     if GcdInt( DenominatorRat( x ), m ) = 1 then
       return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
                         [ ( x + y![1] ) mod m ] );
@@ -325,7 +325,7 @@ InstallMethod( \-,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-                      [ ( x![1] - y![1] ) mod Characteristic( FamilyObj( x ) ) ] );
+                      [ ( x![1] - y![1] ) mod FamilyObj( x )!.Characteristic ] );
     end );
 
 InstallMethod( \-,
@@ -333,7 +333,7 @@ InstallMethod( \-,
     [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-                      [ ( x![1] - y ) mod Characteristic( FamilyObj( x ) ) ] );
+                      [ ( x![1] - y ) mod FamilyObj( x )!.Characteristic ] );
     end );
 
 InstallMethod( \-,
@@ -341,7 +341,7 @@ InstallMethod( \-,
     [ IsInt, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
-                      [ ( x - y![1] ) mod Characteristic( FamilyObj( y ) ) ] );
+                      [ ( x - y![1] ) mod FamilyObj( y )!.Characteristic ] );
     end );
 
 InstallMethod( \-,
@@ -349,7 +349,7 @@ InstallMethod( \-,
     [ IsZmodnZObj and IsModulusRep, IsRat ],
     function( x, y )
     local m;
-    m:= Characteristic( FamilyObj( x ) );
+    m:= FamilyObj( x )!.Characteristic;
     if GcdInt( DenominatorRat( y ), m ) = 1 then
       return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
                         [ ( x![1] - y ) mod m ] );
@@ -363,7 +363,7 @@ InstallMethod( \-,
     [ IsRat, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     local m;
-    m:= Characteristic( FamilyObj( y ) );
+    m:= FamilyObj( y )!.Characteristic;
     if GcdInt( DenominatorRat( x ), m ) = 1 then
       return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
                         [ ( x - y![1] ) mod m ] );
@@ -391,7 +391,7 @@ InstallMethod( \*,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-                      [ ( x![1] * y![1] ) mod Characteristic( FamilyObj( x ) ) ] );
+                      [ ( x![1] * y![1] ) mod FamilyObj( x )!.Characteristic ] );
     end );
 
 InstallMethod( \*,
@@ -399,7 +399,7 @@ InstallMethod( \*,
     [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-                      [ ( x![1] * y ) mod Characteristic( FamilyObj( x ) ) ] );
+                      [ ( x![1] * y ) mod FamilyObj( x )!.Characteristic ] );
     end );
 
 InstallMethod( \*,
@@ -407,7 +407,7 @@ InstallMethod( \*,
     [ IsInt, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
-                      [ ( x * y![1] ) mod Characteristic( FamilyObj( y ) ) ] );
+                      [ ( x * y![1] ) mod FamilyObj( y )!.Characteristic ] );
     end );
 
 InstallMethod( \*,
@@ -415,7 +415,7 @@ InstallMethod( \*,
     [ IsZmodnZObj and IsModulusRep, IsRat ],
     function( x, y )
     local m;
-    m:= Characteristic( FamilyObj( x ) );
+    m:= FamilyObj( x )!.Characteristic;
     if GcdInt( DenominatorRat( y ), m ) = 1 then
       return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
                         [ ( x![1] * y ) mod m ] );
@@ -429,7 +429,7 @@ InstallMethod( \*,
     [ IsRat, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     local m;
-    m:= Characteristic( FamilyObj( y ) );
+    m:= FamilyObj( y )!.Characteristic;
     if GcdInt( DenominatorRat( x ), m ) = 1 then
       return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
                         [ ( x * y![1] ) mod m ] );
@@ -458,7 +458,7 @@ InstallMethod( \/,
         function( x, y )
     local q;
     q := QuotientMod( Integers, x![1], y![1],
-                 Characteristic( FamilyObj( x ) ) );
+                 FamilyObj( x )!.Characteristic );
     if q = fail then
         return fail;
     else
@@ -474,7 +474,7 @@ InstallMethod( \/,
     function( x, y )
     local q;
     q := QuotientMod( Integers, x![1], y,
-                 Characteristic( FamilyObj( x ) ) );
+                 FamilyObj( x )!.Characteristic );
     if q = fail then
         return fail;
     else
@@ -490,7 +490,7 @@ InstallMethod( \/,
         function( x, y )
     local q;
     q := QuotientMod( Integers, x, y![1],
-                 Characteristic( FamilyObj( y ) ) );
+                 FamilyObj( y )!.Characteristic );
     if q = fail then
         return fail;
     else
@@ -505,7 +505,7 @@ InstallMethod( \/,
     [ IsZmodnZObj and IsModulusRep, IsRat ],
     function( x, y )
     local m;
-    m:= Characteristic( FamilyObj( x ) );
+    m:= FamilyObj( x )!.Characteristic;
     if GcdInt( NumeratorRat( y ), m ) = 1 then
       return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
                         [ ( x![1] / y ) mod m ] );
@@ -519,7 +519,7 @@ InstallMethod( \/,
     [ IsRat, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     local m;
-    m:= Characteristic( FamilyObj( y ) );
+    m:= FamilyObj( y )!.Characteristic;
     if GcdInt( DenominatorRat( x ), m ) = 1 then
       return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
                         [ ( x / y![1] ) mod m ] );
@@ -546,7 +546,7 @@ InstallMethod( \^,
     [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, n )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-                  [ PowerModInt( x![1], n, Characteristic( FamilyObj( x ) ) ) ] );
+                  [ PowerModInt( x![1], n, FamilyObj( x )!.Characteristic ) ] );
     end );
 
 
@@ -590,7 +590,7 @@ InstallMethod( InverseOp,
     function( elm )
     local fam, inv;
     fam:= FamilyObj( elm );
-    inv:= QuotientMod( Integers, 1, elm![1], Characteristic( fam ) );
+    inv:= QuotientMod( Integers, 1, elm![1], fam!.Characteristic );
     if inv <> fail then
       inv:= ZmodnZObj( fam, inv );
     fi;
@@ -606,7 +606,7 @@ InstallMethod( Order,
     [ IsZmodnZObj and IsModulusRep ],
     function( elm )
     local ord;
-    ord := OrderMod( elm![1], Characteristic( FamilyObj( elm ) ) );
+    ord := OrderMod( elm![1], FamilyObj( elm )!.Characteristic );
     if ord = 0  then
         Error( "<obj> is not invertible" );
     fi;
@@ -849,7 +849,7 @@ InstallMethod( IsUnit,
     IsCollsElms,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing, IsZmodnZObj and IsModulusRep ],
     function( R, elm )
-    return GcdInt( elm![1], Characteristic( FamilyObj( elm ) ) ) = 1;
+    return GcdInt( elm![1], FamilyObj( elm )!.Characteristic ) = 1;
     end );
 
 #############################################################################
@@ -890,7 +890,7 @@ InstallMethod( \in,
     function( res, G )
     local   m;
 
-    m := Characteristic( FamilyObj( res ) );
+    m := FamilyObj( res )!.Characteristic;
     res := Int( res );
     if GcdInt( res, m ) <> 1  then
         return false;
@@ -955,7 +955,7 @@ InstallMethod( SquareRoots,
     [ IsField and IsPrimeField, IsZmodpZObj and IsModulusRep ],
     function( F, obj )
     F:= FamilyObj( obj );
-    return List( RootsMod( obj![1], 2, Characteristic( obj ) ),
+    return List( RootsMod( obj![1], 2, F!.Characteristic ),
                  x -> ZmodnZObj( F, x ) );
     end );
 
@@ -1086,7 +1086,7 @@ InstallMethod( \mod,
 InstallMethod( ModulusOfZmodnZObj,
     "for element in Z/nZ (nonprime)",
     [ IsZmodnZObjNonprime ],
-    res -> Characteristic( FamilyObj( res ) ) );
+    res -> FamilyObj( res )!.Characteristic );
 
 InstallMethod( ModulusOfZmodnZObj,
     "for element in Z/pZ (prime)",
