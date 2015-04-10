@@ -229,11 +229,11 @@ BIND_GLOBAL( "TYPES_STRING",
           
           ~[2], # T_STRING_NSORT + IMMUTABLE
           
-          NewType (StringFamily, IsString and IsStringRep and
+          NewType3( TypeOfTypes,StringFamily, IsString and IsStringRep and
                   IsSSortedList and IsMutable ),
           # T_STRING_SSORT 
           
-          NewType (StringFamily, IsString and IsStringRep and
+          NewType3( TypeOfTypes,StringFamily, IsString and IsStringRep and
                   IsSSortedList )
           # T_STRING_SSORT +IMMUTABLE
           ]);

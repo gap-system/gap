@@ -188,7 +188,7 @@ InstallMethod(InverseMonoidByGenerators,
 function(gens)
   local s, one, pos;
 
-  s:=Objectify( NewType (FamilyObj( gens ), IsMagmaWithOne and
+  s:=Objectify( NewType3( TypeOfTypes,FamilyObj( gens ), IsMagmaWithOne and
    IsInverseSemigroup and IsAttributeStoringRep), rec());
   
   one:=One(gens);
@@ -218,7 +218,7 @@ InstallMethod(InverseSemigroupByGenerators,
 function(gens)
   local s, pos;
 
-  s:=Objectify( NewType (FamilyObj( gens ), IsMagma and
+  s:=Objectify( NewType3( TypeOfTypes,FamilyObj( gens ), IsMagma and
    IsInverseSemigroup and IsAttributeStoringRep), rec());
   SetGeneratorsOfInverseSemigroup(s, AsList(gens));
   

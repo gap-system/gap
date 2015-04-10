@@ -256,27 +256,27 @@ BIND_GLOBAL( "TYPE_BLIST_IMM",
     IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
     IS_BLIST_REP ) );
 BIND_GLOBAL( "TYPE_BLIST_NSORT_MUT", 
-  NewType( CollectionsFamily(BooleanFamily),
+  NewType3( TypeOfTypes, CollectionsFamily(BooleanFamily),
     IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
     IS_BLIST_REP and Tester(IsSSortedList) ) );
 BIND_GLOBAL( "TYPE_BLIST_NSORT_IMM", 
-  NewType( CollectionsFamily(BooleanFamily),
+  NewType3( TypeOfTypes, CollectionsFamily(BooleanFamily),
     IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
     IS_BLIST_REP and Tester(IsSSortedList) ) );
 BIND_GLOBAL( "TYPE_BLIST_SSORT_MUT", 
-  NewType( CollectionsFamily(BooleanFamily),
+  NewType3( TypeOfTypes, CollectionsFamily(BooleanFamily),
     IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
     IS_BLIST_REP and Tester(IsSSortedList) and IsSSortedList ) );
 BIND_GLOBAL( "TYPE_BLIST_SSORT_IMM", 
-  NewType( CollectionsFamily(BooleanFamily),
+  NewType3( TypeOfTypes, CollectionsFamily(BooleanFamily),
     IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
     IS_BLIST_REP and Tester(IsSSortedList) and IsSSortedList ) );
 BIND_GLOBAL( "TYPE_BLIST_EMPTY_MUT",
-  NewType( CollectionsFamily(BooleanFamily),
+  NewType3( TypeOfTypes, CollectionsFamily(BooleanFamily),
     IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
     IS_BLIST_REP and IsEmpty and Tester(IsEmpty) ) );
 BIND_GLOBAL( "TYPE_BLIST_EMPTY_IMM", 
-  NewType( CollectionsFamily(BooleanFamily),
+  NewType3( TypeOfTypes, CollectionsFamily(BooleanFamily),
     IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
     IS_BLIST_REP and IsEmpty and Tester(IsEmpty) ) );
 
@@ -353,7 +353,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_HOM_NSORT
     elif knr = 3  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and
@@ -361,7 +361,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_HOM_NSORT + IMMUTABLE
     elif knr = 4  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and
@@ -369,7 +369,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_HOM_SSORT
     elif knr = 5  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and
@@ -378,7 +378,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_HOM_SSORT + IMMUTABLE
     elif knr = 6  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and
@@ -401,7 +401,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_TAB_NSORT
     elif knr = 9  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and IsTable
@@ -409,7 +409,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_TAB_NSORT + IMMUTABLE
     elif knr = 10  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and IsTable
@@ -417,7 +417,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_TAB_SSORT
     elif knr = 11  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and
@@ -425,7 +425,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_TAB_SSORT + IMMUTABLE
     elif knr = 12  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsList and IsDenseList and IsHomogeneousList
                         and Tester(IsSSortedList)
                         and IsCollection and IsSSortedList and IsTable
@@ -447,7 +447,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_TAB_RECT_NSORT
     elif knr = 15  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and IsTable and HasIsRectangularTable and IsRectangularTable
@@ -455,7 +455,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_TAB_RECT_NSORT + IMMUTABLE
     elif knr = 16  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and IsTable and HasIsRectangularTable and IsRectangularTable
@@ -463,7 +463,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_TAB_RECT_SSORT
     elif knr = 17  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and
@@ -471,7 +471,7 @@ BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
 
     # T_PLIST_TAB_RECT_SSORT + IMMUTABLE
     elif knr = 18  then
-        return NewType( colls,
+        return NewType3( TypeOfTypes, colls,
                         IsList and IsDenseList and IsHomogeneousList
                         and Tester(IsSSortedList)
                        and IsCollection and IsSSortedList and IsTable and HasIsRectangularTable 
@@ -629,7 +629,7 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_RANGE_SSORT_MUTABLE", 
-        NewType(CollectionsFamily(CyclotomicsFamily), 
+        NewType3( TypeOfTypes,CollectionsFamily(CyclotomicsFamily), 
                 IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                 Tester(IsSSortedList) and IsRange and IsMutable and
@@ -649,7 +649,7 @@ BIND_GLOBAL( "TYPE_RANGE_SSORT_MUTABLE",
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_RANGE_NSORT_MUTABLE", 
-        NewType(CollectionsFamily(CyclotomicsFamily), 
+        NewType3( TypeOfTypes,CollectionsFamily(CyclotomicsFamily), 
                 IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                 Tester(IsSSortedList) and IsRange and IsMutable
@@ -669,7 +669,7 @@ BIND_GLOBAL( "TYPE_RANGE_NSORT_MUTABLE",
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_RANGE_SSORT_IMMUTABLE", 
-        NewType(CollectionsFamily(CyclotomicsFamily), 
+        NewType3( TypeOfTypes,CollectionsFamily(CyclotomicsFamily), 
                 IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                 Tester(IsSSortedList) and IsRange and
@@ -689,7 +689,7 @@ BIND_GLOBAL( "TYPE_RANGE_SSORT_IMMUTABLE",
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_RANGE_NSORT_IMMUTABLE", 
-        NewType(CollectionsFamily(CyclotomicsFamily), 
+        NewType3( TypeOfTypes,CollectionsFamily(CyclotomicsFamily), 
                 IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                 Tester(IsSSortedList) and IsRange 
