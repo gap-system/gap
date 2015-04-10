@@ -832,17 +832,6 @@ InstallMethod( Random,
 
 #############################################################################
 ##
-#M  Size( <R> ) . . . . . . . . . . . . . . . . . . method for full ring Z/nZ
-##
-InstallMethod( Size,
-    "for full ring Z/nZ",
-    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
-    RankFilter( IsRing ),
-    R -> ElementsFamily( FamilyObj( R ) )!.modulus );
-
-
-#############################################################################
-##
 #M  IsIntegralRing( <obj> )  . . . . . . . . . .  method for subrings of Z/nZ
 ##
 InstallImmediateMethod( IsIntegralRing,
@@ -1061,6 +1050,7 @@ InstallGlobalFunction( ZmodnZ, function( n )
       SetIsWholeFamily( R, true );
       SetZero(F,Zero(R));
       SetOne(F,One(R));
+      SetSize(R,n);
 
       # Store the ring.
       Add( Z_MOD_NZ[1], n );
