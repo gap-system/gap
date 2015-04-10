@@ -1132,7 +1132,7 @@ InstallOtherMethod( ModulusOfZmodnZObj,
 InstallMethod( DefaultRingByGenerators,
     "for a collection over a ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection ],
-    C -> ZmodnZ( ModulusOfZmodnZObj( Representative( C ) ) ) );
+    C -> ZmodnZ( Characteristic( Representative( C ) ) ) );
 
 
 #############################################################################
@@ -1152,7 +1152,7 @@ InstallMethod( DefaultRingByGenerators,
 InstallMethod( DefaultFieldOfMatrixGroup,
     "for a matrix group over a ring Z/nZ",
     [ IsMatrixGroup and IsZmodnZObjNonprimeCollCollColl ],
-    G -> ZmodnZ( ModulusOfZmodnZObj( Representative( G )[1][1] ) ) );
+    G -> ZmodnZ( Characteristic( Representative( G )[1][1] ) ) );
 
 
 #############################################################################
