@@ -559,13 +559,14 @@ function( m )
         TryNextMethod();
     fi;
     if  IsZmodnZObj(m[1][1]) then
+      # this case mostly applies to large characteristic, in
+      # which the regular code for FFE elements does not work
+      # (e.g. it tries to create the range [2..chr], which
+      # means chr may be at most 2^28 resp. 2^60).
       Print("ZmodnZ matrix:\n");
       t:=List(m,i->List(i,i->i![1]));
       Display(t);
-      Print("modulo ",DataType(TypeObj(m[1][1])),"\n");
-#T what is this good for?
-#T (The code for finite prime fields should handle this case,
-#T and the output should look the same.)
+      Print("modulo ",Characteristic(m[1][1]),"\n");
     else
       # get the degree and characteristic
       deg  := Lcm( List( m, DegreeFFE ) );
@@ -643,7 +644,7 @@ InstallMethod( Display,
     "for matrix over Integers mod n",
     [ IsZmodnZObjNonprimeCollColl and IsMatrix ],
     function( m )
-    Print( "matrix over Integers mod ", DataType( TypeObj( m[1][1] ) ),
+    Print( "matrix over Integers mod ", Characteristic( m[1][1] ),
            ":\n" );
     Display( List( m, i -> List( i, i -> i![1] ) ) );
     end );

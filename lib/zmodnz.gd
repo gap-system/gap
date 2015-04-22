@@ -239,6 +239,8 @@ DeclareSynonym( "ZmodpZObj", ZmodnZObj );
 ##  For an element <A>obj</A> in a residue class ring of integers modulo
 ##  <M>n</M> (see&nbsp;<Ref Func="IsZmodnZObj"/>),
 ##  <Ref Attr="ModulusOfZmodnZObj"/> returns the positive integer <M>n</M>.
+##
+##  Deprecated, use <Ref Attr="Characteristic"/> instead.
 ##  </Description>
 ##  </ManSection>
 ##
