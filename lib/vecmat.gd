@@ -190,10 +190,17 @@ DeclareSynonym( "ConvertToGF2VectorRep", CONV_GF2VEC );
 ##  [ "IsDataObjectRep", "Is8BitVectorRep" ]
 ##  ]]></Example>
 ##  <P/>
-##  A vector in the special representation over <C>GF(2)</C> is always viewed
+##  A vector in the special representation over <C>GF(2)</C> is always Viewed
 ##  as <C>&lt;a GF2 vector of length ...></C>.
-##  Over fields of orders 3 to 256, a vector of length 10 or less is viewed
+##  Over fields of orders 3 to 256, a vector of length 10 or less is Viewed
 ##  as the list of its coefficients, but a longer one is abbreviated.
+##  <P/>
+##  In GAP it is possible to change the representation of an immutable vector
+##  unless it is in <C>IsLockedRepresentationVector</C> however in HPCGAP
+##  such a vector would be in the public region, where we could not be sure that
+##  another thread was not accessing it, so in this case only mutable vectors
+##  to which we have exclusive access can be converted. Where possible it is
+##  recommended to use <C>CopyToVectorRep</C> instead.
 ##  <P/>
 ##  Arithmetic operations (see&nbsp;<Ref Sect="Arithmetic for Lists"/> and
 ##  the following sections) preserve the compression status of row vectors in

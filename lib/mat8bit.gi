@@ -449,7 +449,7 @@ InstallGlobalFunction(CopyToMatrixRep,
     
     
     if not IsInt(q) then
-        if IsField(q) then
+        if IsFFECollection(q) then
             if Characteristic(q) = 0 then
                 return fail;
             fi;

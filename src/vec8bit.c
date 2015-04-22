@@ -1366,11 +1366,12 @@ Obj FuncSUM_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
             (ql != newq && !MayRewrite(vl)) ||
             (qr != newq && !MayRewrite(vr))) {
             sum = SumListList(vl, vr);
-	    if (newq <= 256)
+	    if (newq <= 256) {
 	      if (REGION(sum))
 		ConvVec8Bit(sum,newq);
 	      else
 		sum = NewVec8Bit(sum,newq);
+	    }
             return sum;
         } else {
             RewriteVec8Bit(vl, newq);
