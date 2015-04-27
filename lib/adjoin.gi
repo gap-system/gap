@@ -27,7 +27,7 @@ end);
 
 InstallMethod(AdjoinedIdentityDefaultType, [IsFamily],
         function(fam) 
-    return NewType(fam, IsMonoidByAdjoiningIdentityEltRep and 
+    return NewType3( TypeOfTypes,fam, IsMonoidByAdjoiningIdentityEltRep and 
                    IsMonoidByAdjoiningIdentityElt);
 end);
 

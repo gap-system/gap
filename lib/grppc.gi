@@ -348,7 +348,7 @@ InstallMethod( GroupWithGenerators,
     if IsFinite(gens) then
       if not IsBound(fam!.defaultFinitelyGeneratedGroupType) then
 	fam!.defaultFinitelyGeneratedGroupType:=
-	  NewType(fam,IsGroup and IsAttributeStoringRep 
+	  NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep 
 		      and HasGeneratorsOfMagmaWithInverses
 		      and IsFinitelyGeneratedGroup
 		      and HasFamilyPcgs and HasHomePcgs);
@@ -357,7 +357,7 @@ InstallMethod( GroupWithGenerators,
     else
       if not IsBound(fam!.defaultGroupType) then
         fam!.defaultGroupType:=
-	  NewType(fam,IsGroup and IsAttributeStoringRep 
+	  NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep 
 		      and HasGeneratorsOfMagmaWithInverses
 		      and HasFamilyPcgs and HasHomePcgs);
       fi;
@@ -386,7 +386,7 @@ InstallOtherMethod( GroupWithGenerators,
     if IsFinite(gens) then
       if not IsBound(fam!.defaultFinitelyGeneratedGroupWithOneType) then
 	fam!.defaultFinitelyGeneratedGroupWithOneType:=
-	  NewType(fam,IsGroup and IsAttributeStoringRep 
+	  NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep 
 		      and HasGeneratorsOfMagmaWithInverses
 		      and IsFinitelyGeneratedGroup and HasOne
 		      and HasFamilyPcgs and HasHomePcgs);
@@ -395,7 +395,7 @@ InstallOtherMethod( GroupWithGenerators,
     else
       if not IsBound(fam!.defaultGroupWithOneType) then
         fam!.defaultGroupWithOneType:=
-	  NewType(fam,IsGroup and IsAttributeStoringRep 
+	  NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep 
 		      and HasGeneratorsOfMagmaWithInverses and HasOne
 		      and HasFamilyPcgs and HasHomePcgs);
       fi;
@@ -423,7 +423,7 @@ InstallOtherMethod( GroupWithGenerators,
     fam:= CollectionsFamily( FamilyObj( id ) );
     if not IsBound(fam!.defaultFinitelyGeneratedGroupWithOneType) then
       fam!.defaultFinitelyGeneratedGroupWithOneType:=
-	NewType(fam,IsGroup and IsAttributeStoringRep 
+	NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep 
 		    and HasGeneratorsOfMagmaWithInverses
 		    and IsFinitelyGeneratedGroup and HasOne
 		    and HasFamilyPcgs and HasHomePcgs);
@@ -2142,7 +2142,7 @@ InstallMethod(ConjugacyClassSubgroups,IsIdenticalObj,[IsPcGroup,IsPcGroup],0,
 function(G,U)
 local cl;
 
-    cl:=Objectify(NewType(CollectionsFamily(FamilyObj(G)),
+    cl:=Objectify(NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(G)),
       IsConjugacyClassSubgroupsByStabilizerRep),rec());
     SetActingDomain(cl,G);
     SetRepresentative(cl,U);

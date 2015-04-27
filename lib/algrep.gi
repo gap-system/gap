@@ -118,7 +118,7 @@ BindGlobal( "BasisOfAlgebraModule",
     function( V, vectors )
     local B, delmod, vecs;
     
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                             IsFiniteBasisDefault and
                             IsBasisOfAlgebraModuleElementSpace and
                             IsAttributeStoringRep ),
@@ -299,7 +299,7 @@ InstallMethod( LeftAlgebraModule,
       local F,type,g,W,gens,B;
 
       F:= LeftActingDomain( A );
-      type:= NewType( NewFamily( "AlgModElementsFam",
+      type:= NewType3( TypeOfTypes, NewFamily( "AlgModElementsFam",
                                     IsLeftAlgebraModuleElement ),
                      IsPackedElementDefaultRep );
       gens:= GeneratorsOfLeftModule( V );
@@ -310,7 +310,7 @@ InstallMethod( LeftAlgebraModule,
           g:= [ Objectify( type, [ Zero(V) ] ) ];
       fi;
       
-      W:= Objectify( NewType( FamilyObj( g ),
+      W:= Objectify( NewType3( TypeOfTypes, FamilyObj( g ),
                             IsLeftModule and IsAttributeStoringRep ),
                    rec() );
       SetLeftActingDomain( W, F );
@@ -326,7 +326,7 @@ InstallMethod( LeftAlgebraModule,
       SetUnderlyingLeftModule( W, V );
       
       if HasBasis( V ) then
-          B:= Objectify( NewType( FamilyObj( W ),
+          B:= Objectify( NewType3( TypeOfTypes, FamilyObj( W ),
                       IsFiniteBasisDefault and
                       IsBasisOfAlgebraModuleElementSpace and
                       IsAttributeStoringRep ),
@@ -360,7 +360,7 @@ InstallMethod( RightAlgebraModule,
       local F,type,g,W,gens,B;
 
       F:= LeftActingDomain( A );
-      type:= NewType( NewFamily( "AlgModElementsFam",
+      type:= NewType3( TypeOfTypes, NewFamily( "AlgModElementsFam",
                                     IsRightAlgebraModuleElement ),
                      IsPackedElementDefaultRep );
       gens:= GeneratorsOfLeftModule( V );
@@ -371,7 +371,7 @@ InstallMethod( RightAlgebraModule,
           g:= [ Objectify( type, [ Zero(V) ] ) ];
       fi;
       
-      W:= Objectify( NewType( FamilyObj( g ),
+      W:= Objectify( NewType3( TypeOfTypes, FamilyObj( g ),
                             IsLeftModule and IsAttributeStoringRep ),
                    rec() );
       SetLeftActingDomain( W, F );
@@ -387,7 +387,7 @@ InstallMethod( RightAlgebraModule,
       SetUnderlyingLeftModule( W, V );
 
       if HasBasis( V ) then
-          B:= Objectify( NewType( FamilyObj( W ),
+          B:= Objectify( NewType3( TypeOfTypes, FamilyObj( W ),
                       IsFiniteBasisDefault and
                       IsBasisOfAlgebraModuleElementSpace and
                       IsAttributeStoringRep ),
@@ -422,7 +422,7 @@ InstallMethod( BiAlgebraModule,
       local   F,  type,  g,  W, Ba, gens;
 
       F:= LeftActingDomain( A );
-      type:= NewType( NewFamily( "AlgModElementsFam",
+      type:= NewType3( TypeOfTypes, NewFamily( "AlgModElementsFam",
                           IsLeftAlgebraModuleElement and
                           IsRightAlgebraModuleElement ),
                        IsPackedElementDefaultRep );
@@ -434,7 +434,7 @@ InstallMethod( BiAlgebraModule,
           g:= [ Objectify( type, [ Zero(V) ] ) ];
       fi;
       
-      W:= Objectify( NewType( FamilyObj( g ),
+      W:= Objectify( NewType3( TypeOfTypes, FamilyObj( g ),
                             IsLeftModule and IsAttributeStoringRep ),
                    rec() );
       SetLeftActingDomain( W, F );
@@ -453,7 +453,7 @@ InstallMethod( BiAlgebraModule,
       SetUnderlyingLeftModule( W, V );
       
       if HasBasis( V ) then
-          Ba:= Objectify( NewType( FamilyObj( W ),
+          Ba:= Objectify( NewType3( TypeOfTypes, FamilyObj( W ),
                       IsFiniteBasisDefault and
                       IsBasisOfAlgebraModuleElementSpace and
                       IsAttributeStoringRep ),
@@ -503,7 +503,7 @@ InstallMethod( MutableBasis,
                                         List( vectors, ExtRepOfObj ) )
             );
 
-    return Objectify( NewType( FamilyObj( vectors ),
+    return Objectify( NewType3( TypeOfTypes, FamilyObj( vectors ),
                                  IsMutableBasis
                              and IsMutable
                              and IsMutableBasisViaUnderlyingMutableBasisRep ),
@@ -524,7 +524,7 @@ InstallOtherMethod( MutableBasis,
                                         ExtRepOfObj( zero ) )
             );
 
-    return Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
+    return Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( zero ) ),
                                    IsMutableBasis
                                and IsMutable
                                and IsMutableBasisViaUnderlyingMutableBasisRep ),
@@ -935,7 +935,7 @@ InstallMethod( SubAlgebraModule,
 
       local sub;
 
-      sub:= Objectify( NewType( FamilyObj( V ),
+      sub:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                     IsLeftModule and IsAttributeStoringRep ), rec() );
       SetIsAlgebraModule( sub, true );
       SetLeftActingDomain( sub, LeftActingDomain( V ) );
@@ -971,7 +971,7 @@ InstallOtherMethod( SubAlgebraModule,
          Error( "Usage: SubAlgebraModule( <V>, <gens>, <str>) where the last argument is string \"basis\"" );
       fi;
 
-      sub:= Objectify( NewType( FamilyObj( V ),
+      sub:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                        IsLeftModule and IsAttributeStoringRep ), rec() );
       SetIsAlgebraModule( sub, true );
       SetLeftActingDomain( sub, LeftActingDomain( V ) );
@@ -1610,7 +1610,7 @@ BindGlobal( "BasisOfMonomialSpace",
     function( V, vectors )
     local B;
 
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                             IsFiniteBasisDefault and
                             IsBasisOfMonomialSpaceRep and
                             IsAttributeStoringRep ),
@@ -1929,7 +1929,7 @@ InstallMethod( TensorProductOp,
     fi;
     
     fam:= NewFamily( "TensorElementsFam", IsTensorElement );
-    type:= NewType( fam, IsMonomialElementRep );
+    type:= NewType3( TypeOfTypes, fam, IsMonomialElementRep );
     fam!.monomialElementDefaultType:= type;
     fam!.zeroCoefficient:= Zero( F );
     fam!.constituentBases:= List( list, Basis );
@@ -2335,7 +2335,7 @@ InstallMethod( ExteriorPower,
 
     F:= LeftActingDomain( V );
     fam:= NewFamily( "WedgeElementsFam", IsWedgeElement );
-    type:= NewType( fam, IsMonomialElementRep );
+    type:= NewType3( TypeOfTypes, fam, IsMonomialElementRep );
     fam!.monomialElementDefaultType:= type;
     fam!.zeroCoefficient:= Zero( F );
     fam!.constituentBasis:= Basis( V );
@@ -2659,7 +2659,7 @@ InstallMethod( SymmetricPower,
 
     F:= LeftActingDomain( V );
     fam:= NewFamily( "SymmetricElementsFam", IsSymmetricPowerElement );
-    type:= NewType( fam, IsMonomialElementRep );
+    type:= NewType3( TypeOfTypes, fam, IsMonomialElementRep );
     fam!.monomialElementDefaultType:= type;
     fam!.zeroCoefficient:= Zero( F );
     fam!.constituentBasis:= Basis( V );
@@ -3067,7 +3067,7 @@ BindGlobal( "BasisOfSparseRowSpace",
 
     # Finally we construct the basis.
 
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                 IsBasisOfSparseRowSpaceRep and
                 IsFiniteBasisDefault and
                 IsAttributeStoringRep ),
@@ -3191,12 +3191,12 @@ InstallMethod( FullSparseRowSpace,
 
     fam:= NewFamily( "FamilyOfSparseRowSpaceElements",
                   IsSparseRowSpaceElement );
-    fam!.sparseRowSpaceElementDefaultType:= NewType( fam,
+    fam!.sparseRowSpaceElementDefaultType:= NewType3( TypeOfTypes, fam,
                                                IsPackedElementDefaultRep );
     fam!.zeroCoefficient:= Zero( F );
     bV:= List( [1..n], x -> ObjByExtRep( fam, [ x, One(F) ] ) );
     V:= VectorSpace( F, bV );
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                 IsBasisOfSparseRowSpaceRep and
                 IsFiniteBasisDefault and
                 IsAttributeStoringRep ),
@@ -3419,7 +3419,7 @@ InstallMethod( DirectSumOfAlgebraModules,
 
     F:= LeftActingDomain( list[1] );
     fam:= NewFamily( "DirectSumElementsFam", IsDirectSumElement );
-    type:= NewType( fam, IsPackedElementDefaultRep );
+    type:= NewType3( TypeOfTypes, fam, IsPackedElementDefaultRep );
     fam!.directSumElementDefaultType:= type;
     fam!.zeroCoefficient:= Zero( F );
     fam!.constituentModules:= list;
@@ -3509,13 +3509,13 @@ InstallMethod( DirectSumOfAlgebraModules,
 
     W:= VectorSpace( F, gens, "basis" );
     SetNiceFreeLeftModule( W, niceMod );
-    B:= Objectify( NewType( FamilyObj( V ), IsFiniteBasisDefault and
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ), IsFiniteBasisDefault and
                  IsBasisOfAlgebraModuleElementSpace and
                  IsAttributeStoringRep ), rec() );
     SetUnderlyingLeftModule( B, V );
     SetBasisVectors( B, GeneratorsOfAlgebraModule(V) );
 
-    BW:= Objectify( NewType( FamilyObj( W ), IsBasisByNiceBasis and
+    BW:= Objectify( NewType3( TypeOfTypes, FamilyObj( W ), IsBasisByNiceBasis and
                                             IsAttributeStoringRep ), rec() );
     SetUnderlyingLeftModule( BW, W );
     SetBasisVectors( BW, gens );

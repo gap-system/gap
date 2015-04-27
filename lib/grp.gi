@@ -3730,7 +3730,7 @@ InstallMethod( GroupWithGenerators,
     if IsFinite(gens) then
       if not IsBound(fam!.defaultFinitelyGeneratedGroupType) then
         fam!.defaultFinitelyGeneratedGroupType:=
-          NewType(fam,IsGroup and IsAttributeStoringRep
+          NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep
                       and HasGeneratorsOfMagmaWithInverses
                       and IsFinitelyGeneratedGroup);
       fi;
@@ -3738,7 +3738,7 @@ InstallMethod( GroupWithGenerators,
     else
       if not IsBound(fam!.defaultGroupType) then
         fam!.defaultGroupType:=
-          NewType(fam,IsGroup and IsAttributeStoringRep
+          NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep
                       and HasGeneratorsOfMagmaWithInverses);
       fi;
       typ:=fam!.defaultGroupType;
@@ -3760,7 +3760,7 @@ InstallMethod( GroupWithGenerators,
     if IsFinite(gens) then
       if not IsBound(fam!.defaultFinitelyGeneratedGroupWithOneType) then
         fam!.defaultFinitelyGeneratedGroupWithOneType:=
-          NewType(fam,IsGroup and IsAttributeStoringRep
+          NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep
                       and HasGeneratorsOfMagmaWithInverses
                       and IsFinitelyGeneratedGroup and HasOne);
       fi;
@@ -3768,7 +3768,7 @@ InstallMethod( GroupWithGenerators,
     else
       if not IsBound(fam!.defaultGroupWithOneType) then
         fam!.defaultGroupWithOneType:=
-          NewType(fam,IsGroup and IsAttributeStoringRep
+          NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep
                       and HasGeneratorsOfMagmaWithInverses and HasOne);
       fi;
       typ:=fam!.defaultGroupWithOneType;
@@ -3790,7 +3790,7 @@ InstallMethod( GroupWithGenerators,
     fam:= CollectionsFamily( FamilyObj( id ) );
     if not IsBound( fam!.defaultFinitelyGeneratedGroupWithOneType ) then
       fam!.defaultFinitelyGeneratedGroupWithOneType:=
-        NewType( fam, IsGroup and IsAttributeStoringRep
+        NewType3( TypeOfTypes, fam, IsGroup and IsAttributeStoringRep
                       and HasGeneratorsOfMagmaWithInverses
                       and IsFinitelyGeneratedGroup and HasOne );
     fi;
@@ -3942,7 +3942,7 @@ InstallMethod(\in,
 InstallGlobalFunction( SubgroupByProperty, function( G, prop )
 local K, S;
 
-  K:= NewType( FamilyObj(G), IsMagmaWithInverses
+  K:= NewType3( TypeOfTypes, FamilyObj(G), IsMagmaWithInverses
                   and IsAttributeStoringRep 
                   and HasElementTestFunction);
   S:=rec();
@@ -3985,7 +3985,7 @@ end );
 InstallGlobalFunction( SubgroupShell, function( G )
 local K, S;
 
-  K:= NewType( FamilyObj(G), IsMagmaWithInverses
+  K:= NewType3( TypeOfTypes, FamilyObj(G), IsMagmaWithInverses
                   and IsAttributeStoringRep);
   S:=rec();
   Objectify(K,S);

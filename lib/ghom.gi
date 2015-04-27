@@ -391,7 +391,7 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
   fi;
 
   obj_args[2] := 
-    NewType( GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
+    NewType3( TypeOfTypes, GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
                                     ElementsFamily( FamilyObj( H ) ) ),
              filter );
 
@@ -953,7 +953,7 @@ InstallMethod( ConjugatorIsomorphism,
     local fam, hom;
 
     fam:= ElementsFamily( FamilyObj( G ) );
-    hom:= Objectify( NewType( GeneralMappingsFamily( fam, fam ),
+    hom:= Objectify( NewType3( TypeOfTypes, GeneralMappingsFamily( fam, fam ),
                                   IsConjugatorIsomorphism
                               and IsSPGeneralMapping
                               and IsAttributeStoringRep ),
@@ -977,7 +977,7 @@ InstallMethod( ConjugatorAutomorphismNC,
     local fam, hom;
 
     fam:= ElementsFamily( FamilyObj( G ) );
-    hom:= Objectify( NewType( GeneralMappingsFamily( fam, fam ),
+    hom:= Objectify( NewType3( TypeOfTypes, GeneralMappingsFamily( fam, fam ),
                                   IsConjugatorAutomorphism
                               and IsSPGeneralMapping
                               and IsAttributeStoringRep ),
@@ -1533,7 +1533,7 @@ local map,type,prefun;
 
       # make the general mapping
       map:= Objectify(
-        NewType(GeneralMappingsFamily(ElementsFamily(FamilyObj(arg[1])),
+        NewType3( TypeOfTypes,GeneralMappingsFamily(ElementsFamily(FamilyObj(arg[1])),
         ElementsFamily(FamilyObj(arg[2]))),type),
                        rec( fun:= arg[3] ) );
       if prefun<>fail then
@@ -1545,7 +1545,7 @@ local map,type,prefun;
 
       # make the mapping
       map:= Objectify(
-        NewType(GeneralMappingsFamily(ElementsFamily(FamilyObj(arg[1])),
+        NewType3( TypeOfTypes,GeneralMappingsFamily(ElementsFamily(FamilyObj(arg[1])),
         ElementsFamily(FamilyObj(arg[2]))),
                                IsSPMappingByFunctionWithInverseRep
                            and IsBijective

@@ -425,7 +425,7 @@ InstallGlobalFunction( EnumeratorByFunctions, function( D, record )
       Error( "<D> must be a record or a family" );
     fi;
 
-    enum:= Objectify( NewType( Fam, filter ), record );
+    enum:= Objectify( NewType3( TypeOfTypes, Fam, filter ), record );
 
     if IsDomain( D ) then
       SetUnderlyingCollection( enum, D );
@@ -985,7 +985,7 @@ InstallGlobalFunction( IteratorByFunctions, function( record )
     fi;
     filter:= IsIteratorByFunctions and IsMutable;
 
-    return Objectify( NewType( IteratorsFamily, filter ), record );
+    return Objectify( NewType3( TypeOfTypes, IteratorsFamily, filter ), record );
 end );
 
 InstallMethod( IsDoneIterator,

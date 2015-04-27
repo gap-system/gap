@@ -2128,7 +2128,7 @@ InstallMethod( Basis,
     [ IsFreeLeftModule and IsFullHomModule ], 100,
     function( V )
     local B;
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsPseudoCanonicalBasisFullHomModule
                             and IsAttributeStoringRep ),
@@ -2164,7 +2164,7 @@ InstallMethod( Hom,
       W:= AsLeftModule( F, W );
     fi;
 
-    M:= Objectify( NewType( CollectionsFamily( GeneralMappingsFamily(
+    M:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( GeneralMappingsFamily(
                                 ElementsFamily( FamilyObj( V ) ),
                                 ElementsFamily( FamilyObj( W ) ) ) ),
                                 IsFreeLeftModule

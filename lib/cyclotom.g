@@ -249,7 +249,7 @@ DeclareRepresentation( "IsSmallIntRep", IsInternalRep, [] );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_INT_SMALL_ZERO", NewType( CyclotomicsFamily,
+BIND_GLOBAL( "TYPE_INT_SMALL_ZERO", NewType3( TypeOfTypes, CyclotomicsFamily,
                             IsInt and IsZeroCyc and IsSmallIntRep ) );
 
 
@@ -264,7 +264,7 @@ BIND_GLOBAL( "TYPE_INT_SMALL_ZERO", NewType( CyclotomicsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_INT_SMALL_NEG", NewType( CyclotomicsFamily,
+BIND_GLOBAL( "TYPE_INT_SMALL_NEG", NewType3( TypeOfTypes, CyclotomicsFamily,
                             IsInt and IsNegRat and IsSmallIntRep ) );
 
 
@@ -279,7 +279,7 @@ BIND_GLOBAL( "TYPE_INT_SMALL_NEG", NewType( CyclotomicsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_INT_SMALL_POS", NewType( CyclotomicsFamily,
+BIND_GLOBAL( "TYPE_INT_SMALL_POS", NewType3( TypeOfTypes, CyclotomicsFamily,
                             IsPosInt and IsSmallIntRep ) );
 
 
@@ -294,7 +294,7 @@ BIND_GLOBAL( "TYPE_INT_SMALL_POS", NewType( CyclotomicsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_INT_LARGE_NEG", NewType( CyclotomicsFamily,
+BIND_GLOBAL( "TYPE_INT_LARGE_NEG", NewType3( TypeOfTypes, CyclotomicsFamily,
                             IsInt and IsNegRat and IsInternalRep ) );
 
 
@@ -309,7 +309,7 @@ BIND_GLOBAL( "TYPE_INT_LARGE_NEG", NewType( CyclotomicsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_INT_LARGE_POS", NewType( CyclotomicsFamily,
+BIND_GLOBAL( "TYPE_INT_LARGE_POS", NewType3( TypeOfTypes, CyclotomicsFamily,
                             IsPosInt and IsInternalRep ) );
 
 
@@ -324,7 +324,7 @@ BIND_GLOBAL( "TYPE_INT_LARGE_POS", NewType( CyclotomicsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_RAT_NEG", NewType( CyclotomicsFamily,
+BIND_GLOBAL( "TYPE_RAT_NEG", NewType3( TypeOfTypes, CyclotomicsFamily,
                             IsRat and IsNegRat and IsInternalRep ) );
 
 
@@ -339,7 +339,7 @@ BIND_GLOBAL( "TYPE_RAT_NEG", NewType( CyclotomicsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_RAT_POS", NewType( CyclotomicsFamily,
+BIND_GLOBAL( "TYPE_RAT_POS", NewType3( TypeOfTypes, CyclotomicsFamily,
                             IsRat and IsPosRat and IsInternalRep ) );
 
 #############################################################################
@@ -354,7 +354,7 @@ BIND_GLOBAL( "TYPE_RAT_POS", NewType( CyclotomicsFamily,
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_CYC",
-    NewType( CyclotomicsFamily, IsCyc and IsInternalRep ) );
+    NewType3( TypeOfTypes, CyclotomicsFamily, IsCyc and IsInternalRep ) );
 
 
 #############################################################################
@@ -471,7 +471,7 @@ DeclareCategory( "IsInfinity", IsCyclotomic );
 
 UNBIND_GLOBAL( "infinity" );
 BIND_GLOBAL( "infinity",
-    Objectify( NewType( CyclotomicsFamily, IsInfinity
+    Objectify( NewType3( TypeOfTypes, CyclotomicsFamily, IsInfinity
                         and IsPositionalObjectRep ), [] ) );
 
 InstallMethod( PrintObj,
@@ -506,7 +506,7 @@ InstallMethod( \<,
 DeclareCategory( "IsNegInfinity", IsCyclotomic );
 
 BIND_GLOBAL( "Ninfinity",
-    Objectify( NewType( CyclotomicsFamily, IsNegInfinity
+    Objectify( NewType3( TypeOfTypes, CyclotomicsFamily, IsNegInfinity
                         and IsPositionalObjectRep ), [] ) );
 
 InstallMethod( PrintObj,

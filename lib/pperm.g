@@ -11,10 +11,10 @@ BIND_GLOBAL("PartialPermFamily", NewFamily("PartialPermFamily",
 DeclareRepresentation( "IsPPerm2Rep", IsInternalRep, [] );
 DeclareRepresentation( "IsPPerm4Rep", IsInternalRep, [] );
 
-BIND_GLOBAL("TYPE_PPERM2", NewType(PartialPermFamily,
+BIND_GLOBAL("TYPE_PPERM2", NewType3( TypeOfTypes,PartialPermFamily,
  IsPartialPerm and IsPPerm2Rep));
 
-BIND_GLOBAL("TYPE_PPERM4", NewType(PartialPermFamily,
+BIND_GLOBAL("TYPE_PPERM4", NewType3( TypeOfTypes,PartialPermFamily,
  IsPartialPerm and IsPPerm4Rep));
 
 

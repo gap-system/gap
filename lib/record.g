@@ -78,7 +78,7 @@ BIND_GLOBAL( "RecordsFamily", NewFamily( "RecordsFamily", IS_REC ) );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_PREC_MUTABLE",
-    NewType( RecordsFamily, IS_MUTABLE_OBJ and IS_REC and IsInternalRep ) );
+    NewType3( TypeOfTypes, RecordsFamily, IS_MUTABLE_OBJ and IS_REC and IsInternalRep ) );
 
 
 #############################################################################
@@ -93,7 +93,7 @@ BIND_GLOBAL( "TYPE_PREC_MUTABLE",
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_PREC_IMMUTABLE",
-    NewType( RecordsFamily, IS_REC and IsInternalRep ) );
+    NewType3( TypeOfTypes, RecordsFamily, IS_REC and IsInternalRep ) );
 
 
 #############################################################################

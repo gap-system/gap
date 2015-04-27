@@ -59,7 +59,7 @@ function( Fam, celt )
   # now we reduce coefficients modulo n
   coeffs := List(coeffs, x -> x mod n);
   elt := coeffs * List( [1..m], j -> E(m)^(j-1) );
-  return Objectify( NewType( Fam, IsZmodnZepsObj and IsZmodnZepsRep ),
+  return Objectify( NewType3( TypeOfTypes, Fam, IsZmodnZepsObj and IsZmodnZepsRep ),
                     [ elt ] );
 end );
 

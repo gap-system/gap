@@ -17,7 +17,7 @@
 # right type and then calls 'Init'.
 InstallMethod(RandomSource, [IsOperation, IsObject], function(rep, seed)
   local res;
-  res := Objectify(NewType(RandomSourcesFamily, rep), rec());
+  res := Objectify(NewType3( TypeOfTypes,RandomSourcesFamily, rep), rec());
   return Init (res, seed);
 end);
 InstallMethod(RandomSource, [IsOperation], function(rep)
@@ -68,7 +68,7 @@ end);
 ############################################################################
 ##  We provide the "classical" GAP random generator via a random source.
 ##  
-InstallValue(GlobalRandomSource, Objectify(NewType(RandomSourcesFamily,
+InstallValue(GlobalRandomSource, Objectify(NewType3( TypeOfTypes,RandomSourcesFamily,
                                                   IsGlobalRandomSource),rec()));
 InstallMethod(Init, [IsGlobalRandomSource, IsObject], function(rs, seed)
   if IsInt(seed) then

@@ -15,7 +15,7 @@
 ##
 #V  Rationals . . . . . . . . . . . . . . . . . . . . . .  field of rationals
 ##
-InstallValue( Rationals, Objectify( NewType(
+InstallValue( Rationals, Objectify( NewType3( TypeOfTypes,
     CollectionsFamily( CyclotomicsFamily ),
     IsRationals and IsAttributeStoringRep ), rec() ) );
 SetName( Rationals, "Rationals" );
@@ -32,7 +32,7 @@ SetIsWholeFamily( Rationals, false );
 ##
 #V  GaussianRationals . . . . . . . . . . . . . . field of Gaussian rationals
 ##
-InstallValue( GaussianRationals, Objectify( NewType(
+InstallValue( GaussianRationals, Objectify( NewType3( TypeOfTypes,
     CollectionsFamily( CyclotomicsFamily ),
     IsGaussianRationals and IsAttributeStoringRep ), rec() ) );
 SetName( GaussianRationals, "GaussianRationals" );
@@ -104,7 +104,7 @@ InstallMethod( CanonicalBasis,
     [ IsRationals ],
     function( Rationals )
     local B;
-    B:= Objectify( NewType( FamilyObj( Rationals ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( Rationals ),
                                 IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisRationals ),

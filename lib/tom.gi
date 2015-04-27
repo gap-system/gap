@@ -965,7 +965,7 @@ InstallGlobalFunction( LatticeSubgroupsByTom, function( G )
     od;
 
     # Create the lattice.
-    lattice:=Objectify(NewType(FamilyObj(classes),IsLatticeSubgroupsRep),
+    lattice:=Objectify(NewType3( TypeOfTypes,FamilyObj(classes),IsLatticeSubgroupsRep),
                        rec());
     lattice!.conjugacyClassesSubgroups:=classes;
     lattice!.group     :=G;
@@ -1207,7 +1207,7 @@ InstallGlobalFunction( ConvertToTableOfMarks, function( record )
     names:= RecNames( record );
 
     # Make the object.
-    Objectify( NewType( TableOfMarksFamily,
+    Objectify( NewType3( TypeOfTypes, TableOfMarksFamily,
                         IsTableOfMarks and IsAttributeStoringRep ),
                record );
 

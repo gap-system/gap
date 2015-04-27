@@ -241,7 +241,7 @@ DeclareRepresentation( "IsRightTransversalPcGroupRep", IsRightTransversalRep,
 DoRightTransversalPc:=function( G, U )
 local elements, g, u, e, i,t,depths,gens,p;
 
-  t := Objectify( NewType( FamilyObj( G ),
+  t := Objectify( NewType3( TypeOfTypes, FamilyObj( G ),
                                IsList and IsDuplicateFreeList
                            and IsRightTransversalPcGroupRep ),
           rec( group :=G,

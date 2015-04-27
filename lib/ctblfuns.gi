@@ -1193,7 +1193,7 @@ InstallMethod( ClassFunction,
     fi;
 
     # Create the object.
-    chi:= Objectify( NewType( FamilyObj( values ),
+    chi:= Objectify( NewType3( TypeOfTypes, FamilyObj( values ),
                                   IsClassFunction
                               and IsAttributeStoringRep ),
                      rec() );
@@ -4794,7 +4794,7 @@ InstallOtherMethod( GroupWithGenerators,
     fi;
 
     # Construct the group.
-    G:= Objectify( NewType( FamilyObj( gens ), filter ), rec() );
+    G:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ), filter ), rec() );
     SetGeneratorsOfMagmaWithInverses( G, AsList( gens ) );
     return G;
     end );
@@ -4822,7 +4822,7 @@ InstallOtherMethod( GroupWithGenerators,
     fi;
 
     # Construct the group.
-    G:= Objectify( NewType( FamilyObj( gens ), filter), rec() );
+    G:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ), filter), rec() );
     SetGeneratorsOfMagmaWithInverses( G, AsList( gens ) );
     SetOne( G, id );
     return G;
@@ -4839,7 +4839,7 @@ InstallOtherMethod( GroupWithGenerators,
     fi;
 
     # Construct the group.
-    G:= Objectify( NewType( CollectionsFamily( FamilyObj( id ) ),
+    G:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( id ) ),
                             IsGroup and IsAttributeStoringRep and
 			    IsFinitelyGeneratedGroup and IsTrivial ),
 

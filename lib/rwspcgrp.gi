@@ -143,7 +143,7 @@ function( rws )
       IsElementsFamilyByRws and CanEasilySortElements );
 
     # create the default type for the elements
-    fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
+    fam!.defaultType := NewType3( TypeOfTypes, fam, IsPackedElementDefaultRep );
 
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(rws) ) );
@@ -382,7 +382,7 @@ function( sc )
     fi;
 
     # create a new family in the category <IsElementsFamilyByRws>
-    fam := NewFamily5( NewType( FamilyOfFamilies,
+    fam := NewFamily5( NewType3( TypeOfTypes, FamilyOfFamilies,
                            IsFamily and IsFamilyDefaultRep
                            and IsElementsFamilyBy8BitsSingleCollector ),
       "MultiplicativeElementsWithInversesFamilyBy8BitsSingleCollector(...)",
@@ -395,10 +395,10 @@ function( sc )
     fam!.rewritingSystem := Immutable(sc);
 
     # create the default type for the elements
-    fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
+    fam!.defaultType := NewType3( TypeOfTypes, fam, IsPackedElementDefaultRep );
 
     # create the special 8 bits type
-    fam!.8BitsType := NewType( fam, Is8BitsPcWordRep );
+    fam!.8BitsType := NewType3( TypeOfTypes, fam, Is8BitsPcWordRep );
 
     # copy the assoc word type
     for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do
@@ -554,7 +554,7 @@ function( sc )
     fi;
 
     # create a new family in the category <IsElementsFamilyByRws>
-    fam := NewFamily5( NewType( FamilyOfFamilies,
+    fam := NewFamily5( NewType3( TypeOfTypes, FamilyOfFamilies,
                            IsFamily and IsFamilyDefaultRep
                            and IsElementsFamilyBy16BitsSingleCollector ),
       "MultiplicativeElementsWithInversesFamilyBy16BitsSingleCollector(...)",
@@ -567,10 +567,10 @@ function( sc )
     fam!.rewritingSystem := Immutable(sc);
 
     # create the default type for the elements
-    fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
+    fam!.defaultType := NewType3( TypeOfTypes, fam, IsPackedElementDefaultRep );
 
     # create the special 16 bits type
-    fam!.16BitsType := NewType( fam, Is16BitsPcWordRep );
+    fam!.16BitsType := NewType3( TypeOfTypes, fam, Is16BitsPcWordRep );
 
     # copy the assoc word type
     for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do
@@ -725,7 +725,7 @@ function( sc )
     fi;
 
     # create a new family in the category <IsElementsFamilyByRws>
-    fam := NewFamily5( NewType( FamilyOfFamilies,
+    fam := NewFamily5( NewType3( TypeOfTypes, FamilyOfFamilies,
                            IsFamily and IsFamilyDefaultRep
                            and IsElementsFamilyBy32BitsSingleCollector ),
       "MultiplicativeElementsWithInversesFamilyBy32BitsSingleCollector(...)",
@@ -738,10 +738,10 @@ function( sc )
     fam!.rewritingSystem := Immutable(sc);
 
     # create the default type for the elements
-    fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
+    fam!.defaultType := NewType3( TypeOfTypes, fam, IsPackedElementDefaultRep );
 
     # create the special 32 bits type
-    fam!.32BitsType := NewType( fam, Is32BitsPcWordRep );
+    fam!.32BitsType := NewType3( TypeOfTypes, fam, Is32BitsPcWordRep );
 
     # copy the assoc word type
     for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do

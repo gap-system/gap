@@ -87,7 +87,7 @@ function(spec)
     cat);
   
   # create the type
-  eType := NewType(eFam, allfilters);
+  eType := NewType3( TypeOfTypes,eFam, allfilters);
 
   # the creation function
   makeelt := x->Objectify(eType, rec(data := x));

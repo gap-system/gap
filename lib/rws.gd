@@ -70,7 +70,7 @@
 ##  rewriting system (in the file <F>lib/kbsemi.gi</F>) uses
 ##  <P/>
 ##  <Log><![CDATA[
-##  kbrws := Objectify(NewType(rwsfam, 
+##  kbrws := Objectify(NewType3( TypeOfTypes,rwsfam, 
 ##    IsMutable and IsKnuthBendixRewritingSystem and 
 ##    IsKnuthBendixRewritingSystemRep), 
 ##    rec(family:= fam,

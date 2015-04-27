@@ -56,7 +56,7 @@ InstallMethod( LieFamily,
 #T maintain other req/imp properties as implied properties of `F'?
 
     # Enter the type of objects in the image.
-    F!.packedType:= NewType( F, filt and IsPackedElementDefaultRep );
+    F!.packedType:= NewType3( TypeOfTypes, F, filt and IsPackedElementDefaultRep );
 
     # Return the Lie family.
     return F;
@@ -86,7 +86,7 @@ InstallMethod( LieFamily,
 #T maintain other req/imp properties as implied properties of `F'?
 
     # Enter the type of objects in the image.
-    F!.packedType:= NewType( F, filt
+    F!.packedType:= NewType3( TypeOfTypes, F, filt
                                 and IsPackedElementDefaultRep
                                 and IsLieMatrix );
 
@@ -549,7 +549,7 @@ InstallHandlingByNiceBasis( "IsLieObjectsModule", rec(
 IdealByGeneratorsForLieAlgebra := function( L, elms )
     local I, lad;
 
-    I:= Objectify( NewType( FamilyObj( L ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( L ),
                                 IsFLMLOR
                             and IsAttributeStoringRep
                             and IsLieAlgebra ),

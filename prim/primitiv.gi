@@ -521,7 +521,7 @@ local arglis,i,j,a,b,l,p,deg,gut,g,grp,nr,f,RFL,ind,it;
     fi;
   od;
 
-  it:=Objectify(NewType(IteratorsFamily,
+  it:=Objectify(NewType3(TypeOfTypes,IteratorsFamily,
                         IsIterator and IsPrimGrpIterRep and IsMutable),rec());
 
   it!.deg:=deg;

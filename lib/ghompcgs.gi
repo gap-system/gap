@@ -61,7 +61,7 @@ local hom, pcgs, pcgsimgs, H, filter, G;
               sourcePcgsImages := pcgsimgs);
 
     ObjectifyWithAttributes(hom,
-              NewType( 
+              NewType3( TypeOfTypes, 
                 GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
                                        ElementsFamily( FamilyObj( H ) ) ),
                 filter ),
@@ -96,7 +96,7 @@ local fam,hom, pcgs, pcgsimgs, G;
 
   fam:=FamilyObj(hom1);
   if not IsBound(fam!.defaultAutomorphismType) then
-    fam!.defaultAutomorphismType:=NewType(fam,
+    fam!.defaultAutomorphismType:=NewType3( TypeOfTypes,fam,
       IsPcGroupHomomorphismByImages and IsToPcGroupHomomorphismByImages and
       IsTotal and IsInjective and IsSurjective and
       HasSource and HasRange and HasImagesSource and HasPreImagesRange);
@@ -536,7 +536,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
     pF:=Pcgs(F);
     imgs:=List(pcgsG,i->PcElementByExponents(pF,
               ExponentsOfPcElement(pcgsF,i)));
-    hom:=Objectify( NewType( GeneralMappingsFamily
+    hom:=Objectify( NewType3( TypeOfTypes, GeneralMappingsFamily
                   ( ElementsFamily( FamilyObj( G ) ),
                     ElementsFamily( FamilyObj( F ) ) ),
                   IsPcgsToPcgsHomomorphism ),

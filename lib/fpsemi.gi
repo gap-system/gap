@@ -161,12 +161,12 @@ function( F, rels )
     fam!.freeSemigroup := F;
     fam!.relations := Immutable( rels );
 
-    fam!.defaultType := NewType( fam, IsElementOfFpSemigroup 
+    fam!.defaultType := NewType3( TypeOfTypes, fam, IsElementOfFpSemigroup 
 			and IsPackedElementDefaultRep );
 
     # Create the semigroup.
     S := Objectify(
-        NewType( CollectionsFamily( fam ),
+        NewType3( TypeOfTypes, CollectionsFamily( fam ),
         IsSemigroup and IsFpSemigroup and IsAttributeStoringRep),
         rec() );
 

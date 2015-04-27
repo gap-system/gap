@@ -103,7 +103,7 @@ BIND_GLOBAL( "FunctionsFamily", NewFamily( "FunctionsFamily", IsFunction ) );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_FUNCTION", NewType( FunctionsFamily,
+BIND_GLOBAL( "TYPE_FUNCTION", NewType3( TypeOfTypes, FunctionsFamily,
                           IsFunction and IsInternalRep ) );
 
 
@@ -119,7 +119,7 @@ BIND_GLOBAL( "TYPE_FUNCTION", NewType( FunctionsFamily,
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_OPERATION",
-    NewType( FunctionsFamily,
+    NewType3( TypeOfTypes, FunctionsFamily,
              IsFunction and IsOperation and IsInternalRep ) );
 
 

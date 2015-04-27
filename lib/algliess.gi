@@ -614,7 +614,7 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
         
     fi;
         
-    R:= Objectify( NewType( NewFamily( "RootSystemFam", IsObject ),
+    R:= Objectify( NewType3( TypeOfTypes, NewFamily( "RootSystemFam", IsObject ),
                 IsAttributeStoringRep and IsRootSystemFromLieAlgebra ), 
                 rec() );
     SetUnderlyingLieAlgebra( R, L );

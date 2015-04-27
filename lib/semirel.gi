@@ -33,7 +33,7 @@ function(X)
 	     ElementsFamily(FamilyObj(X)) );
 
     # Create the default type for the elements.
-    rel :=  Objectify(NewType(fam,
+    rel :=  Objectify(NewType3( TypeOfTypes,fam,
 	       IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
 	       and IsGreensRRelation), rec());
 
@@ -56,7 +56,7 @@ function(X)
 	    ElementsFamily(FamilyObj(X)) );
 
     # Create the default type for the elements.
-    rel :=  Objectify(NewType(fam,
+    rel :=  Objectify(NewType3( TypeOfTypes,fam,
 	    IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
 	    and IsGreensLRelation), rec());
 
@@ -78,7 +78,7 @@ function(X)
 	    ElementsFamily(FamilyObj(X)) );
 
     # Create the default type for the elements.
-    rel :=  Objectify(NewType(fam,
+    rel :=  Objectify(NewType3( TypeOfTypes,fam,
 	    IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
 	    and IsGreensJRelation), rec());
 
@@ -99,7 +99,7 @@ function(X)
 	    ElementsFamily(FamilyObj(X)) );
 
     # Create the default type for the elements.
-    rel :=  Objectify(NewType(fam,
+    rel :=  Objectify(NewType3( TypeOfTypes,fam,
 	    IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
 	    and IsGreensDRelation), rec());
 
@@ -121,7 +121,7 @@ function(X)
 	    ElementsFamily(FamilyObj(X)) );
 
     # Create the default type for the elements.
-    rel :=  Objectify(NewType(fam,
+    rel :=  Objectify(NewType3( TypeOfTypes,fam,
 	    IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
 	    and IsGreensHRelation), rec());
 
@@ -395,7 +395,7 @@ function(rel, rep)
     filts:=filts and IsGreensJClass;
   fi;
   
-  new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)), filts), rec());
+  new:= Objectify(NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(rep)), filts), rec());
 
   SetEquivalenceClassRelation(new, rel);
   SetRepresentative(new, rep);
@@ -1203,7 +1203,7 @@ local hom, filter;
 	#SetAsSSortedList(imgslist, imgslist);
   hom:=rec(imgslist:=imgslist);
 
-Objectify(NewType( GeneralMappingsFamily
+Objectify(NewType3( TypeOfTypes, GeneralMappingsFamily
     ( ElementsFamily( FamilyObj( S ) ),
       ElementsFamily( FamilyObj( T ) ) ), IsSemigroupHomomorphism
       and IsSemigroupHomomorphismByImagesRep), hom);

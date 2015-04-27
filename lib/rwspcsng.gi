@@ -1033,7 +1033,7 @@ function( efam, gens, orders )
     sc[SCP_CONJUGATES] := List( sc[SCP_RWS_GENERATORS], x -> [] );
 
     # convert into a list object and set number of bits
-    type := NewType( fam, IsSingleCollectorRep and bits and IsFinite
+    type := NewType3( TypeOfTypes, fam, IsSingleCollectorRep and bits and IsFinite
                           and IsMutable );
     Objectify( type, sc );
     SetFeatureObj( sc, HasUnderlyingFamily,      true );

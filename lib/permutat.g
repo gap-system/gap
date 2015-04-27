@@ -384,7 +384,7 @@ BIND_GLOBAL( "PermutationsFamily",
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_PERM2",
-    NewType( PermutationsFamily, IsPerm and IsPerm2Rep ) );
+    NewType3( TypeOfTypes, PermutationsFamily, IsPerm and IsPerm2Rep ) );
 
 
 #############################################################################
@@ -399,7 +399,7 @@ BIND_GLOBAL( "TYPE_PERM2",
 ##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_PERM4",
-    NewType( PermutationsFamily, IsPerm and IsPerm4Rep ) );
+    NewType3( TypeOfTypes, PermutationsFamily, IsPerm and IsPerm4Rep ) );
 
 
 #############################################################################

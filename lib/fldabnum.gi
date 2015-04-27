@@ -33,7 +33,7 @@ BindGlobal( "AbelianNumberFieldByReducedGaloisStabilizerInfo",
 
     local D, d;
 
-    D:= Objectify( NewType( CollectionsFamily( CyclotomicsFamily ),
+    D:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( CyclotomicsFamily ),
                                 IsField
                             and IsFiniteDimensional
                             and IsAbelianNumberField
@@ -1221,7 +1221,7 @@ InstallMethod( CanonicalBasis,
           l;
 
     # Make the basis object.
-    B:= Objectify( NewType( FamilyObj( F ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( F ),
                                 IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisAbelianNumberFieldRep ),
@@ -1498,7 +1498,7 @@ InstallMethod( CanonicalBasis,
 
     n:= Conductor( F );
 
-    B:= Objectify( NewType( FamilyObj( F ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( F ),
                                 IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisCyclotomicFieldRep ),
@@ -1740,7 +1740,7 @@ InstallMethod( Coefficients,
 ##
 #V  Cyclotomics . . . . . . . . . . . . . . . . . .  field of all cyclotomics
 ##
-InstallValue( Cyclotomics, Objectify( NewType(
+InstallValue( Cyclotomics, Objectify( NewType3( TypeOfTypes,
     CollectionsFamily( CyclotomicsFamily ),
     IsField and IsAttributeStoringRep ),
     rec() ) );

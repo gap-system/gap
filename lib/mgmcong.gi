@@ -171,7 +171,7 @@ function(F, gens, category )
                ElementsFamily(FamilyObj(F)) );
     
     # Create the default type for the elements.
-    cong := Objectify(NewType(fam, 
+    cong := Objectify(NewType3( TypeOfTypes,fam, 
                 category and IsEquivalenceRelationDefaultRep), rec());
     SetSource(cong, F);
     SetRange(cong, F);
@@ -222,7 +222,7 @@ function(F, part, cat)
                 ElementsFamily(FamilyObj(F)) );
     
     # Create the default type for the elements.
-    cong :=  Objectify(NewType(fam, 
+    cong :=  Objectify(NewType3( TypeOfTypes,fam, 
                  cat and IsEquivalenceRelationDefaultRep), rec());
     SetSource(cong, F);
     SetRange(cong, F);
@@ -983,7 +983,7 @@ function(rel, rep)
     filts:=filts and IsAssociativeElement;
   fi;
 
-  new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)), filts), rec());
+  new:= Objectify(NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(rep)), filts), rec());
 
   SetEquivalenceClassRelation(new, rel);
   SetRepresentative(new, rep);
@@ -998,11 +998,11 @@ function(rel, rep)
     local new;
 
     if IsMultiplicativeElementWithOne(rep) then
-         new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
+         new:= Objectify(NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(rep)),
                    IsCongruenceClass and IsEquivalenceClassDefaultRep 
                    and IsMultiplicativeElementWithOne), rec());
     else
-         new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
+         new:= Objectify(NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(rep)),
                    IsCongruenceClass and IsEquivalenceClassDefaultRep 
                    and IsMultiplicativeElement), rec());
     fi;
@@ -1020,11 +1020,11 @@ InstallMethod(EquivalenceClassOfElementNC,
         local new;
 
         if IsMultiplicativeElementWithOne(rep) then
-             new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
+             new:= Objectify(NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(rep)),
                        IsCongruenceClass and IsEquivalenceClassDefaultRep 
                        and IsMultiplicativeElementWithOne), rec());
         else
-             new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
+             new:= Objectify(NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(rep)),
                        IsCongruenceClass and IsEquivalenceClassDefaultRep 
                        and IsMultiplicativeElement), rec());
         fi;

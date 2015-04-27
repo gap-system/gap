@@ -57,7 +57,7 @@ InstallMethod( Cochain,
              fam:= NewFamily( "CochainFamily", IsCochain );
              fam!.order:= s;
              fam!.module:= V;
-             type:= NewType( fam, IsZeroCochainRep );
+             type:= NewType3( TypeOfTypes, fam, IsZeroCochainRep );
              V!.zeroCochainType:= type;
            else
              type:= V!.zeroCochainType;
@@ -69,7 +69,7 @@ InstallMethod( Cochain,
             fam:= NewFamily( "CochainFamily", IsCochain );
             fam!.order:= s;
             fam!.module:= V;
-            type:= NewType( fam, IsPackedElementDefaultRep );
+            type:= NewType3( TypeOfTypes, fam, IsPackedElementDefaultRep );
             V!.cochainTypes[s]:= type;
          else
             type:= V!.cochainTypes[s];
@@ -556,7 +556,7 @@ InstallGlobalFunction( LieCoboundaryOperator,
           fam!.order:= s+1;
           fam!.module:= V;
           fam!.tuples:= tups;
-          type:= NewType( fam, IsPackedElementDefaultRep );
+          type:= NewType3( TypeOfTypes, fam, IsPackedElementDefaultRep );
           V!.cochainTypes[s+1]:= type;
        fi;
 
@@ -2420,7 +2420,7 @@ InstallGlobalFunction( VectorSearchTable,
         fi;
 
         fam := NewFamily("VectorSearchTableFam", IsVectorSearchTable);
-        T := Objectify( NewType(fam, 
+        T := Objectify( NewType3( TypeOfTypes,fam, 
                                 IsVectorSearchTableDefaultRep and IsMutable),
                         rec( top := 0) );
 
@@ -2526,7 +2526,7 @@ InstallMethod( LatticeGeneratorsInUEA,
 
     fam:= NewFamily( "UEALatticeEltFam", IsUEALatticeElement );
     fam!.packedUEALatticeElementDefaultType:=
-                            NewType( fam, IsPackedElementDefaultRep );
+                            NewType3( TypeOfTypes, fam, IsPackedElementDefaultRep );
     fam!.roots:= roots;
     fam!.rootVecs:= Rvecs;
 
@@ -3032,7 +3032,7 @@ BindGlobal( "BasisOfWeightRepSpace",
     function( V, vectors )
     local B;
 
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                             IsFiniteBasisDefault and
                             IsBasisOfWeightRepElementSpace and
                             IsAttributeStoringRep ),
@@ -3751,7 +3751,7 @@ InstallMethod( HighestWeightModule,
     wvecs:= [ ];
     no:= 0;
     fam:= NewFamily( "WeightRepElementsFamily", IsWeightRepElement );
-    fam!.weightRepElementDefaultType:= NewType( fam,
+    fam!.weightRepElementDefaultType:= NewType3( TypeOfTypes, fam,
                                                IsPackedElementDefaultRep );
 
     for k in [1..Length(weights)] do
@@ -3771,7 +3771,7 @@ InstallMethod( HighestWeightModule,
     V:= LeftAlgebraModuleByGenerators( L, \^, wvecs );
     SetGeneratorsOfLeftModule( V, GeneratorsOfAlgebraModule( V ) );
 
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                             IsFiniteBasisDefault and
                             IsBasisOfAlgebraModuleElementSpace and
                             IsAttributeStoringRep ),

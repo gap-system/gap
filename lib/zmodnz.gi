@@ -71,7 +71,7 @@ InstallOtherMethod( ZmodnZObj,
 
       # Store the type for the representation of prime field elements
       # via residues.
-      Fam!.typeOfZmodnZObj:= NewType( Fam,
+      Fam!.typeOfZmodnZObj:= NewType3( TypeOfTypes, Fam,
                                  IsZmodpZObjSmall and IsModulusRep );
       SetDataType( Fam!.typeOfZmodnZObj, p );   # TODO: remove once no package uses this
 
@@ -1057,7 +1057,7 @@ InstallGlobalFunction( ZmodnZ, function( n )
       SetCharacteristic(F,n);
 
       # Store the objects type.
-      F!.typeOfZmodnZObj:= NewType( F,     IsZmodnZObjNonprime
+      F!.typeOfZmodnZObj:= NewType3( TypeOfTypes, F,     IsZmodnZObjNonprime
                                        and IsModulusRep );
       SetDataType( F!.typeOfZmodnZObj, n );   # TODO: remove once no package uses this
 

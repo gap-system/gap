@@ -67,7 +67,7 @@ function(m)
 
 	# create the type if necessary
 	if not IsBound(FamilyObj(m)!.transtype) then
-		FamilyObj(m)!.transtype := NewType(FamilyObj(m), 
+		FamilyObj(m)!.transtype := NewType3( TypeOfTypes,FamilyObj(m), 
 			IsEndoMapping and IsNonSPGeneralMapping 
 			and IsTransformationRepOfEndo);
 	fi;

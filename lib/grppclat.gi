@@ -1231,7 +1231,7 @@ local s,i,c,classes, lattice,map,GI;
 	       end);
 
   # create the lattice
-  lattice:=Objectify(NewType(FamilyObj(classes),IsLatticeSubgroupsRep),
+  lattice:=Objectify(NewType3( TypeOfTypes,FamilyObj(classes),IsLatticeSubgroupsRep),
 		     rec());
   lattice!.conjugacyClassesSubgroups:=classes;
   lattice!.group     :=G;

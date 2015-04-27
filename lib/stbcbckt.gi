@@ -1519,7 +1519,7 @@ InstallGlobalFunction( PartitionBacktrack,
 #    else
         if IsList( Pr )  then
             image.perm := Objectify
-                ( NewType( PermutationsFamily, IsSlicedPerm ),
+                ( NewType3( TypeOfTypes, PermutationsFamily, IsSlicedPerm ),
                   rec( length := 0, word := [  ] ) );
             image.perm!.lftObj := Pr[ 1 ];
 #            image.perm!.rgtObj := Pr[ 2 ];
@@ -1595,7 +1595,7 @@ function( rbase, image, Q, strat )
                              else  t := image.perm2;  fi;
     if IsSlicedPerm( t )  then
         t := ShallowCopy( t );
-        SET_TYPE_COMOBJ( t, NewType( PermutationsFamily, IsSlicedPermInv ) );
+        SET_TYPE_COMOBJ( t, NewType3( TypeOfTypes, PermutationsFamily, IsSlicedPermInv ) );
     else
         t := t ^ -1;
     fi;

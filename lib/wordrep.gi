@@ -977,7 +977,7 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
 			infinity          ];
 
     # Store the internal types.
-    K:= NewType( F, Is8BitsAssocWord and req );
+    K:= NewType3( TypeOfTypes, F, Is8BitsAssocWord and req );
     K![ AWP_PURE_TYPE    ]      := K;
     K![ AWP_NR_BITS_EXP  ]      := F!.expBits[1];
     K![ AWP_NR_GENS      ]      := rank;
@@ -986,7 +986,7 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     K![ AWP_FUN_ASSOC_WORD    ] := 8Bits_AssocWord;
     F!.types[1]:= K;
 
-    K:= NewType( F, Is16BitsAssocWord and req );
+    K:= NewType3( TypeOfTypes, F, Is16BitsAssocWord and req );
     K![ AWP_PURE_TYPE    ]      := K;
     K![ AWP_NR_BITS_EXP  ]      := F!.expBits[2];
     K![ AWP_NR_GENS      ]      := rank;
@@ -995,7 +995,7 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     K![ AWP_FUN_ASSOC_WORD    ] := 16Bits_AssocWord;
     F!.types[2]:= K;
 
-    K:= NewType( F, Is32BitsAssocWord and req );
+    K:= NewType3( TypeOfTypes, F, Is32BitsAssocWord and req );
     K![ AWP_PURE_TYPE    ]      := K;
     K![ AWP_NR_BITS_EXP  ]      := F!.expBits[3];
     K![ AWP_NR_GENS      ]      := rank;
@@ -1006,7 +1006,7 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
 
   fi;
 
-  K:= NewType( F, IsInfBitsAssocWord and req );
+  K:= NewType3( TypeOfTypes, F, IsInfBitsAssocWord and req );
   K![ AWP_PURE_TYPE    ]      := K;
   K![ AWP_NR_BITS_EXP  ]      := infinity;
   K![ AWP_NR_GENS      ]      := Length( names );
@@ -1016,9 +1016,9 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
   F!.types[4]:= K;
 
   if IsBLetterWordsFamily(F) then
-    K:= NewType( F, IsBLetterAssocWordRep and req );
+    K:= NewType3( TypeOfTypes, F, IsBLetterAssocWordRep and req );
   else
-    K:= NewType( F, IsWLetterAssocWordRep and req );
+    K:= NewType3( TypeOfTypes, F, IsWLetterAssocWordRep and req );
   fi;
   F!.letterWordType:=K;
 
@@ -1134,7 +1134,7 @@ InstallGlobalFunction( InfiniteListOfNames, function( arg )
       Error( "usage: InfiniteListOfNames( <string>[, <init>] )" );
     fi;
 
-    list:= Objectify( NewType( CollectionsFamily( FamilyObj( string ) ),
+    list:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( string ) ),
                                    IsList
                                and IsDenseList
                                and IsConstantTimeAccessList
@@ -1269,7 +1269,7 @@ InstallGlobalFunction( InfiniteListOfGenerators, function( arg )
       init := Immutable( arg[2] );
     fi;
 
-    list:= Objectify( NewType( CollectionsFamily( F ),
+    list:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( F ),
                                    IsList
                                and IsDenseList
                                and IsConstantTimeAccessList

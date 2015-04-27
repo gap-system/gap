@@ -398,7 +398,7 @@ InstallGlobalFunction( RingByStructureConstants, function( arg )
 
     # Construct the default type of the family.
     Fam!.defaultTypeDenseCoeffVectorRep :=
-        NewType( Fam, IsSCRingObj and IsDenseCoeffVectorRep );
+        NewType3( TypeOfTypes, Fam, IsSCRingObj and IsDenseCoeffVectorRep );
 
     SetCoefficientsFamily( Fam, ElementsFamily( FamilyObj( Integers ) ) );
     # temporary

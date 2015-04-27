@@ -153,7 +153,7 @@ InstallMethod( BasicImageGroupElement, "for basic image group elt", true,
     [ IsWordWithInverse, IsList, IsList, IsList, IsGroupHomomorphism ], 0, 
     function( word, base, baseImage, orbitGenerators, homFromFree )
         local Type, Rec;
-	Type := NewType( BasicImageEltRepFamily, IsBasicImageEltRep );
+	Type := NewType3( TypeOfTypes, BasicImageEltRepFamily, IsBasicImageEltRep );
 	Rec := rec( Word := word, Base := base, BaseImage := baseImage,
 		    OrbitGenerators := orbitGenerators, HomFromFree := homFromFree );
 	return Objectify( Type, Rec );
@@ -187,7 +187,7 @@ InstallMethod( BasicImageGroupElement, "for basic image group elt", true,
 	base := BaseOfGroup( siftGroup );
 	baseImage := List( base, b -> b^g );
 
-	Type := NewType( BasicImageEltRepFamily, IsBasicImageEltRep );
+	Type := NewType3( TypeOfTypes, BasicImageEltRepFamily, IsBasicImageEltRep );
 	Rec := rec( Word := word, Base := base, BaseImage := baseImage,
 		    OrbitGenerators := orbitGens, HomFromFree := homFromFree );
 	return Objectify( Type, Rec );

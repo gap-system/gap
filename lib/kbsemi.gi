@@ -106,7 +106,7 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
 
   relwco:=relations_with_correct_order(r,wordord);
 
-  kbrws := Objectify(NewType(rwsfam, 
+  kbrws := Objectify(NewType3( TypeOfTypes,rwsfam, 
     IsMutable and IsKnuthBendixRewritingSystem and 
     IsKnuthBendixRewritingSystemRep), 
     rec(family:= fam,

@@ -43,7 +43,7 @@ InstallGlobalFunction( FullMatrixModule, function( R, m, n )
     fi;
 
     if IsDivisionRing( R ) then
-      M:= Objectify( NewType( CollectionsFamily( CollectionsFamily(
+      M:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( CollectionsFamily(
                                                      FamilyObj( R ) ) ),
                                   IsFreeLeftModule
                               and IsGaussianSpace
@@ -51,7 +51,7 @@ InstallGlobalFunction( FullMatrixModule, function( R, m, n )
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      M:= Objectify( NewType( CollectionsFamily( CollectionsFamily(
+      M:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( CollectionsFamily(
                                                      FamilyObj( R ) ) ),
                                   IsFreeLeftModule
                               and IsFullMatrixModule
@@ -282,7 +282,7 @@ InstallMethod( CanonicalBasis,
     [ IsFreeLeftModule and IsFullMatrixModule ],
     function( V )
     local B;
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisFullMatrixModule

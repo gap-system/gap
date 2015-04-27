@@ -19,7 +19,7 @@
 ##
 #V  Integers  . . . . . . . . . . . . . . . . . . . . .  ring of the integers
 ##
-InstallValue( Integers, Objectify( NewType(
+InstallValue( Integers, Objectify( NewType3( TypeOfTypes,
     CollectionsFamily( CyclotomicsFamily ),
     IsIntegers and IsAttributeStoringRep ),
     rec() ) );
@@ -40,7 +40,7 @@ SetIsWholeFamily( Integers, false );
 ##
 #V  NonnegativeIntegers . . . . . . . . . .  semiring of nonnegative integers
 ##
-InstallValue( NonnegativeIntegers, Objectify( NewType(
+InstallValue( NonnegativeIntegers, Objectify( NewType3( TypeOfTypes,
     CollectionsFamily( CyclotomicsFamily ),
     IsNonnegativeIntegers and IsAttributeStoringRep ),
     rec() ) );
@@ -57,7 +57,7 @@ SetIsWholeFamily( NonnegativeIntegers, false );
 ##
 #V  PositiveIntegers  . . . . . . . . . . . . . semiring of positive integers
 ##
-InstallValue( PositiveIntegers, Objectify( NewType(
+InstallValue( PositiveIntegers, Objectify( NewType3( TypeOfTypes,
     CollectionsFamily( CyclotomicsFamily ),
     IsPositiveIntegers and IsAttributeStoringRep ),
     rec() ) );
@@ -74,7 +74,7 @@ SetIsWholeFamily( PositiveIntegers, false );
 ##
 #V  GaussianIntegers  . . . . . . . . . . . . . . . ring of Gaussian integers
 ##
-InstallValue( GaussianIntegers, Objectify( NewType(
+InstallValue( GaussianIntegers, Objectify( NewType3( TypeOfTypes,
     CollectionsFamily(CyclotomicsFamily),
     IsGaussianIntegers and IsAttributeStoringRep ),
     rec() ) );
@@ -122,7 +122,7 @@ InstallMethod( CanonicalBasis,
     [ IsIntegers ], 0,
     function( Integers )
     local B;
-    B:= Objectify( NewType( FamilyObj( Integers ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( Integers ),
                                 IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisIntegersRep ),

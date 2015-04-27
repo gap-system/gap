@@ -115,7 +115,7 @@ local fam,  filter,  cl;
       fi;
       filter:=filter and HasActingDomain and HasRepresentative and
 	      HasFunctionAction;
-      fam!.defaultClassType:=NewType( FamilyObj( G ), filter );
+      fam!.defaultClassType:=NewType3( TypeOfTypes, FamilyObj( G ), filter );
     fi;
 
     cl:=rec( start := [ g ] );
@@ -140,7 +140,7 @@ local fam,  filter,  cl;
       fi;
       filter:=filter and HasActingDomain and HasRepresentative and
 	      HasFunctionAction and HasStabilizerOfExternalSet;
-      fam!.defaultClassCentType:=NewType( FamilyObj( G ), filter );
+      fam!.defaultClassCentType:=NewType3( TypeOfTypes, FamilyObj( G ), filter );
     fi;
 
     cl:=rec( start := [ g ]);
@@ -460,17 +460,17 @@ end );
 ##
 InstallMethod( RationalClass, IsCollsElms, [ IsGroup, IsObject ],
     function( G, g )
-    local   cl;
-
-    cl := Objectify( NewType( FamilyObj( G ) ), rec(  ) );
+    local   filter, cl;
     if IsPermGroup( G )  then
-        SetFilterObj( cl, IsRationalClassPermGroupRep );
+        filter := IsRationalClassPermGroupRep;
     else
-        SetFilterObj( cl, IsRationalClassGroupRep );
+        filter := IsRationalClassGroupRep;
     fi;
-    SetActingDomain( cl, G );
-    SetRepresentative( cl, g );
-    SetFunctionAction( cl, OnPoints );
+    cl := rec(  );
+    ObjectifyWithAttributes( cl, NewType( FamilyObj( G ), filter ),
+	    ActingDomain, G,
+	    Representative, g,
+	    FunctionAction, OnPoints );
     return cl;
 end );
 

@@ -692,12 +692,12 @@ function(fam)
 local nfam;
   nfam:=NewFamily("AdditiveElementsAsMultiplicativeElementsFamily(...)");
   nfam!.underlyingFamily:=fam;
-  nfam!.defaultType:=NewType(nfam,IsAdditiveElementAsMultiplicativeElementRep);
+  nfam!.defaultType:=NewType3( TypeOfTypes,nfam,IsAdditiveElementAsMultiplicativeElementRep);
   nfam!.defaultTypeOne:=
-    NewType(nfam,IsAdditiveElementAsMultiplicativeElementRep and
+    NewType3( TypeOfTypes,nfam,IsAdditiveElementAsMultiplicativeElementRep and
     IsMultiplicativeElementWithOne);
   nfam!.defaultTypeInverse:=
-    NewType(nfam,IsAdditiveElementAsMultiplicativeElementRep and
+    NewType3( TypeOfTypes,nfam,IsAdditiveElementAsMultiplicativeElementRep and
     IsMultiplicativeElementWithInverse);
   return nfam;
 end);

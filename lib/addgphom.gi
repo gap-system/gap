@@ -25,7 +25,7 @@ local map;
 
       # make the general mapping
       map:= Objectify(
-        NewType(GeneralMappingsFamily(ElementsFamily(FamilyObj(arg[1])),
+        NewType3( TypeOfTypes,GeneralMappingsFamily(ElementsFamily(FamilyObj(arg[1])),
         ElementsFamily(FamilyObj(arg[2]))),
                                IsSPMappingByFunctionRep
                            and IsSingleValued
@@ -38,7 +38,7 @@ local map;
 
       # make the mapping
       map:= Objectify(
-        NewType(GeneralMappingsFamily(ElementsFamily(FamilyObj(arg[1])),
+        NewType3( TypeOfTypes,GeneralMappingsFamily(ElementsFamily(FamilyObj(arg[1])),
         ElementsFamily(FamilyObj(arg[2]))),
                                IsSPMappingByFunctionWithInverseRep
                            and IsBijective

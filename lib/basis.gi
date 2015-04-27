@@ -149,7 +149,7 @@ InstallMethod( RelativeBasis,
     fi;
 
     # Construct the relative basis.
-    R:= Objectify( NewType( FamilyObj( vectors ),
+    R:= Objectify( NewType3( TypeOfTypes, FamilyObj( vectors ),
                                 IsFiniteBasisDefault
                             and IsRelativeBasisDefaultRep ),
                    rec() );
@@ -185,7 +185,7 @@ InstallMethod( RelativeBasisNC,
     fi;
 
     # Construct the relative basis.
-    R:= Objectify( NewType( FamilyObj( vectors ),
+    R:= Objectify( NewType3( TypeOfTypes, FamilyObj( vectors ),
                                 IsFiniteBasisDefault
                             and IsRelativeBasisDefaultRep ),
                    rec() );
@@ -1062,7 +1062,7 @@ InstallMethod( IsCanonicalBasis,
 ##
 BasisForFreeModuleByNiceBasis:= function( V )
     local B;
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsBasisByNiceBasis
                             and IsAttributeStoringRep ),
@@ -1090,7 +1090,7 @@ InstallMethod( Basis,
     local B;
 
     # Create the basis object.
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsBasisByNiceBasis
                             and IsAttributeStoringRep ),
@@ -1118,7 +1118,7 @@ InstallMethod( BasisNC,
     local B;
 
     # Create the basis object.
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsBasisByNiceBasis
                             and IsAttributeStoringRep ),
@@ -1277,7 +1277,7 @@ InstallMethod( Basis,
     [ IsFreeLeftModule and IsTrivial ],
     function( V )
     local B;
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsEmpty
                             and IsAttributeStoringRep ),
@@ -1297,7 +1297,7 @@ InstallMethod( Basis,
     fi;
 
     # Construct an empty basis.
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsEmpty
                             and IsAttributeStoringRep ),
@@ -1316,7 +1316,7 @@ InstallMethod( BasisNC,
     local B;
 
     # Construct an empty basis.
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsEmpty
                             and IsAttributeStoringRep ),
@@ -1339,7 +1339,7 @@ InstallMethod( SemiEchelonBasis,
     fi;
 
     # Construct an empty basis.
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsEmpty
                             and IsSemiEchelonized
@@ -1359,7 +1359,7 @@ InstallMethod( SemiEchelonBasisNC,
     local B;
 
     # Construct an empty basis.
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsEmpty
                             and IsSemiEchelonized
@@ -1420,7 +1420,7 @@ DeclareRepresentation( "IsBasisWithReplacedLeftModuleRep",
 InstallGlobalFunction( BasisWithReplacedLeftModule, function( B, V )
     local new;
 
-    new:= Objectify( NewType( FamilyObj( B ),
+    new:= Objectify( NewType3( TypeOfTypes, FamilyObj( B ),
                                   IsFiniteBasisDefault
                               and IsBasisWithReplacedLeftModuleRep ),
                      rec() );

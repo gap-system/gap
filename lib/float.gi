@@ -679,38 +679,38 @@ InstallOtherMethod(RationalFunctionsFamily, "floats pseudofield",
           IsRationalFunctionsFamily);
 
   # default type for polynomials
-  fam!.defaultPolynomialType := NewType( fam,
+  fam!.defaultPolynomialType := NewType3( TypeOfTypes, fam,
 	  IsPolynomial and IsPolynomialDefaultRep and
 	  HasExtRepPolynomialRatFun);
 
   # default type for univariate laurent polynomials
   fam!.threeLaurentPolynomialTypes := 
-    [ NewType( fam,
+    [ NewType3( TypeOfTypes, fam,
 	  IsLaurentPolynomial
 	  and IsLaurentPolynomialDefaultRep and
 	  HasIndeterminateNumberOfLaurentPolynomial and
 	  HasCoefficientsOfLaurentPolynomial), 
 
-	  NewType( fam,
+	  NewType3( TypeOfTypes, fam,
 	    IsLaurentPolynomial
 	    and IsLaurentPolynomialDefaultRep and
 	    HasIndeterminateNumberOfLaurentPolynomial and
 	    HasCoefficientsOfLaurentPolynomial and
 	    IsConstantRationalFunction and IsUnivariatePolynomial),
 
-	  NewType( fam,
+	  NewType3( TypeOfTypes, fam,
 	    IsLaurentPolynomial and IsLaurentPolynomialDefaultRep and
 	    HasIndeterminateNumberOfLaurentPolynomial and
 	    HasCoefficientsOfLaurentPolynomial and
 	    IsUnivariatePolynomial)];
 	      
   # default type for univariate rational functions
-  fam!.univariateRatfunType := NewType( fam,
+  fam!.univariateRatfunType := NewType3( TypeOfTypes, fam,
 	  IsUnivariateRationalFunctionDefaultRep  and
 	  HasIndeterminateNumberOfLaurentPolynomial and
 	  HasCoefficientsOfUnivariateRationalFunction);
 	      
-  fam!.defaultRatFunType := NewType( fam,
+  fam!.defaultRatFunType := NewType3( TypeOfTypes, fam,
           IsRationalFunctionDefaultRep and
 	  HasExtRepNumeratorRatFun and HasExtRepDenominatorRatFun);
 
@@ -837,7 +837,7 @@ function( r, n )
                      #and IsAlgebraWithOne; # done above already
     fi;
     
-    prng := Objectify( NewType( CollectionsFamily(rfun), type ), rec() );
+    prng := Objectify( NewType3( TypeOfTypes, CollectionsFamily(rfun), type ), rec() );
 
     # set the left acting domain
     SetLeftActingDomain( prng, r );

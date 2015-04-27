@@ -819,7 +819,7 @@ local I,n,fam,typ,gens,hgens,id,i,e,info,W,p,dom;
   fi;
 
   fam:=NewFamily("WreathProductElemFamily",IsWreathProductElement);
-  typ:=NewType(fam,IsWreathProductElementDefaultRep);
+  typ:=NewType3( TypeOfTypes,fam,IsWreathProductElementDefaultRep);
   fam!.defaultType:=typ;
   info:=rec(groups:=[G,H],
 	    family:=fam,

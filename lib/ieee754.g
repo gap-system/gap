@@ -121,7 +121,7 @@ InstallMethod( ComplexConjugate, "for macfloats", [ IsIEEE754FloatRep ], x->x);
 
 DeclareCategory("IsIEEE754PseudoField", IsFloatPseudoField);
 BindGlobal("IEEE754_PSEUDOFIELD",
-        Objectify(NewType(CollectionsFamily(IEEE754FloatsFamily),
+        Objectify(NewType3( TypeOfTypes,CollectionsFamily(IEEE754FloatsFamily),
                 IsIEEE754PseudoField and IsAttributeStoringRep),rec()));
 SetName(IEEE754_PSEUDOFIELD, "IEEE754_PSEUDOFIELD");
 

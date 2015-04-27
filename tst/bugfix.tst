@@ -2182,7 +2182,7 @@ false
 gap> if IsBound(IsXYZ) then MakeReadWriteGlobal("IsXYZ"); Unbind(IsXYZ); fi;
 gap> fam := NewFamily("XYZsFamily");;
 gap> DeclareCategory("IsXYZ",IsObject);
-gap> type := NewType(fam,IsXYZ and IsPositionalObjectRep);;
+gap> type := NewType3( TypeOfTypes,fam,IsXYZ and IsPositionalObjectRep);;
 gap> o := Objectify(type,[]);;
 gap> InstallMethod(String,[IsXYZ],function(o) return "XYZ"; end);
 gap> o;

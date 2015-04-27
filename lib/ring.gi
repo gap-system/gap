@@ -332,7 +332,7 @@ InstallMethod( RingByGenerators,
     [ IsCollection ], 0,
     function( gens )
     local R;
-    R:= Objectify( NewType( FamilyObj( gens ),
+    R:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsRing and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfRing( R, gens );
@@ -458,7 +458,7 @@ end );
 InstallGlobalFunction( SubringWithOneNC, function( R, gens )
     local S;
     if IsEmpty( gens ) then
-      S:= Objectify( NewType( FamilyObj( R ),
+      S:= Objectify( NewType3( TypeOfTypes, FamilyObj( R ),
                               IsRingWithOne and IsAttributeStoringRep ),
                      rec() );
       SetGeneratorsOfRingWithOne( S, AsList( gens ) );
@@ -480,7 +480,7 @@ InstallMethod( RingWithOneByGenerators,
     [ IsCollection ], 0,
     function( gens )
     local R;
-    R:= Objectify( NewType( FamilyObj( gens ),
+    R:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsRingWithOne and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfRingWithOne( R, gens );

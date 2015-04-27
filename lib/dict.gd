@@ -478,10 +478,10 @@ DeclareRepresentation( "IsSparseHashRep",
      "NumberKeys"] );
 
 BindGlobal("DefaultSparseHashRepType",
-  NewType( DictionariesFamily, IsSparseHashRep and IsMutable and IsCopyable ));
+  NewType3( TypeOfTypes, DictionariesFamily, IsSparseHashRep and IsMutable and IsCopyable ));
 
 BindGlobal("DefaultSparseHashWithIKRepType",
-        NewType( DictionariesFamily, IsSparseHashRep and TableHasIntKeyFun 
+        NewType3( TypeOfTypes, DictionariesFamily, IsSparseHashRep and TableHasIntKeyFun 
                 and IsMutable and IsCopyable));
 
 #############################################################################

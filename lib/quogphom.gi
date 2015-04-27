@@ -55,7 +55,7 @@ local fam,filt;
 
   fam:=NewFamily("HomCosetFamily",filt);
   fam!.homomorphism:=hom;
-  fam!.defaultType:=NewType(fam,filt);
+  fam!.defaultType:=NewType3( TypeOfTypes,fam,filt);
   return fam;
 
 end);

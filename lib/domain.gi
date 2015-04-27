@@ -125,7 +125,7 @@ InstallMethod( DomainByGenerators,
     [ IsFamily, IsList and IsEmpty ],
     function ( F, generators )
     local   D;
-    D := Objectify( NewType( CollectionsFamily( F ),
+    D := Objectify( NewType3( TypeOfTypes, CollectionsFamily( F ),
                              IsDomain and IsAttributeStoringRep ),
                     rec() );
     SetGeneratorsOfDomain( D, AsList( generators ) );
@@ -145,7 +145,7 @@ InstallMethod( DomainByGenerators,
     if IsNotIdenticalObj( CollectionsFamily(F), FamilyObj(generators) ) then
         Error( "each element in <generators> must lie in <F>" );
     fi;
-    D := Objectify( NewType( FamilyObj( generators ),
+    D := Objectify( NewType3( TypeOfTypes, FamilyObj( generators ),
                              IsDomain and IsAttributeStoringRep ),
                     rec() );
     SetGeneratorsOfDomain( D, AsList( generators ) );
@@ -162,7 +162,7 @@ InstallOtherMethod( DomainByGenerators,
     [ IsCollection ],
     function ( generators )
     local   D;
-    D := Objectify( NewType( FamilyObj( generators ),
+    D := Objectify( NewType3( TypeOfTypes, FamilyObj( generators ),
                              IsDomain and IsAttributeStoringRep ),
                     rec() );
     SetGeneratorsOfDomain( D, AsList( generators ) );

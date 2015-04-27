@@ -12,7 +12,7 @@
 
 InstallMethod(TypeOfObjWithMemory,"generic",true,[IsFamily],0,
 function(fam)
-  return NewType(fam,IsObjWithMemory);
+  return NewType3( TypeOfTypes,fam,IsObjWithMemory);
 end);
 
 InstallGlobalFunction( GeneratorsWithMemory, 

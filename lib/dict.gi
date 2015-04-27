@@ -27,7 +27,7 @@ local d,rep;
     rep:=IsListDictionary;
     d.list:=[];
   fi;
-  Objectify(NewType(DictionariesFamily,rep and IsMutable and IsCopyable),d);
+  Objectify(NewType3( TypeOfTypes,DictionariesFamily,rep and IsMutable and IsCopyable),d);
   return d;
 end);
 
@@ -42,7 +42,7 @@ local d,rep;
     rep:=IsSortDictionary;
     d.list:=[];
   fi;
-  Objectify(NewType(DictionariesFamily,rep and IsMutable and IsCopyable),d);
+  Objectify(NewType3( TypeOfTypes,DictionariesFamily,rep and IsMutable and IsCopyable),d);
   return d;
 end);
 
@@ -56,28 +56,28 @@ InstallMethod(ShallowCopy, [IsListLookupDictionary and IsCopyable],
         function(dict)
     local   c;
     c := rec( entries := ShallowCopy(dict!.entries) );
-    return Objectify( NewType(DictionariesFamily, IsListLookupDictionary and IsMutable), c);
+    return Objectify( NewType3( TypeOfTypes,DictionariesFamily, IsListLookupDictionary and IsMutable), c);
 end);
 
 InstallMethod(ShallowCopy, [IsListDictionary and IsCopyable],
         function(dict)
     local   c;
     c := rec( list := ShallowCopy(dict!.list) );
-    return Objectify( NewType(DictionariesFamily, IsListDictionary and IsMutable), c);
+    return Objectify( NewType3( TypeOfTypes,DictionariesFamily, IsListDictionary and IsMutable), c);
 end);
 
 InstallMethod(ShallowCopy, [IsSortLookupDictionary and IsCopyable],
         function(dict)
     local   c;
     c := rec( entries := ShallowCopy(dict!.entries) );
-    return Objectify( NewType(DictionariesFamily, IsSortLookupDictionary and IsMutable), c);
+    return Objectify( NewType3( TypeOfTypes,DictionariesFamily, IsSortLookupDictionary and IsMutable), c);
 end);
 
 InstallMethod(ShallowCopy, [IsSortDictionary and IsCopyable],
         function(dict)
     local   c;
     c := rec( list := ShallowCopy(dict!.list) );
-    return Objectify( NewType(DictionariesFamily, IsSortDictionary and IsMutable), c);
+    return Objectify( NewType3( TypeOfTypes,DictionariesFamily, IsSortDictionary and IsMutable), c);
 end);
 
 
@@ -205,7 +205,7 @@ local d,rep;
   else
     rep:=IsPositionDictionary;
   fi;
-  Objectify(NewType(DictionariesFamily,rep and IsMutable and IsCopyable),d);
+  Objectify(NewType3( TypeOfTypes,DictionariesFamily,rep and IsMutable and IsCopyable),d);
   return d;
 end);
 
@@ -214,7 +214,7 @@ InstallMethod(ShallowCopy, [IsPositionDictionary and IsCopyable],
     local   r;
     r := rec( domain := d!.domain,
               blist := ShallowCopy(d!.blist));
-    Objectify(NewType(DictionariesFamily,IsPositionDictionary and IsMutable and IsCopyable),r);
+    Objectify(NewType3( TypeOfTypes,DictionariesFamily,IsPositionDictionary and IsMutable and IsCopyable),r);
     return r;
 end);
         
@@ -224,7 +224,7 @@ InstallMethod(ShallowCopy, [IsPositionLookupDictionary and IsCopyable],
     r := rec( domain := d!.domain,
               blist := ShallowCopy(d!.blist),
               vals := ShallowCopy(d!.vals));
-    Objectify(NewType(DictionariesFamily,IsPositionLookupDictionary and IsMutable and IsCopyable),r);
+    Objectify(NewType3( TypeOfTypes,DictionariesFamily,IsPositionLookupDictionary and IsMutable and IsCopyable),r);
     return r;
 end);
         
@@ -385,7 +385,7 @@ InstallGlobalFunction( DenseHashTable,
     function( )
         local Type, Rec;
 
-        Type := NewType( DictionariesFamily, IsDenseHashRep and IsMutable );
+        Type := NewType3( TypeOfTypes, DictionariesFamily, IsDenseHashRep and IsMutable );
         Rec := rec( KeyArray := [], ValueArray := [] );
         return Objectify( Type, Rec );
     end );

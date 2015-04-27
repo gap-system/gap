@@ -124,7 +124,7 @@ InstallMethod( Embedding,"perm direct product", true,
     info := DirectProductInfo( D );
     if IsBound( info.embeddings[i] ) then return info.embeddings[i]; fi;
     
-    emb := Objectify( NewType( GeneralMappingsFamily( PermutationsFamily,
+    emb := Objectify( NewType3( TypeOfTypes, GeneralMappingsFamily( PermutationsFamily,
                                                       PermutationsFamily ),
                    IsEmbeddingDirectProductPermGroup ),
                    rec( component := i ) );
@@ -245,7 +245,7 @@ InstallMethod( Projection,"perm direct product", true,
     info := DirectProductInfo( D );
     if IsBound( info.projections[i] ) then return info.projections[i]; fi;
     
-    prj := Objectify( NewType( GeneralMappingsFamily( PermutationsFamily,
+    prj := Objectify( NewType3( TypeOfTypes, GeneralMappingsFamily( PermutationsFamily,
                                                       PermutationsFamily ),
                    IsProjectionDirectProductPermGroup ),
                    rec( component := i ) );
@@ -418,7 +418,7 @@ InstallMethod( Projection,"perm subdirect product",true,
     info := SubdirectProductInfo( S );
     if IsBound( info.projections[i] ) then return info.projections[i]; fi;
     
-    prj := Objectify( NewType( GeneralMappingsFamily( PermutationsFamily,
+    prj := Objectify( NewType3( TypeOfTypes, GeneralMappingsFamily( PermutationsFamily,
                                                       PermutationsFamily ),
                    IsProjectionSubdirectProductPermGroup ),
                    rec( component := i ) );
@@ -655,7 +655,7 @@ local	G,H,	    # factors
       degI   := degI,
       hgens  := hgens,
       components := components,
-      embeddingType := NewType(
+      embeddingType := NewType3( TypeOfTypes,
                  GeneralMappingsFamily(PermutationsFamily,PermutationsFamily),
 		 IsEmbeddingImprimitiveWreathProductPermGroup),
       embeddings := [],
@@ -898,7 +898,7 @@ InstallGlobalFunction( WreathProductProductAction, function( G, H )
       basegens := basegens,
       base   := SubgroupNC(W,Flat(basegens)),
       hgens  := hgens,
-      embeddingType := NewType(
+      embeddingType := NewType3( TypeOfTypes,
                  GeneralMappingsFamily(PermutationsFamily,PermutationsFamily),
 		 IsEmbeddingProductActionWreathProductPermGroup),
       embeddings := []);

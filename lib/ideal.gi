@@ -56,7 +56,7 @@ InstallGlobalFunction( TwoSidedIdealNC, function( arg )
       if IsFLMLOR( arg[1] ) then
         I:= SubFLMLORNC( arg[1], arg[2] );
       else
-        I:= Objectify( NewType( FamilyObj( arg[1] ),
+        I:= Objectify( NewType3( TypeOfTypes, FamilyObj( arg[1] ),
                                     IsRing
                                 and IsTrivial
                                 and IsAttributeStoringRep ),
@@ -197,7 +197,7 @@ InstallMethod( TwoSidedIdealByGenerators,
     [ IsRing, IsCollection ], 0,
     function( R, gens )
     local I;
-    I:= Objectify( NewType( FamilyObj( R ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( R ),
                                 IsRing
                             and IsAttributeStoringRep ),
                    rec() );
@@ -218,7 +218,7 @@ InstallMethod( LeftIdealByGenerators,
     [ IsRing, IsCollection ], 0,
     function( R, gens )
     local I;
-    I:= Objectify( NewType( FamilyObj( R ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( R ),
                                 IsRing
                             and IsAttributeStoringRep ),
                    rec() );
@@ -238,7 +238,7 @@ InstallMethod( RightIdealByGenerators,
     [ IsRing, IsCollection ], 0,
     function( R, gens )
     local I;
-    I:= Objectify( NewType( FamilyObj( R ),
+    I:= Objectify( NewType3( TypeOfTypes, FamilyObj( R ),
                                 IsRing
                             and IsAttributeStoringRep ),
                    rec() );

@@ -243,11 +243,11 @@ function(S, mat)
           IsReesMatrixSemigroupElement);
 
   # create the Rees matrix semigroup
-  R := Objectify( NewType( CollectionsFamily( fam ), IsWholeFamily and
+  R := Objectify( NewType3( TypeOfTypes, CollectionsFamily( fam ), IsWholeFamily and
    IsReesMatrixSubsemigroup and IsAttributeStoringRep ), rec() );
 
   # store the type of the elements in the semigroup
-  type:=NewType(fam, IsReesMatrixSemigroupElement);
+  type:=NewType3( TypeOfTypes,fam, IsReesMatrixSemigroupElement);
   
   fam!.type:=type;
   SetTypeReesMatrixSemigroupElements(R, type); 
@@ -292,11 +292,11 @@ function(S, mat)
           IsReesZeroMatrixSemigroupElement);
 
   # create the Rees matrix semigroup
-  R := Objectify( NewType( CollectionsFamily( fam ), IsWholeFamily and
+  R := Objectify( NewType3( TypeOfTypes, CollectionsFamily( fam ), IsWholeFamily and
    IsReesZeroMatrixSubsemigroup and IsAttributeStoringRep ), rec() );
 
   # store the type of the elements in the semigroup
-  type:=NewType(fam, IsReesZeroMatrixSemigroupElement);
+  type:=NewType3( TypeOfTypes,fam, IsReesZeroMatrixSemigroupElement);
   
   fam!.type:=type;
   SetTypeReesMatrixSemigroupElements(R, type); 
@@ -1186,7 +1186,7 @@ function(R, I, U, J)
   local S;
 
   if U=UnderlyingSemigroup(R) and ForAny(Matrix(R){J}{I}, x-> 0 in x) then 
-    S:=Objectify( NewType( FamilyObj(R),
+    S:=Objectify( NewType3( TypeOfTypes, FamilyObj(R),
      IsReesZeroMatrixSubsemigroup and IsAttributeStoringRep ), rec() );
     SetTypeReesMatrixSemigroupElements(S, TypeReesMatrixSemigroupElements(R));
 
@@ -1237,7 +1237,7 @@ function(R, I, U, J)
   local S;
     
   if U=UnderlyingSemigroup(R) then 
-    S:=Objectify( NewType( FamilyObj(R),
+    S:=Objectify( NewType3( TypeOfTypes, FamilyObj(R),
       IsReesMatrixSubsemigroup and IsAttributeStoringRep ), rec() );
     SetTypeReesMatrixSemigroupElements(S, TypeReesMatrixSemigroupElements(R));
 

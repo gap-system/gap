@@ -60,7 +60,7 @@ InstallMethod( CanonicalBasis,
     function( GaussianIntegers )
     local B;
 
-    B:= Objectify( NewType( FamilyObj( GaussianIntegers ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( GaussianIntegers ),
                                 IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisGaussianIntegersRep ),

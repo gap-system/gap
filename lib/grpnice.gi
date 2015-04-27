@@ -103,7 +103,7 @@ function( nice, grp )
     local   fam,  pre;
 
     fam := FamilyObj( Source(nice) );
-    pre := Objectify(NewType(fam,IsGroup and IsAttributeStoringRep), rec());
+    pre := Objectify(NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep), rec());
     SetIsHandledByNiceMonomorphism( pre, true );
     SetNiceMonomorphism( pre, nice );
     SetNiceObject( pre, grp );
@@ -1021,7 +1021,7 @@ InstallMethod( Enumerator,"use nice monomorphism",true,
         [ IsGroup and IsHandledByNiceMonomorphism and IsFinite ], 0,
 function( G )
     return Objectify(
-        NewType( FamilyObj(G), IsList and IsEnumeratorByNiceomorphismRep ),
+        NewType3( TypeOfTypes, FamilyObj(G), IsList and IsEnumeratorByNiceomorphismRep ),
         rec( group:=G,
 	     morphism:=NiceMonomorphism(G),
 	     niceEnumerator:=Enumerator(NiceObject(G))));

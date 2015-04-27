@@ -123,7 +123,7 @@ FFECONWAY.ZNC := function(p,d)
     zc := fam!.ZCache;
     if not IsBound(zc[d]) then
         if not IsBound(fam!.ConwayFldEltDefaultType) then
-            fam!.ConwayFldEltDefaultType := NewType(fam, IsCoeffsModConwayPolRep and IsLexOrderedFFE);
+            fam!.ConwayFldEltDefaultType := NewType3( TypeOfTypes,fam, IsCoeffsModConwayPolRep and IsLexOrderedFFE);
         fi;
         FFECONWAY.SetUpConwayStuff(p,d);
         #

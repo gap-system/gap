@@ -817,7 +817,7 @@ InstallMethod( GroupWithGenerators,
     if IsFinite(gens) then
       if not IsBound(fam!.defaultFinitelyGeneratedGroupType) then
 	fam!.defaultFinitelyGeneratedGroupType:=
-	  NewType(fam,IsGroup and IsAttributeStoringRep
+	  NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep
 		      and HasGeneratorsOfMagmaWithInverses
 		      and IsFinitelyGeneratedGroup);
       fi;
@@ -846,7 +846,7 @@ local G,fam,typ,f;
     if IsFinite(gens) then
       if not IsBound(fam!.defaultFinitelyGeneratedGroupWithOneType) then
 	fam!.defaultFinitelyGeneratedGroupWithOneType:=
-	  NewType(fam,IsGroup and IsAttributeStoringRep
+	  NewType3( TypeOfTypes,fam,IsGroup and IsAttributeStoringRep
 		      and HasGeneratorsOfMagmaWithInverses
 		      and IsFinitelyGeneratedGroup and HasOne);
       fi;
@@ -1074,7 +1074,7 @@ InstallGlobalFunction( "BlowUpIsomorphism", function( matgrp, B )
 
     iso:= rec();
     ObjectifyWithAttributes( iso,
-        NewType( GeneralMappingsFamily( FamilyObj( preimgs[1] ),
+        NewType3( TypeOfTypes, GeneralMappingsFamily( FamilyObj( preimgs[1] ),
                                         FamilyObj( imgs[1] ) ),
                      IsBlowUpIsomorphism
                  and IsGroupGeneralMapping

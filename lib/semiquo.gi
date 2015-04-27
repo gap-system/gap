@@ -38,7 +38,7 @@ function(cong)
     filters := filters and IsFinite;
   fi;
 
-  Q:=Objectify(NewType( CollectionsFamily( efam ), filters), rec() );
+  Q:=Objectify(NewType3( TypeOfTypes, CollectionsFamily( efam ), filters), rec() );
 
   SetRepresentative(Q, Qrep);
   SetQuotientSemigroupPreimage(Q, S);

@@ -502,7 +502,7 @@ local xset,fam,hom;
   fam := GeneralMappingsFamily( ElementsFamily( FamilyObj( aut ) ),
 				PermutationsFamily );
   hom := rec(  );
-  hom:=Objectify(NewType(fam,
+  hom:=Objectify(NewType3( TypeOfTypes,fam,
 		IsActionHomomorphismAutomGroup and IsSurjective ),hom);
   SetIsInjective(hom,true);
   SetUnderlyingExternalSet( hom, xset );

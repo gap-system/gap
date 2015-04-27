@@ -23,7 +23,7 @@
 
 #V  ClosedStreamType  . . . . . . . . . . . . . . . . type of a closed stream
 ##
-ClosedStreamType := NewType(
+ClosedStreamType := NewType3( TypeOfTypes,
     StreamsFamily,
     IsClosedStream );
 
@@ -446,7 +446,7 @@ end );
 ##
 #V  InputTextStringType
 ##
-InputTextStringType := NewType(
+InputTextStringType := NewType3( TypeOfTypes,
     StreamsFamily,
     IsInputTextStream and IsInputTextStringRep );
 
@@ -635,7 +635,7 @@ DeclareRepresentation(
 ##
 #V  InputTextFileType . . . . . . . . . . .  type of a input text file stream
 ##
-InputTextFileType := NewType(
+InputTextFileType := NewType3( TypeOfTypes,
     StreamsFamily,
     IsInputTextStream and IsInputTextFileRep );
 
@@ -811,7 +811,7 @@ DeclareRepresentation(
 ##
 #V  InputTextNoneType	. . . . . . . . . . . type of dummy input text stream
 ##
-InputTextNoneType := NewType(
+InputTextNoneType := NewType3( TypeOfTypes,
     StreamsFamily,
     IsInputTextNone and IsInputTextNoneRep );
 
@@ -947,7 +947,7 @@ DeclareRepresentation(
 ##
 #V  OutputTextStringType
 ##
-OutputTextStringType := NewType(
+OutputTextStringType := NewType3( TypeOfTypes,
     StreamsFamily,
     IsOutputTextStream and IsOutputTextStringRep );
 
@@ -1072,7 +1072,7 @@ DeclareRepresentation(
 ##
 #V  OutputTextFileType
 ##
-OutputTextFileType := NewType(
+OutputTextFileType := NewType3( TypeOfTypes,
     StreamsFamily,
     IsOutputTextStream and IsOutputTextFileRep );
 
@@ -1247,7 +1247,7 @@ DeclareRepresentation(
 ##
 #V  OutputTextNoneType  . . . . . . . . . .  type of dummy output text stream
 ##
-OutputTextNoneType := NewType(
+OutputTextNoneType := NewType3( TypeOfTypes,
     StreamsFamily,
     IsOutputTextNone and IsOutputTextNoneRep );
 
@@ -1390,7 +1390,7 @@ DeclareRepresentation("IsInputOutputStreamByPtyRep", IsPositionalObjectRep,
         []);
 
 InputOutputStreamByPtyDefaultType :=
-  NewType(StreamsFamily, IsInputOutputStreamByPtyRep and IsInputOutputStream);
+  NewType3( TypeOfTypes,StreamsFamily, IsInputOutputStreamByPtyRep and IsInputOutputStream);
 
 #############################################################################
 ##

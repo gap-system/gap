@@ -28,14 +28,14 @@ InstallGlobalFunction( FullRowModule, function( R, n )
     fi;
 
     if IsDivisionRing( R ) then
-      M:= Objectify( NewType( CollectionsFamily( FamilyObj( R ) ),
+      M:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( R ) ),
                                   IsFreeLeftModule
                               and IsGaussianSpace
                               and IsFullRowModule
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      M:= Objectify( NewType( CollectionsFamily( FamilyObj( R ) ),
+      M:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( R ) ),
                                   IsFreeLeftModule
                               and IsFullRowModule
                               and IsAttributeStoringRep ),
@@ -226,7 +226,7 @@ InstallMethod( CanonicalBasis,
     [ IsFreeLeftModule and IsFullRowModule ],
     function( V )
     local B;
-    B:= Objectify( NewType( FamilyObj( V ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( V ),
                                 IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisFullRowModule

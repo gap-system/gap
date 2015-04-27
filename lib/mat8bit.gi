@@ -49,7 +49,7 @@ InstallGlobalFunction(TYPE_MAT8BIT,
                  IsRingElementTable and IsNoImmediateMethodsObject and 
                  HasIsRectangularTable and IsRectangularTable;
         if mut then filts := filts and IsMutable; fi;
-        TYPES_MAT8BIT[col][q] := NewType(CollectionsFamily(FamilyObj(GF(q))),filts);
+        TYPES_MAT8BIT[col][q] := NewType3( TypeOfTypes,CollectionsFamily(FamilyObj(GF(q))),filts);
     fi;
     return TYPES_MAT8BIT[col][q];
 end);

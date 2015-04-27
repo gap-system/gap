@@ -85,8 +85,8 @@ local fam,i,cof,red,rchar,impattr,deg;
 	 IsAlgebraicElementFamily and CanEasilySortElements);
 
   # The two types
-  fam!.baseType := NewType(fam,IsAlgBFRep);
-  fam!.extType := NewType(fam,IsKroneckerConstRep);
+  fam!.baseType := NewType3( TypeOfTypes,fam,IsAlgBFRep);
+  fam!.extType := NewType3( TypeOfTypes,fam,IsKroneckerConstRep);
 
   # Important trivia
   fam!.baseField:=f;
@@ -171,7 +171,7 @@ local f,p,nam,e,fam,colf;
   SetCharacteristic(fam,Characteristic(f));
   fam!.indeterminateName:=nam;
   colf:=CollectionsFamily(fam);
-  e:=Objectify(NewType(colf,IsAlgebraicExtensionDefaultRep),
+  e:=Objectify(NewType3( TypeOfTypes,colf,IsAlgebraicExtensionDefaultRep),
                rec());
 
   fam!.wholeField:=e;
@@ -947,7 +947,7 @@ InstallMethod( CanonicalBasis,
     [ IsAlgebraicExtension ], 0,
     function( F )
     local B;
-    B:= Objectify( NewType( FamilyObj( F ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( F ),
                             IsCanonicalBasisAlgebraicExtension ),
                    rec() );
     SetUnderlyingLeftModule( B, F );

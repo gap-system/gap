@@ -415,7 +415,7 @@ InstallMethod( Basis,
           k;
 
     # Set up the basis object.
-    B:= Objectify( NewType( FamilyObj( gens ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                                 IsFiniteBasisDefault
                             and IsBasisFiniteFieldRep ),
                    rec() );
@@ -480,7 +480,7 @@ InstallMethod( BasisNC,
           k;
 
     # Set up the basis object.
-    B:= Objectify( NewType( FamilyObj( gens ),
+    B:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                                 IsFiniteBasisDefault
                             and IsBasisFiniteFieldRep ),
                    rec() );

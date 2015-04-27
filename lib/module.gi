@@ -24,7 +24,7 @@ InstallMethod( LeftModuleByGenerators,
     [ IsRing, IsCollection ],
     function( R, gens )
     local V;
-    V:= Objectify( NewType( FamilyObj( gens ),
+    V:= Objectify( NewType3( TypeOfTypes, FamilyObj( gens ),
                             IsLeftModule and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( V, R );
@@ -40,7 +40,7 @@ InstallMethod( LeftModuleByGenerators,
     function( R, gens, zero )
     local V;
 
-    V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
+    V:= Objectify( NewType3( TypeOfTypes, CollectionsFamily( FamilyObj( zero ) ),
                             IsLeftModule and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( V, R );
@@ -338,7 +338,7 @@ end );
 InstallGlobalFunction( SubmoduleNC, function( arg )
     local S;
     if IsEmpty( arg[2] ) then
-      S:= Objectify( NewType( FamilyObj( arg[1] ),
+      S:= Objectify( NewType3( TypeOfTypes, FamilyObj( arg[1] ),
                                   IsFreeLeftModule
                               and IsTrivial
                               and IsAttributeStoringRep ),

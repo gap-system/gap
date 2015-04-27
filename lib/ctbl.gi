@@ -1064,7 +1064,7 @@ InstallMethod( OrdinaryCharacterTable,
     local tbl, ccl, idpos, bijection;
 
     # Make the object.
-    tbl:= Objectify( NewType( NearlyCharacterTablesFamily,
+    tbl:= Objectify( NewType3( TypeOfTypes, NearlyCharacterTablesFamily,
                               IsOrdinaryTable and IsAttributeStoringRep ),
                      rec() );
 
@@ -4315,11 +4315,11 @@ InstallGlobalFunction( ConvertToCharacterTableNC, function( record )
     if not IsBound( record.UnderlyingCharacteristic ) then
       Error( "<record> needs component `UnderlyingCharacteristic'" );
     elif record.UnderlyingCharacteristic = 0 then
-      Objectify( NewType( NearlyCharacterTablesFamily,
+      Objectify( NewType3( TypeOfTypes, NearlyCharacterTablesFamily,
                           IsOrdinaryTable and IsAttributeStoringRep ),
                  record );
     else
-      Objectify( NewType( NearlyCharacterTablesFamily,
+      Objectify( NewType3( TypeOfTypes, NearlyCharacterTablesFamily,
                           IsBrauerTable and IsAttributeStoringRep ),
                  record );
     fi;
@@ -4382,7 +4382,7 @@ InstallGlobalFunction( ConvertToLibraryCharacterTableNC, function( record )
 
     # Make the object.
     if IsBound( record.isGenericTable ) and record.isGenericTable then
-      Objectify( NewType( NearlyCharacterTablesFamily,
+      Objectify( NewType3( TypeOfTypes, NearlyCharacterTablesFamily,
                           IsGenericCharacterTableRep ),
                  record );
     else
