@@ -649,9 +649,11 @@ the resulting profiles can be displayed by using the 'profiling' package.
 </Subsection> 
 
 <#Include Label="ProfileLineByLine">
+<#Include Label="CoverageLineByLine">
 <#Include Label="UnprofileLineByLine">
+<#Include label="UncoverageLineByLine">
 <#Include Label="ActivateProfileColour">
-
+<#Include Label="IsLineByLineProfileActive">
 
 
 <#Include Label="DisplayCacheStats">
