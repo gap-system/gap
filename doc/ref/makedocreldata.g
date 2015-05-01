@@ -205,7 +205,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../grp/simple.gd",
     "../../small/small.gd",
     "../../trans/trans.gd",
-    "../../tst/testall.g",    
+    "../../tst/teststandard.g",    
     "../../tst/testinstall.g",
   ],
  );;

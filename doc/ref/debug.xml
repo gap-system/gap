@@ -703,7 +703,7 @@ gaussian.tst               0             10
 [ further lines deleted ]
 ]]></Log>
 
-<#Include Label="[1]{testall.g}">
+<#Include Label="[1]{teststandard.g}">
 <P/>
 
 <#Include Label="Test">
