@@ -236,7 +236,6 @@ teststandard:
 	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) > \
             `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
-	( rm test.tmp )
 
 teststandardrenormalize:
 	mkdir -p dev/log
