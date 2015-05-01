@@ -1,30 +1,27 @@
 #############################################################################
 ##
-#W  testbugfix.g              GAP library                    Markus Pfeiffer
+#W  testall.g                   GAP library                      Frank Celler
 ##
 ##
-#Y  Copyright (C) 2015, The GAP Group
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file lists those files in the directory <F>tst</F> of the &GAP;
 ##  distribution that are recommended to be read after a &GAP; installation.
 ##
-##  Each entry in the argument list of <C>RunStandardTests</C> is a pair that
-##  consists of the filename (relative to the <F>tst</F> directory) and the
-##  scaling factor that occurs in the <C>STOP_TEST</C> call at the end of the
-##  test file.
 ##  <P/>
-##  The documentation states the following:
-##  <P/>
-##  <#GAPDoc Label="[1]{testbugfix.g}">
+##  <#GAPDoc Label="[1]{testall.g}">
 ##  If you want to run a more advanced check (this is not required and 
 ##  make take up to an hour), you can read <File>testall.g</File>
 ##  which is an extended test script performing all tests from the 
 ##  <File>tst</File> directory.
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "testbugfix.g" ) );
+##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "testall.g" ) );
 ##  ]]></Log>
 ##  <P/>
+##  The test requires about 750MB of memory and runs about one hour on an 
+##  Intel Core 2 Duo / 2.53 GHz machine, and produces an output similar 
+##  to the <File>testinstall.g</File> test.
 ##  <#/GAPDoc>
 ##
 
@@ -41,9 +38,11 @@ Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 750m'.\n",
 
 Reread( Filename( DirectoriesLibrary( "tst" ), "testutil.g" ) );
 
-TestDirectory( Filename( DirectoriesLibrary( "tst" ), "testall/bugfix.tst", 
-               rec(exitGAP := true) );
-
+TestDirectory( [
+  Filename( DirectoriesLibrary( "tst" ), "teststandard" ),
+  Filename( DirectoriesLibrary( "tst" ), "testinstall" )],
+  rec(exitGAP := true) );
+  
 # Should never get here
 FORCE_QUIT_GAP(1);
 
