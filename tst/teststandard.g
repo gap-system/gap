@@ -9,14 +9,14 @@
 ##  distribution that are recommended to be read after a &GAP; installation.
 ##
 ##  <P/>
-##  <#GAPDoc Label="[1]{testall.g}">
+##  <#GAPDoc Label="[1]{teststandard.g}">
 ##  If you want to run a more advanced check (this is not required and 
-##  make take up to an hour), you can read <File>testall.g</File>
+##  make take up to an hour), you can read <File>teststandard.g</File>
 ##  which is an extended test script performing all tests from the 
 ##  <File>tst</File> directory.
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "testall.g" ) );
+##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "teststandard.g" ) );
 ##  ]]></Log>
 ##  <P/>
 ##  The test requires about 750MB of memory and runs about one hour on an 
