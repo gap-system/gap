@@ -127,6 +127,7 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 #define HDLR_6ARGS(func)        ((ObjFunc_6ARGS)HDLR_FUNC(func,6))
 #define HDLR_XARGS(func)        ((ObjFunc_1ARGS)HDLR_FUNC(func,7))
 
+extern Obj NargError(Obj func, Int actual);
 
 /****************************************************************************
 **
@@ -257,6 +258,19 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 
 #define LEN_PROF                    5
 
+
+/****************************************************************************
+**
+
+*F  FuncFILENAME_FUNC(Obj self, Obj func) . . . . . . .  filename of function
+*F  FuncSTARTLINE_FUNC(Obj self, Obj func)  . . . . .  start line of function
+*F  FuncENDLINE_FUNC(Obj self, Obj func)  . . . . . . .  end line of function
+**
+**  These functions, usually exported to GAP, get information about GAP
+**  functions */
+Obj FuncFILENAME_FUNC(Obj self, Obj func);
+Obj FuncSTARTLINE_FUNC(Obj self, Obj func);
+Obj FuncENDLINE_FUNC(Obj self, Obj func);
 
 /****************************************************************************
 **

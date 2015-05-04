@@ -66,6 +66,7 @@
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include <assert.h>
 
 /****************************************************************************
 **
@@ -274,19 +275,38 @@ Obj DoWrap6args (
 
 *F  DoFail0args( <self> )  . . . . . .  fail a function call with 0 arguments
 **
-**  'DoWrap<i>args' accepts the <i> arguments <arg1>, <arg2>,  and so on, and
+**  'DoFail<i>args' accepts the <i> arguments <arg1>, <arg2>,  and so on, and
 **  signals an error,  because  the  function for  which  they  are installed
 **  expects another number of arguments.  'DoFail<i>args' are the handlers in
 **  the other slots of a function.
 */
+
+/* Pull this out to avoid repetition, since it gets a little more complex in 
+   the presence of partially variadic functions */
+
+Obj NargError( Obj func, Int actual) {
+  Int narg = NARG_FUNC(func);
+
+  if (narg >= 0) {
+    assert(narg != actual);
+    return ErrorReturnObj(
+			  "Function: number of arguments must be %d (not %d)",
+			  narg, actual,
+			  "you can replace the argument list <args> via 'return <args>;'" );
+  } else {
+    assert(-narg-1 > actual);
+    return ErrorReturnObj(
+        "Function: number of arguments must be at least %d (not %d)",
+        -narg-1, actual,
+        "you can replace the argument list <args> via 'return <args>;'" );
+  }
+}
+
 Obj DoFail0args (
     Obj                 self )
 {
     Obj                 argx;           /* arguments list (to continue)    */
-    argx = ErrorReturnObj(
-        "Function: number of arguments must be %d (not %d)",
-        (Int)NARG_FUNC( self ), 0L,
-        "you can replace the argument list <args> via 'return <args>;'" );
+    argx =NargError(self, 0);
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -300,10 +320,7 @@ Obj DoFail1args (
     Obj                 arg1 )
 {
     Obj                 argx;           /* arguments list (to continue)    */
-    argx = ErrorReturnObj(
-        "Function: number of arguments must be %d (not %d)",
-        (Int)NARG_FUNC( self ), 1L,
-        "you can replace the argument list <args> via 'return <args>;'" );
+    argx =NargError(self, 1);
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -318,10 +335,7 @@ Obj DoFail2args (
     Obj                 arg2 )
 {
     Obj                 argx;           /* arguments list (to continue)    */
-    argx = ErrorReturnObj(
-        "Function: number of arguments must be %d (not %d)",
-        (Int)NARG_FUNC( self ), 2L,
-        "you can replace the argument list <args> via 'return <args>;'" );
+    argx =NargError(self, 2);
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -337,10 +351,7 @@ Obj DoFail3args (
     Obj                 arg3 )
 {
     Obj                 argx;           /* arguments list (to continue)    */
-    argx = ErrorReturnObj(
-        "Function: number of arguments must be %d (not %d)",
-        (Int)NARG_FUNC( self ), 3L,
-        "you can replace the argument list <args> via 'return <args>;'" );
+    argx =NargError(self, 3);
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -357,10 +368,7 @@ Obj DoFail4args (
     Obj                 arg4 )
 {
     Obj                 argx;           /* arguments list (to continue)    */
-    argx = ErrorReturnObj(
-        "Function: number of arguments must be %d (not %d)",
-        (Int)NARG_FUNC( self ), 4L,
-        "you can replace the argument list <args> via 'return <args>;'" );
+    argx =NargError(self, 4);
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -378,10 +386,7 @@ Obj DoFail5args (
     Obj                 arg5 )
 {
     Obj                 argx;           /* arguments list (to continue)    */
-    argx = ErrorReturnObj(
-        "Function: number of arguments must be %d (not %d)",
-        (Int)NARG_FUNC( self ), 5L,
-        "you can replace the argument list <args> via 'return <args>;'" );
+    argx =NargError(self, 5);
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -400,10 +405,7 @@ Obj DoFail6args (
     Obj                 arg6 )
 {
     Obj                 argx;           /* arguments list (to continue)    */
-    argx = ErrorReturnObj(
-        "Function: number of arguments must be %d (not %d)",
-        (Int)NARG_FUNC( self ), 6L,
-        "you can replace the argument list <args> via 'return <args>;'" );
+    argx =NargError(self, 6);
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -417,10 +419,7 @@ Obj DoFailXargs (
     Obj                 args )
 {
     Obj                 argx;           /* arguments list (to continue)    */
-    argx = ErrorReturnObj(
-        "Function: number of arguments must be %d (not %d)",
-        (Int)NARG_FUNC( self ), LEN_LIST( args ),
-        "you can replace the argument list <args> via 'return <args>;'" );
+    argx =NargError(self, LEN_LIST(args));
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -1140,7 +1139,7 @@ Obj NewFunctionT (
     func = NewBag( type, size );
 
     /* create a function with a fixed number of arguments                  */
-    if ( narg != -1 ) {
+    if ( narg >= 0 ) {
         HDLR_FUNC(func,0) = DoFail0args;
         HDLR_FUNC(func,1) = DoFail1args;
         HDLR_FUNC(func,2) = DoFail2args;
@@ -1154,17 +1153,17 @@ Obj NewFunctionT (
 
     /* create a function with a variable number of arguments               */
     else {
-        HDLR_FUNC(func,0) = DoWrap0args;
-        HDLR_FUNC(func,1) = DoWrap1args;
-        HDLR_FUNC(func,2) = DoWrap2args;
-        HDLR_FUNC(func,3) = DoWrap3args;
-        HDLR_FUNC(func,4) = DoWrap4args;
-        HDLR_FUNC(func,5) = DoWrap5args;
-        HDLR_FUNC(func,6) = DoWrap6args;
-        HDLR_FUNC(func,7) = hdlr;
+      HDLR_FUNC(func,0) = (narg >= -1) ? DoWrap0args : DoFail0args;
+      HDLR_FUNC(func,1) = (narg >= -2) ? DoWrap1args : DoFail1args;
+      HDLR_FUNC(func,2) = (narg >= -3) ? DoWrap2args : DoFail2args;
+      HDLR_FUNC(func,3) = (narg >= -4) ? DoWrap3args : DoFail3args;
+      HDLR_FUNC(func,4) = (narg >= -5) ? DoWrap4args : DoFail4args;
+      HDLR_FUNC(func,5) = (narg >= -6) ? DoWrap5args : DoFail5args;
+      HDLR_FUNC(func,6) = (narg >= -7) ? DoWrap6args : DoFail6args;
+      HDLR_FUNC(func,7) = hdlr;
     }
 
-    /* enter the the arguments and the names                               */
+    /* enter the arguments and the names                               */
     NAME_FUNC(func) = name;
     NARG_FUNC(func) = narg;
     NAMS_FUNC(func) = nams;
@@ -1308,7 +1307,9 @@ void PrintFunction (
     Pr("%5>function%< ( %>",0L,0L);
 
     /* print the arguments                                                 */
-    narg = (NARG_FUNC(func) == -1 ? 1 : NARG_FUNC(func));
+    narg = NARG_FUNC(func);
+    if (narg < 0)
+      narg = -narg;
     for ( i = 1; i <= narg; i++ ) {
         if ( NAMS_FUNC(func) != 0 )
             Pr( "%I", (Int)NAMI_FUNC( func, (Int)i ), 0L );
@@ -1339,7 +1340,7 @@ void PrintFunction (
             Pr("<<kernel or compiled code>>",0L,0L);
         }
         else {
-            SWITCH_TO_NEW_LVARS( func, NARG_FUNC(func), NLOC_FUNC(func),
+            SWITCH_TO_NEW_LVARS( func, narg, NLOC_FUNC(func),
                                  oldLVars );
             PrintStat( FIRST_STAT_CURR_FUNC );
             SWITCH_TO_OLD_LVARS( oldLVars );

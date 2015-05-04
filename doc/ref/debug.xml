@@ -644,16 +644,14 @@ gap> DisplayProfile( [ StabChainOp, Centralizer ] );
 <Subsection Label="linebylineprofiling">
 <Heading>Line By Line Profiling</Heading>
 Line By Line profiling tracks which lines have been executed in a piece
-of GAP code. See XXX for an example of how to use these methods.
-
+of GAP code. Built into GAP are the methods necessary to generate profiles,
+the resulting profiles can be displayed by using the 'profiling' package.
 </Subsection> 
 
 <#Include Label="ProfileLineByLine">
 <#Include Label="UnprofileLineByLine">
 <#Include Label="ActivateProfileColour">
-<#Include Label="ReadLineByLineProfile">
-<#Include Label="OutputAnnotatedCodeCoverageFiles">
-<#Include Label="OutputFlameGraph">
+
 
 
 <#Include Label="DisplayCacheStats">
@@ -705,11 +703,11 @@ gaussian.tst               0             10
 [ further lines deleted ]
 ]]></Log>
 
-<#Include Label="[1]{testall.g}">
+<#Include Label="[1]{teststandard.g}">
 <P/>
 
 <#Include Label="Test">
-
+<#Include Label="TestDirectory">
 </Section>
 
 

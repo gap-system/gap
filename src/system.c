@@ -1477,7 +1477,7 @@ void SySleep ( UInt secs )
 **
 **  If the user calls 'QUIT_GAP' with a value, then the global variable
 **  'UserHasQUIT' will be set, and their requested return value will be
-**  in 'UserHasQUITReturnValue'. If the return value would be 0, we check
+**  in 'SystemErrorCode'. If the return value would be 0, we check
 **  this calue and use it instead.
 */
 void SyExit (
@@ -1493,12 +1493,7 @@ void SyExit (
   }
 
 #endif
-    if(ret == 0) {
-        exit(UserHasQUITReturnValue);
-    }
-    else {
         exit( (int)ret );
-    }
 }
 
 /****************************************************************************

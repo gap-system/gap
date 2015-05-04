@@ -260,10 +260,12 @@ function(a,b)
 	  =RepresentativesContainedRightCosets(b);
 end);
 
-InstallMethod(PrintObj,"DoubleCoset",true,[IsDoubleCoset],0,
+InstallMethod(ViewString,"DoubleCoset",true,[IsDoubleCoset],0,
 function(d)
-  Print("DoubleCoset(",LeftActingGroup(d),",",Representative(d),",",
-        RightActingGroup(d),")");
+  return(STRINGIFY("DoubleCoset(\<",
+                   ViewString(LeftActingGroup(d)),",\>",
+                   ViewString(Representative(d)),",\>",
+                   ViewString(RightActingGroup(d)),")"));
 end);
 
 InstallMethod(Random,"double coset",true,[IsDoubleCoset],0,
@@ -405,14 +407,28 @@ function(s,a)
   return RightCoset(s,a);
 end);
 
+InstallMethod(ViewString,"RightCoset",true,[IsRightCoset],0,
+function(d)
+  return STRINGIFY("RightCoset(\<",
+                    ViewString(ActingDomain(d)),",\>",
+                    ViewString(Representative(d)),")");
+end);
+
+InstallMethod(PrintString,"RightCoset",true,[IsRightCoset],0,
+function(d)
+  return STRINGIFY("RightCoset(\<",
+                    PrintString(ActingDomain(d)),",\>",
+                    PrintString(Representative(d)),")");
+end);
+
 InstallMethod(PrintObj,"RightCoset",true,[IsRightCoset],0,
 function(d)
-  Print("RightCoset(",ActingDomain(d),",",Representative(d),")");
+  Print(PrintString(d));
 end);
 
 InstallMethod(ViewObj,"RightCoset",true,[IsRightCoset],0,
 function(d)
-  Print("RightCoset(",ActingDomain(d),",",Representative(d),")");
+  Print(ViewString(d));
 end);
 
 InstallMethod(Random,"RightCoset",true,[IsRightCoset],0,
@@ -453,7 +469,7 @@ local s,r;
   s:=ActingDomain(a);
   r:=Representative(a);
   if ForAny(GeneratorsOfGroup(s),x->not x^r in s) then
-    Error("Inversion only works for cosetss of normal subgroups");
+    Error("Inversion only works for cosets of normal subgroups");
   fi;
   return RightCoset(s,Inverse(r));
 end);

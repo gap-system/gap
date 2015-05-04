@@ -4437,7 +4437,7 @@ Obj QuoPPerm22(Obj f, Obj g){
     rank=RANK_PPERM2(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
-      if(ptf[j]<=deginv){ 
+      if(j<deg && ptf[j]<=deginv){
         ptquo[j]=pttmp[ptf[j]-1];
         if(ptquo[j]>codeg) codeg=ptquo[j];
       }
@@ -4508,7 +4508,7 @@ Obj QuoPPerm24(Obj f, Obj g){
     rank=RANK_PPERM2(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
-      if(ptf[j]<=deginv){ 
+      if(j<deg && ptf[j]<=deginv){
         ptquo[j]=pttmp[ptf[j]-1];
         if(ptquo[j]>codeg) codeg=ptquo[j];
       }
@@ -4579,7 +4579,7 @@ Obj QuoPPerm42(Obj f, Obj g){
     rank=RANK_PPERM4(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
-      if(ptf[j]<=deginv){ 
+      if(j<deg && ptf[j]<=deginv){
         ptquo[j]=pttmp[ptf[j]-1];
         if(ptquo[j]>codeg) codeg=ptquo[j];
       }
@@ -4644,7 +4644,7 @@ Obj QuoPPerm44(Obj f, Obj g){
     rank=RANK_PPERM4(f);
     for(i=1;i<=rank;i++){
       j=INT_INTOBJ(ELM_PLIST(dom, i))-1;
-      if(ptf[j]<=deginv){ 
+      if(j<deg && ptf[j]<=deginv){
         ptquo[j]=pttmp[ptf[j]-1];
         if(ptquo[j]>codeg) codeg=ptquo[j];
       }

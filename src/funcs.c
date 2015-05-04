@@ -792,10 +792,10 @@ static inline void CheckRecursionBefore( void )
 
  Obj STEVES_TRACING;
 
-#define CHECK_RECURSION_BEFORE CheckRecursionBefore();
+#define CHECK_RECURSION_BEFORE CheckRecursionBefore(); PROF_IN_FUNCTION(func);
 
 
-#define CHECK_RECURSION_AFTER     RecursionDepth--;       
+#define CHECK_RECURSION_AFTER     RecursionDepth--; PROF_OUT_FUNCTION(func);   
 
 
 Obj DoExecFunc0args (
@@ -806,7 +806,7 @@ Obj DoExecFunc0args (
     OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
-    PROF_IN_FUNCTION(func);
+    
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 0, NLOC_FUNC(func), oldLvars );
@@ -824,7 +824,7 @@ Obj DoExecFunc0args (
     SWITCH_TO_OLD_LVARS( oldLvars );
 
     CHECK_RECURSION_AFTER
-    PROF_OUT_FUNCTION(func);
+    
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
@@ -1145,6 +1145,59 @@ Obj             DoExecFuncXargs (
 }
 
 
+
+Obj DoPartialUnWrapFunc(Obj func, Obj args) {
+  
+  Bag                 oldLvars;       /* old values bag                  */
+  OLD_BRK_CURR_STAT                   /* old executing statement         */
+    UInt                named;            /* number of arguments             */
+  UInt                i;              /* loop variable                   */
+  UInt len;
+  Obj argx;
+
+
+      named = ((UInt)-NARG_FUNC(func))-1;
+    len = LEN_PLIST(args);
+
+    if (named > len) { /* Can happen for > 6 arguments */
+      argx = NargError(func, len);
+      return DoOperation2Args(CallFuncListOper, func, argx);
+    }
+
+    CHECK_RECURSION_BEFORE    
+    SWITCH_TO_NEW_LVARS( func, named+1, NLOC_FUNC(func), oldLvars );
+
+    for (i = 1; i <= named; i++) {
+      ASS_LVAR(i, ELM_PLIST(args,i));
+    }
+    for (i = named+1; i <= len; i++) {
+    SET_ELM_PLIST(args, i-named, ELM_PLIST(args,i));
+  }
+  SET_LEN_PLIST(args, len-named);
+  ASS_LVAR(named+1, args);
+    /* execute the statement sequence                                      */
+    REM_BRK_CURR_STAT();
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
+    RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
+    /* switch back to the old values bag                                   */
+    SWITCH_TO_OLD_LVARS( oldLvars );
+
+    CHECK_RECURSION_AFTER
+
+    /* return the result                                                   */
+      {
+        Obj                 returnObjStat;
+        returnObjStat = ReturnObjStat;
+        ReturnObjStat = (Obj)0;
+        return returnObjStat;
+      }  
+}
+
 /****************************************************************************
 **
 *F  MakeFunction(<fexp>)  . . . . . . . . . . . . . . . . . . make a function
@@ -1166,7 +1219,8 @@ Obj             MakeFunction (
     else if ( NARG_FUNC(fexp) ==  5 )  hdlr = DoExecFunc5args;
     else if ( NARG_FUNC(fexp) ==  6 )  hdlr = DoExecFunc6args;
     else if ( NARG_FUNC(fexp) >=  7 )  hdlr = DoExecFuncXargs;
-    else   /* NARG_FUNC(fexp) == -1 */ hdlr = DoExecFunc1args;
+    else if ( NARG_FUNC(fexp) == -1 )  hdlr = DoExecFunc1args;
+    else /* NARG_FUNC(fexp) < -1 */    hdlr = DoPartialUnWrapFunc;
 
     /* make the function                                                   */
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC,
@@ -1441,6 +1495,7 @@ static Int InitKernel (
     InitHandlerFunc( DoExecFunc5args, "i5");
     InitHandlerFunc( DoExecFunc6args, "i6");
     InitHandlerFunc( DoExecFuncXargs, "iX");
+    InitHandlerFunc( DoPartialUnWrapFunc, "pUW");
 
     /* install the evaluators and executors                                */
     InstallExecStatFunc( T_PROCCALL_0ARGS , ExecProccall0args);

@@ -699,8 +699,10 @@ Obj FuncFLAT_KERNEL_TRANS_INT (Obj self, Obj f, Obj n){
         for(i=0;i<m;i++)      *ptnew++=*ptker++;
       } else { //m>deg
         for(i=0;i<deg;i++)    *ptnew++=*ptker++;
-        //add new points
-        for(i=RANK_TRANS2(f)+1;i<=m;i++) *ptnew++=INTOBJ_INT(i);
+        //we must now add another (m-deg) points,
+        //starting with the class number (rank+1)
+        for(i=1; i<=m-deg; i++)
+          *ptnew++=INTOBJ_INT(i+RANK_TRANS2(f));
       }
       return new;
     }
@@ -725,8 +727,10 @@ Obj FuncFLAT_KERNEL_TRANS_INT (Obj self, Obj f, Obj n){
         for(i=0;i<m;i++)      *ptnew++=*ptker++;
       } else { //m>deg
         for(i=0;i<deg;i++)    *ptnew++=*ptker++;
-        //add new points
-        for(i=RANK_TRANS4(f)+1;i<=m;i++) *ptnew++=INTOBJ_INT(i);
+        //we must now add another (m-deg) points,
+        //starting with the class number (rank+1)
+        for(i=1; i<=m-deg; i++)
+          *ptnew++=INTOBJ_INT(i+RANK_TRANS4(f));
       }
       return new;
     }
@@ -2008,17 +2012,16 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
   }
 
   len=LEN_LIST(ker);
-  out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
-  SET_LEN_PLIST(out, len);
   
   rank=1;
   
   if(TNUM_OBJ(f)==T_TRANS2){
-    deg=DEG_TRANS2(f);
+    deg=INT_INTOBJ(FuncDegreeOfTransformation(self,f));
     if(len>=deg){
+      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
+      SET_LEN_PLIST(out, len);
       pttmp=ResizeInitTmpTrans(len);
       ptf2=ADDR_TRANS2(f);
-    
       for(i=0;i<deg;i++){ //<f> then <g> with ker(<g>)=<ker>
         j=INT_INTOBJ(ELM_LIST(ker, ptf2[i]+1))-1; // f first!
         if(pttmp[j]==0) pttmp[j]=rank++;
@@ -2031,6 +2034,8 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
         SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
       }
     } else {//len<deg
+      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, deg);
+      SET_LEN_PLIST(out, deg);
       pttmp=ResizeInitTmpTrans(deg);
       ptf2=ADDR_TRANS2(f);
       for(i=0;i<len;i++){  //<f> then <g> with ker(<g>)=<ker>
@@ -2038,17 +2043,24 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
         if(pttmp[j]==0) pttmp[j]=rank++;
         SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
       }
-      for(;i<deg;i++){     //just <f>
-        if(pttmp[ptf2[i]]==0) pttmp[ptf2[i]]=rank++;
-        SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[ptf2[i]]));
+      for(;i<deg;i++){//assume g acts as identity on i
+	if(ptf2[i]+1<=len) {  //refers to a class in ker
+	  j=INT_INTOBJ(ELM_LIST(ker, ptf2[i]+1))-1;
+	  if(pttmp[j]==0) pttmp[j]=rank++;
+	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
+	} else {  //refers to a class outside ker
+	  if(pttmp[ptf2[i]]==0) pttmp[ptf2[i]]=rank++;
+	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[ptf2[i]]));
+	}
       }
     }
   } else { 
-    deg=DEG_TRANS4(f);
+    deg=INT_INTOBJ(FuncDegreeOfTransformation(self,f));
     if(len>=deg){
+      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
+      SET_LEN_PLIST(out, len);
       pttmp=ResizeInitTmpTrans(len);
       ptf4=ADDR_TRANS4(f);
-    
       for(i=0;i<deg;i++){ //<f> then <g> with ker(<g>)=<ker>
         j=INT_INTOBJ(ELM_LIST(ker, ptf4[i]+1))-1; // f first!
         if(pttmp[j]==0) pttmp[j]=rank++;
@@ -2061,6 +2073,8 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
         SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
       }
     } else {//len<deg
+      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, deg);
+      SET_LEN_PLIST(out, deg);
       pttmp=ResizeInitTmpTrans(deg);
       ptf4=ADDR_TRANS4(f);
       for(i=0;i<len;i++){  //<f> then <g> with ker(<g>)=<ker>
@@ -2069,8 +2083,14 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
         SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
       }
       for(;i<deg;i++){     //just <f>
-        if(pttmp[ptf4[i]]==0) pttmp[ptf4[i]]=rank++;
-        SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[ptf4[i]]));
+	if(ptf4[i]+1<=len) {
+	  j=INT_INTOBJ(ELM_LIST(ker, ptf4[i]+1))-1;
+	  if(pttmp[j]==0) pttmp[j]=rank++;
+	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
+	} else {
+	  if(pttmp[ptf4[i]]==0) pttmp[ptf4[i]]=rank++;
+	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[ptf4[i]]));
+	}
       }
     }
   }

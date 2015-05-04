@@ -12,6 +12,8 @@
 
 
 AtomicList := function(l) return l; end;
+FixedAtomicList := function(l) return l; end;
+MakeWriteOnceAtomic := function(obj) return obj; end;
 AtomicRecord := function(r) return r; end;
 
 # Convenience aliases
@@ -19,56 +21,56 @@ AtomicRecord := function(r) return r; end;
 IsShared := function(obj) return true; end;
 IsLockable := IsShared;
 
-ShareObjWithPrecedence := function(arg, precedence)
-  return arg;
+ShareObjWithPrecedence := function(arg1, precedence)
+  return arg1;
 end;
 
-ShareObj := function(arg)
-  return arg;
+ShareObj := function(arg1)
+  return arg1;
 end;
 
-ShareUserObj := function(arg)
-  return arg;
+ShareUserObj := function(arg1)
+  return arg1;
 end;
 
-ShareLibraryObj := function(arg)
-  return arg;
+ShareLibraryObj := function(arg1)
+  return arg1;
 end;
 
-ShareKernelObj := function(arg)
-  return arg;
+ShareKernelObj := function(arg1)
+  return arg1;
 end;
 
-ShareInternalObj := function(arg)
-  return arg;
+ShareInternalObj := function(arg1)
+  return arg1;
 end;
 
-ShareSpecialObj := function(arg)
-  return arg;
+ShareSpecialObj := function(arg1)
+  return arg1;
 end;
 
-ShareSingleObjWithPrecedence := function(arg, precedence)
-  return arg;
+ShareSingleObjWithPrecedence := function(arg1, precedence)
+  return arg1;
 end;
 
-ShareSingleObj := function(arg)
-  return arg;
+ShareSingleObj := function(arg1)
+  return arg1;
 end;
 
-ShareSingleLibraryObj := function(arg)
-  return arg;
+ShareSingleLibraryObj := function(arg1)
+  return arg1;
 end;
 
-ShareSingleKernelObj := function(arg)
-  return arg;
+ShareSingleKernelObj := function(arg1)
+  return arg1;
 end;
 
-ShareSingleInternalObj := function(arg)
-  return arg;
+ShareSingleInternalObj := function(arg1)
+  return arg1;
 end;
 
-ShareSingleSpecialObj := function(arg)
-  return arg;
+ShareSingleSpecialObj := function(arg1)
+  return arg1;
 end;
 
 MigrateObj := function(obj,target)
@@ -90,11 +92,11 @@ RegionSubObjects := function(x)
   return x;
 end;
 
-NewRegionWithPrecedence := function(arg, precedence)
+NewRegionWithPrecedence := function(arg1, precedence)
   return 0;
 end;
 
-NewRegion := function(arg)
+NewRegion := function(arg1)
   return 0;
 end;
 
@@ -114,7 +116,7 @@ AutoReadLock := function(obj)
   return obj;
 end;
 
-NewAutoReadRegion := function(arg)
+NewAutoReadRegion := function(arg1)
   return 0;
 end;
 

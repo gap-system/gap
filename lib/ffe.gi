@@ -198,9 +198,7 @@ InstallGlobalFunction( FFEFamily, function( p )
         # via residues.
         F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge 
 	  and IsModulusRep and IsZDFRE);
-        SetDataType( F!.typeOfZmodnZObj, p );
-        F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
-        F!.modulus:= p;
+        SetDataType( F!.typeOfZmodnZObj, p );   # TODO: remove once no package uses this
 
         SetOne(  F, ZmodnZObj( F, 1 ) );
         SetZero( F, ZmodnZObj( F, 0 ) );

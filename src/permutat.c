@@ -4596,6 +4596,111 @@ Obj Array2Perm (
     return perm;
 }
 
+static inline Int myquo( Obj pt, Obj perm) {
+  if (TNUM_OBJ(perm) == T_PERM2)
+    return INT_INTOBJ(QuoIntPerm2(pt, perm));
+  else if (TNUM_OBJ(perm) == T_PERM4)
+    return INT_INTOBJ(QuoIntPerm4(pt, perm));
+  else
+    return INT_INTOBJ(QUO(pt,perm ));
+}
+  
+
+/* Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop */
+Obj FuncAGESTC( Obj self, Obj args)
+
+{
+  Int i,j;
+  Obj pt;
+  Obj oj, lj;
+  Int img;
+  Obj orbit = ELM_PLIST(args,1);
+  Obj newlabs = ELM_PLIST(args,2);
+  Obj cycles = ELM_PLIST(args,3);
+  Obj labels = ELM_PLIST(args,4);
+  Obj translabels = ELM_PLIST(args,5);
+  Obj transversal = ELM_PLIST(args, 6);
+  Obj genlabels = ELM_PLIST(args,7);
+  Int len = LEN_PLIST(orbit);
+  Int len2 = len;
+  Int lenn = LEN_PLIST(newlabs);
+  Int lenl = LEN_PLIST(genlabels);
+  for (i = 1; i<= len; i++) {
+    pt = ELM_PLIST(orbit, i);
+    for (j = 1; j <= lenn; j++) {
+      oj = ELM_PLIST(newlabs,j);
+      lj = ELM_PLIST(labels, INT_INTOBJ(oj));
+      img = myquo(pt, lj);
+      if (img <= LEN_PLIST(translabels) && (Obj)0 != ELM_PLIST(translabels,img)) 
+	ASS_LIST(cycles, i, True);
+      else {
+	ASS_LIST(translabels, img, oj);
+	ASS_LIST(transversal, img, lj);
+	ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
+	ASS_LIST(cycles, len2, False);
+      }
+    }
+  }
+  while (i <= len2) {
+    pt = ELM_PLIST(orbit, i);
+    for (j = 1; j <= lenl; j++) {
+      oj = ELM_PLIST(genlabels, j);
+      lj = ELM_PLIST(labels, INT_INTOBJ(oj));
+      img = myquo(pt, lj);
+      if (img <= LEN_PLIST(translabels) && (Obj)0 != ELM_PLIST(translabels,img)) 
+	ASS_LIST(cycles, i, True);
+      else {
+	ASS_LIST(translabels, img, oj);
+	ASS_LIST(transversal, img, lj);
+	ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
+	ASS_LIST(cycles, len2, False);
+      }
+    }
+    i++;
+  }
+  return (Obj) 0;
+}
+
+/* Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop */
+Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, Obj transversal, Obj genlabels)
+{
+  Int i,j;
+  Int len = LEN_PLIST(orbit);
+  Int len2 = len;
+  Int lenn = LEN_PLIST(newlabs);
+  Int lenl = LEN_PLIST(genlabels);
+  Obj pt;
+  Obj oj,lj;
+  Int img;
+  for (i = 1; i<= len; i++) {
+    pt = ELM_PLIST(orbit, i);
+    for (j = 1; j <= lenn; j++) {
+      oj = ELM_PLIST(newlabs,j);
+      lj = ELM_PLIST(labels, INT_INTOBJ(oj));
+      img = myquo(pt,lj);
+      if (img > LEN_PLIST(translabels) || (Obj)0 == ELM_PLIST(translabels,img)) {
+	ASS_LIST(translabels, img, oj);
+	ASS_LIST(transversal, img, lj);
+	ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
+      }
+    }
+  }
+  while (i <= len2) {
+    pt = ELM_PLIST(orbit, i);
+    for (j = 1; j <= lenl; j++) {
+      oj = ELM_PLIST(genlabels, j);
+      lj = ELM_PLIST(labels, INT_INTOBJ(oj));
+      img = myquo(pt, lj);
+	if (img > LEN_PLIST(translabels) || (Obj)0 == ELM_PLIST(translabels,img)) {
+	  ASS_LIST(translabels, img, oj);
+	  ASS_LIST(transversal, img, lj);
+	  ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
+	}
+    }
+    i++;
+  }
+  return (Obj) 0;
+}
 
 
 /****************************************************************************
@@ -4679,7 +4784,12 @@ static StructGVarFunc GVarFuncs [] = {
     { "DISTANCE_PERMS", 2, "perm1, perm2",
       FuncDistancePerms, "src/permutat.c:DISTANCE_PERMS" },
     
-
+    { "AGEST", 6, "orbit, newlabels, labels, translabels, transversal,genblabels",
+      FuncAGEST, "src/permutat.c:AGEST" },
+    
+    { "AGESTC", -1, "orbit, newlabels, cycles, labels, translabels, transversal, genlabels",
+      FuncAGESTC, "src/permutat.c:AGESTC" },
+    
 
     { 0 }
 

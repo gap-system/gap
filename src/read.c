@@ -180,7 +180,7 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 **  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
 **
 **  <Var> := <Ident>
-**        |  <Var> '[' <Expr> ']'
+**        |  <Var> '[' <Expr> ]'
 **        |  <Var> '{' <Expr> '}'
 **        |  <Var> '.' <Ident>
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
@@ -382,9 +382,7 @@ void ReadCallVarAss (
              ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
       && ! SyCompilePlease )
     {
-        SyntaxError("warning: unbound global variable");
-        NrError--;
-        NrErrLine--;
+        SyntaxWarning("unbound global variable");
     }
 
     /* check whether this is a reference to the global variable '~'        */
@@ -1096,7 +1094,8 @@ void ReadRecExpr (
 
 
 void ReadFuncExpr (
-    TypSymbolSet        follow )
+    TypSymbolSet        follow,
+    Char mode)
 {
     volatile Obj        nams;           /* list of local variables names   */
     volatile Obj        name;           /* one local variable name         */
@@ -1121,7 +1120,14 @@ void ReadFuncExpr (
 	if (Symbol == S_ATOMIC) {
 	    Match(S_ATOMIC, "atomic", follow);
 	    is_atomic = 1;
-	}
+	} else if (mode == 'a') { /* in this case the atomic keyword
+                                 was matched away by ReadAtomic before
+                                we realised we were reading an atomic function */
+        is_atomic = 1;
+    }
+    if (is_atomic)
+        locks = NEW_STRING(4);
+
     Match( S_FUNCTION, "function", follow );
     Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
     }
@@ -1137,16 +1143,22 @@ void ReadFuncExpr (
 	    lockmode = 0;
 	    switch (Symbol) {
 	      case S_READWRITE:
-	        if (!is_atomic)
+	        if (!is_atomic) {
 		  SyntaxError("'readwrite' argument of non-atomic function");
+                  GetSymbol();
+                  break;
+                }
 	        lockmode++;
 	      case S_READONLY:
-	        if (!is_atomic)
+	        if (!is_atomic) {
 		  SyntaxError("'readonly' argument of non-atomic function");
+                  GetSymbol();
+                  break;
+                }
 	        lockmode++;
 		CHARS_STRING(locks)[0] = lockmode;
 		SET_LEN_STRING(locks, 1);
-	        GetSymbol();
+                GetSymbol();
 	    }
         C_NEW_STRING_DYN( name, Value );
 	    narg += 1;
@@ -1154,21 +1166,32 @@ void ReadFuncExpr (
 	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
 	}
 	while ( Symbol == S_COMMA ) {
+	    if (narg > 0 && !strcmp(CSTR_STRING(ELM_LIST(nams,narg)),"arg"))
+	      {
+		SyntaxWarning("arg used not as the last argument");
+	      }
+
 	    Match( S_COMMA, ",", follow );
 	    lockmode = 0;
 	    switch (Symbol) {
 	      case S_READWRITE:
-	        if (!is_atomic)
+	        if (!is_atomic) {
 		  SyntaxError("'readwrite' argument of non-atomic function");
+                  GetSymbol();
+                  break; 
+                }
 	        lockmode++;
 	      case S_READONLY:
-	        if (!is_atomic)
+	        if (!is_atomic) {
 		  SyntaxError("'readonly' argument of non-atomic function");
+                  GetSymbol();
+                  break;
+                }
 	        lockmode++;
 		GrowString(locks, narg+1);
 		SET_LEN_STRING(locks, narg+1);
 		CHARS_STRING(locks)[narg] = lockmode;
-	        GetSymbol();
+                GetSymbol();
 	    }
 	    for ( i = 1; i <= narg; i++ ) {
 		if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
@@ -1215,9 +1238,16 @@ void ReadFuncExpr (
         Match( S_SEMICOLON, ";", STATBEGIN|S_END|follow );
     }
 
-    /* 'function( arg )' takes a variable number of arguments              */
-    if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
-        narg = -1;
+    /* 'function( ... arg )' takes a variable number of arguments              */
+    if (narg >= 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) ) )
+      {
+	if (narg > 1)
+	  SyntaxWarning("New syntax used -- intentional?");
+	narg = -narg;
+      }
+	
+    /*     if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
+	   narg = -1; */
 
     /* remember the current variables in case of an error                  */
     currLVars = CurrLVars;
@@ -1369,7 +1399,8 @@ void ReadFuncExpr0 (
 
 /****************************************************************************
 **
-*F  ReadLiteral( <follow> ) . . . . . . . . . . . . . . . . . .  read an atom
+*F  ReadLiteral( <follow>,<mode> ) . . . . . . . . . . . . . .  read an atom
+
 **
 **  'ReadLiteral' reads a  literal expression.  In  case of an error it skips
 **  all symbols up to one contained in <follow>.
@@ -1391,7 +1422,8 @@ void ReadFuncExpr0 (
 **  <String>  := " { <any character> } "
 */
 void ReadLiteral (
-    TypSymbolSet        follow )
+    TypSymbolSet        follow,
+    Char mode)
 {
     switch (Symbol) {
 
@@ -1464,7 +1496,7 @@ void ReadLiteral (
     case S_FUNCTION:
     case S_ATOMIC:
     case S_DO:
-        ReadFuncExpr( follow );
+        ReadFuncExpr( follow, mode );
         break;
 
     case S_DOT:
@@ -1520,7 +1552,7 @@ void ReadAtom (
                           S_REC|S_FUNCTION|S_DO|S_ATOMIC| S_FLOAT | S_DOT |
                          S_MAPTO))
     {
-        ReadLiteral( follow );
+        ReadLiteral( follow, mode );
     }
 
     /* '(' <Expr> ')'                                                      */
@@ -2101,9 +2133,14 @@ void ReadAtomic (
     nrError   = NrError;
     /* lockSP    = RegionLockSP(); */
 
-    /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'                                                */    
-    if ( ! READ_ERROR() ) { IntrAtomicBegin(); }
     Match( S_ATOMIC, "atomic", follow );
+    /* Might just be an atomic function literal as an expression */
+    if (Symbol == S_FUNCTION) {
+      ReadExpr(follow, 'a');
+      return; }
+
+    /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'  */ 
+    
     ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
     nexprs = 1;
     while (Symbol == S_COMMA) {

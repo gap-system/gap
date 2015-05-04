@@ -55,7 +55,7 @@ $ git remote add upstream https://github.com/gap-system/gap.git
 $ git fetch upstream
 $ git merge upstream/master
 ```
- * Create, and checkout onto, a topic (or feature) branch on which to base your work.
+ * Create and checkout onto a topic (or feature) branch on which to base your work.
    * This is typically done from the local `master` branch.
    * For your own sanity, please avoid working on the local `master` branch.
  ```
@@ -121,6 +121,7 @@ gap@gap-system.org.  You can refer to [this tutorial](https://burzalodowa.wordpr
 * [GAP Tutorial](http://gap-system.org/Manuals/doc/tut/chap0.html)
 * [GAP Manual](http://gap-system.org/Manuals/doc/ref/chap0.html)
 * [GAP Homepage](http://www.gap-system.org/)
+* [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials/)
 * [Using Pull Requests](https://help.github.com/articles/using-pull-requests)
 * [General GitHub Documentation](https://help.github.com/)
 
