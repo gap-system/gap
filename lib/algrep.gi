@@ -641,44 +641,44 @@ InstallMethod(\+,
     "for two algebra module elements in packed representation",
     IsIdenticalObj, [ IsAlgebraModuleElement and IsPackedElementDefaultRep,
               IsAlgebraModuleElement and IsPackedElementDefaultRep ], 0,
-    function( u, v ) return Objectify( TypeObj( u ), [ u![1]+v![1] ] ); end );
+    function( u, v ) return ObjByExtRep( FamilyObj( u ), u![1]+v![1] ); end );
 
 InstallMethod(\+,
     "for an algebra module element in packed representation and a vector",
     true, [ IsAlgebraModuleElement and IsPackedElementDefaultRep,
               IsVector ], 0,
-    function( u, v ) return Objectify( TypeObj( u ), [ u![1]+v ] ); end );
+    function( u, v ) return ObjByExtRep( FamilyObj( u ), u![1]+v ); end );
 
 
 InstallMethod(\+,
     "for a vector and an algebra module element in packed representation",
     true, [ IsVector,
             IsAlgebraModuleElement and IsPackedElementDefaultRep ], 0,
-    function( u, v ) return Objectify( TypeObj( v ), [ u+v![1] ] ); end );
+    function( u, v ) return ObjByExtRep( FamilyObj( v ), u+v![1] ); end );
 
 InstallMethod( AdditiveInverseOp,
     "for an algebra module element in packed representation",
     true, [ IsAlgebraModuleElement and IsPackedElementDefaultRep ], 0,
-    function( u ) return Objectify( TypeObj(u), [ -u![1] ] ); end );
+    function( u ) return ObjByExtRep( FamilyObj(u),  -u![1] ); end );
 
 InstallMethod( \*,
     "for an algebra module element in packed representation and a scalar",
     true, [ IsAlgebraModuleElement and IsPackedElementDefaultRep,
             IsScalar ], 0,
-    function( u, scal ) return Objectify( TypeObj(u), [ scal*u![1] ] );
+    function( u, scal ) return ObjByExtRep( FamilyObj(u), scal*u![1] );
     end );
 
 
 InstallMethod( \*,
     "for a scalar and an algebra module element in packed representation",
     true, [ IsScalar, IsAlgebraModuleElement and IsPackedElementDefaultRep],0,
-    function( scal, u ) return Objectify( TypeObj(u), [ scal*u![1] ] );
+    function( scal, u ) return ObjByExtRep( FamilyObj(u), scal*u![1] );
     end );
 
 InstallMethod( ZeroOp,
     "for an algebra module element in packed representation",
     true, [ IsAlgebraModuleElement and IsPackedElementDefaultRep ], 0,
-    function( u ) return Objectify( TypeObj(u), [ 0*u![1] ] ); end );
+    function( u ) return ObjByExtRep( FamilyObj(u), 0*u![1] ); end );
 
 
 #############################################################################
@@ -716,8 +716,8 @@ InstallOtherMethod( \^,
     [ IsRingElement,
           IsLeftAlgebraModuleElement and IsPackedElementDefaultRep ], 0,
     function( x, u  )
-        return Objectify( TypeObj( u ),
-                       [ FamilyObj( u )!.left_operation(x,u![1])]);
+        return ObjByExtRep( FamilyObj( u ),
+                        FamilyObj( u )!.left_operation(x,u![1]));
 end );
 
 #############################################################################
@@ -735,8 +735,8 @@ InstallOtherMethod( \^,
     [ IsRightAlgebraModuleElement and IsPackedElementDefaultRep,
           IsRingElement ], 0,
     function( u, x  )
-        return Objectify( TypeObj( u ),
-                       [ FamilyObj( u )!.right_operation(u![1],x)]);
+        return ObjByExtRep( FamilyObj( u ),
+                       FamilyObj( u )!.right_operation(u![1],x));
 end );
 
 #############################################################################
