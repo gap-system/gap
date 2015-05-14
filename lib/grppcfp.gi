@@ -771,6 +771,13 @@ local G, epi, tup, lift, i, found, fac, j, p, iso;
 
     # initialise epimorphism
     epi := InitEpimorphismSQ(F);
+    if epi=false then
+      if 0 in AbelianInvariants(F) then
+	Error("Group has infinite abelian quotient");
+      else
+	Error("initialization failed");
+      fi;
+    fi;
     iso := IsomorphismSpecialPcGroup( epi.image );
     epi.image := Image( iso );
     epi.imgs := List( epi.imgs, x -> Image( iso, x ) );
