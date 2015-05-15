@@ -79,6 +79,15 @@ typedef struct {
 
 } FinPowConjCol;
 
+UInt SCOBJ_NW_STACK_GVAR;
+UInt SCOBJ_LW_STACK_GVAR;
+UInt SCOBJ_PW_STACK_GVAR;
+UInt SCOBJ_EW_STACK_GVAR;
+UInt SCOBJ_GE_STACK_GVAR;
+UInt SCOBJ_CW_VECTOR_GVAR;
+UInt SCOBJ_CW2_VECTOR_GVAR;
+UInt SCOBJ_MAX_STACK_SIZE_GVAR;
+
 
 /****************************************************************************
 **
