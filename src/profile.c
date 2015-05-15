@@ -301,7 +301,7 @@ void InstallPrintExprFunc(Int pos, void(*expr)(Expr)) {
 */
 
 // This function checks if we have ever printed out the id of stat
-static inline UInt getFilenameId(stat)
+static inline UInt getFilenameId(Stat stat)
 {
   UInt id = FILENAMEID_STAT(stat);
   if(LEN_PLIST(OutputtedFilenameList) < id || !ELM_PLIST(OutputtedFilenameList,id))
