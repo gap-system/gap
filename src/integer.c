@@ -212,6 +212,58 @@ Obj ObjInt_UInt(UInt i)
 }
 
 
+/**************************************************************************
+** The following two functions convert a C long long or unsigned long long
+** respectively into a GAP integer, either an immediate, small integer if
+** possible or otherwise a new GAP bag with TNUM T_INTPOS or T_INTNEG.
+**
+*F ObjInt_LongLong(long long i)
+*F ObjInt_ULongLong(unsigned long long i)
+**
+****************************************************************************/
+
+#define NDIGITS_RAW (sizeof (long long) / sizeof (TypDigit))
+#define NDIGITS (NDIGITS_RAW >= 4U ? NDIGITS_RAW : 4U)
+
+Obj ObjInt_LongLong(long long i)
+{
+    Obj n;
+    long long bound = 1LL << NR_SMALL_INT_BITS;
+    if (i >= bound) {
+        /* We have to make a big integer */
+        size_t j;
+        n = NewBag(T_INTPOS, NDIGITS);
+        for ( j = 0U; j < NDIGITS; j++ )
+            ADDR_INT(n)[j] = (TypDigit) (i >> (j * NR_DIGIT_BITS));
+        return n;
+    } else if (-i > bound) {
+        size_t j;
+        n = NewBag(T_INTNEG, NDIGITS);
+        for ( j = 0U; j < NDIGITS; j++ )
+            ADDR_INT(n)[j] = (TypDigit) ((-i) >> (j * NR_DIGIT_BITS));
+        return n;
+    } else {
+        return INTOBJ_INT((Int) i);
+    }
+}
+
+Obj ObjInt_ULongLong(unsigned long long i)
+{
+    Obj n;
+    unsigned long long bound = 1ULL << NR_SMALL_INT_BITS;
+    if (i >= bound) {
+        /* We have to make a big integer */
+        size_t j;
+        n = NewBag(T_INTPOS, NDIGITS);
+        for ( j = 0U; j < NDIGITS; j++ )
+            ADDR_INT(n)[j] = (TypDigit) (i >> (j * NR_DIGIT_BITS));
+        return n;
+    } else {
+        return INTOBJ_INT((Int) i);
+    }
+}
+
+
 
 /****************************************************************************
 **

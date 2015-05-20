@@ -87,6 +87,21 @@ typedef mp_size_t   TypGMPSize;
 Obj ObjInt_Int(Int i);
 Obj ObjInt_UInt(UInt i);
 
+
+/**************************************************************************
+** The following two functions convert a C long long or unsigned long long
+** respectively into* a GAP integer, either an immediate, small integer if
+** possible or otherwise a new GAP bag with TNUM T_INTPOS or T_INTNEG.
+**
+*F ObjInt_LongLong(long long i)
+*F ObjInt_ULongLong(unsigned long long i)
+**
+****************************************************************************/
+
+Obj ObjInt_LongLong(long long i);
+Obj ObjInt_ULongLong(unsigned long long i);
+
+
 /****************************************************************************
 **
 */
