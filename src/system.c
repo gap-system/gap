@@ -1832,8 +1832,8 @@ void InitSystem (
 #if HAVE_TTYNAME
     syBuf[0].fp = fileno(stdin);
     syBuf[0].bufno = -1;
-    if ( isatty( fileno(stdin) ) ) {
-        if ( isatty( fileno(stdout) )
+    if ( isatty( fileno(stdin) ) && ttyname(fileno(stdin)) != NULL ) {
+        if ( isatty( fileno(stdout) ) && ttyname(fileno(stdout)) != NULL
           && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stdout)) ) )
             syBuf[0].echo = fileno(stdout);
         else
@@ -1846,8 +1846,8 @@ void InitSystem (
     }
     syBuf[1].echo = syBuf[1].fp = fileno(stdout); 
     syBuf[1].bufno = -1;
-    if ( isatty( fileno(stderr) ) ) {
-        if ( isatty( fileno(stdin) )
+    if ( isatty( fileno(stderr) ) && ttyname(fileno(stderr)) != NULL ) {
+        if ( isatty( fileno(stdin) ) && ttyname(fileno(stdin)) != NULL
           && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stderr)) ) )
             syBuf[2].fp = fileno(stdin);
         else
