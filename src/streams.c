@@ -2012,13 +2012,13 @@ Obj FuncREAD_STRING_FILE (
         struct stat fstatbuf;
         if ( syBuf[INT_INTOBJ(fid)].pipe == 0 &&
              fstat( syBuf[INT_INTOBJ(fid)].fp,  &fstatbuf) == 0 ) {
-            len = fstatbuf.st_size;
+            len = (Int) fstatbuf.st_size;
             str = NEW_STRING( len );
             ret = read( syBuf[INT_INTOBJ(fid)].fp, 
                         CHARS_STRING(str), len);
             CHARS_STRING(str)[ret] = '\0';
             SET_LEN_STRING(str, ret);
-            if ( ret == len ) {
+            if ( (off_t) ret == fstatbuf.st_size ) {
                  return str;
             }
         }
