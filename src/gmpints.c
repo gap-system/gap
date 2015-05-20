@@ -375,6 +375,41 @@ Obj ObjInt_UInt( UInt i )
   }
 }
 
+Obj ObjInt_LongLong( long long i )
+{
+  Obj gmp;
+  unsigned long long ull;
+  size_t j;
+
+  if ( (-(1LL<<NR_SMALL_INT_BITS) <= i) && (i < 1LL<<NR_SMALL_INT_BITS ))
+    return INTOBJ_INT((Int) i);
+
+  if ( i >= 0LL ) {
+    gmp = NewBag( T_INTPOS, sizeof(i) );
+    ull = (unsigned long long) i;
+  }
+  else {
+    gmp = NewBag( T_INTNEG, sizeof(i) );
+    ull = (unsigned long long) -i;
+  }
+  for ( j = 0U; j < sizeof(i) / sizeof(TypLimb); j++ )
+    ((TypLimb *)ADDR_OBJ( gmp ))[j] = ull >> (j * sizeof(TypLimb));
+  return GMP_NORMALIZE( gmp );
+}
+
+Obj ObjInt_ULongLong( unsigned long long i )
+{
+  Obj gmp;
+  size_t j;
+
+  if ( i < 1ULL<<NR_SMALL_INT_BITS )
+    return INTOBJ_INT((Int) i);
+  gmp = NewBag( T_INTPOS, sizeof(i) );
+  for ( j = 0U; j < sizeof(i) / sizeof(TypLimb); j++ )
+    ((TypLimb *)ADDR_OBJ( gmp ))[j] = i >> (j * sizeof(TypLimb));
+  return GMP_NORMALIZE( gmp );
+}
+
 
 /****************************************************************************
 **
