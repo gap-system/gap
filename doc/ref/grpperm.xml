@@ -542,6 +542,7 @@ rec( random := 1000, reduced := true, tryPcgs := true )
 <#Include Label="IndicesStabChain">
 <#Include Label="ListStabChain">
 <#Include Label="ElementsStabChain">
+<#Include Label="IteratorStabChain">
 <#Include Label="InverseRepresentative">
 <#Include Label="SiftedPermutation">
 <#Include Label="MinimalElementCosetStabChain">

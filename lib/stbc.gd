@@ -447,6 +447,25 @@ DeclareGlobalFunction( "OrbitStabChain" );
 ##
 DeclareGlobalFunction( "ElementsStabChain" );
 
+#############################################################################
+##
+#F  IteratorStabChain( <S> )
+##
+##  <#GAPDoc Label="IteratorStabChain">
+##  <ManSection>
+##  <Func Name="IteratorStabChain" Arg='S'/>
+##
+##  <Description>
+##  returns an iterator for the elments of the group described by the
+##  stabilizer chain <A>S</A>.
+##
+##  The elements are produced in the ordering induced by the base. For
+##  reference see <Cite Key="Ser03" Where="Chapter 4"/> 
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+DeclareGlobalFunction( "NextIterator_StabChain" );
+DeclareGlobalFunction( "IteratorStabChain" );
 
 #############################################################################
 ##
@@ -836,9 +855,7 @@ DeclareGlobalFunction( "VerifyStabilizer" );
 DeclareGlobalFunction( "VerifySGS" );
 DeclareGlobalFunction( "ExtensionOnBlocks" );
 DeclareGlobalFunction( "ClosureRandomPermGroup" );
-DeclareGlobalFunction( "NextIterator_StabChain" );
-DeclareGlobalFunction( "IteratorStabChain" );
-
+#
 #############################################################################
 ##
 #E
