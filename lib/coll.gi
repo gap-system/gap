@@ -956,7 +956,7 @@ InstallOtherMethod( NextIterator,
 #F  IteratorByFunctions( <record> )
 ##
 DeclareRepresentation( "IsIteratorByFunctionsRep", IsComponentObjectRep,
-    [ "NextIterator", "IsDoneIterator", "ShallowCopy", "DescIterator" ] );
+    [ "NextIterator", "IsDoneIterator", "ShallowCopy", "ViewIterator" ] );
 
 DeclareSynonym( "IsIteratorByFunctions",
     IsIteratorByFunctionsRep and IsIterator );
@@ -994,7 +994,7 @@ InstallMethod( ShallowCopy,
     new.NextIterator   := iter!.NextIterator;
     new.IsDoneIterator := iter!.IsDoneIterator;
     new.ShallowCopy    := iter!.ShallowCopy;
-    new.DescIterator   := iter!.DescIterator;
+    new.ViewIterator   := iter!.ViewIterator;
     return IteratorByFunctions( new );
     end );
 
@@ -1007,12 +1007,12 @@ InstallMethod( PrintObj,
     if not IsMutable( iter ) then
       Append(msg, " (immutable)");
     fi;
-    if IsBound( iter!.DescIterator ) then
+    if IsBound( iter!.ViewIterator ) then
       Append(msg, " ");
-      if IsFunction(iter!.DescIterator) then
-        Append(msg, iter!.DescIterator(iter));
-      elif IsString(iter!.DescIterator) then
-        Append(msg, iter!.DescIterator);
+      if IsFunction(iter!.ViewIterator) then
+        Append(msg, iter!.ViewIterator(iter));
+      elif IsString(iter!.ViewIterator) then
+        Append(msg, iter!.ViewIterator);
       else
         Error("Invalid description for iterator.");
       fi;

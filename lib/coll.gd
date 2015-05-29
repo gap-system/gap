@@ -1254,7 +1254,6 @@ DeclareOperation( "NextIterator", [ IsIterator and IsMutable ] );
 ##
 DeclareGlobalFunction( "TrivialIterator" );
 
-
 #############################################################################
 ##
 #F  IteratorByFunctions( <record> )
@@ -1291,6 +1290,13 @@ DeclareGlobalFunction( "TrivialIterator" );
 ##      can be called in order to create a new iterator that is independent
 ##      of <A>iter</A> but behaves like <A>iter</A> w.r.t. the operations
 ##      <Ref Func="NextIterator"/> and <Ref Func="IsDoneIterator"/>.
+##  </Item>
+##  <Mark><C>ViewIterator</C></Mark>
+##  <Item>
+##      either a function in one argument <A>iter</A> returning a string describing
+##      the iterator, or a string a describing the iterator. This is used for
+##      PrintObj. This can be left unbound in which case PrintObj called on the
+##      iterator will just print &lt;iterator&gt;.
 ##  </Item>
 ##  </List>
 ##  Further (data) components may be contained in <A>record</A> which can be
