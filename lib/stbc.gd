@@ -836,7 +836,8 @@ DeclareGlobalFunction( "VerifyStabilizer" );
 DeclareGlobalFunction( "VerifySGS" );
 DeclareGlobalFunction( "ExtensionOnBlocks" );
 DeclareGlobalFunction( "ClosureRandomPermGroup" );
-
+DeclareGlobalFunction( "NextIterator_StabChain" );
+DeclareGlobalFunction( "IteratorStabChain" );
 
 #############################################################################
 ##
