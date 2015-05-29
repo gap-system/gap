@@ -2470,6 +2470,20 @@
               Mathematics and Statistics</other>
 </article></entry>
 
+<entry id="HEO05"><book>
+  <author>
+    <name><first>Derek F.</first><last>Holt</last></name>
+    <name><first>Bettina</first><last>Eick</last></name>
+    <name><first>Eamonn A.</first><last>O'Brien</last></name>
+  </author>
+  <title>Handbook of Computational Group Theory</title>
+  <publisher>Chapman &nbsp; Hall/CRC</publisher>
+  <year>2005</year>
+  <series>Discrete mathematics and its applications</series>
+  <address>New York</address>
+  <isbn>1-584-88372-3</isbn>
+</book></entry>
+
 <entry id="HR99a"><incollection>
   <author>
     <name><first>George</first><last>Havas</last></name>
@@ -4506,6 +4520,16 @@
       Survey Journal
               on Applying Mathematics and Mathematical Applications</other>
 </article></entry>
+
+<entry id="Seress2003"><book>
+  <author>
+    <name><first>Ákos</first><last>Seress</last></name>
+  </author>
+  <title>Permutation Group Algorithms</title>
+  <publisher>Cambridge University Press</publisher>
+  <year>2003</year>
+  <isbn>9780511546549</isbn>
+</book></entry>
 
 <entry id="ST54"><article>
   <author>

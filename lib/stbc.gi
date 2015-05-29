@@ -1722,6 +1722,79 @@ InstallGlobalFunction(ElementsStabChain,function ( S )
    return elms;
 end);
 
+#############################################################################
+##
+#F  IteratorStabChain(<S>)
+##
+InstallGlobalFunction( NextIterator_StabChain,
+function(iter)
+    local l, re;
+
+    if iter!.state = 0 then
+        if Length(iter!.pos) = 0 then 
+            iter!.state := 2;
+        else
+            iter!.state := 1;
+        fi;
+        return ();
+    elif iter!.state = 1 then
+        l := Length(iter!.stack);
+        # Identity is special cased since we only want to
+        # produce a new element when NextIter is called
+        while (l > 0) and iter!.pos[l] = Length(iter!.stack[l].orbit) do
+            l := l - 1;
+        od;
+
+        # Advance, and check whether we have exhausted all group
+        # elements
+        iter!.pos[l] := iter!.pos[l] + 1;
+
+        if l = Length(iter!.stack) and (iter!.pos = iter!.epos) then
+            iter!.state := 2;
+        fi;
+
+        # Now we first find the correct representative for
+        # this element
+        re := InverseRepresentative(iter!.stack[l], iter!.stack[l].orbit[iter!.pos[l]]);
+        if l = 1 then
+            iter!.rep[l] := re^(-1);
+        else
+            iter!.rep[l] := re^(-1) * iter!.rep[l-1];
+        fi;
+        l := l + 1;
+        while l <= Length(iter!.stack) do
+            iter!.rep[l] := iter!.rep[l-1];
+            iter!.pos[l] := 1;
+            l := l + 1;
+        od;
+        return iter!.rep[l-1];
+    fi;
+end);
+
+InstallGlobalFunction(IteratorStabChain,
+function(S)
+    local r,lstack;
+
+    lstack := ListStabChain(S);
+    Remove(lstack);
+    r := rec (
+          stack := lstack
+        , pos := List(lstack, x -> 1)
+        , epos := List(lstack, x -> Length(x.orbit))
+        , rep := List(lstack, x -> ())
+        , state := 0
+        , NextIterator := NextIterator_StabChain
+        , IsDoneIterator := iter -> (iter!.state = 2)
+        , ShallowCopy := iter -> rec( stack := iter!.stack
+	                            , pos := ShallowCopy(iter!.pos)
+                                    , epos := iter!.epos
+                                    , rep := ShallowCopy(iter!.rep)
+                                    , state := iter!.state
+				    )
+    );
+    return IteratorByFunctions(r);
+end);
+
 InstallMethod( ViewObj,"stabilizer chain records", true,
   [ IsRecord ], 0,
 function(r)

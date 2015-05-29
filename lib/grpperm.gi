@@ -584,6 +584,23 @@ local e,S,i,p;
   return e;
 end);
 
+#############################################################################
+##
+#M  Iterator( <G> ) . . . . . . . . . . . . . . iterator of permutation group
+##
+InstallMethod( Iterator,
+    "for a trivial permutation group",
+    [ IsPermGroup and IsTrivial ],
+function(G)
+    return IteratorList([()]);
+end);
+
+InstallMethod( Iterator,
+    "for a permutation group",
+    [ IsPermGroup ],
+function(G)
+    return IteratorStabChain(StabChain(G));
+end);
 
 #############################################################################
 ##
