@@ -584,6 +584,76 @@ local e,S,i,p;
   return e;
 end);
 
+#############################################################################
+##
+#M  Iterator( <G> ) . . . . . . . . . . . . . . iterator of permutation group
+##
+BindGlobal( "NextIterator_PermGroup",
+function(iter)
+    local l, re;
+
+    if iter!.state = 0 then
+        iter!.state := 1;
+        return ();
+    elif iter!.state = 1 then
+        l := Length(iter!.stack);
+        # Identity is special cased since we only want to
+        # produce a new element when NextIter is called
+        while (l > 0) and iter!.pos[l] = Length(iter!.stack[l].orbit) do
+            l := l - 1;
+        od;
+        # We exhausted all group elements
+
+        if l = 0 then
+        # We are allowed to do what we want as per the specification
+        # of NextIterator in the GAP manual.
+            iter!.state := 2;
+            return fail;
+        fi;
+
+        # Advance
+        iter!.pos[l] := iter!.pos[l] + 1;
+
+        # Now we first find the correct representative for
+        # this element
+        re := InverseRepresentative(iter!.stack[l], iter!.stack[l].orbit[iter!.pos[l]]);
+        if l = 1 then
+            iter!.rep[l] := re;
+        else
+            iter!.rep[l] := iter!.rep[l-1] * re;
+        fi;
+        l := l + 1;
+        while l <= Length(iter!.stack) do
+            iter!.rep[l] := iter!.rep[l-1];	
+            iter!.pos[l] := 1;
+            l := l + 1;
+        od;
+        return iter!.rep[l-1];
+    fi;
+end);
+
+InstallMethod( Iterator,
+    "for a permutation group",
+    [ IsPermGroup ],
+function(G)
+    local r,lstack;
+
+    lstack := ListStabChain(StabChain(G));
+    r := rec (
+          stack := lstack
+        , rep := List(lstack, x -> ())
+        , state := 0
+        , NextIterator := NextIterator_PermGroup
+        , IsDoneIterator := function(iter) return (iter!.pos = iter!.epos); end
+        , ShallowCopy := function(iter) end
+    );
+    Remove(r.stack);
+    r.pos := List(r.stack, x -> 1);
+    r.rep := List(r.stack, x -> ());
+    r.epos := List(r.stack, x -> Length(x.orbit));
+
+    return IteratorByFunctions(r);
+end);
 
 #############################################################################
 ##
