@@ -460,7 +460,8 @@ DeclareGlobalFunction( "ElementsStabChain" );
 ##  stabilizer chain <A>S</A>.
 ##
 ##  The elements are produced in the ordering induced by the base. For
-##  reference see <Cite Key="Ser03" Where="Chapter 4"/> 
+##  reference see <Cite Key="Seress03" Where="Chapter 4"/> or
+##  <Cite Key="HEO05" Where="Chapter 4.4"/> 
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
