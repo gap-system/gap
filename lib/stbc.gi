@@ -1756,9 +1756,9 @@ function(iter)
         # this element
         re := InverseRepresentative(iter!.stack[l], iter!.stack[l].orbit[iter!.pos[l]]);
         if l = 1 then
-            iter!.rep[l] := re;
+            iter!.rep[l] := re^(-1);
         else
-            iter!.rep[l] := iter!.rep[l-1] * re;
+            iter!.rep[l] := re^(-1) * iter!.rep[l-1];
         fi;
         l := l + 1;
         while l <= Length(iter!.stack) do

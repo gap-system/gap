@@ -459,9 +459,9 @@ DeclareGlobalFunction( "ElementsStabChain" );
 ##  returns an iterator for the elments of the group described by the
 ##  stabilizer chain <A>S</A>.
 ##
-##  The elements are produced in the ordering induced by the base. For
-##  reference see <Cite Key="Seress03" Where="Chapter 4"/> or
-##  <Cite Key="HEO05" Where="Chapter 4.4"/> 
+##  The elements of the group <A>G</A> are produced by iterating through
+##  all base images in turn, and in the ordering induced by the base. For
+##  more details see&nbsp;< <Ref Sect="Stabilizer Chains"/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
