@@ -1748,7 +1748,8 @@ function(iter)
         # Advance, and check whether we have exhausted all group
         # elements
         iter!.pos[l] := iter!.pos[l] + 1;
-        if iter!.pos = iter!.epos then
+
+        if l = Length(iter!.stack) and (iter!.pos = iter!.epos) then
             iter!.state := 2;
         fi;
 
