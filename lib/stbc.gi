@@ -1778,7 +1778,7 @@ function(S)
     Remove(lstack);
     r := rec (
           stack := lstack
-	, pos := List(lstack, x -> 1)
+        , pos := List(lstack, x -> 1)
         , epos := List(lstack, x -> Length(x.orbit))
         , rep := List(lstack, x -> ())
         , state := 0
