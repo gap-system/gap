@@ -11,9 +11,6 @@ all: $(MAKE_GMP)
 
 all_gmp_mpfr: $(MAKE_GMP) mpfr
 
-../../../extern/gmp-5.0.4: ../../../extern/gmp-5.0.4.tar.gz
-	( cd ../../../extern; tar zxvf gmp-5.0.4.tar.gz )
-
 ../../../extern/gmp-5.0.5: ../../../extern/gmp-5.0.5.tar.gz
 	( cd ../../../extern; tar zxvf gmp-5.0.5.tar.gz )
 
