@@ -1731,7 +1731,11 @@ function(iter)
     local l, re;
 
     if iter!.state = 0 then
-        iter!.state := 1;
+        if Length(iter!.pos) = 0 then 
+            iter!.state := 2;
+        else
+            iter!.state := 1;
+        fi;
         return ();
     elif iter!.state = 1 then
         l := Length(iter!.stack);
@@ -1740,17 +1744,13 @@ function(iter)
         while (l > 0) and iter!.pos[l] = Length(iter!.stack[l].orbit) do
             l := l - 1;
         od;
-        # We exhausted all group elements
 
-        if l = 0 then
-        # We are allowed to do what we want as per the specification
-        # of NextIterator in the GAP manual.
-            iter!.state := 2;
-            return fail;
-        fi;
-
-        # Advance
+        # Advance, and check whether we have exhausted all group
+        # elements
         iter!.pos[l] := iter!.pos[l] + 1;
+        if iter!.pos = iter!.epos then
+            iter!.state := 2;
+        fi;
 
         # Now we first find the correct representative for
         # this element
@@ -1783,15 +1783,14 @@ function(S)
         , rep := List(lstack, x -> ())
         , state := 0
         , NextIterator := NextIterator_StabChain
-        , IsDoneIterator := iter -> (iter!.pos = iter!.epos)
+        , IsDoneIterator := iter -> (iter!.state = 2)
         , ShallowCopy := iter -> rec( stack := iter!.stack
 	                            , pos := ShallowCopy(iter!.pos)
-				    , epos := iter!.epos
-				    , rep := ShallowCopy(iter!.rep)
-				    , state := iter!.state
+                                    , epos := iter!.epos
+                                    , rep := ShallowCopy(iter!.rep)
+                                    , state := iter!.state
 				    )
     );
-
     return IteratorByFunctions(r);
 end);
 
