@@ -24,10 +24,10 @@ gap> NextIterator(it);; a := NextIterator(it);;
 gap> a = b;
 true
 gap> while not IsDoneIterator(it) do NextIterator(it); od;;
-gap> l := ListIterator(it2);;
+gap> l := List(it2);;
 gap> Length(l);
 3628795
-gap> STOP_TEST( "stabchain.tst", 370240 );
+gap> STOP_TEST( "stabchain.tst", 3702400 );
 
 #############################################################################
 ##
