@@ -17,6 +17,9 @@ all_gmp_mpfr: $(MAKE_GMP) mpfr
 ../../../extern/gmp-5.0.5: ../../../extern/gmp-5.0.5.tar.gz
 	( cd ../../../extern; tar zxvf gmp-5.0.5.tar.gz )
 
+../../../extern/gmp-6.0.0a: ../../../extern/gmp-6.0.0a.tar.bz2
+	( cd ../../../extern; tar jxvf gmp-6.0.0a.tar.bz2; mv gmp-6.0.0 gmp-6.0.0a )
+
 gmp_config: ../../../extern/gmp-$(GMP_VER)
 	@mkdir -p gmp-$(GMP_VER)
 	@( cd ../../../extern/gmp-$(GMP_VER); \
