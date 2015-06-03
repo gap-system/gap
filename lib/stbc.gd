@@ -461,7 +461,7 @@ DeclareGlobalFunction( "ElementsStabChain" );
 ##
 ##  The elements of the group <A>G</A> are produced by iterating through
 ##  all base images in turn, and in the ordering induced by the base. For
-##  more details see&nbsp;< <Ref Sect="Stabilizer Chains"/>
+##  more details see&nbsp;<Ref Sect="Stabilizer Chains"/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
