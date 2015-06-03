@@ -1759,7 +1759,7 @@ function(iter)
         if l = 1 then
             iter!.rep[l] := re^(-1);
         else
-            iter!.rep[l] := re^(-1) * iter!.rep[l-1];
+            iter!.rep[l] := LeftQuotient( re, iter!.rep[l-1]);
         fi;
         l := l + 1;
         while l <= Length(iter!.stack) do
