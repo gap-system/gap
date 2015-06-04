@@ -678,6 +678,55 @@ providing the database of <M>p</M>-groups of order <M>p^7</M> for
 </Section>
 
 
+<Section Label="fix478"> 
+<Heading>&GAP; 4.7.8 (June 2015)</Heading>
+
+</Section>
+
+Fixed bugs which could lead to incorrect results:
+<List>
+<Item>
+Added two groups of degree 1575 which were missing in the 
+library of first primitive groups. [Reported by Gordon Royle]
+</Item>
+<Item>
+Fixed the error in the code for algebra module elements in packed 
+representation caused by the use of <Ref Oper="Objectify" BookName="ref"/>
+with the type of the given object instead of <Ref Func="ObjByExtRep" BookName="ref"/>
+as recommended in <Ref Sect="Further Improvements in Implementing Residue Class Rings"
+BookName="ref"/>. The problem was that after calculating <C>u+v</C> where one of the
+summands was known to be zero, this knowledge was wrongly passed to the sum via the 
+type. [Reported by Istvan Szollosi]
+</Item>
+<Item>
+Fixed a bug in <Ref Oper="PowerMod" BookName="ref"/> causing wrong results 
+for univariate Laurent polynomials when the two polynomial arguments are 
+stored with the same non-zero shift. [Reported by Max Horn]
+</Item>
+</List>
+
+Furthermore, new packages that have been added to the redistribution 
+since the release of &GAP; 4.7.7 are: 
+
+<List>
+<Item>
+<Package>PatternClass</Package> by Michael Albert, Ruth Hoffmann and 
+Steve Linton, allowing to explore the permutation pattern classes 
+build by token passing networks. Amongst other things, it can compute 
+the basis of a permutation pattern class, create automata from token 
+passing networks and check if the deterministic automaton is a possible 
+representative of a token passing network.
+</Item>
+<Item>
+<Package>QPA</Package> by Edward Green and Øyvind Solberg, providing
+data structures and algorithms for computations with finite dimensional 
+quotients of path algebras, and with finitely generated modules over such 
+algebras. It implements data structures for quivers, quotients of path 
+algebras, and modules, homomorphisms and complexes of modules over 
+quotients of path algebras.
+</Item>
+</List>
+
 </Chapter>
 
 
