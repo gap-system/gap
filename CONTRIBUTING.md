@@ -121,6 +121,7 @@ gap@gap-system.org.  You can refer to [this tutorial](https://burzalodowa.wordpr
 * [GAP Tutorial](http://gap-system.org/Manuals/doc/tut/chap0.html)
 * [GAP Manual](http://gap-system.org/Manuals/doc/ref/chap0.html)
 * [GAP Homepage](http://www.gap-system.org/)
+* [GAP on GitHub: Quickstart](https://github.com/gap-system/gap-git-cheat-sheet/raw/master/gap-git-cheat-sheet.pdf)
 * [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials/)
 * [Using Pull Requests](https://help.github.com/articles/using-pull-requests)
 * [General GitHub Documentation](https://help.github.com/)
