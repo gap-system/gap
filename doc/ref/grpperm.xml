@@ -145,7 +145,7 @@ The concepts of stabilizer chains, <E>bases</E>,
 and <E>strong generating sets</E> were
 introduced by Charles Sims in&nbsp;<Cite Key="Sim70"/>. An extensive account
 of basic algorithms together with asymptotic runtime analysis can be found in
-reference&nbsp;<Cite Key="Seress03" Where="Chapter 4"/>.
+reference&nbsp;<Cite Key="Seress2003" Where="Chapter 4"/>.
 A further discussion of base change is given in
 section&nbsp;<Ref Sect="Generalized Conjugation Technique"/>.
 <P/>
