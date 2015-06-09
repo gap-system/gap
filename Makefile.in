@@ -436,7 +436,7 @@ cygwin:	extern
 	cp bin/$(GAPARCH)/gapw95.exe bin
 	cp bin/$(GAPARCH)/gap.dll bin
 	cp /bin/cygncurses-10.dll /bin/cygncursesw-10.dll \
-	   /bin/cygpanel-10.dll /bin/cygwin1.dll \
+	   /bin/cygpanel-10.dll /bin/cygpanelw-10.dll /bin/cygwin1.dll \
 	   /bin/libW11.dll /usr/bin/rxvt.exe /usr/bin/regtool.exe \
 	   /bin/cygreadline7.dll /bin/cyggcc_s-1.dll /bin/cygpopt-0.dll \
 	   /bin/cygstart.exe /bin/mintty.exe bin
