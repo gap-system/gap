@@ -1580,6 +1580,8 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
 	List(mats,s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
 		  Image(hom,PreImagesRepresentative(hom,x)^s)))));
       
+    else
+      gal:=Group(()); # to force trivial
     fi;
 
     if Size(gal)>1 then
