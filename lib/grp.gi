@@ -642,7 +642,6 @@ InstallMethod(MaximalAbelianQuotient,
 #T so we do not attempt to set the `IsAbelian' flag for it.
 end );
 
-
 #############################################################################
 ##
 #M  CompositionSeries( <G> )  . . . . . . . . . . . composition series of <G>
@@ -691,6 +690,10 @@ function( grp )
     return series;
 
 end );
+
+InstallMethod( CompositionSeries,
+    "for simple group", true, [IsGroup and IsSimpleGroup], 100,
+    S->[S,TrivialSubgroup(S)]);
 
 
 #############################################################################
