@@ -971,7 +971,7 @@ InstallGlobalFunction(PrintCSV,function(arg)
   end;
 
   sz:=SizeScreen();
-  SizeScreen([255,sz[2]]);
+  SizeScreen([4096,sz[2]]);
   if Length(arg)>2 then
     rf:=arg[3];
   else
