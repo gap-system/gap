@@ -1152,6 +1152,34 @@ DeclareAttribute( "MaximalSubgroups", IsGroup );
 ##
 DeclareAttribute("MaximalSubgroupClassReps",IsGroup);
 
+#############################################################################
+##
+#F  MaximalPropertySubgroups( <G>, <prop> )
+##
+##  <#GAPDoc Label="MaximalPropertySubgroups">
+##  <ManSection>
+##  <Func Name="MaximalPropertySubgroups" Arg='G,prop'/>
+##
+##  <Description>
+##  For a function <A>prop</A> that tests for a property that persists
+##  under taking subgroups, this function returns conjugacy class
+##  representatives of the subgroups of <A>G</A> that are maximal subject to
+##  this property. 
+##  <Example><![CDATA[
+##  gap> max:=MaximalPropertySubgroups(AlternatingGroup(8),IsNilpotent);;
+##  gap> List(max,Size);
+##  [ 64, 15, 12, 9, 7, 6 ]
+##  gap> max:=MaximalSolvableSubgroups(AlternatingGroup(10));;
+##  gap> List(max,Size);
+##  [ 1152, 864, 648, 576, 400, 384, 320, 216, 126, 240, 168, 120 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("MaximalPropertySubgroups");
+DeclareGlobalFunction("MaximalSolvableSubgroups");
+
 
 #############################################################################
 ##
