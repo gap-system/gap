@@ -1460,6 +1460,10 @@ local   orbs, orb,sort,plist,pos,use,o;
   fi;
   sort:=Length(D)>0 and CanEasilySortElements(D[1]);
   plist:=IsPlistRep(D);
+  if plist and Length(D)>0 and IsHomogeneousList(D) and CanEasilySortElements(D[1]) then
+    plist:=false;
+    D:=AsSortedList(D);
+  fi;
   if not plist then
     use:=BlistList([1..Length(D)],[]);
   fi;
