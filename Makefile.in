@@ -73,6 +73,10 @@ GAPARGS=
 TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -A -q -x 80 -r $(GAPARGS)
 TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -q -x 80 -r $(GAPARGS)
 
+PKG_BOOTSTRAP_URL="http://www.gap-system.org/pub/gap/gap4pkgs/"
+PKG_REQUIRED="packages-required-stable-v4.7.8.tar.gz"
+PKG_FULL="packages-v4.7.8.tar.gz"
+
 default: compile
 
 setconfig:
@@ -440,7 +444,26 @@ winbinp:
           bin/$(GAPARCH)/config.h \
           terminfo )
 
-packages:
-	./makepkgs
+bootstrap-pkg-minimal:
+	@if test -e pkg; then \
+        echo "The pkg directory already exists. Please move or remove it to proceed."; \
+    else \
+        mkdir pkg ; \
+        cd pkg ; \
+        wget $(PKG_BOOTSTRAP_URL)$(PKG_REQUIRED) ; \
+        tar xvzf $(PKG_REQUIRED) ; \
+        rm $(PKG_REQUIRED) ; \
+    fi;
+
+bootstrap-pkg-full:
+	@if test -e pkg; then \
+        echo "The pkg directory already exists. Please move or remove it to proceed" ; \
+    else \
+        mkdir pkg ; \
+        cd pkg ; \
+        wget $(PKG_BOOTSTRAP_URL)$(PKG_FULL) ; \
+        tar xvzf $(PKG_FULL) ; \
+        rm $(PKG_FULL) ; \
+    fi;
 
 .PHONY: clean clean_$(CLEANME) clean_gap clean_gap_$(CLEANME) clean_gmp clean_gmp_$(CLEANME) compile config cygwin default distclean extern manuals packages rebuild removewin setconfig static strip testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard teststandardrenormalize winbinp
