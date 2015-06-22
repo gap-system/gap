@@ -28,18 +28,29 @@ by the following two commands
 # ./configure
 # make
 ```
+
+Now, if you do not have a GAP package archive yet, we recommend that you
+bootstrap the stable versions of packages by executing on of the the following
+commands. Whether you choose to `bootstrap-pkg-minimal` or `bootstrap-pkg-full`
+depends on your needs for development. More information on the topic of how
+to handle the `pkg` subdirectory can be found [here]().
+
+```
+# make bootstrap-pkg-minimal
+```
+
+or
+
+```
+# make bootstrap-pkg-full
+```
+
 If everything goes well, you should be able to start GAP by executing
 ```
 # sh bin/gap.sh
 ```
 
-Note that this repository does not contain the `pkg` subdirectory for GAP packages, so
-you will have to create it manually and install the
-[GAPDoc package](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/index.html) there
-to be able to start GAP). If you're interested in trying the GAP development version with
-more packages, you may install them in addition or perhaps put into the `pkg` directory
-symlinks pointing to their locations in your installation of the latest stable GAP release.
-You may also find development versions of some of the GAP packages
+You can also find development versions of some of the GAP packages
 on [GitHub](https://github.com/gap-system) and [Bitbucket](https://bitbucket.org/gap-system).
 
 # We welcome contributions
