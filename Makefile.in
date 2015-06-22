@@ -451,7 +451,7 @@ bootstrap-pkg-minimal:
         mkdir pkg ; \
         cd pkg ; \
         wget $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) ; \
-        tar xvzf $(PKG_MINIMAL) ; \
+        tar xzf $(PKG_MINIMAL) ; \
         rm $(PKG_MINIMAL) ; \
     fi;
 
@@ -462,7 +462,7 @@ bootstrap-pkg-full:
         mkdir pkg ; \
         cd pkg ; \
         wget $(PKG_BOOTSTRAP_URL)$(PKG_FULL) ; \
-        tar xvzf $(PKG_FULL) ; \
+        tar xzf $(PKG_FULL) ; \
         rm $(PKG_FULL) ; \
     fi;
 
