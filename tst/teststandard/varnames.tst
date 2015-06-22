@@ -7,7 +7,7 @@
 ##
 gap> START_TEST("varnames.tst");
 gap> Filtered( NamesSystemGVars(), x -> not x in ALL_KEYWORDS() and
->            ( Length(x)=1 or IsLowerAlphaChar(x[1]) ) );
+>            ( Length(x)=1 or (IsLowerAlphaChar(x[1]) and Length(x) < 12) ) );
 [ "*", "+", "-", ".", "/", "<", "=", "E", "X", "Z", "^", "fail", "infinity", 
   "last", "last2", "last3", "time" ]
 gap> # Filtered(NamesSystemGVars(),name->IsSubset(LETTERS,name));;  
