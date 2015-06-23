@@ -2616,7 +2616,7 @@ Obj FuncSleep( Obj self, Obj secs )
 }
 
 // Common code in the next 3 methods.
-int static SetExitValue(Obj code)
+static int SetExitValue(Obj code)
 {
   if (code == False || code == Fail)
     SystemErrorCode = 1;
