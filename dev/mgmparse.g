@@ -1,5 +1,5 @@
 # Magma to GAP converter
-MGMCONVER:="version 0.3, 6/23/15"; # very raw
+MGMCONVER:="version 0.31, 6/24/15"; # very raw
 # (C) Alexander Hulpke
 
 
@@ -11,18 +11,23 @@ TOKENS:=["if","then","eq","cmpeq","neq","and","or","else","not","assigned",
 	 "procedure","end procedure","where","break",
          "function","return",":=","+:=","-:=","*:=","cat:=","=",
 	 "\\[","\\]","delete","exists",
-	 "[","]","(",")","`",";","#","!","<",">","&","$",":->","hom",
-	 "cat","[*","*]","->","@@","forward",
-	 "+","-","*","/","div","mod","in","^","~","..",".",",","\"",
+	 "[","]","(",")","\\(","\\)","`",";","#","!","<",">","&","$",":->","hom",
+	 "cat","[*","*]","->","@@","forward","join",
+	 "+","-","*","/","div","mod","in","notin","^","~","..",".",",","\"",
 	 "{","}","|","::",":","@","cmpne","subset","by","try","end try",
 	 "declare verbose","declare attributes",
 	 "exists","forall",
 	 "sub","eval","select","rec","recformat","require","case","when","end case",
 	 "%%%" # fake keyword for comments
 	 ];
-BINOPS:=["+","-","*","/","div","mod","in","^","`","!","cat","and","|",
-         "or","eq","cmpeq","ne","le","ge","gt","lt",".","->","@@","@","cmpne","meet","subset"];
-PAROP:=["+","-","div","mod","in","^","`","!","cat","and",
+# Magma binary operators
+BINOPS:=["+","-","*","/","div","mod","in","notin","^","`","!","and","|",
+         "or","eq","cmpeq","ne","le","ge","gt","lt",".","->","@@","@","cmpne"];
+# Magma binaries that have to become function calls in GAP
+FAKEBIN:=["meet","subset","join","diff","cat"];
+BINOPS:=Union(BINOPS,FAKEBIN);
+
+PAROP:=["+","-","div","mod","in","notin","^","`","!","and",
          "or","eq","cmpeq","ne","."];
 TOKENS:=Union(TOKENS,BINOPS);
 TOKENS:=Union(TOKENS,PAROP);
@@ -55,18 +60,77 @@ local n;
   return List([1..n],x->m{[1+n*(x-1)..n*x]});
 end;
 
+FILEPRINTSTR:="";
+FilePrint:=function(arg)
+  local f,i,p;
+  f:=arg[1];
+  for i in [2..Length(arg)] do
+    if not IsString(arg[i]) then
+      FILEPRINTSTR:=Concatenation(FILEPRINTSTR,String(arg[i]));
+    else
+      FILEPRINTSTR:=Concatenation(FILEPRINTSTR,arg[i]);
+    fi;
+    p:=Position(FILEPRINTSTR,'\b');
+    while p<>fail do
+      FILEPRINTSTR:=Concatenation(FILEPRINTSTR{[1..p-2]},FILEPRINTSTR{[p+1..Length(FILEPRINTSTR)]});
+      p:=Position(FILEPRINTSTR,'\b');
+    od;
+    p:=Position(FILEPRINTSTR,'\n');
+    while p<>fail do
+      AppendTo(f,FILEPRINTSTR{[1..p]});
+      FILEPRINTSTR:=FILEPRINTSTR{[p+1..Length(FILEPRINTSTR)]};
+      p:=Position(FILEPRINTSTR,'\n');
+    od;
+
+  od;
+end;
 
 CHARSIDS:=Concatenation(CHARS_DIGITS,CHARS_UALPHA,CHARS_LALPHA,"_");
 CHARSOPS:="+-*/,;:=~!";
 
 MgmParse:=function(file)
 local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
-      ExpectToken,doselect,costack,locals,globvars,defines,
+      ExpectToken,doselect,costack,locals,globvars,defines,problemarea,
       f,l,lines,linum,w,a,idslist,tok,tnum,i,sel,osel,e,comment;
 
   locals:=[];
   globvars:=[];
   defines:=[];
+
+  # print current area (as being problematic)
+  problemarea:=function()
+  local l,s;
+    Print("\n\n");
+    l:=0;
+    for i in [Maximum(1,tnum-200)..tnum-11] do
+      s:=tok[i][2];
+      if not IsString(s) then
+	s:=String(s);
+      fi;
+      l:=l+Length(s);
+      if l>78 then
+	Print("\n");
+	l:=Length(s);
+      fi;
+      Print(s);
+    od;
+    Print("\n");
+    Print(tok{[Maximum(1,tnum-10)..tnum-1]},"\n------\n",tok{[tnum..tnum+10]},"\n");
+    l:=0;
+    for i in [tnum+11..tnum+50] do
+      s:=tok[i][2];
+      if not IsString(s) then
+	s:=String(s);
+      fi;
+      l:=l+Length(s);
+      if l>78 then
+	Print("\n");
+	l:=Length(s);
+      fi;
+      Print(s);
+    od;
+    Print("\n");
+  end;
 
   eatblank:=function()
     while Length(l)>0 and (l[1]=' ' or l[1]='\t') do
@@ -122,7 +186,6 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	od;
 	Append(l,a{[p+2..Length(a)]});
 	a:=a{[1..p-1]};
-      #Error("ZZZZ");
 	Add(comment,a);
 	a:="%%%";
       fi;
@@ -145,6 +208,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       while tok[i][1]="#" do
 	i:=i+1;
       od;
+      problemarea();
       if i>tnum then
 	Error("infix comment?");
       fi;
@@ -212,7 +276,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	sel:=Filtered(sel,x->Length(TOKENS[x])>=i and TOKENS[x][i]=l[i]);
       until Length(sel)=0;
       osel:=Filtered(osel,x->Length(TOKENS[x])=i-1);
-      if Length(osel)<>1 then Error("nonunique");fi;
+      if Length(osel)<>1 then 
+	Error("nonunique");
+      fi;
       if l{[1..i-1]}<>TOKENS[osel[1]] then Error("token error");fi;
       a:=TOKENS[osel[1]];
       if a="%%%" then # this is where the comment should go
@@ -264,11 +330,24 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 
   # read identifier, call, function 
   ReadExpression:=function(stops)
-  local obj,e,a,b,c,argus,procidf,op,assg,val,pre,lbinops,fcomment;
+  local obj,e,a,b,c,argus,procidf,doprocidf,op,assg,val,pre,lbinops,fcomment;
 
      lbinops:=Difference(BINOPS,stops);
 
      procidf:=function()
+      local a,b;
+       a:=doprocidf();
+       while not "[" in stops and tok[tnum][2]="[" do
+	 ExpectToken("[");
+	 # postfacto indexing
+	 b:=ReadExpression(["]"]);
+	 ExpectToken("]");
+	 a:=rec(type:="L",var:=a,at:=b);
+       od;
+       return a;
+     end;
+
+     doprocidf:=function()
      local a,l,e,b,c,d,eset;
 
       eset:=function()
@@ -283,7 +362,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 
       if e in stops then
 	a:=rec(type:="none");
-      elif e="(" then
+      elif e="(" or e="\\(" then
 	tnum:=tnum+1;
         a:=ReadExpression([")",","]);
 	if tok[tnum][2]=","  then 
@@ -342,6 +421,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	      ExpectToken(":");
 	      l:=a; # part 1
 	      if tok[tnum][1]<>"I" then
+		problemarea();
 		Error("weird colon expression");
 	      fi;
 	      a:=tok[tnum][2]; # part 2
@@ -515,7 +595,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	b:=ReadExpression(["|"]);
 	ExpectToken("|");
 	a:=rec(type:="hom",domain:=a,codomain:=b);
-	c:=ReadExpression([":->",">"]);
+	c:=ReadExpression([":->",">",","]);
 	if tok[tnum][2]=">" then
 	  # image defn
 	  a.kind:="images";
@@ -527,8 +607,16 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  a.kind:="fct";
 	  a.var:=c;
 	  a.expr:=d;
+	elif tok[tnum][2]="," then
+	  # gens, imgs
+	  a.kind:="genimg";
+	  a.gens:=c;
+	  ExpectToken(",");
+	  d:=ReadExpression([">"]);
+	  a.images:=d;
 	else
-	  Error("not yet done");
+	  problemarea();
+	  Error(tok[tnum][2], " not yet done");
 	fi;
 	ExpectToken(">","endhom");
 
@@ -552,7 +640,8 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
           a:=ReadExpression(Concatenation(stops,["and","or"]));
 	  a:=rec(type:=Concatenation("U",e),arg:=a);
 	else
-	  Error("other unary");
+	  problemarea();
+	  Error("other unary ",e);
 	fi;
 
       else
@@ -567,7 +656,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	e:=eset();
 
 	while not (e in stops or e in lbinops) do
-	  if e="(" then
+	  if e="select" then
+	    a:=doselect(a,stops);
+	  elif e="(" then
 	    # fct call
 	    assg:=[];
 	    tnum:=tnum+1;
@@ -652,6 +743,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	    b:=ReadExpression(stops);
 	    a:=rec(type:="pair",left:=a,right:=b);
 	  else
+	    problemarea();
 	    Error("eh!");
 	  fi;
 
@@ -676,6 +768,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	    if tok[tnum][1]="I" then
 	      tnum:=tnum+1; # type identifier
 	    else
+	      problemarea();
 	      Error("don't understand ::");
 	    fi;
 	  fi;
@@ -713,6 +806,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       if tok[tnum]=["O","->"] then
 	ExpectToken("->");
 	if tok[tnum][1]<>"I" then
+	  problemarea();
 	  Error("-> unexpected");
 	fi;
 	a:="-> ";
@@ -770,14 +864,20 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
     fi;
   end;
 
-  doselect:=function(cond)
-  local yes,no;
+  doselect:=function(arg)
+  local cond,yes,no,stops;
+    cond:=arg[1];
+    if Length(arg)>1 then
+      stops:=arg[2];
+    else
+      stops:=[];
+    fi;
     ExpectToken("select");
     yes:=ReadExpression(["else"]);
     ExpectToken("else");
-    no:=ReadExpression([";","select"]);
+    no:=ReadExpression(Concatenation([";","select"],stops));
     if tok[tnum][2]="select" then
-      no:=doselect(no);
+      no:=doselect(no,stops);
     fi;
     return rec(type:="select",cond:=cond,yescase:=yes,nocase:=no);
   end;
@@ -1008,12 +1108,21 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	    ExpectToken("when");
 	    a:=ReadExpression([":"]);
 	    ExpectToken(":");
-	    b:=ReadBlock(["when","end case"]);
+	    b:=ReadBlock(["when","end case","else"]);
+	    locals:=Union(locals,b[1]);
 	    Add(c,[a,b[2]]);
 	  od;
+	  a:=rec(type:="case",test:=e,cases:=c);
+	  if tok[tnum][2]="else" then
+	    ExpectToken("else");
+	    b:=ReadBlock(["end case"]);
+	    locals:=Union(locals,b[1]);
+            a.elsecase:=b[2];
+	  fi;
 	  ExpectToken("end case");
-	  Add(l,rec(type:="case",test:=e,cases:=c));
+	  Add(l,a);
 	else
+	  problemarea();
 	  Error("other keyword ",e);
 	fi;
       elif e[1]="I" then
@@ -1024,7 +1133,10 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	fi;
 	e:=tok[tnum];
 	tnum:=tnum+1;
-	if e[1]<>"O" then Error("missing separator");fi;
+	if e[1]<>"O" then 
+	  problemarea();
+	  Error("missing separator");
+	fi;
 	if e[2]="," then 
 	  b:=[a];
 	  while e[2]="," do
@@ -1069,6 +1181,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  a.line:=true; # only command in line
 	  Add(l,a);
 	else
+	  problemarea();
 	  Error("anders");
 	fi;
       elif e[1]="S" then
@@ -1083,6 +1196,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       elif e[2]=";" then
 	# empty command?
       else 
+	problemarea();
 	Error("cannot deal with token ",e);
       fi;
     od;
@@ -1116,7 +1230,7 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
     first:=true;
     for i in l do
       if not first then
-	AppendTo(f,",");
+	FilePrint(f,",");
       else
 	first:=false;
       fi;
@@ -1124,9 +1238,9 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
 	doit(i);
       else
 	if Length(arg)>1 then
-	  AppendTo(f,"\"",i,"\"");
+	  FilePrint(f,"\"",i,"\"");
 	else
-	  AppendTo(f,i);
+	  FilePrint(f,i);
 	fi;
       fi;
     od;
@@ -1140,17 +1254,17 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
       while str[i]<>' ' do
         i:=i-1;
       od;
-      AppendTo(f,"#  ",str{[1..i-1]},"\n",START);
+      FilePrint(f,"#  ",str{[1..i-1]},"\n",START);
       str:=str{[i+1..Length(str)]};
     od;
-    AppendTo(f,"#  ",str,"\n",START);
+    FilePrint(f,"#  ",str,"\n",START);
   end;
 
   doitpar:=function(r,usepar)
     if usepar and r.type<>"I" and r.type<>"N" and r.type<>"S" then
-      AppendTo(f,"(");
+      FilePrint(f,"(");
       doit(r);
-      AppendTo(f,")");
+      FilePrint(f,")");
     else
       doit(r);
     fi;
@@ -1158,96 +1272,96 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
 
   # doit -- main node processor
   doit:=function(node)
-  local t,i,a;
+  local t,i,a,b;
     t:=node.type;
     if t="A" then
       doit(node.left);
-      AppendTo(f,":=");
+      FilePrint(f,":=");
       doit(node.right);
-      AppendTo(f,";\n",START);
+      FilePrint(f,";\n",START);
     elif t[1]='A' and Length(t)=2 and t[2] in "+-*" then
       doit(node.left);
-      AppendTo(f,":=");
+      FilePrint(f,":=");
       doit(node.left);
-      AppendTo(f,t{[2]});
+      FilePrint(f,t{[2]});
       doit(node.right);
-      AppendTo(f,";\n",START);
+      FilePrint(f,";\n",START);
     elif t="Acat" then
       doit(node.left);
-      AppendTo(f,":=Concatenation(");
+      FilePrint(f,":=Concatenation(");
       doit(node.left);
-      AppendTo(f,",");
+      FilePrint(f,",");
       doit(node.right);
-      AppendTo(f,");\n",START);
+      FilePrint(f,");\n",START);
 
     elif t="Amult" then
-      AppendTo(f,"# =v= MULTIASSIGN =v=\n",START);
+      FilePrint(f,"# =v= MULTIASSIGN =v=\n",START);
       a:=node.left[Length(node.left)];
       doit(a);
-      AppendTo(f,":=");
+      FilePrint(f,":=");
       doit(node.right);
-      AppendTo(f,";\n",START);
+      FilePrint(f,";\n",START);
       for i in [1..Length(node.left)] do
         doit(node.left[i]);
-	AppendTo(f,":=");
+	FilePrint(f,":=");
 	doit(a);
-	AppendTo(f,".val",String(i),";\n",START);
+	FilePrint(f,".val",String(i),";\n",START);
       od;
-      AppendTo(f,"# =^= MULTIASSIGN =^=\n",START);
+      FilePrint(f,"# =^= MULTIASSIGN =^=\n",START);
 
     elif t="I" or t="N" then
-      AppendTo(f,node.name);
+      FilePrint(f,node.name);
     elif t="co" then
       # commentary
       a:=node.text;
       i:=Position(a,'\n');
       while i<>fail do
-	AppendTo(f,"\n",START);
-	AppendTo(f,"# ",a{[1..i]},START);
+	FilePrint(f,"\n",START);
+	FilePrint(f,"# ",a{[1..i]},START);
 	a:=a{[i+1..Length(a)]};
 	i:=Position(a,'\n');
       od;
 
-      AppendTo(f,"#  ",a,"\n",START);
+      FilePrint(f,"#  ",a,"\n",START);
     elif t="W" then
       # warning
-      AppendTo(f,"Info(InfoWarning,1,");
+      FilePrint(f,"Info(InfoWarning,1,");
       if Length(node.text)>40 then
-	AppendTo(f,"\n",START,"  ");
+	FilePrint(f,"\n",START,"  ");
       fi;
-      AppendTo(f,"\"",node.text,"\");\n",START);
+      FilePrint(f,"\"",node.text,"\");\n",START);
     elif t="Info" then
       # info
-      AppendTo(f,"Info(Info");
+      FilePrint(f,"Info(Info");
       doit(node.class);
-      AppendTo(f,",1,");
+      FilePrint(f,",1,");
       printlist(node.values,"\"");
-      AppendTo(f,");\n",START);
+      FilePrint(f,");\n",START);
     elif t="Print" then
       # info
-      AppendTo(f,"Print(");
+      FilePrint(f,"Print(");
       printlist(node.values,"\"");
-      AppendTo(f,");\n",START);
+      FilePrint(f,");\n",START);
 
     elif t="return" then
       if Length(node.values)=1 then
-        AppendTo(f,"return ");
+        FilePrint(f,"return ");
 	doit(node.values[1]);
-	AppendTo(f,";\n",START);
+	FilePrint(f,";\n",START);
       else
-	AppendTo(f,"return rec(");
+	FilePrint(f,"return rec(");
 	for i in [1..Length(node.values)] do
-	  if i>1 then AppendTo(f,",\n",START,"  ");fi;
-	  AppendTo(f,"val",String(i),":=");
+	  if i>1 then FilePrint(f,",\n",START,"  ");fi;
+	  FilePrint(f,"val",String(i),":=");
 	  doit(node.values[i]);
 	od;
-	AppendTo(f,");\n",START);
+	FilePrint(f,");\n",START);
       fi;
     elif t[1]='F' then
       # function
-      AppendTo(f,"function(");
+      FilePrint(f,"function(");
       printlist(node.args);
-      AppendTo(f,")\n",START);
+      FilePrint(f,")\n",START);
 
       if IsBound(node.comment) then
 	mulicomm(f,node.comment);
@@ -1255,337 +1369,404 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
 
       indent(1);
       if Length(node.locals)>0 then
-        AppendTo(f,"local ");
+        FilePrint(f,"local ");
 	printlist(node.locals);
-	AppendTo(f,";\n",START);
+	FilePrint(f,";\n",START);
       fi;
       if t="FA" then
 	for i in [1,3..Length(node.assg)-1] do
 	  doit(node.assg[i]);
-	  AppendTo(f,":=ValueOption(\"");
+	  FilePrint(f,":=ValueOption(\"");
 	  doit(node.assg[i]);
-	  AppendTo(f,"\");\n",START,"if ");
+	  FilePrint(f,"\");\n",START,"if ");
 	  doit(node.assg[i]);
-	  AppendTo(f,"=fail then\n",START,"  ");
+	  FilePrint(f,"=fail then\n",START,"  ");
 	  doit(node.assg[i]);
-	  AppendTo(f,":=");
+	  FilePrint(f,":=");
 	  doit(node.assg[i+1]);
-	  AppendTo(f,";\n",START,"fi;\n",START);
+	  FilePrint(f,";\n",START,"fi;\n",START);
 	od;
 
       fi;
       for i in node.block do
 	doit(i);
       od;
-      AppendTo(f,"\n");
+      FilePrint(f,"\n");
       indent(-1);
-      AppendTo(f,START,"end;\n",START);
+      FilePrint(f,START,"end;\n",START);
     elif t="S" then
-      AppendTo(f,"\"");
-      AppendTo(f,node.name);
-      AppendTo(f,"\"");
+      FilePrint(f,"\"");
+      FilePrint(f,node.name);
+      FilePrint(f,"\"");
     elif t="C" or t="CA" then
       # fct. call
       doit(node.fct);
-      AppendTo(f,"(");
+      FilePrint(f,"(");
       printlist(node.args);
       if t="CA" then
-        AppendTo(f,":");
+        FilePrint(f,":");
 	for i in [1,3..Length(node.assg)-1] do
 	  if i>1 then
-	    AppendTo(f,",");
+	    FilePrint(f,",");
 	  fi;
 	  doit(node.assg[i]);
-	  AppendTo(f,":=");
+	  FilePrint(f,":=");
 	  doit(node.assg[i+1]);
 	od;
       fi;
       if IsBound(node.line) then
-	AppendTo(f,");\n",START);
+	FilePrint(f,");\n",START);
       else
-	AppendTo(f,")");
+	FilePrint(f,")");
       fi;
     elif t="L" then
       # list access
       doit(node.var);
-      AppendTo(f,"[");
+      FilePrint(f,"[");
       doit(node.at);
-      AppendTo(f,"]");
+      FilePrint(f,"]");
 
     elif t="V" then
-      AppendTo(f,"[");
+      FilePrint(f,"[");
       printlist(node.args);
-      AppendTo(f,"]");
+      FilePrint(f,"]");
     elif t="{" then
       # Set
-      AppendTo(f,"Set([");
+      FilePrint(f,"Set([");
       printlist(node.args);
-      AppendTo(f,"])");
+      FilePrint(f,"])");
     elif t="perm" then
       # permutation
-      AppendTo(f,node.perm);
+      FilePrint(f,node.perm);
     elif t="notperm" then
       t:=UnFlat(node.notperm);
       if t=fail then
 	t:=node.notperm;
       fi;
-      AppendTo(f,"NOTPERM",t,"\n");
+      FilePrint(f,"NOTPERM",t,"\n");
     elif t="[*" then
-      AppendTo(f,"# [*-list:\n",START,"[");
+      FilePrint(f,"# [*-list:\n",START,"[");
       printlist(node.args);
-      AppendTo(f,"]");
+      FilePrint(f,"]");
     elif t="R" then
-      AppendTo(f,"[");
+      FilePrint(f,"[");
       doit(node.from);
       if IsBound(node.step) then
-	AppendTo(f,",");
+	FilePrint(f,",");
 	doit(node.from);
-	AppendTo(f,"+");
+	FilePrint(f,"+");
 	doit(node.step);
       fi;
-      AppendTo(f,"..");
+      FilePrint(f,"..");
       doit(node.to);
-      AppendTo(f,"]");
+      FilePrint(f,"]");
     elif t="pair" then
-      AppendTo(f,"Tuple([");
+      FilePrint(f,"Tuple([");
       doit(node.left);
-      AppendTo(f,",");
+      FilePrint(f,",");
       doit(node.right);
-      AppendTo(f,"])");
+      FilePrint(f,"])");
     elif t="B!" then
       doit(node.right);
-      AppendTo(f,"*FORCEOne(");
+      FilePrint(f,"*FORCEOne(");
       doit(node.left);
-      AppendTo(f,")");
+      FilePrint(f,")");
     elif t="B`" then
       doit(node.right);
-      AppendTo(f,"Attr(");
+      FilePrint(f,"Attr(");
       doit(node.left);
-      AppendTo(f,")");
+      FilePrint(f,")");
     elif t="Bdiv" then
-      AppendTo(f,"QuoInt(");
+      FilePrint(f,"QuoInt(");
       doit(node.left);
-      AppendTo(f,",");
+      FilePrint(f,",");
       doit(node.right);
-      AppendTo(f,")");
+      FilePrint(f,")");
     elif t="Bcat" then
-      AppendTo(f,"Concatenation(");
+      FilePrint(f,"Concatenation(");
       doit(node.left);
-      AppendTo(f,",");
+      FilePrint(f,",");
       doit(node.right);
-      AppendTo(f,")");
+      FilePrint(f,")");
     elif t[1]='B' then
       # binary op
       i:=t{[2..Length(t)]};
       a:=i;
-      doitpar(node.left,a in PAROP);
-      if i="ne" or i="cmpne" then
-        i:="<>";
-      elif i="eq" or i="cmpeq" then
-        i:="=";
-      elif i="and" then
-        i:=" and ";
-      elif i="or" then
-        i:=" or ";
-      elif i="mod" then
-        i:=" mod ";
-      elif i="in" then
-        i:=" in ";
-      elif i="gt" then
-        i:=" > ";
-      elif i="ge" then
-        i:=" >= ";
-      elif i="lt" then
-        i:=" < ";
-      elif i="le" then
-        i:=" <= ";
+      if a in FAKEBIN then
+	b:=false;
+	if a="meet" then
+	  a:="Intersection";
+	elif a="join" then
+	  a:="Union";
+	elif a="cat" then
+	  a:="Concatenation";
+	elif a="diff" then
+	  a:="Difference";
+	elif a="subset" then
+	  a:="IsSubset";
+	  b:=true;
+	else
+	  Error("Can't do ",a,"yet\n");
+	fi;
+
+	FilePrint(f,a,"(");
+	if b then
+	  doit(node.right);
+	  FilePrint(f,",");
+	  doit(node.left);
+	else
+	  doit(node.left);
+	  FilePrint(f,",");
+	  doit(node.right);
+	fi;
+	FilePrint(f,")");
+      else
+	doitpar(node.left,a in PAROP);
+	if i="ne" or i="cmpne" then
+	  i:="<>";
+	elif i="eq" or i="cmpeq" then
+	  i:="=";
+	elif i="and" then
+	  i:=" and ";
+	elif i="or" then
+	  i:=" or ";
+	elif i="mod" then
+	  i:=" mod ";
+	elif i="in" then
+	  i:=" in ";
+	elif i="gt" then
+	  i:=" > ";
+	elif i="ge" then
+	  i:=" >= ";
+	elif i="lt" then
+	  i:=" < ";
+	elif i="le" then
+	  i:=" <= ";
+	fi;
+	FilePrint(f,i);
+	doitpar(node.right,a in PAROP);
       fi;
-      AppendTo(f,i);
-      doitpar(node.right,a in PAROP);
+
     elif t="U#" then
-      AppendTo(f,"Size(");
+      FilePrint(f,"Size(");
       doit(node.arg);
-      AppendTo(f,")");
+      FilePrint(f,")");
     elif t="U-" then
-      AppendTo(f,"-");
+      FilePrint(f,"-");
       doit(node.arg);
     elif t="U~" then
-      AppendTo(f,"~TILDE~");
+      FilePrint(f,"~TILDE~");
       doit(node.arg);
     elif t="Unot" then
-      AppendTo(f,"not ");
+      FilePrint(f,"not ");
       doit(node.arg);
     elif t="Uassigned" then
-      AppendTo(f,"Has");
+      FilePrint(f,"Has");
       doit(node.arg);
     elif t="Ueval" then
-      AppendTo(f,"#EVAL\n",START,"    ");
+      FilePrint(f,"#EVAL\n",START,"    ");
       doit(node.arg);
 
     elif t="<>" then
-      AppendTo(f,"Sub");
+      FilePrint(f,"Sub");
       doit(node.op);
-      AppendTo(f,"(");
+      FilePrint(f,"(");
       if Length(node.left)=1 then
         doit(node.left[1]);
       else
 	printlist(node.left);
       fi;
-      AppendTo(f,",[");
+      FilePrint(f,",[");
       printlist(node.right);
-      AppendTo(f,"])");
+      FilePrint(f,"])");
     elif t="<" then
-      AppendTo(f,"Span(");
+      FilePrint(f,"Span(");
       printlist(node.args);
-      AppendTo(f,")");
+      FilePrint(f,")");
     elif t=":" then
-      AppendTo(f,"List(");
+      FilePrint(f,"List(");
       doit(node.from);
-      AppendTo(f,",",node.var,"->");
+      FilePrint(f,",",node.var,"->");
       doit(node.op);
-      AppendTo(f,")");
+      FilePrint(f,")");
     elif t="&" then
       if node.op="+" then
-        AppendTo(f,"Sum(");
+        FilePrint(f,"Sum(");
       elif node.op="*" then
-        AppendTo(f,"Product(");
+        FilePrint(f,"Product(");
       elif node.op="cat" then
-        AppendTo(f,"Concatenation(");
+        FilePrint(f,"Concatenation(");
       else
-        Error("node.op not yet done");
+        Error("operation ",node.op," not yet done");
       fi;
       doit(node.arg);
-      AppendTo(f,")");
+      FilePrint(f,")");
     elif t="rec" then
-      AppendTo(f,"rec(");
+      FilePrint(f,"rec(");
       indent(1);
       for i in [1,3..Length(node.assg)-1] do
 	if i>1 then
-	  AppendTo(f,",\n",START);
+	  FilePrint(f,",\n",START);
 	fi;
-	AppendTo(f,node.assg[i].name,":=");
+	FilePrint(f,node.assg[i].name,":=");
 	doit(node.assg[i+1]);
       od;
       indent(-1);
-      AppendTo(f,")");
+      FilePrint(f,")");
     elif t="if" then
-      AppendTo(f,"if ");
+      FilePrint(f,"if ");
       doit(node.cond);
       indent(1);
-      AppendTo(f," then\n",START);
+      FilePrint(f," then\n",START);
       for i in node.block do
 	doit(i);
       od;
       indent(-1);
-      #AppendTo(f,"\n");
 
       if IsBound(node.elseblock) then
-	AppendTo(f,"\b\belse\n");
+	FilePrint(f,"\b\belse\n");
 	indent(1);
-	AppendTo(f,START);
+	FilePrint(f,START);
 	for i in node.elseblock do
 	  doit(i);
 	od;
 	indent(-1);
-	#AppendTo(f,"\n");
       fi;
-      AppendTo(f,"\b\bfi;\n",START);
+      FilePrint(f,"\b\bfi;\n",START);
     elif t="while" then
-      AppendTo(f,"while ");
+      FilePrint(f,"while ");
       doit(node.cond);
       indent(1);
-      AppendTo(f," do\n",START);
+      FilePrint(f," do\n",START);
       for i in node.block do
 	doit(i);
       od;
       indent(-1);
-      #AppendTo(f,"\n");
-      AppendTo(f,"\b\bod;\n",START);
+      #FilePrint(f,"\n");
+      FilePrint(f,"\b\bod;\n",START);
     elif t="for" then
-      AppendTo(f,"for ");
+      FilePrint(f,"for ");
       doit(node.var);
-      AppendTo(f," in ");
+      FilePrint(f," in ");
       doit(node.from);
       indent(1);
-      AppendTo(f," do\n",START);
+      FilePrint(f," do\n",START);
       for i in node.block do
 	doit(i);
       od;
       indent(-1);
-      AppendTo(f,"\b\bod;\n",START);
+      FilePrint(f,"\b\bod;\n",START);
 
     elif t="repeat" then
       indent(1);
-      AppendTo(f,"repeat\n",START);
+      FilePrint(f,"repeat\n",START);
       for i in node.block do
 	doit(i);
       od;
       indent(-1);
-      AppendTo(f,"\n",START);
-      AppendTo(f,"until ");
+      FilePrint(f,"\n",START);
+      FilePrint(f,"until ");
       doit(node.cond);
-      AppendTo(f,";\n",START);
-
+      FilePrint(f,";\n",START);
+    elif t="case" then
+      for i in [1..Length(node.cases)] do
+	if i>1 then
+	  FilePrint(f,"\b\bel");
+	fi;
+	FilePrint(f,"if ");
+	doit(node.test);
+	FilePrint(f,"=");
+	doit(node.cases[i][1]);
+	indent(1);
+	FilePrint(f," then\n",START);
+	for b in node.cases[i][2] do
+	  doit(b);
+	od;
+	indent(-1);
+      od;
+      if IsBound(node.elsecase) then
+	FilePrint(f,"\b\belse\n");
+	indent(1);
+	FilePrint(f,START);
+	for i in node.elsecase do
+	  doit(i);
+	od;
+	indent(-1);
+      fi;
+      FilePrint(f,"\b\bfi;\n",START);
     elif t="sub" then
-      AppendTo(f,"SubStructure(");
+      FilePrint(f,"SubStructure(");
       doit(node.within);
-      AppendTo(f,",");
+      FilePrint(f,",");
       for i in [1..Length(node.span)] do
 	if i=2 then
-	  AppendTo(f,",#TODO CLOSURE\n",START,"  ");
+	  FilePrint(f,",#TODO CLOSURE\n",START,"  ");
 	fi;
 
 	doit(node.span[i]);
       od;
-      AppendTo(f,")");
+      FilePrint(f,")");
 
 
     elif t="assert" then
-      AppendTo(f,"Assert(1,");
+      FilePrint(f,"Assert(1,");
       doit(node.cond);
-      AppendTo(f,");\n",START);
+      FilePrint(f,");\n",START);
 
     elif t="require" then
-      AppendTo(f,"if not ");
+      FilePrint(f,"if not ");
       doit(node.cond);
       indent(1);
-      AppendTo(f,"then\n",START,"Error(");
+      FilePrint(f,"then\n",START,"Error(");
       doit(node.mess);
       indent(-1);
-      AppendTo(f,");\n",START);
+      FilePrint(f,");\n",START);
 
     elif t="select" then
-      AppendTo(f,"SELECT(");
+      FilePrint(f,"SELECT(");
       doit(node.cond);
-      AppendTo(f," then ");
+      FilePrint(f," then ");
       doit(node.yescase);
-      AppendTo(f," else ");
+      FilePrint(f," else ");
       doit(node.nocase);
-      AppendTo(f,")");
+      FilePrint(f,")");
     elif t="hom" then
       if node.kind="images" then
-        AppendTo(f,"GroupHomomorphismByImages(");
+        FilePrint(f,"GroupHomomorphismByImages(");
 	doit(node.domain);
-	AppendTo(f,",");
+	FilePrint(f,",");
 	doit(node.codomain);
 	indent(1);
-	AppendTo(f,",\n",START,"GeneratorsOfGroup(");
+	FilePrint(f,",\n",START,"GeneratorsOfGroup(");
 	doit(node.domain);
-	AppendTo(f,"),");
+	FilePrint(f,"),");
 	doit(node.images);
-	AppendTo(f,")");
+	FilePrint(f,")");
 	indent(-1);
-      elif node.kind="fct" then
-        AppendTo(f,"GroupHomomorphismByFunction(");
+      elif node.kind="genimg" then
+        FilePrint(f,"GroupHomomorphismByImages(");
 	doit(node.domain);
-	AppendTo(f,",");
+	FilePrint(f,",");
 	doit(node.codomain);
 	indent(1);
-	AppendTo(f,",\n",START);
+	FilePrint(f,",\n",START);
+	doit(node.gens);
+	FilePrint(f,",");
+	doit(node.images);
+	FilePrint(f,")");
+	indent(-1);
+
+      elif node.kind="fct" then
+        FilePrint(f,"GroupHomomorphismByFunction(");
+	doit(node.domain);
+	FilePrint(f,",");
+	doit(node.codomain);
+	indent(1);
+	FilePrint(f,",\n",START);
 	doit(node.var);
-	AppendTo(f,"->");
+	FilePrint(f,"->");
 	doit(node.expr);
-	AppendTo(f,")");
+	FilePrint(f,")");
 	indent(-1);
       else
         Error("unknown kind ",node.kind);
@@ -1593,33 +1774,33 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
     elif t="forall" or t="exists" then
       if node.varset<>false then
         doit(node.varset);
-	AppendTo(f,":=");
+	FilePrint(f,":=");
       fi;
       if t="forall" then
-	AppendTo(f,"ForAll(");
+	FilePrint(f,"ForAll(");
       else
-	AppendTo(f,"ForAny(");
+	FilePrint(f,"ForAny(");
       fi;
       doit(node.from);
-      AppendTo(f,",");
+      FilePrint(f,",");
       doit(node.var);
-      AppendTo(f,"->");
+      FilePrint(f,"->");
       doit(node.cond);
-      AppendTo(f,")");
+      FilePrint(f,")");
 
     elif t="error" then
-      AppendTo(f,"Error(");
+      FilePrint(f,"Error(");
       printlist(node.values,"\"");
-      AppendTo(f,");\n",START);
+      FilePrint(f,");\n",START);
     elif t="break" then
-      AppendTo(f,"break");
+      FilePrint(f,"break");
       if node.var.type<>"none" then
-	AppendTo(f," ");
+	FilePrint(f," ");
 	doit(node.var);
       fi;
-      AppendTo(f,";\n",START);
+      FilePrint(f,";\n",START);
     elif t="none" then
-      AppendTo(f,"#NOP\n",START);
+      FilePrint(f,"#NOP\n",START);
     else
       Error("NEED TO DO  type ",t," ");
       #Error("type ",t," not yet done");
@@ -1636,7 +1817,7 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
     Append(t,l.used[i]);
   od;
   mulicomm(f,t);
-  AppendTo(f,"\n");
+  FilePrint(f,"\n");
 
   t:="Defines: ";
   for i in [1..Length(l.defines)] do
@@ -1644,12 +1825,13 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
     Append(t,l.defines[i]);
   od;
   mulicomm(f,t);
-  AppendTo(f,"\n");
+  FilePrint(f,"\n");
 
 
   for i in l.code do
     doit(i);
   od;
+  FilePrint(f,"\n");
 
 end;
 
