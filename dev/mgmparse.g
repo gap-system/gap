@@ -13,7 +13,9 @@ TOKENS:=["if","then","eq","cmpeq","neq","and","or","else","not","assigned",
 	 "[","]","(",")","`",";","#","!","<",">","&","$",
 	 "cat","[*","*]","->","@@","forward",
 	 "+","-","*","/","div","mod","in","^","~","..",".",",","\"",
-	 "{","}","|","::",":","@","cmpne","subset","by",
+	 "{","}","|","::",":","@","cmpne","subset","by","try","end try",
+	 "declare verbose","declare attributes",
+	 "exists","forall",
 	 "sub","eval","select","rec","recformat","require","case","when","end case",
 	 "%%%" # fake keyword for comments
 	 ];
@@ -169,7 +171,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       a:=l{[1..i-1]};
       l:=l{[i..Length(l)]};eatblank();
       i:=Position(TOKENS,a);
-      if a="end" then
+      if a="end" or a="declare" then
         # special case of `end' token -- blank in name
 	i:=1;
 	while l[i] in CHARSIDS do
