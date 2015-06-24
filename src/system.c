@@ -372,7 +372,7 @@ Int SyStorOverrun;
 *V  SyStorKill . . . . . . . . . . . . . . . . . . maximal size of workspace
 **
 **  'SyStorKill' is really the maximal size of the workspace allocated by 
-**  Gasman. GAP exists before trying to allocate more than this amount
+**  Gasman in kB. GAP exits before trying to allocate more than this amount
 **  of memory.
 **
 **  This is per default disabled (i.e. = 0).
@@ -1963,6 +1963,11 @@ void InitSystem (
         SyStorMax = SyStorMin;
     }
 
+    /* fix pool size if larger than SyStorKill */
+    if ( SyStorKill != 0 && SyAllocPool != 0 &&
+                            SyAllocPool > 1024 * SyStorKill ) {
+        SyAllocPool = SyStorKill * 1024;
+    }
     /* fix pool size if it is given and lower than SyStorMax */
     if ( SyAllocPool != 0 && SyAllocPool < SyStorMax * 1024) {
         SyAllocPool = SyStorMax * 1024;
