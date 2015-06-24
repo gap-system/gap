@@ -1,16 +1,17 @@
 # Magma to GAP converter
-# version 0.2, very raw
-# Alexander Hulpke, 6/22/15
+MGMCONVER:="version 0.3, 6/23/15"; # very raw
+# (C) Alexander Hulpke
 
 
 TOKENS:=["if","then","eq","cmpeq","neq","and","or","else","not","assigned",
-         "while","ne","repeat","until","error","do","assert","vprint","print","printf",
+         "while","ne","repeat","until","error","do","assert",
+	 "vprint","print","printf","vprintf",
 	 "freeze","import","local","for","elif","intrinsic","to",
 	 "end for","end function","end if","end intrinsic","end while",
 	 "procedure","end procedure","where","break",
          "function","return",":=","+:=","-:=","*:=","cat:=","=",
 	 "\\[","\\]","delete","exists",
-	 "[","]","(",")","`",";","#","!","<",">","&","$",
+	 "[","]","(",")","`",";","#","!","<",">","&","$",":->","hom",
 	 "cat","[*","*]","->","@@","forward",
 	 "+","-","*","/","div","mod","in","^","~","..",".",",","\"",
 	 "{","}","|","::",":","@","cmpne","subset","by","try","end try",
@@ -58,14 +59,14 @@ end;
 CHARSIDS:=Concatenation(CHARS_DIGITS,CHARS_UALPHA,CHARS_LALPHA,"_");
 CHARSOPS:="+-*/,;:=~!";
 
-GLOBALS:=[];
-
 MgmParse:=function(file)
 local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
-      ExpectToken,doselect,costack,locals,
+      ExpectToken,doselect,costack,locals,globvars,defines,
       f,l,lines,linum,w,a,idslist,tok,tnum,i,sel,osel,e,comment;
 
   locals:=[];
+  globvars:=[];
+  defines:=[];
 
   eatblank:=function()
     while Length(l)>0 and (l[1]=' ' or l[1]='\t') do
@@ -263,12 +264,12 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 
   # read identifier, call, function 
   ReadExpression:=function(stops)
-  local obj,e,a,b,c,argus,procidf,op,assg,val,pre,lbinops;
+  local obj,e,a,b,c,argus,procidf,op,assg,val,pre,lbinops,fcomment;
 
      lbinops:=Difference(BINOPS,stops);
 
      procidf:=function()
-     local a,l,e,b,eset;
+     local a,l,e,b,c,d,eset;
 
       eset:=function()
 	while tok[tnum][1]="#" do
@@ -485,8 +486,53 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  until tok[tnum][2]=">";
 	fi;
 	ExpectToken(">",4);
-
 	a:=rec(type:="rec",format:=e,assg:=assg);
+
+      elif e="forall" or e="exists" then
+	ExpectToken(e);
+        if tok[tnum][2]="(" then
+	  ExpectToken("(");
+	  d:=ReadExpression([")"]);
+	  ExpectToken(")");
+	else
+	  d:=false; 
+	fi;
+	ExpectToken("{");
+	a:=ReadExpression([":",","]);
+	ExpectToken(":");
+	a:=ReadExpression(["in"]);
+	ExpectToken("in");
+	b:=ReadExpression(["|"]);
+	ExpectToken("|");
+	c:=ReadExpression(["}"]);
+	ExpectToken("}");
+        a:=rec(type:=e,var:=a,from:=b,cond:=c,varset:=d);
+      elif e="hom" then
+        ExpectToken("hom");
+        ExpectToken("<","hom");
+	a:=ReadExpression(["->"]);
+	ExpectToken("->");
+	b:=ReadExpression(["|"]);
+	ExpectToken("|");
+	a:=rec(type:="hom",domain:=a,codomain:=b);
+	c:=ReadExpression([":->",">"]);
+	if tok[tnum][2]=">" then
+	  # image defn
+	  a.kind:="images";
+	  a.images:=c;
+	elif tok[tnum][2]=":->" then
+	  # fct defn.
+	  ExpectToken(":->");
+	  d:=ReadExpression([">"]);
+	  a.kind:="fct";
+	  a.var:=c;
+	  a.expr:=d;
+	else
+	  Error("not yet done");
+	fi;
+	ExpectToken(">","endhom");
+
+
       elif not (tok[tnum][1] in ["I","N","S"] or e="$") then
 	tnum:=tnum+1;
 	if e in ["-","#"] then
@@ -547,7 +593,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 
 	    ExpectToken(")");
 	    if a.type="I" and not a.name in locals then
-	      AddSet(GLOBALS,a.name);
+	      AddSet(globvars,a.name);
 	    fi;
 	    a:=rec(type:="C",fct:=a,args:=argus);
 	    if Length(assg)>0 then
@@ -663,13 +709,20 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	    
       fi;
       ExpectToken(")");
+      fcomment:=fail;
       if tok[tnum]=["O","->"] then
 	ExpectToken("->");
 	if tok[tnum][1]<>"I" then
 	  Error("-> unexpected");
 	fi;
-	a:=Concatenation("-> ",tok[tnum][2],"\n");
-	tnum:=tnum+1;
+	a:="-> ";
+	repeat
+	  a:=Concatenation(a,",",tok[tnum][2]," ");
+	  tnum:=tnum+1;
+          if tok[tnum][2]="," then
+	    tnum:=tnum+1;
+	  fi;
+        until tok[tnum][2]="{";
 	ExpectToken("{");
 	while tok[tnum][2]<>"}" do
 	  Add(a,' ');
@@ -681,7 +734,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  tnum:=tnum+1;
 	od;
 	ExpectToken("}");
-	a:=rec(type:="co",text:=a);
+	fcomment:=a;
       fi;
       if tok[tnum][2]=";" then
 	#spurious ; after function definition
@@ -692,6 +745,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       tnum:=tnum+1; # do end .... token
 
       a:=rec(type:="F",args:=argus,locals:=a[1],block:=a[2]);
+      if fcomment<>fail then
+        a.comment:=fcomment;
+      fi;
       if assg<>false then
 	a.type:="FA";
 	a.assg:=assg;
@@ -832,8 +888,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  od;
 	  ExpectToken(";",6);
 	  Add(l,rec(type:="return",values:=a));
-	elif e[2]="vprint" or e[2]="error" or e[2]="print" or e[2]="printf" then
-	  if e[2]="vprint" then
+	elif e[2]="vprint" or e[2]="error" or e[2]="print" or e[2]="printf"
+	  or e[2]="vprintf" then
+	  if e[2]="vprint" or e[2]="vprintf" then
 	    kind:="Info";
 	    a:=ReadExpression([":"]);
 	    ExpectToken(":");
@@ -897,17 +954,22 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  od;
 	  Add(l,rec(type:="co",text:=b));
 	  ExpectToken(";",9);
-	elif e[2]="forward" then
+	elif e[2]="forward" or e[2]="declare verbose"
+	  or e[2]="declare attribute" then
+	  if e[2]="forward" then b:="Forward";
+	  elif e[2]="declare verbose" then b:="Verbose";
+	  elif e[2]="declare attribute" then b:="Attribute";
+	  fi;
 	  repeat
 	    a:=ReadExpression([";",","]);
 	    Add(l,rec(type:="co",
-	      text:=Concatenation("Forward declaration of ",a.name)));
+	      text:=Concatenation(b," declaration of ",String(a.name))));
             if tok[tnum][2]="," then
 	      ExpectToken(",",10);
 	    fi;
 	  until tok[tnum][2]=";";
 	  ExpectToken(";",10);
-	elif e[2]="function" or e[2]="intrinsic" then
+	elif e[2]="function" or e[2]="intrinsic" or e[2]="procedure" then
 	  tnum:=tnum-1;
 	  # rewrite: function Bla 
 	  # to Bla:=function
@@ -985,6 +1047,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  ExpectToken(";",14);
           if ValueOption("inner")<>true and a.type="I" then
 	    Print("> ",a.name," <\n");
+	    AddSet(defines,a.name);
 	  fi;
 	elif e[2]="-:=" then
 	  b:=ReadExpression([";"]);
@@ -1033,12 +1096,12 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
   # actual work
   a:=ReadBlock(false);
 
-  return a[2];
+  return rec(used:=globvars,defines:=defines,code:=a[2]);
 
 end;
 
 GAPOutput:=function(l,f)
-local i,doit,printlist,doitpar,indent,START;
+local i,doit,printlist,doitpar,indent,START,t,mulicomm;
 
    START:="";
    indent:=function(n)
@@ -1067,6 +1130,20 @@ local i,doit,printlist,doitpar,indent,START;
 	fi;
       fi;
     od;
+  end;
+
+  mulicomm:=function(f,str)
+  local i,s;
+    s:=Length(START);
+    while Length(str)+s>75 do
+      i:=75-s;
+      while str[i]<>' ' do
+        i:=i-1;
+      od;
+      AppendTo(f,"#  ",str{[1..i-1]},"\n",START);
+      str:=str{[i+1..Length(str)]};
+    od;
+    AppendTo(f,"#  ",str,"\n",START);
   end;
 
   doitpar:=function(r,usepar)
@@ -1171,6 +1248,11 @@ local i,doit,printlist,doitpar,indent,START;
       AppendTo(f,"function(");
       printlist(node.args);
       AppendTo(f,")\n",START);
+
+      if IsBound(node.comment) then
+	mulicomm(f,node.comment);
+      fi;
+
       indent(1);
       if Length(node.locals)>0 then
         AppendTo(f,"local ");
@@ -1480,6 +1562,51 @@ local i,doit,printlist,doitpar,indent,START;
       AppendTo(f," else ");
       doit(node.nocase);
       AppendTo(f,")");
+    elif t="hom" then
+      if node.kind="images" then
+        AppendTo(f,"GroupHomomorphismByImages(");
+	doit(node.domain);
+	AppendTo(f,",");
+	doit(node.codomain);
+	indent(1);
+	AppendTo(f,",\n",START,"GeneratorsOfGroup(");
+	doit(node.domain);
+	AppendTo(f,"),");
+	doit(node.images);
+	AppendTo(f,")");
+	indent(-1);
+      elif node.kind="fct" then
+        AppendTo(f,"GroupHomomorphismByFunction(");
+	doit(node.domain);
+	AppendTo(f,",");
+	doit(node.codomain);
+	indent(1);
+	AppendTo(f,",\n",START);
+	doit(node.var);
+	AppendTo(f,"->");
+	doit(node.expr);
+	AppendTo(f,")");
+	indent(-1);
+      else
+        Error("unknown kind ",node.kind);
+      fi;
+    elif t="forall" or t="exists" then
+      if node.varset<>false then
+        doit(node.varset);
+	AppendTo(f,":=");
+      fi;
+      if t="forall" then
+	AppendTo(f,"ForAll(");
+      else
+	AppendTo(f,"ForAny(");
+      fi;
+      doit(node.from);
+      AppendTo(f,",");
+      doit(node.var);
+      AppendTo(f,"->");
+      doit(node.cond);
+      AppendTo(f,")");
+
     elif t="error" then
       AppendTo(f,"Error(");
       printlist(node.values,"\"");
@@ -1500,9 +1627,27 @@ local i,doit,printlist,doitpar,indent,START;
   end;
 
   PrintTo(f,
-    "# File converted from Magma code -- requires editing and checking\n\n");
+    "#  File converted from Magma code -- requires editing and checking\n",
+    "#  Magma -> GAP converter, ",MGMCONVER, " by AH\n\n");
 
-  for i in l do
+  t:="Global Variables used: ";
+  for i in [1..Length(l.used)] do
+    if i>1 then Append(t,", ");fi;
+    Append(t,l.used[i]);
+  od;
+  mulicomm(f,t);
+  AppendTo(f,"\n");
+
+  t:="Defines: ";
+  for i in [1..Length(l.defines)] do
+    if i>1 then Append(t,", ");fi;
+    Append(t,l.defines[i]);
+  od;
+  mulicomm(f,t);
+  AppendTo(f,"\n");
+
+
+  for i in l.code do
     doit(i);
   od;
 
