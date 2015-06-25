@@ -1072,7 +1072,9 @@ function( G, N )
 end);
 
 InstallMethod( SemidirectProduct,"different representations",true, 
-    [ IsGroup and IsFinite, IsGroupHomomorphism, IsGroup and IsFinite], 0,
+    [ IsGroup and IsFinite, IsGroupHomomorphism, IsGroup and IsFinite], 
+    # don't be higher than specific perm/pc methods
+    -20,
 function( G, aut, N )
 local giso,niso,P,gens,a,Go,No,i;
   Go:=G;
