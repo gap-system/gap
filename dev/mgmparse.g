@@ -1,5 +1,5 @@
 # Magma to GAP converter
-MGMCONVER:="version 0.31, 6/24/15"; # very raw
+MGMCONVER:="version 0.32, 6/25/15"; # very raw
 # (C) Alexander Hulpke
 
 
@@ -14,21 +14,21 @@ TOKENS:=["if","then","eq","cmpeq","neq","and","or","else","not","assigned",
 	 "[","]","(",")","\\(","\\)","`",";","#","!","<",">","&","$",":->","hom",
 	 "cat","[*","*]","->","@@","forward","join",
 	 "+","-","*","/","div","mod","in","notin","^","~","..",".",",","\"",
-	 "{","}","|","::",":","@","cmpne","subset","by","try","end try",
+	 "{","}","|","::",":","@","cmpne","subset","by","try","end try","catch err",
 	 "declare verbose","declare attributes",
-	 "exists","forall",
+	 "exists","forall","time",
 	 "sub","eval","select","rec","recformat","require","case","when","end case",
 	 "%%%" # fake keyword for comments
 	 ];
 # Magma binary operators
 BINOPS:=["+","-","*","/","div","mod","in","notin","^","`","!","and","|",
-         "or","eq","cmpeq","ne","le","ge","gt","lt",".","->","@@","@","cmpne"];
+         "or","=","eq","cmpeq","ne","le","ge","gt","lt",".","->","@@","@","cmpne"];
 # Magma binaries that have to become function calls in GAP
 FAKEBIN:=["meet","subset","join","diff","cat"];
 BINOPS:=Union(BINOPS,FAKEBIN);
 
 PAROP:=["+","-","div","mod","in","notin","^","`","!","and",
-         "or","eq","cmpeq","ne","."];
+         "or","=","eq","cmpeq","ne","."];
 TOKENS:=Union(TOKENS,BINOPS);
 TOKENS:=Union(TOKENS,PAROP);
 
@@ -100,7 +100,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
   # print current area (as being problematic)
   problemarea:=function()
   local l,s;
-    Print("\n\n");
+    Print("\c\n\n");
     l:=0;
     for i in [Maximum(1,tnum-200)..tnum-11] do
       s:=tok[i][2];
@@ -236,7 +236,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       a:=l{[1..i-1]};
       l:=l{[i..Length(l)]};eatblank();
       i:=Position(TOKENS,a);
-      if a="end" or a="declare" then
+      if a="end" or a="declare" or a="catch" then
         # special case of `end' token -- blank in name
 	i:=1;
 	while l[i] in CHARSIDS do
@@ -625,6 +625,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	tnum:=tnum+1;
 	if e in ["-","#"] then
 	  a:=rec(type:=Concatenation("U",e),arg:=procidf());
+	elif e="+" then
+	  # (spurious) +
+	  a:=procidf();
 	elif e="&" then
 
 	  while tok[tnum][1]="#" do
@@ -694,8 +697,14 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  elif e="[" then
 	    # index
 	    tnum:=tnum+1;
-	    b:=ReadExpression(["]"]);
-	    ExpectToken("]");
+	    b:=ReadExpression(["]",","]);
+	    if tok[tnum][2]="," then
+	      # array indexing -- translate to iterated index by opening a parenthesis and keeping
+	      # position
+	      tok[tnum]:=["O","["];
+	    else
+	      ExpectToken("]");
+	    fi;
 	    a:=rec(type:="L",var:=a,at:=b);
 	  elif e="<" then
 	    pre:=a;
@@ -897,10 +906,18 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       fi;
       e:=tok[tnum];
       tnum:=tnum+1;
+      if e[2]="time" then
+	# timing....
+	Add(l,rec(type:="co",text:="Next line is timing"));
+	e:=tok[tnum];
+	tnum:=tnum+1;
+      fi;
+
       if e[1]="#" then
 	Add(l,rec(type:="co",text:=e[2]));
       elif e[1]="K" then
 	# keyword
+
 	if e[2]="if" then
 	  a:=ReadExpression(["then"]);
 	  ExpectToken("then");
@@ -925,6 +942,23 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  fi;
 	  ExpectToken("end if");
 	  ExpectToken(";",1);
+
+	elif e[2]="try" then
+	  b:=ReadBlock(["catch err","end try"]:inner);
+	  locals:=Union(locals,b[1]);
+	  a:=rec(type:="try",block:=b[2]);
+	  Add(l,a);
+	  if tok[tnum][2]="catch err" then
+	    ExpectToken("catch err");
+	    b:=ReadBlock(["end try"]);
+	    locals:=Union(locals,b[1]);
+	    a.errblock:=b[2];
+	  fi;
+	  ExpectToken("end try");
+	  ExpectToken(";",1);
+
+
+
 	elif e[2]="while" then
 	  a:=ReadExpression(["do"]);
 	  ExpectToken("do");
@@ -1055,13 +1089,18 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  Add(l,rec(type:="co",text:=b));
 	  ExpectToken(";",9);
 	elif e[2]="forward" or e[2]="declare verbose"
-	  or e[2]="declare attribute" then
+	  or e[2]="declare attributes" then
 	  if e[2]="forward" then b:="Forward";
 	  elif e[2]="declare verbose" then b:="Verbose";
-	  elif e[2]="declare attribute" then b:="Attribute";
+	  elif e[2]="declare attributes" then b:="Attribute";
 	  fi;
 	  repeat
-	    a:=ReadExpression([";",","]);
+	    a:=ReadExpression([";",",",":"]);
+	    if tok[tnum][2]=":" then
+	      # skip type
+	      ExpectToken(":");
+	      ReadExpression([";",","]);
+	    fi;
 	    Add(l,rec(type:="co",
 	      text:=Concatenation(b," declaration of ",String(a.name))));
             if tok[tnum][2]="," then
@@ -1127,7 +1166,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	fi;
       elif e[1]="I" then
 	tnum:=tnum-1;
-	a:=ReadExpression([",",":=","-:=","+:=","*:=","cat:=",";"]);
+	a:=ReadExpression([",",":=","-:=","+:=","*:=","cat:=",";","<"]);
 	if a.type="I" then
 	  AddSet(locals,a.name);
 	fi;
@@ -1137,6 +1176,23 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  problemarea();
 	  Error("missing separator");
 	fi;
+	if e[2]="<" then
+	  # implicit generator assignment
+	  c:=[];
+	  repeat
+	    e:=ReadExpression([",",">"]);
+	    Add(c,e);
+	    if tok[tnum][2]="," then
+	      ExpectToken(",","impgen");
+	    fi;
+	  until tok[tnum][2]=">";
+	  ExpectToken(">","impgen");
+	  e:=tok[tnum];
+	  tnum:=tnum+1;
+	else
+	  c:=fail;
+	fi;
+
 	if e[2]="," then 
 	  b:=[a];
 	  while e[2]="," do
@@ -1155,7 +1211,11 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  if tok[tnum][2]="select" then
 	    b:=doselect(b);
 	  fi;
-	  Add(l,rec(type:="A",left:=a,right:=b));
+	  a:=rec(type:="A",left:=a,right:=b);
+	  if c<>fail then
+	    a.implicitassg:=c;
+	  fi;
+	  Add(l,a);
 	  ExpectToken(";",14);
           if ValueOption("inner")<>true and a.type="I" then
 	    Print("> ",a.name," <\n");
@@ -1247,17 +1307,25 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
   end;
 
   mulicomm:=function(f,str)
-  local i,s;
+  local i,s,p;
     s:=Length(START);
-    while Length(str)+s>75 do
-      i:=75-s;
-      while str[i]<>' ' do
+    p:=Position(str,'\n');
+    while Length(str)+s>75 or p<>fail do
+      i:=Minimum(75-s,p);
+      while str[i]<>' ' and str[i]<>'\n' do
         i:=i-1;
       od;
       FilePrint(f,"#  ",str{[1..i-1]},"\n",START);
       str:=str{[i+1..Length(str)]};
+      if p<>fail then
+	p:=Position(str,'\n');
+      fi;
     od;
-    FilePrint(f,"#  ",str,"\n",START);
+    if Length(str)>0 then
+      FilePrint(f,"#  ",str,"\n",START);
+    else
+      FilePrint(f,"\n",START);
+    fi;
   end;
 
   doitpar:=function(r,usepar)
@@ -1279,6 +1347,15 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
       FilePrint(f,":=");
       doit(node.right);
       FilePrint(f,";\n",START);
+      if IsBound(node.implicitassg) then
+	FilePrint(f,"# Implicit generator Assg from previous line.\n",START);
+	for i in [1..Length(node.implicitassg)] do
+	  doit(node.implicitassg[i]);
+	  FilePrint(f,":=");
+	  doit(node.left);
+	  FilePrint(f,".",i,"\n",START);
+	od;
+      fi;
     elif t[1]='A' and Length(t)=2 and t[2] in "+-*" then
       doit(node.left);
       FilePrint(f,":=");
@@ -1313,16 +1390,17 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
       FilePrint(f,node.name);
     elif t="co" then
       # commentary
-      a:=node.text;
-      i:=Position(a,'\n');
-      while i<>fail do
-	FilePrint(f,"\n",START);
-	FilePrint(f,"# ",a{[1..i]},START);
-	a:=a{[i+1..Length(a)]};
-	i:=Position(a,'\n');
-      od;
-
-      FilePrint(f,"#  ",a,"\n",START);
+      mulicomm(f,node.text);
+#      a:=node.text;
+#      i:=Position(a,'\n');
+#      while i<>fail do
+#	FilePrint(f,"\n",START);
+#	FilePrint(f,"# ",a{[1..i]},START);
+#	a:=a{[i+1..Length(a)]};
+#	i:=Position(a,'\n');
+#      od;
+#
+#      FilePrint(f,"#  ",a,"\n",START);
     elif t="W" then
       # warning
       FilePrint(f,"Info(InfoWarning,1,");
@@ -1524,7 +1602,7 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
 	doitpar(node.left,a in PAROP);
 	if i="ne" or i="cmpne" then
 	  i:="<>";
-	elif i="eq" or i="cmpeq" then
+	elif i="eq" or i="cmpeq" or i="=" then
 	  i:="=";
 	elif i="and" then
 	  i:=" and ";
@@ -1633,6 +1711,8 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
 	indent(-1);
       fi;
       FilePrint(f,"\b\bfi;\n",START);
+    elif t="try" then
+      FilePrint(f,"# TODO: try \n");
     elif t="while" then
       FilePrint(f,"while ");
       doit(node.cond);
