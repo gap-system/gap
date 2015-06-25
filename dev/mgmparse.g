@@ -11,11 +11,11 @@ TOKENS:=["if","then","eq","cmpeq","neq","and","or","else","not","assigned",
 	 "procedure","end procedure","where","break",
          "function","return",":=","+:=","-:=","*:=","cat:=","=",
 	 "\\[","\\]","delete","exists",
-	 "[","]","(",")","\\(","\\)","`",";","#","!","<",">","&","$",":->","hom",
+	 "[","]","(",")","\\(","\\)","`",";","#","!","<",">","&","$",":->","hom","map",
 	 "cat","[*","*]","->","@@","forward","join",
 	 "+","-","*","/","div","mod","in","notin","^","~","..",".",",","\"",
 	 "{","}","|","::",":","@","cmpne","subset","by","try","end try","catch err",
-	 "declare verbose","declare attributes",
+	 "declare verbose","declare attributes","error if",
 	 "exists","forall","time",
 	 "sub","eval","select","rec","recformat","require","case","when","end case",
 	 "%%%" # fake keyword for comments
@@ -236,7 +236,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       a:=l{[1..i-1]};
       l:=l{[i..Length(l)]};eatblank();
       i:=Position(TOKENS,a);
-      if a="end" or a="declare" or a="catch" then
+      if a="end" or a="declare" or a="catch" or (a="error" and l{[i..i+2]}=" if") then
         # special case of `end' token -- blank in name
 	i:=1;
 	while l[i] in CHARSIDS do
@@ -332,23 +332,29 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
   ReadExpression:=function(stops)
   local obj,e,a,b,c,argus,procidf,doprocidf,op,assg,val,pre,lbinops,fcomment;
 
-     lbinops:=Difference(BINOPS,stops);
+    lbinops:=Difference(BINOPS,stops);
 
-     procidf:=function()
-      local a,b;
-       a:=doprocidf();
-       while not "[" in stops and tok[tnum][2]="[" do
-	 ExpectToken("[");
-	 # postfacto indexing
-	 b:=ReadExpression(["]"]);
-	 ExpectToken("]");
-	 a:=rec(type:="L",var:=a,at:=b);
-       od;
-       return a;
-     end;
+    procidf:=function()
+    local a,b;
+      a:=doprocidf();
+      while not "[" in stops and tok[tnum][2]="[" do
+	ExpectToken("[");
+	# postfacto indexing
+	b:=ReadExpression(["]",","]);
+	if tok[tnum][2]="[" then
+	  ExpectToken("]");
+	else
+	  # array indexing -- translate to iterated index by opening a parenthesis and keeping
+	  # position
+	  tok[tnum]:=["O","["];
+	fi;
+	a:=rec(type:="L",var:=a,at:=b);
+      od;
+      return a;
+    end;
 
-     doprocidf:=function()
-     local a,l,e,b,c,d,eset;
+    doprocidf:=function()
+    local a,l,e,b,c,d,eset;
 
       eset:=function()
 	while tok[tnum][1]="#" do
@@ -587,14 +593,14 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	c:=ReadExpression(["}"]);
 	ExpectToken("}");
         a:=rec(type:=e,var:=a,from:=b,cond:=c,varset:=d);
-      elif e="hom" then
-        ExpectToken("hom");
+      elif e="hom" or e="map" then
+        tnum:=tnum+1; #ExpectToken("hom");
         ExpectToken("<","hom");
 	a:=ReadExpression(["->"]);
 	ExpectToken("->");
 	b:=ReadExpression(["|"]);
 	ExpectToken("|");
-	a:=rec(type:="hom",domain:=a,codomain:=b);
+	a:=rec(type:=e,domain:=a,codomain:=b);
 	c:=ReadExpression([":->",">",","]);
 	if tok[tnum][2]=">" then
 	  # image defn
@@ -956,7 +962,13 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  fi;
 	  ExpectToken("end try");
 	  ExpectToken(";",1);
-
+ 
+	elif e[2]="error if" then
+	  a:=ReadExpression([","]);
+	  ExpectToken(",");
+	  b:=ReadExpression([";"]);
+	  ExpectToken(";");
+	  Add(l,rec(type:="if",cond:=a,block:=[b]));
 
 
 	elif e[2]="while" then
@@ -1810,9 +1822,14 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
       FilePrint(f," else ");
       doit(node.nocase);
       FilePrint(f,")");
-    elif t="hom" then
+    elif t="hom" or t="map" then
+      if t="hom" then
+	t:="Homomorphism";
+      else
+	t:="GeneralMapping";
+      fi;
       if node.kind="images" then
-        FilePrint(f,"GroupHomomorphismByImages(");
+        FilePrint(f,"Group",t,"ByImages(");
 	doit(node.domain);
 	FilePrint(f,",");
 	doit(node.codomain);
@@ -1824,7 +1841,7 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
 	FilePrint(f,")");
 	indent(-1);
       elif node.kind="genimg" then
-        FilePrint(f,"GroupHomomorphismByImages(");
+        FilePrint(f,"Group",t,"ByImages(");
 	doit(node.domain);
 	FilePrint(f,",");
 	doit(node.codomain);
@@ -1837,7 +1854,7 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
 	indent(-1);
 
       elif node.kind="fct" then
-        FilePrint(f,"GroupHomomorphismByFunction(");
+        FilePrint(f,"Group",t,"ByFunction(");
 	doit(node.domain);
 	FilePrint(f,",");
 	doit(node.codomain);
