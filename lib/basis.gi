@@ -1157,7 +1157,7 @@ InstallMethod( NiceFreeLeftModule,
     local gens;
 
     gens:= GeneratorsOfLeftModule( V );
-    if IsEmpty( gens ) then
+    if IsEmpty( gens ) or ForAll( gens, IsZero ) then
       return LeftModuleByGenerators( LeftActingDomain( V ), [],
                           NiceVector( V, Zero( V ) ) );
     else
@@ -1252,6 +1252,8 @@ InstallMethod( \in,
     a:= NiceVector( V, v );
     if a = fail then
       return false;
+    elif IsZero(a) then
+      return true;
     else
       return a in W and v = UglyVector( V, a );
     fi;
@@ -1479,4 +1481,3 @@ InstallMethod( IsCanonicalBasis,
 #############################################################################
 ##
 #E
-
