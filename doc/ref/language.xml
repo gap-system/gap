@@ -1616,7 +1616,7 @@ gap> for x in g do
 > break;
 > fi; od;
 gap> x;
-(1,4,3)(2,6,5)
+(1,5,2)(3,4,6)
 ]]></Example>
 <P/>
 It is an error to use this statement other than inside a loop.
