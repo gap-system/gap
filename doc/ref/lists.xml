@@ -83,15 +83,15 @@ position (see&nbsp;<Ref Sect="IsBound and Unbind for Lists"/>).
 <P/>
 The term basic operation means that each other list operation can be
 formulated in terms of the basic operations.
-(But note that usually a more efficient method than this one is implemented.)
+(But note that often a more efficient method than this one is implemented.)
 <P/>
 Any &GAP; object <A>list</A> in the category <Ref Func="IsList"/> is regarded
 as a list, and if methods for the basic list operations are installed for
 <A>list</A> then <A>list</A> can be used also for the other list operations.
 <P/>
 For internally represented lists, kernel methods are provided for the basic
-list operations.
-For other lists, it is possible to install appropriate methods for these
+list operations with positive integer indices.
+For other lists or other indices, it is possible to install appropriate methods for these
 operations.
 This permits the implementation of lists that do not need to store all list
 elements (see also&nbsp;<Ref Sect="Enumerators"/>);
@@ -105,15 +105,14 @@ may have to be paid (see&nbsp;<Ref Func="ConstantTimeAccessList"/>).
 <Index Subkey="operation">list assignment</Index>
 <Index Subkey="operation">list unbind</Index>
 <ManSection>
-<Oper Name="\[\]" Arg='list, pos'/>
-<Oper Name="IsBound\[\]" Arg='list, pos'/>
-<Oper Name="\[\]\:\=" Arg='list, pos, val'/>
-<Oper Name="Unbind\[\]" Arg='list, pos'/>
+<Oper Name="\[\]" Arg='list, ix'/>
+<Oper Name="IsBound\[\]" Arg='list, ix'/>
+<Oper Name="\[\]\:\=" Arg='list, pos, ix'/>
+<Oper Name="Unbind\[\]" Arg='list, ix'/>
 
 <Description>
 These operations implement element access, test for element boundedness,
-list element assignment, and removal of the element at position <A>pos</A>.
-In all cases, the index <A>pos</A> must be a positive integer.
+list element assignment, and removal of the element with index  <A>ix</A>.
 <P/>
 Note that the special characters <C>[</C>, <C>]</C>, <C>:</C>,
 and <C>=</C> must be escaped with a backslash <C>\</C>
@@ -123,12 +122,20 @@ whereas <C>[]</C> denotes an empty list.
 (Maybe the variable names involving special characters look strange,
 but nevertheless they are quite suggestive.)
 <P/>
-<C>\[\]( <A>list</A>, <A>pos</A> )</C> is equivalent to
-<C><A>list</A>[ <A>pos</A> ]</C>,
+<C>\[\]( <A>list</A>, <A>ix</A> )</C> is equivalent to
+<C><A>list</A>[ <A>ix</A> ]</C>,
 which clearly will usually be preferred;
 the former is useful mainly if one wants to access the operation itself,
 for example if one wants to install a method for element access in a
 special kind of lists.
+<P/>
+The syntax <C><A>list</A>[ <A>ix1</A>, <A>ix2</A>,.... <A>ixn</A>
+]</C>, with two or more indices is treated as a shorthand for
+<C><A>list</A>[[ <A>ix1</A>, <A>ix2</A>,.... <A>ixn</A>]]</C>
+
+This is intended to provide a nicer syntax for accessing elements of
+matrices and tensors.
+
 <P/>
 Similarly,
 <Ref Oper="IsBound\[\]"/> is used explicitly mainly in method installations.
@@ -152,23 +159,28 @@ and <Ref Oper="Unbind\[\]"/>.
 
 <Index Subkey="list elements">accessing</Index>
 <Index Subkey="access">list element</Index>
-<C><A>list</A>[ <A>pos</A> ]</C>
+<C><A>list</A>[ <A>ix</A> ]</C>
 <P/>
-The above construct evaluates to the <A>pos</A>-th element of the list
-<A>list</A>,
-where <A>pos</A> must be a positive integer.
-List indexing is done with origin 1,
-i.e., the first element of the list is the element at position 1.
+The above construct evaluates to the element of the list
+<A>list</A> with index <A>ix</A>.
+For built-in list types and collections, indexing is done with origin 1,
+i.e., the first element of the list is the element with index 1.
 <Example><![CDATA[
 gap> l := [ 2, 3, 5, 7, 11, 13 ];;  l[1];  l[2];  l[6];
 2
 3
 13
 ]]></Example>
-If <A>list</A> is not a list, or <A>pos</A> does not evaluate to a
-positive integer,
-or <C><A>list</A>[<A>pos</A>]</C> is unbound an error is signalled.
+If <A>list</A> is not a built-in list, or <A>ix</A> does not evaluate to a
+positive integer, method selection is invoked to try and find a way of
+indexing <A>list</A> with index <A>ix</A>. If this fails, or the
+selected method finds that
+<C><A>list</A>[<A>ix</A>]</C> is unbound, an error is signalled.
 <P/>
+<Index>multiple indices</Index>
+<C><A>list</A>[ <A>ix1</A>,<A>ix2</A>,...]</C> <P/> is a short-hand for <C><A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]]</C>
+<P/>
+
 <Index>sublist</Index>
 <Index Subkey="access">sublist</Index>
 <C><A>list</A>{ <A>poss</A> }</C>
@@ -176,7 +188,6 @@ or <C><A>list</A>[<A>pos</A>]</C> is unbound an error is signalled.
 The above construct evaluates to a new list <A>new</A> whose first element is
 <C><A>list</A>[<A>poss</A>[1]]</C>,
 whose second element is <C><A>list</A>[<A>poss</A>[2]]</C>, and so on.
-<A>poss</A> must be a dense list of positive integers.
 However, it does not need to be sorted and may contain duplicate elements.
 If for any <M>i</M>,
 <C><A>list</A>[ <A>poss</A>[</C><M>i</M><C>] ]</C> is unbound,
@@ -271,14 +282,13 @@ cf.&nbsp;<Ref Sect="Basic Operations for Lists"/>.)
 
 <Index Subkey="to a list">assignment</Index>
 <Index Subkey="assignment">list element</Index>
-<C><A>list</A>[ <A>pos</A> ] := <A>object</A>;</C>
+<C><A>list</A>[ <A>ix</A> ] := <A>object</A>;</C>
 <P/>
 The list element assignment assigns the object <A>object</A>,
-which can be of any type, to the list entry at the position <A>pos</A>,
-which must be a positive integer,
+which can be of any type, to the list with index <A>ix</A>,
 in the mutable (see&nbsp;<Ref Sect="Mutability and Copyability"/>) list
 <A>list</A>.
-That means that accessing the <A>pos</A>-th element of the list <A>list</A>
+That means that accessing the <A>ix</A>-th element of the list <A>list</A>
 will return <A>object</A> after this assignment.
 <P/>
 <Example><![CDATA[
@@ -291,7 +301,7 @@ gap> l[ l[1] ] := 10;; l;       # <index> may be an expression
 [ 3, [ 4, 5, 6 ], 10 ]
 ]]></Example>
 <P/>
-If the index <A>pos</A> is larger than the length of the list <A>list</A>
+If the index <A>ix</A> is an integer larger than the length of the list <A>list</A>
 (see <Ref Func="Length"/>),
 the list is automatically enlarged to make room for the new element.
 Note that it is possible to generate lists with holes that way.
@@ -315,6 +325,10 @@ If <A>list</A> does not evaluate to a list, <A>pos</A> does not evaluate to a
 positive integer or <A>object</A> is a call to a function which does not
 return a value (for example <C>Print</C>) an error is signalled.
 <P/>
+<Index Subkey="assignment">multiple indices</Index>
+<C><A>list</A>[ <A>ix1</A>,<A>ix2</A>,...] := <A>obj</A></C>
+<P/> is a short-hand for <C><A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]]
+:= <A>obj</A></C>.<P/>
 <Index Subkey="assignment">sublist</Index>
 <C><A>list</A>{ <A>poss</A> } := <A>objects</A>;</C>
 <P/>
