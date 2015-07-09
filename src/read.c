@@ -398,7 +398,7 @@ void ReadCallVarAss (
         else if ( type == 'd' ) { IntrRefDVar( var, nest0 - 1 );           level=0; }
         else if ( type == 'g' ) { IntrRefGVar( var );           level=0; }
         else if ( type == '[' ) { IntrElmList(narg);                    }
-        else if ( type == ']' ) { IntrElmListLevel( level, narg );       }
+        else if ( type == ']' ) { IntrElmListLevel( narg, level );       }
         else if ( type == '{' ) { IntrElmsList();               level++; }
         else if ( type == '}' ) { IntrElmsListLevel( level );   level++; }
         else if ( type == '<' ) { IntrElmPosObj();                       }
