@@ -189,7 +189,7 @@ InstallMethod( PrintString,
     "for a semigroup with known generators",
     [ IsSemigroup and HasGeneratorsOfMagma ],
     function( S )
-    return PRINT_STRINGIFY( "Semigroup( ", GeneratorsOfMagma( S ), " )" );
+    return PRINT_STRINGIFY( "\>Semigroup(\>\n", GeneratorsOfMagma( S ), " \<)\<" );
     end );
 
 #############################################################################
@@ -347,7 +347,6 @@ InstallMethod( AsSemigroup,
 
 InstallGlobalFunction( Semigroup, function( arg )
   local out, i;
-
   if Length(arg)=0 or (Length(arg)=1 and HasIsEmpty(arg[1]) and IsEmpty(arg[1])) then 
     Error("usage: cannot create a semigroup with no generators,");
     return;
@@ -374,7 +373,7 @@ InstallGlobalFunction( Semigroup, function( arg )
       elif IsMultiplicativeElement(arg[i]) and IsGeneratorsOfSemigroup([arg[i]]) then
         Add(out, arg[i]);
       elif IsGeneratorsOfSemigroup(arg[i]) then
-        if HasGeneratorsOfSemigroup(arg[i]) then
+        if HasGeneratorsOfSemigroup(arg[i]) or IsMagmaIdeal(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
         elif IsList(arg[i]) then 
           Append(out, arg[i]);

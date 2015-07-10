@@ -283,7 +283,7 @@ InstallGlobalFunction( Monoid, function( arg )
       elif IsMultiplicativeElementWithOne(arg[i]) and IsGeneratorsOfSemigroup([arg[i]]) then
         Add(out, arg[i]);
       elif IsGeneratorsOfSemigroup(arg[i]) then
-        if HasGeneratorsOfSemigroup(arg[i]) then
+        if HasGeneratorsOfSemigroup(arg[i]) or IsMagmaIdeal(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
         elif IsList(arg[i]) then 
           Append(out, arg[i]);

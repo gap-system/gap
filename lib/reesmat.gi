@@ -661,6 +661,7 @@ function(R)
   #remove the 0
   gens:=Filtered(Elements(R), x-> x![1]<>0);
   Apply(gens, x-> x![2]);
+  gens := Set(gens);
   
   if IsGeneratorsOfMagmaWithInverses(gens) then 
     i:=1;
