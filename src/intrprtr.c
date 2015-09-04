@@ -3161,41 +3161,60 @@ void            IntrIsbGVar (
 *F  IntrAssListLevel(<level>) . . . . . interpret assignment to several lists
 *F  IntrAsssListLevel(<level>)  . . intr multiple assignment to several lists
 */
-void            IntrAssList ( void )
+void            IntrAssList ( Int narg )
 {
     Obj                 list;           /* list                            */
     Obj                 pos;            /* position                        */
-    Int                 p;              /* position, as a C integer        */
     Obj                 rhs;            /* right hand side                 */
+    Obj pos1,pos2;
+    Obj ixs;
+    Int i;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssList(); return; }
-
+    if ( IntrCoding    > 0 ) { CodeAssList( narg); return; }
 
     /* get the right hand side                                             */
     rhs = PopObj();
+    
+    switch (narg) {
+    case 1:
 
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
-        ErrorQuit(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
+      /* get the position                                                    */
+      pos = PopObj();
 
-    /* get the list (checking is done by 'ASS_LIST' or 'ASSB_LIST')         */
-    list = PopObj();
+      /* get the list (checking is done by 'ASS_LIST' or 'ASSB_LIST')        */
+      list = PopObj();
 
-    if (IS_INTOBJ(pos)) {
-        p = INT_INTOBJ(pos);
-
-        /* assign to the element of the list                                   */
-        ASS_LIST( list, p, rhs );
-    } else
+      /* assign to the element of the list                                   */
+      if (IS_POS_INTOBJ(pos)) {
+        ASS_LIST( list, INT_INTOBJ(pos), rhs );
+      } else {
         ASSB_LIST(list, pos, rhs);
+      }
+      break;
 
+    case 2:
+      pos2 = PopObj();
+      pos1 = PopObj();
+      list = PopObj();
+
+      ASS2_LIST(list, pos1, pos2, rhs);
+      break;
+
+    default:
+      ixs = NEW_PLIST(T_PLIST, narg);
+      for (i = narg; i > 0; i--) {
+	pos = PopObj();
+	SET_ELM_PLIST(ixs, i, pos);
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      list = PopObj();
+      ASSB_LIST(list, ixs, rhs);
+    }
+      
     /* push the right hand side again                                      */
     PushObj( rhs );
 }
@@ -3244,35 +3263,39 @@ void            IntrAsssList ( void )
 }
 
 void            IntrAssListLevel (
-    UInt                level )
+				  Int narg,
+				  UInt                level )
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, left operand          */
     Obj                 rhss;           /* right hand sides, right operand */
-
+    Obj ixs;
+    Int i;
+    
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssListLevel( level ); return; }
+    if ( IntrCoding    > 0 ) { CodeAssListLevel( narg, level ); return; }
 
 
     /* get right hand sides (checking is done by 'AssListLevel')           */
     rhss = PopObj();
 
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
-        ErrorQuit(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
+    ixs = NEW_PLIST(T_PLIST, narg);
+    for (i = narg; i > 0; i--) {
+      /* get and check the position                                          */
+      pos = PopObj();
+      SET_ELM_PLIST(ixs, i, pos);
+      CHANGED_BAG(ixs);
     }
+    SET_LEN_PLIST(ixs, narg);
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'AssListLevel')     */
     lists = PopObj();
 
     /* assign the right hand sides to the elements of several lists        */
-    AssListLevel( lists, pos, rhss, level );
+    AssListLevel( lists, ixs, rhss, level );
 
     /* push the assigned values again                                      */
     PushObj( rhss );
@@ -3313,36 +3336,43 @@ void            IntrAsssListLevel (
     PushObj( rhss );
 }
 
-void            IntrUnbList ( void )
+void            IntrUnbList ( Int narg )
 {
     Obj                 list;           /* list                            */
     Obj                 pos;            /* position                        */
-    Int                 p;              /* position, as a C integer        */
+    Obj                 ixs;
+    Int                 i;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeUnbList(); return; }
+    if ( IntrCoding    > 0 ) { CodeUnbList( narg); return; }
 
 
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
-        ErrorQuit(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
+    if (narg == 1) {
+      /* get and check the position                                          */
+      pos = PopObj();
+      
+      /* get the list (checking is done by 'UNB_LIST' or 'UNBB_LIST')        */
+      list = PopObj();
 
-    /* get the list (checking is done by 'UNB_LIST')                       */
-    list = PopObj();
-
-    if (IS_INTOBJ(pos)) {
-        p = INT_INTOBJ(pos);
-
-        /* unbind the element                                                  */
-        UNB_LIST( list, p );
-    } else
+      /* unbind the element                                                  */
+      if (IS_POS_INTOBJ(pos)) {
+        UNB_LIST( list, INT_INTOBJ(pos) );
+      } else {
         UNBB_LIST(list, pos);
+      }
+    } else {
+      ixs = NEW_PLIST(T_PLIST,narg);
+      for (i = narg; i > 0; i--) {
+	pos = PopObj();
+	SET_ELM_PLIST(ixs, i, pos);
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      list = PopObj();
+      UNBB_LIST(list, ixs);
+    }
 
     /* push void                                                           */
     PushVoidObj();
@@ -3356,34 +3386,59 @@ void            IntrUnbList ( void )
 *F  IntrElmListLevel(<level>) . . . . .  interpret selection of several lists
 *F  IntrElmsListLevel(<level>)  . .  intr multiple selection of several lists
 */
-void            IntrElmList ( void )
+void            IntrElmList ( Int narg )
 {
-    Obj                 elm;            /* element, result                 */
+  Obj                 elm = (Obj) 0;            /* element, result                 */
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
     Int                 p;              /* position, as C integer          */
+    Int                 i;
+    Obj                 ixs;
+    Obj                 pos1;
+    Obj                 pos2;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmList(); return; }
+    if ( IntrCoding    > 0 ) { CodeElmList( narg ); return; }
 
+    if (narg <= 0)
+      SyntaxError("This should never happen");
 
-
-    /* get  the position                                                   */
-    pos = PopObj();
-    /* get the list (checking is done by 'ELM_LIST')                       */
-    list = PopObj();
-
-
-    if ( ! IS_INTOBJ(pos)  || (p = INT_INTOBJ(pos)) <= 0) {
+    if (narg == 1) {
+      /* get  the position                                                   */
+      pos = PopObj();
+      /* get the list (checking is done by 'ELM_LIST')                       */
+      list = PopObj();
+      
+      
+      if ( ! IS_INTOBJ(pos)  || (p = INT_INTOBJ(pos)) <= 0) {
         /* This mostly dispatches to the library */
         elm = ELMB_LIST( list, pos);
-    } else {
+      } else {
         /* get the element of the list                                         */
         elm = ELM_LIST( list, p );
+      }
     }
-
+    if (narg == 2) {
+      pos2 = PopObj();
+      pos1 = PopObj();
+      list = PopObj();
+      /* leave open space for a fastpath for 2 */
+      elm = ELM2_LIST(list, pos1, pos2);
+    }
+    
+    if (narg > 2) {
+      ixs = NEW_PLIST(T_PLIST,narg);
+      for (i = narg; i > 0; i--) {
+	SET_ELM_PLIST(ixs,i,PopObj());
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      list = PopObj();
+      elm = ELMB_LIST(list, ixs);
+    }
+      
     /* push the element                                                    */
     PushObj( elm );
 }
@@ -3418,32 +3473,43 @@ void            IntrElmsList ( void )
     PushObj( elms );
 }
 
-void            IntrElmListLevel (
+void            IntrElmListLevel ( Int narg,
     UInt                level )
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, right operand         */
+    Obj ixs;
+    Int i;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmListLevel( level ); return; }
+    if ( IntrCoding    > 0 ) { CodeElmListLevel( narg, level ); return; }
 
 
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 )) {
-        ErrorQuit(
-            "List Element: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
+    /* get the positions */
+    ixs = NEW_PLIST(T_PLIST, narg);
+    for (i = narg; i > 0; i--) {
+      pos = PopObj();
+      SET_ELM_PLIST(ixs,i,pos);
+      CHANGED_BAG(ixs);
     }
+    SET_LEN_PLIST(ixs, narg);
+      
+    /* /\* get and check the position                                          *\/ */
+    /* pos = PopObj(); */
+    /* if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_POS_INTOBJ(pos) )) { */
+    /*     ErrorQuit( */
+    /*         "List Element: <position> must be a positive integer (not a %s)", */
+    /*         (Int)TNAM_OBJ(pos), 0L ); */
+    /* } */
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'ElmListLevel')     */
     lists = PopObj();
 
     /* select the elements from several lists (store them in <lists>)      */
-    ElmListLevel( lists, pos, level );
+    ElmListLevel( lists, ixs, level );
 
     /* push the elements                                                   */
     PushObj( lists );
@@ -3480,38 +3546,46 @@ void            IntrElmsListLevel (
     PushObj( lists );
 }
 
-void            IntrIsbList ( void )
+void            IntrIsbList ( Int narg )
 {
     Obj                 isb;            /* isbound, result                 */
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
+    Obj ixs;
+    Int i;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIsbList(); return; }
+    if ( IntrCoding    > 0 ) { CodeIsbList(narg); return; }
 
 
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 )) {
-        ErrorQuit(
-            "List Element: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
+    if (narg == 1) {
+      /* get and check the position                                          */
+      pos = PopObj();
+      
+      /* get the list (checking is done by 'ISB_LIST' or 'ISBB_LIST')        */
+      list = PopObj();
+      
+      /* get the result                                                      */
+      if (IS_POS_INTOBJ(pos)) {
+        isb = ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
+      } else {
+        isb = ISBB_LIST( list, pos) ? True : False;
+      }
+    } else {
+      ixs = NEW_PLIST(T_PLIST,narg);
+      for (i = narg; i > 0; i--) {
+	pos = PopObj();
+	SET_ELM_PLIST(ixs, i, pos);
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      list = PopObj();
+      isb = ISBB_LIST(list, ixs) ? True: False;
     }
-
-    /* get the list (checking is done by 'ISB_LIST')                       */
-    list = PopObj();
-
-    if (IS_INTOBJ(pos)) {
-        p = INT_INTOBJ( pos );
-
-        /* get the result                                                      */
-        isb = (ISB_LIST( list, p ) ? True : False);
-    } else
-        isb = (ISBB_LIST( list, pos) ? True : False);
-
+      
+      
     /* push the result                                                     */
     PushObj( isb );
 }
@@ -3746,7 +3820,7 @@ void            IntrAssPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
@@ -3837,12 +3911,11 @@ void            IntrAssPosObjLevel (
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-
 
     /* assign the right hand sides to the elements of several lists        */
     ErrorQuit(
@@ -3899,7 +3972,7 @@ void            IntrUnbPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
@@ -3946,7 +4019,7 @@ void            IntrElmPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
@@ -4028,7 +4101,7 @@ void            IntrElmPosObjLevel (
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
@@ -4095,7 +4168,7 @@ void            IntrIsbPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );

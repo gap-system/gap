@@ -180,7 +180,7 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 **  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
 **
 **  <Var> := <Ident>
-**        |  <Var> '[' <Expr> ]'
+**        |  <Var> '[' <Expr> [,<Expr>]* ']'
 **        |  <Var> '{' <Expr> '}'
 **        |  <Var> '.' <Ident>
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
@@ -397,8 +397,8 @@ void ReadCallVarAss (
         else if ( type == 'h' ) { IntrRefHVar( var );           level=0; }
         else if ( type == 'd' ) { IntrRefDVar( var, nest0 - 1 );           level=0; }
         else if ( type == 'g' ) { IntrRefGVar( var );           level=0; }
-        else if ( type == '[' ) { IntrElmList();                         }
-        else if ( type == ']' ) { IntrElmListLevel( level );             }
+        else if ( type == '[' ) { IntrElmList(narg);                    }
+        else if ( type == ']' ) { IntrElmListLevel( narg, level );       }
         else if ( type == '{' ) { IntrElmsList();               level++; }
         else if ( type == '}' ) { IntrElmsListLevel( level );   level++; }
         else if ( type == '<' ) { IntrElmPosObj();                       }
@@ -414,8 +414,15 @@ void ReadCallVarAss (
 
         /* <Var> '[' <Expr> ']'  list selector                             */
         if ( Symbol == S_LBRACK ) {
+	    
             Match( S_LBRACK, "[", follow );
-            ReadExpr( S_RBRACK|follow, 'r' );
+	    ReadExpr( S_COMMA|S_RBRACK|follow, 'r' );
+	    narg = 1;
+	    while (Symbol == S_COMMA) {
+	      Match(S_COMMA,",", follow|S_RBRACK);
+	      ReadExpr(S_COMMA|S_RBRACK|follow, 'r' );
+	      narg++;
+	    }
             Match( S_RBRACK, "]", follow );
             type = (level == 0 ? '[' : ']');
         }
@@ -519,8 +526,8 @@ void ReadCallVarAss (
         else if ( type == 'h' ) { IntrRefHVar( var );           }
         else if ( type == 'd' ) { IntrRefDVar( var, nest0 - 1 );           }
         else if ( type == 'g' ) { IntrRefGVar( var );           }
-        else if ( type == '[' ) { IntrElmList();                }
-        else if ( type == ']' ) { IntrElmListLevel( level );    }
+        else if ( type == '[' ) { IntrElmList(narg);                }
+        else if ( type == ']' ) { IntrElmListLevel( narg, level );    }
         else if ( type == '{' ) { IntrElmsList();               }
         else if ( type == '}' ) { IntrElmsListLevel( level );   }
         else if ( type == '<' ) { IntrElmPosObj();                }
@@ -556,8 +563,8 @@ void ReadCallVarAss (
         else if ( type == 'h' ) { IntrAssHVar( var );             }
         else if ( type == 'd' ) { IntrAssDVar( var, nest0 - 1 );  }
         else if ( type == 'g' ) { IntrAssGVar( var );             }
-        else if ( type == '[' ) { IntrAssList();                  }
-        else if ( type == ']' ) { IntrAssListLevel( level );      }
+        else if ( type == '[' ) { IntrAssList( narg );                  }
+        else if ( type == ']' ) { IntrAssListLevel( narg, level );      }
         else if ( type == '{' ) { IntrAsssList();                 }
         else if ( type == '}' ) { IntrAsssListLevel( level );     }
         else if ( type == '<' ) { IntrAssPosObj();                }
@@ -582,7 +589,7 @@ void ReadCallVarAss (
         else if ( type == 'h' ) { IntrUnbHVar( var );             }
         else if ( type == 'd' ) { IntrUnbDVar( var, nest0 - 1 );  }
         else if ( type == 'g' ) { IntrUnbGVar( var );             }
-        else if ( type == '[' ) { IntrUnbList();                  }
+        else if ( type == '[' ) { IntrUnbList( narg );            }
         else if ( type == '<' ) { IntrUnbPosObj();                }
         else if ( type == '.' ) { IntrUnbRecName( rnam );         }
         else if ( type == ':' ) { IntrUnbRecExpr();               }
@@ -599,7 +606,7 @@ void ReadCallVarAss (
         else if ( type == 'h' ) { IntrIsbHVar( var );             }
         else if ( type == 'd' ) { IntrIsbDVar( var, nest0 - 1 );  }
         else if ( type == 'g' ) { IntrIsbGVar( var );             }
-        else if ( type == '[' ) { IntrIsbList();                  }
+        else if ( type == '[' ) { IntrIsbList( narg );            }
         else if ( type == '<' ) { IntrIsbPosObj();                }
         else if ( type == '.' ) { IntrIsbRecName( rnam );         }
         else if ( type == ':' ) { IntrIsbRecExpr();               }
