@@ -152,7 +152,7 @@ local g,op,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,dims,nm;
     fi;
     if d>2 then
       nm:=TriangulizedNullspaceMat(TransposedMat(id{[1]}));
-      ConvertToMatrixRep(nm,f);
+      nm := CopyToMatrixRep(nm,f);
       Add(compl,nm);
     fi;
     for i in [2..d] do

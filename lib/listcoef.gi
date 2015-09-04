@@ -1090,15 +1090,16 @@ InstallMethod(DistanceVecFFE,"gf2 vectors",
 InstallMethod(DistancesDistributionVecFFEsVecFFE,"generic",IsCollsElms,
   [IsList, IsList],0,
 function(vecs,vec)
-local d,i;
-  ConvertToMatrixRep(vecs);
-  ConvertToVectorRep(vec);
-  d:=ListWithIdenticalEntries(Length(vec)+1,0);
-  for i in vecs do
-    i:=DistanceVecFFE(i,vec);
-    d[i+1]:=d[i+1]+1;
-  od;
-  return d;
+    local d,i,q;
+    q := DefaultField(vecs);
+    vecs := CopyToMatrixRep(vecs,q);
+    vec := CopyToVectorRep(vec,q);
+    d:=ListWithIdenticalEntries(Length(vec)+1,0);
+    for i in vecs do
+        i:=DistanceVecFFE(i,vec);
+        d[i+1]:=d[i+1]+1;
+    od;
+    return d;
 end);
 
 
@@ -1125,8 +1126,8 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
         [IsMatrix,IsFFECollection and IsField, IsList],0,
         function(mat,f,vec)
     local d,fdi,i,j,veclis,mult,mults,fdip,q, ok8;
-    ConvertToMatrixRepNC(mat,f);
-    ConvertToVectorRepNC(vec,f);
+    mat := CopyToMatrixRepNC(mat,f);
+    vec := CopyToVectorRepNC(vec,f);
     # build the data structures
     f:=AsSSortedList(f);
     Assert(1,f[1]=Zero(f[1]));
@@ -1285,8 +1286,8 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
       Error("First list needs at least ", cnt, " vectors . . .\n");
     fi;
     
-    ConvertToMatrixRepNC(mat,Size(f));
-    ConvertToVectorRepNC(vec,f);
+    mat := CopyToMatrixRepNC(mat,Size(f));
+    vec := CopyToVectorRepNC(vec,Size(f));
     
     # build the data structures
     f:=AsSSortedList(f);
@@ -1533,23 +1534,15 @@ InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
     if 2 <= q and q < 256 then
         
         # 8 bit case, need to get all vectors over the right field
-        ok8 := true;
-        if q <> ConvertToVectorRepNC(v,q) then
-            v := PlainListCopy(v);
-            ok8 := ok8 and q = ConvertToVectorRepNC(v,q);
-        fi;
-        if ok8 and q <> ConvertToVectorRepNC(w,q) then
-            w := PlainListCopy(w);
-            ok8 := ok8 and q = ConvertToVectorRepNC(w,q);
-        fi;
+        v := CopyToVectorRepNC(v,q);
+        w := CopyToVectorRepNC(w,q);
         for x in vl{[1..n]} do
             for i in [1..q+1] do
-                if ok8 and q <> ConvertToVectorRepNC(x[i],q) then
-                    x[i] := PlainListCopy(x[i]);
-                    ok8 := ok8 and q = ConvertToVectorRepNC(x[i],q);
-                fi;
+                x[i] := CopyToVectorRepNC(x[i],q);
             od;
         od;
+        ok8 := true;
+        
     else
         ok8 := false;
     fi;

@@ -616,8 +616,14 @@ Obj GetFieldInfo8Bit( UInt q)
 ** characteristic 
 */
 
+
+
 static Obj IsLockedRepresentationVector;
 
+static int MayRewrite(Obj vec) {
+  return (REGION(vec) && CheckWriteAccess(vec) && True != CALL_1ARGS(IsLockedRepresentationVector, vec));
+}
+     
 void RewriteVec8Bit( Obj vec, UInt q)
 {
     UInt q1 = FIELD_VEC8BIT(vec);
@@ -639,8 +645,8 @@ void RewriteVec8Bit( Obj vec, UInt q)
         return;
     assert(q > q1);
 
-    if (DoFilter(IsLockedRepresentationVector, vec) == True) {
-        ErrorMayQuit("You cannot convert a locked vector compressed over GF(%i) to GF(%i)",
+    if (!MayRewrite(vec)) {
+        ErrorMayQuit("You cannot convert an atomic, read-only or  locked vector compressed over GF(%i) to GF(%i)",
         q1, q);
         return;
     }
@@ -715,8 +721,8 @@ void RewriteGF2Vec( Obj vec, UInt q )
 
     assert(q % 2 == 0);
 
-    if (DoFilter(IsLockedRepresentationVector, vec) == True) {
-        ErrorReturnVoid("You cannot convert a locked vector compressed over GF(2) to GF(%i)",
+    if (!MayRewrite(vec)) {
+        ErrorReturnVoid("You cannot convert a locked, atomic or readonly vector compressed over GF(2) to GF(%i)",
         q, 0, "You can `return;' to ignore the conversion");
         return;
     }
@@ -791,20 +797,23 @@ void ConvVec8Bit (
     if (q == 2)
         ErrorQuit("GF2 has its own representation\n", 0L, 0L);
 
-    /* already in the correct representation                               */
-    if (IS_VEC8BIT_REP(list)) {
-        if (FIELD_VEC8BIT(list) == q)
-            return;
-        else if (FIELD_VEC8BIT(list) < q) {
-            RewriteVec8Bit(list, q);
-            return;
-        }
-        /* remaining case is list is written over too large a field
-           pass through to the generic code */
+    if (REGION(list) == 0)
+      ErrorMayQuit("CONV_VEC8BIT: In-place conversion of object in the public region",0L,0L);
 
-    } else if (IS_GF2VEC_REP(list)) {
-        RewriteGF2Vec(list, q);
-        return;
+    /* already in the correct representation                               */
+    if (IS_VEC8BIT_REP(list) && FIELD_VEC8BIT(list) == q) 
+            return;
+    
+    if (IS_VEC8BIT_REP(list) && FIELD_VEC8BIT(list) < q) {
+      RewriteVec8Bit(list, q);
+      return;
+    }
+    /* remaining case is list is written over too large a field
+       pass through to the generic code */
+    
+    if (IS_GF2VEC_REP(list)) {
+      RewriteGF2Vec(list, q);
+      return;
     }
 
     len = LEN_LIST(list);
@@ -1078,8 +1087,8 @@ void PlainVec8Bit (
     UInt                tnum;
 
     /* resize the list and retype it, in this order                        */
-    if (True == DoFilter(IsLockedRepresentationVector, list)) {
-        ErrorMayQuit("Attempt to convert locked compressed vector to plain list", 0, 0);
+    if (!MayRewrite(list)) {
+        ErrorMayQuit("Attempt to convert locked, atomic or readonly compressed vector to plain list", 0, 0);
         return;
     }
 
@@ -1144,8 +1153,8 @@ Obj FuncPLAIN_VEC8BIT (
             (Int)TNAM_OBJ(list), 0L,
             "you can replace <list> via 'return <list>;'");
     }
-    if (DoFilter(IsLockedRepresentationVector, list) == True) {
-        ErrorMayQuit("You cannot convert a locked vector compressed over GF(%i) to a plain list",
+    if (!MayRewrite(list)) {
+        ErrorMayQuit("You cannot convert a locked, atomic or readonly vector compressed over GF(%i) to a plain list",
         FIELD_VEC8BIT(list) , 0);
         return 0;
     }
@@ -1334,6 +1343,7 @@ Obj SumVec8BitVec8Bit( Obj vl, Obj vr )
 */
 
 static Obj ConvertToVectorRep;  /* BH: changed to static */
+static Obj CopyToVectorRep;  /* BH: changed to static */
 
 
 Obj FuncSUM_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
@@ -1353,9 +1363,15 @@ Obj FuncSUM_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
 
         /* if the exponent is bigger than 31, overflow changes the value to 0 */
         if (newd > 8 || newq > 256 ||
-            (ql != newq && True == CALL_1ARGS(IsLockedRepresentationVector, vl)) ||
-            (qr != newq && True == CALL_1ARGS(IsLockedRepresentationVector, vr))) {
+            (ql != newq && !MayRewrite(vl)) ||
+            (qr != newq && !MayRewrite(vr))) {
             sum = SumListList(vl, vr);
+	    if (newq <= 256) {
+	      if (REGION(sum))
+		ConvVec8Bit(sum,newq);
+	      else
+		sum = NewVec8Bit(sum,newq);
+	    }
             return sum;
         } else {
             RewriteVec8Bit(vl, newq);
@@ -1512,11 +1528,12 @@ Obj ZeroVec8Bit ( UInt q, UInt len, UInt mut )
 Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
 {
     Obj prod;
+    UInt q;
     Obj info;
     UInt d;
 
     if (VAL_FFE(ffe) == 1) { /* ffe is the one */
-        prod = CopyVec8Bit(vec, IS_MUTABLE_OBJ(vec));
+        return CopyVec8Bit(vec, IS_MUTABLE_OBJ(vec));
     } else if (VAL_FFE(ffe) == 0)
         return ZeroVec8Bit(FIELD_VEC8BIT(vec), LEN_VEC8BIT(vec), IS_MUTABLE_OBJ(vec));
 
@@ -1529,7 +1546,15 @@ Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
     /* check for field compatibility */
     if (d % DEGR_FF(FLD_FFE(ffe))) {
         prod = ProdListScl(vec, ffe);
-        CALL_1ARGS(ConvertToVectorRep, prod);
+	if (IS_MUTABLE_OBJ(prod))
+	  CALL_1ARGS(ConvertToVectorRep, prod);
+	else {
+	  q = ChooseFieldVecFFE(prod);
+	  if (q && q <= 256) {
+	    prod = CALL_2ARGS(CopyToVectorRep,prod,INTOBJ_INT(q));
+	    MakeImmutable(prod);
+	  }
+	}
         return prod;
     }
 
@@ -1830,8 +1855,8 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_5( Obj self, Obj vl, Obj vr, Obj mul, Obj from, O
         /* if the exponent is bigger than 31, overflow changes the value to 0 */
         if (d0 > 8 || q0 > 256)
             return TRY_NEXT_METHOD;
-        if ((q0 > q && DoFilter(IsLockedRepresentationVector, vl) == True) ||
-        (q0 > q1 && DoFilter(IsLockedRepresentationVector, vr) == True))
+        if ((q0 > q && !MayRewrite(vl)) ||
+	    (q0 > q1 && !MayRewrite(vr)))
             return TRY_NEXT_METHOD;
         RewriteVec8Bit(vl, q0);
         RewriteVec8Bit(vr, q0);
@@ -1892,8 +1917,8 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_3( Obj self, Obj vl, Obj vr, Obj mul)
         /* if the exponent is bigger than 31, overflow changes the value to 0 */
         if (d0 > 8 || q0 > 256)
             return TRY_NEXT_METHOD;
-        if ((q0 > q && CALL_1ARGS(IsLockedRepresentationVector, vl) == True) ||
-        (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
+        if ((q0 > q && !MayRewrite(vl)) ||
+	    (q0 > q1 && !MayRewrite(vr)))
             return TRY_NEXT_METHOD;
         RewriteVec8Bit(vl, q0);
         RewriteVec8Bit(vr, q0);
@@ -1949,8 +1974,8 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_2( Obj self, Obj vl, Obj vr)
         /* if the exponent is bigger than 31, overflow changes the value to 0 */
         if (d0 > 8 || q0 > 256)
             return TRY_NEXT_METHOD;
-        if ((q0 > q && CALL_1ARGS(IsLockedRepresentationVector, vl) == True) ||
-        (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
+        if ((q0 > q && !MayRewrite(vl)) ||
+	    (q0 > q1 && !MayRewrite(vr)))
             return TRY_NEXT_METHOD;
         RewriteVec8Bit(vl, q0);
         RewriteVec8Bit(vr, q0);
@@ -2059,6 +2084,7 @@ Obj FuncDIFF_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
         UInt newd = LcmDegree(D_FIELDINFO_8BIT(infol), D_FIELDINFO_8BIT(infor));
         UInt p, newq;
         UInt i;
+	UInt q;
         p = P_FIELDINFO_8BIT(infol);
         assert(p == P_FIELDINFO_8BIT(infor));
         newq = 1;
@@ -2066,10 +2092,18 @@ Obj FuncDIFF_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
             newq *= p;
         /* if the exponent is bigger than 31, overflow changes the value to 0 */
         if (newd > 8 || newq > 256 ||
-        (ql != newq && True == CALL_1ARGS(IsLockedRepresentationVector, vl)) ||
-        (qr != newq && True == CALL_1ARGS(IsLockedRepresentationVector, vr))) {
+	    (ql != newq && !MayRewrite(vl)) ||
+	    (qr != newq && !MayRewrite(vr))) {
             diff = DiffListList(vl, vr);
-            CALL_1ARGS(ConvertToVectorRep, diff);
+	    if (IS_MUTABLE_OBJ(diff)) 
+	      CALL_1ARGS(ConvertToVectorRep, diff);
+	    else {
+	      q = ChooseFieldVecFFE(diff);
+	      if (q) {
+		diff = CALL_2ARGS(CopyToVectorRep,diff,INTOBJ_INT(q));
+		MakeImmutable(diff);
+	      }
+	    }
             return diff;
         } else {
             RewriteVec8Bit(vl, newq);
@@ -3096,7 +3130,7 @@ Obj FuncASS_VEC8BIT (
 
     if (p <= LEN_VEC8BIT(list) + 1) {
         if (LEN_VEC8BIT(list) + 1 == p) {
-            if (True == DoFilter(IsLockedRepresentationVector, list)) {
+	  if (!MayRewrite(list)) {
                 ErrorReturnVoid("List assignment would increase length of locked compressed vector", 0, 0,
                                 "You can `return;' to ignore the assignment");
                 return 0;
@@ -3189,7 +3223,7 @@ Obj FuncUNB_VEC8BIT (
             "you can 'return;' and ignore the assignment");
         return 0;
     }
-    if (True == DoFilter(IsLockedRepresentationVector, list)) {
+    if (!MayRewrite(list)) {
         ErrorReturnVoid("Unbind of entry of locked compressed vector is forbidden", 0, 0,
                         "You can `return;' to ignore the assignment");
         return 0;
@@ -3319,7 +3353,7 @@ Obj FuncAPPEND_VEC8BIT (
 
     lenl = LEN_VEC8BIT(vecl);
     lenr = LEN_VEC8BIT(vecr);
-    if (True == DoFilter(IsLockedRepresentationVector, vecl) && lenr > 0) {
+    if (!MayRewrite(vecl) && lenr > 0) {
         ErrorReturnVoid("Append to locked compressed vector is forbidden", 0, 0,
                         "You can `return;' to ignore the operation");
         return 0;
@@ -3481,6 +3515,8 @@ Obj FuncCONV_MAT8BIT( Obj self, Obj list, Obj q )
     if (!IS_INTOBJ(q))
         ErrorQuit("CONV_MAT8BIT: q must be a small integer, not a %s",
         (Int)TNAM_OBJ(q), (Int)0L);
+    if (!REGION(list))
+      ErrorMayQuit("CONV_MAT8BIT: in-place conversion of object in the public region",0L,0L);
     PLAIN_LIST(list);
     len = LEN_PLIST(list);
     mut = IS_MUTABLE_OBJ(list);
@@ -3585,7 +3621,7 @@ Obj FuncPROD_VEC8BIT_MAT8BIT( Obj self, Obj vec, Obj mat)
     q = FIELD_VEC8BIT(vec);
     q1 = FIELD_VEC8BIT(ELM_MAT8BIT(mat, 1));
     if (q != q1) {
-        if (q > q1 || CALL_1ARGS(IsLockedRepresentationVector, vec) == True)
+      if (q > q1 || !MayRewrite(vec))
             return TRY_NEXT_METHOD;
         q2 = q;
         while (q2 < q1) {
@@ -3666,7 +3702,7 @@ Obj FuncPROD_MAT8BIT_VEC8BIT( Obj self, Obj mat, Obj vec)
     q = FIELD_VEC8BIT(vec);
     q1 = FIELD_VEC8BIT(row);
     if (q != q1) {
-        if (q > q1 || CALL_1ARGS(IsLockedRepresentationVector, vec) == True)
+      if (q > q1 || !MayRewrite(vec))
             return TRY_NEXT_METHOD;
         q2 = q;
         while (q2 < q1) {
@@ -3991,7 +4027,8 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
             goto cando;
         } else {
             TYPE_POSOBJ(mat) = IS_MUTABLE_OBJ(mat) ? TYPE_LIST_GF2MAT : TYPE_LIST_GF2MAT_IMM;
-	  SetTypeDatObj(obj, IS_MUTABLE_OBJ(obj) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
+	    if (CheckWriteAccess(obj))
+	      SetTypeDatObj(obj, IS_MUTABLE_OBJ(obj) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
             SET_ELM_GF2MAT(mat, 1, obj);
             return (Obj) 0;
         }
@@ -4010,7 +4047,7 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
 
     q = FIELD_VEC8BIT(row);
     if (IS_GF2VEC_REP(obj)) {
-        if (q % 2 != 0 || CALL_1ARGS(IsLockedRepresentationVector, obj) == True)
+      if (q % 2 != 0 || !MayRewrite(obj))
             goto cantdo;
         else {
             RewriteGF2Vec(obj, q);
@@ -4023,7 +4060,7 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
     if (q1 == q)
         goto cando;
 
-    if (q1 > q || CALL_1ARGS(IsLockedRepresentationVector, obj) == True)
+    if (q1 > q || !MayRewrite(obj))
         goto cantdo;
 
     q2 = q1 * q1;
@@ -4041,8 +4078,10 @@ cando:
         ResizeBag(mat, sizeof(Obj) * (pos + 2));
         SET_LEN_MAT8BIT(mat, pos);
     }
-    type = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(obj));
-  SetTypeDatObj(obj, type);
+    if (CheckWriteAccess(obj)) {
+	type = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(obj));
+	SetTypeDatObj(obj, type);
+      }
     SET_ELM_MAT8BIT(mat, pos, obj);
     CHANGED_BAG(mat);
     return (Obj) 0;
@@ -4280,12 +4319,13 @@ void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
     UInt1 *settab;
     UInt i;
     UInt1 *ptr, *ptr2, byte;
+    assert(IS_VEC8BIT_REP(vec));
     len = LEN_VEC8BIT(vec);
     if (len == newlen)
         return;
 
-    if (True == DoFilter(IsLockedRepresentationVector, vec)) {
-        ErrorReturnVoid("Resize of locked compressed vector is forbidden", 0, 0,
+    if (!MayRewrite(vec)) {
+        ErrorReturnVoid("Resize of atomic or locked compressed vector is forbidden", 0, 0,
         "You can `return;' to ignore the operation");
         return;
     }
@@ -4507,8 +4547,8 @@ Obj FuncADD_COEFFS_VEC8BIT_3( Obj self, Obj vec1, Obj vec2, Obj mult )
         /* if the exponent is bigger than 31, overflow changes the value to 0 */
         if (d0 > 8 || q0 > 256)
             return TRY_NEXT_METHOD;
-        if ((q0 > q && CALL_1ARGS(IsLockedRepresentationVector, vec1) == True) ||
-        (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vec2) == True))
+        if ((q0 > q && !MayRewrite(vec1)) ||
+	    (q0 > q1 && !MayRewrite(vec2)))
             return TRY_NEXT_METHOD;
         RewriteVec8Bit(vec1, q0);
         RewriteVec8Bit(vec2, q0);
@@ -4566,8 +4606,8 @@ Obj FuncADD_COEFFS_VEC8BIT_2( Obj self, Obj vec1, Obj vec2 )
         /* if the exponent is bigger than 31, overflow changes the value to 0 */
         if (d0 > 8 || q0 > 256)
             return TRY_NEXT_METHOD;
-        if ((q0 > q && CALL_1ARGS(IsLockedRepresentationVector, vec1) == True) ||
-            (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vec2) == True))
+        if ((q0 > q && !MayRewrite(vec1)) ||
+            (q0 > q1 && !MayRewrite(vec2)))
             return TRY_NEXT_METHOD;
         RewriteVec8Bit(vec1, q0);
         RewriteVec8Bit(vec2, q0);
@@ -4626,6 +4666,7 @@ Obj FuncRESIZE_VEC8BIT( Obj self, Obj vec, Obj newsize )
         ErrorReturnVoid("RESIZE_VEC8BIT: vector must be mutable",
                         0, 0,
                         "you can 'return;'");
+
     while (IS_INTOBJ(newsize) && INT_INTOBJ(newsize) < 0) {
         newsize = ErrorReturnObj("RESIZE_VEC8BIT: <amount> must be a non-negative integer, not %d",
                                  INT_INTOBJ(newsize), 0,
@@ -4835,8 +4876,8 @@ Obj FuncPROD_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vr, Obj lr  )
         /* if the exponent is bigger than 31, overflow changes the value to 0 */
         if (d0 > 8 || q0 > 256)
             return TRY_NEXT_METHOD;
-        if ((q0 > q && CALL_1ARGS(IsLockedRepresentationVector, vl) == True) ||
-        (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
+        if ((q0 > q && !MayRewrite(vl)) ||
+	    (q0 > q1 && !MayRewrite(vr)))
             return TRY_NEXT_METHOD;
         RewriteVec8Bit(vl, q0);
         RewriteVec8Bit(vr, q0);
@@ -6063,6 +6104,7 @@ static Int InitKernel (
     InitGlobalBag(&FieldInfo8Bit, "src/vec8bit.c:FieldInfo8Bit");
 
     InitFopyGVar("ConvertToVectorRep", &ConvertToVectorRep);
+    InitFopyGVar("CopyToVectorRep", &CopyToVectorRep);
     InitFopyGVar("AddRowVector", &AddRowVector);
     InitFopyGVar("IsLockedRepresentationVector", &IsLockedRepresentationVector);
     InitFopyGVar("AsInternalFFE", &AsInternalFFE);

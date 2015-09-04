@@ -12,6 +12,12 @@
 #define GAP_VECFFE_H
 
 
+/* returns a sensible choice of q such that GF(q)
+contains all the elements of vec. It will either be one already
+stored, or the smallest one. */
+
+extern UInt ChooseFieldVecFFE(Obj vec);
+
 /****************************************************************************
 **
 

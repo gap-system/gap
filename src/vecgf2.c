@@ -1603,6 +1603,14 @@ void ConvGF2Vec (
     UInt                bit;            /* one bit of a block              */
     Obj                 x;
         
+    /* fail now if the object is in the public region. If it's shared
+       and we don't have write access, or it's readonly we will fail
+       later anyway, but any obect in the public region is a
+       problem here */
+
+    if (REGION(list) == 0) 
+      ErrorMayQuit("CONV_GF2VEC: In place format conversion on object in the public region",0L,0L);
+
     /* already in the correct representation                               */
     if ( IS_GF2VEC_REP(list) ) {
         return;
@@ -1782,6 +1790,8 @@ Obj FuncCONV_GF2MAT( Obj self, Obj list)
   len = LEN_LIST(list);
   if (len == 0)
     return (Obj)0;
+  if (!REGION(list))
+    ErrorMayQuit("CONV_GF2MAT: in-place conversion of object in the public region",0L,0L);
   
   PLAIN_LIST(list);
   GROW_PLIST(list, len+1);
@@ -2277,7 +2287,8 @@ Obj FuncASS_GF2MAT (
     }
     else if ( p == 1 && 1 >= LEN_GF2MAT(list) ) {
         ResizeBag( list, SIZE_PLEN_GF2MAT(p) );
-	SetTypeDatObj(elm, IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
+	if (CheckWriteAccess(elm))
+	  SetTypeDatObj(elm, IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
         SET_ELM_GF2MAT( list, p, elm );
 	CHANGED_BAG(list);
     }
@@ -2290,7 +2301,8 @@ Obj FuncASS_GF2MAT (
             ResizeBag( list, SIZE_PLEN_GF2MAT(p) );
             SET_LEN_GF2MAT( list, p );
         }
-	SetTypeDatObj(elm, IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
+	if (CheckWriteAccess(elm))
+	  SetTypeDatObj(elm, IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
         SET_ELM_GF2MAT( list, p, elm );
         CHANGED_BAG(list);
     }
