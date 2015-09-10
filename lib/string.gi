@@ -862,8 +862,29 @@ local l, b;
 end);
 
 InstallGlobalFunction(ReadCSV,function(arg)
-local nohead,file,sep,f, line, fields, l, r, i,s,add;
+local nohead,file,sep,f, line, fields, l, r, i,s,add,dir;
   file:=arg[1];
+
+  if not IsReadableFile(file) then
+    i:=file;
+    file:=Concatenation(i,".csv");
+    if not IsReadableFile(file) then
+      file:=Concatenation(i,".xls");
+      if not IsReadableFile(file) then
+        Error("file ",i," does not exist or is not readable");
+      fi;
+    fi;
+  fi;
+
+  if LowercaseString(file{[Length(file)-3..Length(file)]})=".xls" or
+     LowercaseString(file{[Length(file)-4..Length(file)]})=".xlsx" then
+    dir:=DirectoryTemporary();
+    i:=file;
+    file:=Filename(dir,"temp.csv");
+    Exec(Concatenation("xls2csv -x \"",i,"\" -c \"",file,"\""));
+  else
+    dir:=fail;
+  fi;
   nohead:=false;
   if Length(arg)>1 then
     if IsBool(arg[2]) then
@@ -928,6 +949,9 @@ local nohead,file,sep,f, line, fields, l, r, i,s,add;
     fi;
   od;
   CloseStream(f);
+  if dir<>fail then
+    RemoveFile(file);
+  fi;
   return l;
 end);
 
