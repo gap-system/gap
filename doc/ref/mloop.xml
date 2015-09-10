@@ -915,10 +915,27 @@ were called with these arguments.
 Then a break loop (see&nbsp;<Ref Sect="Break Loops"/>) is
 entered, unless the standard error output is not connected to a terminal.
 You can leave this break loop with <C>return;</C> to continue execution with
-the statement following the call to <Ref Func="Error"/>.
+the statement following the call to <Ref Func="Error"/>. <Ref Func="ErrorMayQuit"/>
+operates identically to <Ref Func="Error"/>, except it does not allow using
+<C>return;</C> to continue execution.
 </Description>
 </ManSection>
 
+<ManSection>
+<Func Name="ErrorMayQuit" Arg='messages ...'/>
+
+<Description>
+<Ref Func="ErrorMayQuit"/> signals an error from within a function.
+First the messages <A>messages</A> are printed,
+this is done exactly as if <Ref Func="Print"/>
+(see&nbsp;<Ref Sect="View and Print"/>)
+were called with these arguments.
+Then a break loop (see&nbsp;<Ref Sect="Break Loops"/>) is
+entered, unless the standard error output is not connected to a terminal.
+This break loop can only be exited with <C>quit;</C>. The function differs from
+<Ref Func="Error"/> by not allowing execution to continue.
+</Description>
+</ManSection>
 
 <ManSection>
 <Func Name="ErrorCount" Arg=''/>
@@ -958,6 +975,41 @@ An emergency way to leave &GAP; is to enter
 <K>QUIT</K>
 at any <C>gap></C>
 or <C>brk></C> or <C>brk_<A>nn</A>></C> prompt. 
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="GAP_EXIT_CODE" Arg='ret'/>
+
+<Description>
+A <C>GAP_EXIT_CODE</C> sets the return value which will be used when
+&GAP; exits. This may be an integer, or a boolean (where
+<K>true</K> is interpreted as 0, and
+<K>false</K> is interpreted as 1.
+<P/>
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="QUIT_GAP" Arg='[ret]'/>
+
+<Description>
+A <C>QUIT_GAP</C> acts similarly to the keyword <C>quit</C>. It exits
+&GAP; cleanly, calling any function installed using <C>InstallAtExit</C>.
+The optional argument will be passed to <C>GAP_EXIT_CODE</C>.
+<P/>
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="FORCE_QUIT_GAP" Arg='[ret]'/>
+
+<Description>
+A <C>FORCE_QUIT_GAP</C> is similar to <C>QUIT_GAP</C>, except it ignores any
+functions installed with <C>InstallAtExit</C>, or any other functions
+normally run at GAP exit, and exits GAP immediately.
+The optional argument will be passed to <C>GAP_EXIT_CODE</C>.
+<P/>
 </Description>
 </ManSection>
 

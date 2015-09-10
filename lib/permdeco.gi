@@ -276,6 +276,7 @@ InstallGlobalFunction(WreathActionChiefFactor,
 function(G,M,N)
 local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
       n,w,embs,reps,act,img,gimg,gens;
+
   # get the simple factor(s)
   cs:=CompositionSeries(M);
   # the cs with N gives a cs for M/N.
@@ -283,12 +284,17 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
   # subgroup
   i:=Length(cs);
   u:=fail;
-  while u=fail and i>0 do
-    if not IsSubset(N,cs[i]) then
-      u:=ClosureGroup(N,cs[i]);
-    fi;
-    i:=i-1;
-  od;
+  if Size(N)=1 then
+    u:=cs[Length(cs)-1];
+  else
+    while u=fail and i>0 do
+      if not IsSubset(N,cs[i]) then
+	u:=ClosureGroup(N,cs[i]);
+      fi;
+      i:=i-1;
+    od;
+  fi;
+
   o:=OrbitStabilizer(G,u);
   norm:=o.stabilizer;
   o:=o.orbit;
@@ -298,15 +304,20 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
   Q:=Image(Qhom,G);
   Thom:=NaturalHomomorphismByNormalSubgroup(u,N);
   T:=Image(Thom);
-  # get the induced automorphism action
-  ng:=SmallGeneratingSet(norm); 
-  autos:=List(ng,i->GroupHomomorphismByImagesNC(T,T,
-	              GeneratorsOfGroup(T),
-		      List(GeneratorsOfGroup(T),
-		        j->Image(Thom,PreImagesRepresentative(Thom,j)^i))));
-  a:=AutomorphismRepresentingGroup(T,autos);
-  Thom:=GroupHomomorphismByImagesNC(norm,a[1],ng,a[3]);
-  a:=a[1];
+  if IsSubset(M,norm) then
+    # nothing outer possible
+    a:=Image(Thom);
+  else
+    # get the induced automorphism action of elements 
+    ng:=SmallGeneratingSet(norm); 
+    autos:=List(ng,i->GroupHomomorphismByImagesNC(T,T,
+			GeneratorsOfGroup(T),
+			List(GeneratorsOfGroup(T),
+			  j->Image(Thom,PreImagesRepresentative(Thom,j)^i))));
+    a:=AutomorphismRepresentingGroup(T,autos);
+    Thom:=GroupHomomorphismByImagesNC(norm,a[1],ng,a[3]);
+    a:=a[1];
+  fi;
 
   # now embed into wreath
   w:=WreathProduct(a,Q);

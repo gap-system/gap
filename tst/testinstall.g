@@ -5,13 +5,10 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file lists those files in the directory <F>tst</F> of the &GAP;
-##  distribution that are recommended to be read after a &GAP; installation.
+##  This file lists those files in the directory <F>tst/testinstall</F> of
+##  the &GAP; distribution, which are recommended to be read after a &GAP;
+##  installation.
 ##
-##  Each entry in the argument list of <C>RunStandardTests</C> is a pair that
-##  consists of the filename (relative to the <F>tst</F> directory) and the
-##  scaling factor that occurs in the <C>STOP_TEST</C> call at the end of the
-##  test file.
 ##  <P/>
 ##  The documentation states the following:
 ##  <P/>
@@ -41,50 +38,11 @@ Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 750m'.\n",
 
 Reread( Filename( DirectoriesLibrary( "tst" ), "testutil.g" ) );
 
-RunStandardTests( [
-  [ "alghom.tst", 6000000 ],
-  [ "algmat.tst", 180800000 ],
-  [ "algsc.tst", 59000000 ],
-  [ "combinat.tst", 5300000 ],
-  [ "comprvec.tst", 853200000 ],
-  [ "ctblfuns.tst", 3900000 ],
-  [ "ctblmoli.tst", 98500000 ],
-  [ "ctblmono.tst", 33400000 ],
-  [ "ctblsolv.tst", 54000000 ],
-  [ "cyclotom.tst", 900000 ],
-  [ "ffe.tst", 3600000 ],
-  [ "ffeconway.tst", 50200000 ],
-  [ "gaussian.tst", 300000 ],
-  [ "grpfp.tst", 146700000 ],
-  [ "grpfree.tst", 700000 ],
-  [ "grpmat.tst", 481000000 ],
-  [ "grppc.tst", 45300000 ],
-  [ "grppcnrm.tst", 2333400000 ],
-  [ "infinity.tst", 1000 ], 
-  [ "intarith.tst", 2300000 ],
-  [ "listgen.tst", 1000000 ],
-  [ "mapping.tst", 37300000 ],
-  [ "mgmring.tst", 1800000 ],
-  [ "modfree.tst", 5800000 ],
-  [ "morpheus.tst", 87200000 ],
-  [ "onecohom.tst", 50600000 ],
-  [ "oprt.tst", 2000000 ],
-  [ "ratfun.tst", 800000 ],
-  [ "relation.tst", 7700000 ],
-  [ "recordname.tst", 100000 ],
-  [ "rwspcgrp.tst", 59400000 ],
-  [ "semicong.tst", 7800000 ],
-  [ "semigrp.tst", 11200000 ],
-  [ "semirel.tst", 10900000 ],
-  [ "strings.tst", 100000 ],
-  [ "read.tst", 10000 ],
-  [ "vspchom.tst", 10500000 ],
-  [ "vspcmat.tst", 8400000 ],
-  [ "vspcrow.tst", 47400000 ],
-  [ "xgap.tst", 1206600000 ],
-  [ "zlattice.tst", 100000 ],
-  [ "zmodnz.tst", 2300000 ],
-] );
+TestDirectory( Filename( DirectoriesLibrary( "tst" ), "testinstall" ),
+               rec(exitGAP := true) );
+  
+# Should never get here
+FORCE_QUIT_GAP(1);
 
 
 #############################################################################

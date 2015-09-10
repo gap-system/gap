@@ -1548,6 +1548,8 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
 	  if not ForAll(GeneratorsOfGroup(Source(hom)),
 	             x->x^P in Source(hom)) then
 	    Error("changed shape!");
+          elif P in Source(hom) then
+	    Error("P is in!");
 	  fi;
 
 	  P:=Group(Concatenation([P],GeneratorsOfGroup(Source(hom))));
@@ -1559,19 +1561,27 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
       # Sufficiently many elements to get the mult. group
       aut:=Size(P)/Size(Source(hom));
       P:=GeneratorsOfGroup(P);
-      diag:=Group(One(field));
-      mats:=[];
-      while Size(diag)<aut do
-        if not DeterminantMat(P[1]) in diag then
-	  diag:=ClosureGroup(diag,DeterminantMat(P[1]));
-	  Add(mats,P[1]);
-	fi;
-        P:=P{[2..Length(P)]};
-      od;
+      if id.series="C" then
+	# we know it's the first
+	mats:=P{[1]};
+	P:=P{[2..Length(P)]};
+      else
+	diag:=Group(One(field));
+	mats:=[];
+	while Size(diag)<aut do
+	  if not DeterminantMat(P[1]) in diag then
+	    diag:=ClosureGroup(diag,DeterminantMat(P[1]));
+	    Add(mats,P[1]);
+	  fi;
+	  P:=P{[2..Length(P)]};
+	od;
+      fi;
       auts:=Concatenation(auts,
 	List(mats,s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
 		  Image(hom,PreImagesRepresentative(hom,x)^s)))));
       
+    else
+      gal:=Group(()); # to force trivial
     fi;
 
     if Size(gal)>1 then
@@ -1613,7 +1623,11 @@ local a,b,c,p;
     c:=DataAboutSimpleGroup(G);
     b:=List(GeneratorsOfGroup(G),x->InnerAutomorphism(G,x));
     a:=OuterAutomorphismGeneratorsSimple(G);
-    if a=fail then
+    if IsBound(c.fullAutGroup) and c.fullAutGroup[1]=1 then
+      # no outer automorphisms
+      a:=rec(aut:=[],inner:=b,sizeaut:=Size(G));
+
+    elif a=fail then
       a:=Morphium(G,G,true);
     else
       if a[2]=true then

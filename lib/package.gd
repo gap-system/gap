@@ -89,7 +89,7 @@ GAPInfo.PackageLoadingMessages := AtomicList( [] );
 ##  "1.0"   "3.141.59"  "2-7-8.3" "5 release 2 patchlevel 666"
 ##  ]]></Log>
 ##  <P/>
-##  <Ref Func="CompareVersionNumbers"/> 
+##  <Ref Func="CompareVersionNumbers"/>
 ##  compares two version numbers, given as strings.
 ##  They are split at non-digit characters,
 ##  the resulting integer lists are compared lexicographically.
@@ -312,7 +312,7 @@ DeclareGlobalFunction( "PackageAvailabilityInfo" );
 ##  whether the  &GAP; package <A>name</A> is available for loading in a
 ##  version that is at least <A>version</A>, or equal to <A>version</A>
 ##  if the first character of <A>version</A> is <C>=</C>
-##  (see <Ref Func="CompareVersionNumbers"/> for further 
+##  (see <Ref Func="CompareVersionNumbers"/> for further
 ##  details about version numbers).
 ##  <P/>
 ##  The result is <K>true</K> if the package is already loaded,
@@ -440,7 +440,7 @@ DeclareGlobalFunction( "TestPackageAvailability" );
 ##  afterwards the messages with at most this severity are shown immediately
 ##  when they arise.
 ##  In order to make this work already for autoloaded packages,
-##  you can call <C>SetUserPreference("InfoPackageLoadingLevel", 
+##  you can call <C>SetUserPreference("InfoPackageLoadingLevel",
 ##  <A>lev</A>);</C> to set the desired severity level <A>lev</A>.
 ##  This can for example be done in your <F>gap.ini</F> file,
 ##  see Section <Ref Subsect="subsect:gap.ini file"/>.
@@ -556,7 +556,7 @@ DeclareGlobalFunction( "DirectoriesPackagePrograms" );
 ##  containing the library functions of this &GAP; package,
 ##  for the version that is already loaded
 ##  or is currently going to be loaded
-##  or would be the first version &GAP; would try to load if no other version 
+##  or would be the first version &GAP; would try to load if no other version
 ##  is explicitly prescribed.
 ##  (If the package <A>name</A> is not yet loaded then we cannot guarantee
 ##  that the returned directories belong to a version that really can be
@@ -691,6 +691,23 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##
 ##  <Description>
 ##  loads the &GAP; package with name <A>name</A>.
+##  <P/>
+##  As an example, the following loads the &GAP; package
+##  <Package>SONATA</Package> (case insensitive) which provides methods for the
+##  construction and analysis of finite nearrings:
+##  <P/>
+##  <Log><![CDATA[
+##  gap> LoadPackage("sonata");
+##  ... some more lines with package banner(s) ...
+##  true
+##  ]]></Log>
+##  <P/>
+##  The package name may be appropriately abbreviated. For example,
+##  <C>LoadPackage("semi");</C> will load the <Package>Semigroups</Package>
+##  package, and <C>LoadPackage("d");</C> will load the
+##  <Package>DESIGN</Package> package. If the abbreviation can not be uniquely
+##  completed, further suggestions will be offered.
+##  <P/>
 ##  If the optional version string <A>version</A> is given,
 ##  the package will only be loaded in a version number at least as large as
 ##  <A>version</A>,
@@ -705,10 +722,10 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  binaries have not been compiled, or if the version number of the
 ##  available version is too small.
 ##  If the package cannot be loaded, <Ref Func="TestPackageAvailability"/>
-##  can be used to find the reasons. Also, 
+##  can be used to find the reasons. Also,
 ##  <Ref Func="DisplayPackageLoadingLog"/> can be used to find out more
 ##  about the failure reasons. To see the problems directly, one can
-##  change the verbosity using the user preference 
+##  change the verbosity using the user preference
 ##  <C>InfoPackageLoadingLevel</C>, see <Ref InfoClass="InfoPackageLoading"/>
 ##  for details.
 ##  <P/>
@@ -1150,14 +1167,14 @@ DeclareGlobalFunction( "BibEntry" );
 ##  <Func Name="Cite" Arg='[pkgname[, key]]'/>
 ##
 ##  <Description>
-##  Used with no arguments or with argument <C>"GAP"</C> (case-insensitive), 
-##  <Ref Func="Cite"/> displays instructions on citing the version of &GAP; 
-##  that is being used. Suggestions are given in plain text, HTML, BibXML 
-##  and BibTeX formats. The same instructions are also contained in the 
+##  Used with no arguments or with argument <C>"GAP"</C> (case-insensitive),
+##  <Ref Func="Cite"/> displays instructions on citing the version of &GAP;
+##  that is being used. Suggestions are given in plain text, HTML, BibXML
+##  and BibTeX formats. The same instructions are also contained in the
 ##  <F>CITATION</F> file in the &GAP; root directory.
 ##  <P/>
-##  If <A>pkgname</A> is the name of a &GAP; package, instructions on 
-##  citing this package will be displayed. They will be produced from the 
+##  If <A>pkgname</A> is the name of a &GAP; package, instructions on
+##  citing this package will be displayed. They will be produced from the
 ##  <F>PackageInfo.g</F> file of the working version of this package that
 ##  must be available in the &GAP; installation being used. Otherwise, one
 ##  will get a warning that no working version of the package is available.

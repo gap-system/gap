@@ -143,7 +143,9 @@ Many of the algorithms for permutation groups use a <E>stabilizer chain</E>
 of the group.
 The concepts of stabilizer chains, <E>bases</E>,
 and <E>strong generating sets</E> were
-introduced by Charles Sims in&nbsp;<Cite Key="Sim70"/>.
+introduced by Charles Sims in&nbsp;<Cite Key="Sim70"/>. An extensive account
+of basic algorithms together with asymptotic runtime analysis can be found in
+reference&nbsp;<Cite Key="Seress2003" Where="Chapter 4"/>.
 A further discussion of base change is given in
 section&nbsp;<Ref Sect="Generalized Conjugation Technique"/>.
 <P/>
@@ -542,6 +544,7 @@ rec( random := 1000, reduced := true, tryPcgs := true )
 <#Include Label="IndicesStabChain">
 <#Include Label="ListStabChain">
 <#Include Label="ElementsStabChain">
+<#Include Label="IteratorStabChain">
 <#Include Label="InverseRepresentative">
 <#Include Label="SiftedPermutation">
 <#Include Label="MinimalElementCosetStabChain">

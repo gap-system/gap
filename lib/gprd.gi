@@ -1072,7 +1072,9 @@ function( G, N )
 end);
 
 InstallMethod( SemidirectProduct,"different representations",true, 
-    [ IsGroup, IsGroupHomomorphism, IsGroup ], 0,
+    [ IsGroup and IsFinite, IsGroupHomomorphism, IsGroup and IsFinite], 
+    # don't be higher than specific perm/pc methods
+    -20,
 function( G, aut, N )
 local giso,niso,P,gens,a,Go,No,i;
   Go:=G;
@@ -1108,6 +1110,68 @@ local giso,niso,P,gens,a,Go,No,i;
   SetSemidirectProductInfo(P,i);
   return P;
 end );
+
+# semidirect product as finitely presented
+
+SemidirectFp:=function( G, aut, N )
+local Go,No,giso,niso,FG,GP,FN,NP,F,GI,NI,rels,i,j,P;
+  Go:=G;
+  No:=N;
+  if not IsFpGroup(G) then
+    giso:=IsomorphismFpGroup(G);
+  else
+    giso:=IdentityMapping(G);
+  fi;
+  if not IsFpGroup(N) then
+    niso:=IsomorphismFpGroup(N);
+  else
+    niso:=IdentityMapping(N);
+  fi;
+  G:=Image(giso,G);
+  N:=Image(niso,N);
+
+  FG:=FreeGeneratorsOfFpGroup(G);
+  GP:=List(GeneratorsOfGroup(G),x->PreImagesRepresentative(giso,x));
+  FN:=FreeGeneratorsOfFpGroup(N);
+  NP:=List(GeneratorsOfGroup(N),x->PreImagesRepresentative(niso,x));
+
+  F:=FreeGroup(List(Concatenation(FG,FN),String));
+  GI:=GeneratorsOfGroup(F){[1..Length(FG)]};
+  NI:=GeneratorsOfGroup(F){[Length(FG)+1..Length(GeneratorsOfGroup(F))]};
+
+  rels:=[];
+  for i in RelatorsOfFpGroup(G) do
+    Add(rels,MappedWord(i,FG,GI));
+  od;
+  for i in RelatorsOfFpGroup(N) do
+    Add(rels,MappedWord(i,FN,NI));
+  od;
+  for i in [1..Length(FG)] do
+    for j in [1..Length(FN)] do
+      Add(rels,NI[j]^GI[i]/(
+        MappedWord(UnderlyingElement(Image(niso,Image(Image(aut,GP[i]),NP[j]))),FN,NI)  ));
+    od;
+  od;
+  P:=F/rels;
+  GI:=GeneratorsOfGroup(P){[1..Length(FG)]};
+  NI:=GeneratorsOfGroup(P){[Length(FG)+1..Length(GeneratorsOfGroup(P))]};
+  # set the embeddings and projections
+  i:=rec(groups:=[Go,No],
+	 embeddings:=[GroupHomomorphismByImagesNC(Go,P,GP,GI),
+	              GroupHomomorphismByImagesNC(No,P,NP,NI)],
+         projections:=GroupHomomorphismByImagesNC(P,Go,
+		        Concatenation(GI,NI),
+			Concatenation(GP,List(NI,x->One(Go))))  );
+  SetSemidirectProductInfo(P,i);
+  return P;
+end;
+
+InstallMethod( SemidirectProduct,"fp with group",true, 
+    [ IsSubgroupFpGroup, IsGroupHomomorphism, IsGroup ], 0, SemidirectFp);
+
+InstallMethod( SemidirectProduct,"group with fp",true, 
+    [ IsGroup, IsGroupHomomorphism, IsSubgroupFpGroup ], 0, SemidirectFp);
+
 
 #############################################################################
 ##
