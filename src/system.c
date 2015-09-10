@@ -406,7 +406,7 @@ Int SyStorOverrun;
 *V  SyStorKill . . . . . . . . . . . . . . . . . . maximal size of workspace
 **
 **  'SyStorKill' is really the maximal size of the workspace allocated by 
-**  Gasman. GAP exists before trying to allocate more than this amount
+**  Gasman in kB. GAP exits before trying to allocate more than this amount
 **  of memory.
 **
 **  This is per default disabled (i.e. = 0).
@@ -1513,6 +1513,11 @@ void SyUSleep ( UInt msecs )
 **  The function 'SyExit' must perform all the neccessary cleanup operations.
 **  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
+**
+**  If the user calls 'QUIT_GAP' with a value, then the global variable
+**  'UserHasQUIT' will be set, and their requested return value will be
+**  in 'SystemErrorCode'. If the return value would be 0, we check
+**  this calue and use it instead.
 */
 void SyExit (
     UInt                ret )
@@ -1527,8 +1532,7 @@ void SyExit (
   }
 
 #endif
-
-    exit( (int)ret );
+        exit( (int)ret );
 }
 
 /****************************************************************************
@@ -1888,8 +1892,8 @@ void InitSystem (
 #if HAVE_TTYNAME
     syBuf[0].fp = fileno(stdin);
     syBuf[0].bufno = -1;
-    if ( isatty( fileno(stdin) ) ) {
-        if ( isatty( fileno(stdout) )
+    if ( isatty( fileno(stdin) ) && ttyname(fileno(stdin)) != NULL ) {
+        if ( isatty( fileno(stdout) ) && ttyname(fileno(stdout)) != NULL
           && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stdout)) ) )
             syBuf[0].echo = fileno(stdout);
         else
@@ -1902,8 +1906,8 @@ void InitSystem (
     }
     syBuf[1].echo = syBuf[1].fp = fileno(stdout); 
     syBuf[1].bufno = -1;
-    if ( isatty( fileno(stderr) ) ) {
-        if ( isatty( fileno(stdin) )
+    if ( isatty( fileno(stderr) ) && ttyname(fileno(stderr)) != NULL ) {
+        if ( isatty( fileno(stdin) ) && ttyname(fileno(stdin)) != NULL
           && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stderr)) ) )
             syBuf[2].fp = fileno(stdin);
         else
@@ -2019,6 +2023,11 @@ void InitSystem (
         SyStorMax = SyStorMin;
     }
 
+    /* fix pool size if larger than SyStorKill */
+    if ( SyStorKill != 0 && SyAllocPool != 0 &&
+                            SyAllocPool > 1024 * SyStorKill ) {
+        SyAllocPool = SyStorKill * 1024;
+    }
     /* fix pool size if it is given and lower than SyStorMax */
     if ( SyAllocPool != 0 && SyAllocPool < SyStorMax * 1024) {
         SyAllocPool = SyStorMax * 1024;

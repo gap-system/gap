@@ -138,6 +138,7 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 #define HDLR_6ARGS(func)        ((ObjFunc_6ARGS)HDLR_FUNC(func,6))
 #define HDLR_XARGS(func)        ((ObjFunc_1ARGS)HDLR_FUNC(func,7))
 
+extern Obj NargError(Obj func, Int actual);
 
 /****************************************************************************
 **

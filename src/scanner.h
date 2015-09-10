@@ -315,6 +315,7 @@ extern void GetSymbol ( void );
 /****************************************************************************
 **
 *F  SyntaxError( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
+*F  SyntaxWarning( <msg> ) ..................display a syntax warning
 **
 **  'SyntaxError' prints the current line, followed by the error message:
 **
@@ -326,8 +327,7 @@ extern void GetSymbol ( void );
 **  'SyntaxError' is called from the parser to print error messages for those
 **  errors that are not caught by 'Match',  for example if the left hand side
 **  of an assignment is not a variable, a list element or a record component,
-**  or if two formal arguments of a function have the same identifier.  It is
-**  also called for warnings, for example if a statement has no effect.
+**  or if two formal arguments of a function have the same identifier.  
 **
 **  'SyntaxError' first increments 'NrError' by   1.  If 'NrError' is greater
 **  than zero the parser functions  will not create  new bags.  This prevents
@@ -338,8 +338,15 @@ extern void GetSymbol ( void );
 **  prevents the printing of multiple error messages for one line, since they
 **  probabely  just reflect the  fact  that the parser has not resynchronized
 **  yet.  'NrErrLine' is reset to 0 if a new line is read in 'GetLine'.
+** 
+**  'SyntaxWarning' displays in the same way but does not increase NrError or 
+**  NrErrLine
+**
 */
 extern  void            SyntaxError (
+            const Char *        msg );
+
+extern  void            SyntaxWarning (
             const Char *        msg );
 
 

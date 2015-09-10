@@ -472,21 +472,21 @@ static Int InitLibrary (
     Undefined = NewBag( T_BOOL, 0 );
 
     /* make and install the 'RETURN_TRUE' function                         */
-    tmp = NewFunctionC( "RETURN_TRUE", -1L, "args", ReturnTrue1 );
+    tmp = NewFunctionC( "RETURN_TRUE", -1L, "arg", ReturnTrue1 );
     HDLR_FUNC( tmp, 1 ) = ReturnTrue1;
     HDLR_FUNC( tmp, 2 ) = ReturnTrue2;
     HDLR_FUNC( tmp, 3 ) = ReturnTrue3;
     AssGVar( GVarName("RETURN_TRUE"), tmp );
 
     /* make and install the 'RETURN_FALSE' function                        */
-    tmp = NewFunctionC("RETURN_FALSE",-1L,"args",ReturnFalse1);
+    tmp = NewFunctionC("RETURN_FALSE",-1L,"arg",ReturnFalse1);
     HDLR_FUNC( tmp, 1 ) = ReturnFalse1;
     HDLR_FUNC( tmp, 2 ) = ReturnFalse2;
     HDLR_FUNC( tmp, 3 ) = ReturnFalse3;
     AssGVar( GVarName( "RETURN_FALSE" ), tmp );
 
     /* make and install the 'RETURN_FAIL' function                        */
-    tmp = NewFunctionC("RETURN_FAIL", -1L, "args", ReturnFail1);
+    tmp = NewFunctionC("RETURN_FAIL", -1L, "arg", ReturnFail1);
     HDLR_FUNC( tmp, 1 ) = ReturnFail1;
     HDLR_FUNC( tmp, 2 ) = ReturnFail2;
     HDLR_FUNC( tmp, 3 ) = ReturnFail3;

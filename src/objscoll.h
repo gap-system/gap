@@ -64,6 +64,15 @@
 #define SC_RWS_GENERATORS(sc) \
     (ADDR_OBJ(sc)[SCP_RWS_GENERATORS])
 
+extern Obj SC_NW_STACK;
+extern Obj SC_LW_STACK;
+extern Obj SC_PW_STACK;
+extern Obj SC_EW_STACK;
+extern Obj SC_GE_STACK;
+extern Obj SC_CW_VECTOR;
+extern Obj SC_CW2_VECTOR;
+extern UInt SC_MAX_STACK_SIZE;
+
 /****************************************************************************
 **
 
