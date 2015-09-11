@@ -1,4 +1,3 @@
-#ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "src/compiled.h"
 
@@ -515,18 +514,18 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "RANDOM_SEED_CONSTRUCTOR", &GC_RANDOM__SEED__CONSTRUCTOR );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(-107735305)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(-107735305)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(-107735305)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](-107735305)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(-107735305)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](-107735305)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(-107735305)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](-107735305)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/random.g:HdlrFunc4(-107735305)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/random.g:NameFunc[4](-107735305)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/random.g:HdlrFunc5(-107735305)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/random.g:NameFunc[5](-107735305)" );
+ InitGlobalBag( &DefaultName, "lib/random.g:DefaultName(-107735305)" );
+ InitGlobalBag( &FileName, "lib/random.g:FileName(-107735305)" );
+ InitHandlerFunc( HdlrFunc1, "lib/random.g:HdlrFunc1(-107735305)" );
+ InitGlobalBag( &(NameFunc[1]), "lib/random.g:NameFunc[1](-107735305)" );
+ InitHandlerFunc( HdlrFunc2, "lib/random.g:HdlrFunc2(-107735305)" );
+ InitGlobalBag( &(NameFunc[2]), "lib/random.g:NameFunc[2](-107735305)" );
+ InitHandlerFunc( HdlrFunc3, "lib/random.g:HdlrFunc3(-107735305)" );
+ InitGlobalBag( &(NameFunc[3]), "lib/random.g:NameFunc[3](-107735305)" );
+ InitHandlerFunc( HdlrFunc4, "lib/random.g:HdlrFunc4(-107735305)" );
+ InitGlobalBag( &(NameFunc[4]), "lib/random.g:NameFunc[4](-107735305)" );
+ InitHandlerFunc( HdlrFunc5, "lib/random.g:HdlrFunc5(-107735305)" );
+ InitGlobalBag( &(NameFunc[5]), "lib/random.g:NameFunc[5](-107735305)" );
  
  /* return success */
  return 0;
@@ -566,7 +565,7 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* information for the functions */
  C_NEW_STRING( DefaultName, 14, "local function" );
- C_NEW_STRING( FileName, 20, "GAPROOT/lib/random.g" );
+ C_NEW_STRING( FileName, 12, "lib/random.g" );
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;
@@ -649,7 +648,7 @@ static Int PostRestore ( StructInitInfo * module )
 /* <name> returns the description of this module */
 static StructInitInfo module = {
  /* type        = */ 2,
- /* name        = */ "GAPROOT/lib/random.g",
+ /* name        = */ "lib/random.g",
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
@@ -668,4 +667,3 @@ StructInitInfo * Init__random ( void )
 }
 
 /* compiled code ends here */
-#endif
