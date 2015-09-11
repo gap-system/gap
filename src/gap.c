@@ -3077,10 +3077,6 @@ static StructGVarFunc GVarFuncs [] = {
     { "FORCE_QUIT_GAP", -1, "args",
       FuncFORCE_QUIT_GAP, "src/gap.c:FORCE_QUIT_GAP" },
 
-    { "FORCE_QUIT_GAP", 0, "",
-      FuncFORCE_QUIT_GAP, "src/gap.c:FORCE_QUIT_GAP" },
-
-
     { "SHELL", -1, "context, canReturnVoid, canReturnObj, lastDepth, setTime, prompt, promptHook, infile, outfile",
       FuncSHELL, "src/gap.c:FuncSHELL" },
 
