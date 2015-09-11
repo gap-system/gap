@@ -72,7 +72,8 @@ InstallOtherMethod( ZmodnZObj,
       # Store the type for the representation of prime field elements
       # via residues.
       Fam!.typeOfZmodnZObj:= NewType( Fam,
-      SetDataType( Fam!.typeOfZmodnZObj, p ) );   # TODO: remove once no package uses this
+                                 IsZmodpZObjSmall and IsModulusRep );
+      SetDataType( Fam!.typeOfZmodnZObj, p );   # TODO: remove once no package uses this
 
     fi;
     return MakeReadOnly(Objectify( Fam!.typeOfZmodnZObj, [ residue mod p ] ));
