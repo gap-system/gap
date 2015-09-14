@@ -42,7 +42,7 @@ Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 750m'.\n",
 Reread( Filename( DirectoriesLibrary( "tst" ), "testutil.g" ) );
 
 TestDirectory( [ Filename( DirectoriesLibrary( "tst" ), "teststandard/bugfix.tst") ] ,
-               rec(exitGAP := true) );
+               rec(exitGAP := true, testOptions := rec(compareFunction := "uptowhitespace") ) );
 
 # Should never get here
 FORCE_QUIT_GAP(1);
