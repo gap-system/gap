@@ -511,31 +511,29 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
     Print("function( ");
     nams := NAMS_FUNC(func);
     narg := NARG_FUNC(func);
-    if nams = fail then
-        Print( "<",narg," unnamed arguments>" );
-    elif narg = -1 then
-        Print("arg");
-    elif narg > 0 then
-        for i in [1..narg] do
-            if locks <> fail then
-                if locks[i] = '\001' then
-                    Print("readonly ");
-                elif locks[i] = '\002' then
-                    Print("readwrite ");
-                fi;
-            fi;
-            Print(nams[i]);
-            if i <> narg then
-                Print(", ");
-            fi;
-        od;
+    if narg < 0 then
+        narg := -narg;
     fi;
     if narg <> 0 then
         if nams = fail then
             Print( "<",narg," unnamed arguments>" );
         else
+            if locks <> fail then
+                if locks[1] = '\001' then
+                    Print("readonly ");
+                elif locks[1] = '\002' then
+                    Print("readwrite ");
+                fi;
+            fi;
             Print(nams[1]);
             for i in [2..narg] do
+                if locks <> fail then
+                    if locks[i] = '\001' then
+                        Print("readonly ");
+                    elif locks[i] = '\002' then
+                        Print("readwrite ");
+                    fi;
+                fi;
                 Print(", ",nams[i]);
             od;
         fi;
