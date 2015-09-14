@@ -3391,15 +3391,6 @@ void            IntrUnbList ( Int narg )
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeUnbList( narg); return; }
 
-
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
-        ErrorQuit(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
-
     if (narg == 1) {
       /* get and check the position                                          */
       pos = PopObj();
