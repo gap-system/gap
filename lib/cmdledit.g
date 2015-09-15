@@ -425,7 +425,7 @@ BindKeysToGAPHandler("\007");
 # command line edit functions below deal with the history. The maximal
 # number of lines in the history is configurable via a user preference.
 if not IsBound(GAPInfo.History) then
-  GAPInfo.History := rec(Lines := [], Pos := 0, Last := 0);
+  GAPInfo.History := rec(Lines := [], Pos := 0, Last := 0, Tmp:="");
 fi;
 DeclareUserPreference( rec(
   name:= ["HistoryMaxLines", "SaveAndRestoreHistory"],
@@ -449,8 +449,8 @@ readline support.",
 
 
 ## We use key 0 (not bound) to add line to history.
-GAPInfo.CommandLineEditFunctions.Functions.AddHistory := function(l)
-  local i, max, hist;
+GAPInfo.CommandLineEditFunctions.Functions.QueueHistory := function(l)
+  local i, max;
   max := UserPreference("HistoryMaxLines");
   # no history
   if max <= 0 then
@@ -465,21 +465,38 @@ GAPInfo.CommandLineEditFunctions.Functions.AddHistory := function(l)
   if Length(l[3]) = 0 then
     return [false, 1, i+1, 1];
   fi;
-  hist := GAPInfo.History.Lines;
-  while Length(hist) >= max do
-    # overrun, throw oldest line away
-    Remove(hist, 1);
-    GAPInfo.History.Last := GAPInfo.History.Last - 1;
-  od;
-  Add(hist, l[3]);
-  GAPInfo.History.Pos := Length(hist) + 1;
+  if Length(GAPInfo.History.Tmp) > 0 then
+    Append(GAPInfo.History.Tmp, " ");
+  fi;
+  Append(GAPInfo.History.Tmp, NormalizedWhitespace(l[3]));
   if i = 0 then
     return [];
   else
     return [false, Length(l[3])+1, Length(l[3]) + i + 1];
   fi;
 end;
-GAPInfo.CommandLineEditFunctions.Functions.0 := 
+GAPInfo.CommandLineEditFunctions.Functions.0 :=
+                       GAPInfo.CommandLineEditFunctions.Functions.QueueHistory;
+
+GAPInfo.CommandLineEditFunctions.Functions.AddHistory := function(l)
+  local i, max, hist;
+  max := UserPreference("HistoryMaxLines");
+  # no history
+  if max <= 0 or IsEmpty(GAPInfo.History.Tmp) then
+    return [];
+  fi;
+  hist := GAPInfo.History.Lines;
+  while Length(hist) >= max do
+    # overrun, throw oldest line away
+    Remove(hist, 1);
+    GAPInfo.History.Last := GAPInfo.History.Last - 1;
+  od;
+  Add(hist, GAPInfo.History.Tmp);
+  GAPInfo.History.Tmp := "";
+  GAPInfo.History.Pos := Length(hist) + 1;
+  return [];
+end;
+GAPInfo.CommandLineEditFunctions.Functions.1 :=
                        GAPInfo.CommandLineEditFunctions.Functions.AddHistory;
 
 ##  C-p: previous line starting like current before point

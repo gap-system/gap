@@ -2384,8 +2384,10 @@ Char * readlineFgets (
       return (Char*)0;
     }
   }
-  /* maybe add to history, we use key 0 for this function */
+  /* (maybe) queue last line for addition to history; we use key 0 for this function.
+     The actual addition is triggered in gap.c, function Shell(). */
   GAP_rl_func(0, 0);
+
   len = strlen(rlres);
   strncpy(line, rlres, len);
   free(rlres);
