@@ -81,16 +81,6 @@ InstallMethod( PrintObj,
     if not IsMutable( iter ) then
       Append(msg, " (immutable)");
     fi;
-    if IsBound( iter!.description ) then
-      Append(msg, " ");
-      if IsFunction(iter!.description) then
-        Append(msg, iter!.description(iter));
-      elif IsString(iter!.description(iter)) then
-        Append(msg, iter!.description);
-      else
-        Error("Invalid description for iterator.");
-      fi;
-    fi;
     Append(msg,">");
     Print(msg);
     end );
@@ -969,7 +959,8 @@ InstallOtherMethod( NextIterator,
 #F  IteratorByFunctions( <record> )
 ##
 DeclareRepresentation( "IsIteratorByFunctionsRep", IsComponentObjectRep,
-    [ "NextIterator", "IsDoneIterator", "ShallowCopy" ] );
+    [ "NextIterator", "IsDoneIterator", "ShallowCopy",
+    , "ViewObj", "PrintObj"] );
 
 DeclareSynonym( "IsIteratorByFunctions",
     IsIteratorByFunctionsRep and IsIterator );
@@ -1007,9 +998,40 @@ InstallMethod( ShallowCopy,
     new.NextIterator   := iter!.NextIterator;
     new.IsDoneIterator := iter!.IsDoneIterator;
     new.ShallowCopy    := iter!.ShallowCopy;
+    new.ViewObj        := iter!.ViewObj;
+    new.PrintObj       := iter!.ViewObj;
     return IteratorByFunctions( new );
     end );
 
+InstallMethod( ViewObj,
+    "for an iterator that perhaps has its own `ViewObj' function",
+    [ IsIteratorByFunctions ], 20,
+function( iter )
+    if IsBound( iter!.ViewObj ) then
+        iter!.ViewObj( iter );
+    elif IsBound( iter!.PrintObj ) then
+        iter!.PrintObj( iter );
+    elif HasUnderlyingCollection( iter ) then
+        Print( "<iterator of " );
+        View( UnderlyingCollection( iter ) );
+        Print( ">" );
+    else
+        Print( "<iterator>" );
+    fi;
+end );
+
+InstallMethod( PrintObj,
+    "for an iterator that perhaps has its own `PrintObj' function",
+    [ IsIteratorByFunctions ],
+function( iter )
+    if IsBound( iter!.PrintObj ) then
+       iter!.PrintObj( iter );
+    elif HasUnderlyingCollection( iter ) then
+       Print( "<iterator of ", UnderlyingCollection( iter ), ">" );
+    else
+       Print( "<iterator>" );
+    fi;
+end );
 
 #############################################################################
 ##
