@@ -26,26 +26,26 @@ BIND_GLOBAL("REGION_NO_PREC", -1);
 
 BIND_GLOBAL("RegionPrecedence", REGION_PRECEDENCE);
 
-ShareObjWithPrecedence := function(arg, precedence)
+ShareObjWithPrecedence := function(args, precedence)
   local name, adj;
-  if precedence > 0 and LEN_LIST(arg) > 1 and IS_INT(arg[LEN_LIST(arg)]) then
-    adj := REM_LIST(arg);
+  if precedence > 0 and LEN_LIST(args) > 1 and IS_INT(args[LEN_LIST(args)]) then
+    adj := REM_LIST(args);
     if adj < -1000 or adj > 1000 then
       Error("Precedence adjustment must be between -1000 and 1000");
       adj := 0;
     fi;
     precedence := precedence + adj;
   fi;
-  if IsBound(arg[2]) then
-    name := arg[2];
+  if IsBound(args[2]) then
+    name := args[2];
     if not HaveReadAccess(name) then
       Error("Cannot access region name");
       name := fail;
     fi;
     name := IMMUTABLE_COPY_OBJ(name);
-    return SHARE(arg[1], name, precedence);
+    return SHARE(args[1], name, precedence);
   else
-    return SHARE(arg[1], fail, precedence);
+    return SHARE(args[1], fail, precedence);
   fi;
 end;
 
@@ -73,25 +73,25 @@ ShareSpecialObj := function(arg)
   return ShareObjWithPrecedence(arg, REGION_NO_PREC);
 end;
 
-ShareSingleObjWithPrecedence := function(arg, precedence)
+ShareSingleObjWithPrecedence := function(args, precedence)
   local name, adj;
-  if precedence > 0 and LEN_LIST(arg) > 1 and IS_INT(arg[LEN_LIST(arg)]) then
-    adj := REM_LIST(arg);
+  if precedence > 0 and LEN_LIST(args) > 1 and IS_INT(args[LEN_LIST(args)]) then
+    adj := REM_LIST(args);
     if adj < -1000 or adj > 1000 then
       Error("Precedence adjustment must be between -1000 and 1000");
       adj := 0;
     fi;
     precedence := precedence + adj;
   fi;
-  if IsBound(arg[2]) then
-    name := arg[2];
+  if IsBound(args[2]) then
+    name := args[2];
     if not HaveReadAccess(name) then
       Error("Cannot access region name");
     fi;
     name := IMMUTABLE_COPY_OBJ(name);
-    return SHARE_NORECURSE(arg[1], name, precedence);
+    return SHARE_NORECURSE(args[1], name, precedence);
   else
-    return SHARE_NORECURSE(arg[1], fail, precedence);
+    return SHARE_NORECURSE(args[1], fail, precedence);
   fi;
 end;
 
@@ -122,18 +122,18 @@ AdoptSingleObj := ADOPT_NORECURSE;
 CopyRegion := CLONE_REACHABLE;
 RegionSubObjects := REACHABLE;
 
-NewRegionWithPrecedence := function(arg, precedence)
+NewRegionWithPrecedence := function(args, precedence)
   local adj;
-  if precedence > 0 and LEN_LIST(arg) > 0 and IS_INT(arg[LEN_LIST(arg)]) then
-    adj := REM_LIST(arg);
+  if precedence > 0 and LEN_LIST(args) > 0 and IS_INT(args[LEN_LIST(args)]) then
+    adj := REM_LIST(args);
     if adj < -1000 or adj > 1000 then
       Error("Precedence adjustment must be between -1000 and 1000");
       adj := 0;
     fi;
     precedence := precedence + adj;
   fi;
-  if IsBound(arg[1]) then
-    return NEW_REGION(arg[1], precedence);
+  if IsBound(args[1]) then
+    return NEW_REGION(args[1], precedence);
   else
     return NEW_REGION(fail, precedence);
   fi;

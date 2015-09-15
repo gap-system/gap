@@ -167,6 +167,47 @@ void            SyntaxError (
     assert(TLS->output);
 }
 
+/****************************************************************************
+**
+*F  SyntaxWarning( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
+**
+*/
+void            SyntaxWarning (
+    const Char *        msg )
+{
+    Int                 i;
+
+    /* open error output                                                   */
+    OpenOutput( "*errout*" );
+    assert(TLS->output);
+
+
+    /* do not print a message if we found one already on the current line  */
+    if ( TLS->nrErrLine == 0 )
+
+      {
+        /* print the message and the filename, unless it is '*stdin*'          */
+        Pr( "Syntax warning: %s", (Int)msg, 0L );
+        if ( strcmp( "*stdin*", TLS->input->name ) != 0 )
+          Pr( " in %s line %d", (Int)TLS->input->name, (Int)TLS->input->number );
+        Pr( "\n", 0L, 0L );
+
+        /* print the current line                                              */
+        Pr( "%s", (Int)TLS->input->line, 0L );
+
+        /* print a '^' pointing to the current position                        */
+        for ( i = 0; i < TLS->in - TLS->input->line - 1; i++ ) {
+          if ( TLS->input->line[i] == '\t' )  Pr("\t",0L,0L);
+          else  Pr(" ",0L,0L);
+        }
+        Pr( "^\n", 0L, 0L );
+      }
+    /* close error output                                                  */
+    assert(TLS->output);
+    CloseOutput();
+    assert(TLS->output);
+}
+
 
 /****************************************************************************
 **

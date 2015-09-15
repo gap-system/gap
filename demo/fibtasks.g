@@ -8,11 +8,11 @@ end;
 
 ResetCache();
 
-DivideAndConquer := function(func, arg, split)
+DivideAndConquer := function(func, args, split)
   if split = 0 then
-    return ImmediateTask(func, arg, split);
+    return ImmediateTask(func, args, split);
   else
-    return RunTask(func, arg, split-1);
+    return RunTask(func, args, split-1);
   fi;
 end;
 

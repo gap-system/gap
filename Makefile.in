@@ -30,16 +30,12 @@
 ##    - starts GAP and reads `tst/testinstall.g'
 ##
 ##  The "teststandard" target:
-##    - starts GAP and reads all files `tst/*.tst'
+##    - starts GAP and reads `tst/teststandard.g'
 ##
 ##  The "teststandardrenormalize" target:
 ##    - starts GAP, reads all files `tst/*.tst', and replaces the scaling
 ##      factors  in the `STOP_TEST' statements
 ##
-##  The "testinstall.g" target:
-##    - creates `tst/testinstall.g' based on the existing version and the
-##      preselected `tst/*.tst' files
-## 
 ##  The "testpackages" target:
 ##    - runs the tests provided by the available packages
 ##
@@ -76,6 +72,10 @@ GAPARGS=
 
 TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -A -q -x 80 -r $(GAPARGS)
 TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -q -x 80 -r $(GAPARGS)
+
+PKG_BOOTSTRAP_URL="http://www.gap-system.org/pub/gap/gap4pkgs/"
+PKG_MINIMAL="bootstrap-pkg-minimal.tar.gz"
+PKG_FULL="bootstrap-pkg-full.tar.gz"
 
 default: compile
 
@@ -231,16 +231,14 @@ testinstall:
 
 teststandard:
 	mkdir -p dev/log
-	( echo 'ShowSystemInformation(); RunStandardTests( [' > test.tmp; \
-          grep -h "STOP_TEST" tst/*.tst | sed -e 's/^gap> STOP_TEST(/[/;s/);/],/' >> test.tmp; \
-          echo '] ); ' >> test.tmp )
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); Read( "test.tmp" );' | $(TESTGAP) > \
+	        ReadGapRoot( "tst/testutil.g" ); \
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) > \
             `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); Read( "test.tmp" );' | $(TESTGAP) > \
+	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) > \
             `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
-	( rm test.tmp )
 
 teststandardrenormalize:
 	mkdir -p dev/log
@@ -253,10 +251,6 @@ teststandardrenormalize:
             CreateTestinstallFile(); Runtime();' | $(TESTGAP) > \
             `date -u +dev/log/teststandardrenormalize_%Y-%m-%d-%H-%M` )
 	( rm test.tmp )
-
-testinstall.g:
-	( echo 'ReadGapRoot( "tst/testutil.g" ); \
-            CreateTestinstallFile();' | $(TESTGAP) )            
 
 testpackages:
 	mkdir -p dev/log
@@ -429,7 +423,7 @@ cygwin:	extern
 	cp bin/$(GAPARCH)/gapw95.exe bin
 	cp bin/$(GAPARCH)/gap.dll bin
 	cp /bin/cygncurses-10.dll /bin/cygncursesw-10.dll \
-	   /bin/cygpanel-10.dll /bin/cygwin1.dll \
+	   /bin/cygpanel-10.dll /bin/cygpanelw-10.dll /bin/cygwin1.dll \
 	   /bin/libW11.dll /usr/bin/rxvt.exe /usr/bin/regtool.exe \
 	   /bin/cygreadline7.dll /bin/cyggcc_s-1.dll /bin/cygpopt-0.dll \
 	   /bin/cygstart.exe /bin/mintty.exe bin
@@ -443,7 +437,26 @@ winbinp:
           bin/$(GAPARCH)/config.h \
           terminfo )
 
-packages:
-	./makepkgs
+bootstrap-pkg-minimal:
+	@if test -e pkg; then \
+        echo "The pkg directory already exists. Please move or remove it to proceed."; \
+    else \
+        mkdir pkg ; \
+        cd pkg ; \
+        wget $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) ; \
+        tar xzf $(PKG_MINIMAL) ; \
+        rm $(PKG_MINIMAL) ; \
+    fi;
+
+bootstrap-pkg-full:
+	@if test -e pkg; then \
+        echo "The pkg directory already exists. Please move or remove it to proceed" ; \
+    else \
+        mkdir pkg ; \
+        cd pkg ; \
+        wget $(PKG_BOOTSTRAP_URL)$(PKG_FULL) ; \
+        tar xzf $(PKG_FULL) ; \
+        rm $(PKG_FULL) ; \
+    fi;
 
 .PHONY: clean clean_$(CLEANME) clean_gap clean_gap_$(CLEANME) clean_gmp clean_gmp_$(CLEANME) compile config cygwin default distclean extern manuals packages rebuild removewin setconfig static strip testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard teststandardrenormalize winbinp

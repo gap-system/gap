@@ -70,6 +70,7 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
       [ "o", "2g", "<mem>", "set hint for maximal workspace size (GAP may allocate more)" ],
       [ "K", "0", "<mem>", "set maximal workspace size (GAP never allocates more)" ],
       [ "c", "0", "<mem>", "set the cache size value" ],
+      [ "s", "4g", "<mem>", "set the initially mapped virtual memory" ],
       [ "a", "0", "<mem>", "set amount to pre-malloc-ate",
              "postfix 'k' = *1024, 'm' = *1024*1024, 'g' = *1024*1024*1024" ],
       ,
@@ -91,11 +92,9 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
       [ "p", false, "enable/disable package output mode" ],
       [ "E", false ],
       [ "U", "" ],     # -C -U undocumented options to the compiler
-      [ "s", "4g" ],
       [ "z", "20" ],
       [ "-prof", "", "<file>", "Run ProfileLineByLine(<filename>,\"w\", true) on GAP start" ],
       [ "-cover", "", "<file>", "Run ProfileLineByLine(<filename>,\"w\", false) on GAP start" ],
-      [ "p", false, "enable/disable package output mode" ],
       
           ],
     ) ));

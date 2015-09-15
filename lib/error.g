@@ -271,3 +271,12 @@ BIND_GLOBAL("Error",
                                arg);
 end);
 
+BIND_GLOBAL("ErrorMayQuit",
+       function ( arg )
+    ErrorInner( rec(
+         context := ParentLVars( GetCurrentLVars(  ) ),
+         mayReturnVoid := false, mayReturnObj := false,
+         lateMessage := "type 'quit;' to quit to outer loop",
+         printThisStatement := false), arg);
+end);
+ 

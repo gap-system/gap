@@ -190,8 +190,9 @@ DeclareOperationKernel( "SetNameFunction", [IS_OBJECT, IS_STRING], SET_NAME_FUNC
 ##
 ##  <Description>
 ##  returns the number of arguments the function <A>func</A> accepts.
+##  -1 is returned for all operations.
 ##  For functions that use <C>arg</C> to take a variable number of arguments,
-##  as well as for operations, -1 is returned.
+##  the number returned is - the total number of parameters including the <C>arg</C>.
 ##  For attributes, 1 is returned.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -203,6 +204,11 @@ DeclareOperationKernel( "SetNameFunction", [IS_OBJECT, IS_STRING], SET_NAME_FUNC
 ##  3
 ##  gap> NumberArgumentsFunction(Sum);
 ##  -1
+##  gap> NumberArgumentsFunction(function(a,arg) return 1; end);
+##  Syntax warning: New syntax used -- intentional? in stream line 1
+##  NumberArgumentsFunction(function(a,arg) return 1; end);
+##                                               ^
+##  -2
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -505,25 +511,33 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
     Print("function( ");
     nams := NAMS_FUNC(func);
     narg := NARG_FUNC(func);
-    if nams = fail then
-        Print( "<",narg," unnamed arguments>" );
-    elif narg = -1 then
-        Print("arg");
-    elif narg > 0 then
-        for i in [1..narg] do
+    if narg < 0 then
+        narg := -narg;
+    fi;
+    if narg <> 0 then
+        if nams = fail then
+            Print( "<",narg," unnamed arguments>" );
+        else
             if locks <> fail then
-                if locks[i] = '\001' then
+                if locks[1] = '\001' then
                     Print("readonly ");
-                elif locks[i] = '\002' then
+                elif locks[1] = '\002' then
                     Print("readwrite ");
                 fi;
             fi;
-            Print(nams[i]);
-            if i <> narg then
-                Print(", ");
-            fi;
-        od;
-    fi;
+            Print(nams[1]);
+            for i in [2..narg] do
+                if locks <> fail then
+                    if locks[i] = '\001' then
+                        Print("readonly ");
+                    elif locks[i] = '\002' then
+                        Print("readwrite ");
+                    fi;
+                fi;
+                Print(", ",nams[i]);
+            od;
+        fi;
+    fi;    
     Print(" ) ... end");
 end);
 

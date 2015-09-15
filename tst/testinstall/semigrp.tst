@@ -259,8 +259,6 @@ gap> HasMultiplicativeZero(s);
 false
 gap> IsMultiplicativeZero(s,a);
 false
-gap> HasMultiplicativeZero(s);
-false
 gap> IsMultiplicativeZero(s,b);
 true
 gap> HasMultiplicativeZero(s);

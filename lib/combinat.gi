@@ -2346,6 +2346,9 @@ InstallGlobalFunction(RestrictedPartitions,function ( arg )
             if arg[2] = 0  then
                 parts := [  ];
             else
+	    if not ForAll(arg[2],IsPosInt) then
+      Error("RestrictedPartitions: Set entries must be positive integers");
+	    fi;
                 parts := RestrictedPartitionsK(
                              arg[1], arg[2], Length(arg[2]), arg[3], [], 1 );
             fi;
@@ -2413,6 +2416,9 @@ InstallGlobalFunction(NrRestrictedPartitions,function ( arg )
         elif arg[1] < arg[3]  or arg[3] = 0  then
             s := 0;
         else
+	    if not ForAll(arg[2],IsPosInt) then
+      Error("NrRestrictedPartitions: Set entries must be positive integers");
+	    fi;
             s := NrRestrictedPartitionsK(
                         arg[1], arg[2], Length(arg[2]), arg[3], [], 1 );
         fi;

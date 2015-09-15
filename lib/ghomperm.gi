@@ -1912,7 +1912,7 @@ function( hom )
   s:= Source( hom );
   if not IsPermGroup( s ) then
     TryNextMethod();
-  elif not ( IsGroupHomomorphism( hom ) and IsBijective( hom ) ) then
+  elif not ( IsGroupHomomorphism( hom ) and IsInjective( hom ) ) then
     return false;
   fi;
   # trivial group
