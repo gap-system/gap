@@ -76,25 +76,12 @@ InstallMethod( PrintObj,
     "for an iterator",
     [ IsIterator ],
     function( iter )
-    local msg;
-    msg := "<iterator";
-    if not IsMutable( iter ) then
-      Append(msg, " (immutable)");
+    if IsMutable( iter ) then
+      Print( "<iterator>" );
+    else
+      Print( "<iterator (immutable)>" );
     fi;
-    if IsBound( iter!.description ) then
-      Append(msg, " ");
-      if IsFunction(iter!.description) then
-        Append(msg, iter!.description(iter));
-      elif IsString(iter!.description(iter)) then
-        Append(msg, iter!.description);
-      else
-        Error("Invalid description for iterator.");
-      fi;
-    fi;
-    Append(msg,">");
-    Print(msg);
-    end );
-
+end );
 
 #############################################################################
 ##
@@ -969,7 +956,7 @@ InstallOtherMethod( NextIterator,
 #F  IteratorByFunctions( <record> )
 ##
 DeclareRepresentation( "IsIteratorByFunctionsRep", IsComponentObjectRep,
-    [ "NextIterator", "IsDoneIterator", "ShallowCopy" ] );
+    [ "NextIterator", "IsDoneIterator", "ShallowCopy", "ViewIterator" ] );
 
 DeclareSynonym( "IsIteratorByFunctions",
     IsIteratorByFunctionsRep and IsIterator );
@@ -1007,9 +994,32 @@ InstallMethod( ShallowCopy,
     new.NextIterator   := iter!.NextIterator;
     new.IsDoneIterator := iter!.IsDoneIterator;
     new.ShallowCopy    := iter!.ShallowCopy;
+    new.ViewIterator   := iter!.ViewIterator;
     return IteratorByFunctions( new );
     end );
 
+InstallMethod( PrintObj,
+    "for an iterator",
+    [ IsIteratorByFunctions ],
+    function( iter )
+    local msg;
+    msg := "<iterator";
+    if not IsMutable( iter ) then
+      Append(msg, " (immutable)");
+    fi;
+    if IsBound( iter!.ViewIterator ) then
+      Append(msg, " ");
+      if IsFunction(iter!.ViewIterator) then
+        Append(msg, iter!.ViewIterator(iter));
+      elif IsString(iter!.ViewIterator) then
+        Append(msg, iter!.ViewIterator);
+      else
+        Error("Invalid description for iterator.");
+      fi;
+    fi;
+    Append(msg,">");
+    Print(msg);
+    end );
 
 #############################################################################
 ##
