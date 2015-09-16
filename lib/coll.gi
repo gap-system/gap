@@ -998,8 +998,12 @@ InstallMethod( ShallowCopy,
     new.NextIterator   := iter!.NextIterator;
     new.IsDoneIterator := iter!.IsDoneIterator;
     new.ShallowCopy    := iter!.ShallowCopy;
-    new.ViewObj        := iter!.ViewObj;
-    new.PrintObj       := iter!.ViewObj;
+    if IsBound(iter!.ViewObj) then
+        new.ViewObj    := iter!.ViewObj;
+    fi;
+    if IsBound(iter!.PrintObj) then
+        new.PrintObj   := iter!.PrintObj;
+    fi;
     return IteratorByFunctions( new );
     end );
 
