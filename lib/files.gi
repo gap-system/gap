@@ -10,6 +10,12 @@
 ##  This file contains the methods for files and directories.
 ##
 
+Unbind(InfoTempDirectories);
+
+DeclareInfoClass("InfoTempDirectories");
+SetInfoLevel(InfoTempDirectories,1);
+
+
 
 #############################################################################
 ##
