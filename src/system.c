@@ -1751,7 +1751,7 @@ struct optInfo options[] = {
   { 'f', "", forceLineEditing, (void *)2, 0 }, /* probably library now */
   { 'E', "", toggle, &SyUseReadline, 0 }, /* kernel */
   { 'i', "", storeString, SySystemInitFile, 1}, /* kernel */
-  { 'l', "root-paths", setGapRootPath, 0, 1}, /* kernel */
+  { 'l', "roots", setGapRootPath, 0, 1}, /* kernel */
   { 'm', "", storeMemory2, &SyStorMin, 1 }, /* kernel */
   { 'r', "", toggle, &IgnoreGapRC, 0 }, /* kernel */
   { 's', "", storeMemory, &SyAllocPool, 1 }, /* kernel */
@@ -1913,7 +1913,7 @@ void InitSystem (
 
 
           for (i = 0;  options[i].shortkey != argv[1][1] &&
-                       (argv[1][1] != '-' || argv[1][2] != 0 || !strcmp(options[i].longkey, argv[1] + 2)) &&
+                       (argv[1][1] != '-' || argv[1][2] == 0 || strcmp(options[i].longkey, argv[1] + 2)) &&
                        (options[i].shortkey != 0 || options[i].longkey[0] != 0); i++)
             ;
 
@@ -2086,4 +2086,3 @@ usage:
 **
 *E  system.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
