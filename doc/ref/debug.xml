@@ -83,7 +83,9 @@ afterwards.
 <Heading>Tracing Methods</Heading>
 
 <#Include Label="TraceMethods">
+<#Include Label="TraceAllMethods">
 <#Include Label="UntraceMethods">
+<#Include Label="UntraceAllMethods">
 <#Include Label="TraceImmediateMethods">
 
 </Section>
@@ -850,4 +852,3 @@ facilities to access information from <C>GASMAN</C> from &GAP; programs.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-

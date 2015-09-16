@@ -28,6 +28,15 @@
 #F  # # # # # # # # # # #  verbose method selection # # # # # # # # # # # # #
 ##
 
+VMETHOD_PRINT_INFO := function ( methods, i, arity)
+    Print("#I  ", methods[(arity+4)*(i-1)+(arity+4)]);
+    if FILENAME_FUNC(methods[(arity+4)*(i-1)+(arity+2)]) <> fail then
+        Print(" at ",
+              FILENAME_FUNC(methods[(arity+4)*(i-1)+(arity+2)]), ":",
+              STARTLINE_FUNC(methods[(arity+4)*(i-1)+(arity+2)]));
+    fi;
+    Print("\n");
+end;
 
 #############################################################################
 ##
@@ -41,7 +50,7 @@ VMETHOD_0ARGS := function ( operation )
     for i  in [1..LEN_LIST(methods)/4]  do
         if methods[4*(i-1)+1]()
         then
-            Print( "#I  ", methods[4*(i-1)+4], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 0);
             return methods[4*(i-1)+2];
         fi;
     od;
@@ -61,7 +70,7 @@ VMETHOD_1ARGS := function ( operation, type1 )
         if    IS_SUBSET_FLAGS( type1![2], methods[5*(i-1)+2] )
           and methods[5*(i-1)+1]( type1![1] )
         then
-            Print( "#I  ", methods[5*(i-1)+5], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 1);
             return methods[5*(i-1)+3];
         fi;
     od;
@@ -82,7 +91,7 @@ VMETHOD_2ARGS := function ( operation, type1, type2 )
           and IS_SUBSET_FLAGS( type2![2], methods[6*(i-1)+3] )
           and methods[6*(i-1)+1]( type1![1], type2![1] )
         then
-            Print( "#I  ", methods[6*(i-1)+6], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 2);
             return methods[6*(i-1)+4];
         fi;
     od;
@@ -104,7 +113,7 @@ VMETHOD_3ARGS := function ( operation, type1, type2, type3 )
           and IS_SUBSET_FLAGS( type3![2], methods[7*(i-1)+4] )
           and methods[7*(i-1)+1]( type1![1], type2![1], type3![1] )
         then
-            Print( "#I  ", methods[7*(i-1)+7], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 3);
             return methods[7*(i-1)+5];
         fi;
     od;
@@ -129,7 +138,7 @@ VMETHOD_4ARGS := function ( operation, type1, type2, type3,
           and  methods[8*(i-1)+1]( type1![1], type2![1], type3![1],
                                    type4![1] )
         then
-            Print( "#I  ", methods[8*(i-1)+8], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 4);
             return methods[8*(i-1)+6];
         fi;
     od;
@@ -155,7 +164,7 @@ VMETHOD_5ARGS := function ( operation, type1, type2, type3,
           and  methods[9*(i-1)+1]( type1![1], type2![1], type3![1],
                                    type4![1], type5![1] )
         then
-            Print( "#I  ", methods[9*(i-1)+9], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 5);
             return methods[9*(i-1)+7];
         fi;
     od;
@@ -182,7 +191,7 @@ VMETHOD_6ARGS := function ( operation, type1, type2, type3,
           and  methods[10*(i-1)+1]( type1![1], type2![1], type3![1],
                                    type4![1], type5![1], type6![1] )
         then
-            Print( "#I  ", methods[10*(i-1)+10], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 6);
             return methods[10*(i-1)+8];
         fi;
     od;
