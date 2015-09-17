@@ -776,7 +776,7 @@ and&nbsp;<Ref Sect="Positional Objects"/>.)
 <P/>
 <Example><![CDATA[
 gap> iter:= Iterator( Integers );
-<iterator>
+<iterator of Integers at 0>
 gap> Print( iter!.NextIterator, "\n" );
 function ( iter )
     iter!.counter := iter!.counter + 1;
