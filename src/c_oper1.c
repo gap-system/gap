@@ -1,4 +1,3 @@
-#ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "src/compiled.h"
 
@@ -83,6 +82,8 @@ static GVar G_DO__LOCK;
 static Obj  GF_DO__LOCK;
 static GVar G_WRITE__LOCK;
 static Obj  GF_WRITE__LOCK;
+static GVar G_READ__LOCK;
+static Obj  GF_READ__LOCK;
 static GVar G_UNLOCK;
 static Obj  GF_UNLOCK;
 static GVar G_MakeReadOnlyObj;
@@ -117,6 +118,8 @@ static GVar G_INSTALL__METHOD;
 static Obj  GF_INSTALL__METHOD;
 static GVar G_DeclareGlobalFunction;
 static Obj  GF_DeclareGlobalFunction;
+static GVar G_OPERATIONS__REGION;
+static Obj  GC_OPERATIONS__REGION;
 static GVar G_EvalString;
 static Obj  GF_EvalString;
 static GVar G_WRAPPER__OPERATIONS;
@@ -1259,6 +1262,7 @@ static Obj  HdlrFunc6 (
  Obj l_k = 0;
  Obj l_imp = 0;
  Obj l_notmatch = 0;
+ Obj l_lk = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -1277,6 +1281,14 @@ static Obj  HdlrFunc6 (
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
+ 
+ /* lk := READ_LOCK( OPERATIONS_REGION ); */
+ t_2 = GF_READ__LOCK;
+ t_3 = GC_OPERATIONS__REGION;
+ CHECK_BOUND( t_3, "OPERATIONS_REGION" )
+ t_1 = CALL_1ARGS( t_2, t_3 );
+ CHECK_FUNC_RESULT( t_1 )
+ l_lk = t_1;
  
  /* len := LEN_LIST( arglist ); */
  t_2 = GF_LEN__LIST;
@@ -2112,6 +2124,10 @@ static Obj  HdlrFunc6 (
  CHECK_BOUND( l_rank, "rank" )
  CALL_6ARGS( t_1, l_opr, l_info, l_rel, l_flags, l_rank, l_method );
  
+ /* UNLOCK( lk ); */
+ t_1 = GF_UNLOCK;
+ CALL_1ARGS( t_1, l_lk );
+ 
  /* return; */
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -2474,8 +2490,8 @@ static Obj  HdlrFunc7 (
    t_6 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
    ENVI_FUNC( t_6 ) = TLS->currLVars;
    t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-   STARTLINE_BODY(t_7) = INTOBJ_INT(599);
-   ENDLINE_BODY(t_7) = INTOBJ_INT(617);
+   STARTLINE_BODY(t_7) = INTOBJ_INT(603);
+   ENDLINE_BODY(t_7) = INTOBJ_INT(621);
    FILENAME_BODY(t_7) = FileName;
    BODY_FUNC(t_6) = t_7;
    CHANGED_BAG( TLS->currLVars );
@@ -2756,6 +2772,7 @@ static Obj  HdlrFunc10 (
  Obj  a_keytest )
 {
  Obj l_str = 0;
+ Obj l_lk = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -2789,8 +2806,8 @@ static Obj  HdlrFunc10 (
   t_1 = NewFunction( NameFunc[11], NargFunc[11], NamsFunc[11], HdlrFunc11 );
   ENVI_FUNC( t_1 ) = TLS->currLVars;
   t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-  STARTLINE_BODY(t_2) = INTOBJ_INT(754);
-  ENDLINE_BODY(t_2) = INTOBJ_INT(758);
+  STARTLINE_BODY(t_2) = INTOBJ_INT(758);
+  ENDLINE_BODY(t_2) = INTOBJ_INT(762);
   FILENAME_BODY(t_2) = FileName;
   BODY_FUNC(t_1) = t_2;
   CHANGED_BAG( TLS->currLVars );
@@ -2869,8 +2886,8 @@ static Obj  HdlrFunc10 (
  t_6 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
  ENVI_FUNC( t_6 ) = TLS->currLVars;
  t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_7) = INTOBJ_INT(775);
- ENDLINE_BODY(t_7) = INTOBJ_INT(775);
+ STARTLINE_BODY(t_7) = INTOBJ_INT(779);
+ ENDLINE_BODY(t_7) = INTOBJ_INT(779);
  FILENAME_BODY(t_7) = FileName;
  BODY_FUNC(t_6) = t_7;
  CHANGED_BAG( TLS->currLVars );
@@ -2888,6 +2905,14 @@ static Obj  HdlrFunc10 (
  CHANGED_BAG( t_3 );
  CALL_2ARGS( t_1, t_2, t_3 );
  
+ /* lk := WRITE_LOCK( OPERATIONS_REGION ); */
+ t_2 = GF_WRITE__LOCK;
+ t_3 = GC_OPERATIONS__REGION;
+ CHECK_BOUND( t_3, "OPERATIONS_REGION" )
+ t_1 = CALL_1ARGS( t_2, t_3 );
+ CHECK_FUNC_RESULT( t_1 )
+ l_lk = t_1;
+ 
  /* ADD_LIST( WRAPPER_OPERATIONS, VALUE_GLOBAL( name ) ); */
  t_1 = GF_ADD__LIST;
  t_2 = GC_WRAPPER__OPERATIONS;
@@ -2898,6 +2923,10 @@ static Obj  HdlrFunc10 (
  t_3 = CALL_1ARGS( t_4, t_5 );
  CHECK_FUNC_RESULT( t_3 )
  CALL_2ARGS( t_1, t_2, t_3 );
+ 
+ /* UNLOCK( lk ); */
+ t_1 = GF_UNLOCK;
+ CALL_1ARGS( t_1, l_lk );
  
  /* InstallOtherMethod( VALUE_GLOBAL( name ), "default method", true, [ domreq, keyreq ], 0, function ( D, key )
       local  known, i, erg;
@@ -2932,8 +2961,8 @@ static Obj  HdlrFunc10 (
  t_6 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
  ENVI_FUNC( t_6 ) = TLS->currLVars;
  t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_7) = INTOBJ_INT(788);
- ENDLINE_BODY(t_7) = INTOBJ_INT(809);
+ STARTLINE_BODY(t_7) = INTOBJ_INT(795);
+ ENDLINE_BODY(t_7) = INTOBJ_INT(816);
  FILENAME_BODY(t_7) = FileName;
  BODY_FUNC(t_6) = t_7;
  CHANGED_BAG( TLS->currLVars );
@@ -3236,8 +3265,8 @@ static Obj  HdlrFunc14 (
  t_5 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
  ENVI_FUNC( t_5 ) = TLS->currLVars;
  t_6 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_6) = INTOBJ_INT(857);
- ENDLINE_BODY(t_6) = INTOBJ_INT(873);
+ STARTLINE_BODY(t_6) = INTOBJ_INT(864);
+ ENDLINE_BODY(t_6) = INTOBJ_INT(880);
  FILENAME_BODY(t_6) = FileName;
  BODY_FUNC(t_5) = t_6;
  CHANGED_BAG( TLS->currLVars );
@@ -3487,7 +3516,8 @@ static Obj  HdlrFunc1 (
  AssGVar( G_INSTALL__METHOD, 0 );
  
  /* BIND_GLOBAL( "INSTALL_METHOD", function ( arglist, check )
-      local  len, opr, info, pos, rel, filters, info1, isstr, flags, i, rank, method, req, reqs, match, j, k, imp, notmatch;
+      local  len, opr, info, pos, rel, filters, info1, isstr, flags, i, rank, method, req, reqs, match, j, k, imp, notmatch, lk;
+      lk := READ_LOCK( OPERATIONS_REGION );
       len := LEN_LIST( arglist );
       if len < 3  then
           Error( "too few arguments given in <arglist>" );
@@ -3621,6 +3651,7 @@ static Obj  HdlrFunc1 (
           fi;
       fi;
       INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method );
+      UNLOCK( lk );
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
@@ -3629,7 +3660,7 @@ static Obj  HdlrFunc1 (
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_4) = INTOBJ_INT(337);
- ENDLINE_BODY(t_4) = INTOBJ_INT(541);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(545);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -3688,8 +3719,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
  ENVI_FUNC( t_2 ) = TLS->currLVars;
  t_3 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_3) = INTOBJ_INT(560);
- ENDLINE_BODY(t_3) = INTOBJ_INT(621);
+ STARTLINE_BODY(t_3) = INTOBJ_INT(564);
+ ENDLINE_BODY(t_3) = INTOBJ_INT(625);
  FILENAME_BODY(t_3) = FileName;
  BODY_FUNC(t_2) = t_3;
  CHANGED_BAG( TLS->currLVars );
@@ -3703,8 +3734,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[9], NargFunc[9], NamsFunc[9], HdlrFunc9 );
  ENVI_FUNC( t_2 ) = TLS->currLVars;
  t_3 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_3) = INTOBJ_INT(624);
- ENDLINE_BODY(t_3) = INTOBJ_INT(630);
+ STARTLINE_BODY(t_3) = INTOBJ_INT(628);
+ ENDLINE_BODY(t_3) = INTOBJ_INT(634);
  FILENAME_BODY(t_3) = FileName;
  BODY_FUNC(t_2) = t_3;
  CHANGED_BAG( TLS->currLVars );
@@ -3715,7 +3746,7 @@ static Obj  HdlrFunc1 (
  AssGVar( G_IsPrimeInt, t_1 );
  
  /* BIND_GLOBAL( "KeyDependentOperation", function ( name, domreq, keyreq, keytest )
-      local  str, oper, attr;
+      local  str, oper, attr, lk;
       if keytest = "prime"  then
           keytest := function ( key )
                 if not IsPrimeInt( key )  then
@@ -3737,7 +3768,9 @@ static Obj  HdlrFunc1 (
             return [  ];
         end );
       DeclareOperation( name, [ domreq, keyreq ] );
+      lk := WRITE_LOCK( OPERATIONS_REGION );
       ADD_LIST( WRAPPER_OPERATIONS, VALUE_GLOBAL( name ) );
+      UNLOCK( lk );
       InstallOtherMethod( VALUE_GLOBAL( name ), "default method", true, [ domreq, keyreq ], 0, function ( D, key )
             local  known, i, erg;
             keytest( key );
@@ -3761,8 +3794,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[10], NargFunc[10], NamsFunc[10], HdlrFunc10 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(750);
- ENDLINE_BODY(t_4) = INTOBJ_INT(810);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(754);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(817);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -3796,8 +3829,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(843);
- ENDLINE_BODY(t_4) = INTOBJ_INT(874);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(850);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(881);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -3875,6 +3908,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "ViewObj", &GC_ViewObj );
  InitFopyGVar( "DO_LOCK", &GF_DO__LOCK );
  InitFopyGVar( "WRITE_LOCK", &GF_WRITE__LOCK );
+ InitFopyGVar( "READ_LOCK", &GF_READ__LOCK );
  InitFopyGVar( "UNLOCK", &GF_UNLOCK );
  InitFopyGVar( "MakeReadOnlyObj", &GF_MakeReadOnlyObj );
  InitCopyGVar( "RUN_IMMEDIATE_METHODS_CHECKS", &GC_RUN__IMMEDIATE__METHODS__CHECKS );
@@ -3892,6 +3926,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "CHECK_INSTALL_METHOD", &GC_CHECK__INSTALL__METHOD );
  InitFopyGVar( "INSTALL_METHOD", &GF_INSTALL__METHOD );
  InitFopyGVar( "DeclareGlobalFunction", &GF_DeclareGlobalFunction );
+ InitCopyGVar( "OPERATIONS_REGION", &GC_OPERATIONS__REGION );
  InitFopyGVar( "EvalString", &GF_EvalString );
  InitCopyGVar( "WRAPPER_OPERATIONS", &GC_WRAPPER__OPERATIONS );
  InitFopyGVar( "INFO_DEBUG", &GF_INFO__DEBUG );
@@ -3916,38 +3951,38 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "CallFuncList", &GF_CallFuncList );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-30525179)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/oper1.g:FileName(-30525179)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-30525179)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-30525179)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-30525179)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-30525179)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-30525179)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-30525179)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-30525179)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-30525179)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-30525179)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-30525179)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-30525179)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-30525179)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-30525179)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-30525179)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-30525179)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-30525179)" );
- InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-30525179)" );
- InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-30525179)" );
- InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-30525179)" );
- InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-30525179)" );
- InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-30525179)" );
- InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-30525179)" );
- InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-30525179)" );
- InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-30525179)" );
- InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-30525179)" );
- InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-30525179)" );
- InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-30525179)" );
- InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-30525179)" );
- InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-30525179)" );
- InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-30525179)" );
+ InitGlobalBag( &DefaultName, "lib/oper1.g:DefaultName(-79117946)" );
+ InitGlobalBag( &FileName, "lib/oper1.g:FileName(-79117946)" );
+ InitHandlerFunc( HdlrFunc1, "lib/oper1.g:HdlrFunc1(-79117946)" );
+ InitGlobalBag( &(NameFunc[1]), "lib/oper1.g:NameFunc[1](-79117946)" );
+ InitHandlerFunc( HdlrFunc2, "lib/oper1.g:HdlrFunc2(-79117946)" );
+ InitGlobalBag( &(NameFunc[2]), "lib/oper1.g:NameFunc[2](-79117946)" );
+ InitHandlerFunc( HdlrFunc3, "lib/oper1.g:HdlrFunc3(-79117946)" );
+ InitGlobalBag( &(NameFunc[3]), "lib/oper1.g:NameFunc[3](-79117946)" );
+ InitHandlerFunc( HdlrFunc4, "lib/oper1.g:HdlrFunc4(-79117946)" );
+ InitGlobalBag( &(NameFunc[4]), "lib/oper1.g:NameFunc[4](-79117946)" );
+ InitHandlerFunc( HdlrFunc5, "lib/oper1.g:HdlrFunc5(-79117946)" );
+ InitGlobalBag( &(NameFunc[5]), "lib/oper1.g:NameFunc[5](-79117946)" );
+ InitHandlerFunc( HdlrFunc6, "lib/oper1.g:HdlrFunc6(-79117946)" );
+ InitGlobalBag( &(NameFunc[6]), "lib/oper1.g:NameFunc[6](-79117946)" );
+ InitHandlerFunc( HdlrFunc7, "lib/oper1.g:HdlrFunc7(-79117946)" );
+ InitGlobalBag( &(NameFunc[7]), "lib/oper1.g:NameFunc[7](-79117946)" );
+ InitHandlerFunc( HdlrFunc8, "lib/oper1.g:HdlrFunc8(-79117946)" );
+ InitGlobalBag( &(NameFunc[8]), "lib/oper1.g:NameFunc[8](-79117946)" );
+ InitHandlerFunc( HdlrFunc9, "lib/oper1.g:HdlrFunc9(-79117946)" );
+ InitGlobalBag( &(NameFunc[9]), "lib/oper1.g:NameFunc[9](-79117946)" );
+ InitHandlerFunc( HdlrFunc10, "lib/oper1.g:HdlrFunc10(-79117946)" );
+ InitGlobalBag( &(NameFunc[10]), "lib/oper1.g:NameFunc[10](-79117946)" );
+ InitHandlerFunc( HdlrFunc11, "lib/oper1.g:HdlrFunc11(-79117946)" );
+ InitGlobalBag( &(NameFunc[11]), "lib/oper1.g:NameFunc[11](-79117946)" );
+ InitHandlerFunc( HdlrFunc12, "lib/oper1.g:HdlrFunc12(-79117946)" );
+ InitGlobalBag( &(NameFunc[12]), "lib/oper1.g:NameFunc[12](-79117946)" );
+ InitHandlerFunc( HdlrFunc13, "lib/oper1.g:HdlrFunc13(-79117946)" );
+ InitGlobalBag( &(NameFunc[13]), "lib/oper1.g:NameFunc[13](-79117946)" );
+ InitHandlerFunc( HdlrFunc14, "lib/oper1.g:HdlrFunc14(-79117946)" );
+ InitGlobalBag( &(NameFunc[14]), "lib/oper1.g:NameFunc[14](-79117946)" );
+ InitHandlerFunc( HdlrFunc15, "lib/oper1.g:HdlrFunc15(-79117946)" );
+ InitGlobalBag( &(NameFunc[15]), "lib/oper1.g:NameFunc[15](-79117946)" );
  
  /* return success */
  return 0;
@@ -4004,6 +4039,7 @@ static Int InitLibrary ( StructInitInfo * module )
  G_ViewObj = GVarName( "ViewObj" );
  G_DO__LOCK = GVarName( "DO_LOCK" );
  G_WRITE__LOCK = GVarName( "WRITE_LOCK" );
+ G_READ__LOCK = GVarName( "READ_LOCK" );
  G_UNLOCK = GVarName( "UNLOCK" );
  G_MakeReadOnlyObj = GVarName( "MakeReadOnlyObj" );
  G_RUN__IMMEDIATE__METHODS__CHECKS = GVarName( "RUN_IMMEDIATE_METHODS_CHECKS" );
@@ -4021,6 +4057,7 @@ static Int InitLibrary ( StructInitInfo * module )
  G_CHECK__INSTALL__METHOD = GVarName( "CHECK_INSTALL_METHOD" );
  G_INSTALL__METHOD = GVarName( "INSTALL_METHOD" );
  G_DeclareGlobalFunction = GVarName( "DeclareGlobalFunction" );
+ G_OPERATIONS__REGION = GVarName( "OPERATIONS_REGION" );
  G_EvalString = GVarName( "EvalString" );
  G_WRAPPER__OPERATIONS = GVarName( "WRAPPER_OPERATIONS" );
  G_INFO__DEBUG = GVarName( "INFO_DEBUG" );
@@ -4049,7 +4086,7 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* information for the functions */
  C_NEW_STRING( DefaultName, 14, "local function" );
- C_NEW_STRING( FileName, 19, "GAPROOT/lib/oper1.g" );
+ C_NEW_STRING( FileName, 11, "lib/oper1.g" );
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;
@@ -4155,6 +4192,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_ViewObj = GVarName( "ViewObj" );
  G_DO__LOCK = GVarName( "DO_LOCK" );
  G_WRITE__LOCK = GVarName( "WRITE_LOCK" );
+ G_READ__LOCK = GVarName( "READ_LOCK" );
  G_UNLOCK = GVarName( "UNLOCK" );
  G_MakeReadOnlyObj = GVarName( "MakeReadOnlyObj" );
  G_RUN__IMMEDIATE__METHODS__CHECKS = GVarName( "RUN_IMMEDIATE_METHODS_CHECKS" );
@@ -4172,6 +4210,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_CHECK__INSTALL__METHOD = GVarName( "CHECK_INSTALL_METHOD" );
  G_INSTALL__METHOD = GVarName( "INSTALL_METHOD" );
  G_DeclareGlobalFunction = GVarName( "DeclareGlobalFunction" );
+ G_OPERATIONS__REGION = GVarName( "OPERATIONS_REGION" );
  G_EvalString = GVarName( "EvalString" );
  G_WRAPPER__OPERATIONS = GVarName( "WRAPPER_OPERATIONS" );
  G_INFO__DEBUG = GVarName( "INFO_DEBUG" );
@@ -4254,11 +4293,11 @@ static Int PostRestore ( StructInitInfo * module )
 /* <name> returns the description of this module */
 static StructInitInfo module = {
  /* type        = */ 2,
- /* name        = */ "GAPROOT/lib/oper1.g",
+ /* name        = */ "lib/oper1.g",
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -30525179,
+ /* crc         = */ -79117946,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,
@@ -4273,4 +4312,3 @@ StructInitInfo * Init__oper1 ( void )
 }
 
 /* compiled code ends here */
-#endif
