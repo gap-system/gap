@@ -513,6 +513,9 @@ BindGlobal("CommandKill@", function(line)
   if thread = fail then
     SystemMessage@("Unknown thread ", line);
     return;
+  elif thread = ActiveThread@ - 1 then
+    SystemMessage@("Cannot kill active thread");
+    return;
   fi;
   KillThread(thread);
 end);
