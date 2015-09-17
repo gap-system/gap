@@ -349,6 +349,8 @@ BIND_GLOBAL( "INSTALL_METHOD",
           method,
           req, reqs, match, j, k, imp, notmatch;
 
+    atomic readonly OPERATIONS_REGION do
+
     # Check the arguments.
     len:= LEN_LIST( arglist );
     if len < 3 then
@@ -538,6 +540,8 @@ BIND_GLOBAL( "INSTALL_METHOD",
 
     # Install the method in the operation.
     INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method );
+
+    od;
 end );
 
 
@@ -776,7 +780,10 @@ BIND_GLOBAL( "KeyDependentOperation",
 
     # Create the wrapper operation that mainly calls the operation.
     DeclareOperation( name, [ domreq, keyreq ] );
+
+    atomic readwrite OPERATIONS_REGION do
     ADD_LIST( WRAPPER_OPERATIONS, VALUE_GLOBAL( name ) );
+    od;
 
     # Install the default method that uses the attribute.
     # (Use `InstallOtherMethod' in order to avoid the warning

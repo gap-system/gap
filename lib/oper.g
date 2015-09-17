@@ -153,8 +153,8 @@ BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "OPERATIONS", [] );
-
+OPERATIONS_REGION := ShareSpecialObj("OPERATIONS_REGION");
+BIND_GLOBAL( "OPERATIONS", LockAndMigrateObj( [], OPERATIONS_REGION) );
 
 #############################################################################
 ##
@@ -172,7 +172,7 @@ BIND_GLOBAL( "OPERATIONS", [] );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "WRAPPER_OPERATIONS", [] );
+BIND_GLOBAL( "WRAPPER_OPERATIONS", LockAndMigrateObj( [], OPERATIONS_REGION) );
 
 
 #############################################################################
@@ -569,8 +569,10 @@ BIND_GLOBAL( "NewOperation", function ( name, filters )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
-    ADD_LIST( OPERATIONS, oper );
-    ADD_LIST( OPERATIONS, [ filt ] );
+    atomic readwrite OPERATIONS_REGION do
+        ADD_LIST( OPERATIONS, oper );
+        ADD_LIST( OPERATIONS, MigrateObj([ filt ], OPERATIONS_REGION ) );
+    od;    
     return oper;
 end );
 
@@ -622,8 +624,10 @@ BIND_GLOBAL( "NewConstructor", function ( name, filters )
     atomic readwrite CONSTRUCTORS do
         ADD_LIST( CONSTRUCTORS, oper );
     od;
-    ADD_LIST( OPERATIONS,   oper );
-    ADD_LIST( OPERATIONS,   [ filt ] );
+    atomic readwrite OPERATIONS_REGION do
+        ADD_LIST( OPERATIONS,   oper );
+        ADD_LIST( OPERATIONS,   MigrateObj([ filt ], OPERATIONS_REGION ) );
+    od;    
     return oper;
 end );
 
@@ -704,6 +708,8 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
       od;
       
+      atomic readwrite OPERATIONS_REGION do
+      
       pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
       if filt in OPERATIONS[ pos+1 ] then
         if not REREADING then
@@ -711,9 +717,11 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
               "for operation `", name, "'\n" );
         fi;
       else
-        ADD_LIST( OPERATIONS[ pos+1 ], filt );
+        ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj( filt, OPERATIONS_REGION) );
       fi;
 
+      od;
+      
     else
 
       # The operation is new.
@@ -755,9 +763,11 @@ BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
-
-    ADD_LIST( OPERATIONS, oper );
-    ADD_LIST( OPERATIONS, [ filt ] );
+    
+    atomic readwrite OPERATIONS_REGION do
+        ADD_LIST( OPERATIONS, oper );
+        ADD_LIST( OPERATIONS, MigrateObj( [ filt ], OPERATIONS_REGION ) );
+    od;
 end );
 
 
@@ -808,8 +818,10 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
       od;
 
-      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      ADD_LIST( OPERATIONS[ pos+1 ], filt );
+      atomic readwrite OPERATIONS_REGION do
+          pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
+          ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj( filt, OPERATIONS_REGION) );
+      od;
 
     else
 
@@ -853,11 +865,11 @@ BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
     
-    atomic readwrite CONSTRUCTORS do
+    atomic readwrite CONSTRUCTORS, OPERATIONS_REGION do
         ADD_LIST( CONSTRUCTORS, oper );
+        ADD_LIST( OPERATIONS,   oper );
+        ADD_LIST( OPERATIONS,   MigrateObj( [ filt ], OPERATIONS_REGION) );
     od;
-    ADD_LIST( OPERATIONS,   oper );
-    ADD_LIST( OPERATIONS,   [ filt ] );
 end );
 
 
@@ -921,15 +933,17 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     # construct setter and tester
     setter := SETTER_FILTER( getter );
     tester := TESTER_FILTER( getter );
-
+    
+    atomic readwrite OPERATIONS_REGION do
     # add getter, setter and tester to the list of operations
     ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
+    ADD_LIST( OPERATIONS, MigrateObj( [ [ FLAGS_FILTER(filter) ] ], OPERATIONS_REGION ) );
     ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS,
-              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_OBJECT ) ] ] );
+    ADD_LIST( OPERATIONS, MigrateObj(
+              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_OBJECT ) ] ], OPERATIONS_REGION ) );
     ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
+    ADD_LIST( OPERATIONS, MigrateObj( [ [ FLAGS_FILTER(filter) ] ], OPERATIONS_REGION ) );
+    od;
 
     # store the information about the filter
     atomic FILTER_REGION do
@@ -1022,11 +1036,13 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
           # add  setter and tester to the list of operations
           setter := SETTER_FILTER( getter );
           tester := TESTER_FILTER( getter );
-
+          
+          atomic readwrite OPERATIONS_REGION do
           ADD_LIST( OPERATIONS, setter );
-          ADD_LIST( OPERATIONS, [ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ] );
+          ADD_LIST( OPERATIONS, MigrateObj([ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ], OPERATIONS_REGION ) );
           ADD_LIST( OPERATIONS, tester );
-          ADD_LIST( OPERATIONS, [ [ flags ] ] );
+          ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
+          od;
 
           # install the default functions
           FILTERS[ FLAG2_FILTER( tester ) ] := tester;
@@ -1079,13 +1095,15 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     setter := SETTER_FILTER( getter );
     tester := TESTER_FILTER( getter );
 
+    atomic readwrite OPERATIONS_REGION do
     ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ [ flags ] ] );
+    ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
     ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, [ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ] );
+    ADD_LIST( OPERATIONS, MigrateObj([ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ], OPERATIONS_REGION ) );
     ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ [ flags ] ] );
-
+    ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
+    od;
+    
     # install the default functions
     atomic FILTER_REGION do
 	FILTERS[ FLAG2_FILTER( tester ) ] := tester;
@@ -1142,7 +1160,7 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
 
     if ISB_GVAR( name ) then
 
-      atomic FILTER_REGION do
+      atomic FILTER_REGION, OPERATIONS_REGION do
 	# The variable exists already.
 	gvar:= VALUE_GLOBAL( name );
 
@@ -1216,12 +1234,12 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
 	fi;
 
 	pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-	ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
+	ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj( [ FLAGS_FILTER( filter ) ], OPERATIONS_REGION ) );
 
 	# also set the extended range for the setter
 	pos:= POS_LIST_DEFAULT( OPERATIONS, Setter(gvar), pos );
-	ADD_LIST( OPERATIONS[ pos+1 ],
-		  [ FLAGS_FILTER( filter),OPERATIONS[pos+1][1][2] ] );
+	ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj(
+		  [ FLAGS_FILTER( filter),OPERATIONS[pos+1][1][2] ], OPERATIONS_REGION ) );
 
       od;
     else
@@ -1285,14 +1303,16 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     # store the property getters
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
 
+    atomic readwrite OPERATIONS_REGION do
     # add getter, setter and tester to the list of operations
     ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
+    ADD_LIST( OPERATIONS, MigrateObj([ [ FLAGS_FILTER(filter) ] ], OPERATIONS_REGION ) );
     ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS,
-              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_BOOL ) ] ] );
+    ADD_LIST( OPERATIONS, MigrateObj(
+              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_BOOL ) ] ], OPERATIONS_REGION ) );
     ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
+    ADD_LIST( OPERATIONS, MigrateObj([ [ FLAGS_FILTER(filter) ] ], OPERATIONS_REGION ) );
+    od;
 
     # install the default functions
     atomic FILTER_REGION do
@@ -1365,13 +1385,15 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     setter := SETTER_FILTER( getter );
     tester := TESTER_FILTER( getter );
 
+    atomic readwrite OPERATIONS_REGION do
     # add getter, setter and tester to the list of operations
     ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ [ flags ] ] );
+    ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
     ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, [ [ flags, FLAGS_FILTER( IS_BOOL ) ] ] );
+    ADD_LIST( OPERATIONS, MigrateObj([ [ flags, FLAGS_FILTER( IS_BOOL ) ] ], OPERATIONS_REGION ) );
     ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ [ flags ] ] );
+    ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
+    od;
 
     # store the property getters
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
@@ -1435,6 +1457,8 @@ BIND_GLOBAL( "DeclareProperty", function ( arg )
     name:= arg[1];
 
     if ISB_GVAR( name ) then
+    
+      atomic readwrite OPERATIONS_REGION do
 
       gvar:= VALUE_GLOBAL( name );
 
@@ -1463,7 +1487,9 @@ BIND_GLOBAL( "DeclareProperty", function ( arg )
       fi;
 
       pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
+      ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj([ FLAGS_FILTER( filter ) ], OPERATIONS_REGION ) );
+      
+      od;
 
     else
 
@@ -1737,10 +1763,12 @@ end );
 
 BIND_GLOBAL( "FLUSH_ALL_METHOD_CACHES", function()
     local i,j;
+    atomic readonly OPERATIONS_REGION do
     for i in [1,3..LEN_LIST(OPERATIONS)-1] do
         for j in [1..6] do
             CHANGED_METHODS_OPERATION(OPERATIONS[i],j);
         od;
+    od;
     od;
 end);
         
