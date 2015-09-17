@@ -347,7 +347,9 @@ BIND_GLOBAL( "INSTALL_METHOD",
           i,
           rank,
           method,
-          req, reqs, match, j, k, imp, notmatch;
+          req, reqs, match, j, k, imp, notmatch, lk;
+
+    lk := READ_LOCK( OPERATIONS_REGION );
 
     # Check the arguments.
     len:= LEN_LIST( arglist );
@@ -538,6 +540,8 @@ BIND_GLOBAL( "INSTALL_METHOD",
 
     # Install the method in the operation.
     INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method );
+
+    UNLOCK( lk );
 end );
 
 
@@ -748,7 +752,7 @@ IsPrimeInt := "2b defined";
 
 BIND_GLOBAL( "KeyDependentOperation",
     function( name, domreq, keyreq, keytest )
-    local str, oper, attr;
+    local str, oper, attr, lk;
 
     if keytest = "prime"  then
       keytest := function( key )
@@ -776,7 +780,10 @@ BIND_GLOBAL( "KeyDependentOperation",
 
     # Create the wrapper operation that mainly calls the operation.
     DeclareOperation( name, [ domreq, keyreq ] );
+
+    lk := WRITE_LOCK( OPERATIONS_REGION );
     ADD_LIST( WRAPPER_OPERATIONS, VALUE_GLOBAL( name ) );
+    UNLOCK( lk );
 
     # Install the default method that uses the attribute.
     # (Use `InstallOtherMethod' in order to avoid the warning
