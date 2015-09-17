@@ -502,8 +502,10 @@ InstallGlobalFunction( FreeGroup, function ( arg )
 
     SetIsWholeFamily( G, true );
 
-    # Store whether the group is trivial.
+    # Store whether the group is trivial / abelian / solvable
     SetIsTrivial( G, Length( names ) = 0 );
+    SetIsAbelian( G, Length( names ) <= 1 );
+    SetIsSolvableGroup( G, Length( names ) <= 1 );
 
     # Store the whole group in the family.
     FamilyObj(G)!.wholeGroup := G;
