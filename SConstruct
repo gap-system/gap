@@ -527,6 +527,7 @@ GAP.Command("src/dbgmacro.c", "etc/dbgmacro.py",
 # If there is a preprocessor defined, run all files through it,
 # generating matching files in the gen/ directory and make them
 # the actual source files instead.
+gen = []
 if preprocess:
   import os, stat
   try: os.mkdir("gen")
@@ -543,5 +544,24 @@ if preprocess:
 if cygwin and GAP["zmq"]:
   libs.append("stdc++")
 
+# Report if Ward failed for any source file
+
+def report(*args, **kwd):
+  failed = []
+  for file in gen:
+    try:
+      fp = open(file)
+      head = fp.readline()
+      fp.close()
+      if head.index("ERROR: Ward") >= 0:
+        failed.append(file)
+    except:
+      pass
+  if len(failed) > 0:
+    files = " file" + (len(failed) != 1 and "s" or "")
+    print "=== warning: ward failed to parse " + str(len(failed)) + files
+
+
 # Build the HPC-GAP binary.
 GAP.Program(build_dir + "/gap", source, LIBS=libs, **options)
+GAP.AddPostAction(build_dir + "/gap", Action("", report))
