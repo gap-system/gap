@@ -488,6 +488,34 @@ source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
 # source = filter(lambda s: not s.startswith("src/c_"), source)
 
+# If we're not using MPI, don't use the MPI code.
+if not GAP["mpi"]:
+  source.remove("src/gapmpi.c")
+
+# Offer a "testward" target to check syntax.
+if "testward" in COMMAND_LINE_TARGETS:
+  ward = GAP["ward"]
+  if not ward:
+    if os.path.exists("../ward/bin/ward"):
+      ward = "../ward"
+    elif os.path.exists("ward/bin/ward"):
+      ward = "ward"
+    else:
+      print("Cannot find ward")
+      Exit(1)
+  if len(COMMAND_LINE_TARGETS) == 1:
+    wardfiles = source
+  else:
+    wardfiles = COMMAND_LINE_TARGETS[:]
+    wardfiles.remove("testward")
+  for file in wardfiles:
+    cmd = ward + "/bin/ward -parseonly" + \
+      make_cc_options("-I", include_path) + make_cc_options("-D", defines) + \
+      " " + file
+    print(cmd)
+    os.system(cmd)
+  Exit(0)
+
 # Generate src/debugmacro.c. It contains functions that wrap important
 # GAP macros to help with debugging on platforms that do not store
 # macros as part of the debugging information.
@@ -495,10 +523,6 @@ if "src/dbgmacro.c" not in source:
   source.append("src/dbgmacro.c")
 GAP.Command("src/dbgmacro.c", "etc/dbgmacro.py",
   "bin/run-python $SOURCE > $TARGET")
-
-# If we're not using MPI, don't use the MPI code.
-if not GAP["mpi"]:
-  source.remove("src/gapmpi.c")
 
 # If there is a preprocessor defined, run all files through it,
 # generating matching files in the gen/ directory and make them
