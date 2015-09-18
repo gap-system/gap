@@ -341,7 +341,7 @@ WaitTask := function(arg)
     od;
   od;
   for task in arg do
-    p := WRITE_LOCK(false, task);
+    p := LOCK(false, task);
     if IsIdenticalObj (p, fail) then
       Error("Could not obtain lock in WaitTask\n");
     fi;
