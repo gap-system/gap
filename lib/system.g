@@ -16,11 +16,11 @@
 ##  When GAP is started with a workspace, the value of `GAPInfo' is kept,
 ##  just some dedicated components are modified via the
 ##  ``post restore functions'' mechanism.
-##  
+##
 
 BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
 
-# do not edit the following three lines. Occurences of `4.dev' and `today' 
+# do not edit the following three lines. Occurences of `4.dev' and `today'
 # will be replaced by string matching by distribution wrapping scripts.
     Version := `"4.dev",
     Date := `"today",
@@ -34,7 +34,7 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
     ),
 
     HasReadGAPRC:= false,
-    
+
     # list of all reserved keywords
     Keywords:=MakeImmutable(ALL_KEYWORDS()),
 
@@ -50,52 +50,66 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
     # admissible command line options
     # (name of the option, default value, descr. strings for help page;
     # if no help string appears then option is not advertised in the help)
+    # These options must be kept in sync with those in system.c, so the help output
+    # for those options is correct
     CommandLineOptionData := `[
-      [ "h", false, "print this help and exit" ],
-      [ "b", false, "disable/enable the banner" ],
-      [ "q", false, "enable/disable quiet mode" ],
-      [ "e", false, "disable/enable quitting on <ctr>-D" ],
-      [ "f", false, "force line editing" ],
-      [ "n", false, "prevent line editing" ],
-      [ "S", false, "disable/enable multi-threaded interface" ],
-      [ "P", "0","<num>", "set number of logical processors" ],
-      [ "G", "0","<num>", "set number of GC threads" ],
-      [ "Z", false, "enforce ordering of region locks" ],
-      [ "E", true, "disable/enable use of readline library (if possible)" ],
-      [ "x", "", "<num>", "set line width" ],
-      [ "y", "", "<num>", "set number of lines" ],
+      rec( short:= "S", default := false, help := ["disable/enable multi-threaded interface"] ),
+      rec( short:= "P", default := "0", arg := "<num>", help := ["set number of logical processors"] ),
+      rec( short:= "G", default := "0", arg := "<num>", help := ["set number of GC threads"] ),
+      rec( short:= "Z", default := false, help := ["enforce ordering of region locks"] ),
+      rec( short:= "h", long := "help", default := false, help := ["print this help and exit"] ),
+      rec( short:= "b", long := "banner", default := false, help := ["disable/enable the banner"] ),
+      rec( short:= "q", long := "quiet", default := false, help := ["enable/disable quiet mode"] ),
+      rec( short:= "e", default := false, help := ["disable/enable quitting on <ctr>-D"] ),
+      rec( short:= "f", default := false, help := ["force line editing"] ),
+      rec( short:= "n", default := false, help := ["prevent line editing"] ),
+      rec( short:= "E", long := "readline", default := true,
+           help := ["disable/enable use of readline library (if", "possible)"] ),
+      rec( short:= "x", long := "width", default := "", arg := "<num>", help := ["set line width"] ),
+      rec( short:= "y", long := "lines", default := "", arg := "<num>", help := ["set number of lines"] ),
       ,
-      [ "g", 0, "show GASMAN messages (full/all/no garbage collections)" ],
-      [ "m", "128m", "<mem>", "set the initial workspace size" ],
-      [ "o", "2g", "<mem>", "set hint for maximal workspace size (GAP may allocate more)" ],
-      [ "K", "0", "<mem>", "set maximal workspace size (GAP never allocates more)" ],
-      [ "c", "0", "<mem>", "set the cache size value" ],
-      [ "s", "4g", "<mem>", "set the initially mapped virtual memory" ],
-      [ "a", "0", "<mem>", "set amount to pre-malloc-ate",
-             "postfix 'k' = *1024, 'm' = *1024*1024, 'g' = *1024*1024*1024" ],
+      rec( short:= "g", long := "gasinfo", default := 0,
+           help := ["show GASMAN messages (full/all/no garbage","collections)"] ),
+      rec( short:= "m", long := "minworkspace", default := "128m", arg := "<mem>",
+           help := ["set the initial workspace size"] ),
+      rec( short:= "o", long := "maxworkspace", default := "2g", arg := "<mem>",
+           help := [ "set hint for maximal workspace size (GAP may", "allocate more)"] ),
+      rec( short:= "K", long := "limitworkspace", default := "0", arg := "<mem>",
+           help := [ "set maximal workspace size (GAP never", "allocates more)"] ),
+      rec( short:= "c", default := "0", arg := "<mem>", help := [ "set the cache size value"] ),
+      rec( short:= "s", default := "4g", arg := "<mem", help := [ "set the initially mapped virtual memory" ] ),
+      rec( short:= "a", default := "0",  arg := "<mem>",help := [ "set amount to pre-malloc-ate",
+             "postfix 'k' = *1024, 'm' = *1024*1024,", "'g' = *1024*1024*1024"] ),
       ,
-      [ "l", [], "<paths>", "set the GAP root paths" ],
-      [ "r", false, "disable/enable user GAP root dir GAPInfo.UserGapRoot" ],
-      [ "A", false, "disable/enable autoloading of suggested GAP packages" ],
-      [ "B", "", "<name>", "current architecture" ],
-      [ "D", false, "enable/disable debugging the loading of files" ],
-      [ "M", false, "disable/enable loading of compiled modules" ],
-      [ "N", false, "unused, for backward compatibility only" ],
-      [ "O", false, "disable/enable loading of obsolete files" ],
-      [ "X", false, "enable/disable CRC checking for compiled modules" ],
-      [ "T", false, "disable/enable break loop" ],
-      [ "i", "", "<file>", "change the name of the init file" ],
+      rec( short:= "l", long := "roots", default := [], arg := "<paths>",
+           help := [ "set the GAP root paths",
+                     "Directories are separated using ';'.",
+                     "Putting ';' on the start/end of list appends",
+                     "directories to the end/start of existing list",
+                     "of root paths" ] ),
+      rec( short:= "r", default := false, help := ["disable/enable user GAP root dir", "GAPInfo.UserGapRoot"] ),
+      rec( short:= "A", default := false, help := ["disable/enable autoloading of suggested", "GAP packages"] ),
+      rec( short:= "B", default := "",    arg := "<name>", help := [ "current architecture"] ),
+      rec( short:= "D", default := false, help := ["enable/disable debugging the loading of files"] ),
+      rec( short:= "M", default := false, help := ["disable/enable loading of compiled modules"] ),
+      rec( short:= "N", default := false, help := ["unused, for backward compatibility only"] ),
+      rec( short:= "O", default := false, help := ["disable/enable loading of obsolete files"] ),
+      rec( short:= "X", default := false, help := ["enable/disable CRC checking for compiled modules"] ),
+      rec( short:= "T", default := false, help := ["disable/enable break loop"] ),
+      rec( short:= "i", default := "", arg := "<file>", help := [ "change the name of the init file"] ),
       ,
-      [ "L", "", "<file>", "restore a saved workspace" ],
-      [ "R", false, "prevent restoring of workspace (ignoring -L)" ],
+      rec( short:= "L", default := "", arg := "<file>", help := [ "restore a saved workspace"] ),
+      rec( short:= "R", default := false, help := ["prevent restoring of workspace (ignoring -L)"] ),
       ,
-      [ "p", false, "enable/disable package output mode" ],
-      [ "E", false ],
-      [ "U", "" ],     # -C -U undocumented options to the compiler
-      [ "z", "20" ],
-      [ "-prof", "", "<file>", "Run ProfileLineByLine(<filename>,\"w\", true) on GAP start" ],
-      [ "-cover", "", "<file>", "Run ProfileLineByLine(<filename>,\"w\", false) on GAP start" ],
-      
+      rec( short:= "p", default := false, help := ["enable/disable package output mode"] ),
+      rec( short := "E", default :=false ),
+      rec( short := "U", default := "" ),     # -C -U undocumented options to the compiler
+      rec( short := "s", default := "4g" ),
+      rec( short := "z", default := "20" ),
+      rec( long := "prof", default := "", arg := "<file>",
+           help := [ "Run ProfileLineByLine(<filename>) on GAP start"] ),
+      rec( long := "cover", default := "", arg := "<file>",
+           help := [ "Run CoverageLineByLine(<filename>) on GAP start"] ),
           ],
     ) ));
   
@@ -172,6 +186,26 @@ BIND_GLOBAL( "InstallAndCallPostRestore", function( func )
 end );
 
 
+#########################################################################
+# For backwards compatability, we make the canonical version of an option
+# its short version if it exists.
+#
+# Set up a map to tell us the canonical name of any command line option
+GAPInfo.CommandLineOptionCanonicalName := rec();
+CallAndInstallPostRestore( function()
+  local option;
+  for option in GAPInfo.CommandLineOptionData do
+    if IsBound(option.short) then
+      GAPInfo.CommandLineOptionCanonicalName.(option.short) := option.short;
+      if IsBound(option.long) then
+        GAPInfo.CommandLineOptionCanonicalName.(option.long) := option.short;
+      fi;
+    else
+        GAPInfo.CommandLineOptionCanonicalName.(option.long) := option.long;
+    fi;
+  od;
+end);
+
 #############################################################################
 ##
 ##  - Set/adjust the kernel specific components.
@@ -182,9 +216,9 @@ end );
 ##
 CallAndInstallPostRestore( function()
     local j, i, CommandLineOptions, CommandLineOptionData,
-          opt, InitFiles, line, word, value;
+          opt, InitFiles, line, word, value, padspace;
 
-    GAPInfo.KernelInfo:= KERNEL_INFO();    
+    GAPInfo.KernelInfo:= KERNEL_INFO();
     GAPInfo.KernelVersion:= GAPInfo.KernelInfo.KERNEL_VERSION;
     GAPInfo.Architecture:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
     GAPInfo.ArchitectureBase:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
@@ -198,21 +232,23 @@ CallAndInstallPostRestore( function()
     if GAPInfo.BytesPerVariable = 4 then
       CommandLineOptionData := SHALLOW_COPY_OBJ( GAPInfo.CommandLineOptionData );
       i := 1;
-      while not(IsBound(CommandLineOptionData[i])) or
-            CommandLineOptionData[i][1] <> "m" do i := i + 1; od;
+      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+            not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
+            GAPInfo.CommandLineOptionData[i].short <> "m" do i := i + 1; od;
       CommandLineOptionData[i] := SHALLOW_COPY_OBJ( CommandLineOptionData[i] );
-      CommandLineOptionData[i][2] := "64m";
+      CommandLineOptionData[i].default := "64m";
       i := 1;
-      while not(IsBound(CommandLineOptionData[i])) or
-            CommandLineOptionData[i][1] <> "o" do i := i + 1; od;
+      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+            not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
+            GAPInfo.CommandLineOptionData[i].short <> "o" do i := i + 1; od;
       CommandLineOptionData[i] := SHALLOW_COPY_OBJ( CommandLineOptionData[i] );
-      CommandLineOptionData[i][2] := "1g";
+      CommandLineOptionData[i].default := "1g";
       i := 1;
-      while not(IsBound(CommandLineOptionData[i])) or
-            CommandLineOptionData[i][1] <> "s" do i := i + 1; od;
+      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+            not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
+            GAPInfo.CommandLineOptionData[i].short <> "s" do i := i + 1; od;
       CommandLineOptionData[i] := SHALLOW_COPY_OBJ( CommandLineOptionData[i] );
-      CommandLineOptionData[i][2] := "1500m";
-      GAPInfo.CommandLineOptionData := `CommandLineOptionData;
+      CommandLineOptionData[i].default := "1500m";
     fi;
 
     # The exact command line which called GAP as list of strings;
@@ -246,14 +282,14 @@ CallAndInstallPostRestore( function()
       for i in [1..LENGTH(GAPInfo.SystemEnvironment.PATH)] do
         if GAPInfo.SystemEnvironment.PATH[i] = ':' then
           if i > j then
-            ADD_LIST_DEFAULT(GAPInfo.DirectoriesSystemPrograms, 
+            ADD_LIST_DEFAULT(GAPInfo.DirectoriesSystemPrograms,
                   `GAPInfo.SystemEnvironment.PATH{[j..i-1]});
           fi;
           j := i+1;
         fi;
       od;
       if j <= LENGTH( GAPInfo.SystemEnvironment.PATH ) then
-        ADD_LIST_DEFAULT( GAPInfo.DirectoriesSystemPrograms, 
+        ADD_LIST_DEFAULT( GAPInfo.DirectoriesSystemPrograms,
             `GAPInfo.SystemEnvironment.PATH{ [ j ..
                 LENGTH( GAPInfo.SystemEnvironment.PATH ) ] } );
       fi;
@@ -262,7 +298,11 @@ CallAndInstallPostRestore( function()
     # the command line options that were given for the current session
     CommandLineOptions:= rec();
     for opt in GAPInfo.CommandLineOptionData do
-      CommandLineOptions.( opt[1] ):= SHALLOW_COPY_OBJ( opt[2] );
+      if IsBound(opt.short) then
+        CommandLineOptions.( opt.short ):= SHALLOW_COPY_OBJ( opt.default );
+      else
+        CommandLineOptions.( opt.long ):= SHALLOW_COPY_OBJ( opt.default );
+      fi;
     od;
 
     InitFiles:= [];
@@ -274,10 +314,14 @@ CallAndInstallPostRestore( function()
       i:= i+1;
       if word[1] = '-' and (LENGTH( word ) = 2 or word[2] = '-') then
         opt:= word{[2..LENGTH(word)]};
-        if not IsBound( CommandLineOptions.( opt ) ) then
+        if opt[1] = '-' then
+          opt := opt{[2..LENGTH(opt)]};
+        fi;
+        if not(IsBound( GAPInfo.CommandLineOptionCanonicalName.( opt ) )) then
           PRINT_TO( "*errout*", "Unrecognised command line option: ",
-                    word, "\n" );
+                      word, "\n" );
         else
+          opt := GAPInfo.CommandLineOptionCanonicalName.( opt );
           value:= CommandLineOptions.( opt );
           if IS_BOOL( value ) then
             CommandLineOptions.( opt ):= not CommandLineOptions.( opt );
@@ -325,6 +369,13 @@ CallAndInstallPostRestore( function()
       InfoRead1:= Print;
     fi;
 
+    padspace := function(strlen, len)
+      local i;
+      for i in [strlen+1..len] do
+        PRINT_TO("*errout*", " ");
+      od;
+    end;
+
     # Evaluate the `-h' option.
     if GAPInfo.CommandLineOptions.h then
       PRINT_TO( "*errout*",
@@ -333,28 +384,54 @@ CallAndInstallPostRestore( function()
         GAPInfo.KernelVersion, "\n\n" );
 
       for i in [ 1 .. LENGTH( GAPInfo.CommandLineOptionData ) ] do
-        if IsBound( GAPInfo.CommandLineOptionData[i] ) then
+        if IsBound( GAPInfo.CommandLineOptionData[i] ) and
+           IsBound( GAPInfo.CommandLineOptionData[i].help ) then
           opt:= GAPInfo.CommandLineOptionData[i];
-          if LENGTH( opt ) > 2 then
-            PRINT_TO( "*errout*", "  -", opt[1]);
-            for j in [1.. 7 - LENGTH(opt[1])] do
-              PRINT_TO("*errout*", " ");
-            od;
-            if LENGTH( opt )  = 3 then
-              PRINT_TO( "*errout*", "         ", opt[3], "\n" );
+
+          # At least one of opt.short or opt.long must be bound
+          if(IsBound(opt.short)) then
+            PRINT_TO("*errout*", " -", opt.short);
+            if(IsBound(opt.long)) then
+              PRINT_TO("*errout*", ", --", opt.long);
+              padspace(4+LENGTH(opt.long), 16);
             else
-              PRINT_TO( "*errout*", opt[3] );
-              for j in [ 1 .. 9 - LENGTH( opt[3] ) ] do
-                PRINT_TO( "*errout*", " " );
-              od;
-              PRINT_TO( "*errout*", opt[4], "\n" );
-              for j in [ 5 .. LENGTH( opt ) ] do
-                PRINT_TO( "*errout*", "              ", opt[j], "\n" );
-              od;
+              padspace(0, 16);
+            fi;
+            if(IsBound(opt.arg)) then
+              PRINT_TO("*errout*", " ", opt.arg);
+              padspace(LENGTH(opt.arg)+1, 8);
+            else
+              padspace(0, 8);
+            fi;
+          else
+            PRINT_TO("*errout*", "   ");
+            # opt.short unbound, opt.long bound
+
+            PRINT_TO("*errout*", "  --", opt.long);
+            padspace(4+LENGTH(opt.long), 16);
+            if(IsBound(opt.arg)) then
+              PRINT_TO("*errout*", " ", opt.arg);
+              padspace(LENGTH(opt.arg)+1, 8);
+            else
+              padspace(0, 8);
             fi;
           fi;
+          if IsBound(opt.long) and LENGTH(opt.long) > 12 then
+            PRINT_TO("*errout*", "\n");
+            padspace(0, 3+16+8+3);
+          else
+            PRINT_TO("*errout*", "   ");
+          fi;
+
+          PRINT_TO("*errout*", opt.help[1], "\n");
+          for j in [2..LENGTH(opt.help)] do
+            padspace(0, 3+16+8+3);
+            PRINT_TO("*errout*", opt.help[j],"\n");
+          od;
         else
-          PRINT_TO( "*errout*", "\n" );
+          if not IsBound(GAPInfo.CommandLineOptionData[i]) then
+            PRINT_TO( "*errout*", "\n" );
+          fi;
         fi;
       od;
 
@@ -421,7 +498,7 @@ end);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ARCH_IS_MAC_OS_X",function()
-  return POSITION_SUBSTRING (GAPInfo.Architecture, "apple-darwin", 0) <> fail 
+  return POSITION_SUBSTRING (GAPInfo.Architecture, "apple-darwin", 0) <> fail
     and IsReadableFile ("/System/Library/CoreServices/Finder.app");
 end);
 
@@ -463,4 +540,3 @@ end);
 #############################################################################
 ##
 #E
-

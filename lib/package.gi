@@ -2178,6 +2178,16 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     fi;
     TestMandat( record, "README_URL", IsString, "a string" );
     TestMandat( record, "PackageInfoURL", IsString, "a string" );
+
+    if TestOption( record, "SourceRepository", IsRecord, "a record" ) then
+      TestMandat( record.SourceRepository, "Type",
+         x -> x in [ "git", "hg", "svn", "cvs" ],
+         Concatenation("one of \"git\", \"hg\", \"svn\", \"cvs\".\n",
+           "If you are using another VCS, please contact GAP developers to extend this list." ) );
+      TestMandat( record.SourceRepository, "URL", IsString, "a string" );
+    fi;
+    TestOption( record, "IssueTrackerURL", IsString, "a string" );
+    TestOption( record, "SupportEmail", IsString, "a string" );
     TestMandat( record, "AbstractHTML", IsString, "a string" );
     TestMandat( record, "PackageWWWHome", IsString, "a string" );
     if TestMandat( record, "PackageDoc",

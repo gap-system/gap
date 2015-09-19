@@ -1699,7 +1699,8 @@ static UInt ParseMemory( Char * s)
 
 
 struct optInfo {
-  Char key[50];
+  Char shortkey;
+  Char longkey[50];
   Int (*handler)(Char **, void *);
   void *otherArg;
   UInt minargs;
@@ -1785,39 +1786,41 @@ static Int preAllocAmount;
 /* These are just the options that need kernel processing. Additional options will be 
    recognised and handled in the library */
 
+/* These options must be kept in sync with those in system.g, so the help output
+   is correct */
 struct optInfo options[] = {
-  { "B",  storeString, &SyArchitecture, 1}, /* default architecture needs to be passed from kernel 
-                                               to library. Might be needed for autoload of compiled files */
-  { "C",  processCompilerArgs, 0, 4}, /* must handle in kernel */
-  { "D",  toggle, &SyDebugLoading, 0}, /* must handle in kernel */
-  { "K",  storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
-  { "L",  storeString, &SyRestoring, 1}, /* must be handled in kernel  */
-  { "M",  toggle, &SyUseModule, 0}, /* must be handled in kernel */
-  { "X",  toggle, &SyCheckCRCCompiledModule, 0}, /* must be handled in kernel */
-  { "R",  unsetString, &SyRestoring, 0}, /* kernel */
-  { "U",  storeString, SyCompileOptions, 1}, /* kernel */
-  { "a",  storeMemory, &preAllocAmount, 1 }, /* kernel -- is this still useful */
-  { "c",  storeMemory, &SyCacheSize, 1 }, /* kernel, unless we provided a hook to set it from library, 
+  { 'B',  "architecture", storeString, &SyArchitecture, 1}, /* default architecture needs to be passed from kernel 
+                                                                  to library. Might be needed for autoload of compiled files */
+  { 'C',  "", processCompilerArgs, 0, 4}, /* must handle in kernel */
+  { 'D',  "debug-loading", toggle, &SyDebugLoading, 0}, /* must handle in kernel */
+  { 'K',  "maximal-workspace", storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
+  { 'L', "", storeString, &SyRestoring, 1}, /* must be handled in kernel  */
+  { 'M', "", toggle, &SyUseModule, 0}, /* must be handled in kernel */
+  { 'X', "", toggle, &SyCheckCRCCompiledModule, 0}, /* must be handled in kernel */
+  { 'R', "", unsetString, &SyRestoring, 0}, /* kernel */
+  { 'U', "", storeString, SyCompileOptions, 1}, /* kernel */
+  { 'a', "", storeMemory, &preAllocAmount, 1 }, /* kernel -- is this still useful */
+  { 'c', "", storeMemory, &SyCacheSize, 1 }, /* kernel, unless we provided a hook to set it from library, 
                                            never seems to be useful */
-  { "e",  toggle, &SyCTRD, 0 }, /* kernel */
-  { "f",  forceLineEditing, (void *)2, 0 }, /* probably library now */
-  { "E",  toggle, &SyUseReadline, 0 }, /* kernel */
-  { "i",  storeString, SySystemInitFile, 1}, /* kernel */
-  { "l",  setGapRootPath, 0, 1}, /* kernel */
-  { "m",  storeMemory2, &SyStorMin, 1 }, /* kernel */
-  { "r",  toggle, &IgnoreGapRC, 0 }, /* kernel */
-  { "s",  storeMemory, &SyAllocPool, 1 }, /* kernel */
-  { "n",  forceLineEditing, 0, 0}, /* prob library */
-  { "o",  storeMemory2, &SyStorMax, 1 }, /* library with new interface */
-  { "p",  toggle, &SyWindow, 0 }, /* ?? */
-  { "q",  toggle, &SyQuiet, 0 }, /* ?? */
-  { "-prof",  enableProfilingAtStartup, 0, 1},    /* enable profiling at startup, has to be kernel to start early enough */
-  { "-cover",  enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup, has to be kernel to start early enough */
-  { "S",  toggle, &ThreadUI, 0 }, /* Thread UI */
-  { "Z",  toggle, &DeadlockCheck, 0 }, /* Thread UI */
-  { "P",  storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
-  { "G",  storePosInteger, &SyNumGCThreads, 1 }, /* Thread UI */
-  { "",0,0}};
+  { 'e', "", toggle, &SyCTRD, 0 }, /* kernel */
+  { 'f', "", forceLineEditing, (void *)2, 0 }, /* probably library now */
+  { 'E', "", toggle, &SyUseReadline, 0 }, /* kernel */
+  { 'i', "", storeString, SySystemInitFile, 1}, /* kernel */
+  { 'l', "roots", setGapRootPath, 0, 1}, /* kernel */
+  { 'm', "", storeMemory2, &SyStorMin, 1 }, /* kernel */
+  { 'r', "", toggle, &IgnoreGapRC, 0 }, /* kernel */
+  { 's', "", storeMemory, &SyAllocPool, 1 }, /* kernel */
+  { 'n', "", forceLineEditing, 0, 0}, /* prob library */
+  { 'o', "", storeMemory2, &SyStorMax, 1 }, /* library with new interface */
+  { 'p', "", toggle, &SyWindow, 0 }, /* ?? */
+  { 'q', "", toggle, &SyQuiet, 0 }, /* ?? */
+  { 'S', "", toggle, &ThreadUI, 0 }, /* Thread UI */
+  { 'Z', "", toggle, &DeadlockCheck, 0 }, /* Thread UI */
+  { 'P', "", storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
+  { 'G', "", storePosInteger, &SyNumGCThreads, 1 }, /* Thread UI */
+  { 0  , "prof",  enableProfilingAtStartup, 0, 1},    /* enable profiling at startup, has to be kernel to start early enough */
+  { 0  , "cover",  enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup, has to be kernel to start early enough */
+  { 0, "",0,0}};
 
 
 
@@ -1969,7 +1972,9 @@ void InitSystem (
           }
 
 
-          for (i = 0; strcmp(options[i].key, argv[1] + 1) && options[i].key[0]; i++)
+          for (i = 0;  options[i].shortkey != argv[1][1] &&
+                       (argv[1][1] != '-' || argv[1][2] == 0 || strcmp(options[i].longkey, argv[1] + 2)) &&
+                       (options[i].shortkey != 0 || options[i].longkey[0] != 0); i++)
             ;
 
         
@@ -2206,4 +2211,3 @@ void MergeSort(void *data, UInt count, UInt width,
 **
 *E  system.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-

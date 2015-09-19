@@ -1628,6 +1628,25 @@ BIND_GLOBAL( "TraceMethods", function( arg )
 
 end );
 
+#############################################################################
+##
+#F  TraceAllMethods( )
+##
+##  <#GAPDoc Label="TraceAllMethods">
+##  <ManSection>
+##  <Func Name="TraceAllMethods" Arg=""/>
+##
+##  <Description>
+##  Invokes <C>TraceMethods</C> for all operations.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "TraceAllMethods", function( arg )
+    local   fun;
+    TraceMethods(OPERATIONS{[ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]});
+end );
+
 
 #############################################################################
 ##
@@ -1641,17 +1660,17 @@ end );
 ##  <Description>
 ##  turns the tracing off for all operations <A>opr1</A>, <A>opr2</A>, ... or
 ##  in the second form, for all operations in the list <A>oprs</A>.
-##  <Example><![CDATA[
+##  <Log><![CDATA[
 ##  gap> TraceMethods( [ Size ] );
 ##  gap> g:= Group( (1,2,3), (1,2) );;
 ##  gap> Size( g );
-##  #I  Size: for a permutation group
+##  #I  Size: for a permutation group at /gap5/lib/grpperm.gi:487
 ##  #I  Setter(Size): system setter
 ##  #I  Size: system getter
 ##  #I  Size: system getter
 ##  6
 ##  gap> UntraceMethods( [ Size ] );
-##  ]]></Example>
+##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1670,6 +1689,25 @@ BIND_GLOBAL( "UntraceMethods", function( arg )
 
 end );
 
+
+#############################################################################
+##
+#F  UntraceAllMethods( <oprs>)
+##
+##  <#GAPDoc Label="UntraceAllMethods">
+##  <ManSection>
+##  <Func Name="UntraceAllMethods" Arg=""/>
+##
+##  <Description>
+##  Equivalent to calling <C>UntraceMethods</C> for all operations.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "UntraceAllMethods", function( arg )
+    local   fun;
+    UntraceMethods(OPERATIONS{[ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]});
+end );
 
 #############################################################################
 ##
@@ -1776,4 +1814,3 @@ end);
 #############################################################################
 ##
 #E
-

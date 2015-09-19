@@ -317,6 +317,7 @@ BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
 BIND_GLOBAL( "StartlineFunc", STARTLINE_FUNC );
 BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 
+
 #############################################################################
 ##
 #F  CallFuncList( <func>, <args> )  . . . . . . . . . . . . . call a function
@@ -597,4 +598,3 @@ InstallMethod( ViewObj,
 #############################################################################
 ##
 #E
-
