@@ -1331,6 +1331,14 @@ DeclareGlobalFunction( "TrivialIterator" );
 ##      of <A>iter</A> but behaves like <A>iter</A> w.r.t. the operations
 ##      <Ref Func="NextIterator"/> and <Ref Func="IsDoneIterator"/>.
 ##  </Item>
+##  <Mark><C>ViewObj</C> and <C>PrintObj</C></Mark>
+##  <Item>
+##      two functions that print what one wants to be printed when
+##      <C>View( <A>iter</A> )</C> or <C>Print( <A>item</A> )</C> is called
+##      (see&nbsp;<Ref Sect="View and Print"/>),
+##      if the <C>ViewObj</C> component is missing then the <C>PrintObj</C>
+##      method is used as a default.
+##  </Item>
 ##  </List>
 ##  Further (data) components may be contained in <A>record</A> which can be
 ##  used by these function.
