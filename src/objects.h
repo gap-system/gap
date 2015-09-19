@@ -220,6 +220,20 @@ static inline Obj prod_intobjs(Int l, Int r)
 
 /****************************************************************************
 **
+*F  RegisterPackageTNUM( <name>, <typeObjFunc> )
+**
+**  Allocates a TNUM for use by a package. The parameters <name> and
+**  <typeObjFunc> are used to initialize the relevant entries in the
+**  InfoBags and TypeObjFuncs arrays.
+**
+**  If allocation fails (e.g. because no more TNUMs are available),
+**  a negative value is returned.
+*/
+Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
+
+
+/****************************************************************************
+**
 
 *S  T_<name>  . . . . . . . . . . . . . . . . symbolic names for object types
 *S  FIRST_CONSTANT_TNUM, LAST_CONSTANT_TNUM . . . . range of constant   types
@@ -338,7 +352,11 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define T_WPOBJ                 (FIRST_EXTERNAL_TNUM+ 3)
      /* #define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 4)
         remove to get parity right */
-#define LAST_EXTERNAL_TNUM      T_WPOBJ
+
+#define FIRST_PACKAGE_TNUM      T_WPOBJ
+#define LAST_PACKAGE_TNUM       (FIRST_PACKAGE_TNUM+49)
+
+#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
 #define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
 #define LAST_VIRTUAL_TNUM LAST_EXTERNAL_TNUM
 
@@ -371,7 +389,6 @@ static inline Obj prod_intobjs(Int l, Int r)
 
 /****************************************************************************
 **
-
 *F  TNUM_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . type of an object
 **
 **  'TNUM_OBJ' returns the type of the object <obj>.
