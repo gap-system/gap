@@ -10,9 +10,6 @@ language: c
 compiler:
   - gcc
   - clang
-branches:
-  only:
-    - /^.*$/
 # Change this to your needs
 addons:
   apt_packages:
