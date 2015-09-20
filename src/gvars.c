@@ -332,7 +332,7 @@ UInt GVarName (
     Int                 len;            /* length of name                  */
 
     /* First see whether it could be namespace-local: */
-    cns = CSTR_STRING(CurrNamespace);
+    cns = CSTR_STRING(TLS(CurrNamespace));
     if (*cns) {   /* only if a namespace is set */
         len = strlen(name);
         if (name[len-1] == NSCHAR) {
@@ -1191,8 +1191,8 @@ static Int InitLibrary (
     SET_LEN_PLIST( TableGVars, SizeGVars );
 
     /* Create the current namespace: */
-    CurrNamespace = NEW_STRING(0);
-    SET_LEN_STRING(CurrNamespace,0);
+    TLS(CurrNamespace) = NEW_STRING(0);
+    SET_LEN_STRING(TLS(CurrNamespace),0);
     
     /* fix C vars                                                          */
     PostRestore( module );

@@ -795,7 +795,7 @@ static inline void CheckRecursionBefore( void )
 #define CHECK_RECURSION_BEFORE CheckRecursionBefore(); PROF_IN_FUNCTION(func);
 
 
-#define CHECK_RECURSION_AFTER     RecursionDepth--; PROF_OUT_FUNCTION(func);   
+#define CHECK_RECURSION_AFTER     TLS(RecursionDepth)--; PROF_OUT_FUNCTION(func);   
 
 
 Obj DoExecFunc0args (
@@ -906,8 +906,8 @@ Obj             DoExecFunc2args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = ReturnObjStat;
-        ReturnObjStat = (Obj)0;
+        returnObjStat = TLS(ReturnObjStat);
+        TLS(ReturnObjStat) = (Obj)0;
         return returnObjStat;
       }
 }

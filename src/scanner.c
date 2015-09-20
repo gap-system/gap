@@ -1933,9 +1933,9 @@ void GetTripStr ( void )
   
   /* print only a partial prompt while reading a triple string           */
   if ( !SyQuiet )
-    Prompt = "> ";
+    TLS(Prompt) = "> ";
   else
-    Prompt = "";
+    TLS(Prompt) = "";
   
   /* read all characters into 'Value'                                    */
   for ( i = 0; i < SAFE_VALUE_SIZE-1 && *In != '\377'; i++ ) {

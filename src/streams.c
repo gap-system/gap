@@ -141,15 +141,15 @@ static Int READ_INNER ( UInt UseUHQ )
 {
     ExecStatus                status;
 
-    if (UserHasQuit)
+    if (TLS(UserHasQuit))
       {
         Pr("Warning: Entering READ with UserHasQuit set, this should never happen, resetting",0,0);
-        UserHasQuit = 0;
+        TLS(UserHasQuit) = 0;
       }
-    if (UserHasQUIT)
+    if (TLS(UserHasQUIT))
       {
         Pr("Warning: Entering READ with UserHasQUIT set, this should never happen, resetting",0,0);
-        UserHasQUIT = 0;
+        TLS(UserHasQUIT) = 0;
       }
     MakeReadWriteGVar(LastReadValueGVar);
     AssGVar( LastReadValueGVar, 0);
@@ -171,18 +171,18 @@ static Int READ_INNER ( UInt UseUHQ )
         else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
           break;
         else if (status == STATUS_QUIT) {
-          RecursionDepth = 0;
-          UserHasQuit = 1;
+          TLS(RecursionDepth) = 0;
+          TLS(UserHasQuit) = 1;
           break;
         }
         else if (status == STATUS_QQUIT) {
-          UserHasQUIT = 1;
+          TLS(UserHasQUIT) = 1;
           break;
         }
-        if (ReadEvalResult)
+        if (TLS(ReadEvalResult))
           {
             MakeReadWriteGVar(LastReadValueGVar);
-            AssGVar( LastReadValueGVar, ReadEvalResult);
+            AssGVar( LastReadValueGVar, TLS(ReadEvalResult));
             MakeReadOnlyGVar(LastReadValueGVar);
           }
         
@@ -270,17 +270,17 @@ static void READ_TEST_OR_LOOP(void)
         AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
 
         /* handle ordinary command                                         */
-        if ( type == 0 && ReadEvalResult != 0 ) {
+        if ( type == 0 && TLS(ReadEvalResult) != 0 ) {
 
             /* remember the value in 'last' and the time in 'time'         */
             AssGVar( Last3, VAL_GVAR( Last2 ) );
             AssGVar( Last2, VAL_GVAR( Last  ) );
-            AssGVar( Last,  ReadEvalResult   );
+            AssGVar( Last,  TLS(ReadEvalResult)   );
 
             /* print the result                                            */
             if ( ! dualSemicolon ) {
                 Bag currLVars = TLS(CurrLVars); /* in case view runs into error */
-                ViewObjHandler( ReadEvalResult );
+                ViewObjHandler( TLS(ReadEvalResult) );
                 SWITCH_TO_OLD_LVARS(currLVars);
             }
         }
@@ -427,11 +427,11 @@ Int READ_GAP_ROOT ( Char * filename )
                 (Int)filename, 0L );
         }
         if ( OpenInput(result.pathname) ) {
-          SySetBuffering(Input->file);
+          SySetBuffering(TLS(Input)->file);
             while ( 1 ) {
                 ClearError();
                 type = ReadEvalCommand(TLS(BottomLVars), 0);
-                if (UserHasQuit || UserHasQUIT)
+                if (TLS(UserHasQuit) || TLS(UserHasQUIT))
                   break;
                 if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
                     Pr( "'return' must not be used in file", 0L, 0L );
@@ -1037,7 +1037,7 @@ Obj FuncREAD_STREAM_LOOP (
         return False;
     }
     if ( catcherrstdout == True )
-      IgnoreStdoutErrout = Output;
+      IgnoreStdoutErrout = TLS(Output);
     else
       IgnoreStdoutErrout = NULL;
 

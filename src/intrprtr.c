@@ -424,7 +424,7 @@ void            IntrFuncCallEnd (
       else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
       else                { val = CALL_XARGS( func, args ); }
 
-      if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+      if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                          READ() and the user quit from a break
                                          loop inside it */
         ReadEvalError();
@@ -2960,8 +2960,8 @@ void            IntrAssDVar (
 
     /* assign the right hand side                                          */
     currLVars = TLS(CurrLVars);
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
+    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
     ASS_HVAR( dvar, rhs );

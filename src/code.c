@@ -81,13 +81,13 @@ Stat OffsBodyStack[1024];
 UInt OffsBodyCount = 0;
 
 static inline void PushOffsBody( void ) {
-  assert(OffsBodyCount <= 1023);
-  OffsBodyStack[OffsBodyCount++] = OffsBody;
+  assert(TLS(OffsBodyCount) <= 1023);
+  TLS(OffsBodyStack)[TLS(OffsBodyCount)++] = TLS(OffsBody);
 }
 
 static inline void PopOffsBody( void ) {
-  assert(OffsBodyCount);
-  OffsBody = OffsBodyStack[--OffsBodyCount];
+  assert(TLS(OffsBodyCount));
+  TLS(OffsBody) = TLS(OffsBodyStack)[--TLS(OffsBodyCount)];
 }
 
 static inline void setup_gapname(TypInputFile* i)
@@ -685,12 +685,12 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    setup_gapname(Input);
-    FILENAME_BODY(body) = Input->gapname;
+    setup_gapname(TLS(Input));
+    FILENAME_BODY(body) = TLS(Input)->gapname;
     STARTLINE_BODY(body) = INTOBJ_INT(startLine);
-    /*    Pr("Coding begin at %s:%d ",(Int)(Input->name),Input->number);
+    /*    Pr("Coding begin at %s:%d ",(Int)(TLS(Input)->name),TLS(Input)->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
-    OffsBody = 0;
+    TLS(OffsBody) = 0;
 
     /* give it an environment                                              */
     ENVI_FUNC( fexp ) = TLS(CurrLVars);
@@ -756,9 +756,9 @@ void CodeFuncExprEnd (
     }
 
     /* make the body smaller                                               */
-    ResizeBag( BODY_FUNC(fexp), OffsBody+NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-    ENDLINE_BODY(BODY_FUNC(fexp)) = INTOBJ_INT(Input->number);
-    /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), Input->number); */
+    ResizeBag( BODY_FUNC(fexp), TLS(OffsBody)+NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+    ENDLINE_BODY(BODY_FUNC(fexp)) = INTOBJ_INT(TLS(Input)->number);
+    /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), TLS(Input)->number); */
 
     /* switch back to the previous function                                */
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
@@ -768,7 +768,7 @@ void CodeFuncExprEnd (
 
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
-    if ( TLS(CurrLVars) != CodeLVars ) {
+    if ( TLS(CurrLVars) != TLS(CodeLVars) ) {
         fexs = FEXS_FUNC( CURR_FUNC );
         len = LEN_PLIST( fexs );
         GROW_PLIST(      fexs, len+1 );
@@ -3375,8 +3375,8 @@ static Int InitLibrary (
   UInt gv;
   Obj cache;
     /* allocate the statements and expressions stacks                      */
-    StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
-    StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
+    TLS(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
+    TLS(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
     FilenameCache = NEW_PLIST(T_PLIST, 0);
 
     GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");

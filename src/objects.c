@@ -854,29 +854,29 @@ void            PrintObj (
 
     lastPV = LastPV;
     LastPV = 1;
-    fromview = (lastPV == 2) && (obj == PrintObjThis);
+    fromview = (lastPV == 2) && (obj == TLS(PrintObjThis));
     
     /* if <obj> is a subobject, then mark and remember the superobject
        unless ViewObj has done that job already */
     
-    if ( !fromview  && 0 < PrintObjDepth ) {
-        if ( IS_MARKABLE(PrintObjThis) )  MARK( PrintObjThis );
-        PrintObjThiss[PrintObjDepth-1]   = PrintObjThis;
-        PrintObjIndices[PrintObjDepth-1] = PrintObjIndex;
+    if ( !fromview  && 0 < TLS(PrintObjDepth) ) {
+        if ( IS_MARKABLE(TLS(PrintObjThis)) )  MARK( TLS(PrintObjThis) );
+        TLS(PrintObjThiss)[TLS(PrintObjDepth)-1]   = TLS(PrintObjThis);
+        TLS(PrintObjIndices)[TLS(PrintObjDepth)-1] = TLS(PrintObjIndex);
     }
 
     /* handle the <obj>                                                    */
     if (!fromview)
       {
-	PrintObjDepth += 1;
-	PrintObjThis   = obj;
-	PrintObjIndex  = 0;
+	TLS(PrintObjDepth) += 1;
+	TLS(PrintObjThis)   = obj;
+	TLS(PrintObjIndex)  = 0;
       }
 
     /* dispatch to the appropriate printing function                       */
-    if ( (! IS_MARKED( PrintObjThis )) ) {
-      if (PrintObjDepth < MAXPRINTDEPTH) {
-        (*PrintObjFuncs[ TNUM_OBJ(PrintObjThis) ])( PrintObjThis );
+    if ( (! IS_MARKED( TLS(PrintObjThis) )) ) {
+      if (TLS(PrintObjDepth) < MAXPRINTDEPTH) {
+        (*PrintObjFuncs[ TNUM_OBJ(TLS(PrintObjThis)) ])( TLS(PrintObjThis) );
       }
       else {
         /* don't recurse if depth too high */
@@ -980,21 +980,21 @@ void            ViewObj (
     LastPV = 2;
     
     /* if <obj> is a subobject, then mark and remember the superobject     */
-    if ( 0 < PrintObjDepth ) {
-        if ( IS_MARKABLE(PrintObjThis) )  MARK( PrintObjThis );
-        PrintObjThiss[PrintObjDepth-1]   = PrintObjThis;
-        PrintObjIndices[PrintObjDepth-1] =  PrintObjIndex;
+    if ( 0 < TLS(PrintObjDepth) ) {
+        if ( IS_MARKABLE(TLS(PrintObjThis)) )  MARK( TLS(PrintObjThis) );
+        TLS(PrintObjThiss)[TLS(PrintObjDepth)-1]   = TLS(PrintObjThis);
+        TLS(PrintObjIndices)[TLS(PrintObjDepth)-1] =  TLS(PrintObjIndex);
     }
 
     /* handle the <obj>                                                    */
-    PrintObjDepth += 1;
-    PrintObjThis   = obj;
-    PrintObjIndex  = 0;
+    TLS(PrintObjDepth) += 1;
+    TLS(PrintObjThis)   = obj;
+    TLS(PrintObjIndex)  = 0;
 
     /* dispatch to the appropriate viewing function                       */
 
-    if ( ! IS_MARKED( PrintObjThis ) ) {
-      if (PrintObjDepth < MAXPRINTDEPTH) {
+    if ( ! IS_MARKED( TLS(PrintObjThis) ) ) {
+      if (TLS(PrintObjDepth) < MAXPRINTDEPTH) {
         DoOperation1Args( ViewObjOper, obj );
       }
       else {

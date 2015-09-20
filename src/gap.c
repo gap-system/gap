@@ -763,13 +763,13 @@ int main (
        ErrorCount = 0; */
   NrImportedGVars = 0;
   NrImportedFuncs = 0;
-  UserHasQUIT = 0;
+  TLS(UserHasQUIT) = 0;
   SystemErrorCode = 0;
-  UserHasQuit = 0;
+  TLS(UserHasQuit) = 0;
     
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv );
-  if (!UserHasQUIT) {           /* maybe the user QUIT from the initial
+  if (!TLS(UserHasQUIT)) {           /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
     if ( SyCompilePlease ) {
@@ -1261,22 +1261,22 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       }
     else 
       plain_args = args;
-    memcpy((void *)&readJmpError, (void *)&ReadJmpError, sizeof(syJmp_buf));
+    memcpy((void *)&readJmpError, (void *)&TLS(ReadJmpError), sizeof(syJmp_buf));
     currLVars = TLS(CurrLVars);
-    currStat = CurrStat;
-    recursionDepth = RecursionDepth;
+    currStat = TLS(CurrStat);
+    recursionDepth = TLS(RecursionDepth);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
-    if (sySetjmp(ReadJmpError)) {
+    if (sySetjmp(TLS(ReadJmpError))) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
-      SET_ELM_PLIST(res,2,ThrownObject);
+      SET_ELM_PLIST(res,2,TLS(ThrownObject));
       CHANGED_BAG(res);
-      ThrownObject = 0;
+      TLS(ThrownObject) = 0;
       TLS(CurrLVars) = currLVars;
-      PtrLVars = PTR_BAG(TLS(CurrLVars));
-      PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-      CurrStat = currStat;
-      RecursionDepth = recursionDepth;
+      TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
+      TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+      TLS(CurrStat) = currStat;
+      TLS(RecursionDepth) = recursionDepth;
     } else {
       switch (LEN_PLIST(plain_args)) {
       case 0: result = CALL_0ARGS(func);
@@ -1379,7 +1379,7 @@ Obj CallErrorInner (
   l = NEW_PLIST(T_PLIST_HOM+IMMUTABLE, 1);
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
-  SET_BRK_CALL_TO(CurrStat);
+  SET_BRK_CALL_TO(TLS(CurrStat));
   return CALL_2ARGS(ErrorInner,r,l);  
 }
 

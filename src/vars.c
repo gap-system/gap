@@ -2993,8 +2993,8 @@ void VarsAfterCollectBags ( void )
 {
   if (TLS(CurrLVars))
     {
-      PtrLVars = PTR_BAG( TLS(CurrLVars) );
-      PtrBody  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+      TLS(PtrLVars) = PTR_BAG( TLS(CurrLVars) );
+      TLS(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
   if (ValGVars)
     PtrGVars = PTR_BAG( ValGVars );

@@ -160,7 +160,7 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
                       sizeof(Obj)*(3+narg+nloc) );
   PtrLVars  = PTR_BAG( TLS(CurrLVars) );
   CURR_FUNC = func;
-  PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
   SET_BRK_CALL_FROM( old );
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {

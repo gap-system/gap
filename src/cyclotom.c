@@ -1502,23 +1502,23 @@ Obj FuncE (
         return INTOBJ_INT(-1);
 
     /* if the root is not known already construct it                       */
-    if ( LastNCyc != INT_INTOBJ(n) ) {
-        LastNCyc = INT_INTOBJ(n);
-        if ( LEN_PLIST(ResultCyc) < LastNCyc ) {
-            GROW_PLIST( ResultCyc, LastNCyc );
-            SET_LEN_PLIST( ResultCyc, LastNCyc );
-            res = &(ELM_PLIST( ResultCyc, 1 ));
-            for ( i = 0; i < LastNCyc; i++ ) { res[i] = INTOBJ_INT(0); }
+    if ( TLS(LastNCyc) != INT_INTOBJ(n) ) {
+        TLS(LastNCyc) = INT_INTOBJ(n);
+        if ( LEN_PLIST(TLS(ResultCyc)) < TLS(LastNCyc) ) {
+            GROW_PLIST( TLS(ResultCyc), TLS(LastNCyc) );
+            SET_LEN_PLIST( TLS(ResultCyc), TLS(LastNCyc) );
+            res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
+            for ( i = 0; i < TLS(LastNCyc); i++ ) { res[i] = INTOBJ_INT(0); }
         }
-        res = &(ELM_PLIST( ResultCyc, 1 ));
+        res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
         res[1] = INTOBJ_INT(1);
-        CHANGED_BAG( ResultCyc );
-        ConvertToBase( LastNCyc );
-        LastECyc = Cyclotomic( LastNCyc, 1 );
+        CHANGED_BAG( TLS(ResultCyc) );
+        ConvertToBase( TLS(LastNCyc) );
+        TLS(LastECyc) = Cyclotomic( TLS(LastNCyc), 1 );
     }
 
     /* return the root                                                     */
-    return LastECyc;
+    return TLS(LastECyc);
 }
 
 
@@ -1969,10 +1969,10 @@ Obj FuncCycList (
 
     /* enlarge the buffer if necessary                                     */
     n = LEN_PLIST( list );
-    if ( LEN_PLIST(ResultCyc) < n ) {
-        GROW_PLIST( ResultCyc, n );
-        SET_LEN_PLIST( ResultCyc, n );
-        res = &(ELM_PLIST( ResultCyc, 1 ));
+    if ( LEN_PLIST(TLS(ResultCyc)) < n ) {
+        GROW_PLIST( TLS(ResultCyc), n );
+        SET_LEN_PLIST( TLS(ResultCyc), n );
+        res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
         for ( i = 0; i < n; i++ ) { res[i] = INTOBJ_INT(0); }
     }
 
@@ -2150,8 +2150,8 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-  LastECyc = (Obj)0;
-  LastNCyc = 0;
+    TLS(LastECyc) = (Obj)0;
+    TLS(LastNCyc) = 0;
   
     /* install the marking function                                        */
     InfoBags[ T_CYC ].name = "cyclotomic";
@@ -2247,9 +2247,9 @@ static Int InitLibrary (
     UInt                i;              /* loop variable                   */
 
     /* create the result buffer                                            */
-    ResultCyc = NEW_PLIST( T_PLIST, 1024 );
-    SET_LEN_PLIST( ResultCyc, 1024 );
-    res = &(ELM_PLIST( ResultCyc, 1 ));
+    TLS(ResultCyc) = NEW_PLIST( T_PLIST, 1024 );
+    SET_LEN_PLIST( TLS(ResultCyc), 1024 );
+    res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
     for ( i = 0; i < 1024; i++ ) { res[i] = INTOBJ_INT(0); }
 
     /* init filters and functions                                          */
