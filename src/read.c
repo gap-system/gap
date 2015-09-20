@@ -54,7 +54,7 @@
 **  the interpretation of  an expression  or  statement lead to an  error (in
 **  which case 'ReadEvalError' jumps back to 'READ_ERROR' via 'longjmp').
 **
-#define READ_ERROR()    (TLS(NrError) || (TLS(NrError)+=sySetjmp(ReadJmpError)))
+#define READ_ERROR()    (TLS(NrError) || (TLS(NrError)+=sySetjmp(TLS(ReadJmpError))))
 */
 /* TL: syJmp_buf         ReadJmpError; */
 
@@ -1106,8 +1106,8 @@ void ReadRecExpr (
 
 
 void ReadFuncExpr (
-		   TypSymbolSet        follow,
-		   Char mode )
+    TypSymbolSet        follow,
+    Char mode)
 {
     volatile Obj        nams;           /* list of local variables names   */
     volatile Obj        name;           /* one local variable name         */
@@ -1124,7 +1124,6 @@ void ReadFuncExpr (
     volatile Bag        locks = 0;      /* locks of the function */
 
     /* begin the function               */
-
     startLine = TLS(Input)->number;
     if (TLS(Symbol) == S_DO) {
 	Match( S_DO, "do", follow );
@@ -1134,14 +1133,15 @@ void ReadFuncExpr (
 	    Match(S_ATOMIC, "atomic", follow);
 	    is_atomic = 1;
 	} else if (mode == 'a') { /* in this case the atomic keyword
-				     was matched away by ReadAtomic before
-				     we realised we were reading an atomic function */
-	    is_atomic = 1;
-	}	  
-	if (is_atomic)
-	  locks = NEW_STRING(4);
-	Match( S_FUNCTION, "function", follow );
-	Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
+                                 was matched away by ReadAtomic before
+                                 we realised we were reading an atomic function */
+        is_atomic = 1;
+    }
+    if (is_atomic)
+        locks = NEW_STRING(4);
+
+    Match( S_FUNCTION, "function", follow );
+    Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
     }
 
     /* make and push the new local variables list (args and locals)        */
@@ -1170,7 +1170,7 @@ void ReadFuncExpr (
 	        lockmode++;
 		CHARS_STRING(locks)[0] = lockmode;
 		SET_LEN_STRING(locks, 1);
-	        GetSymbol();
+                GetSymbol();
 	    }
         C_NEW_STRING_DYN( name, TLS(Value) );
 	    MakeImmutableString(name);
@@ -1302,7 +1302,6 @@ void ReadFuncExpr (
     else
         Match( S_END, "end", follow );
 }
-
 
 
 /****************************************************************************
@@ -1442,8 +1441,8 @@ void ReadFuncExpr0 (
 **  <String>  := " { <any character> } "
 */
 void ReadLiteral (
-		  TypSymbolSet        follow,
-		  Char mode)
+    TypSymbolSet        follow,
+    Char mode)
 {
     switch (TLS(Symbol)) {
 
@@ -1471,7 +1470,6 @@ void ReadLiteral (
         Match( S_TRUE, "true", follow );
         IntrTrueExpr();
         break;
-
 
     /* 'false'                                                             */
     case S_FALSE:
@@ -1526,9 +1524,9 @@ void ReadLiteral (
            of the right kind to end with a . and an associated value and dive
            into the long float literal handler in the parser
          */
-      TLS(Symbol) = S_PARTIALFLOAT1;
-      TLS(Value)[0] = '.';
-      TLS(Value)[1] = '\0';
+        TLS(Symbol) = S_PARTIALFLOAT1;
+        TLS(Value)[0] = '.';
+        TLS(Value)[1] = '\0';
         ReadLongNumber( follow );
         break;
 
@@ -1540,8 +1538,8 @@ void ReadLiteral (
     default:
         Match( S_INT, "literal", follow );
     }
-
 }
+
 
 /****************************************************************************
 **
@@ -1573,7 +1571,7 @@ void ReadAtom (
                           S_REC|S_FUNCTION|S_DO|S_ATOMIC| S_FLOAT | S_DOT |
                          S_MAPTO))
     {
-      ReadLiteral( follow, mode );
+        ReadLiteral( follow, mode );
     }
 
     /* '(' <Expr> ')'                                                      */
@@ -1597,7 +1595,6 @@ void ReadAtom (
         Match( S_INT, "expression", follow );
     }
 }
-
 
 
 /****************************************************************************
@@ -2041,7 +2038,7 @@ void ReadFor (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <Tls->nrError>          */
+    volatile UInt       nrError;        /* copy of <TLS(NrError)>               */
     volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
 
     /* remember the current variables in case of an error                  */
@@ -2152,9 +2149,9 @@ void ReadAtomic (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nexprs;            /* number of statements in body    */
+    volatile UInt       nexprs;         /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>         */
+    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>        */
     volatile int        lockSP;         /* lock stack */
 
     /* remember the current variables in case of an error                  */
@@ -2162,14 +2159,14 @@ void ReadAtomic (
     nrError   = TLS(NrError);
     lockSP    = RegionLockSP();
 
-
     Match( S_ATOMIC, "atomic", follow );
     /* Might just be an atomic function literal as an expression */
     if (TLS(Symbol) == S_FUNCTION) {
       ReadExpr(follow, 'a');
       return; }
-    
-    /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'                                                */        if ( ! READ_ERROR() ) { IntrAtomicBegin(); }
+
+    /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'    */
+    if ( ! READ_ERROR() ) { IntrAtomicBegin(); }
 
     ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
     nexprs = 1;
@@ -2177,11 +2174,10 @@ void ReadAtomic (
       Match( S_COMMA, "comma", follow | S_DO | S_OD );
       ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
       nexprs ++;
-      if (nexprs > MAX_ATOMIC_OBJS)
-	{
-	  SyntaxError("atomic statement can have at most 256 objects to lock");
-	  return;
-	}
+      if (nexprs > MAX_ATOMIC_OBJS) {
+        SyntaxError("atomic statement can have at most 256 objects to lock");
+        return;
+      }
     }
 
     Match( S_DO, "do or comma", STATBEGIN|S_DO|follow );
@@ -2230,7 +2226,7 @@ void ReadRepeat (
 {
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
+    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>        */
 
     /* remember the current variables in case of an error                  */
     currLVars = TLS(CurrLVars);
@@ -2563,24 +2559,24 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     IntrBegin( context );
 
     /* read an expression or an assignment or a procedure call             */
-    if      ( TLS(Symbol) == S_IDENT  ) { ReadExpr(   S_SEMICOLON|S_EOF, 'x' ); }
+    if      (TLS(Symbol) == S_IDENT   ) { ReadExpr(    S_SEMICOLON|S_EOF, 'x' ); }
 
     /* otherwise read a statement                                          */
-    else if (TLS(Symbol)==S_UNBIND    ) { ReadUnbind( S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_INFO      ) { ReadInfo(   S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_ASSERT    ) { ReadAssert( S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_IF        ) { ReadIf(     S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_FOR       ) { ReadFor(    S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_WHILE     ) { ReadWhile(  S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_REPEAT    ) { ReadRepeat( S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_BREAK     ) { ReadBreak(  S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_CONTINUE     ) { ReadContinue(  S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_RETURN    ) { ReadReturn( S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_TRYNEXT   ) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_QUIT      ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_QQUIT     ) { ReadQUIT(   S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_SEMICOLON ) { ReadEmpty(  S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_ATOMIC )    { ReadAtomic(  S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_UNBIND    ) { ReadUnbind(  S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_INFO      ) { ReadInfo(    S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_ASSERT    ) { ReadAssert(  S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_IF        ) { ReadIf(      S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_FOR       ) { ReadFor(     S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_WHILE     ) { ReadWhile(   S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_REPEAT    ) { ReadRepeat(  S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_BREAK     ) { ReadBreak(   S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_CONTINUE  ) { ReadContinue(S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_RETURN    ) { ReadReturn(  S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_TRYNEXT   ) { ReadTryNext( S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_QUIT      ) { ReadQuit(    S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_QQUIT     ) { ReadQUIT(    S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_SEMICOLON ) { ReadEmpty(   S_SEMICOLON|S_EOF      ); }
+    else if (TLS(Symbol)==S_ATOMIC    ) { ReadAtomic(  S_SEMICOLON|S_EOF      ); }
 
     /* otherwise try to read an expression                                 */
     /* Unless the statement is empty, in which case do nothing             */
@@ -2941,8 +2937,8 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
 static Int InitKernel (
     StructInitInfo *    module )
 {
-  TLS(ErrorLVars) = (UInt **)0;
-  TLS(CurrentGlobalForLoopDepth) = 0;
+    TLS(ErrorLVars) = (UInt **)0;
+    TLS(CurrentGlobalForLoopDepth) = 0;
     /* TL: InitGlobalBag( &ReadEvalResult, "src/read.c:ReadEvalResult" ); */
     /* TL: InitGlobalBag( &StackNams,      "src/read.c:StackNams"      ); */
     InitCopyGVar( "GAPInfo", &GAPInfo);
