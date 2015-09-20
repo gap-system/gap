@@ -1392,6 +1392,10 @@ UInt ExecInfo (
 
     selectors = EVAL_EXPR( ARGI_INFO( stat, 1 ) );
     level = EVAL_EXPR( ARGI_INFO( stat, 2) );
+
+    SET_BRK_CALL_TO( stat );
+    SET_BRK_CURR_STAT( stat );
+
     selected = CALL_2ARGS(InfoDecision, selectors, level);
     if (selected == True) {
 
@@ -1436,6 +1440,9 @@ UInt ExecAssert2Args (
     Obj             level;
     Obj             decision;
 
+    SET_BRK_CURR_STAT( stat );
+    SET_BRK_CALL_TO( stat );
+
     level = EVAL_EXPR( ADDR_STAT( stat )[0] );
     if ( ! LT(CurrentAssertionLevel, level) )  {
         decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
@@ -1474,6 +1481,9 @@ UInt ExecAssert3Args (
     Obj             decision;
     Obj             message;
 
+    SET_BRK_CURR_STAT( stat );
+    SET_BRK_CALL_TO( stat );
+    
     level = EVAL_EXPR( ADDR_STAT( stat )[0] );
     if ( ! LT(CurrentAssertionLevel, level) ) {
         decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
