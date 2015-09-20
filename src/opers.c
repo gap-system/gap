@@ -1526,7 +1526,7 @@ Obj FuncCompactTypeIDs( Obj self )
 **
 *F  DoOperation( <name> ) . . . . . . . . . . . . . . .  make a new operation
 */
-/* TL: UInt TLS(CacheIndex); */
+/* TL: UInt CacheIndex; */
 
 Obj Method0Args;
 Obj NextMethod0Args;

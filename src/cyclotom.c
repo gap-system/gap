@@ -145,8 +145,7 @@
 **  resized when need arises.
 */
 
-/* Must be TL 
-Obj ResultCyc; */
+/* TL: Obj ResultCyc; */
 
 void GrowResultCyc(UInt howbig) {
   UInt size = howbig;
@@ -167,13 +166,13 @@ void GrowResultCyc(UInt howbig) {
 
 /****************************************************************************
 **
-*V  TLS(LastECyc)  . . . . . . . . . . . .  last constructed primitive root, local
-*V  TLS(LastNCyc)  . . . . . . . . order of last constructed primitive root, local
+*V  LastECyc  . . . . . . . . . . . .  last constructed primitive root, local
+*V  LastNCyc  . . . . . . . . order of last constructed primitive root, local
 **
-**  'TLS(LastECyc)'  remembers  the primitive  root that  was last  constructed by
+**  'LastECyc'  remembers  the primitive  root that  was last  constructed by
 **  'FunE'.
 **
-**  'TLS(LastNCyc)' is the order of this primitive root.
+**  'LastNCyc' is the order of this primitive root.
 **
 **  These values are used in 'FunE' to avoid constructing the same  primitive
 **  root over and over again.  This might be expensive,  because  $e_n$  need
@@ -181,12 +180,10 @@ void GrowResultCyc(UInt howbig) {
 **
 **  Also these values are used in 'PowCyc' which thereby can recognize if  it
 **  is called to compute $e_n^i$ and can then do this easier by just  putting
-**  1 at the <i>th place in 'TLS(ResultCyc)' and then calling 'Cyclotomic'.
+**  1 at the <i>th place in 'ResultCyc' and then calling 'Cyclotomic'.
 */
-
-/* TL
-Obj  LastECyc;
-UInt TLS(LastNCyc); */
+/* TL: Obj  LastECyc; */
+/* TL: UInt TLS(LastNCyc); */
 
 
 /****************************************************************************
