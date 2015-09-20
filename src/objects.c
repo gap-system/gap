@@ -1743,9 +1743,9 @@ Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     ptr2 = PTR_BAG(obj2);
     ds1 = REGION(obj1);
     ds2 = REGION(obj2);
-    if (!ds1 || ds1->owner != TLS)
+    if (!ds1 || ds1->owner != realTLS)
         ErrorQuit("SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
-    if (!ds2 || ds2->owner != TLS)
+    if (!ds2 || ds2->owner != realTLS)
         ErrorQuit("SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
     REGION(obj2) = ds1;
     PTR_BAG(obj2) = ptr1;
@@ -1786,9 +1786,9 @@ Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     ptr2 = PTR_BAG(obj2);
     ds1 = REGION(obj1);
     ds2 = REGION(obj2);
-    if (ds1 && ds1->owner != TLS)
+    if (ds1 && ds1->owner != realTLS)
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
-    if (ds2 && ds2->owner != TLS)
+    if (ds2 && ds2->owner != realTLS)
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
     REGION(obj2) = ds1;
     PTR_BAG(obj2) = ptr1;

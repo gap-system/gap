@@ -23,7 +23,7 @@ __thread ThreadLocalStorage TLSInstance;
 
 void InitializeTLS()
 {
-  memset((void *)(TLS), 0, sizeof(ThreadLocalStorage));
+  memset((void *)(realTLS), 0, sizeof(ThreadLocalStorage));
 }
 
 void InstallTLSHandler(

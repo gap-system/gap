@@ -202,21 +202,21 @@ void UnlockMonitor(Monitor *monitor)
 void WaitForMonitor(Monitor *monitor)
 {
   struct WaitList node;
-  node.thread = TLS;
+  node.thread = realTLS;
   AddWaitList(monitor, &node);
   UnlockMonitor(monitor);
-  LockThread(TLS);
+  LockThread(realTLS);
   while (!TLS_MACRO(acquiredMonitor))
     WaitThreadSignal();
   if (!TryLockMonitor(monitor))
   {
-    UnlockThread(TLS);
+    UnlockThread(realTLS);
     LockMonitor(monitor);
-    LockThread(TLS);
+    LockThread(realTLS);
   }
   TLS_MACRO(acquiredMonitor) = NULL;
   RemoveWaitList(monitor, &node);
-  UnlockThread(TLS);
+  UnlockThread(realTLS);
 }
 
 static int MonitorOrder(const void *r1, const void *r2)
@@ -294,16 +294,16 @@ UInt WaitForAnyMonitor(UInt count, Monitor **monitors)
   assert(MonitorsAreSorted(count, monitors));
   nodes = alloca(sizeof(struct WaitList) * count);
   for (i=0; i<count; i++)
-    nodes[i].thread = TLS;
+    nodes[i].thread = realTLS;
   for (i=0; i<count; i++)
     AddWaitList(monitors[i], &nodes[i]);
   for (i=0; i<count; i++)
     UnlockMonitor(monitors[i]);
-  LockThread(TLS);
+  LockThread(realTLS);
   while (!TLS_MACRO(acquiredMonitor))
     WaitThreadSignal();
   monitor = TLS_MACRO(acquiredMonitor);
-  UnlockThread(TLS);
+  UnlockThread(realTLS);
   for (i=0; i<count; i++)
   {
     LockMonitor(monitors[i]);
@@ -319,9 +319,9 @@ UInt WaitForAnyMonitor(UInt count, Monitor **monitors)
       UnlockMonitor(monitors[i]);
     }
   }
-  LockThread(TLS);
+  LockThread(realTLS);
   TLS_MACRO(acquiredMonitor) = NULL;
-  UnlockThread(TLS);
+  UnlockThread(realTLS);
   return result;
 }
 
@@ -718,7 +718,7 @@ Obj FuncIsPublic(Obj self, Obj obj) {
 
 Obj FuncIsThreadLocal(Obj self, Obj obj) {
   Region *region = GetRegionOf(obj);
-  return (region && region->fixed_owner && region->owner == TLS) ? True : False;
+  return (region && region->fixed_owner && region->owner == realTLS) ? True : False;
 }
 
 /****************************************************************************
@@ -730,7 +730,7 @@ Obj FuncIsThreadLocal(Obj self, Obj obj) {
 Obj FuncHaveWriteAccess(Obj self, Obj obj)
 {
   Region* region = GetRegionOf(obj);
-  if (region != NULL && (region->owner == TLS || region->alt_owner == TLS))
+  if (region != NULL && (region->owner == realTLS || region->alt_owner == realTLS))
     return True;
   else
     return False;
@@ -1645,7 +1645,7 @@ static void AddToChannel(Channel *channel, Obj obj, int migrate)
   Region *region = REGION(channel->queue);
   UInt i, len;
   if (migrate && IS_BAG_REF(obj) &&
-      REGION(obj) && REGION(obj)->owner == TLS && REGION(obj)->fixed_owner) {
+      REGION(obj) && REGION(obj)->owner == realTLS && REGION(obj)->fixed_owner) {
     children = ReachableObjectsFrom(obj);
     len = children ? LEN_PLIST(children) : 0;
   } else {
@@ -2755,13 +2755,13 @@ static int AutoRetyping = 0;
 static int MigrateObjects(int count, Obj *objects, Region *target, int retype)
 {
   int i;
-  if (retype && IS_BAG_REF(objects[0]) && REGION(objects[0])->owner == TLS
+  if (retype && IS_BAG_REF(objects[0]) && REGION(objects[0])->owner == realTLS
       && AutoRetyping) {
     for (i=0; i<count; i++)
-      if (REGION(objects[i])->owner == TLS)
+      if (REGION(objects[i])->owner == realTLS)
 	CLEAR_OBJ_FLAG(objects[i], TESTED);
     for (i=0; i<count; i++) {
-      if (REGION(objects[i])->owner == TLS && IS_PLIST(objects[i])) {
+      if (REGION(objects[i])->owner == realTLS && IS_PLIST(objects[i])) {
         if (!TEST_OBJ_FLAG(objects[i], TESTED))
 	  TYPE_OBJ(objects[i]);
 	if (retype >= 2)
@@ -2775,7 +2775,7 @@ static int MigrateObjects(int count, Obj *objects, Region *target, int retype)
       region = (Region *)(REGION(objects[i]));
       if (TEST_OBJ_FLAG(objects[i], FIXED_REGION))
         return 0;
-      if (!region || region->owner != TLS || region == ProtectedRegion)
+      if (!region || region->owner != realTLS || region == ProtectedRegion)
         return 0;
     }
   }

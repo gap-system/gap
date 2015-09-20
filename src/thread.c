@@ -70,7 +70,7 @@ int IsSingleThreaded() {
 
 void BeginSingleThreaded() {
   if (ThreadCounter == 1)
-    ProtectedRegion->owner = TLS;
+    ProtectedRegion->owner = realTLS;
 }
 
 void EndSingleThreaded() {
@@ -139,13 +139,13 @@ void FreeTLS(void *address)
 #ifndef DISABLE_GC
 void AddGCRoots()
 {
-  void *p = TLS;
+  void *p = realTLS;
   GC_add_roots(p, (char *)p + sizeof(ThreadLocalStorage));
 }
 
 void RemoveGCRoots()
 {
-  void *p = TLS;
+  void *p = realTLS;
 #if defined(__CYGWIN__) || defined(__CYGWIN32__)
   memset(p, '\0', sizeof(ThreadLocalStorage));
 #else
@@ -178,7 +178,7 @@ static void GrowStack() __attribute__((noinline));
 
 static void GrowStack()
 {
-  char *tls = (char *) TLS;
+  char *tls = (char *) realTLS;
   size_t pagesize = getpagesize();
   /* p needs to be a volatile pointer so that the memory writes are not
    * removed by the optimizer */
@@ -198,7 +198,7 @@ static void SetupTLS()
   GrowStack();
 #endif
   InitializeTLS();
-  MainThreadTLS = TLS;
+  MainThreadTLS = realTLS;
   TLS_MACRO(threadID) = 0;
 }
 
@@ -291,7 +291,7 @@ static void RunThreadedMain2(
   thread_data[0].lock = TLS_MACRO(threadLock);
   thread_data[0].cond = TLS_MACRO(threadSignal);
   thread_data[0].state = TSTATE_RUNNING;
-  thread_data[0].tls = TLS;
+  thread_data[0].tls = realTLS;
   InitSignals();
   if (sySetjmp(TLS_MACRO(threadExit)))
     exit(0);
@@ -351,7 +351,7 @@ void *DispatchThread(void *arg)
   SetRegionName(region, this_thread->region_name);
   TLS_MACRO(threadObject) = this_thread->thread_object;
   pthread_mutex_lock(this_thread->lock);
-  *(ThreadLocalStorage **)(ADDR_OBJ(TLS_MACRO(threadObject))) = TLS;
+  *(ThreadLocalStorage **)(ADDR_OBJ(TLS_MACRO(threadObject))) = realTLS;
   pthread_cond_broadcast(this_thread->cond);
   pthread_mutex_unlock(this_thread->lock);
   this_thread->start(this_thread->arg);
@@ -359,7 +359,7 @@ void *DispatchThread(void *arg)
   region->fixed_owner = 0;
   RegionWriteUnlock(region);
   DestroyTLS();
-  memset(TLS, 0, sizeof(ThreadLocalStorage));
+  memset(realTLS, 0, sizeof(ThreadLocalStorage));
 #ifndef DISABLE_GC
   RemoveGCRoots();
 #endif
@@ -553,7 +553,7 @@ void RegionWriteLock(Region *region)
     pthread_rwlock_wrlock(region->lock);
   }
 
-  region->owner = TLS;
+  region->owner = realTLS;
 }
 
 int RegionTryWriteLock(Region *region)
@@ -565,7 +565,7 @@ int RegionTryWriteLock(Region *region)
       region->locks_acquired++;
     if(TLS_MACRO(CountActive))
       TLS_MACRO(LocksAcquired)++;
-    region->owner = TLS;
+    region->owner = realTLS;
   } else {
     if(region->count_active)
       region->locks_contended++;
@@ -633,7 +633,7 @@ void RegionReadUnlock(Region *region)
 
 void RegionUnlock(Region *region)
 {
-  if (region->owner == TLS)
+  if (region->owner == realTLS)
     region->owner = NULL;
   region->readers[TLS_MACRO(threadID)] = 0;
   pthread_rwlock_unlock(region->lock);
@@ -643,7 +643,7 @@ int IsLocked(Region *region)
 {
   if (!region)
     return 0; /* public region */
-  if (region->owner == TLS)
+  if (region->owner == realTLS)
     return 1;
   if (region->readers[TLS_MACRO(threadID)])
     return 2;

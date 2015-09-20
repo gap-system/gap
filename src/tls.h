@@ -212,7 +212,7 @@ void RunTLSDestructors();
 
 extern __thread ThreadLocalStorage TLSInstance;
 
-#define TLS (&TLSInstance)
+#define realTLS (&TLSInstance)
 
 #else
 
@@ -232,11 +232,11 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
   return (ThreadLocalStorage *) (((uintptr_t) stack) & TLS_MASK);
 }
 
-#define TLS (GetTLS())
+#define realTLS (GetTLS())
 
 #endif /* HAVE_NATIVE_TLS */
 
-#define TLS_MACRO(x) TLS->x
+#define TLS_MACRO(x) realTLS->x
 
 #define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
 
@@ -271,7 +271,7 @@ static ALWAYS_INLINE Bag WriteGuard(Bag bag)
   if (!IS_BAG_REF(bag))
     return bag;
   region = REGION(bag);
-  if (region && region->owner != TLS && region->alt_owner != TLS)
+  if (region && region->owner != realTLS && region->alt_owner != realTLS)
     WriteGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -292,7 +292,7 @@ static ALWAYS_INLINE Bag *WriteGuardByRef(Bag *bagref)
   if (!IS_BAG_REF(bag))
     return bagref;
   region = REGION(bag);
-  if (region && region->owner != TLS && region->alt_owner != TLS)
+  if (region && region->owner != realTLS && region->alt_owner != realTLS)
     WriteGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -314,7 +314,7 @@ static inline int CheckWriteAccess(Bag bag)
   if (!IS_BAG_REF(bag))
     return 1;
   region = REGION(bag);
-  return !(region && region->owner != TLS && region->alt_owner != TLS)
+  return !(region && region->owner != realTLS && region->alt_owner != realTLS)
     || TLS_MACRO(DisableGuards) >= 2;
 }
 
@@ -326,7 +326,7 @@ static inline int CheckExclusiveWriteAccess(Bag bag)
   region = REGION(bag);
   if (!region)
     return 0;
-  return region->owner == TLS || region->alt_owner == TLS
+  return region->owner == realTLS || region->alt_owner == realTLS
     || TLS_MACRO(DisableGuards) >= 2;
 }
 
@@ -341,8 +341,8 @@ static ALWAYS_INLINE Bag ReadGuard(Bag bag)
   if (!IS_BAG_REF(bag))
     return bag;
   region = REGION(bag);
-  if (region && region->owner != TLS &&
-      !region->readers[TLS_MACRO(threadID)] && region->alt_owner != TLS)
+  if (region && region->owner != realTLS &&
+      !region->readers[TLS_MACRO(threadID)] && region->alt_owner != realTLS)
     ReadGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -363,8 +363,8 @@ static ALWAYS_INLINE Bag *ReadGuardByRef(Bag *bagref)
   if (!IS_BAG_REF(bag))
     return bagref;
   region = REGION(bag);
-  if (region && region->owner != TLS &&
-      !region->readers[TLS_MACRO(threadID)] && region->alt_owner != TLS)
+  if (region && region->owner != realTLS &&
+      !region->readers[TLS_MACRO(threadID)] && region->alt_owner != realTLS)
     ReadGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -387,8 +387,8 @@ static ALWAYS_INLINE int CheckReadAccess(Bag bag)
   if (!IS_BAG_REF(bag))
     return 1;
   region = REGION(bag);
-  return !(region && region->owner != TLS &&
-    !region->readers[TLS_MACRO(threadID)] && region->alt_owner != TLS)
+  return !(region && region->owner != realTLS &&
+    !region->readers[TLS_MACRO(threadID)] && region->alt_owner != realTLS)
     || TLS_MACRO(DisableGuards) >= 2;
 }
 

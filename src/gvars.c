@@ -101,13 +101,13 @@ UInt GVarLockDepth;
 void LockGVars(int write) {
   if (PreThreadCreation)
     return;
-  if (GVarLockOwner == TLS) {
+  if (GVarLockOwner == realTLS) {
     GVarLockDepth++;
     return;
   }
   if (write) {
     pthread_rwlock_wrlock(&GVarLock);
-    GVarLockOwner = TLS;
+    GVarLockOwner = realTLS;
     GVarLockDepth = 1;
   }
   else
@@ -117,7 +117,7 @@ void LockGVars(int write) {
 void UnlockGVars() {
   if (PreThreadCreation)
     return;
-  if (GVarLockOwner == TLS) {
+  if (GVarLockOwner == realTLS) {
     GVarLockDepth--;
     if (GVarLockDepth != 0)
       return;
