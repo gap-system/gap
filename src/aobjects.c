@@ -556,7 +556,7 @@ static void ExpandTLRecord(Obj obj)
   do {
     contents = *ADDR_ATOM(obj);
     table = ADDR_OBJ(contents.obj);
-    UInt thread = TLS->threadID;
+    UInt thread = TLS_MACRO(threadID);
     if (thread < (UInt)*table)
       return;
     newcontents.obj = NewBag(T_TLREC_INNER, sizeof(Obj) * (thread+TLR_DATA+1));
@@ -612,8 +612,8 @@ static void PrintTLRecord(Obj obj)
   int comma = 0;
   AtomicObj *deftable;
   int i;
-  if (TLS->threadID < (UInt)table[TLR_SIZE]) {
-    record = table[TLR_DATA+TLS->threadID];
+  if (TLS_MACRO(threadID) < (UInt)table[TLR_SIZE]) {
+    record = table[TLR_DATA+TLS_MACRO(threadID)];
   }
   Pr("%2>rec( %2>", 0L, 0L);
   if (record) {
@@ -1006,7 +1006,7 @@ Obj CopyARecord(Obj obj, Int mutable)
 #if 0
   UInt i, len;
   Obj result;
-  Obj copied = TLS->CopiedObjs;
+  Obj copied = TLS_MACRO(CopiedObjs);
   if (copied)
   {
     len = LEN_PLIST(copied);
@@ -1018,7 +1018,7 @@ Obj CopyARecord(Obj obj, Int mutable)
   else
   {
     len = 0;
-    TLS->CopiedObjs = copied = NEW_PLIST(T_PLIST, 2);
+    TLS_MACRO(CopiedObjs) = copied = NEW_PLIST(T_PLIST, 2);
     SET_LEN_PLIST(copied, 2);
   }
   result = ShallowCopyARecord(obj);
@@ -1047,17 +1047,17 @@ static void UpdateThreadRecord(Obj record, Obj tlrecord)
   Obj inner;
   do {
     inner = GetTLInner(record);
-    ADDR_OBJ(inner)[TLR_DATA+TLS->threadID] = tlrecord;
+    ADDR_OBJ(inner)[TLR_DATA+TLS_MACRO(threadID)] = tlrecord;
     MEMBAR_FULL(); /* memory barrier */
   } while (inner != GetTLInner(record));
   if (tlrecord) {
-    if (TLS->tlRecords)
-      AssPlist(TLS->tlRecords, LEN_PLIST(TLS->tlRecords)+1, record);
+    if (TLS_MACRO(tlRecords))
+      AssPlist(TLS_MACRO(tlRecords), LEN_PLIST(TLS_MACRO(tlRecords))+1, record);
     else {
-      TLS->tlRecords = NEW_PLIST(T_PLIST, 1);
-      SET_LEN_PLIST(TLS->tlRecords, 1);
-      SET_ELM_PLIST(TLS->tlRecords, 1, record);
-      CHANGED_BAG(TLS->tlRecords);
+      TLS_MACRO(tlRecords) = NEW_PLIST(T_PLIST, 1);
+      SET_LEN_PLIST(TLS_MACRO(tlRecords), 1);
+      SET_ELM_PLIST(TLS_MACRO(tlRecords), 1, record);
+      CHANGED_BAG(TLS_MACRO(tlRecords));
     }
   }
 }
@@ -1067,12 +1067,12 @@ Obj GetTLRecordField(Obj record, UInt rnam)
   Obj contents, *table;
   Obj tlrecord;
   UInt pos;
-  Region *savedRegion = TLS->currentRegion;
-  TLS->currentRegion = TLS->threadRegion;
+  Region *savedRegion = TLS_MACRO(currentRegion);
+  TLS_MACRO(currentRegion) = TLS_MACRO(threadRegion);
   ExpandTLRecord(record);
   contents = GetTLInner(record);
   table = ADDR_OBJ(contents);
-  tlrecord = table[TLR_DATA+TLS->threadID];
+  tlrecord = table[TLR_DATA+TLS_MACRO(threadID)];
   if (!tlrecord || !FindPRec(tlrecord, rnam, &pos, 1)) {
     Obj result;
     Obj defrec = table[TLR_DEFAULTS];
@@ -1084,7 +1084,7 @@ Obj GetTLRecordField(Obj record, UInt rnam)
 	UpdateThreadRecord(record, tlrecord);
       }
       AssPRec(tlrecord, rnam, result);
-      TLS->currentRegion = savedRegion;
+      TLS_MACRO(currentRegion) = savedRegion;
       return result;
     } else {
       Obj func;
@@ -1099,7 +1099,7 @@ Obj GetTLRecordField(Obj record, UInt rnam)
 	  result = CALL_0ARGS(func);
 	else
 	  result = CALL_1ARGS(func, record);
-	TLS->currentRegion = savedRegion;
+	TLS_MACRO(currentRegion) = savedRegion;
 	if (!result) {
 	  if (!FindPRec(tlrecord, rnam, &pos, 1))
 	    return 0;
@@ -1108,11 +1108,11 @@ Obj GetTLRecordField(Obj record, UInt rnam)
 	AssPRec(tlrecord, rnam, result);
 	return result;
       }
-      TLS->currentRegion = savedRegion;
+      TLS_MACRO(currentRegion) = savedRegion;
       return 0;
     }
   }
-  TLS->currentRegion = savedRegion;
+  TLS_MACRO(currentRegion) = savedRegion;
   return GET_ELM_PREC(tlrecord, pos);
 }
 
@@ -1136,7 +1136,7 @@ void AssTLRecord(Obj record, UInt rnam, Obj value)
   ExpandTLRecord(record);
   contents = GetTLInner(record);
   table = ADDR_OBJ(contents);
-  tlrecord = table[TLR_DATA+TLS->threadID];
+  tlrecord = table[TLR_DATA+TLS_MACRO(threadID)];
   if (!tlrecord) {
     tlrecord = NEW_PREC(0);
     UpdateThreadRecord(record, tlrecord);
@@ -1151,7 +1151,7 @@ void UnbTLRecord(Obj record, UInt rnam)
   ExpandTLRecord(record);
   contents = GetTLInner(record);
   table = ADDR_OBJ(contents);
-  tlrecord = table[TLR_DATA+TLS->threadID];
+  tlrecord = table[TLR_DATA+TLS_MACRO(threadID)];
   if (!tlrecord) {
     tlrecord = NEW_PREC(0);
     UpdateThreadRecord(record, tlrecord);
@@ -1253,10 +1253,10 @@ static Obj FuncATOMIC_RECORD_REPLACEMENT(Obj self, Obj record, Obj policy)
 }
 
 static Obj CreateTLDefaults(Obj defrec) {
-  Region *saved_region = TLS->currentRegion;
+  Region *saved_region = TLS_MACRO(currentRegion);
   Obj result;
   UInt i;
-  TLS->currentRegion = LimboRegion;
+  TLS_MACRO(currentRegion) = LimboRegion;
   result = NewBag(T_PREC, SIZE_BAG(defrec));
   memcpy(ADDR_OBJ(result), ADDR_OBJ(defrec), SIZE_BAG(defrec));
   for (i = 1; i <= LEN_PREC(defrec); i++) {
@@ -1264,7 +1264,7 @@ static Obj CreateTLDefaults(Obj defrec) {
       CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1, 0));
   }
   CHANGED_BAG(result);
-  TLS->currentRegion = saved_region;
+  TLS_MACRO(currentRegion) = saved_region;
   return NewAtomicRecordFrom(result);
 }
 
@@ -1595,13 +1595,13 @@ void UnbAList(Obj list, Int pos)
 }
 
 void InitAObjectsTLS() {
-  TLS->tlRecords = (Obj) 0;
+  TLS_MACRO(tlRecords) = (Obj) 0;
 }
 
 void DestroyAObjectsTLS() {
   Obj records;
   UInt i, len;
-  records = TLS->tlRecords;
+  records = TLS_MACRO(tlRecords);
   if (records) {
     len = LEN_PLIST(records);
     for (i=1; i<=len; i++)
@@ -1691,7 +1691,7 @@ Obj FuncMakeStrictWriteOnceAtomic(Obj self, Obj obj) {
 
 
 void FuncError(char *message) {
-  ErrorQuit("%s: %s", (Int)(TLS->CurrFuncName), (Int)message);
+  ErrorQuit("%s: %s", (Int)(TLS_MACRO(CurrFuncName)), (Int)message);
 }
 
 Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
@@ -1811,14 +1811,14 @@ Obj BindOnce(Obj obj, Obj index, Obj *new, int eval) {
 
 Obj FuncBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
-  TLS->CurrFuncName = "BindOnce";
+  TLS_MACRO(CurrFuncName) = "BindOnce";
   result = BindOnce(obj, index, &new, 0);
   return result ? result : new;
 }
 
 Obj FuncStrictBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
-  TLS->CurrFuncName = "StrictBindOnce";
+  TLS_MACRO(CurrFuncName) = "StrictBindOnce";
   result = BindOnce(obj, index, &new, 0);
   if (result)
     ErrorQuit("StrictBindOnce: Element already initialized", 0L, 0L);
@@ -1827,21 +1827,21 @@ Obj FuncStrictBindOnce(Obj self, Obj obj, Obj index, Obj new) {
 
 Obj FuncTestBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
-  TLS->CurrFuncName = "TestBindOnce";
+  TLS_MACRO(CurrFuncName) = "TestBindOnce";
   result = BindOnce(obj, index, &new, 0);
   return result ? False : True;
 }
 
 Obj FuncBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
-  TLS->CurrFuncName = "BindOnceExpr";
+  TLS_MACRO(CurrFuncName) = "BindOnceExpr";
   result = BindOnce(obj, index, &new, 1);
   return result ? result : new;
 }
 
 Obj FuncTestBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
-  TLS->CurrFuncName = "TestBindOnceExpr";
+  TLS_MACRO(CurrFuncName) = "TestBindOnceExpr";
   result = BindOnce(obj, index, &new, 1);
   return result ? False : True;
 }

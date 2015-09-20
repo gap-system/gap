@@ -433,7 +433,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
 
 static inline void visitStat(Stat stat)
 {
-  if(profileState.profiledThread != TLS->threadID)
+  if(profileState.profiledThread != TLS_MACRO(threadID))
     return;
   
   int visited = VISITED_STAT(stat);
@@ -503,7 +503,7 @@ void enableAtStartup(char* filename, Int repeats)
     }
     
     profileState.Active = 1;
-    profileState.profiledThread = TLS->threadID;
+    profileState.profiledThread = TLS_MACRO(threadID);
     profileState.lastNotOutputted.line = -1;
 #ifdef HAVE_GETTIMEOFDAY
     profileState.useGetTimeOfDay = 1;
@@ -625,7 +625,7 @@ Obj FuncACTIVATE_PROFILING (
     }
     
     profileState.Active = 1;
-    profileState.profiledThread = TLS->threadID;
+    profileState.profiledThread = TLS_MACRO(threadID);
     profileState.lastNotOutputted.line = -1;
 
     if(wallTime == True) {

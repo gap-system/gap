@@ -135,36 +135,36 @@ void            SyntaxError (
 
     /* open error output                                                   */
     OpenOutput( "*errout*" );
-    assert(TLS->Output);
+    assert(TLS_MACRO(Output));
 
     /* one more error                                                      */
-    TLS->NrError++;
-    TLS->NrErrLine++;
+    TLS_MACRO(NrError)++;
+    TLS_MACRO(NrErrLine)++;
 
     /* do not print a message if we found one already on the current line  */
-    if ( TLS->NrErrLine == 1 )
+    if ( TLS_MACRO(NrErrLine) == 1 )
 
       {
         /* print the message and the filename, unless it is '*stdin*'          */
         Pr( "Syntax error: %s", (Int)msg, 0L );
-        if ( strcmp( "*stdin*", TLS->Input->name ) != 0 )
-          Pr( " in %s line %d", (Int)TLS->Input->name, (Int)TLS->Input->number );
+        if ( strcmp( "*stdin*", TLS_MACRO(Input)->name ) != 0 )
+          Pr( " in %s line %d", (Int)TLS_MACRO(Input)->name, (Int)TLS_MACRO(Input)->number );
         Pr( "\n", 0L, 0L );
 
         /* print the current line                                              */
-        Pr( "%s", (Int)TLS->Input->line, 0L );
+        Pr( "%s", (Int)TLS_MACRO(Input)->line, 0L );
 
         /* print a '^' pointing to the current position                        */
-        for ( i = 0; i < TLS->In - TLS->Input->line - 1; i++ ) {
-          if ( TLS->Input->line[i] == '\t' )  Pr("\t",0L,0L);
+        for ( i = 0; i < TLS_MACRO(In) - TLS_MACRO(Input)->line - 1; i++ ) {
+          if ( TLS_MACRO(Input)->line[i] == '\t' )  Pr("\t",0L,0L);
           else  Pr(" ",0L,0L);
         }
         Pr( "^\n", 0L, 0L );
       }
     /* close error output                                                  */
-    assert(TLS->Output);
+    assert(TLS_MACRO(Output));
     CloseOutput();
-    assert(TLS->Output);
+    assert(TLS_MACRO(Output));
 }
 
 /****************************************************************************
@@ -179,33 +179,33 @@ void            SyntaxWarning (
 
     /* open error output                                                   */
     OpenOutput( "*errout*" );
-    assert(TLS->Output);
+    assert(TLS_MACRO(Output));
 
 
     /* do not print a message if we found one already on the current line  */
-    if ( TLS->NrErrLine == 0 )
+    if ( TLS_MACRO(NrErrLine) == 0 )
 
       {
         /* print the message and the filename, unless it is '*stdin*'          */
         Pr( "Syntax warning: %s", (Int)msg, 0L );
-        if ( strcmp( "*stdin*", TLS->Input->name ) != 0 )
-          Pr( " in %s line %d", (Int)TLS->Input->name, (Int)TLS->Input->number );
+        if ( strcmp( "*stdin*", TLS_MACRO(Input)->name ) != 0 )
+          Pr( " in %s line %d", (Int)TLS_MACRO(Input)->name, (Int)TLS_MACRO(Input)->number );
         Pr( "\n", 0L, 0L );
 
         /* print the current line                                              */
-        Pr( "%s", (Int)TLS->Input->line, 0L );
+        Pr( "%s", (Int)TLS_MACRO(Input)->line, 0L );
 
         /* print a '^' pointing to the current position                        */
-        for ( i = 0; i < TLS->In - TLS->Input->line - 1; i++ ) {
-          if ( TLS->Input->line[i] == '\t' )  Pr("\t",0L,0L);
+        for ( i = 0; i < TLS_MACRO(In) - TLS_MACRO(Input)->line - 1; i++ ) {
+          if ( TLS_MACRO(Input)->line[i] == '\t' )  Pr("\t",0L,0L);
           else  Pr(" ",0L,0L);
         }
         Pr( "^\n", 0L, 0L );
       }
     /* close error output                                                  */
-    assert(TLS->Output);
+    assert(TLS_MACRO(Output));
     CloseOutput();
-    assert(TLS->Output);
+    assert(TLS_MACRO(Output));
 }
 
 
@@ -259,8 +259,8 @@ void Match (
 {
     Char                errmsg [256];
 
-    /* if 'TLS->Symbol' is the expected symbol match it away                    */
-    if ( symbol == TLS->Symbol ) {
+    /* if 'TLS_MACRO(Symbol)' is the expected symbol match it away                    */
+    if ( symbol == TLS_MACRO(Symbol) ) {
         GetSymbol();
     }
 
@@ -269,7 +269,7 @@ void Match (
         strlcpy( errmsg, msg, sizeof(errmsg) );
         strlcat( errmsg, " expected", sizeof(errmsg) );
         SyntaxError( errmsg );
-        while ( ! IS_IN( TLS->Symbol, skipto ) )
+        while ( ! IS_IN( TLS_MACRO(Symbol), skipto ) )
             GetSymbol();
     }
 }
@@ -305,7 +305,7 @@ GVarDescriptor DEFAULT_OUTPUT_STREAM;
 UInt OpenDefaultInput( void )
 {
   Obj func, stream;
-  stream = TLS->DefaultInput;
+  stream = TLS_MACRO(DefaultInput);
   if (stream)
     return OpenInputStream(stream);
   func = GVarOptFunc(&DEFAULT_INPUT_STREAM);
@@ -316,14 +316,14 @@ UInt OpenDefaultInput( void )
     ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0L, 0L);
   if (IsStringConv(stream))
     return OpenInput(CSTR_STRING(stream));
-  TLS->DefaultInput = stream;
+  TLS_MACRO(DefaultInput) = stream;
   return OpenInputStream(stream);
 }
 
 UInt OpenDefaultOutput( void )
 {
   Obj func, stream;
-  stream = TLS->DefaultOutput;
+  stream = TLS_MACRO(DefaultOutput);
   if (stream)
     return OpenOutputStream(stream);
   func = GVarOptFunc(&DEFAULT_OUTPUT_STREAM);
@@ -334,15 +334,15 @@ UInt OpenDefaultOutput( void )
     ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0L, 0L);
   if (IsStringConv(stream))
     return OpenOutput(CSTR_STRING(stream));
-  TLS->DefaultOutput = stream;
+  TLS_MACRO(DefaultOutput) = stream;
   return OpenOutputStream(stream);
 }
 
 TypOutputFile *GetCurrentOutput() {
-  if (!TLS->Output) {
+  if (!TLS_MACRO(Output)) {
     OpenDefaultOutput();
   }
-  return TLS->Output;
+  return TLS_MACRO(Output);
 }
 
 
@@ -386,17 +386,17 @@ UInt OpenInput (
     int sp;
 
     /* fail if we can not handle another open input file                   */
-    if ( TLS->InputFilesSP == (sizeof(TLS->InputFiles)/sizeof(TLS->InputFiles[0]))-1 )
+    if ( TLS_MACRO(InputFilesSP) == (sizeof(TLS_MACRO(InputFiles))/sizeof(TLS_MACRO(InputFiles)[0]))-1 )
         return 0;
 
     /* in test mode keep reading from test input file for break loop input */
-    if ( TLS->TestInput != 0 && ! strcmp( filename, "*errin*" ) )
+    if ( TLS_MACRO(TestInput) != 0 && ! strcmp( filename, "*errin*" ) )
         return 1;
 
     /* Handle *defin*; redirect *errin* to *defin* if the default
      * channel is already open. */
     if (! SyStrcmp(filename, "*defin*") ||
-        (! SyStrcmp(filename, "*errin*") && TLS->DefaultInput) )
+        (! SyStrcmp(filename, "*errin*") && TLS_MACRO(DefaultInput)) )
         return OpenDefaultInput();
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
@@ -404,33 +404,33 @@ UInt OpenInput (
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( TLS->InputFilesSP != 0 ) {
-        TLS->Input->ptr    = TLS->In;
-        TLS->Input->symbol = TLS->Symbol;
+    if ( TLS_MACRO(InputFilesSP) != 0 ) {
+        TLS_MACRO(Input)->ptr    = TLS_MACRO(In);
+        TLS_MACRO(Input)->symbol = TLS_MACRO(Symbol);
     }
 
     /* enter the file identifier and the file name                         */
-    sp = TLS->InputFilesSP++;
-    if (!TLS->InputFiles[sp])
+    sp = TLS_MACRO(InputFilesSP)++;
+    if (!TLS_MACRO(InputFiles)[sp])
     {
-      TLS->InputFiles[sp] = NewInput();
+      TLS_MACRO(InputFiles)[sp] = NewInput();
     }
-    TLS->Input = TLS->InputFiles[sp];
-    TLS->Input->isstream = 0;
-    TLS->Input->file = file;
-    TLS->Input->name[0] = '\0';
+    TLS_MACRO(Input) = TLS_MACRO(InputFiles)[sp];
+    TLS_MACRO(Input)->isstream = 0;
+    TLS_MACRO(Input)->file = file;
+    TLS_MACRO(Input)->name[0] = '\0';
     if (strcmp("*errin*", filename) && strcmp("*stdin*", filename))
-      TLS->Input->echo = 0;
+      TLS_MACRO(Input)->echo = 0;
     else
-      TLS->Input->echo = 1;
-    strlcpy( TLS->Input->name, filename, sizeof(TLS->Input->name) );
-    TLS->Input->gapname = (Obj) 0;
+      TLS_MACRO(Input)->echo = 1;
+    strlcpy( TLS_MACRO(Input)->name, filename, sizeof(TLS_MACRO(Input)->name) );
+    TLS_MACRO(Input)->gapname = (Obj) 0;
 
     /* start with an empty line and no symbol                              */
-    TLS->In = TLS->Input->line;
-    TLS->In[0] = TLS->In[1] = '\0';
-    TLS->Symbol = S_ILLEGAL;
-    TLS->Input->number = 1;
+    TLS_MACRO(In) = TLS_MACRO(Input)->line;
+    TLS_MACRO(In)[0] = TLS_MACRO(In)[1] = '\0';
+    TLS_MACRO(Symbol) = S_ILLEGAL;
+    TLS_MACRO(Input)->number = 1;
 
     /* indicate success                                                    */
     return 1;
@@ -450,42 +450,42 @@ UInt OpenInputStream (
 {
     int sp;
     /* fail if we can not handle another open input file                   */
-    if ( TLS->InputFilesSP == (sizeof(TLS->InputFiles)/sizeof(TLS->InputFiles[0]))-1 )
+    if ( TLS_MACRO(InputFilesSP) == (sizeof(TLS_MACRO(InputFiles))/sizeof(TLS_MACRO(InputFiles)[0]))-1 )
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( TLS->InputFilesSP != 0 ) {
-        TLS->Input->ptr    = TLS->In;
-        TLS->Input->symbol = TLS->Symbol;
+    if ( TLS_MACRO(InputFilesSP) != 0 ) {
+        TLS_MACRO(Input)->ptr    = TLS_MACRO(In);
+        TLS_MACRO(Input)->symbol = TLS_MACRO(Symbol);
     }
 
     /* enter the file identifier and the file name                         */
-    sp = TLS->InputFilesSP++;
-    if (!TLS->InputFiles[sp])
+    sp = TLS_MACRO(InputFilesSP)++;
+    if (!TLS_MACRO(InputFiles)[sp])
     {
-      TLS->InputFiles[sp] = NewInput();
+      TLS_MACRO(InputFiles)[sp] = NewInput();
     }
-    TLS->Input = TLS->InputFiles[sp];
-    TLS->Input->isstream = 1;
-    TLS->Input->stream = stream;
-    TLS->Input->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
-    if (TLS->Input->isstringstream) {
-        TLS->Input->sline = ADDR_OBJ(stream)[2];
-        TLS->Input->spos = INT_INTOBJ(ADDR_OBJ(stream)[1]);
+    TLS_MACRO(Input) = TLS_MACRO(InputFiles)[sp];
+    TLS_MACRO(Input)->isstream = 1;
+    TLS_MACRO(Input)->stream = stream;
+    TLS_MACRO(Input)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
+    if (TLS_MACRO(Input)->isstringstream) {
+        TLS_MACRO(Input)->sline = ADDR_OBJ(stream)[2];
+        TLS_MACRO(Input)->spos = INT_INTOBJ(ADDR_OBJ(stream)[1]);
     }
     else {
-        TLS->Input->sline = 0;
+        TLS_MACRO(Input)->sline = 0;
     }
-    TLS->Input->name[0] = '\0';
-    TLS->Input->file = -1;
-    TLS->Input->echo = 0;
-    strlcpy( TLS->Input->name, "stream", sizeof(TLS->Input->name) );
+    TLS_MACRO(Input)->name[0] = '\0';
+    TLS_MACRO(Input)->file = -1;
+    TLS_MACRO(Input)->echo = 0;
+    strlcpy( TLS_MACRO(Input)->name, "stream", sizeof(TLS_MACRO(Input)->name) );
 
     /* start with an empty line and no symbol                              */
-    TLS->In = TLS->Input->line;
-    TLS->In[0] = TLS->In[1] = '\0';
-    TLS->Symbol = S_ILLEGAL;
-    TLS->Input->number = 1;
+    TLS_MACRO(In) = TLS_MACRO(Input)->line;
+    TLS_MACRO(In)[0] = TLS_MACRO(In)[1] = '\0';
+    TLS_MACRO(Symbol) = S_ILLEGAL;
+    TLS_MACRO(Input)->number = 1;
 
     /* indicate success                                                    */
     return 1;
@@ -510,26 +510,26 @@ UInt OpenInputStream (
 UInt CloseInput ( void )
 {
     /* refuse to close the initial input file                              */
-    if ( TLS->InputFilesSP <= 1)
+    if ( TLS_MACRO(InputFilesSP) <= 1)
         return 1;
 
     /* refuse to close the test input file                                 */
-    if ( TLS->Input == TLS->TestInput )
+    if ( TLS_MACRO(Input) == TLS_MACRO(TestInput) )
         return 0;
 
     /* close the input file                                                */
-    if ( ! TLS->Input->isstream ) {
-        SyFclose( TLS->Input->file );
+    if ( ! TLS_MACRO(Input)->isstream ) {
+        SyFclose( TLS_MACRO(Input)->file );
     }
 
     /* don't keep GAP objects alive unnecessarily */
-    TLS->Input->gapname = 0;
-    TLS->Input->sline = 0;
+    TLS_MACRO(Input)->gapname = 0;
+    TLS_MACRO(Input)->sline = 0;
 
     /* revert to last file                                                 */
-    TLS->Input = TLS->InputFiles[--TLS->InputFilesSP-1];
-    TLS->In     = TLS->Input->ptr;
-    TLS->Symbol = TLS->Input->symbol;
+    TLS_MACRO(Input) = TLS_MACRO(InputFiles)[--TLS_MACRO(InputFilesSP)-1];
+    TLS_MACRO(In)     = TLS_MACRO(Input)->ptr;
+    TLS_MACRO(Symbol) = TLS_MACRO(Input)->symbol;
 
     /* indicate success                                                    */
     return 1;
@@ -543,9 +543,9 @@ UInt CloseInput ( void )
 
 void FlushRestOfInputLine( void )
 {
-  TLS->In[0] = TLS->In[1] = '\0';
-  /* TLS->Input->number = 1; */
-  TLS->Symbol = S_ILLEGAL;
+  TLS_MACRO(In)[0] = TLS_MACRO(In)[1] = '\0';
+  /* TLS_MACRO(Input)->number = 1; */
+  TLS_MACRO(Symbol) = S_ILLEGAL;
 }
 
 
@@ -559,7 +559,7 @@ UInt OpenTest (
     const Char *        filename )
 {
     /* do not allow to nest test files                                     */
-    if ( TLS->TestInput != 0 )
+    if ( TLS_MACRO(TestInput) != 0 )
         return 0;
 
     /* try to open the file as input file                                  */
@@ -567,9 +567,9 @@ UInt OpenTest (
         return 0;
 
     /* remember this is a test input                                       */
-    TLS->TestInput   = TLS->Input;
-    TLS->TestOutput  = TLS->Output;
-    TLS->TestLine[0] = '\0';
+    TLS_MACRO(TestInput)   = TLS_MACRO(Input);
+    TLS_MACRO(TestOutput)  = TLS_MACRO(Output);
+    TLS_MACRO(TestLine)[0] = '\0';
 
     /* indicate success                                                    */
     return 1;
@@ -585,7 +585,7 @@ UInt OpenTestStream (
     Obj                 stream )
 {
     /* do not allow to nest test files                                     */
-    if ( TLS->TestInput != 0 )
+    if ( TLS_MACRO(TestInput) != 0 )
         return 0;
 
     /* try to open the file as input file                                  */
@@ -593,9 +593,9 @@ UInt OpenTestStream (
         return 0;
 
     /* remember this is a test input                                       */
-    TLS->TestInput   = TLS->Input;
-    TLS->TestOutput  = TLS->Output;
-    TLS->TestLine[0] = '\0';
+    TLS_MACRO(TestInput)   = TLS_MACRO(Input);
+    TLS_MACRO(TestOutput)  = TLS_MACRO(Output);
+    TLS_MACRO(TestLine)[0] = '\0';
 
     /* indicate success                                                    */
     return 1;
@@ -610,27 +610,27 @@ UInt OpenTestStream (
 UInt CloseTest ( void )
 {
     /* refuse to a non test file                                           */
-    if ( TLS->TestInput != TLS->Input )
+    if ( TLS_MACRO(TestInput) != TLS_MACRO(Input) )
         return 0;
 
     /* close the input file                                                */
-    if ( ! TLS->Input->isstream ) {
-        SyFclose( TLS->Input->file );
+    if ( ! TLS_MACRO(Input)->isstream ) {
+        SyFclose( TLS_MACRO(Input)->file );
     }
 
     /* don't keep GAP objects alive unnecessarily */
-    TLS->Input->gapname = 0;
-    TLS->Input->sline = 0;
+    TLS_MACRO(Input)->gapname = 0;
+    TLS_MACRO(Input)->sline = 0;
 
     /* revert to last file                                                 */
-    TLS->Input = TLS->InputFiles[--TLS->InputFilesSP-1];
-    TLS->In     = TLS->Input->ptr;
-    TLS->Symbol = TLS->Input->symbol;
+    TLS_MACRO(Input) = TLS_MACRO(InputFiles)[--TLS_MACRO(InputFilesSP)-1];
+    TLS_MACRO(In)     = TLS_MACRO(Input)->ptr;
+    TLS_MACRO(Symbol) = TLS_MACRO(Input)->symbol;
 
     /* we are no longer in test mode                                       */
-    TLS->TestInput   = 0;
-    TLS->TestOutput  = 0;
-    TLS->TestLine[0] = '\0';
+    TLS_MACRO(TestInput)   = 0;
+    TLS_MACRO(TestOutput)  = 0;
+    TLS_MACRO(TestLine)[0] = '\0';
 
     /* indicate success                                                    */
     return 1;
@@ -660,17 +660,17 @@ UInt OpenLog (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->InputLog != 0 || TLS->OutputLog != 0 )
+    if ( TLS_MACRO(InputLog) != 0 || TLS_MACRO(OutputLog) != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->LogFile.file = SyFopen( filename, "w" );
-    TLS->LogFile.isstream = 0;
-    if ( TLS->LogFile.file == -1 )
+    TLS_MACRO(LogFile).file = SyFopen( filename, "w" );
+    TLS_MACRO(LogFile).isstream = 0;
+    if ( TLS_MACRO(LogFile).file == -1 )
         return 0;
 
-    TLS->InputLog  = &TLS->LogFile;
-    TLS->OutputLog = &TLS->LogFile;
+    TLS_MACRO(InputLog)  = &TLS_MACRO(LogFile);
+    TLS_MACRO(OutputLog) = &TLS_MACRO(LogFile);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -690,16 +690,16 @@ UInt OpenLogStream (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->InputLog != 0 || TLS->OutputLog != 0 )
+    if ( TLS_MACRO(InputLog) != 0 || TLS_MACRO(OutputLog) != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->LogStream.isstream = 1;
-    TLS->LogStream.stream = stream;
-    TLS->LogStream.file = -1;
+    TLS_MACRO(LogStream).isstream = 1;
+    TLS_MACRO(LogStream).stream = stream;
+    TLS_MACRO(LogStream).file = -1;
 
-    TLS->InputLog  = &TLS->LogStream;
-    TLS->OutputLog = &TLS->LogStream;
+    TLS_MACRO(InputLog)  = &TLS_MACRO(LogStream);
+    TLS_MACRO(OutputLog) = &TLS_MACRO(LogStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -720,15 +720,15 @@ UInt OpenLogStream (
 UInt CloseLog ( void )
 {
     /* refuse to close a non existent logfile                              */
-    if ( TLS->InputLog == 0 || TLS->OutputLog == 0 || TLS->InputLog != TLS->OutputLog )
+    if ( TLS_MACRO(InputLog) == 0 || TLS_MACRO(OutputLog) == 0 || TLS_MACRO(InputLog) != TLS_MACRO(OutputLog) )
         return 0;
 
     /* close the logfile                                                   */
-    if ( ! TLS->InputLog->isstream ) {
-        SyFclose( TLS->InputLog->file );
+    if ( ! TLS_MACRO(InputLog)->isstream ) {
+        SyFclose( TLS_MACRO(InputLog)->file );
     }
-    TLS->InputLog  = 0;
-    TLS->OutputLog = 0;
+    TLS_MACRO(InputLog)  = 0;
+    TLS_MACRO(OutputLog) = 0;
 
     /* indicate success                                                    */
     return 1;
@@ -757,16 +757,16 @@ UInt OpenInputLog (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->InputLog != 0 )
+    if ( TLS_MACRO(InputLog) != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->InputLogFile.file = SyFopen( filename, "w" );
-    TLS->InputLogFile.isstream = 0;
-    if ( TLS->InputLogFile.file == -1 )
+    TLS_MACRO(InputLogFile).file = SyFopen( filename, "w" );
+    TLS_MACRO(InputLogFile).isstream = 0;
+    if ( TLS_MACRO(InputLogFile).file == -1 )
         return 0;
 
-    TLS->InputLog = &TLS->InputLogFile;
+    TLS_MACRO(InputLog) = &TLS_MACRO(InputLogFile);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -786,15 +786,15 @@ UInt OpenInputLogStream (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->InputLog != 0 )
+    if ( TLS_MACRO(InputLog) != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->InputLogStream.isstream = 1;
-    TLS->InputLogStream.stream = stream;
-    TLS->InputLogStream.file = -1;
+    TLS_MACRO(InputLogStream).isstream = 1;
+    TLS_MACRO(InputLogStream).stream = stream;
+    TLS_MACRO(InputLogStream).file = -1;
 
-    TLS->InputLog = &TLS->InputLogStream;
+    TLS_MACRO(InputLog) = &TLS_MACRO(InputLogStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -815,19 +815,19 @@ UInt OpenInputLogStream (
 UInt CloseInputLog ( void )
 {
     /* refuse to close a non existent logfile                              */
-    if ( TLS->InputLog == 0 )
+    if ( TLS_MACRO(InputLog) == 0 )
         return 0;
 
     /* refuse to close a log opened with LogTo */
-    if (TLS->InputLog == TLS->OutputLog)
+    if (TLS_MACRO(InputLog) == TLS_MACRO(OutputLog))
       return 0;
     
     /* close the logfile                                                   */
-    if ( ! TLS->InputLog->isstream ) {
-        SyFclose( TLS->InputLog->file );
+    if ( ! TLS_MACRO(InputLog)->isstream ) {
+        SyFclose( TLS_MACRO(InputLog)->file );
     }
 
-    TLS->InputLog = 0;
+    TLS_MACRO(InputLog) = 0;
 
     /* indicate success                                                    */
     return 1;
@@ -856,16 +856,16 @@ UInt OpenOutputLog (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->OutputLog != 0 )
+    if ( TLS_MACRO(OutputLog) != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->OutputLogFile.file = SyFopen( filename, "w" );
-    TLS->OutputLogFile.isstream = 0;
-    if ( TLS->OutputLogFile.file == -1 )
+    TLS_MACRO(OutputLogFile).file = SyFopen( filename, "w" );
+    TLS_MACRO(OutputLogFile).isstream = 0;
+    if ( TLS_MACRO(OutputLogFile).file == -1 )
         return 0;
 
-    TLS->OutputLog = &TLS->OutputLogFile;
+    TLS_MACRO(OutputLog) = &TLS_MACRO(OutputLogFile);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -885,15 +885,15 @@ UInt OpenOutputLogStream (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->OutputLog != 0 )
+    if ( TLS_MACRO(OutputLog) != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->OutputLogStream.isstream = 1;
-    TLS->OutputLogStream.stream = stream;
-    TLS->OutputLogStream.file = -1;
+    TLS_MACRO(OutputLogStream).isstream = 1;
+    TLS_MACRO(OutputLogStream).stream = stream;
+    TLS_MACRO(OutputLogStream).file = -1;
 
-    TLS->OutputLog = &TLS->OutputLogStream;
+    TLS_MACRO(OutputLog) = &TLS_MACRO(OutputLogStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -915,19 +915,19 @@ UInt OpenOutputLogStream (
 UInt CloseOutputLog ( void )
 {
     /* refuse to close a non existent logfile                              */
-    if ( TLS->OutputLog == 0 )
+    if ( TLS_MACRO(OutputLog) == 0 )
         return 0;
 
     /* refuse to close a log opened with LogTo */
-    if (TLS->OutputLog == TLS->InputLog)
+    if (TLS_MACRO(OutputLog) == TLS_MACRO(InputLog))
       return 0;
 
     /* close the logfile                                                   */
-    if ( ! TLS->OutputLog->isstream ) {
-        SyFclose( TLS->OutputLog->file );
+    if ( ! TLS_MACRO(OutputLog)->isstream ) {
+        SyFclose( TLS_MACRO(OutputLog)->file );
     }
 
-    TLS->OutputLog = 0;
+    TLS_MACRO(OutputLog) = 0;
 
     /* indicate success                                                    */
     return 1;
@@ -969,24 +969,24 @@ UInt OpenOutput (
     int sp;
 
     /* do nothing for stdout and errout if catched */
-    if ( TLS->Output != NULL && TLS->IgnoreStdoutErrout == TLS->Output &&
+    if ( TLS_MACRO(Output) != NULL && TLS_MACRO(IgnoreStdoutErrout) == TLS_MACRO(Output) &&
           ( strcmp( filename, "*errout*" ) == 0
            || strcmp( filename, "*stdout*" ) == 0 ) ) {
         return 1;
     }
 
     /* fail if we can not handle another open output file                  */
-    if ( TLS->OutputFilesSP == sizeof(TLS->OutputFiles)/sizeof(TLS->OutputFiles[0]))
+    if ( TLS_MACRO(OutputFilesSP) == sizeof(TLS_MACRO(OutputFiles))/sizeof(TLS_MACRO(OutputFiles)[0]))
         return 0;
 
     /* in test mode keep printing to test output file for breakloop output */
-    if ( TLS->TestInput != 0 && ! SyStrcmp( filename, "*errout*" ) )
+    if ( TLS_MACRO(TestInput) != 0 && ! SyStrcmp( filename, "*errout*" ) )
         return 1;
 
     /* Handle *defout* specially; also, redirect *errout* if we already
      * have a default channel open. */
     if ( ! SyStrcmp( filename, "*defout*" ) ||
-         (! SyStrcmp( filename, "*errout*" ) && TLS->threadID != 0) )
+         (! SyStrcmp( filename, "*errout*" ) && TLS_MACRO(threadID) != 0) )
         return OpenDefaultOutput();
 
     /* try to open the file                                                */
@@ -995,21 +995,21 @@ UInt OpenOutput (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    sp = TLS->OutputFilesSP++;
-    if (!TLS->OutputFiles[sp])
+    sp = TLS_MACRO(OutputFilesSP)++;
+    if (!TLS_MACRO(OutputFiles)[sp])
     {
-      TLS->OutputFiles[sp] = NewOutput();
+      TLS_MACRO(OutputFiles)[sp] = NewOutput();
     }
-    TLS->Output = TLS->OutputFiles[sp];
-    TLS->Output->file     = file;
-    TLS->Output->line[0]  = '\0';
-    TLS->Output->pos      = 0;
-    TLS->Output->indent   = 0;
-    TLS->Output->isstream = 0;
-    TLS->Output->format   = 1;
+    TLS_MACRO(Output) = TLS_MACRO(OutputFiles)[sp];
+    TLS_MACRO(Output)->file     = file;
+    TLS_MACRO(Output)->line[0]  = '\0';
+    TLS_MACRO(Output)->pos      = 0;
+    TLS_MACRO(Output)->indent   = 0;
+    TLS_MACRO(Output)->isstream = 0;
+    TLS_MACRO(Output)->format   = 1;
 
     /* variables related to line splitting, very bad place to split        */
-    TLS->Output->hints[0] = -1;
+    TLS_MACRO(Output)->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
@@ -1030,27 +1030,27 @@ UInt OpenOutputStream (
 {
     int sp;
     /* fail if we can not handle another open output file                  */
-    if ( TLS->OutputFilesSP == sizeof(TLS->OutputFiles)/sizeof(TLS->OutputFiles[0]))
+    if ( TLS_MACRO(OutputFilesSP) == sizeof(TLS_MACRO(OutputFiles))/sizeof(TLS_MACRO(OutputFiles)[0]))
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    sp = TLS->OutputFilesSP++;
-    if (!TLS->OutputFiles[sp])
+    sp = TLS_MACRO(OutputFilesSP)++;
+    if (!TLS_MACRO(OutputFiles)[sp])
     {
-      TLS->OutputFiles[sp] = NewOutput();
+      TLS_MACRO(OutputFiles)[sp] = NewOutput();
     }
 
-    TLS->Output = TLS->OutputFiles[sp];
-    TLS->Output->stream   = stream;
-    TLS->Output->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
-    TLS->Output->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
-    TLS->Output->line[0]  = '\0';
-    TLS->Output->pos      = 0;
-    TLS->Output->indent   = 0;
-    TLS->Output->isstream = 1;
+    TLS_MACRO(Output) = TLS_MACRO(OutputFiles)[sp];
+    TLS_MACRO(Output)->stream   = stream;
+    TLS_MACRO(Output)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
+    TLS_MACRO(Output)->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
+    TLS_MACRO(Output)->line[0]  = '\0';
+    TLS_MACRO(Output)->pos      = 0;
+    TLS_MACRO(Output)->indent   = 0;
+    TLS_MACRO(Output)->isstream = 1;
 
     /* variables related to line splitting, very bad place to split        */
-    TLS->Output->hints[0] = -1;
+    TLS_MACRO(Output)->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
@@ -1079,30 +1079,30 @@ UInt CloseOutput ( void )
     /* silently refuse to close the test output file this is probably
          an attempt to close *errout* which is silently not opened, so
          lets silently not close it  */
-    if ( TLS->Output == TLS->TestOutput )
+    if ( TLS_MACRO(Output) == TLS_MACRO(TestOutput) )
         return 1;
     /* and similarly */
-    if ( TLS->IgnoreStdoutErrout == TLS->Output )
+    if ( TLS_MACRO(IgnoreStdoutErrout) == TLS_MACRO(Output) )
         return 1;
 
     /* refuse to close the initial output file '*stdout*'                  */
-    if ( TLS->OutputFilesSP <= 1 && TLS->Output->isstream
-         && TLS->DefaultOutput == TLS->Output->stream)
+    if ( TLS_MACRO(OutputFilesSP) <= 1 && TLS_MACRO(Output)->isstream
+         && TLS_MACRO(DefaultOutput) == TLS_MACRO(Output)->stream)
       return 1;
 
 
     /* flush output and close the file                                     */
     Pr( "%c", (Int)'\03', 0L );
-    if ( ! TLS->Output->isstream ) {
-      SyFclose( TLS->Output->file );
+    if ( ! TLS_MACRO(Output)->isstream ) {
+      SyFclose( TLS_MACRO(Output)->file );
     }
 
     /* revert to previous output file and indicate success                 */
-    --TLS->OutputFilesSP;
-    if (TLS->OutputFilesSP)
-      TLS->Output = TLS->OutputFiles[TLS->OutputFilesSP-1];
+    --TLS_MACRO(OutputFilesSP);
+    if (TLS_MACRO(OutputFilesSP))
+      TLS_MACRO(Output) = TLS_MACRO(OutputFiles)[TLS_MACRO(OutputFilesSP)-1];
     else
-      TLS->Output = 0;
+      TLS_MACRO(Output) = 0;
     return 1;
 }
 
@@ -1125,11 +1125,11 @@ UInt OpenAppend (
     int sp;
 
     /* fail if we can not handle another open output file                  */
-    if ( TLS->OutputFilesSP == sizeof(TLS->OutputFiles)/sizeof(TLS->OutputFiles[0]))
+    if ( TLS_MACRO(OutputFilesSP) == sizeof(TLS_MACRO(OutputFiles))/sizeof(TLS_MACRO(OutputFiles)[0]))
         return 0;
 
     /* in test mode keep printing to test output file for breakloop output */
-    if ( TLS->TestInput != 0 && ! strcmp( filename, "*errout*" ) )
+    if ( TLS_MACRO(TestInput) != 0 && ! strcmp( filename, "*errout*" ) )
         return 1;
     
     if ( ! SyStrcmp( filename, "*defout*") )
@@ -1141,21 +1141,21 @@ UInt OpenAppend (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    sp = TLS->OutputFilesSP++;
-    if (!TLS->OutputFiles[sp])
+    sp = TLS_MACRO(OutputFilesSP)++;
+    if (!TLS_MACRO(OutputFiles)[sp])
     {
-      TLS->OutputFiles[sp] = NewOutput();
+      TLS_MACRO(OutputFiles)[sp] = NewOutput();
     }
 
-    TLS->Output = TLS->OutputFiles[sp];
-    TLS->Output->file     = file;
-    TLS->Output->line[0]  = '\0';
-    TLS->Output->pos      = 0;
-    TLS->Output->indent   = 0;
-    TLS->Output->isstream = 0;
+    TLS_MACRO(Output) = TLS_MACRO(OutputFiles)[sp];
+    TLS_MACRO(Output)->file     = file;
+    TLS_MACRO(Output)->line[0]  = '\0';
+    TLS_MACRO(Output)->pos      = 0;
+    TLS_MACRO(Output)->indent   = 0;
+    TLS_MACRO(Output)->isstream = 0;
 
     /* variables related to line splitting, very bad place to split        */
-    TLS->Output->hints[0] = -1;
+    TLS_MACRO(Output)->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
@@ -1200,9 +1200,9 @@ static Int GetLine2 (
     UInt                    length )
 {
     if ( ! input ) {
-      input = TLS->Input;
+      input = TLS_MACRO(Input);
       if ( ! input ) OpenDefaultInput();
-      input = TLS->Input;
+      input = TLS_MACRO(Input);
     }
 
     if ( input->isstream ) {
@@ -1289,43 +1289,43 @@ Char GetLine ( void )
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
     /* if the GAP function `PrintPromptHook' is defined then it is called  */
     /* for printing the prompt, see also `EndLineHook'                     */
-    if ( ! TLS->Input->isstream ) {
-       if ( TLS->Input->file == 0 ) {
+    if ( ! TLS_MACRO(Input)->isstream ) {
+       if ( TLS_MACRO(Input)->file == 0 ) {
             if ( ! SyQuiet ) {
-                if (TLS->Output->pos > 0)
+                if (TLS_MACRO(Output)->pos > 0)
                     Pr("\n", 0L, 0L);
                 if ( PrintPromptHook )
                      Call0ArgsInNewReader( PrintPromptHook );
                 else
-                     Pr( "%s%c", (Int)TLS->Prompt, (Int)'\03' );
+                     Pr( "%s%c", (Int)TLS_MACRO(Prompt), (Int)'\03' );
             } else
                 Pr( "%c", (Int)'\03', 0L );
         }
-        else if ( TLS->Input->file == 2 ) {
-            if (TLS->Output->pos > 0)
+        else if ( TLS_MACRO(Input)->file == 2 ) {
+            if (TLS_MACRO(Output)->pos > 0)
                 Pr("\n", 0L, 0L);
             if ( PrintPromptHook )
                  Call0ArgsInNewReader( PrintPromptHook );
             else
-                 Pr( "%s%c", (Int)TLS->Prompt, (Int)'\03' );
+                 Pr( "%s%c", (Int)TLS_MACRO(Prompt), (Int)'\03' );
         }
     }
 
     /* bump the line number                                                */
-    if ( TLS->Input->line < TLS->In && (*(TLS->In-1) == '\n' || *(TLS->In-1) == '\r') ) {
-        TLS->Input->number++;
+    if ( TLS_MACRO(Input)->line < TLS_MACRO(In) && (*(TLS_MACRO(In)-1) == '\n' || *(TLS_MACRO(In)-1) == '\r') ) {
+        TLS_MACRO(Input)->number++;
     }
 
-    /* initialize 'TLS->In', no errors on this line so far                      */
-    TLS->In = TLS->Input->line;  TLS->In[0] = '\0';
-    TLS->NrErrLine = 0;
+    /* initialize 'TLS_MACRO(In)', no errors on this line so far                      */
+    TLS_MACRO(In) = TLS_MACRO(Input)->line;  TLS_MACRO(In)[0] = '\0';
+    TLS_MACRO(NrErrLine) = 0;
 
     /* read a line from an ordinary input file                             */
-    if ( TLS->TestInput != TLS->Input ) {
+    if ( TLS_MACRO(TestInput) != TLS_MACRO(Input) ) {
 
         /* try to read a line                                              */
-        if ( ! GetLine2( TLS->Input, TLS->Input->line, sizeof(TLS->Input->line) ) ) {
-            TLS->In[0] = '\377';  TLS->In[1] = '\0';
+        if ( ! GetLine2( TLS_MACRO(Input), TLS_MACRO(Input)->line, sizeof(TLS_MACRO(Input)->line) ) ) {
+            TLS_MACRO(In)[0] = '\377';  TLS_MACRO(In)[1] = '\0';
         }
 
 
@@ -1333,10 +1333,10 @@ Char GetLine ( void )
            (if not inside reading long string which may have line
            or chunk from GetLine starting with '?')                        */
 
-        if ( TLS->In[0] == '?' && TLS->HelpSubsOn == 1) {
-            strlcpy( buf, TLS->In+1, sizeof(buf) );
-            strcpy( TLS->In, "HELP(\"" );
-            for ( p = TLS->In+6,  q = buf;  *q;  q++ ) {
+        if ( TLS_MACRO(In)[0] == '?' && TLS_MACRO(HelpSubsOn) == 1) {
+            strlcpy( buf, TLS_MACRO(In)+1, sizeof(buf) );
+            strcpy( TLS_MACRO(In), "HELP(\"" );
+            for ( p = TLS_MACRO(In)+6,  q = buf;  *q;  q++ ) {
                 if ( *q != '"' && *q != '\n' ) {
                     *p++ = *q;
                 }
@@ -1347,18 +1347,18 @@ Char GetLine ( void )
             }
             *p = '\0';
             /* FIXME: We should do bounds checking, but don't know what 'In' points to */
-            strcat( TLS->In, "\");\n" );
+            strcat( TLS_MACRO(In), "\");\n" );
         }
 
         /* if necessary echo the line to the logfile                      */
-        if( TLS->InputLog != 0 && TLS->Input->echo == 1)
-            if ( !(TLS->In[0] == '\377' && TLS->In[1] == '\0') )
-            PutLine2( TLS->InputLog, TLS->In, strlen(TLS->In) );
+        if( TLS_MACRO(InputLog) != 0 && TLS_MACRO(Input)->echo == 1)
+            if ( !(TLS_MACRO(In)[0] == '\377' && TLS_MACRO(In)[1] == '\0') )
+            PutLine2( TLS_MACRO(InputLog), TLS_MACRO(In), strlen(TLS_MACRO(In)) );
 
-                /*      if ( ! TLS->Input->isstream ) {
-          if ( TLS->InputLog != 0 && ! TLS->Input->isstream ) {
-            if ( TLS->Input->file == 0 || TLS->Input->file == 2 ) {
-              PutLine2( TLS->InputLog, TLS->In );
+                /*      if ( ! TLS_MACRO(Input)->isstream ) {
+          if ( TLS_MACRO(InputLog) != 0 && ! TLS_MACRO(Input)->isstream ) {
+            if ( TLS_MACRO(Input)->file == 0 || TLS_MACRO(Input)->file == 2 ) {
+              PutLine2( TLS_MACRO(InputLog), TLS_MACRO(In) );
             }
             }
             } */
@@ -1369,40 +1369,40 @@ Char GetLine ( void )
     else {
 
         /* continue until we got an input line                             */
-        while ( TLS->In[0] == '\0' ) {
+        while ( TLS_MACRO(In)[0] == '\0' ) {
 
             /* there may be one line waiting                               */
-            if ( TLS->TestLine[0] != '\0' ) {
-                SyStrncat( TLS->In, TLS->TestLine, sizeof(TLS->Input->line) );
-                TLS->TestLine[0] = '\0';
+            if ( TLS_MACRO(TestLine)[0] != '\0' ) {
+                SyStrncat( TLS_MACRO(In), TLS_MACRO(TestLine), sizeof(TLS_MACRO(Input)->line) );
+                TLS_MACRO(TestLine)[0] = '\0';
             }
 
             /* otherwise try to read a line                                */
             else {
-                if ( ! GetLine2(TLS->Input, TLS->Input->line, sizeof(TLS->Input->line)) ) {
-                    TLS->In[0] = '\377';  TLS->In[1] = '\0';
+                if ( ! GetLine2(TLS_MACRO(Input), TLS_MACRO(Input)->line, sizeof(TLS_MACRO(Input)->line)) ) {
+                    TLS_MACRO(In)[0] = '\377';  TLS_MACRO(In)[1] = '\0';
                 }
             }
 
             /* if the line starts with a prompt its an input line          */
-            if      ( TLS->In[0] == 'g' && TLS->In[1] == 'a' && TLS->In[2] == 'p'
-                   && TLS->In[3] == '>' && TLS->In[4] == ' ' ) {
-                TLS->In = TLS->In + 5;
+            if      ( TLS_MACRO(In)[0] == 'g' && TLS_MACRO(In)[1] == 'a' && TLS_MACRO(In)[2] == 'p'
+                   && TLS_MACRO(In)[3] == '>' && TLS_MACRO(In)[4] == ' ' ) {
+                TLS_MACRO(In) = TLS_MACRO(In) + 5;
             }
-            else if ( TLS->In[0] == '>' && TLS->In[1] == ' ' ) {
-                TLS->In = TLS->In + 2;
+            else if ( TLS_MACRO(In)[0] == '>' && TLS_MACRO(In)[1] == ' ' ) {
+                TLS_MACRO(In) = TLS_MACRO(In) + 2;
             }
 
             /* if the line is not empty or a comment, print it             */
-            else if ( TLS->In[0] != '\n' && TLS->In[0] != '#' && TLS->In[0] != '\377' ) {
+            else if ( TLS_MACRO(In)[0] != '\n' && TLS_MACRO(In)[0] != '#' && TLS_MACRO(In)[0] != '\377' ) {
                 /* Commented out by AK
                 char obuf[8];
-                snprintf(obuf, sizeof(obuf), "-%5i:\n- ", (int)TLS->TestInput->number++);
-                PutLine2( TLS->TestOutput, obuf, 7 );
+                snprintf(obuf, sizeof(obuf), "-%5i:\n- ", (int)TLS_MACRO(TestInput)->number++);
+                PutLine2( TLS_MACRO(TestOutput), obuf, 7 );
                 */
-                PutLine2( TLS->TestOutput, "- ", 2 );
-                PutLine2( TLS->TestOutput, TLS->In, strlen(TLS->In) );
-                TLS->In[0] = '\0';
+                PutLine2( TLS_MACRO(TestOutput), "- ", 2 );
+                PutLine2( TLS_MACRO(TestOutput), TLS_MACRO(In), strlen(TLS_MACRO(In)) );
+                TLS_MACRO(In)[0] = '\0';
             }
 
         }
@@ -1410,7 +1410,7 @@ Char GetLine ( void )
     }
 
     /* return the current character                                        */
-    return *TLS->In;
+    return *TLS_MACRO(In);
 }
 
 
@@ -1431,19 +1431,19 @@ static Char Pushback = '\0';
 static Char *RealIn;
 
 static inline void GET_CHAR( void ) {
-  if (TLS->In == &Pushback) {
-      TLS->In = RealIn;
+  if (TLS_MACRO(In) == &Pushback) {
+      TLS_MACRO(In) = RealIn;
   } else
-    TLS->In++;
-  if (!*TLS->In)
+    TLS_MACRO(In)++;
+  if (!*TLS_MACRO(In))
     GetLine();
 }
 
 static inline void UNGET_CHAR( Char c ) {
-  assert(TLS->In != &Pushback);
+  assert(TLS_MACRO(In) != &Pushback);
   Pushback = c;
-  RealIn = TLS->In;
-  TLS->In = &Pushback;
+  RealIn = TLS_MACRO(In);
+  TLS_MACRO(In) = &Pushback;
 }
 
 
@@ -1452,10 +1452,10 @@ static inline void UNGET_CHAR( Char c ) {
 *F  GetIdent()  . . . . . . . . . . . . . get an identifier or keyword, local
 **
 **  'GetIdent' reads   an identifier from  the current  input  file  into the
-**  variable 'TLS->Value' and sets 'Symbol' to 'S_IDENT'.   The first character of
+**  variable 'TLS_MACRO(Value)' and sets 'Symbol' to 'S_IDENT'.   The first character of
 **  the   identifier  is  the current character  pointed to  by 'In'.  If the
 **  characters make  up   a  keyword 'GetIdent'  will  set   'Symbol'  to the
-**  corresponding value.  The parser will ignore 'TLS->Value' in this case.
+**  corresponding value.  The parser will ignore 'TLS_MACRO(Value)' in this case.
 **
 **  An  identifier consists of a letter  followed by more letters, digits and
 **  underscores '_'.  An identifier is terminated by the first  character not
@@ -1464,19 +1464,19 @@ static inline void UNGET_CHAR( Char c ) {
 **  '\' can be used  to include special characters like  '('  in identifiers.
 **  For example 'G\(2\,5\)' is an identifier not a call to a function 'G'.
 **
-**  The size  of 'TLS->Value' limits the  number  of significant characters  in an
+**  The size  of 'TLS_MACRO(Value)' limits the  number  of significant characters  in an
 **  identifier.   If  an  identifier   has more characters    'GetIdent' will
 **  silently truncate it.
 **
 **  After reading the identifier 'GetIdent'  looks at the  first and the last
-**  character  of  'TLS->Value' to see if  it  could possibly  be  a keyword.  For
+**  character  of  'TLS_MACRO(Value)' to see if  it  could possibly  be  a keyword.  For
 **  example 'test'  could  not be  a  keyword  because there  is  no  keyword
 **  starting and ending with a 't'.  After that  test either 'GetIdent' knows
-**  that 'TLS->Value' is not a keyword, or there is a unique possible keyword that
+**  that 'TLS_MACRO(Value)' is not a keyword, or there is a unique possible keyword that
 **  could match, because   no two  keywords  have  identical  first and  last
-**  characters.  For example if 'TLS->Value' starts with 'f' and ends with 'n' the
+**  characters.  For example if 'TLS_MACRO(Value)' starts with 'f' and ends with 'n' the
 **  only possible keyword  is 'function'.   Thus in this case  'GetIdent' can
-**  decide with one string comparison if 'TLS->Value' holds a keyword or not.
+**  decide with one string comparison if 'TLS_MACRO(Value)' holds a keyword or not.
 */
 extern void GetSymbol ( void );
 
@@ -1532,39 +1532,39 @@ void GetIdent ( void )
     /* initially it could be a keyword                                     */
     isQuoted = 0;
 
-    /* read all characters into 'TLS->Value'                                    */
-    for ( i=0; IsIdent(*TLS->In) || IsDigit(*TLS->In) || *TLS->In=='\\'; i++ ) {
+    /* read all characters into 'TLS_MACRO(Value)'                                    */
+    for ( i=0; IsIdent(*TLS_MACRO(In)) || IsDigit(*TLS_MACRO(In)) || *TLS_MACRO(In)=='\\'; i++ ) {
 
         fetch = 1;
         /* handle escape sequences                                         */
         /* we ignore '\ newline' by decrementing i, except at the
            very start of the identifier, when we cannot do that
            so we recurse instead                                           */
-        if ( *TLS->In == '\\' ) {
+        if ( *TLS_MACRO(In) == '\\' ) {
             GET_CHAR();
-            if      ( *TLS->In == '\n' && i == 0 )  { GetSymbol();  return; }
-            else if ( *TLS->In == '\r' )  {
+            if      ( *TLS_MACRO(In) == '\n' && i == 0 )  { GetSymbol();  return; }
+            else if ( *TLS_MACRO(In) == '\r' )  {
                 GET_CHAR();
-                if  ( *TLS->In == '\n' )  {
+                if  ( *TLS_MACRO(In) == '\n' )  {
                      if (i == 0) { GetSymbol();  return; }
                      else i--;
                 }
-                else  {TLS->Value[i] = '\r'; fetch = 0;}
+                else  {TLS_MACRO(Value)[i] = '\r'; fetch = 0;}
             }
-            else if ( *TLS->In == '\n' && i < SAFE_VALUE_SIZE-1 )  i--;
-            else if ( *TLS->In == 'n'  && i < SAFE_VALUE_SIZE-1 )  TLS->Value[i] = '\n';
-            else if ( *TLS->In == 't'  && i < SAFE_VALUE_SIZE-1 )  TLS->Value[i] = '\t';
-            else if ( *TLS->In == 'r'  && i < SAFE_VALUE_SIZE-1 )  TLS->Value[i] = '\r';
-            else if ( *TLS->In == 'b'  && i < SAFE_VALUE_SIZE-1 )  TLS->Value[i] = '\b';
+            else if ( *TLS_MACRO(In) == '\n' && i < SAFE_VALUE_SIZE-1 )  i--;
+            else if ( *TLS_MACRO(In) == 'n'  && i < SAFE_VALUE_SIZE-1 )  TLS_MACRO(Value)[i] = '\n';
+            else if ( *TLS_MACRO(In) == 't'  && i < SAFE_VALUE_SIZE-1 )  TLS_MACRO(Value)[i] = '\t';
+            else if ( *TLS_MACRO(In) == 'r'  && i < SAFE_VALUE_SIZE-1 )  TLS_MACRO(Value)[i] = '\r';
+            else if ( *TLS_MACRO(In) == 'b'  && i < SAFE_VALUE_SIZE-1 )  TLS_MACRO(Value)[i] = '\b';
             else if ( i < SAFE_VALUE_SIZE-1 )  {
-                TLS->Value[i] = *TLS->In;
+                TLS_MACRO(Value)[i] = *TLS_MACRO(In);
                 isQuoted = 1;
             }
         }
 
-        /* put normal chars into 'TLS->Value' but only if there is room         */
+        /* put normal chars into 'TLS_MACRO(Value)' but only if there is room         */
         else {
-            if ( i < SAFE_VALUE_SIZE-1 )  TLS->Value[i] = *TLS->In;
+            if ( i < SAFE_VALUE_SIZE-1 )  TLS_MACRO(Value)[i] = *TLS_MACRO(In);
         }
 
         /* read the next character                                         */
@@ -1574,59 +1574,59 @@ void GetIdent ( void )
 
     /* terminate the identifier and lets assume that it is not a keyword   */
     if ( i < SAFE_VALUE_SIZE-1 )
-        TLS->Value[i] = '\0';
+        TLS_MACRO(Value)[i] = '\0';
     else {
         SyntaxError("Identifiers in GAP must consist of less than 1023 characters.");
         i =  SAFE_VALUE_SIZE-1;
-        TLS->Value[i] = '\0';
+        TLS_MACRO(Value)[i] = '\0';
     }
-    TLS->Symbol = S_IDENT;
+    TLS_MACRO(Symbol) = S_IDENT;
 
-    /* now check if 'TLS->Value' holds a keyword                                */
-    switch ( 256*TLS->Value[0]+TLS->Value[i-1] ) {
-    case 256*'a'+'d': if(!strcmp(TLS->Value,"and"))     TLS->Symbol=S_AND;     break;
-    case 256*'a'+'c': if(!strcmp(TLS->Value,"atomic"))  TLS->Symbol=S_ATOMIC;  break;
-    case 256*'b'+'k': if(!strcmp(TLS->Value,"break"))   TLS->Symbol=S_BREAK;   break;
-    case 256*'c'+'e': if(!strcmp(TLS->Value,"continue"))   TLS->Symbol=S_CONTINUE;   break;
-    case 256*'d'+'o': if(!strcmp(TLS->Value,"do"))      TLS->Symbol=S_DO;      break;
-    case 256*'e'+'f': if(!strcmp(TLS->Value,"elif"))    TLS->Symbol=S_ELIF;    break;
-    case 256*'e'+'e': if(!strcmp(TLS->Value,"else"))    TLS->Symbol=S_ELSE;    break;
-    case 256*'e'+'d': if(!strcmp(TLS->Value,"end"))     TLS->Symbol=S_END;     break;
-    case 256*'f'+'e': if(!strcmp(TLS->Value,"false"))   TLS->Symbol=S_FALSE;   break;
-    case 256*'f'+'i': if(!strcmp(TLS->Value,"fi"))      TLS->Symbol=S_FI;      break;
-    case 256*'f'+'r': if(!strcmp(TLS->Value,"for"))     TLS->Symbol=S_FOR;     break;
-    case 256*'f'+'n': if(!strcmp(TLS->Value,"function"))TLS->Symbol=S_FUNCTION;break;
-    case 256*'i'+'f': if(!strcmp(TLS->Value,"if"))      TLS->Symbol=S_IF;      break;
-    case 256*'i'+'n': if(!strcmp(TLS->Value,"in"))      TLS->Symbol=S_IN;      break;
-    case 256*'l'+'l': if(!strcmp(TLS->Value,"local"))   TLS->Symbol=S_LOCAL;   break;
-    case 256*'m'+'d': if(!strcmp(TLS->Value,"mod"))     TLS->Symbol=S_MOD;     break;
-    case 256*'n'+'t': if(!strcmp(TLS->Value,"not"))     TLS->Symbol=S_NOT;     break;
-    case 256*'o'+'d': if(!strcmp(TLS->Value,"od"))      TLS->Symbol=S_OD;      break;
-    case 256*'o'+'r': if(!strcmp(TLS->Value,"or"))      TLS->Symbol=S_OR;      break;
-    case 256*'r'+'e': if(!strcmp(TLS->Value,"readwrite")) TLS->Symbol=S_READWRITE;     break;
-    case 256*'r'+'y': if(!strcmp(TLS->Value,"readonly"))  TLS->Symbol=S_READONLY;     break;
-    case 256*'r'+'c': if(!strcmp(TLS->Value,"rec"))     TLS->Symbol=S_REC;     break;
-    case 256*'r'+'t': if(!strcmp(TLS->Value,"repeat"))  TLS->Symbol=S_REPEAT;  break;
-    case 256*'r'+'n': if(!strcmp(TLS->Value,"return"))  TLS->Symbol=S_RETURN;  break;
-    case 256*'t'+'n': if(!strcmp(TLS->Value,"then"))    TLS->Symbol=S_THEN;    break;
-    case 256*'t'+'e': if(!strcmp(TLS->Value,"true"))    TLS->Symbol=S_TRUE;    break;
-    case 256*'u'+'l': if(!strcmp(TLS->Value,"until"))   TLS->Symbol=S_UNTIL;   break;
-    case 256*'w'+'e': if(!strcmp(TLS->Value,"while"))   TLS->Symbol=S_WHILE;   break;
-    case 256*'q'+'t': if(!strcmp(TLS->Value,"quit"))    TLS->Symbol=S_QUIT;    break;
-    case 256*'Q'+'T': if(!strcmp(TLS->Value,"QUIT"))    TLS->Symbol=S_QQUIT;   break;
+    /* now check if 'TLS_MACRO(Value)' holds a keyword                                */
+    switch ( 256*TLS_MACRO(Value)[0]+TLS_MACRO(Value)[i-1] ) {
+    case 256*'a'+'d': if(!strcmp(TLS_MACRO(Value),"and"))     TLS_MACRO(Symbol)=S_AND;     break;
+    case 256*'a'+'c': if(!strcmp(TLS_MACRO(Value),"atomic"))  TLS_MACRO(Symbol)=S_ATOMIC;  break;
+    case 256*'b'+'k': if(!strcmp(TLS_MACRO(Value),"break"))   TLS_MACRO(Symbol)=S_BREAK;   break;
+    case 256*'c'+'e': if(!strcmp(TLS_MACRO(Value),"continue"))   TLS_MACRO(Symbol)=S_CONTINUE;   break;
+    case 256*'d'+'o': if(!strcmp(TLS_MACRO(Value),"do"))      TLS_MACRO(Symbol)=S_DO;      break;
+    case 256*'e'+'f': if(!strcmp(TLS_MACRO(Value),"elif"))    TLS_MACRO(Symbol)=S_ELIF;    break;
+    case 256*'e'+'e': if(!strcmp(TLS_MACRO(Value),"else"))    TLS_MACRO(Symbol)=S_ELSE;    break;
+    case 256*'e'+'d': if(!strcmp(TLS_MACRO(Value),"end"))     TLS_MACRO(Symbol)=S_END;     break;
+    case 256*'f'+'e': if(!strcmp(TLS_MACRO(Value),"false"))   TLS_MACRO(Symbol)=S_FALSE;   break;
+    case 256*'f'+'i': if(!strcmp(TLS_MACRO(Value),"fi"))      TLS_MACRO(Symbol)=S_FI;      break;
+    case 256*'f'+'r': if(!strcmp(TLS_MACRO(Value),"for"))     TLS_MACRO(Symbol)=S_FOR;     break;
+    case 256*'f'+'n': if(!strcmp(TLS_MACRO(Value),"function"))TLS_MACRO(Symbol)=S_FUNCTION;break;
+    case 256*'i'+'f': if(!strcmp(TLS_MACRO(Value),"if"))      TLS_MACRO(Symbol)=S_IF;      break;
+    case 256*'i'+'n': if(!strcmp(TLS_MACRO(Value),"in"))      TLS_MACRO(Symbol)=S_IN;      break;
+    case 256*'l'+'l': if(!strcmp(TLS_MACRO(Value),"local"))   TLS_MACRO(Symbol)=S_LOCAL;   break;
+    case 256*'m'+'d': if(!strcmp(TLS_MACRO(Value),"mod"))     TLS_MACRO(Symbol)=S_MOD;     break;
+    case 256*'n'+'t': if(!strcmp(TLS_MACRO(Value),"not"))     TLS_MACRO(Symbol)=S_NOT;     break;
+    case 256*'o'+'d': if(!strcmp(TLS_MACRO(Value),"od"))      TLS_MACRO(Symbol)=S_OD;      break;
+    case 256*'o'+'r': if(!strcmp(TLS_MACRO(Value),"or"))      TLS_MACRO(Symbol)=S_OR;      break;
+    case 256*'r'+'e': if(!strcmp(TLS_MACRO(Value),"readwrite")) TLS_MACRO(Symbol)=S_READWRITE;     break;
+    case 256*'r'+'y': if(!strcmp(TLS_MACRO(Value),"readonly"))  TLS_MACRO(Symbol)=S_READONLY;     break;
+    case 256*'r'+'c': if(!strcmp(TLS_MACRO(Value),"rec"))     TLS_MACRO(Symbol)=S_REC;     break;
+    case 256*'r'+'t': if(!strcmp(TLS_MACRO(Value),"repeat"))  TLS_MACRO(Symbol)=S_REPEAT;  break;
+    case 256*'r'+'n': if(!strcmp(TLS_MACRO(Value),"return"))  TLS_MACRO(Symbol)=S_RETURN;  break;
+    case 256*'t'+'n': if(!strcmp(TLS_MACRO(Value),"then"))    TLS_MACRO(Symbol)=S_THEN;    break;
+    case 256*'t'+'e': if(!strcmp(TLS_MACRO(Value),"true"))    TLS_MACRO(Symbol)=S_TRUE;    break;
+    case 256*'u'+'l': if(!strcmp(TLS_MACRO(Value),"until"))   TLS_MACRO(Symbol)=S_UNTIL;   break;
+    case 256*'w'+'e': if(!strcmp(TLS_MACRO(Value),"while"))   TLS_MACRO(Symbol)=S_WHILE;   break;
+    case 256*'q'+'t': if(!strcmp(TLS_MACRO(Value),"quit"))    TLS_MACRO(Symbol)=S_QUIT;    break;
+    case 256*'Q'+'T': if(!strcmp(TLS_MACRO(Value),"QUIT"))    TLS_MACRO(Symbol)=S_QQUIT;   break;
 
-    case 256*'I'+'d': if(!strcmp(TLS->Value,"IsBound")) TLS->Symbol=S_ISBOUND; break;
-    case 256*'U'+'d': if(!strcmp(TLS->Value,"Unbind"))  TLS->Symbol=S_UNBIND;  break;
-    case 256*'T'+'d': if(!strcmp(TLS->Value,"TryNextMethod"))
-                                                     TLS->Symbol=S_TRYNEXT; break;
-    case 256*'I'+'o': if(!strcmp(TLS->Value,"Info"))    TLS->Symbol=S_INFO;    break;
-    case 256*'A'+'t': if(!strcmp(TLS->Value,"Assert"))  TLS->Symbol=S_ASSERT;  break;
+    case 256*'I'+'d': if(!strcmp(TLS_MACRO(Value),"IsBound")) TLS_MACRO(Symbol)=S_ISBOUND; break;
+    case 256*'U'+'d': if(!strcmp(TLS_MACRO(Value),"Unbind"))  TLS_MACRO(Symbol)=S_UNBIND;  break;
+    case 256*'T'+'d': if(!strcmp(TLS_MACRO(Value),"TryNextMethod"))
+                                                     TLS_MACRO(Symbol)=S_TRYNEXT; break;
+    case 256*'I'+'o': if(!strcmp(TLS_MACRO(Value),"Info"))    TLS_MACRO(Symbol)=S_INFO;    break;
+    case 256*'A'+'t': if(!strcmp(TLS_MACRO(Value),"Assert"))  TLS_MACRO(Symbol)=S_ASSERT;  break;
 
     default: ;
     }
 
     /* if it is quoted it is an identifier                                 */
-    if ( isQuoted )  TLS->Symbol = S_IDENT;
+    if ( isQuoted )  TLS_MACRO(Symbol) = S_IDENT;
 
 
 }
@@ -1636,7 +1636,7 @@ void GetIdent ( void )
 *F  GetNumber()  . . . . . . . . . . . . . .  get an integer or float literal
 **
 **  'GetNumber' reads  a number from  the  current  input file into the
-**  variable  'TLS->Value' and sets  'Symbol' to 'S_INT', 'S_PARTIALINT',
+**  variable  'TLS_MACRO(Value)' and sets  'Symbol' to 'S_INT', 'S_PARTIALINT',
 **  'S_FLOAT' or 'S_PARTIALFLOAT'.   The first character of
 **  the number is the current character pointed to by 'In'.
 **
@@ -1647,7 +1647,7 @@ void GetIdent ( void )
 **  As we read, we keep track of whether we have seen a . or exponent notation
 **  and so whether we will return S_[PARTIAL]INT or S_[PARTIAL]FLOAT.
 **
-**  When TLS->Value is  completely filled we have to check  if the reading of
+**  When TLS_MACRO(Value) is  completely filled we have to check  if the reading of
 **  the number  is complete  or not to  decide whether to return a PARTIAL type.
 **
 **  The argument reflects how far we are through reading a possibly very long number
@@ -1661,32 +1661,32 @@ void GetIdent ( void )
 static Char GetCleanedChar( UInt *wasEscaped ) {
   GET_CHAR();
   *wasEscaped = 0;
-  if (*TLS->In == '\\') {
+  if (*TLS_MACRO(In) == '\\') {
     GET_CHAR();
-    if      ( *TLS->In == '\n')
+    if      ( *TLS_MACRO(In) == '\n')
       return GetCleanedChar(wasEscaped);
-    else if ( *TLS->In == '\r' )  {
+    else if ( *TLS_MACRO(In) == '\r' )  {
       GET_CHAR();
-      if  ( *TLS->In == '\n' )
+      if  ( *TLS_MACRO(In) == '\n' )
         return GetCleanedChar(wasEscaped);
       else {
-        UNGET_CHAR(*TLS->In);
+        UNGET_CHAR(*TLS_MACRO(In));
         *wasEscaped = 1;
         return '\r';
       }
     }
     else {
       *wasEscaped = 1;
-      if ( *TLS->In == 'n')  return '\n';
-      else if ( *TLS->In == 't')  return '\t';
-      else if ( *TLS->In == 'r')  return '\r';
-      else if ( *TLS->In == 'b')  return '\b';
-      else if ( *TLS->In == '>')  return '\01';
-      else if ( *TLS->In == '<')  return '\02';
-      else if ( *TLS->In == 'c')  return '\03';
+      if ( *TLS_MACRO(In) == 'n')  return '\n';
+      else if ( *TLS_MACRO(In) == 't')  return '\t';
+      else if ( *TLS_MACRO(In) == 'r')  return '\r';
+      else if ( *TLS_MACRO(In) == 'b')  return '\b';
+      else if ( *TLS_MACRO(In) == '>')  return '\01';
+      else if ( *TLS_MACRO(In) == '<')  return '\02';
+      else if ( *TLS_MACRO(In) == 'c')  return '\03';
     }
   }
-  return *TLS->In;
+  return *TLS_MACRO(In);
 }
 
 
@@ -1699,11 +1699,11 @@ void GetNumber ( UInt StartingStatus )
   UInt seenADigit = (StartingStatus != 0 && StartingStatus != 2);
   UInt seenExpDigit = (StartingStatus ==5);
 
-  c = *TLS->In;
+  c = *TLS_MACRO(In);
   if (StartingStatus  <  2) {
     /* read initial sequence of digits into 'Value'             */
     for (i = 0; !wasEscaped && IsDigit(c) && i < SAFE_VALUE_SIZE-1; i++) {
-      TLS->Value[i] = c;
+      TLS_MACRO(Value)[i] = c;
       seenADigit = 1;
       c = GetCleanedChar(&wasEscaped);
     }
@@ -1712,26 +1712,26 @@ void GetNumber ( UInt StartingStatus )
     /* maybe we saw an identifier character and realised that this is an identifier we are reading */
     if (wasEscaped || IsIdent(c)) {
       /* Now we know we have an identifier read the rest of it */
-      TLS->Value[i++] = c;
+      TLS_MACRO(Value)[i++] = c;
       c = GetCleanedChar(&wasEscaped);
       for (; wasEscaped || IsIdent(c) || IsDigit(c); i++) {
         if (i < SAFE_VALUE_SIZE -1)
-          TLS->Value[i] = c;
+          TLS_MACRO(Value)[i] = c;
         c = GetCleanedChar(&wasEscaped);
       }
       if (i < SAFE_VALUE_SIZE -1)
-        TLS->Value[i] = '\0';
+        TLS_MACRO(Value)[i] = '\0';
       else
-        TLS->Value[SAFE_VALUE_SIZE-1] = '\0';
-      TLS->Symbol = S_IDENT;
+        TLS_MACRO(Value)[SAFE_VALUE_SIZE-1] = '\0';
+      TLS_MACRO(Symbol) = S_IDENT;
       return;
     }
 
     /* Or maybe we just ran out of space */
     if (IsDigit(c)) {
       assert(i >= SAFE_VALUE_SIZE-1);
-      TLS->Symbol = S_PARTIALINT;
-      TLS->Value[SAFE_VALUE_SIZE-1] = '\0';
+      TLS_MACRO(Symbol) = S_PARTIALINT;
+      TLS_MACRO(Value)[SAFE_VALUE_SIZE-1] = '\0';
       return;
     }
 
@@ -1743,35 +1743,35 @@ void GetNumber ( UInt StartingStatus )
          look for a float.
 
       This is a bit fragile  */
-      if (TLS->Symbol == S_DOT || TLS->Symbol == S_BDOT) {
-	TLS->Value[i]  = '\0';
-	TLS->Symbol = S_INT;
+      if (TLS_MACRO(Symbol) == S_DOT || TLS_MACRO(Symbol) == S_BDOT) {
+	TLS_MACRO(Value)[i]  = '\0';
+	TLS_MACRO(Symbol) = S_INT;
         return;
       }
       
       /* peek ahead to decide which */
       GET_CHAR();
-      if (*TLS->In == '.') {
+      if (*TLS_MACRO(In) == '.') {
         /* It was .. */
-        UNGET_CHAR(*TLS->In);
-        TLS->Symbol = S_INT;
-        TLS->Value[i] = '\0';
+        UNGET_CHAR(*TLS_MACRO(In));
+        TLS_MACRO(Symbol) = S_INT;
+        TLS_MACRO(Value)[i] = '\0';
         return;
       }
 
 
       /* Not .. Put back the character we peeked at */
-      UNGET_CHAR(*TLS->In);
+      UNGET_CHAR(*TLS_MACRO(In));
       /* Now the . must be part of our number
          store it and move on */
-      TLS->Value[i++] = c;
+      TLS_MACRO(Value)[i++] = c;
       c = GetCleanedChar(&wasEscaped);
     }
 
     else {
       /* Anything else we see tells us that the token is done */
-      TLS->Value[i]  = '\0';
-      TLS->Symbol = S_INT;
+      TLS_MACRO(Value)[i]  = '\0';
+      TLS_MACRO(Symbol) = S_INT;
       return;
     }
   }
@@ -1790,7 +1790,7 @@ void GetNumber ( UInt StartingStatus )
 
     /* read digits */
     for (; !wasEscaped && IsDigit(c) && i < SAFE_VALUE_SIZE-1; i++) {
-      TLS->Value[i] = c;
+      TLS_MACRO(Value)[i] = c;
       seenADigit = 1;
       c = GetCleanedChar(&wasEscaped);
     }
@@ -1803,24 +1803,24 @@ void GetNumber ( UInt StartingStatus )
        C99 style */
       if (!wasEscaped) {
         if (IsAlpha(c)) {
-          TLS->Value[i++] = c;
+          TLS_MACRO(Value)[i++] = c;
           c = GetCleanedChar(&wasEscaped);
         }
         /* independently of that, we allow an _ signalling immediate conversion */
         if (c == '_') {
-          TLS->Value[i++] = c;
+          TLS_MACRO(Value)[i++] = c;
           c = GetCleanedChar(&wasEscaped);
           /* After which there may be one character signifying the conversion style */
           if (IsAlpha(c)) {
-            TLS->Value[i++] = c;
+            TLS_MACRO(Value)[i++] = c;
             c = GetCleanedChar(&wasEscaped);
           }
         }
         /* Now if the next character is alphanumerical, or an identifier type symbol then we
            really do have an error, otherwise we return a result */
         if (!IsIdent(c) && !IsDigit(c)) {
-          TLS->Value[i] = '\0';
-          TLS->Symbol = S_FLOAT;
+          TLS_MACRO(Value)[i] = '\0';
+          TLS_MACRO(Symbol) = S_FLOAT;
           return;
         }
       }
@@ -1833,19 +1833,19 @@ void GetNumber ( UInt StartingStatus )
         if (!seenADigit)
           SyntaxError("Badly formed number, need a digit before or after the decimal point");
         seenExp = 1;
-        TLS->Value[i++] = c;
+        TLS_MACRO(Value)[i++] = c;
         c = GetCleanedChar(&wasEscaped);
         if (!wasEscaped && (c == '+' || c == '-'))
           {
-            TLS->Value[i++] = c;
+            TLS_MACRO(Value)[i++] = c;
             c = GetCleanedChar(&wasEscaped);
           }
       }
 
     /* Now deal with full buffer case */
     if (i >= SAFE_VALUE_SIZE -1) {
-      TLS->Symbol = seenExp ? S_PARTIALFLOAT3 : S_PARTIALFLOAT2;
-      TLS->Value[i] = '\0';
+      TLS_MACRO(Symbol) = seenExp ? S_PARTIALFLOAT3 : S_PARTIALFLOAT2;
+      TLS_MACRO(Value)[i] = '\0';
       return;
     }
 
@@ -1857,23 +1857,23 @@ void GetNumber ( UInt StartingStatus )
       /* Might be a conversion marker */
       if (!wasEscaped) {
         if (IsAlpha(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' && c != 'q' && c != 'Q') {
-          TLS->Value[i++] = c;
+          TLS_MACRO(Value)[i++] = c;
           c = GetCleanedChar(&wasEscaped);
         }
         /* independently of that, we allow an _ signalling immediate conversion */
         if (c == '_') {
-          TLS->Value[i++] = c;
+          TLS_MACRO(Value)[i++] = c;
           c = GetCleanedChar(&wasEscaped);
           /* After which there may be one character signifying the conversion style */
           if (IsAlpha(c))
-            TLS->Value[i++] = c;
+            TLS_MACRO(Value)[i++] = c;
           c = GetCleanedChar(&wasEscaped);
         }
         /* Now if the next character is alphanumerical, or an identifier type symbol then we
            really do have an error, otherwise we return a result */
         if (!IsIdent(c) && !IsDigit(c)) {
-          TLS->Value[i] = '\0';
-          TLS->Symbol = S_FLOAT;
+          TLS_MACRO(Value)[i] = '\0';
+          TLS_MACRO(Symbol) = S_FLOAT;
           return;
         }
       }
@@ -1885,7 +1885,7 @@ void GetNumber ( UInt StartingStatus )
   /* Here we are into the unsigned exponent of a number
      in scientific notation, so we just read digits */
   for (; !wasEscaped && IsDigit(c) && i < SAFE_VALUE_SIZE-1; i++) {
-    TLS->Value[i] = c;
+    TLS_MACRO(Value)[i] = c;
     seenExpDigit = 1;
     c = GetCleanedChar(&wasEscaped);
   }
@@ -1894,38 +1894,38 @@ void GetNumber ( UInt StartingStatus )
      which could be a conversion marker */
   if (seenExpDigit) {
     if (IsAlpha(c)) {
-      TLS->Value[i] = c;
+      TLS_MACRO(Value)[i] = c;
       c = GetCleanedChar(&wasEscaped);
-      TLS->Value[i+1] = '\0';
-      TLS->Symbol = S_FLOAT;
+      TLS_MACRO(Value)[i+1] = '\0';
+      TLS_MACRO(Symbol) = S_FLOAT;
       return;
     }
     if (c == '_') {
-      TLS->Value[i++] = c;
+      TLS_MACRO(Value)[i++] = c;
       c = GetCleanedChar(&wasEscaped);
       /* After which there may be one character signifying the conversion style */
       if (IsAlpha(c)) {
-        TLS->Value[i++] = c;
+        TLS_MACRO(Value)[i++] = c;
         c = GetCleanedChar(&wasEscaped);
       }
-      TLS->Value[i] = '\0';
-      TLS->Symbol = S_FLOAT;
+      TLS_MACRO(Value)[i] = '\0';
+      TLS_MACRO(Symbol) = S_FLOAT;
       return;
     }
   }
 
   /* If we ran off the end */
   if (i >= SAFE_VALUE_SIZE -1) {
-    TLS->Symbol = seenExpDigit ? S_PARTIALFLOAT4 : S_PARTIALFLOAT3;
-    TLS->Value[i] = '\0';
+    TLS_MACRO(Symbol) = seenExpDigit ? S_PARTIALFLOAT4 : S_PARTIALFLOAT3;
+    TLS_MACRO(Value)[i] = '\0';
     return;
   }
 
   /* Otherwise this is the end of the token */
   if (!seenExpDigit)
     SyntaxError("Badly Formed Number, need at least one digit in the exponent");
-  TLS->Symbol = S_FLOAT;
-  TLS->Value[i] = '\0';
+  TLS_MACRO(Symbol) = S_FLOAT;
+  TLS_MACRO(Value)[i] = '\0';
   return;
 }
 
@@ -1935,7 +1935,7 @@ void GetNumber ( UInt StartingStatus )
  *F  GetStr()  . . . . . . . . . . . . . . . . . . . . . . get a string, local
  **
  **  'GetStr' reads  a  string from the  current input file into  the variable
- **  'TLS->Value' and sets 'Symbol'   to  'S_STRING'.  The opening double quote '"'
+ **  'TLS_MACRO(Value)' and sets 'Symbol'   to  'S_STRING'.  The opening double quote '"'
  **  of the string is the current character pointed to by 'In'.
  **
  **  A string is a sequence of characters delimited  by double quotes '"'.  It
@@ -1946,7 +1946,7 @@ void GetNumber ( UInt StartingStatus )
  **  An error is raised if the string includes a <newline> character or if the
  **  file ends before the closing '"'.
  **
- **  When TLS->Value is  completely filled we have to check  if the reading of
+ **  When TLS_MACRO(Value) is  completely filled we have to check  if the reading of
  **  the string is  complete or not to decide  between Symbol=S_STRING or
  **  S_PARTIALSTRING.
  */
@@ -1956,52 +1956,52 @@ void GetStr ( void )
   Char                a, b, c;
 
   /* Avoid substitution of '?' in beginning of GetLine chunks */
-  TLS->HelpSubsOn = 0;
+  TLS_MACRO(HelpSubsOn) = 0;
 
-  /* read all characters into 'TLS->Value'                                    */
-  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS->In != '"'
-           && *TLS->In != '\n' && *TLS->In != '\377'; i++ ) {
+  /* read all characters into 'TLS_MACRO(Value)'                                    */
+  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS_MACRO(In) != '"'
+           && *TLS_MACRO(In) != '\n' && *TLS_MACRO(In) != '\377'; i++ ) {
 
     fetch = 1;
     /* handle escape sequences                                         */
-    if ( *TLS->In == '\\' ) {
+    if ( *TLS_MACRO(In) == '\\' ) {
       GET_CHAR();
       /* if next is another '\\' followed by '\n' it must be ignored */
-      while ( *TLS->In == '\\' ) {
+      while ( *TLS_MACRO(In) == '\\' ) {
         GET_CHAR();
-        if ( *TLS->In == '\n' )
+        if ( *TLS_MACRO(In) == '\n' )
           GET_CHAR();
         else {
           UNGET_CHAR( '\\' );
           break;
         }
       }
-      if      ( *TLS->In == '\n' )  i--;
-      else if ( *TLS->In == '\r' )  {
+      if      ( *TLS_MACRO(In) == '\n' )  i--;
+      else if ( *TLS_MACRO(In) == '\r' )  {
         GET_CHAR();
-        if  ( *TLS->In == '\n' )  i--;
-        else  {TLS->Value[i] = '\r'; fetch = 0;}
+        if  ( *TLS_MACRO(In) == '\n' )  i--;
+        else  {TLS_MACRO(Value)[i] = '\r'; fetch = 0;}
       }
-      else if ( *TLS->In == 'n'  )  TLS->Value[i] = '\n';
-      else if ( *TLS->In == 't'  )  TLS->Value[i] = '\t';
-      else if ( *TLS->In == 'r'  )  TLS->Value[i] = '\r';
-      else if ( *TLS->In == 'b'  )  TLS->Value[i] = '\b';
-      else if ( *TLS->In == '>'  )  TLS->Value[i] = '\01';
-      else if ( *TLS->In == '<'  )  TLS->Value[i] = '\02';
-      else if ( *TLS->In == 'c'  )  TLS->Value[i] = '\03';
-      else if ( IsDigit( *TLS->In ) ) {
-        a = *TLS->In; GET_CHAR(); b = *TLS->In; GET_CHAR(); c = *TLS->In;
+      else if ( *TLS_MACRO(In) == 'n'  )  TLS_MACRO(Value)[i] = '\n';
+      else if ( *TLS_MACRO(In) == 't'  )  TLS_MACRO(Value)[i] = '\t';
+      else if ( *TLS_MACRO(In) == 'r'  )  TLS_MACRO(Value)[i] = '\r';
+      else if ( *TLS_MACRO(In) == 'b'  )  TLS_MACRO(Value)[i] = '\b';
+      else if ( *TLS_MACRO(In) == '>'  )  TLS_MACRO(Value)[i] = '\01';
+      else if ( *TLS_MACRO(In) == '<'  )  TLS_MACRO(Value)[i] = '\02';
+      else if ( *TLS_MACRO(In) == 'c'  )  TLS_MACRO(Value)[i] = '\03';
+      else if ( IsDigit( *TLS_MACRO(In) ) ) {
+        a = *TLS_MACRO(In); GET_CHAR(); b = *TLS_MACRO(In); GET_CHAR(); c = *TLS_MACRO(In);
         if (!( IsDigit(b) && IsDigit(c) )){
           SyntaxError("expecting three octal digits after \\ in string");
         }
-        TLS->Value[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
+        TLS_MACRO(Value)[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
       }
-      else  TLS->Value[i] = *TLS->In;
+      else  TLS_MACRO(Value)[i] = *TLS_MACRO(In);
     }
 
-    /* put normal chars into 'TLS->Value' but only if there is room         */
+    /* put normal chars into 'TLS_MACRO(Value)' but only if there is room         */
     else {
-      TLS->Value[i] = *TLS->In;
+      TLS_MACRO(Value)[i] = *TLS_MACRO(In);
     }
 
     /* read the next character                                         */
@@ -2009,28 +2009,28 @@ void GetStr ( void )
 
   }
 
-  /* XXX although we have TLS->ValueLen we need trailing \000 here,
+  /* XXX although we have TLS_MACRO(ValueLen) we need trailing \000 here,
      in gap.c, function FuncMAKE_INIT this is still used as C-string
      and long integers and strings are not yet supported!    */
-  TLS->Value[i] = '\0';
+  TLS_MACRO(Value)[i] = '\0';
 
   /* check for error conditions                                          */
-  if ( *TLS->In == '\n'  )
+  if ( *TLS_MACRO(In) == '\n'  )
     SyntaxError("string must not include <newline>");
-  if ( *TLS->In == '\377' )
+  if ( *TLS_MACRO(In) == '\377' )
     SyntaxError("string must end with \" before end of file");
 
-  /* set length of string, set 'TLS->Symbol' and skip trailing '"'            */
-  TLS->ValueLen = i;
+  /* set length of string, set 'TLS_MACRO(Symbol)' and skip trailing '"'            */
+  TLS_MACRO(ValueLen) = i;
   if ( i < SAFE_VALUE_SIZE-1 )  {
-    TLS->Symbol = S_STRING;
-    if ( *TLS->In == '"' )  GET_CHAR();
+    TLS_MACRO(Symbol) = S_STRING;
+    if ( *TLS_MACRO(In) == '"' )  GET_CHAR();
   }
   else
-    TLS->Symbol = S_PARTIALSTRING;
+    TLS_MACRO(Symbol) = S_PARTIALSTRING;
 
   /* switching on substitution of '?' */
-  TLS->HelpSubsOn = 1;
+  TLS_MACRO(HelpSubsOn) = 1;
 }
 
 /****************************************************************************
@@ -2056,26 +2056,26 @@ void GetTripStr ( void )
   Int                 i = 0;
 
   /* Avoid substitution of '?' in beginning of GetLine chunks */
-  TLS->HelpSubsOn = 0;
+  TLS_MACRO(HelpSubsOn) = 0;
   
   /* read all characters into 'Value'                                    */
-  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS->In != '\377'; i++ ) {
+  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS_MACRO(In) != '\377'; i++ ) {
     // Only thing to check for is a triple quote.
     
-    if ( *TLS->In == '"') {
+    if ( *TLS_MACRO(In) == '"') {
         GET_CHAR();
-        if (*TLS->In == '"') {
+        if (*TLS_MACRO(In) == '"') {
             GET_CHAR();
-            if(*TLS->In == '"' ) {
+            if(*TLS_MACRO(In) == '"' ) {
                 break;
             }
-            TLS->Value[i] = '"';
+            TLS_MACRO(Value)[i] = '"';
             i++;
         }
-        TLS->Value[i] = '"';
+        TLS_MACRO(Value)[i] = '"';
         i++;
     }
-    TLS->Value[i] = *TLS->In;
+    TLS_MACRO(Value)[i] = *TLS_MACRO(In);
 
 
     /* read the next character                                         */
@@ -2085,23 +2085,23 @@ void GetTripStr ( void )
   /* XXX although we have ValueLen we need trailing \000 here,
      in gap.c, function FuncMAKE_INIT this is still used as C-string
      and long integers and strings are not yet supported!    */
-  TLS->Value[i] = '\0';
+  TLS_MACRO(Value)[i] = '\0';
 
   /* check for error conditions                                          */
-  if ( *TLS->In == '\377' )
+  if ( *TLS_MACRO(In) == '\377' )
     SyntaxError("string must end with \" before end of file");
 
   /* set length of string, set 'Symbol' and skip trailing '"'            */
-  TLS->ValueLen = i;
+  TLS_MACRO(ValueLen) = i;
   if ( i < SAFE_VALUE_SIZE-1 )  {
-    TLS->Symbol = S_STRING;
-    if ( *TLS->In == '"' )  GET_CHAR();
+    TLS_MACRO(Symbol) = S_STRING;
+    if ( *TLS_MACRO(In) == '"' )  GET_CHAR();
   }
   else
-    TLS->Symbol = S_PARTIALTRIPSTRING;
+    TLS_MACRO(Symbol) = S_PARTIALTRIPSTRING;
 
   /* switching on substitution of '?' */
-  TLS->HelpSubsOn = 1;
+  TLS_MACRO(HelpSubsOn) = 1;
 }
 
 /****************************************************************************
@@ -2115,21 +2115,21 @@ void GetTripStr ( void )
 void GetMaybeTripStr ( void )
 {
     /* Avoid substitution of '?' in beginning of GetLine chunks */
-    TLS->HelpSubsOn = 0;
+    TLS_MACRO(HelpSubsOn) = 0;
     
     /* This is just a normal string! */
-    if ( *TLS->In != '"' ) {
+    if ( *TLS_MACRO(In) != '"' ) {
         GetStr();
         return;
     }
     
     GET_CHAR();
     /* This was just an empty string! */
-    if ( *TLS->In != '"' ) {
-        TLS->Value[0] = '\0';
-        TLS->ValueLen = 0;
-        TLS->Symbol = S_STRING;
-        TLS->HelpSubsOn = 1;
+    if ( *TLS_MACRO(In) != '"' ) {
+        TLS_MACRO(Value)[0] = '\0';
+        TLS_MACRO(ValueLen) = 0;
+        TLS_MACRO(Symbol) = S_STRING;
+        TLS_MACRO(HelpSubsOn) = 1;
         return;
     }
     
@@ -2144,7 +2144,7 @@ void GetMaybeTripStr ( void )
  *F  GetChar() . . . . . . . . . . . . . . . . . get a single character, local
  **
  **  'GetChar' reads the next  character from the current input file  into the
- **  variable 'TLS->Value' and sets 'Symbol' to 'S_CHAR'.  The opening single quote
+ **  variable 'TLS_MACRO(Value)' and sets 'Symbol' to 'S_CHAR'.  The opening single quote
  **  '\'' of the character is the current character pointed to by 'In'.
  **
  **  A  character is  a  single character delimited by single quotes '\''.  It
@@ -2159,36 +2159,36 @@ void GetChar ( void )
   GET_CHAR();
 
   /* handle escape equences                                              */
-  if ( *TLS->In == '\\' ) {
+  if ( *TLS_MACRO(In) == '\\' ) {
     GET_CHAR();
-    if ( *TLS->In == 'n'  )       TLS->Value[0] = '\n';
-    else if ( *TLS->In == 't'  )  TLS->Value[0] = '\t';
-    else if ( *TLS->In == 'r'  )  TLS->Value[0] = '\r';
-    else if ( *TLS->In == 'b'  )  TLS->Value[0] = '\b';
-    else if ( *TLS->In == '>'  )  TLS->Value[0] = '\01';
-    else if ( *TLS->In == '<'  )  TLS->Value[0] = '\02';
-    else if ( *TLS->In == 'c'  )  TLS->Value[0] = '\03';
-    else if ( *TLS->In >= '0' && *TLS->In <= '7' ) {
+    if ( *TLS_MACRO(In) == 'n'  )       TLS_MACRO(Value)[0] = '\n';
+    else if ( *TLS_MACRO(In) == 't'  )  TLS_MACRO(Value)[0] = '\t';
+    else if ( *TLS_MACRO(In) == 'r'  )  TLS_MACRO(Value)[0] = '\r';
+    else if ( *TLS_MACRO(In) == 'b'  )  TLS_MACRO(Value)[0] = '\b';
+    else if ( *TLS_MACRO(In) == '>'  )  TLS_MACRO(Value)[0] = '\01';
+    else if ( *TLS_MACRO(In) == '<'  )  TLS_MACRO(Value)[0] = '\02';
+    else if ( *TLS_MACRO(In) == 'c'  )  TLS_MACRO(Value)[0] = '\03';
+    else if ( *TLS_MACRO(In) >= '0' && *TLS_MACRO(In) <= '7' ) {
       /* escaped three digit octal numbers are allowed in input */
-      c = 64 * (*TLS->In - '0');
+      c = 64 * (*TLS_MACRO(In) - '0');
       GET_CHAR();
-      if ( *TLS->In < '0' || *TLS->In > '7' )
+      if ( *TLS_MACRO(In) < '0' || *TLS_MACRO(In) > '7' )
         SyntaxError("expecting octal digit in character constant");
-      c = c + 8 * (*TLS->In - '0');
+      c = c + 8 * (*TLS_MACRO(In) - '0');
       GET_CHAR();
-      if ( *TLS->In < '0' || *TLS->In > '7' )
+      if ( *TLS_MACRO(In) < '0' || *TLS_MACRO(In) > '7' )
         SyntaxError("expecting 3 octal digits in character constant");
-      c = c + (*TLS->In - '0');
-      TLS->Value[0] = c;
+      c = c + (*TLS_MACRO(In) - '0');
+      TLS_MACRO(Value)[0] = c;
     }
-    else                     TLS->Value[0] = *TLS->In;
+    else                     TLS_MACRO(Value)[0] = *TLS_MACRO(In);
   }
-  else if ( *TLS->In == '\n' ) {
+  else if ( *TLS_MACRO(In) == '\n' ) {
     SyntaxError("newline not allowed in character literal");
   }
-  /* put normal chars into 'TLS->Value'                                       */
+  /* put normal chars into 'TLS_MACRO(Value)'                                       */
   else {
-    TLS->Value[0] = *TLS->In;
+    TLS_MACRO(Value)[0] = *TLS_MACRO(In);
   }
 
   /* read the next character                                             */
@@ -2196,12 +2196,12 @@ void GetChar ( void )
 
   
   /* check for terminating single quote                                  */
-  if ( *TLS->In != '\'' )
+  if ( *TLS_MACRO(In) != '\'' )
     SyntaxError("missing single quote in character constant");
 
   /* skip the closing quote                                              */
-  TLS->Symbol = S_CHAR;
-  if ( *TLS->In == '\'' )  GET_CHAR();
+  TLS_MACRO(Symbol) = S_CHAR;
+  if ( *TLS_MACRO(In) == '\'' )  GET_CHAR();
 
 }
 
@@ -2212,7 +2212,7 @@ void GetChar ( void )
  **
  **  'GetSymbol' reads  the  next symbol from   the  input,  storing it in the
  **  variable 'Symbol'.  If 'Symbol' is  'S_IDENT', 'S_INT' or 'S_STRING'  the
- **  value of the symbol is stored in the variable 'TLS->Value'.  'GetSymbol' first
+ **  value of the symbol is stored in the variable 'TLS_MACRO(Value)'.  'GetSymbol' first
  **  skips all <space>, <tab> and <newline> characters and comments.
  **
  **  After reading  a  symbol the current  character   is the first  character
@@ -2222,136 +2222,136 @@ void GetChar ( void )
 void GetSymbol ( void )
 {
   /* special case if reading of a long token is not finished */
-  if (TLS->Symbol == S_PARTIALSTRING) {
+  if (TLS_MACRO(Symbol) == S_PARTIALSTRING) {
     GetStr();
     return;
   }
   
-  if (TLS->Symbol == S_PARTIALTRIPSTRING) {
+  if (TLS_MACRO(Symbol) == S_PARTIALTRIPSTRING) {
       GetTripStr();
       return;
   }
   
-  if (TLS->Symbol == S_PARTIALINT) {
-    if (TLS->Value[0] == '\0')
+  if (TLS_MACRO(Symbol) == S_PARTIALINT) {
+    if (TLS_MACRO(Value)[0] == '\0')
       GetNumber(0);
     else
       GetNumber(1);
     return;
   }
-  if (TLS->Symbol == S_PARTIALFLOAT1) {
+  if (TLS_MACRO(Symbol) == S_PARTIALFLOAT1) {
     GetNumber(2);
     return;
   }
 
-  if (TLS->Symbol == S_PARTIALFLOAT2) {
+  if (TLS_MACRO(Symbol) == S_PARTIALFLOAT2) {
     GetNumber(3);
     return;
   }
-  if (TLS->Symbol == S_PARTIALFLOAT3) {
+  if (TLS_MACRO(Symbol) == S_PARTIALFLOAT3) {
     GetNumber(4);
     return;
   }
 
-  if (TLS->Symbol == S_PARTIALFLOAT4) {
+  if (TLS_MACRO(Symbol) == S_PARTIALFLOAT4) {
     GetNumber(5);
     return;
   }
 
 
   /* if no character is available then get one                           */
-  if ( *TLS->In == '\0' )
-    { TLS->In--;
+  if ( *TLS_MACRO(In) == '\0' )
+    { TLS_MACRO(In)--;
       GET_CHAR();
     }
 
   /* skip over <spaces>, <tabs>, <newlines> and comments                 */
-  while (*TLS->In==' '||*TLS->In=='\t'||*TLS->In=='\n'||*TLS->In=='\r'||*TLS->In=='\f'||*TLS->In=='#') {
-    if ( *TLS->In == '#' ) {
-      while ( *TLS->In != '\n' && *TLS->In != '\r' && *TLS->In != '\377' )
+  while (*TLS_MACRO(In)==' '||*TLS_MACRO(In)=='\t'||*TLS_MACRO(In)=='\n'||*TLS_MACRO(In)=='\r'||*TLS_MACRO(In)=='\f'||*TLS_MACRO(In)=='#') {
+    if ( *TLS_MACRO(In) == '#' ) {
+      while ( *TLS_MACRO(In) != '\n' && *TLS_MACRO(In) != '\r' && *TLS_MACRO(In) != '\377' )
         GET_CHAR();
     }
     GET_CHAR();
   }
 
   /* switch according to the character                                   */
-  switch ( *TLS->In ) {
+  switch ( *TLS_MACRO(In) ) {
 
-  case '.':   TLS->Symbol = S_DOT;                         GET_CHAR();
-    /*            if ( *TLS->In == '\\' ) { GET_CHAR();
-            if ( *TLS->In == '\n' ) { GET_CHAR(); } }   */
-    if ( *TLS->In == '.' ) { TLS->Symbol = S_DOTDOT;  GET_CHAR();  break; }
+  case '.':   TLS_MACRO(Symbol) = S_DOT;                         GET_CHAR();
+    /*            if ( *TLS_MACRO(In) == '\\' ) { GET_CHAR();
+            if ( *TLS_MACRO(In) == '\n' ) { GET_CHAR(); } }   */
+    if ( *TLS_MACRO(In) == '.' ) { TLS_MACRO(Symbol) = S_DOTDOT;  GET_CHAR();  break; }
     break;
 
-  case '!':   TLS->Symbol = S_ILLEGAL;                     GET_CHAR();
-    if ( *TLS->In == '\\' ) { GET_CHAR();
-      if ( *TLS->In == '\n' ) { GET_CHAR(); } }
-    if ( *TLS->In == '.' ) { TLS->Symbol = S_BDOT;    GET_CHAR();  break; }
-    if ( *TLS->In == '[' ) { TLS->Symbol = S_BLBRACK; GET_CHAR();  break; }
-    if ( *TLS->In == '{' ) { TLS->Symbol = S_BLBRACE; GET_CHAR();  break; }
+  case '!':   TLS_MACRO(Symbol) = S_ILLEGAL;                     GET_CHAR();
+    if ( *TLS_MACRO(In) == '\\' ) { GET_CHAR();
+      if ( *TLS_MACRO(In) == '\n' ) { GET_CHAR(); } }
+    if ( *TLS_MACRO(In) == '.' ) { TLS_MACRO(Symbol) = S_BDOT;    GET_CHAR();  break; }
+    if ( *TLS_MACRO(In) == '[' ) { TLS_MACRO(Symbol) = S_BLBRACK; GET_CHAR();  break; }
+    if ( *TLS_MACRO(In) == '{' ) { TLS_MACRO(Symbol) = S_BLBRACE; GET_CHAR();  break; }
     break;
-  case '[':   TLS->Symbol = S_LBRACK;                      GET_CHAR();  break;
-  case ']':   TLS->Symbol = S_RBRACK;                      GET_CHAR();  break;
-  case '{':   TLS->Symbol = S_LBRACE;                      GET_CHAR();  break;
-  case '}':   TLS->Symbol = S_RBRACE;                      GET_CHAR();  break;
-  case '(':   TLS->Symbol = S_LPAREN;                      GET_CHAR();  break;
-  case ')':   TLS->Symbol = S_RPAREN;                      GET_CHAR();  break;
-  case ',':   TLS->Symbol = S_COMMA;                       GET_CHAR();  break;
+  case '[':   TLS_MACRO(Symbol) = S_LBRACK;                      GET_CHAR();  break;
+  case ']':   TLS_MACRO(Symbol) = S_RBRACK;                      GET_CHAR();  break;
+  case '{':   TLS_MACRO(Symbol) = S_LBRACE;                      GET_CHAR();  break;
+  case '}':   TLS_MACRO(Symbol) = S_RBRACE;                      GET_CHAR();  break;
+  case '(':   TLS_MACRO(Symbol) = S_LPAREN;                      GET_CHAR();  break;
+  case ')':   TLS_MACRO(Symbol) = S_RPAREN;                      GET_CHAR();  break;
+  case ',':   TLS_MACRO(Symbol) = S_COMMA;                       GET_CHAR();  break;
 
-  case ':':   TLS->Symbol = S_COLON;                       GET_CHAR();
-    if ( *TLS->In == '\\' ) {
+  case ':':   TLS_MACRO(Symbol) = S_COLON;                       GET_CHAR();
+    if ( *TLS_MACRO(In) == '\\' ) {
       GET_CHAR();
-      if ( *TLS->In == '\n' )
+      if ( *TLS_MACRO(In) == '\n' )
         { GET_CHAR(); }
     }
-    if ( *TLS->In == '=' ) { TLS->Symbol = S_ASSIGN;  GET_CHAR(); break; }
-    if ( TLS->In[0] == ':' && TLS->In[1] == '=') {
-      TLS->Symbol = S_INCORPORATE; GET_CHAR(); GET_CHAR(); break;
+    if ( *TLS_MACRO(In) == '=' ) { TLS_MACRO(Symbol) = S_ASSIGN;  GET_CHAR(); break; }
+    if ( TLS_MACRO(In)[0] == ':' && TLS_MACRO(In)[1] == '=') {
+      TLS_MACRO(Symbol) = S_INCORPORATE; GET_CHAR(); GET_CHAR(); break;
     }
     break;
 
-  case ';':   TLS->Symbol = S_SEMICOLON;                   GET_CHAR();  break;
+  case ';':   TLS_MACRO(Symbol) = S_SEMICOLON;                   GET_CHAR();  break;
 
-  case '=':   TLS->Symbol = S_EQ;                          GET_CHAR();  break;
-  case '<':   TLS->Symbol = S_LT;                          GET_CHAR();
-    if ( *TLS->In == '\\' ) { GET_CHAR();
-      if ( *TLS->In == '\n' ) { GET_CHAR(); } }
-    if ( *TLS->In == '=' ) { TLS->Symbol = S_LE;      GET_CHAR();  break; }
-    if ( *TLS->In == '>' ) { TLS->Symbol = S_NE;      GET_CHAR();  break; }
+  case '=':   TLS_MACRO(Symbol) = S_EQ;                          GET_CHAR();  break;
+  case '<':   TLS_MACRO(Symbol) = S_LT;                          GET_CHAR();
+    if ( *TLS_MACRO(In) == '\\' ) { GET_CHAR();
+      if ( *TLS_MACRO(In) == '\n' ) { GET_CHAR(); } }
+    if ( *TLS_MACRO(In) == '=' ) { TLS_MACRO(Symbol) = S_LE;      GET_CHAR();  break; }
+    if ( *TLS_MACRO(In) == '>' ) { TLS_MACRO(Symbol) = S_NE;      GET_CHAR();  break; }
     break;
-  case '>':   TLS->Symbol = S_GT;                          GET_CHAR();
-    if ( *TLS->In == '\\' ) { GET_CHAR();
-      if ( *TLS->In == '\n' ) { GET_CHAR(); } }
-    if ( *TLS->In == '=' ) { TLS->Symbol = S_GE;      GET_CHAR();  break; }
+  case '>':   TLS_MACRO(Symbol) = S_GT;                          GET_CHAR();
+    if ( *TLS_MACRO(In) == '\\' ) { GET_CHAR();
+      if ( *TLS_MACRO(In) == '\n' ) { GET_CHAR(); } }
+    if ( *TLS_MACRO(In) == '=' ) { TLS_MACRO(Symbol) = S_GE;      GET_CHAR();  break; }
     break;
 
-  case '+':   TLS->Symbol = S_PLUS;                        GET_CHAR();  break;
-  case '-':   TLS->Symbol = S_MINUS;                       GET_CHAR();
-    if ( *TLS->In == '\\' ) { GET_CHAR();
-      if ( *TLS->In == '\n' ) { GET_CHAR(); } }
-    if ( *TLS->In == '>' ) { TLS->Symbol=S_MAPTO;     GET_CHAR();  break; }
+  case '+':   TLS_MACRO(Symbol) = S_PLUS;                        GET_CHAR();  break;
+  case '-':   TLS_MACRO(Symbol) = S_MINUS;                       GET_CHAR();
+    if ( *TLS_MACRO(In) == '\\' ) { GET_CHAR();
+      if ( *TLS_MACRO(In) == '\n' ) { GET_CHAR(); } }
+    if ( *TLS_MACRO(In) == '>' ) { TLS_MACRO(Symbol)=S_MAPTO;     GET_CHAR();  break; }
     break;
-  case '*':   TLS->Symbol = S_MULT;                        GET_CHAR();  break;
-  case '/':   TLS->Symbol = S_DIV;                         GET_CHAR();  break;
-  case '^':   TLS->Symbol = S_POW;                         GET_CHAR();  break;
-  case '`':   TLS->Symbol = S_BACKQUOTE;                   GET_CHAR();  break;
+  case '*':   TLS_MACRO(Symbol) = S_MULT;                        GET_CHAR();  break;
+  case '/':   TLS_MACRO(Symbol) = S_DIV;                         GET_CHAR();  break;
+  case '^':   TLS_MACRO(Symbol) = S_POW;                         GET_CHAR();  break;
+  case '`':   TLS_MACRO(Symbol) = S_BACKQUOTE;                   GET_CHAR();  break;
 
   case '"':                        GET_CHAR(); GetMaybeTripStr();  break;
   case '\'':                                          GetChar();   break;
   case '\\':                                          GetIdent();  break;
   case '_':                                           GetIdent();  break;
   case '@':                                           GetIdent();  break;
-  case '~':   TLS->Value[0] = '~';  TLS->Value[1] = '\0';
-    TLS->Symbol = S_IDENT;                       GET_CHAR();  break;
+  case '~':   TLS_MACRO(Value)[0] = '~';  TLS_MACRO(Value)[1] = '\0';
+    TLS_MACRO(Symbol) = S_IDENT;                       GET_CHAR();  break;
 
   case '0': case '1': case '2': case '3': case '4':
   case '5': case '6': case '7': case '8': case '9':
     GetNumber(0);    break;
 
-  case '\377': TLS->Symbol = S_EOF;                        *TLS->In = '\0';  break;
+  case '\377': TLS_MACRO(Symbol) = S_EOF;                        *TLS_MACRO(In) = '\0';  break;
 
-  default :   if ( IsAlpha(*TLS->In) )                   { GetIdent();  break; }
-    TLS->Symbol = S_ILLEGAL;                     GET_CHAR();  break;
+  default :   if ( IsAlpha(*TLS_MACRO(In)) )                   { GetIdent();  break; }
+    TLS_MACRO(Symbol) = S_ILLEGAL;                     GET_CHAR();  break;
   }
 }
 
@@ -2438,20 +2438,20 @@ void PutLineTo ( KOutputStream stream, UInt len )
   UInt lt,ls;     /* These are supposed to hold string lengths */
 
   /* if in test mode and the next input line matches print nothing       */
-  if ( TLS->TestInput != 0 && TLS->TestOutput == stream ) {
-    if ( TLS->TestLine[0] == '\0' ) {
-      if ( ! GetLine2( TLS->TestInput, TLS->TestLine, sizeof(TLS->TestLine) ) ) {
-        TLS->TestLine[0] = '\0';
+  if ( TLS_MACRO(TestInput) != 0 && TLS_MACRO(TestOutput) == stream ) {
+    if ( TLS_MACRO(TestLine)[0] == '\0' ) {
+      if ( ! GetLine2( TLS_MACRO(TestInput), TLS_MACRO(TestLine), sizeof(TLS_MACRO(TestLine)) ) ) {
+        TLS_MACRO(TestLine)[0] = '\0';
       }
-      TLS->TestInput->number++;
+      TLS_MACRO(TestInput)->number++;
     }
 
-    /* Note that TLS->TestLine is ended by a \n, but stream->line need not! */
+    /* Note that TLS_MACRO(TestLine) is ended by a \n, but stream->line need not! */
 
-    lt = strlen(TLS->TestLine);   /* this counts including the newline! */
-    p = TLS->TestLine + (lt-2);
+    lt = strlen(TLS_MACRO(TestLine));   /* this counts including the newline! */
+    p = TLS_MACRO(TestLine) + (lt-2);
     /* this now points to the last char before \n in the line! */
-    while ( TLS->TestLine <= p && ( *p == ' ' || *p == '\t' ) ) {
+    while ( TLS_MACRO(TestLine) <= p && ( *p == ' ' || *p == '\t' ) ) {
       p[1] = '\0';  p[0] = '\n';  p--; lt--;
     }
     /* lt is still the correct string length including \n */
@@ -2465,18 +2465,18 @@ void PutLineTo ( KOutputStream stream, UInt len )
       }
     }
     /* ls is still the correct string length including a possible \n */
-    if ( ! strncmp( TLS->TestLine, stream->line, ls ) ) {
+    if ( ! strncmp( TLS_MACRO(TestLine), stream->line, ls ) ) {
       if (ls < lt)
-        memmove(TLS->TestLine,TLS->TestLine + ls,lt-ls+1);
+        memmove(TLS_MACRO(TestLine),TLS_MACRO(TestLine) + ls,lt-ls+1);
       else
-        TLS->TestLine[0] = '\0';
+        TLS_MACRO(TestLine)[0] = '\0';
     }
     else {
       char obuf[80];
-      /* snprintf(obuf, sizeof(obuf), "+ 5%i bad example:\n+ ", (int)TLS->TestInput->number); */
-      snprintf(obuf, sizeof(obuf), "Line %i : \n+ ", (int)TLS->TestInput->number);
+      /* snprintf(obuf, sizeof(obuf), "+ 5%i bad example:\n+ ", (int)TLS_MACRO(TestInput)->number); */
+      snprintf(obuf, sizeof(obuf), "Line %i : \n+ ", (int)TLS_MACRO(TestInput)->number);
       PutLine2( stream, obuf, strlen(obuf) );
-      PutLine2( stream, TLS->Output->line, strlen(TLS->Output->line) );
+      PutLine2( stream, TLS_MACRO(Output)->line, strlen(TLS_MACRO(Output)->line) );
     }
   }
 
@@ -2486,9 +2486,9 @@ void PutLineTo ( KOutputStream stream, UInt len )
   }
 
   /* if neccessary echo it to the logfile                                */
-  if ( TLS->OutputLog != 0 && ! stream->isstream ) {
+  if ( TLS_MACRO(OutputLog) != 0 && ! stream->isstream ) {
     if ( stream->file == 1 || stream->file == 3 ) {
-      PutLine2( TLS->OutputLog, stream->line, len );
+      PutLine2( TLS_MACRO(OutputLog), stream->line, len );
     }
   }
 }
@@ -2628,7 +2628,7 @@ void PutChrTo (
   /* normal character, room on the current line                          */
   /* TODO: This should be -2 instead of -8 and room for the prefix
    * accounted for elswhere. */
-  else if ( stream->pos < SyNrCols-8-TLS->NoSplitLine ) {
+  else if ( stream->pos < SyNrCols-8-TLS_MACRO(NoSplitLine) ) {
 
     /* put the character on this line                                  */
     stream->line[ stream->pos++ ] = ch;
@@ -2718,7 +2718,7 @@ void PutChrTo (
 
 Obj FuncToggleEcho( Obj self)
 {
-  TLS->Input->echo = 1 - TLS->Input->echo;
+  TLS_MACRO(Input)->echo = 1 - TLS_MACRO(Input)->echo;
   return (Obj)0;
 }
 
@@ -2731,7 +2731,7 @@ Obj FuncToggleEcho( Obj self)
 Obj FuncCPROMPT( Obj self)
 {
   Obj p;
-  C_NEW_STRING_DYN( p, TLS->Prompt );
+  C_NEW_STRING_DYN( p, TLS_MACRO(Prompt) );
   return p;
 }
 
@@ -2752,9 +2752,9 @@ Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
     /* by assigning to Prompt we also tell readline (if used) what the
        current prompt is  */
     strlcpy(promptBuf, CSTR_STRING(prompt), sizeof(promptBuf));
-    TLS->Prompt = promptBuf;
+    TLS_MACRO(Prompt) = promptBuf;
   }
-  Pr("%s%c", (Int)TLS->Prompt, (Int)'\03' );
+  Pr("%s%c", (Int)TLS_MACRO(Prompt), (Int)'\03' );
   return (Obj) 0;
 }
 
@@ -2873,14 +2873,14 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       /* must be careful that line breaks don't go inside
          escaped sequences \n or \123 or similar */
       for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-        if (*q == '\\' && TLS->NoSplitLine == 0) {
+        if (*q == '\\' && TLS_MACRO(NoSplitLine) == 0) {
           if (*(q+1) < '8' && *(q+1) >= '0')
-            TLS->NoSplitLine = 3;
+            TLS_MACRO(NoSplitLine) = 3;
           else
-            TLS->NoSplitLine = 1;
+            TLS_MACRO(NoSplitLine) = 1;
         }
-        else if (TLS->NoSplitLine > 0)
-          TLS->NoSplitLine--;
+        else if (TLS_MACRO(NoSplitLine) > 0)
+          TLS_MACRO(NoSplitLine)--;
         put_a_char( *q );
       }
 
@@ -3049,7 +3049,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 /* TL: static KOutputStream theStream; */
 
 static void putToTheStream( Char c) {
-  PutChrTo(TLS->TheStream, c);
+  PutChrTo(TLS_MACRO(TheStream), c);
 }
 
 void PrTo (
@@ -3058,10 +3058,10 @@ void PrTo (
            Int                 arg1,
            Int                 arg2 )
 {
-  KOutputStream savedStream = TLS->TheStream;
-  TLS->TheStream = stream;
+  KOutputStream savedStream = TLS_MACRO(TheStream);
+  TLS_MACRO(TheStream) = stream;
   FormatOutput( putToTheStream, format, arg1, arg2);
-  TLS->TheStream = savedStream;
+  TLS_MACRO(TheStream) = savedStream;
 }
 
 void Pr (
@@ -3078,30 +3078,30 @@ void Pr (
 
 static void putToTheBuffer( Char c)
 {
-  if (TLS->TheCount < TLS->TheLimit)
-    TLS->TheBuffer[TLS->TheCount++] = c;
+  if (TLS_MACRO(TheCount) < TLS_MACRO(TheLimit))
+    TLS_MACRO(TheBuffer)[TLS_MACRO(TheCount)++] = c;
 }
 
 void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 {
-  Char *savedBuffer = TLS->TheBuffer;
-  UInt savedCount = TLS->TheCount;
-  UInt savedLimit = TLS->TheLimit;
-  TLS->TheBuffer = buffer;
-  TLS->TheCount = 0;
-  TLS->TheLimit = maxlen;
+  Char *savedBuffer = TLS_MACRO(TheBuffer);
+  UInt savedCount = TLS_MACRO(TheCount);
+  UInt savedLimit = TLS_MACRO(TheLimit);
+  TLS_MACRO(TheBuffer) = buffer;
+  TLS_MACRO(TheCount) = 0;
+  TLS_MACRO(TheLimit) = maxlen;
   FormatOutput(putToTheBuffer, format, arg1, arg2);
   putToTheBuffer('\0');
-  TLS->TheBuffer = savedBuffer;
-  TLS->TheCount = savedCount;
-  TLS->TheLimit = savedLimit;
+  TLS_MACRO(TheBuffer) = savedBuffer;
+  TLS_MACRO(TheCount) = savedCount;
+  TLS_MACRO(TheLimit) = savedLimit;
 }
 
 
 Obj FuncINPUT_FILENAME( Obj self) {
   Obj s;
-  if (TLS->Input && TLS->Input->name) {
-    C_NEW_STRING_DYN( s, TLS->Input->name );
+  if (TLS_MACRO(Input) && TLS_MACRO(Input)->name) {
+    C_NEW_STRING_DYN( s, TLS_MACRO(Input)->name );
   } else {
     char *defin = "*defin*";
     C_NEW_STRING_DYN( s, defin );
@@ -3110,7 +3110,7 @@ Obj FuncINPUT_FILENAME( Obj self) {
 }
 
 Obj FuncINPUT_LINENUMBER( Obj self) {
-  return INTOBJ_INT(TLS->Input ? TLS->Input->number : 0);
+  return INTOBJ_INT(TLS_MACRO(Input) ? TLS_MACRO(Input)->number : 0);
 }
 
 Obj FuncALL_KEYWORDS(Obj self) {
@@ -3130,9 +3130,9 @@ Obj FuncALL_KEYWORDS(Obj self) {
 
 Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
   if (val == False)
-    (TLS->OutputFiles[1])->format = 0;
+    (TLS_MACRO(OutputFiles)[1])->format = 0;
   else
-    (TLS->OutputFiles[1])->format = 1;
+    (TLS_MACRO(OutputFiles)[1])->format = 1;
   return val;
 }
 
@@ -3203,11 +3203,11 @@ static Int InitKernel (
     Int                 i;
 
     (void)OpenInput(  "*stdin*"  );
-    TLS->Input->echo = 1; /* echo stdin */
+    TLS_MACRO(Input)->echo = 1; /* echo stdin */
     (void)OpenOutput( "*stdout*" );
 
-    TLS->InputLog  = 0;  TLS->OutputLog  = 0;
-    TLS->TestInput = 0;  TLS->TestOutput = 0;
+    TLS_MACRO(InputLog)  = 0;  TLS_MACRO(OutputLog)  = 0;
+    TLS_MACRO(TestInput) = 0;  TLS_MACRO(TestOutput) = 0;
 
     /* Initialize default stream functions */
 
@@ -3294,7 +3294,7 @@ StructInitInfo * InitInfoScanner ( void )
 
 void InitScannerTLS()
 {
-  TLS->HelpSubsOn = 1;
+  TLS_MACRO(HelpSubsOn) = 1;
 }
 
 void DestroyScannerTLS()

@@ -27,15 +27,15 @@
 
 #ifndef DEBUG_READ_ERROR
 
-#define READ_ERROR()    (TLS->NrError || (TLS->NrError+=sySetjmp(TLS->ReadJmpError)))
+#define READ_ERROR()    (TLS_MACRO(NrError) || (TLS_MACRO(NrError)+=sySetjmp(TLS_MACRO(ReadJmpError))))
 
 #else
 
 #define READ_ERROR()                                                     \
-    ( TLS->NrError ||                                                         \
-      ( ( TLS->NrError += setjmp(TLS->ReadJmpError) ) ?                            \
+    ( TLS_MACRO(NrError) ||                                                         \
+      ( ( TLS_MACRO(NrError) += setjmp(TLS_MACRO(ReadJmpError)) ) ?                            \
         Pr( "READ_ERROR( %s, %d )\n", (Int)__FILE__, __LINE__ ),0 : 0 ), \
-      TLS->NrError )
+      TLS_MACRO(NrError) )
 
 #endif
 

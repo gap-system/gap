@@ -1349,7 +1349,7 @@ static void TLAllocatorInit(void) {
     k ++;
   }
   TLAllocatorMaxSeg = k;
-  if (MAX_GC_PREFIX_DESC * sizeof(void *) > sizeof(TLS->FreeList))
+  if (MAX_GC_PREFIX_DESC * sizeof(void *) > sizeof(TLS_MACRO(FreeList)))
     abort();
 }
 
@@ -1373,18 +1373,18 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
       alloc_size = (size + GRANULE_SIZE - 1 ) / GRANULE_SIZE;
       alloc_seg = TLAllocatorSeg[alloc_size];
       alloc_size = TLAllocatorSize[alloc_seg];
-      if (!TLS->FreeList[gc_type+1])
-        TLS->FreeList[gc_type+1] =
+      if (!TLS_MACRO(FreeList)[gc_type+1])
+        TLS_MACRO(FreeList)[gc_type+1] =
 	  GC_malloc(sizeof(void *) * TLAllocatorMaxSeg);
-      if (!(result = TLS->FreeList[gc_type+1][alloc_seg])) {
+      if (!(result = TLS_MACRO(FreeList)[gc_type+1][alloc_seg])) {
         if (gc_type < 0)
-	  TLS->FreeList[0][alloc_seg] = GC_malloc_many(alloc_size);
+	  TLS_MACRO(FreeList)[0][alloc_seg] = GC_malloc_many(alloc_size);
 	else
 	  GC_generic_malloc_many(alloc_size, GCMKind[gc_type],
-	    &TLS->FreeList[gc_type+1][alloc_seg]);
-	result = TLS->FreeList[gc_type+1][alloc_seg];
+	    &TLS_MACRO(FreeList)[gc_type+1][alloc_seg]);
+	result = TLS_MACRO(FreeList)[gc_type+1][alloc_seg];
       }
-      TLS->FreeList[gc_type+1][alloc_seg] = *(void **)result;
+      TLS_MACRO(FreeList)[gc_type+1][alloc_seg] = *(void **)result;
       memset(result, 0, alloc_size);
     } else {
       if (gc_type >= 0)
@@ -1483,10 +1483,10 @@ Bag NewBag (
     bag = GC_malloc(2*sizeof(Bag *));
 #else
     bag = GC_malloc(4*sizeof(Bag *));
-    if (TLS->PtrLVars) {
+    if (TLS_MACRO(PtrLVars)) {
       bag[2] = (void *)(CURR_FUNC);
-      if (TLS->CurrLVars != TLS->BottomLVars) {
-        Obj plvars = ADDR_OBJ(TLS->CurrLVars)[2];
+      if (TLS_MACRO(CurrLVars) != TLS_MACRO(BottomLVars)) {
+        Obj plvars = ADDR_OBJ(TLS_MACRO(CurrLVars))[2];
 	bag[3] = (void *) (ADDR_OBJ(plvars)[0]);
       }
     }

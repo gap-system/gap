@@ -199,7 +199,7 @@ static void SetupTLS()
 #endif
   InitializeTLS();
   MainThreadTLS = TLS;
-  TLS->threadID = 0;
+  TLS_MACRO(threadID) = 0;
 }
 
 Obj NewThreadObject(UInt id) {
@@ -212,7 +212,7 @@ Obj NewThreadObject(UInt id) {
 
 void InitMainThread()
 {
-  TLS->threadObject = NewThreadObject(0);
+  TLS_MACRO(threadObject) = NewThreadObject(0);
 }
 
 static void RunThreadedMain2(
@@ -286,14 +286,14 @@ static void RunThreadedMain2(
   pthread_rwlock_init(&master_lock, 0);
   pthread_mutex_init(&main_thread_mutex, 0);
   pthread_cond_init(&main_thread_cond, 0);
-  TLS->threadLock = &main_thread_mutex;
-  TLS->threadSignal = &main_thread_cond;
-  thread_data[0].lock = TLS->threadLock;
-  thread_data[0].cond = TLS->threadSignal;
+  TLS_MACRO(threadLock) = &main_thread_mutex;
+  TLS_MACRO(threadSignal) = &main_thread_cond;
+  thread_data[0].lock = TLS_MACRO(threadLock);
+  thread_data[0].cond = TLS_MACRO(threadSignal);
   thread_data[0].state = TSTATE_RUNNING;
   thread_data[0].tls = TLS;
   InitSignals();
-  if (sySetjmp(TLS->threadExit))
+  if (sySetjmp(TLS_MACRO(threadExit)))
     exit(0);
   /* Traversal functionality may be needed during the initialization
    * of some modules, so we set it up now. */
@@ -304,11 +304,11 @@ static void RunThreadedMain2(
 void CreateMainRegion()
 {
   int i;
-  TLS->currentRegion = NewRegion();
-  TLS->threadRegion = TLS->currentRegion;
-  ((Region *)TLS->currentRegion)->fixed_owner = 1;
-  RegionWriteLock(TLS->currentRegion);
-  ((Region *)TLS->currentRegion)->name = MakeImmString("thread region #0");
+  TLS_MACRO(currentRegion) = NewRegion();
+  TLS_MACRO(threadRegion) = TLS_MACRO(currentRegion);
+  ((Region *)TLS_MACRO(currentRegion))->fixed_owner = 1;
+  RegionWriteLock(TLS_MACRO(currentRegion));
+  ((Region *)TLS_MACRO(currentRegion))->name = MakeImmString("thread region #0");
   PublicRegionName = MakeImmString("public region");
   LimboRegion = NewRegion();
   LimboRegion->fixed_owner = 1;
@@ -331,31 +331,31 @@ void *DispatchThread(void *arg)
   ThreadData *this_thread = arg;
   Region *region;
   InitializeTLS();
-  TLS->threadID = this_thread - thread_data;
+  TLS_MACRO(threadID) = this_thread - thread_data;
 #ifndef DISABLE_GC
   AddGCRoots();
 #endif
   InitTLS();
-  TLS->currentRegion = region = NewRegion();
-  TLS->threadRegion = TLS->currentRegion;
-  TLS->threadLock = this_thread->lock;
-  TLS->threadSignal = this_thread->cond;
+  TLS_MACRO(currentRegion) = region = NewRegion();
+  TLS_MACRO(threadRegion) = TLS_MACRO(currentRegion);
+  TLS_MACRO(threadLock) = this_thread->lock;
+  TLS_MACRO(threadSignal) = this_thread->cond;
   region->fixed_owner = 1;
   region->name = this_thread->region_name;
   RegionWriteLock(region);
   if (!this_thread->region_name) {
     char buf[8];
-    sprintf(buf, "%d", TLS->threadID);
+    sprintf(buf, "%d", TLS_MACRO(threadID));
     this_thread->region_name = MakeImmString2("thread #", buf);
   }
   SetRegionName(region, this_thread->region_name);
-  TLS->threadObject = this_thread->thread_object;
+  TLS_MACRO(threadObject) = this_thread->thread_object;
   pthread_mutex_lock(this_thread->lock);
-  *(ThreadLocalStorage **)(ADDR_OBJ(TLS->threadObject)) = TLS;
+  *(ThreadLocalStorage **)(ADDR_OBJ(TLS_MACRO(threadObject))) = TLS;
   pthread_cond_broadcast(this_thread->cond);
   pthread_mutex_unlock(this_thread->lock);
   this_thread->start(this_thread->arg);
-  *(UInt *)(ADDR_OBJ(TLS->threadObject)+2) |= THREAD_TERMINATED;
+  *(UInt *)(ADDR_OBJ(TLS_MACRO(threadObject))+2) |= THREAD_TERMINATED;
   region->fixed_owner = 0;
   RegionWriteUnlock(region);
   DestroyTLS();
@@ -503,30 +503,30 @@ static UInt LockID(void *object) {
 }
 
 void HashLock(void *object) {
-  if (TLS->CurrentHashLock)
+  if (TLS_MACRO(CurrentHashLock))
     ErrorQuit("Nested hash locks", 0L, 0L);
-  TLS->CurrentHashLock = object;
+  TLS_MACRO(CurrentHashLock) = object;
   pthread_rwlock_wrlock(&ObjLock[LockID(object)]);
 }
 
 void HashLockShared(void *object) {
-  if (TLS->CurrentHashLock)
+  if (TLS_MACRO(CurrentHashLock))
     ErrorQuit("Nested hash locks", 0L, 0L);
-  TLS->CurrentHashLock = object;
+  TLS_MACRO(CurrentHashLock) = object;
   pthread_rwlock_rdlock(&ObjLock[LockID(object)]);
 }
 
 void HashUnlock(void *object) {
-  if (TLS->CurrentHashLock != object)
+  if (TLS_MACRO(CurrentHashLock) != object)
     ErrorQuit("Improperly matched hash lock/unlock calls", 0L, 0L);
-  TLS->CurrentHashLock = 0;
+  TLS_MACRO(CurrentHashLock) = 0;
   pthread_rwlock_unlock(&ObjLock[LockID(object)]);
 }
 
 void HashUnlockShared(void *object) {
-  if (TLS->CurrentHashLock != object)
+  if (TLS_MACRO(CurrentHashLock) != object)
     ErrorQuit("Improperly matched hash lock/unlock calls", 0L, 0L);
-  TLS->CurrentHashLock = 0;
+  TLS_MACRO(CurrentHashLock) = 0;
   pthread_rwlock_unlock(&ObjLock[LockID(object)]);
 }
 
@@ -534,19 +534,19 @@ void RegionWriteLock(Region *region)
 {
   int result = 0;
 
-  if (region->count_active || TLS->CountActive) {
+  if (region->count_active || TLS_MACRO(CountActive)) {
     result = !pthread_rwlock_trywrlock(region->lock);
 
     if(result) {
       if(region->count_active)
 	region->locks_acquired++;
-      if(TLS->CountActive)
-	TLS->LocksAcquired++;
+      if(TLS_MACRO(CountActive))
+	TLS_MACRO(LocksAcquired)++;
     } else {
       if(region->count_active)
 	region->locks_contended++;
-      if(TLS->CountActive)
-	TLS->LocksContended++;
+      if(TLS_MACRO(CountActive))
+	TLS_MACRO(LocksContended)++;
       pthread_rwlock_wrlock(region->lock);
     }
   } else {
@@ -563,14 +563,14 @@ int RegionTryWriteLock(Region *region)
   if (result) {
     if(region->count_active)
       region->locks_acquired++;
-    if(TLS->CountActive)
-      TLS->LocksAcquired++;
+    if(TLS_MACRO(CountActive))
+      TLS_MACRO(LocksAcquired)++;
     region->owner = TLS;
   } else {
     if(region->count_active)
       region->locks_contended++;
-    if(TLS->CountActive)
-      TLS->LocksContended++;
+    if(TLS_MACRO(CountActive))
+      TLS_MACRO(LocksContended)++;
   }
   return result;
 }
@@ -585,25 +585,25 @@ void RegionReadLock(Region *region)
 {
   int result = 0;
 
-  if(region->count_active || TLS->CountActive) {
+  if(region->count_active || TLS_MACRO(CountActive)) {
     result = !pthread_rwlock_rdlock(region->lock);
 
     if(result) {
       if(region->count_active)
 	ATOMIC_INC(&region->locks_acquired);
-      if(TLS->CountActive)
-	TLS->LocksAcquired++;
+      if(TLS_MACRO(CountActive))
+	TLS_MACRO(LocksAcquired)++;
     } else {
       if(region->count_active)
 	ATOMIC_INC(&region->locks_contended);
-      if(TLS->CountActive)
-	TLS->LocksAcquired++;
+      if(TLS_MACRO(CountActive))
+	TLS_MACRO(LocksAcquired)++;
       pthread_rwlock_rdlock(region->lock);
     }
   } else {
       pthread_rwlock_rdlock(region->lock);
   }
-  region->readers[TLS->threadID] = 1;
+  region->readers[TLS_MACRO(threadID)] = 1;
 }
 
 int RegionTryReadLock(Region *region)
@@ -613,21 +613,21 @@ int RegionTryReadLock(Region *region)
   if (result) {
     if(region->count_active)
       ATOMIC_INC(&region->locks_acquired);
-    if(TLS->CountActive)
-      TLS->LocksAcquired++;
-    region->readers[TLS->threadID] = 1;
+    if(TLS_MACRO(CountActive))
+      TLS_MACRO(LocksAcquired)++;
+    region->readers[TLS_MACRO(threadID)] = 1;
   } else {
     if(region->count_active)
       ATOMIC_INC(&region->locks_contended);
-    if(TLS->CountActive)
-      TLS->LocksContended++;
+    if(TLS_MACRO(CountActive))
+      TLS_MACRO(LocksContended)++;
   }
   return result;
 }
 
 void RegionReadUnlock(Region *region)
 {
-  region->readers[TLS->threadID] = 0;
+  region->readers[TLS_MACRO(threadID)] = 0;
   pthread_rwlock_unlock(region->lock);
 }
 
@@ -635,7 +635,7 @@ void RegionUnlock(Region *region)
 {
   if (region->owner == TLS)
     region->owner = NULL;
-  region->readers[TLS->threadID] = 0;
+  region->readers[TLS_MACRO(threadID)] = 0;
   pthread_rwlock_unlock(region->lock);
 }
 
@@ -645,7 +645,7 @@ int IsLocked(Region *region)
     return 0; /* public region */
   if (region->owner == TLS)
     return 1;
-  if (region->readers[TLS->threadID])
+  if (region->readers[TLS_MACRO(threadID)])
     return 2;
   return 0;
 }
@@ -740,34 +740,34 @@ static int LessThanLockRequest(const void *a, const void *b)
 }
 
 void PushRegionLock(Region *region) {
-  if (!TLS->lockStack) {
-    TLS->lockStack = NewList(16);
-    TLS->lockStackPointer = 0;
-  } else if (LEN_PLIST(TLS->lockStack) == TLS->lockStackPointer) {
-    int newlen = TLS->lockStackPointer * 3 / 2;
-    GROW_PLIST(TLS->lockStack, newlen);
+  if (!TLS_MACRO(lockStack)) {
+    TLS_MACRO(lockStack) = NewList(16);
+    TLS_MACRO(lockStackPointer) = 0;
+  } else if (LEN_PLIST(TLS_MACRO(lockStack)) == TLS_MACRO(lockStackPointer)) {
+    int newlen = TLS_MACRO(lockStackPointer) * 3 / 2;
+    GROW_PLIST(TLS_MACRO(lockStack), newlen);
   }
-  TLS->lockStackPointer++;
-  SET_ELM_PLIST(TLS->lockStack, TLS->lockStackPointer,
+  TLS_MACRO(lockStackPointer)++;
+  SET_ELM_PLIST(TLS_MACRO(lockStack), TLS_MACRO(lockStackPointer),
     region ? region->obj : (Obj) 0);
 }
 
 void PopRegionLocks(int newSP) {
-  while (newSP < TLS->lockStackPointer)
+  while (newSP < TLS_MACRO(lockStackPointer))
   {
-    int p = TLS->lockStackPointer--;
-    Obj region_obj = ELM_PLIST(TLS->lockStack, p);
+    int p = TLS_MACRO(lockStackPointer)--;
+    Obj region_obj = ELM_PLIST(TLS_MACRO(lockStack), p);
     if (!region_obj) continue;
     RegionUnlock(*(Region **)(ADDR_OBJ(region_obj)));
-    SET_ELM_PLIST(TLS->lockStack, p, (Obj) 0);
+    SET_ELM_PLIST(TLS_MACRO(lockStack), p, (Obj) 0);
   }
 }
 
 void PopRegionAutoLocks(int newSP) {
-  while (newSP < TLS->lockStackPointer)
+  while (newSP < TLS_MACRO(lockStackPointer))
   {
-    int p = TLS->lockStackPointer;
-    Obj region_obj = ELM_PLIST(TLS->lockStack, p);
+    int p = TLS_MACRO(lockStackPointer);
+    Obj region_obj = ELM_PLIST(TLS_MACRO(lockStack), p);
     Region *region;
     if (!region_obj)
       return;
@@ -775,13 +775,13 @@ void PopRegionAutoLocks(int newSP) {
     if (!region->autolock)
       return;
     RegionUnlock(region);
-    SET_ELM_PLIST(TLS->lockStack, p, (Obj) 0);
-    TLS->lockStackPointer--;
+    SET_ELM_PLIST(TLS_MACRO(lockStack), p, (Obj) 0);
+    TLS_MACRO(lockStackPointer)--;
   }
 }
 
 int RegionLockSP() {
-  return TLS->lockStackPointer;
+  return TLS_MACRO(lockStackPointer);
 }
 
 int GetThreadState(int threadID) {
@@ -819,7 +819,7 @@ void PauseThread(int threadID) {
     switch (state & TSTATE_MASK) {
     case TSTATE_RUNNING:
       if (UpdateThreadState(threadID,
-          TSTATE_RUNNING, TSTATE_PAUSED|(TLS->threadID << TSTATE_SHIFT))) {
+          TSTATE_RUNNING, TSTATE_PAUSED|(TLS_MACRO(threadID) << TSTATE_SHIFT))) {
 	SetInterrupt(threadID);
         return;
       }
@@ -827,7 +827,7 @@ void PauseThread(int threadID) {
     case TSTATE_BLOCKED:
     case TSTATE_SYSCALL:
       if (LockAndUpdateThreadState(threadID,
-          state, TSTATE_PAUSED|(TLS->threadID << TSTATE_SHIFT)))
+          state, TSTATE_PAUSED|(TLS_MACRO(threadID) << TSTATE_SHIFT)))
 	return;
       break;
     case TSTATE_PAUSED:
@@ -840,37 +840,37 @@ void PauseThread(int threadID) {
 }
 
 static void TerminateCurrentThread(int locked) {
-  ThreadData *thread = thread_data + TLS->threadID;
+  ThreadData *thread = thread_data + TLS_MACRO(threadID);
   if (locked)
     pthread_mutex_unlock(thread->lock);
   PopRegionLocks(0);
-  if (TLS->CurrentHashLock)
-    HashUnlock(TLS->CurrentHashLock);
-  syLongjmp(TLS->threadExit, 1);
+  if (TLS_MACRO(CurrentHashLock))
+    HashUnlock(TLS_MACRO(CurrentHashLock));
+  syLongjmp(TLS_MACRO(threadExit), 1);
 }
 
 static void PauseCurrentThread(int locked) {
-  ThreadData *thread = thread_data + TLS->threadID;
+  ThreadData *thread = thread_data + TLS_MACRO(threadID);
   if (!locked)
     pthread_mutex_lock(thread->lock);
   for (;;) {
-    int state = GetThreadState(TLS->threadID);
+    int state = GetThreadState(TLS_MACRO(threadID));
     if ((state & TSTATE_MASK) == TSTATE_KILLED)
       TerminateCurrentThread(1);
     if ((state & TSTATE_MASK) != TSTATE_PAUSED)
       break;
-    ((Region *)(TLS->currentRegion))->alt_owner =
+    ((Region *)(TLS_MACRO(currentRegion)))->alt_owner =
       thread_data[state >> TSTATE_SHIFT].tls;
     pthread_cond_wait(thread->cond, thread->lock);
     // TODO: This really should go in ResumeThread()
-    ((Region *)(TLS->currentRegion))->alt_owner = NULL;
+    ((Region *)(TLS_MACRO(currentRegion)))->alt_owner = NULL;
   }
   if (!locked)
     pthread_mutex_unlock(thread->lock);
 }
 
 static void InterruptCurrentThread(int locked, Stat stat) {
-  ThreadData *thread = thread_data + TLS->threadID;
+  ThreadData *thread = thread_data + TLS_MACRO(threadID);
   int state;
   Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args);
   Obj handler = (Obj) 0;
@@ -878,16 +878,16 @@ static void InterruptCurrentThread(int locked, Stat stat) {
     return;
   if (!locked)
     pthread_mutex_lock(thread->lock);
-  TLS->CurrExecStatFuncs = ExecStatFuncs;
+  TLS_MACRO(CurrExecStatFuncs) = ExecStatFuncs;
   SET_BRK_CURR_STAT(stat);
-  state = GetThreadState(TLS->threadID);
+  state = GetThreadState(TLS_MACRO(threadID));
   if ((state & TSTATE_MASK) == TSTATE_INTERRUPTED)
-    UpdateThreadState(TLS->threadID, state, TSTATE_RUNNING);
+    UpdateThreadState(TLS_MACRO(threadID), state, TSTATE_RUNNING);
   if (state >> TSTATE_SHIFT) {
     Int n = state >> TSTATE_SHIFT;
-    if (TLS->interruptHandlers) {
-      if (n >= 1 && n <= LEN_PLIST(TLS->interruptHandlers))
-        handler = ELM_PLIST(TLS->interruptHandlers, n);
+    if (TLS_MACRO(interruptHandlers)) {
+      if (n >= 1 && n <= LEN_PLIST(TLS_MACRO(interruptHandlers)))
+        handler = ELM_PLIST(TLS_MACRO(interruptHandlers), n);
     }
   }
   if (handler)
@@ -899,15 +899,15 @@ static void InterruptCurrentThread(int locked, Stat stat) {
 }
 
 void SetInterruptHandler(int handler, Obj func) {
-  if (!TLS->interruptHandlers) {
-    TLS->interruptHandlers = NEW_PLIST(T_PLIST, MAX_INTERRUPT);
-    SET_LEN_PLIST(TLS->interruptHandlers, MAX_INTERRUPT);
+  if (!TLS_MACRO(interruptHandlers)) {
+    TLS_MACRO(interruptHandlers) = NEW_PLIST(T_PLIST, MAX_INTERRUPT);
+    SET_LEN_PLIST(TLS_MACRO(interruptHandlers), MAX_INTERRUPT);
   }
-  SET_ELM_PLIST(TLS->interruptHandlers, handler, func);
+  SET_ELM_PLIST(TLS_MACRO(interruptHandlers), handler, func);
 }
 
 void HandleInterrupts(int locked, Stat stat) {
-   switch (GetThreadState(TLS->threadID) & TSTATE_MASK) {
+   switch (GetThreadState(TLS_MACRO(threadID)) & TSTATE_MASK) {
      case TSTATE_PAUSED:
        PauseCurrentThread(locked);
        break;
@@ -1048,11 +1048,11 @@ extern UInt DeadlockCheck;
 
 static Int CurrentRegionPrecedence() {
   Int sp;
-  if (!DeadlockCheck || !TLS->lockStack)
+  if (!DeadlockCheck || !TLS_MACRO(lockStack))
     return -1;
-  sp = TLS->lockStackPointer;
+  sp = TLS_MACRO(lockStackPointer);
   while (sp > 0) {
-    Obj region_obj = ELM_PLIST(TLS->lockStack, sp);
+    Obj region_obj = ELM_PLIST(TLS_MACRO(lockStack), sp);
     if (region_obj) {
       Int prec = ((Region *)(*ADDR_OBJ(region_obj)))->prec;
       if (prec >= 0)
@@ -1066,7 +1066,7 @@ static Int CurrentRegionPrecedence() {
 int LockObject(Obj obj, int mode) {
   Region *region = GetRegionOf(obj);
   int locked;
-  int result = TLS->lockStackPointer;
+  int result = TLS_MACRO(lockStackPointer);
   if (!region)
     return result;
   locked = IsLocked(region);
@@ -1112,7 +1112,7 @@ int LockObjects(int count, Obj *objects, int *mode)
   count = p;
   if (p > 1)
     MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
-  result = TLS->lockStackPointer;
+  result = TLS_MACRO(lockStackPointer);
   curr_prec = CurrentRegionPrecedence();
   for (i=0; i<count; i++)
   {
@@ -1172,7 +1172,7 @@ int TryLockObjects(int count, Obj *objects, int *mode)
     order[i].mode = mode[i];
   }
   MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
-  result = TLS->lockStackPointer;
+  result = TLS_MACRO(lockStackPointer);
   for (i=0; i<count; i++)
   {
     Region *region = order[i].region;
@@ -1218,7 +1218,7 @@ int TryLockObjects(int count, Obj *objects, int *mode)
 
 Region *CurrentRegion()
 {
-  return TLS->currentRegion;
+  return TLS_MACRO(currentRegion);
 }
 
 extern GVarDescriptor LastInaccessibleGVar;
@@ -1239,7 +1239,7 @@ void WriteGuardError(Obj o, const char *file, unsigned line,
   char * buffer =
     alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
   ImpliedReadGuard(o);
-  if (TLS->DisableGuards)
+  if (TLS_MACRO(DisableGuards))
     return;
   SetGVar(&LastInaccessibleGVar, o);
   PrintGuardError(buffer, "write", o, file, line, func, expr);
@@ -1256,7 +1256,7 @@ void ReadGuardError(Obj o, const char *file, unsigned line,
     if (AutoLockObj(o))
       return;
   }
-  if (TLS->DisableGuards)
+  if (TLS_MACRO(DisableGuards))
     return;
   SetGVar(&LastInaccessibleGVar, o);
   PrintGuardError(buffer, "read", o, file, line, func, expr);
@@ -1267,7 +1267,7 @@ void ReadGuardError(Obj o, const char *file, unsigned line,
 void WriteGuardError(Obj o)
 {
   ImpliedReadGuard(o);
-  if (TLS->DisableGuards)
+  if (TLS_MACRO(DisableGuards))
     return;
   SetGVar(&LastInaccessibleGVar, o);
   ErrorMayQuit("Attempt to write object %i of type %s without having write access", (Int)o, (Int)TNAM_OBJ(o));
@@ -1280,7 +1280,7 @@ void ReadGuardError(Obj o)
     if (AutoLockObj(o))
       return;
   }
-  if (TLS->DisableGuards)
+  if (TLS_MACRO(DisableGuards))
     return;
   SetGVar(&LastInaccessibleGVar, o);
   ErrorMayQuit("Attempt to read object %i of type %s without having read access", (Int)o, (Int)TNAM_OBJ(o));

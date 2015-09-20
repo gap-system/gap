@@ -211,13 +211,13 @@ SYS_SIG_T syAnswerIntr ( int                 signr );
 static SYS_SIG_T               (*savedSignal)(int);
 static jmp_buf                 readJmpError; /* TOP level => non-reentrant */
 #define MPI_READ_ERROR() \
-          ( memcpy( readJmpError, TLS->ReadJmpError, sizeof(jmp_buf) ), \
+          ( memcpy( readJmpError, TLS_MACRO(ReadJmpError), sizeof(jmp_buf) ), \
             savedSignal = signal( SIGINT, &ParGAPAnswerIntr), \
             READ_ERROR() \
           )
 #define MPI_READ_DONE() \
             signal( SIGINT, savedSignal ); \
-	    memcpy( TLS->ReadJmpError, readJmpError, sizeof(jmp_buf) )
+	    memcpy( TLS_MACRO(ReadJmpError), readJmpError, sizeof(jmp_buf) )
 
 SYS_SIG_T ParGAPAnswerIntr( int signr ) {
   Obj MPIcomm_rank( Obj self );
@@ -264,7 +264,7 @@ SYS_SIG_T ParGAPAnswerIntr( int signr ) {
 */
 Obj UNIX_Catch( Obj self, Obj fnc, Obj arg2 )
 { Obj result; /* gcc -Wall complains if result is initialized to Fail here */
-  Bag currLVars = TLS->CurrLVars;
+  Bag currLVars = TLS_MACRO(CurrLVars);
   jmp_buf readJmpError;
   SYS_SIG_T (*savedSignal)(int);
   OLD_BRK_CURR_STAT                   /* old executing statement         */
@@ -275,9 +275,9 @@ Obj UNIX_Catch( Obj self, Obj fnc, Obj arg2 )
   if ( ! MPI_READ_ERROR() )
     result = FuncCALL_FUNC_LIST( 0L, fnc, arg2 );
   else {
-    while ( TLS->CurrLVars != currLVars && TLS->CurrLVars != TLS->BottomLVars )
+    while ( TLS_MACRO(CurrLVars) != currLVars && TLS_MACRO(CurrLVars) != TLS_MACRO(BottomLVars) )
       SWITCH_TO_OLD_LVARS( BRK_CALL_FROM() );
-    assert( TLS->CurrLVars == currLVars );
+    assert( TLS_MACRO(CurrLVars) == currLVars );
     ClearError();
     SyIsIntr(); /* clear the interrupt, too */
   }

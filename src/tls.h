@@ -208,7 +208,6 @@ void RunTLSDestructors();
 #define ALWAYS_INLINE inline
 #endif
 
-
 #ifdef HAVE_NATIVE_TLS
 
 extern __thread ThreadLocalStorage TLSInstance;
@@ -236,6 +235,8 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
 #define TLS (GetTLS())
 
 #endif /* HAVE_NATIVE_TLS */
+
+#define TLS_MACRO(x) TLS->x
 
 #define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
 
@@ -314,7 +315,7 @@ static inline int CheckWriteAccess(Bag bag)
     return 1;
   region = REGION(bag);
   return !(region && region->owner != TLS && region->alt_owner != TLS)
-    || TLS->DisableGuards >= 2;
+    || TLS_MACRO(DisableGuards) >= 2;
 }
 
 static inline int CheckExclusiveWriteAccess(Bag bag)
@@ -326,7 +327,7 @@ static inline int CheckExclusiveWriteAccess(Bag bag)
   if (!region)
     return 0;
   return region->owner == TLS || region->alt_owner == TLS
-    || TLS->DisableGuards >= 2;
+    || TLS_MACRO(DisableGuards) >= 2;
 }
 
 #ifdef VERBOSE_GUARDS
@@ -341,7 +342,7 @@ static ALWAYS_INLINE Bag ReadGuard(Bag bag)
     return bag;
   region = REGION(bag);
   if (region && region->owner != TLS &&
-      !region->readers[TLS->threadID] && region->alt_owner != TLS)
+      !region->readers[TLS_MACRO(threadID)] && region->alt_owner != TLS)
     ReadGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -363,7 +364,7 @@ static ALWAYS_INLINE Bag *ReadGuardByRef(Bag *bagref)
     return bagref;
   region = REGION(bag);
   if (region && region->owner != TLS &&
-      !region->readers[TLS->threadID] && region->alt_owner != TLS)
+      !region->readers[TLS_MACRO(threadID)] && region->alt_owner != TLS)
     ReadGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -387,13 +388,13 @@ static ALWAYS_INLINE int CheckReadAccess(Bag bag)
     return 1;
   region = REGION(bag);
   return !(region && region->owner != TLS &&
-    !region->readers[TLS->threadID] && region->alt_owner != TLS)
-    || TLS->DisableGuards >= 2;
+    !region->readers[TLS_MACRO(threadID)] && region->alt_owner != TLS)
+    || TLS_MACRO(DisableGuards) >= 2;
 }
 
 static inline int IsMainThread()
 {
-  return TLS->threadID == 0;
+  return TLS_MACRO(threadID) == 0;
 };
 
 void InitializeTLS();

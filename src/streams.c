@@ -59,7 +59,7 @@
 
 #include	"tls.h"
 
-#include        "vars.h"                /* TLS->BottomLVars for execution contexts */
+#include        "vars.h"                /* TLS_MACRO(BottomLVars) for execution contexts */
 
 
 /****************************************************************************
@@ -73,11 +73,11 @@ Int READ_COMMAND ( void )
     ExecStatus    status;
 
     ClearError();
-    status = ReadEvalCommand(TLS->BottomLVars, 0);
+    status = ReadEvalCommand(TLS_MACRO(BottomLVars), 0);
     if( status == STATUS_EOF )
         return 0;
 
-    if ( TLS->UserHasQuit || TLS->UserHasQUIT )
+    if ( TLS_MACRO(UserHasQuit) || TLS_MACRO(UserHasQUIT) )
         return 0;
     
     /* handle return-value or return-void command                          */
@@ -87,11 +87,11 @@ Int READ_COMMAND ( void )
 
     /* handle quit command                                 */
     else if (status == STATUS_QUIT) {
-        TLS->RecursionDepth = 0;
-        TLS->UserHasQuit = 1;
+        TLS_MACRO(RecursionDepth) = 0;
+        TLS_MACRO(UserHasQuit) = 1;
     }
     else if (status == STATUS_QQUIT) {
-        TLS->UserHasQUIT = 1;
+        TLS_MACRO(UserHasQUIT) = 1;
     }
     ClearError();
 
@@ -108,9 +108,9 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
     }
 
     if (echo == True)
-      TLS->Input->echo = 1;
+      TLS_MACRO(Input)->echo = 1;
     else
-      TLS->Input->echo = 0;
+      TLS_MACRO(Input)->echo = 0;
 
     status = READ_COMMAND();
     
@@ -118,16 +118,16 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
 
     if( status == 0 ) return SFail;
 
-    if (TLS->UserHasQUIT) {
-      TLS->UserHasQUIT = 0;
+    if (TLS_MACRO(UserHasQUIT)) {
+      TLS_MACRO(UserHasQUIT) = 0;
       return SFail;
     }
 
-    if (TLS->UserHasQuit) {
-      TLS->UserHasQuit = 0;
+    if (TLS_MACRO(UserHasQuit)) {
+      TLS_MACRO(UserHasQuit) = 0;
     }
     
-    return TLS->ReadEvalResult ? TLS->ReadEvalResult : SFail;
+    return TLS_MACRO(ReadEvalResult) ? TLS_MACRO(ReadEvalResult) : SFail;
     
 }
 
@@ -145,15 +145,15 @@ static Int READ_INNER ( UInt UseUHQ )
 {
     ExecStatus                status;
 
-    if (TLS->UserHasQuit)
+    if (TLS_MACRO(UserHasQuit))
       {
         Pr("Warning: Entering READ with UserHasQuit set, this should never happen, resetting",0,0);
-	TLS->UserHasQuit = 0;
+	TLS_MACRO(UserHasQuit) = 0;
       }
-    if (TLS->UserHasQUIT)
+    if (TLS_MACRO(UserHasQUIT))
       {
         Pr("Warning: Entering READ with UserHasQUIT set, this should never happen, resetting",0,0);
-	TLS->UserHasQUIT = 0;
+	TLS_MACRO(UserHasQUIT) = 0;
       }
     MakeReadWriteGVar(LastReadValueGVar);
     AssGVar( LastReadValueGVar, 0);
@@ -161,8 +161,8 @@ static Int READ_INNER ( UInt UseUHQ )
     /* now do the reading                                                  */
     while ( 1 ) {
         ClearError();
-        status = ReadEvalCommand(TLS->BottomLVars, 0);
-	if (TLS->UserHasQuit || TLS->UserHasQUIT)
+        status = ReadEvalCommand(TLS_MACRO(BottomLVars), 0);
+	if (TLS_MACRO(UserHasQuit) || TLS_MACRO(UserHasQUIT))
 	  break;
         /* handle return-value or return-void command                      */
         if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
@@ -175,18 +175,18 @@ static Int READ_INNER ( UInt UseUHQ )
         else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
           break;
         else if (status == STATUS_QUIT) {
-          TLS->RecursionDepth = 0;
-	  TLS->UserHasQuit = 1;
+          TLS_MACRO(RecursionDepth) = 0;
+	  TLS_MACRO(UserHasQuit) = 1;
           break;
         }
         else if (status == STATUS_QQUIT) {
-	  TLS->UserHasQUIT = 1;
+	  TLS_MACRO(UserHasQUIT) = 1;
           break;
         }
-	if (TLS->ReadEvalResult)
+	if (TLS_MACRO(ReadEvalResult))
           {
             MakeReadWriteGVar(LastReadValueGVar);
-	    AssGVar( LastReadValueGVar, TLS->ReadEvalResult);
+	    AssGVar( LastReadValueGVar, TLS_MACRO(ReadEvalResult));
             MakeReadOnlyGVar(LastReadValueGVar);
           }
         
@@ -201,8 +201,8 @@ static Int READ_INNER ( UInt UseUHQ )
     }
     ClearError();
 
-    if (!UseUHQ && TLS->UserHasQuit) {
-      TLS->UserHasQuit = 0; /* stop recovery here */
+    if (!UseUHQ && TLS_MACRO(UserHasQuit)) {
+      TLS_MACRO(UserHasQuit) = 0; /* stop recovery here */
       return 2;
     }
 
@@ -235,7 +235,7 @@ Obj READ_AS_FUNC ( void )
 
     /* get the function                                                    */
     if ( type == 0 ) {
-        func = TLS->ReadEvalResult;
+        func = TLS_MACRO(ReadEvalResult);
     }
     else {
         func = Fail;
@@ -268,23 +268,23 @@ static void READ_TEST_OR_LOOP(void)
 
         /* read and evaluate the command                                   */
         ClearError();
-        type = ReadEvalCommand(TLS->BottomLVars, &dualSemicolon);
+        type = ReadEvalCommand(TLS_MACRO(BottomLVars), &dualSemicolon);
 
         /* stop the stopwatch                                              */
         AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
 
         /* handle ordinary command                                         */
-        if ( type == 0 && TLS->ReadEvalResult != 0 ) {
+        if ( type == 0 && TLS_MACRO(ReadEvalResult) != 0 ) {
 
             /* remember the value in 'last' and the time in 'time'         */
             AssGVar( Last3, ValGVarTL( Last2 ) );
             AssGVar( Last2, ValGVarTL( Last  ) );
-            AssGVar( Last,  TLS->ReadEvalResult   );
+            AssGVar( Last,  TLS_MACRO(ReadEvalResult)   );
 
             /* print the result                                            */
             if ( ! dualSemicolon ) {
-                Bag currLVars = TLS->CurrLVars; /* in case view runs into error */
-                ViewObjHandler( TLS->ReadEvalResult );
+                Bag currLVars = TLS_MACRO(CurrLVars); /* in case view runs into error */
+                ViewObjHandler( TLS_MACRO(ReadEvalResult) );
                 SWITCH_TO_OLD_LVARS(currLVars);
             }
         }
@@ -431,11 +431,11 @@ Int READ_GAP_ROOT ( Char * filename )
                 (Int)filename, 0L );
         }
         if ( OpenInput(result.pathname) ) {
-	  SySetBuffering(TLS->Input->file);
+	  SySetBuffering(TLS_MACRO(Input)->file);
             while ( 1 ) {
                 ClearError();
-                type = ReadEvalCommand(TLS->BottomLVars, 0);
-		if (TLS->UserHasQuit || TLS->UserHasQUIT)
+                type = ReadEvalCommand(TLS_MACRO(BottomLVars), 0);
+		if (TLS_MACRO(UserHasQuit) || TLS_MACRO(UserHasQUIT))
                   break;
                 if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
                     Pr( "'return' must not be used in file", 0L, 0L );
@@ -705,17 +705,17 @@ Obj FuncPrint (
             PrintFunction( arg );
         }
         else {
-            memcpy( readJmpError, TLS->ReadJmpError, sizeof(syJmp_buf) );
+            memcpy( readJmpError, TLS_MACRO(ReadJmpError), sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
                 PrintObj( arg );
             }
             else {
-                memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
+                memcpy( TLS_MACRO(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
-            memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
+            memcpy( TLS_MACRO(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
         }
     }
 
@@ -758,12 +758,12 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
             PrintString1(arg);
         }
         else if ( TNUM_OBJ(arg) == T_FUNCTION ) {
-            TLS->PrintObjFull = 1;
+            TLS_MACRO(PrintObjFull) = 1;
             PrintFunction( arg );
-            TLS->PrintObjFull = 0;
+            TLS_MACRO(PrintObjFull) = 0;
         }
         else {
-            memcpy( readJmpError, TLS->ReadJmpError, sizeof(syJmp_buf) );
+            memcpy( readJmpError, TLS_MACRO(ReadJmpError), sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
@@ -771,10 +771,10 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
             }
             else {
                 CloseOutput();
-                memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
+                memcpy( TLS_MACRO(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
-            memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
+            memcpy( TLS_MACRO(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
         }
     }
 
@@ -812,7 +812,7 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
         arg = ELM_LIST(args,i);
 
         /* if an error occurs stop printing                                */
-        memcpy( readJmpError, TLS->ReadJmpError, sizeof(syJmp_buf) );
+        memcpy( readJmpError, TLS_MACRO(ReadJmpError), sizeof(syJmp_buf) );
         if ( ! READ_ERROR() ) {
             if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
@@ -821,9 +821,9 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
                 PrintString1(arg);
             }
             else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-                TLS->PrintObjFull = 1;
+                TLS_MACRO(PrintObjFull) = 1;
                 PrintFunction( arg );
-                TLS->PrintObjFull = 0;
+                TLS_MACRO(PrintObjFull) = 0;
             }
             else {
                 PrintObj( arg );
@@ -831,10 +831,10 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
         }
         else {
             CloseOutput();
-            memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
+            memcpy( TLS_MACRO(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
             ReadEvalError();
         }
-        memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
+        memcpy( TLS_MACRO(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -966,7 +966,7 @@ Obj FuncREAD (
         return False;
     }
 
-    SySetBuffering(TLS->Input->file);
+    SySetBuffering(TLS_MACRO(Input)->file);
    
     /* read the test file                                                  */
     return READ() ? True : False;
@@ -998,7 +998,7 @@ Obj FuncREAD_NORECOVERY (
         return False;
     }
 
-    SySetBuffering(TLS->Input->file);
+    SySetBuffering(TLS_MACRO(Input)->file);
    
     /* read the file */
     switch (READ_NORECOVERY()) {
@@ -1041,14 +1041,14 @@ Obj FuncREAD_STREAM_LOOP (
         return False;
     }
     if ( catcherrstdout == True )
-      TLS->IgnoreStdoutErrout = GetCurrentOutput();
+      TLS_MACRO(IgnoreStdoutErrout) = GetCurrentOutput();
     else
-      TLS->IgnoreStdoutErrout = NULL;
+      TLS_MACRO(IgnoreStdoutErrout) = NULL;
 
 
     /* read the test file                                                  */
     READ_LOOP();
-    TLS->IgnoreStdoutErrout = NULL;
+    TLS_MACRO(IgnoreStdoutErrout) = NULL;
     return True;
 }
 
@@ -1120,7 +1120,7 @@ Obj FuncREAD_AS_FUNC (
         return Fail;
     }
 
-    SySetBuffering(TLS->Input->file);
+    SySetBuffering(TLS_MACRO(Input)->file);
     
     /* read the function                                                   */
     return READ_AS_FUNC();

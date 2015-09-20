@@ -278,7 +278,7 @@ Obj ReducedComm (
     Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <u>*<w> to                           */
-    vcw = TLS->SC_CW_VECTOR;
+    vcw = TLS_MACRO(SC_CW_VECTOR);
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     /* check that it has the correct length, unpack <u> into it            */
@@ -296,7 +296,7 @@ Obj ReducedComm (
     }
 
     /* use 'cw2Vector' to collect word <w>*<u> to                          */
-    vc2 = TLS->SC_CW2_VECTOR;
+    vc2 = TLS_MACRO(SC_CW2_VECTOR);
 
     /* check that it has the correct length, unpack <w> into it            */
     if ( fc->vectorWord( vc2, w, num ) == -1 ) {
@@ -348,7 +348,7 @@ Obj ReducedForm (
     Int *               qtr;    /* pointer into the collect vector         */
 
     /* use 'cwVector' to collect word <w> to                               */
-    vcw = TLS->SC_CW_VECTOR;
+    vcw = TLS_MACRO(SC_CW_VECTOR);
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     /* check that it has the correct length                                */
@@ -388,7 +388,7 @@ Obj ReducedLeftQuotient (
     Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <w> to                               */
-    vcw = TLS->SC_CW_VECTOR;
+    vcw = TLS_MACRO(SC_CW_VECTOR);
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     /* check that it has the correct length, unpack <w> into it            */
@@ -399,7 +399,7 @@ Obj ReducedLeftQuotient (
     }
 
     /* use 'cw2Vector' to collect word <u> to                              */
-    vc2 = TLS->SC_CW2_VECTOR;
+    vc2 = TLS_MACRO(SC_CW2_VECTOR);
 
     /* check that it has the correct length, unpack <u> into it            */
     if ( fc->vectorWord( vc2, u, num ) == -1 ) {
@@ -443,7 +443,7 @@ Obj ReducedProduct (
     Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <w> to                               */
-    vcw = TLS->SC_CW_VECTOR;
+    vcw = TLS_MACRO(SC_CW_VECTOR);
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     /* check that it has the correct length, unpack <w> into it            */
@@ -489,8 +489,8 @@ Obj ReducedPowerSmallInt (
     pow = INT_INTOBJ(vpow);
 
     /* use 'cwVector' and 'cw2Vector to collect words to                   */
-    vcw  = TLS->SC_CW_VECTOR;
-    vc2  = TLS->SC_CW2_VECTOR;
+    vcw  = TLS_MACRO(SC_CW_VECTOR);
+    vc2  = TLS_MACRO(SC_CW2_VECTOR);
     num  = SC_NUMBER_RWS_GENERATORS(sc);
     type = SC_DEFAULT_TYPE(sc);
 
@@ -587,8 +587,8 @@ Obj ReducedQuotient (
     Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <w> to                               */
-    vcw  = TLS->SC_CW_VECTOR;
-    vc2  = TLS->SC_CW2_VECTOR;
+    vcw  = TLS_MACRO(SC_CW_VECTOR);
+    vc2  = TLS_MACRO(SC_CW2_VECTOR);
     num  = SC_NUMBER_RWS_GENERATORS(sc);
     type = SC_DEFAULT_TYPE(sc);
 
@@ -714,7 +714,7 @@ Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 Obj FuncSET_SCOBJ_MAX_STACK_SIZE ( Obj self, Obj size )
 {
     if (IS_INTOBJ(size) && INT_INTOBJ(size) > 0)
-        TLS->SC_MAX_STACK_SIZE = INT_INTOBJ(size);
+        TLS_MACRO(SC_MAX_STACK_SIZE) = INT_INTOBJ(size);
     else
         ErrorQuit( "collect vector must be a positive small integer not a %s",
                    (Int)TNAM_OBJ(size), 0L );
@@ -792,14 +792,14 @@ static inline Obj NewPlist( UInt tnum, UInt len, UInt reserved )
 static void SetupCollectorStacks()
 {
     const UInt maxStackSize = 256;
-    TLS->SC_NW_STACK = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
-    TLS->SC_LW_STACK = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
-    TLS->SC_PW_STACK = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
-    TLS->SC_EW_STACK = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
-    TLS->SC_GE_STACK = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
-    TLS->SC_CW_VECTOR = NEW_STRING( 0 );
-    TLS->SC_CW2_VECTOR = NEW_STRING( 0 );
-    TLS->SC_MAX_STACK_SIZE = maxStackSize;
+    TLS_MACRO(SC_NW_STACK) = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
+    TLS_MACRO(SC_LW_STACK) = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
+    TLS_MACRO(SC_PW_STACK) = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
+    TLS_MACRO(SC_EW_STACK) = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
+    TLS_MACRO(SC_GE_STACK) = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
+    TLS_MACRO(SC_CW_VECTOR) = NEW_STRING( 0 );
+    TLS_MACRO(SC_CW2_VECTOR) = NEW_STRING( 0 );
+    TLS_MACRO(SC_MAX_STACK_SIZE) = maxStackSize;
 }
 
 
