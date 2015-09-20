@@ -290,8 +290,16 @@ Obj Shell ( Obj context,
         }
     }
 
-    /* now  read and evaluate and view one command  */
+    /* now read and evaluate and view one command  */
     status = ReadEvalCommand(ShellContext, &dualSemicolon);
+#if HAVE_LIBREADLINE
+    if (SyUseReadline) {
+      /* (maybe) add all entered lines to history; we use key 1 for this function */
+      extern int GAP_rl_func(int count, int key);
+      GAP_rl_func(0, 1);
+    }
+#endif
+
     if (UserHasQUIT)
       break;
 
