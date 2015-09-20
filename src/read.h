@@ -27,15 +27,15 @@ extern syJmp_buf ReadJmpError;
 
 #ifndef DEBUG_READ_ERROR
 
-#define READ_ERROR()    (NrError || (NrError+=sySetjmp(ReadJmpError)))
+#define READ_ERROR()    (TLS(NrError) || (TLS(NrError)+=sySetjmp(TLS(ReadJmpError))))
 
 #else
 
 #define READ_ERROR()                                                     \
-    ( NrError ||                                                         \
-      ( ( NrError += setjmp(ReadJmpError) ) ?                            \
+    ( TLS(NrError) ||                                                         \
+      ( ( TLS(NrError) += setjmp(TLS(ReadJmpError)) ) ?                            \
         Pr( "READ_ERROR( %s, %d )\n", (Int)__FILE__, __LINE__ ),0 : 0 ), \
-      NrError )
+      TLS(NrError) )
 
 #endif
 

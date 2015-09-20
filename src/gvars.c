@@ -301,13 +301,13 @@ Obj CurrNamespace = 0;
 
 Obj FuncSET_NAMESPACE(Obj self, Obj str)
 {
-    CurrNamespace = str;
+    TLS(CurrNamespace) = str;
     return 0;
 }
 
 Obj FuncGET_NAMESPACE(Obj self)
 {
-    return CurrNamespace;
+    return TLS(CurrNamespace);
 }
 
 /****************************************************************************
