@@ -33,6 +33,8 @@
 
 #include        "system.h"              /* system dependent part           */
 
+#include        "gap_version.h"         /* SCM information                 */
+
 #include        "gap.h"                 /* get UserHasQUIT                 */
 
 #include        "sysfiles.h"            /* file input/output               */
@@ -75,11 +77,22 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
 
 /****************************************************************************
 **
-*V  SyKernelVersion  . . . . . . . . . . . . . . . . name of the architecture
+*V  SyKernelVersion  . . . . . . . . . . . . . . . hard coded kernel version
 ** do not edit the following line. Occurences of `4.dev' and `today'
 ** will be replaced by string matching by distribution wrapping scripts.
 */
 const Char * SyKernelVersion = "4.dev";
+
+/****************************************************************************
+**
+*V  SyBuildVersion  . . . . . . . . . . . . . . . . source version for build 
+** GAP_BUILD_VERSION is defined in a generated header file gap_version.h,
+** and will typically contain the tag and commit SHA that was used to build
+** the executable.
+**
+** This variable will replace SyKernelVersion above.
+*/
+const Char * SyBuildVersion = GAP_BUILD_VERSION;
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows

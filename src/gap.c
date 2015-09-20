@@ -2709,6 +2709,10 @@ Obj FuncKERNEL_INFO(Obj self) {
   RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
   r = RNamName("KERNEL_VERSION");
   AssPRec(res,r,tmp);
+  C_NEW_STRING_DYN( tmp, SyBuildVersion );
+  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  r = RNamName("BUILD_VERSION");
+  AssPRec(res,r,tmp);
   /* GAP_ROOT_PATH                                                       */
   /* do we need this. Could we rebuild it from the command line in GAP
      if so, should we                                                    */

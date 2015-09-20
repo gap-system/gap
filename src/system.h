@@ -224,16 +224,18 @@ extern const Char * SyArchitecture;
 /****************************************************************************
 **
 *V  SyKernelVersion  . . . . . . . . . . . . . . . .  kernel version number
+*V  SyBuildVersion . . . . . . . . . . . . . . . . .  kernel version number
+**
+** SyBuildVersion will replace SyKernelVersion
 */
 extern const Char * SyKernelVersion;
-
+extern const Char * SyBuildVersion;
 
 /****************************************************************************
 **
 *V  SyCTRD  . . . . . . . . . . . . . . . . . . .  true if '<ctr>-D' is <eof>
 */
 extern UInt SyCTRD;
-
 
 /****************************************************************************
 **

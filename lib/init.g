@@ -634,8 +634,8 @@ BindGlobal( "ShowKernelInformation", function()
     fi;
 
     if IsBound(GAPInfo.shortbanner) then
-        Print("This is GAP ", GAPInfo.Version, " of ",
-              sysdate, " (", GAPInfo.Architecture);
+        Print("This is GAP ", GAPInfo.Version, " of ", sysdate,
+        " (", GAPInfo.Architecture);
         if "gmpints" in LoadedModules() then
             Print("+gmp");
         fi;
@@ -653,7 +653,7 @@ BindGlobal( "ShowKernelInformation", function()
       else
         btop := "*********"; vert := "*"; bbot := btop;
       fi;
-      Print( " ",btop,"   GAP, Version ", GAPInfo.Version, " of ",
+      Print( " ",btop,"   GAP, Version ", GAPInfo.BuildVersion, " of ",
              sysdate, " (free software, GPL)\n",
              " ",vert,"  GAP  ",vert,"   http://www.gap-system.org\n",
              " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
