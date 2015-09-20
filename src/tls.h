@@ -39,13 +39,16 @@ typedef struct ThreadLocalStorage
   Obj StackObj;
   Int CountObj;
   UInt PeriodicCheckCount;
+
   /* From gvar.c */
   Obj CurrNamespace;
+
   /* From vars.c */
   Bag BottomLVars;
   Bag CurrLVars;
   Obj *PtrLVars;
   Bag LVarsPool[16];
+
   /* From read.c */
   syJmp_buf ReadJmpError;
   syJmp_buf threadExit;
@@ -60,6 +63,7 @@ typedef struct ThreadLocalStorage
   Obj ErrorLVars;
   Obj ErrorLVars0;
   Obj ReadEvalResult;
+
   /* From scanner.c */
   Char Value[MAX_VALUE_LEN];
   UInt ValueLen;
@@ -94,12 +98,15 @@ typedef struct ThreadLocalStorage
   Char *TheBuffer;
   UInt TheCount;
   UInt TheLimit;
+
   /* From exprs.c */
   Obj (**CurrEvalExprFuncs)(Expr);
+
   /* From stats.c */
   Stat CurrStat;
   Obj ReturnObjStat;
   UInt (**CurrExecStatFuncs)(Stat);
+
   /* From code.c */
   Stat *PtrBody;
   Stat OffsBody;
@@ -111,6 +118,7 @@ typedef struct ThreadLocalStorage
   Bag StackExpr;
   Int CountExpr;
   Bag CodeLVars;
+
   /* From funcs.h */
   Int RecursionDepth;
   Obj ExecState;
@@ -121,12 +129,13 @@ typedef struct ThreadLocalStorage
   UInt MethodCacheSize;
   UInt CacheIndex;
 
-  /* From permutat.c */
-  Obj TmpPerm;
   /* From cyclotom.c */
   Obj ResultCyc;
   Obj  LastECyc;
   UInt LastNCyc;
+
+  /* From permutat.c */
+  Obj TmpPerm;
 
   /* From trans.c */
   Obj TmpTrans;
@@ -155,7 +164,6 @@ typedef struct ThreadLocalStorage
   Int *PrintObjIndices;
 
   /* For serializer.c */
-
   Obj SerializationObj;
   UInt SerializationIndex;
   void *SerializationDispatcher;
