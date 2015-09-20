@@ -82,7 +82,7 @@
 **  This  is  in this package,  because  it is stored   along  with the local
 **  variables in the local variables bag.
 */
-#define CURR_FUNC       (TLS->ptrLVars[0])
+#define CURR_FUNC       (TLS->PtrLVars[0])
 
 
 /****************************************************************************
@@ -100,17 +100,17 @@ extern Obj True;
 static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
   if (STEVES_TRACING == True) {
     fprintf(stderr,"SBCT: %i %x %s %i\n",
-            (int)expr, (int)TLS->currLVars, file, line);
+            (int)expr, (int)TLS->CurrLVars, file, line);
   }
-  (TLS->ptrLVars[1] = (Obj)(Int)(expr));
+  (TLS->PtrLVars[1] = (Obj)(Int)(expr));
 }
 
 #else
-#define SetBrkCallTo(expr, file, line)  (TLS->ptrLVars[1] = (Obj)(Int)(expr))
+#define SetBrkCallTo(expr, file, line)  (TLS->PtrLVars[1] = (Obj)(Int)(expr))
 #endif
 
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_TO()                   ((Expr)(Int)(TLS->ptrLVars[1]))
+#define BRK_CALL_TO()                   ((Expr)(Int)(TLS->PtrLVars[1]))
 #define SET_BRK_CALL_TO(expr)           SetBrkCallTo(expr, __FILE__, __LINE__)
 #endif
 #ifdef  NO_BRK_CALLS
@@ -125,8 +125,8 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 *F  SET_BRK_CALL_FROM(lvars)  . .  set frame from which this frame was called
 */
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_FROM()                 (TLS->ptrLVars[2])
-#define SET_BRK_CALL_FROM(lvars)        (TLS->ptrLVars[2] = (lvars))
+#define BRK_CALL_FROM()                 (TLS->PtrLVars[2])
+#define SET_BRK_CALL_FROM(lvars)        (TLS->PtrLVars[2] = (lvars))
 #endif
 #ifdef  NO_BRK_CALLS
 #define BRK_CALL_FROM()                 /* do nothing */
@@ -177,19 +177,19 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 #endif
 )
 {
-  Obj old = TLS->currLVars;
+  Obj old = TLS->CurrLVars;
   CHANGED_BAG( old );
-  TLS->currLVars = NewLVarsBag( narg+nloc );
-  TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
+  TLS->CurrLVars = NewLVarsBag( narg+nloc );
+  TLS->PtrLVars  = PTR_BAG( TLS->CurrLVars );
   CURR_FUNC = func;
-  TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  TLS->PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
   SET_BRK_CALL_FROM( old );
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     Obj n = NAME_FUNC(func);
     Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
     fprintf(stderr,"STNL: %s %i\n   func %lx narg %i nloc %i function name %s\n     old lvars %lx new lvars %lx\n",
-            file, line, (UInt) func, (int)narg, (int)nloc,s,(UInt)old, (UInt)TLS->currLVars);
+            file, line, (UInt) func, (int)narg, (int)nloc,s,(UInt)old, (UInt)TLS->CurrLVars);
   }
 #endif
   return old;
@@ -218,13 +218,13 @@ static inline void SwitchToOldLVars( Obj old
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     fprintf(stderr,"STOL:  %s %i old lvars %lx new lvars %lx\n",
-           file, line, (UInt)TLS->currLVars,(UInt)old);
+           file, line, (UInt)TLS->CurrLVars,(UInt)old);
   }
 #endif
-  CHANGED_BAG( TLS->currLVars );
-  TLS->currLVars = (old);
-  TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
-  TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  CHANGED_BAG( TLS->CurrLVars );
+  TLS->CurrLVars = (old);
+  TLS->PtrLVars  = PTR_BAG( TLS->CurrLVars );
+  TLS->PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
 }
 
 static inline void SwitchToOldLVarsAndFree( Obj old
@@ -236,15 +236,15 @@ static inline void SwitchToOldLVarsAndFree( Obj old
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     fprintf(stderr,"STOL:  %s %i old lvars %lx new lvars %lx\n",
-           file, line, (UInt)TLS->currLVars,(UInt)old);
+           file, line, (UInt)TLS->CurrLVars,(UInt)old);
   }
 #endif
-  CHANGED_BAG( TLS->currLVars );
-  if (TLS->currLVars != old && TNUM_OBJ(TLS->currLVars) == T_LVARS)
-    FreeLVarsBag(TLS->currLVars);
-  TLS->currLVars = (old);
-  TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
-  TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  CHANGED_BAG( TLS->CurrLVars );
+  if (TLS->CurrLVars != old && TNUM_OBJ(TLS->CurrLVars) == T_LVARS)
+    FreeLVarsBag(TLS->CurrLVars);
+  TLS->CurrLVars = (old);
+  TLS->PtrLVars  = PTR_BAG( TLS->CurrLVars );
+  TLS->PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
 }
 
 
@@ -269,7 +269,7 @@ static inline void SwitchToOldLVarsAndFree( Obj old
 **
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
 */
-#define ASS_LVAR(lvar,val)      (TLS->ptrLVars[(lvar)+2] = (val))
+#define ASS_LVAR(lvar,val)      (TLS->PtrLVars[(lvar)+2] = (val))
 
 
 /****************************************************************************
@@ -278,7 +278,7 @@ static inline void SwitchToOldLVarsAndFree( Obj old
 **
 **  'OBJ_LVAR' returns the value of the local variable <lvar>.
 */
-#define OBJ_LVAR(lvar)          (TLS->ptrLVars[(lvar)+2])
+#define OBJ_LVAR(lvar)          (TLS->PtrLVars[(lvar)+2])
 
 
 /****************************************************************************

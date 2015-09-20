@@ -149,16 +149,16 @@ Stat NewStatWithLine (
     /* make certain that the current body bag is large enough              */
     if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
       ResizeBag( BODY_FUNC(CURR_FUNC), TLS->OffsBody + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-        TLS->ptrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+        TLS->PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
     while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < TLS->OffsBody + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj)  ) {
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
-        TLS->ptrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+        TLS->PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
-    setup_gapname(TLS->input);
+    setup_gapname(TLS->Input);
     
     /* enter type and size                                                 */
-    ADDR_STAT(stat)[-1] = ((Stat)TLS->input->gapnameid << 48) + ((Stat)line << 32) +
+    ADDR_STAT(stat)[-1] = ((Stat)TLS->Input->gapnameid << 48) + ((Stat)line << 32) +
                           ((Stat)size << 8) + (Stat)type;
     RegisterStatWithProfiling(stat);
     /* return the new statement                                            */
@@ -169,7 +169,7 @@ Stat NewStat (
     UInt                type,
     UInt                size)
 {
-    return NewStatWithLine(type, size, TLS->input->number);
+    return NewStatWithLine(type, size, TLS->Input->number);
 }
 
 
@@ -195,16 +195,16 @@ Expr            NewExpr (
     /* make certain that the current body bag is large enough              */
     if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
         ResizeBag( BODY_FUNC(CURR_FUNC), TLS->OffsBody );
-        TLS->ptrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+        TLS->PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
     while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < TLS->OffsBody ) {
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
-        TLS->ptrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+        TLS->PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
 
     /* enter type and size                                                 */
-    ADDR_EXPR(expr)[-1] = ((Stat)TLS->input->gapnameid << 48) +
-                          ((Stat)TLS->input->number << 32) +
+    ADDR_EXPR(expr)[-1] = ((Stat)TLS->Input->gapnameid << 48) +
+                          ((Stat)TLS->Input->number << 32) +
                           ((Stat)size << 8) + type;
     RegisterStatWithProfiling(expr);
     /* return the new expression                                           */
@@ -248,17 +248,17 @@ void PushStat (
     Stat                stat )
 {
     /* there must be a stack, it must not be underfull or overfull         */
-    assert( TLS->stackStat != 0 );
-    assert( 0 <= TLS->countStat );
-    assert( TLS->countStat <= SIZE_BAG(TLS->stackStat)/sizeof(Stat) );
+    assert( TLS->StackStat != 0 );
+    assert( 0 <= TLS->CountStat );
+    assert( TLS->CountStat <= SIZE_BAG(TLS->StackStat)/sizeof(Stat) );
     assert( stat != 0 );
 
     /* count up and put the statement onto the stack                       */
-    if ( TLS->countStat == SIZE_BAG(TLS->stackStat)/sizeof(Stat) ) {
-        ResizeBag( TLS->stackStat, 2*TLS->countStat*sizeof(Stat) );
+    if ( TLS->CountStat == SIZE_BAG(TLS->StackStat)/sizeof(Stat) ) {
+        ResizeBag( TLS->StackStat, 2*TLS->CountStat*sizeof(Stat) );
     }
-    ((Stat*)PTR_BAG(TLS->stackStat))[TLS->countStat] = stat;
-    TLS->countStat++;
+    ((Stat*)PTR_BAG(TLS->StackStat))[TLS->CountStat] = stat;
+    TLS->CountStat++;
 }
 
 Stat PopStat ( void )
@@ -266,13 +266,13 @@ Stat PopStat ( void )
     Stat                stat;
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( TLS->stackStat != 0 );
-    assert( 1 <= TLS->countStat );
-    assert( TLS->countStat <= SIZE_BAG(TLS->stackStat)/sizeof(Stat) );
+    assert( TLS->StackStat != 0 );
+    assert( 1 <= TLS->CountStat );
+    assert( TLS->CountStat <= SIZE_BAG(TLS->StackStat)/sizeof(Stat) );
 
     /* get the top statement from the stack, and count down                */
-    TLS->countStat--;
-    stat = ((Stat*)PTR_BAG(TLS->stackStat))[TLS->countStat];
+    TLS->CountStat--;
+    stat = ((Stat*)PTR_BAG(TLS->StackStat))[TLS->CountStat];
 
     /* return the popped statement                                         */
     return stat;
@@ -342,17 +342,17 @@ void PushExpr (
     Expr                expr )
 {
     /* there must be a stack, it must not be underfull or overfull         */
-    assert( TLS->stackExpr != 0 );
-    assert( 0 <= TLS->countExpr );
-    assert( TLS->countExpr <= SIZE_BAG(TLS->stackExpr)/sizeof(Expr) );
+    assert( TLS->StackExpr != 0 );
+    assert( 0 <= TLS->CountExpr );
+    assert( TLS->CountExpr <= SIZE_BAG(TLS->StackExpr)/sizeof(Expr) );
     assert( expr != 0 );
 
     /* count up and put the expression onto the stack                      */
-    if ( TLS->countExpr == SIZE_BAG(TLS->stackExpr)/sizeof(Expr) ) {
-        ResizeBag( TLS->stackExpr, 2*TLS->countExpr*sizeof(Expr) );
+    if ( TLS->CountExpr == SIZE_BAG(TLS->StackExpr)/sizeof(Expr) ) {
+        ResizeBag( TLS->StackExpr, 2*TLS->CountExpr*sizeof(Expr) );
     }
-    ((Expr*)PTR_BAG(TLS->stackExpr))[TLS->countExpr] = expr;
-    TLS->countExpr++;
+    ((Expr*)PTR_BAG(TLS->StackExpr))[TLS->CountExpr] = expr;
+    TLS->CountExpr++;
 }
 
 Expr PopExpr ( void )
@@ -360,13 +360,13 @@ Expr PopExpr ( void )
     Expr                expr;
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( TLS->stackExpr != 0 );
-    assert( 1 <= TLS->countExpr );
-    assert( TLS->countExpr <= SIZE_BAG(TLS->stackExpr)/sizeof(Expr) );
+    assert( TLS->StackExpr != 0 );
+    assert( 1 <= TLS->CountExpr );
+    assert( TLS->CountExpr <= SIZE_BAG(TLS->StackExpr)/sizeof(Expr) );
 
     /* get the top expression from the stack, and count down               */
-    TLS->countExpr--;
-    expr = ((Expr*)PTR_BAG(TLS->stackExpr))[TLS->countExpr];
+    TLS->CountExpr--;
+    expr = ((Expr*)PTR_BAG(TLS->StackExpr))[TLS->CountExpr];
 
     /* return the popped expression                                        */
     return expr;
@@ -521,14 +521,14 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
 void CodeBegin ( void )
 {
     /* the stacks must be empty                                            */
-    assert( TLS->countStat == 0 );
-    assert( TLS->countExpr == 0 );
+    assert( TLS->CountStat == 0 );
+    assert( TLS->CountExpr == 0 );
 
     /* remember the current frame                                          */
-    TLS->codeLVars = TLS->currLVars;
+    TLS->CodeLVars = TLS->CurrLVars;
 
     /* clear the code result bag                                           */
-    TLS->codeResult = 0;
+    TLS->CodeResult = 0;
 }
 
 UInt CodeEnd (
@@ -538,24 +538,24 @@ UInt CodeEnd (
     if ( ! error ) {
 
         /* the stacks must be empty                                        */
-        assert( TLS->countStat == 0 );
-        assert( TLS->countExpr == 0 );
+        assert( TLS->CountStat == 0 );
+        assert( TLS->CountExpr == 0 );
 
-        /* we must be back to 'TLS->currLVars'                                  */
-        assert( TLS->currLVars == TLS->codeLVars );
+        /* we must be back to 'TLS->CurrLVars'                                  */
+        assert( TLS->CurrLVars == TLS->CodeLVars );
 
-        /* 'CodeFuncExprEnd' left the function already in 'TLS->codeResult'     */
+        /* 'CodeFuncExprEnd' left the function already in 'TLS->CodeResult'     */
     }
 
     /* otherwise clean up the mess                                         */
     else {
 
         /* empty the stacks                                                */
-        TLS->countStat = 0;
-        TLS->countExpr = 0;
+        TLS->CountStat = 0;
+        TLS->CountExpr = 0;
 
         /* go back to the correct frame                                    */
-        SWITCH_TO_OLD_LVARS( TLS->codeLVars );
+        SWITCH_TO_OLD_LVARS( TLS->CodeLVars );
     }
 
     /* return value is ignored                                             */
@@ -694,17 +694,17 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    setup_gapname(TLS->input);
-    FILENAME_BODY(body) = TLS->input->gapname;
+    setup_gapname(TLS->Input);
+    FILENAME_BODY(body) = TLS->Input->gapname;
     STARTLINE_BODY(body) = INTOBJ_INT(startLine);
-    /*    Pr("Coding begin at %s:%d ",(Int)(TLS->input->name),TLS->input->number);
+    /*    Pr("Coding begin at %s:%d ",(Int)(TLS->Input->name),TLS->Input->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
     TLS->OffsBody = 0;
 
     /* give it an environment                                              */
-    ENVI_FUNC( fexp ) = TLS->currLVars;
+    ENVI_FUNC( fexp ) = TLS->CurrLVars;
     CHANGED_BAG( fexp );
-    MakeHighVars(TLS->currLVars);
+    MakeHighVars(TLS->CurrLVars);
 
     /* switch to this function                                             */
     SWITCH_TO_NEW_LVARS( fexp, (narg >0 ? narg : -narg), nloc, old );
@@ -771,8 +771,8 @@ void CodeFuncExprEnd (
 
     /* make the body smaller                                               */
     ResizeBag( BODY_FUNC(fexp), TLS->OffsBody+NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-    ENDLINE_BODY(BODY_FUNC(fexp)) = INTOBJ_INT(TLS->input->number);
-    /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), TLS->input->number); */
+    ENDLINE_BODY(BODY_FUNC(fexp)) = INTOBJ_INT(TLS->Input->number);
+    /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), TLS->Input->number); */
 
     /* switch back to the previous function                                */
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
@@ -783,7 +783,7 @@ void CodeFuncExprEnd (
 
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
-    if ( TLS->currLVars != TLS->codeLVars ) {
+    if ( TLS->CurrLVars != TLS->CodeLVars ) {
         fexs = FEXS_FUNC( CURR_FUNC );
         len = LEN_PLIST( fexs );
         GROW_PLIST(      fexs, len+1 );
@@ -795,9 +795,9 @@ void CodeFuncExprEnd (
         PushExpr( expr );
     }
 
-    /* otherwise, make the function and store it in 'TLS->codeResult'           */
+    /* otherwise, make the function and store it in 'TLS->CodeResult'           */
     else {
-        TLS->codeResult = MakeFunction( fexp );
+        TLS->CodeResult = MakeFunction( fexp );
     }
 
 }
@@ -3338,8 +3338,8 @@ void LoadBody ( Obj body )
 
 void InitCoderTLS( void )
 {
-    TLS->stackStat = NewBag( T_BODY, 64*sizeof(Stat) );
-    TLS->stackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
+    TLS->StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
+    TLS->StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
 }
 
 void DestroyCoderTLS( void )
@@ -3370,8 +3370,8 @@ static Int InitKernel (
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 
     /* allocate the statements and expressions stacks                      */
-    InitGlobalBag( &TLS->stackStat, "TLS->stackStat" );
-    InitGlobalBag( &TLS->stackExpr, "TLS->stackExpr" );
+    InitGlobalBag( &TLS->StackStat, "TLS->StackStat" );
+    InitGlobalBag( &TLS->StackExpr, "TLS->StackExpr" );
 
     /* some functions and globals needed for float conversion */
     InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
@@ -3423,17 +3423,17 @@ static Int PreSave (
   UInt i;
 
   /* Can't save in mid-parsing */
-  if (TLS->countExpr || TLS->countStat)
+  if (TLS->CountExpr || TLS->CountStat)
     return 1;
 
   /* push the FP cache index out into a GAP Variable */
   AssGVar(GVAR_SAVED_FLOAT_INDEX, INTOBJ_INT(NextFloatExprNumber));
 
   /* clean any old data out of the statement and expression stacks */
-  for (i = 0; i < SIZE_BAG(TLS->stackStat)/sizeof(UInt); i++)
-    ADDR_OBJ(TLS->stackStat)[i] = (Obj)0;
-  for (i = 0; i < SIZE_BAG(TLS->stackExpr)/sizeof(UInt); i++)
-    ADDR_OBJ(TLS->stackExpr)[i] = (Obj)0;
+  for (i = 0; i < SIZE_BAG(TLS->StackStat)/sizeof(UInt); i++)
+    ADDR_OBJ(TLS->StackStat)[i] = (Obj)0;
+  for (i = 0; i < SIZE_BAG(TLS->StackExpr)/sizeof(UInt); i++)
+    ADDR_OBJ(TLS->StackExpr)[i] = (Obj)0;
   /* return success                                                      */
   return 0;
 }

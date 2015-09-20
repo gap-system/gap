@@ -756,7 +756,7 @@ Obj             EvalFunccallXargs (
 **  'DoExecFunc<i>args' first switches  to a new  values bag.  Then it enters
 **  the arguments <arg1>, <arg2>, and so on in this new  values bag.  Then it
 **  executes  the function body.   After  that it  switches back  to  the old
-**  values bag.  Finally it returns the result from 'TLS->returnObjStat'.
+**  values bag.  Finally it returns the result from 'TLS->ReturnObjStat'.
 **
 **  Note that these functions are never called directly, they are only called
 **  through the function call mechanism.
@@ -775,21 +775,21 @@ static void RecursionDepthTrap( void )
      * when quit-ting a higher level brk-loop to a lower level one.
      * Therefore we don't do anything if  RecursionDepth <= 0
     */
-    if (TLS->recursionDepth > 0) {
-        recursionDepth = TLS->recursionDepth;
-        TLS->recursionDepth = 0;
+    if (TLS->RecursionDepth > 0) {
+        recursionDepth = TLS->RecursionDepth;
+        TLS->RecursionDepth = 0;
         ErrorReturnVoid( "recursion depth trap (%d)\n",         
                          (Int)recursionDepth, 0L,               
                          "you may 'return;'" );
-        TLS->recursionDepth = recursionDepth;
+        TLS->RecursionDepth = recursionDepth;
     }
 }
      
 static inline void CheckRecursionBefore( void )
 {
-    TLS->recursionDepth++;                                           
+    TLS->RecursionDepth++;                                           
     if ( RecursionTrapInterval &&                                
-         0 == (TLS->recursionDepth % RecursionTrapInterval) )
+         0 == (TLS->RecursionDepth % RecursionTrapInterval) )
       RecursionDepthTrap();
 }
 
@@ -799,7 +799,7 @@ static inline void CheckRecursionBefore( void )
 #define CHECK_RECURSION_BEFORE CheckRecursionBefore(); PROF_IN_FUNCTION(func);
 
 
-#define CHECK_RECURSION_AFTER     TLS->recursionDepth--;  PROF_OUT_FUNCTION(func);
+#define CHECK_RECURSION_AFTER     TLS->RecursionDepth--;  PROF_OUT_FUNCTION(func);
 
 #define REMEMBER_LOCKSTACK() \
     int			lockSP = TLS->lockStackPointer
@@ -840,8 +840,8 @@ Obj DoExecFunc0args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -880,8 +880,8 @@ Obj             DoExecFunc1args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -922,8 +922,8 @@ Obj             DoExecFunc2args (
     /* return the result                                                   */
       {
         Obj                  returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -966,8 +966,8 @@ Obj             DoExecFunc3args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1012,8 +1012,8 @@ Obj             DoExecFunc4args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1060,8 +1060,8 @@ Obj             DoExecFunc5args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1110,8 +1110,8 @@ Obj             DoExecFunc6args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1164,8 +1164,8 @@ Obj             DoExecFuncXargs (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1241,8 +1241,8 @@ Obj             DoExecFunc0argsL (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1286,8 +1286,8 @@ Obj             DoExecFunc1argsL (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1333,8 +1333,8 @@ Obj             DoExecFunc2argsL (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1384,8 +1384,8 @@ Obj             DoExecFunc3argsL (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1437,8 +1437,8 @@ Obj             DoExecFunc4argsL (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1493,8 +1493,8 @@ Obj             DoExecFunc5argsL (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1552,8 +1552,8 @@ Obj             DoExecFunc6argsL (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1609,8 +1609,8 @@ Obj             DoExecFuncXargsL (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1663,8 +1663,8 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args) {
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = TLS->returnObjStat;
-        TLS->returnObjStat = (Obj)0;
+        returnObjStat = TLS->ReturnObjStat;
+        TLS->ReturnObjStat = (Obj)0;
         return returnObjStat;
       }  
 }
@@ -1716,10 +1716,10 @@ Obj             MakeFunction (
     /* install the things an interpreted function needs                    */
     NLOC_FUNC( func ) = NLOC_FUNC( fexp );
     BODY_FUNC( func ) = BODY_FUNC( fexp );
-    ENVI_FUNC( func ) = TLS->currLVars;
-    /* the 'CHANGED_BAG(TLS->currLVars)' is needed because it is delayed        */
-    CHANGED_BAG( TLS->currLVars );
-    MakeHighVars(TLS->currLVars);
+    ENVI_FUNC( func ) = TLS->CurrLVars;
+    /* the 'CHANGED_BAG(TLS->CurrLVars)' is needed because it is delayed        */
+    CHANGED_BAG( TLS->CurrLVars );
+    MakeHighVars(TLS->CurrLVars);
     LCKS_FUNC( func ) = locks;
     FEXS_FUNC( func ) = FEXS_FUNC( fexp );
 
@@ -1861,12 +1861,12 @@ void            ExecBegin ( Obj frame )
     /* remember the old execution state                                    */
     execState = NewBag( T_PLIST, 4*sizeof(Obj) );
     ADDR_OBJ(execState)[0] = (Obj)3;
-    ADDR_OBJ(execState)[1] = TLS->execState;
-    ADDR_OBJ(execState)[2] = TLS->currLVars;
-    /* the 'CHANGED_BAG(TLS->currLVars)' is needed because it is delayed        */
-    CHANGED_BAG( TLS->currLVars );
-    ADDR_OBJ(execState)[3] = INTOBJ_INT((Int)TLS->currStat);
-    TLS->execState = execState;
+    ADDR_OBJ(execState)[1] = TLS->ExecState;
+    ADDR_OBJ(execState)[2] = TLS->CurrLVars;
+    /* the 'CHANGED_BAG(TLS->CurrLVars)' is needed because it is delayed        */
+    CHANGED_BAG( TLS->CurrLVars );
+    ADDR_OBJ(execState)[3] = INTOBJ_INT((Int)TLS->CurrStat);
+    TLS->ExecState = execState;
 
     /* set up new state                                                    */
     SWITCH_TO_OLD_LVARS( frame );
@@ -1880,12 +1880,12 @@ void            ExecEnd (
     if ( ! error ) {
 
         /* the state must be primal again                                  */
-        assert( TLS->currStat  == 0 );
+        assert( TLS->CurrStat  == 0 );
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS->execState)[3]) ));
-        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS->execState)[2] );
-        TLS->execState = ADDR_OBJ(TLS->execState)[1];
+        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS->ExecState)[3]) ));
+        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS->ExecState)[2] );
+        TLS->ExecState = ADDR_OBJ(TLS->ExecState)[1];
 
     }
 
@@ -1893,9 +1893,9 @@ void            ExecEnd (
     else {
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS->execState)[3]) ));
-        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS->execState)[2] );
-        TLS->execState = ADDR_OBJ(TLS->execState)[1];
+        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS->ExecState)[3]) ));
+        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS->ExecState)[2] );
+        TLS->ExecState = ADDR_OBJ(TLS->ExecState)[1];
 
     }
 }

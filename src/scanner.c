@@ -135,36 +135,36 @@ void            SyntaxError (
 
     /* open error output                                                   */
     OpenOutput( "*errout*" );
-    assert(TLS->output);
+    assert(TLS->Output);
 
     /* one more error                                                      */
-    TLS->nrError++;
-    TLS->nrErrLine++;
+    TLS->NrError++;
+    TLS->NrErrLine++;
 
     /* do not print a message if we found one already on the current line  */
-    if ( TLS->nrErrLine == 1 )
+    if ( TLS->NrErrLine == 1 )
 
       {
         /* print the message and the filename, unless it is '*stdin*'          */
         Pr( "Syntax error: %s", (Int)msg, 0L );
-        if ( strcmp( "*stdin*", TLS->input->name ) != 0 )
-          Pr( " in %s line %d", (Int)TLS->input->name, (Int)TLS->input->number );
+        if ( strcmp( "*stdin*", TLS->Input->name ) != 0 )
+          Pr( " in %s line %d", (Int)TLS->Input->name, (Int)TLS->Input->number );
         Pr( "\n", 0L, 0L );
 
         /* print the current line                                              */
-        Pr( "%s", (Int)TLS->input->line, 0L );
+        Pr( "%s", (Int)TLS->Input->line, 0L );
 
         /* print a '^' pointing to the current position                        */
-        for ( i = 0; i < TLS->in - TLS->input->line - 1; i++ ) {
-          if ( TLS->input->line[i] == '\t' )  Pr("\t",0L,0L);
+        for ( i = 0; i < TLS->In - TLS->Input->line - 1; i++ ) {
+          if ( TLS->Input->line[i] == '\t' )  Pr("\t",0L,0L);
           else  Pr(" ",0L,0L);
         }
         Pr( "^\n", 0L, 0L );
       }
     /* close error output                                                  */
-    assert(TLS->output);
+    assert(TLS->Output);
     CloseOutput();
-    assert(TLS->output);
+    assert(TLS->Output);
 }
 
 /****************************************************************************
@@ -179,33 +179,33 @@ void            SyntaxWarning (
 
     /* open error output                                                   */
     OpenOutput( "*errout*" );
-    assert(TLS->output);
+    assert(TLS->Output);
 
 
     /* do not print a message if we found one already on the current line  */
-    if ( TLS->nrErrLine == 0 )
+    if ( TLS->NrErrLine == 0 )
 
       {
         /* print the message and the filename, unless it is '*stdin*'          */
         Pr( "Syntax warning: %s", (Int)msg, 0L );
-        if ( strcmp( "*stdin*", TLS->input->name ) != 0 )
-          Pr( " in %s line %d", (Int)TLS->input->name, (Int)TLS->input->number );
+        if ( strcmp( "*stdin*", TLS->Input->name ) != 0 )
+          Pr( " in %s line %d", (Int)TLS->Input->name, (Int)TLS->Input->number );
         Pr( "\n", 0L, 0L );
 
         /* print the current line                                              */
-        Pr( "%s", (Int)TLS->input->line, 0L );
+        Pr( "%s", (Int)TLS->Input->line, 0L );
 
         /* print a '^' pointing to the current position                        */
-        for ( i = 0; i < TLS->in - TLS->input->line - 1; i++ ) {
-          if ( TLS->input->line[i] == '\t' )  Pr("\t",0L,0L);
+        for ( i = 0; i < TLS->In - TLS->Input->line - 1; i++ ) {
+          if ( TLS->Input->line[i] == '\t' )  Pr("\t",0L,0L);
           else  Pr(" ",0L,0L);
         }
         Pr( "^\n", 0L, 0L );
       }
     /* close error output                                                  */
-    assert(TLS->output);
+    assert(TLS->Output);
     CloseOutput();
-    assert(TLS->output);
+    assert(TLS->Output);
 }
 
 
@@ -259,8 +259,8 @@ void Match (
 {
     Char                errmsg [256];
 
-    /* if 'TLS->symbol' is the expected symbol match it away                    */
-    if ( symbol == TLS->symbol ) {
+    /* if 'TLS->Symbol' is the expected symbol match it away                    */
+    if ( symbol == TLS->Symbol ) {
         GetSymbol();
     }
 
@@ -269,7 +269,7 @@ void Match (
         strlcpy( errmsg, msg, sizeof(errmsg) );
         strlcat( errmsg, " expected", sizeof(errmsg) );
         SyntaxError( errmsg );
-        while ( ! IS_IN( TLS->symbol, skipto ) )
+        while ( ! IS_IN( TLS->Symbol, skipto ) )
             GetSymbol();
     }
 }
@@ -305,7 +305,7 @@ GVarDescriptor DEFAULT_OUTPUT_STREAM;
 UInt OpenDefaultInput( void )
 {
   Obj func, stream;
-  stream = TLS->defaultInput;
+  stream = TLS->DefaultInput;
   if (stream)
     return OpenInputStream(stream);
   func = GVarOptFunc(&DEFAULT_INPUT_STREAM);
@@ -316,14 +316,14 @@ UInt OpenDefaultInput( void )
     ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0L, 0L);
   if (IsStringConv(stream))
     return OpenInput(CSTR_STRING(stream));
-  TLS->defaultInput = stream;
+  TLS->DefaultInput = stream;
   return OpenInputStream(stream);
 }
 
 UInt OpenDefaultOutput( void )
 {
   Obj func, stream;
-  stream = TLS->defaultOutput;
+  stream = TLS->DefaultOutput;
   if (stream)
     return OpenOutputStream(stream);
   func = GVarOptFunc(&DEFAULT_OUTPUT_STREAM);
@@ -334,15 +334,15 @@ UInt OpenDefaultOutput( void )
     ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0L, 0L);
   if (IsStringConv(stream))
     return OpenOutput(CSTR_STRING(stream));
-  TLS->defaultOutput = stream;
+  TLS->DefaultOutput = stream;
   return OpenOutputStream(stream);
 }
 
 TypOutputFile *GetCurrentOutput() {
-  if (!TLS->output) {
+  if (!TLS->Output) {
     OpenDefaultOutput();
   }
-  return TLS->output;
+  return TLS->Output;
 }
 
 
@@ -386,17 +386,17 @@ UInt OpenInput (
     int sp;
 
     /* fail if we can not handle another open input file                   */
-    if ( TLS->inputFilesSP == (sizeof(TLS->inputFiles)/sizeof(TLS->inputFiles[0]))-1 )
+    if ( TLS->InputFilesSP == (sizeof(TLS->InputFiles)/sizeof(TLS->InputFiles[0]))-1 )
         return 0;
 
     /* in test mode keep reading from test input file for break loop input */
-    if ( TLS->testInput != 0 && ! strcmp( filename, "*errin*" ) )
+    if ( TLS->TestInput != 0 && ! strcmp( filename, "*errin*" ) )
         return 1;
 
     /* Handle *defin*; redirect *errin* to *defin* if the default
      * channel is already open. */
     if (! SyStrcmp(filename, "*defin*") ||
-        (! SyStrcmp(filename, "*errin*") && TLS->defaultInput) )
+        (! SyStrcmp(filename, "*errin*") && TLS->DefaultInput) )
         return OpenDefaultInput();
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
@@ -404,33 +404,33 @@ UInt OpenInput (
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( TLS->inputFilesSP != 0 ) {
-        TLS->input->ptr    = TLS->in;
-        TLS->input->symbol = TLS->symbol;
+    if ( TLS->InputFilesSP != 0 ) {
+        TLS->Input->ptr    = TLS->In;
+        TLS->Input->symbol = TLS->Symbol;
     }
 
     /* enter the file identifier and the file name                         */
-    sp = TLS->inputFilesSP++;
-    if (!TLS->inputFiles[sp])
+    sp = TLS->InputFilesSP++;
+    if (!TLS->InputFiles[sp])
     {
-      TLS->inputFiles[sp] = NewInput();
+      TLS->InputFiles[sp] = NewInput();
     }
-    TLS->input = TLS->inputFiles[sp];
-    TLS->input->isstream = 0;
-    TLS->input->file = file;
-    TLS->input->name[0] = '\0';
+    TLS->Input = TLS->InputFiles[sp];
+    TLS->Input->isstream = 0;
+    TLS->Input->file = file;
+    TLS->Input->name[0] = '\0';
     if (strcmp("*errin*", filename) && strcmp("*stdin*", filename))
-      TLS->input->echo = 0;
+      TLS->Input->echo = 0;
     else
-      TLS->input->echo = 1;
-    strlcpy( TLS->input->name, filename, sizeof(TLS->input->name) );
-    TLS->input->gapname = (Obj) 0;
+      TLS->Input->echo = 1;
+    strlcpy( TLS->Input->name, filename, sizeof(TLS->Input->name) );
+    TLS->Input->gapname = (Obj) 0;
 
     /* start with an empty line and no symbol                              */
-    TLS->in = TLS->input->line;
-    TLS->in[0] = TLS->in[1] = '\0';
-    TLS->symbol = S_ILLEGAL;
-    TLS->input->number = 1;
+    TLS->In = TLS->Input->line;
+    TLS->In[0] = TLS->In[1] = '\0';
+    TLS->Symbol = S_ILLEGAL;
+    TLS->Input->number = 1;
 
     /* indicate success                                                    */
     return 1;
@@ -450,42 +450,42 @@ UInt OpenInputStream (
 {
     int sp;
     /* fail if we can not handle another open input file                   */
-    if ( TLS->inputFilesSP == (sizeof(TLS->inputFiles)/sizeof(TLS->inputFiles[0]))-1 )
+    if ( TLS->InputFilesSP == (sizeof(TLS->InputFiles)/sizeof(TLS->InputFiles[0]))-1 )
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( TLS->inputFilesSP != 0 ) {
-        TLS->input->ptr    = TLS->in;
-        TLS->input->symbol = TLS->symbol;
+    if ( TLS->InputFilesSP != 0 ) {
+        TLS->Input->ptr    = TLS->In;
+        TLS->Input->symbol = TLS->Symbol;
     }
 
     /* enter the file identifier and the file name                         */
-    sp = TLS->inputFilesSP++;
-    if (!TLS->inputFiles[sp])
+    sp = TLS->InputFilesSP++;
+    if (!TLS->InputFiles[sp])
     {
-      TLS->inputFiles[sp] = NewInput();
+      TLS->InputFiles[sp] = NewInput();
     }
-    TLS->input = TLS->inputFiles[sp];
-    TLS->input->isstream = 1;
-    TLS->input->stream = stream;
-    TLS->input->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
-    if (TLS->input->isstringstream) {
-        TLS->input->sline = ADDR_OBJ(stream)[2];
-        TLS->input->spos = INT_INTOBJ(ADDR_OBJ(stream)[1]);
+    TLS->Input = TLS->InputFiles[sp];
+    TLS->Input->isstream = 1;
+    TLS->Input->stream = stream;
+    TLS->Input->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
+    if (TLS->Input->isstringstream) {
+        TLS->Input->sline = ADDR_OBJ(stream)[2];
+        TLS->Input->spos = INT_INTOBJ(ADDR_OBJ(stream)[1]);
     }
     else {
-        TLS->input->sline = 0;
+        TLS->Input->sline = 0;
     }
-    TLS->input->name[0] = '\0';
-    TLS->input->file = -1;
-    TLS->input->echo = 0;
-    strlcpy( TLS->input->name, "stream", sizeof(TLS->input->name) );
+    TLS->Input->name[0] = '\0';
+    TLS->Input->file = -1;
+    TLS->Input->echo = 0;
+    strlcpy( TLS->Input->name, "stream", sizeof(TLS->Input->name) );
 
     /* start with an empty line and no symbol                              */
-    TLS->in = TLS->input->line;
-    TLS->in[0] = TLS->in[1] = '\0';
-    TLS->symbol = S_ILLEGAL;
-    TLS->input->number = 1;
+    TLS->In = TLS->Input->line;
+    TLS->In[0] = TLS->In[1] = '\0';
+    TLS->Symbol = S_ILLEGAL;
+    TLS->Input->number = 1;
 
     /* indicate success                                                    */
     return 1;
@@ -510,26 +510,26 @@ UInt OpenInputStream (
 UInt CloseInput ( void )
 {
     /* refuse to close the initial input file                              */
-    if ( TLS->inputFilesSP <= 1)
+    if ( TLS->InputFilesSP <= 1)
         return 1;
 
     /* refuse to close the test input file                                 */
-    if ( TLS->input == TLS->testInput )
+    if ( TLS->Input == TLS->TestInput )
         return 0;
 
     /* close the input file                                                */
-    if ( ! TLS->input->isstream ) {
-        SyFclose( TLS->input->file );
+    if ( ! TLS->Input->isstream ) {
+        SyFclose( TLS->Input->file );
     }
 
     /* don't keep GAP objects alive unnecessarily */
-    TLS->input->gapname = 0;
-    TLS->input->sline = 0;
+    TLS->Input->gapname = 0;
+    TLS->Input->sline = 0;
 
     /* revert to last file                                                 */
-    TLS->input = TLS->inputFiles[--TLS->inputFilesSP-1];
-    TLS->in     = TLS->input->ptr;
-    TLS->symbol = TLS->input->symbol;
+    TLS->Input = TLS->InputFiles[--TLS->InputFilesSP-1];
+    TLS->In     = TLS->Input->ptr;
+    TLS->Symbol = TLS->Input->symbol;
 
     /* indicate success                                                    */
     return 1;
@@ -543,9 +543,9 @@ UInt CloseInput ( void )
 
 void FlushRestOfInputLine( void )
 {
-  TLS->in[0] = TLS->in[1] = '\0';
-  /* TLS->input->number = 1; */
-  TLS->symbol = S_ILLEGAL;
+  TLS->In[0] = TLS->In[1] = '\0';
+  /* TLS->Input->number = 1; */
+  TLS->Symbol = S_ILLEGAL;
 }
 
 
@@ -559,7 +559,7 @@ UInt OpenTest (
     const Char *        filename )
 {
     /* do not allow to nest test files                                     */
-    if ( TLS->testInput != 0 )
+    if ( TLS->TestInput != 0 )
         return 0;
 
     /* try to open the file as input file                                  */
@@ -567,9 +567,9 @@ UInt OpenTest (
         return 0;
 
     /* remember this is a test input                                       */
-    TLS->testInput   = TLS->input;
-    TLS->testOutput  = TLS->output;
-    TLS->testLine[0] = '\0';
+    TLS->TestInput   = TLS->Input;
+    TLS->TestOutput  = TLS->Output;
+    TLS->TestLine[0] = '\0';
 
     /* indicate success                                                    */
     return 1;
@@ -585,7 +585,7 @@ UInt OpenTestStream (
     Obj                 stream )
 {
     /* do not allow to nest test files                                     */
-    if ( TLS->testInput != 0 )
+    if ( TLS->TestInput != 0 )
         return 0;
 
     /* try to open the file as input file                                  */
@@ -593,9 +593,9 @@ UInt OpenTestStream (
         return 0;
 
     /* remember this is a test input                                       */
-    TLS->testInput   = TLS->input;
-    TLS->testOutput  = TLS->output;
-    TLS->testLine[0] = '\0';
+    TLS->TestInput   = TLS->Input;
+    TLS->TestOutput  = TLS->Output;
+    TLS->TestLine[0] = '\0';
 
     /* indicate success                                                    */
     return 1;
@@ -610,27 +610,27 @@ UInt OpenTestStream (
 UInt CloseTest ( void )
 {
     /* refuse to a non test file                                           */
-    if ( TLS->testInput != TLS->input )
+    if ( TLS->TestInput != TLS->Input )
         return 0;
 
     /* close the input file                                                */
-    if ( ! TLS->input->isstream ) {
-        SyFclose( TLS->input->file );
+    if ( ! TLS->Input->isstream ) {
+        SyFclose( TLS->Input->file );
     }
 
     /* don't keep GAP objects alive unnecessarily */
-    TLS->input->gapname = 0;
-    TLS->input->sline = 0;
+    TLS->Input->gapname = 0;
+    TLS->Input->sline = 0;
 
     /* revert to last file                                                 */
-    TLS->input = TLS->inputFiles[--TLS->inputFilesSP-1];
-    TLS->in     = TLS->input->ptr;
-    TLS->symbol = TLS->input->symbol;
+    TLS->Input = TLS->InputFiles[--TLS->InputFilesSP-1];
+    TLS->In     = TLS->Input->ptr;
+    TLS->Symbol = TLS->Input->symbol;
 
     /* we are no longer in test mode                                       */
-    TLS->testInput   = 0;
-    TLS->testOutput  = 0;
-    TLS->testLine[0] = '\0';
+    TLS->TestInput   = 0;
+    TLS->TestOutput  = 0;
+    TLS->TestLine[0] = '\0';
 
     /* indicate success                                                    */
     return 1;
@@ -660,17 +660,17 @@ UInt OpenLog (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->inputLog != 0 || TLS->outputLog != 0 )
+    if ( TLS->InputLog != 0 || TLS->OutputLog != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->logFile.file = SyFopen( filename, "w" );
-    TLS->logFile.isstream = 0;
-    if ( TLS->logFile.file == -1 )
+    TLS->LogFile.file = SyFopen( filename, "w" );
+    TLS->LogFile.isstream = 0;
+    if ( TLS->LogFile.file == -1 )
         return 0;
 
-    TLS->inputLog  = &TLS->logFile;
-    TLS->outputLog = &TLS->logFile;
+    TLS->InputLog  = &TLS->LogFile;
+    TLS->OutputLog = &TLS->LogFile;
 
     /* otherwise indicate success                                          */
     return 1;
@@ -690,16 +690,16 @@ UInt OpenLogStream (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->inputLog != 0 || TLS->outputLog != 0 )
+    if ( TLS->InputLog != 0 || TLS->OutputLog != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->logStream.isstream = 1;
-    TLS->logStream.stream = stream;
-    TLS->logStream.file = -1;
+    TLS->LogStream.isstream = 1;
+    TLS->LogStream.stream = stream;
+    TLS->LogStream.file = -1;
 
-    TLS->inputLog  = &TLS->logStream;
-    TLS->outputLog = &TLS->logStream;
+    TLS->InputLog  = &TLS->LogStream;
+    TLS->OutputLog = &TLS->LogStream;
 
     /* otherwise indicate success                                          */
     return 1;
@@ -720,15 +720,15 @@ UInt OpenLogStream (
 UInt CloseLog ( void )
 {
     /* refuse to close a non existent logfile                              */
-    if ( TLS->inputLog == 0 || TLS->outputLog == 0 || TLS->inputLog != TLS->outputLog )
+    if ( TLS->InputLog == 0 || TLS->OutputLog == 0 || TLS->InputLog != TLS->OutputLog )
         return 0;
 
     /* close the logfile                                                   */
-    if ( ! TLS->inputLog->isstream ) {
-        SyFclose( TLS->inputLog->file );
+    if ( ! TLS->InputLog->isstream ) {
+        SyFclose( TLS->InputLog->file );
     }
-    TLS->inputLog  = 0;
-    TLS->outputLog = 0;
+    TLS->InputLog  = 0;
+    TLS->OutputLog = 0;
 
     /* indicate success                                                    */
     return 1;
@@ -757,16 +757,16 @@ UInt OpenInputLog (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->inputLog != 0 )
+    if ( TLS->InputLog != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->inputLogFile.file = SyFopen( filename, "w" );
-    TLS->inputLogFile.isstream = 0;
-    if ( TLS->inputLogFile.file == -1 )
+    TLS->InputLogFile.file = SyFopen( filename, "w" );
+    TLS->InputLogFile.isstream = 0;
+    if ( TLS->InputLogFile.file == -1 )
         return 0;
 
-    TLS->inputLog = &TLS->inputLogFile;
+    TLS->InputLog = &TLS->InputLogFile;
 
     /* otherwise indicate success                                          */
     return 1;
@@ -786,15 +786,15 @@ UInt OpenInputLogStream (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->inputLog != 0 )
+    if ( TLS->InputLog != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->inputLogStream.isstream = 1;
-    TLS->inputLogStream.stream = stream;
-    TLS->inputLogStream.file = -1;
+    TLS->InputLogStream.isstream = 1;
+    TLS->InputLogStream.stream = stream;
+    TLS->InputLogStream.file = -1;
 
-    TLS->inputLog = &TLS->inputLogStream;
+    TLS->InputLog = &TLS->InputLogStream;
 
     /* otherwise indicate success                                          */
     return 1;
@@ -815,19 +815,19 @@ UInt OpenInputLogStream (
 UInt CloseInputLog ( void )
 {
     /* refuse to close a non existent logfile                              */
-    if ( TLS->inputLog == 0 )
+    if ( TLS->InputLog == 0 )
         return 0;
 
     /* refuse to close a log opened with LogTo */
-    if (TLS->inputLog == TLS->outputLog)
+    if (TLS->InputLog == TLS->OutputLog)
       return 0;
     
     /* close the logfile                                                   */
-    if ( ! TLS->inputLog->isstream ) {
-        SyFclose( TLS->inputLog->file );
+    if ( ! TLS->InputLog->isstream ) {
+        SyFclose( TLS->InputLog->file );
     }
 
-    TLS->inputLog = 0;
+    TLS->InputLog = 0;
 
     /* indicate success                                                    */
     return 1;
@@ -856,16 +856,16 @@ UInt OpenOutputLog (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->outputLog != 0 )
+    if ( TLS->OutputLog != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->outputLogFile.file = SyFopen( filename, "w" );
-    TLS->outputLogFile.isstream = 0;
-    if ( TLS->outputLogFile.file == -1 )
+    TLS->OutputLogFile.file = SyFopen( filename, "w" );
+    TLS->OutputLogFile.isstream = 0;
+    if ( TLS->OutputLogFile.file == -1 )
         return 0;
 
-    TLS->outputLog = &TLS->outputLogFile;
+    TLS->OutputLog = &TLS->OutputLogFile;
 
     /* otherwise indicate success                                          */
     return 1;
@@ -885,15 +885,15 @@ UInt OpenOutputLogStream (
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( TLS->outputLog != 0 )
+    if ( TLS->OutputLog != 0 )
         return 0;
 
     /* try to open the file                                                */
-    TLS->outputLogStream.isstream = 1;
-    TLS->outputLogStream.stream = stream;
-    TLS->outputLogStream.file = -1;
+    TLS->OutputLogStream.isstream = 1;
+    TLS->OutputLogStream.stream = stream;
+    TLS->OutputLogStream.file = -1;
 
-    TLS->outputLog = &TLS->outputLogStream;
+    TLS->OutputLog = &TLS->OutputLogStream;
 
     /* otherwise indicate success                                          */
     return 1;
@@ -915,19 +915,19 @@ UInt OpenOutputLogStream (
 UInt CloseOutputLog ( void )
 {
     /* refuse to close a non existent logfile                              */
-    if ( TLS->outputLog == 0 )
+    if ( TLS->OutputLog == 0 )
         return 0;
 
     /* refuse to close a log opened with LogTo */
-    if (TLS->outputLog == TLS->inputLog)
+    if (TLS->OutputLog == TLS->InputLog)
       return 0;
 
     /* close the logfile                                                   */
-    if ( ! TLS->outputLog->isstream ) {
-        SyFclose( TLS->outputLog->file );
+    if ( ! TLS->OutputLog->isstream ) {
+        SyFclose( TLS->OutputLog->file );
     }
 
-    TLS->outputLog = 0;
+    TLS->OutputLog = 0;
 
     /* indicate success                                                    */
     return 1;
@@ -969,18 +969,18 @@ UInt OpenOutput (
     int sp;
 
     /* do nothing for stdout and errout if catched */
-    if ( TLS->output != NULL && TLS->IgnoreStdoutErrout == TLS->output &&
+    if ( TLS->Output != NULL && TLS->IgnoreStdoutErrout == TLS->Output &&
           ( strcmp( filename, "*errout*" ) == 0
            || strcmp( filename, "*stdout*" ) == 0 ) ) {
         return 1;
     }
 
     /* fail if we can not handle another open output file                  */
-    if ( TLS->outputFilesSP == sizeof(TLS->outputFiles)/sizeof(TLS->outputFiles[0]))
+    if ( TLS->OutputFilesSP == sizeof(TLS->OutputFiles)/sizeof(TLS->OutputFiles[0]))
         return 0;
 
     /* in test mode keep printing to test output file for breakloop output */
-    if ( TLS->testInput != 0 && ! SyStrcmp( filename, "*errout*" ) )
+    if ( TLS->TestInput != 0 && ! SyStrcmp( filename, "*errout*" ) )
         return 1;
 
     /* Handle *defout* specially; also, redirect *errout* if we already
@@ -995,21 +995,21 @@ UInt OpenOutput (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    sp = TLS->outputFilesSP++;
-    if (!TLS->outputFiles[sp])
+    sp = TLS->OutputFilesSP++;
+    if (!TLS->OutputFiles[sp])
     {
-      TLS->outputFiles[sp] = NewOutput();
+      TLS->OutputFiles[sp] = NewOutput();
     }
-    TLS->output = TLS->outputFiles[sp];
-    TLS->output->file     = file;
-    TLS->output->line[0]  = '\0';
-    TLS->output->pos      = 0;
-    TLS->output->indent   = 0;
-    TLS->output->isstream = 0;
-    TLS->output->format   = 1;
+    TLS->Output = TLS->OutputFiles[sp];
+    TLS->Output->file     = file;
+    TLS->Output->line[0]  = '\0';
+    TLS->Output->pos      = 0;
+    TLS->Output->indent   = 0;
+    TLS->Output->isstream = 0;
+    TLS->Output->format   = 1;
 
     /* variables related to line splitting, very bad place to split        */
-    TLS->output->hints[0] = -1;
+    TLS->Output->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
@@ -1030,27 +1030,27 @@ UInt OpenOutputStream (
 {
     int sp;
     /* fail if we can not handle another open output file                  */
-    if ( TLS->outputFilesSP == sizeof(TLS->outputFiles)/sizeof(TLS->outputFiles[0]))
+    if ( TLS->OutputFilesSP == sizeof(TLS->OutputFiles)/sizeof(TLS->OutputFiles[0]))
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    sp = TLS->outputFilesSP++;
-    if (!TLS->outputFiles[sp])
+    sp = TLS->OutputFilesSP++;
+    if (!TLS->OutputFiles[sp])
     {
-      TLS->outputFiles[sp] = NewOutput();
+      TLS->OutputFiles[sp] = NewOutput();
     }
 
-    TLS->output = TLS->outputFiles[sp];
-    TLS->output->stream   = stream;
-    TLS->output->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
-    TLS->output->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
-    TLS->output->line[0]  = '\0';
-    TLS->output->pos      = 0;
-    TLS->output->indent   = 0;
-    TLS->output->isstream = 1;
+    TLS->Output = TLS->OutputFiles[sp];
+    TLS->Output->stream   = stream;
+    TLS->Output->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
+    TLS->Output->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
+    TLS->Output->line[0]  = '\0';
+    TLS->Output->pos      = 0;
+    TLS->Output->indent   = 0;
+    TLS->Output->isstream = 1;
 
     /* variables related to line splitting, very bad place to split        */
-    TLS->output->hints[0] = -1;
+    TLS->Output->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
@@ -1079,30 +1079,30 @@ UInt CloseOutput ( void )
     /* silently refuse to close the test output file this is probably
          an attempt to close *errout* which is silently not opened, so
          lets silently not close it  */
-    if ( TLS->output == TLS->testOutput )
+    if ( TLS->Output == TLS->TestOutput )
         return 1;
     /* and similarly */
-    if ( TLS->IgnoreStdoutErrout == TLS->output )
+    if ( TLS->IgnoreStdoutErrout == TLS->Output )
         return 1;
 
     /* refuse to close the initial output file '*stdout*'                  */
-    if ( TLS->outputFilesSP <= 1 && TLS->output->isstream
-         && TLS->defaultOutput == TLS->output->stream)
+    if ( TLS->OutputFilesSP <= 1 && TLS->Output->isstream
+         && TLS->DefaultOutput == TLS->Output->stream)
       return 1;
 
 
     /* flush output and close the file                                     */
     Pr( "%c", (Int)'\03', 0L );
-    if ( ! TLS->output->isstream ) {
-      SyFclose( TLS->output->file );
+    if ( ! TLS->Output->isstream ) {
+      SyFclose( TLS->Output->file );
     }
 
     /* revert to previous output file and indicate success                 */
-    --TLS->outputFilesSP;
-    if (TLS->outputFilesSP)
-      TLS->output = TLS->outputFiles[TLS->outputFilesSP-1];
+    --TLS->OutputFilesSP;
+    if (TLS->OutputFilesSP)
+      TLS->Output = TLS->OutputFiles[TLS->OutputFilesSP-1];
     else
-      TLS->output = 0;
+      TLS->Output = 0;
     return 1;
 }
 
@@ -1125,11 +1125,11 @@ UInt OpenAppend (
     int sp;
 
     /* fail if we can not handle another open output file                  */
-    if ( TLS->outputFilesSP == sizeof(TLS->outputFiles)/sizeof(TLS->outputFiles[0]))
+    if ( TLS->OutputFilesSP == sizeof(TLS->OutputFiles)/sizeof(TLS->OutputFiles[0]))
         return 0;
 
     /* in test mode keep printing to test output file for breakloop output */
-    if ( TLS->testInput != 0 && ! strcmp( filename, "*errout*" ) )
+    if ( TLS->TestInput != 0 && ! strcmp( filename, "*errout*" ) )
         return 1;
     
     if ( ! SyStrcmp( filename, "*defout*") )
@@ -1141,21 +1141,21 @@ UInt OpenAppend (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    sp = TLS->outputFilesSP++;
-    if (!TLS->outputFiles[sp])
+    sp = TLS->OutputFilesSP++;
+    if (!TLS->OutputFiles[sp])
     {
-      TLS->outputFiles[sp] = NewOutput();
+      TLS->OutputFiles[sp] = NewOutput();
     }
 
-    TLS->output = TLS->outputFiles[sp];
-    TLS->output->file     = file;
-    TLS->output->line[0]  = '\0';
-    TLS->output->pos      = 0;
-    TLS->output->indent   = 0;
-    TLS->output->isstream = 0;
+    TLS->Output = TLS->OutputFiles[sp];
+    TLS->Output->file     = file;
+    TLS->Output->line[0]  = '\0';
+    TLS->Output->pos      = 0;
+    TLS->Output->indent   = 0;
+    TLS->Output->isstream = 0;
 
     /* variables related to line splitting, very bad place to split        */
-    TLS->output->hints[0] = -1;
+    TLS->Output->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
@@ -1200,9 +1200,9 @@ static Int GetLine2 (
     UInt                    length )
 {
     if ( ! input ) {
-      input = TLS->input;
+      input = TLS->Input;
       if ( ! input ) OpenDefaultInput();
-      input = TLS->input;
+      input = TLS->Input;
     }
 
     if ( input->isstream ) {
@@ -1289,43 +1289,43 @@ Char GetLine ( void )
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
     /* if the GAP function `PrintPromptHook' is defined then it is called  */
     /* for printing the prompt, see also `EndLineHook'                     */
-    if ( ! TLS->input->isstream ) {
-       if ( TLS->input->file == 0 ) {
+    if ( ! TLS->Input->isstream ) {
+       if ( TLS->Input->file == 0 ) {
             if ( ! SyQuiet ) {
-                if (TLS->output->pos > 0)
+                if (TLS->Output->pos > 0)
                     Pr("\n", 0L, 0L);
                 if ( PrintPromptHook )
                      Call0ArgsInNewReader( PrintPromptHook );
                 else
-                     Pr( "%s%c", (Int)TLS->prompt, (Int)'\03' );
+                     Pr( "%s%c", (Int)TLS->Prompt, (Int)'\03' );
             } else
                 Pr( "%c", (Int)'\03', 0L );
         }
-        else if ( TLS->input->file == 2 ) {
-            if (TLS->output->pos > 0)
+        else if ( TLS->Input->file == 2 ) {
+            if (TLS->Output->pos > 0)
                 Pr("\n", 0L, 0L);
             if ( PrintPromptHook )
                  Call0ArgsInNewReader( PrintPromptHook );
             else
-                 Pr( "%s%c", (Int)TLS->prompt, (Int)'\03' );
+                 Pr( "%s%c", (Int)TLS->Prompt, (Int)'\03' );
         }
     }
 
     /* bump the line number                                                */
-    if ( TLS->input->line < TLS->in && (*(TLS->in-1) == '\n' || *(TLS->in-1) == '\r') ) {
-        TLS->input->number++;
+    if ( TLS->Input->line < TLS->In && (*(TLS->In-1) == '\n' || *(TLS->In-1) == '\r') ) {
+        TLS->Input->number++;
     }
 
-    /* initialize 'TLS->in', no errors on this line so far                      */
-    TLS->in = TLS->input->line;  TLS->in[0] = '\0';
-    TLS->nrErrLine = 0;
+    /* initialize 'TLS->In', no errors on this line so far                      */
+    TLS->In = TLS->Input->line;  TLS->In[0] = '\0';
+    TLS->NrErrLine = 0;
 
     /* read a line from an ordinary input file                             */
-    if ( TLS->testInput != TLS->input ) {
+    if ( TLS->TestInput != TLS->Input ) {
 
         /* try to read a line                                              */
-        if ( ! GetLine2( TLS->input, TLS->input->line, sizeof(TLS->input->line) ) ) {
-            TLS->in[0] = '\377';  TLS->in[1] = '\0';
+        if ( ! GetLine2( TLS->Input, TLS->Input->line, sizeof(TLS->Input->line) ) ) {
+            TLS->In[0] = '\377';  TLS->In[1] = '\0';
         }
 
 
@@ -1333,10 +1333,10 @@ Char GetLine ( void )
            (if not inside reading long string which may have line
            or chunk from GetLine starting with '?')                        */
 
-        if ( TLS->in[0] == '?' && TLS->helpSubsOn == 1) {
-            strlcpy( buf, TLS->in+1, sizeof(buf) );
-            strcpy( TLS->in, "HELP(\"" );
-            for ( p = TLS->in+6,  q = buf;  *q;  q++ ) {
+        if ( TLS->In[0] == '?' && TLS->HelpSubsOn == 1) {
+            strlcpy( buf, TLS->In+1, sizeof(buf) );
+            strcpy( TLS->In, "HELP(\"" );
+            for ( p = TLS->In+6,  q = buf;  *q;  q++ ) {
                 if ( *q != '"' && *q != '\n' ) {
                     *p++ = *q;
                 }
@@ -1347,18 +1347,18 @@ Char GetLine ( void )
             }
             *p = '\0';
             /* FIXME: We should do bounds checking, but don't know what 'In' points to */
-            strcat( TLS->in, "\");\n" );
+            strcat( TLS->In, "\");\n" );
         }
 
         /* if necessary echo the line to the logfile                      */
-        if( TLS->inputLog != 0 && TLS->input->echo == 1)
-            if ( !(TLS->in[0] == '\377' && TLS->in[1] == '\0') )
-            PutLine2( TLS->inputLog, TLS->in, strlen(TLS->in) );
+        if( TLS->InputLog != 0 && TLS->Input->echo == 1)
+            if ( !(TLS->In[0] == '\377' && TLS->In[1] == '\0') )
+            PutLine2( TLS->InputLog, TLS->In, strlen(TLS->In) );
 
-                /*      if ( ! TLS->input->isstream ) {
-          if ( TLS->inputLog != 0 && ! TLS->input->isstream ) {
-            if ( TLS->input->file == 0 || TLS->input->file == 2 ) {
-              PutLine2( TLS->inputLog, TLS->in );
+                /*      if ( ! TLS->Input->isstream ) {
+          if ( TLS->InputLog != 0 && ! TLS->Input->isstream ) {
+            if ( TLS->Input->file == 0 || TLS->Input->file == 2 ) {
+              PutLine2( TLS->InputLog, TLS->In );
             }
             }
             } */
@@ -1369,40 +1369,40 @@ Char GetLine ( void )
     else {
 
         /* continue until we got an input line                             */
-        while ( TLS->in[0] == '\0' ) {
+        while ( TLS->In[0] == '\0' ) {
 
             /* there may be one line waiting                               */
-            if ( TLS->testLine[0] != '\0' ) {
-                SyStrncat( TLS->in, TLS->testLine, sizeof(TLS->input->line) );
-                TLS->testLine[0] = '\0';
+            if ( TLS->TestLine[0] != '\0' ) {
+                SyStrncat( TLS->In, TLS->TestLine, sizeof(TLS->Input->line) );
+                TLS->TestLine[0] = '\0';
             }
 
             /* otherwise try to read a line                                */
             else {
-                if ( ! GetLine2(TLS->input, TLS->input->line, sizeof(TLS->input->line)) ) {
-                    TLS->in[0] = '\377';  TLS->in[1] = '\0';
+                if ( ! GetLine2(TLS->Input, TLS->Input->line, sizeof(TLS->Input->line)) ) {
+                    TLS->In[0] = '\377';  TLS->In[1] = '\0';
                 }
             }
 
             /* if the line starts with a prompt its an input line          */
-            if      ( TLS->in[0] == 'g' && TLS->in[1] == 'a' && TLS->in[2] == 'p'
-                   && TLS->in[3] == '>' && TLS->in[4] == ' ' ) {
-                TLS->in = TLS->in + 5;
+            if      ( TLS->In[0] == 'g' && TLS->In[1] == 'a' && TLS->In[2] == 'p'
+                   && TLS->In[3] == '>' && TLS->In[4] == ' ' ) {
+                TLS->In = TLS->In + 5;
             }
-            else if ( TLS->in[0] == '>' && TLS->in[1] == ' ' ) {
-                TLS->in = TLS->in + 2;
+            else if ( TLS->In[0] == '>' && TLS->In[1] == ' ' ) {
+                TLS->In = TLS->In + 2;
             }
 
             /* if the line is not empty or a comment, print it             */
-            else if ( TLS->in[0] != '\n' && TLS->in[0] != '#' && TLS->in[0] != '\377' ) {
+            else if ( TLS->In[0] != '\n' && TLS->In[0] != '#' && TLS->In[0] != '\377' ) {
                 /* Commented out by AK
                 char obuf[8];
-                snprintf(obuf, sizeof(obuf), "-%5i:\n- ", (int)TLS->testInput->number++);
-                PutLine2( TLS->testOutput, obuf, 7 );
+                snprintf(obuf, sizeof(obuf), "-%5i:\n- ", (int)TLS->TestInput->number++);
+                PutLine2( TLS->TestOutput, obuf, 7 );
                 */
-                PutLine2( TLS->testOutput, "- ", 2 );
-                PutLine2( TLS->testOutput, TLS->in, strlen(TLS->in) );
-                TLS->in[0] = '\0';
+                PutLine2( TLS->TestOutput, "- ", 2 );
+                PutLine2( TLS->TestOutput, TLS->In, strlen(TLS->In) );
+                TLS->In[0] = '\0';
             }
 
         }
@@ -1410,7 +1410,7 @@ Char GetLine ( void )
     }
 
     /* return the current character                                        */
-    return *TLS->in;
+    return *TLS->In;
 }
 
 
@@ -1431,19 +1431,19 @@ static Char Pushback = '\0';
 static Char *RealIn;
 
 static inline void GET_CHAR( void ) {
-  if (TLS->in == &Pushback) {
-      TLS->in = RealIn;
+  if (TLS->In == &Pushback) {
+      TLS->In = RealIn;
   } else
-    TLS->in++;
-  if (!*TLS->in)
+    TLS->In++;
+  if (!*TLS->In)
     GetLine();
 }
 
 static inline void UNGET_CHAR( Char c ) {
-  assert(TLS->in != &Pushback);
+  assert(TLS->In != &Pushback);
   Pushback = c;
-  RealIn = TLS->in;
-  TLS->in = &Pushback;
+  RealIn = TLS->In;
+  TLS->In = &Pushback;
 }
 
 
@@ -1452,10 +1452,10 @@ static inline void UNGET_CHAR( Char c ) {
 *F  GetIdent()  . . . . . . . . . . . . . get an identifier or keyword, local
 **
 **  'GetIdent' reads   an identifier from  the current  input  file  into the
-**  variable 'TLS->value' and sets 'Symbol' to 'S_IDENT'.   The first character of
+**  variable 'TLS->Value' and sets 'Symbol' to 'S_IDENT'.   The first character of
 **  the   identifier  is  the current character  pointed to  by 'In'.  If the
 **  characters make  up   a  keyword 'GetIdent'  will  set   'Symbol'  to the
-**  corresponding value.  The parser will ignore 'TLS->value' in this case.
+**  corresponding value.  The parser will ignore 'TLS->Value' in this case.
 **
 **  An  identifier consists of a letter  followed by more letters, digits and
 **  underscores '_'.  An identifier is terminated by the first  character not
@@ -1464,19 +1464,19 @@ static inline void UNGET_CHAR( Char c ) {
 **  '\' can be used  to include special characters like  '('  in identifiers.
 **  For example 'G\(2\,5\)' is an identifier not a call to a function 'G'.
 **
-**  The size  of 'TLS->value' limits the  number  of significant characters  in an
+**  The size  of 'TLS->Value' limits the  number  of significant characters  in an
 **  identifier.   If  an  identifier   has more characters    'GetIdent' will
 **  silently truncate it.
 **
 **  After reading the identifier 'GetIdent'  looks at the  first and the last
-**  character  of  'TLS->value' to see if  it  could possibly  be  a keyword.  For
+**  character  of  'TLS->Value' to see if  it  could possibly  be  a keyword.  For
 **  example 'test'  could  not be  a  keyword  because there  is  no  keyword
 **  starting and ending with a 't'.  After that  test either 'GetIdent' knows
-**  that 'TLS->value' is not a keyword, or there is a unique possible keyword that
+**  that 'TLS->Value' is not a keyword, or there is a unique possible keyword that
 **  could match, because   no two  keywords  have  identical  first and  last
-**  characters.  For example if 'TLS->value' starts with 'f' and ends with 'n' the
+**  characters.  For example if 'TLS->Value' starts with 'f' and ends with 'n' the
 **  only possible keyword  is 'function'.   Thus in this case  'GetIdent' can
-**  decide with one string comparison if 'TLS->value' holds a keyword or not.
+**  decide with one string comparison if 'TLS->Value' holds a keyword or not.
 */
 extern void GetSymbol ( void );
 
@@ -1532,39 +1532,39 @@ void GetIdent ( void )
     /* initially it could be a keyword                                     */
     isQuoted = 0;
 
-    /* read all characters into 'TLS->value'                                    */
-    for ( i=0; IsIdent(*TLS->in) || IsDigit(*TLS->in) || *TLS->in=='\\'; i++ ) {
+    /* read all characters into 'TLS->Value'                                    */
+    for ( i=0; IsIdent(*TLS->In) || IsDigit(*TLS->In) || *TLS->In=='\\'; i++ ) {
 
         fetch = 1;
         /* handle escape sequences                                         */
         /* we ignore '\ newline' by decrementing i, except at the
            very start of the identifier, when we cannot do that
            so we recurse instead                                           */
-        if ( *TLS->in == '\\' ) {
+        if ( *TLS->In == '\\' ) {
             GET_CHAR();
-            if      ( *TLS->in == '\n' && i == 0 )  { GetSymbol();  return; }
-            else if ( *TLS->in == '\r' )  {
+            if      ( *TLS->In == '\n' && i == 0 )  { GetSymbol();  return; }
+            else if ( *TLS->In == '\r' )  {
                 GET_CHAR();
-                if  ( *TLS->in == '\n' )  {
+                if  ( *TLS->In == '\n' )  {
                      if (i == 0) { GetSymbol();  return; }
                      else i--;
                 }
-                else  {TLS->value[i] = '\r'; fetch = 0;}
+                else  {TLS->Value[i] = '\r'; fetch = 0;}
             }
-            else if ( *TLS->in == '\n' && i < SAFE_VALUE_SIZE-1 )  i--;
-            else if ( *TLS->in == 'n'  && i < SAFE_VALUE_SIZE-1 )  TLS->value[i] = '\n';
-            else if ( *TLS->in == 't'  && i < SAFE_VALUE_SIZE-1 )  TLS->value[i] = '\t';
-            else if ( *TLS->in == 'r'  && i < SAFE_VALUE_SIZE-1 )  TLS->value[i] = '\r';
-            else if ( *TLS->in == 'b'  && i < SAFE_VALUE_SIZE-1 )  TLS->value[i] = '\b';
+            else if ( *TLS->In == '\n' && i < SAFE_VALUE_SIZE-1 )  i--;
+            else if ( *TLS->In == 'n'  && i < SAFE_VALUE_SIZE-1 )  TLS->Value[i] = '\n';
+            else if ( *TLS->In == 't'  && i < SAFE_VALUE_SIZE-1 )  TLS->Value[i] = '\t';
+            else if ( *TLS->In == 'r'  && i < SAFE_VALUE_SIZE-1 )  TLS->Value[i] = '\r';
+            else if ( *TLS->In == 'b'  && i < SAFE_VALUE_SIZE-1 )  TLS->Value[i] = '\b';
             else if ( i < SAFE_VALUE_SIZE-1 )  {
-                TLS->value[i] = *TLS->in;
+                TLS->Value[i] = *TLS->In;
                 isQuoted = 1;
             }
         }
 
-        /* put normal chars into 'TLS->value' but only if there is room         */
+        /* put normal chars into 'TLS->Value' but only if there is room         */
         else {
-            if ( i < SAFE_VALUE_SIZE-1 )  TLS->value[i] = *TLS->in;
+            if ( i < SAFE_VALUE_SIZE-1 )  TLS->Value[i] = *TLS->In;
         }
 
         /* read the next character                                         */
@@ -1574,59 +1574,59 @@ void GetIdent ( void )
 
     /* terminate the identifier and lets assume that it is not a keyword   */
     if ( i < SAFE_VALUE_SIZE-1 )
-        TLS->value[i] = '\0';
+        TLS->Value[i] = '\0';
     else {
         SyntaxError("Identifiers in GAP must consist of less than 1023 characters.");
         i =  SAFE_VALUE_SIZE-1;
-        TLS->value[i] = '\0';
+        TLS->Value[i] = '\0';
     }
-    TLS->symbol = S_IDENT;
+    TLS->Symbol = S_IDENT;
 
-    /* now check if 'TLS->value' holds a keyword                                */
-    switch ( 256*TLS->value[0]+TLS->value[i-1] ) {
-    case 256*'a'+'d': if(!strcmp(TLS->value,"and"))     TLS->symbol=S_AND;     break;
-    case 256*'a'+'c': if(!strcmp(TLS->value,"atomic"))  TLS->symbol=S_ATOMIC;  break;
-    case 256*'b'+'k': if(!strcmp(TLS->value,"break"))   TLS->symbol=S_BREAK;   break;
-    case 256*'c'+'e': if(!strcmp(TLS->value,"continue"))   TLS->symbol=S_CONTINUE;   break;
-    case 256*'d'+'o': if(!strcmp(TLS->value,"do"))      TLS->symbol=S_DO;      break;
-    case 256*'e'+'f': if(!strcmp(TLS->value,"elif"))    TLS->symbol=S_ELIF;    break;
-    case 256*'e'+'e': if(!strcmp(TLS->value,"else"))    TLS->symbol=S_ELSE;    break;
-    case 256*'e'+'d': if(!strcmp(TLS->value,"end"))     TLS->symbol=S_END;     break;
-    case 256*'f'+'e': if(!strcmp(TLS->value,"false"))   TLS->symbol=S_FALSE;   break;
-    case 256*'f'+'i': if(!strcmp(TLS->value,"fi"))      TLS->symbol=S_FI;      break;
-    case 256*'f'+'r': if(!strcmp(TLS->value,"for"))     TLS->symbol=S_FOR;     break;
-    case 256*'f'+'n': if(!strcmp(TLS->value,"function"))TLS->symbol=S_FUNCTION;break;
-    case 256*'i'+'f': if(!strcmp(TLS->value,"if"))      TLS->symbol=S_IF;      break;
-    case 256*'i'+'n': if(!strcmp(TLS->value,"in"))      TLS->symbol=S_IN;      break;
-    case 256*'l'+'l': if(!strcmp(TLS->value,"local"))   TLS->symbol=S_LOCAL;   break;
-    case 256*'m'+'d': if(!strcmp(TLS->value,"mod"))     TLS->symbol=S_MOD;     break;
-    case 256*'n'+'t': if(!strcmp(TLS->value,"not"))     TLS->symbol=S_NOT;     break;
-    case 256*'o'+'d': if(!strcmp(TLS->value,"od"))      TLS->symbol=S_OD;      break;
-    case 256*'o'+'r': if(!strcmp(TLS->value,"or"))      TLS->symbol=S_OR;      break;
-    case 256*'r'+'e': if(!strcmp(TLS->value,"readwrite")) TLS->symbol=S_READWRITE;     break;
-    case 256*'r'+'y': if(!strcmp(TLS->value,"readonly"))  TLS->symbol=S_READONLY;     break;
-    case 256*'r'+'c': if(!strcmp(TLS->value,"rec"))     TLS->symbol=S_REC;     break;
-    case 256*'r'+'t': if(!strcmp(TLS->value,"repeat"))  TLS->symbol=S_REPEAT;  break;
-    case 256*'r'+'n': if(!strcmp(TLS->value,"return"))  TLS->symbol=S_RETURN;  break;
-    case 256*'t'+'n': if(!strcmp(TLS->value,"then"))    TLS->symbol=S_THEN;    break;
-    case 256*'t'+'e': if(!strcmp(TLS->value,"true"))    TLS->symbol=S_TRUE;    break;
-    case 256*'u'+'l': if(!strcmp(TLS->value,"until"))   TLS->symbol=S_UNTIL;   break;
-    case 256*'w'+'e': if(!strcmp(TLS->value,"while"))   TLS->symbol=S_WHILE;   break;
-    case 256*'q'+'t': if(!strcmp(TLS->value,"quit"))    TLS->symbol=S_QUIT;    break;
-    case 256*'Q'+'T': if(!strcmp(TLS->value,"QUIT"))    TLS->symbol=S_QQUIT;   break;
+    /* now check if 'TLS->Value' holds a keyword                                */
+    switch ( 256*TLS->Value[0]+TLS->Value[i-1] ) {
+    case 256*'a'+'d': if(!strcmp(TLS->Value,"and"))     TLS->Symbol=S_AND;     break;
+    case 256*'a'+'c': if(!strcmp(TLS->Value,"atomic"))  TLS->Symbol=S_ATOMIC;  break;
+    case 256*'b'+'k': if(!strcmp(TLS->Value,"break"))   TLS->Symbol=S_BREAK;   break;
+    case 256*'c'+'e': if(!strcmp(TLS->Value,"continue"))   TLS->Symbol=S_CONTINUE;   break;
+    case 256*'d'+'o': if(!strcmp(TLS->Value,"do"))      TLS->Symbol=S_DO;      break;
+    case 256*'e'+'f': if(!strcmp(TLS->Value,"elif"))    TLS->Symbol=S_ELIF;    break;
+    case 256*'e'+'e': if(!strcmp(TLS->Value,"else"))    TLS->Symbol=S_ELSE;    break;
+    case 256*'e'+'d': if(!strcmp(TLS->Value,"end"))     TLS->Symbol=S_END;     break;
+    case 256*'f'+'e': if(!strcmp(TLS->Value,"false"))   TLS->Symbol=S_FALSE;   break;
+    case 256*'f'+'i': if(!strcmp(TLS->Value,"fi"))      TLS->Symbol=S_FI;      break;
+    case 256*'f'+'r': if(!strcmp(TLS->Value,"for"))     TLS->Symbol=S_FOR;     break;
+    case 256*'f'+'n': if(!strcmp(TLS->Value,"function"))TLS->Symbol=S_FUNCTION;break;
+    case 256*'i'+'f': if(!strcmp(TLS->Value,"if"))      TLS->Symbol=S_IF;      break;
+    case 256*'i'+'n': if(!strcmp(TLS->Value,"in"))      TLS->Symbol=S_IN;      break;
+    case 256*'l'+'l': if(!strcmp(TLS->Value,"local"))   TLS->Symbol=S_LOCAL;   break;
+    case 256*'m'+'d': if(!strcmp(TLS->Value,"mod"))     TLS->Symbol=S_MOD;     break;
+    case 256*'n'+'t': if(!strcmp(TLS->Value,"not"))     TLS->Symbol=S_NOT;     break;
+    case 256*'o'+'d': if(!strcmp(TLS->Value,"od"))      TLS->Symbol=S_OD;      break;
+    case 256*'o'+'r': if(!strcmp(TLS->Value,"or"))      TLS->Symbol=S_OR;      break;
+    case 256*'r'+'e': if(!strcmp(TLS->Value,"readwrite")) TLS->Symbol=S_READWRITE;     break;
+    case 256*'r'+'y': if(!strcmp(TLS->Value,"readonly"))  TLS->Symbol=S_READONLY;     break;
+    case 256*'r'+'c': if(!strcmp(TLS->Value,"rec"))     TLS->Symbol=S_REC;     break;
+    case 256*'r'+'t': if(!strcmp(TLS->Value,"repeat"))  TLS->Symbol=S_REPEAT;  break;
+    case 256*'r'+'n': if(!strcmp(TLS->Value,"return"))  TLS->Symbol=S_RETURN;  break;
+    case 256*'t'+'n': if(!strcmp(TLS->Value,"then"))    TLS->Symbol=S_THEN;    break;
+    case 256*'t'+'e': if(!strcmp(TLS->Value,"true"))    TLS->Symbol=S_TRUE;    break;
+    case 256*'u'+'l': if(!strcmp(TLS->Value,"until"))   TLS->Symbol=S_UNTIL;   break;
+    case 256*'w'+'e': if(!strcmp(TLS->Value,"while"))   TLS->Symbol=S_WHILE;   break;
+    case 256*'q'+'t': if(!strcmp(TLS->Value,"quit"))    TLS->Symbol=S_QUIT;    break;
+    case 256*'Q'+'T': if(!strcmp(TLS->Value,"QUIT"))    TLS->Symbol=S_QQUIT;   break;
 
-    case 256*'I'+'d': if(!strcmp(TLS->value,"IsBound")) TLS->symbol=S_ISBOUND; break;
-    case 256*'U'+'d': if(!strcmp(TLS->value,"Unbind"))  TLS->symbol=S_UNBIND;  break;
-    case 256*'T'+'d': if(!strcmp(TLS->value,"TryNextMethod"))
-                                                     TLS->symbol=S_TRYNEXT; break;
-    case 256*'I'+'o': if(!strcmp(TLS->value,"Info"))    TLS->symbol=S_INFO;    break;
-    case 256*'A'+'t': if(!strcmp(TLS->value,"Assert"))  TLS->symbol=S_ASSERT;  break;
+    case 256*'I'+'d': if(!strcmp(TLS->Value,"IsBound")) TLS->Symbol=S_ISBOUND; break;
+    case 256*'U'+'d': if(!strcmp(TLS->Value,"Unbind"))  TLS->Symbol=S_UNBIND;  break;
+    case 256*'T'+'d': if(!strcmp(TLS->Value,"TryNextMethod"))
+                                                     TLS->Symbol=S_TRYNEXT; break;
+    case 256*'I'+'o': if(!strcmp(TLS->Value,"Info"))    TLS->Symbol=S_INFO;    break;
+    case 256*'A'+'t': if(!strcmp(TLS->Value,"Assert"))  TLS->Symbol=S_ASSERT;  break;
 
     default: ;
     }
 
     /* if it is quoted it is an identifier                                 */
-    if ( isQuoted )  TLS->symbol = S_IDENT;
+    if ( isQuoted )  TLS->Symbol = S_IDENT;
 
 
 }
@@ -1636,7 +1636,7 @@ void GetIdent ( void )
 *F  GetNumber()  . . . . . . . . . . . . . .  get an integer or float literal
 **
 **  'GetNumber' reads  a number from  the  current  input file into the
-**  variable  'TLS->value' and sets  'Symbol' to 'S_INT', 'S_PARTIALINT',
+**  variable  'TLS->Value' and sets  'Symbol' to 'S_INT', 'S_PARTIALINT',
 **  'S_FLOAT' or 'S_PARTIALFLOAT'.   The first character of
 **  the number is the current character pointed to by 'In'.
 **
@@ -1647,7 +1647,7 @@ void GetIdent ( void )
 **  As we read, we keep track of whether we have seen a . or exponent notation
 **  and so whether we will return S_[PARTIAL]INT or S_[PARTIAL]FLOAT.
 **
-**  When TLS->value is  completely filled we have to check  if the reading of
+**  When TLS->Value is  completely filled we have to check  if the reading of
 **  the number  is complete  or not to  decide whether to return a PARTIAL type.
 **
 **  The argument reflects how far we are through reading a possibly very long number
@@ -1661,32 +1661,32 @@ void GetIdent ( void )
 static Char GetCleanedChar( UInt *wasEscaped ) {
   GET_CHAR();
   *wasEscaped = 0;
-  if (*TLS->in == '\\') {
+  if (*TLS->In == '\\') {
     GET_CHAR();
-    if      ( *TLS->in == '\n')
+    if      ( *TLS->In == '\n')
       return GetCleanedChar(wasEscaped);
-    else if ( *TLS->in == '\r' )  {
+    else if ( *TLS->In == '\r' )  {
       GET_CHAR();
-      if  ( *TLS->in == '\n' )
+      if  ( *TLS->In == '\n' )
         return GetCleanedChar(wasEscaped);
       else {
-        UNGET_CHAR(*TLS->in);
+        UNGET_CHAR(*TLS->In);
         *wasEscaped = 1;
         return '\r';
       }
     }
     else {
       *wasEscaped = 1;
-      if ( *TLS->in == 'n')  return '\n';
-      else if ( *TLS->in == 't')  return '\t';
-      else if ( *TLS->in == 'r')  return '\r';
-      else if ( *TLS->in == 'b')  return '\b';
-      else if ( *TLS->in == '>')  return '\01';
-      else if ( *TLS->in == '<')  return '\02';
-      else if ( *TLS->in == 'c')  return '\03';
+      if ( *TLS->In == 'n')  return '\n';
+      else if ( *TLS->In == 't')  return '\t';
+      else if ( *TLS->In == 'r')  return '\r';
+      else if ( *TLS->In == 'b')  return '\b';
+      else if ( *TLS->In == '>')  return '\01';
+      else if ( *TLS->In == '<')  return '\02';
+      else if ( *TLS->In == 'c')  return '\03';
     }
   }
-  return *TLS->in;
+  return *TLS->In;
 }
 
 
@@ -1699,11 +1699,11 @@ void GetNumber ( UInt StartingStatus )
   UInt seenADigit = (StartingStatus != 0 && StartingStatus != 2);
   UInt seenExpDigit = (StartingStatus ==5);
 
-  c = *TLS->in;
+  c = *TLS->In;
   if (StartingStatus  <  2) {
     /* read initial sequence of digits into 'Value'             */
     for (i = 0; !wasEscaped && IsDigit(c) && i < SAFE_VALUE_SIZE-1; i++) {
-      TLS->value[i] = c;
+      TLS->Value[i] = c;
       seenADigit = 1;
       c = GetCleanedChar(&wasEscaped);
     }
@@ -1712,26 +1712,26 @@ void GetNumber ( UInt StartingStatus )
     /* maybe we saw an identifier character and realised that this is an identifier we are reading */
     if (wasEscaped || IsIdent(c)) {
       /* Now we know we have an identifier read the rest of it */
-      TLS->value[i++] = c;
+      TLS->Value[i++] = c;
       c = GetCleanedChar(&wasEscaped);
       for (; wasEscaped || IsIdent(c) || IsDigit(c); i++) {
         if (i < SAFE_VALUE_SIZE -1)
-          TLS->value[i] = c;
+          TLS->Value[i] = c;
         c = GetCleanedChar(&wasEscaped);
       }
       if (i < SAFE_VALUE_SIZE -1)
-        TLS->value[i] = '\0';
+        TLS->Value[i] = '\0';
       else
-        TLS->value[SAFE_VALUE_SIZE-1] = '\0';
-      TLS->symbol = S_IDENT;
+        TLS->Value[SAFE_VALUE_SIZE-1] = '\0';
+      TLS->Symbol = S_IDENT;
       return;
     }
 
     /* Or maybe we just ran out of space */
     if (IsDigit(c)) {
       assert(i >= SAFE_VALUE_SIZE-1);
-      TLS->symbol = S_PARTIALINT;
-      TLS->value[SAFE_VALUE_SIZE-1] = '\0';
+      TLS->Symbol = S_PARTIALINT;
+      TLS->Value[SAFE_VALUE_SIZE-1] = '\0';
       return;
     }
 
@@ -1743,35 +1743,35 @@ void GetNumber ( UInt StartingStatus )
          look for a float.
 
       This is a bit fragile  */
-      if (TLS->symbol == S_DOT || TLS->symbol == S_BDOT) {
-	TLS->value[i]  = '\0';
-	TLS->symbol = S_INT;
+      if (TLS->Symbol == S_DOT || TLS->Symbol == S_BDOT) {
+	TLS->Value[i]  = '\0';
+	TLS->Symbol = S_INT;
         return;
       }
       
       /* peek ahead to decide which */
       GET_CHAR();
-      if (*TLS->in == '.') {
+      if (*TLS->In == '.') {
         /* It was .. */
-        UNGET_CHAR(*TLS->in);
-        TLS->symbol = S_INT;
-        TLS->value[i] = '\0';
+        UNGET_CHAR(*TLS->In);
+        TLS->Symbol = S_INT;
+        TLS->Value[i] = '\0';
         return;
       }
 
 
       /* Not .. Put back the character we peeked at */
-      UNGET_CHAR(*TLS->in);
+      UNGET_CHAR(*TLS->In);
       /* Now the . must be part of our number
          store it and move on */
-      TLS->value[i++] = c;
+      TLS->Value[i++] = c;
       c = GetCleanedChar(&wasEscaped);
     }
 
     else {
       /* Anything else we see tells us that the token is done */
-      TLS->value[i]  = '\0';
-      TLS->symbol = S_INT;
+      TLS->Value[i]  = '\0';
+      TLS->Symbol = S_INT;
       return;
     }
   }
@@ -1790,7 +1790,7 @@ void GetNumber ( UInt StartingStatus )
 
     /* read digits */
     for (; !wasEscaped && IsDigit(c) && i < SAFE_VALUE_SIZE-1; i++) {
-      TLS->value[i] = c;
+      TLS->Value[i] = c;
       seenADigit = 1;
       c = GetCleanedChar(&wasEscaped);
     }
@@ -1803,24 +1803,24 @@ void GetNumber ( UInt StartingStatus )
        C99 style */
       if (!wasEscaped) {
         if (IsAlpha(c)) {
-          TLS->value[i++] = c;
+          TLS->Value[i++] = c;
           c = GetCleanedChar(&wasEscaped);
         }
         /* independently of that, we allow an _ signalling immediate conversion */
         if (c == '_') {
-          TLS->value[i++] = c;
+          TLS->Value[i++] = c;
           c = GetCleanedChar(&wasEscaped);
           /* After which there may be one character signifying the conversion style */
           if (IsAlpha(c)) {
-            TLS->value[i++] = c;
+            TLS->Value[i++] = c;
             c = GetCleanedChar(&wasEscaped);
           }
         }
         /* Now if the next character is alphanumerical, or an identifier type symbol then we
            really do have an error, otherwise we return a result */
         if (!IsIdent(c) && !IsDigit(c)) {
-          TLS->value[i] = '\0';
-          TLS->symbol = S_FLOAT;
+          TLS->Value[i] = '\0';
+          TLS->Symbol = S_FLOAT;
           return;
         }
       }
@@ -1833,19 +1833,19 @@ void GetNumber ( UInt StartingStatus )
         if (!seenADigit)
           SyntaxError("Badly formed number, need a digit before or after the decimal point");
         seenExp = 1;
-        TLS->value[i++] = c;
+        TLS->Value[i++] = c;
         c = GetCleanedChar(&wasEscaped);
         if (!wasEscaped && (c == '+' || c == '-'))
           {
-            TLS->value[i++] = c;
+            TLS->Value[i++] = c;
             c = GetCleanedChar(&wasEscaped);
           }
       }
 
     /* Now deal with full buffer case */
     if (i >= SAFE_VALUE_SIZE -1) {
-      TLS->symbol = seenExp ? S_PARTIALFLOAT3 : S_PARTIALFLOAT2;
-      TLS->value[i] = '\0';
+      TLS->Symbol = seenExp ? S_PARTIALFLOAT3 : S_PARTIALFLOAT2;
+      TLS->Value[i] = '\0';
       return;
     }
 
@@ -1857,23 +1857,23 @@ void GetNumber ( UInt StartingStatus )
       /* Might be a conversion marker */
       if (!wasEscaped) {
         if (IsAlpha(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' && c != 'q' && c != 'Q') {
-          TLS->value[i++] = c;
+          TLS->Value[i++] = c;
           c = GetCleanedChar(&wasEscaped);
         }
         /* independently of that, we allow an _ signalling immediate conversion */
         if (c == '_') {
-          TLS->value[i++] = c;
+          TLS->Value[i++] = c;
           c = GetCleanedChar(&wasEscaped);
           /* After which there may be one character signifying the conversion style */
           if (IsAlpha(c))
-            TLS->value[i++] = c;
+            TLS->Value[i++] = c;
           c = GetCleanedChar(&wasEscaped);
         }
         /* Now if the next character is alphanumerical, or an identifier type symbol then we
            really do have an error, otherwise we return a result */
         if (!IsIdent(c) && !IsDigit(c)) {
-          TLS->value[i] = '\0';
-          TLS->symbol = S_FLOAT;
+          TLS->Value[i] = '\0';
+          TLS->Symbol = S_FLOAT;
           return;
         }
       }
@@ -1885,7 +1885,7 @@ void GetNumber ( UInt StartingStatus )
   /* Here we are into the unsigned exponent of a number
      in scientific notation, so we just read digits */
   for (; !wasEscaped && IsDigit(c) && i < SAFE_VALUE_SIZE-1; i++) {
-    TLS->value[i] = c;
+    TLS->Value[i] = c;
     seenExpDigit = 1;
     c = GetCleanedChar(&wasEscaped);
   }
@@ -1894,38 +1894,38 @@ void GetNumber ( UInt StartingStatus )
      which could be a conversion marker */
   if (seenExpDigit) {
     if (IsAlpha(c)) {
-      TLS->value[i] = c;
+      TLS->Value[i] = c;
       c = GetCleanedChar(&wasEscaped);
-      TLS->value[i+1] = '\0';
-      TLS->symbol = S_FLOAT;
+      TLS->Value[i+1] = '\0';
+      TLS->Symbol = S_FLOAT;
       return;
     }
     if (c == '_') {
-      TLS->value[i++] = c;
+      TLS->Value[i++] = c;
       c = GetCleanedChar(&wasEscaped);
       /* After which there may be one character signifying the conversion style */
       if (IsAlpha(c)) {
-        TLS->value[i++] = c;
+        TLS->Value[i++] = c;
         c = GetCleanedChar(&wasEscaped);
       }
-      TLS->value[i] = '\0';
-      TLS->symbol = S_FLOAT;
+      TLS->Value[i] = '\0';
+      TLS->Symbol = S_FLOAT;
       return;
     }
   }
 
   /* If we ran off the end */
   if (i >= SAFE_VALUE_SIZE -1) {
-    TLS->symbol = seenExpDigit ? S_PARTIALFLOAT4 : S_PARTIALFLOAT3;
-    TLS->value[i] = '\0';
+    TLS->Symbol = seenExpDigit ? S_PARTIALFLOAT4 : S_PARTIALFLOAT3;
+    TLS->Value[i] = '\0';
     return;
   }
 
   /* Otherwise this is the end of the token */
   if (!seenExpDigit)
     SyntaxError("Badly Formed Number, need at least one digit in the exponent");
-  TLS->symbol = S_FLOAT;
-  TLS->value[i] = '\0';
+  TLS->Symbol = S_FLOAT;
+  TLS->Value[i] = '\0';
   return;
 }
 
@@ -1935,7 +1935,7 @@ void GetNumber ( UInt StartingStatus )
  *F  GetStr()  . . . . . . . . . . . . . . . . . . . . . . get a string, local
  **
  **  'GetStr' reads  a  string from the  current input file into  the variable
- **  'TLS->value' and sets 'Symbol'   to  'S_STRING'.  The opening double quote '"'
+ **  'TLS->Value' and sets 'Symbol'   to  'S_STRING'.  The opening double quote '"'
  **  of the string is the current character pointed to by 'In'.
  **
  **  A string is a sequence of characters delimited  by double quotes '"'.  It
@@ -1946,7 +1946,7 @@ void GetNumber ( UInt StartingStatus )
  **  An error is raised if the string includes a <newline> character or if the
  **  file ends before the closing '"'.
  **
- **  When TLS->value is  completely filled we have to check  if the reading of
+ **  When TLS->Value is  completely filled we have to check  if the reading of
  **  the string is  complete or not to decide  between Symbol=S_STRING or
  **  S_PARTIALSTRING.
  */
@@ -1956,52 +1956,52 @@ void GetStr ( void )
   Char                a, b, c;
 
   /* Avoid substitution of '?' in beginning of GetLine chunks */
-  TLS->helpSubsOn = 0;
+  TLS->HelpSubsOn = 0;
 
-  /* read all characters into 'TLS->value'                                    */
-  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS->in != '"'
-           && *TLS->in != '\n' && *TLS->in != '\377'; i++ ) {
+  /* read all characters into 'TLS->Value'                                    */
+  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS->In != '"'
+           && *TLS->In != '\n' && *TLS->In != '\377'; i++ ) {
 
     fetch = 1;
     /* handle escape sequences                                         */
-    if ( *TLS->in == '\\' ) {
+    if ( *TLS->In == '\\' ) {
       GET_CHAR();
       /* if next is another '\\' followed by '\n' it must be ignored */
-      while ( *TLS->in == '\\' ) {
+      while ( *TLS->In == '\\' ) {
         GET_CHAR();
-        if ( *TLS->in == '\n' )
+        if ( *TLS->In == '\n' )
           GET_CHAR();
         else {
           UNGET_CHAR( '\\' );
           break;
         }
       }
-      if      ( *TLS->in == '\n' )  i--;
-      else if ( *TLS->in == '\r' )  {
+      if      ( *TLS->In == '\n' )  i--;
+      else if ( *TLS->In == '\r' )  {
         GET_CHAR();
-        if  ( *TLS->in == '\n' )  i--;
-        else  {TLS->value[i] = '\r'; fetch = 0;}
+        if  ( *TLS->In == '\n' )  i--;
+        else  {TLS->Value[i] = '\r'; fetch = 0;}
       }
-      else if ( *TLS->in == 'n'  )  TLS->value[i] = '\n';
-      else if ( *TLS->in == 't'  )  TLS->value[i] = '\t';
-      else if ( *TLS->in == 'r'  )  TLS->value[i] = '\r';
-      else if ( *TLS->in == 'b'  )  TLS->value[i] = '\b';
-      else if ( *TLS->in == '>'  )  TLS->value[i] = '\01';
-      else if ( *TLS->in == '<'  )  TLS->value[i] = '\02';
-      else if ( *TLS->in == 'c'  )  TLS->value[i] = '\03';
-      else if ( IsDigit( *TLS->in ) ) {
-        a = *TLS->in; GET_CHAR(); b = *TLS->in; GET_CHAR(); c = *TLS->in;
+      else if ( *TLS->In == 'n'  )  TLS->Value[i] = '\n';
+      else if ( *TLS->In == 't'  )  TLS->Value[i] = '\t';
+      else if ( *TLS->In == 'r'  )  TLS->Value[i] = '\r';
+      else if ( *TLS->In == 'b'  )  TLS->Value[i] = '\b';
+      else if ( *TLS->In == '>'  )  TLS->Value[i] = '\01';
+      else if ( *TLS->In == '<'  )  TLS->Value[i] = '\02';
+      else if ( *TLS->In == 'c'  )  TLS->Value[i] = '\03';
+      else if ( IsDigit( *TLS->In ) ) {
+        a = *TLS->In; GET_CHAR(); b = *TLS->In; GET_CHAR(); c = *TLS->In;
         if (!( IsDigit(b) && IsDigit(c) )){
           SyntaxError("expecting three octal digits after \\ in string");
         }
-        TLS->value[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
+        TLS->Value[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
       }
-      else  TLS->value[i] = *TLS->in;
+      else  TLS->Value[i] = *TLS->In;
     }
 
-    /* put normal chars into 'TLS->value' but only if there is room         */
+    /* put normal chars into 'TLS->Value' but only if there is room         */
     else {
-      TLS->value[i] = *TLS->in;
+      TLS->Value[i] = *TLS->In;
     }
 
     /* read the next character                                         */
@@ -2009,28 +2009,28 @@ void GetStr ( void )
 
   }
 
-  /* XXX although we have TLS->valueLen we need trailing \000 here,
+  /* XXX although we have TLS->ValueLen we need trailing \000 here,
      in gap.c, function FuncMAKE_INIT this is still used as C-string
      and long integers and strings are not yet supported!    */
-  TLS->value[i] = '\0';
+  TLS->Value[i] = '\0';
 
   /* check for error conditions                                          */
-  if ( *TLS->in == '\n'  )
+  if ( *TLS->In == '\n'  )
     SyntaxError("string must not include <newline>");
-  if ( *TLS->in == '\377' )
+  if ( *TLS->In == '\377' )
     SyntaxError("string must end with \" before end of file");
 
-  /* set length of string, set 'TLS->symbol' and skip trailing '"'            */
-  TLS->valueLen = i;
+  /* set length of string, set 'TLS->Symbol' and skip trailing '"'            */
+  TLS->ValueLen = i;
   if ( i < SAFE_VALUE_SIZE-1 )  {
-    TLS->symbol = S_STRING;
-    if ( *TLS->in == '"' )  GET_CHAR();
+    TLS->Symbol = S_STRING;
+    if ( *TLS->In == '"' )  GET_CHAR();
   }
   else
-    TLS->symbol = S_PARTIALSTRING;
+    TLS->Symbol = S_PARTIALSTRING;
 
   /* switching on substitution of '?' */
-  TLS->helpSubsOn = 1;
+  TLS->HelpSubsOn = 1;
 }
 
 /****************************************************************************
@@ -2056,26 +2056,26 @@ void GetTripStr ( void )
   Int                 i = 0;
 
   /* Avoid substitution of '?' in beginning of GetLine chunks */
-  TLS->helpSubsOn = 0;
+  TLS->HelpSubsOn = 0;
   
   /* read all characters into 'Value'                                    */
-  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS->in != '\377'; i++ ) {
+  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS->In != '\377'; i++ ) {
     // Only thing to check for is a triple quote.
     
-    if ( *TLS->in == '"') {
+    if ( *TLS->In == '"') {
         GET_CHAR();
-        if (*TLS->in == '"') {
+        if (*TLS->In == '"') {
             GET_CHAR();
-            if(*TLS->in == '"' ) {
+            if(*TLS->In == '"' ) {
                 break;
             }
-            TLS->value[i] = '"';
+            TLS->Value[i] = '"';
             i++;
         }
-        TLS->value[i] = '"';
+        TLS->Value[i] = '"';
         i++;
     }
-    TLS->value[i] = *TLS->in;
+    TLS->Value[i] = *TLS->In;
 
 
     /* read the next character                                         */
@@ -2085,23 +2085,23 @@ void GetTripStr ( void )
   /* XXX although we have ValueLen we need trailing \000 here,
      in gap.c, function FuncMAKE_INIT this is still used as C-string
      and long integers and strings are not yet supported!    */
-  TLS->value[i] = '\0';
+  TLS->Value[i] = '\0';
 
   /* check for error conditions                                          */
-  if ( *TLS->in == '\377' )
+  if ( *TLS->In == '\377' )
     SyntaxError("string must end with \" before end of file");
 
   /* set length of string, set 'Symbol' and skip trailing '"'            */
-  TLS->valueLen = i;
+  TLS->ValueLen = i;
   if ( i < SAFE_VALUE_SIZE-1 )  {
-    TLS->symbol = S_STRING;
-    if ( *TLS->in == '"' )  GET_CHAR();
+    TLS->Symbol = S_STRING;
+    if ( *TLS->In == '"' )  GET_CHAR();
   }
   else
-    TLS->symbol = S_PARTIALTRIPSTRING;
+    TLS->Symbol = S_PARTIALTRIPSTRING;
 
   /* switching on substitution of '?' */
-  TLS->helpSubsOn = 1;
+  TLS->HelpSubsOn = 1;
 }
 
 /****************************************************************************
@@ -2115,21 +2115,21 @@ void GetTripStr ( void )
 void GetMaybeTripStr ( void )
 {
     /* Avoid substitution of '?' in beginning of GetLine chunks */
-    TLS->helpSubsOn = 0;
+    TLS->HelpSubsOn = 0;
     
     /* This is just a normal string! */
-    if ( *TLS->in != '"' ) {
+    if ( *TLS->In != '"' ) {
         GetStr();
         return;
     }
     
     GET_CHAR();
     /* This was just an empty string! */
-    if ( *TLS->in != '"' ) {
-        TLS->value[0] = '\0';
-        TLS->valueLen = 0;
-        TLS->symbol = S_STRING;
-        TLS->helpSubsOn = 1;
+    if ( *TLS->In != '"' ) {
+        TLS->Value[0] = '\0';
+        TLS->ValueLen = 0;
+        TLS->Symbol = S_STRING;
+        TLS->HelpSubsOn = 1;
         return;
     }
     
@@ -2144,7 +2144,7 @@ void GetMaybeTripStr ( void )
  *F  GetChar() . . . . . . . . . . . . . . . . . get a single character, local
  **
  **  'GetChar' reads the next  character from the current input file  into the
- **  variable 'TLS->value' and sets 'Symbol' to 'S_CHAR'.  The opening single quote
+ **  variable 'TLS->Value' and sets 'Symbol' to 'S_CHAR'.  The opening single quote
  **  '\'' of the character is the current character pointed to by 'In'.
  **
  **  A  character is  a  single character delimited by single quotes '\''.  It
@@ -2159,36 +2159,36 @@ void GetChar ( void )
   GET_CHAR();
 
   /* handle escape equences                                              */
-  if ( *TLS->in == '\\' ) {
+  if ( *TLS->In == '\\' ) {
     GET_CHAR();
-    if ( *TLS->in == 'n'  )       TLS->value[0] = '\n';
-    else if ( *TLS->in == 't'  )  TLS->value[0] = '\t';
-    else if ( *TLS->in == 'r'  )  TLS->value[0] = '\r';
-    else if ( *TLS->in == 'b'  )  TLS->value[0] = '\b';
-    else if ( *TLS->in == '>'  )  TLS->value[0] = '\01';
-    else if ( *TLS->in == '<'  )  TLS->value[0] = '\02';
-    else if ( *TLS->in == 'c'  )  TLS->value[0] = '\03';
-    else if ( *TLS->in >= '0' && *TLS->in <= '7' ) {
+    if ( *TLS->In == 'n'  )       TLS->Value[0] = '\n';
+    else if ( *TLS->In == 't'  )  TLS->Value[0] = '\t';
+    else if ( *TLS->In == 'r'  )  TLS->Value[0] = '\r';
+    else if ( *TLS->In == 'b'  )  TLS->Value[0] = '\b';
+    else if ( *TLS->In == '>'  )  TLS->Value[0] = '\01';
+    else if ( *TLS->In == '<'  )  TLS->Value[0] = '\02';
+    else if ( *TLS->In == 'c'  )  TLS->Value[0] = '\03';
+    else if ( *TLS->In >= '0' && *TLS->In <= '7' ) {
       /* escaped three digit octal numbers are allowed in input */
-      c = 64 * (*TLS->in - '0');
+      c = 64 * (*TLS->In - '0');
       GET_CHAR();
-      if ( *TLS->in < '0' || *TLS->in > '7' )
+      if ( *TLS->In < '0' || *TLS->In > '7' )
         SyntaxError("expecting octal digit in character constant");
-      c = c + 8 * (*TLS->in - '0');
+      c = c + 8 * (*TLS->In - '0');
       GET_CHAR();
-      if ( *TLS->in < '0' || *TLS->in > '7' )
+      if ( *TLS->In < '0' || *TLS->In > '7' )
         SyntaxError("expecting 3 octal digits in character constant");
-      c = c + (*TLS->in - '0');
-      TLS->value[0] = c;
+      c = c + (*TLS->In - '0');
+      TLS->Value[0] = c;
     }
-    else                     TLS->value[0] = *TLS->in;
+    else                     TLS->Value[0] = *TLS->In;
   }
-  else if ( *TLS->in == '\n' ) {
+  else if ( *TLS->In == '\n' ) {
     SyntaxError("newline not allowed in character literal");
   }
-  /* put normal chars into 'TLS->value'                                       */
+  /* put normal chars into 'TLS->Value'                                       */
   else {
-    TLS->value[0] = *TLS->in;
+    TLS->Value[0] = *TLS->In;
   }
 
   /* read the next character                                             */
@@ -2196,12 +2196,12 @@ void GetChar ( void )
 
   
   /* check for terminating single quote                                  */
-  if ( *TLS->in != '\'' )
+  if ( *TLS->In != '\'' )
     SyntaxError("missing single quote in character constant");
 
   /* skip the closing quote                                              */
-  TLS->symbol = S_CHAR;
-  if ( *TLS->in == '\'' )  GET_CHAR();
+  TLS->Symbol = S_CHAR;
+  if ( *TLS->In == '\'' )  GET_CHAR();
 
 }
 
@@ -2212,7 +2212,7 @@ void GetChar ( void )
  **
  **  'GetSymbol' reads  the  next symbol from   the  input,  storing it in the
  **  variable 'Symbol'.  If 'Symbol' is  'S_IDENT', 'S_INT' or 'S_STRING'  the
- **  value of the symbol is stored in the variable 'TLS->value'.  'GetSymbol' first
+ **  value of the symbol is stored in the variable 'TLS->Value'.  'GetSymbol' first
  **  skips all <space>, <tab> and <newline> characters and comments.
  **
  **  After reading  a  symbol the current  character   is the first  character
@@ -2222,136 +2222,136 @@ void GetChar ( void )
 void GetSymbol ( void )
 {
   /* special case if reading of a long token is not finished */
-  if (TLS->symbol == S_PARTIALSTRING) {
+  if (TLS->Symbol == S_PARTIALSTRING) {
     GetStr();
     return;
   }
   
-  if (TLS->symbol == S_PARTIALTRIPSTRING) {
+  if (TLS->Symbol == S_PARTIALTRIPSTRING) {
       GetTripStr();
       return;
   }
   
-  if (TLS->symbol == S_PARTIALINT) {
-    if (TLS->value[0] == '\0')
+  if (TLS->Symbol == S_PARTIALINT) {
+    if (TLS->Value[0] == '\0')
       GetNumber(0);
     else
       GetNumber(1);
     return;
   }
-  if (TLS->symbol == S_PARTIALFLOAT1) {
+  if (TLS->Symbol == S_PARTIALFLOAT1) {
     GetNumber(2);
     return;
   }
 
-  if (TLS->symbol == S_PARTIALFLOAT2) {
+  if (TLS->Symbol == S_PARTIALFLOAT2) {
     GetNumber(3);
     return;
   }
-  if (TLS->symbol == S_PARTIALFLOAT3) {
+  if (TLS->Symbol == S_PARTIALFLOAT3) {
     GetNumber(4);
     return;
   }
 
-  if (TLS->symbol == S_PARTIALFLOAT4) {
+  if (TLS->Symbol == S_PARTIALFLOAT4) {
     GetNumber(5);
     return;
   }
 
 
   /* if no character is available then get one                           */
-  if ( *TLS->in == '\0' )
-    { TLS->in--;
+  if ( *TLS->In == '\0' )
+    { TLS->In--;
       GET_CHAR();
     }
 
   /* skip over <spaces>, <tabs>, <newlines> and comments                 */
-  while (*TLS->in==' '||*TLS->in=='\t'||*TLS->in=='\n'||*TLS->in=='\r'||*TLS->in=='\f'||*TLS->in=='#') {
-    if ( *TLS->in == '#' ) {
-      while ( *TLS->in != '\n' && *TLS->in != '\r' && *TLS->in != '\377' )
+  while (*TLS->In==' '||*TLS->In=='\t'||*TLS->In=='\n'||*TLS->In=='\r'||*TLS->In=='\f'||*TLS->In=='#') {
+    if ( *TLS->In == '#' ) {
+      while ( *TLS->In != '\n' && *TLS->In != '\r' && *TLS->In != '\377' )
         GET_CHAR();
     }
     GET_CHAR();
   }
 
   /* switch according to the character                                   */
-  switch ( *TLS->in ) {
+  switch ( *TLS->In ) {
 
-  case '.':   TLS->symbol = S_DOT;                         GET_CHAR();
-    /*            if ( *TLS->in == '\\' ) { GET_CHAR();
-            if ( *TLS->in == '\n' ) { GET_CHAR(); } }   */
-    if ( *TLS->in == '.' ) { TLS->symbol = S_DOTDOT;  GET_CHAR();  break; }
+  case '.':   TLS->Symbol = S_DOT;                         GET_CHAR();
+    /*            if ( *TLS->In == '\\' ) { GET_CHAR();
+            if ( *TLS->In == '\n' ) { GET_CHAR(); } }   */
+    if ( *TLS->In == '.' ) { TLS->Symbol = S_DOTDOT;  GET_CHAR();  break; }
     break;
 
-  case '!':   TLS->symbol = S_ILLEGAL;                     GET_CHAR();
-    if ( *TLS->in == '\\' ) { GET_CHAR();
-      if ( *TLS->in == '\n' ) { GET_CHAR(); } }
-    if ( *TLS->in == '.' ) { TLS->symbol = S_BDOT;    GET_CHAR();  break; }
-    if ( *TLS->in == '[' ) { TLS->symbol = S_BLBRACK; GET_CHAR();  break; }
-    if ( *TLS->in == '{' ) { TLS->symbol = S_BLBRACE; GET_CHAR();  break; }
+  case '!':   TLS->Symbol = S_ILLEGAL;                     GET_CHAR();
+    if ( *TLS->In == '\\' ) { GET_CHAR();
+      if ( *TLS->In == '\n' ) { GET_CHAR(); } }
+    if ( *TLS->In == '.' ) { TLS->Symbol = S_BDOT;    GET_CHAR();  break; }
+    if ( *TLS->In == '[' ) { TLS->Symbol = S_BLBRACK; GET_CHAR();  break; }
+    if ( *TLS->In == '{' ) { TLS->Symbol = S_BLBRACE; GET_CHAR();  break; }
     break;
-  case '[':   TLS->symbol = S_LBRACK;                      GET_CHAR();  break;
-  case ']':   TLS->symbol = S_RBRACK;                      GET_CHAR();  break;
-  case '{':   TLS->symbol = S_LBRACE;                      GET_CHAR();  break;
-  case '}':   TLS->symbol = S_RBRACE;                      GET_CHAR();  break;
-  case '(':   TLS->symbol = S_LPAREN;                      GET_CHAR();  break;
-  case ')':   TLS->symbol = S_RPAREN;                      GET_CHAR();  break;
-  case ',':   TLS->symbol = S_COMMA;                       GET_CHAR();  break;
+  case '[':   TLS->Symbol = S_LBRACK;                      GET_CHAR();  break;
+  case ']':   TLS->Symbol = S_RBRACK;                      GET_CHAR();  break;
+  case '{':   TLS->Symbol = S_LBRACE;                      GET_CHAR();  break;
+  case '}':   TLS->Symbol = S_RBRACE;                      GET_CHAR();  break;
+  case '(':   TLS->Symbol = S_LPAREN;                      GET_CHAR();  break;
+  case ')':   TLS->Symbol = S_RPAREN;                      GET_CHAR();  break;
+  case ',':   TLS->Symbol = S_COMMA;                       GET_CHAR();  break;
 
-  case ':':   TLS->symbol = S_COLON;                       GET_CHAR();
-    if ( *TLS->in == '\\' ) {
+  case ':':   TLS->Symbol = S_COLON;                       GET_CHAR();
+    if ( *TLS->In == '\\' ) {
       GET_CHAR();
-      if ( *TLS->in == '\n' )
+      if ( *TLS->In == '\n' )
         { GET_CHAR(); }
     }
-    if ( *TLS->in == '=' ) { TLS->symbol = S_ASSIGN;  GET_CHAR(); break; }
-    if ( TLS->in[0] == ':' && TLS->in[1] == '=') {
-      TLS->symbol = S_INCORPORATE; GET_CHAR(); GET_CHAR(); break;
+    if ( *TLS->In == '=' ) { TLS->Symbol = S_ASSIGN;  GET_CHAR(); break; }
+    if ( TLS->In[0] == ':' && TLS->In[1] == '=') {
+      TLS->Symbol = S_INCORPORATE; GET_CHAR(); GET_CHAR(); break;
     }
     break;
 
-  case ';':   TLS->symbol = S_SEMICOLON;                   GET_CHAR();  break;
+  case ';':   TLS->Symbol = S_SEMICOLON;                   GET_CHAR();  break;
 
-  case '=':   TLS->symbol = S_EQ;                          GET_CHAR();  break;
-  case '<':   TLS->symbol = S_LT;                          GET_CHAR();
-    if ( *TLS->in == '\\' ) { GET_CHAR();
-      if ( *TLS->in == '\n' ) { GET_CHAR(); } }
-    if ( *TLS->in == '=' ) { TLS->symbol = S_LE;      GET_CHAR();  break; }
-    if ( *TLS->in == '>' ) { TLS->symbol = S_NE;      GET_CHAR();  break; }
+  case '=':   TLS->Symbol = S_EQ;                          GET_CHAR();  break;
+  case '<':   TLS->Symbol = S_LT;                          GET_CHAR();
+    if ( *TLS->In == '\\' ) { GET_CHAR();
+      if ( *TLS->In == '\n' ) { GET_CHAR(); } }
+    if ( *TLS->In == '=' ) { TLS->Symbol = S_LE;      GET_CHAR();  break; }
+    if ( *TLS->In == '>' ) { TLS->Symbol = S_NE;      GET_CHAR();  break; }
     break;
-  case '>':   TLS->symbol = S_GT;                          GET_CHAR();
-    if ( *TLS->in == '\\' ) { GET_CHAR();
-      if ( *TLS->in == '\n' ) { GET_CHAR(); } }
-    if ( *TLS->in == '=' ) { TLS->symbol = S_GE;      GET_CHAR();  break; }
+  case '>':   TLS->Symbol = S_GT;                          GET_CHAR();
+    if ( *TLS->In == '\\' ) { GET_CHAR();
+      if ( *TLS->In == '\n' ) { GET_CHAR(); } }
+    if ( *TLS->In == '=' ) { TLS->Symbol = S_GE;      GET_CHAR();  break; }
     break;
 
-  case '+':   TLS->symbol = S_PLUS;                        GET_CHAR();  break;
-  case '-':   TLS->symbol = S_MINUS;                       GET_CHAR();
-    if ( *TLS->in == '\\' ) { GET_CHAR();
-      if ( *TLS->in == '\n' ) { GET_CHAR(); } }
-    if ( *TLS->in == '>' ) { TLS->symbol=S_MAPTO;     GET_CHAR();  break; }
+  case '+':   TLS->Symbol = S_PLUS;                        GET_CHAR();  break;
+  case '-':   TLS->Symbol = S_MINUS;                       GET_CHAR();
+    if ( *TLS->In == '\\' ) { GET_CHAR();
+      if ( *TLS->In == '\n' ) { GET_CHAR(); } }
+    if ( *TLS->In == '>' ) { TLS->Symbol=S_MAPTO;     GET_CHAR();  break; }
     break;
-  case '*':   TLS->symbol = S_MULT;                        GET_CHAR();  break;
-  case '/':   TLS->symbol = S_DIV;                         GET_CHAR();  break;
-  case '^':   TLS->symbol = S_POW;                         GET_CHAR();  break;
-  case '`':   TLS->symbol = S_BACKQUOTE;                   GET_CHAR();  break;
+  case '*':   TLS->Symbol = S_MULT;                        GET_CHAR();  break;
+  case '/':   TLS->Symbol = S_DIV;                         GET_CHAR();  break;
+  case '^':   TLS->Symbol = S_POW;                         GET_CHAR();  break;
+  case '`':   TLS->Symbol = S_BACKQUOTE;                   GET_CHAR();  break;
 
   case '"':                        GET_CHAR(); GetMaybeTripStr();  break;
   case '\'':                                          GetChar();   break;
   case '\\':                                          GetIdent();  break;
   case '_':                                           GetIdent();  break;
   case '@':                                           GetIdent();  break;
-  case '~':   TLS->value[0] = '~';  TLS->value[1] = '\0';
-    TLS->symbol = S_IDENT;                       GET_CHAR();  break;
+  case '~':   TLS->Value[0] = '~';  TLS->Value[1] = '\0';
+    TLS->Symbol = S_IDENT;                       GET_CHAR();  break;
 
   case '0': case '1': case '2': case '3': case '4':
   case '5': case '6': case '7': case '8': case '9':
     GetNumber(0);    break;
 
-  case '\377': TLS->symbol = S_EOF;                        *TLS->in = '\0';  break;
+  case '\377': TLS->Symbol = S_EOF;                        *TLS->In = '\0';  break;
 
-  default :   if ( IsAlpha(*TLS->in) )                   { GetIdent();  break; }
-    TLS->symbol = S_ILLEGAL;                     GET_CHAR();  break;
+  default :   if ( IsAlpha(*TLS->In) )                   { GetIdent();  break; }
+    TLS->Symbol = S_ILLEGAL;                     GET_CHAR();  break;
   }
 }
 
@@ -2438,20 +2438,20 @@ void PutLineTo ( KOutputStream stream, UInt len )
   UInt lt,ls;     /* These are supposed to hold string lengths */
 
   /* if in test mode and the next input line matches print nothing       */
-  if ( TLS->testInput != 0 && TLS->testOutput == stream ) {
-    if ( TLS->testLine[0] == '\0' ) {
-      if ( ! GetLine2( TLS->testInput, TLS->testLine, sizeof(TLS->testLine) ) ) {
-        TLS->testLine[0] = '\0';
+  if ( TLS->TestInput != 0 && TLS->TestOutput == stream ) {
+    if ( TLS->TestLine[0] == '\0' ) {
+      if ( ! GetLine2( TLS->TestInput, TLS->TestLine, sizeof(TLS->TestLine) ) ) {
+        TLS->TestLine[0] = '\0';
       }
-      TLS->testInput->number++;
+      TLS->TestInput->number++;
     }
 
-    /* Note that TLS->testLine is ended by a \n, but stream->line need not! */
+    /* Note that TLS->TestLine is ended by a \n, but stream->line need not! */
 
-    lt = strlen(TLS->testLine);   /* this counts including the newline! */
-    p = TLS->testLine + (lt-2);
+    lt = strlen(TLS->TestLine);   /* this counts including the newline! */
+    p = TLS->TestLine + (lt-2);
     /* this now points to the last char before \n in the line! */
-    while ( TLS->testLine <= p && ( *p == ' ' || *p == '\t' ) ) {
+    while ( TLS->TestLine <= p && ( *p == ' ' || *p == '\t' ) ) {
       p[1] = '\0';  p[0] = '\n';  p--; lt--;
     }
     /* lt is still the correct string length including \n */
@@ -2465,18 +2465,18 @@ void PutLineTo ( KOutputStream stream, UInt len )
       }
     }
     /* ls is still the correct string length including a possible \n */
-    if ( ! strncmp( TLS->testLine, stream->line, ls ) ) {
+    if ( ! strncmp( TLS->TestLine, stream->line, ls ) ) {
       if (ls < lt)
-        memmove(TLS->testLine,TLS->testLine + ls,lt-ls+1);
+        memmove(TLS->TestLine,TLS->TestLine + ls,lt-ls+1);
       else
-        TLS->testLine[0] = '\0';
+        TLS->TestLine[0] = '\0';
     }
     else {
       char obuf[80];
-      /* snprintf(obuf, sizeof(obuf), "+ 5%i bad example:\n+ ", (int)TLS->testInput->number); */
-      snprintf(obuf, sizeof(obuf), "Line %i : \n+ ", (int)TLS->testInput->number);
+      /* snprintf(obuf, sizeof(obuf), "+ 5%i bad example:\n+ ", (int)TLS->TestInput->number); */
+      snprintf(obuf, sizeof(obuf), "Line %i : \n+ ", (int)TLS->TestInput->number);
       PutLine2( stream, obuf, strlen(obuf) );
-      PutLine2( stream, TLS->output->line, strlen(TLS->output->line) );
+      PutLine2( stream, TLS->Output->line, strlen(TLS->Output->line) );
     }
   }
 
@@ -2486,9 +2486,9 @@ void PutLineTo ( KOutputStream stream, UInt len )
   }
 
   /* if neccessary echo it to the logfile                                */
-  if ( TLS->outputLog != 0 && ! stream->isstream ) {
+  if ( TLS->OutputLog != 0 && ! stream->isstream ) {
     if ( stream->file == 1 || stream->file == 3 ) {
-      PutLine2( TLS->outputLog, stream->line, len );
+      PutLine2( TLS->OutputLog, stream->line, len );
     }
   }
 }
@@ -2628,7 +2628,7 @@ void PutChrTo (
   /* normal character, room on the current line                          */
   /* TODO: This should be -2 instead of -8 and room for the prefix
    * accounted for elswhere. */
-  else if ( stream->pos < SyNrCols-8-TLS->noSplitLine ) {
+  else if ( stream->pos < SyNrCols-8-TLS->NoSplitLine ) {
 
     /* put the character on this line                                  */
     stream->line[ stream->pos++ ] = ch;
@@ -2718,7 +2718,7 @@ void PutChrTo (
 
 Obj FuncToggleEcho( Obj self)
 {
-  TLS->input->echo = 1 - TLS->input->echo;
+  TLS->Input->echo = 1 - TLS->Input->echo;
   return (Obj)0;
 }
 
@@ -2731,7 +2731,7 @@ Obj FuncToggleEcho( Obj self)
 Obj FuncCPROMPT( Obj self)
 {
   Obj p;
-  C_NEW_STRING_DYN( p, TLS->prompt );
+  C_NEW_STRING_DYN( p, TLS->Prompt );
   return p;
 }
 
@@ -2752,9 +2752,9 @@ Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
     /* by assigning to Prompt we also tell readline (if used) what the
        current prompt is  */
     strlcpy(promptBuf, CSTR_STRING(prompt), sizeof(promptBuf));
-    TLS->prompt = promptBuf;
+    TLS->Prompt = promptBuf;
   }
-  Pr("%s%c", (Int)TLS->prompt, (Int)'\03' );
+  Pr("%s%c", (Int)TLS->Prompt, (Int)'\03' );
   return (Obj) 0;
 }
 
@@ -2873,14 +2873,14 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       /* must be careful that line breaks don't go inside
          escaped sequences \n or \123 or similar */
       for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-        if (*q == '\\' && TLS->noSplitLine == 0) {
+        if (*q == '\\' && TLS->NoSplitLine == 0) {
           if (*(q+1) < '8' && *(q+1) >= '0')
-            TLS->noSplitLine = 3;
+            TLS->NoSplitLine = 3;
           else
-            TLS->noSplitLine = 1;
+            TLS->NoSplitLine = 1;
         }
-        else if (TLS->noSplitLine > 0)
-          TLS->noSplitLine--;
+        else if (TLS->NoSplitLine > 0)
+          TLS->NoSplitLine--;
         put_a_char( *q );
       }
 
@@ -3049,7 +3049,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 /* TL: static KOutputStream theStream; */
 
 static void putToTheStream( Char c) {
-  PutChrTo(TLS->theStream, c);
+  PutChrTo(TLS->TheStream, c);
 }
 
 void PrTo (
@@ -3058,10 +3058,10 @@ void PrTo (
            Int                 arg1,
            Int                 arg2 )
 {
-  KOutputStream savedStream = TLS->theStream;
-  TLS->theStream = stream;
+  KOutputStream savedStream = TLS->TheStream;
+  TLS->TheStream = stream;
   FormatOutput( putToTheStream, format, arg1, arg2);
-  TLS->theStream = savedStream;
+  TLS->TheStream = savedStream;
 }
 
 void Pr (
@@ -3078,30 +3078,30 @@ void Pr (
 
 static void putToTheBuffer( Char c)
 {
-  if (TLS->theCount < TLS->theLimit)
-    TLS->theBuffer[TLS->theCount++] = c;
+  if (TLS->TheCount < TLS->TheLimit)
+    TLS->TheBuffer[TLS->TheCount++] = c;
 }
 
 void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 {
-  Char *savedBuffer = TLS->theBuffer;
-  UInt savedCount = TLS->theCount;
-  UInt savedLimit = TLS->theLimit;
-  TLS->theBuffer = buffer;
-  TLS->theCount = 0;
-  TLS->theLimit = maxlen;
+  Char *savedBuffer = TLS->TheBuffer;
+  UInt savedCount = TLS->TheCount;
+  UInt savedLimit = TLS->TheLimit;
+  TLS->TheBuffer = buffer;
+  TLS->TheCount = 0;
+  TLS->TheLimit = maxlen;
   FormatOutput(putToTheBuffer, format, arg1, arg2);
   putToTheBuffer('\0');
-  TLS->theBuffer = savedBuffer;
-  TLS->theCount = savedCount;
-  TLS->theLimit = savedLimit;
+  TLS->TheBuffer = savedBuffer;
+  TLS->TheCount = savedCount;
+  TLS->TheLimit = savedLimit;
 }
 
 
 Obj FuncINPUT_FILENAME( Obj self) {
   Obj s;
-  if (TLS->input && TLS->input->name) {
-    C_NEW_STRING_DYN( s, TLS->input->name );
+  if (TLS->Input && TLS->Input->name) {
+    C_NEW_STRING_DYN( s, TLS->Input->name );
   } else {
     char *defin = "*defin*";
     C_NEW_STRING_DYN( s, defin );
@@ -3110,7 +3110,7 @@ Obj FuncINPUT_FILENAME( Obj self) {
 }
 
 Obj FuncINPUT_LINENUMBER( Obj self) {
-  return INTOBJ_INT(TLS->input ? TLS->input->number : 0);
+  return INTOBJ_INT(TLS->Input ? TLS->Input->number : 0);
 }
 
 Obj FuncALL_KEYWORDS(Obj self) {
@@ -3130,9 +3130,9 @@ Obj FuncALL_KEYWORDS(Obj self) {
 
 Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
   if (val == False)
-    (TLS->outputFiles[1])->format = 0;
+    (TLS->OutputFiles[1])->format = 0;
   else
-    (TLS->outputFiles[1])->format = 1;
+    (TLS->OutputFiles[1])->format = 1;
   return val;
 }
 
@@ -3203,11 +3203,11 @@ static Int InitKernel (
     Int                 i;
 
     (void)OpenInput(  "*stdin*"  );
-    TLS->input->echo = 1; /* echo stdin */
+    TLS->Input->echo = 1; /* echo stdin */
     (void)OpenOutput( "*stdout*" );
 
-    TLS->inputLog  = 0;  TLS->outputLog  = 0;
-    TLS->testInput = 0;  TLS->testOutput = 0;
+    TLS->InputLog  = 0;  TLS->OutputLog  = 0;
+    TLS->TestInput = 0;  TLS->TestOutput = 0;
 
     /* Initialize default stream functions */
 
@@ -3294,7 +3294,7 @@ StructInitInfo * InitInfoScanner ( void )
 
 void InitScannerTLS()
 {
-  TLS->helpSubsOn = 1;
+  TLS->HelpSubsOn = 1;
 }
 
 void DestroyScannerTLS()

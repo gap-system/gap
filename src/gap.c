@@ -185,7 +185,7 @@ void ViewObjHandler ( Obj obj )
   cfunc = ValAutoGVar(CustomViewGVar);
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
-  memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
+  memcpy( readJmpError, TLS->ReadJmpError, sizeof(syJmp_buf) );
   if ( ! READ_ERROR() ) {
     if ( cfunc != 0 && TNUM_OBJ(cfunc) == T_FUNCTION ) {
       CALL_1ARGS(cfunc, obj);
@@ -197,10 +197,10 @@ void ViewObjHandler ( Obj obj )
       PrintObj( obj );
     }
     Pr( "\n", 0L, 0L );
-    memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
+    memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
   }
   else {
-    memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
+    memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
   }
 }
 
@@ -266,7 +266,7 @@ Obj Shell ( Obj context,
   oldBaseShellContext = TLS->BaseShellContext;
   TLS->BaseShellContext = context;
   TLS->ShellContextDepth = 0;
-  oldRecursionDepth = TLS->recursionDepth;
+  oldRecursionDepth = TLS->RecursionDepth;
   
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
@@ -280,8 +280,8 @@ Obj Shell ( Obj context,
   
   oldPrintDepth = TLS->PrintObjDepth;
   TLS->PrintObjDepth = 0;
-  oldindent = TLS->output->indent;
-  TLS->output->indent = 0;
+  oldindent = TLS->Output->indent;
+  TLS->Output->indent = 0;
 
   while ( 1 ) {
 
@@ -290,11 +290,11 @@ Obj Shell ( Obj context,
       time = SyTime();
 
     /* read and evaluate one command                                   */
-    TLS->prompt = prompt;
+    TLS->Prompt = prompt;
     ClearError();
     TLS->PrintObjDepth = 0;
-    TLS->output->indent = 0;
-    TLS->recursionDepth = 0;
+    TLS->Output->indent = 0;
+    TLS->RecursionDepth = 0;
       
     /* here is a hook: */
     if (preCommandHook) {
@@ -306,7 +306,7 @@ Obj Shell ( Obj context,
         {
           Call0ArgsInNewReader(preCommandHook);
           /* Recover from a potential break loop: */
-          TLS->prompt = prompt;
+          TLS->Prompt = prompt;
           ClearError();
         }
     }
@@ -318,7 +318,7 @@ Obj Shell ( Obj context,
 
 
     /* handle ordinary command                                         */
-    if ( status == STATUS_END && TLS->readEvalResult != 0 ) {
+    if ( status == STATUS_END && TLS->ReadEvalResult != 0 ) {
 
       /* remember the value in 'last'    */
       if (lastDepth >= 3)
@@ -326,11 +326,11 @@ Obj Shell ( Obj context,
       if (lastDepth >= 2)
         AssGVar( Last2, ValGVarTL( Last  ) );
       if (lastDepth >= 1)
-        AssGVar( Last,  TLS->readEvalResult   );
+        AssGVar( Last,  TLS->ReadEvalResult   );
 
       /* print the result                                            */
       if ( ! dualSemicolon ) {
-        ViewObjHandler( TLS->readEvalResult );
+        ViewObjHandler( TLS->ReadEvalResult );
       }
             
     }
@@ -352,7 +352,7 @@ Obj Shell ( Obj context,
     
     /* handle quit command or <end-of-file>                            */
     else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
-      TLS->recursionDepth = 0;
+      TLS->RecursionDepth = 0;
       TLS->UserHasQuit = 1;
       break;
     }
@@ -376,12 +376,12 @@ Obj Shell ( Obj context,
   }
   
   TLS->PrintObjDepth = oldPrintDepth;
-  TLS->output->indent = oldindent;
+  TLS->Output->indent = oldindent;
   CloseInput();
   CloseOutput();
   TLS->BaseShellContext = oldBaseShellContext;
   TLS->ShellContext = oldShellContext;
-  TLS->recursionDepth = oldRecursionDepth;
+  TLS->RecursionDepth = oldRecursionDepth;
   if (TLS->UserHasQUIT)
     {
       if (catchQUIT)
@@ -410,7 +410,7 @@ Obj Shell ( Obj context,
     {
       res = NEW_PLIST(T_PLIST_HOM,1);
       SET_LEN_PLIST(res,1);
-      SET_ELM_PLIST(res,1,TLS->readEvalResult);
+      SET_ELM_PLIST(res,1,TLS->ReadEvalResult);
       return res;
     }
   assert(0); 
@@ -1180,14 +1180,14 @@ void DownEnvInner( Int depth )
   /* if we really want to go up                                          */
   if ( depth < 0 && -TLS->ErrorLLevel <= -depth ) {
     depth = 0;
-    TLS->errorLVars = TLS->errorLVars0;
+    TLS->ErrorLVars = TLS->ErrorLVars0;
     TLS->ErrorLLevel = 0;
     TLS->ShellContextDepth = 0;
     TLS->ShellContext = TLS->BaseShellContext;
   }
   else if ( depth < 0 ) {
     depth = -TLS->ErrorLLevel + depth;
-    TLS->errorLVars = TLS->errorLVars0;
+    TLS->ErrorLVars = TLS->ErrorLVars0;
     TLS->ErrorLLevel = 0;
     TLS->ShellContextDepth = 0;
     TLS->ShellContext = TLS->BaseShellContext;
@@ -1195,9 +1195,9 @@ void DownEnvInner( Int depth )
   
   /* now go down                                                         */
   while ( 0 < depth
-          && TLS->errorLVars != TLS->bottomLVars
-          && PTR_BAG(TLS->errorLVars)[2] != TLS->bottomLVars ) {
-    TLS->errorLVars = PTR_BAG(TLS->errorLVars)[2];
+          && TLS->ErrorLVars != TLS->BottomLVars
+          && PTR_BAG(TLS->ErrorLVars)[2] != TLS->BottomLVars ) {
+    TLS->ErrorLVars = PTR_BAG(TLS->ErrorLVars)[2];
     TLS->ErrorLLevel--;
     TLS->ShellContext = PTR_BAG(TLS->ShellContext)[2];
     TLS->ShellContextDepth--;
@@ -1221,7 +1221,7 @@ Obj FuncDownEnv (
     ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( TLS->errorLVars == 0 ) {
+  if ( TLS->ErrorLVars == 0 ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
@@ -1247,7 +1247,7 @@ Obj FuncUpEnv (
     ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( TLS->errorLVars == 0 ) {
+  if ( TLS->ErrorLVars == 0 ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
@@ -1259,9 +1259,9 @@ Obj FuncUpEnv (
 
 Obj FuncPrintExecutingStatement(Obj self, Obj context)
 {
-  Obj currLVars = TLS->currLVars;
+  Obj currLVars = TLS->CurrLVars;
   Expr call;
-  if (context == TLS->bottomLVars)
+  if (context == TLS->BottomLVars)
     return (Obj) 0;
   SWITCH_TO_OLD_LVARS(context);
   call = BRK_CALL_TO();
@@ -1317,24 +1317,24 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       }
     else 
       plain_args = args;
-    memcpy((void *)&readJmpError, (void *)&TLS->readJmpError, sizeof(syJmp_buf));
-    currLVars = TLS->currLVars;
-    currStat = TLS->currStat;
-    recursionDepth = TLS->recursionDepth;
+    memcpy((void *)&readJmpError, (void *)&TLS->ReadJmpError, sizeof(syJmp_buf));
+    currLVars = TLS->CurrLVars;
+    currStat = TLS->CurrStat;
+    recursionDepth = TLS->RecursionDepth;
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     lockSP = RegionLockSP();
     savedRegion = TLS->currentRegion;
-    if (sySetjmp(TLS->readJmpError)) {
+    if (sySetjmp(TLS->ReadJmpError)) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
-      SET_ELM_PLIST(res,2,TLS->thrownObject);
+      SET_ELM_PLIST(res,2,TLS->ThrownObject);
       CHANGED_BAG(res);
-      TLS->thrownObject = 0;
-      TLS->currLVars = currLVars;
-      TLS->ptrLVars = PTR_BAG(TLS->currLVars);
-      TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-      TLS->currStat = currStat;
-      TLS->recursionDepth = recursionDepth;
+      TLS->ThrownObject = 0;
+      TLS->CurrLVars = currLVars;
+      TLS->PtrLVars = PTR_BAG(TLS->CurrLVars);
+      TLS->PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+      TLS->CurrStat = currStat;
+      TLS->RecursionDepth = recursionDepth;
       PopRegionLocks(lockSP);
       TLS->currentRegion = savedRegion;
       if (TLS->CurrentHashLock)
@@ -1379,14 +1379,14 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       else
         SET_LEN_PLIST(res,1);
     }
-    memcpy((void *)&TLS->readJmpError, (void *)&readJmpError, sizeof(syJmp_buf));
+    memcpy((void *)&TLS->ReadJmpError, (void *)&readJmpError, sizeof(syJmp_buf));
     return res;
 }
 
 Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
 {
-  TLS->thrownObject = payload;
-  syLongjmp(TLS->readJmpError, 1);
+  TLS->ThrownObject = payload;
+  syLongjmp(TLS->ReadJmpError, 1);
   return 0;
 }
   
@@ -1401,7 +1401,7 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
 {
   TLS->UserHasQuit = INT_INTOBJ(value);
   if (TLS->UserHasQuit)
-    TLS->recursionDepth = 0;
+    TLS->RecursionDepth = 0;
   return 0;
 }
 
@@ -1440,7 +1440,7 @@ Obj CallErrorInner (
   Region *savedRegion = TLS->currentRegion;
   TLS->currentRegion = TLS->threadRegion;
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
-  AssPRec(r, RNamName("context"), TLS->currLVars);
+  AssPRec(r, RNamName("context"), TLS->CurrLVars);
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
   AssPRec(r, RNamName("mayReturnObj"), mayReturnObj? True : False);
   AssPRec(r, RNamName("mayReturnVoid"), mayReturnVoid? True : False);
@@ -1449,7 +1449,7 @@ Obj CallErrorInner (
   l = NEW_PLIST(T_PLIST_HOM+IMMUTABLE, 1);
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
-  SET_BRK_CALL_TO(TLS->currStat);
+  SET_BRK_CALL_TO(TLS->CurrStat);
   result = CALL_2ARGS(ErrorInner,r,l);  
   TLS->currentRegion = savedRegion;
   return result;
@@ -1740,7 +1740,7 @@ Obj FuncLOAD_DYN (
 
     /* Start a new executor to run the outer function of the module
        in global context */
-    ExecBegin( TLS->bottomLVars );
+    ExecBegin( TLS->BottomLVars );
     res = res || (info->initLibrary)(info);
     ExecEnd(res ? STATUS_ERROR : STATUS_END);
     if ( res ) {
@@ -1819,7 +1819,7 @@ Obj FuncLOAD_STAT (
     UpdateCopyFopyInfo();
     /* Start a new executor to run the outer function of the module
        in global context */
-    ExecBegin( TLS->bottomLVars );
+    ExecBegin( TLS->BottomLVars );
     res = res || (info->initLibrary)(info);
     ExecEnd(res ? STATUS_ERROR : STATUS_END);
     if ( res ) {
@@ -2930,23 +2930,23 @@ void ThreadedInterpreter(void *funcargs) {
   int i;
 
   /* intialize everything and begin an interpreter                       */
-  TLS->stackNams   = NEW_PLIST( T_PLIST, 16 );
-  TLS->countNams   = 0;
-  TLS->readTop     = 0;
-  TLS->readTilde   = 0;
-  TLS->currLHSGVar = 0;
-  TLS->intrCoding = 0;
-  TLS->intrIgnoring = 0;
-  TLS->nrError = 0;
-  TLS->thrownObject = 0;
-  TLS->bottomLVars = NewBag( T_HVARS, 3*sizeof(Obj) );
+  TLS->StackNams   = NEW_PLIST( T_PLIST, 16 );
+  TLS->CountNams   = 0;
+  TLS->ReadTop     = 0;
+  TLS->ReadTilde   = 0;
+  TLS->CurrLHSGVar = 0;
+  TLS->IntrCoding = 0;
+  TLS->IntrIgnoring = 0;
+  TLS->NrError = 0;
+  TLS->ThrownObject = 0;
+  TLS->BottomLVars = NewBag( T_HVARS, 3*sizeof(Obj) );
   tmp = NewFunctionC( "bottom", 0, "", 0 );
-  PTR_BAG(TLS->bottomLVars)[0] = tmp;
+  PTR_BAG(TLS->BottomLVars)[0] = tmp;
   tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-  BODY_FUNC( PTR_BAG(TLS->bottomLVars)[0] ) = tmp;
-  TLS->currLVars = TLS->bottomLVars;
+  BODY_FUNC( PTR_BAG(TLS->BottomLVars)[0] ) = tmp;
+  TLS->CurrLVars = TLS->BottomLVars;
 
-  IntrBegin( TLS->bottomLVars );
+  IntrBegin( TLS->BottomLVars );
   tmp = KEPTALIVE(funcargs);
   StopKeepAlive(funcargs);
   func = ELM_PLIST(tmp, 1);

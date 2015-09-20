@@ -352,13 +352,13 @@ Obj CopyObj (
 #ifdef SINGLE_THREADED_COPY_OBJ
     Obj                 new;            /* copy of <obj>                   */
 
-    TLS->copiedObjs = NULL;
+    TLS->CopiedObjs = NULL;
     /* make a copy                                                         */
     new = COPY_OBJ( obj, mut );
 
     /* clean up the marks                                                  */
     CLEAN_OBJ( obj );
-    TLS->copiedObjs = NULL;
+    TLS->CopiedObjs = NULL;
 
     /* return the copy                                                     */
     return new;

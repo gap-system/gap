@@ -72,7 +72,7 @@ extern UInt IntrReturning;
 *F  IntrEnd(<error>)  . . . . . . . . . . . . . . . . . . stop an interpreter
 **
 **  'IntrBegin( <frame> )' starts a new interpreter in context <frame>
-**  if in doubt, pass TLS->bottomLVars as <frame>
+**  if in doubt, pass TLS->BottomLVars as <frame>
 **
 **  'IntrEnd(<error>)' stops the current interpreter.
 **

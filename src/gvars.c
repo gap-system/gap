@@ -455,13 +455,13 @@ Obj NameGVarObj ( UInt gvar )
 
 Obj FuncSET_NAMESPACE(Obj self, Obj str)
 {
-    TLS->currNamespace = str;
+    TLS->CurrNamespace = str;
     return 0;
 }
 
 Obj FuncGET_NAMESPACE(Obj self)
 {
-    return TLS->currNamespace;
+    return TLS->CurrNamespace;
 }
 
 /****************************************************************************
@@ -486,7 +486,7 @@ UInt GVarName (
     Int                 len;            /* length of name                  */
 
     /* First see whether it could be namespace-local: */
-    cns = TLS->currNamespace ? CSTR_STRING(TLS->currNamespace) : "";
+    cns = TLS->CurrNamespace ? CSTR_STRING(TLS->CurrNamespace) : "";
     if (*cns) {   /* only if a namespace is set */
         len = strlen(name);
         if (name[len-1] == NSCHAR) {

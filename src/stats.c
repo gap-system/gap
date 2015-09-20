@@ -1589,7 +1589,7 @@ UInt            ExecReturnObj (
 
     /* evaluate the expression                                             */
     SET_BRK_CURR_STAT( stat );
-    TLS->returnObjStat = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    TLS->ReturnObjStat = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
     /* return up to function interpreter                                   */
     return 1;
@@ -1619,8 +1619,8 @@ UInt            ExecReturnVoid (
     }
 #endif
 
-    /* set 'TLS->returnObjStat' to void                                         */
-    TLS->returnObjStat = 0;
+    /* set 'TLS->ReturnObjStat' to void                                         */
+    TLS->ReturnObjStat = 0;
 
     /* return up to function interpreter                                   */
     return 2;
@@ -1748,8 +1748,8 @@ void ClearError ( void )
         }
     }
 
-    /* reset <TLS->nrError>                                                     */
-    TLS->nrError = 0;
+    /* reset <TLS->NrError>                                                     */
+    TLS->NrError = 0;
 }
 
 /****************************************************************************

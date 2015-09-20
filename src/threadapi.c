@@ -791,7 +791,7 @@ Obj FuncHASH_UNLOCK_SHARED(Obj self, Obj target) {
 Obj FuncHASH_SYNCHRONIZED(Obj self, Obj target, Obj function) {
   volatile int locked = 0;
   jmp_buf readJmpError;
-  memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
+  memcpy( readJmpError, TLS->ReadJmpError, sizeof(jmp_buf) );
   if (!READ_ERROR()) {
     HashLock(target);
     locked = 1;
@@ -801,14 +801,14 @@ Obj FuncHASH_SYNCHRONIZED(Obj self, Obj target, Obj function) {
   }
   if (locked)
     HashUnlock(target);
-  memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+  memcpy( TLS->ReadJmpError, readJmpError, sizeof(jmp_buf) );
   return (Obj) 0;
 }
 
 Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function) {
   volatile int locked = 0;
   jmp_buf readJmpError;
-  memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
+  memcpy( readJmpError, TLS->ReadJmpError, sizeof(jmp_buf) );
   if (!READ_ERROR()) {
     HashLockShared(target);
     locked = 1;
@@ -818,7 +818,7 @@ Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function) {
   }
   if (locked)
     HashUnlockShared(target);
-  memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+  memcpy( TLS->ReadJmpError, readJmpError, sizeof(jmp_buf) );
   return (Obj) 0;
 }
 
@@ -871,15 +871,15 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
     ArgumentError("WITH_TARGET_REGION: Second argument must be a function");
   if (!region || !CheckExclusiveWriteAccess(obj))
     ArgumentError("WITH_TARGET_REGION: Requires write access to target region");
-  memcpy(readJmpError, TLS->readJmpError, sizeof(syJmp_buf));
-  if (sySetjmp(TLS->readJmpError)) {
-    memcpy(TLS->readJmpError, readJmpError, sizeof(syJmp_buf));
+  memcpy(readJmpError, TLS->ReadJmpError, sizeof(syJmp_buf));
+  if (sySetjmp(TLS->ReadJmpError)) {
+    memcpy(TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf));
     TLS->currentRegion = oldRegion;
-    syLongjmp(TLS->readJmpError, 1);
+    syLongjmp(TLS->ReadJmpError, 1);
   }
   TLS->currentRegion = region;
   CALL_0ARGS(func);
-  memcpy(TLS->readJmpError, readJmpError, sizeof(syJmp_buf));
+  memcpy(TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf));
   TLS->currentRegion = oldRegion;
   return (Obj) 0;
 }

@@ -1006,7 +1006,7 @@ Obj CopyARecord(Obj obj, Int mutable)
 #if 0
   UInt i, len;
   Obj result;
-  Obj copied = TLS->copiedObjs;
+  Obj copied = TLS->CopiedObjs;
   if (copied)
   {
     len = LEN_PLIST(copied);
@@ -1018,7 +1018,7 @@ Obj CopyARecord(Obj obj, Int mutable)
   else
   {
     len = 0;
-    TLS->copiedObjs = copied = NEW_PLIST(T_PLIST, 2);
+    TLS->CopiedObjs = copied = NEW_PLIST(T_PLIST, 2);
     SET_LEN_PLIST(copied, 2);
   }
   result = ShallowCopyARecord(obj);

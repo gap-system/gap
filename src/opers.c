@@ -1636,28 +1636,28 @@ static inline Obj CacheOper (
     }
     else
       cacheIndex = INT_INTOBJ(cache);
-    if (cacheIndex > TLS->methodCacheSize)
+    if (cacheIndex > TLS->MethodCacheSize)
     {
-      UInt len = TLS->methodCacheSize;
+      UInt len = TLS->MethodCacheSize;
       while (cacheIndex > len)
 	len *= 2;
-      GROW_PLIST(TLS->methodCache, len);
-      SET_LEN_PLIST(TLS->methodCache, len);
-      TLS->methodCacheItems = ADDR_OBJ(TLS->methodCache);
-      TLS->methodCacheSize = len;
+      GROW_PLIST(TLS->MethodCache, len);
+      SET_LEN_PLIST(TLS->MethodCache, len);
+      TLS->MethodCacheItems = ADDR_OBJ(TLS->MethodCache);
+      TLS->MethodCacheSize = len;
     }
-    cache = ELM_PLIST(TLS->methodCache, cacheIndex);
+    cache = ELM_PLIST(TLS->MethodCache, cacheIndex);
     if ( cache == 0 ) {
         len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2));
         cache = NEW_PLIST( T_PLIST, len);
         SET_LEN_PLIST( cache, len ); 
-        SET_ELM_PLIST( TLS->methodCache, cacheIndex, cache );
-        CHANGED_BAG( TLS->methodCache );
+        SET_ELM_PLIST( TLS->MethodCache, cacheIndex, cache );
+        CHANGED_BAG( TLS->MethodCache );
     }
     return cache;
 }
 #define GET_METHOD_CACHE( oper, i ) \
-  ( TLS->methodCacheItems[INT_INTOBJ( CACHE_OPER ( oper, i ))] )
+  ( TLS->MethodCacheItems[INT_INTOBJ( CACHE_OPER ( oper, i ))] )
 
 Obj DoOperation0Args (
     Obj                 oper )
@@ -6481,10 +6481,10 @@ StructInitInfo * InitInfoOpers ( void )
 
 void InitOpersTLS()
 {
-  TLS->methodCache = NEW_PLIST(T_PLIST, 1);
-  TLS->methodCacheItems = ADDR_OBJ(TLS->methodCache);
-  TLS->methodCacheSize = 1;
-  SET_LEN_PLIST(TLS->methodCache, 1);
+  TLS->MethodCache = NEW_PLIST(T_PLIST, 1);
+  TLS->MethodCacheItems = ADDR_OBJ(TLS->MethodCache);
+  TLS->MethodCacheSize = 1;
+  SET_LEN_PLIST(TLS->MethodCache, 1);
 }
 
 void DestroyOpersTLS()

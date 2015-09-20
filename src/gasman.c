@@ -1483,10 +1483,10 @@ Bag NewBag (
     bag = GC_malloc(2*sizeof(Bag *));
 #else
     bag = GC_malloc(4*sizeof(Bag *));
-    if (TLS->ptrLVars) {
+    if (TLS->PtrLVars) {
       bag[2] = (void *)(CURR_FUNC);
-      if (TLS->currLVars != TLS->bottomLVars) {
-        Obj plvars = ADDR_OBJ(TLS->currLVars)[2];
+      if (TLS->CurrLVars != TLS->BottomLVars) {
+        Obj plvars = ADDR_OBJ(TLS->CurrLVars)[2];
 	bag[3] = (void *) (ADDR_OBJ(plvars)[0]);
       }
     }

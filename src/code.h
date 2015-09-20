@@ -221,7 +221,7 @@ Obj FILENAME_STAT(Stat stat);
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-#define ADDR_STAT(stat) ((Stat*)(((char*)TLS->ptrBody)+(stat)))
+#define ADDR_STAT(stat) ((Stat*)(((char*)TLS->PtrBody)+(stat)))
 
 
 /****************************************************************************

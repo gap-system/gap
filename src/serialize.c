@@ -1018,17 +1018,17 @@ Obj FuncSERIALIZE_NATIVE_STRING(Obj self, Obj obj) {
   syJmp_buf readJmpError;
   SaveSerializationState(&state);
   InitNativeStringSerializer(NEW_STRING(0));
-  memcpy(readJmpError, TLS->readJmpError, sizeof(syJmp_buf));
-  if (sySetjmp(TLS->readJmpError)) {
-    memcpy(TLS->readJmpError, readJmpError, sizeof(syJmp_buf));
+  memcpy(readJmpError, TLS->ReadJmpError, sizeof(syJmp_buf));
+  if (sySetjmp(TLS->ReadJmpError)) {
+    memcpy(TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf));
     RestoreSerializationState(&state);
-    syLongjmp(TLS->readJmpError, 1);
+    syLongjmp(TLS->ReadJmpError, 1);
   }
   SerializeObj(obj);
   while (LEN_PLIST(TLS->SerializationStack) > 0)
     SerializeObj(PopObj());
   result = TLS->SerializationObj;
-  memcpy(TLS->readJmpError, readJmpError, sizeof(syJmp_buf));
+  memcpy(TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf));
   RestoreSerializationState(&state);
   return result;
 }
@@ -1040,15 +1040,15 @@ Obj FuncDESERIALIZE_NATIVE_STRING(Obj self, Obj string) {
   syJmp_buf readJmpError;
   if (!IS_STRING(string))
     ErrorQuit("DESERIALIZE_NATIVE_STRING: argument must be a string", 0L, 0L);
-  memcpy(readJmpError, TLS->readJmpError, sizeof(syJmp_buf));
-  if (sySetjmp(TLS->readJmpError)) {
-    memcpy(TLS->readJmpError, readJmpError, sizeof(syJmp_buf));
+  memcpy(readJmpError, TLS->ReadJmpError, sizeof(syJmp_buf));
+  if (sySetjmp(TLS->ReadJmpError)) {
+    memcpy(TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf));
     RestoreSerializationState(&state);
-    syLongjmp(TLS->readJmpError, 1);
+    syLongjmp(TLS->ReadJmpError, 1);
   }
   InitNativeStringDeserializer(string);
   result = DeserializeObj();
-  memcpy(TLS->readJmpError, readJmpError, sizeof(syJmp_buf));
+  memcpy(TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf));
   RestoreSerializationState(&state);
   return result;
 }

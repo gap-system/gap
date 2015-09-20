@@ -29,95 +29,96 @@ typedef struct ThreadLocalStorage
   void *CurrentHashLock;
   char *CurrFuncName;
   int DisableGuards;
+
   /* From intrprtr.c */
-  Obj intrResult;
-  UInt intrIgnoring;
-  UInt intrReturning;
-  UInt intrCoding;
-  Obj intrState;
-  Obj stackObj;
-  Int countObj;
+  Obj IntrResult;
+  UInt IntrIgnoring;
+  UInt IntrReturning;
+  UInt IntrCoding;
+  Obj IntrState;
+  Obj StackObj;
+  Int CountObj;
   UInt PeriodicCheckCount;
   /* From gvar.c */
-  Obj currNamespace;
+  Obj CurrNamespace;
   /* From vars.c */
-  Bag bottomLVars;
-  Bag currLVars;
-  Obj *ptrLVars;
+  Bag BottomLVars;
+  Bag CurrLVars;
+  Obj *PtrLVars;
   Bag LVarsPool[16];
   /* From read.c */
-  syJmp_buf readJmpError;
+  syJmp_buf ReadJmpError;
   syJmp_buf threadExit;
-  Obj stackNams;
-  UInt countNams;
-  UInt readTop;
-  UInt readTilde;
-  UInt currLHSGVar;
-  UInt currentGlobalForLoopVariables[100];
-  UInt currentGlobalForLoopDepth;
-  Obj exprGVars;
-  Obj errorLVars;
-  Obj errorLVars0;
-  Obj readEvalResult;
+  Obj StackNams;
+  UInt CountNams;
+  UInt ReadTop;
+  UInt ReadTilde;
+  UInt CurrLHSGVar;
+  UInt CurrentGlobalForLoopVariables[100];
+  UInt CurrentGlobalForLoopDepth;
+  Obj ExprGVars;
+  Obj ErrorLVars;
+  Obj ErrorLVars0;
+  Obj ReadEvalResult;
   /* From scanner.c */
-  Char value[MAX_VALUE_LEN];
-  UInt valueLen;
-  UInt nrError;
-  UInt nrErrLine;
-  UInt            symbol;
-  Char *          prompt;
-  TypInputFile *  inputFiles[16];
-  TypOutputFile* outputFiles[16];
-  int inputFilesSP;
-  int outputFilesSP;
-  TypInputFile *  input;
-  Char *          in;
-  TypOutputFile * output;
-  TypOutputFile * inputLog;
-  TypOutputFile * outputLog;
-  TypInputFile *  testInput;
-  TypOutputFile * testOutput;
+  Char Value[MAX_VALUE_LEN];
+  UInt ValueLen;
+  UInt NrError;
+  UInt NrErrLine;
+  UInt            Symbol;
+  Char *          Prompt;
+  TypInputFile *  InputFiles[16];
+  TypOutputFile* OutputFiles[16];
+  int InputFilesSP;
+  int OutputFilesSP;
+  TypInputFile *  Input;
+  Char *          In;
+  TypOutputFile * Output;
+  TypOutputFile * InputLog;
+  TypOutputFile * OutputLog;
+  TypInputFile *  TestInput;
+  TypOutputFile * TestOutput;
   TypOutputFile * IgnoreStdoutErrout;
-  Obj		  defaultOutput;
-  Obj		  defaultInput;
-  Char            testLine [256];
-  TypOutputFile logFile;
-  TypOutputFile logStream;
-  TypOutputFile inputLogFile;
-  TypOutputFile inputLogStream;
-  TypOutputFile outputLogFile;
-  TypOutputFile outputLogStream;
-  Int helpSubsOn;
-  Int noSplitLine;
-  KOutputStream theStream;
-  Char *theBuffer;
-  UInt theCount;
-  UInt theLimit;
+  Obj		  DefaultOutput;
+  Obj		  DefaultInput;
+  Char            TestLine [256];
+  TypOutputFile LogFile;
+  TypOutputFile LogStream;
+  TypOutputFile InputLogFile;
+  TypOutputFile InputLogStream;
+  TypOutputFile OutputLogFile;
+  TypOutputFile OutputLogStream;
+  Int HelpSubsOn;
+  Int NoSplitLine;
+  KOutputStream TheStream;
+  Char *TheBuffer;
+  UInt TheCount;
+  UInt TheLimit;
   /* From exprs.c */
   Obj (**CurrEvalExprFuncs)(Expr);
   /* From stats.c */
-  Stat currStat;
-  Obj returnObjStat;
+  Stat CurrStat;
+  Obj ReturnObjStat;
   UInt (**CurrExecStatFuncs)(Stat);
   /* From code.c */
-  Stat *ptrBody;
+  Stat *PtrBody;
   Stat OffsBody;
   Stat *OffsBodyStack;
   UInt OffsBodyCount;
-  Obj codeResult;
-  Bag stackStat;
-  Int countStat;
-  Bag stackExpr;
-  Int countExpr;
-  Bag codeLVars;
+  Obj CodeResult;
+  Bag StackStat;
+  Int CountStat;
+  Bag StackExpr;
+  Int CountExpr;
+  Bag CodeLVars;
   /* From funcs.h */
-  Int recursionDepth;
-  Obj execState;
+  Int RecursionDepth;
+  Obj ExecState;
 
   /* From opers.c */
-  Obj methodCache;
-  Obj *methodCacheItems;
-  UInt methodCacheSize;
+  Obj MethodCache;
+  Obj *MethodCacheItems;
+  UInt MethodCacheSize;
   UInt CacheIndex;
 
   /* From permutat.c */
@@ -134,7 +135,7 @@ typedef struct ThreadLocalStorage
   Obj TmpPPerm; 
 
   /* From gap.c */
-  Obj thrownObject;
+  Obj ThrownObject;
   UInt UserHasQuit;
   UInt UserHasQUIT;
   Obj ShellContext;

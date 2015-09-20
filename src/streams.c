@@ -59,7 +59,7 @@
 
 #include	"tls.h"
 
-#include        "vars.h"                /* TLS->bottomLVars for execution contexts */
+#include        "vars.h"                /* TLS->BottomLVars for execution contexts */
 
 
 /****************************************************************************
@@ -73,7 +73,7 @@ Int READ_COMMAND ( void )
     ExecStatus    status;
 
     ClearError();
-    status = ReadEvalCommand(TLS->bottomLVars, 0);
+    status = ReadEvalCommand(TLS->BottomLVars, 0);
     if( status == STATUS_EOF )
         return 0;
 
@@ -87,7 +87,7 @@ Int READ_COMMAND ( void )
 
     /* handle quit command                                 */
     else if (status == STATUS_QUIT) {
-        TLS->recursionDepth = 0;
+        TLS->RecursionDepth = 0;
         TLS->UserHasQuit = 1;
     }
     else if (status == STATUS_QQUIT) {
@@ -108,9 +108,9 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
     }
 
     if (echo == True)
-      TLS->input->echo = 1;
+      TLS->Input->echo = 1;
     else
-      TLS->input->echo = 0;
+      TLS->Input->echo = 0;
 
     status = READ_COMMAND();
     
@@ -127,7 +127,7 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
       TLS->UserHasQuit = 0;
     }
     
-    return TLS->readEvalResult ? TLS->readEvalResult : SFail;
+    return TLS->ReadEvalResult ? TLS->ReadEvalResult : SFail;
     
 }
 
@@ -161,7 +161,7 @@ static Int READ_INNER ( UInt UseUHQ )
     /* now do the reading                                                  */
     while ( 1 ) {
         ClearError();
-        status = ReadEvalCommand(TLS->bottomLVars, 0);
+        status = ReadEvalCommand(TLS->BottomLVars, 0);
 	if (TLS->UserHasQuit || TLS->UserHasQUIT)
 	  break;
         /* handle return-value or return-void command                      */
@@ -175,7 +175,7 @@ static Int READ_INNER ( UInt UseUHQ )
         else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
           break;
         else if (status == STATUS_QUIT) {
-          TLS->recursionDepth = 0;
+          TLS->RecursionDepth = 0;
 	  TLS->UserHasQuit = 1;
           break;
         }
@@ -183,10 +183,10 @@ static Int READ_INNER ( UInt UseUHQ )
 	  TLS->UserHasQUIT = 1;
           break;
         }
-	if (TLS->readEvalResult)
+	if (TLS->ReadEvalResult)
           {
             MakeReadWriteGVar(LastReadValueGVar);
-	    AssGVar( LastReadValueGVar, TLS->readEvalResult);
+	    AssGVar( LastReadValueGVar, TLS->ReadEvalResult);
             MakeReadOnlyGVar(LastReadValueGVar);
           }
         
@@ -235,7 +235,7 @@ Obj READ_AS_FUNC ( void )
 
     /* get the function                                                    */
     if ( type == 0 ) {
-        func = TLS->readEvalResult;
+        func = TLS->ReadEvalResult;
     }
     else {
         func = Fail;
@@ -268,23 +268,23 @@ static void READ_TEST_OR_LOOP(void)
 
         /* read and evaluate the command                                   */
         ClearError();
-        type = ReadEvalCommand(TLS->bottomLVars, &dualSemicolon);
+        type = ReadEvalCommand(TLS->BottomLVars, &dualSemicolon);
 
         /* stop the stopwatch                                              */
         AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
 
         /* handle ordinary command                                         */
-        if ( type == 0 && TLS->readEvalResult != 0 ) {
+        if ( type == 0 && TLS->ReadEvalResult != 0 ) {
 
             /* remember the value in 'last' and the time in 'time'         */
             AssGVar( Last3, ValGVarTL( Last2 ) );
             AssGVar( Last2, ValGVarTL( Last  ) );
-            AssGVar( Last,  TLS->readEvalResult   );
+            AssGVar( Last,  TLS->ReadEvalResult   );
 
             /* print the result                                            */
             if ( ! dualSemicolon ) {
-                Bag currLVars = TLS->currLVars; /* in case view runs into error */
-                ViewObjHandler( TLS->readEvalResult );
+                Bag currLVars = TLS->CurrLVars; /* in case view runs into error */
+                ViewObjHandler( TLS->ReadEvalResult );
                 SWITCH_TO_OLD_LVARS(currLVars);
             }
         }
@@ -431,10 +431,10 @@ Int READ_GAP_ROOT ( Char * filename )
                 (Int)filename, 0L );
         }
         if ( OpenInput(result.pathname) ) {
-	  SySetBuffering(TLS->input->file);
+	  SySetBuffering(TLS->Input->file);
             while ( 1 ) {
                 ClearError();
-                type = ReadEvalCommand(TLS->bottomLVars, 0);
+                type = ReadEvalCommand(TLS->BottomLVars, 0);
 		if (TLS->UserHasQuit || TLS->UserHasQUIT)
                   break;
                 if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
@@ -705,17 +705,17 @@ Obj FuncPrint (
             PrintFunction( arg );
         }
         else {
-            memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
+            memcpy( readJmpError, TLS->ReadJmpError, sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
                 PrintObj( arg );
             }
             else {
-                memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
+                memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
-            memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
+            memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
         }
     }
 
@@ -763,7 +763,7 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
             TLS->PrintObjFull = 0;
         }
         else {
-            memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
+            memcpy( readJmpError, TLS->ReadJmpError, sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
@@ -771,10 +771,10 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
             }
             else {
                 CloseOutput();
-                memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
+                memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
-            memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
+            memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
         }
     }
 
@@ -812,7 +812,7 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
         arg = ELM_LIST(args,i);
 
         /* if an error occurs stop printing                                */
-        memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
+        memcpy( readJmpError, TLS->ReadJmpError, sizeof(syJmp_buf) );
         if ( ! READ_ERROR() ) {
             if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
@@ -831,10 +831,10 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
         }
         else {
             CloseOutput();
-            memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
+            memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
             ReadEvalError();
         }
-        memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
+        memcpy( TLS->ReadJmpError, readJmpError, sizeof(syJmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -966,7 +966,7 @@ Obj FuncREAD (
         return False;
     }
 
-    SySetBuffering(TLS->input->file);
+    SySetBuffering(TLS->Input->file);
    
     /* read the test file                                                  */
     return READ() ? True : False;
@@ -998,7 +998,7 @@ Obj FuncREAD_NORECOVERY (
         return False;
     }
 
-    SySetBuffering(TLS->input->file);
+    SySetBuffering(TLS->Input->file);
    
     /* read the file */
     switch (READ_NORECOVERY()) {
@@ -1120,7 +1120,7 @@ Obj FuncREAD_AS_FUNC (
         return Fail;
     }
 
-    SySetBuffering(TLS->input->file);
+    SySetBuffering(TLS->Input->file);
     
     /* read the function                                                   */
     return READ_AS_FUNC();
