@@ -75,7 +75,7 @@
 **
 **  'EXEC_STAT' is defined in the declaration part of this package as follows:
 **
-#define EXEC_STAT(stat) ( (*TLS_MACRO(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
+#define EXEC_STAT(stat) ( (*TLS(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
 */
 
 
@@ -139,7 +139,7 @@ UInt            ExecUnknownStat (
 */
 
 UInt HaveInterrupt( void ) {
-  return TLS_MACRO(CurrExecStatFuncs) == IntrExecStatFuncs;
+  return TLS(CurrExecStatFuncs) == IntrExecStatFuncs;
 }
 
 
@@ -1589,7 +1589,7 @@ UInt            ExecReturnObj (
 
     /* evaluate the expression                                             */
     SET_BRK_CURR_STAT( stat );
-    TLS_MACRO(ReturnObjStat) = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    TLS(ReturnObjStat) = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
     /* return up to function interpreter                                   */
     return 1;
@@ -1619,8 +1619,8 @@ UInt            ExecReturnVoid (
     }
 #endif
 
-    /* set 'TLS_MACRO(ReturnObjStat)' to void                                         */
-    TLS_MACRO(ReturnObjStat) = 0;
+    /* set 'TLS(ReturnObjStat)' to void                                         */
+    TLS(ReturnObjStat) = 0;
 
     /* return up to function interpreter                                   */
     return 2;
@@ -1645,9 +1645,9 @@ UInt (* IntrExecStatFuncs[256]) ( Stat stat );
 
 UInt TakeInterrupt( void ) {
   UInt i;
-  if (TLS_MACRO(CurrExecStatFuncs) == IntrExecStatFuncs) {
-      assert(TLS_MACRO(CurrExecStatFuncs) != ExecStatFuncs);
-      TLS_MACRO(CurrExecStatFuncs) = ExecStatFuncs;
+  if (TLS(CurrExecStatFuncs) == IntrExecStatFuncs) {
+      assert(TLS(CurrExecStatFuncs) != ExecStatFuncs);
+      TLS(CurrExecStatFuncs) = ExecStatFuncs;
       ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
       return 1;
   }
@@ -1670,7 +1670,7 @@ UInt ExecIntrStat (
     UInt                i;              /* loop variable                   */
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    TLS_MACRO(CurrExecStatFuncs) = ExecStatFuncs;
+    TLS(CurrExecStatFuncs) = ExecStatFuncs;
 
     /* and now for something completely different                          */
     HandleInterrupts(1, stat);
@@ -1697,7 +1697,7 @@ UInt ExecIntrStat (
 void InterruptExecStat ( void )
 {
     /* remember the original entries from the table 'ExecStatFuncs'        */
-    TLS_MACRO(CurrExecStatFuncs) = IntrExecStatFuncs;
+    TLS(CurrExecStatFuncs) = IntrExecStatFuncs;
 
 }
 
@@ -1725,7 +1725,7 @@ void InitIntrExecStats ( void )
 */
 
 Int BreakLoopPending( void ) {
-     return TLS_MACRO(CurrExecStatFuncs) == IntrExecStatFuncs;
+     return TLS(CurrExecStatFuncs) == IntrExecStatFuncs;
 }
 
 void ClearError ( void )
@@ -1733,8 +1733,8 @@ void ClearError ( void )
     UInt        i;
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    if ( TLS_MACRO(CurrExecStatFuncs) == IntrExecStatFuncs ) {
-        TLS_MACRO(CurrExecStatFuncs) = ExecStatFuncs;
+    if ( TLS(CurrExecStatFuncs) == IntrExecStatFuncs ) {
+        TLS(CurrExecStatFuncs) = ExecStatFuncs;
         /* check for user interrupt */
         if ( HaveInterrupt() ) {
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
@@ -1748,8 +1748,8 @@ void ClearError ( void )
         }
     }
 
-    /* reset <TLS_MACRO(NrError)>                                                     */
-    TLS_MACRO(NrError) = 0;
+    /* reset <TLS(NrError)>                                                     */
+    TLS(NrError) = 0;
 }
 
 /****************************************************************************
@@ -2252,11 +2252,11 @@ static Int InitKernel (
 
 void InitStatTLS()
 {
-  TLS_MACRO(CurrExecStatFuncs) = ExecStatFuncs;
+  TLS(CurrExecStatFuncs) = ExecStatFuncs;
   MEMBAR_FULL();
-  if (GetThreadState(TLS_MACRO(threadID)) >= TSTATE_INTERRUPT) {
+  if (GetThreadState(TLS(threadID)) >= TSTATE_INTERRUPT) {
     MEMBAR_FULL();
-    TLS_MACRO(CurrExecStatFuncs) = IntrExecStatFuncs;
+    TLS(CurrExecStatFuncs) = IntrExecStatFuncs;
   }
 }
 

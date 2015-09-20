@@ -2488,13 +2488,13 @@ static Obj  HdlrFunc7 (
    SET_ELM_PLIST( t_5, 1, l_cats );
    CHANGED_BAG( t_5 );
    t_6 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
-   ENVI_FUNC( t_6 ) = TLS_MACRO(CurrLVars);
+   ENVI_FUNC( t_6 ) = TLS(CurrLVars);
    t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
    STARTLINE_BODY(t_7) = INTOBJ_INT(603);
    ENDLINE_BODY(t_7) = INTOBJ_INT(621);
    FILENAME_BODY(t_7) = FileName;
    BODY_FUNC(t_6) = t_7;
-   CHANGED_BAG( TLS_MACRO(CurrLVars) );
+   CHANGED_BAG( TLS(CurrLVars) );
    CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, l_rank, t_6 );
    
   }
@@ -2804,13 +2804,13 @@ static Obj  HdlrFunc10 (
       return;
   end; */
   t_1 = NewFunction( NameFunc[11], NargFunc[11], NamsFunc[11], HdlrFunc11 );
-  ENVI_FUNC( t_1 ) = TLS_MACRO(CurrLVars);
+  ENVI_FUNC( t_1 ) = TLS(CurrLVars);
   t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
   STARTLINE_BODY(t_2) = INTOBJ_INT(758);
   ENDLINE_BODY(t_2) = INTOBJ_INT(762);
   FILENAME_BODY(t_2) = FileName;
   BODY_FUNC(t_1) = t_2;
-  CHANGED_BAG( TLS_MACRO(CurrLVars) );
+  CHANGED_BAG( TLS(CurrLVars) );
   ASS_LVAR( 2, t_1 );
   
  }
@@ -2884,13 +2884,13 @@ static Obj  HdlrFunc10 (
  SET_ELM_PLIST( t_5, 1, a_domreq );
  CHANGED_BAG( t_5 );
  t_6 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
- ENVI_FUNC( t_6 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_6 ) = TLS(CurrLVars);
  t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_7) = INTOBJ_INT(779);
  ENDLINE_BODY(t_7) = INTOBJ_INT(779);
  FILENAME_BODY(t_7) = FileName;
  BODY_FUNC(t_6) = t_7;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 );
  
  /* DeclareOperation( name, [ domreq, keyreq ] ); */
@@ -2959,13 +2959,13 @@ static Obj  HdlrFunc10 (
  SET_ELM_PLIST( t_5, 2, a_keyreq );
  CHANGED_BAG( t_5 );
  t_6 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
- ENVI_FUNC( t_6 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_6 ) = TLS(CurrLVars);
  t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_7) = INTOBJ_INT(795);
  ENDLINE_BODY(t_7) = INTOBJ_INT(816);
  FILENAME_BODY(t_7) = FileName;
  BODY_FUNC(t_6) = t_7;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 );
  
  /* return; */
@@ -3263,13 +3263,13 @@ static Obj  HdlrFunc14 (
  t_4 = OBJ_LVAR( 2 );
  CHECK_BOUND( t_4, "reqs" )
  t_5 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
- ENVI_FUNC( t_5 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_5 ) = TLS(CurrLVars);
  t_6 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_6) = INTOBJ_INT(864);
  ENDLINE_BODY(t_6) = INTOBJ_INT(880);
  FILENAME_BODY(t_6) = FileName;
  BODY_FUNC(t_5) = t_6;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_6ARGS( t_1, t_2, t_3, a_fampred, t_4, a_val, t_5 );
  
  /* return; */
@@ -3357,13 +3357,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 19, "RunImmediateMethods" );
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
- ENVI_FUNC( t_3 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_4) = INTOBJ_INT(26);
  ENDLINE_BODY(t_4) = INTOBJ_INT(117);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "METHODS_OPERATION_REGION", NewSpecialRegion( "operation methods" ) ); */
@@ -3466,13 +3466,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 20, "INSTALL_METHOD_FLAGS" );
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
- ENVI_FUNC( t_3 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_4) = INTOBJ_INT(136);
  ENDLINE_BODY(t_4) = INTOBJ_INT(250);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "InstallMethod", function ( arg )
@@ -3482,13 +3482,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 13, "InstallMethod" );
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
- ENVI_FUNC( t_3 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_4) = INTOBJ_INT(297);
  ENDLINE_BODY(t_4) = INTOBJ_INT(299);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "InstallOtherMethod", function ( arg )
@@ -3498,13 +3498,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 18, "InstallOtherMethod" );
  t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
- ENVI_FUNC( t_3 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_4) = INTOBJ_INT(324);
  ENDLINE_BODY(t_4) = INTOBJ_INT(326);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* DeclareGlobalFunction( "EvalString" ); */
@@ -3657,13 +3657,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 14, "INSTALL_METHOD" );
  t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
- ENVI_FUNC( t_3 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_4) = INTOBJ_INT(337);
  ENDLINE_BODY(t_4) = INTOBJ_INT(545);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + 6; */
@@ -3717,13 +3717,13 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_InstallAttributeFunction;
  t_2 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
- ENVI_FUNC( t_2 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_2 ) = TLS(CurrLVars);
  t_3 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_3) = INTOBJ_INT(564);
  ENDLINE_BODY(t_3) = INTOBJ_INT(625);
  FILENAME_BODY(t_3) = FileName;
  BODY_FUNC(t_2) = t_3;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_1ARGS( t_1, t_2 );
  
  /* InstallAttributeFunction( function ( name, filter, getter, setter, tester, mutflag )
@@ -3732,13 +3732,13 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_InstallAttributeFunction;
  t_2 = NewFunction( NameFunc[9], NargFunc[9], NamsFunc[9], HdlrFunc9 );
- ENVI_FUNC( t_2 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_2 ) = TLS(CurrLVars);
  t_3 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_3) = INTOBJ_INT(628);
  ENDLINE_BODY(t_3) = INTOBJ_INT(634);
  FILENAME_BODY(t_3) = FileName;
  BODY_FUNC(t_2) = t_3;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_1ARGS( t_1, t_2 );
  
  /* IsPrimeInt := "2b defined"; */
@@ -3792,13 +3792,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 21, "KeyDependentOperation" );
  t_3 = NewFunction( NameFunc[10], NargFunc[10], NamsFunc[10], HdlrFunc10 );
- ENVI_FUNC( t_3 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_4) = INTOBJ_INT(754);
  ENDLINE_BODY(t_4) = INTOBJ_INT(817);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* CallFuncList := "2b defined"; */
@@ -3827,13 +3827,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 21, "RedispatchOnCondition" );
  t_3 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
- ENVI_FUNC( t_3 ) = TLS_MACRO(CurrLVars);
+ ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_4) = INTOBJ_INT(850);
  ENDLINE_BODY(t_4) = INTOBJ_INT(881);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* InstallMethod( ViewObj, "default method using `PrintObj'", true, [ IS_OBJECT ], 0, PRINT_OBJ ); */
@@ -4135,8 +4135,8 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
- ENVI_FUNC( func1 ) = TLS_MACRO(CurrLVars);
- CHANGED_BAG( TLS_MACRO(CurrLVars) );
+ ENVI_FUNC( func1 ) = TLS(CurrLVars);
+ CHANGED_BAG( TLS(CurrLVars) );
  body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));
  BODY_FUNC( func1 ) = body1;
  CHANGED_BAG( func1 );

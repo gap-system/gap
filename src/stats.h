@@ -45,7 +45,7 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  executor, i.e., to the  function that executes statements  of the type of
 **  <stat>.
 */
-#define EXEC_STAT(stat) ( (*TLS_MACRO(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
+#define EXEC_STAT(stat) ( (*TLS(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
 
 /****************************************************************************
 **
@@ -90,10 +90,10 @@ extern  UInt 		(* IntrExecStatFuncs[256]) ( Stat stat );
 *F  RES_BRK_CURR_STAT() . . . . . . . . restore currently executing statement
 */
 #ifndef NO_BRK_CURR_STAT
-#define SET_BRK_CURR_STAT(stat) (TLS_MACRO(CurrStat) = (stat))
+#define SET_BRK_CURR_STAT(stat) (TLS(CurrStat) = (stat))
 #define OLD_BRK_CURR_STAT       Stat oldStat;
-#define REM_BRK_CURR_STAT()     (oldStat = TLS_MACRO(CurrStat))
-#define RES_BRK_CURR_STAT()     (TLS_MACRO(CurrStat) = oldStat)
+#define REM_BRK_CURR_STAT()     (oldStat = TLS(CurrStat))
+#define RES_BRK_CURR_STAT()     (TLS(CurrStat) = oldStat)
 #endif
 #ifdef  NO_BRK_CURR_STAT
 #define SET_BRK_CURR_STAT(stat) /* do nothing */

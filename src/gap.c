@@ -185,7 +185,7 @@ void ViewObjHandler ( Obj obj )
   cfunc = ValAutoGVar(CustomViewGVar);
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
-  memcpy( readJmpError, TLS_MACRO(ReadJmpError), sizeof(syJmp_buf) );
+  memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
   if ( ! READ_ERROR() ) {
     if ( cfunc != 0 && TNUM_OBJ(cfunc) == T_FUNCTION ) {
       CALL_1ARGS(cfunc, obj);
@@ -197,10 +197,10 @@ void ViewObjHandler ( Obj obj )
       PrintObj( obj );
     }
     Pr( "\n", 0L, 0L );
-    memcpy( TLS_MACRO(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
   }
   else {
-    memcpy( TLS_MACRO(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
   }
 }
 
@@ -261,12 +261,12 @@ Obj Shell ( Obj context,
   Obj oldShellContext;
   Obj oldBaseShellContext;
   Int oldRecursionDepth;
-  oldShellContext = TLS_MACRO(ShellContext);
-  TLS_MACRO(ShellContext) = context;
-  oldBaseShellContext = TLS_MACRO(BaseShellContext);
-  TLS_MACRO(BaseShellContext) = context;
-  TLS_MACRO(ShellContextDepth) = 0;
-  oldRecursionDepth = TLS_MACRO(RecursionDepth);
+  oldShellContext = TLS(ShellContext);
+  TLS(ShellContext) = context;
+  oldBaseShellContext = TLS(BaseShellContext);
+  TLS(BaseShellContext) = context;
+  TLS(ShellContextDepth) = 0;
+  oldRecursionDepth = TLS(RecursionDepth);
   
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
@@ -278,10 +278,10 @@ Obj Shell ( Obj context,
       ErrorMayQuit("SHELL: can't open infile %s",(Int)inFile,0);
     }
   
-  oldPrintDepth = TLS_MACRO(PrintObjDepth);
-  TLS_MACRO(PrintObjDepth) = 0;
-  oldindent = TLS_MACRO(Output)->indent;
-  TLS_MACRO(Output)->indent = 0;
+  oldPrintDepth = TLS(PrintObjDepth);
+  TLS(PrintObjDepth) = 0;
+  oldindent = TLS(Output)->indent;
+  TLS(Output)->indent = 0;
 
   while ( 1 ) {
 
@@ -290,11 +290,11 @@ Obj Shell ( Obj context,
       time = SyTime();
 
     /* read and evaluate one command                                   */
-    TLS_MACRO(Prompt) = prompt;
+    TLS(Prompt) = prompt;
     ClearError();
-    TLS_MACRO(PrintObjDepth) = 0;
-    TLS_MACRO(Output)->indent = 0;
-    TLS_MACRO(RecursionDepth) = 0;
+    TLS(PrintObjDepth) = 0;
+    TLS(Output)->indent = 0;
+    TLS(RecursionDepth) = 0;
       
     /* here is a hook: */
     if (preCommandHook) {
@@ -306,19 +306,19 @@ Obj Shell ( Obj context,
         {
           Call0ArgsInNewReader(preCommandHook);
           /* Recover from a potential break loop: */
-          TLS_MACRO(Prompt) = prompt;
+          TLS(Prompt) = prompt;
           ClearError();
         }
     }
 
     /* now  read and evaluate and view one command  */
-    status = ReadEvalCommand(TLS_MACRO(ShellContext), &dualSemicolon);
-    if (TLS_MACRO(UserHasQUIT))
+    status = ReadEvalCommand(TLS(ShellContext), &dualSemicolon);
+    if (TLS(UserHasQUIT))
       break;
 
 
     /* handle ordinary command                                         */
-    if ( status == STATUS_END && TLS_MACRO(ReadEvalResult) != 0 ) {
+    if ( status == STATUS_END && TLS(ReadEvalResult) != 0 ) {
 
       /* remember the value in 'last'    */
       if (lastDepth >= 3)
@@ -326,11 +326,11 @@ Obj Shell ( Obj context,
       if (lastDepth >= 2)
         AssGVar( Last2, ValGVarTL( Last  ) );
       if (lastDepth >= 1)
-        AssGVar( Last,  TLS_MACRO(ReadEvalResult)   );
+        AssGVar( Last,  TLS(ReadEvalResult)   );
 
       /* print the result                                            */
       if ( ! dualSemicolon ) {
-        ViewObjHandler( TLS_MACRO(ReadEvalResult) );
+        ViewObjHandler( TLS(ReadEvalResult) );
       }
             
     }
@@ -352,14 +352,14 @@ Obj Shell ( Obj context,
     
     /* handle quit command or <end-of-file>                            */
     else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
-      TLS_MACRO(RecursionDepth) = 0;
-      TLS_MACRO(UserHasQuit) = 1;
+      TLS(RecursionDepth) = 0;
+      TLS(UserHasQuit) = 1;
       break;
     }
         
     /* handle QUIT */
     else if (status & (STATUS_QQUIT)) {
-      TLS_MACRO(UserHasQUIT) = 1;
+      TLS(UserHasQUIT) = 1;
       break;
     }
         
@@ -367,26 +367,26 @@ Obj Shell ( Obj context,
     if (setTime)
       AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
 
-    if (TLS_MACRO(UserHasQuit))
+    if (TLS(UserHasQuit))
       {
         FlushRestOfInputLine();
-        TLS_MACRO(UserHasQuit) = 0;        /* quit has done its job if we are here */
+        TLS(UserHasQuit) = 0;        /* quit has done its job if we are here */
       }
 
   }
   
-  TLS_MACRO(PrintObjDepth) = oldPrintDepth;
-  TLS_MACRO(Output)->indent = oldindent;
+  TLS(PrintObjDepth) = oldPrintDepth;
+  TLS(Output)->indent = oldindent;
   CloseInput();
   CloseOutput();
-  TLS_MACRO(BaseShellContext) = oldBaseShellContext;
-  TLS_MACRO(ShellContext) = oldShellContext;
-  TLS_MACRO(RecursionDepth) = oldRecursionDepth;
-  if (TLS_MACRO(UserHasQUIT))
+  TLS(BaseShellContext) = oldBaseShellContext;
+  TLS(ShellContext) = oldShellContext;
+  TLS(RecursionDepth) = oldRecursionDepth;
+  if (TLS(UserHasQUIT))
     {
       if (catchQUIT)
         {
-          TLS_MACRO(UserHasQUIT) = 0;
+          TLS(UserHasQUIT) = 0;
           MakeReadWriteGVar(QUITTINGGVar);
           AssGVar(QUITTINGGVar, True);
           MakeReadOnlyGVar(QUITTINGGVar);
@@ -410,7 +410,7 @@ Obj Shell ( Obj context,
     {
       res = NEW_PLIST(T_PLIST_HOM,1);
       SET_LEN_PLIST(res,1);
-      SET_ELM_PLIST(res,1,TLS_MACRO(ReadEvalResult));
+      SET_ELM_PLIST(res,1,TLS(ReadEvalResult));
       return res;
     }
   assert(0); 
@@ -507,7 +507,7 @@ Obj FuncSHELL (Obj self, Obj args)
   res =  Shell(context, canReturnVoid, canReturnObj, lastDepth, setTime, promptBuffer, preCommandHook, catchQUIT,
                CSTR_STRING(infile), CSTR_STRING(outfile));
 
-  TLS_MACRO(UserHasQuit) = 0;
+  TLS(UserHasQuit) = 0;
   return res;
 }
 #ifdef HAVE_REALPATH
@@ -800,13 +800,13 @@ int main (
   NrImportedGVars = 0;
   NrImportedFuncs = 0;
   ErrorHandler = (Obj) 0;
-  TLS_MACRO(UserHasQUIT) = 0;
-  TLS_MACRO(UserHasQuit) = 0;
+  TLS(UserHasQUIT) = 0;
+  TLS(UserHasQuit) = 0;
   SystemErrorCode = 0;
     
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv );
-  if (!TLS_MACRO(UserHasQUIT)) {         /* maybe the user QUIT from the initial
+  if (!TLS(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
     if ( SyCompilePlease ) {
@@ -1178,29 +1178,29 @@ Obj FuncWindowCmd (
 void DownEnvInner( Int depth )
 {
   /* if we really want to go up                                          */
-  if ( depth < 0 && -TLS_MACRO(ErrorLLevel) <= -depth ) {
+  if ( depth < 0 && -TLS(ErrorLLevel) <= -depth ) {
     depth = 0;
-    TLS_MACRO(ErrorLVars) = TLS_MACRO(ErrorLVars0);
-    TLS_MACRO(ErrorLLevel) = 0;
-    TLS_MACRO(ShellContextDepth) = 0;
-    TLS_MACRO(ShellContext) = TLS_MACRO(BaseShellContext);
+    TLS(ErrorLVars) = TLS(ErrorLVars0);
+    TLS(ErrorLLevel) = 0;
+    TLS(ShellContextDepth) = 0;
+    TLS(ShellContext) = TLS(BaseShellContext);
   }
   else if ( depth < 0 ) {
-    depth = -TLS_MACRO(ErrorLLevel) + depth;
-    TLS_MACRO(ErrorLVars) = TLS_MACRO(ErrorLVars0);
-    TLS_MACRO(ErrorLLevel) = 0;
-    TLS_MACRO(ShellContextDepth) = 0;
-    TLS_MACRO(ShellContext) = TLS_MACRO(BaseShellContext);
+    depth = -TLS(ErrorLLevel) + depth;
+    TLS(ErrorLVars) = TLS(ErrorLVars0);
+    TLS(ErrorLLevel) = 0;
+    TLS(ShellContextDepth) = 0;
+    TLS(ShellContext) = TLS(BaseShellContext);
   }
   
   /* now go down                                                         */
   while ( 0 < depth
-          && TLS_MACRO(ErrorLVars) != TLS_MACRO(BottomLVars)
-          && PTR_BAG(TLS_MACRO(ErrorLVars))[2] != TLS_MACRO(BottomLVars) ) {
-    TLS_MACRO(ErrorLVars) = PTR_BAG(TLS_MACRO(ErrorLVars))[2];
-    TLS_MACRO(ErrorLLevel)--;
-    TLS_MACRO(ShellContext) = PTR_BAG(TLS_MACRO(ShellContext))[2];
-    TLS_MACRO(ShellContextDepth)--;
+          && TLS(ErrorLVars) != TLS(BottomLVars)
+          && PTR_BAG(TLS(ErrorLVars))[2] != TLS(BottomLVars) ) {
+    TLS(ErrorLVars) = PTR_BAG(TLS(ErrorLVars))[2];
+    TLS(ErrorLLevel)--;
+    TLS(ShellContext) = PTR_BAG(TLS(ShellContext))[2];
+    TLS(ShellContextDepth)--;
     depth--;
   }
 }
@@ -1221,7 +1221,7 @@ Obj FuncDownEnv (
     ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( TLS_MACRO(ErrorLVars) == 0 ) {
+  if ( TLS(ErrorLVars) == 0 ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
@@ -1247,7 +1247,7 @@ Obj FuncUpEnv (
     ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( TLS_MACRO(ErrorLVars) == 0 ) {
+  if ( TLS(ErrorLVars) == 0 ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
@@ -1259,9 +1259,9 @@ Obj FuncUpEnv (
 
 Obj FuncPrintExecutingStatement(Obj self, Obj context)
 {
-  Obj currLVars = TLS_MACRO(CurrLVars);
+  Obj currLVars = TLS(CurrLVars);
   Expr call;
-  if (context == TLS_MACRO(BottomLVars))
+  if (context == TLS(BottomLVars))
     return (Obj) 0;
   SWITCH_TO_OLD_LVARS(context);
   call = BRK_CALL_TO();
@@ -1317,28 +1317,28 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       }
     else 
       plain_args = args;
-    memcpy((void *)&readJmpError, (void *)&TLS_MACRO(ReadJmpError), sizeof(syJmp_buf));
-    currLVars = TLS_MACRO(CurrLVars);
-    currStat = TLS_MACRO(CurrStat);
-    recursionDepth = TLS_MACRO(RecursionDepth);
+    memcpy((void *)&readJmpError, (void *)&TLS(ReadJmpError), sizeof(syJmp_buf));
+    currLVars = TLS(CurrLVars);
+    currStat = TLS(CurrStat);
+    recursionDepth = TLS(RecursionDepth);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     lockSP = RegionLockSP();
-    savedRegion = TLS_MACRO(currentRegion);
-    if (sySetjmp(TLS_MACRO(ReadJmpError))) {
+    savedRegion = TLS(currentRegion);
+    if (sySetjmp(TLS(ReadJmpError))) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
-      SET_ELM_PLIST(res,2,TLS_MACRO(ThrownObject));
+      SET_ELM_PLIST(res,2,TLS(ThrownObject));
       CHANGED_BAG(res);
-      TLS_MACRO(ThrownObject) = 0;
-      TLS_MACRO(CurrLVars) = currLVars;
-      TLS_MACRO(PtrLVars) = PTR_BAG(TLS_MACRO(CurrLVars));
-      TLS_MACRO(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-      TLS_MACRO(CurrStat) = currStat;
-      TLS_MACRO(RecursionDepth) = recursionDepth;
+      TLS(ThrownObject) = 0;
+      TLS(CurrLVars) = currLVars;
+      TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
+      TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+      TLS(CurrStat) = currStat;
+      TLS(RecursionDepth) = recursionDepth;
       PopRegionLocks(lockSP);
-      TLS_MACRO(currentRegion) = savedRegion;
-      if (TLS_MACRO(CurrentHashLock))
-        HashUnlock(TLS_MACRO(CurrentHashLock));
+      TLS(currentRegion) = savedRegion;
+      if (TLS(CurrentHashLock))
+        HashUnlock(TLS(CurrentHashLock));
     } else {
       switch (LEN_PLIST(plain_args)) {
       case 0: result = CALL_0ARGS(func);
@@ -1368,7 +1368,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       }
       /* There should be no locks to pop off the stack, but better safe than sorry. */
       PopRegionLocks(lockSP);
-      TLS_MACRO(currentRegion) = savedRegion;
+      TLS(currentRegion) = savedRegion;
       SET_ELM_PLIST(res,1,True);
       if (result)
         {
@@ -1379,14 +1379,14 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       else
         SET_LEN_PLIST(res,1);
     }
-    memcpy((void *)&TLS_MACRO(ReadJmpError), (void *)&readJmpError, sizeof(syJmp_buf));
+    memcpy((void *)&TLS(ReadJmpError), (void *)&readJmpError, sizeof(syJmp_buf));
     return res;
 }
 
 Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
 {
-  TLS_MACRO(ThrownObject) = payload;
-  syLongjmp(TLS_MACRO(ReadJmpError), 1);
+  TLS(ThrownObject) = payload;
+  syLongjmp(TLS(ReadJmpError), 1);
   return 0;
 }
   
@@ -1399,9 +1399,9 @@ UInt SystemErrorCode;
 
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
 {
-  TLS_MACRO(UserHasQuit) = INT_INTOBJ(value);
-  if (TLS_MACRO(UserHasQuit))
-    TLS_MACRO(RecursionDepth) = 0;
+  TLS(UserHasQuit) = INT_INTOBJ(value);
+  if (TLS(UserHasQuit))
+    TLS(RecursionDepth) = 0;
   return 0;
 }
 
@@ -1437,10 +1437,10 @@ Obj CallErrorInner (
   Obj r = NEW_PREC(0);
   Obj l;
   Obj result;
-  Region *savedRegion = TLS_MACRO(currentRegion);
-  TLS_MACRO(currentRegion) = TLS_MACRO(threadRegion);
+  Region *savedRegion = TLS(currentRegion);
+  TLS(currentRegion) = TLS(threadRegion);
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
-  AssPRec(r, RNamName("context"), TLS_MACRO(CurrLVars));
+  AssPRec(r, RNamName("context"), TLS(CurrLVars));
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
   AssPRec(r, RNamName("mayReturnObj"), mayReturnObj? True : False);
   AssPRec(r, RNamName("mayReturnVoid"), mayReturnVoid? True : False);
@@ -1449,9 +1449,9 @@ Obj CallErrorInner (
   l = NEW_PLIST(T_PLIST_HOM+IMMUTABLE, 1);
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
-  SET_BRK_CALL_TO(TLS_MACRO(CurrStat));
+  SET_BRK_CALL_TO(TLS(CurrStat));
   result = CALL_2ARGS(ErrorInner,r,l);  
-  TLS_MACRO(currentRegion) = savedRegion;
+  TLS(currentRegion) = savedRegion;
   return result;
 }
 
@@ -1740,7 +1740,7 @@ Obj FuncLOAD_DYN (
 
     /* Start a new executor to run the outer function of the module
        in global context */
-    ExecBegin( TLS_MACRO(BottomLVars) );
+    ExecBegin( TLS(BottomLVars) );
     res = res || (info->initLibrary)(info);
     ExecEnd(res ? STATUS_ERROR : STATUS_END);
     if ( res ) {
@@ -1819,7 +1819,7 @@ Obj FuncLOAD_STAT (
     UpdateCopyFopyInfo();
     /* Start a new executor to run the outer function of the module
        in global context */
-    ExecBegin( TLS_MACRO(BottomLVars) );
+    ExecBegin( TLS(BottomLVars) );
     res = res || (info->initLibrary)(info);
     ExecEnd(res ? STATUS_ERROR : STATUS_END);
     if ( res ) {
@@ -2769,7 +2769,7 @@ Obj FuncQUIT_GAP( Obj self, Obj args )
     ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0L, 0L );
     return 0;
   }
-  TLS_MACRO(UserHasQUIT) = 1;
+  TLS(UserHasQUIT) = 1;
   ReadEvalError();
   return (Obj)0; 
 }
@@ -2930,23 +2930,23 @@ void ThreadedInterpreter(void *funcargs) {
   int i;
 
   /* intialize everything and begin an interpreter                       */
-  TLS_MACRO(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-  TLS_MACRO(CountNams)   = 0;
-  TLS_MACRO(ReadTop)     = 0;
-  TLS_MACRO(ReadTilde)   = 0;
-  TLS_MACRO(CurrLHSGVar) = 0;
-  TLS_MACRO(IntrCoding) = 0;
-  TLS_MACRO(IntrIgnoring) = 0;
-  TLS_MACRO(NrError) = 0;
-  TLS_MACRO(ThrownObject) = 0;
-  TLS_MACRO(BottomLVars) = NewBag( T_HVARS, 3*sizeof(Obj) );
+  TLS(StackNams)   = NEW_PLIST( T_PLIST, 16 );
+  TLS(CountNams)   = 0;
+  TLS(ReadTop)     = 0;
+  TLS(ReadTilde)   = 0;
+  TLS(CurrLHSGVar) = 0;
+  TLS(IntrCoding) = 0;
+  TLS(IntrIgnoring) = 0;
+  TLS(NrError) = 0;
+  TLS(ThrownObject) = 0;
+  TLS(BottomLVars) = NewBag( T_HVARS, 3*sizeof(Obj) );
   tmp = NewFunctionC( "bottom", 0, "", 0 );
-  PTR_BAG(TLS_MACRO(BottomLVars))[0] = tmp;
+  PTR_BAG(TLS(BottomLVars))[0] = tmp;
   tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-  BODY_FUNC( PTR_BAG(TLS_MACRO(BottomLVars))[0] ) = tmp;
-  TLS_MACRO(CurrLVars) = TLS_MACRO(BottomLVars);
+  BODY_FUNC( PTR_BAG(TLS(BottomLVars))[0] ) = tmp;
+  TLS(CurrLVars) = TLS(BottomLVars);
 
-  IntrBegin( TLS_MACRO(BottomLVars) );
+  IntrBegin( TLS(BottomLVars) );
   tmp = KEPTALIVE(funcargs);
   StopKeepAlive(funcargs);
   func = ELM_PLIST(tmp, 1);
@@ -2959,7 +2959,7 @@ void ThreadedInterpreter(void *funcargs) {
 
   if (!READ_ERROR()) {
     Obj init, exit;
-    if (sySetjmp(TLS_MACRO(threadExit)))
+    if (sySetjmp(TLS(threadExit)))
       return;
     init = GVarOptFunc(&GVarTHREAD_INIT);
     if (init) CALL_0ARGS(init);

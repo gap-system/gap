@@ -73,8 +73,8 @@
 #endif
 #ifndef NO_LVAR_CHECKS
 #define OBJ_REFLVAR(expr)       \
-                        (*(Obj*)(((char*)TLS_MACRO(PtrLVars))+(expr)+5) != 0 ? \
-                         *(Obj*)(((char*)TLS_MACRO(PtrLVars))+(expr)+5) : \
+                        (*(Obj*)(((char*)TLS(PtrLVars))+(expr)+5) != 0 ? \
+                         *(Obj*)(((char*)TLS(PtrLVars))+(expr)+5) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
 #endif
 */
@@ -2145,7 +2145,7 @@ static Int InitLibrary (
 
 void InitExprTLS()
 {
-  TLS_MACRO(CurrEvalExprFuncs) = EvalExprFuncs;
+  TLS(CurrEvalExprFuncs) = EvalExprFuncs;
 }
 
 void DestroyExprTLS()

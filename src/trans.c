@@ -39,7 +39,7 @@
 #define MAX(a,b)          (a<b?b:a)
 
 // TmpTrans is the same as TmpPerm
-#define  TmpTrans TLS_MACRO(TmpTrans)
+#define  TmpTrans TLS(TmpTrans)
 
 /* mp this will become a ReadOnly object? */
 Obj IdentityTrans;

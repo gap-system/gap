@@ -88,7 +88,7 @@
 **
 *V  PtrLVars  . . . . . . . . . . . . . . . .  pointer to local variables bag
 **
-**  'PtrLVars' is a pointer to the 'TLS_MACRO(CurrLVars)' bag.  This  makes it faster to
+**  'PtrLVars' is a pointer to the 'TLS(CurrLVars)' bag.  This  makes it faster to
 **  access local variables.
 **
 **  Since   a   garbage collection may  move   this  bag  around, the pointer
@@ -119,10 +119,10 @@ Obj             ObjLVar (
 
 Bag NewLVarsBag(UInt slots) {
   Bag result;
-  if (slots < sizeof(TLS_MACRO(LVarsPool))/(sizeof(TLS_MACRO(LVarsPool)[0]))) {
-    result = TLS_MACRO(LVarsPool)[slots];
+  if (slots < sizeof(TLS(LVarsPool))/(sizeof(TLS(LVarsPool)[0]))) {
+    result = TLS(LVarsPool)[slots];
     if (result) {
-      TLS_MACRO(LVarsPool)[slots] = ADDR_OBJ(result)[0];
+      TLS(LVarsPool)[slots] = ADDR_OBJ(result)[0];
       return result;
     }
   }
@@ -131,10 +131,10 @@ Bag NewLVarsBag(UInt slots) {
 
 void FreeLVarsBag(Bag bag) {
   UInt slots = SIZE_BAG(bag) / sizeof(Obj) - 3;
-  if (slots < sizeof(TLS_MACRO(LVarsPool))/(sizeof(TLS_MACRO(LVarsPool)[0]))) {
+  if (slots < sizeof(TLS(LVarsPool))/(sizeof(TLS(LVarsPool)[0]))) {
     memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
-    ADDR_OBJ(bag)[0] = TLS_MACRO(LVarsPool)[slots];
-    TLS_MACRO(LVarsPool)[slots] = bag;
+    ADDR_OBJ(bag)[0] = TLS(LVarsPool)[slots];
+    TLS(LVarsPool)[slots] = bag;
   }
 }
 
@@ -850,14 +850,14 @@ void            ASS_HVAR (
     UInt                i;              /* loop variable                   */
 
     /* walk up the environment chain to the correct values bag             */
-    currLVars = TLS_MACRO(CurrLVars);
+    currLVars = TLS(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
     }
 
     /* assign the value                                                    */
     ASS_LVAR( hvar & 0xFFFF, val );
-    /* CHANGED_BAG( TLS_MACRO(CurrLVars) ); is done in the switch below               */
+    /* CHANGED_BAG( TLS(CurrLVars) ); is done in the switch below               */
 
     /* switch back to current local variables bag                          */
     SWITCH_TO_OLD_LVARS( currLVars );
@@ -871,7 +871,7 @@ Obj             OBJ_HVAR (
     UInt                i;              /* loop variable                   */
 
     /* walk up the environment chain to the correct values bag             */
-    currLVars = TLS_MACRO(CurrLVars);
+    currLVars = TLS(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
     }
@@ -894,7 +894,7 @@ Char *          NAME_HVAR (
     UInt                i;              /* loop variable                   */
 
     /* walk up the environment chain to the correct values bag             */
-    currLVars = TLS_MACRO(CurrLVars);
+    currLVars = TLS(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
     }
@@ -2602,7 +2602,7 @@ UInt            ExecAssComObjName (
       case T_ACOMOBJ:
       {
 #ifdef CHECK_TL_ASSIGNS
-          if(GetRegionOf(rhs) == TLS_MACRO(threadRegion))
+          if(GetRegionOf(rhs) == TLS(threadRegion))
           {
               if(strcmp("buffer",NAME_RNAM(rnam)) != 0 && strcmp("state", NAME_RNAM(rnam)) != 0)
               { 
@@ -3030,17 +3030,17 @@ void            PrintIsbComObjExpr (
 
 Obj FuncGetCurrentLVars( Obj self )
 {
-  return TLS_MACRO(CurrLVars);
+  return TLS(CurrLVars);
 }
 
 Obj FuncGetBottomLVars( Obj self )
 {
-  return TLS_MACRO(BottomLVars);
+  return TLS(BottomLVars);
 }
 
 Obj FuncParentLVars( Obj self, Obj lvars )
 {
-  if (lvars == TLS_MACRO(BottomLVars))
+  if (lvars == TLS(BottomLVars))
     return Fail;
   return ADDR_OBJ(lvars)[2];
 }
@@ -3052,7 +3052,7 @@ Obj FuncContentsLVars (Obj self, Obj lvars )
   Obj nams = NAMS_FUNC(func);
   UInt len = (SIZE_BAG(lvars) - 2*sizeof(Obj) - sizeof(UInt))/sizeof(Obj);
   Obj values = NEW_PLIST(T_PLIST+IMMUTABLE, len);
-  if (lvars == TLS_MACRO(BottomLVars))
+  if (lvars == TLS(BottomLVars))
     return False;
   AssPRec(contents, RNamName("func"), func);
   AssPRec(contents,RNamName("names"), nams);
@@ -3061,7 +3061,7 @@ Obj FuncContentsLVars (Obj self, Obj lvars )
     len--;
   SET_LEN_PLIST(values, len);
   AssPRec(contents, RNamName("values"), values);
-  if (ENVI_FUNC(func) != TLS_MACRO(BottomLVars))
+  if (ENVI_FUNC(func) != TLS(BottomLVars))
     AssPRec(contents, RNamName("higher"), ENVI_FUNC(func));
   return contents;
 }
@@ -3073,17 +3073,17 @@ Obj FuncContentsLVars (Obj self, Obj lvars )
 */
 void VarsBeforeCollectBags ( void )
 {
-  if (TLS_MACRO(CurrLVars))
-    CHANGED_BAG( TLS_MACRO(CurrLVars) );
+  if (TLS(CurrLVars))
+    CHANGED_BAG( TLS(CurrLVars) );
 }
 
 void VarsAfterCollectBags ( void )
 {
   int i;
-  if (TLS_MACRO(CurrLVars))
+  if (TLS(CurrLVars))
     {
-      TLS_MACRO(PtrLVars) = PTR_BAG( TLS_MACRO(CurrLVars) );
-      TLS_MACRO(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+      TLS(PtrLVars) = PTR_BAG( TLS(CurrLVars) );
+      TLS(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
   for (i=0; i<GVAR_BUCKETS; i++)
     if (ValGVars[i])
@@ -3189,7 +3189,7 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     UInt                i;              /* loop variable                   */
-    TLS_MACRO(CurrLVars) = (Bag) 0;
+    TLS(CurrLVars) = (Bag) 0;
     
     /* make 'CurrLVars' known to Gasman                                    */
     /* TL: InitGlobalBag( CurrLVars,   "src/vars.c:CurrLVars"   ); */
@@ -3402,8 +3402,8 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-    TLS_MACRO(CurrLVars) = TLS_MACRO(BottomLVars);
-    SWITCH_TO_OLD_LVARS( TLS_MACRO(BottomLVars) );
+    TLS(CurrLVars) = TLS(BottomLVars);
+    SWITCH_TO_OLD_LVARS( TLS(BottomLVars) );
 
 
     /* return success                                                      */
@@ -3420,11 +3420,11 @@ static Int InitLibrary (
 {
     Obj                 tmp;
 
-    TLS_MACRO(BottomLVars) = NewBag( T_LVARS, 3*sizeof(Obj) );
+    TLS(BottomLVars) = NewBag( T_LVARS, 3*sizeof(Obj) );
     tmp = NewFunctionC( "bottom", 0, "", 0 );
-    PTR_BAG(TLS_MACRO(BottomLVars))[0] = tmp;
+    PTR_BAG(TLS(BottomLVars))[0] = tmp;
     tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-    BODY_FUNC( PTR_BAG(TLS_MACRO(BottomLVars))[0] ) = tmp;
+    BODY_FUNC( PTR_BAG(TLS(BottomLVars))[0] ) = tmp;
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
