@@ -141,7 +141,6 @@ typedef struct ThreadLocalStorage
   Obj BaseShellContext;
   UInt ShellContextDepth;
   Int ErrorLLevel;
-  Obj ErrorLVars0;
 
   /* From objects.c */
 

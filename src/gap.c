@@ -1180,14 +1180,14 @@ void DownEnvInner( Int depth )
   /* if we really want to go up                                          */
   if ( depth < 0 && -TLS->ErrorLLevel <= -depth ) {
     depth = 0;
-    TLS->errorLVars = TLS->ErrorLVars0;
+    TLS->errorLVars = TLS->errorLVars0;
     TLS->ErrorLLevel = 0;
     TLS->ShellContextDepth = 0;
     TLS->ShellContext = TLS->BaseShellContext;
   }
   else if ( depth < 0 ) {
     depth = -TLS->ErrorLLevel + depth;
-    TLS->errorLVars = TLS->ErrorLVars0;
+    TLS->errorLVars = TLS->errorLVars0;
     TLS->ErrorLLevel = 0;
     TLS->ShellContextDepth = 0;
     TLS->ShellContext = TLS->BaseShellContext;
