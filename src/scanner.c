@@ -64,12 +64,11 @@
 #include	"tls.h"
 #include	"thread.h"
 
-#include <limits.h>
-
 #include <assert.h>
-/* the following global variables are documented in scanner.h */
+#include <limits.h>
 #include <stdlib.h>
 
+/* the following global variables are documented in scanner.h */
 
 /* TL: UInt            Symbol; */
 
@@ -653,7 +652,7 @@ UInt CloseTest ( void )
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-/* TL: static TypOutputFile logFile; */
+/* TL: static TypOutputFile LogFile; */
 
 UInt OpenLog (
     const Char *        filename )
@@ -683,7 +682,7 @@ UInt OpenLog (
 **
 **  The same as 'OpenLog' but for streams.
 */
-/* TL: static TypOutputFile logStream; */
+/* TL: static TypOutputFile LogStream; */
 
 UInt OpenLogStream (
     Obj             stream )
@@ -750,7 +749,7 @@ UInt CloseLog ( void )
 **  dependent  how many are too many,  but 16 files  should work  everywhere.
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
-/* TL: static TypOutputFile inputLogFile; */
+/* TL: static TypOutputFile InputLogFile; */
 
 UInt OpenInputLog (
     const Char *        filename )
@@ -779,7 +778,7 @@ UInt OpenInputLog (
 **
 **  The same as 'OpenInputLog' but for streams.
 */
-/* TL: static TypOutputFile inputLogStream; */
+/* TL: static TypOutputFile InputLogStream; */
 
 UInt OpenInputLogStream (
     Obj                 stream )
@@ -849,7 +848,7 @@ UInt CloseInputLog ( void )
 **  dependent how many are  too many,  but  16 files should  work everywhere.
 **  Finally 'OpenOutputLog' will fail if there is already a current logfile.
 */
-/* TL: static TypOutputFile outputLogFile; */
+/* TL: static TypOutputFile OutputLogFile; */
 
 UInt OpenOutputLog (
     const Char *        filename )
@@ -899,7 +898,6 @@ UInt OpenOutputLogStream (
     return 1;
 }
 
-/* TL: TypOutputFile*  IgnoreStdoutErrout = NULL; */
 
 /****************************************************************************
 **
@@ -933,7 +931,7 @@ UInt CloseOutputLog ( void )
     return 1;
 }
 
-
+/* TL: TypOutputFile*  IgnoreStdoutErrout = NULL; */
 
 /****************************************************************************
 **
@@ -1094,7 +1092,7 @@ UInt CloseOutput ( void )
     /* flush output and close the file                                     */
     Pr( "%c", (Int)'\03', 0L );
     if ( ! TLS(Output)->isstream ) {
-      SyFclose( TLS(Output)->file );
+        SyFclose( TLS(Output)->file );
     }
 
     /* revert to previous output file and indicate success                 */
@@ -1333,7 +1331,7 @@ Char GetLine ( void )
            (if not inside reading long string which may have line
            or chunk from GetLine starting with '?')                        */
 
-        if ( TLS(In)[0] == '?' && TLS(HelpSubsOn) == 1) {
+        if ( TLS(In)[0] == '?' && TLS(HELPSubsOn) == 1) {
             strlcpy( buf, TLS(In)+1, sizeof(buf) );
             strcpy( TLS(In), "HELP(\"" );
             for ( p = TLS(In)+6,  q = buf;  *q;  q++ ) {
@@ -1744,8 +1742,8 @@ void GetNumber ( UInt StartingStatus )
 
       This is a bit fragile  */
       if (TLS(Symbol) == S_DOT || TLS(Symbol) == S_BDOT) {
-	TLS(Value)[i]  = '\0';
-	TLS(Symbol) = S_INT;
+        TLS(Value)[i]  = '\0';
+        TLS(Symbol) = S_INT;
         return;
       }
       
@@ -1956,9 +1954,9 @@ void GetStr ( void )
   Char                a, b, c;
 
   /* Avoid substitution of '?' in beginning of GetLine chunks */
-  TLS(HelpSubsOn) = 0;
+  TLS(HELPSubsOn) = 0;
 
-  /* read all characters into 'TLS(Value)'                                    */
+  /* read all characters into 'Value'                                    */
   for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS(In) != '"'
            && *TLS(In) != '\n' && *TLS(In) != '\377'; i++ ) {
 
@@ -1999,7 +1997,7 @@ void GetStr ( void )
       else  TLS(Value)[i] = *TLS(In);
     }
 
-    /* put normal chars into 'TLS(Value)' but only if there is room         */
+    /* put normal chars into 'Value' but only if there is room         */
     else {
       TLS(Value)[i] = *TLS(In);
     }
@@ -2009,7 +2007,7 @@ void GetStr ( void )
 
   }
 
-  /* XXX although we have TLS(ValueLen) we need trailing \000 here,
+  /* XXX although we have ValueLen we need trailing \000 here,
      in gap.c, function FuncMAKE_INIT this is still used as C-string
      and long integers and strings are not yet supported!    */
   TLS(Value)[i] = '\0';
@@ -2020,7 +2018,7 @@ void GetStr ( void )
   if ( *TLS(In) == '\377' )
     SyntaxError("string must end with \" before end of file");
 
-  /* set length of string, set 'TLS(Symbol)' and skip trailing '"'            */
+  /* set length of string, set 'Symbol' and skip trailing '"'            */
   TLS(ValueLen) = i;
   if ( i < SAFE_VALUE_SIZE-1 )  {
     TLS(Symbol) = S_STRING;
@@ -2030,7 +2028,7 @@ void GetStr ( void )
     TLS(Symbol) = S_PARTIALSTRING;
 
   /* switching on substitution of '?' */
-  TLS(HelpSubsOn) = 1;
+  TLS(HELPSubsOn) = 1;
 }
 
 /****************************************************************************
@@ -2056,7 +2054,7 @@ void GetTripStr ( void )
   Int                 i = 0;
 
   /* Avoid substitution of '?' in beginning of GetLine chunks */
-  TLS(HelpSubsOn) = 0;
+  TLS(HELPSubsOn) = 0;
   
   /* read all characters into 'Value'                                    */
   for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS(In) != '\377'; i++ ) {
@@ -2101,7 +2099,7 @@ void GetTripStr ( void )
     TLS(Symbol) = S_PARTIALTRIPSTRING;
 
   /* switching on substitution of '?' */
-  TLS(HelpSubsOn) = 1;
+  TLS(HELPSubsOn) = 1;
 }
 
 /****************************************************************************
@@ -2115,7 +2113,7 @@ void GetTripStr ( void )
 void GetMaybeTripStr ( void )
 {
     /* Avoid substitution of '?' in beginning of GetLine chunks */
-    TLS(HelpSubsOn) = 0;
+    TLS(HELPSubsOn) = 0;
     
     /* This is just a normal string! */
     if ( *TLS(In) != '"' ) {
@@ -2129,7 +2127,7 @@ void GetMaybeTripStr ( void )
         TLS(Value)[0] = '\0';
         TLS(ValueLen) = 0;
         TLS(Symbol) = S_STRING;
-        TLS(HelpSubsOn) = 1;
+        TLS(HELPSubsOn) = 1;
         return;
     }
     
@@ -2740,7 +2738,7 @@ Obj FuncCPROMPT( Obj self)
  *F  FuncPRINT_CPROMPT( <prompt> )
  **
  **  prints current `Prompt' if argument <prompt> is not in StringRep, otherwise
- **  uses the content of <prompt> as `Prompt'.
+ **  uses the content of <prompt> as `Prompt' (at most 80 characters).
  **  (important is the flush character without resetting the cursor column)
  */
 /* TODO: Eliminate race condition */
@@ -3046,7 +3044,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 }
 
 
-/* TL: static KOutputStream theStream; */
+/* TL: static KOutputStream TheStream; */
 
 static void putToTheStream( Char c) {
   PutChrTo(TLS(TheStream), c);
@@ -3242,9 +3240,9 @@ static Int InitKernel (
 #endif
 
     /* tell GASMAN about the global bags                                   */
-    /* TL: InitGlobalBag(&(logFile.stream),        "src/scanner.c:logFile"        ); */
-    /* TL: InitGlobalBag(&(logStream.stream),      "src/scanner.c:logStream"      ); */
-    /* TL: InitGlobalBag(&(inputLogStream.stream), "src/scanner.c:inputLogStream" ); */
+    /* TL: InitGlobalBag(&(LogFile.stream),        "src/scanner.c:LogFile"        ); */
+    /* TL: InitGlobalBag(&(LogStream.stream),      "src/scanner.c:LogStream"      ); */
+    /* TL: InitGlobalBag(&(InputLogStream.stream), "src/scanner.c:InputLogStream" ); */
     /* TL: InitGlobalBag(&(outputLogStream.stream),"src/scanner.c:outputLogStream"); */
 
 
@@ -3287,14 +3285,14 @@ StructInitInfo * InitInfoScanner ( void )
 }
 
 /****************************************************************************
-**
-*F  InitScannerTLS() . . . . . . . . . . . . . . . . . . . . . initialize TLS
-*F  DestroyScannerTLS()  . . . . . . . . . . . . . . . . . . . .  destroy TLS
-*/
+ **
+ *F  InitScannerTLS() . . . . . . . . . . . . . . . . . . . . . initialize TLS
+ *F  DestroyScannerTLS()  . . . . . . . . . . . . . . . . . . . .  destroy TLS
+ */
 
 void InitScannerTLS()
 {
-  TLS(HelpSubsOn) = 1;
+  TLS(HELPSubsOn) = 1;
 }
 
 void DestroyScannerTLS()
@@ -3303,7 +3301,6 @@ void DestroyScannerTLS()
 
 
 /****************************************************************************
-**
-
-*E  scanner.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/
+ **
+ *E  scanner.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+ */
