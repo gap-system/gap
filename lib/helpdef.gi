@@ -167,6 +167,8 @@ end);
 ##  the default ReadSix function for books in gapmacro format
 ##  (need to parse a text file in this case, this function still
 ##  looks pretty long winded)
+atomic HELP_REGION do
+
 HELP_BOOK_HANDLER.default.ReadSix := function(stream)
   local   fname,  readNumber, pos,  n,  c,  s,  x,  f,  line,  subline,  
           entries,  c1,  c2,  i,  name,  num,  s1,  sec,  s2,  j,  x1,  
@@ -333,6 +335,8 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
   res.directories := Directory(fname{[1..Length(fname)-10]});  
   return res;
 end;
+
+od;
 
 ##  here are more functions which are used by the `default' handler
 ##  functions (see their use below).
@@ -558,6 +562,8 @@ end);
 
 # now the handlers
 
+atomic HELP_REGION do
+
 HELP_BOOK_HANDLER.default.ShowChapters := function( book )
   local   info,  chap,  i;
   
@@ -757,3 +763,4 @@ HELP_BOOK_HANDLER.default.HelpData := function(book, entrynr, type)
   return fail;
 end;
 
+od;
