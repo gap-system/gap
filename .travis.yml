@@ -1,15 +1,22 @@
-os:
-  - linux
-  - osx
-env:
-  - TEST_SUITE=testinstall
-  - TEST_SUITE=testtravis
-  - TEST_SUITE=testbugfix
-  - TEST_SUITE=makemanuals
 language: c
-compiler:
-  - gcc
-  - clang
+matrix:
+  include:
+    - os: linux
+      env: TEST_SUITE=testtravis
+      compiler: gcc
+    - os: osx
+      env: TEST_SUITE=testtravis
+      compiler: clang
+    - os: linux
+      env: TEST_SUITE=testinstall
+      compiler: gcc
+    - os: linux
+      env: TEST_SUITE=testbugfix
+      compiler: gcc
+    - os: linux
+      env: TEST_SUITE=makemanuals
+      compiler: gcc
+
 # Change this to your needs
 addons:
   apt_packages:
