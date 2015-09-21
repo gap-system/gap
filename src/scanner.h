@@ -26,8 +26,6 @@
 **  dependent module 'system.c' for the low level input/output.
 */
 
-#include <pthread.h>
-
 #ifndef GAP_SCANNER_H
 #define GAP_SCANNER_H
 

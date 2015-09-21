@@ -139,7 +139,6 @@
 #include        "scanner.h"             /* scanner                         */
 
 #include	"code.h"		/* coder                           */
-#include	"systhread.h"		/* system thread primitives	   */
 #include	"thread.h"		/* threads			   */
 #include	"tls.h"			/* thread-local storage		   */
 #ifdef TRACK_CREATOR

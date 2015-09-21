@@ -40,6 +40,7 @@
 #include	"thread.h"		/* threads			   */
 #include	"tls.h"			/* thread-local storage		   */
 
+#include    "systhread.h"   /* system thread primitives        */
 
 /****************************************************************************
 **

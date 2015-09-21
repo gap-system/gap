@@ -27,7 +27,7 @@
 **  Otherwise the internal copies reference functions that signal an error.
 */
 #include        <stdio.h>
-#include        "systhread.h"		/* system thread primitives	   */
+#include        "systhread.h"		    /* system thread primitives	       */
 
 #include        "system.h"              /* Ints, UInts                     */
 

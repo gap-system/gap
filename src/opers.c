@@ -12,9 +12,8 @@
 **  and properties package.
 */
 #include        <assert.h>
+
 #include        "system.h"              /* Ints, UInts                     */
-
-
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -52,6 +51,8 @@
 #include        "tls.h"                 /* thread-local storage            */
 #include        "thread.h"              /* threads                         */
 #include        "aobjects.h"            /* atomic objects                  */
+
+#include        "systhread.h"		    /* system thread primitives	       */
 
 /****************************************************************************
 **

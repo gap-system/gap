@@ -12,7 +12,6 @@
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 #include        <string.h>              /* memcpy */
 #include        <stdlib.h>
-#include	"systhread.h"		/* system thread primitives	   */
 
 #include        "system.h"              /* system dependent part           */
 
