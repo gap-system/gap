@@ -2370,13 +2370,13 @@ Char * readlineFgets (
   rl_event_hook = (OnCharReadHookActive != (Obj) 0) ? charreadhook_rl : 0;
   /* now do the real work */
   doingReadline = 1;
-  rlres = readline(Prompt);
+  rlres = readline(TLS(Prompt));
   doingReadline = 0;
   /* we get a NULL pointer on EOF, say by pressing Ctr-d  */
   if (!rlres) {
     if (!SyCTRD) {
       while (!rlres)
-        rlres = readline(Prompt);
+        rlres = readline(TLS(Prompt));
     }
     else {
       printf("\n");fflush(stdout);

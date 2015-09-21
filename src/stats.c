@@ -1534,7 +1534,7 @@ UInt            ExecReturnObj (
 
     /* evaluate the expression                                             */
     SET_BRK_CURR_STAT( stat );
-    ReturnObjStat = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    TLS(ReturnObjStat) = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
     /* return up to function interpreter                                   */
     return 1;
@@ -1564,8 +1564,8 @@ UInt            ExecReturnVoid (
     }
 #endif
 
-    /* set 'ReturnObjStat' to void                                         */
-    ReturnObjStat = 0;
+    /* set 'TLS(ReturnObjStat)' to void                                         */
+    TLS(ReturnObjStat) = 0;
 
     /* return up to function interpreter                                   */
     return 2;
@@ -1718,8 +1718,8 @@ void ClearError ( void )
         }
     }
 
-    /* reset <NrError>                                                     */
-    NrError = 0;
+    /* reset <TLS(NrError)>                                                     */
+    TLS(NrError) = 0;
 }
 
 /****************************************************************************

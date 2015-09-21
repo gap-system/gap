@@ -141,7 +141,7 @@ UInt            ExecProccall0args (
     else {
       CALL_0ARGS( func );
     }
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -169,7 +169,7 @@ UInt            ExecProccall1args (
       SET_BRK_CALL_TO( call );
       CALL_1ARGS( func, arg1 );
     } 
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -199,7 +199,7 @@ UInt            ExecProccall2args (
       SET_BRK_CALL_TO( call );
       CALL_2ARGS( func, arg1, arg2 );
     }
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -231,7 +231,7 @@ UInt            ExecProccall3args (
       SET_BRK_CALL_TO( call );
       CALL_3ARGS( func, arg1, arg2, arg3 );
     }
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -265,7 +265,7 @@ UInt            ExecProccall4args (
       SET_BRK_CALL_TO( call );
       CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
     }
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -307,7 +307,7 @@ UInt            ExecProccall5args (
       SET_BRK_CALL_TO( call );
       CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
     }
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -345,7 +345,7 @@ UInt            ExecProccall6args (
       SET_BRK_CALL_TO( call );
       CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
     }
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -383,7 +383,7 @@ UInt            ExecProccallXargs (
       CALL_XARGS( func, args );
     }
 
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -449,7 +449,7 @@ Obj             EvalFunccall0args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_0ARGS( func );
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -481,7 +481,7 @@ Obj             EvalFunccall1args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_1ARGS( func, arg1 );
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -516,7 +516,7 @@ Obj             EvalFunccall2args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_2ARGS( func, arg1, arg2 );
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -553,7 +553,7 @@ Obj             EvalFunccall3args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_3ARGS( func, arg1, arg2, arg3 );
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -591,7 +591,7 @@ Obj             EvalFunccall4args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -632,7 +632,7 @@ Obj             EvalFunccall5args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -675,7 +675,7 @@ Obj             EvalFunccall6args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -716,7 +716,7 @@ Obj             EvalFunccallXargs (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_XARGS( func, args );
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
@@ -752,7 +752,7 @@ Obj             EvalFunccallXargs (
 **  'DoExecFunc<i>args' first switches  to a new  values bag.  Then it enters
 **  the arguments <arg1>, <arg2>, and so on in this new  values bag.  Then it
 **  executes  the function body.   After  that it  switches back  to  the old
-**  values bag.  Finally it returns the result from 'ReturnObjStat'.
+**  values bag.  Finally it returns the result from 'TLS(ReturnObjStat)'.
 **
 **  Note that these functions are never called directly, they are only called
 **  through the function call mechanism.
@@ -771,21 +771,21 @@ static void RecursionDepthTrap( void )
      * when quit-ting a higher level brk-loop to a lower level one.
      * Therefore we don't do anything if  RecursionDepth <= 0
     */
-    if (RecursionDepth > 0) {
-        recursionDepth = RecursionDepth;
-        RecursionDepth = 0;
+    if (TLS(RecursionDepth) > 0) {
+        recursionDepth = TLS(RecursionDepth);
+        TLS(RecursionDepth) = 0;
         ErrorReturnVoid( "recursion depth trap (%d)\n",         
                          (Int)recursionDepth, 0L,               
                          "you may 'return;'" );
-        RecursionDepth = recursionDepth;
+        TLS(RecursionDepth) = recursionDepth;
     }
 }
      
 static inline void CheckRecursionBefore( void )
 {
-    RecursionDepth++;                                           
+    TLS(RecursionDepth)++;                                           
     if ( RecursionTrapInterval &&                                
-         0 == (RecursionDepth % RecursionTrapInterval) )
+         0 == (TLS(RecursionDepth) % RecursionTrapInterval) )
       RecursionDepthTrap();
 }
 
@@ -795,7 +795,7 @@ static inline void CheckRecursionBefore( void )
 #define CHECK_RECURSION_BEFORE CheckRecursionBefore(); PROF_IN_FUNCTION(func);
 
 
-#define CHECK_RECURSION_AFTER     RecursionDepth--; PROF_OUT_FUNCTION(func);   
+#define CHECK_RECURSION_AFTER     TLS(RecursionDepth)--; PROF_OUT_FUNCTION(func);   
 
 
 Obj DoExecFunc0args (
@@ -828,8 +828,8 @@ Obj DoExecFunc0args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = ReturnObjStat;
-        ReturnObjStat = (Obj)0;
+        returnObjStat = TLS(ReturnObjStat);
+        TLS(ReturnObjStat) = (Obj)0;
         return returnObjStat;
       }
 }
@@ -866,8 +866,8 @@ Obj             DoExecFunc1args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = ReturnObjStat;
-        ReturnObjStat = (Obj)0;
+        returnObjStat = TLS(ReturnObjStat);
+        TLS(ReturnObjStat) = (Obj)0;
         return returnObjStat;
       }
 }
@@ -906,8 +906,8 @@ Obj             DoExecFunc2args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = ReturnObjStat;
-        ReturnObjStat = (Obj)0;
+        returnObjStat = TLS(ReturnObjStat);
+        TLS(ReturnObjStat) = (Obj)0;
         return returnObjStat;
       }
 }
@@ -948,8 +948,8 @@ Obj             DoExecFunc3args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = ReturnObjStat;
-        ReturnObjStat = (Obj)0;
+        returnObjStat = TLS(ReturnObjStat);
+        TLS(ReturnObjStat) = (Obj)0;
         return returnObjStat;
       }
 }
@@ -992,8 +992,8 @@ Obj             DoExecFunc4args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = ReturnObjStat;
-        ReturnObjStat = (Obj)0;
+        returnObjStat = TLS(ReturnObjStat);
+        TLS(ReturnObjStat) = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1038,8 +1038,8 @@ Obj             DoExecFunc5args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = ReturnObjStat;
-        ReturnObjStat = (Obj)0;
+        returnObjStat = TLS(ReturnObjStat);
+        TLS(ReturnObjStat) = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1086,8 +1086,8 @@ Obj             DoExecFunc6args (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = ReturnObjStat;
-        ReturnObjStat = (Obj)0;
+        returnObjStat = TLS(ReturnObjStat);
+        TLS(ReturnObjStat) = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1138,8 +1138,8 @@ Obj             DoExecFuncXargs (
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = ReturnObjStat;
-        ReturnObjStat = (Obj)0;
+        returnObjStat = TLS(ReturnObjStat);
+        TLS(ReturnObjStat) = (Obj)0;
         return returnObjStat;
       }
 }
@@ -1192,8 +1192,8 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args) {
     /* return the result                                                   */
       {
         Obj                 returnObjStat;
-        returnObjStat = ReturnObjStat;
-        ReturnObjStat = (Obj)0;
+        returnObjStat = TLS(ReturnObjStat);
+        TLS(ReturnObjStat) = (Obj)0;
         return returnObjStat;
       }  
 }
@@ -1231,9 +1231,9 @@ Obj             MakeFunction (
     /* install the things an interpreted function needs                    */
     NLOC_FUNC( func ) = NLOC_FUNC( fexp );
     BODY_FUNC( func ) = BODY_FUNC( fexp );
-    ENVI_FUNC( func ) = CurrLVars;
-    /* the 'CHANGED_BAG(CurrLVars)' is needed because it is delayed        */
-    CHANGED_BAG( CurrLVars );
+    ENVI_FUNC( func ) = TLS(CurrLVars);
+    /* the 'CHANGED_BAG(TLS(CurrLVars))' is needed because it is delayed        */
+    CHANGED_BAG( TLS(CurrLVars) );
     FEXS_FUNC( func ) = FEXS_FUNC( fexp );
 
     /* return the function                                                 */
@@ -1374,12 +1374,12 @@ void            ExecBegin ( Obj frame )
     /* remember the old execution state                                    */
     execState = NewBag( T_PLIST, 4*sizeof(Obj) );
     ADDR_OBJ(execState)[0] = (Obj)3;
-    ADDR_OBJ(execState)[1] = ExecState;
-    ADDR_OBJ(execState)[2] = CurrLVars;
-    /* the 'CHANGED_BAG(CurrLVars)' is needed because it is delayed        */
-    CHANGED_BAG( CurrLVars );
-    ADDR_OBJ(execState)[3] = INTOBJ_INT((Int)CurrStat);
-    ExecState = execState;
+    ADDR_OBJ(execState)[1] = TLS(ExecState);
+    ADDR_OBJ(execState)[2] = TLS(CurrLVars);
+    /* the 'CHANGED_BAG(TLS(CurrLVars))' is needed because it is delayed        */
+    CHANGED_BAG( TLS(CurrLVars) );
+    ADDR_OBJ(execState)[3] = INTOBJ_INT((Int)TLS(CurrStat));
+    TLS(ExecState) = execState;
 
     /* set up new state                                                    */
     SWITCH_TO_OLD_LVARS( frame );
@@ -1393,12 +1393,12 @@ void            ExecEnd (
     if ( ! error ) {
 
         /* the state must be primal again                                  */
-        assert( CurrStat  == 0 );
+        assert( TLS(CurrStat)  == 0 );
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(ExecState)[3]) ));
-        SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
-        ExecState = ADDR_OBJ(ExecState)[1];
+        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS(ExecState))[3]) ));
+        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS(ExecState))[2] );
+        TLS(ExecState) = ADDR_OBJ(TLS(ExecState))[1];
 
     }
 
@@ -1406,9 +1406,9 @@ void            ExecEnd (
     else {
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(ExecState)[3]) ));
-        SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
-        ExecState = ADDR_OBJ(ExecState)[1];
+        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS(ExecState))[3]) ));
+        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS(ExecState))[2] );
+        TLS(ExecState) = ADDR_OBJ(TLS(ExecState))[1];
 
     }
 }
