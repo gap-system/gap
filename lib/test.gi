@@ -696,7 +696,11 @@ TestDirectory := function(arg)
          String( totalTime, 15 ), "\n\n" );
          
   if opts.exitGAP then
-    QUIT_GAP(testTotal = 0);
+    if testTotal then
+      QUIT_GAP(0);
+    else
+      QUIT_GAP(1);
+    fi;
   fi;
   
   return testTotal;

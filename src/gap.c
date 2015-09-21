@@ -2679,7 +2679,7 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
     ErrorQuit( "usage: FORCE_QUIT_GAP( [ <return value> ] )", 0L, 0L );
     return 0;
   }
-  SyExit(0);
+  SyExit(SystemErrorCode);
   return (Obj) 0; /* should never get here */
 }
 
@@ -3390,9 +3390,3 @@ void InitializeGap (
 
 *E  gap.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-
-
-
-
