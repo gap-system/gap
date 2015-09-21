@@ -531,7 +531,7 @@ extern void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
 **  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
 
-extern void SetTypeDatObj( Obj obj, Obj kind);
+extern void SetTypeDatObj( Obj obj, Obj type );
 
 
 /****************************************************************************
