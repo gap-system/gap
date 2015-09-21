@@ -1255,20 +1255,20 @@ Obj SET_TYPE_COMOBJ_Handler (
 {
     switch (TNUM_OBJ(obj)) {
       case T_PREC:
-	MEMBAR_WRITE();
-	TYPE_COMOBJ( obj ) = type;
-	RetypeBag( obj, T_COMOBJ );
-	CHANGED_BAG( obj );
-	break;
+        MEMBAR_WRITE();
+        TYPE_COMOBJ( obj ) = type;
+        RetypeBag( obj, T_COMOBJ );
+        CHANGED_BAG( obj );
+        break;
       case T_COMOBJ:
         SetTypeComObj(obj, type);
-	break;
+        break;
       case T_AREC:
       case T_ACOMOBJ:
         SET_TYPE_OBJ( obj, type );
-	RetypeBag( obj, T_ACOMOBJ );
-	CHANGED_BAG( obj );
-	break;
+        RetypeBag( obj, T_ACOMOBJ );
+        CHANGED_BAG( obj );
+        break;
     }
     return obj;
 }
@@ -1332,18 +1332,18 @@ Obj SET_TYPE_POSOBJ_Handler (
       case T_ALIST:
       case T_FIXALIST:
         SET_TYPE_OBJ( obj, type );
-	RetypeBag( obj, T_APOSOBJ );
-	CHANGED_BAG( obj );
+        RetypeBag( obj, T_APOSOBJ );
+        CHANGED_BAG( obj );
         break;
       case T_POSOBJ:
         SetTypePosObj( obj, type );
-	break;
+        break;
       default:
-	MEMBAR_WRITE();
-	TYPE_POSOBJ( obj ) = type;
-	RetypeBag( obj, T_POSOBJ );
-	CHANGED_BAG( obj );
-	break;
+        MEMBAR_WRITE();
+        TYPE_POSOBJ( obj ) = type;
+        RetypeBag( obj, T_POSOBJ );
+        CHANGED_BAG( obj );
+        break;
     }
     return obj;
 }

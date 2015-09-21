@@ -131,15 +131,15 @@ struct ProfileState
   int StreamWasPopened;
   Int OutputRepeats;
   Int ColouringOutput;
-  
+
   // Used to generate 'X' statements, to make sure we correctly
   // attach each function call to the line it was executed on
   struct StatementLocation lastNotOutputted;
 
 
   // Record last executed statement, to avoid repeats
-  struct StatementLocation lastOutputted; 
-  int lastOutputtedExec;  
+  struct StatementLocation lastOutputted;
+  int lastOutputtedExec;
 
 #if defined(HAVE_GETRUSAGE) || defined(HAVE_GETTIMEOFDAY)
   struct timeval lastOutputtedTime;
@@ -147,11 +147,13 @@ struct ProfileState
   int useGetTimeOfDay;
 
   int minimumProfileTick;
+#ifdef HPCGAP
   int profiledThread;
+#endif
 } profileState;
 
 void ProfileLineByLineOutput(Obj func, char type)
-{ 
+{
   HashLock(&profileState);
   if(profileState.Active && profileState.OutputRepeats)
   {
@@ -164,22 +166,22 @@ void ProfileLineByLineOutput(Obj func, char type)
     if(IS_INTOBJ(endline)) {
       endline_i = INT_INTOBJ(endline);
     }
-    
+
     Obj name = NAME_FUNC(func);
     Char *name_c = ((UInt)name) ? (Char *)CHARS_STRING(name) : (Char *)"nameless";
-    
+
     Obj filename = FuncFILENAME_FUNC(0, func);
     Char *filename_c = (Char*)"<missing filename>";
     if(filename != Fail && filename != NULL)
       filename_c = (Char *)CHARS_STRING(filename);
-    
+
     if(type == 'I' && profileState.lastNotOutputted.line != -1)
     {
       fprintf(profileState.Stream, "{\"Type\":\"X\",\"Line\":%d,\"FileId\":%d}\n",
               (int)profileState.lastNotOutputted.line,
-              (int)profileState.lastNotOutputted.fileID);  
+              (int)profileState.lastNotOutputted.fileID);
     }
-    
+
     fprintf(profileState.Stream,
             "{\"Type\":\"%c\",\"Fun\":\"%s\",\"Line\":%d,\"EndLine\":%d,\"File\":\"%s\"}\n",
             type, name_c, startline_i, endline_i, filename_c);
@@ -188,11 +190,11 @@ void ProfileLineByLineOutput(Obj func, char type)
 }
 
 void ProfileLineByLineIntoFunction(Obj func)
-{ 
-  ProfileLineByLineOutput(func, 'I'); 
+{
+  ProfileLineByLineOutput(func, 'I');
 }
 
-          
+
 void ProfileLineByLineOutFunction(Obj func)
 { ProfileLineByLineOutput(func, 'O'); }
 
@@ -226,7 +228,7 @@ static void fopenMaybeCompressed(char* name, struct ProfileState* ps)
     return;
   }
 #endif
-  
+
   ps->Stream = fopen(name, "w");
   ps->StreamWasPopened = 0;
 }
@@ -248,7 +250,7 @@ static void fcloseMaybeCompressed(struct ProfileState* ps)
 /****************************************************************************
 **
 ** Store the true values of each function we wrap for profiling. These always
-** store the correct values and are never changed. 
+** store the correct values and are never changed.
 */
 
 
@@ -263,7 +265,7 @@ void (* RealPrintExprFuncs[256]) ( Expr expr );
 /****************************************************************************
 **
 ** These functions are here because the library may want to install
-** functions once profiling has started. 
+** functions once profiling has started.
 */
 
 void InstallEvalBoolFunc( Int pos, Obj(*expr)(Expr)) {
@@ -283,7 +285,7 @@ void InstallEvalExprFunc( Int pos, Obj(*expr)(Expr)) {
   }
   HashUnlock(&profileState);
 }
-  
+
 void InstallExecStatFunc( Int pos, UInt(*stat)(Stat)) {
   RealExecStatFuncs[pos] = stat;
   HashLock(&profileState);
@@ -336,19 +338,9 @@ static inline UInt getFilenameId(Stat stat)
 // visit: Was this statement previously visited (that is, executed)
 static inline void outputStat(Stat stat, int exec, int visited)
 {
-  HashLock(&profileState);
-  
-  // Catch the case we arrive here and profiling is already disabled
-  if(!profileState.Active)
-  {
-    HashUnlock(&profileState);
-    return;
-  }
-  
-  char* name;
   UInt line;
   int nameid;
-  
+
   int ticks = 0;
 #if defined(HAVE_GETTIMEOFDAY)
   struct timeval timebuf;
@@ -358,16 +350,24 @@ static inline void outputStat(Stat stat, int exec, int visited)
   struct rusage buf;
 #endif
 #endif
-    
+
+  HashLock(&profileState);
+
+  // Catch the case we arrive here and profiling is already disabled
+  if(!profileState.Active) {
+    HashUnlock(&profileState);
+    return;
+  }
+
   nameid = getFilenameId(stat);
   line = LINE_STAT(stat);
   if(profileState.lastOutputted.line != line ||
-     profileState.lastOutputted.fileID != nameid || 
+     profileState.lastOutputted.fileID != nameid ||
      profileState.lastOutputtedExec != exec)
   {
 
     if(profileState.OutputRepeats) {
-        
+
       if(profileState.useGetTimeOfDay) {
 #if defined(HAVE_GETTIMEOFDAY)
         gettimeofday(&timebuf, 0);
@@ -427,21 +427,23 @@ static inline void outputStat(Stat stat, int exec, int visited)
       profileState.lastNotOutputted.line = -1;
     }
   }
-  
+
   HashUnlock(&profileState);
 }
 
 static inline void visitStat(Stat stat)
 {
+#ifdef HPCGAP
   if(profileState.profiledThread != TLS(threadID))
     return;
-  
+#endif
+
   int visited = VISITED_STAT(stat);
- 
+
   if(!visited) {
     ADDR_STAT(stat)[-1] |= (Stat)1 << 63;
   }
-  
+
   if(profileState.OutputRepeats || !visited) {
     outputStat(stat, 1, visited);
   }
@@ -481,29 +483,31 @@ Obj ProfileEvalBoolPassthrough(Expr stat)
 void enableAtStartup(char* filename, Int repeats)
 {
     Int i;
-    
+
     if(profileState.Active) {
         fprintf(stderr, "-P or -C can only be passed once\n");
         exit(1);
     }
-    
+
     profileState.OutputRepeats = repeats;
-    
+
     fopenMaybeCompressed(filename, &profileState);
     if(!profileState.Stream) {
         fprintf(stderr, "Failed to open '%s' for profiling output.\n", filename);
         fprintf(stderr, "Abandoning starting GAP.\n");
         exit(1);
     }
-    
+
     for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
       ExecStatFuncs[i] = ProfileStatPassthrough;
-      EvalExprFuncs[i] = ProfileEvalExprPassthrough;      
+      EvalExprFuncs[i] = ProfileEvalExprPassthrough;
       EvalBoolFuncs[i] = ProfileEvalBoolPassthrough;
     }
-    
+
     profileState.Active = 1;
+#ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
+#endif
     profileState.lastNotOutputted.line = -1;
 #ifdef HAVE_GETTIMEOFDAY
     profileState.useGetTimeOfDay = 1;
@@ -517,7 +521,7 @@ void enableAtStartup(char* filename, Int repeats)
 #endif
 #endif
 
-    
+
 }
 
 // This function is for when GAP is started with -c, and
@@ -528,7 +532,7 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy)
     enableAtStartup(argv[0], 0);
     return 1;
 }
-    
+
 // This function is for when GAP is started with -P, and
 // enables profiling at startup. If anything goes wrong,
 // we quit straight away.
@@ -537,7 +541,7 @@ Int enableProfilingAtStartup( Char **argv, void * dummy)
     enableAtStartup(argv[0], 1);
     return 1;
 }
-  
+
 Obj FuncACTIVATE_PROFILING (
     Obj                 self,
     Obj                 filename, /* filename to write to */
@@ -547,17 +551,17 @@ Obj FuncACTIVATE_PROFILING (
     Obj                 resolution)
 {
     Int i;
-    
+
     if(profileState.Active) {
       return Fail;
     }
-    
+
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
 
     if ( ! IsStringConv( filename ) ) {
         ErrorMayQuit("<filename> must be a string",0,0);
     }
-        
+
     if(coverage != True && coverage != False) {
       ErrorMayQuit("<coverage> must be a boolean",0,0);
     }
@@ -569,7 +573,7 @@ Obj FuncACTIVATE_PROFILING (
     if(wallTime != True && wallTime != False) {
       ErrorMayQuit("<wallTime> must be a boolean",0,0);
     }
-    
+
 #ifndef HAVE_GETTIMEOFDAY
     if(wallTime == True) {
         ErrorMayQuit("This OS does not support wall-clock based timing");
@@ -582,13 +586,13 @@ Obj FuncACTIVATE_PROFILING (
 #endif
 
     profileState.useGetTimeOfDay = (wallTime == True);
-    
+
     if( ! IS_INTOBJ(resolution) ) {
       ErrorMayQuit("<resolution> must be an integer",0,0);
     }
 
     HashLock(&profileState);
-    
+
     // Recheck inside lock
     if(profileState.Active) {
       HashUnlock(&profileState);
@@ -599,33 +603,34 @@ Obj FuncACTIVATE_PROFILING (
         ErrorMayQuit("<resolution> must be a non-negative integer",0,0);
     }
     profileState.minimumProfileTick = tick;
-    
-    
+
+
     if(coverage == True) {
       profileState.OutputRepeats = 0;
     }
     else {
       profileState.OutputRepeats = 1;
     }
-  
+
     fopenMaybeCompressed(CSTR_STRING(filename), &profileState);
-    
-    if(profileState.Stream == 0)
-    {
+
+    if(profileState.Stream == 0) {
       HashUnlock(&profileState);
       return Fail;
     }
-    
+
     for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
       ExecStatFuncs[i] = ProfileStatPassthrough;
       if(justStat == False) {
-          EvalExprFuncs[i] = ProfileEvalExprPassthrough;      
+          EvalExprFuncs[i] = ProfileEvalExprPassthrough;
           EvalBoolFuncs[i] = ProfileEvalBoolPassthrough;
       }
     }
-    
+
     profileState.Active = 1;
+#ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
+#endif
     profileState.lastNotOutputted.line = -1;
 
     if(wallTime == True) {
@@ -644,26 +649,26 @@ Obj FuncACTIVATE_PROFILING (
         abort(); // this should never be reached
 #endif
     }
-    
+
     HashUnlock(&profileState);
-    
+
     return True;
 }
-        
+
 Obj FuncDEACTIVATE_PROFILING (
     Obj                 self)
 {
   int i;
-  
+
   HashLock(&profileState);
-  
+
   if(!profileState.Active) {
     HashUnlock(&profileState);
-    return Fail; 
+    return Fail;
   }
-  
+
   fcloseMaybeCompressed(&profileState);
-  
+
   for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
     ExecStatFuncs[i] = RealExecStatFuncs[i];
     EvalExprFuncs[i] = RealEvalExprFuncs[i];
@@ -671,9 +676,9 @@ Obj FuncDEACTIVATE_PROFILING (
   }
 
   profileState.Active = 0;
-  
+
   HashUnlock(&profileState);
-  
+
   return True;
 }
 
@@ -754,9 +759,9 @@ void ProfilePrintExprPassthrough(Expr stat)
 Obj activate_colored_output_from_profile(void)
 {
     int i;
-    
+
     HashLock(&profileState);
-    
+
     if(profileState.ColouringOutput) {
       HashUnlock(&profileState);
       return Fail;
@@ -766,27 +771,27 @@ Obj activate_colored_output_from_profile(void)
       PrintStatFuncs[i] = ProfilePrintStatPassthrough;
       PrintExprFuncs[i] = ProfilePrintExprPassthrough;
     }
-    
+
     profileState.ColouringOutput = 1;
     CurrentColour = 0;
     setColour();
-    
+
     HashUnlock(&profileState);
-    
+
     return True;
 }
-        
+
 Obj deactivate_colored_output_from_profile(void)
 {
   int i;
-  
+
   HashLock(&profileState);
-  
+
   if(!profileState.ColouringOutput) {
     HashUnlock(&profileState);
-    return Fail; 
+    return Fail;
   }
-  
+
   for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
     PrintStatFuncs[i] = RealPrintStatFuncs[i];
     PrintExprFuncs[i] = RealPrintExprFuncs[i];
@@ -795,9 +800,9 @@ Obj deactivate_colored_output_from_profile(void)
   profileState.ColouringOutput = 0;
   CurrentColour = 0;
   setColour();
-  
+
   HashUnlock(&profileState);
-  
+
   return True;
 }
 
@@ -805,7 +810,7 @@ Obj FuncACTIVATE_COLOR_PROFILING(Obj self, Obj arg)
 {
   if(arg == True)
   {
-    return activate_colored_output_from_profile(); 
+    return activate_colored_output_from_profile();
   }
   else if(arg == False)
   {
@@ -831,7 +836,7 @@ void RegisterStatWithProfiling(Stat stat)
     if(active) {
       outputStat(stat, 0, 0);
     }
-    
+
 }
 
 
@@ -880,7 +885,7 @@ static Int InitLibrary (
 */
 static Int InitKernel (
     StructInitInfo *    module )
-{   
+{
     InitHdlrFuncsFromTable( GVarFuncs );
     InitGlobalBag(&OutputtedFilenameList, "src/profile.c:OutputtedFileList");
     return 0;

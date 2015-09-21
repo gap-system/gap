@@ -97,7 +97,6 @@
 
 /****************************************************************************
 **
-
 *F  GROW_WPOBJ(<wp>,<plen>) . make sure a weak pointer object is large enough
 **
 **  'GROW_WPOBJ' grows the weak pointer   object <wp> if necessary  to

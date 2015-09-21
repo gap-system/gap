@@ -2216,7 +2216,6 @@ void GetChar ( void )
  **  After reading  a  symbol the current  character   is the first  character
  **  beyond that symbol.
  */
-/* TL: Int DualSemicolon = 0; */
 void GetSymbol ( void )
 {
   /* special case if reading of a long token is not finished */

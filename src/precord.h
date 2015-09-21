@@ -105,13 +105,11 @@ Obj NEW_PREC(UInt len);
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * standard functions for plain records * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F FindPRec( <rec>, <rnam>, <pos>, <cleanup> )
 **   . . . . . . . . . . . . . . . . . find a component name by binary search
 **
@@ -126,7 +124,6 @@ extern UInt FindPRec( Obj rec, UInt rnam, UInt *pos, int cleanup );
 
 /****************************************************************************
 **
-
 *F  ElmPRec(<rec>,<rnam>) . . . . . . . select an element from a plain record
 **
 **  'ElmPRec' returns the element, i.e., the value of the component, with the

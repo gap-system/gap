@@ -52,7 +52,7 @@
 #include        "thread.h"              /* threads                         */
 #include        "aobjects.h"            /* atomic objects                  */
 
-#include        "systhread.h"		    /* system thread primitives	       */
+#include        "systhread.h"              /* system thread primitives        */
 
 /****************************************************************************
 **
@@ -1582,8 +1582,8 @@ static inline Obj TYPE_OBJ_FEO (
                 Obj obj
         )
 {
-  /* TODO: We need to be able to automatically derice this. */
-  ImpliedWriteGuard(obj);
+    /* TODO: We need to be able to automatically derice this. */
+    ImpliedWriteGuard(obj);
     switch ( TNUM_OBJ( obj ) ) {
     case T_COMOBJ:
         return TYPE_COMOBJ(obj);
@@ -1657,6 +1657,7 @@ static inline Obj CacheOper (
     }
     return cache;
 }
+
 #define GET_METHOD_CACHE( oper, i ) \
   ( TLS(MethodCacheItems)[INT_INTOBJ( CACHE_OPER ( oper, i ))] )
 
@@ -1710,11 +1711,11 @@ Obj DoOperation0Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 0 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[2*TLS(CacheIndex)] = method;
               cache[2*TLS(CacheIndex)+1] = prec;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(cacheBag);
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -1751,8 +1752,7 @@ Obj DoOperation1Args (
     Obj                 prec;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );
-    id1 = ID_TYPE( type1 );
+    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 1 ) );
@@ -1798,12 +1798,12 @@ Obj DoOperation1Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 1 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[3*TLS(CacheIndex)] = method;
               cache[3*TLS(CacheIndex)+1] = prec;
               cache[3*TLS(CacheIndex)+2] = id1;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG( cacheBag);
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -1843,10 +1843,8 @@ Obj DoOperation2Args (
     Obj                 prec;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );
-    id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );
-    id2 = ID_TYPE( type2 );
+    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
@@ -1895,13 +1893,13 @@ Obj DoOperation2Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 2 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[4*TLS(CacheIndex)] = method;
               cache[4*TLS(CacheIndex)+1] = prec;
               cache[4*TLS(CacheIndex)+2] = id1;
               cache[4*TLS(CacheIndex)+3] = id2;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(cacheBag);
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -1945,12 +1943,10 @@ Obj DoOperation3Args (
     Obj                 prec;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );
-    id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );
-    id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );
-    id3 = ID_TYPE( type3 );
+    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
+
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
     prec = INTOBJ_INT(-1);
@@ -1998,7 +1994,7 @@ Obj DoOperation3Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 3 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[5*TLS(CacheIndex)] = method;
               cache[5*TLS(CacheIndex)+1] = prec;
               cache[5*TLS(CacheIndex)+2] = id1;
@@ -2052,14 +2048,10 @@ Obj DoOperation4Args (
 
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );
-    id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );
-    id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );
-    id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );
-    id4 = ID_TYPE( type4 );
+    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
@@ -2111,7 +2103,7 @@ Obj DoOperation4Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 4 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[6*TLS(CacheIndex)] = method;
               cache[6*TLS(CacheIndex)+1] = prec;
               cache[6*TLS(CacheIndex)+2] = id1;
@@ -2119,7 +2111,7 @@ Obj DoOperation4Args (
               cache[6*TLS(CacheIndex)+4] = id3;
               cache[6*TLS(CacheIndex)+5] = id4;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(cacheBag);
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -2171,16 +2163,11 @@ Obj DoOperation5Args (
 
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );
-    id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );
-    id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );
-    id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );
-    id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );
-    id5 = ID_TYPE( type5 );
+    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
@@ -2245,7 +2232,7 @@ Obj DoOperation5Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 5 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[7*TLS(CacheIndex)] = method;
               cache[7*TLS(CacheIndex)+1] = prec;
               cache[7*TLS(CacheIndex)+2] = id1;
@@ -2309,18 +2296,12 @@ Obj DoOperation6Args (
 
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );
-    id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );
-    id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );
-    id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );
-    id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );
-    id5 = ID_TYPE( type5 );
-    type6 = TYPE_OBJ_FEO( arg6 );
-    id6 = ID_TYPE( type6 );
+    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
+    type6 = TYPE_OBJ_FEO( arg6 );  id6 = ID_TYPE( type6 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
@@ -2400,7 +2381,7 @@ Obj DoOperation6Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 6 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[8*TLS(CacheIndex)] = method;
               cache[8*TLS(CacheIndex)+1] = prec;
               cache[8*TLS(CacheIndex)+2] = id1;
@@ -3014,69 +2995,6 @@ Obj NewOperation (
 
 /****************************************************************************
 **
-*F  NewOperationC( <name>, <narg>, <nams>, <hdlr> )
-*/
-Obj NewOperationC (
-    const Char *        name,
-    Int                 narg,
-    const Char *        nams,
-    ObjFunc             hdlr )
-{
-    Obj                 oper;
-#ifdef  PREALLOCATE_TABLES
-    Obj                 cache;
-    Obj                 methods;
-    UInt                i;
-#endif
-
-    /* create the function                                                 */
-    oper = NewFunctionCT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
-
-    /* enter the handlers                                                  */
-    HDLR_FUNC(oper,0) = DoOperation0Args;
-    HDLR_FUNC(oper,1) = DoOperation1Args;
-    HDLR_FUNC(oper,2) = DoOperation2Args;
-    HDLR_FUNC(oper,3) = DoOperation3Args;
-    HDLR_FUNC(oper,4) = DoOperation4Args;
-    HDLR_FUNC(oper,5) = DoOperation5Args;
-    HDLR_FUNC(oper,6) = DoOperation6Args;
-    HDLR_FUNC(oper,7) = DoOperationXArgs;
-
-    /* reenter the given handler */
-    if (narg != -1)
-      HDLR_FUNC(oper,narg) = hdlr;
-
-    /*N 1996/06/06 mschoene this should not be done here                   */
-    FLAG1_FILT(oper) = INTOBJ_INT(0);
-    FLAG2_FILT(oper) = INTOBJ_INT(0);
-    FLAGS_FILT(oper) = False;
-    SETTR_FILT(oper) = False;
-    TESTR_FILT(oper) = False;
-
-    /* This isn't an attribute (yet) */
-    SET_ENABLED_ATTR(oper, 0);
-    
-    /* create caches and methods lists                                     */
-#ifdef  PREALLOCATE_TABLES
-    for ( i = 0; i <= 7; i++ ) {
-        methods = NEW_PLIST( T_PLIST, 0 );
-        METHS_OPER( oper, i ) = methods;
-/* TODO: Is there a better solution for this? */
-#if 0
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+2) : 4 * (1+2)) );
-        CACHE_OPER( oper, i ) = cache;
-#endif
-        CHANGED_BAG(oper);
-    }
-#endif
-
-    /* return operation                                                    */
-    return oper;
-}
-
-
-/****************************************************************************
-**
 
 *F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
 */
@@ -3169,7 +3087,7 @@ Obj DoConstructor0Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 0 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[2*TLS(CacheIndex)] = method;
               cache[2*TLS(CacheIndex)+1] = prec;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
@@ -3261,7 +3179,7 @@ Obj DoConstructor1Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 1 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[3*TLS(CacheIndex)] = method;
               cache[3*TLS(CacheIndex)+1] = prec;
               cache[3*TLS(CacheIndex)+2] = type1;
@@ -3313,8 +3231,8 @@ Obj DoConstructor2Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );
-    id2 = ID_TYPE( type2 );
+    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
     prec = INTOBJ_INT(-1);
@@ -3359,13 +3277,13 @@ Obj DoConstructor2Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 2 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[4*TLS(CacheIndex)] = method;
               cache[4*TLS(CacheIndex)+1] = prec;
               cache[4*TLS(CacheIndex)+2] = type1;
               cache[4*TLS(CacheIndex)+3] = id2;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(cacheBag);
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -3416,10 +3334,8 @@ Obj DoConstructor3Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );
-    id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );
-    id3 = ID_TYPE( type3 );
+    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
@@ -3466,14 +3382,14 @@ Obj DoConstructor3Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 3 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[5*TLS(CacheIndex)] = method;
               cache[5*TLS(CacheIndex)+1] = prec;
               cache[5*TLS(CacheIndex)+2] = type1;
               cache[5*TLS(CacheIndex)+3] = id2;
               cache[5*TLS(CacheIndex)+4] = id3;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(cacheBag);
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -3527,12 +3443,9 @@ Obj DoConstructor4Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );
-    id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );
-    id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );
-    id4 = ID_TYPE( type4 );
+    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
@@ -3581,7 +3494,7 @@ Obj DoConstructor4Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 4 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[6*TLS(CacheIndex)] = method;
               cache[6*TLS(CacheIndex)+1] = prec;
               cache[6*TLS(CacheIndex)+2] = type1;
@@ -3589,7 +3502,7 @@ Obj DoConstructor4Args (
               cache[6*TLS(CacheIndex)+4] = id3;
               cache[6*TLS(CacheIndex)+5] = id4;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(cacheBag);
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -3648,14 +3561,10 @@ Obj DoConstructor5Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );
-    id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );
-    id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );
-    id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );
-    id5 = ID_TYPE( type5 );
+    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
@@ -3716,7 +3625,7 @@ Obj DoConstructor5Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 5 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[7*TLS(CacheIndex)] = method;
               cache[7*TLS(CacheIndex)+1] = prec;
               cache[7*TLS(CacheIndex)+2] = type1;
@@ -3725,7 +3634,7 @@ Obj DoConstructor5Args (
               cache[7*TLS(CacheIndex)+5] = id4;
               cache[7*TLS(CacheIndex)+6] = id5;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(cacheBag);
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -3787,16 +3696,11 @@ Obj DoConstructor6Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );
-    id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );
-    id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );
-    id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );
-    id5 = ID_TYPE( type5 );
-    type6 = TYPE_OBJ_FEO( arg6 );
-    id6 = ID_TYPE( type6 );
+    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
+    type6 = TYPE_OBJ_FEO( arg6 );  id6 = ID_TYPE( type6 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
@@ -3872,7 +3776,7 @@ Obj DoConstructor6Args (
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 6 );
-	      cache = 1+ADDR_OBJ( cacheBag );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[8*TLS(CacheIndex)] = method;
               cache[8*TLS(CacheIndex)+1] = prec;
               cache[8*TLS(CacheIndex)+2] = type1;
@@ -3882,7 +3786,7 @@ Obj DoConstructor6Args (
               cache[8*TLS(CacheIndex)+6] = id5;
               cache[8*TLS(CacheIndex)+7] = id6;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(cacheBag);
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -4532,63 +4436,6 @@ Obj NewConstructor (
 
 /****************************************************************************
 **
-*F  NewConstructorC( <name>, <narg>, <nams>, <hdlr> )
-*/
-Obj NewConstructorC (
-    Char *              name,
-    Int                 narg,
-    Char *              nams,
-    ObjFunc             hdlr )
-{
-    Obj                 oper;
-#ifdef  PREALLOCATE_TABLES
-    Obj                 cache;
-    Obj                 methods;
-    UInt                i;
-#endif
-
-    /* create the function                                                 */
-    oper = NewFunctionCT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
-
-    /* enter the handlers                                                  */
-    if ( narg == -1 ) {
-        HDLR_FUNC(oper,0) = DoConstructor0Args;
-        HDLR_FUNC(oper,1) = DoConstructor1Args;
-        HDLR_FUNC(oper,2) = DoConstructor2Args;
-        HDLR_FUNC(oper,3) = DoConstructor3Args;
-        HDLR_FUNC(oper,4) = DoConstructor4Args;
-        HDLR_FUNC(oper,5) = DoConstructor5Args;
-        HDLR_FUNC(oper,6) = DoConstructor6Args;
-        HDLR_FUNC(oper,7) = DoConstructorXArgs;
-    }
-
-    /*N 1996/06/06 mschoene this should not be done here                   */
-    FLAG1_FILT(oper) = INTOBJ_INT(0);
-    FLAG2_FILT(oper) = INTOBJ_INT(0);
-    FLAGS_FILT(oper) = False;
-    SETTR_FILT(oper) = False;
-    TESTR_FILT(oper) = False;
-    
-#ifdef  PREALLOCATE_TABLES
-    /* create caches and methods lists                                     */
-    for ( i = 0; i <= 7; i++ ) {
-        methods = NEW_PLIST( T_PLIST, 0 );
-        METHS_OPER( oper, i ) = methods;
-#if 0
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+1) : CACHE_SIZE * (1+1)) );
-        CACHE_OPER( oper, i ) = cache;
-#endif
-        CHANGED_BAG(oper);
-    }
-#endif
-
-    /* return constructor                                                  */
-    return oper;
-}
-
-
-/****************************************************************************
-**
 *F  DoAttribute( <name> ) . . . . . . . . . . . . . . .  make a new attribute
 */
 
@@ -5024,7 +4871,7 @@ Obj DoSetProperty (
     /* set the value                                                       */
     /*N 1996/06/28 mschoene <self> is the <setter> here, not the <getter>! */
     /*N 1996/06/28 mschoene see hack below                                 */
-    switch (TNUM_OBJ(obj)) {
+    switch ( TNUM_OBJ( obj ) ) {
     case T_COMOBJ:
     case T_ACOMOBJ:
     case T_APOSOBJ:
@@ -5041,7 +4888,7 @@ Obj DoSetProperty (
         }
       }
       else {
-	ErrorReturnVoid(
+          ErrorReturnVoid(
 			"Value cannot be set for internal objects",
 			0L, 0L,
 			"you can 'return;' without setting it" );
@@ -5139,15 +4986,15 @@ Obj DoVerboseProperty (
     
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
-      switch (TNUM_OBJ(obj)) {
-	case T_COMOBJ:
-	case T_ACOMOBJ:
-	case T_POSOBJ:
-	case T_APOSOBJ:
-	case T_DATOBJ:
-	  flags = (val == True ? self : TESTR_FILT(self));
-	  CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-      }
+        switch ( TNUM_OBJ( obj ) ) {
+        case T_COMOBJ:
+        case T_ACOMOBJ:
+        case T_POSOBJ:
+        case T_APOSOBJ:
+        case T_DATOBJ:
+            flags = (val == True ? self : TESTR_FILT(self));
+            CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+        }
     }
 
     /* return the value                                                    */
@@ -5615,7 +5462,7 @@ Obj MethsOper (
     methods = METHS_OPER( oper, i );
     if ( methods == 0 ) {
         methods = NEW_PLIST( T_PLIST, 0 );
-	MakeBagReadOnly(methods);
+        MakeBagReadOnly(methods);
         METHS_OPER( oper, i ) = methods;
         CHANGED_BAG( oper );
     }
@@ -5654,8 +5501,8 @@ Obj FuncCHANGED_METHODS_OPERATION (
     Obj                 oper,
     Obj                 narg )
 {
-    Obj                 *cache;
-    Bag			cacheBag;
+    Obj *               cache;
+    Bag			        cacheBag;
     Int                 n;
     Int                 i;
 
@@ -5669,11 +5516,11 @@ Obj FuncCHANGED_METHODS_OPERATION (
     }
     if (!PreThreadCreation) {
         ErrorQuit("Methods may only be changed before thread creation",0L,0L);
-	return 0;
+        return 0;
     }
     n = INT_INTOBJ( narg );
     cacheBag = CacheOper( oper, (UInt) n );
-    cache = ADDR_OBJ(cacheBag);
+    cache = ADDR_OBJ( cacheBag );
     for ( i = 1;  i < SIZE_OBJ(cacheBag) / sizeof(Obj);  i++ ) {
         cache[i] = 0;
     }
@@ -6375,8 +6222,10 @@ static Int InitKernel (
     /* import copy of REREADING */
     ImportGVarFromLibrary( "REREADING", &REREADING );
 
+#ifdef HPCGAP
     /* initialize cache mutex */
     pthread_mutex_init(&CacheLock, NULL);
+#endif
 
     /* return success                                                      */
     return 0;
@@ -6435,8 +6284,6 @@ static Int InitLibrary (
 
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
-    /*CCC TRY_NEXT_METHOD = NEW_STRING( 16 );
-      SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );CCC*/
     C_NEW_STRING_CONST(TRY_NEXT_METHOD, "TRY_NEXT_METHOD");
     RetypeBag(TRY_NEXT_METHOD, T_STRING+IMMUTABLE);
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
