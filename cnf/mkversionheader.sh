@@ -1,7 +1,7 @@
 #!/bin/sh
 
 GAP_BUILD_VERSION=`git describe --tags --dirty`
-GAP_BUILD_DATE=`date +"%Y-%m-%d %H:%M:%SZ"`
+GAP_BUILD_DATE=`date +"%Y-%m-%d %H:%M:%S (%Z)"`
 if test x"${GAP_BUILD_VERSION}" != x ; then
 cat > $1 <<EOF
 #ifndef GAP_BUILD_VERSION
