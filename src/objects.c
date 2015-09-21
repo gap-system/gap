@@ -1385,7 +1385,7 @@ void SetTypeDatObj( Obj obj, Obj kind)
     if (TNUM_OBJ(obj) == T_DATOBJ &&
         !IsMutableObjObject(obj) && !IsInternallyMutableObj(obj)) {
       if (ReadOnlyDatObjs)
-	MakeBagReadOnly(obj);
+        MakeBagReadOnly(obj);
       else
         MakeBagPublic(obj);
     }

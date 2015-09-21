@@ -429,11 +429,11 @@ void            IntrFuncCallEnd (
       else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
       else                { val = CALL_XARGS( func, args ); }
 
-      if (TLS(UserHasQuit) || TLS(UserHasQUIT))
-                                         /* the procedure must have called
-                                         READ() and the user quit from a break
-                                         loop inside it */
+      if (TLS(UserHasQuit) || TLS(UserHasQUIT)) {
+        /* the procedure must have called READ() and the user quit
+           from a break loop inside it */
         ReadEvalError();
+      }
     }
 
     /* check the return value                                              */
@@ -1085,8 +1085,8 @@ void            IntrAtomicEnd ( void )
       o = PopObj();
       mode = INT_INTOBJ(PopObj());
       if (!((Int)o & 0x3)) {
-	tolock[j] =  o;
-	locktypes[j++] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
+        tolock[j] =  o;
+        locktypes[j++] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
       }
     }
     nrexprs = j;
@@ -1406,6 +1406,7 @@ void            IntrQUIT ( void )
     /* indicate that a quit-statement was interpreted                      */
     TLS(IntrReturning) = STATUS_QQUIT;
 }
+
 
 /****************************************************************************
 **
@@ -3873,9 +3874,9 @@ void            IntrAssPosObj ( void )
     /* assign to the element of the list                                   */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
         /* Because BindOnce() functions can reallocate the list even if they
-	 * only have read-only access, we have to be careful when accessing
-	 * positional objects. Hence the explicit WriteGuard().
-	 */
+         * only have read-only access, we have to be careful when accessing
+         * positional objects. Hence the explicit WriteGuard().
+         */
         WriteGuard(list);
         if ( SIZE_OBJ(list)/sizeof(Obj) - 1 < p ) {
             ResizeBag( list, (p+1) * sizeof(Obj) );
@@ -4033,9 +4034,9 @@ void            IntrUnbPosObj ( void )
     /* unbind the element                                                  */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
         /* Because BindOnce() functions can reallocate the list even if they
-	 * only have read-only access, we have to be careful when accessing
-	 * positional objects. Hence the explicit WriteGuard().
-	 */
+         * only have read-only access, we have to be careful when accessing
+         * positional objects. Hence the explicit WriteGuard().
+         */
         WriteGuard(list);
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
@@ -4088,11 +4089,11 @@ void            IntrElmPosObj ( void )
     /* get the element of the list                                         */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
         /* Because BindOnce() functions can reallocate the list even if they
-	 * only have read-only access, we have to be careful when accessing
-	 * positional objects.
-	 */
+         * only have read-only access, we have to be careful when accessing
+         * positional objects.
+         */
         Bag *contents = PTR_BAG(list);
-	MEMBAR_READ(); /* essential memory barrier */
+        MEMBAR_READ(); /* essential memory barrier */
         if ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
             ErrorQuit(
                 "PosObj Element: <posobj>![%d] must have an assigned value",
@@ -4246,14 +4247,14 @@ void            IntrIsbPosObj ( void )
     /* get the result                                                      */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
         /* Because BindOnce() functions can reallocate the list even if they
-	 * only have read-only access, we have to be careful when accessing
-	 * positional objects.
-	 */
+         * only have read-only access, we have to be careful when accessing
+         * positional objects.
+         */
         Bag *contents = PTR_BAG(list);
-	if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
-	  isb = False;
-	else
-	  isb = contents[p] != 0 ? True : False;
+        if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
+          isb = False;
+        else
+          isb = contents[p] != 0 ? True : False;
     }
     else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
         isb = (IsbListFuncs[T_FIXALIST]( list, p ) ? True : False);
@@ -4297,10 +4298,10 @@ void            IntrAssComObjName (
         break;
       case T_ACOMOBJ:
         SetARecordField( record, rnam, rhs );
-	break;
+        break;
       default:
         ASS_REC( record, rnam, rhs );
-	break;
+        break;
     }
 
     /* push the assigned value                                             */
@@ -4335,10 +4336,10 @@ void            IntrAssComObjExpr ( void )
         break;
       case T_ACOMOBJ:
         SetARecordField( record, rnam, rhs );
-	break;
+        break;
       default:
         ASS_REC( record, rnam, rhs );
-	break;
+        break;
     }
 
     /* push the assigned value                                             */
@@ -4363,13 +4364,13 @@ void            IntrUnbComObjName (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         UnbPRec( record, rnam );
-	break;
+        break;
       case T_ACOMOBJ:
         UnbRecFuncs[T_AREC]( record, rnam);
-	break;
+        break;
       default:
         UNB_REC( record, rnam );
-	break;
+        break;
     }
 
     /* push void                                                           */
@@ -4397,13 +4398,13 @@ void            IntrUnbComObjExpr ( void )
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         UnbPRec( record, rnam );
-	break;
+        break;
       case T_ACOMOBJ:
         UnbRecFuncs[T_AREC]( record, rnam);
-	break;
+        break;
       default:
         UNB_REC( record, rnam );
-	break;
+        break;
     }
 
     /* push void                                                           */
@@ -4436,13 +4437,13 @@ void            IntrElmComObjName (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-	break;
+        break;
       case T_ACOMOBJ:
         elm = ElmARecord ( record, rnam );
-	break;
+        break;
       default:
         elm = ELM_REC( record, rnam );
-	break;
+        break;
     }
 
     /* push the element                                                    */
@@ -4471,15 +4472,14 @@ void            IntrElmComObjExpr ( void )
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-	break;
+        break;
       case T_ACOMOBJ:
         elm = ElmARecord ( record, rnam );
-	break;
+        break;
       default:
         elm = ELM_REC( record, rnam );
-	break;
+        break;
     }
-
 
     /* push the element                                                    */
     PushObj( elm );
@@ -4504,13 +4504,13 @@ void            IntrIsbComObjName (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         isb = ElmPRec( record, rnam ) ? True : False;
-	break;
+        break;
       case T_ACOMOBJ:
         isb = GetARecordField( record, rnam ) ? True : False;
-	break;
+        break;
       default:
         isb = ISB_REC( record, rnam ) ? True : False;
-	break;
+        break;
     }
 
     /* push the result                                                     */
@@ -4539,14 +4539,15 @@ void            IntrIsbComObjExpr ( void )
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         isb = ElmPRec( record, rnam ) ? True : False;
-	break;
+        break;
       case T_ACOMOBJ:
         isb = GetARecordField( record, rnam ) ? True : False;
-	break;
+        break;
       default:
         isb = ISB_REC( record, rnam ) ? True : False;
-	break;
+        break;
     }
+
     /* push the result                                                     */
     PushObj( isb );
 }

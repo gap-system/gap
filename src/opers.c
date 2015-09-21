@@ -669,28 +669,28 @@ Obj FuncAND_FLAGS (
         locked = (Obj) 0;
         if ( INT_INTOBJ(flags1) < INT_INTOBJ(flags2) ) {
             flagsX = flags2;
-	    if (!PreThreadCreation) {
-	      locked = flags1;
-	      HashLock(locked);
-	    }
+            if (!PreThreadCreation) {
+              locked = flags1;
+              HashLock(locked);
+            }
             cache  = AND_CACHE_FLAGS(flags1);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
-		MakeBagPublic(cache);
+                MakeBagPublic(cache);
                 SET_AND_CACHE_FLAGS( flags1, cache );
                 CHANGED_BAG(flags1);
             }
         }
         else {
             flagsX = flags1;
-	    if (!PreThreadCreation) {
-	      locked = flags2;
-	      HashLock(locked);
-	    }
+            if (!PreThreadCreation) {
+              locked = flags2;
+              HashLock(locked);
+            }
             cache  = AND_CACHE_FLAGS(flags2);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
-		MakeBagPublic(cache);
+                MakeBagPublic(cache);
                 SET_AND_CACHE_FLAGS( flags2, cache );
                 CHANGED_BAG(flags2);
             }
@@ -707,8 +707,8 @@ Obj FuncAND_FLAGS (
                     AndFlagsCacheHit++;
 #               endif
 #   ifdef AND_FLAGS_HASH_SIZE
-		if (locked)
-		    HashUnlock(locked);
+            if (locked)
+                HashUnlock(locked);
 #   endif
                 return ELM_PLIST( cache, 2*hash2+2 );
             }
@@ -6496,6 +6496,5 @@ void DestroyOpersTLS()
 
 /****************************************************************************
 **
-
 *E  opers.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
