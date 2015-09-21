@@ -3098,11 +3098,10 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 
 Obj FuncINPUT_FILENAME( Obj self) {
   Obj s;
-  if (TLS(Input) && TLS(Input)->name) {
+  if (TLS(Input)) {
     C_NEW_STRING_DYN( s, TLS(Input)->name );
   } else {
-    char *defin = "*defin*";
-    C_NEW_STRING_DYN( s, defin );
+    C_NEW_STRING_CONST( s, "*defin*" );
   }
   return s;
 }
