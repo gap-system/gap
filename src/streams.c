@@ -148,12 +148,12 @@ static Int READ_INNER ( UInt UseUHQ )
     if (TLS(UserHasQuit))
       {
         Pr("Warning: Entering READ with UserHasQuit set, this should never happen, resetting",0,0);
-	TLS(UserHasQuit) = 0;
+        TLS(UserHasQuit) = 0;
       }
     if (TLS(UserHasQUIT))
       {
         Pr("Warning: Entering READ with UserHasQUIT set, this should never happen, resetting",0,0);
-	TLS(UserHasQUIT) = 0;
+        TLS(UserHasQUIT) = 0;
       }
     MakeReadWriteGVar(LastReadValueGVar);
     AssGVar( LastReadValueGVar, 0);
@@ -176,17 +176,17 @@ static Int READ_INNER ( UInt UseUHQ )
           break;
         else if (status == STATUS_QUIT) {
           TLS(RecursionDepth) = 0;
-	  TLS(UserHasQuit) = 1;
+          TLS(UserHasQuit) = 1;
           break;
         }
         else if (status == STATUS_QQUIT) {
-	  TLS(UserHasQUIT) = 1;
+          TLS(UserHasQUIT) = 1;
           break;
         }
-	if (TLS(ReadEvalResult))
+        if (TLS(ReadEvalResult))
           {
             MakeReadWriteGVar(LastReadValueGVar);
-	    AssGVar( LastReadValueGVar, TLS(ReadEvalResult));
+            AssGVar( LastReadValueGVar, TLS(ReadEvalResult));
             MakeReadOnlyGVar(LastReadValueGVar);
           }
         
@@ -431,11 +431,11 @@ Int READ_GAP_ROOT ( Char * filename )
                 (Int)filename, 0L );
         }
         if ( OpenInput(result.pathname) ) {
-	  SySetBuffering(TLS(Input)->file);
+          SySetBuffering(TLS(Input)->file);
             while ( 1 ) {
                 ClearError();
                 type = ReadEvalCommand(TLS(BottomLVars), 0);
-		if (TLS(UserHasQuit) || TLS(UserHasQUIT))
+                if (TLS(UserHasQuit) || TLS(UserHasQUIT))
                   break;
                 if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
                     Pr( "'return' must not be used in file", 0L, 0L );
@@ -2066,8 +2066,7 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
 {
   Int fd;
   int fdi;
-  while (fid == (Obj) 0 || !(IS_INTOBJ(fid)))
-  {
+  while (fid == (Obj) 0 || !(IS_INTOBJ(fid))) {
     fid = ErrorReturnObj(
            "<fid> must be a small integer (not a %s)",
            (Int)TNAM_OBJ(fid),0L,

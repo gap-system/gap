@@ -1800,7 +1800,7 @@ void            ElmsListLevel (
 
             /* replace the list with the elements                          */
             SET_ELM_PLIST( lists, i, elm );
-	    
+
             /* notify Gasman                                               */
             CHANGED_BAG( lists );
 

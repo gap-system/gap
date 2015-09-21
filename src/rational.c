@@ -701,7 +701,9 @@ Obj             PowRat (
 
     /* if <opR> is negative and numerator is -1 return (-1)^r * num(l)     */
     else if ( NUM_RAT(opL) == INTOBJ_INT( -1L ) ) {
-        pow = ProdInt(PowInt(NUM_RAT(opL),ProdInt(INTOBJ_INT(-1L),opR)), PowInt(DEN_RAT(opL),ProdInt(INTOBJ_INT(-1L),opR)));
+        numP = PowInt( NUM_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
+        denP = PowInt( DEN_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
+        pow = ProdInt(numP, denP);
     }
 
     /* if <opR> is negative do both powers, take care of the sign          */
@@ -745,7 +747,8 @@ Obj             IsRatHandler (
     Obj                 val )
 {
     /* return 'true' if <val> is a rational and 'false' otherwise          */
-    if ( TNUM_OBJ(val) == T_RAT    || TNUM_OBJ(val) == T_INT || TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG ) {
+    if ( TNUM_OBJ(val) == T_RAT    || TNUM_OBJ(val) == T_INT
+      || TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG ) {
         return True;
     }
     else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
@@ -772,7 +775,8 @@ Obj             FuncNumeratorRat (
     Obj                 rat )
 {
     /* check the argument                                                   */
-    while ( TNUM_OBJ(rat) != T_RAT    && TNUM_OBJ(rat) != T_INT && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
+    while ( TNUM_OBJ(rat) != T_RAT    && TNUM_OBJ(rat) != T_INT
+         && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
         rat = ErrorReturnObj(
             "Numerator: <rat> must be a rational (not a %s)",
             (Int)TNAM_OBJ(rat), 0L,
@@ -804,7 +808,8 @@ Obj             FuncDenominatorRat (
     Obj                 rat )
 {
     /* check the argument                                                  */
-    while ( TNUM_OBJ(rat) != T_RAT    && TNUM_OBJ(rat) != T_INT && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
+    while ( TNUM_OBJ(rat) != T_RAT    && TNUM_OBJ(rat) != T_INT
+         && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
         rat = ErrorReturnObj(
             "DenominatorRat: <rat> must be a rational (not a %s)",
             (Int)TNAM_OBJ(rat), 0L,

@@ -645,7 +645,7 @@ Obj FuncAND_FLAGS (
     Obj                 flagsX;
     Obj                 cache;
     Obj                 entry;
-    Obj			locked;
+    Obj			        locked;
     UInt                hash;
     UInt                hash2;
     static UInt         next = 0;

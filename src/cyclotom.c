@@ -144,7 +144,6 @@
 **  It is created in 'InitCyc' with room for up to 1000 coefficients  and  is
 **  resized when need arises.
 */
-
 /* TL: Obj ResultCyc; */
 
 void GrowResultCyc(UInt howbig) {

@@ -769,20 +769,16 @@ Obj FuncStandardizeTableC (
                     i = &(ELM_PLIST(ptTable[2*k],1)) - 1;
                     c1 = INT_INTOBJ( h[lcos] );
                     c2 = INT_INTOBJ( h[mcos] );
-                    if ( c1 != 0 )
-		        i[c1] = INTOBJ_INT( mcos );
-                    if ( c2 != 0 )
-		        i[c2] = INTOBJ_INT( lcos );
+                    if ( c1 != 0 )  i[c1] = INTOBJ_INT( mcos );
+                    if ( c2 != 0 )  i[c2] = INTOBJ_INT( lcos );
                     tmp     = h[lcos];
                     h[lcos] = h[mcos];
                     h[mcos] = tmp;
                     if ( i != h ) {
                         c1 = INT_INTOBJ( i[lcos] );
                         c2 = INT_INTOBJ( i[mcos] );
-                        if ( c1 != 0 )
-			    h[c1] = INTOBJ_INT( mcos );
-                        if ( c2 != 0 )
-			   h[c2] = INTOBJ_INT( lcos );
+                        if ( c1 != 0 )  h[c1] = INTOBJ_INT( mcos );
+                        if ( c2 != 0 )  h[c2] = INTOBJ_INT( lcos );
                         tmp     = i[lcos];
                         i[lcos] = i[mcos];
                         i[mcos] = tmp;
@@ -2879,10 +2875,8 @@ Obj FuncStandardizeTable2C (
                     i2 = &(ELM_PLIST(ptTabl2[2*k],1)) - 1;
                     c1 = INT_INTOBJ( h[lcos] );
                     c2 = INT_INTOBJ( h[mcos] );
-                    if ( c1 != 0 )
-		        i[c1] = INTOBJ_INT( mcos );
-                    if ( c2 != 0 )
-		       i[c2] = INTOBJ_INT( lcos );
+                    if ( c1 != 0 )  i[c1] = INTOBJ_INT( mcos );
+                    if ( c2 != 0 )  i[c2] = INTOBJ_INT( lcos );
                     tmp     = h[lcos];
                     h[lcos] = h[mcos];
                     h[mcos] = tmp;
@@ -2892,10 +2886,8 @@ Obj FuncStandardizeTable2C (
                     if ( i != h ) {
                         c1 = INT_INTOBJ( i[lcos] );
                         c2 = INT_INTOBJ( i[mcos] );
-                        if ( c1 != 0 )
-			    h[c1] = INTOBJ_INT( mcos );
-                        if ( c2 != 0 )
-			    h[c2] = INTOBJ_INT( lcos );
+                        if ( c1 != 0 )  h[c1] = INTOBJ_INT( mcos );
+                        if ( c2 != 0 )  h[c2] = INTOBJ_INT( lcos );
                         tmp     = i[lcos];
                         i[lcos] = i[mcos];
                         i[mcos] = tmp;
