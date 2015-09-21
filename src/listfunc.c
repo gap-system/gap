@@ -156,17 +156,15 @@ Obj FuncADD_LIST3 (
   }
   if ( IS_PLIST( list ) ) {
     AddPlist3( list, obj, ipos );
-  }
-  else if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
+  } else if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
     AddList3( list, obj, ipos );
-    } else if ( TNUM_OBJ(list) == T_ALIST ) {
-        AddAList( list, obj );
-  }
-  else {
+  } else if ( TNUM_OBJ(list) == T_ALIST ) {
+    AddAList( list, obj );
+  } else {
     if (pos == 0)
       DoOperation2Args( self, list, obj );
     else
-      DoOperation3Args( self, list,  obj, pos);
+      DoOperation3Args( self, list, obj, pos);
   }
 
     /* return nothing                                                      */
@@ -289,8 +287,7 @@ Obj             FuncAPPEND_LIST_INTR (
     Obj *               ptr1;           /* pointer into the first list     */
     Obj *               ptr2;           /* pointer into the second list    */
     Obj                 elm;            /* one element of the second list  */
-    Int                i;              /* loop variable                   */
-    Obj e1,e2;
+    Int                 i;              /* loop variable                   */
 
     /* check the mutability of the first argument */
     while ( !IS_MUTABLE_OBJ( list1) )

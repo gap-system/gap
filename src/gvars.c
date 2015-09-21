@@ -74,7 +74,6 @@
 **  'PtrGVars' must be  revalculated afterwards.   This  should be done by  a
 **  function in this package, but is still done in 'VarsAfterCollectBags'.
 */
-
 Obj   ValGVars[GVAR_BUCKETS];
 
 Obj * PtrGVars[GVAR_BUCKETS];
@@ -357,7 +356,7 @@ Obj             ValAutoGVar (
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
-	val = ValGVar(gvar);
+        val = ValGVar(gvar);
         while ( val  == 0 ) {
             ErrorReturnVoid(
        "Variable: automatic variable '%s' must get a value by function call",
@@ -416,7 +415,6 @@ Obj FuncIsThreadLocalGvar( Obj self, Obj name) {
   return (VAL_GVAR(gvar) == 0 && IS_INTOBJ(ELM_PLIST(ExprGVars[gvar_bucket], gvar_index))) ?
     True: False;
 }
-  
 
 
 /****************************************************************************
@@ -527,53 +525,53 @@ UInt GVarName (
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
     if ( gvar == 0 ) {
         UInt gvar_bucket, gvar_index;
-	pos = i;
+        pos = i;
         CountGVars++;
-	gvar_bucket = GVAR_BUCKET(CountGVars);
-	gvar_index = GVAR_INDEX(CountGVars);
+        gvar_bucket = GVAR_BUCKET(CountGVars);
+        gvar_index = GVAR_INDEX(CountGVars);
         gvar = INTOBJ_INT(CountGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
         strlcpy(namx, name, sizeof(namx));
         C_NEW_STRING_DYN(string, namx);
 
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
-	if (!ValGVars[gvar_bucket]) {
-	   ValGVars[gvar_bucket] = NewGVarBucket();
-	   PtrGVars[gvar_bucket] = ADDR_OBJ(ValGVars[gvar_bucket])+1;
-	   NameGVars[gvar_bucket] = NewGVarBucket();
-	   WriteGVars[gvar_bucket] = NewGVarBucket();
-	   ExprGVars[gvar_bucket] = NewGVarBucket();
-	   CopiesGVars[gvar_bucket] = NewGVarBucket();
-	   FopiesGVars[gvar_bucket] = NewGVarBucket();
-	}
-	SET_ELM_PLIST(ValGVars[gvar_bucket], gvar_index, 0);
-	SET_ELM_PLIST(NameGVars[gvar_bucket], gvar_index, string);
-	SET_ELM_PLIST(WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(1));
-	SET_ELM_PLIST(ExprGVars[gvar_bucket], gvar_index, 0);
-	SET_ELM_PLIST(CopiesGVars[gvar_bucket], gvar_index, 0);
-	SET_ELM_PLIST(FopiesGVars[gvar_bucket], gvar_index, 0);
+        if (!ValGVars[gvar_bucket]) {
+           ValGVars[gvar_bucket] = NewGVarBucket();
+           PtrGVars[gvar_bucket] = ADDR_OBJ(ValGVars[gvar_bucket])+1;
+           NameGVars[gvar_bucket] = NewGVarBucket();
+           WriteGVars[gvar_bucket] = NewGVarBucket();
+           ExprGVars[gvar_bucket] = NewGVarBucket();
+           CopiesGVars[gvar_bucket] = NewGVarBucket();
+           FopiesGVars[gvar_bucket] = NewGVarBucket();
+        }
+        SET_ELM_PLIST(ValGVars[gvar_bucket], gvar_index, 0);
+        SET_ELM_PLIST(NameGVars[gvar_bucket], gvar_index, string);
+        SET_ELM_PLIST(WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(1));
+        SET_ELM_PLIST(ExprGVars[gvar_bucket], gvar_index, 0);
+        SET_ELM_PLIST(CopiesGVars[gvar_bucket], gvar_index, 0);
+        SET_ELM_PLIST(FopiesGVars[gvar_bucket], gvar_index, 0);
 
-	/* if the table is too crowed, make a larger one, rehash the names     */
-	if ( SizeGVars < 3 * CountGVars / 2 ) {
-	    table = TableGVars;
-	    SizeGVars = 2 * SizeGVars + 1;
-	    TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
-	    MakeBagPublic(TableGVars);
-	    SET_LEN_PLIST( TableGVars, SizeGVars );
-	    for ( i = 1; i <= (SizeGVars-1)/2; i++ ) {
-		gvar2 = ELM_PLIST( table, i );
-		if ( gvar2 == 0 )  continue;
-		pos = 0;
-		for ( p = NameGVar( INT_INTOBJ(gvar2) ); *p != '\0'; p++ ) {
-		    pos = 65599 * pos + *p;
-		}
-		pos = (pos % SizeGVars) + 1;
-		while ( ELM_PLIST( TableGVars, pos ) != 0 ) {
-		    pos = (pos % SizeGVars) + 1;
-		}
-		SET_ELM_PLIST( TableGVars, pos, gvar2 );
-	    }
-	}
+        /* if the table is too crowed, make a larger one, rehash the names     */
+        if ( SizeGVars < 3 * CountGVars / 2 ) {
+            table = TableGVars;
+            SizeGVars = 2 * SizeGVars + 1;
+            TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
+            MakeBagPublic(TableGVars);
+            SET_LEN_PLIST( TableGVars, SizeGVars );
+            for ( i = 1; i <= (SizeGVars-1)/2; i++ ) {
+            gvar2 = ELM_PLIST( table, i );
+            if ( gvar2 == 0 )  continue;
+            pos = 0;
+            for ( p = NameGVar( INT_INTOBJ(gvar2) ); *p != '\0'; p++ ) {
+                pos = 65599 * pos + *p;
+            }
+            pos = (pos % SizeGVars) + 1;
+            while ( ELM_PLIST( TableGVars, pos ) != 0 ) {
+                pos = (pos % SizeGVars) + 1;
+            }
+            SET_ELM_PLIST( TableGVars, pos, gvar2 );
+            }
+        }
     }
 
     UnlockGVars();
@@ -639,8 +637,6 @@ void MakeThreadLocalVar (
     if (value && TLVars)
         SetTLDefault(TLVars, rnam, value);
 }
-
-
 
 
 /****************************************************************************
@@ -819,8 +815,8 @@ Obj             AUTOHandler (
                 "you can return a string for <name>" );
         }
         gvar = GVarName( CSTR_STRING(name) );
-	gvar_bucket = GVAR_BUCKET(gvar);
-	gvar_index = GVAR_INDEX(gvar);
+        gvar_bucket = GVAR_BUCKET(gvar);
+        gvar_index = GVAR_INDEX(gvar);
         SET_ELM_PLIST( ValGVars[gvar_bucket],   gvar_index, 0    );
         SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, list );
         CHANGED_BAG(   ExprGVars[gvar_bucket] );
@@ -1162,8 +1158,8 @@ void UpdateCopyFopyInfo ( void )
         name = CopyAndFopyGVars[NCopyAndFopyDone].name;
         copy = CopyAndFopyGVars[NCopyAndFopyDone].copy;
         gvar = GVarName(name);
-	gvar_bucket = GVAR_BUCKET(gvar);
-	gvar_index = GVAR_INDEX(gvar);
+        gvar_bucket = GVAR_BUCKET(gvar);
+        gvar_index = GVAR_INDEX(gvar);
 
         /* get the copies list and its length                              */
         if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
@@ -1172,7 +1168,7 @@ void UpdateCopyFopyInfo ( void )
             }
             else {
                 cops = NEW_PLIST( T_PLIST, 0 );
-		MakeBagPublic(cops);
+                MakeBagPublic(cops);
                 SET_ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index, cops );
                 CHANGED_BAG(FopiesGVars[gvar_bucket]);
             }
@@ -1183,7 +1179,7 @@ void UpdateCopyFopyInfo ( void )
             }
             else {
                 cops = NEW_PLIST( T_PLIST, 0 );
-		MakeBagPublic(cops);
+                MakeBagPublic(cops);
                 SET_ELM_PLIST( CopiesGVars[gvar_bucket], gvar_index, cops );
                 CHANGED_BAG(CopiesGVars[gvar_bucket]);
             }
@@ -1198,7 +1194,7 @@ void UpdateCopyFopyInfo ( void )
 
         /* now copy the value of <gvar> to <cvar>                          */
         if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
-	    Obj val = ValGVar(gvar);
+            Obj val = ValGVar(gvar);
             if ( val != 0 && IS_FUNC(val) ) {
                 *copy = val;
             }
@@ -1237,6 +1233,7 @@ void RemoveCopyFopyInfo( void )
     UnlockGVars();
     return;
 }
+
 
 /****************************************************************************
 **

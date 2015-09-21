@@ -2145,7 +2145,7 @@ static Int InitLibrary (
 
 void InitExprTLS()
 {
-  TLS(CurrEvalExprFuncs) = EvalExprFuncs;
+    TLS(CurrEvalExprFuncs) = EvalExprFuncs;
 }
 
 void DestroyExprTLS()

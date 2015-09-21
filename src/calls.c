@@ -1307,7 +1307,6 @@ void PrintFunction (
       return;
     }
 
-    
     /* print 'function (' or 'atomic function ('                          */
     if (LCKS_FUNC(func)) {
       locks = CHARS_STRING(LCKS_FUNC(func));
@@ -1320,16 +1319,16 @@ void PrintFunction (
     if (narg < 0)
       narg = -narg;
     for ( i = 1; i <= narg; i++ ) {
-      if (locks) {
-	switch(locks[i-1]) {
-	case 1:
-	  Pr("%>readonly %<", 0L, 0L);
-	  break;
-	case 2:
-	  Pr("%>readwrite %<", 0L, 0L);
-	  break;
-	}
-      }
+        if (locks) {
+            switch(locks[i-1]) {
+            case 1:
+                Pr("%>readonly %<", 0L, 0L);
+                break;
+            case 2:
+                Pr("%>readwrite %<", 0L, 0L);
+                break;
+            }
+        }
         if ( NAMS_FUNC(func) != 0 )
             Pr( "%I", (Int)NAMI_FUNC( func, (Int)i ), 0L );
         else
@@ -1828,10 +1827,10 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
         Obj fn =  FILENAME_BODY(BODY_FUNC(func));
 #ifndef WARD_ENABLED
         if (fn) {
-	    if (IS_BAG_REF(fn))
-	      MakeBagPublic(fn);
+            if (IS_BAG_REF(fn))
+                MakeBagPublic(fn);
             return fn;
-	}
+        }
 #endif
     }
     return Fail;

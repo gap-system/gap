@@ -765,7 +765,7 @@ Obj             EvalFunccallXargs (
 **
 */
 
-/* Int RecursionDepth; */
+/* TL: Int RecursionDepth; */
 static UInt RecursionTrapInterval;
 
 static void RecursionDepthTrap( void )
@@ -794,15 +794,19 @@ static inline void CheckRecursionBefore( void )
 }
 
 
- Obj STEVES_TRACING;
+Obj STEVES_TRACING;
 
-#define CHECK_RECURSION_BEFORE CheckRecursionBefore(); PROF_IN_FUNCTION(func);
+#define CHECK_RECURSION_BEFORE \
+            CheckRecursionBefore(); \
+            PROF_IN_FUNCTION(func);
 
-
-#define CHECK_RECURSION_AFTER     TLS(RecursionDepth)--;  PROF_OUT_FUNCTION(func);
+#define CHECK_RECURSION_AFTER \
+            TLS(RecursionDepth)--; \
+            PROF_OUT_FUNCTION(func);
 
 #define REMEMBER_LOCKSTACK() \
     int			lockSP = TLS(lockStackPointer)
+
 #define CLEAR_LOCK_STACK() \
     if (lockSP != TLS(lockStackPointer)) \
       PopRegionLocks(lockSP)
@@ -921,7 +925,7 @@ Obj             DoExecFunc2args (
 
     /* return the result                                                   */
       {
-        Obj                  returnObjStat;
+        Obj                 returnObjStat;
         returnObjStat = TLS(ReturnObjStat);
         TLS(ReturnObjStat) = (Obj)0;
         return returnObjStat;
@@ -1960,8 +1964,8 @@ static Int InitLibrary (
 static Int InitKernel (
     StructInitInfo *    module )
 {
-  RecursionTrapInterval = 1000;
-  InitCopyGVar("STEVES_TRACING", &STEVES_TRACING);
+    RecursionTrapInterval = 1000;
+    InitCopyGVar("STEVES_TRACING", &STEVES_TRACING);
   
     /* make the global variable known to Gasman                            */
     /* TL: InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );           */

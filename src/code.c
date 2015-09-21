@@ -112,13 +112,11 @@ Obj FILENAME_STAT(Stat stat)
 {
   Obj filename;
   UInt filenameid = FILENAMEID_STAT(stat);
-  if(filenameid == 0)
-    return NEW_STRING(0);
+  if (filenameid == 0)
+      filename = NEW_STRING(0);
   else
-  {
-    filename = ELM_LIST(FilenameCache, filenameid);
-    return filename;
-  }
+      filename = ELM_LIST(FilenameCache, filenameid);
+  return filename;
 }
     
     
@@ -801,6 +799,7 @@ void CodeFuncExprEnd (
     }
 
 }
+
 
 /****************************************************************************
 **
@@ -3336,6 +3335,11 @@ void LoadBody ( Obj body )
 }
 
 
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
 void InitCoderTLS( void )
 {
     TLS(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
@@ -3348,7 +3352,6 @@ void DestroyCoderTLS( void )
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -3382,6 +3385,11 @@ static Int InitKernel (
     return 0;
 }
 
+
+/****************************************************************************
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
 static Int InitLibrary (
     StructInitInfo *    module )
 {

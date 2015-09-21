@@ -146,21 +146,20 @@
 */
 /* TL: Obj ResultCyc; */
 
-void GrowResultCyc(UInt howbig) {
-  UInt size = howbig;
-  Obj *res;
-  UInt i;
-  if (size < 1024)
-    size = 1024;
-  if (TLS(ResultCyc) == 0) {
-    TLS(ResultCyc) = NEW_PLIST( T_PLIST, size );
-  } else if (LEN_PLIST(TLS(ResultCyc))  < size) {
+void GrowResultCyc(UInt size) {
+    Obj *res;
+    UInt i;
+    if (size < 1024)
+      size = 1024;
+    if (TLS(ResultCyc) == 0) {
+        TLS(ResultCyc) = NEW_PLIST( T_PLIST, size );
+    } else if (LEN_PLIST(TLS(ResultCyc))  < size) {
         GROW_PLIST( TLS(ResultCyc), size );
-  } else
-    return;
-  SET_LEN_PLIST( TLS(ResultCyc), size );
-  res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
-  for ( i = 0; i < size; i++ ) { res[i] = INTOBJ_INT(0); }
+    } else
+        return;
+    SET_LEN_PLIST( TLS(ResultCyc), size );
+    res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
+    for ( i = 0; i < size; i++ ) { res[i] = INTOBJ_INT(0); }
 }
 
 /****************************************************************************
@@ -1522,7 +1521,7 @@ Obj FuncE (
     /* if the root is not known already construct it                       */
     if ( TLS(LastNCyc) != INT_INTOBJ(n) ) {
         TLS(LastNCyc) = INT_INTOBJ(n);
-	GrowResultCyc(TLS(LastNCyc));
+        GrowResultCyc(TLS(LastNCyc));
         res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
         res[1] = INTOBJ_INT(1);
         CHANGED_BAG( TLS(ResultCyc) );

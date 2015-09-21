@@ -232,10 +232,6 @@ char *original_argv0;
 static char **sysargv;
 static char **sysenviron;
 
-/* 
-syJmp_buf SyRestartBuf;
-*/
-
 /* TL: Obj ShellContext = 0; */
 /* TL: Obj BaseShellContext = 0; */
 /* TL: UInt ShellContextDepth; */
@@ -504,6 +500,7 @@ Obj FuncSHELL (Obj self, Obj args)
     catchQUIT = 0;
   else
     ErrorMayQuit("SHELL: 10th argument (catch QUIT) should be true or false",0,0);
+
   res =  Shell(context, canReturnVoid, canReturnObj, lastDepth, setTime, promptBuffer, preCommandHook, catchQUIT,
                CSTR_STRING(infile), CSTR_STRING(outfile));
 
@@ -511,8 +508,6 @@ Obj FuncSHELL (Obj self, Obj args)
   return res;
 }
 #ifdef HAVE_REALPATH
-
-
 
 static void StrAppend(char **st, const char *st2)
 {
@@ -873,8 +868,8 @@ Obj FuncRUNTIMES( Obj     self)
   SET_ELM_PLIST(res, 3, INTOBJ_INT( SyTimeChildren() ));
   SET_ELM_PLIST(res, 4, INTOBJ_INT( SyTimeChildrenSys() ));
   return res;
-   
 }
+
 
 /****************************************************************************
 **
@@ -1164,7 +1159,6 @@ Obj FuncWindowCmd (
 
 /****************************************************************************
 **
-
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
 
@@ -1389,12 +1383,10 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
   syLongjmp(TLS(ReadJmpError), 1);
   return 0;
 }
-  
 
-#if 0
-TL: UInt UserHasQuit;
-TL: UInt UserHasQUIT; 
-#endif
+
+/* TL: UInt UserHasQuit; */
+/* TL: UInt UserHasQUIT; */
 UInt SystemErrorCode;
 
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
@@ -3198,14 +3190,12 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-
-
-
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* create windows command buffer                                       */
     WindowCmdString = NEW_STRING( 1000 );
+
     /* return success                                                      */
     return PostRestore( module );
 }
@@ -3613,8 +3603,5 @@ void InitializeGap (
 
 /****************************************************************************
 **
-
 *E  gap.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-

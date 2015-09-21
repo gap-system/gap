@@ -261,8 +261,6 @@ static inline void SwitchToOldLVarsAndFree( Obj old
 #endif
 
 
-
-
 /****************************************************************************
 **
 *F  ASS_LVAR( <lvar>, <val> ) . . . . . . . . . . .  assign to local variable

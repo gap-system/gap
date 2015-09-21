@@ -1620,11 +1620,10 @@ void            RetypeBag (
     UInt                new_type )
 {
 
-    UInt                old_type;       /* old type of the bag */
-
 #ifdef  COUNT_BAGS
     /* update the statistics      */
     {
+          UInt                old_type;       /* old type of the bag */
           UInt                size;
 
           old_type = TNUM_BAG(bag);
@@ -1640,7 +1639,7 @@ void            RetypeBag (
     }
 #else
 #ifdef BOEHM_GC
-    old_type = TNUM_BAG(bag);
+    UInt old_type = TNUM_BAG(bag);
 #endif
 #endif
 
