@@ -2515,8 +2515,7 @@ InstallMethod( Identifier,
     function( tbl )
 
     # Construct an identifier that is unique in the current session.
-    LARGEST_IDENTIFIER_NUMBER[1]:= LARGEST_IDENTIFIER_NUMBER[1] + 1;
-    tbl:= Concatenation( "CT", String( LARGEST_IDENTIFIER_NUMBER[1] ) );
+    tbl:= Concatenation( "CT", String( ATOMIC_ADDITION( LARGEST_IDENTIFIER_NUMBER, 1, 1 ) ) );
     ConvertToStringRep( tbl );
     return tbl;
     end );
@@ -5048,7 +5047,7 @@ fi;
 ##
 #V  CharacterTableDisplayDefaults
 ##
-InstallValue( CharacterTableDisplayDefaults, rec(
+InstallValue( CharacterTableDisplayDefaults, MakeImmutable(rec(
       Global:= rec(
         centralizers    := true,
 
@@ -5056,7 +5055,7 @@ InstallValue( CharacterTableDisplayDefaults, rec(
         StringEntry     := CharacterTableDisplayStringEntryDefault,
         StringEntryData := CharacterTableDisplayStringEntryDataDefault,
         Legend          := CharacterTableDisplayLegendDefault,
-    ) ) );
+    ) ) ) );
 
 
 #############################################################################
