@@ -222,7 +222,7 @@
 **  object  that was  weakly but not   strongly  marked in  a recent  garbage
 **  collection.   These persist until  after the next full garbage collection
 **  by which time all references to them should have been removed.
-** 
+**
 */
 
 #define SIZE_MPTR_BAGS  1
@@ -307,6 +307,39 @@ Bag *                   AllocBags;
 UInt                    AllocSizeBags;
 Bag *                   StopBags;
 Bag *                   EndBags;
+
+#if defined(MEMORY_CANARY) && !defined(BOEHM_GC)
+
+#include <valgrind/valgrind.h>
+#include <valgrind/memcheck.h>
+Int canary_size() {
+  Int bufsize = (Int)StopBags - (Int)AllocBags;
+  return bufsize<4096?bufsize:4096;
+}
+
+void ADD_CANARY() {
+  VALGRIND_MAKE_MEM_NOACCESS(AllocBags, canary_size());
+}
+void CLEAR_CANARY() {
+  VALGRIND_MAKE_MEM_DEFINED(AllocBags, canary_size());
+}
+#define CANARY_DISABLE_VALGRIND()  VALGRIND_DISABLE_ERROR_REPORTING
+#define CANARY_ENABLE_VALGRIND() VALGRIND_ENABLE_ERROR_REPORTING
+
+void CHANGED_BAG_IMPL(Bag bag) {
+    CANARY_DISABLE_VALGRIND();
+    if ( PTR_BAG(bag) <= YoungBags && PTR_BAG(bag)[-1] == (bag) ) {
+        PTR_BAG(bag)[-1] = ChangedBags;
+        ChangedBags = (bag);
+    }
+    CANARY_ENABLE_VALGRIND();
+}
+#else
+#define ADD_CANARY()
+#define CLEAR_CANARY()
+#define CANARY_DISABLE_VALGRIND()
+#define CANARY_ENABLE_VALGRIND()
+#endif
 
 
 /* These macros, are (a) for more readable code, but more importantly
@@ -448,6 +481,12 @@ UInt                    NrHalfDeadBags;
 
 /****************************************************************************
 **
+*V  InfoBags[<type>]  . . . . . . . . . . . . . . . . .  information for bags
+*/
+TNumInfoBags            InfoBags [ NTYPES ];
+
+/****************************************************************************
+**
 *F  IS_BAG -- check if a value looks like a masterpointer reference.
 */
 static inline UInt IS_BAG (
@@ -457,12 +496,6 @@ static inline UInt IS_BAG (
          && (bid < (UInt)OldBags)
          && (bid & (sizeof(Bag)-1)) == 0);
 }
-
-/****************************************************************************
-**
-*V  InfoBags[<type>]  . . . . . . . . . . . . . . . . .  information for bags
-*/
-TNumInfoBags            InfoBags [ NTYPES ];
 
 /****************************************************************************
 **
@@ -750,7 +783,7 @@ void MarkBagWeakly(
        && YoungBags < PTR_BAG(bag)          /*  points to a young bag */
        && PTR_BAG(bag) <= AllocBags         /*    "     " "  "     "  */
        && IS_MARKED_DEAD(bag) )             /*  and not marked already */
-    {                          
+    {
       LINK_BAG(bag) = (Bag)MARKED_HALFDEAD(bag);   /* mark it now as we
                                                don't have to recurse */
     }
@@ -789,9 +822,9 @@ void CallbackForAllBags(
 
 
 /****************************************************************************
-**  
+**
 *V  GlobalBags  . . . . . . . . . . . . . . . . . . . . . list of global bags
-*/  
+*/
 TNumGlobalBags GlobalBags;
 
 
@@ -821,7 +854,7 @@ void ClearGlobalBags ( void )
   GlobalSortingStatus = 0;
   WarnInitGlobalBag = 0;
   return;
-}    
+}
 #endif
 
 void InitGlobalBag (
@@ -847,7 +880,7 @@ void InitGlobalBag (
 #endif
     if ( WarnInitGlobalBag ) {
         Pr( "#W  global bag '%s' initialized\n", (Int)cookie, 0L );
-    } 
+    }
     GlobalBags.addr[GlobalBags.nr] = addr;
     GlobalBags.cookie[GlobalBags.nr] = cookie;
     GlobalBags.nr++;
@@ -859,7 +892,7 @@ void InitGlobalBag (
 
 #ifndef BOEHM_GC
 static Int IsLessGlobal (
-    const Char *        cookie1, 
+    const Char *        cookie1,
     const Char *        cookie2,
     UInt                byWhat )
 {
@@ -893,7 +926,7 @@ void SortGlobals( UInt byWhat )
     return;
   len = GlobalBags.nr;
   h = 1;
-  while ( 9*h + 4 < len ) 
+  while ( 9*h + 4 < len )
     { h = 3*h + 1; }
   while ( 0 < h ) {
     for ( i = h; i < len; i++ ) {
@@ -919,7 +952,7 @@ void SortGlobals( UInt byWhat )
 }
 
 
-                       
+
 Bag * GlobalByCookie(
        const Char * cookie )
 {
@@ -931,7 +964,7 @@ Bag * GlobalByCookie(
       Pr("Panic -- 0L cookie passed to GlobalByCookie\n",0L,0L);
       SyExit(2);
     }
-  if (GlobalSortingStatus != 2) 
+  if (GlobalSortingStatus != 2)
     {
       for (i = 0; i < GlobalBags.nr; i++)
         {
@@ -960,7 +993,7 @@ Bag * GlobalByCookie(
     return (Bag *) 0;
 #endif /* !BOEHM_GC */
 }
-                                      
+
 
 static Bag NextMptrRestoring;
 extern TNumAllocFuncBags       AllocFuncBags;
@@ -1009,7 +1042,7 @@ Bag NextBagRestoring( UInt size, UInt type)
   ((UInt *)AllocBags)[0] = type;
   ((UInt *)AllocBags)[1] = size;
 #endif
-  
+
   ((Bag *)AllocBags)[HEADER_SIZE-1] = NextMptrRestoring;
   NextMptrRestoring++;
 #ifdef DEBUG_LOADING
@@ -1017,10 +1050,10 @@ Bag NextBagRestoring( UInt size, UInt type)
     (*AbortFuncBags)("Overran Masterpointer area");
 #endif
   AllocBags += HEADER_SIZE;
-  
+
   for (i = 0; i < WORDS_BAG(size); i++)
     *AllocBags++ = (Bag)0;
-  
+
 #ifdef DEBUG_LOADING
   if (AllocBags > EndBags)
     (*AbortFuncBags)("Overran data area");
@@ -1171,7 +1204,7 @@ TNumAbortFuncBags       AbortFuncBags;
  */
 
 void BuildPrefixGCDescriptor(unsigned prefix_len) {
-  
+
   if (prefix_len) {
     GC_word bits[1] = {0};
     unsigned i;
@@ -1212,7 +1245,7 @@ void            InitBags (
 
     ClearGlobalBags();
     WarnInitGlobalBag = 0;
-    
+
     /* install the allocator and the abort function                        */
     AllocFuncBags   = alloc_func;
     AbortFuncBags   = abort_func;
@@ -1438,20 +1471,21 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
 **  local  variables  of the function.  To  enable  statistics only {\Gasman}
 **  needs to be recompiled.
 */
-
 Bag NewBag (
     UInt                type,
     UInt                size )
 {
     Bag                 bag;            /* identifier of the new bag       */
     Bag *               dst;            /* destination of the new bag      */
+#ifdef BOEHM_GC
     UInt		alloc_size;
+#endif
 
 #ifndef BOEHM_GC
 #ifdef TREMBLE_HEAP
     CollectBags(0,0);
 #endif
-    
+
     /* check that a masterpointer and enough storage are available         */
     if ( (FreeMptrBags == 0 || SizeAllocationArea < HEADER_SIZE+WORDS_BAG(size))
       && CollectBags( size, 0 ) == 0 )
@@ -1472,10 +1506,11 @@ Bag NewBag (
     /* get the identifier of the bag and set 'FreeMptrBags' to the next    */
     bag          = FreeMptrBags;
     FreeMptrBags = *(Bag*)bag;
-
+    CLEAR_CANARY();
     /* allocate the storage for the bag                                    */
     dst       = AllocBags;
     AllocBags = dst + HEADER_SIZE + WORDS_BAG(size);
+    ADD_CANARY();
 #else /* BOEHM_GC */
     alloc_size = HEADER_SIZE*sizeof(Bag) + size;
 #ifndef DISABLE_GC
@@ -1587,13 +1622,14 @@ void            RetypeBag (
 {
 
     UInt                old_type;       /* old type of the bag */
+
 #ifdef  COUNT_BAGS
     /* update the statistics      */
     {
-	  UInt                size;
+          UInt                size;
 
           old_type = TNUM_BAG(bag);
-	  size = SIZE_BAG(bag);
+          size = SIZE_BAG(bag);
           InfoBags[old_type].nrLive   -= 1;
           InfoBags[new_type].nrLive   += 1;
           InfoBags[old_type].nrAll    -= 1;
@@ -1739,7 +1775,7 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
 #endif
 
     /* check the size                                                      */
-    
+
 #ifdef TREMBLE_HEAP
     CollectBags(0,0);
 #endif
@@ -1801,7 +1837,7 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
         else
           {
 #ifdef USE_NEWSHAPE
-            *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = 
+            *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) =
               (WORDS_BAG(old_size)-WORDS_BAG(new_size)-1)*sizeof(Bag) << 16 | 255;
 #else
             *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = 255;
@@ -1822,7 +1858,7 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
 
     /* if the last bag is to be enlarged                                   */
     else if ( PTR_BAG(bag) + WORDS_BAG(old_size) == AllocBags ) {
-
+        CLEAR_CANARY();
         /* check that enough storage for the new bag is available          */
         if ( StopBags < PTR_BAG(bag)+WORDS_BAG(new_size)
           && CollectBags( new_size-old_size, 0 ) == 0 ) {
@@ -1834,6 +1870,7 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
             YoungBags += WORDS_BAG(new_size) - WORDS_BAG(old_size);
         AllocBags += WORDS_BAG(new_size) - WORDS_BAG(old_size);
 
+        ADD_CANARY();
         /* change the size-type word                                       */
 #ifdef USE_NEWSHAPE
       *(*bag-2) = (new_size << 16 | type);
@@ -1851,42 +1888,44 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
           && CollectBags( new_size, 0 ) == 0 ) {
             return 0;
         }
-
+        CLEAR_CANARY();
         /* allocate the storage for the bag                                */
         dst       = AllocBags;
         AllocBags = dst + HEADER_SIZE + WORDS_BAG(new_size);
+        ADD_CANARY();
 #else
-	alloc_size = HEADER_SIZE*sizeof(Bag) + new_size;
-	if (new_size == 0)
-	    alloc_size++;
+        alloc_size = HEADER_SIZE*sizeof(Bag) + new_size;
+        if (new_size == 0)
+            alloc_size++;
 #ifndef DISABLE_GC
-	dst = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
+        dst = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
 #else
         dst       = malloc( alloc_size );
-	memset(dst, 0, alloc_size);
+        memset(dst, 0, alloc_size);
 #endif
 #endif
-	
+
         /* leave magic size-type word  for the sweeper, type must be 255   */
 #ifdef USE_NEWSHAPE
 #ifndef BOEHM_GC
-	*(*bag-2) = (((WORDS_BAG(old_size)+1) * sizeof(Bag))) << 16 | 255;
+        *(*bag-2) = (((WORDS_BAG(old_size)+1) * sizeof(Bag))) << 16 | 255;
 #endif
-	*dst++ = (Bag)(new_size << 16 | type);
+        *dst++ = (Bag)(new_size << 16 | type);
 #else
 #ifndef BOEHM_GC
-	*(*bag-3) = 255; 
+        *(*bag-3) = 255;
         *(*bag-2) = (((WORDS_BAG(old_size)+2) * sizeof(Bag)));
 #endif
-	
+
         /* enter the new size-type word                                    */
 
         *dst++ = (Bag)type;
         *dst++ = (Bag)new_size;
 #endif
-        
+
 
 #ifndef BOEHM_GC
+        CANARY_DISABLE_VALGRIND();
         /* if the bag is already on the changed bags list, keep it there   */
         if ( PTR_BAG(bag)[-1] != bag ) {
             *dst++ = PTR_BAG(bag)[-1];
@@ -1901,6 +1940,7 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
         else {
             *dst++ = bag;
         }
+	    CANARY_ENABLE_VALGRIND();
 #else
         *dst++ = bag;
 #endif
@@ -1917,10 +1957,10 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
             *dst++ = *src++;
 #else
         if (dst != src) {
-	    memcpy( dst, src, old_size < new_size ? old_size : new_size );
-	} else if (new_size < old_size) {
-	  memset(dst+new_size, 0, old_size - new_size);
-	}
+            memcpy( dst, src, old_size < new_size ? old_size : new_size );
+        } else if (new_size < old_size) {
+            memset(dst+new_size, 0, old_size - new_size);
+        }
 #endif
 
     }
@@ -2047,7 +2087,7 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
 **  are tagged    with  MARKED_ALIVE(<identifier>)  in the   link   word, and
 **  half-dead bags (ie bags pointed to weakly but not strongly) with the tage
 **  MARKED_HALFDEAD(<identifier>).
-** 
+**
 **  Note that 'CollectBags' cannot put a random or magic  value into the link
 **  word, because the sweep phase must be able to find the masterpointer of a
 **  bag by only looking at the link word of a bag. This is done using the macros
@@ -2124,12 +2164,12 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
 **  to get along with  what it  got.   Also 'CollectBags' wants at least  one
 **  masterpointer per 8 words of free storage available.  If  this is not the
 **  case, 'CollectBags'  extends the masterpointer area  by moving the bodies
-**  of all bags and readjusting the masterpointers.  
+**  of all bags and readjusting the masterpointers.
 **
 **  Also,  after   a  full  garbage   collection,  'CollectBags'   scans  the
 **  masterpointer area for  identifiers containing 'OldWeakDeadBagMarker'. If
 **  the sweep functions have done their work then no  references to these bag
-**  identifiers can exist, and so 'CollectBags' frees these masterpointers.  
+**  identifiers can exist, and so 'CollectBags' frees these masterpointers.
 */
 #ifndef BOEHM_GC
 
@@ -2164,7 +2204,7 @@ void GenStackFuncBags ( void )
                 MARK_BAG( *p );
         }
     }
-#if ITANIUM 
+#if ITANIUM
     /* Itanium has two stacks */
     top = ItaniumRegisterStackTop();
     for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
@@ -2180,6 +2220,7 @@ void GenStackFuncBags ( void )
         MARK_BAG( *p );
 
 }
+
 UInt FullBags;
 
 /*  These are used to overwrite masterpointers which may still be
@@ -2189,7 +2230,7 @@ kind can be reclaimed after a full garbage collection. The values must
 not look like valid pointers, and should be congruent to 1 mod sizeof(Bag) */
 
 Bag * NewWeakDeadBagMarker = (Bag *)(1000*sizeof(Bag) + 1L);
-Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1L); 
+Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1L);
 
 #endif /* !BOEHM_GC */
 
@@ -2216,11 +2257,13 @@ UInt CollectBags (
     /*     Bag *               last;
            Char                type; */
 
+    CANARY_DISABLE_VALGRIND();
+    CLEAR_CANARY();
 #ifdef DEBUG_MASTERPOINTERS
     CheckMasterPointers();
 #endif
 
-    
+
     /* call the before function (if any)                                   */
     if ( BeforeCollectFuncBags != 0 )
         (*BeforeCollectFuncBags)();
@@ -2245,7 +2288,7 @@ again:
         }
 
         /* Also time to change the tag for dead children of weak
-           pointer objects. After this collection, there can be no more 
+           pointer objects. After this collection, there can be no more
            weak pointer objects pointing to anything with OldWeakDeadBagMarker
            in it */
         {
@@ -2269,7 +2312,7 @@ again:
     for ( i = 0; i < GlobalBags.nr; i++ )
         MARK_BAG( *GlobalBags.addr[i] );
 
-    
+
     /* mark from the stack                                                 */
     if ( StackFuncBags ) {
         (*StackFuncBags)();
@@ -2329,11 +2372,11 @@ again:
             /* leftover of a resize of <n> bytes                           */
             if ( (*(UInt*)src & 0xFFL) == 255 ) {
 
-                if ((*(UInt *)src >> 16) == 1) 
+                if ((*(UInt *)src >> 16) == 1)
                   src++;
                 else
                   src += WORDS_BAG(((UInt *)src)[1]);
-                
+
 
             }
 
@@ -2351,7 +2394,7 @@ again:
                       ((UInt)(src[HEADER_SIZE-1])) % sizeof(Bag) == 2 )
               {
 #ifdef DEBUG_MASTERPOINTERS
-                if  ( (((UInt)(src[1])) % sizeof(Bag) == 0 && 
+                if  ( (((UInt)(src[1])) % sizeof(Bag) == 0 &&
                        PTR_BAG( UNMARKED_DEAD(src[1]) ) != src+HEADER_SIZE)  ||
                       (((UInt)(src[1])) % sizeof(Bag) == 2 &&
                        PTR_BAG( UNMARKED_HALFDEAD(src[1])) != src+HEADER_SIZE))
@@ -2363,12 +2406,12 @@ again:
                 /* call freeing function                                   */
                 if ( TabFreeFuncBags[ *(UInt*)src & 0xFFL ] != 0 )
                   (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[HEADER_SIZE-1] );
-                
+
                 /* advance src                                             */
                 src += HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1] ) ;
-                
+
               }
-            
+
 
             /* live bag                                                    */
             else if ( ((UInt)(src[HEADER_SIZE-1])) % sizeof(Bag) == 1 )
@@ -2409,7 +2452,7 @@ again:
     while ( src < AllocBags ) {
 
         /* leftover of a resize of <n> bytes                               */
-        if ( (*(UInt*)src & 0xFFL) == 255 ) {     
+        if ( (*(UInt*)src & 0xFFL) == 255 ) {
 
             /* advance src                                                 */
             if ((*(UInt *) src) >> 8 == 1)
@@ -2443,7 +2486,7 @@ again:
             sizeDeadBags +=  ((UInt *)src)[0] >> 16;
 #else
             sizeDeadBags += ((UInt *)src)[1];
-#endif    
+#endif
 
 #ifdef  COUNT_BAGS
             /* update the statistics                                       */
@@ -2506,7 +2549,7 @@ again:
             /* don't free the identifier                                   */
             if (((UInt)UNMARKED_HALFDEAD(src[HEADER_SIZE-1])) % 4 != 0)
               (*AbortFuncBags)("align error in halfdead bag");
-                                              
+
            *(Bag**)(UNMARKED_HALFDEAD(src[HEADER_SIZE-1])) = NewWeakDeadBagMarker;
            nrHalfDeadBags ++;
 
@@ -2555,15 +2598,15 @@ again:
                   (*(TabSweepFuncBags[(UInt)(src[-HEADER_SIZE]) & 0xFFL]))(src,dst,end-src);
                   dst += end-src;
                   src = end;
-                  
+
                 }
-              
+
               /* Otherwise do the default thing */
               else if ( dst != src ) {
                 memmove((void *)dst, (void *)src, (end - src)*sizeof(*src));
                 dst += (end-src);
                 src = end;
-                
+
                 /*
                 while ( src < end )
                   *dst++ = *src++;
@@ -2624,8 +2667,8 @@ again:
         /* maybe adjust the size of the allocation area                    */
         if ( ! CacheSizeBags ) {
             if ( nrLiveBags+nrDeadBags +nrHalfDeadBags < 512
-                 
-                 /* The test below should stop AllocSizeBags 
+
+                 /* The test below should stop AllocSizeBags
                     growing uncontrollably when all bags are big */
                  && StopBags > OldBags + 4*1024*WORDS_BAG(AllocSizeBags))
                 AllocSizeBags += 256L;
@@ -2644,7 +2687,7 @@ again:
         /* if we dont get enough free storage or masterpointers do full gc */
         if ( EndBags < StopBags + WORDS_BAG(1024*AllocSizeBags)
           || SizeMptrsArea <
-             
+
              /*      nrLiveBags+nrDeadBags+nrHalfDeadBags+ 4096 */
              /*      If this test triggered, but the one below didn't
                      then a full collection would ensue which wouldn't
@@ -2653,8 +2696,8 @@ again:
                      but I wasn't sure it always made sense         SL */
 
              /* change the test to avoid subtracting unsigned integers */
-             
-             WORDS_BAG(AllocSizeBags*1024)/7 +(NrLiveBags + NrHalfDeadBags) 
+
+             WORDS_BAG(AllocSizeBags*1024)/7 +(NrLiveBags + NrHalfDeadBags)
              ) {
             done = 0;
         }
@@ -2667,7 +2710,7 @@ again:
     /* if we already performed a full garbage collection                   */
     else {
 
-      /* Clean up old half-dead bags                                      
+      /* Clean up old half-dead bags
          also reorder the free masterpointer linked list
          to get more locality */
       FreeMptrBags = (Bag)0L;
@@ -2780,9 +2823,11 @@ again:
 #ifdef DEBUG_MASTERPOINTERS
     CheckMasterPointers();
 #endif
-    
+
     /* Possibly advise the operating system about unused pages:            */
     SyMAdviseFree();
+
+    CANARY_ENABLE_VALGRIND();
 
     /* return success                                                      */
     return 1;
@@ -2844,11 +2889,11 @@ void SwapMasterPoint (
     }
     else if ( PTR_BAG(bag1)[-1] == bag1 ) {
         PTR_BAG(bag1)[-1] = ChangedBags;
-        ChangedBags = bag1; 
+        ChangedBags = bag1;
     }
     else if ( PTR_BAG(bag2)[-1] == bag2 ) {
         PTR_BAG(bag2)[-1] = ChangedBags;
-        ChangedBags = bag2; 
+        ChangedBags = bag2;
     }
 
     /* swap them                                                           */
