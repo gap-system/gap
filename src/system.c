@@ -86,13 +86,15 @@ const Char * SyKernelVersion = "4.dev";
 /****************************************************************************
 **
 *V  SyBuildVersion  . . . . . . . . . . . . . . . . source version for build 
+*V  SyBuildDate . . . . . . . . . . . . . . . . . . . date and time of build 
 ** GAP_BUILD_VERSION is defined in a generated header file gap_version.h,
 ** and will typically contain the tag and commit SHA that was used to build
 ** the executable.
 **
 ** This variable will replace SyKernelVersion above.
 */
-const Char * SyBuildVersion = GAP_BUILD_VERSION;
+const Char * SyBuildVersion  = GAP_BUILD_VERSION;
+const Char * SyBuildDateTime = GAP_BUILD_DATETIME;
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
