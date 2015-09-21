@@ -1823,7 +1823,6 @@ struct optInfo options[] = {
   { 0, "",0,0}};
 
 
-
 Char ** SyOriginalArgv;
 UInt SyOriginalArgc;
 

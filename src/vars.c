@@ -2486,10 +2486,10 @@ Obj             EvalIsbPosObj (
     /* get the result                                                      */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
         Bag *contents = PTR_BAG(list);
-	if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
-	  isb = False;
-	else
-	  isb = contents[p] != 0 ? True : False;
+        if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
+          isb = False;
+        else
+          isb = contents[p] != 0 ? True : False;
     }
     else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
         isb = IsbListFuncs[T_FIXALIST](list, p) ? True : False;
@@ -2598,7 +2598,7 @@ UInt            ExecAssComObjName (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-	break;
+        break;
       case T_ACOMOBJ:
       {
 #ifdef CHECK_TL_ASSIGNS
@@ -2614,10 +2614,10 @@ UInt            ExecAssComObjName (
 #endif
         SetARecordField( record, rnam, rhs);
       }
-	break;
+        break;
       default:
         ASS_REC( record, rnam, rhs );
-	break;
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2653,13 +2653,13 @@ UInt            ExecAssComObjExpr (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-	break;
+        break;
       case T_ACOMOBJ:
         SetARecordField( record, rnam, rhs );
-	break;
+        break;
       default:
         ASS_REC( record, rnam, rhs );
-	break;
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2691,13 +2691,13 @@ UInt            ExecUnbComObjName (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         UnbPRec( record, rnam );
-	break;
+        break;
       case T_ACOMOBJ:
         UnbRecFuncs[T_AREC]( record, rnam);
-	break;
+        break;
       default:
         UNB_REC( record, rnam );
-	break;
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2729,13 +2729,13 @@ UInt            ExecUnbComObjExpr (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         UnbPRec( record, rnam );
-	break;
+        break;
       case T_ACOMOBJ:
         UnbRecFuncs[T_AREC]( record, rnam);
-	break;
+        break;
       default:
         UNB_REC( record, rnam );
-	break;
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2767,13 +2767,13 @@ Obj             EvalElmComObjName (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         elm = ElmPRec(record, rnam);
-	break;
+        break;
       case T_ACOMOBJ:
         elm = ElmARecord(record, rnam);
-	break;
+        break;
       default:
         elm = ELM_REC( record, rnam );
-	break;
+        break;
     }
 
     /* return the element                                                  */
@@ -2837,13 +2837,13 @@ Obj             EvalIsbComObjName (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         isb = (IsbPRec( record, rnam ) ? True : False);
-	break;
+        break;
       case T_ACOMOBJ:
         isb = (GetARecordField( record, rnam ) != (Obj) 0 ? True : False);
-	break;
+        break;
       default:
         isb = (ISB_REC( record, rnam ) ? True : False);
-	break;
+        break;
     }
 
     /* return the result                                                   */
@@ -2875,13 +2875,13 @@ Obj             EvalIsbComObjExpr (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         isb = (IsbPRec( record, rnam ) ? True : False);
-	break;
+        break;
       case T_ACOMOBJ:
         isb = (GetARecordField( record, rnam ) != (Obj) 0 ? True : False);
-	break;
+        break;
       default:
         isb = (ISB_REC( record, rnam ) ? True : False);
-	break;
+        break;
     }
 
     /* return the result                                                   */

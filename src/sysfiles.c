@@ -880,12 +880,11 @@ Int SyFopen (
         if ( syBuf[fid].fp == -1 )
           break;
     
-    if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) )
-    {
+    if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) ) {
         HashUnlock(&syBuf);
         return (Int)-1;
     }
-    
+
     /* set up <namegz> and <cmd> for pipe command                          */
     namegz[0] = '\0';
     if (strlen(name) <= 1018) {
@@ -963,8 +962,7 @@ UInt SySetBuffering( UInt fid )
   while (bufno < sizeof(syBuffers)/sizeof(syBuffers[0]) &&
          syBuffers[bufno].inuse != 0)
     bufno++;
-  if (bufno >= sizeof(syBuffers)/sizeof(syBuffers[0]))
-  {
+  if (bufno >= sizeof(syBuffers)/sizeof(syBuffers[0])) {
       HashUnlock(&syBuf);
       return 0;
   }
