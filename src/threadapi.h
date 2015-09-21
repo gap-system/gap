@@ -1,6 +1,8 @@
 #ifndef GAP_THREADAPI_H
 #define GAP_THREADAPI_H
 
+#include <pthread.h>
+
 typedef struct {
   pthread_mutex_t lock;
   struct WaitList *head, *tail;
