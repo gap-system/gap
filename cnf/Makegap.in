@@ -150,7 +150,8 @@ calls.o: ../../Makefile @srcdir@/calls.c @srcdir@/system.h config.h @srcdir@/gas
   @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
   @srcdir@/calls.h @srcdir@/opers.h @srcdir@/records.h @srcdir@/precord.h \
   @srcdir@/lists.h @srcdir@/bool.h @srcdir@/plist.h @srcdir@/string.h \
-  @srcdir@/code.h @srcdir@/vars.h @srcdir@/stats.h @srcdir@/saveload.h
+  @srcdir@/code.h @srcdir@/stats.h @srcdir@/saveload.h @srcdir@/tls.h \
+  @srcdir@/vars.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o calls.o -c @srcdir@/calls.c
 
 code.o: ../../Makefile @srcdir@/code.c @srcdir@/system.h config.h @srcdir@/gasman.h \
@@ -495,8 +496,8 @@ sysfiles.o: ../../Makefile @srcdir@/sysfiles.c @srcdir@/system.h config.h @srcdi
   @srcdir@/read.h @srcdir@/compstat.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o sysfiles.o -c @srcdir@/sysfiles.c
 
-system.o: ../../Makefile @srcdir@/system.c @srcdir@/system.h config.h @srcdir@/gap.h \
-  @srcdir@/sysfiles.h @srcdir@/gasman.h
+system.o: ../../Makefile @srcdir@/system.c @srcdir@/system.h config.h gap_version.h \
+  @srcdir@/gap.h @srcdir@/sysfiles.h @srcdir@/gasman.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o system.o -c @srcdir@/system.c
 
 tietze.o: ../../Makefile @srcdir@/tietze.c @srcdir@/system.h config.h @srcdir@/code.h \
