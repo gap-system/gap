@@ -8,11 +8,6 @@
 *Y    See included file, COPYING, for conditions for copying
 **
 */
-#ifdef INCLUDE_DECLARATION_PART
-const char * Revision_gapmpi_h =
-   "@(#)$Id: gapmpi.h,v 1.4 2001/07/12 15:08:52 gap Exp $";
-#endif
-
 
 /****************************************************************************
 **

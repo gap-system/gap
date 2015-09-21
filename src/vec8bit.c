@@ -6113,7 +6113,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoVec8bit ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

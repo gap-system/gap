@@ -1546,10 +1546,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoThreadAPI ( void )
 {
-    /* TODO: Insert proper revision numbers. */
-    module.revision_c = "@(#)$Id: threadapi.c,v 1.0 ";
-    module.revision_h = "@(#)$Id: threadapi.h,v 1.0 ";
-    FillInVersion( &module );
     return &module;
 }
 

@@ -2117,9 +2117,5 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoAObjects ( void )
 {
-    /* TODO: Insert proper revision numbers. */
-    module.revision_c = "@(#)$Id: aobjects.c,v 1.0 ";
-    module.revision_h = "@(#)$Id: aobjects.h,v 1.0 ";
-    FillInVersion( &module );
     return &module;
 }

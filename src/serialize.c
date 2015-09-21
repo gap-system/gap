@@ -1188,7 +1188,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSerialize ( void )
 {
-    FillInVersion( &module );
     return &module;
 }
 

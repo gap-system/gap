@@ -1052,6 +1052,5 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoObjSets ( void )
 {
-    FillInVersion( &module );
     return &module;
 }

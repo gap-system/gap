@@ -21,9 +21,6 @@
 #include	<stdio.h>		/* NULL, fprintf		   */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_gapmpi_c =
-"@(#)$Id: gapmpi.c,v 1.7 2001/07/12 15:03:13 gap Exp $";
-
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
@@ -49,9 +46,7 @@ const char * Revision_gapmpi_c =
 #include        "vars.h"                /* variables                       */
 #include        "stats.h"               /* statements (XXX_BRK_CURR_STAT)  */
 
-#define INCLUDE_DECLARATION_PART
 # include       "gapmpi.h"               /* MPI functions and UNIX utils   */
-#undef  INCLUDE_DECLARATION_PART
 #include        <mpi.h>                  /* provided with MPI distribution */
 #ifndef SYS_UNISTD_H                     /* definition of 'chdir'          */
 # include <unistd.h>
@@ -737,16 +732,10 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoGapmpi ( void ) /* For backward compatibility */
 {
-    module.revision_c = Revision_gapmpi_c;
-    module.revision_h = Revision_gapmpi_h;
-    FillInVersion( &module );
     return &module;
 }
 StructInitInfo * InitInfoPargapmpi ( void )
 {
-    module.revision_c = Revision_gapmpi_c;
-    module.revision_h = Revision_gapmpi_h;
-    FillInVersion( &module );
     return &module;
 }
 
