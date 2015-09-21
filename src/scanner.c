@@ -877,7 +877,7 @@ UInt OpenOutput (
     Int                 file;
 
     /* do nothing for stdout and errout if catched */
-    if ( TLS(Output) != NULL && IgnoreStdoutErrout == TLS(Output) &&
+    if ( TLS(Output) != NULL && TLS(IgnoreStdoutErrout) == TLS(Output) &&
           ( strcmp( filename, "*errout*" ) == 0
            || strcmp( filename, "*stdout*" ) == 0 ) ) {
         return 1;
@@ -975,7 +975,7 @@ UInt CloseOutput ( void )
     if ( TLS(Output) == TLS(TestOutput) )
         return 1;
     /* and similarly */
-    if ( IgnoreStdoutErrout == TLS(Output) )
+    if ( TLS(IgnoreStdoutErrout) == TLS(Output) )
         return 1;
 
     /* refuse to close the initial output file '*stdout*'                  */
