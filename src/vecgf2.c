@@ -805,43 +805,43 @@ struct greaseinfo {
   UInt **prrows;
 };
 
-static struct greaseinfo g;
+
 
 /* Make if necessary the grease row for bits
    controlled by the data in g. Recursive
    so can't be inlined */
 
-static UInt * getgreasedata( UInt bits)
+static UInt * getgreasedata( struct greaseinfo *g, UInt bits)
 { 
   UInt x,y;
   register UInt *ps, *pd, *ps2,i ;
   UInt *pd1;
-  switch(g.pgtags[bits])
+  switch(g->pgtags[bits])
     {
     case 0:
       /* Need to make the row */
-      x = g.pgrules[bits];
+      x = g->pgrules[bits];
       y = bits ^ (1 << x);
       /* make it by adding row x to grease vector indexed y */
-      ps =g.prrows[x];
-      ps2 = getgreasedata(y);
-      pd1 = g.pgbuf + (bits-3)*g.nblocks;
+      ps =g->prrows[x];
+      ps2 = getgreasedata(g,y);
+      pd1 = g->pgbuf + (bits-3)*g->nblocks;
       pd = pd1;
       /* time critical inner loop */
-      for (i = g.nblocks; i > 0; i--)
+      for (i = g->nblocks; i > 0; i--)
 	*pd++ = *ps++ ^ *ps2++;
       /* record that we made it */
-      g.pgtags[bits] = 1;
+      g->pgtags[bits] = 1;
       return pd1;
 
     case 1:
       /* we've made this one already, so just return it */
-      return  g.pgbuf + (bits-3)*g.nblocks;
+      return  g->pgbuf + (bits-3)*g->nblocks;
 
     case 2:
       /* This one does not need making, bits actually
 	 has just a single 1 bit in it */
-      return g.prrows[g.pgrules[bits]];
+      return g->prrows[g->pgrules[bits]];
 
     }
   return (UInt *)0;		/* can't actually get here
@@ -877,6 +877,7 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
   UInt **prrows;
   Obj prowptrs;			/* and for prod */
   UInt **pprows;
+  struct greaseinfo g;
   
   len = LEN_GF2MAT(ml);
   row = ELM_GF2MAT(mr, 1);
@@ -1013,6 +1014,7 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
 
 	      /* find the appropriate parts of grease tags
 		 grease buffer and mr. Store in g */
+	      
 	      if (gs > 1)
 		{
 		  g.pgtags = pgtags + glen*i;
@@ -1029,7 +1031,7 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
 	      else if (bits == 1) /* handle this one specially to speed up the greaselevel 1 case */
 		v = prrows[k-1]; /* -1 is because k is 1-based index */
 	      else
-		v = getgreasedata(bits); /* The main case */
+		v = getgreasedata(&g,bits); /* The main case */
 				/* This function should be inlined */
 	      AddGF2VecToGF2Vec(pprow, v,  rlen);  
 	    }  
