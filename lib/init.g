@@ -645,8 +645,8 @@ BindGlobal( "ShowKernelInformation", function()
       else
         btop := "*********"; vert := "*"; bbot := btop;
       fi;
-      Print( " ",btop,"   GAP, Version ", GAPInfo.BuildVersion, " of ",
-             sysdate, " (free software, GPL)\n",
+      Print( " ",btop,"   GAP ", GAPInfo.BuildVersion,
+             " of ", sysdate, "\n",
              " ",vert,"  GAP  ",vert,"   http://www.gap-system.org\n",
              " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
       # For each library, print the name.
