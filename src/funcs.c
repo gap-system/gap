@@ -794,18 +794,28 @@ static inline void CheckRecursionBefore( void )
 }
 
 
- Obj STEVES_TRACING;
+Obj STEVES_TRACING;
 
-#define CHECK_RECURSION_BEFORE CheckRecursionBefore(); PROF_IN_FUNCTION(func);
+#define CHECK_RECURSION_BEFORE \
+            CheckRecursionBefore(); \
+            PROF_IN_FUNCTION(func);
 
+#define CHECK_RECURSION_AFTER \
+            TLS(RecursionDepth)--; \
+            PROF_OUT_FUNCTION(func);
 
-#define CHECK_RECURSION_AFTER     TLS(RecursionDepth)--; PROF_OUT_FUNCTION(func);   
+#define REMEMBER_LOCKSTACK() \
+    do { } while (0)
+
+#define CLEAR_LOCK_STACK() \
+    do { } while (0)
 
 
 Obj DoExecFunc0args (
     Obj                 func )
 {
     Bag                 oldLvars;       /* old values bag                  */
+    REMEMBER_LOCKSTACK();
 
     OLD_BRK_CURR_STAT                   /* old executing statement         */
 
@@ -819,13 +829,14 @@ Obj DoExecFunc0args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+    CLEAR_LOCK_STACK();
 
    /* remove the link to the calling function, in case this values bag
        stays alive due to higher variable reference */
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* Switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
     
@@ -843,6 +854,7 @@ Obj             DoExecFunc1args (
     Obj                 arg1 )
 {
     Bag                 oldLvars;       /* old values bag                  */
+    REMEMBER_LOCKSTACK();
     OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
@@ -857,13 +869,14 @@ Obj             DoExecFunc1args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+    CLEAR_LOCK_STACK();
 
    /* remove the link to the calling function, in case this values bag
        stays alive due to higher variable reference */
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -882,6 +895,7 @@ Obj             DoExecFunc2args (
     Obj                 arg2 )
 {
     Bag                 oldLvars;       /* old values bag                  */
+    REMEMBER_LOCKSTACK();
     OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
@@ -897,13 +911,14 @@ Obj             DoExecFunc2args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+    CLEAR_LOCK_STACK();
 
    /* remove the link to the calling function, in case this values bag
        stays alive due to higher variable reference */
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -923,6 +938,7 @@ Obj             DoExecFunc3args (
     Obj                 arg3 )
 {
     Bag                 oldLvars;       /* old values bag                  */
+    REMEMBER_LOCKSTACK();
     OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
@@ -939,13 +955,14 @@ Obj             DoExecFunc3args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+    CLEAR_LOCK_STACK();
 
    /* remove the link to the calling function, in case this values bag
        stays alive due to higher variable reference */
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -966,6 +983,7 @@ Obj             DoExecFunc4args (
     Obj                 arg4 )
 {
     Bag                 oldLvars;       /* old values bag                  */
+    REMEMBER_LOCKSTACK();
     OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
@@ -983,13 +1001,14 @@ Obj             DoExecFunc4args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+    CLEAR_LOCK_STACK();
 
    /* remove the link to the calling function, in case this values bag
        stays alive due to higher variable reference */
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -1011,6 +1030,7 @@ Obj             DoExecFunc5args (
     Obj                 arg5 )
 {
     Bag                 oldLvars;       /* old values bag                  */
+    REMEMBER_LOCKSTACK();
     OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
@@ -1029,13 +1049,14 @@ Obj             DoExecFunc5args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+    CLEAR_LOCK_STACK();
 
    /* remove the link to the calling function, in case this values bag
        stays alive due to higher variable reference */
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -1058,6 +1079,7 @@ Obj             DoExecFunc6args (
     Obj                 arg6 )
 {
     Bag                 oldLvars;       /* old values bag                  */
+    REMEMBER_LOCKSTACK();
     OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
@@ -1077,13 +1099,14 @@ Obj             DoExecFunc6args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+    CLEAR_LOCK_STACK();
 
    /* remove the link to the calling function, in case this values bag
        stays alive due to higher variable reference */
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -1101,6 +1124,7 @@ Obj             DoExecFuncXargs (
     Obj                 args )
 {
     Bag                 oldLvars;       /* old values bag                  */
+    REMEMBER_LOCKSTACK();
     OLD_BRK_CURR_STAT                   /* old executing statement         */
     UInt                len;            /* number of arguments             */
     UInt                i;              /* loop variable                   */
@@ -1129,13 +1153,14 @@ Obj             DoExecFuncXargs (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+    CLEAR_LOCK_STACK();
 
    /* remove the link to the calling function, in case this values bag
        stays alive due to higher variable reference */
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -1477,8 +1502,8 @@ static Int InitLibrary (
 static Int InitKernel (
     StructInitInfo *    module )
 {
-  RecursionTrapInterval = 5000;
-  InitCopyGVar("STEVES_TRACING", &STEVES_TRACING);
+    RecursionTrapInterval = 5000;
+    InitCopyGVar("STEVES_TRACING", &STEVES_TRACING);
   
     /* make the global variable known to Gasman                            */
     InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );

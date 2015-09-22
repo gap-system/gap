@@ -211,6 +211,13 @@ static inline void SwitchToOldLVars( Obj old
 #define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old))
 #endif
 
+// The following is here for HPC-GAP compatibility
+#ifdef TRACEFRAMES
+#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVars((old), __FILE__,__LINE__)
+#else
+#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVars((old))
+#endif
+
 
 /****************************************************************************
 **
