@@ -723,21 +723,16 @@ local val,brci,fam;
   g:=CoefficientsOfLaurentPolynomial(g);
   m:=CoefficientsOfLaurentPolynomial(m);
 
-  # use 'PowerModCoeffs' to power polynomial
-  if g[2]=m[2] then
-    val:=g[2];
-    g:=g[1];
-    m:=m[1];
-  else
-    val:=0;
-    g:=ShiftedCoeffs(g[1],g[2]);
-    m:=ShiftedCoeffs(m[1],m[2]);
-  fi;
+  g:=ShiftedCoeffs(g[1],g[2]);
+  m:=ShiftedCoeffs(m[1],m[2]);
+
   g:=PowerModCoeffs(g,Length(g),e,m,Length(m));
   if Length(g)>0 and (g[1]=fam!.zeroCoefficient or
-    g[Length(g)]=fam!.zeroCoefficient) then
-    g:=ShallowCopy(g);
-    val:=val+RemoveOuterCoeffs(g,fam!.zeroCoefficient);
+             g[Length(g)]=fam!.zeroCoefficient) then
+      g:=ShallowCopy(g);
+      val:=RemoveOuterCoeffs(g,fam!.zeroCoefficient);
+  else
+      val := 0;
   fi;
   g:=LaurentPolynomialByExtRepNC(fam,g,val,brci);
   return g;
