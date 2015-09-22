@@ -139,6 +139,7 @@ Int SyFindOrLinkGapRootFile (
     Int                 found_gap = 0;
     Int                 found_dyn = 0;
     Int                 found_sta = 0;
+    Char                tmpbuffer[256];
     Char *              tmp;
     Char                module[256];
     Char                name[256];
@@ -156,7 +157,7 @@ Int SyFindOrLinkGapRootFile (
 
     /* find the GAP file                                                   */
     result->pathname[0] = '\0';
-    tmp = SyFindGapRootFile(filename);
+    tmp = SyFindGapRootFile(filename, tmpbuffer);
     if ( tmp ) {
         strxcpy( result->pathname, tmp, sizeof(result->pathname) );
         strxcpy( name, tmp, sizeof(name) );
@@ -223,7 +224,7 @@ Int SyFindOrLinkGapRootFile (
         strxcat( module, filename, sizeof(module) );
     }
     strxcat( module, ".so", sizeof(module) );
-    tmp = SyFindGapRootFile(module);
+    tmp = SyFindGapRootFile(module, tmpbuffer);
 
     /* special handling for the case of package files */
     if (!tmp && !strncmp(filename, "pkg", 3)) {
@@ -259,7 +260,7 @@ Int SyFindOrLinkGapRootFile (
           strxcat( module, p2, sizeof(module) );
         }
         strxcat( module, ".so", sizeof(module) );
-        tmp = SyFindGapRootFile(module);
+        tmp = SyFindGapRootFile(module, tmpbuffer);
 
      }
     if ( tmp ) {
@@ -3631,19 +3632,18 @@ Obj SyIsDir ( const Char * name )
 
 /****************************************************************************
 **
-*F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
+*F  SyFindGapRootFile( <filename>,<buffer> ) . .  find file in system area
 */
-Char * SyFindGapRootFile ( const Char * filename )
+Char * SyFindGapRootFile ( const Char * filename, Char * result )
 {
-    static Char     result[256];
     Int             k;
 
     for ( k=0;  k<sizeof(SyGapRootPaths)/sizeof(SyGapRootPaths[0]);  k++ ) {
         if ( SyGapRootPaths[k][0] ) {
             result[0] = '\0';
-            if (strlcpy( result, SyGapRootPaths[k], sizeof(result) ) >= sizeof(result))
+            if (strlcpy( result, SyGapRootPaths[k], 256 ) >= 256)
                 continue;
-            if (strlcat( result, filename, sizeof(result) ) >= sizeof(result))
+            if (strlcat( result, filename, 256 ) >= 256)
             	continue;
             if ( SyIsReadableFile(result) == 0 ) {
                 return result;
