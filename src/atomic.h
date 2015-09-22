@@ -7,4 +7,7 @@
  * and classic GAP.
  */
 
+#define MEMBAR_READ() ((void) 0)
+#define MEMBAR_WRITE() ((void) 0)
+
 #endif
