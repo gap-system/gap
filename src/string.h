@@ -278,6 +278,24 @@ extern Int IsStringConv (
 
 /****************************************************************************
 **
+*F  MakeImmutableString(  <str> ) make a string immutable in place
+**
+*/
+
+void MakeImmutableString(Obj str);
+
+
+Obj MakeString(Char *cstr);
+Obj MakeString2(Char *cstr1, Char *cstr2);
+Obj MakeString3(Char *cstr1, Char *cstr2, Char *cstr3);
+Obj MakeImmString(Char *cstr);
+Obj MakeImmString2(Char *cstr1, Char *cstr2);
+Obj MakeImmString3(Char *cstr1, Char *cstr2, Char *cstr3);
+Obj ConvImmString(Obj str);
+
+
+/****************************************************************************
+**
 *F  C_NEW_STRING_DYN( <string>, <cstring> ) . . . . . . . . create GAP string
 **
 ** The cstring is assumed to be allocated on the heap, hence its length

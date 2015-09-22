@@ -1520,6 +1520,68 @@ void MakeImmutableString( Obj str )
 }
 
 
+Obj MakeString(Char *cstr)
+{
+  Obj result;
+  C_NEW_STRING(result, strlen(cstr), cstr);
+  return result;
+}
+
+Obj MakeString2(Char *cstr1, Char *cstr2)
+{
+  Obj result;
+  size_t len1 = strlen(cstr1), len2 = strlen(cstr2);
+  result = NEW_STRING(len1 + len2);
+  memcpy(CSTR_STRING(result), cstr1, len1);
+  memcpy(CSTR_STRING(result)+len1, cstr2, len2);
+  return result;
+}
+
+Obj MakeString3(Char *cstr1, Char *cstr2, Char *cstr3)
+{
+  Obj result;
+  size_t len1 = strlen(cstr1), len2 = strlen(cstr2), len3 = strlen(cstr3);
+  result = NEW_STRING(len1 + len2 + len3);
+  memcpy(CSTR_STRING(result), cstr1, len1);
+  memcpy(CSTR_STRING(result)+len1, cstr2, len2);
+  memcpy(CSTR_STRING(result)+len1+len2, cstr3, len3);
+  return result;
+}
+
+Obj MakeImmString(Char *cstr)
+{
+  Obj result = MakeString(cstr);
+  MakeImmutableString(result);
+  return result;
+}
+
+Obj MakeImmString2(Char *cstr1, Char *cstr2)
+{
+  Obj result = MakeString2(cstr1, cstr2);
+  MakeImmutableString(result);
+  return result;
+}
+
+Obj MakeImmString3(Char *cstr1, Char *cstr2, Char *cstr3)
+{
+  Obj result = MakeString3(cstr1, cstr2, cstr3);
+  MakeImmutableString(result);
+  return result;
+}
+
+Obj ConvImmString(Obj str)
+{
+  Obj result;
+  if (!str || !IsStringConv(str))
+    return (Obj) 0;
+  if (!IS_MUTABLE_OBJ(str))
+    return str;
+  C_NEW_STRING(result, GET_LEN_STRING(str), CSTR_STRING(str))
+  MakeImmutableString(result);
+  return result;
+}
+
+
 
 /****************************************************************************
 **
