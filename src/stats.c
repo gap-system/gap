@@ -132,6 +132,14 @@ UInt            ExecUnknownStat (
     return 0;
 }
 
+/****************************************************************************
+**
+*F  UInt HaveInterrupt() . . . . . . . . check for user interrupts
+**
+*/
+
+#define HaveInterrupt()   SyIsIntr()
+
 
 /****************************************************************************
 **
@@ -469,7 +477,7 @@ UInt            ExecFor (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -502,7 +510,7 @@ UInt            ExecFor (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -578,7 +586,7 @@ UInt            ExecFor2 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -616,7 +624,7 @@ UInt            ExecFor2 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -699,7 +707,7 @@ UInt            ExecFor3 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -743,7 +751,7 @@ UInt            ExecFor3 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -843,7 +851,7 @@ UInt            ExecForRange (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -908,7 +916,7 @@ UInt            ExecForRange2 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -980,7 +988,7 @@ UInt            ExecForRange3 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1058,7 +1066,7 @@ UInt ExecWhile (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1096,7 +1104,7 @@ UInt ExecWhile2 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1141,7 +1149,7 @@ UInt ExecWhile3 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1207,7 +1215,7 @@ UInt ExecRepeat (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1245,7 +1253,7 @@ UInt ExecRepeat2 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1290,7 +1298,7 @@ UInt ExecRepeat3 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1531,7 +1539,7 @@ UInt            ExecReturnObj (
 {
 #if ! HAVE_SIGNAL
     /* test for an interrupt                                               */
-    if ( SyIsIntr() ) {
+    if ( HaveInterrupt() ) {
         ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
     }
 #endif
@@ -1563,7 +1571,7 @@ UInt            ExecReturnVoid (
 {
 #if ! HAVE_SIGNAL
     /* test for an interrupt                                               */
-    if ( SyIsIntr() ) {
+    if ( HaveInterrupt() ) {
         ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
     }
 #endif
@@ -1595,7 +1603,7 @@ UInt RealExecStatCopied;
 
 UInt TakeInterrupt( void ) {
   UInt i;
-  if (SyIsIntr()) {
+  if (HaveInterrupt()) {
       assert(RealExecStatCopied);
       for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
           ExecStatFuncs[i] = RealExecStatFuncs[i];
@@ -1630,7 +1638,7 @@ UInt ExecIntrStat (
         }
         RealExecStatCopied = 0;
     }
-    SyIsIntr();
+    HaveInterrupt();
 
     /* and now for something completely different                          */
     SET_BRK_CURR_STAT( stat );
@@ -1710,7 +1718,7 @@ void ClearError ( void )
         }
         RealExecStatCopied = 0;
         /* check for user interrupt */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
               0L, 0L);
         }
