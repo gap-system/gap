@@ -1485,7 +1485,6 @@ Obj FuncE (
     Obj                 self,
     Obj                 n )
 {
-    UInt                i;              /* loop variable                   */
     Obj *               res;            /* pointer into result bag         */
 
     /* do full operation                                                   */
