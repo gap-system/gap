@@ -1061,8 +1061,13 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
     return true;
   end;
 
+  if not M.IsOverFiniteField then
+    return Error ("Argument of ProperModuleDecomp is not over a finite field.");
+  fi;
+
   n:=M.dimension;
   F:=M.field;
+
   zero:=Zero(F);
   Info(InfoMtxHom,2,"ProperModuleDecomp for module of dimension ", n);
 

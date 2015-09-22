@@ -20,9 +20,8 @@ local l,f,dim,m;
     Error("Usage: GModuleByMats(<mats>,[<id>,]<field>)");
   fi;
   f:=arg[Length(arg)];
-  if Size(f)=infinity or Length(l)>0 and
-    (Characteristic(l[1])<>Characteristic(f) or not IsFFECollCollColl(l)) then
-      Error("matrices and field do not fit together or field is infinite");
+  if Length(l)>0 and Characteristic(l[1])<>Characteristic(f) then
+      Error("matrices and field do not fit together");
   fi;
   l:=List(l,i->ImmutableMatrix(f,i));
   MakeImmutable(l);
@@ -45,6 +44,7 @@ local l,f,dim,m;
   m.dimension:=dim;
   m.generators:=l;
 
+  m.IsOverFiniteField:= Size(f)<>infinity and IsFFECollCollColl(l);
   return m;
 end);
 
@@ -52,7 +52,7 @@ end);
 ##
 #F  TrivialGModule ( g, F ) . . . trivial G-module
 ##
-##  g is a finite group, F a finite field, trivial smash G-module computed.
+##  g is a finite group, F a field, trivial smash G-module computed.
 InstallGlobalFunction(TrivialGModule,function (g, F)
 local mats;
   mats:=List(GeneratorsOfGroup(g),i->[[One(F)]]);
@@ -86,7 +86,11 @@ InstallGlobalFunction(InducedGModule,function (g, h, m)
 
    hdim:=SMTX.Dimension(m);
    F:=SMTX.Field(m);
-   ghom:=GroupHomomorphismByImages(h,GL(hdim,Size(F)),gensh,mats);
+   if Characteristic(F)=0 then
+       ghom:=GroupHomomorphismByImagesNC(h,Group(mats),gensh,mats);
+   else
+       ghom:=GroupHomomorphismByImages(h,GL(hdim,F),gensh,mats);
+   fi;
 
    #set up transveral
    r:=RightTransversal (g, h);
@@ -120,7 +124,7 @@ end);
 ##
 #F PermutationGModule ( g, F) . permutation module
 ##
-## g is a permutation group, F a finite field.
+## g is a permutation group, F a field.
 ## The corresponding permutation module is output.
 InstallGlobalFunction(PermutationGModule,function (g, F)
    local gens, deg;
@@ -1125,6 +1129,9 @@ SMTX_IrreducibilityTest:=function ( module )
       return Error ("Argument of IsIrreducible is not a module.");
    fi;
 
+   if not module.IsOverFiniteField then
+      return Error ("Argument of IsIrreducible is not over a finite field.");
+   fi;
    matrices:=ShallowCopy(module.generators);
    dim:=SMTX.Dimension(module);
    ngens:=Length (matrices);
@@ -1833,10 +1840,17 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
       pow, matrices, newmatrices, looking, 
       basisN, basisB, basisBN, P, Pinv, i, j, k, nblocks; 
 
-   if not SMTX.IsMTXModule(module) or not SMTX.IsIrreducible(module) then
-      Error("Argument of IsAbsoluteIrreducible is not an irreducible module");
+   if not SMTX.IsMTXModule(module) then
+      Error("Argument of IsAbsoluteIrreducible is not a module");
    fi;
 
+   if not SMTX.IsIrreducible(module) then
+      Error("Argument of iIsAbsoluteIrreducible s not an irreducible module");
+   fi;
+
+   if not module.IsOverFiniteField then
+      return Error ("Argument of IsAbsoluteIrreducible is not over a finite field.");
+   fi;
    dim:=SMTX.Dimension(module);
    F:=SMTX.Field(module);
    q:=Size (F);
