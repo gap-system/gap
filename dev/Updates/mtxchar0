@@ -1,0 +1,29 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! 2015/02/11
+!! Changed by
+DP, AH
+!! Type of Change
+Fix: usability issue
+New: improved documentation
+!! Description
+Removed unnecessary tests for the finiteness of the field from GModule and 
+related functions (the ones that do not need meataxe, but just linear algebra).
+Thus the correponding functions will work in char 0 case, or for other infinite
+fields, too.
+! Test Code
+gap> a:=AlternatingGroup(5);;
+gap> irr:=IrreducibleRepresentations(a);;
+gap> m:=GModuleByMats(GeneratorsOfGroup(Image(irr[3])),CyclotomicField(10));;
+gap> mm:=TensorProductGModule(m,m);;
+gap> smm:=MTX.SubGModule(mm,[[1,1,1,1,1,1,1,1,1]]);;
+gap> Size(Group(MTX.InducedActionSubmodule(mm,smm).generators));
+60
+gap> im:=InducedGModule(AlternatingGroup(6),a,m);;
+gap> im.dimension;
+18
+gap> MTX.CompositionFactors(m);
+Error, Argument of IsIrreducible is not over a finite field.
+!! Changeset
+47c566add2e58ce4395385cb916363660d2dfb74
+!! End
