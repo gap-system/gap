@@ -4218,11 +4218,13 @@ void            IntrAssComObjName (
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+      default:
         ASS_REC( record, rnam, rhs );
+        break;
     }
 
     /* push the assigned value                                             */
@@ -4251,11 +4253,13 @@ void            IntrAssComObjExpr ( void )
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+      default:
         ASS_REC( record, rnam, rhs );
+        break;
     }
 
     /* push the assigned value                                             */
@@ -4276,12 +4280,14 @@ void            IntrUnbComObjName (
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    /* unbind the element of the record             			   */
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         UNB_REC( record, rnam );
+        break;
     }
 
     /* push void                                                           */
@@ -4305,12 +4311,14 @@ void            IntrUnbComObjExpr ( void )
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    /* unbind the element of the record             			   */
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         UNB_REC( record, rnam );
+        break;
     }
 
     /* push void                                                           */
@@ -4339,11 +4347,14 @@ void            IntrElmComObjName (
     record = PopObj();
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         elm = ELM_REC( record, rnam );
+        break;
     }
 
     /* push the element                                                    */
@@ -4369,11 +4380,13 @@ void            IntrElmComObjExpr ( void )
     record = PopObj();
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         elm = ELM_REC( record, rnam );
+        break;
     }
 
     /* push the element                                                    */
@@ -4396,11 +4409,13 @@ void            IntrIsbComObjName (
     record = PopObj();
 
     /* get the result                                                      */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
-        isb = (ISB_REC( record, rnam ) ? True : False);
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        isb = ElmPRec( record, rnam ) ? True : False;
+        break;
+      default:
+        isb = ISB_REC( record, rnam ) ? True : False;
+        break;
     }
 
     /* push the result                                                     */
@@ -4426,11 +4441,13 @@ void            IntrIsbComObjExpr ( void )
     record = PopObj();
 
     /* get the result                                                      */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
-        isb = (ISB_REC( record, rnam ) ? True : False);
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        isb = IsbPRec( record, rnam ) ? True : False;
+        break;
+      default:
+        isb = ISB_REC( record, rnam ) ? True : False;
+        break;
     }
 
     /* push the result                                                     */
