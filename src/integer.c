@@ -1643,6 +1643,8 @@ Obj             PowInt (
     Obj                 pow;
 
     /* power with a large exponent                                         */
+    ReadGuard(opL);
+    ReadGuard(opR);
     if ( ! IS_INTOBJ(opR) ) {
         if ( opL == INTOBJ_INT(0) )
             pow = INTOBJ_INT(0);

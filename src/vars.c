@@ -2311,13 +2311,13 @@ UInt            ExecAssPosObj (
 
     /* special case for plain list                                         */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+        WriteGuard(list);
         if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
             ResizeBag( list, (p+1) * sizeof(Obj) );
         }
         SET_ELM_PLIST( list, p, rhs );
         CHANGED_BAG( list );
     }
-
     /* generic case                                                        */
     else {
         ASS_LIST( list, p, rhs );
@@ -2358,6 +2358,7 @@ UInt            ExecUnbPosObj (
 
     /* unbind the element                                                  */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+        WriteGuard(list);
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }
