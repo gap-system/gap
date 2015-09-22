@@ -33,6 +33,10 @@
 
 #include        "set.h"                 /* sets                            */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 #ifndef GAP_PPERM_H
 #define GAP_PPERM_H
 

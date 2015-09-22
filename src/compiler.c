@@ -45,9 +45,11 @@
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 
-#include        "vars.h"                /* variables                       */
-
 #include        "compiler.h"            /* compiler                        */
+
+#include        "tls.h"                 /* thread-local storage            */
+
+#include        "vars.h"                /* variables                       */
 
 
 /****************************************************************************

@@ -36,6 +36,8 @@
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
+#include        "code.h"                /* coder                           */
+
 #include        "gvars.h"               /* global variables                */
 
 #include        "calls.h"               /* generic call mechanism          */
@@ -50,9 +52,12 @@
 
 #include        "bool.h"                /* booleans                        */
 
+#include        "tls.h"                 /* thread-local storage            */
+#include        "thread.h"              /* threads                         */
+#include        "aobjects.h"            /* atomic objects                  */
+
 /****************************************************************************
 **
-
 *V  ValGVars  . . . . . . . . . . . . . . . . . .  values of global variables
 *V  PtrGVars  . . . . . . . . . . . . . pointer to values of global variables
 **

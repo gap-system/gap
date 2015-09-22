@@ -10,6 +10,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
+#include        "tls.h"
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -45,6 +46,8 @@
 #include        <assert.h>
 
 #include        "profile.h"
+
+#include        "thread.h"
 
 #include        "calls.h"               /* function filename, line number  */
 

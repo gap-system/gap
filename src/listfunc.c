@@ -35,6 +35,7 @@
 #include        "bool.h"                /* booleans                        */
 
 #include        "permutat.h"            /* permutations                    */
+#include        "finfield.h"            /* finite fields                   */
 #include        "trans.h"               /* transformations                 */
 #include        "pperm.h"               /* partial perms                   */
 
@@ -43,6 +44,10 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "set.h"                 /* plain sets                      */
 #include        "range.h"               /* ranges                          */
+#include	"code.h"
+#include	"thread.h"
+#include	"tls.h"
+#include	"aobjects.h"		/* atomic objects		   */
 
 #include                <string.h>
 #include                <stdlib.h> 

@@ -12,9 +12,8 @@
 **  and properties package.
 */
 #include        <assert.h>
+
 #include        "system.h"              /* Ints, UInts                     */
-
-
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -26,6 +25,8 @@
 #include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "calls.h"               /* generic call mechanism          */
+
+#include        "code.h"                /* coder                           */
 
 #include        "opers.h"               /* generic operations              */
 
@@ -46,6 +47,10 @@
 
 #include        "listfunc.h"   
 #include        "integer.h"   
+
+#include        "tls.h"                 /* thread-local storage            */
+#include        "thread.h"              /* threads                         */
+#include        "aobjects.h"            /* atomic objects                  */
 
 /****************************************************************************
 **

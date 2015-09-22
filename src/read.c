@@ -24,7 +24,6 @@
 #include        "string.h"              /* strings                         */
 #include        "calls.h"               /* generic call mechanism          */
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -36,6 +35,11 @@
 #include        "intrprtr.h"            /* interpreter                     */
 
 #include        "read.h"                /* reader                          */
+
+#include	"tls.h"
+#include	"thread.h"
+
+#include        "vars.h"                /* variables                       */
 
 #include        "bool.h"
 

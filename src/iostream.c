@@ -44,6 +44,10 @@
 #include        "records.h"             /* generic records                 */
 #include        "bool.h"                /* True and False                  */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 #include <stdio.h>                      /* standard input/output functions */
 #include <stdlib.h>
 #include <string.h>

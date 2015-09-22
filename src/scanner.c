@@ -42,6 +42,8 @@
 
 #include        "scanner.h"             /* scanner                         */
 
+#include        "code.h"                /* coder                           */
+
 #include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
@@ -59,8 +61,12 @@
 #include        "opers.h"               /* DoFilter...                     */
 #include        "read.h"                /* Call0ArgsInNewReader            */
 
+#include	"tls.h"
+#include	"thread.h"
+
 #include <assert.h>
 #include <limits.h>
+#include <stdlib.h>
 
 /* the following global variables are documented in scanner.h */
 

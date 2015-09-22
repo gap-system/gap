@@ -9,6 +9,8 @@
 **
 **  This file contains the functions of the objects package.
 */
+#include	<stdlib.h>
+
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
 
 
@@ -37,6 +39,12 @@
 #include        "string.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
+
+#include        "aobjects.h"            /* atomic objects                  */
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+//#include	"traverse.h"		/* object traversal		   */
+#include	"tls.h"			/* thread-local storage		   */
 
 
 /****************************************************************************

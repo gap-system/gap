@@ -21,6 +21,7 @@
 #include        <sys/stat.h>
 #endif
 
+#include	<sys/time.h>
 #include <unistd.h> /* move this and wrap execvp later */
 
 #include        "gasman.h"              /* garbage collector               */
@@ -80,7 +81,6 @@
 
 #include        "code.h"                /* coder                           */
 
-#include        "vars.h"                /* variables                       */
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 #include        "funcs.h"               /* functions                       */
@@ -100,6 +100,12 @@
 #ifdef GAPMPI
 #include        "gapmpi.h"              /* ParGAP/MPI                      */
 #endif
+
+#include        "thread.h"
+#include        "tls.h"
+#include        "aobjects.h"
+
+#include        "vars.h"                /* variables                       */
 
 #include        "intfuncs.h"
 #include        "iostream.h"

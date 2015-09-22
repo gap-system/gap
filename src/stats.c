@@ -37,7 +37,6 @@
 #include        "bool.h"                /* booleans                        */
 
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
 #include        "exprs.h"               /* expressions                     */
 
 #include        "intrprtr.h"            /* interpreter                     */
@@ -49,6 +48,11 @@
 #include        "profile.h"             /* installing methods              */
 
 #include        <assert.h>
+
+#include	"tls.h"
+#include	"thread.h"
+
+#include        "vars.h"                /* variables                       */
 
 /****************************************************************************
 **

@@ -70,6 +70,9 @@
 #include        "string.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
+#include	"code.h"
+#include	"thread.h"
+#include	"tls.h"
 
 
 #if 0

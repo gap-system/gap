@@ -119,6 +119,8 @@
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include        "code.h"
+#include        "tls.h"
 
 /****************************************************************************
 **

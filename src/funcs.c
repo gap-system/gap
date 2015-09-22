@@ -32,7 +32,6 @@
 #include        "calls.h"               /* generic call mechanism          */
 
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 
@@ -50,6 +49,11 @@
 
 #include        "opers.h"               /* generic operations              */
 #include        "gvars.h"
+#include        "thread.h"              /* threads                         */
+#include        "tls.h"                 /* thread-local storage            */
+
+#include        "vars.h"                /* variables                       */
+
 
 #include        "profile.h"             /* installing methods              */
 /****************************************************************************

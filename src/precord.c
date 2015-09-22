@@ -26,6 +26,7 @@
 **
 */
 #include        <stdlib.h>              /* for qsort */
+#include        <sys/time.h>            /* for gettimeofday() */
 #include        "system.h"              /* system dependent part           */
 
 
@@ -51,6 +52,11 @@
 #include        "string.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
+
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+#include	"aobjects.h"		/* thread-local storage		   */
 
 
 /****************************************************************************

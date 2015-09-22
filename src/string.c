@@ -56,6 +56,7 @@
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
+#include        "code.h"                /* coder                           */
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
@@ -77,6 +78,7 @@
 #include        "string.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
+#include        "tls.h"                 /* thread-local storage            */
 
 #include        <assert.h>
 

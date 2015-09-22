@@ -33,6 +33,7 @@
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
+#include        "code.h"                /* coder                           */
 
 #include        "gap.h"                 /* error handling, initialisation  */
 #include        "read.h"                /* reader                          */
@@ -55,6 +56,9 @@
 #include        "streams.h"             /* streams package                 */
 
 #include        "code.h"
+
+#include	"tls.h"
+
 #include        "vars.h"                /* TLS(BottomLVars) for execution contexts */
 
 

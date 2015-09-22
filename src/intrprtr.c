@@ -49,11 +49,16 @@
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
 #include        "funcs.h"               /* functions                       */
 #include        "read.h"
 
 #include        "intrprtr.h"            /* interpreter                     */
+
+#include	"tls.h"
+#include	"thread.h"
+#include	"aobjects.h"		/* atomic objects		   */
+
+#include        "vars.h"                /* variables                       */
 
 #include        "saveload.h"            /* saving and loading              */
 

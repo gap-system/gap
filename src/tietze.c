@@ -34,6 +34,10 @@
 
 #include        "tietze.h"              /* tietze helper functions         */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 
 /****************************************************************************
 **
