@@ -455,6 +455,14 @@ XXX nowhere used, throw away??? (FL)
 
 extern Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
+/****************************************************************************
+**
+*F  SetTypeDatobj( <obj>, <kind> ) . . . . . . . .  set kind of a data object
+**
+**  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
+*/
+
+#define SetTypeDatObj(obj, type)  SET_TYPE_DATOBJ(obj, type)
 
 /****************************************************************************
 **

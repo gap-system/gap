@@ -755,7 +755,7 @@ Obj ProdGF2MatGF2MatSimple( Obj ml, Obj mr )
 
       /* Since I'm going to put this vector into a matrix, I must lock its
 	 representation, so that it doesn't get rewritten over GF(2^k) */
-      TYPE_DATOBJ(row) = rtype;
+      SetTypeDatObj(row, rtype);
       SET_ELM_GF2MAT(prod,i,row);
       CHANGED_BAG(prod);
       TakeInterrupt();
@@ -1649,10 +1649,11 @@ void ConvGF2Vec (
     /* retype and resize bag                                               */
     ResizeBag( list, SIZE_PLEN_GF2VEC(len) );
     SET_LEN_GF2VEC( list, len );
-    if ( HAS_FILT_LIST( list, FN_IS_MUTABLE ) )
-        TYPE_DATOBJ( list ) = TYPE_LIST_GF2VEC;
-    else
-        TYPE_DATOBJ( list ) = TYPE_LIST_GF2VEC_IMM;
+    if ( HAS_FILT_LIST( list, FN_IS_MUTABLE ) ) {
+        SetTypeDatObj( list, TYPE_LIST_GF2VEC);
+    } else {
+        SetTypeDatObj( list, TYPE_LIST_GF2VEC_IMM);
+    }
     RetypeBag( list, T_DATOBJ );
 }
 
