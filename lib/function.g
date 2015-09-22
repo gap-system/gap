@@ -467,6 +467,58 @@ BIND_GLOBAL( "ReturnFalse", RETURN_FALSE );
 ##
 BIND_GLOBAL( "ReturnFail", RETURN_FAIL );
 
+#############################################################################
+##
+#F  ReturnNothing( ... ) . . . . . . . . . . . . . . . . . . 
+##
+##  <#GAPDoc Label="ReturnNothing">
+##  <ManSection>
+##  <Func Name="ReturnNothing" Arg='...'/>
+##
+##  <Description>
+##  This function takes any number of arguments,
+##  and always returns nothing.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> n:=ReturnFail;  
+##  function( arg ) ... end
+##  gap> n();
+##  gap> n(-42);
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "ReturnNothing", RETURN_NOTHING );
+
+#############################################################################
+##
+#F  ReturnFirst( ... ) . . . . . . . . . . . . . . . . . . 
+##
+##  <#GAPDoc Label="ReturnFirst">
+##  <ManSection>
+##  <Func Name="ReturnFirst" Arg='...'/>
+##
+##  <Description>
+##  This function takes one or more arguments, and always returns
+##  the first argument. <Ref Func="IdFunc"/> behaves similarly, but only
+##  accepts a single argument.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> f:=ReturnFirst;  
+##  function( arg ) ... end
+##  gap> f(1);
+##  1
+##  gap> f(2,3,4);
+##  2
+##  gap> f();
+##  Error, RETURN_FIRST requires one or more arguments
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "ReturnFirst", RETURN_FIRST );
 
 #############################################################################
 ##
@@ -477,7 +529,8 @@ BIND_GLOBAL( "ReturnFail", RETURN_FAIL );
 ##  <Func Name="IdFunc" Arg='obj'/>
 ##
 ##  <Description>
-##  returns <A>obj</A>.
+##  returns <A>obj</A>. <Ref Func="ReturnFirst"/> is similar, but accepts
+##  one or more arguments, returning only the first.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> id:=IdFunc;  
