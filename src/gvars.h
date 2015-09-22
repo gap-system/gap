@@ -32,7 +32,6 @@
 
 /****************************************************************************
 **
-
 *V  ValGVars  . . . . . . . . . . . . . . . . . .  values of global variables
 *V  PtrGVars  . . . . . . . . . . . . . pointer to values of global variables
 **

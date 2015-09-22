@@ -59,15 +59,15 @@
 **  bytes, called IsVec8BitRep, which inherits from IsDataObjectRep
 **  The 1st 4 bytes  stores the actual vector length (in field elements)
 **  as a C integer. The 2nd component stores the field size as a C integer
-**  The data bytes begin at the 3rd component
+**  The data bytes begin at the 3rd component.
 **  
 **  In addition, this file defines format and access for the fieldinfo
-**  objects which contain the meat-axe tables for the arithmetics
+**  objects which contain the meat-axe tables for the arithmetics.
 **
 **  There is a special representation for matrices, all of whose rows
 **  are immutable packed GFQ vectors over the same q, which is a positional
-**  representation Is8BitMatrixRep. Some special methods for such matrices are
-**  included here
+**  representation Is8BitMatrixRep. Some special methods for such matrices 
+**  are included here.
 ** 
 */
 
@@ -874,8 +874,6 @@ void ConvVec8Bit (
     RetypeBag(list, T_DATOBJ);
 }
 
-
-
 /****************************************************************************
 **
 *F  LcmDegree( <d>, <d1> )
@@ -1382,9 +1380,7 @@ Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
     if (VAL_FFE(ffe) == 1) { /* ffe is the one */
         prod = CopyVec8Bit(vec, IS_MUTABLE_OBJ(vec));
     } else if (VAL_FFE(ffe) == 0)
-        return ZeroVec8Bit(FIELD_VEC8BIT(vec),
-        LEN_VEC8BIT(vec),
-        IS_MUTABLE_OBJ(vec));
+        return ZeroVec8Bit(FIELD_VEC8BIT(vec), LEN_VEC8BIT(vec), IS_MUTABLE_OBJ(vec));
 
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(vec));
     d = D_FIELDINFO_8BIT(info);
@@ -3290,7 +3286,7 @@ Obj FuncPROD_VEC8BIT_MATRIX( Obj self, Obj vec, Obj mat)
 
 /****************************************************************************
 **
-*F  * * * * * * *  special rep for matrices over thses fields * * * * * * *
+*F  * * * * * * *  special rep for matrices over these fields * * * * * * *
 */
 
 #define LEN_MAT8BIT(mat)                   INT_INTOBJ(ADDR_OBJ(mat)[1])

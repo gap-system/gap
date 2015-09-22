@@ -1507,6 +1507,7 @@ Int IsStringConv (
     return res;
 }
 
+
 /****************************************************************************
 **
 *F  MakeImmutableString(  <str> ) make a string immutable in place

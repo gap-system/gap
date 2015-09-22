@@ -490,8 +490,6 @@ Obj FuncSHELL (Obj self, Obj args)
   else
     ErrorMayQuit("SHELL: 10th argument (catch QUIT) should be true or false",0,0);
 
-
-
   res =  Shell(context, canReturnVoid, canReturnObj, lastDepth, setTime, promptBuffer, preCommandHook, catchQUIT,
                CSTR_STRING(infile), CSTR_STRING(outfile));
 
@@ -832,7 +830,6 @@ Obj FuncRuntime (
 }
 
 
-
 Obj FuncRUNTIMES( Obj     self)
 {
   Obj    res;
@@ -843,9 +840,7 @@ Obj FuncRUNTIMES( Obj     self)
   SET_ELM_PLIST(res, 3, INTOBJ_INT( SyTimeChildren() ));
   SET_ELM_PLIST(res, 4, INTOBJ_INT( SyTimeChildrenSys() ));
   return res;
-   
 }
-
 
 
 /****************************************************************************
@@ -1115,7 +1110,6 @@ Obj FuncWindowCmd (
 
 /****************************************************************************
 **
-
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
 UInt ErrorLevel;
@@ -1330,7 +1324,7 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
   syLongjmp(TLS(ReadJmpError), 1);
   return 0;
 }
-  
+
 
 UInt UserHasQuit;
 UInt UserHasQUIT;
@@ -2640,12 +2634,14 @@ static int SetExitValue(Obj code)
 *F  FuncGAP_EXIT_CODE() . . . . . . . . Set the code with which GAP exits.
 **
 */
+
 Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
 {
-  if(!SetExitValue(code))
+  if (!SetExitValue(code))
     ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0L, 0L);
   return (Obj) 0;
 }
+
 
 /****************************************************************************
 **
@@ -2994,15 +2990,12 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-
-
-
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* create windows command buffer                                       */
     WindowCmdString = NEW_STRING( 1000 );
-    
+
     /* return success                                                      */
     return PostRestore( module );
 }
@@ -3390,15 +3383,7 @@ void InitializeGap (
 
 }
 
-
 /****************************************************************************
 **
-
 *E  gap.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-
-
-
-

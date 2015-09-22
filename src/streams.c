@@ -2066,11 +2066,12 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
 {
   Int fd;
   int fdi;
-  while (fid == (Obj) 0 || !(IS_INTOBJ(fid)))
+  while (fid == (Obj) 0 || !(IS_INTOBJ(fid))) {
     fid = ErrorReturnObj(
            "<fid> must be a small integer (not a %s)",
            (Int)TNAM_OBJ(fid),0L,
            "you can replace <fid> via 'return <fid>;'" );
+  }
 
   fd = INT_INTOBJ(fid);
   fdi = syBuf[fd].fp;

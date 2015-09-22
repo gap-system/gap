@@ -299,7 +299,6 @@ Obj NameGVarObj ( UInt gvar )
     return ELM_PLIST( NameGVars, gvar );
 }
 
-
 #define NSCHAR '@'
 
 Obj CurrNamespace = 0;

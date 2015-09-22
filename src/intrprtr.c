@@ -429,10 +429,11 @@ void            IntrFuncCallEnd (
       else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
       else                { val = CALL_XARGS( func, args ); }
 
-      if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
-                                         READ() and the user quit from a break
-                                         loop inside it */
+      if (TLS(UserHasQuit) || TLS(UserHasQUIT)) {
+        /* the procedure must have called READ() and the user quit
+           from a break loop inside it */
         ReadEvalError();
+      }
     }
 
     /* check the return value                                              */
@@ -3282,7 +3283,6 @@ void            IntrAssListLevel (
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeAssListLevel( narg, level ); return; }
 
-
     /* get right hand sides (checking is done by 'AssListLevel')           */
     rhss = PopObj();
 
@@ -3352,7 +3352,6 @@ void            IntrUnbList ( Int narg )
     if ( TLS(IntrReturning) > 0 ) { return; }
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeUnbList( narg); return; }
-
 
     if (narg == 1) {
       /* get and check the position                                          */
@@ -3491,7 +3490,6 @@ void            IntrElmListLevel ( Int narg,
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeElmListLevel( narg, level ); return; }
 
-
     /* get the positions */
     ixs = NEW_PLIST(T_PLIST, narg);
     for (i = narg; i > 0; i--) {
@@ -3563,7 +3561,6 @@ void            IntrIsbList ( Int narg )
     if ( TLS(IntrReturning) > 0 ) { return; }
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeIsbList(narg); return; }
-
 
     if (narg == 1) {
       /* get and check the position                                          */

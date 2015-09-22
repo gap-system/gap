@@ -1589,7 +1589,7 @@ void PlainGF2Mat (
 
 /****************************************************************************
 **
-*F  ConvGF2Vec( <list> )  . . . . .  convert a list into a GF2 vector objects
+*F  ConvGF2Vec( <list> )  . . . . . . convert a list into a GF2 vector object
 */
 void ConvGF2Vec (
     Obj                 list )
@@ -1606,7 +1606,7 @@ void ConvGF2Vec (
     }
 
     /* Otherwise make it a plain list so that we will know where it keeps
-       its data -- could do much better in the case of GF(2^n) ectors that actually
+       its data -- could do much better in the case of GF(2^n) vectors that actually
        lie over GF(2) */
 
     if (IS_VEC8BIT_REP(list))
