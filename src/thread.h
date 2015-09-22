@@ -7,4 +7,9 @@
  * and classic GAP.
  */
 
+#define HashLock(obj)         do { } while(0)
+#define HashLockShared(obj)   do { } while(0)
+#define HashUnlock(obj)       do { } while(0)
+#define HashUnlockShared(obj) do { } while(0)
+
 #endif

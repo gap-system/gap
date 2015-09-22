@@ -873,12 +873,16 @@ Int SyFopen (
           return 3;
     }
 
+    HashLock(&syBuf);
     /* try to find an unused file identifier                               */
     for ( fid = 4; fid < sizeof(syBuf)/sizeof(syBuf[0]); ++fid )
         if ( syBuf[fid].fp == -1 )
           break;
-    if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) )
+    
+    if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) ) {
+        HashUnlock(&syBuf);
         return (Int)-1;
+    }
 
     /* set up <namegz> and <cmd> for pipe command                          */
     namegz[0] = '\0';
@@ -928,15 +932,20 @@ Int SyFopen (
     }
 #endif
     else {
+        HashUnlock(&syBuf);
         return (Int)-1;
     }
 
+    HashUnlock(&syBuf);
+
     if(strncmp(mode, "r", 1) == 0)
         SySetBuffering(fid);
+
     /* return file identifier                                              */
     return fid;
 }
 
+// Lock on SyBuf for both SyBuf and SyBuffers
 
 UInt SySetBuffering( UInt fid )
 {
@@ -948,16 +957,19 @@ UInt SySetBuffering( UInt fid )
     return 1;
 
   bufno = 0;
+  HashLock(&syBuf);
   while (bufno < sizeof(syBuffers)/sizeof(syBuffers[0]) &&
          syBuffers[bufno].inuse != 0)
     bufno++;
-  if (bufno >= sizeof(syBuffers)/sizeof(syBuffers[0]))
-    return 0;
+  if (bufno >= sizeof(syBuffers)/sizeof(syBuffers[0])) {
+      HashUnlock(&syBuf);
+      return 0;
+  }
   syBuf[fid].bufno = bufno;
   syBuffers[bufno].inuse = 1;
   syBuffers[bufno].bufstart = 0;
   syBuffers[bufno].buflen = 0;
-
+  HashUnlock(&syBuf);
   return 1;
 }
 
@@ -985,7 +997,7 @@ Int SyFclose (
     if ( fid == 0 || fid == 1 || fid == 2 || fid == 3 ) {
         return -1;
     }
-
+    HashLock(&syBuf);
     /* try to close the file                                               */
     if ( (syBuf[fid].pipe == 0 && close( syBuf[fid].fp ) == EOF)
       || (syBuf[fid].pipe == 1 && pclose( syBuf[fid].pipehandle ) == -1
@@ -997,6 +1009,7 @@ Int SyFclose (
         fputs("gap: 'SyFclose' cannot close file, ",stderr);
         fputs("maybe your file system is full?\n",stderr);
         syBuf[fid].fp = -1;
+        HashUnlock(&syBuf);
         return -1;
     }
 
@@ -1004,6 +1017,7 @@ Int SyFclose (
     if (syBuf[fid].bufno >= 0)
       syBuffers[syBuf[fid].bufno].inuse = 0;
     syBuf[fid].fp = -1;
+    HashUnlock(&syBuf);
     return 0;
 }
 
