@@ -528,15 +528,20 @@ GAP.Command("src/dbgmacro.c", "etc/dbgmacro.py",
 # generating matching files in the gen/ directory and make them
 # the actual source files instead.
 gen = []
+includes = glob.glob("src/*.h")
 if preprocess:
   import os, stat
   try: os.mkdir("gen")
   except: pass
-  pregen = source + glob.glob("src/*.h")
+  pregen = source + includes
+  includes = map(lambda s: "gen/"+s[4:], includes)
   gen = map(lambda s: "gen/"+s[4:], pregen)
   for i in range(len(pregen)):
     GAP.Command(gen[i], pregen[i],
         preprocess + " $SOURCE >$TARGET")
+    if gen[i].endswith(".c"):
+      obj = "build/obj/" + gen[i][4:-2] + ".o"
+      GAP.Depends(obj, includes)
   source = map(lambda s: "gen/"+s[4:], source)
 
 # Cygwin needs to be explicitly told to include libstdc++ when linking
