@@ -2653,6 +2653,9 @@ static Int InitKernel ( StructInitInfo * module )
   TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
   TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;
 
+  MakeBagTypePublic( T_INTPOS );
+  MakeBagTypePublic( T_INTNEG );
+  
   /* return success                                                        */
   return 0;
 }

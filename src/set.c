@@ -504,7 +504,7 @@ Obj FuncADD_SET (
 	if (len == 0 )
 	  {
 	    if (TNUM_OBJ(obj) <= T_CYC)
-	      RetypeBag( set, T_PLIST_CYC_SSORT);
+	      RetypeBagIfWritable( set, T_PLIST_CYC_SSORT);
 	    else
 	      {
 		SET_FILT_LIST( set, FN_IS_HOMOG );
@@ -518,7 +518,7 @@ Obj FuncADD_SET (
 	    /* Now determine homogeneity */
 	    if (isCyc)
 	      if (TNUM_OBJ(obj) <= T_CYC)
-		RetypeBag( set, T_PLIST_CYC_SSORT);
+		RetypeBagIfWritable( set, T_PLIST_CYC_SSORT);
 	      else
 		{
 		  RESET_FILT_LIST(set, FN_IS_HOMOG);

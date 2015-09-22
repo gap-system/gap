@@ -33,7 +33,10 @@ Obj WordVectorAndClear ( Obj type, Obj vv, Int num )
     }
 
     /* correct the size of <obj>                                           */
-    RESIZE_WORD( obj, j );
+    (void) RESIZE_WORD( obj, j );
+
+    MakeBagReadOnly( obj );
+
     return obj;
 }
 

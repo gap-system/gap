@@ -670,6 +670,7 @@ Obj FuncAND_FLAGS (
             cache  = AND_CACHE_FLAGS(flags1);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
+                MakeBagPublic(cache);
                 SET_AND_CACHE_FLAGS( flags1, cache );
                 CHANGED_BAG(flags1);
             }
@@ -679,6 +680,7 @@ Obj FuncAND_FLAGS (
             cache  = AND_CACHE_FLAGS(flags2);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
+                MakeBagPublic(cache);
                 SET_AND_CACHE_FLAGS( flags2, cache );
                 CHANGED_BAG(flags2);
             }
@@ -6094,6 +6096,9 @@ static Int InitKernel (
     /* and the saving function */
     SaveObjFuncs[ T_FLAGS ] = SaveFlags;
     LoadObjFuncs[ T_FLAGS ] = LoadFlags;
+
+    /* flags are protected objects by default */
+    MakeBagTypePublic(T_FLAGS);
 
     /* import copy of REREADING */
     ImportGVarFromLibrary( "REREADING", &REREADING );

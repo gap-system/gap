@@ -590,6 +590,7 @@ void MakeFieldInfo8Bit( UInt q)
     }
 
 
+    MakeBagReadOnly(info);
     /* remember the result */
     SET_ELM_PLIST(FieldInfo8Bit, q, info);
     CHANGED_BAG(FieldInfo8Bit);
@@ -4821,6 +4822,9 @@ Obj MakeShiftedVecs( Obj v, UInt len)
                 ptrs[elts - 1 - (i % elts)] ++;
         }
     }
+    for (i=1; i <= elts; i++)
+      MakeBagReadOnly(ELM_PLIST(shifts, i));
+    MakeBagReadOnly(shifts);
     return shifts;
 }
 
@@ -5941,6 +5945,7 @@ static Int InitLibrary (
     FieldInfo8Bit = NEW_PLIST(T_PLIST_NDENSE, 257);
     SET_ELM_PLIST(FieldInfo8Bit, 257, INTOBJ_INT(1));
     SET_LEN_PLIST(FieldInfo8Bit, 257);
+    MakeBagPublic(FieldInfo8Bit);
     /* init filters and functions                                          */
     InitGVarFuncsFromTable(GVarFuncs);
 

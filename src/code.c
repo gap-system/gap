@@ -3351,6 +3351,9 @@ static Int InitKernel (
     SaveObjFuncs[ T_BODY ] = SaveBody;
     LoadObjFuncs[ T_BODY ] = LoadBody;
 
+    /* Allocate function bodies in the public data space */
+    MakeBagTypePublic(T_BODY);
+
     /* make the result variable known to Gasman                            */
     InitGlobalBag( &CodeResult, "CodeResult" );
     

@@ -574,6 +574,7 @@ static Int InitKernel (
     /* install the marking functions for macfloatean values                    */
     InfoBags[ T_MACFLOAT ].name = "macfloat";
     InitMarkFuncBags( T_MACFLOAT, MarkNoSubBags );
+    MakeBagTypePublic( T_MACFLOAT );
 
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
