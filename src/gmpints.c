@@ -57,6 +57,9 @@
 
 #ifdef USE_GMP
 
+/* TODO: Remove after Ward2 */
+#ifndef WARD_ENABLED
+
 // GMP must be included outside of 'extern C'
 #ifdef GAP_IN_EXTERN_C
 }
@@ -2709,8 +2712,8 @@ StructInitInfo * InitInfoInt ( void )
   return &module;
 }
 
-/* corresponds to USE_GMP test at start */
-#endif
+#endif /* ! WARD_ENABLED */
+#endif /* USE_GMP */
 
 /****************************************************************************
 **

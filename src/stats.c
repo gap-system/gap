@@ -75,7 +75,7 @@
 **
 **  'EXEC_STAT' is defined in the declaration part of this package as follows:
 **
-#define EXEC_STAT(stat) ( (*ExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) )
+#define EXEC_STAT(stat) ( (*TLS(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
 */
 
 
@@ -1019,14 +1019,13 @@ UInt            ExecForRange3 (
 /****************************************************************************
 **
 *F  ExecAtomic(<stat>)
-**
-**  In non-HPC GAP, we completely ignore all the 'atomic' terms
 */
 
 UInt ExecAtomic(
 		Stat stat)
 {
-      return EXEC_STAT(ADDR_STAT(stat)[0]);
+    // In non-HPC GAP, we completely ignore all the 'atomic' terms
+    return EXEC_STAT(ADDR_STAT(stat)[0]);
 }
 
 

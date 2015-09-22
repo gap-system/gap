@@ -694,11 +694,11 @@ void CleanStringCopy (
 **  which can be read in by GAP afterwards.
 **
 */
-static char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
 
 void PrintString (
     Obj                 list )
 {
+  char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
   UInt scanout, n;
   UInt1 c;
   UInt len = GET_LEN_STRING(list);
@@ -781,6 +781,7 @@ void PrintString (
 void PrintString1 (
     Obj                 list )
 {
+  char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
   UInt len = GET_LEN_STRING(list);
   UInt scanout, off = 0;
   UInt1  *p;

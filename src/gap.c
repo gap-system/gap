@@ -768,12 +768,12 @@ int main (
   NrImportedGVars = 0;
   NrImportedFuncs = 0;
   TLS(UserHasQUIT) = 0;
-  SystemErrorCode = 0;
   TLS(UserHasQuit) = 0;
+  SystemErrorCode = 0;
     
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv );
-  if (!TLS(UserHasQUIT)) {           /* maybe the user QUIT from the initial
+  if (!TLS(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
     if ( SyCompilePlease ) {
@@ -1349,8 +1349,8 @@ static Obj ErrorMessageToGAPString(
 {
   Char message[120];
   Obj Message;
-  SPrTo(message, 120, msg, arg1, arg2);
-  message[119] = '\0';
+  SPrTo(message, sizeof(message), msg, arg1, arg2);
+  message[sizeof(message)-1] = '\0';
   C_NEW_STRING_DYN(Message, message);
   return Message;
 }
@@ -2114,7 +2114,7 @@ Obj FuncOBJ_HANDLE (
     }
     else {
         ErrorQuit( "<handle> must be a positive integer", 0L, 0L );
-        return 0;
+        return (Obj) 0;
     }
 }
 
@@ -3191,7 +3191,9 @@ void RecordLoadedModule (
 **  general    `InitLibrary'  will  create    all objects    and  then  calls
 **  `PostRestore'.  This function is only used when restoring.
 */
+#ifndef BOEHM_GC
 extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
+#endif
 
 static Obj POST_RESTORE;
 
@@ -3278,11 +3280,13 @@ void InitializeGap (
         }
 #   endif
 
+#ifndef BOEHM_GC
     /* and now for a special hack                                          */
     for ( i = LAST_CONSTANT_TNUM+1; i <= LAST_REAL_TNUM; i++ ) {
       if (TabMarkFuncBags[i + COPYING] == MarkAllSubBagsDefault)
         TabMarkFuncBags[ i+COPYING ] = TabMarkFuncBags[ i ];
     }
+#endif
 
     /* if we are restoring, load the workspace and call the post restore   */
     if ( SyRestoring ) {

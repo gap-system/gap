@@ -110,11 +110,13 @@ static inline void setup_gapname(TypInputFile* i)
 
 Obj FILENAME_STAT(Stat stat)
 {
+  Obj filename;
   UInt filenameid = FILENAMEID_STAT(stat);
-  if(filenameid == 0)
-    return NEW_STRING(0);
+  if (filenameid == 0)
+      filename = NEW_STRING(0);
   else
-    return ELM_PLIST(FilenameCache, filenameid);
+      filename = ELM_PLIST(FilenameCache, filenameid);
+  return filename;
 }
     
     
@@ -1832,10 +1834,15 @@ static Obj CONVERT_FLOAT_LITERAL_EAGER;
 
 
 static UInt getNextFloatExprNumber( void ) {
+  UInt next;
+  HashLock(&NextFloatExprNumber);
   if (NextFloatExprNumber > MAX_FLOAT_INDEX)
-    return 0;
-  else
-    return NextFloatExprNumber++;
+    next = 0;
+  else {
+    next = NextFloatExprNumber++;
+  }
+  HashUnlock(&NextFloatExprNumber);
+  return next;
 }
 
 static UInt CheckForCommonFloat(Char *str) {

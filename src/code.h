@@ -157,6 +157,8 @@ extern  Stat *          PtrBody;
 
 #define LAST_STAT_TNUM          T_ATOMIC
 
+#define T_NO_STAT		(Stat)(-1)
+
 
 /****************************************************************************
 **
