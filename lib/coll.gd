@@ -2559,23 +2559,7 @@ DeclareOperation( "ProductOp", [ IsListOrCollection ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "Filtered" );
-
-
-#############################################################################
-##
-#O  FilteredOp( <C>, <func> )
-##
-##  <ManSection>
-##  <Oper Name="FilteredOp" Arg='C, func'/>
-##
-##  <Description>
-##  <C>FilteredOp</C> is the operation called by <C>Filtered</C>
-##  if <A>C</A> is not an internal list.
-##  </Description>
-##  </ManSection>
-##
-DeclareOperation( "FilteredOp", [ IsListOrCollection, IsFunction ] );
+DeclareOperation( "Filtered", [ IsListOrCollection, IsFunction ] );
 
 
 #############################################################################
@@ -2630,23 +2614,7 @@ DeclareOperation( "FilteredOp", [ IsListOrCollection, IsFunction ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "Number" );
-
-
-#############################################################################
-##
-#O  NumberOp( <C>, <func> )
-##
-##  <ManSection>
-##  <Oper Name="NumberOp" Arg='C, func'/>
-##
-##  <Description>
-##  <C>NumberOp</C> is the operation called by <C>Number</C>
-##  if <A>C</A> is not an internal list.
-##  </Description>
-##  </ManSection>
-##
-DeclareOperation( "NumberOp", [ IsListOrCollection, IsFunction ] );
+DeclareOperation( "Number", [ IsListOrCollection, IsFunction ] );
 
 
 #############################################################################
@@ -2676,23 +2644,7 @@ DeclareOperation( "NumberOp", [ IsListOrCollection, IsFunction ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "ForAll" );
-
-
-#############################################################################
-##
-#O  ForAllOp( <C>, <func> )
-##
-##  <ManSection>
-##  <Oper Name="ForAllOp" Arg='C, func'/>
-##
-##  <Description>
-##  <C>ForAllOp</C> is the operation called by <C>ForAll</C>
-##  if <A>C</A> is not an internal list.
-##  </Description>
-##  </ManSection>
-##
-DeclareOperation( "ForAllOp", [ IsListOrCollection, IsFunction ] );
+DeclareOperation( "ForAll", [ IsListOrCollection, IsFunction ] );
 
 
 #############################################################################
@@ -2724,23 +2676,7 @@ DeclareOperation( "ForAllOp", [ IsListOrCollection, IsFunction ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "ForAny" );
-
-
-#############################################################################
-##
-#O  ForAnyOp( <C>, <func> )
-##
-##  <ManSection>
-##  <Oper Name="ForAnyOp" Arg='C, func'/>
-##
-##  <Description>
-##  <C>ForAnyOp</C> is the operation called by <C>ForAny</C>
-##  if <A>C</A> is not an internal list.
-##  </Description>
-##  </ManSection>
-##
-DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
+DeclareOperation( "ForAny", [ IsListOrCollection, IsFunction ] );
 
 
 #############################################################################

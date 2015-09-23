@@ -1399,34 +1399,25 @@ end;
 
 #############################################################################
 ##
-#F  Filtered( <coll>, <func> )
+#M  Filtered( <C>, <func> ) . . . . . . extract elements that have a property
 ##
-InstallGlobalFunction( Filtered,
-    function( C, func )
-    local tnum, res, i, elm;
-    tnum:= TNUM_OBJ_INT( C );
-    if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
-      # start with empty list of same representation
-      res := C{[]};
-      i   := 0;
-      for elm in C do
+InstallMethod( Filtered,
+    "for an internal list, and a function",
+    [ IsList and IsInternalRep, IsFunction ],
+    function ( C, func )
+    local res, i, elm;
+    # start with empty list of same representation
+    res := C{[]};
+    i   := 0;
+    for elm in C do
         if func( elm ) then
-          i:= i+1;
-          res[i]:= elm;
+            i:= i+1;
+            res[i]:= elm;
         fi;
-      od;
-      return res;
-    else
-      return FilteredOp( C, func );
-    fi;
-end );
-
-
-#############################################################################
-##
-#M  FilteredOp( <C>, <func> ) . . . . . extract elements that have a property
-##
-InstallMethod( FilteredOp,
+    od;
+    return res;
+    end );
+InstallMethod( Filtered,
     "for a list/collection, and a function",
     [ IsListOrCollection, IsFunction ],
     function ( C, func )
@@ -1439,23 +1430,7 @@ InstallMethod( FilteredOp,
     od;
     return res;
     end );
-InstallMethod( FilteredOp,
-    "for a list, and a function",
-    [ IsList, IsFunction ],
-    function ( C, func )
-    local res, elm, ob;
-    res := [];
-    for elm in [1..Length(C)] do
-        if IsBound(C[elm]) then
-            ob := C[elm];
-            if func( ob ) then
-                Add( res, ob );
-            fi;
-        fi;
-    od;
-    return res;
-    end );
-InstallMethod( FilteredOp,
+InstallMethod( Filtered,
     "for a dense list, and a function",
     [ IsDenseList, IsFunction ],
     function ( C, func )
@@ -1471,7 +1446,7 @@ InstallMethod( FilteredOp,
     end );
 
 #T Is this useful compared to the previous method? (FL)
-InstallMethod( FilteredOp,
+InstallMethod( Filtered,
     "for an empty list/collection, and a function",
     [ IsEmpty, IsFunction ], 
     SUM_FLAGS, # there is nothing to do
@@ -1482,46 +1457,22 @@ InstallMethod( FilteredOp,
 
 #############################################################################
 ##
-#F  Number( <coll> )
-#F  Number( <coll>, <func> )
+#M  Number( <C>, <func> ) . . . . . . . . count elements that have a property
 ##
-InstallGlobalFunction( Number,
-    function( arg )
-    local tnum, C, func, nr, elm,l;
-    l := Length( arg );
-    if l = 0 then
-      Error( "usage: Number( <C>[, <func>] )" );
-    fi;
-    tnum:= TNUM_OBJ_INT( arg[1] );
-    if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
-      C:= arg[1];
-      if l = 1 then
-        nr := 0;
-        for elm in C do
-            nr := nr + 1;
-        od;
-        return nr;
-      else
-        func:= arg[2];
-        nr := 0;
-        for elm in C do
-            if func( elm ) then
-                nr:= nr + 1;
-            fi;
-        od;
-        return nr;
-      fi;
-    else
-      return CallFuncList( NumberOp, arg );
-    fi;
-end );
-
-
-#############################################################################
-##
-#M  NumberOp( <C>, <func> ) . . . . . . . count elements that have a property
-##
-InstallMethod( NumberOp,
+InstallMethod( Number,
+    "for an internal list, and a function",
+    [ IsList and IsInternalRep, IsFunction ],
+    function ( C, func )
+    local nr, elm;
+    nr := 0;
+    for elm in C do
+        if func( elm ) then
+            nr:= nr + 1;
+        fi;
+    od;
+    return nr;
+    end );
+InstallMethod( Number,
     "for a list/collection, and a function",
     [ IsListOrCollection, IsFunction ],
     function ( C, func )
@@ -1534,24 +1485,9 @@ InstallMethod( NumberOp,
     od;
     return nr;
     end );
-InstallMethod( NumberOp,
-    "for a list, and a function",
-    [ IsList, IsFunction ],
-    function ( C, func )
-    local nr, elm;
-    nr := 0;
-    for elm in [1..Length(C)] do
-        if IsBound(C[elm]) then
-            if func( C[elm] ) then
-                nr:= nr + 1;
-            fi;
-        fi;
-    od;
-    return nr;
-    end );
-InstallMethod( NumberOp,
+InstallMethod( Number,
     "for a dense list, and a function",
-    [ IsDenseList, IsFunction ],
+    [ IsDenseList and IsFinite, IsFunction ],
     function ( C, func )
     local nr, elm;
     nr := 0;
@@ -1566,9 +1502,9 @@ InstallMethod( NumberOp,
 
 #############################################################################
 ##
-#M  NumberOp( <C> ) . . . . . . . . . . . count elements that have a property
+#M  Number( <C> ) . . . . . . . . . . . . count elements that have a property
 ##
-InstallOtherMethod( NumberOp,
+InstallOtherMethod( Number,
     "for a list/collection",
     [ IsListOrCollection ],
     function ( C )
@@ -1579,50 +1515,29 @@ InstallOtherMethod( NumberOp,
     od;
     return nr;
     end );
-InstallOtherMethod( NumberOp,
-    "for a list",
-    [ IsList ],
-    function ( C )
-    local nr, elm;
-    nr := 0;
-    for elm in [1..Length(C)] do
-        if IsBound(C[elm]) then
-            nr := nr + 1;
-        fi;
-    od;
-    return nr;
-    end );
-InstallOtherMethod( NumberOp,
+
+InstallOtherMethod( Number,
     "for a dense list",
     [ IsDenseList ], Length );
 
 
 #############################################################################
 ##
-#F  ForAll( <coll>, <func> )
+#M  ForAll( <C>, <func> ) . . . .  test a property for all elements of a list
 ##
-InstallGlobalFunction( ForAll,
-    function( C, func )
-    local tnum, elm;
-    tnum:= TNUM_OBJ_INT( C );
-    if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
-      for elm in C do
-          if not func( elm ) then
-              return false;
-          fi;
-      od;
-      return true;
-    else
-      return ForAllOp( C, func );
-    fi;
-end );
-
-
-#############################################################################
-##
-#M  ForAllOp( <C>, <func> ) . . .  test a property for all elements of a list
-##
-InstallMethod( ForAllOp,
+InstallMethod( ForAll,
+    "for an internal list, and a function",
+    [ IsList and IsInternalRep, IsFunction ],
+    function ( C, func )
+    local elm;
+    for elm in C do
+        if not func( elm ) then
+            return false;
+        fi;
+    od;
+    return true;
+    end );
+InstallMethod( ForAll,
     "for a list/collection, and a function",
     [ IsListOrCollection, IsFunction ],
     function ( C, func )
@@ -1634,21 +1549,7 @@ InstallMethod( ForAllOp,
     od;
     return true;
     end );
-InstallMethod( ForAllOp,
-    "for a list, and a function",
-    [ IsList and IsFinite, IsFunction ],
-    function ( C, func )
-    local elm;
-    for elm in [1..Length(C)] do
-        if IsBound(C[elm]) then
-            if not func( C[elm] ) then
-                return false;
-            fi;
-        fi;
-    od;
-    return true;
-    end );
-InstallMethod( ForAllOp,
+InstallMethod( ForAll,
     "for a dense list, and a function",
     [ IsDenseList and IsFinite, IsFunction ],
     function ( C, func )
@@ -1661,7 +1562,7 @@ InstallMethod( ForAllOp,
     return true;
     end );
 
-InstallOtherMethod( ForAllOp,
+InstallOtherMethod( ForAll,
     "for an empty list/collection, and a function",
     [ IsEmpty, IsFunction ], 
     SUM_FLAGS, # there is nothing to do
@@ -1670,30 +1571,21 @@ InstallOtherMethod( ForAllOp,
 
 #############################################################################
 ##
-#F  ForAny( <coll>, <func> )
+#M  ForAny( <C>, <func> ) . . . . . test a property for any element of a list
 ##
-InstallGlobalFunction( ForAny,
-    function( C, func )
-    local tnum, elm;
-    tnum:= TNUM_OBJ_INT( C );
-    if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
-      for elm in C do
-          if func( elm ) then
-              return true;
-          fi;
-      od;
-      return false;
-    else
-      return ForAnyOp( C, func );
-    fi;
+InstallMethod( ForAny,
+    "for an internal list, and a function",
+    [ IsList and IsInternalRep, IsFunction ],
+    function ( C, func )
+    local elm;
+    for elm in C do
+        if func( elm ) then
+            return true;
+        fi;
+    od;
+    return false;
 end );
-
-
-#############################################################################
-##
-#M  ForAnyOp( <C>, <func> ) . . . . test a property for any element of a list
-##
-InstallMethod( ForAnyOp,
+InstallMethod( ForAny,
     "for a list/collection, and a function",
     [ IsListOrCollection, IsFunction ],
     function ( C, func )
@@ -1705,22 +1597,7 @@ InstallMethod( ForAnyOp,
     od;
     return false;
 end );
-
-InstallMethod( ForAnyOp,
-    "for a list, and a function",
-    [ IsList and IsFinite, IsFunction ],
-    function ( C, func )
-    local elm;
-    for elm in [1..Length(C)] do
-        if IsBound(C[elm]) then
-            if func( C[elm] ) then
-                return true;
-            fi;
-        fi;
-    od;
-    return false;
-    end );
-InstallMethod( ForAnyOp,
+InstallMethod( ForAny,
     "for a dense list, and a function",
     [ IsDenseList and IsFinite, IsFunction ],
     function ( C, func )
@@ -1733,7 +1610,7 @@ InstallMethod( ForAnyOp,
     return false;
     end );
 
-InstallOtherMethod( ForAnyOp,
+InstallOtherMethod( ForAny,
     "for an empty list/collection, and a function",
     [ IsEmpty, IsFunction ],
     SUM_FLAGS, # there is nothing to do

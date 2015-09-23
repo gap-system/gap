@@ -351,7 +351,7 @@ InstallMethod(Permuted, "sparse list", [IsSparseListBySortedListRep
     return SparseListBySortedListNC( poss, vals, sl![SL_LENGTH], sl![SL_DEFAULT]);
 end);
 
-InstallMethod( FilteredOp, "sparse list", [IsSparseListBySortedListRep 
+InstallMethod( Filtered, "sparse list", [IsSparseListBySortedListRep 
         and IsSparseList, IsFunction],
         function(sl, filt)
     local   skipped,  iposs,  oposs,  ivals,  ovals,  i,  newlen;
