@@ -54,7 +54,9 @@ extern "C" {
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
 
+#include        "code.h"                /* coder                           */
 #include        "tls.h"                 /* thread-local storage            */
+
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
 #include        "objscoll.h"            /* single collector                */
@@ -67,9 +69,6 @@ extern "C" {
 #include        "costab.h"              /* coset table                     */
 #include        "tietze.h"              /* tietze helper functions         */
 
-#include        "code.h"                /* coder                           */
-
-#include        "vars.h"                /* variables                       */
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 #include        "funcs.h"               /* functions                       */
@@ -87,7 +86,9 @@ extern "C" {
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
 
+#include        "vars.h"                /* variables                       */
 
+#include        "aobjects.h"            /* atomic variables                */
 extern Obj InfoDecision;
 extern Obj InfoDoPrint;
 extern Obj CurrentAssertionLevel;

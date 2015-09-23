@@ -38,6 +38,10 @@
 #include        "records.h"             /* generic records                 */
 #include        "bool.h"                /* Global True and False           */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 #include        <assert.h>
 #include        <fcntl.h>
 
@@ -135,6 +139,7 @@ Int SyFindOrLinkGapRootFile (
     Int                 found_gap = 0;
     Int                 found_dyn = 0;
     Int                 found_sta = 0;
+    Char                tmpbuffer[256];
     Char *              tmp;
     Char                module[256];
     Char                name[256];
@@ -152,7 +157,7 @@ Int SyFindOrLinkGapRootFile (
 
     /* find the GAP file                                                   */
     result->pathname[0] = '\0';
-    tmp = SyFindGapRootFile(filename);
+    tmp = SyFindGapRootFile(filename, tmpbuffer);
     if ( tmp ) {
         strxcpy( result->pathname, tmp, sizeof(result->pathname) );
         strxcpy( name, tmp, sizeof(name) );
@@ -219,7 +224,7 @@ Int SyFindOrLinkGapRootFile (
         strxcat( module, filename, sizeof(module) );
     }
     strxcat( module, ".so", sizeof(module) );
-    tmp = SyFindGapRootFile(module);
+    tmp = SyFindGapRootFile(module, tmpbuffer);
 
     /* special handling for the case of package files */
     if (!tmp && !strncmp(filename, "pkg", 3)) {
@@ -255,7 +260,7 @@ Int SyFindOrLinkGapRootFile (
           strxcat( module, p2, sizeof(module) );
         }
         strxcat( module, ".so", sizeof(module) );
-        tmp = SyFindGapRootFile(module);
+        tmp = SyFindGapRootFile(module, tmpbuffer);
 
      }
     if ( tmp ) {
@@ -869,12 +874,16 @@ Int SyFopen (
           return 3;
     }
 
+    HashLock(&syBuf);
     /* try to find an unused file identifier                               */
     for ( fid = 4; fid < sizeof(syBuf)/sizeof(syBuf[0]); ++fid )
         if ( syBuf[fid].fp == -1 )
           break;
-    if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) )
+    
+    if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) ) {
+        HashUnlock(&syBuf);
         return (Int)-1;
+    }
 
     /* set up <namegz> and <cmd> for pipe command                          */
     namegz[0] = '\0';
@@ -924,15 +933,20 @@ Int SyFopen (
     }
 #endif
     else {
+        HashUnlock(&syBuf);
         return (Int)-1;
     }
 
+    HashUnlock(&syBuf);
+
     if(strncmp(mode, "r", 1) == 0)
         SySetBuffering(fid);
+
     /* return file identifier                                              */
     return fid;
 }
 
+// Lock on SyBuf for both SyBuf and SyBuffers
 
 UInt SySetBuffering( UInt fid )
 {
@@ -944,16 +958,19 @@ UInt SySetBuffering( UInt fid )
     return 1;
 
   bufno = 0;
+  HashLock(&syBuf);
   while (bufno < sizeof(syBuffers)/sizeof(syBuffers[0]) &&
          syBuffers[bufno].inuse != 0)
     bufno++;
-  if (bufno >= sizeof(syBuffers)/sizeof(syBuffers[0]))
-    return 0;
+  if (bufno >= sizeof(syBuffers)/sizeof(syBuffers[0])) {
+      HashUnlock(&syBuf);
+      return 0;
+  }
   syBuf[fid].bufno = bufno;
   syBuffers[bufno].inuse = 1;
   syBuffers[bufno].bufstart = 0;
   syBuffers[bufno].buflen = 0;
-
+  HashUnlock(&syBuf);
   return 1;
 }
 
@@ -981,7 +998,7 @@ Int SyFclose (
     if ( fid == 0 || fid == 1 || fid == 2 || fid == 3 ) {
         return -1;
     }
-
+    HashLock(&syBuf);
     /* try to close the file                                               */
     if ( (syBuf[fid].pipe == 0 && close( syBuf[fid].fp ) == EOF)
       || (syBuf[fid].pipe == 1 && pclose( syBuf[fid].pipehandle ) == -1
@@ -993,6 +1010,7 @@ Int SyFclose (
         fputs("gap: 'SyFclose' cannot close file, ",stderr);
         fputs("maybe your file system is full?\n",stderr);
         syBuf[fid].fp = -1;
+        HashUnlock(&syBuf);
         return -1;
     }
 
@@ -1000,6 +1018,7 @@ Int SyFclose (
     if (syBuf[fid].bufno >= 0)
       syBuffers[syBuf[fid].bufno].inuse = 0;
     syBuf[fid].fp = -1;
+    HashUnlock(&syBuf);
     return 0;
 }
 
@@ -3613,19 +3632,18 @@ Obj SyIsDir ( const Char * name )
 
 /****************************************************************************
 **
-*F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
+*F  SyFindGapRootFile( <filename>,<buffer> ) . .  find file in system area
 */
-Char * SyFindGapRootFile ( const Char * filename )
+Char * SyFindGapRootFile ( const Char * filename, Char * result )
 {
-    static Char     result[256];
     Int             k;
 
     for ( k=0;  k<sizeof(SyGapRootPaths)/sizeof(SyGapRootPaths[0]);  k++ ) {
         if ( SyGapRootPaths[k][0] ) {
             result[0] = '\0';
-            if (strlcpy( result, SyGapRootPaths[k], sizeof(result) ) >= sizeof(result))
+            if (strlcpy( result, SyGapRootPaths[k], 256 ) >= 256)
                 continue;
-            if (strlcat( result, filename, sizeof(result) ) >= sizeof(result))
+            if (strlcat( result, filename, 256 ) >= 256)
             	continue;
             if ( SyIsReadableFile(result) == 0 ) {
                 return result;

@@ -44,6 +44,10 @@
 #include        "records.h"             /* generic records                 */
 #include        "bool.h"                /* True and False                  */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 #include <stdio.h>                      /* standard input/output functions */
 #include <stdlib.h>
 #include <string.h>
@@ -133,18 +137,22 @@ static Int FreePtyIOStreams;
 Int NewStream( void )
 {
   Int stream = -1;
+  HashLock(PtyIOStreams);
   if ( FreePtyIOStreams != -1 )
   {
       stream = FreePtyIOStreams;
       FreePtyIOStreams = PtyIOStreams[stream].childPID;
   }
+  HashUnlock(PtyIOStreams);
   return stream;
 }
 
 void FreeStream( UInt stream)
 {
+   HashLock(PtyIOStreams);
    PtyIOStreams[stream].childPID = FreePtyIOStreams;
    FreePtyIOStreams = stream;
+   HashUnlock(PtyIOStreams);
 }
 
 /****************************************************************************
@@ -153,10 +161,12 @@ void FreeStream( UInt stream)
 */
 void SignalChild (UInt stream, UInt sig)
 {
+    HashLock(PtyIOStreams);
     if ( PtyIOStreams[stream].childPID != -1 )
     {
         kill( PtyIOStreams[stream].childPID, sig );
     }
+    HashUnlock(PtyIOStreams);
 }
 
 /****************************************************************************
@@ -165,11 +175,13 @@ void SignalChild (UInt stream, UInt sig)
 */
 void KillChild (UInt stream)
 {
+    HashLock(PtyIOStreams);
     if ( PtyIOStreams[stream].childPID != -1 )
     {
         close(PtyIOStreams[stream].ptyFD);
         SignalChild( stream, SIGKILL );
     }
+    HashUnlock(PtyIOStreams);
 }
 
 
@@ -370,6 +382,7 @@ void ChildStatusChanged( int whichsig )
   int status;
   int retcode;
   assert(whichsig == SIGCHLD);
+  HashLock(PtyIOStreams);
   for (i = 0; i < MAX_PTYS; i++) {
       if (PtyIOStreams[i].inuse) {
           retcode = waitpid( PtyIOStreams[i].childPID, &status, WNOHANG | WUNTRACED );
@@ -380,6 +393,7 @@ void ChildStatusChanged( int whichsig )
           }
       }
   }
+  HashUnlock(PtyIOStreams);
   /* Collect up any other zombie children */
   do {
       retcode = waitpid( -1, &status, WNOHANG);
@@ -540,24 +554,33 @@ void HandleChildStatusChanges( UInt pty)
 {
   /* common error handling, when we are asked to read or write to a stopped
      or dead child */
+  HashLock(PtyIOStreams);
   if (PtyIOStreams[pty].alive == 0)
   {
       PtyIOStreams[pty].changed = 0;
       PtyIOStreams[pty].blocked = 0;
+      HashUnlock(PtyIOStreams);
       ErrorQuit("Child Process is unexpectedly dead", (Int) 0L, (Int) 0L);
+      return;
   }
   if (PtyIOStreams[pty].blocked)
   {
+      HashUnlock(PtyIOStreams);
       ErrorQuit("Child Process is still dead", (Int)0L,(Int)0L);
+      return;
   }
   if (PtyIOStreams[pty].changed)
   {
       PtyIOStreams[pty].blocked = 1;
       PtyIOStreams[pty].changed = 0;
+      Int cPID = PtyIOStreams[pty].childPID;
+      Int status = PtyIOStreams[pty].status;
+      HashUnlock(PtyIOStreams);
       ErrorQuit("Child Process %d has stopped or died, status %d",
-                (Int) PtyIOStreams[pty].childPID,
-                (Int) PtyIOStreams[pty].status);
+                cPID, status);
+      return;
   }
+  HashUnlock(PtyIOStreams);
 }
 
 #define MAX_ARGS 1000

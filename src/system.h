@@ -239,6 +239,7 @@ extern const Char * SyBuildDateTime;
 */
 extern UInt SyCTRD;
 
+
 /****************************************************************************
 **
 *V  SyCacheSize . . . . . . . . . . . . . . . . . . . . . . size of the cache

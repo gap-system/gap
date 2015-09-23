@@ -67,8 +67,10 @@
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
 
-#include        "saveload.h"            /* saving and loading              */
+#include        "code.h"                /* coder                           */
 
+#include        "saveload.h"            /* saving and loading              */
+#include        "tls.h"
 
 /****************************************************************************
 **

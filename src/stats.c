@@ -37,7 +37,6 @@
 #include        "bool.h"                /* booleans                        */
 
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
 #include        "exprs.h"               /* expressions                     */
 
 #include        "intrprtr.h"            /* interpreter                     */
@@ -49,6 +48,11 @@
 #include        "profile.h"             /* installing methods              */
 
 #include        <assert.h>
+
+#include	"tls.h"
+#include	"thread.h"
+
+#include        "vars.h"                /* variables                       */
 
 /****************************************************************************
 **
@@ -71,7 +75,7 @@
 **
 **  'EXEC_STAT' is defined in the declaration part of this package as follows:
 **
-#define EXEC_STAT(stat) ( (*ExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) )
+#define EXEC_STAT(stat) ( (*TLS(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
 */
 
 
@@ -127,6 +131,14 @@ UInt            ExecUnknownStat (
         (Int)TNUM_STAT(stat), 0L );
     return 0;
 }
+
+/****************************************************************************
+**
+*F  UInt HaveInterrupt() . . . . . . . . check for user interrupts
+**
+*/
+
+#define HaveInterrupt()   SyIsIntr()
 
 
 /****************************************************************************
@@ -465,7 +477,7 @@ UInt            ExecFor (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -498,7 +510,7 @@ UInt            ExecFor (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -574,7 +586,7 @@ UInt            ExecFor2 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -612,7 +624,7 @@ UInt            ExecFor2 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -695,7 +707,7 @@ UInt            ExecFor3 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -739,7 +751,7 @@ UInt            ExecFor3 (
 
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
-            if ( SyIsIntr() ) {
+            if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
@@ -839,7 +851,7 @@ UInt            ExecForRange (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -904,7 +916,7 @@ UInt            ExecForRange2 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -976,7 +988,7 @@ UInt            ExecForRange3 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1007,14 +1019,13 @@ UInt            ExecForRange3 (
 /****************************************************************************
 **
 *F  ExecAtomic(<stat>)
-**
-**  In non-HPC GAP, we completely ignore all the 'atomic' terms
 */
 
 UInt ExecAtomic(
 		Stat stat)
 {
-      return EXEC_STAT(ADDR_STAT(stat)[0]);
+    // In non-HPC GAP, we completely ignore all the 'atomic' terms
+    return EXEC_STAT(ADDR_STAT(stat)[0]);
 }
 
 
@@ -1054,7 +1065,7 @@ UInt ExecWhile (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1092,7 +1103,7 @@ UInt ExecWhile2 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1137,7 +1148,7 @@ UInt ExecWhile3 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1203,7 +1214,7 @@ UInt ExecRepeat (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1241,7 +1252,7 @@ UInt ExecRepeat2 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1286,7 +1297,7 @@ UInt ExecRepeat3 (
 
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
@@ -1527,7 +1538,7 @@ UInt            ExecReturnObj (
 {
 #if ! HAVE_SIGNAL
     /* test for an interrupt                                               */
-    if ( SyIsIntr() ) {
+    if ( HaveInterrupt() ) {
         ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
     }
 #endif
@@ -1559,7 +1570,7 @@ UInt            ExecReturnVoid (
 {
 #if ! HAVE_SIGNAL
     /* test for an interrupt                                               */
-    if ( SyIsIntr() ) {
+    if ( HaveInterrupt() ) {
         ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
     }
 #endif
@@ -1591,7 +1602,7 @@ UInt RealExecStatCopied;
 
 UInt TakeInterrupt( void ) {
   UInt i;
-  if (SyIsIntr()) {
+  if (HaveInterrupt()) {
       assert(RealExecStatCopied);
       for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
           ExecStatFuncs[i] = RealExecStatFuncs[i];
@@ -1626,7 +1637,7 @@ UInt ExecIntrStat (
         }
         RealExecStatCopied = 0;
     }
-    SyIsIntr();
+    HaveInterrupt();
 
     /* and now for something completely different                          */
     SET_BRK_CURR_STAT( stat );
@@ -1706,7 +1717,7 @@ void ClearError ( void )
         }
         RealExecStatCopied = 0;
         /* check for user interrupt */
-        if ( SyIsIntr() ) {
+        if ( HaveInterrupt() ) {
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
               0L, 0L);
         }
@@ -1920,6 +1931,7 @@ void            PrintAtomic (
     PrintStat( ADDR_STAT(stat)[0]);
     Pr( "%4<\nod;", 0L, 0L );
 }
+
 
 /****************************************************************************
 **

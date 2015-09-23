@@ -12,9 +12,8 @@
 **  and properties package.
 */
 #include        <assert.h>
+
 #include        "system.h"              /* Ints, UInts                     */
-
-
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -26,6 +25,8 @@
 #include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "calls.h"               /* generic call mechanism          */
+
+#include        "code.h"                /* coder                           */
 
 #include        "opers.h"               /* generic operations              */
 
@@ -46,6 +47,12 @@
 
 #include        "listfunc.h"   
 #include        "integer.h"   
+
+#include        "tls.h"                 /* thread-local storage            */
+#include        "thread.h"              /* threads                         */
+#include        "aobjects.h"            /* atomic objects                  */
+
+#include        "atomic.h"
 
 /****************************************************************************
 **
@@ -663,6 +670,7 @@ Obj FuncAND_FLAGS (
             cache  = AND_CACHE_FLAGS(flags1);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
+                MakeBagPublic(cache);
                 SET_AND_CACHE_FLAGS( flags1, cache );
                 CHANGED_BAG(flags1);
             }
@@ -672,6 +680,7 @@ Obj FuncAND_FLAGS (
             cache  = AND_CACHE_FLAGS(flags2);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
+                MakeBagPublic(cache);
                 SET_AND_CACHE_FLAGS( flags2, cache );
                 CHANGED_BAG(flags2);
             }
@@ -1573,6 +1582,9 @@ static inline Obj CacheOper (
     return cache;
 }
 
+#define GET_METHOD_CACHE( oper, i ) \
+    CACHE_OPER( oper, i )
+
 Obj DoOperation0Args (
     Obj                 oper )
 {
@@ -1622,11 +1634,12 @@ Obj DoOperation0Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 0 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 0 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[2*TLS(CacheIndex)] = method;
               cache[2*TLS(CacheIndex)+1] = prec;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,0));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -1708,12 +1721,13 @@ Obj DoOperation1Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 1 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 1 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[3*TLS(CacheIndex)] = method;
               cache[3*TLS(CacheIndex)+1] = prec;
               cache[3*TLS(CacheIndex)+2] = id1;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,1));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -1802,13 +1816,14 @@ Obj DoOperation2Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 2 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 2 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[4*TLS(CacheIndex)] = method;
               cache[4*TLS(CacheIndex)+1] = prec;
               cache[4*TLS(CacheIndex)+2] = id1;
               cache[4*TLS(CacheIndex)+3] = id2;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,2));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -1902,14 +1917,15 @@ Obj DoOperation3Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 3 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 3 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[5*TLS(CacheIndex)] = method;
               cache[5*TLS(CacheIndex)+1] = prec;
               cache[5*TLS(CacheIndex)+2] = id1;
               cache[5*TLS(CacheIndex)+3] = id2;
               cache[5*TLS(CacheIndex)+4] = id3;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,3));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -2010,7 +2026,8 @@ Obj DoOperation4Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 4 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 4 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[6*TLS(CacheIndex)] = method;
               cache[6*TLS(CacheIndex)+1] = prec;
               cache[6*TLS(CacheIndex)+2] = id1;
@@ -2018,7 +2035,7 @@ Obj DoOperation4Args (
               cache[6*TLS(CacheIndex)+4] = id3;
               cache[6*TLS(CacheIndex)+5] = id4;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,4));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -2138,7 +2155,8 @@ Obj DoOperation5Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 5 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 5 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[7*TLS(CacheIndex)] = method;
               cache[7*TLS(CacheIndex)+1] = prec;
               cache[7*TLS(CacheIndex)+2] = id1;
@@ -2147,7 +2165,7 @@ Obj DoOperation5Args (
               cache[7*TLS(CacheIndex)+5] = id4;
               cache[7*TLS(CacheIndex)+6] = id5;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,5));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -2286,7 +2304,8 @@ Obj DoOperation6Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 6 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 6 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[8*TLS(CacheIndex)] = method;
               cache[8*TLS(CacheIndex)+1] = prec;
               cache[8*TLS(CacheIndex)+2] = id1;
@@ -2296,7 +2315,7 @@ Obj DoOperation6Args (
               cache[8*TLS(CacheIndex)+6] = id5;
               cache[8*TLS(CacheIndex)+7] = id6;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,6));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -2989,11 +3008,12 @@ Obj DoConstructor0Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 0 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 0 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[2*TLS(CacheIndex)] = method;
               cache[2*TLS(CacheIndex)+1] = prec;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,0));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -3080,12 +3100,13 @@ Obj DoConstructor1Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 1 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 1 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[3*TLS(CacheIndex)] = method;
               cache[3*TLS(CacheIndex)+1] = prec;
               cache[3*TLS(CacheIndex)+2] = type1;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,1));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           ConstructorMiss++;
@@ -3177,13 +3198,14 @@ Obj DoConstructor2Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 2 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 2 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[4*TLS(CacheIndex)] = method;
               cache[4*TLS(CacheIndex)+1] = prec;
               cache[4*TLS(CacheIndex)+2] = type1;
               cache[4*TLS(CacheIndex)+3] = id2;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,2));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -3281,14 +3303,15 @@ Obj DoConstructor3Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 3 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 3 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[5*TLS(CacheIndex)] = method;
               cache[5*TLS(CacheIndex)+1] = prec;
               cache[5*TLS(CacheIndex)+2] = type1;
               cache[5*TLS(CacheIndex)+3] = id2;
               cache[5*TLS(CacheIndex)+4] = id3;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,3));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -3392,7 +3415,8 @@ Obj DoConstructor4Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 4 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 4 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[6*TLS(CacheIndex)] = method;
               cache[6*TLS(CacheIndex)+1] = prec;
               cache[6*TLS(CacheIndex)+2] = type1;
@@ -3400,7 +3424,7 @@ Obj DoConstructor4Args (
               cache[6*TLS(CacheIndex)+4] = id3;
               cache[6*TLS(CacheIndex)+5] = id4;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,4));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -3522,7 +3546,8 @@ Obj DoConstructor5Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 5 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 5 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[7*TLS(CacheIndex)] = method;
               cache[7*TLS(CacheIndex)+1] = prec;
               cache[7*TLS(CacheIndex)+2] = type1;
@@ -3531,7 +3556,7 @@ Obj DoConstructor5Args (
               cache[7*TLS(CacheIndex)+5] = id4;
               cache[7*TLS(CacheIndex)+6] = id5;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,5));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -3672,7 +3697,8 @@ Obj DoConstructor6Args (
           /* update the cache */
           if (method && prec < INTOBJ_INT(CACHE_SIZE))
             {
-              cache = 1+ADDR_OBJ( CACHE_OPER( oper, 6 ) );
+              Bag cacheBag = GET_METHOD_CACHE( oper, 6 );
+              cache = 1+ADDR_OBJ( cacheBag );
               cache[8*TLS(CacheIndex)] = method;
               cache[8*TLS(CacheIndex)+1] = prec;
               cache[8*TLS(CacheIndex)+2] = type1;
@@ -3682,7 +3708,7 @@ Obj DoConstructor6Args (
               cache[8*TLS(CacheIndex)+6] = id5;
               cache[8*TLS(CacheIndex)+7] = id6;
               TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
-              CHANGED_BAG(CACHE_OPER(oper,6));
+              CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
           OperationMiss++;
@@ -4559,6 +4585,7 @@ Obj DoVerboseMutableAttribute (
         UInt addon_len = sizeof(addon) - 1; \
         char *tmp; \
         fname = NEW_STRING( name_len + addon_len + 2 ); \
+        ImpliedWriteGuard(fname); \
         tmp = CSTR_STRING(fname); \
         memcpy( tmp, addon, addon_len ); tmp += addon_len; \
         *tmp++ = '('; \
@@ -5334,6 +5361,7 @@ Obj MethsOper (
     methods = METHS_OPER( oper, i );
     if ( methods == 0 ) {
         methods = NEW_PLIST( T_PLIST, 0 );
+        MakeBagReadOnly(methods);
         METHS_OPER( oper, i ) = methods;
         CHANGED_BAG( oper );
     }
@@ -5358,6 +5386,7 @@ Obj FuncMETHODS_OPERATION (
     }
     n = INT_INTOBJ( narg );
     meth = MethsOper( oper, (UInt)n );
+    MEMBAR_READ();
     return meth == 0 ? Fail : meth;
 }
 
@@ -5372,6 +5401,7 @@ Obj FuncCHANGED_METHODS_OPERATION (
     Obj                 narg )
 {
     Obj *               cache;
+    Bag			        cacheBag;
     Int                 n;
     Int                 i;
 
@@ -5384,8 +5414,9 @@ Obj FuncCHANGED_METHODS_OPERATION (
         return 0;
     }
     n = INT_INTOBJ( narg );
-    cache = ADDR_OBJ( CacheOper( oper, (UInt) n ) );
-    for ( i = 0;  i < SIZE_OBJ(CACHE_OPER(oper,n)) / sizeof(Obj);  i++ ) {
+    cacheBag = CacheOper( oper, (UInt) n );
+    cache = ADDR_OBJ( cacheBag );
+    for ( i = 0;  i < SIZE_OBJ(cacheBag) / sizeof(Obj);  i++ ) {
         cache[i] = 0;
     }
     return 0;
@@ -5413,6 +5444,7 @@ Obj FuncSET_METHODS_OPERATION (
         return 0;
     }
     n = INT_INTOBJ( narg );
+    MEMBAR_WRITE();
     METHS_OPER( oper, n ) = meths;
     return 0;
 }
@@ -6065,6 +6097,9 @@ static Int InitKernel (
     SaveObjFuncs[ T_FLAGS ] = SaveFlags;
     LoadObjFuncs[ T_FLAGS ] = LoadFlags;
 
+    /* flags are protected objects by default */
+    MakeBagTypePublic(T_FLAGS);
+
     /* import copy of REREADING */
     ImportGVarFromLibrary( "REREADING", &REREADING );
     /* return success                                                      */
@@ -6163,8 +6198,5 @@ StructInitInfo * InitInfoOpers ( void )
 
 /****************************************************************************
 **
-
 *E  opers.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-

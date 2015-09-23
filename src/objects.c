@@ -9,6 +9,8 @@
 **
 **  This file contains the functions of the objects package.
 */
+#include	<stdlib.h>
+
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
 
 
@@ -37,6 +39,12 @@
 #include        "string.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
+
+#include        "aobjects.h"            /* atomic objects                  */
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+//#include	"traverse.h"		/* object traversal		   */
+#include	"tls.h"			/* thread-local storage		   */
 
 
 /****************************************************************************
@@ -855,7 +863,7 @@ void            PrintObj (
     lastPV = LastPV;
     LastPV = 1;
     fromview = (lastPV == 2) && (obj == TLS(PrintObjThis));
-    
+
     /* if <obj> is a subobject, then mark and remember the superobject
        unless ViewObj has done that job already */
     
@@ -1585,9 +1593,9 @@ static Int InitKernel (
     InfoBags[         T_DATOBJ +COPYING ].name = "object (data,copied)";
     InitMarkFuncBags( T_DATOBJ +COPYING , MarkOneSubBags  );
 
-
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
+    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         TypeObjFuncs[ t ] = TypeObjError;
+    }
 
     TypeObjFuncs[ T_COMOBJ ] = TypeComObj;
     TypeObjFuncs[ T_POSOBJ ] = TypePosObj;

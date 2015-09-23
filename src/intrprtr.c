@@ -49,11 +49,16 @@
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
 #include        "funcs.h"               /* functions                       */
 #include        "read.h"
 
 #include        "intrprtr.h"            /* interpreter                     */
+
+#include	"tls.h"
+#include	"thread.h"
+#include	"aobjects.h"		/* atomic objects		   */
+
+#include        "vars.h"                /* variables                       */
 
 #include        "saveload.h"            /* saving and loading              */
 
@@ -424,10 +429,11 @@ void            IntrFuncCallEnd (
       else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
       else                { val = CALL_XARGS( func, args ); }
 
-      if (TLS(UserHasQuit) || TLS(UserHasQUIT)) /* the procedure must have called
-                                         READ() and the user quit from a break
-                                         loop inside it */
+      if (TLS(UserHasQuit) || TLS(UserHasQUIT)) {
+        /* the procedure must have called READ() and the user quit
+           from a break loop inside it */
         ReadEvalError();
+      }
     }
 
     /* check the return value                                              */
@@ -3277,7 +3283,6 @@ void            IntrAssListLevel (
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeAssListLevel( narg, level ); return; }
 
-
     /* get right hand sides (checking is done by 'AssListLevel')           */
     rhss = PopObj();
 
@@ -3347,7 +3352,6 @@ void            IntrUnbList ( Int narg )
     if ( TLS(IntrReturning) > 0 ) { return; }
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeUnbList( narg); return; }
-
 
     if (narg == 1) {
       /* get and check the position                                          */
@@ -3486,7 +3490,6 @@ void            IntrElmListLevel ( Int narg,
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeElmListLevel( narg, level ); return; }
 
-
     /* get the positions */
     ixs = NEW_PLIST(T_PLIST, narg);
     for (i = narg; i > 0; i--) {
@@ -3558,7 +3561,6 @@ void            IntrIsbList ( Int narg )
     if ( TLS(IntrReturning) > 0 ) { return; }
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeIsbList(narg); return; }
-
 
     if (narg == 1) {
       /* get and check the position                                          */
@@ -4216,11 +4218,13 @@ void            IntrAssComObjName (
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+      default:
         ASS_REC( record, rnam, rhs );
+        break;
     }
 
     /* push the assigned value                                             */
@@ -4249,11 +4253,13 @@ void            IntrAssComObjExpr ( void )
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+      default:
         ASS_REC( record, rnam, rhs );
+        break;
     }
 
     /* push the assigned value                                             */
@@ -4274,12 +4280,14 @@ void            IntrUnbComObjName (
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    /* unbind the element of the record             			   */
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         UNB_REC( record, rnam );
+        break;
     }
 
     /* push void                                                           */
@@ -4303,12 +4311,14 @@ void            IntrUnbComObjExpr ( void )
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    /* unbind the element of the record             			   */
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         UNB_REC( record, rnam );
+        break;
     }
 
     /* push void                                                           */
@@ -4337,11 +4347,14 @@ void            IntrElmComObjName (
     record = PopObj();
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         elm = ELM_REC( record, rnam );
+        break;
     }
 
     /* push the element                                                    */
@@ -4367,11 +4380,13 @@ void            IntrElmComObjExpr ( void )
     record = PopObj();
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         elm = ELM_REC( record, rnam );
+        break;
     }
 
     /* push the element                                                    */
@@ -4394,11 +4409,13 @@ void            IntrIsbComObjName (
     record = PopObj();
 
     /* get the result                                                      */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
-        isb = (ISB_REC( record, rnam ) ? True : False);
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        isb = ElmPRec( record, rnam ) ? True : False;
+        break;
+      default:
+        isb = ISB_REC( record, rnam ) ? True : False;
+        break;
     }
 
     /* push the result                                                     */
@@ -4424,11 +4441,13 @@ void            IntrIsbComObjExpr ( void )
     record = PopObj();
 
     /* get the result                                                      */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
-        isb = (ISB_REC( record, rnam ) ? True : False);
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        isb = IsbPRec( record, rnam ) ? True : False;
+        break;
+      default:
+        isb = ISB_REC( record, rnam ) ? True : False;
+        break;
     }
 
     /* push the result                                                     */

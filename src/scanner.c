@@ -42,6 +42,8 @@
 
 #include        "scanner.h"             /* scanner                         */
 
+#include        "code.h"                /* coder                           */
+
 #include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
@@ -59,8 +61,12 @@
 #include        "opers.h"               /* DoFilter...                     */
 #include        "read.h"                /* Call0ArgsInNewReader            */
 
+#include	"tls.h"
+#include	"thread.h"
+
 #include <assert.h>
 #include <limits.h>
+#include <stdlib.h>
 
 /* the following global variables are documented in scanner.h */
 
@@ -2974,12 +2980,16 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 
 Obj FuncINPUT_FILENAME( Obj self) {
   Obj s;
-  C_NEW_STRING_DYN( s, TLS(Input)->name );
+  if (TLS(Input)) {
+    C_NEW_STRING_DYN( s, TLS(Input)->name );
+  } else {
+    C_NEW_STRING_CONST( s, "*defin*" );
+  }
   return s;
 }
 
 Obj FuncINPUT_LINENUMBER( Obj self) {
-  return INTOBJ_INT(TLS(Input)->number);
+  return INTOBJ_INT(TLS(Input) ? TLS(Input)->number : 0);
 }
 
 Obj FuncALL_KEYWORDS(Obj self) {

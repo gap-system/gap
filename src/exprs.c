@@ -42,14 +42,19 @@
 
 #include        "code.h"                /* coder                           */
 #include        "calls.h"
-#include        "vars.h"                /* variables                       */
 #include        "stats.h"
 
 
 #include        "exprs.h"               /* expressions                     */
 
+#include        "tls.h"                 /* thread-local storage            */
 #include        "profile.h"             /* installing methods              */
-#include <assert.h>
+#include        "aobjects.h"            /* atomic objects                  */
+
+#include        "vars.h"                /* variables                       */
+
+#include	<assert.h>
+
 
 /****************************************************************************
 **

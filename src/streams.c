@@ -33,6 +33,7 @@
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
+#include        "code.h"                /* coder                           */
 
 #include        "gap.h"                 /* error handling, initialisation  */
 #include        "read.h"                /* reader                          */
@@ -55,6 +56,9 @@
 #include        "streams.h"             /* streams package                 */
 
 #include        "code.h"
+
+#include	"tls.h"
+
 #include        "vars.h"                /* TLS(BottomLVars) for execution contexts */
 
 
@@ -2062,11 +2066,12 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
 {
   Int fd;
   int fdi;
-  while (fid == (Obj) 0 || !(IS_INTOBJ(fid)))
+  while (fid == (Obj) 0 || !(IS_INTOBJ(fid))) {
     fid = ErrorReturnObj(
            "<fid> must be a small integer (not a %s)",
            (Int)TNAM_OBJ(fid),0L,
            "you can replace <fid> via 'return <fid>;'" );
+  }
 
   fd = INT_INTOBJ(fid);
   fdi = syBuf[fd].fp;

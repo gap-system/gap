@@ -42,11 +42,15 @@
 
 #include        "code.h"                /* coder                           */
 
-#include        "vars.h"                /* variables                       */
-
 #include        "saveload.h"            /* saving and loading              */
 #include        "read.h"                /* to access stack of for loop globals */
 #include        "gvars.h"
+#include        "thread.h"              /* threads                         */
+#include        "tls.h"                 /* thread-local storage            */
+#include	"aobjects.h"		/* atomic objects		   */
+
+#include        "vars.h"                /* variables                       */
+
 
 #include        "profile.h"             /* access to stat register function*/
 
@@ -106,11 +110,13 @@ static inline void setup_gapname(TypInputFile* i)
 
 Obj FILENAME_STAT(Stat stat)
 {
+  Obj filename;
   UInt filenameid = FILENAMEID_STAT(stat);
-  if(filenameid == 0)
-    return NEW_STRING(0);
+  if (filenameid == 0)
+      filename = NEW_STRING(0);
   else
-    return ELM_PLIST(FilenameCache, filenameid);
+      filename = ELM_PLIST(FilenameCache, filenameid);
+  return filename;
 }
     
     
@@ -1828,10 +1834,15 @@ static Obj CONVERT_FLOAT_LITERAL_EAGER;
 
 
 static UInt getNextFloatExprNumber( void ) {
+  UInt next;
+  HashLock(&NextFloatExprNumber);
   if (NextFloatExprNumber > MAX_FLOAT_INDEX)
-    return 0;
-  else
-    return NextFloatExprNumber++;
+    next = 0;
+  else {
+    next = NextFloatExprNumber++;
+  }
+  HashUnlock(&NextFloatExprNumber);
+  return next;
 }
 
 static UInt CheckForCommonFloat(Char *str) {
@@ -3324,17 +3335,13 @@ void LoadBody ( Obj body )
 }
 
 
-
-
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -3346,6 +3353,9 @@ static Int InitKernel (
 
     SaveObjFuncs[ T_BODY ] = SaveBody;
     LoadObjFuncs[ T_BODY ] = LoadBody;
+
+    /* Allocate function bodies in the public data space */
+    MakeBagTypePublic(T_BODY);
 
     /* make the result variable known to Gasman                            */
     InitGlobalBag( &CodeResult, "CodeResult" );

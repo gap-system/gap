@@ -31,6 +31,10 @@
 #include        "string.h"
 #include        <assert.h>
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 /* the following two declarations would belong in `saveload.h', but then all
  * files get macfloat dependencies */
 extern Double LoadDouble( void);
@@ -570,6 +574,7 @@ static Int InitKernel (
     /* install the marking functions for macfloatean values                    */
     InfoBags[ T_MACFLOAT ].name = "macfloat";
     InitMarkFuncBags( T_MACFLOAT, MarkNoSubBags );
+    MakeBagTypePublic( T_MACFLOAT );
 
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );

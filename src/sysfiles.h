@@ -545,10 +545,14 @@ extern Obj SyIsDir (
 
 /****************************************************************************
 **
-*F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
+*F  SyFindGapRootFile( <filename>, <buffer> ) . . .  find file in system area
+**
+**  <buffer> must point to a buffer of at least 256 characters. The returned
+**  pointer will either be NULL, or into <buffer>
 */
 extern Char * SyFindGapRootFile (
-            const Char *    filename );
+            const Char *    filename,
+            Char *          buffer);
 
 
 /****************************************************************************

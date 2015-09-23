@@ -95,7 +95,10 @@
 
 #include        "bool.h"                /* booleans                        */
 
-#include        "tls.h"                 /* thread-local storage            */
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 #include        "objfgelm.h"            /* objects of free groups          */
 
 

@@ -49,7 +49,7 @@
 #include        "opers.h"               /* generic operations              */
 
 #include        "ariths.h"              /* basic arithmetic                */
-#include        "finfield.h"            /* fintie fields                   */
+#include        "finfield.h"            /* finite fields                   */
 
 #include        "bool.h"                /* booleans                        */
 
@@ -63,6 +63,9 @@
 #include        "blister.h"             /* boolean lists                   */
 
 #include        "saveload.h"            /* saving and loading              */
+#include	"code.h"
+#include	"thread.h"
+#include	"tls.h"
 
 #include        <assert.h>
 /****************************************************************************

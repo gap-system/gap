@@ -27,7 +27,7 @@
 #define NEW_GF2VEC( vec, type, len ) \
     do { \
         vec = NewBag( T_DATOBJ, SIZE_PLEN_GF2VEC(len) ); \
-        TYPE_DATOBJ(vec) = type; \
+        SetTypeDatObj(vec, type); \
     } while (0)
 
 

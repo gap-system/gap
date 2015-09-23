@@ -21,6 +21,7 @@
 #include        <sys/stat.h>
 #endif
 
+#include	<sys/time.h>
 #include <unistd.h> /* move this and wrap execvp later */
 
 #include        "gasman.h"              /* garbage collector               */
@@ -80,7 +81,6 @@
 
 #include        "code.h"                /* coder                           */
 
-#include        "vars.h"                /* variables                       */
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 #include        "funcs.h"               /* functions                       */
@@ -100,6 +100,12 @@
 #ifdef GAPMPI
 #include        "gapmpi.h"              /* ParGAP/MPI                      */
 #endif
+
+#include        "thread.h"
+#include        "tls.h"
+#include        "aobjects.h"
+
+#include        "vars.h"                /* variables                       */
 
 #include        "intfuncs.h"
 #include        "iostream.h"
@@ -484,8 +490,6 @@ Obj FuncSHELL (Obj self, Obj args)
   else
     ErrorMayQuit("SHELL: 10th argument (catch QUIT) should be true or false",0,0);
 
-
-
   res =  Shell(context, canReturnVoid, canReturnObj, lastDepth, setTime, promptBuffer, preCommandHook, catchQUIT,
                CSTR_STRING(infile), CSTR_STRING(outfile));
 
@@ -764,12 +768,12 @@ int main (
   NrImportedGVars = 0;
   NrImportedFuncs = 0;
   TLS(UserHasQUIT) = 0;
-  SystemErrorCode = 0;
   TLS(UserHasQuit) = 0;
+  SystemErrorCode = 0;
     
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv );
-  if (!TLS(UserHasQUIT)) {           /* maybe the user QUIT from the initial
+  if (!TLS(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
     if ( SyCompilePlease ) {
@@ -826,7 +830,6 @@ Obj FuncRuntime (
 }
 
 
-
 Obj FuncRUNTIMES( Obj     self)
 {
   Obj    res;
@@ -837,9 +840,7 @@ Obj FuncRUNTIMES( Obj     self)
   SET_ELM_PLIST(res, 3, INTOBJ_INT( SyTimeChildren() ));
   SET_ELM_PLIST(res, 4, INTOBJ_INT( SyTimeChildrenSys() ));
   return res;
-   
 }
-
 
 
 /****************************************************************************
@@ -1109,10 +1110,8 @@ Obj FuncWindowCmd (
 
 /****************************************************************************
 **
-
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
-UInt ErrorLevel;
 
 Obj  ErrorLVars0;    
 Obj  ErrorLVars;
@@ -1324,7 +1323,7 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
   syLongjmp(TLS(ReadJmpError), 1);
   return 0;
 }
-  
+
 
 UInt UserHasQuit;
 UInt UserHasQUIT;
@@ -1350,8 +1349,8 @@ static Obj ErrorMessageToGAPString(
 {
   Char message[120];
   Obj Message;
-  SPrTo(message, 120, msg, arg1, arg2);
-  message[119] = '\0';
+  SPrTo(message, sizeof(message), msg, arg1, arg2);
+  message[sizeof(message)-1] = '\0';
   C_NEW_STRING_DYN(Message, message);
   return Message;
 }
@@ -2115,7 +2114,7 @@ Obj FuncOBJ_HANDLE (
     }
     else {
         ErrorQuit( "<handle> must be a positive integer", 0L, 0L );
-        return 0;
+        return (Obj) 0;
     }
 }
 
@@ -2634,12 +2633,14 @@ static int SetExitValue(Obj code)
 *F  FuncGAP_EXIT_CODE() . . . . . . . . Set the code with which GAP exits.
 **
 */
+
 Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
 {
-  if(!SetExitValue(code))
+  if (!SetExitValue(code))
     ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0L, 0L);
   return (Obj) 0;
 }
+
 
 /****************************************************************************
 **
@@ -2988,15 +2989,12 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-
-
-
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* create windows command buffer                                       */
     WindowCmdString = NEW_STRING( 1000 );
-    
+
     /* return success                                                      */
     return PostRestore( module );
 }
@@ -3193,7 +3191,9 @@ void RecordLoadedModule (
 **  general    `InitLibrary'  will  create    all objects    and  then  calls
 **  `PostRestore'.  This function is only used when restoring.
 */
+#ifndef BOEHM_GC
 extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
+#endif
 
 static Obj POST_RESTORE;
 
@@ -3280,11 +3280,13 @@ void InitializeGap (
         }
 #   endif
 
+#ifndef BOEHM_GC
     /* and now for a special hack                                          */
     for ( i = LAST_CONSTANT_TNUM+1; i <= LAST_REAL_TNUM; i++ ) {
       if (TabMarkFuncBags[i + COPYING] == MarkAllSubBagsDefault)
         TabMarkFuncBags[ i+COPYING ] = TabMarkFuncBags[ i ];
     }
+#endif
 
     /* if we are restoring, load the workspace and call the post restore   */
     if ( SyRestoring ) {
@@ -3384,9 +3386,7 @@ void InitializeGap (
 
 }
 
-
 /****************************************************************************
 **
-
 *E  gap.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

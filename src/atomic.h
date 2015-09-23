@@ -1,5 +1,5 @@
-#ifndef GAP_TLS_H
-#define GAP_TLS_H
+#ifndef GAP_ATOMIC_H
+#define GAP_ATOMIC_H
 
 /*
  * This header is a placeholder for the HPC-GAP header of the same name. It
@@ -7,12 +7,7 @@
  * and classic GAP.
  */
 
-#define ReadGuard(bag) NOOP
-#define WriteGuard(bag) NOOP
-
-static inline Bag ImpliedWriteGuard(Bag bag)
-{
-  return bag;
-}
+#define MEMBAR_READ() ((void) 0)
+#define MEMBAR_WRITE() ((void) 0)
 
 #endif

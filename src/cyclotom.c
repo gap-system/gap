@@ -119,6 +119,8 @@
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include        "code.h"
+#include        "tls.h"
 
 /****************************************************************************
 **
@@ -144,6 +146,16 @@
 */
 Obj ResultCyc;
 
+void GrowResultCyc(UInt size) {
+    Obj *res;
+    UInt i;
+    if ( LEN_PLIST(TLS(ResultCyc)) < size ) {
+        GROW_PLIST( TLS(ResultCyc), size );
+        SET_LEN_PLIST( TLS(ResultCyc), size );
+        res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
+        for ( i = 0; i < size; i++ ) { res[i] = INTOBJ_INT(0); }
+    }
+}
 
 /****************************************************************************
 **
@@ -750,9 +762,8 @@ UInt4 CyclotomicsLimit = 1000000;
 
 static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
 {
-  UInt n,i,a,b,c;
+  UInt n,a,b,c;
   UInt8 n8;
-  Obj *res;
   
   /* get the smallest field that contains both cyclotomics               */
   /* First Euclid's Algorithm for gcd */
@@ -787,12 +798,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
   *mr = n/nr;
 
   /* make sure that the result bag is large enough                      */
-  if ( LEN_PLIST(TLS(ResultCyc)) < n ) {
-    GROW_PLIST( TLS(ResultCyc), n );
-    SET_LEN_PLIST( TLS(ResultCyc), n );
-    res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
-    for ( i = 0; i < n; i++ ) { res[i] = INTOBJ_INT(0); }
-  }
+  GrowResultCyc(n);
   return n;
 }
 
@@ -1479,7 +1485,6 @@ Obj FuncE (
     Obj                 self,
     Obj                 n )
 {
-    UInt                i;              /* loop variable                   */
     Obj *               res;            /* pointer into result bag         */
 
     /* do full operation                                                   */
@@ -1504,12 +1509,7 @@ Obj FuncE (
     /* if the root is not known already construct it                       */
     if ( TLS(LastNCyc) != INT_INTOBJ(n) ) {
         TLS(LastNCyc) = INT_INTOBJ(n);
-        if ( LEN_PLIST(TLS(ResultCyc)) < TLS(LastNCyc) ) {
-            GROW_PLIST( TLS(ResultCyc), TLS(LastNCyc) );
-            SET_LEN_PLIST( TLS(ResultCyc), TLS(LastNCyc) );
-            res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
-            for ( i = 0; i < TLS(LastNCyc); i++ ) { res[i] = INTOBJ_INT(0); }
-        }
+        GrowResultCyc(TLS(LastNCyc));
         res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
         res[1] = INTOBJ_INT(1);
         CHANGED_BAG( TLS(ResultCyc) );
@@ -1969,12 +1969,7 @@ Obj FuncCycList (
 
     /* enlarge the buffer if necessary                                     */
     n = LEN_PLIST( list );
-    if ( LEN_PLIST(TLS(ResultCyc)) < n ) {
-        GROW_PLIST( TLS(ResultCyc), n );
-        SET_LEN_PLIST( TLS(ResultCyc), n );
-        res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
-        for ( i = 0; i < n; i++ ) { res[i] = INTOBJ_INT(0); }
-    }
+    GrowResultCyc(n);
 
     /* transfer the coefficients into the buffer                           */
     res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
