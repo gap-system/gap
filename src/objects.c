@@ -1464,6 +1464,52 @@ Obj FuncCLONE_OBJ (
     return 0;
 }
 
+/****************************************************************************
+**
+
+*F  FuncSWITCH_OBJ( <self>, <obj1>, <obj2> ) . . .  switch <obj1> and <obj2>
+**
+**  `SWITCH_OBJ' exchanges the objects referenced by its two arguments.  It
+**   is not allowed to switch clone small integers or finite field elements.
+**
+**   This is inspired by the Smalltalk 'become:' operation.
+*/
+
+Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
+    Obj *ptr1, *ptr2;
+
+    if ( IS_INTOBJ(obj1) || IS_INTOBJ(obj2) ) {
+        ErrorReturnVoid( "small integer objects cannot be switched", 0, 0,
+                         "you can 'return;' to leave them in place" );
+        return 0;
+    }
+    if ( IS_FFE(obj1) || IS_FFE(obj2) ) {
+        ErrorReturnVoid( "finite field elements cannot be switched", 0, 0,
+                         "you can 'return;' to leave them in place" );
+        return 0;
+    }
+    ptr1 = PTR_BAG(obj1);
+    ptr2 = PTR_BAG(obj2);
+    PTR_BAG(obj2) = ptr1;
+    PTR_BAG(obj1) = ptr2;
+    CHANGED_BAG(obj1);
+    CHANGED_BAG(obj2);
+    return (Obj) 0;
+}
+
+
+/****************************************************************************
+**
+
+*F  FuncFORCE_SWITCH_OBJ( <self>, <obj1>, <obj2> ) .  switch <obj1> and <obj2>
+**
+**  In GAP, FORCE_SWITCH_OBJ does the same thing as SWITCH_OBJ. In HPC_GAP
+**  it allows public objects to be exchanged.
+*/
+
+Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
+    return FuncSWITCH_OBJ(self, obj1, obj2);
+}
 
 /****************************************************************************
 **
@@ -1557,6 +1603,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CLONE_OBJ", 2, "obj, dst, src",
       FuncCLONE_OBJ, "src/objects.c:CLONE_OBJ" },
+
+    { "SWITCH_OBJ", 2, "obj1, obj2",
+      FuncSWITCH_OBJ, "src/objects.c:SWITCH_OBJ" },
+
+    { "FORCE_SWITCH_OBJ", 2, "obj1, obj2",
+      FuncFORCE_SWITCH_OBJ, "src/objects.c:FORCE_SWITCH_OBJ" },
 
     { "SET_PRINT_OBJ_INDEX", 1, "index",
       FuncSET_PRINT_OBJ_INDEX, "src/objects.c:SET_PRINT_OBJ_INDEX" },
@@ -1797,4 +1849,3 @@ StructInitInfo * InitInfoObjects ( void )
 
 *E  objects.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
