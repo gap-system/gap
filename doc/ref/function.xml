@@ -56,6 +56,8 @@ So <Ref Func="ReturnTrue"/> is often used as family predicate in
 <#Include Label="ReturnTrue">
 <#Include Label="ReturnFalse">
 <#Include Label="ReturnFail">
+<#Include Label="ReturnNothing">
+<#Include Label="ReturnFirst">
 <#Include Label="IdFunc">
 
 </Section>
@@ -176,5 +178,3 @@ there is one operation <Ref Oper="Zero"/> instead of two operations
 </Section>
 
 </Chapter>
-
-

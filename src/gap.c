@@ -810,6 +810,31 @@ Obj FuncID_FUNC (
   return val1;
 }
 
+/****************************************************************************
+**
+*F  FuncRETURN_FIRST( <self>, <args> ) . . . . . . . . Return first argument
+*/
+Obj FuncRETURN_FIRST (
+                 Obj                 self,
+                 Obj                 args )
+{
+  if (!IS_PLIST(args) || LEN_PLIST(args) < 1)
+        ErrorMayQuit("RETURN_FIRST requires one or more arguments",0,0);
+
+  return ELM_PLIST(args, 1);
+}
+
+/****************************************************************************
+**
+*F  FuncRETURN_NOTHING( <self>, <arg> ) . . . . . . . . . . . Return nothing
+*/
+Obj FuncRETURN_NOTHING (
+                 Obj                 self,
+                 Obj                 arg )
+{
+  return 0;
+}
+
 
 /****************************************************************************
 **
@@ -2809,6 +2834,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ID_FUNC", 1, "object",
       FuncID_FUNC, "src/gap.c:ID_FUNC" },
+
+    { "RETURN_FIRST", -1, "object",
+      FuncRETURN_FIRST, "src/gap.c:RETURN_FIRST" },
+
+    { "RETURN_NOTHING", -1, "object",
+      FuncRETURN_NOTHING, "src/gap.c:RETURN_NOTHING" },
 
     { "ExportToKernelFinished", 0, "",
       FuncExportToKernelFinished, "src/gap.c:ExportToKernelFinished" },
