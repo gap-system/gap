@@ -480,8 +480,8 @@ BIND_GLOBAL( "ReturnFail", RETURN_FAIL );
 ##  and always returns nothing.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> n:=ReturnFail;  
-##  function( arg ) ... end
+##  gap> n:=ReturnNothing;
+##  function( object ) ... end
 ##  gap> n();
 ##  gap> n(-42);
 ##  ]]></Example>
@@ -505,8 +505,8 @@ BIND_GLOBAL( "ReturnNothing", RETURN_NOTHING );
 ##  accepts a single argument.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> f:=ReturnFirst;  
-##  function( arg ) ... end
+##  gap> f:=ReturnFirst;
+##  function( object ) ... end
 ##  gap> f(1);
 ##  1
 ##  gap> f(2,3,4);
