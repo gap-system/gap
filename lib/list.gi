@@ -3622,7 +3622,7 @@ end);
 ##  This is intended for use in certain rare situations, such as before
 ##  Objectifying. Normally, ConstantAccessTimeList should be enough
 ##
-##  This function guarantees that the reult will be a plain list, distinct
+##  This function guarantees that the result will be a plain list, distinct
 ##  from the input object.
 ##
 InstallGlobalFunction(PlainListCopy, function( list )
