@@ -813,7 +813,7 @@ InstallMethod( ListOp,
 
 InstallMethod( ListOp,
     "for a dense list, and a function",
-    [ IsDenseList, IsFunction ],
+    [ IsDenseList and IsFinite, IsFunction ],
     function ( C, func )
     local   res, elm;
     res := EmptyPlist(Length(C));
@@ -1432,7 +1432,7 @@ InstallMethod( Filtered,
     end );
 InstallMethod( Filtered,
     "for a dense list, and a function",
-    [ IsDenseList, IsFunction ],
+    [ IsDenseList and IsFinite, IsFunction ],
     function ( C, func )
     local res, elm, ob;
     res := [];
