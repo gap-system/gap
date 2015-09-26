@@ -1445,10 +1445,10 @@ InstallMethod( Filtered,
     return res;
     end );
 
-#T Is this useful compared to the previous method? (FL)
+# Optimization for empty lists gives a tiny but noticeable speedup
 InstallMethod( Filtered,
     "for an empty list/collection, and a function",
-    [ IsEmpty, IsFunction ], 
+    [ IsEmpty and IsListOrCollection, IsFunction ], 
     SUM_FLAGS, # there is nothing to do
     function( list, func )
     return [];
@@ -1562,9 +1562,10 @@ InstallMethod( ForAll,
     return true;
     end );
 
-InstallOtherMethod( ForAll,
+# Optimization for empty lists gives a tiny but noticeable speedup
+InstallMethod( ForAll,
     "for an empty list/collection, and a function",
-    [ IsEmpty, IsFunction ], 
+    [ IsEmpty and IsListOrCollection, IsFunction ], 
     SUM_FLAGS, # there is nothing to do
     ReturnTrue );
 
@@ -1610,9 +1611,10 @@ InstallMethod( ForAny,
     return false;
     end );
 
-InstallOtherMethod( ForAny,
+# Optimization for empty lists gives a tiny but noticeable speedup
+InstallMethod( ForAny,
     "for an empty list/collection, and a function",
-    [ IsEmpty, IsFunction ],
+    [ IsEmpty and IsListOrCollection, IsFunction ],
     SUM_FLAGS, # there is nothing to do
     ReturnFalse );
 
