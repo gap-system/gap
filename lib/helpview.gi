@@ -430,6 +430,8 @@ show := function(file)
 end
 );
 
+MakeReadOnly(HELP_VIEWER_INFO);
+
 #############################################################################
 ##
 #F  SetHelpViewer(<viewer>):  Set the viewer used for help
