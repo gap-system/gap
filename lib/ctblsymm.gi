@@ -1737,7 +1737,7 @@ BindGlobal( "OrderOfSchurLift", function( pi )
 ##
 #V  CharTableDoubleCoverSymmetric
 ##
-InstallValue( CharTableDoubleCoverSymmetric, rec(
+InstallValue( CharTableDoubleCoverSymmetric, MakeImmutable ( rec(
     isGenericTable:=
         true,
     identifier:=
@@ -1865,14 +1865,14 @@ InstallValue( CharTableDoubleCoverSymmetric, rec(
                     Irr:= Concatenation( CharTableSymmetric.matrix( n )
                               { [ 1 .. nrparts ] }{ fus }, chars ) );
         end,
-    domain:= IsPosInt ) );
+    domain:= IsPosInt ) ) );
 
 
 #############################################################################
 ##
 #V  CharTableDoubleCoverAlternating
 ##
-InstallValue( CharTableDoubleCoverAlternating, rec(
+InstallValue( CharTableDoubleCoverAlternating, MakeImmutable( rec(
     isGenericTable:=
         true,
     identifier:=
@@ -2167,7 +2167,7 @@ InstallValue( CharTableDoubleCoverAlternating, rec(
                     Irr:= Concatenation( tbl.Irr{
                             [ 1 .. Length( tbl.Irr ) ] }{ fus1 }, chars ) );
         end,
-    domain:= IsPosInt ) );
+    domain:= IsPosInt ) ) );
 
 
 #############################################################################

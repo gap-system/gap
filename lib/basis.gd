@@ -855,7 +855,7 @@ DeclareGlobalFunction( "InstallHandlingByNiceBasis" );
 ##  <#/GAPDoc>
 ##
 BindGlobal( "NiceBasisFiltersInfo", [] );
-
+ShareSpecialObj( NiceBasisFiltersInfo );
 
 #############################################################################
 ##
@@ -885,12 +885,15 @@ DeclareGlobalFunction( "CheckForHandlingByNiceBasis" );
 
 InstallGlobalFunction( "DeclareHandlingByNiceBasis", function( name, info )
     local len, i;
-    len:= Length( NiceBasisFiltersInfo );
-    for i in [ len, len-1 .. 1 ] do
-      NiceBasisFiltersInfo[ i+1 ]:= NiceBasisFiltersInfo[i];
+    atomic readwrite NiceBasisFiltersInfo do
+      len:= Length( NiceBasisFiltersInfo );
+      for i in [ len, len-1 .. 1 ] do
+        NiceBasisFiltersInfo[ i+1 ]:= NiceBasisFiltersInfo[i];
+      od;
+      DeclareFilter( name );
+      NiceBasisFiltersInfo[1] := 
+        MigrateObj([ ValueGlobal( name ), info ],NiceBasisFiltersInfo);
     od;
-    DeclareFilter( name );
-    NiceBasisFiltersInfo[1]:= [ ValueGlobal( name ), info ];
 end );
 
 

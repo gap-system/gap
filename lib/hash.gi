@@ -190,12 +190,13 @@ InstallMethod( PrintObj,
 #T  tune these for reasonable performance
 ##
 
-ListHashParams := rec(
+ListHashParams := AtomicRecord( rec(
                       BASIC_HASH_RANGE := 16,
                       HASH_GROW_MARGIN := 5/4,
                       HASH_GROW_FACTOR := 3/2,
                       HASH_SHRINK_MARGIN := 3,
-                      HASH_SHRINK_FACTOR := 2);
+                      HASH_SHRINK_FACTOR := 2
+                      ) );
 
 #############################################################################
 ##
@@ -572,11 +573,11 @@ end);
 #T  tune these for reasonable performance
 ##
 
-FlatHashParams := rec(
+FlatHashParams := AtomicRecord( rec(
                       BASIC_HASH_RANGE := 50,
                       HASH_GROW_MARGIN := 3/2,
                       HASH_GROW_FACTOR := 2
-                      );
+                      ) );
 
 #############################################################################
 ##
