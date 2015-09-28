@@ -37,6 +37,8 @@
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
+#include        "thread.h"              /* threads                         */
+#include        "tls.h"                 /* thread-local storage            */
 
 #include        "objfgelm.h"            /* objects of free groups          */
 

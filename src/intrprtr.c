@@ -49,11 +49,16 @@
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
 #include        "funcs.h"               /* functions                       */
 #include        "read.h"
 
 #include        "intrprtr.h"            /* interpreter                     */
+
+#include	"tls.h"
+#include	"thread.h"
+#include	"aobjects.h"		/* atomic objects		   */
+
+#include        "vars.h"                /* variables                       */
 
 #include        "saveload.h"            /* saving and loading              */
 
@@ -148,29 +153,29 @@ void            PushObj (
     Obj                 val )
 {
     /* there must be a stack, it must not be underfull or overfull         */
-    assert( StackObj != 0 );
-    assert( 0 <= CountObj && CountObj == LEN_PLIST(StackObj) );
+    assert( TLS(StackObj) != 0 );
+    assert( 0 <= TLS(CountObj) && TLS(CountObj) == LEN_PLIST(TLS(StackObj)) );
     assert( val != 0 );
 
     /* count up and put the value onto the stack                           */
-    CountObj++;
-    GROW_PLIST(    StackObj, CountObj );
-    SET_LEN_PLIST( StackObj, CountObj );
-    SET_ELM_PLIST( StackObj, CountObj, val );
-    CHANGED_BAG(   StackObj );
+    TLS(CountObj)++;
+    GROW_PLIST(    TLS(StackObj), TLS(CountObj) );
+    SET_LEN_PLIST( TLS(StackObj), TLS(CountObj) );
+    SET_ELM_PLIST( TLS(StackObj), TLS(CountObj), val );
+    CHANGED_BAG(   TLS(StackObj) );
 }
 
 void            PushVoidObj ( void )
 {
     /* there must be a stack, it must not be underfull or overfull         */
-    assert( StackObj != 0 );
-    assert( 0 <= CountObj && CountObj == LEN_PLIST(StackObj) );
+    assert( TLS(StackObj) != 0 );
+    assert( 0 <= TLS(CountObj) && TLS(CountObj) == LEN_PLIST(TLS(StackObj)) );
 
     /* count up and put the void value onto the stack                      */
-    CountObj++;
-    GROW_PLIST(    StackObj, CountObj );
-    SET_LEN_PLIST( StackObj, CountObj );
-    SET_ELM_PLIST( StackObj, CountObj, (Obj)0 );
+    TLS(CountObj)++;
+    GROW_PLIST(    TLS(StackObj), TLS(CountObj) );
+    SET_LEN_PLIST( TLS(StackObj), TLS(CountObj) );
+    SET_ELM_PLIST( TLS(StackObj), TLS(CountObj), (Obj)0 );
 }
 
 Obj             PopObj ( void )
@@ -178,14 +183,14 @@ Obj             PopObj ( void )
     Obj                 val;
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( StackObj != 0 );
-    assert( 1 <= CountObj && CountObj == LEN_LIST(StackObj) );
+    assert( TLS(StackObj) != 0 );
+    assert( 1 <= TLS(CountObj) && TLS(CountObj) == LEN_LIST(TLS(StackObj)) );
 
     /* get the top element from the stack and count down                   */
-    val = ELM_PLIST( StackObj, CountObj );
-    SET_ELM_PLIST( StackObj, CountObj, 0 );
-    SET_LEN_PLIST( StackObj, CountObj-1  );
-    CountObj--;
+    val = ELM_PLIST( TLS(StackObj), TLS(CountObj) );
+    SET_ELM_PLIST( TLS(StackObj), TLS(CountObj), 0 );
+    SET_LEN_PLIST( TLS(StackObj), TLS(CountObj)-1  );
+    TLS(CountObj)--;
 
     /* return the popped value (which must be non-void)                    */
     assert( val != 0 );
@@ -197,14 +202,14 @@ Obj             PopVoidObj ( void )
     Obj                 val;
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( StackObj != 0 );
-    assert( 1 <= CountObj && CountObj == LEN_LIST(StackObj) );
+    assert( TLS(StackObj) != 0 );
+    assert( 1 <= TLS(CountObj) && TLS(CountObj) == LEN_LIST(TLS(StackObj)) );
 
     /* get the top element from the stack and count down                   */
-    val = ELM_PLIST( StackObj, CountObj );
-    SET_ELM_PLIST( StackObj, CountObj, 0 );
-    SET_LEN_PLIST( StackObj, CountObj-1  );
-    CountObj--;
+    val = ELM_PLIST( TLS(StackObj), TLS(CountObj) );
+    SET_ELM_PLIST( TLS(StackObj), TLS(CountObj), 0 );
+    SET_LEN_PLIST( TLS(StackObj), TLS(CountObj)-1  );
+    TLS(CountObj)--;
 
     /* return the popped value (which may be void)                         */
     return val;
@@ -226,7 +231,7 @@ Obj             PopVoidObj ( void )
 **
 **  If 'IntrEnd' returns  0, then no  return-statement or quit-statement  was
 **  interpreted.  If  'IntrEnd' returns 1,  then a return-value-statement was
-**  interpreted and in this case the  return value is stored in 'IntrResult'.
+**  interpreted and in this case the  return value is stored in 'TLS(IntrResult)'.
 **  If  'IntrEnd' returns 2, then a  return-void-statement  was  interpreted.
 **  If 'IntrEnd' returns 8, then a quit-statement was interpreted.
 */
@@ -239,22 +244,22 @@ void IntrBegin ( Obj frame )
        place from which we might call SaveWorkspace */
     intrState = NewBag( T_PLIST, 4*sizeof(Obj) );
     ADDR_OBJ(intrState)[0] = (Obj)3;
-    ADDR_OBJ(intrState)[1] = IntrState;
-    ADDR_OBJ(intrState)[2] = StackObj;
-    ADDR_OBJ(intrState)[3] = INTOBJ_INT(CountObj);
-    IntrState = intrState;
+    ADDR_OBJ(intrState)[1] = TLS(IntrState);
+    ADDR_OBJ(intrState)[2] = TLS(StackObj);
+    ADDR_OBJ(intrState)[3] = INTOBJ_INT(TLS(CountObj));
+    TLS(IntrState) = intrState;
 
     /* allocate a new values stack                                         */
-    StackObj = NEW_PLIST( T_PLIST, 64 );
-    SET_LEN_PLIST( StackObj, 0 );
-    CountObj = 0;
+    TLS(StackObj) = NEW_PLIST( T_PLIST, 64 );
+    SET_LEN_PLIST( TLS(StackObj), 0 );
+    TLS(CountObj) = 0;
 
     /* must be in immediate (non-ignoring, non-coding) mode                */
-    assert( IntrIgnoring == 0 );
-    assert( IntrCoding   == 0 );
+    assert( TLS(IntrIgnoring) == 0 );
+    assert( TLS(IntrCoding)   == 0 );
 
     /* no return-statement was yet interpreted                             */
-    IntrReturning = 0;
+    TLS(IntrReturning) = 0;
 
     /* start an execution environment                                      */
     ExecBegin(frame);
@@ -272,21 +277,21 @@ ExecStatus IntrEnd (
         ExecEnd( 0UL );
 
         /* remember whether the interpreter interpreted a return-statement */
-        intrReturning = IntrReturning;
-        IntrReturning = 0;
+        intrReturning = TLS(IntrReturning);
+        TLS(IntrReturning) = 0;
 
         /* must be back in immediate (non-ignoring, non-coding) mode       */
-        assert( IntrIgnoring == 0 );
-        assert( IntrCoding   == 0 );
+        assert( TLS(IntrIgnoring) == 0 );
+        assert( TLS(IntrCoding)   == 0 );
 
         /* and the stack must contain the result value (which may be void) */
-        assert( CountObj == 1 );
-        IntrResult = PopVoidObj();
+        assert( TLS(CountObj) == 1 );
+        TLS(IntrResult) = PopVoidObj();
 
         /* switch back to the old state                                    */
-        CountObj  = INT_INTOBJ( ADDR_OBJ(IntrState)[3] );
-        StackObj  = ADDR_OBJ(IntrState)[2];
-        IntrState = ADDR_OBJ(IntrState)[1];
+        TLS(CountObj)  = INT_INTOBJ( ADDR_OBJ(TLS(IntrState))[3] );
+        TLS(StackObj)  = ADDR_OBJ(TLS(IntrState))[2];
+        TLS(IntrState) = ADDR_OBJ(TLS(IntrState))[1];
 
     }
 
@@ -297,23 +302,23 @@ ExecStatus IntrEnd (
         ExecEnd( 1UL );
 
         /* clean up the coder too                                          */
-        if ( IntrCoding > 0 ) { CodeEnd( 1UL ); }
+        if ( TLS(IntrCoding) > 0 ) { CodeEnd( 1UL ); }
 
         /* remember that we had an error                                   */
         intrReturning = STATUS_ERROR;
-        IntrReturning = 0;
+        TLS(IntrReturning) = 0;
 
         /* must be back in immediate (non-ignoring, non-coding) mode       */
-        IntrIgnoring = 0;
-        IntrCoding   = 0;
+        TLS(IntrIgnoring) = 0;
+        TLS(IntrCoding)   = 0;
 
         /* dummy result value (probably ignored)                           */
-        IntrResult = (Obj)0;
+        TLS(IntrResult) = (Obj)0;
 
         /* switch back to the old state                                    */
-        CountObj  = INT_INTOBJ( ADDR_OBJ(IntrState)[3] );
-        StackObj  = ADDR_OBJ(IntrState)[2];
-        IntrState = ADDR_OBJ(IntrState)[1];
+        TLS(CountObj)  = INT_INTOBJ( ADDR_OBJ(TLS(IntrState))[3] );
+        TLS(StackObj)  = ADDR_OBJ(TLS(IntrState))[2];
+        TLS(IntrState) = ADDR_OBJ(TLS(IntrState))[1];
 
     }
 
@@ -341,9 +346,9 @@ ExecStatus IntrEnd (
 void            IntrFuncCallBegin ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeFuncCallBegin(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeFuncCallBegin(); return; }
 
 }
 
@@ -369,9 +374,9 @@ void            IntrFuncCallEnd (
     UInt                i;              /* loop variable                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) {
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) {
       CodeFuncCallEnd( funccall, options, nr );
       return; }
 
@@ -424,10 +429,11 @@ void            IntrFuncCallEnd (
       else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
       else                { val = CALL_XARGS( func, args ); }
 
-      if (UserHasQuit || UserHasQUIT) /* the procedure must have called
-                                         READ() and the user quit from a break
-                                         loop inside it */
+      if (TLS(UserHasQuit) || TLS(UserHasQUIT)) {
+        /* the procedure must have called READ() and the user quit
+           from a break loop inside it */
         ReadEvalError();
+      }
     }
 
     /* check the return value                                              */
@@ -470,17 +476,17 @@ void            IntrFuncExprBegin (
     Int                 startLine)
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) {
-        IntrCoding++;
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) {
+        TLS(IntrCoding)++;
         CodeFuncExprBegin( narg, nloc, nams, startLine );
         return;
     }
 
     /* switch to coding mode now                                           */
     CodeBegin();
-    IntrCoding = 1;
+    TLS(IntrCoding) = 1;
 
     /* code a function expression                                          */
     CodeFuncExprBegin( narg, nloc, nams, startLine );
@@ -493,24 +499,24 @@ void            IntrFuncExprEnd (
     Obj                 func;           /* the function, result            */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 1 ) {
-        IntrCoding--;
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 1 ) {
+        TLS(IntrCoding)--;
         CodeFuncExprEnd( nr, mapsto );
         return;
     }
 
     /* must be coding                                                      */
-    assert( IntrCoding > 0 );
+    assert( TLS(IntrCoding) > 0 );
 
     /* code a function expression                                          */
     CodeFuncExprEnd( nr, mapsto );
 
     /* switch back to immediate mode, get the function                     */
     CodeEnd(0);
-    IntrCoding = 0;
-    func = CodeResult;
+    TLS(IntrCoding) = 0;
+    func = TLS(CodeResult);
 
     /* push the function                                                   */
     PushObj(func);
@@ -552,27 +558,27 @@ void            IntrFuncExprEnd (
 void            IntrIfBegin ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { IntrIgnoring++; return; }
-    if ( IntrCoding    > 0 ) { CodeIfBegin(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { TLS(IntrIgnoring)++; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIfBegin(); return; }
 
 }
 
 void            IntrIfElif ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIfElif(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIfElif(); return; }
 
 }
 
 void            IntrIfElse ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIfElse(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIfElse(); return; }
 
 
     /* push 'true' (to execute body of else-branch)                        */
@@ -584,9 +590,9 @@ void            IntrIfBeginBody ( void )
     Obj                 cond;           /* value of condition              */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { IntrIgnoring++; return; }
-    if ( IntrCoding    > 0 ) { CodeIfBeginBody(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { TLS(IntrIgnoring)++; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIfBeginBody(); return; }
 
 
     /* get and check the condition                                         */
@@ -599,7 +605,7 @@ void            IntrIfBeginBody ( void )
 
     /* if the condition is 'false', ignore the body                        */
     if ( cond == False ) {
-        IntrIgnoring = 1;
+        TLS(IntrIgnoring) = 1;
     }
 }
 
@@ -609,14 +615,14 @@ void            IntrIfEndBody (
     UInt                i;              /* loop variable                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 1 ) { IntrIgnoring--; return; }
-    if ( IntrCoding    > 0 ) { CodeIfEndBody( nr ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 1 ) { TLS(IntrIgnoring)--; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIfEndBody( nr ); return; }
 
 
     /* if the condition was 'false', the body was ignored                  */
-    if ( IntrIgnoring == 1 ) {
-        IntrIgnoring = 0;
+    if ( TLS(IntrIgnoring) == 1 ) {
+        TLS(IntrIgnoring) = 0;
         return;
     }
 
@@ -626,21 +632,21 @@ void            IntrIfEndBody (
     }
 
     /* one branch of the if-statement was executed, ignore the others      */
-    IntrIgnoring = 1;
+    TLS(IntrIgnoring) = 1;
 }
 
 void            IntrIfEnd (
     UInt                nr )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 1 ) { IntrIgnoring--; return; }
-    if ( IntrCoding    > 0 ) { CodeIfEnd( nr ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 1 ) { TLS(IntrIgnoring)--; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIfEnd( nr ); return; }
 
 
     /* if one branch was executed (ignoring the others)                    */
-    if ( IntrIgnoring == 1 ) {
-        IntrIgnoring = 0;
+    if ( TLS(IntrIgnoring) == 1 ) {
+        TLS(IntrIgnoring) = 0;
         PushVoidObj();
     }
 
@@ -687,14 +693,14 @@ void IntrForBegin ( void )
     Obj                 nams;           /* (empty) list of names           */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { IntrCoding++; CodeForBegin(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { TLS(IntrCoding)++; CodeForBegin(); return; }
 
 
     /* switch to coding mode now                                           */
     CodeBegin();
-    IntrCoding = 1;
+    TLS(IntrCoding) = 1;
 
     /* code a function expression (with no arguments and locals)           */
     nams = NEW_PLIST( T_PLIST, 0 );
@@ -706,10 +712,10 @@ void IntrForBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
 
-    if (CountNams > 0) {
-        GROW_PLIST(StackNams, ++CountNams);
-        SET_ELM_PLIST(StackNams, CountNams, nams);
-        SET_LEN_PLIST(StackNams, CountNams);
+    if (TLS(CountNams) > 0) {
+        GROW_PLIST(TLS(StackNams), ++TLS(CountNams));
+        SET_ELM_PLIST(TLS(StackNams), TLS(CountNams), nams);
+        SET_LEN_PLIST(TLS(StackNams), TLS(CountNams));
     }
 
     CodeFuncExprBegin( 0, 0, nams, 0 );
@@ -721,24 +727,24 @@ void IntrForBegin ( void )
 void IntrForIn ( void )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
+    assert( TLS(IntrCoding) > 0 );
     CodeForIn();
 }
 
 void IntrForBeginBody ( void )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
+    assert( TLS(IntrCoding) > 0 );
     CodeForBeginBody();
 }
 
@@ -746,11 +752,11 @@ void IntrForEndBody (
     UInt                nr )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( IntrCoding != 0 ) {
+    if ( TLS(IntrCoding) != 0 ) {
         CodeForEndBody( nr );
     }
 }
@@ -760,26 +766,26 @@ void IntrForEnd ( void )
     Obj                 func;           /* the function, result            */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 1 ) { IntrCoding--; CodeForEnd(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 1 ) { TLS(IntrCoding)--; CodeForEnd(); return; }
 
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
+    assert( TLS(IntrCoding) > 0 );
 
     /* code a function expression (with one statement in the body)         */
     CodeFuncExprEnd( 1UL, 0UL );
 
     /* switch back to immediate mode, get the function                     */
-    IntrCoding = 0;
+    TLS(IntrCoding) = 0;
     CodeEnd( 0 );
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (CountNams > 0)
-      CountNams--;
+    if (TLS(CountNams) > 0)
+      TLS(CountNams)--;
 
-    func = CodeResult;
+    func = TLS(CodeResult);
 
     /* call the function                                                   */
     CALL_0ARGS( func );
@@ -820,14 +826,14 @@ void            IntrWhileBegin ( void )
     Obj                 nams;           /* (empty) list of names           */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { IntrCoding++; CodeWhileBegin(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { TLS(IntrCoding)++; CodeWhileBegin(); return; }
 
 
     /* switch to coding mode now                                           */
     CodeBegin();
-    IntrCoding = 1;
+    TLS(IntrCoding) = 1;
 
     /* code a function expression (with no arguments and locals)           */
     nams = NEW_PLIST( T_PLIST, 0 );
@@ -839,10 +845,10 @@ void            IntrWhileBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
 
-    if (CountNams > 0) {
-        GROW_PLIST(StackNams, ++CountNams);
-        SET_ELM_PLIST(StackNams, CountNams, nams);
-        SET_LEN_PLIST(StackNams, CountNams);
+    if (TLS(CountNams) > 0) {
+        GROW_PLIST(TLS(StackNams), ++TLS(CountNams));
+        SET_ELM_PLIST(TLS(StackNams), TLS(CountNams), nams);
+        SET_LEN_PLIST(TLS(StackNams), TLS(CountNams));
     }
 
     CodeFuncExprBegin( 0, 0, nams, 0 );
@@ -854,12 +860,12 @@ void            IntrWhileBegin ( void )
 void            IntrWhileBeginBody ( void )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
+    assert( TLS(IntrCoding) > 0 );
     CodeWhileBeginBody();
 }
 
@@ -867,11 +873,11 @@ void            IntrWhileEndBody (
     UInt                nr )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
+    assert( TLS(IntrCoding) > 0 );
     CodeWhileEndBody( nr );
 }
 
@@ -880,13 +886,13 @@ void            IntrWhileEnd ( void )
     Obj                 func;           /* the function, result            */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 1 ) { IntrCoding--; CodeWhileEnd(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 1 ) { TLS(IntrCoding)--; CodeWhileEnd(); return; }
 
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
+    assert( TLS(IntrCoding) > 0 );
     CodeWhileEnd();
 
     /* code a function expression (with one statement in the body)         */
@@ -894,15 +900,15 @@ void            IntrWhileEnd ( void )
 
 
     /* switch back to immediate mode, get the function                     */
-    IntrCoding = 0;
+    TLS(IntrCoding) = 0;
     CodeEnd( 0 );
 
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (CountNams > 0)
-      CountNams--;
+    if (TLS(CountNams) > 0)
+      TLS(CountNams)--;
 
-    func = CodeResult;
+    func = TLS(CodeResult);
 
 
     /* call the function                                                   */
@@ -925,9 +931,9 @@ void            IntrWhileEnd ( void )
 void IntrQualifiedExprBegin(UInt qual) 
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { IntrIgnoring++; return; }
-    if ( IntrCoding    > 0 ) { CodeQualifiedExprBegin(qual); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { TLS(IntrIgnoring)++; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeQualifiedExprBegin(qual); return; }
     PushObj(INTOBJ_INT(qual));
     return;
 }
@@ -935,9 +941,9 @@ void IntrQualifiedExprBegin(UInt qual)
 void IntrQualifiedExprEnd( void ) 
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { IntrIgnoring--; return; }
-    if ( IntrCoding    > 0 ) { CodeQualifiedExprEnd(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { TLS(IntrIgnoring)--; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeQualifiedExprEnd(); return; }
     return;
 }
 
@@ -972,9 +978,9 @@ void            IntrAtomicBegin ( void )
 {
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAtomicBegin(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAtomicBegin(); return; }
     /* nothing to do here */
     return;
   
@@ -985,16 +991,16 @@ void            IntrAtomicBeginBody ( UInt nrexprs )
   Obj nams;
 
     /* ignore    or code                                                          */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { IntrCoding++; CodeAtomicBeginBody(nrexprs); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { TLS(IntrCoding)++; CodeAtomicBeginBody(nrexprs); return; }
 
 
     /* leave the expressions and qualifiers on the stack, switch to coding to process the body
        of the Atomic expression */
     PushObj(INTOBJ_INT(nrexprs));
     CodeBegin();
-    IntrCoding = 1;
+    TLS(IntrCoding) = 1;
     
     
     /* code a function expression (with no arguments and locals)           */
@@ -1008,14 +1014,14 @@ void            IntrAtomicBeginBody ( UInt nrexprs )
        
        If we are not in a break loop, then this would be a waste of time and effort */
     
-    if (CountNams > 0)
+    if (TLS(CountNams) > 0)
       {
-	GROW_PLIST(StackNams, ++CountNams);
-	SET_ELM_PLIST(StackNams, CountNams, nams);
-	SET_LEN_PLIST(StackNams, CountNams);
+	GROW_PLIST(TLS(StackNams), ++TLS(CountNams));
+	SET_ELM_PLIST(TLS(StackNams), TLS(CountNams), nams);
+	SET_LEN_PLIST(TLS(StackNams), TLS(CountNams));
       }
     
-    CodeFuncExprBegin( 0, 0, nams, Input->number );
+    CodeFuncExprBegin( 0, 0, nams, TLS(Input)->number );
 }
 
 void            IntrAtomicEndBody (
@@ -1024,31 +1030,31 @@ void            IntrAtomicEndBody (
   Obj body;
 
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
-    if (IntrCoding == 1) {
+    if (TLS(IntrCoding) == 1) {
       /* This is the case where we are really immediately interpreting an atomic
 	 statement, but we switched to coding to store the body until we have it all */
 
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-      if (CountNams > 0)
-	CountNams--;
+      if (TLS(CountNams) > 0)
+	TLS(CountNams)--;
 
       /* Code the body as a function expression */
       CodeFuncExprEnd( nrstats, 0UL );
     
 
       /* switch back to immediate mode, get the function                     */
-      IntrCoding = 0;
+      TLS(IntrCoding) = 0;
       CodeEnd( 0 );
-      body = CodeResult;
+      body = TLS(CodeResult);
       PushObj(body);
       return;
     } else {
       
-        assert( IntrCoding > 0 );
+        assert( TLS(IntrCoding) > 0 );
         CodeAtomicEndBody( nrstats );
     }
 }
@@ -1061,9 +1067,9 @@ void            IntrAtomicEnd ( void )
     UInt                i;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { IntrCoding--; CodeAtomicEnd(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { TLS(IntrCoding)--; CodeAtomicEnd(); return; }
     /* Now we need to recover the objects to lock, and go to work */
 
     body = PopObj();
@@ -1113,14 +1119,14 @@ void            IntrRepeatBegin ( void )
     Obj                 nams;           /* (empty) list of names           */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { IntrCoding++; CodeRepeatBegin(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { TLS(IntrCoding)++; CodeRepeatBegin(); return; }
 
 
     /* switch to coding mode now                                           */
     CodeBegin();
-    IntrCoding = 1;
+    TLS(IntrCoding) = 1;
 
     /* code a function expression (with no arguments and locals)           */
     nams = NEW_PLIST( T_PLIST, 0 );
@@ -1132,13 +1138,13 @@ void            IntrRepeatBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
 
-    if (CountNams > 0) {
-        GROW_PLIST(StackNams, ++CountNams);
-        SET_ELM_PLIST(StackNams, CountNams, nams);
-        SET_LEN_PLIST(StackNams, CountNams);
+    if (TLS(CountNams) > 0) {
+        GROW_PLIST(TLS(StackNams), ++TLS(CountNams));
+        SET_ELM_PLIST(TLS(StackNams), TLS(CountNams), nams);
+        SET_LEN_PLIST(TLS(StackNams), TLS(CountNams));
     }
 
-    CodeFuncExprBegin( 0, 0, nams, Input->number );
+    CodeFuncExprBegin( 0, 0, nams, TLS(Input)->number );
 
     /* code a repeat loop                                                  */
     CodeRepeatBegin();
@@ -1147,12 +1153,12 @@ void            IntrRepeatBegin ( void )
 void            IntrRepeatBeginBody ( void )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
+    assert( TLS(IntrCoding) > 0 );
     CodeRepeatBeginBody();
 }
 
@@ -1160,11 +1166,11 @@ void            IntrRepeatEndBody (
     UInt                nr )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
+    assert( TLS(IntrCoding) > 0 );
     CodeRepeatEndBody( nr );
 }
 
@@ -1173,26 +1179,26 @@ void            IntrRepeatEnd ( void )
     Obj                 func;           /* the function, result            */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 1 ) { IntrCoding--; CodeRepeatEnd(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 1 ) { TLS(IntrCoding)--; CodeRepeatEnd(); return; }
 
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
+    assert( TLS(IntrCoding) > 0 );
     CodeRepeatEnd();
 
     /* code a function expression (with one statement in the body)         */
     CodeFuncExprEnd( 1UL, 0UL );
 
     /* switch back to immediate mode, get the function                     */
-    IntrCoding = 0;
+    TLS(IntrCoding) = 0;
     CodeEnd( 0 );
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (CountNams > 0)
-      CountNams--;
-    func = CodeResult;
+    if (TLS(CountNams) > 0)
+      TLS(CountNams)--;
+    func = TLS(CodeResult);
 
     /* call the function                                                   */
     CALL_0ARGS( func );
@@ -1215,11 +1221,11 @@ void            IntrRepeatEnd ( void )
 void            IntrBreak ( void )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( IntrCoding == 0 )
+    if ( TLS(IntrCoding) == 0 )
       ErrorQuit("A break statement can only appear inside a loop",0L,0L);
     else
       CodeBreak();
@@ -1240,11 +1246,11 @@ void            IntrBreak ( void )
 void            IntrContinue ( void )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( IntrCoding == 0 )
+    if ( TLS(IntrCoding) == 0 )
       ErrorQuit("A continue statement can only appear inside a loop",0L,0L);
     else
       CodeContinue();
@@ -1265,19 +1271,19 @@ void            IntrReturnObj ( void )
     Obj                 val;            /* return value                    */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeReturnObj(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeReturnObj(); return; }
 
 
     /* empty the values stack and push the return value                    */
     val = PopObj();
-    SET_LEN_PLIST( StackObj, 0 );
-    CountObj = 0;
+    SET_LEN_PLIST( TLS(StackObj), 0 );
+    TLS(CountObj) = 0;
     PushObj( val );
 
     /* indicate that a return-value-statement was interpreted              */
-    IntrReturning = 1;
+    TLS(IntrReturning) = 1;
 }
 
 
@@ -1291,18 +1297,18 @@ void            IntrReturnObj ( void )
 void            IntrReturnVoid ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeReturnVoid(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeReturnVoid(); return; }
 
 
     /* empty the values stack and push the void value                      */
-    SET_LEN_PLIST( StackObj, 0 );
-    CountObj = 0;
+    SET_LEN_PLIST( TLS(StackObj), 0 );
+    TLS(CountObj) = 0;
     PushVoidObj();
 
     /* indicate that a return-void-statement was interpreted               */
-    IntrReturning = 2;
+    TLS(IntrReturning) = 2;
 }
 
 
@@ -1316,23 +1322,23 @@ void            IntrReturnVoid ( void )
 void            IntrQuit ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* 'quit' is not allowed in functions (by the reader)                  */
-    /* assert( IntrCoding == 0 ); */
-    if ( IntrCoding > 0 ) {
+    /* assert( TLS(IntrCoding) == 0 ); */
+    if ( TLS(IntrCoding) > 0 ) {
       SyntaxError("'quit;' cannot be used in this context");
     }
 
     /* empty the values stack and push the void value                      */
-    SET_LEN_PLIST( StackObj, 0 );
-    CountObj = 0;
+    SET_LEN_PLIST( TLS(StackObj), 0 );
+    TLS(CountObj) = 0;
     PushVoidObj();
 
 
     /* indicate that a quit-statement was interpreted                      */
-    IntrReturning = STATUS_QUIT;
+    TLS(IntrReturning) = STATUS_QUIT;
 }
 
 /****************************************************************************
@@ -1345,20 +1351,20 @@ void            IntrQuit ( void )
 void            IntrQUIT ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* 'quit' is not allowed in functions (by the reader)                  */
-    assert( IntrCoding == 0 );
+    assert( TLS(IntrCoding) == 0 );
 
     /* empty the values stack and push the void value                      */
-    SET_LEN_PLIST( StackObj, 0 );
-    CountObj = 0;
+    SET_LEN_PLIST( TLS(StackObj), 0 );
+    TLS(CountObj) = 0;
     PushVoidObj();
 
 
     /* indicate that a quit-statement was interpreted                      */
-    IntrReturning = STATUS_QQUIT;
+    TLS(IntrReturning) = STATUS_QQUIT;
 }
 
 
@@ -1380,9 +1386,9 @@ void            IntrOrL ( void )
     Obj                 opL;            /* value of left operand           */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { IntrIgnoring++; return; }
-    if ( IntrCoding    > 0 ) { CodeOrL(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { TLS(IntrIgnoring)++; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeOrL(); return; }
 
 
     /* if the left operand is 'true', ignore the right operand             */
@@ -1390,7 +1396,7 @@ void            IntrOrL ( void )
     PushObj( opL );
     if ( opL == True ) {
         PushObj( opL );
-        IntrIgnoring = 1;
+        TLS(IntrIgnoring) = 1;
     }
 }
 
@@ -1400,13 +1406,13 @@ void            IntrOr ( void )
     Obj                 opR;            /* value of right operand          */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 1 ) { IntrIgnoring--; return; }
-    if ( IntrCoding    > 0 ) { CodeOr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 1 ) { TLS(IntrIgnoring)--; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeOr(); return; }
 
 
     /* stop ignoring things now                                            */
-    IntrIgnoring = 0;
+    TLS(IntrIgnoring) = 0;
 
     /* get the operands                                                    */
     opR = PopObj();
@@ -1454,9 +1460,9 @@ void            IntrAndL ( void )
     Obj                 opL;            /* value of left operand           */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { IntrIgnoring++; return; }
-    if ( IntrCoding    > 0 ) { CodeAndL(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { TLS(IntrIgnoring)++; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAndL(); return; }
 
 
     /* if the left operand is 'false', ignore the right operand            */
@@ -1464,7 +1470,7 @@ void            IntrAndL ( void )
     PushObj( opL );
     if ( opL == False ) {
         PushObj( opL );
-        IntrIgnoring = 1;
+        TLS(IntrIgnoring) = 1;
     }
 }
 
@@ -1478,13 +1484,13 @@ void            IntrAnd ( void )
     Obj                 opR;            /* value of right operand          */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 1 ) { IntrIgnoring--; return; }
-    if ( IntrCoding    > 0 ) { CodeAnd(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 1 ) { TLS(IntrIgnoring)--; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAnd(); return; }
 
 
     /* stop ignoring things now                                            */
-    IntrIgnoring = 0;
+    TLS(IntrIgnoring) = 0;
 
     /* get the operands                                                    */
     opR = PopObj();
@@ -1541,8 +1547,8 @@ void            IntrNot ( void )
     Obj                 op;             /* operand                         */
 
     /* ignore or code                                                      */
-    if ( IntrIgnoring > 0 ) { return; }
-    if ( IntrCoding   > 0 ) { CodeNot(); return; }
+    if ( TLS(IntrIgnoring) > 0 ) { return; }
+    if ( TLS(IntrCoding)   > 0 ) { CodeNot(); return; }
 
 
     /* get and check the operand                                           */
@@ -1595,9 +1601,9 @@ void            IntrEq ( void )
     Obj                 opR;            /* right operand                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeEq(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeEq(); return; }
 
 
     /* get the operands                                                    */
@@ -1614,9 +1620,9 @@ void            IntrEq ( void )
 void            IntrNe ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeNe(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeNe(); return; }
 
 
     /* '<left> <> <right>' is 'not <left> = <right>'                       */
@@ -1631,9 +1637,9 @@ void            IntrLt ( void )
     Obj                 opR;            /* right operand                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeLt(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeLt(); return; }
 
 
     /* get the operands                                                    */
@@ -1650,9 +1656,9 @@ void            IntrLt ( void )
 void            IntrGe ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeGe(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeGe(); return; }
 
 
     /* '<left> >= <right>' is 'not <left> < <right>'                       */
@@ -1663,9 +1669,9 @@ void            IntrGe ( void )
 void            IntrGt ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeGt(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeGt(); return; }
 
 
     /* '<left> > <right>' is '<right> < <left>'                            */
@@ -1676,9 +1682,9 @@ void            IntrGt ( void )
 void            IntrLe ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeLe(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeLe(); return; }
 
 
     /* '<left> <= <right>' is 'not <right> < <left>'                       */
@@ -1702,9 +1708,9 @@ void            IntrIn ( void )
     Obj                 opR;            /* right operand                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIn(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIn(); return; }
 
 
     /* get the operands                                                    */
@@ -1741,9 +1747,9 @@ void            IntrSum ( void )
     Obj                 opR;            /* right operand                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeSum(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeSum(); return; }
 
 
     /* get the operands                                                    */
@@ -1763,9 +1769,9 @@ void            IntrAInv ( void )
     Obj                 opL;            /* left operand                    */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAInv(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAInv(); return; }
 
 
     /* get the operand                                                     */
@@ -1785,9 +1791,9 @@ void            IntrDiff ( void )
     Obj                 opR;            /* right operand                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeDiff(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeDiff(); return; }
 
 
     /* get the operands                                                    */
@@ -1808,9 +1814,9 @@ void            IntrProd ( void )
     Obj                 opR;            /* right operand                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeProd(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeProd(); return; }
 
 
     /* get the operands                                                    */
@@ -1830,9 +1836,9 @@ void            IntrInv ( void )
     Obj                 opL;            /* left operand                    */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeInv(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeInv(); return; }
 
 
     /* get the operand                                                     */
@@ -1852,9 +1858,9 @@ void            IntrQuo ( void )
     Obj                 opR;            /* right operand                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeQuo(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeQuo(); return; }
 
 
     /* get the operands                                                    */
@@ -1875,9 +1881,9 @@ void            IntrMod ( void )
     Obj                 opR;            /* right operand                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeMod(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeMod(); return; }
 
 
     /* get the operands                                                    */
@@ -1898,9 +1904,9 @@ void            IntrPow ( void )
     Obj                 opR;            /* right operand                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodePow(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodePow(); return; }
 
 
     /* get the operands                                                    */
@@ -1933,9 +1939,9 @@ void            IntrIntExpr (
     UInt                i;              /* loop variable                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIntExpr( str ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIntExpr( str ); return; }
 
 
     /* get the signs, if any                                                */
@@ -1998,9 +2004,9 @@ void            IntrLongIntExpr (
     UInt                i;              /* loop variable                   */
     UChar *              str;            /* temp pointer                    */
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeLongIntExpr( string ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeLongIntExpr( string ); return; }
 
 
     /* get the signs, if any                                                */
@@ -2077,9 +2083,9 @@ void            IntrFloatExpr (
     Obj                 val;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) {  CodeFloatExpr( str );   return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) {  CodeFloatExpr( str );   return; }
 
     C_NEW_STRING_DYN(val, str);
     PushObj(ConvertFloatLiteralEager(val));
@@ -2097,9 +2103,9 @@ void            IntrLongFloatExpr (
     Obj               string )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeLongFloatExpr( string );  return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeLongFloatExpr( string );  return; }
 
     PushObj(ConvertFloatLiteralEager(string));
 }
@@ -2113,9 +2119,9 @@ void            IntrLongFloatExpr (
 void            IntrTrueExpr ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeTrueExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeTrueExpr(); return; }
 
 
     /* push the value                                                      */
@@ -2132,9 +2138,9 @@ void            IntrTrueExpr ( void )
 void            IntrFalseExpr ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeFalseExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeFalseExpr(); return; }
 
 
     /* push the value                                                      */
@@ -2153,9 +2159,9 @@ void            IntrCharExpr (
     Char                chr )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeCharExpr( chr ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeCharExpr( chr ); return; }
 
 
     /* push the value                                                      */
@@ -2180,9 +2186,9 @@ void            IntrPermCycle (
     UInt                j, k;           /* loop variable                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodePermCycle(nrx,nrc); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodePermCycle(nrx,nrc); return; }
 
 
     /* get the permutation (allocate for the first cycle)                  */
@@ -2192,8 +2198,8 @@ void            IntrPermCycle (
         ptr4 = ADDR_PERM4( perm );
     }
     else {
-        m = INT_INTOBJ( ELM_LIST( StackObj, CountObj - nrx ) );
-        perm = ELM_LIST( StackObj, CountObj - nrx - 1 );
+        m = INT_INTOBJ( ELM_LIST( TLS(StackObj), TLS(CountObj) - nrx ) );
+        perm = ELM_LIST( TLS(StackObj), TLS(CountObj) - nrx - 1 );
         ptr4 = ADDR_PERM4( perm );
     }
 
@@ -2259,9 +2265,9 @@ void            IntrPerm (
     UInt                k;              /* loop variable                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodePerm(nrc); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodePerm(nrc); return; }
 
 
     /* special case for identity permutation                               */
@@ -2313,9 +2319,9 @@ void            IntrListExprBegin (
     Obj                 old;            /* old value of '~'                */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeListExprBegin( top ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeListExprBegin( top ); return; }
 
 
     /* allocate the new list                                               */
@@ -2339,9 +2345,9 @@ void            IntrListExprBeginElm (
     UInt                pos )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeListExprBeginElm( pos ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeListExprBeginElm( pos ); return; }
 
 
     /* remember this position on the values stack                          */
@@ -2356,9 +2362,9 @@ void            IntrListExprEndElm ( void )
     Obj                 val;            /* value to assign into list       */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeListExprEndElm(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeListExprEndElm(); return; }
 
 
     /* get the value                                                       */
@@ -2392,9 +2398,9 @@ void            IntrListExprEnd (
     Obj                 val;            /* temporary value                 */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeListExprEnd(nr,range,top,tilde); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeListExprEnd(nr,range,top,tilde); return; }
 
 
     /* if this was a top level expression, restore the value of '~'        */
@@ -2503,9 +2509,9 @@ void           IntrStringExpr (
     Obj               string )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeStringExpr( string ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeStringExpr( string ); return; }
 
 
     /* push the string, already newly created                              */
@@ -2527,9 +2533,9 @@ void            IntrRecExprBegin (
     Obj                 old;            /* old value of '~'                */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeRecExprBegin( top ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeRecExprBegin( top ); return; }
 
 
     /* allocate the new record                                             */
@@ -2552,9 +2558,9 @@ void            IntrRecExprBeginElmName (
     UInt                rnam )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeRecExprBeginElmName( rnam ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeRecExprBeginElmName( rnam ); return; }
 
 
     /* remember the name on the values stack                               */
@@ -2566,9 +2572,9 @@ void            IntrRecExprBeginElmExpr ( void )
     UInt                rnam;           /* record name                     */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeRecExprBeginElmExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeRecExprBeginElmExpr(); return; }
 
 
     /* convert the expression to a record name                             */
@@ -2585,9 +2591,9 @@ void            IntrRecExprEndElm ( void )
     Obj                 val;            /* value of record element         */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeRecExprEndElm(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeRecExprEndElm(); return; }
 
 
     /* get the value                                                       */
@@ -2615,9 +2621,9 @@ void            IntrRecExprEnd (
     Obj                 old;            /* old value of '~'                */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeRecExprEnd(nr,top,tilde); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeRecExprEnd(nr,top,tilde); return; }
 
 
     /* if this was a top level expression, restore the value of '~'        */
@@ -2646,9 +2652,9 @@ void            IntrFuncCallOptionsBegin ( void )
     Obj                 record;         /* new record                      */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsBegin( ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeFuncCallOptionsBegin( ); return; }
 
 
     /* allocate the new record                                             */
@@ -2661,9 +2667,9 @@ void            IntrFuncCallOptionsBeginElmName (
     UInt                rnam )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsBeginElmName( rnam ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeFuncCallOptionsBeginElmName( rnam ); return; }
 
 
     /* remember the name on the values stack                               */
@@ -2675,9 +2681,9 @@ void            IntrFuncCallOptionsBeginElmExpr ( void )
     UInt                rnam;           /* record name                     */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsBeginElmExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeFuncCallOptionsBeginElmExpr(); return; }
 
 
     /* convert the expression to a record name                             */
@@ -2694,9 +2700,9 @@ void            IntrFuncCallOptionsEndElm ( void )
     Obj                 val;            /* value of record element         */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsEndElm(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeFuncCallOptionsEndElm(); return; }
 
 
     /* get the value                                                       */
@@ -2722,9 +2728,9 @@ void            IntrFuncCallOptionsEndElmEmpty ( void )
     Obj                 val;            /* value of record element         */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsEndElmEmpty(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeFuncCallOptionsEndElmEmpty(); return; }
 
 
     /* get the value                                                       */
@@ -2746,9 +2752,9 @@ void            IntrFuncCallOptionsEndElmEmpty ( void )
 void            IntrFuncCallOptionsEnd ( UInt nr )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsEnd(nr); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeFuncCallOptionsEnd(nr); return; }
 
 
 }
@@ -2763,11 +2769,11 @@ void            IntrAssLVar (
 {
   Obj val;
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( IntrCoding > 0 )
+    if ( TLS(IntrCoding) > 0 )
       CodeAssLVar( lvar );
 
     /* Or in the break loop */
@@ -2782,11 +2788,11 @@ void            IntrUnbLVar (
     UInt                lvar )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( IntrCoding > 0 )
+    if ( TLS(IntrCoding) > 0 )
       CodeUnbLVar( lvar );
 
     /* or in the break loop */
@@ -2806,11 +2812,11 @@ void            IntrRefLVar (
 {
   Obj val;
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( IntrCoding > 0 )
+    if ( TLS(IntrCoding) > 0 )
       CodeRefLVar( lvar );
 
     /* or in the break loop */
@@ -2831,11 +2837,11 @@ void            IntrIsbLVar (
     UInt                lvar )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if( IntrCoding > 0 )
+    if( TLS(IntrCoding) > 0 )
       CodeIsbLVar( lvar );
 
     /* or debugging */
@@ -2854,11 +2860,11 @@ void            IntrAssHVar (
 {
   Obj val;
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if( IntrCoding > 0 )
+    if( TLS(IntrCoding) > 0 )
       CodeAssHVar( hvar );
     /* Or in the break loop */
     else {
@@ -2872,11 +2878,11 @@ void            IntrUnbHVar (
     UInt                hvar )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( IntrCoding > 0 )
+    if ( TLS(IntrCoding) > 0 )
       CodeUnbHVar( hvar );
     /* or debugging */
     else {
@@ -2895,11 +2901,11 @@ void            IntrRefHVar (
 {
   Obj val;
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if( IntrCoding > 0 )
+    if( TLS(IntrCoding) > 0 )
       CodeRefHVar( hvar );
     /* or debugging */
     else {
@@ -2918,11 +2924,11 @@ void            IntrIsbHVar (
     UInt                hvar )
 {
     /* ignore                                                              */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if( IntrCoding > 0 )
+    if( TLS(IntrCoding) > 0 )
       CodeIsbHVar( hvar );
     /* or debugging */
     else
@@ -2944,12 +2950,12 @@ void            IntrAssDVar (
     Obj                 currLVars;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    /* if ( IntrCoding    > 0 ) { CodeAssDVar( gvar ); return; } */
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    /* if ( TLS(IntrCoding)    > 0 ) { CodeAssDVar( gvar ); return; } */
 
 
-    if ( IntrCoding > 0 ) {
+    if ( TLS(IntrCoding) > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
                    dvar >> 10, dvar & 0x3FF );
     }
@@ -2959,11 +2965,11 @@ void            IntrAssDVar (
     rhs = PopObj();
 
     /* assign the right hand side                                          */
-    currLVars = CurrLVars;
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    currLVars = TLS(CurrLVars);
+    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
+    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
     ASS_HVAR( dvar, rhs );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
@@ -2978,22 +2984,22 @@ void            IntrUnbDVar (
     Obj                 currLVars;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    /* if ( IntrCoding    > 0 ) { CodeUnbGVar( gvar ); return; } */
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    /* if ( TLS(IntrCoding)    > 0 ) { CodeUnbGVar( gvar ); return; } */
 
 
-    if ( IntrCoding > 0 ) {
+    if ( TLS(IntrCoding) > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
                    dvar >> 10, dvar & 0x3FF );
     }
 
     /* assign the right hand side                                          */
-    currLVars = CurrLVars;
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    currLVars = TLS(CurrLVars);
+    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
+    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
     ASS_HVAR( dvar, (Obj)0 );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
@@ -3014,21 +3020,21 @@ void            IntrRefDVar (
     Obj                 currLVars;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    /* if ( IntrCoding    > 0 ) { CodeRefGVar( gvar ); return; } */
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    /* if ( TLS(IntrCoding)    > 0 ) { CodeRefGVar( gvar ); return; } */
 
 
-    if ( IntrCoding > 0 ) {
+    if ( TLS(IntrCoding) > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
                    dvar >> 10, dvar & 0x3FF );
     }
 
     /* get and check the value                                             */
-    currLVars = CurrLVars;
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    currLVars = TLS(CurrLVars);
+    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
     val = OBJ_HVAR( dvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
     if ( val == 0 ) {
@@ -3048,17 +3054,17 @@ void            IntrIsbDVar (
     Obj                 currLVars;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    /* if ( IntrCoding    > 0 ) { CodeIsbGVar( gvar ); return; } */
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    /* if ( TLS(IntrCoding)    > 0 ) { CodeIsbGVar( gvar ); return; } */
 
 
     /* get the value                                                       */
-    currLVars = CurrLVars;
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    currLVars = TLS(CurrLVars);
+    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
+    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
     val = OBJ_HVAR( dvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
@@ -3077,9 +3083,9 @@ void            IntrAssGVar (
     Obj                 rhs;            /* right hand side                 */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssGVar( gvar ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssGVar( gvar ); return; }
 
 
     /* get the right hand side                                             */
@@ -3096,9 +3102,9 @@ void            IntrUnbGVar (
     UInt                gvar )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeUnbGVar( gvar ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeUnbGVar( gvar ); return; }
 
 
     /* assign the right hand side                                          */
@@ -3119,9 +3125,9 @@ void            IntrRefGVar (
     Obj                 val;            /* value, result                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeRefGVar( gvar ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeRefGVar( gvar ); return; }
 
 
     /* get and check the value                                             */
@@ -3141,9 +3147,9 @@ void            IntrIsbGVar (
     Obj                 val;            /* value, result                   */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIsbGVar( gvar ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIsbGVar( gvar ); return; }
 
 
     /* get the value                                                       */
@@ -3161,41 +3167,60 @@ void            IntrIsbGVar (
 *F  IntrAssListLevel(<level>) . . . . . interpret assignment to several lists
 *F  IntrAsssListLevel(<level>)  . . intr multiple assignment to several lists
 */
-void            IntrAssList ( void )
+void            IntrAssList ( Int narg )
 {
     Obj                 list;           /* list                            */
     Obj                 pos;            /* position                        */
-    Int                 p;              /* position, as a C integer        */
     Obj                 rhs;            /* right hand side                 */
+    Obj pos1,pos2;
+    Obj ixs;
+    Int i;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssList(); return; }
-
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssList( narg); return; }
 
     /* get the right hand side                                             */
     rhs = PopObj();
+    
+    switch (narg) {
+    case 1:
 
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
-        ErrorQuit(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
+      /* get the position                                                    */
+      pos = PopObj();
 
-    /* get the list (checking is done by 'ASS_LIST' or 'ASSB_LIST')         */
-    list = PopObj();
+      /* get the list (checking is done by 'ASS_LIST' or 'ASSB_LIST')        */
+      list = PopObj();
 
-    if (IS_INTOBJ(pos)) {
-        p = INT_INTOBJ(pos);
-
-        /* assign to the element of the list                                   */
-        ASS_LIST( list, p, rhs );
-    } else
+      /* assign to the element of the list                                   */
+      if (IS_POS_INTOBJ(pos)) {
+        ASS_LIST( list, INT_INTOBJ(pos), rhs );
+      } else {
         ASSB_LIST(list, pos, rhs);
+      }
+      break;
 
+    case 2:
+      pos2 = PopObj();
+      pos1 = PopObj();
+      list = PopObj();
+
+      ASS2_LIST(list, pos1, pos2, rhs);
+      break;
+
+    default:
+      ixs = NEW_PLIST(T_PLIST, narg);
+      for (i = narg; i > 0; i--) {
+	pos = PopObj();
+	SET_ELM_PLIST(ixs, i, pos);
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      list = PopObj();
+      ASSB_LIST(list, ixs, rhs);
+    }
+      
     /* push the right hand side again                                      */
     PushObj( rhs );
 }
@@ -3207,9 +3232,9 @@ void            IntrAsssList ( void )
     Obj                 rhss;           /* right hand sides                */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAsssList(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAsssList(); return; }
 
 
     /* get the right hand sides                                            */
@@ -3244,35 +3269,38 @@ void            IntrAsssList ( void )
 }
 
 void            IntrAssListLevel (
-    UInt                level )
+				  Int narg,
+				  UInt                level )
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, left operand          */
     Obj                 rhss;           /* right hand sides, right operand */
-
+    Obj ixs;
+    Int i;
+    
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssListLevel( level ); return; }
-
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssListLevel( narg, level ); return; }
 
     /* get right hand sides (checking is done by 'AssListLevel')           */
     rhss = PopObj();
 
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
-        ErrorQuit(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
+    ixs = NEW_PLIST(T_PLIST, narg);
+    for (i = narg; i > 0; i--) {
+      /* get and check the position                                          */
+      pos = PopObj();
+      SET_ELM_PLIST(ixs, i, pos);
+      CHANGED_BAG(ixs);
     }
+    SET_LEN_PLIST(ixs, narg);
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'AssListLevel')     */
     lists = PopObj();
 
     /* assign the right hand sides to the elements of several lists        */
-    AssListLevel( lists, pos, rhss, level );
+    AssListLevel( lists, ixs, rhss, level );
 
     /* push the assigned values again                                      */
     PushObj( rhss );
@@ -3286,9 +3314,9 @@ void            IntrAsssListLevel (
     Obj                 rhss;           /* right hand sides, right operand */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAsssListLevel( level ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAsssListLevel( level ); return; }
 
 
     /* get right hand sides (checking is done by 'AsssListLevel')          */
@@ -3313,36 +3341,42 @@ void            IntrAsssListLevel (
     PushObj( rhss );
 }
 
-void            IntrUnbList ( void )
+void            IntrUnbList ( Int narg )
 {
     Obj                 list;           /* list                            */
     Obj                 pos;            /* position                        */
-    Int                 p;              /* position, as a C integer        */
+    Obj                 ixs;
+    Int                 i;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeUnbList(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeUnbList( narg); return; }
 
+    if (narg == 1) {
+      /* get and check the position                                          */
+      pos = PopObj();
+      
+      /* get the list (checking is done by 'UNB_LIST' or 'UNBB_LIST')        */
+      list = PopObj();
 
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
-        ErrorQuit(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
-
-    /* get the list (checking is done by 'UNB_LIST')                       */
-    list = PopObj();
-
-    if (IS_INTOBJ(pos)) {
-        p = INT_INTOBJ(pos);
-
-        /* unbind the element                                                  */
-        UNB_LIST( list, p );
-    } else
+      /* unbind the element                                                  */
+      if (IS_POS_INTOBJ(pos)) {
+        UNB_LIST( list, INT_INTOBJ(pos) );
+      } else {
         UNBB_LIST(list, pos);
+      }
+    } else {
+      ixs = NEW_PLIST(T_PLIST,narg);
+      for (i = narg; i > 0; i--) {
+	pos = PopObj();
+	SET_ELM_PLIST(ixs, i, pos);
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      list = PopObj();
+      UNBB_LIST(list, ixs);
+    }
 
     /* push void                                                           */
     PushVoidObj();
@@ -3356,34 +3390,59 @@ void            IntrUnbList ( void )
 *F  IntrElmListLevel(<level>) . . . . .  interpret selection of several lists
 *F  IntrElmsListLevel(<level>)  . .  intr multiple selection of several lists
 */
-void            IntrElmList ( void )
+void            IntrElmList ( Int narg )
 {
-    Obj                 elm;            /* element, result                 */
+  Obj                 elm = (Obj) 0;            /* element, result                 */
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
     Int                 p;              /* position, as C integer          */
+    Int                 i;
+    Obj                 ixs;
+    Obj                 pos1;
+    Obj                 pos2;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmList(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmList( narg ); return; }
 
+    if (narg <= 0)
+      SyntaxError("This should never happen");
 
-
-    /* get  the position                                                   */
-    pos = PopObj();
-    /* get the list (checking is done by 'ELM_LIST')                       */
-    list = PopObj();
-
-
-    if ( ! IS_INTOBJ(pos)  || (p = INT_INTOBJ(pos)) <= 0) {
+    if (narg == 1) {
+      /* get  the position                                                   */
+      pos = PopObj();
+      /* get the list (checking is done by 'ELM_LIST')                       */
+      list = PopObj();
+      
+      
+      if ( ! IS_INTOBJ(pos)  || (p = INT_INTOBJ(pos)) <= 0) {
         /* This mostly dispatches to the library */
         elm = ELMB_LIST( list, pos);
-    } else {
+      } else {
         /* get the element of the list                                         */
         elm = ELM_LIST( list, p );
+      }
     }
-
+    if (narg == 2) {
+      pos2 = PopObj();
+      pos1 = PopObj();
+      list = PopObj();
+      /* leave open space for a fastpath for 2 */
+      elm = ELM2_LIST(list, pos1, pos2);
+    }
+    
+    if (narg > 2) {
+      ixs = NEW_PLIST(T_PLIST,narg);
+      for (i = narg; i > 0; i--) {
+	SET_ELM_PLIST(ixs,i,PopObj());
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      list = PopObj();
+      elm = ELMB_LIST(list, ixs);
+    }
+      
     /* push the element                                                    */
     PushObj( elm );
 }
@@ -3395,9 +3454,9 @@ void            IntrElmsList ( void )
     Obj                 poss;           /* positions, right operand        */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmsList(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmsList(); return; }
 
 
     /* get and check the positions                                         */
@@ -3418,32 +3477,42 @@ void            IntrElmsList ( void )
     PushObj( elms );
 }
 
-void            IntrElmListLevel (
+void            IntrElmListLevel ( Int narg,
     UInt                level )
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, right operand         */
+    Obj ixs;
+    Int i;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmListLevel( level ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmListLevel( narg, level ); return; }
 
-
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 )) {
-        ErrorQuit(
-            "List Element: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
+    /* get the positions */
+    ixs = NEW_PLIST(T_PLIST, narg);
+    for (i = narg; i > 0; i--) {
+      pos = PopObj();
+      SET_ELM_PLIST(ixs,i,pos);
+      CHANGED_BAG(ixs);
     }
+    SET_LEN_PLIST(ixs, narg);
+      
+    /* /\* get and check the position                                          *\/ */
+    /* pos = PopObj(); */
+    /* if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_POS_INTOBJ(pos) )) { */
+    /*     ErrorQuit( */
+    /*         "List Element: <position> must be a positive integer (not a %s)", */
+    /*         (Int)TNAM_OBJ(pos), 0L ); */
+    /* } */
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'ElmListLevel')     */
     lists = PopObj();
 
     /* select the elements from several lists (store them in <lists>)      */
-    ElmListLevel( lists, pos, level );
+    ElmListLevel( lists, ixs, level );
 
     /* push the elements                                                   */
     PushObj( lists );
@@ -3456,9 +3525,9 @@ void            IntrElmsListLevel (
     Obj                 poss;           /* positions, right operand        */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmsListLevel( level ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmsListLevel( level ); return; }
 
 
     /* get and check the positions                                         */
@@ -3480,38 +3549,45 @@ void            IntrElmsListLevel (
     PushObj( lists );
 }
 
-void            IntrIsbList ( void )
+void            IntrIsbList ( Int narg )
 {
     Obj                 isb;            /* isbound, result                 */
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
+    Obj ixs;
+    Int i;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIsbList(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIsbList(narg); return; }
 
-
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 )) {
-        ErrorQuit(
-            "List Element: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
+    if (narg == 1) {
+      /* get and check the position                                          */
+      pos = PopObj();
+      
+      /* get the list (checking is done by 'ISB_LIST' or 'ISBB_LIST')        */
+      list = PopObj();
+      
+      /* get the result                                                      */
+      if (IS_POS_INTOBJ(pos)) {
+        isb = ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
+      } else {
+        isb = ISBB_LIST( list, pos) ? True : False;
+      }
+    } else {
+      ixs = NEW_PLIST(T_PLIST,narg);
+      for (i = narg; i > 0; i--) {
+	pos = PopObj();
+	SET_ELM_PLIST(ixs, i, pos);
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      list = PopObj();
+      isb = ISBB_LIST(list, ixs) ? True: False;
     }
-
-    /* get the list (checking is done by 'ISB_LIST')                       */
-    list = PopObj();
-
-    if (IS_INTOBJ(pos)) {
-        p = INT_INTOBJ( pos );
-
-        /* get the result                                                      */
-        isb = (ISB_LIST( list, p ) ? True : False);
-    } else
-        isb = (ISBB_LIST( list, pos) ? True : False);
-
+      
+      
     /* push the result                                                     */
     PushObj( isb );
 }
@@ -3529,9 +3605,9 @@ void            IntrAssRecName (
     Obj                 rhs;            /* rhs, right operand              */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssRecName( rnam ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssRecName( rnam ); return; }
 
 
     /* get the right hand side                                             */
@@ -3554,9 +3630,9 @@ void            IntrAssRecExpr ( void )
     Obj                 rhs;            /* rhs, right operand              */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssRecExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssRecExpr(); return; }
 
 
     /* get the right hand side                                             */
@@ -3581,9 +3657,9 @@ void            IntrUnbRecName (
     Obj                 record;         /* record, left operand            */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeUnbRecName( rnam ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeUnbRecName( rnam ); return; }
 
 
     /* get the record (checking is done by 'UNB_REC')                      */
@@ -3602,9 +3678,9 @@ void            IntrUnbRecExpr ( void )
     UInt                rnam;           /* name, left operand              */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeUnbRecExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeUnbRecExpr(); return; }
 
 
     /* get the name and convert it to a record name                        */
@@ -3633,9 +3709,9 @@ void            IntrElmRecName (
     Obj                 record;         /* the record, left operand        */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmRecName( rnam ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmRecName( rnam ); return; }
 
 
     /* get the record (checking is done by 'ELM_REC')                      */
@@ -3655,9 +3731,9 @@ void            IntrElmRecExpr ( void )
     UInt                rnam;           /* the name, right operand         */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmRecExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmRecExpr(); return; }
 
 
     /* get the name and convert it to a record name                        */
@@ -3680,9 +3756,9 @@ void            IntrIsbRecName (
     Obj                 record;         /* the record, left operand        */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIsbRecName( rnam ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIsbRecName( rnam ); return; }
 
 
     /* get the record (checking is done by 'ISB_REC')                      */
@@ -3702,9 +3778,9 @@ void            IntrIsbRecExpr ( void )
     UInt                rnam;           /* the name, right operand         */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIsbRecExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIsbRecExpr(); return; }
 
 
     /* get the name and convert it to a record name                        */
@@ -3736,9 +3812,9 @@ void            IntrAssPosObj ( void )
     Obj                 rhs;            /* right hand side                 */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssPosObj(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssPosObj(); return; }
 
 
     /* get the right hand side                                             */
@@ -3746,7 +3822,7 @@ void            IntrAssPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
@@ -3779,9 +3855,9 @@ void            IntrAsssPosObj ( void )
     Obj                 rhss;           /* right hand sides                */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAsssPosObj(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAsssPosObj(); return; }
 
 
     /* get the right hand sides                                            */
@@ -3827,9 +3903,9 @@ void            IntrAssPosObjLevel (
     Obj                 rhss;           /* right hand sides, right operand */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssPosObjLevel( level ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssPosObjLevel( level ); return; }
 
 
     /* get right hand sides (checking is done by 'AssPosObjLevel')           */
@@ -3837,12 +3913,11 @@ void            IntrAssPosObjLevel (
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-
 
     /* assign the right hand sides to the elements of several lists        */
     ErrorQuit(
@@ -3860,9 +3935,9 @@ void            IntrAsssPosObjLevel (
     Obj                 rhss;           /* right hand sides, right operand */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAsssPosObjLevel( level ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAsssPosObjLevel( level ); return; }
 
 
     /* get right hand sides (checking is done by 'AsssPosObjLevel')          */
@@ -3892,14 +3967,14 @@ void            IntrUnbPosObj ( void )
     Int                 p;              /* position, as a C integer        */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeUnbPosObj(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeUnbPosObj(); return; }
 
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
@@ -3939,14 +4014,14 @@ void            IntrElmPosObj ( void )
     Int                 p;              /* position, as C integer          */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmPosObj(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmPosObj(); return; }
 
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
@@ -3985,9 +4060,9 @@ void            IntrElmsPosObj ( void )
     Obj                 poss;           /* positions, right operand        */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmsPosObj(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmsPosObj(); return; }
 
 
     /* get and check the positions                                         */
@@ -4021,14 +4096,14 @@ void            IntrElmPosObjLevel (
     Obj                 pos;            /* position, right operand         */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmPosObjLevel( level ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmPosObjLevel( level ); return; }
 
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
@@ -4054,9 +4129,9 @@ void            IntrElmsPosObjLevel (
     Obj                 poss;           /* positions, right operand        */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmsPosObjLevel( level ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmsPosObjLevel( level ); return; }
 
 
     /* get and check the positions                                         */
@@ -4088,14 +4163,14 @@ void            IntrIsbPosObj ( void )
     Int                 p;              /* position, as C integer          */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIsbPosObj(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIsbPosObj(); return; }
 
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
@@ -4131,9 +4206,9 @@ void            IntrAssComObjName (
     Obj                 rhs;            /* rhs, right operand              */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssComObjName( rnam ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssComObjName( rnam ); return; }
 
 
     /* get the right hand side                                             */
@@ -4143,11 +4218,13 @@ void            IntrAssComObjName (
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+      default:
         ASS_REC( record, rnam, rhs );
+        break;
     }
 
     /* push the assigned value                                             */
@@ -4161,9 +4238,9 @@ void            IntrAssComObjExpr ( void )
     Obj                 rhs;            /* rhs, right operand              */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssComObjExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssComObjExpr(); return; }
 
 
     /* get the right hand side                                             */
@@ -4176,11 +4253,13 @@ void            IntrAssComObjExpr ( void )
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+      default:
         ASS_REC( record, rnam, rhs );
+        break;
     }
 
     /* push the assigned value                                             */
@@ -4193,20 +4272,22 @@ void            IntrUnbComObjName (
     Obj                 record;         /* record, left operand            */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeUnbComObjName( rnam ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeUnbComObjName( rnam ); return; }
 
 
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    /* unbind the element of the record             			   */
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         UNB_REC( record, rnam );
+        break;
     }
 
     /* push void                                                           */
@@ -4219,9 +4300,9 @@ void            IntrUnbComObjExpr ( void )
     UInt                rnam;           /* name, left operand              */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeUnbComObjExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeUnbComObjExpr(); return; }
 
 
     /* get the name and convert it to a record name                        */
@@ -4230,12 +4311,14 @@ void            IntrUnbComObjExpr ( void )
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    /* unbind the element of the record             			   */
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         UNB_REC( record, rnam );
+        break;
     }
 
     /* push void                                                           */
@@ -4255,20 +4338,23 @@ void            IntrElmComObjName (
     Obj                 record;         /* the record, left operand        */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmComObjName( rnam ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmComObjName( rnam ); return; }
 
 
     /* get the record (checking is done by 'ELM_REC')                      */
     record = PopObj();
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         elm = ELM_REC( record, rnam );
+        break;
     }
 
     /* push the element                                                    */
@@ -4282,9 +4368,9 @@ void            IntrElmComObjExpr ( void )
     UInt                rnam;           /* the name, right operand         */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmComObjExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeElmComObjExpr(); return; }
 
 
     /* get the name and convert it to a record name                        */
@@ -4294,11 +4380,13 @@ void            IntrElmComObjExpr ( void )
     record = PopObj();
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-    }
-    else {
+        break;
+      default:
         elm = ELM_REC( record, rnam );
+        break;
     }
 
     /* push the element                                                    */
@@ -4312,20 +4400,22 @@ void            IntrIsbComObjName (
     Obj                 record;         /* the record, left operand        */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIsbComObjName( rnam ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIsbComObjName( rnam ); return; }
 
 
     /* get the record (checking is done by 'ISB_REC')                      */
     record = PopObj();
 
     /* get the result                                                      */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
-        isb = (ISB_REC( record, rnam ) ? True : False);
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        isb = ElmPRec( record, rnam ) ? True : False;
+        break;
+      default:
+        isb = ISB_REC( record, rnam ) ? True : False;
+        break;
     }
 
     /* push the result                                                     */
@@ -4339,9 +4429,9 @@ void            IntrIsbComObjExpr ( void )
     UInt                rnam;           /* the name, right operand         */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIsbComObjExpr(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeIsbComObjExpr(); return; }
 
 
     /* get the name and convert it to a record name                        */
@@ -4351,11 +4441,13 @@ void            IntrIsbComObjExpr ( void )
     record = PopObj();
 
     /* get the result                                                      */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
-        isb = (ISB_REC( record, rnam ) ? True : False);
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        isb = IsbPRec( record, rnam ) ? True : False;
+        break;
+      default:
+        isb = ISB_REC( record, rnam ) ? True : False;
+        break;
     }
 
     /* push the result                                                     */
@@ -4371,9 +4463,9 @@ void            IntrIsbComObjExpr ( void )
 void             IntrEmpty ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeEmpty(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeEmpty(); return; }
 
 
     /* interpret */
@@ -4407,9 +4499,9 @@ void             IntrEmpty ( void )
 void            IntrInfoBegin( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeInfoBegin(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeInfoBegin(); return; }
 
 }
 
@@ -4424,16 +4516,16 @@ void            IntrInfoMiddle( void )
                         gets printed or not */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { IntrIgnoring++; return; }
-    if ( IntrCoding    > 0 ) { CodeInfoMiddle(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { TLS(IntrIgnoring)++; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeInfoMiddle(); return; }
 
 
     level = PopObj();
     selectors = PopObj();
     selected = CALL_2ARGS( InfoDecision, selectors, level);
     if (selected == False)
-      IntrIgnoring = 1;
+      TLS(IntrIgnoring) = 1;
     return;
 }
 
@@ -4445,13 +4537,13 @@ void            IntrInfoEnd( UInt narg )
      Obj args;    /* gathers up the arguments to be printed */
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeInfoEnd( narg ); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeInfoEnd( narg ); return; }
 
 
     /* print if necessary                                                  */
-    if ( IntrIgnoring  > 0 )
-      IntrIgnoring--;
+    if ( TLS(IntrIgnoring)  > 0 )
+      TLS(IntrIgnoring)--;
     else
       {
         args = NEW_PLIST( T_PLIST, narg);
@@ -4465,7 +4557,7 @@ void            IntrInfoEnd( UInt narg )
 
     /* If we actually executed this statement at all
        (even if we printed nothing) then return a Void */
-    if (IntrIgnoring == 0)
+    if (TLS(IntrIgnoring) == 0)
       PushVoidObj();
     return;
 }
@@ -4490,7 +4582,7 @@ void            IntrInfoEnd( UInt narg )
 *V  CurrentAssertionLevel  . .  . . . . . . . . . . . .  copy of GAP variable
 **
 **
-**  IntrIgnoring is increased by (a total of) 2 if an assertion either is not
+**  TLS(IntrIgnoring) is increased by (a total of) 2 if an assertion either is not
 **  tested (because we were Ignoring when we got to it, or due to level)
 **  or is tested and passes
 */
@@ -4500,9 +4592,9 @@ Obj              CurrentAssertionLevel;
 void              IntrAssertBegin ( void )
 {
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssertBegin(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssertBegin(); return; }
 
 }
 
@@ -4512,15 +4604,15 @@ void             IntrAssertAfterLevel ( void )
   Obj level;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { IntrIgnoring++; return; }
-    if ( IntrCoding    > 0 ) { CodeAssertAfterLevel(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { TLS(IntrIgnoring)++; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssertAfterLevel(); return; }
 
 
     level = PopObj();
 
     if (LT( CurrentAssertionLevel, level))
-           IntrIgnoring = 1;
+           TLS(IntrIgnoring) = 1;
 }
 
 void             IntrAssertAfterCondition ( void )
@@ -4528,15 +4620,15 @@ void             IntrAssertAfterCondition ( void )
   Obj condition;
 
     /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { IntrIgnoring++; return; }
-    if ( IntrCoding    > 0 ) { CodeAssertAfterCondition(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrIgnoring)  > 0 ) { TLS(IntrIgnoring)++; return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssertAfterCondition(); return; }
 
 
     condition = PopObj();
 
     if (condition == True)
-      IntrIgnoring= 2;
+      TLS(IntrIgnoring)= 2;
     else if (condition != False)
         ErrorQuit(
             "<condition> in Assert must yield 'true' or 'false' (not a %s)",
@@ -4546,16 +4638,16 @@ void             IntrAssertAfterCondition ( void )
 void             IntrAssertEnd2Args ( void )
 {
       /* ignore or code                                                      */
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssertEnd2Args(); return; }
+    if ( TLS(IntrReturning) > 0 ) { return; }
+    if ( TLS(IntrCoding)    > 0 ) { CodeAssertEnd2Args(); return; }
 
 
-    if ( IntrIgnoring  == 0 )
+    if ( TLS(IntrIgnoring)  == 0 )
       ErrorQuit("Assertion Failure", 0, 0);
     else
-      IntrIgnoring -= 2;
+      TLS(IntrIgnoring) -= 2;
 
-    if (IntrIgnoring == 0)
+    if (TLS(IntrIgnoring) == 0)
       PushVoidObj();
     return;
 }
@@ -4565,11 +4657,11 @@ void             IntrAssertEnd3Args ( void )
 {
   Obj message;
   /* ignore or code                                                      */
-  if ( IntrReturning > 0 ) { return; }
-  if ( IntrCoding    > 0 ) { CodeAssertEnd3Args(); return; }
+  if ( TLS(IntrReturning) > 0 ) { return; }
+  if ( TLS(IntrCoding)    > 0 ) { CodeAssertEnd3Args(); return; }
 
 
-  if ( IntrIgnoring  == 0 ) {
+  if ( TLS(IntrIgnoring)  == 0 ) {
       message = PopVoidObj();
       if (message != (Obj) 0 ) {
           if (IS_STRING_REP( message ))
@@ -4578,9 +4670,9 @@ void             IntrAssertEnd3Args ( void )
             PrintObj(message);
       }
   } else
-      IntrIgnoring -= 2;
+      TLS(IntrIgnoring) -= 2;
 
-  if (IntrIgnoring == 0)
+  if (TLS(IntrIgnoring) == 0)
       PushVoidObj();
   return;
 }

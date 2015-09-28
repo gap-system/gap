@@ -78,6 +78,13 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
+#include	"code.h"		/* coder                           */
+#include	"aobjects.h"		/* atomic access to plists	   */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
+#include	"ffdata.h"		/* pre-computed finite field data  */
+
 
 /****************************************************************************
 **

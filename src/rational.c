@@ -70,6 +70,9 @@
 #include        "string.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
+#include	"code.h"
+#include	"thread.h"
+#include	"tls.h"
 
 
 #if 0
@@ -698,8 +701,9 @@ Obj             PowRat (
 
     /* if <opR> is negative and numerator is -1 return (-1)^r * num(l)     */
     else if ( NUM_RAT(opL) == INTOBJ_INT( -1L ) ) {
-        pow = ProdInt(PowInt(NUM_RAT(opL),ProdInt(INTOBJ_INT(-1L),opR)),
-                      PowInt(DEN_RAT(opL),ProdInt(INTOBJ_INT(-1L),opR)));
+        numP = PowInt( NUM_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
+        denP = PowInt( DEN_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
+        pow = ProdInt(numP, denP);
     }
 
     /* if <opR> is negative do both powers, take care of the sign          */
@@ -893,7 +897,15 @@ static Int InitKernel (
 {
     /* install the marking function                                        */
     InfoBags[         T_RAT ].name = "rational";
+    /* MarkTwoSubBags() is faster for Gasman, but MarkAllSubBags() is
+     * more space-efficient for the Boehm GC and does not incur a
+     * speed penalty.
+     */
+#ifndef BOEHM_GC
     InitMarkFuncBags( T_RAT, MarkTwoSubBags );
+#else
+    InitMarkFuncBags( T_RAT, MarkAllSubBags );
+#endif
 
     /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_RAT_POS", &TYPE_RAT_POS );
@@ -987,6 +999,8 @@ static Int InitKernel (
     PowFuncs [ T_RAT    ][ T_INT    ] = PowRat;
     PowFuncs [ T_RAT    ][ T_INTPOS ] = PowRat;
     PowFuncs [ T_RAT    ][ T_INTNEG ] = PowRat;
+
+    MakeBagTypePublic(T_RAT);
 
     /* return success                                                      */
     return 0;

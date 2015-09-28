@@ -24,10 +24,12 @@ InstallMethod( CollectionsFamily,
     coll_req := IsCollection;
     coll_imp := IsObject;
     elms_flags := F!.IMP_FLAGS;
-    for tmp  in CATEGORIES_COLLECTIONS  do
-        if IS_SUBSET_FLAGS( elms_flags, FLAGS_FILTER( tmp[1] ) )  then
-            coll_imp := coll_imp and tmp[2];
-        fi;
+    atomic readonly CATEGORIES_COLLECTIONS do
+        for tmp  in CATEGORIES_COLLECTIONS  do
+            if IS_SUBSET_FLAGS( elms_flags, FLAGS_FILTER( tmp[1] ) )  then
+                coll_imp := coll_imp and tmp[2];
+            fi;
+        od;
     od;
 
     if    ( not HasElementsFamily( F ) )
@@ -80,16 +82,6 @@ InstallMethod( PrintObj,
     msg := "<iterator";
     if not IsMutable( iter ) then
       Append(msg, " (immutable)");
-    fi;
-    if IsBound( iter!.description ) then
-      Append(msg, " ");
-      if IsFunction(iter!.description) then
-        Append(msg, iter!.description(iter));
-      elif IsString(iter!.description(iter)) then
-        Append(msg, iter!.description);
-      else
-        Error("Invalid description for iterator.");
-      fi;
     fi;
     Append(msg,">");
     Print(msg);
@@ -969,7 +961,8 @@ InstallOtherMethod( NextIterator,
 #F  IteratorByFunctions( <record> )
 ##
 DeclareRepresentation( "IsIteratorByFunctionsRep", IsComponentObjectRep,
-    [ "NextIterator", "IsDoneIterator", "ShallowCopy" ] );
+    [ "NextIterator", "IsDoneIterator", "ShallowCopy",
+    , "ViewObj", "PrintObj"] );
 
 DeclareSynonym( "IsIteratorByFunctions",
     IsIteratorByFunctionsRep and IsIterator );
@@ -1007,9 +1000,44 @@ InstallMethod( ShallowCopy,
     new.NextIterator   := iter!.NextIterator;
     new.IsDoneIterator := iter!.IsDoneIterator;
     new.ShallowCopy    := iter!.ShallowCopy;
+    if IsBound(iter!.ViewObj) then
+        new.ViewObj    := iter!.ViewObj;
+    fi;
+    if IsBound(iter!.PrintObj) then
+        new.PrintObj   := iter!.PrintObj;
+    fi;
     return IteratorByFunctions( new );
     end );
 
+InstallMethod( ViewObj,
+    "for an iterator that perhaps has its own `ViewObj' function",
+    [ IsIteratorByFunctions ], 20,
+function( iter )
+    if IsBound( iter!.ViewObj ) then
+        iter!.ViewObj( iter );
+    elif IsBound( iter!.PrintObj ) then
+        iter!.PrintObj( iter );
+    elif HasUnderlyingCollection( iter ) then
+        Print( "<iterator of " );
+        View( UnderlyingCollection( iter ) );
+        Print( ">" );
+    else
+        Print( "<iterator>" );
+    fi;
+end );
+
+InstallMethod( PrintObj,
+    "for an iterator that perhaps has its own `PrintObj' function",
+    [ IsIteratorByFunctions ],
+function( iter )
+    if IsBound( iter!.PrintObj ) then
+       iter!.PrintObj( iter );
+    elif HasUnderlyingCollection( iter ) then
+       Print( "<iterator of ", UnderlyingCollection( iter ), ">" );
+    else
+       Print( "<iterator>" );
+    fi;
+end );
 
 #############################################################################
 ##

@@ -497,7 +497,8 @@ gap> s;
 
 <#Include Label="JoinStringsWithSeparator">
 <#Include Label="Chomp">
-
+<#Include Label="StartsWith">
+        
 The following two functions convert basic strings to lists of numbers and
 vice versa. They are useful for examples of text encryption.
 <#Include Label="NumbersString">
@@ -709,4 +710,3 @@ functionality in this direction.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-

@@ -438,7 +438,7 @@ end );
 BIND_GLOBAL( "DirectoriesSystemPrograms", function()
     if GAPInfo.DirectoriesPrograms = false  then
         GAPInfo.DirectoriesPrograms :=
-            List( GAPInfo.DirectoriesSystemPrograms, Directory );
+            AtomicList( List( GAPInfo.DirectoriesSystemPrograms, Directory ) );
     fi;
     return GAPInfo.DirectoriesPrograms;
 end );
@@ -464,10 +464,20 @@ end );
 ##  <K>fail</K> is returned.
 ##  In this case <Ref Func="LastSystemError"/> can be used to get information
 ##  about the error.
+##  <P/>
+##  A warning message is given if more than 1000 temporary directories are 
+##  created in any &GAP; session.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+DIRECTORY_TEMPORARY_COUNT := 0;
+DIRECTORY_TEMPORART_LIMIT := 1000;
+InfoTempDirectories := fail;
+
+
+
+
 BIND_GLOBAL( "DirectoryTemporary", function( arg )
     local   dir,drive,a;
 
@@ -493,7 +503,13 @@ BIND_GLOBAL( "DirectoryTemporary", function( arg )
 
   # remember directory name
   Add( GAPInfo.DirectoriesTemporary, dir );
-
+  
+  DIRECTORY_TEMPORARY_COUNT := DIRECTORY_TEMPORARY_COUNT + 1;
+  if DIRECTORY_TEMPORARY_COUNT = DIRECTORY_TEMPORART_LIMIT then
+      Info(InfoTempDirectories,1, DIRECTORY_TEMPORART_LIMIT, " temporary directories made in this session");
+      DIRECTORY_TEMPORART_LIMIT := DIRECTORY_TEMPORART_LIMIT*10;
+  fi;
+  
   return Directory(dir);
 end );
 

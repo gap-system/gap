@@ -74,10 +74,10 @@ extern  Stat            CurrStat;
 *F  RES_BRK_CURR_STAT() . . . . . . . . restore currently executing statement
 */
 #ifndef NO_BRK_CURR_STAT
-#define SET_BRK_CURR_STAT(stat) (CurrStat = (stat))
+#define SET_BRK_CURR_STAT(stat) (TLS(CurrStat) = (stat))
 #define OLD_BRK_CURR_STAT       Stat oldStat;
-#define REM_BRK_CURR_STAT()     (oldStat = CurrStat)
-#define RES_BRK_CURR_STAT()     (CurrStat = oldStat)
+#define REM_BRK_CURR_STAT()     (oldStat = TLS(CurrStat))
+#define RES_BRK_CURR_STAT()     (TLS(CurrStat) = oldStat)
 #endif
 #ifdef  NO_BRK_CURR_STAT
 #define SET_BRK_CURR_STAT(stat) /* do nothing */

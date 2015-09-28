@@ -42,14 +42,19 @@
 
 #include        "code.h"                /* coder                           */
 #include        "calls.h"
-#include        "vars.h"                /* variables                       */
 #include        "stats.h"
 
 
 #include        "exprs.h"               /* expressions                     */
 
+#include        "tls.h"                 /* thread-local storage            */
 #include        "profile.h"             /* installing methods              */
-#include <assert.h>
+#include        "aobjects.h"            /* atomic objects                  */
+
+#include        "vars.h"                /* variables                       */
+
+#include	<assert.h>
+
 
 /****************************************************************************
 **
@@ -68,8 +73,8 @@
 #endif
 #ifndef NO_LVAR_CHECKS
 #define OBJ_REFLVAR(expr)       \
-                        (*(Obj*)(((char*)PtrLVars)+(expr)+5) != 0 ? \
-                         *(Obj*)(((char*)PtrLVars)+(expr)+5) : \
+                        (*(Obj*)(((char*)TLS(PtrLVars))+(expr)+5) != 0 ? \
+                         *(Obj*)(((char*)TLS(PtrLVars))+(expr)+5) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
 #endif
 */

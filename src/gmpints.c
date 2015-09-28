@@ -57,6 +57,9 @@
 
 #ifdef USE_GMP
 
+/* TODO: Remove after Ward2 */
+#ifndef WARD_ENABLED
+
 // GMP must be included outside of 'extern C'
 #ifdef GAP_IN_EXTERN_C
 }
@@ -2653,6 +2656,9 @@ static Int InitKernel ( StructInitInfo * module )
   TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
   TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;
 
+  MakeBagTypePublic( T_INTPOS );
+  MakeBagTypePublic( T_INTNEG );
+  
   /* return success                                                        */
   return 0;
 }
@@ -2706,8 +2712,8 @@ StructInitInfo * InitInfoInt ( void )
   return &module;
 }
 
-/* corresponds to USE_GMP test at start */
-#endif
+#endif /* ! WARD_ENABLED */
+#endif /* USE_GMP */
 
 /****************************************************************************
 **

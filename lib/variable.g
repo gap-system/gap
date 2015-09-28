@@ -72,6 +72,7 @@ end );
 ##  <Ref Func="FlushCaches"/> resets the value of each global variable that
 ##  has been declared with <Ref Func="DeclareGlobalVariable"/> and for which
 ##  the initial value has been set with <Ref Func="InstallFlushableValue"/>
+##  or <Ref Func="InstallFlushableValueFromFunction"/>
 ##  to this initial value.
 ##  <P/>
 ##  <Ref Func="FlushCaches"/> should be used only for debugging purposes,
@@ -109,7 +110,8 @@ InstallMethod( FlushCaches, "return method", [], function() end );
 ##  of the respective package
 ##  (see&nbsp;<Ref Sect="Declaration and Implementation Part"/>),
 ##  values can then be assigned to the new variable with
-##  <Ref Func="InstallValue"/> or <Ref Func="InstallFlushableValue"/>,
+##  <Ref Func="InstallValue"/>, <Ref Func="InstallFlushableValue"/> or
+##  <Ref Func="InstallFlushableValueFromFunction"/>,
 ##  in the implementation part
 ##  (again, see&nbsp;<Ref Sect="Declaration and Implementation Part"/>).
 ##  </Description>
@@ -125,11 +127,13 @@ end );
 ##
 #F  InstallValue( <gvar>, <value> )
 #F  InstallFlushableValue( <gvar>, <value> )
+#F  InstallFlushableValueFromFunction( <gvar>, <func> )
 ##
 ##  <#GAPDoc Label="InstallValue">
 ##  <ManSection>
 ##  <Func Name="InstallValue" Arg="gvar, value"/>
 ##  <Func Name="InstallFlushableValue" Arg="gvar, value"/>
+##  <Func Name="InstallFlushableValueFromFunction" Arg="gvar, func"/>
 ##
 ##  <Description>
 ##  <Ref Func="InstallValue"/> assigns the value <A>value</A> to the global
@@ -137,6 +141,9 @@ end );
 ##  <Ref Func="InstallFlushableValue"/> does the same but additionally
 ##  provides that each call of <Ref Func="FlushCaches"/>
 ##  will assign a structural copy of <A>value</A> to <A>gvar</A>.
+##  <Ref Func="InstallFlushableValueFromFunction"/> instead assigns
+##  the result of <A>func</A> to <A>gvar</A> (<A>func</A> is re-evaluated
+##  for each invocation of <Ref Func="FlushCaches"/>
 ##  <P/>
 ##  <Ref Func="InstallValue"/> does <E>not</E> work if <A>value</A> is an
 ##  <Q>immediate object</Q>, i.e., an internally represented small integer or
@@ -178,6 +185,29 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
    fi;
     CLONE_OBJ (gvar, value);
 end);
+
+BIND_GLOBAL( "InstallFlushableValueFromFunction", function( gvar, func )
+    local initval, flushfunc, ret;
+
+    # Initialize the variable.
+    ret := func();
+    atomic gvar, ret do
+       InstallValue(gvar, MigrateObj(ret, gvar) );
+    od;
+
+    # Install the method to flush the cache.
+    InstallMethod( FlushCaches,
+      [],
+      function()
+         local ret;
+         ret := func();
+         atomic gvar, ret do
+            CLONE_OBJ(gvar, MigrateObj(ret, gvar) );
+         od;
+        TryNextMethod();
+      end );
+end );
+
 
 BIND_GLOBAL( "InstallFlushableValue", function( gvar, value )
     local initval;
@@ -285,4 +315,3 @@ BIND_GLOBAL( "CURRENT_NAMESPACE",
 ##
 
 #E
-

@@ -26,10 +26,12 @@
 ##
 InstallGlobalFunction( UseSubsetRelationNC, function ( super, sub )
     local  entry;
-    for entry  in SUBSET_MAINTAINED_INFO[1]  do
-        if entry[1]( super ) and entry[2]( sub ) and not entry[4]( sub )  then
-            entry[5]( sub, entry[3]( super ) );
-        fi;
+    atomic readonly SUBSET_MAINTAINED_INFO do
+      for entry  in SUBSET_MAINTAINED_INFO[1]  do
+	  if entry[1]( super ) and entry[2]( sub ) and not entry[4]( sub )  then
+	      entry[5]( sub, entry[3]( super ) );
+	  fi;
+      od;
     od;
     return true;
 end );

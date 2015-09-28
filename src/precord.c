@@ -20,12 +20,13 @@
 **  components are always appended (record bags grow by a factor of 5/4
 **  if needed as plists do), already sorted rnams are stored by storing
 **  their negative value to indicate sortedness. The new entries will have
-**  positive rnams and can thus be distinguished. Every read access will 
+**  positive rnams and can thus be distinguished. Every read access will
 **  clean up the mess by sorting the new part and then merging the two
 **  sorted areas. After that, all rnams are negative indicating sortedness.
 **
 */
 #include        <stdlib.h>              /* for qsort */
+#include        <sys/time.h>            /* for gettimeofday() */
 #include        "system.h"              /* system dependent part           */
 
 
@@ -51,6 +52,11 @@
 #include        "string.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
+
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+#include	"aobjects.h"		/* thread-local storage		   */
 
 
 /****************************************************************************
@@ -136,7 +142,7 @@ Int IsCopyablePRecYes (
 */
 Obj NEW_PREC(UInt len)
 {
-    Obj o = NewBag( T_PREC, (len) * 2*sizeof(Obj) + 2*sizeof(Obj) ); 
+    Obj o = NewBag( T_PREC, (len) * 2*sizeof(Obj) + 2*sizeof(Obj) );
     SET_LEN_PREC(o,0);
     return o;
 }
@@ -151,15 +157,15 @@ Int             GrowPRec (
     Obj                 rec,
     UInt                need )
 {
-    UInt                newsize, want, good;     
+    UInt                newsize, want, good;
 
     /* check if big enough */
     want = (2*need+2)*sizeof(Obj);
     if (SIZE_OBJ(rec) >= want) return 0L;
 
-    
+
     /* find out how large the bag should become at least                   */
-    good = ((5 * LEN_PREC(rec) + 3)/4 + 1) * 2 * sizeof(Obj) + 2; 
+    good = ((5 * LEN_PREC(rec) + 3)/4 + 1) * 2 * sizeof(Obj) + 2;
 
     /* but maybe we need more                                              */
     newsize = (want < good) ? good : want;
@@ -321,7 +327,7 @@ void MakeImmutablePRec( Obj rec)
 
 
 /****************************************************************************
- * FindPRec( <rec>, <rnam>, <pos>, <cleanup> )  
+ * FindPRec( <rec>, <rnam>, <pos>, <cleanup> )
  *   . . . . . . . . . . . . . . . . . find a component name by binary search
  *
  * Searches rnam in rec, sets pos to the position where it is found (return
@@ -339,12 +345,12 @@ UInt FindPRec( Obj rec, UInt rnam, UInt *pos, int cleanup )
     UInt high;
 
     high = LEN_PREC(rec);
-    if (high > 0 && (Int) (GET_RNAM_PREC(rec,high)) > 0) {  
+    if (high > 0 && (Int) (GET_RNAM_PREC(rec,high)) > 0) {
         /* DIRTY! Not everything sorted! */
         if (cleanup) {
             SortPRecRNam(rec,0);
-            /* Note that this does not change the length and it cannot 
-             * trigger a garbage collection if cleanup is 1! 
+            /* Note that this does not change the length and it cannot
+             * trigger a garbage collection if cleanup is 1!
              * We do not want record accesses to trigger garbage
              * collections! */
         } else {
@@ -557,7 +563,7 @@ static int PrecComparer(const void *a, const void *b)
     else return 1;
 }
 
-void SortPRecRNam ( 
+void SortPRecRNam (
     Obj                 rec, int inplace )
 {
     UInt len = LEN_PREC(rec);
@@ -973,6 +979,9 @@ static Int InitKernel (
     InitMarkFuncBags( T_PREC +IMMUTABLE          , MarkAllSubBags );
     InitMarkFuncBags( T_PREC            +COPYING , MarkAllSubBags );
     InitMarkFuncBags( T_PREC +IMMUTABLE +COPYING , MarkAllSubBags );
+
+    /* Immutable records are public					   */
+    MakeBagTypePublic( T_PREC + IMMUTABLE );
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );

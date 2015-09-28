@@ -157,6 +157,8 @@ extern  Stat *          PtrBody;
 
 #define LAST_STAT_TNUM          T_ATOMIC
 
+#define T_NO_STAT		(Stat)(-1)
+
 
 /****************************************************************************
 **
@@ -219,7 +221,7 @@ Obj FILENAME_STAT(Stat stat);
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-#define ADDR_STAT(stat) ((Stat*)(((char*)PtrBody)+(stat)))
+#define ADDR_STAT(stat) ((Stat*)(((char*)TLS(PtrBody))+(stat)))
 
 
 /****************************************************************************
@@ -387,7 +389,12 @@ Obj FILENAME_STAT(Stat stat);
 #define T_FLOAT_EXPR_EAGER      (FIRST_EXPR_TNUM+82)
 #define T_FLOAT_EXPR_LAZY       (FIRST_EXPR_TNUM+83)
 
-#define LAST_EXPR_TNUM          T_FLOAT_EXPR_LAZY
+#define T_ELM2_LIST             (FIRST_EXPR_TNUM+84)
+#define T_ELMX_LIST             (FIRST_EXPR_TNUM+85)
+#define T_ASS2_LIST             (FIRST_EXPR_TNUM+86)
+#define T_ASSX_LIST             (FIRST_EXPR_TNUM+87)
+
+#define LAST_EXPR_TNUM          T_ASSX_LIST
 
 
 /****************************************************************************
@@ -1153,17 +1160,17 @@ extern  void            CodeIsbGVar (
 *F  CodeAssListLevel(<level>) . . . . . . .  code assignment to several lists
 *F  CodeAsssListLevel(<level>)  . . code multiple assignment to several lists
 */
-extern  void            CodeAssList ( void );
+extern  void            CodeAssList ( Int narg );
 
 extern  void            CodeAsssList ( void );
 
-extern  void            CodeAssListLevel (
+extern  void            CodeAssListLevel ( Int narg,
             UInt                level );
 
 extern  void            CodeAsssListLevel (
             UInt                level );
 
-extern  void            CodeUnbList ( void );
+extern  void            CodeUnbList ( Int narg );
 
 
 /****************************************************************************
@@ -1173,17 +1180,18 @@ extern  void            CodeUnbList ( void );
 *F  CodeElmListLevel(<level>) . . . . . . . . code selection of several lists
 *F  CodeElmsListLevel(<level>)  . .  code multiple selection of several lists
 */
-extern  void            CodeElmList ( void );
+extern  void            CodeElmList ( Int narg );
 
 extern  void            CodeElmsList ( void );
 
 extern  void            CodeElmListLevel (
-            UInt                level );
+					  Int narg,
+					  UInt level);
 
 extern  void            CodeElmsListLevel (
             UInt                level );
 
-extern  void            CodeIsbList ( void );
+extern  void            CodeIsbList ( Int narg );
 
 
 /****************************************************************************

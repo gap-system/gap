@@ -114,6 +114,10 @@
 
 #include        "intfuncs.h"
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 #include <stdio.h>
 
 /* for fallbacks to library */
@@ -1639,6 +1643,8 @@ Obj             PowInt (
     Obj                 pow;
 
     /* power with a large exponent                                         */
+    ReadGuard(opL);
+    ReadGuard(opR);
     if ( ! IS_INTOBJ(opR) ) {
         if ( opL == INTOBJ_INT(0) )
             pow = INTOBJ_INT(0);
@@ -3332,6 +3338,9 @@ static Int InitKernel (
     TypeObjFuncs[ T_INT    ] = TypeIntSmall;
     TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
     TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;
+
+    MakeBagTypePublic( T_INTPOS );
+    MakeBagTypePublic( T_INTNEG );
 
     /* return success                                                      */
     return 0;

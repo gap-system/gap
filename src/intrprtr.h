@@ -72,7 +72,7 @@ extern UInt IntrReturning;
 *F  IntrEnd(<error>)  . . . . . . . . . . . . . . . . . . stop an interpreter
 **
 **  'IntrBegin( <frame> )' starts a new interpreter in context <frame>
-**  if in doubt, pass BottomLVars as <frame>
+**  if in doubt, pass TLS(BottomLVars) as <frame>
 **
 **  'IntrEnd(<error>)' stops the current interpreter.
 **
@@ -753,17 +753,17 @@ extern  void            IntrIsbGVar (
 *F  IntrAssListLevel(<level>) . . . . . interpret assignment to several lists
 *F  IntrAsssListLevel(<level>)  . . intr multiple assignment to several lists
 */
-extern  void            IntrAssList ( void );
+extern  void            IntrAssList ( Int narg );
 
 extern  void            IntrAsssList ( void );
 
-extern  void            IntrAssListLevel (
+extern  void            IntrAssListLevel ( Int narg,
             UInt                level );
 
 extern  void            IntrAsssListLevel (
             UInt                level );
 
-extern  void            IntrUnbList ( void );
+extern  void            IntrUnbList (Int narg );
 
 
 /****************************************************************************
@@ -773,17 +773,17 @@ extern  void            IntrUnbList ( void );
 *F  IntrElmListLevel(<level>) . . . . .  interpret selection of several lists
 *F  IntrElmsListLevel(<level>)  . .  intr multiple selection of several lists
 */
-extern  void            IntrElmList ( void );
+extern  void            IntrElmList ( Int narg);
 
 extern  void            IntrElmsList ( void );
 
-extern  void            IntrElmListLevel (
+extern  void            IntrElmListLevel ( Int narg,
             UInt                level );
 
 extern  void            IntrElmsListLevel (
             UInt                level );
 
-extern  void            IntrIsbList ( void );
+extern  void            IntrIsbList ( Int narg );
 
 
 /****************************************************************************

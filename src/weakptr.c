@@ -36,10 +36,14 @@
 #include        "saveload.h"            /* saving and loading              */
 #include        "opers.h"               /* generic operations              */
 
+#include	"scanner.h"		/* scanner                         */
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 
 /****************************************************************************
 **
-
 *F  GROW_WPOBJ(<wp>,<plen>) . make sure a weak pointer object is large enough
 **
 **  'GROW_WPOBJ' grows the weak pointer   object <wp> if necessary  to

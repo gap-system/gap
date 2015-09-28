@@ -656,7 +656,7 @@ TestDirectory := function(arg)
     if not(testResult) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
       if opts.exitGAP then
-        FORCE_QUIT_GAP(1);
+        QUIT_GAP(1);
       fi;
       return false;
     fi;
@@ -696,7 +696,11 @@ TestDirectory := function(arg)
          String( totalTime, 15 ), "\n\n" );
          
   if opts.exitGAP then
-    FORCE_QUIT_GAP(testTotal = 0);
+    if testTotal then
+      QUIT_GAP(0);
+    else
+      QUIT_GAP(1);
+    fi;
   fi;
   
   return testTotal;

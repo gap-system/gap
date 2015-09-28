@@ -491,7 +491,6 @@ function(f)
     Append(str, String(img[i]));
   od;
   Append(str, " ]");
-
   return STRINGIFY("Transformation( ", str, " )");
 end);
 

@@ -1350,8 +1350,8 @@ Some influential environment variables:
               not deselect it) in 32- or 64-bit mode. The default value for
               this option is determined by testing the behaviour of your
               compiler, so should be 32 on a 32-bit system and 64 on one which
-              is 64-bit. On ARM processors, leave this unset (the build system
-              will set it to "standard" for GMP).
+              is 64-bit. If this is unset, the build system will set a value
+              of 64 or 32 depending of the pointer size of the host.
   CONFIGNAME  Supply a (meaningful) name for the configuration you are
               building. This name will be appended to the
               architecture-dependent named sub-directory of bin/. Allows for
@@ -3370,8 +3370,10 @@ elif test "$ABI" = "64"; then
 elif test "$ABI" = "32"; then
   ABI_CFLAGS="-m32"
 else
-  as_fn_error $? " $ABI is not a supported value for ABI. Please use ABI=64
-                 or 32, or leave it unset." "$LINENO" 5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:  $ABI is not a supported value for ABI. The supported values are ABI=64
+                 or 32." >&5
+$as_echo "$as_me: WARNING:  $ABI is not a supported value for ABI. The supported values are ABI=64
+                 or 32." >&2;}
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ABI" >&5

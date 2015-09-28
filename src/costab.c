@@ -37,6 +37,10 @@
 
 #include        "costab.h"              /* coset table                     */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 
 /****************************************************************************
 **

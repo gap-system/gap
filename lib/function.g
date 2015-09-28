@@ -317,6 +317,7 @@ BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
 BIND_GLOBAL( "StartlineFunc", STARTLINE_FUNC );
 BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 
+
 #############################################################################
 ##
 #F  CallFuncList( <func>, <args> )  . . . . . . . . . . . . . call a function
@@ -466,6 +467,58 @@ BIND_GLOBAL( "ReturnFalse", RETURN_FALSE );
 ##
 BIND_GLOBAL( "ReturnFail", RETURN_FAIL );
 
+#############################################################################
+##
+#F  ReturnNothing( ... ) . . . . . . . . . . . . . . . . . . 
+##
+##  <#GAPDoc Label="ReturnNothing">
+##  <ManSection>
+##  <Func Name="ReturnNothing" Arg='...'/>
+##
+##  <Description>
+##  This function takes any number of arguments,
+##  and always returns nothing.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> n:=ReturnNothing;
+##  function( object ) ... end
+##  gap> n();
+##  gap> n(-42);
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "ReturnNothing", RETURN_NOTHING );
+
+#############################################################################
+##
+#F  ReturnFirst( ... ) . . . . . . . . . . . . . . . . . . 
+##
+##  <#GAPDoc Label="ReturnFirst">
+##  <ManSection>
+##  <Func Name="ReturnFirst" Arg='...'/>
+##
+##  <Description>
+##  This function takes one or more arguments, and always returns
+##  the first argument. <Ref Func="IdFunc"/> behaves similarly, but only
+##  accepts a single argument.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> f:=ReturnFirst;
+##  function( object ) ... end
+##  gap> f(1);
+##  1
+##  gap> f(2,3,4);
+##  2
+##  gap> f();
+##  Error, RETURN_FIRST requires one or more arguments
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "ReturnFirst", RETURN_FIRST );
 
 #############################################################################
 ##
@@ -476,7 +529,8 @@ BIND_GLOBAL( "ReturnFail", RETURN_FAIL );
 ##  <Func Name="IdFunc" Arg='obj'/>
 ##
 ##  <Description>
-##  returns <A>obj</A>.
+##  returns <A>obj</A>. <Ref Func="ReturnFirst"/> is similar, but accepts
+##  one or more arguments, returning only the first.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> id:=IdFunc;  
@@ -503,7 +557,11 @@ BIND_GLOBAL( "IdFunc", ID_FUNC );
 ##
 InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
         function ( func )
-    local nams, narg, i;
+    local  locks, nams, narg, i;
+    locks := LOCKS_FUNC(func);
+    if locks <> fail then
+        Print("atomic ");
+    fi;
     Print("function( ");
     nams := NAMS_FUNC(func);
     narg := NARG_FUNC(func);
@@ -514,8 +572,22 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
         if nams = fail then
             Print( "<",narg," unnamed arguments>" );
         else
+            if locks <> fail then
+                if locks[1] = '\001' then
+                    Print("readonly ");
+                elif locks[1] = '\002' then
+                    Print("readwrite ");
+                fi;
+            fi;
             Print(nams[1]);
             for i in [2..narg] do
+                if locks <> fail then
+                    if locks[i] = '\001' then
+                        Print("readonly ");
+                    elif locks[i] = '\002' then
+                        Print("readwrite ");
+                    fi;
+                fi;
                 Print(", ",nams[i]);
             od;
         fi;
@@ -530,12 +602,14 @@ BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
     class := "Operation";
     if IS_IDENTICAL_OBJ(op,IS_OBJECT) then
         class := "Filter";
-    elif op in CONSTRUCTORS then
+    elif IS_CONSTRUCTOR(op) then
         class := "Constructor";
     elif IsFilter(op) then
         class := "Filter";
         flags := TRUES_FLAGS(FLAGS_FILTER(op));
-        types := INFO_FILTERS{flags};
+	atomic readonly FILTER_REGION do
+            types := INFO_FILTERS{flags};
+	od;
         catok := true;
         repok := true;
         propok := true;
@@ -577,4 +651,3 @@ InstallMethod( ViewObj,
 #############################################################################
 ##
 #E
-

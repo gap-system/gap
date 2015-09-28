@@ -2633,6 +2633,9 @@ local dom,n,t,map;
 
   LoadPackage("tomlib"); # force tomlib load
   t:=TableOfMarks(Concatenation("A",String(n)));
+  if t=fail then
+    return fail;
+  fi;
   return [map,t];
 end);
 

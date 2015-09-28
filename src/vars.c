@@ -42,14 +42,20 @@
 
 #include        "code.h"                /* coder                           */
 
-#include        "vars.h"                /* variables                       */
-
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 
+#include        "tls.h"                 /* thread-local storage            */
+
+#include        "vars.h"                /* variables                       */
+
+
+#include        "aobjects.h"            /* atomic objects                  */
 #include        "saveload.h"            /* saving and loading              */
 
+#include	    "thread.h"		        /* threads                         */
 #include        "profile.h"             /* installing methods              */
+
 
 /****************************************************************************
 **
@@ -82,7 +88,7 @@ Bag BottomLVars;
 **
 *V  PtrLVars  . . . . . . . . . . . . . . . .  pointer to local variables bag
 **
-**  'PtrLVars' is a pointer to the 'CurrLVars' bag.  This  makes it faster to
+**  'PtrLVars' is a pointer to the 'TLS(CurrLVars)' bag.  This  makes it faster to
 **  access local variables.
 **
 **  Since   a   garbage collection may  move   this  bag  around, the pointer
@@ -823,14 +829,14 @@ void            ASS_HVAR (
     UInt                i;              /* loop variable                   */
 
     /* walk up the environment chain to the correct values bag             */
-    currLVars = CurrLVars;
+    currLVars = TLS(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
     }
 
     /* assign the value                                                    */
     ASS_LVAR( hvar & 0xFFFF, val );
-    /* CHANGED_BAG( CurrLVars ); is done in the switch below               */
+    /* CHANGED_BAG( TLS(CurrLVars) ); is done in the switch below               */
 
     /* switch back to current local variables bag                          */
     SWITCH_TO_OLD_LVARS( currLVars );
@@ -844,7 +850,7 @@ Obj             OBJ_HVAR (
     UInt                i;              /* loop variable                   */
 
     /* walk up the environment chain to the correct values bag             */
-    currLVars = CurrLVars;
+    currLVars = TLS(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
     }
@@ -867,7 +873,7 @@ Char *          NAME_HVAR (
     UInt                i;              /* loop variable                   */
 
     /* walk up the environment chain to the correct values bag             */
-    currLVars = CurrLVars;
+    currLVars = TLS(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
     }
@@ -1138,41 +1144,103 @@ UInt            ExecAssList (
     SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
-    /* evaluate and check the position                                     */
+    /* evaluate the position                                               */
     pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 )) {
-        pos = ErrorReturnObj(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
-    }
 
     /* evaluate the right hand side                                        */
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
-    if (IS_INTOBJ(pos))
-        {
-          p = INT_INTOBJ(pos);
-          
-          /* special case for plain list                                         */
-          if ( TNUM_OBJ(list) == T_PLIST ) {
+    if (IS_POS_INTOBJ(pos)) {
+        p = INT_INTOBJ(pos);
+
+        /* special case for plain list                                     */
+        if ( TNUM_OBJ(list) == T_PLIST ) {
             if ( LEN_PLIST(list) < p ) {
-              GROW_PLIST( list, p );
-              SET_LEN_PLIST( list, p );
+                GROW_PLIST( list, p );
+                SET_LEN_PLIST( list, p );
             }
             SET_ELM_PLIST( list, p, rhs );
             CHANGED_BAG( list );
-          }
-          
-          /* generic case                                                        */
-          else
-            {
-              ASS_LIST( list, p, rhs );
-            }
         }
-    else
-      ASSB_LIST(list, pos, rhs);
-          
+
+        /* generic case                                                    */
+        else {
+            ASS_LIST( list, p, rhs );
+        }
+    } else {
+        ASSB_LIST(list, pos, rhs);
+    }
+
+    /* return 0 (to indicate that no leave-statement was executed)         */
+    return 0;
+}
+/****************************************************************************
+**
+*F  ExecAss2List(<ass>)  . . . . . . . . . . .  assign to an element of a list
+**
+**  'ExexAss2List'  executes the list  assignment statement <stat> of the form
+**  '<list>[<position>,<position>] := <rhs>;'.
+*/
+UInt            ExecAss2List (
+    Expr                stat )
+{
+    Obj                 list;           /* list, left operand              */
+    Obj                 pos1;            /* position, left operand          */
+    Obj                 pos2;            /* position, left operand          */
+    Obj                 rhs;            /* right hand side, right operand  */
+
+    /* evaluate the list (checking is done by 'ASS_LIST')                  */
+    SET_BRK_CURR_STAT( stat );
+    list = EVAL_EXPR( ADDR_STAT(stat)[0] );
+
+    /* evaluate the position                                               */
+    pos1 = EVAL_EXPR( ADDR_STAT(stat)[1] );
+    pos2 = EVAL_EXPR( ADDR_STAT(stat)[2] );
+
+    /* evaluate the right hand side                                        */
+    rhs = EVAL_EXPR( ADDR_STAT(stat)[3] );
+
+    ASS2_LIST( list, pos1, pos2, rhs );
+
+    /* return 0 (to indicate that no leave-statement was executed)         */
+    return 0;
+}
+/****************************************************************************
+**
+*F  ExecAssXList(<ass>)  . . . . . . . . . . .  assign to an element of a list
+**
+**  'ExexAssXList'  executes the list  assignment statement <stat> of the form
+**  '<list>[<position>,<position>,<position>[,<position>]*] := <rhs>;'.
+*/
+UInt            ExecAssXList (
+    Expr                stat )
+{
+    Obj                 list;           /* list, left operand              */
+    Obj                 pos;            /* position, left operand          */
+    Obj                 rhs;            /* right hand side, right operand  */
+    Obj ixs;
+    Int i;
+    Int narg;
+
+    /* evaluate the list (checking is done by 'ASS_LIST')                  */
+    SET_BRK_CURR_STAT( stat );
+    list = EVAL_EXPR( ADDR_STAT(stat)[0] );
+
+    narg = SIZE_STAT(stat)/sizeof(Stat) - 2;
+    ixs = NEW_PLIST(T_PLIST,narg);
+
+    for (i = 1; i <= narg; i++) {
+      /* evaluate the position                                               */
+      pos = EVAL_EXPR( ADDR_STAT(stat)[i] );
+      SET_ELM_PLIST(ixs,i,pos);
+      CHANGED_BAG(ixs);
+    }
+    SET_LEN_PLIST(ixs,narg);
+
+    /* evaluate the right hand side                                        */
+    rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
+
+    ASSB_LIST(list, ixs, rhs);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -1253,29 +1321,30 @@ UInt            ExecAssListLevel (
     Obj                 pos;            /* position, left operand          */
     Obj                 rhss;           /* right hand sides, right operand */
     Int                 level;          /* level                           */
+    Int narg,i;
+    Obj ixs;
 
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'AssListLevel')     */
     SET_BRK_CURR_STAT( stat );
     lists = EVAL_EXPR( ADDR_STAT(stat)[0] );
-
-    /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
-        pos = ErrorReturnObj(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
+    narg = SIZE_STAT(stat)/sizeof(Stat) -3;
+    ixs = NEW_PLIST(T_PLIST, narg);
+    for (i = 1; i <= narg; i++) {
+      pos = EVAL_EXPR(ADDR_STAT(stat)[i]);
+      SET_ELM_PLIST(ixs,i,pos);
+      CHANGED_BAG(ixs);
     }
+    SET_LEN_PLIST(ixs, narg);
 
     /* evaluate right hand sides (checking is done by 'AssListLevel')      */
-    rhss = EVAL_EXPR( ADDR_STAT(stat)[2] );
-
+    rhss = EVAL_EXPR( ADDR_STAT(stat)[narg+1] );
+      
     /* get the level                                                       */
-    level = (Int)(ADDR_STAT(stat)[3]);
+    level = (Int)(ADDR_STAT(stat)[narg+2]);
 
     /* assign the right hand sides to the elements of several lists        */
-    AssListLevel( lists, pos, rhss, level );
+    AssListLevel( lists, ixs, rhss, level );
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -1344,24 +1413,34 @@ UInt            ExecUnbList (
 {
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, left operand          */
-    Int                 p;              /* position, as a C integer        */
+    Obj ixs;
+    Int narg;
+    Int i;
 
     /* evaluate the list (checking is done by 'LEN_LIST')                  */
     SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR( ADDR_STAT(stat)[0] );
-
-    /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
-        pos = ErrorReturnObj(
-         "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
+    narg = SIZE_STAT(stat)/sizeof(Stat) - 1;
+    if (narg == 1) {
+      pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
+      /* unbind the element                                                  */
+      if (IS_POS_INTOBJ(pos)) {
+        UNB_LIST( list, INT_INTOBJ(pos) );
+      } else {
+        UNBB_LIST( list, pos );
+      }
+    } else {
+      ixs = NEW_PLIST(T_PLIST, narg);
+      for (i = 1; i <= narg; i++) {
+	/* evaluate the position                                               */
+	pos = EVAL_EXPR( ADDR_STAT(stat)[i] );
+	SET_ELM_PLIST(ixs,i,pos);
+	CHANGED_BAG(ixs);
+      }
+      SET_LEN_PLIST(ixs, narg);
+      UNBB_LIST(list, ixs);
     }
-    p = INT_INTOBJ(pos);
-
-    /* unbind the element                                                  */
-    UNB_LIST( list, p );
+    
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -1388,31 +1467,96 @@ Obj             EvalElmList (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    
+
     SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
 
-    if (IS_INTOBJ(pos) && (p = INT_INTOBJ( pos )) > 0)
-      {
-        
-        /* special case for plain lists (use generic code to signal errors)    */
-        if ( IS_PLIST( list ) )
-          {
+    if (IS_POS_INTOBJ(pos)) {
+        p = INT_INTOBJ( pos );
+
+        /* special case for plain lists (use generic code to signal errors) */
+        if ( IS_PLIST( list ) ) {
             if ( LEN_PLIST(list) < p ) {
-              return ELM_LIST( list, p );
+                return ELM_LIST( list, p );
             }
             elm = ELM_PLIST( list, p );
             if ( elm == 0 ) {
-              return ELM_LIST( list, p );
+                return ELM_LIST( list, p );
             }
-          }
-        /* generic case                                                        */
-        else
-          {
+        }
+        /* generic case                                                    */
+        else {
             elm = ELM_LIST( list, p );
-          }
-      }
-    else
-      elm = ELMB_LIST(list, pos);
+        }
+    } else {
+        elm = ELMB_LIST(list, pos);
+    }
+
+    /* return the element                                                  */
+    return elm;
+}
+
+/****************************************************************************
+**
+*F  EvalElm2List(<expr>) . . . . . . . . . . . . select an element of a list
+**
+**  'EvalElm2List' evaluates the list  element expression  <expr> of the  form
+**  '<list>[<pos1>,<pos2>]'.
+*/
+Obj             EvalElm2List (
+    Expr                expr )
+{
+    Obj                 elm;            /* element, result                 */
+    Obj                 list;           /* list, left operand              */
+    Obj                 pos1;            /* position, right operand         */
+    Obj                 pos2;            /* position, right operand         */
+
+    /* evaluate the list (checking is done by 'ELM2_LIST')                  */
+    list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+
+    /* evaluate and check the positions                                     */
+    pos1 = EVAL_EXPR( ADDR_EXPR(expr)[1] ); 
+    pos2 = EVAL_EXPR( ADDR_EXPR(expr)[2] ); 
+   
+    elm = ELM2_LIST(list, pos1, pos2);
+
+
+    /* return the element                                                  */
+    return elm;
+}
+
+/****************************************************************************
+**
+*F  EvalElm2List(<expr>) . . . . . . . . . . . . select an element of a list
+**
+**  'EvalElm2List' evaluates the list  element expression  <expr> of the  form
+**  '<list>[<pos1>,<pos2>,<pos3>,....]'.
+*/
+Obj             EvalElmXList (
+    Expr                expr )
+{
+    Obj                 elm;            /* element, result                 */
+    Obj                 list;           /* list, left operand              */
+    Obj                 pos;            /* position, right operand         */
+    Obj ixs;
+    Int narg;
+    Int i;
+     
+
+    /* evaluate the list (checking is done by 'ELM2_LIST')                  */
+    list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+
+    /* evaluate and check the positions                                     */
+    narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
+    ixs = NEW_PLIST(T_PLIST,narg);
+    for (i = 1; i <= narg; i++) {
+      pos = EVAL_EXPR( ADDR_EXPR(expr)[i] );
+      SET_ELM_PLIST(ixs,i,pos);
+      CHANGED_BAG(ixs);
+    }
+    SET_LEN_PLIST(ixs,narg);
+   
+    elm = ELMB_LIST(list,ixs);
+
     /* return the element                                                  */
     return elm;
 }
@@ -1470,25 +1614,27 @@ Obj             EvalElmListLevel (
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, right operand         */
+    Obj                 ixs;
     Int                 level;          /* level                           */
+    Int narg;
+    Int i;
 
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'ElmListLevel')     */
     lists = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-
-    /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    while ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 )) {
-        pos = ErrorReturnObj(
-            "List Element: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
+    narg = SIZE_EXPR(expr)/sizeof(Expr) -2;
+    ixs = NEW_PLIST(T_PLIST, narg);
+    for (i = 1; i <= narg; i++) {
+      pos = EVAL_EXPR( ADDR_EXPR(expr)[i]);
+      SET_ELM_PLIST(ixs, i, pos);
+      CHANGED_BAG(ixs);
     }
+    SET_LEN_PLIST(ixs, narg);
     /* get the level                                                       */
-    level = (Int)(ADDR_EXPR(expr)[2]);
+    level = (Int)(ADDR_EXPR(expr)[narg+1]);
     
     /* select the elements from several lists (store them in <lists>)      */
-    ElmListLevel( lists, pos, level );
+    ElmListLevel( lists, ixs, level );
 
     /* return the elements                                                 */
     return lists;
@@ -1552,20 +1698,31 @@ Obj             EvalIsbList (
 {
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
+    Obj ixs;
+    Int narg, i;
 
     /* evaluate the list (checking is done by 'ISB_LIST')                  */
     list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-
-    /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    if (IS_INTOBJ(pos))
-      {
-        p = INT_INTOBJ( pos );
-        return (ISB_LIST( list, p ) ? True : False);
+    narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
+    if (narg == 1) {
+      /* evaluate and check the position                                     */
+      pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+      
+      if (IS_POS_INTOBJ(pos))
+        return ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
+      else
+        return ISBB_LIST(list, pos) ? True : False;
+    } else {
+      ixs = NEW_PLIST(T_PLIST, narg);
+      for (i = 1; i <= narg; i++) {
+	pos = EVAL_EXPR( ADDR_EXPR(expr)[i] );
+	SET_ELM_PLIST(ixs,i,pos);
+	CHANGED_BAG(ixs);
       }
-    else
-      return ISBB_LIST(list, pos) ? True : False;
+      SET_LEN_PLIST(ixs, narg);
+      return ISBB_LIST(list, ixs) ? True : False;
+    }
+	
 }
 
 
@@ -1591,14 +1748,54 @@ void            PrintAssList (
     Pr("%2<;",0L,0L);
 }
 
+void            PrintAss2List (
+    Stat                stat )
+{
+    Pr("%4>",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[0] );
+    Pr("%<[",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[1] );
+    Pr("%<, %>",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[2] );
+    Pr("%<]",0L,0L);
+    Pr("%< %>:= ",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[3] );
+    Pr("%2<;",0L,0L);
+}
+
+void            PrintAssXList (
+    Stat                stat )
+{
+  Int narg = SIZE_STAT(stat)/sizeof(stat) - 2;
+  Int i;
+    Pr("%4>",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[0] );
+    Pr("%<[",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[1] );
+    for (i = 2; i <= narg; i++) {
+      Pr("%<, %>",0L,0L);
+      PrintExpr( ADDR_STAT(stat)[i] );
+    }
+    Pr("%<]",0L,0L);
+    Pr("%< %>:= ",0L,0L);
+    PrintExpr( ADDR_STAT(stat)[narg + 1] );
+    Pr("%2<;",0L,0L);
+}
+
 void            PrintUnbList (
     Stat                stat )
 {
+  Int narg = SIZE_STAT(stat)/sizeof(Stat) -1;
+  Int i;
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_STAT(stat)[0] );
     Pr("%<[",0L,0L);
     PrintExpr( ADDR_STAT(stat)[1] );
+    for (i = 2; i <= narg; i++) {
+      Pr("%<, %>",0L,0L);
+      PrintExpr(ADDR_STAT(stat)[i]);
+    }
     Pr("%<]",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1646,14 +1843,65 @@ void            PrintElmList (
     Pr("%<]",0L,0L);
 }
 
+void PrintElm2List (
+		     Expr expr )
+{
+    Pr("%2>",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[0] );
+    Pr("%<[",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[1] );
+    Pr("%<, %<",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[2] );
+    Pr("%<]",0L,0L);
+}
+
+void PrintElmXList (
+		     Expr expr )
+{
+  Int i;
+  Int narg = SIZE_EXPR(expr)/sizeof(Expr) -1 ;
+    Pr("%2>",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[0] );
+    Pr("%<[",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[1] );
+    for (i = 2; i <= narg; i++) {
+      Pr("%<, %<",0L,0L);
+      PrintExpr( ADDR_EXPR(expr)[2] );
+    }
+    Pr("%<]",0L,0L);
+}
+
+void PrintElmListLevel (
+		     Expr expr )
+{
+  Int i;
+  Int narg = SIZE_EXPR(expr)/sizeof(Expr) -2 ;
+    Pr("%2>",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[0] );
+    Pr("%<[",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[1] );
+    for (i = 2; i <= narg; i++) {
+      Pr("%<, %<",0L,0L);
+      PrintExpr( ADDR_EXPR(expr)[2] );
+    }
+    Pr("%<]",0L,0L);
+}
+
+
 void            PrintIsbList (
     Expr                expr )
 {
+  Int narg = SIZE_EXPR(expr)/sizeof(Expr) - 1;
+  Int i;
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<[",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[1] );
+    for (i = 2; i <= narg; i++) {
+      Pr("%<, %>", 0L, 0L);
+      PrintExpr(ADDR_EXPR(expr)[i] );
+    }
     Pr("%<]",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -2050,7 +2298,7 @@ UInt            ExecAssPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
@@ -2063,13 +2311,13 @@ UInt            ExecAssPosObj (
 
     /* special case for plain list                                         */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+        WriteGuard(list);
         if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
             ResizeBag( list, (p+1) * sizeof(Obj) );
         }
         SET_ELM_PLIST( list, p, rhs );
         CHANGED_BAG( list );
     }
-
     /* generic case                                                        */
     else {
         ASS_LIST( list, p, rhs );
@@ -2100,7 +2348,7 @@ UInt            ExecUnbPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
@@ -2110,6 +2358,7 @@ UInt            ExecUnbPosObj (
 
     /* unbind the element                                                  */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+        WriteGuard(list);
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }
@@ -2143,7 +2392,7 @@ Obj             EvalElmPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
@@ -2198,7 +2447,7 @@ Obj             EvalIsbPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
@@ -2692,25 +2941,25 @@ void            PrintIsbComObjExpr (
 *F  FuncParentLVars
 *F  FuncContentsLVars
 **
-**  Provide access to local variable bags at GAP level. Mainly for use in 
-**  error handling. 
+**  Provide access to local variable bags at GAP level. Mainly for use in
+**  error handling.
 **
 */
 
 
 Obj FuncGetCurrentLVars( Obj self )
 {
-  return CurrLVars;
+  return TLS(CurrLVars);
 }
 
 Obj FuncGetBottomLVars( Obj self )
 {
-  return BottomLVars;
+  return TLS(BottomLVars);
 }
 
 Obj FuncParentLVars( Obj self, Obj lvars )
 {
-  if (lvars == BottomLVars)
+  if (lvars == TLS(BottomLVars))
     return Fail;
   return ADDR_OBJ(lvars)[2];
 }
@@ -2722,18 +2971,18 @@ Obj FuncContentsLVars (Obj self, Obj lvars )
   Obj nams = NAMS_FUNC(func);
   UInt len = (SIZE_BAG(lvars) - 2*sizeof(Obj) - sizeof(UInt))/sizeof(Obj);
   Obj values = NEW_PLIST(T_PLIST+IMMUTABLE, len);
-  if (lvars == BottomLVars)
+  if (lvars == TLS(BottomLVars))
     return False;
-  AssPRec(contents, RNamName("func"), func);  
+  AssPRec(contents, RNamName("func"), func);
   AssPRec(contents,RNamName("names"), nams);
   memcpy((void *)(1+ADDR_OBJ(values)), (void *)(3+ADDR_OBJ(lvars)), len*sizeof(Obj));
   while (ELM_PLIST(values, len) == 0)
     len--;
   SET_LEN_PLIST(values, len);
   AssPRec(contents, RNamName("values"), values);
-  if (ENVI_FUNC(func) != BottomLVars)
+  if (ENVI_FUNC(func) != TLS(BottomLVars))
     AssPRec(contents, RNamName("higher"), ENVI_FUNC(func));
-  return contents;  
+  return contents;
 }
 
 /****************************************************************************
@@ -2743,16 +2992,16 @@ Obj FuncContentsLVars (Obj self, Obj lvars )
 */
 void VarsBeforeCollectBags ( void )
 {
-  if (CurrLVars)
-    CHANGED_BAG( CurrLVars );
+  if (TLS(CurrLVars))
+    CHANGED_BAG( TLS(CurrLVars) );
 }
 
 void VarsAfterCollectBags ( void )
 {
-  if (CurrLVars)
+  if (TLS(CurrLVars))
     {
-      PtrLVars = PTR_BAG( CurrLVars );
-      PtrBody  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+      TLS(PtrLVars) = PTR_BAG( TLS(CurrLVars) );
+      TLS(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
   if (ValGVars)
     PtrGVars = PTR_BAG( ValGVars );
@@ -2855,8 +3104,8 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     UInt                i;              /* loop variable                   */
-    CurrLVars = (Bag) 0;
-    
+    TLS(CurrLVars) = (Bag) 0;
+
     /* make 'CurrLVars' known to Gasman                                    */
     InitGlobalBag( &CurrLVars,   "src/vars.c:CurrLVars"   );
     InitGlobalBag( &BottomLVars, "src/vars.c:BottomLVars" );
@@ -2879,7 +3128,7 @@ static Int InitKernel (
         EqFuncs[T_LVARS][i] = EqLVarsX;
         EqFuncs[i][T_LVARS] = EqLVarsX;
       }
-   
+
 
     /* install executors, evaluators, and printers for local variables     */
     InstallExecStatFunc( T_ASS_LVAR       , ExecAssLVar);
@@ -2959,12 +3208,22 @@ static Int InitKernel (
     InstallExecStatFunc( T_ASSS_LIST      , ExecAsssList);
     InstallExecStatFunc( T_ASS_LIST_LEV   , ExecAssListLevel);
     InstallExecStatFunc( T_ASSS_LIST_LEV  , ExecAsssListLevel);
+    InstallExecStatFunc( T_ASS2_LIST  , ExecAss2List);
+    InstallExecStatFunc( T_ASSX_LIST  , ExecAssXList);
+    InstallPrintStatFunc( T_ASS2_LIST  , PrintAss2List);
+    InstallPrintStatFunc( T_ASSX_LIST  , PrintAssXList);
+    
     InstallExecStatFunc( T_UNB_LIST       , ExecUnbList);
     InstallEvalExprFunc( T_ELM_LIST       , EvalElmList);
     InstallEvalExprFunc( T_ELMS_LIST      , EvalElmsList);
     InstallEvalExprFunc( T_ELM_LIST_LEV   , EvalElmListLevel);
     InstallEvalExprFunc( T_ELMS_LIST_LEV  , EvalElmsListLevel);
     InstallEvalExprFunc( T_ISB_LIST       , EvalIsbList);
+    InstallEvalExprFunc( T_ELM2_LIST      , EvalElm2List);
+    InstallEvalExprFunc( T_ELMX_LIST      , EvalElmXList);
+    InstallPrintExprFunc( T_ELM2_LIST     , PrintElm2List);
+    InstallPrintExprFunc( T_ELMX_LIST     , PrintElmXList);
+    
     InstallPrintStatFunc( T_ASS_LIST       , PrintAssList);
     InstallPrintStatFunc( T_ASSS_LIST      , PrintAsssList);
     InstallPrintStatFunc( T_ASS_LIST_LEV   , PrintAssList);
@@ -2972,9 +3231,10 @@ static Int InitKernel (
     InstallPrintStatFunc( T_UNB_LIST       , PrintUnbList);
     InstallPrintExprFunc( T_ELM_LIST       , PrintElmList);
     InstallPrintExprFunc( T_ELMS_LIST      , PrintElmsList);
-    InstallPrintExprFunc( T_ELM_LIST_LEV   , PrintElmList);
+    InstallPrintExprFunc( T_ELM_LIST_LEV   , PrintElmListLevel);
     InstallPrintExprFunc( T_ELMS_LIST_LEV  , PrintElmsList);
     InstallPrintExprFunc( T_ISB_LIST       , PrintIsbList);
+
 
     /* install executors, evaluators, and printers for record elements     */
     InstallExecStatFunc( T_ASS_REC_NAME   , ExecAssRecName);
@@ -3042,8 +3302,8 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-    CurrLVars = BottomLVars;
-    SWITCH_TO_OLD_LVARS( BottomLVars );
+    TLS(CurrLVars) = TLS(BottomLVars);
+    SWITCH_TO_OLD_LVARS( TLS(BottomLVars) );
 
 
     /* return success                                                      */
@@ -3060,11 +3320,11 @@ static Int InitLibrary (
 {
     Obj                 tmp;
 
-    BottomLVars = NewBag( T_LVARS, 3*sizeof(Obj) );
+    TLS(BottomLVars) = NewBag( T_LVARS, 3*sizeof(Obj) );
     tmp = NewFunctionC( "bottom", 0, "", 0 );
-    PTR_BAG(BottomLVars)[0] = tmp;
+    PTR_BAG(TLS(BottomLVars))[0] = tmp;
     tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-    BODY_FUNC( PTR_BAG(BottomLVars)[0] ) = tmp;
+    BODY_FUNC( PTR_BAG(TLS(BottomLVars))[0] ) = tmp;
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );

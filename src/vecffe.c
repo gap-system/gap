@@ -42,6 +42,10 @@
 #include        "calls.h"               /* needed for opers.h              */
 #include        "opers.h"               /* for TRY_NEXT_METHOD             */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 #include <assert.h>
 
 

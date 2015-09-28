@@ -60,11 +60,13 @@
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
 
 #include        "stats.h"               /* statements                      */
 
 #include        "saveload.h"            /* saving and loading              */
+#include        "tls.h"                 /* thread-local storage            */
+
+#include        "vars.h"                /* variables                       */
 
 #include <assert.h>
 
@@ -1167,6 +1169,7 @@ Obj NewFunctionT (
     NAME_FUNC(func) = name;
     NARG_FUNC(func) = narg;
     NAMS_FUNC(func) = nams;
+    if (nams) MakeBagPublic(nams);
     CHANGED_BAG(func);
 
     /* enter the profiling bag                                             */
@@ -1586,9 +1589,10 @@ Obj FuncSET_NAME_FUNC(
                       Obj func,
                       Obj name )
 {
-  while (!IsStringConv(name))
+  while (!IsStringConv(name)) {
     name = ErrorReturnObj("SET_NAME_FUNC( <func>, <name> ): <name> must be a string, not a %s",
                           (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
+  }
   if (TNUM_OBJ(func) == T_FUNCTION ) {
     NAME_FUNC(func) = name;
     CHANGED_BAG(func);
@@ -1783,8 +1787,11 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
 
     if (BODY_FUNC(func)) {
         Obj fn =  FILENAME_BODY(BODY_FUNC(func));
-        if (fn)
+#ifndef WARD_ENABLED
+        if (fn) {
             return fn;
+        }
+#endif
     }
     return Fail;
 }

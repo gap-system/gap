@@ -75,7 +75,9 @@
 ##  group where the preimage of an adjacent transposition <M>(i,i+1)</M> has
 ##  order 4, -1 gives a group where the preimage of an adjacent transposition
 ##  <M>(i,i+1)</M> has order 2.  If no <A>sign</A> is specified, +1 is used by
-##  default.  If no <A>p</A> is specified, 3 is used by default. </Description>
+##  default.  If no <A>p</A> is specified, 3 is used by default.
+##  (Note that the convention of which cover is labelled as +1 is
+##  inconsistent in the literature.)</Description>
 ##
 ##  </ManSection>
 ##
@@ -99,6 +101,8 @@ DeclareGlobalFunction( "BasicSpinRepresentationOfSymmetricGroup" );
 ##  -1 gives a group where the preimage of an adjacent transposition
 ##  <M>(i,i+1)</M> has order 2.  If no <A>sign</A> is specified, +1 is used by
 ##  default.  If no <A>p</A> is specified, 3 is used by default.
+##  (Note that the convention of which cover is labelled as +1 is
+##  inconsistent in the literature.)
 ##
 ##  For <M><A>n</A> \leq 3</M>, the symmetric group is its own Schur cover and
 ##  <A>sign</A> is ignored. For <M><A>p</A> = 2</M>, there is no faithful,

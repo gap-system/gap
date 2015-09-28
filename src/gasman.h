@@ -47,6 +47,7 @@
 */
 #include "config.h"
 
+#include "atomic.h"
 
 /* on 64 bit systems use only two words for bag header */
 
@@ -350,6 +351,7 @@ extern  void            RetypeBag (
             Bag                 bag,
             UInt                new_type );
 
+#define RetypeBagIfWritable(x,y)     RetypeBag(x,y)
 
 /****************************************************************************
 **
@@ -539,6 +541,10 @@ typedef struct  {
 
 extern  TNumInfoBags            InfoBags [ 256 ];
 
+#define MakeBagTypePublic(type)     do { } while(0)
+#define MakeBagTypeProtected(type)  do { } while(0)
+#define MakeBagPublic(bag)          do { } while(0)
+#define MakeBagReadOnly(bag)        do { } while(0)
 
 /****************************************************************************
 **

@@ -98,6 +98,10 @@
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 
 /****************************************************************************
 **
@@ -2702,6 +2706,11 @@ static Int InitKernel (
         InitMarkFuncBags( t1 +IMMUTABLE,           MarkNoSubBags  );
         InitMarkFuncBags( t1            +COPYING , MarkOneSubBags );
         InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkOneSubBags );
+    }
+
+    /* Make immutable blists public					   */
+    for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
+        MakeBagTypePublic( t1 + IMMUTABLE );
     }
 
     /* install the type methods                                            */

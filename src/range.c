@@ -77,6 +77,10 @@
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 
 /****************************************************************************
 **
@@ -1594,6 +1598,10 @@ static Int InitKernel (
     InitMarkFuncBags(   T_RANGE_NSORT +IMMUTABLE +COPYING , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT            +COPYING , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE +COPYING , MarkAllSubBags );
+
+    /* Make immutable bags public                                          */
+    MakeBagTypePublic( T_RANGE_NSORT + IMMUTABLE );
+    MakeBagTypePublic( T_RANGE_SSORT + IMMUTABLE );
 
     /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_RANGE_NSORT_MUTABLE",

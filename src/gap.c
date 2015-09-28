@@ -21,6 +21,7 @@
 #include        <sys/stat.h>
 #endif
 
+#include	<sys/time.h>
 #include <unistd.h> /* move this and wrap execvp later */
 
 #include        "gasman.h"              /* garbage collector               */
@@ -80,7 +81,6 @@
 
 #include        "code.h"                /* coder                           */
 
-#include        "vars.h"                /* variables                       */
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 #include        "funcs.h"               /* functions                       */
@@ -100,6 +100,12 @@
 #ifdef GAPMPI
 #include        "gapmpi.h"              /* ParGAP/MPI                      */
 #endif
+
+#include        "thread.h"
+#include        "tls.h"
+#include        "aobjects.h"
+
+#include        "vars.h"                /* variables                       */
 
 #include        "intfuncs.h"
 #include        "iostream.h"
@@ -169,7 +175,7 @@ void ViewObjHandler ( Obj obj )
   cfunc = ValAutoGVar(CustomViewGVar);
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
-  memcpy( readJmpError, ReadJmpError, sizeof(syJmp_buf) );
+  memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
   if ( ! READ_ERROR() ) {
     if ( cfunc != 0 && TNUM_OBJ(cfunc) == T_FUNCTION ) {
       CALL_1ARGS(cfunc, obj);
@@ -181,10 +187,10 @@ void ViewObjHandler ( Obj obj )
       PrintObj( obj );
     }
     Pr( "\n", 0L, 0L );
-    memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
+    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
   }
   else {
-    memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
+    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
   }
 }
 
@@ -240,12 +246,12 @@ Obj Shell ( Obj context,
   Obj oldShellContext;
   Obj oldBaseShellContext;
   Int oldRecursionDepth;
-  oldShellContext = ShellContext;
-  ShellContext = context;
-  oldBaseShellContext = BaseShellContext;
-  BaseShellContext = context;
-  ShellContextDepth = 0;
-  oldRecursionDepth = RecursionDepth;
+  oldShellContext = TLS(ShellContext);
+  TLS(ShellContext) = context;
+  oldBaseShellContext = TLS(BaseShellContext);
+  TLS(BaseShellContext) = context;
+  TLS(ShellContextDepth) = 0;
+  oldRecursionDepth = TLS(RecursionDepth);
   
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
@@ -257,10 +263,10 @@ Obj Shell ( Obj context,
       ErrorMayQuit("SHELL: can't open infile %s",(Int)inFile,0);
     }
   
-  oldPrintDepth = PrintObjDepth;
-  PrintObjDepth = 0;
-  oldindent = Output->indent;
-  Output->indent = 0;
+  oldPrintDepth = TLS(PrintObjDepth);
+  TLS(PrintObjDepth) = 0;
+  oldindent = TLS(Output)->indent;
+  TLS(Output)->indent = 0;
 
   while ( 1 ) {
 
@@ -269,11 +275,11 @@ Obj Shell ( Obj context,
       time = SyTime();
 
     /* read and evaluate one command                                   */
-    Prompt = prompt;
+    TLS(Prompt) = prompt;
     ClearError();
-    PrintObjDepth = 0;
-    Output->indent = 0;
-    RecursionDepth = 0;
+    TLS(PrintObjDepth) = 0;
+    TLS(Output)->indent = 0;
+    TLS(RecursionDepth) = 0;
       
     /* here is a hook: */
     if (preCommandHook) {
@@ -285,19 +291,19 @@ Obj Shell ( Obj context,
         {
           Call0ArgsInNewReader(preCommandHook);
           /* Recover from a potential break loop: */
-          Prompt = prompt;
+          TLS(Prompt) = prompt;
           ClearError();
         }
     }
 
     /* now  read and evaluate and view one command  */
-    status = ReadEvalCommand(ShellContext, &dualSemicolon);
-    if (UserHasQUIT)
+    status = ReadEvalCommand(TLS(ShellContext), &dualSemicolon);
+    if (TLS(UserHasQUIT))
       break;
 
 
     /* handle ordinary command                                         */
-    if ( status == STATUS_END && ReadEvalResult != 0 ) {
+    if ( status == STATUS_END && TLS(ReadEvalResult) != 0 ) {
 
       /* remember the value in 'last'    */
       if (lastDepth >= 3)
@@ -305,11 +311,11 @@ Obj Shell ( Obj context,
       if (lastDepth >= 2)
         AssGVar( Last2, VAL_GVAR( Last  ) );
       if (lastDepth >= 1)
-        AssGVar( Last,  ReadEvalResult   );
+        AssGVar( Last,  TLS(ReadEvalResult)   );
 
       /* print the result                                            */
       if ( ! dualSemicolon ) {
-        ViewObjHandler( ReadEvalResult );
+        ViewObjHandler( TLS(ReadEvalResult) );
       }
             
     }
@@ -331,14 +337,14 @@ Obj Shell ( Obj context,
     
     /* handle quit command or <end-of-file>                            */
     else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
-      RecursionDepth = 0;
-      UserHasQuit = 1;
+      TLS(RecursionDepth) = 0;
+      TLS(UserHasQuit) = 1;
       break;
     }
         
     /* handle QUIT */
     else if (status & (STATUS_QQUIT)) {
-      UserHasQUIT = 1;
+      TLS(UserHasQUIT) = 1;
       break;
     }
         
@@ -346,26 +352,26 @@ Obj Shell ( Obj context,
     if (setTime)
       AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
 
-    if (UserHasQuit)
+    if (TLS(UserHasQuit))
       {
         FlushRestOfInputLine();
-        UserHasQuit = 0;        /* quit has done its job if we are here */
+        TLS(UserHasQuit) = 0;        /* quit has done its job if we are here */
       }
 
   }
   
-  PrintObjDepth = oldPrintDepth;
-  Output->indent = oldindent;
+  TLS(PrintObjDepth) = oldPrintDepth;
+  TLS(Output)->indent = oldindent;
   CloseInput();
   CloseOutput();
-  BaseShellContext = oldBaseShellContext;
-  ShellContext = oldShellContext;
-  RecursionDepth = oldRecursionDepth;
-  if (UserHasQUIT)
+  TLS(BaseShellContext) = oldBaseShellContext;
+  TLS(ShellContext) = oldShellContext;
+  TLS(RecursionDepth) = oldRecursionDepth;
+  if (TLS(UserHasQUIT))
     {
       if (catchQUIT)
         {
-          UserHasQUIT = 0;
+          TLS(UserHasQUIT) = 0;
           MakeReadWriteGVar(QUITTINGGVar);
           AssGVar(QUITTINGGVar, True);
           MakeReadOnlyGVar(QUITTINGGVar);
@@ -389,7 +395,7 @@ Obj Shell ( Obj context,
     {
       res = NEW_PLIST(T_PLIST_HOM,1);
       SET_LEN_PLIST(res,1);
-      SET_ELM_PLIST(res,1,ReadEvalResult);
+      SET_ELM_PLIST(res,1,TLS(ReadEvalResult));
       return res;
     }
   assert(0); 
@@ -484,12 +490,10 @@ Obj FuncSHELL (Obj self, Obj args)
   else
     ErrorMayQuit("SHELL: 10th argument (catch QUIT) should be true or false",0,0);
 
-
-
   res =  Shell(context, canReturnVoid, canReturnObj, lastDepth, setTime, promptBuffer, preCommandHook, catchQUIT,
                CSTR_STRING(infile), CSTR_STRING(outfile));
 
-  UserHasQuit = 0;
+  TLS(UserHasQuit) = 0;
   return res;
 }
 #ifdef HAVE_REALPATH
@@ -763,13 +767,13 @@ int main (
        ErrorCount = 0; */
   NrImportedGVars = 0;
   NrImportedFuncs = 0;
-  UserHasQUIT = 0;
+  TLS(UserHasQUIT) = 0;
+  TLS(UserHasQuit) = 0;
   SystemErrorCode = 0;
-  UserHasQuit = 0;
     
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv );
-  if (!UserHasQUIT) {           /* maybe the user QUIT from the initial
+  if (!TLS(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
     if ( SyCompilePlease ) {
@@ -806,6 +810,31 @@ Obj FuncID_FUNC (
   return val1;
 }
 
+/****************************************************************************
+**
+*F  FuncRETURN_FIRST( <self>, <args> ) . . . . . . . . Return first argument
+*/
+Obj FuncRETURN_FIRST (
+                 Obj                 self,
+                 Obj                 args )
+{
+  if (!IS_PLIST(args) || LEN_PLIST(args) < 1)
+        ErrorMayQuit("RETURN_FIRST requires one or more arguments",0,0);
+
+  return ELM_PLIST(args, 1);
+}
+
+/****************************************************************************
+**
+*F  FuncRETURN_NOTHING( <self>, <arg> ) . . . . . . . . . . . Return nothing
+*/
+Obj FuncRETURN_NOTHING (
+                 Obj                 self,
+                 Obj                 arg )
+{
+  return 0;
+}
+
 
 /****************************************************************************
 **
@@ -826,7 +855,6 @@ Obj FuncRuntime (
 }
 
 
-
 Obj FuncRUNTIMES( Obj     self)
 {
   Obj    res;
@@ -837,9 +865,7 @@ Obj FuncRUNTIMES( Obj     self)
   SET_ELM_PLIST(res, 3, INTOBJ_INT( SyTimeChildren() ));
   SET_ELM_PLIST(res, 4, INTOBJ_INT( SyTimeChildrenSys() ));
   return res;
-   
 }
-
 
 
 /****************************************************************************
@@ -1109,10 +1135,8 @@ Obj FuncWindowCmd (
 
 /****************************************************************************
 **
-
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
-UInt ErrorLevel;
 
 Obj  ErrorLVars0;    
 Obj  ErrorLVars;
@@ -1124,29 +1148,29 @@ extern Obj BottomLVars;
 void DownEnvInner( Int depth )
 {
   /* if we really want to go up                                          */
-  if ( depth < 0 && -ErrorLLevel <= -depth ) {
+  if ( depth < 0 && -TLS(ErrorLLevel) <= -depth ) {
     depth = 0;
-    ErrorLVars = ErrorLVars0;
-    ErrorLLevel = 0;
-    ShellContextDepth = 0;
-    ShellContext = BaseShellContext;
+    TLS(ErrorLVars) = TLS(ErrorLVars0);
+    TLS(ErrorLLevel) = 0;
+    TLS(ShellContextDepth) = 0;
+    TLS(ShellContext) = TLS(BaseShellContext);
   }
   else if ( depth < 0 ) {
-    depth = -ErrorLLevel + depth;
-    ErrorLVars = ErrorLVars0;
-    ErrorLLevel = 0;
-    ShellContextDepth = 0;
-    ShellContext = BaseShellContext;
+    depth = -TLS(ErrorLLevel) + depth;
+    TLS(ErrorLVars) = TLS(ErrorLVars0);
+    TLS(ErrorLLevel) = 0;
+    TLS(ShellContextDepth) = 0;
+    TLS(ShellContext) = TLS(BaseShellContext);
   }
   
   /* now go down                                                         */
   while ( 0 < depth
-          && ErrorLVars != BottomLVars
-          && PTR_BAG(ErrorLVars)[2] != BottomLVars ) {
-    ErrorLVars = PTR_BAG(ErrorLVars)[2];
-    ErrorLLevel--;
-    ShellContext = PTR_BAG(ShellContext)[2];
-    ShellContextDepth--;
+          && TLS(ErrorLVars) != TLS(BottomLVars)
+          && PTR_BAG(TLS(ErrorLVars))[2] != TLS(BottomLVars) ) {
+    TLS(ErrorLVars) = PTR_BAG(TLS(ErrorLVars))[2];
+    TLS(ErrorLLevel)--;
+    TLS(ShellContext) = PTR_BAG(TLS(ShellContext))[2];
+    TLS(ShellContextDepth)--;
     depth--;
   }
 }
@@ -1167,7 +1191,7 @@ Obj FuncDownEnv (
     ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( ErrorLVars == 0 ) {
+  if ( TLS(ErrorLVars) == 0 ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
@@ -1193,7 +1217,7 @@ Obj FuncUpEnv (
     ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( ErrorLVars == 0 ) {
+  if ( TLS(ErrorLVars) == 0 ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
@@ -1205,9 +1229,9 @@ Obj FuncUpEnv (
 
 Obj FuncPrintExecutingStatement(Obj self, Obj context)
 {
-  Obj currLVars = CurrLVars;
+  Obj currLVars = TLS(CurrLVars);
   Expr call;
-  if (context == BottomLVars)
+  if (context == TLS(BottomLVars))
     return (Obj) 0;
   SWITCH_TO_OLD_LVARS(context);
   call = BRK_CALL_TO();
@@ -1261,22 +1285,22 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       }
     else 
       plain_args = args;
-    memcpy((void *)&readJmpError, (void *)&ReadJmpError, sizeof(syJmp_buf));
-    currLVars = CurrLVars;
-    currStat = CurrStat;
-    recursionDepth = RecursionDepth;
+    memcpy((void *)&readJmpError, (void *)&TLS(ReadJmpError), sizeof(syJmp_buf));
+    currLVars = TLS(CurrLVars);
+    currStat = TLS(CurrStat);
+    recursionDepth = TLS(RecursionDepth);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
-    if (sySetjmp(ReadJmpError)) {
+    if (sySetjmp(TLS(ReadJmpError))) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
-      SET_ELM_PLIST(res,2,ThrownObject);
+      SET_ELM_PLIST(res,2,TLS(ThrownObject));
       CHANGED_BAG(res);
-      ThrownObject = 0;
-      CurrLVars = currLVars;
-      PtrLVars = PTR_BAG(CurrLVars);
-      PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-      CurrStat = currStat;
-      RecursionDepth = recursionDepth;
+      TLS(ThrownObject) = 0;
+      TLS(CurrLVars) = currLVars;
+      TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
+      TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+      TLS(CurrStat) = currStat;
+      TLS(RecursionDepth) = recursionDepth;
     } else {
       switch (LEN_PLIST(plain_args)) {
       case 0: result = CALL_0ARGS(func);
@@ -1314,17 +1338,17 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       else
         SET_LEN_PLIST(res,1);
     }
-    memcpy((void *)&ReadJmpError, (void *)&readJmpError, sizeof(syJmp_buf));
+    memcpy((void *)&TLS(ReadJmpError), (void *)&readJmpError, sizeof(syJmp_buf));
     return res;
 }
 
 Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
 {
-  ThrownObject = payload;
-  syLongjmp(ReadJmpError, 1);
+  TLS(ThrownObject) = payload;
+  syLongjmp(TLS(ReadJmpError), 1);
   return 0;
 }
-  
+
 
 UInt UserHasQuit;
 UInt UserHasQUIT;
@@ -1332,9 +1356,9 @@ UInt SystemErrorCode;
 
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
 {
-  UserHasQuit = INT_INTOBJ(value);
-  if (UserHasQuit)
-    RecursionDepth = 0;
+  TLS(UserHasQuit) = INT_INTOBJ(value);
+  if (TLS(UserHasQuit))
+    TLS(RecursionDepth) = 0;
   return 0;
 }
 
@@ -1350,8 +1374,8 @@ static Obj ErrorMessageToGAPString(
 {
   Char message[120];
   Obj Message;
-  SPrTo(message, 120, msg, arg1, arg2);
-  message[119] = '\0';
+  SPrTo(message, sizeof(message), msg, arg1, arg2);
+  message[sizeof(message)-1] = '\0';
   C_NEW_STRING_DYN(Message, message);
   return Message;
 }
@@ -1370,7 +1394,7 @@ Obj CallErrorInner (
   Obj r = NEW_PREC(0);
   Obj l;
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
-  AssPRec(r, RNamName("context"), CurrLVars);
+  AssPRec(r, RNamName("context"), TLS(CurrLVars));
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
   AssPRec(r, RNamName("mayReturnObj"), mayReturnObj? True : False);
   AssPRec(r, RNamName("mayReturnVoid"), mayReturnVoid? True : False);
@@ -1379,7 +1403,7 @@ Obj CallErrorInner (
   l = NEW_PLIST(T_PLIST_HOM+IMMUTABLE, 1);
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
-  SET_BRK_CALL_TO(CurrStat);
+  SET_BRK_CALL_TO(TLS(CurrStat));
   return CALL_2ARGS(ErrorInner,r,l);  
 }
 
@@ -1668,7 +1692,7 @@ Obj FuncLOAD_DYN (
 
     /* Start a new executor to run the outer function of the module
        in global context */
-    ExecBegin( BottomLVars );
+    ExecBegin( TLS(BottomLVars) );
     res = res || (info->initLibrary)(info);
     ExecEnd(res ? STATUS_ERROR : STATUS_END);
     if ( res ) {
@@ -1747,7 +1771,7 @@ Obj FuncLOAD_STAT (
     UpdateCopyFopyInfo();
     /* Start a new executor to run the outer function of the module
        in global context */
-    ExecBegin( BottomLVars );
+    ExecBegin( TLS(BottomLVars) );
     res = res || (info->initLibrary)(info);
     ExecEnd(res ? STATUS_ERROR : STATUS_END);
     if ( res ) {
@@ -2115,7 +2139,7 @@ Obj FuncOBJ_HANDLE (
     }
     else {
         ErrorQuit( "<handle> must be a positive integer", 0L, 0L );
-        return 0;
+        return (Obj) 0;
     }
 }
 
@@ -2634,12 +2658,14 @@ static int SetExitValue(Obj code)
 *F  FuncGAP_EXIT_CODE() . . . . . . . . Set the code with which GAP exits.
 **
 */
+
 Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
 {
-  if(!SetExitValue(code))
+  if (!SetExitValue(code))
     ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0L, 0L);
   return (Obj) 0;
 }
+
 
 /****************************************************************************
 **
@@ -2657,7 +2683,7 @@ Obj FuncQUIT_GAP( Obj self, Obj args )
     ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0L, 0L );
     return 0;
   }
-  UserHasQUIT = 1;
+  TLS(UserHasQUIT) = 1;
   ReadEvalError();
   return (Obj)0; 
 }
@@ -2679,7 +2705,7 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
     ErrorQuit( "usage: FORCE_QUIT_GAP( [ <return value> ] )", 0L, 0L );
     return 0;
   }
-  SyExit(0);
+  SyExit(SystemErrorCode);
   return (Obj) 0; /* should never get here */
 }
 
@@ -2708,6 +2734,14 @@ Obj FuncKERNEL_INFO(Obj self) {
   C_NEW_STRING_DYN( tmp, SyKernelVersion );
   RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
   r = RNamName("KERNEL_VERSION");
+  AssPRec(res,r,tmp);
+  C_NEW_STRING_DYN( tmp, SyBuildVersion );
+  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  r = RNamName("BUILD_VERSION");
+  AssPRec(res,r,tmp);
+  C_NEW_STRING_DYN( tmp, SyBuildDateTime );
+  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  r = RNamName("BUILD_DATETIME");
   AssPRec(res,r,tmp);
   /* GAP_ROOT_PATH                                                       */
   /* do we need this. Could we rebuild it from the command line in GAP
@@ -2800,6 +2834,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ID_FUNC", 1, "object",
       FuncID_FUNC, "src/gap.c:ID_FUNC" },
+
+    { "RETURN_FIRST", -1, "object",
+      FuncRETURN_FIRST, "src/gap.c:RETURN_FIRST" },
+
+    { "RETURN_NOTHING", -1, "object",
+      FuncRETURN_NOTHING, "src/gap.c:RETURN_NOTHING" },
 
     { "ExportToKernelFinished", 0, "",
       FuncExportToKernelFinished, "src/gap.c:ExportToKernelFinished" },
@@ -2980,15 +3020,12 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-
-
-
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* create windows command buffer                                       */
     WindowCmdString = NEW_STRING( 1000 );
-    
+
     /* return success                                                      */
     return PostRestore( module );
 }
@@ -3185,7 +3222,9 @@ void RecordLoadedModule (
 **  general    `InitLibrary'  will  create    all objects    and  then  calls
 **  `PostRestore'.  This function is only used when restoring.
 */
+#ifndef BOEHM_GC
 extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
+#endif
 
 static Obj POST_RESTORE;
 
@@ -3272,11 +3311,13 @@ void InitializeGap (
         }
 #   endif
 
+#ifndef BOEHM_GC
     /* and now for a special hack                                          */
     for ( i = LAST_CONSTANT_TNUM+1; i <= LAST_REAL_TNUM; i++ ) {
       if (TabMarkFuncBags[i + COPYING] == MarkAllSubBagsDefault)
         TabMarkFuncBags[ i+COPYING ] = TabMarkFuncBags[ i ];
     }
+#endif
 
     /* if we are restoring, load the workspace and call the post restore   */
     if ( SyRestoring ) {
@@ -3376,15 +3417,7 @@ void InitializeGap (
 
 }
 
-
 /****************************************************************************
 **
-
 *E  gap.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-
-
-
-

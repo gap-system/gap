@@ -224,9 +224,14 @@ extern const Char * SyArchitecture;
 /****************************************************************************
 **
 *V  SyKernelVersion  . . . . . . . . . . . . . . . .  kernel version number
+*V  SyBuildVersion . . . . . . . . . . . . . . . . .  kernel version number
+*V  SyBuildDateTime  . . . . . . . . . . . . . . . .  kernel build time
+**
+** SyBuildVersion will replace SyKernelVersion
 */
 extern const Char * SyKernelVersion;
-
+extern const Char * SyBuildVersion;
+extern const Char * SyBuildDateTime;
 
 /****************************************************************************
 **
@@ -1119,6 +1124,11 @@ extern Char *getOptionArg(Char key, UInt which);
 extern void InitSystem (
             Int                 argc,
             Char *              argv [] );
+
+
+// FIXME: The TLS macro is for compatibility with the HPC-GAP branch, and helps
+// to keep the diffs between it and master branch small(er).
+#define TLS(x) x
 
 
 #endif // GAP_SYSTEM_H

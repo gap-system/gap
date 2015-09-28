@@ -82,7 +82,7 @@ extern  Obj *           PtrLVars;
 **  This  is  in this package,  because  it is stored   along  with the local
 **  variables in the local variables bag.
 */
-#define CURR_FUNC       (PtrLVars[0])
+#define CURR_FUNC       (TLS(PtrLVars)[0])
 
 
 /****************************************************************************
@@ -100,17 +100,17 @@ extern Obj True;
 static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
   if (STEVES_TRACING == True) {
     fprintf(stderr,"SBCT: %i %x %s %i\n",
-            (int)expr, (int)CurrLVars, file, line);
+            (int)expr, (int)TLS(CurrLVars), file, line);
   }
-  (PtrLVars[1] = (Obj)(Int)(expr));
+  (TLS(PtrLVars)[1] = (Obj)(Int)(expr));
 }
 
 #else
-#define SetBrkCallTo(expr, file, line)  (PtrLVars[1] = (Obj)(Int)(expr))
+#define SetBrkCallTo(expr, file, line)  (TLS(PtrLVars)[1] = (Obj)(Int)(expr))
 #endif
 
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_TO()                   ((Expr)(Int)(PtrLVars[1]))
+#define BRK_CALL_TO()                   ((Expr)(Int)(TLS(PtrLVars)[1]))
 #define SET_BRK_CALL_TO(expr)           SetBrkCallTo(expr, __FILE__, __LINE__)
 #endif
 #ifdef  NO_BRK_CALLS
@@ -125,8 +125,8 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 *F  SET_BRK_CALL_FROM(lvars)  . .  set frame from which this frame was called
 */
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_FROM()                 (PtrLVars[2])
-#define SET_BRK_CALL_FROM(lvars)        (PtrLVars[2] = (lvars))
+#define BRK_CALL_FROM()                 (TLS(PtrLVars)[2])
+#define SET_BRK_CALL_FROM(lvars)        (TLS(PtrLVars)[2] = (lvars))
 #endif
 #ifdef  NO_BRK_CALLS
 #define BRK_CALL_FROM()                 /* do nothing */
@@ -154,20 +154,20 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 #endif
 )
 {
-  Obj old = CurrLVars;
+  Obj old = TLS(CurrLVars);
   CHANGED_BAG( old );
-  CurrLVars = NewBag( T_LVARS,
+  TLS(CurrLVars) = NewBag( T_LVARS,
                       sizeof(Obj)*(3+narg+nloc) );
-  PtrLVars  = PTR_BAG( CurrLVars );
+  PtrLVars  = PTR_BAG( TLS(CurrLVars) );
   CURR_FUNC = func;
-  PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
   SET_BRK_CALL_FROM( old );
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     Obj n = NAME_FUNC(func);
     Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
     fprintf(stderr,"STNL: %s %i\n   func %lx narg %i nloc %i function name %s\n     old lvars %lx new lvars %lx\n",
-            file, line, (UInt) func, (int)narg, (int)nloc,s,(UInt)old, (UInt)CurrLVars);
+            file, line, (UInt) func, (int)narg, (int)nloc,s,(UInt)old, (UInt)TLS(CurrLVars));
   }
 #endif
   return old;
@@ -196,19 +196,26 @@ static inline void SwitchToOldLVars( Obj old
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     fprintf(stderr,"STOL:  %s %i old lvars %lx new lvars %lx\n",
-           file, line, (UInt)CurrLVars,(UInt)old);
+           file, line, (UInt)TLS(CurrLVars),(UInt)old);
   }
 #endif
-  CHANGED_BAG( CurrLVars );
-  CurrLVars = (old);
-  PtrLVars  = PTR_BAG( CurrLVars );
-  PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  CHANGED_BAG( TLS(CurrLVars) );
+  TLS(CurrLVars) = (old);
+  TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
+  TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
 }
 
 #ifdef TRACEFRAMES
 #define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old), __FILE__,__LINE__)
 #else
 #define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old))
+#endif
+
+// The following is here for HPC-GAP compatibility
+#ifdef TRACEFRAMES
+#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVars((old), __FILE__,__LINE__)
+#else
+#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVars((old))
 #endif
 
 
@@ -218,7 +225,7 @@ static inline void SwitchToOldLVars( Obj old
 **
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
 */
-#define ASS_LVAR(lvar,val)      (PtrLVars[(lvar)+2] = (val))
+#define ASS_LVAR(lvar,val)      (TLS(PtrLVars)[(lvar)+2] = (val))
 
 
 /****************************************************************************
@@ -227,7 +234,7 @@ static inline void SwitchToOldLVars( Obj old
 **
 **  'OBJ_LVAR' returns the value of the local variable <lvar>.
 */
-#define OBJ_LVAR(lvar)          (PtrLVars[(lvar)+2])
+#define OBJ_LVAR(lvar)          (TLS(PtrLVars)[(lvar)+2])
 
 
 /****************************************************************************

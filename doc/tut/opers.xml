@@ -352,7 +352,7 @@ If you want to see which methods  are chosen for certain operations while
 <Ref Func="TraceMethods" BookName="ref" Label="for a list of operations"/>
 with a list of these operations as arguments.
 <P/>
-<Example><![CDATA[
+<Log><![CDATA[
 gap> TraceMethods( [ Size ] );
 gap> g:= Group( (1,2,3), (1,2) );;  Size( g );
 #I  Size: for a permutation group
@@ -360,14 +360,14 @@ gap> g:= Group( (1,2,3), (1,2) );;  Size( g );
 #I  Size: system getter
 #I  Size: system getter
 6
-]]></Example>
+]]></Log>
 <P/>
 The system getter is called once to fetch  the freshly computed value for
 returning  to the user.  The  second  call is  triggered by  an immediate
 method. To  find out  by which,  we can trace   the immediate  methods by
 saying <C>TraceImmediateMethods( true )</C>.
 <P/>
-<Example><![CDATA[
+<Log><![CDATA[
 gap> TraceImmediateMethods( true );
 gap> g:= Group( (1,2,3), (1,2) );;
 #I  immediate: Size
@@ -390,7 +390,7 @@ gap> Size( g );
 6
 gap> TraceImmediateMethods( false );
 gap> UntraceMethods( [ Size ] );
-]]></Example>
+]]></Log>
 <P/>
 The last two lines switch off tracing  again.
 We now  see that the system getter was called by the immediate method for

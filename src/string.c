@@ -56,6 +56,7 @@
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
+#include        "code.h"                /* coder                           */
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
@@ -77,6 +78,7 @@
 #include        "string.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
+#include        "tls.h"                 /* thread-local storage            */
 
 #include        <assert.h>
 
@@ -692,11 +694,11 @@ void CleanStringCopy (
 **  which can be read in by GAP afterwards.
 **
 */
-static char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
 
 void PrintString (
     Obj                 list )
 {
+  char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
   UInt scanout, n;
   UInt1 c;
   UInt len = GET_LEN_STRING(list);
@@ -779,6 +781,7 @@ void PrintString (
 void PrintString1 (
     Obj                 list )
 {
+  char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
   UInt len = GET_LEN_STRING(list);
   UInt scanout, off = 0;
   UInt1  *p;
@@ -1505,6 +1508,7 @@ Int IsStringConv (
     return res;
 }
 
+
 /****************************************************************************
 **
 *F  MakeImmutableString(  <str> ) make a string immutable in place
@@ -1514,6 +1518,68 @@ Int IsStringConv (
 void MakeImmutableString( Obj str )
 {
     RetypeBag(str, IMMUTABLE_TNUM(TNUM_OBJ(str)));
+}
+
+
+Obj MakeString(Char *cstr)
+{
+  Obj result;
+  C_NEW_STRING(result, strlen(cstr), cstr);
+  return result;
+}
+
+Obj MakeString2(Char *cstr1, Char *cstr2)
+{
+  Obj result;
+  size_t len1 = strlen(cstr1), len2 = strlen(cstr2);
+  result = NEW_STRING(len1 + len2);
+  memcpy(CSTR_STRING(result), cstr1, len1);
+  memcpy(CSTR_STRING(result)+len1, cstr2, len2);
+  return result;
+}
+
+Obj MakeString3(Char *cstr1, Char *cstr2, Char *cstr3)
+{
+  Obj result;
+  size_t len1 = strlen(cstr1), len2 = strlen(cstr2), len3 = strlen(cstr3);
+  result = NEW_STRING(len1 + len2 + len3);
+  memcpy(CSTR_STRING(result), cstr1, len1);
+  memcpy(CSTR_STRING(result)+len1, cstr2, len2);
+  memcpy(CSTR_STRING(result)+len1+len2, cstr3, len3);
+  return result;
+}
+
+Obj MakeImmString(Char *cstr)
+{
+  Obj result = MakeString(cstr);
+  MakeImmutableString(result);
+  return result;
+}
+
+Obj MakeImmString2(Char *cstr1, Char *cstr2)
+{
+  Obj result = MakeString2(cstr1, cstr2);
+  MakeImmutableString(result);
+  return result;
+}
+
+Obj MakeImmString3(Char *cstr1, Char *cstr2, Char *cstr3)
+{
+  Obj result = MakeString3(cstr1, cstr2, cstr3);
+  MakeImmutableString(result);
+  return result;
+}
+
+Obj ConvImmString(Obj str)
+{
+  Obj result;
+  if (!str || !IsStringConv(str))
+    return (Obj) 0;
+  if (!IS_MUTABLE_OBJ(str))
+    return str;
+  C_NEW_STRING(result, GET_LEN_STRING(str), CSTR_STRING(str))
+  MakeImmutableString(result);
+  return result;
 }
 
 
@@ -2433,6 +2499,11 @@ static Int InitKernel (
         InitMarkFuncBags( t1 +COPYING            , MarkNoSubBags );
         InitMarkFuncBags( t1 +COPYING +IMMUTABLE , MarkNoSubBags );
     }
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
+      MakeBagTypePublic( t1 + IMMUTABLE );
+    }
+
+    MakeBagTypePublic(T_CHAR);
 
     /* make all the character constants once and for all                   */
     for ( i = 0; i < 256; i++ ) {
