@@ -789,6 +789,24 @@ function(x)
   Print("(", x![1],",", x![2], ",", x![3], ")");
 end);
 
+InstallMethod(ViewString, "for a Rees matrix semigroup element",
+[IsReesMatrixSemigroupElement],
+function(x)
+  return PRINT_STRINGIFY("\>(", ViewString(x![1]), ",", ViewString(x![2]), ",",
+                         ViewString(x![3]), ")\<");
+end);
+
+#
+
+InstallMethod(ViewString, "for a Rees 0-matrix semigroup element",
+[IsReesZeroMatrixSemigroupElement],
+function(x)
+  if x![1] = 0 then
+    return "0";
+  fi;
+  return PRINT_STRINGIFY("\>(", ViewString(x![1]), ",", ViewString(x![2]), ",",
+                         ViewString(x![3]), ")\<");
+end);
 
 #
 
