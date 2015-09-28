@@ -29,12 +29,12 @@ as well as formal aspects of the documentation.
 <Section Label="Sect-TstFiles">
 <Heading><C>.tst</C>-files</Heading>
 
-The directory <F>tst</F> in the &GAP; root directory contains files whose
-names have the suffix <C>.tst</C>.
+The directory <F>tst</F> in the &GAP; root directory contains directories,
+each of which contains files whose names have the suffix <C>.tst</C>.
 The format of each of these files must be suitable for being read with
 the function <C>ReadTest</C>,
 see section <Ref BookName="Ref" Sect="Test Files"/>.
-If functionality from &GAP; packages is needed in a <C>tst/*.tst</C> file
+If functionality from &GAP; packages is needed in a <C>tst</C> file
 then it is recommended to execute these tests only if the packages are
 really available, and to load the packages explicitly,
 for example as follows.
@@ -51,29 +51,21 @@ gap> if LoadPackage( "ctbllib" ) &lt;&gt; fail then
 Moreover, it is recommended to group tests that require packages to be 
 performed after all other tests are completed.
 
-Some of the test files in the <F>tst</F> directory are listed in the file
-<F>tst/testinstall.g</F>,
-running this subset of tests is recommended after installing &GAP;,
+The directory <F>tst/testinstall</F> contains a subset of tests which are 
+recommended after installing &GAP;,
 see <URL>http://www.gap-system.org/Download/INSTALL</URL>.
 The idea is that the examples in these <C>.tst</C> files are typical
 &GAP; computations,
 and that running these tests requires only a few minutes.
-Each of the <C>.tst</C> files in this subset must contain the string
-<C>"To be listed in testinstall.g"</C> in its header,
-in order to make it possible to create <F>tst/testinstall.g</F> automatically
-from an existing version of this file and the contents of the <F>tst</F>
-directory, see section <Ref Sect="Sect-TestSuite"/>.
+The &GAP; script <F>tst/testinstall.g</F> will run the tests in 
+<F>tst/testinstall</F>.
 <P/>
 
-Additionally, all test files in the <F>tst</F> directory are listed in the file
-<F>tst/testall.g</F> which can be used to run all tests instead of only a subset
-of those (see section <Ref Sect="Sect-TestSuite"/>).
+Further tests are contained in <F>tst/teststandard</F>. The script 
+<F>tst/teststandard.g</F> will run all tests in both <F>tst/teststandard</F>
+and <F>tst/testinstall</F>.
 <P/>
 
-All <C>.tst</C> files in the <F>tst</F> directory (also those that are not
-listed in <F>tst/testall.g</F>) and the files  <F>tst/testinstall.g</F>, 
-<F>tst/testall.g</F> and <F>tst/testutil.g</F> belong to the distribution 
-of &GAP; and are kept under CVS control.
 </Section>
 
 
@@ -145,7 +137,7 @@ repository, it consists of the files <F>doc/test/README.old</F>,
 Besides tests of the functionality of packages, we are also interested
 in the effects of packages on the functionality of the main system.
 The output that is shown in examples in the &GAP; manuals as well as the
-output that is prescribed in the files <C>tst/*.tst</C> should be the same
+output that is prescribed in the test files in <C>tst</C> should be the same
 when &GAP; is run without packages or with all packages available.
 Therefore, the tests in the standard test suite
 (see <Ref Sect="Sect-TestSuite"/>) are run several times,
@@ -228,14 +220,11 @@ in the &GAP; root directory.
 It consists of
 <List>
   <Item>
-    the tests contained in the subset of all files <C>tst/*.tst</C>
-    mentioned in <F>tst/testinstall.g</F>),
+    The tests contained in <F>tst/testinstall</F>,
     see <Ref Sect="Sect-TstFiles"/>,
   </Item>
   <Item>
-    the tests contained in all files <C>tst/*.tst</C>
-    (that is, not only the subset of those files that are mentioned in
-    <F>tst/testinstall.g</F>),
+    All tests in all subdirectories of <C>tst</C>,
     see <Ref Sect="Sect-TstFiles"/>,
   </Item>
   <Item>
@@ -262,19 +251,8 @@ packages and/or all available autoloaded packages.
 <P/>
 
 Before running these tests,
-you should make sure that the system is up to date,
-in particular,
+you should make sure that the system is up to date, in particular,
 <List>
-  <Item>
-    call <C>cvs update -d</C> for the main system,
-  </Item>
-  <Item>
-    unpack the latest package archive into the <F>pkg</F> directory,
-  </Item>
-  <Item>
-    compile a new &GAP; executable (call <C>make</C> in the root directory,
-    if necessary, calling <C>make clean ; ./configure</C> before),
-  </Item>
   <Item>
     compile package executables where applicable,
   </Item>
@@ -301,8 +279,8 @@ Then proceed as follows in the &GAP; root directory.
   </Item>
   <Item>
     Call <C>make teststandard</C>.
-    This runs the tests in the files <C>tst/*.tst</C>,
-    and may require several hours.
+    This runs the tests in <C>tst</C>,
+    and may require a couple of hours.
   </Item>
   <Item>
     Call <C>make testpackages</C>.
@@ -327,8 +305,7 @@ and the assertion level is set to 2 before the tests.
 <P/>
 
 The output is written to files in the directory <F>dev/log</F>,
-which does not belong to the distribution of &GAP; and
-is also not kept under CVS control.
+which does not belong to the distribution of &GAP;.
 The file names start with the name of the target (<C>testinstall</C>,
 <C>teststandard</C>, etc.),
 followed by <C>1</C> for the case that no packages are loaded before the tests,
@@ -416,30 +393,9 @@ The following additional issues are related to testing
 when a new version of &GAP; is to be released.
 <List>
   <Item>
-    Using a processor of the type mentioned in
-    <F>tst/testinstall.g</F>, <F>tst/testall.g</F>,
+    Use renormaliseStones option of TestDirectory to 
     run the standard tests and renormalize the scaling factors in the
-    <C>STOP_TEST</C> statements of the <C>tst/*.tst</C> files,
-    and replace the scaling factors in files 
-    <F>tst/testinstall.g</F> and <C>tst/testall.g</C>.
-    This can be done by calling <C>make teststandardrenormalize</C> in the
-    &GAP; root directory;
-    in this case the tests are run without any package being loaded,
-    and a new version of the file <F>tst/testinstall.g</F> is created in the end.
-
-    (If such a processor is no longer typical then use a more typical
-    processor for the renormalization, and adjust the two statements
-    in <F>tst/testinstall.g</F> and <C>tst/testall.g</C>.
-    Note that the source also for the relevant paragraph in
-    <F>doc/ref/install.xml</F> can be found in <F>tst/testinstall.g</F>.)
-  </Item>
-  <Item>
-    If new test files have appeared in <C>tst/*.tst</C> then
-    decide about adding them to the list in <C>tst/testall.g</C>;
-    this is expressed by the string <C>"To be listed in testall.g"</C>
-    in the headers (see Section <Ref Sect="Sect-TstFiles"/>).
-    Then prepare an up-to-date version of the file <F>tst/testinstall.g</F>,
-    by calling <C>make testinstall.g</C> in the &GAP; root directory.
+    <C>STOP_TEST</C> statements of the files in the <C>tst</C> directory.
   </Item>
   <Item>
     After these updates, repeat all tests.
@@ -457,7 +413,7 @@ when a new version of &GAP; is to be released.
     When new documentation is added,
     add meaningful examples to this documentation,
     from which users get an idea what typical uses are.
-    In a corresponding <C>tst/*.tst</C> file,
+    In a corresponding file in the <C>tst</C> directory,
     add examples which cover also pathological input such as empty lists.
     Add also interesting computations to the tests which are perhaps to be
     excluded from the regular testing;
@@ -484,4 +440,3 @@ when a new version of &GAP; is to be released.
 </Section>
 
 </Chapter>
-
