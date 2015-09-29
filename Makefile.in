@@ -455,7 +455,7 @@ winbinp:
           terminfo )
 
 bootstrap-pkg-minimal:
-        @if test -e pkg; then \
+	@if test -e pkg; then \
         echo "The pkg directory already exists. Please move or remove it to proceed."; \
     else \
         mkdir pkg ; \
@@ -466,7 +466,7 @@ bootstrap-pkg-minimal:
     fi;
 
 bootstrap-pkg-full:
-        @if test -e pkg; then \
+	@if test -e pkg; then \
         echo "The pkg directory already exists. Please move or remove it to proceed" ; \
     else \
         mkdir pkg ; \
