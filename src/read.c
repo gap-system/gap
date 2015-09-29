@@ -1226,9 +1226,8 @@ void ReadFuncExpr (
                 SyntaxError("name used for argument and local");
             }
         }
-        name = NEW_STRING( strlen(TLS(Value)) );
-        SyStrncat( CSTR_STRING(name), TLS(Value), strlen(TLS(Value)) );
-	MakeImmutableString(name);
+        C_NEW_STRING_DYN( name, TLS(Value) );
+	      MakeImmutableString(name);
         nloc += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1246,9 +1245,8 @@ void ReadFuncExpr (
                     SyntaxError("name used for two locals");
                 }
             }
-            name = NEW_STRING( strlen(TLS(Value)) );
-            SyStrncat( CSTR_STRING(name), TLS(Value), strlen(TLS(Value)) );
-	    MakeImmutableString(name);
+            C_NEW_STRING_DYN( name, TLS(Value) );
+	          MakeImmutableString(name);
             nloc += 1;
             ASS_LIST( nams, narg+nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -2771,6 +2769,69 @@ void            ReadEvalError ( void )
     syLongjmp( TLS(ReadJmpError), 1 );
 }
 
+/****************************************************************************
+**
+**   Reader state -- the next group of functions are used to "push" the current
+**  interpreter state allowing GAP code to be interpreted in the middle of other
+**  code. This is used, for instance, in the command-line editor.
+*/
+
+
+struct SavedReaderState {
+  Obj                 stackNams;
+  UInt                countNams;
+  UInt                readTop;
+  UInt                readTilde;
+  UInt                currLHSGVar;
+  UInt                userHasQuit;
+  syJmp_buf           readJmpError;
+  UInt                intrCoding;
+  UInt                intrIgnoring;
+  UInt                intrReturning;
+  UInt                nrError;
+};
+
+static void SaveReaderState( struct SavedReaderState *s) {
+  s->stackNams   = TLS(StackNams);
+  s->countNams   = TLS(CountNams);
+  s->readTop     = TLS(ReadTop);
+  s->readTilde   = TLS(ReadTilde);
+  s->currLHSGVar = TLS(CurrLHSGVar);
+  s->userHasQuit = TLS(UserHasQuit);
+  s->intrCoding = TLS(IntrCoding);
+  s->intrIgnoring = TLS(IntrIgnoring);
+  s->intrReturning = TLS(IntrReturning);
+  s->nrError = TLS(NrError);
+  memcpy( s->readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
+}
+
+static void ClearReaderState( void ) {
+  TLS(StackNams)   = NEW_PLIST( T_PLIST, 16 );
+  TLS(CountNams)   = 0;
+  TLS(ReadTop)     = 0;
+  TLS(ReadTilde)   = 0;
+  TLS(CurrLHSGVar) = 0;
+  TLS(UserHasQuit) = 0;
+  TLS(IntrCoding) = 0;
+  TLS(IntrIgnoring) = 0;
+  TLS(IntrReturning) = 0;
+  TLS(NrError) = 0;
+}
+
+static void RestoreReaderState( const struct SavedReaderState *s) {
+  memcpy( TLS(ReadJmpError), s->readJmpError, sizeof(syJmp_buf) );
+  TLS(UserHasQuit) = s->userHasQuit;
+  TLS(StackNams)   = s->stackNams;
+  TLS(CountNams)   = s->countNams;
+  TLS(ReadTop)     = s->readTop;
+  TLS(ReadTilde)   = s->readTilde;
+  TLS(CurrLHSGVar) = s->currLHSGVar;
+  TLS(IntrCoding) = s->intrCoding;
+  TLS(IntrIgnoring) = s->intrIgnoring;
+  TLS(IntrReturning) = s->intrReturning;
+  TLS(NrError) = s->nrError;
+}
+
 
 /****************************************************************************
 **
@@ -2783,42 +2844,14 @@ Obj Call0ArgsInNewReader(Obj f)
 {
   /* for the new interpreter context: */
 /*  ExecStatus          type; */
-  Obj                 stackNams;
-  UInt                countNams;
-  UInt                readTop;
-  UInt                readTilde;
-  UInt                currLHSGVar;
-  UInt                userHasQuit;
-  syJmp_buf           readJmpError;
-  UInt                intrCoding;
-  UInt                intrIgnoring;
-  UInt                intrReturning;
-  UInt                nrError;
+  struct SavedReaderState s;
   Obj result;
-
+  
   /* remember the old reader context                                     */
-  stackNams   = TLS(StackNams);
-  countNams   = TLS(CountNams);
-  readTop     = TLS(ReadTop);
-  readTilde   = TLS(ReadTilde);
-  currLHSGVar = TLS(CurrLHSGVar);
-  userHasQuit = TLS(UserHasQuit);
-  intrCoding = TLS(IntrCoding);
-  intrIgnoring = TLS(IntrIgnoring);
-  intrReturning = TLS(IntrReturning);
-  nrError = TLS(NrError);
-  memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
-
+  SaveReaderState(&s);
+  
   /* intialize everything and begin an interpreter                       */
-  TLS(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-  TLS(CountNams)   = 0;
-  TLS(ReadTop)     = 0;
-  TLS(ReadTilde)   = 0;
-  TLS(CurrLHSGVar) = 0;
-  TLS(UserHasQuit) = 0;
-  TLS(IntrCoding) = 0;
-  TLS(IntrIgnoring) = 0;
-  TLS(NrError) = 0;
+  ClearReaderState();
   IntrBegin( TLS(BottomLVars) );
 
   if (!READ_ERROR()) {
@@ -2833,17 +2866,7 @@ Obj Call0ArgsInNewReader(Obj f)
   }
 
   /* switch back to the old reader context                               */
-  memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
-  TLS(UserHasQuit) = userHasQuit;
-  TLS(StackNams)   = stackNams;
-  TLS(CountNams)   = countNams;
-  TLS(ReadTop)     = readTop;
-  TLS(ReadTilde)   = readTilde;
-  TLS(CurrLHSGVar) = currLHSGVar;
-  TLS(IntrCoding) = intrCoding;
-  TLS(IntrIgnoring) = intrIgnoring;
-  TLS(IntrReturning) = intrReturning;
-  TLS(NrError) = nrError;
+  RestoreReaderState(&s);
   return result;
 }
 
@@ -2858,43 +2881,15 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
 {
   /* for the new interpreter context: */
 /*ExecStatus          type; */
-  Obj                 stackNams;
-  UInt                countNams;
-  UInt                readTop;
-  UInt                readTilde;
-  UInt                currLHSGVar;
-  UInt                userHasQuit;
-  UInt                intrCoding;
-  UInt                intrIgnoring;
-  UInt                intrReturning;
-  syJmp_buf             readJmpError;
+  struct SavedReaderState s;
   Obj result;
-  UInt                nrError;
 
   /* remember the old reader context                                     */
-  stackNams   = TLS(StackNams);
-  countNams   = TLS(CountNams);
-  readTop     = TLS(ReadTop);
-  readTilde   = TLS(ReadTilde);
-  currLHSGVar = TLS(CurrLHSGVar);
-  userHasQuit = TLS(UserHasQuit);
-  intrCoding = TLS(IntrCoding);
-  intrIgnoring = TLS(IntrIgnoring);
-  intrReturning = TLS(IntrReturning);
-  nrError = TLS(NrError);
-  memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
+
+  SaveReaderState(&s);
 
   /* intialize everything and begin an interpreter                       */
-  TLS(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-  TLS(CountNams)   = 0;
-  TLS(ReadTop)     = 0;
-  TLS(ReadTilde)   = 0;
-  TLS(CurrLHSGVar) = 0;
-  TLS(UserHasQuit) = 0;
-  TLS(IntrCoding) = 0;
-  TLS(IntrIgnoring) = 0;
-  TLS(IntrReturning) = 0;
-  TLS(NrError) = 0;
+  ClearReaderState();
   IntrBegin( TLS(BottomLVars) );
 
   if (!READ_ERROR()) {
@@ -2909,17 +2904,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   }
 
   /* switch back to the old reader context                               */
-  memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
-  TLS(IntrCoding) = intrCoding;
-  TLS(IntrIgnoring) = intrIgnoring;
-  TLS(IntrReturning) = intrReturning;
-  TLS(StackNams)   = stackNams;
-  TLS(CountNams)   = countNams;
-  TLS(ReadTop)     = readTop;
-  TLS(ReadTilde)   = readTilde;
-  TLS(CurrLHSGVar) = currLHSGVar;
-  TLS(UserHasQuit) = userHasQuit;
-  TLS(NrError) = nrError;
+  RestoreReaderState(&s);
   return result;
 }
 
@@ -2977,6 +2962,3 @@ StructInitInfo * InitInfoRead ( void )
 
 *E  read.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

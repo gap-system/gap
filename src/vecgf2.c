@@ -1654,12 +1654,11 @@ void ConvGF2Vec (
     ResizeBag( list, SIZE_PLEN_GF2VEC(len) );
     SET_LEN_GF2VEC( list, len );
     if ( HAS_FILT_LIST( list, FN_IS_MUTABLE ) ) {
-        RetypeBag( list, T_DATOBJ );
         SetTypeDatObj( list, TYPE_LIST_GF2VEC);
     } else {
-        RetypeBag( list, T_DATOBJ );
         SetTypeDatObj( list, TYPE_LIST_GF2VEC_IMM);
     }
+    RetypeBag( list, T_DATOBJ );
 }
 
 

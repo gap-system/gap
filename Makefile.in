@@ -129,6 +129,7 @@ extern: config
 		CONFIGNAME='$(CONFIGNAME)' )
 
 compile: extern
+	cnf/mkversionheader.sh bin/$(GAPARCH)/gap_version.h
 	( cd bin/$(GAPARCH); \
 		$(MAKE) \
 		ABI='$(ABI)' \

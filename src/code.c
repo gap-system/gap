@@ -3396,6 +3396,8 @@ static Int InitLibrary (
   UInt gv;
   Obj cache;
     /* allocate the statements and expressions stacks                      */
+    TLS(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
+    TLS(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
     FilenameCache = NewAtomicList(0);
 
     GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
@@ -3478,6 +3480,3 @@ StructInitInfo * InitInfoCode ( void )
 
 *E  code.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

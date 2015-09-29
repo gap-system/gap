@@ -644,19 +644,11 @@ BindGlobal( "ShowKernelInformation", function()
       Print( suffix );
     end;
 
-    sysdate:= GAPInfo.Date;
-    if sysdate = "today" and IsBoundGlobal( "IO_stat" ) then
-      # In the case of the development version, show the compilation date.
-      fun:= ValueGlobal( "IO_stat" );
-      fun:= fun( GAPInfo.SystemCommandLine[1] );
-      if fun <> fail then
-        sysdate:= NormalizedWhitespace(StringDate( QuoInt( fun.mtime, 86400 )));
-      fi;
-    fi;
+    sysdate:= GAPInfo.BuildDateTime;
 
     if IsBound(GAPInfo.shortbanner) then
-        Print("This is GAP ", GAPInfo.Version, " of ",
-              sysdate, " (", GAPInfo.Architecture);
+        Print("This is GAP ", GAPInfo.Version, " of ", sysdate,
+        " (", GAPInfo.Architecture);
         if "gmpints" in LoadedModules() then
             Print("+gmp");
         fi;
@@ -675,7 +667,7 @@ BindGlobal( "ShowKernelInformation", function()
         btop := "*********"; vert := "*"; bbot := btop;
       fi;
       Print( " ",btop,"   HPC-GAP, Version ", GAPInfo.Version, " of ",
-             sysdate, " (free software, GPL)\n",
+             sysdate, "\n",
              " ",vert,"  GAP  ",vert,"   http://www.gap-system.org\n",
              " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n",
 	     "             Maximum concurrent threads: ",

@@ -795,7 +795,6 @@ static inline void CheckRecursionBefore( void )
 
 
 Obj STEVES_TRACING;
-
 #define CHECK_RECURSION_BEFORE \
             CheckRecursionBefore(); \
             PROF_IN_FUNCTION(func);
@@ -1964,7 +1963,7 @@ static Int InitLibrary (
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    RecursionTrapInterval = 1000;
+    RecursionTrapInterval = 5000;
     InitCopyGVar("STEVES_TRACING", &STEVES_TRACING);
   
     /* make the global variable known to Gasman                            */
@@ -2078,6 +2077,3 @@ StructInitInfo * InitInfoFuncs ( void )
 
 *E  funcs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

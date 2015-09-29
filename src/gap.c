@@ -114,6 +114,9 @@
 #include        "threadapi.h"
 #include        "aobjects.h"
 #include        "objset.h"
+#include        "thread.h"
+#include        "tls.h"
+#include        "aobjects.h"
 
 #include        "vars.h"                /* variables                       */
 
@@ -838,6 +841,31 @@ Obj FuncID_FUNC (
   return val1;
 }
 
+/****************************************************************************
+**
+*F  FuncRETURN_FIRST( <self>, <args> ) . . . . . . . . Return first argument
+*/
+Obj FuncRETURN_FIRST (
+                 Obj                 self,
+                 Obj                 args )
+{
+  if (!IS_PLIST(args) || LEN_PLIST(args) < 1)
+        ErrorMayQuit("RETURN_FIRST requires one or more arguments",0,0);
+
+  return ELM_PLIST(args, 1);
+}
+
+/****************************************************************************
+**
+*F  FuncRETURN_NOTHING( <self>, <arg> ) . . . . . . . . . . . Return nothing
+*/
+Obj FuncRETURN_NOTHING (
+                 Obj                 self,
+                 Obj                 arg )
+{
+  return 0;
+}
+
 
 /****************************************************************************
 **
@@ -889,7 +917,6 @@ Obj FuncSystemClock(Obj self)
   gettimeofday(&t, NULL);
   return NEW_MACFLOAT( (double) t.tv_sec + ((double) t.tv_usec) / 1000000.0);
 }
-
 
 
 /****************************************************************************
@@ -2733,13 +2760,7 @@ Obj FuncMicroSleep( Obj self, Obj msecs )
 
 Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
 {
-  if (code == False || code == Fail)
-    SystemErrorCode = 1;
-  else if (code == True)
-    SystemErrorCode = 0;
-  else if (IS_INTOBJ(code))
-    SystemErrorCode = INT_INTOBJ(code);
-  else
+  if (!SetExitValue(code))
     ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0L, 0L);
   return (Obj) 0;
 }
@@ -2783,7 +2804,7 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
     ErrorQuit( "usage: FORCE_QUIT_GAP( [ <return value> ] )", 0L, 0L );
     return 0;
   }
-  SyExit(0);
+  SyExit(SystemErrorCode);
   return (Obj) 0; /* should never get here */
 }
 
@@ -2813,6 +2834,14 @@ Obj FuncKERNEL_INFO(Obj self) {
   C_NEW_STRING_DYN( tmp, SyKernelVersion );
   RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
   r = RNamName("KERNEL_VERSION");
+  AssPRec(res,r,tmp);
+  C_NEW_STRING_DYN( tmp, SyBuildVersion );
+  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  r = RNamName("BUILD_VERSION");
+  AssPRec(res,r,tmp);
+  C_NEW_STRING_DYN( tmp, SyBuildDateTime );
+  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  r = RNamName("BUILD_DATETIME");
   AssPRec(res,r,tmp);
   /* GAP_ROOT_PATH                                                       */
   /* do we need this. Could we rebuild it from the command line in GAP
@@ -2996,6 +3025,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ID_FUNC", 1, "object",
       FuncID_FUNC, "src/gap.c:ID_FUNC" },
+
+    { "RETURN_FIRST", -1, "object",
+      FuncRETURN_FIRST, "src/gap.c:RETURN_FIRST" },
+
+    { "RETURN_NOTHING", -1, "object",
+      FuncRETURN_NOTHING, "src/gap.c:RETURN_NOTHING" },
 
     { "ExportToKernelFinished", 0, "",
       FuncExportToKernelFinished, "src/gap.c:ExportToKernelFinished" },

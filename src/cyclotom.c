@@ -149,17 +149,12 @@
 void GrowResultCyc(UInt size) {
     Obj *res;
     UInt i;
-    if (size < 1024)
-      size = 1024;
-    if (TLS(ResultCyc) == 0) {
-        TLS(ResultCyc) = NEW_PLIST( T_PLIST, size );
-    } else if (LEN_PLIST(TLS(ResultCyc))  < size) {
+    if ( LEN_PLIST(TLS(ResultCyc)) < size ) {
         GROW_PLIST( TLS(ResultCyc), size );
-    } else
-        return;
-    SET_LEN_PLIST( TLS(ResultCyc), size );
-    res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
-    for ( i = 0; i < size; i++ ) { res[i] = INTOBJ_INT(0); }
+        SET_LEN_PLIST( TLS(ResultCyc), size );
+        res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
+        for ( i = 0; i < size; i++ ) { res[i] = INTOBJ_INT(0); }
+    }
 }
 
 /****************************************************************************
@@ -1490,7 +1485,6 @@ Obj FuncE (
     Obj                 self,
     Obj                 n )
 {
-    UInt                i;              /* loop variable                   */
     Obj *               res;            /* pointer into result bag         */
 
     /* do full operation                                                   */
@@ -2151,6 +2145,8 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+    TLS(LastECyc) = (Obj)0;
+    TLS(LastNCyc) = 0;
   
     /* install the marking function                                        */
     InfoBags[ T_CYC ].name = "cyclotomic";
@@ -2240,6 +2236,11 @@ static Int InitLibrary (
     Obj *               res;            /* pointer into the result         */
     UInt                i;              /* loop variable                   */
 
+    /* create the result buffer                                            */
+    TLS(ResultCyc) = NEW_PLIST( T_PLIST, 1024 );
+    SET_LEN_PLIST( TLS(ResultCyc), 1024 );
+    res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
+    for ( i = 0; i < 1024; i++ ) { res[i] = INTOBJ_INT(0); }
 
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );

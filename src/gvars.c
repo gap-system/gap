@@ -1529,6 +1529,10 @@ static Int InitLibrary (
     MakeBagPublic(TableGVars);
     SET_LEN_PLIST( TableGVars, SizeGVars );
 
+    /* Create the current namespace: */
+    TLS(CurrNamespace) = NEW_STRING(0);
+    SET_LEN_STRING(TLS(CurrNamespace),0);
+    
     /* fix C vars                                                          */
     PostRestore( module );
 

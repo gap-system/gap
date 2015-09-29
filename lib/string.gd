@@ -613,7 +613,6 @@ DeclareGlobalFunction( "JoinStringsWithSeparator" );
 ##  <#GAPDoc Label="Chomp">
 ##  <ManSection>
 ##  <Func Name="Chomp" Arg='str'/>
-##
 ##  <Description>
 ##  Like the similarly named Perl function, <Ref Func="Chomp"/> removes a
 ##  trailing newline character (or carriage-return line-feed couplet) from a
@@ -662,16 +661,19 @@ DeclareGlobalFunction( "Chomp" );
 ##
 #F  StartsWith( <string>, <prefix> ) . . . does <string> start with <prefix>?
 #F  EndsWith( <string>, <suffix> ) . . . . . does <string> end with <suffix>?
-#F  FileString( <name>, <string>[, <append> ] ) . . write <string> to <name> 
 ##
+##  <#GAPDoc Label="StartsWith">
 ##  <ManSection>
 ##  <Func Name="StartsWith" Arg='string, prefix'/>
 ##  <Func Name="EndsWith" Arg='string, suffix'/>
 ##
 ##  <Description>
+##  <Index>Prefix</Index>
+##  <Index>Suffix</Index>
 ##  Determines whether a string starts or ends with another string.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "StartsWith" );
 DeclareGlobalFunction( "EndsWith" );
@@ -765,4 +767,3 @@ BindGlobal("BHINT", `"\>\<");
 #############################################################################
 ##
 #E
-

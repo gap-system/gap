@@ -1,3 +1,4 @@
+#ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "src/compiled.h"
 
@@ -3951,38 +3952,38 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "CallFuncList", &GF_CallFuncList );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "lib/oper1.g:DefaultName(-79117946)" );
- InitGlobalBag( &FileName, "lib/oper1.g:FileName(-79117946)" );
- InitHandlerFunc( HdlrFunc1, "lib/oper1.g:HdlrFunc1(-79117946)" );
- InitGlobalBag( &(NameFunc[1]), "lib/oper1.g:NameFunc[1](-79117946)" );
- InitHandlerFunc( HdlrFunc2, "lib/oper1.g:HdlrFunc2(-79117946)" );
- InitGlobalBag( &(NameFunc[2]), "lib/oper1.g:NameFunc[2](-79117946)" );
- InitHandlerFunc( HdlrFunc3, "lib/oper1.g:HdlrFunc3(-79117946)" );
- InitGlobalBag( &(NameFunc[3]), "lib/oper1.g:NameFunc[3](-79117946)" );
- InitHandlerFunc( HdlrFunc4, "lib/oper1.g:HdlrFunc4(-79117946)" );
- InitGlobalBag( &(NameFunc[4]), "lib/oper1.g:NameFunc[4](-79117946)" );
- InitHandlerFunc( HdlrFunc5, "lib/oper1.g:HdlrFunc5(-79117946)" );
- InitGlobalBag( &(NameFunc[5]), "lib/oper1.g:NameFunc[5](-79117946)" );
- InitHandlerFunc( HdlrFunc6, "lib/oper1.g:HdlrFunc6(-79117946)" );
- InitGlobalBag( &(NameFunc[6]), "lib/oper1.g:NameFunc[6](-79117946)" );
- InitHandlerFunc( HdlrFunc7, "lib/oper1.g:HdlrFunc7(-79117946)" );
- InitGlobalBag( &(NameFunc[7]), "lib/oper1.g:NameFunc[7](-79117946)" );
- InitHandlerFunc( HdlrFunc8, "lib/oper1.g:HdlrFunc8(-79117946)" );
- InitGlobalBag( &(NameFunc[8]), "lib/oper1.g:NameFunc[8](-79117946)" );
- InitHandlerFunc( HdlrFunc9, "lib/oper1.g:HdlrFunc9(-79117946)" );
- InitGlobalBag( &(NameFunc[9]), "lib/oper1.g:NameFunc[9](-79117946)" );
- InitHandlerFunc( HdlrFunc10, "lib/oper1.g:HdlrFunc10(-79117946)" );
- InitGlobalBag( &(NameFunc[10]), "lib/oper1.g:NameFunc[10](-79117946)" );
- InitHandlerFunc( HdlrFunc11, "lib/oper1.g:HdlrFunc11(-79117946)" );
- InitGlobalBag( &(NameFunc[11]), "lib/oper1.g:NameFunc[11](-79117946)" );
- InitHandlerFunc( HdlrFunc12, "lib/oper1.g:HdlrFunc12(-79117946)" );
- InitGlobalBag( &(NameFunc[12]), "lib/oper1.g:NameFunc[12](-79117946)" );
- InitHandlerFunc( HdlrFunc13, "lib/oper1.g:HdlrFunc13(-79117946)" );
- InitGlobalBag( &(NameFunc[13]), "lib/oper1.g:NameFunc[13](-79117946)" );
- InitHandlerFunc( HdlrFunc14, "lib/oper1.g:HdlrFunc14(-79117946)" );
- InitGlobalBag( &(NameFunc[14]), "lib/oper1.g:NameFunc[14](-79117946)" );
- InitHandlerFunc( HdlrFunc15, "lib/oper1.g:HdlrFunc15(-79117946)" );
- InitGlobalBag( &(NameFunc[15]), "lib/oper1.g:NameFunc[15](-79117946)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-79117946)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/oper1.g:FileName(-79117946)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-79117946)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-79117946)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-79117946)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-79117946)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-79117946)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-79117946)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-79117946)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-79117946)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-79117946)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-79117946)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-79117946)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-79117946)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-79117946)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-79117946)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-79117946)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-79117946)" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-79117946)" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-79117946)" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-79117946)" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-79117946)" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-79117946)" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-79117946)" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-79117946)" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-79117946)" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-79117946)" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-79117946)" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-79117946)" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-79117946)" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-79117946)" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-79117946)" );
  
  /* return success */
  return 0;
@@ -4086,7 +4087,7 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* information for the functions */
  C_NEW_STRING( DefaultName, 14, "local function" );
- C_NEW_STRING( FileName, 11, "lib/oper1.g" );
+ C_NEW_STRING( FileName, 19, "GAPROOT/lib/oper1.g" );
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;
@@ -4293,7 +4294,7 @@ static Int PostRestore ( StructInitInfo * module )
 /* <name> returns the description of this module */
 static StructInitInfo module = {
  /* type        = */ 2,
- /* name        = */ "lib/oper1.g",
+ /* name        = */ "GAPROOT/lib/oper1.g",
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
@@ -4312,3 +4313,4 @@ StructInitInfo * Init__oper1 ( void )
 }
 
 /* compiled code ends here */
+#endif

@@ -832,4 +832,3 @@ StructInitInfo * InitInfoRecords ( void )
 
 *E  records.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
