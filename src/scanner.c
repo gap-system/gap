@@ -1251,7 +1251,7 @@ Char GetLine ( void )
 
             /* there may be one line waiting                               */
             if ( TLS(TestLine)[0] != '\0' ) {
-                SyStrncat( TLS(In), TLS(TestLine), sizeof(TLS(Input)->line) );
+                strncat( TLS(In), TLS(TestLine), sizeof(TLS(Input)->line) );
                 TLS(TestLine)[0] = '\0';
             }
 
