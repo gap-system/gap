@@ -12,7 +12,6 @@
 **  This file implements the  functions  handling  GMP integers.
 **
 */
-#include        <sys/mman.h>
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* garbage collector               */
@@ -2538,23 +2537,6 @@ static StructGVarFunc GVarFuncs [] = {
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-
-static void *allocForGmp(size_t size) {
-  return mmap((void *)0, size, PROT_READ| PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-}
-
-static void *reallocForGmp (void *old, size_t old_size, size_t new_size) {
-  void * newptr = allocForGmp(new_size);
-  size_t common_size = (new_size < old_size) ? new_size:old_size;
-  memcpy(newptr, old, common_size);
-  munmap(old, old_size);
-  return newptr;
-}
-
-static  void freeForGmp (void *ptr, size_t size) {
-  munmap(ptr, size);
-}
-
 static Int InitKernel ( StructInitInfo * module )
 {
   UInt                t1,  t2;
@@ -2563,8 +2545,6 @@ static Int InitKernel ( StructInitInfo * module )
     FPUTS_TO_STDERR("Panic, GMP limb size mismatch\n");
     SyExit( 1 ); 
   }
-
-   mp_set_memory_functions( allocForGmp, reallocForGmp, freeForGmp); 
 
   /* init filters and functions                                            */
   InitHdlrFiltsFromTable( GVarFilts );
