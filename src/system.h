@@ -642,65 +642,11 @@ extern UInt SyTimeChildrenSys ( void );
 
 /****************************************************************************
 **
-*F  SyStrlen( <str> ) . . . . . . . . . . . . . . . . . .  length of a string
-**
-**  'SyStrlen' returns the length of the string <str>, i.e.,  the  number  of
-**  characters in <str> that precede the terminating null character.
-*/
-extern UInt SyStrlen (
-            const Char *     str );
-
-
-/****************************************************************************
-**
-*F  SyStrcmp( <str1>, <str2> )  . . . . . . . . . . . . . compare two strings
-**
-**  'SyStrcmp' returns an integer greater than, equal to, or less  than  zero
-**  according to whether <str1> is greater  than,  equal  to,  or  less  than
-**  <str2> lexicographically.
-*/
-extern Int SyStrcmp (
-            const Char *    str1,
-            const Char *    str2 );
-
-
-/****************************************************************************
-**
-*F  SyStrncmp( <str1>, <str2>, <len> )  . . . . . . . . . compare two strings
-**
-**  'SyStrncmp' returns an integer greater than, equal to,  or less than zero
-**  according  to whether  <str1>  is greater than,  equal  to,  or less than
-**  <str2> lexicographically.  'SyStrncmp' compares at most <len> characters.
-*/
-extern Int SyStrncmp (
-            const Char *    str1,
-            const Char *    str2,
-            UInt            len );
-
-/****************************************************************************
-**
 *F  SyIntString( <string> ) . . . . . . . . extract a C integer from a string
 **
 */
 
 extern Int SyIntString( const Char *string );
-
-
-
-/****************************************************************************
-**
-*F  SyStrncat( <dst>, <src>, <len> )  . . . . .  append one string to another
-**
-**  'SyStrncat'  appends characters from the  <src>  to <dst>  until either a
-**  null character  is  encoutered  or  <len>  characters have   been copied.
-**  <dst> becomes the concatenation of <dst> and <src>.  The resulting string
-**  is always null terminated.  'SyStrncat' returns a pointer to <dst>.
-*/
-extern Char * SyStrncat (
-            Char *              dst,
-            const Char *        src,
-            UInt                len );
-
 
 
 /****************************************************************************
