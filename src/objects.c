@@ -1799,7 +1799,6 @@ Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     return (Obj) 0;
 }
 
-
 /****************************************************************************
 **
 
@@ -2150,4 +2149,3 @@ StructInitInfo * InitInfoObjects ( void )
 
 *E  objects.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-

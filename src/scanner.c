@@ -2056,6 +2056,12 @@ void GetTripStr ( void )
   /* Avoid substitution of '?' in beginning of GetLine chunks */
   TLS(HELPSubsOn) = 0;
   
+  /* print only a partial prompt while reading a triple string           */
+  if ( !SyQuiet )
+    TLS(Prompt) = "> ";
+  else
+    TLS(Prompt) = "";
+  
   /* read all characters into 'Value'                                    */
   for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS(In) != '\377'; i++ ) {
     // Only thing to check for is a triple quote.

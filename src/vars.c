@@ -3190,7 +3190,7 @@ static Int InitKernel (
 {
     UInt                i;              /* loop variable                   */
     TLS(CurrLVars) = (Bag) 0;
-    
+
     /* make 'CurrLVars' known to Gasman                                    */
     /* TL: InitGlobalBag( CurrLVars,   "src/vars.c:CurrLVars"   ); */
     /* TL: InitGlobalBag( &BottomLVars, "src/vars.c:BottomLVars" ); */

@@ -1,22 +1,29 @@
-os:
-  - linux
-  - osx
-env:
-  - TEST_SUITE=testinstall
-  - TEST_SUITE=testtravis
-  - TEST_SUITE=testbugfix
 language: c
-compiler:
-  - gcc
-  - clang
-branches:
-  only:
-    - master
-    - hpcgap-default
+matrix:
+  include:
+    - os: linux
+      env: TEST_SUITE=testtravis
+      compiler: gcc
+    - os: osx
+      env: TEST_SUITE=testtravis
+      compiler: clang
+    - os: linux
+      env: TEST_SUITE=testinstall
+      compiler: gcc
+    - os: linux
+      env: TEST_SUITE=testbugfix
+      compiler: gcc
+
 # Change this to your needs
 addons:
   apt_packages:
   - libgmp3-dev
+  - texlive-latex-base
+  - texlive-latex-recommended
+  - texlive-latex-extra
+  - texlive-extra-utils
+  - texlive-fonts-recommended
+  - texlive-fonts-extra
 script:
   - git clone --depth=50 https://github.com/gap-system/ward extern/ward
   - ./make.hpc WARD="extern/ward" GMP=system ZMQ=no

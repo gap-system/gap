@@ -579,8 +579,9 @@ sysfiles.o: ../../Makefile @srcdir@/sysfiles.c @srcdir@/system.h config.h @srcdi
   @srcdir@/tls.h @srcdir@/tlsconfig.h @srcdir@/read.h @srcdir@/compstat.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o sysfiles.o -c @srcdir@/sysfiles.c
 
-system.o: ../../Makefile @srcdir@/system.c @srcdir@/system.h config.h @srcdir@/sysfiles.h \
-  @srcdir@/gasman.h @srcdir@/atomic.h atomic_ops.h
+system.o: ../../Makefile @srcdir@/system.c @srcdir@/system.h config.h gap_version.h \
+  @srcdir@/gap.h @srcdir@/sysfiles.h @srcdir@/gasman.h @srcdir@/atomic.h \
+  atomic_ops.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o system.o -c @srcdir@/system.c
 
 tietze.o: ../../Makefile @srcdir@/tietze.c @srcdir@/system.h config.h @srcdir@/code.h \

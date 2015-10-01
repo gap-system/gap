@@ -260,11 +260,11 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     fi;
     relev := [];
     atomic readonly CATS_AND_REPS do
-        for i  in flags  do
-            if not i in CATS_AND_REPS  then
-                ADD_LIST( relev, i );
-            fi;
-        od;
+    for i  in flags  do
+        if not i in CATS_AND_REPS  then
+            ADD_LIST( relev, i );
+        fi;
+    od;
     od;
 
     # All requirements are categories/representations.
@@ -275,52 +275,53 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     flags:= relev;
 
     atomic FILTER_REGION do
-	# Remove requirements that are implied by the remaining ones.
-	# (Note that it is possible to have implications from a filter
-	# to another one with a bigger number.)
-	relev  := [];
-	rflags := [];
-	for i  in flags  do
 
-	  # Get the implications of this filter.
-	  wif:= WITH_IMPS_FLAGS( FLAGS_FILTER( FILTERS[i] ) );
+    # Remove requirements that are implied by the remaining ones.
+    # (Note that it is possible to have implications from a filter
+    # to another one with a bigger number.)
+    relev  := [];
+    rflags := [];
+    for i  in flags  do
 
-	  # If the filter is implied by one in `relev', ignore it.
-	  # Otherwise add it to `relev', and remove all those that
-	  # are implied by the new filter.
-	  ignore:= false;
-	  for j  in [ 1 .. LEN_LIST( relev ) ]  do
-	      if IsBound( rflags[j] ) then
-		  if IS_SUBSET_FLAGS( rflags[j], wif ) then
+      # Get the implications of this filter.
+      wif:= WITH_IMPS_FLAGS( FLAGS_FILTER( FILTERS[i] ) );
 
-		      # `FILTERS[i]' is implied by one in `relev'.
-		      ignore:= true;
-		      break;
-		  elif IS_SUBSET_FLAGS( wif, rflags[j] ) then
+      # If the filter is implied by one in `relev', ignore it.
+      # Otherwise add it to `relev', and remove all those that
+      # are implied by the new filter.
+      ignore:= false;
+      for j  in [ 1 .. LEN_LIST( relev ) ]  do
+          if IsBound( rflags[j] ) then
+              if IS_SUBSET_FLAGS( rflags[j], wif ) then
 
-		      # `FILTERS[i]' implies one in `relev'.
-		      Unbind( relev[j]  );
-		      Unbind( rflags[j] );
-		  fi;
-	      fi;
-	  od;
-	  if not ignore then
-	      ADD_LIST( relev, i    );
-	      ADD_LIST( rflags, wif );
-	  fi;
-	od;
+                  # `FILTERS[i]' is implied by one in `relev'.
+                  ignore:= true;
+                  break;
+              elif IS_SUBSET_FLAGS( wif, rflags[j] ) then
 
-	# We install the method for the requirements in `relev'.
-	# 'pos' is saved for modifying 'imm' below.
-	# TODO: this way of changing IMMEDIATE_METHODS should be atomic
-	pos:=LEN_LIST( IMMEDIATE_METHODS );
-	IMMEDIATE_METHODS[pos+1]:=method;
-	pos:=pos+1;
-	
-	for j  in relev  do
+                  # `FILTERS[i]' implies one in `relev'.
+                  Unbind( relev[j]  );
+                  Unbind( rflags[j] );
+              fi;
+          fi;
+      od;
+      if not ignore then
+          ADD_LIST( relev, i    );
+          ADD_LIST( rflags, wif );
+      fi;
+    od;
 
-	  # adjust `IMM_FLAGS'
-	  IMM_FLAGS:= SUB_FLAGS( IMM_FLAGS, FLAGS_FILTER( FILTERS[j] ) );
+    # We install the method for the requirements in `relev'.
+    # 'pos' is saved for modifying 'imm' below.
+    # TODO: this way of changing IMMEDIATE_METHODS should be atomic
+    pos:=LEN_LIST( IMMEDIATE_METHODS );
+    IMMEDIATE_METHODS[pos+1]:=method;
+    pos:=pos+1;
+
+    for j  in relev  do
+
+      # adjust `IMM_FLAGS'
+      IMM_FLAGS:= SUB_FLAGS( IMM_FLAGS, FLAGS_FILTER( FILTERS[j] ) );
 #T here it would be better to subtract a flag list
 #T with `true' exactly at position `j'!
 #T means: When an immed. method gets installed for a property then
@@ -622,10 +623,10 @@ BIND_GLOBAL( "NewConstructor", function ( name, filters )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
     atomic readwrite CONSTRUCTORS do
-        ADD_LIST( CONSTRUCTORS, oper );
+    ADD_LIST( CONSTRUCTORS, oper );
     od;
     atomic readwrite OPERATIONS_REGION do
-        ADD_LIST( OPERATIONS,   oper );
+    ADD_LIST( OPERATIONS,   oper );
         ADD_LIST( OPERATIONS,   MigrateObj([ filt ], OPERATIONS_REGION ) );
     od;    
     return oper;
@@ -681,7 +682,7 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
         else
 	  atomic readonly FILTER_REGION do
 	    if    INFO_FILTERS[ pos ] in FNUM_TPRS
-		 or INFO_FILTERS[ pos ] in FNUM_ATTS then
+             or INFO_FILTERS[ pos ] in FNUM_ATTS then
 
 	      # `gvar' is an attribute tester or property tester.
 	      Error( "operation `", name,
@@ -693,7 +694,7 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
 	      Error( "operation `", name,
 		     "' was created as a property, use`DeclareProperty'" );
 
-	    fi;
+        fi;
 	  od;
 	fi;
 
@@ -763,9 +764,9 @@ BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
-    
+
     atomic readwrite OPERATIONS_REGION do
-        ADD_LIST( OPERATIONS, oper );
+    ADD_LIST( OPERATIONS, oper );
         ADD_LIST( OPERATIONS, MigrateObj( [ filt ], OPERATIONS_REGION ) );
     od;
 end );
@@ -819,7 +820,7 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
       od;
 
       atomic readwrite OPERATIONS_REGION do
-          pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
+      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
           ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj( filt, OPERATIONS_REGION) );
       od;
 
@@ -864,10 +865,10 @@ BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
-    
+
     atomic readwrite CONSTRUCTORS, OPERATIONS_REGION do
-        ADD_LIST( CONSTRUCTORS, oper );
-        ADD_LIST( OPERATIONS,   oper );
+    ADD_LIST( CONSTRUCTORS, oper );
+    ADD_LIST( OPERATIONS,   oper );
         ADD_LIST( OPERATIONS,   MigrateObj( [ filt ], OPERATIONS_REGION) );
     od;
 end );
@@ -933,7 +934,7 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     # construct setter and tester
     setter := SETTER_FILTER( getter );
     tester := TESTER_FILTER( getter );
-    
+
     atomic readwrite OPERATIONS_REGION do
     # add getter, setter and tester to the list of operations
     ADD_LIST( OPERATIONS, getter );
@@ -947,9 +948,9 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
 
     # store the information about the filter
     atomic FILTER_REGION do
-	FILTERS[ FLAG2_FILTER( tester ) ] := tester;
-	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
-        INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
+    FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
+    INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
     od;
 
     # clear the cache because <filter> is something old
@@ -961,7 +962,7 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
 
     # store the ranks
     atomic FILTER_REGION do
-        RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
     od;
 
     # and make the remaining assignments
@@ -1036,7 +1037,7 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
           # add  setter and tester to the list of operations
           setter := SETTER_FILTER( getter );
           tester := TESTER_FILTER( getter );
-          
+
           atomic readwrite OPERATIONS_REGION do
           ADD_LIST( OPERATIONS, setter );
           ADD_LIST( OPERATIONS, MigrateObj([ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ], OPERATIONS_REGION ) );
@@ -1161,8 +1162,8 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
     if ISB_GVAR( name ) then
 
       atomic FILTER_REGION, OPERATIONS_REGION do
-	# The variable exists already.
-	gvar:= VALUE_GLOBAL( name );
+      # The variable exists already.
+      gvar:= VALUE_GLOBAL( name );
 
 	# Check that the variable is in fact bound to an operation.
 	if not IS_OPERATION( gvar ) then
@@ -1227,17 +1228,17 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
               
       fi;
 
-	# Add the new requirements.
-	filter:= arg[2];
-	if not IS_OPERATION( filter ) then
-	  Error( "<filter> must be an operation" );
-	fi;
+      # Add the new requirements.
+      filter:= arg[2];
+      if not IS_OPERATION( filter ) then
+        Error( "<filter> must be an operation" );
+      fi;
 
-	pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
+      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
 	ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj( [ FLAGS_FILTER( filter ) ], OPERATIONS_REGION ) );
 
-	# also set the extended range for the setter
-	pos:= POS_LIST_DEFAULT( OPERATIONS, Setter(gvar), pos );
+      # also set the extended range for the setter
+      pos:= POS_LIST_DEFAULT( OPERATIONS, Setter(gvar), pos );
 	ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj(
 		  [ FLAGS_FILTER( filter),OPERATIONS[pos+1][1][2] ], OPERATIONS_REGION ) );
 
@@ -1316,11 +1317,11 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
 
     # install the default functions
     atomic FILTER_REGION do
-	FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
-	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
-	FILTERS[ FLAG2_FILTER( getter ) ]:= tester;
-	INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
-	INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
+    FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
+    FILTERS[ FLAG2_FILTER( getter ) ]:= tester;
+    INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
+    INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
     od;
 
     # clear the cache because <filter> is something old
@@ -1334,8 +1335,8 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
 
     # store the ranks
     atomic FILTER_REGION do
-	RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
-	RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
+    RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
+    RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
     od;
 
     # and make the remaining assignments
@@ -1400,11 +1401,11 @@ BIND_GLOBAL( "NewProperty", function ( arg )
 
     # install the default functions
     atomic FILTER_REGION do
-	FILTERS[ FLAG1_FILTER( getter ) ] := getter;
-	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
-	FILTERS[ FLAG2_FILTER( getter ) ] := tester;
-	INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
-	INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
+    FILTERS[ FLAG1_FILTER( getter ) ] := getter;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
+    FILTERS[ FLAG2_FILTER( getter ) ] := tester;
+    INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
+    INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
     od;
 
     # the <tester> and  <getter> are newly  made, therefore the cache cannot
@@ -1418,12 +1419,12 @@ BIND_GLOBAL( "NewProperty", function ( arg )
 
     # store the rank
     atomic FILTER_REGION do
-      if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-	  RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
-      else
-	  RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
-      fi;
-      RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
+    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
+    else
+        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
+    fi;
+    RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
     od;
 
     # and return the getter
@@ -1488,7 +1489,7 @@ BIND_GLOBAL( "DeclareProperty", function ( arg )
 
       pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
       ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj([ FLAGS_FILTER( filter ) ], OPERATIONS_REGION ) );
-      
+
       od;
 
     else
@@ -1770,7 +1771,7 @@ BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
 
     name := arg[1];
     atomic GLOBAL_FUNCTION_NAMES do
-	ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
+    ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
     od;
     BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
 end );
@@ -1790,11 +1791,11 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
       oper:= VALUE_GLOBAL( oper );
     fi;
     atomic readonly GLOBAL_FUNCTION_NAMES do
-      if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
-	Error("you cannot install a global function for another global ",
-	      "function,\nuse `DeclareSynonym' instead!");
-      fi;
-      INSTALL_METHOD_ARGS( oper, func );
+    if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
+      Error("you cannot install a global function for another global ",
+            "function,\nuse `DeclareSynonym' instead!");
+    fi;
+    INSTALL_METHOD_ARGS( oper, func );
     od;
 end );
 

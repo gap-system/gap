@@ -4870,7 +4870,7 @@ end);
 InstallMethod(FpElementNFFunction,true,[IsElementOfFpGroupFamily],0,
 # default reduction -- 
 function(fam)
-local iso,k,id;
+local iso,k,id,f;
   # first try whether the group is ``small''
   iso:=FPFaithHom(fam);
   if iso<>fail and Size(Image(iso))<50000 then
@@ -4878,7 +4878,9 @@ local iso,k,id;
     return w->UnderlyingElement(Factorization(k,Image(iso,ElementOfFpGroup(fam,w))));
   fi;
   iso:=IsomorphismFpMonoidGeneratorsFirst(CollectionsFamily(fam)!.wholeGroup);
-  k:=ReducedConfluentRewritingSystem(Image(iso));
+  f:=FreeMonoidOfFpMonoid(Range(iso));
+  k:=ReducedConfluentRewritingSystem(Range(iso),
+	BasicWreathProductOrdering(f,GeneratorsOfMonoid(f)));
   id:=UnderlyingElement(Image(iso,One(fam)));
   return w->MonwordToGroupword(UnderlyingElement(One(fam)),
 	       ReducedForm(k,GroupwordToMonword(id,w)));

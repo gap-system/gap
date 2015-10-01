@@ -220,6 +220,8 @@ CallAndInstallPostRestore( function()
 
     GAPInfo.KernelInfo:= KERNEL_INFO();
     GAPInfo.KernelVersion:= GAPInfo.KernelInfo.KERNEL_VERSION;
+    GAPInfo.BuildVersion:= GAPInfo.KernelInfo.BUILD_VERSION;
+    GAPInfo.BuildDateTime:= GAPInfo.KernelInfo.BUILD_DATETIME;
     GAPInfo.Architecture:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
     GAPInfo.ArchitectureBase:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
     for i in [ 1 .. LENGTH( GAPInfo.Architecture ) ] do

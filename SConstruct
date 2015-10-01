@@ -168,6 +168,9 @@ def parse_config(config_header_file):
   return abi, config_file_contents != ""
 
 
+versionheader = GAP.Command(build_dir + "/gap_version.h", [], "cnf/mkversionheader.sh ${TARGET}")
+GAP.AlwaysBuild(versionheader)
+
 # Create config.h if we don't have it and determine ABI
 
 config_header_file = build_dir + "/config.h"
