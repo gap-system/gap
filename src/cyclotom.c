@@ -149,7 +149,11 @@
 void GrowResultCyc(UInt size) {
     Obj *res;
     UInt i;
-    if ( LEN_PLIST(TLS(ResultCyc)) < size ) {
+    if (TLS(ResultCyc) == 0) {
+        TLS(ResultCyc) = NEW_PLIST( T_PLIST, size );
+        res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
+        for ( i = 0; i < size; i++ ) { res[i] = INTOBJ_INT(0); }
+    } else if ( LEN_PLIST(TLS(ResultCyc)) < size ) {
         GROW_PLIST( TLS(ResultCyc), size );
         SET_LEN_PLIST( TLS(ResultCyc), size );
         res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
