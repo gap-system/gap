@@ -2585,18 +2585,6 @@ static Int InitKernel (
         IsbvListFuncs[ type ] = IsbListObject;
     }
 
-    /* make and install the 'ISBB_LIST' operation                           */
-    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        IsbbListFuncs[  type ] = IsbbListError;
-    }
-
-    for (type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-      IsbbListFuncs[ type ] = IsbbListInternal;
-    }
-    
-    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
-        IsbbListFuncs[  type ] = IsbbListObject;
-    }
 
     /* make and install the 'ELM0_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2646,20 +2634,6 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'UNBB_LIST' operation                           */
-    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        UnbbListFuncs[  type ] = UnbbListError;
-    }
-
-    for (type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-      UnbbListFuncs[ type ] = UnbbListInternal;
-    }
-    
-    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
-        UnbbListFuncs[  type ] = UnbbListObject;
-    }
-
-
     /* make and install the 'ASS_LIST' operation                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         AssListFuncs[ type ] = AssListError;
@@ -2669,20 +2643,6 @@ static Int InitKernel (
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         AssListFuncs[ type ] = AssListObject;
-    }
-
-
-    /* make and install the 'ASSB_LIST' operation                           */
-    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        AssbListFuncs[  type ] = AssbListError;
-    }
-
-    for (type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-      AssbListFuncs[ type ] = AssbListInternal;
-    }
-    
-    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
-        AssbListFuncs[  type ] = AssbListObject;
     }
 
 
