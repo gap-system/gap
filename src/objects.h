@@ -220,6 +220,20 @@ static inline Obj prod_intobjs(Int l, Int r)
 
 /****************************************************************************
 **
+*F  RegisterPackageTNUM( <name>, <typeObjFunc> )
+**
+**  Allocates a TNUM for use by a package. The parameters <name> and
+**  <typeObjFunc> are used to initialize the relevant entries in the
+**  InfoBags and TypeObjFuncs arrays.
+**
+**  If allocation fails (e.g. because no more TNUMs are available),
+**  a negative value is returned.
+*/
+Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
+
+
+/****************************************************************************
+**
 
 *S  T_<name>  . . . . . . . . . . . . . . . . symbolic names for object types
 *S  FIRST_CONSTANT_TNUM, LAST_CONSTANT_TNUM . . . . range of constant   types
@@ -262,7 +276,7 @@ static inline Obj prod_intobjs(Int l, Int r)
 */
 #define FIRST_REAL_TNUM         0
 
-#define FIRST_CONSTANT_TNUM     ((UInt)0)
+#define FIRST_CONSTANT_TNUM     (0UL)
 #define T_INT                   (FIRST_CONSTANT_TNUM+ 0)    /* immediate */
 #define T_INTPOS                (FIRST_CONSTANT_TNUM+ 1)
 #define T_INTNEG                (FIRST_CONSTANT_TNUM+ 2)
@@ -338,7 +352,11 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define T_WPOBJ                 (FIRST_EXTERNAL_TNUM+ 3)
      /* #define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 4)
         remove to get parity right */
-#define LAST_EXTERNAL_TNUM      T_WPOBJ
+
+#define FIRST_PACKAGE_TNUM      T_WPOBJ
+#define LAST_PACKAGE_TNUM       (FIRST_PACKAGE_TNUM+49)
+
+#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
 #define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
 #define LAST_VIRTUAL_TNUM LAST_EXTERNAL_TNUM
 
@@ -351,6 +369,10 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define TESTING                 COPYING
 #define LAST_TESTING_TNUM       LAST_COPYING_TNUM
 
+#if LAST_COPYING_TNUM > 254
+#error LAST_COPYING_TNUM out of range
+#endif
+
 
 /****************************************************************************
 **
@@ -358,12 +380,15 @@ static inline Obj prod_intobjs(Int l, Int r)
 **
 **  'T_BODY' is the type of the function body bags.
 */
-#define T_BODY                  175
+#define T_BODY                  254
+
+#if T_BODY <= LAST_COPYING_TNUM
+#error T_BODY out of range
+#endif
 
 
 /****************************************************************************
 **
-
 *F  TNUM_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . type of an object
 **
 **  'TNUM_OBJ' returns the type of the object <obj>.
