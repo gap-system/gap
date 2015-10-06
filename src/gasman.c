@@ -113,6 +113,7 @@
 #include        <string.h>
 #include        <stdlib.h>
 #include        <stdio.h>
+#include 	<pthread.h>
 #include        "system.h"              /* Ints, UInts                     */
 
 
@@ -3013,7 +3014,11 @@ Region *NewRegion(void)
 }
 
 void *AllocateMemoryBlock(UInt size) {
+#ifndef DISABLE_GC
   return GC_malloc(size);
+#else
+  return malloc(size);
+#endif
 }
 
 

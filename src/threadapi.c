@@ -97,6 +97,7 @@ typedef struct Barrier
 typedef struct SyncVar
 {
   Obj monitor;
+  Obj queue;
   Obj value;
   int written;
 } SyncVar;

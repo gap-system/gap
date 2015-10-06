@@ -627,9 +627,9 @@ void CleanObjWPObjCopy (
 *F  FinalizeWeapPointerObj( <wpobj> )
 */
 
-#ifdef BOEHM_GC
 void FinalizeWeakPointerObj( Obj wpobj )
 {
+#ifdef BOEHM_GC
     volatile Obj keep = wpobj;
     UInt i, len;
     len = STORED_LEN_WPOBJ(wpobj);
@@ -639,8 +639,8 @@ void FinalizeWeakPointerObj( Obj wpobj )
       if (IS_BAG_REF(tmp) && ELM_WPOBJ(wpobj, i))
         FORGET_WP(&ELM_WPOBJ(wpobj, i));
     }
-}
 #endif
+}
 
 /****************************************************************************
 **
