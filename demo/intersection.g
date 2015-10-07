@@ -1,0 +1,50 @@
+#
+# This is a test that Chris Jefferson <caj21@st-andrews.ac.uk> ran to benchmark
+# HPC-GAP
+#
+# On: Intel(R) Core(TM) i5-3320M CPU @ 2.60GHz
+#     DragonFly v4.3.1.522.geab4ae-DEVELOPMENT
+#     v4.7.8-1937-g27f9adb
+#     ./make.hpc GC=boehm-par GCBLKSIZE=32768 ZMQ=no
+#
+#     sh bin/gap.sh
+#     [ 1.863809, 1.059302, 1.029212, 1.016774, 1.025828, 1.002134
+#     , 1.011906, 0.990309, 1.009315, 0.975533 ] 
+#
+#     sh bin/gap.sh -m 2g
+#     [ 1.139157, 1.140261, 1.131134, 1.141077, 1.146236, 1.154671
+#     , 1.090985, 0.918337, 0.909092, 0.914071 ]  
+#
+#     ./make.hpc ZMQ=no
+#     sh bin/gap.sh
+#     [ 1.177997, 1.204405, 1.148141, 1.199733, 1.15236, 1.155158
+#     , 1.155291, 1.200296, 1.149203, 1.173227 ]
+#
+#     sh bin/gap.sh -m 2g
+#     [ 1.210171, 1.203508, 1.210213, 1.197907, 1.200302, 1.274284
+#     , 0.986507, 0.912661, 0.924253, 0.913704 ]
+#
+# (ZMQ=no is necessary because zeromq as bundled with hpcgap does not work
+#  on DragonFly)
+
+Read("demo/bench.g");
+
+p := (1,39,45,82,28,37,23,36,31,83,77,93,29,58,87,91,63,71,70,56,89,74,3,9,
+16,54,97,60,96,26,84,40,79,13,73,48,86,72,34,22,35,57,2,10,65,59,66)(4,
+92,81,12,21,64,42,25,88,85,33,100,49,24,20,76,8)(5,94,27,18,14,38)(6,53,
+98,51,67,99,17,78,68,19,11,52,32,75,47,41,7,95,46,62,43,50,44,55)(15,69,
+30,61,90);
+
+res := [];
+
+for i in [1..10] do
+    Print("run ", i, "...");
+    Add(res, Bench( do
+       local g, h;
+       g := DirectProduct(List([1..10], x -> AlternatingGroup(10)));
+       h := g^p;
+       Intersection(g,h);
+    od) );
+    Print(" completed.\n");
+od;
+Print(res);
