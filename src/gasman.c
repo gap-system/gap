@@ -1331,6 +1331,7 @@ void            InitBags (
     }
     GC_set_all_interior_pointers(0);
     GC_init();
+    GC_set_free_space_divisor(1);
     TLAllocatorInit();
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
