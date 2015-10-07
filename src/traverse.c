@@ -147,7 +147,9 @@ void CopyWPObj(Obj copy, Obj original)
     MEMBAR_READ();
     if (tmp && *ptr)
       *copyptr = ReplaceByCopy(tmp);
+#ifdef BOEHM_GC 
     REGISTER_WP(copyptr, tmp);
+#endif 
     ptr++;
     copyptr++;
   }
