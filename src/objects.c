@@ -47,6 +47,33 @@
 #include	"tls.h"			/* thread-local storage		   */
 
 
+static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
+
+/****************************************************************************
+**
+*F  RegisterPackageTNUM( <name>, <typeObjFunc> )
+**
+**  Allocates a TNUM for use by a package. The parameters <name> and
+**  <typeObjFunc> are used to initialize the relevant entries in the
+**  InfoBags and TypeObjFuncs arrays.
+**
+**  If allocation fails (e.g. because no more TNUMs are available),
+**  a negative value is returned.
+*/
+Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) )
+{
+    if (lastFreePackageTNUM > LAST_PACKAGE_TNUM)
+        return -1;
+
+    Int tnum = lastFreePackageTNUM++;
+
+    InfoBags[tnum].name = name;
+    TypeObjFuncs[tnum] = typeObjFunc;
+
+    return tnum;
+}
+
+
 /****************************************************************************
 **
 

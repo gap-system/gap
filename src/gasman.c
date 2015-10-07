@@ -532,12 +532,12 @@ void InitSweepFuncBags (
 
     if ( TabSweepFuncBags[type] != 0 ) {
         str[0] = 0;
-        SyStrncat( str, "warning: sweep function for type ", 33 );
+        strncat( str, "warning: sweep function for type ", 33 );
         str[33] = '0' + ((type/100) % 10);
         str[34] = '0' + ((type/ 10) % 10);
         str[35] = '0' + ((type/  1) % 10);
         str[36] = 0;
-        SyStrncat( str, " already installed\n", 19 );
+        strncat( str, " already installed\n", 19 );
         SyFputs( str, 0 );
     }
 #endif
@@ -590,12 +590,12 @@ void InitMarkFuncBags (
 
     if ( TabMarkFuncBags[type] != MarkAllSubBagsDefault ) {
         str[0] = 0;
-        SyStrncat( str, "warning: mark function for type ", 32 );
+        strncat( str, "warning: mark function for type ", 32 );
         str[32] = '0' + ((type/100) % 10);
         str[33] = '0' + ((type/ 10) % 10);
         str[34] = '0' + ((type/  1) % 10);
         str[35] = 0;
-        SyStrncat( str, " already installed\n", 19 );
+        strncat( str, " already installed\n", 19 );
         SyFputs( str, 0 );
     }
 #endif

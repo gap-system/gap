@@ -114,7 +114,7 @@ function( arg )
           Append(out, GeneratorsOfInverseSemigroup(arg[i]));
         #elif HasGeneratorsOfMonoid(arg[i]) then 
         #  Append(out, GeneratorsOfMonoid(arg[i]));
-        elif HasGeneratorsOfSemigroup(arg[i]) then
+        elif HasGeneratorsOfSemigroup(arg[i]) or IsMagmaIdeal(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
         else
           Append(out, AsList(arg[i]));
@@ -159,7 +159,7 @@ function( arg )
        and IsGeneratorsOfInverseSemigroup(arg[i]) then 
         if HasGeneratorsOfInverseSemigroup(arg[i]) then 
           Append(out, GeneratorsOfInverseSemigroup(arg[i]));
-        elif HasGeneratorsOfSemigroup(arg[i]) then
+        elif HasGeneratorsOfSemigroup(arg[i]) or IsMagmaIdeal(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
         else
           Append(out, arg[i]);

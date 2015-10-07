@@ -5047,7 +5047,7 @@ fi;
 ##
 #V  CharacterTableDisplayDefaults
 ##
-InstallValue( CharacterTableDisplayDefaults, MakeImmutable(rec(
+InstallValue( CharacterTableDisplayDefaults, rec(
       Global:= rec(
         centralizers    := true,
 
@@ -5055,8 +5055,8 @@ InstallValue( CharacterTableDisplayDefaults, MakeImmutable(rec(
         StringEntry     := CharacterTableDisplayStringEntryDefault,
         StringEntryData := CharacterTableDisplayStringEntryDataDefault,
         Legend          := CharacterTableDisplayLegendDefault,
-    ) ) ) );
-
+    ) ) );
+MakeThreadLocal("CharacterTableDisplayDefaults");
 
 #############################################################################
 ##
@@ -6933,4 +6933,3 @@ end );
 #############################################################################
 ##
 #E
-
