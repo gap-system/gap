@@ -2,10 +2,13 @@
 # This is a test that Chris Jefferson <caj21@st-andrews.ac.uk> ran to benchmark
 # HPC-GAP against legacy GAP
 #
-# On: Intel(R) Core(TM) i5-3320M CPU @ 2.60GHz
+# All runtimes are in seconds, time taken by gettimeofday syscall
+#
+# On: Intel(R) Core(TM) i5-3320M CPU @ 2.60GHz 12GB RAM
 #     DragonFly v4.3.1.522.geab4ae-DEVELOPMENT
-
+#
 #     GAP
+#     v4.7.8-405-gd56a79a
 #     [ 1.398771, 0.547569, 0.586479, 0.543494, 0.551666, 0.608868,
 #       0.538831, 0.550874, 0.590647, 0.533375 ]
 #
@@ -21,6 +24,12 @@
 #     [ 1.139157, 1.140261, 1.131134, 1.141077, 1.146236, 1.154671
 #     , 1.090985, 0.918337, 0.909092, 0.914071 ]  
 #
+#     export GC_DONT_GC=1
+#     sh bin/gap.sh -m 3g
+#
+#     [ 1.200419, 1.188618, 1.19537, 1.27388, 1.199707, 1.2004
+#     , 1.189136, 1.190223, 1.197886, 1.194482 ]
+#
 #     ./make.hpc ZMQ=no
 #     sh bin/gap.sh
 #     [ 1.177997, 1.204405, 1.148141, 1.199733, 1.15236, 1.155158
@@ -30,6 +39,12 @@
 #     [ 1.210171, 1.203508, 1.210213, 1.197907, 1.200302, 1.274284
 #     , 0.986507, 0.912661, 0.924253, 0.913704 ]
 #
+#     export GC_DONT_GC=1
+#     sh bin/gap.sh -m 3g
+#     [ 1.991388, 1.166975, 1.192522, 1.183164, 1.209047, 1.199393,
+#       1.205105, 1.213722, 1.211879, 1.215503 ]
+#     
+
 # (ZMQ=no is necessary because zeromq as bundled with hpcgap does not work
 #  on DragonFly)
 
