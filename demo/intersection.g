@@ -1,9 +1,15 @@
 #
 # This is a test that Chris Jefferson <caj21@st-andrews.ac.uk> ran to benchmark
-# HPC-GAP
+# HPC-GAP against legacy GAP
 #
 # On: Intel(R) Core(TM) i5-3320M CPU @ 2.60GHz
 #     DragonFly v4.3.1.522.geab4ae-DEVELOPMENT
+
+#     GAP
+#     [ 1.398771, 0.547569, 0.586479, 0.543494, 0.551666, 0.608868,
+#       0.538831, 0.550874, 0.590647, 0.533375 ]
+#
+#     HPC-GAP
 #     v4.7.8-1937-g27f9adb
 #     ./make.hpc GC=boehm-par GCBLKSIZE=32768 ZMQ=no
 #
