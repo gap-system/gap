@@ -425,6 +425,7 @@ testobsoletes:
 	( rm wsp.g )
 
 cygwin:	extern
+	cnf/mkversionheader.sh bin/$(GAPARCH)/gap_version.h
 	( cd bin/$(GAPARCH) ; $(MAKE) gapdll ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' CONFIGNAME='$(CONFIGNAME)' )
 	chmod +x bin/gap-$(CONFIGNAME).sh
 	chmod +x bin/*.bat
