@@ -238,6 +238,19 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define IS_FFE(o)               \
                         ((Int)(o) & 0x02)
 
+/**************************************************************************
+ * **
+ * **
+ * *F  RegisterPackageTNUM( <name>, <typeObjFunc> )
+ * **
+ * **  Allocates a TNUM for use by a package. The parameters <name> and
+ * **  <typeObjFunc> are used to initialize the relevant entries in the
+ * **  InfoBags and TypeObjFuncs arrays.
+ * **
+ * **  If allocation fails (e.g. because no more TNUMs are available),
+ * **  a negative value is returned.
+ * */
+Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
@@ -283,7 +296,7 @@ static inline Obj prod_intobjs(Int l, Int r)
 */
 #define FIRST_REAL_TNUM         0
 
-#define FIRST_CONSTANT_TNUM     ((UInt)0)
+#define FIRST_CONSTANT_TNUM     (0UL)
 #define T_INT                   (FIRST_CONSTANT_TNUM+ 0)    /* immediate */
 #define T_INTPOS                (FIRST_CONSTANT_TNUM+ 1)
 #define T_INTNEG                (FIRST_CONSTANT_TNUM+ 2)
@@ -369,7 +382,6 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define FIRST_SHARED_TNUM	(T_WPOBJ+1)
 #define T_APOSOBJ 		(FIRST_SHARED_TNUM+ 0)
 #define T_ACOMOBJ 		(FIRST_SHARED_TNUM+ 1)
-#define LAST_EXTERNAL_TNUM      T_ACOMOBJ
 
 /* Primitive types */
 #define T_THREAD		(FIRST_SHARED_TNUM+ 2)
@@ -390,7 +402,12 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define T_AREC_INNER 		(FIRST_SHARED_TNUM+ 16)
 #define T_TLREC 		(FIRST_SHARED_TNUM+ 17)
 #define T_TLREC_INNER 		(FIRST_SHARED_TNUM+ 18)
-#define LAST_SHARED_TNUM	(T_TLREC_INNER)
+
+#define FIRST_PACKAGE_TNUM      (T_TLREC_INNER+1)
+#define LAST_PACKAGE_TNUM       (FIRST_PACKAGE_TNUM+28)
+#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
+
+#define LAST_SHARED_TNUM	(LAST_EXTERNAL_TNUM)
 
 #define LAST_REAL_TNUM          LAST_SHARED_TNUM
 #define LAST_VIRTUAL_TNUM 	LAST_SHARED_TNUM
@@ -398,6 +415,10 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define FIRST_COPYING_TNUM      (LAST_REAL_TNUM + 1)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)
 #define LAST_COPYING_TNUM       (LAST_REAL_TNUM + COPYING)
+
+#if LAST_COPYING_TNUM > 254
+#error LAST_COPYING_TNUM out of range
+#endif
 
 /****************************************************************************
 **
@@ -415,8 +436,11 @@ static inline Obj prod_intobjs(Int l, Int r)
 **
 **  'T_BODY' is the type of the function body bags.
 */
-#define T_BODY                  175
+#define T_BODY                  254
 
+#if T_BODY <= LAST_COPYING_TNUM
+#error T_BODY out of range
+#endif
 
 /****************************************************************************
 **
