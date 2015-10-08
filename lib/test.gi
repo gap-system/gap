@@ -516,6 +516,8 @@ end);
 ##  </Item>
 ##  <Mark><C>stonesLimit</C></Mark>
 ##  <Item>Only try tests which take less than <C>stonesLimit</C> stones (defaults to infinity)</Item>
+##  <Mark><C>renormaliseStones</C></Mark>
+##  <Item>Re-normalise the stones number given in every tst files's 'STOP_TEST'</Item>
 ##  </List>
 ## 
 ##  </Description>
@@ -534,12 +536,13 @@ end);
 ##    recursive := true      : Search through directories recursively
 ##    exitGAP := false       : Exit GAP, setting exit value depending on if tests succeeded
 ##    stonesLimit := infinity: Set limit (in GAPstones) on longest test to be run.
+##    renormaliseStones := false: Edit tst files to re-normalise the gapstones stored in every file.
 ##
 ##
 
 TestDirectory := function(arg)
-  local basedirs, nopts, opts, files, newfiles, filestones,
-        f, c, i, recurseFiles, StringEnd, getStones,
+  local basedirs, nopts, opts, files, newfiles, filestones, filetimes, 
+        f, c, i, recurseFiles, StringEnd, getStones, setStones,
         startTime, time, stones, testResult, testTotal,
         totalTime, totalStones, STOP_TEST_CPY, stopPos,
         count, prod;
@@ -564,7 +567,7 @@ TestDirectory := function(arg)
     lines := SplitString(StringFile(file),"\n");
     for l in lines do
       if PositionSublist(l, "STOP_TEST") <> fail then
-        # Try out best to get the stones out!
+        # Try our best to get the stones out!
         start := PositionSublist(l, ",");
         finish := PositionSublist(l, ")");
         stones := EvalString(l{[start+1..finish-1]});
@@ -575,6 +578,27 @@ TestDirectory := function(arg)
     od;
     return 0;
   end;
+  
+  setStones := function(file, newstones)
+    local lines, l, start, finish, stones;
+    lines := SplitString(StringFile(file), "\n");
+    for i in [1..Length(lines)] do
+      if PositionSublist(lines[i], "STOP_TEST") <> fail then
+        # Try our best to get the stones out!
+        start := PositionSublist(lines[i], ",");
+        finish := PositionSublist(lines[i], ")");
+        stones := EvalString(lines[i]{[start+1..finish-1]});
+        if IsInt(stones) then
+          lines[i] := Concatenation(lines[i]{[1..start]}," ",String(newstones),
+                                    lines[i]{[finish..Length(lines[i])]});
+          FileString(file, Concatenation(List(lines, x -> Concatenation(x,"\n"))));
+        else
+          Print("Unable to parse STOP_TEST in ", file);
+        fi;
+      fi;
+    od;
+  end;
+          
     
   
   if IsString(arg[1]) then
@@ -594,7 +618,8 @@ TestDirectory := function(arg)
     earlyStop := false,
     showProgress := true,
     exitGAP := false,
-    stonesLimit := infinity
+    stonesLimit := infinity,
+    renormaliseStones := false
   );
   
   for c in RecFields(nopts) do
@@ -607,6 +632,7 @@ TestDirectory := function(arg)
   fi;
   
   files := [];
+  filetimes := [];
   
   recurseFiles := function(dir)
     local dircontents, tests, recursedirs, d;
@@ -663,6 +689,7 @@ TestDirectory := function(arg)
     testTotal := testTotal and testResult;
     
     time := Runtime() - startTime;
+    filetimes[i] := time;
     if time > 100 and filestones[i] > 1000 then
       stones := QuoInt(filestones[i], time);
       totalTime := totalTime + time;
@@ -694,7 +721,18 @@ TestDirectory := function(arg)
   Print( "total",
          String( RootInt( prod, count ), 23 ),
          String( totalTime, 15 ), "\n\n" );
-         
+        
+        
+  if opts.renormaliseStones then
+    for i in [1..Length(files)] do
+      if filetimes[i] < 5 then
+        setStones(files[i], 1);
+      else
+        setStones(files[i], filetimes[i] * 10000);
+      fi;
+    od;
+  fi;
+  
   if opts.exitGAP then
     if testTotal then
       QUIT_GAP(0);

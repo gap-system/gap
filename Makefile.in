@@ -243,16 +243,7 @@ teststandard:
             `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
 
 teststandardrenormalize:
-	mkdir -p dev/log
-	( echo 'RunStandardTests( [' > test.tmp; \
-          grep -h "STOP_TEST" tst/*.tst | \
-            sed -e 's/^gap> STOP_TEST(/[/;s/);/],/' >> test.tmp; \
-          echo '], true ); ShowSystemInformation();' \
-          >> test.tmp; \
-          echo 'ReadGapRoot( "tst/testutil.g" ); Read( "test.tmp" ); \
-            CreateTestinstallFile(); Runtime();' | $(TESTGAP) > \
-            `date -u +dev/log/teststandardrenormalize_%Y-%m-%d-%H-%M` )
-	( rm test.tmp )
+	( echo 'TestDirectory("tst", rec(renormaliseStones := true));' | $(TESTGAP) )
 
 testpackages:
 	mkdir -p dev/log
