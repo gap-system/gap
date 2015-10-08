@@ -1826,6 +1826,10 @@ true
 gap> Log2Int( 2^60 );
 60
 
+# Reported by Chris Jefferson on 20151008 in github issue #282
+gap> Log2Int( -2^60 );
+60
+
 # Reported by WDeMeo on 2011/02/19, added by JS on 2011/03/09
 # IntermediateSubgroups(G,normal) included non-maximal inclusions
 gap> g:=CyclicGroup(2^6);; IntermediateSubgroups( g, TrivialSubgroup(g) ).inclusions;
