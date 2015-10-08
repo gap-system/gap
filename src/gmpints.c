@@ -630,7 +630,7 @@ Obj FuncLog2Int( Obj self, Obj integer)
     a = INT_INTOBJ(integer);
     if (a < 0) a = -a;
     res = NR_SMALL_INT_BITS;
-    for(res = NR_SMALL_INT_BITS - 1, mask = (Int)1 << (NR_SMALL_INT_BITS-1);
+    for(res = NR_SMALL_INT_BITS, mask = (Int)1 << NR_SMALL_INT_BITS;
         (mask & a) == 0 && mask != (Int)0;
         mask = mask >> 1, res--);
     return INTOBJ_INT(res);
