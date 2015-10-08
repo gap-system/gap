@@ -2152,6 +2152,32 @@ Char * syFgetsNoEdit (
 {
   UInt x = 0;
   int ret = 0;
+  UInt bufno;
+  Char* newlinepos;
+  Char* bufstart;
+  int buflen;
+
+  /* if stream is buffered, and the buffer has a full line,
+   * grab it -- we could make more use of the buffer, but
+   * this covers the majority of cases simply. */
+#ifndef LINE_END_HACK
+  if(!syBuf[fid].isTTY && syBuf[fid].bufno >= 0) {
+    bufno = syBuf[fid].bufno;
+    if (syBuffers[bufno].bufstart < syBuffers[bufno].buflen) {
+      bufstart = syBuffers[bufno].buf + syBuffers[bufno].bufstart;
+      buflen = syBuffers[bufno].buflen - syBuffers[bufno].bufstart;
+      newlinepos = memchr(bufstart, '\n', buflen);
+      if(newlinepos && (newlinepos - bufstart) < length - 2) {
+          newlinepos++;
+          memcpy(line, bufstart, newlinepos - bufstart);
+          line[newlinepos - bufstart] = '\0';
+          syBuffers[bufno].bufstart += (newlinepos - bufstart);
+          return line;
+      }
+    }
+  }
+#endif
+
   while (x < length -1) {
     if (!block && x && !HasAvailableBytes( fid ))
       {
