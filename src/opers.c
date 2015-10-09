@@ -452,15 +452,17 @@ Obj FuncIS_EQUAL_FLAGS (
 
 
 
-/****************************************************************************
-**
-*F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . subset test
-*/
+
 Int IsSubsetFlagsCalls;
 Int IsSubsetFlagsCalls1;
 Int IsSubsetFlagsCalls2;
 
-Obj FuncIS_SUBSET_FLAGS (
+/****************************************************************************
+**
+*F  UncheckedIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) subset test with 
+*F                                                         no safety check
+*/
+Obj UncheckedIS_SUBSET_FLAGS (
     Obj                 self,
     Obj                 flags1,
     Obj                 flags2 )
@@ -471,21 +473,6 @@ Obj FuncIS_SUBSET_FLAGS (
     UInt *              ptr2;
     Int                 i;
     Obj                 trues;
-
-    /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
-        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags1), 0L,
-            "you can replace <flags1> via 'return <flags1>;'" );
-    }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
-        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags2), 0L,
-            "you can replace <flags2> via 'return <flags2>;'" );
-    }
-    if ( flags1 == flags2 ) {
-        return True;
-    }
 
     /* do the real work                                                    */
 #ifdef COUNT_OPERS
@@ -556,6 +543,29 @@ Obj FuncIS_SUBSET_FLAGS (
     return True;
 }
 
+/****************************************************************************
+**
+*F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . subset test
+*/
+Obj FuncIS_SUBSET_FLAGS (
+    Obj                 self,
+    Obj                 flags1,
+    Obj                 flags2 )
+{
+    /* do some correctness checks                                            */
+    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
+        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags1), 0L,
+            "you can replace <flags1> via 'return <flags1>;'" );
+    }
+    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
+        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags2), 0L,
+            "you can replace <flags2> via 'return <flags2>;'" );
+    }
+    
+    return UncheckedIS_SUBSET_FLAGS(self, flags1, flags2);
+}
 
 /****************************************************************************
 **
@@ -825,6 +835,14 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
     Int old_moving;
     Obj with = flags;
     
+    /* do some trivial checks - we have to do this so we can use
+     * UncheckedIS_SUBSET_FLAGS                                              */
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags), 0L,
+            "you can replace <flags> via 'return <flags>;'" );
+    }
+    
     for(hash_loop = 0; hash_loop < 3; ++hash_loop)
     {
       cacheval = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1);
@@ -840,8 +858,8 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
       changed = 0;
       for(i = hidden_imps_length; i >= 1; --i)
       {
-        if( FuncIS_SUBSET_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
-           FuncIS_SUBSET_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
+        if( UncheckedIS_SUBSET_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
+           UncheckedIS_SUBSET_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1));
           changed = 1;
