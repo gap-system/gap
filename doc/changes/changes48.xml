@@ -1,12 +1,12 @@
 <Chapter Label="ChangesGAP47toGAP48"> 
 <Heading>Changes between &GAP; 4.7 and &GAP; 4.8</Heading>
 
-This chapter contains an overview of most important changes 
+This chapter contains an overview of the most important changes
 introduced in &GAP; 4.8.0 release (the beta release of &GAP; 4.8).
 Later it will also contain information about subsequent update 
 releases for &GAP; 4.8.
 
-First of all, &GAP; development repository is now hosted on GitHub at
+First of all, the &GAP; development repository is now hosted on GitHub at
 <URL>https://github.com/gap-system/gap</URL>, and &GAP; 4.8 is the first 
 major &GAP; release made from this repository. The public issue tracker
 for the core &GAP; system is located at 
@@ -22,17 +22,10 @@ most significant ones is provided below.
 <Subsection Label="Changes in the core GAP48 system"> 
 <Heading>Changes in the core &GAP; system introduced in &GAP; 4.8</Heading>
 
-Improved and extended functionality:
+New features:
 <List>
-<Item>
-Unnecessary tests for the finiteness of the field were removed from 
-<Ref Func="GModuleByMats" BookName="ref"/> and related functions 
-(those that do not need MeatAxe, but just linear algebra).
-Thus the correponding functions will work in the case of characteristic 0
-or for other infinite fields, too.
-</Item> 
 <!-- https://github.com/gap-system/gap/pull/192 -->
-<Item>Extended support for accessing lists using multiple indices and
+<Item>Added support for accessing lists using multiple indices and
 indexing into lists using indices other than positive small integers.
 This allows library or packages to install methods supporting expressions 
 like
@@ -42,6 +35,30 @@ m[1,2,3] := x;
 IsBound(m["a","b",Z(7)]);
 Unbind(m[1][2,3])
 ]]></Log>
+</Item>
+<Item>
+<!-- https://github.com/gap-system/gap/pull/90 -->
+Added support for partially variadic functions to allow function expressions
+like
+<Log><![CDATA[
+function(a,b,c,arg) ... end;
+]]></Log>
+which would require at least three arguments and assign the first three
+to <A>a</A>, <A>b</A> and <A>c</A> and then a list containing any remaining
+ones to <A>arg</A>.
+<P/>
+This may break an existing code when <A>arg</A> is used as a name of the
+argument which is not the last one.
+</Item>
+</List>
+
+Improved and extended functionality:
+<List>
+<Item>
+<Ref Func="GModuleByMats" BookName="ref"/> and some related functions now
+work for infinite fields, in particular in characteristic 0. However,
+this only applies for functions that do not need the MeatAxe, as that is
+still tied to finite fields.
 </Item>
 <Item>
 The most common cases of <Ref Oper="AddDictionary" BookName="ref"/> 
@@ -62,26 +79,13 @@ as a template).
 Changed functionality:
 <List>  
 <Item>
-<!-- https://github.com/gap-system/gap/pull/90 -->
-Added support for partially variadic functions to allow function expressions
-like
-<Log><![CDATA[
-function(a,b,c,arg) ... end;
-]]></Log>
-which would require at least three arguments and assign the first three 
-to <A>a</A>, <A>b</A> and <A>c</A> and then a list containing any remaining 
-ones to <A>arg</A>.
-<P/>
-This may break an existing code when <A>arg</A> is used as a name of the
-argument which is not the last one.
-</Item>
-<Item>
 As a preparation for the future migration to the multithreaded &GAP;&nbsp;5,
 some language extensions from the <Package>HPC-GAP</Package> project were
 backported to the &GAP; library to help to unify the codebase of both 
-&GAP;&nbsp;4 and &GAP;&nbsp;5. At the moment, the only change which is not
-backwards compatible is <C>atomic</C> is no longer a valid identifier in 
-&GAP;&nbsp;4 since it is reserved as a keyword for  &GAP;&nbsp;5.
+&GAP;&nbsp;4 and &GAP;&nbsp;5. The only change which is not backwards
+compatible is that <C>atomic</C> now is a keyword, and thus is no longer
+a valid identifier. So if you have any variables or functions using that name,
+you will have to change it in &GAP; 4.8.
 </Item>
 </List>
 
@@ -93,7 +97,7 @@ A combination of two bugs could lead to a segfault. First off,
 <Ref Func="NullMat" BookName="ref"/> (and various other &GAP; functions),
 when asked to produce matrix over a small field, called 
 <Ref Func="ConvertToMatrixRep" BookName="ref"/>. After this, if the user
-tried to changed one of the entries to a value from a larger extension
+tried to change one of the entries to a value from a larger extension
 field, this resulted in an error. (This is now fixed).
 <P/>
 Unfortunately, the C code catching this error had a bug and allowed
