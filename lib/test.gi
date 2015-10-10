@@ -5,7 +5,6 @@
 #Y  Copyright (C) 2011 The GAP Group
 ##
 ##  This file contains functions for test files.
-##  These can substitute the READ_TEST functionality in the GAP kernel.
 ##
 
 ##  FirstDiff := function(a, b)

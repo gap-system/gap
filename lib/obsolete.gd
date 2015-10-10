@@ -502,6 +502,20 @@ end);
 ##
 DeclareOperation("PositionFirstComponent",[IsList,IsObject]);
 
+#############################################################################
+##
+#O  ReadTest 
+##
+##  `ReadTest' is superseded by more robust and flexible `Test'. Since the
+##  former is still used in some packages, for backwards compatibility we
+##  replace it by the call of `Test' with comparison up to whitespaces.
+##
+BindGlobal( "ReadTest", function( fn )
+  Print("#I  ReadTest is no longer supported. Please use more robust and flexible\n",
+        "#I  Test. For backwards compatibility, ReadTest(<filename>) is replaced\n",
+        "#I  by Test( <filename>, rec( compareFunction := \"uptowhitespace\" ))\n");
+  Test( fn, rec( compareFunction := "uptowhitespace" ));
+end);
 
 #############################################################################
 ##

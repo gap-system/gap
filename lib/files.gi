@@ -217,26 +217,6 @@ end );
 
 #############################################################################
 ##
-#M  ReadTest( <filename> )  . . . . . . . . . . . . . . . .  read a test file
-##
-InstallMethod( ReadTest,
-    "string",
-    [ IsString ],
-    function( name )
-    local oldvalue, result, breakOnError;
-	breakOnError := BreakOnError;
-	BreakOnError := false;
-    oldvalue:= SizeScreen();
-    SizeScreen( [ 80 ] );
-    result:= READ_TEST( USER_HOME_EXPAND( name ) );  
-    SizeScreen( oldvalue );
-    BreakOnError := breakOnError;
-    return result;
-    end );
-
-
-#############################################################################
-##
 #M  ReadAsFunction( <filename> )  . . . . . . . . . . read a file as function
 ##
 InstallMethod( ReadAsFunction,
