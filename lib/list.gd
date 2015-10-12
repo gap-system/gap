@@ -2304,7 +2304,7 @@ DeclareGlobalFunction("BlistStringDecode");
 ##
 DeclareGlobalFunction("Average");
 DeclareGlobalFunction("Median");
-DeclareGlobalFunction("Variance")
+DeclareGlobalFunction("Variance");
 
 
 #############################################################################
