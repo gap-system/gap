@@ -1849,7 +1849,7 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  <Description>
 ##  <Ref Func="EnumeratorByFunctions" Label="for a domain and a record"/>
 ##  returns an immutable, dense, and duplicate-free list <M>enum</M> for
-##  which <Ref Func="IsBound" Label="for a list position"/>,
+##  which <Ref Func="IsBound" Label="for a list index"/>,
 ##  element access via <Ref Func="\[\]"/>,
 ##  <Ref Func="Length"/>, and <Ref Func="Position"/>
 ##  are computed via prescribed functions.
@@ -1885,7 +1885,7 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  If the first argument is a domain <A>D</A> then <A>enum</A> lists the
 ##  elements of <A>D</A> (in general <A>enum</A> is <E>not</E> sorted),
 ##  and methods for <Ref Attr="Length"/>,
-##  <Ref Func="IsBound" Label="for a list position"/>,
+##  <Ref Func="IsBound" Label="for a list index"/>,
 ##  and <Ref Func="PrintObj"/> may use <A>D</A>.
 ##  <!-- is this really true for Length?-->
 ##  <P/>

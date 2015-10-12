@@ -227,10 +227,10 @@ DeclareOperationKernel( "Elm0List",
 ##  [ , 2,,,, 7,,,, 11 ]
 ##  ]]></Example>
 ##  <P/>
-##  Note that <Ref Func="IsBound" Label="for a list position"/> and
+##  Note that <Ref Func="IsBound" Label="for a list index"/> and
 ##  <Ref Func="Unbind" Label="unbind a list entry"/> are special
 ##  in that they do not evaluate their argument,
-##  otherwise <Ref Func="IsBound" Label="for a list position"/>
+##  otherwise <Ref Func="IsBound" Label="for a list index"/>
 ##  would always signal an error when it is supposed to return <K>false</K>
 ##  and there would be no way to tell
 ##  <Ref Func="Unbind" Label="unbind a list entry"/>
