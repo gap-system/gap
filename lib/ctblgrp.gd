@@ -403,7 +403,7 @@ DeclareOperation( "IrrDixonSchneider", [ IsGroup, IsRecord ] );
 ##  there is no subgroup in which its reduction has a linear constituent
 ##  with multiplicity one.
 ##  <P/>
-##  If the option unitary is given GAP tries, at extra cost, to find a
+##  If the option <A>unitary</A> is given, &GAP; tries, at extra cost, to find a
 ##  unitary representation (and will issue an error if it cannot do so).
 ##  <Example><![CDATA[
 ##  gap> a5:= AlternatingGroup( 5 );
