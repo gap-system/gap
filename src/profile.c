@@ -323,11 +323,14 @@ void InstallPrintExprFunc(Int pos, void(*expr)(Expr)) {
 static inline UInt getFilenameId(Stat stat)
 {
   UInt id = FILENAMEID_STAT(stat);
-  if(LEN_PLIST(OutputtedFilenameList) < id || !ELM_PLIST(OutputtedFilenameList,id))
+  if(LEN_PLIST(OutputtedFilenameList) < id || ELM_PLIST(OutputtedFilenameList,id) != True)
   {
-    GROW_PLIST(OutputtedFilenameList, id);
-    SET_LEN_PLIST(OutputtedFilenameList, id);
+    if(LEN_PLIST(OutputtedFilenameList) < id) {
+      GROW_PLIST(OutputtedFilenameList, id);
+      SET_LEN_PLIST(OutputtedFilenameList, id);
+    }
     SET_ELM_PLIST(OutputtedFilenameList, id, True);
+    CHANGED_BAG(OutputtedFilenameList);
     fprintf(profileState.Stream, "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
                                   CSTR_STRING(FILENAME_STAT(stat)), (int)id);
   }
