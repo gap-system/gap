@@ -183,7 +183,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
       LogPackageLoadingMessage( PACKAGE_DEBUG,
           "exit InitializePackagesInfoRecords (no pkg directories found)",
           "GAP" );
-      GAPInfo.PackagesInfo:= `rec();
+      GAPInfo.PackagesInfo:= AtomicRecord();
       return;
     fi;
 
@@ -276,7 +276,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
                   elif IsRecord( record.PackageDoc ) then
                     record.PackageDoc:= [ record.PackageDoc ];
                   fi;
-                  Add( GAPInfo.PackagesInfo, record );
+                  Add( GAPInfo.PackagesInfo, `record );
                 fi;
               fi;
             fi;
@@ -295,12 +295,12 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     for r in GAPInfo.PackagesInfo do
       name:= `LowercaseString( r.PackageName );
       if IsBound( record.( name ) ) then
-        Add( record.( name ), r );
+        record.( name ) := `Concatenation( record.( name ), [ r ] );
       else
-        record.( name ):= [ r ];
+        record.( name ):= `[ r ];
       fi;
     od;
-    GAPInfo.PackagesInfo:= `record;
+    GAPInfo.PackagesInfo:= AtomicRecord(record);
 
     GAPInfo.PackagesInfoInitialized:= true;
     LogPackageLoadingMessage( PACKAGE_DEBUG,
@@ -2180,11 +2180,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     TestMandat( record, "PackageInfoURL", IsString, "a string" );
 
     if TestOption( record, "SourceRepository", IsRecord, "a record" ) then
-      TestMandat( record.SourceRepository, "Type",
-         x -> x in [ "git", "hg", "svn", "cvs" ],
-         Concatenation("one of \"git\", \"hg\", \"svn\", \"cvs\".\n",
-           "If you are using another VCS, please contact GAP developers to extend this list." ) );
-      TestMandat( record.SourceRepository, "URL", IsString, "a string" );
+      if IsBound( record.SourceRepository ) then
+        TestMandat( record.SourceRepository, "Type", IsString, "a string" );
+        TestMandat( record.SourceRepository, "URL", IsString, "a string" );
+      fi;  
     fi;
     TestOption( record, "IssueTrackerURL", IsString, "a string" );
     TestOption( record, "SupportEmail", IsString, "a string" );
@@ -3382,4 +3381,3 @@ InstallGlobalFunction( ShowPackageVariables, function( arg )
 #############################################################################
 ##
 #E
-

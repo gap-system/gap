@@ -356,8 +356,8 @@ BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfile, gap, other
 ##  and reads the file <testfile> (a path relative to the package directory).
 ##  If <other> is `true' then all other available packages are also loaded.
 ##
-##  The file <testfile> can either be a file that contains `ReadTest'
-##  or `Test' statements and therefore must be read with `Read',
+##  The file <testfile> can either be a file that contains 
+##  `Test' statements and therefore must be read with `Read',
 ##  or it can be a file that itself must be read with `Test';
 ##  the latter is detected from the occurrence of a substring
 ##  `"START_TEST"' in the file.

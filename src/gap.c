@@ -2889,10 +2889,10 @@ Obj FuncKERNEL_INFO(Obj self) {
         str = NEW_STRING(lenstr2);
     else
         str = NEW_STRING(lenstr);
-    SyStrncat(CSTR_STRING(str),sysenviron[i],lenstr2);
+    strncat(CSTR_STRING(str),sysenviron[i],lenstr2);
     r = RNamName(CSTR_STRING(str));
     *(CSTR_STRING(str)) = 0;
-    SyStrncat(CSTR_STRING(str),p, lenstr);
+    strncat(CSTR_STRING(str),p, lenstr);
     SET_LEN_STRING(str, lenstr);
     SHRINK_STRING(str);
     AssPRec(tmp,r , str);

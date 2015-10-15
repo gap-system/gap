@@ -245,6 +245,7 @@ extern  Obj             GcdInt (
                                 Obj                 opR );
 
 
+extern Int CLog2Int(Int intnum);
 extern Obj FuncLog2Int( Obj self, Obj intnum);
 
 extern Obj AInvInt ( Obj gmp );

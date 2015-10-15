@@ -254,6 +254,20 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
+*F  RegisterPackageTNUM( <name>, <typeObjFunc> )
+**
+**  Allocates a TNUM for use by a package. The parameters <name> and
+**  <typeObjFunc> are used to initialize the relevant entries in the
+**  InfoBags and TypeObjFuncs arrays.
+**
+**  If allocation fails (e.g. because no more TNUMs are available),
+**  a negative value is returned.
+*/
+Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
+
+
+/****************************************************************************
+**
 
 *S  T_<name>  . . . . . . . . . . . . . . . . symbolic names for object types
 *S  FIRST_CONSTANT_TNUM, LAST_CONSTANT_TNUM . . . . range of constant   types
@@ -430,6 +444,11 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define TESTED (1 << 9)
 #define FIXED_REGION (1 << 10)
 
+#if LAST_COPYING_TNUM > 254
+#error LAST_COPYING_TNUM out of range
+#endif
+
+
 /****************************************************************************
 **
 *S  T_BODY  . . . . . . . . . . . . . . . . . . . . type of function body bag
@@ -444,7 +463,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
-
 *F  TNUM_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . type of an object
 **
 **  'TNUM_OBJ' returns the type of the object <obj>.

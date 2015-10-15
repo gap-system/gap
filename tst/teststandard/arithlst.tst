@@ -12,7 +12,7 @@ gap> START_TEST("arithlst.tst");
 #############################################################################
 ##
 ##  Parametrize the output; if `error' has the value `Error' then only the
-##  first error in each call is printed in the `ReadTest' run,
+##  first error in each call is printed in the `Test' run,
 ##  if the value is `Print' then all errors are printed.
 ##
 gap> error:= Print;;

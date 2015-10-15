@@ -49,6 +49,7 @@
 
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
 
+
 /**************************************************************************
  * **
  * **
@@ -64,6 +65,7 @@ static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
 Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) )
 {
     HashLock(0);
+
     if (lastFreePackageTNUM > LAST_PACKAGE_TNUM)
         return -1;
 

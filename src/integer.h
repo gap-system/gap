@@ -223,6 +223,7 @@ extern  Obj             GcdInt (
             Obj                 opR );
 
 
+extern Int CLog2Int(Int a);
 extern Obj FuncLog2Int( Obj self, Obj intnum);
 
 /****************************************************************************
