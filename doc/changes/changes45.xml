@@ -221,7 +221,7 @@ printed and to the output stream, see <Ref Sect="Info Functions" BookName="ref"/
 </Item>
 <Item>
 New function <Ref Func="Test" BookName="ref"/>  which is a more flexible and
-informative substitute of <Ref Func="ReadTest" BookName="ref"/> operation.
+informative substitute of <C>ReadTest</C> operation.
 </Item>
 <Item>
 <C>ConnectGroupAndCharacterTable</C> is replaced by more robust 

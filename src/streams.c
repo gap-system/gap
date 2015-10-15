@@ -304,24 +304,6 @@ static void READ_TEST_OR_LOOP(void)
     }
 }
 
-/****************************************************************************
-**
-*F  READ_TEST() . . . . . . . . . . . . . . . . .  read current input as test
-**
-**  Read the current input as test and close the input stream.
-*/
-static void READ_TEST ( void )
-{
-    READ_TEST_OR_LOOP();
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseTest() ) {
-        ErrorQuit(
-            "Panic: ReadTest cannot close input, this should not happen",
-            0L, 0L );
-    }
-    ClearError();
-}
 
 /****************************************************************************
 **
@@ -1049,52 +1031,6 @@ Obj FuncREAD_STREAM_LOOP (
     /* read the test file                                                  */
     READ_LOOP();
     TLS(IgnoreStdoutErrout) = NULL;
-    return True;
-}
-
-
-/****************************************************************************
-**
-*F  FuncREAD_TEST( <self>, <filename> ) . . . . . . . . . .  read a test file
-*/
-Obj FuncREAD_TEST (
-    Obj                 self,
-    Obj                 filename )
-{
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "ReadTest: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
-
-    /* try to open the file                                                */
-    if ( ! OpenTest( CSTR_STRING(filename) ) ) {
-        return False;
-    }
-
-    /* read the test file                                                  */
-    READ_TEST();
-    return True;
-}
-
-
-/****************************************************************************
-**
-*F  FuncREAD_TEST_STREAM( <self>, <stream> )  . . . . . .  read a test stream
-*/
-Obj FuncREAD_TEST_STREAM (
-    Obj                 self,
-    Obj                 stream )
-{
-    /* try to open the file                                                */
-    if ( ! OpenTestStream(stream) ) {
-        return False;
-    }
-
-    /* read the test file                                                  */
-    READ_TEST();
     return True;
 }
 
@@ -2306,12 +2242,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "READ_STREAM_LOOP", 2L, "stream, catchstderrout",
       FuncREAD_STREAM_LOOP, "src/streams.c:READ_STREAM_LOOP" },
-
-    { "READ_TEST", 1L, "filename", 
-      FuncREAD_TEST, "src/streams.c:READ_TEST" },
-
-    { "READ_TEST_STREAM", 1L, "stream",
-      FuncREAD_TEST_STREAM, "src/streams.c:READ_TEST_STREAM" },
 
     { "READ_AS_FUNC", 1L, "filename",
       FuncREAD_AS_FUNC, "src/streams.c:READ_AS_FUNC" },

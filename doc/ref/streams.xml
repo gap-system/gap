@@ -78,9 +78,8 @@ during compilation of &GAP;.
 <Section Label="Operations for Input Streams">
 <Heading>Operations for Input Streams</Heading>
 
-Three operations normally used to read files: <Ref Oper="Read"/>, 
-<Ref Oper="ReadAsFunction"/> and <Ref Oper="ReadTest"/>
-can also be used to read &GAP; input from a
+Two operations normally used to read files: <Ref Oper="Read"/> and
+<Ref Oper="ReadAsFunction"/> can also be used to read &GAP; input from a
 stream. The input is immediately parsed and executed. When reading
 from a stream <A>str</A>, the &GAP; kernel generates calls to
 <C>ReadLine(<A>str</A>)</C> to supply text to the parser. 
@@ -126,16 +125,6 @@ gap> Read(i);
 gap> a;
 10
 ]]></Example>
-</Description>
-</ManSection>
-
-
-<ManSection>
-<Oper Name="ReadTest" Arg='input-text-stream' Label="for streams"/>
-
-<Description>
-reads the input-text-stream as  test input until <C>end-of-stream</C> occurs.
-See <Ref Sect="File Operations"/> for details.
 </Description>
 </ManSection>
 

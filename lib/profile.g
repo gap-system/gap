@@ -1033,7 +1033,7 @@ end);
 ##
 ##  <Description>
 ##  <Ref Func="START_TEST"/> and <Ref Func="STOP_TEST"/> may be optionally
-##  used in files that are read via <Ref Func="ReadTest"/>. If used,
+##  used in files that are read via <Ref Func="Test"/>. If used,
 ##  <Ref Func="START_TEST"/> reinitialize the caches and the global
 ##  random number generator, in order to be independent of the reading
 ##  order of several test files. Furthermore, the assertion level
@@ -1064,7 +1064,7 @@ end);
 ##  <F>tst/combinat.tst</F>.
 ##  <P/>
 ##  Note that the functions in <F>tst/testutil.g</F> temporarily replace
-##  <Ref Func="STOP_TEST"/> before they call <Ref Func="ReadTest"/>.
+##  <Ref Func="STOP_TEST"/> before they call <Ref Func="Test"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -246,39 +246,6 @@ DeclareOperation( "Read", [ IsString ] );
 
 #############################################################################
 ##
-#O  ReadTest( <string> )  . . . . . . . . . . . . . . . . .  read a test file
-##
-##  <#GAPDoc Label="ReadTest">
-##  <ManSection>
-##  <Oper Name="ReadTest" Arg='string'/>
-##  
-##  <Description>
-##  reads the test file with name <A>string</A>.
-##  The test file should contain lines of &GAP; input and corresponding output.
-##  The input lines start with the <C>gap> </C> prompt
-##  (or with the <C>> </C> prompt if commands exceed one line).
-##  The output is exactly as would result from typing
-##  in the input interactively to a &GAP; session
-##  (on a screen with 80 characters per line).
-##  <P/>
-##  Optionally, <Ref Func="START_TEST"/> and <Ref Func="STOP_TEST"/> 
-##  may be used in the beginning and end of test files 
-##  to reinitialize the caches and the global 
-##  random number generator in order to be independent of the reading order 
-##  of several test files. 
-##  Furthermore, <Ref Func="START_TEST"/> increases the assertion level 
-##  for the time of the test, and <Ref Func="STOP_TEST"/> sets the 
-##  proportionality factor that is used to output a <Q>&GAP;stone</Q> 
-##  speed ranking after the file has been completely processed.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "ReadTest", [ IsString ] );
-
-
-#############################################################################
-##
 #O  ReadAsFunction( <filename> ) . . . . . . . . . . read a file as function
 ##
 ##  <#GAPDoc Label="ReadAsFunction">

@@ -18,66 +18,6 @@
   
 ################ ???????????????????????????? ###############################
 
-# this doesn't seem to do something sensible, outdated? (FL)
-#############################################################################
-##
-#F  HELP_TEST_EXAMPLES( <book>, <chapter> ) . . . . . . . . test the examples
-##
-HELP_TEST_EXAMPLES\?\?\? := function( book, chapter )
-    local   info,  chap,  filename,  stream,  examples,  test,  line,
-            size;
-
-    # get the chapter info
-    info := HELP_BOOK_INFO(book);
-    chap := HELP_CHAPTER_INFO( book, chapter );
-    if chap = fail  then
-        return;
-    fi;
-
-    # open the stream and read in the help
-    filename := Filename( info.directories, info.filenames[chapter] );
-    stream := InputTextFile(filename);
-
-    # search for examples
-    examples := false;
-    test := "";
-    repeat
-        line := ReadLine(stream);
-        if line <> fail  then
-
-            # example environment
-            if MATCH_BEGIN(line,"\\beginexample")  then
-                examples := true;
-            elif MATCH_BEGIN(line,"\\endexample")  then
-                examples := false;
-            fi;
-
-            # store the lines
-            if examples and not MATCH_BEGIN(line,"\\beginexample")  then
-                if Length(line) < 5  then
-                    Print( "* ", line );
-                elif line[5] <> '#'  then
-                    line := line{[5..Length(line)]};
-                    Append( test, line );
-                fi;
-            fi;
-        fi;
-    until IsEndOfStream(stream);
-    CloseStream(stream);
-
-    # now do the test
-    stream := InputTextString( test );
-
-    size := SizeScreen();
-    SizeScreen( [ 72, ] );
-    RANDOM_SEED(1);
-
-    ReadTest(stream);
-
-    SizeScreen(size);
-
-end;
-################ ?????????????end???????????? ###############################
 
 #############################################################################
 ##  
