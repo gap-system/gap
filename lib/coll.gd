@@ -1031,6 +1031,7 @@ end );
 ##  <#GAPDoc Label="Iterator">
 ##  <ManSection>
 ##  <Oper Name="Iterator" Arg='listorcoll'/>
+##  <Filt Name="IsStandardIterator" Arg='listorcoll'/>
 ##
 ##  <Description>
 ##  Iterators provide a possibility to loop over the elements of a
@@ -1098,6 +1099,11 @@ end );
 ##  from <M>C</M>, which provides a (partial) mapping from <M>C</M> to the
 ##  positive integers.
 ##  <P/>
+##  The filter <Ref Filt="IsStandardIterator"/> means that the iterator is
+##  implemented as a component object and has components <C>IsDoneIterator</C>
+##  and <C>NextIterator</C> which are bound to the methods of the operations of
+##  the same name for this iterator. 
+##  <!-- (This is used to avoid overhead when looping over such iterators.) -->
 ##  <!--  We wanted to admit an iterator as first argument of <C>Filtered</C>,-->
 ##  <!--  <C>First</C>, <C>ForAll</C>, <C>ForAny</C>, <C>Number</C>.-->
 ##  <!--  This is not yet implemented.-->
@@ -1123,6 +1129,7 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+DeclareFilter("IsStandardIterator");
 DeclareOperation( "Iterator", [ IsListOrCollection ] );
 
 
@@ -1307,6 +1314,9 @@ DeclareGlobalFunction( "TrivialIterator" );
 ##  <Ref Func="IteratorByFunctions"/> does <E>not</E> make a shallow copy of
 ##  <A>record</A>, this record is changed in place
 ##  (see Section &nbsp;<Ref Sect="Creating Objects"/>).
+##  <P/>
+##  Iterators constructed with <Ref Func="IteratorByFunctions"/> are in the
+##  filter <Ref Filt="IsStandardIterator"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

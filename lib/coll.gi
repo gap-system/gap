@@ -976,7 +976,7 @@ InstallGlobalFunction( IteratorByFunctions, function( record )
       Error( "<record> must be a record with components `NextIterator',\n",
              "`IsDoneIterator', and `ShallowCopy'" );
     fi;
-    filter:= IsIteratorByFunctions and IsMutable;
+    filter:= IsIteratorByFunctions and IsStandardIterator and IsMutable;
 
     return Objectify( NewType( IteratorsFamily, filter ), record );
 end );
