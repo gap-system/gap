@@ -475,10 +475,22 @@ Obj ProfileEvalBoolPassthrough(Expr stat)
   return RealEvalBoolFuncs[TNUM_STAT(stat)](stat);
 }
 
+
+
 /****************************************************************************
 **
 ** Activating and deacivating profiling, either at startup or by user request
 */
+
+void outputVersionInfo()
+{
+    fprintf(profileState.Stream, 
+            "{ \"Type\": \"_\", \"Version\":1, \"IsCover\": %s, "
+            "  \"TimeType\": \"%s\"}\n", 
+            profileState.OutputRepeats?"false":"true",
+            profileState.useGetTimeOfDay?"Wall":"CPU");
+  
+}
 
 void enableAtStartup(char* filename, Int repeats)
 {
@@ -521,7 +533,7 @@ void enableAtStartup(char* filename, Int repeats)
 #endif
 #endif
 
-
+    outputVersionInfo();
 }
 
 // This function is for when GAP is started with -c, and
@@ -650,6 +662,7 @@ Obj FuncACTIVATE_PROFILING (
 #endif
     }
 
+    outputVersionInfo();
     HashUnlock(&profileState);
 
     return True;
