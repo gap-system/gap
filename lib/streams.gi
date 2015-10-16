@@ -237,26 +237,6 @@ end );
 
 #############################################################################
 ##
-#M  ReadTest( <input-stream> ) . . . . . . . . read stream as TEST input
-##
-InstallOtherMethod( ReadTest,
-    "input stream",
-    [ IsInputStream ],
-    function( stream )
-    local oldvalue, result, breakOnError;
-	breakOnError := BreakOnError;
-	BreakOnError := false;
-    oldvalue:= SizeScreen();
-    SizeScreen( [ 80 ] );
-    result:= READ_TEST_STREAM( stream );
-    SizeScreen( oldvalue );
- 	BreakOnError := breakOnError;
-    return result;
-    end );
-
-
-#############################################################################
-##
 #M  ReadAsFunction( <input-stream> ) . . . . . . read stream as function
 ##
 InstallOtherMethod( ReadAsFunction,

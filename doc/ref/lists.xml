@@ -140,7 +140,7 @@ matrices and tensors.
 Similarly,
 <Ref Oper="IsBound\[\]"/> is used explicitly mainly in method installations.
 In other situations, one can simply call
-<Ref Func="IsBound" Label="for a list position"/>,
+<Ref Func="IsBound" Label="for a list index"/>,
 which then delegates to <Ref Oper="IsBound\[\]"/>
 if the first argument is a list,
 and to <Ref Oper="IsBound\."/> if the first argument is a record.

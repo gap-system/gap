@@ -631,58 +631,9 @@ UInt SyTimeChildrenSys ( void )
 
 /****************************************************************************
 **
-*F  SyStrlen( <str> ) . . . . . . . . . . . . . . . . . .  length of a string
-**
-**  'SyStrlen' returns the length of the string <str>, i.e.,  the  number  of
-**  characters in <str> that precede the terminating null character.
-*/
-UInt SyStrlen (
-    const Char *         str )
-{
-    return strlen( str );
-}
-
-
-/****************************************************************************
-**
-*F  SyStrcmp( <str1>, <str2> )  . . . . . . . . . . . . . compare two strings
-**
-**  'SyStrcmp' returns an integer greater than, equal to, or less  than  zero
-**  according to whether <str1> is greater  than,  equal  to,  or  less  than
-**  <str2> lexicographically.
-*/
-Int SyStrcmp (
-    const Char *        str1,
-    const Char *        str2 )
-{
-    return strcmp( str1, str2 );
-}
-
-
-/****************************************************************************
-**
-*F  SyStrncmp( <str1>, <str2>, <len> )  . . . . . . . . . compare two strings
-**
-**  'SyStrncmp' returns an integer greater than, equal to,  or less than zero
-**  according  to whether  <str1>  is greater than,  equal  to,  or less than
-**  <str2> lexicographically.  'SyStrncmp' compares at most <len> characters.
-*/
-Int SyStrncmp (
-    const Char *        str1,
-    const Char *        str2,
-    UInt                len )
-{
-    return strncmp( str1, str2, len );
-}
-
-/****************************************************************************
-**
 *F  SyIntString( <string> ) . . . . . . . . extract a C integer from a string
 **
 */
-
-
-
 
 #if HAVE_ATOL
 Int SyIntString( const Char *string) {
@@ -711,27 +662,7 @@ Int SyIntString( const Char *string) {
   return sign*x;
 }
 
-
 #endif
-
-
-
-/****************************************************************************
-**
-*F  SyStrncat( <dst>, <src>, <len> )  . . . . .  append one string to another
-**
-**  'SyStrncat'  appends characters from the  <src>  to <dst>  until either a
-**  null character  is  encoutered  or  <len>  characters have   been copied.
-**  <dst> becomes the concatenation of <dst> and <src>.  The resulting string
-**  is always null terminated.  'SyStrncat' returns a pointer to <dst>.
-*/
-Char * SyStrncat (
-    Char *              dst,
-    const Char *        src,
-    UInt                len )
-{
-    return strncat( dst, src, len );
-}
 
 
 #ifndef HAVE_STRLCPY

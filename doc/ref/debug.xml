@@ -692,7 +692,6 @@ Test files are used to check that &GAP; produces correct results in
 certain computations. A selection of test files for the library can be
 found in the <F>tst</F> directory of the &GAP; distribution.
 
-<#Include Label="ReadTest">
 <#Include Label="StartStopTest">
 
 <#Include Label="[1]{testinstall.g}">

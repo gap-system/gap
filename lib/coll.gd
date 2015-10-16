@@ -1070,6 +1070,7 @@ end );
 ##  <#GAPDoc Label="Iterator">
 ##  <ManSection>
 ##  <Oper Name="Iterator" Arg='listorcoll'/>
+##  <Filt Name="IsStandardIterator" Arg='listorcoll'/>
 ##
 ##  <Description>
 ##  Iterators provide a possibility to loop over the elements of a
@@ -1137,6 +1138,11 @@ end );
 ##  from <M>C</M>, which provides a (partial) mapping from <M>C</M> to the
 ##  positive integers.
 ##  <P/>
+##  The filter <Ref Filt="IsStandardIterator"/> means that the iterator is
+##  implemented as a component object and has components <C>IsDoneIterator</C>
+##  and <C>NextIterator</C> which are bound to the methods of the operations of
+##  the same name for this iterator. 
+##  <!-- (This is used to avoid overhead when looping over such iterators.) -->
 ##  <!--  We wanted to admit an iterator as first argument of <C>Filtered</C>,-->
 ##  <!--  <C>First</C>, <C>ForAll</C>, <C>ForAny</C>, <C>Number</C>.-->
 ##  <!--  This is not yet implemented.-->
@@ -1162,6 +1168,7 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+DeclareFilter("IsStandardIterator");
 DeclareOperation( "Iterator", [ IsListOrCollection ] );
 
 
@@ -1346,6 +1353,9 @@ DeclareGlobalFunction( "TrivialIterator" );
 ##  <Ref Func="IteratorByFunctions"/> does <E>not</E> make a shallow copy of
 ##  <A>record</A>, this record is changed in place
 ##  (see Section &nbsp;<Ref Sect="Creating Objects"/>).
+##  <P/>
+##  Iterators constructed with <Ref Func="IteratorByFunctions"/> are in the
+##  filter <Ref Filt="IsStandardIterator"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1888,7 +1898,7 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  <Description>
 ##  <Ref Func="EnumeratorByFunctions" Label="for a domain and a record"/>
 ##  returns an immutable, dense, and duplicate-free list <M>enum</M> for
-##  which <Ref Func="IsBound" Label="for a list position"/>,
+##  which <Ref Func="IsBound" Label="for a list index"/>,
 ##  element access via <Ref Func="\[\]"/>,
 ##  <Ref Func="Length"/>, and <Ref Func="Position"/>
 ##  are computed via prescribed functions.
@@ -1924,7 +1934,7 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  If the first argument is a domain <A>D</A> then <A>enum</A> lists the
 ##  elements of <A>D</A> (in general <A>enum</A> is <E>not</E> sorted),
 ##  and methods for <Ref Attr="Length"/>,
-##  <Ref Func="IsBound" Label="for a list position"/>,
+##  <Ref Func="IsBound" Label="for a list index"/>,
 ##  and <Ref Func="PrintObj"/> may use <A>D</A>.
 ##  <!-- is this really true for Length?-->
 ##  <P/>

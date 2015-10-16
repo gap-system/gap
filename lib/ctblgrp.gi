@@ -2281,7 +2281,8 @@ end);
 
 BindGlobal("DixonRepGHchi",function(G,H,chi)
 local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
-      sum, A, x, ra, l, rt, rti, rtl, r, alonin, wert, bx, mats, hom, i;
+      sum, A, x, ra, l, rt, rti, rtl, r, alonin, wert, bx, mats, hom,
+      i,balonin;
 
   tblG:=UnderlyingCharacterTable(chi);
   if UnderlyingGroup(tblG)<>G then
@@ -2313,6 +2314,8 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
 
   Info(InfoCharacterTable,2,"DixonRepGHchi ",Size(G),",",Size(H),":\n",chi);
 
+  Info(InfoCharacterTable,3,"theta= ",theta);
+
   ch:=ConjugacyClasses(tblH);
 
   alpha:=function(t)
@@ -2331,7 +2334,7 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
     od;
     return s;
   end;
-
+  
   AF:=function(elm)
   local elmi,mat,i,j;
     elmi:=elm^-1;
@@ -2365,7 +2368,8 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
       until rtl[rti]=false;
       rtl[rti]:=true;
       r:=rt[rti];
-      r:=Random(H)*r;
+      i:=Random(H);
+      r:=i*r;
       rti:=rti+1;
       for i in [1..l] do
 	A[i][l+1]:=alpha(r/x[i]);
@@ -2379,6 +2383,7 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
       if RankMat(A)>ra then
 	ra:=ra+1;
       else
+	Unbind(A[l]);Unbind(x[l]);
         l:=l-1; #overwrite last
       fi;
     od;
@@ -2393,13 +2398,14 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
     if wert<bw then
       bx:=x;
       bw:=wert;
+      balonin:=alonin;
     fi;
   until bw<Size(G) or cnt>30 
 	# bw*1000<average
         or bw*1000*cnt<sum;
   x:=bx;
 
-  mats:=List(GeneratorsOfGroup(G),i->AF(i)*alonin);
+  mats:=List(GeneratorsOfGroup(G),i->AF(i)*balonin);
 
   if ValueOption("unitary")=true then
     r:=CholeskyDecomp(alonin^-1);

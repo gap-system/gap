@@ -221,7 +221,7 @@ Obj FuncRandomListMT(Obj self, Obj mtstr, Obj list)
   len = LEN_LIST(list);
   if (len == 0) return Fail;
   mt = (UInt4*) CHARS_STRING(mtstr);
-  lg = 31 - INT_INTOBJ(FuncLog2Int((Obj)0, INTOBJ_INT(len)));
+  lg = 31 - CLog2Int(len);
   for (a = nextrandMT_int32(mt) >> lg;
        a >= len;
        a = nextrandMT_int32(mt) >> lg

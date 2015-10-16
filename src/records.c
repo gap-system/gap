@@ -145,7 +145,7 @@ UInt            RNamName (
       LockNames(1);
       /* look through the table until we find a free slot or the global      */
       while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
-	   && SyStrncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
+	   && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
 	  pos = (pos % SizeRNam) + 1;
       }
     }

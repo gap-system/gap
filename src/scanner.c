@@ -394,8 +394,8 @@ UInt OpenInput (
 
     /* Handle *defin*; redirect *errin* to *defin* if the default
      * channel is already open. */
-    if (! SyStrcmp(filename, "*defin*") ||
-        (! SyStrcmp(filename, "*errin*") && TLS(DefaultInput)) )
+    if (! strcmp(filename, "*defin*") ||
+        (! strcmp(filename, "*errin*") && TLS(DefaultInput)) )
         return OpenDefaultInput();
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
@@ -978,13 +978,13 @@ UInt OpenOutput (
         return 0;
 
     /* in test mode keep printing to test output file for breakloop output */
-    if ( TLS(TestInput) != 0 && ! SyStrcmp( filename, "*errout*" ) )
+    if ( TLS(TestInput) != 0 && ! strcmp( filename, "*errout*" ) )
         return 1;
 
     /* Handle *defout* specially; also, redirect *errout* if we already
      * have a default channel open. */
-    if ( ! SyStrcmp( filename, "*defout*" ) ||
-         (! SyStrcmp( filename, "*errout*" ) && TLS(threadID) != 0) )
+    if ( ! strcmp( filename, "*defout*" ) ||
+         (! strcmp( filename, "*errout*" ) && TLS(threadID) != 0) )
         return OpenDefaultOutput();
 
     /* try to open the file                                                */
@@ -1130,7 +1130,7 @@ UInt OpenAppend (
     if ( TLS(TestInput) != 0 && ! strcmp( filename, "*errout*" ) )
         return 1;
     
-    if ( ! SyStrcmp( filename, "*defout*") )
+    if ( ! strcmp( filename, "*defout*") )
         return OpenDefaultOutput();
 
     /* try to open the file                                                */
@@ -1371,7 +1371,7 @@ Char GetLine ( void )
 
             /* there may be one line waiting                               */
             if ( TLS(TestLine)[0] != '\0' ) {
-                SyStrncat( TLS(In), TLS(TestLine), sizeof(TLS(Input)->line) );
+                strncat( TLS(In), TLS(TestLine), sizeof(TLS(Input)->line) );
                 TLS(TestLine)[0] = '\0';
             }
 

@@ -878,7 +878,7 @@ that reflects exactly the required filters.
 </Item>
 
 <Item>
-In test files that are read with <Ref BookName="ref" Func="ReadTest"/>,
+In test files that are read with <C>ReadTest</C>,
 the assertion level is set to 2 between <C>START_TEST</C>
 and <C>STOP_TEST</C>.
 This may result in runtimes for the tests that are substantially longer
@@ -980,7 +980,7 @@ New Conway polynomials provided by John Bray and Kate Minola have been added.
 </Item>
 
 <Item>
-The <Ref BookName="ref" Func="ReadTest"/>
+The <C>ReadTest</C>
  methods for strings (filenames) and streams now automatically set
 the screen width (see <Ref BookName="ref" Func="SizeScreen"/>) to 80 before the tests,
 and reset it afterwards.

@@ -661,7 +661,7 @@ InstallMethod( InverseGeneralMapping, "via generators/images", true,
 function( hom )
 local mapi;
   mapi:=MappingGeneratorsImages(hom);
-  mapi:=GroupGeneralMappingByImagesNC( Range( hom ),   Source( hom ),
+  mapi:=GroupGeneralMappingByImagesNC( Image( hom ),   Source( hom ),
                                       mapi[2], mapi[1] );
   if HasIsSurjective(hom) then
     SetIsTotal(mapi,IsSurjective(hom));

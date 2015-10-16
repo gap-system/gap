@@ -12,7 +12,6 @@
 **  This file implements the  functions  handling  GMP integers.
 **
 */
-#include        <sys/mman.h>
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* garbage collector               */
@@ -612,6 +611,25 @@ Obj FuncIntHexString( Obj self,  Obj str )
   }
 }
 
+/****************************************************************************
+**  
+**  Implementation of Log2Int for C integers.
+*/
+
+Int CLog2Int(Int a)
+{
+  Int res, mask;
+  if (a < 0) a = -a;
+  if (a < 1) return -1;
+  if (a < 65536) {
+    for(mask = 2, res = 0; ;mask *= 2, res += 1) {
+      if(a < mask) return res;
+    }
+  }
+  for(mask = 65536, res = 15; ;mask *= 2, res += 1) {
+    if(a < mask) return res;
+  }
+}
 
 /****************************************************************************
 **
@@ -621,20 +639,13 @@ Obj FuncIntHexString( Obj self,  Obj str )
 */
 Obj FuncLog2Int( Obj self, Obj integer)
 {
-  Int res, d;
+  Int d;
   Int a, len;
-  Int mask;
   TypLimb dmask;
   
   /* case of small ints                                                    */
   if (IS_INTOBJ(integer)) {
-    a = INT_INTOBJ(integer);
-    if (a < 0) a = -a;
-    res = NR_SMALL_INT_BITS;
-    for(res = NR_SMALL_INT_BITS, mask = (Int)1 << NR_SMALL_INT_BITS;
-        (mask & a) == 0 && mask != (Int)0;
-        mask = mask >> 1, res--);
-    return INTOBJ_INT(res);
+    return INTOBJ_INT(CLog2Int(INT_INTOBJ(integer)));
   }
 
   /* case of long ints                                                     */
@@ -2538,23 +2549,6 @@ static StructGVarFunc GVarFuncs [] = {
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-
-static void *allocForGmp(size_t size) {
-  return mmap((void *)0, size, PROT_READ| PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-}
-
-static void *reallocForGmp (void *old, size_t old_size, size_t new_size) {
-  void * newptr = allocForGmp(new_size);
-  size_t common_size = (new_size < old_size) ? new_size:old_size;
-  memcpy(newptr, old, common_size);
-  munmap(old, old_size);
-  return newptr;
-}
-
-static  void freeForGmp (void *ptr, size_t size) {
-  munmap(ptr, size);
-}
-
 static Int InitKernel ( StructInitInfo * module )
 {
   UInt                t1,  t2;
@@ -2563,8 +2557,6 @@ static Int InitKernel ( StructInitInfo * module )
     FPUTS_TO_STDERR("Panic, GMP limb size mismatch\n");
     SyExit( 1 ); 
   }
-
-   mp_set_memory_functions( allocForGmp, reallocForGmp, freeForGmp); 
 
   /* init filters and functions                                            */
   InitHdlrFiltsFromTable( GVarFilts );

@@ -38,5 +38,5 @@ DeclareAttribute("AsInverseMonoid", IsCollection);
 DeclareOperation("AsInverseSubsemigroup", [IsDomain, IsCollection]);
 DeclareOperation("AsInverseSubmonoid", [IsDomain, IsCollection]);
 
-DeclareAttribute("ReverseNaturalPartialOrder", IsInverseSemigroup);
-DeclareAttribute("NaturalPartialOrder", IsInverseSemigroup);
+DeclareAttribute("ReverseNaturalPartialOrder", IsSemigroup);
+DeclareAttribute("NaturalPartialOrder", IsSemigroup);

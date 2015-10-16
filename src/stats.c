@@ -425,6 +425,8 @@ Obj             IS_DONE_ITER;
 
 Obj             NEXT_ITER;
 
+Obj             STD_ITER;
+
 UInt            ExecFor (
     Stat                stat )
 {
@@ -435,6 +437,8 @@ UInt            ExecFor (
     Obj                 elm;            /* one element of the list         */
     Stat                body;           /* body of loop                    */
     UInt                i;              /* loop variable                   */
+    Obj                 nfun, dfun;     /* functions for NextIterator and
+                                           IsDoneIterator                  */  
 
     /* get the variable (initialize them first to please 'lint')           */
     if ( IS_REFLVAR( ADDR_STAT(stat)[0] ) ) {
@@ -501,11 +505,20 @@ UInt            ExecFor (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
+            /* this can avoid method selection overhead on iterator        */
+            dfun = ElmPRec( list, RNamName("IsDoneIterator") );
+            nfun = ElmPRec( list, RNamName("NextIterator") );
+        } else {
+            dfun = IS_DONE_ITER;
+            nfun = NEXT_ITER;
+        }
+
         /* loop over the iterator                                          */
-        while ( CALL_1ARGS( IS_DONE_ITER, list ) == False ) {
+        while ( CALL_1ARGS( dfun, list ) == False ) {
 
             /* get the element and assign it to the variable               */
-            elm = CALL_1ARGS( NEXT_ITER, list );
+            elm = CALL_1ARGS( nfun, list );
             if      ( vart == 'l' )  ASS_LVAR( var, elm );
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
@@ -543,6 +556,8 @@ UInt            ExecFor2 (
     Stat                body1;          /* first  stat. of body of loop    */
     Stat                body2;          /* second stat. of body of loop    */
     UInt                i;              /* loop variable                   */
+    Obj                 nfun, dfun;     /* functions for NextIterator and
+                                           IsDoneIterator                  */  
 
     /* get the variable (initialize them first to please 'lint')           */
     if ( IS_REFLVAR( ADDR_STAT(stat)[0] ) ) {
@@ -615,11 +630,20 @@ UInt            ExecFor2 (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
+            /* this can avoid method selection overhead on iterator        */
+            dfun = ElmPRec( list, RNamName("IsDoneIterator") );
+            nfun = ElmPRec( list, RNamName("NextIterator") );
+        } else {
+            dfun = IS_DONE_ITER;
+            nfun = NEXT_ITER;
+        }
+
         /* loop over the iterator                                          */
-        while ( CALL_1ARGS( IS_DONE_ITER, list ) == False ) {
+        while ( CALL_1ARGS( dfun, list ) == False ) {
 
             /* get the element and assign it to the variable               */
-            elm = CALL_1ARGS( NEXT_ITER, list );
+            elm = CALL_1ARGS( nfun, list );
             if      ( vart == 'l' )  ASS_LVAR( var, elm );
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
@@ -663,6 +687,8 @@ UInt            ExecFor3 (
     Stat                body2;          /* second stat. of body of loop    */
     Stat                body3;          /* third  stat. of body of loop    */
     UInt                i;              /* loop variable                   */
+    Obj                 nfun, dfun;     /* functions for NextIterator and
+                                           IsDoneIterator                  */  
 
     /* get the variable (initialize them first to please 'lint')           */
     if ( IS_REFLVAR( ADDR_STAT(stat)[0] ) ) {
@@ -742,11 +768,20 @@ UInt            ExecFor3 (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
+            /* this can avoid method selection overhead on iterator        */
+            dfun = ElmPRec( list, RNamName("IsDoneIterator") );
+            nfun = ElmPRec( list, RNamName("NextIterator") );
+        } else {
+            dfun = IS_DONE_ITER;
+            nfun = NEXT_ITER;
+        }
+
         /* loop over the iterator                                          */
-        while ( CALL_1ARGS( IS_DONE_ITER, list ) == False ) {
+        while ( CALL_1ARGS( dfun, list ) == False ) {
 
             /* get the element and assign it to the variable               */
-            elm = CALL_1ARGS( NEXT_ITER, list );
+            elm = CALL_1ARGS( nfun, list );
             if      ( vart == 'l' )  ASS_LVAR( var, elm );
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
@@ -2178,6 +2213,7 @@ static Int InitKernel (
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );
     ImportFuncFromLibrary( "IsDoneIterator", &IS_DONE_ITER );
     ImportFuncFromLibrary( "NextIterator",   &NEXT_ITER );
+    ImportFuncFromLibrary( "IsStandardIterator",   &STD_ITER );
 
     /* install executors for non-statements                                */
     for ( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {

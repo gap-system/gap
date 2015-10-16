@@ -454,7 +454,7 @@ end );
 ##  <Var Name="GAPInfo.TestData"/>
 ##
 ##  <Description>
-##  This is a mutable record used in files that are read via <C>ReadTest</C>.
+##  This is a mutable record used in files that are read via <C>Test</C>.
 ##  These files contain the commands <C>START_TEST</C> and <C>STOP_TEST</C>,
 ##  which set, read, and unbind the components <C>START_TIME</C> and <C>START_NAME</C>.
 ##  The function <C>RunStandardTests</C> also uses a component <C>results</C>.

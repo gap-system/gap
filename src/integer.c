@@ -513,6 +513,26 @@ void            PrintInt (
 }
 
 /****************************************************************************
+**  
+**  Implementation of Log2Int for C integers.
+*/
+
+Int CLog2Int(Int a)
+{
+  Int res, mask;
+  if (a < 0) a = -a;
+  if (a < 1) return -1;
+  if (a < 65536) {
+    for(mask = 2, res = 0; ;mask *= 2, res += 1) {
+      if(a < mask) return res;
+    }
+  }
+  for(mask = 65536, res = 15; ;mask *= 2, res += 1) {
+    if(a < mask) return res;
+  }
+}
+
+/****************************************************************************
 **
 *F  FuncLog2Int( <self>, <int> ) . . . . . . . . . nr of bits of integer - 1
 **
@@ -520,20 +540,13 @@ void            PrintInt (
 */
 Obj FuncLog2Int( Obj self, Obj integer)
 {
-  Int res, d;
+  Int d;
   Int a, len;
-  Int mask;
   TypDigit dmask;
 
   /* case of small ints */
   if (IS_INTOBJ(integer)) {
-    a = INT_INTOBJ(integer);
-    if (a < 0) a = -a;
-    res = NR_SMALL_INT_BITS;
-    for(res = NR_SMALL_INT_BITS, mask = (Int)1 << NR_SMALL_INT_BITS;
-        (mask & a) == 0 && mask != (Int)0;
-        mask = mask >> 1, res--);
-    return INTOBJ_INT(res);
+    return INTOBJ_INT(CLog2Int(INT_INTOBJ(integer)));
   }
 
   /* case of long ints */

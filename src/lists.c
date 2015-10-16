@@ -2585,7 +2585,6 @@ static Int InitKernel (
         IsbvListFuncs[ type ] = IsbListObject;
     }
 
-
     /* make and install the 'ELM0_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         Elm0ListFuncs[  type ] = Elm0ListError;
@@ -3081,6 +3080,3 @@ StructInitInfo * InitInfoLists ( void )
 
 *E  lists.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-
