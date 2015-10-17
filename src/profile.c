@@ -206,6 +206,7 @@ void ProfileLineByLineOutFunction(Obj func)
 ** of GAP's execution, before anything else is done.
 */
 
+#if HAVE_POPEN
 static int endsWithgz(char* s)
 {
   s = strrchr(s, '.');
@@ -214,11 +215,12 @@ static int endsWithgz(char* s)
   else
     return 0;
 }
+#endif
 
 static void fopenMaybeCompressed(char* name, struct ProfileState* ps)
 {
-  char popen_buf[4096];
 #if HAVE_POPEN
+  char popen_buf[4096];
   if(endsWithgz(name) && strlen(name) < 3000)
   {
     strcpy(popen_buf, "gzip > ");
