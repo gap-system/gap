@@ -752,7 +752,6 @@ ReadLib( "helpview.gi"  );
 IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
 # allow type determination of IMPLICATIONS without using it
 TypeObj(IMPLICATIONS[1]);
-HIDDEN_IMPS:=HIDDEN_IMPS{[Length(HIDDEN_IMPS),Length(HIDDEN_IMPS)-1..1]};
 #T shouldn't this better be at the end of reading the library?
 #T and what about implications installed in packages?
 #T (put later installations to the front?)

@@ -450,15 +450,19 @@ Obj FuncIS_EQUAL_FLAGS (
 }
 
 
-/****************************************************************************
-**
-*F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . subset test
-*/
+
+
+
 Int IsSubsetFlagsCalls;
 Int IsSubsetFlagsCalls1;
 Int IsSubsetFlagsCalls2;
 
-Obj FuncIS_SUBSET_FLAGS (
+/****************************************************************************
+**
+*F  UncheckedIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) subset test with 
+*F                                                         no safety check
+*/
+Obj UncheckedIS_SUBSET_FLAGS (
     Obj                 self,
     Obj                 flags1,
     Obj                 flags2 )
@@ -469,21 +473,6 @@ Obj FuncIS_SUBSET_FLAGS (
     UInt *              ptr2;
     Int                 i;
     Obj                 trues;
-
-    /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
-        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags1), 0L,
-            "you can replace <flags1> via 'return <flags1>;'" );
-    }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
-        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags2), 0L,
-            "you can replace <flags2> via 'return <flags2>;'" );
-    }
-    if ( flags1 == flags2 ) {
-        return True;
-    }
 
     /* do the real work                                                    */
 #ifdef COUNT_OPERS
@@ -554,6 +543,29 @@ Obj FuncIS_SUBSET_FLAGS (
     return True;
 }
 
+/****************************************************************************
+**
+*F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . subset test
+*/
+Obj FuncIS_SUBSET_FLAGS (
+    Obj                 self,
+    Obj                 flags1,
+    Obj                 flags2 )
+{
+    /* do some correctness checks                                            */
+    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
+        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags1), 0L,
+            "you can replace <flags1> via 'return <flags1>;'" );
+    }
+    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
+        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags2), 0L,
+            "you can replace <flags2> via 'return <flags2>;'" );
+    }
+    
+    return UncheckedIS_SUBSET_FLAGS(self, flags1, flags2);
+}
 
 /****************************************************************************
 **
@@ -762,6 +774,129 @@ Obj FuncAND_FLAGS (
     return flags;
 }
 
+Obj HIDDEN_IMPS;
+Obj WITH_HIDDEN_IMPS_FLAGS_CACHE;
+static const Int hidden_imps_cache_length = 2003;
+
+/* Forward declaration of FuncFLAGS_FILTER */
+Obj FuncFLAGS_FILTER(Obj self, Obj oper);
+    
+/****************************************************************************
+**
+*F  FuncInstallHiddenTrueMethod( <filter>, <filters> ) Add a hidden true method
+*/
+Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
+{
+    Obj imp = FuncFLAGS_FILTER(0, filter);
+    Obj imps = FuncFLAGS_FILTER(0, filters);
+    UInt len = LEN_PLIST(HIDDEN_IMPS);
+    GROW_PLIST(HIDDEN_IMPS, len + 2);
+    SET_LEN_PLIST(HIDDEN_IMPS, len + 2);
+    ELM_PLIST(HIDDEN_IMPS, len + 1) = imp;
+    ELM_PLIST(HIDDEN_IMPS, len + 2) = imps;
+    return 0;
+}
+
+/****************************************************************************
+**
+*F  FuncCLEAR_HIDDEN_IMP_CACHE( <self>, <flags> ) . . . .clear cache of flags
+*/
+Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
+{
+  Int i;
+  Obj flags = FuncFLAGS_FILTER(0, filter);
+  
+  for(i = 1; i < hidden_imps_cache_length * 2 - 1; i += 2)
+  {
+    if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i) &&
+       FuncIS_SUBSET_FLAGS(0, ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i+1), flags) == True)
+    {
+        ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i) = 0;
+        ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i+1) = 0;
+        CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);
+    }
+  }
+  return 0;
+}
+
+/****************************************************************************
+**
+*F  FuncWITH_HIDDEN_IMP_FLAGS( <self>, <flags> ) . . add hidden imps to flags
+*/
+Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
+{
+    Int changed, i;
+    Int hidden_imps_length = LEN_PLIST(HIDDEN_IMPS) / 2;
+    Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % hidden_imps_cache_length;
+    Int hash = base_hash;
+    Int hash_loop = 0;
+    Obj cacheval;
+    Obj old_with, old_flags, new_with, new_flags;
+    Int old_moving;
+    Obj with = flags;
+    
+    /* do some trivial checks - we have to do this so we can use
+     * UncheckedIS_SUBSET_FLAGS                                              */
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags), 0L,
+            "you can replace <flags> via 'return <flags>;'" );
+    }
+    
+    for(hash_loop = 0; hash_loop < 3; ++hash_loop)
+    {
+      cacheval = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1);
+      if(cacheval && cacheval == flags) {
+        return ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2);
+      }
+      hash = (hash * 311 + 61) % hidden_imps_cache_length;
+    }
+    
+    changed = 1;
+    while(changed)
+    {
+      changed = 0;
+      for(i = hidden_imps_length; i >= 1; --i)
+      {
+        if( UncheckedIS_SUBSET_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
+           UncheckedIS_SUBSET_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
+        {
+          with = FuncAND_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1));
+          changed = 1;
+        }
+      }
+    }
+
+    /* add to hash table, shuffling old values along (last one falls off) */
+    hash = base_hash;
+    
+    old_moving = 1;
+    new_with = with;
+    new_flags = flags;
+    
+    for(hash_loop = 0; old_moving && hash_loop < 3; ++hash_loop) {
+      old_moving = 0;
+      if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1))
+      {
+        old_flags = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1);
+        old_with = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2);
+        old_moving = 1;
+      }
+      
+      ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1) = new_flags;
+      ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2) = new_with;
+      
+      if(old_moving)
+      {
+        new_flags = old_flags;
+        new_with = old_with;
+        hash = (hash * 311 + 61) % hidden_imps_cache_length;
+      }
+    }
+    
+    CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);    
+    return with;
+}
 
 /****************************************************************************
 **
@@ -5796,6 +5931,15 @@ static StructGVarFunc GVarFuncs [] = {
     { "IS_EQUAL_FLAGS", 2, "flags1, flags2",
       FuncIS_EQUAL_FLAGS, "src/opers.c:IS_EQUAL_FLAGS" },
 
+    { "CLEAR_HIDDEN_IMP_CACHE", 1, "flags",
+      FuncCLEAR_HIDDEN_IMP_CACHE, "src/opers.c:CLEAR_HIDDEN_IMP_CACHE" },
+    
+    { "WITH_HIDDEN_IMPS_FLAGS", 1, "flags",
+      FuncWITH_HIDDEN_IMPS_FLAGS, "src/opers.c:WITH_HIDDEN_IMPS_FLAGS" },
+         
+    { "InstallHiddenTrueMethod", 2, "filter, filters",
+      FuncInstallHiddenTrueMethod, "src/opers.c:InstallHiddenTrueMethod" },
+          
     { "IS_SUBSET_FLAGS", 2, "flags1, flags2",
       FuncIS_SUBSET_FLAGS, "src/opers.c:IS_SUBSET_FLAGS" },
 
@@ -5997,11 +6141,16 @@ static Int InitKernel (
     ImportGVarFromLibrary( "TYPE_FLAGS", &TYPE_FLAGS );
     TypeObjFuncs[ T_FLAGS ] = TypeFlags;
 
+    
+    /* set up hidden implications                                          */
+    InitGlobalBag( &WITH_HIDDEN_IMPS_FLAGS_CACHE, "src/opers.c:WITH_HIDDEN_IMPS_FLAGS_CACHE");
+    InitGlobalBag( &HIDDEN_IMPS, "src/opers.c:HIDDEN_IMPS");
+    
     /* make the 'true' operation                                           */  
     InitGlobalBag( &ReturnTrueFilter, "src/opers.c:ReturnTrueFilter" );
 
     /* install the (function) copies of global variables                   */
-    /* for the inside-out (kernel to library) interface                    */
+    /*for the inside-out (kernel to library) interface                    */
     InitGlobalBag( &TRY_NEXT_METHOD, "src/opers.c:TRY_NEXT_METHOD" );
 
     ImportFuncFromLibrary( "METHOD_0ARGS", &Method0Args );
@@ -6152,6 +6301,11 @@ static Int InitLibrary (
     C_NEW_STRING_CONST( str, "val" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObjVal, 2, str );
+
+    HIDDEN_IMPS = NEW_PLIST(T_PLIST, 0);
+    SET_LEN_PLIST(HIDDEN_IMPS, 0);
+    WITH_HIDDEN_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, hidden_imps_cache_length * 2);
+    SET_LEN_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hidden_imps_cache_length * 2);
 
     /* make the 'true' operation                                           */  
     ReturnTrueFilter = NewReturnTrueFilter();
