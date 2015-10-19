@@ -221,6 +221,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
         cached := cache[hash];
         if IS_EQUAL_FLAGS( flags, cached![2] )  then
             if    IS_IDENTICAL_OBJ(  data,  cached![ POS_DATA_TYPE ] )
+              and IS_IDENTICAL_OBJ( parent, cached![ POS_PARENT_TYPE] )
               and IS_IDENTICAL_OBJ(  typeOfTypes, TYPE_OBJ(cached) )
             then
                 NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
@@ -247,6 +248,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
     type := [ family, flags ];
     type[POS_DATA_TYPE] := MakeReadOnly(data);
     type[POS_NUMB_TYPE] := NEW_TYPE_NEXT_ID;
+    type[POS_PARENT_TYPE] := parent;
 
     if not IS_IDENTICAL_OBJ(parent,fail) then
         for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
@@ -1057,4 +1059,3 @@ end );
 #############################################################################
 ##
 #E
-
