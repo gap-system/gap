@@ -2152,15 +2152,15 @@ Char * syFgetsNoEdit (
 {
   UInt x = 0;
   int ret = 0;
-  UInt bufno;
-  Char* newlinepos;
-  Char* bufstart;
-  int buflen;
 
   /* if stream is buffered, and the buffer has a full line,
    * grab it -- we could make more use of the buffer, but
    * this covers the majority of cases simply. */
 #ifndef LINE_END_HACK
+  UInt bufno;
+  Char* newlinepos;
+  Char* bufstart;
+  int buflen;
   if(!syBuf[fid].isTTY && syBuf[fid].bufno >= 0) {
     bufno = syBuf[fid].bufno;
     if (syBuffers[bufno].bufstart < syBuffers[bufno].buflen) {
