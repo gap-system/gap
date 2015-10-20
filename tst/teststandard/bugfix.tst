@@ -2825,6 +2825,19 @@ gap> -w+w;
 
 #############################################################################
 #
+#  Changes 4.7.8 -> 4.7.9
+
+#2015/10/20 (Chris Jefferson)
+gap> extS := ExternalSet(SymmetricGroup(4), [1..4],
+>                   GeneratorsOfGroup(SymmetricGroup(4)),
+>                   GeneratorsOfGroup(SymmetricGroup(4)),
+>                   OnRight);
+<xset:[ 1 .. 4 ]>
+gap> ExternalSubset(extS);
+[  ]^G
+
+#############################################################################
+#
 # Tests requiring loading some packages must be performed at the end.
 # Do not put tests that do not need any packages below this line.
 #
