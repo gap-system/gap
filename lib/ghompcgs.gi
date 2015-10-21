@@ -88,6 +88,10 @@ InstallMethod( CompositionMapping2, "method for two pc group automorphisms",
 function( hom1, hom2 )
 local fam,hom, pcgs, pcgsimgs, G;
 
+  # is it automorphism?
+  if Range(hom1)<>Source(hom2) then
+    TryNextMethod();
+  fi;
   pcgs := hom2!.sourcePcgs;
   pcgsimgs := List( hom2!.sourcePcgsImages, 
                     x -> ImageElm(hom1, x ) );
