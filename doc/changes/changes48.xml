@@ -1,0 +1,146 @@
+<Chapter Label="ChangesGAP47toGAP48"> 
+<Heading>Changes between &GAP; 4.7 and &GAP; 4.8</Heading>
+
+This chapter contains an overview of the most important changes
+introduced in &GAP; 4.8.0 release (the beta release of &GAP; 4.8).
+Later it will also contain information about subsequent update 
+releases for &GAP; 4.8.
+
+First of all, the &GAP; development repository is now hosted on GitHub at
+<URL>https://github.com/gap-system/gap</URL>, and &GAP; 4.8 is the first 
+major &GAP; release made from this repository. The public issue tracker
+for the core &GAP; system is located at 
+<URL>https://github.com/gap-system/gap/issues</URL>,
+and you may use appropriate milestones from 
+<URL>https://github.com/gap-system/gap/milestones</URL> to see all changes
+that were introduced in corresponding &GAP; releases. An overview of the
+most significant ones is provided below.
+
+<Section Label="gap480"> 
+<Heading>&GAP; 4.8.0 (Autumn 2015)</Heading>
+
+<Subsection Label="Changes in the core GAP48 system"> 
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.8</Heading>
+
+New features:
+<List>
+<!-- https://github.com/gap-system/gap/pull/192 -->
+<Item>Added support for accessing lists using multiple indices and
+indexing into lists using indices other than positive small integers.
+This allows library or packages to install methods supporting expressions 
+like
+<Log><![CDATA[
+m[1,2];
+m[1,2,3] := x;
+IsBound(m["a","b",Z(7)]);
+Unbind(m[1][2,3])
+]]></Log>
+</Item>
+<Item>
+<!-- https://github.com/gap-system/gap/pull/90 -->
+Added support for partially variadic functions to allow function expressions
+like
+<Log><![CDATA[
+function(a,b,c,arg) ... end;
+]]></Log>
+which would require at least three arguments and assign the first three
+to <A>a</A>, <A>b</A> and <A>c</A> and then a list containing any remaining
+ones to <A>arg</A>.
+<P/>
+This may break an existing code when <A>arg</A> is used as a name of the
+argument which is not the last one.
+</Item>
+</List>
+
+Improved and extended functionality:
+<List>
+<Item>
+<Ref Func="GModuleByMats" BookName="ref"/> and some related functions now
+work for infinite fields, in particular in characteristic 0. However,
+this only applies for functions that do not need the MeatAxe, as that is
+still tied to finite fields.
+</Item>
+<Item>
+The most common cases of <Ref Oper="AddDictionary" BookName="ref"/> 
+on three arguments now bypass method selection, avoiding the cost 
+of determining homogeneity for plain lists of mutable objects.
+</Item>
+<Item> 
+<!-- https://github.com/gap-system/gap/issues/7 -->
+Package authors may optionally specify the source code repository,
+issue tracker and support email address for their package using new
+components in the <File>PackageInfo.g</File> file, which will be used
+to create hyperlinks from the package overview page (see 
+<File>PackageInfo.g</File> from the Example package which you may use
+as a template).
+</Item>
+</List>
+
+Changed functionality:
+<List>  
+<Item>
+As a preparation for the future migration to the multithreaded &GAP;&nbsp;5,
+some language extensions from the <Package>HPC-GAP</Package> project were
+backported to the &GAP; library to help to unify the codebase of both 
+&GAP;&nbsp;4 and &GAP;&nbsp;5. The only change which is not backwards
+compatible is that <C>atomic</C> now is a keyword, and thus is no longer
+a valid identifier. So if you have any variables or functions using that name,
+you will have to change it in &GAP; 4.8.
+</Item>
+</List>
+
+Fixed bugs:
+
+<List>
+<Item>
+A combination of two bugs could lead to a segfault. First off,
+<Ref Func="NullMat" BookName="ref"/> (and various other &GAP; functions),
+when asked to produce matrix over a small field, called 
+<Ref Func="ConvertToMatrixRep" BookName="ref"/>. After this, if the user
+tried to change one of the entries to a value from a larger extension
+field, this resulted in an error. (This is now fixed).
+<P/>
+Unfortunately, the C code catching this error had a bug and allowed
+users to type <Q>return</Q> to continue while ignoring the conversion
+error. This was a bad idea, as the C code would be in an inconsistent
+state at this point, subsequently leading to a crash.
+<P/>
+This, too, has been fixed, by not allowing the user to ignore the error
+by entering <Q>return</Q>.
+</Item>
+<Item>
+<!-- https://github.com/gap-system/gap/pull/243/ -->
+<Ref Oper="PowerMod" BookName="ref"/> produced wrong results for univariate 
+Laurent polynomials when the two polynomial arguments are stored with the 
+same non-zero shift.
+</Item>
+</List>
+
+</Subsection>
+
+<Subsection Label="New and updated packages since GAP 4.7.8"> 
+<Heading>New and updated packages since &GAP; 4.7.8</Heading>
+
+<Index>Packages, new</Index>
+At the time of the release of &GAP; 4.7.8 there were 119 packages 
+redistributed with &GAP;. New packages that have been added to the 
+redistribution since the release of &GAP; 4.7.8 are: 
+
+<List>
+<Item>
+<Package>matgrp</Package> package by Alexander Hulpke, which provides
+an interface to the solvable radical functionality for matrix groups,
+building on constructive recognition.
+</Item>
+</List>
+
+</Subsection>
+
+</Section>
+
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<!-- %% --> 
+<!-- %E -->
