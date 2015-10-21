@@ -61,8 +61,10 @@ local n;
 end;
 
 FILEPRINTSTR:="";
+START:="";
+
 FilePrint:=function(arg)
-  local f,i,p;
+  local f,i,p,a;
   f:=arg[1];
   for i in [2..Length(arg)] do
     if not IsString(arg[i]) then
@@ -77,8 +79,30 @@ FilePrint:=function(arg)
     od;
     p:=Position(FILEPRINTSTR,'\n');
     while p<>fail do
-      AppendTo(f,FILEPRINTSTR{[1..p]});
-      FILEPRINTSTR:=FILEPRINTSTR{[p+1..Length(FILEPRINTSTR)]};
+      if p>76 then
+	# try to find better break point
+	a:=p;
+	p:=76;
+	while p>0 and not FILEPRINTSTR[p] in "]) " do
+	  p:=p-1;
+	od;
+	if p=0 or ForAll([1..p],x->FILEPRINTSTR[x]=' ') then
+	  p:=a;
+	  p:=76;
+	  while p>0 and not FILEPRINTSTR[p] in "," do
+	    p:=p-1;
+	  od;
+	  if p=0 then
+	    p:=a;
+	  fi;
+
+	fi;
+	AppendTo(f,FILEPRINTSTR{[1..p]},"\n");
+	FILEPRINTSTR:=Concatenation(START," ",FILEPRINTSTR{[p+1..Length(FILEPRINTSTR)]});
+      else
+	AppendTo(f,FILEPRINTSTR{[1..p]});
+	FILEPRINTSTR:=FILEPRINTSTR{[p+1..Length(FILEPRINTSTR)]};
+      fi;
       p:=Position(FILEPRINTSTR,'\n');
     od;
 
@@ -98,11 +122,12 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
   defines:=[];
 
   # print current area (as being problematic)
-  problemarea:=function()
-  local l,s;
+  problemarea:=function(arg)
+  local a,l,s;
+    if Length(arg)=0 then a:=10;else a:=arg[1];fi;
     Print("\c\n\n");
     l:=0;
-    for i in [Maximum(1,tnum-200)..tnum-11] do
+    for i in [Maximum(1,tnum-200)..tnum-a-1] do
       s:=tok[i][2];
       if not IsString(s) then
 	s:=String(s);
@@ -115,9 +140,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       Print(s);
     od;
     Print("\n");
-    Print(tok{[Maximum(1,tnum-10)..tnum-1]},"\n------\n",tok{[tnum..tnum+10]},"\n");
+    Print(tok{[Maximum(1,tnum-a)..tnum-1]},"\n------\n",tok{[tnum..tnum+a]},"\n");
     l:=0;
-    for i in [tnum+11..tnum+50] do
+    for i in [tnum+a+1..tnum+50] do
       s:=tok[i][2];
       if not IsString(s) then
 	s:=String(s);
@@ -236,7 +261,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       a:=l{[1..i-1]};
       l:=l{[i..Length(l)]};eatblank();
       i:=Position(TOKENS,a);
-      if a="end" or a="declare" or a="catch" or (a="error" and l{[i..i+2]}=" if") then
+      if a="end" or a="declare" or a="catch" or (a="error" and l{[1..3]}=" if") then
         # special case of `end' token -- blank in name
 	i:=1;
 	while l[i] in CHARSIDS do
@@ -480,12 +505,16 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  Add(l,a);
 	until tok[tnum][2]="\\]" or tok[tnum][2]="]";
 	tnum:=tnum+1; # as ExpectToken("\\]","]");
-	l:=List(l,x->x.name);
-	a:=PermList(l);
-	if Length(l)<>Maximum(l) or a=fail then
+	if not ForAll(l,x->IsBound(x.name)) then
 	  a:=rec(type:="notperm",notperm:=l);
 	else
-	  a:=rec(type:="perm",perm:=a);
+	  l:=List(l,x->x.name);
+	  a:=PermList(l);
+	  if Length(l)<>Maximum(l) or a=fail then
+	    a:=rec(type:="notperm",notperm:=l);
+	  else
+	    a:=rec(type:="perm",perm:=a);
+	  fi;
 	fi;
 
       elif e="[*" then
@@ -1286,8 +1315,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 
 end;
 
+
 GAPOutput:=function(l,f)
-local i,doit,printlist,doitpar,indent,START,t,mulicomm;
+local i,doit,printlist,doitpar,indent,t,mulicomm;
 
    START:="";
    indent:=function(n)
