@@ -1,5 +1,5 @@
 # Magma to GAP converter
-MGMCONVER:="version 0.32, 6/25/15"; # very raw
+MGMCONVER:="version 0.33, 10/21/15"; # very raw
 # (C) Alexander Hulpke
 
 
@@ -367,7 +367,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	# postfacto indexing
 	b:=ReadExpression(["]",","]);
 	if tok[tnum][2]="[" then
-	  ExpectToken("]");
+	  ExpectToken("[");
 	else
 	  # array indexing -- translate to iterated index by opening a parenthesis and keeping
 	  # position
@@ -1353,10 +1353,17 @@ local i,doit,printlist,doitpar,indent,t,mulicomm;
     s:=Length(START);
     p:=Position(str,'\n');
     while Length(str)+s>75 or p<>fail do
-      i:=Minimum(75-s,p);
-      while str[i]<>' ' and str[i]<>'\n' do
+      if p=fail then
+	i:=75-s;
+      else
+	i:=Minimum(75-s,p);
+      fi;
+      while i>0 and str[i]<>' ' and str[i]<>'\n' do
         i:=i-1;
       od;
+      if i=0 then
+	i:=Minimum(75,Length(str));
+      fi;
       FilePrint(f,"#  ",str{[1..i-1]},"\n",START);
       str:=str{[i+1..Length(str)]};
       if p<>fail then
