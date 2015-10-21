@@ -1057,7 +1057,7 @@ gap> ForAll(R, x-> ForAll(R, y-> x^f*y^f=(x*y)^f));
 true
 
 #
-gap> STOP_TEST( "reesmat.tst", 6000000 );
+gap> STOP_TEST( "reesmat.tst", 57630000);
 
 #############################################################################
 ##
