@@ -23,12 +23,14 @@
 
 /****************************************************************************
 **
-
 *F  InitInfoStats() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoProfile ( void );
 
 void RegisterStatWithProfiling(Stat);
+
+
+
 
 void InstallEvalBoolFunc( Int, Obj(*)(Expr));
 void InstallEvalExprFunc( Int, Obj(*)(Expr));
@@ -46,6 +48,23 @@ void ProfileLineByLineOutFunction(Obj o);
 #define PROF_IN_FUNCTION(x)
 #define PROF_OUT_FUNCTION(x)
 #endif
+
+/****************************************************************************
+**
+** We need this to be in the header, so it can be inlined away. The only
+** functionality here which should be publicly used is 'VisitStatIfProfiling'
+*/
+
+extern UInt profileState_Active;
+
+void visitStat(Stat stat);
+
+static inline void VisitStatIfProfiling(Stat stat)
+{
+  if(profileState_Active)
+    visitStat(stat);
+}
+
 
 #endif // GAP_STATS_H
 
