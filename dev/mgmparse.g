@@ -60,6 +60,24 @@ local n;
   return List([1..n],x->m{[1+n*(x-1)..n*x]});
 end;
 
+UnpackNumberList:=function(l)
+local m,i;
+  m:=[];
+  for i in l do
+    if not IsRecord(i) then
+      Add(m,i);
+    elif i.type="N" then
+      Add(m,i.name);
+    elif i.type="U-" and i.arg.type="N" then
+      Add(m,-i.arg.name);
+    else
+      return fail;
+    fi;
+      
+  od;
+  return m;
+end;
+
 FILEPRINTSTR:="";
 START:="";
 
@@ -114,11 +132,12 @@ CHARSOPS:="+-*/,;:=~!";
 
 MgmParse:=function(file)
 local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
-      ExpectToken,doselect,costack,locals,globvars,defines,problemarea,
+      ExpectToken,doselect,costack,locals,globvars,globimp,defines,problemarea,
       f,l,lines,linum,w,a,idslist,tok,tnum,i,sel,osel,e,comment;
 
   locals:=[];
   globvars:=[];
+  globimp:=[];
   defines:=[];
 
   # print current area (as being problematic)
@@ -366,12 +385,12 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	ExpectToken("[");
 	# postfacto indexing
 	b:=ReadExpression(["]",","]);
-	if tok[tnum][2]="[" then
-	  ExpectToken("[");
-	else
+	if tok[tnum][2]="," then
 	  # array indexing -- translate to iterated index by opening a parenthesis and keeping
 	  # position
-	  tok[tnum]:=["O","["];
+	  Error("multi-post-index");
+	else
+	  ExpectToken("]");
 	fi;
 	a:=rec(type:="L",var:=a,at:=b);
       od;
@@ -927,7 +946,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
   end;
 
   ReadBlock:=function(endkey)
-  local l,e,a,aif,b,c,locals,kind,i;
+  local l,e,a,aif,b,c,d,f,locals,kind,i;
     l:=[];
     locals:=[];
 
@@ -1120,14 +1139,18 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	      a:=fail;
 	    fi;
 	  until a=fail;
+	  d:=b;
 	  b:=Concatenation("import from ",b,":\n");
 	  for i in [1..Length(c)] do
+	    Add(globimp,rec(file:=d,func:=c[i].name));
 	    if i>1 then
 	      Append(b,", ");
 	    fi;
 	    Append(b,c[i].name);
 	  od;
-	  Add(l,rec(type:="co",text:=b));
+
+	  #Add(l,rec(type:="co",text:=b));
+
 	  ExpectToken(";",9);
 	elif e[2]="forward" or e[2]="declare verbose"
 	  or e[2]="declare attributes" then
@@ -1258,9 +1281,10 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  fi;
 	  Add(l,a);
 	  ExpectToken(";",14);
-          if ValueOption("inner")<>true and a.type="I" then
-	    Print("> ",a.name," <\n");
-	    AddSet(defines,a.name);
+	  if endkey=false then
+	    # top-level assignment -- global variable
+	    #Print("> ",a.left.name," <\n");
+	    AddSet(defines,a.left.name);
 	  fi;
 	elif e[2]="-:=" then
 	  b:=ReadExpression([";"]);
@@ -1311,7 +1335,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
   # actual work
   a:=ReadBlock(false);
 
-  return rec(used:=globvars,defines:=defines,code:=a[2]);
+  globvars:=Difference(globvars,List(globimp,x->x.func));
+
+  return rec(used:=globvars,import:=globimp,defines:=defines,code:=a[2]);
 
 end;
 
@@ -1566,7 +1592,11 @@ local i,doit,printlist,doitpar,indent,t,mulicomm;
       # permutation
       FilePrint(f,node.perm);
     elif t="notperm" then
-      t:=UnFlat(node.notperm);
+      t:=UnpackNumberList(node.notperm);
+      if t=fail then
+	t:=node.notperm;
+      fi;
+      t:=UnFlat(t);
       if t=fail then
 	t:=node.notperm;
       fi;
@@ -1988,3 +2018,46 @@ local infile, f,l;
   GAPOutput(l,f);
   CloseStream(f);
 end;
+
+
+Project:=function(dir)
+local a,b,c,l,i,j,r,uses,defs,import;
+  # TODO: Move into common namespace
+  a:=DirectoryContents(Concatenation(dir,"/magma"));
+  a:=Filtered(a,x->Length(x)>2 and x{[Length(x)-1..Length(x)]}=".m");
+  l:=[];
+
+  for i in a do
+    c:=i{[1..Length(i)-2]};
+    Print("Reading ",c,"\n");
+    r:=MgmParse(Concatenation(dir,"/magma/",c,".m"));
+    r.filename:=c;
+    Add(l,r);
+    #MagmaConvert(Concatenation(dir,"/magma/",c,".m"),Concatenation(dir,"/translate/",c,".g"));
+  od;
+  uses:=Union(List(l,x->x.used)); # globals used
+  defs:=Union(List(l,x->x.defines)); # globals defined
+  import:=[];
+  for i in l do
+    for j in i.import do
+      if not j.file in a then
+        AddSet(import,j);
+      fi;
+    od;
+  od;
+
+  for i in [1..Length(l)] do
+    c:=[];
+    for j in [1..Length(l)] do
+      if j<>i then
+        c:=Union(c,Intersection(l[i].defines,l[j].defines));
+      fi;
+    od;
+    l[i].clashes:=c;
+  od;
+
+
+  Error();
+  return a;
+end;
+
