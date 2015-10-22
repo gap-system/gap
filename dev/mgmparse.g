@@ -1,5 +1,5 @@
 # Magma to GAP converter
-MGMCONVER:="version 0.33, 10/21/15"; # very raw
+MGMCONVER:="version 0.34, 10/22/15"; # very raw
 # (C) Alexander Hulpke
 
 
@@ -133,12 +133,13 @@ CHARSOPS:="+-*/,;:=~!";
 MgmParse:=function(file)
 local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       ExpectToken,doselect,costack,locals,globvars,globimp,defines,problemarea,
-      f,l,lines,linum,w,a,idslist,tok,tnum,i,sel,osel,e,comment;
+      f,l,lines,linum,w,a,idslist,tok,tnum,i,sel,osel,e,comment,forward;
 
   locals:=[];
   globvars:=[];
   globimp:=[];
   defines:=[];
+  forward:=[];
 
   # print current area (as being problematic)
   problemarea:=function(arg)
@@ -1167,6 +1168,8 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	    fi;
 	    Add(l,rec(type:="co",
 	      text:=Concatenation(b," declaration of ",String(a.name))));
+            Add(forward,a.name);
+
             if tok[tnum][2]="," then
 	      ExpectToken(",",10);
 	    fi;
@@ -1337,19 +1340,29 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 
   globvars:=Difference(globvars,List(globimp,x->x.func));
 
-  return rec(used:=globvars,import:=globimp,defines:=defines,code:=a[2]);
+  return rec(used:=globvars,import:=globimp,defines:=defines,
+             forward:=forward,code:=a[2]);
 
 end;
 
 
 GAPOutput:=function(l,f)
-local i,doit,printlist,doitpar,indent,t,mulicomm;
+local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
 
    START:="";
    indent:=function(n)
      n:=n*2;
      if n<0 then START:=START{[1..Length(START)+n]};
      else Append(START,ListWithIdenticalEntries(n,' '));fi;
+   end;
+
+   # translate identifier
+   traid:=function(s)
+     # TODO: use name space
+     if s in l.namespace then
+       s:=Concatenation(s,"@");
+     fi;
+     return s;
    end;
 
    printlist:=function(arg)
@@ -1418,9 +1431,20 @@ local i,doit,printlist,doitpar,indent,t,mulicomm;
   local t,i,a,b;
     t:=node.type;
     if t="A" then
-      doit(node.left);
-      FilePrint(f,":=");
-      doit(node.right);
+      # special case of declaration assignment
+      if IsBound(node.left.type) and node.left.type="I" and node.left.name
+	in declared then
+	FilePrint(f,"InstallGlobalFunction(");
+	doit(node.left);
+	FilePrint(f,",\n",START);
+	doit(node.right);
+	FilePrint(f,")");
+      else
+	doit(node.left);
+	FilePrint(f,":=");
+	doit(node.right);
+      fi;
+
       FilePrint(f,";\n",START);
       if IsBound(node.implicitassg) then
 	FilePrint(f,"# Implicit generator Assg from previous line.\n",START);
@@ -1461,8 +1485,10 @@ local i,doit,printlist,doitpar,indent,t,mulicomm;
       od;
       FilePrint(f,"# =^= MULTIASSIGN =^=\n",START);
 
-    elif t="I" or t="N" then
+    elif t="N" then
       FilePrint(f,node.name);
+    elif t="I" then
+      FilePrint(f,traid(node.name));
     elif t="co" then
       # commentary
       mulicomm(f,node.text);
@@ -1991,6 +2017,11 @@ local i,doit,printlist,doitpar,indent,t,mulicomm;
   mulicomm(f,t);
   FilePrint(f,"\n");
 
+  declared:=Concatenation(l.mustdeclare,l.forward);
+
+  for i in declared do
+    FilePrint(f,"DeclareGlobalFunction(\"",traid(i),"\");\n\n");
+  od;
 
   for i in l.code do
     doit(i);
@@ -2004,6 +2035,10 @@ local infile, f,l;
 
   infile:=arg[1];
   l:=MgmParse(infile);
+  l.clashes:=[];
+  l.depends:=[];
+  l.mustdeclare:=[];
+  l.namespace:=[];
 
   if Length(arg)>1 and IsString(arg[2]) then
     f:=OutputTextFile(arg[2],false);
@@ -2020,8 +2055,8 @@ local infile, f,l;
 end;
 
 
-Project:=function(dir)
-local a,b,c,l,i,j,r,uses,defs,import;
+Project:=function(dir,pkgname)
+local a,b,c,d,f,l,i,j,r,uses,defs,import,depend,order;
   # TODO: Move into common namespace
   a:=DirectoryContents(Concatenation(dir,"/magma"));
   a:=Filtered(a,x->Length(x)>2 and x{[Length(x)-1..Length(x)]}=".m");
@@ -2048,16 +2083,51 @@ local a,b,c,l,i,j,r,uses,defs,import;
 
   for i in [1..Length(l)] do
     c:=[];
+    d:=[];
     for j in [1..Length(l)] do
       if j<>i then
         c:=Union(c,Intersection(l[i].defines,l[j].defines));
       fi;
+      d:=Union(d,List(Filtered(l[j].import,x->x.file=a[i]),x->x.func));
     od;
     l[i].clashes:=c;
+    l[i].depends:=Set(List(l[i].import,x->x.file));
+    l[i].mustdeclare:=d;
+    l[i].namespace:=defs;
   od;
 
+  order:=[1..Length(l)];
+  # bubblesort as this is not a proper total order
+  for i in [1..Length(l)] do
+    for j in [i+1..Length(l)] do
+      if (a[order[j]] in l[order[i]].depends or
+	Length(l[order[j]].depends)<Length(l[order[i]].depends))
+	and not a[order[i]] in l[order[j]].depends  then
+	c:=order[i];order[i]:=order[j];order[j]:=c;
+      fi;
+    od;
+  od;
 
-  Error();
-  return a;
+  f:=Filtered(order,x->Length(l[x].mustdeclare)=0);
+  order:=Concatenation(Filtered(order,x->not x in f),f);
+  Print("No dependencies from ",
+    List(l{f},x->x.filename),"\n");
+
+  f:=OutputTextFile(Concatenation(dir,"/translate/read.g"),false);
+  AppendTo(f,"ENTER_NAMESPACE(",pkgname,")\n");
+  for i in order do
+    AppendTo(f,"Read(\"",l[i].filename,".g\");\n");
+  od;
+  AppendTo(f,"LEAVE_NAMESPACE(",pkgname,")\n");
+  CloseStream(f);
+
+  for i in order do
+    Print("Processing ",l[i].filename,"\n");
+    f:=OutputTextFile(Concatenation(dir,"/translate/",l[i].filename,".g"),false);
+    GAPOutput(l[i],f);
+    CloseStream(f);
+  od;
+
+  #return a;
 end;
 
