@@ -126,7 +126,6 @@ struct StatementLocation
 
 struct ProfileState
 {
-  UInt Active;
   FILE* Stream;
   int StreamWasPopened;
   Int OutputRepeats;
@@ -152,10 +151,13 @@ struct ProfileState
 #endif
 } profileState;
 
+/* We keep this seperate as it is exported for use in other files */
+UInt profileState_Active;
+
 void ProfileLineByLineOutput(Obj func, char type)
 {
   HashLock(&profileState);
-  if(profileState.Active && profileState.OutputRepeats)
+  if(profileState_Active && profileState.OutputRepeats)
   {
     int startline_i = 0, endline_i = 0;
     Obj startline = FuncSTARTLINE_FUNC(0, func);
@@ -273,7 +275,7 @@ void (* RealPrintExprFuncs[256]) ( Expr expr );
 void InstallEvalBoolFunc( Int pos, Obj(*expr)(Expr)) {
   RealEvalBoolFuncs[pos] = expr;
   HashLock(&profileState);
-  if(!profileState.Active) {
+  if(!profileState_Active) {
     EvalBoolFuncs[pos] = expr;
   }
   HashUnlock(&profileState);
@@ -282,7 +284,7 @@ void InstallEvalBoolFunc( Int pos, Obj(*expr)(Expr)) {
 void InstallEvalExprFunc( Int pos, Obj(*expr)(Expr)) {
   RealEvalExprFuncs[pos] = expr;
   HashLock(&profileState);
-  if(!profileState.Active) {
+  if(!profileState_Active) {
     EvalExprFuncs[pos] = expr;
   }
   HashUnlock(&profileState);
@@ -291,7 +293,7 @@ void InstallEvalExprFunc( Int pos, Obj(*expr)(Expr)) {
 void InstallExecStatFunc( Int pos, UInt(*stat)(Stat)) {
   RealExecStatFuncs[pos] = stat;
   HashLock(&profileState);
-  if(!profileState.Active) {
+  if(!profileState_Active) {
     ExecStatFuncs[pos] = stat;
   }
   HashUnlock(&profileState);
@@ -356,10 +358,16 @@ static inline void outputStat(Stat stat, int exec, int visited)
 #endif
 #endif
 
+
   HashLock(&profileState);
+  // Explicitly skip these two cases, as they are often specially handled
+  // and also aren't really interesting statements (something else will
+  // be executed whenever they are).
+  if(TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR)
+    return;
 
   // Catch the case we arrive here and profiling is already disabled
-  if(!profileState.Active) {
+  if(!profileState_Active) {
     HashUnlock(&profileState);
     return;
   }
@@ -436,7 +444,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
   HashUnlock(&profileState);
 }
 
-static inline void visitStat(Stat stat)
+void visitStat(Stat stat)
 {
 #ifdef HPCGAP
   if(profileState.profiledThread != TLS(threadID))
@@ -501,7 +509,7 @@ void enableAtStartup(char* filename, Int repeats)
 {
     Int i;
 
-    if(profileState.Active) {
+    if(profileState_Active) {
         fprintf(stderr, "-P or -C can only be passed once\n");
         exit(1);
     }
@@ -521,7 +529,7 @@ void enableAtStartup(char* filename, Int repeats)
       EvalBoolFuncs[i] = ProfileEvalBoolPassthrough;
     }
 
-    profileState.Active = 1;
+    profileState_Active = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
@@ -569,7 +577,7 @@ Obj FuncACTIVATE_PROFILING (
 {
     Int i;
 
-    if(profileState.Active) {
+    if(profileState_Active) {
       return Fail;
     }
 
@@ -611,7 +619,7 @@ Obj FuncACTIVATE_PROFILING (
     HashLock(&profileState);
 
     // Recheck inside lock
-    if(profileState.Active) {
+    if(profileState_Active) {
       HashUnlock(&profileState);
       return Fail;
     }
@@ -644,7 +652,7 @@ Obj FuncACTIVATE_PROFILING (
       }
     }
 
-    profileState.Active = 1;
+    profileState_Active = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
@@ -680,7 +688,7 @@ Obj FuncDEACTIVATE_PROFILING (
 
   HashLock(&profileState);
 
-  if(!profileState.Active) {
+  if(!profileState_Active) {
     HashUnlock(&profileState);
     return Fail;
   }
@@ -693,7 +701,7 @@ Obj FuncDEACTIVATE_PROFILING (
     EvalBoolFuncs[i] = RealEvalBoolFuncs[i];
   }
 
-  profileState.Active = 0;
+  profileState_Active = 0;
 
   HashUnlock(&profileState);
 
@@ -703,7 +711,7 @@ Obj FuncDEACTIVATE_PROFILING (
 Obj FuncIS_PROFILE_ACTIVE (
     Obj self)
 {
-  if(profileState.Active) {
+  if(profileState_Active) {
     return True;
   } else {
     return False;
@@ -849,7 +857,7 @@ void RegisterStatWithProfiling(Stat stat)
 {
     int active;
     HashLock(&profileState);
-    active = profileState.Active;
+    active = profileState_Active;
     HashUnlock(&profileState);
     if(active) {
       outputStat(stat, 0, 0);
