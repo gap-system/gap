@@ -75,7 +75,7 @@
 **     which show which parts of an expression have been executed
 **
 **  There are not that many tricky cases here. We have to be careful that
-**  sum Expr are integers or local variables, and not touch those.
+**  some Expr are integers or local variables, and not touch those.
 **
 **  Limitations (and how we overcome them):
 **
@@ -96,6 +96,22 @@
 **     serious additional overheads, I can't see how to provide this
 **     functionality in output (basically we would have to store
 **     line and character positions for the start and end of every expression).
+**
+**
+**  Achieving 100% code coverage is a little tricky. Here is a list of
+**  the special cases which had to be considered (so far)
+**
+**  GAP special cases for-loops of the form 'for i in [a..b]', by digging
+**  into the range to extract 'a' and 'b'. Therefore nothing on the line is
+**  ever evaluated and it appears to never be executed. We special case this
+**  if ForRange, by marking the range as evaluated.
+**
+**  We purposesfully ignore T_TRUE_EXPR and T_FALSE_EXPR, which represent the
+**  constants 'true' and 'false', as they are often read but not 'executed'.
+**  We already ignored all integer and float constants anyway.
+**  However, the main reason this was added is that GAP represents 'else'
+**  as 'elif true then', and this was leading to 'else' statements being
+**  never marked as executed.
 */
 
 
@@ -126,9 +142,13 @@ struct StatementLocation
 
 struct ProfileState
 {
+  // C steam we are writing to
   FILE* Stream;
+  // Did we use 'popen' to open the stream (matters when closing)
   int StreamWasPopened;
+  // Are we currently outputting repeats (false=code coverage)
   Int OutputRepeats;
+  // Are we colouring output (not related to profiling directly)
   Int ColouringOutput;
 
   // Used to generate 'X' statements, to make sure we correctly
@@ -149,10 +169,19 @@ struct ProfileState
 #ifdef HPCGAP
   int profiledThread;
 #endif
+
+  /* Have we previously profiled this execution of GAP? We need this because
+  ** code coverage doesn't work more than once, as we use a bit in each Stat
+  ** to mark if we previously executed this statement, which we can't
+  ** clear */
+  UInt profiledPreviously;
+
 } profileState;
 
 /* We keep this seperate as it is exported for use in other files */
 UInt profileState_Active;
+
+
 
 void ProfileLineByLineOutput(Obj func, char type)
 {
@@ -190,15 +219,6 @@ void ProfileLineByLineOutput(Obj func, char type)
   }
   HashUnlock(&profileState);
 }
-
-void ProfileLineByLineIntoFunction(Obj func)
-{
-  ProfileLineByLineOutput(func, 'I');
-}
-
-
-void ProfileLineByLineOutFunction(Obj func)
-{ ProfileLineByLineOutput(func, 'O'); }
 
 /****************************************************************************
 **
@@ -513,6 +533,8 @@ void enableAtStartup(char* filename, Int repeats)
         fprintf(stderr, "-P or -C can only be passed once\n");
         exit(1);
     }
+    
+    
 
     profileState.OutputRepeats = repeats;
 
@@ -530,6 +552,7 @@ void enableAtStartup(char* filename, Int repeats)
     }
 
     profileState_Active = 1;
+    profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
@@ -579,6 +602,13 @@ Obj FuncACTIVATE_PROFILING (
 
     if(profileState_Active) {
       return Fail;
+    }
+    
+    if(profileState.profiledPreviously &&
+       coverage == True) {
+        ErrorMayQuit("Code coverage can only be started once per"
+                     " GAP session. Please exit GAP and restart. Sorry.",0,0);
+        return Fail;
     }
 
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
@@ -653,6 +683,7 @@ Obj FuncACTIVATE_PROFILING (
     }
 
     profileState_Active = 1;
+    profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
