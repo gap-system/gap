@@ -647,13 +647,71 @@ gap> DisplayProfile( [ StabChainOp, Centralizer ] );
 <Heading>Line By Line Profiling</Heading>
 Line By Line profiling tracks which lines have been executed in a piece
 of GAP code. Built into GAP are the methods necessary to generate profiles,
-the resulting profiles can be displayed by using the 'profiling' package.
+the resulting profiles can be displayed with the 'profiling' package.
 </Subsection> 
+
+<Subsection Label="subsect:linebylineprofexample">
+<Heading>Line by Line profiling example</Heading>
+There are two kinds of profiles GAP can build:
+
+<List>
+  <Item> Coverage : This records which lines of code are executed</Item>
+  <Item> Timing : This records how much time is spend executing each line of code </Item>
+</List>
+
+A timing profile provides more information, but will take longer to generate
+and parse.
+
+A timing profile is generated using the functions <Ref Func="ProfileLineByLine"/>
+and <Ref Func="UnprofileLineByLine"/>, as follows:
+
+<Log><![CDATA[
+gap> ProfileLineByLine("output.gz");
+gap> Size(AlternatingGroup(10)); ; # Execute some GAP code you want to profile
+gap> UnprofileLineByLine();
+]]></Log>
+
+For code coverage, use instead the functions <Ref Func="CoverageLineByLine"/>
+and <Ref Func="UncoverageLineByLine"/>.
+
+The profiler will only record lines which are read and executed while
+the profiler is running. If you want to perform code coverage or profile
+GAP's library, then you can use the GAP command  line option '--cover filename.gz',
+which executes  <Ref Func="CoverageLineByLine"/> before GAP starts. Similarly
+the option '--prof filename.gz' executes <Ref Func="ProfileLineByLine"/> before
+GAP starts.
+
+
+The profiler is designed for high performance, because of this, there are some
+limitations which users should be aware of:
+
+<List>
+  <Item> By default the profiler records the wall-clock time which has passed,
+    rather than the CPU time taken (because it is lower overhead), so any time
+    taken writing commands will be charged to the last GAP statement which was
+    executed. Therefore it is better to write a function which starts profiling,
+    executes your code, and then stops profiling.
+  </Item>
+  <Item>
+    If you end the filename with ".gz", the resulting file will automatically
+    be compressed. This is highly recommended!
+  </Item>
+  <Item>
+    The profiler can only track GAP code which occurs in a function -- this
+    is most obvious when looking at code coverage examples, which will appear
+    to miss lines of code in files not in a function.
+  </Item>
+</List>
+
+Profiles are transformed into a human-readable form with
+'profiling' package, for example with the 'OutputAnnotatedCodeCoverageFiles' function.
+
+</Subsection>
 
 <#Include Label="ProfileLineByLine">
 <#Include Label="CoverageLineByLine">
 <#Include Label="UnprofileLineByLine">
-<#Include label="UncoverageLineByLine">
+<#Include Label="UncoverageLineByLine">
 <#Include Label="ActivateProfileColour">
 <#Include Label="IsLineByLineProfileActive">
 
