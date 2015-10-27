@@ -2268,7 +2268,7 @@ local n,i,j,aii,Li,L;
       return fail; 
       Error("huch");
     fi;
-    Li:=MutableIdentityMat(n);
+    Li:=IdentityMat(n);
     Li[i][i]:=aii;
     for j in [i+1..n] do
       Li[j][i]:=1/aii*A[j][i];
