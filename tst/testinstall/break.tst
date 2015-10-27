@@ -11,9 +11,9 @@ gap> f := function() continue; end;
 Syntax error: continue statement not enclosed in a loop in stream line 1
 f := function() continue; end;
                         ^
-gap> f := function() for i in [1..5] do continue; od; end;;
+gap> f := function() local i; for i in [1..5] do continue; od; end;;
 gap> f();
-gap> f := function() for i in [1..5] do break; od; end;;
+gap> f := function() local i; for i in [1..5] do break; od; end;;
 gap> f();
 gap> f := function() local i; i := 1; while i in [1..5] do i := i + 1; continue; od; end;;
 gap> f();
