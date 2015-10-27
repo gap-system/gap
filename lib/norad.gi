@@ -158,8 +158,8 @@ local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
 	  permact:=Action(GroupWithGenerators(Concatenation(acts,pcgsacts)),
 	    induce.allobj,induce.allact);
 	  i:=Concatenation(
-	    List([1..Length(gens)], x->Tuple([gens[x],imgs[x]])),
-	    List(pcgs, x->Tuple([x,One(imgs[1])])));
+	    List([1..Length(gens)], x->DirectProductElement([gens[x],imgs[x]])),
+	    List(pcgs, x->DirectProductElement([x,One(imgs[1])])));
 	  pacthom:=GroupHomomorphismByImagesNC(GroupWithGenerators(i),permact,i,
 		    GeneratorsOfGroup(permact));
 
