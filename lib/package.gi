@@ -172,6 +172,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
       return;
     fi;
 
+    GAPInfo.LoadPackageLevel:= 0;
     GAPInfo.PackagesInfo:= [];
     GAPInfo.PackagesInfoRefuseLoad:= [];
 
