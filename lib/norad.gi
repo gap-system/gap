@@ -158,8 +158,8 @@ local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
 	  permact:=Action(GroupWithGenerators(Concatenation(acts,pcgsacts)),
 	    induce.allobj,induce.allact);
 	  i:=Concatenation(
-	    List([1..Length(gens)], x->Tuple([gens[x],imgs[x]])),
-	    List(pcgs, x->Tuple([x,One(imgs[1])])));
+	    List([1..Length(gens)], x->DirectProductElement([gens[x],imgs[x]])),
+	    List(pcgs, x->DirectProductElement([x,One(imgs[1])])));
 	  pacthom:=GroupHomomorphismByImagesNC(GroupWithGenerators(i),permact,i,
 		    GeneratorsOfGroup(permact));
 
@@ -404,7 +404,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
       localclust:=[];
       stabsz:=Size(localgl);
     else
-      lvecs:=NormedVectors(f^Dimension(space));
+      lvecs:=NormedRowVectors(f^Dimension(space));
       clu:=BasisVectors(Basis(space));
       xlvecs:=List(lvecs,x->OnLines(x*clu,One(npm[1])));
       # for each local vector the position in vecs
@@ -627,9 +627,9 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 		Info(InfoFitFree,2,"use vectors of ",Size(f)^Length(sub));
 
 		# 1-dim subspaces
-		vecs:=NormedVectors(VectorSpace(f,sub));
+		vecs:=NormedRowVectors(VectorSpace(f,sub));
 		if Size(f)^Length(sub[1])/(Size(f)-1)<500000 then
-		  ovecs:=NormedVectors(f^Length(sub[1]));
+		  ovecs:=NormedRowVectors(f^Length(sub[1]));
 		fi;
 
 		properties:=[];
