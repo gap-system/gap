@@ -401,4 +401,3 @@ InstallGlobalFunction(RemoveDirectoryRecursively,
 #############################################################################
 ##
 #E
-
