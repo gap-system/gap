@@ -70,6 +70,17 @@ endif
 GAPARCH=@GAPARCH@
 GAPARGS=
 
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+datarootdir=@datarootdir@
+GAPROOT=@datadir@/gap
+GAPROOTARCH=@libdir@/gap
+GAPINST=$(DESTDIR)$(GAPROOT)
+GAPINSTARCH=$(DESTDIR)$(GAPROOTARCH)
+GAPINSTBIN=$(DESTDIR)@bindir@
+DIRINST=etc grp lib tst prim small trans doc
+DIRINSTARCH=bin extern
+
 TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -A -q -x 80 -r $(GAPARGS)
 TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 750m -q -x 80 -r $(GAPARGS)
 
@@ -184,7 +195,7 @@ clean_gap_$(CLEANME): rebuild
 	    echo "changing config to "$$nextconf; \
 	    $(MAKE) setconfig CONFIGNAME=$$nextconf; \
 	  else \
-	    rm -f Makefile sysinfo.gap bin/gap.sh; \
+	    rm -f Makefile sysinfo.gap bin/gap.sh bin/gapinst.sh; \
 	  fi; \
 	fi)
 	rm -f Makefile-$(CONFIGNAME)
@@ -202,6 +213,17 @@ clean_gmp_$(CLEANME):
 
 distclean:
 	while test -e Makefile; do $(MAKE) clean; done
+
+install:
+	mkdir -p $(GAPINST)     && cp -pr $(DIRINST) $(GAPINST)
+	mkdir -p $(GAPINSTARCH) && cp -pr $(DIRINSTARCH) $(GAPINSTARCH)
+	cp -p sysinfo.gap-$(CONFIGNAME) $(GAPINSTARCH)
+	ln -s sysinfo.gap-$(CONFIGNAME) $(GAPINSTARCH)/sysinfo.gap
+	mkdir -p $(GAPINSTBIN)  && \
+	sed -e "s@\$${prefix}@${prefix}@g;" \
+	    -e "s@\$${exec_prefix}@${exec_prefix}@g;" \
+	    -e "s@\$${datarootdir}@${datarootdir}@g;" \
+	     < bin/gapinst.sh > $(GAPINSTBIN)/gap && chmod +x $(GAPINSTBIN)/gap
 
 manuals:
 	( echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAPauto) )

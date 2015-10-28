@@ -157,7 +157,7 @@ AC_SUBST(USE_GMP)
 AC_SUBST(GMP_VER)
 
 mkdir -p bin
-AC_OUTPUT(Makefile-${CONFIGNAME}:Makefile.in sysinfo.gap-${CONFIGNAME}:sysinfo.in bin/gap-${CONFIGNAME}.sh:gap.shi)
+AC_OUTPUT(Makefile-${CONFIGNAME}:Makefile.in sysinfo.gap-${CONFIGNAME}:sysinfo.in bin/gap-${CONFIGNAME}.sh:gap.shi bin/gapinst.sh:gapinst.shi)
 ln -sf gap-${CONFIGNAME}.sh bin/gap.sh
 ln -sf Makefile-${CONFIGNAME} Makefile
 ln -sf sysinfo.gap-${CONFIGNAME} sysinfo.gap
