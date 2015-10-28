@@ -404,7 +404,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
       localclust:=[];
       stabsz:=Size(localgl);
     else
-      lvecs:=NormedVectors(f^Dimension(space));
+      lvecs:=NormedRowVectors(f^Dimension(space));
       clu:=BasisVectors(Basis(space));
       xlvecs:=List(lvecs,x->OnLines(x*clu,One(npm[1])));
       # for each local vector the position in vecs
@@ -627,9 +627,9 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 		Info(InfoFitFree,2,"use vectors of ",Size(f)^Length(sub));
 
 		# 1-dim subspaces
-		vecs:=NormedVectors(VectorSpace(f,sub));
+		vecs:=NormedRowVectors(VectorSpace(f,sub));
 		if Size(f)^Length(sub[1])/(Size(f)-1)<500000 then
-		  ovecs:=NormedVectors(f^Length(sub[1]));
+		  ovecs:=NormedRowVectors(f^Length(sub[1]));
 		fi;
 
 		properties:=[];
