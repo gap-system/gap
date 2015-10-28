@@ -335,8 +335,8 @@ string).
 
 
 <#Include Label="Name">
+<#Include Label="InfoText" Arg='obj'/>
 <#Include Label="IsInternallyConsistent">
-
 
 <ManSection>
 <Oper Name="MemoryUsage" Arg='obj'/>
