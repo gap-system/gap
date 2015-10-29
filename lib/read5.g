@@ -147,8 +147,8 @@ ReadLib( "grppcatr.gi" );
 ReadLib( "grppcnrm.gi" );
 
 # files dealing with trees and hash tables
-ReadLib( "hash.gi"     );
 ReadLib( "dict.gi"  );
+ReadLib( "dicthf.gi"  );
 
 ReadLib( "grptbl.gi"   );
 

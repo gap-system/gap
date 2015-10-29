@@ -14,16 +14,33 @@
 ##  between dict.gi and the rest of the library.
 ##
 #T  * This is all apparently completely undocumented.
-#T  * Replace these dictionaries with dictionaries from the datastructures
-#T    package
 #
 
-j
 InstallMethod(DenseIntKey,"default fail",true,[IsObject,IsObject],
         0,ReturnFail);
 
 InstallMethod(SparseIntKey,"defaults to DenseIntKey",true,[IsObject,IsObject],
         0,DenseIntKey);
+
+#############################################################################
+##
+#F  HashKeyBag(<obj>,<seed>,<skip>,<maxread>)
+##
+##  returns a hash key which is given by the bytes in the bag storing <obj>.
+##  The result is reduced modulo $2^{28}$ (on 32 bit systems) resp. modulo
+##  $2^{60}$ (on 64 bit systems) to obtain a small integer.
+##  As some objects carry excess data in their bag, the first <skip> bytes
+##  will be skipped and <maxread> bytes (a value of -1 represents infinity)
+##  will be read at most. (The proper values for these numbers might depend on
+##  the internal representation used as well as on the word length of the
+##  machine on which {\GAP} is running and care has to be taken when using
+##  `HashKeyBag' to ensure identical key values for equal objects.)
+##
+##  The values returned by `HashKeyBag' are not guaranteed to be portable
+##  between different runs of {\GAP} and no reference to their absolute
+##  values ought to be made.
+##
+BindGlobal("HashKeyBag",HASHKEY_BAG);
 
 #############################################################################
 ##

@@ -166,10 +166,6 @@ ReadLib( "sgpres.gd" );
 ReadLib( "tietze.gd" );
 ReadLib( "ghomfp.gd" );
 
-# files dealing with trees and hash tables
-ReadLib( "hash.gd"     );
-
-
 # files needed for deep thought
 ReadLib( "dt.g" );
 
