@@ -672,56 +672,6 @@ BindGlobal("HashClashFct",function(intkey,i,len)
   #return 1+(intkey mod (len-i));
 end);
 
-
-# old obsolete code
-# #############################################################################
-# ##
-# #M  GetHashEntryAtLastIndex( <hash> )
-# ##
-# InstallMethod( GetHashEntryAtLastIndex, "for hash table", true,
-#     [ IsHash ], 0, 
-#     function( hash )
-#         if IsBound( hash!.ValueArray[ LastHashIndex ] ) then
-#             return( hash!.ValueArray[ LastHashIndex ] );
-#       else 
-#           return fail;
-#       fi;
-#     end );
-# 
-# #############################################################################
-# ##
-# #M  SetHashEntry( <hash>, <key>, <value> )
-# ##
-# InstallMethod( SetHashEntry, "for hash table", true,
-#     [ IsHash and IsMutable, IsObject, IsObject ], 0,
-# function( hash, intkey, value )
-# local index, i;
-#   for i in HASH_RANGE do
-#     index := IntegerHashFunction( intkey, i, hash!.LengthArray );
-#     if hash!.KeyArray[index] = fail then
-#       hash!.ValueArray[ LastHashIndex ] := value;
-#       return value;
-#     fi;
-#   od;
-#   Error("hash table in infinite loop");
-# end );
-# 
-# #############################################################################
-# ##
-# #M  SetHashEntryAtLastIndex( <hash>, <newValue> )
-# ##
-# InstallMethod( SetHashEntryAtLastIndex, "for hash table", true,
-#     [ IsHash and IsMutable, IsObject ], 0, 
-#     function( hash, newvalue )
-#       hash!.ValueArray[ LastHashIndex ] := newvalue;
-#         return newvalue;
-#     end );
-
-# dictionary type interface for hash tables. As we want these to be really
-# fast, the code has been stripped down.
-
-#MAXCLASH:=0;
-
 #############################################################################
 ##
 #M  AddDictionary(<dict>,<key>,<val>)
