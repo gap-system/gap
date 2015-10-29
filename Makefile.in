@@ -128,8 +128,10 @@ extern: config
 		MAKE_GMP='$(MAKE_GMP)' \
 		CONFIGNAME='$(CONFIGNAME)' )
 
-compile: extern
+bin/$(GAPARCH)/gap_version.h:
 	cnf/mkversionheader.sh bin/$(GAPARCH)/gap_version.h
+
+compile: extern bin/$(GAPARCH)/gap_version.h
 	( cd bin/$(GAPARCH); \
 		$(MAKE) \
 		ABI='$(ABI)' \

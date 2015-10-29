@@ -307,9 +307,17 @@ extern void SyFputs (
 **
 **  'SyIsIntr' returns 1 if the user typed '<ctr>-C' and 0 otherwise.
 */
+
 extern void SyInstallAnswerIntr ( void );
 
 extern UInt SyIsIntr ( void );
+
+extern const int SyHaveAlarms;
+extern volatile int SyAlarmRunning;
+extern volatile int SyAlarmHasGoneOff;
+
+extern void SyInstallAlarm( UInt seconds, UInt nanoseconds);
+extern void SyStopAlarm( UInt *seconds, UInt *nanoseconds);
 
 
 /****************************************************************************

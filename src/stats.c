@@ -1679,9 +1679,15 @@ UInt ExecIntrStat (
     }
     HaveInterrupt();
 
+
+    /* One reason we might be here is a timeout. If so longjump out to the 
+       CallWithTimeLimit where we started */
+    
+    if ( SyAlarmHasGoneOff ) 
+      syLongjmp(AlarmJumpBuffers[NumAlarmJumpBuffers],1);
+      
     /* and now for something completely different                          */
     SET_BRK_CURR_STAT( stat );
-
     if ( SyStorOverrun != 0 ) {
       SyStorOverrun = 0; /* reset */
       ErrorReturnVoid(

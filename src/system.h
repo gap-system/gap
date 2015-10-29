@@ -1053,6 +1053,8 @@ extern Char *getOptionArg(Char key, UInt which);
 #endif
 #endif
 
+extern syJmp_buf AlarmJumpBuffer;
+
 
 
 /****************************************************************************
