@@ -335,7 +335,7 @@ string).
 
 
 <#Include Label="Name">
-<#Include Label="InfoText" Arg='obj'/>
+<#Include Label="InfoText">
 <#Include Label="IsInternallyConsistent">
 
 <ManSection>

@@ -115,6 +115,8 @@ DeclareGlobalFunction( "ConwayPol" );
 ##  &GAP; package <Package>Browse</Package>,
 ##  see <Ref Func="BrowseGapData" BookName="browse"/>.
 ##  <P/>
+##  <Index Key="InfoText"
+##         Subkey="(for Conway polynomials)"><C>InfoText</C></Index>
 ##  If <A>pol</A> is a result returned by <Ref Func="ConwayPolynomial"/> the
 ##  command <C>Print( InfoText( <A>pol</A> ) );</C> will print some info on
 ##  the origin of that particular polynomial.

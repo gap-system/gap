@@ -257,7 +257,7 @@ The following few conventions should be noted.
 <#Include Label="ClassNames">
 <#Include Label="ClassParameters">
 <#Include Label="Identifier:ctbl">
-<#Include Label="InfoText">
+<#Include Label="InfoText_ctbl">
 <#Include Label="InverseClasses">
 <#Include Label="RealClasses">
 <#Include Label="ClassOrbit">
