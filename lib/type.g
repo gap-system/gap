@@ -398,11 +398,11 @@ DeclareRepresentation( "IsTypeDefaultRep",
 BIND_GLOBAL( "FamilyOfFamilies", AtomicRecord( rec() ) );
 
 NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
-BIND_GLOBAL( "TypeOfFamilies", AtomicList( [
+BIND_GLOBAL( "TypeOfFamilies", [
     FamilyOfFamilies,
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamily and IsFamilyDefaultRep ) ),
     false,
-    NEW_TYPE_NEXT_ID ] ) );
+    NEW_TYPE_NEXT_ID ] );
 
 FamilyOfFamilies!.NAME          := "FamilyOfFamilies";
 FamilyOfFamilies!.REQ_FLAGS     := FLAGS_FILTER( IsFamily );
@@ -434,6 +434,7 @@ BIND_GLOBAL( "TypeOfTypes", [
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsType and IsTypeDefaultRep ) ),
     false,
     NEW_TYPE_NEXT_ID ] );
+MakeReadOnly(TypeOfTypes);
 
 
 FamilyOfTypes!.NAME             := "FamilyOfTypes";
@@ -458,6 +459,7 @@ MakeReadOnly(TypeOfFamilyOfTypes);
 
 SET_TYPE_COMOBJ( FamilyOfFamilies, TypeOfFamilyOfFamilies );
 SET_TYPE_POSOBJ( TypeOfFamilies,   TypeOfTypes            );
+MakeReadOnly(TypeOfFamilies);
 
 SET_TYPE_COMOBJ( FamilyOfTypes,    TypeOfFamilyOfTypes    );
 SET_TYPE_POSOBJ( TypeOfTypes,      TypeOfTypes            );
