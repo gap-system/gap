@@ -79,19 +79,36 @@ Obj FilenameCache;
 **  'OffsBody' is the  offset in the current   body.  It is  only valid while
 **  coding.
 */
+#define MAX_FUNC_EXPR_NESTING 1024
+
+
 Stat OffsBody;
 
-Stat OffsBodyStack[1024];
+Stat OffsBodyStack[MAX_FUNC_EXPR_NESTING];
 UInt OffsBodyCount = 0;
 
+UInt LoopNesting = 0;
+UInt LoopStack[MAX_FUNC_EXPR_NESTING];
+UInt LoopStackCount = 0;
+
 static inline void PushOffsBody( void ) {
-  assert(TLS(OffsBodyCount) <= 1023);
+  assert(TLS(OffsBodyCount) <= MAX_FUNC_EXPR_NESTING-1);
   TLS(OffsBodyStack)[TLS(OffsBodyCount)++] = TLS(OffsBody);
 }
 
 static inline void PopOffsBody( void ) {
   assert(TLS(OffsBodyCount));
   TLS(OffsBody) = TLS(OffsBodyStack)[--TLS(OffsBodyCount)];
+}
+
+static inline void PushLoopNesting( void ) {
+  assert(TLS(LoopStackCount) <= MAX_FUNC_EXPR_NESTING-1);
+  TLS(LoopStack)[TLS(LoopStackCount)++] = TLS(LoopNesting);
+}
+
+static inline void PopLoopNesting( void ) {
+  assert(TLS(LoopStackCount));
+  TLS(LoopNesting) = TLS(LoopStack)[--TLS(LoopStackCount)];
 }
 
 static inline void setup_gapname(TypInputFile* i)
@@ -671,7 +688,9 @@ void CodeFuncExprBegin (
     /* remember the current offset                                         */
     PushOffsBody();
 
-
+    /* and the loop nesting depth */
+    PushLoopNesting();
+    
     /* create a function expression                                        */
     fexp = NewBag( T_FUNCTION, SIZE_FUNC );
     NARG_FUNC( fexp ) = narg;
@@ -697,6 +716,7 @@ void CodeFuncExprBegin (
     /*    Pr("Coding begin at %s:%d ",(Int)(TLS(Input)->name),TLS(Input)->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
     TLS(OffsBody) = 0;
+    TLS(LoopNesting) = 0;
 
     /* give it an environment                                              */
     ENVI_FUNC( fexp ) = TLS(CurrLVars);
@@ -724,7 +744,8 @@ void CodeFuncExprEnd (
 
     /* get the function expression                                         */
     fexp = CURR_FUNC;
-
+    assert(!LoopNesting);
+    
     /* get the body of the function                                        */
     /* push an addition return-void-statement if neccessary                */
     /* the function interpreters depend on each function ``returning''     */
@@ -769,6 +790,9 @@ void CodeFuncExprEnd (
     /* switch back to the previous function                                */
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
 
+    /* restore loop nesting info */
+    PopLoopNesting();
+    
     /* restore the remembered offset                                       */
     PopOffsBody();
 
@@ -934,6 +958,7 @@ void CodeForIn ( void )
 
 void CodeForBeginBody ( void )
 {
+  TLS(LoopNesting)++;
 }
 
 void CodeForEndBody (
@@ -993,6 +1018,9 @@ void CodeForEndBody (
 
     /* push the for-statement                                              */
     PushStat( stat );
+
+    /* decrement loop nesting count */
+    TLS(LoopNesting)--;
 }
 
 void CodeForEnd ( void )
@@ -1135,6 +1163,7 @@ void CodeWhileBegin ( void )
 
 void CodeWhileBeginBody ( void )
 {
+  TLS(LoopNesting)++;
 }
 
 void CodeWhileEndBody (
@@ -1171,6 +1200,9 @@ void CodeWhileEndBody (
     cond = PopExpr();
     ADDR_STAT(stat)[0] = cond;
 
+    /* decrmement loop nesting */
+    TLS(LoopNesting)--;
+    
     /* push the while-statement                                            */
     PushStat( stat );
 }
@@ -1209,6 +1241,7 @@ void CodeRepeatBegin ( void )
 
 void CodeRepeatBeginBody ( void )
 {
+  TLS(LoopNesting)++;
 }
 
 void CodeRepeatEndBody (
@@ -1216,6 +1249,7 @@ void CodeRepeatEndBody (
 {
     /* leave the number of statements in the body on the expression stack  */
     PushExpr( INTEXPR_INT(nr) );
+    TLS(LoopNesting)--;
 }
 
 void CodeRepeatEnd ( void )
@@ -1274,6 +1308,9 @@ void            CodeBreak ( void )
 {
     Stat                stat;           /* break-statement, result         */
 
+    if (!TLS(LoopNesting))
+      SyntaxError("break statement not enclosed in a loop");
+    
     /* allocate the break-statement                                        */
     stat = NewStat( T_BREAK, 0 * sizeof(Expr) );
 
@@ -1291,6 +1328,9 @@ void            CodeBreak ( void )
 void            CodeContinue ( void )
 {
     Stat                stat;           /* continue-statement, result         */
+
+    if (!TLS(LoopNesting))
+      SyntaxError("continue statement not enclosed in a loop");
 
     /* allocate the continue-statement                                        */
     stat = NewStat( T_CONTINUE, 0 * sizeof(Expr) );
