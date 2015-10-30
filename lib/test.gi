@@ -563,7 +563,7 @@ TestDirectory := function(arg)
   getStones := function(file)
     local lines, l, start, finish, stones;
     
-    lines := SplitString(StringFile(file),"\n");
+    lines := SplitString(StringFile(file.name),"\n");
     for l in lines do
       if PositionSublist(l, "STOP_TEST") <> fail then
         # Try our best to get the stones out!
@@ -580,7 +580,7 @@ TestDirectory := function(arg)
   
   setStones := function(file, newstones)
     local lines, l, start, finish, stones;
-    lines := SplitString(StringFile(file), "\n");
+    lines := SplitString(StringFile(file.name), "\n");
     for i in [1..Length(lines)] do
       if PositionSublist(lines[i], "STOP_TEST") <> fail then
         # Try our best to get the stones out!
@@ -590,9 +590,9 @@ TestDirectory := function(arg)
         if IsInt(stones) then
           lines[i] := Concatenation(lines[i]{[1..start]}," ",String(newstones),
                                     lines[i]{[finish..Length(lines[i])]});
-          FileString(file, Concatenation(List(lines, x -> Concatenation(x,"\n"))));
+          FileString(file.name, Concatenation(List(lines, x -> Concatenation(x,"\n"))));
         else
-          Print("Unable to parse STOP_TEST in ", file);
+          Print("Unable to parse STOP_TEST in ", file.name);
         fi;
       fi;
     od;
@@ -633,23 +633,31 @@ TestDirectory := function(arg)
   files := [];
   filetimes := [];
   
-  recurseFiles := function(dir)
-    local dircontents, tests, recursedirs, d;
+  recurseFiles := function(dir, basedir)
+    local dircontents, testfiles, t, testrecs, shortName, recursedirs, d;
     dircontents := List(DirectoryContents(dir), x -> Filename(Directory(dir), x));
-    tests := Filtered(dircontents, x -> Length(x) > 4 and x{[Length(x)-3..Length(x)]} = ".tst");
-    Append(files, tests);
+    testfiles := Filtered(dircontents, x -> Length(x) > 4 and x{[Length(x)-3..Length(x)]} = ".tst");
+    testrecs := [];
+    for t in testfiles do
+      shortName := t{[Length(basedir)+1..Length(t)]};
+      if shortName[1] = '/' then
+        shortName := shortName{[2..Length(shortName)]};
+      fi;
+      Add(testrecs, rec(name := t, shortName := shortName));
+    od;
+    Append(files, testrecs);
     recursedirs := Filtered(dircontents, x -> IsDirectoryPath(x) and not(StringEnd(x,"/.")) and not(StringEnd(x,"/..")));
     for d in recursedirs do
-      recurseFiles(d);
+      recurseFiles(d, basedir);
     od;
   end;
   
   files := [];
   for f in basedirs do
     if IsDirectoryPath(f) then
-      recurseFiles(f);
+      recurseFiles(f, f);
     else
-      Add(files, f);
+      Add(files, rec(name := f, shortName := f));
     fi;
   od;
 
@@ -673,11 +681,11 @@ TestDirectory := function(arg)
   
   for i in [1..Length(files)] do
     if opts.showProgress then
-      Print("testing: ", files[i], "\n");
+      Print("testing: ", files[i].name, "\n");
     fi;
     
     startTime := Runtime();
-    testResult := Test(files[i], opts.testOptions);
+    testResult := Test(files[i].name, opts.testOptions);
     if not(testResult) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
       if opts.exitGAP then
@@ -700,7 +708,7 @@ TestDirectory := function(arg)
     fi;
     
     if opts.showProgress then
-      Print( String( filestones[i], -20 ),
+      Print( String( files[i].shortName, -20 ),
              String( stones, 8 ),
              String( time, 15 ) );
       if i < Length(filestones) and filestones[i+1] > 0 and totalTime > 0 then
