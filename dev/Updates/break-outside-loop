@@ -17,7 +17,7 @@ untidily at run time.
 
 ! Test Code
 gap> function() break; end;
-Syntax error: break statement not enclosed in a loop  in stream line 1
+Syntax error: break statement not enclosed in a loop in stream line 1
 function() break; end;
                 ^
 ! Prefetch
