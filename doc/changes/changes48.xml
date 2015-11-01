@@ -17,13 +17,22 @@ that were introduced in corresponding &GAP; releases. An overview of the
 most significant ones is provided below.
 
 <Section Label="gap480"> 
-<Heading>&GAP; 4.8.0 (Autumn 2015)</Heading>
+<Heading>&GAP; 4.8.0 (November 2015)</Heading>
 
 <Subsection Label="Changes in the core GAP48 system"> 
 <Heading>Changes in the core &GAP; system introduced in &GAP; 4.8</Heading>
 
 New features:
 <List>
+<Item>
+Added support for profiling which tracks how much time in spent on each line
+of &GAP; code. This can be used to show where code is spending a long time
+and also check which lines of code are even executed. See the documentation
+for <Ref Func="ProfileLineByLine" BookName="ref"/> and
+<Ref Func="CoverageLineByLine" BookName="ref"/> for details on generating profiles,
+and the <Package>Profiling</Package> package for transforming these profiles
+into a human-readable form.
+</Item>
 <!-- https://github.com/gap-system/gap/pull/192 -->
 <Item>Added support for accessing lists using multiple indices and
 indexing into lists using indices other than positive small integers.
@@ -50,10 +59,20 @@ ones to <A>arg</A>.
 This may break an existing code when <A>arg</A> is used as a name of the
 argument which is not the last one.
 </Item>
+<Item>
+&GAP; now displays the filename and line numbers of statements in backtraces
+when entering the break loop.
+</Item>
 </List>
 
 Improved and extended functionality:
 <List>
+<Item>
+Method tracing shows the filename and line of function during tracing.
+</Item>
+<Item>
+<Ref Func="TraceAllMethods" BookName="ref"/> allows tracing all methods in &GAP;.
+</Item>
 <Item>
 <Ref Func="GModuleByMats" BookName="ref"/> and some related functions now
 work for infinite fields, in particular in characteristic 0. However,
