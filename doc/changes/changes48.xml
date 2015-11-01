@@ -151,6 +151,11 @@ redistribution since the release of &GAP; 4.7.8 are:
 an interface to the solvable radical functionality for matrix groups,
 building on constructive recognition.
 </Item>
+<Item>
+<Package>profiling</Package> package by Christopher Jefferson for
+transforming profiles produced by <Ref Func="ProfileLineByLine" BookName="ref"/>
+and <Ref Func="CoverageLineByLine" BookName="ref"/> into a human-readable form.
+</Item>
 </List>
 
 </Subsection>
