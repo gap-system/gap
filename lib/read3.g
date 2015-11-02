@@ -252,15 +252,3 @@ ReadLib("gasman.gd");
 
 # random sources
 ReadLib("random.gi");
-
-#############################################################################
-##
-#X  files dealing with subgroup chains
-##
-#ReadLib("utils.gd");
-#ReadLib("quogphom.gd");
-#ReadLib("gptransv.gd");
-#ReadLib("grpchain.gd");
-#ReadLib("rss.gd");
-#ReadLib("basicim.gd");
-#ReadLib("solmxgrp.gd");
