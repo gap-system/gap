@@ -1651,9 +1651,9 @@ InstallValue( LARGEST_IDENTIFIER_NUMBER, FixedAtomicList([ 0 ]) );
 ##
 #A  InfoText( <tbl> )
 ##
-##  <#GAPDoc Label="InfoText">
+##  <#GAPDoc Label="InfoText_ctbl">
 ##  <ManSection>
-##  <Attr Name="InfoText" Arg='tbl'/>
+##  <Meth Name="InfoText" Arg='tbl' Label="for character tables"/>
 ##
 ##  <Description>
 ##  is a mutable string with information about the character table
