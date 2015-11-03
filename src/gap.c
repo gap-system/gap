@@ -1245,12 +1245,12 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
      else if ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
 #endif
       PrintStat( call );
-      Pr(" on line %d of file %s",LINE_STAT(call),(UInt)CSTR_STRING(FILENAME_STAT(call)));
+      Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
     }
     else if ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
               && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) {
       PrintExpr( call );
-      Pr(" on line %d of file %s",LINE_STAT(call),(UInt)CSTR_STRING(FILENAME_STAT(call)));
+      Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
     }
     SWITCH_TO_OLD_LVARS( currLVars );
     return (Obj) 0;
