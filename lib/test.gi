@@ -600,7 +600,7 @@ TestDirectory := function(arg)
           
     
   
-  if IsString(arg[1]) then
+  if IsString(arg[1]) or IsDirectory(arg[1]) then
     basedirs := [arg[1]];
   else
     basedirs := arg[1];
@@ -655,7 +655,11 @@ TestDirectory := function(arg)
   files := [];
   for f in basedirs do
     if IsDirectoryPath(f) then
-      recurseFiles(f, f);
+      if IsDirectory(f) then
+        recurseFiles(f![1], f![1]);
+      else
+        recurseFiles(f,f);
+      fi;
     else
       Add(files, rec(name := f, shortName := f));
     fi;
