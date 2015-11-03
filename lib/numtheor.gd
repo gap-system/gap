@@ -113,7 +113,7 @@ DeclareOperation( "Phi", [ IsObject ] );
 
 #############################################################################
 ##
-#O  Lambda( <m> ) . . . . . . . . . . . . . . . . . . .  Carmichaels function
+#O  Lambda( <m> ) . . . . . . . . . . . . . . . . . . . . Carmichael function
 ##
 ##  <#GAPDoc Label="Lambda">
 ##  <ManSection>

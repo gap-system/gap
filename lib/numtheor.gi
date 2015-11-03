@@ -44,10 +44,10 @@ end );
 
 #############################################################################
 ##
-#M  Phi( <m> )  . . . . . . . . . . . . . . . . . . . Eulers totient function
+#M  Phi( <m> )  . . . . . . . . . . . . . . . . . .  Euler's totient function
 ##
 InstallMethod( Phi,
-               "value of Eulers totient function of an integer",
+               "value of Euler's totient function of an integer",
                true, [ IsInt ], 0,
 
   function ( m )
@@ -73,7 +73,7 @@ InstallMethod( Phi,
 
 #############################################################################
 ##
-#M  Lambda( <m> ) . . . . . . . . . . . . . . . . . . .  Carmichaels function
+#M  Lambda( <m> ) . . . . . . . . . . . . . . . . . . . . Carmichael function
 ##
 InstallMethod( Lambda,
                "exponent of the group of prime residues modulo an integer",
@@ -341,7 +341,7 @@ InstallGlobalFunction( Jacobi, function ( n, m )
     # check the argument
     if m <= 0  then Error("<m> must be positive");  fi;
 
-    # compute the jacobi symbol similar to euclids algorithm
+    # compute the Jacobi symbol similar to Euclid's algorithm
     jac := 1;
     while m <> 1  do
 
@@ -446,12 +446,12 @@ BindGlobal( "RootModPrime", function ( n, k, p )
     elif n = 0  then
         r := 0;
 
-    # its easy if $k$ is invertable mod $p-1 = \phi(p)$
+    # it's easy if $k$ is invertible mod $p-1 = \phi(p)$
     elif GcdInt( p-1, k ) = 1  then
         Info( InfoNumtheor, 2, " <r> = <n>^", 1/k mod (p-1), " mod <p>" );
         r := PowerModInt( n, 1/k mod (p-1), p );
 
-    # check that $n$ has a $k$th root (Eulers criterium)
+    # check that $n$ has a $k$th root (Euler's criterium)
     elif PowerModInt( n, (p-1)/k, p ) = 1  then
 
         # $p-1 = x kk$, $x$ mod $k <> 0$
@@ -686,12 +686,12 @@ BindGlobal( "RootsModPrime", function ( n, k, p )
     elif n = 0  then
         rr := [ 0 ];
 
-    # its easy if $k$ is invertable mod $p-1 = \phi(p)$
+    # it's easy if $k$ is invertible mod $p-1 = \phi(p)$
     elif GcdInt( p-1, k ) = 1  then
         Info( InfoNumtheor, 2, " <r> = <n>^", 1/k mod (p-1), " mod <p>" );
         rr := [ PowerModInt( n, 1/k mod (p-1), p ) ];
 
-    # check that $n$ has a $k$th root (Eulers criterium)
+    # check that $n$ has a $k$th root (Euler's criterium)
     elif PowerModInt( n, (p-1)/k, p ) = 1  then
 
         # $p-1 = x kk$, $x$ mod $k <> 0$
@@ -915,11 +915,11 @@ BindGlobal( "RootsUnityModPrime", function ( k, p )
     if p = 2  then
         rr := [ 1 ];
 
-    # its easy if $k$ is invertable mod $p-1 = \phi(p)$
+    # it's easy if $k$ is invertible mod $p-1 = \phi(p)$
     elif GcdInt( p-1, k ) = 1  then
         rr := [ 1 ];
 
-    # check that $n$ has a $k$th root (Eulers criterium)
+    # check that $n$ has a $k$th root (Euler's criterium)
     else
 
         # find a generator $t$ of the subgroup of $k$-th roots of 1.
@@ -956,7 +956,7 @@ RootsUnityModPrimePower := function ( k, p, l )
     if l = 1  then
         rr := RootsUnityModPrime( k, p );
 
-    # if $k$ is invertable mod $\phi(p^l)$ then there is only one root
+    # if $k$ is invertible mod $\phi(p^l)$ then there is only one root
     elif GcdInt(k,(p-1)*p) = 1  then
         rr := [ 1 ];
 
@@ -1507,7 +1507,7 @@ end );
 #T                 Error("<l> and <r> must have the same modulus");
 #T             fi;
 #T             if GcdInt( r.representative, r.modulus ) <> 1  then
-#T                 Error("<r> must be invertable");
+#T                 Error("<r> must be invertible");
 #T             fi;
 #T             pow := l;
 #T         elif IsInt( r )  then

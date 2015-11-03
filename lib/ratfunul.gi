@@ -715,7 +715,7 @@ local val,brci,fam;
   if e < 0  then
     g := QuotientMod(One(g),g,m);
     if g = fail  then
-      Error("<g> must be invertable module <m>");
+      Error("<g> must be invertible module <m>");
     fi;
     e := -e;
   fi;
