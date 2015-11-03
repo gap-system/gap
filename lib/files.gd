@@ -313,6 +313,18 @@ DeclareGlobalFunction("DirectoryContents");
 
 #############################################################################
 ##
+#F  IsDirectoryPath(<name>)
+## 
+BIND_GLOBAL("IsDirectoryPath", function(dirname)
+  local str;
+  if IsDirectory(dirname) then
+    dirname := dirname![1];
+  fi;
+  return IsDirectoryPathString(dirname);
+end);
+
+#############################################################################
+##
 #F  DirectoriesLibrary( [<name>] )  . . . . . . .  directories of the library
 ##
 ##  <#GAPDoc Label="DirectoriesLibrary">
@@ -662,4 +674,3 @@ BIND_GLOBAL("CHARS_SYMBOLS",Immutable(SSortedList(
 #############################################################################
 ##
 #E
-
