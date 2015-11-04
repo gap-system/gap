@@ -356,7 +356,11 @@ function( home, list, modulo )
       od;
       new!.parentDepthMap:=wm;
 
-      i:=IndicesNormalSteps(par);
+      if HasIndicesEANormalSteps(par) then
+	i:=IndicesEANormalSteps(par);
+      else
+	i:=IndicesNormalSteps(par);
+      fi;
       new!.layranges:=List([1..Length(i)-1],x->[i[x]..i[x+1]-1]);
 
       pcsexp:=List(pcs,x->ExponentsOfPcElement(par,x));

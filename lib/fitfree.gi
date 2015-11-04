@@ -100,14 +100,14 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths;
     if not HasOneOfPcgs(ipcgs) then
       SetOneOfPcgs(ipcgs,One(G));
     fi;
-    depths:=IndicesNormalSteps(ipcgs);
+    depths:=IndicesEANormalSteps(ipcgs);
   else
     depths:=[];
   fi;
 
-  # transfer the IndicesNormalSteps
-  if ffs.pcgs<>ipcgs and HasIndicesNormalSteps(ffs.pcgs) then
-    U:=IndicesNormalSteps(ffs.pcgs);
+  # transfer the IndicesEANormalSteps
+  if ffs.pcgs<>ipcgs and HasIndicesEANormalSteps(ffs.pcgs) then
+    U:=IndicesEANormalSteps(ffs.pcgs);
     r:=ipcgs!.depthsInParent;
     l:=[];
     for i in U{[1..Length(U)-1]} do # last one is length+1
@@ -117,7 +117,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths;
       fi;
     od;
     Add(l,Length(ipcgs)+1);
-    SetIndicesNormalSteps(ipcgs,l);
+    SetIndicesEANormalSteps(ipcgs,l);
   fi;
 
   U:=SubgroupNC(G,Concatenation(gens,ipcgs));

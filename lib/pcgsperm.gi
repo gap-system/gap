@@ -959,7 +959,6 @@ InstallMethod( ExtendedPcgs, "perm pcgs", true,
     pcgs!.stabChain := S;
     SetRelativeOrders( pcgs, S.relativeOrders );
     Unbind( S.relativeOrders );
-    #SetIndicesNormalSteps( pcgs, Concatenation( [ 1 ], IndicesNormalSteps( N ) ) );
     pcgs!.permpcgsNormalSteps:=Concatenation([1],N!.permpcgsNormalSteps+1);
     SetEANormalSeriesByPcgs( pcgs, Concatenation( [ GroupStabChain( S ) ],
             EANormalSeriesByPcgs( N ) ) );

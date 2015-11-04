@@ -773,7 +773,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 	if Length(part)>0 then
 	  famo:=prev mod part;
   #if Length(famo)>1 then Error("ZZY");fi;
-	  IndicesNormalSteps(NumeratorOfModuloPcgs(famo));
+	  IndicesEANormalSteps(NumeratorOfModuloPcgs(famo));
 	else
 	  famo:=prev;
 	fi;
