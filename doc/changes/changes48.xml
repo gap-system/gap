@@ -57,7 +57,7 @@ to <A>a</A>, <A>b</A> and <A>c</A> and then a list containing any remaining
 ones to <A>arg</A>.
 <P/>
 This may break an existing code when <A>arg</A> is used as a name of the
-argument which is not the last one.
+argument which is not the only one.
 </Item>
 <Item>
 &GAP; now displays the filename and line numbers of statements in backtraces
@@ -102,8 +102,9 @@ As a preparation for the future migration to the multithreaded &GAP;&nbsp;5,
 some language extensions from the <Package>HPC-GAP</Package> project were
 backported to the &GAP; library to help to unify the codebase of both 
 &GAP;&nbsp;4 and &GAP;&nbsp;5. The only change which is not backwards
-compatible is that <C>atomic</C> now is a keyword, and thus is no longer
-a valid identifier. So if you have any variables or functions using that name,
+compatible is that <C>atomic</C>, <C>readonly</C> and <C>readwrite</C> are
+now keywords, and thus are no longer valid identifiers.
+So if you have any variables or functions using that name,
 you will have to change it in &GAP; 4.8.
 </Item>
 </List>
