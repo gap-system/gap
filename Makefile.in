@@ -441,22 +441,20 @@ bootstrap-pkg-minimal:
 	@if test -e pkg; then \
         echo "The pkg directory already exists. Please move or remove it to proceed."; \
     else \
+        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) ; \
         mkdir pkg ; \
         cd pkg ; \
-        wget $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) ; \
-        tar xzf $(PKG_MINIMAL) ; \
-        rm $(PKG_MINIMAL) ; \
+        tar xzf ../$(PKG_MINIMAL) ; \
     fi;
 
 bootstrap-pkg-full:
 	@if test -e pkg; then \
         echo "The pkg directory already exists. Please move or remove it to proceed" ; \
     else \
+        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_FULL) ; \
         mkdir pkg ; \
         cd pkg ; \
-        wget $(PKG_BOOTSTRAP_URL)$(PKG_FULL) ; \
-        tar xzf $(PKG_FULL) ; \
-        rm $(PKG_FULL) ; \
+        tar xzf ../$(PKG_FULL) ; \
     fi;
 
 .PHONY: clean clean_$(CLEANME) clean_gap clean_gap_$(CLEANME) clean_gmp clean_gmp_$(CLEANME) compile config cygwin default distclean extern manuals packages rebuild removewin setconfig static strip testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard teststandardrenormalize winbinp
