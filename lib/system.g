@@ -523,7 +523,7 @@ end);
 ##
 ## <Description>
 ##  tests whether this installation of &GAP; supports the timeout functionality
-## of <C>CallWithTimeout</C> and related functions. 
+## of <Ref Func="CallWithTimeout"/> and related functions. 
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
