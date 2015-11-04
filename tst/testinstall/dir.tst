@@ -14,8 +14,8 @@ gap> ForAll([DirectoryHome, DirectoryDesktop,DirectoryCurrent],
 >           x -> (IsDirectoryPath(x()) and IsDirectory(x())) );
 true
 gap> dirTest := Concatenation(base,"/dir-test");;
-gap> DirectoryContents(dirTest);
+gap> SortedList(DirectoryContents(dirTest));
 [ ".", "..", "A", "B", "C", "D" ]
-gap> DirectoryContents(Directory(dirTest));
+gap> SortedList(DirectoryContents(Directory(dirTest)));
 [ ".", "..", "A", "B", "C", "D" ]
 gap> STOP_TEST("dir.tst", 1);
