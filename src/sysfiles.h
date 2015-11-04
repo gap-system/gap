@@ -312,7 +312,7 @@ extern void SyInstallAnswerIntr ( void );
 
 extern UInt SyIsIntr ( void );
 
-extern const int SyHaveAlarms;
+extern int SyHaveAlarms;
 extern volatile int SyAlarmRunning;
 extern volatile int SyAlarmHasGoneOff;
 

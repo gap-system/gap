@@ -1400,12 +1400,12 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
     if (SyAlarmRunning)
       ErrorMayQuit("CALL_WITH_TIMEOUT cannot currently be nested except via break loops."
 		   " There is already a timeout running", 0, 0);
-    if (NumAlarmJumpBuffers++ >= MAX_TIMEOUT_NESTING_DEPTH)
+    if (NumAlarmJumpBuffers >= MAX_TIMEOUT_NESTING_DEPTH-1)
       ErrorMayQuit("Nesting depth of timeouts via break loops limited to %i", MAX_TIMEOUT_NESTING_DEPTH, 0L);
     currLVars = TLS(CurrLVars);
     currStat = TLS(CurrStat);
     recursionDepth = TLS(RecursionDepth);
-    if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers])) {
+    if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers++])) {
       /* Timeout happened */
       TLS(CurrLVars) = currLVars;
       TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
@@ -1443,6 +1443,14 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
       }
       /* make sure the alarm is not still running */
       SyStopAlarm( NULL, NULL);
+      /* Now the alarm might have gone off since we executed the last statement 
+	 of func. So */
+      if (SyAlarmHasGoneOff) {
+	SyAlarmHasGoneOff = 0;
+	UnInterruptExecStat();
+      }
+      assert(NumAlarmJumpBuffers);
+      NumAlarmJumpBuffers--;
       res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE, 1);
       if (result)
         {
@@ -1455,8 +1463,6 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
         SET_LEN_PLIST(res,0);
       }
     }
-    assert(NumAlarmJumpBuffers);
-    NumAlarmJumpBuffers--;
     return res;
 }
 

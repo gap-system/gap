@@ -43,7 +43,9 @@
 ##  <C>CallWithTimeout[List]</C> is an empty list.<P/>
 ##
 ##  If the call does not complete within the timeout, the result of <C>CallWithTimeout[List]</C>
-##  is <K>fail</K>.<P/>
+##  is <K>fail</K>. In this case, just as if you had <C>quit</C> from a break loop, there is some
+##  risk that internal data structures in &GAP; may have been left in an inconsistent state, and you 
+##  should proceed with caution.<P/>
 ##
 ##  The timer is suspended during execution of a break loop and abandoned when you quit from a break loop.<P/>
 ##

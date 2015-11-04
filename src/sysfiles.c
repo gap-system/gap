@@ -1380,7 +1380,7 @@ volatile int SyAlarmHasGoneOff = 0;
 
 /* Handler for the Alarm signal */
 
-const int SyHaveAlarms = 1;
+int SyHaveAlarms = 1;
 
 /* This API lets us pick wich signal to use */
 #define TIMER_SIGNAL SIGVTALRM
@@ -1395,7 +1395,10 @@ static void SyInitAlarm( void ) {
   se.sigev_notify = SIGEV_SIGNAL;
   se.sigev_signo = TIMER_SIGNAL;
   se.sigev_value.sival_int = 0x12345678;  
-  timer_create( CLOCK_THREAD_CPUTIME_ID, &se, &syTimer);
+  if (timer_create( CLOCK_THREAD_CPUTIME_ID, &se, &syTimer)) {
+    Pr("#E  Could not create interval timer. Timeouts will not be supported\n",0L,0L);
+    SyHaveAlarms = 0;
+  }
 }
 
 static void syAnswerAlarm ( int signr, siginfo_t * si, void *context)
@@ -1420,7 +1423,7 @@ void SyInstallAlarm ( UInt seconds, UInt nanoseconds )
   sa.sa_handler = NULL;
   sa.sa_sigaction = syAnswerAlarm;
   sigemptyset(&(sa.sa_mask));
-  sa.sa_flags = SA_RESETHAND | SA_SIGINFO;
+  sa.sa_flags = SA_RESETHAND | SA_SIGINFO | SA_RESTART;
   
   /* First install the handler */
   if (sigaction( TIMER_SIGNAL, &sa, NULL ))
@@ -1472,7 +1475,7 @@ void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
 
 /* Handler for the Alarm signal */
 
-const int SyHaveAlarms = 1;
+int SyHaveAlarms = 1;
 
 
 static void SyInitAlarm( void ) {
@@ -1500,7 +1503,7 @@ void SyInstallAlarm ( UInt seconds, UInt nanoseconds )
   sa.sa_handler = NULL;
   sa.sa_sigaction = syAnswerAlarm;
   sigemptyset(&(sa.sa_mask));
-  sa.sa_flags = SA_RESETHAND | SA_SIGINFO;
+  sa.sa_flags = SA_RESETHAND | SA_SIGINFO | SA_RESTART;
 
   
   /* First install the handler */
@@ -4042,7 +4045,6 @@ static StructGVarFunc GVarFuncs [] = {
     { "READLINEINITLINE", 1, "line",
        FuncREADLINEINITLINE, "src/sysfiles.c:FuncREADLINEINITLINE" },
 #endif
-
 
 
     { 0 } };

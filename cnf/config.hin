@@ -221,6 +221,9 @@
 /* Define to 1 if you have the `sigsetjmp' function. */
 #undef HAVE_SIGSETJMP
 
+/* Check for sig_atomic_t */
+#undef HAVE_SIG_ATOMIC_T
+
 /* Define to 1 if you have the `socket' function. */
 #undef HAVE_SOCKET
 

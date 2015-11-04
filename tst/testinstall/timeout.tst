@@ -1,10 +1,12 @@
 gap> START_TEST("timeout.tst");
-gap> spinFor := function(ms, arg) local t; t := Runtime();
-Syntax warning: New syntax used -- intentional? in stream line 1
-spinFor := function(ms, arg) local t; t := Runtime();
-                                      ^
-> while Runtime() < t + ms do od; if Length(arg) >= 1
+gap> spinFor := function(ms, arg) local t;
+> t := Runtimes().user_time + Runtimes().system_time;
+> while Runtimes().user_time + Runtimes().system_time < t + ms do od;
+> if Length(arg) >= 1
 > then return arg[1]; else return; fi; end;
+Syntax warning: New syntax used -- intentional? in stream line 2
+t := Runtimes().user_time + Runtimes().system_time;
+^
 function( ms, arg ) ... end
 gap> spinFor(10);
 gap> spinFor(10,0);
