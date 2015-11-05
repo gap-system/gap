@@ -15,7 +15,9 @@
 ## don't replace it, so we can make it Read Only
 ##
 
-SetTLDefault(ThreadVar, "OptionsStack", [ ]);
+BindThreadLocal("OptionsStack", []);
+
+# SetTLDefault(ThreadVar, "OptionsStack", [ ]);
 
 #############################################################################
 ##
