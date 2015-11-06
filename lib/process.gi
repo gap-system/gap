@@ -147,6 +147,10 @@ InstallMethod( Process,
 PROCESS_INPUT_TEMPORARY := fail;
 PROCESS_OUTPUT_TEMPORARY := fail;
 
+MakeThreadLocal("PROCESS_OUTPUT_TEMPORARY");
+MakeThreadLocal("PROCESS_INPUT_TEMPORARY");
+
+
 InstallMethod( Process,
     [ IsDirectory and IsDirectoryRep,
       IsString,
