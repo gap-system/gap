@@ -255,12 +255,12 @@ Obj Shell ( Obj context,
   
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
-    ErrorMayQuit("SHELL: can't open outfile %s",(Int)outFile,0);
+      ErrorQuit("SHELL: can't open outfile %s",(Int)outFile,0);
 
   if(!OpenInput(inFile))
     {
       CloseOutput();
-      ErrorMayQuit("SHELL: can't open infile %s",(Int)inFile,0);
+      ErrorQuit("SHELL: can't open infile %s",(Int)inFile,0);
     }
   
   oldPrintDepth = TLS(PrintObjDepth);
