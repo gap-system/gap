@@ -906,8 +906,8 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     elif nam="M = F(1)" then
       nam:="M";
     fi;
-    if nam in ["M12","M22","HJ","Suz","HS","McL","He","Fi22","F3+",
-               "HN","ON","J3"] then
+    if nam in ["M12","M22","HS","McL","He","Fi22","F3+","HN","Suz","ON",
+               "J2","J3"] then
       e:=[[2,"2"]];
     fi;
   elif id.series="A" then
