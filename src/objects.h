@@ -353,8 +353,9 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
      /* #define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 4)
         remove to get parity right */
 
-#define FIRST_PACKAGE_TNUM      T_WPOBJ
-#define LAST_PACKAGE_TNUM       (FIRST_PACKAGE_TNUM+49)
+/* reserve space for 50 package TNUMs */
+#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
+#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+53)
 
 #define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
 #define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
