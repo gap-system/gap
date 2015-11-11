@@ -2429,7 +2429,7 @@ GVarDescriptor GVarBeginEdit, GVarEndEdit;
 
 Int syBeginEdit(Int fid)
 {
-  Obj func = GVarFunc(&GVarBeginEdit);
+  Obj func = GVarFunction(&GVarBeginEdit);
   Obj result;
   if (!func)
     return syStartraw(fid);
@@ -2439,7 +2439,7 @@ Int syBeginEdit(Int fid)
 
 Int syEndEdit(Int fid)
 {
-  Obj func = GVarFunc(&GVarEndEdit);
+  Obj func = GVarFunction(&GVarEndEdit);
   Obj result;
   if (!func) {
     syStopraw(fid);

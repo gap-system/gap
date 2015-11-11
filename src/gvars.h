@@ -304,16 +304,16 @@ extern void RestoreCopyFopyInfo( void );
 *F  DeclareGVar(<gvar>, <name>) . . . . . .  declare global variable by name
 *F  GVarValue(<gvar>) . . . . . . . . . return value of <gvar>, 0 if unbound
 *F  GVarObj(<gvar>) . . . . . . . . return value of <gvar>, error if unbound
-*F  GVarFunc(<gvar>) . . . . return value of <gvar>, error if not a function
-*F  GVarOptFunc(<gvar>) . . return value of <gvar>, 0 if unbound/no function
+*F  GVarFunction(<gvar>) . . . . return value of <gvar>, error if not a function
+*F  GVarOptFunction(<gvar>) . . return value of <gvar>, 0 if unbound/no function
 *F  SetGVar(<gvar>, <obj>) . . . . . . . . . . . . .  assign <obj> to <gvar>
 */
 
 extern void DeclareGVar(GVarDescriptor *gvar, char *name);
 extern Obj GVarValue(GVarDescriptor *gvar);
 extern Obj GVarObj(GVarDescriptor *gvar);
-extern Obj GVarFunc(GVarDescriptor *gvar);
-extern Obj GVarOptFunc(GVarDescriptor *gvar);
+extern Obj GVarFunction(GVarDescriptor *gvar);
+extern Obj GVarOptFunction(GVarDescriptor *gvar);
 extern void SetGVar(GVarDescriptor *gvar, Obj obj);
 
 

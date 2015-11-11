@@ -1255,8 +1255,8 @@ GVarDescriptor *LastDeclaredGVar;
 *F  DeclareGVar(<gvar>, <name>) . . . . . .  declare global variable by name
 *F  GVarValue(<gvar>) . . . . . . . . . return value of <gvar>, 0 if unbound
 *F  GVarObj(<gvar>) . . . . . . . . return value of <gvar>, error if unbound
-*F  GVarFunc(<gvar>) . . . . return value of <gvar>, error if not a function
-*F  GVarOptFunc(<gvar>) . . return value of <gvar>, 0 if unbound/no function
+*F  GVarFunction(<gvar>) . . return value of <gvar>, error if not a function
+*F  GVarOptFunction(<gvar>) return value of <gvar>, 0 if unbound/no function
 *F  SetGVar(<gvar>, <obj>) . . . . . . . . . . . . .  assign <obj> to <gvar>
 */
 
@@ -1302,7 +1302,7 @@ Obj GVarObj(GVarDescriptor *gvar)
   return result;
 }
 
-Obj GVarFunc(GVarDescriptor *gvar)
+Obj GVarFunction(GVarDescriptor *gvar)
 {
   Obj result = *(gvar->ref);
   if (!result)
@@ -1316,7 +1316,7 @@ Obj GVarFunc(GVarDescriptor *gvar)
   return result;
 }
 
-Obj GVarOptFunc(GVarDescriptor *gvar)
+Obj GVarOptFunction(GVarDescriptor *gvar)
 {
   Obj result = *(gvar->ref);
   if (!result)

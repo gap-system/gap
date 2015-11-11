@@ -2982,10 +2982,10 @@ void ThreadedInterpreter(void *funcargs) {
     Obj init, exit;
     if (sySetjmp(TLS(threadExit)))
       return;
-    init = GVarOptFunc(&GVarTHREAD_INIT);
+    init = GVarOptFunction(&GVarTHREAD_INIT);
     if (init) CALL_0ARGS(init);
     FuncCALL_FUNC_LIST((Obj) 0, func, tmp);
-    exit = GVarOptFunc(&GVarTHREAD_EXIT);
+    exit = GVarOptFunction(&GVarTHREAD_EXIT);
     if (exit) CALL_0ARGS(exit);
     PushVoidObj();
     /* end the interpreter                                                 */

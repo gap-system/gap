@@ -724,7 +724,7 @@ Obj LookupIntTag(Obj tag) {
         return result;
       if (GVarObj(&SERIALIZATION_TAGS_NEED_UPDATE_GVar) == False)
         return (Obj) 0;
-      func = GVarFunc(&SERIALIZATION_UPDATE_TAGS_GVar);
+      func = GVarFunction(&SERIALIZATION_UPDATE_TAGS_GVar);
       if (!func)
         return (Obj) 0;
       CALL_0ARGS(func);
@@ -866,7 +866,7 @@ Obj LookupTypeTag(Obj type) {
       return result;
     if (GVarObj(&SERIALIZATION_TAGS_NEED_UPDATE_GVar) == False)
       return (Obj) 0;
-    func = GVarFunc(&SERIALIZATION_UPDATE_TAGS_GVar);
+    func = GVarFunction(&SERIALIZATION_UPDATE_TAGS_GVar);
     if (func)
       CALL_0ARGS(func);
     tags = GVarObj(&SERIALIZATION_TAG_GVar);
@@ -912,7 +912,7 @@ void SerializeTypedObj(Obj obj) {
     }
   }
   WriteTNum(TNUM_OBJ(obj));
-  rep = CALL_1ARGS(GVarFunc(&SerializableRepresentationGVar), obj);
+  rep = CALL_1ARGS(GVarFunction(&SerializableRepresentationGVar), obj);
   if (!rep || !IS_PLIST(rep) || LEN_PLIST(rep) == 0) {
     SerRepError();
     return;

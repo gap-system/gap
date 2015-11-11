@@ -307,7 +307,7 @@ UInt OpenDefaultInput( void )
   stream = TLS(DefaultInput);
   if (stream)
     return OpenInputStream(stream);
-  func = GVarOptFunc(&DEFAULT_INPUT_STREAM);
+  func = GVarOptFunction(&DEFAULT_INPUT_STREAM);
   if (!func)
     return OpenInput("*stdin*");
   stream = CALL_0ARGS(func);
@@ -325,7 +325,7 @@ UInt OpenDefaultOutput( void )
   stream = TLS(DefaultOutput);
   if (stream)
     return OpenOutputStream(stream);
-  func = GVarOptFunc(&DEFAULT_OUTPUT_STREAM);
+  func = GVarOptFunction(&DEFAULT_OUTPUT_STREAM);
   if (!func)
     return OpenOutput("*stdout*");
   stream = CALL_0ARGS(func);
