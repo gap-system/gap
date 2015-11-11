@@ -265,6 +265,27 @@ if GAP["mpi"]:
 
 # Construct command line options
 
+abi_path = "extern/"+GAP["abi"]+"bit"
+
+include_path = [ build_dir, "." ] # for config.h
+library_path = [ ]
+options = { }
+
+def add_include_path(path):
+  global include_path, options
+  if path not in include_path:
+    include_path.append(path)
+    options["CPPPATH"] = ":".join(include_path)
+
+def add_library_path(path):
+  global library_path, options
+  if path not in library_path:
+    library_path.append(path)
+    options["LIBPATH"] = library_path[:]
+
+add_library_path(abi_path + "/lib")
+include_path.append(abi_path + "/include")
+
 defines = ["HPCGAP"]
 cflags = ""
 linkflags = ""
@@ -317,9 +338,7 @@ GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags+linkflags)
 
 # Building external libraries
 
-abi_path = "extern/"+GAP["abi"]+"bit"
 GAP.Append(RPATH=os.path.join(os.getcwd(), abi_path, "lib"))
-
 
 # General routine to build an external library using gunzip,
 # tar, configure, and make.
@@ -404,24 +423,6 @@ if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
 
 # Adding paths for external libraries
 
-include_path = [ build_dir, "." ] # for config.h
-library_path = [ ]
-options = { }
-
-def add_include_path(path):
-  global include_path, options
-  if path not in include_path:
-    include_path.append(path)
-    options["CPPPATH"] = ":".join(include_path)
-
-def add_library_path(path):
-  global library_path, options
-  if path not in library_path:
-    library_path.append(path)
-    options["LIBPATH"] = library_path[:]
-
-add_library_path(abi_path + "/lib")
-include_path.append(abi_path + "/include")
 options["CPPPATH"] = ":".join(include_path)
 options["OBJPREFIX"] = "../build/obj/"
 
