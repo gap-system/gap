@@ -2355,6 +2355,24 @@ InstallOtherMethod( SortParallel,
     [IsList,IsList,IsFunction],
     SORT_MUTABILITY_ERROR_HANDLER);
 
+#############################################################################
+##
+#F  Intersperse( <list>, <elt> )
+##
+InstallGlobalFunction( Intersperse,
+    function(list, elt)
+        local x, res;
+        if Length(list) = 0 then
+            res := [];
+        else
+            res := [list[1]];
+            for x in list{[2..Length(list)]} do
+                Add(res, elt);
+                Add(res, x);
+            od;
+        fi;
+        return res;
+    end);
 
 #############################################################################
 ##
