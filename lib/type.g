@@ -31,7 +31,8 @@
 ##
 BIND_GLOBAL( "POS_DATA_TYPE", 3 );
 BIND_GLOBAL( "POS_NUMB_TYPE", 4 );
-BIND_GLOBAL( "POS_FIRST_FREE_TYPE", 5 );
+BIND_GLOBAL( "POS_PARENT_TYPE", 5 );
+BIND_GLOBAL( "POS_FIRST_FREE_TYPE", 6 );
 
 
 #############################################################################
@@ -622,4 +623,3 @@ end );
 #############################################################################
 ##
 #E
-

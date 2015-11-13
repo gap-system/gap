@@ -92,8 +92,8 @@ DeclareCategory( "IsExternalSetByPcgs", IsExternalSet );
 # The following two integer variables give position in which the `Type' of an
 # external set can  store the `Type' of its  external subsets resp.  external
 # orbits (to avoid repeated calls of `NewType').
-BindGlobal( "XSET_XSSETTYPE", 4 );
-BindGlobal( "XSET_XORBTYPE", 5 );
+BindGlobal( "XSET_XSSETTYPE", POS_FIRST_FREE_TYPE );
+BindGlobal( "XSET_XORBTYPE", POS_FIRST_FREE_TYPE + 1 );
 
 
 #############################################################################
@@ -2623,4 +2623,3 @@ DeclareOperation("DomainForAction",[IsObject,IsListOrCollection,IsFunction]);
 #############################################################################
 ##
 #E
-
