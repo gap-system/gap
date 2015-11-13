@@ -65,7 +65,8 @@
 ##
 ##  The precision of the timeouts is not guaranteed, and there is a system dependent upper limit on the timeout 
 ##  which is typically about 8 years on 32 bit systems and about 30 billion years on 64 bit systems. Timeouts longer
-##  than this will be reduced to this limit.<P/>
+##  than this will be reduced to this limit. On Windows systems, timing is based on elapsed time, not CPU time
+##  because the necessary POSIX CPU timing API is not supported.<P/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

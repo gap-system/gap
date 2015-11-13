@@ -1389,13 +1389,19 @@ int SyHaveAlarms = 1;
 /* For now anyway we create one timer at initialisation and use it */
 static timer_t syTimer = 0;
 
+#if SYS_IS_CYGWIN32
+#define MY_CLOCK CLOCK_REALTIME
+#else
+#define MY_CLOCK CLOCK_THREAD_CPUTIME_ID
+#endif
+
 static void SyInitAlarm( void ) {
 /* Create the CPU timer used for timeouts */
   struct sigevent se;
   se.sigev_notify = SIGEV_SIGNAL;
   se.sigev_signo = TIMER_SIGNAL;
-  se.sigev_value.sival_int = 0x12345678;  
-  if (timer_create( CLOCK_THREAD_CPUTIME_ID, &se, &syTimer)) {
+  se.sigev_value.sival_int = 0x12345678;
+  if (timer_create( MY_CLOCK, &se, &syTimer)) {
     Pr("#E  Could not create interval timer. Timeouts will not be supported\n",0L,0L);
     SyHaveAlarms = 0;
   }

@@ -1630,6 +1630,18 @@ sig_atomic_t volatile RealExecStatCopied;
 int volatile RealExecStatCopied;
 #endif
 
+/****************************************************************************
+**
+*F  void CheckAndRespondToAlarm()
+**
+*/
+
+static void CheckAndRespondToAlarm(void) {
+  if ( SyAlarmHasGoneOff ) {
+    assert(NumAlarmJumpBuffers);
+    syLongjmp(AlarmJumpBuffers[--NumAlarmJumpBuffers],1);
+  }
+}
 
 /****************************************************************************
 **
@@ -1648,8 +1660,10 @@ int volatile RealExecStatCopied;
 UInt TakeInterrupt( void ) {
   if (HaveInterrupt()) {
     UnInterruptExecStat();
-      ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-      return 1;
+    CheckAndRespondToAlarm();
+    
+    ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+    return 1;
   }
   return 0;
 }
@@ -1695,11 +1709,7 @@ UInt ExecIntrStat (
 
     /* One reason we might be here is a timeout. If so longjump out to the 
        CallWithTimeLimit where we started */
-    
-    if ( SyAlarmHasGoneOff ) {
-      assert(NumAlarmJumpBuffers);
-      syLongjmp(AlarmJumpBuffers[--NumAlarmJumpBuffers],1);
-    }
+    CheckAndRespondToAlarm();
       
     /* and now for something completely different                          */
     SET_BRK_CURR_STAT( stat );
