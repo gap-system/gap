@@ -533,6 +533,7 @@ void HashUnlockShared(void *object) {
 void RegionWriteLock(Region *region)
 {
   int result = 0;
+  assert(region->owner != realTLS);
 
   if (region->count_active || TLS(CountActive)) {
     result = !pthread_rwlock_trywrlock(region->lock);
@@ -558,7 +559,9 @@ void RegionWriteLock(Region *region)
 
 int RegionTryWriteLock(Region *region)
 {
-  int result = !pthread_rwlock_trywrlock(region->lock);
+  int result;
+  assert(region->owner != realTLS);
+  result = !pthread_rwlock_trywrlock(region->lock);
 
   if (result) {
     if(region->count_active)
@@ -577,6 +580,7 @@ int RegionTryWriteLock(Region *region)
 
 void RegionWriteUnlock(Region *region)
 {
+  assert(region->owner == realTLS);
   region->owner = NULL;
   pthread_rwlock_unlock(region->lock);
 }
@@ -584,6 +588,8 @@ void RegionWriteUnlock(Region *region)
 void RegionReadLock(Region *region)
 {
   int result = 0;
+  assert(region->owner != realTLS);
+  assert(region->readers[TLS(threadID)] == 0);
 
   if(region->count_active || TLS(CountActive)) {
     result = !pthread_rwlock_rdlock(region->lock);
@@ -609,6 +615,8 @@ void RegionReadLock(Region *region)
 int RegionTryReadLock(Region *region)
 {
   int result = !pthread_rwlock_rdlock(region->lock);
+  assert(region->owner != realTLS);
+  assert(region->readers[TLS(threadID)] == 0);
 
   if (result) {
     if(region->count_active)
@@ -627,12 +635,14 @@ int RegionTryReadLock(Region *region)
 
 void RegionReadUnlock(Region *region)
 {
+  assert(region->readers[TLS(threadID)]);
   region->readers[TLS(threadID)] = 0;
   pthread_rwlock_unlock(region->lock);
 }
 
 void RegionUnlock(Region *region)
 {
+  assert(region->owner == realTLS || region->readers[TLS(threadID)]);
   if (region->owner == realTLS)
     region->owner = NULL;
   region->readers[TLS(threadID)] = 0;
