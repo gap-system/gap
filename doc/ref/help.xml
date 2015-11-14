@@ -229,7 +229,7 @@ in your <F>gap.ini</F> file (see&nbsp;<Ref Sect="sect:gap.ini"/>).
   well (so far, since we do not yet use many special characters which
   such terminals could not display). 
 </Item>
-<Mark><C>"firefox"</C>, <C>chrome</C>, <C>"mozilla"</C>, <C>"netscape"</C>, <C>"konqueror"</C></Mark>
+<Mark><C>"firefox"</C>, <C>"chrome"</C>, <C>"mozilla"</C>, <C>"netscape"</C>, <C>"konqueror"</C></Mark>
 <Item>
   If a book is available in HTML format this is shown using the
   corresponding web browser.
