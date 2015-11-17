@@ -318,8 +318,6 @@ local a,h,d;
       if h[Length(h)]<>'/' then Add(h,'/');fi;
       return Directory(Concatenation(h,a));
     else
-      Info(InfoWarning,1,"Foreign Localization of Windows\n",
-	"Need name of 'My Documents' folder",d);
       return Directory(StringHOMEPath());
     fi;
   else
@@ -342,8 +340,6 @@ local a,h,d;
       if h[Length(h)]<>'/' then Add(h,'/');fi;
       return Directory(Concatenation(h,a));
     else
-      Info(InfoWarning,1,"Foreign Localization of Windows\n",
-	"Need name of 'Desktop' folder",d);
       return Directory(StringHOMEPath());
     fi;
   else

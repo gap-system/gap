@@ -8,7 +8,7 @@ gap> List(dirs, IsDirectoryPath);
 [ true, true, false, false ]
 gap> List(dirs, IsDirectory);
 [ false, true, false, true ]
-gap> DirectoryHome() = Directory("~");
+gap> DirectoryHome() = Directory("~") or ARCH_IS_WINDOWS();
 true
 gap> ForAll([DirectoryHome, DirectoryDesktop,DirectoryCurrent],
 >           x -> (IsDirectoryPath(x()) and IsDirectory(x())) );
