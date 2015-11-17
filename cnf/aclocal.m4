@@ -189,7 +189,7 @@ dnl ##
 AC_DEFUN(GP_PROG_CC_DYNFLAGS,
 [AC_CACHE_CHECK(dynamic module compile options, gp_cv_prog_cc_cdynoptions,
  [ case "$host-$CC" in
-    i686-pc-cygwin-gcc* )
+    *cygwin* )
         gp_cv_prog_cc_cdynoptions="${ABI_CFLAGS}";;
     *-apple-darwin*gcc* )
         gp_cv_prog_cc_cdynoptions="-fPIC -Wall ${ABI_CFLAGS}";;
@@ -227,7 +227,7 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
  [ case "$host-$CC" in
     *-apple-darwin*gcc* )
         gp_cv_prog_cc_cdynlinking='-g -bundle -bundle_loader ${gap_bin}/gap -lc -lm'" ${ABI_CFLAGS}";;
-    i686-pc-cygwin-gcc* )
+    *cygwin* )
         gp_cv_prog_cc_cdynlinking='-shared ${gap_bin}/gap.dll';;
     *-gcc )
         gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
