@@ -250,5 +250,8 @@ ReadLib("other.gd");
 
 ReadLib("gasman.gd");
 
+# files dealing with function calling
+ReadLib("function.gd");
+
 # random sources
 ReadLib("random.gi");

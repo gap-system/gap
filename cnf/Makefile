@@ -110,7 +110,7 @@ Makegap.in: Makegap.top Makefile Makegap.bottom
 	@echo >> Makegap.in
 	@echo '# compile and link GAP' >> Makegap.in
 	@echo 'gap: $$(OBJECTS) $$(ITANIUMOBJ) $$(EXTOBJS)' >> Makegap.in
-	@echo '	$$(CC) $$(LDFLAGS) -o gap $$(OBJECTS) $$(ITANIUMOBJ) -lm $$(MPILIBS) $$(EXTOBJS) $$(GMP_LIBS) $$(CONFLIBS)' >> Makegap.in
+	@echo '	$$(CC) $$(LDFLAGS) -o gap $$(OBJECTS) $$(ITANIUMOBJ) -lm -lrt $$(MPILIBS) $$(EXTOBJS) $$(GMP_LIBS) $$(CONFLIBS)' >> Makegap.in
 	@echo >> Makegap.in
 	@echo '# compile and link gap.dll on cygwin' >> Makegap.in
 	@echo 'gapdll: $$(OBJECTS) $$(ITANIUMOBJ) $$(EXTOBJS)' >> Makegap.in

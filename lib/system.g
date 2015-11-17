@@ -513,6 +513,22 @@ BIND_GLOBAL("ARCH_IS_UNIX",function()
   return not ARCH_IS_WINDOWS();
 end);
 
+#############################################################################
+##
+#V  GAPInfo.TimeoutsSupported
+##
+##  <#GAPDoc Label="GAPInfo.TimeoutsSupported">
+##  <ManSection>
+##  <Var Name="GAPInfo.TimeoutsSupported"/>
+##
+## <Description>
+##  tests whether this installation of &GAP; supports the timeout functionality
+## of <Ref Func="CallWithTimeout"/> and related functions. 
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+
+GAPInfo.TimeoutsSupported := TIMEOUTS_SUPPORTED();
 
 #############################################################################
 ##

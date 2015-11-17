@@ -77,6 +77,9 @@
 /* Define to 1 if you have the `fstat' function. */
 #undef HAVE_FSTAT
 
+/* Define to 1 if you have the `getitimer' function. */
+#undef HAVE_GETITIMER
+
 /* Define to 1 if you have the `getpseudotty' function. */
 #undef HAVE_GETPSEUDOTTY
 
@@ -100,6 +103,9 @@
 
 /* Define to 1 if you have the `readline' library (-lreadline). */
 #undef HAVE_LIBREADLINE
+
+/* Define to 1 if you have the `rt' library (-lrt). */
+#undef HAVE_LIBRT
 
 /* Define to 1 if you have the <libutil.h> header file. */
 #undef HAVE_LIBUTIL_H
@@ -194,11 +200,17 @@
 /* Define to 1 if you have the `send' function. */
 #undef HAVE_SEND
 
+/* Define to 1 if you have the `setitimer' function. */
+#undef HAVE_SETITIMER
+
 /* Define to 1 if you have the `setpgid' function. */
 #undef HAVE_SETPGID
 
 /* Define to 1 if you have the <sgtty.h> header file. */
 #undef HAVE_SGTTY_H
+
+/* Define to 1 if you have the `sigaction' function. */
+#undef HAVE_SIGACTION
 
 /* Define to 1 if you have the `signal' function. */
 #undef HAVE_SIGNAL
@@ -208,6 +220,9 @@
 
 /* Define to 1 if you have the `sigsetjmp' function. */
 #undef HAVE_SIGSETJMP
+
+/* Check for sig_atomic_t */
+#undef HAVE_SIG_ATOMIC_T
 
 /* Define to 1 if you have the `socket' function. */
 #undef HAVE_SOCKET
@@ -265,6 +280,15 @@
 /* Define to 1 if you have the <sys/sysmacros.h> header file. */
 #undef HAVE_SYS_SYSMACROS_H
 
+/* Define to 1 if you have the `sys_timer_create' function. */
+#undef HAVE_SYS_TIMER_CREATE
+
+/* Define to 1 if you have the `sys_timer_gettime' function. */
+#undef HAVE_SYS_TIMER_GETTIME
+
+/* Define to 1 if you have the `sys_timer_settime' function. */
+#undef HAVE_SYS_TIMER_SETTIME
+
 /* Define to 1 if you have the <sys/times.h> header file. */
 #undef HAVE_SYS_TIMES_H
 
@@ -283,8 +307,20 @@
 /* Define to 1 if you have the <termio.h> header file. */
 #undef HAVE_TERMIO_H
 
+/* Define to 1 if you have the `timer_create' function. */
+#undef HAVE_TIMER_CREATE
+
+/* Define to 1 if you have the `timer_gettime' function. */
+#undef HAVE_TIMER_GETTIME
+
+/* Define to 1 if you have the `timer_settime' function. */
+#undef HAVE_TIMER_SETTIME
+
 /* Define to 1 if you have the `times' function. */
 #undef HAVE_TIMES
+
+/* Define to 1 if you have the <time.h> header file. */
+#undef HAVE_TIME_H
 
 /* Define to 1 if you have the `trunc' function. */
 #undef HAVE_TRUNC

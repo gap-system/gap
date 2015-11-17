@@ -37,7 +37,7 @@ OBJECTS=ariths.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_random.o c_ty
 
 # compile and link GAP
 gap: $(OBJECTS) $(ITANIUMOBJ) $(EXTOBJS)
-	$(CC) $(LDFLAGS) -o gap $(OBJECTS) $(ITANIUMOBJ) -lm $(MPILIBS) $(EXTOBJS) $(GMP_LIBS) $(CONFLIBS)
+	$(CC) $(LDFLAGS) -o gap $(OBJECTS) $(ITANIUMOBJ) -lm  $(MPILIBS) $(EXTOBJS) $(GMP_LIBS) $(CONFLIBS)
 
 # compile and link gap.dll on cygwin
 gapdll: $(OBJECTS) $(ITANIUMOBJ) $(EXTOBJS)
@@ -262,7 +262,8 @@ gap.o: ../../Makefile @srcdir@/gap.c @srcdir@/system.h config.h @srcdir@/gasman.
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o gap.o -c @srcdir@/gap.c
 
 gasman.o: ../../Makefile @srcdir@/gasman.c @srcdir@/system.h config.h @srcdir@/gasman.h \
-  @srcdir@/atomic.h @srcdir@/objects.h @srcdir@/scanner.h
+  @srcdir@/atomic.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/code.h \
+  @srcdir@/thread.h @srcdir@/tls.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o gasman.o -c @srcdir@/gasman.c
 
 gmpints.o: ../../Makefile @srcdir@/gmpints.c @srcdir@/system.h config.h @srcdir@/gasman.h \
