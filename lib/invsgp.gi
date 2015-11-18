@@ -49,19 +49,25 @@ InstallMethod(AsInverseMonoid, "for an inverse monoid",
 
 #
 
-InstallMethod(AsInverseMonoid, "for an inverse semigroup",
-[IsInverseSemigroup],
-function(s)
+InstallMethod(AsInverseMonoid,
+"for an inverse semigroup with known generators",
+[IsInverseSemigroup and HasGeneratorsOfInverseSemigroup],
+function(S)
   local gens, pos;
 
-  if One(s)=fail then
+  if not (IsMultiplicativeElementWithOneCollection(S)
+          and One(S) <> fail and One(S) in S) then
     return fail;
   fi;
 
-  gens:=ShallowCopy(GeneratorsOfInverseSemigroup(s));
-  pos:=Position(gens, One(s));
-  if pos<>fail then 
-    Remove(gens, pos); 
+  gens := GeneratorsOfInverseSemigroup(S);
+
+  if CanEasilyCompareElements(gens) then
+    pos := Position(gens, One(S));
+    if pos <> fail then
+      gens := ShallowCopy(gens);
+      Remove(gens, pos);
+    fi;
   fi;
   return InverseMonoid(gens);
 end);
@@ -196,55 +202,84 @@ end);
 
 #
 
-InstallMethod(InverseMonoidByGenerators, 
+InstallMethod(InverseMonoidByGenerators,
 [IsAssociativeElementCollection],
 function(gens)
-  local s, one, pos;
+  local S, one, pos;
 
-  s:=Objectify( NewType (FamilyObj( gens ), IsMagmaWithOne and
-   IsInverseSemigroup and IsAttributeStoringRep), rec());
-  
-  one:=One(gens);
-  SetOne(s, one);
-  pos:=Position(gens, one);
-  
-  if pos<>fail then 
-    SetGeneratorsOfInverseSemigroup(s, gens);
-    gens:=ShallowCopy(gens); 
-    Remove(gens, pos);
-    SetGeneratorsOfInverseMonoid(s, gens);
-  else 
-    SetGeneratorsOfInverseMonoid(s, gens);
-    gens:=ShallowCopy(gens);
-    Add(gens, one);
-    SetGeneratorsOfInverseSemigroup(s, gens);
+  S := Objectify(NewType(FamilyObj(gens), IsMagmaWithOne
+                                          and IsInverseSemigroup
+                                          and IsAttributeStoringRep), rec());
+
+  gens := AsList(gens);
+
+  if CanEasilyCompareElements(gens) and IsFinite(gens)
+      and IsMultiplicativeElementWithOneCollection(gens) then
+    one := One(gens);
+    SetOne(S, one);
+    pos := Position(gens, one);
+    if pos <> fail  then
+      SetGeneratorsOfInverseSemigroup(S, gens);
+      if Length(gens) = 1 then # Length(gens) <> 0 since One(gens) in gens
+        SetIsTrivial(S, true);
+      elif not IsPartialPermCollection(gens) or One(gens) =
+        One(gens{Concatenation([1 .. pos - 1], [pos + 1 .. Length(gens)])}) then
+        # if gens = [PartialPerm([1,2]), PartialPerm([1])], then removing the One
+        # = gens[1] from this, it is not possible to recreate the semigroup using
+        # Monoid(PartialPerm([1])) (since the One in this case is
+        # PartialPerm([1]) not PartialPerm([1,2]) as it should be.
+        gens := ShallowCopy(gens);
+        Remove(gens, pos);
+      fi;
+      SetGeneratorsOfInverseMonoid(S, gens);
+    else
+      SetGeneratorsOfInverseMonoid(S, gens);
+      gens := ShallowCopy(gens);
+      Add(gens, one);
+      SetGeneratorsOfInverseSemigroup(S, gens);
+    fi;
+  else
+    SetGeneratorsOfInverseMonoid(S, gens);
   fi;
-  
-  return s;
+
+  return S;
 end);
 
 #
 
-InstallMethod(InverseSemigroupByGenerators, 
-"for associative element with unique semigroup inverse collection",  
+InstallMethod(InverseSemigroupByGenerators,
+"for associative element with unique semigroup inverse collection",
 [IsAssociativeElementCollection],
 function(gens)
-  local s, pos;
+  local S, pos;
 
-  s:=Objectify( NewType (FamilyObj( gens ), IsMagma and
-   IsInverseSemigroup and IsAttributeStoringRep), rec());
-  SetGeneratorsOfInverseSemigroup(s, AsList(gens));
-  
-  if IsMultiplicativeElementWithOneCollection(gens) then 
-    pos:=Position(gens, One(gens));
-    if pos<>fail then 
-      SetFilterObj(s, IsMonoid);
-      gens:=ShallowCopy(gens);
-      Remove(gens, pos);
-      SetGeneratorsOfInverseMonoid(s, gens);
+  S := Objectify(NewType (FamilyObj(gens), IsMagma
+                                           and IsInverseSemigroup
+                                           and IsAttributeStoringRep), rec());
+  gens := AsList(gens);
+  SetGeneratorsOfInverseSemigroup(S, gens);
+
+  if IsMultiplicativeElementWithOneCollection(gens)
+      and CanEasilyCompareElements(gens)
+      and IsFinite(gens) then
+    pos := Position(gens, One(gens));
+    if pos <> fail then
+      SetFilterObj(S, IsMonoid);
+      if Length(gens) = 1 then # Length(gens) <> 0 since One(gens) in gens
+        SetIsTrivial(S, true);
+      elif not IsPartialPermCollection(gens) or One(gens) =
+          One(gens{Concatenation([1 .. pos - 1], [pos + 1 .. Length(gens)])}) then
+        # if gens = [PartialPerm([1,2]), PartialPerm([1])], then removing the One
+        # = gens[1] from this, it is not possible to recreate the semigroup using
+        # Monoid(PartialPerm([1])) (since the One in this case is
+        # PartialPerm([1]) not PartialPerm([1,2]) as it should be.
+        gens := ShallowCopy(gens);
+        Remove(gens, pos);
+      fi;
+      SetGeneratorsOfInverseMonoid(S, gens);
     fi;
   fi;
-  return s;
+  return S;
 end);
 
 #

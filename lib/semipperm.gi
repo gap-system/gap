@@ -187,14 +187,13 @@ end);
 InstallMethod(GeneratorsOfInverseMonoid,
 "for an inverse partial perm monoid with generators",
 [IsPartialPermSemigroup and IsInverseMonoid and HasGeneratorsOfMonoid],
-function(s)
-  local gens, one, pos, f;
+function(S)
+  local gens, pos, x;
 
-  gens:=ShallowCopy(GeneratorsOfMonoid(s));
-  one:=One(s);
-  for f in gens do
-    pos:=Position(gens, f^-1);
-    if pos<>fail and (f<>f^-1 or f=one) then 
+  gens := ShallowCopy(GeneratorsOfMonoid(S));
+  for x in gens do
+    pos := Position(gens, x ^ -1);
+    if pos <> fail and x <> x ^ -1  then
       Remove(gens, pos);
     fi;
   od;
