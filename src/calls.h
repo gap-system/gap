@@ -396,11 +396,10 @@ extern void PrintFunction (
 **  'CallFuncList' calls the  function <func> with the arguments list <list>,
 **  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
 */
-extern Obj FuncCALL_FUNC_LIST (
-    Obj                 self,
-    Obj                 func,
-    Obj                 list );
 
+extern Obj CallFuncList(
+			Obj func,
+			Obj list);
 
 extern Obj CallFuncListOper;
 

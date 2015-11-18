@@ -309,7 +309,7 @@ Obj DoFail0args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 0);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -323,7 +323,7 @@ Obj DoFail1args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 1);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -338,7 +338,7 @@ Obj DoFail2args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 2);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -354,7 +354,7 @@ Obj DoFail3args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 3);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -371,7 +371,7 @@ Obj DoFail4args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 4);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -389,7 +389,7 @@ Obj DoFail5args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 5);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -408,7 +408,7 @@ Obj DoFail6args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 6);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -422,7 +422,7 @@ Obj DoFailXargs (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, LEN_LIST(args));
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -1493,23 +1493,13 @@ Obj FuncCALL_FUNC (
 */
 Obj CallFuncListOper;
 
-Obj FuncCALL_FUNC_LIST (
-    Obj                 self,
-    Obj                 func,
-    Obj                 list )
+Obj CallFuncList ( Obj func, Obj list )
 {
     Obj                 result;         /* result                          */
     Obj                 list2;          /* list of arguments               */
     Obj                 arg;            /* one argument                    */
     UInt                i;              /* loop variable                   */
-
-    /* check that the second argument is a list                            */
-    while ( ! IS_SMALL_LIST( list ) ) {
-        list = ErrorReturnObj(
-            "CallFuncList: <list> must be a small list",
-            0L, 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
+   
 
     if (TNUM_OBJ(func) == T_FUNCTION) {
 
@@ -1551,12 +1541,27 @@ Obj FuncCALL_FUNC_LIST (
         result = CALL_XARGS( func, list2 );
       }
     } else {
-      result = DoOperation2Args(self, func, list);
+      result = DoOperation2Args(CallFuncListOper, func, list);
     }
     /* return the result                                                   */
     return result;
+
 }
 
+Obj FuncCALL_FUNC_LIST (
+    Obj                 self,
+    Obj                 func,
+    Obj                 list )
+{
+  /* check that the second argument is a list                            */
+    while ( ! IS_SMALL_LIST( list ) ) {
+        list = ErrorReturnObj(
+            "CallFuncList: <list> must be a small list",
+            0L, 0L,
+            "you can replace <list> via 'return <list>;'" );
+    }
+    return CallFuncList(func, list);
+}
 
 /****************************************************************************
 **
