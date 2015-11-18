@@ -241,6 +241,28 @@ the file <F>gaprc</F> (without the leading dot, same name for all operating
 systems) in the directory <C>GAPInfo.UserGapRoot</C>.
 
 </Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="obsolete-semigroups-properties">
+  <Heading>Properties of semigroups</Heading>
+
+  Until Version 4.8 of &GAP; there was inconsistent use of the following
+  properties of semigroups: <C>IsGroupAsSemigroup</C>, <C>IsMonoidAsSemigroup</C>, 
+  and <C>IsSemilatticeAsSemigroup</C>. <C>IsGroupAsSemigroup</C> was true for
+  semigroups that mathematically defined a group, and for semigroups in the
+  category <Ref Filt = "IsGroup"/>; <C>IsMonoidAsSemigroup</C> was true for
+  semigroups that mathematically defined monoids, but did not belong to the
+  category <Ref Filt = "IsMonoid"/>; and <C>IsSemilatticeAsSemigroup</C> was
+  simply a property of semigroups, there is no category <C>IsSemilattice</C>. 
+  <P/>
+
+  From Version 4.8 onwards, <C>IsSemilatticeAsSemigroup</C> is renamed
+  <C>IsSemilattice</C>, and <C>IsMonoidAsSemigroup</C> returns <C>true</C> for
+  semigroups in the category <Ref Filt = "IsMonoid"/>.
+  
+  <#Include Label="IsSemilatticeAsSemigroup">
+</Section>
+
 </Chapter>
 
 
