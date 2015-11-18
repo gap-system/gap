@@ -421,6 +421,16 @@ gap> GeneratorsOfInverseSemigroup(S);
 gap> GeneratorsOfInverseMonoid(S);
 [ IdentityTransformation ]
 
+# Check that empty semigroup does not satisfy IsTrivial
+gap> S := FreeSemigroup(2);
+<free semigroup on the generators [ s1, s2 ]>
+gap> T := Subsemigroup(S, []);
+<semigroup of size 0, with 0 generators>
+gap> IsTrivial(T);
+false
+gap> IsEmpty(T);
+true
+
 #
 gap> STOP_TEST( "semigrp.tst", 1060000);
 
