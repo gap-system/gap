@@ -604,8 +604,12 @@ InstallTrueMethod(IsZeroSemigroup, IsInverseSemigroup and IsTrivial);
 
 # ...to here was added by JDM / WW.
 
+# the following allow us to only use a single method for ViewString for
+# semigroups of transformations and partial perms.
+
+DeclareOperation("SemigroupViewStringPrefix", [IsSemigroup]);
+DeclareOperation("SemigroupViewStringSuffix", [IsSemigroup]);
 
 #############################################################################
 ##
 #E
-

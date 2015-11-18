@@ -337,7 +337,7 @@ gap> V:=Semigroup(GeneratorsOfSemigroup(U));
 gap> IsReesZeroMatrixSemigroup(V);
 true
 gap> S:=Semigroup(Transformation([1,1]), Transformation([1,2]));
-&lt;commutative transformation monoid on 2 pts with 1 generator>
+&lt;commutative transformation monoid of degree 2 with 1 generator>
 gap> IsSimpleSemigroup(S);
 false
 gap> mat:=[[0, One(S), 0, One(S)], [One(S), 0, One(S), 0], 

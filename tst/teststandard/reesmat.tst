@@ -205,7 +205,7 @@ second argument <i> must equal 1, 2, or 3,
 gap> gens:=[Transformation([3,3,2,6,2,4,4,6]),
 > Transformation([5,1,7,8,7,5,8,1])];;
 gap> s:=Semigroup(gens);
-<transformation semigroup on 8 pts with 2 generators>
+<transformation semigroup of degree 8 with 2 generators>
 gap> IsSimpleSemigroup(s);
 true
 gap> IsomorphismReesMatrixSemigroup(s);;
@@ -611,7 +611,7 @@ gap> Length(GreensDClasses(UUU));
 gap> Size(V);
 33
 gap> Vt:=Range(IsomorphismTransformationSemigroup(V));
-<transformation semigroup on 34 pts with 5 generators>
+<transformation semigroup of degree 34 with 5 generators>
 gap> Size(Vt);
 33
 gap> Representative(R);
@@ -866,7 +866,7 @@ false
 gap> Length(GreensDClasses(V));
 2
 gap> Vt;
-<transformation semigroup of size 33, on 34 pts with 5 generators>
+<transformation semigroup of size 33, degree 34 with 5 generators>
 gap> VV:=AssociatedReesMatrixSemigroupOfDClass(
 > First(GreensDClasses(Vt), x-> RankOfTransformation(Representative(x))=1));
 <Rees matrix semigroup 1x1 over Group(())>
@@ -894,7 +894,7 @@ Error, usage: the entries of <mat> must be 0 or belong to <S>,
 gap> mat:=List([1..3], x-> List([1..4], x->
 > Random(FullTransformationSemigroup(3))));;
 gap> R:=ReesZeroMatrixSemigroup(FullTransformationSemigroup(3), mat);
-<Rees 0-matrix semigroup 4x3 over <full transformation semigroup on 3 pts>>
+<Rees 0-matrix semigroup 4x3 over <full transformation monoid of degree 3>>
 gap> IsSimpleSemigroup(R);
 false
 gap> S:=Semigroup(Transformation([4,4,4,1,1,6,7,8,9,10,11,1]),
@@ -917,8 +917,8 @@ gap> mat:=[ [ Transformation( [ 7, 7, 2, 6, 6, 4, 2, 8, 9, 11, 10, 4 ] ),
 >      Transformation( [ 8, 8, 9, 9, 9, 11, 10, 6, 7, 2, 4, 8 ] ), 
 >      Transformation( [ 4, 4, 4, 1, 1, 6, 7, 9, 8, 10, 11, 1 ] ) ] ];;
 gap> R:=ReesMatrixSemigroup(S, mat);               
-<Rees matrix semigroup 4x3 over <transformation semigroup 
-  on 12 pts with 7 generators>>
+<Rees matrix semigroup 4x3 over <transformation semigroup of degree 12 with 7 
+  generators>>
 gap> IsSimpleSemigroup(R);
 true
 gap> IsWholeFamily(R);

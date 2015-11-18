@@ -865,17 +865,18 @@ gap> NrMovedPoints(IdentityTransformation);
     smallest point which is moved by at least one element of <A>coll</A> is
     returned, if such a point exists.  If <A>coll</A> only contains identity
     transformations, then <C>SmallestMovedPoint</C> returns <K>infinity</K>.
-  <Example>
-gap> S:=FullTransformationSemigroup(5);    
-&lt;full transformation semigroup on 5 pts>
+    <Example><![CDATA[
+gap> S := FullTransformationSemigroup(5);    
+<full transformation monoid of degree 5>
 gap> SmallestMovedPoint(S);              
 1
-gap> S:=Semigroup(IdentityTransformation);;
+gap> S := Semigroup(IdentityTransformation);
+<trivial transformation group of degree 0 with 1 generator>
 gap> SmallestMovedPoint(S);
 infinity
-gap> f:=Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
+gap> f := Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
 gap> SmallestMovedPoint(f);
-4</Example>
+4]]></Example>
   </Description>
 </ManSection>
 
@@ -895,17 +896,18 @@ gap> SmallestMovedPoint(f);
     returned, if such a point exists.  If <A>coll</A> only contains identity
     transformations, then <C>LargestMovedPoint</C> returns <C>0</C>.
 
-  <Example>
-gap> S:=FullTransformationSemigroup(5);    
-&lt;full transformation semigroup on 5 pts>
+    <Example><![CDATA[
+gap> S := FullTransformationSemigroup(5);    
+<full transformation monoid of degree 5>
 gap> LargestMovedPoint(S);
 5
-gap> S:=Semigroup(IdentityTransformation);;
+gap> S := Semigroup(IdentityTransformation);
+<trivial transformation group of degree 0 with 1 generator>
 gap> LargestMovedPoint(S);
 0
-gap> f:=Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
+gap> f := Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
 gap> LargestMovedPoint(f); 
-5</Example>
+5]]></Example>
   </Description>
 </ManSection>
 
@@ -929,17 +931,18 @@ gap> LargestMovedPoint(f);
     transformations, then <C>SmallestImageOfMovedPoint</C> returns
     <K>infinity</K>.
 
-  <Example>
-gap> S:=FullTransformationSemigroup(5);    
-&lt;full transformation semigroup on 5 pts>
+    <Example><![CDATA[
+gap> S := FullTransformationSemigroup(5);    
+<full transformation monoid of degree 5>
 gap> SmallestImageOfMovedPoint(S);              
 1
-gap> S:=Semigroup(IdentityTransformation);;
+gap> S := Semigroup(IdentityTransformation);
+<trivial transformation group of degree 0 with 1 generator>
 gap> SmallestImageOfMovedPoint(S);
 infinity
-gap> f:=Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
+gap> f := Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
 gap> SmallestImageOfMovedPoint(f);
-6</Example>
+6]]></Example>
   </Description>
 </ManSection>
 
@@ -961,17 +964,17 @@ gap> SmallestImageOfMovedPoint(f);
     of <A>coll</A> is returned, if such a point exists.  If <A>coll</A> only
     contains identity transformations, then <C>LargestImageOfMovedPoint</C>
     returns <C>0</C>.
-  <Example>
-gap> S:=FullTransformationSemigroup(5);    
-&lt;full transformation semigroup on 5 pts>
+    <Example><![CDATA[
+gap> S := FullTransformationSemigroup(5);    
+<full transformation monoid of degree 5>
 gap> LargestImageOfMovedPoint(S);
 5
-gap> S:=Semigroup(IdentityTransformation);;
+gap> S := Semigroup(IdentityTransformation);;
 gap> LargestImageOfMovedPoint(S);
 0
-gap> f:=Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
+gap> f := Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
 gap> LargestImageOfMovedPoint(f); 
-6</Example>
+6]]></Example>
   </Description>
 </ManSection>
 
@@ -1409,23 +1412,24 @@ An object <A>obj</A> is a transformation monoid in &GAP; if it satisfies
 <Ref Prop="IsMonoid"/> and <Ref Filt="IsTransformationCollection"/>.<P/>
 
 Note that it is possible for a transformation semigroup to have a multiplicative neutral element (i.e. an identity element) but not to satisfy <C>IsTransformationMonoid</C>. For example, 
-<Example>
-gap> f:=Transformation( [ 2, 6, 7, 2, 6, 9, 9, 1, 1, 5 ] );;
-gap> S:=Semigroup(f, One(f));
-&lt;commutative transformation monoid on 10 pts with 1 generator>
+    <Example><![CDATA[
+gap> f := Transformation( [ 2, 6, 7, 2, 6, 9, 9, 1, 1, 5 ] );;
+gap> S := Semigroup(f, One(f));
+<commutative transformation monoid of degree 10 with 1 generator>
 gap> IsMonoid(S);
 true
 gap> IsTransformationMonoid(S);
 true
-gap> S:=Semigroup( Transformation( [ 3, 8, 1, 4, 5, 6, 7, 1, 10, 10 ] ), 
+gap> S := Semigroup( 
+> Transformation( [ 3, 8, 1, 4, 5, 6, 7, 1, 10, 10 ] ), 
 > Transformation( [ 1, 2, 3, 4, 5, 6, 7, 8, 10, 10 ] ) );
-&lt;transformation semigroup on 10 pts with 2 generators>
+<transformation semigroup of degree 10 with 2 generators>
 gap> One(S);
 fail
 gap> MultiplicativeNeutralElement(S);
 Transformation( [ 1, 2, 3, 4, 5, 6, 7, 8, 10, 10 ] )
 gap> IsMonoid(S);
-false</Example>
+false]]></Example>
 In this example <C>S</C> cannot be converted into a monoid using 
 <Ref Attr="AsMonoid"/> since the <Ref Attr="One"/> of any element in <C>S</C>
 differs from the multiplicative neutral element. <P/>
@@ -1441,12 +1445,13 @@ For more details see <Ref Filt="IsMagmaWithOne"/>.
   The <E>degree</E> of a transformation semigroup <A>S</A> is just the
   maximum of the degrees of the elements of <A>S</A>.
 
-  <Example>
-gap> S:=Semigroup(Transformation( [ 3, 8, 1, 4, 5, 6, 7, 1, 10, 10, 11 ] ),
+  <Example><![CDATA[
+gap> S := Semigroup(
+> Transformation( [ 3, 8, 1, 4, 5, 6, 7, 1, 10, 10, 11 ] ),
 > Transformation( [ 1, 2, 3, 4, 5, 6, 7, 8, 1, 1, 11 ] ) );
-&lt;transformation semigroup on 10 pts with 2 generators>
+<transformation semigroup of degree 10 with 2 generators>
 gap> DegreeOfTransformationSemigroup(S);
-10</Example>
+10]]></Example>
 </Description>
 </ManSection>
 
@@ -1469,9 +1474,9 @@ gap> DegreeOfTransformationSemigroup(S);
   <C>FulTransformationMonoid</C> is a synonym for
   <C>FullTransformationSemigroup</C>. 
 
-  <Example>
+  <Example><![CDATA[
 gap> FullTransformationSemigroup(1234); 
-&lt;full transformation semigroup on 1234 pts></Example>
+<full transformation monoid of degree 1234>]]></Example>
 </Description>
 </ManSection>
 
@@ -1492,19 +1497,20 @@ gap> FullTransformationSemigroup(1234);
   for the full transformation monoid to be referred to as the full
   transformation semigroup.  
 
-  <Example>
-gap> S:=Semigroup(AsTransformation((1,3,4,2), 5), AsTransformation((1,3,5), 5),
-> Transformation( [ 1, 1, 2, 3, 4 ] ));
-&lt;transformation semigroup on 5 pts with 3 generators>
+  <Example><![CDATA[
+gap> S := Semigroup(AsTransformation((1,3,4,2), 5), 
+>                   AsTransformation((1,3,5), 5),
+>                   Transformation( [ 1, 1, 2, 3, 4 ] ));
+<transformation semigroup of degree 5 with 3 generators>
 gap> IsFullTransformationSemigroup(S);
 true
 gap> S;
-&lt;full transformation semigroup on 5 pts>
+<full transformation monoid of degree 5>
 gap> IsFullTransformationMonoid(S);
 true
-gap> S:=FullTransformationSemigroup(5);; 
+gap> S := FullTransformationSemigroup(5);; 
 gap> IsFullTransformationSemigroup(S);
-true</Example>
+true]]></Example>
 </Description>
 </ManSection>
 
@@ -1542,26 +1548,26 @@ true</Example>
   only in that its range is a transformation monoid, and not only a semigroup,
   when the semigroup <A>S</A> is a monoid. 
 
-  <Log>
-gap> gens:= [ [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ], 
+  <Log><![CDATA[
+gap> gens := [ [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ^ 0 ] ], 
 >  [ [ Z(3), Z(3)^0 ], [ Z(3), 0*Z(3) ] ], 
 >  [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] ];;
-gap> S:=Semigroup(gens);;
+gap> S := Semigroup(gens);;
 gap> Size(S);
 81
 gap> IsomorphismTransformationSemigroup(S);;
-gap> S:=SymmetricInverseSemigroup(4);
-&lt;symmetric inverse semigroup on 4 pts>
+gap> S := SymmetricInverseSemigroup(4);
+<symmetric inverse semigroup on 4 pts>
 gap> IsomorphismTransformationMonoid(S);
-MappingByFunction( &lt;symmetric inverse semigroup on 4 pts>, 
-&lt;transformation monoid on 5 pts with 4 generators>
- , function( x ) ... end, &lt;Operation "AsPartialPerm"> )
-gap> G:=Group((1,2,3));
+MappingByFunction( <symmetric inverse semigroup on 4 pts>, 
+<transformation monoid on 5 pts with 4 generators>
+ , function( x ) ... end, <Operation "AsPartialPerm"> )
+gap> G := Group((1,2,3));
 Group([ (1,2,3) ])
 gap> IsomorphismTransformationMonoid(G);
-MappingByFunction( Group([ (1,2,3) ]), &lt;commutative transformation 
+MappingByFunction( Group([ (1,2,3) ]), <commutative transformation 
  monoid on 3 pts with 1 generator>
- , function( x ) ... end, function( x ) ... end )</Log>
+ , function( x ) ... end, function( x ) ... end )]]></Log>
 </Description>
 </ManSection>
   
@@ -1575,17 +1581,16 @@ MappingByFunction( Group([ (1,2,3) ]), &lt;commutative transformation
   resulting transformation semigroup equals the size of <A>S</A> plus
   <M>1</M>, and, consequently, this function is of limited use. <P/>
 
-    <Example>
-gap> S:=Semigroup( Transformation( [ 5, 5, 1, 1, 3 ] ), 
+    <Example><![CDATA[
+gap> S := Semigroup( Transformation( [ 5, 5, 1, 1, 3 ] ), 
 > Transformation( [ 2, 4, 1, 5, 5 ] ) );
-&lt;transformation semigroup on 5 pts with 2 generators>
+<transformation semigroup of degree 5 with 2 generators>
 gap> Size(S);
 172
 gap> AntiIsomorphismTransformationSemigroup(S);
-MappingByFunction( &lt;transformation semigroup of size 172, 
- on 5 pts with 2 generators>, &lt;transformation semigroup 
- on 173 pts with 2 generators>
- , function( x ) ... end, function( x ) ... end )</Example>
+MappingByFunction( <transformation semigroup of size 172, degree 5 
+ with 2 generators>, <transformation semigroup of degree 173 with 2 
+ generators>, function( x ) ... end, function( x ) ... end )]]></Example>
     </Description>
   </ManSection>
 </Section>
