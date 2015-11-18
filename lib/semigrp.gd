@@ -555,6 +555,8 @@ DeclareOperation("DisplaySemigroup",
 
 # Everything from here...
 
+DeclareAttribute("NilpotencyDegree", IsSemigroup);
+
 DeclareOperation("IsSubsemigroup", [IsSemigroup, IsSemigroup]);
 
 DeclareProperty("IsBand", IsSemigroup);
@@ -568,6 +570,7 @@ DeclareProperty("IsIdempotentGenerated", IsSemigroup);
 DeclareProperty("IsLeftZeroSemigroup", IsSemigroup);
 DeclareProperty("IsMonogenicSemigroup", IsSemigroup);
 DeclareProperty("IsMonoidAsSemigroup", IsSemigroup);
+DeclareProperty("IsNilpotentSemigroup", IsSemigroup);
 DeclareProperty("IsOrthodoxSemigroup", IsSemigroup);
 DeclareProperty("IsRectangularBand", IsSemigroup);
 DeclareProperty("IsRightZeroSemigroup", IsSemigroup);
