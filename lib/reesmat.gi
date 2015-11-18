@@ -30,15 +30,13 @@
 # a Rees matrix semigroup over a semigroup <S> is simple if and only if <S> is
 # simple.
 
-#
-
-#InstallMethod(\<, "for Rees 0-matrix semigroups", 
-#[IsReesZeroMatrixSemigroup, IsReesZeroMatrixSemigroup], 100,
-#function(R, S)
-#  return Size(R)<Size(S) or (Rows(R)<Rows(S) or (Rows(R)=Rows(S) and
-#  Columns(R)<Columns(S)) or (Rows(R)=Rows(S) and Columns(R)=Columns(S) 
-#    and UnderlyingSemigroup(R)<UnderlyingSemigroup(S)));
-#end);
+InstallImmediateMethod(IsFinite, IsReesZeroMatrixSubsemigroup, 0,
+function(R)
+  if IsBound(ElementsFamily(FamilyObj(R))!.IsFinite) then
+    return ElementsFamily(FamilyObj(R))!.IsFinite;
+  fi;
+  TryNextMethod();
+end);
 
 InstallMethod(IsFinite, "for a Rees matrix subsemigroup",
 [IsReesMatrixSubsemigroup], 
@@ -272,53 +270,57 @@ end);
 #
 
 InstallMethod(ReesZeroMatrixSemigroup, "for a semigroup and a dense list",
-[IsSemigroup, IsDenseList], 
+[IsSemigroup, IsDenseList],
 function(S, mat)
   local fam, R, type, x;
 
-  if not ForAll(mat, x-> IsDenseList(x) and Length(x)=Length(mat[1])) then 
+  if not ForAll(mat, x -> IsDenseList(x) and Length(x) = Length(mat[1])) then
     Error("usage: <mat> must be a list of dense lists of equal length,");
     return;
   fi;
 
-  for x in mat do 
-    if ForAny(x, s-> not (s=0 or s in S)) then
+  for x in mat do
+    if ForAny(x, s -> not (s = 0 or s in S)) then
       Error("usage: the entries of <mat> must be 0 or belong to <S>,");
       return;
     fi;
   od;
 
-  fam := NewFamily( "ReesZeroMatrixSemigroupElementsFamily",
-          IsReesZeroMatrixSemigroupElement);
+  fam := NewFamily("ReesZeroMatrixSemigroupElementsFamily",
+                   IsReesZeroMatrixSemigroupElement);
+
+  if HasIsFinite(S) then
+    fam!.IsFinite := IsFinite(S);
+  fi;
 
   # create the Rees matrix semigroup
-  R := Objectify( NewType( CollectionsFamily( fam ), IsWholeFamily and
-   IsReesZeroMatrixSubsemigroup and IsAttributeStoringRep ), rec() );
+  R := Objectify(NewType(CollectionsFamily(fam),
+                 IsWholeFamily
+                 and IsReesZeroMatrixSubsemigroup
+                 and IsAttributeStoringRep), rec());
 
   # store the type of the elements in the semigroup
-  type:=NewType(fam, IsReesZeroMatrixSemigroupElement);
-  
-  fam!.type:=type;
-  SetTypeReesMatrixSemigroupElements(R, type); 
+  type := NewType(fam, IsReesZeroMatrixSemigroupElement);
+
+  fam!.type := type;
+  SetTypeReesMatrixSemigroupElements(R, type);
   SetReesMatrixSemigroupOfFamily(fam, R);
 
-  SetMatrix(R, mat);                 SetUnderlyingSemigroup(R, S);
-  SetRows(R, [1..Length(mat[1])]);   SetColumns(R, [1..Length(mat)]);
-  SetMultiplicativeZero(R, 
-   Objectify(TypeReesMatrixSemigroupElements(R), [0]));
+  SetMatrix(R, mat);
+  SetUnderlyingSemigroup(R, S);
+  SetRows(R, [1 .. Length(mat[1])]);
+  SetColumns(R, [1 .. Length(mat)]);
+  SetMultiplicativeZero(R,
+                        Objectify(TypeReesMatrixSemigroupElements(R), [0]));
 
   # cannot set IsZeroSimpleSemigroup to be <true> here since the matrix may
   # contain a row or column consisting entirely of 0s!
+  # WW Also S might not be a simple semigroup (which is necessary)!
 
-  if HasIsFinite(S) then 
-    SetIsFinite(R, IsFinite(S));
-  fi;
-  GeneratorsOfSemigroup(R); 
+  GeneratorsOfSemigroup(R);
   SetIsSimpleSemigroup(R, false);
   return R;
 end);
-
-#
 
 InstallMethod(ViewObj, "for a Rees matrix semigroup",
 [IsReesMatrixSemigroup], 3, #to beat the next method
@@ -501,7 +503,7 @@ end);
 #
 
 InstallMethod(Enumerator, "for a Rees 0-matrix semigroup",
-[IsReesZeroMatrixSemigroup],    
+[IsReesZeroMatrixSemigroup and HasUnderlyingSemigroup],
 function( R )
   
   return EnumeratorByFunctions(R, rec(
