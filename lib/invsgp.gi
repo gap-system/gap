@@ -9,17 +9,30 @@
 ##  This file contains the declaration of operations for inverse semigroups.
 ##
 
+InstallMethod(GeneratorsOfInverseSemigroup,
+"for a group with known generators",
+[IsGroup and HasGeneratorsOfGroup],
+GeneratorsOfGroup);
+
+InstallMethod(GeneratorsOfInverseMonoid,
+"for a group with known generators",
+[IsGroup and HasGeneratorsOfGroup],
+GeneratorsOfGroup);
+
 InstallImmediateMethod(GeneratorsOfSemigroup,
 IsInverseSemigroup and HasGeneratorsOfInverseSemigroup, 0,
-function(s)
-  local gens, f;
-
-  gens:=ShallowCopy(GeneratorsOfInverseSemigroup(s));
-  Append(gens, List(gens, x-> x^-1));
-  MakeImmutable(gens);
-  return gens;
-end); 
-
+function(S)
+  local gens, out, x;
+  gens := GeneratorsOfInverseSemigroup(S);
+  out := ShallowCopy(gens);
+  for x in gens do
+    if not IsIdempotent(x) then
+      Add(out, x ^ -1);
+    fi;
+  od;
+  MakeImmutable(out);
+  return out;
+end);
 
 #
 
