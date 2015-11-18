@@ -338,7 +338,7 @@ true
 gap> Rows(S); Columns(S);
 [ 1, 2, 3 ]
 [ 2, 3 ]
-gap> T:=Range(IsomorphismReesMatrixSemigroup(S));;
+gap> T:=Range(IsomorphismReesZeroMatrixSemigroup(S));;
 gap> Rows(T); Columns(T);
 [ 1 .. 3 ]
 [ 1, 2 ]
@@ -858,7 +858,7 @@ gap> Size(S);
 85
 gap> Size(R);
 85
-gap> IsomorphismReesMatrixSemigroup(S);;
+gap> IsomorphismReesZeroMatrixSemigroup(S);;
 gap> V;
 <Rees 0-matrix semigroup 4x4 over Group([ (1,2) ])>
 gap> IsSimpleSemigroup(V);
@@ -880,7 +880,7 @@ gap> V;
 <Rees 0-matrix semigroup 4x4 over Group([ (1,2) ])>
 gap> IsZeroSimpleSemigroup(V);
 true
-gap> IsomorphismReesMatrixSemigroup(V);;
+gap> IsomorphismReesZeroMatrixSemigroup(V);;
 
 #over semigroups not groups!
 gap> ReesZeroMatrixSemigroup(FullTransformationSemigroup(3), [[,0],[0,0]]);
@@ -1017,7 +1017,7 @@ gap> R:=ReesZeroMatrixSubsemigroup(R, [2,3], Group(()), [2,3]);
 <Rees 0-matrix semigroup 2x2 over Group(())>
 gap> IsZeroSimpleSemigroup(R);
 false
-gap> IsomorphismReesMatrixSemigroup(R);
+gap> IsomorphismReesZeroMatrixSemigroup(R);
 MappingByFunction( <Rees 0-matrix semigroup 2x2 over Group(())>, 
 <Rees 0-matrix semigroup 2x2 over Group(())>
  , function( u ) ... end, function( v ) ... end )

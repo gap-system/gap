@@ -140,7 +140,7 @@ gap> GeneratorsOfSemigroup(i1);;
 gap> c1 := ReesCongruenceOfSemigroupIdeal(i1);;
 gap> q := i2/c1;;
 gap> IsZeroSimpleSemigroup(q);;
-gap> irms := IsomorphismReesMatrixSemigroup(q);;
+gap> irms := IsomorphismReesZeroMatrixSemigroup(q);;
 gap> MatrixOfReesZeroMatrixSemigroup(Range(irms));;
 gap> g := Group( (1,2),(1,2,3) );;
 gap> i := TrivialSubgroup( g );;

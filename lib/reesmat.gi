@@ -1276,101 +1276,135 @@ end);
 
 #
 
-InstallMethod(IsomorphismReesMatrixSemigroup, 
-"for a finite simple or 0-simple semigroup", [IsSemigroup], 
-function(S)
-  local iso_trans, T, iter, rep, H, R, iso, inv, iso_perm, inv_perm, lreps, rreps, mat, invl, invr, x, lclasses, rclasses, i, j;
-  
-  if not (IsSimpleSemigroup(S) or IsZeroSimpleSemigroup(S)) or not IsFinite(S)
-   then 
-    TryNextMethod();
-  fi;
-  
-  if not IsTransformationSemigroup(S) then  
-    iso_trans:=IsomorphismTransformationSemigroup(S);
-    T:=Range(IsomorphismTransformationSemigroup(S));
-  else
-    iso_trans:=MappingByFunction(S, S, IdFunc, IdFunc);
-    T:=S;
-  fi;
+BindGlobal("_InjectionPrincipalFactor",
+function(D, constructor)
+  local map, inv, G, mat, rep, R, L, x, RR, LL, rms, iso, hom, i, j;
 
-  # a group H-class
-  iter:=Iterator(T);
-  rep:=NextIterator(iter);
-  if IsZeroSimpleSemigroup(T) and rep=MultiplicativeZero(T) then 
-    rep:=NextIterator(iter);
-  fi;
+  map := IsomorphismPermGroup(GroupHClassOfGreensDClass(D));
+  inv := InverseGeneralMapping(map);
 
-  H:=GroupHClassOfGreensDClass(GreensDClassOfElement(T, rep));
-  rep:=Representative(H);
-  iso_perm:=IsomorphismPermGroup(H); inv_perm:=InverseGeneralMapping(iso_perm);
-  
-  lreps:=List(GreensHClasses(GreensRClassOfElement(T, rep)), Representative);
-  rreps:=List(GreensHClasses(GreensLClassOfElement(T, rep)), Representative);
-  
-  mat:=[]; invl:=[]; invr:=[]; 
-  
-  for i in [1..Length(lreps)] do
-    mat[i]:=[];
-    for j in [1..Length(rreps)] do
-      x:=lreps[i]*rreps[j];
-      if IsZeroSimpleSemigroup(S) and x=MultiplicativeZero(T) then 
-        mat[i][j]:=0;
+  G := Range(map);
+  mat := [];
+
+  rep := Representative(GroupHClassOfGreensDClass(D));
+  L := List(GreensHClasses(GreensRClassOfElement(Parent(D), rep)),
+            Representative);
+  R := List(GreensHClasses(GreensLClassOfElement(Parent(D), rep)),
+            Representative);
+
+  for i in [1 .. Length(L)] do
+    mat[i] := [];
+    for j in [1 .. Length(R)] do
+      x := L[i] * R[j];
+      if x in D then
+        mat[i][j] := x ^ map;
       else
-        mat[i][j]:=x^iso_perm;
-        if not IsBound(invr[j]) then 
-          invr[j]:=(mat[i][j]^-1)^inv_perm*lreps[i];
-        fi;
-        if not IsBound(invl[i]) then 
-          invl[i]:=rreps[j]*(mat[i][j]^-1)^inv_perm;
-        fi;
+        mat[i][j] := 0;
       fi;
     od;
   od;
 
-  if IsZeroSimpleSemigroup(S) then
-    R:=ReesZeroMatrixSemigroup(Range(iso_perm), mat);
-  else
-    R:=ReesMatrixSemigroup(Range(iso_perm), mat);
-  fi;
+  RR := EmptyPlist(Length(R));
+  LL := EmptyPlist(Length(L));
 
-  lclasses:=List(lreps, x-> GreensLClassOfElement(T, x));
-  rclasses:=List(rreps, x-> GreensRClassOfElement(T, x));
-  
-  iso:=function(x)
-    local i, j;
-    x:=x^iso_trans;
-    i:=PositionProperty(lclasses, L -> L=GreensLClassOfElement(T, x));
-    if i=fail then 
+  for j in [1 .. Length(R)] do
+    for i in [1 .. Length(L)] do
+      if mat[i][j] <> 0 then
+        RR[j] := ((mat[i][j] ^ -1) ^ inv) * L[i];
+        break;
+      fi;
+    od;
+  od;
+
+  for i in [1 .. Length(L)] do
+    for j in [1 .. Length(R)] do
+      if mat[i][j] <> 0 then
+        LL[i] := R[j] * (mat[i][j] ^ -1) ^ inv;
+        break;
+      fi;
+    od;
+  od;
+
+  rms := constructor(G, mat);
+
+  iso := function(x)
+    i := PositionProperty(R, y -> y in GreensRClassOfElement(D, x));
+    j := PositionProperty(L, y -> y in GreensLClassOfElement(D, x));
+
+    if i = fail or j = fail then
       return fail;
     fi;
-    j:=PositionProperty(rclasses, R -> R=GreensRClassOfElement(T, x));
-    if j=fail then 
-      return fail;
-    fi;
-    return Objectify(TypeReesMatrixSemigroupElements(R), 
-     [j, (invr[j]*x*invl[i])^iso_perm, i, mat]);
+    return Objectify(TypeReesMatrixSemigroupElements(rms),
+                     [i, (rep * RR[i] * x * LL[j]) ^ map, j, mat]);
   end;
 
-  inv:=function(x)
-    if x![1]=0 then
-      return MultiplicativeZero(S);
-    fi;
-    return 
-    (rreps[x![1]]*(x![2]^inv_perm)*lreps[x![3]])
-    ^InverseGeneralMapping(iso_trans);
-  end;
-
-  return MagmaIsomorphismByFunctionsNC(S, R, iso, inv);
+  hom := MappingByFunction(D, rms, iso,
+                           function(x)
+                             if x![1] = 0 then
+                               return fail;
+                             fi;
+                             return R[x![1]] * (x![2] ^ inv) * L[x![3]];
+                           end);
+  SetIsInjective(hom, true);
+  SetIsTotal(hom, true);
+  return hom;
 end);
 
-#JDM this should be replaced with InjectionPrincipalFactor, and PrincipalFactor.
+InstallMethod(IsomorphismReesMatrixSemigroup, "for a D-class",
+[IsGreensDClass],
+function(D)
+  if Number(D, IsIdempotent) <> Length(GreensHClasses(D)) then
+    ErrorMayQuit("IsomorphismReesMatrixSemigroup: usage,\n",
+                 "the D-class is not a subsemigroup,");
+  fi;
+  return _InjectionPrincipalFactor(D, ReesMatrixSemigroup);
+end);
 
-InstallMethod(AssociatedReesMatrixSemigroupOfDClass, 
+InstallMethod(IsomorphismReesMatrixSemigroup,
+"for a finite simple", [IsSemigroup],
+function(S)
+  local rep, inj;
+
+  if not (IsSimpleSemigroup(S) and IsFinite(S)) then
+    Error("usage: the semigroup must be a finite simple semigroup,");
+    return;
+  fi;
+
+  rep := Representative(S);
+  inj := _InjectionPrincipalFactor(GreensDClassOfElement(S, rep),
+                                   ReesMatrixSemigroup);
+
+  return MagmaIsomorphismByFunctionsNC(S, Range(inj),
+                                       x -> x ^ inj,
+                                       x -> x ^ InverseGeneralMapping(inj));
+end);
+
+InstallMethod(IsomorphismReesZeroMatrixSemigroup,
+"for a finite 0-simple", [IsSemigroup],
+function(S)
+  local D, inj;
+
+  if not (IsZeroSimpleSemigroup(S) and IsFinite(S)) then
+    Error("usage: the semigroup must be a finite 0-simple semigroup,");
+    return;
+  fi;
+
+  D := First(GreensDClasses(S),
+             x -> not IsMultiplicativeZero(S, Representative(x)));
+
+  inj := _InjectionPrincipalFactor(D, ReesZeroMatrixSemigroup);
+
+  return MagmaIsomorphismByFunctionsNC(S, Range(inj),
+                                       x -> x ^ inj,
+                                       x -> x ^ InverseGeneralMapping(inj));
+end);
+
+#
+
+InstallMethod(AssociatedReesMatrixSemigroupOfDClass,
 "for a Green's D-class of a semigroup",
 [IsGreensDClass],
-function( D )
-  local h, r, l, phi, iszerosimple, mat, x, i, j;
+function(D)
 
   if not IsFinite(Parent(D)) then
     TryNextMethod();
@@ -1381,35 +1415,10 @@ function( D )
     return;
   fi;
 
-  h:=GroupHClassOfGreensDClass(D);
-  l:=GreensRClassOfElement(Parent(D), Representative(h));
-  r:=GreensLClassOfElement(Parent(D), Representative(h));
-  
-  r:= List(GreensHClasses(r), Representative);
-  l:= List(GreensHClasses(l), Representative);
-  
-  phi:=IsomorphismPermGroup(h);
-
-  iszerosimple:=false;    
-  mat:=[];
-  for i in [1..Length(l)] do 
-    mat[i]:=[];
-    for j in [1..Length(r)] do 
-      x:=l[i]*r[j]; 
-      if x in D then 
-        mat[i][j]:=x^phi;
-      else
-        iszerosimple:=true;
-        mat[i][j]:=0;
-      fi;
-    od;
-  od;
-
-  if iszerosimple then
-    return ReesZeroMatrixSemigroup(Range(phi), mat);
-  else
-    return ReesMatrixSemigroup(Range(phi), mat);
+  if Length(GreensHClasses(D)) = Number(D, IsIdempotent) then
+    return Range(IsomorphismReesMatrixSemigroup(D));
   fi;
+  return Range(_InjectionPrincipalFactor(D, ReesZeroMatrixSemigroup));
 end);
 
 # so that we can find Green's relations etc
@@ -1434,35 +1443,37 @@ end);
 
 # the next two methods by Michael Torpey and Thomas Bourne.
 
-InstallMethod(IsomorphismReesMatrixSemigroup, 
+InstallMethod(IsomorphismReesZeroMatrixSemigroup,
 "for a Rees 0-matrix subsemigroup", [IsReesZeroMatrixSubsemigroup],
 function(U)
   local V, iso, inv, hom;
 
   if not IsReesZeroMatrixSemigroup(U) then
     TryNextMethod();
-  elif IsWholeFamily(U) then 
+  elif IsWholeFamily(U) then
     return MagmaIsomorphismByFunctionsNC(U, U, IdFunc, IdFunc);
   fi;
 
   V:=ReesZeroMatrixSemigroup(UnderlyingSemigroup(U),
-   Matrix(U){Columns(U)}{Rows(U)});
+                             Matrix(U){Columns(U)}{Rows(U)});
 
   iso := function(u)
     if u = MultiplicativeZero(U) then
       return MultiplicativeZero(V);
     fi;
-    return RMSElement(V, Position(Rows(U),u![1]), u![2], 
-    Position(Columns(U),u![3]));
+    return RMSElement(V,
+                      Position(Rows(U),u![1]),
+                      u![2],
+                      Position(Columns(U),u![3]));
   end;
-  
+
   inv := function(v)
     if v = MultiplicativeZero(V) then
       return MultiplicativeZero(U);
     fi;
     return RMSElement(U, Rows(U)[v![1]], v![2], Columns(U)[v![3]]);
   end;
-  
+
   return MagmaIsomorphismByFunctionsNC(U, V, iso, inv);
 end);
 
