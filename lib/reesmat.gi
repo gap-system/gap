@@ -776,7 +776,9 @@ x-> x![3]);
 InstallMethod(PrintObj, "for a Rees matrix semigroup element",
 [IsReesMatrixSemigroupElement],
 function(x)
-  Print("(", x![1],",", x![2], ",", x![3], ")");
+  Print("RMSElement(",
+        ReesMatrixSemigroupOfFamily(FamilyObj(x)),
+        ", ", x![1], ", ", x![2], ", ", x![3], ")");
 end);
 
 #
@@ -784,11 +786,15 @@ end);
 InstallMethod(PrintObj, "for a Rees 0-matrix semigroup element",
 [IsReesZeroMatrixSemigroupElement],
 function(x)
-  if x![1]=0 then 
-    Print("0");
+  if x![1]=0 then
+    Print("MultiplicativeZero(",
+          ReesMatrixSemigroupOfFamily(FamilyObj(x)),
+          ")");
     return;
   fi;
-  Print("(", x![1],",", x![2], ",", x![3], ")");
+  Print("RMSElement(",
+        ReesMatrixSemigroupOfFamily(FamilyObj(x)),
+        ", ", x![1], ", ", x![2], ", ", x![3], ")");
 end);
 
 InstallMethod(ViewString, "for a Rees matrix semigroup element",
