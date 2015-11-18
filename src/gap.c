@@ -1268,23 +1268,15 @@ Obj ThrownObject = 0;
 Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
 {
     syJmp_buf readJmpError;
-    Obj plain_args;
     Obj res;
     Obj currLVars;
     Obj result;
     Int recursionDepth;
     Stat currStat;
     if (!IS_FUNC(func))
-      ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <func> must be a function",0,0);
+      ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <func> must be a function",0,0);
     if (!IS_LIST(args))
-      ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <args> must be a list",0,0);
-    if (!IS_PLIST(args))
-      {
-        plain_args = SHALLOW_COPY_OBJ(args);
-        PLAIN_LIST(plain_args);
-      }
-    else 
-      plain_args = args;
+      ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <args> must be a list",0,0);
     memcpy((void *)&readJmpError, (void *)&TLS(ReadJmpError), sizeof(syJmp_buf));
     currLVars = TLS(CurrLVars);
     currStat = TLS(CurrStat);
@@ -1302,41 +1294,16 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       TLS(CurrStat) = currStat;
       TLS(RecursionDepth) = recursionDepth;
     } else {
-      switch (LEN_PLIST(plain_args)) {
-      case 0: result = CALL_0ARGS(func);
-        break;
-      case 1: result = CALL_1ARGS(func, ELM_PLIST(plain_args,1));
-        break;
-      case 2: result = CALL_2ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2));
-        break;
-      case 3: result = CALL_3ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3));
-        break;
-      case 4: result = CALL_4ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4));
-        break;
-      case 5: result = CALL_5ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5));
-        break;
-      case 6: result = CALL_6ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5),
-                                  ELM_PLIST(plain_args,6));
-        break;
-      default: result = CALL_XARGS(func, plain_args);
+    result = CallFuncList(func, args);
+    SET_ELM_PLIST(res,1,True);
+    if (result)
+      {
+	SET_LEN_PLIST(res,2);
+	SET_ELM_PLIST(res,2,result);
+	CHANGED_BAG(res);
       }
-      SET_ELM_PLIST(res,1,True);
-      if (result)
-        {
-          SET_LEN_PLIST(res,2);
-          SET_ELM_PLIST(res,2,result);
-          CHANGED_BAG(res);
-        }
-      else
-        SET_LEN_PLIST(res,1);
+    else
+      SET_LEN_PLIST(res,1);
     }
     memcpy((void *)&TLS(ReadJmpError), (void *)&readJmpError, sizeof(syJmp_buf));
     return res;
@@ -1374,32 +1341,28 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
    
  Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Obj args )
 {
-  Obj plain_args;
     Obj res;
     Obj currLVars;
     Obj result;
     Int recursionDepth;
     Stat currStat;
+      
     if (!SyHaveAlarms)
       ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
     if (!IS_INTOBJ(seconds) || 0 > INT_INTOBJ(seconds))
-      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <seconds> must be a non-negative small integer",0,0);
+      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
+		   " <seconds> must be a non-negative small integer",0,0);
     if (!IS_INTOBJ(microseconds) || 0 > INT_INTOBJ(microseconds) || 999999999 < INT_INTOBJ(microseconds))
-      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <microseconds> must be a non-negative small integer less than 10^9",0,0);
+      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
+		   " <microseconds> must be a non-negative small integer less than 10^9",0,0);
     if (!IS_FUNC(func))
       ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <func> must be a function",0,0);
     if (!IS_LIST(args))
       ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <args> must be a list",0,0);
-    if (!IS_PLIST(args))
-      {
-        plain_args = SHALLOW_COPY_OBJ(args);
-        PLAIN_LIST(plain_args);
-      }
-    else 
-      plain_args = args;
-    if (SyAlarmRunning)
+    if (SyAlarmRunning) {            
       ErrorMayQuit("CALL_WITH_TIMEOUT cannot currently be nested except via break loops."
-		   " There is already a timeout running", 0, 0);
+		   " There is already a timeout running", 0, 0); 
+    }
     if (NumAlarmJumpBuffers >= MAX_TIMEOUT_NESTING_DEPTH-1)
       ErrorMayQuit("Nesting depth of timeouts via break loops limited to %i", MAX_TIMEOUT_NESTING_DEPTH, 0L);
     currLVars = TLS(CurrLVars);
@@ -1417,32 +1380,7 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
       SET_ELM_PLIST(res, 1, False);
     } else {
       SyInstallAlarm( INT_INTOBJ(seconds), 1000*INT_INTOBJ(microseconds));
-      switch (LEN_PLIST(plain_args)) {
-      case 0: result = CALL_0ARGS(func);
-        break;
-      case 1: result = CALL_1ARGS(func, ELM_PLIST(plain_args,1));
-        break;
-      case 2: result = CALL_2ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2));
-        break;
-      case 3: result = CALL_3ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3));
-        break;
-      case 4: result = CALL_4ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4));
-        break;
-      case 5: result = CALL_5ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5));
-        break;
-      case 6: result = CALL_6ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5),
-                                  ELM_PLIST(plain_args,6));
-        break;
-      default: result = CALL_XARGS(func, plain_args);
-      }
+      result = CallFuncList(func, args);
       /* make sure the alarm is not still running */
       SyStopAlarm( NULL, NULL);
       /* Now the alarm might have gone off since we executed the last statement 
