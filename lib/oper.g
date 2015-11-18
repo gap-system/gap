@@ -465,14 +465,17 @@ end );
 ##
 ##  <#GAPDoc Label="TraceImmediateMethods">
 ##  <ManSection>
-##  <Func Name="TraceImmediateMethods" Arg='flag'/>
+##  <Func Name="TraceImmediateMethods" Arg='[flag]'/>
+##  <Func Name="UntraceImmediateMethods" Arg=''/>
 ##
 ##  <Description>
-##  If <A>flag</A> is true, tracing for all immediate methods is turned on.
-##  If <A>flag</A> is false it is turned off.
+##  <Ref Func="TraceImmediateMethods"/> enables tracing for all immediate methods
+##  if <A>flag</A> is either <K>true</K>, or not present.
+##  <Ref Func="UntraceImmediateMethods"/>, or <Ref Func="TraceImmediateMethods"/>
+##  with <A>flag</A> equal <K>false</K> turns tracing off.
 ##  (There is no facility to trace <E>specific</E> immediate methods.)
 ##  <Example><![CDATA[
-##  gap> TraceImmediateMethods( true );
+##  gap> TraceImmediateMethods( );
 ##  gap> g:= Group( (1,2,3), (1,2) );;
 ##  #I  immediate: Size
 ##  #I  immediate: IsCyclic
@@ -488,7 +491,7 @@ end );
 ##  #I  immediate: IsPerfectGroup
 ##  #I  immediate: IsEmpty
 ##  6
-##  gap> TraceImmediateMethods( false );
+##  gap> UntraceImmediateMethods( );
 ##  gap> UntraceMethods( [ Size ] );
 ##  ]]></Example>
 ##  <P/>
@@ -507,8 +510,21 @@ end );
 ##
 TRACE_IMMEDIATE_METHODS := false;
 
-BIND_GLOBAL( "TraceImmediateMethods", function( flag )
-    if flag  then
+BIND_GLOBAL( "UntraceImmediateMethods", function ()
+    TRACE_IMMEDIATE_METHODS := false;
+end );
+
+BIND_GLOBAL( "TraceImmediateMethods", function( arg )
+    if LENGTH(arg) = 0 then
+        TRACE_IMMEDIATE_METHODS := true;
+        return;
+    fi;
+
+    if LENGTH(arg) > 1 or not IS_BOOL(arg[1]) then
+      Error("Usage: TraceImmediateMethods( [bool] )");
+    fi;
+
+    if arg[1] then
         TRACE_IMMEDIATE_METHODS := true;
     else
         TRACE_IMMEDIATE_METHODS := false;
