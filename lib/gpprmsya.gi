@@ -1705,6 +1705,32 @@ local dom, l, sgs, nondupbase;
   return StabChainBaseStrongGenerators(dom{[1..Length(dom)-1]},sgs,());
 end);
 
+InstallOtherMethod( StabChainOp, "alternating group", true,
+    [ IsNaturalAlternatingGroup,IsRecord ], 0,
+function(G,r)
+local dom, l, sgs, nondupbase;
+
+  # test for internal rep
+  if HasGeneratorsOfGroup(G) and 
+    not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
+    TryNextMethod();
+  fi;
+
+  if IsBound(r.reduced) and r.reduced=false then
+    TryNextMethod();
+  fi;
+  dom:=Set(MovedPoints(G));
+  l:=Length(dom);
+  
+  if IsBound(r.base) then
+      nondupbase:=DuplicateFreeList(r.base);
+      dom:=Concatenation(Filtered(nondupbase,i->i in dom),Difference(dom,nondupbase));
+  fi;
+
+  sgs:=List([1..l-2],i->(dom[i],dom[l-1],dom[l]));
+  return StabChainBaseStrongGenerators(dom{[1..Length(dom)-2]},sgs,());
+end);
+
 #############################################################################
 ##
 #M  AlternatingSubgroup( <grp> )
