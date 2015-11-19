@@ -92,6 +92,18 @@ gap> Collected(List(m,x->Index(w,x)));
 [ [ 2, 3 ], [ 5, 1 ], [ 6, 1 ], [ 10, 1 ], [ 16, 1 ], [ 3125, 1 ], 
   [ 7776, 1 ], [ 100000, 1 ] ]
 gap> Unbind(m);Unbind(w);Unbind(g);
+gap> g := Group(GeneratorsOfGroup(SymmetricGroup(1000)));;
+gap> IsNaturalSymmetricGroup(g);
+true
+gap> Size(g) = Factorial(1000);
+true
+gap> g := Group(GeneratorsOfGroup(AlternatingGroup(999)));;
+gap> IsNaturalSymmetricGroup(g);
+false
+gap> IsNaturalAlternatingGroup(g);
+true
+gap> 2*Size(g) = Factorial(999);
+true
 gap> STOP_TEST( "grpperm.tst", 1799980000);
 
 #############################################################################

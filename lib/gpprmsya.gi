@@ -789,6 +789,28 @@ InstallMethod( Size,
     [ IsNaturalSymmetricGroup ], 0,
     sym -> Factorial( NrMovedPoints(sym) ) );
 
+BindGlobal("FLOYDS_ALGORITHM", function(deg, even)
+    local  rnd, sgn, i, k, tmp;
+    rnd := [1..deg];
+    sgn := 1;
+    for i  in [1..deg-1] do
+        k := Random( [ i .. deg] );
+        if k <> i then
+            tmp := rnd[i];
+            rnd[i] := rnd[k];
+            rnd[k] := tmp;
+            sgn := -sgn;
+        fi;
+    od;
+    if even and sgn = -1 then
+        tmp := rnd[deg];
+        rnd[deg] := rnd[deg-1];
+        rnd[deg-1] := tmp;
+    fi;
+    return rnd;
+end);
+
+    
 
 InstallMethod( Random,
     "symmetric group: floyd's algorithm",
@@ -797,11 +819,9 @@ InstallMethod( Random,
     10, # override perm. gp. method
 function ( G )
     local   rnd,        # random permutation, result
-            sgn,        # sign of the permutation so far
-            tmp,        # temporary variable for swapping
 	    deg,
-	    mov,
-            i,  k;      # loop variables
+	    mov;
+    
 
     # test for internal rep
     if HasGeneratorsOfGroup(G) and 
@@ -812,15 +832,44 @@ function ( G )
     # use Floyd\'s algorithm
     mov:=MovedPoints(G);
     deg:=Length(mov);
-    rnd := [1..deg];
-    sgn := 1;
-    for i  in [1..deg-1] do
-        k := Random( [ i .. deg] );
-        tmp := rnd[i];
-        rnd[i] := rnd[k];
-        rnd[k] := tmp;
-    od;
+    rnd := FLOYDS_ALGORITHM(deg,false);
+    # return the permutation
+    return PermList( rnd )^MappingPermListList([1..deg],mov);
+end);
 
+#############################################################################
+##
+#M  Size( <nat-alt-grp> )
+##
+InstallMethod( Size,
+    true,
+    [ IsNaturalAlternatingGroup ], 0,
+    sym -> Factorial( NrMovedPoints(sym) )/2 );
+
+
+    
+
+InstallMethod( Random,
+    "alternating group: floyd's algorithm",
+    true,
+    [ IsNaturalAlternatingGroup ],
+    10, # override perm. gp. method
+function ( G )
+    local   rnd,        # random permutation, result
+	    deg,
+	    mov;
+    
+
+    # test for internal rep
+    if HasGeneratorsOfGroup(G) and 
+      not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
+      TryNextMethod();
+    fi;
+
+    # use Floyd\'s algorithm
+    mov:=MovedPoints(G);
+    deg:=Length(mov);
+    rnd := FLOYDS_ALGORITHM(deg,true);
     # return the permutation
     return PermList( rnd )^MappingPermListList([1..deg],mov);
 end);
