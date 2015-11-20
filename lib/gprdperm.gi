@@ -545,6 +545,7 @@ local	G,H,	    # factors
         I,          # image of <alpha>
         grp,        # wreath product of <G> and <H>, result
         gens,       # generators of the wreath product
+	gens1,      # generators of first base part
         gen,        # one generator
         domG,       # domain of operation of <G>
         degG,       # degree of <G>
@@ -613,8 +614,15 @@ local	G,H,	    # factors
         for gen  in Ggens  do
             Add( gens, gen ^ shift );
         od;
+	if i=1 then gens1:=ShallowCopy(gens);fi;
     od;
     basegens:=ShallowCopy(gens);
+
+    # reduce generator number if it becomes too large -- only first base
+    # part
+    if Length(basegens)>10 and Length(domI)>1 and IsTransitive(I,domI) then
+      gens:=gens1;
+    fi;
 
     # add the generators of <I>
     hgens:=[];
