@@ -1662,17 +1662,39 @@ end);
 ##
 InstallMethod(AlternatingSubgroup,"for perm groups",true,[IsPermGroup],0,
 function(G)
-local a;
+local a,b,x,i;
   if SignPermGroup(G)=1 then
     return G;
   fi;
-  a:=DerivedSubgroup(G);
-  if SignPermGroup(a)=1 and Index(G,a)=2 then
-    return a;
-  fi;
+  # otherwise construct
   # this is faster than intersecting with A_n, because no stabchain for A_n
   # needs to be built
-  return SubgroupProperty(G,i->SignPerm(i)=1);
+  a:=[];
+  b:=[];
+  for i in GeneratorsOfGroup(G) do
+    if SignPerm(i)=1 then
+      Add(a,i);
+    else
+      Add(b,i);
+      if Order(i)>2 then
+	Add(a,i^2);
+      fi;
+      if Length(b)>1 then
+	Add(a,b[1]/i);
+      fi;
+    fi;
+  od;
+  a:=SubgroupNC(G,a);
+  StabChainOptions(a).limit:=Size(G)/2;
+  while Size(a)<Size(g)/2 do
+    repeat 
+      #Print("close\n");
+      x:=Random(GeneratorsOfGroup(a))^Random(b);
+    until not x in a;
+    a:=ClosureSubgroupNC(a,x);
+  od;
+  return a;
+
 end);
 
 
