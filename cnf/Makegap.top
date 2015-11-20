@@ -24,4 +24,4 @@ else
 	CONFLIBS=$(LIBSOVERRIDE)
 endif
 
-
+uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')

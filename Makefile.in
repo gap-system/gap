@@ -89,9 +89,9 @@ setconfig:
 	  echo "There is no config with name: "$(CONFIGNAME); \
 	fi;
 
-config: bin/$(GAPARCH)/configure  bin/$(GAPARCH)/config.status 
+config: bin/$(GAPARCH)/configure  bin/$(GAPARCH)/config.status
 
-bin/$(GAPARCH)/configure: cnf/configure.out 
+bin/$(GAPARCH)/configure: cnf/configure.out
 	mkdir -p bin/$(GAPARCH)
 	@rm -f bin/$(GAPARCH)/configure
 	cp cnf/configure.out bin/$(GAPARCH)/configure
@@ -212,13 +212,13 @@ manuals:
 	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
           ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
 	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )          
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
 	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
           ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
 	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
           ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
 	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )           
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
 	( rm doc/wsp.g )
 
 
@@ -273,7 +273,7 @@ testpackages:
             | $(TESTGAP) -L wsp.g > /dev/null )
 	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
 	( rm wsp.g )
-	
+
 testpackagesload:
 	mkdir -p dev/log
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \
@@ -293,7 +293,7 @@ testpackagesload:
             | $(TESTGAP) -L wsp.g > /dev/null )
 	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
             `date -u +dev/log/testpackagesloadN1_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
-	( rm wsp.g )	
+	( rm wsp.g )
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
 	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
@@ -324,7 +324,7 @@ testpackagesvars:
 	( chmod 777 testpackagesvars.in; ./testpackagesvars.in > \
             `date -u +dev/log/testpackagesvars_%Y-%m-%d-%H-%M`; rm testpackagesvars.in )
 	( rm wsp.g )
-	
+
 testmanuals1:
 	(cd doc/ref; ../../bin/gap.sh -r extractexamples.g runexamples.g)
 	(cd doc/tut; ../../bin/gap.sh -r extractexamples.g runexamples.g)
@@ -395,7 +395,7 @@ testupdates:
             ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
             SetAssertionLevel( 2 ); RunDevUpdateTests();' | $(TESTGAP) > \
             `date -u +dev/log/testupdates2_%Y-%m-%d-%H-%M` )
-            
+
 testobsoletes:
 	mkdir -p dev/log
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \
@@ -417,27 +417,17 @@ testobsoletes:
             `date -u +dev/log/testobsoletesN1_%Y-%m-%d-%H-%M`; rm testobsoletesN1.in )
 	( rm wsp.g )
 
-cygwin:	extern
-	cnf/mkversionheader.sh bin/$(GAPARCH)/gap_version.h
-	( cd bin/$(GAPARCH) ; $(MAKE) gapdll ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' CONFIGNAME='$(CONFIGNAME)' )
-	chmod +x bin/gap-$(CONFIGNAME).sh
+uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
+
+ifeq ($(uname_O), Cygwin)
+default: cygwin
+endif
+
+cygwin: compile
 	chmod +x bin/*.bat
-	cp bin/$(GAPARCH)/gapw95.exe bin
-	cp bin/$(GAPARCH)/gap.dll bin
-	cp /bin/cygncurses-10.dll /bin/cygncursesw-10.dll \
-	   /bin/cygpanel-10.dll /bin/cygpanelw-10.dll /bin/cygwin1.dll \
-	   /bin/libW11.dll /usr/bin/rxvt.exe /usr/bin/regtool.exe \
-	   /bin/cygreadline7.dll /bin/cyggcc_s-1.dll /bin/cygpopt-0.dll \
-	   /bin/cygstart.exe /bin/mintty.exe bin
 	chmod +x cnf/instcygwinterminfo.sh
 	cnf/instcygwinterminfo.sh
-	( if which peflags ; then peflags --cygwin-heap=2048 bin/gapw95.exe ; fi )
-	
-winbinp:
-	( tar cfz ../winbin.tgz bin/*.dll bin/*.exe \
-          bin/$(GAPARCH)/gac \
-          bin/$(GAPARCH)/config.h \
-          terminfo )
+	( if which peflags ; then peflags --cygwin-heap=2048 bin/$(GAPARCH)/gap.exe ; fi )
 
 bootstrap-pkg-minimal:
 	@if test -e pkg; then \
