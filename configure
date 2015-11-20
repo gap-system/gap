@@ -629,6 +629,8 @@ GMP_CFLAGS
 m4_PRESENT
 GAPARCH
 CONFIGNAME
+wincygbin
+wingapdir
 gapdir
 SET_MAKE
 BASECC
@@ -4098,6 +4100,15 @@ fi
 
 gapdir=`pwd`
 
+case $target_os in
+  cygwin*)
+
+    wingapdir=$(cygpath -w $(pwd))
+
+    wincygbin=$(cygpath -w /bin)
+    gapdir=$(echo /proc/cygdrive/"$(cygpath -am $(pwd))" | sed -e 's/:\//\//g')
+esac
+
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking GAP config name" >&5
@@ -4237,6 +4248,13 @@ fi
 
 mkdir -p bin
 ac_config_files="$ac_config_files Makefile-${CONFIGNAME}:Makefile.in sysinfo.gap-${CONFIGNAME}:sysinfo.in bin/gap-${CONFIGNAME}.sh:gap.shi"
+
+
+case $target_os in
+  cygwin*)
+    ac_config_files="$ac_config_files bin/gap.bat:cnf/gap.bai bin/gapcmd.bat:cnf/gapcmd.bai bin/gaprxvt.bat:cnf/gaprxvt.bai"
+
+esac
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4946,6 +4964,9 @@ do
     "Makefile-${CONFIGNAME}") CONFIG_FILES="$CONFIG_FILES Makefile-${CONFIGNAME}:Makefile.in" ;;
     "sysinfo.gap-${CONFIGNAME}") CONFIG_FILES="$CONFIG_FILES sysinfo.gap-${CONFIGNAME}:sysinfo.in" ;;
     "bin/gap-${CONFIGNAME}.sh") CONFIG_FILES="$CONFIG_FILES bin/gap-${CONFIGNAME}.sh:gap.shi" ;;
+    "bin/gap.bat") CONFIG_FILES="$CONFIG_FILES bin/gap.bat:cnf/gap.bai" ;;
+    "bin/gapcmd.bat") CONFIG_FILES="$CONFIG_FILES bin/gapcmd.bat:cnf/gapcmd.bai" ;;
+    "bin/gaprxvt.bat") CONFIG_FILES="$CONFIG_FILES bin/gaprxvt.bat:cnf/gaprxvt.bai" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -5394,6 +5415,7 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
+
 
 ln -sf gap-${CONFIGNAME}.sh bin/gap.sh
 ln -sf Makefile-${CONFIGNAME} Makefile

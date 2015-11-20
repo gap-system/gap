@@ -2,6 +2,7 @@ set TERMINFO=/cygdrive/c/gap4dev/terminfo
 set CYGWIN=nodosfilewarning
 set LANG=en_US.ISO-8859-1
 set HOME=%HOMEDRIVE%%HOMEPATH%
+set PATH=@wincygbin@;%PATH%
 cd %HOME%
-start "GAP" C:\gap4dev\bin\rxvt.exe -fn fixedsys -sl 1000 -e /cygdrive/c/gap4dev/bin/gapw95.exe -l /cygdrive/c/gap4dev %*
+start "GAP" @wincygbin@\rxvt.exe -fn fixedsys -sl 1000 - e@gapdir@/bin/@GAPARCH@/gap.exe -l @gapdir@ %*
 exit
