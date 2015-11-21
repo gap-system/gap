@@ -1686,7 +1686,7 @@ local a,b,x,i;
   od;
   a:=SubgroupNC(G,a);
   StabChainOptions(a).limit:=Size(G)/2;
-  while Size(a)<Size(g)/2 do
+  while Size(a)<Size(G)/2 do
     repeat 
       #Print("close\n");
       x:=Random(GeneratorsOfGroup(a))^Random(b);
