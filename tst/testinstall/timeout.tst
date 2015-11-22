@@ -11,16 +11,16 @@ function( ms, arg ) ... end
 gap> spinFor(10);
 gap> spinFor(10,0);
 0
-gap> CallWithTimeout(5000,spinFor,1);
+gap> CallWithTimeout(50000,spinFor,1);
 [  ]
 gap> CallWithTimeout(5000,spinFor,10000);
 fail
-gap> CallWithTimeout(5000,spinFor,1,1);
+gap> CallWithTimeout(50000,spinFor,1,1);
 [ 1 ]
-gap> CallWithTimeoutList(5000,spinFor,[1,1]);
+gap> CallWithTimeoutList(50000,spinFor,[1,1]);
 [ 1 ]
 gap> CallWithTimeoutList(5000,spinFor,[10000,1]);
 fail
-gap> CallWithTimeoutList(5000,spinFor,[1]);
+gap> CallWithTimeoutList(50000,spinFor,[1]);
 [  ]
 gap> STOP_TEST( "timeout.tst", 330000);
