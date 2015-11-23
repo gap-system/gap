@@ -773,7 +773,11 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     for i in p do
       # exception: Table I, 1
       if n<>8 or i<>2 or issn then
-	m:=WreathProduct(SymmetricGroup(i),SymmetricGroup(n/i));
+	v:=Group(SmallGeneratingSet(SymmetricGroup(i)));
+	SetSize(v,Factorial(i));
+	k:=Group(SmallGeneratingSet(SymmetricGroup(n/i)));
+	SetSize(k,Factorial(n/i));
+	m:=WreathProduct(v,k);
 	if not issn then
 	  m:=AlternatingSubgroup(m);
 	fi;
@@ -891,7 +895,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
   # type (f): Almost simple
   if n>2499 then
     Error("tables missing");
-  elif n>50 then
+  elif n>999 then
     # all type 2 nonalt groups of right parity
     k:=Factorial(n)/2;
     l:=AllPrimitiveGroups(DegreeOperation,n,
