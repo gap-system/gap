@@ -1355,3 +1355,40 @@ local l;
   fi;
 end);
 
+InstallMethod(ChiefSeriesTF,"fitting free",true,
+  [IsGroup and CanComputeFittingFree ],0,
+function(G)
+local ff,i,j,c,q,a,b,prev,sub,m,k;
+  ff:=FittingFreeLiftSetup(G);
+  if Size(ff.radical)=Size(G) then
+    c:=[G];
+  else
+    if Size(ff.radical)=1 then
+      c:=ChiefSeries(G);
+    else
+      q:=Image(ff.factorhom,G);
+      a:=ChiefSeries(q);
+      c:=List(a,x->PreImage(ff.factorhom,x));
+    fi;
+  fi;
+  # go through the depths
+  prev:=ff.pcgs;
+  for i in [2..Length(ff.depths)] do
+    sub:=InducedPcgsByPcSequence(ff.pcgs,ff.pcgs{[ff.depths[i]..Length(ff.pcgs)]});
+    m:=prev mod sub;
+    k:=SubgroupNC(G,sub);
+    a:=LinearActionLayer(G,m);
+    a:=GModuleByMats(a,GF(RelativeOrders(m)[1]));
+    b:=MTX.BasesSubmodules(a);
+    b:=b{[2..Length(b)-1]}; # only intermnediate ones
+    if Length(b)>0 then
+      for j in Reversed(b) do
+	Add(c,ClosureSubgroupNC(k,List(j,x->PcElementByExponents(m,x))));
+      od;
+    fi;
+    Add(c,k);
+    prev:=sub;
+  od;
+  return c;
+end);
+
