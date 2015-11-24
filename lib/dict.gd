@@ -245,6 +245,21 @@ DeclareSynonym("AddHashEntry",AddDictionary);
 
 #############################################################################
 ##
+#O  RemoveDictionary( <dict>, <key> )
+##
+##  <ManSection>
+##  <Oper Name="RemoveDictionary" Arg='key'/>
+##
+##  <Description>
+##  Removes the given key and its associated value from the dictionary.
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation( "RemoveDictionary", [ IsDictionary and IsMutable, IsObject ] );
+
+
+#############################################################################
+##
 #O  LookupDictionary(<dict>,<key>)
 ##
 ##  <#GAPDoc Label="LookupDictionary">
@@ -286,6 +301,20 @@ IsListDictionary:=NewRepresentation("IsListDictionary",IsDictionaryDefaultRep,
 IsListLookupDictionary:=NewRepresentation("IsListLookupDictionary",
   IsListDictionary and IsLookupDictionary,
   ["entries"] );
+
+#############################################################################
+##
+#O  ListKeyEnumerator( <dict> )
+##
+##  <ManSection>
+##  <Oper Name="ListKeyEnumerator" Arg='dict'/>
+##
+##  <Description>
+##  Enumerates the keys of the list dictionary (Enumerator enumerates values).
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation( "ListKeyEnumerator", [ IsListDictionary ] );
 
 #############################################################################
 ##
