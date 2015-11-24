@@ -624,7 +624,7 @@ InstallMethod( ViewObj, "for sparse hash tables", true,
     [ IsSparseHashRep ], 0,
     function( hash )
         if Size( hash ) > MaxHashViewSize then
-            Print("< sparse hash table of size ", Size( hash ), " >");
+            Print("<sparse hash table of size ", Size( hash ), ">");
         else
             PrintHashWithNames( hash, "Keys", "Values" );
         fi;

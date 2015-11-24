@@ -25,8 +25,8 @@ gap> for i in [1..1000] do
 > AddDictionary(dict, i, String(i));
 > od;
 gap> dict;
-< sparse hash table of size 1002 >
-gap> STOP_TEST( "dict.tst", 200320000);
+<sparse hash table of size 1002>
+gap> STOP_TEST( "dict.tst", 1000);
 #############################################################################
 ##
 #E  
