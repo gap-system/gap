@@ -128,12 +128,6 @@ state at this point, subsequently leading to a crash.
 This, too, has been fixed, by not allowing the user to ignore the error
 by entering <Q>return</Q>.
 </Item>
-<Item>
-<!-- https://github.com/gap-system/gap/pull/243/ -->
-<Ref Oper="PowerMod" BookName="ref"/> produced wrong results for univariate 
-Laurent polynomials when the two polynomial arguments are stored with the 
-same non-zero shift.
-</Item>
 </List>
 
 </Subsection>
