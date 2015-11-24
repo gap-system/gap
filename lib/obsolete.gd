@@ -502,7 +502,7 @@ DeclareObsoleteSynonym( "MutableNullMat", "NullMat", "4.8" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareObsoleteSynonym( "IsSemilatticeAsSemigroup", "IsSemilattice", "4.8" );
+DeclareSynonymAttr( "IsSemilatticeAsSemigroup", IsSemilattice );
 
 #############################################################################
 ##
