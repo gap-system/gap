@@ -71,6 +71,7 @@
 
 #include        "saveload.h"            /* saving and loading              */
 #include        "tls.h"
+#include        "trans.h"
 
 /****************************************************************************
 **
@@ -282,59 +283,20 @@ void            PrintPermQ (
 */
 Int             EqPerm22 (
     Obj                 opL,
-    Obj                 opR )
-{
-    UInt                degL;           /* degree of the left operand      */
-    UInt2 *             ptL;            /* pointer to the left operand     */
-    UInt2 *             ptLstart;       /* pointer to left operand start   */
-    UInt                degR;           /* degree of the right operand     */
-    UInt2 *             ptR;            /* pointer to the right operand    */
-    UInt2 *             ptRstart;       /* pointer to right operand start  */
-    UInt                p;              /* loop variable                   */
+    Obj                 opR ) {
+  return EqPermTrans22(DEG_PERM2(opL), 
+                       DEG_PERM2(opR), 
+                       ADDR_PERM2(opL),
+                       ADDR_PERM2(opR));
+}
 
-    /* get the degrees                                                     */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM2(opR);
-
-    /* set up the pointers                                                 */
-    ptLstart = ADDR_PERM2(opL);
-    ptRstart = ADDR_PERM2(opR);
-
-    /* if permutations are different sizes, check final element as
-     * early check                                                         */
-
-    if ( degL != degR ) {
-      if ( degL < degR ) {
-        if ( *(ptRstart + degR - 1) != (degR - 1) )
-          return 0L;
-      }
-      else {
-        if ( *(ptLstart + degL - 1) != (degL - 1) )
-          return 0L;
-      }
-    }
-    
-    /* search for a difference and return False if you find one          */
-    if ( degL <= degR ) {
-      ptR = ptRstart + degL;
-      for ( p = degL; p < degR; p++ )
-          if ( *(ptR++) !=        p )
-              return 0L;
-        
-        if(memcmp(ptLstart, ptRstart, degL * sizeof(UInt2)) != 0)
-            return 0L;
-    }
-    else {
-        ptL = ptLstart + degR;
-        for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) !=        p )
-                return 0L;
-        if(memcmp(ptLstart, ptRstart, degR * sizeof(UInt2)) != 0)
-          return 0L;
-    }
-
-    /* otherwise they must be equal                                        */
-    return 1L;
+Int             EqPerm44 (
+    Obj                 opL,
+    Obj                 opR ) {
+  return EqPermTrans44(DEG_PERM4(opL), 
+                       DEG_PERM4(opR), 
+                       ADDR_PERM4(opL),
+                       ADDR_PERM4(opR));
 }
 
 Int             EqPerm24 (
@@ -416,64 +378,6 @@ Int             EqPerm42 (
     /* otherwise they must be equal                                        */
     return 1L;
 }
-
-Int             EqPerm44 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    UInt                degL;           /* degree of the left operand      */
-    UInt4 *             ptL;            /* pointer to the left operand     */
-    UInt4 *             ptLstart;       /* pointer to left operand start   */
-    UInt                degR;           /* degree of the right operand     */
-    UInt4 *             ptR;            /* pointer to the right operand    */
-    UInt4 *             ptRstart;       /* pointer to right operand start  */
-    UInt                p;              /* loop variable                   */
-
-    /* get the degrees                                                     */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM4(opR);
-
-    /* set up the pointers                                                 */
-    ptLstart = ADDR_PERM4(opL);
-    ptRstart = ADDR_PERM4(opR);
-
-    /* if permutations are different sizes, check final element as
-     * early check                                                         */
-
-    if ( degL != degR ) {
-      if ( degL < degR ) {
-        if ( *(ptRstart + degR - 1) != (degR - 1) )
-          return 0L;
-      }
-      else {
-        if ( *(ptLstart + degL - 1) != (degL - 1) )
-          return 0L;
-      }
-    }
-    
-    /* search for a difference and return False if you find one          */
-    if ( degL <= degR ) {
-      ptR = ptRstart + degL;
-      for ( p = degL; p < degR; p++ )
-          if ( *(ptR++) !=        p )
-              return 0L;
-        
-        if(memcmp(ptLstart, ptRstart, degL * sizeof(UInt4)) != 0)
-            return 0L;
-    }
-    else {
-        ptL = ptLstart + degR;
-        for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) !=        p )
-                return 0L;
-        if(memcmp(ptLstart, ptRstart, degR * sizeof(UInt4)) != 0)
-          return 0L;
-    }
-
-    /* otherwise they must be equal                                        */
-    return 1L;
-}
-
 
 /****************************************************************************
 **

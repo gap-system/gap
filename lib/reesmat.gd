@@ -103,6 +103,8 @@ DeclareSynonym("UnderlyingSemigroupOfReesZeroMatrixSemigroup",
 
 DeclareAttribute("AssociatedReesMatrixSemigroupOfDClass", IsGreensDClass);
 DeclareAttribute("IsomorphismReesMatrixSemigroup", IsSemigroup);
+DeclareAttribute("IsomorphismReesMatrixSemigroup", IsGreensDClass);
+DeclareAttribute("IsomorphismReesZeroMatrixSemigroup", IsSemigroup);
 
 # undocumented
 

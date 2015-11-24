@@ -11,6 +11,24 @@
 ##  semigroups and is based on earlier code of Isabel Araújo and Robert Arthur.
 ##
 
+InstallMethod(PrintObj,
+"for a semigroup with known generators",
+[IsTransformationSemigroup and IsGroup and HasGeneratorsOfMagma],
+function(S)
+  Print("Group( ", GeneratorsOfMagma(S), " )");
+end);
+
+InstallMethod(SemigroupViewStringPrefix, "for a transformation semigroup",
+[IsTransformationSemigroup], S -> "\>transformation\< ");
+
+InstallMethod(SemigroupViewStringSuffix, "for a transformation semigroup",
+[IsTransformationSemigroup],
+function(S)
+  return Concatenation("\>degree \>",
+                       ViewString(DegreeOfTransformationSemigroup(S)),
+                       "\<\< ");
+end);
+
 InstallMethod(\<, "for transformation semigroups",
 [IsTransformationSemigroup, IsTransformationSemigroup],
 function(S, T)
@@ -48,104 +66,17 @@ InstallMethod(DisplayString, "for a transformation semigroup with generators",
 
 #
 
-InstallMethod(ViewString, "for a transformation semigroup with generators",
-[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
-function(s)
-  local str, nrgens;
-  
-  str:="\><";
-
-  if HasIsTrivial(s) and IsTrivial(s) then 
-    Append(str, "\>trivial\< ");
-  else 
-    if HasIsCommutative(s) and IsCommutative(s) then 
-      Append(str, "\>commutative\< ");
-    fi;
-  fi;
-
-  if HasIsTrivial(s) and IsTrivial(s) then 
-  elif HasIsZeroSimpleSemigroup(s) and IsZeroSimpleSemigroup(s) then 
-    Append(str, "\>0-simple\< ");
-  elif HasIsSimpleSemigroup(s) and IsSimpleSemigroup(s) then 
-    Append(str, "\>simple\< ");
-  fi;
-
-  if HasIsInverseSemigroup(s) and IsInverseSemigroup(s) then 
-    Append(str, "\>inverse\< ");
-  elif HasIsRegularSemigroup(s) 
-   and not (HasIsSimpleSemigroup(s) and IsSimpleSemigroup(s)) then 
-    if IsRegularSemigroup(s) then 
-      Append(str, "\>regular\< ");
-    else
-      Append(str, "\>non-regular\< ");
-    fi;
-  fi;
-  
-  Append(str, "\>transformation\< ");
- 
-  if HasIsMonoid(s) and IsMonoid(s) then 
-    Append(str, "\>monoid\< ");
-    nrgens:=Length(GeneratorsOfMonoid(s));
-  else 
-    Append(str, "\>semigroup\< ");
-    nrgens:=Length(GeneratorsOfSemigroup(s));
-  fi;
-  
-  if HasIsTrivial(s) and not IsTrivial(s) and HasSize(s) and Size(s)<2^64 then 
-    Append(str, "\>of size\> ");
-    Append(str, String(Size(s)));
-    Append(str, ",\<\< ");
-  fi;
- 
-  Append(str, "\>on \>");
-  Append(str, ViewString(DegreeOfTransformationSemigroup(s)));
-  Append(str, "\< pts with\> ");
-  Append(str, ViewString(nrgens));
-  Append(str, "\< generator");
-
-  if nrgens>1 or nrgens=0 then 
-    Append(str, "s\<");
-  else 
-    Append(str, "\<");
-  fi;
-  Append(str, ">\<");
-
-  return str;
-end);
-
-#
-
 InstallMethod(ViewString, "for a full transformation semigroup",
-[IsTransformationSemigroup and IsFullTransformationSemigroup and HasGeneratorsOfSemigroup],
-function(s)
-  return STRINGIFY("<full transformation semigroup on ", 
-  DegreeOfTransformationSemigroup(s), " pts>");
+[IsTransformationSemigroup and IsFullTransformationSemigroup and
+ HasGeneratorsOfSemigroup], SUM_FLAGS,
+function(S)
+  return STRINGIFY("<full transformation monoid of degree ",
+                   DegreeOfTransformationSemigroup(S), ">");
 end);
 
-
 #
 
-#InstallTrueMethod(IsTransformationMonoid, IsMonoid and
-#    IsTransformationCollection);
-
-#
-
-#InstallMethod(IsTransformationMonoid, 
-#"for a transformation semigroup with generators",
-#[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
-#function( S )
-#    if ForAny(GeneratorsOfSemigroup(S),
-#           x->RankOfTransformation(x)=DegreeOfTransformationSemigroup(S)) then
-#      SetGeneratorsOfMonoid(S, GeneratorsOfSemigroup(S));
-#      return true;
-#    else
-#      return false;
-#    fi;
-#end);
-
-#
-
-InstallMethod(AsMonoid, 
+InstallMethod(AsMonoid,
 "for transformation semigroup with generators",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 function(S)

@@ -183,9 +183,7 @@ function(F, gens, category )
         SetGeneratingPairsOfMagmaCongruence(cong, Immutable(gens));
     elif (category = IsLeftMagmaCongruence) then  
         SetGeneratingPairsOfLeftMagmaCongruence(cong, Immutable(gens)); 
-        SetGeneratingPairsOfMagmaCongruence(cong, Immutable(gens)); 
     elif (category = IsRightMagmaCongruence) then 
-        SetGeneratingPairsOfMagmaCongruence(cong, Immutable(gens)); 
         SetGeneratingPairsOfRightMagmaCongruence(cong, Immutable(gens)); 
     else
         Error("Invalid category ",category," of Magma congruence");

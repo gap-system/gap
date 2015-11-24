@@ -479,6 +479,30 @@ DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat", "4.8" );
 ##
 DeclareObsoleteSynonym( "MutableNullMat", "NullMat", "4.8" );
 
+#############################################################################
+##
+#F  IsSemilatticeAsSemigroup( <S> ) is the semigroup <S> a semilattice
+##
+##  <#GAPDoc Label="IsSemilatticeAsSemigroup">
+##  <ManSection>
+##  <Prop Name="IsSemilatticeAsSemigroup" Arg='S'/>
+##
+##  <Description>
+##    <C>IsSemilatticeAsSemigroup</C> returns <K>true</K> if the semigroup
+##    <A>S</A> is a semilattice and <K>false</K> if it is not. <P/>
+##
+##    A semigroup is a <E>semilattice</E> if it is commutative and every
+##    element is an idempotent. The idempotents of an inverse semigroup form a
+##    semilattice.
+##
+##    This is identical to <Ref Prop="IsSemilattice" BookName = "Semigroups"/> #
+##    and is present in &GAP;&nbsp;4.8 #  only for the sake of compatibility with
+##    beta-releases.  #  It should <E>not</E> be used in new code.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareObsoleteSynonym( "IsSemilatticeAsSemigroup", "IsSemilattice", "4.8" );
 
 #############################################################################
 ##
