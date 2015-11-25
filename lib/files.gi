@@ -316,7 +316,9 @@ local a,h,d;
 	      "ÐœÐ¾Ð¸ Ð”Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ñ‹", #ru
 	      ],x->LowercaseString(x) in d);
     if a<>fail then
-      if h[Length(h)]<>'/' then Add(h,'/');fi;
+      if h[Length(h)]<>'/' then
+        h := Concatenation(h,"/");
+      fi;
       return Directory(Concatenation(h,a));
     else
       return Directory(StringHOMEPath());
@@ -338,7 +340,9 @@ local a,h,d;
 	      "Î•Ï€Î¹Ï†Î¬Î½ÎµÎ¹Î± ÎµÏÎ³Î±ÏƒÎ¯Î±Ï‚", #gr
 	     ],x->LowercaseString(x) in d);
     if a<>fail then
-      if h[Length(h)]<>'/' then Add(h,'/');fi;
+      if h[Length(h)]<>'/' then
+        h := Concatenation(h,"/");
+      fi;
       return Directory(Concatenation(h,a));
     else
       return Directory(StringHOMEPath());
@@ -351,7 +355,9 @@ local a,h,d;
 	      "Escritorio", #es
 	     ],x->LowercaseString(x) in d);
     if a<>fail then
-      if h[Length(h)]<>'/' then Add(h,'/');fi;
+      if h[Length(h)]<>'/' then
+        h := Concatenation(h,"/");
+      fi;
       return Directory(Concatenation(h,a));
     else
       return Directory(h);
