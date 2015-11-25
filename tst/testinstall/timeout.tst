@@ -12,15 +12,15 @@ gap> spinFor(10);
 gap> spinFor(10,0);
 0
 gap> CallWithTimeout(50000,spinFor,1);
-[  ]
+Error, Calling with time limits not supported in this GAP installation
 gap> CallWithTimeout(5000,spinFor,10000);
-fail
+Error, Calling with time limits not supported in this GAP installation
 gap> CallWithTimeout(50000,spinFor,1,1);
-[ 1 ]
+Error, Calling with time limits not supported in this GAP installation
 gap> CallWithTimeoutList(50000,spinFor,[1,1]);
-[ 1 ]
+Error, Calling with time limits not supported in this GAP installation
 gap> CallWithTimeoutList(5000,spinFor,[10000,1]);
-fail
+Error, Calling with time limits not supported in this GAP installation
 gap> CallWithTimeoutList(50000,spinFor,[1]);
-[  ]
+Error, Calling with time limits not supported in this GAP installation
 gap> STOP_TEST( "timeout.tst", 330000);
