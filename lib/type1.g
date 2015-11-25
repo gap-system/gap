@@ -83,36 +83,39 @@ InstallAttributeFunction(
 ##  <#/GAPDoc>
 ##
 Subtype := "defined below";
+DS_TYPE_CACHE := ShareSpecialObj([]);
 
 
 BIND_GLOBAL( "NEW_FAMILY",
     function ( typeOfFamilies, name, req_filter, imp_filter )
-    local   type, pair, family;
+    local   lock, type, pair, family;
 
     # Look whether the category of the desired family can be improved
     # using the categories defined by 'CategoryFamily'.
     imp_filter := WITH_IMPS_FLAGS( AND_FLAGS( imp_filter, req_filter ) );
     type := Subtype( typeOfFamilies, IsAttributeStoringRep );
+    lock := READ_LOCK(CATEGORIES_FAMILY);
     for pair in CATEGORIES_FAMILY do
         if IS_SUBSET_FLAGS( imp_filter, pair[1] ) then
             type:= Subtype( type, pair[2] );
         fi;
     od;
+    UNLOCK(lock);
 
     # cannot use 'Objectify', because 'IsList' may not be defined yet
-    family := rec();
+    family := AtomicRecord();
     SET_TYPE_COMOBJ( family, type );
-    family!.NAME            := name;
+    family!.NAME            := MakeImmutable(name);
     family!.REQ_FLAGS       := req_filter;
     family!.IMP_FLAGS       := imp_filter;
-    family!.TYPES           := [];
+    lock := WRITE_LOCK(DS_TYPE_CACHE);
+    family!.TYPES           := MIGRATE_RAW([], DS_TYPE_CACHE);
+    UNLOCK(lock);
     family!.nTYPES          := 0;
     family!.HASH_SIZE       := 32;
     # for chaching types of homogeneous lists (see TYPE_LIST_HOM in list.g), 
     # assigned in kernel when needed 
-    family!.TYPES_LIST_FAM  := [];
-    # for efficiency
-    family!.TYPES_LIST_FAM[27] := 0;
+    family!.TYPES_LIST_FAM  := MakeWriteOnceAtomic(AtomicList(27));
     return family;
 end );
 
@@ -201,19 +204,37 @@ end );
 NEW_TYPE_CACHE_MISS  := 0;
 NEW_TYPE_CACHE_HIT   := 0;
 
+# We must access this through ASS_GVAR / VAL_GVAR as the compiler does not understand
+# thread local variables
+BIND_GLOBAL("_NEW_TYPE_READONLY", `"NEW_TYPE_READONLY");
+ASS_GVAR(_NEW_TYPE_READONLY, true);
+MakeThreadLocal(_NEW_TYPE_READONLY);
+
+
+BIND_GLOBAL("ConstructExtendedType", function(body)
+    local type, save_flag;
+    save_flag := VAL_GVAR(_NEW_TYPE_READONLY);
+    ASS_GVAR(_NEW_TYPE_READONLY, false);
+    type := body();
+    ASS_GVAR(_NEW_TYPE_READONLY, save_flag);
+    return MakeReadOnlyObj(type);
+end);
+
 BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
-    local   hash,  cache,  cached,  type, ncache, ncl, t;
+    local   lock, hash,  cache,  cached,  type, ncache, ncl, t;
 
     # maybe it is in the type cache
+    lock := WRITE_LOCK(DS_TYPE_CACHE);
     cache := family!.TYPES;
     hash  := HASH_FLAGS(flags) mod family!.HASH_SIZE + 1;
-    if IsBound( cache[hash] )  then
+    if IsBound( cache[hash] ) and VAL_GVAR(_NEW_TYPE_READONLY) then
         cached := cache[hash];
         if IS_EQUAL_FLAGS( flags, cached![2] )  then
             if    IS_IDENTICAL_OBJ(  data,  cached![ POS_DATA_TYPE ] )
               and IS_IDENTICAL_OBJ(  typeOfTypes, TYPE_OBJ(cached) )
             then
                 NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
+                UNLOCK(lock);
                 return cached;
             else
                 flags := cached![2];
@@ -234,14 +255,14 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     # make the new type
     # cannot use 'Objectify', because 'IsList' may not be defined yet
     type := [ family, flags ];
-    type[POS_DATA_TYPE] := data;
+    type[POS_DATA_TYPE] := MakeReadOnly(data);
     type[POS_NUMB_TYPE] := NEW_TYPE_NEXT_ID;
 
     SET_TYPE_POSOBJ( type, typeOfTypes );
     
     # check the size of the cache before storing this type
     if 3*family!.nTYPES > family!.HASH_SIZE then
-        ncache := [];
+        ncache := MIGRATE_RAW([], DS_TYPE_CACHE);
         ncl := 3*family!.HASH_SIZE+1;
         for t in cache do
             ncache[ HASH_FLAGS(t![2]) mod ncl + 1] := t;
@@ -253,18 +274,21 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
         cache[hash] := type;
     fi;
     family!.nTYPES := family!.nTYPES + 1;
+    if VAL_GVAR(_NEW_TYPE_READONLY) then
+        MakeReadOnlyObj(type);
+    fi;
+    UNLOCK(lock);
 
     # return the type
     return type;
 end );
 
 
-
 BIND_GLOBAL( "NewType2", function ( typeOfTypes, family )
     return NEW_TYPE( typeOfTypes,
                      family,
                      family!.IMP_FLAGS,
-                     false );
+                     fail );
 end );
 
 
@@ -274,7 +298,7 @@ BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         family!.IMP_FLAGS,
                         FLAGS_FILTER(filter) ) ),
-                     false );
+                     fail );
 end );
 
 
@@ -349,7 +373,9 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "Subtype2", function ( type, filter )
-    local   new, i;
+    local   new, i, save_flag;
+    save_flag := VAL_GVAR(_NEW_TYPE_READONLY);
+    ASS_GVAR(_NEW_TYPE_READONLY, false);
     new := NEW_TYPE( TypeOfTypes,
                      type![1],
                      WITH_IMPS_FLAGS( AND_FLAGS(
@@ -357,16 +383,20 @@ BIND_GLOBAL( "Subtype2", function ( type, filter )
                         FLAGS_FILTER( filter ) ) ),
                      type![ POS_DATA_TYPE ] );
     for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) then
+        if IsBound( type![i] ) and not IsBound(new![i]) then
             new![i] := type![i];
         fi;
     od;
+    MakeReadOnlyObj(new);
+    ASS_GVAR(_NEW_TYPE_READONLY, save_flag);
     return new;
 end );
 
 
 BIND_GLOBAL( "Subtype3", function ( type, filter, data )
-    local   new, i;
+    local   new, i, save_flag;
+    save_flag := VAL_GVAR(_NEW_TYPE_READONLY);
+    ASS_GVAR(_NEW_TYPE_READONLY, false);
     new := NEW_TYPE( TypeOfTypes,
                      type![1],
                      WITH_IMPS_FLAGS( AND_FLAGS(
@@ -374,17 +404,20 @@ BIND_GLOBAL( "Subtype3", function ( type, filter, data )
                         FLAGS_FILTER( filter ) ) ),
                      data );
     for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) then
+        if IsBound( type![i] ) and not IsBound(new![i]) then
             new![i] := type![i];
         fi;
     od;
+    MakeReadOnlyObj(new);
+    ASS_GVAR(_NEW_TYPE_READONLY, save_flag);
     return new;
 end );
 
 
 Unbind( Subtype );
 BIND_GLOBAL( "Subtype", function ( arg )
-
+    local p;
+    p := READ_LOCK(arg);
     # check argument
     if not IsType( arg[1] )  then
         Error("<type> must be a type");
@@ -396,7 +429,7 @@ BIND_GLOBAL( "Subtype", function ( arg )
     else
         return Subtype3( arg[1], arg[2], arg[3] );
     fi;
-
+    UNLOCK(p);
 end );
 
 
@@ -506,7 +539,7 @@ BIND_GLOBAL( "FlagsType", K -> K![2] );
 BIND_GLOBAL( "DataType", K -> K![ POS_DATA_TYPE ] );
 
 BIND_GLOBAL( "SetDataType", function ( K, data )
-    K![ POS_DATA_TYPE ]:= data;
+    StrictBindOnce(K, POS_DATA_TYPE, `data);
 end );
 
 
@@ -684,8 +717,37 @@ BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags",
         FLAGS_FILTER(IsAtomicPositionalObjectRep));
 BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags", 
         FLAGS_FILTER(IsReadOnlyPositionalObjectRep));
+        
+BIND_GLOBAL( "Objectify", function(type, obj)
+    local flags;
+    if not IsType( type )  then
+        Error("<type> must be a type");
+    fi;
+    flags := FlagsType(type);
+    if IS_LIST( obj )  then
+        if IS_SUBSET_FLAGS(flags, IsAtomicPositionalObjectRepFlags) then
+            FORCE_SWITCH_OBJ( obj, FixedAtomicList(obj) );
+        fi;
+        SET_TYPE_POSOBJ( obj, type );
+    elif IS_REC( obj )  then
+        if IS_ATOMIC_RECORD(obj) then
+            if IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
+                FORCE_SWITCH_OBJ( obj, FromAtomicRecord(obj) );
+            fi;
+        elif not IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
+            FORCE_SWITCH_OBJ( obj, AtomicRecord(obj) );
+        fi;
 
-BIND_GLOBAL( "Objectify", SetTypeObj );
+        SET_TYPE_COMOBJ( obj, type );
+  fi;
+    if not IsNoImmediateMethodsObject(obj) then
+      RunImmediateMethods( obj, type![2] );
+    fi;
+  if IsReadOnlyPositionalObjectRep(obj) then
+      MakeReadOnlyObj(obj);
+  fi;
+  return obj;
+end );
 
 
 #############################################################################
@@ -966,7 +1028,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
     local obj, type, flags, attr, val, i, extra,  nflags;
     obj := arg[1];
     type := arg[2];
-    flags := FlagsType( type);
+    flags := FlagsType(type);
     extra := [];
     
     if not IS_SUBSET_FLAGS(
@@ -1012,14 +1074,14 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
                     flags , 
                     DataType(type)), obj);
         else
-            Objectify( type, obj);
+            Objectify( type, obj );
         fi;
     fi;
     for i in [1,3..LEN_LIST(extra)-1] do
         if (Tester(extra[i])(obj)) then
-	  INFO_OWA( "#W  Supplied type has tester of ",NAME_FUNC(extra[i]),
-		    "with non-standard setter\n" );
-	  ResetFilterObj(obj, Tester(extra[i]));
+	        INFO_OWA( "#W  Supplied type has tester of ",NAME_FUNC(extra[i]),
+		              "with non-standard setter\n" );
+	        ResetFilterObj(obj, Tester(extra[i]));
 #T If there is an immediate method relying on an attribute
 #T whose tester is set to `true' in `type'
 #T and that has a special setter

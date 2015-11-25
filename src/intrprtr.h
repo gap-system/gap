@@ -28,7 +28,7 @@
 **  the  statement  that  was  last  interpreted (which   might  have been  a
 **  return-value-statement).
 */
-extern  Obj             IntrResult;
+/* TL: extern  Obj             IntrResult; */
 
 
 /****************************************************************************
@@ -42,7 +42,7 @@ extern  Obj             IntrResult;
 **
 **  This mode is also used in Info and Assert, when arguments are not printed. 
 */
-extern UInt IntrIgnoring;
+/* TL: extern UInt IntrIgnoring; */
 
 
 /****************************************************************************
@@ -53,7 +53,7 @@ extern UInt IntrIgnoring;
 **  The interpreter  switches  to this  mode for  constructs  that it  cannot
 **  directly interpret, such as loops or function bodies.
 */
-extern UInt IntrCoding;
+/* TL: extern UInt IntrCoding; */
 
 /****************************************************************************
 **
@@ -294,6 +294,10 @@ extern void IntrQualifiedExprBegin( UInt access);
 extern void IntrQualifiedExprEnd( void);
 
 
+#define DEFAULT_LOCK_TYPE 1
+#define MAX_ATOMIC_OBJS 256
+
+
 /****************************************************************************
 **
 *F  IntrAtomicBegin()  . . . . . interpret atomic-statement, begin of statement
@@ -318,7 +322,6 @@ extern void IntrQualifiedExprEnd( void);
 **  when  the reader encounters  the  end of  the  statement, i.e., immediate
 **  after 'IntrAtomicEndBody'.
 **
-**  These functions are just placeholders for future HPC-GAP code
 */
 
 extern  void            IntrAtomicBegin ( void );

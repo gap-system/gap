@@ -43,8 +43,14 @@ local f,typ,lc;
   fi;
   
   # slightly better to do this after the Length has been determined 
-  if IsFFECollection(coeff) and IS_PLIST_REP(coeff) then
-    ConvertToVectorRep(coeff);
+  if IS_PLIST_REP(coeff) then
+    if IsFFECollection(coeff) then
+      ConvertToVectorRep(coeff);
+      if IS_DATOBJ(coeff) then
+	coeff := ShallowCopy(coeff);
+	MakeReadOnly(coeff);
+      fi;
+    fi;
   fi;
 
   
@@ -53,7 +59,7 @@ local f,typ,lc;
 
   # note that `IndNum.LaurentPol. is IndnumUnivRatFun !
   f := rec(IndeterminateNumberOfUnivariateRationalFunction:=inum,
-           CoefficientsOfLaurentPolynomial:=Immutable([coeff,val]));
+           CoefficientsOfLaurentPolynomial:=MakeReadOnly(CopyRegion([coeff,val])));
   Objectify(typ,f);
 
 #  ObjectifyWithAttributes(f,typ,

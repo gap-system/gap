@@ -75,7 +75,7 @@ BindGlobal( "RunStandardTests", function( arg )
     for i in [ 1 .. Length( testfiles ) ]  do
       name:= Filename( dir, testfiles[i][1] );
       Print( "testing: ", name, "\n" );
-      Test( name );
+      Test( name, rec(compareFunction := "uptowhitespace" ));
       if Length( GAPInfo.TestData.results ) < i then
         Print( "#E  Add a `STOP_TEST' command to the file `", name, "'!\n" );
         GAPInfo.TestData.results[i]:= "dummy";
@@ -162,7 +162,6 @@ BindGlobal( "RunStandardTests", function( arg )
 ##  <bookname> is either ref or tut. 
 ##  The function should be called EXACTLY from the GAP root directory.
 ## 
-LoadPackage("gapdoc");
 ExtractManualExamples:=function( bookname )
 local path, main, files, tst, i, s, name, output;
 if bookname="tut" then
@@ -329,6 +328,7 @@ BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfile, gap, other
                     " > ", outfile, "$TIMESTAMP.", name, "\n" ) );
             Append( result, Concatenation(
                     "echo 'SetUserPreference(\"UseColorsInTerminal\",false); ",
+                    "ReadGapRoot( \"tst/testutil.g\" ); ",
                     "RunPackageTests( \"", name,
                     "\", \"", entry.Version, "\", \"", entry.TestFile,
                     "\", \"", other, "\" );' | ", gap, 

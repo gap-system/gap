@@ -69,7 +69,7 @@
 **  'CHANGED_BAG' for  each of such change.  Instead we wait until  a garbage
 **  collection begins  and then  call  'CHANGED_BAG'  in  'BeginCollectBags'.
 */
-Bag CurrLVars;
+/* TL: Bag CurrLVars; */
 
 
 /****************************************************************************
@@ -81,7 +81,7 @@ Bag CurrLVars;
 **  have to check for the bottom, slowing it down.
 **
 */
-Bag BottomLVars;
+/* TL: Bag BottomLVars; */
 
 
 /****************************************************************************
@@ -94,7 +94,7 @@ Bag BottomLVars;
 **  Since   a   garbage collection may  move   this  bag  around, the pointer
 **  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
 */
-Obj * PtrLVars;
+/* TL: Obj * PtrLVars; */
 
 
 /****************************************************************************
@@ -115,6 +115,27 @@ Obj             ObjLVar (
             "you can 'return;' after assigning a value" );
     }
     return val;
+}
+
+Bag NewLVarsBag(UInt slots) {
+  Bag result;
+  if (slots < sizeof(TLS(LVarsPool))/(sizeof(TLS(LVarsPool)[0]))) {
+    result = TLS(LVarsPool)[slots];
+    if (result) {
+      TLS(LVarsPool)[slots] = ADDR_OBJ(result)[0];
+      return result;
+    }
+  }
+  return NewBag(T_LVARS, sizeof(Obj) * ( 3 + slots ) );
+}
+
+void FreeLVarsBag(Bag bag) {
+  UInt slots = SIZE_BAG(bag) / sizeof(Obj) - 3;
+  if (slots < sizeof(TLS(LVarsPool))/(sizeof(TLS(LVarsPool)[0]))) {
+    memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
+    ADDR_OBJ(bag)[0] = TLS(LVarsPool)[slots];
+    TLS(LVarsPool)[slots] = bag;
+  }
 }
 
 
@@ -1051,9 +1072,9 @@ Obj             EvalRefGVar (
     Obj                 val;            /* value, result                   */
 
     /* get and check the value of the global variable                      */
-    if ( (val = VAL_GVAR( (UInt)(ADDR_EXPR(expr)[0]) )) == 0
+    if ( (val = ValGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0
       && (val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
-        while ( (val = VAL_GVAR( (UInt)(ADDR_EXPR(expr)[0]) )) == 0
+        while ( (val = ValGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0
              && (val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
@@ -1072,7 +1093,7 @@ Obj             EvalIsbGVar (
     Obj                 val;            /* value, result                   */
 
     /* get the value of the global variable                                */
-    val = VAL_GVAR( (UInt)(ADDR_EXPR(expr)[0]) );
+    val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) );
 
     /* return the value                                                    */
     return (val != (Obj)0 ? True : False);
@@ -2317,6 +2338,8 @@ UInt            ExecAssPosObj (
         }
         SET_ELM_PLIST( list, p, rhs );
         CHANGED_BAG( list );
+    } else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        AssListFuncs[T_FIXALIST](list, p, rhs);
     }
     /* generic case                                                        */
     else {
@@ -2362,6 +2385,8 @@ UInt            ExecUnbPosObj (
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }
+    } else if (TNUM_OBJ(list) == T_APOSOBJ ) {
+        UnbListFuncs[T_FIXALIST](list, p);
     }
     else {
         UNB_LIST( list, p );
@@ -2402,19 +2427,22 @@ Obj             EvalElmPosObj (
 
     /* special case for plain lists (use generic code to signal errors)    */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
-        while ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
+        Bag *contents = PTR_BAG(list);
+        while ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
             ErrorReturnVoid(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
                 (Int)p, 0L,
                 "you can 'return;' after assigning a value" );
         }
-        elm = ELM_PLIST( list, p );
+        elm = contents[p];
         while ( elm == 0 ) {
             ErrorReturnVoid(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
                 (Int)p, 0L,
                 "you can 'return;' after assigning a value" );
         }
+    } else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        elm = ElmListFuncs[T_FIXALIST](list, p);
     }
 
     /* generic case                                                        */
@@ -2457,8 +2485,14 @@ Obj             EvalIsbPosObj (
 
     /* get the result                                                      */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
-        isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
-               True : False);
+        Bag *contents = PTR_BAG(list);
+        if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
+          isb = False;
+        else
+          isb = contents[p] != 0 ? True : False;
+    }
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        isb = IsbListFuncs[T_FIXALIST](list, p) ? True : False;
     }
     else {
         isb = (ISB_LIST( list, p ) ? True : False);
@@ -2561,11 +2595,29 @@ UInt            ExecAssComObjName (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+      case T_ACOMOBJ:
+      {
+#ifdef CHECK_TL_ASSIGNS
+          if(GetRegionOf(rhs) == TLS(threadRegion))
+          {
+              if(strcmp("buffer",NAME_RNAM(rnam)) != 0 && strcmp("state", NAME_RNAM(rnam)) != 0)
+              { 
+                  ErrorReturnObj("Warning: thread local assignment of '%s'", (Int)NAME_RNAM(rnam), 0L,
+                                           "type 'return <value>; to continue'");
+               }
+
+          }
+#endif
+        SetARecordField( record, rnam, rhs);
+      }
+        break;
+      default:
         ASS_REC( record, rnam, rhs );
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2598,11 +2650,16 @@ UInt            ExecAssComObjExpr (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+      case T_ACOMOBJ:
+        SetARecordField( record, rnam, rhs );
+        break;
+      default:
         ASS_REC( record, rnam, rhs );
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2631,11 +2688,16 @@ UInt            ExecUnbComObjName (
     rnam = (UInt)(ADDR_STAT(stat)[1]);
 
     /* unbind the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+        break;
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
+        break;
+      default:
         UNB_REC( record, rnam );
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2664,11 +2726,16 @@ UInt            ExecUnbComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_STAT(stat)[1] ) );
 
     /* unbind the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+        break;
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
+        break;
+      default:
         UNB_REC( record, rnam );
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2697,11 +2764,16 @@ Obj             EvalElmComObjName (
     rnam = (UInt)(ADDR_EXPR(expr)[1]);
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        elm = ElmPRec( record, rnam );
-    }
-    else {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        elm = ElmPRec(record, rnam);
+        break;
+      case T_ACOMOBJ:
+        elm = ElmARecord(record, rnam);
+        break;
+      default:
         elm = ELM_REC( record, rnam );
+        break;
     }
 
     /* return the element                                                  */
@@ -2730,15 +2802,14 @@ Obj             EvalElmComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        elm = ElmPRec( record, rnam );
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        return ElmPRec( record, rnam );
+      case T_ACOMOBJ:
+        return ElmARecord( record, rnam );
+      default:
+        return ELM_REC( record, rnam);
     }
-    else {
-        elm = ELM_REC( record, rnam );
-    }
-
-    /* return the element                                                  */
-    return elm;
 }
 
 
@@ -2763,11 +2834,16 @@ Obj             EvalIsbComObjName (
     rnam = (UInt)(ADDR_EXPR(expr)[1]);
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
+        break;
+      case T_ACOMOBJ:
+        isb = (GetARecordField( record, rnam ) != (Obj) 0 ? True : False);
+        break;
+      default:
         isb = (ISB_REC( record, rnam ) ? True : False);
+        break;
     }
 
     /* return the result                                                   */
@@ -2796,11 +2872,16 @@ Obj             EvalIsbComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
+        break;
+      case T_ACOMOBJ:
+        isb = (GetARecordField( record, rnam ) != (Obj) 0 ? True : False);
+        break;
+      default:
         isb = (ISB_REC( record, rnam ) ? True : False);
+        break;
     }
 
     /* return the result                                                   */
@@ -2998,13 +3079,17 @@ void VarsBeforeCollectBags ( void )
 
 void VarsAfterCollectBags ( void )
 {
+  int i;
   if (TLS(CurrLVars))
     {
       TLS(PtrLVars) = PTR_BAG( TLS(CurrLVars) );
       TLS(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
-  if (ValGVars)
-    PtrGVars = PTR_BAG( ValGVars );
+  for (i=0; i<GVAR_BUCKETS; i++)
+    if (ValGVars[i])
+      PtrGVars[i] = ADDR_OBJ( ValGVars[i] )+1;
+    else
+      break;
 }
 
 /****************************************************************************
@@ -3107,26 +3192,41 @@ static Int InitKernel (
     TLS(CurrLVars) = (Bag) 0;
 
     /* make 'CurrLVars' known to Gasman                                    */
-    InitGlobalBag( &CurrLVars,   "src/vars.c:CurrLVars"   );
-    InitGlobalBag( &BottomLVars, "src/vars.c:BottomLVars" );
+    /* TL: InitGlobalBag( CurrLVars,   "src/vars.c:CurrLVars"   ); */
+    /* TL: InitGlobalBag( &BottomLVars, "src/vars.c:BottomLVars" ); */
 
     /* install the marking functions for local variables bag               */
     InfoBags[ T_LVARS ].name = "values bag";
     InitMarkFuncBags( T_LVARS, MarkAllSubBags );
+    InfoBags[ T_HVARS ].name = "high variables bag";
+    InitMarkFuncBags( T_HVARS, MarkAllSubBags );
+
+    /* Make T_LVARS bags public */
+    MakeBagTypePublic(T_LVARS);
+    MakeBagTypePublic(T_HVARS);
 
     /* and the save restore functions */
     SaveObjFuncs[ T_LVARS ] = SaveLVars;
     LoadObjFuncs[ T_LVARS ] = LoadLVars;
+    SaveObjFuncs[ T_HVARS ] = SaveLVars;
+    LoadObjFuncs[ T_HVARS ] = LoadLVars;
 
     /* and a type */
 
     TypeObjFuncs[ T_LVARS ] = TypeLVars;
+    TypeObjFuncs[ T_HVARS ] = TypeLVars;
     PrintObjFuncs[ T_LVARS ] = PrintLVars;
+    PrintObjFuncs[ T_HVARS ] = PrintLVars;
     EqFuncs[T_LVARS][T_LVARS] = EqLVars;
+    EqFuncs[T_LVARS][T_HVARS] = EqLVars;
+    EqFuncs[T_HVARS][T_LVARS] = EqLVars;
+    EqFuncs[T_HVARS][T_HVARS] = EqLVars;
     for (i = FIRST_REAL_TNUM; i <= LAST_REAL_TNUM; i++)
       {
         EqFuncs[T_LVARS][i] = EqLVarsX;
         EqFuncs[i][T_LVARS] = EqLVarsX;
+        EqFuncs[T_HVARS][i] = EqLVarsX;
+        EqFuncs[i][T_HVARS] = EqLVarsX;
       }
 
 

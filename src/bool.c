@@ -78,6 +78,18 @@ Obj Fail;
 */
 Obj SFail;
 
+/****************************************************************************
+**
+*V  Undefined  . . . . . . . . . . . . . . . . . . . . . . . undefined value
+**
+**  'Undefined' is a special object that is used in lieu of (Obj) 0 in places
+**  where the kernel cannot handle a null reference easily. This object is
+**  never exposed to GAP code and only used within the kernel.
+*/
+Obj Undefined;
+
+
+
 
 /****************************************************************************
 **
@@ -117,6 +129,9 @@ void PrintBool (
     }
     else if ( bool == SFail ) {
         Pr( "SuPeRfail", 0L, 0L );
+    }
+    else if ( bool == Undefined ) {
+        Pr( "Undefined", 0L, 0L );
     }
     else {
         Pr( "<<very strange boolean value>>", 0L, 0L );
@@ -403,6 +418,7 @@ static Int InitKernel (
     InitGlobalBag( &False, "src/bool.c:FALSE" );
     InitGlobalBag( &Fail,  "src/bool.c:FAIL"  );
     InitGlobalBag( &SFail,  "src/bool.c:SFAIL"  );
+    InitGlobalBag( &Undefined,  "src/bool.c:UNDEFINED"  );
 
     /* install the saving functions                                       */
     SaveObjFuncs[ T_BOOL ] = SaveBool;
@@ -417,6 +433,7 @@ static Int InitKernel (
     EqFuncs[ T_BOOL ][ T_BOOL ] = EqBool;
     LtFuncs[ T_BOOL ][ T_BOOL ] = LtBool;
 
+    MakeBagTypePublic(T_BOOL);
     /* return success                                                      */
     return 0;
 }
@@ -450,6 +467,9 @@ static Int InitLibrary (
     gvar = GVarName( "SuPeRfail" );
     AssGVar( gvar, SFail );
     MakeReadOnlyGVar(gvar);
+
+    /* Undefined is an internal value */
+    Undefined = NewBag( T_BOOL, 0 );
 
     /* make and install the 'RETURN_TRUE' function                         */
     tmp = NewFunctionC( "RETURN_TRUE", -1L, "arg", ReturnTrue1 );

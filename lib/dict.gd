@@ -245,6 +245,21 @@ DeclareSynonym("AddHashEntry",AddDictionary);
 
 #############################################################################
 ##
+#O  RemoveDictionary( <dict>, <key> )
+##
+##  <ManSection>
+##  <Oper Name="RemoveDictionary" Arg='key'/>
+##
+##  <Description>
+##  Removes the given key and its associated value from the dictionary.
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation( "RemoveDictionary", [ IsDictionary and IsMutable, IsObject ] );
+
+
+#############################################################################
+##
 #O  LookupDictionary(<dict>,<key>)
 ##
 ##  <#GAPDoc Label="LookupDictionary">
@@ -265,7 +280,7 @@ DeclareSynonym("GetHashEntry",LookupDictionary);
 
 
 IsDictionaryDefaultRep:=NewRepresentation("IsDictionaryDefaultRep",
-  IsDictionary and IsComponentObjectRep,[]);
+  IsDictionary and IsNonAtomicComponentObjectRep,[]);
 
 #############################################################################
 ##
@@ -286,6 +301,20 @@ IsListDictionary:=NewRepresentation("IsListDictionary",IsDictionaryDefaultRep,
 IsListLookupDictionary:=NewRepresentation("IsListLookupDictionary",
   IsListDictionary and IsLookupDictionary,
   ["entries"] );
+
+#############################################################################
+##
+#O  ListKeyEnumerator( <dict> )
+##
+##  <ManSection>
+##  <Oper Name="ListKeyEnumerator" Arg='dict'/>
+##
+##  <Description>
+##  Enumerates the keys of the list dictionary (Enumerator enumerates values).
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation( "ListKeyEnumerator", [ IsListDictionary ] );
 
 #############################################################################
 ##
@@ -478,10 +507,10 @@ DeclareRepresentation( "IsSparseHashRep",
      "NumberKeys"] );
 
 BindGlobal("DefaultSparseHashRepType",
-  NewType( DictionariesFamily, IsSparseHashRep and IsMutable and IsCopyable ));
+  NewType( DictionariesFamily, IsNonAtomicComponentObjectRep and IsSparseHashRep and IsMutable and IsCopyable ));
 
 BindGlobal("DefaultSparseHashWithIKRepType",
-        NewType( DictionariesFamily, IsSparseHashRep and TableHasIntKeyFun 
+        NewType( DictionariesFamily,IsNonAtomicComponentObjectRep and IsSparseHashRep and TableHasIntKeyFun 
                 and IsMutable and IsCopyable));
 
 #############################################################################

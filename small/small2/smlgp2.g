@@ -73,6 +73,7 @@ CODE_SMALL_GROUP_FUNCS[ 8 ] := function( size, i, inforec )
 
     return SMALL_GROUP_LIB[ size ][ i ];
 end;
+
 CODE_SMALL_GROUP_FUNCS[ 9 ] := CODE_SMALL_GROUP_FUNCS[ 8 ];
 
 #############################################################################
@@ -87,7 +88,7 @@ CODE_SMALL_GROUP_FUNCS[ 10 ] := function( size, i, inforec )
     fi;
 
     if not IsBound( SMALL_GROUP_LIB[ size ] ) then
-        SMALL_GROUP_LIB[ size ] := [ ];
+        SMALL_GROUP_LIB[ size ] := AtomicList([ ]);
     fi;
 
     file := QuoInt( i + 2499, 2500 );
@@ -97,6 +98,7 @@ CODE_SMALL_GROUP_FUNCS[ 10 ] := function( size, i, inforec )
     fi;
 
     return SMALL_GROUP_LIB[ size ][ file ][ pos ];
+        
 end;
 
 #############################################################################
@@ -308,7 +310,9 @@ SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs, vals, inforec, all,
     if not IsBound( PROPERTIES_SMALL_GROUPS[ size ] ) then 
         ReadSmallLib( "prop", inforec.lib, size, [ ] );
     fi;
-
+    
+    atomic PROPERTIES_SMALL_GROUPS[ size ] do
+    
     cand := [ 1, -inforec.number ];
 
     evalfuncs := [ ];
@@ -330,14 +334,14 @@ SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs, vals, inforec, all,
                IsBound( PROPERTIES_SMALL_GROUPS[ size ].isSupersolvable )) or
                ( func in [ IsSolvable, IsSolvableGroup ] and not
                IsBound( PROPERTIES_SMALL_GROUPS[ size ].isSolvable )) then
-                if val = [ false ] then
-                    if all then
-                        return [ ];
-                    fi;
-                    return fail;
-                # else
+                 if val = [ false ] then
+                   if all then
+                     return [ ];
+                   fi;
+                   return fail;
+                  # else
                     # all groups of this size have the property
-                fi;
+                 fi;
             else
                 if func = IsAbelian then
                     prop := PROPERTIES_SMALL_GROUPS[ size ].isAbelian;
@@ -472,6 +476,8 @@ SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs, vals, inforec, all,
     else
         return fail;
     fi;
+    
+    od; # atomic PROPERTIES_SMALL_GROUPS[ size ] do
 end;
 
 SELECT_SMALL_GROUPS_FUNCS[ 9 ] := SELECT_SMALL_GROUPS_FUNCS[ 8 ];
@@ -489,5 +495,7 @@ NUMBER_SMALL_GROUPS_FUNCS[ 8 ] := function( size, inforec )
 
     inforec.number := Length( SMALL_GROUP_LIB[ size ] );
     return inforec;
+    
 end;
+
 NUMBER_SMALL_GROUPS_FUNCS[ 9 ] := NUMBER_SMALL_GROUPS_FUNCS[ 8 ];

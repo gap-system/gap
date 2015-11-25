@@ -1984,26 +1984,28 @@ InstallGlobalFunction( DenominatorCyc, function( cyc )
 # any of the other semirings.
 # To simplify the code using these lists, the final entry of each list is
 # fail, resp. the trivial filter IsObject.
-BindGlobal("CompareCyclotomicCollectionHelper_Semirings", [
+BindGlobal("CompareCyclotomicCollectionHelper_Semirings", MakeReadOnlyObj([
 	PositiveIntegers, NonnegativeIntegers,
 	Integers, GaussianIntegers,
 	Rationals, GaussianRationals,
 	Cyclotomics, fail
-] );
+]) );
 
-BindGlobal("CompareCyclotomicCollectionHelper_Filters", [
+BindGlobal("CompareCyclotomicCollectionHelper_Filters", MakeReadOnly([
 	IsPositiveIntegers, IsNonnegativeIntegers,
 	IsIntegers, IsGaussianIntegers,
 	IsRationals, IsGaussianRationals,
 	IsWholeFamily, IsObject
-] );
+]) );
 
-BindGlobal("CompareCyclotomicCollectionHelper_Proxies", [
+BindGlobal("CompareCyclotomicCollectionHelper_Proxies", MakeImmutable([
 	[ 1 ], [ 0, 1 ],
 	[ -1, 0, 1 ], [ -1, 0, 1, E(4) ],
 	[ -1, 0, 1/2, 1 ], [ -1, 0, 1, 1/2, E(4) ],
 	[ -1, 0, 1, 1/2, E(4), E(9) ], fail
-] );
+] ) );
+#TODO: MakeImmutable() for efficiency once we are sure that it's safe.
+# MakeThreadLocal("CompareCyclotomicCollectionHelper_Proxies");
 
 
 BindGlobal("CompareCyclotomicCollectionHelper", function (A, B)

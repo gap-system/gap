@@ -101,7 +101,7 @@ UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  purpose of 'CurrStat' is to make it possible to  point to the location in
 **  case an error is signalled.
 */
-Stat            CurrStat;
+/* TL: Stat            CurrStat; */
 
 
 /****************************************************************************
@@ -112,7 +112,7 @@ Stat            CurrStat;
 **  executed.  It is set  in  'ExecReturnObj' and  used in the  handlers that
 **  interpret functions.
 */
-Obj             ReturnObjStat;
+/* TL: Obj             ReturnObjStat; */
 
 
 /****************************************************************************
@@ -140,7 +140,9 @@ UInt            ExecUnknownStat (
 **
 */
 
-#define HaveInterrupt()   SyIsIntr()
+UInt HaveInterrupt( void ) {
+  return TLS(CurrExecStatFuncs) == IntrExecStatFuncs;
+}
 
 
 /****************************************************************************
@@ -505,7 +507,7 @@ UInt            ExecFor (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
-        if ( CALL_1ARGS( STD_ITER, list ) == True ) {
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
             /* this can avoid method selection overhead on iterator        */
             dfun = ElmPRec( list, RNamName("IsDoneIterator") );
             nfun = ElmPRec( list, RNamName("NextIterator") );
@@ -630,7 +632,7 @@ UInt            ExecFor2 (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
-        if ( CALL_1ARGS( STD_ITER, list ) == True ) {
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
             /* this can avoid method selection overhead on iterator        */
             dfun = ElmPRec( list, RNamName("IsDoneIterator") );
             nfun = ElmPRec( list, RNamName("NextIterator") );
@@ -768,7 +770,7 @@ UInt            ExecFor3 (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
-        if ( CALL_1ARGS( STD_ITER, list ) == True ) {
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
             /* this can avoid method selection overhead on iterator        */
             dfun = ElmPRec( list, RNamName("IsDoneIterator") );
             nfun = ElmPRec( list, RNamName("NextIterator") );
@@ -1064,8 +1066,61 @@ UInt            ExecForRange3 (
 UInt ExecAtomic(
 		Stat stat)
 {
-    // In non-HPC GAP, we completely ignore all the 'atomic' terms
-    return EXEC_STAT(ADDR_STAT(stat)[0]);
+  Obj tolock[MAX_ATOMIC_OBJS];
+  int locktypes[MAX_ATOMIC_OBJS];
+  int lockstatus[MAX_ATOMIC_OBJS];
+  Region *locked[MAX_ATOMIC_OBJS];
+  int lockSP;
+  UInt mode, nrexprs,i,j,status;
+  Obj o;
+  
+  SET_BRK_CURR_STAT( stat );
+  nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
+  
+  j = 0;
+  for (i = 1; i <= nrexprs; i++) {
+    o = EVAL_EXPR(ADDR_STAT(stat)[2*i]);
+    if (!((Int)o & 0x3)) {
+      tolock[j] =  o;
+      mode = INT_INTEXPR(ADDR_STAT(stat)[2*i-1]);
+      locktypes[j] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
+      j++;
+    }
+  }
+  
+  nrexprs = j;
+
+  GetLockStatus(nrexprs, tolock, lockstatus);
+
+    j = 0;
+    for (i = 0; i < nrexprs; i++)
+      {	
+
+	switch(lockstatus[i]) {
+	case 0:
+	  tolock[j] = tolock[i];
+	  locktypes[j] = locktypes[i];
+	  j++;
+	  break;
+	case 2:
+	  if (locktypes[i] == 1)
+	    ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
+	  break;
+	case 1:
+	  break;
+ 	default:
+	  assert(0);
+	}
+      }
+    lockSP = LockObjects(j, tolock, locktypes);
+    if (lockSP >= 0) {
+      status = EXEC_STAT(ADDR_STAT(stat)[0]);
+      PopRegionLocks(lockSP);
+    } else {
+      status = 0;
+      ErrorMayQuit("Cannot lock required regions", 0L, 0L);      
+    }
+    return status;
 }
 
 
@@ -1622,7 +1677,7 @@ UInt            ExecReturnVoid (
     return 2;
 }
 
-UInt (* RealExecStatFuncs[256]) ( Stat stat );
+UInt (* IntrExecStatFuncs[256]) ( Stat stat );
 
 #ifdef HAVE_SIG_ATOMIC_T
 sig_atomic_t volatile RealExecStatCopied;
@@ -1658,31 +1713,15 @@ static void CheckAndRespondToAlarm(void) {
 */
 
 UInt TakeInterrupt( void ) {
-  if (HaveInterrupt()) {
-    UnInterruptExecStat();
-    CheckAndRespondToAlarm();
-    
-    ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-    return 1;
+  UInt i;
+  if (TLS(CurrExecStatFuncs) == IntrExecStatFuncs) {
+      assert(TLS(CurrExecStatFuncs) != ExecStatFuncs);
+      TLS(CurrExecStatFuncs) = ExecStatFuncs;
+      CheckAndRespondToAlarm();
+      ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+      return 1;
   }
   return 0;
-}
-
-
-/****************************************************************************
-**
-*F  UnInterruptExecStat()  . . . . .revert the Statement execution jump table 
-**                                   to normal 
-*/
-
-void UnInterruptExecStat() {
-  UInt i;
-  assert(RealExecStatCopied);
-  for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-    ExecStatFuncs[i] = RealExecStatFuncs[i];
-  }
-  RealExecStatCopied = 0;
-  return;
 }
 
 
@@ -1701,27 +1740,14 @@ UInt ExecIntrStat (
 {
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    if ( RealExecStatCopied ) {
-      UnInterruptExecStat();
-    }
-    HaveInterrupt();
-
+    TLS(CurrExecStatFuncs) = ExecStatFuncs;
 
     /* One reason we might be here is a timeout. If so longjump out to the 
        CallWithTimeLimit where we started */
     CheckAndRespondToAlarm();
-      
+
     /* and now for something completely different                          */
-    SET_BRK_CURR_STAT( stat );
-    if ( SyStorOverrun != 0 ) {
-      SyStorOverrun = 0; /* reset */
-      ErrorReturnVoid(
-  "reached the pre-set memory limit\n(change it with the -o command line option)",
-        0L, 0L, "you can 'return;'" );
-    }
-    else {
-      ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-    }
+    HandleInterrupts(1, stat);
 
     /* continue at the interrupted statement                               */
     return EXEC_STAT( stat );
@@ -1744,27 +1770,26 @@ UInt ExecIntrStat (
 */
 void InterruptExecStat ( void )
 {
-    UInt                i;              /* loop variable                   */
-    /*    assert(reason > 0) */
-
     /* remember the original entries from the table 'ExecStatFuncs'        */
-    if ( ! RealExecStatCopied ) {
-        for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-            RealExecStatFuncs[i] = ExecStatFuncs[i];
-        }
-        RealExecStatCopied = 1;
-    }
+    TLS(CurrExecStatFuncs) = IntrExecStatFuncs;
 
+}
+
+void InitIntrExecStats ( void )
+{
+    UInt                i;              /* loop variable                   */
     /* change the entries in the table 'ExecStatFuncs' to 'ExecIntrStat'   */
     for ( i = 0;
           i < T_SEQ_STAT;
           i++ ) {
-        ExecStatFuncs[i] = ExecIntrStat;
+        IntrExecStatFuncs[i] = ExecIntrStat;
     }
+    for (i = T_SEQ_STAT; i < T_RETURN_VOID; i++)
+      IntrExecStatFuncs[i] = ExecStatFuncs[i];
     for ( i = T_RETURN_VOID;
           i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]);
           i++ ) {
-        ExecStatFuncs[i] = ExecIntrStat;
+        IntrExecStatFuncs[i] = ExecIntrStat;
     }
 }
 
@@ -1774,16 +1799,15 @@ void InterruptExecStat ( void )
 */
 
 Int BreakLoopPending( void ) {
-     return RealExecStatCopied;
+     return TLS(CurrExecStatFuncs) == IntrExecStatFuncs;
 }
 
 void ClearError ( void )
 {
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    
-    if ( RealExecStatCopied ) {
-      UnInterruptExecStat();
+    if ( TLS(CurrExecStatFuncs) == IntrExecStatFuncs ) {
+        TLS(CurrExecStatFuncs) = ExecStatFuncs;
         /* check for user interrupt */
         if ( HaveInterrupt() ) {
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
@@ -2203,15 +2227,13 @@ static Int InitKernel (
 {
     UInt                i;              /* loop variable                   */
 
-    RealExecStatCopied = 0;
-    
     /* make the global bags known to Gasman                                */
     /* 'InitGlobalBag( &CurrStat );' is not really needed, since we are in */
     /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */
     /* furthermore, statements are no longer bags                          */
     /* InitGlobalBag( &CurrStat );                                         */
 
-    InitGlobalBag( &ReturnObjStat, "src/stats.c:ReturnObjStat" );
+    /* TL: InitGlobalBag( &ReturnObjStat, "src/stats.c:ReturnObjStat" ); */
 
     /* connect to external functions                                       */
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );
@@ -2296,8 +2318,24 @@ static Int InitKernel (
     InstallPrintStatFunc( T_EMPTY          , PrintEmpty);
     InstallPrintStatFunc( T_ATOMIC         , PrintAtomic);
 
+    InitIntrExecStats();
+
     /* return success                                                      */
     return 0;
+}
+
+void InitStatTLS()
+{
+  TLS(CurrExecStatFuncs) = ExecStatFuncs;
+  MEMBAR_FULL();
+  if (GetThreadState(TLS(threadID)) >= TSTATE_INTERRUPT) {
+    MEMBAR_FULL();
+    TLS(CurrExecStatFuncs) = IntrExecStatFuncs;
+  }
+}
+
+void DestroyStatTLS()
+{
 }
 
 

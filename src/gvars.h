@@ -29,6 +29,25 @@
 #ifndef GAP_GVARS_H
 #define GAP_GVARS_H
 
+#define GVAR_BUCKETS 1024
+#define GVAR_BUCKET_SIZE 1024
+
+#define GVAR_BUCKET(gvar) ((UInt)(gvar) / GVAR_BUCKET_SIZE)
+#define GVAR_INDEX(gvar) ((UInt)(gvar) % GVAR_BUCKET_SIZE + 1)
+
+
+
+/****************************************************************************
+**
+*T  GVarDescriptor  . . . . . . . . . . . .  descriptor for a global variable
+*/
+
+typedef struct GVarDescriptor {
+	  Obj *ref;
+	  char *name;
+	  struct GVarDescriptor *next;
+	} GVarDescriptor;
+
 
 /****************************************************************************
 **
@@ -40,14 +59,15 @@
 **  'PtrGVars' is a pointer  to the 'ValGVars'  bag.  This makes it faster to
 **  access global variables.
 */
-extern  Obj             ValGVars;
+extern  Obj             ValGVars[GVAR_BUCKETS];
 
-extern  Obj *           PtrGVars;
+extern  Obj *           PtrGVars[GVAR_BUCKETS];
 
 
 /****************************************************************************
 **
 *F  VAL_GVAR(<gvar>)  . . . . . . . . . . . . . . .  value of global variable
+*F  ValGVar(<gvar>)   . . . . . . . . . . . . . . .  value of global variable
 **
 **  'VAL_GVAR' returns the  value of the global  variable  <gvar>.  If <gvar>
 **  has no  assigned value, 'VAL_GVAR' returns 0.   In this case <gvar> might
@@ -55,14 +75,23 @@ extern  Obj *           PtrGVars;
 **  will return the value of <gvar>  after evaluating <gvar>-s expression, or
 **  0 if <gvar> was not an automatic variable.
 */
-#define VAL_GVAR(gvar)          PtrGVars[ (gvar) ]
+
+
+#define VAL_GVAR(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
+				[GVAR_INDEX(gvar)-1])
+
+static inline Obj ValGVar(UInt gvar) {
+  Obj result = VAL_GVAR(gvar);
+  MEMBAR_READ();
+  return result;
+}
 
 
 /****************************************************************************
 **
 *V  WriteGVars  . . . . . . . . . . . . .  writable flags of global variables
 */
-extern Obj WriteGVars;
+extern Obj WriteGVars[GVAR_BUCKETS];
 
 
 /****************************************************************************
@@ -105,6 +134,16 @@ extern  void            AssGVar (
 **  call, if <gvar> is automatic.
 */
 extern  Obj             ValAutoGVar (
+            UInt                gvar );
+
+/****************************************************************************
+**
+*F  ValGVarTL(<gvar>) . . . . . . . . value of a global/thread-local variable
+**
+**  'ValGVarTL' returns the value of the global or thread-local variable
+**  <gvar>.
+*/
+extern  Obj             ValGVarTL (
             UInt                gvar );
 
 
@@ -174,12 +213,17 @@ extern UInt completion_gvar (
 **
 *F  MakeReadOnlyGVar( <gvar> )  . . . . . .  make a global variable read only
 *F  MakeReadWriteGVar( <gvar> ) . . . . . . make a global variable read-write
+*F  MakeThreadLocalVar( <gvar>, <rnam> ) . . . . make a variable thread-local
 */
 extern void MakeReadOnlyGVar (
     UInt                gvar );
 
 extern void MakeReadWriteGVar (
     UInt                gvar );
+
+extern void MakeThreadLocalVar (
+    UInt                gvar,
+    UInt		rnam );
 
 extern Int IsReadOnlyGVar (
     UInt                gvar );
@@ -254,6 +298,23 @@ extern void RemoveCopyFopyInfo( void );
 *F  RestoreCopyFopyInfo() . . .  restore the info from the copy in the kernel
 */
 extern void RestoreCopyFopyInfo( void );
+
+/****************************************************************************
+**
+*F  DeclareGVar(<gvar>, <name>) . . . . . .  declare global variable by name
+*F  GVarValue(<gvar>) . . . . . . . . . return value of <gvar>, 0 if unbound
+*F  GVarObj(<gvar>) . . . . . . . . return value of <gvar>, error if unbound
+*F  GVarFunction(<gvar>) . . . . return value of <gvar>, error if not a function
+*F  GVarOptFunction(<gvar>) . . return value of <gvar>, 0 if unbound/no function
+*F  SetGVar(<gvar>, <obj>) . . . . . . . . . . . . .  assign <obj> to <gvar>
+*/
+
+extern void DeclareGVar(GVarDescriptor *gvar, char *name);
+extern Obj GVarValue(GVarDescriptor *gvar);
+extern Obj GVarObj(GVarDescriptor *gvar);
+extern Obj GVarFunction(GVarDescriptor *gvar);
+extern Obj GVarOptFunction(GVarDescriptor *gvar);
+extern void SetGVar(GVarDescriptor *gvar, Obj obj);
 
 
 

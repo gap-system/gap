@@ -179,8 +179,8 @@ DeclareCategory("IsGlobalRandomSource", IsRandomSource);
 DeclareCategory("IsGAPRandomSource", IsRandomSource);
 DeclareCategory("IsMersenneTwister", IsRandomSource);
 
-DeclareGlobalVariable( "GlobalRandomSource" );
-DeclareGlobalVariable( "GlobalMersenneTwister" );
+MakeThreadLocal( "GlobalRandomSource" );
+MakeThreadLocal( "GlobalMersenneTwister" );
 
 #############################################################################
 ##  

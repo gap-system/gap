@@ -61,7 +61,7 @@
 **
 **  'PtrBody' is a pointer to the current body.
 */
-Stat * PtrBody;
+/* TL: Stat * PtrBody; */
 
 /****************************************************************************
 **
@@ -80,16 +80,14 @@ Obj FilenameCache;
 **  coding.
 */
 #define MAX_FUNC_EXPR_NESTING 1024
+/* TL: Stat OffsBody; */
 
+/* TL: Stat OffsBodyStack[1024]; */
+/* TL: UInt OffsBodyCount = 0; */
 
-Stat OffsBody;
-
-Stat OffsBodyStack[MAX_FUNC_EXPR_NESTING];
-UInt OffsBodyCount = 0;
-
-UInt LoopNesting = 0;
-UInt LoopStack[MAX_FUNC_EXPR_NESTING];
-UInt LoopStackCount = 0;
+/* TL: UInt LoopNesting = 0; */
+/* TL: UInt LoopStack[MAX_FUNC_EXPR_NESTING]; */
+/* TL: UInt LoopStackCount = 0; */
 
 static inline void PushOffsBody( void ) {
   assert(TLS(OffsBodyCount) <= MAX_FUNC_EXPR_NESTING-1);
@@ -99,6 +97,11 @@ static inline void PushOffsBody( void ) {
 static inline void PopOffsBody( void ) {
   assert(TLS(OffsBodyCount));
   TLS(OffsBody) = TLS(OffsBodyStack)[--TLS(OffsBodyCount)];
+}
+
+static void SetupOffsBodyStackAndLoopStack() {
+  TLS(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
+  TLS(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
 }
 
 static inline void PushLoopNesting( void ) {
@@ -116,12 +119,7 @@ static inline void setup_gapname(TypInputFile* i)
   UInt len;
   if(!i->gapname) {
     C_NEW_STRING_DYN(i->gapname, i->name);
-    len = LEN_PLIST( FilenameCache );
-    GROW_PLIST(      FilenameCache, len+1 );
-    SET_LEN_PLIST(   FilenameCache, len+1 );
-    SET_ELM_PLIST(   FilenameCache, len+1, i->gapname );
-    CHANGED_BAG(     FilenameCache );
-    i->gapnameid = len+1;
+    i->gapnameid = AddAList(FilenameCache, i->gapname);
   }
 }
 
@@ -132,7 +130,7 @@ Obj FILENAME_STAT(Stat stat)
   if (filenameid == 0)
       filename = NEW_STRING(0);
   else
-      filename = ELM_PLIST(FilenameCache, filenameid);
+      filename = ELM_LIST(FilenameCache, filenameid);
   return filename;
 }
     
@@ -234,7 +232,7 @@ Expr            NewExpr (
 **  'CodeResult'  is the result  of the coding, i.e.,   the function that was
 **  coded.
 */
-Obj CodeResult;
+/* TL: Obj CodeResult; */
 
 
 /****************************************************************************
@@ -255,9 +253,9 @@ Obj CodeResult;
 **  'PopStat' returns the  top statement from the  statements  stack and pops
 **  it.  It is an error if the stack is empty.
 */
-Bag StackStat;
+/* TL: Bag StackStat; */
 
-Int CountStat;
+/* TL: Int CountStat; */
 
 void PushStat (
     Stat                stat )
@@ -349,9 +347,9 @@ Stat PopSeqStat (
 **  'PopExpr' returns the top expressions from the expressions stack and pops
 **  it.  It is an error if the stack is empty.
 */
-Bag StackExpr;
+/* TL: Bag StackExpr; */
 
-Int CountExpr;
+/* TL: Int CountExpr; */
 
 void PushExpr (
     Expr                expr )
@@ -531,7 +529,7 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
 **
 **  ...only function expressions inbetween...
 */
-Bag CodeLVars;
+/* TL: Bag CodeLVars; */
 
 void CodeBegin ( void )
 {
@@ -696,6 +694,7 @@ void CodeFuncExprBegin (
     NARG_FUNC( fexp ) = narg;
     NLOC_FUNC( fexp ) = nloc;
     NAMS_FUNC( fexp ) = nams;
+    if (nams) MakeBagPublic(nams);
     CHANGED_BAG( fexp );
 
     /* give it a functions expressions list                                */
@@ -721,10 +720,15 @@ void CodeFuncExprBegin (
     /* give it an environment                                              */
     ENVI_FUNC( fexp ) = TLS(CurrLVars);
     CHANGED_BAG( fexp );
+    MakeHighVars(TLS(CurrLVars));
 
     /* switch to this function                                             */
     SWITCH_TO_NEW_LVARS( fexp, (narg >0 ? narg : -narg), nloc, old );
     (void) old; /* please picky compilers. */
+
+    /* Make the function expression bag immutable and public               */
+    /* TODO: Check if that's actually correct. */
+    RetypeBag(fexs, T_PLIST + IMMUTABLE);
 
     /* allocate the top level statement sequence                           */
     stat1 = NewStat( T_SEQ_STAT, 8*sizeof(Stat) );
@@ -744,7 +748,7 @@ void CodeFuncExprEnd (
 
     /* get the function expression                                         */
     fexp = CURR_FUNC;
-    assert(!LoopNesting);
+    assert(!TLS(LoopNesting));
     
     /* get the body of the function                                        */
     /* push an addition return-void-statement if neccessary                */
@@ -794,6 +798,7 @@ void CodeFuncExprEnd (
     PopLoopNesting();
     
     /* restore the remembered offset                                       */
+    TLS(OffsBody) = BRK_CALL_TO();
     PopOffsBody();
 
     /* if this was inside another function definition, make the expression */
@@ -1050,8 +1055,6 @@ void CodeForEnd ( void )
 **  'CodeAtomicEnd' is an action to code a atomic-statement.  It is called when
 **  the reader encounters  the end  of the  statement, i.e., immediate  after
 **  'CodeAtomicEndBody'.
-**
-**  These functions are just placeholders for the future HPC-GAP code.
 */
 
 void CodeAtomicBegin ( void )
@@ -1867,8 +1870,6 @@ void CodeStringExpr (
 static UInt GVAR_SAVED_FLOAT_INDEX;
 static UInt NextFloatExprNumber = 3;
 
-static UInt NextEagerFloatLiteralNumber = 1;
-
 static Obj EAGER_FLOAT_LITERAL_CACHE = 0;
 static Obj CONVERT_FLOAT_LITERAL_EAGER;
 
@@ -1952,20 +1953,17 @@ static void CodeLazyFloatExpr( Char *str, UInt len) {
 
 static void CodeEagerFloatExpr( Obj str, Char mark ) {
   /* Eager case, do the conversion now */
+  UInt next;
   UInt l = GET_LEN_STRING(str);
   Expr fl = NewExpr( T_FLOAT_EXPR_EAGER, sizeof(UInt)* 3 + l + 1);
   Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
   assert(EAGER_FLOAT_LITERAL_CACHE);
-  assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
-  GROW_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
-  SET_ELM_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber, v);
-  CHANGED_BAG(EAGER_FLOAT_LITERAL_CACHE);
-  SET_LEN_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
-  ADDR_EXPR(fl)[0] = NextEagerFloatLiteralNumber;
+  assert(TNUM_OBJ(EAGER_FLOAT_LITERAL_CACHE) == T_ALIST);
+  next = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
+  ADDR_EXPR(fl)[0] = next;
   ADDR_EXPR(fl)[1] = l;
   ADDR_EXPR(fl)[2] = (UInt)mark;
   memcpy((void*)(ADDR_EXPR(fl)+3), (void *)CHARS_STRING(str), l+1);
-  NextEagerFloatLiteralNumber++;
   PushExpr(fl);
 }
 
@@ -3380,6 +3378,16 @@ void LoadBody ( Obj body )
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
+void InitCoderTLS( void )
+{
+    TLS(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
+    TLS(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
+}
+
+void DestroyCoderTLS( void )
+{
+}
+
 /****************************************************************************
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
@@ -3398,7 +3406,7 @@ static Int InitKernel (
     MakeBagTypePublic(T_BODY);
 
     /* make the result variable known to Gasman                            */
-    InitGlobalBag( &CodeResult, "CodeResult" );
+    /* TL: InitGlobalBag( &CodeResult, "CodeResult" ); */
     
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 
@@ -3409,6 +3417,7 @@ static Int InitKernel (
     /* some functions and globals needed for float conversion */
     InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
+    InstallTLSHandler(SetupOffsBodyStackAndLoopStack, NULL);
 
     /* return success                                                      */
     return 0;
@@ -3427,13 +3436,12 @@ static Int InitLibrary (
     /* allocate the statements and expressions stacks                      */
     TLS(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
     TLS(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
-    FilenameCache = NEW_PLIST(T_PLIST, 0);
+    FilenameCache = NewAtomicList(0);
 
     GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
     
     gv = GVarName("EAGER_FLOAT_LITERAL_CACHE");
-    cache = NEW_PLIST(T_PLIST+IMMUTABLE, 1000L);
-    SET_LEN_PLIST(cache,0);
+    cache = NewAtomicList(1);
     AssGVar(gv, cache);
 
     /* return success                                                      */
@@ -3448,7 +3456,7 @@ static Int PostRestore (
     StructInitInfo *    module )
 {
   GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
-  NextFloatExprNumber = INT_INTOBJ(VAL_GVAR(GVAR_SAVED_FLOAT_INDEX));
+  NextFloatExprNumber = INT_INTOBJ(ValGVar(GVAR_SAVED_FLOAT_INDEX));
   return 0;
 }
 
@@ -3510,6 +3518,3 @@ StructInitInfo * InitInfoCode ( void )
 
 *E  code.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

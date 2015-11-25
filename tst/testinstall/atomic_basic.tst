@@ -58,14 +58,13 @@ function ( x )
     return;
 end
 gap> h3 := atomic function(x) end;;
-gap> # We do not preserve atomic functions in non-HPC gap, just want them to parse
 gap> Print(h3, "\n");
-function ( x )
+atomic function ( x )
     return;
 end
 gap> h4 := atomic function(readwrite x, readonly y, z) end;;
 gap> Print(h4, "\n");
-function ( x, y, z )
+atomic function ( readwrite x, readonly y, z )
     return;
 end
 gap> h5 := function(readwrite x, readonly y, z) end;;

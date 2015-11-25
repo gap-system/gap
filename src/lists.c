@@ -19,6 +19,7 @@
 **  'LEN_PLIST', 'SET_LEN_PLIST',   'ELM_PLIST', and 'SET_ELM_PLIST' exported
 **  by the plain list package to access and modify plain lists.
 */
+
 #include        "system.h"              /* Ints, UInts                     */
 
 
@@ -210,7 +211,10 @@ Obj FuncLENGTH (
     Obj             list )
 {
     /* internal list types                                                 */
-    if ( FIRST_LIST_TNUM<=TNUM_OBJ(list) && TNUM_OBJ(list)<=LAST_LIST_TNUM) {
+    ReadGuard(list);
+    ImpliedWriteGuard(list);
+    if ( (FIRST_LIST_TNUM<=TNUM_OBJ(list) && TNUM_OBJ(list)<=LAST_LIST_TNUM)
+         || TNUM_OBJ(list) == T_ALIST || TNUM_OBJ(list) == T_FIXALIST) {
         return ObjInt_Int( LEN_LIST(list) );
     }
 
@@ -1801,6 +1805,11 @@ void            ElmsListLevel (
 
         }
 
+	/* Since the elements of lists are now mutable lists
+	   (made by ELMS_LIST in the list above), we cannot remember too much
+	   about them */
+	RetypeBag(lists, T_PLIST_DENSE);
+	
     }
 
     /* otherwise recurse                                                   */
@@ -1817,6 +1826,7 @@ void            ElmsListLevel (
             ElmsListLevel( list, poss, level-1 );
 
         }
+	RetypeBag(lists, T_PLIST_DENSE);
 
     }
 
@@ -2049,7 +2059,16 @@ UInt            TYPES_LIST_FAM_RNam;
 Obj             TYPES_LIST_FAM (
     Obj                 fam )
 {
-    return ElmPRec( fam, TYPES_LIST_FAM_RNam );
+    switch (TNUM_OBJ(fam))
+    {
+      case T_COMOBJ:
+        return ElmPRec( fam, TYPES_LIST_FAM_RNam );
+      case T_ACOMOBJ:
+	MEMBAR_READ();
+        return GetARecordField( fam, TYPES_LIST_FAM_RNam );
+      default:
+        return 0;
+    }
 }
 
 
@@ -2626,7 +2645,6 @@ static Int InitKernel (
     }
 
 
-
     /* make and install the 'ASSS_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         AsssListFuncs[ type ] = AsssListError;
@@ -3062,6 +3080,3 @@ StructInitInfo * InitInfoLists ( void )
 
 *E  lists.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

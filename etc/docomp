@@ -1,6 +1,6 @@
 #!/bin/sh
 
-GAC=bin/`sed -n -e s/GAParch=//p sysinfo.gap`/gac
+GAC=bin/`grep GAParch= sysinfo.gap | sed -e s/GAParch=//`/gac
 
 echo Assuming to be in the GAP root directory . . .
 
@@ -19,7 +19,6 @@ compileme() {
   rm $inter
 }
 
-echo $GAC
 echo c_oper1
 compileme oper1 oper1
 echo c_methsel1

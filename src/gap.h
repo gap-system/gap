@@ -237,8 +237,8 @@ typedef UInt ExecStatus;
 
 
 
-extern UInt UserHasQuit;
-extern UInt UserHasQUIT;
+// TL: extern UInt UserHasQuit;
+// TL: extern UInt UserHasQUIT;
 extern UInt SystemErrorCode;
 
 #if 0

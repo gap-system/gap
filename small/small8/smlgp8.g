@@ -46,8 +46,8 @@ SMALL_GROUP_FUNCS[ 14 ] := function( size, i, inforec )
     fi;
 
     if not IsBound( SMALL_GROUP_LIB[ 1536 ] ) then
-        SMALL_GROUP_LIB[ 1536 ] := rec( 
-            npnil := List( [ 1 .. 12 ], x -> [] ) );
+        SMALL_GROUP_LIB[ 1536 ] := AtomicRecord( rec( 
+            npnil := AtomicList( List( [ 1 .. 12 ], x -> [] ) ) ) );
     fi;
 
     if i <= 408526597 then

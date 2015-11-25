@@ -71,7 +71,7 @@ SELECT_SMALL_GROUPS_FUNCS := [ ];
 ##
 ##  This list will contain all data for the group construction read from the
 ##  small group library.
-SMALL_GROUP_LIB := [ ];
+SMALL_GROUP_LIB := AtomicList([ ]);
 
 #############################################################################
 ##
@@ -79,7 +79,7 @@ SMALL_GROUP_LIB := [ ];
 ##
 ##  This list will contain all data for the group selection read from the
 ##  small group library.
-PROPERTIES_SMALL_GROUPS := [ ];
+PROPERTIES_SMALL_GROUPS := AtomicList([ ]);
 
 #############################################################################
 ##
@@ -122,7 +122,7 @@ end );
 ##
 ##  returns the  number of groups of the order <size>.
 InstallGlobalFunction( NumberSmallGroups, function( size )
-    local inforec;
+    local inforec, r;
 
     if not IsPosInt( size ) then 
         Error( "usage: NumberSmallGroups( order )" ); 
@@ -139,7 +139,13 @@ InstallGlobalFunction( NumberSmallGroups, function( size )
     if IsBound( inforec.number ) then 
         return inforec.number;
     fi;
-    return NUMBER_SMALL_GROUPS_FUNCS[ inforec.func ]( size, inforec ).number;
+    
+    r := NUMBER_SMALL_GROUPS_FUNCS[ inforec.func ]( size, inforec );
+    
+    atomic readonly r do
+        return r.number;
+    od;    
+    
 end );
 
 #############################################################################
@@ -305,7 +311,7 @@ end );
 #V  ID_GROUP_TREE
 ##
 ##  Variable containing information for group identification
-ID_GROUP_TREE := rec( fp := [ 1 .. 50000 ], next := [ ] );
+ID_GROUP_TREE := ShareSpecialObj( rec( fp := [ 1 .. 50000 ], next := [ ] ) );
 
 #############################################################################
 ##
@@ -416,10 +422,10 @@ end );
 ##
 ##  will remove the data from the small groups library from memory. 
 InstallGlobalFunction( UnloadSmallGroupsData, function( )
-    SMALL_GROUP_LIB := [ ];
-    PROPERTIES_SMALL_GROUPS := [ ];
+    SMALL_GROUP_LIB := AtomicList([ ]);
+    PROPERTIES_SMALL_GROUPS := AtomicList([ ]);
     GAP3_CATALOGUE_ID_GROUP := fail;
-    ID_GROUP_TREE := rec( fp := [ 1 .. 50000 ], next := [ ] );
+    ID_GROUP_TREE := ShareSpecialObj( rec( fp := [ 1 .. 50000 ], next := [ ] ) );
 end );
 
 #############################################################################
@@ -454,3 +460,24 @@ function( G )
     fi;
     return IdGroup( ff );                                      
 end );
+
+#############################################################################
+##  
+#F  FinalizeSmallGroupData()
+##
+##  This function should be called when all levels of the small group library 
+##  have been loaded. It makes various records immutable for thread-safety.
+##
+InstallGlobalFunction( FinalizeSmallGroupData,
+        function()
+    MakeImmutable(CODE_SMALL_GROUP_FUNCS);
+    MakeImmutable(SMALL_GROUP_FUNCS);
+    MakeImmutable(NUMBER_SMALL_GROUPS_FUNCS);
+    MakeImmutable(SELECT_SMALL_GROUPS_FUNCS);
+    MakeImmutable(SMALL_AVAILABLE_FUNCS);
+    MakeImmutable(ID_AVAILABLE_FUNCS);
+    MakeImmutable(READ_SMALL_FUNCS);
+    MakeImmutable(READ_IDLIB_FUNCS);
+    MakeImmutable(ID_GROUP_FUNCS);
+end);
+

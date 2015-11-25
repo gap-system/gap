@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 ##  This file contains the identification routines for groups of order up to
-##  1000 except 512, 768 andsize a product of more then 3 primes
+##  1000 except 512, 768 and size a product of more then 3 primes
 ##
 
 #############################################################################
@@ -40,7 +40,8 @@ end;
 ID_GROUP_FUNCS[ 8 ] := function( arg )
     local level, branch, indices, fp, l, L, i, j, size,
           coc, desc, adesc, pos, filename, ldesc, Pack, sfp, newcls, lookup,
-          cfp, classes, classtyps, sclasstyps, asList, G, inforec, fpcache;              
+          cfp, classes, classtyps, sclasstyps, asList, G, inforec, fpcache, 
+          lock, branchfunc;              
     # fingerprint used for compression of lists in the ID_GROUP_TREE
     Pack := function( list )
         local r, i;
@@ -77,8 +78,10 @@ ID_GROUP_FUNCS[ 8 ] := function( arg )
     adesc := [ ];
 
     # main loop
-    while not IsInt( branch ) do
+    while not ( IsPublic(branch) and IsInt(branch) ) do
     
+        lock := LOCK(false,ID_GROUP_TREE);
+        
         if IsBound( branch.level ) then
             level := branch.level;
         fi;
@@ -155,7 +158,11 @@ ID_GROUP_FUNCS[ 8 ] := function( arg )
             if IsBound( coc ) then 
                 inforec.coc := coc;
             fi;
-            inforec := ID_GROUP_FUNCS[ branch.func ]( G, inforec );
+            branchfunc := branch.func;
+            UNLOCK(lock);
+            # to avoid attempting to change from read to write lock
+            inforec := ID_GROUP_FUNCS[ branchfunc ]( G, inforec );
+            lock := LOCK(false,ID_GROUP_TREE);
             if IsBound( inforec.id ) then 
                 return inforec.id;
             fi;
@@ -199,13 +206,24 @@ ID_GROUP_FUNCS[ 8 ] := function( arg )
                    "hubesche@tu-bs.de\n" );
         fi;
         Add( indices, pos );
-
+        
+        UNLOCK(lock);
+        
         # load required branch of 'IdGroupTree' if it is not in memory
+       
+        lock := LOCK(true,ID_GROUP_TREE);
+        
         if not IsBound( branch.next[ pos ] ) then
-            ReadSmallLib( "id", inforec.lib, size, 
-                          indices{[ 2 .. Length( indices ) ]} );
+            WITH_TARGET_REGION( ID_GROUP_TREE, function()
+                ReadSmallLib( "id", inforec.lib, size, 
+                              indices{[ 2 .. Length( indices ) ]} );
+                end);              
         fi;
+        
+        UNLOCK(lock);
 
+        lock := LOCK(false,ID_GROUP_TREE);
+        
         if lookup and fpcache = [ ] then
             if IsBound( branch.desc ) then
                 branch.next[ pos ].desc := branch.desc;
@@ -219,6 +237,9 @@ ID_GROUP_FUNCS[ 8 ] := function( arg )
         branch := branch.next[ pos ];
 
         level := level + 1;
+        
+        UNLOCK(lock);
+        
     od;
 
     # branch is now a integer
@@ -234,7 +255,9 @@ end;
 ID_GROUP_FUNCS[ 9 ] := function( G, inforec )
     local g, gs, spcgs, coc, desc, flcoc, rand, rands, gens, i, j, ldesc,
           size;
-
+          
+    atomic readonly ID_GROUP_TREE do
+    
     size := Size( G );
     gs := List( inforec.branch.fp, x -> SmallGroup( Size( G ), x ) );
     spcgs := Concatenation( [ SpecialPcgs( G ) ], List( gs, SpecialPcgs ) );
@@ -277,6 +300,8 @@ ID_GROUP_FUNCS[ 9 ] := function( G, inforec )
             fi;
         od;
     od;
+    
+    od; # atomic readonly ID_GROUP_TREE
 end;
 
 #############################################################################
@@ -286,14 +311,29 @@ end;
 ##  identification of the isomorphism type of a p-sylow-subgrop
 ##
 ID_GROUP_FUNCS[ 10 ] := function( G, inforec )
-    if IsBound( inforec.branch.p ) then
-        inforec.fp := IdGroup( HallSubgroup( G, inforec.branch.p ) )[ 2 ];
+    local p, id;
+    # parts of the inforec record may belong to ID_GROUP_TREE region
+    # so we need to fetch p, release lock, compute ID and then return 
+    atomic readonly ID_GROUP_TREE do
+        if IsBound( inforec.branch.p ) then
+            p := inforec.branch.p;
+        else
+            p := fail;
+        fi;
+    od;
+    
+    if p <> fail then
+        id := IdGroup( HallSubgroup( G, p ) )[ 2 ];
     elif Size( G ) in [ 486, 972 ] then
-        inforec.fp := IdGroup( SylowSubgroup( G, 3 ) )[ 2 ];
+        id := IdGroup( SylowSubgroup( G, 3 ) )[ 2 ];
     else
-        inforec.fp := IdGroup( SylowSubgroup( G, 2 ) )[ 2 ];
+        id := IdGroup( SylowSubgroup( G, 2 ) )[ 2 ];
     fi;
-    return inforec;
+
+    atomic readwrite ID_GROUP_TREE do    
+        inforec.fp := MigrateObj( id, ID_GROUP_TREE );
+        return inforec;
+    od;
 end;
 
 #############################################################################
@@ -305,6 +345,9 @@ end;
 ID_GROUP_FUNCS[ 11 ] := function( G, inforec )
     local spcgs, flcoc, rand, gens;
 
+    # parts of the inforec record may belong to ID_GROUP_TREE region
+    atomic readonly ID_GROUP_TREE do
+    
     spcgs := SpecialPcgs( G );
     flcoc := List( inforec.coc, Concatenation );
     repeat 
@@ -318,6 +361,8 @@ ID_GROUP_FUNCS[ 11 ] := function( G, inforec )
     until rand in inforec.branch.fp;
     inforec.fp := rand;
     return inforec;
+    
+    od;
 end;
 
 #############################################################################

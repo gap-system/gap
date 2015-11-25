@@ -56,7 +56,7 @@
 **
 #define READ_ERROR()    (TLS(NrError) || (TLS(NrError)+=sySetjmp(TLS(ReadJmpError))))
 */
-syJmp_buf         ReadJmpError;
+/* TL: syJmp_buf         ReadJmpError; */
 
 
 /****************************************************************************
@@ -73,9 +73,9 @@ syJmp_buf         ReadJmpError;
 **  'CountNams' is the number of local variables names lists currently on the
 **  stack.
 */
-Obj             StackNams;
+/* TL: Obj             StackNams; */
 
-UInt            CountNams;
+/* TL: UInt            CountNams; */
 
 
 /****************************************************************************
@@ -91,9 +91,9 @@ UInt            CountNams;
 **  'ReadTilde' is 1 if the reader has read a  reference to the global variable
 **  '~' within the current outmost list or record expression.
 */
-UInt            ReadTop;
+/* TL: UInt            ReadTop; */
 
-UInt            ReadTilde;
+/* TL: UInt            ReadTilde; */
 
 
 /****************************************************************************
@@ -104,7 +104,7 @@ UInt            ReadTilde;
 **  to prevent undefined global variable  warnings, when reading a  recursive
 **  function.
 */
-UInt            CurrLHSGVar;
+/* TL: UInt            CurrLHSGVar; */
 
 
 /****************************************************************************
@@ -131,8 +131,8 @@ void ReadAtom (
     TypSymbolSet        follow,
     Char                mode );
 
-static UInt CurrentGlobalForLoopVariables[100];
-static UInt CurrentGlobalForLoopDepth;
+/* TL: static UInt CurrentGlobalForLoopVariables[100]; */
+/* TL: static UInt CurrentGlobalForLoopDepth; */
 
 void PushGlobalForLoopVariable( UInt var)
 {
@@ -189,9 +189,9 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 **        |  <Var> '.' <Ident>
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
 */
-extern Obj ExprGVars;
-extern Obj ErrorLVars;
-extern Obj BottomLVars;
+extern Obj ExprGVars[GVAR_BUCKETS];
+/* TL: extern Obj ErrorLVars; */
+/* TL: extern Obj BottomLVars; */
 
 /* This function reads the options part at the end of a function call
    The syntax is
@@ -379,14 +379,16 @@ void ReadCallVarAss (
       && var != TLS(CurrLHSGVar)
       && var != Tilde
       && VAL_GVAR(var) == 0
-      && ELM_PLIST(ExprGVars,var) == 0
+      && ELM_PLIST(ExprGVars[GVAR_BUCKET(var)], GVAR_INDEX(var)) == 0
       && ! TLS(IntrIgnoring)
       && ! GlobalComesFromEnclosingForLoop(var)
       && (GAPInfo == 0 || !IS_REC(GAPInfo) || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) ||
              ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
       && ! SyCompilePlease )
     {
-        SyntaxWarning("unbound global variable");
+        SyntaxError("warning: unbound global variable");
+        TLS(NrError)--;
+        TLS(NrErrLine)--;
     }
 
     /* check whether this is a reference to the global variable '~'        */
@@ -1171,6 +1173,7 @@ void ReadFuncExpr (
                 GetSymbol();
 	    }
         C_NEW_STRING_DYN( name, TLS(Value) );
+	    MakeImmutableString(name);
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
 	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -1209,6 +1212,7 @@ void ReadFuncExpr (
 		}
 	    }
         C_NEW_STRING_DYN( name, TLS(Value) );
+	    MakeImmutableString(name);
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
 	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -1223,6 +1227,7 @@ void ReadFuncExpr (
             }
         }
         C_NEW_STRING_DYN( name, TLS(Value) );
+	      MakeImmutableString(name);
         nloc += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1241,6 +1246,7 @@ void ReadFuncExpr (
                 }
             }
             C_NEW_STRING_DYN( name, TLS(Value) );
+	          MakeImmutableString(name);
             nloc += 1;
             ASS_LIST( nams, narg+nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1266,6 +1272,7 @@ void ReadFuncExpr (
 
     /* now finally begin the function                                      */
     if ( ! READ_ERROR() ) { IntrFuncExprBegin( narg, nloc, nams, startLine ); }
+    if ( nrError == 0) LCKS_FUNC(CURR_FUNC) = locks;
 
     /* <Statments>                                                         */
     nr = ReadStats( S_END|follow );
@@ -1319,6 +1326,7 @@ void ReadFuncExpr1 (
     TLS(CountNams)++;
     ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
     C_NEW_STRING_DYN( name, TLS(Value) );
+    MakeImmutableString( name );
     ASS_LIST( nams, 1, name );
 
     /* match away the '->'                                                 */
@@ -1796,9 +1804,6 @@ void ReadAnd (
 **  up to one contained in <follow>.
 **
 **  <QualifiedExpr> := ['readonly' | 'readwrite' ] <Expr>
-** 
-** This is a placeholder for the HPC-GAP function. 
-** HPC-GAP specific code has been commented out. 
 */
 void ReadQualifiedExpr (
     TypSymbolSet        follow,
@@ -1830,6 +1835,17 @@ void ReadQualifiedExpr (
 **  up to one contained in <follow>.
 **
 **  <Expr> := <And> { 'or' <And> }
+**
+**  The <mode> is either 'r' indicating that the expression should be 
+**  evaluated as usual, 'x' indicating that it may be the left-hand-side of an
+**  assignment or 'a' indicating that it is a function expression following
+**  an "atomic" keyword and that the function should be made atomic.
+**
+**  This last case exists because when reading "atomic function" in statement 
+**  context the atomic has been matched away before we can see that it is an
+**  atomic function literal, not an atomic statement.
+**
+**
 */
 void ReadExpr (
     TypSymbolSet        follow,
@@ -2127,8 +2143,6 @@ void ReadWhile (
 **
 **  <Statement> := 'atomic' <QualifiedExpression> { ',' <QualifiedExpression } 'do' <Statements> 'od' ';'
 **
-**
-** This is a placeholder for the HPC-GAP function. 
 */
 void ReadAtomic (
     TypSymbolSet        follow )
@@ -2137,11 +2151,12 @@ void ReadAtomic (
     volatile UInt       nexprs;         /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
     volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>        */
+    volatile int        lockSP;         /* lock stack */
 
     /* remember the current variables in case of an error                  */
     currLVars = TLS(CurrLVars);
     nrError   = TLS(NrError);
-    /* lockSP    = RegionLockSP(); */
+    lockSP    = RegionLockSP();
 
     Match( S_ATOMIC, "atomic", follow );
     /* Might just be an atomic function literal as an expression */
@@ -2150,13 +2165,18 @@ void ReadAtomic (
       return; }
 
     /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'    */
-    
+    if ( ! READ_ERROR() ) { IntrAtomicBegin(); }
+
     ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
     nexprs = 1;
     while (TLS(Symbol) == S_COMMA) {
       Match( S_COMMA, "comma", follow | S_DO | S_OD );
       ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
       nexprs ++;
+      if (nexprs > MAX_ATOMIC_OBJS) {
+        SyntaxError("atomic statement can have at most 256 objects to lock");
+        return;
+      }
     }
 
     Match( S_DO, "do or comma", STATBEGIN|S_DO|follow );
@@ -2183,6 +2203,9 @@ void ReadAtomic (
         TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
         TLS(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
+    /* This is a no-op if IntrAtomicEnd() succeeded, otherwise it restores
+     * locks to where they were before. */
+    PopRegionLocks(lockSP);
 }
 
 
@@ -2440,7 +2463,7 @@ UInt ReadStats (
 
 *V  ReadEvalResult  . . . . . . . . result of reading one command immediately
 */
-Obj ReadEvalResult;
+/* TL: Obj ReadEvalResult; */
 
 
 /****************************************************************************
@@ -2497,6 +2520,7 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     Obj                 errorLVars;
     Obj                 errorLVars0;
     syJmp_buf           readJmpError;
+    int			lockSP;
 
     /* get the first symbol from the input                                 */
     Match( TLS(Symbol), "", 0UL );
@@ -2529,6 +2553,7 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     errorLVars0 = TLS(ErrorLVars0);
     TLS(ErrorLVars) = context;
     TLS(ErrorLVars0) = TLS(ErrorLVars);
+    lockSP = RegionLockSP();
 
     IntrBegin( context );
 
@@ -2573,10 +2598,14 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     /* end the interpreter                                                 */
     if ( ! READ_ERROR() ) {
         type = IntrEnd( 0UL );
+        PopRegionAutoLocks(lockSP);
     }
     else {
         IntrEnd( 1UL );
         type = STATUS_ERROR;
+        PopRegionLocks(lockSP);
+	if (TLS(CurrentHashLock))
+	  HashUnlock(TLS(CurrentHashLock));
     }
 
     /* switch back to the old reader context                               */
@@ -2620,6 +2649,7 @@ UInt ReadEvalFile ( void )
     volatile Obj        nams;
     volatile Int        nloc;
     volatile Int        i;
+    volatile int	lockSP;
 
     /* get the first symbol from the input                                 */
     Match( TLS(Symbol), "", 0UL );
@@ -2639,6 +2669,7 @@ UInt ReadEvalFile ( void )
     readTop     = TLS(ReadTop);
     readTilde   = TLS(ReadTilde);
     currLHSGVar = TLS(CurrLHSGVar);
+    lockSP      = RegionLockSP();
     memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
 
     /* intialize everything and begin an interpreter                       */
@@ -2711,6 +2742,9 @@ UInt ReadEvalFile ( void )
 
     /* switch back to the old reader context                               */
     memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+    PopRegionLocks(lockSP);
+    if (TLS(CurrentHashLock))
+      HashUnlock(TLS(CurrentHashLock));
     TLS(StackNams)   = stackNams;
     TLS(CountNams)   = countNams;
     TLS(ReadTop)     = readTop;
@@ -2735,7 +2769,6 @@ void            ReadEvalError ( void )
     TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
     syLongjmp( TLS(ReadJmpError), 1 );
 }
-
 
 /****************************************************************************
 **
@@ -2814,10 +2847,10 @@ Obj Call0ArgsInNewReader(Obj f)
 /*  ExecStatus          type; */
   struct SavedReaderState s;
   Obj result;
-
+  
   /* remember the old reader context                                     */
   SaveReaderState(&s);
-
+  
   /* intialize everything and begin an interpreter                       */
   ClearReaderState();
   IntrBegin( TLS(BottomLVars) );
@@ -2892,8 +2925,8 @@ static Int InitKernel (
 {
     TLS(ErrorLVars) = (UInt **)0;
     TLS(CurrentGlobalForLoopDepth) = 0;
-    InitGlobalBag( &ReadEvalResult, "src/read.c:ReadEvalResult" );
-    InitGlobalBag( &StackNams,      "src/read.c:StackNams"      );
+    /* TL: InitGlobalBag( &ReadEvalResult, "src/read.c:ReadEvalResult" ); */
+    /* TL: InitGlobalBag( &StackNams,      "src/read.c:StackNams"      ); */
     InitCopyGVar( "GAPInfo", &GAPInfo);
     /* return success                                                      */
     return 0;
@@ -2930,6 +2963,3 @@ StructInitInfo * InitInfoRead ( void )
 
 *E  read.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

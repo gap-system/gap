@@ -118,14 +118,27 @@ end );
 
 #############################################################################
 ##
+#V METHODS_OPERATION_REGION . . . . pseudo lock for updating method lists.
+##
+## We really just need one arbitrary lock here. Any globally shared
+## region will do. This is to prevent concurrent SET_METHODS_OPERATION()
+## calls to overwrite each other. Given that these normally only occur
+## when loading a package, actual concurrent calls should be vanishingly
+## rare.
+
+BIND_GLOBAL("METHODS_OPERATION_REGION", NewSpecialRegion("operation methods"));
+
+#############################################################################
+##
 #F  INSTALL_METHOD_FLAGS( <opr>, <info>, <rel>, <flags>, <rank>, <method> ) .
 ##
 BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     function( opr, info, rel, flags, rank, method )
-    local   methods,  narg,  i,  k,  tmp, replace, match, j;
+    local   methods,  narg,  i,  k,  tmp, replace, match, j, lk;
 
+    lk := WRITE_LOCK(METHODS_OPERATION_REGION);
     # add the number of filters required for each argument
-    if opr in CONSTRUCTORS  then
+    if IS_CONSTRUCTOR(opr) then
         if 0 < LEN_LIST(flags)  then
             rank := rank - RankFilter( flags[ 1 ] );
         fi;
@@ -138,6 +151,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     # get the methods list
     narg := LEN_LIST( flags );
     methods := METHODS_OPERATION( opr, narg );
+    methods := methods{[1..LEN_LIST(methods)]};
 
     # set the name
     if info = false  then
@@ -231,7 +245,8 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
 
     # flush the cache
-    CHANGED_METHODS_OPERATION( opr, narg );
+    SET_METHODS_OPERATION( opr, narg, MakeReadOnlyObj(methods) );
+    UNLOCK(lk);
 end );
 
 
@@ -332,7 +347,9 @@ BIND_GLOBAL( "INSTALL_METHOD",
           i,
           rank,
           method,
-          req, reqs, match, j, k, imp, notmatch;
+          req, reqs, match, j, k, imp, notmatch, lk;
+
+    lk := READ_LOCK( OPERATIONS_REGION );
 
     # Check the arguments.
     len:= LEN_LIST( arglist );
@@ -523,6 +540,8 @@ BIND_GLOBAL( "INSTALL_METHOD",
 
     # Install the method in the operation.
     INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method );
+
+    UNLOCK( lk );
 end );
 
 
@@ -544,7 +563,7 @@ LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + 6;  # one method
 InstallAttributeFunction(
     function ( name, filter, getter, setter, tester, mutflag )
 
-    local flags, rank, cats, props, i;
+    local flags, rank, cats, props, i, lk;
 
     if not IS_IDENTICAL_OBJ( filter, IS_OBJECT ) then
 
@@ -552,16 +571,23 @@ InstallAttributeFunction(
         rank  := 0;
         cats  := IS_OBJECT;
         props := [];
-        for i in [ 1 .. LEN_FLAGS( flags ) ] do
-            if ELM_FLAGS( flags, i ) then
-                if i in CATS_AND_REPS  then
-                    cats := cats and FILTERS[i];
-                    rank := rank - RankFilter( FILTERS[i] );
-                elif i in NUMBERS_PROPERTY_GETTERS  then
-                    ADD_LIST( props, FILTERS[i] );
-                fi;
-            fi;
-        od;
+	lk := DO_LOCK(FILTER_REGION, false, CATS_AND_REPS);
+	for i in [ 1 .. LEN_FLAGS( flags ) ] do
+	    if ELM_FLAGS( flags, i ) then
+		if i in CATS_AND_REPS  then
+		    cats := cats and FILTERS[i];
+		    rank := rank - RankFilter( FILTERS[i] );
+		elif i in NUMBERS_PROPERTY_GETTERS  then
+		    ADD_LIST( props, FILTERS[i] );
+		fi;
+	    fi;
+	od;
+        UNLOCK(lk);
+
+	# Because the getter function may be called from other
+	# threads, <props> needs to be immutable or atomic.
+
+	MakeImmutable(props);
 
         if 0 < LEN_LIST( props ) then
 
@@ -726,7 +752,7 @@ IsPrimeInt := "2b defined";
 
 BIND_GLOBAL( "KeyDependentOperation",
     function( name, domreq, keyreq, keytest )
-    local str, oper, attr;
+    local str, oper, attr, lk;
 
     if keytest = "prime"  then
       keytest := function( key )
@@ -754,7 +780,10 @@ BIND_GLOBAL( "KeyDependentOperation",
 
     # Create the wrapper operation that mainly calls the operation.
     DeclareOperation( name, [ domreq, keyreq ] );
+
+    lk := WRITE_LOCK( OPERATIONS_REGION );
     ADD_LIST( WRAPPER_OPERATIONS, VALUE_GLOBAL( name ) );
+    UNLOCK( lk );
 
     # Install the default method that uses the attribute.
     # (Use `InstallOtherMethod' in order to avoid the warning

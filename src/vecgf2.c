@@ -111,75 +111,6 @@ Obj GF2One;
 Obj GF2Zero;
 
 
-/****************************************************************************
-**
-*F * * * * * * * * * * * * arithmetic operations  * * * * * * * * * * * * * *
-*/
-
-static inline void AddGF2VecToGF2Vec(
-  UInt *	ptS,
-  UInt *	ptV,
-  UInt		len)
-{
-  register UInt ct;
-  ct = (len+BIPEB-1)/BIPEB;
-  while ( ct-- ) {
-    *ptS++ ^= *ptV++;
-  }
-}
-
-/****************************************************************************
-**
-*F  AddCoeffsGF2VecGF2Vec( <sum>, <vec> ) . . . . . . . .  add <vec> to <sum>
-**
-**  `AddCoeffsGF2VecGF2Vec' adds  the   entries of <vec>  to <sum>.    If the
-**  length  are not equal the  missing entries are  assumed  to be zero.  The
-**  position of the rightmost Z(2) is returned.
-*/
-
-UInt RightMostOneGF2Vec (
-    Obj                 vec )
-{
-    UInt                len;
-
-    len = LEN_GF2VEC(vec);
-    while ( 0 < len ) {
-        if ( BLOCK_ELM_GF2VEC(vec,len) == 0 )
-	    len = BIPEB*((len-1)/BIPEB);
-        else if ( BLOCK_ELM_GF2VEC(vec,len) & MASK_POS_GF2VEC(len) )
-            break;
-	else
-	  len--;
-    }
-    return len;
-}
-
-
-Obj AddCoeffsGF2VecGF2Vec (
-    Obj                 sum,
-    Obj                 vec )
-{
-    UInt *              ptS;
-    UInt *              ptV;
-    UInt                len;
-
-    /* get the length                                                      */
-    len = LEN_GF2VEC(vec);
-    
-    /* grow <sum> is necessary                                             */
-    if ( LEN_GF2VEC(sum) < len ) {
-        ResizeBag( sum, SIZE_PLEN_GF2VEC(len) );
-        SET_LEN_GF2VEC( sum, len );
-    }
-
-    /* add <vec> to <sum>                                                  */
-    ptS = BLOCKS_GF2VEC(sum);
-    ptV = BLOCKS_GF2VEC(vec);
-    AddGF2VecToGF2Vec(ptS, ptV, len);
-    return INTOBJ_INT(RightMostOneGF2Vec(sum));
-}
-
-
 
 
 static inline UInt highbits( UInt word, UInt howmany) 
@@ -410,6 +341,77 @@ void CopySection_GF2Vecs(Obj src, Obj dest, UInt smin, UInt dmin, UInt nelts)
     return;
   }
 }
+
+
+/****************************************************************************
+**
+*F * * * * * * * * * * * * arithmetic operations  * * * * * * * * * * * * * *
+*/
+
+static inline void AddGF2VecToGF2Vec(
+  UInt *	ptS,
+  UInt *	ptV,
+  UInt		len)
+{
+  register UInt ct;
+  ct = (len+BIPEB-1)/BIPEB;
+  while ( ct-- ) {
+    *ptS++ ^= *ptV++;
+  }
+}
+
+/****************************************************************************
+**
+*F  AddCoeffsGF2VecGF2Vec( <sum>, <vec> ) . . . . . . . .  add <vec> to <sum>
+**
+**  `AddCoeffsGF2VecGF2Vec' adds  the   entries of <vec>  to <sum>.    If the
+**  length  are not equal the  missing entries are  assumed  to be zero.  The
+**  position of the rightmost Z(2) is returned.
+*/
+
+UInt RightMostOneGF2Vec (
+    Obj                 vec )
+{
+    UInt                len;
+
+    len = LEN_GF2VEC(vec);
+    while ( 0 < len ) {
+        if ( BLOCK_ELM_GF2VEC(vec,len) == 0 )
+	    len = BIPEB*((len-1)/BIPEB);
+        else if ( BLOCK_ELM_GF2VEC(vec,len) & MASK_POS_GF2VEC(len) )
+            break;
+	else
+	  len--;
+    }
+    return len;
+}
+
+
+Obj AddCoeffsGF2VecGF2Vec (
+    Obj                 sum,
+    Obj                 vec )
+{
+    UInt *              ptS;
+    UInt *              ptV;
+    UInt                len;
+
+    /* get the length                                                      */
+    len = LEN_GF2VEC(vec);
+    
+    /* grow <sum> is necessary                                             */
+    if ( LEN_GF2VEC(sum) < len ) {
+        ResizeBag( sum, SIZE_PLEN_GF2VEC(len) );
+        SET_LEN_GF2VEC( sum, len );
+    }
+
+    /* add <vec> to <sum>                                                  */
+    ptS = BLOCKS_GF2VEC(sum);
+    ptV = BLOCKS_GF2VEC(vec);
+    AddGF2VecToGF2Vec(ptS, ptV, len);
+    return INTOBJ_INT(RightMostOneGF2Vec(sum));
+}
+
+
 
 /****************************************************************************
 **
@@ -1675,6 +1677,96 @@ Obj FuncCONV_GF2VEC (
     return 0;
 }
 
+
+/****************************************************************************
+**
+*F  NewGF2Vec( <list> )  . . . . . . convert a list into a GF2 vector object
+** 
+**  This is a non-destructive counterpart of ConvGF2Vec
+*/
+Obj NewGF2Vec (
+    Obj                 list )
+{
+    Int                 len;            /* logical length of the vector    */
+    Int                 i;              /* loop variable                   */
+    UInt                block;          /* one block of the boolean list   */
+    UInt                bit;            /* one bit of a block              */
+    Obj                 x;
+    Obj                 res;            /* resulting GF2 vector object     */
+    
+    /* already in the correct representation                               */
+    if ( IS_GF2VEC_REP(list) ) {
+        res = ShallowCopyVecGF2(list);
+        if (!IS_MUTABLE_OBJ(list))
+          SetTypeDatObj(res, TYPE_LIST_GF2VEC_IMM);
+        return res;
+    }
+    
+    len = LEN_PLIST(list);
+    NEW_GF2VEC( res, TYPE_LIST_GF2VEC, len );
+    SET_LEN_GF2VEC( res, len );
+    
+    /* Otherwise make it a plain list so that we will know where it keeps
+       its data -- could do much better in the case of GF(2^n) vectors that actually
+       lie over GF(2)
+       AK: for now, comment this out - these will destroy the argument. 
+       We will just test it on plain lists first 
+    if (IS_VEC8BIT_REP(list))
+      PlainVec8Bit(list);
+    else
+      PLAIN_LIST( list );
+    */
+    
+    /* now do the work */
+    block = 0;
+    bit   = 1;
+    for ( i = 1;  i <= len;  i++ ) {
+      x = ELM_PLIST(list, i);
+      if (x == GF2One)
+	    block |= bit;
+      else if (x != GF2Zero)
+	    {
+	      /* might be GF(2) elt written over bigger field */
+	      if (EQ(x, GF2One))
+	        block |= bit;
+	      else
+	        assert(EQ(x, GF2Zero));
+	    }
+      
+      bit = bit << 1;
+      if ( bit == 0 || i == len ) {
+	    BLOCK_ELM_GF2VEC(res,i) = block; /* only changed list to res */
+	    block = 0;
+	    bit   = 1;
+      }
+    }
+
+    /* mutability should be inherited from the argument */
+    if ( HAS_FILT_LIST( list, FN_IS_MUTABLE ) )
+        SetTypeDatObj( res , TYPE_LIST_GF2VEC);
+    else
+        SetTypeDatObj( res , TYPE_LIST_GF2VEC_IMM);
+    
+    return res;
+}
+
+
+/****************************************************************************
+**
+*F  FuncCOPY_GF2VEC( <self>, <list> ) . . . . . convert into a GF2 vector rep
+**
+**  This is a non-destructive counterpart of FuncCONV_GF2VEC
+*/
+Obj FuncCOPY_GF2VEC (
+    Obj                 self,
+    Obj                 list )
+{
+    /* check whether <list> is a GF2 vector                               */
+    list = NewGF2Vec(list);
+
+    return list;
+}
+
 /****************************************************************************
 **
 *F FuncCONV_GF2MAT (<self>, <list> ) . . . convert into a GF2 matrix rep
@@ -1706,7 +1798,7 @@ Obj FuncCONV_GF2MAT( Obj self, Obj list)
 	    }
 	  ErrorMayQuit("CONV_GF2MAT: argument must be a list of compressed GF2 vectors", 0L, 0L);
 	}
-      TYPE_DATOBJ(tmp) = IS_MUTABLE_OBJ(tmp) ? TYPE_LIST_GF2VEC_LOCKED: TYPE_LIST_GF2VEC_IMM_LOCKED;
+      SetTypeDatObj(tmp, IS_MUTABLE_OBJ(tmp) ? TYPE_LIST_GF2VEC_LOCKED: TYPE_LIST_GF2VEC_IMM_LOCKED);
       SET_ELM_PLIST(list, i+1, tmp);
     }
   SET_ELM_PLIST(list,1,INTOBJ_INT(len));
@@ -2185,7 +2277,7 @@ Obj FuncASS_GF2MAT (
     }
     else if ( p == 1 && 1 >= LEN_GF2MAT(list) ) {
         ResizeBag( list, SIZE_PLEN_GF2MAT(p) );
-	TYPE_DATOBJ(elm) = IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED;
+	SetTypeDatObj(elm, IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
         SET_ELM_GF2MAT( list, p, elm );
 	CHANGED_BAG(list);
     }
@@ -2198,7 +2290,7 @@ Obj FuncASS_GF2MAT (
             ResizeBag( list, SIZE_PLEN_GF2MAT(p) );
             SET_LEN_GF2MAT( list, p );
         }
-	TYPE_DATOBJ(elm) = IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED;
+	SetTypeDatObj(elm, IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
         SET_ELM_GF2MAT( list, p, elm );
         CHANGED_BAG(list);
     }
@@ -2858,17 +2950,22 @@ Obj FuncPOSITION_NONZERO_GF2VEC3(
 
 
 Obj FuncCOPY_SECTION_GF2VECS(Obj self, Obj src, Obj dest, Obj from, Obj to, Obj howmany) {
+  Int   ifrom;
+  Int   ito;
+  Int   ihowmany;
+  UInt  lens;
+  UInt  lend;
   if (!IS_GF2VEC_REP(src) ||
       !IS_GF2VEC_REP(dest) ||
       !IS_INTOBJ(from) || 
       !IS_INTOBJ(to) || 
       !IS_INTOBJ(howmany)) 
     ErrorMayQuit("Bad argument types", 0,0);
-  Int ifrom = INT_INTOBJ(from);
-  Int ito = INT_INTOBJ(to);
-  Int ihowmany = INT_INTOBJ(howmany);
-  UInt lens = LEN_GF2VEC(src);
-  UInt lend = LEN_GF2VEC(dest);
+  ifrom = INT_INTOBJ(from);
+  ito = INT_INTOBJ(to);
+  ihowmany = INT_INTOBJ(howmany);
+  lens = LEN_GF2VEC(src);
+  lend = LEN_GF2VEC(dest);
   if (ifrom <= 0 || ito <= 0 ||
       ihowmany < 0 || ifrom + ihowmany -1 > lens || ito + ihowmany -1 > lend)
     ErrorMayQuit("Bad argument values",0,0);
@@ -2877,6 +2974,7 @@ Obj FuncCOPY_SECTION_GF2VECS(Obj self, Obj src, Obj dest, Obj from, Obj to, Obj 
   CopySection_GF2Vecs(src, dest, (UInt)ifrom, (UInt)ito, (UInt)ihowmany);
   return (Obj) 0;
 }
+
 
 
 /****************************************************************************
@@ -2991,7 +3089,7 @@ Obj FuncSUM_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
 	  AddGF2VecToGF2Vec(BLOCKS_GF2VEC(sv), BLOCKS_GF2VEC(vl), wm);
 	}
       
-      TYPE_DATOBJ(sv) = rtype;
+      SetTypeDatObj(sv, rtype);
       SET_ELM_GF2MAT( sum, i, sv);
       CHANGED_BAG(sum);
     }
@@ -3005,7 +3103,7 @@ Obj FuncSUM_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
       if (rtype == TYPE_LIST_GF2VEC_LOCKED)
 	sv = ShallowCopyVecGF2( sv );
       
-      TYPE_DATOBJ(sv) = rtype;
+      SetTypeDatObj(sv, rtype);
       SET_ELM_GF2MAT( sum, i, sv);
       CHANGED_BAG(sum);      
     }
@@ -4549,6 +4647,11 @@ Obj FuncDETERMINANT_LIST_GF2VECS( Obj self, Obj mat)
   return (len == TriangulizeListGF2Vecs( mat , 0)) ? GF2One : GF2Zero;
 }
 
+
+
+
+
+
 /****************************************************************************
 **
 *F  FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( <self>, <matl>, <matr>)
@@ -4661,6 +4764,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "CONV_GF2VEC", 1, "list",
       FuncCONV_GF2VEC, "src/vecgf2.c:CONV_GF2VEC" },
 
+    { "COPY_GF2VEC", 1, "list",
+      FuncCOPY_GF2VEC, "src/vecgf2.c:COPY_GF2VEC" },
+      
     { "PLAIN_GF2VEC", 1, "gf2vec",
       FuncPLAIN_GF2VEC, "src/vecgf2.c:PLAIN_GF2VEC" },
 

@@ -937,10 +937,12 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
 
     local rank,
           rbits,
-          K;
+          K,
+          expB,
+          typesList;
 
   # Store the names, initialize the types list.
-  F!.types := [];
+  typesList := [];
   F!.names := Immutable( names );
 
   # for letter word families we do not need these types
@@ -959,61 +961,66 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     while 2^rbits < rank do
       rbits:= rbits + 1;
     od;
-    F!.expBits:= [  8 - rbits,
-		    16 - rbits,
-		    Minimum( 32 - rbits, 28 ),
-		    infinity ];
+
+    expB := [  8 - rbits,
+	       16 - rbits,
+	       Minimum( 32 - rbits, 28 ),
+	       infinity ];
 
     # Note that one bit of the exponents is needed for the sign,
     # and we disallow the use of a representation if at most two
     # additional bits would be available.
-    if F!.expBits[1] <= 3 then F!.expBits[1]:= 0; fi;
-    if F!.expBits[2] <= 3 then F!.expBits[2]:= 0; fi;
-    if F!.expBits[3] <= 3 then F!.expBits[3]:= 0; fi;
+    if expB[1] <= 3 then expB[1]:= 0; fi;
+    if expB[2] <= 3 then expB[2]:= 0; fi;
+    if expB[3] <= 3 then expB[3]:= 0; fi;
 
-    F!.expBitsInfo := [ 2^( F!.expBits[1] - 1 ),
-			2^( F!.expBits[2] - 1 ),
-			2^( F!.expBits[3] - 1 ),
-			infinity          ];
+    F!.expBits := `expB;
+
+    F!.expBitsInfo := `[ 2^( F!.expBits[1] - 1 ),
+			 2^( F!.expBits[2] - 1 ),
+			 2^( F!.expBits[3] - 1 ),
+			 infinity          ];
 
     # Store the internal types.
     K:= NewType( F, Is8BitsAssocWord and req );
-    K![ AWP_PURE_TYPE    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[1];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 8;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 8Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 8Bits_AssocWord;
-    F!.types[1]:= K;
-
+    StrictBindOnce(K, AWP_PURE_TYPE        , K);
+    StrictBindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[1]);
+    StrictBindOnce(K, AWP_NR_GENS          , rank);
+    StrictBindOnce(K, AWP_NR_BITS_PAIR     , 8);
+    StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 8Bits_ObjByVector);
+    StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 8Bits_AssocWord);
+    typesList[1]:= K;
+    
     K:= NewType( F, Is16BitsAssocWord and req );
-    K![ AWP_PURE_TYPE    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[2];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 16;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 16Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 16Bits_AssocWord;
-    F!.types[2]:= K;
+    StrictBindOnce(K, AWP_PURE_TYPE        , K);
+    StrictBindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[2]);
+    StrictBindOnce(K, AWP_NR_GENS          , rank);
+    StrictBindOnce(K, AWP_NR_BITS_PAIR     , 16);
+    StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 16Bits_ObjByVector);
+    StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 16Bits_AssocWord);
+    typesList[2]:= K;
 
     K:= NewType( F, Is32BitsAssocWord and req );
-    K![ AWP_PURE_TYPE    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[3];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 32;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 32Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 32Bits_AssocWord;
-    F!.types[3]:= K;
+    StrictBindOnce(K, AWP_PURE_TYPE        , K);
+    StrictBindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[3]);
+    StrictBindOnce(K, AWP_NR_GENS          , rank);
+    StrictBindOnce(K, AWP_NR_BITS_PAIR     , 32);
+    StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 32Bits_ObjByVector);
+    StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 32Bits_AssocWord);
+    typesList[3]:= K;
 
   fi;
 
   K:= NewType( F, IsInfBitsAssocWord and req );
-  K![ AWP_PURE_TYPE    ]      := K;
-  K![ AWP_NR_BITS_EXP  ]      := infinity;
-  K![ AWP_NR_GENS      ]      := Length( names );
-  K![ AWP_NR_BITS_PAIR ]      := infinity;
-  K![ AWP_FUN_OBJ_BY_VECTOR ] := InfBits_ObjByVector;
-  K![ AWP_FUN_ASSOC_WORD    ] := InfBits_AssocWord;
-  F!.types[4]:= K;
+  StrictBindOnce(K, AWP_PURE_TYPE         , K);
+  StrictBindOnce(K, AWP_NR_BITS_EXP       , infinity);
+  StrictBindOnce(K, AWP_NR_GENS           , Length( names ));
+  StrictBindOnce(K, AWP_NR_BITS_PAIR      , infinity);
+  StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR , InfBits_ObjByVector);
+  StrictBindOnce(K, AWP_FUN_ASSOC_WORD    , InfBits_AssocWord);
+  typesList[4]:= K;
+
+  F!.types := `typesList;
 
   if IsBLetterWordsFamily(F) then
     K:= NewType( F, IsBLetterAssocWordRep and req );
@@ -1142,6 +1149,7 @@ InstallGlobalFunction( InfiniteListOfNames, function( arg )
                       [ string, init ] );
     SetIsFinite( list, false );
     SetIsEmpty( list, false );
+    MakeReadOnly( list );    
     SetLength( list, infinity );
 #T meaningless since not attribute storing!
     return list;
@@ -1277,6 +1285,7 @@ InstallGlobalFunction( InfiniteListOfGenerators, function( arg )
                       [ F, init ] );
     SetIsFinite( list, false );
     SetIsEmpty( list, false );
+    MakeReadOnly(list);
     SetLength( list, infinity );
 #T meaningless since not attribute storing!
     return list;

@@ -3,7 +3,7 @@
 #W  smlgp3.g                 GAP group library             Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-##  This file contains the reading and constrution functions for the groups
+##  This file contains the reading and construction functions for the groups
 ##  of size 2^n * p for 3 <= n <= 8 and p an odd prime. 2^n * p has to be
 ##  greater then 1000.
 ##
@@ -72,10 +72,10 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
         if size = 768 then
             # the 4912 none-p-nil groups of size 768 are stored in 4 files
             if not IsBound( SMALL_GROUP_LIB[ 768 ] ) then
-                SMALL_GROUP_LIB[ 768 ] := rec();
+                SMALL_GROUP_LIB[ 768 ] := AtomicRecord( rec() );
             fi;
             if not IsBound( SMALL_GROUP_LIB[ 768 ].npnil ) then
-                SMALL_GROUP_LIB[ 768 ].npnil := [];
+                SMALL_GROUP_LIB[ 768 ].npnil := AtomicList([]);
             fi;
             file := QuoInt( iint + 1249, 1250 );
             pos  := iint - ( file - 1 ) * 1250;
@@ -86,7 +86,7 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
         fi;
 
         if not IsBound( SMALL_GROUP_LIB[ size ] ) then
-            SMALL_GROUP_LIB[ size ] := rec();
+            SMALL_GROUP_LIB[ size ] := AtomicRecord( rec() );
             ReadSmallLib( "sml", inforec.lib, size, [ ] );
         fi;
 
@@ -98,7 +98,7 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
 
     elif typ = "p-autos" then
         if not IsBound( SMALL_GROUP_LIB[ size ] ) then
-            SMALL_GROUP_LIB[ size ] := rec();
+            SMALL_GROUP_LIB[ size ] := AtomicRecord( rec() );
         fi;
         if not IsBound( SMALL_GROUP_LIB[ size ].pnil ) then
             ReadSmallLib( "sml", 3, size, [ ] );
@@ -112,7 +112,7 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
             fi;
         else 
             if not IsBound( SMALL_GROUP_LIB[ 8 ] ) then
-                SMALL_GROUP_LIB[ 8 ] := [ ];
+                SMALL_GROUP_LIB[ 8 ] := AtomicList( [ ] );
             fi;
             if not IsBound( SMALL_GROUP_LIB[ 8 ][ typ ] ) then
                 c := [ 1, 2, 3, 3, 3, 3, 3, 3 ];
@@ -139,6 +139,8 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
         else
             c := [ 0 ];
         fi;
+        
+        atomic readwrite SMALL_GROUP_LIB[n][typ] do
 
         if IsRecord( SMALL_GROUP_LIB[ n ][ typ ] ) then
             # lists with many empty entries are compressed
@@ -157,15 +159,15 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
                     od;
                 fi;
             od;
-            SMALL_GROUP_LIB[ n ][ typ ] := tmp;
+            SMALL_GROUP_LIB[ n ][ typ ] := MigrateObj( tmp, SMALL_GROUP_LIB[n][typ] );
         fi;
 
         sid := PositionSorted( c, iint ) - 2;
         iint := iint - c[ sid + 1 ];
         sid := sid * 1000 + 1;
         while ( not IsBound( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) )
-           or ( IsInt( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) )
-           or ( Length( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) < iint ) do
+                 or ( IsInt( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) )
+                 or ( Length( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) < iint ) do
             if not IsBound( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) then
                 # for typ = 1 an empty entry shows that it is the same like
                 # the precedessor
@@ -182,15 +184,17 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
                                  -SMALL_GROUP_LIB[ n ][ typ ][ sid ] ] ) then
                         SMALL_GROUP_LIB[ n ][ typ ][
                                  -SMALL_GROUP_LIB[ n ][ typ ][ sid ] ] :=
-                            listInt( SMALL_GROUP_LIB[ n ][ typ ][
-                                 -SMALL_GROUP_LIB[ n ][ typ ][ sid ] ]);
+                      MigrateObj( listInt( SMALL_GROUP_LIB[ n ][ typ ][
+                                 -SMALL_GROUP_LIB[ n ][ typ ][ sid ] ]), 
+                                  SMALL_GROUP_LIB[ n ][ typ ] );
                     fi;
                     SMALL_GROUP_LIB[ n ][ typ ][ sid ] := SMALL_GROUP_LIB[ n]
                               [ typ ][ -SMALL_GROUP_LIB[ n ][ typ ][ sid ] ];
                 else
                     # special way of decompession
-                    SMALL_GROUP_LIB[ n ][ typ ][ sid ] := listInt( 
-                                        SMALL_GROUP_LIB[ n ][ typ ][ sid ] );
+                    SMALL_GROUP_LIB[ n ][ typ ][ sid ] := 
+                        MigrateObj( listInt( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ), 
+                                             SMALL_GROUP_LIB[ n ][ typ ] );
                 fi;
             else
                 # simple case, just count group ids
@@ -198,6 +202,8 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
                 sid := sid + 1;
             fi;
         od;
+        
+        od; # atomic SMALL_GROUP_LIB[n][typ]
     fi;
 
     if n = 3 then 
@@ -245,8 +251,10 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
         rank := PositionSorted( c[ n ], sid );
 
         if typ = 1 then
-            aut := CoefficientsMultiadic( List( [1..rank], x->2 ),
-                                SMALL_GROUP_LIB[ n ][ typ ][ sid ][ iint ] );
+            atomic readonly SMALL_GROUP_LIB[n][typ] do
+                aut := CoefficientsMultiadic( List( [1..rank], x->2 ),
+                                    SMALL_GROUP_LIB[ n ][ typ ][ sid ][ iint ] );
+            od;                        
             for i in [ 1 .. rank ] do
                 if aut[ i ] = 1 then 
                      Add( rels, gens[ n+1] ^ gens[i] * gens[ n+1] );
@@ -254,6 +262,9 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
             od;
         else
             root := PrimitiveRootMod( p ) ^ ((p-1)/2^typ) mod p;
+
+            atomic readonly SMALL_GROUP_LIB[n][typ] do
+
             if SMALL_GROUP_LIB[ n ][ typ ][ sid ][ iint ] < 0 then
                 root := root ^ ( -SMALL_GROUP_LIB[n][typ][sid][iint] ) mod p;
                 while SMALL_GROUP_LIB[ n ][ typ ][ sid ][ iint ] < 0 do
@@ -264,6 +275,9 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
             gS := GeneratorsOfGroup( S );
             aut := CoefficientsMultiadic( List( [1..rank], x->2^typ ),
                                 SMALL_GROUP_LIB[ n ][ typ ][ sid ][ iint ] );
+                                
+            od; # atomic readonly SMALL_GROUP_LIB[n][typ]
+            
             for i in [ 1 .. rank ] do
                 Add( rels, gens[ n + 1 ] ^ gens[ i ] /
                            gens[ n + 1 ] ^ ( root ^ aut[ i ] mod p ) );

@@ -412,6 +412,14 @@ DeclareAttribute( "FrattinifactorSize", IsGroup );
 ##
 DeclareAttribute( "FrattinifactorId", IsGroup );
 
+#############################################################################
+##  
+#F  FinalizeSmallGroupData()
+##
+##  This function should be called when all levels of the small group library 
+##  have been loaded. It makes various records immutable for thread-safety.
+##
+DeclareGlobalFunction( "FinalizeSmallGroupData");
 
 #############################################################################
 ##

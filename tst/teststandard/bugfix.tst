@@ -725,7 +725,7 @@ gap> NrPerfectLibraryGroups(1);
 0
 
 # 2005/07/18 (FL)
-gap> TypeObj(IMPLICATIONS);;
+gap> atomic readonly IMPLICATIONS do TypeObj(IMPLICATIONS); od;
 
 # 2005/07/20 (TB)
 gap> T:= EmptySCTable( 2, 0 );;
@@ -2167,10 +2167,12 @@ false
 # makes sense if a book of a not loaded package is loaded in a workspace 
 # and GAP is started with a root path that contains a newer version. 
 # Reported by Sebastian Gutsche, fixed by FL on 2012-09-11
-gap> old := ShallowCopy(HELP_KNOWN_BOOKS[2][1]);;
-gap> HELP_KNOWN_BOOKS[2][1][3] := 
-> Concatenation(HELP_KNOWN_BOOKS[2][1][3], "blabla");;
-gap> CallFuncList(HELP_ADD_BOOK, old);
+gap> atomic HELP_REGION do
+> old := ShallowCopy(HELP_KNOWN_BOOKS[2][1]);;
+> HELP_KNOWN_BOOKS[2][1][3] :=
+> Concatenation(HELP_KNOWN_BOOKS[2][1][3], "blabla");
+> CallFuncList(HELP_ADD_BOOK, old);
+> od;
 #I  Overwriting already installed help book 'tutorial'.
 
 # Check of the membership test after fixing a method for coefficients 

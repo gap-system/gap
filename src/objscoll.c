@@ -58,14 +58,14 @@
 *F * * * * * * * * * * * * local defines and typedefs * * * * * * * * * * * *
 */
 
-Obj SC_NW_STACK;
-Obj SC_LW_STACK;
-Obj SC_PW_STACK;
-Obj SC_EW_STACK;
-Obj SC_GE_STACK;
-Obj SC_CW_VECTOR;
-Obj SC_CW2_VECTOR;
-UInt SC_MAX_STACK_SIZE;
+/* TL: Obj SC_NW_STACK; */
+/* TL: Obj SC_LW_STACK; */
+/* TL: Obj SC_PW_STACK; */
+/* TL: Obj SC_EW_STACK; */
+/* TL: Obj SC_GE_STACK; */
+/* TL: Obj SC_CW_VECTOR; */
+/* TL: Obj SC_CW2_VECTOR; */
+/* TL: UInt SC_MAX_STACK_SIZE; */
 
 /****************************************************************************
 **
@@ -822,13 +822,7 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    InitGlobalBag( &SC_NW_STACK, "SC_NW_STACK" );
-    InitGlobalBag( &SC_LW_STACK, "SC_LW_STACK" );
-    InitGlobalBag( &SC_PW_STACK, "SC_PW_STACK" );
-    InitGlobalBag( &SC_EW_STACK, "SC_EW_STACK" );
-    InitGlobalBag( &SC_GE_STACK, "SC_GE_STACK" );
-    InitGlobalBag( &SC_CW_VECTOR, "SC_CW_VECTOR" );
-    InitGlobalBag( &SC_CW2_VECTOR, "SC_CW2_VECTOR" );
+    InstallTLSHandler(SetupCollectorStacks, NULL);
 
     /* return success                                                      */
     return 0;
@@ -871,8 +865,6 @@ static Int InitLibrary (
              INTOBJ_INT(SCP_CLASS) );
     AssGVar( GVarName( "SCP_AVECTOR2" ),
              INTOBJ_INT(SCP_AVECTOR2) );
-
-    SetupCollectorStacks();
 
     /* export collector number                                             */
     AssGVar( GVarName( "8Bits_SingleCollector" ),

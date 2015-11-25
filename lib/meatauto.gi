@@ -30,7 +30,9 @@ local f, d1, d2, e, z, g1, g2, r, b, n, a, gp, i, j, k;
   d2:=m2.dimension;
   e:=[];
   z:=ListWithIdenticalEntries(d1*d2,Zero(f));
-  ConvertToVectorRep(z,f);
+  if Size(f)<=256 then
+    z := CopyToVectorRepNC(z,Size(f));
+  fi;  
   for gp in [1..Length(m1.generators)] do
     g1:=m1.generators[gp];
     g2:=m2.generators[gp];
@@ -282,7 +284,9 @@ local mat, m, n, zero, one, empty, i, k, nullspace, row,mi;
 
   # insert empty rows to bring the leading term of each row on the diagonal
   empty := ListWithIdenticalEntries(n,zero);
-  ConvertToVectorRep(empty,e.field);
+  if Size(e.field) <= 256 then
+    empty := CopyToVectorRepNC(empty,Size(e.field));
+  fi;  
   i := 1;
   while i <= Length(mat)  do
     if i < n  and mat[i][i] = zero  then
@@ -573,8 +577,10 @@ local V, nv, W, nw, U, echu, F, matsV, matsW, k, g1, g2, max_stack_len, _t,
     M:=IdentityMat(nw,F);
     pos:=Difference([1..nv], echu)[1];
     v0:=ListWithIdenticalEntries(nv,zero);
-    ConvertToVectorRep(v0,F);
     v0[pos]:=One(F);
+    if Size(F)<=256 then
+      v0 := CopyToVectorRepNC(v0,Size(F));
+    fi;
   fi;
   return [v0, M];
 
@@ -679,8 +685,10 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
   zero:=Zero(F);
 
   zeroW:=ListWithIdenticalEntries(nw,zero);
-  ConvertToVectorRep(zeroW,F);
-
+  if Size(F)<=256 then
+    zeroW := CopyToVectorRepNC(zeroW,Size(F));
+  fi;
+  
   # group generating sets acting on each module
   gV:=V.generators;
   gW:=W.generators;
@@ -776,7 +784,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
       oldlen:=Length(v);
 
       for i in [start..oldlen] do     ### loop on vectors in <v>
-	for j in [1..k] do          ### loop on generators of G
+	  for j in [1..k] do          ### loop on generators of G
 
 	  if Length(a[i])=0 then
 	    #T: special treatment 0-dimensional
@@ -799,7 +807,9 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
 	  # storing the coefficients in <c>
 	  #
 	  c:=ListWithIdenticalEntries(Length(v),zero);
-	  ConvertToVectorRep(c,F);
+	  if Size(F) <= 256 then
+	    c := CopyToVectorRepNC(c,Size(F));
+	  fi;  
 	  for l in [1..Length(v)] do
 	    z:=x[echv[l]];
 	    if z <> zero then
@@ -858,7 +868,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
 	    Append(mat, X);
 	    SMTX_AddEqns(e, TransposedMat(mat), zeroW);
 	  fi;
-	od;
+	  od;
       od;
 
       start:=oldlen+1;

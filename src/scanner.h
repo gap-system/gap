@@ -146,7 +146,7 @@
 
 #define S_EOF           ((1UL<<31))
 
-extern  UInt            Symbol;
+/* TL: extern  UInt            Symbol; */
 
 
 /****************************************************************************
@@ -239,9 +239,11 @@ typedef UInt            TypSymbolSet;
 **  stop the scan just before a non-digit (., E, +,-, etc.) which would make
 **  it hard for the scanner to carry on correctly.
 */
-extern  Char            Value [1030];
-extern  UInt            ValueLen;
+/* TL: extern  Char            Value [1030]; */
+/* TL: extern  UInt            ValueLen; */
+
 #define         SAFE_VALUE_SIZE 1024
+#define MAX_VALUE_LEN 1025
 
 /****************************************************************************
 **
@@ -265,8 +267,8 @@ extern  UInt            ValueLen;
 **  one line, since they  probabely  just reflect  the  fact that the  parser
 **  has not resynchronized yet.
 */
-extern  UInt            NrError;
-extern  UInt            NrErrLine;
+/* TL: extern  UInt            NrError; */
+/* TL: extern  UInt            NrErrLine; */
 
 
 /****************************************************************************
@@ -279,7 +281,7 @@ extern  UInt            NrErrLine;
 **  It is set to 'gap> ' or 'brk> ' in the  read-eval-print loops and changed
 **  to the partial prompt '> ' in 'Read' after the first symbol is read.
 */
-extern  const Char *    Prompt;
+/* TL: extern  const Char *    Prompt; */
 
 /***************************************************************************** 
 **
@@ -290,7 +292,7 @@ extern  const Char *    Prompt;
 **  default is: Instead of `PrintPromptHook' the `Prompt' is printed and
 **  instead of `EndLineHook' nothing is done.
 */
-extern Obj  PrintPromptHook;
+/* TL: extern Obj  PrintPromptHook; */
 extern Obj  EndLineHook;
 
 /****************************************************************************
@@ -423,7 +425,6 @@ extern Int BreakLoopPending( void );
 
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
-
 
 /****************************************************************************
 **
@@ -853,9 +854,9 @@ typedef struct {
 **  current input character.  It points into the buffer 'Input->line'.
 */
 
-extern TypInputFile    InputFiles [16];
-extern TypInputFile *  Input;
-extern Char *          In;
+/* extern TypInputFile    InputFiles [16]; */
+/* TL: extern TypInputFile *  Input; */
+/* TL: extern Char *          In; */
 
 
 /****************************************************************************
@@ -893,9 +894,18 @@ typedef struct {
     Obj         stream;
 } TypOutputFile;
 
-extern TypOutputFile   OutputFiles [16];
-extern TypOutputFile * Output;
-extern TypOutputFile* IgnoreStdoutErrout;
+/* TL: extern TypOutputFile   OutputFiles [16]; */
+/* TL: extern TypOutputFile * Output; */
+
+/* TL: extern TypOutputFile* IgnoreStdoutErrout; */
+
+/****************************************************************************
+**
+*F  GetCurrentOutput()  . . . . . . . . . . . get the current thread's output
+**
+**  The same as 'OpenOutput' but for streams.
+*/
+extern TypOutputFile *GetCurrentOutput ( void );
 
 /****************************************************************************
 **
@@ -957,7 +967,7 @@ extern  void            SPrTo (
 **  not 0  the    scanner echoes all input   from  the files  '*stdin*'   and
 **  '*errin*' to this file.
 */
-extern TypOutputFile * InputLog;
+/* TL: extern TypOutputFile * InputLog; */
 
 
 /****************************************************************************
@@ -968,7 +978,7 @@ extern TypOutputFile * InputLog;
 **  is  not  0  the  scanner echoes  all output  to  the files '*stdout*' and
 **  '*errout*' to this file.
 */
-extern TypOutputFile * OutputLog;
+/* TL: extern TypOutputFile * OutputLog; */
 
 
 /****************************************************************************

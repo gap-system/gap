@@ -213,6 +213,35 @@ extern Int SyFclose (
 extern Int SyIsEndOfFile (
     Int                 fid );
 
+/****************************************************************************
+**
+*F  syStartraw( <fid> ) . . . . . . start raw mode on input file <fid>, local
+**
+**  The  following four  functions are  the  actual system  dependent part of
+**  'SyFgets'.
+**
+**  'syStartraw' tries to put the file with the file  identifier  <fid>  into
+**  raw mode.  I.e.,  disabling  echo  and  any  buffering.  It also finds  a
+**  place to put the echoing  for  'syEchoch'.  If  'syStartraw'  succedes it
+**  returns 1, otherwise, e.g., if the <fid> is not a terminal, it returns 0.
+**
+**  'syStopraw' stops the raw mode for the file  <fid>  again,  switching  it
+**  back into whatever mode the terminal had before 'syStartraw'.
+**
+**  'syGetch' reads one character from the file <fid>, which must  have  been
+**  turned into raw mode before, and returns it.
+**
+**  'syEchoch' puts the character <ch> to the file opened by 'syStartraw' for
+**  echoing.  Note that if the user redirected 'stdout' but not 'stdin',  the
+**  echo for 'stdin' must go to 'ttyname(fileno(stdin))' instead of 'stdout'.
+*/
+
+extern UInt syStartraw (
+            Int                 fid );
+
+extern void syStopraw (
+            Int                 fid );
+
 
 /****************************************************************************
 **
@@ -312,7 +341,7 @@ extern void SyInstallAnswerIntr ( void );
 
 extern UInt SyIsIntr ( void );
 
-extern int SyHaveAlarms;
+extern const int SyHaveAlarms;
 extern volatile int SyAlarmRunning;
 extern volatile int SyAlarmHasGoneOff;
 

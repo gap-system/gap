@@ -11,10 +11,9 @@
 ##
 ##  This file initializes GAP.
 ##
-Revision := rec();
+Revision := AtomicRecord( rec() );
 
 
-    
 #############################################################################
 ##
 #1 Temporary error handling until we are able to read error.g
@@ -67,13 +66,9 @@ Error := function( arg )
     JUMP_TO_CATCH("early error");
 end;
 
-ErrorInner := function(arg)
-    local x;
+ErrorInner := function(options, message)
     Print("Error before error-handling is initialized: ");
-    for x in [6..LENGTH(arg)] do
-      Print(arg[x]);
-    od;
-    Print("\n");
+    Print(message);
     JUMP_TO_CATCH("early error");
 end;
 
@@ -193,19 +188,24 @@ end;
 ReadGapRoot( "lib/kernel.g" );
 ReadGapRoot( "lib/global.g" );
 
-
 #############################################################################
 ##
 ##  Read architecture dependent data and other globals, such as version
 ##  information.
 ##
+
+
+
 ReadGapRoot( "lib/system.g" );
 
-IS_READ_OR_COMPLETE := false;
+##IS_READ_OR_COMPLETE := false;
+## commented out - was needed by the completion mechanism
+## READED_FILES := [];
 
-READED_FILES := [];
-
-RANK_FILTER_LIST         := [];
+FILTER_REGION	 	 := NEW_REGION("filter region", -1);
+atomic FILTER_REGION do
+  RANK_FILTER_LIST         := MIGRATE([], FILTER_REGION);
+od;
 RANK_FILTER_LIST_CURRENT := fail;
 RANK_FILTER_COUNT        := fail;
 
@@ -213,6 +213,21 @@ RANK_FILTER_COMPLETION   := Error;	# defined in "filter.g"
 RANK_FILTER_STORE        := Error;	# defined in "filter.g"
 RANK_FILTER              := Error;	# defined in "filter.g"
 RankFilter               := Error;      # defined in "filter.g"
+
+
+#############################################################################
+##
+#V  ThreadVar  . . . . . . . . . . . . . . . . . . . . thread-local variables
+
+BIND_GLOBAL("ThreadVar", ThreadLocalRecord());
+BIND_GLOBAL("BindThreadLocal", function(name, default)
+  MakeThreadLocal(name);
+  SetTLDefault(ThreadVar, name, default);
+end);
+BIND_GLOBAL("BindThreadLocalConstructor", function(name, default)
+  MakeThreadLocal(name);
+  SetTLConstructor(ThreadVar, name, default);
+end);
 
 
 #############################################################################
@@ -232,7 +247,7 @@ CallAndInstallPostRestore( function()
     MAKE_READ_WRITE_GLOBAL( "TEACHING_MODE" );
     UNBIND_GLOBAL( "TEACHING_MODE" );
     BIND_GLOBAL( "TEACHING_MODE", GAPInfo.CommandLineOptions.T );
-    ASS_GVAR( "BreakOnError", not GAPInfo.CommandLineOptions.T );
+    BindThreadLocal( "BreakOnError", not GAPInfo.CommandLineOptions.T );
 end);
 
 
@@ -312,18 +327,20 @@ end;
 ##
 #F  READ_CHANGED_GAP_ROOT( <name> ) . . . . . .  completion file is out-dated
 ##
-READ_CHANGED_GAP_ROOT := function( name )
-    local   rankFilter;
-
-    rankFilter := RankFilter;
-    RankFilter := RANK_FILTER;
-    Print( "#W  inconsistent completion for \"", name, "\"\n" );
-    if not READ_GAP_ROOT(name)  then
-        Error( "cannot read file ", name );
-    fi;
-    RankFilter := rankFilter;
-end;
-
+##READ_CHANGED_GAP_ROOT := function( name )
+##    local   rankFilter;
+##
+##    atomic FILTER_REGION do
+##	rankFilter := RankFilter;
+##	RankFilter := RANK_FILTER;
+##	Print( "#W  inconsistent completion for \"", name, "\"\n" );
+##	if not READ_GAP_ROOT(name)  then
+##	    Error( "cannot read file ", name );
+##	fi;
+##	RankFilter := rankFilter;
+##    od;
+##end;
+##
 
 #############################################################################
 ##
@@ -408,29 +425,31 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
         APPEND_LIST_INTR( libname, name );
 
         # we are completing, store the filename and filter ranks
-        if IS_READ_OR_COMPLETE  then
-            ADD_LIST( READED_FILES, libname );
-            if IsBound(RANK_FILTER_LIST_CURRENT) then
-                rflc := RANK_FILTER_LIST_CURRENT;
-            fi;
-            if IsBound(RANK_FILTER_COUNT) then
-                rfc := RANK_FILTER_COUNT;
-            fi;
-            RANK_FILTER_LIST_CURRENT := [];
-            RANK_FILTER_COUNT := 0;
-            ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
+##        if IS_READ_OR_COMPLETE  then
+##	    atomic FILTER_REGION do
+##		ADD_LIST( READED_FILES, libname );
+##		if IsBound(RANK_FILTER_LIST_CURRENT) then
+##		    rflc := RANK_FILTER_LIST_CURRENT;
+##		fi;
+##		if IsBound(RANK_FILTER_COUNT) then
+##		    rfc := RANK_FILTER_COUNT;
+##		fi;
+##		RANK_FILTER_LIST_CURRENT := [];
+##		RANK_FILTER_COUNT := 0;
+##		ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
+##		error:=not READ_GAP_ROOT(libname);
+##		Unbind(RANK_FILTER_LIST_CURRENT);
+##		if IsBound(rflc) then
+##		    RANK_FILTER_LIST_CURRENT := rflc;
+##		fi;
+##		Unbind(RANK_FILTER_COUNT);
+##		if IsBound(rfc) then
+##		    RANK_FILTER_COUNT := rfc;
+##		fi;
+##	    od;
+##        else
             error:=not READ_GAP_ROOT(libname);
-            Unbind(RANK_FILTER_LIST_CURRENT);
-            if IsBound(rflc) then
-                RANK_FILTER_LIST_CURRENT := rflc;
-            fi;
-            Unbind(RANK_FILTER_COUNT);
-            if IsBound(rfc) then
-                RANK_FILTER_COUNT := rfc;
-            fi;
-        else
-            error:=not READ_GAP_ROOT(libname);
-        fi;
+##        fi;
 
 	if error then
 	  if LEN_LIST( arg )=1 then
@@ -528,6 +547,7 @@ end);
 # inner functions, needed in the kernel
 ReadGapRoot( "lib/read1.g" );
 ExportToKernelFinished();
+ENABLE_AUTO_RETYPING();
 
 # try to find terminal encoding
 CallAndInstallPostRestore( function()
@@ -591,6 +611,7 @@ CallAndInstallPostRestore( function()
   else
     GAPInfo.TermEncoding := GAPInfo.TermEncodingOverwrite;
   fi;
+  MakeImmutable( GAPInfo.TermEncoding );
 end );
 
 
@@ -645,10 +666,12 @@ BindGlobal( "ShowKernelInformation", function()
       else
         btop := "*********"; vert := "*"; bbot := btop;
       fi;
-      Print( " ",btop,"   GAP ", GAPInfo.BuildVersion,
-             " of ", sysdate, "\n",
+      Print( " ",btop,"   HPC-GAP, Version ", GAPInfo.Version, " of ",
+             sysdate, "\n",
              " ",vert,"  GAP  ",vert,"   http://www.gap-system.org\n",
-             " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
+             " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n",
+	     "             Maximum concurrent threads: ",
+	     GAPInfo.KernelInfo.NUM_CPUS, "\n");
       # For each library, print the name.
       libs:= [];
       if "gmpints" in LoadedModules() then
@@ -663,8 +686,14 @@ BindGlobal( "ShowKernelInformation", function()
       if GAPInfo.CommandLineOptions.L <> "" then
         Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );
       fi;
+      Print("\n",
+            "#W <<< This is an alpha release.      >>>\n",
+            "#W <<< Do not use for important work. >>>\n",
+	    "\n");
     fi;
 end );
+
+
 
 # delay printing the banner, if -L option was passed (LB)
 
@@ -720,6 +749,7 @@ BIND_GLOBAL("VIEW_STRING_SPECIAL_CHARACTERS_OLD",
   # contains characters that should instead be printed after a `\'.
   Immutable([ "\c\b\n\r\"\\", "cbnr\"\\" ]));
 BIND_GLOBAL("SPECIAL_CHARS_VIEW_STRING",
+MakeImmutable(
 [ List(Concatenation([0..31],[34,92],[127..255]), CHAR_INT), [
 "\\000", "\\>", "\\<", "\\c", "\\004", "\\005", "\\006", "\\007", "\\b", "\\t",
 "\\n", "\\013", "\\014", "\\r", "\\016", "\\017", "\\020", "\\021", "\\022",
@@ -739,7 +769,7 @@ BIND_GLOBAL("SPECIAL_CHARS_VIEW_STRING",
 "\\342","\\343","\\344","\\345","\\346","\\347","\\350","\\351","\\352",
 "\\353","\\354","\\355","\\356","\\357","\\360","\\361","\\362","\\363",
 "\\364","\\365","\\366","\\367","\\370","\\371","\\372","\\373","\\374",
-"\\375","\\376","\\377" ]]);
+"\\375","\\376","\\377" ]]));
 
 
 # help system, profiling
@@ -749,9 +779,13 @@ ReadOrComplete( "lib/read4.g" );
 ReadLib( "helpview.gi"  );
 
 #T  1996/09/01 M.Schönert this helps performance
-IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
-# allow type determination of IMPLICATIONS without using it
-TypeObj(IMPLICATIONS[1]);
+ORIGINAL_IMPS := IMPLICATIONS;
+atomic ORIGINAL_IMPS do
+    IMPLICATIONS :=
+      IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
+    MigrateSingleObj(IMPLICATIONS, ORIGINAL_IMPS);
+    TypeObj(IMPLICATIONS[1]);
+od;
 #T shouldn't this better be at the end of reading the library?
 #T and what about implications installed in packages?
 #T (put later installations to the front?)
@@ -860,17 +894,6 @@ end );
 
 #############################################################################
 ##
-##  ParGAP/MPI slave hook
-##
-##  A ParGAP slave redefines this as a function if the GAP package ParGAP
-##  is loaded. It is called just once at  the  end  of  GAP's  initialisation
-##  process i.e. at the end of this file.
-##
-PAR_GAP_SLAVE_START := fail;
-
-
-#############################################################################
-##
 ##  Autoload packages (suppressing banners).
 ##  (If GAP was started with a workspace then the user may have given
 ##  additional directories, so more suggested packages may become available.
@@ -885,10 +908,9 @@ PAR_GAP_SLAVE_START := fail;
 ##  Load additional packages, such that their names appear in the banner.
 ##
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
-    Print ("and packages ...\n");
+  Print ("and packages ...\n");
 fi;
 CallAndInstallPostRestore( AutoloadPackages );
-
 
 ############################################################################
 ##
@@ -1037,7 +1059,7 @@ BindGlobal( "ShowPackageInformation", function()
 
     if IsBound(GAPInfo.shortbanner) then
         indent := "  ";
-        if GAPInfo.PackagesLoaded <> rec() then
+        if RecNames( GAPInfo.PackagesLoaded ) <> [ ] then
             print_info( "Packages ",
                   List( RecNames( GAPInfo.PackagesLoaded ),
                         name -> Concatenation(
@@ -1164,12 +1186,11 @@ HELP_ADD_BOOK("Changes", "Changes from Earlier Versions", "doc/changes");
 
 #############################################################################
 ##
-##  ParGAP loading and switching into the slave mode hook
+##  MPIGAP loading 
 ##
 if IsBoundGlobal("MPI_Initialized") then
-  LoadPackage("pargap");
+  ReadLib("distributed/distgap.g");
 fi;
-if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
 
 
 #############################################################################
@@ -1195,7 +1216,20 @@ InstallAndCallPostRestore( function()
     od;
 end );
 
-SESSION();
+if IsBoundGlobal("MPI_Initialized") and MPI_Comm_rank() <> 0 then
+  WaitThread(TaskManager);
+  WaitThread(MessageManager);
+  MPI_Finalize();
+else
+  if THREAD_UI() then
+    ReadLib("consoleui.g");
+    MULTI_SESSION();
+  else
+    SESSION();
+  fi; 
+fi;
+
+PROGRAM_CLEAN_UP();
 
 
 #############################################################################

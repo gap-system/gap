@@ -1,7 +1,8 @@
 /****************************************************************************
 **
-*A  unzoo.c                     Tools                        Martin Schönert
+*A  unzoo.c                     Tools                        Martin Schoenert
 **
+*H  @(#)$Id: unzoo.c,v 4.9 2006/01/02 10:08:53 gap Exp $
 **
 *Y  This file is in the Public Domain.
 **
@@ -219,26 +220,7 @@
 **  Dave Bayer ported 'unzoo' to the Macintosh,  including Macbinary support.
 **
 **  HISTORY
-*H  $Log$
-*H  Revision 4.11  2011/11/04 13:59:45  gap
-*H  Removed cvs  $Id tags and all bindings to Revision on GAP level and revision
-*H  entries in kernel modules.
-*H  This is part of the preparation for the move to another version control
-*H  system shortly after the release of GAP 4.5.
-*H  FL
-*H
-*H  Revision 4.10  2010/02/23 15:12:39  gap
-*H  This is the conversion of the files under gap-dev to UTF-8 encoding.
-*H  Also spellings from pre-latin1 times are corrected.
-*H  A file etc/to_utf8.g will be added which documents  how this was done.
-*H
-*H  Files in the following directories were not touched:
-*H    pkg, cnf, bin, mac*
-*H  Also, files with the following extensions were left alone:
-*H    .in, .shi, .tex, .bib, .msk, .html, .gz, .zoo, .ps, .dvi
-*H
-*H  FL
-*H
+*H  $Log: unzoo.c,v $
 *H  Revision 4.9  2006/01/02 10:08:53  gap
 *H  added more efficient BlockWriteText for Mac version. BH
 *H
@@ -2937,12 +2919,13 @@ int             ExtrArch ( bim, out, ovr, pre, arc, filec, files )
 */
 int			Banner ()
 {
-    printf("unzoo -- a zoo archive extractor by Martin Schönert\n");
+    printf("unzoo -- a zoo archive extractor by Martin Schoenert\n");
 #ifndef SYS_IS_MAC_MWC
+    printf("  ($Id: unzoo.c,v 4.9 2006/01/02 10:08:53 gap Exp $)\n");
 #endif
     printf("  based on 'booz' version 2.0 by Rahul Dhesi\n");
 #ifdef SYS_IS_MAC_MWC
-    printf("  Macintosh version "MACUNZOOSHORTVERS" by Burkhard Höfling.\n");
+    printf("  Macintosh version "MACUNZOOSHORTVERS" by Burkhard Hofling.\n");
 #endif
 }
 

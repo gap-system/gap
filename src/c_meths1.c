@@ -606,8 +606,8 @@ static Obj  HdlrFunc6 (
   }
   l_i = t_2;
   
-  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and methods[i]( type1![1], type2![1], type3![1], 
-   type4![1] ) then */
+  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) 
+and methods[i]( type1![1], type2![1], type3![1], type4![1] ) then */
   t_11 = GF_IS__SUBSET__FLAGS;
   C_ELM_POSOBJ_NLE( t_12, a_type1, 2 );
   C_SUM_FIA( t_14, l_i, INTOBJ_INT(1) )
@@ -769,8 +769,8 @@ static Obj  HdlrFunc7 (
   }
   l_i = t_2;
   
-  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and IS_SUBSET_FLAGS( type5![2], methods[i + 5] ) 
-and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1] ) then */
+  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) 
+  and IS_SUBSET_FLAGS( type5![2], methods[i + 5] ) and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1] ) then */
   t_12 = GF_IS__SUBSET__FLAGS;
   C_ELM_POSOBJ_NLE( t_13, a_type1, 2 );
   C_SUM_FIA( t_15, l_i, INTOBJ_INT(1) )
@@ -957,8 +957,8 @@ static Obj  HdlrFunc8 (
   }
   l_i = t_2;
   
-  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and IS_SUBSET_FLAGS( type5![2], methods[i + 5] ) 
-  and IS_SUBSET_FLAGS( type6![2], methods[i + 6] ) and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] ) then */
+  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) 
+    and IS_SUBSET_FLAGS( type5![2], methods[i + 5] ) and IS_SUBSET_FLAGS( type6![2], methods[i + 6] ) and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] ) then */
   t_13 = GF_IS__SUBSET__FLAGS;
   C_ELM_POSOBJ_NLE( t_14, a_type1, 2 );
   C_SUM_FIA( t_16, l_i, INTOBJ_INT(1) )
@@ -1532,7 +1532,8 @@ static Obj  HdlrFunc13 (
        t_1 = (Obj)(((UInt)t_1)+4) ) {
   l_i = t_1;
   
-  /* if IS_SUBSET_FLAGS( type1![2], methods[7 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( type1![1], type2![1], type3![1] ) then */
+  /* if IS_SUBSET_FLAGS( type1![2], methods[7 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( type1![1], type2![1], type3![1] )
+  then */
   t_8 = GF_IS__SUBSET__FLAGS;
   C_ELM_POSOBJ_NLE( t_9, a_type1, 2 );
   C_DIFF_INTOBJS( t_13, l_i, INTOBJ_INT(1) )
@@ -4749,8 +4750,8 @@ static Obj  HdlrFunc1 (
       local  methods, i;
       methods := METHODS_OPERATION( operation, 5 );
       for i  in [ 1, 10 .. LEN_LIST( methods ) - 8 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and IS_SUBSET_FLAGS( type5![2], methods[i + 5] )
-              and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1] )  then
+          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) 
+                and IS_SUBSET_FLAGS( type5![2], methods[i + 5] ) and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1] )  then
               return methods[i + 6];
           fi;
       od;
@@ -4770,8 +4771,8 @@ static Obj  HdlrFunc1 (
       local  methods, i;
       methods := METHODS_OPERATION( operation, 6 );
       for i  in [ 1, 11 .. LEN_LIST( methods ) - 9 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and IS_SUBSET_FLAGS( type5![2], methods[i + 5] )
-                and IS_SUBSET_FLAGS( type6![2], methods[i + 6] ) and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] )  then
+          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) 
+                  and IS_SUBSET_FLAGS( type5![2], methods[i + 5] ) and IS_SUBSET_FLAGS( type6![2], methods[i + 6] ) and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] )  then
               return methods[i + 7];
           fi;
       od;
@@ -4881,8 +4882,8 @@ static Obj  HdlrFunc1 (
       methods := METHODS_OPERATION( operation, 3 );
       j := 0;
       for i  in [ 1 .. LEN_LIST( methods ) / 7 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[7 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( type1![1], type2![1], type3![1] )
-               then
+          if IS_SUBSET_FLAGS( type1![2], methods[7 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) 
+              and methods[7 * (i - 1) + 1]( type1![1], type2![1], type3![1] )  then
               if k = j  then
                   return methods[7 * (i - 1) + 5];
               else
@@ -4959,8 +4960,9 @@ static Obj  HdlrFunc1 (
       methods := METHODS_OPERATION( operation, 6 );
       j := 0;
       for i  in [ 1 .. LEN_LIST( methods ) / 10 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[10 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[10 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[10 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[10 * (i - 1) + 5] ) 
-                  and IS_SUBSET_FLAGS( type5![2], methods[10 * (i - 1) + 6] ) and IS_SUBSET_FLAGS( type6![2], methods[10 * (i - 1) + 7] ) and methods[10 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] )  then
+          if IS_SUBSET_FLAGS( type1![2], methods[10 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[10 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[10 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[10 * (i - 1) + 5] 
+                       ) and IS_SUBSET_FLAGS( type5![2], methods[10 * (i - 1) + 6] ) and IS_SUBSET_FLAGS( type6![2], methods[10 * (i - 1) + 7] ) and methods[10 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] )
+               then
               if k = j  then
                   return methods[10 * (i - 1) + 8];
               else
@@ -5090,7 +5092,8 @@ static Obj  HdlrFunc1 (
       local  methods, i;
       methods := METHODS_OPERATION( operation, 3 );
       for i  in [ 1 .. LEN_LIST( methods ) / 7 ]  do
-          if IS_SUBSET_FLAGS( methods[7 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( flags1, type2![1], type3![1] )  then
+          if IS_SUBSET_FLAGS( methods[7 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( flags1, type2![1], type3![1] )
+               then
               return methods[7 * (i - 1) + 5];
           fi;
       od;
@@ -5263,7 +5266,8 @@ static Obj  HdlrFunc1 (
       methods := METHODS_OPERATION( operation, 3 );
       j := 0;
       for i  in [ 1 .. LEN_LIST( methods ) / 7 ]  do
-          if IS_SUBSET_FLAGS( methods[7 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( flags1, type2![1], type3![1] )  then
+          if IS_SUBSET_FLAGS( methods[7 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( flags1, type2![1], type3![1] )
+               then
               if k = j  then
                   return methods[7 * (i - 1) + 5];
               else

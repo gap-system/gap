@@ -96,6 +96,8 @@ InstallValue(CompositeSPP2,
   7306561, 7820201, 8036033, 8095447, 8725753, 9006401,
   9056501, 9371251, 9729301, 9863461 ]);
 
+MakeImmutable(CompositeSPP2);
+
 ##############################################################################
 ##
 ##  Caches - install flushable values into the cache if they are not already
@@ -103,6 +105,7 @@ InstallValue(CompositeSPP2,
 ##
 ##############################################################################
 InstallFlushableValue(PrimesProofs,[]);
+ShareSpecialObj(PrimesProofs);
 
 ##############################################################################
 ## 
@@ -121,25 +124,28 @@ InstallValue(CCANT_1_7_3_q63,List([1..63],i->0));
 InstallValue(CCANT_1_7_3_q64,List([1..64],i->0));
 InstallValue(CCANT_1_7_3_q65,List([1..65],i->0));
 
+for t in [0..32] do
+    CCANT_1_7_3_q11[(t^2 mod 11)+1]:=1;
+    CCANT_1_7_3_q63[(t^2 mod 63)+1]:=1;
+    CCANT_1_7_3_q64[(t^2 mod 64)+1]:=1;
+    CCANT_1_7_3_q65[(t^2 mod 65)+1]:=1;
+od;
+MakeImmutable(CCANT_1_7_3_q11);
+MakeImmutable(CCANT_1_7_3_q63);
+MakeImmutable(CCANT_1_7_3_q64);
+MakeImmutable(CCANT_1_7_3_q65);
+
+Unbind(t);
+
 BindGlobal("CCANT_1_7_3",
 function(n)
 local t,r,q;
   if n < 0 then return false; fi;
-  if CCANT_1_7_3_q11[1]=0 then
-    #initialize
-    for t in [0..32] do
-      CCANT_1_7_3_q11[(t^2 mod 11)+1]:=1;
-      CCANT_1_7_3_q63[(t^2 mod 63)+1]:=1;
-      CCANT_1_7_3_q64[(t^2 mod 64)+1]:=1;
-      CCANT_1_7_3_q65[(t^2 mod 65)+1]:=1;
-    od;
-  fi;
-
   t:= n mod 64;
   if(CCANT_1_7_3_q64[t+1]=0) then return false; fi;
   r:= n mod 45045;
     if(CCANT_1_7_3_q63[(r mod 63)+1]=0) then return false;
-  elif(CCANT_1_7_3_q65[(r mod 65)+1]=0) then return false;
+ elif(CCANT_1_7_3_q65[(r mod 65)+1]=0) then return false;
   elif(CCANT_1_7_3_q11[(r mod 11)+1]=0) then return false;
   else q:=RootInt(n);
     return n=q^2;
@@ -147,7 +153,6 @@ local t,r,q;
 end);
 
 InstallGlobalFunction(IsSquareInt,CCANT_1_7_3);
-
 
 
 ##############################################################################
@@ -967,21 +972,29 @@ InstallGlobalFunction(IsPrimeInt,
 function(N)
   local ret;
   N := AbsInt(N);
+  atomic readonly Primes2 do 
   if(N in Primes2) then return true; fi;
+  od;
   ret:= IsBPSWPseudoPrime(N);
   if ret = false  then return false;
-  elif ret = true and N < 10^13 then 
+elif ret = true and N < 10^13 then 
+    atomic readwrite Primes2 do
     AddSet(Primes2,N);
+    od;
     return true;
   elif ret = true then
     ret := PrimalityProof(N);
     if PrimalityProof_VerifyStructure(N,ret) <> [] then
-      AddSet(Primes2,N);
-      AddSet(PrimesProofs,[N,ret]);
+        atomic readwrite Primes2, readwrite PrimesProofs do
+        AddSet(Primes2,N);
+        AddSet(PrimesProofs,MigrateObj([N,ret],PrimesProofs));
+    od;
     else
           Info(InfoPrimeInt, 1,
-         "IsPrimeInt: probably prime, but not proven: ", N);
+               "IsPrimeInt: probably prime, but not proven: ", N);
+          atomic readwrite ProbablePrimes2 do
           AddSet( ProbablePrimes2, N );
+          od;
     fi;
     return true;
   fi;
@@ -1000,14 +1013,18 @@ end);
 ##############################################################################
 InstallGlobalFunction(IsProbablyPrimeInt,
 function(N)
-  local ret, RabinMillerTrials;
-  if(N in Primes2 or N in ProbablePrimes2) then return true; fi;
+    local ret, RabinMillerTrials;
+    atomic readonly Primes2, readonly ProbablePrimes2 do
+    if(N in Primes2 or N in ProbablePrimes2) then return true; fi;
+   od;
   ret := IsBPSWPseudoPrime(N);
 
   if ret = false then return false;
   # Otherwise is BPSW number, and all such < 10^13 are prime
-  elif ret = true and N < 10 ^ 13 then 
+elif ret = true and N < 10 ^ 13 then 
+    atomic readwrite Primes2 do
     AddSet(Primes2,N);
+    od;
     return true;
   # Otherwise give a dose of Rabin-Miller
   else
@@ -1020,8 +1037,10 @@ function(N)
     fi;
     if ForAll([1..RabinMillerTrials],i->
       IsStrongPseudoPrimeBaseA(N,Random(3,N-1))) 
-    then
-      AddSet(ProbablePrimes2,N);
+       then
+        atomic readwrite ProbablePrimes2 do
+        AddSet(ProbablePrimes2,N);
+    od;
       return true;
     # Otherwise an error or composite BPSW number has been found.
     else

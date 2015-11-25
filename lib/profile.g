@@ -759,7 +759,9 @@ BIND_GLOBAL("ProfileOperationsOn",function()
     local   prof;
 
     # Note that the list of operations may have grown since the last call.
+    atomic readonly OPERATIONS_REGION do
     prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
+    od;
     PROFILED_OPERATIONS := prof;
     UnprofileMethods(prof);
     ProfileFunctions( prof );
@@ -817,8 +819,9 @@ end);
 ##
 BIND_GLOBAL("ProfileOperationsAndMethodsOn",function()
     local   prof;
-
+    atomic readonly OPERATIONS_REGION do
     prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
+    od;
     PROFILED_OPERATIONS := prof;
     ProfileFunctions( prof );
     ProfileMethods(prof);
@@ -872,6 +875,7 @@ end );
 ##  <#/GAPDoc>
 ##
 PROFILED_GLOBAL_FUNCTIONS := [];
+MakeThreadLocal("PROFILED_GLOBAL_FUNCTIONS");
 
 BIND_GLOBAL( "ProfileGlobalFunctions", function( arg )
     local name, func, funcs;
@@ -879,14 +883,16 @@ BIND_GLOBAL( "ProfileGlobalFunctions", function( arg )
         DisplayProfile( PROFILED_GLOBAL_FUNCTIONS );
     elif arg[1] = true then
         PROFILED_GLOBAL_FUNCTIONS  := [];
-        for name in GLOBAL_FUNCTION_NAMES do
-            if IsBoundGlobal(name) then
-                func := ValueGlobal(name);
-                if IsFunction(func) then
-                    Add(PROFILED_GLOBAL_FUNCTIONS, func);
-                fi;
-            fi;
-        od;
+	atomic readonly GLOBAL_FUNCTION_NAMES do
+	    for name in GLOBAL_FUNCTION_NAMES do
+		if IsBoundGlobal(name) then
+		    func := ValueGlobal(name);
+		    if IsFunction(func) then
+			Add(PROFILED_GLOBAL_FUNCTIONS, func);
+		    fi;
+		fi;
+	    od;
+	od;
         ProfileFunctions(PROFILED_GLOBAL_FUNCTIONS);
     elif arg[1] = false then
         UnprofileFunctions(PROFILED_GLOBAL_FUNCTIONS);

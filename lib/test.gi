@@ -132,8 +132,8 @@ InstallGlobalFunction(RunTests, function(arg)
   BreakOnError := breakOnError;
 end);
 
-BindGlobal("TEST", rec(Timings := rec()));
-TEST.compareFunctions := rec();
+BindGlobal("TEST", AtomicRecord( rec(Timings := rec())));
+TEST.compareFunctions := AtomicRecord(rec());
 TEST.compareFunctions.uptonl := function(a, b)
   a := ShallowCopy(a);
   b := ShallowCopy(b);
@@ -189,7 +189,7 @@ end;
 ##  If the optional argument <Arg>optrec</Arg> is given it must be a record.
 ##  The following components of <Arg>optrec</Arg> are recognized and can change
 ##  the default behaviour of <Ref Func="Test" />:
-##  <List >
+##  <List>
 ##  <Mark><C>ignoreComments</C></Mark>
 ##  <Item>If set to <K>false</K> then no lines in <Arg>fname</Arg>
 ##  are ignored as explained above (default is <K>true</K>).</Item>
@@ -252,9 +252,17 @@ end;
 ##  <Item>If this is <K>true</K> then &GAP; substitutes DOS/Windows style
 ##  line breaks "\r\n" by UNIX style line breaks "\n" after reading the test
 ##  file. (default is <K>true</K>).</Item>
+##  <Mark><C>showProgress</C></Mark>
+##  <Item>If this is <K>true</K> then &GAP; prints position information
+##  and the input line before it is processed
+##  (default is <K>false</K>).</Item>
+##  <Mark><C>subsWindowsLineBreaks</C></Mark>
+##  <Item>If this is <K>true</K> then &GAP; substitutes DOS/Windows style
+##  line breaks "\r\n" by UNIX style line breaks "\n" after reading the test
+##  file. (default is <K>true</K>).</Item>
 ##  </List>
 ## 
-##  <Example>
+##  <Example><![CDATA[
 ##  gap> tnam := Filename(DirectoriesLibrary(), "../doc/ref/demo.tst");;
 ##  gap> mask := function(str) return Concatenation("| ", 
 ##  >          JoinStringsWithSeparator(SplitString(str, "\n", ""), "\n| "),
@@ -298,7 +306,7 @@ end;
 ##  | # the following fails:
 ##  | gap> a := 13+29;
 ##  | 42
-##  </Example>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

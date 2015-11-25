@@ -52,6 +52,7 @@
 #include        "thread.h"              /* threads                         */
 #include        "aobjects.h"            /* atomic objects                  */
 
+#include        "systhread.h"              /* system thread primitives        */
 #include        "atomic.h"
 
 /****************************************************************************
@@ -658,6 +659,7 @@ Obj FuncAND_FLAGS (
     Obj                 flagsX;
     Obj                 cache;
     Obj                 entry;
+    Obj			        locked;
     UInt                hash;
     UInt                hash2;
     static UInt         next = 0;
@@ -677,8 +679,13 @@ Obj FuncAND_FLAGS (
 
     /* check the cache                                                     */
 #   ifdef AND_FLAGS_HASH_SIZE
+        locked = (Obj) 0;
         if ( INT_INTOBJ(flags1) < INT_INTOBJ(flags2) ) {
             flagsX = flags2;
+            if (!PreThreadCreation) {
+              locked = flags1;
+              HashLock(locked);
+            }
             cache  = AND_CACHE_FLAGS(flags1);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
@@ -689,6 +696,10 @@ Obj FuncAND_FLAGS (
         }
         else {
             flagsX = flags1;
+            if (!PreThreadCreation) {
+              locked = flags2;
+              HashLock(locked);
+            }
             cache  = AND_CACHE_FLAGS(flags2);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
@@ -708,6 +719,10 @@ Obj FuncAND_FLAGS (
 #               ifdef COUNT_OPERS
                     AndFlagsCacheHit++;
 #               endif
+#   ifdef AND_FLAGS_HASH_SIZE
+            if (locked)
+                HashUnlock(locked);
+#   endif
                 return ELM_PLIST( cache, 2*hash2+2 );
             }
         }
@@ -730,9 +745,17 @@ Obj FuncAND_FLAGS (
     len2   = LEN_FLAGS(flags2);
     size2  = NRB_FLAGS(flags2);
     if ( len1 == 0 ) {
+#   ifdef AND_FLAGS_HASH_SIZE
+	if (locked)
+	    HashUnlock(locked);
+#   endif
         return flags2;
     }
     if ( len2 == 0 ) {
+#   ifdef AND_FLAGS_HASH_SIZE
+	if (locked)
+	    HashUnlock(locked);
+#   endif
         return flags1;
     }
     if ( len1 < len2 ) {
@@ -768,6 +791,8 @@ Obj FuncAND_FLAGS (
         SET_ELM_PLIST( cache, 2*hash+1, flagsX );
         SET_ELM_PLIST( cache, 2*hash+2, flags  );
         CHANGED_BAG(cache);
+	if (locked)
+	    HashUnlock(locked);
 #   endif
 
     /* and return the result                                               */
@@ -789,11 +814,13 @@ Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
 {
     Obj imp = FuncFLAGS_FILTER(0, filter);
     Obj imps = FuncFLAGS_FILTER(0, filters);
+    RegionWriteLock(REGION(HIDDEN_IMPS));
     UInt len = LEN_PLIST(HIDDEN_IMPS);
     GROW_PLIST(HIDDEN_IMPS, len + 2);
     SET_LEN_PLIST(HIDDEN_IMPS, len + 2);
     ELM_PLIST(HIDDEN_IMPS, len + 1) = imp;
     ELM_PLIST(HIDDEN_IMPS, len + 2) = imps;
+    RegionWriteUnlock(REGION(HIDDEN_IMPS));
     return 0;
 }
 
@@ -805,7 +832,7 @@ Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
 {
   Int i;
   Obj flags = FuncFLAGS_FILTER(0, filter);
-  
+  RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
   for(i = 1; i < hidden_imps_cache_length * 2 - 1; i += 2)
   {
     if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i) &&
@@ -816,6 +843,7 @@ Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
         CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);
     }
   }
+  RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
   return 0;
 }
 
@@ -842,12 +870,14 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
             (Int)TNAM_OBJ(flags), 0L,
             "you can replace <flags> via 'return <flags>;'" );
     }
-    
+    RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
     for(hash_loop = 0; hash_loop < 3; ++hash_loop)
     {
       cacheval = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1);
       if(cacheval && cacheval == flags) {
-        return ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2);
+        Obj ret = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2);
+        RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
+        return ret;
       }
       hash = (hash * 311 + 61) % hidden_imps_cache_length;
     }
@@ -894,7 +924,8 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
       }
     }
     
-    CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);    
+    CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);
+    RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
     return with;
 }
 
@@ -1578,6 +1609,9 @@ Obj CallHandleMethodNotFound( Obj oper,
   Obj r;
   Obj arglist;
   UInt i;
+  Region *savedRegion = TLS(currentRegion);
+  TLS(currentRegion) = TLS(threadRegion);
+
   r = NEW_PREC(5);
   if (RNamOperation == 0)
     {
@@ -1600,7 +1634,9 @@ Obj CallHandleMethodNotFound( Obj oper,
   AssPRec(r,RNamIsConstructor,constructor ? True : False);
   AssPRec(r,RNamPrecedence,precedence);
   SortPRecRNam(r,0);
-  return CALL_1ARGS(HandleMethodNotFound, r);
+  r = CALL_1ARGS(HandleMethodNotFound, r);
+  TLS(currentRegion) = savedRegion;
+  return r;
 }
 
 /****************************************************************************
@@ -1633,7 +1669,7 @@ Obj FuncCompactTypeIDs( Obj self )
 **
 *F  DoOperation( <name> ) . . . . . . . . . . . . . . .  make a new operation
 */
-UInt CacheIndex;
+/* TL: UInt CacheIndex; */
 
 Obj Method0Args;
 Obj NextMethod0Args;
@@ -1688,6 +1724,8 @@ static inline Obj TYPE_OBJ_FEO (
                 Obj obj
         )
 {
+    /* TODO: We need to be able to automatically derice this. */
+    ImpliedWriteGuard(obj);
     switch ( TNUM_OBJ( obj ) ) {
     case T_COMOBJ:
         return TYPE_COMOBJ(obj);
@@ -1700,25 +1738,70 @@ static inline Obj TYPE_OBJ_FEO (
     }
 }
 
+static pthread_mutex_t CacheLock;
+static UInt CacheSize;
+
+static void LockCache()
+{
+  if (!PreThreadCreation)
+    pthread_mutex_lock(&CacheLock);
+}
+
+static void UnlockCache()
+{
+  if (!PreThreadCreation)
+    pthread_mutex_unlock(&CacheLock);
+}
+
 static inline Obj CacheOper (
     Obj                 oper,
     UInt                i )
 {
     Obj                 cache;
+    UInt		cacheIndex;
     UInt len;
     cache = CACHE_OPER( oper, i );
+    if ( cache == 0 )
+    {
+      /* This is a safe form of double-checked locking, because
+       * the cache value is not a reference. */
+      LockCache();
+      cache = CACHE_OPER( oper, i );
+      if (cache == 0 )
+      {
+        CacheSize++;
+	cacheIndex = CacheSize;
+        CACHE_OPER( oper, i ) = INTOBJ_INT(cacheIndex);
+      }
+      else
+        cacheIndex = INT_INTOBJ(cache);
+      UnlockCache();
+    }
+    else
+      cacheIndex = INT_INTOBJ(cache);
+    if (cacheIndex > TLS(MethodCacheSize))
+    {
+      UInt len = TLS(MethodCacheSize);
+      while (cacheIndex > len)
+	len *= 2;
+      GROW_PLIST(TLS(MethodCache), len);
+      SET_LEN_PLIST(TLS(MethodCache), len);
+      TLS(MethodCacheItems) = ADDR_OBJ(TLS(MethodCache));
+      TLS(MethodCacheSize) = len;
+    }
+    cache = ELM_PLIST(TLS(MethodCache), cacheIndex);
     if ( cache == 0 ) {
         len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2));
         cache = NEW_PLIST( T_PLIST, len);
         SET_LEN_PLIST( cache, len ); 
-        CACHE_OPER( oper, i ) = cache;
-        CHANGED_BAG( oper );
+        SET_ELM_PLIST( TLS(MethodCache), cacheIndex, cache );
+        CHANGED_BAG( TLS(MethodCache) );
     }
     return cache;
 }
 
 #define GET_METHOD_CACHE( oper, i ) \
-    CACHE_OPER( oper, i )
+  ( TLS(MethodCacheItems)[INT_INTOBJ( CACHE_OPER ( oper, i ))] )
 
 Obj DoOperation0Args (
     Obj                 oper )
@@ -1811,7 +1894,8 @@ Obj DoOperation1Args (
     Obj                 prec;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 1 ) );
@@ -1902,8 +1986,10 @@ Obj DoOperation2Args (
     Obj                 prec;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
@@ -2002,10 +2088,12 @@ Obj DoOperation3Args (
     Obj                 prec;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
     prec = INTOBJ_INT(-1);
@@ -2107,10 +2195,14 @@ Obj DoOperation4Args (
 
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
@@ -2222,11 +2314,16 @@ Obj DoOperation5Args (
 
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( type5 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
@@ -2355,12 +2452,18 @@ Obj DoOperation6Args (
 
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
-    type6 = TYPE_OBJ_FEO( arg6 );  id6 = ID_TYPE( type6 );
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( type5 );
+    type6 = TYPE_OBJ_FEO( arg6 );
+    id6 = ID_TYPE( type6 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
@@ -3035,8 +3138,11 @@ Obj NewOperation (
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2)) );
+/* TODO: Is there a better solution for this? */
+#if 0
+        cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+2) : 4 * (1+2)) );
         CACHE_OPER( oper, i ) = cache;
+#endif
         CHANGED_BAG(oper);
     }
 #endif
@@ -3054,7 +3160,6 @@ Obj NewOperation (
 
 *F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
 */
-UInt TLS(CacheIndex);
 
 Obj Constructor0Args;
 Obj NextConstructor0Args;
@@ -3288,8 +3393,8 @@ Obj DoConstructor2Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
     prec = INTOBJ_INT(-1);
@@ -3391,8 +3496,10 @@ Obj DoConstructor3Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
@@ -3500,9 +3607,12 @@ Obj DoConstructor4Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
@@ -3618,10 +3728,14 @@ Obj DoConstructor5Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( type5 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
@@ -3753,11 +3867,16 @@ Obj DoConstructor6Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
-    type6 = TYPE_OBJ_FEO( arg6 );  id6 = ID_TYPE( type6 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( type5 );
+    type6 = TYPE_OBJ_FEO( arg6 );
+    id6 = ID_TYPE( type6 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
@@ -4478,8 +4597,10 @@ Obj NewConstructor (
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+1) : CACHE_SIZE * (1+1)) );
+#if 0
+        cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+1) : 4 * (1+1)) );
         CACHE_OPER( oper, i ) = cache;
+#endif
         CHANGED_BAG(oper);
     }
 #endif
@@ -4565,7 +4686,9 @@ Obj DoAttribute (
     if ( ENABLED_ATTR( self ) == 1 ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
+        case T_ACOMOBJ:
         case T_POSOBJ:
+        case T_APOSOBJ:
         case T_DATOBJ:
             DoSetAttribute( SETTR_FILT(self), obj, val );
         }
@@ -4610,7 +4733,9 @@ Obj DoVerboseAttribute (
     if ( ENABLED_ATTR( self ) == 1 ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
+        case T_ACOMOBJ:
         case T_POSOBJ:
+        case T_APOSOBJ:
         case T_DATOBJ:
             DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
         }
@@ -4653,7 +4778,9 @@ Obj DoMutableAttribute (
     if ( ENABLED_ATTR( self ) == 1 ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
+        case T_ACOMOBJ:
         case T_POSOBJ:
+        case T_APOSOBJ:
         case T_DATOBJ:
             DoSetAttribute( SETTR_FILT(self), obj, val );
         }
@@ -4696,7 +4823,9 @@ Obj DoVerboseMutableAttribute (
     if ( ENABLED_ATTR( self ) == 1 ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
+        case T_ACOMOBJ:
         case T_POSOBJ:
+        case T_APOSOBJ:
         case T_DATOBJ:
             DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
         }
@@ -4920,26 +5049,29 @@ Obj DoSetProperty (
     /*N 1996/06/28 mschoene see hack below                                 */
     switch ( TNUM_OBJ( obj ) ) {
     case T_COMOBJ:
+    case T_ACOMOBJ:
+    case T_APOSOBJ:
     case T_POSOBJ:
     case T_DATOBJ:
-        flags = (val == True ? self : TESTR_FILT(self));
-        CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-        return 0;
-    }
-
-    if ( IS_PLIST(obj) || IS_RANGE(obj) || IS_STRING_REP(obj)
-           || IS_BLIST_REP(obj) )  {
+      flags = (val == True ? self : TESTR_FILT(self));
+      CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+      break;
+    default:
+      if ( IS_PLIST(obj) || IS_RANGE(obj) || IS_STRING_REP(obj)
+	   || IS_BLIST_REP(obj) )  {
         if ( val == True ) {
             FuncSET_FILTER_LIST( 0, obj, self );
         }
+      }
+      else {
+          ErrorReturnVoid(
+			"Value cannot be set for internal objects",
+			0L, 0L,
+			"you can 'return;' without setting it" );
+      }
     }
-    else {
-        ErrorReturnVoid(
-            "Value cannot be set for internal objects",
-            0L, 0L,
-            "you can 'return;' without setting it" );
-    }
-
+    
+    /* return the value                                                    */
     return 0;
 }
 
@@ -4984,7 +5116,9 @@ Obj DoProperty (
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
+        case T_ACOMOBJ:
         case T_POSOBJ:
+        case T_APOSOBJ:
         case T_DATOBJ:
             flags = (val == True ? self : TESTR_FILT(self));
             CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
@@ -5030,7 +5164,9 @@ Obj DoVerboseProperty (
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
+        case T_ACOMOBJ:
         case T_POSOBJ:
+        case T_APOSOBJ:
         case T_DATOBJ:
             flags = (val == True ? self : TESTR_FILT(self));
             CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
@@ -5195,7 +5331,7 @@ void InstallMethodArgs (
             ADDR_OBJ(oper)[i] = ADDR_OBJ(func)[i];
         }
     }
-    NAME_FUNC(oper) = name;
+    NAME_FUNC(oper) = ConvImmString(name);
     CHANGED_BAG(oper);
 }
 
@@ -5222,8 +5358,11 @@ void SaveOperationExtras (
     SaveUInt(ENABLED_ATTR(oper));
     for (i = 0; i <= 7; i++)
         SaveSubObj(METHS_OPER(oper,i));
+/* TODO: We probably don't want to save/restore the cache? */
+#if 0
     for (i = 0; i <= 7; i++)
         SaveSubObj(CACHE_OPER(oper,i));
+#endif
     return;
 }
 
@@ -5250,8 +5389,11 @@ void LoadOperationExtras (
     SET_ENABLED_ATTR(oper,i);
     for (i = 0; i <= 7; i++)
         METHS_OPER(oper,i) = LoadSubObj();
+/* TODO: We probably don't want to save/restore the cache? */
+#if 0
     for (i = 0; i <= 7; i++)
         CACHE_OPER(oper,i) = LoadSubObj();
+#endif
     return;
 }
 
@@ -5548,6 +5690,10 @@ Obj FuncCHANGED_METHODS_OPERATION (
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
         return 0;
     }
+    if (!PreThreadCreation) {
+        ErrorQuit("Methods may only be changed before thread creation",0L,0L);
+        return 0;
+    }
     n = INT_INTOBJ( narg );
     cacheBag = CacheOper( oper, (UInt) n );
     cache = ADDR_OBJ( cacheBag );
@@ -5600,8 +5746,14 @@ Obj DoSetterFunction (
     Obj                 flags;
     UInt                flag2;
     Obj                 type;
+    int			atomic = 0;
 
-    if ( TNUM_OBJ(obj) != T_COMOBJ ) {
+    switch (TNUM_OBJ(obj)) {
+      case T_ACOMOBJ:
+        atomic = 1;
+      case T_COMOBJ:
+        break;
+      default:
         ErrorQuit( "<obj> must be an component object", 0L, 0L );
         return 0L;
     }
@@ -5617,7 +5769,11 @@ Obj DoSetterFunction (
     }
 
     /* set the value                                                       */
-    AssPRec( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)), CopyObj(value,0) );
+    if (atomic)
+      SetARecordField( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)),
+        CopyObj(value,0) );
+    else
+      AssPRec( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)), CopyObj(value,0) );
     CALL_2ARGS( SET_FILTER_OBJ, obj, tester );
     return 0;
 }
@@ -5635,7 +5791,7 @@ Obj FuncSETTER_FUNCTION (
     WRAP_NAME(fname, name, "SetterFunc");
     func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, CSTR_STRING(fname), 2,
                          "object, value", DoSetterFunction );
-    tmp = NEW_PLIST( T_PLIST, 2 );
+    tmp = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
     SET_ELM_PLIST( tmp, 2, filter );
@@ -5654,11 +5810,15 @@ Obj DoGetterFunction (
     Obj                 self,
     Obj                 obj )
 {
-    if ( TNUM_OBJ(obj) != T_COMOBJ ) {
+    switch (TNUM_OBJ(obj)) {
+      case T_COMOBJ:
+        return ElmPRec( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
+      case T_ACOMOBJ:
+        return GetARecordField( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
+      default:
         ErrorQuit( "<obj> must be an component object", 0L, 0L );
         return 0L;
     }
-    return ElmPRec( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
 }
 
 
@@ -6251,6 +6411,12 @@ static Int InitKernel (
 
     /* import copy of REREADING */
     ImportGVarFromLibrary( "REREADING", &REREADING );
+
+#ifdef HPCGAP
+    /* initialize cache mutex */
+    pthread_mutex_init(&CacheLock, NULL);
+#endif
+
     /* return success                                                      */
     return 0;
 }
@@ -6267,7 +6433,7 @@ static Int postRestore (
     StructInitInfo *    module )
 {
 
-  CountFlags = LEN_LIST(VAL_GVAR(GVarName("FILTERS")))+1;
+  CountFlags = LEN_LIST(ValGVar(GVarName("FILTERS")))+1;
   return 0;
 }
 
@@ -6306,6 +6472,9 @@ static Int InitLibrary (
     SET_LEN_PLIST(HIDDEN_IMPS, 0);
     WITH_HIDDEN_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, hidden_imps_cache_length * 2);
     SET_LEN_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hidden_imps_cache_length * 2);
+    
+    REGION(HIDDEN_IMPS) = NewRegion();
+    REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE) = REGION(HIDDEN_IMPS);
 
     /* make the 'true' operation                                           */  
     ReturnTrueFilter = NewReturnTrueFilter();
@@ -6314,6 +6483,7 @@ static Int InitLibrary (
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
     C_NEW_STRING_CONST(TRY_NEXT_METHOD, "TRY_NEXT_METHOD");
+    RetypeBag(TRY_NEXT_METHOD, T_STRING+IMMUTABLE);
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
     /* init filters and functions                                          */
@@ -6347,6 +6517,25 @@ static StructInitInfo module = {
 StructInitInfo * InitInfoOpers ( void )
 {
     return &module;
+}
+
+/****************************************************************************
+**
+*F  InitOpersTLS() . . . . . . . . . . . . . . . . . . . . . . initialize TLS
+*F  DestroyOpersTLS()  . . . . . . . . . . . . . . . . . . . . .  destroy TLS
+*/
+
+void InitOpersTLS()
+{
+  TLS(MethodCache) = NEW_PLIST(T_PLIST, 1);
+  TLS(MethodCacheItems) = ADDR_OBJ(TLS(MethodCache));
+  TLS(MethodCacheSize) = 1;
+  SET_LEN_PLIST(TLS(MethodCache), 1);
+}
+
+void DestroyOpersTLS()
+{
+  /* Nothing for now. */
 }
 
 

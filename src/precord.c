@@ -43,6 +43,7 @@
 #include        "ariths.h"              /* basic arithmetic                */
 #include        "records.h"             /* generic records                 */
 #include        "lists.h"               /* generic lists                   */
+#include        "integer.h"             /* arbitrary size integers         */
 
 #include        "bool.h"                /* booleans                        */
 
@@ -90,6 +91,19 @@ Obj TypePRecImm (
     Obj                 prec )
 {
     return TYPE_PREC_IMMUTABLE;
+}
+
+/****************************************************************************
+**
+*F  SetTypePRecToComObj( <rec>, <kind> )  convert record to component object
+**
+*/
+
+void SetTypePRecToComObj( Obj rec, Obj kind )
+{
+  TYPE_COMOBJ(rec) = kind;
+  RetypeBag(rec, T_COMOBJ);
+  CHANGED_BAG(rec);
 }
 
 
@@ -747,14 +761,21 @@ Obj FuncREC_NAMES (
     Obj                 rec )
 {
     /* check the argument                                                  */
-    while ( ! IS_PREC_REP(rec) ) {
-        rec = ErrorReturnObj(
-            "RecNames: <rec> must be a record (not a %s)",
-            (Int)TNAM_OBJ(rec), 0L,
-            "you can replace <rec> via 'return <rec>;'" );
+    UInt tnum;
+    for (;;) {
+      tnum = TNUM_OBJ(rec);
+      switch (tnum) {
+        case T_PREC:
+	case T_PREC+IMMUTABLE:
+	  return InnerRecNames(rec);
+	case T_AREC:
+	  return InnerRecNames(FromAtomicRecord(rec));
+      }
+      rec = ErrorReturnObj(
+	  "RecNames: <rec> must be a record (not a %s)",
+	  (Int)TNAM_OBJ(rec), 0L,
+	  "you can replace <rec> via 'return <rec>;'" );
     }
-
-    return InnerRecNames( rec );
 }
 
 
@@ -768,13 +789,20 @@ Obj FuncREC_NAMES_COMOBJ (
     Obj                 rec )
 {
     /* check the argument                                                  */
-    while ( TNUM_OBJ(rec) != T_COMOBJ ) {
-        rec = ErrorReturnObj(
-            "RecNames: <rec> must be a component object (not a %s)",
-            (Int)TNAM_OBJ(rec), 0L,
-            "you can replace <rec> via 'return <rec>;'" );
+    UInt tnum;
+    for (;;) {
+      tnum = TNUM_OBJ(rec);
+      if (tnum == T_COMOBJ)
+        return InnerRecNames(rec);
+      if (tnum == T_ACOMOBJ) {
+        rec = FromAtomicRecord(rec);
+	return InnerRecNames(rec);
+      }
+      rec = ErrorReturnObj(
+	  "RecNames: <rec> must be a component object (not a %s)",
+	  (Int)TNAM_OBJ(rec), 0L,
+	  "you can replace <rec> via 'return <rec>;'" );
     }
-    return InnerRecNames( rec );
 }
 
 
@@ -918,6 +946,48 @@ void LoadPRec( Obj prec )
   return;
 }
 
+/* Temporarily borrowed by AK from the IO package for timing
+   (see also an entry for this in GVarFuncs below) */
+
+#ifndef USE_GMP
+static Obj MyObjInt_Int(Int i)
+{
+    Obj n;
+    Int bound = 1L << NR_SMALL_INT_BITS;
+    if (i >= bound) {
+        /* We have to make a big integer */
+        n = NewBag(T_INTPOS,4*sizeof(TypDigit));
+        ADDR_INT(n)[0] = (TypDigit) (i & ((Int) INTBASE - 1L));
+        ADDR_INT(n)[1] = (TypDigit) (i >> NR_DIGIT_BITS);
+        ADDR_INT(n)[2] = 0;
+        ADDR_INT(n)[3] = 0;
+        return n;
+    } else if (-i > bound) {
+        n = NewBag(T_INTNEG,4*sizeof(TypDigit));
+        ADDR_INT(n)[0] = (TypDigit) ((-i) & ((Int) INTBASE - 1L));
+        ADDR_INT(n)[1] = (TypDigit) ((-i) >> NR_DIGIT_BITS);
+        ADDR_INT(n)[2] = 0;
+        ADDR_INT(n)[3] = 0;
+        return n;
+    } else {
+        return INTOBJ_INT(i);
+    }
+}
+#else
+#define MyObjInt_Int(i) ObjInt_Int(i)
+#endif
+
+Obj Func_gettimeofday( Obj self )
+{
+   Obj tmp;
+   struct timeval tv;
+   gettimeofday(&tv, NULL);
+   tmp = NEW_PREC(0);
+   AssPRec(tmp, RNamName("tv_sec"), MyObjInt_Int( tv.tv_sec ));
+   AssPRec(tmp, RNamName("tv_usec"), MyObjInt_Int( tv.tv_usec ));
+   return tmp;
+}
+
 /****************************************************************************
 **
 
@@ -955,6 +1025,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "LT_PREC", 2, "left, right",
       FuncLT_PREC, "src/precord.c:LT_PREC" },
+
+    { "CurrentTime", 0, "",
+      Func_gettimeofday, "src/precord.c:CurrentTime" },
 
     { 0 }
 
@@ -1030,6 +1103,8 @@ static Int InitKernel (
 
     TypeObjFuncs[ T_PREC            ] = TypePRecMut;
     TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRecImm;
+
+    SetTypeObjFuncs [ T_PREC ] = SetTypePRecToComObj;
 
     MakeImmutableObjFuncs[ T_PREC   ] = MakeImmutablePRec;
 

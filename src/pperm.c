@@ -51,10 +51,12 @@ Obj   EmptyPartialPerm;
 **  that require a zero-initialization need to do this at the start.
 */
 
-Obj TmpPPerm;
+#define  TmpPPerm TLS(TmpPPerm)
 
 static inline void ResizeTmpPPerm( UInt len ){
-  if(SIZE_OBJ(TmpPPerm)<len*sizeof(UInt4))
+  if (TmpPPerm == (Obj)0) 
+    TmpPPerm = NewBag(T_PPERM4, len*sizeof(UInt4));
+  else if (SIZE_BAG(TmpPPerm) < len*sizeof(UInt4))
     ResizeBag(TmpPPerm,len*sizeof(UInt4));
 }
 
@@ -280,8 +282,8 @@ Obj FuncSparsePartialPermNC( Obj self, Obj dom, Obj img ){
   if(!IS_PLIST(img)) PLAIN_LIST(img);
 
   // make dom and img immutable
-  if(IS_MUTABLE_OBJ(dom)) RetypeBag(dom, TNUM_OBJ(dom)+IMMUTABLE);
-  if(IS_MUTABLE_OBJ(img)) RetypeBag(img, TNUM_OBJ(img)+IMMUTABLE);
+  MakeImmutable(dom);
+  MakeImmutable(img);
   
   // create the pperm
   if(codeg<65536){ 
@@ -5850,7 +5852,7 @@ static Int InitKernel ( StructInitInfo *module )
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* make the buffer bag                                                 */
-    InitGlobalBag( &TmpPPerm, "src/pperm.c:TmpPPerm" );
+    /* InitGlobalBag( &TmpPPerm, "src/pperm.c:TmpPPerm" );		   */
     InitGlobalBag( &EmptyPartialPerm, "src/pperm.c:EmptyPartialPerm" );
 
     /* install the saving functions */
@@ -5941,7 +5943,7 @@ static Int InitLibrary ( StructInitInfo *module )
   /* init filters and functions                                          */
   InitGVarFuncsFromTable( GVarFuncs );
   InitGVarFiltsFromTable( GVarFilts );
-  TmpPPerm = NEW_PPERM4(1000);
+  TmpPPerm = 0;
 
   EmptyPartialPerm=NEW_PPERM2(0);
   

@@ -128,6 +128,7 @@ end);
 ##   numerically with a denominator of 'digits' digits.
 ##
 APPROXROOTS:=[];
+ShareSpecialObj(APPROXROOTS);
 
 BindGlobal("ApproximateRoot",function(arg)
 local r,e,f,x,nf,lf,c,store,letzt;
@@ -135,8 +136,12 @@ local r,e,f,x,nf,lf,c,store,letzt;
   e:=arg[2];
 
   store:= e<=10 and IsInt(r) and 0<=r and r<=100;
-  if store and IsBound(APPROXROOTS[e]) and IsBound(APPROXROOTS[e][r+1])
-    then return APPROXROOTS[e][r+1];
+  if store then
+      atomic readonly APPROXROOTS do
+          if IsBound(APPROXROOTS[e]) and IsBound(APPROXROOTS[e][r+1])
+          then return APPROXROOTS[e][r+1];
+          fi;
+      od;
   fi;
 
   if Length(arg)>2 then
@@ -170,10 +175,17 @@ local r,e,f,x,nf,lf,c,store,letzt;
   # until 3 times no improvement
   until c>2 or x in letzt;
   if store then
-    if not IsBound(APPROXROOTS[e]) then
-      APPROXROOTS[e]:=[];
-    fi;
-    APPROXROOTS[e][r+1]:=x;
+      atomic readwrite APPROXROOTS do
+          if not IsBound(APPROXROOTS[e]) then
+             APPROXROOTS[e]:=MigrateObj([],APPROXROOTS);
+             APPROXROOTS[e][r+1]:=x;
+             
+         elif IsBound(APPROXROOTS[e][r+1]) then
+             return APPROXROOTS[e][r+1];
+         else
+             APPROXROOTS[e][r+1] := x;
+         fi;
+     od;       
   fi;
   return x;
 end);

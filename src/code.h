@@ -35,7 +35,7 @@
 **
 **  'PtrBody' is a pointer to the current body.
 */
-extern  Stat *          PtrBody;
+/* TL: extern  Stat *          PtrBody; */
 
 
 /****************************************************************************
@@ -489,7 +489,7 @@ Obj FILENAME_STAT(Stat stat);
 **  'CodeResult'  is the result  of the coding, i.e.,   the function that was
 **  coded.
 */
-extern  Obj             CodeResult;
+/* TL: extern  Obj             CodeResult; */
 
 
 /****************************************************************************
@@ -728,8 +728,6 @@ extern  void            CodeForEnd ( void );
 **  'CodeAtomicEnd' is an action to code a atomic-statement.  It is called when
 **  the reader encounters  the end  of the  statement, i.e., immediate  after
 **  'CodeAtomicEndBody'.
-**
-**  These functions are just placeholders for the future HPC-GAP code.
 */
 
 void CodeAtomicBegin ( void );

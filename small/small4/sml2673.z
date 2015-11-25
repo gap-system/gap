@@ -4,6 +4,6 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 
-SMALL_GROUP_LIB[ 2673 ].pnil := rec( syl :=
+SMALL_GROUP_LIB[ 2673 ].pnil := AtomicRecord( `rec( syl :=
 [ 67 ], oper :=
-[ 160873398629 ] );
+[ 160873398629 ] ) );

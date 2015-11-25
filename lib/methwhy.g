@@ -125,7 +125,7 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
     Error("usage: ApplicableMethodTypes(<opr>,<arglist>[,<verbosity>[,<nr>]])");
   fi;
   oper:=arg[1];
-  isconstructor:=oper in CONSTRUCTORS;
+  isconstructor:=IS_CONSTRUCTOR(oper);
   obj:=arg[2];
   if Length(arg)>2 then
     verbos:=arg[3];
@@ -243,7 +243,7 @@ local i,l;
   fi;
   l:=ShallowCopy(arg[2]);
   for i in [1..Length(l)] do
-    if i=1 and arg[1] in CONSTRUCTORS then
+    if i=1 and IS_CONSTRUCTOR(arg[1]) then
       l[i]:=l[i];
     else
       l[i]:=TypeObj(l[i]);
@@ -296,16 +296,18 @@ end);
 BIND_GLOBAL("ShowImpliedFilters",function(fil)
 local flags,f,i,j,l,m,n;
   flags:=FLAGS_FILTER(fil);
-  f:=Filtered(IMPLICATIONS,x->IS_SUBSET_FLAGS(x[2],flags));
+  atomic readonly IMPLICATIONS do
+      f:=Filtered(IMPLICATIONS,x->IS_SUBSET_FLAGS(x[2],flags));
   l:=[];
   m:=[];
-  for i in f do
-    n:=SUB_FLAGS(i[2],flags); # the additional requirements
-    if SIZE_FLAGS(n)=0 then
-      Add(l,i[1]);
-    else
-      Add(m,[n,i[1]]);
-    fi;
+    for i in f do
+      n:=SUB_FLAGS(i[2],flags); # the additional requirements
+      if SIZE_FLAGS(n)=0 then
+        Add(l,i[1]);
+      else
+        Add(m,[n,i[1]]);
+      fi;
+    od;
   od;
   if Length(l)>0 then
     Print("Implies:\n");
@@ -328,7 +330,6 @@ local flags,f,i,j,l,m,n;
     od;
   fi;
 end);
-
 #############################################################################
 ##
 #F  PageSource( func ) . . . . . . . . . . . . . . . show source code in pager
@@ -377,6 +378,7 @@ BIND_GLOBAL("PageSource", function ( fun )
         Pager(rec(lines := StringFile(f), formatted := true, start := l));
     fi;
 end);
+
 
 #############################################################################
 ##

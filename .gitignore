@@ -31,7 +31,6 @@ doc/*/manual.lab
 doc/*/manual.pdf
 doc/*/manual.six
 
-pkg/
 extern/gmp*/
 
 dev/log
@@ -39,3 +38,12 @@ dev/log
 *.core
 *.rej
 *.orig
+
+/.sconf_temp/
+/.sconsign.dblite
+/src/dbgmacro.c
+/bin/current
+/bin/scons-local-2.2.0/
+/build/
+/extern/64bit/
+/gen/

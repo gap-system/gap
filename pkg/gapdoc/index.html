@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <link href="pkgreadme.css" type="text/css" rel="StyleSheet" />
+
+    <title>GAP package GAPDoc</title>
+  </head>
+
+  <body>
+ 
+  <!-- the header, probably package name -->
+  <h1><span class="pkg">GAP</span> package <span class="pkg">GAPDoc</span></h1>
+
+  <p class="maininfo">
+  <!-- author(s), possibly with link to homepage  -->
+  <strong>Authors: </strong> 
+    <a href="http://www.math.rwth-aachen.de/~Frank.Luebeck/">Frank Lübeck</a>
+    and
+    <a href="http://www-groups.mcs.st-and.ac.uk/~neunhoef/">Max 
+    Neunhöffer</a>
+    <br />
+
+  <!-- needed software/versions, probably at least GAP,  
+       maybe with appropriate links -->
+  <strong>Needs: </strong> <a href="http://www.gap-system.org">GAP</a> in
+  version at least 4.5.3<br />
+  and for  creating high  quality output of  <span class="pkg">GAPDoc</span>
+  documents a  sufficiently new  version of  <code>LaTeX/pdfLaTeX</code> and
+  certain <code>LaTeX</code> packages, <code>makeindex</code>.
+
+  
+  <br />
+
+  <!-- operating system needed for this package -->
+  <strong>Operating    systems:    </strong>    Any,    on    which    <span
+  class="pkg">GAP</span> and the programs mentioned above are running.
+  <br />
+
+  <!-- current version, maybe further version info, 
+       links to old versions ... -->
+  <strong>Current version: </strong> 1.5.1 (2/2012)
+  <br />
+  
+  <!-- status of the package  -->
+  <strong>Status:</strong> Accepted (since October 2006)
+  <br />
+
+  <!-- author/maintainer contact information, probably email 
+       address(es) with link(s)  -->
+  <strong>Contact: </strong> 
+  <a href="mailto:Frank.Luebeck@Math.RWTH-Aachen.De">
+  Frank.Luebeck@Math.RWTH-Aachen.De</a> or
+  <a href="mailto:neunhoef at mcs.st-and.ac.uk">neunhoef at mcs.st-and.ac.uk</a>
+  <br />
+
+  <!-- download location, maybe link to somewhere below -->
+  <strong>Download: </strong> See <a href="#ARCHS">below</a> for archives in
+  several formats.
+  <br />
+
+  <strong>History: </strong> This text file <a href="CHANGES.txt">CHANGES</a>
+  describes the most important differences to former versions of <span
+  class="pkg">GAPDoc</span>.
+  
+  </p>
+
+  <!-- enclose paragraphs below in <p> and </p> tags -->
+  
+  <h2>Description</h2>
+  
+  <p>
+  This    package  describes a document format for writing 
+  <span  class="pkg">GAP</span> documentation.
+  </p>
+
+  <p>
+  The  idea  is  to  define  a sufficiently  abstract  markup  language  for
+  <span  class="pkg">GAP</span>  documentation   which  can  be  (relatively
+  easily)   converted   into   different   output  formats.   We   used   <a
+  href="http://www.w3.org/XML/">XML</a> to define such a language.
+  </p>
+
+  <p>
+  This package provides:
+  </p> 
+ 
+  <ul>
+  <li>Utilities to <strong>use</strong> the  documentation 
+  which is written  in <span class="pkg">GAPDoc</span> format with the <span
+  class="pkg">GAP</span> help system.  
+  If you don't want to write your own (package)  documentation you can skip 
+  to the last point of this list.
+  </li>
+
+  <li>
+  The description of a markup language for <span  class="pkg">GAP</span> 
+  documentation (which is defined using the XML standard).
+  </li>
+
+  <li>
+  Three    example    documents    using   this    language:    The    <span
+  class="pkg">GAPDoc</span>  documentation  itself,  a short  example  which
+  demonstrates all constructs defined in the <span class="pkg">GAPDoc</span>
+  language, and  a very short example  explained in the introduction  of the
+  main documentation.
+  </li>
+
+  <li>
+  A mechanism for distributing  documentation among several files,
+  including source code files.
+  </li>
+
+  <li>
+  <span  class="pkg">GAP</span> programs (written by the first named 
+  author) which produce from 
+  documentation written in the GAPDoc language several document formats:
+  
+  <ul>
+      <li>
+       text format with color markup for onscreen browsing.
+      </li>
+      <li>
+      LaTeX format and from this PDF- (and DVI)-versions with hyperlinks.
+      </li>
+      <li>      
+      HTML (XHTML 1.0 strict) format for reading with a Web-browser (and
+      many hooks for CSS layout).
+      </li>
+  </ul>
+  </li>
+  <li>
+  Utility <span  class="pkg">GAP</span> programs which are used for the 
+  above but can be of independent interest as well: 
+    <ul>
+        <li>unicode strings with translations to and from  other encodings
+        </li>
+        <li>further utilities for manipulating strings
+        </li>
+        <li>tools for dealing with BibTeX data
+        </li>
+        <li>another data format BibXMLext for bibliographical data including
+            tools to manipulate/translate them
+        </li>
+        <li>a tool <code>ComposedDocument</code> for composing documents 
+            which are distributed in many files
+        </li>
+    </ul>
+  </li>
+  </ul>
+  
+  <h2>Installation</h2>
+
+  <p>
+  Just unpack one of the <a href="#ARCHS">archives</a> given below in the 
+  <code>pkg</code> subdirectory of your <span class="pkg">GAP</span> 
+  installation. 
+  </p>
+
+  <p>
+  Unpacking generates a subdirectory <code>GAPDoc-1.5.1</code>. 
+  </p>
+
+  <p>
+  That's    it!   (Maybe    you   want    to   read    the   help    section
+  '<code>?SetHelpViewer</code>' in the <span class="pkg">GAP</span> reference
+  manual.)
+  </p>
+
+  <p>
+  Installation outside the <span class="pkg">GAP</span> main directory: When
+  you  don't have  access to  the directory  of your  main <span
+  class="pkg">GAP</span>  installation
+  you  can  also  install  the  package  by  unpacking  inside  a  directory
+  <code>MYGAPDIR/pkg</code>.  (Don't forget  to  call <code>gap</code>  with
+  the  <code>-l  ";MYGAPDIR"</code> option.)  
+  The  only  drawback with  this
+  installation is that in the HTML  version of the package documentation the
+  links to the main <span class="pkg">GAP</span> manuals don't work. You can
+  correct this  by recompiling  the HTML version  of the  documentation: Say
+  <code>cd GAPDoc*; gap makedocrel.g</code>.
+  </p>
+  
+  <h2>Online Documentation</h2>
+
+  <!-- links to the documentation, maybe in several formats -->
+  <p>
+  Here is the documentation of the <span class="pkg">GAPDoc</span> package in 
+  several output formats. 
+  If you have installed the package as described above you can also access 
+  all of these documents from the <span class="pkg">GAP</span> online help.
+  </p>
+
+  <h3> Main <span  class="pkg">GAPDoc</span> documentation </h3>
+
+  <ul>
+  <li> <a href="doc/chap0.html">HTML-version</a> </li>
+  <li> <a href="doc/manual.pdf"><code>pdf</code>-version</a> </li>
+  <li> <a href="doc/manual.ps">postscript-version</a> (no color, for
+  printing)</li>
+  <li> text-version <a href="gapdoc.txt">with</a> and <a
+  href="gapdoc-nc.txt">without</a> color markup (you can read the colored 
+  version with <code>less</code> on a terminal screen, if it looks like 
+  garbage, type <code>-r&lt;CR&gt;</code> or start with <code>less -r</code>)
+  </li>
+  </ul>
+
+  <p>
+  There is  also an  example document  which uses  all constructs  which are
+  allowed  in  a  <span  class="pkg">GAPDoc</span> document.  Here  you  can
+  compare directly  the <span class="pkg">GAPDoc</span>-XML-source  code and
+  how it looks like in each format.
+  </p>
+
+  <h3> Example <span  class="pkg">GAPDoc</span> document </h3>
+  
+  <ul>
+  <li> <a href="example/chap0.html">HTML-version</a> </li>
+  <li> <a href="example/manual.pdf"><code>pdf</code>-version</a> </li>
+  <li> <a href="example/manual.ps">postscript-version</a> (no color, for
+  printing)</li>
+  <li> text-version <a href="example.txt">with</a> and <a
+  href="example-nc.txt">without</a> color markup.  </li>
+  </ul>
+  
+  <h2><a name="ARCHS" />Package Archives for Download</h2>
+  
+  <!-- direct links to package archives, maybe in several formats -->
+  <p>
+  The <span class="pkg">GAPDoc</span> package is availabe in several formats:
+  </p>
+
+  <ul>
+  <li>
+  <a href="GAPDoc-1.5.1.tar.gz"><code>GAPDoc-1.5.1.tar.gz</code></a>  
+  (GNU <code>tar</code> archive, <code>gzip</code>'ed)
+  </li>
+  <li>
+  <a href="GAPDoc-1.5.1.tar.bz2"><code>GAPDoc-1.5.1.tar.bz2</code></a>  
+  (GNU <code>tar</code> archive, <code>bzip2</code>'ed)
+  </li>
+  <li>
+  <a href="GAPDoc-1.5.1-win.zip"><code>GAPDoc-1.5.1-win.zip</code></a>  
+  (with DOS/Windows style line breaks in text files)
+  </li>
+  <li>
+  <a href="GAPDoc-1.5.1.zoo"><code>GAPDoc-1.5.1.zoo</code></a>  
+  (use  the "unzoo"  or  "unzoo.exe" from  the <span  class="pkg">GAP</span>
+  homepage)
+  </li>
+  </ul>
+
+  <p>
+  For <span class="pkg">GAP</span> 4.4.12 use the following older version
+  of <span class="pkg">GAPDoc</span>:
+  </p>
+  <ul>
+  <li>
+  <a href="GAPDoc-1.3.zoo"><code>GAPDoc-1.3.zoo</code></a>  
+  (use  the "unzoo"  or  "unzoo.exe" from  the <span  class="pkg">GAP</span>
+  homepage)
+  </li>
+  <li>
+  <a href="GAPDoc-1.3.tar.gz"><code>GAPDoc-1.3.tar.gz</code></a>  
+  (GNU <code>tar</code> archive, <code>gzip</code>'ed)
+  </li>
+  <li>
+  <a href="GAPDoc-1.3.tar.bz2"><code>GAPDoc-1.3.tar.bz2</code></a>  
+  (GNU <code>tar</code> archive, <code>bzip2</code>'ed)
+  </li>
+  <li>
+  <a href="GAPDoc-1.3-win.zip"><code>GAPDoc-1.3-win.zip</code></a>  
+  (with DOS/Windows style line breaks in text files)
+  </li>
+  </ul>
+
+  <hr />
+  <p class="foot">
+  <a href="mailto:Frank.Luebeck@Math.RWTH-Aachen.De">Frank Lübeck</a> / Last modified:
+Thu, 23 Feb 2012 16:06:34 +0100
+  </p>
+  </body>
+</html>
+

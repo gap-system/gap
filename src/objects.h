@@ -30,6 +30,45 @@
 #define Obj             Bag
 */
 
+/****************************************************************************
+**
+*F OVERFLOW_INT( <i> ) . . . . test if the result of an operation overflowed
+*F LSL_INT( <i> ) . . . . . . . . . . logical left shift of signed integers
+*F LSR_INT( <i> ) . . . . . . . . . . logical right shift of signed integers
+*F ASL_INT( <i> ) . . . . . . . . . arithmetic left shift of signed integers
+*F ASR_INT( <i> ) . . . . . . . . . arithmetic right shift of signed integers
+*F CPL_IF_NEG( <i>, <s> ) . . . logical complement if second argument is < 0
+**
+** These macros define various useful operations on signed integers in a
+** portable way. The only assumption is that the integers use two's
+** complement representation, which should be the case on all modern
+** processors
+*/
+
+#define OVERFLOW_INT(x) \
+  ((Int)((UInt)(x) ^ (((UInt)(x)) << 1)) < 0)
+
+#define HAVE_ASR ((-1L >> 1) == -1L)
+
+/* For testing:        */
+/* #define HAVE_ASR 0  */
+
+#define LSL_INT(x, y) \
+  ((Int)(((UInt)(x)) << (y)))
+
+#define LSR_INT(x, y) \
+  ((Int)(((UInt)(x)) >> (y)))
+
+#define ASL_INT(x, y) \
+  ((Int)(((UInt)(x)) << (y)))
+
+#define CPL_IF_NEG(x, y) ((x) ^ -((y)<0))
+
+#define ASR_INT(x, y) \
+  ((HAVE_ASR) ? (((Int)(x)) >> (y)) : \
+    CPL_IF_NEG(LSR_INT(CPL_IF_NEG((x), (x)), (y)), (x)))
+
+
 
 /****************************************************************************
 **
@@ -71,7 +110,7 @@
 **  'INTOBJ_INT' converts the C integer <i> to an (immediate) integer object.
 */
 #define INTOBJ_INT(i) \
-    ((Obj)(((Int)(i) << 2) + 0x01))
+    ((Obj)(ASL_INT(i,2)+1))
 
 
 /****************************************************************************
@@ -83,13 +122,7 @@
 /* Note that the C standard does not define what >> does here if the
  * value is negative. So we have to be careful if the C compiler
  * chooses to do a logical right shift. */
-#if HAVE_ARITHRIGHTSHIFT
-#define INT_INTOBJ(o) \
-    ((Int)(o) >> 2)
-#else
-#define INT_INTOBJ(o) \
-    (((Int)(o)-1) / 4)
-#endif
+#define INT_INTOBJ(o) ASR_INT((Int)(o), 2)
 
 
 
@@ -125,15 +158,9 @@
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The sum itself is stored in <o>.
 */
-#if HAVE_ARITHRIGHTSHIFT
 #define SUM_INTOBJS(o,l,r)             \
     ((o) = (Obj)((Int)(l)+(Int)(r)-1), \
-    (((Int)(o) << 1) >> 1) == (Int)(o) )
-#else
-#define SUM_INTOBJS(o,l,r)             \
-    ((o) = (Obj)((Int)(l)+(Int)(r)-1), \
-     ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
-#endif
+    (!OVERFLOW_INT((Int)(o))))
 
 
 /****************************************************************************
@@ -144,15 +171,9 @@
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The difference itself is stored in <o>.
 */
-#if HAVE_ARITHRIGHTSHIFT
 #define DIFF_INTOBJS(o,l,r)            \
     ((o) = (Obj)((Int)(l)-(Int)(r)+1), \
-     (((Int)(o) << 1) >> 1) == (Int)(o) )
-#else
-#define DIFF_INTOBJS(o,l,r)            \
-    ((o) = (Obj)((Int)(l)-(Int)(r)+1), \
-     ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
-#endif
+    (!OVERFLOW_INT((Int)(o))))
 
 
 /****************************************************************************
@@ -217,6 +238,19 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define IS_FFE(o)               \
                         ((Int)(o) & 0x02)
 
+/**************************************************************************
+ * **
+ * **
+ * *F  RegisterPackageTNUM( <name>, <typeObjFunc> )
+ * **
+ * **  Allocates a TNUM for use by a package. The parameters <name> and
+ * **  <typeObjFunc> are used to initialize the relevant entries in the
+ * **  InfoBags and TypeObjFuncs arrays.
+ * **
+ * **  If allocation fails (e.g. because no more TNUMs are available),
+ * **  a negative value is returned.
+ * */
+Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
@@ -291,21 +325,22 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_FLAGS                 (FIRST_CONSTANT_TNUM+11)
 #define T_MACFLOAT              (FIRST_CONSTANT_TNUM+12)
 #define T_LVARS                 (FIRST_CONSTANT_TNUM+13)   
-#define T_SINGULAR              (FIRST_CONSTANT_TNUM+14)   
-#define T_POLYMAKE              (FIRST_CONSTANT_TNUM+15)
-#define T_TRANS2                (FIRST_CONSTANT_TNUM+16)
-#define T_TRANS4                (FIRST_CONSTANT_TNUM+17)
-#define T_PPERM2                (FIRST_CONSTANT_TNUM+18)
-#define T_PPERM4                (FIRST_CONSTANT_TNUM+19)
-#define T_SPARE1                (FIRST_CONSTANT_TNUM+20)
-#define T_SPARE2                (FIRST_CONSTANT_TNUM+21)
-#define T_SPARE3                (FIRST_CONSTANT_TNUM+22)
-#define T_SPARE4                (FIRST_CONSTANT_TNUM+23)
+#define T_HVARS                 (FIRST_CONSTANT_TNUM+14)   
+#define T_SINGULAR              (FIRST_CONSTANT_TNUM+15)   
+#define T_POLYMAKE              (FIRST_CONSTANT_TNUM+16)
+#define T_TRANS2                (FIRST_CONSTANT_TNUM+17)
+#define T_TRANS4                (FIRST_CONSTANT_TNUM+18)
+#define T_PPERM2                (FIRST_CONSTANT_TNUM+19)
+#define T_PPERM4                (FIRST_CONSTANT_TNUM+20)
+#define T_SPARE1                (FIRST_CONSTANT_TNUM+21)
+#define T_SPARE2                (FIRST_CONSTANT_TNUM+22)
+#define T_SPARE3                (FIRST_CONSTANT_TNUM+23)
+#define T_SPARE4                (FIRST_CONSTANT_TNUM+24)
 #define LAST_CONSTANT_TNUM      (T_SPARE4)
 
 #define IMMUTABLE               1
 
-#define FIRST_IMM_MUT_TNUM      (LAST_CONSTANT_TNUM+1)    /* Should be even */
+#define FIRST_IMM_MUT_TNUM      (LAST_CONSTANT_TNUM+2)    /* Should be even */
 #define FIRST_RECORD_TNUM       FIRST_IMM_MUT_TNUM
 #define T_PREC                  (FIRST_RECORD_TNUM+ 0)
 #define LAST_RECORD_TNUM        (T_PREC+IMMUTABLE)
@@ -344,8 +379,14 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define LAST_LIST_TNUM          (T_STRING_SSORT+IMMUTABLE)
 #define LAST_IMM_MUT_TNUM       LAST_LIST_TNUM
 
+/* Object sets and maps */
+#define FIRST_OBJSET_TNUM	(LAST_LIST_TNUM+1)
+#define T_OBJSET		(FIRST_OBJSET_TNUM+0)
+#define T_OBJMAP		(FIRST_OBJSET_TNUM+2)
+#define LAST_OBJSET_TNUM	(T_OBJMAP+IMMUTABLE)
+
 /* IMMUTABLE is not used for external types but keep the parity */
-#define FIRST_EXTERNAL_TNUM     (LAST_LIST_TNUM+1)
+#define FIRST_EXTERNAL_TNUM     (LAST_OBJSET_TNUM+1)
 #define T_COMOBJ                (FIRST_EXTERNAL_TNUM+ 0)
 #define T_POSOBJ                (FIRST_EXTERNAL_TNUM+ 1)
 #define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
@@ -353,22 +394,60 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
      /* #define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 4)
         remove to get parity right */
 
+
+/* The next two TNUMA are BOTH external AND shared! */
+#define FIRST_SHARED_TNUM	(T_WPOBJ+1)
+#define T_APOSOBJ 		(FIRST_SHARED_TNUM+ 0)
+#define T_ACOMOBJ 		(FIRST_SHARED_TNUM+ 1)
+
+/* Primitive types */
+#define T_THREAD		(FIRST_SHARED_TNUM+ 2)
+#define T_MUTEX			(FIRST_SHARED_TNUM+ 3)
+#define T_CONDVAR		(FIRST_SHARED_TNUM+ 4)
+#define T_RWLOCK		(FIRST_SHARED_TNUM+ 5)
+#define T_MONITOR		(FIRST_SHARED_TNUM+ 6)
+#define T_REGION		(FIRST_SHARED_TNUM+ 7)
+/* User-programmable types */
+#define T_LOCK			(FIRST_SHARED_TNUM+ 8)
+#define T_SEMAPHORE		(FIRST_SHARED_TNUM+ 9)
+#define T_CHANNEL		(FIRST_SHARED_TNUM+ 10)
+#define T_BARRIER		(FIRST_SHARED_TNUM+ 11)
+#define T_SYNCVAR		(FIRST_SHARED_TNUM+ 12)
+#define T_FIXALIST		(FIRST_SHARED_TNUM+ 13)
+#define T_ALIST			(FIRST_SHARED_TNUM+ 14)
+#define T_AREC 			(FIRST_SHARED_TNUM+ 15)
+#define T_AREC_INNER 		(FIRST_SHARED_TNUM+ 16)
+#define T_TLREC 		(FIRST_SHARED_TNUM+ 17)
+#define T_TLREC_INNER 		(FIRST_SHARED_TNUM+ 18)
+
 /* reserve space for 50 package TNUMs */
 #define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
-#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+53)
+#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+43)
 
 #define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
-#define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
-#define LAST_VIRTUAL_TNUM LAST_EXTERNAL_TNUM
+
+#define LAST_SHARED_TNUM	(LAST_EXTERNAL_TNUM)
+
+#define LAST_REAL_TNUM          LAST_SHARED_TNUM
+#define LAST_VIRTUAL_TNUM 	LAST_SHARED_TNUM
 
 #define FIRST_COPYING_TNUM      (LAST_REAL_TNUM + 1)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)
 #define LAST_COPYING_TNUM       (LAST_REAL_TNUM + COPYING)
 
-/* share the same numbers between `COPYING' and `TESTING' */
-#define FIRST_TESTING_TNUM      FIRST_COPYING_TNUM
-#define TESTING                 COPYING
-#define LAST_TESTING_TNUM       LAST_COPYING_TNUM
+#if LAST_COPYING_TNUM > 254
+#error LAST_COPYING_TNUM out of range
+#endif
+
+/****************************************************************************
+**
+** Object flags for use with SET_OBJ_FLAG() etc.
+**
+*/
+
+#define TESTING (1 << 8)
+#define TESTED (1 << 9)
+#define FIXED_REGION (1 << 10)
 
 #if LAST_COPYING_TNUM > 254
 #error LAST_COPYING_TNUM out of range
@@ -386,7 +465,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #if T_BODY <= LAST_COPYING_TNUM
 #error T_BODY out of range
 #endif
-
 
 /****************************************************************************
 **
@@ -481,6 +559,18 @@ XXX nowhere used, throw away??? (FL)
 
 extern Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
+
+/****************************************************************************
+**
+*F  SET_TYPE_OBJ( <obj>, <kind> ) . . . . . . . . . . . set kind of an object
+**
+**  'SET_TYPE_OBJ' sets the kind <kind>of the object <obj>.
+*/
+#define SET_TYPE_OBJ(obj, kind) \
+  ((*SetTypeObjFuncs[ TNUM_OBJ(obj) ])( obj, kind ))
+
+extern void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
+
 /****************************************************************************
 **
 *F  SetTypeDatobj( <obj>, <kind> ) . . . . . . . .  set kind of a data object
@@ -488,7 +578,8 @@ extern Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 **  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
 
-#define SetTypeDatObj(obj, type)  SET_TYPE_DATOBJ(obj, type)
+extern void SetTypeDatObj( Obj obj, Obj type );
+
 
 /****************************************************************************
 **
@@ -518,6 +609,15 @@ extern void MakeImmutable( Obj obj );
 
 /****************************************************************************
 **
+*F  CheckedMakeImmutable( <obj> )  . . . . . . . . . make an object immutable
+**
+**  Same effect as MakeImmutable( <obj> ), but checks first that all
+**  subobjects lie in a writable region.
+*/
+extern void CheckedMakeImmutable( Obj obj );
+
+/****************************************************************************
+**
 *F  IS_MUTABLE_OBJ( <obj> ) . . . . . . . . . . . . . .  is an object mutable
 **
 **  'IS_MUTABLE_OBJ' returns   1 if the object  <obj> is mutable   (i.e., can
@@ -527,6 +627,18 @@ extern void MakeImmutable( Obj obj );
                         ((*IsMutableObjFuncs[ TNUM_OBJ(obj) ])( obj ))
 
 extern Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+
+/****************************************************************************
+**
+*F  IsInternallyMutableObj( <obj> ) . . . does an object have a mutable state
+**
+**  This function returns   1 if the object  <obj> has a mutable state, i.e.
+**  if its internal representation can change even though its outwardly
+**  visible properties do not, e.g. through code that transparently
+**  reorganizes its structure.
+*/
+
+extern Int IsInternallyMutableObj(Obj obj);
 
 /****************************************************************************
 **
@@ -692,12 +804,12 @@ extern void PrintObj (
 **  is the function '<func>(<obj>)' that should be called to print the object
 **  <obj> of this type.
 */
-extern Obj  PrintObjThis;
+/* TL: extern Obj  PrintObjThis; */
 
-extern Int  PrintObjIndex;
-extern Int  PrintObjDepth;
+/* TL: extern Int  PrintObjIndex; */
+/* TL: extern Int  PrintObjDepth; */
 
-extern Int  PrintObjFull;
+/* TL: extern Int  PrintObjFull; */
 
 extern void (* PrintObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 

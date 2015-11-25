@@ -16,19 +16,19 @@
 if not IsBound( LARGE_TASK )  then  LARGE_TASK := false;   fi;
 
 # set some global variables
-BindGlobal("STBBCKT_STRING_CENTRALIZER","Centralizer");
-BindGlobal("STBBCKT_STRING_REGORB1","_RegularOrbit1");
-BindGlobal("STBBCKT_STRING_REGORB2","RegularOrbit2");
-BindGlobal("STBBCKT_STRING_REGORB3","RegularOrbit3");
-BindGlobal("STBBCKT_STRING_SPLITOFF","SplitOffBlock");
-BindGlobal("STBBCKT_STRING_INTERSECTION","Intersection");
-BindGlobal("STBBCKT_STRING_PROCESSFIX","ProcessFixpoint");
-BindGlobal("STBBCKT_STRING_MAKEBLOX","_MakeBlox");
-BindGlobal("STBBCKT_STRING_SUBORBITS0","Suborbits0");
-BindGlobal("STBBCKT_STRING_SUBORBITS1","Suborbits1");
-BindGlobal("STBBCKT_STRING_SUBORBITS2","Suborbits2");
-BindGlobal("STBBCKT_STRING_SUBORBITS3","Suborbits3");
-BindGlobal("STBBCKT_STRING_TWOCLOSURE","TwoClosure");
+BindGlobal("STBBCKT_STRING_CENTRALIZER",MakeImmutable("Centralizer"));
+BindGlobal("STBBCKT_STRING_REGORB1",MakeImmutable("_RegularOrbit1"));
+BindGlobal("STBBCKT_STRING_REGORB2",MakeImmutable("RegularOrbit2"));
+BindGlobal("STBBCKT_STRING_REGORB3",MakeImmutable("RegularOrbit3"));
+BindGlobal("STBBCKT_STRING_SPLITOFF",MakeImmutable("SplitOffBlock"));
+BindGlobal("STBBCKT_STRING_INTERSECTION",MakeImmutable("Intersection"));
+BindGlobal("STBBCKT_STRING_PROCESSFIX",MakeImmutable("ProcessFixpoint"));
+BindGlobal("STBBCKT_STRING_MAKEBLOX",MakeImmutable("_MakeBlox"));
+BindGlobal("STBBCKT_STRING_SUBORBITS0",MakeImmutable("Suborbits0"));
+BindGlobal("STBBCKT_STRING_SUBORBITS1",MakeImmutable("Suborbits1"));
+BindGlobal("STBBCKT_STRING_SUBORBITS2",MakeImmutable("Suborbits2"));
+BindGlobal("STBBCKT_STRING_SUBORBITS3",MakeImmutable("Suborbits3"));
+BindGlobal("STBBCKT_STRING_TWOCLOSURE",MakeImmutable("TwoClosure"));
 
 # #############################################################################
 # ##
@@ -1883,6 +1883,13 @@ end);
 Refinements.(STBBCKT_STRING_TWOCLOSURE):=Refinements_TwoClosure;
 
 #############################################################################
+##  
+## After construction, made Refinements immutable for thread-safety 
+##
+MakeImmutable(Refinements);
+
+
+#############################################################################
 ##
 #F  NextLevelRegularGroups( <P>, <rbase> )  . . . . . . . . . . . . . . local
 ##
@@ -2618,9 +2625,10 @@ local Pr, div, B, rbase, data, N;
   else
     N := ShallowCopy( G );
   fi;
-  # remove cached information
-  Unbind(G!.suborbits);
-  Unbind(E!.suborbits);
+  # remove cached information (before this used Unbound and crashed.
+  # I've replaced unbinding to emptying. TODO: properly rework !. access)
+  G!.suborbits:=[];
+  E!.suborbits:=[];
 
   # bring the stabilizer chains back into a decent form
   ReduceStabChain(StabChainMutable(G));
@@ -2636,8 +2644,14 @@ Eh, Lh, Nh,G0;
 
   G := arg[ 1 ];
   E := arg[ 2 ];
-  Unbind(G!.suborbits); # in case any remained from interruption
-  Unbind(E!.suborbits);
+  # TODO: I guess this is only relevant after interruption, so as a quick 
+  # hack I've added checking `IsBound' so the error will occur only then.
+  if IsBound(G!.suborbits) then
+    Unbind(G!.suborbits); # in case any remained from interruption
+  fi;  
+  if IsBound(G!.suborbits) then
+    Unbind(E!.suborbits);
+  fi;  
   if IsTrivial( E ) or IsTrivial( G ) then
       return G;
   elif Size( E ) = 2  then

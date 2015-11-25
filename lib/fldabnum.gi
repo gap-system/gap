@@ -17,6 +17,10 @@
 ##  by their family.)
 ##
 
+atomic readwrite CYCLOTOMIC_FIELDS do
+  CYCLOTOMIC_FIELDS[1]:=Rationals;
+  CYCLOTOMIC_FIELDS[4]:=GaussianRationals;
+od;
 
 #############################################################################
 ##
@@ -99,10 +103,12 @@ InstallGlobalFunction( CyclotomicField, function ( arg )
     # The subfield is given by `Rationals' denoting the prime field.
     if subfield = Rationals then
 
-      # The standard field is required.  Look whether it is already stored.
-      if IsBound( CYCLOTOMIC_FIELDS[ xtension ] ) then
-        return CYCLOTOMIC_FIELDS[ xtension ];
-      fi;
+      # The standard field is required.  Look whether it is already stored
+      atomic readonly CYCLOTOMIC_FIELDS do
+      	if IsBound( CYCLOTOMIC_FIELDS[ xtension ] ) then
+        	return CYCLOTOMIC_FIELDS[ xtension ];	
+        fi;
+      od;
 
     elif IsAbelianNumberField( subfield ) then
 
@@ -120,13 +126,17 @@ InstallGlobalFunction( CyclotomicField, function ( arg )
 
     # If the standard field was constructed, store it.
     if subfield = Rationals then
-      CYCLOTOMIC_FIELDS[ xtension ]:= F;
+    	atomic readwrite CYCLOTOMIC_FIELDS do
+    		if IsBound( CYCLOTOMIC_FIELDS[ xtension ] ) then
+        		return CYCLOTOMIC_FIELDS[ xtension ];	
+        	fi;
+        	CYCLOTOMIC_FIELDS[ xtension ]:= F;
+        od;
     fi;
 
     # Return the field.
     return F;
 end );
-
 
 #############################################################################
 ##
@@ -249,23 +259,34 @@ InstallGlobalFunction( AbelianNumberField, function ( N, stabilizer )
     fi;
 
     # The standard field is required.  Look whether it is already stored.
-    if not IsBound( ABELIAN_NUMBER_FIELDS[1][N] ) then
-      ABELIAN_NUMBER_FIELDS[1][N]:= [];
-      ABELIAN_NUMBER_FIELDS[2][N]:= [];
-    fi;
-    pos:= Position( ABELIAN_NUMBER_FIELDS[1][N], stabilizer );
-    if pos <> fail then
-      return ABELIAN_NUMBER_FIELDS[2][N][ pos ];
-    fi;
-
+    atomic readonly ABELIAN_NUMBER_FIELDS do
+      if IsBound( ABELIAN_NUMBER_FIELDS[1][N] ) then
+          pos:= Position( ABELIAN_NUMBER_FIELDS[1][N], stabilizer );
+          if pos <> fail then
+              return ABELIAN_NUMBER_FIELDS[2][N][ pos ];
+          fi;
+      fi;
+    od;
+      
     # Construct the field.
     F:= AbelianNumberFieldByReducedGaloisStabilizerInfo( Rationals,
             N, stabilizer );
 
     # Store the field.
-    Add( ABELIAN_NUMBER_FIELDS[1][N], stabilizer );
-    Add( ABELIAN_NUMBER_FIELDS[2][N], F );
-
+    atomic readwrite ABELIAN_NUMBER_FIELDS do
+       if not IsBound( ABELIAN_NUMBER_FIELDS[1][N] ) then
+           ABELIAN_NUMBER_FIELDS[1][N]:= MigrateObj([],ABELIAN_NUMBER_FIELDS);
+           ABELIAN_NUMBER_FIELDS[2][N]:= MigrateObj([],ABELIAN_NUMBER_FIELDS);
+       fi;
+       pos:= Position( ABELIAN_NUMBER_FIELDS[1][N], stabilizer );
+       if pos <> fail then
+           # someone else constructed it at the same time
+           # return their version
+           return ABELIAN_NUMBER_FIELDS[2][N][ pos ];
+       fi;
+       Add( ABELIAN_NUMBER_FIELDS[1][N], MakeImmutable(stabilizer) );
+       Add( ABELIAN_NUMBER_FIELDS[2][N], F );
+    od;
     # Return the number field.
     return F;
 end );
@@ -1250,8 +1271,8 @@ InstallMethod( CanonicalBasis,
       # Fill in additional components.
       SetBasisVectors( B, List( lenst,
                                 x -> Sum( List( x, y -> E(N)^y ) ) ) );
-      B!.coeffslist  := List( lenst, x -> x[1] + 1 );
-      B!.lenstrabase := lenst;
+      B!.coeffslist  := `List( lenst, x -> x[1] + 1 );
+      B!.lenstrabase := `lenst;
       B!.conductor   := N;
 #T better compute basis vectors only if necessary
 #T (in the case of a normal basis the vectors are of course known ...)
@@ -1513,7 +1534,7 @@ InstallMethod( CanonicalBasis,
       SetIsIntegralBasis( B, true );
 
       # Construct the Zumbroich basis.
-      B!.zumbroichbase := ZumbroichBase( n, Conductor( subfield ) );
+      B!.zumbroichbase := `ZumbroichBase( n, Conductor( subfield ) );
 
     else
 
@@ -1558,8 +1579,8 @@ InstallMethod( CanonicalBasis,
       SetBasisVectors( B, vectors );
       SetIsNormalBasis( B, true );
 
-      B!.zumbroichbase := zumb - 1;
-      B!.coeffsmat     := coeffsmat;
+      B!.zumbroichbase := `(zumb - 1);
+      B!.coeffsmat     := `coeffsmat;
 
     fi;
 

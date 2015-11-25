@@ -62,6 +62,7 @@ DeclareGlobalVariable( "TRANSCOMBCACHE", "combinations cache" );
 DeclareGlobalVariable( "TRANSARRCACHE", "arrangements cache" );
 DeclareGlobalVariable( "TRANSSHAPEFREQS", "frequencies of shapes" );
 
+BindGlobal("TRANSREGION", NewLibraryRegion("transitive groups region"));
 
 #############################################################################
 ##

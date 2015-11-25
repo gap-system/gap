@@ -144,12 +144,16 @@
 **  It is created in 'InitCyc' with room for up to 1000 coefficients  and  is
 **  resized when need arises.
 */
-Obj ResultCyc;
+/* TL: Obj ResultCyc; */
 
 void GrowResultCyc(UInt size) {
     Obj *res;
     UInt i;
-    if ( LEN_PLIST(TLS(ResultCyc)) < size ) {
+    if (TLS(ResultCyc) == 0) {
+        TLS(ResultCyc) = NEW_PLIST( T_PLIST, size );
+        res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
+        for ( i = 0; i < size; i++ ) { res[i] = INTOBJ_INT(0); }
+    } else if ( LEN_PLIST(TLS(ResultCyc)) < size ) {
         GROW_PLIST( TLS(ResultCyc), size );
         SET_LEN_PLIST( TLS(ResultCyc), size );
         res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
@@ -175,8 +179,8 @@ void GrowResultCyc(UInt size) {
 **  is called to compute $e_n^i$ and can then do this easier by just  putting
 **  1 at the <i>th place in 'ResultCyc' and then calling 'Cyclotomic'.
 */
-Obj  LastECyc;
-UInt LastNCyc;
+/* TL: Obj  LastECyc; */
+/* TL: UInt TLS(LastNCyc); */
 
 
 /****************************************************************************
@@ -2152,12 +2156,6 @@ static Int InitKernel (
     InfoBags[ T_CYC ].name = "cyclotomic";
     InitMarkFuncBags( T_CYC, MarkCycSubBags );
 
-    /* create the result buffer                                            */
-    InitGlobalBag( &ResultCyc , "src/cyclotom.c:ResultCyc" );
-
-    /* tell Gasman about the place were we remember the primitive root     */
-    InitGlobalBag( &LastECyc, "src/cyclotom.c:LastECyc" );
-
     /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_CYC", &TYPE_CYC );
     TypeObjFuncs[ T_CYC ] = TypeCyc;
@@ -2226,6 +2224,7 @@ static Int InitKernel (
     ProdFuncs[ T_CYC    ][ T_INTNEG ] = ProdCycInt;
     ProdFuncs[ T_CYC    ][ T_RAT    ] = ProdCycInt;
 
+    MakeBagTypePublic(T_CYC);
     /* return success                                                      */
     return 0;
 }

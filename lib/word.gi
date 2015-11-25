@@ -157,7 +157,7 @@ end);
 ##
 ##  This representation is equal to the external representation.
 ##
-DeclareRepresentation( "IsBracketRep", IsPositionalObjectRep, [] );
+DeclareRepresentation( "IsBracketRep", IsAtomicPositionalObjectRep, [] );
 
 
 #############################################################################

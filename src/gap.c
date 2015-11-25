@@ -24,6 +24,8 @@
 #include	<sys/time.h>
 #include <unistd.h> /* move this and wrap execvp later */
 
+/* TL: extern char * In; */
+
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
@@ -97,10 +99,21 @@
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
 #include        "profile.h"             /* profiling                       */
+#include	"serialize.h"		/* object serialization		   */
+
 #ifdef GAPMPI
 #include        "gapmpi.h"              /* ParGAP/MPI                      */
 #endif
 
+#ifdef WITH_ZMQ
+#include	"zmqgap.h"		/* GAP ZMQ support		   */
+#endif
+
+#include        "thread.h"
+#include        "tls.h"
+#include        "threadapi.h"
+#include        "aobjects.h"
+#include        "objset.h"
 #include        "thread.h"
 #include        "tls.h"
 #include        "aobjects.h"
@@ -201,6 +214,7 @@ void ViewObjHandler ( Obj obj )
 */
 UInt QUITTINGGVar;
 
+Obj ErrorHandler;               /* not yet settable from GAP level */
 
 typedef struct {
     const Char *                name;
@@ -221,9 +235,9 @@ char *original_argv0;
 static char **sysargv;
 static char **sysenviron;
 
-Obj ShellContext = 0;
-Obj BaseShellContext = 0;
-UInt ShellContextDepth;
+/* TL: Obj ShellContext = 0; */
+/* TL: Obj BaseShellContext = 0; */
+/* TL: UInt ShellContextDepth; */
 
 
 Obj Shell ( Obj context, 
@@ -307,9 +321,9 @@ Obj Shell ( Obj context,
 
       /* remember the value in 'last'    */
       if (lastDepth >= 3)
-        AssGVar( Last3, VAL_GVAR( Last2 ) );
+        AssGVar( Last3, ValGVarTL( Last2 ) );
       if (lastDepth >= 2)
-        AssGVar( Last2, VAL_GVAR( Last  ) );
+        AssGVar( Last2, ValGVarTL( Last  ) );
       if (lastDepth >= 1)
         AssGVar( Last,  TLS(ReadEvalResult)   );
 
@@ -423,7 +437,7 @@ Obj FuncSHELL (Obj self, Obj args)
     ErrorMayQuit("SHELL takes 10 arguments",0,0);
   
   context = ELM_PLIST(args,1);
-  if (TNUM_OBJ(context) != T_LVARS)
+  if (TNUM_OBJ(context) != T_LVARS && TNUM_OBJ(context) != T_HVARS)
     ErrorMayQuit("SHELL: 1st argument should be a local variables bag",0,0);
   
   if (ELM_PLIST(args,2) == True)
@@ -730,9 +744,25 @@ int DoFixGac(char *myself)
 }
 #endif
 
-#ifdef COMPILECYGWINDLL
-#define main realmain
+int realmain (
+	  int                 argc,
+	  char *              argv [],
+          char *              environ [] );
+
+int main (
+	  int                 argc,
+	  char *              argv [],
+          char *              environ [] )
+{
+#ifdef PRINT_BACKTRACE
+  void InstallBacktraceHandlers();
+  InstallBacktraceHandlers();
 #endif
+  RunThreadedMain(realmain, argc, argv, environ);
+  return 0;
+}
+
+#define main realmain
 
 int main (
           int                 argc,
@@ -767,6 +797,7 @@ int main (
        ErrorCount = 0; */
   NrImportedGVars = 0;
   NrImportedFuncs = 0;
+  ErrorHandler = (Obj) 0;
   TLS(UserHasQUIT) = 0;
   TLS(UserHasQuit) = 0;
   SystemErrorCode = 0;
@@ -865,6 +896,26 @@ Obj FuncRUNTIMES( Obj     self)
   SET_ELM_PLIST(res, 3, INTOBJ_INT( SyTimeChildren() ));
   SET_ELM_PLIST(res, 4, INTOBJ_INT( SyTimeChildrenSys() ));
   return res;
+}
+
+
+/****************************************************************************
+**
+*F  FuncSystemClock( <self> . . . . . . . . . internal function 'SystemClock'
+**
+**  'FuncSystemClock' implements the internal function 'SystemClock'.
+**
+**  'SystemClock()'
+**
+**  'SystemClock' returns the current value of the system clock, as reported
+**  by gettimeofday(), as a floating point number valued in seconds.
+*/
+
+Obj FuncSystemClock(Obj self)
+{
+  struct timeval t;
+  gettimeofday(&t, NULL);
+  return NEW_MACFLOAT( (double) t.tv_sec + ((double) t.tv_usec) / 1000000.0);
 }
 
 
@@ -1138,11 +1189,11 @@ Obj FuncWindowCmd (
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
 
-Obj  ErrorLVars0;    
-Obj  ErrorLVars;
-Int  ErrorLLevel;
+/* Obj  ErrorLVars0;    */
+/* TL: Obj  ErrorLVars; */
+/* TL: Int  ErrorLLevel; */
 
-extern Obj BottomLVars;
+/* TL: extern Obj BottomLVars; */
 
 
 void DownEnvInner( Int depth )
@@ -1263,7 +1314,7 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
 */
   
 /* syJmp_buf CatchBuffer; */
-Obj ThrownObject = 0;
+/* TL: Obj ThrownObject = 0; */
 
 Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
 {
@@ -1274,6 +1325,8 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     Obj result;
     Int recursionDepth;
     Stat currStat;
+    int lockSP;
+    Region *savedRegion;
     if (!IS_FUNC(func))
       ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <func> must be a function",0,0);
     if (!IS_LIST(args))
@@ -1290,6 +1343,8 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     currStat = TLS(CurrStat);
     recursionDepth = TLS(RecursionDepth);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
+    lockSP = RegionLockSP();
+    savedRegion = TLS(currentRegion);
     if (sySetjmp(TLS(ReadJmpError))) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
@@ -1301,6 +1356,10 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       TLS(CurrStat) = currStat;
       TLS(RecursionDepth) = recursionDepth;
+      PopRegionLocks(lockSP);
+      TLS(currentRegion) = savedRegion;
+      if (TLS(CurrentHashLock))
+        HashUnlock(TLS(CurrentHashLock));
     } else {
       switch (LEN_PLIST(plain_args)) {
       case 0: result = CALL_0ARGS(func);
@@ -1328,6 +1387,9 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
         break;
       default: result = CALL_XARGS(func, plain_args);
       }
+      /* There should be no locks to pop off the stack, but better safe than sorry. */
+      PopRegionLocks(lockSP);
+      TLS(currentRegion) = savedRegion;
       SET_ELM_PLIST(res,1,True);
       if (result)
         {
@@ -1350,8 +1412,8 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
 }
 
 
-UInt UserHasQuit;
-UInt UserHasQUIT;
+/* TL: UInt UserHasQuit; */
+/* TL: UInt UserHasQUIT; */
 UInt SystemErrorCode;
 
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
@@ -1447,7 +1509,10 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
 	 of func. So */
       if (SyAlarmHasGoneOff) {
 	SyAlarmHasGoneOff = 0;
-	UnInterruptExecStat();
+  // TODO : Fix in HPC-GAP
+  //UnInterruptExecStat();
+  Pr("Alarms not implemented in HPC-GAP",0,0);
+  abort();
       }
       assert(NumAlarmJumpBuffers);
       NumAlarmJumpBuffers--;
@@ -1511,7 +1576,7 @@ static Obj ErrorMessageToGAPString(
     Int                 arg1,
     Int                 arg2 )
 {
-  Char message[120];
+  Char message[500];
   Obj Message;
   SPrTo(message, sizeof(message), msg, arg1, arg2);
   message[sizeof(message)-1] = '\0';
@@ -1532,6 +1597,9 @@ Obj CallErrorInner (
   Obj EarlyMsg;
   Obj r = NEW_PREC(0);
   Obj l;
+  Obj result;
+  Region *savedRegion = TLS(currentRegion);
+  TLS(currentRegion) = TLS(threadRegion);
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
   AssPRec(r, RNamName("context"), TLS(CurrLVars));
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
@@ -1543,8 +1611,9 @@ Obj CallErrorInner (
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(TLS(CurrStat));
-  Obj res =  CALL_2ARGS(ErrorInner,r,l);
-  return res;
+  result = CALL_2ARGS(ErrorInner,r,l);  
+  TLS(currentRegion) = savedRegion;
+  return result;
 }
 
 void ErrorQuit (
@@ -2758,6 +2827,7 @@ Obj FuncExportToKernelFinished (
 
 Obj FuncSleep( Obj self, Obj secs )
 {
+  extern UInt HaveInterrupt();
   Int  s;
 
   while( ! IS_INTOBJ(secs) )
@@ -2769,7 +2839,7 @@ Obj FuncSleep( Obj self, Obj secs )
     SySleep((UInt)s);
   
   /* either we used up the time, or we were interrupted. */
-  if (SyIsIntr())
+  if (HaveInterrupt())
     {
       ClearError(); /* The interrupt may still be pending */
       ErrorReturnVoid("user interrupt in sleep", 0L, 0L,
@@ -2791,6 +2861,37 @@ static int SetExitValue(Obj code)
   else
     return 0;
   return 1;
+}
+
+
+/****************************************************************************
+**
+*F  FuncMicroSleep( <self>, <secs> )
+**
+*/
+
+Obj FuncMicroSleep( Obj self, Obj msecs )
+{
+  extern UInt HaveInterrupt();
+  Int  s;
+
+  while( ! IS_INTOBJ(msecs) )
+    msecs = ErrorReturnObj( "<usecs> must be a small integer", 0L, 0L, 
+                           "you can replace <usecs> via 'return <usecs>;'" );
+
+  
+  if ( (s = INT_INTOBJ(msecs)) > 0)
+    SyUSleep((UInt)s);
+  
+  /* either we used up the time, or we were interrupted. */
+  if (HaveInterrupt())
+    {
+      ClearError(); /* The interrupt may still be pending */
+      ErrorReturnVoid("user interrupt in microsleep", 0L, 0L,
+                    "you can 'return;' as if the microsleep was finished");
+    }
+  
+  return (Obj) 0;
 }
 
 /****************************************************************************
@@ -2864,6 +2965,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   Char *p;
   Obj tmp,list,str;
   UInt i,j;
+  extern UInt SyNumProcessors;
 
   /* GAP_ARCHITECTURE                                                    */
   C_NEW_STRING_DYN( tmp, SyArchitecture );
@@ -2944,7 +3046,9 @@ Obj FuncKERNEL_INFO(Obj self) {
   C_NEW_STRING_DYN( str, CONFIGNAME );
   r = RNamName("CONFIGNAME");
   AssPRec(res, r, str);
-  
+  r = RNamName("NUM_CPUS");
+  AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
+
   /* export if we want to use readline  */
   r = RNamName("HAVE_LIBREADLINE");
   if (SyUseReadline)
@@ -2952,8 +3056,94 @@ Obj FuncKERNEL_INFO(Obj self) {
   else
     AssPRec(res, r, False);
 
+  MakeImmutable(res);
+  
   return res;
   
+}
+
+/****************************************************************************
+**
+*F FuncTHREAD_UI  ... Whether we use a multi-threaded interface
+**
+*/
+
+Obj FuncTHREAD_UI(Obj self)
+{
+  extern UInt ThreadUI;
+  return ThreadUI ? True : False;
+}
+
+
+/****************************************************************************
+**
+*F FuncGETPID  ... export UNIX getpid to GAP level
+**
+*/
+
+Obj FuncGETPID(Obj self) {
+  return INTOBJ_INT(getpid());
+}
+
+GVarDescriptor GVarTHREAD_INIT;
+GVarDescriptor GVarTHREAD_EXIT;
+
+void ThreadedInterpreter(void *funcargs) {
+  Obj tmp, func;
+  int i;
+
+  /* intialize everything and begin an interpreter                       */
+  TLS(StackNams)   = NEW_PLIST( T_PLIST, 16 );
+  TLS(CountNams)   = 0;
+  TLS(ReadTop)     = 0;
+  TLS(ReadTilde)   = 0;
+  TLS(CurrLHSGVar) = 0;
+  TLS(IntrCoding) = 0;
+  TLS(IntrIgnoring) = 0;
+  TLS(NrError) = 0;
+  TLS(ThrownObject) = 0;
+  TLS(BottomLVars) = NewBag( T_HVARS, 3*sizeof(Obj) );
+  tmp = NewFunctionC( "bottom", 0, "", 0 );
+  PTR_BAG(TLS(BottomLVars))[0] = tmp;
+  tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+  BODY_FUNC( PTR_BAG(TLS(BottomLVars))[0] ) = tmp;
+  TLS(CurrLVars) = TLS(BottomLVars);
+
+  IntrBegin( TLS(BottomLVars) );
+  tmp = KEPTALIVE(funcargs);
+  StopKeepAlive(funcargs);
+  func = ELM_PLIST(tmp, 1);
+  for (i=2; i<=LEN_PLIST(tmp); i++)
+  {
+    Obj item = ELM_PLIST(tmp, i);
+    SET_ELM_PLIST(tmp, i-1, item);
+  }
+  SET_LEN_PLIST(tmp, LEN_PLIST(tmp)-1);
+
+  if (!READ_ERROR()) {
+    Obj init, exit;
+    if (sySetjmp(TLS(threadExit)))
+      return;
+    init = GVarOptFunction(&GVarTHREAD_INIT);
+    if (init) CALL_0ARGS(init);
+    FuncCALL_FUNC_LIST((Obj) 0, func, tmp);
+    exit = GVarOptFunction(&GVarTHREAD_EXIT);
+    if (exit) CALL_0ARGS(exit);
+    PushVoidObj();
+    /* end the interpreter                                                 */
+    IntrEnd( 0UL );
+  } else {
+    IntrEnd( 1UL );
+    ClearError();
+  } 
+}
+
+UInt BreakPointValue;
+
+Obj BREAKPOINT(Obj self, Obj arg) {
+  if (IS_INTOBJ(arg))
+    BreakPointValue = INT_INTOBJ(arg);
+  return (Obj) 0;
 }
 
 
@@ -2965,6 +3155,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "Runtime", 0, "",
       FuncRuntime, "src/gap.c:Runtime" },
+
+    { "SystemClock", 0, "",
+      FuncSystemClock, "src/gap.c:SystemClock" },
 
     { "RUNTIMES", 0, "",
       FuncRUNTIMES, "src/gap.c:RUNTIMES" },
@@ -3038,6 +3231,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "WindowCmd", 1, "arg-list",
       FuncWindowCmd, "src/gap.c:WindowCmd" },
 
+    { "MicroSleep", 1, "msecs",
+      FuncMicroSleep, "src/gap.c:MicroSleep" },
 
     { "Sleep", 1, "secs",
       FuncSleep, "src/gap.c:Sleep" },
@@ -3076,8 +3271,17 @@ static StructGVarFunc GVarFuncs [] = {
     { "KERNEL_INFO", 0, "",
       FuncKERNEL_INFO, "src/gap.c:KERNEL_INFO" },
 
+    { "THREAD_UI", 0, "",
+      FuncTHREAD_UI, "src/gap.c:THREAD_UI" },
+
     { "SetUserHasQuit", 1, "value",
       FuncSetUserHasQuit, "src/gap.c:SetUserHasQuit" },
+
+    { "GETPID", 0, "",
+      FuncGETPID, "src/gap.c:GETPID" },
+
+    { "BREAKPOINT", 1, "num",
+      BREAKPOINT, "src/gap.c:BREAKPOINT" },
 
     { "MASTER_POINTER_NUMBER", 1, "ob",
       FuncMASTER_POINTER_NUMBER, "src/gap.c:MASTER_POINTER_NUMBER" },
@@ -3103,7 +3307,7 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* init the completion function                                        */
-    InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      );
+    /* InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      ); */
 
     /* list of exit functions                                              */
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
@@ -3117,6 +3321,9 @@ static Int InitKernel (
     ImportFuncFromLibrary(  "ViewObj", 0L );
     ImportFuncFromLibrary(  "Error", &Error );
     ImportFuncFromLibrary(  "ErrorInner", &ErrorInner );
+
+    DeclareGVar(&GVarTHREAD_INIT, "THREAD_INIT");
+    DeclareGVar(&GVarTHREAD_EXIT, "THREAD_EXIT");
 
 
 #if HAVE_SELECT
@@ -3294,9 +3501,20 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     /* main module                                                         */
     InitInfoGap,
 
+    /* threads                                                             */
+    InitInfoThreadAPI,
+    InitInfoAObjects,
+    InitInfoObjSets,
+    InitInfoSerialize,
+
 #ifdef GAPMPI
     /* ParGAP/MPI module                                                   */
     InitInfoGapmpi,
+#endif
+
+#ifdef WITH_ZMQ
+    /* ZeroMQ module */
+    InitInfoZmq,
 #endif
 
     0
@@ -3436,6 +3654,9 @@ void InitializeGap (
             }
         }
     }
+
+    InitMainThread();
+    InitTLS();
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);

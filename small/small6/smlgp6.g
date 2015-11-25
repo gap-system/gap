@@ -3,7 +3,7 @@
 #W  smlgp6.g                 GAP group library             Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-##  This file contains the reading and constrution functions for the groups
+##  This file contains the reading and construction functions for the groups
 ##  of size 1152 and 1920.
 ##
 
@@ -58,8 +58,8 @@ SMALL_GROUP_FUNCS[ 12 ] := function( size, i, inforec )
     fi;
 
     if not IsBound( SMALL_GROUP_LIB[ size ] ) then
-        SMALL_GROUP_LIB[ size ] := rec( 2nil := rec(),
-                                        n2nil := [ ] );
+        SMALL_GROUP_LIB[ size ] := AtomicRecord( rec( 2nil := AtomicRecord( rec() ),
+                                        n2nil := AtomicList( [ ] ) ) );
     fi;
 
     if ( size = 1152 and i <= 148656 ) or

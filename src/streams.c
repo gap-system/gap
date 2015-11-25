@@ -277,8 +277,8 @@ static void READ_TEST_OR_LOOP(void)
         if ( type == 0 && TLS(ReadEvalResult) != 0 ) {
 
             /* remember the value in 'last' and the time in 'time'         */
-            AssGVar( Last3, VAL_GVAR( Last2 ) );
-            AssGVar( Last2, VAL_GVAR( Last  ) );
+            AssGVar( Last3, ValGVarTL( Last2 ) );
+            AssGVar( Last2, ValGVarTL( Last  ) );
             AssGVar( Last,  TLS(ReadEvalResult)   );
 
             /* print the result                                            */
@@ -1023,7 +1023,7 @@ Obj FuncREAD_STREAM_LOOP (
         return False;
     }
     if ( catcherrstdout == True )
-      TLS(IgnoreStdoutErrout) = TLS(Output);
+      TLS(IgnoreStdoutErrout) = GetCurrentOutput();
     else
       TLS(IgnoreStdoutErrout) = NULL;
 
@@ -2014,6 +2014,25 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
   return INTOBJ_INT(fdi);
 }
 
+Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
+{
+  Int fd;
+  int fdi;
+  while (fid == (Obj) 0 || !(IS_INTOBJ(fid)))
+  {
+    fid = ErrorReturnObj(
+           "<fid> must be a small integer (not a %s)",
+           (Int)TNAM_OBJ(fid),0L,
+           "you can replace <fid> via 'return <fid>;'" );
+  }
+  fd = INT_INTOBJ(fid);
+  fdi = syBuf[fd].fp;
+  if (onoff == False || onoff == Fail)
+    return syStopraw(fdi), False;
+  else
+    return syStartraw(fdi) ? True : False;
+}
+
 #if HAVE_SELECT
 Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist, 
                    Obj timeoutsec, Obj timeoutusec)
@@ -2377,6 +2396,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "FD_OF_FILE", 1L, "fid",
       FuncFD_OF_FILE, "src/streams.c:FD_OF_FILE" },
+
+    { "RAW_MODE_FILE", 2L, "fid, bool",
+      FuncRAW_MODE_FILE, "src/streams.c:RAW_MODE_FILE" },
 
 #ifdef HAVE_SELECT
     { "UNIXSelect", 5L, "inlist, outlist, exclist, timeoutsec, timeoutusec",

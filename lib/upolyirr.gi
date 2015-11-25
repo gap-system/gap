@@ -37,18 +37,24 @@ end;
 #V  IRR_POLS_OVER_GF_CACHE:  a cache for the following function
 ##  
 IRR_POLS_OVER_GF_CACHE := [];
+ShareSpecialObj( IRR_POLS_OVER_GF_CACHE );
 ##  RedCoeffDirectFun := ApplicableMethod(ReduceCoeffs,[[Z(3)],1,[Z(3)],1]);
 AllIrreducibleMonicPolynomialCoeffsOfDegree := function(n, q)
   local   l,  zero,  i,  r,  p, new, neverdiv;
-  if not IsBound(IRR_POLS_OVER_GF_CACHE[q]) then
-    IRR_POLS_OVER_GF_CACHE[q] := [];
-  fi;
-  if IsBound(IRR_POLS_OVER_GF_CACHE[q][n]) then
-    return IRR_POLS_OVER_GF_CACHE[q][n];
-  fi;
   
-  # this is for going around converting coefficients to polynomials 
-  # and using the \mod operator for divisibility tests
+  # check if IRR_POLS_OVER_GF_CACHE[q][n] is known and return if it is
+  atomic readonly IRR_POLS_OVER_GF_CACHE do
+    if IsBound(IRR_POLS_OVER_GF_CACHE[q]) then
+      if IsBound(IRR_POLS_OVER_GF_CACHE[q][n]) then
+        return IRR_POLS_OVER_GF_CACHE[q][n];
+      fi;
+    fi;
+  od;  
+  
+  # compute IRR_POLS_OVER_GF_CACHE[q][n] if it is not known
+  
+  # this auxiliary function is for going around converting coefficients 
+  # to polynomials and using the \mod operator for divisibility tests
   # (I found a speedup factor of about 6 in the example n=9, q=3) 
   neverdiv := function(r, p)
     local   lr,  lp,  rr,  pp;
@@ -58,7 +64,7 @@ AllIrreducibleMonicPolynomialCoeffsOfDegree := function(n, q)
       pp := ShallowCopy(p);
       # here we go around method selection which gives a 10% speedup
       ReduceCoeffs(pp, lp, rr, lr);
-##        RedCoeffDirectFun(pp, lp, rr, lr);
+      ## RedCoeffDirectFun(pp, lp, rr, lr);
       ShrinkRowVector(pp);
       if Length(pp)=0 then
         return false;
@@ -66,6 +72,12 @@ AllIrreducibleMonicPolynomialCoeffsOfDegree := function(n, q)
     od;
     return true;
   end;
+
+  atomic readwrite IRR_POLS_OVER_GF_CACHE do
+  
+  if not IsBound(IRR_POLS_OVER_GF_CACHE[q]) then
+    IRR_POLS_OVER_GF_CACHE[q] := MigrateObj([],IRR_POLS_OVER_GF_CACHE);
+  fi;
   
   l := AllMonicPolynomialCoeffsOfDegree(n, q);
   zero := 0*Indeterminate(GF(q));
@@ -79,8 +91,12 @@ AllIrreducibleMonicPolynomialCoeffsOfDegree := function(n, q)
     od;
     l := new;
   od;
+  
   IRR_POLS_OVER_GF_CACHE[q][n] := Immutable(l);
   return IRR_POLS_OVER_GF_CACHE[q][n];  
+  
+  od;
+  
 end;
 
 #############################################################################

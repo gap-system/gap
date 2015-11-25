@@ -18,17 +18,17 @@
 ##  ``post restore functions'' mechanism.
 ##
 
-BIND_GLOBAL( "GAPInfo", rec(
+BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
 
 # do not edit the following three lines. Occurences of `4.dev' and `today'
 # will be replaced by string matching by distribution wrapping scripts.
-    Version := "4.dev",
-    Date := "today",
-    NeedKernelVersion := "4.dev",
+    Version := `"4.dev",
+    Date := `"today",
+    NeedKernelVersion := `"4.dev",
 
 # Without the needed packages, GAP does not start.
     Dependencies := rec(
-      NeededOtherPackages := [
+      NeededOtherPackages := `[
         [ "gapdoc", ">= 1.2" ],
       ],
     ),
@@ -36,23 +36,27 @@ BIND_GLOBAL( "GAPInfo", rec(
     HasReadGAPRC:= false,
 
     # list of all reserved keywords
-    Keywords:=ALL_KEYWORDS(),
+    Keywords:=MakeImmutable(ALL_KEYWORDS()),
 
     # the maximal number of arguments a method can have
     MaxNrArgsMethod:= 6,
 
     # caches of functions that are needed also with a workspace
-    AtExitFuncs:= [],
-    PostRestoreFuncs:= [],
+    AtExitFuncs:= AtomicList([]),
+    PostRestoreFuncs:= AtomicList([]),
 
-    TestData:= rec(),
+    TestData:= ThreadLocalRecord( rec() ),
 
     # admissible command line options
     # (name of the option, default value, descr. strings for help page;
     # if no help string appears then option is not advertised in the help)
     # These options must be kept in sync with those in system.c, so the help output
     # for those options is correct
-    CommandLineOptionData := [
+    CommandLineOptionData := `[
+      rec( short:= "S", default := false, help := ["disable/enable multi-threaded interface"] ),
+      rec( short:= "P", default := "0", arg := "<num>", help := ["set number of logical processors"] ),
+      rec( short:= "G", default := "0", arg := "<num>", help := ["set number of GC threads"] ),
+      rec( short:= "Z", default := false, help := ["enforce ordering of region locks"] ),
       rec( short:= "h", long := "help", default := false, help := ["print this help and exit"] ),
       rec( short:= "b", long := "banner", default := false, help := ["disable/enable the banner"] ),
       rec( short:= "q", long := "quiet", default := false, help := ["enable/disable quiet mode"] ),
@@ -107,8 +111,8 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( long := "cover", default := "", arg := "<file>",
            help := [ "Run CoverageLineByLine(<filename>) on GAP start"] ),
           ],
-    ) );
-
+    ) ));
+  
 
 #############################################################################
 ##
@@ -211,7 +215,8 @@ end);
 ##    In case of `-h' print a help screen and exit.
 ##
 CallAndInstallPostRestore( function()
-    local j, i, CommandLineOptions, opt, InitFiles, line, word, value, padspace;
+    local j, i, CommandLineOptions, CommandLineOptionData,
+          opt, InitFiles, line, word, value, padspace;
 
     GAPInfo.KernelInfo:= KERNEL_INFO();
     GAPInfo.KernelVersion:= GAPInfo.KernelInfo.KERNEL_VERSION;
@@ -227,21 +232,25 @@ CallAndInstallPostRestore( function()
     od;
     # On 32-bit we have to adjust some values:
     if GAPInfo.BytesPerVariable = 4 then
+      CommandLineOptionData := SHALLOW_COPY_OBJ( GAPInfo.CommandLineOptionData );
       i := 1;
       while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
             not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
             GAPInfo.CommandLineOptionData[i].short <> "m" do i := i + 1; od;
-      GAPInfo.CommandLineOptionData[i].default := "64m";
+      CommandLineOptionData[i] := SHALLOW_COPY_OBJ( CommandLineOptionData[i] );
+      CommandLineOptionData[i].default := "64m";
       i := 1;
       while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
             not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
             GAPInfo.CommandLineOptionData[i].short <> "o" do i := i + 1; od;
-      GAPInfo.CommandLineOptionData[i].default := "1g";
+      CommandLineOptionData[i] := SHALLOW_COPY_OBJ( CommandLineOptionData[i] );
+      CommandLineOptionData[i].default := "1g";
       i := 1;
       while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
             not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
             GAPInfo.CommandLineOptionData[i].short <> "s" do i := i + 1; od;
-      GAPInfo.CommandLineOptionData[i].default := "1500m";
+      CommandLineOptionData[i] := SHALLOW_COPY_OBJ( CommandLineOptionData[i] );
+      CommandLineOptionData[i].default := "1500m";
     fi;
 
     # The exact command line which called GAP as list of strings;
@@ -265,25 +274,25 @@ CallAndInstallPostRestore( function()
     fi;
 
     # directory caches
-    GAPInfo.DirectoriesLibrary:= rec();
+    GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
     GAPInfo.DirectoriesPrograms:= false;
-    GAPInfo.DirectoriesTemporary:= [];
+    GAPInfo.DirectoriesTemporary:= AtomicList([]);
     GAPInfo.DirectoryCurrent:= false;
-    GAPInfo.DirectoriesSystemPrograms:= [];
+    GAPInfo.DirectoriesSystemPrograms:= AtomicList([]);
     if IsBound(GAPInfo.SystemEnvironment.PATH) then
       j:= 1;
       for i in [1..LENGTH(GAPInfo.SystemEnvironment.PATH)] do
         if GAPInfo.SystemEnvironment.PATH[i] = ':' then
           if i > j then
             ADD_LIST_DEFAULT(GAPInfo.DirectoriesSystemPrograms,
-                  GAPInfo.SystemEnvironment.PATH{[j..i-1]});
+                  `GAPInfo.SystemEnvironment.PATH{[j..i-1]});
           fi;
           j := i+1;
         fi;
       od;
       if j <= LENGTH( GAPInfo.SystemEnvironment.PATH ) then
         ADD_LIST_DEFAULT( GAPInfo.DirectoriesSystemPrograms,
-            GAPInfo.SystemEnvironment.PATH{ [ j ..
+            `GAPInfo.SystemEnvironment.PATH{ [ j ..
                 LENGTH( GAPInfo.SystemEnvironment.PATH ) ] } );
       fi;
     fi;

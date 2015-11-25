@@ -225,7 +225,7 @@ IGNORE_IMMEDIATE_METHODS := false;
 ##  </ManSection>
 ##
 BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
-    function( oper, desc, filter, rank, method )
+    function( oper, name, filter, rank, method )
 
     local   flags,
             relev,
@@ -235,7 +235,9 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
             ignore,
             j,
             k,
-            replace;
+            replace,
+            pos,
+            imm;
 
     # Check whether <oper> really is an operation.
     if not IS_OPERATION(oper)  then
@@ -273,6 +275,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     flags:= relev;
 
     atomic FILTER_REGION do
+
     # Remove requirements that are implied by the remaining ones.
     # (Note that it is possible to have implications from a filter
     # to another one with a bigger number.)
@@ -309,7 +312,11 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     od;
 
     # We install the method for the requirements in `relev'.
-    ADD_LIST( IMMEDIATE_METHODS, method );
+    # 'pos' is saved for modifying 'imm' below.
+    # TODO: this way of changing IMMEDIATE_METHODS should be atomic
+    pos:=LEN_LIST( IMMEDIATE_METHODS );
+    IMMEDIATE_METHODS[pos+1]:=method;
+    pos:=pos+1;
 
     for j  in relev  do
 
@@ -321,48 +328,52 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
 #T the property tester should remain in IMM_FLAGS.
 #T (This would make an if statement in `RunImmediateMethods' unnecessary!)
 
-      # Find the place to put the new method.
-      if not IsBound( IMMEDIATES[j] ) then
-          IMMEDIATES[j]:= [];
-      fi;
-      i := 0;
-      while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
-          i := i + 7;
-      od;
+	  # Find the place to put the new method.
+	  if not IsBound( IMMEDIATES[j] ) then
+	      IMMEDIATES[j]:= MakeImmutable([]);
+	  fi;
+	  i := 0;
+	  while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
+	      i := i + 7;
+	  od;
+	  
+	  # Now is a good time to see if the method is already there 
+	  if REREADING then
+	      replace := false;
+	      k := i;
+	      while k < LEN_LIST(IMMEDIATES[j]) and 
+		rank = IMMEDIATES[j][k+5] do
+		  if name = IMMEDIATES[j][k+7] and
+		     oper = IMMEDIATES[j][k+1] and
+		     FLAGS_FILTER( filter ) = IMMEDIATES[j][k+4] then
+		      replace := true;
+		      i := k;
+		      break;
+		  fi;
+		  k := k+7;
+	      od;
+	  fi;
+	  
+	  # push the other functions back
       
-      # Now is a good time to see if the method is already there 
-      if REREADING then
-          replace := false;
-          k := i;
-          while k < LEN_LIST(IMMEDIATES[j]) and 
-            rank = IMMEDIATES[j][k+5] do
-              if desc = IMMEDIATES[j][k+7] and
-                 oper = IMMEDIATES[j][k+1] and
-                 FLAGS_FILTER( filter ) = IMMEDIATES[j][k+4] then
-                  replace := true;
-                  i := k;
-                  break;
-              fi;
-              k := k+7;
-          od;
-      fi;
-      
-      # push the other functions back
-      if not REREADING or not replace then
-          IMMEDIATES[j]{[i+8..7+LEN_LIST(IMMEDIATES[j])]}
-            := IMMEDIATES[j]{[i+1..LEN_LIST(IMMEDIATES[j])]};
-      fi;
-
-      # install the new method
-      IMMEDIATES[j][i+1] := oper;
-      IMMEDIATES[j][i+2] := SETTER_FILTER( oper );
-      IMMEDIATES[j][i+3] := FLAGS_FILTER( TESTER_FILTER( oper ) );
-      IMMEDIATES[j][i+4] := FLAGS_FILTER( filter );
-      IMMEDIATES[j][i+5] := rank;
-      IMMEDIATES[j][i+6] := LEN_LIST( IMMEDIATE_METHODS );
-      IMMEDIATES[j][i+7] := IMMUTABLE_COPY_OBJ(desc);
-
-    od;
+	  # ShallowCopy is not bound yet, so we take a sublist
+	  imm:=IMMEDIATES[j]{[1..LEN_LIST(IMMEDIATES[j])]};
+	  
+	  if not REREADING or not replace then
+	      imm{[i+8..7+LEN_LIST(imm)]} := imm{[i+1..LEN_LIST(imm)]};
+	  fi;
+	  
+	  # install the new method
+	  imm[i+1] := oper;
+	  imm[i+2] := SETTER_FILTER( oper );
+	  imm[i+3] := FLAGS_FILTER( TESTER_FILTER( oper ) );
+	  imm[i+4] := FLAGS_FILTER( filter );
+	  imm[i+5] := rank;
+	  imm[i+6] := pos;
+	  imm[i+7] := IMMUTABLE_COPY_OBJ(name);
+	 
+	  IMMEDIATES[j]:=MakeImmutable(imm);
+	od;
     od;
 end );
 
@@ -460,6 +471,8 @@ end );
 
 
 #############################################################################
+##  #I  immediate: IsFreeAbelian
+##  #I  immediate: IsTorsionFree
 ##
 #F  TraceImmediateMethods( <flag> )
 ##
@@ -484,8 +497,6 @@ end );
 ##  gap> Size( g );
 ##  #I  immediate: IsNonTrivial
 ##  #I  immediate: Size
-##  #I  immediate: IsFreeAbelian
-##  #I  immediate: IsTorsionFree
 ##  #I  immediate: IsNonTrivial
 ##  #I  immediate: GeneralizedPcgs
 ##  #I  immediate: IsPerfectGroup
@@ -576,7 +587,7 @@ BIND_GLOBAL( "NewOperation", function ( name, filters )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
     atomic readwrite OPERATIONS_REGION do
-    ADD_LIST( OPERATIONS, oper );
+        ADD_LIST( OPERATIONS, oper );
         ADD_LIST( OPERATIONS, MigrateObj([ filt ], OPERATIONS_REGION ) );
     od;    
     return oper;
@@ -689,15 +700,15 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
 	    if    INFO_FILTERS[ pos ] in FNUM_TPRS
              or INFO_FILTERS[ pos ] in FNUM_ATTS then
 
-          # `gvar' is an attribute tester or property tester.
-          Error( "operation `", name,
-                 "' is an attribute tester or property tester" );
+	      # `gvar' is an attribute tester or property tester.
+	      Error( "operation `", name,
+		     "' is an attribute tester or property tester" );
 
-        else
+	    else
 
-          # `gvar' is a property.
-          Error( "operation `", name,
-                 "' was created as a property, use`DeclareProperty'" );
+	      # `gvar' is a property.
+	      Error( "operation `", name,
+		     "' was created as a property, use`DeclareProperty'" );
 
         fi;
 	  od;
@@ -1091,16 +1102,49 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     else
         getter := NEW_ATTRIBUTE( name );
     fi;
-    if LEN_LIST(arg) = 3 and IS_INT(arg[3]) then
-        rank := arg[3];
-    else
-        rank := 1;
-    fi;
-    ADD_LIST(OPERATIONS,getter);
-    ADD_LIST(OPERATIONS, [ [ flags ] ]);
-    OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
-    # store the information about the filtera
-    # And return the getter
+
+    # store the information about the filter
+    atomic FILTER_REGION do
+        INFO_FILTERS[ FLAG2_FILTER(getter) ] := 6;
+    od;
+
+    # add getter, setter and tester to the list of operations
+    setter := SETTER_FILTER( getter );
+    tester := TESTER_FILTER( getter );
+
+    atomic readwrite OPERATIONS_REGION do
+    ADD_LIST( OPERATIONS, getter );
+    ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
+    ADD_LIST( OPERATIONS, setter );
+    ADD_LIST( OPERATIONS, MigrateObj([ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ], OPERATIONS_REGION ) );
+    ADD_LIST( OPERATIONS, tester );
+    ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
+    od;
+    
+    # install the default functions
+    atomic FILTER_REGION do
+	FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+    od;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
+
+    # the <tester> is newly made, therefore  the cache cannot contain a  flag
+    # list involving <tester>
+    InstallHiddenTrueMethod( filter, tester );
+    # CLEAR_HIDDEN_IMP_CACHE();
+
+    # run the attribute functions
+    RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
+
+    # store the rank
+    atomic FILTER_REGION do
+	if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+	    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := arg[3];
+	else
+	    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+	fi;
+    od;
+
+    # and return the getter
     return getter;
 end );
 
@@ -1137,15 +1181,17 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
       # The variable exists already.
       gvar:= VALUE_GLOBAL( name );
 
-      # Check that the variable is in fact bound to an operation.
-      if not IS_OPERATION( gvar ) then
-        Error( "variable `", name, "' is not bound to an operation" );
-      fi;
+	# Check that the variable is in fact bound to an operation.
+	if not IS_OPERATION( gvar ) then
+	  Error( "variable `", name, "' is not bound to an operation" );
+	fi;
 
-      # The attribute has already been declared.
-      # If it was not created as an attribute
-      # then we may be able to convert it
-      if FLAG2_FILTER( gvar ) = 0 or gvar in FILTERS then
+	# The attribute has already been declared.
+	# If it was not created as an attribute
+	# then ask for re-declaration as an ordinary operation.
+	# (Note that the values computed for objects matching the new
+	# requirements cannot be stored.)
+	if FLAG2_FILTER( gvar ) = 0 or gvar in FILTERS then
 
           # `gvar' is not an attribute (tester) and not a property (tester),
           # or `gvar' is a filter;
@@ -1428,7 +1474,7 @@ BIND_GLOBAL( "DeclareProperty", function ( arg )
     name:= arg[1];
 
     if ISB_GVAR( name ) then
-
+    
       atomic readwrite OPERATIONS_REGION do
 
       gvar:= VALUE_GLOBAL( name );

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#A        Frank LÃ¼beck
+#A        Frank Lübeck
 ##  
 ##  Usage:   cd <GAPDIR>/pkg;  ../etc/packpack <pack>
 ##  
@@ -17,6 +17,7 @@
 ##  *.txt, *.gi, *.gd, *.g, *.c, *.h, *.htm, *.html, *.xml, *.tex, 
 ##  *.six, *.bib, *.tst, README.*, INSTALL.*, Makefile
 ##  
+##  $Id: packpack,v 1.4 2004/03/12 08:10:05 gap Exp $
 ##  
 
 pname=$1

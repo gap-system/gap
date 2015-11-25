@@ -1,0 +1,358 @@
+<Chapter Label="ch:intro"><Heading>Introduction and Example</Heading>
+
+The main  purpose of  the &GAPDoc; package  is to define  a file  format for
+documentation of &GAP;-programs and -packages (see <Cite Key="GAP4" />). The
+problem  is that  such documentation  should be  readable in  several output
+formats. For example it should be  possible to read the documentation inside
+the terminal in which  &GAP; is running (a text mode) and  there should be a
+printable version in  high typesetting quality (produced by  some version of
+&TeX;). It  is also popular to  view &GAP;'s online help  with a Web-browser
+via an HTML-version  of the documentation. Nowadays one can  use &LaTeX; and
+standard viewer  programs to produce and  view on the screen  <C>dvi</C>- or
+<C>pdf</C>-files  with full  support  of internal  and external  hyperlinks.
+Certainly there will be other interesting document formats and tools in this
+direction in the future. <P/>
+
+Our aim is to find a <Emph>format for writing</Emph> the documentation which
+allows a relatively easy translation  into the output formats just mentioned
+and which hopefully  makes it easy to translate to  future output formats as
+well. <P/>
+
+To make  documentation written  in the &GAPDoc;  format directly  usable, we
+also  provide a  set of  programs, called  converters, which  produce text-,
+hyperlinked &LaTeX;- and HTML-output versions  of a &GAPDoc; document. These
+programs are developed by the first named author. They run completely inside
+&GAP;, i.e., no external programs are needed. You only need <C>latex</C> and
+<C>pdflatex</C> to process the &LaTeX;  output. These programs are described
+in Chapter&nbsp;<Ref Chap="ch:conv"/>.
+
+<Section Label="sec:XML"><Heading>XML</Heading>
+<Index >XML</Index>
+
+The definition  of the  &GAPDoc; format uses  XML, the  <Q>eXtendible Markup
+Language</Q>.  This  is a  standard  (defined  by  the W3C  consortium,  see
+<URL>http://www.w3c.org</URL>) which lays down a syntax for adding markup to
+a document  or to  some data.  It allows to  define document  structures via
+introducing markup <E>elements</E> and  certain relations between them. This
+is done  in a  <E>document type  definition</E>. The  file <F>gapdoc.dtd</F>
+contains such  a document  type definition  and is the  central part  of the
+&GAPDoc; package. <P/>
+
+The easiest way for getting a good idea about this is probably to look at an
+example. The Appendix&nbsp;<Ref Appendix="app:3k+1"  /> contains a short but
+complete  &GAPDoc; document  for a  fictitious  share package.  In the  next
+section we will go through this  document, explain basic facts about XML and
+the &GAPDoc; document type, and give pointers to more details in later parts
+of this documentation. <P/>
+
+In the last Section&nbsp;<Ref Sect="sec:faq" /> of this introductory chapter
+we try  to answer some general  questions about the decisions  which lead to
+the &GAPDoc; package. 
+
+</Section>
+
+<Section Label="sec:3k+1expl"><Heading>A complete example</Heading>
+
+In  this  section  we  recall  the   lines  from  the  example  document  in
+Appendix&nbsp;<Ref Appendix="app:3k+1" /> and give some explanations.
+
+<Listing Type="from 3k+1.xml">
+<![CDATA[<?xml version="1.0" encoding="UTF-8"?> ]]>
+</Listing>
+
+This line just tells a human  reader and computer programs that the file
+is a document with XML markup and  that the text is encoded in the UTF-8
+character set (other common encodings are ASCII or ISO-8895-X encodings).  
+
+<Listing Type="from 3k+1.xml">
+<![CDATA[<!--   A complete "fake package" documentation   
+-->
+]]></Listing>
+
+Everything   in    a   XML    file   between    <Q><C>&lt;!--</C></Q>   and
+<Q><C>--></C></Q> is a comment and not part of the document content.
+
+<Listing Type="from 3k+1.xml">
+<![CDATA[<!DOCTYPE Book SYSTEM "gapdoc.dtd">
+]]></Listing>
+
+This  line says  that  the  document contains  markup  which  is defined  in
+the  system  file  <F>gapdoc.dtd</F>  and  that  the  markup  obeys  certain
+rules defined  in that  file (the ending  <F>dtd</F> means  <Q>document type
+definition</Q>). It  further says  that the actual  content of  the document
+consists of an element with name <Q>Book</Q>. And we can really see that the
+remaining part of the file is enclosed as follows:
+
+<Listing Type="from 3k+1.xml">
+<![CDATA[<Book Name="3k+1">
+  [...] (content omitted)
+</Book>
+]]></Listing>
+
+This demonstrates the basics of the markup in XML. This part of the document
+is an <Q>element</Q>. It consists  of the <Q>start tag</Q> <C><![CDATA[<Book
+Name="3k+1">]]></C>,  the  <Q>element  content</Q> and  the  <Q>end  tag</Q>
+<C><![CDATA[</Book>]]></C> (end  tags always start with  <C>&lt;/</C>). This
+element  also  has an  <Q>attribute</Q>  <C>Name</C>  whose <Q>value</Q>  is
+<C>3k+1</C>.
+<P/>
+
+If  you know  HTML, this  will  look familiar  to  you. But  there are  some
+important  differences:  The element  name  <C>Book</C>  and attribute  name
+<C>Name</C>  are  <E>case sensitive</E>.  The  value  of an  attribute  must
+<E>always</E> be enclosed in quotes. In XML <E>every</E> element has a start
+and end tag (which can be combined for elements defined as <Q>empty</Q>, see
+for example <C>&lt;TableOfContents/&gt;</C> below).
+<P/>
+
+If   you   know   &LaTeX;,   you   are   familiar   with   quite   different
+types  of   markup,  for   example:  The   equivalent  of   the  <C>Book</C>
+element   in   &LaTeX;   is   <C>\begin{document}   ...
+\end{document}</C>.  The sectioning  in &LaTeX;  is not
+done  by  explicit  start  and   end  markup,  but  implicitly  via  heading
+commands  like  <C>\section</C>.  Other   markup  is  done  by  using
+braces  <C>{}</C> and  putting some  commands inside.  And for
+mathematical  formulae  one  can  use  the  <C>$</C>  for  the  start
+<E>and</E> the end of the markup.  In XML <E>all</E> markup looks similar to
+that of the <C>Book</C> element. <P/>
+
+The content of the book starts with a title page.
+
+<Listing Type="from 3k+1.xml">
+<![CDATA[<TitlePage>
+  <Title>The <Package>ThreeKPlusOne</Package> Package</Title>
+  <Version>Version 42</Version>
+  <Author>Dummy Authör
+    <Email>3kplusone@dev.null</Email>
+  </Author>
+
+  <Copyright>&copyright; 2000 The Author. <P/>
+    You can do with this package what you want.<P/> Really.
+  </Copyright>
+</TitlePage>
+]]></Listing>
+
+The content of  the <C>TitlePage</C> element consists again  of elements. In
+Chapter&nbsp;<Ref  Chap="DTD"  /> we  describe  which  elements are  allowed
+within  a <C>TitlePage</C>  and that  their ordering  is prescribed  in this
+case. In  the (stupid) name of  the author you  see that a German  umlaut is
+used directly (in ISO-latin1 encoding). 
+<P/>
+
+Contrary to &LaTeX;-  or HTML-files this markup does not  say anything about
+the actual layout of  the title page in any output  version of the document.
+It just adds information about the <E>meaning</E> of pieces of text. <P/>
+
+Within the <C>Copyright</C> element there are two more things to learn about
+XML markup. The <C>&lt;P/></C> is a  complete element. It is a combined
+start and end  tag. This shortcut is allowed for  elements which are defined
+to be  always <Q>empty</Q>, i.e., to  have no content. You  may have already
+guessed that <C>&lt;P/></C> is used as a paragraph separator. Note that
+empty lines do not separate paragraphs (contrary to &LaTeX;). <P/>
+
+The  other construct  we see  here  is <C>&amp;copyright;</C>.  This is  an
+example of  an <Q>entity</Q>  in XML  and is a  macro for  some substitution
+text. Here we use an entity as a shortcut for a complicated expression which
+makes it  possible that the  term <E>copyright</E>  is printed as  some text
+like <C>(C)</C>  in text  terminal output  and as  a copyright  character in
+other output formats. In &GAPDoc;  we predefine some entities.
+Certain <Q>special  characters</Q> must be  typed via entities,  for example
+<Q>&lt;</Q>, <Q>></Q> and <Q>&amp;</Q> to avoid a misinterpretation as
+XML markup.    It  is  possible   to  define
+additional entities for your document inside the <C>&lt;!DOCTYPE ...&gt;</C>
+declaration, see&nbsp;<Ref Subsect="GDent" />. <P/>
+
+Note  that elements  in  XML must  always  be properly  nested,  as in  this
+example. A construct like <C><![CDATA[<a><b>...</a></b>]]></C> is <E>not</E>
+allowed.
+
+<Listing Type="from 3k+1.xml">
+<![CDATA[<TableOfContents/>
+]]></Listing>
+
+This is  another example of  an <Q>empty element</Q>.  It just means  that a
+table of contents for the whole  document should be included into any output
+version of the document.
+<P/>
+After this the  main text of the document follows  inside certain sectioning
+elements:
+
+<Listing Type="from 3k+1.xml">
+<![CDATA[<Body>
+  <Chapter> <Heading>The <M>3k+1</M> Problem</Heading>
+    <Section Label="sec:theory"> <Heading>Theory</Heading>
+      [...] (content omitted)
+    </Section>
+    <Section> <Heading>Program</Heading>
+      [...] (content omitted) 
+    </Section>
+  </Chapter>
+</Body>
+]]></Listing>
+
+These   elements   are   used  similarly   to   <Q>\chapter</Q>   and
+<Q>\section</Q> in &LaTeX;.  But note that the explicit  end tags are
+necessary here.
+<P/>
+The sectioning commands allow to assign an optional attribute <Q>Label</Q>.
+This can be used for referring to a section inside the document. 
+<P/>
+The text of the first section starts  as follows. The whitespace in the text
+is unimportant and the indenting is not necessary.
+
+<Listing Type="from 3k+1.xml">
+
+<![CDATA[      Let  <M>k \in  &NN;</M> be  a  natural number.  We consider  the
+      sequence <M>n(i, k), i \in &NN;,</M> with <M>n(1, k) = k</M> and
+      else 
+]]></Listing>
+
+Here we come  to the interesting question how to  type mathematical formulae
+in a &GAPDoc; document. We did not find any alternative for writing formulae
+in &TeX;  syntax. (There is MATHML,  but even simple formulae  contain a lot
+of  markup,  become  quite  unreadable  and they  are  cumbersome  to  type.
+Furthermore  there  seem to  be  no  tools  available which  translate  such
+formulae in  a nice way into  &TeX; and text.) So,  formulae are essentially
+typed  as  in &LaTeX;.  (Actually,  it  is  also  possible to  type  unicode
+characters of some mathematical symbols directly,  or via an entity like the
+<C>&amp;NN;</C>  above.)  There  are  three  types  of  elements  containing
+formulae: <Q>M</Q>,  <Q>Math</Q> and <Q>Display</Q>.  The first two  are for
+in-text formulae and the third is  for displayed formulae. Here <Q>M</Q> and
+<Q>Math</Q>  are  equivalent,  when  translating a  &GAPDoc;  document  into
+&LaTeX;.  But they  are handled  differently  for terminal  text (and  HTML)
+output. For the content of an <Q>M</Q>-element there are defined rules for a
+translation into well readable terminal  text. More complicated formulae are
+in <Q>Math</Q> or <Q>Display</Q> elements and  they are just printed as they
+are typed  in text  output. So,  to make  a section  well readable  inside a
+terminal window  you should  try to  put as many  formulae as  possible into
+<Q>M</Q>-elements. In our  example text we used the  notation <C>n(i, k)</C>
+instead of  <C>n_i(k)</C> because  it is  easier to read  in text  mode. See
+Sections&nbsp;<Ref Sect="GDformulae"/> and&nbsp;<Ref  Sect="sec:misc" /> for
+more details. <P/>
+
+A few lines further on we find two non-internal references.
+
+<Listing Type="from 3k+1.xml">
+<![CDATA[      problem, see <Cite Key="Wi98"/> or
+      <URL>http://mathsrv.ku-eichstaett.de/MGF/homes/wirsching/</URL>
+]]></Listing>
+
+The  first within  the <Q>Cite</Q>-element  is the  citation of  a book.  In
+&GAPDoc;  we use  the widely  used  &BibTeX; database  format for  reference
+lists. This  does not use  XML but has a  well documented structure which is
+easy  to parse.  And  many  people have  collections  of references  readily
+available in this format. The reference list in an  output version of the
+document is produced with the empty element 
+
+<Listing Type="from 3k+1.xml">
+<![CDATA[<Bibliography Databases="3k+1" />
+]]></Listing>
+
+close  to  the end  of  our  example  file. The  attribute  <Q>Databases</Q>
+give  the name(s)  of the  database  (<F>.bib</F>) files  which contain  the
+references.
+<P/>
+
+Putting  a  Web-address  into an  <Q>URL</Q>-element allows one to create  a
+hyperlink in output formats which allow this. 
+<P/>
+
+The second section of our example contains a special kind of subsection
+defined in &GAPDoc;.
+
+<Listing Type="from 3k+1.xml">
+<![CDATA[      <ManSection> 
+        <Func Name="ThreeKPlusOneSequence" Arg="k[, max]"/>
+        <Description>
+          This  function computes  for a  natural number  <A>k</A> the
+          beginning of the sequence  <M>n(i, k)</M> defined in section
+          <Ref Sect="sec:theory"/>.  The sequence  stops at  the first
+          <M>1</M>  or at  <M>n(<A>max</A>, k)</M>,  if <A>max</A>  is
+          given.
+<Example>
+gap> ThreeKPlusOneSequence(101);
+"Sorry, not yet implemented. Wait for Version 84 of the package"
+</Example>
+        </Description>
+      </ManSection>
+]]></Listing>
+
+A <Q>ManSection</Q>  contains the  description of some  function, operation,
+method, filter  and so on. The  <Q>Func</Q>-element describes the name  of a
+<E>function</E> (there  are also similar elements  <Q>Oper</Q>, <Q>Meth</Q>,
+<Q>Filt</Q>  and so  on) and  names  for its  arguments, optional  arguments
+enclosed in square brackets. See Section&nbsp;<Ref Sect="sec:mansect" /> for
+more details. <P/>
+
+In the <Q>Description</Q> we write  the argument names as <Q>A</Q>-elements.
+A good  description of a function  should usually contain an  example of its
+use.  For this  there  are  some verbatim-like  elements  in &GAPDoc;,  like
+<Q>Example</Q>  above  (here, clearly,  whitespace  matters  which causes  a
+slightly strange indenting). <P/>
+
+The  text contains  an  internal  reference to  the  first  section via  the
+explicitly defined label <C>sec:theory</C>.
+<P/>
+
+The first  section also  contains a <Q>Ref</Q>-element  which refers  to the
+function described  here. Note that  there is no  explicit label for  such a
+reference. The pair  <C><![CDATA[<Func Name="ThreeKPlusOneSequence" Arg="k[,
+max]"/>]]></C>  and  <C><![CDATA[<Ref  Func="ThreeKPlusOneSequence"/>]]></C>
+does the cross referencing (and hyperlinking if possible) implicitly via the
+name of the function.
+<P/>
+
+Here  is one  further element  from our  example document  which we  want to
+explain.
+
+
+<Listing Type="from 3k+1.xml">
+<![CDATA[<TheIndex/>
+]]></Listing>
+
+This is again an empty element which just says that an output version of the
+document should contain  an index. Many entries for the  index are generated
+automatically  because  the  <Q>Func</Q>  and  similar  elements  implicitly
+produce such  entries. It  is also possible  to include  explicit additional
+entries in the index.
+
+</Section>
+
+
+<Section Label="sec:faq"><Heading>Some questions</Heading>
+
+<List>
+ <Mark>Are those XML files too ugly to read and edit?</Mark>
+ <Item>
+  Just have a look and decide yourself. The markup needs more characters
+  than most &TeX; or &LaTeX; markup. But the structure of the document is
+  easier to see. If you configure your favorite editor well, you do not need
+  more key strokes for typing the markup than in &LaTeX;.
+ </Item> 
+
+ <Mark>Why do we not use &LaTeX; alone?</Mark>
+ <Item>
+  &LaTeX; is  good for  writing books. But  &LaTeX; files  are generally
+  difficult to  parse and to process  to other output formats  like text
+  for browsing  in a terminal window  or HTML (or new  formats which may
+  become  popular in  the  future).  &GAPDoc; markup  is  one step  more
+  abstract  than &LaTeX;  insofar  as it  describes  meaning instead  of
+  appearance of text. The inner  workings of &LaTeX; are too complicated
+  to learn without  pain, which makes it difficult  to overcome problems
+  that occur occasionally.
+ </Item>
+
+ <Mark>Why XML and not a newly defined markup language?</Mark>
+ <Item>
+  XML is a well defined standard that is more and more widely used. Lots 
+  of people have thought about it. Years of experience with SGML went into the
+  design. It is easy to explain, easy to parse and lots of tools are available, 
+  there will be more in the future. 
+ </Item>
+</List>
+
+
+</Section>
+
+</Chapter>
+

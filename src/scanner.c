@@ -70,29 +70,29 @@
 
 /* the following global variables are documented in scanner.h */
 
-UInt            Symbol;
+/* TL: UInt            Symbol; */
 
-Char            Value [1030];
-UInt            ValueLen;
+/* TL: Char            Value [1030]; */
+/* TL: UInt            ValueLen; */
 
-UInt            NrError;
-UInt            NrErrLine;
+/* TL: UInt            NrError; */
+/* TL: UInt            NrErrLine; */
 
-const Char *    Prompt;
+/* TL: Char *          Prompt; */
 
 Obj             PrintPromptHook = 0;
 Obj             EndLineHook = 0;
 
-TypInputFile    InputFiles [16];
-TypInputFile *  Input;
-Char *          In;
+/* TL: TypInputFile    InputFiles [16]; */
+/* TL: TypInputFile *  Input; */
+/* TL: Char *          In; */
 
-TypOutputFile   OutputFiles [16];
-TypOutputFile * Output;
+/* TL: TypOutputFile   OutputFiles [16]; */
+/* TL: TypOutputFile * Output; */
 
-TypOutputFile * InputLog;
+/* TL: TypOutputFile * InputLog; */
 
-TypOutputFile * OutputLog;
+/* TL: TypOutputFile * OutputLog; */
 
 
 /****************************************************************************
@@ -117,9 +117,9 @@ TypOutputFile * OutputLog;
 **  'TestLine' holds the one line that is read from 'TestInput' to compare it
 **  with a line that is about to be printed to 'TestOutput'.
 */
-static TypInputFile  *TestInput  = 0;
-static TypOutputFile *TestOutput = 0;
-static Char           TestLine[256];
+/* TL: TypInputFile *  TestInput  = 0; */
+/* TL: TypOutputFile * TestOutput = 0; */
+/* TL: Char            TestLine [256]; */
 
 
 /****************************************************************************
@@ -280,6 +280,70 @@ void Match (
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
 
+TypOutputFile *NewOutput()
+{
+  TypOutputFile *result;
+  result = AllocateMemoryBlock(sizeof(TypOutputFile));
+  if (!result)
+    abort();
+  return result;
+}
+
+TypInputFile *NewInput()
+{
+  TypInputFile *result;
+  result = AllocateMemoryBlock(sizeof(TypInputFile));
+  if (!result)
+    abort();
+  return result;
+}
+
+GVarDescriptor DEFAULT_INPUT_STREAM;
+GVarDescriptor DEFAULT_OUTPUT_STREAM;
+
+UInt OpenDefaultInput( void )
+{
+  Obj func, stream;
+  stream = TLS(DefaultInput);
+  if (stream)
+    return OpenInputStream(stream);
+  func = GVarOptFunction(&DEFAULT_INPUT_STREAM);
+  if (!func)
+    return OpenInput("*stdin*");
+  stream = CALL_0ARGS(func);
+  if (!stream)
+    ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0L, 0L);
+  if (IsStringConv(stream))
+    return OpenInput(CSTR_STRING(stream));
+  TLS(DefaultInput) = stream;
+  return OpenInputStream(stream);
+}
+
+UInt OpenDefaultOutput( void )
+{
+  Obj func, stream;
+  stream = TLS(DefaultOutput);
+  if (stream)
+    return OpenOutputStream(stream);
+  func = GVarOptFunction(&DEFAULT_OUTPUT_STREAM);
+  if (!func)
+    return OpenOutput("*stdout*");
+  stream = CALL_0ARGS(func);
+  if (!stream)
+    ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0L, 0L);
+  if (IsStringConv(stream))
+    return OpenOutput(CSTR_STRING(stream));
+  TLS(DefaultOutput) = stream;
+  return OpenOutputStream(stream);
+}
+
+TypOutputFile *GetCurrentOutput() {
+  if (!TLS(Output)) {
+    OpenDefaultOutput();
+  }
+  return TLS(Output);
+}
+
 
 /****************************************************************************
 **
@@ -318,30 +382,42 @@ UInt OpenInput (
     const Char *        filename )
 {
     Int                 file;
+    int sp;
 
     /* fail if we can not handle another open input file                   */
-    if ( TLS(Input)+1 == TLS(InputFiles)+(sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])) )
+    if ( TLS(InputFilesSP) == (sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0]))-1 )
         return 0;
 
     /* in test mode keep reading from test input file for break loop input */
     if ( TLS(TestInput) != 0 && ! strcmp( filename, "*errin*" ) )
         return 1;
 
+    /* Handle *defin*; redirect *errin* to *defin* if the default
+     * channel is already open. */
+    if (! strcmp(filename, "*defin*") ||
+        (! strcmp(filename, "*errin*") && TLS(DefaultInput)) )
+        return OpenDefaultInput();
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
     if ( file == -1 )
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( TLS(Input)+1 != TLS(InputFiles) ) {
+    if ( TLS(InputFilesSP) != 0 ) {
         TLS(Input)->ptr    = TLS(In);
         TLS(Input)->symbol = TLS(Symbol);
     }
 
     /* enter the file identifier and the file name                         */
-    TLS(Input)++;
+    sp = TLS(InputFilesSP)++;
+    if (!TLS(InputFiles)[sp])
+    {
+      TLS(InputFiles)[sp] = NewInput();
+    }
+    TLS(Input) = TLS(InputFiles)[sp];
     TLS(Input)->isstream = 0;
     TLS(Input)->file = file;
+    TLS(Input)->name[0] = '\0';
     if (strcmp("*errin*", filename) && strcmp("*stdin*", filename))
       TLS(Input)->echo = 0;
     else
@@ -371,18 +447,24 @@ Obj IsStringStream;
 UInt OpenInputStream (
     Obj                 stream )
 {
+    int sp;
     /* fail if we can not handle another open input file                   */
-    if ( TLS(Input)+1 == TLS(InputFiles)+(sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])) )
+    if ( TLS(InputFilesSP) == (sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0]))-1 )
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( TLS(Input)+1 != TLS(InputFiles) ) {
+    if ( TLS(InputFilesSP) != 0 ) {
         TLS(Input)->ptr    = TLS(In);
         TLS(Input)->symbol = TLS(Symbol);
     }
 
     /* enter the file identifier and the file name                         */
-    TLS(Input)++;
+    sp = TLS(InputFilesSP)++;
+    if (!TLS(InputFiles)[sp])
+    {
+      TLS(InputFiles)[sp] = NewInput();
+    }
+    TLS(Input) = TLS(InputFiles)[sp];
     TLS(Input)->isstream = 1;
     TLS(Input)->stream = stream;
     TLS(Input)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
@@ -393,6 +475,7 @@ UInt OpenInputStream (
     else {
         TLS(Input)->sline = 0;
     }
+    TLS(Input)->name[0] = '\0';
     TLS(Input)->file = -1;
     TLS(Input)->echo = 0;
     strlcpy( TLS(Input)->name, "stream", sizeof(TLS(Input)->name) );
@@ -426,8 +509,8 @@ UInt OpenInputStream (
 UInt CloseInput ( void )
 {
     /* refuse to close the initial input file                              */
-    if ( TLS(Input) == TLS(InputFiles) )
-        return 0;
+    if ( TLS(InputFilesSP) <= 1)
+        return 1;
 
     /* refuse to close the test input file                                 */
     if ( TLS(Input) == TLS(TestInput) )
@@ -443,7 +526,7 @@ UInt CloseInput ( void )
     TLS(Input)->sline = 0;
 
     /* revert to last file                                                 */
-    TLS(Input)--;
+    TLS(Input) = TLS(InputFiles)[--TLS(InputFilesSP)-1];
     TLS(In)     = TLS(Input)->ptr;
     TLS(Symbol) = TLS(Input)->symbol;
 
@@ -539,7 +622,7 @@ UInt CloseTest ( void )
     TLS(Input)->sline = 0;
 
     /* revert to last file                                                 */
-    TLS(Input)--;
+    TLS(Input) = TLS(InputFiles)[--TLS(InputFilesSP)-1];
     TLS(In)     = TLS(Input)->ptr;
     TLS(Symbol) = TLS(Input)->symbol;
 
@@ -569,7 +652,7 @@ UInt CloseTest ( void )
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-static TypOutputFile LogFile;
+/* TL: static TypOutputFile LogFile; */
 
 UInt OpenLog (
     const Char *        filename )
@@ -599,7 +682,7 @@ UInt OpenLog (
 **
 **  The same as 'OpenLog' but for streams.
 */
-static TypOutputFile LogStream;
+/* TL: static TypOutputFile LogStream; */
 
 UInt OpenLogStream (
     Obj             stream )
@@ -666,7 +749,7 @@ UInt CloseLog ( void )
 **  dependent  how many are too many,  but 16 files  should work  everywhere.
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
-static TypOutputFile InputLogFile;
+/* TL: static TypOutputFile InputLogFile; */
 
 UInt OpenInputLog (
     const Char *        filename )
@@ -695,7 +778,7 @@ UInt OpenInputLog (
 **
 **  The same as 'OpenInputLog' but for streams.
 */
-static TypOutputFile InputLogStream;
+/* TL: static TypOutputFile InputLogStream; */
 
 UInt OpenInputLogStream (
     Obj                 stream )
@@ -765,7 +848,7 @@ UInt CloseInputLog ( void )
 **  dependent how many are  too many,  but  16 files should  work everywhere.
 **  Finally 'OpenOutputLog' will fail if there is already a current logfile.
 */
-static TypOutputFile OutputLogFile;
+/* TL: static TypOutputFile OutputLogFile; */
 
 UInt OpenOutputLog (
     const Char *        filename )
@@ -794,7 +877,7 @@ UInt OpenOutputLog (
 **
 **  The same as 'OpenOutputLog' but for streams.
 */
-static TypOutputFile OutputLogStream;
+/* TL: static TypOutputFile outputLogStream; */
 
 UInt OpenOutputLogStream (
     Obj                 stream )
@@ -848,7 +931,7 @@ UInt CloseOutputLog ( void )
     return 1;
 }
 
-TypOutputFile*  IgnoreStdoutErrout = NULL;
+/* TL: TypOutputFile*  IgnoreStdoutErrout = NULL; */
 
 /****************************************************************************
 **
@@ -881,6 +964,7 @@ UInt OpenOutput (
     const Char *        filename )
 {
     Int                 file;
+    int sp;
 
     /* do nothing for stdout and errout if catched */
     if ( TLS(Output) != NULL && TLS(IgnoreStdoutErrout) == TLS(Output) &&
@@ -890,12 +974,18 @@ UInt OpenOutput (
     }
 
     /* fail if we can not handle another open output file                  */
-    if ( TLS(Output)+1==TLS(OutputFiles)+(sizeof(TLS(OutputFiles))/sizeof(TLS(OutputFiles)[0])) )
+    if ( TLS(OutputFilesSP) == sizeof(TLS(OutputFiles))/sizeof(TLS(OutputFiles)[0]))
         return 0;
 
     /* in test mode keep printing to test output file for breakloop output */
     if ( TLS(TestInput) != 0 && ! strcmp( filename, "*errout*" ) )
         return 1;
+
+    /* Handle *defout* specially; also, redirect *errout* if we already
+     * have a default channel open. */
+    if ( ! strcmp( filename, "*defout*" ) ||
+         (! strcmp( filename, "*errout*" ) && TLS(threadID) != 0) )
+        return OpenDefaultOutput();
 
     /* try to open the file                                                */
     file = SyFopen( filename, "w" );
@@ -903,10 +993,12 @@ UInt OpenOutput (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    if (TLS(Output) == 0L)
-      TLS(Output) = TLS(OutputFiles);
-    else
-      TLS(Output)++;
+    sp = TLS(OutputFilesSP)++;
+    if (!TLS(OutputFiles)[sp])
+    {
+      TLS(OutputFiles)[sp] = NewOutput();
+    }
+    TLS(Output) = TLS(OutputFiles)[sp];
     TLS(Output)->file     = file;
     TLS(Output)->line[0]  = '\0';
     TLS(Output)->pos      = 0;
@@ -934,12 +1026,19 @@ Obj PrintFormattingStatus;
 UInt OpenOutputStream (
     Obj                 stream )
 {
+    int sp;
     /* fail if we can not handle another open output file                  */
-    if ( TLS(Output)+1==TLS(OutputFiles)+(sizeof(TLS(OutputFiles))/sizeof(TLS(OutputFiles)[0])) )
+    if ( TLS(OutputFilesSP) == sizeof(TLS(OutputFiles))/sizeof(TLS(OutputFiles)[0]))
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    TLS(Output)++;
+    sp = TLS(OutputFilesSP)++;
+    if (!TLS(OutputFiles)[sp])
+    {
+      TLS(OutputFiles)[sp] = NewOutput();
+    }
+
+    TLS(Output) = TLS(OutputFiles)[sp];
     TLS(Output)->stream   = stream;
     TLS(Output)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
     TLS(Output)->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
@@ -985,8 +1084,10 @@ UInt CloseOutput ( void )
         return 1;
 
     /* refuse to close the initial output file '*stdout*'                  */
-    if ( TLS(Output) == TLS(OutputFiles) )
-        return 0;
+    if ( TLS(OutputFilesSP) <= 1 && TLS(Output)->isstream
+         && TLS(DefaultOutput) == TLS(Output)->stream)
+      return 1;
+
 
     /* flush output and close the file                                     */
     Pr( "%c", (Int)'\03', 0L );
@@ -995,7 +1096,11 @@ UInt CloseOutput ( void )
     }
 
     /* revert to previous output file and indicate success                 */
-    TLS(Output)--;
+    --TLS(OutputFilesSP);
+    if (TLS(OutputFilesSP))
+      TLS(Output) = TLS(OutputFiles)[TLS(OutputFilesSP)-1];
+    else
+      TLS(Output) = 0;
     return 1;
 }
 
@@ -1015,14 +1120,18 @@ UInt OpenAppend (
     const Char *        filename )
 {
     Int                 file;
+    int sp;
 
     /* fail if we can not handle another open output file                  */
-    if ( TLS(Output)+1==TLS(OutputFiles)+(sizeof(TLS(OutputFiles))/sizeof(TLS(OutputFiles)[0])) )
+    if ( TLS(OutputFilesSP) == sizeof(TLS(OutputFiles))/sizeof(TLS(OutputFiles)[0]))
         return 0;
 
     /* in test mode keep printing to test output file for breakloop output */
     if ( TLS(TestInput) != 0 && ! strcmp( filename, "*errout*" ) )
         return 1;
+    
+    if ( ! strcmp( filename, "*defout*") )
+        return OpenDefaultOutput();
 
     /* try to open the file                                                */
     file = SyFopen( filename, "a" );
@@ -1030,7 +1139,13 @@ UInt OpenAppend (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    TLS(Output)++;
+    sp = TLS(OutputFilesSP)++;
+    if (!TLS(OutputFiles)[sp])
+    {
+      TLS(OutputFiles)[sp] = NewOutput();
+    }
+
+    TLS(Output) = TLS(OutputFiles)[sp];
     TLS(Output)->file     = file;
     TLS(Output)->line[0]  = '\0';
     TLS(Output)->pos      = 0;
@@ -1082,6 +1197,11 @@ static Int GetLine2 (
     Char *                  buffer,
     UInt                    length )
 {
+    if ( ! input ) {
+      input = TLS(Input);
+      if ( ! input ) OpenDefaultInput();
+      input = TLS(Input);
+    }
 
     if ( input->isstream ) {
         if ( input->sline == 0
@@ -1156,7 +1276,7 @@ extern void PutLine2(
     const Char *            line,
     UInt                    len   );
 
-Int HELPSubsOn = 1;
+/* TL: Int HELPSubsOn = 1; */
 
 Char GetLine ( void )
 {
@@ -2389,7 +2509,7 @@ void PutLineTo ( KOutputStream stream, UInt len )
  **  In the later case 'PutChrTo' has to decide where to  split the output line.
  **  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
  */
-Int NoSplitLine = 0;
+/* TL: Int NoSplitLine = 0; */
 
 /* helper function to add a hint about a possible line break;
    a triple (pos, value, indent), such that the minimal (value-pos) wins */
@@ -2509,7 +2629,9 @@ void PutChrTo (
   }
 
   /* normal character, room on the current line                          */
-  else if ( stream->pos < SyNrCols-2-TLS(NoSplitLine) ) {
+  /* TODO: This should be -2 instead of -8 and room for the prefix
+   * accounted for elswhere. */
+  else if ( stream->pos < SyNrCols-8-TLS(NoSplitLine) ) {
 
     /* put the character on this line                                  */
     stream->line[ stream->pos++ ] = ch;
@@ -2624,6 +2746,7 @@ Obj FuncCPROMPT( Obj self)
  **  uses the content of <prompt> as `Prompt' (at most 80 characters).
  **  (important is the flush character without resetting the cursor column)
  */
+/* TODO: Eliminate race condition */
 Char promptBuf[81];
 
 Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
@@ -2926,7 +3049,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 }
 
 
-static KOutputStream TheStream;
+/* TL: static KOutputStream TheStream; */
 
 static void putToTheStream( Char c) {
   PutChrTo(TLS(TheStream), c);
@@ -2949,12 +3072,12 @@ void Pr (
          Int                 arg1,
          Int                 arg2 )
 {
-  PrTo(TLS(Output), format, arg1, arg2);
+  PrTo(GetCurrentOutput(), format, arg1, arg2);
 }
 
-static Char *TheBuffer;
-static UInt TheCount;
-static UInt TheLimit;
+/* TL: static Char *theBuffer; */
+/* TL: static UInt theCount; */
+/* TL: static UInt theLimit; */
 
 static void putToTheBuffer( Char c)
 {
@@ -3009,9 +3132,9 @@ Obj FuncALL_KEYWORDS(Obj self) {
 
 Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
   if (val == False)
-    (TLS(OutputFiles)+1)->format = 0;
+    (TLS(OutputFiles)[1])->format = 0;
   else
-    (TLS(OutputFiles)+1)->format = 1;
+    (TLS(OutputFiles)[1])->format = 1;
   return val;
 }
 
@@ -3072,53 +3195,59 @@ static Int InitLibrary (
  **
  *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
  */
-static Char Cookie[sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])][9];
-static Char MoreCookie[sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])][9];
-static Char StillMoreCookie[sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])][9];
+/* TL: static Char Cookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9]; */
+/* TL: static Char MoreCookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9]; */
+/* TL: static Char StillMoreCookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9]; */
 
 static Int InitKernel (
     StructInitInfo *    module )
 {
     Int                 i;
 
-    TLS(Input) = TLS(InputFiles);
-    TLS(Input)--;
     (void)OpenInput(  "*stdin*"  );
     TLS(Input)->echo = 1; /* echo stdin */
-    TLS(Output) = 0L;
     (void)OpenOutput( "*stdout*" );
 
     TLS(InputLog)  = 0;  TLS(OutputLog)  = 0;
     TLS(TestInput) = 0;  TLS(TestOutput) = 0;
 
+    /* Initialize default stream functions */
+
+    DeclareGVar(&DEFAULT_INPUT_STREAM, "DEFAULT_INPUT_STREAM");
+    DeclareGVar(&DEFAULT_OUTPUT_STREAM, "DEFAULT_OUTPUT_STREAM");
+
     /* initialize cookies for streams                                      */
     /* also initialize the cookies for the GAP strings which hold the
        latest lines read from the streams  and the name of the current input file*/
-    for ( i = 0;  i < sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0]);  i++ ) {
+    /* We don't need the cookies anymore, since the data got moved to thread-local
+     * storage. */
+#if 0
+    for ( i = 0;  i < sizeof(InputFiles)/sizeof(InputFiles[0]);  i++ ) {
       Cookie[i][0] = 's';  Cookie[i][1] = 't';  Cookie[i][2] = 'r';
       Cookie[i][3] = 'e';  Cookie[i][4] = 'a';  Cookie[i][5] = 'm';
       Cookie[i][6] = ' ';  Cookie[i][7] = '0'+i;
       Cookie[i][8] = '\0';
-      InitGlobalBag(&(TLS(InputFiles)[i].stream), &(Cookie[i][0]));
+      /* TL: InitGlobalBag(&(InputFiles[i].stream), &(Cookie[i][0])); */
 
       MoreCookie[i][0] = 's';  MoreCookie[i][1] = 'l';  MoreCookie[i][2] = 'i';
       MoreCookie[i][3] = 'n';  MoreCookie[i][4] = 'e';  MoreCookie[i][5] = ' ';
       MoreCookie[i][6] = ' ';  MoreCookie[i][7] = '0'+i;
       MoreCookie[i][8] = '\0';
-      InitGlobalBag(&(TLS(InputFiles)[i].sline), &(MoreCookie[i][0]));
+      /* TL: InitGlobalBag(&(InputFiles[i].sline), &(MoreCookie[i][0])); */
 
       StillMoreCookie[i][0] = 'g';  StillMoreCookie[i][1] = 'a';  StillMoreCookie[i][2] = 'p';
       StillMoreCookie[i][3] = 'n';  StillMoreCookie[i][4] = 'a';  StillMoreCookie[i][5] = 'm';
       StillMoreCookie[i][6] = 'e';  StillMoreCookie[i][7] = '0'+i;
       StillMoreCookie[i][8] = '\0';
-      InitGlobalBag(&(TLS(InputFiles)[i].gapname), &(StillMoreCookie[i][0]));
+      /* TL: InitGlobalBag(&(InputFiles[i].gapname), &(StillMoreCookie[i][0])); */
     }
+#endif
 
     /* tell GASMAN about the global bags                                   */
-    InitGlobalBag(&(LogFile.stream),        "src/scanner.c:LogFile"        );
-    InitGlobalBag(&(LogStream.stream),      "src/scanner.c:LogStream"      );
-    InitGlobalBag(&(InputLogStream.stream), "src/scanner.c:InputLogStream" );
-    InitGlobalBag(&(OutputLogStream.stream),"src/scanner.c:OutputLogStream");
+    /* TL: InitGlobalBag(&(LogFile.stream),        "src/scanner.c:LogFile"        ); */
+    /* TL: InitGlobalBag(&(LogStream.stream),      "src/scanner.c:LogStream"      ); */
+    /* TL: InitGlobalBag(&(InputLogStream.stream), "src/scanner.c:InputLogStream" ); */
+    /* TL: InitGlobalBag(&(outputLogStream.stream),"src/scanner.c:outputLogStream"); */
 
 
     /* import functions from the library                                   */
@@ -3157,6 +3286,21 @@ static StructInitInfo module = {
 StructInitInfo * InitInfoScanner ( void )
 {
   return &module;
+}
+
+/****************************************************************************
+ **
+ *F  InitScannerTLS() . . . . . . . . . . . . . . . . . . . . . initialize TLS
+ *F  DestroyScannerTLS()  . . . . . . . . . . . . . . . . . . . .  destroy TLS
+ */
+
+void InitScannerTLS()
+{
+  TLS(HELPSubsOn) = 1;
+}
+
+void DestroyScannerTLS()
+{
 }
 
 

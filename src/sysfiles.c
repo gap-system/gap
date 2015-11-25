@@ -1355,7 +1355,13 @@ UInt SyIsIntr ( void )
     UInt                isIntr;
 
     isIntr = (syLastIntr != 0);
-    syLastIntr = 0;
+    /* The following write has to be conditional to avoid serious
+     * performance degradation on shared memory (especially NUMA)
+     * architectures when multiple threads all try to write to the same
+     * location at the same time. Branch prediction can be expected to
+     * be near perfect.
+     */
+    if (isIntr) syLastIntr = 0;
     return isIntr;
 }
 
@@ -1554,7 +1560,7 @@ void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
 }
 
 #else
-int SyHaveAlarms = 0;
+const int SyHaveAlarms = 0;
 
 /* stub implementations */
 
@@ -2663,6 +2669,30 @@ Char * readlineFgets (
 
 #endif
 
+GVarDescriptor GVarBeginEdit, GVarEndEdit;
+
+Int syBeginEdit(Int fid)
+{
+  Obj func = GVarFunction(&GVarBeginEdit);
+  Obj result;
+  if (!func)
+    return syStartraw(fid);
+  result = CALL_1ARGS(func, INTOBJ_INT(fid));
+  return result != False && result != Fail && result != INTOBJ_INT(0);
+}
+
+Int syEndEdit(Int fid)
+{
+  Obj func = GVarFunction(&GVarEndEdit);
+  Obj result;
+  if (!func) {
+    syStopraw(fid);
+    return 1;
+  }
+  result = CALL_1ARGS(func, INTOBJ_INT(fid));
+  return result != False && result != Fail && result != INTOBJ_INT(0);
+}
+
 Char * syFgets (
     Char *              line,
     UInt                length,
@@ -2697,10 +2727,8 @@ Char * syFgets (
 
     /* no line editing if the user disabled it
        or we can't make it into raw mode */
-    if ( SyLineEdit == 0 || ! syStartraw(fid) ) {
-        SyStopTime = SyTime();
+    if ( SyLineEdit == 0 || ! syBeginEdit(fid) ) {
         p = syFgetsNoEdit(line, length, fid, block );
-        SyStartTime += SyTime() - SyStopTime;
         return p;
     }
 
@@ -2711,11 +2739,12 @@ Char * syFgets (
           syStopraw(fid);
 
       /* stop the clock, reading should take no time                         */
-      SyStopTime = SyTime();
+      /* TODO: Make time adjustment thread-safe? */
+      /* SyStopTime = SyTime(); */
 
       p = readlineFgets(line, length, fid, block);
       /* start the clock again                                               */
-      SyStartTime += SyTime() - SyStopTime;
+      /* SyStartTime += SyTime() - SyStopTime; */
       if ( EndLineHook ) Call0ArgsInNewReader( EndLineHook );
       if (!p)
         return p;
@@ -2733,7 +2762,7 @@ Char * syFgets (
       line[len] = '\0';
       /* switch back to cooked mode                                          */
       if ( SyLineEdit == 1 )
-          syStopraw(fid);
+          syEndEdit(fid);
 
       /* return the line (or '0' at end-of-file)                             */
       if ( *line == '\0' )
@@ -2746,8 +2775,6 @@ Char * syFgets (
       yank buffer (= length of line buffer for input files).*/
     if (length > 32768)
        ErrorQuit("Cannot handle lines with more than 32768 characters in line edit mode.",0,0);
-    /* stop the clock, reading should take no time                         */
-    SyStopTime = SyTime();
 
     /* the line starts out blank                                           */
     line[0] = '\0';  p = line;
@@ -3241,9 +3268,6 @@ Char * syFgets (
     if ( SyLineEdit == 1 )
         syStopraw(fid);
 
-    /* start the clock again                                               */
-    SyStartTime += SyTime() - SyStopTime;
-
     /* return the line (or '0' at end-of-file)                             */
     if ( *line == '\0' )
         return (Char*)0;
@@ -3486,26 +3510,10 @@ UInt SyExecuteProcess (
 #endif
     Int                     tin;                    /* temp in             */
     Int                     tout;                   /* temp out            */
-    sig_handler_t           *func;
-    sig_handler_t           *func2;
 
 #if !HAVE_WAITPID
     struct rusage           usage;
 #endif
-
-
-    /* turn off the SIGCHLD handling, so that we can be sure to collect this child
-       `After that, we call the old signal handler, in case any other children have died in the
-       meantime. This resets the handler */
-
-    func2 = signal( SIGCHLD, SIG_DFL );
-
-    /* This may return SIG_DFL (0x0) or SIG_IGN (0x1) if the previous handler
-     * was set to the default or 'ignore'. In these cases (or if SIG_ERR is
-     * returned), just use a null signal hander - the default on most systems
-     * is to do nothing */
-    if(func2 == SIG_ERR || func2 == SIG_DFL || func2 == SIG_IGN)
-      func2 = &NullSignalHandler;
 
     /* clone the process                                                   */
     pid = vfork();
@@ -3516,9 +3524,6 @@ UInt SyExecuteProcess (
     /* we are the parent                                                   */
     if ( pid != 0 ) {
 
-        /* ignore a CTRL-C                                                 */
-        func = signal( SIGINT, SIG_IGN );
-
         /* wait for some action                                            */
 #if HAVE_WAITPID
         wait_pid = waitpid( pid, &status, 0 );
@@ -3526,18 +3531,12 @@ UInt SyExecuteProcess (
         wait_pid = wait4( pid, &status, 0, &usage );
 #endif
         if ( wait_pid == -1 ) {
-            signal( SIGINT, func );
-            (*func2)(SIGCHLD);
             return -1;
         }
 
         if ( WIFSIGNALED(status) ) {
-            signal( SIGINT, func );
-            (*func2)(SIGCHLD);
             return -1;
         }
-        signal( SIGINT, func );
-        (*func2)(SIGCHLD);
         return WEXITSTATUS(status);
     }
 
@@ -4094,6 +4093,8 @@ static Int InitKernel(
   ImportGVarFromLibrary("GAPInfo", &GAPInfo);
   ImportFuncFromLibrary("LineEditKeyHandler", &LineEditKeyHandler);
   ImportGVarFromLibrary("LineEditKeyHandlers", &LineEditKeyHandlers);
+  DeclareGVar(&GVarBeginEdit, "TERMINAL_BEGIN_EDIT");
+  DeclareGVar(&GVarEndEdit, "TERMINAL_END_EDIT");
   /* return success                                                      */
   return 0;
 

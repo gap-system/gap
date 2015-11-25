@@ -41,7 +41,7 @@
 **  'CHANGED_BAG' for  each of such change.  Instead we wait until  a garbage
 **  collection begins  and then  call  'CHANGED_BAG'  in  'BeginCollectBags'.
 */
-extern  Bag             CurrLVars;
+/* TL: extern  Bag             CurrLVars; */
 
 
 
@@ -57,7 +57,7 @@ extern  Bag             CurrLVars;
 **  have to check for the bottom, slowing it down.
 **
 */
-extern  Bag             BottomLVars;
+/* TL: extern  Bag             BottomLVars; */
 
 
 /****************************************************************************
@@ -70,7 +70,7 @@ extern  Bag             BottomLVars;
 **  Since   a   garbage collection may  move   this  bag  around, the pointer
 **  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
 */
-extern  Obj *           PtrLVars;
+/* TL: extern  Obj *           PtrLVars; */
 
 
 /****************************************************************************
@@ -136,6 +136,29 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 
 /****************************************************************************
 **
+*F  NewLVarsBag( <slots> ) . . make new lvars bag with <slots> variable slots
+*F  FreeLVarsBag( <bag> )  . . . . . . . . . . . . . . . . . . free lvars bag
+*/
+
+Bag NewLVarsBag(UInt slots);
+void FreeLVarsBag(Bag bag);
+
+/****************************************************************************
+**
+*F  MakeHighVars( <bag> ) . . turn all frames on the stack into high vars
+*/
+
+static inline void MakeHighVars( Bag bag ) {
+  while (bag && TNUM_OBJ(bag) == T_LVARS) {
+    RetypeBag(bag, T_HVARS);
+    bag = ADDR_OBJ(bag)[2];
+  }
+}
+
+
+
+/****************************************************************************
+**
 *F  SWITCH_TO_NEW_LVARS( <func>, <narg>, <nloc>, <old> )  . . . . . new local
 **
 **  'SWITCH_TO_NEW_LVARS'  creates and switches  to a new local variabes bag,
@@ -156,9 +179,8 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 {
   Obj old = TLS(CurrLVars);
   CHANGED_BAG( old );
-  TLS(CurrLVars) = NewBag( T_LVARS,
-                      sizeof(Obj)*(3+narg+nloc) );
-  PtrLVars  = PTR_BAG( TLS(CurrLVars) );
+  TLS(CurrLVars) = NewLVarsBag( narg+nloc );
+  TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
   CURR_FUNC = func;
   TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
   SET_BRK_CALL_FROM( old );
@@ -205,17 +227,37 @@ static inline void SwitchToOldLVars( Obj old
   TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
 }
 
+static inline void SwitchToOldLVarsAndFree( Obj old
+#ifdef TRACEFRAMES
+, char *file, int line
+#endif
+)
+{
+#ifdef TRACEFRAMES
+  if (STEVES_TRACING == True) {
+    fprintf(stderr,"STOL:  %s %i old lvars %lx new lvars %lx\n",
+           file, line, (UInt)TLS(CurrLVars),(UInt)old);
+  }
+#endif
+  CHANGED_BAG( TLS(CurrLVars) );
+  if (TLS(CurrLVars) != old && TNUM_OBJ(TLS(CurrLVars)) == T_LVARS)
+    FreeLVarsBag(TLS(CurrLVars));
+  TLS(CurrLVars) = (old);
+  TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
+  TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+}
+
+
 #ifdef TRACEFRAMES
 #define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old), __FILE__,__LINE__)
 #else
 #define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old))
 #endif
 
-// The following is here for HPC-GAP compatibility
 #ifdef TRACEFRAMES
-#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVars((old), __FILE__,__LINE__)
+#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVarsAndFree((old), __FILE__,__LINE__)
 #else
-#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVars((old))
+#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVarsAndFree((old))
 #endif
 
 

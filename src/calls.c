@@ -1165,8 +1165,8 @@ Obj NewFunctionT (
       HDLR_FUNC(func,7) = hdlr;
     }
 
-    /* enter the arguments and the names                               */
-    NAME_FUNC(func) = name;
+    /* enter the the arguments and the names                               */
+    NAME_FUNC(func) = ConvImmString(name);
     NARG_FUNC(func) = narg;
     NAMS_FUNC(func) = nams;
     if (nams) MakeBagPublic(nams);
@@ -1299,6 +1299,7 @@ void PrintFunction (
     Int                 nloc;           /* number of locals                */
     Obj                 oldLVars;       /* terrible hack                   */
     UInt                i;              /* loop variable                   */
+    UChar               *locks = 0L;
 
 
     if ( IS_OPERATION(func) ) {
@@ -1306,14 +1307,28 @@ void PrintFunction (
       return;
     }
 
-    /* print 'function ('                                                  */
-    Pr("%5>function%< ( %>",0L,0L);
+    /* print 'function (' or 'atomic function ('                          */
+    if (LCKS_FUNC(func)) {
+      locks = CHARS_STRING(LCKS_FUNC(func));
+      Pr("%5>atomic function%< ( %>",0L,0L);
+    } else
+      Pr("%5>function%< ( %>",0L,0L);
 
     /* print the arguments                                                 */
     narg = NARG_FUNC(func);
     if (narg < 0)
       narg = -narg;
     for ( i = 1; i <= narg; i++ ) {
+        if (locks) {
+            switch(locks[i-1]) {
+            case 1:
+                Pr("%>readonly %<", 0L, 0L);
+                break;
+            case 2:
+                Pr("%>readwrite %<", 0L, 0L);
+                break;
+            }
+        }
         if ( NAMS_FUNC(func) != 0 )
             Pr( "%I", (Int)NAMI_FUNC( func, (Int)i ), 0L );
         else
@@ -1572,8 +1587,7 @@ Obj FuncNAME_FUNC (
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         name = NAME_FUNC(func);
         if ( name == 0 ) {
-            C_NEW_STRING_CONST(name, "unknown");
-            RetypeBag(name, T_STRING+IMMUTABLE);
+            name = MakeImmString("unknown");
             NAME_FUNC(func) = name;
             CHANGED_BAG(func);
         }
@@ -1594,7 +1608,7 @@ Obj FuncSET_NAME_FUNC(
                           (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
   }
   if (TNUM_OBJ(func) == T_FUNCTION ) {
-    NAME_FUNC(func) = name;
+    NAME_FUNC(func) = ConvImmString(name);
     CHANGED_BAG(func);
   } else
     DoOperation2Args(SET_NAME_FUNC_Oper, func, name);
@@ -1635,6 +1649,30 @@ Obj FuncNAMS_FUNC (
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         nams = NAMS_FUNC(func);
         return (nams != (Obj)0) ? nams : Fail;
+    }
+    else {
+        return DoOperation1Args( self, func );
+    }
+}
+
+/****************************************************************************
+**
+*F  FuncLOCKS_FUNC( <self>, <func> ) . . . . locking status of a possibly
+**                                           atomic function
+*/
+Obj LOCKS_FUNC_Oper;
+
+Obj FuncLOCKS_FUNC (
+    Obj                 self,
+    Obj                 func )
+{
+  Obj locks;
+    if ( TNUM_OBJ(func) == T_FUNCTION ) {
+      locks = LCKS_FUNC(func);
+      if ( locks == (Obj)0) 
+	return Fail;
+      else
+	return locks;
     }
     else {
         return DoOperation1Args( self, func );
@@ -1741,7 +1779,7 @@ Obj FuncPROFILE_FUNC(
         HDLR_FUNC(copy,5) = HDLR_FUNC(func,5);
         HDLR_FUNC(copy,6) = HDLR_FUNC(func,6);
         HDLR_FUNC(copy,7) = HDLR_FUNC(func,7);
-        NAME_FUNC(copy)   = NAME_FUNC(func);
+        NAME_FUNC(copy)   = ConvImmString(NAME_FUNC(func));
         NARG_FUNC(copy)   = NARG_FUNC(func);
         NAMS_FUNC(copy)   = NAMS_FUNC(func);
         PROF_FUNC(copy)   = PROF_FUNC(func);
@@ -1789,6 +1827,8 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
         Obj fn =  FILENAME_BODY(BODY_FUNC(func));
 #ifndef WARD_ENABLED
         if (fn) {
+            if (IS_BAG_REF(fn))
+                MakeBagPublic(fn);
             return fn;
         }
 #endif
@@ -1922,7 +1962,7 @@ void LoadFunction ( Obj func )
   UInt i;
   for (i = 0; i <= 7; i++)
     HDLR_FUNC(func,i) = LoadHandler();
-  NAME_FUNC(func) = LoadSubObj();
+  NAME_FUNC(func) = ConvImmString(LoadSubObj());
   NARG_FUNC(func) = LoadUInt();
   NAMS_FUNC(func) = LoadSubObj();
   PROF_FUNC(func) = LoadSubObj();
@@ -1979,6 +2019,9 @@ static StructGVarOper GVarOpers [] = {
 
     { "NAMS_FUNC", 1, "func", &NAMS_FUNC_Oper,
       FuncNAMS_FUNC, "src/calls.c:NAMS_FUNC" },
+
+    { "LOCKS_FUNC", 1, "func", &LOCKS_FUNC_Oper,
+      FuncLOCKS_FUNC, "src/calls.c:LOCKS_FUNC" },
 
     { "PROF_FUNC", 1, "func", &PROF_FUNC_Oper,
       FuncPROF_FUNC, "src/calls.c:PROF_FUNC" },

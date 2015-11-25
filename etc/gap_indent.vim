@@ -1,6 +1,7 @@
 " GAP indent file
 " Language:	GAP  (http://www.gap-system.org)
-" Maintainer:	Frank LÃ¼beck (Frank.Luebeck@Math.RWTH-Aachen.De)
+" Maintainer:	Frank Lübeck (Frank.Luebeck@Math.RWTH-Aachen.De)
+" CVS:	 $Id: gap_indent.vim,v 1.1 2001/10/31 09:50:29 gap Exp $
 " Comments: 
 " --  started from Matlab indent file in vim 6.0
 " --  Many people like a 4 blank indentation, I prefer 2 blanks: this can

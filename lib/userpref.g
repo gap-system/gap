@@ -207,9 +207,9 @@
 #T - Support also an ``extendible menu'', i. e. a list of choices plus the
 #T   possibility to enter a value not in the list.
 ##
-GAPInfo.DeclarationsOfUserPreferences:= [];
+GAPInfo.DeclarationsOfUserPreferences:= AtomicList([]);
 
-GAPInfo.UserPreferences:= rec();
+GAPInfo.UserPreferences := AtomicRecord(rec());
 
 DeclareUserPreference:= function( record )
     local name, package, default, i, up;
@@ -267,6 +267,7 @@ DeclareUserPreference:= function( record )
     record.package:= package;
     record.omitFromGapIniFile:= IsBound( record.omitFromGapIniFile )
                                 and record.omitFromGapIniFile = true;
+    MakeImmutable( record );
     Add( GAPInfo.DeclarationsOfUserPreferences, record );
 
     # Set the default value, if not yet set.
@@ -283,7 +284,7 @@ DeclareUserPreference:= function( record )
     fi;
     up := GAPInfo.UserPreferences;
     if not IsBound( up.( package ) ) then
-      up.( package ):= rec();
+      up.( package ):= AtomicRecord(rec());
     fi;
     if IsString( record.name ) then
       if not IsBound(up.( package ).( record.name )) then
@@ -321,11 +322,11 @@ BindGlobal( "SetUserPreference", function( arg )
     pref:= GAPInfo.UserPreferences;
     if not IsBound( pref.( package ) ) then
       # We may set a preference now that will become declared later.
-      pref.( package ):= rec();;
+      pref.( package ):= AtomicRecord( rec() );
     fi;
     pref:= pref.( package );
 #T First check whether the desired value is admissible?
-    pref.( name ):= value;
+    pref.( name ):= MakeImmutable(value);
     end );
 
 
@@ -658,7 +659,7 @@ ShowUserPreferences:= function(arg)
         Append(str, undec[1]);
         for i in [2..Length(undec)] do
           Append(str, ", ");
-          Append(str, undec[i]);
+          Append(undec[i]);
         od;
       fi;
 
@@ -726,16 +727,10 @@ Please specify directory to write gap.ini file.");
       Error("Cannot write backup file ",target,".bak.\nError message: ",
             LastSystemError().message,".\n");
       return fail;
-    else
-      Info(InfoWarning, 1, "Copied existing gap.ini to ", target, ".bak");
     fi;
   fi;
   # content of resulting file as string
   res := StringUserPreferences(ignorecurrent);
-  if ARCH_IS_WINDOWS() then
-    # use DOS/Windows style line breaks
-    res := ReplacedString(res, "\n", "\r\n");
-  fi;
   # finally write the gap.ini file
   ret := FileString(target, res);
   if ret = fail then

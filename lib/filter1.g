@@ -16,10 +16,10 @@
 #F  WITH_HIDDEN_IMPS_FLAGS( <flags> )
 ##
 
+
 WITH_HIDDEN_IMPS_FLAGS_COUNT      := 0;
 WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := 0;
 WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT  := 0;
-
 
 
 
@@ -29,28 +29,34 @@ WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT  := 0;
 #F  WITH_IMPS_FLAGS( <flags> )
 ##
 
-IMPLICATIONS := [];
-WITH_IMPS_FLAGS_CACHE      := [];
+IMPLICATIONS := ShareSpecialObj([]);
+WITH_IMPS_FLAGS_CACHE      := LockAndMigrateObj([], IMPLICATIONS);
 WITH_IMPS_FLAGS_COUNT      := 0;
 WITH_IMPS_FLAGS_CACHE_HIT  := 0;
 WITH_IMPS_FLAGS_CACHE_MISS := 0;
 
 Unbind(CLEAR_IMP_CACHE);
 BIND_GLOBAL( "CLEAR_IMP_CACHE", function()
-    WITH_IMPS_FLAGS_CACHE := [];
+    local lock;
+    lock := WRITE_LOCK(IMPLICATIONS);
+    WITH_IMPS_FLAGS_CACHE := MigrateObj([], IMPLICATIONS);
+    UNLOCK(lock);
 end );
 
 
 BIND_GLOBAL( "WITH_IMPS_FLAGS", function ( flags )
-    local   with,  changed,  imp,  hash,  hash2,  i;
+    local   with,  changed,  imp,  hash,  hash2,  i,  lock;
 
     hash := HASH_FLAGS(flags) mod 11001;
+    lock := WRITE_LOCK(IMPLICATIONS);
     for i  in [ 0 .. 3 ]  do
         hash2 := 2 * ((hash+31*i) mod 11001) + 1;
         if IsBound(WITH_IMPS_FLAGS_CACHE[hash2])  then
             if IS_IDENTICAL_OBJ(WITH_IMPS_FLAGS_CACHE[hash2],flags) then
                 WITH_IMPS_FLAGS_CACHE_HIT := WITH_IMPS_FLAGS_CACHE_HIT + 1;
-                return WITH_IMPS_FLAGS_CACHE[hash2+1];
+                with := WITH_IMPS_FLAGS_CACHE[hash2+1];
+		UNLOCK(lock);
+		return with;
             fi;
         else
             break;
@@ -79,6 +85,7 @@ BIND_GLOBAL( "WITH_IMPS_FLAGS", function ( flags )
 
     WITH_IMPS_FLAGS_CACHE[hash2  ] := flags;
     WITH_IMPS_FLAGS_CACHE[hash2+1] := with;
+    UNLOCK(lock);
     return with;
 end );
 
@@ -95,7 +102,7 @@ end );
 
 UNBIND_GLOBAL( "RANK_FILTER" );
 BIND_GLOBAL( "RANK_FILTER", function( filter )
-    local   rank,  flags,  i;
+    local   rank,  flags,  i, lock;
 
     rank  := 0;
     if IS_FUNCTION(filter)  then
@@ -103,53 +110,61 @@ BIND_GLOBAL( "RANK_FILTER", function( filter )
     else
         flags := filter;
     fi;
+    lock := WRITE_LOCK(FILTER_REGION);
     for i  in TRUES_FLAGS(WITH_HIDDEN_IMPS_FLAGS(flags))  do
-        if IsBound(RANK_FILTERS[i])  then
-            rank := rank + RANK_FILTERS[i];
-        else
-            rank := rank + 1;
-        fi;
+	if IsBound(RANK_FILTERS[i])  then
+	    rank := rank + RANK_FILTERS[i];
+	else
+	    rank := rank + 1;
+	fi;
     od;
+    UNLOCK(lock);
     return rank;
 end );
 
 RankFilter := RANK_FILTER;
-
-UNBIND_GLOBAL( "RANK_FILTER_STORE" );
-BIND_GLOBAL( "RANK_FILTER_STORE", function( filter )
-    local   hash,  rank,  flags;
-
-    if IS_FUNCTION(filter)  then
-        flags := FLAGS_FILTER(filter);
-    else
-        flags := filter;
-    fi;
-    hash := HASH_FLAGS(flags);
-    rank := RANK_FILTER(flags);
-    ADD_LIST( RANK_FILTER_LIST_CURRENT, hash );
-    ADD_LIST( RANK_FILTER_LIST_CURRENT, rank );
-    return rank;
-
-end );
-
-UNBIND_GLOBAL( "RANK_FILTER_COMPLETION" );
-BIND_GLOBAL( "RANK_FILTER_COMPLETION", function( filter )
-    local   hash,  flags;
-
-    if IS_FUNCTION(filter)  then
-        flags := FLAGS_FILTER(filter);
-    else
-        flags := filter;
-    fi;
-    hash := HASH_FLAGS(flags);
-    if hash <> RANK_FILTER_LIST[RANK_FILTER_COUNT]  then
-        Error( "corrupted completion file" );
-    fi;
-    RANK_FILTER_COUNT := RANK_FILTER_COUNT+2;
-    return RANK_FILTER_LIST[RANK_FILTER_COUNT-1];
-
-end );
-
+##
+##UNBIND_GLOBAL( "RANK_FILTER_STORE" );
+##BIND_GLOBAL( "RANK_FILTER_STORE", function( filter )
+##    local   hash,  rank,  flags,  lock;
+##
+##    if IS_FUNCTION(filter)  then
+##        flags := FLAGS_FILTER(filter);
+##    else
+##        flags := filter;
+##    fi;
+##    hash := HASH_FLAGS(flags);
+##    lock := WRITE_LOCK(FILTER_REGION);
+##    rank := RANK_FILTER(flags);
+##    ADD_LIST( RANK_FILTER_LIST_CURRENT, hash );
+##    ADD_LIST( RANK_FILTER_LIST_CURRENT, rank );
+##    UNLOCK(lock);
+##    return rank;
+##
+##end );
+##
+##UNBIND_GLOBAL( "RANK_FILTER_COMPLETION" );
+##BIND_GLOBAL( "RANK_FILTER_COMPLETION", function( filter )
+##    local   hash,  flags,  lock,  result;
+##
+##    if IS_FUNCTION(filter)  then
+##        flags := FLAGS_FILTER(filter);
+##    else
+##        flags := filter;
+##    fi;
+##    hash := HASH_FLAGS(flags);
+##    lock := WRITE_LOCK(FILTER_REGION);
+##    if hash <> RANK_FILTER_LIST[RANK_FILTER_COUNT]  then
+##        UNLOCK(lock);
+##        Error( "corrupted completion file" );
+##    fi;
+##    RANK_FILTER_COUNT := RANK_FILTER_COUNT+2;
+##    result := RANK_FILTER_LIST[RANK_FILTER_COUNT-1];
+##    UNLOCK(lock);
+##    return result;
+##
+##end );
+##
 #############################################################################
 ##
 #E  filter1.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

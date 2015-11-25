@@ -1,10 +1,10 @@
 #ifndef _GAP_FFDATA_H
 #define _GAP_FFDATA_H
 
-/*
- * This header is a placeholder for the HPC-GAP header of the same name. It
- * is here to allow us to reduce diffs between the code bases of HPC-GAP
- * and classic GAP.
- */
+#define NUM_SHORT_FINITE_FIELDS 6635
 
-#endif
+extern unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1];
+extern unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1];
+extern unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1];
+
+#endif /* _GAP_FFDATA_H */

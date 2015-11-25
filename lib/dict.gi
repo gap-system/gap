@@ -105,6 +105,31 @@ end);
 
 #############################################################################
 ##
+#M  RemoveDictionary(<dict>,<obj>)
+##
+InstallOtherMethod(RemoveDictionary,"for lookup list dictionaries",true,
+  [IsListLookupDictionary and IsMutable,IsObject],0,
+function(d, key)
+  local pos;
+  pos := PositionFirstComponent(d!.entries, key);
+  if pos <= Length(d!.entries) and d!.entries[pos][1] = key then
+    Remove(d!.entries, pos);
+  fi;;
+end);
+
+InstallMethod(RemoveDictionary,"for list dictionaries",true,
+  [IsListDictionary and IsMutable,IsObject],0,
+function(d, key)
+  local pos;
+  pos := Position(d!.list, key);
+  if pos <= Length(d!.list) and d!.list[pos] = key then
+    Remove(d!.list, pos);
+  fi;;
+end);
+
+
+#############################################################################
+##
 #M  AddDictionary(<dict>,<obj>,<val>)
 ##
 InstallOtherMethod(AddDictionary,"for lookup sort dictionaries",true,
@@ -343,6 +368,34 @@ local hashfun,obj,dom,lookup;
   return DictionaryByList(lookup);
 end);
 
+#############################################################################
+##
+#M  Enumerator( <dict> ) for list dictionaries
+##
+InstallMethod( Enumerator, "for list dictionaries",
+    [ IsListDictionary ], 0,
+    function( dict )
+      if IsListLookupDictionary(dict) then
+        return List(dict!.entries, pair -> pair[2]);
+      else
+        return ShallowCopy(dict!.list);
+      fi;
+    end );
+
+#############################################################################
+##
+#M  ListKeyEnumerator( <dict> ) for list dictionaries
+##
+InstallMethod( ListKeyEnumerator, "for list dictionaries",
+    [ IsListDictionary ], 0,
+    function( dict )
+      if IsListLookupDictionary(dict) then
+        return List(dict!.entries, pair -> pair[1]);
+      else
+        return ShallowCopy(dict!.list);
+      fi;
+    end );
+
 # here starts the hash table bit by Gene and Scott
 
 ##  PERFORMANCE:
@@ -497,8 +550,8 @@ InstallMethod( RandomHashKey, "for dense hash tables", true,
 ##
 ##  Default starting hash table size
 ##
-DefaultHashLength := 2^7; 
-BindGlobal("HASH_RANGE",[0..DefaultHashLength-2]);
+DefaultHashLength := 2^7;
+MakeThreadLocal("DefaultHashLength");
 
 #############################################################################
 ##
@@ -509,7 +562,9 @@ function(arg)
       local Rec,T;
 
   Rec := rec( KeyArray := ListWithIdenticalEntries( DefaultHashLength, fail ), 
-          ValueArray := [], LengthArray := DefaultHashLength, NumberKeys := 0 );
+          ValueArray := [], LengthArray := DefaultHashLength, 
+          HashRange := DefaultHashLength - 2,
+          NumberKeys := 0 );
     
   if Length(arg)>0 then
     T:=Objectify( DefaultSparseHashWithIKRepType, Rec );
@@ -672,6 +727,7 @@ BindGlobal("HashClashFct",function(intkey,i,len)
   #return 1+(intkey mod (len-i));
 end);
 
+
 #############################################################################
 ##
 #M  AddDictionary(<dict>,<key>,<val>)
@@ -681,8 +737,9 @@ local index,intkey,i,cnt;
   intkey := hash!.intKeyFun(key);
 #  cnt:=0;
   repeat
-    for i in HASH_RANGE do
+    for i in [0..hash!.HashRange] do
       index:=HashClashFct(intkey,i,hash!.LengthArray);
+      # Print(intkey,":",i,":",hash!.LengthArray);
       if hash!.KeyArray[index] = fail then
 #if cnt>MAXCLASH then MAXCLASH:=cnt;
 #Print("found after ",cnt," clashes, ", Length(Set(
@@ -702,10 +759,8 @@ local index,intkey,i,cnt;
 #      cnt:=cnt+1;
     od;
     # failed: Double size
-    #Error("Failed/double ",intkey," ",key," ",Maximum(HASH_RANGE),"\n");
-    MakeReadWriteGlobal("HASH_RANGE");
-    HASH_RANGE:=[1..2*Maximum(HASH_RANGE)];
-    MakeReadOnlyGlobal("HASH_RANGE");
+    #Error("Failed/double ",intkey," ",key," ",Maximum(hash!.HashRange),"\n");
+    hash!.HashRange := hash!.HashRange * 2;
     DoubleHashDictSize( hash );
   until false;
 end );
@@ -720,7 +775,7 @@ InstallOtherMethod(AddDictionary,"for hash tables",true,
 function(hash,key,value)
 local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
-  for i in HASH_RANGE do
+  for i in [0..hash!.HashRange] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
 
     if hash!.KeyArray[index] = fail then
@@ -769,7 +824,9 @@ function( hash )
   hash!.LengthArrayHalf := QuoInt(hash!.LengthArray,2);
   hash!.KeyArray:=0; # old one away
   hash!.KeyArray := ListWithIdenticalEntries( hash!.LengthArray, fail );
+  MigrateObj(hash!.KeyArray, hash);
   hash!.ValueArray := [];
+  MigrateObj(hash!.ValueArray, hash);
   hash!.NumberKeys := 0;
   l:=Length(oldKeyArray);
   if IsBound(hash!.intKeyFun) then
@@ -820,7 +877,7 @@ InstallMethod(LookupDictionary,"for hash tables that know their int key",true,
 function( hash, key )
 local index,intkey,i,cnt;
   intkey := hash!.intKeyFun(key);
-  for i in HASH_RANGE do
+  for i in [0..hash!.HashRange] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = key then
       #LastHashIndex := index;
@@ -842,7 +899,7 @@ InstallMethod(LookupDictionary,"for hash tables",true,
 function( hash, key )
 local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
-  for i in HASH_RANGE do
+  for i in [0..hash!.HashRange] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = key then
         #LastHashIndex := index;

@@ -206,19 +206,18 @@ distclean:
 	while test -e Makefile; do $(MAKE) clean; done
 
 manuals:
-	( echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAPauto) )
 	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) > make_manuals.out )
 	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) > make_manuals.out )
 	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) > make_manuals.out )          
 	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) > make_manuals.out )
 	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) > make_manuals.out )
 	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) > make_manuals.out )           
 	( rm doc/wsp.g )
 
 
@@ -250,29 +249,23 @@ teststandardrenormalize:
 testpackages:
 	mkdir -p dev/log
 	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
-            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
-	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            CreatePackageTestsInput( "testpackages.in", \
             "dev/log/testpackages1", \
-            "$(TESTGAP) -L wsp.g", "false" );'\
-            | $(TESTGAP) -L wsp.g > /dev/null )
+            "$(TESTGAP)", "false" );'\
+            | $(TESTGAP) > /dev/null )
 	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
-	( rm wsp.g )
 	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
-            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
-	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            CreatePackageTestsInput( "testpackages.in", \
             "dev/log/testpackagesA", \
-            "$(TESTGAPauto) -L wsp.g", "auto" );'\
-            | $(TESTGAPauto) -L wsp.g > /dev/null )
+            "$(TESTGAPauto)", "auto" );'\
+            | $(TESTGAPauto) > /dev/null )
 	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
-	( rm wsp.g )
 	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
-            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
-	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            CreatePackageTestsInput( "testpackages.in", \
             "dev/log/testpackages2", \
-            "$(TESTGAP) -L wsp.g", "true" );'\
-            | $(TESTGAP) -L wsp.g > /dev/null )
+            "$(TESTGAP)", "true" );'\
+            | $(TESTGAP) > /dev/null )
 	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
-	( rm wsp.g )
 
 testpackagesload:
 	mkdir -p dev/log

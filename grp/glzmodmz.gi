@@ -313,7 +313,7 @@ local oper,n,R,o,nrit,
 	    e:=1/pp*e;
 	    e:=Concatenation(e)*one;
 	    if p<257 then
-	      ConvertToVectorRep(e,p);
+	      e := CopyToVectorRep(e,p);
 	    fi;
 	    if not e in sub then
 	      Add(bas,e);

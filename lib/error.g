@@ -12,6 +12,7 @@
 CallAndInstallPostRestore( function()
     ASS_GVAR( "ERROR_COUNT", 0 );
     ASS_GVAR( "ErrorLevel", 0 );
+    MakeThreadLocal("ErrorLevel");
     ASS_GVAR( "QUITTING", false );
 end);
 
@@ -23,10 +24,10 @@ end);
 Unbind(OnQuit);         # OnQuit is called from the kernel so we take great
 BIND_GLOBAL( "OnQuit",  # care to ensure it always has a definition. - GG
         function()
-    if not IsEmpty(OptionsStack) then
+    if not IsEmpty(ThreadVar.OptionsStack) then
       repeat
         PopOptions();
-      until IsEmpty(OptionsStack);
+      until IsEmpty(ThreadVar.OptionsStack);
       Info(InfoWarning,1,"Options stack has been reset");
     fi;
 end);
@@ -232,7 +233,11 @@ BIND_GLOBAL("ErrorInner",
         prompt := "brk> ";
     fi;
     if not justQuit then
-        res := SHELL(context,mayReturnVoid,mayReturnObj,1,false,prompt,false,"*errin*","*errout*",false);
+	if HaveMultiThreadedUI then
+          res := SHELL(context,mayReturnVoid,mayReturnObj,1,false,prompt,false,"*defin*","*defout*",false);
+	else
+          res := SHELL(context,mayReturnVoid,mayReturnObj,1,false,prompt,false,"*errin*","*errout*",false);
+	fi;
     else
         res := fail;
     fi;

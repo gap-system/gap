@@ -2296,13 +2296,15 @@ DeclareGlobalFunction("BlistStringDecode");
 ##
 #F  Average(l);
 #F  Median(l);
+#F  Variance(l);
 ##
 ##  For a nonempty list of objects that can be ordered totally and permit
 ##  scalar multiplication by rational numbers, these functions compute the
-##  average and median of the objects in the list.
+##  average, median, and variance of the objects in the list.
 ##
 DeclareGlobalFunction("Average");
 DeclareGlobalFunction("Median");
+DeclareGlobalFunction("Variance");
 
 
 #############################################################################

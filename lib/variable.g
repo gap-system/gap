@@ -168,9 +168,12 @@ end );
 ##     `DeclareOperation', `DeclareProperty' etc. would admit this already.
 ##
 
+BIND_GLOBAL( "FLUSHABLE_VALUE_REGION", NewSpecialRegion("FLUSHABLE_VALUE_REGION"));
+
 BIND_GLOBAL("UNCLONEABLE_TNUMS",MakeImmutable([0,5,8]));
 
 BIND_GLOBAL( "InstallValue", function ( gvar, value )
+    local tmp;
     if (not IsBound(REREADING) or REREADING = false) and not
        IsToBeDefinedObj( gvar ) then
         Error("InstallValue: a value has been installed already");
@@ -179,11 +182,47 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
       INFO_DEBUG( 1,
           "please use `BindGlobal' for the family object ",
           value!.NAME, ", not `InstallValue'" );
-   fi;
-   if TNUM_OBJ_INT(value) in UNCLONEABLE_TNUMS then
+    fi;
+    if TNUM_OBJ_INT(value) in UNCLONEABLE_TNUMS then
        Error("InstallValue: value cannot be immediate, boolean or character");
-   fi;
-    CLONE_OBJ (gvar, value);
+    fi;
+    if IsPublic(value) then
+      # TODO: We need to handle those cases more cleanly.
+      if IS_ATOMIC_RECORD(value) then
+        value := AtomicRecord(FromAtomicRecord(value));
+      elif IS_ATOMIC_LIST(value) then
+        value := AtomicList(FromAtomicList(value));
+      elif IS_FIXED_ATOMIC_LIST(value) then
+        value := FixedAtomicList(FromAtomicList(value));
+      else
+        if IS_COMOBJ(value) then
+	  # atomic component object
+	  value := Objectify(TypeObj(value), FromAtomicComObj(value));
+	elif IS_POSOBJ(value) then
+	  # atomic positional object
+	  CLONE_OBJ(gvar, value);
+	  return;
+	elif IS_MUTABLE_OBJ(value) then
+	  value := ShallowCopy(value);
+	else
+	  value := MakeImmutable(ShallowCopy(value));
+	fi;
+      fi;
+      FORCE_SWITCH_OBJ (gvar, value);
+    elif IsType(value) and IsReadOnly(value) then
+      value := CopyRegion(value);
+      FORCE_SWITCH_OBJ(gvar, value);
+      MakeReadOnlyObj(gvar);
+    elif IsShared(value) then
+      atomic value do
+        tmp := CopyRegion(value);
+	MigrateObj(tmp, value);
+	FORCE_SWITCH_OBJ(gvar, tmp);
+      od;
+    else
+      value := CopyRegion(value);
+      FORCE_SWITCH_OBJ(gvar, value);
+    fi;
 end);
 
 BIND_GLOBAL( "InstallFlushableValueFromFunction", function( gvar, func )
@@ -213,20 +252,33 @@ BIND_GLOBAL( "InstallFlushableValue", function( gvar, value )
     local initval;
 
     if not ( IS_LIST( value ) or IS_REC( value ) ) then
-      Error( "<value> must be a list or a record" );
+      Error( "InstallFlushableValue: <value> must be a list or a record" );
     fi;
 
-    # Make a structural copy of the initial value.
-    initval:= DEEP_COPY_OBJ( value );
+    if IsPublic(value) then
+      Error( "InstallFlushableValue: <value> must not be in the public region" );
+    fi;
+
+
+    # Make a structural copy of the initial value and put it in a shared
+    # region.
+    initval:= CopyRegion( value );
+    LockAndMigrateObj(initval, FLUSHABLE_VALUE_REGION);
 
     # Initialize the variable.
+    # InstallValue() will always make a copy of value, so we
+    # can reuse it.
     InstallValue( gvar, value );
 
     # Install the method to flush the cache.
     InstallMethod( FlushCaches,
       [],
       function()
-          CLONE_OBJ( gvar, DEEP_COPY_OBJ( initval ) );
+	  if HaveWriteAccess(gvar) then
+	    atomic gvar, initval do
+	      SWITCH_OBJ( gvar, MigrateObj(CopyRegion( initval ), gvar) );
+	    od;
+	  fi;
           TryNextMethod();
       end );
 end );
@@ -266,7 +318,7 @@ BIND_GLOBAL( "TYPE_LVARS", NewType(LVARS_FAMILY, IsLVarsBag));
 #
 # Namespaces:
 #
-BIND_GLOBAL( "NAMESPACES_STACK", [] );
+BIND_GLOBAL( "NAMESPACES_STACK", ShareSpecialObj([]) );
 
 BIND_GLOBAL( "ENTER_NAMESPACE",
   function( namesp )
@@ -274,41 +326,50 @@ BIND_GLOBAL( "ENTER_NAMESPACE",
         Error( "<namesp> must be a string" );
         return;
     fi;
-    NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)+1] := namesp;
+    namesp := MakeImmutable(CopyRegion(namesp));
+    atomic NAMESPACES_STACK do
+        NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)+1] := namesp;
+    od;
     SET_NAMESPACE(namesp);
   end );
 
 BIND_GLOBAL( "LEAVE_NAMESPACE",
   function( )
-    if LEN_LIST(NAMESPACES_STACK) = 0 then
-        SET_NAMESPACE("");
-        Error( "was not in any namespace" );
-    else
-        UNB_LIST(NAMESPACES_STACK,LEN_LIST(NAMESPACES_STACK));
-        if LEN_LIST(NAMESPACES_STACK) = 0 then
-            SET_NAMESPACE("");
-        else
-            SET_NAMESPACE(NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)]);
-        fi;
-    fi;
+    atomic NAMESPACES_STACK do
+      if LEN_LIST(NAMESPACES_STACK) = 0 then
+	  SET_NAMESPACE(MakeImmutable(""));
+	  Error( "was not in any namespace" );
+      else
+	  UNB_LIST(NAMESPACES_STACK,LEN_LIST(NAMESPACES_STACK));
+	  if LEN_LIST(NAMESPACES_STACK) = 0 then
+	      SET_NAMESPACE(MakeImmutable(""));
+	  else
+	      SET_NAMESPACE(NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)]);
+	  fi;
+      fi;
+    od;
   end );
 
 BIND_GLOBAL( "LEAVE_ALL_NAMESPACES",
   function( )
     local i;
-    SET_NAMESPACE("");
-    for i in [1..LEN_LIST(NAMESPACES_STACK)] do
-         UNB_LIST(NAMESPACES_STACK,i);
+    atomic NAMESPACES_STACK do
+      SET_NAMESPACE(MakeImmutable(""));
+      for i in [1..LEN_LIST(NAMESPACES_STACK)] do
+	   UNB_LIST(NAMESPACES_STACK,i);
+      od;
     od;
   end );
     
 BIND_GLOBAL( "CURRENT_NAMESPACE",
   function()
-    if LEN_LIST(NAMESPACES_STACK) > 0 then
-        return NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)];
-    else
-        return "";
-    fi;
+    atomic NAMESPACES_STACK do
+      if LEN_LIST(NAMESPACES_STACK) > 0 then
+	  return NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)];
+      else
+	  return "";
+      fi;
+    od;
   end );
 
 #############################################################################

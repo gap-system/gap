@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 
-SMALL_GROUP_LIB[ 45 ] := [
+SMALL_GROUP_LIB[ 45 ] := AtomicList( List( [
 [ [ 1 ], [ 1, 3 ], -1, [ 1, -2, 3 ], -1 ], 
 [ [ 1 ], [ 9 ] ], 
-[ [ 1 ] ] ];
+[ [ 1 ] ] ], ShareSpecialObj) );

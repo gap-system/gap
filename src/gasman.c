@@ -498,6 +498,49 @@ static inline UInt IS_BAG (
 
 /****************************************************************************
 **
+*V  DSInfoBags[<type>]  . . . .  . . . . . . . . . .  region info for bags
+*/
+
+static char DSInfoBags[NTYPES];
+
+#define DSI_TL 0
+#define DSI_PUBLIC 1
+#define DSI_PROTECTED 2
+
+void MakeBagTypePublic(int type)
+{
+    DSInfoBags[type] = DSI_PUBLIC;
+}
+
+void MakeBagTypeProtected(int type)
+{
+    DSInfoBags[type] = DSI_PROTECTED;
+}
+
+Bag MakeBagPublic(Bag bag)
+{
+    MEMBAR_WRITE();
+    REGION(bag) = 0;
+    return bag;
+}
+
+Bag MakeBagReadOnly(Bag bag)
+{
+    MEMBAR_WRITE();
+    REGION(bag) = ReadOnlyRegion;
+    return bag;
+}
+
+Region *RegionBag(Bag bag)
+{
+    Region *result = REGION(bag);
+    MEMBAR_READ();
+    return result;
+}
+
+
+/****************************************************************************
+**
 *F  InitMsgsFuncBags(<msgs-func>) . . . . . . . . .  install message function
 **
 **  'InitMsgsFuncBags'  simply  stores  the  printing  function  in a  global
@@ -544,6 +587,34 @@ void InitSweepFuncBags (
     TabSweepFuncBags[type] = sweep_func;
 #endif
 }
+
+/****************************************************************************
+**
+*F  InitFinalizerFuncBags(<type>,<finalizer-func>)  . . . . install finalizer
+*/
+
+FinalizerFunction TabFinalizerFuncBags [ NTYPES ];
+
+void InitFinalizerFuncBags(
+    UInt		type,
+    FinalizerFunction   finalizer_func)
+{
+  TabFinalizerFuncBags[type] = finalizer_func;
+}
+
+#ifndef WARD_ENABLED
+
+void StandardFinalizer( void * bagContents, void * data )
+{
+  Bag bag;
+  void *bagContents2;
+  bagContents2 = ((char *) bagContents) + HEADER_SIZE * sizeof (Bag *);
+  bag = (Bag) &bagContents2;
+  TabFinalizerFuncBags[TNUM_BAG(bag)](bag);
+}
+
+#endif
+
 
 #if ITANIUM
 extern void * ItaniumRegisterStackTop();
@@ -1260,6 +1331,7 @@ void            InitBags (
     }
     GC_set_all_interior_pointers(0);
     GC_init();
+    GC_set_free_space_divisor(1);
     TLAllocatorInit();
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
@@ -1508,6 +1580,17 @@ Bag NewBag (
 
     /* set the masterpointer                                               */
     PTR_BAG(bag) = dst;
+    switch (DSInfoBags[type]) {
+    case DSI_TL:
+      REGION(bag) = CurrentRegion();
+      break;
+    case DSI_PUBLIC:
+      REGION(bag) = NULL;
+      break;
+    case DSI_PROTECTED:
+      REGION(bag) = ProtectedRegion;
+      break;
+    }
 #if 0
     {
       extern void * stderr;
@@ -1563,7 +1646,7 @@ void            RetypeBag (
 
     /* change the size-type word                                           */
 #ifdef USE_NEWSHAPE
-    *(*bag-HEADER_SIZE) &= 0xFFFFFFFFFFFF0000L;
+    *(*bag-HEADER_SIZE) &= 0xFFFFFFFFFFFFFF00L;
     *(*bag-HEADER_SIZE) |= new_type;
 #else
     *(*bag-HEADER_SIZE) = new_type;
@@ -1585,6 +1668,20 @@ void            RetypeBag (
       }
     }
 #endif
+    switch (DSInfoBags[new_type]) {
+      case DSI_PUBLIC:
+        REGION(bag) = NULL;
+	break;
+      case DSI_PROTECTED:
+        REGION(bag) = ProtectedRegion;
+	break;
+    }
+}
+
+void RetypeBagIfWritable( Obj obj, UInt new_type )
+{
+  if (CheckWriteAccess(obj))
+    RetypeBag(obj, new_type);
 }
 
 
@@ -2887,6 +2984,38 @@ UInt SET_ELM_BAG (
 }
 
 #endif
+
+void LockFinalizer(void *lock, void *data)
+{
+  pthread_rwlock_destroy(lock);
+}
+
+Region *NewRegion(void)
+{
+  Region *result;
+  pthread_rwlock_t *lock;
+  Obj region_obj;
+#ifndef DISABLE_GC
+  result = GC_malloc(sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
+  lock = GC_malloc_atomic(sizeof(*lock));
+  GC_register_finalizer(lock, LockFinalizer, NULL, NULL, NULL);
+#else
+  result = malloc(sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
+  memset(result, 0, sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
+  lock = malloc(sizeof(*lock));
+#endif
+  pthread_rwlock_init(lock, NULL);
+  region_obj = NewBag(T_REGION, sizeof(Region *));
+  MakeBagPublic(region_obj);
+  *(Region **)(ADDR_OBJ(region_obj)) = result;
+  result->obj = region_obj;
+  result->lock = lock;
+  return result;
+}
+
+void *AllocateMemoryBlock(UInt size) {
+  return GC_malloc(size);
+}
 
 
 /****************************************************************************

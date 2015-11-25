@@ -497,7 +497,7 @@ Obj ZeroAttrMat( Obj self, Obj mat )
   if (len == 0)
     return NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
   zrow = ZERO(ELM_LIST(mat,1));
-  MakeImmutable(zrow);
+  CheckedMakeImmutable(zrow);
   res = NEW_PLIST(T_PLIST_TAB_RECT+IMMUTABLE, len);
   SET_LEN_PLIST(res,len);
   for (i = 1; i <= len; i++)
@@ -1004,8 +1004,11 @@ Obj             ProdListList (
           }
     }
 
+    /* TODO: This is possible expensive, we may be able to settle for
+     * a cheaper check and call MakeImmutable() instead.
+     */
     if (imm && IS_MUTABLE_OBJ(listP))
-      MakeImmutable(listP);
+      CheckedMakeImmutable(listP);
 
     if (!listP)
       ErrorMayQuit("Inner product multiplication of lists: no summands", 0, 0);
@@ -1098,8 +1101,8 @@ Obj             OneMatrix (
     case 0:
       zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
       one  = ONE_MUT( zero );
-      MakeImmutable(zero);
-      MakeImmutable(one);
+      CheckedMakeImmutable(zero);
+      CheckedMakeImmutable(one);
       ctype = rtype = T_PLIST+IMMUTABLE;
       break;
       
@@ -1212,8 +1215,8 @@ Obj             InvMatrix (
         zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
         one  = ONE_MUT( zero );
         ctype = rtype = T_PLIST+IMMUTABLE;
-        MakeImmutable(zero);
-        MakeImmutable(one);
+        CheckedMakeImmutable(zero);
+        CheckedMakeImmutable(one);
         break;
         
       case 1:
@@ -1678,7 +1681,7 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
   if (res == (Obj)0)
     res = ZERO(ELMW_LIST(mat,1));
   if (!IS_MUTABLE_OBJ(vec) && !IS_MUTABLE_OBJ(mat))
-    MakeImmutable(res);
+    CheckedMakeImmutable(res);
   return res;
 }
 
@@ -1720,7 +1723,7 @@ Obj InvMatWithRowVecs( Obj mat, UInt mut)
     switch( mut) {
     case 0:
       res = INV(mat);
-      MakeImmutable(res);
+      CheckedMakeImmutable(res);
       return res;
       break;
     case 1:
@@ -1823,7 +1826,7 @@ Obj InvMatWithRowVecs( Obj mat, UInt mut)
   switch (mut)
     {
     case 0:
-      MakeImmutable(res);
+      CheckedMakeImmutable(res);
       break;
       
     case 1:
@@ -1831,10 +1834,10 @@ Obj InvMatWithRowVecs( Obj mat, UInt mut)
         {
           if (!IS_MUTABLE_OBJ(ELM_LIST(mat,1)))
             for (i = 1; i <= len; i++)
-              MakeImmutable(ELM_LIST(res,i));
+              CheckedMakeImmutable(ELM_LIST(res,i));
         }
       else
-        MakeImmutable(res);
+        CheckedMakeImmutable(res);
       break;
     case 2:
       break;

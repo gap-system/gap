@@ -1,209 +1,282 @@
 #############################################################################
 ##
-#W  thread1.g                    GAP library                 Chris Jefferson
+#W  thread1.g                    GAP library                 Reimer Behrends
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-##  This file provides trivial mocks of thread-related primitives for
-##  traditional GAP.
-##
-##  The major design decision here it to make these mocks fast, rather than
-##  try to make them as accurate as possible. For example, in HPC-GAP many
-##  of these functions will perform an inernal copy of their argument,
-##  which we do not do here.
+##  This file provides the necessary thread initialization code code needed
+##  early in GAP's initialization process. The rest can be found in thread.g.
 ##
 
-# First we define some objects defined in init.g in HPC-GAP
-BIND_GLOBAL("FILTER_REGION", "filter region");
-BIND_GLOBAL("ThreadVar", rec());
+# Global variable to show that we're using HPCGAP.
 
-# Now we mock functions from thread1.g
-
-BIND_GLOBAL("MakeThreadLocal", ID_FUNC);
-BIND_GLOBAL("MakeReadOnly", ID_FUNC);
-BIND_GLOBAL("MakeReadOnlyRaw", ID_FUNC);
-BIND_GLOBAL("MakeProtected", ID_FUNC);
-BIND_GLOBAL("MakeProjectedObj", ID_FUNC);
-BIND_GLOBAL("MakeReadOnlyObj", ID_FUNC);
-
-BIND_GLOBAL("IsReadOnly", RETURN_FALSE);
-BIND_GLOBAL("IsProtected", RETURN_FALSE);
-
-BIND_GLOBAL("AtomicList", function(arg)
-  local l, i;
-  if LEN_LIST(arg) = 0 or LEN_LIST(arg) > 2 then
-    Error("Invalid AtomicList arguments");
-  fi;
-
-  if LEN_LIST(arg) = 1 and IS_LIST(arg[1]) then
-    l := [];
-    for i in [1..LEN_LIST(arg[1])] do
-      l[i] := arg[1][i];
-    od;
-    return l;
-  fi;
-
-  l := [];
-  for i in [1..arg[1]] do
-    l[i] := arg[2];
-  od;
-  return l;
-end);
-
-BIND_GLOBAL("FixedAtomicList", AtomicList);
-
-BIND_GLOBAL("FromAtomicRecord", ID_FUNC);
-BIND_GLOBAL("FromAtomicList", ID_FUNC);
-BIND_GLOBAL("FromAtomicComObj", ID_FUNC);
-
-BIND_GLOBAL("MakeStrictWriteOnceAtomic", ID_FUNC);
-BIND_GLOBAL("MakeWriteOnceAtomic", ID_FUNC);
-
-BIND_GLOBAL("AtomicRecord", function(arg)
-  if LEN_LIST(arg) = 0 then
-    return rec();
-  fi;
-
-  if LEN_LIST(arg) > 1 then
-    Error("AtomicRecord takes one optional argument");
-  fi;
-
-  if not(IS_INT(arg[1]) or IS_REC(arg[1])) then
-    Error("AtomicRecord takes an integer or record");
-  fi;
-
-  if IS_INT(arg[1]) then
-    return rec();
-  else
-    return arg[1];
-  fi;
-end);
-
-BIND_GLOBAL("BindThreadLocal", ASS_GVAR);
-
-BIND_GLOBAL("BindThreadLocalConstructor", function(name, fun)
-  local ret;
-  # Catch if the function returns a value
-  ret := CALL_WITH_CATCH(fun,[]);
-  if LEN_LIST(ret) > 1 then
-    ASS_GVAR(name, ret[2]);
-  fi;
-end);
+BIND_GLOBAL("HPCGAP", true);
 
 
 # Convenience aliases
 
-BIND_GLOBAL("IsShared", RETURN_TRUE);
-BIND_GLOBAL("IsLockable", RETURN_TRUE);
+IsLockable := IsShared;
+BIND_GLOBAL("REGION_APP_PREC", 30000);
+BIND_GLOBAL("REGION_LIBRARY_PREC", 20000);
+BIND_GLOBAL("REGION_KERNEL_PREC", 10000);
+BIND_GLOBAL("REGION_INTERNAL_PREC", 0);
+BIND_GLOBAL("REGION_NO_PREC", -1);
 
-BIND_GLOBAL("ShareObjWithPrecedence", RETURN_FIRST);
+BIND_GLOBAL("RegionPrecedence", REGION_PRECEDENCE);
 
+ShareObjWithPrecedence := function(args, precedence)
+  local name, adj;
+  if precedence > 0 and LEN_LIST(args) > 1 and IS_INT(args[LEN_LIST(args)]) then
+    adj := REM_LIST(args);
+    if adj < -1000 or adj > 1000 then
+      Error("Precedence adjustment must be between -1000 and 1000");
+      adj := 0;
+    fi;
+    precedence := precedence + adj;
+  fi;
+  if IsBound(args[2]) then
+    name := args[2];
+    if not HaveReadAccess(name) then
+      Error("Cannot access region name");
+      name := fail;
+    fi;
+    name := IMMUTABLE_COPY_OBJ(name);
+    return SHARE(args[1], name, precedence);
+  else
+    return SHARE(args[1], fail, precedence);
+  fi;
+end;
 
-BIND_GLOBAL("ShareObj", RETURN_FIRST);
-BIND_GLOBAL("ShareUserObj", RETURN_FIRST);
-BIND_GLOBAL("ShareLibraryObj", RETURN_FIRST);
-BIND_GLOBAL("ShareKernelObj", RETURN_FIRST);
-BIND_GLOBAL("ShareInternalObj", RETURN_FIRST);
-BIND_GLOBAL("ShareSpecialObj", RETURN_FIRST);
-BIND_GLOBAL("ShareSingleObjWithPrecedence", RETURN_FIRST);
-BIND_GLOBAL("ShareSingleObj", RETURN_FIRST); 
-BIND_GLOBAL("ShareSingleLibraryObj", RETURN_FIRST);
-BIND_GLOBAL("ShareSingleKernelObj", RETURN_FIRST);
-BIND_GLOBAL("ShareSingleInternalObj", RETURN_FIRST);
-BIND_GLOBAL("ShareSingleSpecialObj", RETURN_FIRST);
+ShareObj := function(arg)
+  return ShareObjWithPrecedence(arg, REGION_APP_PREC);
+end;
 
+ShareUserObj := function(arg)
+  return ShareObjWithPrecedence(arg, REGION_APP_PREC);
+end;
 
-BIND_GLOBAL("MIGRATE", RETURN_FIRST);
-BIND_GLOBAL("MIGRATE_RAW", RETURN_FIRST);
-BIND_GLOBAL("MIGRATE_NORECURSE", RETURN_FIRST);
-BIND_GLOBAL("ADOPT", ID_FUNC);
-BIND_GLOBAL("ADOPT_NORECURSE", ID_FUNC);
-BIND_GLOBAL("CLONE_REACHABLE", ID_FUNC);
-BIND_GLOBAL("REACHABLE", ID_FUNC);
+ShareLibraryObj := function(arg)
+  return ShareObjWithPrecedence(arg, REGION_LIBRARY_PREC);
+end;
 
-BIND_GLOBAL("MigrateObj", MIGRATE);
-BIND_GLOBAL("MigrateSingleObj", MIGRATE_NORECURSE);
-BIND_GLOBAL("AdoptObj", ADOPT);
-BIND_GLOBAL("AdoptSingleObj", ADOPT_NORECURSE);
-BIND_GLOBAL("CopyRegion", CLONE_REACHABLE);
-BIND_GLOBAL("RegionSubObjects", REACHABLE);
+ShareKernelObj := function(arg)
+  return ShareObjWithPrecedence(arg, REGION_KERNEL_PREC);
+end;
 
-BIND_GLOBAL("NewRegionWithPrecedence", function(arg1, precedence)
-  return 0;
-end);
+ShareInternalObj := function(arg)
+  return ShareObjWithPrecedence(arg, REGION_INTERNAL_PREC);
+end;
 
-BIND_GLOBAL("NewRegion", function(arg1)
-  return 0;
-end);
+ShareSpecialObj := function(arg)
+  return ShareObjWithPrecedence(arg, REGION_NO_PREC);
+end;
 
-BIND_GLOBAL("NewLibraryRegion", NewRegion);
-BIND_GLOBAL("NewKernelRegion", NewRegion);
-BIND_GLOBAL("NewInternalRegion", NewRegion);
-BIND_GLOBAL("NewSpecialRegion", NewRegion);
+ShareSingleObjWithPrecedence := function(args, precedence)
+  local name, adj;
+  if precedence > 0 and LEN_LIST(args) > 1 and IS_INT(args[LEN_LIST(args)]) then
+    adj := REM_LIST(args);
+    if adj < -1000 or adj > 1000 then
+      Error("Precedence adjustment must be between -1000 and 1000");
+      adj := 0;
+    fi;
+    precedence := precedence + adj;
+  fi;
+  if IsBound(args[2]) then
+    name := args[2];
+    if not HaveReadAccess(name) then
+      Error("Cannot access region name");
+    fi;
+    name := IMMUTABLE_COPY_OBJ(name);
+    return SHARE_NORECURSE(args[1], name, precedence);
+  else
+    return SHARE_NORECURSE(args[1], fail, precedence);
+  fi;
+end;
 
-BIND_GLOBAL("ShareAutoReadObj", ID_FUNC);
+ShareSingleObj := function(arg)
+  return ShareSingleObjWithPrecedence(arg, REGION_APP_PREC);
+end;
 
-BIND_GLOBAL("AutoReadLock", ID_FUNC);
+ShareSingleLibraryObj := function(arg)
+  return ShareSingleObjWithPrecedence(arg, REGION_LIBRARY_PREC);
+end;
 
-BIND_GLOBAL("NewAutoReadRegion", function(arg1)
-  return 0;
-end);
+ShareSingleKernelObj := function(arg)
+  return ShareSingleObjWithPrecedence(arg, REGION_KERNEL_PREC);
+end;
 
-BIND_GLOBAL("LockAndMigrateObj", RETURN_FIRST);
+ShareSingleInternalObj := function(arg)
+  return ShareSingleObjWithPrecedence(arg, REGION_INTERNAL_PREC);
+end;
 
-BIND_GLOBAL("LockAndAdoptObj", ID_FUNC);
+ShareSingleSpecialObj := function(arg)
+  return ShareSingleObjWithPrecedence(arg, REGION_NO_PREC);
+end;
 
-BIND_GLOBAL("IncorporateObj", function(target, index, value)
+MigrateObj := MIGRATE;
+MigrateSingleObj := MIGRATE_NORECURSE;
+AdoptObj := ADOPT;
+AdoptSingleObj := ADOPT_NORECURSE;
+CopyRegion := CLONE_REACHABLE;
+RegionSubObjects := REACHABLE;
+
+NewRegionWithPrecedence := function(args, precedence)
+  local adj;
+  if precedence > 0 and LEN_LIST(args) > 0 and IS_INT(args[LEN_LIST(args)]) then
+    adj := REM_LIST(args);
+    if adj < -1000 or adj > 1000 then
+      Error("Precedence adjustment must be between -1000 and 1000");
+      adj := 0;
+    fi;
+    precedence := precedence + adj;
+  fi;
+  if IsBound(args[1]) then
+    return NEW_REGION(args[1], precedence);
+  else
+    return NEW_REGION(fail, precedence);
+  fi;
+end;
+
+NewRegion := function(arg)
+  return NewRegionWithPrecedence(arg, REGION_APP_PREC);
+end;
+
+NewLibraryRegion := function(arg)
+  return NewRegionWithPrecedence(arg, REGION_LIBRARY_PREC);
+end;
+
+NewKernelRegion := function(arg)
+  return NewRegionWithPrecedence(arg, REGION_KERNEL_PREC);
+end;
+
+NewInternalRegion := function(arg)
+  return NewRegionWithPrecedence(arg, REGION_INTERNAL_PREC);
+end;
+
+NewSpecialRegion := function(arg)
+  return NewRegionWithPrecedence(arg, REGION_NO_PREC);
+end;
+
+ShareAutoReadObj := function(obj)
+  SHARE(obj, fail, REGION_INTERNAL_PREC);
+  SetAutoLockRegion(obj, true);
+  return obj;
+end;
+
+AutoReadLock := function(obj)
+  SetAutoLockRegion(obj, true);
+  return obj;
+end;
+
+NewAutoReadRegion := function(arg)
+  local region;
+  if LEN_LIST(arg) = 0 then
+    region := NewRegion();
+  else
+    region := NewRegion(arg[1]);
+  fi;
+  SetAutoLockRegion(region, true);
+  return region;
+end;
+
+LockAndMigrateObj := function(obj, target)
+  local lock;
+  if IsShared(target) and not HaveWriteAccess(target) then
+    atomic target do
+      MIGRATE(obj, target);
+    od;
+  else
+    MIGRATE(obj, target);
+  fi;
+  return obj;
+end;
+
+LockAndAdoptObj := function(obj)
+  local lock;
+  if IsShared(obj) and not HaveWriteAccess(obj) then
+    lock := WRITE_LOCK(obj);
+    ADOPT(obj);
+    UNLOCK(lock);
+  else
+    ADOPT(obj);
+  fi;
+  return obj;
+end;
+
+IncorporateObj := function(target, index, value)
+  atomic value do
     if IS_PLIST_REP(target) then
-      target[index] := target;
+      target[index] := MigrateObj(value, target);
     elif IS_REC(target) then
-      target.(index) := target;
+      target.(index) := MigrateObj(value, target);
     else
       Error("IncorporateObj: target must be plain list or record");
     fi;
-end);
+  od;
+end;
 
-BIND_GLOBAL("AtomicIncorporateObj", IncorporateObj);
+AtomicIncorporateObj := function(target, index, value)
+  atomic target, value do
+    if IS_PLIST_REP(target) then
+      target[index] := MigrateObj(value, target);
+    elif IS_REC(target) then
+      target.(index) := MigrateObj(value, target);
+    else
+      Error("IncorporateObj: target must be plain list or record");
+    fi;
+  od;
+end;
 
-BIND_GLOBAL("CopyFromRegion", ID_FUNC);
-BIND_GLOBAL("CopyToRegion", ID_FUNC);
+CopyFromRegion := CopyRegion;
 
-
-###########################
-# C methods
-
-# From aobjects.c
-
-BIND_GLOBAL("SetTLDefault", BindThreadLocal);
-BIND_GLOBAL("SetTLConstructor", BindThreadLocalConstructor);
-
-BIND_GLOBAL("ATOMIC_ADDITION", function(list, index, inc)
-  list[index] := list[index] + inc;
-  return list[index];
-end);
-
-BIND_GLOBAL("IS_ATOMIC_RECORD", IS_REC);
-
-BIND_GLOBAL("GET_ATOMIC_RECORD", function(record, field, def)
-  if IsBound(record.(field)) then
-    return record.(field);
+CopyToRegion := atomic function(readonly obj, target)
+  if IsPublic(obj) then
+    return obj;
   else
-    return def;
+    return MigrateObj(CopyRegion(obj), target);
+  fi;
+end;
+
+AT_THREAD_EXIT_LIST := 0;
+MakeThreadLocal("AT_THREAD_EXIT_LIST");
+
+BIND_GLOBAL("THREAD_EXIT", function()
+  local func;
+  if AT_THREAD_EXIT_LIST <> 0 then
+    for func in AT_THREAD_EXIT_LIST do
+      func();
+    od;
   fi;
 end);
 
-BIND_GLOBAL("SET_ATOMIC_RECORD", function(record, field, val)
-  record.(field) := val;
-  return val;
+BIND_GLOBAL("AtThreadExit", function(func)
+  if AT_THREAD_EXIT_LIST = 0 then
+    AT_THREAD_EXIT_LIST := [ func ];
+  else
+    ADD_LIST(AT_THREAD_EXIT_LIST, func);
+  fi;
 end);
 
-BIND_GLOBAL("UNBIND_ATOMIC_RECORD", function(record, field)
-  Unbind(record.(field));
+AT_THREAD_INIT_LIST := MakeWriteOnceAtomic([]);
+
+BIND_GLOBAL("AtThreadInit", function(func)
+  ADD_LIST(AT_THREAD_INIT_LIST, func);
 end);
 
-BIND_GLOBAL("ATOMIC_RECORD_REPLACEMENT", RETURN_NOTHING);
-# From calls.c
+BIND_GLOBAL("THREAD_INIT", function()
+  local func;
+  for func in AT_THREAD_INIT_LIST do
+    func();
+  od;
+end);
 
-BIND_GLOBAL("LOCKS_FUNC", RETURN_FAIL);
+MakeThreadLocal("~");
+MakeThreadLocal("last");
+MakeThreadLocal("last2");
+MakeThreadLocal("last3");
+MakeThreadLocal("time");
+
+
+HaveMultiThreadedUI := false;

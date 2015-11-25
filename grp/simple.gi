@@ -12,6 +12,7 @@
 # data for simple groups of order up to 10^18 that are not L_2(q)
 # for some of the groups entry #5 indicates the smallest permutation degree
 BindGlobal("SIMPLEGPSNONL2",
+  MakeImmutable(
   [[60,"A",5,0,5],[360,"A",6,0,6],[2520,"A",7,0,7],
     [5616,"L",3,3,13],[6048,"U",3,3,28],
     [7920,"Spor","M(11)",0,11],[20160,"A",8,0,8],
@@ -148,7 +149,7 @@ BindGlobal("SIMPLEGPSNONL2",
     [712975930219192320,"L",4,17],[756131656307437872,"U",3,197],
     [796793353927300800,"G",2,19],[802332214764045216,"L",3,173],
     [819770591880266400,"L",3,199],[911215823217986880,"S",4,67]]
-    );
+    ));
 
 # call atlasrep, possibly with extra parameters, but only if atlasrep is available
 BindGlobal("DoAtlasrepGroup",function(params)

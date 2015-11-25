@@ -266,6 +266,40 @@ UInt SyLineEdit;
 
 /****************************************************************************
 **
+*V  ThreadUI  . . . . . . . . . . . . . . . . . . . .  support UI for threads
+**
+*/
+UInt ThreadUI = 1;
+
+/****************************************************************************
+**
+*V  DeadlockCheck  . . . . . . . . . . . . . . . . . .  check for deadlocks
+**
+*/
+UInt DeadlockCheck = 1;
+
+/****************************************************************************
+**
+*V  SyNumProcessors  . . . . . . . . . . . . . . . . . number of logical CPUs
+**
+*/
+#ifdef NUM_CPUS
+UInt SyNumProcessors = NUM_CPUS;
+#else
+UInt SyNumProcessors = 4;
+#endif
+
+/****************************************************************************
+**
+*V  SyNumGCThreads  . . . . . . . . . . . . . . . number of GC worker threads
+**
+*/
+UInt SyNumGCThreads = 0;
+
+
+
+/****************************************************************************
+**
 *V  SyUseReadline   . . . . . . . . . . . . . . . . . .  support line editing
 **
 **  Switch for not using readline although GAP is compiled with libreadline
@@ -455,13 +489,6 @@ UInt SyWindow;
 *V  SyStartTime . . . . . . . . . . . . . . . . . . time when GAP was started
 */
 UInt SyStartTime;
-
-
-/****************************************************************************
-**
-*V  SyStopTime  . . . . . . . . . . . . . . . . . . time when reading started
-*/
-UInt SyStopTime;
 
 
 /****************************************************************************
@@ -1406,6 +1433,18 @@ void SySleep ( UInt secs )
 
 /****************************************************************************
 **
+*F  SyUSleep( <msecs> ) . . . . . . . . . .sleep GAP for <msecs> microseconds
+**
+**  NB Various OS events (like signals) might wake us up
+**
+*/
+void SyUSleep ( UInt msecs )
+{
+  usleep( (unsigned int) msecs );
+}
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
@@ -1621,6 +1660,22 @@ static Int toggle( Char ** argv, void *Variable )
   return 0;
 }
 
+static Int storePosInteger( Char **argv, void *Where )
+{
+  UInt *where = (UInt *)Where;
+  UInt n;
+  Char *p = argv[0];
+  n = 0;
+  while (isdigit(*p)) {
+    n = n * 10 + (*p-'0');
+    p++;
+  }
+  if (p == argv[0] || *p || n == 0)
+    FPUTS_TO_STDERR("Argument not a positive integer");
+  *where = n;
+  return 1;
+}
+
 static Int storeString( Char **argv, void *Where )
 {
   Char **where = (Char **)Where;
@@ -1705,6 +1760,10 @@ struct optInfo options[] = {
   { 'o', "", storeMemory2, &SyStorMax, 1 }, /* library with new interface */
   { 'p', "", toggle, &SyWindow, 0 }, /* ?? */
   { 'q', "", toggle, &SyQuiet, 0 }, /* ?? */
+  { 'S', "", toggle, &ThreadUI, 0 }, /* Thread UI */
+  { 'Z', "", toggle, &DeadlockCheck, 0 }, /* Thread UI */
+  { 'P', "", storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
+  { 'G', "", storePosInteger, &SyNumGCThreads, 1 }, /* Thread UI */
   { 0  , "prof",  enableProfilingAtStartup, 0, 1},    /* enable profiling at startup, has to be kernel to start early enough */
   { 0  , "cover",  enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup, has to be kernel to start early enough */
   { 0, "",0,0}};
@@ -1732,7 +1791,7 @@ void InitSystem (
     SyDebugLoading = 0;
     SyHasUserHome = 0;
     SyLineEdit = 1;
-    SyUseReadline = 1;
+    SyUseReadline = 0;
     SyMsgsFlagBags = 0;
     SyNrCols = 0;
     SyNrColsLocked = 0;
@@ -2008,8 +2067,10 @@ void InitSystem (
 #endif
 
 
+#if !HAVE_GETRUSAGE
     /* start the clock                                                     */
     SyStartTime = SyTime();
+#endif
 
 
 
@@ -2025,6 +2086,69 @@ usage:
  FPUTS_TO_STDERR("       use '-h' option to get help.\n");
  FPUTS_TO_STDERR("\n");
  SyExit( 1 );
+}
+
+static void Merge(char *to, char *from1, UInt size1, char *from2,
+  UInt size2, UInt width, int (*lessThan)(const void *a, const void *b))
+{
+  while (size1 && size2) {
+    if (lessThan(from1, from2)) {
+      memcpy(to, from1, width);
+      from1 += width;
+      size1--;
+    } else {
+      memcpy(to, from2, width);
+      from2 += width;
+      size2--;
+    }
+    to += width;
+  }
+  if (size1)
+    memcpy(to, from1, size1*width);
+  else
+    memcpy(to, from2, size2*width);
+}
+
+static void MergeSortRecurse(char *data, char *aux, UInt count, UInt width,
+  int (*lessThan)(const void *a, const void *))
+{
+  UInt nleft, nright;
+  /* assert(count > 1); */
+  if (count == 2) {
+    if (!lessThan(data, data+width))
+    {
+      memcpy(aux, data, width);
+      memcpy(data, data+width, width);
+      memcpy(data+width, aux, width);
+    }
+    return;
+  }
+  nleft = count/2;
+  nright = count-nleft;
+  if (nleft > 1)
+    MergeSortRecurse(data, aux, nleft, width, lessThan);
+  if (nright > 1)
+    MergeSortRecurse(data+nleft*width, aux+nleft*width, nright, width, lessThan);
+  memcpy(aux, data, count*width);
+  Merge(data, aux, nleft, aux+nleft*width, nright, width, lessThan);
+}
+
+/****************************************************************************
+**
+*F  MergeSort() . . . . . . . . . . . . . . . sort an array using mergesort.
+**
+**  MergeSort() sorts an array of 'count' elements of individual size 'width'
+**  with ordering determined by the parameter 'lessThan'. The 'lessThan'
+**  function is to return a non-zero value if the first argument is less
+**  than the second argument, zero otherwise.
+*/
+
+void MergeSort(void *data, UInt count, UInt width,
+  int (*lessThan)(const void *a, const void *))
+{
+  char *aux = alloca(count * width);
+  if (count > 1)
+    MergeSortRecurse(data, aux, count, width, lessThan);
 }
 
 

@@ -158,6 +158,8 @@ Obj FuncADD_LIST3 (
     AddPlist3( list, obj, ipos );
   } else if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
     AddList3( list, obj, ipos );
+  } else if ( TNUM_OBJ(list) == T_ALIST ) {
+    AddAList( list, obj );
   } else {
     if (pos == 0)
       DoOperation2Args( self, list, obj );

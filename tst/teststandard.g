@@ -41,7 +41,8 @@ Reread( Filename( DirectoriesLibrary( "tst" ), "testutil.g" ) );
 TestDirectory( [
   Filename( DirectoriesLibrary( "tst" ), "teststandard" ),
   Filename( DirectoriesLibrary( "tst" ), "testinstall" )],
-  rec(exitGAP := true) );
+  rec( exitGAP := true,
+       testOptions := rec(compareFunction := "uptowhitespace") ) );
   
 # Should never get here
 FORCE_QUIT_GAP(1);

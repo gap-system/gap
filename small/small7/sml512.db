@@ -4,8 +4,9 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 
-SMALL_GROUP_LIB[ 512 ] := [];
-SMALL_GROUP_LIB[ 512 ][ 106 ] := [
+SMALL_GROUP_LIB[ 512 ] := AtomicList( [] );
+
+SMALL_GROUP_LIB[ 512 ][ 106 ] := `[
 "%&()*+,-./0123456789:<=>ABCDEFGHYZ[]^abcdefghijk",
 "%&()*+,-./012345IJKLMNOPQRSTUVWX6789:<=>ABCDEFGHYZ[]^abcdefghijk",
 "%&()*+,-./012345YZ[]^abcdefghijk",

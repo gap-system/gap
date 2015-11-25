@@ -78,8 +78,7 @@ InstallMethod( IsFullSCAlgebra,
 ##  The external representation is the coefficients vector,
 ##  which is stored at position 1 in the object.
 ##
-DeclareRepresentation( "IsDenseCoeffVectorRep",
-    IsPositionalObjectRep, [ 1 ] );
+DeclareRepresentation( "IsDenseCoeffVectorRep", IsAtomicPositionalObjectRep, [ 1 ] );
 
 
 #############################################################################
@@ -601,7 +600,7 @@ BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
 
     # Construct the default type of the family.
     Fam!.defaultTypeDenseCoeffVectorRep :=
-        NewType( Fam, IsSCAlgebraObj and IsDenseCoeffVectorRep );
+        NewType( Fam, IsSCAlgebraObj and IsDenseCoeffVectorRep);
 
     SetCharacteristic( Fam, Characteristic( R ) );
     SetCoefficientsFamily( Fam, ElementsFamily( FamilyObj( R ) ) );
@@ -683,7 +682,7 @@ InstallAccessToGenerators( IsSCAlgebraObjCollection and IsFullSCAlgebra,
 #V  QuaternionAlgebraData
 ##
 InstallFlushableValue( QuaternionAlgebraData, [] );
-
+ShareSpecialObj( QuaternionAlgebraData );
 
 #############################################################################
 ##
@@ -717,45 +716,66 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
     fi;
 
     # Generators in the right family may be already available.
-    stored:= First( QuaternionAlgebraData,
-                    t ->     t[1] = a and t[2] = b
-                         and IsIdenticalObj( t[3], FamilyObj( F ) ) );
-    if stored <> fail then
-      A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
-      SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
-    else
-
-      # Construct a filter describing element properties,
-      # which will be stored in the family.
-      filter:= IsSCAlgebraObj and IsQuaternion;
-      if HasIsAssociative( F ) and IsAssociative( F ) then
-        filter:= filter and IsAssociativeElement;
+    atomic readonly QuaternionAlgebraData do
+      stored:= First( QuaternionAlgebraData,
+                      t -> t[1] = a and t[2] = b and
+                           IsIdenticalObj( t[3], FamilyObj( F ) ) );
+      if stored <> fail then
+        A := AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
+        SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
+        # A quaternion algebra with negative parameters over a real field
+        # is a division ring.
+        if IsNegRat( a ) and IsNegRat( b ) and IsCyclotomicCollection( F ) and 
+           IsField( F ) and ForAll( GeneratorsOfDivisionRing( F ),
+                                  x -> x = ComplexConjugate( x ) ) then
+          SetFilterObj( A, IsDivisionRing );
+          #T better use `DivisionRingByGenerators'?
+          SetGeneratorsOfDivisionRing( A, GeneratorsOfAlgebraWithOne( A ) );
+        fi;
+        # Return the quaternion algebra.
+        return A;
       fi;
-      if     IsNegRat( a ) and IsNegRat( b )
-#T it suffices if the parameters are real and negative
-         and IsCyclotomicCollection( F ) and IsField( F )
-         and ForAll( GeneratorsOfDivisionRing( F ),
-                     x -> x = ComplexConjugate( x ) ) then
-        filter:= filter and IsZDFRE;
-      fi;
-
-      # Construct the algebra.
-      A:= AlgebraByStructureConstantsArg(
-              [ F,
-                [ [ [[1],[e]], [[2],[ e]], [[3],[ e]], [[4],[   e]] ],
-                  [ [[2],[e]], [[1],[ a]], [[4],[ e]], [[3],[   a]] ],
-                  [ [[3],[e]], [[4],[-e]], [[1],[ b]], [[2],[  -b]] ],
-                  [ [[4],[e]], [[3],[-a]], [[2],[ b]], [[1],[-a*b]] ],
-                  0, Zero(F) ],
-                "e", "i", "j", "k" ],
-              filter );
-      SetFilterObj( A, IsAlgebraWithOne );
-#T better introduce AlgebraWithOneByStructureConstants?
-
-      # Store the data for the next call.
-      Add( QuaternionAlgebraData, [ a, b, FamilyObj( F ), A ] );
-
+    od;
+    
+    # Construct a filter describing element properties,
+    # which will be stored in the family.
+    filter:= IsSCAlgebraObj and IsQuaternion;
+    if HasIsAssociative( F ) and IsAssociative( F ) then
+      filter:= filter and IsAssociativeElement;
     fi;
+    if IsNegRat( a ) and IsNegRat( b )
+        #T it suffices if the parameters are real and negative
+        and IsCyclotomicCollection( F ) and IsField( F )
+        and ForAll( GeneratorsOfDivisionRing( F ),
+                    x -> x = ComplexConjugate( x ) ) then
+      filter:= filter and IsZDFRE;
+    fi;
+
+    # Construct the algebra.
+    A:= AlgebraByStructureConstantsArg(
+            [ F,
+              [ [ [[1],[e]], [[2],[ e]], [[3],[ e]], [[4],[   e]] ],
+                [ [[2],[e]], [[1],[ a]], [[4],[ e]], [[3],[   a]] ],
+                [ [[3],[e]], [[4],[-e]], [[1],[ b]], [[2],[  -b]] ],
+                [ [[4],[e]], [[3],[-a]], [[2],[ b]], [[1],[-a*b]] ],
+                0, Zero(F) ],
+              "e", "i", "j", "k" ],
+            filter );
+    SetFilterObj( A, IsAlgebraWithOne );
+    #T better introduce AlgebraWithOneByStructureConstants?
+
+    atomic readwrite QuaternionAlgebraData do
+      stored:= First( QuaternionAlgebraData,
+                      t -> t[1] = a and t[2] = b and
+                           IsIdenticalObj( t[3], FamilyObj( F ) ) );
+      if stored = fail then
+        # Store the data for the next call.
+        Add( QuaternionAlgebraData, MakeImmutable([ a, b, FamilyObj( F ), A ]) );
+      else
+        A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
+        SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
+      fi;
+    od;  
 
     # A quaternion algebra with negative parameters over a real field
     # is a division ring.

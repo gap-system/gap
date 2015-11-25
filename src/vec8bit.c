@@ -219,7 +219,7 @@ Obj TypeVec8Bit( UInt q, UInt mut)
 {
   UInt col = mut ? 1 : 2;
   Obj type;
-  type = ELM_PLIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
+  type = ELM0_LIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
   if (type == 0)
     return CALL_2ARGS(TYPE_VEC8BIT, INTOBJ_INT(q), mut ? True: False);
   else
@@ -230,7 +230,7 @@ Obj TypeVec8BitLocked( UInt q, UInt mut)
 {
   UInt col = mut ? 3 : 4;
   Obj type;
-  type = ELM_PLIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
+  type = ELM0_LIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
   if (type == 0)
     return CALL_2ARGS(TYPE_VEC8BIT_LOCKED, INTOBJ_INT(q), mut ? True : False);
   else
@@ -249,7 +249,7 @@ Obj TypeMat8Bit( UInt q, UInt mut)
 {
   UInt col = mut ? 1 : 2;
   Obj type;
-  type = ELM_PLIST(ELM_PLIST(TYPES_MAT8BIT, col),q);
+  type = ELM0_LIST(ELM0_LIST(TYPES_MAT8BIT, col),q);
   if (type == 0)
     return CALL_2ARGS(TYPE_MAT8BIT, INTOBJ_INT(q), mut ? True: False);
   else
@@ -436,8 +436,7 @@ void MakeFieldInfo8Bit( UInt q)
 
     /* simply invert the permutation to get the other one */
     for (i = 0; i < q; i++)
-        FFE_FELT_FIELDINFO_8BIT(info)[FELT_FFE_FIELDINFO_8BIT(info)[i]] =
-        NEW_FFE(gfq, i);
+        FFE_FELT_FIELDINFO_8BIT(info)[FELT_FFE_FIELDINFO_8BIT(info)[i]] = NEW_FFE(gfq, i);
 
 
     /* Now we need to store the position in Elements(GF(q)) of each field element
@@ -592,7 +591,7 @@ void MakeFieldInfo8Bit( UInt q)
 
     MakeBagReadOnly(info);
     /* remember the result */
-    SET_ELM_PLIST(FieldInfo8Bit, q, info);
+    ATOMIC_SET_ELM_PLIST_ONCE(FieldInfo8Bit, q, info);
     CHANGED_BAG(FieldInfo8Bit);
 }
      
@@ -600,10 +599,10 @@ Obj GetFieldInfo8Bit( UInt q)
 {
     Obj info;
     assert(2 < q && q <= 256);
-    info = ELM_PLIST(FieldInfo8Bit, q);
+    info = ATOMIC_ELM_PLIST(FieldInfo8Bit, q);
     if (info == 0) {
         MakeFieldInfo8Bit(q);
-        info = ELM_PLIST(FieldInfo8Bit, q);
+        info = ATOMIC_ELM_PLIST(FieldInfo8Bit, q);
     }
     return info;
 }
@@ -717,8 +716,8 @@ void RewriteGF2Vec( Obj vec, UInt q )
     assert(q % 2 == 0);
 
     if (DoFilter(IsLockedRepresentationVector, vec) == True) {
-        ErrorMayQuit("You cannot convert a locked vector compressed over GF(2) to GF(%i)",
-        q, 0);
+        ErrorReturnVoid("You cannot convert a locked vector compressed over GF(2) to GF(%i)",
+        q, 0, "You can `return;' to ignore the conversion");
         return;
     }
 
@@ -918,6 +917,145 @@ Obj FuncCONV_VEC8BIT (
     return 0;
 }
 
+/****************************************************************************
+**
+*F  NewVec8Bit( <list>, <q> )  . . .  convert a list into 8bit vector object
+**
+**  This is a non-destructive counterpart of ConvVec8Bit
+*/
+
+Obj NewVec8Bit (
+    Obj                 list,
+    UInt                q)
+{
+    Int                 len;            /* logical length of the vector    */
+    Int                 i;              /* loop variable                   */
+    UInt                p;	/* char */
+    UInt                d;	/* degree */
+    FF                  f;	/* field */
+ /* Obj                 x;	/ an element */
+    Obj                 info;	/* field info object */
+    UInt                elts;	/* elements per byte */
+    UInt1 *             settab;	/* element setting table */
+    UInt1 *             convtab; /* FFE -> FELT conversion table */
+    UInt                e;	/* loop varibale */
+    UInt1               byte;	/* byte under construction */
+    UInt1*              ptr;	/* place to put byte */
+    Obj                 elt;
+    UInt                val;
+    UInt                nsize;
+    Obj                 type;
+    Obj                 res;            /* resulting 8bit vector object     */
+
+        
+    if (q > 256)
+      ErrorQuit("Field size %d is too much for 8 bits\n", q, 0L);
+    if (q == 2)
+      ErrorQuit("GF2 has its own representation\n", 0L, 0L);
+
+    /* already in the correct representation                               */
+    if ( IS_VEC8BIT_REP(list) )
+      {
+	if( FIELD_VEC8BIT(list) == q ) 
+	  {
+	    res = CopyVec8Bit(list,1); 
+        if (!IS_MUTABLE_OBJ(list))
+          /* index 0 is for immutable vectors */   
+	  SetTypeDatObj( res, TypeVec8Bit( q, 0 ) );
+        return res;
+      }
+	else if ( FIELD_VEC8BIT(list) < q )
+	  {
+	    /* rewriting to a larger field */   
+        res = CopyVec8Bit(list,1);
+        RewriteVec8Bit(res,q);
+        /* TODO: rework RewriteVec8Bit and avoid calling CopyVec8Bit */
+        if (!IS_MUTABLE_OBJ(list))
+          SetTypeDatObj( res, TypeVec8Bit( q, 0 ) );
+	    return res;
+	  }
+	/* remaining case is list is written over too large a field
+	   pass through to the generic code */
+
+    }
+    else if ( IS_GF2VEC_REP(list) )
+      {
+        res = ShallowCopyVecGF2(list);  
+        RewriteGF2Vec(res, q);
+        /* TODO: rework RewriteGF2Vec and avoid calling ShallowCopyVecGF2 */
+        if (!IS_MUTABLE_OBJ(list))
+          SetTypeDatObj( res, TypeVec8Bit( q, 0 ) );
+	    return res;
+      }
+    
+    /* OK, so now we know which field we want, set up data */
+    info = GetFieldInfo8Bit(q);
+    p = P_FIELDINFO_8BIT(info);
+    d = D_FIELDINFO_8BIT(info);
+    f = FiniteField(p,d);
+
+    /* determine the size and create a new bag */    
+    len = LEN_LIST(list);
+    elts = ELS_BYTE_FIELDINFO_8BIT(info);
+    nsize = SIZE_VEC8BIT(len,elts);
+    res = NewBag( T_DATOBJ, nsize );
+    
+    /* main loop -- e is the element within byte */
+    e = 0;
+    byte = 0;
+    ptr = BYTES_VEC8BIT(res);
+    for ( i = 1;  i <= len;  i++ ) {
+      elt = ELM_LIST(list,i);
+      assert(CHAR_FF(FLD_FFE(elt)) == p);
+      assert( d % DegreeFFE(elt) == 0);
+      val = VAL_FFE(elt);
+      if (val != 0 && FLD_FFE(elt) != f)
+	{
+	  val = 1+(val-1)*(q-1)/(SIZE_FF(FLD_FFE(elt))-1);
+	}
+      /* Must get these afresh after every list access, just in case this is
+       a virtual list whose accesses might cause a garbage collection */
+      settab = SETELT_FIELDINFO_8BIT(info);
+      convtab = FELT_FFE_FIELDINFO_8BIT(info);
+      byte = settab[(e + elts*convtab[val])*256 + byte];
+      if (++e == elts || i == len)
+	{
+	  *ptr++ = byte;
+	  byte = 0;
+	  e = 0;
+	}
+    }
+    
+    /* retype bag */
+    SET_LEN_VEC8BIT( res, len );
+    SET_FIELD_VEC8BIT( res, q );
+    type = TypeVec8Bit( q, HAS_FILT_LIST( list, FN_IS_MUTABLE) );
+    SetTypeDatObj( res, type );
+    
+    return res;
+}
+
+/****************************************************************************
+**
+*F  FuncCOPY_VEC8BIT( <self>, <list> ) . . . . . convert into 8bit vector rep
+**
+**  This is a non-destructive counterpart of FuncCOPY_GF2VEC
+*/
+Obj FuncCOPY_VEC8BIT (
+    Obj                 self,
+    Obj                 list,
+    Obj                 q)
+{
+  if (!IS_INTOBJ(q))
+    {
+      ErrorMayQuit("CONV_VEC8BIT: q must be a small integer (3--256) not a %s",
+		   (Int)TNAM_OBJ(q), 0);
+    }
+    
+  list = NewVec8Bit(list, INT_INTOBJ(q));
+  
+  return list;
+}
 
 /****************************************************************************
 **
@@ -4781,7 +4919,7 @@ Obj MakeShiftedVecs( Obj v, UInt len)
     SetTypeDatObj(vn, type);
 
     /* Now we start to build up the result */
-    shifts = NEW_PLIST(T_PLIST_TAB + IMMUTABLE, elts + 2);
+    shifts = NEW_PLIST(T_PLIST_TAB, elts + 2);
     SET_ELM_PLIST(shifts, elts + 1, INTOBJ_INT(len));
     SET_ELM_PLIST(shifts, elts + 2, xi);
     SET_LEN_PLIST(shifts, elts + 2);
@@ -5674,6 +5812,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "CONV_VEC8BIT", 2, "list,q",
       FuncCONV_VEC8BIT, "src/vec8bit.c:CONV_VEC8BIT" },
 
+    { "COPY_VEC8BIT", 2, "list,q",
+      FuncCOPY_VEC8BIT, "src/vec8bit.c:COPY_VEC8BIT" },
+      
     { "PLAIN_VEC8BIT", 1, "gfqvec",
       FuncPLAIN_VEC8BIT, "src/vec8bit.c:PLAIN_VEC8BIT" },
 

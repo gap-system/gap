@@ -45,14 +45,30 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  executor, i.e., to the  function that executes statements  of the type of
 **  <stat>.
 */
+#define EXEC_STAT(stat) ( (*TLS(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
 
-#include <stdio.h>
+/****************************************************************************
+**
+*V  ExecStatFuncs[<type>] . . . . . .  executor for statements of type <type>
+**
+**  'ExecStatFuncs' is   the dispatch table  that contains  for every type of
+**  statements a pointer to the executor  for statements of  this type, i.e.,
+**  the function  that should  be  called  if a  statement   of that type  is
+**  executed.
+*/
+extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 
-static inline UInt EXEC_STAT(Stat stat)
-{ 
-  return ( (*ExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) ); 
-}
-//#define EXEC_STAT(stat) ( (*ExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) )
+/****************************************************************************
+**
+*V  IntrExecStatFuncs[<type>] . . . .  pseudo executor to handle interrupts
+**
+**  'IntrExecStatFuncs' is a dispatch table that dispatches to an interrupt
+**  function for every single entry; it is used in lieu of 'ExecStatFuncs'
+**  when the normal control flow needs to be interrupted by an external
+**  event.
+*/
+
+extern  UInt 		(* IntrExecStatFuncs[256]) ( Stat stat );
 
 
 /****************************************************************************
@@ -63,7 +79,7 @@ static inline UInt EXEC_STAT(Stat stat)
 **  purpose of 'CurrStat' is to make it possible to  point to the location in
 **  case an error is signalled.
 */
-extern  Stat            CurrStat;
+/* TL: extern  Stat            CurrStat; */
 
 
 /****************************************************************************
@@ -95,7 +111,7 @@ extern  Stat            CurrStat;
 **  executed.  It is set  in  'ExecReturnObj' and  used in the  handlers that
 **  interpret functions.
 */
-extern  Obj             ReturnObjStat;
+/* TL: extern  Obj             ReturnObjStat; */
 
 
 extern UInt TakeInterrupt();

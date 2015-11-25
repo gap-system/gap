@@ -2465,6 +2465,28 @@ InstallMethod( MaximumList,
     return max;
     end );
 
+InstallMethod( MaximumList,
+    "for a list and a comparison function",
+    [ IsList, IsFunction ],
+    function( list, comp )
+        local m, i, len;
+
+        len := Length(list);
+
+        if Length(list) = 0 then
+            Error( "MaximumList: <list> must contain at least one element" );
+        else
+            m := list[1];
+
+            for i in [2 .. len] do
+                if comp(m, list[i]) = true then
+                    m := list[i];
+                fi;
+            od;
+        fi;
+ 
+        return m;
+end);
 
 #############################################################################
 ##
@@ -2571,6 +2593,29 @@ InstallMethod( MinimumList,
     fi;
     return min;
     end );
+
+InstallMethod( MinimumList,
+    "for a list and a comparison function",
+    [ IsList, IsFunction ],
+    function( list, comp )
+        local m, i, len;
+
+        len := Length(list);
+
+        if Length(list) = 0 then
+            Error( "MinimumList: <list> must contain at least one element" );
+        else
+            m := list[1];
+
+            for i in [2 .. len] do
+                if comp(list[i], m) = true then
+                    m := list[i];
+                fi;
+            od;
+        fi;
+ 
+        return m;
+    end);
 
 #############################################################################
 ##
@@ -3782,11 +3827,18 @@ local BLISTFT,BLISTIND;
   HEXBYTES1:=ShallowCopy(HEXBYTES);
   BLISTBYTES1:=ShallowCopy(BLISTBYTES);
   SortParallel(HEXBYTES1,BLISTBYTES1);
+  MakeImmutable(BLISTBYTES);
+  MakeImmutable(BLISTBYTES1);
+  MakeImmutable(HEXBYTES);
+  MakeImmutable(HEXBYTES1);
 end);
+
+HexBlistSetup();
+
 
 InstallGlobalFunction(HexStringBlist,function(b)
 local i,n,s;
-  HexBlistSetup();
+#  HexBlistSetup();
   n:=Length(b);
   i:=1;
   s:="";
@@ -3807,7 +3859,7 @@ end);
 
 InstallGlobalFunction(HexStringBlistEncode,function(b)
 local i,n,s,t,u,zero;
-  HexBlistSetup();
+#  HexBlistSetup();
   zero:="00";
   n:=Length(b);
   i:=1;
@@ -3858,7 +3910,7 @@ end);
 
 InstallGlobalFunction(BlistStringDecode,function(arg)
 local s,b,i,j,zero,l;
-  HexBlistSetup();
+#  HexBlistSetup();
   zero:=BLISTBYTES1[PositionSorted(HEXBYTES1,"00")];
   s:=arg[1];
   b:=[];
@@ -3895,10 +3947,18 @@ InstallMethod(IntersectSet,
 
 InstallGlobalFunction(Average,l->1/Length(l)*Sum(l));
 
-InstallGlobalFunction(Median,function(l)
+InstallGlobalFunction(Median,
+function(l)
   l:=ShallowCopy(l);
   Sort(l);
   return l[Int((Length(l)+1)/2)];
+end);
+
+InstallGlobalFunction(Variance,
+function(l)
+    local avg;
+    avg := Average(l);
+    return Average(List(l, x -> (x-avg)^2));
 end);
 
 #############################################################################

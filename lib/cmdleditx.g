@@ -60,26 +60,32 @@
 ##  `INT_CHAR(<k>) mod 32' and combined with the `Esc' key (pressed before)
 ##  the number is `INT_CHAR(<k>) + 256'.
 ##  
+
+BindGlobal("CommandLineRegion", NewSpecialRegion("command line region"));
+
 BindGlobal("LineEditKeyHandlers", []);
+LockAndMigrateObj(LineEditKeyHandlers, CommandLineRegion);
 # args: [linestr, ch, ppos, length, yankstr]
 # returns: [linestr, ppos, yankstr]
 BindGlobal("LineEditKeyHandler", function(l)
   local res, lin;
-  if not IsBound(LineEditKeyHandlers[l[2]+1]) then
-    return [l[1], l[3], l[5]];
-  fi;
-  res := LineEditKeyHandlers[l[2]+1](l);
+  atomic CommandLineRegion do
+    if not IsBound(LineEditKeyHandlers[l[2]+1]) then
+      return [l[1], l[3], l[5]];
+    fi;
+    res := LineEditKeyHandlers[l[2]+1](l);
 ##    if not IS_INT(res) and not (IS_STRING_REP(res[1]) and 
 ##            LENGTH(res[1]) < l[4]-1 and
 ##            IS_STRING_REP(res[3]) and LENGTH(res[3]) < 32768 and
 ##            res[2] < l[4] and res[2] <= LENGTH(res[1])+1) then
-  if not (IsSmallIntRep(res) and res >= 0) and not (IsStringRep(res[1]) and 
-          Length(res[1]) < l[4]-1 and
-          IsStringRep(res[3]) and Length(res[3]) < 32768 and
-          res[2] < l[4] and res[2] <= Length(res[1])+1) then
-    Error("Key handler for line editing produced invalid result.");
-  fi;
-  return res;
+    if not (IsSmallIntRep(res) and res >= 0) and not (IsStringRep(res[1]) and 
+	    Length(res[1]) < l[4]-1 and
+	    IsStringRep(res[3]) and Length(res[3]) < 32768 and
+	    res[2] < l[4] and res[2] <= Length(res[1])+1) then
+      Error("Key handler for line editing produced invalid result.");
+    fi;
+    return res;
+  od;
 end);
 
 ############################################################################
@@ -100,6 +106,7 @@ end);
 
 # init empty history
 BindGlobal("CommandLineHistory", [1]);
+LockAndMigrateObj(CommandLineHistory, CommandLineRegion);
 MaxCommandLineHistory := 0;
 
 # history position from previous line
@@ -109,6 +116,8 @@ LastPosCLH := 1;
 # key number 0 is used as a hook for saving a new line in the history
 BindGlobal("CommandLineHistoryHandler", function(l)
   local key, hist, n, m, start, res, i;
+  atomic CommandLineRegion do
+
   key := l[2];
   hist := CommandLineHistory;
   if key = 0 then  # save line data
@@ -126,14 +135,14 @@ BindGlobal("CommandLineHistoryHandler", function(l)
       for i in [2..Length(hist)-1] do
         hist[i] := hist[i+1];
       od;
-      hist[Length(hist)] := l[1];
+      hist[Length(hist)] := `l[1];
       if hist[1] > 2 then
         hist[1] := hist[1]-1;
       else
         hist[1] := Length(hist)+1;
       fi;
     else
-      Add(hist, l[1]);
+      Add(hist, `l[1]);
     fi;
     LastPosCLH := hist[1];
     hist[1] := Length(hist)+1;
@@ -202,12 +211,15 @@ BindGlobal("CommandLineHistoryHandler", function(l)
     return ["", 1, l[5]];
   else
     Error("Cannot handle command line history with key ", key);
-  fi;
+  fi;  
+  od;
 end);
 
 # install the handlers for the history commands
-for tmpclh in [0, 16, 14, 12, 316, 318] do
-  LineEditKeyHandlers[tmpclh+1] := CommandLineHistoryHandler;
+atomic CommandLineRegion do
+  for tmpclh in [0, 16, 14, 12, 316, 318] do
+    LineEditKeyHandlers[tmpclh+1] := CommandLineHistoryHandler;
+  od;
 od;
 Unbind(tmpclh);
 
@@ -223,6 +235,8 @@ Unbind(tmpclh);
 ##  
 BindGlobal("SaveCommandLineHistory", function(arg)
   local fnam, hist, max, start, i;
+  atomic CommandLineRegion do
+  
   if Length(arg) > 0 then
     fnam := arg[1];
   else
@@ -239,10 +253,14 @@ BindGlobal("SaveCommandLineHistory", function(arg)
   for i in [start..Length(hist)] do
     AppendTo(fnam, hist[i], "\n");
   od;
+  od;
+  
 end);
 
 BindGlobal("ReadCommandLineHistory", function(arg)
   local fnam, hist, s, n;
+  atomic CommandLineRegion do
+
   if Length(arg) > 0 then
     fnam := arg[1];
   else
@@ -253,50 +271,62 @@ BindGlobal("ReadCommandLineHistory", function(arg)
   if IsString(s) then
     s := SplitString(s,"","\n");
     MaxCommandLineHistory := UserPreference("HistoryMaxLines");
-    if not IsInt(MaxCommandLineHistory) then 
+    if not IsInt(MaxCommandLineHistory) then
       MaxCommandLineHistory := 0;
     fi;
-    if MaxCommandLineHistory > 0 and 
+    if MaxCommandLineHistory > 0 and
        Length(s) + Length(hist) - 1 > MaxCommandLineHistory then
       n := MaxCommandLineHistory + 1 - Length(hist);
       s := s{[Length(s)-n+1..Length(s)]};
     fi;
     hist{[Length(s)+2..Length(s)+Length(hist)]} := hist{[2..Length(hist)]};
-    hist{[2..Length(s)+1]} := s;
+    hist{[2..Length(s)+1]} := `s;
   fi;
   hist[1] := Length(hist) + 1;
+
+  od;
 end);
 
 # Implementation of the default ESC-N and ESC-S behaviour described above.
-AutomaticInputLines := [];
+AutomaticInputLines := LockAndMigrateObj([], CommandLineRegion);
 AutomaticInputLinesCounter := 1;
 BindGlobal("DefaultEscNHandler", function(arg)
   local res;
-  if AutomaticInputLinesCounter <= Length(AutomaticInputLines) then
-    res := AutomaticInputLines[AutomaticInputLinesCounter];
-    AutomaticInputLinesCounter := AutomaticInputLinesCounter + 1;
-    return [res, Length(res)+1, arg[1][5]];
-  else
-    return ["",1,arg[1][5]];
-  fi;
+  atomic CommandLineRegion do
+    if AutomaticInputLinesCounter <= Length(AutomaticInputLines) then
+      res := AutomaticInputLines[AutomaticInputLinesCounter];
+      AutomaticInputLinesCounter := AutomaticInputLinesCounter + 1;
+      return [res, Length(res)+1, arg[1][5]];
+    else
+      return ["",1,arg[1][5]];
+    fi;
+  od;
 end);
-LineEditKeyHandlers[334+1] := DefaultEscNHandler;
+atomic CommandLineRegion do
+  LineEditKeyHandlers[334+1] := DefaultEscNHandler;
+od;
 
 # ESC('S') calls Length(AutomaticInputLines) often ESC('N')
-LineEditKeyHandlers[339+1] := function(arg) 
-  AutomaticInputLinesCounter := 1;
-  return Length(AutomaticInputLines);
-end;
+atomic CommandLineRegion do
+  LineEditKeyHandlers[339+1] := function(arg) 
+    atomic CommandLineRegion do
+      AutomaticInputLinesCounter := 1;
+      return Length(AutomaticInputLines);
+    od;
+  end;
+od; 
 
 ##  Standard behaviour to insert a character for the key.
 ##  We don't install this directly in LineEditKeyHandlers but this can be 
 ##  useful for writing other key handlers)
 BindGlobal("LineEditInsert", function(l)
   local line;
-  line := l[1]{[1..l[3]-1]};
-  Add(line, CHAR_INT(l[2]));
-  Append(line, l[1]{[l[3]..Length(l[1])]});
-  return [line, l[3]+1, l[5]];
+  atomic CommandLineRegion do
+    line := l[1]{[1..l[3]-1]};
+    Add(line, CHAR_INT(l[2]));
+    Append(line, l[1]{[l[3]..Length(l[1])]});
+    return [line, l[3]+1, l[5]];
+  od;
 end);
 
 ##  This will be installed as handler for the space-key, it removes the prompts
@@ -305,23 +335,30 @@ end);
 ##  be switched off by setting 'GAPInfo.DeletePrompts := false;'.
 GAPInfo.DeletePrompts := true;
 BindGlobal("LineEditDelPrompt", function(l);
-  if GAPInfo.DeletePrompts and l[1]{[1..l[3]-1]} in ["gap>", ">", "brk>"] then
-    return [l[1]{[l[3]..Length(l[1])]}, 1, l[5]];
-  else
-    return LineEditInsert(l);
-  fi;
+  atomic CommandLineRegion do
+    if GAPInfo.DeletePrompts and l[1]{[1..l[3]-1]} in ["gap>", ">", "brk>"] then
+      return [l[1]{[l[3]..Length(l[1])]}, 1, l[5]];
+    else
+      return LineEditInsert(l);
+    fi;
+  od;
 end);
-LineEditKeyHandlers[33] := LineEditDelPrompt;
+atomic CommandLineRegion do
+  LineEditKeyHandlers[33] := LineEditDelPrompt;
+od;
 
 ############################################################################
 ##       readline interface functions
 
 if not IsBound(GAPInfo.History) then
-  GAPInfo.History := rec(MaxLines := -1, Lines := [], Pos := 0);
+  GAPInfo.History :=
+    AtomicRecord(rec(MaxLines := -1, Lines := [], Pos := 0));
+  ShareSpecialObj(GAPInfo.History.Lines);
 fi;
 GAPInfo.History.AddLine := function(l)
   local hist, len;
   hist := GAPInfo.History;
+  MakeImmutable(l);
   # if history switched off
   if hist.MaxLines = 0 then
     return;
@@ -336,32 +373,79 @@ GAPInfo.History.AddLine := function(l)
   if len = 0 then
     return;
   fi;
-  if hist.MaxLines > 0 and Length(hist.Lines) >= hist.MaxLines then
-    # overrun, throw oldest line away
-    Remove(hist.Lines, 1);
-  fi;
-  Add(hist.Lines, l);
-  hist.Pos := Length(hist.Lines) + 1;
+  atomic hist.Lines do
+    if hist.MaxLines > 0 and Length(hist.Lines) >= hist.MaxLines then
+      # overrun, throw oldest line away
+      Remove(hist.Lines, 1);
+    fi;
+    Add(hist.Lines, l);
+    hist.Pos := Length(hist.Lines) + 1;
+  od;
 end;
+
 GAPInfo.History.PrevLine := function(start)
   local hist, len, pos, first;
   hist := GAPInfo.History;
   len := Length(start);
-  pos := hist.Pos - 1;
-  if pos = 0 then
-    pos := Length(hist.Lines);
-  fi;
-  first := pos;
-  repeat
-    if PositionSublist(hist.Lines[pos], start) = 1 then
-      hist.Pos := pos;
-      return hist.Lines[pos];
-    fi;
-    if pos > 1 then
-      pos := pos - 1;
-    else
+  atomic hist.Lines do
+    pos := hist.Pos - 1;
+    if pos = 0 then
       pos := Length(hist.Lines);
     fi;
-  until pos = first;
+    first := pos;
+    repeat
+      if PositionSublist(hist.Lines[pos], start) = 1 then
+	hist.Pos := pos;
+	return hist.Lines[pos];
+      fi;
+      if pos > 1 then
+	pos := pos - 1;
+      else
+	pos := Length(hist.Lines);
+      fi;
+    until pos = first;
+  od;
 end;
 
+# Operations to enable and disable raw mode on terminals.
+
+# Set operations are not available yet, so we cheat by using
+# [] in lieu of Set([]); AddSet() and RemoveSet() accept the
+# empty list as a proper set because it is sorted.
+
+TERMINAL_REGION := ShareSpecialObj("TERMINAL_REGION");
+TERMINAL_FILE_IDS := LockAndMigrateObj([], TERMINAL_REGION);
+TERMINAL_EXITING := false;
+
+TERMINAL_BEGIN_EDIT := function(fid)
+  atomic TERMINAL_REGION do
+    while TERMINAL_EXITING do
+      Sleep(1); # idle wait until program exit
+    od;
+    if RAW_MODE_FILE(fid, true) then
+      AddSet(TERMINAL_FILE_IDS, fid);
+      return true;
+    else
+      return false;
+    fi;
+  od;
+end;
+
+TERMINAL_END_EDIT := function(fid)
+  atomic TERMINAL_REGION do
+    if not TERMINAL_EXITING then
+      RemoveSet(TERMINAL_FILE_IDS, fid);
+      return RAW_MODE_FILE(fid, false);
+    fi;
+  od;
+end;
+
+TERMINAL_CLOSE := function()
+  local fid;
+  atomic TERMINAL_REGION do
+    TERMINAL_EXITING := true;
+    for fid in TERMINAL_FILE_IDS do
+      RAW_MODE_FILE(fid, false);
+    od;
+  od;
+end;

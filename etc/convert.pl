@@ -76,7 +76,7 @@
 #        replace tth by another conversion, for example TeXexplorer, but
 #        (at least) the line calling `tth' would need to be modified.)
 
-#    -u  Like -t, but uses `tth -u2' to produce unicode.
+#    -u  Like -t, but uses `tth -u1' to produce unicode.
 #
 #    <doc-dir>  The directory where all the needed .tex, .toc, .lab and .bbl
 #               files are located.
@@ -182,7 +182,7 @@ $sharepkg = "";
 
 %convertbooks = ();
 
-# This is added to when scanning GAPDoc manuals. 
+# This is added to when scanning for \UseGapDocReferences. 
 #
 
 %gapdocbooks = ();
@@ -190,14 +190,13 @@ $sharepkg = "";
 # Types of href label are:
 # 0 (non -c books) : C<MMM>S<NNN>.htm
 # 1 (-c books)     : CHAP<MMM>.htm#SECT<NNN>
-# 2 (== $gapdoc)   : chap<M>.html#<gapdoc-id>
+# 2 (== $gapdoc)   : chap<M>.html#s<N>ss0
 #
 # It would be nice to support subsections properly like GapDoc,
 # but this involves creating a subsection data-structure modelled
 # on section, which is a mite non-trivial (maybe ... if I find time).
 # For now in-text references go to the beginning of the chapter.
 #
-# BH: it might be easier to use tags based on the name of the function
 
 $gapdoc = 2;
 
@@ -249,7 +248,7 @@ sub kanonize {
 }
 
 sub def_section_by_name {
-    my ($sec, $chapno, $secno, $ssecno, $name) = @_;
+    my ($sec, $chapno, $secno, $ssecno) = @_;
     my $secname = canonize $1;
     if (defined $sections_by_name{$secname}) {
         if (($sections_by_name{$secname}->{chapnum} ne $chapno) ||
@@ -268,9 +267,8 @@ sub def_section_by_name {
     $sections_by_name{$secname}
          = {chapnum => $chapno,
             secnum  => $secno,
-            ssecnum => $ssecno,
-            name => $name};
-   # print STDERR "Defined section \"$secname\": $chapno.$secno.$ssecno $name\n";
+            ssecnum => $ssecno};
+#   print STDERR "Defined section \"$secname\": $chapno.$secno.$ssecno\n";
 }
 
 sub tonum { # Needed since chanu may be A,B,... for appendices
@@ -346,8 +344,8 @@ sub getchaps {
                                 ssecnum => 0,
                                 chapter => $chap};
                 if ($4 ne $5) {
-                    def_section_by_name("$book:$chapnam", $chanu, 0, 0, canonize $chapnam);
-                    add_to_index(htm_fname($opt_c,$chanu,0, 0, ""), 
+                    def_section_by_name("$book:$chapnam", $chanu, 0, 0);
+                    add_to_index(htm_fname($opt_c,$chanu,0), 
                                            $4, $chap_as_sec, 0);
                 }
 
@@ -363,20 +361,13 @@ sub getchaps {
 
 sub getlabs {
   my ($bkdir) = @_;
-
   open (LAB, "<${bkdir}manual.lab") || print "Can't open ${bkdir}manual.lab";
     while (<LAB>) {
       if ( /\\setcitlab/ ) {
 	  next; # We don't get the bibliography labels from here
-      } elsif ( /\\GAPDocLabFile\s*\{([^}]+)\}/ ) {
-        $gapdocbooks{$1} = 1;
-        print STDERR "GapDoc books: ", keys(%gapdocbooks), "\n";
-      } elsif (/\\makelabel\s*\{([^}]+)\}\s*\{(\w+)(\.(\d+))?(\.(\d+))?\}\{([^}]+)\}/) {
-        def_section_by_name($1, $2, (defined($3) ? $4 : 0),
-				      (defined($5) ? $6 : 0), $7);
       } elsif (/\\makelabel\s*\{([^}]+)\}\s*\{(\w+)(\.(\d+))?(\.(\d+))?\}/) {
-          def_section_by_name($1, $2, (defined($3) ? $4 : 0),
-          (defined($5) ? $6 : 0), "");
+	  def_section_by_name($1, $2, (defined($3) ? $4 : 0),
+				      (defined($5) ? $6 : 0));
       } else {
 	  chomp;
 	  print STDERR "Ignored line: $_\n... in ${bkdir}manual.lab\n";
@@ -438,19 +429,15 @@ sub sec_label {
 # The HREFs of subsections, sections and chapter files are determined by
 # this routine directly if the chapter, section, subsection numbers are known.
 sub htm_fname {
-    my ($c_s_gapdoc,$cnum,$snum,$ssnum,$name) = @_;
-    # print STDERR "making htm_fname from $cnum.$snum.$ssnum $name\n";
+    my ($c_s_gapdoc,$cnum,$snum,$ssnum) = @_;
 
-    my $seclabel = "$name";
-    
-    $seclabel = sec_label($c_s_gapdoc,$cnum,$snum,$ssnum) if ($seclabel eq "");
+    my $seclabel = sec_label($c_s_gapdoc,$cnum,$snum,$ssnum);
     $seclabel = "#$seclabel" if ($seclabel ne "");
-    # print STDERR "made $seclabel\n";
- 
+
     if ($c_s_gapdoc == $gapdoc) {
       return "chap${cnum}.html$seclabel";
     }
-    
+
     $cnum = "0" x (3 - length $cnum) . $cnum;
     $snum = "0" x (3 - length $snum) . $snum;
     return ($c_s_gapdoc) ? "CHAP${cnum}.htm$seclabel" 
@@ -465,14 +452,12 @@ sub hreftype {
       my @ls = `ls ${odir}$bdir`;
       $convertbooks{$book} 
           = (grep { m/^CHAP...[.]htm$/ } @ls) ?
-                1 :             # .htm files have shape CHAP<MMM>.htm
+                1 :         # .htm files have shape CHAP<MMM>.htm
                 (grep { m/^CHAP...[.]htm$/ } @ls) ?
-                    0 :         # .htm files have shape C<MMM>S<NNN>.htm
-                    (grep { m/^chap...[.]html$/ } @ls) ?
-                        2 :     # .html files have shape chapM.html
-                        $opt_c; # can't determine the shape ... don't exist
-                                # yet ... we assume the shape of the current
-                                # manual being compiled.
+                    0 :     # .htm files have shape C<MMM>S<NNN>.htm
+                    $opt_c; # can't determine the shape ... don't exist
+                            # yet ... we assume the shape of the current
+                            # manual being compiled.
     }
     return $convertbooks{$book};
 }
@@ -491,7 +476,7 @@ sub name2fn {
       if ($mainman==1) {
 	$bdir = "../$1/";
       } else {
-        $bdir = "../../../doc/$1/";
+        $bdir = "../../../doc/htm/$1/";
       }
       $c_s_gapdoc = hreftype($1, $bdir);
     } elsif ($canon_name =~ /^([a-zA-Z_0-9]*):/ ) {
@@ -531,8 +516,7 @@ sub name2fn {
     return $bdir . htm_fname($c_s_gapdoc,
                              $sec->{chapnum}, 
                              ($ischap == 1) ? 0 : $sec->{secnum},
-                             ($ischap == 1) ? 0 : $sec->{ssecnum},
-                             $sec->{name});
+                             ($ischap == 1) ? 0 : $sec->{ssecnum});
 }
 
 
@@ -731,7 +715,7 @@ sub tth_math_replace {
         $tth= $1."{\\it ".$2."\\/}".$3;
     }
     # replace `...' by proper TeX
-    while ($tth =~ /(.*[^\\])`(.*[^\\])\'(.*)/) { 
+    while ($tth =~ /(.*[^\\])`(.*[^\\])\'(.*)/) {
         $tth= $1."{\\tt ".$2."}".$3;
     }
     # replace \< by proper TeX
@@ -943,7 +927,7 @@ sub macro_replace {
           }
 	# pseudo ``itemend'' character
         elsif ($macro eq "itmnd")        { return ($rest, "<dd>");         }
-        elsif ($macro eq "cite" and $rest =~ /^\{\s*(\S+)\s*\}/) 
+        elsif ($macro eq "cite" and $rest =~ /^\{\s*(\w+)\s*\}/) 
           { return ($', "<a href=\"biblio.htm#$1\"><cite>$1</cite></a>"); }
         elsif ($macro eq "URL" and $rest =~ /^\{([^\}]*)\}/) 
           { return ($', "<a href=\"$1\">$1</a>"); }
@@ -1629,7 +1613,7 @@ sub startfile {
     }
     $name2 = kanonize $name;
     $fname = htm_fname($opt_c, 
-                       $sec->{chapnum}, $sec->{secnum}, $sec->{ssecnum}, "");
+                       $sec->{chapnum}, $sec->{secnum}, $sec->{ssecnum});
 
     open ( OUT, ">${odir}${fname}" ) || die "Can't write to ${odir}${fname}";
     select OUT;
@@ -1647,7 +1631,7 @@ sub startsec {
     my $sec = $_[0];
     my $snum = $sec->{secnum};
     my $name = $sec->{name};  
-    add_to_index(htm_fname($opt_c, $sec->{chapnum}, $snum, 0, ""), $name, $sec);
+    add_to_index(htm_fname($opt_c, $sec->{chapnum}, $snum, 0), $name, $sec);
     my $num = $sec->{chapnum} . "." .$snum;
     $snum = "0" x (3 - length $snum) . $snum;
     my $name1 = metaquote $name;
@@ -1662,7 +1646,7 @@ sub sectionlist {
     print  "<P>\n<H3>Sections</H3>\n<oL>\n";
   SUBSEC: for $sec (@{$chap->{sections}}) {
       next SUBSEC if ($sec->{secnum} == 0);
-      my $link = htm_fname($opt_c, $sec->{chapnum}, $sec->{secnum}, 0, "");
+      my $link = htm_fname($opt_c, $sec->{chapnum}, $sec->{secnum}, 0);
       my $name2 = kanonize $sec->{name};
       print  "<li> <A HREF=\"$link\">$name2</a>\n";
     }
@@ -1677,7 +1661,7 @@ sub sectionlist {
 sub navigation {
     my $sec = $_[0];
     my $chap = $sec->{chapter};
-    my $cfname = htm_fname($opt_c, $sec->{chapnum}, 0, 0, "");
+    my $cfname = htm_fname($opt_c, $sec->{chapnum}, 0, 0);
     if ($mainman == 1) {
       print  "[<a href=\"../index.htm\">Top</a>] "
     } else {
@@ -1690,30 +1674,30 @@ sub navigation {
         if (tonum($chap->{number}) != 1) {
             my $prev = htm_fname($opt_c,
                                  $chapters[tonum($chap->{number}) - 1]{number},
-                                 0, 0, "");
+                                 0, 0);
             print  "[<a href =\"$prev\">Previous</a>] ";
         }
         if (tonum($chap->{number}) != $#chapters) {
             my $next = htm_fname($opt_c,
                                  $chapters[tonum($chap->{number}) + 1]{number},
-                                 0, 0, "");
+                                 0, 0);
             print  "[<a href =\"$next\">Next</a>] ";
         }
     } else {
         print  "[<a href = \"$cfname\">Up</a>] ";
         if ($sec->{secnum} != 1) {
             my $prev = htm_fname($opt_c, $chap->{number}, $sec->{secnum} - 1, 
-                                 0, "");
+                                 0);
             print  "[<a href =\"$prev\">Previous</a>] ";
         }
         if ($sec->{secnum} != $#{$chap->{sections}}) {
             my $next = htm_fname($opt_c, $chap->{number}, $sec->{secnum} + 1,
-                                 0, "");
+                                 0);
             print  "[<a href =\"$next\">Next</a>] ";
         } elsif (tonum($chap->{number}) != $#chapters) {
             my $next = htm_fname($opt_c,
                                  $chapters[tonum($chap->{number}) + 1]{number},
-                                 0, 0, "");
+                                 0, 0);
             print  "[<a href =\"$next\">Next</a>] ";
         }
     }
@@ -1827,7 +1811,7 @@ END
 
   CHAP: foreach $chap (@chapters) {
       unless (defined $chap) { next CHAP};
-        my $link = htm_fname($opt_c, $chap->{number}, 0, 0, "");
+        my $link = htm_fname($opt_c, $chap->{number}, 0, 0);
         my $name2 = kanonize $chap->{name};
         print  "</ol><ol type=\"A\">\n" if ( $chap->{number} eq "A" );
         print  "<li><a href=\"$link\">$name2</a>\n";
@@ -2078,7 +2062,7 @@ if ($opt_u) {
                  "... Maths formulae will vanish!",
                  " Install tth or avoid -t option.\n";
   }
-  $tthbin="tth -u2";
+  $tthbin="tth -u1";
 }
 
 if ($opt_n) {
@@ -2168,9 +2152,9 @@ while (<TEX>) {
       getlabs "$dir$1/";
   } elsif (/\\UseGapDocReferences{([^}]*)}/) { 
       getlabs "$dir$1/";
-#      ($gapdocbook = $1) =~ s?.*/([^/]*)/doc?$1?;
-#      $gapdocbooks{$gapdocbook} = 1;
-#      print STDERR "GapDoc books: ", keys(%gapdocbooks), "\n";
+      ($gapdocbook = $1) =~ s?.*/([^/]*)/doc?$1?;
+      $gapdocbooks{$gapdocbook} = 1;
+      print STDERR "GapDoc books: ", keys(%gapdocbooks), "\n";
   } elsif (/\\Package{([^}]*)}/) {
       $sharepkg .= "|$1"; 
   }

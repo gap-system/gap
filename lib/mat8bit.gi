@@ -26,10 +26,14 @@
 ##  without changing the kernel.
 ##
 
-InstallValue(TYPES_MAT8BIT , [[],[]]);
+InstallValue(TYPES_MAT8BIT, 
+  [ MakeWriteOnceAtomic([]), 
+    MakeWriteOnceAtomic([]) 
+  ]);
 TYPES_MAT8BIT[1][257] := 1;
 TYPES_MAT8BIT[2][257] := 1;
 
+MakeReadOnly(TYPES_MAT8BIT);
 
 #############################################################################
 ##
@@ -41,7 +45,7 @@ TYPES_MAT8BIT[2][257] := 1;
 
 InstallGlobalFunction(TYPE_MAT8BIT,
   function( q, mut)
-    local col,filts;
+    local col,filts, type;
     if mut then col := 1; else col := 2; fi;
     if not IsBound(TYPES_MAT8BIT[col][q]) then
         filts := IsHomogeneousList and IsListDefault and IsCopyable and
@@ -49,7 +53,10 @@ InstallGlobalFunction(TYPE_MAT8BIT,
                  IsRingElementTable and IsNoImmediateMethodsObject and 
                  HasIsRectangularTable and IsRectangularTable;
         if mut then filts := filts and IsMutable; fi;
-        TYPES_MAT8BIT[col][q] := NewType(CollectionsFamily(FamilyObj(GF(q))),filts);
+	type := NewType(CollectionsFamily(FamilyObj(GF(q))),filts);
+	InstallTypeSerializationTag(type, SERIALIZATION_BASE_MAT8BIT +
+	  SERIALIZATION_TAG_BASE * (q * 2 + col - 1));
+        TYPES_MAT8BIT[col][q] := type;
     fi;
     return TYPES_MAT8BIT[col][q];
 end);

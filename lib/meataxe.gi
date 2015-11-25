@@ -265,33 +265,33 @@ SMTX.HasIsAbsolutelyIrreducible:=function(module)
   return IsBound(module.IsAbsolutelyIrreducible);
 end;
 
-SMTX.SetSmashRecord:=SMTX.Setter("dummy");
-SMTX.Subbasis:=SMTX.Getter("subbasis");
-SMTX.SetSubbasis:=SMTX.Setter("subbasis");
-SMTX.AlgEl:=SMTX.Getter("algebraElement");
-SMTX.SetAlgEl:=SMTX.Setter("algebraElement");
-SMTX.AlgElMat:=SMTX.Getter("algebraElementMatrix");
-SMTX.SetAlgElMat:=SMTX.Setter("algebraElementMatrix");
-SMTX.AlgElCharPol:=SMTX.Getter("characteristicPolynomial");
-SMTX.SetAlgElCharPol:=SMTX.Setter("characteristicPolynomial");
-SMTX.AlgElCharPolFac:=SMTX.Getter("charpolFactors");
-SMTX.SetAlgElCharPolFac:=SMTX.Setter("charpolFactors");
-SMTX.AlgElNullspaceVec:=SMTX.Getter("nullspaceVector");
-SMTX.SetAlgElNullspaceVec:=SMTX.Setter("nullspaceVector");
-SMTX.AlgElNullspaceDimension:=SMTX.Getter("ndimFlag");
-SMTX.SetAlgElNullspaceDimension:=SMTX.Setter("ndimFlag");
+SMTX.SetSmashRecord:=SMTX.Setter(`"dummy");
+SMTX.Subbasis:=SMTX.Getter(`"subbasis");
+SMTX.SetSubbasis:=SMTX.Setter(`"subbasis");
+SMTX.AlgEl:=SMTX.Getter(`"algebraElement");
+SMTX.SetAlgEl:=SMTX.Setter(`"algebraElement");
+SMTX.AlgElMat:=SMTX.Getter(`"algebraElementMatrix");
+SMTX.SetAlgElMat:=SMTX.Setter(`"algebraElementMatrix");
+SMTX.AlgElCharPol:=SMTX.Getter(`"characteristicPolynomial");
+SMTX.SetAlgElCharPol:=SMTX.Setter(`"characteristicPolynomial");
+SMTX.AlgElCharPolFac:=SMTX.Getter(`"charpolFactors");
+SMTX.SetAlgElCharPolFac:=SMTX.Setter(`"charpolFactors");
+SMTX.AlgElNullspaceVec:=SMTX.Getter(`"nullspaceVector");
+SMTX.SetAlgElNullspaceVec:=SMTX.Setter(`"nullspaceVector");
+SMTX.AlgElNullspaceDimension:=SMTX.Getter(`"ndimFlag");
+SMTX.SetAlgElNullspaceDimension:=SMTX.Setter(`"ndimFlag");
 
-SMTX.CentMat:=SMTX.Getter("centMat");
-SMTX.SetCentMat:=SMTX.Setter("centMat");
-SMTX.CentMatMinPoly:=SMTX.Getter("centMatMinPoly");
-SMTX.SetCentMatMinPoly:=SMTX.Setter("centMatMinPoly");
+SMTX.CentMat:=SMTX.Getter(`"centMat");
+SMTX.SetCentMat:=SMTX.Setter(`"centMat");
+SMTX.CentMatMinPoly:=SMTX.Getter(`"centMatMinPoly");
+SMTX.SetCentMatMinPoly:=SMTX.Setter(`"centMatMinPoly");
 
-SMTX.FGCentMat:=SMTX.Getter("fieldGenCentMat");
-SMTX.SetFGCentMat:=SMTX.Setter("fieldGenCentMat");
-SMTX.FGCentMatMinPoly:=SMTX.Getter("fieldGenCentMatMinPoly");
-SMTX.SetFGCentMatMinPoly:=SMTX.Setter("fieldGenCentMatMinPoly");
+SMTX.FGCentMat:=SMTX.Getter(`"fieldGenCentMat");
+SMTX.SetFGCentMat:=SMTX.Setter(`"fieldGenCentMat");
+SMTX.FGCentMatMinPoly:=SMTX.Getter(`"fieldGenCentMatMinPoly");
+SMTX.SetFGCentMatMinPoly:=SMTX.Setter(`"fieldGenCentMatMinPoly");
 
-SMTX.SetDegreeFieldExt:=SMTX.Setter("degreeFieldExt");
+SMTX.SetDegreeFieldExt:=SMTX.Setter(`"degreeFieldExt");
 
 LinearCombinationVecs:=function(v,c)
 local i,s;
@@ -378,7 +378,7 @@ end;
 ## matrices in the list are used.
 SMTX_SpinnedBasis:=function ( arg  )
    local   v, matrices, ngens, zero,  
-           ans, dim, subdim, leadpos, w, i, j, k, l, m,F;
+           ans, dim, subdim, leadpos, u, w, i, j, k, l, m,F;
 
    if Number (arg) < 3 or Number (arg) > 4 then
       Error ("Usage:  SpinnedBasis ( v, matrices, F, [ngens] )");
@@ -403,7 +403,12 @@ SMTX_SpinnedBasis:=function ( arg  )
    fi;
    zero:=Zero(matrices[1][1][1]);
    ans:=ShallowCopy(Basis(VectorSpace(F,v)));
-   for v in ans do ConvertToVectorRep(v,F); od;
+   for v in [1..Length(ans)] do
+     u := CopyToVectorRep(ans[v],Size(F));
+     if u <> fail then
+       ans[v]:=u;
+     fi;  
+   od;
    if Length(ans)=0 then
      return ans;
    fi;
@@ -434,10 +439,10 @@ SMTX_SpinnedBasis:=function ( arg  )
             subdim:=subdim + 1;
             leadpos[subdim]:=j;
             #w:=(w[j]^-1) * w;
-	    MultRowVector(w,w[j]^-1);
+	        MultRowVector(w,w[j]^-1);
             Add ( ans, w );
             if subdim = dim then
-	       ans:=ImmutableMatrix(F,ans);
+	           ans:=ImmutableMatrix(F,ans);
                return ans;
             fi;
          fi;
@@ -2471,7 +2476,7 @@ SMTX.MinimalSubGModule:=SMTX_MinimalSubGModule ;
 SMTX_IsomorphismComp:=function (module1, module2, action)
    local matrices, matrices1, matrices2, F, R, dim, swapmodule, genpair,
          swapped, orig_ngens, i, j, el, p, fac, ngens, M, mat, v1, v2, v, 
-         N, basis, basis1, basis2;
+         N, basis, basis1, basis2, tmp;
 
   #CCC:=[ShallowCopy(module1),ShallowCopy(module2),ShallowCopy(action)];
   #CCC[1].smashMeataxe:=ShallowCopy(CCC[1].smashMeataxe);
@@ -2553,7 +2558,7 @@ SMTX_IsomorphismComp:=function (module1, module2, action)
    fac:=SMTX.AlgElCharPolFac (module1);
    mat:=Value (fac, M,M^0);
    Info(InfoMeatAxe,2,"Calculating nullspace for second module.");
-   N:=NullspaceMat (mat);
+   N:=NullspaceMat(mat);
    if Length (N) <> SMTX.AlgElNullspaceDimension(module1) then
       Info(InfoMeatAxe,2,"Null space dimensions different.");
       return fail;
@@ -2564,8 +2569,11 @@ SMTX_IsomorphismComp:=function (module1, module2, action)
    Info(InfoMeatAxe,2,"Spinning up in direct sum.");
    matrices:=SMTX.MatrixSum (matrices1, matrices2);
    v1:=SMTX.AlgElNullspaceVec(module1);
-   ConvertToVectorRep(N[1],F);
    v2:=N[1];
+   tmp := CopyToVectorRep(v2,Size(F));
+   if tmp<>fail then
+     v2:=tmp;
+   fi;
    v:=Concatenation (v1, v2);
    basis:=SMTX.SpinnedBasis (v, matrices, F);
    if Length (basis) = dim then
@@ -2848,9 +2856,9 @@ SMTX_Homomorphisms:= function (m1, m2)
    else
       rels:=TransposedMat (rels);
    fi;
-   N:=NullspaceMat (rels);
-   for k in N do
-     ConvertToVectorRep(k,F);
+   N:=ShallowCopy(NullspaceMat (rels)); # TODO - is this compressed????
+   for k in [1..Length(N)] do
+     N[k]:=CopyToVectorRep(N[k],Size(F));
    od;
    ans:=[];
    for k in [1..Length (N)] do
@@ -3774,4 +3782,6 @@ SMTX_OrthogonalSign:=function(gm)
     fi;
 end;
         
-SMTX.OrthogonalSign:=SMTX_OrthogonalSign;        
+SMTX.OrthogonalSign:=SMTX_OrthogonalSign;     
+
+MakeReadOnly(SMTX);

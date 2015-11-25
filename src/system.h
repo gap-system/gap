@@ -20,8 +20,6 @@
 #ifndef GAP_SYSTEM_H
 #define GAP_SYSTEM_H
 
-#define NOOP ((void) 0)
-
 /****************************************************************************
 **
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
@@ -183,14 +181,32 @@ typedef unsigned long long int  UInt8;
 */
 typedef UInt * *        Bag;
 
+/****************************************************************************
+**
+*T  BagW  . . . . . . . . . . . . . . . . . . . . type of a write-guarded bag
+*/
+
+typedef struct { UInt MemW; } * * BagW;
+
+/****************************************************************************
+**
+*T  BagR  . . . . . . . . . . . . . . . . . . . .  type of a read-guarded bag
+*/
+
+typedef struct { UInt MemR; } * * BagR;
+
 
 /****************************************************************************
 **
 *T  Obj . . . . . . . . . . . . . . . . . . . . . . . . . . . type of objects
+*T  ObjW  . . . . . . . . . . . . . . . . . . . type of write-guarded objects
+*T  ObjR  . . . . . . . . . . . . . . . . . . .  type of read-guarded objects
 **
 **  'Obj' is the type of objects.
 */
 #define Obj             Bag
+#define ObjW		BagW
+#define ObjR		BagR
 
 
 /****************************************************************************
@@ -579,13 +595,6 @@ extern UInt SyWindow;
 *V  SyStartTime . . . . . . . . . . . . . . . . . . time when GAP was started
 */
 extern UInt SyStartTime;
-
-
-/****************************************************************************
-**
-*V  SyStopTime  . . . . . . . . . . . . . . . . . . time when reading started
-*/
-extern UInt SyStopTime;
 
 
 /****************************************************************************
@@ -1018,6 +1027,15 @@ extern void SySleep( UInt secs );
 
 /****************************************************************************
 **
+*F  SyUSleep( <msecs> ) . . . . . . . . .Try to sleep for <msecs> microseconds
+**
+**  The OS may wake us earlier, for example on receipt of a signal
+*/
+
+extern void SyUSleep( UInt msecs );
+
+/****************************************************************************
+**
 *F  getOptionCount ( <key> ) . number of times a command line option was used
 *F  getOptionArg ( <key>, <which> ) get arguments used on <which>'th occurrence
 *F                             of <key> as a command line option NULL if none
@@ -1026,6 +1044,19 @@ extern void SySleep( UInt secs );
 
 extern Int getOptionCount (Char key);
 extern Char *getOptionArg(Char key, UInt which);
+
+/****************************************************************************
+**
+*F  MergeSort() . . . . . . . . . . . . . . . sort an array using mergesort.
+**
+**  MergeSort() sorts an array of 'count' elements of individual size 'width'
+**  with ordering determined by the parameter 'lessThan'. The 'lessThan'
+**  function is to return a non-zero value if the first argument is less
+**  than the second argument, zero otherwise.
+*/
+
+extern void MergeSort(void *data, UInt count, UInt width,
+  int (*lessThan)(const void *a, const void *));
 
 /****************************************************************************
  **
@@ -1074,9 +1105,6 @@ extern void InitSystem (
             Char *              argv [] );
 
 
-// FIXME: The TLS macro is for compatibility with the HPC-GAP branch, and helps
-// to keep the diffs between it and master branch small(er).
-#define TLS(x) x
 
 
 #endif // GAP_SYSTEM_H

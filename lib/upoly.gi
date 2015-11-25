@@ -110,9 +110,14 @@ InstallGlobalFunction( CyclotomicPol, function( n )
           i,
           c,
           k;
-
-    if not IsBound( CYCLOTOMICPOLYNOMIALS[ n ] ) then
-
+    
+    atomic readonly CYCLOTOMICPOLYNOMIALS do
+        if IsBound(CYCLOTOMICPOLYNOMIALS[n]) then
+            return CYCLOTOMICPOLYNOMIALS[n];
+        fi;
+    od;
+    
+    
       # We have to compute the polynomial. Start with 'X^n - 1' ...
       f := List( [ 1 .. n ], x -> 0 );
       f[1]     := -1;
@@ -139,15 +144,12 @@ InstallGlobalFunction( CyclotomicPol, function( n )
       od;
 
       # store the coefficients list
-      CYCLOTOMICPOLYNOMIALS[n]:= Immutable( f );
-    else
-
-      # just fetch the coefficients list
-      f := CYCLOTOMICPOLYNOMIALS[n];
-    fi;
-
-    # return the coefficients list
-    return f;
+      atomic readwrite CYCLOTOMICPOLYNOMIALS do
+          if not IsBound(CYCLOTOMICPOLYNOMIALS[n]) then
+              CYCLOTOMICPOLYNOMIALS[n]:= MakeImmutable( f );
+          fi;
+          return CYCLOTOMICPOLYNOMIALS[n];
+      od;
 end );
 
 

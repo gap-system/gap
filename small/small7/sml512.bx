@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 
-SMALL_GROUP_LIB[ 512 ][ 76 ] := [
+SMALL_GROUP_LIB[ 512 ][ 76 ] := `[
 "%%%%%kV8f2)))%D%/%%%%bCvCtA,,: %fcZhM,IKMO.0QSACdf!%fc^qM%6!/kbAi%(j /k)Ai%\
 %I6Y*M:^(K8,O=.QAd0SCf!/kb-i%,7!/khA6%+u!/kbB6%-w /3&a{M%I*MJN6Y7Z.2AE8[]0S \
 MfuVhM%I*M:^(K,O=b&+<)->.A2U0C4W/B31D5!MfuY,M,& Mfu]5M%I*M:^&J+N<a.A2U/B3V(K\

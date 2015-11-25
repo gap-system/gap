@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 
-SMALL_GROUP_LIB[ 512 ][ 89 ] := [
+SMALL_GROUP_LIB[ 512 ][ 89 ] := `[
 Concatenation(
 "%%%%%%%%(G8,6:e1)8,,8b%/%))%%% }t0%dM:^2UEh(K8[0SCf,O=b4WGj&J7/Re+N<a3VFi)L\
 9]1TDg-P>c5XHk }w0%%I6Y.QAd*:^2UEh(K8[0SCf,O=b4WGj&JZ/RBN<a3VFi)L9]1TDg-P>c5\

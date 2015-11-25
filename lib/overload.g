@@ -380,6 +380,8 @@ end);
 
 DeclareSynonym( "RemoveElmList", Remove);
 
+MakeImmutable(SOLVABILITY_IMPLYING_FUNCTIONS);
+
 #############################################################################
 ##
 #E

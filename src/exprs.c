@@ -1078,7 +1078,7 @@ Obj             EvalListTildeExpr (
     Obj                 tilde;          /* old value of tilde              */
 
     /* remember the old value of '~'                                       */
-    tilde = VAL_GVAR( Tilde );
+    tilde = ValAutoGVar( Tilde );
 
     /* create the list value                                               */
     list = ListExpr1( expr );
@@ -1348,6 +1348,10 @@ Obj             EvalFloatExprLazy (
     Obj cache= 0;
     Obj fl;
     
+    /* This code is safe for threads trying to create or update the
+     * cache concurrently in that it won't crash, but may occasionally
+     * result in evaluating a floating point literal twice.
+     */
     ix = ((UInt *)ADDR_EXPR(expr))[1];
     if (ix && (!MAX_FLOAT_LITERAL_CACHE_SIZE || 
                MAX_FLOAT_LITERAL_CACHE_SIZE == INTOBJ_INT(0) ||
@@ -1355,13 +1359,12 @@ Obj             EvalFloatExprLazy (
       cache = FLOAT_LITERAL_CACHE;
       if (!cache)
         {
-          cache = NEW_PLIST(T_PLIST,ix);
+          cache = NewAtomicList(ix);
           AssGVar(GVAR_FLOAT_LITERAL_CACHE, cache);
         }
       else
-        assert(IS_PLIST(cache));
-      GROW_PLIST(cache,ix);
-      fl = ELM_PLIST(cache,ix);
+        assert(TNUM_OBJ(cache) == T_ALIST);
+      fl = Elm0AList(cache,ix);
       if (fl)
         return fl;
     }
@@ -1372,10 +1375,8 @@ Obj             EvalFloatExprLazy (
            len );
     fl = CALL_1ARGS(CONVERT_FLOAT_LITERAL, string);
     if (cache) {
-      SET_ELM_PLIST(cache, ix, fl);
+      AssAList(cache, ix, fl);
       CHANGED_BAG(cache);
-      if (LEN_PLIST(cache) < ix)
-        SET_LEN_PLIST(cache, ix);
     }
 
     return fl;
@@ -1399,8 +1400,8 @@ Obj             EvalFloatExprEager (
     
     ix = ((UInt *)ADDR_EXPR(expr))[0];
     cache = EAGER_FLOAT_LITERAL_CACHE;
-    assert(IS_PLIST(cache));
-    fl = ELM_PLIST(cache,ix);
+    assert(TNUM_OBJ(cache) == T_ALIST);
+    fl = Elm0AList(cache,ix);
     assert(fl);
     return fl;
 }
@@ -1452,7 +1453,7 @@ Obj             EvalRecTildeExpr (
     Obj                 tilde;          /* old value of tilde              */
 
     /* remember the old value of '~'                                       */
-    tilde = VAL_GVAR( Tilde );
+    tilde = ValAutoGVar( Tilde );
 
     /* create the record value                                             */
     rec = RecExpr1( expr );
@@ -2140,6 +2141,15 @@ static Int InitLibrary (
 {
     GVAR_FLOAT_LITERAL_CACHE = GVarName("FLOAT_LITERAL_CACHE");
     return 0;
+}
+
+void InitExprTLS()
+{
+    TLS(CurrEvalExprFuncs) = EvalExprFuncs;
+}
+
+void DestroyExprTLS()
+{
 }
 
 /****************************************************************************

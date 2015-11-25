@@ -71,7 +71,7 @@
 **  the  statement  that  was  last  interpreted (which   might  have been  a
 **  return-value-statement).
 */
-Obj IntrResult;
+/* TL: Obj IntrResult; */
 
 
 /****************************************************************************
@@ -84,7 +84,7 @@ Obj IntrResult;
 **  If it interpretes a return-void-statement,  it sets 'IntrReturning' to 2.
 **  If it interpretes a quit-statement, it sets 'IntrReturning' to 8.
 */
-UInt IntrReturning;
+/* TL: UInt IntrReturning; */
 
 
 /****************************************************************************
@@ -98,7 +98,7 @@ UInt IntrReturning;
 **
 **  This mode is also used in Info and Assert, when arguments are not printed.
 */
-UInt IntrIgnoring;
+/* TL: UInt IntrIgnoring; */
 
 
 /****************************************************************************
@@ -109,7 +109,7 @@ UInt IntrIgnoring;
 **  The interpreter  switches  to this  mode for  constructs  that it  cannot
 **  directly interpret, such as loops or function bodies.
 */
-UInt IntrCoding;
+/* TL: UInt IntrCoding; */
 
 
 /****************************************************************************
@@ -143,11 +143,11 @@ UInt IntrCoding;
 **  'CountObj' there were active when the current interpreter was started and
 **  which will be made active again when the current interpreter will stop.
 */
-static Obj             IntrState;
+/* TL: Obj             IntrState; */
 
-static Obj             StackObj;
+/* TL: Obj             StackObj; */
 
-static Int             CountObj;
+/* TL: Int             CountObj; */
 
 void            PushObj (
     Obj                 val )
@@ -971,8 +971,6 @@ void IntrQualifiedExprEnd( void )
 **  when  the reader encounters  the  end of  the  statement, i.e., immediate
 **  after 'IntrAtomicEndBody'.
 **
-**  These functions are just placeholders for the future HPC-GAP code
-**
 */
 void            IntrAtomicBegin ( void )
 {
@@ -1064,7 +1062,13 @@ void            IntrAtomicEnd ( void )
 {
     Obj                 body;           /* the function, result            */
     UInt                nrexprs;
-    UInt                i;
+    UInt                mode,i,j;
+
+    Obj tolock[MAX_ATOMIC_OBJS];
+    int locktypes[MAX_ATOMIC_OBJS];
+    int lockstatus[MAX_ATOMIC_OBJS];
+    int lockSP;
+    Obj o;
 
     /* ignore or code                                                      */
     if ( TLS(IntrReturning) > 0 ) { return; }
@@ -1076,12 +1080,48 @@ void            IntrAtomicEnd ( void )
 
     nrexprs = INT_INTOBJ(PopObj());
 
+    j = 0;
     for (i = 0; i < nrexprs; i++) {
-      PopObj(); /* pop object */
-      PopObj(); /* pop mode */
+      o = PopObj();
+      mode = INT_INTOBJ(PopObj());
+      if (!((Int)o & 0x3)) {
+        tolock[j] =  o;
+        locktypes[j++] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
+      }
     }
-    
+    nrexprs = j;
+
+    GetLockStatus(nrexprs, tolock, lockstatus);
+
+    j = 0;
+    for (i = 0; i < nrexprs; i++)
+      {
+	switch(lockstatus[i]) {
+	case 0:
+	  tolock[j] = tolock[i];
+	  locktypes[j] = locktypes[i];
+	  j++;
+	  break;
+	case 2:
+	  if (locktypes[i] == 1)
+	    ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
+	  break;
+	case 1:
+	    break;
+ 	default:
+	  assert(0);
+	}
+      }
+    lockSP = LockObjects(j, tolock, locktypes);
+    /* Push at least one empty region on the stack so we can tell
+     * that we are inside an atomic section. */
+    if (j == 0)
+      PushRegionLock((Region *) 0);
+    if (lockSP >= 0) {
       CALL_0ARGS( body );
+      PopRegionLocks(lockSP);
+    } else
+      ErrorMayQuit("Cannot lock required regions", 0L, 0L);
 
     /* push void                                                           */
     PushVoidObj();
@@ -2331,7 +2371,7 @@ void            IntrListExprBegin (
     /* if this is an outmost list, save it for reference in '~'            */
     /* (and save the old value of '~' on the values stack)                 */
     if ( top ) {
-        old = VAL_GVAR( Tilde );
+        old = ValAutoGVar( Tilde );
         if ( old != 0 ) { PushObj( old ); }
         else            { PushVoidObj();  }
         AssGVar( Tilde, list );
@@ -2544,7 +2584,7 @@ void            IntrRecExprBegin (
     /* if this is an outmost record, save it for reference in '~'          */
     /* (and save the old value of '~' on the values stack)                 */
     if ( top ) {
-        old = VAL_GVAR( Tilde );
+        old = ValAutoGVar( Tilde );
         if ( old != 0 ) { PushObj( old ); }
         else            { PushVoidObj();  }
         AssGVar( Tilde, record );
@@ -2940,7 +2980,7 @@ void            IntrIsbHVar (
 **
 *F  IntrAssDVar(<dvar>) . . . . . . . . . . . . interpret assignment to debug
 */
-extern  Obj             ErrorLVars;
+/* TL: extern  Obj             ErrorLVars; */
 
 void            IntrAssDVar (
     UInt                dvar,
@@ -2966,7 +3006,6 @@ void            IntrAssDVar (
 
     /* assign the right hand side                                          */
     currLVars = TLS(CurrLVars);
-    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
@@ -3834,11 +3873,19 @@ void            IntrAssPosObj ( void )
 
     /* assign to the element of the list                                   */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+        /* Because BindOnce() functions can reallocate the list even if they
+         * only have read-only access, we have to be careful when accessing
+         * positional objects. Hence the explicit WriteGuard().
+         */
+        WriteGuard(list);
         if ( SIZE_OBJ(list)/sizeof(Obj) - 1 < p ) {
             ResizeBag( list, (p+1) * sizeof(Obj) );
         }
         SET_ELM_PLIST( list, p, rhs );
         CHANGED_BAG( list );
+    }
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        AssListFuncs[T_FIXALIST]( list, p, rhs );
     }
     else {
         ASS_LIST( list, p, rhs );
@@ -3885,7 +3932,7 @@ void            IntrAsssPosObj ( void )
     list = PopObj();
 
     /* assign to several elements of the list                              */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ || TNUM_OBJ(list) == T_APOSOBJ ) {
         ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
     }
     else {
@@ -3986,9 +4033,17 @@ void            IntrUnbPosObj ( void )
 
     /* unbind the element                                                  */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+        /* Because BindOnce() functions can reallocate the list even if they
+         * only have read-only access, we have to be careful when accessing
+         * positional objects. Hence the explicit WriteGuard().
+         */
+        WriteGuard(list);
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }
+    }
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        UnbListFuncs[T_FIXALIST]( list, p );
     }
     else {
         UNB_LIST( list, p );
@@ -4033,17 +4088,26 @@ void            IntrElmPosObj ( void )
 
     /* get the element of the list                                         */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
-        if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
+        /* Because BindOnce() functions can reallocate the list even if they
+         * only have read-only access, we have to be careful when accessing
+         * positional objects.
+         */
+        Bag *contents = PTR_BAG(list);
+        MEMBAR_READ(); /* essential memory barrier */
+        if ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
             ErrorQuit(
                 "PosObj Element: <posobj>![%d] must have an assigned value",
                 (Int)p, 0L );
         }
-        elm = ELM_PLIST( list, p );
+        elm = contents[p];
         if ( elm == 0 ) {
             ErrorQuit(
                 "PosObj Element: <posobj>![%d] must have an assigned value",
                 (Int)p, 0L );
         }
+    }
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        elm = ElmListFuncs[T_FIXALIST]( list, p );
     }
     else {
         elm = ELM_LIST( list, p );
@@ -4077,7 +4141,7 @@ void            IntrElmsPosObj ( void )
     list = PopObj();
 
     /* select several elements from the list                               */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ || TNUM_OBJ(list) == T_APOSOBJ ) {
         elms = 0;
         ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
     }
@@ -4182,8 +4246,18 @@ void            IntrIsbPosObj ( void )
 
     /* get the result                                                      */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
-        isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
-               True : False);
+        /* Because BindOnce() functions can reallocate the list even if they
+         * only have read-only access, we have to be careful when accessing
+         * positional objects.
+         */
+        Bag *contents = PTR_BAG(list);
+        if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
+          isb = False;
+        else
+          isb = contents[p] != 0 ? True : False;
+    }
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        isb = (IsbListFuncs[T_FIXALIST]( list, p ) ? True : False);
     }
     else {
         isb = (ISB_LIST( list, p ) ? True : False);
@@ -4222,6 +4296,9 @@ void            IntrAssComObjName (
       case T_COMOBJ:
         AssPRec( record, rnam, rhs );
         break;
+      case T_ACOMOBJ:
+        SetARecordField( record, rnam, rhs );
+        break;
       default:
         ASS_REC( record, rnam, rhs );
         break;
@@ -4257,6 +4334,9 @@ void            IntrAssComObjExpr ( void )
       case T_COMOBJ:
         AssPRec( record, rnam, rhs );
         break;
+      case T_ACOMOBJ:
+        SetARecordField( record, rnam, rhs );
+        break;
       default:
         ASS_REC( record, rnam, rhs );
         break;
@@ -4284,6 +4364,9 @@ void            IntrUnbComObjName (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         UnbPRec( record, rnam );
+        break;
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
         break;
       default:
         UNB_REC( record, rnam );
@@ -4315,6 +4398,9 @@ void            IntrUnbComObjExpr ( void )
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         UnbPRec( record, rnam );
+        break;
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
         break;
       default:
         UNB_REC( record, rnam );
@@ -4352,6 +4438,9 @@ void            IntrElmComObjName (
       case T_COMOBJ:
         elm = ElmPRec( record, rnam );
         break;
+      case T_ACOMOBJ:
+        elm = ElmARecord ( record, rnam );
+        break;
       default:
         elm = ELM_REC( record, rnam );
         break;
@@ -4384,6 +4473,9 @@ void            IntrElmComObjExpr ( void )
       case T_COMOBJ:
         elm = ElmPRec( record, rnam );
         break;
+      case T_ACOMOBJ:
+        elm = ElmARecord ( record, rnam );
+        break;
       default:
         elm = ELM_REC( record, rnam );
         break;
@@ -4412,6 +4504,9 @@ void            IntrIsbComObjName (
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         isb = ElmPRec( record, rnam ) ? True : False;
+        break;
+      case T_ACOMOBJ:
+        isb = GetARecordField( record, rnam ) ? True : False;
         break;
       default:
         isb = ISB_REC( record, rnam ) ? True : False;
@@ -4443,7 +4538,10 @@ void            IntrIsbComObjExpr ( void )
     /* get the result                                                      */
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
-        isb = IsbPRec( record, rnam ) ? True : False;
+        isb = ElmPRec( record, rnam ) ? True : False;
+        break;
+      case T_ACOMOBJ:
+        isb = GetARecordField( record, rnam ) ? True : False;
         break;
       default:
         isb = ISB_REC( record, rnam ) ? True : False;
@@ -4693,9 +4791,9 @@ void             IntrAssertEnd3Args ( void )
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    InitGlobalBag( &IntrResult, "src/intrprtr.c:IntrResult" );
-    InitGlobalBag( &IntrState,  "src/intrprtr.c:IntrState"  );
-    InitGlobalBag( &StackObj,   "src/intrprtr.c:StackObj"   );
+    /* TL: InitGlobalBag( &IntrResult, "src/intrprtr.c:IntrResult" ); */
+    /* TL: InitGlobalBag( &IntrState,  "src/intrprtr.c:IntrState"  ); */
+    /* TL: InitGlobalBag( &StackObj,   "src/intrprtr.c:StackObj"   ); */
     InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 

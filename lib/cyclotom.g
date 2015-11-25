@@ -473,7 +473,8 @@ UNBIND_GLOBAL( "infinity" );
 BIND_GLOBAL( "infinity",
     Objectify( NewType( CyclotomicsFamily, IsInfinity
                         and IsPositionalObjectRep ), [] ) );
-
+MakeReadOnly(infinity);
+                        
 InstallMethod( PrintObj,
     "for infinity",
     [ IsInfinity ], function( obj ) Print( "infinity" ); end );
@@ -502,12 +503,11 @@ InstallMethod( \<,
     "for `infinity' and `infinity'",
     IsIdenticalObj, [ IsInfinity, IsInfinity ], ReturnFalse );
 
-
 DeclareCategory( "IsNegInfinity", IsCyclotomic );
 
 BIND_GLOBAL( "Ninfinity",
     Objectify( NewType( CyclotomicsFamily, IsNegInfinity
-                        and IsPositionalObjectRep ), [] ) );
+                        and IsAtomicPositionalObjectRep ), [] ) );
 
 InstallMethod( PrintObj,
     "for -infinity",
@@ -584,6 +584,7 @@ InstallMethod( \+,
 InstallMethod( \+,
     "for `-infinity' and `-infinity'",
     IsIdenticalObj, [ IsNegInfinity, IsNegInfinity ], function(x,y) return -infinity; end );
+
 
 #############################################################################
 ##

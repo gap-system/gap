@@ -1054,58 +1054,66 @@ function( G, d, e, opr )
     fi;
 end );
 
-CYCLICACHE:=[];
+BIND_GLOBAL( "CYCLICACHE", []);
+ShareSpecialObj(CYCLICACHE);
+
 InstallGlobalFunction(CreateIsomorphicPcGroup,function(pcgs,needindices,flag)
 local r,i,p,A,f,a;
   r:=RelativeOrders(pcgs);
   if Length(r)<=1 then
     p:=Product(r);
     i:=1;
-    while i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])<p do
-      i:=i+1;
+    atomic readonly CYCLICACHE do
+        while i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])<p do
+          i:=i+1;
+        od;
+        # do we have it?
+        if i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])=p then
+          return CYCLICACHE[i];
+        fi;
     od;
-    # do we have it?
-    if i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])=p then
-      return CYCLICACHE[i];
-    fi;
 
-    # make space
-    p:=i;
-    for i in [Length(CYCLICACHE),Length(CYCLICACHE)-1..p] do
-      CYCLICACHE[i+1]:=CYCLICACHE[i];
+    atomic readwrite CYCLICACHE do
+        # make space
+        p:=i;
+        for i in [Length(CYCLICACHE),Length(CYCLICACHE)-1..p] do
+          CYCLICACHE[i+1]:=CYCLICACHE[i];
+        od;
+        A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), flag );
+        CYCLICACHE[p]:=A;
+        return A;
     od;
-    A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), flag );
-    CYCLICACHE[p]:=A;
-    return A;
   fi;
 
   # is the group in the mappings families cache?
   f:=FamiliesOfGeneralMappingsAndRanges(FamilyObj(OneOfPcgs(pcgs)));
   i:=1;
-  while i<=Length(f) do
-    a:=ElmWPObj(f,i);
-    if a<>fail and IsBound(a!.DefiningPcgs) 
-       and RelativeOrders(a!.DefiningPcgs)=r then
-      # right type PCGS -- test relations
-      a:=a!.DefiningPcgs;
-      if (needindices=false or  (not HasIndicesEANormalSteps(a)) or
-	IndicesEANormalSteps(a)=IndicesEANormalSteps(pcgs)) and
-	ForAll([1..Length(r)-1],x->
-        ExponentsOfPcElement(a,a[x]^r[x])
-        =ExponentsOfPcElement(pcgs,pcgs[x]^r[x])) and
-	ForAll([1..Length(r)],x->ForAll([x+1..Length(r)],y->
-	  ExponentsOfPcElement(a,a[y]^a[x])
-	  =ExponentsOfPcElement(pcgs,pcgs[y]^pcgs[x]))) then
+  atomic readonly GENERAL_MAPPING_REGION do
+    while i<=Length(f) do
+      a:=ElmWPObj(f,i);
+      if a<>fail and IsBound(a!.DefiningPcgs) 
+         and RelativeOrders(a!.DefiningPcgs)=r then
+        # right type PCGS -- test relations
+        a:=a!.DefiningPcgs;
+        if (needindices=false or  (not HasIndicesEANormalSteps(a)) or
+	       IndicesEANormalSteps(a)=IndicesEANormalSteps(pcgs)) and
+	       ForAll([1..Length(r)-1],x->
+             ExponentsOfPcElement(a,a[x]^r[x])
+             =ExponentsOfPcElement(pcgs,pcgs[x]^r[x])) and
+	       ForAll([1..Length(r)],x->ForAll([x+1..Length(r)],y->
+	         ExponentsOfPcElement(a,a[y]^a[x])
+	         =ExponentsOfPcElement(pcgs,pcgs[y]^pcgs[x]))) then
 
-	# indeed the group is OK
-	if not HasIndicesEANormalSteps(a) then
-	  SetIndicesEANormalSteps(a,IndicesEANormalSteps(pcgs));
-	fi;
-        A:=GroupOfPcgs(a);
-	return A;
+	       # indeed the group is OK
+	       if not HasIndicesEANormalSteps(a) then
+	         SetIndicesEANormalSteps(a,IndicesEANormalSteps(pcgs));
+	       fi;
+           A:=GroupOfPcgs(a);
+	       return A;
+         fi;
       fi;
-    fi;
-    i:=i+2;
+      i:=i+2;
+    od;
   od;
   A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), flag );
   return A;

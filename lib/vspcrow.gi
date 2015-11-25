@@ -747,7 +747,7 @@ local d,z;
   d:=LeftActingDomain(V);
   z:=Zero( d ) * [ 1 .. DimensionOfVectors( V ) ];
   if IsField(d) and IsFinite(d) and Size(d)<=256 then
-    ConvertToVectorRep(z,d);
+    z := CopyToVectorRep(z,Size(d));
   fi;
   return z;
 end);
@@ -903,8 +903,8 @@ InstallMethod( NormedRowVectors,
           i,          # loop over field elements
           toadd,      # vector to add to known vectors
           k,          # loop over `elms2'
-          v;          # one normed row vector
-
+          v,          # one normed row vector
+          w;          # attempt to convert v to compressed representation
     if not IsFinite( V ) then
       Error( "sorry, cannot compute normed vectors of infinite domain <V>" );
     fi;
@@ -932,7 +932,12 @@ InstallMethod( NormedRowVectors,
         toadd:= base[j+1] + i * base[j];
         for k in [ 1 .. len ] do
           v:= elms2[k] + toadd;
-          ConvertToVectorRep( v, q );
+          if q <= 256 then
+            w:=CopyToVectorRep( v, q );
+            if w <> fail then
+              v:=w;
+            fi;
+          fi;
           new[ pos + k ]:= v;
         od;
         pos:= pos + len;
@@ -1723,7 +1728,9 @@ BindGlobal( "ElementNumber_ExtendedVectors", function( enum, n )
       Error( "<enum>[", n, "] must have an assigned value" );
     fi;
     n:= Concatenation( enum!.spaceEnumerator[n], [ enum!.one ] );
-    ConvertToVectorRepNC( n, enum!.q );
+    if enum!.q <= 256 then
+        n := CopyToVectorRepNC( n, enum!.q );
+    fi;    
     return Immutable( n );
 end );
 
@@ -1736,13 +1743,18 @@ BindGlobal( "NumberElement_ExtendedVectors", function( enum, elm )
 		     elm{ [ 1 .. Length( elm ) - 1 ] } );
 end );
 
-BindGlobal( "NumberElement_ExtendedVectorsFF", function( enum, elm )
+BindGlobal( "NumberElement_ExtendedVectorsFF", function( enum, elt )
+    local elm;
     # test whether the vector is indeed compact over the right finite field
-    if not IsDataObjectRep( elm ) then
-      if ConvertToVectorRepNC( elm, enum!.q ) = fail then
-        return NumberElement_ExtendedVectors( enum, elm );
+    if not IsDataObjectRep( elt ) then
+      elm := CopyToVectorRep( elt, enum!.q );
+      if elm = fail then
+        return NumberElement_ExtendedVectors( enum, elt );
       fi;
+    else
+      elm := elt;
     fi;
+    
     # Problem with GF(4) vectors over GF(2)
     if ( IsGF2VectorRep( elm ) and enum!.q <> 2 )
        or ( Is8BitVectorRep( elm ) and enum!.q = 2 ) then
@@ -1828,7 +1840,9 @@ BindGlobal( "ElementNumber_NormedRowVectors", function( T, num )
         v[ i ] := f[ num mod q + 1 ];
         num := QuoInt( num, q );
     od;
-    ConvertToVectorRepNC(v,q);
+    if q <= 256 then
+        v := CopyToVectorRepNC(v,q);
+    fi;    
     return Immutable( v );
 end );
 

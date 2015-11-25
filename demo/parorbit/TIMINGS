@@ -1,0 +1,105 @@
+J4
+
+  5 hash servers, 10 workers, with Richard:
+  8 hash servers, 8 workers, with Richard : 132 seconds
+  6 hash servers, 6 workers, with Richard :
+  1 hash server, 1 worker, with Richard   : 857 seconds
+  4 hash servers, 9 workers, with Richard : 192 seconds
+                                      2nd : 576 seconds
+
+  Traditional orbit: 1514 seconds
+
+Observations:
+  H2W3 already starves the workers (they have 80% CPU load only)
+  H4W9 also starves the workers (they have 50% CPU load only)
+
+
+Schmuh:
+
+gap> t := DoStatistics(gens,v,OnRightRO,[2,4,8],[3,6,9],    
+> rec( hashlen := NextPrimeInt(200000000)));
+Doing 2 hashservers and 3 workers... 389.2135620117188
+Doing 2 hashservers and 6 workers... 390.5462260246277
+Doing 2 hashservers and 9 workers... 1086.817008018494
+Doing 4 hashservers and 3 workers... 1181.292973995209
+Doing 4 hashservers and 6 workers... 1297.50292801857
+Doing 4 hashservers and 9 workers... 1158.620494842529
+
+
+HN on lovelace sequential without Richard's background jobs with -S:
+  28.0
+
+
+HN on lovelace without Richard's background jobs
+(parallelorbit2)
+
+Hashes:         1               2               3               4
+1 worker      25.8            26.5            27.0            26.5
+2 workers     12.9            14.2            13.8            13.4
+3 workers      8.8             9.1             9.3             9.6
+4 workers      6.8             6.9             7.0             6.9
+5 workers      5.9             5.5             5.6             6.1
+6 workers      5.5             4.8             4.9             4.7
+7 workers      5.2             4.6             4.3             4.3
+8 workers      5.4             4.0             4.0             3.9
+
+HN on lovelace without Richard's background jobs
+(parallelorbit3)
+
+Hashes:         1               2               3               4
+1 worker      23.7            24.3            24.4            24.4
+2 workers     14.1             3.98????       11.4            14.2
+3 workers     12.0             6.5             9.0            10.2
+4 workers     10.0             7.0             7.7             9.2
+5 workers      8.0             8.3             8.1             6.8
+6 workers      7.2             8.6             7.9             7.9
+7 workers      6.0             8.3             7.5             6.5
+8 workers      6.0             7.4             7.5             6.1
+
+HN on lovelace without Richard's background jobs with -S:
+(parallelorbit2)
+
+Hashes:         1               2               3               4
+1 worker      23.6            24.3            24.5            24.4
+2 workers     12.0            12.4            12.4            12.4
+3 workers      8.4             8.4             8.5             8.4
+4 workers      6.3             6.6             6.5             7.2
+5 workers      5.4             6.3             5.5             5.7
+6 workers      5.2             4.8             4.6             4.8
+7 workers      5.2             4.0             4.5             4.0
+8 workers      5.0             3.9             4.0             3.6
+
+HN on lovelace with Richard's background jobs
+(parallelorbit2)
+
+Hashes:         1               2               3               4
+1 worker      32.2            31.0            33.4            33.0
+2 workers     16.1            16.8            17.0            17.2
+3 workers     11.6            11.4            11.7            11.9
+4 workers      8.7             9.1             9.5             9.3
+5 workers      7.1             7.3             7.3             7.2
+6 workers      7.0             5.9             5.9             6.0
+7 workers      6.6             5.6             5.2             5.6
+8 workers      6.3             4.7             4.7             4.7
+
+
+J4 on lovelace on empty machine:
+
+Hashes:         1               2               3               4
+1 worker       627              X               X               X
+2 workers      657             341             287              X
+3 workers      641             334             222             218
+4 workers       X              324             197             180
+5 workers       X               X              201             176
+6 workers       X               X              207             170
+7 workers       X               X               X              180
+8 workers       X               X               X              180
+
+5 hash 5 workers: 148
+6 hash 6 workers: 129
+7 hash 7 workers: 120
+8 hash 8 workers: 112
+
+sequential: 1127
+sequential, 6 at the same time: 1607
+

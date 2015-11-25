@@ -64,3 +64,4 @@ end;
 READ_SMALL_LIB();
 
 Unbind( READ_SMALL_LIB );
+FinalizeSmallGroupData();

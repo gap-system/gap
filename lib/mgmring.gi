@@ -68,7 +68,7 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsPositionalObjectRep,
+DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsAtomicPositionalObjectRep, 
     [ 1, 2 ] );
 
 
@@ -84,7 +84,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
     "for a family of elements in a *free* magma ring, and a list",
     [ IsElementOfFreeMagmaRingFamily, IsList ],
     function( Fam, descr )
-    return descr;
+    return MakeImmutable(descr);
     end );
 
 
@@ -635,7 +635,7 @@ InstallMethod( OneOp,
       return fail;
     fi;
     z:= ZeroCoefficient( elm );
-    return Objectify( F!.defaultType, [ z, [ F!.oneMagma, One( z ) ] ] );
+    return Objectify( F!.defaultType, `[ z, [ F!.oneMagma, One( z ) ] ] );
     end );
 
 
@@ -913,7 +913,7 @@ InstallMethod( CanonicalBasis,
       SetBasisVectors( B,
           List( EnumeratorSorted( UnderlyingMagma( RM ) ),
                 x -> ElementOfMagmaRing( F, zero, [ one ], [ x ] ) ) );
-      B!.zerovector:= List( BasisVectors( B ), x -> zero );
+      B!.zerovector:= `List( BasisVectors( B ), x -> zero );
     fi;
 
     return B;
@@ -1443,10 +1443,10 @@ InstallHandlingByNiceBasis( "IsSpaceOfElementsOfMagmaRing", rec(
 
       # For the zero row vector, catch the case of empty `monomials' list.
       if IsEmpty( monomials ) then
-        info.zerovector := [ Zero( LeftActingDomain( V ) ) ];
+        info.zerovector := `[ Zero( LeftActingDomain( V ) ) ];
       else
-        info.zerovector := ListWithIdenticalEntries( Length( monomials ),
-                                                     zero );
+        info.zerovector := `ListWithIdenticalEntries( Length( monomials ),
+                                                      zero );
       fi;
 
       return info;
@@ -1599,11 +1599,11 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
       if descr[2][i] = zeromagma then
         descr:= [ descr[1], Concatenation( descr[2]{ [ 1 .. i-1 ] },
                                            descr[2]{ [ i+2 .. len ] } ) ];
-        MakeImmutable( descr );
         break;
       fi;
     od;
-
+    
+    MakeImmutable( descr );
     return descr;
     end );
 

@@ -3592,12 +3592,16 @@ for i in [ 1 .. 31 ] do
   MakeImmutable( IMFList[i].orbitReps );
 od;
 
+MakeReadOnly(IMFList);
+
 if IsBound( IMFRec.i ) then
   i := IMFRec.i;
   Unbind( IMFRec.i );
 else
   Unbind( i );
 fi;
+
+MakeImmutable( IMFRec );
 
 #############################################################################
 ##

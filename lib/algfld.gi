@@ -105,11 +105,11 @@ local fam,i,cof,red,rchar,impattr,deg;
   fam!.deg:=deg;
   i:=List([1..DegreeOfLaurentPolynomial(p)],i->fam!.zeroCoefficient);
   i[2]:=fam!.oneCoefficient;
-  if rchar>0 then
-    ConvertToVectorRep(i,rchar);
+  if rchar > 0 then # rchar is <= 256
+    i := CopyToVectorRepNC(i,rchar);
   fi;
-  fam!.primitiveElm:=ObjByExtRep(fam,i);
-  fam!.indeterminateName:="a";
+  fam!.primitiveElm:=`ObjByExtRep(fam,i);
+  fam!.indeterminateName:=`"a";
 
   # reductions
   #red:=IdentityMat(deg,fam!.oneCoefficient);
@@ -117,8 +117,8 @@ local fam,i,cof,red,rchar,impattr,deg;
   for i in [deg..2*deg-2] do
     cof:=ListWithIdenticalEntries(i,fam!.zeroCoefficient);
     Add(cof,fam!.oneCoefficient);
-    if rchar>0 then
-      ConvertToVectorRep(cof,rchar);
+    if rchar > 0 then # rchar is <= 256
+      cof := CopyToVectorRep(cof,rchar);
     fi;
     ReduceCoeffs(cof,fam!.polCoeffs);
     while Length(cof)<deg do
@@ -129,13 +129,13 @@ local fam,i,cof,red,rchar,impattr,deg;
   red:=ImmutableMatrix(fam!.baseField,red);
   fam!.reductionMat:=red;
   fam!.prodlen:=Length(red);
-  fam!.entryrange:=[1..deg];
+  fam!.entryrange:=`[1..deg];
 
   red:=[];
   for i in [deg..2*deg-1] do
     red[i]:=[deg+1..i];
   od;
-  fam!.mulrange:=red;
+  fam!.mulrange:=`red;
 
   SetIsUFDFamily(fam,true);
   SetCoefficientsFamily(fam,FamilyObj(One(f)));
@@ -581,8 +581,8 @@ local i,fam,f,g,t,h,rf,rg,rh,z;
     #od;
   od;
   rf:=1/f[Length(f)]*rf;
-  if fam!.rchar>0 then
-    ConvertToVectorRep(rf,fam!.rchar);
+  if fam!.rchar > 0 and fam!.rchar <= 256 then
+    rf := CopyToVectorRep( rf, fam!.rchar );
   fi;
   return AlgExtElm(fam,rf);
 end);
@@ -881,8 +881,8 @@ function(e)
 local fam,l;
   fam:=e!.extFam;
   l:=List([1..fam!.deg],i->Random(fam!.baseField));
-  if fam!.rchar>0 then
-    ConvertToVectorRep(l,fam!.rchar);
+  if fam!.rchar > 0 and fam!.rchar <= 256 then
+    l := CopyToVectorRep( l, fam!.rchar );
   fi;
   return AlgExtElm(fam,l);
 end);
