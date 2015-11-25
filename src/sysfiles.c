@@ -1560,7 +1560,7 @@ void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
 }
 
 #else
-const int SyHaveAlarms = 0;
+int SyHaveAlarms = 0;
 
 /* stub implementations */
 
