@@ -681,8 +681,6 @@ providing the database of <M>p</M>-groups of order <M>p^7</M> for
 <Section Label="fix478"> 
 <Heading>&GAP; 4.7.8 (June 2015)</Heading>
 
-</Section>
-
 Fixed bugs which could lead to incorrect results:
 <List>
 <Item>
@@ -726,6 +724,32 @@ algebras, and modules, homomorphisms and complexes of modules over
 quotients of path algebras.
 </Item>
 </List>
+
+</Section>
+
+<Section Label="fix479">
+<Heading>&GAP; 4.7.9 (November 2015)</Heading>
+
+Fixed bug which could lead to incorrect results:
+<List>
+<Item>
+Fixed an error in <C>DataAboutSimpleGroup</C>calculation, which caused
+wrong result in calculation of the automorphism group of <M>J_2</M>.
+[Reported by Fatemeh Koorepazan-Moftakhar]
+</Item>
+</List>
+
+Improved and extended functionality:
+<List>
+<Item>
+<Ref Func="GModuleByMats" BookName="ref"/> and some related functions now
+work for infinite fields, in particular in characteristic 0. However,
+this only applies for functions that do not need the MeatAxe, as that is
+still tied to finite fields.
+</Item>
+</List>
+
+</Section>
 
 </Chapter>
 
