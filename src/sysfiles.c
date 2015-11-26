@@ -1373,7 +1373,8 @@ volatile int SyAlarmHasGoneOff = 0;
 
 #endif
 
-#if HAVE_TIMER_CREATE && HAVE_SIGACTION
+
+#if HAVE_TIMER_CREATE && HAVE_SIGACTION && !defined(HPCGAP)
 
 /* Could live without sigaction but it seems to be pretty universal */
 
@@ -1479,7 +1480,7 @@ void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
 }
 
 #else
-#if HAVE_SETITIMER && HAVE_SIGACTION
+#if HAVE_SETITIMER && HAVE_SIGACTION && !defined(HPCGAP)
 
 /* Using setitimer and getitimer from sys/time.h */
 /* again sigaction could be replaced by signal if that was useful
