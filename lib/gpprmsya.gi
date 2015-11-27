@@ -837,7 +837,57 @@ InstallMethod( Size,
     sym -> Factorial( NrMovedPoints(sym) )/2 );
 
 
+#############################################################################
+##
+#M Intersection2
+
+InstallMethod( Intersection2, [IsNaturalSymmetricGroup, IsNaturalSymmetricGroup],
+        function(s1,s2)
+    return SymmetricGroup(Intersection(MovedPoints(s1),MovedPoints(s2)));
+end);
+
+InstallMethod( Intersection2, [IsNaturalSymmetricGroup, IsNaturalAlternatingGroup],
+        function(s1,s2)
+    return AlternatingGroup(Intersection(MovedPoints(s1),MovedPoints(s2)));
+end);
+
+InstallMethod( Intersection2, [IsNaturalAlternatingGroup, IsNaturalSymmetricGroup],
+        function(s1,s2)
+    return AlternatingGroup(Intersection(MovedPoints(s1),MovedPoints(s2)));
+end);
+
+InstallMethod( Intersection2, [IsNaturalAlternatingGroup, IsNaturalAlternatingGroup],
+        function(s1,s2)
+    return AlternatingGroup(Intersection(MovedPoints(s1),MovedPoints(s2)));
+end);
+
+
+InstallMethod( Intersection2, [IsNaturalSymmetricGroup, IsPermGroup],
+        function(s,g)
+    return Stabilizer(g,Difference(MovedPoints(g),MovedPoints(s)), OnTuples);
+end);
+
+InstallMethod( Intersection2, [IsPermGroup, IsNaturalSymmetricGroup],
+        function(g,s)
+    return Stabilizer(g,Difference(MovedPoints(g),MovedPoints(s)), OnTuples);
+end);
+
+InstallMethod( Intersection2, [IsNaturalAlternatingGroup, IsPermGroup],
+        function(s,g)
+    return AlternatingSubgroup(Stabilizer(g,Difference(MovedPoints(g),MovedPoints(s)), OnTuples));
+end);
+
+InstallMethod( Intersection2, [IsPermGroup, IsNaturalAlternatingGroup],
+        function(g,s)
+    return AlternatingSubgroup(Stabilizer(g,Difference(MovedPoints(g),MovedPoints(s)), OnTuples));
+end);
+
+
+        
     
+    
+
+
 
 
 #############################################################################
@@ -937,8 +987,33 @@ InstallOtherMethod( StabilizerOp,"symmetric group", true,
         RankFilter(IsSolvableGroup),
         SYMGP_STABILIZER);
 
-    
-        
+InstallOtherMethod( StabilizerOp,"alternating group", true,
+    [ IsNaturalAlternatingGroup, IsObject, IsList, IsList, IsFunction ],
+  # the objects might be a group element: rank up	
+        RankFilter(IsMultiplicativeElementWithInverse) + 
+        RankFilter(IsSolvableGroup),
+        function(g, arg) 
+    return AlternatingSubgroup(CallFuncList(SYMGP_STABILIZER, Concatenation([SymmetricParentGroup(g)], arg)));
+end);
+
+
+InstallOtherMethod( StabilizerOp,"alternating group", true,
+    [ IsNaturalAlternatingGroup, IsDomain, IsObject, IsList, IsList, IsFunction ],
+  # the objects might be a group element: rank up	
+        RankFilter(IsMultiplicativeElementWithInverse) + 
+        RankFilter(IsSolvableGroup),
+        function(g, arg) 
+    return AlternatingSubgroup(CallFuncList(SYMGP_STABILIZER, Concatenation([SymmetricParentGroup(g)], arg)));
+end);
+
+InstallMethod( CentralizerOp,
+    "element in natural alternating group",
+    IsCollsElms,
+    [ IsNaturalAlternatingGroup, IsPerm ], 0,
+        function ( G, g )
+    return AlternatingSubgroup(Centralizer(SymmetricParentGroup(G),g));
+end);
+
 
 InstallMethod( CentralizerOp,
     "element in natural symmetric group",
@@ -1004,6 +1079,7 @@ function ( G, g )
   # return the centralizer
   return C;
 end);
+
 
 BindGlobal("AllNormalizerfixedBlockSystem",function(G,dom)
 local b, bl,prop;
