@@ -1084,6 +1084,8 @@ extern void MergeSort(void *data, UInt count, UInt width,
 #endif
 #endif
 
+extern syJmp_buf AlarmJumpBuffer;
+
 
 
 /****************************************************************************

@@ -54,8 +54,17 @@ AC_PROG_MAKE_SET
 AC_SUBST(gapdir)
 gapdir=`pwd`
 
+case $target_os in
+  cygwin*)
+    AC_SUBST(wingapdir)
+    wingapdir=$(cygpath -w $(pwd))
+    AC_SUBST(wincygbin)
+    wincygbin=$(cygpath -w /bin)
+    gapdir=$(echo /proc/cygdrive/"$(cygpath -am $(pwd))" | sed -e 's/:\//\//g')
+esac
+
 AC_ARG_VAR(CONFIGNAME,[Supply a (meaningful) name for the configuration you are building.
-    This name will be appended to the architecture-dependent named 
+    This name will be appended to the architecture-dependent named
     sub-directory of bin/. Allows for multiple configurations side by
     side. Default value is "defaultXX" where "XX" is 32 or 64.])
 
@@ -75,7 +84,7 @@ AC_ARG_WITH(gmp,
       If the argument you supply is "yes" or <empty>, then the version of GMP bundled with this GAP will be used (default).
       If the argument is "system" that means the library is reachable with the standard
       search path "/usr" or "/usr/local".
-      Otherwise you give the <path> to the directory which contains the library. 
+      Otherwise you give the <path> to the directory which contains the library.
       If the argument is no, use original GAP large integers instead of GMP.
       [[default=yes]]
     ]),
@@ -157,7 +166,19 @@ AC_SUBST(USE_GMP)
 AC_SUBST(GMP_VER)
 
 mkdir -p bin
-AC_OUTPUT(Makefile-${CONFIGNAME}:Makefile.in sysinfo.gap-${CONFIGNAME}:sysinfo.in bin/gap-${CONFIGNAME}.sh:gap.shi)
+AC_CONFIG_FILES([Makefile-${CONFIGNAME}:Makefile.in
+                 sysinfo.gap-${CONFIGNAME}:sysinfo.in
+                 bin/gap-${CONFIGNAME}.sh:gap.shi])
+
+case $target_os in
+  cygwin*)
+    AC_CONFIG_FILES([bin/gap.bat:cnf/gap.bai
+                     bin/gapcmd.bat:cnf/gapcmd.bai
+                     bin/gaprxvt.bat:cnf/gaprxvt.bai])
+esac
+
+AC_OUTPUT
+
 ln -sf gap-${CONFIGNAME}.sh bin/gap.sh
 ln -sf Makefile-${CONFIGNAME} Makefile
 ln -sf sysinfo.gap-${CONFIGNAME} sysinfo.gap

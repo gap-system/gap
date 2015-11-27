@@ -205,7 +205,7 @@ second argument <i> must equal 1, 2, or 3,
 gap> gens:=[Transformation([3,3,2,6,2,4,4,6]),
 > Transformation([5,1,7,8,7,5,8,1])];;
 gap> s:=Semigroup(gens);
-<transformation semigroup on 8 pts with 2 generators>
+<transformation semigroup of degree 8 with 2 generators>
 gap> IsSimpleSemigroup(s);
 true
 gap> IsomorphismReesMatrixSemigroup(s);;
@@ -338,7 +338,7 @@ true
 gap> Rows(S); Columns(S);
 [ 1, 2, 3 ]
 [ 2, 3 ]
-gap> T:=Range(IsomorphismReesMatrixSemigroup(S));;
+gap> T:=Range(IsomorphismReesZeroMatrixSemigroup(S));;
 gap> Rows(T); Columns(T);
 [ 1 .. 3 ]
 [ 1, 2 ]
@@ -611,7 +611,7 @@ gap> Length(GreensDClasses(UUU));
 gap> Size(V);
 33
 gap> Vt:=Range(IsomorphismTransformationSemigroup(V));
-<transformation semigroup on 34 pts with 5 generators>
+<transformation semigroup of degree 34 with 5 generators>
 gap> Size(Vt);
 33
 gap> Representative(R);
@@ -858,7 +858,7 @@ gap> Size(S);
 85
 gap> Size(R);
 85
-gap> IsomorphismReesMatrixSemigroup(S);;
+gap> IsomorphismReesZeroMatrixSemigroup(S);;
 gap> V;
 <Rees 0-matrix semigroup 4x4 over Group([ (1,2) ])>
 gap> IsSimpleSemigroup(V);
@@ -866,7 +866,7 @@ false
 gap> Length(GreensDClasses(V));
 2
 gap> Vt;
-<transformation semigroup of size 33, on 34 pts with 5 generators>
+<transformation semigroup of size 33, degree 34 with 5 generators>
 gap> VV:=AssociatedReesMatrixSemigroupOfDClass(
 > First(GreensDClasses(Vt), x-> RankOfTransformation(Representative(x))=1));
 <Rees matrix semigroup 1x1 over Group(())>
@@ -880,7 +880,7 @@ gap> V;
 <Rees 0-matrix semigroup 4x4 over Group([ (1,2) ])>
 gap> IsZeroSimpleSemigroup(V);
 true
-gap> IsomorphismReesMatrixSemigroup(V);;
+gap> IsomorphismReesZeroMatrixSemigroup(V);;
 
 #over semigroups not groups!
 gap> ReesZeroMatrixSemigroup(FullTransformationSemigroup(3), [[,0],[0,0]]);
@@ -894,7 +894,7 @@ Error, usage: the entries of <mat> must be 0 or belong to <S>,
 gap> mat:=List([1..3], x-> List([1..4], x->
 > Random(FullTransformationSemigroup(3))));;
 gap> R:=ReesZeroMatrixSemigroup(FullTransformationSemigroup(3), mat);
-<Rees 0-matrix semigroup 4x3 over <full transformation semigroup on 3 pts>>
+<Rees 0-matrix semigroup 4x3 over <full transformation monoid of degree 3>>
 gap> IsSimpleSemigroup(R);
 false
 gap> S:=Semigroup(Transformation([4,4,4,1,1,6,7,8,9,10,11,1]),
@@ -917,8 +917,8 @@ gap> mat:=[ [ Transformation( [ 7, 7, 2, 6, 6, 4, 2, 8, 9, 11, 10, 4 ] ),
 >      Transformation( [ 8, 8, 9, 9, 9, 11, 10, 6, 7, 2, 4, 8 ] ), 
 >      Transformation( [ 4, 4, 4, 1, 1, 6, 7, 9, 8, 10, 11, 1 ] ) ] ];;
 gap> R:=ReesMatrixSemigroup(S, mat);               
-<Rees matrix semigroup 4x3 over <transformation semigroup 
-  on 12 pts with 7 generators>>
+<Rees matrix semigroup 4x3 over <transformation semigroup of degree 12 with 7 
+  generators>>
 gap> IsSimpleSemigroup(R);
 true
 gap> IsWholeFamily(R);
@@ -1017,7 +1017,7 @@ gap> R:=ReesZeroMatrixSubsemigroup(R, [2,3], Group(()), [2,3]);
 <Rees 0-matrix semigroup 2x2 over Group(())>
 gap> IsZeroSimpleSemigroup(R);
 false
-gap> IsomorphismReesMatrixSemigroup(R);
+gap> IsomorphismReesZeroMatrixSemigroup(R);
 MappingByFunction( <Rees 0-matrix semigroup 2x2 over Group(())>, 
 <Rees 0-matrix semigroup 2x2 over Group(())>
  , function( u ) ... end, function( v ) ... end )
@@ -1057,7 +1057,37 @@ gap> ForAll(R, x-> ForAll(R, y-> x^f*y^f=(x*y)^f));
 true
 
 #
-gap> STOP_TEST( "reesmat.tst", 6000000 );
+gap> R := ReesZeroMatrixSemigroup( Group(
+> [ ( 1, 2)( 3, 5)( 4, 6)( 7, 8)( 9,11)(10,12)(13,19)(14,20)(15,21)(16,22)(17,23)
+>     (18,24), ( 1, 3)( 2, 4)( 5, 6)( 7,13)( 8,14)( 9,15)(10,16)(11,17)(12,18)(19,20)
+>     (21,23)(22,24), ( 1, 7)( 2, 8)( 3, 9)( 4,10)( 5,11)( 6,12)(13,15)(14,16)(17,18)
+>     (19,21)(20,22)(23,24) ] ), [ [ 0, 0, 0, 0, 0, 0, (), (), (), () ],
+>   [ 0, 0, 0, (), (), (), 0, 0, 0, () ],
+>   [ 0, (), (), 0, 0, (), 0, 0, ( 1, 2)( 3, 5)( 4, 6)( 7, 8)( 9,11)(10,12)(13,19)
+>         (14,20)(15,21)(16,22)(17,23)(18,24), 0 ],
+>   [ (), 0, (), 0, ( 1, 3)( 2, 4)( 5, 6)( 7,13)( 8,14)( 9,15)(10,16)(11,17)(12,18)
+>         (19,20)(21,23)(22,24), 0, 0, ( 1, 4, 5)( 2, 3, 6)( 7,14,19)( 8,13,20)
+>         ( 9,17,21)(10,18,22)(11,15,23)(12,16,24), 0, 0 ],
+>   [ (), ( 1, 7)( 2, 8)( 3, 9)( 4,10)( 5,11)( 6,12)(13,15)(14,16)(17,18)(19,21)(20,22)
+>         (23,24), 0, ( 1, 9,13)( 2,10,14)( 3, 7,15)( 4, 8,16)( 5,12,17)( 6,11,18)
+>         (19,22,23)(20,21,24), 0, 0, ( 1,10,17,19)( 2, 9,18,20)( 3,12,14,21)
+>         ( 4,11,13,22)( 5, 7,16,23)( 6, 8,15,24), 0, 0, 0 ] ] );;
+gap> HasIsFinite(R);
+true
+gap> IsFinite(R);
+true
+gap> S := Semigroup(GeneratorsOfSemigroup(R)[1],
+> GeneratorsOfSemigroup(R)[2]);
+<subsemigroup of 10x5 Rees 0-matrix semigroup with 2 generators>
+gap> HasIsFinite(R);
+true
+gap> HasIsFinite(S);
+true
+gap> IsFinite(S);
+true
+
+#
+gap> STOP_TEST( "reesmat.tst", 57630000);
 
 #############################################################################
 ##

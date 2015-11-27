@@ -23,29 +23,51 @@
 
 /****************************************************************************
 **
-
 *F  InitInfoStats() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoProfile ( void );
 
 void RegisterStatWithProfiling(Stat);
 
+
 void InstallEvalBoolFunc( Int, Obj(*)(Expr));
 void InstallEvalExprFunc( Int, Obj(*)(Expr));
 void InstallExecStatFunc( Int, UInt(*)(Stat));
 void InstallPrintStatFunc(Int, void(*)(Stat));
-void InstallPrintExprFunc(Int, void(*)(Expr)); 
+void InstallPrintExprFunc(Int, void(*)(Expr));
 
-#define PROFILE_EVERYTHING
-#ifdef PROFILE_EVERYTHING
-void ProfileLineByLineIntoFunction(Obj o);
-void ProfileLineByLineOutFunction(Obj o);
-#define PROF_IN_FUNCTION(x) ProfileLineByLineIntoFunction(x)
-#define PROF_OUT_FUNCTION(x) ProfileLineByLineOutFunction(x)
-#else
-#define PROF_IN_FUNCTION(x)
-#define PROF_OUT_FUNCTION(x)
-#endif
+/****************************************************************************
+**
+** We need this to be in the header, so it can be inlined away. The only
+** functionality here which should be publicly used is 'VisitStatIfProfiling',
+** 'ProfileLineByLineIntoFunction' and 'ProfileLineByLineOutFunction'.
+*/
+
+extern UInt profileState_Active;
+
+void visitStat(Stat stat);
+
+static inline void VisitStatIfProfiling(Stat stat)
+{
+  if(profileState_Active)
+    visitStat(stat);
+}
+
+void ProfileLineByLineOutput(Obj func, char type);
+
+static inline void ProfileLineByLineIntoFunction(Obj func)
+{
+  if(profileState_Active)
+    ProfileLineByLineOutput(func, 'I');
+}
+
+
+static inline void ProfileLineByLineOutFunction(Obj func)
+{
+  if(profileState_Active)
+    ProfileLineByLineOutput(func, 'O');
+}
+
 
 #endif // GAP_STATS_H
 

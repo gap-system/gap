@@ -1364,7 +1364,7 @@ Obj FuncIsExecutableFile (
 **
 *F  FuncIsDirectoryPath( <self>, <name> ) . . . .  is file <name> a directory
 */
-Obj FuncIsDirectoryPath (
+Obj FuncIsDirectoryPathString (
     Obj             self,
     Obj             filename )
 {
@@ -2352,8 +2352,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "IsExecutableFile", 1L, "filename",
       FuncIsExecutableFile, "src/streams.c:IsExecutableFile" },
 
-    { "IsDirectoryPath", 1L, "filename",
-      FuncIsDirectoryPath, "src/streams.c:IsDirectoryPath" },
+    { "IsDirectoryPathString", 1L, "filename",
+      FuncIsDirectoryPathString, "src/streams.c:IsDirectoryPath" },
 
     { "STRING_LIST_DIR", 1L, "dirname",
       FuncSTRING_LIST_DIR, "src/streams.c:STRING_LIST_DIR"},

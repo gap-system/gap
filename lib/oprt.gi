@@ -205,17 +205,9 @@ InstallOtherMethod( ExternalSubsetOp,
 
     type := TypeObj( xset );
 
-    # The type of an external set can store the type of its external subsets,
-    # to avoid repeated calls of `NewType'.
-    if not IsBound( type![XSET_XSSETTYPE] )  then
-        xsset := ExternalSetByFilterConstructor( IsExternalSubset,
-                         G, HomeEnumerator( xset ), gens, acts, act );
-        StrictBindOnce( type, XSET_XSSETTYPE, TypeObj( xsset ) );
-    else
-        xsset := ExternalSetByTypeConstructor( type![XSET_XSSETTYPE],
-                         G, HomeEnumerator( xset ), gens, acts, act );
-    fi;
-    
+    xsset := ExternalSetByFilterConstructor( IsExternalSubset,
+                     G, HomeEnumerator( xset ), gens, acts, act );
+
     xsset!.start := Immutable( start );
     return xsset;
 end );
@@ -339,18 +331,10 @@ InstallOtherMethod( ExternalOrbitOp,
     local   type,  xorb;
 
     type := TypeObj( xset );
-    
-    # The type of  an external set  can store the type  of external orbits of
-    # its points, to avoid repeated calls of `NewType'.
-    if not IsBound( type![XSET_XORBTYPE] )  then
-        xorb := ExternalSetByFilterConstructor( IsExternalOrbit,
-                        G, HomeEnumerator( xset ), gens, acts, act );
-        StrictBindOnce( type, XSET_XORBTYPE, TypeObj( xorb ) );
-    else
-        xorb := ExternalSetByTypeConstructor( type![XSET_XORBTYPE],
-                        G, HomeEnumerator( xset ), gens, acts, act );
-    fi;
-    
+
+    xorb := ExternalSetByFilterConstructor( IsExternalOrbit,
+                    G, HomeEnumerator( xset ), gens, acts, act );
+
     SetRepresentative( xorb, pnt );
     xorb!.start := Immutable( [ pnt ] );
     return xorb;
@@ -3415,4 +3399,3 @@ InstallMethod( IsInjective, "for a linear action homomorphism",
 #############################################################################
 ##
 #E
-

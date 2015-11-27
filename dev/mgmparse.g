@@ -1,5 +1,5 @@
 # Magma to GAP converter
-MGMCONVER:="version 0.32, 6/25/15"; # very raw
+MGMCONVER:="version 0.34, 10/22/15"; # very raw
 # (C) Alexander Hulpke
 
 
@@ -60,9 +60,29 @@ local n;
   return List([1..n],x->m{[1+n*(x-1)..n*x]});
 end;
 
+UnpackNumberList:=function(l)
+local m,i;
+  m:=[];
+  for i in l do
+    if not IsRecord(i) then
+      Add(m,i);
+    elif i.type="N" then
+      Add(m,i.name);
+    elif i.type="U-" and i.arg.type="N" then
+      Add(m,-i.arg.name);
+    else
+      return fail;
+    fi;
+      
+  od;
+  return m;
+end;
+
 FILEPRINTSTR:="";
+START:="";
+
 FilePrint:=function(arg)
-  local f,i,p;
+  local f,i,p,a;
   f:=arg[1];
   for i in [2..Length(arg)] do
     if not IsString(arg[i]) then
@@ -77,8 +97,30 @@ FilePrint:=function(arg)
     od;
     p:=Position(FILEPRINTSTR,'\n');
     while p<>fail do
-      AppendTo(f,FILEPRINTSTR{[1..p]});
-      FILEPRINTSTR:=FILEPRINTSTR{[p+1..Length(FILEPRINTSTR)]};
+      if p>76 then
+	# try to find better break point
+	a:=p;
+	p:=76;
+	while p>0 and not FILEPRINTSTR[p] in "]) " do
+	  p:=p-1;
+	od;
+	if p=0 or ForAll([1..p],x->FILEPRINTSTR[x]=' ') then
+	  p:=a;
+	  p:=76;
+	  while p>0 and not FILEPRINTSTR[p] in "," do
+	    p:=p-1;
+	  od;
+	  if p=0 then
+	    p:=a;
+	  fi;
+
+	fi;
+	AppendTo(f,FILEPRINTSTR{[1..p]},"\n");
+	FILEPRINTSTR:=Concatenation(START," ",FILEPRINTSTR{[p+1..Length(FILEPRINTSTR)]});
+      else
+	AppendTo(f,FILEPRINTSTR{[1..p]});
+	FILEPRINTSTR:=FILEPRINTSTR{[p+1..Length(FILEPRINTSTR)]};
+      fi;
       p:=Position(FILEPRINTSTR,'\n');
     od;
 
@@ -90,19 +132,22 @@ CHARSOPS:="+-*/,;:=~!";
 
 MgmParse:=function(file)
 local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
-      ExpectToken,doselect,costack,locals,globvars,defines,problemarea,
-      f,l,lines,linum,w,a,idslist,tok,tnum,i,sel,osel,e,comment;
+      ExpectToken,doselect,costack,locals,globvars,globimp,defines,problemarea,
+      f,l,lines,linum,w,a,idslist,tok,tnum,i,sel,osel,e,comment,forward;
 
   locals:=[];
   globvars:=[];
+  globimp:=[];
   defines:=[];
+  forward:=[];
 
   # print current area (as being problematic)
-  problemarea:=function()
-  local l,s;
+  problemarea:=function(arg)
+  local a,l,s;
+    if Length(arg)=0 then a:=10;else a:=arg[1];fi;
     Print("\c\n\n");
     l:=0;
-    for i in [Maximum(1,tnum-200)..tnum-11] do
+    for i in [Maximum(1,tnum-200)..tnum-a-1] do
       s:=tok[i][2];
       if not IsString(s) then
 	s:=String(s);
@@ -115,9 +160,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       Print(s);
     od;
     Print("\n");
-    Print(tok{[Maximum(1,tnum-10)..tnum-1]},"\n------\n",tok{[tnum..tnum+10]},"\n");
+    Print(tok{[Maximum(1,tnum-a)..tnum-1]},"\n------\n",tok{[tnum..tnum+a]},"\n");
     l:=0;
-    for i in [tnum+11..tnum+50] do
+    for i in [tnum+a+1..tnum+50] do
       s:=tok[i][2];
       if not IsString(s) then
 	s:=String(s);
@@ -236,7 +281,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       a:=l{[1..i-1]};
       l:=l{[i..Length(l)]};eatblank();
       i:=Position(TOKENS,a);
-      if a="end" or a="declare" or a="catch" or (a="error" and l{[i..i+2]}=" if") then
+      if a="end" or a="declare" or a="catch" or (a="error" and l{[1..3]}=" if") then
         # special case of `end' token -- blank in name
 	i:=1;
 	while l[i] in CHARSIDS do
@@ -341,12 +386,12 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	ExpectToken("[");
 	# postfacto indexing
 	b:=ReadExpression(["]",","]);
-	if tok[tnum][2]="[" then
-	  ExpectToken("]");
-	else
+	if tok[tnum][2]="," then
 	  # array indexing -- translate to iterated index by opening a parenthesis and keeping
 	  # position
-	  tok[tnum]:=["O","["];
+	  Error("multi-post-index");
+	else
+	  ExpectToken("]");
 	fi;
 	a:=rec(type:="L",var:=a,at:=b);
       od;
@@ -480,12 +525,16 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  Add(l,a);
 	until tok[tnum][2]="\\]" or tok[tnum][2]="]";
 	tnum:=tnum+1; # as ExpectToken("\\]","]");
-	l:=List(l,x->x.name);
-	a:=PermList(l);
-	if Length(l)<>Maximum(l) or a=fail then
+	if not ForAll(l,x->IsBound(x.name)) then
 	  a:=rec(type:="notperm",notperm:=l);
 	else
-	  a:=rec(type:="perm",perm:=a);
+	  l:=List(l,x->x.name);
+	  a:=PermList(l);
+	  if Length(l)<>Maximum(l) or a=fail then
+	    a:=rec(type:="notperm",notperm:=l);
+	  else
+	    a:=rec(type:="perm",perm:=a);
+	  fi;
 	fi;
 
       elif e="[*" then
@@ -898,7 +947,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
   end;
 
   ReadBlock:=function(endkey)
-  local l,e,a,aif,b,c,locals,kind,i;
+  local l,e,a,aif,b,c,d,f,locals,kind,i;
     l:=[];
     locals:=[];
 
@@ -1091,14 +1140,18 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	      a:=fail;
 	    fi;
 	  until a=fail;
+	  d:=b;
 	  b:=Concatenation("import from ",b,":\n");
 	  for i in [1..Length(c)] do
+	    Add(globimp,rec(file:=d,func:=c[i].name));
 	    if i>1 then
 	      Append(b,", ");
 	    fi;
 	    Append(b,c[i].name);
 	  od;
-	  Add(l,rec(type:="co",text:=b));
+
+	  #Add(l,rec(type:="co",text:=b));
+
 	  ExpectToken(";",9);
 	elif e[2]="forward" or e[2]="declare verbose"
 	  or e[2]="declare attributes" then
@@ -1115,6 +1168,8 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	    fi;
 	    Add(l,rec(type:="co",
 	      text:=Concatenation(b," declaration of ",String(a.name))));
+            Add(forward,a.name);
+
             if tok[tnum][2]="," then
 	      ExpectToken(",",10);
 	    fi;
@@ -1229,9 +1284,10 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  fi;
 	  Add(l,a);
 	  ExpectToken(";",14);
-          if ValueOption("inner")<>true and a.type="I" then
-	    Print("> ",a.name," <\n");
-	    AddSet(defines,a.name);
+	  if endkey=false then
+	    # top-level assignment -- global variable
+	    #Print("> ",a.left.name," <\n");
+	    AddSet(defines,a.left.name);
 	  fi;
 	elif e[2]="-:=" then
 	  b:=ReadExpression([";"]);
@@ -1282,18 +1338,31 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
   # actual work
   a:=ReadBlock(false);
 
-  return rec(used:=globvars,defines:=defines,code:=a[2]);
+  globvars:=Difference(globvars,List(globimp,x->x.func));
+
+  return rec(used:=globvars,import:=globimp,defines:=defines,
+             forward:=forward,code:=a[2]);
 
 end;
 
+
 GAPOutput:=function(l,f)
-local i,doit,printlist,doitpar,indent,START,t,mulicomm;
+local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
 
    START:="";
    indent:=function(n)
      n:=n*2;
      if n<0 then START:=START{[1..Length(START)+n]};
      else Append(START,ListWithIdenticalEntries(n,' '));fi;
+   end;
+
+   # translate identifier
+   traid:=function(s)
+     # TODO: use name space
+     if s in l.namespace then
+       s:=Concatenation(s,"@");
+     fi;
+     return s;
    end;
 
    printlist:=function(arg)
@@ -1323,10 +1392,17 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
     s:=Length(START);
     p:=Position(str,'\n');
     while Length(str)+s>75 or p<>fail do
-      i:=Minimum(75-s,p);
-      while str[i]<>' ' and str[i]<>'\n' do
+      if p=fail then
+	i:=75-s;
+      else
+	i:=Minimum(75-s,p);
+      fi;
+      while i>0 and str[i]<>' ' and str[i]<>'\n' do
         i:=i-1;
       od;
+      if i=0 then
+	i:=Minimum(75,Length(str));
+      fi;
       FilePrint(f,"#  ",str{[1..i-1]},"\n",START);
       str:=str{[i+1..Length(str)]};
       if p<>fail then
@@ -1355,9 +1431,20 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
   local t,i,a,b;
     t:=node.type;
     if t="A" then
-      doit(node.left);
-      FilePrint(f,":=");
-      doit(node.right);
+      # special case of declaration assignment
+      if IsBound(node.left.type) and node.left.type="I" and node.left.name
+	in declared then
+	FilePrint(f,"InstallGlobalFunction(");
+	doit(node.left);
+	FilePrint(f,",\n",START);
+	doit(node.right);
+	FilePrint(f,")");
+      else
+	doit(node.left);
+	FilePrint(f,":=");
+	doit(node.right);
+      fi;
+
       FilePrint(f,";\n",START);
       if IsBound(node.implicitassg) then
 	FilePrint(f,"# Implicit generator Assg from previous line.\n",START);
@@ -1398,8 +1485,10 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
       od;
       FilePrint(f,"# =^= MULTIASSIGN =^=\n",START);
 
-    elif t="I" or t="N" then
+    elif t="N" then
       FilePrint(f,node.name);
+    elif t="I" then
+      FilePrint(f,traid(node.name));
     elif t="co" then
       # commentary
       mulicomm(f,node.text);
@@ -1529,7 +1618,11 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
       # permutation
       FilePrint(f,node.perm);
     elif t="notperm" then
-      t:=UnFlat(node.notperm);
+      t:=UnpackNumberList(node.notperm);
+      if t=fail then
+	t:=node.notperm;
+      fi;
+      t:=UnFlat(t);
       if t=fail then
 	t:=node.notperm;
       fi;
@@ -1924,6 +2017,11 @@ local i,doit,printlist,doitpar,indent,START,t,mulicomm;
   mulicomm(f,t);
   FilePrint(f,"\n");
 
+  declared:=Concatenation(l.mustdeclare,l.forward);
+
+  for i in declared do
+    FilePrint(f,"DeclareGlobalFunction(\"",traid(i),"\");\n\n");
+  od;
 
   for i in l.code do
     doit(i);
@@ -1937,6 +2035,10 @@ local infile, f,l;
 
   infile:=arg[1];
   l:=MgmParse(infile);
+  l.clashes:=[];
+  l.depends:=[];
+  l.mustdeclare:=[];
+  l.namespace:=[];
 
   if Length(arg)>1 and IsString(arg[2]) then
     f:=OutputTextFile(arg[2],false);
@@ -1951,3 +2053,81 @@ local infile, f,l;
   GAPOutput(l,f);
   CloseStream(f);
 end;
+
+
+Project:=function(dir,pkgname)
+local a,b,c,d,f,l,i,j,r,uses,defs,import,depend,order;
+  # TODO: Move into common namespace
+  a:=DirectoryContents(Concatenation(dir,"/magma"));
+  a:=Filtered(a,x->Length(x)>2 and x{[Length(x)-1..Length(x)]}=".m");
+  l:=[];
+
+  for i in a do
+    c:=i{[1..Length(i)-2]};
+    Print("Reading ",c,"\n");
+    r:=MgmParse(Concatenation(dir,"/magma/",c,".m"));
+    r.filename:=c;
+    Add(l,r);
+    #MagmaConvert(Concatenation(dir,"/magma/",c,".m"),Concatenation(dir,"/translate/",c,".g"));
+  od;
+  uses:=Union(List(l,x->x.used)); # globals used
+  defs:=Union(List(l,x->x.defines)); # globals defined
+  import:=[];
+  for i in l do
+    for j in i.import do
+      if not j.file in a then
+        AddSet(import,j);
+      fi;
+    od;
+  od;
+
+  for i in [1..Length(l)] do
+    c:=[];
+    d:=[];
+    for j in [1..Length(l)] do
+      if j<>i then
+        c:=Union(c,Intersection(l[i].defines,l[j].defines));
+      fi;
+      d:=Union(d,List(Filtered(l[j].import,x->x.file=a[i]),x->x.func));
+    od;
+    l[i].clashes:=c;
+    l[i].depends:=Set(List(l[i].import,x->x.file));
+    l[i].mustdeclare:=d;
+    l[i].namespace:=defs;
+  od;
+
+  order:=[1..Length(l)];
+  # bubblesort as this is not a proper total order
+  for i in [1..Length(l)] do
+    for j in [i+1..Length(l)] do
+      if (a[order[j]] in l[order[i]].depends or
+	Length(l[order[j]].depends)<Length(l[order[i]].depends))
+	and not a[order[i]] in l[order[j]].depends  then
+	c:=order[i];order[i]:=order[j];order[j]:=c;
+      fi;
+    od;
+  od;
+
+  f:=Filtered(order,x->Length(l[x].mustdeclare)=0);
+  order:=Concatenation(Filtered(order,x->not x in f),f);
+  Print("No dependencies from ",
+    List(l{f},x->x.filename),"\n");
+
+  f:=OutputTextFile(Concatenation(dir,"/translate/read.g"),false);
+  AppendTo(f,"ENTER_NAMESPACE(",pkgname,")\n");
+  for i in order do
+    AppendTo(f,"Read(\"",l[i].filename,".g\");\n");
+  od;
+  AppendTo(f,"LEAVE_NAMESPACE(",pkgname,")\n");
+  CloseStream(f);
+
+  for i in order do
+    Print("Processing ",l[i].filename,"\n");
+    f:=OutputTextFile(Concatenation(dir,"/translate/",l[i].filename,".g"),false);
+    GAPOutput(l[i],f);
+    CloseStream(f);
+  od;
+
+  #return a;
+end;
+

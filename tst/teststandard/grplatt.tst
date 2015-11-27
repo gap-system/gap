@@ -74,7 +74,7 @@ gap> Collected(List(l,Size));
   [ 28800, 1 ] ]
 
 # thats all, folks
-gap> STOP_TEST( "grplatt.tst", 3761183624 );
+gap> STOP_TEST( "grplatt.tst", 413800000);
 
 #############################################################################
 ##

@@ -8,8 +8,8 @@ process as easy as possible.
 
 * Before you report an issue, or wish to add functionality, please try
   and check to see if there are existing
-  [issues](https://github.com/gap-system/gap-git/issues) or
-  [pull requests](https://github.com/gap-system/gap-git/pulls).
+  [issues](https://github.com/gap-system/gap/issues) or
+  [pull requests](https://github.com/gap-system/gap/pulls).
   We do not want you wasting your time duplicating somebody else's work.
 * For substantial changes it is also advisable to contact us before
   you start work to discuss your ideas.

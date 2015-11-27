@@ -1692,20 +1692,20 @@ end );
 
 #############################################################################
 ##
-#M  IndicesNormalSteps( <ipcgs> )
+#M  IndicesEANormalSteps( <ipcgs> )
 ##
-InstallMethod(IndicesNormalSteps,"inherit from parent",true,
+InstallMethod(IndicesEANormalSteps,"inherit from parent",true,
   [IsInducedPcgs and HasParentPcgs],0,
 function(pcgs)
 local l,i,p,ind,a,b,d;
   p:=ParentPcgs(pcgs);
-  if not HasIndicesNormalSteps(p) then
+  if not HasIndicesEANormalSteps(p) then
     TryNextMethod();
   fi;
   d:=pcgs!.depthsInParent;
   ind:=[];
   a:=1;
-  for i in IndicesNormalSteps(p) do
+  for i in IndicesEANormalSteps(p) do
     b:=First([a..Length(d)],x->d[x]>=i);
     if b<>fail then
       if not b in ind then
@@ -1714,6 +1714,7 @@ local l,i,p,ind,a,b,d;
       a:=b;
     fi;
   od;
+  Add(ind,Length(pcgs)+1);
   return ind;
 end);
 

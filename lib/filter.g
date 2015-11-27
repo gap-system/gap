@@ -18,9 +18,7 @@
 #V  "forward declarations that will be picked up in filter1.g
 ##
 
-HIDDEN_IMPS := fail;
 IMPLICATIONS := fail;
-CLEAR_HIDDEN_IMP_CACHE := fail;
 CLEAR_IMP_CACHE := fail;
 
 
@@ -100,25 +98,6 @@ BIND_GLOBAL( "Setter", SETTER_FILTER );
 #F  Tester( <filter> )  . . . . . . . . . . . . . . . .  tester of a <filter>
 ##
 BIND_GLOBAL( "Tester", TESTER_FILTER );
-
-
-
-#############################################################################
-##
-#F  InstallHiddenTrueMethod( <filter>, <filters> )
-##
-BIND_GLOBAL( "InstallHiddenTrueMethod", function ( filter, filters )
-    local   imp;
-
-    atomic HIDDEN_IMPS do
-	imp := [];
-	imp[1] := FLAGS_FILTER( filter );
-	imp[2] := FLAGS_FILTER( filters );
-	MIGRATE_RAW(imp, HIDDEN_IMPS);
-	ADD_LIST( HIDDEN_IMPS, imp );
-    od;
-end );
-
 
 
 
@@ -377,4 +356,3 @@ BIND_GLOBAL( "CANONICAL_BASIS_FLAGS", QUO_INT(SUM_FLAGS,5) );
 #############################################################################
 ##
 #E
-

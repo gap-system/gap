@@ -12,6 +12,204 @@
 
 # Everything from here...
 
+# fall back methods
+
+InstallMethod(SemigroupViewStringPrefix, "for a semigroup",
+[IsSemigroup], S -> "");
+
+InstallMethod(SemigroupViewStringSuffix, "for a semigroup",
+[IsSemigroup], S -> "");
+
+BindGlobal("_ViewStringForSemigroups",
+function(S)
+  local str, nrgens, suffix;
+
+  str := "\><";
+
+  if HasIsTrivial(S) and IsTrivial(S) then
+    Append(str, "\>trivial\< ");
+  else
+    if HasIsFinite(S) and not IsFinite(S) then
+      Append(str, "\>infinite\< ");
+    fi;
+    if HasIsCommutative(S) and IsCommutative(S) then
+      Append(str, "\>commutative\< ");
+    fi;
+  fi;
+
+  if not IsGroup(S) then
+    if HasIsTrivial(S) and IsTrivial(S) then
+      # do nothing
+    elif HasIsZeroSimpleSemigroup(S) and IsZeroSimpleSemigroup(S) then
+      Append(str, "\>0-simple\< ");
+    elif HasIsSimpleSemigroup(S) and IsSimpleSemigroup(S) then
+      Append(str, "\>simple\< ");
+    fi;
+
+    if HasIsInverseSemigroup(S) and IsInverseSemigroup(S) then
+      Append(str, "\>inverse\< ");
+    elif HasIsRegularSemigroup(S)
+        and not (HasIsSimpleSemigroup(S) and IsSimpleSemigroup(S)) then
+      if IsRegularSemigroup(S) then
+        Append(str, "\>regular\< ");
+      else
+        Append(str, "\>non-regular\< ");
+      fi;
+    fi;
+  fi;
+
+  Append(str, SemigroupViewStringPrefix(S));
+
+  if HasIsMonoid(S) and IsMonoid(S) then
+    Append(str, "\>monoid\< ");
+    if HasGeneratorsOfInverseMonoid(S) then
+      nrgens := Length(GeneratorsOfInverseMonoid(S));
+    else
+      nrgens := Length(GeneratorsOfMonoid(S));
+    fi;
+  else
+    Append(str, "\>semigroup\< ");
+    if HasGeneratorsOfInverseSemigroup(S) then
+      nrgens := Length(GeneratorsOfInverseSemigroup(S));
+    else
+      nrgens := Length(GeneratorsOfSemigroup(S));
+    fi;
+  fi;
+
+  if HasIsTrivial(S) and not IsTrivial(S) and HasSize(S) and IsFinite(S) then
+    Append(str, "\>of size\> ");
+    Append(str, ViewString(Size(S)));
+    Append(str, ",\<\< ");
+  fi;
+
+  suffix := SemigroupViewStringSuffix(S);
+
+  if suffix <> ""
+      and not (HasIsTrivial(S) and not IsTrivial(S) and HasSize(S)) then
+    suffix := Concatenation("\>of\< ", suffix);
+  fi;
+  Append(str, suffix);
+
+  Append(str, "\>with\< \>");
+  Append(str, ViewString(nrgens));
+  Append(str, "\< \>generator");
+
+  if nrgens > 1 or nrgens = 0 then
+    Append(str, "s\<");
+  else
+    Append(str, "\<");
+  fi;
+
+  Append(str, ">\<");
+
+  return str;
+end);
+
+# ViewString
+
+InstallMethod(ViewString, "for a semigroup with generators",
+[IsSemigroup and HasGeneratorsOfSemigroup], _ViewStringForSemigroups);
+
+InstallMethod(ViewString, "for a monoid with generators",
+[IsMonoid and HasGeneratorsOfMonoid], _ViewStringForSemigroups);
+
+InstallMethod(ViewString, "for an inverse semigroup with generators",
+[IsInverseSemigroup and HasGeneratorsOfInverseSemigroup],
+_ViewStringForSemigroups);
+
+InstallMethod(ViewString, "for an inverse monoid with generators",
+[IsInverseMonoid and HasGeneratorsOfInverseMonoid],
+_ViewStringForSemigroups);
+
+MakeReadWriteGlobal("_ViewStringForSemigroups");
+Unbind(_ViewStringForSemigroups);
+
+#
+
+BindGlobal("_ViewStringForSemigroupsGroups",
+function(S)
+  local str, suffix, gens;
+
+  str := "\><";
+
+  if HasIsTrivial(S) and IsTrivial(S) then
+    Append(str, "\>trivial\< ");
+  fi;
+  Append(str, SemigroupViewStringPrefix(S));
+  Append(str, "\>group\< ");
+  if HasIsTrivial(S) and not IsTrivial(S) and HasSize(S) then
+    Append(str, "\>of size\> ");
+    Append(str, ViewString(Size(S)));
+    Append(str, ",\<\< ");
+  fi;
+
+  suffix := SemigroupViewStringSuffix(S);
+  if suffix <> ""
+      and not (HasIsTrivial(S) and not IsTrivial(S) and HasSize(S)) then
+    suffix := Concatenation("of ", suffix);
+  fi;
+  Append(str, suffix);
+
+  if IsGroup(S) and HasGeneratorsOfGroup(S) then
+    gens := GeneratorsOfGroup(S);
+  elif IsInverseMonoid(S) and HasGeneratorsOfInverseMonoid(S) then
+    gens := GeneratorsOfInverseMonoid(S);
+  elif IsInverseSemigroup(S) and HasGeneratorsOfInverseSemigroup(S) then
+    gens := GeneratorsOfInverseSemigroup(S);
+  elif IsMonoid(S) and HasGeneratorsOfMonoid(S) then
+    gens := GeneratorsOfMonoid(S);
+  elif HasGeneratorsOfSemigroup(S) then
+    gens := GeneratorsOfSemigroup(S);
+  fi;
+
+  if IsBound(gens) then
+    Append(str, "with\> ");
+    Append(str, ViewString(Length(gens)));
+    Append(str, "\< generator");
+
+    if Length(gens) > 1 or Length(gens) = 0 then
+      Append(str, "s\<");
+    else
+      Append(str, "\<");
+    fi;
+  else
+    Remove(str, Length(str));
+  fi;
+
+  Append(str, ">\<");
+
+  return str;
+end);
+
+InstallMethod(ViewString,
+"for a group as semigroup with known generators (as a semigroup)",
+[IsGroupAsSemigroup and HasGeneratorsOfSemigroup],
+_ViewStringForSemigroupsGroups);
+
+InstallMethod(ViewString,
+"for a group with known generators (as a semigroup)",
+[IsGroup and HasGeneratorsOfSemigroup],
+_ViewStringForSemigroupsGroups);
+
+# the next two methods required to use _ViewStringForSemigroupsGroups instead
+# of the ViewString for IsGroup and HasGeneratorsOfGroup.
+
+InstallMethod(ViewString, "for a group of transformations",
+[IsGroup and HasGeneratorsOfGroup and IsTransformationSemigroup],
+_ViewStringForSemigroupsGroups);
+
+InstallMethod(ViewString, "for a group of partial perms",
+[IsGroup and HasGeneratorsOfGroup and IsPartialPermSemigroup],
+_ViewStringForSemigroupsGroups);
+
+InstallMethod(ViewString, "for a group as semigroup",
+[IsGroupAsSemigroup and IsSemigroupIdeal],
+SUM_FLAGS, # to beat the method for semigroup ideals
+_ViewStringForSemigroupsGroups);
+
+MakeReadWriteGlobal("_ViewStringForSemigroupsGroups");
+Unbind(_ViewStringForSemigroupsGroups);
+
 InstallMethod(IsGeneratorsOfSemigroup, "for an empty list",
 [IsList and IsEmpty], ReturnFalse);
 
@@ -156,13 +354,6 @@ InstallMethod(CayleyGraphDualSemigroup, "for generic finite semigroups",
 #M  PrintObj( <S> ) . . . . . . . . . . . . . . . . . . . . print a semigroup
 ##
 
-#InstallMethod( PrintObj, #JDM required?? Shouldn't the default call PrintString?
-#    "for a semigroup",
-#    [ IsSemigroup ],
-#    function( S )
-#    Print( "Semigroup( ... )" );
-#    end );
-
 InstallMethod( String,
     "for a semigroup",
     [ IsSemigroup ],
@@ -201,18 +392,6 @@ InstallMethod( ViewString,
     [ IsSemigroup ],
     function( S )
     return "<semigroup>";
-    end );
-
-InstallMethod( ViewString,
-    "for a semigroup with generators",
-    [ IsSemigroup and HasGeneratorsOfMagma ],
-    function( S )
-    if Length(GeneratorsOfMagma(S)) = 1 then
-      return "<semigroup with 1 generator>";
-    else
-      return STRINGIFY("<semigroup with ", Length( GeneratorsOfMagma( S ) ),
-           " generators>" );
-    fi;
     end );
 
 #############################################################################
@@ -277,31 +456,40 @@ end);
 ##
 #M  SemigroupByGenerators( <gens> ) . . . . . . semigroup generated by <gens>
 ##
-InstallMethod( SemigroupByGenerators,
-    "for a collection",
-    [ IsCollection ],
-    function( gens )
-      local S, pos;
+InstallMethod(SemigroupByGenerators,
+"for a collection",
+[IsCollection],
+function(gens)
+  local S, pos;
 
-    S:= Objectify( NewType( FamilyObj( gens ),
-                            IsSemigroup and IsAttributeStoringRep ),
-                   rec() );
-    SetGeneratorsOfMagma( S, AsList( gens ) );
-    
-    if IsMultiplicativeElementWithOneCollection(gens) 
-      and CanEasilyCompareElements(gens) then 
-      pos:=Position(gens, One(gens));
-      if pos<>fail then 
-        SetFilterObj(S, IsMonoid);
-        gens:=ShallowCopy(gens);
+  S := Objectify(NewType(FamilyObj(gens), IsSemigroup
+                                             and IsAttributeStoringRep), rec());
+  gens := AsList(gens);
+  SetGeneratorsOfMagma(S, gens);
+
+  if IsMultiplicativeElementWithOneCollection(gens)
+      and CanEasilyCompareElements(gens)
+      and IsFinite(gens) then
+    pos := Position(gens, One(gens));
+    if pos <> fail then
+      SetFilterObj(S, IsMonoid);
+      if Length(gens) = 1 then # Length(gens) <> 0 since One(gens) in gens
+        SetIsTrivial(S, true);
+      elif not IsPartialPermCollection(gens) or One(gens) =
+        One(gens{Concatenation([1 .. pos - 1], [pos + 1 .. Length(gens)])}) then
+        # if gens = [PartialPerm([1, 2]), PartialPerm([1])], then removing the One
+        # = gens[1] from this, it is not possible to recreate the semigroup using
+        # Monoid(PartialPerm([1])) (since the One in this case is
+        # PartialPerm([1]) not PartialPerm([1, 2]) as it should be.
+        gens := ShallowCopy(gens);
         Remove(gens, pos);
-        SetGeneratorsOfMonoid(S, gens);
       fi;
+      SetGeneratorsOfMonoid(S, gens);
     fi;
+  fi;
 
-    return S;
-    end );
-
+  return S;
+end);
 
 #############################################################################
 ##

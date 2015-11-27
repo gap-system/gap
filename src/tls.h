@@ -112,6 +112,10 @@ typedef struct ThreadLocalStorage
   Stat OffsBody;
   Stat *OffsBodyStack;
   UInt OffsBodyCount;
+  UInt LoopNesting;
+  UInt *LoopStack;
+  UInt LoopStackCount;
+  
   Obj CodeResult;
   Bag StackStat;
   Int CountStat;

@@ -786,13 +786,6 @@ atomic ORIGINAL_IMPS do
     MigrateSingleObj(IMPLICATIONS, ORIGINAL_IMPS);
     TypeObj(IMPLICATIONS[1]);
 od;
-# allow type determination of IMPLICATIONS without using it
-ORIGINAL_IMPS := HIDDEN_IMPS;
-atomic ORIGINAL_IMPS do
-    HIDDEN_IMPS:=HIDDEN_IMPS{[Length(HIDDEN_IMPS),Length(HIDDEN_IMPS)-1..1]};
-    MigrateSingleObj(HIDDEN_IMPS, ORIGINAL_IMPS);
-od;
-UNBIND_GLOBAL("ORIGINAL_IMPS");
 #T shouldn't this better be at the end of reading the library?
 #T and what about implications installed in packages?
 #T (put later installations to the front?)

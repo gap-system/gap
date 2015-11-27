@@ -166,10 +166,6 @@ ReadLib( "sgpres.gd" );
 ReadLib( "tietze.gd" );
 ReadLib( "ghomfp.gd" );
 
-# files dealing with trees and hash tables
-ReadLib( "hash.gd"     );
-
-
 # files needed for deep thought
 ReadLib( "dt.g" );
 
@@ -250,17 +246,8 @@ ReadLib("other.gd");
 
 ReadLib("gasman.gd");
 
+# files dealing with function calling
+ReadLib("function.gd");
+
 # random sources
 ReadLib("random.gi");
-
-#############################################################################
-##
-#X  files dealing with subgroup chains
-##
-#ReadLib("utils.gd");
-#ReadLib("quogphom.gd");
-#ReadLib("gptransv.gd");
-#ReadLib("grpchain.gd");
-#ReadLib("rss.gd");
-#ReadLib("basicim.gd");
-#ReadLib("solmxgrp.gd");

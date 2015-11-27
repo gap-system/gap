@@ -7,157 +7,37 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-##  This file contains the implementation of some basics for partial perm 
+##  This file contains the implementation of some basics for partial perm
 ##  semigroups.
 
-#
+InstallMethod(PrintObj,
+"for a semigroup with known generators",
+[IsPartialPermSemigroup and IsGroup and HasGeneratorsOfMagma],
+function(S)
+  Print("Group(", GeneratorsOfMagma(S), ")");
+end);
 
 InstallMethod(DisplayString, "for a partial perm semigroup with generators",
 [IsPartialPermSemigroup and HasGeneratorsOfSemigroup], ViewString);
 
-# the following is used to produce the view string for every type of partial
-# perm semigroup, in particular it is required so that it is used in preference
-# to the method for inverse semigroups/monoids
+InstallMethod(SemigroupViewStringPrefix, "for a partial perm semigroup",
+[IsPartialPermSemigroup], S -> "\>partial perm\< ");
 
-BindGlobal("ViewStringForPartialPermSemigroups", 
+InstallMethod(SemigroupViewStringSuffix, "for a partial perm semigroup",
+[IsPartialPermSemigroup],
 function(S)
-  local str, nrgens;
-  
-  str:="<";
-
-  if HasIsTrivial(S) and IsTrivial(S) then 
-    Append(str, "trivial ");
-  else 
-    if HasIsCommutative(S) and IsCommutative(S) then 
-      Append(str, "commutative ");
-    fi;
-  fi;
-
-  if HasIsTrivial(S) and IsTrivial(S) then 
-  elif HasIsZeroSimpleSemigroup(S) and IsZeroSimpleSemigroup(S) then 
-    Append(str, "0-simple ");
-  elif HasIsSimpleSemigroup(S) and IsSimpleSemigroup(S) then 
-    Append(str, "simple ");
-  fi;
-
-  if HasIsInverseSemigroup(S) and IsInverseSemigroup(S) then 
-    Append(str, "inverse ");
-  fi;
-
-  Append(str, "partial perm ");
- 
-  if HasIsMonoid(S) and IsMonoid(S) then 
-    Append(str, "monoid ");
-    if HasIsInverseSemigroup(S) and IsInverseSemigroup(S) then 
-      nrgens:=Length(GeneratorsOfInverseMonoid(S));
-    else 
-      nrgens:=Length(GeneratorsOfMonoid(S));
-    fi;
-  else 
-    Append(str, "semigroup ");
-    if HasIsInverseSemigroup(S) and IsInverseSemigroup(S) then 
-      nrgens:=Length(GeneratorsOfInverseSemigroup(S));
-    else
-      nrgens:=Length(GeneratorsOfSemigroup(S));
-    fi;
-  fi;
- 
- if HasIsTrivial(S) and not IsTrivial(S) and HasSize(S) and Size(S)<2^64 then 
-    Append(str, "\<\>of size ");
-    Append(str, String(Size(S)));
-    Append(str, ", ");
-  fi;
- 
-  Append(str, "\<\>on ");
-  Append(str, String(RankOfPartialPermSemigroup(S)));
-  Append(str, " pts\<\> with ");
-
-  Append(str, String(nrgens));
-  Append(str, " generator");
-
-  if nrgens>1 or nrgens=0 then 
-    Append(str, "s");
-  fi;
-  Append(str, ">");
-
-  return str;
+  return Concatenation("\>rank \>",
+                       ViewString(RankOfPartialPermSemigroup(S)),
+                       "\<\< ");
 end);
 
-# the following method is required so that the view string method for partial
-# perm semigroup (immediately below) is used in preference to the method for
-# inverse semigroups
-
-InstallMethod(ViewString, "for a partial perm inverse semigroup",
-[IsPartialPermSemigroup and IsInverseSemigroup],
-ViewStringForPartialPermSemigroups);
-
-InstallMethod(ViewString, "for a partial perm inverse semigroup",
-[IsPartialPermSemigroup and IsInverseMonoid],
-ViewStringForPartialPermSemigroups);
-
-InstallMethod(ViewString, "for a partial perm semigroup with generators",
+InstallMethod(One, "for a partial perm semigroup with generators",
 [IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
-ViewStringForPartialPermSemigroups);
-
-InstallMethod(ViewString, "for a partial perm monoid with generators",
-[IsPartialPermMonoid and HasGeneratorsOfMonoid],
-ViewStringForPartialPermSemigroups);
-
-InstallMethod(ViewString, 
-"for a simple inverse partial perm semigroup with generators",
-[IsPartialPermSemigroup and HasGeneratorsOfSemigroup 
-and IsSimpleSemigroup and IsInverseSemigroup], 
-function(s)
-  local str, nrgens;
-  
-  str:="<";
-
-  if HasIsTrivial(s) and IsTrivial(s) then 
-    Append(str, "trivial ");
-  else 
-    if HasIsCommutative(s) and IsCommutative(s) then 
-      Append(str, "commutative ");
-    fi;
-  fi;
-
-  Append(str, "partial perm group ");
-
-  if HasIsMonoid(s) and IsMonoid(s) then 
-    nrgens:=Length(GeneratorsOfInverseMonoid(s));
-  else 
-    nrgens:=Length(GeneratorsOfInverseSemigroup(s));
-  fi;
- 
- if HasIsTrivial(s) and not IsTrivial(s) and HasSize(s) and Size(s)<2^64 then 
-    Append(str, "\<\>of size ");
-    Append(str, String(Size(s)));
-    Append(str, ", ");
-  fi;
- 
-  Append(str, "\<\>on ");
-  Append(str, String(RankOfPartialPermSemigroup(s)));
-  Append(str, " pts\<\> with ");
-
-  Append(str, String(nrgens));
-  Append(str, " generator");
-
-  if nrgens>1 or nrgens=0 then 
-    Append(str, "s");
-  fi;
-  Append(str, ">");
-
-  return str;
-end);
-
-#
-
-InstallMethod(One, "for a partial perm semigroup with generators", 
-[IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
-function(s)
+function(S)
   local x;
-  
-  x:=One(GeneratorsOfSemigroup(s));
-  if x in s then 
+
+  x := One(GeneratorsOfSemigroup(S));
+  if x in S then
     return x;
   fi;
   return fail;
@@ -205,7 +85,12 @@ s-> DegreeOfPartialPermSemigroup(s));
 InstallMethod(RankOfPartialPermSemigroup,
 "for a partial perm semigroup",
 [IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
-s-> RankOfPartialPermCollection(GeneratorsOfSemigroup(s)));
+S -> RankOfPartialPermCollection(GeneratorsOfSemigroup(S)));
+
+InstallMethod(RankOfPartialPermSemigroup,
+"for a partial perm semigroup",
+[IsPartialPermSemigroup and HasGeneratorsOfGroup],
+S -> RankOfPartialPermCollection(GeneratorsOfGroup(S)));
 
 InstallMethod(RankOfPartialPermCollection,
 "for a partial perm semigroup",
@@ -302,14 +187,13 @@ end);
 InstallMethod(GeneratorsOfInverseMonoid,
 "for an inverse partial perm monoid with generators",
 [IsPartialPermSemigroup and IsInverseMonoid and HasGeneratorsOfMonoid],
-function(s)
-  local gens, one, pos, f;
+function(S)
+  local gens, pos, x;
 
-  gens:=ShallowCopy(GeneratorsOfMonoid(s));
-  one:=One(s);
-  for f in gens do
-    pos:=Position(gens, f^-1);
-    if pos<>fail and (f<>f^-1 or f=one) then 
+  gens := ShallowCopy(GeneratorsOfMonoid(S));
+  for x in gens do
+    pos := Position(gens, x ^ -1);
+    if pos <> fail and x <> x ^ -1  then
       Remove(gens, pos);
     fi;
   od;
@@ -546,11 +430,11 @@ end);
 
 #
 
-InstallMethod(ViewString, "for a symmetric inverse semigroup",
-[IsSymmetricInverseSemigroup and IsPartialPermSemigroup], 
-function(s)
-  return STRINGIFY("<symmetric inverse semigroup on ",
-   DegreeOfPartialPermSemigroup(s), " pts>");
+InstallMethod(ViewString, "for a symmetric inverse monoid",
+[IsSymmetricInverseSemigroup and IsPartialPermSemigroup], SUM_FLAGS,
+function(S)
+  return STRINGIFY("<symmetric inverse monoid of degree ",
+                   DegreeOfPartialPermSemigroup(S), ">");
 end);
 
 #InstallMethod(IsSymmetricInverseSemigroup, 

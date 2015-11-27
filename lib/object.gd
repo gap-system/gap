@@ -381,6 +381,22 @@ BIND_GLOBAL( "StructuralCopy", DEEP_COPY_OBJ );
 ##
 DeclareAttribute( "Name", IsObject );
 
+#############################################################################
+##
+#A  InfoText( <obj> )
+##
+##  <#GAPDoc Label="InfoText">
+##  <ManSection>
+##  <Attr Name="InfoText" Arg='obj'/>
+##
+##  <Description>
+##  is a mutable string with information about the object <A>obj</A>.
+##  There is no default method to create an info text.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "InfoText", IsObject, "mutable" );
 
 #############################################################################
 ##

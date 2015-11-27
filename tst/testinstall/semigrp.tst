@@ -284,7 +284,155 @@ gap> CategoryCollections(IsMultiplicativeElementWithZero)(m);
 true
 gap> 
 gap> 
-gap> STOP_TEST( "semigrp.tst", 11200000 );
+
+#T# Checking for correct non-removal of one from generating sets in
+# SemigroupByGenerators JDM
+gap> S := Semigroup(PartialPerm([1]));
+<trivial partial perm group of rank 1 with 1 generator>
+gap> GeneratorsOfSemigroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfMonoid(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfGroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfInverseSemigroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfInverseMonoid(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> S := Semigroup(IdentityTransformation);
+<trivial transformation group of degree 0 with 1 generator>
+gap> GeneratorsOfSemigroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfMonoid(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfGroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfInverseSemigroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfInverseMonoid(S);
+[ IdentityTransformation ]
+
+#T# Checking for correct non-removal of one from generating sets in
+# MonoidByGenerators JDM
+gap> S := Monoid(PartialPerm([1]));
+<trivial partial perm group of rank 1 with 1 generator>
+gap> S := Monoid(PartialPerm([1]));
+<trivial partial perm group of rank 1 with 1 generator>
+gap> GeneratorsOfSemigroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfMonoid(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfGroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfInverseSemigroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfInverseMonoid(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> S := Monoid(IdentityTransformation);
+<trivial transformation group of degree 0 with 1 generator>
+gap> GeneratorsOfSemigroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfMonoid(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfGroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfInverseSemigroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfInverseMonoid(S);
+[ IdentityTransformation ]
+
+#T# Checking for correct non-removal of one from generating sets in
+# InverseSemigroupByGenerators JDM
+gap> S := InverseSemigroup(PartialPerm([1]));
+<trivial partial perm group of rank 1 with 1 generator>
+gap> GeneratorsOfSemigroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfMonoid(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfGroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfInverseSemigroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfInverseMonoid(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> S := InverseSemigroup(IdentityTransformation);
+<trivial transformation group of degree 0 with 1 generator>
+gap> GeneratorsOfSemigroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfMonoid(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfGroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfInverseSemigroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfInverseMonoid(S);
+[ IdentityTransformation ]
+
+#T# Checking for correct non-removal of one from generating sets in
+# InverseMonoidByGenerators JDM
+gap> S := InverseMonoid(PartialPerm([1]));
+<trivial partial perm group of rank 1 with 1 generator>
+gap> GeneratorsOfSemigroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfMonoid(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfGroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfInverseSemigroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfInverseMonoid(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> S := InverseMonoid(IdentityTransformation);
+<trivial transformation group of degree 0 with 1 generator>
+gap> GeneratorsOfSemigroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfMonoid(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfGroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfInverseSemigroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfInverseMonoid(S);
+[ IdentityTransformation ]
+
+#T# Checking GroupByGenerators
+gap> S := Group(PartialPerm([1]));
+<partial perm group of rank 1 with 1 generator>
+gap> GeneratorsOfSemigroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfMonoid(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfGroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfInverseSemigroup(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> GeneratorsOfInverseMonoid(S);
+[ <identity partial perm on [ 1 ]> ]
+gap> S := Group(IdentityTransformation);
+<transformation group of degree 0 with 1 generator>
+gap> GeneratorsOfSemigroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfMonoid(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfGroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfInverseSemigroup(S);
+[ IdentityTransformation ]
+gap> GeneratorsOfInverseMonoid(S);
+[ IdentityTransformation ]
+
+# Check that empty semigroup does not satisfy IsTrivial
+gap> S := FreeSemigroup(2);
+<free semigroup on the generators [ s1, s2 ]>
+gap> T := Subsemigroup(S, []);
+<semigroup of size 0, with 0 generators>
+gap> IsTrivial(T);
+false
+gap> IsEmpty(T);
+true
+
+#
+gap> STOP_TEST( "semigrp.tst", 1060000);
 
 #############################################################################
 ##

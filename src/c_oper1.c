@@ -45,6 +45,8 @@ static GVar G_TRY__NEXT__METHOD;
 static Obj  GC_TRY__NEXT__METHOD;
 static GVar G_SUB__FLAGS;
 static Obj  GF_SUB__FLAGS;
+static GVar G_WITH__HIDDEN__IMPS__FLAGS;
+static Obj  GF_WITH__HIDDEN__IMPS__FLAGS;
 static GVar G_IS__SUBSET__FLAGS;
 static Obj  GF_IS__SUBSET__FLAGS;
 static GVar G_TRUES__FLAGS;
@@ -129,8 +131,6 @@ static GVar G_INFO__DEBUG;
 static Obj  GF_INFO__DEBUG;
 static GVar G_OPERATIONS;
 static Obj  GC_OPERATIONS;
-static GVar G_WITH__HIDDEN__IMPS__FLAGS;
-static Obj  GF_WITH__HIDDEN__IMPS__FLAGS;
 static GVar G_NamesFilter;
 static Obj  GF_NamesFilter;
 static GVar G_Ordinal;
@@ -3890,6 +3890,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "IS_OBJECT", &GC_IS__OBJECT );
  InitCopyGVar( "TRY_NEXT_METHOD", &GC_TRY__NEXT__METHOD );
  InitFopyGVar( "SUB_FLAGS", &GF_SUB__FLAGS );
+ InitFopyGVar( "WITH_HIDDEN_IMPS_FLAGS", &GF_WITH__HIDDEN__IMPS__FLAGS );
  InitFopyGVar( "IS_SUBSET_FLAGS", &GF_IS__SUBSET__FLAGS );
  InitFopyGVar( "TRUES_FLAGS", &GF_TRUES__FLAGS );
  InitFopyGVar( "SIZE_FLAGS", &GF_SIZE__FLAGS );
@@ -3932,7 +3933,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "WRAPPER_OPERATIONS", &GC_WRAPPER__OPERATIONS );
  InitFopyGVar( "INFO_DEBUG", &GF_INFO__DEBUG );
  InitCopyGVar( "OPERATIONS", &GC_OPERATIONS );
- InitFopyGVar( "WITH_HIDDEN_IMPS_FLAGS", &GF_WITH__HIDDEN__IMPS__FLAGS );
  InitFopyGVar( "NamesFilter", &GF_NamesFilter );
  InitFopyGVar( "Ordinal", &GF_Ordinal );
  InitFopyGVar( "INSTALL_METHOD_FLAGS", &GF_INSTALL__METHOD__FLAGS );
@@ -4021,6 +4021,7 @@ static Int InitLibrary ( StructInitInfo * module )
  G_IS__OBJECT = GVarName( "IS_OBJECT" );
  G_TRY__NEXT__METHOD = GVarName( "TRY_NEXT_METHOD" );
  G_SUB__FLAGS = GVarName( "SUB_FLAGS" );
+ G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
  G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
  G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
  G_SIZE__FLAGS = GVarName( "SIZE_FLAGS" );
@@ -4063,7 +4064,6 @@ static Int InitLibrary ( StructInitInfo * module )
  G_WRAPPER__OPERATIONS = GVarName( "WRAPPER_OPERATIONS" );
  G_INFO__DEBUG = GVarName( "INFO_DEBUG" );
  G_OPERATIONS = GVarName( "OPERATIONS" );
- G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
  G_NamesFilter = GVarName( "NamesFilter" );
  G_Ordinal = GVarName( "Ordinal" );
  G_INSTALL__METHOD__FLAGS = GVarName( "INSTALL_METHOD_FLAGS" );
@@ -4174,6 +4174,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_IS__OBJECT = GVarName( "IS_OBJECT" );
  G_TRY__NEXT__METHOD = GVarName( "TRY_NEXT_METHOD" );
  G_SUB__FLAGS = GVarName( "SUB_FLAGS" );
+ G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
  G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
  G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
  G_SIZE__FLAGS = GVarName( "SIZE_FLAGS" );
@@ -4216,7 +4217,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_WRAPPER__OPERATIONS = GVarName( "WRAPPER_OPERATIONS" );
  G_INFO__DEBUG = GVarName( "INFO_DEBUG" );
  G_OPERATIONS = GVarName( "OPERATIONS" );
- G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
  G_NamesFilter = GVarName( "NamesFilter" );
  G_Ordinal = GVarName( "Ordinal" );
  G_INSTALL__METHOD__FLAGS = GVarName( "INSTALL_METHOD_FLAGS" );

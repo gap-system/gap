@@ -570,11 +570,11 @@ gap> DomainOfPartialPerm(f);
       The <E>image</E> of a partial permutation collection <A>coll</A> is the
       union of the images of its elements. 
 
-      <Example>
-gap> S:=SymmetricInverseSemigroup(5);                                
-&lt;symmetric inverse semigroup on 5 pts>
+      <Example><![CDATA[
+gap> S := SymmetricInverseSemigroup(5);                                
+<symmetric inverse monoid of degree 5>
 gap> ImageOfPartialPermCollection(GeneratorsOfInverseSemigroup(S));
-[ 1, 2, 3, 4, 5 ]</Example>
+[ 1, 2, 3, 4, 5 ]]]></Example>
     </Description>
   </ManSection>
 
@@ -775,18 +775,18 @@ gap> LargestMovedPoint(PartialPerm([1 .. 10]));
     only contains identity partial permutations, then
     <C>SmallestImageOfMovedPoint</C> returns <K>infinity</K>.
 
-  <Example>
+  <Example><![CDATA[
 gap> S := SymmetricInverseSemigroup(5);
-&lt;symmetric inverse semigroup on 5 pts>
+<symmetric inverse monoid of degree 5>
 gap> SmallestImageOfMovedPoint(S);
 1
-gap> S := Semigroup(PartialPerm([10..100], [10..100]));;
+gap> S := Semigroup(PartialPerm([10 .. 100], [10 .. 100]));;
 gap> SmallestImageOfMovedPoint(S);
 infinity
 gap> f := PartialPerm( [ 1, 2, 3, 6 ] );
 [4,6](1)(2)(3)
 gap> SmallestImageOfMovedPoint(f);
-6</Example>
+6]]></Example>
   </Description>
 </ManSection>
 
@@ -809,17 +809,17 @@ gap> SmallestImageOfMovedPoint(f);
     element of <A>coll</A> is returned, if such a point exists.  If <A>coll</A>
     only contains identity partial permutations, then
     <C>LargestImageOfMovedPoint</C> returns <C>0</C>.
-  <Example>
-gap> S:=SymmetricInverseSemigroup(5);
-&lt;symmetric inverse semigroup on 5 pts>
+  <Example><![CDATA[
+gap> S := SymmetricInverseSemigroup(5);
+<symmetric inverse monoid of degree 5>
 gap> LargestImageOfMovedPoint(S);
 5
-gap> S:=Semigroup(PartialPerm([10..100], [10..100]));;
+gap> S := Semigroup(PartialPerm([10 .. 100], [10 .. 100]));;
 gap> LargestImageOfMovedPoint(S);
 0
-gap> f:=PartialPerm( [ 1, 2, 3, 6 ] );;
+gap> f := PartialPerm( [ 1, 2, 3, 6 ] );;
 gap> LargestImageOfMovedPoint(f);
-6</Example>
+6]]></Example>
   </Description>
 </ManSection>
 
@@ -1541,14 +1541,14 @@ when applied to a partial permutation semigroup.
 Note that it is possible for a partial perm semigroup to have a
 multiplicative neutral element (i.e. an identity element) but not to satisfy
 <C>IsPartialPermMonoid</C>. For example,
-<Example>
-gap> f:=PartialPerm( [ 1, 2, 3, 6, 8, 10 ], [ 2, 6, 7, 9, 1, 5 ] );;
-gap> S:=Semigroup(f, One(f));
-&lt;commutative partial perm monoid on 9 pts with 1 generator>
+<Example><![CDATA[
+gap> f := PartialPerm( [ 1, 2, 3, 6, 8, 10 ], [ 2, 6, 7, 9, 1, 5 ] );;
+gap> S := Semigroup(f, One(f));
+<commutative partial perm monoid of rank 9 with 1 generator>
 gap> IsMonoid(S);
 true
 gap> IsPartialPermMonoid(S);
-true</Example>
+true]]></Example>
 
 Note that unlike transformation semigroups, the <Ref Attr="One"/> of a partial permutation semigroup must coincide with the multiplicative neutral element, if either exists.<P/>
 
@@ -1570,15 +1570,15 @@ For more details see <Ref Filt="IsMagmaWithOne"/>.
 
     The <E>rank</E> of a partial permutation semigroup <A>S</A> is the number
     of points on which it acts. 
-    <Example>
+    <Example><![CDATA[
 gap> S := Semigroup( PartialPerm( [ 1, 5 ], [ 10000, 3 ] ) );
-&lt;commutative partial perm semigroup on 2 pts with 1 generator>
+<commutative partial perm semigroup of rank 2 with 1 generator>
 gap> DegreeOfPartialPermSemigroup(S);
 5
 gap> CodegreeOfPartialPermSemigroup(S);
 10000
 gap> RankOfPartialPermSemigroup(S);
-2</Example>
+2]]></Example>
   </Description>
 </ManSection>
 
@@ -1604,13 +1604,13 @@ gap> RankOfPartialPermSemigroup(S);
     <C>SymmetricInverseMonoid</C> is a synonym for
     <C>SymmetricInverseSemigroup</C>.
 
-    <Example>
+    <Example><![CDATA[
 gap> S := SymmetricInverseSemigroup(5);
-&lt;symmetric inverse semigroup on 5 pts>
+<symmetric inverse monoid of degree 5>
 gap> Size(S);
 1546
 gap> GeneratorsOfInverseMonoid(S);
-[ (1,2,3,4,5), (1,2)(3)(4)(5), [5,4,3,2,1] ]</Example>
+[ (1,2,3,4,5), (1,2)(3)(4)(5), [5,4,3,2,1] ]]]></Example>
   </Description>
 </ManSection>
 
@@ -1629,14 +1629,14 @@ gap> GeneratorsOfInverseMonoid(S);
   for the symmetric inverse monoid to be referred to as the symmetric inverse
   semigroup.  
 
-  <Example>
-gap> S:=Semigroup( AsPartialPerm((1,3,4,2), 5), AsPartialPerm((1,3,5), 5),
+  <Example><![CDATA[
+gap> S := Semigroup(AsPartialPerm((1, 3, 4, 2), 5), AsPartialPerm((1, 3, 5), 5),
 > PartialPerm( [ 1, 2, 3, 4 ] ) );
-&lt;partial perm semigroup on 5 pts with 3 generators>
+<partial perm semigroup of rank 5 with 3 generators>
 gap> IsSymmetricInverseSemigroup(S);
 true
 gap> S;
-&lt;symmetric inverse semigroup on 5 pts></Example>
+<symmetric inverse monoid of degree 5>]]></Example>
 </Description>
 </ManSection>
 
@@ -1669,10 +1669,10 @@ gap> S;
     <C>Elements(<A>S</A>)[i]</C>. See also 
     <Ref Func="NaturalLeqPartialPerm"/>.
   
-    <Example>
-gap> S:=InverseSemigroup([ PartialPerm( [ 1, 3 ], [ 1, 3 ] ),
+    <Example><![CDATA[
+gap> S := InverseSemigroup([ PartialPerm( [ 1, 3 ], [ 1, 3 ] ),
 > PartialPerm( [ 1, 2 ], [ 3, 2 ] ) ] );
-&lt;inverse partial perm semigroup on 3 pts with 2 generators>
+<inverse partial perm semigroup of rank 3 with 2 generators>
 gap> Size(S);
 11
 gap> NaturalPartialOrder(S);
@@ -1681,7 +1681,7 @@ gap> NaturalPartialOrder(S);
 gap> NaturalLeqPartialPerm(Elements(S)[4], Elements(S)[10]);
 true
 gap> NaturalLeqPartialPerm(Elements(S)[4], Elements(S)[1]); 
-false</Example>
+false]]></Example>
   </Description>
 </ManSection>
 
@@ -1729,39 +1729,38 @@ false</Example>
         <Ref Prop="IsInverseMonoid"/>, then
         <C>IsomorphismPartialPermMonoid</C> returns an isomorphism from
         <A>S</A> to an inverse monoid of partial permutations on a subset of
-        <C>[1..DegreeOfTransformationSemigroup(<A>S</A>)]</C>.
+        <C>[1 .. DegreeOfTransformationSemigroup(<A>S</A>)]</C>.
       </Item>
     </List>
-    <Example>
-gap> S:=InverseSemigroup( 
+    <Example><![CDATA[
+gap> S := InverseSemigroup( 
 > PartialPerm( [ 1, 2, 3, 4, 5 ], [ 4, 2, 3, 1, 5 ] ),
 > PartialPerm( [ 1, 2, 4, 5 ], [ 3, 1, 4, 2 ] ) );;
 gap> IsMonoid(S); 
 false
-gap> iso:=IsomorphismPartialPermMonoid(S);
-MappingByFunction( &lt;inverse partial perm semigroup on 5 pts
- with 2 generators>, &lt;inverse partial perm monoid on 5 pts
- with 2 generators>, function( object ) ... end, function( object ) ..\
-. end )
+gap> iso := IsomorphismPartialPermMonoid(S);
+MappingByFunction( <inverse partial perm semigroup of rank 5 with 2 
+ generators>, <inverse partial perm monoid of rank 5 with 2 
+ generators>, function( object ) ... end, function( object ) ... end )
 gap> Size(S);
 508
 gap> Size(Range(iso));
 508
-gap> G:=Group((1,2)(3,8)(4,6)(5,7), (1,3,4,7)(2,5,6,8), (1,4)(2,6)(3,7)(5,8));;
+gap> G := Group((1,2)(3,8)(4,6)(5,7), (1,3,4,7)(2,5,6,8), (1,4)(2,6)(3,7)(5,8));;
 gap> IsomorphismPartialPermSemigroup(G);
 MappingByFunction( Group([ (1,2)(3,8)(4,6)(5,7), (1,3,4,7)
-(2,5,6,8), (1,4)(2,6)(3,7)(5,8) ]), &lt;inverse partial perm semigroup 
-on 8 pts
- with 3 generators>, function( p ) ... end, function( f ) ... end )
-gap> S:=Semigroup(Transformation( [ 2, 5, 1, 7, 3, 7, 7 ] ), 
+(2,5,6,8), (1,4)(2,6)(3,7)
+(5,8) ]), <inverse partial perm semigroup of rank 8 with 3 generators>
+ , function( p ) ... end, function( f ) ... end )
+gap> S := Semigroup(Transformation( [ 2, 5, 1, 7, 3, 7, 7 ] ), 
 > Transformation( [ 3, 6, 5, 7, 2, 1, 7 ] ) );;
-gap> iso:=IsomorphismPartialPermMonoid(S);;
-gap> MultiplicativeNeutralElement(S)^iso;
-&lt;identity partial perm on [ 1, 2, 3, 5, 6, 7 ]>
+gap> iso := IsomorphismPartialPermMonoid(S);;
+gap> MultiplicativeNeutralElement(S) ^ iso;
+<identity partial perm on [ 1, 2, 3, 5, 6, 7 ]>
 gap> One(Range(iso));
-&lt;identity partial perm on [ 1, 2, 3, 5, 6, 7 ]>
+<identity partial perm on [ 1, 2, 3, 5, 6, 7 ]>
 gap> MovedPoints(Range(iso));
-[ 1, 2, 3, 5, 6 ]</Example>
+[ 1, 2, 3, 5, 6 ]]]></Example>
   </Description>
 </ManSection>
 </Section>

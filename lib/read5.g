@@ -147,8 +147,8 @@ ReadLib( "grppcatr.gi" );
 ReadLib( "grppcnrm.gi" );
 
 # files dealing with trees and hash tables
-ReadLib( "hash.gi"     );
 ReadLib( "dict.gi"  );
+ReadLib( "dicthf.gi"  );
 
 ReadLib( "grptbl.gi"   );
 
@@ -251,18 +251,9 @@ ReadLib( "other.gi");
 
 ReadLib( "gasman.gi");
 
+ReadLib( "function.gi");
+
+
 # floateans, now really install all handlers
 ReadLib( "float.gi" );
 ReadLib( "ieee754.g" );
-
-#############################################################################
-##
-#X  files dealing with subgroup chains
-##
-#ReadLib("utils.gi");
-#ReadLib("quogphom.gi");
-#ReadLib("gptransv.gi");
-#ReadLib("grpchain.gi");
-#ReadLib("rss.gi");
-#ReadLib("basicim.gi");
-#ReadLib("solmxgrp.gi");

@@ -555,6 +555,8 @@ DeclareOperation("DisplaySemigroup",
 
 # Everything from here...
 
+DeclareAttribute("NilpotencyDegree", IsSemigroup);
+
 DeclareOperation("IsSubsemigroup", [IsSemigroup, IsSemigroup]);
 
 DeclareProperty("IsBand", IsSemigroup);
@@ -568,39 +570,46 @@ DeclareProperty("IsIdempotentGenerated", IsSemigroup);
 DeclareProperty("IsLeftZeroSemigroup", IsSemigroup);
 DeclareProperty("IsMonogenicSemigroup", IsSemigroup);
 DeclareProperty("IsMonoidAsSemigroup", IsSemigroup);
+DeclareProperty("IsNilpotentSemigroup", IsSemigroup);
 DeclareProperty("IsOrthodoxSemigroup", IsSemigroup);
 DeclareProperty("IsRectangularBand", IsSemigroup);
 DeclareProperty("IsRightZeroSemigroup", IsSemigroup);
 DeclareProperty("IsSemiband", IsSemigroup);
-DeclareProperty("IsSemilatticeAsSemigroup", IsSemigroup);
+DeclareProperty("IsSemilattice", IsSemigroup);
 DeclareProperty("IsZeroSemigroup", IsSemigroup);
 
-InstallTrueMethod(IsBand, IsSemilatticeAsSemigroup);
-InstallTrueMethod(IsBrandtSemigroup, IsInverseSemigroup and                     IsZeroSimpleSemigroup);
-InstallTrueMethod(IsCliffordSemigroup, IsSemilatticeAsSemigroup);
+InstallTrueMethod(IsMonoidAsSemigroup, IsMagmaWithOne and IsSemigroup);
+InstallTrueMethod(IsGroupAsSemigroup, IsMagmaWithInverses and IsSemigroup);
+InstallTrueMethod(IsGroupAsSemigroup, IsInverseSemigroup and IsSimpleSemigroup and IsFinite);
+InstallTrueMethod(IsGroupAsSemigroup, IsCommutativeSemigroup and IsSimpleSemigroup);
+InstallTrueMethod(IsBand, IsSemilattice);
+InstallTrueMethod(IsBrandtSemigroup, IsInverseSemigroup and IsZeroSimpleSemigroup);
+InstallTrueMethod(IsCliffordSemigroup, IsSemilattice);
 InstallTrueMethod(IsCompletelyRegularSemigroup, IsCliffordSemigroup);
 InstallTrueMethod(IsCompletelyRegularSemigroup, IsSimpleSemigroup);
 InstallTrueMethod(IsCompletelySimpleSemigroup, IsSimpleSemigroup and IsFinite);
-InstallTrueMethod(IsGroupAsSemigroup, IsInverseSemigroup and IsSimpleSemigroup);
-InstallTrueMethod(IsIdempotentGenerated, IsSemilatticeAsSemigroup);
-InstallTrueMethod(IsInverseSemigroup, IsSemilatticeAsSemigroup);
+InstallTrueMethod(IsIdempotentGenerated, IsSemilattice);
+InstallTrueMethod(IsInverseSemigroup, IsSemilattice);
 InstallTrueMethod(IsInverseSemigroup, IsCliffordSemigroup);
+InstallTrueMethod(IsInverseSemigroup, IsGroupAsSemigroup);
 InstallTrueMethod(IsLeftZeroSemigroup, IsInverseSemigroup and IsTrivial);
 InstallTrueMethod(IsRegularSemigroup, IsInverseSemigroup);
 InstallTrueMethod(IsRegularSemigroup, IsSimpleSemigroup);
-InstallTrueMethod(IsMonoidAsSemigroup, IsGroupAsSemigroup);
 InstallTrueMethod(IsOrthodoxSemigroup, IsInverseSemigroup);
 InstallTrueMethod(IsRightZeroSemigroup, IsInverseSemigroup and IsTrivial);
 InstallTrueMethod(IsSemiband, IsIdempotentGenerated);
-InstallTrueMethod(IsSemilatticeAsSemigroup, IsCommutative and IsBand);
+InstallTrueMethod(IsSemilattice, IsCommutative and IsBand);
 InstallTrueMethod(IsSimpleSemigroup, IsGroupAsSemigroup);
 InstallTrueMethod(IsZeroSemigroup, IsInverseSemigroup and IsTrivial);
-InstallTrueMethod(IsGroupAsSemigroup, IsCommutative and IsSimpleSemigroup);
 
-# to here was added by JDM.
+# ...to here was added by JDM / WW.
 
+# the following allow us to only use a single method for ViewString for
+# semigroups of transformations and partial perms.
+
+DeclareOperation("SemigroupViewStringPrefix", [IsSemigroup]);
+DeclareOperation("SemigroupViewStringSuffix", [IsSemigroup]);
 
 #############################################################################
 ##
 #E
-

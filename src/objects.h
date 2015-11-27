@@ -391,6 +391,9 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_POSOBJ                (FIRST_EXTERNAL_TNUM+ 1)
 #define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
 #define T_WPOBJ                 (FIRST_EXTERNAL_TNUM+ 3)
+     /* #define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 4)
+        remove to get parity right */
+
 
 /* The next two TNUMA are BOTH external AND shared! */
 #define FIRST_SHARED_TNUM	(T_WPOBJ+1)
@@ -417,8 +420,10 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_TLREC 		(FIRST_SHARED_TNUM+ 17)
 #define T_TLREC_INNER 		(FIRST_SHARED_TNUM+ 18)
 
-#define FIRST_PACKAGE_TNUM      (T_TLREC_INNER+1)
-#define LAST_PACKAGE_TNUM       (FIRST_PACKAGE_TNUM+28)
+/* reserve space for 50 package TNUMs */
+#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
+#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+43)
+
 #define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
 
 #define LAST_SHARED_TNUM	(LAST_EXTERNAL_TNUM)

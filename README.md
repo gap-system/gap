@@ -45,6 +45,9 @@ or
 # make bootstrap-pkg-full
 ```
 
+(in the latter case please that `make bootstrap-pkg-full` only unpacks packages
+but does not build those of them that require compilation).
+
 If everything goes well, you should be able to start GAP by executing
 ```
 # sh bin/gap.sh
@@ -73,4 +76,3 @@ Please tell us about your use of GAP in research or teaching. We maintain a
 [bibliography of publications citing GAP](http://www.gap-system.org/Doc/Bib/bib.html).
 Please [help us](http://gap-system.org/Contacts/publicationfeedback.html)
 keeping it up to date.
-

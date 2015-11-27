@@ -187,6 +187,18 @@ DeclareAttribute("DirectFactorsFittingFreeSocle",IsGroup);
 
 #############################################################################
 ##
+#A  ChiefSeriesTF( <G> )
+##
+##  <#GAPDoc Label="ChiefSeriesTF">
+##  <ManSection>
+##  <Attr Name="ChiefSeriesTF" Arg='G'/>
+##
+##  <Description>
+##  A chief series for <A>G</A> that fits with the FittingFreeLiftSetup.
+DeclareAttribute("ChiefSeriesTF",IsGroup);
+
+#############################################################################
+##
 #F  HallViaRadical( <G>, <pi> )
 ##
 DeclareGlobalFunction("HallViaRadical");

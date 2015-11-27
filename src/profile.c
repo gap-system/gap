@@ -75,7 +75,7 @@
 **     which show which parts of an expression have been executed
 **
 **  There are not that many tricky cases here. We have to be careful that
-**  sum Expr are integers or local variables, and not touch those.
+**  some Expr are integers or local variables, and not touch those.
 **
 **  Limitations (and how we overcome them):
 **
@@ -96,6 +96,22 @@
 **     serious additional overheads, I can't see how to provide this
 **     functionality in output (basically we would have to store
 **     line and character positions for the start and end of every expression).
+**
+**
+**  Achieving 100% code coverage is a little tricky. Here is a list of
+**  the special cases which had to be considered (so far)
+**
+**  GAP special cases for-loops of the form 'for i in [a..b]', by digging
+**  into the range to extract 'a' and 'b'. Therefore nothing on the line is
+**  ever evaluated and it appears to never be executed. We special case this
+**  if ForRange, by marking the range as evaluated.
+**
+**  We purposesfully ignore T_TRUE_EXPR and T_FALSE_EXPR, which represent the
+**  constants 'true' and 'false', as they are often read but not 'executed'.
+**  We already ignored all integer and float constants anyway.
+**  However, the main reason this was added is that GAP represents 'else'
+**  as 'elif true then', and this was leading to 'else' statements being
+**  never marked as executed.
 */
 
 
@@ -126,10 +142,13 @@ struct StatementLocation
 
 struct ProfileState
 {
-  UInt Active;
+  // C steam we are writing to
   FILE* Stream;
+  // Did we use 'popen' to open the stream (matters when closing)
   int StreamWasPopened;
+  // Are we currently outputting repeats (false=code coverage)
   Int OutputRepeats;
+  // Are we colouring output (not related to profiling directly)
   Int ColouringOutput;
 
   // Used to generate 'X' statements, to make sure we correctly
@@ -150,12 +169,24 @@ struct ProfileState
 #ifdef HPCGAP
   int profiledThread;
 #endif
+
+  /* Have we previously profiled this execution of GAP? We need this because
+  ** code coverage doesn't work more than once, as we use a bit in each Stat
+  ** to mark if we previously executed this statement, which we can't
+  ** clear */
+  UInt profiledPreviously;
+
 } profileState;
+
+/* We keep this seperate as it is exported for use in other files */
+UInt profileState_Active;
+
+
 
 void ProfileLineByLineOutput(Obj func, char type)
 {
   HashLock(&profileState);
-  if(profileState.Active && profileState.OutputRepeats)
+  if(profileState_Active && profileState.OutputRepeats)
   {
     int startline_i = 0, endline_i = 0;
     Obj startline = FuncSTARTLINE_FUNC(0, func);
@@ -189,15 +220,6 @@ void ProfileLineByLineOutput(Obj func, char type)
   HashUnlock(&profileState);
 }
 
-void ProfileLineByLineIntoFunction(Obj func)
-{
-  ProfileLineByLineOutput(func, 'I');
-}
-
-
-void ProfileLineByLineOutFunction(Obj func)
-{ ProfileLineByLineOutput(func, 'O'); }
-
 /****************************************************************************
 **
 ** Functionality to store streams compressed.
@@ -206,6 +228,7 @@ void ProfileLineByLineOutFunction(Obj func)
 ** of GAP's execution, before anything else is done.
 */
 
+#if HAVE_POPEN
 static int endsWithgz(char* s)
 {
   s = strrchr(s, '.');
@@ -214,11 +237,12 @@ static int endsWithgz(char* s)
   else
     return 0;
 }
+#endif
 
 static void fopenMaybeCompressed(char* name, struct ProfileState* ps)
 {
-  char popen_buf[4096];
 #if HAVE_POPEN
+  char popen_buf[4096];
   if(endsWithgz(name) && strlen(name) < 3000)
   {
     strcpy(popen_buf, "gzip > ");
@@ -271,7 +295,7 @@ void (* RealPrintExprFuncs[256]) ( Expr expr );
 void InstallEvalBoolFunc( Int pos, Obj(*expr)(Expr)) {
   RealEvalBoolFuncs[pos] = expr;
   HashLock(&profileState);
-  if(!profileState.Active) {
+  if(!profileState_Active) {
     EvalBoolFuncs[pos] = expr;
   }
   HashUnlock(&profileState);
@@ -280,7 +304,7 @@ void InstallEvalBoolFunc( Int pos, Obj(*expr)(Expr)) {
 void InstallEvalExprFunc( Int pos, Obj(*expr)(Expr)) {
   RealEvalExprFuncs[pos] = expr;
   HashLock(&profileState);
-  if(!profileState.Active) {
+  if(!profileState_Active) {
     EvalExprFuncs[pos] = expr;
   }
   HashUnlock(&profileState);
@@ -289,7 +313,7 @@ void InstallEvalExprFunc( Int pos, Obj(*expr)(Expr)) {
 void InstallExecStatFunc( Int pos, UInt(*stat)(Stat)) {
   RealExecStatFuncs[pos] = stat;
   HashLock(&profileState);
-  if(!profileState.Active) {
+  if(!profileState_Active) {
     ExecStatFuncs[pos] = stat;
   }
   HashUnlock(&profileState);
@@ -354,10 +378,16 @@ static inline void outputStat(Stat stat, int exec, int visited)
 #endif
 #endif
 
+
   HashLock(&profileState);
+  // Explicitly skip these two cases, as they are often specially handled
+  // and also aren't really interesting statements (something else will
+  // be executed whenever they are).
+  if(TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR)
+    return;
 
   // Catch the case we arrive here and profiling is already disabled
-  if(!profileState.Active) {
+  if(!profileState_Active) {
     HashUnlock(&profileState);
     return;
   }
@@ -434,7 +464,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
   HashUnlock(&profileState);
 }
 
-static inline void visitStat(Stat stat)
+void visitStat(Stat stat)
 {
 #ifdef HPCGAP
   if(profileState.profiledThread != TLS(threadID))
@@ -499,10 +529,12 @@ void enableAtStartup(char* filename, Int repeats)
 {
     Int i;
 
-    if(profileState.Active) {
+    if(profileState_Active) {
         fprintf(stderr, "-P or -C can only be passed once\n");
         exit(1);
     }
+    
+    
 
     profileState.OutputRepeats = repeats;
 
@@ -519,7 +551,8 @@ void enableAtStartup(char* filename, Int repeats)
       EvalBoolFuncs[i] = ProfileEvalBoolPassthrough;
     }
 
-    profileState.Active = 1;
+    profileState_Active = 1;
+    profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
@@ -567,8 +600,15 @@ Obj FuncACTIVATE_PROFILING (
 {
     Int i;
 
-    if(profileState.Active) {
+    if(profileState_Active) {
       return Fail;
+    }
+    
+    if(profileState.profiledPreviously &&
+       coverage == True) {
+        ErrorMayQuit("Code coverage can only be started once per"
+                     " GAP session. Please exit GAP and restart. Sorry.",0,0);
+        return Fail;
     }
 
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
@@ -609,7 +649,7 @@ Obj FuncACTIVATE_PROFILING (
     HashLock(&profileState);
 
     // Recheck inside lock
-    if(profileState.Active) {
+    if(profileState_Active) {
       HashUnlock(&profileState);
       return Fail;
     }
@@ -642,7 +682,8 @@ Obj FuncACTIVATE_PROFILING (
       }
     }
 
-    profileState.Active = 1;
+    profileState_Active = 1;
+    profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
@@ -678,7 +719,7 @@ Obj FuncDEACTIVATE_PROFILING (
 
   HashLock(&profileState);
 
-  if(!profileState.Active) {
+  if(!profileState_Active) {
     HashUnlock(&profileState);
     return Fail;
   }
@@ -691,7 +732,7 @@ Obj FuncDEACTIVATE_PROFILING (
     EvalBoolFuncs[i] = RealEvalBoolFuncs[i];
   }
 
-  profileState.Active = 0;
+  profileState_Active = 0;
 
   HashUnlock(&profileState);
 
@@ -701,7 +742,7 @@ Obj FuncDEACTIVATE_PROFILING (
 Obj FuncIS_PROFILE_ACTIVE (
     Obj self)
 {
-  if(profileState.Active) {
+  if(profileState_Active) {
     return True;
   } else {
     return False;
@@ -847,7 +888,7 @@ void RegisterStatWithProfiling(Stat stat)
 {
     int active;
     HashLock(&profileState);
-    active = profileState.Active;
+    active = profileState_Active;
     HashUnlock(&profileState);
     if(active) {
       outputStat(stat, 0, 0);

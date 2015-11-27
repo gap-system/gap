@@ -107,7 +107,7 @@ false
 false
 false
 false
-gap> STOP_TEST( "intarith.tst", 2300000 );
+gap> STOP_TEST( "intarith.tst", 330000);
 
 #############################################################################
 ##

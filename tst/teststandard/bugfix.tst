@@ -140,7 +140,7 @@ gap> GeneratorsOfSemigroup(i1);;
 gap> c1 := ReesCongruenceOfSemigroupIdeal(i1);;
 gap> q := i2/c1;;
 gap> IsZeroSimpleSemigroup(q);;
-gap> irms := IsomorphismReesMatrixSemigroup(q);;
+gap> irms := IsomorphismReesZeroMatrixSemigroup(q);;
 gap> MatrixOfReesZeroMatrixSemigroup(Range(irms));;
 gap> g := Group( (1,2),(1,2,3) );;
 gap> i := TrivialSubgroup( g );;
@@ -2263,15 +2263,15 @@ fail
 gap> s := FreeSemigroup("a","b");
 <free semigroup on the generators [ a, b ]>
 gap> t := Subsemigroup(s,[s.1]);
-<semigroup with 1 generator>
+<infinite commutative semigroup with 1 generator>
 gap> t := Subsemigroup(s,[s.1]);
-<semigroup with 1 generator>
+<infinite commutative semigroup with 1 generator>
 gap> HasSize(t);
 true
 gap> Size(t);
 infinity
-gap> t := Subsemigroup(s,[]);
-<semigroup with 0 generators>
+gap> t := Subsemigroup(s, []);
+<semigroup of size 0, with 0 generators>
 gap> HasSize(t);
 true
 gap> Size(t);
@@ -2827,6 +2827,19 @@ gap> -w+w;
 
 #############################################################################
 #
+#  Changes 4.7.8 -> 4.7.9
+
+#2015/10/20 (Chris Jefferson)
+gap> extS := ExternalSet(SymmetricGroup(4), [1..4],
+>                   GeneratorsOfGroup(SymmetricGroup(4)),
+>                   GeneratorsOfGroup(SymmetricGroup(4)),
+>                   OnRight);
+<xset:[ 1 .. 4 ]>
+gap> ExternalSubset(extS);
+[  ]^G
+
+#############################################################################
+#
 # Tests requiring loading some packages must be performed at the end.
 # Do not put tests that do not need any packages below this line.
 #
@@ -2972,7 +2985,7 @@ gap> PowerMod(x, p, f);
 x^35
 
 #############################################################################
-gap> STOP_TEST( "bugfix.tst", 15319000000*10 );
+gap> STOP_TEST( "bugfix.tst", 781280000);
 
 #############################################################################
 ##

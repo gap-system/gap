@@ -269,12 +269,12 @@ Obj Shell ( Obj context,
   
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
-    ErrorMayQuit("SHELL: can't open outfile %s",(Int)outFile,0);
+      ErrorQuit("SHELL: can't open outfile %s",(Int)outFile,0);
 
   if(!OpenInput(inFile))
     {
       CloseOutput();
-      ErrorMayQuit("SHELL: can't open infile %s",(Int)inFile,0);
+      ErrorQuit("SHELL: can't open infile %s",(Int)inFile,0);
     }
   
   oldPrintDepth = TLS(PrintObjDepth);
@@ -1296,12 +1296,12 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
      else if ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
 #endif
       PrintStat( call );
-      Pr(" on line %d of file %s",LINE_STAT(call),(UInt)CSTR_STRING(FILENAME_STAT(call)));
+      Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
     }
     else if ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
               && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) {
       PrintExpr( call );
-      Pr(" on line %d of file %s",LINE_STAT(call),(UInt)CSTR_STRING(FILENAME_STAT(call)));
+      Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
     }
     SWITCH_TO_OLD_LVARS( currLVars );
     return (Obj) 0;
@@ -1424,6 +1424,148 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
   return 0;
 }
 
+
+ #define MAX_TIMEOUT_NESTING_DEPTH 1024
+ 
+ syJmp_buf AlarmJumpBuffers[MAX_TIMEOUT_NESTING_DEPTH];
+ UInt NumAlarmJumpBuffers = 0;
+
+ Obj FuncTIMEOUTS_SUPPORTED(Obj self) {
+   return SyHaveAlarms ? True: False;
+ }
+   
+ Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Obj args )
+{
+  Obj plain_args;
+    Obj res;
+    Obj currLVars;
+    Obj result;
+    Int recursionDepth;
+    Stat currStat;
+    if (!SyHaveAlarms)
+      ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
+    if (!IS_INTOBJ(seconds) || 0 > INT_INTOBJ(seconds))
+      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <seconds> must be a non-negative small integer",0,0);
+    if (!IS_INTOBJ(microseconds) || 0 > INT_INTOBJ(microseconds) || 999999999 < INT_INTOBJ(microseconds))
+      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <microseconds> must be a non-negative small integer less than 10^9",0,0);
+    if (!IS_FUNC(func))
+      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <func> must be a function",0,0);
+    if (!IS_LIST(args))
+      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <args> must be a list",0,0);
+    if (!IS_PLIST(args))
+      {
+        plain_args = SHALLOW_COPY_OBJ(args);
+        PLAIN_LIST(plain_args);
+      }
+    else 
+      plain_args = args;
+    if (SyAlarmRunning)
+      ErrorMayQuit("CALL_WITH_TIMEOUT cannot currently be nested except via break loops."
+		   " There is already a timeout running", 0, 0);
+    if (NumAlarmJumpBuffers >= MAX_TIMEOUT_NESTING_DEPTH-1)
+      ErrorMayQuit("Nesting depth of timeouts via break loops limited to %i", MAX_TIMEOUT_NESTING_DEPTH, 0L);
+    currLVars = TLS(CurrLVars);
+    currStat = TLS(CurrStat);
+    recursionDepth = TLS(RecursionDepth);
+    if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers++])) {
+      /* Timeout happened */
+      TLS(CurrLVars) = currLVars;
+      TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
+      TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+      TLS(CurrStat) = currStat;
+      TLS(RecursionDepth) = recursionDepth;
+      res = Fail;
+    } else {
+      SyInstallAlarm( INT_INTOBJ(seconds), 1000*INT_INTOBJ(microseconds));
+      switch (LEN_PLIST(plain_args)) {
+      case 0: result = CALL_0ARGS(func);
+        break;
+      case 1: result = CALL_1ARGS(func, ELM_PLIST(plain_args,1));
+        break;
+      case 2: result = CALL_2ARGS(func, ELM_PLIST(plain_args,1),
+                                  ELM_PLIST(plain_args,2));
+        break;
+      case 3: result = CALL_3ARGS(func, ELM_PLIST(plain_args,1),
+                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3));
+        break;
+      case 4: result = CALL_4ARGS(func, ELM_PLIST(plain_args,1),
+                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
+                                  ELM_PLIST(plain_args,4));
+        break;
+      case 5: result = CALL_5ARGS(func, ELM_PLIST(plain_args,1),
+                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
+                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5));
+        break;
+      case 6: result = CALL_6ARGS(func, ELM_PLIST(plain_args,1),
+                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
+                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5),
+                                  ELM_PLIST(plain_args,6));
+        break;
+      default: result = CALL_XARGS(func, plain_args);
+      }
+      /* make sure the alarm is not still running */
+      SyStopAlarm( NULL, NULL);
+      /* Now the alarm might have gone off since we executed the last statement 
+	 of func. So */
+      if (SyAlarmHasGoneOff) {
+	SyAlarmHasGoneOff = 0;
+  // TODO : Fix in HPC-GAP
+  //UnInterruptExecStat();
+  Pr("Alarms not implemented in HPC-GAP",0,0);
+  abort();
+      }
+      assert(NumAlarmJumpBuffers);
+      NumAlarmJumpBuffers--;
+      res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE, 1);
+      if (result)
+        {
+          SET_LEN_PLIST(res,1);
+          SET_ELM_PLIST(res,1,result);
+          CHANGED_BAG(res);
+        }
+      else {
+	RetypeBag(res, T_PLIST_EMPTY+IMMUTABLE);
+        SET_LEN_PLIST(res,0);
+      }
+    }
+    return res;
+}
+
+Obj FuncSTOP_TIMEOUT( Obj self ) {
+  UInt seconds, nanoseconds;
+  if (!SyHaveAlarms || !SyAlarmRunning) 
+    return Fail;
+  SyStopAlarm(&seconds, &nanoseconds);
+  Obj state = NEW_PLIST(T_PLIST_CYC+IMMUTABLE, 3);
+  SET_ELM_PLIST(state,1,INTOBJ_INT(seconds));
+  SET_ELM_PLIST(state,2,INTOBJ_INT(nanoseconds/1000));
+  SET_ELM_PLIST(state,3,INTOBJ_INT(NumAlarmJumpBuffers));
+  SET_LEN_PLIST(state,3);
+  return state;
+}
+
+Obj FuncRESUME_TIMEOUT( Obj self, Obj state ) {
+  if (!SyHaveAlarms || SyAlarmRunning) 
+    return Fail;
+  if (!IS_PLIST(state) || LEN_PLIST(state) < 2)
+    return Fail;
+  if (!IS_INTOBJ(ELM_PLIST(state,1)) ||
+      !IS_INTOBJ(ELM_PLIST(state,2)))
+    return Fail;
+  Int s = INT_INTOBJ(ELM_PLIST(state,1));
+  Int us = INT_INTOBJ(ELM_PLIST(state,2));
+  if (s < 0 || us < 0 || us > 999999)
+    return Fail;
+  Int depth = INT_INTOBJ(ELM_PLIST(state,3));
+  if (depth < 0 || depth >= MAX_TIMEOUT_NESTING_DEPTH)
+    return Fail;
+  NumAlarmJumpBuffers = depth;
+  SyInstallAlarm(s, 1000*us);
+  return True;
+}
+
+ 
+ 
 /****************************************************************************
 **
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
@@ -1648,7 +1790,7 @@ void ErrorMayQuit (
 Obj Error;
 Obj ErrorInner;
 
-
+ 
 /****************************************************************************
 **
 
@@ -3109,6 +3251,18 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CALL_WITH_CATCH", 2, "func, args",
       FuncCALL_WITH_CATCH, "src/gap.c:CALL_WITH_CATCH" },
+
+    { "TIMEOUTS_SUPPORTED", 0, "",
+      FuncTIMEOUTS_SUPPORTED, "src/gap.c:TIMEOUTS_SUPPORTED" },
+
+    { "CALL_WITH_TIMEOUT", 4, "seconds, microseconds, func, args",
+      FuncCALL_WITH_TIMEOUT, "src/gap.c:CALL_WITH_TIMEOUT" },
+
+    {"STOP_TIMEOUT", 0, "",
+     FuncSTOP_TIMEOUT, "src/gap.c:FuncSTOP_TIMEOUT" },
+
+    {"RESUME_TIMEOUT", 1, "state",
+     FuncRESUME_TIMEOUT, "src/gap.c:FuncRESUME_TIMEOUT" },
 
     { "JUMP_TO_CATCH", 1, "payload",
       FuncJUMP_TO_CATCH, "src/gap.c:JUMP_TO_CATCH" },

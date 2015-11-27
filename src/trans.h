@@ -88,6 +88,28 @@ extern Obj OnSetsTrans ( Obj set, Obj f );
 extern  Obj             IdentityTrans;
 
 /****************************************************************************
+**
+*V  EqPermTrans22 . . . . . . . . . . . . . . . . .  
+**
+**  The actual equality checking function for Perm2 and Trans2.
+*/
+Int EqPermTrans22 (UInt                degL,
+                   UInt                degR, 
+                   UInt2 *             ptLstart,       
+                   UInt2 *             ptRstart);
+
+/****************************************************************************
+**
+*V  EqPermTrans44 . . . . . . . . . . . . . . . . .  
+**
+**  The actual equality checking function for Perm4 and Trans4.
+*/
+Int EqPermTrans44 (UInt                degL,
+                   UInt                degR, 
+                   UInt4 *             ptLstart,       
+                   UInt4 *             ptRstart);
+
+/****************************************************************************
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * */
 

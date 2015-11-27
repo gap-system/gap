@@ -16,65 +16,12 @@
 #F  WITH_HIDDEN_IMPS_FLAGS( <flags> )
 ##
 
-HIDDEN_IMPS := ShareSpecialObj([]);
-WITH_HIDDEN_IMPS_FLAGS_CACHE      := LockAndMigrateObj([], HIDDEN_IMPS);
+
 WITH_HIDDEN_IMPS_FLAGS_COUNT      := 0;
 WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := 0;
 WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT  := 0;
 
-Unbind( CLEAR_HIDDEN_IMP_CACHE);
-BIND_GLOBAL( "CLEAR_HIDDEN_IMP_CACHE", function( filter )
-    local   i, flags, lock;
 
-    flags := FLAGS_FILTER(filter);
-    lock := WRITE_LOCK(HIDDEN_IMPS);
-    for i  in [ 1, 3 .. LEN_LIST(WITH_HIDDEN_IMPS_FLAGS_CACHE)-1 ]  do
-        if IsBound(WITH_HIDDEN_IMPS_FLAGS_CACHE[i])  then
-          if IS_SUBSET_FLAGS(WITH_HIDDEN_IMPS_FLAGS_CACHE[i+1],flags)  then
-            Unbind(WITH_HIDDEN_IMPS_FLAGS_CACHE[i]);
-            Unbind(WITH_HIDDEN_IMPS_FLAGS_CACHE[i+1]);
-          fi;
-      fi;
-    od;
-    UNLOCK(lock);
-end );
-
-
-BIND_GLOBAL( "WITH_HIDDEN_IMPS_FLAGS", function ( flags )
-    local   with,  changed,  imp,  hash,  lock;
-
-    hash := 2 * ( HASH_FLAGS(flags) mod 1009 ) + 1;
-    lock := WRITE_LOCK(HIDDEN_IMPS);
-    if IsBound(WITH_HIDDEN_IMPS_FLAGS_CACHE[hash])  then
-        if IS_IDENTICAL_OBJ(WITH_HIDDEN_IMPS_FLAGS_CACHE[hash],flags)  then
-            WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT :=
-              WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT + 1;
-            with := WITH_HIDDEN_IMPS_FLAGS_CACHE[hash+1];
-	    UNLOCK(lock);
-	    return with;
-        fi;
-    fi;
-
-    WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS+1;
-    with := flags;
-    changed := true;
-    while changed  do
-        changed := false;
-        for imp in HIDDEN_IMPS  do
-            if        IS_SUBSET_FLAGS( with, imp[2] )
-              and not IS_SUBSET_FLAGS( with, imp[1] )
-            then
-                with := AND_FLAGS( with, imp[1] );
-                changed := true;
-            fi;
-        od;
-    od;
-
-    WITH_HIDDEN_IMPS_FLAGS_CACHE[hash  ] := flags;
-    WITH_HIDDEN_IMPS_FLAGS_CACHE[hash+1] := with;
-    UNLOCK(lock);
-    return with;
-end );
 
 
 #############################################################################

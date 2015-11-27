@@ -797,11 +797,11 @@ static inline void CheckRecursionBefore( void )
 Obj STEVES_TRACING;
 #define CHECK_RECURSION_BEFORE \
             CheckRecursionBefore(); \
-            PROF_IN_FUNCTION(func);
+            ProfileLineByLineIntoFunction(func);
 
 #define CHECK_RECURSION_AFTER \
             TLS(RecursionDepth)--; \
-            PROF_OUT_FUNCTION(func);
+            ProfileLineByLineOutFunction(func);
 
 #define REMEMBER_LOCKSTACK() \
     int			lockSP = TLS(lockStackPointer)

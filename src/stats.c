@@ -54,6 +54,8 @@
 
 #include        "vars.h"                /* variables                       */
 
+#include        "profile.h"             /* visit statements for profiling  */
+
 /****************************************************************************
 **
 
@@ -859,6 +861,7 @@ UInt            ExecForRange (
 
     /* evaluate the range                                                  */
     SET_BRK_CURR_STAT( stat );
+    VisitStatIfProfiling(ADDR_STAT(stat)[1]);
     elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[0] );
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
@@ -923,6 +926,7 @@ UInt            ExecForRange2 (
 
     /* evaluate the range                                                  */
     SET_BRK_CURR_STAT( stat );
+    VisitStatIfProfiling(ADDR_STAT(stat)[1]);
     elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[0] );
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
@@ -994,6 +998,7 @@ UInt            ExecForRange3 (
 
     /* evaluate the range                                                  */
     SET_BRK_CURR_STAT( stat );
+    VisitStatIfProfiling(ADDR_STAT(stat)[1]);
     elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[0] );
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
@@ -1674,6 +1679,24 @@ UInt            ExecReturnVoid (
 
 UInt (* IntrExecStatFuncs[256]) ( Stat stat );
 
+#ifdef HAVE_SIG_ATOMIC_T
+sig_atomic_t volatile RealExecStatCopied;
+#else
+int volatile RealExecStatCopied;
+#endif
+
+/****************************************************************************
+**
+*F  void CheckAndRespondToAlarm()
+**
+*/
+
+static void CheckAndRespondToAlarm(void) {
+  if ( SyAlarmHasGoneOff ) {
+    assert(NumAlarmJumpBuffers);
+    syLongjmp(AlarmJumpBuffers[--NumAlarmJumpBuffers],1);
+  }
+}
 
 /****************************************************************************
 **
@@ -1694,6 +1717,7 @@ UInt TakeInterrupt( void ) {
   if (TLS(CurrExecStatFuncs) == IntrExecStatFuncs) {
       assert(TLS(CurrExecStatFuncs) != ExecStatFuncs);
       TLS(CurrExecStatFuncs) = ExecStatFuncs;
+      CheckAndRespondToAlarm();
       ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
       return 1;
   }
@@ -1714,10 +1738,13 @@ UInt TakeInterrupt( void ) {
 UInt ExecIntrStat (
     Stat                stat )
 {
-    UInt                i;              /* loop variable                   */
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
     TLS(CurrExecStatFuncs) = ExecStatFuncs;
+
+    /* One reason we might be here is a timeout. If so longjump out to the 
+       CallWithTimeLimit where we started */
+    CheckAndRespondToAlarm();
 
     /* and now for something completely different                          */
     HandleInterrupts(1, stat);
@@ -1777,7 +1804,6 @@ Int BreakLoopPending( void ) {
 
 void ClearError ( void )
 {
-    UInt        i;
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
     if ( TLS(CurrExecStatFuncs) == IntrExecStatFuncs ) {

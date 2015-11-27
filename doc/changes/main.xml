@@ -56,6 +56,8 @@
 
 <#Include SYSTEM "preface.xml">
 
+<#Include SYSTEM "changes48.xml">
+
 <#Include SYSTEM "changes47.xml">
 
 <#Include SYSTEM "changes46.xml">
