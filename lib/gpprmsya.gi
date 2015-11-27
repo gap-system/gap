@@ -833,8 +833,15 @@ end);
 ##
 InstallMethod( Size,
     true,
-    [ IsNaturalAlternatingGroup ], 0,
-    sym -> Factorial( NrMovedPoints(sym) )/2 );
+        [ IsNaturalAlternatingGroup ], 0,
+        function(a)
+    local n;
+    n := NrMovedPoints(a);
+    if n <= 2 then
+        return 1;
+    fi;
+    return Factorial( n )/2;
+end);
 
 
 #############################################################################
