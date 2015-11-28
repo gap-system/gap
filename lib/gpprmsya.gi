@@ -959,10 +959,14 @@ SYMGP_STABILIZER := function(sym, arg)
             Add(parts, part);
         fi;
         
-        stab := TrivialSubgroup(sym);
+        gens := [];
+        size := 1;
         for part in parts do
-            stab := ClosureGroup(stab, SymmetricGroup(part));
+            Append(gens, GeneratorsOfGroup(SymmetricGroup(part)));
+            size := size*Factorial(Length(part));
         od;
+        stab := Group(gens,());
+        SetSize(stab,size);
         nat := Length(parts) <= 1;
     else
         TryNextMethod();

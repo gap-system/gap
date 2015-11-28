@@ -1,0 +1,24 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2015/11/28
+!! Changed by
+SL
+! Reported by
+
+!! Type of Change
+Fix: efficiency issue
+
+!! Description
+Improve the methods for "natural" symmetric and alternating groups,
+remove a little duplicated code.
+
+Tests added to tst/teststandard/grpperm.tst
+
+! Test Code
+
+! Prefetch
+
+!! Changeset
+
+!! End
