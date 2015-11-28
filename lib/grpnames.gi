@@ -20,21 +20,387 @@
 ##  from GAP3 code written by Markus Püschel and Sebastian Egner.
 ##
 
+
+#############################################################################
+##
+#M  IsTrivialNormalIntersectionInList( <L>, <U>, <V> ) . . . . generic method
+##
+InstallMethod( IsTrivialNormalIntersectionInList,
+               "if minimal normal subgroups are computed",
+               [ IsList, IsGroup, IsGroup ],
+
+  function( L, U, V )
+    local gs;
+
+    gs:= List(Filtered(L, N -> not IsTrivial(N)),
+                                               N -> GeneratorsOfGroup(N)[1]);
+    return ForAll(gs, g -> not g in U or not g in V);
+  end);
+
+#############################################################################
+##
+#M  IsTrivialNormalIntersection( <G>, <U>, <V> ) . . . . . . . generic method
+##
+
+InstallMethod( IsTrivialNormalIntersection,
+               "if minimal normal subgroups are computed",
+               [ IsGroup and HasMinimalNormalSubgroups, IsGroup, IsGroup ],
+
+  function( G, U, V )
+    local gs;
+
+    gs := List(MinimalNormalSubgroups(G), N -> GeneratorsOfGroup(N)[1]);
+    return ForAll(gs, g -> not g in U or not g in V);
+  end);
+
+InstallMethod( IsTrivialNormalIntersection,
+               "if socle is computed",
+               [ IsGroup and HasSocle, IsGroup, IsGroup ],
+
+  function( G, U, V )
+    local gs;
+
+    gs := GeneratorsOfGroup(Socle(G));
+    return ForAll(gs, g -> not g in U or not g in V);
+  end);
+
+InstallMethod( IsTrivialNormalIntersection,
+               "for nilpotent groups",
+               [ IsGroup and IsNilpotentGroup, IsGroup, IsGroup ],
+
+  function( G, U, V )
+    local gs;
+
+    gs := List(MinimalNormalSubgroups(Center(G)),
+                                              N -> GeneratorsOfGroup(N)[1]);
+    return ForAll(gs, g -> not g in U or not g in V);
+  end);
+
+InstallMethod( IsTrivialNormalIntersection,
+               "generic method", [ IsGroup, IsGroup, IsGroup ],
+
+  function( G, U, V )
+
+    return IsTrivial(NormalIntersection(U, V));
+  end);
+
+#############################################################################
+##
+#M  ComplementNormalSubgroup( <G>, <N> ) . . . . . . . . . . . generic method
+##
+InstallMethod( ComplementNormalSubgroup,
+               "generic method", [ IsGroup,  IsGroup ],
+
+  function( G, N )
+
+    # if <N> is trivial then the only complement is <G>
+    if IsTrivial(N) then
+      return G;
+
+    # if <G> and <N> are equal then the only complement is trivial
+    elif G = N  then
+      return TrivialSubgroup(G);
+
+    elif not (IsSubgroup(G, N) and IsNormal(G, N)) then
+      Error("N must be a normal subgroup of G");
+
+    else
+      return ComplementNormalSubgroupNC(G, N);
+    fi;
+  end);
+
+InstallMethod( ComplementNormalSubgroupNC,
+               "generic method", [ IsGroup,  IsGroup ],
+
+  function( G, N )
+
+    local F,    # G/N
+          DfF,  # Direct factors of F=G/N
+          gF,   # element of F=G/N
+          i,    # running index
+          l,    # list for storing stuff
+          b,    # elements of Abelian complement
+          B,    # complement to N
+          T,    # = [C_G(N), G] = 1 x B'
+          Gf,   # = G/T = N x B/B'
+          Nf,   # = NT/T
+          Bf,   # Abelian complement to Nf in Gf ( = B/B')
+          BfF;  # Direct factors of Bf
+
+    # if <N> is trivial then the only complement is <G>
+    if IsTrivial(N) then
+      return G;
+
+    # if <G> and <N> are equal then the only complement is trivial
+    elif G = N  then
+      return TrivialSubgroup(G);
+
+    # if G/N is Abelian
+    elif HasAbelianFactorGroup(G, N) then
+      F := FactorGroupNC(G, N);
+      b := [];
+      l := [];
+      i:=0;
+      for gF in IndependentGeneratorsOfAbelianGroup(F) do
+        i := i+1;
+        l := First(PreImage(NaturalHomomorphism(F), [gF]),
+              x -> IsCentral(G, SubgroupNC(G,[x])) and Order(x) = Order(gF));
+        if l <> fail then
+          b[i] := l;
+        else
+          return fail;
+        fi;
+      od;
+      B := SubgroupNC(G, b);
+      return B;
+
+    # if G/N is not Abelian
+    else
+      T := CommutatorSubgroup(Centralizer(G, N), G);
+      if not IsTrivial(T) and IsTrivialNormalIntersection(G, T, N) then
+        Gf := FactorGroupNC(G, T);
+        Nf := Image(NaturalHomomorphism(Gf), N);
+        # not quite sure if this check is needed
+        if HasAbelianFactorGroup(Gf, Nf) then
+          Bf := ComplementNormalSubgroupNC(Gf, Nf);
+          if Bf = fail then
+            return fail;
+          else
+            B := PreImage(NaturalHomomorphism(Gf), Bf);
+            return B;
+          fi;
+        else
+          return fail;
+        fi;
+      else
+        return fail;
+      fi;
+    fi;
+  end);
+
 #############################################################################
 ##
 #M  DirectFactorsOfGroup( <G> ) . . . . . . . . . . . . . . .  generic method
 ##
-InstallMethod( DirectFactorsOfGroup,
-               "generic method", true, [ IsGroup ], 0,
+InstallMethod(DirectFactorsOfGroup,
+            "for direct products if normal subgroups are computed", true,
+            [ IsGroup and HasDirectProductInfo and HasNormalSubgroups ], 10,
 
-  function ( G )
+  function(G)
+    local i, info, Ns, MinNs, H, Df, DfNs, DfMinNs, gs;
 
-    local  N, facts, sizes, i, j, s1, s2;
+    Ns := NormalSubgroups(G);
+    MinNs := MinimalNormalSubgroups(G);
+    Df := [];
+    info := DirectProductInfo(G).groups;
+    for i in [1..Length(info)] do
+      H := Image(Embedding(G,i),info[i]);
+      DfMinNs := Filtered(MinNs, N ->IsSubset(H, N));
+      if Length(DfMinNs) = 1 then
+        # size of DfMinNs is an upper bound to the number of components of H
+        UniteSet(Df, H);
+      else
+        DfNs := Filtered(Ns, N ->IsSubset(H, N));
+        gs := Set(DfMinNs, N -> GeneratorsOfGroup(N)[1]);
+        # normal subgroup containing all minimal subgroups cannot have complement in H
+        DfNs := Filtered(DfNs, N -> not IsSubset(N, gs));
+        UniteSet(Df, DirectFactorsOfGroupFromList(H, DfNs, DfMinNs));
+      fi;
+    od;
+    return Df;
+  end);
+
+InstallMethod(DirectFactorsOfGroup, "for direct products", true,
+                      [ IsGroup and HasDirectProductInfo ], 10,
+
+  function(G)
+    local i, info, Ns;
+
+    Ns := [];
+    info := DirectProductInfo(G).groups;
+    for i in [1..Length(info)] do
+      UniteSet(Ns, DirectFactorsOfGroup(Image(Embedding(G,i),info[i])));
+    od;
+    return Ns;
+  end);
+
+InstallMethod(DirectFactorsOfGroup, "if normal subgroups are computed", true,
+                      [ IsGroup and HasNormalSubgroups ], 10,
+
+  function(G)
+    local Ns, MinNs, GGd, gs;
+
+    Ns := NormalSubgroups(G);
+    MinNs := MinimalNormalSubgroups(G);
+
+    if Length(MinNs)= 1 then
+      # size of MinNs is an upper bound to the number of components
+      return [ G ];
+    fi;
+
+    if IsSolvableGroup(G) then
+      GGd := CommutatorFactorGroup(G);
+      if IsCyclic(GGd) and IsPrimePowerInt(Size(GGd)) then
+        # G is direct indecomposable, because has a unique maximal subgroup
+        return [ G ];
+      fi;
+    elif Length(MaximalNormalSubgroups(G))= 1 then
+      # size of MaximalNormalSubgroups is an upper bound to the number of
+      # components
+      return [ G ];
+    fi;
+
+    gs := Set(MinNs, N -> GeneratorsOfGroup(N)[1]);
+    # normal subgroup containing all minimal subgroups cannot have complement
+    Ns := Filtered(Ns, N -> not IsSubset(N, gs));
+
+    return DirectFactorsOfGroupFromList(G, Ns, MinNs);
+  end);
+
+InstallMethod(DirectFactorsOfGroup, "generic method", true,
+                        [ IsGroup ], 0,
+  function(G)
+
+    local p,        # prime
+          Gd,       # G'
+          GGd,      # G/G'
+          C,        # Center(G)
+          GC,       # G/C
+          avoid,    # set of elements or indices to avoid
+          Ns,       # list of normal subgroups
+          MinNs,    # list of minimal normal subgroups
+          gs,       # list containing one generator for each MinNs
+          g,        # group element
+          N,        # (possible) component of G, containing g
+          B;        # (possible) complement of G in N
+
+    # for Abelian groups return the canonical decomposition
+    if IsTrivial(G) then
+      return [G];
+    elif IsAbelian(G) then
+      Ns := List(IndependentGeneratorsOfAbelianGroup(G),
+                                                  g -> SubgroupNC(G, [g]));
+      # for infinite groups Set may be very inefficient
+      # might cause problems because for finite groups we return a set
+      if not IsFinite(G) then
+        return Ns;
+      else
+        return Set(Ns);
+      fi;
+    fi;
 
     if not IsFinite(G) then TryNextMethod(); fi;
-    N := ShallowCopy(NormalSubgroups(G));
-    sizes := List(N,Size);
-    SortParallel(sizes,N);
+
+    # Nilpotent groups are direct product of Sylow subgroups
+    if IsNilpotentGroup(G) then
+      if not IsPGroup(G) then
+        Ns := [ ];
+        for p in PrimeDivisors(Size(G)) do
+          UniteSet(Ns, DirectFactorsOfGroup(SylowSubgroup(G, p)));
+        od;
+        return Ns;
+      else
+        if IsCyclic(Center(G)) then
+          # G is direct indecomposable, because has a unique minimal subgroup
+          return [ G ];
+        fi;
+      fi;
+    fi;
+
+    if IsSolvableGroup(G) then
+      GGd := CommutatorFactorGroup(G);
+      if IsCyclic(GGd) and IsPrimePowerInt(Size(GGd)) then
+        # G is direct indecomposable, because has a unique maximal subgroup
+        return [ G ];
+      fi;
+    fi;
+
+    # look for Abelian cyclic component from the center
+    C := Center(G);
+    # (these components cannot lie in the commutator)
+    Gd := DerivedSubgroup(G);
+    avoid := [];
+    for g in C do
+      if not g in Gd and ForAll(avoid,h -> not g in RationalClass(G, h)) then
+        N := Subgroup(G, [g]);
+        B := ComplementNormalSubgroupNC(G, N);
+        # if B is a complement to N
+        if B <> fail then
+          return Union(DirectFactorsOfGroup(N), DirectFactorsOfGroup(B));
+        # if there is no complement to N then discard the generators of N
+        else
+          AddSet(avoid, g);
+        fi;
+      fi;
+    od;
+
+    # all components are non-Abelian
+    if IsCyclic(Gd) and IsPrimePowerInt(Size(Gd)) then
+      # if A and B are two non-Abelian components, then
+      # A' and B' must be nontrivial
+      # this can only help for some meta-Abelian groups
+      return [ G ];
+    fi;
+
+    if not IsTrivial(C) then
+      GC := G/C;
+      if IsAbelian(GC) and Length(DirectFactorsOfGroup(GC)) < 4 then
+        # if A and B are two non-Abelian components,
+        # where A/Center(A) and B/Center(B) are Abelian, then
+        # A/Center(A) and B/Center(B) must have at least two components each
+        return [ G ];
+      fi;
+    fi;
+
+    # if everything else fails, compute all normal subgroups
+    Ns := NormalSubgroups(G);
+    if IsNilpotentGroup(G) then
+        # minimal normal subgroups are central in nilpotent groups
+        MinNs := MinimalNormalSubgroups(Center(G));
+    else
+      # MinimalNormalSubgroups seems to compute faster after NormalSubgroups
+      MinNs := MinimalNormalSubgroups(G);
+    fi;
+
+    if Length(MinNs)= 1 then
+      # size of MinNs is an upper bound to the number of components
+      return [ G ];
+    fi;
+
+    if not IsSolvableGroup(G) and Length(MaximalNormalSubgroups(G))= 1 then
+      # size of MaximalNormalSubgroups is an upper bound to the number of
+      # components
+      return [ G ];
+    fi;
+
+    gs := Set(MinNs, N -> GeneratorsOfGroup(N)[1]);
+    # normal subgroup containing all minimal subgroups cannot have complement
+    Ns := Filtered(Ns, N -> not IsSubset(N, gs));
+
+    return DirectFactorsOfGroupFromList(G, Ns, MinNs);
+  end);
+
+InstallGlobalFunction( DirectFactorsOfGroupFromList,
+
+  function ( G, NList, MinList )
+
+    local  gs, Ns, MinNs, NNs, MinNNs, facts, sizes, i, j, s1, s2;
+
+    if Length(MinList)=1 then
+      # size of MinList is an upper bound to the number of components
+      return [ G ];
+    fi;
+
+    if not IsFinite(G) then TryNextMethod(); fi;
+
+    Ns := ShallowCopy(NList);
+    MinNs := ShallowCopy(MinList);
+    gs:= List(Filtered(MinNs, N -> not IsTrivial(N)),
+                                               N -> GeneratorsOfGroup(N)[1]);
+    # normal subgroup containing all minimal subgroups cannot have complement
+    Ns := Filtered(Ns, N -> not IsSubset(N, gs));
+    sizes := List(Ns,Size);
+    SortParallel(sizes,Ns);
     for s1 in Difference(Set(sizes),[Size(G),1]) do
       i := PositionSet(sizes,s1);
       s2 := Size(G)/s1;
@@ -46,19 +412,182 @@ InstallMethod( DirectFactorsOfGroup,
           else 
             j := i + 1;
           fi;
-          while sizes[j] = s2 do
-            if IsTrivial(Intersection(N[i],N[j])) then
-              return Union(DirectFactorsOfGroup(N[i]),
-                           DirectFactorsOfGroup(N[j]));
+          while j <= Size(sizes) and sizes[j] = s2 do
+            if IsTrivialNormalIntersectionInList(MinList,Ns[i],Ns[j]) then
+            # Ns[i] is the smallest direct factor, hence direct irreducible
+            # we keep from Ns only the subgroups of Ns[j] having size min. s1
+              NNs := Filtered(Ns{[i..j]}, N -> Size(N) >= s1
+                              and s2 mod Size(N) = 0 and IsSubset(Ns[j], N));
+              MinNNs := Filtered(MinNs, N -> s2 mod Size(N) = 0
+                                                and IsSubset(Ns[j], N));
+              return Union([ Ns[i] ], DirectFactorsOfGroupFromList(Ns[j],
+                        NNs, MinNNs));
             fi;
             j := j + 1;
           od;
           i := i + 1;
-        until sizes[i] <> s1;
+        until i>=Size(sizes) or sizes[i] <> s1;
       fi;
     od;
     return [ G ];
   end );
+
+InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
+                        [ IsGroup ], 10,
+  function(G)
+
+    local Ns,       # list of some direct components
+          i,        # running index
+          Gd,       # derived subgroup G'
+          p,        # prime
+          N,        # (possible) component of G
+          B,        # complement of G in N
+          K,        # normal subgroup
+          prodK,    # product of normal subgroups
+          Z1,       # contains a (unique) component with trivial center
+          g,a,b,    # elements of G
+          avoid,    # set of elements or indices to avoid
+          C,        # Center(G)
+          Cl,       # all conjugacy classes of G
+          Clf,      # filtered list of conjugacy classes of G
+          c1,c2,c3, # conjugacy class of G
+          com,      # true if c1 and c2 commute, false otherwise
+          prod,     # product of c1 and c2
+          RedCl,    # reducible conjugacy classes of G
+          IrrCl,    # irreducible conjugacy classes of G
+          preedges, # pre-edges of the non-commuting graph
+          edges,    # final edges of the non-commuting graph
+          e,        # one edge of the non-commuting graph
+          comp,     # components of the non-commuting graph
+          DfZ1,     # non-Abelian direct factors of Z1
+          S1;       # index set corresponding to first component
+
+    # for Abelian groups return the canonical decomposition
+    if IsTrivial(G) then
+      return [G];
+    elif IsAbelian(G) then
+      Ns := List(IndependentGeneratorsOfAbelianGroup(G),
+                                                  g -> SubgroupNC(G, [g]));
+      # for infinite groups Set may be very inefficient
+      # might cause problems because for finite groups we return a set
+      if not IsFinite(G) then
+        return Ns;
+      else
+        return Set(Ns);
+      fi;
+    fi;
+
+    if not IsFinite(G) then TryNextMethod(); fi;
+
+    # look for Abelian cyclic component from the center
+    C := Center(G);
+    # (these components cannot lie in the commutator)
+    Gd := DerivedSubgroup(G);
+    avoid := [];
+    for g in C do
+      if not g in Gd and ForAll(avoid,h -> not g in RationalClass(G, h)) then
+        N := Subgroup(G, [g]);
+        B := ComplementNormalSubgroupNC(G, N);
+        # if B is a complement to N
+        if B <> fail then
+          return Union(DirectFactorsOfGroupKN(N), DirectFactorsOfGroupKN(B));
+        # if there is no complement to N then discard the generators of N
+        else
+          AddSet(avoid, g);
+        fi;
+      fi;
+    od;
+
+    # all components are non-Abelian
+    # !!! this can (and should) be made more efficient later !!!
+    # instead of conjugacy classes we should calculate by normal subgroups
+    # generated by 1 element
+    Cl := Set(ConjugacyClasses(G));
+    RedCl := Set(Filtered(Cl, x -> Size(x) = 1));
+    Clf := Difference(Cl, RedCl);
+    preedges := [];
+    for c1 in Clf do
+      for c2 in Clf do
+        com := true;
+        prod := [];
+        if c1 <> c2 then
+          for a in c1 do
+            for b in c2 do
+              if com then
+                g := a*b;
+                if g<>b*a then
+                  com := false;
+                  AddSet(preedges, [c1, c2]);
+                else
+                  AddSet(prod, g);
+                fi;
+              fi;
+            od;
+          od;
+          if com and Size(prod) = Size(c1)*Size(c2) then
+            a := Representative(c1);
+            b := Representative(c2);
+            c3 := ConjugacyClass(G, a*b);
+            if Size(c3)=Size(prod) then
+              AddSet(RedCl, c3);
+            fi;
+          fi;
+        fi;
+      od;
+    od;
+    IrrCl := Difference(Clf, RedCl);
+
+    # need to remove edges corresponding to reducible classes
+    edges := ShallowCopy(preedges);
+    for e in preedges do
+      if Intersection(e, RedCl) <> [] then
+        RemoveSet(edges, e);
+      fi;
+    od;
+
+    # now we create the graph components of the irreducible class graph
+    # as an equivalence relation
+    # this is not compatible with and not using the grape package
+    comp := EquivalenceRelationPartition(
+              EquivalenceRelationByPairsNC(IrrCl, edges));
+
+    # replace classes in comp by their representatives
+    comp := Set(comp, x-> Set(x, Representative));
+
+    # now replace every list by their generated normal subgroup
+    Ns := Set(comp, x-> NormalClosure(G, SubgroupNC(G, x)));
+    if IsTrivial(C) or Size(Ns)=1 then
+      return Ns;
+    fi;
+
+    # look for the possible direct components from Ns
+    # partition to two sets, consider both
+    for S1 in PartitionsSet(Ns,2) do for i in [1..2] do
+      prodK := TrivialSubgroup(G);
+      for K in S1[i] do
+        prodK := ClosureGroup(prodK, K);
+      od;
+      Z1 := Centralizer(G, prodK);
+      # Z1 is non-Abelian <==> contains a non-Abelian factor
+      if not IsAbelian(Z1) then
+        N := First(DirectFactorsOfGroupKN(Z1), x-> not IsAbelian(x));
+        # not sure if IsNormal(G, N) should be checked
+
+        # this certainly can be done better,
+        # because we basically know all possible normal subgroups
+        # but it suffices for now
+        B := ComplementNormalSubgroup(G, N);
+        if B <> fail then
+          # N is direct indecomposable by construction
+          return Union( [ N ], DirectFactorsOfGroupKN(B) );
+        fi;
+      fi;
+    od; od;
+
+    # if no direct component is found
+    return [ G ];
+  end);
+
 
 #############################################################################
 ##

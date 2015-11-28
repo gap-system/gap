@@ -16,6 +16,26 @@
 
 #############################################################################
 ##
+#O  IsTrivialNormalIntersection( <G>, <U>, <V> ) . . . . . . . generic method
+##
+##  <ManSection>
+##  <Oper Name="IsTrivialNormalIntersection" Arg="G, U, V"/>
+##
+##  <Description>
+##    For normal subgroups U and V of G, IsTrivialNormalIntersection returns
+##    true if U and V intersect trivially, and false otherwise.
+##    If U and V are not normal subgroups of G, then it may return true
+##    even if they have a nontrivial intersection.
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation( "IsTrivialNormalIntersection",[IsGroup, IsGroup, IsGroup]);
+# checks if arg2 and arg3 both contain the first generator of any element in
+# the given list arg1 of (minimal) normal subgroups
+DeclareOperation( "IsTrivialNormalIntersectionInList",[IsList, IsGroup, IsGroup]);
+
+#############################################################################
+##
 #A  DirectFactorsOfGroup( <G> ) . . . . . decomposition into a direct product
 ##
 ##  <ManSection>
@@ -122,6 +142,21 @@
 ##   and where it is in the b-sequence if any. The the
 ##   linear algorithm above may be used.
 ##
+
+## The Kayal-Nezhmetdinov algorithm is described in
+## Neeraj Kayal and Timur Nezhmetdinov, Factoring Groups Efficiently, in
+## International Colloquium on Automata, Languages and Programming (ICALP) ,
+## Springer Verlag, 2009.
+# Gives a normal complement to the second argument if exists, fail otherwise.
+# In theory it finds the normal complement for infinite groups, as well,
+# but has an infinite loop if g/N is Abelian for infinite N.
+DeclareOperation( "ComplementNormalSubgroup", [IsGroup, IsGroup]);
+DeclareOperation( "ComplementNormalSubgroupNC", [IsGroup, IsGroup]);
+# Kayal-Nezhmetdinov algorithm with only a few tweaks
+DeclareAttribute( "DirectFactorsOfGroupKN", IsGroup );
+# checks if there are factors from first list
+# trivial intersection is checked if both contain anyone from second list
+DeclareGlobalFunction( "DirectFactorsOfGroupFromList", [IsGroup, IsList, IsList]);
 DeclareAttribute( "DirectFactorsOfGroup", IsGroup );
 
 #############################################################################
