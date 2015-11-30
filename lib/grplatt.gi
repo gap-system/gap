@@ -1799,6 +1799,11 @@ local G,	# group
       still,
       ab,
       idx,
+      opr,
+      zim,
+      mat,
+      eig,
+      qhom,affm,vsb,
       T,S,C,A,ji,orb,orbi,cllen,r,o,c,inv,cnt,
       ii,i,j,k;	# loop
 
@@ -1813,6 +1818,7 @@ local G,	# group
     return InvariantSubgroupsElementaryAbelianGroup(G,[]);
   fi;
 
+  #cs:=ChiefSeriesTF(G);
   cs:=ChiefSeries(G);
   G!.lattfpres:=IsomorphismFpGroupByChiefSeriesFactor(G,"x",G);
   nt:=[G];
@@ -1873,11 +1879,87 @@ local G,	# group
 	      l:=[];
 	      OCOneCocycles(ocr,true);
 	      if IsBound(ocr.complement) then
-		l:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
-		      BasisVectors(Basis(ocr.oneCoboundaries)));
-		vs:=VectorSpace(LeftActingDomain(ocr.oneCocycles),
-			 l.factorspace,Zero(ocr.oneCocycles));
-		Info(InfoLattice,2,p^Length(l.factorspace)," cocycles");
+		if Length(BasisVectors(Basis(ocr.oneCoboundaries)))>0 then
+		  Error("nontrivial coboundaries basis!");
+		fi;
+		vs:=ocr.oneCocycles;
+		Info(InfoLattice,2,Size(vs)," cocycles");
+
+		# get affine action on cocycles that represents conjugation
+		if Size(vs)>10 then
+		  qhom:=GroupHomomorphismByImagesNC(ocr.group,
+	                  Range(ocr.factorfphom),
+			  Concatenation(
+			    MappingGeneratorsImages(ocr.factorfphom)[1],
+			    GeneratorsOfGroup(M)),
+			  Concatenation(
+			    MappingGeneratorsImages(ocr.factorfphom)[2],
+			    List(GeneratorsOfGroup(M),
+			      x->One(Range(ocr.factorfphom)))));
+                  Assert(2,GroupHomomorphismByImages(Source(qhom),Range(qhom),
+		    MappingGeneratorsImages(qhom)[1],
+		    MappingGeneratorsImages(qhom)[2])<>fail);
+		  opr:=function(cyc,elm)
+		  local l,i,lc,lw;
+		    l:=ocr.cocycleToList(cyc);
+		    for i in [1..Length(l)] do
+		      l[i]:=ocr.complementGens[i]*l[i];
+		    od;
+
+		    # inverse conjugation will give us words that undo the
+		    # action on the factor
+		    lc:=[];
+		    for i in [1..Length(l)] do
+		      lc[i]:=ImagesRepresentative(qhom,l[i]^(elm^-1));
+		      l[i]:=l[i]^elm;
+		    od;
+		    # other generators for same complement, these should be
+		    # nice ones.
+		    lw:=List(lc,x->MappedWord(x,GeneratorsOfGroup(Range(qhom)),l));
+
+		    lc:=List([1..Length(lc)],x->LeftQuotient(ocr.complementGens[x],lw[x]));
+		    Assert(1,ForAll(lc,x->x in M));
+
+		    return ocr.listToCocycle(lc);
+
+		  end;
+		  affm:=[];
+		  vsb:=Basis(vs);
+		  for k in SmallGeneratingSet(G) do
+		    zim:=Coefficients(vsb,opr(Zero(vs),k));
+		    mat:=List(BasisVectors(vsb),x->
+	    Concatenation(Coefficients(vsb,opr(x,k))-zim,[Zero(ocr.field)]));
+	            Add(mat,Concatenation(zim,[One(ocr.field)]));
+		    Add(affm,mat);
+		  od;
+
+		  # ensure the action is OK
+		  Assert(1,GroupHomomorphismByImages(G,Group(affm),
+		    SmallGeneratingSet(G),affm)<>fail);
+
+		  #eve:=ExtendedVectors(ocr.field^Length(vsb));
+		  #ooo:=Orbits(Group(affm),eve);
+		  #Info(InfoLattice,2,"orblens=",Collected(List(ooo,Length)));
+
+		  # common eigenspaces for eigenvalue 1:
+		  eig:=List(affm,x->NullspaceMat(x-x^0));
+		  mat:=eig[1];
+		  for k in [2..Length(eig)] do
+		    mat:=SumIntersectionMat(mat,eig[k])[2];
+		  od;
+		  Info(InfoLattice,2,"eigenspace 1=",Length(mat));
+		  # take only vectors with last entry one
+		  vs:=[];
+		  if Length(mat)>0 then
+		    for k in Elements(VectorSpace(ocr.field,mat)) do
+		      if IsOne(k[Length(k)]) then
+			Add(vs,k{[1..Length(vsb)]}*vsb);
+		      fi;
+		    od;
+		  fi;
+		  Info(InfoLattice,2,"vectors=",Length(vs));
+		fi;
+	        
 
 		# try to catch some solvable cases that look awful
 		if Size(vs)>1000 and Length(Set(Factors(Index(j,N))))<=2
