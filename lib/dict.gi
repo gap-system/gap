@@ -105,6 +105,31 @@ end);
 
 #############################################################################
 ##
+#M  RemoveDictionary(<dict>,<obj>)
+##
+InstallOtherMethod(RemoveDictionary,"for lookup list dictionaries",true,
+  [IsListLookupDictionary and IsMutable,IsObject],0,
+function(d, key)
+  local pos;
+  pos := PositionProperty(d!.entries, x->x[1] = key);
+  if pos <> fail then
+    Remove(d!.entries, pos);
+  fi;
+end);
+
+InstallMethod(RemoveDictionary,"for list dictionaries",true,
+  [IsListDictionary and IsMutable,IsObject],0,
+function(d, key)
+  local pos;
+  pos := Position(d!.list, key);
+  if pos <= Length(d!.list) and d!.list[pos] = key then
+    Remove(d!.list, pos);
+  fi;;
+end);
+
+
+#############################################################################
+##
 #M  AddDictionary(<dict>,<obj>,<val>)
 ##
 InstallOtherMethod(AddDictionary,"for lookup sort dictionaries",true,
@@ -113,7 +138,7 @@ InstallOtherMethod(AddDictionary,"for lookup sort dictionaries",true,
     local pair, p;
     pair:=[Immutable(x),val];
     # MakeImmutable(pair); # to be able to store sortedness
-   
+
     p := PositionSorted(d!.entries,[x]);
     if p <= Length(d!.entries) and d!.entries[p][1] = x then
         d!.entries[p] := pair;
@@ -209,7 +234,7 @@ local d,rep;
   return d;
 end);
 
-InstallMethod(ShallowCopy, [IsPositionDictionary and IsCopyable], 
+InstallMethod(ShallowCopy, [IsPositionDictionary and IsCopyable],
         function(d)
     local   r;
     r := rec( domain := d!.domain,
@@ -217,8 +242,8 @@ InstallMethod(ShallowCopy, [IsPositionDictionary and IsCopyable],
     Objectify(NewType(DictionariesFamily,IsPositionDictionary and IsMutable and IsCopyable),r);
     return r;
 end);
-        
-InstallMethod(ShallowCopy, [IsPositionLookupDictionary and IsCopyable], 
+
+InstallMethod(ShallowCopy, [IsPositionLookupDictionary and IsCopyable],
         function(d)
     local   r;
     r := rec( domain := d!.domain,
@@ -227,7 +252,7 @@ InstallMethod(ShallowCopy, [IsPositionLookupDictionary and IsCopyable],
     Objectify(NewType(DictionariesFamily,IsPositionLookupDictionary and IsMutable and IsCopyable),r);
     return r;
 end);
-        
+
 
 #############################################################################
 ##
@@ -296,8 +321,8 @@ local hashfun,obj,dom,lookup;
   fi;
 
   # are we given a domain, which can index very quickly?
-  if dom<>fail and IsList(dom) and 
-    (IsQuickPositionList(dom) or 
+  if dom<>fail and IsList(dom) and
+    (IsQuickPositionList(dom) or
       (not IsMutable(dom) and IsSSortedList(dom) and
        CanEasilySortElements(dom[1]) )  )
        #2^22 plist (for position lookup) is 16MB size
@@ -306,7 +331,7 @@ local hashfun,obj,dom,lookup;
     return DictionaryByPosition(dom,lookup);
   elif dom<>fail and IsFreeLeftModule(dom) and
     IsFFECollection(LeftActingDomain(dom)) and
-    Size(LeftActingDomain(dom))<=256 
+    Size(LeftActingDomain(dom))<=256
     #2^22 plist (for position lookup) is 16MB size
     and Size(dom)<2^22 then
     # FF vector space: use enumerator for position
@@ -343,6 +368,48 @@ local hashfun,obj,dom,lookup;
   return DictionaryByList(lookup);
 end);
 
+#############################################################################
+##
+#M  Enumerator( <dict> ) for list dictionaries
+##
+InstallMethod( Enumerator, "for list dictionaries",
+    [ IsListDictionary ], 0,
+    function( dict )
+      if IsListLookupDictionary(dict) then
+        return List(dict!.entries, pair -> pair[2]);
+      else
+        return ShallowCopy(dict!.list);
+      fi;
+    end );
+
+#############################################################################
+##
+#M  ListKeyEnumerator( <dict> ) for list dictionaries
+##
+InstallMethod( ListKeyEnumerator, "for list dictionaries",
+    [ IsListDictionary ], 0,
+    function( dict )
+      if IsListLookupDictionary(dict) then
+        return List(dict!.entries, pair -> pair[1]);
+      else
+        return ShallowCopy(dict!.list);
+      fi;
+    end );
+
+#############################################################################
+##
+#M  ViewObj( <dict> ) for dictionaries
+##
+InstallMethod( ViewObj, "for dictionaries", true,
+    [ IsDictionary ], 0,
+    function( hash )
+      Print("<");
+      if IsLookupDictionary(hash) then
+          Print("lookup ");
+      fi;
+      Print("dictionary>");
+    end );
+
 # here starts the hash table bit by Gene and Scott
 
 ##  PERFORMANCE:
@@ -357,10 +424,10 @@ end);
 ##
 #V  MaxHashViewSize
 ##
-##  The maximum size of a hash table for which ViewObj will print the whole 
+##  The maximum size of a hash table for which ViewObj will print the whole
 ##  table (default 10).
 ##
-MaxHashViewSize := 10;  
+MaxHashViewSize := 10;
 
 #############################################################################
 ##
@@ -381,7 +448,7 @@ LastHashIndex := -1;
 ##
 #F  DenseHashTable( )
 ##
-InstallGlobalFunction( DenseHashTable, 
+InstallGlobalFunction( DenseHashTable,
     function( )
         local Type, Rec;
 
@@ -398,7 +465,7 @@ InstallMethod( ViewObj, "for dense hash tables", true,
     [ IsDenseHashRep ], 0,
     function( hash )
         if Size( hash ) > MaxHashViewSize then
-            Print("< dense hash table of size ", Size( hash ), " >");
+            Print("<dense hash table of size ", Size( hash ), ">");
         else
             PrintHashWithNames( hash, "Keys", "Values" );
         fi;
@@ -414,7 +481,7 @@ InstallMethod( PrintHashWithNames, "for dense hash tables", true,
     function( hash, keyName, valueName )
         local key;
         Print(keyName, ": ", hash!.KeyArray, "\n");
-        Print(valueName, ": ", List( hash!.KeyArray, 
+        Print(valueName, ": ", List( hash!.KeyArray,
                key -> hash!.ValueArray[key] ));
     end );
 
@@ -465,11 +532,11 @@ InstallMethod( HashKeyEnumerator, "for dense hash tables", true,
 ##  Returns a random value.
 ##
 InstallMethod( Random, "for dense hash tables", true,
-    [ IsHash and IsDenseHashRep ], 100,    
-    function( hash ) 
+    [ IsHash and IsDenseHashRep ], 100,
+    function( hash )
         return GetHashEntry( hash, RandomHashKey( hash ) );
     end );
-        
+
 #############################################################################
 ##
 #M  RandomHashKey( <hash> ) for dense hash tables
@@ -477,8 +544,8 @@ InstallMethod( Random, "for dense hash tables", true,
 ##  Returns a random key.
 ##
 InstallMethod( RandomHashKey, "for dense hash tables", true,
-    [ IsHash and IsDenseHashRep ], 100,    
-    function( hash ) 
+    [ IsHash and IsDenseHashRep ], 100,
+    function( hash )
         return Random(hash!.KeyArray);
     end );
 
@@ -497,20 +564,20 @@ InstallMethod( RandomHashKey, "for dense hash tables", true,
 ##
 ##  Default starting hash table size
 ##
-DefaultHashLength := 2^7; 
+DefaultHashLength := 2^7;
 BindGlobal("HASH_RANGE",[0..DefaultHashLength-2]);
 
 #############################################################################
 ##
 #F  SparseHashTable( )
 ##
-InstallGlobalFunction( SparseHashTable, 
+InstallGlobalFunction( SparseHashTable,
 function(arg)
       local Rec,T;
 
-  Rec := rec( KeyArray := ListWithIdenticalEntries( DefaultHashLength, fail ), 
+  Rec := rec( KeyArray := ListWithIdenticalEntries( DefaultHashLength, fail ),
           ValueArray := [], LengthArray := DefaultHashLength, NumberKeys := 0 );
-    
+
   if Length(arg)>0 then
     T:=Objectify( DefaultSparseHashWithIKRepType, Rec );
     T!.intKeyFun:=arg[1];
@@ -526,8 +593,6 @@ end );
 ##
 #M  ShallowCopy( <hash> ) for sparse hash table
 ##
-
-
 InstallMethod(ShallowCopy, [IsSparseHashRep and IsCopyable],
         function(t)
     local r;
@@ -551,9 +616,6 @@ InstallMethod(ShallowCopy, [IsSparseHashRep and TableHasIntKeyFun and IsCopyable
     return Objectify( DefaultSparseHashWithIKRepType and IsMutable, r);
 end);
 
-
-
-
 #############################################################################
 ##
 #M  ViewObj( <hash> ) for sparse hash table
@@ -562,7 +624,7 @@ InstallMethod( ViewObj, "for sparse hash tables", true,
     [ IsSparseHashRep ], 0,
     function( hash )
         if Size( hash ) > MaxHashViewSize then
-            Print("< sparse hash table of size ", Size( hash ), " >");
+            Print("<sparse hash table of size ", Size( hash ), ">");
         else
             PrintHashWithNames( hash, "Keys", "Values" );
         fi;
@@ -570,7 +632,7 @@ InstallMethod( ViewObj, "for sparse hash tables", true,
 
 #############################################################################
 ##
-#M  PrintHashWithNames( <hash>, <keyName>, <valueName> ) 
+#M  PrintHashWithNames( <hash>, <keyName>, <valueName> )
 ##      for sparse hash table
 ##
 InstallMethod( PrintHashWithNames, "for sparse hash tables", true,
@@ -605,7 +667,7 @@ InstallMethod( Size, "for sparse hash tables", true,
 ##
 InstallMethod( Enumerator, "for sparse hash tables", true,
     [ IsHash and IsSparseHashRep ], 0,
-    hash -> List( Filtered( hash!.KeyArray, x -> x <> fail ), 
+    hash -> List( Filtered( hash!.KeyArray, x -> x <> fail ),
                   key -> GetHashEntry( hash, key ) ) );
 
 #############################################################################
@@ -624,7 +686,7 @@ InstallMethod( HashKeyEnumerator, "for sparse hash tables", true,
 ##
 InstallMethod( Random, "for sparse hash tables", true,
     [ IsHash and IsSparseHashRep ], 100,
-    function( hash )        
+    function( hash )
         return GetHashEntry( hash, RandomHashKey( hash ) );
     end );
 
@@ -635,17 +697,16 @@ InstallMethod( Random, "for sparse hash tables", true,
 ##  Returns a random key.
 ##
 InstallMethod( RandomHashKey, "for sparse hash tables", true,
-    [ IsHash and IsSparseHashRep ], 100,    
-    function( hash ) 
+    [ IsHash and IsSparseHashRep ], 100,
+    function( hash )
         local i;
-    
-        if Size( hash ) = 0 then return fail; fi; 
+
+        if Size( hash ) = 0 then return fail; fi;
         repeat
             i := Random( [1..hash!.LengthArray] );
         until hash!.KeyArray[i] <> fail;
         return hash!.KeyArray[i];
     end );
-
 
 #############################################################################
 #############################################################################
@@ -748,7 +809,7 @@ function( hash )
   oldValueArray := hash!.ValueArray;
   # compact
   l:=Length(oldKeyArray);
-  i:=1; # read 
+  i:=1; # read
   j:=1; # write
   while i<=l do
     if oldKeyArray[i]<>fail then
@@ -798,7 +859,7 @@ end );
 InstallOtherMethod(AddDictionary,"for hash tables, no value given",true,
   [IsHash and IsMutable,IsObject],0,
 function(ht, x)
-  AddDictionary(ht,x,true); 
+  AddDictionary(ht,x,true);
 end);
 
 #############################################################################
@@ -824,7 +885,7 @@ local index,intkey,i,cnt;
     index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = key then
       #LastHashIndex := index;
-      return hash!.ValueArray[ index ]; 
+      return hash!.ValueArray[ index ];
     elif hash!.KeyArray[index] = fail then
       return fail;
     fi;
@@ -846,7 +907,7 @@ local index,intkey,i;
     index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = key then
         #LastHashIndex := index;
-        return hash!.ValueArray[ index ]; 
+        return hash!.ValueArray[ index ];
     elif hash!.KeyArray[index] = fail then
       return fail;
     fi;
