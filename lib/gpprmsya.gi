@@ -903,7 +903,7 @@ end);
 ##
 SYMGP_STABILIZER := function(sym, arg)
     local  k, act, pt, mov, stab, nat, diff, int, bls, mov1, parts, 
-           part, bl, i;
+           part, bl, i, gens, size;
     k := Length(arg);
     act := arg[k];
     pt := arg[k-3];
