@@ -50,57 +50,18 @@ function( g, S )
     fi;
 end );
 
-InstallMethod( Random,
-    "alternating group: floyd's algorithm",
-    true,
-    [ IsNaturalAlternatingGroup ],
-    10, # override perm gp. method
-function ( G )
-    local   rnd,        # random permutation, result
-            sgn,        # sign of the permutation so far
-            tmp,        # temporary variable for swapping
-	    deg,
-	    mov,
-            i,  k;      # loop variables
 
-    # test for internal rep
-    if HasGeneratorsOfGroup(G) and 
-      not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
-      TryNextMethod();
-    fi;
-    # use Floyd\'s algorithm
-    mov:=MovedPoints(G);
-    deg:=Length(mov);
-    rnd := [1..deg];
-    sgn := 1;
-    for i  in [1..deg-2] do
-        k := Random( [ i .. deg] );
-        tmp := rnd[i];
-        rnd[i] := rnd[k];
-        rnd[k] := tmp;
-        if i <> k  then
-            sgn := -sgn;
-        fi;
-    od;
 
-    # make the permutation even
-    if sgn = -1  then
-        tmp := rnd[deg-1];
-        rnd[deg-1] := rnd[deg];
-        rnd[deg] := tmp;
-    fi;
-
-    # return the permutation
-    return PermList( rnd )^MappingPermListList([1..deg],mov);
-end);
-
-#T special StabChain method?
 
 
 
 #############################################################################
 ##
 #M  RepresentativeAction( <G>, <d>, <e>, <opr> ). . for alternating groups
+##
+## This method may fail if d and e are the same integer. RepresentativeAction
+## catches this case first, so this may be acceptable.
+##
 ##
 InstallOtherMethod( RepresentativeActionOp, "natural alternating group",
   true, [ IsNaturalAlternatingGroup, IsObject, IsObject, IsFunction ], 
@@ -789,12 +750,60 @@ InstallMethod( Size,
     [ IsNaturalSymmetricGroup ], 0,
     sym -> Factorial( NrMovedPoints(sym) ) );
 
+BindGlobal("FLOYDS_ALGORITHM", function(deg, even)
+    local  rnd, sgn, i, k, tmp;
+    rnd := [1..deg];
+    sgn := 1;
+    for i  in [1..deg-1] do
+        k := Random( [ i .. deg] );
+        if k <> i then
+            tmp := rnd[i];
+            rnd[i] := rnd[k];
+            rnd[k] := tmp;
+            sgn := -sgn;
+        fi;
+    od;
+    if even and sgn = -1 then
+        tmp := rnd[deg];
+        rnd[deg] := rnd[deg-1];
+        rnd[deg-1] := tmp;
+    fi;
+    return rnd;
+end);
+
+    
 
 InstallMethod( Random,
     "symmetric group: floyd's algorithm",
     true,
     [ IsNaturalSymmetricGroup ],
     10, # override perm. gp. method
+function ( G )
+    local   rnd,        # random permutation, result
+	    deg,
+	    mov;
+    
+
+    # test for internal rep
+    if HasGeneratorsOfGroup(G) and 
+      not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
+      TryNextMethod();
+    fi;
+
+    # use Floyd\'s algorithm
+    mov:=MovedPoints(G);
+    deg:=Length(mov);
+    rnd := FLOYDS_ALGORITHM(deg,false);
+    # return the permutation
+    return PermList( rnd )^MappingPermListList([1..deg],mov);
+end);
+
+
+InstallMethod( Random,
+    "alternating group: floyd's algorithm",
+    true,
+    [ IsNaturalAlternatingGroup ],
+    10, # override perm gp. method
 function ( G )
     local   rnd,        # random permutation, result
             sgn,        # sign of the permutation so far
@@ -808,45 +817,214 @@ function ( G )
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
       TryNextMethod();
     fi;
-
     # use Floyd\'s algorithm
     mov:=MovedPoints(G);
     deg:=Length(mov);
-    rnd := [1..deg];
-    sgn := 1;
-    for i  in [1..deg-1] do
-        k := Random( [ i .. deg] );
-        tmp := rnd[i];
-        rnd[i] := rnd[k];
-        rnd[k] := tmp;
-    od;
+    rnd := FLOYDS_ALGORITHM(deg, true);
 
     # return the permutation
     return PermList( rnd )^MappingPermListList([1..deg],mov);
 end);
 
+
 #############################################################################
 ##
-#M  StabilizerOp( <nat-sym-grp>, <int>, OnPoints )
+#M  Size( <nat-alt-grp> )
 ##
-InstallOtherMethod( StabilizerOp,"symmetric group", true,
-    [ IsNaturalSymmetricGroup, IsPosInt, IsFunction ],
-  # the objects might be a group element: rank up	
-  RankFilter(IsMultiplicativeElementWithInverse),
-
-function( sym, p, opr )
-    # test for internal rep
-    if HasGeneratorsOfGroup(sym) and 
-      not ForAll(GeneratorsOfGroup(sym),IsInternalRep) then
-      TryNextMethod();
+InstallMethod( Size,
+    true,
+        [ IsNaturalAlternatingGroup ], 0,
+        function(a)
+    local n;
+    n := NrMovedPoints(a);
+    if n <= 2 then
+        return 1;
     fi;
+    return Factorial( n )/2;
+end);
 
-    if opr <> OnPoints  then
+
+#############################################################################
+##
+#M Intersection2
+
+InstallMethod( Intersection2, [IsNaturalSymmetricGroup, IsNaturalSymmetricGroup],
+        function(s1,s2)
+    return SymmetricGroup(Intersection(MovedPoints(s1),MovedPoints(s2)));
+end);
+
+InstallMethod( Intersection2, [IsNaturalSymmetricGroup, IsNaturalAlternatingGroup],
+        function(s1,s2)
+    return AlternatingGroup(Intersection(MovedPoints(s1),MovedPoints(s2)));
+end);
+
+InstallMethod( Intersection2, [IsNaturalAlternatingGroup, IsNaturalSymmetricGroup],
+        function(s1,s2)
+    return AlternatingGroup(Intersection(MovedPoints(s1),MovedPoints(s2)));
+end);
+
+InstallMethod( Intersection2, [IsNaturalAlternatingGroup, IsNaturalAlternatingGroup],
+        function(s1,s2)
+    return AlternatingGroup(Intersection(MovedPoints(s1),MovedPoints(s2)));
+end);
+
+
+InstallMethod( Intersection2, [IsNaturalSymmetricGroup, IsPermGroup],
+        function(s,g)
+    return Stabilizer(g,Difference(MovedPoints(g),MovedPoints(s)), OnTuples);
+end);
+
+InstallMethod( Intersection2, [IsPermGroup, IsNaturalSymmetricGroup],
+        function(g,s)
+    return Stabilizer(g,Difference(MovedPoints(g),MovedPoints(s)), OnTuples);
+end);
+
+InstallMethod( Intersection2, [IsNaturalAlternatingGroup, IsPermGroup],
+        function(s,g)
+    return AlternatingSubgroup(Stabilizer(g,Difference(MovedPoints(g),MovedPoints(s)), OnTuples));
+end);
+
+InstallMethod( Intersection2, [IsPermGroup, IsNaturalAlternatingGroup],
+        function(g,s)
+    return AlternatingSubgroup(Stabilizer(g,Difference(MovedPoints(g),MovedPoints(s)), OnTuples));
+end);
+
+
+        
+    
+    
+
+
+
+
+#############################################################################
+##
+#M  StabilizerOp( <nat-sym-grp>, ...... )
+##
+SYMGP_STABILIZER := function(sym, arg)
+    local  k, act, pt, mov, stab, nat, diff, int, bls, mov1, parts, 
+           part, bl, i;
+    k := Length(arg);
+    act := arg[k];
+    pt := arg[k-3];
+    
+    if arg[k-1] <> arg[k-2] then
         TryNextMethod();
     fi;
-    return AsSubgroup( sym,
-           SymmetricGroup( Difference( MovedPoints( sym ), [ p ] ) ) );
-end );
+    mov := MovedPoints(sym);
+    if act = OnPoints and IsPosInt(pt) then
+        if pt in mov then
+            stab := SymmetricGroup(Difference(mov,[pt]));
+        else
+            stab := sym;
+        fi ;
+        nat := true;
+    elif act = OnTuples and IsList(pt) and ForAll(pt, IsPosInt) then
+        stab := SymmetricGroup(Difference(mov, Set(pt)));
+        nat := true;
+    elif act = OnSets and IsSet(pt) and ForAll(pt, IsPosInt) then
+        diff := Difference(mov, pt);
+        int := Intersection(mov,pt);
+        if Length(diff) = 0 or Length(int) = 0 then
+            stab := sym;
+            nat := true;
+        else
+            stab := Group(Concatenation(GeneratorsOfGroup(SymmetricGroup(diff)),
+                            GeneratorsOfGroup(SymmetricGroup(int))),());
+            SetSize(stab, Factorial(Length(diff))*Factorial(Length(int)));
+            nat := Length(diff) = 1 or Length(int) = 1;
+        fi;
+    elif act = OnTuplesTuples and IsList(pt) and ForAll(pt, x->IsList(x) and ForAll(x,IsPosInt)) then
+        stab := SymmetricGroup(Difference(mov,Set(Flat(pt))));
+        nat := true;        
+    elif act = OnTuplesSets and IsList(pt) and ForAll(pt, x-> IsSet(x) and ForAll(x,IsPosInt)) then
+        bls := List(mov, x-> List(pt, y-> x in y));
+        mov1 := ShallowCopy(mov);
+        SortParallel(bls, mov1);
+        parts := [];
+        part := [mov1[1]];
+        bl := bls[1];
+        for i in [2..Length(mov)] do
+            if bls[i] <> bl then
+                if Length(part) > 1 then
+                    Add(parts, part);
+                fi;
+                bl := bls[i];
+                part := [mov1[i]];
+            else
+                Add(part, mov1[i]);
+            fi;
+        od;
+        if Length(part) > 1 then
+            Add(parts, part);
+        fi;
+        
+        gens := [];
+        size := 1;
+        for part in parts do
+            Append(gens, GeneratorsOfGroup(SymmetricGroup(part)));
+            size := size*Factorial(Length(part));
+        od;
+        stab := Group(gens,());
+        SetSize(stab,size);
+        nat := Length(parts) <= 1;
+    else
+        TryNextMethod();
+    fi;
+    stab := AsSubgroup(sym, stab);
+    if nat then
+        SetIsNaturalSymmetricGroup(stab,true);
+    fi;
+    return stab;
+end;
+
+        
+
+        
+            
+        
+
+InstallOtherMethod( StabilizerOp,"symmetric group", true,
+    [ IsNaturalSymmetricGroup, IsObject, IsList, IsList, IsFunction ],
+  # the objects might be a group element: rank up	
+        RankFilter(IsMultiplicativeElementWithInverse) + 
+        RankFilter(IsSolvableGroup),
+        SYMGP_STABILIZER);
+
+InstallOtherMethod( StabilizerOp,"symmetric group", true,
+    [ IsNaturalSymmetricGroup, IsDomain, IsObject, IsList, IsList, IsFunction ],
+  # the objects might be a group element: rank up	
+        RankFilter(IsMultiplicativeElementWithInverse) + 
+        RankFilter(IsSolvableGroup),
+        SYMGP_STABILIZER);
+
+InstallOtherMethod( StabilizerOp,"alternating group", true,
+    [ IsNaturalAlternatingGroup, IsObject, IsList, IsList, IsFunction ],
+  # the objects might be a group element: rank up	
+        RankFilter(IsMultiplicativeElementWithInverse) + 
+        RankFilter(IsSolvableGroup),
+        function(g, arg) 
+    return AlternatingSubgroup(CallFuncList(SYMGP_STABILIZER, Concatenation([SymmetricParentGroup(g)], arg)));
+end);
+
+
+InstallOtherMethod( StabilizerOp,"alternating group", true,
+    [ IsNaturalAlternatingGroup, IsDomain, IsObject, IsList, IsList, IsFunction ],
+  # the objects might be a group element: rank up	
+        RankFilter(IsMultiplicativeElementWithInverse) + 
+        RankFilter(IsSolvableGroup),
+        function(g, arg) 
+    return AlternatingSubgroup(CallFuncList(SYMGP_STABILIZER, Concatenation([SymmetricParentGroup(g)], arg)));
+end);
+
+InstallMethod( CentralizerOp,
+    "element in natural alternating group",
+    IsCollsElms,
+    [ IsNaturalAlternatingGroup, IsPerm ], 0,
+        function ( G, g )
+    return AlternatingSubgroup(Centralizer(SymmetricParentGroup(G),g));
+end);
+
 
 InstallMethod( CentralizerOp,
     "element in natural symmetric group",
@@ -912,6 +1090,7 @@ function ( G, g )
   # return the centralizer
   return C;
 end);
+
 
 BindGlobal("AllNormalizerfixedBlockSystem",function(G,dom)
 local b, bl,prop;
@@ -1654,6 +1833,32 @@ local dom, l, sgs, nondupbase;
   fi;
   sgs:=List([1..l-1],i->(dom[i],dom[l]));
   return StabChainBaseStrongGenerators(dom{[1..Length(dom)-1]},sgs,());
+end);
+
+InstallOtherMethod( StabChainOp, "alternating group", true,
+    [ IsNaturalAlternatingGroup,IsRecord ], 0,
+function(G,r)
+local dom, l, sgs, nondupbase;
+
+  # test for internal rep
+  if HasGeneratorsOfGroup(G) and 
+    not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
+    TryNextMethod();
+  fi;
+
+  if IsBound(r.reduced) and r.reduced=false then
+    TryNextMethod();
+  fi;
+  dom:=Set(MovedPoints(G));
+  l:=Length(dom);
+  
+  if IsBound(r.base) then
+      nondupbase:=DuplicateFreeList(r.base);
+      dom:=Concatenation(Filtered(nondupbase,i->i in dom),Difference(dom,nondupbase));
+  fi;
+
+  sgs:=List([1..l-2],i->(dom[i],dom[l-1],dom[l]));
+  return StabChainBaseStrongGenerators(dom{[1..Length(dom)-2]},sgs,());
 end);
 
 #############################################################################
