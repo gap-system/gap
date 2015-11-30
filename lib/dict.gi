@@ -111,10 +111,10 @@ InstallOtherMethod(RemoveDictionary,"for lookup list dictionaries",true,
   [IsListLookupDictionary and IsMutable,IsObject],0,
 function(d, key)
   local pos;
-  pos := PositionFirstComponent(d!.entries, key);
-  if pos <= Length(d!.entries) and d!.entries[pos][1] = key then
+  pos := PositionProperty(d!.entries, x->x[1] = key);
+  if pos <> fail then
     Remove(d!.entries, pos);
-  fi;;
+  fi;
 end);
 
 InstallMethod(RemoveDictionary,"for list dictionaries",true,
