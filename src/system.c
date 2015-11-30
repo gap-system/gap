@@ -33,7 +33,9 @@
 
 #include        "system.h"              /* system dependent part           */
 
+#ifndef WARD_ENABLED
 #include        "gap_version.h"         /* SCM information                 */
+#endif
 
 #include        "gap.h"                 /* get UserHasQUIT                 */
 
