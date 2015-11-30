@@ -1047,6 +1047,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  b:=ReadBlock(["end for"]:inner);
 	  locals:=Union(locals,b[1]);
       #if a.name="cl" then Error("rof");fi;
+	  AddSet(locals,a.name);
 	  a:=rec(type:="for",var:=a,from:=c,block:=b[2]);
 	  ExpectToken("end for");
 	  ExpectToken(";",3);
@@ -1270,6 +1271,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  od;
 	  a:=ReadExpression([";"]);
 	  Add(l,rec(type:="Amult",left:=b,right:=a));
+	  for a in b do
+	    AddSet(locals,a.name);
+	  od;
 	  ExpectToken(";",13);
 	elif e[2]=":=" then
 	  # assignment
@@ -1416,8 +1420,11 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
     fi;
   end;
 
+NOPARTYPE:=["N","S","C","U-","Bdiv", # translates to QuoInt
+	    "I","sub"];
+
   doitpar:=function(r,usepar)
-    if usepar and r.type<>"I" and r.type<>"N" and r.type<>"S" then
+    if usepar and not r.type in NOPARTYPE then
       FilePrint(f,"(");
       doit(r);
       FilePrint(f,")");
@@ -1886,6 +1893,8 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       for i in [1..Length(node.span)] do
 	if i=2 then
 	  FilePrint(f,",#TODO CLOSURE\n",START,"  ");
+	elif i>2 then
+	  FilePrint(f,",");
 	fi;
 
 	doit(node.span[i]);
