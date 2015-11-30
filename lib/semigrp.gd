@@ -64,7 +64,7 @@ DeclareOperation("InversesOfSemigroupElement",
 ##  gap> b:= Transformation( [ 2, 2, 3, 4 ] );
 ##  Transformation( [ 2, 2 ] )
 ##  gap> s:= Semigroup(a, b);
-##  <transformation semigroup on 4 pts with 2 generators>
+##  <transformation semigroup of degree 4 with 2 generators>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -91,7 +91,7 @@ DeclareGlobalFunction( "Semigroup" );
 ##  gap> a:=GeneratorsOfSemigroup(s)[1];
 ##  Transformation( [ 2, 3, 4, 1 ] )
 ##  gap> t:=Subsemigroup(s,[a]);
-##  <commutative transformation semigroup on 4 pts with 1 generator>
+##  <commutative transformation semigroup of degree 4 with 1 generator>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

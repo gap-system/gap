@@ -18,18 +18,18 @@
 ##  This is the category of elements in a family which can be the operands of 
 ##  <C>*</C> (multiplication) and the operation 
 ##  <Ref Attr="MultiplicativeZero"/>.
-##<Example>
-##gap> S:=Semigroup(Transformation( [ 1, 1, 1 ] ));;
-##gap> M:=MagmaWithZeroAdjoined(S);
-##&lt;&lt;commutative transformation semigroup on 3 pts with 1 generator>
-##  with 0 adjoined>
-##gap> x:=Representative(M);
-##&lt;semigroup with 0 adjoined elt: Transformation( [ 1, 1, 1 ] )>
-##gap> IsMultiplicativeElementWithZero(x);
-##true
-##gap> MultiplicativeZeroOp(x);
-##&lt;semigroup with 0 adjoined elt: 0>
-##</Example>
+##  <Example><![CDATA[
+##  gap> S:=Semigroup(Transformation( [ 1, 1, 1 ] ));;
+##  gap> M:=MagmaWithZeroAdjoined(S);
+##  <<commutative transformation semigroup of degree 3 with 1 generator>
+##    with 0 adjoined>
+##  gap> x:=Representative(M);
+##  <semigroup with 0 adjoined elt: Transformation( [ 1, 1, 1 ] )>
+##  gap> IsMultiplicativeElementWithZero(x);
+##  true
+##  gap> MultiplicativeZeroOp(x);
+##  <semigroup with 0 adjoined elt: 0>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -55,12 +55,13 @@ DeclareCategoryCollections("IsMultiplicativeElementWithZero");
 ##  often arise from adjoining a new zero to an existing magma. 
 ##  See&nbsp;<Ref Attr="InjectionZeroMagma"/> or 
 ##  <Ref Func="MagmaWithZeroAdjoined"/> for details.
-##<Example>
-##gap> G:=AlternatingGroup(5);;
-##gap> x:=Representative(MagmaWithZeroAdjoined(G));
-##&lt;group with 0 adjoined elt: ()>
-##gap> MultiplicativeZeroOp(x);
-##&lt;group with 0 adjoined elt: 0></Example>
+##  <Example><![CDATA[
+##  gap> G:=AlternatingGroup(5);;
+##  gap> x:=Representative(MagmaWithZeroAdjoined(G));
+##  <group with 0 adjoined elt: ()>
+##  gap> MultiplicativeZeroOp(x);
+##  <group with 0 adjoined elt: 0>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -79,17 +80,18 @@ DeclareOperation( "MultiplicativeZeroOp", [IsMultiplicativeElementWithZero] );
 ##
 ##  <C>IsMultiplicativeZero</C> returns <K>true</K> if the element <A>z</A> of
 ##  the magma <A>M</A> equals the multiplicative zero of <A>M</A>. 
-##<Example>
-##gap> S:=Semigroup( Transformation( [ 1, 1, 1 ] ), 
-##> Transformation( [ 2, 3, 1 ] ) );
-##&lt;transformation semigroup on 3 pts with 2 generators>
-##gap> MultiplicativeZero(S);
-##fail
-##gap> S:=Semigroup( Transformation( [ 1, 1, 1 ] ), 
-##> Transformation( [ 1, 3, 2 ] ) );
-##&lt;transformation semigroup on 3 pts with 2 generators>
-##gap> MultiplicativeZero(S);
-##Transformation( [ 1, 1, 1 ] )</Example>
+##  <Example><![CDATA[
+##  gap> S:=Semigroup( Transformation( [ 1, 1, 1 ] ), 
+##  > Transformation( [ 2, 3, 1 ] ) );
+##  <transformation semigroup of degree 3 with 2 generators>
+##  gap> MultiplicativeZero(S);
+##  fail
+##  gap> S:=Semigroup( Transformation( [ 1, 1, 1 ] ), 
+##  > Transformation( [ 1, 3, 2 ] ) );
+##  <transformation semigroup of degree 3 with 2 generators>
+##  gap> MultiplicativeZero(S);
+##  Transformation( [ 1, 1, 1 ] )
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

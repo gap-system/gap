@@ -6,15 +6,16 @@
   <C>IsMagmaWithZeroAdjoined</C> returns <K>true</K> if the magma <A>M</A> was
   created using <Ref Attr="InjectionZeroMagma"/> or 
   <Ref Oper="MagmaWithZeroAdjoined"/> and returns <K>false</K> if it was not.
-  <Example>
+<Example><![CDATA[
 gap> S:=Semigroup(Transformation([1,1,1]), Transformation([1,3,2]));;
 gap> IsMagmaWithZeroAdjoined(S);
 false
 gap> M:=MagmaWithZeroAdjoined(S);
-&lt;&lt;transformation semigroup on 3 pts with 2 generators>
+<<transformation semigroup of degree 3 with 2 generators>
   with 0 adjoined>
 gap> IsMagmaWithZeroAdjoined(M);
-true</Example>
+true
+]]></Example>
   </Description>
 </ManSection>
 
@@ -35,21 +36,22 @@ true</Example>
   If <C>N</C> is a magma with zero adjoined, then the embedding 
   used to create <C>N</C> can be recovered using 
   <Ref Attr="UnderlyingInjectionZeroMagma"/>.
-
-<Example>
+<Example><![CDATA[
 gap> S:=Monoid(Transformation( [ 7, 7, 5, 3, 1, 3, 7 ] ),
 > Transformation( [ 5, 1, 4, 1, 4, 4, 7 ] ));;
 gap> MultiplicativeZero(S);
 Transformation( [ 7, 7, 7, 7, 7, 7, 7 ] )
 gap> T:=MagmaWithZeroAdjoined(S);
-&lt;&lt;transformation monoid on 7 pts with 2 generators> with 0 adjoined>
+<<transformation monoid of degree 7 with 2 generators>
+  with 0 adjoined>
 gap> map:=UnderlyingInjectionZeroMagma(T);;
 gap> x:=Transformation( [ 7, 7, 7, 3, 7, 3, 7 ] );;
 gap> x^map;
-&lt;monoid with 0 adjoined elt: Transformation( [ 7, 7, 7, 3, 7, 3, 7 ]
+<monoid with 0 adjoined elt: Transformation( [ 7, 7, 7, 3, 7, 3, 7 ]
  )>
 gap> PreImage(map, x^map)=x;
-true</Example>
+true
+]]></Example>
   </Description>
 </ManSection>
 
@@ -59,18 +61,19 @@ true</Example>
   <C>UnderlyingInjectionZeroMagma</C> 
   returns the embedding used to create the magma with zero adjoined 
   <A>M</A>. 
-<Example>
+<Example><![CDATA[
 gap> S:=Monoid(Transformation( [ 8, 7, 5, 3, 1, 3, 8, 8 ] ),
 > Transformation( [ 5, 1, 4, 1, 4, 4, 7, 8 ] ));;
 gap> MultiplicativeZero(S);
 Transformation( [ 8, 8, 8, 8, 8, 8, 8, 8 ] )
 gap> T:=MagmaWithZeroAdjoined(S);
-&lt;&lt;transformation monoid on 8 pts with 2 generators> with 0 adjoined>
+<<transformation monoid of degree 8 with 2 generators>
+  with 0 adjoined>
 gap> UnderlyingInjectionZeroMagma(T);
-MappingByFunction( &lt;transformation monoid on 8 pts with 2 generators>
- , &lt;&lt;transformation monoid on 8 pts with 2 generators>
+MappingByFunction( <transformation monoid of degree 8 with 2 
+ generators>, <<transformation monoid of degree 8 with 2 generators>
   with 0 adjoined>, function( elt ) ... end, function( x ) ... end )
-</Example>
+]]></Example>
   </Description>
 </ManSection>
 
