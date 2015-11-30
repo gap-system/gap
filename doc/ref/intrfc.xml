@@ -767,7 +767,7 @@ gap> a+b;
 gap> a*b;
 [ 2, 3 ]
 gap> s:=Semigroup(a,b);
-<semigroup with 2 generators>
+<commutative semigroup with 2 generators>
 gap> Size(s);
 3
 ]]></Example>
