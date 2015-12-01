@@ -160,11 +160,17 @@ gap> GeneratorsOfGroup(last);
   (84,100), (85,100), (86,100), (87,100), (88,100), (89,100), (90,100), 
   (91,100), (92,100), (93,100), (94,100), (95,100), (96,100), (97,100), 
   (98,100), (99,100) ]
-gap> Centralizer(a, (1,2,3,4)(5,6,7,8)(9,10,11)(12,13,14));
+gap> Centralizer(AlternatingGroup(14), (1,2,3,4)(5,6,7,8)(9,10,11)(12,13,14));
 <permutation group of size 288 with 7 generators>
 gap> GeneratorsOfGroup(last);
 [ (1,3)(2,4), (1,5)(2,6)(3,7)(4,8), (5,7)(6,8), (1,2,3,4)(5,8,7,6), 
   (9,10,11), (1,2,3,4)(9,12)(10,13)(11,14), (12,13,14) ]
+gap> a8 := AlternatingGroup(8);;
+gap> pairs := Tuples( [1..8], 2 );;
+gap> orbs := Orbits( a8, pairs, OnPairs );; Length( orbs );
+2
+gap> u56 := Stabilizer( a8, orbs[2][1], OnPairs );; Index( a8, u56 );
+56
 gap> STOP_TEST( "grpperm.tst", 1799980000);
 
 #############################################################################

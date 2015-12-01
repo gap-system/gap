@@ -1004,7 +1004,7 @@ InstallOtherMethod( StabilizerOp,"alternating group", true,
         RankFilter(IsMultiplicativeElementWithInverse) + 
         RankFilter(IsSolvableGroup),
         function(g, arg) 
-    return AlternatingSubgroup(CallFuncList(SYMGP_STABILIZER, Concatenation([SymmetricParentGroup(g)], arg)));
+    return AlternatingSubgroup(CallFuncList(Stabilizer, Concatenation([SymmetricParentGroup(g)], arg)));
 end);
 
 
@@ -1014,7 +1014,7 @@ InstallOtherMethod( StabilizerOp,"alternating group", true,
         RankFilter(IsMultiplicativeElementWithInverse) + 
         RankFilter(IsSolvableGroup),
         function(g, arg) 
-    return AlternatingSubgroup(CallFuncList(SYMGP_STABILIZER, Concatenation([SymmetricParentGroup(g)], arg)));
+    return AlternatingSubgroup(CallFuncList(Stabilizer, Concatenation([SymmetricParentGroup(g)], arg)));
 end);
 
 InstallMethod( CentralizerOp,
