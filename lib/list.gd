@@ -1661,6 +1661,29 @@ DeclareOperation( "SortParallel",
 DeclareOperation( "SortParallel",
     [ IsDenseList and IsMutable, IsDenseList and IsMutable, IsFunction ] );
 
+#############################################################################
+##
+#F  Intersperse( <list>, <elt> )  . . . . . . . . intersperse list with elt
+##
+##  <#GAPDoc Label="Intersperse">
+##  <ManSection>
+##  <Oper Name="Intersperse" Arg='list, elt'/>
+##
+##  <Description>
+##  Returns a new mutable list that is consists of elements of the list
+##  <A>list</A> interspersed with the element <A>elt</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> list := [ 1, 7, 5 ];;
+##  gap> Intersperse( list, 15 );
+##  [ 1, 15, 7, 15, 5 ]
+##  ]]></Example>
+##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "Intersperse" );
 
 #############################################################################
 ##
