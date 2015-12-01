@@ -918,14 +918,20 @@ static Obj  HdlrFunc3 (
      CHECK_FUNC_RESULT( t_1 )
      l_tmp = t_1;
      
-     /* if tmp <> AINV( 1 ) and tmp <> narg then */
-     t_4 = GF_AINV;
-     t_3 = CALL_1ARGS( t_4, INTOBJ_INT(1) );
-     CHECK_FUNC_RESULT( t_3 )
-     t_2 = (Obj)(UInt)( ! EQ( l_tmp, t_3 ));
+     /* if tmp < AINV( narg ) - 1 or tmp >= 0 and tmp <> narg then */
+     t_5 = GF_AINV;
+     t_4 = CALL_1ARGS( t_5, l_narg );
+     CHECK_FUNC_RESULT( t_4 )
+     C_DIFF_FIA( t_3, t_4, INTOBJ_INT(1) )
+     t_2 = (Obj)(UInt)(LT( l_tmp, t_3 ));
      t_1 = t_2;
-     if ( t_1 ) {
-      t_3 = (Obj)(UInt)( ! EQ( l_tmp, l_narg ));
+     if ( ! t_1 ) {
+      t_4 = (Obj)(UInt)(! LT( l_tmp, INTOBJ_INT(0) ));
+      t_3 = t_4;
+      if ( t_3 ) {
+       t_5 = (Obj)(UInt)( ! EQ( l_tmp, l_narg ));
+       t_3 = t_5;
+      }
       t_1 = t_3;
      }
      if ( t_1 ) {
@@ -1049,14 +1055,20 @@ static Obj  HdlrFunc3 (
      CHECK_FUNC_RESULT( t_1 )
      l_tmp = t_1;
      
-     /* if tmp <> AINV( 1 ) and tmp <> narg then */
-     t_4 = GF_AINV;
-     t_3 = CALL_1ARGS( t_4, INTOBJ_INT(1) );
-     CHECK_FUNC_RESULT( t_3 )
-     t_2 = (Obj)(UInt)( ! EQ( l_tmp, t_3 ));
+     /* if tmp < AINV( narg ) - 1 or tmp >= 0 and tmp <> narg then */
+     t_5 = GF_AINV;
+     t_4 = CALL_1ARGS( t_5, l_narg );
+     CHECK_FUNC_RESULT( t_4 )
+     C_DIFF_FIA( t_3, t_4, INTOBJ_INT(1) )
+     t_2 = (Obj)(UInt)(LT( l_tmp, t_3 ));
      t_1 = t_2;
-     if ( t_1 ) {
-      t_3 = (Obj)(UInt)( ! EQ( l_tmp, l_narg ));
+     if ( ! t_1 ) {
+      t_4 = (Obj)(UInt)(! LT( l_tmp, INTOBJ_INT(0) ));
+      t_3 = t_4;
+      if ( t_3 ) {
+       t_5 = (Obj)(UInt)( ! EQ( l_tmp, l_narg ));
+       t_3 = t_5;
+      }
       t_1 = t_3;
      }
      if ( t_1 ) {
@@ -3327,7 +3339,7 @@ static Obj  HdlrFunc1 (
       elif IS_FUNCTION( rel )  then
           if CHECK_INSTALL_METHOD  then
               tmp := NARG_FUNC( rel );
-              if tmp <> AINV( 1 ) and tmp <> narg  then
+              if tmp < AINV( narg ) - 1 or tmp >= 0 and tmp <> narg  then
                   Error( NAME_FUNC( opr ), ": <famrel> must accept ", narg, " arguments" );
               fi;
           fi;
@@ -3345,7 +3357,7 @@ static Obj  HdlrFunc1 (
       elif IS_FUNCTION( method )  then
           if CHECK_INSTALL_METHOD and not IS_OPERATION( method )  then
               tmp := NARG_FUNC( method );
-              if tmp <> AINV( 1 ) and tmp <> narg  then
+              if tmp < AINV( narg ) - 1 or tmp >= 0 and tmp <> narg  then
                   Error( NAME_FUNC( opr ), ": <method> must accept ", narg, " arguments" );
               fi;
           fi;
@@ -3829,38 +3841,38 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "CallFuncList", &GF_CallFuncList );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-101748169)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/oper1.g:FileName(-101748169)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-101748169)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-101748169)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-101748169)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-101748169)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-101748169)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-101748169)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-101748169)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-101748169)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-101748169)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-101748169)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-101748169)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-101748169)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-101748169)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-101748169)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-101748169)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-101748169)" );
- InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-101748169)" );
- InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-101748169)" );
- InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-101748169)" );
- InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-101748169)" );
- InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-101748169)" );
- InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-101748169)" );
- InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-101748169)" );
- InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-101748169)" );
- InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-101748169)" );
- InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-101748169)" );
- InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-101748169)" );
- InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-101748169)" );
- InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-101748169)" );
- InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-101748169)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-56035116)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/oper1.g:FileName(-56035116)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-56035116)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-56035116)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-56035116)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-56035116)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-56035116)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-56035116)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-56035116)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-56035116)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-56035116)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-56035116)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-56035116)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-56035116)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-56035116)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-56035116)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-56035116)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-56035116)" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-56035116)" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-56035116)" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-56035116)" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-56035116)" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-56035116)" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-56035116)" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-56035116)" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-56035116)" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-56035116)" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-56035116)" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-56035116)" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-56035116)" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-56035116)" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-56035116)" );
  
  /* return success */
  return 0;
@@ -4155,7 +4167,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -101748169,
+ /* crc         = */ -56035116,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

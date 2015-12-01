@@ -192,7 +192,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     elif IS_FUNCTION(rel)  then
         if CHECK_INSTALL_METHOD  then
             tmp := NARG_FUNC(rel);
-            if tmp <> AINV(1) and tmp <> narg  then
+            if tmp < AINV(narg)-1 or (tmp >= 0 and tmp <> narg)   then
                 Error(NAME_FUNC(opr),": <famrel> must accept ",
 		      narg, " arguments");
             fi;
@@ -216,7 +216,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     elif IS_FUNCTION(method)  then
         if CHECK_INSTALL_METHOD and not IS_OPERATION( method ) then
             tmp := NARG_FUNC(method);
-            if tmp <> AINV(1) and tmp <> narg  then
+            if tmp < AINV(narg)-1 or (tmp >= 0 and tmp <> narg)  then
                Error(NAME_FUNC(opr),": <method> must accept ",
 	             narg, " arguments");
             fi;
