@@ -890,10 +890,19 @@ InstallMethod( Intersection2, [IsPermGroup, IsNaturalAlternatingGroup],
 end);
 
 
-        
-    
-    
+#############################################################################
+##
+#M DerivedSubgroup
+##
 
+InstallMethod( DerivedSubgroup, [IsNaturalSymmetricGroup],
+        function(g)
+    local d;
+    d := AlternatingGroup(MovedPoints(g));
+    d := AsSubgroup(g,d);
+    SetIsNaturalAlternatingGroup(d, true);
+    return d;
+end);
 
 
 
@@ -919,7 +928,7 @@ SYMGP_STABILIZER := function(sym, arg)
             stab := sym;
         fi ;
         nat := true;
-    elif act = OnTuples and IsList(pt) and ForAll(pt, IsPosInt) then
+    elif (act = OnTuples or act = OnPairs) and IsList(pt) and ForAll(pt, IsPosInt) then
         stab := SymmetricGroup(Difference(mov, Set(pt)));
         nat := true;
     elif act = OnSets and IsSet(pt) and ForAll(pt, IsPosInt) then
