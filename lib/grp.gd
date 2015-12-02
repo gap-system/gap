@@ -1193,7 +1193,7 @@ DeclareGlobalFunction("MaximalSolvableSubgroups");
 ##  is the smallest normal subgroup of <A>G</A> that has a solvable factor group.
 ##  <Example><![CDATA[
 ##  gap> PerfectResiduum(Group((1,2,3,4,5),(1,2)));
-##  Group([ (1,3,2), (2,4,3), (1,3)(4,5) ])
+##  Group([ (1,3,2), (1,4,3), (1,5,4) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1223,10 +1223,10 @@ DeclareAttribute( "PerfectResiduum", IsGroup );
 ##  gap> m11:=TransitiveGroup(11,6);
 ##  M(11)
 ##  gap> r:=RepresentativesPerfectSubgroups(m11);
-##  [ Group([ (3,9,11)(4,8,6)(5,10,7), (1,3)(2,11)(4,6)(7,8) ]), 
-##    Group([ (2,3,4)(5,6,8)(7,11,9), (1,3)(2,11)(4,6)(7,8) ]), 
-##    Group([ (4,11,10,9)(5,7,8,6), (1,6,4)(2,9,7)(8,11,10) ]), 
-##    Group([ (3,5,8)(4,11,7)(6,9,10), (1,3)(2,11)(4,6)(7,8) ]), M(11), 
+##  [ Group([ (3,5,8)(4,11,7)(6,9,10), (1,5)(2,3)(6,9)(10,11) ]),
+##    Group([ (2,4,6)(3,10,7)(5,9,11), (1,5)(2,3)(6,9)(10,11) ]),
+##    Group([ (3,6,4,9)(5,11,7,8), (1,9,11)(4,7,8)(5,6,10) ]),
+##    Group([ (3,4,10)(5,11,6)(7,9,8), (1,5)(2,3)(6,9)(10,11) ]), M(11),
 ##    Group(()) ]
 ##  gap> List(r,Size);
 ##  [ 60, 60, 360, 660, 7920, 1 ]
@@ -1252,14 +1252,14 @@ DeclareAttribute( "RepresentativesSimpleSubgroups", IsGroup );
 ##  (see <Ref Func="RepresentativesPerfectSubgroups"/>.)
 ##  <Example><![CDATA[
 ##  gap> ConjugacyClassesPerfectSubgroups(m11);
-##  [ Group( [ ( 3, 9,11)( 4, 8, 6)( 5,10, 7), 
-##        ( 1, 3)( 2,11)( 4, 6)( 7, 8) ] )^G, 
-##    Group( [ ( 2, 3, 4)( 5, 6, 8)( 7,11, 9), 
-##        ( 1, 3)( 2,11)( 4, 6)( 7, 8) ] )^G, 
-##    Group( [ ( 4,11,10, 9)( 5, 7, 8, 6), ( 1, 6, 4)( 2, 9, 7)( 8,11,10) 
-##       ] )^G, 
-##    Group( [ ( 3, 5, 8)( 4,11, 7)( 6, 9,10), 
-##        ( 1, 3)( 2,11)( 4, 6)( 7, 8) ] )^G, M(11)^G, Group( () )^G ]
+##  [ Group( [ ( 3, 5, 8)( 4,11, 7)( 6, 9,10),
+##        ( 1, 5)( 2, 3)( 6, 9)(10,11) ] )^G,
+##    Group( [ ( 2, 4, 6)( 3,10, 7)( 5, 9,11),
+##        ( 1, 5)( 2, 3)( 6, 9)(10,11) ] )^G,
+##    Group( [ ( 3, 6, 4, 9)( 5,11, 7, 8), ( 1, 9,11)( 4, 7, 8)( 5, 6,10)
+##       ] )^G,
+##    Group( [ ( 3, 4,10)( 5,11, 6)( 7, 9, 8),
+##        ( 1, 5)( 2, 3)( 6, 9)(10,11) ] )^G, M(11)^G, Group( () )^G ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1412,7 +1412,7 @@ DeclareAttribute( "DerivedSeriesOfGroup", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> DerivedSubgroup(g);
-##  Group([ (1,3,2), (1,4,3) ])
+##  Group([ (1,3,2), (2,4,3) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2070,7 +2070,7 @@ DeclareAttribute( "SmallGeneratingSet", IsGroup );
 ##  <M><A>G</A> / N</M> is supersolvable.
 ##  <Example><![CDATA[
 ##  gap> SupersolvableResiduum(g);
-##  Group([ (1,3)(2,4), (1,4)(2,3) ])
+##  Group([ (1,2)(3,4), (1,4)(2,3) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3016,7 +3016,7 @@ DeclareOperation( "IsSubnormal", [ IsGroup, IsGroup ] );
 ##  of the closure of <A>G</A> and <A>U</A> which contains <A>U</A>.
 ##  <Example><![CDATA[
 ##  gap> NormalClosure(g,Subgroup(g,[(1,2,3)]));
-##  Group([ (1,2,3), (1,3,4) ])
+##  Group([ (1,2,3), (2,3,4) ])
 ##  gap> NormalClosure(g,Group((3,4,5)));
 ##  Group([ (3,4,5), (1,5,4), (1,2,5) ])
 ##  ]]></Example>
@@ -3185,7 +3185,7 @@ KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
 ##  <M>V \geq </M><A>U</A>. If <A>U</A> is subnormal, <M>V =</M> <A>U</A>.
 ##  <Example><![CDATA[
 ##  gap> s:=SubnormalSeries(g,Group((1,2)(3,4)));
-##  [ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,3)(2,4) ]), 
+##  [ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,4)(2,3) ]),
 ##    Group([ (1,2)(3,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
