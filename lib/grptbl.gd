@@ -152,7 +152,7 @@ DeclareGlobalFunction( "MagmaElement" );
 ##  Otherwise <K>fail</K> is returned.
 ##  <Example><![CDATA[
 ##  gap> SemigroupByMultiplicationTable([[1,2,3],[2,3,1],[3,1,2]]);
-##  <semigroup with 3 generators>
+##  <semigroup of size 3, with 3 generators>
 ##  gap> SemigroupByMultiplicationTable([[1,2,3],[2,3,1],[3,2,1]]);
 ##  fail
 ##  ]]></Example>
@@ -178,7 +178,7 @@ DeclareGlobalFunction( "SemigroupByMultiplicationTable" );
 ##  Otherwise <K>fail</K> is returned.
 ##  <Example><![CDATA[
 ##  gap> MonoidByMultiplicationTable([[1,2,3],[2,3,1],[3,1,2]]);
-##  <monoid with 3 generators>
+##  <monoid of size 3, with 3 generators>
 ##  gap> MonoidByMultiplicationTable([[1,2,3],[2,3,1],[1,3,2]]);
 ##  fail
 ##  ]]></Example>
