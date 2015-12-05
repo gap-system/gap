@@ -89,7 +89,7 @@ InstallMethod( IsTrivialNormalIntersection,
 #M  ComplementNormalSubgroup( <G>, <N> ) . . . . . . . . . . . generic method
 ##
 InstallMethod( ComplementNormalSubgroup,
-               "generic method", [ IsGroup,  IsGroup ],
+               "generic method", IsIdenticalObj, [ IsGroup,  IsGroup ],
 
   function( G, N )
 
@@ -110,7 +110,7 @@ InstallMethod( ComplementNormalSubgroup,
   end);
 
 InstallMethod( ComplementNormalSubgroupNC,
-               "generic method", [ IsGroup,  IsGroup ],
+               "generic method", IsIdenticalObj, [ IsGroup,  IsGroup ],
 
   function( G, N )
 
@@ -119,12 +119,12 @@ InstallMethod( ComplementNormalSubgroupNC,
           gF,   # element of F=G/N
           i,    # running index
           l,    # list for storing stuff
-          b,    # elements of Abelian complement
+          b,    # elements of abelian complement
           B,    # complement to N
           T,    # = [C_G(N), G] = 1 x B'
           Gf,   # = G/T = N x B/B'
           Nf,   # = NT/T
-          Bf,   # Abelian complement to Nf in Gf ( = B/B')
+          Bf,   # abelian complement to Nf in Gf ( = B/B')
           BfF;  # Direct factors of Bf
 
     # if <N> is trivial then the only complement is <G>
@@ -135,7 +135,7 @@ InstallMethod( ComplementNormalSubgroupNC,
     elif G = N  then
       return TrivialSubgroup(G);
 
-    # if G/N is Abelian
+    # if G/N is abelian
     elif HasAbelianFactorGroup(G, N) then
       F := FactorGroupNC(G, N);
       b := [];
@@ -154,7 +154,7 @@ InstallMethod( ComplementNormalSubgroupNC,
       B := SubgroupNC(G, b);
       return B;
 
-    # if G/N is not Abelian
+    # if G/N is not abelian
     else
       T := CommutatorSubgroup(Centralizer(G, N), G);
       if not IsTrivial(T) and IsTrivialNormalIntersection(G, T, N) then
@@ -274,14 +274,15 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
           N,        # (possible) component of G, containing g
           B;        # (possible) complement of G in N
 
-    # for Abelian groups return the canonical decomposition
+    # for abelian groups return the canonical decomposition
     if IsTrivial(G) then
       return [G];
     elif IsAbelian(G) then
       Ns := List(IndependentGeneratorsOfAbelianGroup(G),
                                                   g -> SubgroupNC(G, [g]));
-      # for infinite groups Set may be very inefficient
-      # might cause problems because for finite groups we return a set
+      # for infinite groups Set may be very inefficient or might not even
+      # terminate
+      # this might cause problems because for finite groups we return a set
       if not IsFinite(G) then
         return Ns;
       else
@@ -291,7 +292,7 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
 
     if not IsFinite(G) then TryNextMethod(); fi;
 
-    # Nilpotent groups are direct product of Sylow subgroups
+    # nilpotent groups are direct product of Sylow subgroups
     if IsNilpotentGroup(G) then
       if not IsPGroup(G) then
         Ns := [ ];
@@ -315,9 +316,9 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
       fi;
     fi;
 
-    # look for Abelian cyclic component from the center
+    # look for abelian cyclic component from the center
     C := Center(G);
-    # (these components cannot lie in the commutator)
+    # abelian cyclic components cannot lie in the commutator
     Gd := DerivedSubgroup(G);
     avoid := [];
     for g in C do
@@ -334,19 +335,19 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
       fi;
     od;
 
-    # all components are non-Abelian
+    # all components are nonabelian
     if IsCyclic(Gd) and IsPrimePowerInt(Size(Gd)) then
-      # if A and B are two non-Abelian components, then
+      # if A and B are two nonabelian components, then
       # A' and B' must be nontrivial
-      # this can only help for some meta-Abelian groups
+      # this can only help for some metabelian groups
       return [ G ];
     fi;
 
     if not IsTrivial(C) then
       GC := G/C;
       if IsAbelian(GC) and Length(DirectFactorsOfGroup(GC)) < 4 then
-        # if A and B are two non-Abelian components,
-        # where A/Center(A) and B/Center(B) are Abelian, then
+        # if A and B are two nonabelian components,
+        # where A/Center(A) and B/Center(B) are abelian, then
         # A/Center(A) and B/Center(B) must have at least two components each
         return [ G ];
       fi;
@@ -459,10 +460,10 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
           edges,    # final edges of the non-commuting graph
           e,        # one edge of the non-commuting graph
           comp,     # components of the non-commuting graph
-          DfZ1,     # non-Abelian direct factors of Z1
+          DfZ1,     # nonabelian direct factors of Z1
           S1;       # index set corresponding to first component
 
-    # for Abelian groups return the canonical decomposition
+    # for abelian groups return the canonical decomposition
     if IsTrivial(G) then
       return [G];
     elif IsAbelian(G) then
@@ -479,7 +480,7 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
 
     if not IsFinite(G) then TryNextMethod(); fi;
 
-    # look for Abelian cyclic component from the center
+    # look for abelian cyclic component from the center
     C := Center(G);
     # (these components cannot lie in the commutator)
     Gd := DerivedSubgroup(G);
@@ -498,7 +499,7 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
       fi;
     od;
 
-    # all components are non-Abelian
+    # all components are nonabelian
     # !!! this can (and should) be made more efficient later !!!
     # instead of conjugacy classes we should calculate by normal subgroups
     # generated by 1 element
@@ -568,7 +569,7 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
         prodK := ClosureGroup(prodK, K);
       od;
       Z1 := Centralizer(G, prodK);
-      # Z1 is non-Abelian <==> contains a non-Abelian factor
+      # Z1 is nonabelian <==> contains a nonabelian factor
       if not IsAbelian(Z1) then
         N := First(DirectFactorsOfGroupKN(Z1), x-> not IsAbelian(x));
         # not sure if IsNormal(G, N) should be checked
