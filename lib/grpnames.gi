@@ -25,16 +25,18 @@
 ##
 #M  IsTrivialNormalIntersectionInList( <L>, <U>, <V> ) . . . . generic method
 ##
-InstallMethod( IsTrivialNormalIntersectionInList,
-               "if minimal normal subgroups are computed",
-               [ IsList, IsGroup, IsGroup ],
+InstallGlobalFunction( IsTrivialNormalIntersectionInList,
 
-  function( L, U, V )
-    local gs;
+  function( MinNs, U, V )
+    local N, g;
 
-    gs:= List(Filtered(L, N -> not IsTrivial(N)),
-                                               N -> GeneratorsOfGroup(N)[1]);
-    return ForAll(gs, g -> not g in U or not g in V);
+    for N in MinNs do
+      g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+      if g <> fail and g in U and g in V then
+        return false;
+      fi;
+    od;
+    return true;
   end);
 
 #############################################################################
@@ -43,41 +45,28 @@ InstallMethod( IsTrivialNormalIntersectionInList,
 ##
 
 InstallMethod( IsTrivialNormalIntersection,
-               "if minimal normal subgroups are computed",
+               "if minimal normal subgroups are computed", IsFamFamFam,
                [ IsGroup and HasMinimalNormalSubgroups, IsGroup, IsGroup ],
 
   function( G, U, V )
-    local gs;
+    local N, g;
 
-    gs := List(MinimalNormalSubgroups(G), N -> GeneratorsOfGroup(N)[1]);
-    return ForAll(gs, g -> not g in U or not g in V);
+    for N in MinimalNormalSubgroups(G) do
+      g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+      if g <> fail and g in U and g in V then
+        # found a nontrivial common element
+        return false;
+      fi;
+    od;
+    # if U and V intersect nontrivially, then their intersection must contain
+    # a minimal normal subgroup, and therefore both U and V contains any of
+    # its generators
+    return true;
   end);
 
 InstallMethod( IsTrivialNormalIntersection,
-               "if socle is computed",
-               [ IsGroup and HasSocle, IsGroup, IsGroup ],
-
-  function( G, U, V )
-    local gs;
-
-    gs := GeneratorsOfGroup(Socle(G));
-    return ForAll(gs, g -> not g in U or not g in V);
-  end);
-
-InstallMethod( IsTrivialNormalIntersection,
-               "for nilpotent groups",
-               [ IsGroup and IsNilpotentGroup, IsGroup, IsGroup ],
-
-  function( G, U, V )
-    local gs;
-
-    gs := List(MinimalNormalSubgroups(Center(G)),
-                                              N -> GeneratorsOfGroup(N)[1]);
-    return ForAll(gs, g -> not g in U or not g in V);
-  end);
-
-InstallMethod( IsTrivialNormalIntersection,
-               "generic method", [ IsGroup, IsGroup, IsGroup ],
+               "generic method", IsFamFamFam,
+               [ IsGroup, IsGroup, IsGroup ],
 
   function( G, U, V )
 

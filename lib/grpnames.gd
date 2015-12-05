@@ -53,7 +53,7 @@ DeclareOperation( "IsTrivialNormalIntersection",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation( "IsTrivialNormalIntersectionInList",
+DeclareGlobalFunction( "IsTrivialNormalIntersectionInList",
                   [ IsList, IsGroup, IsGroup ] );
 
 #############################################################################
