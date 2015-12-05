@@ -295,9 +295,8 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
           return [ G ];
         fi;
       fi;
-    fi;
-
-    if IsSolvableGroup(G) then
+    # nonabelian p-groups cannot have a unique maximal subgroup
+    elif IsSolvableGroup(G) then
       GGd := CommutatorFactorGroup(G);
       if IsCyclic(GGd) and IsPrimePowerInt(Size(GGd)) then
         # G is direct indecomposable, because has a unique maximal subgroup
