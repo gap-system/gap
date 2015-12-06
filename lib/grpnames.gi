@@ -176,7 +176,7 @@ InstallMethod(DirectFactorsOfGroup,
             [ IsGroup and HasDirectProductInfo and HasNormalSubgroups ], 10,
 
   function(G)
-    local i, info, Ns, MinNs, H, Df, DfNs, DfMinNs, gs;
+    local i, info, Ns, MinNs, H, Df, DfNs, DfMinNs, N, g, gs;
 
     Ns := NormalSubgroups(G);
     MinNs := MinimalNormalSubgroups(G);
@@ -190,7 +190,13 @@ InstallMethod(DirectFactorsOfGroup,
         UniteSet(Df, H);
       else
         DfNs := Filtered(Ns, N ->IsSubset(H, N));
-        gs := Set(DfMinNs, N -> GeneratorsOfGroup(N)[1]);
+        gs := [ ];
+        for N in DfMinNs do
+          g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+          if g <> fail then
+            AddSet(gs, g);
+          fi;
+        od;
         # normal subgroup containing all minimal subgroups cannot have complement in H
         DfNs := Filtered(DfNs, N -> not IsSubset(N, gs));
         UniteSet(Df, DirectFactorsOfGroupFromList(H, DfNs, DfMinNs));
