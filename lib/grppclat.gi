@@ -1286,6 +1286,13 @@ InstallGlobalFunction(ExactSizeConsiderFunction,function(size)
          end;
 end);
 
+BindGlobal("ElementaryAbelianConsider",
+function(c,a,n,b,m)
+  return HasElementaryAbelianFactorGroup(a,n) and
+    ForAll(GeneratorsOfGroup(a),x->ForAll(GeneratorsOfGroup(b),y->Comm(x,y)
+    in m));
+end);
+
 #############################################################################
 ##
 #E  grppclat.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
