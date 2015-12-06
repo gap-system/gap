@@ -217,7 +217,7 @@ InstallMethod(DirectFactorsOfGroup, "if normal subgroups are computed", true,
                       [ IsGroup and HasNormalSubgroups ], 10,
 
   function(G)
-    local Ns, MinNs, GGd, gs;
+    local Ns, MinNs, GGd, g, N, gs;
 
     Ns := NormalSubgroups(G);
     MinNs := MinimalNormalSubgroups(G);
@@ -239,7 +239,13 @@ InstallMethod(DirectFactorsOfGroup, "if normal subgroups are computed", true,
       return [ G ];
     fi;
 
-    gs := Set(MinNs, N -> GeneratorsOfGroup(N)[1]);
+    gs := [ ];
+    for N in MinNs do
+      g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+      if g <> fail then
+        AddSet(gs, g);
+      fi;
+    od;
     # normal subgroup containing all minimal subgroups cannot have complement
     Ns := Filtered(Ns, N -> not IsSubset(N, gs));
 
@@ -362,7 +368,13 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
       return [ G ];
     fi;
 
-    gs := Set(MinNs, N -> GeneratorsOfGroup(N)[1]);
+    gs := [ ];
+    for N in MinNs do
+      g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+      if g <> fail then
+        AddSet(gs, g);
+      fi;
+    od;
     # normal subgroup containing all minimal subgroups cannot have complement
     Ns := Filtered(Ns, N -> not IsSubset(N, gs));
 
@@ -373,7 +385,7 @@ InstallGlobalFunction( DirectFactorsOfGroupFromList,
 
   function ( G, NList, MinList )
 
-    local  gs, Ns, MinNs, NNs, MinNNs, facts, sizes, i, j, s1, s2;
+    local g, N, gs, Ns, MinNs, NNs, MinNNs, facts, sizes, i, j, s1, s2;
 
     if Length(MinList)=1 then
       # size of MinList is an upper bound to the number of components
@@ -384,8 +396,13 @@ InstallGlobalFunction( DirectFactorsOfGroupFromList,
 
     Ns := ShallowCopy(NList);
     MinNs := ShallowCopy(MinList);
-    gs:= List(Filtered(MinNs, N -> not IsTrivial(N)),
-                                               N -> GeneratorsOfGroup(N)[1]);
+    gs := [ ];
+    for N in MinNs do
+      g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+      if g <> fail then
+        AddSet(gs, g);
+      fi;
+    od;
     # normal subgroup containing all minimal subgroups cannot have complement
     Ns := Filtered(Ns, N -> not IsSubset(N, gs));
     sizes := List(Ns,Size);
