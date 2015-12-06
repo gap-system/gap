@@ -239,10 +239,16 @@ InstallMethod(DirectFactorsOfGroup, "if normal subgroups are computed", true,
         # G is direct indecomposable, because has a unique maximal subgroup
         return [ G ];
       fi;
-    elif Length(MaximalNormalSubgroups(G))= 1 then
-      # size of MaximalNormalSubgroups is an upper bound to the number of
-      # components
-      return [ G ];
+    else
+      GGd := CommutatorFactorGroup(G);
+      # if GGd is not cyclic of prime power size then there are at least two
+      # maximal subgroups
+      if IsTrivial(GGd) or (IsCyclic(GGd) and IsPrimePowerInt(Size(GGd)))
+        and Length(MaximalNormalSubgroups(G))= 1 then
+        # size of MaximalNormalSubgroups is an upper bound to the number of
+        # components
+        return [ G ];
+      fi;
     fi;
 
     gs := [ ];
@@ -368,10 +374,16 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
       return [ G ];
     fi;
 
-    if not IsSolvableGroup(G) and Length(MaximalNormalSubgroups(G))= 1 then
-      # size of MaximalNormalSubgroups is an upper bound to the number of
-      # components
-      return [ G ];
+    if not IsSolvableGroup(G) then
+      GGd := CommutatorFactorGroup(G);
+      # if GGd is not cyclic of prime power size then there are at least two
+      # maximal subgroups
+      if IsTrivial(GGd) or (IsCyclic(GGd) and IsPrimePowerInt(Size(GGd)))
+        and Length(MaximalNormalSubgroups(G))= 1 then
+        # size of MaximalNormalSubgroups is an upper bound to the number of
+        # components
+        return [ G ];
+      fi;
     fi;
 
     gs := [ ];
