@@ -36,8 +36,6 @@ Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g'.\n",
        "The `next' time is an approximation of the running time ",
        "for the next file.\n\n" );
 
-Reread( Filename( DirectoriesLibrary( "tst" ), "testutil.g" ) );
-
 TestDirectory( [
   Filename( DirectoriesLibrary( "tst" ), "teststandard" ),
   Filename( DirectoriesLibrary( "tst" ), "testinstall" )],
