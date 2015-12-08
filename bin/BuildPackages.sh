@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # You need 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
 # Run this script from the 'pkg' subdirectory of your GAP installation.
 
