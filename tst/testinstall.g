@@ -5,13 +5,11 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file lists those files in the directory <F>tst/testinstall</F> of
-##  the &GAP; distribution, which are recommended to be read after a &GAP;
-##  installation.
+##  This file runs all tests from the directory 'tst/testinstall' of the
+##  GAP distribution. It is recommented to read it after GAP installation.
 ##
-##  <P/>
 ##  The documentation states the following:
-##  <P/>
+##
 ##  <#GAPDoc Label="[1]{testinstall.g}">
 ##  If you want to run a quick test of your &GAP; installation 
 ##  (though this is not required), you can read in a test script 

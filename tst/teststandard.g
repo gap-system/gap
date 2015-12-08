@@ -5,10 +5,9 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file lists those files in the directory <F>tst</F> of the &GAP;
-##  distribution that are recommended to be read after a &GAP; installation.
+##  This file runs all tests from 'tst/testinstall' and 'tst/teststandard'
+##  directories of the GAP distribution.
 ##
-##  <P/>
 ##  <#GAPDoc Label="[1]{teststandard.g}">
 ##  If you want to run a more advanced check (this is not required and 
 ##  make take up to an hour), you can read <File>teststandard.g</File>
