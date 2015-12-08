@@ -50,6 +50,11 @@ if ! (cd $SUBDIR && [ -f $GAPDIR/sysinfo.gap ])
     exit 1
 fi
 
+if (cd $SUBDIR && grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null) ; then
+  echo Building with 32-bit ABI
+  ABI32=YES
+  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
+fi;
 
 echo Attempting to build GAP packages.
 echo Note that many GAP packages require extra programs to be installed,
@@ -114,12 +119,6 @@ run_configure_and_make() {
     fi;
   fi;
 }
-
-if grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null ; then
-  echo Building with 32-bit ABI
-  ABI32=YES
-  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
-fi;
 
 for dir in `ls -d */`
 do
