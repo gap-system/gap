@@ -9,8 +9,11 @@
 # Even if it doesn't work completely automatically for you, you may get
 # an idea what to do for a complete installation of GAP.
 
-
-MAKE=make
+if ! (x`which gmake` = "x" ) ; then
+  MAKE=gmake
+else
+  MAKE=make
+fi
 
 # Package-specific info:
 
@@ -70,13 +73,13 @@ cd carat-2.1b1/functions
 # carat-2.1b1/Makefile.)
 tar xzpf gmp-*.tar.gz
 cd ..
-$(MAKE) TOPDIR=`pwd` Links
+$MAKE TOPDIR=`pwd` Links
 # Note that Gmp may use processor specific code, so this step may not be ok
 # for a network installation if you want to use the package on older computers
 # as well.
-$(MAKE) TOPDIR=`pwd` Gmp
+$MAKE TOPDIR=`pwd` Gmp
 # And now the actual Carat programs.
-$(MAKE) TOPDIR=`pwd` CFLAGS='-O2'
+$MAKE TOPDIR=`pwd` CFLAGS='-O2'
 )
 }
 
@@ -98,14 +101,14 @@ build_fail() {
 run_configure_and_make() {
   # We want to know if this is an autoconf configure script
   # or not, without actually executing it!
-  if [ -f autogen.sh ] && ! [ -f configure ] then
+  if [ -f autogen.sh ] && ! [ -f configure ] ; then
     ./autogen.sh
   fi;
   if [ -f configure ]; then
     if grep Autoconf ./configure > /dev/null; then
-      ./configure $CONFIGFLAGS --with-gaproot=$GAPDIR && $(MAKE)
+      ./configure $CONFIGFLAGS --with-gaproot=$GAPDIR && $MAKE
     else
-      ./configure $GAPDIR && $(MAKE)
+      ./configure $GAPDIR && $MAKE
     fi;
   fi;
 }
@@ -122,7 +125,7 @@ do
       echo ==== Building $dir
       case $dir in
         anupq*)
-          (cd $dir && ./configure $CONFIGFLAGS && $(MAKE) $CONFIGFLAGS) || build_fail
+          (cd $dir && ./configure $CONFIGFLAGS && $MAKE $CONFIGFLAGS) || build_fail
         ;;
 
         atlasrep*)
@@ -138,19 +141,19 @@ do
         ;;
 
         fplsa*)
-          (cd $dir && ./configure $GAPDIR && $(MAKE) CC="gcc -O2 ") || build_fail
+          (cd $dir && ./configure $GAPDIR && $MAKE CC="gcc -O2 ") || build_fail
         ;;
 
         kbmag*)
-          (cd $dir && ./configure $GAPDIR && $(MAKE) COPTS="-O2 -g") || build_fail
+          (cd $dir && ./configure $GAPDIR && $MAKE COPTS="-O2 -g") || build_fail
         ;;
 
         pargap*)
-          (cd $dir && ./configure $GAPDIR && $(MAKE) && cp bin/pargap.sh $GAPDIR/bin && rm -f ALLPKG) || build_fail
+          (cd $dir && ./configure $GAPDIR && $MAKE && cp bin/pargap.sh $GAPDIR/bin && rm -f ALLPKG) || build_fail
         ;;
 
         xgap*)
-          (cd $dir && ./configure && $(MAKE) && rm -f $GAPDIR/bin/xgap.sh && cp bin/xgap.sh $GAPDIR/bin) || build_fail
+          (cd $dir && ./configure && $MAKE && rm -f $GAPDIR/bin/xgap.sh && cp bin/xgap.sh $GAPDIR/bin) || build_fail
         ;;
 
         simpcomp*)
