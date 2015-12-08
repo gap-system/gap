@@ -11,7 +11,7 @@ set -e
 # Even if it doesn't work completely automatically for you, you may get
 # an idea what to do for a complete installation of GAP.
 
-if ! (x`which gmake` = "x" ) ; then
+if ! [ x`which gmake` = "x" ] ; then
   MAKE=gmake
 else
   MAKE=make
