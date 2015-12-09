@@ -20,7 +20,7 @@
 ##
 
 InstallGlobalFunction(CallWithTimeout, 
-        function( timeout, func, arg )
+        function( timeout, func, arg... )
     return CallWithTimeoutList(timeout, func, arg);
 end );
 
@@ -83,4 +83,3 @@ end);
                 
        
                   
-

@@ -910,7 +910,7 @@ end);
 ##
 #M  StabilizerOp( <nat-sym-grp>, ...... )
 ##
-SYMGP_STABILIZER := function(sym, arg)
+SYMGP_STABILIZER := function(sym, arg...)
     local  k, act, pt, mov, stab, nat, diff, int, bls, mov1, parts, 
            part, bl, i, gens, size;
     k := Length(arg);
@@ -1012,7 +1012,7 @@ InstallOtherMethod( StabilizerOp,"alternating group", true,
   # the objects might be a group element: rank up	
         RankFilter(IsMultiplicativeElementWithInverse) + 
         RankFilter(IsSolvableGroup),
-        function(g, arg) 
+        function(g, arg...) 
     return AlternatingSubgroup(CallFuncList(Stabilizer, Concatenation([SymmetricParentGroup(g)], arg)));
 end);
 
@@ -1022,7 +1022,7 @@ InstallOtherMethod( StabilizerOp,"alternating group", true,
   # the objects might be a group element: rank up	
         RankFilter(IsMultiplicativeElementWithInverse) + 
         RankFilter(IsSolvableGroup),
-        function(g, arg) 
+        function(g, arg...)
     return AlternatingSubgroup(CallFuncList(Stabilizer, Concatenation([SymmetricParentGroup(g)], arg)));
 end);
 

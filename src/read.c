@@ -1114,7 +1114,7 @@ void ReadFuncExpr (
 {
     volatile Obj        nams;           /* list of local variables names   */
     volatile Obj        name;           /* one local variable name         */
-    volatile UInt       narg;           /* number of arguments             */
+    volatile Int        narg;           /* number of arguments             */
     volatile UInt       isvarg = 0;     /* does function have varargs?     */
     volatile UInt       nloc;           /* number of locals                */
     volatile UInt       nr;             /* number of statements            */
@@ -1278,12 +1278,9 @@ void ReadFuncExpr (
     /* Also, we special case function(arg)                                   */
     if (isvarg || ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) )) )
       {
-	/* TODO: remove this before the next non-beta release */
-	if (narg > 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) ) )
-	  SyntaxWarning("New syntax used -- intentional?");
 	narg = -narg;
       }
-	
+      
     /*     if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
 	   narg = -1; */
 
