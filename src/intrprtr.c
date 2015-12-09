@@ -4411,7 +4411,7 @@ void            IntrIsbComObjName (
     /* get the result                                                      */
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
-        isb = ElmPRec( record, rnam ) ? True : False;
+        isb = IsbPRec( record, rnam ) ? True : False;
         break;
       default:
         isb = ISB_REC( record, rnam ) ? True : False;
