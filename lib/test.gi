@@ -539,7 +539,7 @@ end);
 ##
 ##
 
-TestDirectory := function(arg)
+InstallGlobalFunction( "TestDirectory", function(arg)
   local basedirs, nopts, opts, files, newfiles, filestones, filetimes, 
         f, c, i, recurseFiles, StringEnd, getStones, setStones,
         startTime, time, stones, testResult, testTotal,
@@ -753,4 +753,4 @@ TestDirectory := function(arg)
   fi;
   
   return testTotal;
-end;
+end);
