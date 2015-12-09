@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -e
 
 # You need 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
 # Run this script from the 'pkg' subdirectory of your GAP installation.
@@ -8,6 +10,12 @@
 # Note, that this isn't and is not intended to be a sophisticated script.
 # Even if it doesn't work completely automatically for you, you may get
 # an idea what to do for a complete installation of GAP.
+
+if ! [ x`which gmake` = "x" ] ; then
+  MAKE=gmake
+else
+  MAKE=make
+fi
 
 # Package-specific info:
 
@@ -42,6 +50,11 @@ if ! (cd $SUBDIR && [ -f $GAPDIR/sysinfo.gap ])
     exit 1
 fi
 
+if (cd $SUBDIR && grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null) ; then
+  echo Building with 32-bit ABI
+  ABI32=YES
+  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
+fi;
 
 echo Attempting to build GAP packages.
 echo Note that many GAP packages require extra programs to be installed,
@@ -67,13 +80,13 @@ cd carat-2.1b1/functions
 # carat-2.1b1/Makefile.)
 tar xzpf gmp-*.tar.gz
 cd ..
-make TOPDIR=`pwd` Links
+$MAKE TOPDIR=`pwd` Links
 # Note that Gmp may use processor specific code, so this step may not be ok
 # for a network installation if you want to use the package on older computers
 # as well.
-make TOPDIR=`pwd` Gmp
+$MAKE TOPDIR=`pwd` Gmp
 # And now the actual Carat programs.
-make TOPDIR=`pwd` CFLAGS='-O2'
+$MAKE TOPDIR=`pwd` CFLAGS='-O2'
 )
 }
 
@@ -84,7 +97,7 @@ cd cohomolo
 cd standalone/progs.d
 cp makefile.orig makefile
 cd ../..
-make
+$MAKE
 )
 }
 
@@ -95,23 +108,17 @@ build_fail() {
 run_configure_and_make() {
   # We want to know if this is an autoconf configure script
   # or not, without actually executing it!
-  if [ -f autogen.sh ] && ! [ -f configure ] then
+  if [ -f autogen.sh ] && ! [ -f configure ] ; then
     ./autogen.sh
   fi;
   if [ -f configure ]; then
     if grep Autoconf ./configure > /dev/null; then
-      ./configure $CONFIGFLAGS --with-gaproot=$GAPDIR && make
+      ./configure $CONFIGFLAGS --with-gaproot=$GAPDIR && $MAKE
     else
-      ./configure $GAPDIR && make
+      ./configure $GAPDIR && $MAKE
     fi;
   fi;
 }
-
-if grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null ; then
-  echo Building with 32-bit ABI
-  ABI32=YES
-  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
-fi;
 
 for dir in `ls -d */`
 do
@@ -119,7 +126,7 @@ do
       echo ==== Building $dir
       case $dir in
         anupq*)
-          (cd $dir && ./configure $CONFIGFLAGS && make $CONFIGFLAGS) || build_fail
+          (cd $dir && ./configure $CONFIGFLAGS && $MAKE $CONFIGFLAGS) || build_fail
         ;;
 
         atlasrep*)
@@ -135,19 +142,19 @@ do
         ;;
 
         fplsa*)
-          (cd $dir && ./configure $GAPDIR && make CC="gcc -O2 ") || build_fail
+          (cd $dir && ./configure $GAPDIR && $MAKE CC="gcc -O2 ") || build_fail
         ;;
 
         kbmag*)
-          (cd $dir && ./configure $GAPDIR && make COPTS="-O2 -g") || build_fail
+          (cd $dir && ./configure $GAPDIR && $MAKE COPTS="-O2 -g") || build_fail
         ;;
 
         pargap*)
-          (cd $dir && ./configure $GAPDIR && make && cp bin/pargap.sh $GAPDIR/bin && rm -f ALLPKG) || build_fail
+          (cd $dir && ./configure $GAPDIR && $MAKE && cp bin/pargap.sh $GAPDIR/bin && rm -f ALLPKG) || build_fail
         ;;
 
         xgap*)
-          (cd $dir && ./configure && make && rm -f $GAPDIR/bin/xgap.sh && cp bin/xgap.sh $GAPDIR/bin) || build_fail
+          (cd $dir && ./configure && $MAKE && rm -f $GAPDIR/bin/xgap.sh && cp bin/xgap.sh $GAPDIR/bin) || build_fail
         ;;
 
         simpcomp*)
