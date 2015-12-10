@@ -1463,7 +1463,7 @@ void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
 
   timer_settime(syTimer, 0, &tv, &buf);
   SyAlarmRunning = 0;
-  signal(TIMER_SIGNAL, SIG_DFL);
+  signal(TIMER_SIGNAL, SIG_IGN);
 
   if (seconds)
     *seconds = (UInt)buf.it_value.tv_sec;
@@ -1529,7 +1529,7 @@ void SyInstallAlarm ( UInt seconds, UInt nanoseconds )
   SyAlarmRunning = 1;
   SyAlarmHasGoneOff = 0;
   if (setitimer(ITIMER_VIRTUAL, &tv, NULL)) {
-    signal(SIGVTALRM, SIG_DFL);
+    signal(SIGVTALRM, SIG_IGN);
     ErrorReturnVoid("Could not set interval timer", 0L, 0L, "you can return to ignore");
   }
   return;
@@ -1544,7 +1544,7 @@ void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
 
   setitimer(ITIMER_VIRTUAL, &tv, &buf);
   SyAlarmRunning = 0;
-  signal(SIGVTALRM, SIG_DFL);
+  signal(SIGVTALRM, SIG_IGN);
 
   if (seconds)
     *seconds = (UInt)buf.it_value.tv_sec;
