@@ -272,8 +272,8 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
           Gd,       # G'
           GGd,      # G/G'
           C,        # Center(G)
+          D,        # Intersection(C, Gd)
           GC,       # G/C
-          avoid,    # set of elements or indices to avoid
           Ns,       # list of normal subgroups
           MinNs,    # list of minimal normal subgroups
           gs,       # list containing one generator for each MinNs
@@ -324,19 +324,16 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
 
     # look for abelian cyclic component from the center
     C := Center(G);
-    # abelian cyclic components cannot lie in the commutator
+    # abelian cyclic components have trivial intersection with the commutator
     Gd := DerivedSubgroup(G);
-    avoid := [];
-    for g in C do
-      if not g in Gd and ForAll(avoid,h -> not g in RationalClass(G, h)) then
-        N := Subgroup(G, [g]);
+    D := Intersection(C, Gd);
+    for g in RationalClasses(C) do
+      N := Subgroup(C, Set(g));
+      if not IsTrivial(N) and IsTrivialNormalIntersection(C, D, N) then
         B := ComplementNormalSubgroupNC(G, N);
         # if B is a complement to N
         if B <> fail then
           return Union(DirectFactorsOfGroup(N), DirectFactorsOfGroup(B));
-        # if there is no complement to N then discard the generators of N
-        else
-          AddSet(avoid, g);
         fi;
       fi;
     od;
@@ -470,8 +467,8 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
           prodK,    # product of normal subgroups
           Z1,       # contains a (unique) component with trivial center
           g,a,b,    # elements of G
-          avoid,    # set of elements or indices to avoid
           C,        # Center(G)
+          D,        # Intersection(C, Gd)
           Cl,       # all conjugacy classes of G
           Clf,      # filtered list of conjugacy classes of G
           c1,c2,c3, # conjugacy class of G
@@ -505,19 +502,16 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
 
     # look for abelian cyclic component from the center
     C := Center(G);
-    # (these components cannot lie in the commutator)
+    # abelian cyclic components have trivial intersection with the commutator
     Gd := DerivedSubgroup(G);
-    avoid := [];
-    for g in C do
-      if not g in Gd and ForAll(avoid,h -> not g in RationalClass(G, h)) then
-        N := Subgroup(G, [g]);
+    D := Intersection(C, Gd);
+    for g in RationalClasses(C) do
+      N := Subgroup(C, Set(g));
+      if not IsTrivial(N) and IsTrivialNormalIntersection(C, D, N) then
         B := ComplementNormalSubgroupNC(G, N);
         # if B is a complement to N
         if B <> fail then
-          return Union(DirectFactorsOfGroupKN(N), DirectFactorsOfGroupKN(B));
-        # if there is no complement to N then discard the generators of N
-        else
-          AddSet(avoid, g);
+          return Union(DirectFactorsOfGroup(N), DirectFactorsOfGroup(B));
         fi;
       fi;
     od;
