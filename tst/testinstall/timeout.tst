@@ -4,9 +4,6 @@ gap> spinFor := function(ms, arg) local t;
 > while Runtimes().user_time + Runtimes().system_time < t + ms do od;
 > if Length(arg) >= 1
 > then return arg[1]; else return; fi; end;
-Syntax warning: New syntax used -- intentional? in stream line 2
-t := Runtimes().user_time + Runtimes().system_time;
-^
 function( ms, arg ) ... end
 gap> spinFor(10);
 gap> spinFor(10,0);
