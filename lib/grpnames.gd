@@ -35,10 +35,10 @@ DeclareOperation( "IsTrivialNormalIntersection",
 
 #############################################################################
 ##
-#O  IsTrivialNormalIntersectionInList( <MinNs>, <U>, <V> ) . . generic method
+#F  IsTrivialNormalIntersectionInList( <MinNs>, <U>, <V> ) . . generic method
 ##
 ##  <ManSection>
-##  <Oper Name="IsTrivialNormalIntersectionInList" Arg="MinNs, U, V"/>
+##  <Func Name="IsTrivialNormalIntersectionInList" Arg="MinNs, U, V"/>
 ##
 ##  <Description>
 ##    For groups <A>U</A> and <A>V</A>, IsTrivialNormalIntersection returns
