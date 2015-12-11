@@ -75,6 +75,25 @@ InstallMethod( IsTrivialNormalIntersection,
 
 #############################################################################
 ##
+#M  UnionIfCanEasilySortElements( <L1>[, <L2>, ... ] ) . . . . generic method
+##
+InstallGlobalFunction( UnionIfCanEasilySortElements,
+
+  function( arg )
+    local i, N;
+
+    for i in [1..Length(arg)] do
+      for N in arg[i] do
+        if not CanEasilySortElements(N) then
+          return Concatenation(arg);
+        fi;
+      od;
+    od;
+    return Union(arg);
+  end);
+
+#############################################################################
+##
 #M  ComplementNormalSubgroup( <G>, <N> ) . . . . . . . . . . . generic method
 ##
 InstallMethod( ComplementNormalSubgroup,
@@ -187,7 +206,7 @@ InstallMethod(DirectFactorsOfGroup,
       DfMinNs := Filtered(MinNs, N ->IsSubset(H, N));
       if Length(DfMinNs) = 1 then
         # size of DfMinNs is an upper bound to the number of components of H
-        UniteSet(Df, H);
+        Df := UnionIfCanEasilySortElements(Df, [H]);
       else
         DfNs := Filtered(Ns, N ->IsSubset(H, N));
         gs := [ ];
@@ -199,7 +218,8 @@ InstallMethod(DirectFactorsOfGroup,
         od;
         # normal subgroup containing all minimal subgroups cannot have complement in H
         DfNs := Filtered(DfNs, N -> not IsSubset(N, gs));
-        UniteSet(Df, DirectFactorsOfGroupFromList(H, DfNs, DfMinNs));
+        Df := UnionIfCanEasilySortElements(Df,
+                            DirectFactorsOfGroupFromList(H, DfNs, DfMinNs));
       fi;
     od;
     return Df;
@@ -214,7 +234,8 @@ InstallMethod(DirectFactorsOfGroup, "for direct products", true,
     Ns := [];
     info := DirectProductInfo(G).groups;
     for i in [1..Length(info)] do
-      UniteSet(Ns, DirectFactorsOfGroup(Image(Embedding(G,i),info[i])));
+      Ns := UnionIfCanEasilySortElements(Ns,
+                        DirectFactorsOfGroup(Image(Embedding(G,i),info[i])));
     od;
     return Ns;
   end);
@@ -285,16 +306,11 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
     if IsTrivial(G) then
       return [G];
     elif IsAbelian(G) then
-      Ns := List(IndependentGeneratorsOfAbelianGroup(G),
-                                                  g -> SubgroupNC(G, [g]));
-      # for infinite groups Set may be very inefficient or might not even
-      # terminate
-      # this might cause problems because for finite groups we return a set
-      if not IsFinite(G) then
-        return Ns;
-      else
-        return Set(Ns);
-      fi;
+      Ns := [];
+      for g in IndependentGeneratorsOfAbelianGroup(G) do
+        Ns := UnionIfCanEasilySortElements(Ns, [SubgroupNC(G, [g])]);
+      od;
+      return Ns;
     fi;
 
     if not IsFinite(G) then TryNextMethod(); fi;
@@ -304,7 +320,8 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
       if not IsPGroup(G) then
         Ns := [ ];
         for p in PrimeDivisors(Size(G)) do
-          UniteSet(Ns, DirectFactorsOfGroup(SylowSubgroup(G, p)));
+          Ns := UnionIfCanEasilySortElements(Ns,
+                                  DirectFactorsOfGroup(SylowSubgroup(G, p)));
         od;
         return Ns;
       else
@@ -333,7 +350,8 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
         B := ComplementNormalSubgroupNC(G, N);
         # if B is a complement to N
         if B <> fail then
-          return Union(DirectFactorsOfGroup(N), DirectFactorsOfGroup(B));
+          return UnionIfCanEasilySortElements( DirectFactorsOfGroup(N),
+                                                  DirectFactorsOfGroup(B));
         fi;
       fi;
     od;
@@ -441,8 +459,8 @@ InstallGlobalFunction( DirectFactorsOfGroupFromList,
                               and s2 mod Size(N) = 0 and IsSubset(Ns[j], N));
               MinNNs := Filtered(MinNs, N -> s2 mod Size(N) = 0
                                                 and IsSubset(Ns[j], N));
-              return Union([ Ns[i] ], DirectFactorsOfGroupFromList(Ns[j],
-                        NNs, MinNNs));
+              return UnionIfCanEasilySortElements( [ Ns[i] ],
+                          DirectFactorsOfGroupFromList(Ns[j], NNs, MinNNs));
             fi;
             j := j + 1;
           od;
@@ -487,15 +505,11 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
     if IsTrivial(G) then
       return [G];
     elif IsAbelian(G) then
-      Ns := List(IndependentGeneratorsOfAbelianGroup(G),
-                                                  g -> SubgroupNC(G, [g]));
-      # for infinite groups Set may be very inefficient
-      # might cause problems because for finite groups we return a set
-      if not IsFinite(G) then
-        return Ns;
-      else
-        return Set(Ns);
-      fi;
+      Ns := [];
+      for g in IndependentGeneratorsOfAbelianGroup(G) do
+        Ns := UnionIfCanEasilySortElements(Ns, [SubgroupNC(G, [g])]);
+      od;
+      return Ns;
     fi;
 
     if not IsFinite(G) then TryNextMethod(); fi;
@@ -511,7 +525,8 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
         B := ComplementNormalSubgroupNC(G, N);
         # if B is a complement to N
         if B <> fail then
-          return Union(DirectFactorsOfGroup(N), DirectFactorsOfGroup(B));
+          return UnionIfCanEasilySortElements( DirectFactorsOfGroup(N),
+                                                    DirectFactorsOfGroup(B));
         fi;
       fi;
     od;
@@ -572,10 +587,11 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
               EquivalenceRelationByPairsNC(IrrCl, edges));
 
     # replace classes in comp by their representatives
-    comp := Set(comp, x-> Set(x, Representative));
+    comp := List(comp, x-> Set(x, Representative));
 
     # now replace every list by their generated normal subgroup
-    Ns := Set(comp, x-> NormalClosure(G, SubgroupNC(G, x)));
+    Ns := List(comp, x-> NormalClosure(G, SubgroupNC(G, x)));
+    Ns := UnionIfCanEasilySortElements(Ns);
     if IsTrivial(C) or Size(Ns)=1 then
       return Ns;
     fi;
@@ -599,7 +615,7 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
         B := ComplementNormalSubgroup(G, N);
         if B <> fail then
           # N is direct indecomposable by construction
-          return Union( [ N ], DirectFactorsOfGroupKN(B) );
+          return UnionIfCanEasilySortElements([N],DirectFactorsOfGroupKN(B));
         fi;
       fi;
     od; od;

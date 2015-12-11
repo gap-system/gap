@@ -58,6 +58,21 @@ DeclareGlobalFunction( "IsTrivialNormalIntersectionInList",
 
 #############################################################################
 ##
+#F  UnionIfCanEasilySortElements( <L1>[, <L2>, ... ] ) . . . . generic method
+##
+##  <ManSection>
+##  <Func Name="UnionIfCanEasilySortElements" Arg="L1[, L2, ... ]"/>
+##
+##  <Description>
+##    Return the union of <A>Li</A> if CanEasilySortElements is true for all
+##    elements of all <A>Li</A>, and the concatenation of them, otherwise.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "UnionIfCanEasilySortElements", IsList );
+
+#############################################################################
+##
 #O  ComplementNormalSubgroup( <G>, <N> ) . . . . . . . . . . . generic method
 ##
 ##  <#GAPDoc Label="ComplementNormalSubgroup">
@@ -94,8 +109,8 @@ DeclareOperation( "ComplementNormalSubgroupNC", [IsGroup, IsGroup]);
 ##  <Attr Name="DirectFactorsOfGroup" Arg="G"/>
 ##
 ##  <Description>
-##    A sorted list of factors [<A>G1</A>, .., <A>Gr</A>] such that
-##    <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
+##    A (sorted if possible) list of factors [<A>G1</A>, .., <A>Gr</A>] such
+##    that <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
 ##    is a direct product.
 ##    If <A>G</A> is an infinite abelian group, then it returns an unsorted
 ##    list of the factors. DirectFactorsOfGroup currently cannot compute the
@@ -114,8 +129,8 @@ DeclareAttribute( "DirectFactorsOfGroup", IsGroup );
 ##  <Func Name="DirectFactorsOfGroup" Arg="G, Ns, MinNs"/>
 ##
 ##  <Description>
-##    A sorted list of factors [<A>G1</A>, .., <A>Gr</A>] such that
-##    <A>G</A> = <A>G1</A> x .. x <A>Gr</A>, none of the <A>Gi</A>
+##    A (sorted if possible) list of factors [<A>G1</A>, .., <A>Gr</A>] such
+##    that <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
 ##    is a direct product, and all the factors <A>Gi</A> are from the list
 ##    <A>Ns</A>. The list <A>MinNs</A> is supposed to be a list such that the
 ##    intersection of any two groups from <A>Ns</A> is either trivial or
@@ -228,8 +243,8 @@ DeclareGlobalFunction( "DirectFactorsOfGroupFromList",
 ##  <Attr Name="DirectFactorsOfGroupKN" Arg="G"/>
 ##
 ##  <Description>
-##    A sorted list of factors [<A>G1</A>, .., <A>Gr</A>] such that
-##    <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
+##    A (sorted if possible) list of factors [<A>G1</A>, .., <A>Gr</A>] such
+##    that <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
 ##    is a direct product.
 ##    This is the implementation of the algorithm described in
 ##    Neeraj Kayal and Timur Nezhmetdinov, Factoring Groups Efficiently,
