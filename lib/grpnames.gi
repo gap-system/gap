@@ -531,16 +531,18 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
         if c1 <> c2 then
           for a in c1 do
             for b in c2 do
-              if com then
-                g := a*b;
-                if g<>b*a then
-                  com := false;
-                  AddSet(preedges, [c1, c2]);
-                else
-                  AddSet(prod, g);
-                fi;
+              g := a*b;
+              if g<>b*a then
+                com := false;
+                AddSet(preedges, [c1, c2]);
+                break;
+              else
+                AddSet(prod, g);
               fi;
             od;
+            if not com then
+              break;
+            fi;
           od;
           if com and Size(prod) = Size(c1)*Size(c2) then
             a := Representative(c1);
