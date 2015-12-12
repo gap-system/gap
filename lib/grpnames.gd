@@ -48,7 +48,7 @@ DeclareOperation( "IsTrivialNormalIntersection",
 ##    This operation is useful if it is already known that the intersection
 ##    of <A>U</A> and <A>V</A> is either trivial, or contains at least one
 ##    group from <A>MinNs</A>.
-##    For example if </A>U</A> and </A>V</A> are normal subgroups of a group
+##    For example if <A>U</A> and <A>V</A> are normal subgroups of a group
 ##    G and <A>MinNs</A>=MinimalNormalSubgroups(G).
 ##  </Description>
 ##  </ManSection>
