@@ -294,7 +294,6 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
           GGd,      # G/G'
           C,        # Center(G)
           D,        # Intersection(C, Gd)
-          GC,       # G/C
           Ns,       # list of normal subgroups
           MinNs,    # list of minimal normal subgroups
           gs,       # list containing one generator for each MinNs
@@ -364,14 +363,12 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
       return [ G ];
     fi;
 
-    if not IsTrivial(C) then
-      GC := G/C;
-      if IsAbelian(GC) and Length(DirectFactorsOfGroup(GC)) < 4 then
-        # if A and B are two nonabelian components,
-        # where A/Center(A) and B/Center(B) are abelian, then
-        # A/Center(A) and B/Center(B) must have at least two components each
-        return [ G ];
-      fi;
+    if not IsTrivial(C) and HasAbelianFactorGroup(G, C)
+      and Length(DirectFactorsOfGroup(G/C)) < 4 then
+      # if A and B are two nonabelian components,
+      # where A/Center(A) and B/Center(B) are abelian, then
+      # A/Center(A) and B/Center(B) must have at least two components each
+      return [ G ];
     fi;
 
     # if everything else fails, compute all normal subgroups
