@@ -1677,6 +1677,8 @@ void GetNumber ( UInt StartingStatus )
     if (wasEscaped || (IsIdent(c)  && c != 'e' && c != 'E' && c != 'D' && c != 'q' &&
                        c != 'd' && c != 'Q')) {
 
+      if (!seenADigit)
+        SyntaxError("Badly formed number, need a digit before or after the decimal point");
       /* We allow one letter on the end of the numbers -- could be an i,
        C99 style */
       if (!wasEscaped) {
