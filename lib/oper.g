@@ -1734,20 +1734,44 @@ end );
 ##  global variables (see <C>variable.g</C>) because of the completion
 ##  mechanism.
 ##
+
+BIND_GLOBAL( "UTILS_FUNCTION_NAMES",                    ## for Utils 
+    ShareSpecialObj([], "UTILS_FUNCTION_NAMES") );      ## for Utils 
+BIND_GLOBAL( "UTILS_FUNCTION_OPERS",                    ## for Utils 
+    ShareSpecialObj([], "UTILS_FUNCTION_OPERS") );      ## for Utils 
+BIND_GLOBAL( "UTILS_FUNCTION_COUNT",                    ## for Utils 
+    ShareSpecialObj([], "UTILS_FUNCTION_COUNT") );      ## for Utils 
+
 BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", ShareSpecialObj([], "GLOBAL_FUNCTION_NAMES") );
 
 BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
-    local   name;
+    local   
+            pos,  val,                                  ## for Utils 
+            name;
 
     name := arg[1];
+if not ( ISBOUND_GLOBAL( name ) and                     ## for Utils 
+         ( name in UTILS_FUNCTION_NAMES ) ) then        ## for Utils 
     atomic GLOBAL_FUNCTION_NAMES do
     ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
     od;
     BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
+fi;                                                     ## for Utils 
+if ( name in UTILS_FUNCTION_NAMES ) then                ## for Utils  
+    pos := 1;                                           ## for Utils 
+    while not ( name = UTILS_FUNCTION_NAMES[pos] ) do   ## for Utils 
+        pos := pos + 1;                                 ## for Utils 
+    od;                                                 ## for Utils 
+    val := UTILS_FUNCTION_COUNT[pos] + 1;               ## for Utils 
+    UTILS_FUNCTION_COUNT[pos] := val;                   ## for Utils 
+##  Print( "#Ud: ", name, ", ", val, "\n" );            ## for Utils 
+fi;                                                     ## for Utils 
 end );
 
 BIND_GLOBAL( "InstallGlobalFunction", function( arg )
-    local   oper,  info,  func;
+    local   
+            ok,  pos,  val,                             ## for Utils 
+            oper,  info,  func;
 
     if LEN_LIST(arg) = 3  then
         oper := arg[1];
@@ -1758,8 +1782,24 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
         func := arg[2];
     fi;
     if IS_STRING( oper ) then
-      oper:= VALUE_GLOBAL( oper );
+      oper := VALUE_GLOBAL( oper );
     fi;
+
+ok := true;                                             ## for Utils 
+if ( oper in UTILS_FUNCTION_OPERS ) then                ## for Utils 
+    pos := 1;                                           ## for Utils 
+    while not ( oper = UTILS_FUNCTION_OPERS[pos] ) do   ## for Utils 
+        pos := pos + 1;                                 ## for Utils 
+    od;                                                 ## for Utils 
+    val := UTILS_FUNCTION_COUNT[pos];                   ## for Utils 
+    if ( val >= 2 ) then                                ## for Utils 
+        ok := false;                                    ## for Utils 
+    fi;                                                 ## for Utils 
+##  Print( "#Ui: ", UTILS_FUNCTION_NAMES[pos],          ## for Utils  
+##         ", ", val, ", ok = ", ok, "\n" );            ## for Utils 
+fi;                                                     ## for Utils 
+
+if ok then                                              ## for Utils 
     atomic readonly GLOBAL_FUNCTION_NAMES do
     if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
       Error("you cannot install a global function for another global ",
@@ -1767,6 +1807,7 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
     fi;
     INSTALL_METHOD_ARGS( oper, func );
     od;
+fi;                                                     ## for Utils 
 end );
 
 
