@@ -16,6 +16,10 @@ gap> IsFinite( g );
 false
 gap> Size( g );
 infinity
+gap> Order( g.1 );
+infinity
+gap> Order( One(g) );
+1
 gap> gens:= GeneratorsOfGroup( g );
 [ a, b ]
 gap> a:= gens[1];; b:= gens[2];;
