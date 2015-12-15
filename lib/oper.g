@@ -1682,6 +1682,136 @@ end );
 
 #############################################################################
 ##
+#F  AllowGlobalRedeclaration( <list> ) . . function(s) may be declared twice
+#F  AllowGlobalReinstallation( <list> ) . . . . . .  and implemented twice
+## 
+##  <#GAPDoc Label="AllowGlobalRedeclaration">
+##  <ManSection>
+##  <Func Name="AllowGlobalRedeclaration" Arg='list'/>
+##  <Func Name="AllowGlobalReinstallation" Arg='list'/>
+##  <Func Name="AllowGlobalRebinding" Arg='list'/>
+##
+##  <Description>
+##  These three functions are provided to assist with the transfer of global
+##  functions from one package to another.
+##  They allowthe declaration and implementation code of a global 
+##  function to be duplicated  without causing an error. 
+##  The function <C>AllowGlobalRedeclaration</C> allows the same name to be
+##  passed to <A>DeclareGlobalFunction</A> without causing an error. Similarly,
+##  <C>AllowGlobalReinstall</C> allows multiple calls to
+##  <A>InstallGlobalFunction</A>, and <C>AllowGlobalRebinding</C> allows multiple
+##  calls to <A>BIND_GLOBAL</A>. When <A>AllowGlobalReinstall</A> or 
+##  <A>AllowGlobalRebinding</A> is used, <A>BIND_GLOBAL</A> and
+##  <A>InstallGlobalFunction</A> will both ignore the function pass after the
+##  first call installing a given name. 
+##  <P/> 
+##  Each of these functions accepts as arguments 
+##  one or more strings, or a list of strings, and ignores duplicates. 
+##  The following example shows how these functions can be used in practice.
+##  </Description>
+##  </ManSection>
+##  <Example>
+##  <![CDATA[
+##  gap> DeclareGlobalFunction( "f1" );
+##  gap> InstallGlobalFunction( f1, function(n) return n^2; end );
+##  gap> f1(9);
+##  81
+##  gap> AllowGlobalRedeclaration( "f1" );
+##  gap> AllowGlobalRedeclaration( "f2", "f3" );
+##  gap> AllowGlobalRedeclaration( [ "f2", "f3", "f4" ] );
+##  gap> AllowGlobalReinstallation( f1 );
+##  gap> DeclareGlobalFunction( "f1" );
+##  gap> InstallGlobalFunction( f1, function(n) return -n; end );
+##  gap> f1(9);
+##  81
+##  gap> DeclareGlobalFunction( "f1" );
+##  gap> DeclareGlobalFunction( "f2" );
+##  gap> InstallGlobalFunction( f2, function(m,n) return m+n; end );
+##  gap> AllowGlobalReinstallation( f2 );
+##  gap> DeclareGlobalFunction( "f2" );
+##  gap> InstallGlobalFunction( f2, function(m,n) return m+n; end );
+##  gap> DeclareGlobalFunction( "f3" );
+##  gap> DeclareGlobalFunction( "f4" );
+##  gap> AllowGlobalReinstallation( f4 );
+##  Error, redeclaration and reinstallation lists inconsistent
+##  ]]>
+##  </Example>
+##  <#/GAPDoc>
+##
+
+BIND_GLOBAL( "GLOBAL_REDECLARATION_LIST",   
+    ShareSpecialObj([], "GLOBAL_REDECLARATION_LIST") );  
+BIND_GLOBAL( "GLOBAL_REINSTALLATION_LIST",  
+    ShareSpecialObj([], "GLOBAL_REINSTALLATION_LIST") );  
+BIND_GLOBAL( "GLOBAL_REDECLARATION_COUNT", 
+    ShareSpecialObj([], "GLOBAL_REDECLARATION_COUNT") );  
+
+BIND_GLOBAL( "AllowGlobalRedeclaration", function( arg ) 
+    local  L, pos, name, count;
+    ##  form the arguments into a list of strings L 
+    if ( LEN_LIST(arg) = 1 ) then 
+        if IS_STRING_REP( arg[1] ) then 
+            L := arg; 
+        elif IS_LIST( arg[1] ) then 
+            L := arg[1]; 
+        fi; 
+    else 
+        L := arg; 
+    fi; 
+    for name in L do  
+        if not IS_STRING_REP( name ) then 
+            Error("arg must be a string (function name) or a list of strings");
+        fi;
+    od;
+    for name in L do 
+        ##  avoid duplicate entries in GLOBAL_REDECLARATION_LIST 
+        pos := POS_LIST_DEFAULT( GLOBAL_REDECLARATION_LIST, name, 0 ); 
+        if ( pos = fail ) then 
+            ADD_LIST( GLOBAL_REDECLARATION_LIST, name ); 
+            ##  has name been declared already? 
+            if ISBOUND_GLOBAL( name ) then 
+                count := 1; 
+            else 
+                count := 0;
+            fi; 
+            ADD_LIST( GLOBAL_REDECLARATION_COUNT, count ); 
+        fi;
+    od;
+end );
+
+BIND_GLOBAL( "AllowGlobalReinstallation", function( arg ) 
+    local  L, oper, posd, posi, name; 
+    ##  form the arguments into a list of functions L 
+    if ( ( LEN_LIST(arg) = 1 ) and IS_LIST( arg[1] ) ) then 
+        L := arg[1]; 
+    else 
+        L := arg; 
+    fi; 
+    for oper in L do  
+        if not IS_FUNCTION( oper ) then 
+            Error("arg must be a function name or a list of functions");
+        fi;
+    od;
+    for oper in L do 
+        ##  avoid duplicate entries in GLOBAL_REINSTALLATION_LIST 
+        posi := POS_LIST_DEFAULT( GLOBAL_REINSTALLATION_LIST, oper, 0 ); 
+        if ( ( posi = fail ) and IS_FUNCTION( oper ) ) then 
+            ##  check that the two lists are consistently ordered 
+            posi := LEN_LIST( GLOBAL_REINSTALLATION_LIST ) + 1; 
+            name := NAME_FUNC( oper ); 
+            posd := POS_LIST_DEFAULT( GLOBAL_REDECLARATION_LIST, name, 0 ); 
+            if ( posd = posi ) then 
+                ADD_LIST( GLOBAL_REINSTALLATION_LIST, oper ); 
+            else 
+                Error( "redeclaration and reinstallation lists inconsistent" );
+            fi;
+        fi;
+    od;
+end );
+
+
+#############################################################################
+##
 #F  DeclareGlobalFunction( <name>, <info> ) . .  create a new global function
 #F  InstallGlobalFunction( <oper>, <func> )
 ##
@@ -1734,20 +1864,32 @@ end );
 ##  global variables (see <C>variable.g</C>) because of the completion
 ##  mechanism.
 ##
-BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", ShareSpecialObj([], "GLOBAL_FUNCTION_NAMES") );
+
+BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", 
+    ShareSpecialObj([], "GLOBAL_FUNCTION_NAMES") );
 
 BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
-    local   name;
+    local   pos,  count,  name;
 
     name := arg[1];
+    ## special case: redeclaration is permitted so increment count for 'name' 
+    if ( name in GLOBAL_REDECLARATION_LIST ) then 
+        pos := POS_LIST_DEFAULT( GLOBAL_REDECLARATION_LIST, name, 0 );   
+        count := GLOBAL_REDECLARATION_COUNT[pos] + 1; 
+        GLOBAL_REDECLARATION_COUNT[pos] := count; 
+        ## if already declared then there is nothing to do 
+        if ISBOUND_GLOBAL( name ) then
+            return; 
+        fi;
+    fi; 
     atomic GLOBAL_FUNCTION_NAMES do
     ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
     od;
-    BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
+    BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) ); 
 end );
 
 BIND_GLOBAL( "InstallGlobalFunction", function( arg )
-    local   oper,  info,  func;
+    local   oper,  info,  func,  pos;
 
     if LEN_LIST(arg) = 3  then
         oper := arg[1];
@@ -1758,12 +1900,20 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
         func := arg[2];
     fi;
     if IS_STRING( oper ) then
-      oper:= VALUE_GLOBAL( oper );
+        oper := VALUE_GLOBAL( oper );
     fi;
+    ## special case: reinstallation is permitted so check declaration number 
+    if ( oper in GLOBAL_REINSTALLATION_LIST ) then 
+        pos := POS_LIST_DEFAULT( GLOBAL_REINSTALLATION_LIST, oper, 0 );   
+        if ( GLOBAL_REDECLARATION_COUNT[pos] >= 2 ) then 
+            ## there have been 2 declarations so this is a repeat installation 
+            return; 
+        fi; 
+    fi;  
     atomic readonly GLOBAL_FUNCTION_NAMES do
     if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
-      Error("you cannot install a global function for another global ",
-            "function,\nuse `DeclareSynonym' instead!");
+        Error("you cannot install a global function for another global ",
+              "function,\nuse `DeclareSynonym' instead!");
     fi;
     INSTALL_METHOD_ARGS( oper, func );
     od;
