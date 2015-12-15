@@ -452,7 +452,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  fi;
 	fi;
 	ExpectToken(")");
-        return a;
+        return rec(type:="paren",arg:=a);
       elif e="[" then
 	ExpectToken("[");
 	l:=[];
@@ -1272,7 +1272,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  a:=ReadExpression([";"]);
 	  Add(l,rec(type:="Amult",left:=b,right:=a));
 	  for a in b do
-	    AddSet(locals,a.name);
+	    if a.type="I" then
+	      AddSet(locals,a.name);
+	    fi;
 	  od;
 	  ExpectToken(";",13);
 	elif e[2]=":=" then
@@ -1350,6 +1352,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 end;
 
 
+NOPARTYPE:=["N","S","C","U-","Bdiv", # translates to QuoInt
+	    "I","sub","paren"];
+
 GAPOutput:=function(l,f)
 local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
 
@@ -1419,9 +1424,6 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       FilePrint(f,"\n",START);
     fi;
   end;
-
-NOPARTYPE:=["N","S","C","U-","Bdiv", # translates to QuoInt
-	    "I","sub"];
 
   doitpar:=function(r,usepar)
     if usepar and not r.type in NOPARTYPE then
@@ -1656,6 +1658,10 @@ NOPARTYPE:=["N","S","C","U-","Bdiv", # translates to QuoInt
       FilePrint(f,",");
       doit(node.right);
       FilePrint(f,"])");
+    elif t="paren" then
+      FilePrint(f,"(");
+      doit(node.arg);
+      FilePrint(f,")");
     elif t="B!" then
       doit(node.right);
       FilePrint(f,"*FORCEOne(");
