@@ -2,9 +2,6 @@
 ##
 #W  global.g                    GAP library                      Steve Linton
 ##
-##  edited BIND_GLOBAL and introduced the empty list UTILS_FUNCTION_NAMES 
-##  for the benefit of the Utils package (Chris Wensley, Nov. 2015). 
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -100,6 +97,7 @@ MAKE_READ_WRITE_GLOBAL := MakeReadWriteGVar;
 
 REREADING := false;
 MAKE_READ_ONLY_GLOBAL("REREADING");
+
 
 #############################################################################
 ##
