@@ -98,6 +98,8 @@ MAKE_READ_WRITE_GLOBAL := MakeReadWriteGVar;
 REREADING := false;
 MAKE_READ_ONLY_GLOBAL("REREADING");
 
+GLOBAL_REBINDING_LIST := [ ]; 
+GLOBAL_REBINDING_COUNT := [ ]; 
 
 #############################################################################
 ##
@@ -111,6 +113,9 @@ MAKE_READ_ONLY_GLOBAL("REREADING");
 ##
   
 BIND_GLOBAL := function( name, val)
+local   pos,  count; 
+if not ( ISBOUND_GLOBAL( name ) and  
+         ( name in GLOBAL_REBINDING_LIST ) ) then 
     if not REREADING and ISBOUND_GLOBAL( name ) then
         if (IS_READ_ONLY_GLOBAL(name)) then
             Error("BIND_GLOBAL: variable `", name, "' must be unbound");
@@ -121,7 +126,46 @@ BIND_GLOBAL := function( name, val)
     ASS_GVAR(name, val);
     MAKE_READ_ONLY_GLOBAL(name);
     return val;
+fi; 
+if ( name in GLOBAL_REBINDING_LIST ) then  
+    pos := POS_LIST_DEFAULT( GLOBAL_REBINDING_LIST, name, 0 );   
+    count := GLOBAL_REBINDING_COUNT[pos] + 1; 
+    GLOBAL_REBINDING_COUNT[pos] := count; 
+##  Print( "#Ub: ", name, ", ", count, "\n" ); 
+fi; 
 end;
+
+#############################################################################
+##
+#F  AllowGlobalRebinding( <list> ) . . function(s) may be BIND_GLOBAL'ed twice
+##
+BIND_GLOBAL( "AllowGlobalRebinding", function( arg ) 
+    local  L, pos, name, val;
+    if LEN_LIST(arg) = 1 then 
+        if IS_STRING_REP( arg[1] ) then 
+            L := arg;
+        elif IS_LIST( arg[1] ) then 
+            L := arg[1]; 
+        else 
+            L := [ ]; 
+        fi;
+    else 
+        L := arg;
+    fi;
+    for name in L do 
+        ##  prevent duplicate entries 
+        pos := POS_LIST_DEFAULT( GLOBAL_REBINDING_LIST, name, 0 ); 
+        if ( ( pos = fail ) and IS_STRING_REP( name ) ) then 
+            ADD_LIST( GLOBAL_REBINDING_LIST, name ); 
+            if ISBOUND_GLOBAL( name ) then 
+                val := 1; 
+            else 
+                val := 0;
+            fi; 
+            ADD_LIST( GLOBAL_REBINDING_COUNT, val ); 
+        fi;
+    od;
+end );
 
 #############################################################################
 ##

@@ -1682,6 +1682,105 @@ end );
 
 #############################################################################
 ##
+#F  AllowGlobalRedeclaration( <list> ) . . function(s) may be declared twice
+#F  AllowGlobalReinstallation( <list> ) . . . . . .  and implemented twice
+## 
+##  <#GAPDoc Label="AllowGlobalRedeclaration">
+##  <ManSection>
+##  <Func Name="AllowGlobalRedeclaration" Arg='list'/>
+##  <Func Name="AllowGlobalReinstallation" Arg='list'/>
+##
+##  <Description>
+##  These two functions are provided to assist with the transfer of global 
+##  functions from one package to another. 
+##  They were originally introduced when the <Package>Utils</Package> package 
+##  was being put together, but may prove to have more general use. 
+##  The idea was to enable the declaration and implementation code of a global 
+##  function <A>glob</A> in package <Package>First</Package> (say) 
+##  to be duplicated in package <Package>Second</Package> without causing an 
+##  error when both packages are loaded (in either order). 
+##  Then, when all tests are satisfactory, the code may be deleted from 
+##  <Package>First</Package>. 
+##  The function <C>AllowGlobalRedeclaration</C> adds the name <A>"glob"</A> 
+##  to the list <A>GLOBAL_REDECLARATION_LIST</A>, 
+##  while the function <C>AllowGlobalReinstallation</C> adds the function 
+##  <A>glob</A> to the list <A>GLOBAL_REINSTALLATION_LIST</A>.  
+##  Here is the order in which commands are read in <Package>Second</Package>. 
+##  <Listing>
+##  AllowGlobalRedeclaration( "glob" );
+##  DeclareGlobalFunction( "glob" ); 
+##  AllowGlobalReinstallation( glob );
+##  InstallGlobalFunction( glob, function( . . . 
+##  </Listing> 
+##  Since some functions avoid separate declaration and installation steps, 
+##  and use <C>BIND_GLOBAL</C> directly, there is a similar function 
+##  <C>AllowGlobalRebinding</C> in file <File>global.g</File> 
+##  which adds a function name to the list <A>GLOBAL_REBINDING_LIST</A>. 
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+
+BIND_GLOBAL( "GLOBAL_REDECLARATION_LIST",   
+    ShareSpecialObj([], "GLOBAL_REDECLARATION_LIST") );  
+BIND_GLOBAL( "GLOBAL_REINSTALLATION_LIST",  
+    ShareSpecialObj([], "GLOBAL_REINSTALLATION_LIST") );  
+BIND_GLOBAL( "GLOBAL_REDECLARATION_COUNT", 
+    ShareSpecialObj([], "GLOBAL_REDECLARATION_COUNT") );  
+
+BIND_GLOBAL( "AllowGlobalRedeclaration", function( arg ) 
+    local  L, pos, name, count;
+    if LEN_LIST(arg) = 1 then 
+        if IS_STRING_REP( arg[1] ) then 
+            L := arg;
+        elif IS_LIST( arg[1] ) then 
+            L := arg[1]; 
+        else 
+            L := [ ]; 
+        fi;
+    else 
+        L := arg;
+    fi;
+    for name in L do 
+        ##  prevent duplicate entries 
+        pos := POS_LIST_DEFAULT( GLOBAL_REDECLARATION_LIST, name, 0 ); 
+        if ( ( pos = fail ) and IS_STRING_REP( name ) ) then 
+            ADD_LIST( GLOBAL_REDECLARATION_LIST, name ); 
+            if ISBOUND_GLOBAL( name ) then 
+                count := 1; 
+            else 
+                count := 0;
+            fi; 
+            ADD_LIST( GLOBAL_REDECLARATION_COUNT, count ); 
+        fi;
+    od;
+end );
+
+BIND_GLOBAL( "AllowGlobalReinstallation", function( arg ) 
+    local  L, pos, oper;
+    if LEN_LIST(arg) = 1 then 
+        if IS_FUNCTION( arg[1] ) then 
+            L := arg;
+        elif IS_LIST( arg[1] ) then 
+            L := arg[1]; 
+        else 
+            L := [ ]; 
+        fi;
+    else 
+        L := arg;
+    fi;
+    for oper in L do 
+        ##  prevent duplicate entries 
+        pos := POS_LIST_DEFAULT( GLOBAL_REINSTALLATION_LIST, oper, 0 ); 
+        if ( ( pos = fail ) and IS_FUNCTION( oper ) ) then 
+            ADD_LIST( GLOBAL_REINSTALLATION_LIST, oper ); 
+        fi;
+    od;
+end );
+
+
+#############################################################################
+##
 #F  DeclareGlobalFunction( <name>, <info> ) . .  create a new global function
 #F  InstallGlobalFunction( <oper>, <func> )
 ##
@@ -1735,43 +1834,30 @@ end );
 ##  mechanism.
 ##
 
-BIND_GLOBAL( "UTILS_FUNCTION_NAMES",                    ## for Utils 
-    ShareSpecialObj([], "UTILS_FUNCTION_NAMES") );      ## for Utils 
-BIND_GLOBAL( "UTILS_FUNCTION_OPERS",                    ## for Utils 
-    ShareSpecialObj([], "UTILS_FUNCTION_OPERS") );      ## for Utils 
-BIND_GLOBAL( "UTILS_FUNCTION_COUNT",                    ## for Utils 
-    ShareSpecialObj([], "UTILS_FUNCTION_COUNT") );      ## for Utils 
-
-BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", ShareSpecialObj([], "GLOBAL_FUNCTION_NAMES") );
+BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", 
+    ShareSpecialObj([], "GLOBAL_FUNCTION_NAMES") );
 
 BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
-    local   
-            pos,  val,                                  ## for Utils 
-            name;
+    local   pos,  count,  name;
 
     name := arg[1];
-if not ( ISBOUND_GLOBAL( name ) and                     ## for Utils 
-         ( name in UTILS_FUNCTION_NAMES ) ) then        ## for Utils 
+if not ( ISBOUND_GLOBAL( name ) and  
+         ( name in GLOBAL_REDECLARATION_LIST ) ) then 
     atomic GLOBAL_FUNCTION_NAMES do
     ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
     od;
     BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
-fi;                                                     ## for Utils 
-if ( name in UTILS_FUNCTION_NAMES ) then                ## for Utils  
-    pos := 1;                                           ## for Utils 
-    while not ( name = UTILS_FUNCTION_NAMES[pos] ) do   ## for Utils 
-        pos := pos + 1;                                 ## for Utils 
-    od;                                                 ## for Utils 
-    val := UTILS_FUNCTION_COUNT[pos] + 1;               ## for Utils 
-    UTILS_FUNCTION_COUNT[pos] := val;                   ## for Utils 
-##  Print( "#Ud: ", name, ", ", val, "\n" );            ## for Utils 
-fi;                                                     ## for Utils 
+fi;   
+if ( name in GLOBAL_REDECLARATION_LIST ) then  
+    pos := POS_LIST_DEFAULT( GLOBAL_REDECLARATION_LIST, name, 0 );   
+    count := GLOBAL_REDECLARATION_COUNT[pos] + 1; 
+    GLOBAL_REDECLARATION_COUNT[pos] := count; 
+##  Print( "#Ud: ", name, ", ", count, "\n" ); 
+fi; 
 end );
 
 BIND_GLOBAL( "InstallGlobalFunction", function( arg )
-    local   
-            ok,  pos,  val,                             ## for Utils 
-            oper,  info,  func;
+    local   ok,  pos,  count,  oper,  info,  func;
 
     if LEN_LIST(arg) = 3  then
         oper := arg[1];
@@ -1785,21 +1871,18 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
       oper := VALUE_GLOBAL( oper );
     fi;
 
-ok := true;                                             ## for Utils 
-if ( oper in UTILS_FUNCTION_OPERS ) then                ## for Utils 
-    pos := 1;                                           ## for Utils 
-    while not ( oper = UTILS_FUNCTION_OPERS[pos] ) do   ## for Utils 
-        pos := pos + 1;                                 ## for Utils 
-    od;                                                 ## for Utils 
-    val := UTILS_FUNCTION_COUNT[pos];                   ## for Utils 
-    if ( val >= 2 ) then                                ## for Utils 
-        ok := false;                                    ## for Utils 
-    fi;                                                 ## for Utils 
-##  Print( "#Ui: ", UTILS_FUNCTION_NAMES[pos],          ## for Utils  
-##         ", ", val, ", ok = ", ok, "\n" );            ## for Utils 
-fi;                                                     ## for Utils 
+ok := true;  
+if ( oper in GLOBAL_REINSTALLATION_LIST ) then 
+    pos := POS_LIST_DEFAULT( GLOBAL_REINSTALLATION_LIST, oper, 0 );   
+    count := GLOBAL_REDECLARATION_COUNT[pos];  
+    if ( count >= 2 ) then  
+        ok := false; 
+    fi; 
+##  Print( "#Ui: ", GLOBAL_REDECLARATION_LIST[pos],   
+##         ", ", count, ", ok = ", ok, "\n" ); 
+fi;  
 
-if ok then                                              ## for Utils 
+if ok then 
     atomic readonly GLOBAL_FUNCTION_NAMES do
     if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
       Error("you cannot install a global function for another global ",
@@ -1807,7 +1890,7 @@ if ok then                                              ## for Utils
     fi;
     INSTALL_METHOD_ARGS( oper, func );
     od;
-fi;                                                     ## for Utils 
+fi;  
 end );
 
 
