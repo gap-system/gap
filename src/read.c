@@ -1178,7 +1178,7 @@ void ReadFuncExpr (
 	while ( TLS(Symbol) == S_COMMA ) {
 	    if (narg > 0 && !strcmp(CSTR_STRING(ELM_LIST(nams,narg)),"arg"))
 	      {
-		SyntaxWarning("arg used not as the last argument");
+		SyntaxError("arg used not as the last argument");
 	      }
 
 	    Match( S_COMMA, ",", follow );
@@ -1251,9 +1251,6 @@ void ReadFuncExpr (
     /* 'function( ... arg )' takes a variable number of arguments              */
     if (narg >= 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) ) )
       {
-	/* TODO: remove this before the next non-beta release */
-	if (narg > 1)
-	  SyntaxWarning("New syntax used -- intentional?");
 	narg = -narg;
       }
 	
