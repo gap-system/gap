@@ -1,5 +1,5 @@
 # Magma to GAP converter
-MGMCONVER:="version 0.34, 10/22/15"; # very raw
+MGMCONVER:="version 0.35, 12/15/15"; # raw
 # (C) Alexander Hulpke
 
 
@@ -18,17 +18,32 @@ TOKENS:=["if","then","eq","cmpeq","neq","and","or","else","not","assigned",
 	 "declare verbose","declare attributes","error if",
 	 "exists","forall","time",
 	 "sub","eval","select","rec","recformat","require","case","when","end case",
+	 "^^", "adj", "is", "non", "notadj", "notsubset", "sdiff", "xor",
 	 "%%%" # fake keyword for comments
 	 ];
 # Magma binary operators
 BINOPS:=["+","-","*","/","div","mod","in","notin","^","`","!","and","|",
-         "or","=","eq","cmpeq","ne","le","ge","gt","lt",".","->","@@","@","cmpne"];
+         "or","=","eq","cmpeq","ne","le","ge","gt","lt",".","->","@@","@",
+	 "cmpne","xor","^^","is", "non" ];
 # Magma binaries that have to become function calls in GAP
-FAKEBIN:=["meet","subset","join","diff","cat"];
+FAKEBIN:=["meet","subset","join","diff","cat","adj","notadj",
+          "notsubset", "sdiff",];
 BINOPS:=Union(BINOPS,FAKEBIN);
 
 PAROP:=["+","-","div","mod","in","notin","^","`","!","and",
          "or","=","eq","cmpeq","ne","."];
+
+# operator precedence from
+# https://magma.maths.usyd.edu.au/magma/handbook/text/67
+# note that some might have been take care of by parser earlier
+
+OPRECED:=["|","`",".","@","@@","!","!!",
+"^", "cat", "*", "/", "div", "mod", "+", "-", "meet", "sdiff",
+"diff", "join", "adj", "in", "notadj", "notin", "notsubset", "subset",
+"non", "cmpeq", "cmpne", "eq", "ge", "gt", "le", "lt", "ne", "not",
+"and", "or", "xor", "^^", "non", "->", "=", ":=", "is"];
+
+
 TOKENS:=Union(TOKENS,BINOPS);
 TOKENS:=Union(TOKENS,PAROP);
 
@@ -375,7 +390,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 
   # read identifier, call, function 
   ReadExpression:=function(stops)
-  local obj,e,a,b,c,argus,procidf,doprocidf,op,assg,val,pre,lbinops,fcomment;
+  local obj,e,a,b,c,argus,procidf,doprocidf,op,assg,val,pre,lbinops,fcomment,stack;
 
     lbinops:=Difference(BINOPS,stops);
 
@@ -915,15 +930,37 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 
     # todo: parentheses
     else 
+      stack:=[];
       a:=procidf();
+      Add(stack,a);
       while tok[tnum][2] in lbinops do
         op:=tok[tnum][2];
+	Add(stack,op);
 	tnum:=tnum+1;
 
 	b:=procidf();
-	a:=rec(type:=Concatenation("B",op),left:=a,right:=b);
+	Add(stack,b);
+	#a:=rec(type:=Concatenation("B",op),left:=a,right:=b);
       od;
-      return a;
+
+      # sort out operation precedence
+      i:=1;
+      while Length(stack)>1 do
+	#Print(stack,"|",OPRECED[i],"|\n");
+        a:=2;
+	while a<=Length(stack) do
+	  if stack[a]=OPRECED[i] then
+	    stack:=Concatenation(stack{[1..a-2]},
+	      [rec(type:=Concatenation("B",stack[a]),left:=stack[a-1],right:=stack[a+1])],
+	      stack{[a+2..Length(stack)]});
+	#Print(stack,"{",OPRECED[i],"}\n");
+	  else
+	    a:=a+2;
+	  fi;
+	od;
+	i:=i+1;
+      od;
+      return stack[1];
 
     fi;
   end;
