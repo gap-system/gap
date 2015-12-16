@@ -452,7 +452,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  fi;
 	fi;
 	ExpectToken(")");
-        return a;
+        return rec(type:="paren",arg:=a);
       elif e="[" then
 	ExpectToken("[");
 	l:=[];
@@ -1047,6 +1047,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  b:=ReadBlock(["end for"]:inner);
 	  locals:=Union(locals,b[1]);
       #if a.name="cl" then Error("rof");fi;
+	  AddSet(locals,a.name);
 	  a:=rec(type:="for",var:=a,from:=c,block:=b[2]);
 	  ExpectToken("end for");
 	  ExpectToken(";",3);
@@ -1270,6 +1271,11 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  od;
 	  a:=ReadExpression([";"]);
 	  Add(l,rec(type:="Amult",left:=b,right:=a));
+	  for a in b do
+	    if a.type="I" then
+	      AddSet(locals,a.name);
+	    fi;
+	  od;
 	  ExpectToken(";",13);
 	elif e[2]=":=" then
 	  # assignment
@@ -1346,6 +1352,9 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 end;
 
 
+NOPARTYPE:=["N","S","C","U-","Bdiv", # translates to QuoInt
+	    "I","sub","paren"];
+
 GAPOutput:=function(l,f)
 local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
 
@@ -1417,7 +1426,7 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
   end;
 
   doitpar:=function(r,usepar)
-    if usepar and r.type<>"I" and r.type<>"N" and r.type<>"S" then
+    if usepar and not r.type in NOPARTYPE then
       FilePrint(f,"(");
       doit(r);
       FilePrint(f,")");
@@ -1649,6 +1658,10 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       FilePrint(f,",");
       doit(node.right);
       FilePrint(f,"])");
+    elif t="paren" then
+      FilePrint(f,"(");
+      doit(node.arg);
+      FilePrint(f,")");
     elif t="B!" then
       doit(node.right);
       FilePrint(f,"*FORCEOne(");
@@ -1886,6 +1899,8 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       for i in [1..Length(node.span)] do
 	if i=2 then
 	  FilePrint(f,",#TODO CLOSURE\n",START,"  ");
+	elif i>2 then
+	  FilePrint(f,",");
 	fi;
 
 	doit(node.span[i]);
