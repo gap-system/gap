@@ -302,48 +302,45 @@ Obj FuncDegreeOfTransformation(Obj self, Obj f){
   UInt    n, i, deg;
   UInt2   *ptf2;
   UInt4   *ptf4;
-  Obj     ext;
 
-  if(TNUM_OBJ(f)==T_TRANS2){ 
-    ext=EXT_TRANS(f);
-    if(ext == NULL){ 
-      n=DEG_TRANS2(f);
-      ptf2=ADDR_TRANS2(f);
-      if(ptf2[n-1]!=n-1){
-        ext=INTOBJ_INT(n);
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    if (EXT_TRANS(f) == NULL) {
+      n    = DEG_TRANS2(f);
+      ptf2 = ADDR_TRANS2(f);
+      if (ptf2[n - 1] != n - 1) {
+        EXT_TRANS(f) = INTOBJ_INT(n);
       } else {
-        deg=0;
-        for(i=0;i<n;i++){ 
-          if(ptf2[i]>i&&ptf2[i]+1>deg){
-            deg=ptf2[i]+1;
-          } else if(ptf2[i]<i&&i+1>deg){
-            deg=i+1;
+        deg = 0;
+        for (i = 0; i < n; i++) {
+          if (ptf2[i] > i && ptf2[i] + 1 > deg) {
+            deg = ptf2[i] + 1;
+          } else if (ptf2[i] < i && i + 1 > deg) {
+            deg = i + 1;
           }
-        }  
-        ext=INTOBJ_INT(deg);
+        }
+        EXT_TRANS(f) = INTOBJ_INT(deg);
       }
     }
-    return ext;
-  } else if (TNUM_OBJ(f)==T_TRANS4){
-    ext=EXT_TRANS(f);
-    if(ext == NULL){ 
-      n=DEG_TRANS4(f);
-      ptf4=ADDR_TRANS4(f);
-      if(ptf4[n-1]!=n-1){
-        ext=INTOBJ_INT(n);
+    return EXT_TRANS(f);
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
+    if(EXT_TRANS(f) == NULL){
+      n = DEG_TRANS4(f);
+      ptf4 = ADDR_TRANS4(f);
+      if(ptf4[n - 1] != n - 1){
+        EXT_TRANS(f) = INTOBJ_INT(n);
       } else {
-        deg=0;
-        for(i=0;i<n;i++){ 
-          if(ptf4[i]>i&&ptf4[i]+1>deg){
-            deg=ptf4[i]+1;
-          } else if(ptf4[i]<i&&i+1>deg){
-            deg=i+1;
+        deg = 0;
+        for (i = 0; i < n; i++) {
+          if (ptf4[i] > i && ptf4[i] + 1 > deg) {
+            deg = ptf4[i] + 1;
+          } else if (ptf4[i] < i && i + 1 > deg) {
+            deg = i + 1;
           }
-        }  
-        ext=INTOBJ_INT(deg);
+        }
+        EXT_TRANS(f) = INTOBJ_INT(deg);
       }
     }
-    return ext;
+    return EXT_TRANS(f);
   }
   ErrorQuit("usage: the argument should be a transformation,", 0L, 0L);
   return 0L;
@@ -1282,19 +1279,23 @@ Obj FuncTRIM_TRANS (Obj self, Obj f, Obj m){
 Obj FuncHASH_FUNC_FOR_TRANS(Obj self, Obj f, Obj data){
   UInt deg;
 
-  deg=INT_INTOBJ(FuncDegreeOfTransformation(self, f));
-  
-  if(TNUM_OBJ(f)==T_TRANS4){
-    if(deg<=65536){
-      FuncTRIM_TRANS(self, f, EXT_TRANS(f));
+  deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
+
+  if (TNUM_OBJ(f) == T_TRANS4) {
+    if (deg <= 65536) {
+      FuncTRIM_TRANS(self, f, INTOBJ_INT(deg));
     } else {
-      return INTOBJ_INT((HASHKEY_BAG_NC(f, (UInt4) 255, 3*sizeof(Obj), 
-              (int) 4*deg) % (INT_INTOBJ(data)))+1);
+      return INTOBJ_INT((HASHKEY_BAG_NC(f,
+                                        (UInt4) 255,
+                                        3 * sizeof(Obj),
+                                        (int) 4 * deg) % (INT_INTOBJ(data))) + 1);
     }
   }
 
-  return INTOBJ_INT((HASHKEY_BAG_NC(f, (UInt4) 255, 3*sizeof(Obj), 
-          (int) 2*deg) % (INT_INTOBJ(data)))+1);
+  return INTOBJ_INT((HASHKEY_BAG_NC(f,
+                                    (UInt4) 255,
+                                    3 * sizeof(Obj),
+                                    (int) 2 * deg) % (INT_INTOBJ(data))) + 1);
 
 }
 
