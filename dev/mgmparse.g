@@ -390,7 +390,8 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 
   # read identifier, call, function 
   ReadExpression:=function(stops)
-  local obj,e,a,b,c,argus,procidf,doprocidf,op,assg,val,pre,lbinops,fcomment,stack;
+  local obj,e,a,b,c,argus,procidf,doprocidf,op,assg,val,pre,lbinops,
+        fcomment,stack,locopt;
 
     lbinops:=Difference(BINOPS,stops);
 
@@ -864,11 +865,14 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	fi;
       od;
       assg:=false;
+      locopt:=[];
       if tok[tnum][2]=":" then
 	ExpectToken(":");
 	assg:=[];
 	repeat
-	  Add(assg,ReadExpression([":="]));
+	  a:=ReadExpression([":="]);
+	  Add(assg,a);
+	  Add(locopt,a.name);
 	  ExpectToken(":=");
 	  Add(assg,ReadExpression([")",","]));
 	  if tok[tnum][2]="," then
@@ -917,7 +921,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       a:=ReadBlock(["end function","end intrinsic","end procedure"]:inner);
       tnum:=tnum+1; # do end .... token
 
-      a:=rec(type:="F",args:=argus,locals:=a[1],block:=a[2]);
+      a:=rec(type:="F",args:=argus,locals:=Concatenation(a[1],locopt),block:=a[2]);
       if fcomment<>fail then
         a.comment:=fcomment;
       fi;
