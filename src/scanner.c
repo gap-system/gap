@@ -2165,7 +2165,12 @@ void GetSymbol ( void )
   case '.':   TLS(Symbol) = S_DOT;                         GET_CHAR();
     /*            if ( *TLS(In) == '\\' ) { GET_CHAR();
             if ( *TLS(In) == '\n' ) { GET_CHAR(); } }   */
-    if ( *TLS(In) == '.' ) { TLS(Symbol) = S_DOTDOT;  GET_CHAR();  break; }
+    if ( *TLS(In) == '.' ) { 
+            TLS(Symbol) = S_DOTDOT; GET_CHAR();
+            if ( *TLS(In) == '.') {
+                    TLS(Symbol) = S_DOTDOTDOT; GET_CHAR();
+            }
+    }
     break;
 
   case '!':   TLS(Symbol) = S_ILLEGAL;                     GET_CHAR();
