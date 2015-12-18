@@ -64,6 +64,7 @@
 #define S_COLON         ((1UL<< 9)+2)
 #define S_READWRITE     ((1UL<< 9)+3)
 #define S_READONLY      ((1UL<< 9)+4)
+#define S_DOTDOTDOT     ((1UL<< 9)+5)
 
 #define S_PARTIALINT    ((1UL<<10)+0) /* Some digits */
 #define S_INT           ((1UL<<10)+1)
