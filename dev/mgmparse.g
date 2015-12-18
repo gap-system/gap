@@ -921,7 +921,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       a:=ReadBlock(["end function","end intrinsic","end procedure"]:inner);
       tnum:=tnum+1; # do end .... token
 
-      a:=rec(type:="F",args:=argus,locals:=Concatenation(a[1],locopt),block:=a[2]);
+      a:=rec(type:="F",args:=argus,locals:=Union(a[1],locopt),block:=a[2]);
       if fcomment<>fail then
         a.comment:=fcomment;
       fi;
@@ -1466,19 +1466,9 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
     fi;
   end;
 
-  doitpar:=function(r,usepar)
-    if usepar and not r.type in NOPARTYPE then
-      FilePrint(f,"(");
-      doit(r);
-      FilePrint(f,")");
-    else
-      doit(r);
-    fi;
-  end;
-
   # doit -- main node processor
   doit:=function(node)
-  local t,i,a,b;
+  local t,i,a,b,cachef,cachest,str1,str2;
     t:=node.type;
     if t="A" then
       # special case of declaration assignment
@@ -1758,7 +1748,25 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
 	fi;
 	FilePrint(f,")");
       else
-	doitpar(node.left,a in PAROP);
+	# store the strings for both parameters to allow potential later
+	# introduction of parentheses
+	cachef:=f;
+	cachest:=FILEPRINTSTR;
+	FILEPRINTSTR:="";
+	str1:="";
+	f:=OutputTextString(str1,true);
+	doit(node.left);
+	CloseStream(f);
+	str1:=Concatenation(str1,FILEPRINTSTR);
+	FILEPRINTSTR:="";
+	str2:="";
+	f:=OutputTextString(str2,true);
+	doit(node.right);
+	CloseStream(f);
+	str2:=Concatenation(str2,FILEPRINTSTR);
+	f:=cachef;
+	FILEPRINTSTR:=cachest;
+
 	if i="ne" or i="cmpne" then
 	  i:="<>";
 	elif i="eq" or i="cmpeq" or i="=" then
@@ -1780,8 +1788,9 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
 	elif i="le" then
 	  i:=" <= ";
 	fi;
+	FilePrint(f,str1);
 	FilePrint(f,i);
-	doitpar(node.right,a in PAROP);
+	FilePrint(f,str2);
       fi;
 
     elif t="U#" then
@@ -1792,7 +1801,7 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       FilePrint(f,"-");
       doit(node.arg);
     elif t="U~" then
-      FilePrint(f,"~TILDE~");
+      FilePrint(f,"TILDE");
       doit(node.arg);
     elif t="Unot" then
       FilePrint(f,"not ");
@@ -2187,3 +2196,9 @@ local a,b,c,d,f,l,i,j,r,uses,defs,import,depend,order;
   #return a;
 end;
 
+# translation list for operations
+TRANSLATE:=[
+"Nrows","Length",
+"DiagonalMatrix","DiagonalMat",
+"Determinant","DeterminantMat",
+];
