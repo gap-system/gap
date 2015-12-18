@@ -205,7 +205,7 @@ NEW_TYPE_CACHE_MISS  := 0;
 NEW_TYPE_CACHE_HIT   := 0;
 
 BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
-    local   lock, hash,  cache,  cached,  type, ncache, ncl, t, i;
+    local   lock, hash,  cache,  cached,  type, ncache, ncl, t, i, match;
 
     # maybe it is in the type cache
     lock := WRITE_LOCK(DS_TYPE_CACHE);
@@ -214,14 +214,36 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
     if IsBound( cache[hash] ) then
         cached := cache[hash];
         if IS_EQUAL_FLAGS( flags, cached![2] )  then
+            flags := cached![2];
             if    IS_IDENTICAL_OBJ(  data,  cached![ POS_DATA_TYPE ] )
               and IS_IDENTICAL_OBJ(  typeOfTypes, TYPE_OBJ(cached) )
             then
-                NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
-                UNLOCK(lock);
-                return cached;
-            else
-                flags := cached![2];
+                if IS_IDENTICAL_OBJ(parent, fail) and LEN_POSOBJ( cached ) = POS_FIRST_FREE_TYPE - 1 then
+                    NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
+                    UNLOCK(lock);
+                    return cached;
+                fi;
+                # so there is a parent type; make sure the any extra data in it
+                # matches what is in the cache
+                if LEN_POSOBJ( parent ) = LEN_POSOBJ( cached ) then
+                    match := true;
+                    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
+                        if IsBound( parent![i] ) <> IsBound( cached![i] ) then
+                            match := false;
+                            break;
+                        fi;
+                        if    IsBound( parent![i] ) and IsBound( cached![i] )
+                          and not IS_IDENTICAL_OBJ( parent![i], cached![i] ) then
+                            match := false;
+                            break;
+                        fi;
+                    od;
+                    if match then
+                        NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
+                        UNLOCK(lock);
+                        return cached;
+                    fi;
+                fi;
             fi;
         fi;
         NEW_TYPE_CACHE_MISS := NEW_TYPE_CACHE_MISS + 1;
@@ -242,9 +264,9 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
     type[POS_DATA_TYPE] := MakeReadOnly(data);
     type[POS_NUMB_TYPE] := NEW_TYPE_NEXT_ID;
 
-    if not IS_IDENTICAL_OBJ(parent,fail) then
+    if not IS_IDENTICAL_OBJ(parent, fail) then
         for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
-            if IsBound( parent![i] ) and not IsBound(type[i]) then
+            if IsBound( parent![i] ) and not IsBound( type[i] ) then
                 type[i] := parent![i];
             fi;
         od;
@@ -1049,4 +1071,3 @@ end );
 #############################################################################
 ##
 #E
-
