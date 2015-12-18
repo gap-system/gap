@@ -204,12 +204,6 @@ end );
 NEW_TYPE_CACHE_MISS  := 0;
 NEW_TYPE_CACHE_HIT   := 0;
 
-# We must access this through ASS_GVAR / VAL_GVAR as the compiler does not understand
-# thread local variables
-BIND_GLOBAL("_NEW_TYPE_READONLY", `"NEW_TYPE_READONLY");
-ASS_GVAR(_NEW_TYPE_READONLY, true);
-MakeThreadLocal(_NEW_TYPE_READONLY);
-
 BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
     local   lock, hash,  cache,  cached,  type, ncache, ncl, t, i;
 
@@ -217,7 +211,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
     lock := WRITE_LOCK(DS_TYPE_CACHE);
     cache := family!.TYPES;
     hash  := HASH_FLAGS(flags) mod family!.HASH_SIZE + 1;
-    if IsBound( cache[hash] ) and VAL_GVAR(_NEW_TYPE_READONLY) then
+    if IsBound( cache[hash] ) then
         cached := cache[hash];
         if IS_EQUAL_FLAGS( flags, cached![2] )  then
             if    IS_IDENTICAL_OBJ(  data,  cached![ POS_DATA_TYPE ] )
@@ -272,9 +266,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
         cache[hash] := type;
     fi;
     family!.nTYPES := family!.nTYPES + 1;
-    if VAL_GVAR(_NEW_TYPE_READONLY) then
-        MakeReadOnlyObj(type);
-    fi;
+    MakeReadOnlyObj(type);
     UNLOCK(lock);
 
     # return the type
