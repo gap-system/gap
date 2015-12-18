@@ -114,25 +114,27 @@ GLOBAL_REBINDING_COUNT := [ ];
   
 BIND_GLOBAL := function( name, val)
 local   pos,  count; 
-if not ( ISBOUND_GLOBAL( name ) and  
-         ( name in GLOBAL_REBINDING_LIST ) ) then 
-    if not REREADING and ISBOUND_GLOBAL( name ) then
+    ## ignore if the function is bound and rebinding is permitted 
+    if not ( ISBOUND_GLOBAL( name ) and  
+           ( name in GLOBAL_REBINDING_LIST ) ) then 
+      ## the next 11 lines contain the original code for this function 
+      if not REREADING and ISBOUND_GLOBAL( name ) then
         if (IS_READ_ONLY_GLOBAL(name)) then
-            Error("BIND_GLOBAL: variable `", name, "' must be unbound");
+          Error("BIND_GLOBAL: variable `", name, "' must be unbound");
         else
-            Print("#W BIND_GLOBAL: variable `", name,"' already has a value\n");
+          Print("#W BIND_GLOBAL: variable `", name,"' already has a value\n");
         fi;
-    fi;
-    ASS_GVAR(name, val);
-    MAKE_READ_ONLY_GLOBAL(name);
-    return val;
-fi; 
-if ( name in GLOBAL_REBINDING_LIST ) then  
-    pos := POS_LIST_DEFAULT( GLOBAL_REBINDING_LIST, name, 0 );   
-    count := GLOBAL_REBINDING_COUNT[pos] + 1; 
-    GLOBAL_REBINDING_COUNT[pos] := count; 
-##  Print( "#Ub: ", name, ", ", count, "\n" ); 
-fi; 
+      fi;
+      ASS_GVAR(name, val);
+      MAKE_READ_ONLY_GLOBAL(name);
+      return val;
+    fi; 
+    if ( name in GLOBAL_REBINDING_LIST ) then 
+      ## increment the count for 'name' 
+      pos := POS_LIST_DEFAULT( GLOBAL_REBINDING_LIST, name, 0 );   
+      count := GLOBAL_REBINDING_COUNT[pos] + 1; 
+      GLOBAL_REBINDING_COUNT[pos] := count; 
+    fi; 
 end;
 
 #############################################################################
@@ -141,6 +143,7 @@ end;
 ##
 BIND_GLOBAL( "AllowGlobalRebinding", function( arg ) 
     local  L, pos, name, val;
+    ##  form the arguments into a list L 
     if LEN_LIST(arg) = 1 then 
         if IS_STRING_REP( arg[1] ) then 
             L := arg;
@@ -157,6 +160,7 @@ BIND_GLOBAL( "AllowGlobalRebinding", function( arg )
         pos := POS_LIST_DEFAULT( GLOBAL_REBINDING_LIST, name, 0 ); 
         if ( ( pos = fail ) and IS_STRING_REP( name ) ) then 
             ADD_LIST( GLOBAL_REBINDING_LIST, name ); 
+            ##  has name been declared already? 
             if ISBOUND_GLOBAL( name ) then 
                 val := 1; 
             else 
