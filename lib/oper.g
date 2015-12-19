@@ -1,4 +1,4 @@
-#############################################################################
+ #############################################################################
 ##
 #W  oper.g                      GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
@@ -1799,9 +1799,9 @@ BIND_GLOBAL( "AllowGlobalRedeclaration", function( arg )
         L := arg;
     fi;
     for name in L do 
-        ##  prevent duplicate entries 
+        ##  avoid duplicate entries in GLOBAL_REDECLARATION_LIST 
         pos := POS_LIST_DEFAULT( GLOBAL_REDECLARATION_LIST, name, 0 ); 
-        if ( ( pos = fail ) and IS_STRING_REP( name ) ) then 
+        if ( pos = fail ) then 
             ADD_LIST( GLOBAL_REDECLARATION_LIST, name ); 
             ##  has name been declared already? 
             if ISBOUND_GLOBAL( name ) then 
@@ -1829,7 +1829,7 @@ BIND_GLOBAL( "AllowGlobalReinstallation", function( arg )
         L := arg;
     fi;
     for oper in L do 
-        ##  prevent duplicate entries 
+        ##  avoid duplicate entries in GLOBAL_REINSTALLATION_LIST 
         posi := POS_LIST_DEFAULT( GLOBAL_REINSTALLATION_LIST, oper, 0 ); 
         if ( ( posi = fail ) and IS_FUNCTION( oper ) ) then 
             ##  check that the two lists are consistently ordered 
@@ -1908,25 +1908,24 @@ BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
     local   pos,  count,  name;
 
     name := arg[1];
-    ## ignore if the function is declared and redeclaration is permitted 
-    if not ( ISBOUND_GLOBAL( name ) and  
-           ( name in GLOBAL_REDECLARATION_LIST ) ) then 
-        ## the next four lines contain the original code for this function 
-        atomic GLOBAL_FUNCTION_NAMES do
-        ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
-        od;
-        BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
-    fi; 
+    ## special case: redeclaration is permitted so increment count for 'name' 
     if ( name in GLOBAL_REDECLARATION_LIST ) then 
-        ## increment the count for 'name' 
         pos := POS_LIST_DEFAULT( GLOBAL_REDECLARATION_LIST, name, 0 );   
         count := GLOBAL_REDECLARATION_COUNT[pos] + 1; 
         GLOBAL_REDECLARATION_COUNT[pos] := count; 
+        ## if already declared then there is nothing to do 
+        if ISBOUND_GLOBAL( name ) then
+            return; 
+        fi;
     fi; 
+    atomic GLOBAL_FUNCTION_NAMES do
+    ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
+    od;
+    BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) ); 
 end );
 
 BIND_GLOBAL( "InstallGlobalFunction", function( arg )
-    local   ok,  pos,  count,  oper,  info,  func;
+    local   oper,  info,  func,  pos;
 
     if LEN_LIST(arg) = 3  then
         oper := arg[1];
@@ -1937,25 +1936,20 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
         func := arg[2];
     fi;
     if IS_STRING( oper ) then
-      oper := VALUE_GLOBAL( oper );
+        oper := VALUE_GLOBAL( oper );
     fi;
-    ## ignore if the function is installed and reinstallation is permitted 
-    ok := true;  
+    ## special case: reinstallation is permitted so check declaration number 
     if ( oper in GLOBAL_REINSTALLATION_LIST ) then 
         pos := POS_LIST_DEFAULT( GLOBAL_REINSTALLATION_LIST, oper, 0 );   
-        count := GLOBAL_REDECLARATION_COUNT[pos];  
-        if ( count >= 2 ) then  
-            ok := false; 
+        if ( GLOBAL_REDECLARATION_COUNT[pos] >= 2 ) then 
+            ## there have been 2 declarations so this is a repeat installation 
+            return; 
         fi; 
     fi;  
-    if not ok then 
-        return; 
-    fi; 
-    ## the next 7 lines contain the original code for this function 
     atomic readonly GLOBAL_FUNCTION_NAMES do
     if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
-      Error("you cannot install a global function for another global ",
-            "function,\nuse `DeclareSynonym' instead!");
+        Error("you cannot install a global function for another global ",
+              "function,\nuse `DeclareSynonym' instead!");
     fi;
     INSTALL_METHOD_ARGS( oper, func );
     od;

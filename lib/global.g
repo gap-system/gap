@@ -1,3 +1,5 @@
+
+
 #############################################################################
 ##
 #W  global.g                    GAP library                      Steve Linton
@@ -114,27 +116,26 @@ GLOBAL_REBINDING_COUNT := [ ];
   
 BIND_GLOBAL := function( name, val)
 local   pos,  count; 
-    ## ignore if the function is bound and rebinding is permitted 
-    if not ( ISBOUND_GLOBAL( name ) and  
-           ( name in GLOBAL_REBINDING_LIST ) ) then 
-      ## the next 11 lines contain the original code for this function 
-      if not REREADING and ISBOUND_GLOBAL( name ) then
-        if (IS_READ_ONLY_GLOBAL(name)) then
-          Error("BIND_GLOBAL: variable `", name, "' must be unbound");
-        else
-          Print("#W BIND_GLOBAL: variable `", name,"' already has a value\n");
-        fi;
-      fi;
-      ASS_GVAR(name, val);
-      MAKE_READ_ONLY_GLOBAL(name);
-      return val;
-    fi; 
+    ## special case: rebinding is permitted so increment count for 'name'  
     if ( name in GLOBAL_REBINDING_LIST ) then 
-      ## increment the count for 'name' 
-      pos := POS_LIST_DEFAULT( GLOBAL_REBINDING_LIST, name, 0 );   
-      count := GLOBAL_REBINDING_COUNT[pos] + 1; 
-      GLOBAL_REBINDING_COUNT[pos] := count; 
+        pos := POS_LIST_DEFAULT( GLOBAL_REBINDING_LIST, name, 0 );   
+        count := GLOBAL_REBINDING_COUNT[pos] + 1; 
+        GLOBAL_REBINDING_COUNT[pos] := count; 
+        ## if already bound then there is nothing to do 
+        if ISBOUND_GLOBAL( name ) then 
+            return; 
+        fi;
     fi; 
+    if not REREADING and ISBOUND_GLOBAL( name ) then
+        if (IS_READ_ONLY_GLOBAL(name)) then
+            Error("BIND_GLOBAL: variable `", name, "' must be unbound");
+        else
+            Print("#W BIND_GLOBAL: variable `", name,"' already has a value\n");
+        fi;
+    fi;
+    ASS_GVAR(name, val);
+    MAKE_READ_ONLY_GLOBAL(name);
+    return val;
 end;
 
 #############################################################################
@@ -156,11 +157,11 @@ BIND_GLOBAL( "AllowGlobalRebinding", function( arg )
         L := arg;
     fi;
     for name in L do 
-        ##  prevent duplicate entries 
+        ##  avoid duplicate entries in GLOBAL_REBINDING_LIST 
         pos := POS_LIST_DEFAULT( GLOBAL_REBINDING_LIST, name, 0 ); 
-        if ( ( pos = fail ) and IS_STRING_REP( name ) ) then 
+        if ( pos = fail ) then 
             ADD_LIST( GLOBAL_REBINDING_LIST, name ); 
-            ##  has name been declared already? 
+            ##  has 'name' been declared already? 
             if ISBOUND_GLOBAL( name ) then 
                 val := 1; 
             else 
