@@ -55,6 +55,8 @@ TRANSLATE:=[
 "Transpose","TransposedMat",
 "GCD","Gcd",
 "DiagonalJoin","DirectSumMat",
+"IsEven","IsEvenInt",
+"IsOdd","IsOddInt",
 ];
 
 # parses to the following units:
@@ -1037,7 +1039,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	    ExpectToken("then");
 	    b:=ReadBlock(["else","end if","elif"]:inner);
 	    locals:=Union(locals,b[1]);
-	    a.elseblock:=[rec(type:="if",cond:=c,block:=b[2])];
+	    a.elseblock:=[rec(type:="if",isElif:=true,cond:=c,block:=b[2])];
 	    a:=a.elseblock[1]; # make elif an iterated else if
 	  od;
 	  if tok[tnum][2]="else" then
@@ -1301,6 +1303,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  repeat
 	    e:=ReadExpression([",",">"]);
 	    Add(c,e);
+	    AddSet(locals,e.name);
 	    if tok[tnum][2]="," then
 	      ExpectToken(",","impgen");
 	    fi;
@@ -1883,7 +1886,11 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
       indent(-1);
       FilePrint(f,")");
     elif t="if" then
-      FilePrint(f,"if ");
+      if IsBound(node.isElif) then
+	FilePrint(f,"elif ");
+      else
+	FilePrint(f,"if ");
+      fi;
       doit(node.cond);
       indent(1);
       FilePrint(f," then\n",START);
@@ -1892,16 +1899,29 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
       od;
       indent(-1);
 
+      str1:=true;
       if IsBound(node.elseblock) then
-	FilePrint(f,"\b\belse\n");
-	indent(1);
-	FilePrint(f,START);
-	for i in node.elseblock do
-	  doit(i);
-	od;
-	indent(-1);
+	# is it an ``else if'' case -- translate to elif
+	if node.elseblock[1].type="if" and IsBound(node.elseblock[1].isElif) then
+	  FilePrint(f,"\b\b");
+	  for i in node.elseblock do
+	    doit(i);
+	  od;
+	  str1:=false;
+	else
+	  FilePrint(f,"\b\belse\n");
+	  indent(1);
+	  FilePrint(f,START);
+	  for i in node.elseblock do
+	    doit(i);
+	  od;
+	  indent(-1);
+	fi;
+
       fi;
-      FilePrint(f,"\b\bfi;\n",START);
+      if str1 then
+	FilePrint(f,"\b\bfi;\n",START);
+      fi;
     elif t="try" then
       FilePrint(f,"# TODO: try \n");
     elif t="while" then
