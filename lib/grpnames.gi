@@ -291,8 +291,7 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
                         [ IsGroup ], 0,
   function(G)
 
-    local p,        # prime
-          Gd,       # G'
+    local Gd,       # G'
           GGd,      # G/G'
           C,        # Center(G)
           D,        # Intersection(C, Gd)
@@ -320,9 +319,8 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
     if IsNilpotentGroup(G) then
       if not IsPGroup(G) then
         Ns := [ ];
-        for p in PrimeDivisors(Size(G)) do
-          Ns := UnionIfCanEasilySortElements(Ns,
-                                  DirectFactorsOfGroup(SylowSubgroup(G, p)));
+        for N in SylowSystem(G) do
+          Ns := UnionIfCanEasilySortElements(Ns, DirectFactorsOfGroup(N));
         od;
         return Ns;
       else
