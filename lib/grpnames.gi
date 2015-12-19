@@ -315,7 +315,7 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
 
     if not IsFinite(G) then TryNextMethod(); fi;
 
-    # nilpotent groups are direct product of Sylow subgroups
+    # nilpotent groups are direct products of Sylow subgroups
     if IsNilpotentGroup(G) then
       if not IsPGroup(G) then
         Ns := [ ];
@@ -323,11 +323,9 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
           Ns := UnionIfCanEasilySortElements(Ns, DirectFactorsOfGroup(N));
         od;
         return Ns;
-      else
-        if IsCyclic(Center(G)) then
-          # G is direct indecomposable, because has a unique minimal subgroup
-          return [ G ];
-        fi;
+      elif IsCyclic(Center(G)) then
+        # G is direct indecomposable, because has a unique minimal subgroup
+        return [ G ];
       fi;
     # nonabelian p-groups cannot have a unique maximal subgroup
     elif IsSolvableGroup(G) then
