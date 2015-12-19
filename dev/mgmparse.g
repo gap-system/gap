@@ -47,6 +47,16 @@ OPRECED:=["|","`",".","@","@@","!","!!",
 TOKENS:=Union(TOKENS,BINOPS);
 TOKENS:=Union(TOKENS,PAROP);
 
+# translation list for global function names
+TRANSLATE:=[
+"Nrows","Length",
+"DiagonalMatrix","DiagonalMat",
+"Determinant","DeterminantMat",
+"Transpose","TransposedMat",
+"GCD","Gcd",
+"DiagonalJoin","DirectSumMat",
+];
+
 # parses to the following units:
 
 # co commentary
@@ -1397,7 +1407,15 @@ NOPARTYPE:=["N","S","C","U-","Bdiv", # translates to QuoInt
 	    "I","sub","paren"];
 
 GAPOutput:=function(l,f)
-local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
+local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
+
+   # process translation list
+   tralala:=[[],[]];
+   for i in [1,3..Length(TRANSLATE)-1] do
+     Add(tralala[1],Immutable(TRANSLATE[i]));
+     Add(tralala[2],Immutable(TRANSLATE[i+1]));
+   od;
+   SortParallel(tralala[1],tralala[2]);
 
    START:="";
    indent:=function(n)
@@ -1619,7 +1637,12 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       FilePrint(f,"\"");
     elif t="C" or t="CA" then
       # fct. call
-      doit(node.fct);
+      i:=PositionSorted(tralala[1],node.fct.name);
+      if i<>fail and IsBound(tralala[1][i]) and tralala[1][i]=node.fct.name then
+	FilePrint(f,tralala[2][i]);
+      else
+	doit(node.fct);
+      fi;
       FilePrint(f,"(");
       printlist(node.args);
       if t="CA" then
@@ -2157,9 +2180,24 @@ local a,b,c,d,f,l,i,j,r,uses,defs,import,depend,order;
     od;
     l[i].clashes:=c;
     l[i].depends:=Set(List(l[i].import,x->x.file));
+    l[i].dependnum:=List(l[i].depends,x->PositionProperty(l,y->Concatenation(y.filename,".m")=x));
+    l[i].dependall:=ShallowCopy(l[i].dependnum);
     l[i].mustdeclare:=d;
     l[i].namespace:=defs;
   od;
+
+  # full dependencies
+  repeat
+    f:=true;
+    for i in [1..Length(l)] do
+      for j in l[i].dependall do
+	if not IsSubset(l[i].dependall,l[j].dependnum) then
+	  f:=false;
+	  l[i].dependall:=Union(l[i].dependall,l[j].dependnum);
+	fi;
+      od;
+    od;
+  until f;
 
   order:=[1..Length(l)];
   # bubblesort as this is not a proper total order
@@ -2193,12 +2231,6 @@ local a,b,c,d,f,l,i,j,r,uses,defs,import,depend,order;
     CloseStream(f);
   od;
 
+  return List(l,x->[x.filename,List(l{x.dependall},y->y.filename)]);
   #return a;
 end;
-
-# translation list for operations
-TRANSLATE:=[
-"Nrows","Length",
-"DiagonalMatrix","DiagonalMat",
-"Determinant","DeterminantMat",
-];
