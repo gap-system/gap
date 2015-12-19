@@ -125,6 +125,7 @@ InstallMethod( ComplementNormalSubgroupNC,
     local F,    # G/N
           DfF,  # Direct factors of F=G/N
           gF,   # element of F=G/N
+          g,    # element of G corresponding to gF
           i,    # running index
           l,    # list for storing stuff
           b,    # elements of abelian complement
@@ -151,8 +152,9 @@ InstallMethod( ComplementNormalSubgroupNC,
       i:=0;
       for gF in IndependentGeneratorsOfAbelianGroup(F) do
         i := i+1;
-        l := First(PreImage(NaturalHomomorphism(F), [gF]),
-              x -> IsCentral(G, SubgroupNC(G,[x])) and Order(x) = Order(gF));
+        g := PreImagesRepresentative(NaturalHomomorphism(F), gF);
+        l := First(RightCoset(N, g),
+              x -> Order(x) = Order(gF) and IsCentral(G, SubgroupNC(G,[x])));
         if l <> fail then
           b[i] := l;
         else
