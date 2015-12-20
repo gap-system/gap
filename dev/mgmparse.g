@@ -1,5 +1,5 @@
 # Magma to GAP converter
-MGMCONVER:="version 0.35, 12/15/15"; # raw
+MGMCONVER:="version 0.36, 12/19/15"; # basic version
 # (C) Alexander Hulpke
 
 
@@ -50,6 +50,7 @@ TOKENS:=Union(TOKENS,PAROP);
 # translation list for global function names
 TRANSLATE:=[
 "Nrows","Length",
+"NumberOfRows","Length",
 "DiagonalMatrix","DiagonalMat",
 "Determinant","DeterminantMat",
 "Transpose","TransposedMat",
@@ -57,6 +58,8 @@ TRANSLATE:=[
 "DiagonalJoin","DirectSumMat",
 "IsEven","IsEvenInt",
 "IsOdd","IsOddInt",
+"Matrix","MatrixByEntries",
+"Dimension","DimensionOfMatrixGroup",
 ];
 
 # parses to the following units:
@@ -1344,7 +1347,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  fi;
 	  Add(l,a);
 	  ExpectToken(";",14);
-	  if endkey=false then
+	  if endkey=false and IsBound(a.left.name) then
 	    # top-level assignment -- global variable
 	    #Print("> ",a.left.name," <\n");
 	    AddSet(defines,a.left.name);
@@ -1725,10 +1728,9 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
       doit(node.left);
       FilePrint(f,")");
     elif t="B`" then
-      doit(node.right);
-      FilePrint(f,"Attr(");
       doit(node.left);
-      FilePrint(f,")");
+      FilePrint(f,".");
+      doit(node.right);
     elif t="Bdiv" then
       FilePrint(f,"QuoInt(");
       doit(node.left);
@@ -1833,8 +1835,9 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
       FilePrint(f,"not ");
       doit(node.arg);
     elif t="Uassigned" then
-      FilePrint(f,"Has");
+      FilePrint(f,"IsBound(");
       doit(node.arg);
+      FilePrint(f,")");
     elif t="Ueval" then
       FilePrint(f,"#EVAL\n",START,"    ");
       doit(node.arg);
@@ -1852,9 +1855,13 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
       printlist(node.right);
       FilePrint(f,"])");
     elif t="<" then
-      FilePrint(f,"Span(");
+      # seems to be not span, but just another variant of list
+      FilePrint(f,"[");
       printlist(node.args);
-      FilePrint(f,")");
+      FilePrint(f,"]");
+      #FilePrint(f,"Span(");
+      #printlist(node.args);
+      #FilePrint(f,")");
     elif t=":" then
       FilePrint(f,"List(");
       doit(node.from);
