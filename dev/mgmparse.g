@@ -510,9 +510,16 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	      tnum:=tnum+1;
 	      ExpectToken("in");
 
-	      e:=ReadExpression(["]"]); #part 2
-	      ExpectToken("]");
-	      a:=rec(type:=":",op:=l,var:=a,from:=e);
+	      e:=ReadExpression(["]","|"]); #part 2
+	      if tok[tnum][2]="|" then
+		ExpectToken("|");
+		a:=rec(type:=":F",op:=l,var:=a,from:=e);
+		a.test:=ReadExpression(["]"]);
+		ExpectToken("]");
+	      else
+		ExpectToken("]");
+		a:=rec(type:=":",op:=l,var:=a,from:=e);
+	      fi;
 	      return a;
 	    elif tok[tnum][2]=".." then
 	      ExpectToken("..");
@@ -1863,19 +1870,26 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
       #printlist(node.args);
       #FilePrint(f,")");
     elif t=":" then
-      if node.from.type="B|" then
-        # filtered construct (which was somewhat misparsed)
-	FilePrint(f,"Filtered(");
-	doit(node.from.left);
-	FilePrint(f,",",node.var,"->");
-	doit(node.from.right);
-	FilePrint(f,")");
-	#Error("ZZZ");
-      else
-	# ordinary list
+      # ordinary List construct
+      FilePrint(f,"List(");
+      doit(node.from);
+      FilePrint(f,",",node.var,"->");
+      doit(node.op);
+      FilePrint(f,")");
+    elif t=":F" then
+      # is it a List(Filtered construct ?
+      str1:=node.op.type<>"I" or node.op.name<>node.var;
+      if str1 then
 	FilePrint(f,"List(");
-	doit(node.from);
-	FilePrint(f,",",node.var,"->");
+      fi;
+      # ordinary Filtered construct 
+      FilePrint(f,"Filtered(");
+      doit(node.from);
+      FilePrint(f,",",node.var,"->");
+      doit(node.test);
+      FilePrint(f,")");
+      if str1 then
+	FilePrint(f,"),",node.var,"->");
 	doit(node.op);
 	FilePrint(f,")");
       fi;
