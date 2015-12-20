@@ -666,7 +666,7 @@ DeclareAttribute( "AsInternalFFE", IsFFE);
 ##  then
 ##  <K>fail</K> is returned.
 ##
-DeclareOperation( "RootFFE", [ IsFFE, IsInt ] );
+DeclareOperation( "RootFFE", [ IsFFE, IsObject ] );
 
 
 #############################################################################
