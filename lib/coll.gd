@@ -1620,14 +1620,14 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Random([1..6]);
-##  6
+##  1
 ##  gap> Random(1, 2^100);
-##  216763054510766614871671341272
+##  866227015645295902682304086250
 ##  gap> g:= Group( (1,2,3) );;  Random( g );  Random( g );
-##  ()
 ##  (1,3,2)
+##  (1,2,3)
 ##  gap> Random(Rationals);
-##  -4
+##  -2
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
