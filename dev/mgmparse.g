@@ -1,5 +1,5 @@
 # Magma to GAP converter
-MGMCONVER:="version 0.36, 12/19/15"; # basic version
+MGMCONVER:="version 0.37, 12/20/15"; # basic version
 # (C) Alexander Hulpke
 
 
@@ -1863,11 +1863,22 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
       #printlist(node.args);
       #FilePrint(f,")");
     elif t=":" then
-      FilePrint(f,"List(");
-      doit(node.from);
-      FilePrint(f,",",node.var,"->");
-      doit(node.op);
-      FilePrint(f,")");
+      if node.from.type="B|" then
+        # filtered construct (which was somewhat misparsed)
+	FilePrint(f,"Filtered(");
+	doit(node.from.left);
+	FilePrint(f,",",node.var,"->");
+	doit(node.from.right);
+	FilePrint(f,")");
+	#Error("ZZZ");
+      else
+	# ordinary list
+	FilePrint(f,"List(");
+	doit(node.from);
+	FilePrint(f,",",node.var,"->");
+	doit(node.op);
+	FilePrint(f,")");
+      fi;
     elif t="&" then
       if node.op="+" then
         FilePrint(f,"Sum(");
