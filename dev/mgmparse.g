@@ -1,5 +1,5 @@
 # Magma to GAP converter
-MGMCONVER:="version 0.34, 10/22/15"; # very raw
+MGMCONVER:="version 0.37, 12/20/15"; # basic version
 # (C) Alexander Hulpke
 
 
@@ -9,7 +9,7 @@ TOKENS:=["if","then","eq","cmpeq","neq","and","or","else","not","assigned",
 	 "freeze","import","local","for","elif","intrinsic","to",
 	 "end for","end function","end if","end intrinsic","end while",
 	 "procedure","end procedure","where","break",
-         "function","return",":=","+:=","-:=","*:=","cat:=","=",
+         "function","return",":=","+:=","-:=","*:=","/:=","cat:=","=",
 	 "\\[","\\]","delete","exists",
 	 "[","]","(",")","\\(","\\)","`",";","#","!","<",">","&","$",":->","hom","map",
 	 "cat","[*","*]","->","@@","forward","join",
@@ -18,19 +18,49 @@ TOKENS:=["if","then","eq","cmpeq","neq","and","or","else","not","assigned",
 	 "declare verbose","declare attributes","error if",
 	 "exists","forall","time",
 	 "sub","eval","select","rec","recformat","require","case","when","end case",
+	 "^^", "adj", "is", "non", "notadj", "notsubset", "sdiff", "xor",
 	 "%%%" # fake keyword for comments
 	 ];
 # Magma binary operators
 BINOPS:=["+","-","*","/","div","mod","in","notin","^","`","!","and","|",
-         "or","=","eq","cmpeq","ne","le","ge","gt","lt",".","->","@@","@","cmpne"];
+         "or","=","eq","cmpeq","ne","le","ge","gt","lt",".","->","@@","@",
+	 "cmpne","xor","^^","is", "non" ];
 # Magma binaries that have to become function calls in GAP
-FAKEBIN:=["meet","subset","join","diff","cat"];
+FAKEBIN:=["meet","subset","join","diff","cat","adj","notadj",
+          "notsubset", "sdiff",];
 BINOPS:=Union(BINOPS,FAKEBIN);
 
 PAROP:=["+","-","div","mod","in","notin","^","`","!","and",
          "or","=","eq","cmpeq","ne","."];
+
+# operator precedence from
+# https://magma.maths.usyd.edu.au/magma/handbook/text/67
+# note that some might have been take care of by parser earlier
+
+OPRECED:=["|","`",".","@","@@","!","!!",
+"^", "cat", "*", "/", "div", "mod", "+", "-", "meet", "sdiff",
+"diff", "join", "adj", "in", "notadj", "notin", "notsubset", "subset",
+"non", "cmpeq", "cmpne", "eq", "ge", "gt", "le", "lt", "ne", "not",
+"and", "or", "xor", "^^", "non", "->", "=", ":=", "is"];
+
+
 TOKENS:=Union(TOKENS,BINOPS);
 TOKENS:=Union(TOKENS,PAROP);
+
+# translation list for global function names
+TRANSLATE:=[
+"Nrows","Length",
+"NumberOfRows","Length",
+"DiagonalMatrix","DiagonalMat",
+"Determinant","DeterminantMat",
+"Transpose","TransposedMat",
+"GCD","Gcd",
+"DiagonalJoin","DirectSumMat",
+"IsEven","IsEvenInt",
+"IsOdd","IsOddInt",
+"Matrix","MatrixByEntries",
+"Dimension","DimensionOfMatrixGroup",
+];
 
 # parses to the following units:
 
@@ -375,7 +405,8 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 
   # read identifier, call, function 
   ReadExpression:=function(stops)
-  local obj,e,a,b,c,argus,procidf,doprocidf,op,assg,val,pre,lbinops,fcomment;
+  local obj,e,a,b,c,argus,procidf,doprocidf,op,assg,val,pre,lbinops,
+        fcomment,stack,locopt;
 
     lbinops:=Difference(BINOPS,stops);
 
@@ -479,9 +510,16 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	      tnum:=tnum+1;
 	      ExpectToken("in");
 
-	      e:=ReadExpression(["]"]); #part 2
-	      ExpectToken("]");
-	      a:=rec(type:=":",op:=l,var:=a,from:=e);
+	      e:=ReadExpression(["]","|"]); #part 2
+	      if tok[tnum][2]="|" then
+		ExpectToken("|");
+		a:=rec(type:=":F",op:=l,var:=a,from:=e);
+		a.test:=ReadExpression(["]"]);
+		ExpectToken("]");
+	      else
+		ExpectToken("]");
+		a:=rec(type:=":",op:=l,var:=a,from:=e);
+	      fi;
 	      return a;
 	    elif tok[tnum][2]=".." then
 	      ExpectToken("..");
@@ -849,11 +887,14 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	fi;
       od;
       assg:=false;
+      locopt:=[];
       if tok[tnum][2]=":" then
 	ExpectToken(":");
 	assg:=[];
 	repeat
-	  Add(assg,ReadExpression([":="]));
+	  a:=ReadExpression([":="]);
+	  Add(assg,a);
+	  Add(locopt,a.name);
 	  ExpectToken(":=");
 	  Add(assg,ReadExpression([")",","]));
 	  if tok[tnum][2]="," then
@@ -902,7 +943,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
       a:=ReadBlock(["end function","end intrinsic","end procedure"]:inner);
       tnum:=tnum+1; # do end .... token
 
-      a:=rec(type:="F",args:=argus,locals:=a[1],block:=a[2]);
+      a:=rec(type:="F",args:=argus,locals:=Union(a[1],locopt),block:=a[2]);
       if fcomment<>fail then
         a.comment:=fcomment;
       fi;
@@ -915,15 +956,37 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 
     # todo: parentheses
     else 
+      stack:=[];
       a:=procidf();
+      Add(stack,a);
       while tok[tnum][2] in lbinops do
         op:=tok[tnum][2];
+	Add(stack,op);
 	tnum:=tnum+1;
 
 	b:=procidf();
-	a:=rec(type:=Concatenation("B",op),left:=a,right:=b);
+	Add(stack,b);
+	#a:=rec(type:=Concatenation("B",op),left:=a,right:=b);
       od;
-      return a;
+
+      # sort out operation precedence
+      i:=1;
+      while Length(stack)>1 do
+	#Print(stack,"|",OPRECED[i],"|\n");
+        a:=2;
+	while a<=Length(stack) do
+	  if stack[a]=OPRECED[i] then
+	    stack:=Concatenation(stack{[1..a-2]},
+	      [rec(type:=Concatenation("B",stack[a]),left:=stack[a-1],right:=stack[a+1])],
+	      stack{[a+2..Length(stack)]});
+	#Print(stack,"{",OPRECED[i],"}\n");
+	  else
+	    a:=a+2;
+	  fi;
+	od;
+	i:=i+1;
+      od;
+      return stack[1];
 
     fi;
   end;
@@ -986,7 +1049,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	    ExpectToken("then");
 	    b:=ReadBlock(["else","end if","elif"]:inner);
 	    locals:=Union(locals,b[1]);
-	    a.elseblock:=[rec(type:="if",cond:=c,block:=b[2])];
+	    a.elseblock:=[rec(type:="if",isElif:=true,cond:=c,block:=b[2])];
 	    a:=a.elseblock[1]; # make elif an iterated else if
 	  od;
 	  if tok[tnum][2]="else" then
@@ -1234,7 +1297,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	fi;
       elif e[1]="I" then
 	tnum:=tnum-1;
-	a:=ReadExpression([",",":=","-:=","+:=","*:=","cat:=",";","<"]);
+	a:=ReadExpression([",",":=","-:=","+:=","*:=","/:=","cat:=",";","<"]);
 	if a.type="I" then
 	  AddSet(locals,a.name);
 	fi;
@@ -1250,6 +1313,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  repeat
 	    e:=ReadExpression([",",">"]);
 	    Add(c,e);
+	    AddSet(locals,e.name);
 	    if tok[tnum][2]="," then
 	      ExpectToken(",","impgen");
 	    fi;
@@ -1290,7 +1354,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  fi;
 	  Add(l,a);
 	  ExpectToken(";",14);
-	  if endkey=false then
+	  if endkey=false and IsBound(a.left.name) then
 	    # top-level assignment -- global variable
 	    #Print("> ",a.left.name," <\n");
 	    AddSet(defines,a.left.name);
@@ -1307,6 +1371,10 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  b:=ReadExpression([";"]);
 	  ExpectToken(";");
 	  Add(l,rec(type:="A*",left:=a,right:=b));
+	elif e[2]="/:=" then
+	  b:=ReadExpression([";"]);
+	  ExpectToken(";");
+	  Add(l,rec(type:="A/",left:=a,right:=b));
 	elif e[2]="cat:=" then
 	  b:=ReadExpression([";"]);
 	  ExpectToken(";");
@@ -1356,7 +1424,15 @@ NOPARTYPE:=["N","S","C","U-","Bdiv", # translates to QuoInt
 	    "I","sub","paren"];
 
 GAPOutput:=function(l,f)
-local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
+local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
+
+   # process translation list
+   tralala:=[[],[]];
+   for i in [1,3..Length(TRANSLATE)-1] do
+     Add(tralala[1],Immutable(TRANSLATE[i]));
+     Add(tralala[2],Immutable(TRANSLATE[i+1]));
+   od;
+   SortParallel(tralala[1],tralala[2]);
 
    START:="";
    indent:=function(n)
@@ -1425,19 +1501,9 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
     fi;
   end;
 
-  doitpar:=function(r,usepar)
-    if usepar and not r.type in NOPARTYPE then
-      FilePrint(f,"(");
-      doit(r);
-      FilePrint(f,")");
-    else
-      doit(r);
-    fi;
-  end;
-
   # doit -- main node processor
   doit:=function(node)
-  local t,i,a,b;
+  local t,i,a,b,cachef,cachest,str1,str2;
     t:=node.type;
     if t="A" then
       # special case of declaration assignment
@@ -1464,7 +1530,7 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
 	  FilePrint(f,".",i,"\n",START);
 	od;
       fi;
-    elif t[1]='A' and Length(t)=2 and t[2] in "+-*" then
+    elif t[1]='A' and Length(t)=2 and t[2] in "+-*/" then
       doit(node.left);
       FilePrint(f,":=");
       doit(node.left);
@@ -1588,7 +1654,12 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       FilePrint(f,"\"");
     elif t="C" or t="CA" then
       # fct. call
-      doit(node.fct);
+      i:=PositionSorted(tralala[1],node.fct.name);
+      if i<>fail and IsBound(tralala[1][i]) and tralala[1][i]=node.fct.name then
+	FilePrint(f,tralala[2][i]);
+      else
+	doit(node.fct);
+      fi;
       FilePrint(f,"(");
       printlist(node.args);
       if t="CA" then
@@ -1668,10 +1739,9 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       doit(node.left);
       FilePrint(f,")");
     elif t="B`" then
-      doit(node.right);
-      FilePrint(f,"Attr(");
       doit(node.left);
-      FilePrint(f,")");
+      FilePrint(f,".");
+      doit(node.right);
     elif t="Bdiv" then
       FilePrint(f,"QuoInt(");
       doit(node.left);
@@ -1717,7 +1787,25 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
 	fi;
 	FilePrint(f,")");
       else
-	doitpar(node.left,a in PAROP);
+	# store the strings for both parameters to allow potential later
+	# introduction of parentheses
+	cachef:=f;
+	cachest:=FILEPRINTSTR;
+	FILEPRINTSTR:="";
+	str1:="";
+	f:=OutputTextString(str1,true);
+	doit(node.left);
+	CloseStream(f);
+	str1:=Concatenation(str1,FILEPRINTSTR);
+	FILEPRINTSTR:="";
+	str2:="";
+	f:=OutputTextString(str2,true);
+	doit(node.right);
+	CloseStream(f);
+	str2:=Concatenation(str2,FILEPRINTSTR);
+	f:=cachef;
+	FILEPRINTSTR:=cachest;
+
 	if i="ne" or i="cmpne" then
 	  i:="<>";
 	elif i="eq" or i="cmpeq" or i="=" then
@@ -1739,8 +1827,9 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
 	elif i="le" then
 	  i:=" <= ";
 	fi;
+	FilePrint(f,str1);
 	FilePrint(f,i);
-	doitpar(node.right,a in PAROP);
+	FilePrint(f,str2);
       fi;
 
     elif t="U#" then
@@ -1751,14 +1840,15 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       FilePrint(f,"-");
       doit(node.arg);
     elif t="U~" then
-      FilePrint(f,"~TILDE~");
+      FilePrint(f,"TILDE");
       doit(node.arg);
     elif t="Unot" then
       FilePrint(f,"not ");
       doit(node.arg);
     elif t="Uassigned" then
-      FilePrint(f,"Has");
+      FilePrint(f,"IsBound(");
       doit(node.arg);
+      FilePrint(f,")");
     elif t="Ueval" then
       FilePrint(f,"#EVAL\n",START,"    ");
       doit(node.arg);
@@ -1776,15 +1866,37 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       printlist(node.right);
       FilePrint(f,"])");
     elif t="<" then
-      FilePrint(f,"Span(");
+      # seems to be not span, but just another variant of list
+      FilePrint(f,"[");
       printlist(node.args);
-      FilePrint(f,")");
+      FilePrint(f,"]");
+      #FilePrint(f,"Span(");
+      #printlist(node.args);
+      #FilePrint(f,")");
     elif t=":" then
+      # ordinary List construct
       FilePrint(f,"List(");
       doit(node.from);
       FilePrint(f,",",node.var,"->");
       doit(node.op);
       FilePrint(f,")");
+    elif t=":F" then
+      # is it a List(Filtered construct ?
+      str1:=node.op.type<>"I" or node.op.name<>node.var;
+      if str1 then
+	FilePrint(f,"List(");
+      fi;
+      # ordinary Filtered construct 
+      FilePrint(f,"Filtered(");
+      doit(node.from);
+      FilePrint(f,",",node.var,"->");
+      doit(node.test);
+      FilePrint(f,")");
+      if str1 then
+	FilePrint(f,",",node.var,"->");
+	doit(node.op);
+	FilePrint(f,")");
+      fi;
     elif t="&" then
       if node.op="+" then
         FilePrint(f,"Sum(");
@@ -1810,7 +1922,11 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       indent(-1);
       FilePrint(f,")");
     elif t="if" then
-      FilePrint(f,"if ");
+      if IsBound(node.isElif) then
+	FilePrint(f,"elif ");
+      else
+	FilePrint(f,"if ");
+      fi;
       doit(node.cond);
       indent(1);
       FilePrint(f," then\n",START);
@@ -1819,16 +1935,29 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       od;
       indent(-1);
 
+      str1:=true;
       if IsBound(node.elseblock) then
-	FilePrint(f,"\b\belse\n");
-	indent(1);
-	FilePrint(f,START);
-	for i in node.elseblock do
-	  doit(i);
-	od;
-	indent(-1);
+	# is it an ``else if'' case -- translate to elif
+	if node.elseblock[1].type="if" and IsBound(node.elseblock[1].isElif) then
+	  FilePrint(f,"\b\b");
+	  for i in node.elseblock do
+	    doit(i);
+	  od;
+	  str1:=false;
+	else
+	  FilePrint(f,"\b\belse\n");
+	  indent(1);
+	  FilePrint(f,START);
+	  for i in node.elseblock do
+	    doit(i);
+	  od;
+	  indent(-1);
+	fi;
+
       fi;
-      FilePrint(f,"\b\bfi;\n",START);
+      if str1 then
+	FilePrint(f,"\b\bfi;\n",START);
+      fi;
     elif t="try" then
       FilePrint(f,"# TODO: try \n");
     elif t="while" then
@@ -2005,6 +2134,7 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared;
       fi;
       FilePrint(f,";\n",START);
     elif t="none" then
+      Error("UUU");
       FilePrint(f,"#NOP\n",START);
     else
       Error("NEED TO DO  type ",t," ");
@@ -2107,9 +2237,24 @@ local a,b,c,d,f,l,i,j,r,uses,defs,import,depend,order;
     od;
     l[i].clashes:=c;
     l[i].depends:=Set(List(l[i].import,x->x.file));
+    l[i].dependnum:=List(l[i].depends,x->PositionProperty(l,y->Concatenation(y.filename,".m")=x));
+    l[i].dependall:=ShallowCopy(l[i].dependnum);
     l[i].mustdeclare:=d;
     l[i].namespace:=defs;
   od;
+
+  # full dependencies
+  repeat
+    f:=true;
+    for i in [1..Length(l)] do
+      for j in l[i].dependall do
+	if not IsSubset(l[i].dependall,l[j].dependnum) then
+	  f:=false;
+	  l[i].dependall:=Union(l[i].dependall,l[j].dependnum);
+	fi;
+      od;
+    od;
+  until f;
 
   order:=[1..Length(l)];
   # bubblesort as this is not a proper total order
@@ -2143,6 +2288,6 @@ local a,b,c,d,f,l,i,j,r,uses,defs,import,depend,order;
     CloseStream(f);
   od;
 
+  return List(l,x->[x.filename,List(l{x.dependall},y->y.filename)]);
   #return a;
 end;
-
