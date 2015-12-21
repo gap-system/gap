@@ -9,7 +9,7 @@ TOKENS:=["if","then","eq","cmpeq","neq","and","or","else","not","assigned",
 	 "freeze","import","local","for","elif","intrinsic","to",
 	 "end for","end function","end if","end intrinsic","end while",
 	 "procedure","end procedure","where","break",
-         "function","return",":=","+:=","-:=","*:=","cat:=","=",
+         "function","return",":=","+:=","-:=","*:=","/:=","cat:=","=",
 	 "\\[","\\]","delete","exists",
 	 "[","]","(",")","\\(","\\)","`",";","#","!","<",">","&","$",":->","hom","map",
 	 "cat","[*","*]","->","@@","forward","join",
@@ -1297,7 +1297,7 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	fi;
       elif e[1]="I" then
 	tnum:=tnum-1;
-	a:=ReadExpression([",",":=","-:=","+:=","*:=","cat:=",";","<"]);
+	a:=ReadExpression([",",":=","-:=","+:=","*:=","/:=","cat:=",";","<"]);
 	if a.type="I" then
 	  AddSet(locals,a.name);
 	fi;
@@ -1371,6 +1371,10 @@ local Comment,eatblank,gimme,ReadID,ReadOP,ReadExpression,ReadBlock,
 	  b:=ReadExpression([";"]);
 	  ExpectToken(";");
 	  Add(l,rec(type:="A*",left:=a,right:=b));
+	elif e[2]="/:=" then
+	  b:=ReadExpression([";"]);
+	  ExpectToken(";");
+	  Add(l,rec(type:="A/",left:=a,right:=b));
 	elif e[2]="cat:=" then
 	  b:=ReadExpression([";"]);
 	  ExpectToken(";");
@@ -1526,7 +1530,7 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
 	  FilePrint(f,".",i,"\n",START);
 	od;
       fi;
-    elif t[1]='A' and Length(t)=2 and t[2] in "+-*" then
+    elif t[1]='A' and Length(t)=2 and t[2] in "+-*/" then
       doit(node.left);
       FilePrint(f,":=");
       doit(node.left);
@@ -1889,7 +1893,7 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
       doit(node.test);
       FilePrint(f,")");
       if str1 then
-	FilePrint(f,"),",node.var,"->");
+	FilePrint(f,",",node.var,"->");
 	doit(node.op);
 	FilePrint(f,")");
       fi;
@@ -2130,6 +2134,7 @@ local i,doit,printlist,doitpar,indent,t,mulicomm,traid,declared,tralala;
       fi;
       FilePrint(f,";\n",START);
     elif t="none" then
+      Error("UUU");
       FilePrint(f,"#NOP\n",START);
     else
       Error("NEED TO DO  type ",t," ");
