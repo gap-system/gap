@@ -1299,7 +1299,9 @@ void PrintFunction (
     Int                 nloc;           /* number of locals                */
     Obj                 oldLVars;       /* terrible hack                   */
     UInt                i;              /* loop variable                   */
+    UInt                isvarg;         /* does function have varargs?     */
 
+    isvarg = 0;
 
     if ( IS_OPERATION(func) ) {
       CALL_1ARGS( PrintOperation, func );
@@ -1311,13 +1313,19 @@ void PrintFunction (
 
     /* print the arguments                                                 */
     narg = NARG_FUNC(func);
-    if (narg < 0)
+    if (narg < 0) {
+      isvarg = 1;
       narg = -narg;
+    }
+    
     for ( i = 1; i <= narg; i++ ) {
         if ( NAMS_FUNC(func) != 0 )
             Pr( "%I", (Int)NAMI_FUNC( func, (Int)i ), 0L );
         else
             Pr( "<<arg-%d>>", (Int)i, 0L );
+        if(isvarg && i == narg) {
+            Pr("...", 0L, 0L);
+        }
         if ( i != narg )  Pr("%<, %>",0L,0L);
     }
     Pr(" %<)",0L,0L);

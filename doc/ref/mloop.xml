@@ -638,7 +638,7 @@ gap> ErrorNoTraceBack := function(arg) # arg is special variable that GAP
 >      OnBreak := ENTBOnBreak;
 >      Error();
 >    end;
-function( arg ) ... end
+function( arg... ) ... end
 ]]></Example>
 <P/>
 Here is a somewhat trivial demonstration of the use of

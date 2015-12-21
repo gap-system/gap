@@ -364,7 +364,7 @@
 {\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
   |obeylines % end of line is active
   |gdef||{|char124} %
-  |gdef|ttfinish#1^^M#2\endtt{#1|medskip{#2}|endgroup %
+  |gdef|ttfinish^^M#1\endtt{|medskip{#1}|endgroup %
   |endgroup%
   |vskip-|parskip|medskip|noindent|ignorespaces}}
 \def\unstableoutput{}
@@ -374,16 +374,16 @@
 {\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
   |obeylines % end of line is active
   |gdef||{|char124} %
-  |gdef|examplefinish#1^^M#2\endexample{%
+  |gdef|examplefinish^^M#1^^M\endexample{%
       |iftestexample%
          |ifexamplefileopen%
          |else|immediate|openout|exampleout=|jobname.example-|the|chapno.tst%
          |global|examplefileopentrue%
          |fi%
-        {|def^^M{^^J}|immediate|write|exampleout{#1^^J#2}}%
+        {|def^^M{^^J}|immediate|write|exampleout{#1}}%
       |fi%
       |global|testexampletrue%
-      #1|medskip{#2}|endgroup%
+      |medskip{#1}|endgroup%
   |endgroup%
   |vskip-|parskip|medskip|noindent|ignorespaces}}
 

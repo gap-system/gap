@@ -1587,7 +1587,9 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  <Oper Name="Random" Arg='from, to' Label="for lower and upper bound"/>
 ##
 ##  <Description>
-##  <Index Subkey="of a list or collection">random element</Index>
+##  <!-- to get this on top of results for ?Random -->
+##  <Index Key="Random"><Ref Func="Random" 
+##                           Label="for a list or collection"/></Index> 
 ##  <Ref Oper="Random" Label="for a list or collection"/> returns a
 ##  (pseudo-)random element of the list or collection <A>listorcoll</A>.
 ##  <P/>
@@ -1599,7 +1601,7 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  The distribution of elements returned by
 ##  <Ref Oper="Random" Label="for a list or collection"/> depends
 ##  on the argument.
-##  For a list, all elements are equally likely.
+##  For a list the distribution is uniform (all elements are equally likely).
 ##  The same holds usually for finite collections that are
 ##  not lists.
 ##  For infinite collections some reasonable distribution is used.
@@ -1608,19 +1610,24 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  which distribution is being used.
 ##  <P/>
 ##  For some collections ensuring a reasonable distribution can be
-##  difficult and require substantial runtime.
-##  If speed at the cost of equal distribution is desired,
+##  difficult and require substantial runtime (for example for large
+##  finite groups). If speed is more important than a guaranteed
+##  distribution, 
 ##  the operation <Ref Func="PseudoRandom"/> should be used instead.
 ##  <P/>
 ##  Note that <Ref Oper="Random" Label="for a list or collection"/>
 ##  is of course <E>not</E> an attribute.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> Random(Rationals);
-##  4
+##  gap> Random([1..6]);
+##  1
+##  gap> Random(1, 2^100);
+##  866227015645295902682304086250
 ##  gap> g:= Group( (1,2,3) );;  Random( g );  Random( g );
 ##  (1,3,2)
-##  ()
+##  (1,2,3)
+##  gap> Random(Rationals);
+##  -2
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

@@ -191,8 +191,8 @@ DeclareOperationKernel( "SetNameFunction", [IS_OBJECT, IS_STRING], SET_NAME_FUNC
 ##  <Description>
 ##  returns the number of arguments the function <A>func</A> accepts.
 ##  -1 is returned for all operations.
-##  For functions that use <C>arg</C> to take a variable number of arguments,
-##  the number returned is - the total number of parameters including the <C>arg</C>.
+##  For functions that use <C>...</C> or <C>arg</C> to take a variable number of
+##  arguments, the number returned is -1 times the total number of parameters.
 ##  For attributes, 1 is returned.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -204,10 +204,7 @@ DeclareOperationKernel( "SetNameFunction", [IS_OBJECT, IS_STRING], SET_NAME_FUNC
 ##  3
 ##  gap> NumberArgumentsFunction(Sum);
 ##  -1
-##  gap> NumberArgumentsFunction(function(a,arg) return 1; end);
-##  Syntax warning: New syntax used -- intentional? in stream line 1
-##  NumberArgumentsFunction(function(a,arg) return 1; end);
-##                                               ^
+##  gap> NumberArgumentsFunction(function(a, x...) return 1; end);
 ##  -2
 ##  ]]></Example>
 ##  </Description>
@@ -366,14 +363,14 @@ BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 ##  >     CallFuncList( Print, arg );
 ##  >     Print( "\n" );
 ##  >    end;
-##  function( arg ) ... end
+##  function( arg... ) ... end
 ##  gap> PrintNumberFromDigits( 1, 9, 7, 3, 2 );
 ##  19732
 ##  gap> PrintDigits := function ( arg )
 ##  >     Print( arg );
 ##  >     Print( "\n" );
 ##  >    end;
-##  function( arg ) ... end
+##  function( arg... ) ... end
 ##  gap> PrintDigits( 1, 9, 7, 3, 2 );
 ##  [ 1, 9, 7, 3, 2 ]
 ##  ]]></Example>
@@ -401,7 +398,7 @@ DeclareOperationKernel( "CallFuncList", [IS_OBJECT, IS_LIST], CALL_FUNC_LIST );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f:=ReturnTrue;  
-##  function( arg ) ... end
+##  function( arg... ) ... end
 ##  gap> f();  
 ##  true
 ##  gap> f(42);
@@ -428,7 +425,7 @@ BIND_GLOBAL( "ReturnTrue", RETURN_TRUE );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f:=ReturnFalse;  
-##  function( arg ) ... end
+##  function( arg... ) ... end
 ##  gap> f();  
 ##  false
 ##  gap> f("any_string");
@@ -455,7 +452,7 @@ BIND_GLOBAL( "ReturnFalse", RETURN_FALSE );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> oops:=ReturnFail;  
-##  function( arg ) ... end
+##  function( arg... ) ... end
 ##  gap> oops();  
 ##  fail
 ##  gap> oops(-42);  
@@ -481,7 +478,7 @@ BIND_GLOBAL( "ReturnFail", RETURN_FAIL );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> n:=ReturnNothing;
-##  function( object ) ... end
+##  function( object... ) ... end
 ##  gap> n();
 ##  gap> n(-42);
 ##  ]]></Example>
@@ -506,7 +503,7 @@ BIND_GLOBAL( "ReturnNothing", RETURN_NOTHING );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f:=ReturnFirst;
-##  function( object ) ... end
+##  function( object... ) ... end
 ##  gap> f(1);
 ##  1
 ##  gap> f(2,3,4);
@@ -557,7 +554,8 @@ BIND_GLOBAL( "IdFunc", ID_FUNC );
 ##
 InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
         function ( func )
-    local  locks, nams, narg, i;
+    local  locks, nams, narg, i, isvarg;
+    isvarg := false;
     locks := LOCKS_FUNC(func);
     if locks <> fail then
         Print("atomic ");
@@ -566,7 +564,11 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
     nams := NAMS_FUNC(func);
     narg := NARG_FUNC(func);
     if narg < 0 then
+        isvarg := true;
         narg := -narg;
+    fi;
+    if narg = 1 and nams <> fail and nams[1] = "arg" then
+        isvarg := true;
     fi;
     if narg <> 0 then
         if nams = fail then
@@ -590,6 +592,9 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
                 fi;
                 Print(", ",nams[i]);
             od;
+        fi;
+        if isvarg then
+            Print("...");
         fi;
     fi;    
     Print(" ) ... end");
