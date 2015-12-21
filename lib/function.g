@@ -363,14 +363,14 @@ BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 ##  >     CallFuncList( Print, arg );
 ##  >     Print( "\n" );
 ##  >    end;
-##  function( arg ) ... end
+##  function( arg... ) ... end
 ##  gap> PrintNumberFromDigits( 1, 9, 7, 3, 2 );
 ##  19732
 ##  gap> PrintDigits := function ( arg )
 ##  >     Print( arg );
 ##  >     Print( "\n" );
 ##  >    end;
-##  function( arg ) ... end
+##  function( arg... ) ... end
 ##  gap> PrintDigits( 1, 9, 7, 3, 2 );
 ##  [ 1, 9, 7, 3, 2 ]
 ##  ]]></Example>
@@ -398,7 +398,7 @@ DeclareOperationKernel( "CallFuncList", [IS_OBJECT, IS_LIST], CALL_FUNC_LIST );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f:=ReturnTrue;  
-##  function( arg ) ... end
+##  function( arg... ) ... end
 ##  gap> f();  
 ##  true
 ##  gap> f(42);
@@ -425,7 +425,7 @@ BIND_GLOBAL( "ReturnTrue", RETURN_TRUE );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f:=ReturnFalse;  
-##  function( arg ) ... end
+##  function( arg... ) ... end
 ##  gap> f();  
 ##  false
 ##  gap> f("any_string");
@@ -452,7 +452,7 @@ BIND_GLOBAL( "ReturnFalse", RETURN_FALSE );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> oops:=ReturnFail;  
-##  function( arg ) ... end
+##  function( arg... ) ... end
 ##  gap> oops();  
 ##  fail
 ##  gap> oops(-42);  
@@ -478,7 +478,7 @@ BIND_GLOBAL( "ReturnFail", RETURN_FAIL );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> n:=ReturnNothing;
-##  function( object ) ... end
+##  function( object... ) ... end
 ##  gap> n();
 ##  gap> n(-42);
 ##  ]]></Example>
@@ -503,7 +503,7 @@ BIND_GLOBAL( "ReturnNothing", RETURN_NOTHING );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f:=ReturnFirst;
-##  function( object ) ... end
+##  function( object... ) ... end
 ##  gap> f(1);
 ##  1
 ##  gap> f(2,3,4);
