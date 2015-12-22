@@ -1165,23 +1165,6 @@ InstallOtherMethod( AsInternalFFE, [IsObject],
     fi;
 end);
 
-#############################################################################
-##
-#M  RootFFE( <z>, <k> ) 
-##
-InstallMethod( RootFFE, "use LogFFE",true,[IsFFE,IsPosInt],
-function(z,k)
-local q,e;
-  q:=Characteristic(z)^DegreeFFE(z);
-  e:=LogFFE(z,Z(q));
-  e:=e/k;
-  if Gcd(DenominatorRat(e),q-1)=1 then
-    return Z(q)^(e mod (q-1));
-  else
-    return fail;
-  fi;
-end);
-
 
 
 #############################################################################
