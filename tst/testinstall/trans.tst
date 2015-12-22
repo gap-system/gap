@@ -1188,6 +1188,16 @@ true
 gap> ConstantTransformation(4,1)<IdentityTransformation;
 true
 
+# Test for the issue with caching the degree of a transformation in PR #384
+gap> x := Transformation([1,1]) ^ (1,2)(3,70000);
+Transformation( [ 2, 2 ] )
+gap> IsTrans4Rep(x);
+true
+gap> HASH_FUNC_FOR_TRANS(x, 101);
+41
+gap> x;
+Transformation( [ 2, 2 ] )
+
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;
