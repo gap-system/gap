@@ -665,6 +665,9 @@ DeclareAttribute( "AsInternalFFE", IsFFE);
 ##  <A>r</A> whose <A>k</A>-th power is <A>z</A>. If no such element exists
 ##  then
 ##  <K>fail</K> is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "RootFFE", [ IsFFE, IsObject ] );
 

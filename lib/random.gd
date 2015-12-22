@@ -63,7 +63,7 @@ DeclareCategory( "IsRandomSource", IsComponentObjectRep );
 ##  <Example>
 ##  gap> mysource := RandomSource(IsMersenneTwister, 42);;
 ##  gap> Random(mysource, 1, 10^60);
-##  474943581767832038339909502952186501785153672757525589711853
+##  999331861769949319194941485000557997842686717712198687315183
 ##  </Example>
 ##  </Description>
 ##  </ManSection>

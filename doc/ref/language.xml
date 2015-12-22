@@ -777,8 +777,8 @@ or to a component of a record (see Chapter&nbsp;<Ref Chap="Records"/>)
 In any case &GAP; tests whether the value is a function.
 If it is not, &GAP; signals an error.
 <P/>
-<Index Subkey="with a variable number of arguments">functions</Index>
-<Index Key="arg" Subkey="special function argument"><C>arg</C></Index>
+<Index Subkey="with a variable number of arguments, calling">functions</Index>
+<Index Key="arg" Subkey="special function argument, calling with"><C>arg</C></Index>
 Next &GAP; checks that the number of actual arguments <A>arg-expr</A>s agrees
 with the number of <E>formal arguments</E> as given in the function definition.
 If they do not agree &GAP; signals an error.
