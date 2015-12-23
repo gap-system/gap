@@ -84,7 +84,7 @@ end);
 ##   <Oper Name="Trunc" Arg="x"/>
 ##   <Oper Name="Frac" Arg="x"/>
 ##   <Oper Name="SignFloat" Arg="x"/>
-##   <Oper Name="Argument" Arg="x"/>
+##   <Oper Name="Argument" Arg="x" Label="for complex numbers" />
 ##   <Oper Name="Erf" Arg="x"/>
 ##   <Oper Name="Zeta" Arg="x"/>
 ##   <Oper Name="Gamma" Arg="x"/>

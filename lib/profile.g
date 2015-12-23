@@ -1037,7 +1037,7 @@ end);
 ##  <Ref Func="START_TEST"/> reinitialize the caches and the global
 ##  random number generator, in order to be independent of the reading
 ##  order of several test files. Furthermore, the assertion level
-##  (see&nbsp;<Ref Func="Assert"/>) is set to <M>2</M> by
+##  (see&nbsp;<Ref Func="Assert"/>) is set to <M>2</M> (if it was lower before) by
 ##  <Ref Func="START_TEST"/> and set back to the previous value in the
 ##  subsequent <Ref Func="STOP_TEST"/> call.
 ##  <P/>
@@ -1077,7 +1077,9 @@ START_TEST := function( name )
     GAPInfo.TestData.START_TIME := Runtime();
     GAPInfo.TestData.START_NAME := name;
     GAPInfo.TestData.AssertionLevel:= AssertionLevel();
-    SetAssertionLevel( 2 );
+    if GAPInfo.TestData.AssertionLevel < 2 then
+        SetAssertionLevel( 2 );
+    fi;
 end;
 
 STOP_TEST := function( file, fac )
