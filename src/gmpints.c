@@ -2401,7 +2401,7 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
   Obj res;
   Int i, n, q, r, qoff, len;
   UInt4 *mt, rand;
-  TypLimb *pt;
+  UInt4 *pt;
   while (! IsStringConv(mtstr)) {
      mtstr = ErrorReturnObj(
          "<mtstr> must be a string, not a %s)",
@@ -2441,30 +2441,24 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 #endif
   }
   else {
-     /* large int case - number of Limbs */
-     q = n / GMP_LIMB_BITS;
-     r = n - q*GMP_LIMB_BITS;
+     /* large int case */
+     q = n / 32;
+     r = n - q * 32;
+     /* qoff = number of 32 bit words we need */
      qoff = q + (r==0 ? 0:1);
-     len = qoff;
+     /* len = number of limbs we need (limbs currently are either 32 or 64 bit wide) */
+     len = (qoff*4 +  sizeof(TypLimb) - 1) / sizeof(TypLimb);
      res = NewBag( T_INTPOS, len*sizeof(TypLimb) );
-     pt = ADDR_INT(res);
+     pt = (UInt4*) ADDR_INT(res);
      mt = (UInt4*) CHARS_STRING(mtstr);
-#ifdef SYS_IS_64_BIT
      for (i = 0; i < qoff; i++, pt++) {
-       rand = (TypLimb) nextrandMT_int32(mt);
-       *pt = rand; 
-       rand = (TypLimb) nextrandMT_int32(mt);
-       *pt |= (UInt)rand << 32; 
+       rand = (UInt4) nextrandMT_int32(mt);
+       *pt = rand;
      }
-#else
-     for (i = 0; i < qoff; i++, pt++) {
-       rand = nextrandMT_int32(mt);
-       *pt = (TypLimb) rand;
-     }
-#endif
      if (r != 0) {
-       ADDR_INT(res)[qoff-1] = ADDR_INT(res)[qoff-1] & ((TypLimb)(-1)
-                                                      >> (GMP_LIMB_BITS-r));
+       /* we generated too many random bits -- chop of the extra bits */
+       pt = (UInt4*) ADDR_INT(res);
+       pt[qoff-1] = pt[qoff-1] & ((UInt4)(-1) >> (32-r));
      }
      /* shrink bag if necessary */
      res = GMP_NORMALIZE(res);
