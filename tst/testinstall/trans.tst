@@ -1193,8 +1193,7 @@ gap> x := Transformation([1,1]) ^ (1,2)(3,70000);
 Transformation( [ 2, 2 ] )
 gap> IsTrans4Rep(x);
 true
-gap> HASH_FUNC_FOR_TRANS(x, 101);
-41
+gap> HASH_FUNC_FOR_TRANS(x, 101);;
 gap> x;
 Transformation( [ 2, 2 ] )
 
