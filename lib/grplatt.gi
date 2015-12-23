@@ -2713,7 +2713,9 @@ local dom,n,t,map;
     map:=ConjugatorIsomorphism(G,map);
   fi;
 
-  LoadPackage("tomlib"); # force tomlib load
+  if LoadPackage("tomlib")<>true then # force tomlib load
+    return fail;
+  fi;
   t:=TableOfMarks(Concatenation("A",String(n)));
   if t=fail then
     return fail;
