@@ -693,6 +693,8 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     if not(testResult) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
       if opts.exitGAP then
+        # Do not change the next line - it is needed for testing scrips
+        Print( "#I  Errors detected while testing\n\n" );
         QUIT_GAP(1);
       fi;
       return false;
@@ -746,8 +748,12 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   
   if opts.exitGAP then
     if testTotal then
+      # Do not change the next line - it is needed for testing scrips
+      Print( "#I  No errors detected while testing\n\n" );
       QUIT_GAP(0);
     else
+      # Do not change the next line - it is needed for testing scrips
+      Print( "#I  Errors detected while testing\n\n" );
       QUIT_GAP(1);
     fi;
   fi;
