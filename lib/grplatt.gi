@@ -2731,7 +2731,10 @@ local T,t,hom,inf,nam,i,aut;
   # missing?
   if inf=fail then return fail;fi;
 
-  LoadPackage("tomlib"); # force tomlib load
+  if LoadPackage("tomlib")<>true then # force tomlib load
+    return fail;
+  fi;
+
   nam:=inf.tomName;
 
   # simple group
