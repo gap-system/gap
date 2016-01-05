@@ -975,7 +975,7 @@ InstallGlobalFunction(PrintCSV,function(arg)
     q:=false;
     if not IsString(s) then
       s:=String(s);
-    elif IsString(s) and Int(s)<>fail and AbsInt(Int(s))>10^7 then
+    elif IsString(s) and ForAll(s,x->x in CHARS_DIGITS or x in "+-") and Int(s)<>fail and AbsInt(Int(s))>10^7 then
       q:=true;
     fi;
 
