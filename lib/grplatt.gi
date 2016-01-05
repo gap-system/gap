@@ -839,7 +839,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
   makesubgroupclasses,cefastersize;
 
   #group order below which cyclic extension is usually faster
-  if LoadPackage("tomlib")=true then
+  if IsPackageMarkedForLoading("tomlib","")=true then
     cefastersize:=1; 
   else
     cefastersize:=40000; 
@@ -2713,7 +2713,9 @@ local dom,n,t,map;
     map:=ConjugatorIsomorphism(G,map);
   fi;
 
-  LoadPackage("tomlib"); # force tomlib load
+  if IsPackageMarkedForLoading("tomlib","")<>true then
+    return fail; # no tomlib available
+  fi;
   t:=TableOfMarks(Concatenation("A",String(n)));
   if t=fail then
     return fail;
@@ -2731,8 +2733,8 @@ local T,t,hom,inf,nam,i,aut;
   # missing?
   if inf=fail then return fail;fi;
 
-  if LoadPackage("tomlib")<>true then # force tomlib load
-    return fail;
+  if IsPackageMarkedForLoading("tomlib","")<>true then # force tomlib load
+    return fail; # no tomlib available
   fi;
 
   nam:=inf.tomName;
