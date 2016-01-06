@@ -829,7 +829,7 @@ InstallGlobalFunction( EmptyRBase, function( G, Omega, P )
         if IsIdenticalObj( G[ 1 ], G[ 2 ] )  then
             rbase.level2 := true;
         else
-            rbase.level2 := CopyStabChain( StabChainMutable( G[ 2 ] ) );
+            rbase.level2 := CopyStabChain( StabChainImmutable( G[ 2 ] ) );
             rbase.lev2   := [  ];
         fi;
         G := G[ 1 ];
@@ -841,7 +841,7 @@ InstallGlobalFunction( EmptyRBase, function( G, Omega, P )
 #        rbase.fix   := [  ];
 #        rbase.level := NrMovedPoints( G );
 #    else
-        rbase.chain := CopyStabChain( StabChainMutable( G ) );
+        rbase.chain := CopyStabChain( StabChainImmutable( G ) );
         rbase.level := rbase.chain;
 #    fi;
     
@@ -1547,8 +1547,8 @@ InstallGlobalFunction( PartitionBacktrack,
         
         # In   the representative case,   assign  to <L>  and <R>  stabilizer
         # chains.
-        L := ListStabChain( CopyStabChain( StabChainMutable( L ) ) );
-        R := ListStabChain( CopyStabChain( StabChainMutable( R ) ) );
+        L := ListStabChain( CopyStabChain( StabChainImmutable( L ) ) );
+        R := ListStabChain( CopyStabChain( StabChainImmutable( R ) ) );
 
     fi;
     
