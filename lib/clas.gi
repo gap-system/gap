@@ -746,6 +746,14 @@ local rcls, cl, mark, rep, c, o, cop, same, sub, pow, p, i, j,closure,
 
   rcls:=[];
   cl:=ConjugacyClasses(G);
+
+  if Length(Filtered(cl,x->Size(x)<10))<10000 then
+    # trigger for cheap element test
+    for i in [1..Length(cl)] do
+      if Size(cl[i])<10 then Elements(cl[i]);fi;
+    od;
+  fi;
+
   mark:=BlistList([1..Length(cl)],[]);
   for i in [1..Length(cl)] do
     if mark[i]=false then
@@ -759,8 +767,10 @@ local rcls, cl, mark, rep, c, o, cop, same, sub, pow, p, i, j,closure,
       dec:=[cl[i]];
       if o>2 then
         cop:=Set(Flat(GeneratorsPrimeResidues(o).generators));
+
 	# get orders that give the same class
-	same:=Filtered(cop,i->RepresentativeAction(G,rep,rep^i)<>fail);
+	#same:=Filtered(cop,i->RepresentativeAction(G,rep,rep^i)<>fail);
+	same:=Filtered(cop,x->rep^x in cl[i]);
 	if Length(same)<Length(cop) then
 	  # there are other classes:
 	  sub:=[1];
