@@ -31,6 +31,8 @@ extern void MurmurHash3_x64_128 ( const void * key, const int len,
 
 extern Int HASHKEY_BAG_NC(Obj obj, UInt4 factor, Int skip, int maxread);
 
+Obj IntStringInternal( Obj string );
+
 /****************************************************************************
 **
 
