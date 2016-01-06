@@ -1943,7 +1943,7 @@ void            IntrIntExpr (
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeIntExpr( str ); return; }
 
-
+    
     /* get the signs, if any                                                */
     sign = 1;
     i = 0;
@@ -1996,60 +1996,21 @@ void            IntrIntExpr (
 void            IntrLongIntExpr (
     Obj               string )
 {
-    Obj                 val;            /* value = <upp> * <pow> + <low>   */
-    Obj                 upp;            /* upper part                      */
-    Int                 pow;            /* power                           */
-    Int                 low;            /* lower part                      */
-    Int                 sign;           /* is the integer negative         */
-    UInt                i;              /* loop variable                   */
-    UChar *              str;            /* temp pointer                    */
+    Obj                 ret;            /* integer encoded as GAP obj      */
     /* ignore or code                                                      */
     if ( TLS(IntrReturning) > 0 ) { return; }
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeLongIntExpr( string ); return; }
 
-
-    /* get the signs, if any                                                */
-    str = CHARS_STRING(string);
-    sign = 1;
-    i = 0;
-    while ( str[i] == '-' ) {
-        sign = - sign;
-        i++;
-    }
-
-    /* collect the digits in groups of 8                                   */
-    low = 0;
-    pow = 1;
-    upp = INTOBJ_INT(0);
-    while ( str[i] != '\0' ) {
-        low = 10 * low + str[i] - '0';
-        pow = 10 * pow;
-        if ( pow == 100000000L ) {
-            upp = PROD(upp,INTOBJ_INT(pow) );
-            upp = SUM(upp  , INTOBJ_INT(sign*low) );
-            str = CHARS_STRING(string);
-            pow = 1;
-            low = 0;
-        }
-        i++;
-    }
-
-    /* compose the integer value                                           */
-    val = 0;
-    if ( upp == INTOBJ_INT(0) ) {
-        val = INTOBJ_INT(sign*low);
-    }
-    else if ( pow == 1 ) {
-        val = upp;
-    }
-    else {
-        upp =  PROD( upp, INTOBJ_INT(pow) );
-        val = SUM( upp , INTOBJ_INT(sign*low) );
+    ret = IntStringInternal(string);
+    
+    if ( ret == Fail ) {
+        /* This should never happen */
+        ErrorQuit("Int: Invalid parsing (internal error)", 0, 0);
     }
 
     /* push the integer value                                              */
-    PushObj( val );
+    PushObj( ret );
 }
 
 /****************************************************************************
