@@ -160,7 +160,6 @@ ReadLib( "grpperm.gi"  );
 ReadLib( "gpprmsya.gi" );
 ReadLib( "gprdperm.gi" );
 ReadLib( "gprdpc.gi"   );
-ReadLib( "gprdmat.gi" );
 ReadLib( "oprt.gi"     );
 ReadLib( "oprtperm.gi" );
 ReadLib( "oprtpcgs.gi" );
