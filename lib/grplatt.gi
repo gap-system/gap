@@ -1903,9 +1903,10 @@ local G,	# group
 
 		  else 
                     # generators should correspond to factorfphom
-		    Assert(1,List(ocr.generators,
-		      x->ImagesRepresentative(ocr.factorfphom,x))
-		      =GeneratorsOfGroup(Range(ocr.factorfphom)));
+		    # comment out as homomorphism is different
+		    # Assert(1,List(ocr.generators,
+		    #  x->ImagesRepresentative(ocr.factorfphom,x))
+		    #  =GeneratorsOfGroup(Range(ocr.factorfphom)));
 
 		    qhom:=GroupHomomorphismByImagesNC(ocr.group,
 			    Range(ocr.factorfphom),
