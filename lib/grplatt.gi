@@ -839,7 +839,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
   makesubgroupclasses,cefastersize;
 
   #group order below which cyclic extension is usually faster
-  if LoadPackage("tomlib")=true then
+  if IsPackageMarkedForLoading("tomlib","")=true then
     cefastersize:=1; 
   else
     cefastersize:=40000; 
@@ -1887,18 +1887,42 @@ local G,	# group
 
 		# get affine action on cocycles that represents conjugation
 		if Size(vs)>10 then
-		  qhom:=GroupHomomorphismByImagesNC(ocr.group,
-	                  Range(ocr.factorfphom),
-			  Concatenation(
-			    MappingGeneratorsImages(ocr.factorfphom)[1],
-			    GeneratorsOfGroup(M)),
-			  Concatenation(
-			    MappingGeneratorsImages(ocr.factorfphom)[2],
-			    List(GeneratorsOfGroup(M),
-			      x->One(Range(ocr.factorfphom)))));
-                  Assert(2,GroupHomomorphismByImages(Source(qhom),Range(qhom),
+
+		  if IsModuloPcgs(ocr.generators) then
+		    # cohomology by pcgs -- factorfphom was not used
+		    k:=PcGroupWithPcgs(ocr.generators);
+		    k:=Image(IsomorphismFpGroup(k));
+
+		    qhom:=GroupHomomorphismByImagesNC(ocr.group,k,
+			    Concatenation(ocr.generators,
+			      ocr.modulePcgs,
+			      GeneratorsOfGroup(M)),
+			    Concatenation(GeneratorsOfGroup(k),
+			      List(ocr.modulePcgs,x->One(k)),
+			      List(GeneratorsOfGroup(M),x->One(k)) ));
+
+		  else 
+                    # generators should correspond to factorfphom
+		    # comment out as homomorphism is different
+		    # Assert(1,List(ocr.generators,
+		    #  x->ImagesRepresentative(ocr.factorfphom,x))
+		    #  =GeneratorsOfGroup(Range(ocr.factorfphom)));
+
+		    qhom:=GroupHomomorphismByImagesNC(ocr.group,
+			    Range(ocr.factorfphom),
+			    Concatenation(
+			      MappingGeneratorsImages(ocr.factorfphom)[1],
+			      GeneratorsOfGroup(M)),
+			    Concatenation(
+			      MappingGeneratorsImages(ocr.factorfphom)[2],
+			      List(GeneratorsOfGroup(M),
+				x->One(Range(ocr.factorfphom)))));
+
+		  fi;
+		  Assert(2,GroupHomomorphismByImages(Source(qhom),Range(qhom),
 		    MappingGeneratorsImages(qhom)[1],
 		    MappingGeneratorsImages(qhom)[2])<>fail);
+
 		  opr:=function(cyc,elm)
 		  local l,i,lc,lw;
 		    l:=ocr.cocycleToList(cyc);
@@ -2713,7 +2737,9 @@ local dom,n,t,map;
     map:=ConjugatorIsomorphism(G,map);
   fi;
 
-  LoadPackage("tomlib"); # force tomlib load
+  if IsPackageMarkedForLoading("tomlib","")<>true then
+    return fail; # no tomlib available
+  fi;
   t:=TableOfMarks(Concatenation("A",String(n)));
   if t=fail then
     return fail;
@@ -2731,7 +2757,10 @@ local T,t,hom,inf,nam,i,aut;
   # missing?
   if inf=fail then return fail;fi;
 
-  LoadPackage("tomlib"); # force tomlib load
+  if IsPackageMarkedForLoading("tomlib","")<>true then # force tomlib load
+    return fail; # no tomlib available
+  fi;
+
   nam:=inf.tomName;
 
   # simple group

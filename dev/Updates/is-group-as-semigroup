@@ -27,6 +27,8 @@ belong to the Semigroups and Smallsemi packages.
 
 ! Test Code
 # these tests will only work if the Semigroups package is loaded
+gap> LoadPackage("semigroups",false);
+true
 gap> S := Semigroup(Transformation([1, 2, 3, 4, 4]));
 <commutative transformation semigroup of degree 5 with 1 generator>
 gap> IsMonoid(S);

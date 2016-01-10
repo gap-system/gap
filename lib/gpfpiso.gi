@@ -529,6 +529,8 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
     # nonabelian
     p:=Range(mnsf);
     ngen:=FreeGeneratorsOfFpGroup(p);
+    # This is not really a pcgs, but treated as layer generators the same
+    # way, thus use the same variable name
     pcgs:=List(GeneratorsOfGroup(p),i->PreImagesRepresentative(mnsf,i));
     f:=FreeGroup(Length(fpqg)+Length(pcgs));
     qimg:=GeneratorsOfGroup(f){[1..Length(fpqg)]};
@@ -559,8 +561,9 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
   od;
   fp:=f/rels;
   hom2:=GroupHomomorphismByImagesNC(G,fp,
-	Concatenation(qreps,pcgs),
-	GeneratorsOfGroup(fp));
+	 Concatenation(Concatenation(qreps,pcgs),GeneratorsOfGroup(N)),
+	 Concatenation(GeneratorsOfGroup(fp),
+	 List(GeneratorsOfGroup(N),x->One(fp))));
 
   # build decompositioninfo
   di:=rec(gens:=Concatenation(qreps,pcgs),fp:=fp,source:=G);

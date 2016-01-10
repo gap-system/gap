@@ -790,11 +790,11 @@ end );
 
 #############################################################################
 ##
-#F  RedispatchOnCondition( <oper>, <fampred>, <reqs>, <cond>, <val> )
+#F  RedispatchOnCondition( <oper>, <fampred>[, <info>], <reqs>, <cond>, <val> )
 ##
 ##  <#GAPDoc Label="RedispatchOnCondition">
 ##  <ManSection>
-##  <Func Name="RedispatchOnCondition" Arg="oper, fampred, reqs, cond, val"/>
+##  <Func Name="RedispatchOnCondition" Arg="oper[, info], fampred, reqs, cond, val"/>
 ##
 ##  <Description>
 ##  This function installs a method for the operation <A>oper</A> under the
@@ -807,6 +807,8 @@ end );
 ##  they are explicitly tested and if they are fulfilled <E>and</E> stored
 ##  after this test, the operation is dispatched again.
 ##  Otherwise the method exits with <Ref Func="TryNextMethod"/>.
+##  If supplied, <A>info</A> should be a short but informative string
+##  that describes these conditions.
 ##  This can be used to enforce tests like
 ##  <Ref Func="IsFinite"/> in situations when all
 ##  existing methods require this property.
@@ -818,8 +820,26 @@ end );
 ##
 CallFuncList:="2b defined";
 
-BIND_GLOBAL( "RedispatchOnCondition", function(oper,fampred,reqs,cond,val)
-    local re,i;
+BIND_GLOBAL( "RedispatchOnCondition", function(arg)
+    local oper,info,fampred,reqs,cond,val,re,i;
+
+    if LEN_LIST(arg) = 5 then
+        oper := arg[1];
+        info :=" fallback method to test conditions";
+        fampred := arg[2];
+        reqs := arg[3];
+        cond := arg[4];
+        val := arg[5];
+    elif LEN_LIST(arg) = 6 then
+        oper := arg[1];
+        info := arg[2];
+        fampred := arg[3];
+        reqs := arg[4];
+        cond := arg[5];
+        val := arg[6];
+    else
+        Error("Usage: RedispatchOnCondition(oper[,info],fampred,reqs,cond,val)");
+    fi;
 
     # force value 0 (unless offset).
     for i in reqs do
@@ -829,7 +849,7 @@ BIND_GLOBAL( "RedispatchOnCondition", function(oper,fampred,reqs,cond,val)
     od;
 
     InstallOtherMethod( oper,
-      "fallback method to test conditions",
+      info,
       fampred,
       reqs, val,
       function( arg )

@@ -381,7 +381,8 @@ local so,fp,isofp,rels,mapi;
   # relators in the generators on the genimages and take the normal closure.
   so:=Source(map);
   mapi:=MappingGeneratorsImages(map);
-  if Length(GeneratorsOfGroup(so))=0 then
+  if Length(GeneratorsOfGroup(so))=0 
+    or ForAll(GeneratorsOfGroup(so),x->IsOne(UnderlyingElement(x))) then
     rels:=ShallowCopy(mapi[2]);
   else
     isofp:=IsomorphismFpGroupByGeneratorsNC(so,mapi[1],"F");

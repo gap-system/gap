@@ -3092,12 +3092,11 @@ static Obj  HdlrFunc15 (
 /* handler for function 14 */
 static Obj  HdlrFunc14 (
  Obj  self,
- Obj  a_oper,
- Obj  a_fampred,
- Obj  a_reqs,
- Obj  a_cond,
- Obj  a_val )
+ Obj  a_arg )
 {
+ Obj l_info = 0;
+ Obj l_fampred = 0;
+ Obj l_val = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -3115,11 +3114,87 @@ static Obj  HdlrFunc14 (
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,5,0,oldFrame);
- ASS_LVAR( 1, a_oper );
- ASS_LVAR( 2, a_reqs );
- ASS_LVAR( 3, a_cond );
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
+ 
+ /* if LEN_LIST( arg ) = 5 then */
+ t_3 = GF_LEN__LIST;
+ t_2 = CALL_1ARGS( t_3, a_arg );
+ CHECK_FUNC_RESULT( t_2 )
+ t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(5) ));
+ if ( t_1 ) {
+  
+  /* oper := arg[1]; */
+  C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(1) )
+  ASS_LVAR( 1, t_1 );
+  
+  /* info := " fallback method to test conditions"; */
+  C_NEW_STRING( t_1, 35, " fallback method to test conditions" );
+  l_info = t_1;
+  
+  /* fampred := arg[2]; */
+  C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(2) )
+  l_fampred = t_1;
+  
+  /* reqs := arg[3]; */
+  C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(3) )
+  ASS_LVAR( 2, t_1 );
+  
+  /* cond := arg[4]; */
+  C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(4) )
+  ASS_LVAR( 3, t_1 );
+  
+  /* val := arg[5]; */
+  C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(5) )
+  l_val = t_1;
+  
+ }
+ 
+ /* elif LEN_LIST( arg ) = 6 then */
+ else {
+  t_3 = GF_LEN__LIST;
+  t_2 = CALL_1ARGS( t_3, a_arg );
+  CHECK_FUNC_RESULT( t_2 )
+  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(6) ));
+  if ( t_1 ) {
+   
+   /* oper := arg[1]; */
+   C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(1) )
+   ASS_LVAR( 1, t_1 );
+   
+   /* info := arg[2]; */
+   C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(2) )
+   l_info = t_1;
+   
+   /* fampred := arg[3]; */
+   C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(3) )
+   l_fampred = t_1;
+   
+   /* reqs := arg[4]; */
+   C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(4) )
+   ASS_LVAR( 2, t_1 );
+   
+   /* cond := arg[5]; */
+   C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(5) )
+   ASS_LVAR( 3, t_1 );
+   
+   /* val := arg[6]; */
+   C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(6) )
+   l_val = t_1;
+   
+  }
+  
+  /* else */
+  else {
+   
+   /* Error( "Usage: RedispatchOnCondition(oper[,info],fampred,reqs,cond,val)" ); */
+   t_1 = GF_Error;
+   C_NEW_STRING( t_2, 63, "Usage: RedispatchOnCondition(oper[,info],fampred,reqs,cond,val)" );
+   CALL_1ARGS( t_1, t_2 );
+   
+  }
+ }
+ /* fi */
  
  /* for i in reqs do */
  t_4 = OBJ_LVAR( 2 );
@@ -3146,6 +3221,7 @@ static Obj  HdlrFunc14 (
   ASS_LVAR( 5, t_2 );
   
   /* val := val - SIZE_FLAGS( WITH_HIDDEN_IMPS_FLAGS( FLAGS_FILTER( i ) ) ); */
+  CHECK_BOUND( l_val, "val" )
   t_7 = GF_SIZE__FLAGS;
   t_9 = GF_WITH__HIDDEN__IMPS__FLAGS;
   t_11 = GF_FLAGS__FILTER;
@@ -3157,13 +3233,13 @@ static Obj  HdlrFunc14 (
   CHECK_FUNC_RESULT( t_8 )
   t_6 = CALL_1ARGS( t_7, t_8 );
   CHECK_FUNC_RESULT( t_6 )
-  C_DIFF_FIA( t_5, a_val, t_6 )
-  a_val = t_5;
+  C_DIFF_FIA( t_5, l_val, t_6 )
+  l_val = t_5;
   
  }
  /* od */
  
- /* InstallOtherMethod( oper, "fallback method to test conditions", fampred, reqs, val, function ( arg... )
+ /* InstallOtherMethod( oper, info, fampred, reqs, val, function ( arg... )
       re := false;
       for i  in [ 1 .. LEN_LIST( reqs ) ]  do
           re := re or IsBound( cond[i] ) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] );
@@ -3178,18 +3254,19 @@ static Obj  HdlrFunc14 (
  t_1 = GF_InstallOtherMethod;
  t_2 = OBJ_LVAR( 1 );
  CHECK_BOUND( t_2, "oper" )
- C_NEW_STRING( t_3, 34, "fallback method to test conditions" );
- t_4 = OBJ_LVAR( 2 );
- CHECK_BOUND( t_4, "reqs" )
- t_5 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
- ENVI_FUNC( t_5 ) = TLS(CurrLVars);
- t_6 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_6) = INTOBJ_INT(835);
- ENDLINE_BODY(t_6) = INTOBJ_INT(851);
- FILENAME_BODY(t_6) = FileName;
- BODY_FUNC(t_5) = t_6;
+ CHECK_BOUND( l_info, "info" )
+ CHECK_BOUND( l_fampred, "fampred" )
+ t_3 = OBJ_LVAR( 2 );
+ CHECK_BOUND( t_3, "reqs" )
+ t_4 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
+ ENVI_FUNC( t_4 ) = TLS(CurrLVars);
+ t_5 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ STARTLINE_BODY(t_5) = INTOBJ_INT(855);
+ ENDLINE_BODY(t_5) = INTOBJ_INT(871);
+ FILENAME_BODY(t_5) = FileName;
+ BODY_FUNC(t_4) = t_5;
  CHANGED_BAG( TLS(CurrLVars) );
- CALL_6ARGS( t_1, t_2, t_3, a_fampred, t_4, a_val, t_5 );
+ CALL_6ARGS( t_1, t_2, l_info, l_fampred, t_3, l_val, t_4 );
  
  /* return; */
  RES_BRK_CURR_STAT();
@@ -3705,12 +3782,29 @@ static Obj  HdlrFunc1 (
  C_NEW_STRING( t_1, 10, "2b defined" );
  AssGVar( G_CallFuncList, t_1 );
  
- /* BIND_GLOBAL( "RedispatchOnCondition", function ( oper, fampred, reqs, cond, val )
-      local  re, i;
+ /* BIND_GLOBAL( "RedispatchOnCondition", function ( arg... )
+      local  oper, info, fampred, reqs, cond, val, re, i;
+      if LEN_LIST( arg ) = 5  then
+          oper := arg[1];
+          info := " fallback method to test conditions";
+          fampred := arg[2];
+          reqs := arg[3];
+          cond := arg[4];
+          val := arg[5];
+      elif LEN_LIST( arg ) = 6  then
+          oper := arg[1];
+          info := arg[2];
+          fampred := arg[3];
+          reqs := arg[4];
+          cond := arg[5];
+          val := arg[6];
+      else
+          Error( "Usage: RedispatchOnCondition(oper[,info],fampred,reqs,cond,val)" );
+      fi;
       for i  in reqs  do
           val := val - SIZE_FLAGS( WITH_HIDDEN_IMPS_FLAGS( FLAGS_FILTER( i ) ) );
       od;
-      InstallOtherMethod( oper, "fallback method to test conditions", fampred, reqs, val, function ( arg... )
+      InstallOtherMethod( oper, info, fampred, reqs, val, function ( arg... )
             re := false;
             for i  in [ 1 .. LEN_LIST( reqs ) ]  do
                 re := re or IsBound( cond[i] ) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] );
@@ -3729,8 +3823,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(821);
- ENDLINE_BODY(t_4) = INTOBJ_INT(852);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(823);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(872);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -3841,38 +3935,38 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "CallFuncList", &GF_CallFuncList );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-56035116)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/oper1.g:FileName(-56035116)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-56035116)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-56035116)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-56035116)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-56035116)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-56035116)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-56035116)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-56035116)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-56035116)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-56035116)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-56035116)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-56035116)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-56035116)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-56035116)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-56035116)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-56035116)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-56035116)" );
- InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-56035116)" );
- InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-56035116)" );
- InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-56035116)" );
- InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-56035116)" );
- InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-56035116)" );
- InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-56035116)" );
- InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-56035116)" );
- InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-56035116)" );
- InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-56035116)" );
- InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-56035116)" );
- InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-56035116)" );
- InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-56035116)" );
- InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-56035116)" );
- InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-56035116)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-28903883)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/oper1.g:FileName(-28903883)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-28903883)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-28903883)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-28903883)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-28903883)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-28903883)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-28903883)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-28903883)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-28903883)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-28903883)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-28903883)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-28903883)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-28903883)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-28903883)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-28903883)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-28903883)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-28903883)" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-28903883)" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-28903883)" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-28903883)" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-28903883)" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-28903883)" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-28903883)" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-28903883)" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-28903883)" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-28903883)" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-28903883)" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-28903883)" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-28903883)" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-28903883)" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-28903883)" );
  
  /* return success */
  return 0;
@@ -4008,7 +4102,7 @@ static Int InitLibrary ( StructInitInfo * module )
  NargFunc[13] = 2;
  NameFunc[14] = DefaultName;
  NamsFunc[14] = 0;
- NargFunc[14] = 5;
+ NargFunc[14] = -1;
  NameFunc[15] = DefaultName;
  NamsFunc[15] = 0;
  NargFunc[15] = -1;
@@ -4149,7 +4243,7 @@ static Int PostRestore ( StructInitInfo * module )
  NargFunc[13] = 2;
  NameFunc[14] = DefaultName;
  NamsFunc[14] = 0;
- NargFunc[14] = 5;
+ NargFunc[14] = -1;
  NameFunc[15] = DefaultName;
  NamsFunc[15] = 0;
  NargFunc[15] = -1;
@@ -4167,7 +4261,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -56035116,
+ /* crc         = */ -28903883,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,
