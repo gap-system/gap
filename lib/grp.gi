@@ -314,6 +314,24 @@ RedispatchOnCondition (PrimePGroup, true,
 #T for example one that checks only small integers?)
 
 InstallMethod( IsNilpotentGroup,
+    "if group size can be computed and is a prime power",
+    [ IsGroup and CanComputeSize ], 25,
+    function ( G )
+    local s;
+
+    s := Size ( G );
+    if IsInt( s ) and IsPrimePowerInt( s ) then
+        SetIsPGroup( G, true );
+        SetPrimePGroup( G, Factors( s )[1] );
+        return true;
+    else
+        SetIsPGroup( G, false );
+    fi;
+    TryNextMethod();
+    end );
+
+
+InstallMethod( IsNilpotentGroup,
     "generic method for groups",
     [ IsGroup ],
     function ( G )
