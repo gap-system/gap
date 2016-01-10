@@ -176,9 +176,13 @@ InstallMethod( IsPGroup,
         if ord = infinity then
           return false;
         elif 1 < ord then
-          UniteSet( s, Factors( ord ) );
-          if 1 < Length( s ) then
+          if not IsPrimePowerInt( ord ) then
             return false;
+          else
+            AddSet( s, Factors( ord )[1] );
+            if 1 < Length( s ) then
+              return false;
+            fi;
           fi;
         fi;
       od;
@@ -193,10 +197,10 @@ InstallMethod( IsPGroup,
         return true;
       elif s = infinity then
         return false;
-      fi;
-      s:= Set( Factors( s ) );
-      if 1 < Length( s ) then
+      elif not IsPrimePowerInt( s ) then
         return false;
+      else
+        s:= Factors( s );
       fi;
 
     fi;
@@ -217,10 +221,10 @@ InstallMethod( IsPGroup,
         return true;
       elif s = infinity then
         return false;
-      fi;
-      s:= Set( Factors( s ) );
-      if 1 < Length( s ) then
+      elif not IsPrimePowerInt( s ) then
         return false;
+      else
+        s:= Factors( s );
       fi;
     else
       s:= [];
@@ -229,9 +233,13 @@ InstallMethod( IsPGroup,
         if ord = infinity then
           return false;
         elif 1 < ord then
-          UniteSet( s, Factors( ord ) );
-          if 1 < Length( s ) then
+          if not IsPrimePowerInt( ord ) then
             return false;
+          else
+            AddSet( s, Factors( ord )[1] );
+            if 1 < Length( s ) then
+              return false;
+            fi;
           fi;
         fi;
       od;
