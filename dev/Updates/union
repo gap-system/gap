@@ -1,0 +1,24 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2016/01/11
+!! Changed by
+SL
+! Reported by
+Nick Loughlin
+!! Type of Change
+Fix: wrong result
+
+!! Description
+Under some circumstances the union of a combination of lists of small integers
+and ranges could be computed incorrectly. This change fixes this and also
+avoids expanding ranges unnecessarily in some cases.
+
+! Test Code
+# included in union.tst
+
+! Prefetch
+
+!! Changeset
+
+!! End
