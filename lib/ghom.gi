@@ -306,6 +306,9 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
     Error("<gens> and <imgs> must be lists of same length");
   fi;
 
+  Assert( 2, ForAll( gens, x -> x in G ) );
+  Assert( 2, ForAll( imgs, x -> x in H ) );
+
   mapi:=[Immutable(gens),Immutable(imgs)];
   filter := IsGroupGeneralMappingByImages and HasSource and HasRange 
             and HasMappingGeneratorsImages;
@@ -434,6 +437,7 @@ InstallMethod( GroupHomomorphismByImagesNC, "for group, group, list, list",
 function( G, H, gens, imgs )
 local   hom;
   hom := GroupGeneralMappingByImagesNC( G, H, gens, imgs );
+  Assert( 2, IsMapping( hom ) );
   SetIsMapping( hom, true );
   return hom;
 end );
@@ -443,6 +447,7 @@ InstallMethod( GroupHomomorphismByImagesNC, "for group, list, list",
 function( G, gens, imgs )
 local   hom;
   hom := GroupGeneralMappingByImagesNC( G, gens, imgs );
+  Assert( 2, IsMapping( hom ) );
   SetIsMapping( hom, true );
   return hom;
 end );
