@@ -456,25 +456,15 @@ InstallOtherMethod( GroupHomomorphismByImagesNC, "for group, group, list",
                     true, [ IsGroup, IsGroup, IsList ], 0,
 
   function( G, H, imgs )
-
-    local  hom;
-
-    hom := GroupGeneralMappingByImagesNC( G, H, GeneratorsOfGroup(G), imgs );
-    SetIsMapping( hom, true );
-    return hom;
+    return GroupHomomorphismByImagesNC( G, H, GeneratorsOfGroup(G), imgs );
   end );
 
 InstallOtherMethod( GroupHomomorphismByImagesNC, "for group, group",
                     true, [ IsGroup, IsGroup ], 0,
 
   function( G, H )
-
-    local  hom;
-
-    hom := GroupGeneralMappingByImagesNC( G, H, GeneratorsOfGroup(G),
+    return GroupHomomorphismByImagesNC( G, H, GeneratorsOfGroup(G),
                                               GeneratorsOfGroup(H) );
-    SetIsMapping( hom, true );
-    return hom;
   end );
 
 #############################################################################
