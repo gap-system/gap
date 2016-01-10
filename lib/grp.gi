@@ -258,6 +258,23 @@ InstallMethod( IsPGroup,
 #M  PrimePGroup . . . . . . . . . . . . . . . . . . . . .  prime of a p-group
 ##
 InstallMethod( PrimePGroup,
+    "generic method, check the order of a nontrivial generator",
+    [ IsPGroup and HasGeneratorsOfGroup ],
+function( G )
+local gen, s;
+  if IsTrivial( G ) then
+    return fail;
+  fi;
+  for gen in GeneratorsOfGroup( G ) do
+    s := Order( gen );
+    if s <> 1 then
+      break;
+    fi;
+  od;
+  return Factors( s )[1];
+end );
+
+InstallMethod( PrimePGroup,
     "generic method, check the group order",
     [ IsPGroup ],
 function( G )
@@ -271,8 +288,12 @@ local s;
   if s = 1 then
     return fail;
   fi;
-  return Set( Factors( s ) )[1];
+  return Factors( s )[1];
 end );
+
+RedispatchOnCondition (PrimePGroup, true,
+    [IsGroup],
+    [IsPGroup], 0);
 
 
 #############################################################################
