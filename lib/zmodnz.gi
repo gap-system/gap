@@ -656,6 +656,20 @@ InstallMethod( LogFFE,
     return LogMod( n![1], r![1], Characteristic( n ) );
     end );
 
+#############################################################################
+##
+#M  RootFFE( <z>, <k> )  . . . . . . . . . . . . . . . . . . for `IsZmodpZObj'
+##
+InstallMethod(RootFFE,"for modulus rep, using RootMod",true,
+  [IsZmodpZObj and IsModulusRep,IsPosInt],
+function( z, k )
+local r,fam;
+  fam:=FamilyObj(z);
+  r:=RootMod(z![1],k,fam!.Characteristic);
+  if r=fail then return r;fi;
+  return ZmodnZObj(fam,r);
+end );
+
 
 #############################################################################
 ##
