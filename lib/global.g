@@ -115,12 +115,11 @@ GLOBAL_REBINDING_COUNT := [ ];
 ##
   
 BIND_GLOBAL := function( name, val)
-local   pos,  count; 
+local   pos; 
     ## special case: rebinding is permitted so increment count for 'name'  
     if ( name in GLOBAL_REBINDING_LIST ) then 
-        pos := POS_LIST_DEFAULT( GLOBAL_REBINDING_LIST, name, 0 );   
-        count := GLOBAL_REBINDING_COUNT[pos] + 1; 
-        GLOBAL_REBINDING_COUNT[pos] := count; 
+        pos := POS_LIST_DEFAULT( GLOBAL_REBINDING_LIST, name, 0 ); 
+        GLOBAL_REBINDING_COUNT[pos] := GLOBAL_REBINDING_COUNT[pos] + 1; 
         ## if already bound then there is nothing to do 
         if ISBOUND_GLOBAL( name ) then 
             return; 
@@ -144,18 +143,25 @@ end;
 ##
 BIND_GLOBAL( "AllowGlobalRebinding", function( arg ) 
     local  L, pos, name, val;
-    ##  form the arguments into a list L 
-    if LEN_LIST(arg) = 1 then 
+Print( "arg = ", arg, "\n" ); 
+Print( "arg[1] = ", arg[1], "\n" );
+    ##  form the arguments into a list of strings L 
+    if ( LEN_LIST(arg) = 1 ) then 
         if IS_STRING_REP( arg[1] ) then 
-            L := arg;
+            L := arg; 
         elif IS_LIST( arg[1] ) then 
             L := arg[1]; 
-        else 
-            L := [ ]; 
-        fi;
+        fi; 
     else 
-        L := arg;
-    fi;
+        L := arg; 
+    fi; 
+Print( "L1 = ", L, "\n" );
+    for name in L do  
+        if not IS_STRING_REP( name ) then 
+Print( "name = ", name, "\n" );
+            Error("arg must be a string (function name) or a list of strings");
+        fi;
+    od;
     for name in L do 
         ##  avoid duplicate entries in GLOBAL_REBINDING_LIST 
         pos := POS_LIST_DEFAULT( GLOBAL_REBINDING_LIST, name, 0 ); 

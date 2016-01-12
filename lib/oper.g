@@ -1786,18 +1786,22 @@ BIND_GLOBAL( "GLOBAL_REDECLARATION_COUNT",
 
 BIND_GLOBAL( "AllowGlobalRedeclaration", function( arg ) 
     local  L, pos, name, count;
-    ##  form the arguments into a list L 
-    if LEN_LIST(arg) = 1 then 
+    ##  form the arguments into a list of strings L 
+    if ( LEN_LIST(arg) = 1 ) then 
         if IS_STRING_REP( arg[1] ) then 
-            L := arg;
+            L := arg; 
         elif IS_LIST( arg[1] ) then 
             L := arg[1]; 
-        else 
-            L := [ ]; 
-        fi;
+        fi; 
     else 
-        L := arg;
-    fi;
+        L := arg; 
+    fi; 
+Print( "L2 = ", L, "\n" );
+    for name in L do  
+        if not IS_STRING_REP( name ) then 
+            Error("arg must be a string (function name) or a list of strings");
+        fi;
+    od;
     for name in L do 
         ##  avoid duplicate entries in GLOBAL_REDECLARATION_LIST 
         pos := POS_LIST_DEFAULT( GLOBAL_REDECLARATION_LIST, name, 0 ); 
@@ -1816,18 +1820,17 @@ end );
 
 BIND_GLOBAL( "AllowGlobalReinstallation", function( arg ) 
     local  L, oper, posd, posi, name; 
-    ##  form the arguments into a list L 
-    if LEN_LIST(arg) = 1 then 
-        if IS_FUNCTION( arg[1] ) then 
-            L := arg;
-        elif IS_LIST( arg[1] ) then 
-            L := arg[1]; 
-        else 
-            L := [ ]; 
-        fi;
+    ##  form the arguments into a list of functions L 
+    if ( ( LEN_LIST(arg) = 1 ) and IS_LIST( arg[1] ) ) then 
+        L := arg[1]; 
     else 
-        L := arg;
-    fi;
+        L := arg; 
+    fi; 
+    for oper in L do  
+        if not IS_FUNCTION( oper ) then 
+            Error("arg must be a function name or a list of functions");
+        fi;
+    od;
     for oper in L do 
         ##  avoid duplicate entries in GLOBAL_REINSTALLATION_LIST 
         posi := POS_LIST_DEFAULT( GLOBAL_REINSTALLATION_LIST, oper, 0 ); 
