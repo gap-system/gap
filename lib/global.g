@@ -143,8 +143,6 @@ end;
 ##
 BIND_GLOBAL( "AllowGlobalRebinding", function( arg ) 
     local  L, pos, name, val;
-Print( "arg = ", arg, "\n" ); 
-Print( "arg[1] = ", arg[1], "\n" );
     ##  form the arguments into a list of strings L 
     if ( LEN_LIST(arg) = 1 ) then 
         if IS_STRING_REP( arg[1] ) then 
@@ -155,10 +153,8 @@ Print( "arg[1] = ", arg[1], "\n" );
     else 
         L := arg; 
     fi; 
-Print( "L1 = ", L, "\n" );
     for name in L do  
         if not IS_STRING_REP( name ) then 
-Print( "name = ", name, "\n" );
             Error("arg must be a string (function name) or a list of strings");
         fi;
     od;

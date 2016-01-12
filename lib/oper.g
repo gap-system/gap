@@ -1796,7 +1796,6 @@ BIND_GLOBAL( "AllowGlobalRedeclaration", function( arg )
     else 
         L := arg; 
     fi; 
-Print( "L2 = ", L, "\n" );
     for name in L do  
         if not IS_STRING_REP( name ) then 
             Error("arg must be a string (function name) or a list of strings");
