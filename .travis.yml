@@ -42,5 +42,5 @@ script:
   - tar xvzf tomlib1r2p4.tar.gz
   - cd ..
   - echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh -S | tee testlog.txt | grep --colour=always -E "########> Diff|$"
-  - cat testlog.txt | tail -n 2 | grep "total"
+  - cat testlog.txt | grep "total"
   - ( ! grep "########> Diff" testlog.txt )
