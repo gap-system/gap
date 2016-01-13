@@ -134,26 +134,17 @@ Int SyFindOrLinkGapRootFile (
     Int4                crc_gap,
     TypGRF_Data *       result )
 {
-    UInt4               crc_dyn = 0;
     UInt4               crc_sta = 0;
     Int                 found_gap = 0;
-    Int                 found_dyn = 0;
     Int                 found_sta = 0;
     Char                tmpbuffer[256];
     Char *              tmp;
     Char                module[256];
     Char                name[256];
-    StructInitInfo *    info_dyn = 0;
+
     StructInitInfo *    info_sta = 0;
     Int                 k;
 
-#if HAVE_DLOPEN
-    const Char *        p;
-    const Char *        dot;
-    Int                 pos;
-    Int                 pot = 0;
-    InitInfoFunc        init;
-#endif
 
     /* find the GAP file                                                   */
     result->pathname[0] = '\0';
@@ -191,90 +182,9 @@ Int SyFindOrLinkGapRootFile (
     }
 
 
-    /* try to find any dynamically loadable module for filename            */
-#if HAVE_DLOPEN
-    pos = strlen(filename);
-    p   = filename + pos;
-    dot = 0;
-    while ( filename <= p && *p != '/' ) {
-        if ( *p == '.' ) {
-            dot = p;
-            pot = pos;
-        }
-        p--;
-        pos--;
-    }
-    strxcpy( module, "bin/", sizeof(module) );
-    strxcat( module, SyArchitecture, sizeof(module) );
-    strxcat( module, "/compiled/", sizeof(module) );
-    if ( dot ) {
-        if ( p < filename ) {
-            strxcat( module, dot+1, sizeof(module) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, filename, sizeof(module), pot );
-        }
-        else {
-            strxncat( module, filename, sizeof(module), pos );
-            strxcat( module, "/", sizeof(module) );
-            strxcat( module, dot+1, sizeof(module) );
-            strxncat( module, filename+pos, sizeof(module), pot-pos );
-        }
-    }
-    else {
-        strxcat( module, filename, sizeof(module) );
-    }
-    strxcat( module, ".so", sizeof(module) );
-    tmp = SyFindGapRootFile(module, tmpbuffer);
-
-    /* special handling for the case of package files */
-    if (!tmp && !strncmp(filename, "pkg", 3)) {
-        Char pkgname[16];
-        const Char *p2;
-        Char *p1;
-        p2 = filename + 4; /* after the pkg/ */
-        p1 = pkgname;
-        while (*p2 != '\0' && *p2 != '/')
-          *p1++ = *p2++;
-        *p1 = '\0';
-
-        module[0] = '\0';
-        strxcat( module, "pkg/", sizeof(module) );
-        strxncat( module, pkgname, sizeof(module), p1 - pkgname + 1 );
-        strxcat( module, "/bin/", sizeof(module) );
-        strxcat( module, SyArchitecture, sizeof(module) );
-        strxcat( module, "/compiled/", sizeof(module) );
-        if ( dot ) {
-          if ( p <= p2 ) {
-            strxncat( module, dot+1, sizeof(module), strlen(dot+1) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, p2+1, sizeof(module), pot - (p2 + 1 - filename) );
-          }
-          else {
-            strxncat( module, p2+1, sizeof(module), pos - (p2 +1 - filename) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, dot+1, sizeof(module), strlen(dot+1) );
-            strxncat( module, filename+pos, sizeof(module), pot-pos );
-          }
-        }
-        else {
-          strxcat( module, p2, sizeof(module) );
-        }
-        strxcat( module, ".so", sizeof(module) );
-        tmp = SyFindGapRootFile(module, tmpbuffer);
-
-     }
-    if ( tmp ) {
-        init = SyLoadModule(tmp);
-        if ( ( (Int)init & 1 ) == 0 ) {
-            info_dyn  = (*init)();
-            crc_dyn   = info_dyn->crc;
-            found_dyn = 1;
-        }
-    }
-#endif
 
     /* check if we have to compute the crc                                 */
-    if ( found_gap && ( found_dyn || found_sta ) ) {
+    if ( found_gap && ( found_sta ) ) {
         if ( crc_gap == 0 ) {
             crc_gap = SyGAPCRC(name);
         } else if ( SyCheckCRCCompiledModule ) {
@@ -286,10 +196,6 @@ Int SyFindOrLinkGapRootFile (
 
 
     /* now decide what to do                                               */
-    if ( found_gap && found_dyn && crc_gap != crc_dyn ) {
-        Pr("#W Dynamic module %s has CRC mismatch, ignoring\n", (Int) filename, 0);
-        found_dyn = 0;
-    }
     if ( found_gap && found_sta && crc_gap != crc_sta ) {
         Pr("#W Static module %s has CRC mismatch, ignoring\n", (Int) filename, 0);
         found_sta = 0;
@@ -298,20 +204,12 @@ Int SyFindOrLinkGapRootFile (
         result->module_info = info_sta;
         return 2;
     }
-    if ( found_gap && found_dyn ) {
-        *(StructInitInfo**)result = info_dyn;
-        return 1;
-    }
     if ( found_gap ) {
         return 3;
     }
     if ( found_sta ) {
         result->module_info = info_sta;
         return 2;
-    }
-    if ( found_dyn ) {
-        result->module_info = info_dyn;
-        return 1;
     }
     return 0;
 }
