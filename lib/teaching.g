@@ -287,7 +287,7 @@ BindGlobal("AllSubgroups",
 ##  determining check digits.
 ##  <Example><![CDATA[
 ##  gap> isbntest:=CheckDigitTestFunction(10,11,[1,2,3,4,5,6,7,8,9,-1]); 
-##  function( arg ) ... end
+##  function( arg... ) ... end
 ##  gap> isbntest("038794680");
 ##  Check Digit is 2
 ##  2

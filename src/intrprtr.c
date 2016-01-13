@@ -4503,7 +4503,7 @@ void            IntrIsbComObjName (
     /* get the result                                                      */
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
-        isb = ElmPRec( record, rnam ) ? True : False;
+        isb = IsbPRec( record, rnam ) ? True : False;
         break;
       case T_ACOMOBJ:
         isb = GetARecordField( record, rnam ) ? True : False;

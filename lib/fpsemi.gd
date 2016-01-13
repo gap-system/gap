@@ -286,7 +286,7 @@ DeclareAttribute("IsomorphismFpSemigroup",IsSemigroup);
 ##  gap> IsFpSemigroup( s );
 ##  true
 ##  gap> t := Semigroup( [ GeneratorsOfSemigroup( s )[ 1 ] ]);
-##  <semigroup with 1 generator>
+##  <commutative semigroup with 1 generator>
 ##  gap> IsSubsemigroupFpSemigroup( t );
 ##  true
 ##  gap> IsElementOfFpSemigroup( GeneratorsOfSemigroup( t )[ 1 ] );

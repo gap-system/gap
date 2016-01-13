@@ -1470,16 +1470,6 @@ void SyUSleep ( UInt msecs )
 void SyExit (
     UInt                ret )
 {
-#if SYS_IS_CYGWIN32
-  if (ret!=0) {
-    Int c;
-    fputs("gap: Press <Enter> to end program\n",stderr);
-    do {
-      c=SyGetch(1);   /* wait for the user to type <return> */
-    } while (c!='\n' && c!=' ');
-  }
-
-#endif
         exit( (int)ret );
 }
 

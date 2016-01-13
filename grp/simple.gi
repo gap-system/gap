@@ -154,7 +154,7 @@ BindGlobal("SIMPLEGPSNONL2",
 # call atlasrep, possibly with extra parameters, but only if atlasrep is available
 BindGlobal("DoAtlasrepGroup",function(params)
 local g;
-  if LoadPackage("atlasrep")<>true then
+  if IsPackageMarkedForLoading("atlasrep","")<>true then
     Error("`atlasrep' package must be available to construct group ",params[1]);
   fi;
   g:=CallFuncList(ValueGlobal("AtlasGroup"),params);

@@ -173,7 +173,7 @@ stored using 16-bit integers and to <C>IsTrans4Rep</C> if it is stored using
       if <C>i</C> is in the range <C>[1..Length(<A>list</A>)]</C> and 
       <C>f</C> fixes all other points.
 
-      <Example>
+      <Example><![CDATA[
 gap> SetUserPreference("NotationForTransformations", "input");
 gap> f:=Transformation( [ 11, 10, 2, 11, 4, 4, 7, 6, 9, 10, 1, 11 ] );
 Transformation( [ 11, 10, 2, 11, 4, 4, 7, 6, 9, 10, 1, 11 ] )
@@ -181,8 +181,9 @@ gap> f:=TransformationList( [ 2, 3, 3, 1 ] );
 Transformation( [ 2, 3, 3, 1 ] )
 gap> SetUserPreference("NotationForTransformations", "fr");
 gap> f:=Transformation([10, 11], x-> x^2);
-&lt;transformation: 1,2,3,4,5,6,7,8,9,100,121>
-gap> SetUserPreference("NotationForTransformations", "input");</Example>
+<transformation: 1,2,3,4,5,6,7,8,9,100,121>
+gap> SetUserPreference("NotationForTransformations", "input");
+]]></Example>
     </Description>
   </ManSection>
   
@@ -207,11 +208,12 @@ gap> SetUserPreference("NotationForTransformations", "input");</Example>
       <Ref Func="MappingPermListList"/>. <C>Transformation</C> is a
       synonym of <C>TransformationListList</C> when its arguments are two
       lists of positive integers.
-    <Example>
+    <Example><![CDATA[
 gap> Transformation( [ 10, 11 ],[ 11, 12 ] );
 Transformation( [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 12 ] )
 gap> TransformationListList( [ 1, 2, 3 ], [ 4, 5, 6 ] );
-Transformation( [ 4, 5, 6, 4, 5, 6 ] )</Example>
+Transformation( [ 4, 5, 6, 4, 5, 6 ] )
+]]></Example>
     </Description>
   </ManSection>
 
@@ -232,13 +234,14 @@ Transformation( [ 4, 5, 6, 4, 5, 6 ] )</Example>
       transformation with rank equal to the length of <A>im</A>. If the 
       arguments do not fulfil these conditions, then <K>fail</K> is returned.
 
-      <Example>
+      <Example><![CDATA[
 gap> TransformationByImageAndKernel([ 8, 1, 3, 4 ],
 > [ 1, 2, 3, 1, 2, 1, 2, 4 ]);
 Transformation( [ 8, 1, 3, 8, 1, 8, 1, 4 ] )
 gap> TransformationByImageAndKernel([ 1, 3, 8, 4 ],
 > [ 1, 2, 3, 1, 2, 1, 2, 4 ]);
-Transformation( [ 1, 3, 8, 1, 3, 1, 3, 4 ] )</Example>
+Transformation( [ 1, 3, 8, 1, 3, 1, 3, 4 ] )
+]]></Example>
     </Description>
   </ManSection>
 
@@ -261,13 +264,14 @@ Transformation( [ 1, 3, 8, 1, 3, 1, 3, 4 ] )</Example>
       Note that this is function does not always return the same transformation
       as <C>TransformationByImageAndKernel</C> with the same arguments.
       
-      <Example>
+      <Example><![CDATA[
 gap> Idempotent([ 2, 4, 6, 7, 8, 10, 11 ],
 > [ 1, 2, 1, 3, 3, 4, 5, 1, 6, 6, 7, 5 ] );
 Transformation( [ 8, 2, 8, 4, 4, 6, 7, 8, 10, 10, 11, 7 ] )
 gap> TransformationByImageAndKernel([ 2, 4, 6, 7, 8, 10, 11 ],
 > [ 1, 2, 1, 3, 3, 4, 5, 1, 6, 6, 7, 5 ] );
-Transformation( [ 2, 4, 2, 6, 6, 7, 8, 2, 10, 10, 11, 8 ] )</Example>
+Transformation( [ 2, 4, 2, 6, 6, 7, 8, 2, 10, 10, 11, 8 ] )
+]]></Example>
     </Description>
   </ManSection>
 
@@ -298,7 +302,7 @@ Transformation( [ 2, 4, 2, 6, 6, 7, 8, 2, 10, 10, 11, 8 ] )</Example>
       This function should be used only with caution, and in situations where
       it is guaranteed that the arguments have the required properties.
 
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 10, 2, 3, 10, 5, 10, 7, 2, 5, 6 ] );;
 gap> TransformationOp(f, [ 2, 3 ] );
 IdentityTransformation
@@ -309,7 +313,8 @@ gap> S:=SemigroupByMultiplicationTable( [ [ 1, 1, 1 ], [ 1, 1, 1 ],
 gap> TransformationOp(Elements(S)[1], S, OnRight);
 Transformation( [ 1, 1, 1 ] )
 gap> TransformationOp(Elements(S)[3], S, OnRight);
-Transformation( [ 1, 1, 2 ] )</Example>
+Transformation( [ 1, 1, 2 ] )
+]]></Example>
     </Description>
   </ManSection>
 
@@ -332,7 +337,7 @@ Transformation( [ 1, 1, 2 ] )</Example>
       <C>[1..<A>n</A>^<A>n</A>]</C> that corresponds to <A>f</A>. If the
       optional second argument <A>n</A> is not specified, then the degree of
       <A>f</A> is used by default. 
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 3, 3, 5, 3, 3 ] );;
 gap> NumberTransformation(f, 5);
 1613
@@ -341,7 +346,8 @@ gap> NumberTransformation(f, 10);
 gap> TransformationNumber(2242256790, 10);
 Transformation( [ 3, 3, 5, 3, 3 ] )
 gap> TransformationNumber(1613, 5); 
-Transformation( [ 3, 3, 5, 3, 3 ] )</Example> 
+Transformation( [ 3, 3, 5, 3, 3 ] )
+]]></Example> 
     </Description>
   </ManSection>
 
@@ -367,9 +373,10 @@ Transformation( [ 2, 1, 2, 1, 1, 2 ] )</Log>
    <Returns>The identity transformation.</Returns>
    <Description>
      Returns the identity transformation, which has degree <C>0</C>. 
-     <Example>
+     <Example><![CDATA[
 gap> f:=IdentityTransformation;
-IdentityTransformation</Example>
+IdentityTransformation
+]]></Example>
    </Description>
   </ManSection>
   
@@ -382,11 +389,12 @@ IdentityTransformation</Example>
       This function returns a constant transformation <C>f</C> such that
       <C>i^f=<A>n</A></C> for all <C>i</C> less than or equal to <A>m</A>, when
       <A>n</A> and <A>m</A> are positive integers. 
-    <Example>
+    <Example><![CDATA[
 gap> ConstantTransformation(5, 1);
 Transformation( [ 1, 1, 1, 1, 1 ] )
 gap> ConstantTransformation(6, 4);
-Transformation( [ 4, 4, 4, 4, 4, 4 ] )</Example>
+Transformation( [ 4, 4, 4, 4, 4, 4 ] )
+]]></Example>
     </Description>
   </ManSection>
 </Section>
@@ -460,7 +468,7 @@ Transformation( [ 4, 4, 4, 4, 4, 4 ] )</Example>
       transformation. 
     </Item>
   </List>
-  <Example>
+  <Example><![CDATA[
 gap> f:=Transformation( [ 3, 5, 3, 4, 1, 2 ] );;
 gap> AsTransformation(f, 5);
 Transformation( [ 3, 5, 3, 4, 1 ] )
@@ -483,7 +491,8 @@ gap> AsPartialPerm(last, DomainOfPartialPerm(f));
 gap> AsTransformation(f);
 Transformation( [ 6, 7, 1, 4, 3, 2, 8, 8 ] )
 gap> AsTransformation(Transformation( [ 1, 1, 2 ] ), 0);
-IdentityTransformation</Example>
+IdentityTransformation
+]]></Example>
   </Description>
   </ManSection>
 
@@ -500,10 +509,11 @@ IdentityTransformation</Example>
     free dense list consisting of positive integers, whereas
     <C>RestrictedTransformationNC</C> performs no checks.
 
-    <Example>
+    <Example><![CDATA[
 gap> f:=Transformation( [ 2, 10, 5, 9, 10, 9, 6, 3, 8, 4, 6, 5 ] );;
 gap> RestrictedTransformation(f, [ 1, 2, 3, 10, 11, 12 ] );
-Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )</Example>
+Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )
+]]></Example>
   </Description>
 </ManSection>
 
@@ -519,7 +529,7 @@ Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )</Example>
     with argument <A>f</A> returns the same value as <C>AsPermutation</C> with
     argument <A>f</A>.
 
-  <Example>
+  <Example><![CDATA[
 gap> f:=Transformation( [ 5, 8, 3, 5, 8, 6, 2, 2, 7, 8 ] );;
 gap> PermutationOfImage(f);
 fail
@@ -531,7 +541,8 @@ gap> PermutationOfImage(f);
 (2,3,6,10,5)
 gap> f:=Transformation( [ 5, 2, 8, 4, 1, 8, 10, 3, 5, 7 ] );;
 gap> PermutationOfImage(f);
-(1,5)(3,8)(7,10)</Example>
+(1,5)(3,8)(7,10)
+]]></Example>
   </Description>
   </ManSection>
 </Section>
@@ -617,13 +628,14 @@ gap> PermutationOfImage(f);
       <C>PermLeftQuoTransformation</C> verifies that <A>f</A> and <A>g</A> have
       equal kernels and image sets, and returns an error if they do not. 
       <C>PermLeftQuoTransformationNC</C> does no checks.
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 5, 6, 7, 1, 4, 3, 2, 7 ] );;
 gap> g:=Transformation( [ 5, 7, 1, 6, 4, 3, 2, 1 ] );;
 gap> PermLeftQuoTransformation(f, g);
 (1,6,7)
 gap> PermLeftQuoTransformation(g, f);
-(1,7,6)</Example>
+(1,7,6)
+]]></Example>
     </Description>
   </ManSection>
 
@@ -645,7 +657,7 @@ gap> PermLeftQuoTransformation(g, f);
       <C>IsInjectiveListTrans</C> returns <K>true</K> if <C>f</C> is injective
       on <A>list</A> and <K>false</K> if it is not. If <A>list</A> is not
       duplicate free, then <K>false</K> is returned. <P/>
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 2, 6, 7, 2, 6, 9, 9, 1, 1, 5 ] );;
 gap> IsInjectiveListTrans( [ 1, 5 ], f );
 true
@@ -654,7 +666,8 @@ true
 gap> IsInjectiveListTrans( [ 5, 1, 5, 1, 1, ], f );
 false
 gap> IsInjectiveListTrans( [ 5, 1, 2, 3 ], [ 1, 2, 3, 4, 5 ] );
-true</Example>
+true
+]]></Example>
     </Description>
   </ManSection>
 
@@ -669,14 +682,15 @@ true</Example>
     <C>i</C> such that <C><A>n</A>^<A>f</A>^j=i</C> for some positive
     integer <C>j</C>, i.e. the elements of the component of <A>f</A> containing
     <A>n</A> that can be obtained by applying powers of <A>f</A> to <A>n</A>.
-<Example>
+<Example><![CDATA[
 gap> f:=Transformation( [ 6, 2, 8, 4, 7, 5, 8, 3, 5, 8 ] );;
 gap> ComponentTransformationInt(f, 1);
 [ 1, 6, 5, 7, 8, 3 ]
 gap> ComponentTransformationInt(f, 12);
 [ 12 ]
 gap> ComponentTransformationInt(f, 5); 
-[ 5, 7, 8, 3 ]</Example>
+[ 5, 7, 8, 3 ]
+]]></Example>
   </Description>
 </ManSection>
 
@@ -690,14 +704,15 @@ gap> ComponentTransformationInt(f, 5);
       transformation <A>f</A>, i.e. the positive integers <C>i</C> such that
       <C>i^<A>f</A>=n</C>.
 
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 2, 6, 7, 2, 6, 9, 9, 1, 1, 5 ] );;
 gap> PreImagesOfTransformation(f, 1);
 [ 8, 9 ]
 gap> PreImagesOfTransformation(f, 3);
 [  ]
 gap> PreImagesOfTransformation(f, 100);
-[ 100 ]</Example>
+[ 100 ]
+]]></Example>
 </Description>
 </ManSection>
 
@@ -722,12 +737,13 @@ gap> PreImagesOfTransformation(f, 100);
 
       The degree a collection of transformations <A>coll</A> is
       the maximum degree of any transformation in <A>coll</A>. 
-      <Example>
+      <Example><![CDATA[
 gap> DegreeOfTransformation(IdentityTransformation);
 0
 gap> DegreeOfTransformationCollection([ Transformation( [ 1, 3, 4, 1 ] ), 
 > Transformation( [ 3, 1, 1, 3, 4 ]), Transformation( [ 2, 4, 1, 2 ] ) ]);
-5</Example>
+5
+]]></Example>
     </Description>
   </ManSection>
   
@@ -745,12 +761,13 @@ gap> DegreeOfTransformationCollection([ Transformation( [ 1, 3, 4, 1 ] ),
 
       This is the analogue for transformations of <Ref Func="ListPerm"/> for
       permutations.
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 2 ,3, 4, 2, 4 ] );;
 gap> ImageListOfTransformation(f);
 [ 2, 3, 4, 2, 4 ]
 gap> ImageListOfTransformation(f, 10);
-[ 2, 3, 4, 2, 4, 6, 7, 8, 9, 10 ]</Example>
+[ 2, 3, 4, 2, 4, 6, 7, 8, 9, 10 ]
+]]></Example>
     </Description>
   </ManSection>
 
@@ -765,12 +782,13 @@ gap> ImageListOfTransformation(f, 10);
       If the optional second argument <A>n</A> is not given, then the
       degree of <A>f</A> is used. <P/>
 
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 5, 6, 7, 1, 4, 3, 2, 7 ] );;
 gap> ImageSetOfTransformation(f);
 [ 1, 2, 3, 4, 5, 6, 7 ]
 gap> ImageSetOfTransformation(f, 10);
-[ 1, 2, 3, 4, 5, 6, 7, 9, 10 ]</Example>
+[ 1, 2, 3, 4, 5, 6, 7, 9, 10 ]
+]]></Example>
 </Description>
 </ManSection>
 
@@ -793,7 +811,7 @@ gap> ImageSetOfTransformation(f, 10);
       <A>list</A> of positive integers, this function returns the size of the
       set of images of the transformation <A>f</A> on <A>list</A>.
 
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 8, 5, 8, 2, 2, 8, 4, 7, 3, 1 ] );;
 gap> ImageSetOfTransformation(f);
 [ 1, 2, 3, 4, 5, 7, 8 ]
@@ -802,7 +820,8 @@ gap> RankOfTransformation(f);
 gap> RankOfTransformation(f, 100);                   
 97
 gap> RankOfTransformation(f, [ 2, 5, 8 ] );
-3</Example>
+3
+]]></Example>
     </Description>
   </ManSection>
 
@@ -818,14 +837,15 @@ gap> RankOfTransformation(f, [ 2, 5, 8 ] );
       
       <C>MovedPoints</C> returns the set of points moved by some element of
       the collection of transformations <A>coll</A>.
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 6, 10, 1, 4, 6, 5, 1, 2, 3, 3 ] );;
 gap> MovedPoints(f); 
 [ 1, 2, 3, 5, 6, 7, 8, 9, 10 ]
 gap> f:=IdentityTransformation;  
 IdentityTransformation
 gap> MovedPoints(f);
-[  ]</Example>
+[  ]
+]]></Example>
     </Description>
   </ManSection>
 
@@ -841,12 +861,13 @@ gap> MovedPoints(f);
       
       <C>MovedPoints</C> returns the number of points which are moved by at
       least one element of the collection of transformations <A>coll</A>.
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 7, 1, 4, 3, 2, 7, 7, 6, 6, 5 ] );;
 gap> NrMovedPoints(f);
 9
 gap> NrMovedPoints(IdentityTransformation);
-0</Example>
+0
+]]></Example>
     </Description>
   </ManSection>
 
@@ -876,7 +897,8 @@ gap> SmallestMovedPoint(S);
 infinity
 gap> f := Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
 gap> SmallestMovedPoint(f);
-4]]></Example>
+4
+]]></Example>
   </Description>
 </ManSection>
 
@@ -907,7 +929,8 @@ gap> LargestMovedPoint(S);
 0
 gap> f := Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
 gap> LargestMovedPoint(f); 
-5]]></Example>
+5
+]]></Example>
   </Description>
 </ManSection>
 
@@ -942,7 +965,8 @@ gap> SmallestImageOfMovedPoint(S);
 infinity
 gap> f := Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
 gap> SmallestImageOfMovedPoint(f);
-6]]></Example>
+6
+]]></Example>
   </Description>
 </ManSection>
 
@@ -974,7 +998,8 @@ gap> LargestImageOfMovedPoint(S);
 0
 gap> f := Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
 gap> LargestImageOfMovedPoint(f); 
-6]]></Example>
+6
+]]></Example>
   </Description>
 </ManSection>
 
@@ -993,10 +1018,11 @@ gap> LargestImageOfMovedPoint(f);
 
       If the optional second argument <A>n</A> is not present, then the degree
       of <A>f</A> is used by defualt. 
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 10, 3, 7, 10, 1, 5, 9, 2, 6, 10 ] );;
 gap> FlatKernelOfTransformation(f);
-[ 1, 2, 3, 1, 4, 5, 6, 7, 8, 1 ]</Example>
+[ 1, 2, 3, 1, 4, 5, 6, 7, 8, 1 ]
+]]></Example>
     </Description>
   </ManSection>
   
@@ -1015,7 +1041,7 @@ gap> FlatKernelOfTransformation(f);
 
       The second and third arguments are optional, the default values are the
       degree of <A>f</A> and <K>true</K>.
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5 ] );;
 gap> KernelOfTransformation(f);
 [ [ 1, 4 ], [ 2, 5 ], [ 3 ], [ 6, 7 ], [ 8, 10 ], [ 9 ], [ 11 ], 
@@ -1028,7 +1054,8 @@ gap> KernelOfTransformation(f, 15);
 [ [ 1, 4 ], [ 2, 5 ], [ 3 ], [ 6, 7 ], [ 8, 10 ], [ 9 ], [ 11 ], 
   [ 12 ], [ 13 ], [ 14 ], [ 15 ] ]
 gap> KernelOfTransformation(f, false);    
-[ [ 1, 4 ], [ 2, 5 ], [ 6, 7 ], [ 8, 10 ] ]</Example>
+[ [ 1, 4 ], [ 2, 5 ], [ 6, 7 ], [ 8, 10 ] ]
+]]></Example>
   </Description>
   </ManSection>
 
@@ -1045,14 +1072,15 @@ gap> KernelOfTransformation(f, false);
     <C>g*<A>f</A>*g=g</C>. 
     Every transformation has at least one inverse in a full
     transformation semigroup.
-    <Example>
+    <Example><![CDATA[
 gap> f:=Transformation( [ 2, 6, 7, 2, 6, 9, 9, 1, 1, 5 ] );;
 gap> g:=InverseOfTransformation(f);
 Transformation( [ 8, 1, 1, 1, 10, 2, 3, 1, 6, 1 ] )
 gap> f*g*f;
 Transformation( [ 2, 6, 7, 2, 6, 9, 9, 1, 1, 5 ] )
 gap> g*f*g;
-Transformation( [ 8, 1, 1, 1, 10, 2, 3, 1, 6, 1 ] )</Example>
+Transformation( [ 8, 1, 1, 1, 10, 2, 3, 1, 6, 1 ] )
+]]></Example>
   </Description>
 </ManSection>
 
@@ -1063,11 +1091,12 @@ Transformation( [ 8, 1, 1, 1, 10, 2, 3, 1, 6, 1 ] )</Example>
     If the transformation <A>f</A> is a bijection, then <C>Inverse</C> or 
     <C><A>f</A>^-1</C> returns the inverse of <A>f</A>. 
     If <A>f</A> is not a bijection, then <K>fail</K> is returned. 
-    <Example>
+    <Example><![CDATA[
 gap> Transformation( [ 3, 8, 12, 1, 11, 9, 9, 4, 10, 5, 10, 6 ] )^-1;
 fail
 gap> Transformation( [ 2, 3, 1 ] )^-1;
-Transformation( [ 3, 1, 2 ] )</Example>
+Transformation( [ 3, 1, 2 ] )
+]]></Example>
   </Description>
 </ManSection>
 
@@ -1080,7 +1109,7 @@ Transformation( [ 3, 1, 2 ] )</Example>
       Returns the least positive integers <C>m</C> and <C>r</C> such that
       <C><A>f</A>^(m+r)=<A>f</A>^m</C>, which are  known as the <E>index</E>
       and <E>period</E> of the transformation <A>f</A>.  
-      <Example> 
+      <Example><![CDATA[ 
 gap> f:=Transformation( [ 3, 4, 4, 6, 1, 3, 3, 7, 1 ] );; 
 gap> IndexPeriodOfTransformation(f); 
 [ 2, 3 ]
@@ -1093,7 +1122,8 @@ gap> IndexPeriodOfTransformation(Transformation([1,2,1]));
 gap> IndexPeriodOfTransformation(Transformation([1,2,3]));
 [ 1, 1 ]
 gap> IndexPeriodOfTransformation(Transformation([1,3,2]));
-[ 1, 2 ]</Example>  
+[ 1, 2 ]
+]]></Example>  
     </Description> 
   </ManSection>
 
@@ -1109,13 +1139,14 @@ gap> IndexPeriodOfTransformation(Transformation([1,3,2]));
       <A>f</A> that is greater than or equal to the index of <A>f</A>; 
       see <Ref Attr="IndexPeriodOfTransformation"/>.
 
-      <Example>
+      <Example><![CDATA[
 gap> f:=Transformation( [ 6, 7, 4, 1, 7, 4, 6, 1, 3, 4 ] );;
 gap> SmallestIdempotentPower(f);
 3
 gap> f:=Transformation( [ 6, 6, 6, 2, 7, 1, 5, 3, 10, 6 ] );;
 gap> SmallestIdempotentPower(f);
-2</Example>
+2
+]]></Example>
     </Description>
   </ManSection>
 
@@ -1130,7 +1161,7 @@ gap> SmallestIdempotentPower(f);
     <C>[1..DegreeOfTransformation(f)]</C>, and the union of the components is
     <C>[1..DegreeOfTransformation(f)]</C>.
 
-    <Example>
+    <Example><![CDATA[
 gap> f:=Transformation( [ 6, 12, 11, 1, 7, 6, 2, 8, 4, 7, 5, 12 ] );
 Transformation( [ 6, 12, 11, 1, 7, 6, 2, 8, 4, 7, 5, 12 ] )
 gap> ComponentsOfTransformation(f);  
@@ -1138,7 +1169,8 @@ gap> ComponentsOfTransformation(f);
 gap> f:=AsTransformation((1,8,2,4,11,5,10)(3,7)(9,12));
 Transformation( [ 8, 4, 7, 11, 10, 6, 3, 2, 12, 1, 5, 9 ] )
 gap> ComponentsOfTransformation(f);  
-[ [ 1, 2, 4, 5, 8, 10, 11 ], [ 3, 7 ], [ 6 ], [ 9, 12 ] ]</Example>
+[ [ 1, 2, 4, 5, 8, 10, 11 ], [ 3, 7 ], [ 6 ], [ 9, 12 ] ]
+]]></Example>
   </Description>
 </ManSection>
 
@@ -1152,7 +1184,7 @@ gap> ComponentsOfTransformation(f);
     returns the number of components of the transformation <A>f</A> on the
     range <C>[1..DegreeOfTransformation(<A>f</A>)]</C>. 
     
-    <Example>
+    <Example><![CDATA[
 gap> f:=Transformation( [ 6, 12, 11, 1, 7, 6, 2, 8, 4, 7, 5, 12 ] );
 Transformation( [ 6, 12, 11, 1, 7, 6, 2, 8, 4, 7, 5, 12 ] )
 gap> NrComponentsOfTransformation(f);
@@ -1160,7 +1192,8 @@ gap> NrComponentsOfTransformation(f);
 gap> f:=AsTransformation((1,8,2,4,11,5,10)(3,7)(9,12));
 Transformation( [ 8, 4, 7, 11, 10, 6, 3, 2, 12, 1, 5, 9 ] )
 gap> NrComponentsOfTransformation(f);
-4</Example>
+4
+]]></Example>
   </Description>
 </ManSection>
     
@@ -1178,7 +1211,7 @@ gap> NrComponentsOfTransformation(f);
     <C>ComponentRepsOfTransformation</C> are partitioned according to the
     component they belong to.  <C>ComponentRepsOfTransformation</C> returns the
     least number of representatives. 
-    <Example>
+    <Example><![CDATA[
 gap> f:=Transformation( [ 6, 12, 11, 1, 7, 6, 2, 8, 4, 7, 5, 12 ] );
 Transformation( [ 6, 12, 11, 1, 7, 6, 2, 8, 4, 7, 5, 12 ] )
 gap> ComponentRepsOfTransformation(f);
@@ -1186,7 +1219,8 @@ gap> ComponentRepsOfTransformation(f);
 gap> f:=AsTransformation((1,8,2,4,11,5,10)(3,7)(9,12));
 Transformation( [ 8, 4, 7, 11, 10, 6, 3, 2, 12, 1, 5, 9 ] )
 gap> ComponentRepsOfTransformation(f);
-[ [ 1 ], [ 3 ], [ 6 ], [ 9 ] ]</Example>
+[ [ 1 ], [ 3 ], [ 6 ], [ 9 ] ]
+]]></Example>
   </Description>
 </ManSection>
 
@@ -1204,7 +1238,7 @@ gap> ComponentRepsOfTransformation(f);
     If the optional second argument is not present, then the range
     <C>[1..DegreeOfTransformation(<A>f</A>)]</C> is used as the default value
     for <A>list</A>.  
-    <Example>
+    <Example><![CDATA[
 gap> f:=Transformation( [ 6, 12, 11, 1, 7, 6, 2, 8, 4, 7, 5, 12 ] );
 Transformation( [ 6, 12, 11, 1, 7, 6, 2, 8, 4, 7, 5, 12 ] )
 gap> CyclesOfTransformation(f);   
@@ -1212,7 +1246,8 @@ gap> CyclesOfTransformation(f);
 gap> CyclesOfTransformation(f, [ 1, 2, 4 ] ); 
 [ [ 6 ], [ 12 ] ]
 gap> CyclesOfTransformation(f, [ 1 .. 17 ]);
-[ [ 6 ], [ 12 ], [ 8 ], [ 13 ], [ 14 ], [ 15 ], [ 16 ], [ 17 ] ]</Example>
+[ [ 6 ], [ 12 ], [ 8 ], [ 13 ], [ 14 ], [ 15 ], [ 16 ], [ 17 ] ]
+]]></Example>
   </Description>
 </ManSection>
 
@@ -1225,14 +1260,15 @@ gap> CyclesOfTransformation(f, [ 1 .. 17 ]);
     If <A>f</A> is a transformation and <A>n</A> is a positive
     integer, then <C>CycleTransformationInt</C> returns the cycle of the
     component of <A>f</A> containing <A>n</A>.
-    <Example>
+    <Example><![CDATA[
 gap> f:=Transformation( [ 6, 2, 8, 4, 7, 5, 8, 3, 5, 8 ] );;
 gap> CycleTransformationInt(f, 1);
 [ 8, 3 ]
 gap> CycleTransformationInt(f, 12);
 [ 12 ]
 gap> CycleTransformationInt(f, 5); 
-[ 8, 3 ]</Example>
+[ 8, 3 ]
+]]></Example>
   </Description>
 </ManSection>
 
@@ -1252,7 +1288,7 @@ gap> CycleTransformationInt(f, 5);
     image set (with respect to the degree of <A>f</A>) of <C>e</C>
     equals the image set of <A>f</A> and <C><A>f</A>*e=f</C>. 
     
-    <Example>
+    <Example><![CDATA[
 gap> f:=Transformation( [ 11, 10, 2, 11, 4, 4, 7, 6, 9, 10, 1, 11 ] );;
 gap> e:=RightOne(f);
 Transformation( [ 1, 2, 2, 4, 4, 6, 7, 7, 9, 10, 11, 11 ] )
@@ -1265,7 +1301,8 @@ Transformation( [ 1, 2, 3, 1, 5, 5, 7, 8, 9, 2, 11, 1 ] )
 gap> e*f=f;  
 true
 gap> IsIdempotent(e);
-true</Example>
+true
+]]></Example>
   </Description>
 </ManSection>
 
@@ -1295,12 +1332,12 @@ true</Example>
       The transformation <A>f</A> is changed in-place, and
       nothing is returned by this function.
 
-      <Log> 
+      <Log><![CDATA[ 
 gap> f:=Transformation( [ 1 .. 2^16 ], x-> x+1 );
-&lt;transformation on 65537 pts with rank 65536>
+<transformation on 65537 pts with rank 65536>
 gap> g:=Transformation( [ 1 .. 2^16+1 ], function(x)
 > if x=1 or x=65537 then return x; else return x-1; fi; end);
-&lt;transformation on 65536 pts with rank 65535>
+<transformation on 65536 pts with rank 65535>
 gap> h:=g*f;
 Transformation( [ 2, 2 ] )
 gap> DegreeOfTransformation(h); IsTrans4Rep(h); MemoryUsage(h);
@@ -1312,7 +1349,8 @@ Transformation( [ 2, 2 ] )
 gap> DegreeOfTransformation(h); IsTrans4Rep(h); MemoryUsage(h);
 2
 false
-44</Log>
+44
+]]></Log>
     </Description>
   </ManSection>
 </Section>
@@ -1355,16 +1393,17 @@ false
         <C>&lt;identity transformation></C>.
       </Item>
     </List>
-    <Log>
+    <Log><![CDATA[
 gap> SetUserPreference("TransformationDisplayLimit", 12);
 gap> f:=Transformation([ 3, 8, 12, 1, 11, 9, 9, 4, 10, 5, 10, 6 ]);
-&lt;transformation on 12 pts with rank 10>
+<transformation on 12 pts with rank 10>
 gap> SetUserPreference("TransformationDisplayLimit", 100);
 gap> f;
 Transformation( [ 3, 8, 12, 1, 11, 9, 9, 4, 10, 5, 10, 6 ] )
 gap> SetUserPreference("NotationForTransformations", "fr");
 gap> f;
-&lt;transformation: 3,8,12,1,11,9,9,4,10,5,10,6></Log>
+<transformation: 3,8,12,1,11,9,9,4,10,5,10,6>
+]]></Log>
 </Section>
 
 <!-- *************************************************************** -->
@@ -1429,7 +1468,8 @@ fail
 gap> MultiplicativeNeutralElement(S);
 Transformation( [ 1, 2, 3, 4, 5, 6, 7, 8, 10, 10 ] )
 gap> IsMonoid(S);
-false]]></Example>
+false
+]]></Example>
 In this example <C>S</C> cannot be converted into a monoid using 
 <Ref Attr="AsMonoid"/> since the <Ref Attr="One"/> of any element in <C>S</C>
 differs from the multiplicative neutral element. <P/>
@@ -1451,7 +1491,8 @@ gap> S := Semigroup(
 > Transformation( [ 1, 2, 3, 4, 5, 6, 7, 8, 1, 1, 11 ] ) );
 <transformation semigroup of degree 10 with 2 generators>
 gap> DegreeOfTransformationSemigroup(S);
-10]]></Example>
+10
+]]></Example>
 </Description>
 </ManSection>
 
@@ -1476,7 +1517,8 @@ gap> DegreeOfTransformationSemigroup(S);
 
   <Example><![CDATA[
 gap> FullTransformationSemigroup(1234); 
-<full transformation monoid of degree 1234>]]></Example>
+<full transformation monoid of degree 1234>
+]]></Example>
 </Description>
 </ManSection>
 
@@ -1510,7 +1552,8 @@ gap> IsFullTransformationMonoid(S);
 true
 gap> S := FullTransformationSemigroup(5);; 
 gap> IsFullTransformationSemigroup(S);
-true]]></Example>
+true
+]]></Example>
 </Description>
 </ManSection>
 
@@ -1590,7 +1633,8 @@ gap> Size(S);
 gap> AntiIsomorphismTransformationSemigroup(S);
 MappingByFunction( <transformation semigroup of size 172, degree 5 
  with 2 generators>, <transformation semigroup of degree 173 with 2 
- generators>, function( x ) ... end, function( x ) ... end )]]></Example>
+ generators>, function( x ) ... end, function( x ) ... end )
+]]></Example>
     </Description>
   </ManSection>
 </Section>
