@@ -198,7 +198,6 @@ or into <F>/home/myhome/gap</F>, respectively.
 <#Include Label="DirectoryContents">
 <#Include Label="DirectoryDesktop">
 <#Include Label="DirectoryHome">
-
 </Section>
 
 
@@ -475,6 +474,7 @@ can be used to get information about the error.
 </Description>
 </ManSection>
 
+<#Include Label="UserHomeExpand">
 
 <#Include Label="Reread">
 
@@ -485,4 +485,3 @@ can be used to get information about the error.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-

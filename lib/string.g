@@ -325,20 +325,8 @@ InstallMethod( String,
 
     
 #############################################################################
+## Documented as UserHomeExpand in files.gi
 ##
-#F  USER_HOME_EXPAND . . . . . . . . . . . . .  expand leading ~ in file name
-##
-##  <ManSection>
-##  <Func Name="USER_HOME_EXPAND" Arg='obj'/>
-##  <Description>
-##
-##  
-##  If `GAPInfo.UserHome' has positive length then a leading '~' character in 
-##  string `str' is substituted by the content of `GAPInfo.UserHome'.
-##  Otherwise `str' itself is returned.
-##  </Description>
-##  </ManSection>
-##  
 BIND_GLOBAL("USER_HOME_EXPAND", function(str)
   if Length(str) > 0 and str[1] = '~' and IsString(GAPInfo.UserHome) and
      Length( GAPInfo.UserHome ) > 0 then
@@ -347,7 +335,6 @@ BIND_GLOBAL("USER_HOME_EXPAND", function(str)
     return str;
   fi;
 end);
-    
 
 #############################################################################
 ##

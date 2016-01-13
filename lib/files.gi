@@ -36,6 +36,18 @@ BindGlobal( "DirectoryType", NewType(
     DirectoriesFamily,
     IsDirectory and IsDirectoryRep ) );
 
+#############################################################################
+##
+#F  UserHomeExpand . . . . . . . . . . . . .  expand leading ~ in file name
+## 
+
+InstallGlobalFunction("UserHomeExpand", function(str)
+  if not IsString(str) then
+    ErrorMayQuit("Filenames must be a string");
+  fi;
+  return USER_HOME_EXPAND(str);
+end);
+
 
 
 #############################################################################
