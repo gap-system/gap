@@ -168,7 +168,7 @@ void            SyntaxError (
 
 /****************************************************************************
 **
-*F  SyntaxWarning( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
+*F  SyntaxWarning( <msg> )  . . . . . . . . . . . . . . raise a syntax warning
 **
 */
 void            SyntaxWarning (
