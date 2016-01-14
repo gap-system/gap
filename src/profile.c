@@ -631,12 +631,12 @@ Obj FuncACTIVATE_PROFILING (
 
 #ifndef HAVE_GETTIMEOFDAY
     if(wallTime == True) {
-        ErrorMayQuit("This OS does not support wall-clock based timing");
+        ErrorMayQuit("This OS does not support wall-clock based timing",0,0);
     }
 #endif
 #ifndef HAVE_GETRUSAGE
     if(wallTime == False) {
-        ErrorMayQuit("This OS does not support CPU based timing");
+        ErrorMayQuit("This OS does not support CPU based timing",0,0);
     }
 #endif
 
