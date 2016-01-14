@@ -2287,6 +2287,9 @@ Obj FuncOBJ_HANDLE (
 /****************************************************************************
 **
 *F  FuncHANDLE_OBJ( <self>, <obj> ) . . . . . .  expert function 'HANDLE_OBJ'
+**
+**  This is a very quick function which returns a unique integer for each object
+**  non-identical objects will have different handles. The integers may be large.
 */
 Obj FuncHANDLE_OBJ (
     Obj                 self,
@@ -2309,6 +2312,10 @@ Obj FuncHANDLE_OBJ (
     return hnum;
 }
 
+/* This function does quite  a similar job to HANDLE_OBJ, but (a) returns 0 for all 
+immediate objects (small integers or ffes) and (b) returns reasonably small results
+(roughly in teh range from 1 to the max number of objects that have existed in this session */
+
 Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
 {
     if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
@@ -2318,6 +2325,7 @@ Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
     }
 }
 
+/* Returns a measure of the size of a GAP function */
 Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
 {
     Obj body;
