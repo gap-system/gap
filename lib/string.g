@@ -325,11 +325,26 @@ InstallMethod( String,
 
     
 #############################################################################
-## Documented as UserHomeExpand in files.gi
 ##
-BIND_GLOBAL("USER_HOME_EXPAND", function(str)
-  if Length(str) > 0 and str[1] = '~' and IsString(GAPInfo.UserHome) and
-     Length( GAPInfo.UserHome ) > 0 then
+#F  UserHomeExpand( <str> ) . . . . . . . . . . . . expand leading ~ in str
+##
+##  <#GAPDoc Label="UserHomeExpand">
+##  <ManSection>
+##  <Func Name="UserHomeExpand" Arg='str'/>
+##  <Description>
+##
+##  If the string <A>str</A> starts with a <C>'~'</C> character this
+##  function returns a new string with the leading <C>'~'</C> substituted by
+##  the users home directory as stored in <C>GAPInfo.UserHome</C>.
+##  
+##  Otherwise <A>str</A> is returned unchanged.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("UserHomeExpand", function(str)
+  if IsString(str) and Length(str) > 0 and str[1] = '~' 
+        and IsString(GAPInfo.UserHome) and Length( GAPInfo.UserHome ) > 0 then
     return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
   else
     return str;
