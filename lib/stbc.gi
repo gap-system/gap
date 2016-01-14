@@ -21,6 +21,15 @@ InstallGlobalFunction( StabChain, function( arg )
     fi;
 end );
 
+InstallGlobalFunction( SetStabChain, function(G, chain)
+     if IsMutable(chain) then
+         SetStabChainMutable(G, chain);
+     fi;
+     if not HasStabChainImmutable(G) then
+         SetStabChainImmutable(G, Immutable(chain));
+     fi;
+ end );
+
 InstallMethod( StabChainImmutable,"use StabChainMutable",
   true, [ IsObject ], 0, StabChainMutable );
 
@@ -178,7 +187,7 @@ InstallMethod( StabChainOp,"group and option",
         StabChainOptions( G ).random := options.random;
     fi;
     
-    SetStabChainMutable( G, S );
+    SetStabChain( G, S );
     return S;
 end );
 
@@ -443,7 +452,7 @@ local   S,  G,  P,L;
             G := Subgroup( P, L );
         fi;
     fi;
-    SetStabChainMutable( G, S );
+    SetStabChain( G, S );
 
     return G;
 end);

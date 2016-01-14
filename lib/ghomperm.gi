@@ -1058,7 +1058,7 @@ InstallMethod( CompositionMapping2, "group hom. with perm group hom.",
     S.idimage := One( Range( hom1 ) );
     prd := GroupHomomorphismByImagesNC( Source( hom2 ), Range( hom1 ),
                    stb.generators, stb.genimages );
-    SetStabChainMutable( prd, stb );
+    SetStabChain( prd, stb );
     return prd;
 end );
 
@@ -1433,7 +1433,7 @@ local   D,  I,G;
   else
     G:=SubgroupNC(Range(hom),
       List(GeneratorsOfGroup(H),i->Permutation(i,D)));
-    SetStabChainMutable(G,I);
+    SetStabChain(G,I);
     return G;
   fi;
 end );
@@ -1460,7 +1460,7 @@ local   D,H,I,G;
     return GroupStabChain( I );
   else
     G:=Group(List(GeneratorsOfGroup(H),i->Permutation(i,D)),());
-    SetStabChainMutable(G,I);
+    SetStabChain(G,I);
     return G;
   fi;
 end;

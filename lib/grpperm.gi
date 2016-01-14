@@ -48,7 +48,7 @@ InstallMethod( AsSubgroup,"perm groups",
     UseIsomorphismRelation( U, S );
     UseSubsetRelation( U, S );
     if HasStabChainMutable( U )  then
-        SetStabChainMutable( S, StabChainMutable( U ) );
+        SetStabChain( S, StabChainMutable( U ) );
     fi;
     return S;
 end );
@@ -745,7 +745,7 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     else
       if inpar  then  C := SubgroupNC(P,newgens);
 		else  C := Group( newgens,One(G) );           fi;
-      SetStabChainMutable(C,chain);
+      SetStabChain(C,chain);
     fi;
     SetStabChainOptions( C, rec( random := options.random ) );
 
@@ -819,7 +819,7 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
     N := SubgroupNC( G, GeneratorsOfGroup(U) );
     UseIsomorphismRelation(U,N);
     UseSubsetRelation(U,N);
-    SetStabChainMutable( N, StabChainMutable( U ) );
+    SetStabChain( N, StabChainMutable( U ) );
     options := ShallowCopy( StabChainOptions( U ) );
     if IsBound( options.random )  then  random := options.random;
                                   else  random := 1000;            fi;
@@ -897,7 +897,7 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
         fi;
         chain := SCRRestoredRecord( chain );
     fi;
-    SetStabChainMutable( N, chain );
+    SetStabChain( N, chain );
     if result <> chain.identity  then
         N := ClosureGroup( N, [ result ] );
     fi;
@@ -932,7 +932,7 @@ local   H,  S;
     if HasStabChainMutable(G) then
       S := EmptyStabChain( [  ], One( H ) );
       ConjugateStabChain( StabChainMutable( G ), S, g, g );
-      SetStabChainMutable( H, S );
+      SetStabChain( H, S );
     elif HasSize(G) then
       SetSize(H,Size(G));
     fi;
@@ -2174,4 +2174,3 @@ end);
 #############################################################################
 ##
 #E
-
