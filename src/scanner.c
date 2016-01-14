@@ -1678,7 +1678,7 @@ void GetNumber ( UInt StartingStatus )
                        c != 'd' && c != 'Q')) {
 
       if (!seenADigit)
-        SyntaxError("Badly formed number, need a digit before or after the decimal point");
+        SyntaxError("Badly formed number: need a digit before or after the decimal point");
       /* We allow one letter on the end of the numbers -- could be an i,
        C99 style */
       if (!wasEscaped) {
@@ -1711,7 +1711,7 @@ void GetNumber ( UInt StartingStatus )
        left the previous loop because of overflow */
     if (IsAlpha(c)) {
         if (!seenADigit)
-          SyntaxError("Badly formed number, need a digit before or after the decimal point");
+          SyntaxError("Badly formed number: need a digit before or after the decimal point");
         seenExp = 1;
         TLS(Value)[i++] = c;
         c = GetCleanedChar(&wasEscaped);
@@ -1733,7 +1733,7 @@ void GetNumber ( UInt StartingStatus )
        deal with the end of token case */
     if (!seenExp) {
       if (!seenADigit)
-        SyntaxError("Badly formed number, need a digit before or after the decimal point");
+        SyntaxError("Badly formed number: need a digit before or after the decimal point");
       /* Might be a conversion marker */
       if (!wasEscaped) {
         if (IsAlpha(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' && c != 'q' && c != 'Q') {
@@ -1803,7 +1803,7 @@ void GetNumber ( UInt StartingStatus )
 
   /* Otherwise this is the end of the token */
   if (!seenExpDigit)
-    SyntaxError("Badly Formed Number, need at least one digit in the exponent");
+    SyntaxError("Badly Formed Number: need at least one digit in the exponent");
   TLS(Symbol) = S_FLOAT;
   TLS(Value)[i] = '\0';
   return;
@@ -1872,7 +1872,7 @@ void GetStr ( void )
       else if ( IsDigit( *TLS(In) ) ) {
         a = *TLS(In); GET_CHAR(); b = *TLS(In); GET_CHAR(); c = *TLS(In);
         if (!( IsDigit(b) && IsDigit(c) )){
-          SyntaxError("expecting three octal digits after \\ in string");
+          SyntaxError("Expecting three octal digits after \\ in string");
         }
         TLS(Value)[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
       }
@@ -1896,9 +1896,9 @@ void GetStr ( void )
 
   /* check for error conditions                                          */
   if ( *TLS(In) == '\n'  )
-    SyntaxError("string must not include <newline>");
+    SyntaxError("String must not include <newline>");
   if ( *TLS(In) == '\377' )
-    SyntaxError("string must end with \" before end of file");
+    SyntaxError("String must end with \" before end of file");
 
   /* set length of string, set 'Symbol' and skip trailing '"'            */
   TLS(ValueLen) = i;
@@ -1975,7 +1975,7 @@ void GetTripStr ( void )
 
   /* check for error conditions                                          */
   if ( *TLS(In) == '\377' )
-    SyntaxError("string must end with \" before end of file");
+    SyntaxError("String must end with \" before end of file");
 
   /* set length of string, set 'Symbol' and skip trailing '"'            */
   TLS(ValueLen) = i;
@@ -2059,18 +2059,18 @@ void GetChar ( void )
       c = 64 * (*TLS(In) - '0');
       GET_CHAR();
       if ( *TLS(In) < '0' || *TLS(In) > '7' )
-        SyntaxError("expecting octal digit in character constant");
+        SyntaxError("Expecting octal digit in character constant");
       c = c + 8 * (*TLS(In) - '0');
       GET_CHAR();
       if ( *TLS(In) < '0' || *TLS(In) > '7' )
-        SyntaxError("expecting 3 octal digits in character constant");
+        SyntaxError("Expecting 3 octal digits in character constant");
       c = c + (*TLS(In) - '0');
       TLS(Value)[0] = c;
     }
     else                     TLS(Value)[0] = *TLS(In);
   }
   else if ( *TLS(In) == '\n' ) {
-    SyntaxError("newline not allowed in character literal");
+    SyntaxError("Newline not allowed in character literal");
   }
   /* put normal chars into 'TLS(Value)'                                       */
   else {
@@ -2083,7 +2083,7 @@ void GetChar ( void )
   
   /* check for terminating single quote                                  */
   if ( *TLS(In) != '\'' )
-    SyntaxError("missing single quote in character constant");
+    SyntaxError("Missing single quote in character constant");
 
   /* skip the closing quote                                              */
   TLS(Symbol) = S_CHAR;

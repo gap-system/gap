@@ -216,7 +216,7 @@ void ReadFuncCallOption( TypSymbolSet follow )
     if ( ! READ_ERROR() ) { IntrFuncCallOptionsBeginElmExpr(); }
   }
   else {
-    SyntaxError("identifier expected");
+    SyntaxError("Identifier expected");
   }
   if ( TLS(Symbol) == S_ASSIGN )
     {
@@ -273,7 +273,7 @@ void ReadCallVarAss (
 
     /* all variables must begin with an identifier                         */
     if ( TLS(Symbol) != S_IDENT ) {
-        SyntaxError( "identifier expected" );
+        SyntaxError( "Identifier expected" );
         return;
     }
 
@@ -366,7 +366,7 @@ void ReadCallVarAss (
 	  return;
 	}
       else
-	SyntaxError("function literal in impossible context");
+	SyntaxError("Function literal in impossible context");
     }
 
     /* check whether this is an unbound global variable                    */
@@ -386,7 +386,7 @@ void ReadCallVarAss (
              ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
       && ! SyCompilePlease )
     {
-        SyntaxWarning("unbound global variable");
+        SyntaxWarning("Unbound global variable");
     }
 
     /* check whether this is a reference to the global variable '~'        */
@@ -469,7 +469,7 @@ void ReadCallVarAss (
                 type = ':';
             }
             else {
-                SyntaxError("record component name expected");
+                SyntaxError("Record component name expected");
             }
             level = 0;
         }
@@ -489,7 +489,7 @@ void ReadCallVarAss (
                 type = '|';
             }
             else {
-                SyntaxError("record component name expected");
+                SyntaxError("Record component name expected");
             }
             level = 0;
         }
@@ -598,7 +598,7 @@ void ReadCallVarAss (
         else if ( type == ':' ) { IntrUnbRecExpr();               }
         else if ( type == '!' ) { IntrUnbComObjName( rnam );      }
         else if ( type == '|' ) { IntrUnbComObjExpr();            }
-        else { SyntaxError("illegal operand for 'Unbind'");       }
+        else { SyntaxError("Illegal operand for 'Unbind'");       }
     }
 
 
@@ -615,7 +615,7 @@ void ReadCallVarAss (
         else if ( type == ':' ) { IntrIsbRecExpr();               }
         else if ( type == '!' ) { IntrIsbComObjName( rnam );      }
         else if ( type == '|' ) { IntrIsbComObjExpr();            }
-        else { SyntaxError("illegal operand for 'IsBound'");      }
+        else { SyntaxError("Illegal operand for 'IsBound'");      }
     }
 
 }
@@ -994,16 +994,16 @@ void ReadListExpr (
 
     /* incorrect place for three dots                                      */
     if (TLS(Symbol) == S_DOTDOTDOT) {
-            SyntaxError("only two dots in a range");
+            SyntaxError("Only two dots in a range");
     }
 
     /* '..' <Expr> ']'                                                     */
     if ( TLS(Symbol) == S_DOTDOT ) {
         if ( pos != nr ) {
-            SyntaxError("must have no unbound entries in range");
+            SyntaxError("Must have no unbound entries in range");
         }
         if ( 2 < nr ) {
-            SyntaxError("must have at most 2 entries before '..'");
+            SyntaxError("Must have at most 2 entries before '..'");
         }
         range = 1;
         Match( S_DOTDOT, "..", follow );
@@ -1013,7 +1013,7 @@ void ReadListExpr (
         if ( ! READ_ERROR() ) { IntrListExprEndElm(); }
         nr++;
         if ( TLS(ReadTop) == 1 && TLS(ReadTilde) == 1 ) {
-            SyntaxError("sorry, '~' not allowed in range");
+            SyntaxError("Sorry, '~' not allowed in range");
         }
     }
 
@@ -1073,7 +1073,7 @@ void ReadRecExpr (
 	  if ( ! READ_ERROR() ) { IntrRecExprBeginElmExpr(); }
         }
         else {
-	  SyntaxError("identifier expected");
+	  SyntaxError("Identifier expected");
         }
         Match( S_ASSIGN, ":=", follow );
         ReadExpr( S_RPAREN|follow, 'r' );
@@ -1224,7 +1224,7 @@ void ReadFuncExpr (
 
 	    for ( i = 1; i <= narg; i++ ) {
 		if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
-		    SyntaxError("name used for two arguments");
+		    SyntaxError("Name used for two arguments");
 		}
 	    }
         C_NEW_STRING_DYN( name, TLS(Value) );
@@ -1245,7 +1245,7 @@ void ReadFuncExpr (
         Match( S_LOCAL, "local", follow );
         for ( i = 1; i <= narg; i++ ) {
             if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
-                SyntaxError("name used for argument and local");
+                SyntaxError("Name used for argument and local");
             }
         }
         C_NEW_STRING_DYN( name, TLS(Value) );
@@ -1258,12 +1258,12 @@ void ReadFuncExpr (
             Match( S_COMMA, ",", follow );
             for ( i = 1; i <= narg; i++ ) {
                 if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
-                    SyntaxError("name used for argument and local");
+                    SyntaxError("Name used for argument and local");
                 }
             }
             for ( i = narg+1; i <= narg+nloc; i++ ) {
                 if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
-                    SyntaxError("name used for two locals");
+                    SyntaxError("Name used for two locals");
                 }
             }
             C_NEW_STRING_DYN( name, TLS(Value) );
@@ -2690,7 +2690,7 @@ UInt ReadEvalFile ( void )
             Match( S_COMMA, ",", 0L );
             for ( i = 1; i <= nloc; i++ ) {
                 if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
-                    SyntaxError("name used for two locals");
+                    SyntaxError("Name used for two locals");
                 }
             }
             C_NEW_STRING_DYN( name, TLS(Value) );
