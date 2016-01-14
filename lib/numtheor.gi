@@ -1384,6 +1384,19 @@ InstallGlobalFunction( TwoSquares, function ( n )
 end );
 
 
+InstallGlobalFunction(PPart,function(n,p)
+local a;
+  if not IsPrimeInt(p) or not IsPosInt(n) then
+    Error("wrong parameters");
+  fi;
+  a:=1;
+  while n mod p=0 do
+    a:=a*p;
+    n:=n/p;
+  od;
+  return a;
+end);
+
 #T ##########################################################################
 #T ##
 #T #F  IsResidueClass(<obj>) . . . . . . .  test if an object is a residue class

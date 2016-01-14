@@ -784,6 +784,30 @@ DeclareGlobalFunction( "MoebiusMu" );
 ##
 DeclareGlobalFunction( "TwoSquares" );
 
+#############################################################################
+##
+#F  PPart( <n>, <p> ) . . . . . . . . . . . prime part of integer
+##
+##  <#GAPDoc Label="PPart">
+##  <ManSection>
+##  <Func Name="PPart" Arg='n, p'/>
+##
+##  <Description>
+##  For a positive integer <A>n</A> and a prime <A>p</A> this function returns
+##  the <A>p</A>-part of <A>n</A>,
+##  that is the largest power of <A>p</A> that divides <A>n</A>.
+##  <Example><![CDATA[
+##  gap> PPart(100,2);
+##  4
+##  gap> PPart(100,3);
+##  1
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "PPart" );
+
 
 #############################################################################
 ##
