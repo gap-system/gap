@@ -2766,6 +2766,8 @@ InstallGlobalFunction(Union, function(arg)
         for i in [3..Length(tounite)] do
             UniteSet(u,tounite[i]);
         od;
+        IS_RANGE(u);
+        return u;
     fi;
     #
     # if we have nothing but plain lists then it is at most linear in space and time
