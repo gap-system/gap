@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  testall.g                   GAP library                      Frank Celler
+#W  teststandard.g                   GAP library                      Frank Celler
 ##
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany

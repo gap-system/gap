@@ -94,7 +94,7 @@ $ git diff --check
  * Run all the tests to assure nothing else was accidentally broken.
 ```
 $ make testinstall
-$ make testall
+$ make teststandard
 ```
  * Push your changes to a topic branch in your fork of the repository.
 ```

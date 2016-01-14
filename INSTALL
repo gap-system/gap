@@ -346,10 +346,10 @@ gaussian.tst               0             10
 [ further lines deleted ]
 
 If you want to run a more advanced check (this is not required and may take
-up to an hour), you can read testall.g which is an extended test script
+up to an hour), you can read teststandard.g which is an extended test script
 performing all tests from the tst directory.
 
-gap> Read( Filename( DirectoriesLibrary( "tst" ), "testall.g" ) );
+gap> Read( Filename( DirectoriesLibrary( "tst" ), "teststandard.g" ) );
 
 The test requires about 512 MB of memory and runs about one hour on an
 Intel Core 2 Duo / 2.53 GHz machine, and produces an output similar to the
