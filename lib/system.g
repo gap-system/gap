@@ -31,7 +31,10 @@ BIND_GLOBAL( "GAPInfo", rec(
       NeededOtherPackages := [
         [ "gapdoc", ">= 1.2" ],
       ],
-    ),
+           ),
+ # There is no SuggestedOtherPackages here because the default value of 
+ # the user preference PackagesToLoad does the job                           
+                            
 
     HasReadGAPRC:= false,
 
