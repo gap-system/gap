@@ -33,7 +33,7 @@ gmp_config: ../../../extern/gmp-$(GMP_VER)
 	    echo ""; \
 	    echo "Configuring GMP. Logging to bin/$(GAPARCH)/extern/gmp-$(GMP_VER)/build_log. Please wait... "; \
 	    echo ""; \
-	    ./configure --prefix=`pwd`/../../bin/$(GAPARCH)/extern/gmp-$(GMP_VER) ABI=$(ABI) \
+	    ./configure --prefix=`pwd`/../../bin/$(GAPARCH)/extern/gmp-$(GMP_VER) --enable-cxx ABI=$(ABI) \
 	     > ../../bin/$(GAPARCH)/extern/gmp-$(GMP_VER)/build_log 2>&1; \
 	    rm -f LASTBUILD*; \
 	    touch LASTBUILD.$(GAPARCH); \

@@ -49,15 +49,22 @@ DeclareCategory( "IsRandomSource", IsComponentObjectRep );
 ##
 ##  <#GAPDoc Label="Random">
 ##  <ManSection>
-##  <Oper Name="Random" Arg='rs, list' Label="for a list"/>
-##  <Oper Name="Random" Arg='rs, low, high' Label="for a range of integers"/>
+##  <Oper Name="Random" Arg='rs, list' Label="for random source and list"/>
+##  <Oper Name="Random" Arg='rs, low, high' 
+##                      Label="for random source and two integers"/>
 ##
 ##  <Description>
 ##  This operation returns a random element from list <A>list</A>, or an integer 
 ##  in the range from the given (possibly large) integers <A>low</A> to <A>high</A>,
 ##  respectively. 
+##  <P/>
 ##  The choice should only depend on the random source <A>rs</A> and have no 
 ##  effect on other random sources.
+##  <Example>
+##  gap> mysource := RandomSource(IsMersenneTwister, 42);;
+##  gap> Random(mysource, 1, 10^60);
+##  999331861769949319194941485000557997842686717712198687315183
+##  </Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -970,9 +970,12 @@ InstallGlobalFunction(PrintCSV,function(arg)
   file:=arg[1];
   l:=arg[2];
   printEntry:=function(s)
-  local p;
+  local p,q;
+    q:=false;
     if not IsString(s) then
       s:=String(s);
+    elif IsString(s) and ForAll(s,x->x in CHARS_DIGITS or x in "+-") and Int(s)<>fail and AbsInt(Int(s))>10^9 then
+      q:=true;
     fi;
 
     p:=Position(s,'\n');
@@ -999,6 +1002,9 @@ InstallGlobalFunction(PrintCSV,function(arg)
 
     if ',' in s or '"' in s then
       s:=Concatenation("\"",s,"\"");
+    elif q=true then
+      # integers as string
+      s:=Concatenation("\"_",s,"\"");
     fi;
     AppendTo(file,s,"\c");
   end;
@@ -1055,6 +1061,156 @@ InstallGlobalFunction(PrintCSV,function(arg)
     AppendTo(file,"\n");
   od;
   SizeScreen(sz);
+end);
+
+
+# Format commands
+# RLC: alignment
+# M: Math mode
+# MN: Math mode but names, characters are put into mbox
+# F: Number displayed in factored form
+# P: Minipage environment (25mm per default)
+# B: Background color
+# option `rows' colors alternating rows
+InstallGlobalFunction(LaTeXTable,function(file,l)
+local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt;
+
+  alt:=ValueOption("rows")<>fail;
+  color:=fail;
+  # row 1 indicates which columns are relevant and their formatting
+  cold:=l[1];
+  f:=RecFields(cold);
+  for i in ShallowCopy(f) do
+    if cold.(i)="B" then 
+      # color indicator
+      color:=i;
+      Unbind(cold.(i));
+      f:=Difference(f,[i]);
+    else
+      cold.(i):=UppercaseString(cold.(i));
+    fi;
+  od;
+  PrintTo(file);
+  # header
+  format:="";
+  for i in [1..Length(f)] do
+    if i>1 then Append(format,"|");fi;
+    if 'R' in cold.(f[i]) then
+      Add(format,'r');
+    elif 'C' in cold.(f[i]) then
+      Add(format,'c');
+    else
+      Add(format,'l');
+    fi;
+  od;
+
+  # header
+  AppendTo(file,"\\begin{tabular}{",format,"}\n");
+  for i in [1..Length(f)] do
+    if i>1 then AppendTo(file,"&");fi;
+    AppendTo(file,l[2].(f[i]),"\n");
+  od;
+  AppendTo(file,"\\\\\n");
+  AppendTo(file,"\\hline\n");
+
+  #entries
+  for j in [3..Length(l)] do
+    if color<>fail and IsBound(l[j].(color)) then
+      AppendTo(file,"\\rowcolor{",l[j].(color),"}%\n");
+    elif alt and IsEvenInt(j) then
+      # light grey color
+      AppendTo(file,"\\rowcolor{lgrey}%\n");
+    fi;
+    for i in [1..Length(f)] do
+      if i>1 then AppendTo(file,"&");fi;
+      if IsBound(l[j].(f[i])) then
+	str:=l[j].(f[i]);
+	# fix _integer to keep long integers from Excel
+	if IsList(str) and Length(str)>0 and str[1]='_' and
+	  Int(str{[2..Length(str)]})<>fail then
+	  str:=str{[2..Length(str)]};
+	fi;
+
+	if 'P' in cold.(f[i]) then
+	  mini:=true;
+	  AppendTo(file,"\\begin{minipage}{25mm}%\n");
+	else
+	  mini:=false;
+	fi;
+	if 'F' in cold.(f[i]) then
+	  # transform str in normal format
+	  str:=Filtered(str,x->x<>',');
+	  z:=0;
+	  a:=Position(str,'E');
+	  if a<>fail then
+	    z:=Int(Filtered(str{[a+1..Length(str)]},x->x<>'+'));
+	    str:=str{[1..a-1]};
+	  fi;
+	  a:=Position(str,'.');
+	  if a<>fail then
+	    z:=z-(Length(str)-a);
+	    str:=Filtered(str,x->x<>'.');
+	  fi;
+
+	  a:=Int(str)*10^z;
+
+	  a:=Collected(Factors(a));
+	  AppendTo(file,"$");
+	  for z in [1..Length(a)] do
+	    if z>1 and e=false then
+	      AppendTo(file,"\n{\\cdot}");
+	    fi;
+	    AppendTo(file,a[z][1]);
+	    if a[z][2]>1 then
+	      AppendTo(file,"^{",a[z][2],"}");
+	      e:=true;
+	    else
+	      e:=false;
+	    fi;
+	  od;
+	  AppendTo(file,"$\n");
+	elif 'M' in cold.(f[i]) and 'N' in cold.(f[i]) then
+	  # make strings ``names'' in mbox
+	  new:="";
+	  box:=false;
+	  lc:=false;
+	  for a in str do
+	    z:=a in CHARS_UALPHA or a in CHARS_LALPHA;
+	    if z and box=false then
+	      if lc='\\' then # actual command
+		box:=fail;
+	      else
+		Append(new,"\\mbox{");
+		box:=true;
+	      fi;
+	    elif box=true and not z then
+	      Append(new,"}");
+	      box:=false;
+	    elif box=fail and not z then
+	      box:=false; # command over
+	    fi;
+	    Add(new,a);
+	    lc:=a; # last character
+	  od;
+	  if box=true then
+	    Append(new,"}");
+	  fi;
+	  AppendTo(file,"$",new,"$\n");
+
+	elif 'M' in cold.(f[i]) then
+	  AppendTo(file,"$",str,"$\n");
+	else
+	  AppendTo(file,str,"\n");
+	fi;
+	if mini then
+	  AppendTo(file,"\\end{minipage}%\n");
+	fi;
+      fi;
+    od;
+    AppendTo(file,"\\\\\n");
+  od;
+
+  AppendTo(file,"\\end{tabular}\n");
 end);
 
 #############################################################################

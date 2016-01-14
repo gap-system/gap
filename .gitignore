@@ -47,3 +47,13 @@ dev/log
 /build/
 /extern/64bit/
 /gen/
+
+doc/gapmacrodoc.aux
+doc/gapmacrodoc.example-1.tst
+doc/gapmacrodoc.idx
+doc/gapmacrodoc.lab
+doc/gapmacrodoc.log
+doc/gapmacrodoc.pdf
+doc/gapmacrodoc.six
+doc/gapmacrodoc.synctex.gz
+doc/gapmacrodoc.toc

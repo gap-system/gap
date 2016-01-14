@@ -142,8 +142,8 @@ DeclareAttribute("NaturalHomomorphismsPool",IsGroup,
 ##  gap> FactorCosetAction(g,u);
 ##  <action epimorphism>
 ##  gap> Range(last);
-##  Group([ (1,9,13,10,4)(2,8,14,11,5)(3,7,15,12,6), 
-##    (1,7)(2,8)(3,9)(5,6)(10,11)(14,15) ])
+##  Group([ (1,7,13,10,4)(2,9,14,11,5)(3,8,15,12,6), (1,7)(2,8)(3,9)(4,5)
+##  (10,12)(13,14) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

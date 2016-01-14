@@ -362,6 +362,22 @@ InstallMethod( MagmaGeneratorsOfFamily,
     return gens;
     end );
 
+#############################################################################
+##
+#M  Order <elm> )
+##
+InstallMethod( Order,
+        "free group element",
+        [ IsElementOfFreeGroup ],
+        0,
+        function(elt)
+           if IsOne(elt) then
+               return 1;
+           else
+               return infinity;
+           fi;
+        end);
+
 # the following method returns a lex-minimal generating set for a free group
 # it relies on the (unguaranteed) ordering of free group elements, that
 # inverses of generators come before the generators, and generators of low

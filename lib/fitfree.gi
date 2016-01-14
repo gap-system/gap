@@ -1183,7 +1183,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,prd,k,nk,map,ns,all,hl,hcomp,
 	h:=h+1;
       od;
 
-      if cgens=[] then
+      if cgens<>fail and ForAll(cgens,IsOne) then
 	# degenerate case -- nothing in the factor, just use hall in s
 	Add(all,j.hall);
       elif cgens<>fail then

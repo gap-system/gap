@@ -994,6 +994,11 @@ void ReadListExpr (
         }
     }
 
+    /* incorrect place for three dots                                      */
+    if (TLS(Symbol) == S_DOTDOTDOT) {
+            SyntaxError("only two dots in a range");
+    }
+
     /* '..' <Expr> ']'                                                     */
     if ( TLS(Symbol) == S_DOTDOT ) {
         if ( pos != nr ) {
@@ -1111,7 +1116,8 @@ void ReadFuncExpr (
 {
     volatile Obj        nams;           /* list of local variables names   */
     volatile Obj        name;           /* one local variable name         */
-    volatile UInt       narg;           /* number of arguments             */
+    volatile Int        narg;           /* number of arguments             */
+    volatile UInt       isvarg = 0;     /* does function have varargs?     */
     volatile UInt       nloc;           /* number of locals                */
     volatile UInt       nr;             /* number of statements            */
     volatile UInt       i;              /* loop variable                   */
@@ -1178,11 +1184,19 @@ void ReadFuncExpr (
 	    ASS_LIST( nams, narg+nloc, name );
 	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
 	}
+
+	if(TLS(Symbol) == S_DOTDOT) {
+	    SyntaxError("Three dots required for variadic argument list");
+	}
+	if(TLS(Symbol) == S_DOTDOTDOT) {
+	    isvarg = 1;
+	    GetSymbol();
+    }
+
 	while ( TLS(Symbol) == S_COMMA ) {
-	    if (narg > 0 && !strcmp(CSTR_STRING(ELM_LIST(nams,narg)),"arg"))
-	      {
-		SyntaxWarning("arg used not as the last argument");
-	      }
+	    if (isvarg) {
+	        SyntaxError("Only final argument can be variadic");
+	    }
 
 	    Match( S_COMMA, ",", follow );
 	    lockmode = 0;
@@ -1206,6 +1220,11 @@ void ReadFuncExpr (
 		CHARS_STRING(locks)[narg] = lockmode;
 	        GetSymbol();
 	    }
+
+	    if(TLS(Symbol) != S_IDENT) {
+	        SyntaxError("Expect identifier");
+	    }
+
 	    for ( i = 1; i <= narg; i++ ) {
 		if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
 		    SyntaxError("name used for two arguments");
@@ -1216,6 +1235,13 @@ void ReadFuncExpr (
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
 	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
+	    if(TLS(Symbol) == S_DOTDOT) {
+	        SyntaxError("Three dots required for variadic argument list");
+	    }
+	    if(TLS(Symbol) == S_DOTDOTDOT) {
+	        isvarg = 1;
+	        GetSymbol();
+	    }
 	}
         Match( S_RPAREN, ")", S_LOCAL|STATBEGIN|S_END|follow );
     }
@@ -1254,15 +1280,13 @@ void ReadFuncExpr (
         Match( S_SEMICOLON, ";", STATBEGIN|S_END|follow );
     }
 
-    /* 'function( ... arg )' takes a variable number of arguments              */
-    if (narg >= 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) ) )
+    /* 'function( a,b, p... )' takes a variable number of arguments           */
+    /* Also, we special case function(arg)                                   */
+    if (isvarg || ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) )) )
       {
-	/* TODO: remove this before the next non-beta release */
-	if (narg > 1)
-	  SyntaxWarning("New syntax used -- intentional?");
 	narg = -narg;
       }
-	
+      
     /*     if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
 	   narg = -1; */
 

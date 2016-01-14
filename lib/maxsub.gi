@@ -21,7 +21,11 @@ BindGlobal("MaxSubmodsByPcgs",function( G, pcgs, field )
     local mats, modu, max, pcgD, pcgN, i, base, sub;
     mats := LinearOperationLayer( G, pcgs );
     modu := GModuleByMats( mats, Length(pcgs), field );
-    max  := MTX.BasesMaximalSubmodules( modu );
+    if modu.dimension=1 then 
+      max:=[[]];
+    else
+      max  := MTX.BasesMaximalSubmodules( modu );
+    fi;
     pcgD := DenominatorOfModuloPcgs( pcgs );
     pcgN := NumeratorOfModuloPcgs( pcgs );
     for i in [1..Length( max )] do
@@ -220,7 +224,8 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
 	  if homliftlevel+1<f then
             pcgsM := InducedPcgsByPcSequenceNC( spec, spec{[homliftlevel+1..f-1]} );
 	    RUN_IN_GGMBI:=true;
-	    fphom:=LiftFactorFpHom(fphom,G,fail,fail,pcgsM);
+	    fphom:=LiftFactorFpHom(fphom,G,Group(spec),
+	      Group(spec{[homliftlevel+1..f-1]}),pcgsM);
 	    RUN_IN_GGMBI:=false;
 	    # translate words
 	    L:=FreeGeneratorsOfFpGroup(Range(fphom)){[1..Length(wordgens)]};

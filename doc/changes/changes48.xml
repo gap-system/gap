@@ -2,7 +2,7 @@
 <Heading>Changes between &GAP; 4.7 and &GAP; 4.8</Heading>
 
 This chapter contains an overview of the most important changes
-introduced in &GAP; 4.8.0 release (the beta release of &GAP; 4.8).
+introduced in &GAP; 4.8.1 release (the 2nd beta release of &GAP; 4.8).
 Later it will also contain information about subsequent update 
 releases for &GAP; 4.8.
 
@@ -17,7 +17,7 @@ that were introduced in corresponding &GAP; releases. An overview of the
 most significant ones is provided below.
 
 <Section Label="gap480"> 
-<Heading>&GAP; 4.8.0 (November 2015)</Heading>
+<Heading>&GAP; 4.8.1 (December 2015)</Heading>
 
 <Subsection Label="Changes in the core GAP48 system"> 
 <Heading>Changes in the core &GAP; system introduced in &GAP; 4.8</Heading>
@@ -34,10 +34,10 @@ and the <Package>Profiling</Package> package for transforming these profiles
 into a human-readable form.
 </Item>
 <!-- https://github.com/gap-system/gap/pull/192 -->
-<Item>Added support for accessing lists using multiple indices and
-indexing into lists using indices other than positive small integers.
-This allows library or packages to install methods supporting expressions 
-like
+<Item>Added ability to install (in the library or packages) methods
+for accessing lists using multiple indices and indexing into lists
+using indices other than positive small integers. Such methods could allow,
+for example, to support expressions like
 <Log><![CDATA[
 m[1,2];
 m[1,2,3] := x;
@@ -50,18 +50,31 @@ Unbind(m[1][2,3])
 Added support for partially variadic functions to allow function expressions
 like
 <Log><![CDATA[
-function(a,b,c,arg) ... end;
+function( a, b, c, x... ) ... end;
 ]]></Log>
 which would require at least three arguments and assign the first three
 to <A>a</A>, <A>b</A> and <A>c</A> and then a list containing any remaining
-ones to <A>arg</A>.
+ones to <A>x</A>.
 <P/>
-This may break an existing code when <A>arg</A> is used as a name of the
-argument which is not the only one.
+The former special meaning of the argument <A>arg</A> is still supported
+and is now equivalent to <C>function( arg... )</C>, so no changes in the
+existing code are required.
+</Item>
+<Item>
+Introduced <Ref Func="CallWithTimeout" BookName="ref"/> and
+<Ref Func="CallWithTimeoutList" BookName="ref"/> to call a function with
+a limit on the CPU time it can consume. This functionality may not be
+available on all systems and you should check <C>GAPInfo.TimeoutsSupported</C>
+before using this functionality.
 </Item>
 <Item>
 &GAP; now displays the filename and line numbers of statements in backtraces
 when entering the break loop.
+</Item>
+<Item>
+Introduced <Ref Func="TestDirectory" BookName="ref"/> function to find
+(recursively) all <F>.tst</F> files from a given directory or a list of
+directories and run them using <Ref Func="Test" BookName="ref"/>.
 </Item>
 </List>
 
@@ -71,18 +84,20 @@ Improved and extended functionality:
 Method tracing shows the filename and line of function during tracing.
 </Item>
 <Item>
-<Ref Func="TraceAllMethods" BookName="ref"/> allows tracing all methods in &GAP;.
-</Item>
-<Item>
-<Ref Func="GModuleByMats" BookName="ref"/> and some related functions now
-work for infinite fields, in particular in characteristic 0. However,
-this only applies for functions that do not need the MeatAxe, as that is
-still tied to finite fields.
+<Ref Func="TraceAllMethods" BookName="ref"/> and
+<Ref Func="UntraceAllMethods" BookName="ref"/> to turn on and off tracing all
+methods in &GAP;. Also, for the uniform approach
+<Ref Func="UntraceImmediateMethods" BookName="ref"/> has been added as an
+equivalent of <C>TraceImmediateMethods(false)</C>.
 </Item>
 <Item>
 The most common cases of <Ref Oper="AddDictionary" BookName="ref"/> 
 on three arguments now bypass method selection, avoiding the cost 
 of determining homogeneity for plain lists of mutable objects.
+</Item>
+<Item>
+Improved methods for symmetric and alternating groups in the "natural"
+representations and removed some duplicated code.
 </Item>
 <Item> 
 <!-- https://github.com/gap-system/gap/issues/7 -->
@@ -98,14 +113,38 @@ as a template).
 Changed functionality:
 <List>  
 <Item>
-As a preparation for the future migration to the multithreaded &GAP;&nbsp;5,
+As a preparation for the future developments to support multithreading,
 some language extensions from the <Package>HPC-GAP</Package> project were
 backported to the &GAP; library to help to unify the codebase of both 
-&GAP;&nbsp;4 and &GAP;&nbsp;5. The only change which is not backwards
+&GAP;&nbsp;4 and <Package>HPC-GAP</Package>. The only change which is not backwards
 compatible is that <C>atomic</C>, <C>readonly</C> and <C>readwrite</C> are
 now keywords, and thus are no longer valid identifiers.
 So if you have any variables or functions using that name,
 you will have to change it in &GAP; 4.8.
+</Item>
+<Item>
+There was inconsistent use of the following properties of semigroups:
+<C>IsGroupAsSemigroup</C>, <C>IsMonoidAsSemigroup</C>, and
+<C>IsSemilatticeAsSemigroup</C>. <C>IsGroupAsSemigroup</C> was true for
+semigroups that mathematically defined a group, and for semigroups in the
+category <Ref Filt="IsGroup" BookName="ref"/>; <C>IsMonoidAsSemigroup</C>
+was only true for semigroups that mathematically defined monoids, but did
+not belong to the category <Ref Filt="IsMonoid" BookName="ref"/>; and
+<C>IsSemilatticeAsSemigroup</C> was simply a property of semigroups, as
+there is no category <C>IsSemilattice</C>.
+<P/>
+From version 4.8 onwards, <C>IsSemilatticeAsSemigroup</C> is renamed to
+<C>IsSemilattice</C>, and <C>IsMonoidAsSemigroup</C> returns true for
+semigroups in the category <Ref Filt="IsMonoid" BookName="ref"/>.
+<P/>
+This way all of the properties of the type <C>IsXAsSemigroup</C> are consistent.
+It should be noted that the only methods installed for <C>IsMonoidAsSemigroup</C>
+belong to the <Package>Semigroups</Package> and <Package>Smallsemi</Package> packages.
+</Item>
+<Item>
+<C>ReadTest</C> became obsolete and for backwards compatibility is replaced by
+<Ref Func="Test" BookName="ref"/> with the option to compare the output up to
+whitespaces.
 </Item>
 </List>
 
@@ -128,6 +167,25 @@ state at this point, subsequently leading to a crash.
 This, too, has been fixed, by not allowing the user to ignore the error
 by entering <Q>return</Q>.
 </Item>
+<Item>
+The Fitting-free code and code inheriting PCGS is now using
+<Ref Attr="IndicesEANormalSteps" BookName="ref"/> instead of
+<Ref Attr="IndicesNormalSteps" BookName="ref"/>, as these indices are neither
+guaranteed, nor required to be maximally refined when restricting to subgroups.
+</Item>
+<Item>
+A bug that caused a break loop in the computation of the Hall subgroup for
+groups having a trivial Fitting subgroup.
+</Item>
+<Item>
+Including a <C>break</C> or <C>continue</C> statement in a function body
+but not in a loop now gives a syntax error instead of failing at run time.
+</Item>
+<Item>
+Fixed a bug in caching the degree of transformation that could lead to a
+non-identity transformation accidentally changing its value to the identity
+transformation.
+</Item>
 </List>
 
 </Subsection>
@@ -141,6 +199,20 @@ redistributed with &GAP;. New packages that have been added to the
 redistribution since the release of &GAP; 4.7.8 are: 
 
 <List>
+<Item>
+<Package>CAP</Package> (Categories, Algorithms, Programming) package
+by Sebastian Gutsche, Sebastian Posur and Øystein Skartsæterhagen,
+together with three associated packages
+<Package>GeneralizedMorphismsForCAP</Package>,
+<Package>LinearAlgebraForCAP</Package> and
+<Package>ModulePresentationsForCAP</Package>
+(all three - by Sebastian Gutsche and Sebastian Posur).
+</Item>
+<Item>
+<Package>FinInG</Package> package by John Bamberg, Anton Betten,
+Philippe Cara, Jan De Beule, Michel Lavrauw and Max Neunhöffer
+for computation in Finite Incidence Geometry.
+</Item>
 <Item>
 <Package>matgrp</Package> package by Alexander Hulpke, which provides
 an interface to the solvable radical functionality for matrix groups,

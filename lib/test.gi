@@ -547,7 +547,7 @@ end);
 ##
 ##
 
-TestDirectory := function(arg)
+InstallGlobalFunction( "TestDirectory", function(arg)
   local basedirs, nopts, opts, files, newfiles, filestones, filetimes, 
         f, c, i, recurseFiles, StringEnd, getStones, setStones,
         startTime, time, stones, testResult, testTotal,
@@ -701,6 +701,8 @@ TestDirectory := function(arg)
     if not(testResult) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
       if opts.exitGAP then
+        # Do not change the next line - it is needed for testing scrips
+        Print( "#I  Errors detected while testing\n\n" );
         QUIT_GAP(1);
       fi;
       return false;
@@ -754,11 +756,15 @@ TestDirectory := function(arg)
   
   if opts.exitGAP then
     if testTotal then
+      # Do not change the next line - it is needed for testing scrips
+      Print( "#I  No errors detected while testing\n\n" );
       QUIT_GAP(0);
     else
+      # Do not change the next line - it is needed for testing scrips
+      Print( "#I  Errors detected while testing\n\n" );
       QUIT_GAP(1);
     fi;
   fi;
   
   return testTotal;
-end;
+end);

@@ -1797,6 +1797,8 @@ void GetNumber ( UInt StartingStatus )
     if (wasEscaped || (IsIdent(c)  && c != 'e' && c != 'E' && c != 'D' && c != 'q' &&
                        c != 'd' && c != 'Q')) {
 
+      if (!seenADigit)
+        SyntaxError("Badly formed number, need a digit before or after the decimal point");
       /* We allow one letter on the end of the numbers -- could be an i,
        C99 style */
       if (!wasEscaped) {
@@ -2283,7 +2285,12 @@ void GetSymbol ( void )
   case '.':   TLS(Symbol) = S_DOT;                         GET_CHAR();
     /*            if ( *TLS(In) == '\\' ) { GET_CHAR();
             if ( *TLS(In) == '\n' ) { GET_CHAR(); } }   */
-    if ( *TLS(In) == '.' ) { TLS(Symbol) = S_DOTDOT;  GET_CHAR();  break; }
+    if ( *TLS(In) == '.' ) { 
+            TLS(Symbol) = S_DOTDOT; GET_CHAR();
+            if ( *TLS(In) == '.') {
+                    TLS(Symbol) = S_DOTDOTDOT; GET_CHAR();
+            }
+    }
     break;
 
   case '!':   TLS(Symbol) = S_ILLEGAL;                     GET_CHAR();
