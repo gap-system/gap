@@ -1286,11 +1286,11 @@ end );
 ##
 InstallGlobalFunction( MakeStabChainLong,
     function( hom, stb, ran, c1, c2, cohom, cokername )
-    local   newlevs,  S,  idimage, i,  len,  rest,  trans;
+    local   newlevs,  S, baseS, idimage, i,  len,  rest,  trans;
     
     # Construct the stabilizer chain for <hom>.
     S := CopyStabChain( stb );
-    SetStabChainMutable( hom, S );
+    baseS := S;
     newlevs := [  ];
     idimage:= One( Range( hom ) );
 
@@ -1334,7 +1334,9 @@ InstallGlobalFunction( MakeStabChainLong,
     for S  in newlevs  do
         Unbind( S[ Length( S ) ] );
     od;
-    
+
+    SetStabChain( hom, baseS );
+
     # Construct the cokernel.
     if not IsEmpty( stb.genlabels )  then
         if not Tester( cokername )( cohom )  then
@@ -1347,7 +1349,6 @@ InstallGlobalFunction( MakeStabChainLong,
     else 
         Setter( cokername )( cohom, TrivialSubgroup( Range( hom ) ) );
     fi;
-    
 end );
 
 #############################################################################
