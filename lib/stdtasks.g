@@ -17,6 +17,8 @@ TASKS := AtomicRecord( rec (
 
   WorkerThread := function(context)
     local task;
+    BreakOnError := false;
+    SilentErrors := true;
     WaitSemaphore(context.semaphore);
     while true do
       WaitSemaphore(context.semaphore);
@@ -102,6 +104,9 @@ TASKS := AtomicRecord( rec (
 	  task.adopt_result := false;
 	fi;
       fi;
+      if error then
+        task.error := LastErrorMessage;
+      fi;
       notify := AdoptSingleObj(task.notify);
       task.notify := MigrateSingleObj([], task);
     od;
@@ -128,6 +133,7 @@ TASKS := AtomicRecord( rec (
       args := [],
       adopt := [],
       result := fail,
+      error := fail,
       adopt_result := fail,
       region := NewSpecialRegion(),
       complete := false,
@@ -549,6 +555,26 @@ end);
 BindGlobal("TaskFinished", atomic function(readonly task)
   return task.complete;
 end);
+
+BindGlobal("TaskError", function(task)
+  local complete;
+  atomic readonly task do
+    complete := task.complete;
+    if complete then
+      return task.error;
+    fi;
+  od;
+  WAIT_TASK([task], true);
+  atomic readonly task do
+    return task.error;
+  od;
+end);
+
+BindGlobal("TaskSuccess", function(task)
+  return TaskError(task) = fail;
+end);
+
+
 
 BindGlobal("TaskCancellationRequested", atomic function(readonly task)
   return task.cancel;
