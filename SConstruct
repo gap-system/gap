@@ -384,7 +384,7 @@ def build_external(libname, confargs="", makeargs="",
 
 if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
   os.environ["ABI"] = GAP["abi"]
-  build_external("gmp-5.0.5", confargs="--disable-shared", cc=GAP["CC"])
+  build_external("gmp-6.0.0", confargs="--disable-shared", cc=GAP["CC"])
   del os.environ["ABI"]
 
 if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
