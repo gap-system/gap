@@ -1649,7 +1649,7 @@ InstallMethod( RadicalGroup,
     # but not all subgroups in the comp.ser have their own stabchain.
     normals:=[];
     for i in [1..Length(list)-1] do
-      if HasStabChainMutable(list[i]) then
+      if HasStabChainImmutable(list[i]) then
         normals[i]:=ShallowCopy(StabChainMutable(list[i]).generators);
       else
         normals[i]:=ShallowCopy(GeneratorsOfGroup(list[i]));
