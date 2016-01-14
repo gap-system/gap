@@ -44,7 +44,7 @@ ApplicableMethod := fail;
 ##
 HANDLE_METHOD_NOT_FOUND := function ( INF )
   local no_method_found, ShowArguments, ShowArgument, ShowDetails, ShowMethods, 
-             ShowOtherMethods;
+             ShowOtherMethods, i;
 
 
 #############################################################################
@@ -226,6 +226,12 @@ end;
 PRINT_TO( "*errout*",
         "Error, no method found! For debugging hints type ?Recovery from NoMethodFound\n" ); # should go to errout
   no_method_found:="no ";
+  for i in [ 1 .. LENGTH(INF.Arguments) ] do
+    if INF.Arguments[i] = fail then
+      PRINT_TO( "*errout*",
+                "The ", Ordinal(i), " argument is 'fail' which might point to an earlier problem\n" ); # should go to errout
+    fi;
+  od;
   APPEND_LIST(no_method_found,Ordinal(INF.Precedence+1));
   APPEND_LIST(no_method_found," choice method found for `");
   APPEND_LIST(no_method_found,NAME_FUNC(INF.Operation));
