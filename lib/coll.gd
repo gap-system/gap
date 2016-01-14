@@ -3089,7 +3089,7 @@ DeclareOperation( "Intersection2",
 ##  [ 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 20, 25 ]
 ##  gap> Union( [ [1,2,4], [2,3,4], [1,3,4] ] )
 ##  >    ;  # or one list of lists or collections
-##  [ 1, 2, 3, 4 ]
+##  [ 1 .. 4 ]
 ##  gap> Union( [ ] );
 ##  [  ]
 ##  ]]></Example><P/>

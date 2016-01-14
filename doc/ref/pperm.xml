@@ -574,7 +574,7 @@ gap> DomainOfPartialPerm(f);
 gap> S := SymmetricInverseSemigroup(5);                                
 <symmetric inverse monoid of degree 5>
 gap> ImageOfPartialPermCollection(GeneratorsOfInverseSemigroup(S));
-[ 1, 2, 3, 4, 5 ]]]></Example>
+[ 1 .. 5 ]]]></Example>
     </Description>
   </ManSection>
 
