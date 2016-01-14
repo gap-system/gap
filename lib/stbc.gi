@@ -34,7 +34,14 @@ InstallMethod( StabChainImmutable,"use StabChainMutable",
   true, [ IsObject ], 0, StabChainMutable );
 
 InstallMethod( StabChainMutable,"call StabChainOp", true, [ IsGroup ], 0,
-    G -> StabChainOp( G, rec(  ) ) );
+    function( G )
+        local stab;
+        stab := StabChainOp( G, rec(  ) );
+        if not HasStabChainImmutable(G) then
+            SetStabChainImmutable(G, stab);
+        fi;
+        return stab;
+    end);
 
 InstallOtherMethod( StabChainOp,"with base", true, [ IsPermGroup,
         IsList and IsCyclotomicCollection ], 0,

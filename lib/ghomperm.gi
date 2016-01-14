@@ -944,6 +944,9 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
 
     od;
     
+    if not HasStabChainImmutable(hom) then
+        SetStabChainImmutable(hom, Immutable(S));
+    fi;
     return S;
 end );
 
@@ -1358,7 +1361,14 @@ end );
 InstallMethod( StabChainMutable, "perm to perm mapping by images",true,
         [ IsPermGroupGeneralMappingByImages and
           IsToPermGroupGeneralMappingByImages ], 0,
-        StabChainPermGroupToPermGroupGeneralMappingByImages );
+        function(g)
+            local stab;
+            stab := StabChainPermGroupToPermGroupGeneralMappingByImages(g);
+            if not HasStabChainImmutable(g) then
+                SetStabChainImmutable(g, Immutable(stab));
+            fi;
+            return stab;
+        end);
 
 #############################################################################
 ##
