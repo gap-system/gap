@@ -1029,7 +1029,7 @@ InstallMethod( CompositionMapping2, "group hom. with perm group hom.",
     function( hom1, hom2 )
     local   prd,  stb,  levs,  S,t,i,oli;
 
-    stb := StructuralCopy( StabChainMutable( hom2 ) );
+    stb := CopyStabChain( StabChainImmutable( hom2 ) );
     levs := [  ];
     S := stb;
     while IsBound( S.stabilizer )  do
@@ -1694,7 +1694,7 @@ InstallMethod( PreImagesRepresentative, "blocks homomorphism",
             pos;        # position of point hit by preimage
     
     D := Enumerator( UnderlyingExternalSet( hom ) );
-    S := StabChainMutable( hom );
+    S := StabChainImmutable( hom );
     pre := One( Source( hom ) );
 
     # loop over the blocks and their iterated set stabilizers
@@ -1832,7 +1832,7 @@ local e1,e2,d1,d2,i,ac,act,hom,xset;
   MakeImmutable(d2);
   IsSSortedList(d2);
   xset:=ExternalSet(Source(map1),d2,act);
-  xset!.basePermImage:=BaseStabChain(StabChainMutable(ImagesSource(map2)));
+  xset!.basePermImage:=BaseStabChain(StabChainImmutable(ImagesSource(map2)));
   SetBaseOfGroup(xset,d2{xset!.basePermImage});
 
   if HasImagesSource(map1) and HasIsSurjective(map2) 
@@ -1998,8 +1998,8 @@ function( hom )
         for pnt  in dom  do
             sliced := [  ];
             while pnt <> bpt  do
-                Add( sliced, StabChainMutable( hom ).transimages[ pnt ] );
-                pnt := pnt ^ StabChainMutable( hom ).transversal[ pnt ];
+                Add( sliced, StabChainImmutable( hom ).transimages[ pnt ] );
+                pnt := pnt ^ StabChainImmutable( hom ).transversal[ pnt ];
             od;
             Add( idom, PreImageWord( fix, sliced ) );
         od;

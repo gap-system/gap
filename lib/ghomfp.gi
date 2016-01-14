@@ -80,7 +80,7 @@ local s, bas, sg, o, gi, l, p, rel, start, i;
   if IsFreeGroup(s) then
     return true;
   fi;
-  bas:=BaseStabChain(StabChainMutable(Range(hom)));
+  bas:=BaseStabChain(StabChainImmutable(Range(hom)));
   sg:=FreeGeneratorsOfFpGroup(s);
   o:=One(Range(hom));
   # take the images corresponding to the free gens in case of reordering or
