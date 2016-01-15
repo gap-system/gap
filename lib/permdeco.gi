@@ -27,7 +27,7 @@ local   pcgs,r,hom,A,iso,p,i;
 
   A:=CreateIsomorphicPcGroup(pcgs,true,false);
 
-  iso := GroupHomomorphismByImagesNC( G, A, pcgs, GeneratorsOfGroup( A ));
+  iso := GroupHomomorphismByImagesNC( r, A, pcgs, GeneratorsOfGroup( A ));
   SetIsBijective( iso, true );
   return rec(pcgs:=pcgs,
              depths:=IndicesEANormalSteps(pcgs),
