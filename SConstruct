@@ -406,10 +406,10 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
   if cygwin:
     patchfiles = []
   else:
-    patchfiles = ["gc-7.3dev-configure.patch"]
+    patchfiles = ["gc-7.4.2-conf.patch"]
     if GAP["gc"].startswith("boehm-"):
-      patchfiles.append("gc-7.3dev-tl.patch")
-  build_external(cygwin and "gc-7.2d" or "gc-7.3dev", cflags=gc_cflags,
+      patchfiles.append("gc-7.4.2-tl.patch")
+  build_external(cygwin and "gc-7.2d" or "gc-7.4.2", cflags=gc_cflags,
     confargs="--disable-shared --disable-gcj-support --enable-large-config" +
       (GAP["gc"] == "boehm-par" and " --enable-parallel-mark" or
                                     " --disable-parallel-mark"),
