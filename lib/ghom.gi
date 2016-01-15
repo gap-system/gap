@@ -306,8 +306,12 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
     Error("<gens> and <imgs> must be lists of same length");
   fi;
 
-  Assert( 2, ForAll( gens, x -> x in G ) );
-  Assert( 2, ForAll( imgs, x -> x in H ) );
+  if not HasIsHandledByNiceMonomorphism(G) and ValueOption("noassert")<>true then
+    Assert( 2, ForAll( gens, x -> x in G ) );
+  fi;
+  if not HasIsHandledByNiceMonomorphism(H) and ValueOption("noassert")<>true then
+    Assert( 2, ForAll( imgs, x -> x in H ) );
+  fi;
 
   mapi:=[Immutable(gens),Immutable(imgs)];
   filter := IsGroupGeneralMappingByImages and HasSource and HasRange 
@@ -437,7 +441,11 @@ InstallMethod( GroupHomomorphismByImagesNC, "for group, group, list, list",
 function( G, H, gens, imgs )
 local   hom;
   hom := GroupGeneralMappingByImagesNC( G, H, gens, imgs );
-  Assert( 2, IsMapping( hom ) );
+  if not (HasIsHandledByNiceMonomorphism(G) or
+    HasIsHandledByNiceMonomorphism(H)) 
+    and ValueOption("noassert")<>true then
+    Assert( 2, IsMapping( hom ) );
+  fi;
   SetIsMapping( hom, true );
   return hom;
 end );
@@ -447,7 +455,9 @@ InstallMethod( GroupHomomorphismByImagesNC, "for group, list, list",
 function( G, gens, imgs )
 local   hom;
   hom := GroupGeneralMappingByImagesNC( G, gens, imgs );
-  Assert( 2, IsMapping( hom ) );
+  if not HasIsHandledByNiceMonomorphism(G) and ValueOption("noassert")<>true then
+    Assert( 2, IsMapping( hom ) );
+  fi;
   SetIsMapping( hom, true );
   return hom;
 end );
@@ -678,7 +688,7 @@ function( hom )
 local mapi;
   mapi:=MappingGeneratorsImages(hom);
   mapi:=GroupHomomorphismByImagesNC( Range( hom ),   Source( hom ),
-                                      mapi[2], mapi[1] );
+                                      mapi[2], mapi[1]);
   SetIsBijective( mapi, true );
   return mapi;
 end );
