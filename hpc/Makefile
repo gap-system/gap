@@ -1,6 +1,6 @@
 JOBS=4
 GMP=yes
-GC=boehm-tl
+GC=boehm-par
 MPI_GC=boehm
 GCBLKSIZE=8192
 GCMAXTHREADS=
