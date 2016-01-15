@@ -2337,8 +2337,8 @@ local r,	#radical
       else
 	new:=LiftClassesEANonsolvGeneral(G,mpcgs,i,hom,pcisom,solvtriv,fran);
       fi;
-      Assert(3,ForAll(new,x->x[6]
-        =Size(Group(Concatenation(x[2],DenominatorOfModuloPcgs(mpcgs))))));
+      #Assert(3,ForAll(new,x->x[6]
+      #  =Size(Group(Concatenation(x[2],DenominatorOfModuloPcgs(mpcgs))))));
 
 #if ForAny(new,x->x[2]<>TFMakeInducedPcgsModulo(pcgs,x[2],nran)) then Error("HUH6");fi;
 #Print(List(new,x->List(x[2],y->DepthOfPcElement(pcgs,y))),"\n");
