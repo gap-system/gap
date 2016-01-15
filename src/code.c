@@ -76,7 +76,7 @@ Obj FilenameCache;
 **
 *V  OffsBody  . . . . . . . . . . . . . . . . . . . .  offset in current body
 **
-**  'OffsBody' is the  offset in the current   body.  It is  only valid while
+*  'OffsBody' is the  offset in the current   body.  It is  only valid while
 **  coding.
 */
 #define MAX_FUNC_EXPR_NESTING 1024
@@ -707,6 +707,7 @@ void CodeFuncExprBegin (
     /* give it a body                                                      */
     body = NewBag( T_BODY, 1024*sizeof(Stat) );
     BODY_FUNC( fexp ) = body;
+    RETURNS_FUNC( fexp ) = 0;
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
@@ -745,6 +746,12 @@ void CodeFuncExprEnd (
     /* get the function expression                                         */
     fexp = CURR_FUNC;
     assert(!LoopNesting);
+
+    if ((RETURNS_FUNC(fexp) & (FUNC_RETURNS_OBJ | FUNC_RETURNS_VOID)) ==
+	(FUNC_RETURNS_VOID | FUNC_RETURNS_OBJ))
+      {
+	SyntaxWarning("Function contains both 'return <obj>;' and 'return;'");
+      }
     
     /* get the body of the function                                        */
     /* push an addition return-void-statement if neccessary                */
@@ -1355,7 +1362,8 @@ void CodeReturnObj ( void )
 
     /* allocate the return-statement                                       */
     stat = NewStat( T_RETURN_OBJ, sizeof(Expr) );
-
+    RETURNS_FUNC(CURR_FUNC) |= FUNC_RETURNS_OBJ;
+    
     /* enter the expression                                                */
     expr = PopExpr();
     ADDR_STAT(stat)[0] = expr;
@@ -1378,6 +1386,7 @@ void CodeReturnVoid ( void )
 
     /* allocate the return-statement                                       */
     stat = NewStat( T_RETURN_VOID, 0 * sizeof(Expr) );
+    RETURNS_FUNC(CURR_FUNC) |= FUNC_RETURNS_VOID;
 
     /* push the return-statement                                           */
     PushStat( stat );

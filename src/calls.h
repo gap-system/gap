@@ -93,6 +93,12 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 **  'NAMI_FUNC(<func>,<i>)' is the name of the <i>-th local variable.
 **
 **  'PROF_FUNC(<func>)' is the profiling information bag.
+**  'RETURNS_FUNC(<func>)' is space used during coding to detect
+**                      functions that contain both return and return <obj>;
+**                      it's actually the same space as PROF_FUNC since that 
+**                      is never needed at coding time
+**  'FUNC_RETURNS_OBJ'  and 'FUNCS_RETURNS_VOID' are two different bits used
+**                       for this
 **
 **  'NLOC_FUNC(<func>)' is the number of local variables of  the  interpreted
 **  function <func>.
@@ -112,11 +118,14 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 #define NAMS_FUNC(func)         (*            (ADDR_OBJ(func) +10     ) )
 #define NAMI_FUNC(func,i)       ((Char *)CHARS_STRING(ELM_LIST(NAMS_FUNC(func),i)))
 #define PROF_FUNC(func)         (*            (ADDR_OBJ(func) +11     ) )
+#define RETURNS_FUNC(func)      (* (UInt*)    (ADDR_OBJ(func) +11     ) )
 #define NLOC_FUNC(func)         (* (UInt*)    (ADDR_OBJ(func) +12     ) )
 #define BODY_FUNC(func)         (*            (ADDR_OBJ(func) +13     ) )
 #define ENVI_FUNC(func)         (*            (ADDR_OBJ(func) +14     ) )
 #define FEXS_FUNC(func)         (*            (ADDR_OBJ(func) +15     ) )
 #define SIZE_FUNC               (16*sizeof(Bag))
+#define FUNC_RETURNS_OBJ        1L
+#define FUNC_RETURNS_VOID       2L
 
 #define HDLR_0ARGS(func)        ((ObjFunc_0ARGS)HDLR_FUNC(func,0))
 #define HDLR_1ARGS(func)        ((ObjFunc_1ARGS)HDLR_FUNC(func,1))
