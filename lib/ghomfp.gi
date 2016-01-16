@@ -854,7 +854,7 @@ local aug,w,p,pres,f,fam;
   aug.primaryImages:=GeneratorsOfGroup(f);
   SecondaryImagesAugmentedCosetTable(aug);
 
-  f:=GroupHomomorphismByImagesNC(u,f,gens,GeneratorsOfGroup(f));
+  f:=GroupHomomorphismByImagesNC(u,f,gens,GeneratorsOfGroup(f):noassert);
 
   # tell f, that `aug' can be used as its coset table
   SetCosetTableFpHom(f,aug);

@@ -604,7 +604,9 @@ local di, hom;
     if di.gens=ggens or cgens=ggens then
       di.gens:=cgens;
       di.source:=k;
-      hom:=GroupHomomorphismByImagesNC(k,di.fp,cgens,GeneratorsOfGroup(di.fp));
+      # this homomorphism is just to store decomposition information and is
+      # not declared total, so an assertion test will fail
+      hom:=GroupHomomorphismByImagesNC(k,di.fp,cgens,GeneratorsOfGroup(di.fp):noassert);
       hom!.decompinfo:=`di;
       if HasIsSurjective(h) and IsSurjective(h) 
 	and HasKernelOfMultiplicativeGeneralMapping(h)
