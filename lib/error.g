@@ -43,9 +43,6 @@ end);
 
 ErrorLVars := fail;
 
-
-
-
 BIND_GLOBAL("WHERE", function( context, depth, outercontext)
     local   bottom,  lastcontext,  f;
     if depth <= 0 then
@@ -191,11 +188,18 @@ BIND_GLOBAL("ErrorInner",
     errorLVars := ErrorLVars;
     ErrorLVars := context;
     if QUITTING or not BreakOnError then
-        PrintTo("*errout*","Error, ");
-        for x in earlyMessage do
-            PrintTo("*errout*",x);
-        od;
-        PrintTo("*errout*","\n");
+        if not SilentErrors then
+	  PrintTo("*errout*","Error, ");
+	  for x in earlyMessage do
+	      PrintTo("*errout*",x);
+	  od;
+	  PrintTo("*errout*","\n");
+	fi;
+	LastErrorMessage := "";
+	for x in earlyMessage do
+	  Append(LastErrorMessage, x);
+	od;
+	MakeImmutable(LastErrorMessage);
         ErrorLevel := ErrorLevel-1;
         ErrorLVars := errorLVars;
         if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;

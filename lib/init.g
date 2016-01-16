@@ -248,7 +248,10 @@ CallAndInstallPostRestore( function()
     UNBIND_GLOBAL( "TEACHING_MODE" );
     BIND_GLOBAL( "TEACHING_MODE", GAPInfo.CommandLineOptions.T );
     BindThreadLocal( "BreakOnError", not GAPInfo.CommandLineOptions.T );
+    BindThreadLocal( "SilentErrors", false );
+    BindThreadLocal( "LastErrorMessage", "" );
 end);
+
 
 
 #############################################################################
