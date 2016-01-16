@@ -279,3 +279,5 @@ BIND_GLOBAL("ErrorNoReturn",
          printThisStatement := false), arg);
 end);
  
+# HACK: remove this before final GAP 4.8 release
+BIND_GLOBAL("ErrorMayQuit", ErrorNoReturn);
