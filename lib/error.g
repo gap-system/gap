@@ -279,7 +279,7 @@ BIND_GLOBAL("Error",
                                arg);
 end);
 
-BIND_GLOBAL("ErrorMayQuit",
+BIND_GLOBAL("ErrorNoReturn",
        function ( arg )
     ErrorInner( rec(
          context := ParentLVars( GetCurrentLVars(  ) ),
