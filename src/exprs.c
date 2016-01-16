@@ -47,9 +47,9 @@
 
 #include        "exprs.h"               /* expressions                     */
 
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 #include        "profile.h"             /* installing methods              */
-#include        "aobjects.h"            /* atomic objects                  */
+#include        "hpc/aobjects.h"            /* atomic objects                  */
 
 #include        "vars.h"                /* variables                       */
 

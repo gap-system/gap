@@ -70,7 +70,8 @@
 #include        "code.h"                /* coder                           */
 
 #include        "saveload.h"            /* saving and loading              */
-#include        "tls.h"
+#include        "hpc/tls.h"
+
 #include        "trans.h"
 
 /****************************************************************************

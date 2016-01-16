@@ -29,8 +29,6 @@
 #include        "scanner.h"             /* scanner                         */
 
 #include        "gap.h"                 /* error handling, initialisation  */
-#include        "tls.h"                 /* thread-local storage            */
-
 #include        "read.h"                /* reader                          */
 
 #include        "gvars.h"               /* global variables                */
@@ -101,9 +99,9 @@
 #include        "gapmpi.h"              /* ParGAP/MPI                      */
 #endif
 
-#include        "thread.h"
-#include        "tls.h"
-#include        "aobjects.h"
+#include        "hpc/thread.h"
+#include        "hpc/tls.h"
+#include        "hpc/aobjects.h"
 
 #include        "vars.h"                /* variables                       */
 

@@ -49,8 +49,8 @@
 
 #include        "opers.h"               /* generic operations              */
 #include        "gvars.h"
-#include        "thread.h"              /* threads                         */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/thread.h"          /* threads                         */
+#include        "hpc/tls.h"             /* thread-local storage            */
 
 #include        "vars.h"                /* variables                       */
 
