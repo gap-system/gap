@@ -225,7 +225,7 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
             pcgsM := InducedPcgsByPcSequenceNC( spec, spec{[homliftlevel+1..f-1]} );
 	    RUN_IN_GGMBI:=true;
 	    fphom:=LiftFactorFpHom(fphom,G,Group(spec),
-	      Group(spec{[homliftlevel+1..f-1]}),pcgsM);
+	      Group(spec{[f..Length(spec)]}),pcgsM);
 	    RUN_IN_GGMBI:=false;
 	    # translate words
 	    L:=FreeGeneratorsOfFpGroup(Range(fphom)){[1..Length(wordgens)]};
