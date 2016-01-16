@@ -659,26 +659,6 @@ end );
 ##
 DeclareGlobalFunction( "Edit" );
 
-
-#############################################################################
-##
-#F  UserHomeExpand . . . . . . . . . . . . .  expand leading ~ in file name
-##
-##  <#GAPDoc Label="UserHomeExpand">
-##  <ManSection>
-##  <Func Name="UserHomeExpand" Arg='obj'/>
-##  <Description>
-##
-##  Replaces "~" at the start of <A>obj</A> with the users home directory
-##  (which is stored in `GAPInfo.UserHome`, if known) and returns the result.
-##  If <A>obj</A> does not start with "~", the filename is returned unchanged.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##  
-DeclareGlobalFunction("UserHomeExpand");
-
-
 # the character set definitions might be needed when processing files, thus
 # they must come earlier.
 BIND_GLOBAL("CHARS_DIGITS",Immutable(SSortedList("0123456789")));

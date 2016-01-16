@@ -1031,7 +1031,7 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
     /* allow ~/... expansion in SaveWorkspace                              */ 
-    ImportFuncFromLibrary("USER_HOME_EXPAND", &userHomeExpand);
+    ImportFuncFromLibrary("UserHomeExpand", &userHomeExpand);
 
     /* return success                                                      */
     return 0;

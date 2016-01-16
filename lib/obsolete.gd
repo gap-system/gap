@@ -543,5 +543,12 @@ end);
 
 #############################################################################
 ##
+#F  USER_HOME_EXPAND
+##
+##  This got a nicer name before is became documented.
+DeclareGlobalFunction( "USER_HOME_EXPAND" );
+
+#############################################################################
+##
 #E
 
