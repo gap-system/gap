@@ -443,7 +443,8 @@ local   hom;
   hom := GroupGeneralMappingByImagesNC( G, H, gens, imgs );
   if not (HasIsHandledByNiceMonomorphism(G) or
     HasIsHandledByNiceMonomorphism(H)) 
-    and ValueOption("noassert")<>true then
+    and ValueOption("noassert")<>true 
+    and not IsSubgroupFpGroup(H) then
     Assert( 2, IsMapping( hom ) );
   fi;
   SetIsMapping( hom, true );
