@@ -204,40 +204,46 @@ end );
 NEW_TYPE_CACHE_MISS  := 0;
 NEW_TYPE_CACHE_HIT   := 0;
 
-# We must access this through ASS_GVAR / VAL_GVAR as the compiler does not understand
-# thread local variables
-BIND_GLOBAL("_NEW_TYPE_READONLY", `"NEW_TYPE_READONLY");
-ASS_GVAR(_NEW_TYPE_READONLY, true);
-MakeThreadLocal(_NEW_TYPE_READONLY);
-
-
-BIND_GLOBAL("ConstructExtendedType", function(body)
-    local type, save_flag;
-    save_flag := VAL_GVAR(_NEW_TYPE_READONLY);
-    ASS_GVAR(_NEW_TYPE_READONLY, false);
-    type := body();
-    ASS_GVAR(_NEW_TYPE_READONLY, save_flag);
-    return MakeReadOnlyObj(type);
-end);
-
-BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
-    local   lock, hash,  cache,  cached,  type, ncache, ncl, t;
+BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
+    local   lock, hash,  cache,  cached,  type, ncache, ncl, t, i, match;
 
     # maybe it is in the type cache
     lock := WRITE_LOCK(DS_TYPE_CACHE);
     cache := family!.TYPES;
     hash  := HASH_FLAGS(flags) mod family!.HASH_SIZE + 1;
-    if IsBound( cache[hash] ) and VAL_GVAR(_NEW_TYPE_READONLY) then
+    if IsBound( cache[hash] ) then
         cached := cache[hash];
         if IS_EQUAL_FLAGS( flags, cached![2] )  then
+            flags := cached![2];
             if    IS_IDENTICAL_OBJ(  data,  cached![ POS_DATA_TYPE ] )
               and IS_IDENTICAL_OBJ(  typeOfTypes, TYPE_OBJ(cached) )
             then
-                NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
-                UNLOCK(lock);
-                return cached;
-            else
-                flags := cached![2];
+                if IS_IDENTICAL_OBJ(parent, fail) and LEN_POSOBJ( cached ) = POS_FIRST_FREE_TYPE - 1 then
+                    NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
+                    UNLOCK(lock);
+                    return cached;
+                fi;
+                # so there is a parent type; make sure the any extra data in it
+                # matches what is in the cache
+                if LEN_POSOBJ( parent ) = LEN_POSOBJ( cached ) then
+                    match := true;
+                    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
+                        if IsBound( parent![i] ) <> IsBound( cached![i] ) then
+                            match := false;
+                            break;
+                        fi;
+                        if    IsBound( parent![i] ) and IsBound( cached![i] )
+                          and not IS_IDENTICAL_OBJ( parent![i], cached![i] ) then
+                            match := false;
+                            break;
+                        fi;
+                    od;
+                    if match then
+                        NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
+                        UNLOCK(lock);
+                        return cached;
+                    fi;
+                fi;
             fi;
         fi;
         NEW_TYPE_CACHE_MISS := NEW_TYPE_CACHE_MISS + 1;
@@ -258,6 +264,14 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     type[POS_DATA_TYPE] := MakeReadOnly(data);
     type[POS_NUMB_TYPE] := NEW_TYPE_NEXT_ID;
 
+    if not IS_IDENTICAL_OBJ(parent, fail) then
+        for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
+            if IsBound( parent![i] ) and not IsBound( type[i] ) then
+                type[i] := parent![i];
+            fi;
+        od;
+    fi;
+
     SET_TYPE_POSOBJ( type, typeOfTypes );
     
     # check the size of the cache before storing this type
@@ -274,9 +288,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
         cache[hash] := type;
     fi;
     family!.nTYPES := family!.nTYPES + 1;
-    if VAL_GVAR(_NEW_TYPE_READONLY) then
-        MakeReadOnlyObj(type);
-    fi;
+    MakeReadOnlyObj(type);
     UNLOCK(lock);
 
     # return the type
@@ -288,7 +300,7 @@ BIND_GLOBAL( "NewType2", function ( typeOfTypes, family )
     return NEW_TYPE( typeOfTypes,
                      family,
                      family!.IMP_FLAGS,
-                     fail );
+                     fail, fail );
 end );
 
 
@@ -298,7 +310,7 @@ BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         family!.IMP_FLAGS,
                         FLAGS_FILTER(filter) ) ),
-                     fail );
+                     fail, fail );
 end );
 
 
@@ -308,21 +320,21 @@ BIND_GLOBAL( "NewType4", function ( typeOfTypes, family, filter, data )
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         family!.IMP_FLAGS,
                         FLAGS_FILTER(filter) ) ),
-                     data );
+                     data, fail );
 end );
 
 
 BIND_GLOBAL( "NewType5",
     function ( typeOfTypes, family, filter, data, stuff )
-    local   type;
+    local   type, temp;
+    temp := [];
+    temp[POS_FIRST_FREE_TYPE] := stuff;
     type := NEW_TYPE( typeOfTypes,
                       family,
                       WITH_IMPS_FLAGS( AND_FLAGS(
                          family!.IMP_FLAGS,
                          FLAGS_FILTER(filter) ) ),
-                      data );
-    type![ POS_FIRST_FREE_TYPE ] := stuff;
-#T really ??
+                      data, temp );
     return type;
 end );
 
@@ -373,44 +385,22 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "Subtype2", function ( type, filter )
-    local   new, i, save_flag;
-    save_flag := VAL_GVAR(_NEW_TYPE_READONLY);
-    ASS_GVAR(_NEW_TYPE_READONLY, false);
-    new := NEW_TYPE( TypeOfTypes,
+    return NEW_TYPE( TypeOfTypes,
                      type![1],
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         type![2],
                         FLAGS_FILTER( filter ) ) ),
-                     type![ POS_DATA_TYPE ] );
-    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) and not IsBound(new![i]) then
-            new![i] := type![i];
-        fi;
-    od;
-    MakeReadOnlyObj(new);
-    ASS_GVAR(_NEW_TYPE_READONLY, save_flag);
-    return new;
+                     type![ POS_DATA_TYPE ], type );
 end );
 
 
 BIND_GLOBAL( "Subtype3", function ( type, filter, data )
-    local   new, i, save_flag;
-    save_flag := VAL_GVAR(_NEW_TYPE_READONLY);
-    ASS_GVAR(_NEW_TYPE_READONLY, false);
-    new := NEW_TYPE( TypeOfTypes,
+    return NEW_TYPE( TypeOfTypes,
                      type![1],
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         type![2],
                         FLAGS_FILTER( filter ) ) ),
-                     data );
-    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) and not IsBound(new![i]) then
-            new![i] := type![i];
-        fi;
-    od;
-    MakeReadOnlyObj(new);
-    ASS_GVAR(_NEW_TYPE_READONLY, save_flag);
-    return new;
+                     data, type );
 end );
 
 
@@ -445,36 +435,22 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "SupType2", function ( type, filter )
-    local   new, i;
-    new := NEW_TYPE( TypeOfTypes,
+    return NEW_TYPE( TypeOfTypes,
                      type![1],
                      SUB_FLAGS(
                         type![2],
                         FLAGS_FILTER( filter ) ),
-                     type![ POS_DATA_TYPE ] );
-    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) then
-            new![i] := type![i];
-        fi;
-    od;
-    return new;
+                     type![ POS_DATA_TYPE ], type );
 end );
 
 
 BIND_GLOBAL( "SupType3", function ( type, filter, data )
-    local   new, i;
-    new := NEW_TYPE( TypeOfTypes,
+    return NEW_TYPE( TypeOfTypes,
                      type![1],
                      SUB_FLAGS(
                         type![2],
                         FLAGS_FILTER( filter ) ),
-                     data );
-    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) then
-            new![i] := type![i];
-        fi;
-    od;
-    return new;
+                     data, type );
 end );
 
 
@@ -1072,7 +1048,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
             Objectify( NEW_TYPE(TypeOfTypes, 
                     FamilyType(type), 
                     flags , 
-                    DataType(type)), obj);
+                    DataType(type), fail), obj);
         else
             Objectify( type, obj );
         fi;
@@ -1095,4 +1071,3 @@ end );
 #############################################################################
 ##
 #E
-
