@@ -156,8 +156,57 @@ InstallMethod( IsElementaryAbelian,
 ##
 #M  IsPGroup( <G> ) . . . . . . . . . . . . . . . . .  is a group a p-group ?
 ##
+BindGlobal( "IS_PGROUP_FOR_NILPOTENT",
+
+    function( G )
+    local s, gen, ord;
+
+    s:= [];
+    for gen in GeneratorsOfGroup( G ) do
+      ord:= Order( gen );
+      if ord = infinity then
+        return false;
+      elif 1 < ord then
+        if not IsPrimePowerInt( ord ) then
+          return false;
+        else
+          AddSet( s, Factors( ord )[1] );
+          if 1 < Length( s ) then
+            return false;
+          fi;
+        fi;
+      fi;
+    od;
+    if IsEmpty( s ) then
+      return true;
+    fi;
+
+    SetPrimePGroup( G, s[1] );
+    return true;
+    end);
+
+BindGlobal( "IS_PGROUP_FROM_SIZE",
+
+    function( G )
+    local s;
+
+    s:= Size( G );
+    if s = 1 then
+      return true;
+    elif s = infinity then
+      return false;
+    elif not IsPrimePowerInt( s ) then
+      return false;
+    else
+      s:= Factors( s );
+    fi;
+
+    SetPrimePGroup( G, s[1] );
+    return true;
+    end);
+
 InstallMethod( IsPGroup,
-    "generic method (check order of the group or of generators)",
+    "generic method (check order of the group or of generators if nilpotent)",
     [ IsGroup ],
     function( G )
     local s, gen, ord;
@@ -169,44 +218,10 @@ InstallMethod( IsPGroup,
     if     ( not HasSize( G ) )
        and (    ( HasIsNilpotentGroup( G ) and IsNilpotentGroup( G ) )
              or IsAbelian( G ) ) then
-
-      s:= [];
-      for gen in GeneratorsOfGroup( G ) do
-        ord:= Order( gen );
-        if ord = infinity then
-          return false;
-        elif 1 < ord then
-          if not IsPrimePowerInt( ord ) then
-            return false;
-          else
-            AddSet( s, Factors( ord )[1] );
-            if 1 < Length( s ) then
-              return false;
-            fi;
-          fi;
-        fi;
-      od;
-      if IsEmpty( s ) then
-        return true;
-      fi;
-
+      return IS_PGROUP_FOR_NILPOTENT( G );
     else
-
-      s:= Size( G );
-      if s = 1 then
-        return true;
-      elif s = infinity then
-        return false;
-      elif not IsPrimePowerInt( s ) then
-        return false;
-      else
-        s:= Factors( s );
-      fi;
-
+      return IS_PGROUP_FROM_SIZE( G );
     fi;
-
-    SetPrimePGroup( G, s[1] );
-    return true;
     end );
 
 InstallMethod( IsPGroup,
@@ -216,40 +231,10 @@ InstallMethod( IsPGroup,
     local s, gen, ord;
 
     if HasSize( G ) then
-      s:= Size( G );
-      if s = 1 then
-        return true;
-      elif s = infinity then
-        return false;
-      elif not IsPrimePowerInt( s ) then
-        return false;
-      else
-        s:= Factors( s );
-      fi;
+      return IS_PGROUP_FROM_SIZE( G );
     else
-      s:= [];
-      for gen in GeneratorsOfGroup( G ) do
-        ord:= Order( gen );
-        if ord = infinity then
-          return false;
-        elif 1 < ord then
-          if not IsPrimePowerInt( ord ) then
-            return false;
-          else
-            AddSet( s, Factors( ord )[1] );
-            if 1 < Length( s ) then
-              return false;
-            fi;
-          fi;
-        fi;
-      od;
-      if IsEmpty( s ) then
-        return true;
-      fi;
+      return IS_PGROUP_FOR_NILPOTENT( G );
     fi;
-
-    SetPrimePGroup( G, s[1] );
-    return true;
     end );
 
 
