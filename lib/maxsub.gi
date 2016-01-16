@@ -204,8 +204,10 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     wordpre:=List(wordfpgens,x->PreImagesRepresentative(ff.factorhom,
 	      PreImagesRepresentative(fphom,x)));
     fphom:=ff.factorhom*fphom;
-    f:=GroupHomomorphismByImagesNC(Range(fphom),Source(fphom),
-	wordfpgens,wordpre);
+    # no assertion as this is not a proper homomorphism, but an inverse
+    # multiplicative map
+    f:=GroupGeneralMappingByImagesNC(Range(fphom),Source(fphom),
+	wordfpgens,wordpre:noassert);
     SetInverseGeneralMapping(fphom,f);
 
     homliftlevel:=0;
