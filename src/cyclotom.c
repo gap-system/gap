@@ -120,7 +120,7 @@
 #include        "saveload.h"            /* saving and loading              */
 
 #include        "code.h"
-#include        "tls.h"
+#include        "hpc/tls.h"
 
 /****************************************************************************
 **

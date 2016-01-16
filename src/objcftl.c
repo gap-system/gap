@@ -31,8 +31,8 @@
 #include        "objcftl.h"             /* from the left collect           */
 
 #include	"code.h"
-#include	"thread.h"
-#include	"tls.h"
+#include	"hpc/thread.h"
+#include	"hpc/tls.h"
 
 
 #define IS_INT_ZERO( n )  (IS_INTOBJ(n) && ((n) == INTOBJ_INT(0))) 

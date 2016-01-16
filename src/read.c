@@ -36,8 +36,8 @@
 
 #include        "read.h"                /* reader                          */
 
-#include	"tls.h"
-#include	"thread.h"
+#include	"hpc/tls.h"
+#include	"hpc/thread.h"
 
 #include        "vars.h"                /* variables                       */
 

@@ -64,7 +64,7 @@
 #include        "stats.h"               /* statements                      */
 
 #include        "saveload.h"            /* saving and loading              */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"             /* thread-local storage            */
 
 #include        "vars.h"                /* variables                       */
 
