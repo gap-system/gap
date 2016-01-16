@@ -19,7 +19,6 @@
 ApplicableMethod := fail;
 ##  See below for the other part of it!
 
-
 #############################################################################
 ##
 #F  HANDLE_METHOD_NOT_FOUND( <information> ) . . . raise the method not
@@ -44,7 +43,19 @@ ApplicableMethod := fail;
 ##
 HANDLE_METHOD_NOT_FOUND := function ( INF )
   local no_method_found, ShowArguments, ShowArgument, ShowDetails, ShowMethods, 
-             ShowOtherMethods;
+             ShowOtherMethods, a, first, truncateString, str;
+             
+             
+  truncateString :=  function(s, len)
+   s := String(s);
+   if LENGTH(s) <= len then
+     return s;
+   fi;
+   
+   s := s{[1..len - 3]};
+   APPEND_LIST(s,  "...");
+   return s;
+  end;
 
 
 #############################################################################
@@ -202,7 +213,7 @@ end;
 ##  <#/GAPDoc>
 ##
 ShowOtherMethods := function( arg )
-  local verbosity, i, l, args;
+  local verbosity, i, l, args, str;
   if LENGTH(arg) <> 1 or not IS_INT(arg[1]) then
     verbosity := 1;
   elif arg[1] < 1 then
@@ -227,11 +238,24 @@ PRINT_TO( "*errout*",
         "Error, no method found! For debugging hints type ?Recovery from NoMethodFound\n" ); # should go to errout
   no_method_found:="no ";
   APPEND_LIST(no_method_found,Ordinal(INF.Precedence+1));
-  APPEND_LIST(no_method_found," choice method found for `");
+  APPEND_LIST(no_method_found," choice method found for ");
   APPEND_LIST(no_method_found,NAME_FUNC(INF.Operation));
-  APPEND_LIST(no_method_found,"' on ");
-  APPEND_LIST(no_method_found,STRING_INT(LENGTH(INF.Arguments)));
-  APPEND_LIST(no_method_found," arguments");
+  APPEND_LIST(no_method_found,"(");
+  first := true;
+  for a in INF.Arguments do
+    if first then
+      first := false;
+    else
+      APPEND_LIST(no_method_found, ", ");
+    fi;
+    str := CALL_WITH_CATCH(truncateString, [a, 25]);
+    if str[1] then
+      APPEND_LIST(no_method_found, str[2]);
+    else
+      APPEND_LIST(no_method_found, "?");
+    fi;
+  od;
+  APPEND_LIST(no_method_found,")");
   Error(no_method_found);
 end;
 
@@ -267,4 +291,3 @@ BIND_GLOBAL( "ShowOtherMethods", NONAVAILABLE_SHOW_FUNC );
 #############################################################################
 ##
 #E
-
