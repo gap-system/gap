@@ -232,7 +232,7 @@ finfield.o: ../../Makefile @srcdir@/finfield.c @srcdir@/system.h config.h @srcdi
  @srcdir@/bool.h @srcdir@/integer.h @srcdir@/finfield.h @srcdir@/records.h \
  @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h \
  @srcdir@/code.h @srcdir@/hpc/aobjects.h @srcdir@/hpc/thread.h @srcdir@/hpc/tls.h \
- @srcdir@/hpc/ffdata.h
+ @srcdir@/ffdata.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o finfield.o -c @srcdir@/finfield.c
 
 funcs.o: ../../Makefile @srcdir@/funcs.c @srcdir@/system.h config.h @srcdir@/bool.h \
