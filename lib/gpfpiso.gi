@@ -234,11 +234,12 @@ function(g,str,N)
   local ser, ab, homs, gens, idx, start, pcgs, hom, f, fgens, auts, sf, orb, tra, j, a, ad, lad, n, fg, free, rels, fp, vals, dec, still, lgens, ngens, nrels, nvals, p, dodecomp, decomp, hogens, di, i, k, l, m;
   if Size(g)=1 then
     # often occurs in induction base base
-    return GroupHomomorphismByFunction(g,TRIVIAL_FP_GROUP,x->One(TRIVIAL_FP_GROUP),x->One(g));
+    return
+    GroupHomomorphismByFunction(g,TRIVIAL_FP_GROUP,x->One(TRIVIAL_FP_GROUP),x->One(g):noassert);
   elif g=N then
     # often occurs in induction base base
     return GroupHomomorphismByImagesNC(g,TRIVIAL_FP_GROUP,GeneratorsOfGroup(g),
-             List(GeneratorsOfGroup(g),x->One(TRIVIAL_FP_GROUP)));
+             List(GeneratorsOfGroup(g),x->One(TRIVIAL_FP_GROUP)):noassert);
   elif IsTrivial(N) then
     ser:=ChiefSeries(g);
   else
@@ -262,7 +263,7 @@ function(g,str,N)
       Append(gens,pcgs);
     else
       ab[i-1]:=false;
-      hom:=NaturalHomomorphismByNormalSubgroup(ser[i-1],ser[i]);
+      hom:=NaturalHomomorphismByNormalSubgroup(ser[i-1],ser[i]:noassert);
       IsOne(hom);
       f:=Image(hom);
       # knowing simplicity makes it easy to test whether a map is faithful
@@ -281,7 +282,7 @@ function(g,str,N)
       fgens:=GeneratorsOfGroup(f);
       auts:=List(GeneratorsOfGroup(g),i->
 	     GroupHomomorphismByImagesNC(f,f,fgens,
-	       List(fgens,j->Image(hom,PreImagesRepresentative(hom,j)^i))));
+	       List(fgens,j->Image(hom,PreImagesRepresentative(hom,j)^i)):noassert));
       for j in auts do
 	SetIsBijective(j,true);
       od;
@@ -305,7 +306,7 @@ function(g,str,N)
       # we know sf is simple
       SetIsSimpleGroup(sf,true);
       IsNaturalAlternatingGroup(sf);
-      a:=IsomorphismFpGroup(sf);
+      a:=IsomorphismFpGroup(sf:noassert);
       ad:=List(GeneratorsOfGroup(Range(a)),i->PreImagesRepresentative(a,i));
       lad:=Length(ad);
 
@@ -332,7 +333,7 @@ function(g,str,N)
       od;
 
       fp:=fg/rels;
-      a:=GroupHomomorphismByImagesNC(f,fp,fgens,GeneratorsOfGroup(fp));
+      a:=GroupHomomorphismByImagesNC(f,fp,fgens,GeneratorsOfGroup(fp):noassert);
       Append(gens,List(fgens,i->PreImagesRepresentative(hom,i)));
 
       # here we really want a composed homomorphism, to avoid extra work for 
@@ -426,13 +427,13 @@ function(g,str,N)
   fp:=f/rels;
   di:=rec(gens:=gens,fp:=fp,idx:=idx,dec:=dec,source:=g);
   if IsTrivial(N) then
-    hom:=GroupHomomorphismByImagesNC(g,fp,gens,GeneratorsOfGroup(fp));
+    hom:=GroupHomomorphismByImagesNC(g,fp,gens,GeneratorsOfGroup(fp):noassert);
     SetIsBijective(hom,true);
   else
     hom:=GroupHomomorphismByImagesNC(g,fp,
 	  Concatenation(gens,GeneratorsOfGroup(N)),
 	  Concatenation(GeneratorsOfGroup(fp),
-	    List(GeneratorsOfGroup(N),i->One(fp))));
+	    List(GeneratorsOfGroup(N),i->One(fp))):noassert);
     SetIsSurjective(hom,true);
     SetKernelOfMultiplicativeGeneralMapping(hom,N);
   fi;
@@ -563,7 +564,7 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
   hom2:=GroupHomomorphismByImagesNC(G,fp,
 	 Concatenation(Concatenation(qreps,pcgs),GeneratorsOfGroup(N)),
 	 Concatenation(GeneratorsOfGroup(fp),
-	 List(GeneratorsOfGroup(N),x->One(fp))));
+	 List(GeneratorsOfGroup(N),x->One(fp))):noassert);
 
   # build decompositioninfo
   di:=rec(gens:=Concatenation(qreps,pcgs),fp:=fp,source:=G);
@@ -604,7 +605,9 @@ local di, hom;
     if di.gens=ggens or cgens=ggens then
       di.gens:=cgens;
       di.source:=k;
-      hom:=GroupHomomorphismByImagesNC(k,di.fp,cgens,GeneratorsOfGroup(di.fp));
+      # this homomorphism is just to store decomposition information and is
+      # not declared total, so an assertion test will fail
+      hom:=GroupHomomorphismByImagesNC(k,di.fp,cgens,GeneratorsOfGroup(di.fp):noassert);
       hom!.decompinfo:=`di;
       if HasIsSurjective(h) and IsSurjective(h) 
 	and HasKernelOfMultiplicativeGeneralMapping(h)
