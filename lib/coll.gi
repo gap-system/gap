@@ -2725,7 +2725,13 @@ InstallGlobalFunction(Union, function(arg)
     if Length(tounite) = 0 then
         return [];
     elif Length(tounite) = 1 then
-        return Set(tounite[1]);
+        x := tounite[1];
+        if IsList(x) then
+            Set(x);
+        else
+            return x;
+        fi;
+        
     fi;
     #
     # Now eliminate identical lists
@@ -2752,7 +2758,12 @@ InstallGlobalFunction(Union, function(arg)
     tounite := distinct;
     
     if Length(tounite) = 1 then
-        return Set(tounite[1]);
+        x := tounite[1];
+        if IsList(x) then
+            return Set(x);
+        else
+            return x;
+        fi;        
     fi;
     #
     # if we spotted anything except a plain list or range then we use
