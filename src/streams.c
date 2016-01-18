@@ -104,7 +104,7 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
 
     /* try to open the file                                                */
     if ( ! OpenInputStream(stream) ) {
-        return SFail;
+        return SuPeRfail;
     }
 
     if (echo == True)
@@ -116,18 +116,18 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
     
     CloseInput();
 
-    if( status == 0 ) return SFail;
+    if( status == 0 ) return SuPeRfail;
 
     if (TLS(UserHasQUIT)) {
       TLS(UserHasQUIT) = 0;
-      return SFail;
+      return SuPeRfail;
     }
 
     if (TLS(UserHasQuit)) {
       TLS(UserHasQuit) = 0;
     }
     
-    return TLS(ReadEvalResult) ? TLS(ReadEvalResult) : SFail;
+    return TLS(ReadEvalResult) ? TLS(ReadEvalResult) : SuPeRfail;
     
 }
 
