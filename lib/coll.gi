@@ -2727,7 +2727,7 @@ InstallGlobalFunction(Union, function(arg)
     elif Length(tounite) = 1 then
         x := tounite[1];
         if IsList(x) then
-            Set(x);
+            return Set(x);
         else
             return x;
         fi;
