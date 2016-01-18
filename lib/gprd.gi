@@ -209,7 +209,7 @@ end );
 #M  IsNilpotentGroup( <D> )
 ##
 InstallMethod( IsNilpotentGroup, "for direct products",
-               [IsGroup and HasDirectProductInfo],
+               [IsGroup and HasDirectProductInfo], 30,
 function( D )
     return ForAll( DirectProductInfo( D ).groups, IsNilpotentGroup );
 end );
