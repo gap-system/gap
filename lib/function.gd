@@ -36,16 +36,16 @@
 ##  <C>CallWithTimeoutList</C> in contrast takes exactly three arguments, of which the third is a list
 ##  (possibly empty) or arguments to pass to <A>func</A>. <P/>
 ##
-##  If the call completes within the allotted time and returns a value, the result of 
-##  <C>CallWithTimeout[List]</C> is a length 1 list containing that value. <P/>
+##  If the call completes within the allotted time and returns a value <C>res</C>, the result of 
+##  <C>CallWithTimeout[List]</C> is a length 2 list of the form <C> [ true, res ] </C>. <P/>
 ##  
 ##  If the call completes within the allotted time and returns no value, the result of 
-##  <C>CallWithTimeout[List]</C> is an empty list.<P/>
+##  <C>CallWithTimeout[List]</C> is a list of length 1 containing the value <C>true</C>.<P/>
 ##
 ##  If the call does not complete within the timeout, the result of <C>CallWithTimeout[List]</C>
-##  is <K>fail</K>. In this case, just as if you had <C>quit</C> from a break loop, there is some
-##  risk that internal data structures in &GAP; may have been left in an inconsistent state, and you 
-##  should proceed with caution.<P/>
+##  is a list of length 1 containing the value <C>false</C>  In this case, just as if you had
+##  <C>quit</C> from a break loop, there is some risk that internal data structures in &GAP; may
+##  have been left in an inconsistent state, and you should proceed with caution.<P/>
 ##
 ##  The timer is suspended during execution of a break loop and abandoned when you quit from a break loop.<P/>
 ##

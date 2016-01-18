@@ -1405,6 +1405,8 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
     currLVars = TLS(CurrLVars);
     currStat = TLS(CurrStat);
     recursionDepth = TLS(RecursionDepth);
+    res = NEW_PLIST( T_PLIST_DENSE+IMMUTABLE, 2 );
+    SET_LEN_PLIST(res, 1);
     if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers++])) {
       /* Timeout happened */
       TLS(CurrLVars) = currLVars;
@@ -1412,7 +1414,7 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
       TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       TLS(CurrStat) = currStat;
       TLS(RecursionDepth) = recursionDepth;
-      res = Fail;
+      SET_ELM_PLIST(res, 1, False);
     } else {
       SyInstallAlarm( INT_INTOBJ(seconds), 1000*INT_INTOBJ(microseconds));
       switch (LEN_PLIST(plain_args)) {
@@ -1451,18 +1453,14 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
       }
       assert(NumAlarmJumpBuffers);
       NumAlarmJumpBuffers--;
-      res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE, 1);
+      SET_ELM_PLIST(res,1,True);
       if (result)
         {
-          SET_LEN_PLIST(res,1);
-          SET_ELM_PLIST(res,1,result);
-          CHANGED_BAG(res);
+          SET_LEN_PLIST(res,2);
+          SET_ELM_PLIST(res,2,result);
         }
-      else {
-	RetypeBag(res, T_PLIST_EMPTY+IMMUTABLE);
-        SET_LEN_PLIST(res,0);
-      }
     }
+    CHANGED_BAG(res);
     return res;
 }
 
