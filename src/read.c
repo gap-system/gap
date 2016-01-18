@@ -1240,6 +1240,151 @@ void ReadRecExpr (
     TLS(ReadTop)--;
 }
 
+/****************************************************************************
+**
+**  ArgList representes the return value of ReadFuncArgList
+*/
+struct ArgList
+{
+    Int        narg;           /* number of arguments             */
+    Obj        nams;           /* list of local variables names   */
+    UInt       isvarg;         /* does function have varargs?     */
+};
+
+
+/****************************************************************************
+**
+*F  ReadFuncArgList(<follow>, <is_atomic>, <is_block>, <symbol>, <symbolstr>)
+**  . . . . . . . . . .  read a function argument list.
+**
+**  'ReadFuncArgList' reads the argument list of a function. In case of an
+**  error it skips all symbols up to one contained in <follow>.
+**
+**  <ArgList> :=    ('readwrite'|'readonly') <Ident>
+**                   {',' ('readwrite'|'readonly') <Ident> } ( '...' )
+**
+**  is_atomic: Is this an atomic function?
+**  symbol: The end symbol of the arglist (usually S_RBRACK, but S_RBRACE
+**          for lambda functions).
+**  symbolstr: symbol as an ascii string
+**
+**  This function assumes the opening bracket is already read, and is
+**  responsible for reading the closing bracket.
+*/
+
+struct ArgList ReadFuncArgList(
+    TypSymbolSet        follow,
+    Int is_atomic,
+    UInt symbol,
+    const Char * symbolstr)
+{
+    Obj        name;           /* one local variable name         */
+    Int        narg;           /* number of arguments             */
+    int        lockmode;       /* type of lock for current argument */
+    Obj        nams;           /* list of local variables names   */
+    Bag        locks = 0;      /* locks of the function */
+    UInt       isvarg = 0;     /* does function have varargs?     */
+
+    UInt       i;              /* loop variable */
+    if (is_atomic)
+        locks = NEW_STRING(4);
+
+    /* make and push the new local variables list (args and locals)        */
+    narg = 0;
+    nams = NEW_PLIST( T_PLIST, narg );
+    SET_LEN_PLIST( nams, narg );
+    TLS(CountNams) += 1;
+    ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
+    if ( TLS(Symbol) != symbol ) {
+        lockmode = 0;
+        switch (TLS(Symbol)) {
+            case S_READWRITE:
+            if (!is_atomic) {
+                SyntaxError("'readwrite' argument of non-atomic function");
+                GetSymbol();
+                break;
+            }
+            lockmode++;
+            case S_READONLY:
+            if (!is_atomic) {
+                SyntaxError("'readonly' argument of non-atomic function");
+                GetSymbol();
+                break;
+            }
+            lockmode++;
+            CHARS_STRING(locks)[0] = lockmode;
+            SET_LEN_STRING(locks, 1);
+            GetSymbol();
+        }
+        C_NEW_STRING_DYN( name, TLS(Value) );
+        narg += 1;
+        ASS_LIST( nams, narg, name );
+        Match(S_IDENT,"identifier",symbol|S_LOCAL|STATBEGIN|S_END|follow);
+    }
+
+    if(TLS(Symbol) == S_DOTDOT) {
+        SyntaxError("Three dots required for variadic argument list");
+    }
+    if(TLS(Symbol) == S_DOTDOTDOT) {
+        isvarg = 1;
+        GetSymbol();
+    }
+
+    while ( TLS(Symbol) == S_COMMA ) {
+        if (isvarg) {
+            SyntaxError("Only final argument can be variadic");
+        }
+
+        Match( S_COMMA, ",", follow );
+        lockmode = 0;
+        switch (TLS(Symbol)) {
+            case S_READWRITE:
+            if (!is_atomic) {
+                SyntaxError("'readwrite' argument of non-atomic function");
+                GetSymbol();
+                break;
+            }
+            lockmode++;
+            case S_READONLY:
+            if (!is_atomic) {
+                SyntaxError("'readonly' argument of non-atomic function");
+                GetSymbol();
+                break;
+            }
+            lockmode++;
+            GrowString(locks, narg+1);
+            SET_LEN_STRING(locks, narg+1);
+            CHARS_STRING(locks)[narg] = lockmode;
+            GetSymbol();
+        }
+
+        if(TLS(Symbol) != S_IDENT) {
+            SyntaxError("Expect identifier");
+        }
+
+        for (i = 1; i <= narg; i++ ) {
+            if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
+                SyntaxError("Name used for two arguments");
+            }
+        }
+        C_NEW_STRING_DYN( name, TLS(Value) );
+        narg += 1;
+        ASS_LIST( nams, narg, name );
+        Match(S_IDENT,"identifier",symbol|S_LOCAL|STATBEGIN|S_END|follow);
+        if(TLS(Symbol) == S_DOTDOT) {
+            SyntaxError("Three dots required for variadic argument list");
+        }
+        if(TLS(Symbol) == S_DOTDOTDOT) {
+            isvarg = 1;
+            GetSymbol();
+        }
+    }
+    Match( symbol, symbolstr, S_LOCAL|STATBEGIN|S_END|follow );
+
+    struct ArgList ret = {narg, nams, isvarg};
+    return ret;
+}
+
 
 /****************************************************************************
 **
@@ -1248,22 +1393,16 @@ void ReadRecExpr (
 **  'ReadFuncExpr' reads a function literal expression.  In  case of an error
 **  it skips all symbols up to one contained in <follow>.
 **
-**  <Function> := 'function (' [ <Ident> {',' <Ident>} ] ')'
+**  <Function> := 'function (' <ArgList> ')'
 **                             [ 'local'  <Ident> {',' <Ident>} ';' ]
 **                             <Statments>
 **                'end'
 */
-
-
 void ReadFuncExpr (
     TypSymbolSet        follow,
     Char mode)
 {
-    volatile Obj        nams;           /* list of local variables names   */
     volatile Obj        name;           /* one local variable name         */
-    volatile Int        narg;           /* number of arguments             */
-    volatile UInt       isvarg = 0;     /* does function have varargs?     */
-    volatile UInt       nloc;           /* number of locals                */
     volatile UInt       nr;             /* number of statements            */
     volatile UInt       i;              /* loop variable                   */
     volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
@@ -1271,123 +1410,41 @@ void ReadFuncExpr (
     volatile Int        startLine;      /* line number of function keyword */
     volatile int        is_block = 0;   /* is this a do ... od block?      */
     volatile int        is_atomic = 0;  /* is this an atomic function?      */
-    volatile int        lockmode;       /* type of lock for current argument */
-    volatile Bag        locks = 0;      /* locks of the function */
+    volatile Int        narg;           /* number of arguments             */
+    volatile Obj        nams;           /* list of local variables names   */
+    volatile UInt       nloc;           /* number of locals                */
+    UInt                isvarg = 0;     /* is this function variadic?      */
+    nloc = 0;
 
     /* begin the function               */
     startLine = TLS(Input)->number;
     if (TLS(Symbol) == S_DO) {
 	Match( S_DO, "do", follow );
         is_block = 1;
+        /* make and push the new local variables list (args and locals)        */
+        narg = 0;
+        nams = NEW_PLIST( T_PLIST, narg );
+        SET_LEN_PLIST( nams, narg );
+        TLS(CountNams) += 1;
+        ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
     } else {
-	if (TLS(Symbol) == S_ATOMIC) {
-	    Match(S_ATOMIC, "atomic", follow);
-	    is_atomic = 1;
-	} else if (mode == 'a') { /* in this case the atomic keyword
-                                 was matched away by ReadAtomic before
-                                 we realised we were reading an atomic function */
-        is_atomic = 1;
-    }
-    if (is_atomic)
-        locks = NEW_STRING(4);
-
-    Match( S_FUNCTION, "function", follow );
-    Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
-    }
-
-    /* make and push the new local variables list (args and locals)        */
-    narg = nloc = 0;
-    nams = NEW_PLIST( T_PLIST, narg+nloc );
-    SET_LEN_PLIST( nams, narg+nloc );
-    TLS(CountNams) += 1;
-    ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
-    if (!is_block) {
-	if ( TLS(Symbol) != S_RPAREN ) {
-	    lockmode = 0;
-	    switch (TLS(Symbol)) {
-	      case S_READWRITE:
-	        if (!is_atomic) {
-		  SyntaxError("'readwrite' argument of non-atomic function");
-                  GetSymbol();
-                  break;
-                }
-	        lockmode++;
-	      case S_READONLY:
-	        if (!is_atomic) {
-		  SyntaxError("'readonly' argument of non-atomic function");
-                  GetSymbol();
-                  break;
-                }
-	        lockmode++;
-		CHARS_STRING(locks)[0] = lockmode;
-		SET_LEN_STRING(locks, 1);
-                GetSymbol();
-	    }
-        C_NEW_STRING_DYN( name, TLS(Value) );
-	    narg += 1;
-	    ASS_LIST( nams, narg+nloc, name );
-	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
-	}
-
-	if(TLS(Symbol) == S_DOTDOT) {
-	    SyntaxError("Three dots required for variadic argument list");
-	}
-	if(TLS(Symbol) == S_DOTDOTDOT) {
-	    isvarg = 1;
-	    GetSymbol();
+        if (TLS(Symbol) == S_ATOMIC) {
+            Match(S_ATOMIC, "atomic", follow);
+            is_atomic = 1;
+        } else if (mode == 'a') { /* in this case the atomic keyword
+                                     was matched away by ReadAtomic before
+                                     we realised we were reading an atomic function */
+            is_atomic = 1;
+        }
+        Match( S_FUNCTION, "function", follow );
+        Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
+        struct ArgList args = ReadFuncArgList(follow, is_atomic, S_RPAREN, ")");
+        narg = args.narg;
+        nams = args.nams;
+        isvarg = args.isvarg;
     }
 
-	while ( TLS(Symbol) == S_COMMA ) {
-	    if (isvarg) {
-	        SyntaxError("Only final argument can be variadic");
-	    }
 
-	    Match( S_COMMA, ",", follow );
-	    lockmode = 0;
-	    switch (TLS(Symbol)) {
-	      case S_READWRITE:
-	        if (!is_atomic) {
-		  SyntaxError("'readwrite' argument of non-atomic function");
-                  GetSymbol();
-                  break;
-                }
-	        lockmode++;
-	      case S_READONLY:
-	        if (!is_atomic) {
-		  SyntaxError("'readonly' argument of non-atomic function");
-                  GetSymbol();
-                  break;
-                }
-	        lockmode++;
-		GrowString(locks, narg+1);
-		SET_LEN_STRING(locks, narg+1);
-		CHARS_STRING(locks)[narg] = lockmode;
-	        GetSymbol();
-	    }
-
-	    if(TLS(Symbol) != S_IDENT) {
-	        SyntaxError("Expect identifier");
-	    }
-
-	    for ( i = 1; i <= narg; i++ ) {
-		if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
-		    SyntaxError("Name used for two arguments");
-		}
-	    }
-        C_NEW_STRING_DYN( name, TLS(Value) );
-	    narg += 1;
-	    ASS_LIST( nams, narg+nloc, name );
-	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
-	    if(TLS(Symbol) == S_DOTDOT) {
-	        SyntaxError("Three dots required for variadic argument list");
-	    }
-	    if(TLS(Symbol) == S_DOTDOTDOT) {
-	        isvarg = 1;
-	        GetSymbol();
-	    }
-	}
-        Match( S_RPAREN, ")", S_LOCAL|STATBEGIN|S_END|follow );
-    }
     if ( TLS(Symbol) == S_LOCAL ) {
         Match( S_LOCAL, "local", follow );
         for ( i = 1; i <= narg; i++ ) {
@@ -1469,28 +1526,21 @@ void ReadFuncExpr (
 
 /****************************************************************************
 **
-*F  ReadFuncExpr1(<follow>) . . . . . . . . . . .  read a function expression
+*F  ReadFuncExprBody(<follow>) . . . . . . read the body function expression
 **
-**  'ReadFuncExpr1' reads  an abbreviated  function literal   expression.  In
-**  case of an error it skips all symbols up to one contained in <follow>.
+**  'ReadFuncExprBody reads an abbreviated  function literal expression after
+**  the variable declaration. In case of an error it skips all symbols up to
+**  one contained in <follow>.
 **
-**      <Function>      := <Var> '->' <Expr>
+**      <FunctionBody>      := '->' <Expr>
 */
-void ReadFuncExpr1 (
-    TypSymbolSet        follow )
+void ReadFuncExprBody (
+    TypSymbolSet        follow,
+    Obj nams,
+    UInt narg)
 {
-    volatile Obj        nams;           /* list of local variables names   */
-    volatile Obj        name;           /* one local variable name         */
     volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
-
-    /* make and push the new local variables list                          */
-    nams = NEW_PLIST( T_PLIST, 1 );
-    SET_LEN_PLIST( nams, 0 );
-    TLS(CountNams)++;
-    ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
-    C_NEW_STRING_DYN( name, TLS(Value) );
-    ASS_LIST( nams, 1, name );
+    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>        */
 
     /* match away the '->'                                                 */
     Match( S_MAPTO, "->", follow );
@@ -1500,7 +1550,9 @@ void ReadFuncExpr1 (
     nrError   = TLS(NrError);
 
     /* begin interpreting the function expression (with 1 argument)        */
-    if ( ! READ_ERROR() ) { IntrFuncExprBegin( 1L, 0L, nams, TLS(Input)->number ); }
+    if ( ! READ_ERROR() ) {
+        IntrFuncExprBegin( narg, 0L, nams, TLS(Input)->number );
+    }
 
     /* read the expression and turn it into a return-statement             */
     ReadExpr( follow, 'r' );
@@ -1527,6 +1579,62 @@ void ReadFuncExpr1 (
 
 /****************************************************************************
 **
+*F  ReadFuncExprLong(<follow>) . . . . . read a multi-arg function expression
+**
+**  'ReadFuncExprLong' reads  an abbreviated  function literal expression.  In
+**  case of an error it skips all symbols up to one contained in <follow>.
+**
+**      <Function>      := '{' <ArgList> '}' '->' <Expr>
+*/
+void ReadFuncExprLong (
+    TypSymbolSet        follow )
+{
+    volatile Int        narg;           /* number of arguments             */
+    volatile Obj        nams;           /* list of local variables names   */
+
+    Match( S_LBRACE, "{", follow );
+
+    struct ArgList args = ReadFuncArgList(follow, 0, S_RBRACE, ")");
+    narg = args.narg;
+    nams = args.nams;
+
+    /* 'function( a,b, p... )' takes a variable number of arguments           */
+    /* Also, we special case function(arg)                                   */
+    if (args.isvarg) {
+      narg = -narg;
+    }
+
+    ReadFuncExprBody(follow, nams, narg);
+}
+
+/****************************************************************************
+**
+*F  ReadFuncExpr1(<follow>) . . . . . . . . . . .  read a function expression
+**
+**  'ReadFuncExpr1' reads  an abbreviated  function literal   expression.  In
+**  case of an error it skips all symbols up to one contained in <follow>.
+**
+**      <Function>      := <Var> '->' <Expr>
+*/
+void ReadFuncExpr1 (
+    TypSymbolSet        follow )
+{
+    volatile Obj        nams;           /* list of local variables names   */
+    volatile Obj        name;           /* one local variable name         */
+
+    /* make and push the new local variables list                          */
+    nams = NEW_PLIST( T_PLIST, 1 );
+    SET_LEN_PLIST( nams, 0 );
+    TLS(CountNams)++;
+    ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
+    C_NEW_STRING_DYN( name, TLS(Value) );
+    ASS_LIST( nams, 1, name );
+
+    ReadFuncExprBody(follow, nams, 1);
+}
+
+/****************************************************************************
+**
 *F  ReadFuncExpr0(<follow>) . . . . . . . . . . .  read a function expression
 **
 **  'ReadFuncExpr0' reads  an abbreviated  function literal   expression.  In
@@ -1535,11 +1643,9 @@ void ReadFuncExpr1 (
 **      <Function>      := '->' <Expr>
 */
 void ReadFuncExpr0 (
-    TypSymbolSet        follow )
+    TypSymbolSet        follow)
 {
     volatile Obj        nams;           /* list of local variables names   */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
 
     /* make and push the new local variables list                          */
     nams = NEW_PLIST( T_PLIST, 0 );
@@ -1547,36 +1653,7 @@ void ReadFuncExpr0 (
     TLS(CountNams)++;
     ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
 
-    /* match away the '->'                                                 */
-    Match( S_MAPTO, "->", follow );
-
-    /* remember the current variables in case of an error                  */
-    currLVars = TLS(CurrLVars);
-    nrError   = TLS(NrError);
-
-    /* begin interpreting the function expression (with 1 argument)        */
-    if ( ! READ_ERROR() ) { IntrFuncExprBegin( 0L, 0L, nams, TLS(Input)->number ); }
-
-    /* read the expression and turn it into a return-statement             */
-    ReadExpr( follow, 'r' );
-    if ( ! READ_ERROR() ) { IntrReturnObj(); }
-
-    /* end interpreting the function expression (with 1 statement)         */
-    if ( ! READ_ERROR() ) {
-        IntrFuncExprEnd( 1UL, 1UL );
-    }
-
-    /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0  && TLS(IntrCoding) ) {
-        CodeEnd(1);
-        TLS(IntrCoding)--;
-        TLS(CurrLVars) = currLVars;
-        TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
-        TLS(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
-    }
-
-    /* pop the new local variables list                                    */
-    TLS(CountNams)--;
+    ReadFuncExprBody(follow, nams, 0);
 }
 
 /****************************************************************************
@@ -1696,6 +1773,10 @@ void ReadLiteral (
 
     case S_MAPTO:
         ReadFuncExpr0( follow );
+        break;
+
+    case S_LBRACE:
+        ReadFuncExprLong( follow );
         break;
 
     /* signal an error, we want to see a literal                           */
