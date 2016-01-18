@@ -51,6 +51,16 @@ extern Obj Fail;
 */
 extern Obj SuPeRfail;
 
+/****************************************************************************
+**
+*V  Undefined  . . . . . . . . . . . . . . . . . . . . . . . undefined value
+**
+**  'Undefined' is a special object that is used in lieu of (Obj) 0 in places
+**  where the kernel cannot handle a null reference easily. This object is
+**  never exposed to GAP code and only used within the kernel.
+*/
+extern Obj Undefined;
+
 
 /****************************************************************************
 **
