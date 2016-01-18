@@ -1362,7 +1362,7 @@ InstallMethod(IsomorphismReesMatrixSemigroup, "for a D-class",
 [IsGreensDClass],
 function(D)
   if Number(D, IsIdempotent) <> Length(GreensHClasses(D)) then
-    ErrorMayQuit("IsomorphismReesMatrixSemigroup: usage,\n",
+    ErrorNoReturn("IsomorphismReesMatrixSemigroup: usage,\n",
                  "the D-class is not a subsemigroup,");
   fi;
   return _InjectionPrincipalFactor(D, ReesMatrixSemigroup);

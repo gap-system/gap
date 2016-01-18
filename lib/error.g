@@ -270,7 +270,7 @@ BIND_GLOBAL("Error",
                                arg);
 end);
 
-BIND_GLOBAL("ErrorMayQuit",
+BIND_GLOBAL("ErrorNoReturn",
        function ( arg )
     ErrorInner( rec(
          context := ParentLVars( GetCurrentLVars(  ) ),
@@ -279,3 +279,5 @@ BIND_GLOBAL("ErrorMayQuit",
          printThisStatement := false), arg);
 end);
  
+# HACK: remove this before final GAP 4.8 release
+BIND_GLOBAL("ErrorMayQuit", ErrorNoReturn);
