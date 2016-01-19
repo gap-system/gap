@@ -453,3 +453,4 @@ bootstrap-pkg-full:
 .PHONY: compile config default extern manuals packages rebuild removewin setconfig static strip
 .PHONY: testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard teststandardrenormalize
 .PHONY: cygwin removewin winbinp
+.PHONY: bootstrap-pkg-minimal bootstrap-pkg-full
