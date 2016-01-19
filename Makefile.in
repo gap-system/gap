@@ -205,7 +205,7 @@ clean_gmp_$(CLEANME):
 distclean:
 	while test -e Makefile; do $(MAKE) clean; done
 
-manuals:
+manuals: compile
 	( echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAPauto) )
 	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
           ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
@@ -226,7 +226,7 @@ check: compile
 	        ReadGapRoot( "tst/testutil.g" ); \
             ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) )
 
-testinstall:
+testinstall: compile
 	mkdir -p dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
 	        ReadGapRoot( "tst/testutil.g" ); \
@@ -237,7 +237,7 @@ testinstall:
             ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) > \
             `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
 
-teststandard:
+teststandard: compile
 	mkdir -p dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
 	        ReadGapRoot( "tst/testutil.g" ); \
@@ -248,10 +248,10 @@ teststandard:
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) > \
             `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
 
-teststandardrenormalize:
+teststandardrenormalize: compile
 	( echo 'TestDirectory("tst", rec(renormaliseStones := true));' | $(TESTGAP) )
 
-testpackages:
+testpackages: compile
 	mkdir -p dev/log
 	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
@@ -278,7 +278,7 @@ testpackages:
 	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
 	( rm wsp.g )
 
-testpackagesload:
+testpackagesload: compile
 	mkdir -p dev/log
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
@@ -317,7 +317,7 @@ testpackagesload:
             `date -u +dev/log/testpackagesloadNA_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
 	( rm wsp.g )
 
-testpackagesvars:
+testpackagesvars: compile
 	mkdir -p dev/log
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
@@ -329,11 +329,11 @@ testpackagesvars:
             `date -u +dev/log/testpackagesvars_%Y-%m-%d-%H-%M`; rm testpackagesvars.in )
 	( rm wsp.g )
 
-testmanuals1:
+testmanuals1: compile
 	(cd doc/ref; ../../bin/gap.sh -r extractexamples.g runexamples.g)
 	(cd doc/tut; ../../bin/gap.sh -r extractexamples.g runexamples.g)
 
-testmanuals:
+testmanuals: compile
 	mkdir -p dev/log
 	((cd doc/tut ; \
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
@@ -389,7 +389,7 @@ testmanuals:
 	  > `date -u +dev/log/testmanuals2_%Y-%m-%d-%H-%M` 2>&1 )
 	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
 
-testupdates:
+testupdates: compile
 	mkdir -p dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
             ReadGapRoot( "tst/testutil.g" ); \
@@ -400,7 +400,7 @@ testupdates:
             SetAssertionLevel( 2 ); RunDevUpdateTests();' | $(TESTGAP) > \
             `date -u +dev/log/testupdates2_%Y-%m-%d-%H-%M` )
 
-testobsoletes:
+testobsoletes: compile
 	mkdir -p dev/log
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
