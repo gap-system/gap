@@ -221,6 +221,10 @@ manuals:
           ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
 	( rm doc/wsp.g )
 
+check: compile
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); \
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) )
 
 testinstall:
 	mkdir -p dev/log
@@ -454,3 +458,4 @@ bootstrap-pkg-full:
 .PHONY: testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard teststandardrenormalize
 .PHONY: cygwin removewin winbinp
 .PHONY: bootstrap-pkg-minimal bootstrap-pkg-full
+.PHONY: check
