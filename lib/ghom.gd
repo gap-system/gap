@@ -53,17 +53,15 @@
 ##  <#/GAPDoc>
 ##
 
-# for future use:
-#DeclareOperation( "GroupGeneralMappingByImages",
-#    [ IsGroup, IsGroup, IsList, IsList ] );
-#DeclareOperation( "GroupGeneralMappingByImages",
-#    [ IsGroup, IsList, IsList ] );
+DeclareOperation( "GroupGeneralMappingByImages",
+    [ IsGroup, IsGroup, IsList, IsList ] );
+DeclareOperation( "GroupGeneralMappingByImages",
+    [ IsGroup, IsList, IsList ] );
 
 DeclareOperation( "GroupGeneralMappingByImagesNC",
     [ IsGroup, IsGroup, IsList, IsList ] );
 DeclareOperation( "GroupGeneralMappingByImagesNC",
     [ IsGroup, IsList, IsList ] );
-DeclareSynonym("GroupGeneralMappingByImages",GroupGeneralMappingByImagesNC);
 
 
 #############################################################################

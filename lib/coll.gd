@@ -3089,10 +3089,13 @@ DeclareOperation( "Intersection2",
 ##  [ 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 20, 25 ]
 ##  gap> Union( [ [1,2,4], [2,3,4], [1,3,4] ] )
 ##  >    ;  # or one list of lists or collections
-##  [ 1, 2, 3, 4 ]
+##  [ 1 .. 4 ]
 ##  gap> Union( [ ] );
 ##  [  ]
-##  ]]></Example>
+##  ]]></Example><P/>
+##  When computing the Union of lists or sets of small integers and ranges, 
+##  every attempt is made to return the result as a range and to avoid expanding
+##  ranges provided as input.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

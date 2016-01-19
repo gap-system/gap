@@ -659,7 +659,6 @@ end );
 ##
 DeclareGlobalFunction( "Edit" );
 
-
 # the character set definitions might be needed when processing files, thus
 # they must come earlier.
 BIND_GLOBAL("CHARS_DIGITS",Immutable(SSortedList("0123456789")));

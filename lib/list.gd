@@ -134,6 +134,8 @@ BIND_GLOBAL( "MAX_SIZE_LIST_INTERNAL", 2^(8*GAPInfo.BytesPerVariable-4) - 1 );
 ##  <#/GAPDoc>
 ##
 DeclareAttributeKernel( "Length", IsList, LENGTH );
+InstallTrueMethod(HasLength,IsPlistRep);
+
 
 
 #############################################################################

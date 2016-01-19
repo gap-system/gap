@@ -10,7 +10,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-#include        "tls.h"
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -47,7 +46,8 @@
 
 #include        "profile.h"
 
-#include        "thread.h"
+#include        "hpc/tls.h"
+#include        "hpc/thread.h"
 
 #include        "calls.h"               /* function filename, line number  */
 
@@ -631,12 +631,12 @@ Obj FuncACTIVATE_PROFILING (
 
 #ifndef HAVE_GETTIMEOFDAY
     if(wallTime == True) {
-        ErrorMayQuit("This OS does not support wall-clock based timing");
+        ErrorMayQuit("This OS does not support wall-clock based timing",0,0);
     }
 #endif
 #ifndef HAVE_GETRUSAGE
     if(wallTime == False) {
-        ErrorMayQuit("This OS does not support CPU based timing");
+        ErrorMayQuit("This OS does not support CPU based timing",0,0);
     }
 #endif
 

@@ -22,3 +22,4 @@ gap> cheesefun;
 [ 1 ]
 gap> cheeseval;
 [ 2 ]
+gap> STOP_TEST("flush.tst", 1);

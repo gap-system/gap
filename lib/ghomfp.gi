@@ -802,7 +802,9 @@ local aug,w,p,pres,f,fam,opt;
 
   # write the homomorphism in terms of the image's free generators
   # (so preimages are cheap)
-  f:=GroupHomomorphismByImagesNC(u,f,w,GeneratorsOfGroup(f));
+  # this object cannot test whether is is a proper mapping, so skip
+  # safety assertions that could be triggered by the construction process
+  f:=GroupHomomorphismByImagesNC(u,f,w,GeneratorsOfGroup(f):noassert);
   # but give it `aug' as coset table, so we will use rewriting for images
   SetCosetTableFpHom(f,aug);
 
@@ -852,7 +854,7 @@ local aug,w,p,pres,f,fam;
   aug.primaryImages:=GeneratorsOfGroup(f);
   SecondaryImagesAugmentedCosetTable(aug);
 
-  f:=GroupHomomorphismByImagesNC(u,f,gens,GeneratorsOfGroup(f));
+  f:=GroupHomomorphismByImagesNC(u,f,gens,GeneratorsOfGroup(f):noassert);
 
   # tell f, that `aug' can be used as its coset table
   SetCosetTableFpHom(f,aug);

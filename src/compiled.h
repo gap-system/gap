@@ -55,7 +55,7 @@ extern "C" {
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
@@ -88,7 +88,7 @@ extern "C" {
 
 #include        "vars.h"                /* variables                       */
 
-#include        "aobjects.h"            /* atomic variables                */
+#include        "hpc/aobjects.h"            /* atomic variables                */
 extern Obj InfoDecision;
 extern Obj InfoDoPrint;
 extern Obj CurrentAssertionLevel;

@@ -34,8 +34,8 @@
 #include        "saveload.h"            /* saving and loading              */
 
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 
 /***************************************************************************
@@ -1031,7 +1031,7 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
     /* allow ~/... expansion in SaveWorkspace                              */ 
-    ImportFuncFromLibrary("USER_HOME_EXPAND", &userHomeExpand);
+    ImportFuncFromLibrary("UserHomeExpand", &userHomeExpand);
 
     /* return success                                                      */
     return 0;

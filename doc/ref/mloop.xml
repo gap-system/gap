@@ -81,7 +81,7 @@ error message of the following form
 <P/>
 <Log><![CDATA[
 gap> 1 * ;
-Syntax error: expression expected
+Syntax error: Expression expected
 1 * ;
     ^
 ]]></Log>
@@ -915,17 +915,17 @@ were called with these arguments.
 Then a break loop (see&nbsp;<Ref Sect="Break Loops"/>) is
 entered, unless the standard error output is not connected to a terminal.
 You can leave this break loop with <C>return;</C> to continue execution with
-the statement following the call to <Ref Func="Error"/>. <Ref Func="ErrorMayQuit"/>
+the statement following the call to <Ref Func="Error"/>. <Ref Func="ErrorNoReturn"/>
 operates identically to <Ref Func="Error"/>, except it does not allow using
 <C>return;</C> to continue execution.
 </Description>
 </ManSection>
 
 <ManSection>
-<Func Name="ErrorMayQuit" Arg='messages ...'/>
+<Func Name="ErrorNoReturn" Arg='messages ...'/>
 
 <Description>
-<Ref Func="ErrorMayQuit"/> signals an error from within a function.
+<Ref Func="ErrorNoReturn"/> signals an error from within a function.
 First the messages <A>messages</A> are printed,
 this is done exactly as if <Ref Func="Print"/>
 (see&nbsp;<Ref Sect="View and Print"/>)

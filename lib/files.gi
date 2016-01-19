@@ -36,8 +36,6 @@ BindGlobal( "DirectoryType", NewType(
     DirectoriesFamily,
     IsDirectory and IsDirectoryRep ) );
 
-
-
 #############################################################################
 ##
 #M  Directory( <str> )  . . . . . . . . . . .  create a new directpory object
@@ -46,7 +44,7 @@ InstallMethod( Directory,
     "string",
     [ IsString ],
 function( str )
-    str := USER_HOME_EXPAND(str);
+    str := UserHomeExpand(str);
     #
     # ':' or '\\' probably are untranslated MSDOS or MaxOS path
     # separators, but ':' in position 2 may be OK
@@ -176,7 +174,7 @@ InstallGlobalFunction(DirectoryContents, function(dirname)
     dirname := dirname![1];
   else
     # to make ~/mydir work
-    dirname := USER_HOME_EXPAND(dirname);
+    dirname := UserHomeExpand(dirname);
   fi;
   str := STRING_LIST_DIR(dirname);
   if str = fail then
@@ -199,7 +197,7 @@ InstallMethod( Read,
 function ( name )
     local   readIndent,  found;
 
-    name := USER_HOME_EXPAND(name);
+    name := UserHomeExpand(name);
 
     readIndent := SHALLOW_COPY_OBJ( READ_INDENT );
     APPEND_LIST_INTR( READ_INDENT, "  " );
@@ -222,7 +220,7 @@ end );
 InstallMethod( ReadAsFunction,
     "string",
     [ IsString ],
-    name -> READ_AS_FUNC( USER_HOME_EXPAND( name ) ) );  
+    name -> READ_AS_FUNC( UserHomeExpand( name ) ) );  
 
 
 #############################################################################
@@ -260,7 +258,7 @@ leave the 'Editor' and 'EditorOptions' preferences empty."
 InstallGlobalFunction( Edit, function( name )
     local   editor,  ret;
 
-    name := USER_HOME_EXPAND(name);
+    name := UserHomeExpand(name);
     editor := Filename( DirectoriesSystemPrograms(), UserPreference("Editor") );
     if editor = fail  then
         Error( "cannot locate editor `", UserPreference("Editor"),

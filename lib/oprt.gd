@@ -1602,7 +1602,7 @@ OrbitishFO( "Blocks",
 ##  is a subset of one block.
 ##  <Example><![CDATA[
 ##  gap> MaximalBlocks(g,[1..8]);
-##  [ [ 1, 2, 3, 8 ], [ 4, 5, 6, 7 ] ]
+##  [ [ 1, 2, 3, 8 ], [ 4 .. 7 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

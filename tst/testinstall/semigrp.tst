@@ -431,6 +431,19 @@ false
 gap> IsEmpty(T);
 true
 
+# Check for correct ViewString method for IsInverseSemigroup and
+# HasGeneratorsOfSemigroup
+gap> S := Semigroup(Transformation([4, 3, 5, 5, 5]),
+>                   Transformation([4, 1, 5, 2, 5]), 
+>                   Transformation([5, 5, 2, 1, 5]));
+<transformation semigroup of degree 5 with 3 generators>
+gap> IsInverseSemigroup(S);
+true
+gap> Size(S);
+36
+gap> S;
+<inverse transformation semigroup of size 36, degree 5 with 3 generators>
+
 #
 gap> STOP_TEST( "semigrp.tst", 1060000);
 

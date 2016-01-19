@@ -84,7 +84,7 @@ end
 gap> [1..2];
 [ 1, 2 ]
 gap> [1...2];
-Syntax error: only two dots in a range in stream line 1
+Syntax error: Only two dots in a range in stream line 1
 [1...2];
     ^
 gap> f := function(a,arg) return [a,arg]; end;

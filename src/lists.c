@@ -47,11 +47,11 @@
 #include        "string.h"              /* strings                         */
 #include        "integer.h"             /* integers                        */
 
-#include	"aobjects.h"		/* atomic objects                  */
+#include        "hpc/aobjects.h"        /* atomic objects                  */
 
-#include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include        "code.h"		            /* coder                           */
+#include        "hpc/thread.h"		      /* threads			                   */
+#include        "hpc/tls.h"			        /* thread-local storage            */
 
 
 

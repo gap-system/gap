@@ -45,9 +45,9 @@
 #include        "saveload.h"            /* saving and loading              */
 #include        "read.h"                /* to access stack of for loop globals */
 #include        "gvars.h"
-#include        "thread.h"              /* threads                         */
-#include        "tls.h"                 /* thread-local storage            */
-#include	"aobjects.h"		/* atomic objects		   */
+#include        "hpc/thread.h"              /* threads                         */
+#include        "hpc/tls.h"                 /* thread-local storage            */
+#include        "hpc/aobjects.h"		/* atomic objects		   */
 
 #include        "vars.h"                /* variables                       */
 
@@ -1309,7 +1309,7 @@ void            CodeBreak ( void )
     Stat                stat;           /* break-statement, result         */
 
     if (!TLS(LoopNesting))
-      SyntaxError("break statement not enclosed in a loop");
+      SyntaxError("'break' statement not enclosed in a loop");
     
     /* allocate the break-statement                                        */
     stat = NewStat( T_BREAK, 0 * sizeof(Expr) );
@@ -1330,7 +1330,7 @@ void            CodeContinue ( void )
     Stat                stat;           /* continue-statement, result         */
 
     if (!TLS(LoopNesting))
-      SyntaxError("continue statement not enclosed in a loop");
+      SyntaxError("'continue' statement not enclosed in a loop");
 
     /* allocate the continue-statement                                        */
     stat = NewStat( T_CONTINUE, 0 * sizeof(Expr) );
