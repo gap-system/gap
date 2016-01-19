@@ -91,6 +91,10 @@ setconfig:
 
 config: bin/$(GAPARCH)/configure  bin/$(GAPARCH)/config.status
 
+Makefile: Makefile-$(CONFIGNAME)
+Makefile-$(CONFIGNAME): config.status Makefile.in
+	./config.status --file $@:Makefile.in
+
 bin/$(GAPARCH)/configure: cnf/configure.out
 	mkdir -p bin/$(GAPARCH)
 	@rm -f bin/$(GAPARCH)/configure
