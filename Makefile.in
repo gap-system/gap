@@ -449,4 +449,7 @@ bootstrap-pkg-full:
         tar xzf ../$(PKG_FULL) ; \
     fi;
 
-.PHONY: clean clean_$(CLEANME) clean_gap clean_gap_$(CLEANME) clean_gmp clean_gmp_$(CLEANME) compile config cygwin default distclean extern manuals packages rebuild removewin setconfig static strip testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard teststandardrenormalize winbinp
+.PHONY: clean clean_$(CLEANME) clean_gap clean_gap_$(CLEANME) clean_gmp clean_gmp_$(CLEANME) distclean
+.PHONY: compile config default extern manuals packages rebuild removewin setconfig static strip
+.PHONY: testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard teststandardrenormalize
+.PHONY: cygwin removewin winbinp
