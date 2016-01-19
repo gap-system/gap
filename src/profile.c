@@ -383,8 +383,10 @@ static inline void outputStat(Stat stat, int exec, int visited)
   // Explicitly skip these two cases, as they are often specially handled
   // and also aren't really interesting statements (something else will
   // be executed whenever they are).
-  if(TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR)
+  if(TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR) {
+    HashUnlock(&profileState);
     return;
+  }
 
   // Catch the case we arrive here and profiling is already disabled
   if(!profileState_Active) {
