@@ -333,10 +333,6 @@ testpackagesvars: compile
             `date -u +dev/log/testpackagesvars_%Y-%m-%d-%H-%M`; rm testpackagesvars.in )
 	( rm wsp.g )
 
-testmanuals1: compile
-	(cd doc/ref; ../../bin/gap.sh -r extractexamples.g runexamples.g)
-	(cd doc/tut; ../../bin/gap.sh -r extractexamples.g runexamples.g)
-
 testmanuals: compile
 	mkdir -p dev/log
 	((cd doc/tut ; \
