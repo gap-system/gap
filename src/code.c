@@ -1309,7 +1309,7 @@ void            CodeBreak ( void )
     Stat                stat;           /* break-statement, result         */
 
     if (!TLS(LoopNesting))
-      SyntaxError("Break statement not enclosed in a loop");
+      SyntaxError("'break' statement not enclosed in a loop");
     
     /* allocate the break-statement                                        */
     stat = NewStat( T_BREAK, 0 * sizeof(Expr) );
@@ -1330,7 +1330,7 @@ void            CodeContinue ( void )
     Stat                stat;           /* continue-statement, result         */
 
     if (!TLS(LoopNesting))
-      SyntaxError("Continue statement not enclosed in a loop");
+      SyntaxError("'continue' statement not enclosed in a loop");
 
     /* allocate the continue-statement                                        */
     stat = NewStat( T_CONTINUE, 0 * sizeof(Expr) );

@@ -1226,7 +1226,7 @@ void            IntrBreak ( void )
 
     /* otherwise must be coding                                            */
     if ( TLS(IntrCoding) == 0 )
-      ErrorQuit("A break statement can only appear inside a loop",0L,0L);
+      ErrorQuit("'break' statement can only appear inside a loop",0L,0L);
     else
       CodeBreak();
     return;
@@ -1251,7 +1251,7 @@ void            IntrContinue ( void )
 
     /* otherwise must be coding                                            */
     if ( TLS(IntrCoding) == 0 )
-      ErrorQuit("A continue statement can only appear inside a loop",0L,0L);
+      ErrorQuit("'continue' statement can only appear inside a loop",0L,0L);
     else
       CodeContinue();
     return;
