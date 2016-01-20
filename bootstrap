@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+########################################################################
+# Regenerate auto-generated files (e.g. configure)
+########################################################################
+
+
+aclocal -I m4
+if [ $? -ne 0 ]; then
+    echo >&2 "Bootstrap failed in aclocal."
+fi
+
+libtoolize --copy
+if [ $? -ne 0 ]; then
+    echo >&2 "Bootstrap failed in libtoolize."
+fi
+
+automake --add-missing
+if [ $? -ne 0 ]; then
+    echo >&2 "Bootstrap failed in automake."
+fi
+
+autoconf
+if [ $? -ne 0 ]; then
+    echo >&2 "Bootstrap failed in autoconf."
+fi
+

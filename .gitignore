@@ -42,6 +42,7 @@ dev/log
 *.core
 *.rej
 *.orig
+*.o
 doc/gapmacrodoc.aux
 doc/gapmacrodoc.example-1.tst
 doc/gapmacrodoc.idx
@@ -52,3 +53,28 @@ doc/gapmacrodoc.pdf
 doc/gapmacrodoc.six
 doc/gapmacrodoc.synctex.gz
 doc/gapmacrodoc.toc
+
+# Emacs temporary files
+*~
+\#*\#
+\.\#*
+
+# Autotools generated files (run ./bootstrap)
+.deps
+aclocal.m4
+autom4te.cache/
+compile
+config.guess
+config.sub
+configure
+depcomp
+install-sh
+libtool
+ltmain.sh
+m4/
+missing
+stamp-h1
+Makefile.in
+src/gap
+src/config.h
+src/config.h.in
