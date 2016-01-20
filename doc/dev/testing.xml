@@ -1,17 +1,7 @@
-<!-- 
-
-  testing.xml          GAP documentation    
-
-  Copyright (C) 2005,  The GAP Group
-
-Describe testing.
-
--->
-
 <Chapter Label="Chap-Testing">
 <Heading>Testing &GAP;</Heading>
 
-<E>TODO: This chapter is partially outdated and has to be revised for &GAP; 4.5</E>
+<E>TODO: This chapter is partially outdated and has to be revised</E>
 <P/>
 
 In this chapter we describe several tests which should be applied regularly
@@ -32,7 +22,7 @@ as well as formal aspects of the documentation.
 The directory <F>tst</F> in the &GAP; root directory contains directories,
 each of which contains files whose names have the suffix <C>.tst</C>.
 The format of each of these files must be suitable for being read with
-the function <C>ReadTest</C>,
+the function <C>Test</C>,
 see section <Ref BookName="Ref" Sect="Test Files"/>.
 If functionality from &GAP; packages is needed in a <C>tst</C> file
 then it is recommended to execute these tests only if the packages are
@@ -157,7 +147,7 @@ If the record in the <F>PackageInfo.g</F> file of the package
 contains the component <C>TestFile</C> then the file given by the value
 is read as a part of the regular &GAP; test suite,
 see section <Ref Sect="Sect-TestSuite"/>.
-So this file should contain <C>ReadTest</C> statements for suitable
+So this file should contain <C>Test</C> statements for suitable
 files that are part of the package distribution.
 Since these tests are intended to be run regularly,
 they should require not more than a few hours of CPU time.
