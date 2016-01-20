@@ -42,8 +42,11 @@ gapinclude_HEADERS = \
 gap_CFLAGS = $(AM_CFLAGS) \
   -DCONFIG_H @GMP_CFLAGS@
 
-# the no-undefined is necessary for Cygwin
-gap_LDFLAGS = -lm @GMP_LIBS@ -Wno-undefined
+# * the no-undefined is necessary for Cygwin
+# * export-dynamic is a bit of a hack to allow dynamic loading of gap
+#   packages. This would not be needed if the GAP symbols were in a
+#   shared library (libgap)
+gap_LDFLAGS = -lm @GMP_LIBS@ -no-undefined -export-dynamic
 
 
 dist-hook:
