@@ -221,7 +221,7 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  gap> p:=SemidirectProduct(g,apci,n);
 ##  <pc group of size 24 with 4 generators>
 ##  gap> IsomorphismGroups(p,Group((1,2,3,4),(1,2)));
-##  [ f1, f2, f3, f4 ] -> [ (3,4), (1,4,3), (1,2)(3,4), (1,3)(2,4) ]
+##  [ f1, f2, f3, f4 ] -> [ (2,3), (1,2,3), (1,4)(2,3), (1,3)(2,4) ]
 ##  gap> SemidirectProduct(SU(3,3),GF(9)^3);
 ##  <matrix group of size 4408992 with 3 generators>
 ##  gap> SemidirectProduct(Group((1,2,3),(2,3,4)),GF(5)^4);

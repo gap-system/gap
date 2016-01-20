@@ -921,14 +921,14 @@ Group([ (1,4)(2,3), (1,3)(2,4) ])
 gap> Image( hom, (1,2,3) );
 (1,2,3)
 gap> Image( hom, DerivedSubgroup(s4) );
-Group([ (1,3,2), (1,2,3) ])
+Group([ (1,3,2), (1,3,2) ])
 ]]></Example>
 <P/>
 <Log><![CDATA[
 gap> PreImage( hom, (1,2,3) );
 Error, <map> must be an inj. and surj. mapping called from
-<function>( <arguments> ) called from read-eval-loop
-Entering break read-eval-print loop ...
+<function "PreImage">( <arguments> )
+ called from read-eval loop at line 4 of *stdin*
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> quit;
@@ -976,13 +976,13 @@ But note that horrible things can happen if
 <Ref Func="GroupHomomorphismByImagesNC" BookName="ref"/>
 is used when the input does not describe a homomorphism.
 <P/>
-<Example><![CDATA[
+<Log><![CDATA[
 gap> hom2 := GroupHomomorphismByImagesNC( s4, s3,
 >            GeneratorsOfGroup(s4), [(1,2,3),(2,3)] );
 [ (1,2,3,4), (1,2) ] -> [ (1,2,3), (2,3) ]
 gap> Size( Kernel(hom2) );
 24
-]]></Example>
+]]></Log>
 <P/>
 In other words, &GAP; claims that the kernel is the full <C>s4</C>,
 yet <C>hom2</C> obviously has some non-trivial images!
@@ -993,10 +993,10 @@ to an element of order&nbsp;3 (namely, (1,2,3)).
 <Ref Func="GroupHomomorphismByImagesNC" BookName="ref"/>,
 &GAP; trusts you.</E>
 <P/>
-<Example><![CDATA[
+<Log><![CDATA[
 gap> IsGroupHomomorphism( hom2 );
 true
-]]></Example>
+]]></Log>
 <P/>
 And then it produces serious nonsense if the thing is not a homomorphism,
 as seen above!
@@ -1178,7 +1178,7 @@ gap> niceaut := NiceObject( aut );
 Group([ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ])
 gap> IsomorphismGroups( niceaut, SymmetricGroup( 4 ) );
 [ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ] -> 
-[ (1,2,3,4), (2,3,4), (1,3)(2,4), (1,2)(3,4) ]
+[ (1,2,3,4), (1,2,4), (1,3)(2,4), (1,2)(3,4) ]
 ]]></Example>
 <P/>
 The range of  a nice monomorphism is  in most cases a permutation  group,
