@@ -434,7 +434,6 @@ BIND_GLOBAL( "TypeOfTypes", [
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsType and IsTypeDefaultRep ) ),
     false,
     NEW_TYPE_NEXT_ID ] );
-MakeReadOnly(TypeOfTypes);
 
 
 FamilyOfTypes!.NAME             := "FamilyOfTypes";
@@ -624,4 +623,3 @@ end );
 #############################################################################
 ##
 #E
-
