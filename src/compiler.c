@@ -5636,7 +5636,7 @@ Int CompileFunc (
 
     /* emit code to include the interface files                            */
     Emit( "/* C file produced by GAC */\n" );
-    Emit( "#include \"src/compiled.h\"\n" );
+    Emit( "#include \"compiled.h\"\n" );
 
     /* emit code for global variables                                      */
     Emit( "\n/* global variables used in handlers */\n" );

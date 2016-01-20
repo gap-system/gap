@@ -33,6 +33,9 @@ doc/*/manual.six
 
 pkg/
 extern/gmp*/
+bootstrap-pkg-minimal.tar.gz
+bootstrap-pkg-full.tar.gz
+
 
 dev/log
 
