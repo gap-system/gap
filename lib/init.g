@@ -235,72 +235,6 @@ CallAndInstallPostRestore( function()
     ASS_GVAR( "BreakOnError", not GAPInfo.CommandLineOptions.T );
 end);
 
-
-#############################################################################
-##
-#F  ReadOrComplete( <name> )  . . . . . . . . . . . . read file or completion
-####
-##COMPLETABLE_FILES := [];
-##COMPLETED_FILES   := [];
-##
-##ReadOrComplete := function( name )
-##    local check;
-##
-##    READED_FILES := [];
-##    check        := CHECK_INSTALL_METHOD;
-##
-##    # use completion files
-##    if not GAPInfo.CommandLineOptions.N then
-##
-##        # do not check installation and use cached ranks
-##        CHECK_INSTALL_METHOD := false;
-##        RankFilter           := RANK_FILTER_COMPLETION;
-##
-##        # check for the completion file
-##        if not READ_GAP_ROOT( ReplacedString( name, ".g", ".co" ) ) then
-##
-##            # set filter functions to store
-##            IS_READ_OR_COMPLETE  := true;
-##            CHECK_INSTALL_METHOD := check;
-##            RankFilter           := RANK_FILTER_STORE;
-##            RANK_FILTER_LIST     := [];
-##
-##            # read the original file
-##            InfoRead1( "#I  reading ", name, "\n" );
-##            if not READ_GAP_ROOT( name ) then
-##                Error( "cannot read or complete file ", name );
-##            fi;
-##            ADD_LIST( COMPLETABLE_FILES, [ name, READED_FILES, RANK_FILTER_LIST ] );
-##
-##        # file completed
-##        else
-##            ADD_LIST( COMPLETED_FILES, name );
-##            InfoRead1( "#I  completed ", name, "\n" );
-##        fi;
-##
-##    else
-##
-##        # set `RankFilter' to hash the ranks
-##        IS_READ_OR_COMPLETE := true;
-##        RankFilter          := RANK_FILTER_STORE;
-##        RANK_FILTER_LIST    := [];
-##
-##        # read the file
-##        if not READ_GAP_ROOT( name ) then
-##            Error( "cannot read file ", name );
-##        fi;
-##        ADD_LIST( COMPLETABLE_FILES, [ name, READED_FILES, RANK_FILTER_LIST ] );
-##    fi;
-##
-##    # reset rank and filter functions
-##    IS_READ_OR_COMPLETE  := false;
-##    CHECK_INSTALL_METHOD := check;
-##    RankFilter           := RANK_FILTER;
-##    Unbind(RANK_FILTER_LIST);
-##    Unbind(READED_FILES);
-##end;
-##
-
 ReadOrComplete := function(name)
     InfoRead1( "#I  reading ", name, "\n" );
     if not READ_GAP_ROOT( name ) then
@@ -543,16 +477,6 @@ CallAndInstallPostRestore( function()
     return fail;
   end;
 
-
-  ##  i := Length (str)-Length (sub) + 1;
-  ##  while i > 0 do
-  ##      if str{[i..i+Length(sub)-1]}=sub then
-  ##          return i;
-  ##      fi;
-  ##  od;
-  ##  return fail;
-  ##end;
-        
   # we leave the GAPInfo.TermEncodingOverwrite for gaprc
   # for a moment, but don't document it - doesn't work with 
   # loaded workspaces
@@ -679,7 +603,6 @@ CallAndInstallPostRestore( function()
         
      
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
-    #Print (" Loading the library ... (see '?Saving and Loading' to start GAP faster)\n");
     Print (" Loading the library \c");
 fi;
 
@@ -798,8 +721,6 @@ BindGlobal( "SetUserPreferences", function( arg )
       od;
     fi;
     end );
-
-# SetUserPreferences();
 
 # Here are a few general user preferences which may be useful for 
 # various purposes. They are self-explaining.
