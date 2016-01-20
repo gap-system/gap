@@ -5631,10 +5631,13 @@ Obj FuncSETTER_FUNCTION (
     Obj                 func;
     Obj                 fname;
     Obj                 tmp;
+    Obj                 args;
+
+    args = ArgStringToList("object, value");
 
     WRAP_NAME(fname, name, "SetterFunc");
-    func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, CSTR_STRING(fname), 2,
-                         "object, value", DoSetterFunction );
+    func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 2,
+                         args, DoSetterFunction );
     tmp = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
@@ -5668,11 +5671,18 @@ Obj FuncGETTER_FUNCTION (
 {
     Obj                 func;
     Obj                 fname;
+    Obj                 args;
+    Obj                 rnam;
+
+    args = ArgStringToList("object, value");
 
     WRAP_NAME(fname, name, "GetterFunc");
-    func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, CSTR_STRING(fname), 1,
-                         "object, value", DoGetterFunction );
-    ENVI_FUNC(func) = INTOBJ_INT( RNamObj(name) );
+    func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 1,
+                         args, DoGetterFunction );
+    /* Need to seperate this onto two lines, in case RNamObj causes
+     * a garbage collection */
+    rnam = INTOBJ_INT( RNamObj(name) );
+    ENVI_FUNC(func) = rnam;
     return func;
 }
 
