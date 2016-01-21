@@ -891,5 +891,46 @@ end);
 
 #############################################################################
 ##
+#F  SetUserPreferences
+##
+##  Set the defaults of `GAPInfo.UserPreferences'.
+##
+##  We locate the first file `gap.ini' in GAP root directories,
+##  and read it if available.
+##  This must be done before `GAPInfo.UserPreferences' is used.
+##  Some of the preferences require an initialization,
+##  but this cannot be called before the complete library has been loaded.
+##
+BindGlobal( "SetUserPreferences", function( arg )
+    local name, record;
+
+    Info( InfoWarning, 1, "");
+    Info( InfoWarning, 1, Concatenation( [
+          "The call to 'SetUserPreferences' (probably in a 'gap.ini' file)\n",
+          "#I  should be replaced by individual 'SetUserPreference' calls,\n",
+          "#I  which are package specific.\n",
+          "#I  Try 'WriteGapIniFile()'." ] ) );
+
+    # Set the new values.
+    if Length( arg ) = 1 then
+      record:= arg[1];
+      if not IsBound(GAPInfo.UserPreferences.gapdoc) then
+        GAPInfo.UserPreferences.gapdoc := rec();
+      fi;
+      if not IsBound(GAPInfo.UserPreferences.gap) then
+        GAPInfo.UserPreferences.gap := rec();
+      fi;
+      for name in RecNames( record ) do
+        if name in [ "HTMLStyle", "TextTheme", "UseMathJax" ] then
+          GAPInfo.UserPreferences.gapdoc.( name ):= record.( name );
+        else
+          GAPInfo.UserPreferences.gap.( name ):= record.( name );
+        fi;
+      od;
+    fi;
+    end );
+
+#############################################################################
+##
 #E
 
