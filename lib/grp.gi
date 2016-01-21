@@ -996,13 +996,14 @@ InstallMethod( FittingSubgroup,
     "generic method for groups",
     [ IsGroup and IsFinite ],
     function (G)
-        if IsTrivial (G) then
-            return G;
-        else
-            return SubgroupNC( G, Filtered(Union( List( Set( FactorsInt( Size( G ) ) ),
+        if not IsTrivial( G ) then
+            G := SubgroupNC( G, Filtered(Union( List( Set( FactorsInt( Size( G ) ) ),
                          p -> GeneratorsOfGroup( PCore( G, p ) ) ) ),
                          p->p<>One(G)));
+            Assert( 2, IsNilpotentGroup( G ) );
+            SetIsNilpotentGroup( G, true );
         fi;
+        return G;
     end);
 
 RedispatchOnCondition( FittingSubgroup, true, [IsGroup], [IsFinite], 0);
@@ -1019,7 +1020,12 @@ local m;
       return G;
     fi;
     m:=List(ConjugacyClassesMaximalSubgroups(G),C->Core(G,Representative(C)));
-    return Intersection(m);
+    m := Intersection(m);
+    if HasIsFinite(G) and IsFinite(G) then
+      Assert(2,IsNilpotentGroup(m));
+      SetIsNilpotentGroup(m,true);
+    fi;
+    return m;
 end);
 
 

@@ -134,7 +134,10 @@ InstallMethod( FrattiniSubgroup,
     0,
 
 function( G )
-    return Core( G, PrefrattiniSubgroup( G ) );
+    G := Core( G, PrefrattiniSubgroup( G ) );
+    Assert( 2, IsNilpotentGroup( G) );
+    SetIsNilpotentGroup( G, true );
+    return G;
 end);
 
 
