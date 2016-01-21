@@ -3,9 +3,9 @@
 
 #if !defined(HPCGAP)
 
-#ifndef HAVE_NATIVE_TLS
-
 #else
+
+#ifndef HAVE_NATIVE_TLS
 
 #if SIZEOF_VOID_P == 8
 #define TLS_SIZE (1L << 20)
