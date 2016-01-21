@@ -990,7 +990,7 @@ InstallMethod( Exponent,
 #M  FittingSubgroup( <G> )  . . . . . . . . . . . Fitting subgroup of a group
 ##
 InstallMethod( FittingSubgroup, "for nilpotent group",
-    [ IsGroup and IsNilpotentGroup ], 0, IdFunc );
+    [ IsGroup and IsNilpotentGroup ], SUM_FLAGS, IdFunc );
 
 InstallMethod( FittingSubgroup,
     "generic method for groups",
