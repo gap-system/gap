@@ -1,6 +1,22 @@
 #ifndef GAP_TLS_H
 #define GAP_TLS_H
 
+#if !defined(HPCGAP)
+
+/*
+ * HPC-GAP stubs.
+ */
+
+#define ReadGuard(bag) NOOP
+#define WriteGuard(bag) NOOP
+
+static inline Bag ImpliedWriteGuard(Bag bag)
+{
+  return bag;
+}
+
+#else
+
 #include <stdint.h>
 
 #include "code.h"
@@ -415,5 +431,7 @@ Int AllocateExtraTLSSlot();
 
 void InitTLS();
 void DestroyTLS();
+
+#endif // HPCGAP
 
 #endif // GAP_TLS_H
