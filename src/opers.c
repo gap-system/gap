@@ -964,13 +964,16 @@ Obj SetterAndFilter (
     Obj                 getter )
 {
     Obj                 setter;
-
+    Obj                 obj;
     if ( SETTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
         setter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
                                 "<<setter-and-filter>>", 2L, "obj, val",
                                 DoSetAndFilter );
-        FLAG1_FILT(setter)  = SetterFilter( FLAG1_FILT(getter) );
-        FLAG2_FILT(setter)  = SetterFilter( FLAG2_FILT(getter) );
+        /* assign via 'obj' to avoid GC issues */
+        obj =  SetterFilter( FLAG1_FILT(getter) );
+        FLAG1_FILT(setter)  = obj;
+        obj = SetterFilter( FLAG2_FILT(getter) );
+        FLAG2_FILT(setter)  = obj;
         SETTR_FILT(getter)  = setter;
         CHANGED_BAG(getter);
     }
