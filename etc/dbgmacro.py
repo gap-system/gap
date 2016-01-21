@@ -99,9 +99,9 @@ include("code.h")
 include("funcs.h")
 include("read.h")
 include("intrprtr.h")
-include("tls.h")
-include("thread.h")
-include("aobjects.h")
+include("hpc/tls.h")
+include("hpc/thread.h")
+include("hpc/aobjects.h")
 include("vars.h")
 
 macros("""

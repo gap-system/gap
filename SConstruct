@@ -488,7 +488,7 @@ GAP.Append(CFLAGS=" -DMAX_GC_THREADS="+str(gcmaxthreads))
 
 # Get all the source files that we need to compile GAP.
 # We currently exclude the Win95 file and GAC-generated files.
-source = glob.glob("src/*.c")
+source = glob.glob("src/*.c") + glob.glob("src/hpc/*.c")
 source.remove("src/gapw95.c")
 # source = filter(lambda s: not s.startswith("src/c_"), source)
 
