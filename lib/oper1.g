@@ -778,10 +778,15 @@ BIND_GLOBAL( "KeyDependentOperation",
 
         if LEN_LIST( known ) < i or known[i] <> key then
 	  erg := oper( D, key );
-          known{ [ i + 2 .. LEN_LIST( known ) + 2 ] }:=
-            known{ [ i .. LEN_LIST( known ) ] };
-          known[  i  ]:= key;
-          known[ i+1 ]:= erg;
+          while i < LEN_LIST( known ) and known[i] < key do
+            i:= i + 2;
+          od;
+          if LEN_LIST( known ) < i or known[i] <> key then
+            known{ [ i + 2 .. LEN_LIST( known ) + 2 ] }:=
+              known{ [ i .. LEN_LIST( known ) ] };
+            known[  i  ]:= key;
+            known[ i+1 ]:= erg;
+          fi;
         fi;
         return known[ i+1 ];
         end );
