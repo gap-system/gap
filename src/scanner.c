@@ -61,8 +61,8 @@
 #include        "opers.h"               /* DoFilter...                     */
 #include        "read.h"                /* Call0ArgsInNewReader            */
 
-#include	"tls.h"
-#include	"thread.h"
+#include	"hpc/tls.h"
+#include	"hpc/thread.h"
 
 #include <assert.h>
 #include <limits.h>

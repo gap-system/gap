@@ -45,15 +45,15 @@
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 
 #include        "vars.h"                /* variables                       */
 
 
-#include        "aobjects.h"            /* atomic objects                  */
+#include        "hpc/aobjects.h"            /* atomic objects                  */
 #include        "saveload.h"            /* saving and loading              */
 
-#include	    "thread.h"		        /* threads                         */
+#include	    "hpc/thread.h"		        /* threads                         */
 #include        "profile.h"             /* installing methods              */
 
 

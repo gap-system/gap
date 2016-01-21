@@ -57,7 +57,7 @@
 
 #include        "code.h"
 
-#include	"tls.h"
+#include	"hpc/tls.h"
 
 #include        "vars.h"                /* TLS(BottomLVars) for execution contexts */
 

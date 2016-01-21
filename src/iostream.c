@@ -45,8 +45,8 @@
 #include        "bool.h"                /* True and False                  */
 
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 #include <stdio.h>                      /* standard input/output functions */
 #include <stdlib.h>

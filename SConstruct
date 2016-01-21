@@ -532,7 +532,7 @@ GAP.Command("src/dbgmacro.c", "etc/dbgmacro.py",
 # generating matching files in the gen/ directory and make them
 # the actual source files instead.
 gen = []
-includes = glob.glob("src/*.h")
+includes = glob.glob("src/*.h") + glob.glob("src/hpc/*.h")
 if preprocess:
   import os, stat
   try: os.mkdir("gen")

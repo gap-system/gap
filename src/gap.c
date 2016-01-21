@@ -31,7 +31,7 @@
 #include        "scanner.h"             /* scanner                         */
 
 #include        "gap.h"                 /* error handling, initialisation  */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 
 #include        "read.h"                /* reader                          */
 
@@ -109,14 +109,14 @@
 #include	"zmqgap.h"		/* GAP ZMQ support		   */
 #endif
 
-#include        "thread.h"
-#include        "tls.h"
+#include        "hpc/thread.h"
+#include        "hpc/tls.h"
 #include        "threadapi.h"
-#include        "aobjects.h"
+#include        "hpc/aobjects.h"
 #include        "objset.h"
-#include        "thread.h"
-#include        "tls.h"
-#include        "aobjects.h"
+#include        "hpc/thread.h"
+#include        "hpc/tls.h"
+#include        "hpc/aobjects.h"
 
 #include        "vars.h"                /* variables                       */
 

@@ -24,8 +24,8 @@
 #include	"precord.h"
 #include	"stats.h"
 #include        "gap.h"
-#include        "tls.h"
-#include        "thread.h"
+#include        "hpc/tls.h"
+#include        "hpc/thread.h"
 #include        "threadapi.h"
 #include	"fibhash.h"
 

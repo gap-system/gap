@@ -39,9 +39,9 @@
 
 #include        "code.h"               /* for TakeInterrupt */
 #include        "stats.h" 
-#include	"aobjects.h"		/* atomic objects */
-#include	"thread.h"
-#include	"tls.h"
+#include	"hpc/aobjects.h"		/* atomic objects */
+#include	"hpc/thread.h"
+#include	"hpc/tls.h"
 
 #ifndef DEBUG
 #ifndef NDEBUG

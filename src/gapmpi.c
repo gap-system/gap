@@ -42,7 +42,7 @@
 #include        "sysfiles.h"            /* file input/output               */
 
 #include        "code.h"                /* coder                           */
-#include        "tls.h"                 /* thread local storage (needed for hpcgap) */
+#include        "hpc/tls.h"                 /* thread local storage (needed for hpcgap) */
 #include        "vars.h"                /* variables                       */
 #include        "stats.h"               /* statements (XXX_BRK_CURR_STAT)  */
 

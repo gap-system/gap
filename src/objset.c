@@ -49,8 +49,8 @@
 
 #include	"string.h"
 
-#include        "thread.h"
-#include        "tls.h"
+#include        "hpc/thread.h"
+#include        "hpc/tls.h"
 #include        "vars.h"                /* variables                       */
 
 

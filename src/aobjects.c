@@ -49,12 +49,12 @@
 
 #include	"string.h"
 
-#include        "thread.h"
+#include        "hpc/thread.h"
 #include        "traverse.h"
-#include        "tls.h"
+#include        "hpc/tls.h"
 #include        "vars.h"                /* variables                       */
 
-#include        "aobjects.h"
+#include        "hpc/aobjects.h"
 
 
 #include        "intrprtr.h"            /* interpreter                     */

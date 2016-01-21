@@ -55,9 +55,9 @@
 #include        "saveload.h"            /* saving and loading              */
 
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
-#include	"aobjects.h"		/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
+#include	"hpc/aobjects.h"		/* thread-local storage		   */
 
 
 /****************************************************************************

@@ -12,8 +12,8 @@
 #include "string.h"
 #include "gap.h"
 #include "lists.h"
-#include "aobjects.h"
-#include "tls.h"
+#include "hpc/aobjects.h"
+#include "hpc/tls.h"
 #include "serialize.h"
 #include "objset.h"
 

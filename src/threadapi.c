@@ -52,9 +52,9 @@
 #include        "stats.h"               /* statements                      */
 #include        "funcs.h"               /* functions                       */
 
-#include        "thread.h"
+#include        "hpc/thread.h"
 #include        "traverse.h"
-#include        "tls.h"
+#include        "hpc/tls.h"
 #include        "threadapi.h"
 
 #include        "vars.h"                /* variables                       */

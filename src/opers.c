@@ -48,12 +48,12 @@
 #include        "listfunc.h"   
 #include        "integer.h"   
 
-#include        "tls.h"                 /* thread-local storage            */
-#include        "thread.h"              /* threads                         */
-#include        "aobjects.h"            /* atomic objects                  */
+#include        "hpc/tls.h"                 /* thread-local storage            */
+#include        "hpc/thread.h"              /* threads                         */
+#include        "hpc/aobjects.h"            /* atomic objects                  */
 
 #include        "systhread.h"              /* system thread primitives        */
-#include        "atomic.h"
+#include        "hpc/atomic.h"
 
 /****************************************************************************
 **

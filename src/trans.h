@@ -34,8 +34,8 @@
 #include        "set.h"                 /* sets                            */
 
 #include	"code.h"		/* coder                           */
-#include        "thread.h"              /* threads                         */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/thread.h"              /* threads                         */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 
 #ifndef GAP_TRANS_H
 #define GAP_TRANS_H
