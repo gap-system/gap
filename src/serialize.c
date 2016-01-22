@@ -9,7 +9,7 @@
 #include "precord.h"
 #include "records.h"
 #include "scanner.h"
-#include "string.h"
+#include "stringobj.h"
 #include "gap.h"
 #include "lists.h"
 #include "hpc/aobjects.h"

@@ -38,7 +38,7 @@
 #include        "listoper.h"            /* operations for generic lists    */
 #include        "listfunc.h"            /* functions for generic lists    */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "opers.h"               /* TRY_NEXT_METHOD                 */
 #include        "range.h"               /* Ranges                          */
 #include        "code.h"		/* Coder                           */

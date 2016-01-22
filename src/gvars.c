@@ -51,7 +51,7 @@
 #include        "lists.h"               /* generic lists                   */
 
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "bool.h"                /* booleans                        */
 

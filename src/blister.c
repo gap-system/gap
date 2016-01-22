@@ -94,7 +94,7 @@
 #include        "set.h"                 /* plain sets                      */
 #include        "blister.h"             /* boolean lists                   */
 #include        "range.h"               /* ranges                          */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
 

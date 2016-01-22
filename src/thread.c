@@ -20,7 +20,7 @@
 #include	"scanner.h"
 #include	"code.h"
 #include	"plist.h"
-#include	"string.h"
+#include	"stringobj.h"
 #include	"precord.h"
 #include	"stats.h"
 #include        "gap.h"

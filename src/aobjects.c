@@ -47,7 +47,7 @@
 
 #include	"fibhash.h"
 
-#include	"string.h"
+#include	"stringobj.h"
 
 #include        "hpc/thread.h"
 #include        "traverse.h"

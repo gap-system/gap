@@ -72,7 +72,7 @@
 #include        "lists.h"               /* generic lists                   */
 #include        "listfunc.h"            /* functions for generic lists     */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include	"code.h"		/* coder                           */
 #include	"hpc/thread.h"		/* threads			   */

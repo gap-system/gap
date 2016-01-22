@@ -52,7 +52,7 @@ extern "C" {
 #include        "vector.h"              /* functions for plain vectors     */
 #include        "blister.h"             /* boolean lists                   */
 #include        "range.h"               /* ranges                          */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
 #include        "hpc/tls.h"                 /* thread-local storage            */
