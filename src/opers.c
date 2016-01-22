@@ -37,7 +37,7 @@
 
 #include        "plist.h"               /* plain lists                     */
 #include        "blister.h"             /* boolean lists                   */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "range.h"               /* ranges                          */
 
 #include        "records.h"             /* generic records                 */

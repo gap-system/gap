@@ -45,7 +45,7 @@
 #include        "listfunc.h"            /* functions for generic lists     */
 #include        "plist.h"               /* plain lists                     */
 #include        "set.h"                 /* plain sets                      */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include	"code.h"		/* coder                           */
 #include	"hpc/thread.h"		/* threads			   */

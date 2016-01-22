@@ -24,7 +24,7 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "ariths.h"              /* basic arithmetic                */
 #include        "bool.h"                /* booleans                        */

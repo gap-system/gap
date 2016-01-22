@@ -33,7 +33,7 @@
 #include        "listfunc.h"            /* functions for generic lists     */
 
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "records.h"             /* generic records                 */
 #include        "bool.h"                /* Global True and False           */
