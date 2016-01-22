@@ -111,7 +111,7 @@
 
 #include        "hpc/thread.h"
 #include        "hpc/tls.h"
-#include        "threadapi.h"
+#include        "hpc/threadapi.h"
 #include        "hpc/aobjects.h"
 #include        "objset.h"
 #include        "hpc/thread.h"
