@@ -4618,6 +4618,7 @@ Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, O
   return (Obj) 0;
 }
 
+
 /****************************************************************************
 **
 *F  MappingPermListList( <src>, <dst> ) . . . . . return a perm mapping src to
@@ -4716,6 +4717,171 @@ Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
     return FuncPermList(self,out);
 }
 
+/* InstallGlobalFunction( SCRSift, function ( S, g ) */
+/*     local stb,   # the stabilizer of S we currently work with */
+/*           bpt;   # first point of stb.orbit */
+
+/*     stb := S; */
+/*     while IsBound( stb.stabilizer ) do */
+/*         bpt := stb.orbit[1]; */
+/*         if IsBound( stb.transversal[bpt^g] ) then */
+/*             while bpt <> bpt^g do */
+/*                 g := g*stb.transversal[bpt^g]; */
+/*             od; */
+/*             stb := stb.stabilizer; */
+/*         else */
+/*             #current g witnesses that input was not in S */
+/*             return g; */
+/*         fi; */
+/*     od; */
+
+/*     return g; */
+/* end ); */
+
+
+Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
+{
+  Obj stb = S;
+  static UInt RN_stabilizer = 0;
+  static UInt RN_orbit = 0;
+  static UInt RN_transversal = 0;
+  UInt nn = INT_INTOBJ(n);
+  UInt useP2;
+  Obj result;
+  Obj t;
+  Obj trans;
+
+  /* Setup the result, sort out which rep we are going to work in  */
+  if (nn > 65535) {
+    result = NEW_PERM4(nn);
+    useP2 = 0;
+  } else {
+    result = NEW_PERM2(nn);
+    useP2 = 1;
+  }
+
+  UInt dg;
+  if (IS_PERM2(g))
+    dg = DEG_PERM2(g);
+  else
+    dg = DEG_PERM4(g);
+
+  if (dg > nn) /* In this case the caller has messed up or 
+		  g just ends with a lot of fixed points which we can 
+		  ignore */
+    dg = nn;
+
+  /* Copy g into the buffer */
+  if (IS_PERM2(g) && useP2) {
+    UInt2 * ptR = ADDR_PERM2(result);
+    memmove(ptR,ADDR_PERM2(g),2*dg);
+    for (int i = dg; i < nn; i++)
+      ptR[i] = (UInt2)i;
+  } else if (IS_PERM4(g) && !useP2) {
+    UInt4 *ptR = ADDR_PERM4(result);
+    memmove(ptR,ADDR_PERM4(g),4*dg);    
+    for (int i = dg; i <nn; i++)
+      ptR[i] = (UInt4)i;
+  } else if (IS_PERM2(g) && !useP2) {
+    UInt4 *ptR = ADDR_PERM4(result);
+    UInt2 *ptG = ADDR_PERM2(g);
+    for (int i = 0; i < dg; i++)
+      ptR[i] = (UInt4)ptG[i];
+    for (int i = dg; i < nn; i++)
+      ptR[i] = (UInt4)i;
+  } else {
+    UInt2 *ptR = ADDR_PERM2(result);
+    UInt4 *ptG = ADDR_PERM4(g);
+    for (int i = 0; i < dg; i++)
+      ptR[i] = (UInt2)ptG[i];
+    for (int i = dg; i < nn; i++)
+      ptR[i] = (UInt2)i;
+  }    
+    
+  
+  if (!RN_stabilizer)
+    RN_stabilizer = RNamName("stabilizer");
+  if (!RN_orbit)
+    RN_orbit = RNamName("orbit");
+  if (!RN_transversal)
+    RN_transversal = RNamName("transversal");
+  while (IsbPRec(stb,RN_stabilizer)) {
+    trans = ElmPRec(stb, RN_transversal);
+    Obj orb = ElmPRec(stb,RN_orbit);
+    Int bpt = INT_INTOBJ(ELM_LIST(orb,1))-1;
+    Int im;
+    if (useP2)
+      im = (Int)ADDR_PERM2(result)[bpt];
+    else
+      im = (Int)ADDR_PERM4(result)[bpt];
+    if (!(t = ELM0_LIST(trans,im+1)))
+      break;
+    else {
+      while (bpt != im) {
+
+	/* Ugly -- eight versions of the loop */
+	if (useP2) {
+	  UInt2 *ptR = ADDR_PERM2(result);
+	  if (IS_PERM2(t)) {
+	    UInt2 *ptT = ADDR_PERM2(t);
+	    UInt dt = DEG_PERM2(t);
+	    if (dt >= nn)
+	      for (int i = 0; i < nn; i++) 
+		ptR[i] = ptT[ptR[i]];
+	    else
+	      for (int i = 0; i < nn; i++)
+		ptR[i] = IMAGE(ptR[i], ptT, dt);
+	  }
+	  else {
+	    UInt4 *ptT = ADDR_PERM4(t);
+	    UInt dt = DEG_PERM4(t);
+	    if (dt >= nn)
+	      for (int i = 0; i < nn; i++)
+		ptR[i] = (UInt2) ptT[ptR[i]];
+	    else
+	      for (int i = 0; i < nn; i++)
+		ptR[i] = (UInt2)IMAGE(ptR[i], ptT, dt);
+	  }
+	  im = (Int)ptR[bpt];
+	} else {
+	  UInt4 *ptR = ADDR_PERM4(result);
+	  if (IS_PERM2(t)) {
+	    UInt2 *ptT = ADDR_PERM2(t);
+	    UInt dt = DEG_PERM2(t);
+	    if (dt >= nn)
+	      for (int i = 0; i < nn; i++)
+		ptR[i] = (UInt4)ptT[ptR[i]];
+	    else
+	      for (int i = 0; i < nn; i++)
+		ptR[i] = (UInt4)IMAGE(ptR[i], ptT, dt);
+	  }
+	  else {
+	    UInt4 *ptT = ADDR_PERM4(t);
+	    UInt dt = DEG_PERM4(t);
+	    if (dt >= nn)
+	      for (int i = 0; i < nn; i++)
+		ptR[i] = ptT[ptR[i]];
+	    else
+	      for (int i = 0; i < nn; i++)
+		ptR[i] = IMAGE(ptR[i], ptT, dt);
+	  }
+	  im = (Int)ptR[bpt];
+	}
+	t = ELM_PLIST(trans,im+1);
+      }
+    }
+    stb = ElmPRec(stb, RN_stabilizer);
+  }
+  /* so we're done sifting, and now we just have to clean up result */  
+  return result;
+  
+  
+}
+  
+  
+  
+
+
 /****************************************************************************
 **
 
@@ -4805,6 +4971,9 @@ static StructGVarFunc GVarFuncs [] = {
     
     { "MappingPermListList", 2, "src, dst", 
       FuncMappingPermListList, "src/permutat.c:MappingPermListList" },
+    
+    { "SCR_SIFT_HELPER", 3, "stabrec, perm, n",
+      FuncSCR_SIFT_HELPER, "src/permutat.c:SRC_SIFT_HELPER" },
     
 
     { 0 }

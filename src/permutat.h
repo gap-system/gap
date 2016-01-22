@@ -32,6 +32,9 @@
 
 #define IMAGE(i,pt,dg)  (((i) < (dg)) ? (pt)[(i)] : (i))
 
+#define IS_PERM2(perm)  (TNUM_OBJ(perm) == T_PERM2)
+#define IS_PERM4(perm)  (TNUM_OBJ(perm) == T_PERM4)
+
 /****************************************************************************
 **
 *V  IdentityPerm  . . . . . . . . . . . . . . . . . . .  identity permutation
