@@ -4365,6 +4365,7 @@ Obj             OnSetsPerm (
     return res;
 }
 
+
 /****************************************************************************
 **
 *F  SavePerm2( <perm2> )
@@ -4645,6 +4646,103 @@ Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, O
   return (Obj) 0;
 }
 
+/****************************************************************************
+**
+*F  MappingPermListList( <src>, <dst> ) . . . . . return a perm mapping src to
+**  dst
+**
+*/
+
+#define DEGREELIMITONSTACK 512
+
+Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
+{
+    Int l;
+    Int i;
+    Int d;
+    Int next;
+    Obj out;
+    Obj tabdst, tabsrc;
+    Int x;
+    Int mytabs[DEGREELIMITONSTACK+1];
+    Int mytabd[DEGREELIMITONSTACK+1];
+
+    l = LEN_LIST(src);
+    if (l != LEN_LIST(dst)) {
+        ErrorReturnVoid( "both arguments must be lists of equal length", 
+                     0L, 0L, "type 'return;' or 'quit;' to exit break loop" );
+        return 0L;
+    }
+    d = 0;
+    for (i = 1;i <= l;i++) {
+        x = INT_INTOBJ(ELM_LIST(src,i));
+        if (x > d) d = x;
+    }
+    for (i = 1;i <= l;i++) {
+        x = INT_INTOBJ(ELM_LIST(dst,i));
+        if (x > d) d = x;
+    }
+    if (d <= DEGREELIMITONSTACK) {
+        /* Small case where we work on the stack: */
+        memset(&mytabs,0,sizeof(mytabs));
+        memset(&mytabd,0,sizeof(mytabd));
+        for (i = 1;i <= l;i++) {
+            mytabs[INT_INTOBJ(ELM_LIST(src,i))] = i;
+        }
+        for (i = 1;i <= l;i++) {
+            mytabd[INT_INTOBJ(ELM_LIST(dst,i))] = i;
+        }
+        out = NEW_PLIST(T_PLIST_CYC,d);
+        SET_LEN_PLIST(out,d);
+        /* No garbage collection from here ... */
+        next = 1;
+        for (i = 1;i <= d;i++) {
+            if (mytabs[i]) {   /* if i is in src */
+                SET_ELM_PLIST(out,i, ELM_LIST(dst,mytabs[i]));
+            } else {
+                /* Skip things in dst: */
+                while (mytabd[next]) next++;
+                SET_ELM_PLIST(out,i,INTOBJ_INT(next));
+                next++;
+            }
+        }
+        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+    } else {
+        /* Version with intermediate objects: */
+
+        tabsrc = NEW_PLIST(T_PLIST,d);
+        SET_LEN_PLIST(tabsrc,0);
+        /* No garbage collection from here ... */
+        for (i = 1;i <= l;i++) {
+            SET_ELM_PLIST(tabsrc,INT_INTOBJ(ELM_LIST(src,i)),INTOBJ_INT(i));
+        }
+        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+        tabdst = NEW_PLIST(T_PLIST,d);
+        SET_LEN_PLIST(tabdst,0);
+        /* No garbage collection from here ... */
+        for (i = 1;i <= l;i++) {
+            SET_ELM_PLIST(tabdst,INT_INTOBJ(ELM_LIST(dst,i)),INTOBJ_INT(i));
+        }
+        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+        out = NEW_PLIST(T_PLIST_CYC,d);
+        SET_LEN_PLIST(out,d);
+        /* No garbage collection from here ... */
+        next = 1;
+        for (i = 1;i <= d;i++) {
+            if (ELM_PLIST(tabsrc,i)) {   /* if i is in src */
+                SET_ELM_PLIST(out,i,
+                    ELM_LIST(dst,INT_INTOBJ(ELM_PLIST(tabsrc,i))));
+            } else {
+                /* Skip things in dst: */
+                while (ELM_PLIST(tabdst,next)) next++;
+                SET_ELM_PLIST(out,i,INTOBJ_INT(next));
+                next++;
+            }
+        }
+        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+    }
+    return FuncPermList(self,out);
+}
 
 /****************************************************************************
 **
@@ -4732,6 +4830,9 @@ static StructGVarFunc GVarFuncs [] = {
     
     { "AGESTC", -1, "orbit, newlabels, cycles, labels, translabels, transversal, genlabels",
       FuncAGESTC, "src/permutat.c:AGESTC" },
+    
+    { "MappingPermListList", 2, "src, dst", 
+      FuncMappingPermListList, "src/permutat.c:MappingPermListList" },
     
 
     { 0 }
