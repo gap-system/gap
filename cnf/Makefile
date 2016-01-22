@@ -48,6 +48,7 @@ SOURCE= \
     objfgelm \
     objpcgel \
     objscoll \
+    objset \
     opers \
     permutat \
     plist \
