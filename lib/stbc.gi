@@ -21,11 +21,27 @@ InstallGlobalFunction( StabChain, function( arg )
     fi;
 end );
 
+InstallGlobalFunction( SetStabChain, function(G, chain)
+     if IsMutable(chain) then
+         SetStabChainMutable(G, chain);
+     fi;
+     if not HasStabChainImmutable(G) then
+         SetStabChainImmutable(G, Immutable(chain));
+     fi;
+ end );
+
 InstallMethod( StabChainImmutable,"use StabChainMutable",
   true, [ IsObject ], 0, StabChainMutable );
 
 InstallMethod( StabChainMutable,"call StabChainOp", true, [ IsGroup ], 0,
-    G -> StabChainOp( G, rec(  ) ) );
+    function( G )
+        local stab;
+        stab := StabChainOp( G, rec(  ) );
+        if not HasStabChainImmutable(G) then
+            SetStabChainImmutable(G, stab);
+        fi;
+        return stab;
+    end);
 
 InstallOtherMethod( StabChainOp,"with base", true, [ IsPermGroup,
         IsList and IsCyclotomicCollection ], 0,
@@ -65,7 +81,7 @@ InstallMethod( StabChainOp,"group and option",
     local   S,  T,  degree,  pcgs;
     
     # If a stabilizer chain <S> is already known, modify it.
-    if HasStabChainMutable( G )  then
+    if HasStabChainImmutable( G )  then
         S := StructuralCopy( StabChainMutable( G ) );
         if IsBound( options.base )  then
             if not IsBound( options.reduced )  then
@@ -178,7 +194,7 @@ InstallMethod( StabChainOp,"group and option",
         StabChainOptions( G ).random := options.random;
     fi;
     
-    SetStabChainMutable( G, S );
+    SetStabChain( G, S );
     return S;
 end );
 
@@ -328,7 +344,7 @@ InstallGlobalFunction(CopyOptionsDefaults,function( G, options )
 
     # See whether we know a base for <G>.
     if not IsBound( options.knownBase )  then
-	if HasStabChainMutable(G) then
+	if HasStabChainImmutable(G) then
 	  options.knownBase := BaseStabChain(StabChainMutable(G));
         elif   HasBaseOfGroup( G )  then
 	  options.knownBase := BaseOfGroup( G );
@@ -338,7 +354,7 @@ InstallGlobalFunction(CopyOptionsDefaults,function( G, options )
 		and not IsIdenticalObj( P, Parent( P ) )  do
 	    P := Parent( P );
 	  od;
-	  if HasStabChainMutable(P) then
+	  if HasStabChainImmutable(P) then
 	    options.knownBase := BaseStabChain(StabChainMutable(P));
 	  elif HasBaseOfGroup( P )  then
 	    options.knownBase := BaseOfGroup( P );
@@ -443,7 +459,7 @@ local   S,  G,  P,L;
             G := Subgroup( P, L );
         fi;
     fi;
-    SetStabChainMutable( G, S );
+    SetStabChain( G, S );
 
     return G;
 end);
