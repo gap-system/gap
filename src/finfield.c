@@ -565,16 +565,6 @@ FF              FiniteField (
     if (ATOMIC_ELM_PLIST(TypeFF0, ff))
       return ff;
 
-#if 0
-    /* check whether we can build such a finite field                      */
-    if ( (  2 <= p && 17 <= d) || (  3 <= p && 11 <= d)
-      || (  5 <= p &&  7 <= d) || (  7 <= p &&  6 <= d)
-      || ( 11 <= p &&  5 <= d) || ( 17 <= p &&  4 <= d)
-      || ( 41 <= p &&  3 <= d) || (257 <= p &&  2 <= d) ) {
-        return 0;
-    }
-#endif
-
     /* allocate a bag for the finite field and one for a temporary         */
     bag1  = NewBag( T_PERM2, q * sizeof(FFV) );
     bag2  = NewBag( T_PERM2, q * sizeof(FFV) );
@@ -628,10 +618,6 @@ FF              FiniteField (
     }
 
     /* enter the finite field in the tables                                */
-#if 0
-    ASS_LIST( CharFF, ff, INTOBJ_INT(p) );
-    ASS_LIST( DegrFF, ff, INTOBJ_INT(d) );
-#endif
     ATOMIC_SET_ELM_PLIST_ONCE( SuccFF, ff, bag2 );
     CHANGED_BAG(SuccFF);
     bag1 = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
@@ -2036,10 +2022,6 @@ static Int InitKernel (
     TypeObjFuncs[ T_FFE ] = TypeFFE;
 
     /* create the fields and integer conversion bags                       */
-#if 0
-    InitGlobalBag( &CharFF, "src/finfield.c:CharFF" );
-    InitGlobalBag( &DegrFF, "src/finfield.c:DegrFF" );
-#endif
     InitGlobalBag( &SuccFF, "src/finfield.c:SuccFF" );
     InitGlobalBag( &TypeFF, "src/finfield.c:TypeFF" );
     InitGlobalBag( &TypeFF0, "src/finfield.c:TypeFF0" );
@@ -2102,14 +2084,6 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     /* create the fields and integer conversion bags                       */
-#if 0
-    CharFF = NEW_PLIST( T_PLIST, NUM_SHORT_FINITE_FIELDS );
-    SET_LEN_PLIST( CharFF, NUM_SHORT_FINITE_FIELDS );
-
-    DegrFF = NEW_PLIST( T_PLIST, NUM_SHORT_FINITE_FIELDS );
-    SET_LEN_PLIST( DegrFF, NUM_SHORT_FINITE_FIELDS );
-#endif
-
     SuccFF = NEW_PLIST( T_PLIST, NUM_SHORT_FINITE_FIELDS );
     SET_LEN_PLIST( SuccFF, NUM_SHORT_FINITE_FIELDS );
 
