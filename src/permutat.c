@@ -4750,6 +4750,7 @@ Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
   Obj result;
   Obj t;
   Obj trans;
+  int i;
 
   /* Setup the result, sort out which rep we are going to work in  */
   if (nn > 65535) {
@@ -4775,26 +4776,26 @@ Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
   if (IS_PERM2(g) && useP2) {
     UInt2 * ptR = ADDR_PERM2(result);
     memmove(ptR,ADDR_PERM2(g),2*dg);
-    for (int i = dg; i < nn; i++)
+    for ( i = dg; i < nn; i++)
       ptR[i] = (UInt2)i;
   } else if (IS_PERM4(g) && !useP2) {
     UInt4 *ptR = ADDR_PERM4(result);
     memmove(ptR,ADDR_PERM4(g),4*dg);    
-    for (int i = dg; i <nn; i++)
+    for ( i = dg; i <nn; i++)
       ptR[i] = (UInt4)i;
   } else if (IS_PERM2(g) && !useP2) {
     UInt4 *ptR = ADDR_PERM4(result);
     UInt2 *ptG = ADDR_PERM2(g);
-    for (int i = 0; i < dg; i++)
+    for ( i = 0; i < dg; i++)
       ptR[i] = (UInt4)ptG[i];
-    for (int i = dg; i < nn; i++)
+    for (i = dg; i < nn; i++)
       ptR[i] = (UInt4)i;
   } else {
     UInt2 *ptR = ADDR_PERM2(result);
     UInt4 *ptG = ADDR_PERM4(g);
-    for (int i = 0; i < dg; i++)
+    for ( i = 0; i < dg; i++)
       ptR[i] = (UInt2)ptG[i];
-    for (int i = dg; i < nn; i++)
+    for (i = dg; i < nn; i++)
       ptR[i] = (UInt2)i;
   }    
     
@@ -4826,20 +4827,20 @@ Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
 	    UInt2 *ptT = ADDR_PERM2(t);
 	    UInt dt = DEG_PERM2(t);
 	    if (dt >= nn)
-	      for (int i = 0; i < nn; i++) 
+	      for (i = 0; i < nn; i++) 
 		ptR[i] = ptT[ptR[i]];
 	    else
-	      for (int i = 0; i < nn; i++)
+	      for ( i = 0; i < nn; i++)
 		ptR[i] = IMAGE(ptR[i], ptT, dt);
 	  }
 	  else {
 	    UInt4 *ptT = ADDR_PERM4(t);
 	    UInt dt = DEG_PERM4(t);
 	    if (dt >= nn)
-	      for (int i = 0; i < nn; i++)
+	      for ( i = 0; i < nn; i++)
 		ptR[i] = (UInt2) ptT[ptR[i]];
 	    else
-	      for (int i = 0; i < nn; i++)
+	      for ( i = 0; i < nn; i++)
 		ptR[i] = (UInt2)IMAGE(ptR[i], ptT, dt);
 	  }
 	  im = (Int)ptR[bpt];
@@ -4849,20 +4850,20 @@ Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
 	    UInt2 *ptT = ADDR_PERM2(t);
 	    UInt dt = DEG_PERM2(t);
 	    if (dt >= nn)
-	      for (int i = 0; i < nn; i++)
+	      for ( i = 0; i < nn; i++)
 		ptR[i] = (UInt4)ptT[ptR[i]];
 	    else
-	      for (int i = 0; i < nn; i++)
+	      for ( i = 0; i < nn; i++)
 		ptR[i] = (UInt4)IMAGE(ptR[i], ptT, dt);
 	  }
 	  else {
 	    UInt4 *ptT = ADDR_PERM4(t);
 	    UInt dt = DEG_PERM4(t);
 	    if (dt >= nn)
-	      for (int i = 0; i < nn; i++)
+	      for ( i = 0; i < nn; i++)
 		ptR[i] = ptT[ptR[i]];
 	    else
-	      for (int i = 0; i < nn; i++)
+	      for ( i = 0; i < nn; i++)
 		ptR[i] = IMAGE(ptR[i], ptT, dt);
 	  }
 	  im = (Int)ptR[bpt];
