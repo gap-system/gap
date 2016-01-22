@@ -79,11 +79,12 @@
 #include        "string.h"              /* strings                         */
 
 #include	"code.h"		/* coder                           */
-#include	"hpc/aobjects.h"		/* atomic access to plists	   */
-#include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
 
-#include	"hpc/ffdata.h"		/* pre-computed finite field data  */
+#include	"hpc/aobjects.h"	/* atomic access to plists	   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"		/* thread-local storage		   */
+
+#include	"ffdata.h"		/* pre-computed finite field data  */
 
 
 /****************************************************************************
@@ -115,9 +116,8 @@ typedef UInt2       FF;
 **
 **  'CHAR_FF' is defined in the declaration part of this package as follows
 **
-#define CHAR_FF(ff)             INT_INTOBJ( ELM_PLIST( CharFF, ff ) )
+#define CHAR_FF(ff)             (CharFF[ff])
 */
-Obj             CharFF;
 
 
 /****************************************************************************
@@ -131,9 +131,8 @@ Obj             CharFF;
 **
 **  'DEGR_FF' is defined in the declaration part of this package as follows
 **
-#define DEGR_FF(ff)             INT_INTOBJ( ELM_PLIST( DegrFF, ff ) )
+#define DEGR_FF(ff)             (DegrFF[ff])
 */
-Obj             DegrFF;
 
 
 /****************************************************************************
@@ -147,7 +146,7 @@ Obj             DegrFF;
 **
 **  'SIZE_FF' is defined in the declaration part of this package as follows
 **
-#define SIZE_FF(ff)             (*SUCC_FF(ff)+1)
+#define SIZE_FF(ff)             (SizeFF[ff])
 */
 
 
@@ -525,24 +524,33 @@ FF              FiniteField (
     UInt                poly;           /* Conway polynomial of extension  */
     UInt                i, l, f, n, e;  /* loop variables                  */
 
-    /* search through the finite field table                               */
-    for ( ff = 1; ff <= LEN_PLIST(SuccFF); ff++ ) {
-        if ( CHAR_FF(ff) == p && DEGR_FF(ff) == d ) {
-            return ff;
-        }
-    }
-
-    /* check whether we can build such a finite field                      */
-    if ( (  2 <= p && 17 <= d) || (  3 <= p && 11 <= d)
-      || (  5 <= p &&  7 <= d) || (  7 <= p &&  6 <= d)
-      || ( 11 <= p &&  5 <= d) || ( 17 <= p &&  4 <= d)
-      || ( 41 <= p &&  3 <= d) || (257 <= p &&  2 <= d) ) {
-        return 0;
-    }
-
-    /* allocate a bag for the finite field and one for a temporary         */
+    /* calculate size of field */
     q = 1;
     for ( i = 1; i <= d; i++ ) q *= p;
+
+    /* search through the finite field table                               */
+    l = 1; n = NUM_SHORT_FINITE_FIELDS;
+    while (l <= n) {
+      /* interpolation search */
+      /* cuts iterations roughly in half compared to binary search at
+       * the expense of additional divisions. */
+      e = (q - SizeFF[l]+1) * (n-l) / (SizeFF[n]-SizeFF[l]+1);
+      ff = l + e;
+      if (SizeFF[ff] == q)
+        break;
+      if (SizeFF[ff] < q)
+        l = ff+1;
+      else
+        n = ff-1;
+    }
+    if (SizeFF[ff] != q)
+      return 0;
+    if (ff > NUM_SHORT_FINITE_FIELDS)
+        return 0;
+    if (ELM_PLIST(TypeFF0, ff))
+      return ff;
+
+    /* allocate a bag for the finite field and one for a temporary         */
     bag1  = NewBag( T_PERM2, q * sizeof(FFV) );
     bag2  = NewBag( T_PERM2, q * sizeof(FFV) );
     indx = (FFV*)ADDR_OBJ( bag1 );
@@ -595,8 +603,6 @@ FF              FiniteField (
     }
 
     /* enter the finite field in the tables                                */
-    ASS_LIST( CharFF, ff, INTOBJ_INT(p) );
-    ASS_LIST( DegrFF, ff, INTOBJ_INT(d) );
     ASS_LIST( SuccFF, ff, bag2 );
     CHANGED_BAG(SuccFF);
     bag1 = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
@@ -1775,7 +1781,7 @@ Obj INT_FF (
     if ( LEN_PLIST(IntFF) < ff || ELM_PLIST(IntFF,ff) == 0 ) {
         q = SIZE_FF( ff );
         p = CHAR_FF( ff );
-        conv = NEW_PLIST( T_PLIST, p-1 );
+        conv = NEW_PLIST( T_PLIST+IMMUTABLE, p-1 );
         succ = SUCC_FF( ff );
         SET_LEN_PLIST( conv, p-1 );
         z = 1;
@@ -2001,8 +2007,6 @@ static Int InitKernel (
     TypeObjFuncs[ T_FFE ] = TypeFFE;
 
     /* create the fields and integer conversion bags                       */
-    InitGlobalBag( &CharFF, "src/finfield.c:CharFF" );
-    InitGlobalBag( &DegrFF, "src/finfield.c:DegrFF" );
     InitGlobalBag( &SuccFF, "src/finfield.c:SuccFF" );
     InitGlobalBag( &TypeFF, "src/finfield.c:TypeFF" );
     InitGlobalBag( &TypeFF0, "src/finfield.c:TypeFF0" );
@@ -2065,23 +2069,17 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     /* create the fields and integer conversion bags                       */
-    CharFF = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( CharFF, 0 );
+    SuccFF = NEW_PLIST( T_PLIST, NUM_SHORT_FINITE_FIELDS );
+    SET_LEN_PLIST( SuccFF, NUM_SHORT_FINITE_FIELDS );
 
-    DegrFF = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( DegrFF, 0 );
+    TypeFF = NEW_PLIST( T_PLIST, NUM_SHORT_FINITE_FIELDS );
+    SET_LEN_PLIST( TypeFF, NUM_SHORT_FINITE_FIELDS );
 
-    SuccFF = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( SuccFF, 0 );
+    TypeFF0 = NEW_PLIST( T_PLIST, NUM_SHORT_FINITE_FIELDS );
+    SET_LEN_PLIST( TypeFF0, NUM_SHORT_FINITE_FIELDS );
 
-    TypeFF = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( TypeFF, 0 );
-
-    TypeFF0 = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( TypeFF0, 0 );
-
-    IntFF = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( IntFF, 0 );
+    IntFF = NEW_PLIST( T_PLIST, NUM_SHORT_FINITE_FIELDS );
+    SET_LEN_PLIST( IntFF, NUM_SHORT_FINITE_FIELDS );
 
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
