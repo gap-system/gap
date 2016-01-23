@@ -749,7 +749,7 @@ local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
   #act:=ActionHomomorphism(G,dom,OnLines,"surjective");
   PG:=Image(act); # this will be PSL etc.
 
-  StabChainMutable(PG);; # needed anyhow and will speed up images under act
+  StabChainImmutable(PG);; # needed anyhow and will speed up images under act
   z:=Size(Centre(G));
   zel:=Filtered(Elements(Centre(G)),x->Order(x)>1);
   cl:=ConjugacyClasses(G);
@@ -826,4 +826,3 @@ end);
 #############################################################################
 ##
 #E
-

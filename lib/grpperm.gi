@@ -47,8 +47,8 @@ InstallMethod( AsSubgroup,"perm groups",
     S:= SubgroupNC( G, GeneratorsOfGroup( U ) );
     UseIsomorphismRelation( U, S );
     UseSubsetRelation( U, S );
-    if HasStabChainMutable( U )  then
-        SetStabChainMutable( S, StabChainMutable( U ) );
+    if HasStabChainImmutable( U )  then
+        SetStabChain( S, StabChainMutable( U ) );
     fi;
     return S;
 end );
@@ -745,7 +745,7 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     else
       if inpar  then  C := SubgroupNC(P,newgens);
 		else  C := Group( newgens,One(G) );           fi;
-      SetStabChainMutable(C,chain);
+      SetStabChain(C,chain);
     fi;
     SetStabChainOptions( C, rec( random := options.random ) );
 
@@ -819,7 +819,7 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
     N := SubgroupNC( G, GeneratorsOfGroup(U) );
     UseIsomorphismRelation(U,N);
     UseSubsetRelation(U,N);
-    SetStabChainMutable( N, StabChainMutable( U ) );
+    SetStabChain( N, StabChainMutable( U ) );
     options := ShallowCopy( StabChainOptions( U ) );
     if IsBound( options.random )  then  random := options.random;
                                   else  random := 1000;            fi;
@@ -897,7 +897,7 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
         fi;
         chain := SCRRestoredRecord( chain );
     fi;
-    SetStabChainMutable( N, chain );
+    SetStabChain( N, chain );
     if result <> chain.identity  then
         N := ClosureGroup( N, [ result ] );
     fi;
@@ -929,10 +929,10 @@ function( G, g )
 local   H,  S;
     
     H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ), One( G ) );
-    if HasStabChainMutable(G) then
+    if HasStabChainImmutable(G) then
       S := EmptyStabChain( [  ], One( H ) );
       ConjugateStabChain( StabChainMutable( G ), S, g, g );
-      SetStabChainMutable( H, S );
+      SetStabChain( H, S );
     elif HasSize(G) then
       SetSize(H,Size(G));
     fi;
@@ -1626,7 +1626,7 @@ InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
           processStabGen, currPt,currGen, stgp, orblen, gens,Ggens;
 
     one:= One( G );
-  if HasStabChainMutable( G ) and punkt in StabChainMutable(G).orbit then
+  if HasStabChainImmutable( G ) and punkt in StabChainImmutable(G).orbit then
 # if we already have a stab chain and bother computing the proper
 # stabilizer, a trivial orbit algorithm seems best.
     return Concatenation([[punkt]],
@@ -2174,4 +2174,3 @@ end);
 #############################################################################
 ##
 #E
-

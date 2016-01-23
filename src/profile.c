@@ -278,13 +278,13 @@ static void fcloseMaybeCompressed(struct ProfileState* ps)
 */
 
 
-UInt (* RealExecStatFuncs[256]) ( Stat stat );
+UInt (* OriginalExecStatFuncsForProf[256]) ( Stat stat );
 
-Obj  (* RealEvalExprFuncs[256]) ( Expr expr );
-Obj  (* RealEvalBoolFuncs[256]) ( Expr expr );
+Obj  (* OriginalEvalExprFuncsForProf[256]) ( Expr expr );
+Obj  (* OriginalEvalBoolFuncsForProf[256]) ( Expr expr );
 
-void (* RealPrintStatFuncs[256]) ( Stat stat );
-void (* RealPrintExprFuncs[256]) ( Expr expr );
+void (* OriginalPrintStatFuncsForProf[256]) ( Stat stat );
+void (* OriginalPrintExprFuncsForProf[256]) ( Expr expr );
 
 /****************************************************************************
 **
@@ -293,7 +293,7 @@ void (* RealPrintExprFuncs[256]) ( Expr expr );
 */
 
 void InstallEvalBoolFunc( Int pos, Obj(*expr)(Expr)) {
-  RealEvalBoolFuncs[pos] = expr;
+  OriginalEvalBoolFuncsForProf[pos] = expr;
   HashLock(&profileState);
   if(!profileState_Active) {
     EvalBoolFuncs[pos] = expr;
@@ -302,7 +302,7 @@ void InstallEvalBoolFunc( Int pos, Obj(*expr)(Expr)) {
 }
 
 void InstallEvalExprFunc( Int pos, Obj(*expr)(Expr)) {
-  RealEvalExprFuncs[pos] = expr;
+  OriginalEvalExprFuncsForProf[pos] = expr;
   HashLock(&profileState);
   if(!profileState_Active) {
     EvalExprFuncs[pos] = expr;
@@ -311,7 +311,7 @@ void InstallEvalExprFunc( Int pos, Obj(*expr)(Expr)) {
 }
 
 void InstallExecStatFunc( Int pos, UInt(*stat)(Stat)) {
-  RealExecStatFuncs[pos] = stat;
+  OriginalExecStatFuncsForProf[pos] = stat;
   HashLock(&profileState);
   if(!profileState_Active) {
     ExecStatFuncs[pos] = stat;
@@ -320,7 +320,7 @@ void InstallExecStatFunc( Int pos, UInt(*stat)(Stat)) {
 }
 
 void InstallPrintStatFunc(Int pos, void(*stat)(Stat)) {
-  RealPrintStatFuncs[pos] = stat;
+  OriginalPrintStatFuncsForProf[pos] = stat;
   HashLock(&profileState);
   if(!profileState.ColouringOutput) {
     PrintStatFuncs[pos] = stat;
@@ -329,7 +329,7 @@ void InstallPrintStatFunc(Int pos, void(*stat)(Stat)) {
 }
 
 void InstallPrintExprFunc(Int pos, void(*expr)(Expr)) {
-  RealPrintExprFuncs[pos] = expr;
+  OriginalPrintExprFuncsForProf[pos] = expr;
   HashLock(&profileState);
   if(!profileState.ColouringOutput) {
     PrintExprFuncs[pos] = expr;
@@ -485,13 +485,13 @@ void visitStat(Stat stat)
 UInt ProfileStatPassthrough(Stat stat)
 {
   visitStat(stat);
-  return RealExecStatFuncs[TNUM_STAT(stat)](stat);
+  return OriginalExecStatFuncsForProf[TNUM_STAT(stat)](stat);
 }
 
 Obj ProfileEvalExprPassthrough(Expr stat)
 {
   visitStat(stat);
-  return RealEvalExprFuncs[TNUM_STAT(stat)](stat);
+  return OriginalEvalExprFuncsForProf[TNUM_STAT(stat)](stat);
 }
 
 Obj ProfileEvalBoolPassthrough(Expr stat)
@@ -499,13 +499,13 @@ Obj ProfileEvalBoolPassthrough(Expr stat)
   /* There are two cases we must pass through without touching */
   /* From TNUM_EXPR */
   if(IS_REFLVAR(stat)) {
-    return RealEvalBoolFuncs[T_REFLVAR](stat);
+    return OriginalEvalBoolFuncsForProf[T_REFLVAR](stat);
   }
   if(IS_INTEXPR(stat)) {
-    return RealEvalBoolFuncs[T_INTEXPR](stat);
+    return OriginalEvalBoolFuncsForProf[T_INTEXPR](stat);
   }
   visitStat(stat);
-  return RealEvalBoolFuncs[TNUM_STAT(stat)](stat);
+  return OriginalEvalBoolFuncsForProf[TNUM_STAT(stat)](stat);
 }
 
 
@@ -727,9 +727,9 @@ Obj FuncDEACTIVATE_PROFILING (
   fcloseMaybeCompressed(&profileState);
 
   for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
-    ExecStatFuncs[i] = RealExecStatFuncs[i];
-    EvalExprFuncs[i] = RealEvalExprFuncs[i];
-    EvalBoolFuncs[i] = RealEvalBoolFuncs[i];
+    ExecStatFuncs[i] = OriginalExecStatFuncsForProf[i];
+    EvalExprFuncs[i] = OriginalEvalExprFuncsForProf[i];
+    EvalBoolFuncs[i] = OriginalEvalBoolFuncsForProf[i];
   }
 
   profileState_Active = 0;
@@ -784,7 +784,7 @@ void ProfilePrintStatPassthrough(Stat stat)
     CurrentColour = 2;
   }
   setColour();
-  RealPrintStatFuncs[TNUM_STAT(stat)](stat);
+  OriginalPrintStatFuncsForProf[TNUM_STAT(stat)](stat);
   CurrentColour = SavedColour;
   setColour();
 }
@@ -795,9 +795,9 @@ void ProfilePrintExprPassthrough(Expr stat)
   /* There are two cases we must pass through without touching */
   /* From TNUM_EXPR */
   if(IS_REFLVAR(stat)) {
-    RealPrintExprFuncs[T_REFLVAR](stat);
+    OriginalPrintExprFuncsForProf[T_REFLVAR](stat);
   } else if(IS_INTEXPR(stat)) {
-    RealPrintExprFuncs[T_INTEXPR](stat);
+    OriginalPrintExprFuncsForProf[T_INTEXPR](stat);
   } else {
     SavedColour = CurrentColour;
     if(VISITED_STAT(stat)) {
@@ -807,7 +807,7 @@ void ProfilePrintExprPassthrough(Expr stat)
       CurrentColour = 2;
     }
     setColour();
-    RealPrintExprFuncs[TNUM_STAT(stat)](stat);
+    OriginalPrintExprFuncsForProf[TNUM_STAT(stat)](stat);
     CurrentColour = SavedColour;
     setColour();
   }
@@ -850,8 +850,8 @@ Obj deactivate_colored_output_from_profile(void)
   }
 
   for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
-    PrintStatFuncs[i] = RealPrintStatFuncs[i];
-    PrintExprFuncs[i] = RealPrintExprFuncs[i];
+    PrintStatFuncs[i] = OriginalPrintStatFuncsForProf[i];
+    PrintExprFuncs[i] = OriginalPrintExprFuncsForProf[i];
   }
 
   profileState.ColouringOutput = 0;

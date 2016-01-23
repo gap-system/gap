@@ -1222,14 +1222,11 @@ DeclareAttribute( "PerfectResiduum", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> m11:=TransitiveGroup(11,6);
 ##  M(11)
-##  gap> r:=RepresentativesPerfectSubgroups(m11);
-##  [ Group([ (3,4,10)(5,11,6)(7,9,8), (1,7)(3,6)(4,8)(9,11) ]), 
-##    Group([ (2,3,7)(4,11,9)(5,8,10), (1,7)(3,6)(4,8)(9,11) ]), 
-##    Group([ (3,4,11,5)(6,8,10,7), (1,7)(3,6)(4,8)(9,11) ]), 
-##    Group([ (2,3,5)(4,10,9)(6,7,11), (1,7)(3,6)(4,8)(9,11) ]), M(11), 
-##    Group(()) ]
+##  gap> r:=RepresentativesPerfectSubgroups(m11);;
 ##  gap> List(r,Size);
 ##  [ 60, 60, 360, 660, 7920, 1 ]
+##  gap> List(r,StructureDescription);
+##  [ "A5", "A5", "A6", "PSL(2,11)", "M11", "1" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1251,15 +1248,11 @@ DeclareAttribute( "RepresentativesSimpleSubgroups", IsGroup );
 ##  returns a list of the conjugacy classes of perfect subgroups of <A>G</A>.
 ##  (see <Ref Func="RepresentativesPerfectSubgroups"/>.)
 ##  <Example><![CDATA[
-##  gap> ConjugacyClassesPerfectSubgroups(m11);
-##  [ Group( [ ( 3, 4,10)( 5,11, 6)( 7, 9, 8), 
-##        ( 1, 7)( 3, 6)( 4, 8)( 9,11) ] )^G, 
-##    Group( [ ( 2, 3, 7)( 4,11, 9)( 5, 8,10), 
-##        ( 1, 7)( 3, 6)( 4, 8)( 9,11) ] )^G, 
-##    Group( [ ( 3, 4,11, 5)( 6, 8,10, 7), ( 1, 7)( 3, 6)( 4, 8)( 9,11) 
-##       ] )^G, 
-##    Group( [ ( 2, 3, 5)( 4,10, 9)( 6, 7,11), 
-##        ( 1, 7)( 3, 6)( 4, 8)( 9,11) ] )^G, M(11)^G, Group( () )^G ]
+##  gap> r := ConjugacyClassesPerfectSubgroups(m11);;
+##  gap> List(r, x -> StructureDescription(Representative(x)));
+##  [ "A5", "A5", "A6", "PSL(2,11)", "M11", "1" ]
+##  gap> SortedList( List(r,Size) );
+##  [ 1, 1, 11, 12, 66, 132 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2682,8 +2675,9 @@ DeclareOperation( "CosetTableNormalClosure", [ IsGroup, IsGroup ] );
 ##  [ (1,2,3,4), (1,2) ] -> [ f1*f2, f1 ]
 ##  gap> Size(ImagesSource(hom));
 ##  6
-##  gap> FactorGroup(g,n);
-##  Group([ f1, f2 ])
+##  gap> FactorGroup(g,n);;
+##  gap> StructureDescription(last);
+##  "S3"
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3279,10 +3273,10 @@ KeyDependentOperation( "SylowComplement", IsGroup, IsPosInt, "prime" );
 ##  gap> HallSubgroup(h,[2,3]);  
 ##  [ <permutation group of size 96 with 6 generators>, 
 ##    <permutation group of size 96 with 6 generators> ]
-##  gap> HallSubgroup(h,[3,31]);
-##  Group([ (2,29,7)(3,30,11)(4,28,8)(5,27,9)(6,31,10)(12,24,21)(13,25,20)
-##  (14,23,17)(15,22,19)(16,26,18), (1,20,31,23,11,25,29,3,21,24,6,19,5,
-##  17,12,14,4,18,8,10,30,27,16,26,22,13,7,15,28,9,2) ])
+##  gap> u := HallSubgroup(h,[3,31]);;
+##  gap> Size(u); StructureDescription(u);
+##  93
+##  "C31 : C3"
 ##  gap> HallSubgroup(h,[5,31]);
 ##  fail
 ##  ]]></Example>
@@ -4132,7 +4126,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  #I  the image group has 3 gens and 11 rels of total length 92
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens : 
 ##  >                                           method := "fast" );;
-##  #I  the image group has 3 gens and 150 rels of total length 3336
+##  #I  the image group has 3 gens and 178 rels of total length 4001
 ##  ]]></Example>
 ##  <P/>
 ##  Though the option <C>method := "regular"</C> is only checked in the case
@@ -4154,7 +4148,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
 ##        [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens );;
-##  #I  the image group has 2 gens and 10 rels of total length 126
+##  #I  the image group has 2 gens and 9 rels of total length 112
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens : 
 ##  >                                           method := "regular");;
 ##  #I  the image group has 2 gens and 6 rels of total length 56

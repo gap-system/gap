@@ -31,7 +31,7 @@ gap:  $(GMP_LIBS)
 endif
 
 # OBJECTS are generated from SOURCE
-OBJECTS=ariths.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_random.o c_type1.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intfuncs.o intrprtr.o iostream.o listfunc.o listoper.o lists.o macfloat.o objccoll.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o opers.o permutat.o plist.o pperm.o precord.o profile.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o trans.o vars.o vec8bit.o vecffe.o vecgf2.o vector.o weakptr.o $(GAPMPI_OBJ)
+OBJECTS=ariths.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_random.o c_type1.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o ffdata.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intfuncs.o intrprtr.o iostream.o listfunc.o listoper.o lists.o macfloat.o objccoll.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o opers.o permutat.o plist.o pperm.o precord.o profile.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o trans.o vars.o vec8bit.o vecffe.o vecgf2.o vector.o weakptr.o $(GAPMPI_OBJ)
 
 
 # compile and link GAP
@@ -226,13 +226,16 @@ exprs.o: ../../Makefile @srcdir@/exprs.c @srcdir@/system.h config.h @srcdir@/gas
  @srcdir@/hpc/aobjects.h @srcdir@/vars.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o exprs.o -c @srcdir@/exprs.c
 
+ffdata.o: ../../Makefile @srcdir@/ffdata.c @srcdir@/ffdata.h
+	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o ffdata.o -c @srcdir@/ffdata.c
+
 finfield.o: ../../Makefile @srcdir@/finfield.c @srcdir@/system.h config.h @srcdir@/gasman.h \
  @srcdir@/hpc/atomic.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
  @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h \
  @srcdir@/bool.h @srcdir@/integer.h @srcdir@/finfield.h @srcdir@/records.h \
  @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h \
  @srcdir@/code.h @srcdir@/hpc/aobjects.h @srcdir@/hpc/thread.h @srcdir@/hpc/tls.h \
- @srcdir@/hpc/ffdata.h
+ @srcdir@/ffdata.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o finfield.o -c @srcdir@/finfield.c
 
 funcs.o: ../../Makefile @srcdir@/funcs.c @srcdir@/system.h config.h @srcdir@/bool.h \

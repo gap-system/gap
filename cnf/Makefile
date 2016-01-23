@@ -27,6 +27,7 @@ SOURCE= \
     dt \
     dteval \
     exprs \
+    ffdata \
     finfield \
     funcs \
     gap \

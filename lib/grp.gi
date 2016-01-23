@@ -1618,6 +1618,46 @@ function( G )
     return comp;
 end );
 
+#############################################################################
+##
+#M  Socle( <G> )  . . . . . . . . . . . . . . . . for finite nilpotent groups
+##
+InstallMethod( Socle, "for finite nilpotent groups",
+              [ IsGroup ],
+              RankFilter( IsGroup and CanComputeSize and IsFinite and
+                          IsNilpotentGroup ) - RankFilter( IsGroup ),
+  function(G)
+    local H, prodH;
+
+    if not CanComputeSize(G) or not IsFinite(G)
+       or not IsNilpotentGroup(G) then
+      TryNextMethod();
+    fi;
+
+    prodH := TrivialSubgroup(G);
+    # now socle is the product of Omega of the Sylow subgroups of the center
+    for H in SylowSystem(Center(G)) do
+      prodH := ClosureSubgroupNC(prodH, Omega(H, PrimePGroup(H)));
+    od;
+
+    # Socle is central in G, set some properties and attributes accordingly
+    SetIsAbelian(prodH, true);
+    if not HasParent(prodH) then
+      SetParent(prodH, G);
+      SetCentralizerInParent(prodH, G);
+      SetIsNormalInParent(prodH, true);
+    elif CanComputeIsSubset(G, Parent(prodH))
+         and IsSubgroup(G, Parent(prodH)) then
+      SetCentralizerInParent(prodH, Parent(prodH));
+      SetIsNormalInParent(prodH, true);
+    elif CanComputeIsSubset(G, Parent(prodH))
+         and IsSubgroup(Parent(prodH), G) and IsNormal(Parent(prodH), G) then
+      # characteristic subgroup of a normal subgroup is normal
+      SetIsNormalInParent(prodH, true);
+    fi;
+
+    return prodH;
+  end);
 
 #############################################################################
 ##
