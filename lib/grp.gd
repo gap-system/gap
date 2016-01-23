@@ -2675,8 +2675,9 @@ DeclareOperation( "CosetTableNormalClosure", [ IsGroup, IsGroup ] );
 ##  [ (1,2,3,4), (1,2) ] -> [ f1*f2, f1 ]
 ##  gap> Size(ImagesSource(hom));
 ##  6
-##  gap> FactorGroup(g,n);
-##  Group([ f1, f2 ])
+##  gap> FactorGroup(g,n);;
+##  gap> StructureDescription(last);
+##  "S3"
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
