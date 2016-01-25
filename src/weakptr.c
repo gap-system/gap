@@ -756,8 +756,8 @@ static Int InitKernel (
     InitSweepFuncBags( T_WPOBJ,          SweepWeakPointerObj  );
     InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ +COPYING, SweepWeakPointerObj  );
-    InitFinalizerFuncBags( T_WPOBJ, FinalizeWeakPointerObj );
-    InitFinalizerFuncBags( T_WPOBJ+COPYING, FinalizeWeakPointerObj );
+    InitFreeFuncBag( T_WPOBJ, FinalizeWeakPointerObj );
+    InitFreeFuncBag( T_WPOBJ+COPYING, FinalizeWeakPointerObj );
 #else
     /* force atomic allocation of these pointers */
     InitMarkFuncBags ( T_WPOBJ,          MarkNoSubBags   );

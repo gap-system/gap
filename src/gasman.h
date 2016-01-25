@@ -878,13 +878,6 @@ extern  void            InitSweepFuncBags (
             TNumSweepFuncBags    sweep_func );
  
 
-typedef void 		(* FinalizerFunction) (
-	    Bag bag );
-
-extern void		InitFinalizerFuncBags (
-	    UInt		tnum,
-	    FinalizerFunction finalizer_func );
-
 /****************************************************************************
 **
 *V  GlobalBags  . . . . . . . . . . . . . . . . . . . . . list of global bags
