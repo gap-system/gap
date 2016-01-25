@@ -42,8 +42,6 @@ gap> C := SmallGroup(125, 4);;
 gap> D := DirectProduct(A, B, C, SmallGroup(1536, 2));;
 gap> IdGroup(Socle(D));
 [ 1440, 5958 ]
-gap> Socle(D) = ClosureSubgroup(TrivialSubgroup(D), Union(Set(MinimalNormalSubgroups(D), GeneratorsOfGroup)));
-true
 gap> Socle(D) = Center(D);
 true
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)
