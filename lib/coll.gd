@@ -3231,8 +3231,10 @@ DeclareOperation( "CanComputeIsSubset", [IsObject,IsObject] );
 ##  <Func Name="CanComputeSize" Arg='dom'/>
 ##
 ##  <Description>
-##  This filter indicates whether the size of the domain <A>dom</A>
-##  (which might be <Ref Var="infinity"/>) can be computed.
+##  This filter indicates that we know that the size of the domain <A>dom</A>
+##  (which might be <Ref Var="infinity"/>) can be computed reasonably
+##  easily. It doesn't imply as quick a computation as <C>HasSize</C> would
+##  but its absence does not imply that the size cannot be computed.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
