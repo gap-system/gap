@@ -313,7 +313,7 @@ InstallMethod( ImagesSet,
     if     IsActionHomomorphism( map )
        and HasBaseOfGroup( UnderlyingExternalSet( map ) )
        and not HasBaseOfGroup( img )
-       and not HasStabChainImmutable( img )  then
+       and not HasStabChainMutable( img )  then
         if not IsBound( UnderlyingExternalSet( map )!.basePermImage )  then
             UnderlyingExternalSet( map )!.basePermImage :=
 	     List(BaseOfGroup(UnderlyingExternalSet(map)),

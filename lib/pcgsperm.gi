@@ -317,7 +317,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
     # Otherwise start  with stabilizer chain  of  <U> with identical `labels'
     # components on all levels.
     if IsGroup( U )  then                               
-        if IsTrivial( U )  and  not HasStabChainImmutable( U )  then
+        if IsTrivial( U )  and  not HasStabChainMutable( U )  then
             U := EmptyStabChain( [  ], One( U ) );
         else
 	    S:=U;
