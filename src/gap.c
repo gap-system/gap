@@ -102,7 +102,7 @@
 #include	"serialize.h"		/* object serialization		   */
 
 #ifdef GAPMPI
-#include        "gapmpi.h"              /* ParGAP/MPI                      */
+#include        "hpc/gapmpi.h"          /* ParGAP/MPI                      */
 #endif
 
 #ifdef WITH_ZMQ

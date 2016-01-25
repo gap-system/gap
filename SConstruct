@@ -496,7 +496,7 @@ source.remove("src/gapw95.c")
 
 # If we're not using MPI, don't use the MPI code.
 if not GAP["mpi"]:
-  source.remove("src/gapmpi.c")
+  source.remove("src/hpc/gapmpi.c")
 
 # Offer a "testward" target to check syntax.
 if "testward" in COMMAND_LINE_TARGETS:
