@@ -23,7 +23,7 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
 #include        "blister.h"             /* boolean lists                   */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "vecgf2.h"              /* GF2 vectors                     */
 

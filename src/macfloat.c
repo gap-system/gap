@@ -28,7 +28,7 @@
 
 #include        "bool.h"
 #include        "scanner.h"
-#include        "string.h"
+#include        "stringobj.h"
 #include        <assert.h>
 
 #include	"code.h"		/* coder                           */
