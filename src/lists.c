@@ -44,7 +44,7 @@
 
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "integer.h"             /* integers                        */
 
 #include        "hpc/aobjects.h"        /* atomic objects                  */

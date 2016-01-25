@@ -35,7 +35,7 @@
 #include        "precord.h"             /* plain records                   */
 
 #include        "lists.h"               /* generic lists                   */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
 

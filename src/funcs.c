@@ -28,7 +28,7 @@
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "calls.h"               /* generic call mechanism          */
 
 #include        "code.h"                /* coder                           */

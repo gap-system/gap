@@ -64,7 +64,7 @@ SOURCE= \
     set \
     stats \
     streams \
-    string \
+    stringobj \
     sysfiles \
     system \
     tietze \
