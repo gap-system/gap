@@ -789,7 +789,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
   # if the original group has no stabchain we probably do not want to keep
   # it (or a homomorphisms pool) there -- make a copy for working
   # intermediately with it.
-  if not HasStabChainImmutable(G) then
+  if not HasStabChainMutable(G) then
     H:= GroupWithGenerators( GeneratorsOfGroup( G ),One(G) );
     if HasSize(G) then
       SetSize(H,Size(G));
@@ -939,7 +939,7 @@ local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
 	      fi;
 
 	      op:=ActionHomomorphism(gimg,bb,OnSets,"surjective");
-	      if HasSize(gimg) and not HasStabChainImmutable(gimg) then
+	      if HasSize(gimg) and not HasStabChainMutable(gimg) then
 		sto:=StabChainOptions(Range(op));
 		sto.limit:=Size(gimg);
 		# try only with random (will exclude some chances, but is
@@ -993,7 +993,7 @@ local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
 	    b:=Set(List(b,i->Immutable(Union(bdom{i}))));
 	  fi;
 	  op:=ActionHomomorphism(gimg,b,OnSets,"surjective");
-	  if HasSize(gimg) and not HasStabChainImmutable(gimg) then
+	  if HasSize(gimg) and not HasStabChainMutable(gimg) then
 	    sto:=StabChainOptions(Range(op));
 	    sto.limit:=Size(gimg);
 	    # try only with random (will exclude some chances, but is

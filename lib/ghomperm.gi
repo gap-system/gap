@@ -944,9 +944,6 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
 
     od;
     
-    if not HasStabChainImmutable(hom) then
-        SetStabChainImmutable(hom, Immutable(S));
-    fi;
     return S;
 end );
 
@@ -1032,7 +1029,7 @@ InstallMethod( CompositionMapping2, "group hom. with perm group hom.",
     function( hom1, hom2 )
     local   prd,  stb,  levs,  S,t,i,oli;
 
-    stb := CopyStabChain( StabChainImmutable( hom2 ) );
+    stb := StructuralCopy( StabChainMutable( hom2 ) );
     levs := [  ];
     S := stb;
     while IsBound( S.stabilizer )  do
@@ -1061,7 +1058,7 @@ InstallMethod( CompositionMapping2, "group hom. with perm group hom.",
     S.idimage := One( Range( hom1 ) );
     prd := GroupHomomorphismByImagesNC( Source( hom2 ), Range( hom1 ),
                    stb.generators, stb.genimages );
-    SetStabChain( prd, stb );
+    SetStabChainMutable( prd, stb );
     return prd;
 end );
 
@@ -1271,7 +1268,7 @@ InstallGlobalFunction( StabChainPermGroupToPermGroupGeneralMappingByImages,
     
     if  NrMovedPoints(longgroup)<=10000 and
        (not HasInverseGeneralMapping( hom )
-       or not HasStabChainImmutable( InverseGeneralMapping( hom ) )
+       or not HasStabChainMutable( InverseGeneralMapping( hom ) )
        or not HasKernelOfMultiplicativeGeneralMapping( hom ) 
        )then
         MakeStabChainLong( InverseGeneralMapping( hom ),
@@ -1289,11 +1286,11 @@ end );
 ##
 InstallGlobalFunction( MakeStabChainLong,
     function( hom, stb, ran, c1, c2, cohom, cokername )
-    local   newlevs,  S, baseS, idimage, i,  len,  rest,  trans;
+    local   newlevs,  S,  idimage, i,  len,  rest,  trans;
     
     # Construct the stabilizer chain for <hom>.
     S := CopyStabChain( stb );
-    baseS := S;
+    SetStabChainMutable( hom, S );
     newlevs := [  ];
     idimage:= One( Range( hom ) );
 
@@ -1337,9 +1334,7 @@ InstallGlobalFunction( MakeStabChainLong,
     for S  in newlevs  do
         Unbind( S[ Length( S ) ] );
     od;
-
-    SetStabChain( hom, baseS );
-
+    
     # Construct the cokernel.
     if not IsEmpty( stb.genlabels )  then
         if not Tester( cokername )( cohom )  then
@@ -1352,6 +1347,7 @@ InstallGlobalFunction( MakeStabChainLong,
     else 
         Setter( cokername )( cohom, TrivialSubgroup( Range( hom ) ) );
     fi;
+    
 end );
 
 #############################################################################
@@ -1361,14 +1357,7 @@ end );
 InstallMethod( StabChainMutable, "perm to perm mapping by images",true,
         [ IsPermGroupGeneralMappingByImages and
           IsToPermGroupGeneralMappingByImages ], 0,
-        function(g)
-            local stab;
-            stab := StabChainPermGroupToPermGroupGeneralMappingByImages(g);
-            if not HasStabChainImmutable(g) then
-                SetStabChainImmutable(g, Immutable(stab));
-            fi;
-            return stab;
-        end);
+        StabChainPermGroupToPermGroupGeneralMappingByImages );
 
 #############################################################################
 ##
@@ -1380,7 +1369,7 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
           IsToPermGroupGeneralMappingByImages ], 0,
 function( hom )
 local ker;
-  if HasStabChainImmutable( hom ) then TryNextMethod(); fi;
+  if HasStabChainMutable( hom ) then TryNextMethod(); fi;
   StabChainPermGroupToPermGroupGeneralMappingByImages( hom );
   ker:=KernelOfMultiplicativeGeneralMapping( hom );
   if Size(ker)=1 then
@@ -1428,7 +1417,7 @@ end );
 InstallMethod( ImagesSet,"constituent homomorphism", CollFamSourceEqFamElms,
         # this method should *not* be applied if the group to be mapped has
         # no stabilizer chain (for example because it is very big).
-        [ IsConstituentHomomorphism, IsPermGroup and HasStabChainImmutable], 0,
+        [ IsConstituentHomomorphism, IsPermGroup and HasStabChainMutable], 0,
 function( hom, H )
 local   D,  I,G;
   
@@ -1444,7 +1433,7 @@ local   D,  I,G;
   else
     G:=SubgroupNC(Range(hom),
       List(GeneratorsOfGroup(H),i->Permutation(i,D)));
-    SetStabChain(G,I);
+    SetStabChainMutable(G,I);
     return G;
   fi;
 end );
@@ -1457,7 +1446,7 @@ RanImgSrcSurjTraho:=function(hom)
 local   D,H,I,G;
   H:=Source(hom);
   # only worth if the source has a stab chain to utilize
-  if not HasStabChainImmutable(H) then
+  if not HasStabChainMutable(H) then
     TryNextMethod();
   fi;
   D := Enumerator( UnderlyingExternalSet( hom ) );
@@ -1471,7 +1460,7 @@ local   D,H,I,G;
     return GroupStabChain( I );
   else
     G:=Group(List(GeneratorsOfGroup(H),i->Permutation(i,D)),());
-    SetStabChain(G,I);
+    SetStabChainMutable(G,I);
     return G;
   fi;
 end;
@@ -1492,7 +1481,7 @@ InstallMethod( PreImagesRepresentative,"constituent homomorphism",
   FamRangeEqFamElm,[IsConstituentHomomorphism,IsPerm], 0,
 function( hom, elm )
 local D,DP;
-  if not HasStabChainImmutable(Source(hom)) then
+  if not HasStabChainMutable(Source(hom)) then
     # do not enforce a stabchain if not neccessary -- it could be big
     TryNextMethod();
   fi;
@@ -1667,7 +1656,7 @@ end);
 RanImgSrcSurjBloho:=function(hom)
 local gens,imgs,ran,dom;
 # using stabchain info will produce just too many generators
-  if ValueOption("onlyimage")=fail and HasStabChainImmutable(Source(hom)) 
+  if ValueOption("onlyimage")=fail and HasStabChainMutable(Source(hom)) 
     and NrMovedPoints(Source(hom))<20000 then
     # transfer stabchain information if not too expensive
     ran:=ImageKernelBlocksHomomorphism(hom,Source(hom),false);
@@ -1705,7 +1694,7 @@ InstallMethod( PreImagesRepresentative, "blocks homomorphism",
             pos;        # position of point hit by preimage
     
     D := Enumerator( UnderlyingExternalSet( hom ) );
-    S := StabChainImmutable( hom );
+    S := StabChainMutable( hom );
     pre := One( Source( hom ) );
 
     # loop over the blocks and their iterated set stabilizers
@@ -1843,7 +1832,7 @@ local e1,e2,d1,d2,i,ac,act,hom,xset;
   MakeImmutable(d2);
   IsSSortedList(d2);
   xset:=ExternalSet(Source(map1),d2,act);
-  xset!.basePermImage:=BaseStabChain(StabChainImmutable(ImagesSource(map2)));
+  xset!.basePermImage:=BaseStabChain(StabChainMutable(ImagesSource(map2)));
   SetBaseOfGroup(xset,d2{xset!.basePermImage});
 
   if HasImagesSource(map1) and HasIsSurjective(map2) 
@@ -2009,8 +1998,8 @@ function( hom )
         for pnt  in dom  do
             sliced := [  ];
             while pnt <> bpt  do
-                Add( sliced, StabChainImmutable( hom ).transimages[ pnt ] );
-                pnt := pnt ^ StabChainImmutable( hom ).transversal[ pnt ];
+                Add( sliced, StabChainMutable( hom ).transimages[ pnt ] );
+                pnt := pnt ^ StabChainMutable( hom ).transversal[ pnt ];
             od;
             Add( idom, PreImageWord( fix, sliced ) );
         od;

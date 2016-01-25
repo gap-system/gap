@@ -174,21 +174,6 @@ DeclareOperation( "StabChainOp", [ IsGroup, IsRecord ] );
 DeclareAttribute( "StabChainMutable", IsObject, "mutable" );
 DeclareAttribute( "StabChainImmutable", IsObject );
 
-#############################################################################
-##
-##  <#GAPDoc Label="SetStabChain">
-##  <ManSection>
-##  <Func Name="SetStabChain" Arg='G, stabchain'
-##   Label="for a group and a stabilizer chain"/>
-##
-##  <Description>
-##  This function sets the <Ref Attr="StabChainImmutable"/> of <A>G</A> to
-##  <A>stabchain</A>. Further, if <A>stabchain</A> is mutable, it sets
-##  <Ref Attr="StabChainMutable"/> of <A>G</A>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-DeclareGlobalFunction( "SetStabChain" );
 
 #############################################################################
 ##
