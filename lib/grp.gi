@@ -2820,6 +2820,27 @@ InstallMethod (HallSubgroupOp, "test trivial cases", true,
     end);
 
 
+#############################################################################
+##
+#M  HallSubgroupOp( <G>, <p> ) . . . . . . . . . . . . for a nilpotent group
+##
+InstallMethod( HallSubgroupOp,
+    "method for a nilpotent group",
+    [ IsGroup and IsNilpotentGroup, IsList ],
+    function( G, pi )
+    local p, smallpi, S;
+
+    S := TrivialSubgroup(G);
+    smallpi := [];
+    for p in pi do
+      AddSet(smallpi, p);
+      S := ClosureSubgroupNC(S, SylowSubgroup(G, p));
+      SetHallSubgroup(G, smallpi, S);
+    od;
+    return S;
+    end );
+
+
 ############################################################################
 ##
 #M  SylowComplementOp (<grp>, <p>)
