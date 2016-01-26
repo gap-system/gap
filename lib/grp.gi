@@ -1587,6 +1587,8 @@ function( G )
         comp[i] := SubgroupByPcgs( G, sub );
         SetIsPGroup( comp[i], true );
         SetPrimePGroup( comp[i], primes[i] );
+        SetSylowSubgroup(G, primes[i], comp[i]);
+        SetHallSubgroup(G, [primes[i]], comp[i]);
     od;
     return comp;
 end );
@@ -1614,6 +1616,10 @@ function( G )
                            x -> weights[x][3] in pis[i] )};
         sub  := InducedPcgsByPcSequenceNC( spec, gens );
         comp[i] := SubgroupByPcgs( G, sub );
+        SetHallSubgroup(G, pis[i], comp[i]);
+        if Length(pis[i])=1 then
+            SetSylowSubgroup(G, pis[i][1], comp[i]);
+        fi;
     od;
     return comp;
 end );
@@ -2783,6 +2789,8 @@ InstallMethod( SylowSubgroupOp,
     if Size(S) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
+        SetHallSubgroup(G, [p], S);
+        SetPCore(G, p, S);
     fi;
     return S;
     end );

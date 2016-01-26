@@ -212,6 +212,7 @@ function ( G, p )
     if Size( S ) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
+        SetHallSubgroup(G, [p], S);
     fi;
 
     # return the Sylow subgroup
@@ -1574,6 +1575,7 @@ local   S,          # <p>-Sylow subgroup of <G>, result
     if Size( S ) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
+        SetHallSubgroup(G, [p], S);
     fi;
 
     # return the Sylow subgroup

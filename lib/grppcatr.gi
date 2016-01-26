@@ -261,16 +261,24 @@ InstallMethod( SylowComplementOp,
     80,
 
 function( G, p )
-    local   spec,  weights,  gens,  i,  S;
+    local   spec,  weights,  gens,  i,  S,  pi;
 
     spec := SpecialPcgs( G );
     weights := LGWeights( spec );
     gens := [];
+    pi := [];
     for i in [1..Length(spec)] do
-        if weights[i][3] <> p then Add( gens, spec[i] ); fi;
+        if weights[i][3] <> p then
+            Add( gens, spec[i] );
+            Add( pi, weights[i][3] );
+        fi;
     od;
     gens := InducedPcgsByPcSequenceNC( spec, gens );
     S := SubgroupByPcgs( G, gens );
+    SetHallSubgroup( G, pi, S );
+    if Length( pi ) = 1 then
+        SetSylowSubgroup( G, pi[1], S );
+    fi;
     return S;
 end );
 
@@ -306,6 +314,7 @@ function( G, p )
     if Size(S) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
+        SetHallSubgroup(G, [p], S);
     fi;
     return S;
 end );

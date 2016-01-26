@@ -1420,6 +1420,7 @@ local   S;
   if Size(S) > 1 then
     SetIsPGroup( S, true );
     SetPrimePGroup( S, p );
+    SetHallSubgroup(G, [p], S);
   fi;
   return S;
 end );

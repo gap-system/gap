@@ -1415,6 +1415,8 @@ InstallMethod( PCoreOp,
            if ppart > 1 then
                SetIsPGroup( D, true );
                SetPrimePGroup( D, p );
+               SetSylowSubgroup( workgroup, p, D );
+               SetHallSubgroup( workgroup, [p], D );
            fi;
            return D;
     fi;
