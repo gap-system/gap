@@ -2649,6 +2649,13 @@ end);
 ##  <p> subgroup of <G>.  This is the core of the <p> Sylow subgroups.
 ##
 InstallMethod( PCoreOp,
+    "generic method for nilpotent group and prime",
+    [ IsGroup and IsNilpotentGroup, IsPosInt ],
+    function ( G, p )
+    return SylowSubgroup( G, p );
+    end );
+
+InstallMethod( PCoreOp,
     "generic method for group and prime",
     [ IsGroup, IsPosInt ],
     function ( G, p )
