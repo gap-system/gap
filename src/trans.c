@@ -39,8 +39,10 @@
 #define MAX(a,b)          (a<b?b:a)
 
 // TmpTrans is the same as TmpPerm
+#define  TmpTrans TLS(TmpTrans)
 
 Obj TmpTrans;
+/* mp this will become a ReadOnly object? */
 Obj IdentityTrans;
 
 /*******************************************************************************
@@ -48,7 +50,9 @@ Obj IdentityTrans;
 *******************************************************************************/
 
 static inline void ResizeTmpTrans( UInt len ){
-  if(SIZE_OBJ(TmpTrans)<len*sizeof(UInt4)){
+  if (TmpTrans == (Obj)0) {
+    TmpTrans = NewBag(T_TRANS4, len*sizeof(UInt4));
+  } else if(SIZE_OBJ(TmpTrans)<len*sizeof(UInt4)) {
     ResizeBag(TmpTrans,len*sizeof(UInt4));
   }
 }
@@ -57,9 +61,11 @@ static inline UInt4 * ResizeInitTmpTrans( UInt len ){
   UInt    i;
   UInt4   *pttmp;
 
-  if(SIZE_OBJ(TmpTrans)<len*sizeof(UInt4)){
-    ResizeBag(TmpTrans,len*sizeof(UInt4));
-  }
+  if (TmpTrans == (Obj)0)
+    TmpTrans = NewBag(T_TRANS4, len*sizeof(UInt4));
+  else if (SIZE_BAG(TmpTrans) < len*sizeof(UInt4))
+    ResizeBag(TmpTrans, len*sizeof(UInt4));
+
   pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
   for(i=0;i<len;i++) pttmp[i]=0;
   return pttmp;
@@ -941,6 +947,8 @@ Obj FuncPREIMAGES_TRANS_INT (Obj self, Obj f, Obj pt){
   }
   SET_LEN_PLIST(out, (Int) nr);
   SHRINK_PLIST(out, (Int) nr);
+  if (!nr)
+    RetypeBag(out, T_PLIST_EMPTY);
   return out;
 }
 
@@ -2585,8 +2593,8 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list){
           SET_ELM_PLIST(out, ++len_out, NEW_PLIST(T_PLIST_CYC, 32));
           CHANGED_BAG(out);
           ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-          do{ AssPlist(ELM_PLIST(out, len_out), ++ptlens[len_out], 
-               INTOBJ_INT(j+1));
+          do{ 
+              AssPlist(ELM_PLIST(out, len_out), ++ptlens[len_out], INTOBJ_INT(j+1));
               j=(ADDR_TRANS2(f))[j];
               ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
           }while(j!=pt);
@@ -2614,8 +2622,7 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list){
           SET_ELM_PLIST(out, ++len_out, NEW_PLIST(T_PLIST_CYC, 32));
           CHANGED_BAG(out);
           ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-          do{ AssPlist(ELM_PLIST(out, len_out), ++ptlens[len_out], 
-               INTOBJ_INT(j+1));
+          do{ AssPlist(ELM_PLIST(out, len_out), ++ptlens[len_out],INTOBJ_INT(j+1));
               j=(ADDR_TRANS4(f))[j];
               ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
           }while(j!=pt);
@@ -4368,8 +4375,10 @@ static Int InitKernel ( StructInitInfo *module )
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* make the buffer bag                                                 */
-    InitGlobalBag( &TmpTrans, "src/trans.c:TmpTrans" );
-    
+#ifndef HPCGAP
+     InitGlobalBag( &TmpTrans, "src/trans.c:TmpTrans" );
+#endif
+
     // make the identity trans
     InitGlobalBag( &IdentityTrans, "src/trans.c:IdentityTrans" );
     
@@ -4435,7 +4444,7 @@ static Int InitLibrary ( StructInitInfo *module )
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
     InitGVarFiltsFromTable( GVarFilts );
-    TmpTrans = NEW_TRANS4(1000);
+    TmpTrans = 0;
     IdentityTrans = NEW_TRANS2(0);
 
     /* return success                                                      */
@@ -4467,4 +4476,3 @@ StructInitInfo * InitInfoTrans ( void )
 {
     return &module;
 }
-
