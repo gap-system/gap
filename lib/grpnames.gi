@@ -194,7 +194,7 @@ InstallMethod( ComplementNormalSubgroupNC,
 ##
 InstallMethod(DirectFactorsOfGroup,
             "for direct products if normal subgroups are computed", true,
-            [ IsGroup and HasDirectProductInfo and HasNormalSubgroups ], 10,
+            [ IsGroup and HasDirectProductInfo and HasNormalSubgroups ], 0,
 
   function(G)
     local i, info, Ns, MinNs, H, Df, DfNs, DfMinNs, N, g, gs;
@@ -228,7 +228,7 @@ InstallMethod(DirectFactorsOfGroup,
   end);
 
 InstallMethod(DirectFactorsOfGroup, "for direct products", true,
-                      [ IsGroup and HasDirectProductInfo ], 10,
+                      [ IsGroup and HasDirectProductInfo ], 0,
 
   function(G)
     local i, info, Ns;
@@ -243,7 +243,7 @@ InstallMethod(DirectFactorsOfGroup, "for direct products", true,
   end);
 
 InstallMethod(DirectFactorsOfGroup, "if normal subgroups are computed", true,
-                      [ IsGroup and HasNormalSubgroups ], 10,
+                      [ IsGroup and HasNormalSubgroups ], 0,
 
   function(G)
     local Ns, MinNs, GGd, g, N, gs;
@@ -467,7 +467,7 @@ InstallGlobalFunction( DirectFactorsOfGroupFromList,
   end );
 
 InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
-                        [ IsGroup ], 10,
+                        [ IsGroup ], 0,
   function(G)
 
     local Ns,       # list of some direct components
