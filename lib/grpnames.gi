@@ -593,27 +593,30 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
 
     # look for the possible direct components from Ns
     # partition to two sets, consider both
-    for S1 in PartitionsSet(Ns,2) do for i in [1..2] do
-      prodK := TrivialSubgroup(G);
-      for K in S1[i] do
-        prodK := ClosureGroup(prodK, K);
-      od;
-      Z1 := Centralizer(G, prodK);
-      # Z1 is nonabelian <==> contains a nonabelian factor
-      if not IsAbelian(Z1) then
-        N := First(DirectFactorsOfGroupKN(Z1), x-> not IsAbelian(x));
-        # not sure if IsNormal(G, N) should be checked
+    for S1 in IteratorOfCombinations(Ns) do
+      if S1 <> [] and S1<>Ns then
+        prodK := TrivialSubgroup(G);
+        for K in S1 do
+          prodK := ClosureGroup(prodK, K);
+        od;
+        Z1 := Centralizer(G, prodK);
+        # Z1 is nonabelian <==> contains a nonabelian factor
+        if not IsAbelian(Z1) then
+          N := First(DirectFactorsOfGroupKN(Z1), x-> not IsAbelian(x));
+          # not sure if IsNormal(G, N) should be checked
 
-        # this certainly can be done better,
-        # because we basically know all possible normal subgroups
-        # but it suffices for now
-        B := ComplementNormalSubgroup(G, N);
-        if B <> fail then
-          # N is direct indecomposable by construction
-          return UnionIfCanEasilySortElements([N],DirectFactorsOfGroupKN(B));
+          # this certainly can be done better,
+          # because we basically know all possible normal subgroups
+          # but it suffices for now
+          B := ComplementNormalSubgroup(G, N);
+          if B <> fail then
+            # N is direct indecomposable by construction
+            return UnionIfCanEasilySortElements([N],
+                                                  DirectFactorsOfGroupKN(B));
+          fi;
         fi;
       fi;
-    od; od;
+    od;
 
     # if no direct component is found
     return [ G ];
