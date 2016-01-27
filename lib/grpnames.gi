@@ -315,6 +315,11 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
 
     if not CanComputeSize(G) or not IsFinite(G) then TryNextMethod(); fi;
 
+    # the KN method performs slower in practice, only called if forced
+    if ValueOption("useKN") = true then
+      return DirectFactorsOfGroupKN(G);
+    fi;
+
     # nilpotent groups are direct products of Sylow subgroups
     if IsNilpotentGroup(G) then
       if not IsPGroup(G) then
@@ -466,8 +471,8 @@ InstallGlobalFunction( DirectFactorsOfGroupFromList,
     return [ G ];
   end );
 
-InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
-                        [ IsGroup ], 0,
+InstallGlobalFunction(DirectFactorsOfGroupKN,
+
   function(G)
 
     local Ns,       # list of some direct components

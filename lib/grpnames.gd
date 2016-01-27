@@ -115,6 +115,15 @@ DeclareOperation( "ComplementNormalSubgroupNC", [IsGroup, IsGroup]);
 ##    If <A>G</A> is an infinite abelian group, then it returns an unsorted
 ##    list of the factors. DirectFactorsOfGroup currently cannot compute the
 ##    direct factors of a nonabelian infinite group.
+##
+##    The option <Q>useKN</Q> forces to use the function
+##    DirectFactorsOfGroupKN based on
+##    Neeraj Kayal and Timur Nezhmetdinov, Factoring Groups Efficiently,
+##    in International Colloquium on Automata, Languages and Programming
+##    (ICALP), Lecture Notes in Computer Science 5555, 585-596,
+##    Springer Verlag, Berlin Heidelberg 2009.
+##    This algorithm never computes normal subgroups, and performs slower in
+##    practice than the default method.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -240,7 +249,7 @@ DeclareGlobalFunction( "DirectFactorsOfGroupFromList",
 #A  DirectFactorsOfGroupKN( <G> ) . . . . decomposition into a direct product
 ##
 ##  <ManSection>
-##  <Attr Name="DirectFactorsOfGroupKN" Arg="G"/>
+##  <Func Name="DirectFactorsOfGroupKN" Arg="G"/>
 ##
 ##  <Description>
 ##    A (sorted if possible) list of factors [<A>G1</A>, .., <A>Gr</A>] such
@@ -254,7 +263,7 @@ DeclareGlobalFunction( "DirectFactorsOfGroupFromList",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareAttribute( "DirectFactorsOfGroupKN", IsGroup );
+DeclareGlobalFunction( "DirectFactorsOfGroupKN", IsGroup );
 
 #############################################################################
 ##
