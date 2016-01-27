@@ -13,7 +13,9 @@
 ##
 
 #############################################################################
-DeclareRepresentation("IsIEEE754FloatRep", IsFloat and IsInternalRep and IS_MACFLOAT,[]);
+DeclareRepresentation("IsIEEE754FloatRep", IsFloat and IsInternalRep 
+        #and IS_MACFLOAT
+        ,[]);
 
 BIND_GLOBAL("IEEE754FloatsFamily", NewFamily("IEEE754FloatsFamily", IsIEEE754FloatRep));
 

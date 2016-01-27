@@ -483,8 +483,8 @@ Obj FuncFREXP_MACFLOAT( Obj self, Obj f)
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_MACFLOAT", "obj", &IsMacfloatFilt,
-      IsMacfloatHandler, "src/macfloat.c:IS_MACFLOAT" },
+  /*    { "IS_MACFLOAT", "obj", &IsMacfloatFilt,
+	IsMacfloatHandler, "src/macfloat.c:IS_MACFLOAT" }, */
 
     { 0 }
 
