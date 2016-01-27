@@ -313,7 +313,7 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
       return Ns;
     fi;
 
-    if not IsFinite(G) then TryNextMethod(); fi;
+    if not CanComputeSize(G) or not IsFinite(G) then TryNextMethod(); fi;
 
     # nilpotent groups are direct products of Sylow subgroups
     if IsNilpotentGroup(G) then
