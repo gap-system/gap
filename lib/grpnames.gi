@@ -425,8 +425,6 @@ InstallGlobalFunction( DirectFactorsOfGroupFromList,
       return [ G ];
     fi;
 
-    if not IsFinite(G) then TryNextMethod(); fi;
-
     Ns := ShallowCopy(NList);
     MinNs := ShallowCopy(MinList);
     gs := [ ];
@@ -511,8 +509,6 @@ InstallGlobalFunction(DirectFactorsOfGroupKN,
       od;
       return Ns;
     fi;
-
-    if not IsFinite(G) then TryNextMethod(); fi;
 
     # look for abelian cyclic component from the center
     C := Center(G);
