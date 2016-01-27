@@ -260,14 +260,6 @@ end );
 
 
 
-BIND_GLOBAL( "NewType2", function ( typeOfTypes, family )
-    return NEW_TYPE( typeOfTypes,
-                     family,
-                     family!.IMP_FLAGS,
-                     false );
-end );
-
-
 BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
     return NEW_TYPE( typeOfTypes,
                      family,
@@ -288,21 +280,6 @@ BIND_GLOBAL( "NewType4", function ( typeOfTypes, family, filter, data )
 end );
 
 
-BIND_GLOBAL( "NewType5",
-    function ( typeOfTypes, family, filter, data, stuff )
-    local   type;
-    type := NEW_TYPE( typeOfTypes,
-                      family,
-                      WITH_IMPS_FLAGS( AND_FLAGS(
-                         family!.IMP_FLAGS,
-                         FLAGS_FILTER(filter) ) ),
-                      data );
-    type![ POS_FIRST_FREE_TYPE ] := stuff;
-#T really ??
-    return type;
-end );
-
-
 BIND_GLOBAL( "NewType", function ( arg )
     local   type;
 
@@ -311,25 +288,17 @@ BIND_GLOBAL( "NewType", function ( arg )
         Error("<family> must be a family");
     fi;
 
-    # only one argument (why would you want that?)
-    if LEN_LIST(arg) = 1  then
-        type := NewType2( TypeOfTypes, arg[1] );
-
     # NewType( <family>, <filter> )
-    elif LEN_LIST(arg) = 2  then
+    if LEN_LIST(arg) = 2  then
         type := NewType3( TypeOfTypes, arg[1], arg[2] );
 
     # NewType( <family>, <filter>, <data> )
     elif LEN_LIST(arg) = 3  then
         type := NewType4( TypeOfTypes, arg[1], arg[2], arg[3] );
 
-    # NewType( <family>, <filter>, <data>, <stuff> )
-    elif LEN_LIST(arg) = 4  then
-        type := NewType5( TypeOfTypes, arg[1], arg[2], arg[3], arg[4] );
-
     # otherwise signal an error
     else
-        Error("usage: NewType( <family> [, <filter> [, <data> ]] )");
+        Error("usage: NewType( <family>, <filter> [, <data> ] )");
 
     fi;
 
