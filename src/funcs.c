@@ -28,7 +28,7 @@
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "calls.h"               /* generic call mechanism          */
 
 #include        "code.h"                /* coder                           */
@@ -49,8 +49,8 @@
 
 #include        "opers.h"               /* generic operations              */
 #include        "gvars.h"
-#include        "thread.h"              /* threads                         */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/thread.h"              /* threads                         */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 
 #include        "vars.h"                /* variables                       */
 

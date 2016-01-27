@@ -52,10 +52,10 @@ extern "C" {
 #include        "vector.h"              /* functions for plain vectors     */
 #include        "blister.h"             /* boolean lists                   */
 #include        "range.h"               /* ranges                          */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
@@ -88,7 +88,7 @@ extern "C" {
 
 #include        "vars.h"                /* variables                       */
 
-#include        "aobjects.h"            /* atomic variables                */
+#include        "hpc/aobjects.h"            /* atomic variables                */
 extern Obj InfoDecision;
 extern Obj InfoDoPrint;
 extern Obj CurrentAssertionLevel;

@@ -32,7 +32,7 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "bool.h"                /* booleans                        */
 
@@ -49,8 +49,8 @@
 
 #include        <assert.h>
 
-#include	"tls.h"
-#include	"thread.h"
+#include	"hpc/tls.h"
+#include	"hpc/thread.h"
 
 #include        "vars.h"                /* variables                       */
 

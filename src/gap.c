@@ -31,7 +31,7 @@
 #include        "scanner.h"             /* scanner                         */
 
 #include        "gap.h"                 /* error handling, initialisation  */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 
 #include        "read.h"                /* reader                          */
 
@@ -64,7 +64,7 @@
 #include        "vecffe.h"              /* functions for fin field vectors */
 #include        "blister.h"             /* boolean lists                   */
 #include        "range.h"               /* ranges                          */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "vecgf2.h"              /* functions for GF2 vectors       */
 #include        "vec8bit.h"             /* functions for other compressed
                                            GF(q) vectors                   */
@@ -102,21 +102,21 @@
 #include	"serialize.h"		/* object serialization		   */
 
 #ifdef GAPMPI
-#include        "gapmpi.h"              /* ParGAP/MPI                      */
+#include        "hpc/gapmpi.h"          /* ParGAP/MPI                      */
 #endif
 
 #ifdef WITH_ZMQ
 #include	"zmqgap.h"		/* GAP ZMQ support		   */
 #endif
 
-#include        "thread.h"
-#include        "tls.h"
-#include        "threadapi.h"
-#include        "aobjects.h"
+#include        "hpc/thread.h"
+#include        "hpc/tls.h"
+#include        "hpc/threadapi.h"
+#include        "hpc/aobjects.h"
 #include        "objset.h"
-#include        "thread.h"
-#include        "tls.h"
-#include        "aobjects.h"
+#include        "hpc/thread.h"
+#include        "hpc/tls.h"
+#include        "hpc/aobjects.h"
 
 #include        "vars.h"                /* variables                       */
 

@@ -41,17 +41,17 @@
 #include        "precord.h"             /* plain records                   */
 
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
 
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 #include        "objfgelm.h"            /* objects of free groups          */
 
 #include        "objscoll.h"            /* single collector                */
 
 #include        "objccoll.h"            /* combinatorial collector         */
-#include        "thread.h"
+#include        "hpc/thread.h"
 
 /****************************************************************************
 **

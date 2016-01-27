@@ -46,7 +46,7 @@
 
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
 #include        "funcs.h"               /* functions                       */
@@ -54,9 +54,9 @@
 
 #include        "intrprtr.h"            /* interpreter                     */
 
-#include	"tls.h"
-#include	"thread.h"
-#include	"aobjects.h"		/* atomic objects		   */
+#include	"hpc/tls.h"
+#include	"hpc/thread.h"
+#include	"hpc/aobjects.h"		/* atomic objects		   */
 
 #include        "vars.h"                /* variables                       */
 

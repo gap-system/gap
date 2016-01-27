@@ -21,7 +21,7 @@
 #include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "calls.h"               /* generic call mechanism          */
 #include        "code.h"                /* coder                           */
 
@@ -36,8 +36,8 @@
 
 #include        "read.h"                /* reader                          */
 
-#include	"tls.h"
-#include	"thread.h"
+#include	"hpc/tls.h"
+#include	"hpc/thread.h"
 
 #include        "vars.h"                /* variables                       */
 

@@ -23,7 +23,7 @@
 #include        "gap.h"                 /* error handling, initialisation  */
 #include        "gvars.h"               /* global variables                */
 #include        "streams.h"             /* streams                         */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "scanner.h"             /* scanner                         */
 #include        "sysfiles.h"            /* file input/output               */
 #include        "plist.h"               /* plain lists                     */
@@ -34,8 +34,8 @@
 #include        "saveload.h"            /* saving and loading              */
 
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 
 /***************************************************************************

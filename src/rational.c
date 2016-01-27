@@ -67,12 +67,12 @@
 #include        "precord.h"             /* plain records                   */
 
 #include        "lists.h"               /* generic lists                   */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
 #include	"code.h"
-#include	"thread.h"
-#include	"tls.h"
+#include	"hpc/thread.h"
+#include	"hpc/tls.h"
 
 
 #if 0

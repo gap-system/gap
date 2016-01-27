@@ -267,7 +267,7 @@ if GAP["mpi"]:
 
 abi_path = "extern/"+GAP["abi"]+"bit"
 
-include_path = [ build_dir, "." ] # for config.h
+include_path = [ "src/", "src/hpc/", build_dir, "."] # for config.h
 library_path = [ ]
 options = { }
 
@@ -285,6 +285,8 @@ def add_library_path(path):
 
 add_library_path(abi_path + "/lib")
 include_path.append(abi_path + "/include")
+
+add_include_path("src/")
 
 defines = ["HPCGAP"]
 cflags = ""
@@ -488,13 +490,13 @@ GAP.Append(CFLAGS=" -DMAX_GC_THREADS="+str(gcmaxthreads))
 
 # Get all the source files that we need to compile GAP.
 # We currently exclude the Win95 file and GAC-generated files.
-source = glob.glob("src/*.c")
+source = glob.glob("src/*.c") + glob.glob("src/hpc/*.c")
 source.remove("src/gapw95.c")
 # source = filter(lambda s: not s.startswith("src/c_"), source)
 
 # If we're not using MPI, don't use the MPI code.
 if not GAP["mpi"]:
-  source.remove("src/gapmpi.c")
+  source.remove("src/hpc/gapmpi.c")
 
 # Offer a "testward" target to check syntax.
 if "testward" in COMMAND_LINE_TARGETS:
@@ -532,20 +534,15 @@ GAP.Command("src/dbgmacro.c", "etc/dbgmacro.py",
 # generating matching files in the gen/ directory and make them
 # the actual source files instead.
 gen = []
-includes = glob.glob("src/*.h")
 if preprocess:
   import os, stat
   try: os.mkdir("gen")
   except: pass
-  pregen = source + includes
-  includes = map(lambda s: "gen/"+s[4:], includes)
+  pregen = source
   gen = map(lambda s: "gen/"+s[4:], pregen)
   for i in range(len(pregen)):
     GAP.Command(gen[i], pregen[i],
         preprocess + " $SOURCE >$TARGET")
-    if gen[i].endswith(".c"):
-      obj = "build/obj/" + gen[i][4:-2] + ".o"
-      GAP.Depends(obj, includes)
   source = map(lambda s: "gen/"+s[4:], source)
 
 # Cygwin needs to be explicitly told to include libstdc++ when linking

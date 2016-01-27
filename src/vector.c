@@ -38,15 +38,15 @@
 #include        "lists.h"               /* generic lists                   */
 #include        "listoper.h"            /* operations for generic lists    */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "vector.h"              /* functions for plain vectors     */
 
 #include        "range.h"               /* ranges                          */
 
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 #include <assert.h>
 

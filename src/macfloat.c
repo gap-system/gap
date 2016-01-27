@@ -28,12 +28,12 @@
 
 #include        "bool.h"
 #include        "scanner.h"
-#include        "string.h"
+#include        "stringobj.h"
 #include        <assert.h>
 
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 /* the following two declarations would belong in `saveload.h', but then all
  * files get macfloat dependencies */

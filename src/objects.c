@@ -36,15 +36,15 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
 
-#include        "aobjects.h"            /* atomic objects                  */
+#include        "hpc/aobjects.h"            /* atomic objects                  */
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
+#include	"hpc/thread.h"		/* threads			   */
 #include	"traverse.h"		/* object traversal		   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;

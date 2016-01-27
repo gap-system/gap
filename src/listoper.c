@@ -38,12 +38,12 @@
 #include        "listoper.h"            /* operations for generic lists    */
 #include        "listfunc.h"            /* functions for generic lists    */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "opers.h"               /* TRY_NEXT_METHOD                 */
 #include        "range.h"               /* Ranges                          */
 #include        "code.h"		/* Coder                           */
-#include        "thread.h"              /* threads                         */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/thread.h"              /* threads                         */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 
 
 /****************************************************************************

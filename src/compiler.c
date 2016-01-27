@@ -38,7 +38,7 @@
 
 #include        "plist.h"               /* plain lists                     */
 
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
 
@@ -47,7 +47,7 @@
 
 #include        "compiler.h"            /* compiler                        */
 
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 
 #include        "vars.h"                /* variables                       */
 

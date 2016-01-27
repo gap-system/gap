@@ -45,11 +45,11 @@
 #include        "listfunc.h"            /* functions for generic lists     */
 #include        "plist.h"               /* plain lists                     */
 #include        "set.h"                 /* plain sets                      */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 
 /****************************************************************************

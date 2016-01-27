@@ -10,7 +10,8 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-#include        "tls.h"
+
+#include        "hpc/tls.h"
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -29,7 +30,7 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "bool.h"                /* booleans                        */
 
@@ -44,10 +45,11 @@
 #include        "stats.h"               /* statements                      */
 
 #include        <assert.h>
+#include        <string.h>
 
 #include        "profile.h"
 
-#include        "thread.h"
+#include        "hpc/thread.h"
 
 #include        "calls.h"               /* function filename, line number  */
 

@@ -65,12 +65,12 @@
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
 
 #include        "saveload.h"            /* saving and loading              */
-#include        "tls.h"
+#include        "hpc/tls.h"
 #include        "trans.h"
 
 /****************************************************************************

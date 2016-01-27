@@ -23,7 +23,7 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
 #include        "blister.h"             /* boolean lists                   */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "vecgf2.h"              /* GF2 vectors                     */
 
@@ -36,8 +36,8 @@
 #include        "code.h"                /* Needed for TakeInterrupt */
 #include        "stats.h"
 
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 #include        <assert.h>
 

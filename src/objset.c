@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*W  threadapi.c                 GAP source                    Reimer Behrends
+*W  objset.c                   GAP source                    Reimer Behrends
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -47,10 +47,10 @@
 
 #include	"fibhash.h"
 
-#include	"string.h"
+#include	"stringobj.h"
 
-#include        "thread.h"
-#include        "tls.h"
+#include        "hpc/thread.h"
+#include        "hpc/tls.h"
 #include        "vars.h"                /* variables                       */
 
 

@@ -76,12 +76,12 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include	"code.h"		/* coder                           */
-#include	"aobjects.h"		/* atomic access to plists	   */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/aobjects.h"		/* atomic access to plists	   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 #include	"ffdata.h"		/* pre-computed finite field data  */
 

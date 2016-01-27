@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*W  string.c                    GAP source                     Frank Lübeck,
+*W  stringobj.c                    GAP source                     Frank Lübeck,
 *W                                            Frank Celler & Martin Schönert
 **
 **
@@ -75,10 +75,10 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
 
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 
 #include        <assert.h>
 
@@ -2464,7 +2464,7 @@ static Int ResetFiltTab [] = {
 static StructGVarFilt GVarFilts [] = {
 
     { "IS_STRING", "obj", &IsStringFilt,
-      FuncIS_STRING, "src/string.c:IS_STRING" },
+      FuncIS_STRING, "src/stringobj.c:IS_STRING" },
 
     { "IS_STRING_REP", "obj", &IsStringRepFilt,
       FuncIS_STRING_REP, "src/lists.c:IS_STRING_REP" },
@@ -2481,67 +2481,67 @@ static StructGVarFilt GVarFilts [] = {
 static StructGVarFunc GVarFuncs [] = {
 
     { "IS_STRING_CONV", 1, "string",
-      FuncIS_STRING_CONV, "src/string.c:IS_STRING_CONV" },
+      FuncIS_STRING_CONV, "src/stringobj.c:IS_STRING_CONV" },
 
     { "CONV_STRING", 1, "string",
-      FuncCONV_STRING, "src/string.c:CONV_STRING" },
+      FuncCONV_STRING, "src/stringobj.c:CONV_STRING" },
 
     { "COPY_TO_STRING_REP", 1, "string",
-      FuncCOPY_TO_STRING_REP, "src/string.c:COPY_TO_STRING_REP" },
+      FuncCOPY_TO_STRING_REP, "src/stringobj.c:COPY_TO_STRING_REP" },
 
     { "CHAR_INT", 1, "integer",
-      FuncCHAR_INT, "src/string.c:CHAR_INT" },
+      FuncCHAR_INT, "src/stringobj.c:CHAR_INT" },
 
     { "INT_CHAR", 1, "char",
-      FuncINT_CHAR, "src/string.c:INT_CHAR" },
+      FuncINT_CHAR, "src/stringobj.c:INT_CHAR" },
 
     { "CHAR_SINT", 1, "integer",
-      FuncCHAR_SINT, "src/string.c:CHAR_SINT" },
+      FuncCHAR_SINT, "src/stringobj.c:CHAR_SINT" },
 
     { "SINT_CHAR", 1, "char",
-      FuncSINT_CHAR, "src/string.c:SINT_CHAR" },
+      FuncSINT_CHAR, "src/stringobj.c:SINT_CHAR" },
 
     { "STRING_SINTLIST", 1, "list",
-      FuncSTRING_SINTLIST, "src/string.c:STRING_SINTLIST" },
+      FuncSTRING_SINTLIST, "src/stringobj.c:STRING_SINTLIST" },
 
     { "INTLIST_STRING", 2, "string, sign",
-      FuncINTLIST_STRING, "src/string.c:INTLIST_STRING" },
+      FuncINTLIST_STRING, "src/stringobj.c:INTLIST_STRING" },
 
     { "SINTLIST_STRING", 1, "string",
-      FuncSINTLIST_STRING, "src/string.c:SINTLIST_STRING" },
+      FuncSINTLIST_STRING, "src/stringobj.c:SINTLIST_STRING" },
 
     { "EmptyString", 1, "len",
-      FuncEmptyString, "src/string.c:FuncEmptyString" },
+      FuncEmptyString, "src/stringobj.c:FuncEmptyString" },
     
     { "ShrinkAllocationString", 1, "str",
-      FuncShrinkAllocationString, "src/string.c:FuncShrinkAllocationString" },
+      FuncShrinkAllocationString, "src/stringobj.c:FuncShrinkAllocationString" },
     
     { "REVNEG_STRING", 1, "string",
-      FuncREVNEG_STRING, "src/string.c:REVNEG_STRING" },
+      FuncREVNEG_STRING, "src/stringobj.c:REVNEG_STRING" },
 
     { "POSITION_SUBSTRING", 3, "string, substr, off",
-      FuncPOSITION_SUBSTRING, "src/string.c:POSITION_SUBSTRING" },
+      FuncPOSITION_SUBSTRING, "src/stringobj.c:POSITION_SUBSTRING" },
 
     { "FIND_ALL_IN_STRING", 2, "string, characters",
-      FuncFIND_ALL_IN_STRING, "src/string.c:FIND_ALL_IN_STRING" },
+      FuncFIND_ALL_IN_STRING, "src/stringobj.c:FIND_ALL_IN_STRING" },
 
     { "NORMALIZE_NEWLINES", 1, "string",
-      FuncNORMALIZE_NEWLINES, "src/string.c:NORMALIZE_NEWLINES" },
+      FuncNORMALIZE_NEWLINES, "src/stringobj.c:NORMALIZE_NEWLINES" },
 
     { "NormalizeWhitespace", 1, "string",
-      FuncNormalizeWhitespace, "src/string.c:NormalizeWhitespace" },
+      FuncNormalizeWhitespace, "src/stringobj.c:NormalizeWhitespace" },
 
     { "REMOVE_CHARACTERS", 2, "string, rem",
-      FuncRemoveCharacters, "src/string.c:RemoveCharacters" },
+      FuncRemoveCharacters, "src/stringobj.c:RemoveCharacters" },
 
     { "TranslateString", 2, "string, trans",
-      FuncTranslateString, "src/string.c:TranslateString" },
+      FuncTranslateString, "src/stringobj.c:TranslateString" },
 
     { "SplitStringInternal", 3, "string, seps, wspace",
-      FuncSplitString, "src/string.c:SplitStringInternal" },
+      FuncSplitString, "src/stringobj.c:SplitStringInternal" },
 
     { "SMALLINT_STR", 1, "string",
-      FuncSMALLINT_STR, "src/string.c:SMALLINT_STR" },
+      FuncSMALLINT_STR, "src/stringobj.c:SMALLINT_STR" },
 
     { 0 }
 
@@ -2560,7 +2560,7 @@ static Int InitKernel (
     UInt                t1;
     UInt                t2;
     Int                 i, j;
-    const Char *        cookie_base = "src/string.c:Char";
+    const Char *        cookie_base = "src/stringobj.c:Char";
 
     /* check dependencies                                                  */
     RequireModule( module, "lists", 403600000UL );
@@ -2785,5 +2785,5 @@ StructInitInfo * InitInfoString ( void )
 /****************************************************************************
 **
 
-*E  string.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*E  stringobj.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

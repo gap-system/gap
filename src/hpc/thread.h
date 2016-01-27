@@ -1,6 +1,19 @@
 #ifndef GAP_THREAD_H
 #define GAP_THREAD_H
 
+#if !defined(HPCGAP)
+
+/*
+ * HPC-GAP stubs.
+ */
+
+#define HashLock(obj)         do { } while(0)
+#define HashLockShared(obj)   do { } while(0)
+#define HashUnlock(obj)       do { } while(0)
+#define HashUnlockShared(obj) do { } while(0)
+
+#else
+
 /* Maximum number of threads excluding the main thread */
 #define MAX_THREADS 1023
 
@@ -104,4 +117,7 @@ void SetInterruptHandler(int handler, Obj func);
 
 #define MAX_INTERRUPT 100
 
+#endif // HPCGAP
+
 #endif // GAP_THREAD_H
+

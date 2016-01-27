@@ -3,8 +3,8 @@
 #include 	"objects.h"
 #include	"scanner.h"
 #include	"code.h"
-#include 	"tls.h"
-#include    "thread.h"
+#include 	"hpc/tls.h"
+#include    "hpc/thread.h"
 
 #include	<string.h>
 

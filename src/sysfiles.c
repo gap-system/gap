@@ -33,14 +33,14 @@
 #include        "listfunc.h"            /* functions for generic lists     */
 
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "records.h"             /* generic records                 */
 #include        "bool.h"                /* Global True and False           */
 
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 #include        <assert.h>
 #include        <fcntl.h>

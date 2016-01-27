@@ -1,6 +1,17 @@
 #ifndef GAP_ATOMIC_H
 #define GAP_ATOMIC_H
 
+#if !defined(HPCGAP)
+
+/*
+ * HPC-GAP stubs.
+ */
+
+#define MEMBAR_READ() ((void) 0)
+#define MEMBAR_WRITE() ((void) 0)
+
+#else
+
 #ifndef WARD_ENABLED
 #include <atomic_ops.h>
 #else
@@ -16,4 +27,6 @@ typedef size_t AO_t;
 
 typedef AO_t AtomicUInt;
 
-#endif
+#endif // HPCGAP
+
+#endif // GAP_ATOMIC_H

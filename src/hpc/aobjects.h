@@ -1,6 +1,14 @@
 #ifndef GAP_AOBJECTS_H
 #define GAP_AOBJECTS_H
 
+#if !defined(HPCGAP)
+
+/* 
+ * HPC-GAP stubs.
+ */
+
+#else
+
 StructInitInfo *InitInfoAObjects(void);
 Obj NewAtomicRecord(UInt capacity);
 Obj SetARecordField(Obj record, UInt field, Obj obj);
@@ -31,7 +39,7 @@ Obj LengthAList(Obj list);
 **
 **    (1) Compare *<addr> with <old>.
 **    (2) Exchange *<addr> with <new_> if the comparison succeeded.
-** 
+**
 **  It returns a non-zero value if the comparison in (1) succeeded, zero
 **  otherwise.
 **  markuspf: renamed new to new_ for compatibility with C++ packages.
@@ -126,4 +134,6 @@ static inline Obj ATOMIC_ELM_PLIST(Obj list, UInt index) {
 #endif
 }
 
-#endif
+#endif // HPCGAP
+
+#endif // GAP_AOBJECTS_H

@@ -1,6 +1,10 @@
 #ifndef GAP_TLSCONFIG_H
 #define GAP_TLSCONFIG_H
 
+#if !defined(HPCGAP)
+
+#else
+
 #ifndef HAVE_NATIVE_TLS
 
 #if SIZEOF_VOID_P == 8
@@ -15,5 +19,7 @@
 #endif
 
 #endif // SIZEOF_VOID_P == 8
+
+#endif // HPCGAP
 
 #endif // GAP_TLSCONFIG_H
