@@ -342,7 +342,7 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
     Gd := DerivedSubgroup(G);
     D := Intersection(C, Gd);
     for g in RationalClasses(C) do
-      N := Subgroup(C, Set(g));
+      N := Subgroup(C, [Representative(g)]);
       if not IsTrivial(N) and IsTrivialNormalIntersection(C, D, N) then
         B := ComplementNormalSubgroupNC(G, N);
         # if B is a complement to N
@@ -515,7 +515,7 @@ InstallMethod(DirectFactorsOfGroupKN, "Kayal-Nezhmetdinov method", true,
     Gd := DerivedSubgroup(G);
     D := Intersection(C, Gd);
     for g in RationalClasses(C) do
-      N := Subgroup(C, Set(g));
+      N := Subgroup(C, [Representative(g)]);
       if not IsTrivial(N) and IsTrivialNormalIntersection(C, D, N) then
         B := ComplementNormalSubgroupNC(G, N);
         # if B is a complement to N
