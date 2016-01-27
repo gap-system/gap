@@ -904,8 +904,8 @@ end);
 BindGlobal( "SetUserPreferences", function( arg )
     local name, record;
 
-    Info( InfoWarning, 1, "");
-    Info( InfoWarning, 1, Concatenation( [
+    Info( InfoObsolete, 1, "");
+    Info( InfoObsolete, 1, Concatenation( [
           "The call to 'SetUserPreferences' (probably in a 'gap.ini' file)\n",
           "#I  should be replaced by individual 'SetUserPreference' calls,\n",
           "#I  which are package specific.\n",
