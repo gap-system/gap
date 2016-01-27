@@ -1751,6 +1751,8 @@ SetIsFinite( Cyclotomics, false );
 SetIsWholeFamily( Cyclotomics, true );
 SetDegreeOverPrimeField( Cyclotomics, infinity );
 SetDimension( Cyclotomics, infinity );
+SetRepresentative(Cyclotomics, 0);
+
 
 
 #############################################################################
@@ -2109,8 +2111,12 @@ InstallMethod( GaloisGroup,
     fi;
 
     return group;
-    end );
+end );
+    
+    
+InstallMethod( Representative, [IsCyclotomicField], f->0);
 
+    
 
 #############################################################################
 ##

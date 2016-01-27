@@ -75,7 +75,7 @@ end);
 ##   <Oper Name="Exp2" Arg="x"/>
 ##   <Oper Name="Exp10" Arg="x"/>
 ##   <Oper Name="Expm1" Arg="x"/>
-##   <Oper Name="Cuberoot" Arg="x"/>
+##   <Oper Name="CubeRoot" Arg="x"/>
 ##   <Oper Name="Square" Arg="x"/>
 ##   <Oper Name="Hypothenuse" Arg="x y"/>
 ##   <Oper Name="Ceil" Arg="x"/>

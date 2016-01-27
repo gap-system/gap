@@ -2968,7 +2968,7 @@ local   xset,he,gp,p,canfail,bas,fun;
   # can we compute the image cheaper using stabilizer chain methods?
   if not canfail and HasImagesSource(hom) then
     gp:=ImagesSource(hom);
-    if HasStabChainImmutable(gp) then
+    if HasStabChainMutable(gp) or HasStabChainImmutable(gp) then
       bas:=BaseStabChain(StabChain(gp));
       if Length(bas)*50<Length(he) then
 	p:=RepresentativeActionOp(gp,bas,
@@ -3074,7 +3074,7 @@ InstallMethod( ImagesSource,"actionHomomorphismByBase", true,
     
     xset := UnderlyingExternalSet( hom );
     img := ImagesSet( hom, Source( hom ) );
-    if not HasStabChainImmutable( img )  and  not HasBaseOfGroup( img )  then
+    if not HasStabChainMutable( img )  and  not HasBaseOfGroup( img )  then
         if not IsBound( xset!.basePermImage )  then
             D := HomeEnumerator( xset );
             xset!.basePermImage := List( BaseOfGroup( xset ),

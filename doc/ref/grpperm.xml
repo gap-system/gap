@@ -409,7 +409,6 @@ guaranteed correct output.
 <Heading>Construction of Stabilizer Chains</Heading>
 
 <#Include Label="StabChain">
-<#Include Label="SetStabChain">
 <#Include Label="StabChainOptions">
 <#Include Label="DefaultStabChainOptions">
 <#Include Label="StabChainBaseStrongGenerators">
@@ -693,3 +692,4 @@ is much faster than the first one and takes less memory.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
+

@@ -320,7 +320,7 @@ local clT,	# classes T
 
 #	  #force 'centralizers[j]' to have its base appropriate to the component
 #	  # (this will speed up preimages)
-#	  if not (HasStabChainImmutable(cen) 
+#	  if not (HasStabChainMutable(cen) 
 #	     and i<=Length(centralizers)
 #	     and BaseStabChain(StabChainMutable(cen))[1] in centralizers[i])
 #	    then

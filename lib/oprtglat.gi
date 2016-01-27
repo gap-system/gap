@@ -177,7 +177,7 @@ function(G,dom,all)
     n:=n-1;
     gp:=dom[p];
     t:=Length(GeneratorsOfGroup(gp));
-    if HasSize(gp) and not HasStabChainImmutable(gp) and t>4 then
+    if HasSize(gp) and not HasStabChainMutable(gp) and t>4 then
       sel:=GeneratorsOfGroup(gp);
       t:=Group(sel{Set(List([1,2],i->Random([1..t])))},One(gp));
       while Size(t)<Size(gp) do
