@@ -1452,11 +1452,11 @@ DeclareGlobalFunction("TryGcdCancelExtRepPolynomials");
 
 #############################################################################
 ##
-#O  HeuristicCancelPolynomials(<fam>,<ext1>,<ext2>)
+#O  HeuristicCancelPolynomialsExtRep(<fam>,<ext1>,<ext2>)
 ##
-##  <#GAPDoc Label="HeuristicCancelPolynomials">
+##  <#GAPDoc Label="HeuristicCancelPolynomialsExtRep">
 ##  <ManSection>
-##  <Oper Name="HeuristicCancelPolynomials" Arg='fam,ext1,ext2'/>
+##  <Oper Name="HeuristicCancelPolynomialsExtRep" Arg='fam,ext1,ext2'/>
 ##
 ##  <Description>
 ##  is called by <Ref Func="TryGcdCancelExtRepPolynomials"/> to perform the
