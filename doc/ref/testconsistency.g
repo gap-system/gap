@@ -93,7 +93,7 @@ for elt in x do
       man := ManSectionType( obj );
       # we allow to use "Meth" for "Oper" but probably should issue a warning
       # if there is no at least one "Oper" for any "Meth"
-      if ( man <> elt.name ) and not ( man="Oper" and elt.name="Meth") then
+      if ( man <> elt.name ) and not ( man in ["Attr","Prop","Oper"] and elt.name="Meth") then
         pos:=OriginalPositionDocument(doc[2],elt.start);
         Print( pos[1], ":", pos[2], " : ", name, " uses ", elt.name, " but must be ", man, "\n");
         errcount:=errcount+1;
