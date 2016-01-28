@@ -139,9 +139,19 @@ Obj             IdentityPerm;
 **  course that it is large enough.
 **  The buffer is *not* guaranteed to have any particular value, routines
 **  that require a zero-initialization need to do this at the start.
+**  This buffer is only constructed once it is needed, to avoid startup
+**  costs (particularly when starting new threads).
+**  Use the UseTmpPerm(<size>) utility function to ensure it is constructed!
 */
 Obj                     TmpPerm;
+#define  TmpPerm TLS(TmpPerm)
 
+static void UseTmpPerm( UInt size) {
+  if (TmpPerm == (Obj)0)
+    TmpPerm  = NewBag(T_PERM4, size);
+  else if (SIZE_BAG(TmpPerm) < size)
+    ResizeBag(TmpPerm, size);
+}
 
 /****************************************************************************
 **
@@ -788,8 +798,7 @@ Obj ProdPerm44Cooperman(
     prd  = NEW_PERM4( degP );
     bucketSize = 1 << logBucketSize;
     nBuckets = (degP+(bucketSize-1))>>logBucketSize;
-    if (SIZE_BAG(TmpPerm) < sizeof(Obj)+4*degP)
-      ResizeBag(TmpPerm, sizeof(Obj)+4*degP);
+    UseTmpPerm(sizeof(Obj)+4*degP);
     bucketPointers = NewBag(T_DATOBJ, sizeof(Obj)+sizeof(UInt4 *)*nBuckets);
     
     
@@ -881,9 +890,7 @@ Obj             QuoPerm22 (
     quo  = NEW_PERM2( degQ );
 
     /* make sure that the buffer bag is large enough to hold the inverse   */
-    if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opR) ) {
-        ResizeBag( TmpPerm, SIZE_OBJ(opR) );
-    }
+    UseTmpPerm(SIZE_OBJ(opR));
 
     /* invert the right permutation into the buffer bag                    */
     ptI = ADDR_PERM2(TmpPerm);
@@ -932,9 +939,7 @@ Obj             QuoPerm24 (
     quo  = NEW_PERM4( degQ );
 
     /* make sure that the buffer bag is large enough to hold the inverse   */
-    if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opR) ) {
-        ResizeBag( TmpPerm, SIZE_OBJ(opR) );
-    }
+    UseTmpPerm(SIZE_OBJ(opR));
 
     /* invert the right permutation into the buffer bag                    */
     ptI = ADDR_PERM4(TmpPerm);
@@ -982,9 +987,7 @@ Obj             QuoPerm42 (
     quo  = NEW_PERM4( degQ );
 
     /* make sure that the buffer bag is large enough to hold the inverse   */
-    if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opR) ) {
-        ResizeBag( TmpPerm, SIZE_OBJ(opR) );
-    }
+    UseTmpPerm(SIZE_OBJ(opR));
 
     /* invert the right permutation into the buffer bag                    */
     ptI = ADDR_PERM2(TmpPerm);
@@ -1032,9 +1035,7 @@ Obj             QuoPerm44 (
     quo  = NEW_PERM4( degQ );
 
     /* make sure that the buffer bag is large enough to hold the inverse   */
-    if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opR) ) {
-        ResizeBag( TmpPerm, SIZE_OBJ(opR) );
-    }
+    UseTmpPerm(SIZE_OBJ(opR));
 
     /* invert the right permutation into the buffer bag                    */
     ptI = ADDR_PERM4(TmpPerm);
@@ -1272,8 +1273,7 @@ Obj InvPerm4Cooperman ( Obj perm, UInt logBucketSize )
   UInt4* ptB;
   UInt4 p;
 
-  if (SIZE_BAG(TmpPerm) < sizeof(Obj)+4*2*deg)
-    ResizeBag(TmpPerm, sizeof(Obj)+4*2*deg);
+  UseTmpPerm(sizeof(Obj)+4*2*deg);
   nBuckets = (deg+(bucketSize-1))>>logBucketSize;
   bucketPointers = NewBag(T_DATOBJ, sizeof(Obj)+sizeof(UInt4 *)*nBuckets);
   inv = NEW_PERM4(deg);
@@ -1337,8 +1337,7 @@ Obj LQuoPerm4Cooperman ( Obj perm1, Obj perm2, UInt logBucketSize )
   UInt4* ptB;
   UInt4 p;
 
-  if (SIZE_BAG(TmpPerm) < sizeof(Obj)+4*2*degQ)
-    ResizeBag(TmpPerm, sizeof(Obj)+4*2*degQ);
+  UseTmpPerm(sizeof(Obj)+4*2*degQ);
   nBuckets = (degQ+(bucketSize-1))>>logBucketSize;
   bucketPointers = NewBag(T_DATOBJ, sizeof(Obj)+sizeof(UInt4 *)*nBuckets);
   quo = NEW_PERM4(degQ);
@@ -1437,9 +1436,7 @@ Obj             PowPerm2Int (
     else if ( TNUM_OBJ(opR) == T_INT && 8 <= INT_INTOBJ(opR) ) {
 
         /* make sure that the buffer bag is large enough                   */
-        if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
-            ResizeBag( TmpPerm, SIZE_OBJ(opL) );
-        }
+      UseTmpPerm(SIZE_OBJ(opL));
         ptKnown = ADDR_PERM2(TmpPerm);
 
         /* clear the buffer bag                                            */
@@ -1485,9 +1482,7 @@ Obj             PowPerm2Int (
     else if ( TNUM_OBJ(opR) == T_INTPOS ) {
 
         /* make sure that the buffer bag is large enough                   */
-        if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
-            ResizeBag( TmpPerm, SIZE_OBJ(opL) );
-        }
+      UseTmpPerm(SIZE_OBJ(opL));
         ptKnown = ADDR_PERM2(TmpPerm);
 
         /* clear the buffer bag                                            */
@@ -1564,9 +1559,7 @@ Obj             PowPerm2Int (
     else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) <= -8 ) {
 
         /* make sure that the buffer bag is large enough                   */
-        if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
-            ResizeBag( TmpPerm, SIZE_OBJ(opL) );
-        }
+      UseTmpPerm(SIZE_OBJ(opL));
         ptKnown = ADDR_PERM2(TmpPerm);
 
         /* clear the buffer bag                                            */
@@ -1611,9 +1604,7 @@ Obj             PowPerm2Int (
     else if ( TNUM_OBJ(opR) == T_INTNEG ) {
 
         /* make sure that the buffer bag is large enough                   */
-        if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
-            ResizeBag( TmpPerm, SIZE_OBJ(opL) );
-        }
+      UseTmpPerm(SIZE_OBJ(opL));
         ptKnown = ADDR_PERM2(TmpPerm);
 
         /* clear the buffer bag                                            */
@@ -1705,9 +1696,8 @@ Obj             PowPerm4Int (
     else if ( TNUM_OBJ(opR) == T_INT && 8 <= INT_INTOBJ(opR) ) {
 
         /* make sure that the buffer bag is large enough                   */
-        if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
-            ResizeBag( TmpPerm, SIZE_OBJ(opL) );
-        }
+
+      UseTmpPerm(SIZE_OBJ(opL));
         ptKnown = ADDR_PERM4(TmpPerm);
 
         /* clear the buffer bag                                            */
@@ -1752,9 +1742,8 @@ Obj             PowPerm4Int (
     else if ( TNUM_OBJ(opR) == T_INTPOS ) {
 
         /* make sure that the buffer bag is large enough                   */
-        if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
-            ResizeBag( TmpPerm, SIZE_OBJ(opL) );
-        }
+      UseTmpPerm(SIZE_OBJ(opL));
+
         ptKnown = ADDR_PERM4(TmpPerm);
 
         /* clear the buffer bag                                            */
@@ -1831,9 +1820,7 @@ Obj             PowPerm4Int (
     else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) <= -8 ) {
 
         /* make sure that the buffer bag is large enough                   */
-        if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
-            ResizeBag( TmpPerm, SIZE_OBJ(opL) );
-        }
+      UseTmpPerm(SIZE_OBJ(opL));
         ptKnown = ADDR_PERM4(TmpPerm);
 
         /* clear the buffer bag                                            */
@@ -1878,9 +1865,8 @@ Obj             PowPerm4Int (
     else if ( TNUM_OBJ(opR) == T_INTNEG ) {
 
         /* make sure that the buffer bag is large enough                   */
-        if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
-            ResizeBag( TmpPerm, SIZE_OBJ(opL) );
-        }
+            UseTmpPerm(SIZE_OBJ(opL));
+
         ptKnown = ADDR_PERM4(TmpPerm);
 
         /* clear the buffer bag                                            */
@@ -2512,9 +2498,7 @@ Obj             FuncPermList (
         degPerm = LEN_LIST( list );
 
         /* make sure that the global buffer bag is large enough for checkin*/
-        if ( SIZE_OBJ(TmpPerm) < degPerm * sizeof(UInt2) ) {
-            ResizeBag( TmpPerm, degPerm * sizeof(UInt2) );
-        }
+	UseTmpPerm(degPerm*sizeof(UInt2)); 
 
         /* allocate the bag for the permutation and get pointer            */
         perm    = NEW_PERM2( degPerm );
@@ -2579,9 +2563,7 @@ Obj             FuncPermList (
         degPerm = LEN_LIST( list );
 
         /* make sure that the global buffer bag is large enough for checkin*/
-        if ( SIZE_OBJ(TmpPerm) < degPerm * sizeof(UInt4) ) {
-            ResizeBag( TmpPerm, degPerm * sizeof(UInt4) );
-        }
+	UseTmpPerm(degPerm*sizeof(UInt4));
 
         /* allocate the bag for the permutation and get pointer            */
         perm    = NEW_PERM4( degPerm );
@@ -2935,9 +2917,7 @@ Obj             FuncCycleStructurePerm (
     }
 
     /* make sure that the buffer bag is large enough                       */
-    if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(perm)+8 ) {
-        ResizeBag( TmpPerm, SIZE_OBJ(perm)+8 );
-    }
+    UseTmpPerm(SIZE_OBJ(perm)+8);
 
     /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -3124,9 +3104,7 @@ Obj             FuncOrderPerm (
     }
 
     /* make sure that the buffer bag is large enough                       */
-    if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(perm) ) {
-        ResizeBag( TmpPerm, SIZE_OBJ(perm) );
-    }
+    UseTmpPerm(SIZE_OBJ(perm));
 
     /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -3248,9 +3226,7 @@ Obj             FuncSignPerm (
     }
 
     /* make sure that the buffer bag is large enough                       */
-    if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(perm) ) {
-        ResizeBag( TmpPerm, SIZE_OBJ(perm) );
-    }
+    UseTmpPerm(SIZE_OBJ(perm));
 
     /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -3373,9 +3349,7 @@ Obj             FuncSmallestGeneratorPerm (
     }
 
     /* make sure that the buffer bag is large enough                       */
-    if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(perm) ) {
-        ResizeBag( TmpPerm, SIZE_OBJ(perm) );
-    }
+    UseTmpPerm(SIZE_OBJ(perm));
 
     /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -3557,9 +3531,7 @@ Obj             FuncRESTRICTED_PERM (
     }
 
     /* make sure that the buffer bag is large enough */
-    if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(perm) ) {
-        ResizeBag( TmpPerm, SIZE_OBJ(perm) );
-    }
+    UseTmpPerm(SIZE_OBJ(perm));
 
     /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -4365,6 +4337,7 @@ Obj             OnSetsPerm (
     return res;
 }
 
+
 /****************************************************************************
 **
 *F  SavePerm2( <perm2> )
@@ -4645,6 +4618,103 @@ Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, O
   return (Obj) 0;
 }
 
+/****************************************************************************
+**
+*F  MappingPermListList( <src>, <dst> ) . . . . . return a perm mapping src to
+**  dst
+**
+*/
+
+#define DEGREELIMITONSTACK 512
+
+Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
+{
+    Int l;
+    Int i;
+    Int d;
+    Int next;
+    Obj out;
+    Obj tabdst, tabsrc;
+    Int x;
+    Int mytabs[DEGREELIMITONSTACK+1];
+    Int mytabd[DEGREELIMITONSTACK+1];
+
+    l = LEN_LIST(src);
+    if (l != LEN_LIST(dst)) {
+        ErrorReturnVoid( "both arguments must be lists of equal length", 
+                     0L, 0L, "type 'return;' or 'quit;' to exit break loop" );
+        return 0L;
+    }
+    d = 0;
+    for (i = 1;i <= l;i++) {
+        x = INT_INTOBJ(ELM_LIST(src,i));
+        if (x > d) d = x;
+    }
+    for (i = 1;i <= l;i++) {
+        x = INT_INTOBJ(ELM_LIST(dst,i));
+        if (x > d) d = x;
+    }
+    if (d <= DEGREELIMITONSTACK) {
+        /* Small case where we work on the stack: */
+        memset(&mytabs,0,sizeof(mytabs));
+        memset(&mytabd,0,sizeof(mytabd));
+        for (i = 1;i <= l;i++) {
+            mytabs[INT_INTOBJ(ELM_LIST(src,i))] = i;
+        }
+        for (i = 1;i <= l;i++) {
+            mytabd[INT_INTOBJ(ELM_LIST(dst,i))] = i;
+        }
+        out = NEW_PLIST(T_PLIST_CYC,d);
+        SET_LEN_PLIST(out,d);
+        /* No garbage collection from here ... */
+        next = 1;
+        for (i = 1;i <= d;i++) {
+            if (mytabs[i]) {   /* if i is in src */
+                SET_ELM_PLIST(out,i, ELM_LIST(dst,mytabs[i]));
+            } else {
+                /* Skip things in dst: */
+                while (mytabd[next]) next++;
+                SET_ELM_PLIST(out,i,INTOBJ_INT(next));
+                next++;
+            }
+        }
+        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+    } else {
+        /* Version with intermediate objects: */
+
+        tabsrc = NEW_PLIST(T_PLIST,d);
+        SET_LEN_PLIST(tabsrc,0);
+        /* No garbage collection from here ... */
+        for (i = 1;i <= l;i++) {
+            SET_ELM_PLIST(tabsrc,INT_INTOBJ(ELM_LIST(src,i)),INTOBJ_INT(i));
+        }
+        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+        tabdst = NEW_PLIST(T_PLIST,d);
+        SET_LEN_PLIST(tabdst,0);
+        /* No garbage collection from here ... */
+        for (i = 1;i <= l;i++) {
+            SET_ELM_PLIST(tabdst,INT_INTOBJ(ELM_LIST(dst,i)),INTOBJ_INT(i));
+        }
+        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+        out = NEW_PLIST(T_PLIST_CYC,d);
+        SET_LEN_PLIST(out,d);
+        /* No garbage collection from here ... */
+        next = 1;
+        for (i = 1;i <= d;i++) {
+            if (ELM_PLIST(tabsrc,i)) {   /* if i is in src */
+                SET_ELM_PLIST(out,i,
+                    ELM_LIST(dst,INT_INTOBJ(ELM_PLIST(tabsrc,i))));
+            } else {
+                /* Skip things in dst: */
+                while (ELM_PLIST(tabdst,next)) next++;
+                SET_ELM_PLIST(out,i,INTOBJ_INT(next));
+                next++;
+            }
+        }
+        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+    }
+    return FuncPermList(self,out);
+}
 
 /****************************************************************************
 **
@@ -4733,6 +4803,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "AGESTC", -1, "orbit, newlabels, cycles, labels, translabels, transversal, genlabels",
       FuncAGESTC, "src/permutat.c:AGESTC" },
     
+    { "MappingPermListList", 2, "src, dst", 
+      FuncMappingPermListList, "src/permutat.c:MappingPermListList" },
+    
 
     { 0 }
 
@@ -4744,6 +4817,7 @@ static StructGVarFunc GVarFuncs [] = {
 
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
+
 static Int InitKernel (
     StructInitInfo *    module )
 {
@@ -4753,7 +4827,11 @@ static Int InitKernel (
     InfoBags[           T_PERM4         ].name = "permutation (large)";
     InitMarkFuncBags(   T_PERM4         , MarkNoSubBags );
 
-    /* install the type functions                                          */
+    MakeBagTypePublic( T_PERM2);
+    MakeBagTypePublic( T_PERM4);
+
+
+    /* install the type functions                                           */
     ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
     ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
 
@@ -4765,7 +4843,9 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* make the buffer bag                                                 */
+#ifndef HPCGAP
     InitGlobalBag( &TmpPerm, "src/permutat.c:TmpPerm" );
+#endif
 
     /* make the identity permutation                                       */
     InitGlobalBag( &IdentityPerm, "src/permutat.c:IdentityPerm" );
@@ -4853,9 +4933,8 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
-
     /* make the buffer bag                                                 */
-    TmpPerm = NEW_PERM4( 1000 );
+    TmpPerm = 0;
 
     /* make the identity permutation                                       */
     IdentityPerm = NEW_PERM2(0);

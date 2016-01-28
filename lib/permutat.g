@@ -550,9 +550,10 @@ end);
 ##
 ##  <Description>
 ##  Let <A>src</A> and <A>dst</A> be lists of positive integers of the same
-##  length, such that neither may contain an element twice.
-##  <Ref Func="MappingPermListList"/> returns a permutation <M>\pi</M> such
-##  that <A>src</A><C>[</C><M>i</M><C>]^</C><M>\pi =</M>
+##  length, such that there is a permutation <M>\pi</M> such that
+##  <C>OnTuples(<A>src</A>,</C> <M>\pi</M><C>) = <A>dst</A></C>.
+##  <Ref Func="MappingPermListList"/> returns the permutation <C>p</C> from the
+##  previous sentence, i.e.  <A>src</A><C>[</C><M>i</M><C>]^</C><M>p =</M>
 ##  <A>dst</A><C>[</C><M>i</M><C>]</C>.
 ##  The permutation <M>\pi</M> fixes all points larger than the maximum of
 ##  the entries in <A>src</A> and <A>dst</A>.
@@ -562,26 +563,6 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL( "MappingPermListList", function( src, dst )
-
-    if not IsList(src) or not IsList(dst) or Length(src) <> Length(dst)  then
-       Error("usage: MappingPermListList( <lst1>, <lst2> )");
-    fi;
-
-    if IsEmpty( src )  then
-        return ();
-    fi;
-
-    src := Concatenation( src, Difference( [1..Maximum(src)], src ) );
-    dst := Concatenation( dst, Difference( [1..Maximum(dst)], dst ) );
-    src := PermList(src);
-    if src = fail then return fail; fi;
-    dst := PermList(dst);
-    if dst = fail then return fail; fi;
-
-    return LeftQuotient( src, dst );
-end );
-
 
 #############################################################################
 ##
