@@ -465,7 +465,8 @@ BindGlobal( "Matrix_CharacteristicPolynomialSameField",
             vec[i] := zero;
         fi;
     od;
-    Assert(3, IsZero(Value(cp,imat)));
+    #    Assert(3, IsZero(Value(cp,imat))); We can't do this because Value involves powering
+    #    which uses the CharacteristicPolynomial
     Assert(2, Length(CoefficientsOfUnivariatePolynomial(cp)) = n+1);
     Info(InfoMatrix,1,"Characteristic Polynomial returns ", cp);
     return cp;
