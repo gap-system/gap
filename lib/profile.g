@@ -1076,10 +1076,6 @@ START_TEST := function( name )
     GASMAN( "collect" );
     GAPInfo.TestData.START_TIME := Runtime();
     GAPInfo.TestData.START_NAME := name;
-    GAPInfo.TestData.AssertionLevel:= AssertionLevel();
-    if GAPInfo.TestData.AssertionLevel < 2 then
-        SetAssertionLevel( 2 );
-    fi;
 end;
 
 STOP_TEST := function( file, fac )
@@ -1096,8 +1092,6 @@ STOP_TEST := function( file, fac )
     else
       Print( "GAP4stones: infinity\n" );
     fi;
-    SetAssertionLevel( GAPInfo.TestData.AssertionLevel );
-    Unbind( GAPInfo.TestData.AssertionLevel );
     Unbind( GAPInfo.TestData.START_TIME );
     Unbind( GAPInfo.TestData.START_NAME );
 end;
