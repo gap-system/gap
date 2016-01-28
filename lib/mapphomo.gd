@@ -134,8 +134,8 @@ InstallTrueMethod( RespectsOne,
 ##
 ##  <#GAPDoc Label="IsGroupGeneralMapping">
 ##  <ManSection>
-##  <Prop Name="IsGroupGeneralMapping" Arg='mapp'/>
-##  <Prop Name="IsGroupHomomorphism" Arg='mapp'/>
+##  <Filt Name="IsGroupGeneralMapping" Arg='mapp'/>
+##  <Filt Name="IsGroupHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
 ##  A <E>group general mapping</E> is a mapping which respects multiplication
@@ -316,8 +316,8 @@ InstallTrueMethod( RespectsZero,
 ##
 ##  <#GAPDoc Label="IsAdditiveGroupGeneralMapping">
 ##  <ManSection>
-##  <Prop Name="IsAdditiveGroupGeneralMapping" Arg='mapp'/>
-##  <Prop Name="IsAdditiveGroupHomomorphism" Arg='mapp'/>
+##  <Filt Name="IsAdditiveGroupGeneralMapping" Arg='mapp'/>
+##  <Filt Name="IsAdditiveGroupHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
 ##  <Ref Prop="IsAdditiveGroupGeneralMapping"/>
@@ -425,8 +425,8 @@ InstallTrueMethod( RespectsAdditiveInverses, RespectsScalarMultiplication );
 ##
 ##  <#GAPDoc Label="IsLeftModuleGeneralMapping">
 ##  <ManSection>
-##  <Prop Name="IsLeftModuleGeneralMapping" Arg='mapp'/>
-##  <Prop Name="IsLeftModuleHomomorphism" Arg='mapp'/>
+##  <Filt Name="IsLeftModuleGeneralMapping" Arg='mapp'/>
+##  <Filt Name="IsLeftModuleHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
 ##  <Ref Prop="IsLeftModuleGeneralMapping"/>
@@ -486,8 +486,8 @@ DeclareOperation( "IsLinearMapping", [ IsDomain, IsGeneralMapping ] );
 ##
 ##  <#GAPDoc Label="IsRingGeneralMapping">
 ##  <ManSection>
-##  <Prop Name="IsRingGeneralMapping" Arg='mapp'/>
-##  <Prop Name="IsRingHomomorphism" Arg='mapp'/>
+##  <Filt Name="IsRingGeneralMapping" Arg='mapp'/>
+##  <Filt Name="IsRingHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
 ##  <Ref Prop="IsRingGeneralMapping"/> specifies whether a general mapping
@@ -516,8 +516,8 @@ DeclareSynonymAttr( "IsRingHomomorphism",
 ##
 ##  <#GAPDoc Label="IsRingWithOneGeneralMapping">
 ##  <ManSection>
-##  <Prop Name="IsRingWithOneGeneralMapping" Arg='mapp'/>
-##  <Prop Name="IsRingWithOneHomomorphism" Arg='mapp'/>
+##  <Filt Name="IsRingWithOneGeneralMapping" Arg='mapp'/>
+##  <Filt Name="IsRingWithOneHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
 ##  </Description>
@@ -538,8 +538,8 @@ DeclareSynonymAttr( "IsRingWithOneHomomorphism",
 ##
 ##  <#GAPDoc Label="IsAlgebraGeneralMapping">
 ##  <ManSection>
-##  <Prop Name="IsAlgebraGeneralMapping" Arg='mapp'/>
-##  <Prop Name="IsAlgebraHomomorphism" Arg='mapp'/>
+##  <Filt Name="IsAlgebraGeneralMapping" Arg='mapp'/>
+##  <Filt Name="IsAlgebraHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
 ##  <Ref Prop="IsAlgebraGeneralMapping"/> specifies whether a general 
@@ -567,8 +567,8 @@ DeclareSynonymAttr( "IsAlgebraHomomorphism",
 ##
 ##  <#GAPDoc Label="IsAlgebraWithOneGeneralMapping">
 ##  <ManSection>
-##  <Prop Name="IsAlgebraWithOneGeneralMapping" Arg='mapp'/>
-##  <Prop Name="IsAlgebraWithOneHomomorphism" Arg='mapp'/>
+##  <Filt Name="IsAlgebraWithOneGeneralMapping" Arg='mapp'/>
+##  <Filt Name="IsAlgebraWithOneHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
 ##  <Ref Prop="IsAlgebraWithOneGeneralMapping"/>

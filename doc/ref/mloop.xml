@@ -559,7 +559,7 @@ gap>
 
 
 <ManSection>
-<Var Name="OnBreak"/>
+<Func Name="OnBreak" Arg=''/>
 
 <Description>
 By default, when a break loop is entered, &GAP; prints a trace of the 
@@ -678,7 +678,7 @@ gap> OnBreak := Where;;
 </ManSection>
 
 <ManSection>
-<Var Name="OnBreakMessage"/>
+<Func Name="OnBreakMessage" Arg=''/>
 
 <Description>
 <Index>Break loop message</Index>

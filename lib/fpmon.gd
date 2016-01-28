@@ -51,7 +51,7 @@ DeclareCategoryCollections("IsElementOfFpMonoid");
 ##
 ##  <#GAPDoc Label="IsSubmonoidFpMonoid">
 ##  <ManSection>
-##  <Attr Name="IsSubmonoidFpMonoid" Arg='t'/>
+##  <Filt Name="IsSubmonoidFpMonoid" Arg='t'/>
 ##
 ##  <Description>
 ##  true if <A>t</A> is a finitely presented monoid or a 
@@ -136,7 +136,7 @@ DeclareOperation( "FpMonoidOfElementOfFpMonoid",[IsElementOfFpMonoid]);
 ##
 ##  <#GAPDoc Label="IsFpMonoid">
 ##  <ManSection>
-##  <Prop Name="IsFpMonoid" Arg='m'/>
+##  <Filt Name="IsFpMonoid" Arg='m'/>
 ##
 ##  <Description>
 ##  is a synonym for <C>IsSubmonoidFpMonoid(<A>m</A>)</C> and 

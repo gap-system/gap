@@ -225,7 +225,7 @@ InstallTrueMethod( IsCopyable, IsMutable);
 ##
 ##  <#GAPDoc Label="Immutable">
 ##  <ManSection>
-##  <Oper Name="Immutable" Arg='obj'/>
+##  <Func Name="Immutable" Arg='obj'/>
 ##
 ##  <Description>
 ##  returns an immutable structural copy

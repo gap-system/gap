@@ -152,7 +152,7 @@ stored using 16-bit integers and to <C>IsTrans4Rep</C> if it is stored using
     <Oper Name="Transformation" Arg="list" Label="for an image list"/>
     <Oper Name="Transformation" Arg="list, func" 
       Label="for a list and function"/>
-    <Func Name="TransformationList" Arg="list" Label="for an image list"/>
+    <Oper Name="TransformationList" Arg="list" Label="for an image list"/>
     <Returns>A transformation or <K>fail</K>.</Returns>
     <Description>
       <C>TransformationList</C> returns the transformation <C>f</C> such that
@@ -192,7 +192,7 @@ gap> SetUserPreference("NotationForTransformations", "input");
   <ManSection>
     <Oper Name="Transformation" Arg="src, dst" 
       Label="for a source and destination"/>
-    <Func Name="TransformationListList" Arg="src, dst" 
+    <Oper Name="TransformationListList" Arg="src, dst"
       Label="for a source and destination"/>
     <Returns>A transformation or <K>fail</K>.</Returns>
     <Description>
@@ -248,10 +248,10 @@ Transformation( [ 1, 3, 8, 1, 3, 1, 3, 4 ] )
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Func Name="Idempotent" Arg="im, ker"/>
+    <Oper Name="Idempotent" Arg="im, ker"/>
     <Returns>A transformation or <K>fail</K>.</Returns>
     <Description>
-      <C>Idempotent</C> returns the idempotent transformation with image set
+      <Ref Oper="Idempotent"/> returns the idempotent transformation with image set
       <A>im</A> and flat kernel <A>ker</A> if such a transformation exists and
       <K>fail</K> if it does not. <P/>
       
@@ -278,12 +278,12 @@ Transformation( [ 2, 4, 2, 6, 6, 7, 8, 2, 10, 10, 11, 8 ] )
 <!-- *************************************************************** -->
   
   <ManSection>
-    <Func Name="TransformationOp" Arg="obj, list[, func]"/>
-    <Func Name="TransformationOpNC" Arg="obj, list[, func]"/>
+    <Oper Name="TransformationOp" Arg="obj, list[, func]"/>
+    <Oper Name="TransformationOpNC" Arg="obj, list[, func]"/>
     <Returns>A transformation or <K>fail</K>.</Returns>
     <Description>
-      <C>TransformationOp</C> returns the transformation that corresponds to
-      the action of the object <A>obj</A> on the domain or list <A>list</A>
+      <Ref Oper="TransformationOp"/> returns the transformation that corresponds
+      to the action of the object <A>obj</A> on the domain or list <A>list</A>
       via the function <A>func</A>. If the optional third argument <A>func</A>
       is not specified, then the action <Ref Func="OnPoints"/> is used by
       default.  Note that the returned transformation
@@ -296,9 +296,9 @@ Transformation( [ 2, 4, 2, 6, 6, 7, 8, 2, 10, 10, 11, 8 ] )
       If <A>obj</A> does not map elements of <A>list</A> into <A>list</A>, then
       <K>fail</K> is returned.<P/>
 
-      <C>TransformationOpNC</C> does not check that <A>obj</A> maps elements of
-      <A>list</A> to elements of <A>list</A> or that a transformation is
-      defined by the action of <A>obj</A> on <A>list</A> via <A>func</A>. 
+      <Ref Oper="TransformationOpNC"/> does not check that <A>obj</A> maps
+      elements of <A>list</A> to elements of <A>list</A> or that a transformation
+      is defined by the action of <A>obj</A> on <A>list</A> via <A>func</A>.
       This function should be used only with caution, and in situations where
       it is guaranteed that the arguments have the required properties.
 
@@ -414,7 +414,7 @@ Transformation( [ 4, 4, 4, 4, 4, 4 ] )
   types of objects into transformations.
 
   <ManSection>
-  <Oper Name="AsTransformation" Arg="f[, n]"/>
+  <Attr Name="AsTransformation" Arg="f[, n]"/>
   <Returns>A transformation.</Returns>
   <Description>
   <C>AsTransformation</C> 
@@ -674,7 +674,7 @@ true
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <ManSection>  
-  <Attr Name="ComponentTransformationInt" Arg="f, n" /> 
+  <Oper Name="ComponentTransformationInt" Arg="f, n" /> 
   <Returns>A list of positive integers.</Returns>
   <Description>
     If <A>f</A> is a transformation and <A>n</A> is a positive
@@ -852,8 +852,8 @@ gap> MovedPoints(f);
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="NrMovedPoints" Arg="f" Label="for a transformation"/>
-    <Oper Name="NrMovedPoints" Arg="coll" Label="for a transformation coll"/>
+    <Attr Name="NrMovedPoints" Arg="f" Label="for a transformation"/>
+    <Attr Name="NrMovedPoints" Arg="coll" Label="for a transformation coll"/>
     <Returns>A positive integer.</Returns>
     <Description>
       When the argument is a transformation,<C>NrMovedPoints</C> returns the
@@ -874,8 +874,8 @@ gap> NrMovedPoints(IdentityTransformation);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <ManSection>
-  <Oper Name="SmallestMovedPoint" Arg="f" Label="for a transformation"/>
-  <Oper Name="SmallestMovedPoint" Arg="coll" Label="for a transformation coll"/>
+  <Attr Name="SmallestMovedPoint" Arg="f" Label="for a transformation"/>
+  <Meth Name="SmallestMovedPoint" Arg="coll" Label="for a transformation coll"/>
   <Returns>A positive integer or <K>infinity</K>.</Returns>
   <Description>
     <C>SmallestMovedPoint</C> returns the smallest  positive integer <C>i</C>
@@ -905,8 +905,8 @@ gap> SmallestMovedPoint(f);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <ManSection>
-  <Oper Name="LargestMovedPoint" Arg="f" Label="for a transformation"/>
-  <Oper Name="LargestMovedPoint" Arg="coll" Label="for a transformation coll"/>
+  <Attr Name="LargestMovedPoint" Arg="f" Label="for a transformation"/>
+  <Meth Name="LargestMovedPoint" Arg="coll" Label="for a transformation coll"/>
   <Returns>A positive integer.</Returns>
   <Description>
     <C>LargestMovedPoint</C> returns the largest positive integers <C>i</C>
@@ -937,8 +937,8 @@ gap> LargestMovedPoint(f);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <ManSection>
-  <Oper Name="SmallestImageOfMovedPoint" Arg="f" Label="for a transformation"/>
-  <Oper Name="SmallestImageOfMovedPoint" Arg="coll" 
+  <Attr Name="SmallestImageOfMovedPoint" Arg="f" Label="for a transformation"/>
+  <Meth Name="SmallestImageOfMovedPoint" Arg="coll" 
     Label="for a transformation coll"/>
   <Returns>A positive integer or <K>infinity</K>.</Returns>
   <Description>
@@ -973,8 +973,8 @@ gap> SmallestImageOfMovedPoint(f);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <ManSection>
-  <Oper Name="LargestImageOfMovedPoint" Arg="f" Label="for a transformation"/>
-  <Oper Name="LargestImageOfMovedPoint" Arg="coll" 
+  <Attr Name="LargestImageOfMovedPoint" Arg="f" Label="for a transformation"/>
+  <Meth Name="LargestImageOfMovedPoint" Arg="coll" 
     Label="for a transformation coll"/>
   <Returns>A positive integer.</Returns>
   <Description>

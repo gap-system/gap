@@ -177,10 +177,10 @@ BIND_GLOBAL( "CopyToStringRep", COPY_TO_STRING_REP );
 ##
 ##  <#GAPDoc Label="CharsFamily">
 ##  <ManSection>
-##  <Var Name="CharsFamily"/>
+##  <Fam Name="CharsFamily"/>
 ##
 ##  <Description>
-##  Each character lies in the family <Ref Var="CharsFamily"/>,
+##  Each character lies in the family <Ref Fam="CharsFamily"/>,
 ##  each nonempty string lies in the collections family of this family.
 ##  Note the subtle differences between the empty list <C>[]</C> and the
 ##  empty string <C>""</C> when both are printed.

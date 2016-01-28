@@ -830,11 +830,11 @@ DeclareSynonym("IndeterminateOfLaurentPolynomial",
 ##
 ##  <#GAPDoc Label="IndeterminateNumberOfLaurentPolynomial">
 ##  <ManSection>
-##  <Func Name="IndeterminateNumberOfLaurentPolynomial" Arg='pol'/>
+##  <Attr Name="IndeterminateNumberOfLaurentPolynomial" Arg='pol'/>
 ##
 ##  <Description>
 ##  Is a synonym for
-##  <Ref Func="IndeterminateNumberOfUnivariateRationalFunction"/>.
+##  <Ref Attr="IndeterminateNumberOfUnivariateRationalFunction"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1196,7 +1196,7 @@ DeclareGlobalFunction("MonomialExtGrlexLess");
 ##
 ##  <#GAPDoc Label="LeadingMonomial">
 ##  <ManSection>
-##  <Func Name="LeadingMonomial" Arg='pol'/>
+##  <Oper Name="LeadingMonomial" Arg='pol'/>
 ##
 ##  <Description>
 ##  returns the leading monomial (with respect to the ordering given by
