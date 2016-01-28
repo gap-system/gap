@@ -458,7 +458,7 @@ the groups of a given order.
 Finally we note that for the computation of split extensions it is not
 necessary that <A>M</A> must correspond to an elementary abelian group. Here
 it is possible to construct split extensions of arbitrary pc groups,
-see <Ref Func="SplitExtensions"/>.
+see <Ref Func="SplitExtension"/>.
 
 <#Include Label="TwoCoboundaries">
 <#Include Label="TwoCocycles">
@@ -514,7 +514,7 @@ up to equivalence, but not up to isomorphism.
 <#Include Label="ExtensionRepresentatives">
 
 <ManSection>
-<Func Name="SplitExtensions" Arg='G, aut, N'/>
+<Func Name="SplitExtension" Arg='G, aut, N'/>
 
 <Description>
 returns the split extensions of the pc group <A>G</A> by the pc group
