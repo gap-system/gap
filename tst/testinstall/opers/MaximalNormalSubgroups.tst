@@ -1,4 +1,4 @@
-gap> START_TEST("normal_hall_subgroups.tst");
+gap> START_TEST("MaximalNormalSubgroups.tst");
 gap> G := SymmetricGroup(4);; MaximalNormalSubgroups(G)=[DerivedSubgroup(G)];
 true
 gap> G := SymmetricGroup(5);; MaximalNormalSubgroups(G)=[DerivedSubgroup(G)];
@@ -18,4 +18,4 @@ gap> List(MaximalNormalSubgroups(G), StructureDescription);
   "C12600 x C20 x C2", "C2520 x C60 x C2", "C12600 x C12 x C2", 
   "C12600 x C12 x C2", "C12600 x C12 x C2", "C12600 x C12 x C2", 
   "C12600 x C12 x C2", "C1800 x C60 x C2" ]
-gap> STOP_TEST("normal_hall_subgroups.tst", 10000);
+gap> STOP_TEST("MaximalNormalSubgroups.tst", 10000);
