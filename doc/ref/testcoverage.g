@@ -7,9 +7,10 @@ Read( "makedocreldata.g" );
 doc := ComposedXMLString(
     GAPInfo.ManualDataRef.pathtodoc, 
     GAPInfo.ManualDataRef.main, 
-    GAPInfo.ManualDataRef.files);;
+    GAPInfo.ManualDataRef.files,
+    true);;
 
-r := ParseTreeXMLString(doc);;
+r := ParseTreeXMLString(doc[1]);;
 
 CheckAndCleanGapDocTree(r);
 
@@ -21,6 +22,8 @@ without:=0;
 for m in x do
   y := XMLElements( m, ["Example"] );
   if Length(y)=0 then
+    pos:=OriginalPositionDocument(doc[2],m.start);
+    Print( pos[1], ":", pos[2], " : \c " );
     if IsBound(m.content[1].attributes) and
       IsBound(m.content[1].attributes.Name) then
       Print( m.content[1].attributes.Name );
