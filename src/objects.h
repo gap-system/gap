@@ -420,7 +420,7 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_TLREC 		(FIRST_SHARED_TNUM+ 17)
 #define T_TLREC_INNER 		(FIRST_SHARED_TNUM+ 18)
 
-/* reserve space for 50 package TNUMs */
+/* reserve space for 40 package TNUMs */
 #define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
 #define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+43)
 
