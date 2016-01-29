@@ -31,7 +31,7 @@ gap:  $(GMP_LIBS)
 endif
 
 # OBJECTS are generated from SOURCE
-OBJECTS=ariths.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_random.o c_type1.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o ffdata.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intfuncs.o intrprtr.o iostream.o listfunc.o listoper.o lists.o macfloat.o objccoll.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o opers.o permutat.o plist.o pperm.o precord.o profile.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o stringobj.o sysfiles.o system.o tietze.o trans.o vars.o vec8bit.o vecffe.o vecgf2.o vector.o weakptr.o $(GAPMPI_OBJ)
+OBJECTS=ariths.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_random.o c_type1.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o ffdata.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intfuncs.o intrprtr.o iostream.o listfunc.o listoper.o lists.o macfloat.o objccoll.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objset.o opers.o permutat.o plist.o pperm.o precord.o profile.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o stringobj.o sysfiles.o system.o tietze.o trans.o vars.o vec8bit.o vecffe.o vecgf2.o vector.o weakptr.o $(GAPMPI_OBJ)
 
 
 # compile and link GAP
@@ -267,8 +267,7 @@ gap.o: ../../Makefile @srcdir@/gap.c @srcdir@/system.h config.h @srcdir@/gasman.
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o gap.o -c @srcdir@/gap.c
 
 gasman.o: ../../Makefile @srcdir@/gasman.c @srcdir@/system.h config.h @srcdir@/gasman.h \
- @srcdir@/hpc/atomic.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/code.h \
- @srcdir@/hpc/thread.h @srcdir@/hpc/tls.h
+ @srcdir@/hpc/atomic.h @srcdir@/objects.h @srcdir@/scanner.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o gasman.o -c @srcdir@/gasman.c
 
 gmpints.o: ../../Makefile @srcdir@/gmpints.c @srcdir@/system.h config.h @srcdir@/gasman.h \
@@ -401,6 +400,17 @@ objscoll.o: ../../Makefile @srcdir@/objscoll.c @srcdir@/system.h config.h @srcdi
  @srcdir@/code.h @srcdir@/hpc/tls.h @srcdir@/objfgelm.h @srcdir@/objscoll.h \
  @srcdir@/objccoll.h @srcdir@/hpc/thread.h @srcdir@/objscoll-impl.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o objscoll.o -c @srcdir@/objscoll.c
+
+objset.o: ../../Makefile @srcdir@/objset.c @srcdir@/system.h config.h @srcdir@/gasman.h \
+ @srcdir@/hpc/atomic.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
+ @srcdir@/read.h @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h \
+ @srcdir@/ariths.h @srcdir@/integer.h @srcdir@/bool.h @srcdir@/records.h \
+ @srcdir@/precord.h @srcdir@/lists.h @srcdir@/listoper.h @srcdir@/listfunc.h \
+ @srcdir@/plist.h @srcdir@/code.h @srcdir@/exprs.h @srcdir@/stats.h \
+ @srcdir@/funcs.h @srcdir@/fibhash.h @srcdir@/stringobj.h @srcdir@/hpc/thread.h \
+ @srcdir@/hpc/tls.h @srcdir@/vars.h @srcdir@/intrprtr.h @srcdir@/compiler.h \
+ @srcdir@/objset.h
+	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o objset.o -c @srcdir@/objset.c
 
 opers.o: ../../Makefile @srcdir@/opers.c @srcdir@/system.h config.h @srcdir@/gasman.h \
  @srcdir@/hpc/atomic.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gvars.h \

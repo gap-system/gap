@@ -48,6 +48,7 @@ SOURCE= \
     objfgelm \
     objpcgel \
     objscoll \
+    objset \
     opers \
     permutat \
     plist \
@@ -122,7 +123,7 @@ Makegap.in: Makegap.top Makefile Makegap.bottom
 	@echo >> Makegap.in
 	@echo '# dependencies are automatically generated' >> Makegap.in
 	@(for i in `eval 'echo $(SOURCE)'`; do \
-	    $(CC) -MM -MG -I .. -DUSE_PRECOMPILED ../src/$$i.c; \
+	    $(CC) -MM -MG -I .. -DUSE_PRECOMPILED -DSIZEOF_VOID_P=8 ../src/$$i.c; \
 	    echo '	$$(CC) $$(CPPFLAGS) $$(GMP_CFLAGS) $$(CFLAGS)' -o $$i.o -c ../src/$$i.c; \
 	    echo ; \
 	done \
