@@ -51,9 +51,9 @@ Obj IdentityTrans;
 
 static inline void ResizeTmpTrans( UInt len ){
   if (TmpTrans == (Obj)0) {
-    TmpTrans = NewBag(T_TRANS4, len*sizeof(UInt4));
-  } else if(SIZE_OBJ(TmpTrans)<len*sizeof(UInt4)) {
-    ResizeBag(TmpTrans,len*sizeof(UInt4));
+    TmpTrans = NewBag(T_TRANS4, len*sizeof(UInt4)+3*sizeof(Obj));
+  } else if(SIZE_OBJ(TmpTrans)<len*sizeof(UInt4)+3*sizeof(Obj)) {
+    ResizeBag(TmpTrans,len*sizeof(UInt4)+3*sizeof(Obj));
   }
 }
 
@@ -62,9 +62,9 @@ static inline UInt4 * ResizeInitTmpTrans( UInt len ){
   UInt4   *pttmp;
 
   if (TmpTrans == (Obj)0)
-    TmpTrans = NewBag(T_TRANS4, len*sizeof(UInt4));
-  else if (SIZE_BAG(TmpTrans) < len*sizeof(UInt4))
-    ResizeBag(TmpTrans, len*sizeof(UInt4));
+    TmpTrans = NewBag(T_TRANS4, len*sizeof(UInt4)+3*sizeof(Obj));
+  else if (SIZE_BAG(TmpTrans) < len*sizeof(UInt4)+3*sizeof(Obj))
+    ResizeBag(TmpTrans, len*sizeof(UInt4)+3*sizeof(Obj));
 
   pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
   for(i=0;i<len;i++) pttmp[i]=0;
