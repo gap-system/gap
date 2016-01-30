@@ -126,9 +126,15 @@ InstallMethod( ComplementNormalSubgroupNC,
           DfF,  # Direct factors of F=G/N
           gF,   # element of F=G/N
           g,    # element of G corresponding to gF
+          x,    # element of G
           i,    # running index
           l,    # list for storing stuff
           b,    # elements of abelian complement
+          C,    # Center of G
+          S,    # Subgroup of C
+          r,    # RationalClass of C
+          R,    # right coset
+          gens, # generators of subgroup of C
           B,    # complement to N
           T,    # = [C_G(N), G] = 1 x B'
           Gf,   # = G/T = N x B/B'
@@ -153,8 +159,46 @@ InstallMethod( ComplementNormalSubgroupNC,
       for gF in IndependentGeneratorsOfAbelianGroup(F) do
         i := i+1;
         g := PreImagesRepresentative(NaturalHomomorphism(F), gF);
-        l := First(RightCoset(N, g),
-              x -> Order(x) = Order(gF) and IsCentral(G, SubgroupNC(G,[x])));
+        R := RightCoset(N, g);
+        # DirectFactorsOfGroup already computed Center and RationalClasses
+        # when calling ComplementNormalSubgroup
+        if HasCenter(G) and HasRationalClasses(Center(G)) then
+          l := [];
+          C := Center(G);
+          for r in RationalClasses(C) do
+            if Order(Representative(r)) = Order(gF) then
+              for x in Set(r) do
+                if x in R then
+                  l := [x];
+                  break;
+                fi;
+              od;
+            fi;
+          od;
+          # Intersection(l, R) can take a long time
+          l := First(l, x -> true);
+        # if N is big, then Center is hopefully small and fast to compute
+        elif HasCenter(G) or Size(N) > Index(G, N) then
+          C := Center(G);
+          # it is enough to look for the Order(gF)-part of C
+          gens := [];
+          for x in IndependentGeneratorsOfAbelianGroup(C) do
+            Add(gens, x^(Order(x)/GcdInt(Order(x), Order(gF))));
+          od;
+          S := SubgroupNC(C, gens);
+          if Size(S) > Size(N) then
+            # Intersection(S, R) can take a long time
+            l := First(R, x -> Order(x) = Order(gF) and x in S);
+          else
+            # Intersection(C, R) can take a long time
+            l := First(S, x -> Order(x) = Order(gF) and x in R);
+          fi;
+        # N is small, then looping through its elements might be more
+        # efficient than computing the Center
+        else
+          l := First(R, x -> Order(x) = Order(gF)
+                          and IsCentral(G, SubgroupNC(G, [x])));
+        fi;
         if l <> fail then
           b[i] := l;
         else
