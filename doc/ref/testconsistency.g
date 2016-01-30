@@ -75,11 +75,18 @@ end;
 #
 # Checks whether ManSections are using the right kind of elements
 #
-CheckManSectionTypes := function( doc )
-local r, s, x, elt, stats, name, pos, obj, man, errcount;
+CheckManSectionTypes := function( doc, verbose... )
+local types, type, r, s, t, x, y, yint, elt, stats, name, pos, obj, man,
+      matches, matches2, match, errcount, referrcount, warncount, display_warnings;
+if Length( verbose ) = 0 then
+  display_warnings := false;
+else
+  display_warnings := verbose[1];
+fi;
+types:=[ "Func", "Oper", "Meth", "Filt", "Prop", "Attr", "Var", "Fam", "InfoClass" ];
 r := ParseTreeXMLString(doc[1]);;
 CheckAndCleanGapDocTree(r);
-x := XMLElements( r, [ "Func", "Oper", "Meth", "Filt", "Prop", "Attr", "Var", "Fam", "InfoClass" ] );;
+x := XMLElements( r, types );;
 errcount:=0;
 for elt in x do
   name := elt.attributes.Name;
@@ -95,9 +102,66 @@ for elt in x do
       # if there is no at least one "Oper" for any "Meth"
       if ( man <> elt.name ) and not ( man in ["Attr","Prop","Oper"] and elt.name="Meth") then
         pos:=OriginalPositionDocument(doc[2],elt.start);
-        Print( pos[1], ":", pos[2], " : ", name, " uses ", elt.name, " but must be ", man, "\n");
+        Print( pos[1], ":", pos[2], " : ", name, " uses ", elt.name, " instead of ", man, "\n");
         errcount:=errcount+1;
       fi;
+    fi;
+  fi;
+od;
+
+y := XMLElements( r, [ "Ref" ] );
+Print( "Found ", Length(y), " Ref elements " );
+yint := Filtered( y, elt ->
+      not IsBound(elt.attributes.BookName) or
+      (IsBound(elt.attributes.BookName) and elt.attributes.BookName="ref"));
+Print( "including ", Length(yint), " within the Reference manual\n" );
+y := Filtered( yint, elt -> ForAny( types, t -> IsBound(elt.attributes.(t))));
+
+referrcount:=0;
+warncount:=0;
+for elt in y do
+  type := First( types, t -> IsBound(elt.attributes.(t)));
+  if type <> fail then
+    matches := Filtered(x, t -> t.attributes.Name=elt.attributes.(type));
+    if Length(matches) = 0 then
+      pos:=OriginalPositionDocument(doc[2],elt.start);
+      Print( pos[1], ":", pos[2], " : no match for ", type , ":=", elt.attributes.(type), "\n" );
+      referrcount:=referrcount+1;
+      continue;
+    elif Length(matches) = 1 then
+      match := matches[1];
+    elif IsBound(elt.attributes.Label) then
+      matches := Filtered( matches, t -> IsBound(t.attributes.Label));
+      matches := Filtered( matches, t -> t.attributes.Label=elt.attributes.Label);
+      if Length(matches) > 1 then
+        Error("Multiple labels - this should not happen!");
+      fi;
+      match := matches[1];
+    else
+      matches2 := Filtered( matches, t -> not IsBound(t.attributes.Label));
+      if Length(matches2)=0 then
+        pos:=OriginalPositionDocument(doc[2],elt.start);
+        Print( pos[1], ":", pos[2], " : no match (wrong type or missing label?) for ", type , ":=", elt.attributes.(type), "\n" );
+        Print("  Suggestions: \n");
+        matches := Filtered( matches, t -> IsBound(t.attributes.Label));
+        for t in matches do
+          Print( "Use ", t.name, " with Label:=\"", t.attributes.Label, "\" (for Arg:=\"", t.attributes.Arg, "\")\n");
+        od;
+        
+        referrcount:=referrcount+1;
+        continue;
+      elif Length(matches2) > 1 then
+        Error("Multiple labels - this should not happen!");
+      else
+        match := matches[1];
+      fi;
+    fi;
+    if match.name <> type then
+      pos:=OriginalPositionDocument(doc[2],elt.start);
+      if display_warnings then
+        Print( pos[1], ":", pos[2], " : Ref to ", elt.attributes.(type), " uses ", type, " instead of ", match.name, "\n" );
+      fi;
+      warncount:=warncount+1;
     fi;
   fi;
 od;
@@ -107,7 +171,17 @@ Print("Selected ", Length(x), " ManSections of the following types:\n");
 for s in stats do
   Print( s[1], " - ", s[2], "\n");
 od;
-Print( errcount, " errors detected \n");
+Print( "Found ", errcount, " errors in ManSection types \n");
+
+Print( "Selected ", Length(y), " Ref elements referring to ManSections \n" );
+Print( "Found ", referrcount, " errors and ", warncount, " warnings in Ref elements \n");
+
+if display_warnings then
+  Print("To suppress warnings, use CheckManSectionTypes(doc,false) or with one argument\n");
+else
+  Print("To show warnings, use CheckManSectionTypes(doc,true); \n");
+fi;
+
 return errcount=0;
 end;
 
