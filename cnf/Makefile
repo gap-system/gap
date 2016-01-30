@@ -11,6 +11,7 @@ CC=cc
 
 SOURCE= \
     ariths \
+    backtrace \
     blister \
     bool \
     c_filt1 \

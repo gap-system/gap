@@ -741,6 +741,11 @@ int main (
   Obj                 func;                   /* function (compiler)     */
   Int4                crc;                    /* crc of file to compile  */
 
+#ifdef PRINT_BACKTRACE
+  void InstallBacktraceHandlers();
+  InstallBacktraceHandlers();
+#endif
+
 #ifdef HAVE_REALPATH
   if (argc >= 3 && !strcmp(argv[1],"--createstartupscript")) {
       return DoCreateStartupScript(argc,argv,0);
