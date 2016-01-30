@@ -94,9 +94,9 @@ InstallGlobalFunction( UnionIfCanEasilySortElements,
 
 #############################################################################
 ##
-#M  ComplementNormalSubgroup( <G>, <N> ) . . . . . . . . . . . generic method
+#M  NormalComplement( <G>, <N> ) . . . . . . . . . . . generic method
 ##
-InstallMethod( ComplementNormalSubgroup,
+InstallMethod( NormalComplement,
                "generic method", IsIdenticalObj, [ IsGroup,  IsGroup ],
 
   function( G, N )
@@ -113,11 +113,11 @@ InstallMethod( ComplementNormalSubgroup,
       Error("N must be a normal subgroup of G");
 
     else
-      return ComplementNormalSubgroupNC(G, N);
+      return NormalComplementNC(G, N);
     fi;
   end);
 
-InstallMethod( ComplementNormalSubgroupNC,
+InstallMethod( NormalComplementNC,
                "generic method", IsIdenticalObj, [ IsGroup,  IsGroup ],
 
   function( G, N )
@@ -161,7 +161,7 @@ InstallMethod( ComplementNormalSubgroupNC,
         g := PreImagesRepresentative(NaturalHomomorphism(F), gF);
         R := RightCoset(N, g);
         # DirectFactorsOfGroup already computed Center and RationalClasses
-        # when calling ComplementNormalSubgroup
+        # when calling NormalComplement
         if HasCenter(G) and HasRationalClasses(Center(G)) then
           l := [];
           C := Center(G);
@@ -216,7 +216,7 @@ InstallMethod( ComplementNormalSubgroupNC,
         Nf := Image(NaturalHomomorphism(Gf), N);
         # not quite sure if this check is needed
         if HasAbelianFactorGroup(Gf, Nf) then
-          Bf := ComplementNormalSubgroupNC(Gf, Nf);
+          Bf := NormalComplementNC(Gf, Nf);
           if Bf = fail then
             return fail;
           else
@@ -393,7 +393,7 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
     for g in RationalClasses(C) do
       N := Subgroup(C, [Representative(g)]);
       if not IsTrivial(N) and IsTrivialNormalIntersection(C, D, N) then
-        B := ComplementNormalSubgroupNC(G, N);
+        B := NormalComplementNC(G, N);
         # if B is a complement to N
         if B <> fail then
           return UnionIfCanEasilySortElements( DirectFactorsOfGroup(N),
@@ -562,7 +562,7 @@ InstallGlobalFunction(DirectFactorsOfGroupKN,
     for g in RationalClasses(C) do
       N := Subgroup(C, [Representative(g)]);
       if not IsTrivial(N) and IsTrivialNormalIntersection(C, D, N) then
-        B := ComplementNormalSubgroupNC(G, N);
+        B := NormalComplementNC(G, N);
         # if B is a complement to N
         if B <> fail then
           return UnionIfCanEasilySortElements( DirectFactorsOfGroup(N),
@@ -653,7 +653,7 @@ InstallGlobalFunction(DirectFactorsOfGroupKN,
           # this certainly can be done better,
           # because we basically know all possible normal subgroups
           # but it suffices for now
-          B := ComplementNormalSubgroup(G, N);
+          B := NormalComplement(G, N);
           if B <> fail then
             # N is direct indecomposable by construction
             return UnionIfCanEasilySortElements([N],

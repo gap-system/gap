@@ -3,7 +3,7 @@ gap> D := DihedralGroup(12);; Df := DirectFactorsOfGroup(D);; IsSet(Df); List(Df
 true
 [ [ 6, 1 ], [ 2, 1 ] ]
 gap> U := Df[1];; V := Df[2];;
-gap> ComplementNormalSubgroup(D, U)=V;
+gap> NormalComplement(D, U)=V;
 true
 gap> IsTrivialNormalIntersection(D, U, V);
 true
@@ -17,15 +17,26 @@ true
 gap> U := Center(D);; V := Centralizer(D, DerivedSubgroup(D));;
 gap> IsTrivialNormalIntersection(D, U, V);
 false
-gap> ComplementNormalSubgroup(D, D);
+gap> NormalComplement(SymmetricGroup(10), AlternatingGroup(10));
+fail
+gap> G := SymmetricGroup(10);; N := AlternatingGroup(10);; Center(G);;
+gap> NormalComplement(G, N);
+fail
+gap> G := SmallGroup(64,3);;N:=First(NormalSubgroups(G),N -> Size(N)=4);;
+gap> Center(G);;
+gap> NormalComplement(G, N);
+fail
+gap> n := 0;; for G in AllGroups(16) do for N in NormalSubgroups(G) do C := NormalComplement(G, N); if C<>fail then n := n+1; fi; od; od; n;
+135
+gap> NormalComplement(D, D);
 Group([  ])
-gap> ComplementNormalSubgroup(D, DerivedSubgroup(Center(D)))=D;
+gap> NormalComplement(D, DerivedSubgroup(Center(D)))=D;
 true
-gap> ComplementNormalSubgroupNC(D, D);
+gap> NormalComplementNC(D, D);
 Group([  ])
-gap> ComplementNormalSubgroupNC(D, DerivedSubgroup(Center(D)))=D;
+gap> NormalComplementNC(D, DerivedSubgroup(Center(D)))=D;
 true
-gap> G:=SmallGroup(16,7);; C := Center(G);; ComplementNormalSubgroup(G,C);
+gap> G:=SmallGroup(16,7);; C := Center(G);; NormalComplement(G,C);
 fail
 gap> G := DirectProduct(D, D, D);;
 gap> List(DirectFactorsOfGroup(G), IdGroup);

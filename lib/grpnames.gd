@@ -73,11 +73,11 @@ DeclareGlobalFunction( "UnionIfCanEasilySortElements", IsList );
 
 #############################################################################
 ##
-#O  ComplementNormalSubgroup( <G>, <N> ) . . . . . . . . . . . generic method
+#O  NormalComplement( <G>, <N> ) . . . . . . . . . . . generic method
 ##
-##  <#GAPDoc Label="ComplementNormalSubgroup">
+##  <#GAPDoc Label="NormalComplement">
 ##  <ManSection>
-##  <Oper Name="ComplementNormalSubgroup" Arg="G, N"/>
+##  <Oper Name="NormalComplement" Arg="G, N"/>
 ##
 ##  <Description>
 ##    Gives a normal complement to the normal subgroup <A>N</A> in <A>G</A>
@@ -85,7 +85,7 @@ DeclareGlobalFunction( "UnionIfCanEasilySortElements", IsList );
 ##    In theory it finds the normal complement for infinite <A>G</A>,
 ##    but can have an infinite loop if <A>G/N</A> is abelian and <A>N</A> is
 ##    infinite.
-##    ComplementNormalSubgroupsNC does not check if <A>N</A> is a normal
+##    NormalComplementsNC does not check if <A>N</A> is a normal
 ##    subgroup of <A>G</A>.
 ##  </Description>
 ##  </ManSection>
@@ -97,8 +97,8 @@ DeclareGlobalFunction( "UnionIfCanEasilySortElements", IsList );
 ##    (ICALP), Lecture Notes in Computer Science 5555, 585-596,
 ##    Springer Verlag, Berlin Heidelberg 2009.
 ##
-DeclareOperation( "ComplementNormalSubgroup", [IsGroup, IsGroup]);
-DeclareOperation( "ComplementNormalSubgroupNC", [IsGroup, IsGroup]);
+DeclareOperation( "NormalComplement", [IsGroup, IsGroup]);
+DeclareOperation( "NormalComplementNC", [IsGroup, IsGroup]);
 
 #############################################################################
 ##
