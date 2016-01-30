@@ -444,7 +444,15 @@ function(g,l)
 local mon,h;
    mon:=NiceMonomorphism(g);
    h:=HallSubgroup(ImagesSet(mon,g),l);
-   return PreImage(mon,h);
+   if h = fail then
+       return fail;
+   elif IsList(h) then
+       return List(h, k -> PreImage(mon, k));
+   elif IsGroup(h) then
+       return PreImage(mon,h);
+   else
+       Error("Unexpected return value from HallSubgroup");
+   fi;
 end);
 
 #############################################################################
