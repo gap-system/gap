@@ -2830,7 +2830,7 @@ InstallMethod (HallSubgroupOp, "test trivial cases", true,
 
 #############################################################################
 ##
-#M  HallSubgroupOp( <G>, <p> ) . . . . . . . . . . . . for a nilpotent group
+#M  HallSubgroupOp( <G>, <pi> ) . . . . . . . . . . . . for a nilpotent group
 ##
 InstallMethod( HallSubgroupOp,
     "method for a nilpotent group",

@@ -270,7 +270,7 @@ function( G, p )
     for i in [1..Length(spec)] do
         if weights[i][3] <> p then
             Add( gens, spec[i] );
-            Add( pi, weights[i][3] );
+            AddSet( pi, weights[i][3] );
         fi;
     od;
     gens := InducedPcgsByPcSequenceNC( spec, gens );
