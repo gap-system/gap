@@ -2813,6 +2813,127 @@ InstallMethod (HallSubgroupOp, "test trivial cases", true,
     end);
 
 
+#############################################################################
+##
+#M  NormalHallSubgroups( <G> )
+##
+InstallGlobalFunction( NormalHallSubgroupsFromSylows, function( arg )
+
+  local G, method, primes, edges, i, j, S, N, UpSets, part, U, NHs;
+
+  if Length(arg) = 1 and IsGroup(arg[1]) then
+    G := arg[1];
+    method := "all";
+  elif Length(arg) = 2 and IsGroup(arg[1]) and arg[2] in ["all", "any"] then
+    G := arg[1];
+    method := arg[2];
+  else
+    Error("usage: NormalHallSubgroupsFromSylows( <G> [, <mthd> ] )");
+  fi;
+  if HasNormalHallSubgroups(G) then
+    if method = "any" then
+      for N in NormalHallSubgroups(G) do
+        if not IsTrivial(N) and G<>N then
+          return N;
+        fi;
+      od;
+      return fail;
+    else
+      return NormalHallSubgroups(G);
+    fi;
+  elif method ="any" and Length(ComputedHallSubgroups(G))>0 then
+    i := 0;
+    while i < Length(ComputedHallSubgroups(G)) do
+      i := i+2;
+      N := ComputedHallSubgroups(G)[i];
+      if N <> fail and IsNormal(G, N) then
+        return N;
+      fi;
+    od;
+  # no need to factor Size(G) if G is a p-group
+  elif IsTrivial(G) or IsPGroup(G) then
+    SetNormalHallSubgroups(G, Set([ TrivialSubgroup(G), G ]));
+    if method = "any" then
+      return fail;
+    else
+      return Set([ TrivialSubgroup(G), G ]);
+    fi;
+  ## ? might take a long time to check if G is simple ?
+  # simple groups have no nontrivial normal subgroups
+  elif IsSimpleGroup(G) then
+    SetNormalHallSubgroups(G, Set([ TrivialSubgroup(G), G ]));
+    if method = "any" then
+      return fail;
+    else
+      return Set([ TrivialSubgroup(G), G ]);
+    fi;
+  fi;
+  primes := PrimeDivisors(Size(G));
+  edges := [];
+  S := [];
+  # create edges of directed graph
+  for i in [1..Length(primes)] do
+    # S[i] is the normal closure of the Sylow subgroup for primes[i]
+    if IsNilpotentGroup(G) then
+      S[i] := SylowSubgroup(G, primes[i]);
+    else
+      S[i] := NormalClosure(G, SylowSubgroup(G, primes[i]));
+    fi;
+    if IsNilpotentGroup(G) then
+      edges[i] := [i];
+    else
+      edges[i] := [];
+      # factoring Size(S[i]) probably takes more time
+      for j in [1..Length(primes)] do
+        # i -> j is an edge if Size(S[i]) has prime divisor primes[j]
+        if Size(S[i]) mod primes[j] = 0 then
+          AddSet(edges[i], j);
+        fi;
+      od;
+    fi;
+    if method = "any" and edges[i] = [i] then
+      return S[i];
+    fi;
+  od;
+  # compute the reachable points from every point of the digraph
+  # and then collapse same sets
+  # the relation defined by edges is already reflexive
+  UpSets := Set(Successors(TransitiveClosureBinaryRelation(
+                                            BinaryRelationOnPoints(edges))));
+  NHs := [ TrivialSubgroup(G), G ];
+  for part in IteratorOfCombinations(UpSets) do
+    U := Union(part);
+    # trivial subgroup and G should not be added again
+    if U <> [] and U <> [1..Length(primes)] then
+      N := TrivialSubgroup(G);
+      for i in Union(part) do
+        N := ClosureGroup(N, S[i]);
+      od;
+      if method = "any" then
+        return N;
+      else
+        AddSet(NHs, N);
+      fi;
+    fi;
+  od;
+  if method = "any" then
+    SetNormalHallSubgroups(G, Set([ TrivialSubgroup(G), G ]));
+    return fail;
+  else
+    SetNormalHallSubgroups(G, NHs);
+    return NHs;
+  fi;
+end);
+
+InstallMethod( NormalHallSubgroups,
+               "by normal closure of Sylow subgroups", true,
+               [ IsGroup and CanComputeSizeAnySubgroup and IsFinite ], 0,
+
+  function( G )
+    return NormalHallSubgroupsFromSylows(G, "all");
+  end );
+
+
 ############################################################################
 ##
 #M  SylowComplementOp (<grp>, <p>)

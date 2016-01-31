@@ -3289,6 +3289,45 @@ KeyDependentOperation( "HallSubgroup", IsGroup, IsList, ReturnTrue );
 
 #############################################################################
 ##
+#F  NormalHallSubgroupsFromSylows( <G>[, <method>] )
+##
+##  <ManSection>
+##  <Func Name="NormalHallSubgroupsFromSylows" Arg="G[, method]"/>
+##
+##  <Description>
+##    Computes all normal Hall subgroups, that is all normal subgroups
+##    <A>N</A> for which the size of <A>N</A> is relatively prime to the
+##    index of <A>N</A> in <A>G</A>.
+##
+##    Sometimes it is not desirable to compute all normal Hall subgroups. The
+##    user can express such a wish by using the <A>method</A> <Q>"any"</Q>.
+##    Then NormalHallSubgroupsFromSylows returns a nontrivial normal Hall
+##    subgroup, if there is one, and returns fail, otherwise.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "NormalHallSubgroupsFromSylows", [ IsGroup ] );
+
+
+#############################################################################
+##
+#A  NormalHallSubgroups( <G> )
+##
+##  <ManSection>
+##  <Attr Name="NormalHallSubgroups" Arg="G"/>
+##
+##  <Description>
+##    Returns a list of all normal Hall subgroups, that is of all normal
+##    subgroups <A>N</A> for which the size of <A>N</A> is relatively prime
+##    to the index of <A>N</A> in <A>G</A>.
+##  </Description>
+##  </ManSection>
+##
+DeclareAttribute( "NormalHallSubgroups", IsGroup );
+
+
+#############################################################################
+##
 #O  NrConjugacyClassesInSupergroup( <U>, <G> )
 ##
 ##  <ManSection>
