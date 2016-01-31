@@ -1230,9 +1230,9 @@ function( G, N )
   C := [ ];
   for Hc in ConjugacyClassesSubgroups(G) do
     H := Representative(Hc);
-    if not IsTrivial(H) and G<>H and IsTrivial(Intersection(N, H)) and
-      (( CanComputeSize(G) and CanComputeSize(N) and CanComputeSize(H) and
-        Size(G) = Size(N)*Size(H) ) or G = ClosureGroup(N, H) ) then
+    if (( CanComputeSize(G) and CanComputeSize(N) and CanComputeSize(H) and
+        Size(G) = Size(N)*Size(H) ) or G = ClosureGroup(N, H) )
+	and IsTrivial(Intersection(N, H)) then
       Add(C, H);
     fi;
   od;
