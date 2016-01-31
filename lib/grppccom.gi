@@ -1204,17 +1204,57 @@ end);
 
 #############################################################################
 ##
-#M  ComplementcClassesRepresentatives( <G>, <N> )
+#M  ComplementcClassesRepresentatives( <G>, <N> ) . . . . . . generic method
 ##
 InstallMethod( ComplementClassesRepresentatives,
-  "tell that the normal subgroup must be solvable",IsIdenticalObj,
-  [IsGroup,IsGroup],-2*RankFilter(IsGroup),
+  "by computing all subgroups", IsIdenticalObj, [ IsGroup, IsGroup ],
+  -2*RankFilter(IsGroup),
+
 function( G, N )
-  if IsSolvableGroup(N) then
+
+  local C, Hc, H;
+
+  # if <N> is trivial the only complement is <G>
+  if IsTrivial(N) then
+      C := [ G ];
+  # if <G> and <N> are equal the only complement is trivial
+  elif G = N  then
+      C := [ TrivialSubgroup(G) ];
+  elif not IsNormal(G, N) then
+    Error("N must be normal in G");
+  elif IsSolvableGroup(N) or HasSolvableFactorGroup(G, N) then
     TryNextMethod();
   fi;
-  Error("Cannot compute complement classes for nonsolvable normal subgroups");
+
+  Info(InfoWarning,1,"N and G/N are not solvable, computing all subgroups!");
+  C := [ ];
+  for Hc in ConjugacyClassesSubgroups(G) do
+    H := Representative(Hc);
+    if not IsTrivial(H) and G<>H and IsTrivial(Intersection(N, H)) and
+      (( CanComputeSize(G) and CanComputeSize(N) and CanComputeSize(H) and
+        Size(G) = Size(N)*Size(H) ) or G = ClosureGroup(N, H) ) then
+      Add(C, H);
+    fi;
+  od;
+  return C;
 end);
+
+
+#############################################################################
+##
+#M  ComplementClassesRepresentativesKD( <G> ) . . . . . . . . generic method
+##
+##
+##  This is the same operation as ComplementClassesRepresentatives, except
+##  that this stores the complements for the normal subgroups.
+##
+InstallMethod( ComplementClassesRepresentativesKDOp,
+               "generic method", [ IsGroup,  IsGroup ], 0,
+
+  function( G, N )
+    return ComplementClassesRepresentatives(G, N);
+  end);
+
 
 #############################################################################
 ##

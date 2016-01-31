@@ -188,5 +188,23 @@ DeclareOperation("ComplementClassesRepresentatives",[IsGroup,IsGroup]);
 
 #############################################################################
 ##
+#O  ComplementClassesRepresentativesKD( <G>, <N> ) . . . . complement classes
+##
+##  <ManSection>
+##  <Oper Name="ComplementClassesRepresentativesKD" Arg="G, N"/>
+##
+##  <Description>
+##  This is the same operation as ComplementClassesRepresentatives, except
+##  that this stores the complements for the normal subgroups as a
+##  keydependent operation.
+##  </Description>
+##  </ManSection>
+##
+KeyDependentOperation( "ComplementClassesRepresentativesKD", IsGroup,
+                                                      IsGroup, ReturnTrue );
+
+
+#############################################################################
+##
 #E
 
