@@ -57,7 +57,7 @@
 
 #include        "code.h"
 
-#include	"hpc/tls.h"
+#include        "hpc/tls.h"
 
 #include        "vars.h"                /* TLS(BottomLVars) for execution contexts */
 
@@ -98,13 +98,25 @@ Int READ_COMMAND ( void )
     return 1;
 }
 
-Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
+/*
+ Returns a list with one or two entries. The first
+ entry is set to "false" if there was any error
+ executing the command, and "true" otherwise.
+ The second entry, if present, is the return value of
+ the command. If it not present, the command returned nothing.
+*/
+Obj FuncREAD_COMMAND_REAL ( Obj self, Obj stream, Obj echo )
 {
     Int status;
+    Obj result;
+
+    result = NEW_PLIST( T_PLIST, 2 );
+    SET_LEN_PLIST(result, 1);
+    SET_ELM_PLIST(result, 1, False);
 
     /* try to open the file                                                */
     if ( ! OpenInputStream(stream) ) {
-        return SFail;
+        return result;
     }
 
     if (echo == True)
@@ -116,19 +128,34 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
     
     CloseInput();
 
-    if( status == 0 ) return SFail;
+    if( status == 0 ) return result;
 
     if (TLS(UserHasQUIT)) {
       TLS(UserHasQUIT) = 0;
-      return SFail;
+      return result;
     }
 
     if (TLS(UserHasQuit)) {
       TLS(UserHasQuit) = 0;
     }
     
-    return TLS(ReadEvalResult) ? TLS(ReadEvalResult) : SFail;
-    
+    SET_ELM_PLIST(result, 1, True);
+    if (TLS(ReadEvalResult)) {
+        SET_LEN_PLIST(result, 2);
+        SET_ELM_PLIST(result, 2, TLS(ReadEvalResult));
+    }
+    return result;
+}
+
+/*
+ Deprecated alternative to READ_COMMAND_REAL, kept for now to maintain
+ compatibility with the few packages that use it.
+ */
+Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
+{
+    Obj result;
+    result = FuncREAD_COMMAND_REAL(self, stream, echo);
+    return (LEN_PLIST(result) == 2) ? ELM_PLIST(result, 2) : SuPeRfail;
 }
 
 /****************************************************************************
@@ -2252,6 +2279,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "READ_NORECOVERY", 1L, "filename",
       FuncREAD_NORECOVERY, "src/streams.c:READ_NORECOVERY" },
+
+    { "READ_COMMAND_REAL", 2L, "stream, echo",
+      FuncREAD_COMMAND_REAL, "src/streams.c:READ_COMMAND_REAL" },
 
     { "READ_COMMAND", 2L, "stream, echo", 
       FuncREAD_COMMAND, "src/streams.c:READ_COMMAND" },

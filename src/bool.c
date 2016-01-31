@@ -38,12 +38,11 @@
 
 #include	"code.h"		/* coder                           */
 #include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
+#include	"hpc/tls.h"		/* thread-local storage		   */
 
 
 /****************************************************************************
 **
-
 *V  True  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  true value
 **
 **   'True' is the value 'true'.
@@ -70,13 +69,13 @@ Obj Fail;
 
 /****************************************************************************
 **
-*V  SFail  . . . . . . . . . . . . . . . . . . . . . . . . . . superfail value
+*V  SuPeRfail  . . . . . . . . . . . . . . . . . . . . . . .  superfail value
 **
-**  'SFail' is an ``superfail'' object which is used to indicate failure if
+**  'SuPeRfail' is an ``superfail'' object which is used to indicate failure if
 **  `fail' itself is a sensible response. This is used when having GAP read
 **  a file line-by-line via a library function (demo.g)
 */
-Obj SFail;
+Obj SuPeRfail;
 
 /****************************************************************************
 **
@@ -93,7 +92,6 @@ Obj Undefined;
 
 /****************************************************************************
 **
-
 *F  TypeBool( <bool> )  . . . . . . . . . . . . . . . type of a boolean value
 **
 **  'TypeBool' returns the type of boolean values.
@@ -127,7 +125,7 @@ void PrintBool (
     else if ( bool == Fail ) {
         Pr( "fail", 0L, 0L );
     }
-    else if ( bool == SFail ) {
+    else if ( bool == SuPeRfail ) {
         Pr( "SuPeRfail", 0L, 0L );
     }
     else if ( bool == Undefined ) {
@@ -417,7 +415,7 @@ static Int InitKernel (
     InitGlobalBag( &True,  "src/bool.c:TRUE"  );
     InitGlobalBag( &False, "src/bool.c:FALSE" );
     InitGlobalBag( &Fail,  "src/bool.c:FAIL"  );
-    InitGlobalBag( &SFail,  "src/bool.c:SFAIL"  );
+    InitGlobalBag( &SuPeRfail,  "src/bool.c:SUPERFAIL"  );
     InitGlobalBag( &Undefined,  "src/bool.c:UNDEFINED"  );
 
     /* install the saving functions                                       */
@@ -463,9 +461,9 @@ static Int InitLibrary (
     MakeReadOnlyGVar(gvar);
 
     /* `SuPeRfail' ditto                       */
-    SFail  = NewBag( T_BOOL, 0L );
+    SuPeRfail  = NewBag( T_BOOL, 0L );
     gvar = GVarName( "SuPeRfail" );
-    AssGVar( gvar, SFail );
+    AssGVar( gvar, SuPeRfail );
     MakeReadOnlyGVar(gvar);
 
     /* Undefined is an internal value */
