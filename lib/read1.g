@@ -80,6 +80,8 @@ ReadLib( "userpref.g"  );
 
 ReadLib( "cmdledit.g"  );
 
+ReadLib( "objset.g" );
+
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
 
