@@ -100,7 +100,7 @@
 
 #include	"code.h"		/* coder                           */
 #include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
+#include	"hpc/tls.h"		/* thread-local storage		   */
 
 
 /****************************************************************************
