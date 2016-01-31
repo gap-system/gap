@@ -4,7 +4,7 @@
 #X  after this file is read an 'ExportToKernelFinished' is done.
 ##
 
-ReadLib( "thread1.g"   );
+ReadLib( "hpc/thread1.g"   );
 ReadLib( "filter.g"    );
 ReadLib( "filter1.g"   );
 ReadLib( "oper.g"      );
@@ -82,25 +82,25 @@ ReadLib( "userpref.g"  );
 
 ReadLib( "cmdledit.g"  );
 
-ReadLib( "serialize.g" );
-ReadLib( "thread.g" );
+ReadLib( "hpc/serialize.g" );
+ReadLib( "hpc/thread.g" );
 ReadLib( "objset.g" );
-ReadLib( "smallrgn.g"  );
+ReadLib( "hpc/smallrgn.g"  );
 
 if not IsBound(MPI_Initialized) and not IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
-  ReadLib( "stdtasks.g" );
+  ReadLib( "hpc/stdtasks.g" );
 fi;
 
 ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
-ReadLib( "altview.g" );
+ReadLib( "hpc/altview.g" );
 
 if not IsBound(MPI_Initialized) and IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
-  ReadLib( "tasks.g" );
+  ReadLib( "hpc/tasks.g" );
 fi;
 
 if not IsBound(MPI_Initialized) then
-  ReadLib( "actor.g" );
+  ReadLib( "hpc/actor.g" );
 fi;
 
 ReadLib( "error.g"   );
