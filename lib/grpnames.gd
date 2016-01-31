@@ -16,15 +16,134 @@
 
 #############################################################################
 ##
+#O  IsTrivialNormalIntersection( <G>, <U>, <V> ) . . . . . . . generic method
+##
+##  <ManSection>
+##  <Oper Name="IsTrivialNormalIntersection" Arg="G, U, V"/>
+##
+##  <Description>
+##    For normal subgroups <A>U</A> and <A>V</A> of <A>G</A>,
+##    IsTrivialNormalIntersection returns
+##    true if <A>U</A> and <A>V</A> intersect trivially, and false otherwise.
+##    The result is undefined if either <A>U</A> or <A>V</A> is not a normal
+##    subgroup of G.
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation( "IsTrivialNormalIntersection",
+                  [ IsGroup, IsGroup, IsGroup ] );
+
+#############################################################################
+##
+#F  IsTrivialNormalIntersectionInList( <MinNs>, <U>, <V> ) . . generic method
+##
+##  <ManSection>
+##  <Func Name="IsTrivialNormalIntersectionInList" Arg="MinNs, U, V"/>
+##
+##  <Description>
+##    For groups <A>U</A> and <A>V</A>, IsTrivialNormalIntersection returns
+##    false if for any group H in list <A>MinNs</A> both <A>U</A> and
+##    <A>V</A> contains the first nontrivial generator of H. Otherwise, the
+##    result is true.
+##    This operation is useful if it is already known that the intersection
+##    of <A>U</A> and <A>V</A> is either trivial, or contains at least one
+##    group from <A>MinNs</A>.
+##    For example if <A>U</A> and <A>V</A> are normal subgroups of a group
+##    G and <A>MinNs</A>=MinimalNormalSubgroups(G).
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "IsTrivialNormalIntersectionInList",
+                  [ IsList, IsGroup, IsGroup ] );
+
+#############################################################################
+##
+#F  UnionIfCanEasilySortElements( <L1>[, <L2>, ... ] ) . . . . generic method
+##
+##  <ManSection>
+##  <Func Name="UnionIfCanEasilySortElements" Arg="L1[, L2, ... ]"/>
+##
+##  <Description>
+##    Return the union of <A>Li</A> if CanEasilySortElements is true for all
+##    elements of all <A>Li</A>, and the concatenation of them, otherwise.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "UnionIfCanEasilySortElements", IsList );
+
+#############################################################################
+##
+#O  NormalComplement( <G>, <N> ) . . . . . . . . . . . generic method
+##
+##  <#GAPDoc Label="NormalComplement">
+##  <ManSection>
+##  <Oper Name="NormalComplement" Arg="G, N"/>
+##
+##  <Description>
+##    Gives a normal complement to the normal subgroup <A>N</A> in <A>G</A>
+##    if exists, fail otherwise.
+##    In theory it finds the normal complement for infinite <A>G</A>,
+##    but can have an infinite loop if <A>G/N</A> is abelian and <A>N</A> is
+##    infinite.
+##    NormalComplementsNC does not check if <A>N</A> is a normal
+##    subgroup of <A>G</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+##    This is the implementation of the algorithm described in
+##    Neeraj Kayal and Timur Nezhmetdinov, Factoring Groups Efficiently,
+##    in International Colloquium on Automata, Languages and Programming
+##    (ICALP), Lecture Notes in Computer Science 5555, 585-596,
+##    Springer Verlag, Berlin Heidelberg 2009.
+##
+DeclareOperation( "NormalComplement", [IsGroup, IsGroup]);
+DeclareOperation( "NormalComplementNC", [IsGroup, IsGroup]);
+
+#############################################################################
+##
 #A  DirectFactorsOfGroup( <G> ) . . . . . decomposition into a direct product
 ##
+##  <#GAPDoc Label="DirectFactorsOfGroup">
 ##  <ManSection>
 ##  <Attr Name="DirectFactorsOfGroup" Arg="G"/>
 ##
 ##  <Description>
-##    A sorted list of factors [<A>G1</A>, .., <A>Gr</A>] such that
-##    <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
+##    A (sorted if possible) list of factors [<A>G1</A>, .., <A>Gr</A>] such
+##    that <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
 ##    is a direct product.
+##    If <A>G</A> is an infinite abelian group, then it returns an unsorted
+##    list of the factors. DirectFactorsOfGroup currently cannot compute the
+##    direct factors of a nonabelian infinite group.
+##
+##    The option <Q>useKN</Q> forces to use the function
+##    DirectFactorsOfGroupKN based on
+##    Neeraj Kayal and Timur Nezhmetdinov, Factoring Groups Efficiently,
+##    in International Colloquium on Automata, Languages and Programming
+##    (ICALP), Lecture Notes in Computer Science 5555, 585-596,
+##    Springer Verlag, Berlin Heidelberg 2009.
+##    This algorithm never computes normal subgroups, and performs slower in
+##    practice than the default method.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "DirectFactorsOfGroup", IsGroup );
+
+#############################################################################
+##
+#F  DirectFactorsOfGroupFromList( <G>, <Ns>, <MinNs> )
+##
+##  <ManSection>
+##  <Func Name="DirectFactorsOfGroup" Arg="G, Ns, MinNs"/>
+##
+##  <Description>
+##    A (sorted if possible) list of factors [<A>G1</A>, .., <A>Gr</A>] such
+##    that <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
+##    is a direct product, and all the factors <A>Gi</A> are from the list
+##    <A>Ns</A>. The list <A>MinNs</A> is supposed to be a list such that the
+##    intersection of any two groups from <A>Ns</A> is either trivial or
+##    contains a group from <A>MinNs</A>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -119,10 +238,32 @@
 ##      This is done by merging the two sequences into
 ##   a single increasing sequence of pairs <c_i, which_i>
 ##   where which_i indicates where c_i is in the a-sequence
-##   and where it is in the b-sequence if any. The the
+##   and where it is in the b-sequence if any. Then the
 ##   linear algorithm above may be used.
 ##
-DeclareAttribute( "DirectFactorsOfGroup", IsGroup );
+DeclareGlobalFunction( "DirectFactorsOfGroupFromList",
+                        [ IsGroup, IsList, IsList ] );
+
+#############################################################################
+##
+#A  DirectFactorsOfGroupKN( <G> ) . . . . decomposition into a direct product
+##
+##  <ManSection>
+##  <Func Name="DirectFactorsOfGroupKN" Arg="G"/>
+##
+##  <Description>
+##    A (sorted if possible) list of factors [<A>G1</A>, .., <A>Gr</A>] such
+##    that <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
+##    is a direct product.
+##    This is the implementation of the algorithm described in
+##    Neeraj Kayal and Timur Nezhmetdinov, Factoring Groups Efficiently,
+##    in International Colloquium on Automata, Languages and Programming
+##    (ICALP), Lecture Notes in Computer Science 5555, 585-596,
+##    Springer Verlag, Berlin Heidelberg 2009.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "DirectFactorsOfGroupKN", IsGroup );
 
 #############################################################################
 ##
