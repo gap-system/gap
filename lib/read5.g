@@ -264,3 +264,5 @@ ReadLib( "ieee754.g" );
 ReadLib("genacc.gi");
 ReadLib("permacc.gi");
 ReadLib("lazypermacc.gi");
+ReadLib("eagerpermacc.gi");
+

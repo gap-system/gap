@@ -1,3 +1,6 @@
+BindGlobal("AccumulatorsFamily", NewFamily(IsAccumulator));
+
+
 InstallMethod(Conjugate, [IsAccumulator and IsMutable, IsMultiplicativeElementWithInverse],
         function(acc, x)
     acc := LeftDivide(acc, x);

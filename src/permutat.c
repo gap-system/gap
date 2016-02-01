@@ -96,6 +96,9 @@
 #define ADDR_PERM4(perm)        ((UInt4*)ADDR_OBJ(perm))
 */
 
+#define IS_PERM2(perm) (TNUM_OBJ((perm)) == T_PERM2)
+#define IS_PERM4(perm) (TNUM_OBJ((perm)) == T_PERM4)
+
 
 /****************************************************************************
 **
@@ -4718,7 +4721,209 @@ Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
 
 /****************************************************************************
 **
+*F * * * * * * * * * * * * * permutation accumulators * * * * * * * * * * * * * *
+*/
 
+/* Import type from library -- this will be bound with a CopyGVar below */
+static Obj DefaultTypeEagerPermAccumulator;
+
+/* Layout - a permutation accumulator is a T_DATOBJ with a type and 
+   then a copy of the main data of a T_PERM4 */
+
+#define ADDR_PERMACC(b) ((UInt4*)(ADDR_OBJ((b))+1))
+#define DEG_PERMACC(b) ((SIZE_BAG((b))-sizeof(Obj))/sizeof(UInt4))
+
+/* Make a new one with a given permutation */
+
+Obj FuncNEW_PERMACC(Obj self, Obj perm) {
+  UInt deg;
+  Obj accumulator;
+  int i;
+  if (IS_PERM2(perm))
+    deg = DEG_PERM2(perm);
+  else
+    deg = DEG_PERM4(perm);
+  accumulator= NewBag(T_DATOBJ, sizeof(Obj) + 4*deg);
+  SetTypeDatObj(accumulator,DefaultTypeEagerPermAccumulator);
+  if (IS_PERM2(perm)) {
+    UInt2 *ptP = ADDR_PERM2(perm);
+    UInt4 *ptB = ADDR_PERMACC(accumulator);
+    for (i = 0; i < deg; i++)
+      ptB[i] = (UInt4)ptP[i];
+  } else {
+    memmove(ADDR_PERMACC(accumulator), ADDR_PERM4(perm), 4*deg);
+  }
+  return accumulator;
+}
+
+/* Utility function -- increase size if necessary */
+
+static void GrowPermAcc(Obj acc, UInt deg) {
+  UInt odeg = DEG_PERMACC(acc);
+  UInt i;
+  if (odeg < deg) {
+    ResizeBag(acc, 4*deg+sizeof(Obj));
+    /* Fill newly allocated part with identity perm */
+    UInt4* ptA = ADDR_PERMACC(acc);
+    for (i = odeg; i < deg; i++)
+      ptA[i] = i;
+  }
+}
+
+/* Arithmetic operations */
+
+Obj FuncRIGHT_MULTIPLY_PERMACC(Obj self, Obj acc, Obj perm) {
+  UInt deg;
+  UInt i;
+  if (IS_PERM2(perm))
+    deg = DEG_PERM2(perm);
+  else
+    deg = DEG_PERM4(perm);
+    GrowPermAcc(acc, deg);
+  UInt adeg = DEG_PERMACC(acc);
+  UInt4 *ptA = ADDR_PERMACC(acc);
+  if (IS_PERM2(perm)) {
+    UInt2 *ptP = ADDR_PERM2(perm);
+    if (adeg <=  deg) {
+      for (i = 0; i < adeg; i++)
+	ptA[i] = ptP[ptA[i]];
+    } else {
+      for (i = 0; i < adeg; i++)
+	ptA[i] = IMAGE(ptA[i], ptP, deg);
+    }
+  } else {
+    UInt4 *ptP = ADDR_PERM4(perm);
+    if (adeg <=  deg) {
+      for (i = 0; i < adeg; i++)
+	ptA[i] = ptP[ptA[i]];
+    } else {
+      for (i = 0; i < adeg; i++)
+	ptA[i] = IMAGE(ptA[i], ptP, deg);
+    }
+  }
+  return acc;
+}
+
+Obj FuncLEFT_MULTIPLY_PERMACC(Obj self, Obj acc, Obj perm) {
+  UInt deg;
+  UInt i;
+  if (IS_PERM2(perm))
+    deg = DEG_PERM2(perm);
+  else
+    deg = DEG_PERM4(perm);
+  GrowPermAcc(acc, deg);
+  UInt adeg = DEG_PERMACC(acc);
+  UseTmpPerm(4*adeg);
+  UInt4 *ptA = ADDR_PERMACC(acc);
+  UInt4 *ptT = ADDR_PERM4(TmpPerm);
+  if (IS_PERM2(perm)) {
+    UInt2 *ptP = ADDR_PERM2(perm);
+    for (i = 0; i < deg; i++)
+      ptT[i] = ptA[ptP[i]];
+  } else {
+    UInt4 *ptP = ADDR_PERM4(perm);
+    for (i = 0; i < deg; i++)
+      ptT[i] = ptA[ptP[i]];
+  }  
+  memmove(ptA,ptT,4*deg);
+  return acc;
+}
+
+Obj FuncRIGHT_DIVIDE_PERMACC(Obj self, Obj acc, Obj perm) {
+  UInt deg;
+  UInt i;
+  UInt4 * ptT;
+  if (IS_PERM2(perm))
+    deg = DEG_PERM2(perm);
+  else
+    deg = DEG_PERM4(perm);
+  UseTmpPerm(4*deg);
+  ptT = ADDR_PERM4(TmpPerm);
+  if (IS_PERM2(perm)) {
+    UInt2 *ptP = ADDR_PERM2(perm);
+    for (i = 0; i < deg; i++)
+      ptT[ptP[i]] = i;
+  } else {
+    UInt4 *ptP = ADDR_PERM4(perm);
+    for (i = 0; i < deg; i++)
+      ptT[ptP[i]] = i;
+  }
+  return FuncRIGHT_MULTIPLY_PERMACC(self,acc,TmpPerm);
+}
+
+Obj FuncLEFT_DIVIDE_PERMACC(Obj self, Obj acc, Obj perm) {
+  UInt deg;
+  UInt i;
+  if (IS_PERM2(perm))
+    deg = DEG_PERM2(perm);
+  else
+    deg = DEG_PERM4(perm);
+  GrowPermAcc(acc, deg);
+  UseTmpPerm(4*deg);
+  UInt4 *ptA = ADDR_PERMACC(acc);
+  UInt4 *ptT = ADDR_PERM4(TmpPerm);
+  if (IS_PERM2(perm)) {
+    UInt2 *ptP = ADDR_PERM2(perm);
+    for (i = 0; i < deg; i++)
+      ptT[ptP[i]] = ptA[i];
+  } else {
+    UInt4 *ptP = ADDR_PERM4(perm);
+    for (i = 0; i < deg; i++)
+      ptT[ptP[i]] = ptA[i];
+  }
+  memmove(ptA,ptT,4*deg);
+  return acc;
+}
+
+Obj FuncINVERT_PERMACC(Obj self, Obj acc) {
+  UInt i;
+  UInt adeg = DEG_PERMACC(acc);
+  UseTmpPerm(4*adeg);
+  UInt4 *ptA = ADDR_PERMACC(acc);
+  UInt4 *ptT = ADDR_PERM4(TmpPerm);
+  for (i = 0; i < adeg; i++)
+    ptT[ptA[i]] = i;
+  memmove(ptA,ptT,4*adeg);
+  return acc;
+}
+
+
+Obj FuncSHALLOWCOPY_PERMACC(Obj self, Obj acc) {
+  Obj newacc  = NewBag(T_DATOBJ, SIZE_BAG(acc));
+  SetTypeDatObj(newacc, ADDR_OBJ(acc)[0]);
+  memmove(ADDR_PERMACC(newacc), ADDR_PERMACC(acc), DEG_PERMACC(acc)*4);
+  return newacc;
+}
+
+Obj FuncVALUE_PERMACC(Obj self, Obj acc) {
+  UInt deg = DEG_PERMACC(acc);
+  UInt i;
+  Obj val;
+  if (deg < 65536) {
+    val = NEW_PERM2(deg);
+    UInt4 *ptA = ADDR_PERMACC(acc);
+    UInt2 *ptV = ADDR_PERM2(val);
+    for (i = 0; i < deg; i++)
+      ptV[i] = ptA[i];
+  } else {
+    val = NEW_PERM4(deg);
+    memmove(ADDR_PERM4(val), ADDR_PERMACC(acc), 4*deg);
+  }
+  return val;
+}
+
+Obj FuncONPOINTS_PERMACC(Obj self, Obj pt, Obj acc) {
+  UInt deg = DEG_PERMACC(acc);
+  UInt x = INT_INTOBJ(pt)-1;
+  UInt4 *ptA = ADDR_PERMACC(acc);
+  return INTOBJ_INT(IMAGE(x, ptA , deg)+1);
+}
+
+
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -4805,7 +5010,33 @@ static StructGVarFunc GVarFuncs [] = {
     
     { "MappingPermListList", 2, "src, dst", 
       FuncMappingPermListList, "src/permutat.c:MappingPermListList" },
+
+    {"NEW_PERMACC", 1, "perm",
+     FuncNEW_PERMACC, "src/permutat.c:NEW_PERMACC" },
+
+    {"RIGHT_MULTIPLY_PERMACC", 2, "acc, perm",
+     FuncRIGHT_MULTIPLY_PERMACC, "src/permutat.c:RIGHT_MULTIPLY_PERMACC" },
+
+    {"LEFT_MULTIPLY_PERMACC", 2, "acc, perm",
+     FuncLEFT_MULTIPLY_PERMACC, "src/permutat.c:LEFT_MULTIPLY_PERMACC" },
+
+    {"RIGHT_DIVIDE_PERMACC", 2, "acc, perm",
+     FuncRIGHT_DIVIDE_PERMACC, "src/permutat.c:RIGHT_DIVIDE_PERMACC" },
+
+    {"LEFT_DIVIDE_PERMACC", 2, "acc, perm",
+     FuncLEFT_DIVIDE_PERMACC, "src/permutat.c:LEFT_DIVIDE_PERMACC" },
     
+    {"INVERT_PERMACC", 1, "acc",
+     FuncINVERT_PERMACC, "src/permutat.c:INVERT_PERMACC" },
+
+    {"SHALLOWCOPY_PERMACC", 1, "acc",
+     FuncSHALLOWCOPY_PERMACC, "src/permutat.c:SHALLOWCOPY_PERMACC" },
+
+    {"VALUE_PERMACC", 1, "acc",
+     FuncVALUE_PERMACC, "src/permutat.c:VALUE_PERMACC" },
+
+    {"ONPOINTS_PERMACC", 2, "pt, acc",
+     FuncONPOINTS_PERMACC, "src/permutat.c:ONPOINTS_PERMACC" },
 
     { 0 }
 
@@ -4834,6 +5065,7 @@ static Int InitKernel (
     /* install the type functions                                           */
     ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
     ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
+    InitCopyGVar("DefaultTypeEagerPermAccumulator", &DefaultTypeEagerPermAccumulator );
 
     TypeObjFuncs[ T_PERM2 ] = TypePerm2;
     TypeObjFuncs[ T_PERM4 ] = TypePerm4;
@@ -4935,6 +5167,7 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
     /* make the buffer bag                                                 */
     TmpPerm = 0;
+
 
     /* make the identity permutation                                       */
     IdentityPerm = NEW_PERM2(0);

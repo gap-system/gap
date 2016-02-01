@@ -1,6 +1,5 @@
 DeclareRepresentation("IsLazyPermutationAccumulatorRep", 
         IsPositionalObjectRep and IsPermutationAccumulator, 2);
-BindGlobal("AccumulatorsFamily", NewFamily(IsAccumulator));
 
 BindGlobal("LazyPermutationAccumulatorDefaultType", 
         NewType(AccumulatorsFamily, IsMutable and IsLazyPermutationAccumulatorRep));
@@ -141,4 +140,4 @@ end);
 
         
 
-                   
+#T View/Print                   
