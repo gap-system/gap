@@ -26,11 +26,18 @@
 ##    - removes the subdirectory CPU-VENDOR-OS in the directory `bin'
 ##    - removes any files created by `configure'
 ##
-##  The "testinstall" target:
+##  The "check" target:
 ##    - starts GAP and reads `tst/testinstall.g'
 ##
+##  The "testinstall" target:
+##    - starts GAP and reads `tst/testinstall.g' twice, once without packages
+##      and once with all packages loaded. The results are logged to the
+##      subdirectory `dev/log/'.
+##
 ##  The "teststandard" target:
-##    - starts GAP and reads `tst/teststandard.g'
+##    - starts GAP and reads `tst/teststandard.g' twice, once without packages
+##      and once with all packages loaded. The results are logged to the
+##      subdirectory `dev/log/'.
 ##
 ##  The "teststandardrenormalize" target:
 ##    - starts GAP, reads all files `tst/*.tst', and replaces the scaling
