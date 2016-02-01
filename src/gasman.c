@@ -223,7 +223,7 @@ TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
  * hpc_boehm_gc.h contains replacements of those functions for when
  * gasman is not in use */
 #ifdef BOEHM_GC
-#include       "hpc_boehm_gc.h"         /* boehm-specific code             */
+#include       "hpc/boehm_gc.h"         /* boehm-specific code             */
 #endif
 
 /****************************************************************************
