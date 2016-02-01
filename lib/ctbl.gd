@@ -332,7 +332,7 @@ DeclareCategory( "IsCharacterTableInProgress", IsNearlyCharacterTable );
 ##
 ##  <#GAPDoc Label="NearlyCharacterTablesFamily">
 ##  <ManSection>
-##  <Var Name="NearlyCharacterTablesFamily"/>
+##  <Fam Name="NearlyCharacterTablesFamily"/>
 ##
 ##  <Description>
 ##  Every character table like object lies in this family

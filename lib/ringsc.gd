@@ -67,7 +67,7 @@ DeclareAttribute("StandardGeneratorsSubringSCRing",IsSubringSCRing);
 ##
 ##  <#GAPDoc Label="Subrings">
 ##  <ManSection>
-##  <Func Name="Subrings" Arg='R'/>
+##  <Attr Name="Subrings" Arg='R'/>
 ##
 ##  <Description>
 ##  for a finite ring <A>R</A> this function returns a list of all 
@@ -93,7 +93,7 @@ DeclareAttribute("Subrings",IsRing);
 ##
 ##  <#GAPDoc Label="Ideals">
 ##  <ManSection>
-##  <Func Name="Ideals" Arg='R'/>
+##  <Attr Name="Ideals" Arg='R'/>
 ##
 ##  <Description>
 ##  for a finite ring <A>R</A> this function returns a list of all

@@ -78,7 +78,7 @@ DeclareOperation( "Directory", [ IsString ] );
 ##
 ##  <#GAPDoc Label="DirectoryHome">
 ##  <ManSection>
-##  <Oper Name="DirectoryHome" Arg=''/>
+##  <Func Name="DirectoryHome" Arg=''/>
 ##
 ##  <Description>
 ##  returns a directory object for the users home directory, defined as a
@@ -103,7 +103,7 @@ DeclareGlobalFunction( "DirectoryHome" );
 ##
 ##  <#GAPDoc Label="DirectoryDesktop">
 ##  <ManSection>
-##  <Oper Name="DirectoryDesktop" Arg=''/>
+##  <Func Name="DirectoryDesktop" Arg=''/>
 ##
 ##  <Description>
 ##  returns a directory object for the users desktop directory as defined on

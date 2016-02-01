@@ -569,7 +569,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  ]]></Example>
 ##
 ##  <ManSection>
-##  <Func Name="Characteristic" Arg='chi' Label="for a class function"/>
+##  <Attr Name="Characteristic" Arg='chi' Label="for a class function"/>
 ##
 ##  <Description>
 ##  The <E>characteristic</E> of class functions is zero,
@@ -594,9 +594,9 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  </ManSection>
 ##
 ##  <ManSection>
-##  <Func Name="ComplexConjugate" Arg='chi' Label="for a class function"/>
-##  <Func Name="GaloisCyc" Arg='chi, k' Label="for a class function"/>
-##  <Func Name="Permuted" Arg='chi, pi' Label="for a class function"/>
+##  <Attr Name="ComplexConjugate" Arg='chi' Label="for a class function"/>
+##  <Oper Name="GaloisCyc" Arg='chi, k' Label="for a class function"/>
+##  <Meth Name="Permuted" Arg='chi, pi' Label="for a class function"/>
 ##
 ##  <Description>
 ##  The operations
@@ -624,7 +624,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  </ManSection>
 ##  <P/>
 ##  <ManSection>
-##  <Func Name="Order" Arg='chi' Label="for a class function"/>
+##  <Attr Name="Order" Arg='chi' Label="for a class function"/>
 ##
 ##  <Description>
 ##  By definition of <Ref Func="Order"/> for arbitrary monoid elements,

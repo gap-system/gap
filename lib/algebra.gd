@@ -162,7 +162,7 @@ DeclareSynonym( "IsAlgebraWithOne",
 ##
 ##  <#GAPDoc Label="IsLieAlgebra">
 ##  <ManSection>
-##  <Prop Name="IsLieAlgebra" Arg='A'/>
+##  <Filt Name="IsLieAlgebra" Arg='A'/>
 ##
 ##  <Description>
 ##  An algebra <A>A</A> is called Lie algebra if <M>a * a = 0</M>

@@ -301,7 +301,7 @@ InstallTrueMethod( IsSubsetLocallyFiniteGroup, IsFFECollection and IsMagma );
 ##
 ##  <#GAPDoc Label="CanEasilyTestMembership">
 ##  <ManSection>
-##  <Func Name="CanEasilyTestMembership" Arg='G'/>
+##  <Filt Name="CanEasilyTestMembership" Arg='G'/>
 ##
 ##  <Description>
 ##  This filter indicates whether &GAP; can test membership of elements in
@@ -323,7 +323,7 @@ DeclareFilter( "CanEasilyTestMembership" );
 ##
 ##  <#GAPDoc Label="CanEasilyComputeWithIndependentGensAbelianGroup">
 ##  <ManSection>
-##  <Func Name="CanEasilyComputeWithIndependentGensAbelianGroup" Arg='G'/>
+##  <Filt Name="CanEasilyComputeWithIndependentGensAbelianGroup" Arg='G'/>
 ##
 ##  <Description>
 ##  This filter indicates whether &GAP; can in reasonable time compute
@@ -347,7 +347,7 @@ DeclareFilter( "CanEasilyComputeWithIndependentGensAbelianGroup" );
 ##
 ##  <#GAPDoc Label="CanComputeSizeAnySubgroup">
 ##  <ManSection>
-##  <Func Name="CanComputeSizeAnySubgroup" Arg='G'/>
+##  <Filt Name="CanComputeSizeAnySubgroup" Arg='G'/>
 ##
 ##  <Description>
 ##  This filter indicates whether &GAP; can easily compute the size of any
@@ -378,7 +378,7 @@ InstallTrueMethod( CanComputeSize, IsTrivial );
 ##
 ##  <#GAPDoc Label="CanComputeIndex">
 ##  <ManSection>
-##  <Func Name="CanComputeIndex" Arg='G, H'/>
+##  <Oper Name="CanComputeIndex" Arg='G, H'/>
 ##
 ##  <Description>
 ##  This function indicates whether the index <M>[<A>G</A>:<A>H</A>]</M>
@@ -3107,7 +3107,7 @@ DeclareOperation("CentralizerModulo", [IsGroup,IsGroup,IsObject]);
 ##
 ##  <#GAPDoc Label="PCentralSeries">
 ##  <ManSection>
-##  <Func Name="PCentralSeries" Arg='G, p'/>
+##  <Oper Name="PCentralSeries" Arg='G, p'/>
 ##
 ##  <Description>
 ##  The <A>p</A>-central series of <A>G</A> is defined by
@@ -3146,7 +3146,7 @@ KeyDependentOperation( "PRump", IsGroup, IsPosInt, "prime" );
 ##
 ##  <#GAPDoc Label="PCore">
 ##  <ManSection>
-##  <Func Name="PCore" Arg='G, p'/>
+##  <Oper Name="PCore" Arg='G, p'/>
 ##
 ##  <Description>
 ##  <Index Key="Op(G)" Subkey="see PCore"><C>PCore</C></Index>
@@ -3195,13 +3195,13 @@ InParentFOA( "SubnormalSeries", IsGroup, IsGroup, DeclareAttribute );
 ##
 ##  <#GAPDoc Label="SylowSubgroup">
 ##  <ManSection>
-##  <Func Name="SylowSubgroup" Arg='G, p'/>
+##  <Oper Name="SylowSubgroup" Arg='G, p'/>
 ##
 ##  <Description>
 ##  returns a Sylow <A>p</A> subgroup of the finite group <A>G</A>.
 ##  This is a <A>p</A>-subgroup of <A>G</A> whose index in <A>G</A> is
 ##  coprime to <A>p</A>.
-##  <Ref Func="SylowSubgroup"/> computes Sylow subgroups via the operation
+##  <Ref Oper="SylowSubgroup"/> computes Sylow subgroups via the operation
 ##  <C>SylowSubgroupOp</C>.
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(4);;
@@ -3221,7 +3221,7 @@ KeyDependentOperation( "SylowSubgroup", IsGroup, IsPosInt, "prime" );
 ##
 ##  <#GAPDoc Label="SylowComplement">
 ##  <ManSection>
-##  <Func Name="SylowComplement" Arg='G, p'/>
+##  <Oper Name="SylowComplement" Arg='G, p'/>
 ##
 ##  <Description>
 ##  returns a Sylow <A>p</A>-complement of the finite group <A>G</A>.
@@ -3248,7 +3248,7 @@ KeyDependentOperation( "SylowComplement", IsGroup, IsPosInt, "prime" );
 ##
 ##  <#GAPDoc Label="HallSubgroup">
 ##  <ManSection>
-##  <Func Name="HallSubgroup" Arg='G, P'/>
+##  <Oper Name="HallSubgroup" Arg='G, P'/>
 ##
 ##  <Description>
 ##  computes a <A>P</A>-Hall subgroup for a set <A>P</A> of primes.

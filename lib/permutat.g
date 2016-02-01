@@ -114,7 +114,7 @@ DeclareCategoryCollections( "IsPermCollection" );
 ##
 ##  <#GAPDoc Label="SmallestGeneratorPerm">
 ##  <ManSection>
-##  <Func Name="SmallestGeneratorPerm" Arg='perm'/>
+##  <Attr Name="SmallestGeneratorPerm" Arg='perm'/>
 ##
 ##  <Description>
 ##  is the smallest permutation that generates the same cyclic group
@@ -358,7 +358,7 @@ DeclareRepresentation( "IsPerm4Rep", IsInternalRep, [] );
 ##
 ##  <#GAPDoc Label="PermutationsFamily">
 ##  <ManSection>
-##  <Var Name="PermutationsFamily"/>
+##  <Fam Name="PermutationsFamily"/>
 ##
 ##  <Description>
 ##  is the family of all permutations.

@@ -1721,8 +1721,8 @@ DeclareGlobalFunction( "SimultaneousEigenvalues" );
 ##
 ##  <#GAPDoc Label="TraceMat">
 ##  <ManSection>
-##  <Func Name="TraceMat" Arg='mat'/>
-##  <Func Name="Trace" Arg='mat' Label="of a matrix"/>
+##  <Oper Name="TraceMat" Arg='mat'/>
+##  <Attr Name="Trace" Arg='mat' Label="of a matrix"/>
 ##
 ##  <Description>
 ##  The trace of a square matrix is the sum of its diagonal entries.

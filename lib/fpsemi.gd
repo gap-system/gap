@@ -67,7 +67,7 @@ DeclareCategoryCollections("IsElementOfFpSemigroup");
 ##
 ##  <#GAPDoc Label="IsSubsemigroupFpSemigroup">
 ##  <ManSection>
-##  <Attr Name="IsSubsemigroupFpSemigroup" Arg='t'/>
+##  <Filt Name="IsSubsemigroupFpSemigroup" Arg='t'/>
 ##
 ##  <Description>
 ##  true if <A>t</A> is a finitely presented semigroup or a 
@@ -154,7 +154,7 @@ DeclareOperation( "ElementOfFpSemigroup",
 ##
 ##  <#GAPDoc Label="IsFpSemigroup">
 ##  <ManSection>
-##  <Prop Name="IsFpSemigroup" Arg='s'/>
+##  <Filt Name="IsFpSemigroup" Arg='s'/>
 ##
 ##  <Description>
 ##  is a synonym for <C>IsSubsemigroupFpSemigroup(<A>s</A>)</C> and 
