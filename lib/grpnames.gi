@@ -310,7 +310,7 @@ InstallMethod(DirectFactorsOfGroup, "if normal subgroups are computed", true,
       GGd := CommutatorFactorGroup(G);
       # if GGd is not cyclic of prime power size then there are at least two
       # maximal subgroups
-      if IsTrivial(GGd) or (IsCyclic(GGd) and IsPrimePowerInt(Size(GGd)))
+      if (IsTrivial(GGd) or (IsCyclic(GGd) and IsPrimePowerInt(Size(GGd))))
         and Length(MaximalNormalSubgroups(G))= 1 then
         # size of MaximalNormalSubgroups is an upper bound to the number of
         # components
@@ -437,7 +437,7 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
       GGd := CommutatorFactorGroup(G);
       # if GGd is not cyclic of prime power size then there are at least two
       # maximal subgroups
-      if IsTrivial(GGd) or (IsCyclic(GGd) and IsPrimePowerInt(Size(GGd)))
+      if (IsTrivial(GGd) or (IsCyclic(GGd) and IsPrimePowerInt(Size(GGd))))
         and Length(MaximalNormalSubgroups(G))= 1 then
         # size of MaximalNormalSubgroups is an upper bound to the number of
         # components
