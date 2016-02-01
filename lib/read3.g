@@ -251,3 +251,8 @@ ReadLib("function.gd");
 
 # random sources
 ReadLib("random.gi");
+
+# accumulators
+
+ReadLib("accum.gd");
+

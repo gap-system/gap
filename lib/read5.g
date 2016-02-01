@@ -258,3 +258,9 @@ ReadLib( "function.gi");
 # floateans, now really install all handlers
 ReadLib( "float.gi" );
 ReadLib( "ieee754.g" );
+
+# accumulators
+
+ReadLib("genacc.gi");
+ReadLib("permacc.gi");
+ReadLib("lazypermacc.gi");
