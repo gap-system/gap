@@ -102,11 +102,14 @@ gap> DirectFactorsOfGroup(SymmetricGroup(4));
 [ Sym( [ 1 .. 4 ] ) ]
 gap> DirectFactorsOfGroup(SymmetricGroup(5));
 [ Sym( [ 1 .. 5 ] ) ]
-gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)(7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
+gap> G := Group([ (6,7,8,9,10), (8,9,10), (1,2)(6,7), (1,2,3,4,5)(6,7,8,9,10) ]);;
+gap> DirectFactorsOfGroup(G)=[G];
+true
+gap> G := Group([ (6,7,8,9,10), (8,9,10), (1,2)(6,7), (1,2,3,4,5)(6,7,8,9,10) ]);;
+gap> NormalSubgroups(G);;
 gap> DirectFactorsOfGroup(G)=[G];
 true
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)(7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
-gap> NormalSubgroups(G);;
-gap> DirectFactorsOfGroup(G)=[G];
+gap> DirectFactorsOfGroup(G)=[ Group([ (4,8)(6,10), (4,6)(10,12), (2,12,8)(4,6,10) ]), Group([ (1,7,9)(3,5,11), (3,9)(7,11), (3,11)(5,7) ]) ];
 true
 gap> STOP_TEST("direct_factors.tst", 10000);
