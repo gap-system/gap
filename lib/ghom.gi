@@ -445,7 +445,7 @@ local   hom;
     HasIsHandledByNiceMonomorphism(H)) 
     and ValueOption("noassert")<>true 
     and not IsSubgroupFpGroup(H) then
-    Assert( 2, IsMapping( hom ) );
+    Assert( 3, IsMapping( hom ) );
   fi;
   SetIsMapping( hom, true );
   return hom;
@@ -457,7 +457,7 @@ function( G, gens, imgs )
 local   hom;
   hom := GroupGeneralMappingByImagesNC( G, gens, imgs );
   if not HasIsHandledByNiceMonomorphism(G) and ValueOption("noassert")<>true then
-    Assert( 2, IsMapping( hom ) );
+    Assert( 3, IsMapping( hom ) );
   fi;
   SetIsMapping( hom, true );
   return hom;
