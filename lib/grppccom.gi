@@ -1204,11 +1204,26 @@ end);
 
 #############################################################################
 ##
-#M  ComplementcClassesRepresentatives( <G>, <N> ) . . . . . . generic method
+#M  ComplementcClassesRepresentatives( <G>, <N> )
 ##
 InstallMethod( ComplementClassesRepresentatives,
-  "by computing all subgroups", IsIdenticalObj, [ IsGroup, IsGroup ],
-  -2*RankFilter(IsGroup),
+  "tell that the normal subgroup or factor must be solvable", IsIdenticalObj,
+  [ IsGroup, IsGroup ], -2*RankFilter(IsGroup),
+function( G, N )
+  if IsSolvableGroup(N) or HasSolvableFactorGroup(G, N) then
+    TryNextMethod();
+  fi;
+  Error("Cannot compute complements if both N and G/N are nonsolvable");
+end);
+
+
+#############################################################################
+##
+#M  ComplementcClassesRepresentatives( <G>, <N> ) . from conj. cl. subgroups
+##
+InstallMethod( ComplementClassesRepresentatives,
+  "using conjugacy classes of subgroups", IsIdenticalObj,
+  [ IsGroup and HasConjugacyClassesSubgroups, IsGroup ], 0,
 
 function( G, N )
 
@@ -1222,20 +1237,17 @@ function( G, N )
       C := [ TrivialSubgroup(G) ];
   elif not IsNormal(G, N) then
     Error("N must be normal in G");
-  elif IsSolvableGroup(N) or HasSolvableFactorGroup(G, N) then
-    TryNextMethod();
+  else
+    C := [ ];
+    for Hc in ConjugacyClassesSubgroups(G) do
+      H := Representative(Hc);
+      if (( CanComputeSize(G) and CanComputeSize(N) and CanComputeSize(H) and
+	  Size(G) = Size(N)*Size(H) ) or G = ClosureGroup(N, H) )
+	  and IsTrivial(Intersection(N, H)) then
+	Add(C, H);
+      fi;
+    od;
   fi;
-
-  Info(InfoWarning,1,"N and G/N are not solvable, computing all subgroups!");
-  C := [ ];
-  for Hc in ConjugacyClassesSubgroups(G) do
-    H := Representative(Hc);
-    if (( CanComputeSize(G) and CanComputeSize(N) and CanComputeSize(H) and
-        Size(G) = Size(N)*Size(H) ) or G = ClosureGroup(N, H) )
-	and IsTrivial(Intersection(N, H)) then
-      Add(C, H);
-    fi;
-  od;
   return C;
 end);
 
