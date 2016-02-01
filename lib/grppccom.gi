@@ -1242,22 +1242,6 @@ end);
 
 #############################################################################
 ##
-#M  ComplementClassesRepresentativesKD( <G> ) . . . . . . . . generic method
-##
-##
-##  This is the same operation as ComplementClassesRepresentatives, except
-##  that this stores the complements for the normal subgroups.
-##
-InstallMethod( ComplementClassesRepresentativesKDOp,
-               "generic method", [ IsGroup,  IsGroup ], 0,
-
-  function( G, N )
-    return ComplementClassesRepresentatives(G, N);
-  end);
-
-
-#############################################################################
-##
 #E  grppccom.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
 
