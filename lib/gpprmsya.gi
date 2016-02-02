@@ -752,12 +752,12 @@ InstallMethod( Size,
     [ IsNaturalSymmetricGroup ], 0,
     sym -> Factorial( NrMovedPoints(sym) ) );
 
-BindGlobal("FLOYDS_ALGORITHM", function(deg, even)
+BindGlobal("FLOYDS_ALGORITHM", function(rs,deg, even)
     local  rnd, sgn, i, k, tmp;
     rnd := [1..deg];
     sgn := 1;
     for i  in [1..deg-1] do
-        k := Random( [ i .. deg] );
+        k := Random( rs, [ i .. deg] );
         if k <> i then
             tmp := rnd[i];
             rnd[i] := rnd[k];
@@ -778,9 +778,9 @@ end);
 InstallMethod( Random,
     "symmetric group: floyd's algorithm",
     true,
-    [ IsNaturalSymmetricGroup ],
+    [ IsRandomSource, IsNaturalSymmetricGroup ],
     10, # override perm. gp. method
-function ( G )
+function ( rs, G )
     local   rnd,        # random permutation, result
 	    deg,
 	    mov;
@@ -795,7 +795,7 @@ function ( G )
     # use Floyd\'s algorithm
     mov:=MovedPoints(G);
     deg:=Length(mov);
-    rnd := FLOYDS_ALGORITHM(deg,false);
+    rnd := FLOYDS_ALGORITHM(rs,deg,false);
     # return the permutation
     return PermList( rnd )^MappingPermListList([1..deg],mov);
 end);
@@ -804,15 +804,13 @@ end);
 InstallMethod( Random,
     "alternating group: floyd's algorithm",
     true,
-    [ IsNaturalAlternatingGroup ],
+    [ IsRandomSource, IsNaturalAlternatingGroup ],
     10, # override perm gp. method
-function ( G )
+function ( rs, G )
     local   rnd,        # random permutation, result
-            sgn,        # sign of the permutation so far
-            tmp,        # temporary variable for swapping
 	    deg,
-	    mov,
-            i,  k;      # loop variables
+	    mov;
+    
 
     # test for internal rep
     if HasGeneratorsOfGroup(G) and 
@@ -822,11 +820,25 @@ function ( G )
     # use Floyd\'s algorithm
     mov:=MovedPoints(G);
     deg:=Length(mov);
-    rnd := FLOYDS_ALGORITHM(deg, true);
+    rnd := FLOYDS_ALGORITHM(rs, deg, true);
 
     # return the permutation
     return PermList( rnd )^MappingPermListList([1..deg],mov);
 end);
+
+InstallMethod( Random,
+        "symmetric group: use default random source",
+        true,
+        [IsNaturalSymmetricGroup],
+        10,
+        G->Random(GlobalRandomSource, G));
+
+InstallMethod( Random,
+        "alternating group: use default random source",
+        true,
+        [IsNaturalAlternatingGroup],
+        10,
+        G->Random(GlobalRandomSource, G));
 
 
 #############################################################################

@@ -70,6 +70,7 @@ DeclareCategory( "IsRandomSource", IsComponentObjectRep );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "Random", [IsRandomSource, IsList] );
+DeclareOperation( "Random", [IsRandomSource, IsCollection and IsFinite] );
 DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
 
 #############################################################################
