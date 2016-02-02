@@ -1613,6 +1613,7 @@ Obj CallHandleMethodNotFound( Obj oper,
   SET_LEN_PLIST(arglist,nargs);
   for (i = 0; i < nargs; i++)
     SET_ELM_PLIST( arglist, i+1, args[i]);
+  CHANGED_BAG(arglist);
   AssPRec(r,RNamArguments,arglist);
   AssPRec(r,RNamIsVerbose,verbose ? True : False);
   AssPRec(r,RNamIsConstructor,constructor ? True : False);
@@ -6321,15 +6322,18 @@ static Int InitLibrary (
     C_NEW_STRING_CONST( str, "obj" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObj, 1, str );
+    CHANGED_BAG( ArglistObj );
 
     ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( ArglistObjVal, 2 );
     C_NEW_STRING_CONST( str, "obj" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObjVal, 1, str );
+    CHANGED_BAG( ArglistObjVal );
     C_NEW_STRING_CONST( str, "val" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObjVal, 2, str );
+    CHANGED_BAG( ArglistObjVal );
 
     HIDDEN_IMPS = NEW_PLIST(T_PLIST, 0);
     SET_LEN_PLIST(HIDDEN_IMPS, 0);
