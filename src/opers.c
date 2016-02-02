@@ -5170,6 +5170,7 @@ Obj NewOperationArgs (
     Obj                 nams )
 {
     Obj                 func;
+    Obj                 namobj;
 
     /* create the function                                                 */
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC, name, narg, nams, 
@@ -5192,7 +5193,9 @@ Obj NewOperationArgs (
     }
 
     /* added the name                                                      */
-    NAME_FUNC(func) = CopyObj( name, 0 );
+    namobj = CopyObj( name, 0 );
+    NAME_FUNC(func) = namobj;
+    CHANGED_BAG(func);
 
     /* and return                                                          */
     return func;
