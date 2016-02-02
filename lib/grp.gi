@@ -1013,6 +1013,32 @@ RedispatchOnCondition( FittingSubgroup, true, [IsGroup], [IsFinite], 0);
 ##
 #M  FrattiniSubgroup( <G> ) . . . . . . . . . .  Frattini subgroup of a group
 ##
+InstallMethod( FrattiniSubgroup, "generic method for nilpotent groups",
+            [ IsGroup ],
+            RankFilter( IsGroup and IsNilpotentGroup )
+            - RankFilter( IsGroup ),
+function(G)
+local i, p, q, gen, Gf;
+    if IsTrivial(G) then
+      return G;
+    elif IsAbelian(G) then
+        gen := [ ];
+        for i in [1..Length(AbelianInvariants(G))] do
+            q := AbelianInvariants(G)[i];
+            if q<>0 and not IsPrime(q) then
+                p := SmallestRootInt(q);
+                Add(gen, IndependentGeneratorsOfAbelianGroup(G)[i]^p);
+            fi;
+        od;
+        return SubgroupNC(G, gen);
+    elif IsNilpotentGroup(G) then
+        Gf := CommutatorFactorGroup(G);
+        return PreImage(NaturalHomomorphism(Gf), FrattiniSubgroup(Gf));
+    else
+        TryNextMethod();
+    fi;
+end);
+
 InstallMethod( FrattiniSubgroup, "generic method for groups", [ IsGroup ],0,
 function(G)
 local m;
