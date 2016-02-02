@@ -13,7 +13,6 @@ DeclareOperation("LeftMultiply", [IsAccumulator and IsMutable, IsExtRElement] );
 DeclareOperation("RightDivide", [IsAccumulator and IsMutable, IsMultiplicativeElementWithInverse] );
 DeclareOperation("LeftDivide", [IsAccumulator and IsMutable, IsMultiplicativeElementWithInverse] );
 DeclareOperation("Invert", [IsAccumulator and IsMutable] );
-DeclareOperation("Exponentiate", [IsAccumulator and IsMutable, IsInt] );
 DeclareOperation("Conjugate", [IsAccumulator and IsMutable, IsMultiplicativeElementWithInverse] );
 
 DeclareCategory("IsPermutationAccumulator", IsAccumulator);

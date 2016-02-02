@@ -51,34 +51,6 @@ InstallMethod(Invert, [IsLazyPermutationAccumulatorRep and IsMutable],
     return acc;
 end);
 
-InstallMethod(Exponentiate, [IsLazyPermutationAccumulatorRep and IsMutable, IsInt],
-        function (acc, pow)
-    local  i, new, x, l, j;
-    if pow < 0 then 
-        Invert(acc);
-        pow := -pow;
-    fi;
-    if pow = 0 then
-        for i in [1..4] do
-            acc![i] := [];
-        od;
-        return acc;
-    fi;
-    if pow = 1 then
-        return acc;
-    fi;
-    new := [[],[],[],[]];
-    for i in [1..4] do
-        x  := acc![i];
-        l := ShallowCopy(x);
-        for j in [2..pow] do
-            Append(l,x);
-        od;
-        acc![i] := l;
-    od;
-    return acc;
-end);
-
 
 InstallMethod(ShallowCopy,[IsLazyPermutationAccumulatorRep],
         function(acc)
