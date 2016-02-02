@@ -5451,6 +5451,7 @@ Obj FuncNEW_OPERATION_ARGS (
     list = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( list, 1 );
     SET_ELM_PLIST( list, 1, args );
+    CHANGED_BAG( list );
     return NewOperationArgs( name, -1, list );
 }
 
