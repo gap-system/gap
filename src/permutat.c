@@ -4772,14 +4772,10 @@ static void GrowPermAcc(Obj acc, UInt deg) {
 
 /* Arithmetic operations */
 
-Obj FuncRIGHT_MULTIPLY_PERMACC(Obj self, Obj acc, Obj perm) {
-  UInt deg;
+static void RIGHT_MULTIPLY_PERMACC_Inner (Obj acc, Obj perm, UInt deg)
+{
   UInt i;
-  if (IS_PERM2(perm))
-    deg = DEG_PERM2(perm);
-  else
-    deg = DEG_PERM4(perm);
-    GrowPermAcc(acc, deg);
+  GrowPermAcc(acc, deg);
   UInt adeg = DEG_PERMACC(acc);
   UInt4 *ptA = ADDR_PERMACC(acc);
   if (IS_PERM2(perm)) {
@@ -4801,6 +4797,15 @@ Obj FuncRIGHT_MULTIPLY_PERMACC(Obj self, Obj acc, Obj perm) {
 	ptA[i] = IMAGE(ptA[i], ptP, deg);
     }
   }
+}
+
+Obj FuncRIGHT_MULTIPLY_PERMACC(Obj self, Obj acc, Obj perm) {
+  UInt deg;
+  if (IS_PERM2(perm))
+    deg = DEG_PERM2(perm);
+  else
+    deg = DEG_PERM4(perm);
+  RIGHT_MULTIPLY_PERMACC_Inner(acc, perm, deg);
   return acc;
 }
 
@@ -4848,7 +4853,8 @@ Obj FuncRIGHT_DIVIDE_PERMACC(Obj self, Obj acc, Obj perm) {
     for (i = 0; i < deg; i++)
       ptT[ptP[i]] = i;
   }
-  return FuncRIGHT_MULTIPLY_PERMACC(self,acc,TmpPerm);
+  RIGHT_MULTIPLY_PERMACC_Inner(acc,TmpPerm, deg);
+  return acc;
 }
 
 Obj FuncLEFT_DIVIDE_PERMACC(Obj self, Obj acc, Obj perm) {
