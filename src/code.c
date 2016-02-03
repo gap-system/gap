@@ -61,7 +61,7 @@
 **
 **  'PtrBody' is a pointer to the current body.
 */
-Stat * PtrBody;
+/* TL: Stat * PtrBody; */
 
 /****************************************************************************
 **
@@ -80,16 +80,14 @@ Obj FilenameCache;
 **  coding.
 */
 #define MAX_FUNC_EXPR_NESTING 1024
+/* TL: Stat OffsBody; */
 
+/* TL: Stat OffsBodyStack[1024]; */
+/* TL: UInt OffsBodyCount = 0; */
 
-Stat OffsBody;
-
-Stat OffsBodyStack[MAX_FUNC_EXPR_NESTING];
-UInt OffsBodyCount = 0;
-
-UInt LoopNesting = 0;
-UInt LoopStack[MAX_FUNC_EXPR_NESTING];
-UInt LoopStackCount = 0;
+/* TL: UInt LoopNesting = 0; */
+/* TL: UInt LoopStack[MAX_FUNC_EXPR_NESTING]; */
+/* TL: UInt LoopStackCount = 0; */
 
 static inline void PushOffsBody( void ) {
   assert(TLS(OffsBodyCount) <= MAX_FUNC_EXPR_NESTING-1);
@@ -99,6 +97,11 @@ static inline void PushOffsBody( void ) {
 static inline void PopOffsBody( void ) {
   assert(TLS(OffsBodyCount));
   TLS(OffsBody) = TLS(OffsBodyStack)[--TLS(OffsBodyCount)];
+}
+
+static void SetupOffsBodyStackAndLoopStack() {
+  TLS(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
+  TLS(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
 }
 
 static inline void PushLoopNesting( void ) {
@@ -234,7 +237,7 @@ Expr            NewExpr (
 **  'CodeResult'  is the result  of the coding, i.e.,   the function that was
 **  coded.
 */
-Obj CodeResult;
+/* TL: Obj CodeResult; */
 
 
 /****************************************************************************
@@ -255,9 +258,9 @@ Obj CodeResult;
 **  'PopStat' returns the  top statement from the  statements  stack and pops
 **  it.  It is an error if the stack is empty.
 */
-Bag StackStat;
+/* TL: Bag StackStat; */
 
-Int CountStat;
+/* TL: Int CountStat; */
 
 void PushStat (
     Stat                stat )
@@ -349,9 +352,9 @@ Stat PopSeqStat (
 **  'PopExpr' returns the top expressions from the expressions stack and pops
 **  it.  It is an error if the stack is empty.
 */
-Bag StackExpr;
+/* TL: Bag StackExpr; */
 
-Int CountExpr;
+/* TL: Int CountExpr; */
 
 void PushExpr (
     Expr                expr )
@@ -531,7 +534,7 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
 **
 **  ...only function expressions inbetween...
 */
-Bag CodeLVars;
+/* TL: Bag CodeLVars; */
 
 void CodeBegin ( void )
 {
@@ -744,7 +747,7 @@ void CodeFuncExprEnd (
 
     /* get the function expression                                         */
     fexp = CURR_FUNC;
-    assert(!LoopNesting);
+    assert(!TLS(LoopNesting));
     
     /* get the body of the function                                        */
     /* push an addition return-void-statement if neccessary                */
@@ -794,6 +797,7 @@ void CodeFuncExprEnd (
     PopLoopNesting();
     
     /* restore the remembered offset                                       */
+    TLS(OffsBody) = BRK_CALL_TO();
     PopOffsBody();
 
     /* if this was inside another function definition, make the expression */
@@ -3380,6 +3384,16 @@ void LoadBody ( Obj body )
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
+void InitCoderTLS( void )
+{
+    TLS(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
+    TLS(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
+}
+
+void DestroyCoderTLS( void )
+{
+}
+
 /****************************************************************************
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
@@ -3398,7 +3412,7 @@ static Int InitKernel (
     MakeBagTypePublic(T_BODY);
 
     /* make the result variable known to Gasman                            */
-    InitGlobalBag( &CodeResult, "CodeResult" );
+    /* TL: InitGlobalBag( &CodeResult, "CodeResult" ); */
     
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 
@@ -3507,9 +3521,5 @@ StructInitInfo * InitInfoCode ( void )
 
 /****************************************************************************
 **
-
 *E  code.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

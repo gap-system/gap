@@ -35,7 +35,7 @@
 **
 **  'PtrBody' is a pointer to the current body.
 */
-extern  Stat *          PtrBody;
+/* TL: extern  Stat *          PtrBody; */
 
 
 /****************************************************************************
