@@ -1,7 +1,9 @@
 #ifndef GAP_FIBHASH_H
 #define GAP_FIBHASH_H
 
-#ifndef SIZEOF_VOID_P
+#include "config.h"
+
+#if !defined(SIZEOF_VOID_P) && !defined(USE_PRECOMPILED)
 #error Require SIZEOF_VOID_P to be defined
 #endif
 
