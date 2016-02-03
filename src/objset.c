@@ -1047,7 +1047,7 @@ static StructInitInfo module = {
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    0                         		/* postRestore                    */
+    PostRestore               		/* postRestore                    */
 };
 
 StructInitInfo * InitInfoObjSets ( void )
