@@ -4126,7 +4126,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  #I  the image group has 3 gens and 11 rels of total length 92
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens : 
 ##  >                                           method := "fast" );;
-##  #I  the image group has 3 gens and 178 rels of total length 4001
+##  #I  the image group has 3 gens and 150 rels of total length 3336
 ##  ]]></Example>
 ##  <P/>
 ##  Though the option <C>method := "regular"</C> is only checked in the case
@@ -4148,7 +4148,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
 ##        [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens );;
-##  #I  the image group has 2 gens and 9 rels of total length 112
+##  #I  the image group has 2 gens and 10 rels of total length 126
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens : 
 ##  >                                           method := "regular");;
 ##  #I  the image group has 2 gens and 6 rels of total length 56
