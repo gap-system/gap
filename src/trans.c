@@ -41,7 +41,7 @@
 // TmpTrans is the same as TmpPerm
 #define  TmpTrans TLS(TmpTrans)
 
-Obj TmpTrans;
+/* Obj TmpTrans; */
 /* mp this will become a ReadOnly object? */
 Obj IdentityTrans;
 

@@ -3016,9 +3016,9 @@ Obj FuncALL_KEYWORDS(Obj self) {
 
 Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
   if (val == False)
-    (TLS(OutputFiles)+1)->format = 0;
+      ((TypOutputFile *)(TLS(OutputFiles)+1))->format = 0;
   else
-    (TLS(OutputFiles)+1)->format = 1;
+      ((TypOutputFile *)(TLS(OutputFiles)+1))->format = 1;
   return val;
 }
 
@@ -3106,19 +3106,19 @@ static Int InitKernel (
       Cookie[i][3] = 'e';  Cookie[i][4] = 'a';  Cookie[i][5] = 'm';
       Cookie[i][6] = ' ';  Cookie[i][7] = '0'+i;
       Cookie[i][8] = '\0';
-      InitGlobalBag(&(TLS(InputFiles)[i].stream), &(Cookie[i][0]));
+      InitGlobalBag(&(TLS(InputFiles)[i]->stream), &(Cookie[i][0]));
 
       MoreCookie[i][0] = 's';  MoreCookie[i][1] = 'l';  MoreCookie[i][2] = 'i';
       MoreCookie[i][3] = 'n';  MoreCookie[i][4] = 'e';  MoreCookie[i][5] = ' ';
       MoreCookie[i][6] = ' ';  MoreCookie[i][7] = '0'+i;
       MoreCookie[i][8] = '\0';
-      InitGlobalBag(&(TLS(InputFiles)[i].sline), &(MoreCookie[i][0]));
+      InitGlobalBag(&(TLS(InputFiles)[i]->sline), &(MoreCookie[i][0]));
 
       StillMoreCookie[i][0] = 'g';  StillMoreCookie[i][1] = 'a';  StillMoreCookie[i][2] = 'p';
       StillMoreCookie[i][3] = 'n';  StillMoreCookie[i][4] = 'a';  StillMoreCookie[i][5] = 'm';
       StillMoreCookie[i][6] = 'e';  StillMoreCookie[i][7] = '0'+i;
       StillMoreCookie[i][8] = '\0';
-      InitGlobalBag(&(TLS(InputFiles)[i].gapname), &(StillMoreCookie[i][0]));
+      InitGlobalBag(&(TLS(InputFiles)[i]->gapname), &(StillMoreCookie[i][0]));
     }
 
     /* tell GASMAN about the global bags                                   */

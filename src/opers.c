@@ -3084,12 +3084,9 @@ Obj NewOperation (
 
 
 /****************************************************************************
-**
-
-*F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
-*/
-UInt TLS(CacheIndex);
-
+ **
+ *F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
+ */
 Obj Constructor0Args;
 Obj NextConstructor0Args;
 Obj Constructor1Args;

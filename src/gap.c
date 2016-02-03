@@ -95,6 +95,9 @@
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
 #include        "profile.h"             /* profiling                       */
+
+#include        "interpreterstate.h"    /* Global State                    */
+
 #ifdef GAPMPI
 #include        "hpc/gapmpi.h"          /* ParGAP/MPI                      */
 #endif
@@ -107,6 +110,9 @@
 
 #include        "intfuncs.h"
 #include        "iostream.h"
+
+
+InterpreterState *MainInterpreterState;
 
 /****************************************************************************
 **
@@ -745,6 +751,8 @@ int main (
   void InstallBacktraceHandlers();
   InstallBacktraceHandlers();
 #endif
+
+  MainInterpreterState = malloc(sizeof(InterpreterState));
 
 #ifdef HAVE_REALPATH
   if (argc >= 3 && !strcmp(argv[1],"--createstartupscript")) {

@@ -75,6 +75,7 @@ extern "C" {
 
 
 #include        "intrprtr.h"            /* interpreter                     */
+#include        "interpreterstate.h"    /* */
 
 #include        "compiler.h"            /* compiler                        */
 
