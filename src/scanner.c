@@ -3101,6 +3101,7 @@ static Int InitKernel (
     /* initialize cookies for streams                                      */
     /* also initialize the cookies for the GAP strings which hold the
        latest lines read from the streams  and the name of the current input file*/
+#if 0 
     for ( i = 0;  i < sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0]);  i++ ) {
       Cookie[i][0] = 's';  Cookie[i][1] = 't';  Cookie[i][2] = 'r';
       Cookie[i][3] = 'e';  Cookie[i][4] = 'a';  Cookie[i][5] = 'm';
@@ -3120,7 +3121,7 @@ static Int InitKernel (
       StillMoreCookie[i][8] = '\0';
       /* TL: InitGlobalBag(&(InputFiles[i].gapname), &(StillMoreCookie[i][0])); */
     }
-
+#endif
     /* tell GASMAN about the global bags                                   */
     /* TL: InitGlobalBag(&(LogFile.stream),        "src/scanner.c:LogFile"        ); */
     /* TL: InitGlobalBag(&(LogStream.stream),      "src/scanner.c:LogStream"      ); */

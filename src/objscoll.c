@@ -822,6 +822,7 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
+    /* TL:
     InitGlobalBag( &SC_NW_STACK, "SC_NW_STACK" );
     InitGlobalBag( &SC_LW_STACK, "SC_LW_STACK" );
     InitGlobalBag( &SC_PW_STACK, "SC_PW_STACK" );
@@ -829,6 +830,7 @@ static Int InitKernel (
     InitGlobalBag( &SC_GE_STACK, "SC_GE_STACK" );
     InitGlobalBag( &SC_CW_VECTOR, "SC_CW_VECTOR" );
     InitGlobalBag( &SC_CW2_VECTOR, "SC_CW2_VECTOR" );
+    */
 
     /* return success                                                      */
     return 0;

@@ -1087,8 +1087,8 @@ static Int InitKernel (
                    "src/gvars.c:FopiesGVars"  );
     InitGlobalBag( &TableGVars,
                    "src/gvars.c:TableGVars" );
-    InitGlobalBag( &CurrNamespace,
-                   "src/gvars.c:CurrNamespace" );
+    /* TL: InitGlobalBag( &CurrNamespace,
+                   "src/gvars.c:CurrNamespace" ); */
 
     InitHandlerFunc( ErrorMustEvalToFuncHandler,
                      "src/gvars.c:ErrorMustEvalToFuncHandler" );

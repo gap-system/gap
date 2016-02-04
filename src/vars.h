@@ -158,7 +158,7 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
   CHANGED_BAG( old );
   TLS(CurrLVars) = NewBag( T_LVARS,
                       sizeof(Obj)*(3+narg+nloc) );
-  PtrLVars  = PTR_BAG( TLS(CurrLVars) );
+  TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
   CURR_FUNC = func;
   TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
   SET_BRK_CALL_FROM( old );
