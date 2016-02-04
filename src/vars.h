@@ -41,7 +41,7 @@
 **  'CHANGED_BAG' for  each of such change.  Instead we wait until  a garbage
 **  collection begins  and then  call  'CHANGED_BAG'  in  'BeginCollectBags'.
 */
-extern  Bag             CurrLVars;
+/* TL: extern  Bag             CurrLVars; */
 
 
 
@@ -57,7 +57,7 @@ extern  Bag             CurrLVars;
 **  have to check for the bottom, slowing it down.
 **
 */
-extern  Bag             BottomLVars;
+/* TL: extern  Bag             BottomLVars; */
 
 
 /****************************************************************************
@@ -70,7 +70,7 @@ extern  Bag             BottomLVars;
 **  Since   a   garbage collection may  move   this  bag  around, the pointer
 **  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
 */
-extern  Obj *           PtrLVars;
+/* TL: extern  Obj *           PtrLVars; */
 
 
 /****************************************************************************
