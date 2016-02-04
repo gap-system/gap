@@ -58,14 +58,14 @@
 *F * * * * * * * * * * * * local defines and typedefs * * * * * * * * * * * *
 */
 
-Obj SC_NW_STACK;
-Obj SC_LW_STACK;
-Obj SC_PW_STACK;
-Obj SC_EW_STACK;
-Obj SC_GE_STACK;
-Obj SC_CW_VECTOR;
-Obj SC_CW2_VECTOR;
-UInt SC_MAX_STACK_SIZE;
+/* TL: Obj SC_NW_STACK; */
+/* TL: Obj SC_LW_STACK; */
+/* TL: Obj SC_PW_STACK; */
+/* TL: Obj SC_EW_STACK; */
+/* TL: Obj SC_GE_STACK; */
+/* TL: Obj SC_CW_VECTOR; */
+/* TL: Obj SC_CW2_VECTOR; */
+/* TL: UInt SC_MAX_STACK_SIZE; */
 
 /****************************************************************************
 **
