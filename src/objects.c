@@ -865,6 +865,17 @@ static UInt LastPV = 0; /* This variable contains one of the values
 			   PrintObj or ViewObj still open (0), or the
 			   innermost such is Print (1) or View (2) */
 
+/* On-demand creation of the PrintObj stack */
+void InitPrintObjStack()
+{
+  if (!TLS(PrintObjThiss)) {
+    TLS(PrintObjThissObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Obj)+sizeof(Obj));
+    TLS(PrintObjThiss) = ADDR_OBJ(TLS(PrintObjThissObj))+1;
+    TLS(PrintObjIndicesObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Int)+sizeof(Obj));
+    TLS(PrintObjIndices) = (Int *)(ADDR_OBJ(TLS(PrintObjIndicesObj))+1);
+  }
+}
+    
 void            PrintObj (
     Obj                 obj )
 {
@@ -894,6 +905,7 @@ void            PrintObj (
     /* if <obj> is a subobject, then mark and remember the superobject
        unless ViewObj has done that job already */
     
+    InitPrintObjStack();
     if ( !fromview  && 0 < TLS(PrintObjDepth) ) {
         if ( IS_MARKABLE(TLS(PrintObjThis)) )  MARK( TLS(PrintObjThis) );
         TLS(PrintObjThiss)[TLS(PrintObjDepth)-1]   = TLS(PrintObjThis);
