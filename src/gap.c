@@ -1274,7 +1274,7 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
 */
   
 /* syJmp_buf CatchBuffer; */
-Obj ThrownObject = 0;
+/* TL: Obj ThrownObject = 0; */
 
 Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
 {
@@ -1328,8 +1328,8 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
 }
 
 
-UInt UserHasQuit;
-UInt UserHasQUIT;
+/* TL: UInt UserHasQuit; */
+/* TL: UInt UserHasQUIT; */
 UInt SystemErrorCode;
 
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
@@ -3057,7 +3057,7 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* init the completion function                                        */
-    InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      );
+    /* InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      ); */
 
     /* list of exit functions                                              */
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
