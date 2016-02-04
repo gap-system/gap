@@ -778,16 +778,28 @@ InstallMethod( DerivedSeriesOfGroup,
     fi;
 
     # compute the series by repeated calling of `DerivedSubgroup'
-    S := [ G ];
-    Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
-    D := DerivedSubgroup( G );
-    while D <> S[ Length(S) ]  do
-        Add( S, D );
-        Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
-        D := DerivedSubgroup( D );
-    od;
+    S := [ ];
+    repeat
+        if S = [ ] then
+            D := G;
+        else
+            Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
+            D := DerivedSubgroup( D );
+        fi;
+        Add(S, D);
+        if IsAbelian(D) then
+            if not IsTrivial(G) then
+                Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
+                Add(S, TrivialSubgroup(G));
+            fi;
+            SetIsSolvableGroup(G, true);
+            return S;
+        fi;
+    until D = DerivedSubgroup(D);
 
     # return the series when it becomes stable
+    # this can only run if G was nonsolvable
+    SetIsSolvableGroup(G, false);
     return S;
     end );
 
