@@ -1153,7 +1153,7 @@ Obj  ErrorLVars0;
 Obj  ErrorLVars;
 Int  ErrorLLevel;
 
-extern Obj BottomLVars;
+// extern Obj BottomLVars;
 
 
 void DownEnvInner( Int depth )
@@ -3342,7 +3342,6 @@ void InitializeGap (
     UInt                i;
     Int                 ret;
 
-
     /* initialize the basic system and gasman                              */
 #ifdef GAPMPI
     /* ParGAP/MPI needs to call MPI_Init() first to remove command line args */
@@ -3357,6 +3356,15 @@ void InitializeGap (
               SyCacheSize, 0, SyAbortBags );
               InitMsgsFuncBags( SyMsgsBags ); 
 
+    TLS(StackNams)   = NEW_PLIST( T_PLIST, 16 );
+    TLS(CountNams)   = 0;
+    TLS(ReadTop)     = 0;
+    TLS(ReadTilde)   = 0;
+    TLS(CurrLHSGVar) = 0;
+    TLS(IntrCoding) = 0;
+    TLS(IntrIgnoring) = 0;
+    TLS(NrError) = 0;
+    TLS(ThrownObject) = 0;
 
     /* get info structures for the build in modules                        */
     NrModules = 0;

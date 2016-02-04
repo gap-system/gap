@@ -3057,8 +3057,8 @@ static Int InitKernel (
 {
     TLS(ErrorLVars) = (UInt **)0;
     TLS(CurrentGlobalForLoopDepth) = 0;
-    /* TL: InitGlobalBag( &ReadEvalResult, "src/read.c:ReadEvalResult" ); */
-    /* TL: InitGlobalBag( &StackNams,      "src/read.c:StackNams"      ); */
+    InitGlobalBag( &TLS(ReadEvalResult), "src/read.c:ReadEvalResult" );
+    InitGlobalBag( &TLS(StackNams),      "src/read.c:StackNams"      );
     InitCopyGVar( "GAPInfo", &GAPInfo);
     /* return success                                                      */
     return 0;

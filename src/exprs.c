@@ -2145,6 +2145,15 @@ static Int InitLibrary (
     return 0;
 }
 
+void InitExprState(InterpreterState *state)
+{
+    state->CurrEvalExprFuncs = EvalExprFuncs;
+}
+
+void DestroyExprState(InterpreterState *state)
+{
+}
+
 /****************************************************************************
 **
 *F  InitInfoExprs() . . . . . . . . . . . . . . . . . table of init functions

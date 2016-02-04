@@ -4659,9 +4659,9 @@ void             IntrAssertEnd3Args ( void )
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* TL: InitGlobalBag( &IntrResult, "src/intrprtr.c:IntrResult" ); */
-    /* TL: InitGlobalBag( &IntrState,  "src/intrprtr.c:IntrState"  ); */
-    /* TL: InitGlobalBag( &StackObj,   "src/intrprtr.c:StackObj"   ); */
+    InitGlobalBag( &TLS(IntrResult), "src/intrprtr.c:IntrResult" );
+    InitGlobalBag( &TLS(IntrState),  "src/intrprtr.c:IntrState"  );
+    InitGlobalBag( &TLS(StackObj),   "src/intrprtr.c:StackObj"   );
     InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 

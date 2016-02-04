@@ -3106,8 +3106,8 @@ static Int InitKernel (
     TLS(CurrLVars) = (Bag) 0;
 
     /* make 'CurrLVars' known to Gasman                                    */
-    /* TL: InitGlobalBag( CurrLVars,   "src/vars.c:CurrLVars"   ); */
-    /* TL: InitGlobalBag( &BottomLVars, "src/vars.c:BottomLVars" ); */
+    InitGlobalBag( &TLS(CurrLVars),   "src/vars.c:CurrLVars"   );
+    InitGlobalBag( &TLS(BottomLVars), "src/vars.c:BottomLVars" );
 
     /* install the marking functions for local variables bag               */
     InfoBags[ T_LVARS ].name = "values bag";

@@ -100,8 +100,9 @@ static inline void PopOffsBody( void ) {
 }
 
 static void SetupOffsBodyStackAndLoopStack() {
-  TLS(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
-  TLS(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
+  // Careful: Malloc without free
+  TLS(OffsBodyStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
+  TLS(LoopStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
 }
 
 static inline void PushLoopNesting( void ) {
@@ -3384,13 +3385,13 @@ void LoadBody ( Obj body )
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
-void InitCoderTLS( void )
+void InitCoderState(InterpreterState *state)
 {
-    TLS(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
-    TLS(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
+    state->StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
+    state->StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
 }
 
-void DestroyCoderTLS( void )
+void DestroyCoderState(InterpreterState *state)
 {
 }
 
@@ -3423,6 +3424,8 @@ static Int InitKernel (
     /* some functions and globals needed for float conversion */
     InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
+    // InstallTLSHandler(SetupOffsBodyStackAndLoopStack, NULL);
+    SetupOffsBodyStackAndLoopStack();
 
     /* return success                                                      */
     return 0;

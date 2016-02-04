@@ -36,6 +36,7 @@ SOURCE= \
     gmpints \
     gvars \
     intfuncs \
+    interpreterstate \
     intrprtr \
     iostream \
     listfunc \

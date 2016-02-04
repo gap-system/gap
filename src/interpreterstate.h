@@ -3,7 +3,8 @@
  *W  interpreterstate.h      GAP source                 Markus Pfeiffer
  **
  **
- ** This file declares all variables that are considered state for the interpreter
+ ** This file declares all variables that are considered state for the
+ ** interpreter
  **
  */
 #ifndef GAP_INTERPRETER_STATE_H
@@ -11,6 +12,7 @@
 
 #include <stdint.h>
 
+#include "system.h"
 #include "code.h"
 #include "scanner.h"
 #include "gasman.h"
@@ -184,5 +186,22 @@ typedef struct InterpreterState
 } InterpreterState;
 
 extern InterpreterState *MainInterpreterState;
+
+void InitInterpreter(void);
+
+void InitScannerState(InterpreterState *);
+void InitStatState(InterpreterState *);
+void InitExprState(InterpreterState *);
+void InitCoderState(InterpreterState *);
+void InitOpersState(InterpreterState *);
+
+void DestroyScannerState(InterpreterState *);
+void DestroyStatState(InterpreterState *);
+void DestroyExprState(InterpreterState *);
+void DestroyCoderState(InterpreterState *);
+void DestroyOpersState(InterpreterState *);
+
+void InitInterpreterState(InterpreterState *state);
+void DestroyInterpreterState(InterpreterState *state);
 
 #endif // GAP_TLS_H
