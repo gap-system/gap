@@ -73,6 +73,7 @@
 #include        "hpc/tls.h"
 
 #include        "trans.h"
+#include        <assert.h>
 
 /****************************************************************************
 **
@@ -95,6 +96,8 @@
 #define DEG_PERM4(perm)         (SIZE_OBJ(perm) / sizeof(UInt4))
 #define ADDR_PERM4(perm)        ((UInt4*)ADDR_OBJ(perm))
 */
+
+
 
 
 /****************************************************************************
@@ -2562,6 +2565,10 @@ Obj             FuncPermList (
 
         degPerm = LEN_LIST( list );
 
+	if (degPerm > MAX_DEG_PERM4)
+	  ErrorMayQuit("PermList: list length %i exceeds maximum permutation degree %i\n",
+		       degPerm, MAX_DEG_PERM4);
+
         /* make sure that the global buffer bag is large enough for checkin*/
 	UseTmpPerm(degPerm*sizeof(UInt4));
 
@@ -3722,6 +3729,9 @@ Obj             FuncSHIFTED_PERM (
   if (deg<0) deg=0; /* everything shift away */
 
   if (deg>65536) {
+    if (deg > MAX_DEG_PERM4)
+      ErrorMayQuit("SHIFTED_PERM: Shift would make permutation degree %i bigger than limit (%i)",
+		   deg, MAX_DEG_PERM4);
     to=4;
     new=NEW_PERM4(deg);
     ptTo2=ADDR_PERM2(new); /* please compiler */
@@ -4038,8 +4048,7 @@ Obj             FunSmallestImgTuplePerm (
     UInt                lmp;            /* largest moved point             */
     UInt                i, k;           /* loop variables                  */
 
-    res = 2UL << 30; /* ``infty''. 
-                        We have no permutations on over 2^28 points        */
+    res = MAX_DEG_PERM4; /* ``infty''. */
     /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
@@ -4455,6 +4464,9 @@ Obj Array2Perm (
                     "you can replace <expr> via 'return <expr>;'" );
             }
             c = INT_INTOBJ(val);
+	    if (c > MAX_DEG_PERM4)
+	      ErrorMayQuit( "Permutation literal exceeds maximum permutatuion degree -- %i vs %i",
+			    c, MAX_DEG_PERM4);
 
             /* if necessary resize the permutation                         */
             if ( SIZE_OBJ(perm)/sizeof(UInt4) < c ) {

@@ -2176,6 +2176,11 @@ void            IntrPermCycle (
                 (Int)TNAM_OBJ(val), 0L );
         }
         c = INT_INTOBJ(val);
+	if (c > MAX_DEG_PERM4)
+	  ErrorQuit( "Permutation literal exceeds maximum permutation degree -- %i vs %i",
+		     c, MAX_DEG_PERM4);
+	
+	  
 
         /* if necessary resize the permutation                             */
         if ( SIZE_OBJ(perm)/sizeof(UInt4) < c ) {

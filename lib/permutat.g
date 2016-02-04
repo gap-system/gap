@@ -32,6 +32,11 @@
 ##  takes <M>4m</M> bytes of storage.
 ##  It can take even more because the internal list has sometimes room for
 ##  more than <M>d</M> images.
+##  <P/> On 32-bit systems, the limit on the degree of permutations is, for 
+##  technical reasons, <M>2^{28}-1</M>.
+##  On 64-bit systems, it is <M>2^{32}-1</M> because only a 32-bit integer 
+##  is used to represent each image internally. Error messages should be given
+##  if any command would require creating a permutation exceeding this limit. 
 ##  <P/>
 ##  The operation <Ref Func="RestrictedPerm"/> reduces the storage degree of
 ##  its result and therefore can be used to save memory if intermediate
