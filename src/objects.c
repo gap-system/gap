@@ -809,18 +809,18 @@ Obj FuncMakeImmutable( Obj self, Obj obj)
 **
 **  'PrintObj' prints the object <obj>.
 */
-Obj PrintObjThis;
+/* TL: Obj PrintObjThis; */
 
-Int PrintObjIndex;
+/* TL: Int PrintObjIndex; */
 
-Int PrintObjFull;
+/* TL: Int PrintObjFull; */
 
-Int PrintObjDepth;
+/* TL: Int PrintObjDepth; */
 
 #define MAXPRINTDEPTH 1024L
-Obj PrintObjThiss [MAXPRINTDEPTH];
+/* TL: Obj PrintObjThiss [MAXPRINTDEPTH]; */
 
-Int PrintObjIndices [MAXPRINTDEPTH];
+/* TL: Int PrintObjIndices [MAXPRINTDEPTH]; */
 
 /****************************************************************************
 **

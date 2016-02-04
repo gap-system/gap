@@ -698,12 +698,12 @@ extern void PrintObj (
 **  is the function '<func>(<obj>)' that should be called to print the object
 **  <obj> of this type.
 */
-extern Obj  PrintObjThis;
+/* TL: extern Obj  PrintObjThis; */
 
-extern Int  PrintObjIndex;
-extern Int  PrintObjDepth;
+/* TL: extern Int  PrintObjIndex; */
+/* TL: extern Int  PrintObjDepth; */
 
-extern Int  PrintObjFull;
+/* TL: extern Int  PrintObjFull; */
 
 extern void (* PrintObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
