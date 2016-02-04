@@ -82,7 +82,7 @@ BindGlobal("NewInterruptID", function()
 end);
 
 if IsBound(ZmqSocket) then
-  ReadLib("zmq.g");
+  ReadLib("hpc/zmq.g");
 fi;
 
 CreateThread(function()
