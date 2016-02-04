@@ -468,54 +468,41 @@ end );
 ##
 #M  MaximalNormalSubgroups( <G> )
 ##
-InstallMethod( MaximalNormalSubgroups, "for finite solvable groups",
+InstallMethod( MaximalNormalSubgroups, "for solvable groups",
               [ IsGroup ],
-              RankFilter( IsGroup and CanComputeSize and IsFinite
-                          and IsSolvableGroup ) - RankFilter( IsGroup ),
+              RankFilter( IsGroup and IsSolvableGroup )
+              - RankFilter( IsGroup ),
 
   function( G )
-    local GF,     # FactorGroup of G
-          MaxGF,  # MaximalNormalSubgroups of GF
-          max,    # MaximalNormalSubgroups of G
-          SS,     # SylowSystem of G
-          N,      # a maximal normal subgroup
-          i, j;   # loop variables
+    local Gf,     # FactorGroup of G
+          hom,    # homomorphism from G to Gf
+          MaxGf;  # MaximalNormalSubgroups of Gf
 
-    if not CanComputeSize(G) or not IsFinite(G) or not IsSolvableGroup(G)
-    then
-      # not a finite solvable group
-      TryNextMethod();
-    elif not IsAbelian(G) then
+    if 0 in AbelianInvariants(G) then
+      # (p) is a maximal normal subgroup in Z for every prime p
+      Error("number of maximal normal subgroups is infinity");
+    elif IsAbelian(G) then
+      if not IsPcGroup(G) then
+        # convert it to an Abelian PcGroup with same invariants
+        Gf := AbelianGroup(IsPcGroup, AbelianInvariants(G));
+        hom := IsomorphismGroups(G, Gf);
+        MaxGf := MaximalNormalSubgroups(Gf);
+        return List(MaxGf, N -> PreImage(hom, N));
+      else
+        # for abelian pc groups return all maximal subgroups
+        # NormalMaximalSubgroups seems to omit some unnecessary checks,
+        # hence faster than MaximalSubgroups
+        return NormalMaximalSubgroups(G);
+      fi;
+    elif IsSolvableGroup(G) then
       # every maximal normal subgroup is above the derived subgroup
-      GF := CommutatorFactorGroup(G);
-      MaxGF := MaximalNormalSubgroups(GF);
-      # currently MaximalNormalSubgroups returns a list, not a set
-      return List(MaxGF, N -> PreImage(NaturalHomomorphism(GF), N));
-    elif not IsPGroup(G) then
-      # maximal normal is maximal in one Sylow multiplied by the other Sylows
-      SS := SylowSystem(G);
-      max := [ ];
-      for i in [1..Length(SS)] do
-        for N in MaximalNormalSubgroups(SS[i]) do
-          for j in [1..Length(SS)] do
-            if j<>i then
-              N := ClosureSubgroupNC(N, SS[j]);
-            fi;
-          od;
-          Add(max, N);
-        od;
-      od;
-      return max;
-    elif not IsElementaryAbelian(G) then
-      # every maximal subgroup is normal, hence above the Frattini subgroup
-      GF := FactorGroup(G, FrattiniSubgroup(G));
-      MaxGF := MaximalNormalSubgroups(GF);
-      return List(MaxGF, N -> PreImage(NaturalHomomorphism(GF), N));
+      Gf := CommutatorFactorGroup(G);
+      hom := NaturalHomomorphism(Gf);
+      MaxGf := MaximalNormalSubgroups(Gf);
+      return List(MaxGf, N -> PreImage(hom, N));
     else
-      # for elementary abelian groups return all maximal subgroups
-      # NormalMaximalSubgroups seems to omit some unnecessary checks,
-      # hence faster than MaximalSubgroups
-      return NormalMaximalSubgroups(G);
+      # not solvable group
+      TryNextMethod();
     fi;
   end);
 
