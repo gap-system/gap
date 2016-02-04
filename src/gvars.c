@@ -299,7 +299,7 @@ Obj NameGVarObj ( UInt gvar )
 
 #define NSCHAR '@'
 
-Obj CurrNamespace = 0;
+/* TL: Obj CurrNamespace = 0; */
 
 Obj FuncSET_NAMESPACE(Obj self, Obj str)
 {
