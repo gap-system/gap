@@ -2154,13 +2154,11 @@ static Int InitKernel (
   
     /* install the marking function                                        */
     InfoBags[ T_CYC ].name = "cyclotomic";
-#if 0 // XXXHPC
     /* create the result buffer                                            */
-    InitGlobalBag( &ResultCyc , "src/cyclotom.c:ResultCyc" );
+    InitGlobalBag( &TLS(ResultCyc) , "src/cyclotom.c:ResultCyc" );
 
     /* tell Gasman about the place were we remember the primitive root     */
-    InitGlobalBag( &LastECyc, "src/cyclotom.c:LastECyc" );
-#endif
+    InitGlobalBag( &TLS(LastECyc), "src/cyclotom.c:LastECyc" );
     /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_CYC", &TYPE_CYC );
     TypeObjFuncs[ T_CYC ] = TypeCyc;
