@@ -1978,11 +1978,10 @@ Obj FuncGASMAN (
     Char                buf[41];
 
     /* check the argument                                                  */
-    while ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
-        args = ErrorReturnObj(
+    if ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
+        ErrorMayQuit(
             "usage: GASMAN( \"display\"|\"displayshort\"|\"clear\"|\"collect\"|\"message\"|\"partial\" )",
-            0L, 0L,
-            "you can replace the argument list <args> via 'return <args>;'" );
+            0L, 0L);
     }
 
     /* loop over the arguments                                             */
