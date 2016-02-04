@@ -3413,7 +3413,7 @@ static Int InitKernel (
     MakeBagTypePublic(T_BODY);
 
     /* make the result variable known to Gasman                            */
-    /* TL: InitGlobalBag( &CodeResult, "CodeResult" ); */
+    InitGlobalBag( &TLS(CodeResult), "CodeResult" );
     
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 
