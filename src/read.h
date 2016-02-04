@@ -23,7 +23,7 @@
 **  the interpretation of  an expression  or  statement lead to an  error (in
 **  which case 'ReadEvalError' jumps back to 'READ_ERROR' via 'longjmp').
 */
-extern syJmp_buf ReadJmpError;
+/* TL: extern syJmp_buf ReadJmpError; */
 
 #ifndef DEBUG_READ_ERROR
 
@@ -52,7 +52,7 @@ extern syJmp_buf ReadJmpError;
 
 *V  ReadEvalResult  . . . . . . . . result of reading one command immediately
 */
-extern Obj ReadEvalResult;
+/* TL: extern Obj ReadEvalResult; */
 
 
 /****************************************************************************
@@ -102,8 +102,8 @@ extern void ReadEvalError ( void );
 **  while loops and the break loop
 */
 
-extern Obj StackNams;
-extern UInt CountNams;
+/* TL: extern Obj StackNams; */
+/* TL: extern UInt CountNams; */
 
 
 extern void PushGlobalForLoopVariable( UInt var);

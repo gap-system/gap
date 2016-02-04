@@ -56,7 +56,7 @@
 **
 #define READ_ERROR()    (TLS(NrError) || (TLS(NrError)+=sySetjmp(TLS(ReadJmpError))))
 */
-syJmp_buf         ReadJmpError;
+/* TL: syJmp_buf         ReadJmpError; */
 
 
 /****************************************************************************
@@ -73,9 +73,9 @@ syJmp_buf         ReadJmpError;
 **  'CountNams' is the number of local variables names lists currently on the
 **  stack.
 */
-Obj             StackNams;
+/* TL: Obj             StackNams; */
 
-UInt            CountNams;
+/* TL: UInt            CountNams; */
 
 
 /****************************************************************************
@@ -91,9 +91,9 @@ UInt            CountNams;
 **  'ReadTilde' is 1 if the reader has read a  reference to the global variable
 **  '~' within the current outmost list or record expression.
 */
-UInt            ReadTop;
+/* TL: UInt            ReadTop; */
 
-UInt            ReadTilde;
+/* TL: UInt            ReadTilde; */
 
 
 /****************************************************************************
@@ -104,7 +104,7 @@ UInt            ReadTilde;
 **  to prevent undefined global variable  warnings, when reading a  recursive
 **  function.
 */
-UInt            CurrLHSGVar;
+/* TL: UInt            CurrLHSGVar; */
 
 
 /****************************************************************************
@@ -131,8 +131,8 @@ void ReadAtom (
     TypSymbolSet        follow,
     Char                mode );
 
-static UInt CurrentGlobalForLoopVariables[100];
-static UInt CurrentGlobalForLoopDepth;
+/* TL: static UInt CurrentGlobalForLoopVariables[100]; */
+/* TL: static UInt CurrentGlobalForLoopDepth; */
 
 void PushGlobalForLoopVariable( UInt var)
 {
@@ -190,8 +190,8 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
 */
 extern Obj ExprGVars;
-extern Obj ErrorLVars;
-extern Obj BottomLVars;
+/* TL: extern Obj ErrorLVars; */
+/* TL: extern Obj BottomLVars; */
 
 /* This function reads the options part at the end of a function call
    The syntax is
@@ -2605,7 +2605,7 @@ UInt ReadStats (
 
 *V  ReadEvalResult  . . . . . . . . result of reading one command immediately
 */
-Obj ReadEvalResult;
+/* TL: Obj ReadEvalResult; */
 
 
 /****************************************************************************
@@ -3057,8 +3057,8 @@ static Int InitKernel (
 {
     TLS(ErrorLVars) = (UInt **)0;
     TLS(CurrentGlobalForLoopDepth) = 0;
-    InitGlobalBag( &ReadEvalResult, "src/read.c:ReadEvalResult" );
-    InitGlobalBag( &StackNams,      "src/read.c:StackNams"      );
+    /* TL: InitGlobalBag( &ReadEvalResult, "src/read.c:ReadEvalResult" ); */
+    /* TL: InitGlobalBag( &StackNams,      "src/read.c:StackNams"      ); */
     InitCopyGVar( "GAPInfo", &GAPInfo);
     /* return success                                                      */
     return 0;
