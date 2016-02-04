@@ -96,7 +96,7 @@
 #include        "weakptr.h"             /* weak pointers                   */
 #include        "profile.h"             /* profiling                       */
 #ifdef GAPMPI
-#include        "gapmpi.h"              /* ParGAP/MPI                      */
+#include        "hpc/gapmpi.h"          /* ParGAP/MPI                      */
 #endif
 
 #include        "hpc/thread.h"
