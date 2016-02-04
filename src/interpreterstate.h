@@ -60,8 +60,8 @@ typedef struct InterpreterState
   UInt NrErrLine;
   UInt            Symbol;
   Char *          Prompt;
-  TypInputFile *  InputFiles[16];
-  TypOutputFile* OutputFiles[16];
+  TypInputFile   InputFiles[16];
+  TypOutputFile OutputFiles[16];
   int InputFilesSP;
   int OutputFilesSP;
   TypInputFile *  Input;

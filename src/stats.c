@@ -2211,7 +2211,7 @@ static Int InitKernel (
     /* furthermore, statements are no longer bags                          */
     /* InitGlobalBag( &CurrStat );                                         */
 
-    /* TL: InitGlobalBag( &ReturnObjStat, "src/stats.c:ReturnObjStat" ); */
+    InitGlobalBag( &TLS(ReturnObjStat), "src/stats.c:ReturnObjStat" );
 
     /* connect to external functions                                       */
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );

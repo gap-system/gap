@@ -1027,6 +1027,9 @@ void            ViewObj (
     LastPV = 2;
     
     /* if <obj> is a subobject, then mark and remember the superobject     */
+
+    InitPrintObjStack();
+
     if ( 0 < TLS(PrintObjDepth) ) {
         if ( IS_MARKABLE(TLS(PrintObjThis)) )  MARK( TLS(PrintObjThis) );
         TLS(PrintObjThiss)[TLS(PrintObjDepth)-1]   = TLS(PrintObjThis);
