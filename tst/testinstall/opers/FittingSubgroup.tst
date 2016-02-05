@@ -18,7 +18,7 @@ true
 #
 gap> List(AllSmallGroups(60), g -> Size(FittingSubgroup(g)));
 [ 30, 30, 30, 60, 1, 15, 15, 15, 20, 30, 30, 30, 60 ]
-gap> ForAll(AllSmallGroups(60), g -> IsNormal(g, FrattiniSubgroup(g)));
+gap> ForAll(AllSmallGroups(60), g -> IsNormal(g, FittingSubgroup(g)));
 true
 
 #
@@ -39,9 +39,9 @@ gap> f := FittingSubgroup(g);;
 gap> HasIsNilpotentGroup(f);
 true
 gap> p := SylowSubgroup(g, 2);;
-gap> HasIsNilpotentGroup(p);
+gap> HasIsNilpotentGroup(p) and IsNilpotentGroup(p);
 true
-gap> HasIsNilpotentGroup(FittingSubgroup(p));
+gap> HasFittingSubgroup(p) and HasIsNilpotentGroup(FittingSubgroup(p)) and FittingSubgroup(p)=p;
 true
 
 #
