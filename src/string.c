@@ -1440,6 +1440,8 @@ Obj CopyToStringRep(
     return (copy);
 }
 
+
+
 /****************************************************************************
 **
 *F  ConvString( <string> )  . . convert a string to the string representation
