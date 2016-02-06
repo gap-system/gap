@@ -181,7 +181,6 @@ void            AssGVar (
     Obj                 cops;           /* list of internal copies         */
     Obj *               copy;           /* one copy                        */
     UInt                i;              /* loop variable                   */
-    Char *              name;           /* name of a function              */
     Obj                 onam;           /* object of <name>                */
 
     /* make certain that the variable is not read only                     */
@@ -236,8 +235,7 @@ void            AssGVar (
 
     /* assign name to a function                                           */
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
-        name = NameGVar(gvar);
-        C_NEW_STRING_DYN(onam, name);
+        onam = CopyToStringRep(NameGVarObj(gvar));
         RESET_FILT_LIST( onam, FN_IS_MUTABLE );
         NAME_FUNC(val) = onam;
         CHANGED_BAG(val);
