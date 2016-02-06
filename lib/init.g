@@ -296,6 +296,8 @@ CallAndInstallPostRestore( function()
         haveint[i]:= IntHexString( have[i] );
         needint[i]:= IntHexString( need[i] );
       od;
+      Print( "Current kernel version:   ", haveint[1], ".", haveint[2], ".", haveint[3], "\n" );
+      Print( "Library requires version: ", needint[1], ".", needint[2], ".", needint[3], "\n" );
 
       if haveint > needint then
         # kernel newer
