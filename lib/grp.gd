@@ -4268,7 +4268,8 @@ DeclareGlobalFunction( "PowerMapOfGroupWithInvariants" );
 ##
 ##  <Description>
 ##  tests whether <A>G</A> <M>/</M> <A>N</A> is abelian
-##  (without explicitly constructing the factor group).
+##  (without explicitly constructing the factor group and without testing
+##  whether <A>N</A> is in fact a normal subgroup).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -4285,7 +4286,8 @@ DeclareGlobalFunction("HasAbelianFactorGroup");
 ##
 ##  <Description>
 ##  tests whether <A>G</A> <M>/</M> <A>N</A> is solvable
-##  (without explicitly constructing the factor group).
+##  (without explicitly constructing the factor group and without testing
+##  whether <A>N</A> is in fact a normal subgroup).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
