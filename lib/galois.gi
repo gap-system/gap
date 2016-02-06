@@ -687,6 +687,10 @@ end);
 ##
 #F  GaloisType(<pol>,[<cands>]) . . . . . . . . . . . . . compute Galois type
 ##
+##  The optional 2nd argument may be used to restrict the range of transitive
+##  permutation groups that will be considered as possible Galois groups.
+##  The use of the 2nd argument is experimental and is not documented.
+##
 BindGlobal("DoGaloisType",function(arg)
 local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
       orbs,GetResolvent,norb,act,repro,minpol,ext,ncand,pos,step,lens,gudeg,
