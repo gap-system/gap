@@ -1116,6 +1116,8 @@ Obj FuncREAD_GAP_ROOT (
     Obj                 self,
     Obj                 filename )
 {
+    Char filenamecpy[4096];
+
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
@@ -1124,8 +1126,10 @@ Obj FuncREAD_GAP_ROOT (
             "you can replace <filename> via 'return <filename>;'" );
     }
 
+    /* Copy to avoid garbage collection moving string                      */
+    strlcpy(filenamecpy, CSTR_STRING(filename), 4096);
     /* try to open the file                                                */
-    return READ_GAP_ROOT(CSTR_STRING(filename)) ? True : False;
+    return READ_GAP_ROOT(filenamecpy) ? True : False;
 }
 
 

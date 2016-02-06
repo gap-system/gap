@@ -2044,7 +2044,7 @@ InstallGlobalFunction( DeclareAutoreadableVariables,
 #F  ValidatePackageInfo( <info> )
 ##
 InstallGlobalFunction( ValidatePackageInfo, function( info )
-    local record, pkgdir, i, IsStringList, IsRecordList, IsProperBool,
+    local record, pkgdir, i, IsStringList, IsRecordList, IsProperBool, IsURL,
           IsFilename, IsFilenameList, result, TestOption, TestMandat, subrec,
           list;
 
@@ -2082,6 +2082,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         ( pkgdir = fail or
           ( x[1] <> '/' and IsReadableFile( Concatenation( pkgdir, x ) ) ) );
     IsFilenameList:= x -> IsList( x ) and ForAll( x, IsFilename );
+    IsURL := x -> ForAny(["http://","https://","ftp://"], s -> StartsWith(x,s));
 
     result:= true;
 
@@ -2116,7 +2117,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         x -> IsString(x) and Length(x) = 10 and x{ [3,6] } = "//"
                  and ForAll( x{ [1,2,4,5,7,8,9,10] }, IsDigitChar ),
         "a string of the form `dd/mm/yyyy'" );
-    TestMandat( record, "ArchiveURL", IsString, "a string" );
+    TestMandat( record, "ArchiveURL", IsURL, "a string started with http://, https:// or ftp://" );
     TestMandat( record, "ArchiveFormats", IsString, "a string" );
     TestOption( record, "TextFiles", IsStringList, "a list of strings" );
     TestOption( record, "BinaryFiles", IsStringList, "a list of strings" );
@@ -2157,7 +2158,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
           fi;
         fi;
         TestOption( subrec, "Email", IsString, "a string" );
-        TestOption( subrec, "WWWHome", IsString, "a string" );
+        TestOption( subrec, "WWWHome", IsURL, "a string started with http://, https:// or ftp://" );
         TestOption( subrec, "PostalAddress", IsString, "a string" );
         TestOption( subrec, "Place", IsString, "a string" );
         TestOption( subrec, "Institution", IsString, "a string" );
@@ -2177,8 +2178,8 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                    and ForAll( x{ [1,2,4,5,6,7] }, IsDigitChar ),
           "a string of the form `mm/yyyy'" );
     fi;
-    TestMandat( record, "README_URL", IsString, "a string" );
-    TestMandat( record, "PackageInfoURL", IsString, "a string" );
+    TestMandat( record, "README_URL", IsURL, "a string started with http://, https:// or ftp://" );
+    TestMandat( record, "PackageInfoURL", IsURL, "a string started with http://, https:// or ftp://" );
 
     if TestOption( record, "SourceRepository", IsRecord, "a record" ) then
       if IsBound( record.SourceRepository ) then
@@ -2186,10 +2187,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         TestMandat( record.SourceRepository, "URL", IsString, "a string" );
       fi;  
     fi;
-    TestOption( record, "IssueTrackerURL", IsString, "a string" );
+    TestOption( record, "IssueTrackerURL", IsURL, "a string started with http://, https:// or ftp://" );
     TestOption( record, "SupportEmail", IsString, "a string" );
     TestMandat( record, "AbstractHTML", IsString, "a string" );
-    TestMandat( record, "PackageWWWHome", IsString, "a string" );
+    TestMandat( record, "PackageWWWHome", IsURL, "a string started with http://, https:// or ftp://" );
     if TestMandat( record, "PackageDoc",
            x -> IsRecord( x ) or IsRecordList( x ),
            "a record or a list of records" ) then
