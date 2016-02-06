@@ -18,7 +18,7 @@ true
 #
 gap> List(AllSmallGroups(60), g -> Size(FittingSubgroup(g)));
 [ 30, 30, 30, 60, 1, 15, 15, 15, 20, 30, 30, 30, 60 ]
-gap> ForAll(AllSmallGroups(60), g -> IsNormal(g, FrattiniSubgroup(g)));
+gap> ForAll(AllSmallGroups(60), g -> IsNormal(g, FittingSubgroup(g)));
 true
 
 #
