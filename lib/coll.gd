@@ -2766,10 +2766,10 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##
 ##  <#GAPDoc Label="ListX">
 ##  <ManSection>
-##  <Oper Name="ListX" Arg='arg1, arg2, ... argn, func'/>
+##  <Func Name="ListX" Arg='arg1, arg2, ... argn, func'/>
 ##
 ##  <Description>
-##  <Ref Oper="ListX"/> returns a new list constructed from the arguments.
+##  <Ref Func="ListX"/> returns a new list constructed from the arguments.
 ##  <P/>
 ##  Each of the arguments <A>arg1</A>, <A>arg2</A>, <M>\ldots</M> <A>argn</A>
 ##  must be one of the following:
@@ -2857,11 +2857,11 @@ DeclareGlobalFunction( "ListX" );
 ##
 ##  <#GAPDoc Label="SetX">
 ##  <ManSection>
-##  <Oper Name="SetX" Arg='arg1, arg2, ... func'/>
+##  <Func Name="SetX" Arg='arg1, arg2, ... func'/>
 ##
 ##  <Description>
-##  The only difference between <Ref Oper="SetX"/> and <Ref Oper="ListX"/>
-##  is that the result list of <Ref Oper="SetX"/> is strictly sorted.
+##  The only difference between <Ref Func="SetX"/> and <Ref Func="ListX"/>
+##  is that the result list of <Ref Func="SetX"/> is strictly sorted.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2875,11 +2875,11 @@ DeclareGlobalFunction( "SetX" );
 ##
 ##  <#GAPDoc Label="SumX">
 ##  <ManSection>
-##  <Oper Name="SumX" Arg='arg1, arg2, ... func'/>
+##  <Func Name="SumX" Arg='arg1, arg2, ... func'/>
 ##
 ##  <Description>
-##  <Ref Oper="SumX"/> returns the sum of the elements in the list obtained
-##  by <Ref Oper="ListX"/> when this is called with the same arguments.
+##  <Ref Func="SumX"/> returns the sum of the elements in the list obtained
+##  by <Ref Func="ListX"/> when this is called with the same arguments.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2893,11 +2893,11 @@ DeclareGlobalFunction( "SumX" );
 ##
 ##  <#GAPDoc Label="ProductX">
 ##  <ManSection>
-##  <Oper Name="ProductX" Arg='arg1, arg2, ... func'/>
+##  <Func Name="ProductX" Arg='arg1, arg2, ... func'/>
 ##
 ##  <Description>
-##  <Ref Oper="ProductX"/> returns the product of the elements in the list
-##  obtained by <Ref Oper="ListX"/> when this is called with the same
+##  <Ref Func="ProductX"/> returns the product of the elements in the list
+##  obtained by <Ref Func="ListX"/> when this is called with the same
 ##  arguments.
 ##  </Description>
 ##  </ManSection>
@@ -2912,10 +2912,10 @@ DeclareGlobalFunction( "ProductX" );
 ##
 ##  <#GAPDoc Label="Perform">
 ##  <ManSection>
-##  <Oper Name="Perform" Arg='list, func'/>
+##  <Func Name="Perform" Arg='list, func'/>
 ##
 ##  <Description>
-##  <Ref Oper="Perform"/> applies the function <A>func</A> to every element
+##  <Ref Func="Perform"/> applies the function <A>func</A> to every element
 ##  of the list <A>list</A>, discarding any return values.
 ##  It does not return a value.
 ##  <P/>

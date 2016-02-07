@@ -11,6 +11,7 @@ CC=cc
 
 SOURCE= \
     ariths \
+    backtrace \
     blister \
     bool \
     c_filt1 \
@@ -48,6 +49,7 @@ SOURCE= \
     objfgelm \
     objpcgel \
     objscoll \
+    objset \
     opers \
     permutat \
     plist \

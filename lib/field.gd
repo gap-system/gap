@@ -57,7 +57,7 @@
 ##
 ##  <#GAPDoc Label="IsField">
 ##  <ManSection>
-##  <Prop Name="IsField" Arg='D'/>
+##  <Filt Name="IsField" Arg='D'/>
 ##
 ##  <Description>
 ##  A <E>field</E> is a commutative division ring

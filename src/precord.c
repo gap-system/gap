@@ -722,7 +722,7 @@ Obj InnerRecNames( Obj rec )
     UInt                rnam;           /* one name of record              */
     Obj                 string;         /* one name as string              */
     UInt                i;
-
+    Obj                 name;
     SortPRecRNam(rec,0);   /* Make sure rnams are sorted and thus negative */
 
     /* allocate the list                                                   */
@@ -733,7 +733,8 @@ Obj InnerRecNames( Obj rec )
     for ( i = 1; i <= LEN_PREC(rec); i++ ) {
         rnam = -(Int)(GET_RNAM_PREC( rec, i ));
         /* could have been moved by garbage collection */
-        C_NEW_STRING_DYN( string, NAME_RNAM(rnam) );
+        name = NAME_OBJ_RNAM( rnam );
+        string = CopyToStringRep( name );
         SET_ELM_PLIST( list, i, string );
         CHANGED_BAG( list );
     }
@@ -1083,6 +1084,3 @@ StructInitInfo * InitInfoPRecord ( void )
 
 *E  precord.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

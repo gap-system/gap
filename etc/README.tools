@@ -45,15 +45,10 @@ in this archive).
                follow the gapmacro.tex conventions (see gapmacrodoc.pdf 
                and comments in the script itself for usage instructions).
            packpack
-               shell script that creates archives in several formats (.zoo,
-               .zip, .tar.gz, .tar.bz2) of a package (i.e. it ``packs up a
+               shell script that creates archives in several formats (.zip,
+               .tar.gz, .tar.bz2) of a package (i.e. it ``packs up a
                package''). Usage instructions are at the beginning of
-               packpack. You may modify it to remove some parts; for 
-               example, we do not use the ``zoo'' archive format any more,
-               so you do not have to provide it).
-           unzoo.c
-               C source file for the unzoo program (in case you need it to
-               unpack some legacy zoo archive).
+               packpack.
            README.tools
                this file!
               

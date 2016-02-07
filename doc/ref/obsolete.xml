@@ -187,7 +187,7 @@ your specific use case.
 
 
 <ManSection>
-<Var Name="InfoObsolete"/>
+<InfoClass Name="InfoObsolete"/>
 <Description>
 is an info class to display warnings when an obsolete variable is used.
 By default, these warnings are switched off since the info level for 

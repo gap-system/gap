@@ -850,7 +850,7 @@ DeclareSynonym( "UniteBlistList", UNITE_BLIST_LIST );
 ##
 ##  <#GAPDoc Label="ListBlist">
 ##  <ManSection>
-##  <Oper Name="ListBlist" Arg='list, blist'/>
+##  <Func Name="ListBlist" Arg='list, blist'/>
 ##
 ##  <Description>
 ##  returns the sublist <M>sub</M> of the list <A>list</A>, which must have

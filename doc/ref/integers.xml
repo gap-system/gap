@@ -62,15 +62,15 @@ in chapter&nbsp;<Ref Chap="Combinatorics"/>.
 <#Include Label="ListOfDigits">
 
 <ManSection>
-<Func Name="Random" Arg='Integers' Label="for integers"/>
+<Meth Name="Random" Arg='Integers' Label="for integers"/>
 
 <Description>
-<Ref Func="Random" Label="for integers"/> for integers returns
+<Ref Meth="Random" Label="for integers"/> for integers returns
 pseudo random integers between <M>-10</M> and
 <M>10</M> distributed according to a binomial distribution.
 To generate uniformly distributed integers from a range,
 use the construction <C>Random( [ <A>low</A> .. <A>high</A> ] )</C>
-&nbsp;(see&nbsp;<Ref Func="Random" Label="for lower and upper bound"/>).
+&nbsp;(see&nbsp;<Ref Meth="Random" Label="for lower and upper bound"/>).
 </Description>
 </ManSection>
 

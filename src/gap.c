@@ -96,7 +96,7 @@
 #include        "weakptr.h"             /* weak pointers                   */
 #include        "profile.h"             /* profiling                       */
 #ifdef GAPMPI
-#include        "gapmpi.h"              /* ParGAP/MPI                      */
+#include        "hpc/gapmpi.h"          /* ParGAP/MPI                      */
 #endif
 
 #include        "hpc/thread.h"
@@ -740,6 +740,11 @@ int main (
   UInt                type;                   /* result of compile       */
   Obj                 func;                   /* function (compiler)     */
   Int4                crc;                    /* crc of file to compile  */
+
+#ifdef PRINT_BACKTRACE
+  void InstallBacktraceHandlers();
+  InstallBacktraceHandlers();
+#endif
 
 #ifdef HAVE_REALPATH
   if (argc >= 3 && !strcmp(argv[1],"--createstartupscript")) {

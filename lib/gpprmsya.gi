@@ -205,6 +205,8 @@ function ( G, p )
 
     # make the Sylow subgroup
     S := SubgroupNC( G, sgs );
+    SetSize(S,p^Length(sgs));
+    
 
     # add the stabilizer chain
     #MakeStabChainStrongGenerators( S, Reversed([1..G.degree]), sgs );
@@ -1047,9 +1049,11 @@ function ( G, g )
             cycle,      # one cycle from <cycles>
             lasts,      # '<lasts>[<l>]' is the last cycle of length <l>
             last,       # one cycle from <lasts>
-	    mov,
-            i;          # loop variable
-
+            counts,     # number of cycles of each length
+	    mov,        # moved points of group
+            siz,        # size of centraliser
+            l;
+    
     # test for internal rep
     if HasGeneratorsOfGroup(G) and 
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
@@ -1067,19 +1071,27 @@ function ( G, g )
     sgs := [];
 
     # compute the cycles and find for each length the last one
+    # and the count
     cycles := Cycles( g, mov );
     lasts := [];
+    counts := [];
     for cycle  in cycles  do
-      lasts[Length(cycle)] := cycle;
+        l := Length(cycle);
+        lasts[l] := cycle;
+        if not IsBound(counts[l]) then
+            counts[l] := 1;
+        else
+            counts[l] := counts[l]+1;
+        fi;
     od;
-
+    
     # loop over the cycles
     for cycle  in cycles  do
-
+        l := Length(cycle);
       # add that cycle itself to the strong generators
-      if Length( cycle ) <> 1  then
+      if l <> 1  then
 	  gen := MappingPermListList(cycle,
-	            Concatenation(cycle{[2..Length(cycle)]},[cycle[1]]));
+	            Concatenation(cycle{[2..l]},[cycle[1]]));
 	  Add( sgs, gen );
       fi;
 
@@ -1092,9 +1104,18 @@ function ( G, g )
       fi;
 
   od;
-
+  
+  siz := 1;
+  for l in [1..Length(counts)] do
+      if IsBound(counts[l]) then
+          siz := siz*l^counts[l]*Factorial(counts[l]);
+      fi;
+  od;
+  
   # make the centralizer
-  C := Subgroup(  G , sgs );
+  C := SubgroupNC(  G , sgs );
+  SetSize(C,siz);
+  
 
   # return the centralizer
   return C;
@@ -1569,8 +1590,10 @@ local   S,          # <p>-Sylow subgroup of <G>, result
     od;
 
     # make the Sylow subgroup
-    S := Subgroup(  G , sgs );
-
+    S := SubgroupNC(  G , sgs );
+    SetSize(S,p^Length(sgs));
+    
+    
     if Size( S ) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );

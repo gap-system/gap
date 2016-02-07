@@ -278,6 +278,3 @@ BIND_GLOBAL("ErrorNoReturn",
          lateMessage := "type 'quit;' to quit to outer loop",
          printThisStatement := false), arg);
 end);
- 
-# HACK: remove this before final GAP 4.8 release
-BIND_GLOBAL("ErrorMayQuit", ErrorNoReturn);

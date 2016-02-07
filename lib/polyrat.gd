@@ -46,7 +46,7 @@ DeclareGlobalFunction("BPolyProd");
 ##
 ##  <#GAPDoc Label="PrimitivePolynomial">
 ##  <ManSection>
-##  <Func Name="PrimitivePolynomial" Arg='f'/>
+##  <Oper Name="PrimitivePolynomial" Arg='f'/>
 ##
 ##  <Description>
 ##  takes a polynomial <A>f</A> with rational coefficients and computes a new

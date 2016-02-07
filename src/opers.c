@@ -1748,13 +1748,15 @@ Obj DoOperation0Args (
     Obj                prec;
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 0 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 0 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -1832,13 +1834,15 @@ Obj DoOperation1Args (
     type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 1 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 1 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -1924,13 +1928,15 @@ Obj DoOperation2Args (
     type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -2025,13 +2031,15 @@ Obj DoOperation3Args (
     type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -2131,13 +2139,16 @@ Obj DoOperation4Args (
     type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
+
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -2247,13 +2258,15 @@ Obj DoOperation5Args (
     type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
     
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -2381,13 +2394,15 @@ Obj DoOperation6Args (
     type6 = TYPE_OBJ_FEO( arg6 );  id6 = ID_TYPE( type6 );
     
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3125,13 +3140,15 @@ Obj DoConstructor0Args (
     Obj                prec;
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 0 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 0 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3213,13 +3230,15 @@ Obj DoConstructor1Args (
     type1 = FLAGS_FILT( arg1 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 1 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 1 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3309,13 +3328,15 @@ Obj DoConstructor2Args (
     type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3413,13 +3434,15 @@ Obj DoConstructor3Args (
     type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3523,13 +3546,15 @@ Obj DoConstructor4Args (
     type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3642,13 +3667,15 @@ Obj DoConstructor5Args (
     type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
     
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3778,13 +3805,15 @@ Obj DoConstructor6Args (
     type6 = TYPE_OBJ_FEO( arg6 );  id6 = ID_TYPE( type6 );
     
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))

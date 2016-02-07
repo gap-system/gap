@@ -128,8 +128,6 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
          (Int)TNAM_OBJ(initstr), 0L,
          "you can replace <initstr> via 'return <initstr>;'" );
   }
-  init_key = CHARS_STRING(initstr);
-  key_length = GET_LEN_STRING(initstr) / 4;
 
   /* store array of 624 UInt4 and one UInt4 as counter "mti" and an
      endianness marker */
@@ -139,6 +137,9 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
   /* here the counter mti is set to 624 */
   initGRMT(mt, 19650218UL);
   i=1; j=0;
+  /* Do not set these up until all garbage collection is done   */
+  init_key = CHARS_STRING(initstr);
+  key_length = GET_LEN_STRING(initstr) / 4;
   k = (N>key_length ? N : key_length);
   for (; k; k--) {
       mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525UL))
@@ -239,7 +240,7 @@ Obj FuncRandomListMT(Obj self, Obj mtstr, Obj list)
 **
 **  'HASHKEY_BAG( <obj>, <seed>, <offset>, <maxlen> )'
 **
-**  takes an non-immediate object and a small integer <int> and computes a
+**  takes an non-immediate object and a small integer <seed> and computes a
 **  hash value for the contents of the bag from these. (For this to be
 **  usable in algorithms, we need that objects of this kind are stored uniquely
 **  internally.
