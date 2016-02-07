@@ -140,20 +140,6 @@ DeclareOperation( "GroupString", [IsGroup,IsString] );
 
 #############################################################################
 ##
-#A  NameIsomorphismClass( <G> ) . . . . . . . . . . . . . . . .  experimental
-##
-##  <ManSection>
-##  <Attr Name="NameIsomorphismClass" Arg='G'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareAttribute( "NameIsomorphismClass", IsGroup );
-
-
-#############################################################################
-##
 #P  IsCyclic( <G> )
 ##
 ##  <#GAPDoc Label="IsCyclic">
