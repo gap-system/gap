@@ -33,16 +33,16 @@ gap> ForAll(MaximalNormalSubgroups(D2), N -> IsSubgroup(D2, N) and IsNormal(D2, 
 true
 
 # some infinite fp-groups
-#gap> F := FreeGroup("r", "s");; r := F.1;; s := F.2;;
-#gap> G := F/[r*s*r^(-1)*s^(-1), r^180, s^168];;
-#gap> Length(MaximalNormalSubgroups(G));
-#9
-#gap> G := F/[s^2, s*r*s*r];;
+gap> F := FreeGroup("r", "s");; r := F.1;; s := F.2;;
+gap> G := F/[r^(-1)*s^(-1)*r*s, r^18, s^24];;
+gap> Length(MaximalNormalSubgroups(G));
+7
+gap> G := F/[s^2, s*r*s*r];;
 
 # currently IsSolvable(G) would not run, will be remedied later
-#gap> IsAbelian(DerivedSubgroup(G));
-#true
-#gap> SetIsSolvableGroup(G, true);
-#gap> Length(MaximalNormalSubgroups(G));
-#3
+gap> IsAbelian(DerivedSubgroup(G));
+true
+gap> SetIsSolvableGroup(G, true);
+gap> Length(MaximalNormalSubgroups(G));
+3
 gap> STOP_TEST("MaximalNormalSubgroups.tst", 10000);
