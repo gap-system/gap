@@ -148,7 +148,7 @@ Obj FuncADD_LIST3 (
   Int ipos;
   if (pos == (Obj)0)
     ipos = -1;
-  else if (IS_INTOBJ(pos))
+  else if (IS_INTOBJ(pos) && INT_INTOBJ(pos) > 0)
     ipos = INT_INTOBJ(pos);
   else {
     DoOperation3Args( self, list,  obj, pos);
