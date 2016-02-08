@@ -112,6 +112,28 @@ gap> res := foo(o);
 [ [ 1, 2, 3 ], [ 4, 5 ], [ 1, 2, 3 ], [ 4, 5 ], function(  ) ... end ]
 gap> res[5]();
 [ [ 6, 7 ], [ 5, 6, 7 ] ]
+gap> s := [];; Add(s, 1); s;
+[ 1 ]
+gap> Add(s, 4); s;
+[ 1, 4 ]
+gap> s := [];; Add(s,1,3); s;
+[ ,, 1 ]
+gap> s := [];; Add(s,1,1); s;
+[ 1 ]
+gap> s := [];; Add(s, ' ',1); s;
+" "
+gap> s := [];; Add(s, ' ',2); s;
+[ , ' ' ]
+gap> s := [];; Add(s, 0, 0);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `Add' on 3 arguments
+gap> s;
+[  ]
+gap> s := [];; Add(s, 0, -1);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `Add' on 3 arguments
+gap> s;
+[  ]
 
 # that's all, folks
 gap> STOP_TEST( "listgen.tst", 320000);
