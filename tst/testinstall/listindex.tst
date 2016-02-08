@@ -134,6 +134,50 @@ Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Add' on 3 arguments
 gap> s;
 [  ]
+gap> s := [1,2,3];; l := [4,5,6];;
+gap> CopyListEntries(s,1,1,l,1,1,1); l;
+[ 1, 5, 6 ]
+gap> CopyListEntries(s,2,2,l,2,2,1); l;
+[ 1, 2, 6 ]
+gap> CopyListEntries(s,8,2,l,1,1,2); l;
+[ ,, 6 ]
+gap> CopyListEntries(s,3,-1,l,1,1,2); l;
+[ 3, 2, 6 ]
+gap> CopyListEntries(s,3,-1,l,6,-1,2); l;
+[ 3, 2, 6,, 2, 3 ]
+gap> CopyListEntries(s,3,-1,l,4,-3,2); l;
+[ 2, 2, 6, 3, 2, 3 ]
+gap> CopyListEntries("abc",3,-1,l,4,-3,2);
+Error, COPY_LIST_ENTRIES: source must be a plain list not a list (string)
+gap> CopyListEntries(s,3,-1,"abc",4,-3,2);
+Error, COPY_LIST_ENTRIES: destination must be a mutable plain list not a list \
+(string)
+gap> CopyListEntries(s,3,-1,Immutable([1,2,3]),4,-3,2);
+Error, COPY_LIST_ENTRIES: destination must be a mutable plain list not a list \
+(plain,cyc,imm)
+gap> CopyListEntries(s, "cheese", 1, l, 1, 1, 2);
+Error, COPY_LIST_ENTRIES: argument 2  must be a small integer, not a list (str\
+ing)
+gap> CopyListEntries(s, 1, "cheese", l, 1, 1, 2);
+Error, COPY_LIST_ENTRIES: argument 3  must be a small integer, not a list (str\
+ing)
+gap> CopyListEntries(s, 1, 1, l, "cheese", 1, 2);
+Error, COPY_LIST_ENTRIES: argument 5  must be a small integer, not a list (str\
+ing)
+gap> CopyListEntries(s, 1, 1, l, 1, "cheese", 2);
+Error, COPY_LIST_ENTRIES: argument 6  must be a small integer, not a list (str\
+ing)
+gap> CopyListEntries(s, 1, 1, l, 1, 1, "cheese");
+Error, COPY_LIST_ENTRIES: argument 7  must be a small integer, not a list (str\
+ing)
+gap> CopyListEntries(s,0,1,l,1,1,2);
+Error, COPY_LIST_ENTRIES: list indices must be positive integers
+gap> CopyListEntries(s,1,-1,l,1,1,2);
+Error, COPY_LIST_ENTRIES: list indices must be positive integers
+gap> CopyListEntries(s,1,1,l,1,-1,2);
+Error, COPY_LIST_ENTRIES: list indices must be positive integers
+gap> CopyListEntries(s,1,1,l,0,1,2);
+Error, COPY_LIST_ENTRIES: list indices must be positive integers
 
 # that's all, folks
 gap> STOP_TEST( "listgen.tst", 320000);
