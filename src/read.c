@@ -1529,7 +1529,9 @@ void ReadLiteral (
     /* <Function>                                                          */
     case S_FUNCTION:
     case S_ATOMIC:
+#ifdef HPCGAP
     case S_DO:
+#endif
         ReadFuncExpr( follow, mode );
         break;
 
@@ -1583,8 +1585,11 @@ void ReadAtom (
     }
     /* otherwise read a literal expression                                 */
     else if (IS_IN(TLS(Symbol),S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
-                          S_REC|S_FUNCTION|S_DO|S_ATOMIC| S_FLOAT | S_DOT |
-                         S_MAPTO))
+                          S_REC|S_FUNCTION|
+#ifdef HPCGAP
+                          S_DO|
+#endif
+                          S_ATOMIC|S_FLOAT|S_DOT|S_MAPTO))
     {
         ReadLiteral( follow, mode );
     }
