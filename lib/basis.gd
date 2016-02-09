@@ -896,7 +896,6 @@ InstallGlobalFunction( "DeclareHandlingByNiceBasis", function( name, info )
     od;
 end );
 
-
 #############################################################################
 ##
 #F  IsGenericFiniteSpace( <V> )
@@ -1187,4 +1186,3 @@ DeclareGlobalFunction( "BasisWithReplacedLeftModule" );
 #############################################################################
 ##
 #E
-
