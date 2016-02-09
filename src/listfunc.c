@@ -688,67 +688,33 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
     }
   return (Obj) 0;
 }
-  
 
-void SORT_LIST (
-    Obj                 list )
-{
-    UInt                len;            /* length of the list              */
-    UInt                h;              /* gap width in the shellsort      */
-    Obj                 v, w;           /* two element of the list         */
-    UInt                i, k;           /* loop variables                  */
+// See sortbase.h for a description of these macros.
 
-    /* sort the list with a shellsort                                      */
-    len = LEN_LIST( list );
-    h = 1;
-    while ( 9*h + 4 < len ) { h = 3*h + 1; }
-    while ( 0 < h ) {
-        for ( i = h+1; i <= len; i++ ) {
-            v = ELMV_LIST( list, i );
-            k = i;
-            w = ELMV_LIST( list, k-h );
-            while ( h < k && LT( v, w ) ) {
-                ASS_LIST( list, k, w );
-                k -= h;
-                if ( h < k )  w = ELMV_LIST( list, k-h );
-            }
-            ASS_LIST( list, k, v );
-        }
-        h = h / 3;
-    }
-    if (IS_PLIST(list))
-      RESET_FILT_LIST(list, FN_IS_NSORT);
-}
-
-void SortDensePlist (
-    Obj                 list )
-{
-    UInt                len;            /* length of the list              */
-    UInt                h;              /* gap width in the shellsort      */
-    Obj                 v, w;           /* two element of the list         */
-    UInt                i, k;           /* loop variables                  */
-
-    /* sort the list with a shellsort                                      */
-    len = LEN_PLIST( list );
-    h = 1;
-    while ( 9*h + 4 < len ) { h = 3*h + 1; }
-    while ( 0 < h ) {
-        for ( i = h+1; i <= len; i++ ) {
-            v = ELM_PLIST( list, i );
-            k = i;
-            w = ELM_PLIST( list, k-h );
-            while ( h < k && LT( v, w ) ) {
-                SET_ELM_PLIST( list, k, w );
-                k -= h;
-                if ( h < k )  w = ELM_PLIST( list, k-h );
-            }
-            SET_ELM_PLIST( list, k, v );
-        }
-        h = h / 3;
-    }
+#define SORT_FUNC_NAME SORT_LIST
+#define SORT_FUNC_ARGS  Obj list
+#define SORT_CREATE_TEMP(name) Obj name ;
+#define SORT_LEN_LIST() LEN_LIST(list)
+#define SORT_ASS_LIST_TO_TEMP(t, i) t = ELMV_LIST(list, i)
+#define SORT_ASS_TEMP_TO_LIST(i, j) ASS_LIST(list, i, j)
+#define SORT_COMP(v, w) LT(v, w)
+#define SORT_FILTER_CHECKS() \
+  if(IS_PLIST(list)) \
     RESET_FILT_LIST(list, FN_IS_NSORT);
-}
 
+#include "sortbase.h"
+
+#define SORT_FUNC_NAME SortDensePlist
+#define SORT_FUNC_ARGS Obj list
+#define SORT_CREATE_TEMP(name) Obj name ;
+#define SORT_LEN_LIST() LEN_PLIST(list)
+#define SORT_ASS_LIST_TO_TEMP(t, i) t = ELM_PLIST(list, i)
+#define SORT_ASS_TEMP_TO_LIST(i, j) SET_ELM_PLIST(list, i, j)
+#define SORT_COMP(v, w) LT(v, w)
+#define SORT_FILTER_CHECKS() \
+  RESET_FILT_LIST(list, FN_IS_NSORT);
+
+#include "sortbase.h"
 
 /****************************************************************************
 **
@@ -758,74 +724,33 @@ void SortDensePlist (
 **  'SORT_LISTComp' sorts the list <list> in increasing order, with respect to
 **  comparison function <func>.
 */
-void SORT_LISTComp (
-    Obj                 list,
-    Obj                 func )
-{
-    UInt                len;            /* length of the list              */
-    UInt                h;              /* gap width in the shellsort      */
-    Obj                 v, w;           /* two element of the list         */
-    UInt                i, k;           /* loop variables                  */
+#define SORT_FUNC_NAME SORT_LISTComp
+#define SORT_FUNC_ARGS Obj list, Obj func
+#define SORT_CREATE_TEMP(name) Obj name ;
+#define SORT_LEN_LIST() LEN_LIST(list)
+#define SORT_ASS_LIST_TO_TEMP(t, i) t = ELMV_LIST(list, i)
+#define SORT_ASS_TEMP_TO_LIST(i, j) ASS_LIST(list, i, j)
+#define SORT_COMP(v, w) CALL_2ARGS(func, v, w) == True
+/* list is not necc. sorted wrt. \< (any longer) */
+#define SORT_FILTER_CHECKS() \
+  RESET_FILT_LIST(list, FN_IS_SSORT); \
+  RESET_FILT_LIST(list, FN_IS_NSORT);
 
-    /* sort the list with a shellsort                                      */
-    len = LEN_LIST( list );
-    h = 1;
-    while ( 9*h + 4 < len ) { h = 3*h + 1; }
-    while ( 0 < h ) {
-        for ( i = h+1; i <= len; i++ ) {
-            v = ELMV_LIST( list, i );
-            k = i;
-            w = ELMV_LIST( list, k-h );
-            while ( h < k && CALL_2ARGS( func, v, w ) == True ) {
-                ASS_LIST( list, k, w );
-                k -= h;
-                if ( h < k )  w = ELMV_LIST( list, k-h );
-            }
-            ASS_LIST( list, k, v );
-        }
-        h = h / 3;
-    }
-    /* list is not necc. sorted wrt. \< (any longer) */
-    RESET_FILT_LIST(list, FN_IS_SSORT);
-    RESET_FILT_LIST(list, FN_IS_NSORT);
-}
+#include "sortbase.h"
 
+#define SORT_FUNC_NAME SortDensePlistComp
+#define SORT_FUNC_ARGS Obj list, Obj func
+#define SORT_CREATE_TEMP(name) Obj name ;
+#define SORT_LEN_LIST() LEN_PLIST(list)
+#define SORT_ASS_LIST_TO_TEMP(t, i) t = ELM_PLIST(list, i)
+#define SORT_ASS_TEMP_TO_LIST(i, j) SET_ELM_PLIST(list, i, j)
+#define SORT_COMP(v, w) CALL_2ARGS(func, v, w) == True
+/* list is not necc. sorted wrt. \< (any longer) */
+#define SORT_FILTER_CHECKS() \
+  RESET_FILT_LIST(list, FN_IS_SSORT); \
+  RESET_FILT_LIST(list, FN_IS_NSORT);
 
-
-
-
-
-void SortDensePlistComp (
-    Obj                 list,
-    Obj                 func )
-{
-    UInt                len;            /* length of the list              */
-    UInt                h;              /* gap width in the shellsort      */
-    Obj                 v, w;           /* two element of the list         */
-    UInt                i, k;           /* loop variables                  */
-
-    /* sort the list with a shellsort                                      */
-    len = LEN_PLIST( list );
-    h = 1;
-    while ( 9*h + 4 < len ) { h = 3*h + 1; }
-    while ( 0 < h ) {
-        for ( i = h+1; i <= len; i++ ) {
-            v = ELM_PLIST( list, i );
-            k = i;
-            w = ELM_PLIST( list, k-h );
-            while ( h < k && CALL_2ARGS( func, v, w ) == True ) {
-                SET_ELM_PLIST( list, k, w );
-                k -= h;
-                if ( h < k )  w = ELM_PLIST( list, k-h );
-            }
-            SET_ELM_PLIST( list, k, v );
-        }
-        h = h / 3;
-    }
-    /* list is not necc. sorted wrt. \< (any longer) */
-    RESET_FILT_LIST(list, FN_IS_SSORT);
-    RESET_FILT_LIST(list, FN_IS_NSORT);
-}
+#include "sortbase.h"
 
 /****************************************************************************
 **
@@ -843,175 +768,85 @@ void SortDensePlistComp (
 **  the second list added in.
 */
 
-void SORT_PARA_LIST (
-    Obj                 list,
-    Obj               shadow )
-{
-    UInt                len;            /* length of the list              */
-    UInt                h;              /* gap width in the shellsort      */
-    Obj                 v,  w;          /* two element of the list         */
-    Obj                 vs, ws;         /* two element of the shadow list  */
-    UInt                i,  k;          /* loop variables                  */
-
-    /* sort the list with a shellsort                                      */
-    len = LEN_LIST( list );
-    h = 1;
-    while ( 9*h + 4 < len ) { h = 3*h + 1; }
-    while ( 0 < h ) {
-        for ( i = h+1; i <= len; i++ ) {
-            v  = ELMV_LIST( list,   i ); 
-            vs = ELMV_LIST( shadow, i );
-            k  = i;
-            w  = ELMV_LIST( list,   k-h );
-            ws = ELMV_LIST( shadow, k-h );
-            while ( h < k && LT( v, w ) ) {
-              ASS_LIST( list,   k, w  );
-              ASS_LIST( shadow, k, ws );
-                k -= h;
-                if ( h < k ) {
-                    w  = ELMV_LIST( list,   k-h );
-                    ws = ELMV_LIST( shadow, k-h );
-                }
-            }
-            ASS_LIST( list,   k, v  ); 
-            ASS_LIST( shadow, k, vs );
-        }
-        h = h / 3;
-    }
+#define SORT_FUNC_NAME SORT_PARA_LIST
+#define SORT_FUNC_ARGS Obj list, Obj shadow
+#define SORT_CREATE_TEMP(name) Obj name ; Obj name##s ;
+#define SORT_LEN_LIST() LEN_LIST(list)
+#define SORT_ASS_LIST_TO_TEMP(t, i) \
+  t = ELMV_LIST(list, i); \
+  t##s = ELMV_LIST(shadow, i);
+#define SORT_ASS_TEMP_TO_LIST(i, t) \
+  ASS_LIST(list, i, t); \
+  ASS_LIST(shadow, i, t##s);
+#define SORT_COMP(v, w) LT( v, w )
     /* if list was ssorted, then it still will be,
        but, we don't know anything else any more */
-    RESET_FILT_LIST(list, FN_IS_NSORT);
-    RESET_FILT_LIST(shadow, FN_IS_SSORT);
-    RESET_FILT_LIST(shadow, FN_IS_NSORT);
-}
+#define SORT_FILTER_CHECKS() \
+  RESET_FILT_LIST(list, FN_IS_NSORT); \
+  RESET_FILT_LIST(shadow, FN_IS_SSORT); \
+  RESET_FILT_LIST(shadow, FN_IS_NSORT);
 
-void SortParaDensePlist (
-    Obj                 list,
-    Obj               shadow )
-{
-    UInt                len;            /* length of the list              */
-    UInt                h;              /* gap width in the shellsort      */
-    Obj                 v,  w;          /* two element of the list         */
-    Obj                 vs, ws;         /* two element of the shadow list  */
-    UInt                i,  k;          /* loop variables                  */
+#include "sortbase.h"
 
-    /* sort the list with a shellsort                                      */
-    len = LEN_PLIST( list );
-    h = 1;
-    while ( 9*h + 4 < len ) { h = 3*h + 1; }
-    while ( 0 < h ) {
-        for ( i = h+1; i <= len; i++ ) {
-            v  = ELM_PLIST( list,   i );
-            vs = ELM_PLIST( shadow, i );
-            k  = i;
-            w  = ELM_PLIST( list,   k-h );
-            ws = ELM_PLIST( shadow, k-h );
-            while ( h < k && LT( v, w ) ) {
-                SET_ELM_PLIST( list,   k, w  );
-                SET_ELM_PLIST( shadow, k, ws );
-                k -= h;
-                if ( h < k ) {
-                    w  = ELM_PLIST( list,   k-h );
-                    ws = ELM_PLIST( shadow, k-h );
-                }
-            }
-            SET_ELM_PLIST( list,   k, v  );
-            SET_ELM_PLIST( shadow, k, vs );
-        }
-        h = h / 3;
-    }
-
+#define SORT_FUNC_NAME SortParaDensePlist
+#define SORT_FUNC_ARGS Obj list, Obj shadow
+#define SORT_CREATE_TEMP(name) Obj name ; Obj name##s ;
+#define SORT_LEN_LIST() LEN_PLIST(list)
+#define SORT_ASS_LIST_TO_TEMP(t, i) \
+  t = ELM_PLIST(list, i); \
+  t##s = ELM_PLIST(shadow, i);
+#define SORT_ASS_TEMP_TO_LIST(i, t) \
+  SET_ELM_PLIST(list, i, t); \
+  SET_ELM_PLIST(shadow, i, t##s);
+#define SORT_COMP(v, w) LT( v, w )
     /* if list was ssorted, then it still will be,
        but, we don't know anything else any more */
-    RESET_FILT_LIST(list, FN_IS_NSORT);
+#define SORT_FILTER_CHECKS() \
+  RESET_FILT_LIST(list, FN_IS_NSORT); \
+  RESET_FILT_LIST(shadow, FN_IS_SSORT); \
+  RESET_FILT_LIST(shadow, FN_IS_NSORT);
+
+#include "sortbase.h"
+
+#define SORT_FUNC_NAME SORT_PARA_LISTComp
+#define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
+#define SORT_CREATE_TEMP(name) Obj name ; Obj name##s ;
+#define SORT_LEN_LIST() LEN_LIST(list)
+#define SORT_ASS_LIST_TO_TEMP(t, i) \
+  t = ELMV_LIST(list, i); \
+  t##s = ELMV_LIST(shadow, i);
+#define SORT_ASS_TEMP_TO_LIST(i, t) \
+  ASS_LIST(list, i, t); \
+  ASS_LIST(shadow, i, t##s);
+#define SORT_COMP(v, w) CALL_2ARGS( func, v, w ) == True
+/* list is not necc. sorted wrt. \< (any longer) */
+#define SORT_FILTER_CHECKS() \
+    RESET_FILT_LIST(list, FN_IS_SSORT); \
+    RESET_FILT_LIST(list, FN_IS_NSORT); \
+    RESET_FILT_LIST(shadow, FN_IS_NSORT); \
     RESET_FILT_LIST(shadow, FN_IS_SSORT);
-    RESET_FILT_LIST(shadow, FN_IS_NSORT);
-}
 
-void SORT_PARA_LISTComp (
-    Obj                 list,
-    Obj               shadow,
-    Obj                 func )
-{
-    UInt                len;            /* length of the list              */
-    UInt                h;              /* gap width in the shellsort      */
-    Obj                 v,  w;          /* two element of the list         */
-    Obj                 vs, ws;         /* two element of the shadow list  */
-    UInt                i,  k;          /* loop variables                  */
-
-    /* sort the list with a shellsort                                      */
-    len = LEN_LIST( list );
-    h = 1;
-    while ( 9*h + 4 < len ) { h = 3*h + 1; }
-    while ( 0 < h ) {
-        for ( i = h+1; i <= len; i++ ) {
-            v  = ELMV_LIST( list,   i );    
-            vs = ELMV_LIST( shadow, i );
-            k  = i;
-            w  = ELMV_LIST( list,   k-h );
-            ws = ELMV_LIST( shadow, k-h );
-            while ( h < k && CALL_2ARGS( func, v, w ) == True ) {
-                ASS_LIST( list,   k, w );
-                ASS_LIST( shadow, k, ws );
-                k -= h;
-                if ( h < k ) {
-                    w  = ELMV_LIST( list,   k-h );
-                    ws = ELMV_LIST( shadow, k-h );
-                }
-            }
-            ASS_LIST( list,   k, v  );
-            ASS_LIST( shadow, k, vs );
-        }
-        h = h / 3;
-    }
-    /* list is not necc. sorted wrt. \< (any longer) */
-    RESET_FILT_LIST(list, FN_IS_SSORT);
-    RESET_FILT_LIST(list, FN_IS_NSORT);
-    RESET_FILT_LIST(shadow, FN_IS_NSORT);
+#include "sortbase.h"
+  
+#define SORT_FUNC_NAME SortParaDensePlistComp
+#define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
+#define SORT_CREATE_TEMP(name) Obj name ; Obj name##s ;
+#define SORT_LEN_LIST() LEN_PLIST(list)
+#define SORT_ASS_LIST_TO_TEMP(t, i) \
+  t = ELM_PLIST(list, i); \
+  t##s = ELM_PLIST(shadow, i);
+#define SORT_ASS_TEMP_TO_LIST(i, t) \
+  SET_ELM_PLIST(list, i, t); \
+  SET_ELM_PLIST(shadow, i, t##s);
+#define SORT_COMP(v, w) CALL_2ARGS( func, v, w ) == True
+/* list is not necc. sorted wrt. \< (any longer) */
+#define SORT_FILTER_CHECKS() \
+    RESET_FILT_LIST(list, FN_IS_SSORT); \
+    RESET_FILT_LIST(list, FN_IS_NSORT); \
+    RESET_FILT_LIST(shadow, FN_IS_NSORT); \
     RESET_FILT_LIST(shadow, FN_IS_SSORT);
-}
 
-void SortParaDensePlistComp (
-    Obj                 list,
-    Obj               shadow,
-    Obj                 func )
-{
-    UInt                len;            /* length of the list              */
-    UInt                h;              /* gap width in the shellsort      */
-    Obj                 v,  w;          /* two element of the list         */
-    Obj                 vs, ws;         /* two element of the shadow list  */
-    UInt                i,  k;          /* loop variables                  */
-
-    /* sort the list with a shellsort                                      */
-    len = LEN_PLIST( list );
-    h = 1;
-    while ( 9*h + 4 < len ) { h = 3*h + 1; }
-    while ( 0 < h ) {
-        for ( i = h+1; i <= len; i++ ) {
-            v  = ELM_PLIST( list,   i );
-            vs = ELM_PLIST( shadow, i );
-            k  = i;
-            w  = ELM_PLIST( list,   k-h );
-            ws = ELM_PLIST( shadow, k-h );
-            while ( h < k && CALL_2ARGS( func, v, w ) == True ) {
-                SET_ELM_PLIST( list,   k, w  );
-                SET_ELM_PLIST( shadow, k, ws );
-                k -= h;
-                if ( h < k ) {
-                    w  = ELM_PLIST( list,   k-h );  
-                    ws = ELM_PLIST( shadow, k-h );
-                }
-            }
-            SET_ELM_PLIST( list,   k, v  );
-            SET_ELM_PLIST( shadow, k, vs );
-        }
-        h = h / 3;
-    }
-    RESET_FILT_LIST(list, FN_IS_NSORT);
-    RESET_FILT_LIST(list, FN_IS_SSORT);
-    RESET_FILT_LIST(shadow, FN_IS_NSORT);
-    RESET_FILT_LIST(shadow, FN_IS_SSORT);
-}
+#include "sortbase.h"
 
 
 
