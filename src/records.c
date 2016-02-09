@@ -739,7 +739,7 @@ static Int InitLibrary (
     SET_LEN_PLIST( NamesRNam, 0 );
 
     /* make the hash list of record names                                  */
-    SizeRNam = 997;
+    SizeRNam = 14033;
     HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
     MakeBagPublic(HashRNam);
     SET_LEN_PLIST( HashRNam, SizeRNam );

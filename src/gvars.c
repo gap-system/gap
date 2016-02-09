@@ -1188,7 +1188,7 @@ static Int InitLibrary (
     SET_LEN_PLIST( FopiesGVars, 0 );
 
     /* make the list of global variables                                   */
-    SizeGVars  = 997;
+    SizeGVars  = 14033;
     TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
     SET_LEN_PLIST( TableGVars, SizeGVars );
 
