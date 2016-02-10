@@ -693,10 +693,11 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 
 #define SORT_FUNC_NAME SORT_LIST
 #define SORT_FUNC_ARGS  Obj list
-#define SORT_CREATE_TEMP(name) Obj name ;
+#define SORT_ARGS list
+#define SORT_CREATE_LOCAL(name) Obj name ;
 #define SORT_LEN_LIST() LEN_LIST(list)
-#define SORT_ASS_LIST_TO_TEMP(t, i) t = ELMV_LIST(list, i)
-#define SORT_ASS_TEMP_TO_LIST(i, j) ASS_LIST(list, i, j)
+#define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELMV_LIST(list, i)
+#define SORT_ASS_LOCAL_TO_LIST(i, j) ASS_LIST(list, i, j)
 #define SORT_COMP(v, w) LT(v, w)
 #define SORT_FILTER_CHECKS() \
   if(IS_PLIST(list)) \
@@ -706,10 +707,11 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 
 #define SORT_FUNC_NAME SortDensePlist
 #define SORT_FUNC_ARGS Obj list
-#define SORT_CREATE_TEMP(name) Obj name ;
+#define SORT_ARGS list
+#define SORT_CREATE_LOCAL(name) Obj name ;
 #define SORT_LEN_LIST() LEN_PLIST(list)
-#define SORT_ASS_LIST_TO_TEMP(t, i) t = ELM_PLIST(list, i)
-#define SORT_ASS_TEMP_TO_LIST(i, j) SET_ELM_PLIST(list, i, j)
+#define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELM_PLIST(list, i)
+#define SORT_ASS_LOCAL_TO_LIST(i, j) SET_ELM_PLIST(list, i, j)
 #define SORT_COMP(v, w) LT(v, w)
 #define SORT_FILTER_CHECKS() \
   RESET_FILT_LIST(list, FN_IS_NSORT);
@@ -726,10 +728,11 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 */
 #define SORT_FUNC_NAME SORT_LISTComp
 #define SORT_FUNC_ARGS Obj list, Obj func
-#define SORT_CREATE_TEMP(name) Obj name ;
+#define SORT_ARGS list, func
+#define SORT_CREATE_LOCAL(name) Obj name ;
 #define SORT_LEN_LIST() LEN_LIST(list)
-#define SORT_ASS_LIST_TO_TEMP(t, i) t = ELMV_LIST(list, i)
-#define SORT_ASS_TEMP_TO_LIST(i, j) ASS_LIST(list, i, j)
+#define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELMV_LIST(list, i)
+#define SORT_ASS_LOCAL_TO_LIST(i, j) ASS_LIST(list, i, j)
 #define SORT_COMP(v, w) CALL_2ARGS(func, v, w) == True
 /* list is not necc. sorted wrt. \< (any longer) */
 #define SORT_FILTER_CHECKS() \
@@ -740,10 +743,11 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 
 #define SORT_FUNC_NAME SortDensePlistComp
 #define SORT_FUNC_ARGS Obj list, Obj func
-#define SORT_CREATE_TEMP(name) Obj name ;
+#define SORT_ARGS list, func
+#define SORT_CREATE_LOCAL(name) Obj name ;
 #define SORT_LEN_LIST() LEN_PLIST(list)
-#define SORT_ASS_LIST_TO_TEMP(t, i) t = ELM_PLIST(list, i)
-#define SORT_ASS_TEMP_TO_LIST(i, j) SET_ELM_PLIST(list, i, j)
+#define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELM_PLIST(list, i)
+#define SORT_ASS_LOCAL_TO_LIST(i, j) SET_ELM_PLIST(list, i, j)
 #define SORT_COMP(v, w) CALL_2ARGS(func, v, w) == True
 /* list is not necc. sorted wrt. \< (any longer) */
 #define SORT_FILTER_CHECKS() \
@@ -770,12 +774,13 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 
 #define SORT_FUNC_NAME SORT_PARA_LIST
 #define SORT_FUNC_ARGS Obj list, Obj shadow
-#define SORT_CREATE_TEMP(name) Obj name ; Obj name##s ;
+#define SORT_ARGS list, shadow
+#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ;
 #define SORT_LEN_LIST() LEN_LIST(list)
-#define SORT_ASS_LIST_TO_TEMP(t, i) \
+#define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELMV_LIST(list, i); \
   t##s = ELMV_LIST(shadow, i);
-#define SORT_ASS_TEMP_TO_LIST(i, t) \
+#define SORT_ASS_LOCAL_TO_LIST(i, t) \
   ASS_LIST(list, i, t); \
   ASS_LIST(shadow, i, t##s);
 #define SORT_COMP(v, w) LT( v, w )
@@ -790,12 +795,13 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 
 #define SORT_FUNC_NAME SortParaDensePlist
 #define SORT_FUNC_ARGS Obj list, Obj shadow
-#define SORT_CREATE_TEMP(name) Obj name ; Obj name##s ;
+#define SORT_ARGS list, shadow
+#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ;
 #define SORT_LEN_LIST() LEN_PLIST(list)
-#define SORT_ASS_LIST_TO_TEMP(t, i) \
+#define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELM_PLIST(list, i); \
   t##s = ELM_PLIST(shadow, i);
-#define SORT_ASS_TEMP_TO_LIST(i, t) \
+#define SORT_ASS_LOCAL_TO_LIST(i, t) \
   SET_ELM_PLIST(list, i, t); \
   SET_ELM_PLIST(shadow, i, t##s);
 #define SORT_COMP(v, w) LT( v, w )
@@ -810,12 +816,13 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 
 #define SORT_FUNC_NAME SORT_PARA_LISTComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
-#define SORT_CREATE_TEMP(name) Obj name ; Obj name##s ;
+#define SORT_ARGS list, shadow, func
+#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ;
 #define SORT_LEN_LIST() LEN_LIST(list)
-#define SORT_ASS_LIST_TO_TEMP(t, i) \
+#define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELMV_LIST(list, i); \
   t##s = ELMV_LIST(shadow, i);
-#define SORT_ASS_TEMP_TO_LIST(i, t) \
+#define SORT_ASS_LOCAL_TO_LIST(i, t) \
   ASS_LIST(list, i, t); \
   ASS_LIST(shadow, i, t##s);
 #define SORT_COMP(v, w) CALL_2ARGS( func, v, w ) == True
@@ -830,12 +837,13 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
   
 #define SORT_FUNC_NAME SortParaDensePlistComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
-#define SORT_CREATE_TEMP(name) Obj name ; Obj name##s ;
+#define SORT_ARGS list, shadow, func
+#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ;
 #define SORT_LEN_LIST() LEN_PLIST(list)
-#define SORT_ASS_LIST_TO_TEMP(t, i) \
+#define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELM_PLIST(list, i); \
   t##s = ELM_PLIST(shadow, i);
-#define SORT_ASS_TEMP_TO_LIST(i, t) \
+#define SORT_ASS_LOCAL_TO_LIST(i, t) \
   SET_ELM_PLIST(list, i, t); \
   SET_ELM_PLIST(shadow, i, t##s);
 #define SORT_COMP(v, w) CALL_2ARGS( func, v, w ) == True
