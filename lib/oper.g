@@ -521,7 +521,7 @@ BIND_GLOBAL( "TraceImmediateMethods", function( arg )
     fi;
 
     if LENGTH(arg) > 1 or not IS_BOOL(arg[1]) then
-      Error("Usage: TraceImmediateMethods( [bool] )");
+        Error("Usage: TraceImmediateMethods( [bool] )");
     fi;
 
     if arg[1] then
@@ -686,20 +686,20 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
 
         else
 	  atomic readonly FILTER_REGION do
-	    if    INFO_FILTERS[ pos ] in FNUM_TPRS
+	  if    INFO_FILTERS[ pos ] in FNUM_TPRS
              or INFO_FILTERS[ pos ] in FNUM_ATTS then
 
-          # `gvar' is an attribute tester or property tester.
-          Error( "operation `", name,
-                 "' is an attribute tester or property tester" );
+            # `gvar' is an attribute tester or property tester.
+            Error( "operation `", name,
+                   "' is an attribute tester or property tester" );
 
-        else
+          else
 
-          # `gvar' is a property.
-          Error( "operation `", name,
-                 "' was created as a property, use`DeclareProperty'" );
+            # `gvar' is a property.
+            Error( "operation `", name,
+                   "' was created as a property, use`DeclareProperty'" );
 
-        fi;
+          fi;
 	  od;
 	fi;
 
@@ -772,7 +772,7 @@ BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
 
     atomic readwrite OPERATIONS_REGION do
     ADD_LIST( OPERATIONS, oper );
-        ADD_LIST( OPERATIONS, MigrateObj( [ filt ], OPERATIONS_REGION ) );
+    ADD_LIST( OPERATIONS, MigrateObj( [ filt ], OPERATIONS_REGION ) );
     od;
 end );
 
@@ -826,7 +826,7 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
 
       atomic readwrite OPERATIONS_REGION do
       pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-          ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj( filt, OPERATIONS_REGION) );
+      ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj( filt, OPERATIONS_REGION) );
       od;
 
     else
@@ -874,7 +874,7 @@ BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
     atomic readwrite CONSTRUCTORS, OPERATIONS_REGION do
     ADD_LIST( CONSTRUCTORS, oper );
     ADD_LIST( OPERATIONS,   oper );
-        ADD_LIST( OPERATIONS,   MigrateObj( [ filt ], OPERATIONS_REGION) );
+    ADD_LIST( OPERATIONS,   MigrateObj( [ filt ], OPERATIONS_REGION) );
     od;
 end );
 
@@ -1505,7 +1505,7 @@ end );
 ##  <Ref Oper="ViewObj"/> prints information about the object <A>obj</A>.
 ##  This information is thought to be short and human readable,
 ##  in particular <E>not</E> necessarily detailed enough for defining <A>obj</A>,
-##  an in general <E>not</E> &GAP; readable.
+##  and in general <E>not</E> &GAP; readable.
 ##  <P/>
 ##  More detailed information can be obtained by <Ref Func="PrintObj"/>
 ##  </Description>
@@ -1682,6 +1682,174 @@ end );
 
 #############################################################################
 ##
+#F  AllowGlobalRedeclaration( <list> ) . . function(s) may be declared twice
+#F  AllowGlobalReinstallation( <list> ) . . . . . . .  and implemented twice
+## 
+##  <#GAPDoc Label="AllowGlobalRedeclaration">
+##  <ManSection>
+##  <Func Name="AllowGlobalRedeclaration" Arg='list'/>
+##  <Func Name="AllowGlobalReinstallation" Arg='list'/>
+##
+##  <Description>
+##  These two functions are provided to assist with the transfer of global 
+##  functions from one package to another. 
+##  They were originally introduced when the <Package>Utils</Package> package 
+##  was being put together, but may prove to have more general use. 
+##  The idea was to enable the declaration and implementation code of a global 
+##  function <A>glob</A> in package <Package>First</Package> (say) 
+##  to be duplicated in package <Package>Second</Package> without causing an 
+##  error when both packages are loaded (in either order). 
+##  Then, when all tests are satisfactory, the code may be deleted from 
+##  <Package>First</Package>. 
+##  The function <C>AllowGlobalRedeclaration</C> adds the name <A>"glob"</A> 
+##  to the list <A>GLOBAL_REDECLARATION_LIST</A>, 
+##  while the function <C>AllowGlobalReinstallation</C> adds the function 
+##  <A>glob</A> to the list <A>GLOBAL_REINSTALLATION_LIST</A>. 
+##  The list <A>GLOBAL_REDECLARATION_COUNT</A> records the number of times 
+##  that each function in <A>GLOBAL_REDECLARATION_LIST</A> has been declared.
+##  Since there appears to be no simple way to test whether a global function 
+##  has been installed, it is <E>assumed</E> that every 
+##  <C>DeclareGlobalFunction</C> in <Package>First</Package> is followed 
+##  by an <C>InstallGlobalFunction</C>, so that both are read 
+##  when the package is loaded. 
+##  Here is the order in which commands are read in <Package>Second</Package>. 
+##  <Listing>
+##  AllowGlobalRedeclaration( "glob" );
+##  DeclareGlobalFunction( "glob" ); 
+##  AllowGlobalReinstallation( glob );
+##  InstallGlobalFunction( glob, function( . . . 
+##  </Listing> 
+##  <P/> 
+##  Since some functions avoid separate declaration and installation steps, 
+##  and use <C>BIND_GLOBAL</C> directly, there is a similar function 
+##  <C>AllowGlobalRebinding</C> in the file <File>global.g</File> 
+##  which adds a function name to the list <A>GLOBAL_REBINDING_LIST</A>. 
+##  <P/> 
+##  The function <C>AllowGlobalRedeclaration</C> accepts as arguments 
+##  one or more strings, or a list of strings, and ignores duplicates. 
+##  The following example is included to show that the functions work 
+##  as expected, but not how they will be used in practice 
+##  (surely no package has global functions <A>f1, f2</A> etc.).  
+##  </Description>
+##  </ManSection>
+##  <Example>
+##  <![CDATA[
+##  gap> DeclareGlobalFunction( "f1" );
+##  gap> InstallGlobalFunction( f1, function(n) return n^2; end );
+##  gap> f1(9);
+##  81
+##  gap> AllowGlobalRedeclaration( "f1" );
+##  gap> AllowGlobalRedeclaration( "f2", "f3" );
+##  gap> AllowGlobalRedeclaration( [ "f2", "f3", "f4" ] );
+##  gap> GLOBAL_REDECLARATION_LIST;
+##  [ "f1", "f2", "f3", "f4" ]
+##  gap> AllowGlobalReinstallation( f1 );
+##  gap> DeclareGlobalFunction( "f1" );
+##  gap> InstallGlobalFunction( f1, function(n) return -n; end );  
+##  gap> f1(9);
+##  81
+##  gap> ## this shows that the second installation command is ignored 
+##  gap> ## in correct usage the two installation codes will be identical 
+##  gap> GLOBAL_REDECLARATION_COUNT;
+##  [ 2, 0, 0, 0 ]
+##  gap> DeclareGlobalFunction( "f1" );
+##  gap> DeclareGlobalFunction( "f2" );
+##  gap> InstallGlobalFunction( f2, function(m,n) return m+n; end );
+##  gap> AllowGlobalReinstallation( f2 );
+##  gap> DeclareGlobalFunction( "f2" );                             
+##  gap> InstallGlobalFunction( f2, function(m,n) return m+n; end );
+##  gap> GLOBAL_REDECLARATION_COUNT;
+##  [ 3, 2, 0, 0 ]
+##  gap> GLOBAL_REINSTALLATION_LIST = [ f1, f2 ];
+##  true
+##  gap> DeclareGlobalFunction( "f3" );
+##  gap> DeclareGlobalFunction( "f4" );
+##  ## we should AllowGlobalReinstallation( f3 ); before f4, so an error: 
+##  gap> AllowGlobalReinstallation( f4 );
+##  Error, redeclaration and reinstallation lists inconsistent called from
+##  <function "AllowGlobalReinstallation">( <arguments> )
+##   called from read-eval loop at line 28 of *stdin*
+##  you can 'quit;' to quit to outer loop, or
+##  you can 'return;' to continue
+##  brk> 
+##  ]]>
+##  </Example>
+##  <#/GAPDoc>
+##
+
+BIND_GLOBAL( "GLOBAL_REDECLARATION_LIST",   
+    ShareSpecialObj([], "GLOBAL_REDECLARATION_LIST") );  
+BIND_GLOBAL( "GLOBAL_REINSTALLATION_LIST",  
+    ShareSpecialObj([], "GLOBAL_REINSTALLATION_LIST") );  
+BIND_GLOBAL( "GLOBAL_REDECLARATION_COUNT", 
+    ShareSpecialObj([], "GLOBAL_REDECLARATION_COUNT") );  
+
+BIND_GLOBAL( "AllowGlobalRedeclaration", function( arg ) 
+    local  L, pos, name, count;
+    ##  form the arguments into a list of strings L 
+    if ( LEN_LIST(arg) = 1 ) then 
+        if IS_STRING_REP( arg[1] ) then 
+            L := arg; 
+        elif IS_LIST( arg[1] ) then 
+            L := arg[1]; 
+        fi; 
+    else 
+        L := arg; 
+    fi; 
+    for name in L do  
+        if not IS_STRING_REP( name ) then 
+            Error("arg must be a string (function name) or a list of strings");
+        fi;
+    od;
+    for name in L do 
+        ##  avoid duplicate entries in GLOBAL_REDECLARATION_LIST 
+        pos := POS_LIST_DEFAULT( GLOBAL_REDECLARATION_LIST, name, 0 ); 
+        if ( pos = fail ) then 
+            ADD_LIST( GLOBAL_REDECLARATION_LIST, name ); 
+            ##  has name been declared already? 
+            if ISBOUND_GLOBAL( name ) then 
+                count := 1; 
+            else 
+                count := 0;
+            fi; 
+            ADD_LIST( GLOBAL_REDECLARATION_COUNT, count ); 
+        fi;
+    od;
+end );
+
+BIND_GLOBAL( "AllowGlobalReinstallation", function( arg ) 
+    local  L, oper, posd, posi, name; 
+    ##  form the arguments into a list of functions L 
+    if ( ( LEN_LIST(arg) = 1 ) and IS_LIST( arg[1] ) ) then 
+        L := arg[1]; 
+    else 
+        L := arg; 
+    fi; 
+    for oper in L do  
+        if not IS_FUNCTION( oper ) then 
+            Error("arg must be a function name or a list of functions");
+        fi;
+    od;
+    for oper in L do 
+        ##  avoid duplicate entries in GLOBAL_REINSTALLATION_LIST 
+        posi := POS_LIST_DEFAULT( GLOBAL_REINSTALLATION_LIST, oper, 0 ); 
+        if ( ( posi = fail ) and IS_FUNCTION( oper ) ) then 
+            ##  check that the two lists are consistently ordered 
+            posi := LEN_LIST( GLOBAL_REINSTALLATION_LIST ) + 1; 
+            name := NAME_FUNC( oper ); 
+            posd := POS_LIST_DEFAULT( GLOBAL_REDECLARATION_LIST, name, 0 ); 
+            if ( posd = posi ) then 
+                ADD_LIST( GLOBAL_REINSTALLATION_LIST, oper ); 
+            else 
+                Error( "redeclaration and reinstallation lists inconsistent" );
+            fi;
+        fi;
+    od;
+end );
+
+
+#############################################################################
+##
 #F  DeclareGlobalFunction( <name>, <info> ) . .  create a new global function
 #F  InstallGlobalFunction( <oper>, <func> )
 ##
@@ -1734,20 +1902,32 @@ end );
 ##  global variables (see <C>variable.g</C>) because of the completion
 ##  mechanism.
 ##
-BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", ShareSpecialObj([], "GLOBAL_FUNCTION_NAMES") );
+
+BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", 
+    ShareSpecialObj([], "GLOBAL_FUNCTION_NAMES") );
 
 BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
-    local   name;
+    local   pos,  count,  name;
 
     name := arg[1];
+    ## special case: redeclaration is permitted so increment count for 'name' 
+    if ( name in GLOBAL_REDECLARATION_LIST ) then 
+        pos := POS_LIST_DEFAULT( GLOBAL_REDECLARATION_LIST, name, 0 );   
+        count := GLOBAL_REDECLARATION_COUNT[pos] + 1; 
+        GLOBAL_REDECLARATION_COUNT[pos] := count; 
+        ## if already declared then there is nothing to do 
+        if ISBOUND_GLOBAL( name ) then
+            return; 
+        fi;
+    fi; 
     atomic GLOBAL_FUNCTION_NAMES do
     ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
     od;
-    BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
+    BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) ); 
 end );
 
 BIND_GLOBAL( "InstallGlobalFunction", function( arg )
-    local   oper,  info,  func;
+    local   oper,  info,  func,  pos;
 
     if LEN_LIST(arg) = 3  then
         oper := arg[1];
@@ -1758,12 +1938,20 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
         func := arg[2];
     fi;
     if IS_STRING( oper ) then
-      oper:= VALUE_GLOBAL( oper );
+        oper := VALUE_GLOBAL( oper );
     fi;
+    ## special case: reinstallation is permitted so check declaration number 
+    if ( oper in GLOBAL_REINSTALLATION_LIST ) then 
+        pos := POS_LIST_DEFAULT( GLOBAL_REINSTALLATION_LIST, oper, 0 );   
+        if ( GLOBAL_REDECLARATION_COUNT[pos] >= 2 ) then 
+            ## there have been 2 declarations so this is a repeat installation 
+            return; 
+        fi; 
+    fi;  
     atomic readonly GLOBAL_FUNCTION_NAMES do
     if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
-      Error("you cannot install a global function for another global ",
-            "function,\nuse `DeclareSynonym' instead!");
+        Error("you cannot install a global function for another global ",
+              "function,\nuse `DeclareSynonym' instead!");
     fi;
     INSTALL_METHOD_ARGS( oper, func );
     od;
