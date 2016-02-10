@@ -3,6 +3,8 @@ gap> G := SymmetricGroup(4);; MaximalNormalSubgroups(G)=[DerivedSubgroup(G)];
 true
 gap> G := SymmetricGroup(5);; MaximalNormalSubgroups(G)=[DerivedSubgroup(G)];
 true
+gap> G := AlternatingGroup(5);; Size(MaximalNormalSubgroups(G))=1 and IsTrivial(MaximalNormalSubgroups(G)[1]);
+true
 gap> l := [2,4,8,3,9,5,25,7];; G := DirectProduct(List(l, CyclicGroup));;
 gap> List(MaximalNormalSubgroups(G),N ->List(MinimalGeneratingSet(N),Order));
 [ [ 2, 60, 6300 ], [ 2, 30, 12600 ], [ 2, 30, 12600 ], [ 60, 12600 ], 
