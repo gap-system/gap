@@ -151,6 +151,9 @@ SMALL_GROUP_FUNCS[ 4 ] := function( size, i, inforec )
     elif i = 4 then 
         rels := [ gens[1]^p/gens[3], gens[2]^p, gens[3]^p,
                   Comm( gens[2], gens[1] ) / gens[3] ];
+        if size = 8 then
+            rels[ 2 ] := gens[2]^2/gens[3];
+        fi;
     elif i = 5 then 
         rels := [ gens[1]^p, gens[2]^p, gens[3]^p ];
     fi;
