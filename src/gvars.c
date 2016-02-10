@@ -305,7 +305,7 @@ void            AssGVar (
 	if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
 	    name = NameGVar(gvar);
 	    /*CCC        onam = NEW_STRING(strlen(name));
-	      SyStrncat( CSTR_STRING(onam), name, strlen(name) ); CCC*/
+	      strncat( CSTR_STRING(onam), name, strlen(name) ); CCC*/
 	    len = strlen(name);
 	    C_NEW_STRING_DYN(onam, name);
 	    RESET_FILT_LIST( onam, FN_IS_MUTABLE );
