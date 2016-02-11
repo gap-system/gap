@@ -2101,6 +2101,11 @@ InstallMethod( Sort,
     [ IsList and IsMutable and IsSmallList ],
     SORT_LIST );
 
+InstallMethod( StableSort,
+    "for a mutable small list",
+    [ IsList and IsMutable and IsSmallList ],
+    STABLE_SORT_LIST );
+
 InstallMethod( Sort,
     "for a mutable list",
     [ IsList and IsMutable ],
@@ -2112,7 +2117,23 @@ InstallMethod( Sort,
     fi;
     end );
 
+InstallMethod( StableSort,
+    "for a mutable list",
+    [ IsList and IsMutable ],
+    function( list )
+    if IsSmallList( list ) then
+      STABLE_SORT_LIST( list );
+    else
+      TryNextMethod();
+    fi;
+    end );
+
 InstallMethod( Sort,
+    "for a mutable set",
+    [ IsList and IsMutable and IsSortedList ], SUM_FLAGS,
+    Ignore );
+
+InstallMethod( StableSort,
     "for a mutable set",
     [ IsList and IsMutable and IsSortedList ], SUM_FLAGS,
     Ignore );
@@ -2122,12 +2143,28 @@ InstallMethod( Sort,
     [ IsList and IsMutable and IsSmallList, IsFunction ],
     SORT_LIST_COMP );
 
+InstallMethod( StableSort,
+    "for a mutable small list and a function",
+    [ IsList and IsMutable and IsSmallList, IsFunction ],
+    STABLE_SORT_LIST_COMP );
+
 InstallMethod( Sort,
     "for a mutable list and a function",
     [ IsList and IsMutable, IsFunction ],
     function( list, func )
     if IsSmallList( list ) then
       SORT_LIST_COMP( list, func );
+    else
+      TryNextMethod();
+  fi;
+end );
+
+InstallMethod( StableSort,
+    "for a mutable list and a function",
+    [ IsList and IsMutable, IsFunction ],
+    function( list, func )
+    if IsSmallList( list ) then
+      STABLE_SORT_LIST_COMP( list, func );
     else
       TryNextMethod();
   fi;
@@ -2147,7 +2184,14 @@ InstallMethod( SortBy, "for a mutable list and a function",
     return;
 end);
 
-
+InstallMethod( StableSortBy, "for a mutable list and a function",
+        [IsList and IsMutable, IsFunction ],
+        function(list, func)
+    local images;
+    images := List(list, func);
+    StableSortParallel(images, list);
+    return;
+end);
     
 #############################################################################
 ##
@@ -2175,11 +2219,20 @@ InstallOtherMethod( Sort,
     [ IsList ],
     SORT_MUTABILITY_ERROR_HANDLER );
 
+InstallOtherMethod( StableSort,
+    "for an immutable list",
+    [ IsList ],
+    SORT_MUTABILITY_ERROR_HANDLER );
+
 InstallOtherMethod( Sort,
     "for an immutable list and a function",
     [ IsList, IsFunction ],
     SORT_MUTABILITY_ERROR_HANDLER );
 
+InstallOtherMethod( StableSort,
+    "for an immutable list and a function",
+    [ IsList, IsFunction ],
+    SORT_MUTABILITY_ERROR_HANDLER );
 
 #############################################################################
 ##
@@ -2320,7 +2373,12 @@ InstallMethod( SortParallel,
       IsDenseList and IsMutable ],
     SORT_PARA_LIST );
 
-
+InstallMethod( StableSortParallel,
+    "for two dense and mutable lists",
+    [ IsDenseList and IsMutable,
+      IsDenseList and IsMutable ],
+    STABLE_SORT_PARA_LIST );
+    
 #############################################################################
 ##
 #M  SortParallel( <sorted>, <list> )
@@ -2332,6 +2390,12 @@ InstallMethod( SortParallel,
     SUM_FLAGS,
     Ignore );
 
+InstallMethod( StableSortParallel,
+    "for a mutable set and a dense mutable list",
+    [ IsDenseList and IsSortedList and IsMutable,
+      IsDenseList and IsMutable ],
+    SUM_FLAGS,
+    Ignore );
 
 #############################################################################
 ##
@@ -2344,8 +2408,19 @@ InstallMethod( SortParallel,
       IsFunction ],
     SORT_PARA_LIST_COMP );
 
+InstallMethod( StableSortParallel,
+    "for two dense and mutable lists, and function",
+    [ IsDenseList and IsMutable,
+      IsDenseList and IsMutable,
+      IsFunction ],
+    STABLE_SORT_PARA_LIST_COMP );
 
 InstallOtherMethod( SortParallel,
+    "for two immutable lists",
+    [IsList,IsList],
+    SORT_MUTABILITY_ERROR_HANDLER);
+
+InstallOtherMethod( StableSortParallel,
     "for two immutable lists",
     [IsList,IsList],
     SORT_MUTABILITY_ERROR_HANDLER);
@@ -2355,6 +2430,10 @@ InstallOtherMethod( SortParallel,
     [IsList,IsList,IsFunction],
     SORT_MUTABILITY_ERROR_HANDLER);
 
+InstallOtherMethod( StableSortParallel,
+    "for two immutable lists and function",
+    [IsList,IsList,IsFunction],
+    SORT_MUTABILITY_ERROR_HANDLER);
 
 #############################################################################
 ##
@@ -3904,5 +3983,3 @@ end);
 #############################################################################
 ##
 #E
-
-
