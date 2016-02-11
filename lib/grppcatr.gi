@@ -496,8 +496,8 @@ InstallMethod( MaximalNormalSubgroups, "for solvable groups",
       fi;
     elif IsSolvableGroup(G) then
       # every maximal normal subgroup is above the derived subgroup
-      Gf := CommutatorFactorGroup(G);
-      hom := NaturalHomomorphism(Gf);
+      hom := MaximalAbelianQuotient(G);
+      Gf := Image(hom);
       MaxGf := MaximalNormalSubgroups(Gf);
       return List(MaxGf, N -> PreImage(hom, N));
     else
