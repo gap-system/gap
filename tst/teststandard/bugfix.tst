@@ -2855,7 +2855,7 @@ gap> if LoadPackage("tomlib", false) <> fail then
 # Tests requiring CTblLib
 
 # 2005/08/29 (TB)
-gap> LoadPackage("ctbllib", "=0.0");
+gap> LoadPackage("ctbllib", "=0.0",false);
 fail
 
 ##  Bug 18 for fix 4
