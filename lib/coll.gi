@@ -2712,6 +2712,8 @@ InstallGlobalFunction(Union, function(arg)
     #
     tounite := [];
     handles := [];
+    useUnion2 := false;
+    rangeSeen := false;
     for x in arg do
         if not IsListOrCollection(x) then
             Error("Union: arguments must be lists or collections");
@@ -2719,45 +2721,17 @@ InstallGlobalFunction(Union, function(arg)
         if (HasLength(x) and Length(x) = 0) or (HasSize(x) and Size(x) = 0) then
             continue;
         fi;
+        if IS_RANGE_REP(x) then
+            rangeSeen := true;
+        elif not IsPlistRep(x) then
+            useUnion2 := true;
+        fi;
         Add(tounite,x);
         Add(handles, HANDLE_OBJ(x));
     od;
     if Length(tounite) = 0 then
         return [];
     elif Length(tounite) = 1 then
-        x := tounite[1];
-        if IsList(x) then
-            return Set(x);
-        else
-            return x;
-        fi;
-        
-    fi;
-    #
-    # Now eliminate identical lists
-    # and scan for anything except plain lists and ranges
-    #
-    useUnion2 := false;
-    rangeSeen := false;
-    SortParallel(handles,tounite);
-    distinct := [];
-    lasthandle := fail;
-    for i in [1..Length(tounite)] do
-        h := handles[i];
-        if h <> lasthandle then
-            x := tounite[i];
-            Add(distinct,x);
-            lasthandle := h;
-            if IS_RANGE_REP(x) then
-                rangeSeen := true;
-            elif not IsPlistRep(x) then
-                useUnion2 := true;
-            fi;
-        fi;
-    od;
-    tounite := distinct;
-    
-    if Length(tounite) = 1 then
         x := tounite[1];
         if IsList(x) then
             return Set(x);
@@ -2783,6 +2757,30 @@ InstallGlobalFunction(Union, function(arg)
         od;
         IS_RANGE(u);
         return u;
+    fi;
+    #
+    # Now eliminate identical lists
+    #
+    SortParallel(handles,tounite);
+    distinct := [];
+    lasthandle := fail;
+    for i in [1..Length(tounite)] do
+        h := handles[i];
+        if h <> lasthandle then
+            x := tounite[i];
+            Add(distinct,x);
+            lasthandle := h;
+        fi;
+    od;
+    tounite := distinct;
+    
+    if Length(tounite) = 1 then
+        x := tounite[1];
+        if IsList(x) then
+            return Set(x);
+        else
+            return x;
+        fi;        
     fi;
     #
     # if we have nothing but plain lists then it is at most linear in space and time
