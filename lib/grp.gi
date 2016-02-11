@@ -1018,7 +1018,7 @@ InstallMethod( FrattiniSubgroup, "generic method for nilpotent groups",
             RankFilter( IsGroup and IsNilpotentGroup )
             - RankFilter( IsGroup ),
 function(G)
-local i, abinv, indgen, p, q, gen, Gf;
+local i, abinv, indgen, p, q, gen, hom, Gf;
     if IsTrivial(G) then
       return G;
     elif IsAbelian(G) then
@@ -1034,8 +1034,10 @@ local i, abinv, indgen, p, q, gen, Gf;
         od;
         return SubgroupNC(G, gen);
     elif IsNilpotentGroup(G) then
-        Gf := CommutatorFactorGroup(G);
-        return PreImage(NaturalHomomorphism(Gf), FrattiniSubgroup(Gf));
+        hom := MaximalAbelianQuotient(G);
+        Gf := Image(hom);
+        SetIsAbelian(Gf, true);
+        return PreImage(hom, FrattiniSubgroup(Gf));
     else
         TryNextMethod();
     fi;
