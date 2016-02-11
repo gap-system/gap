@@ -1018,16 +1018,18 @@ InstallMethod( FrattiniSubgroup, "generic method for nilpotent groups",
             RankFilter( IsGroup and IsNilpotentGroup )
             - RankFilter( IsGroup ),
 function(G)
-local i, p, q, gen, Gf;
+local i, abinv, indgen, p, q, gen, Gf;
     if IsTrivial(G) then
       return G;
     elif IsAbelian(G) then
         gen := [ ];
-        for i in [1..Length(AbelianInvariants(G))] do
-            q := AbelianInvariants(G)[i];
+        abinv := AbelianInvariants(G);
+        indgen := IndependentGeneratorsOfAbelianGroup(G);
+        for i in [1..Length(abinv)] do
+            q := abinv[i];
             if q<>0 and not IsPrime(q) then
                 p := SmallestRootInt(q);
-                Add(gen, IndependentGeneratorsOfAbelianGroup(G)[i]^p);
+                Add(gen, indgen[i]^p);
             fi;
         od;
         return SubgroupNC(G, gen);
