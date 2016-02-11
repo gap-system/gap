@@ -486,7 +486,7 @@ InstallMethod( MaximalNormalSubgroups, "for solvable groups",
         # convert it to an Abelian PcGroup with same invariants
         Gf := AbelianGroup(IsPcGroup, AbelianInvariants(G));
         hom := IsomorphismGroups(G, Gf);
-        MaxGf := MaximalNormalSubgroups(Gf);
+        MaxGf := NormalMaximalSubgroups(Gf);
         return List(MaxGf, N -> PreImage(hom, N));
       else
         # for abelian pc groups return all maximal subgroups
