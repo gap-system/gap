@@ -693,6 +693,15 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 
 // See sortbase.h for a description of these macros.
 
+// We put these first, as they are the same for the next 4 functions so
+// we do not have to repeat them
+#define SORT_CREATE_TEMP_BUFFER(len)  NEW_PLIST( T_PLIST, len + 1000);
+#define SORT_ASS_BUF_TO_LOCAL(buffer, t, i) t = ELM_PLIST(buffer, i);
+#define SORT_ASS_LOCAL_TO_BUF(buffer, i, j) \
+  SET_ELM_PLIST(buffer, i, j); \
+  CHANGED_BAG(buffer);
+
+
 #define SORT_FUNC_NAME SORT_LIST
 #define SORT_FUNC_ARGS  Obj list
 #define SORT_ARGS list
@@ -713,7 +722,9 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 #define SORT_CREATE_LOCAL(name) Obj name ;
 #define SORT_LEN_LIST() LEN_PLIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELM_PLIST(list, i)
-#define SORT_ASS_LOCAL_TO_LIST(i, j) SET_ELM_PLIST(list, i, j)
+#define SORT_ASS_LOCAL_TO_LIST(i, j)  \
+  SET_ELM_PLIST(list, i, j); \
+  CHANGED_BAG(list);
 #define SORT_COMP(v, w) LT(v, w)
 #define SORT_FILTER_CHECKS() \
   RESET_FILT_LIST(list, FN_IS_NSORT);
@@ -749,7 +760,9 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 #define SORT_CREATE_LOCAL(name) Obj name ;
 #define SORT_LEN_LIST() LEN_PLIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELM_PLIST(list, i)
-#define SORT_ASS_LOCAL_TO_LIST(i, j) SET_ELM_PLIST(list, i, j)
+#define SORT_ASS_LOCAL_TO_LIST(i, j) \
+  SET_ELM_PLIST(list, i, j); \
+  CHANGED_BAG(list);
 #define SORT_COMP(v, w) CALL_2ARGS(func, v, w) == True
 /* list is not necc. sorted wrt. \< (any longer) */
 #define SORT_FILTER_CHECKS() \
@@ -773,6 +786,22 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 **  The code here is a duplication of the code above with the operations on
 **  the second list added in.
 */
+
+// These 3 macros are the same for all 4 of the following functions.
+#undef SORT_CREATE_TEMP_BUFFER
+#undef SORT_ASS_BUF_TO_LOCAL
+#undef SORT_ASS_LOCAL_TO_BUF
+
+#define SORT_CREATE_TEMP_BUFFER(len) NEW_PLIST( T_PLIST, len * 2 + 1000);
+#define SORT_ASS_BUF_TO_LOCAL(buffer, t, i) \
+  t = ELM_PLIST(buffer, 2*(i)); \
+  t##s = ELM_PLIST(buffer,  2*(i)-1);
+#define SORT_ASS_LOCAL_TO_BUF(buffer, i, j) \
+  SET_ELM_PLIST(buffer, 2*(i), j); \
+  SET_ELM_PLIST(buffer, 2*(i)-1, j##s); \
+  CHANGED_BAG(buffer);
+
+
 
 #define SORT_FUNC_NAME SORT_PARA_LIST
 #define SORT_FUNC_ARGS Obj list, Obj shadow
@@ -805,7 +834,9 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
   t##s = ELM_PLIST(shadow, i);
 #define SORT_ASS_LOCAL_TO_LIST(i, t) \
   SET_ELM_PLIST(list, i, t); \
-  SET_ELM_PLIST(shadow, i, t##s);
+  SET_ELM_PLIST(shadow, i, t##s); \
+  CHANGED_BAG(list); \
+  CHANGED_BAG(shadow);
 #define SORT_COMP(v, w) LT( v, w )
     /* if list was ssorted, then it still will be,
        but, we don't know anything else any more */
@@ -847,7 +878,9 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
   t##s = ELM_PLIST(shadow, i);
 #define SORT_ASS_LOCAL_TO_LIST(i, t) \
   SET_ELM_PLIST(list, i, t); \
-  SET_ELM_PLIST(shadow, i, t##s);
+  SET_ELM_PLIST(shadow, i, t##s); \
+  CHANGED_BAG(list); \
+  CHANGED_BAG(shadow);
 #define SORT_COMP(v, w) CALL_2ARGS( func, v, w ) == True
 /* list is not necc. sorted wrt. \< (any longer) */
 #define SORT_FILTER_CHECKS() \
@@ -936,6 +969,31 @@ UInt            RemoveDupsDensePlist (
 
 /****************************************************************************
 **
+**  Some common checks.
+*/
+
+void CheckIsSmallList(
+     Obj                list,
+     Char*              caller)
+{
+  if ( ! IS_SMALL_LIST(list) ) {
+    ErrorMayQuit("%s: <list> must be a small list (not a %s)",
+                 (Int)caller, (Int)TNAM_OBJ(list));
+  }
+}
+
+void CheckIsFunction(
+     Obj                func,
+     Char*              caller)
+{
+  if ( TNUM_OBJ( func ) != T_FUNCTION ) {
+    ErrorMayQuit("%s: <func> must be a function (not a %s)",
+          (Int)caller, (Int)TNAM_OBJ(func));
+  }
+}
+
+/****************************************************************************
+**
 *F  FuncSORT_LIST( <self>, <list> ) . . . . . . . . . . . . . . . sort a list
 */
 Obj FuncSORT_LIST (
@@ -943,12 +1001,7 @@ Obj FuncSORT_LIST (
     Obj                 list )
 {
     /* check the first argument                                            */
-    while ( ! IS_SMALL_LIST(list) ) {
-        list = ErrorReturnObj(
-            "SORT_LIST: <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
+    CheckIsSmallList(list, "SORT_LIST");
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) ) {
@@ -963,11 +1016,30 @@ Obj FuncSORT_LIST (
     return (Obj)0;
 }
 
+Obj FuncSTABLE_SORT_LIST (
+    Obj                 self,
+    Obj                 list )
+{
+    /* check the first argument                                            */
+    CheckIsSmallList(list, "STABLE_SORT_LIST");
+
+    /* dispatch                                                            */
+    if ( IS_DENSE_PLIST(list) ) {
+        SortDensePlistMerge( list );
+    }
+    else {
+        SORT_LISTMerge( list );
+    }
+    IS_SSORT_LIST(list);
+
+    /* return nothing                                                      */
+    return (Obj)0;
+}
+
+
 
 /****************************************************************************
 **
-
-
 *F  FuncSORT_LIST_COMP( <self>, <list>, <func> )  . . . . . . . . sort a list
 */
 Obj FuncSORT_LIST_COMP (
@@ -976,20 +1048,10 @@ Obj FuncSORT_LIST_COMP (
     Obj                 func )
 {
     /* check the first argument                                            */
-    while ( ! IS_SMALL_LIST(list) ) {
-        list = ErrorReturnObj(
-            "SORT_LISTComp: <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
+    CheckIsSmallList(list, "SORT_LIST_COMP");
 
     /* check the third argument                                            */
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "SORT_LISTComp: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
+    CheckIsFunction(func, "SORT_LIST_COMP");
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) ) {
@@ -997,6 +1059,29 @@ Obj FuncSORT_LIST_COMP (
     }
     else {
         SORT_LISTComp( list, func );
+    }
+
+    /* return nothing                                                      */
+    return (Obj)0;
+}
+
+Obj FuncSTABLE_SORT_LIST_COMP (
+    Obj                 self,
+    Obj                 list,
+    Obj                 func )
+{
+    /* check the first argument                                            */
+    CheckIsSmallList(list, "STABLE_SORT_LIST_COMP");
+
+    /* check the third argument                                            */
+    CheckIsFunction(func, "STABLE_SORT_LIST_COMP");
+
+    /* dispatch                                                            */
+    if ( IS_DENSE_PLIST(list) ) {
+        SortDensePlistCompMerge( list, func );
+    }
+    else {
+        SORT_LISTCompMerge( list, func );
     }
 
     /* return nothing                                                      */
@@ -1014,24 +1099,14 @@ Obj FuncSORT_PARA_LIST (
     Obj               shadow )
 {
     /* check the first two arguments                                       */
-    while ( ! IS_SMALL_LIST(list) ) {
-        list = ErrorReturnObj(
-            "SORT_PARA_LIST: first <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
-    while ( ! IS_SMALL_LIST(shadow) ) {
-        shadow = ErrorReturnObj(
-            "SORT_PARA_LIST: second <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(shadow), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
+    CheckIsSmallList(list, "SORT_PARA_LIST");
+    CheckIsSmallList(shadow, "SORT_PARA_LIST");
+
     if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
-        ErrorReturnVoid( 
+        ErrorMayQuit( 
             "SORT_PARA_LIST: lists must have the same length (not %d and %d)",
             (Int)LEN_LIST( list ),
-            (Int)LEN_LIST( shadow ),
-            "you can 'return;'" );
+            (Int)LEN_LIST( shadow ));
     }
 
     /* dispatch                                                            */
@@ -1040,6 +1115,35 @@ Obj FuncSORT_PARA_LIST (
     }
     else {
         SORT_PARA_LIST( list, shadow );
+    }
+    IS_SSORT_LIST(list);
+
+    /* return nothing                                                      */
+    return (Obj)0;
+}
+
+Obj FuncSTABLE_SORT_PARA_LIST (
+    Obj                 self,
+    Obj                 list,
+    Obj               shadow )
+{
+    /* check the first two arguments                                       */
+    CheckIsSmallList(list, "STABLE_SORT_PARA_LIST");
+    CheckIsSmallList(shadow, "STABLE_SORT_PARA_LIST");
+
+    if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
+        ErrorMayQuit( 
+            "STABLE_SORT_PARA_LIST: lists must have the same length (not %d and %d)",
+            (Int)LEN_LIST( list ),
+            (Int)LEN_LIST( shadow ));
+    }
+
+    /* dispatch                                                            */
+    if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
+        SortParaDensePlistMerge( list, shadow );
+    }
+    else {
+        SORT_PARA_LISTMerge( list, shadow );
     }
     IS_SSORT_LIST(list);
 
@@ -1059,40 +1163,57 @@ Obj FuncSORT_PARA_LIST_COMP (
     Obj                 func )
 {
     /* check the first two arguments                                       */
-    while ( ! IS_SMALL_LIST(list) ) {
-        list = ErrorReturnObj(
-            "SORT_LISTComp: <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
-    while ( ! IS_SMALL_LIST(shadow) ) {
-        shadow = ErrorReturnObj(
-            "SORT_PARA_LIST: second <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(shadow), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
+    CheckIsSmallList(list, "SORT_PARA_LIST_COMP");
+    CheckIsSmallList(shadow, "SORT_PARA_LIST_COMP");
+
     if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
-        ErrorReturnVoid( 
-            "SORT_PARA_LIST: lists must have the same length (not %d and %d)",
+        ErrorMayQuit( 
+            "SORT_PARA_LIST_COMP: lists must have the same length (not %d and %d)",
             (Int)LEN_LIST( list ),
-            (Int)LEN_LIST( shadow ),
-            "you can 'return;'" );
+            (Int)LEN_LIST( shadow ));
     }
 
     /* check the third argument                                            */
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "SORT_LISTComp: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
-
+    CheckIsFunction(func, "SORT_PARA_LIST_COMP");
+    
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
         SortParaDensePlistComp( list, shadow, func );
     }
     else {
         SORT_PARA_LISTComp( list, shadow, func );
+    }
+
+    /* return nothing                                                      */
+    return (Obj)0;
+}
+
+Obj FuncSTABLE_SORT_PARA_LIST_COMP (
+    Obj                 self,
+    Obj                 list,
+    Obj               shadow,
+    Obj                 func )
+{
+    /* check the first two arguments                                       */
+    CheckIsSmallList(list, "SORT_PARA_LIST_COMP");
+    CheckIsSmallList(shadow, "SORT_PARA_LIST_COMP");
+
+    if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
+        ErrorMayQuit( 
+            "SORT_PARA_LIST_COMP: lists must have the same length (not %d and %d)",
+            (Int)LEN_LIST( list ),
+            (Int)LEN_LIST( shadow ));
+    }
+
+    /* check the third argument                                            */
+    CheckIsFunction(func, "SORT_PARA_LIST_COMP");
+    
+    /* dispatch                                                            */
+    if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
+        SortParaDensePlistCompMerge( list, shadow, func );
+    }
+    else {
+        SORT_PARA_LISTCompMerge( list, shadow, func );
     }
 
     /* return nothing                                                      */
@@ -1861,14 +1982,26 @@ static StructGVarFunc GVarFuncs [] = {
     { "SORT_LIST", 1, "list",
       FuncSORT_LIST, "src/listfunc.c:SORT_LIST" },
 
+    { "STABLE_SORT_LIST", 1, "list",
+      FuncSTABLE_SORT_LIST, "src/listfunc.c:STABLE_SORT_LIST" },
+
     { "SORT_LIST_COMP", 2, "list, func",
       FuncSORT_LIST_COMP, "src/listfunc.c:SORT_LIST_COMP" },
+
+    { "STABLE_SORT_LIST_COMP", 2, "list, func",
+      FuncSTABLE_SORT_LIST_COMP, "src/listfunc.c:STABLE_SORT_LIST_COMP" },
 
     { "SORT_PARA_LIST", 2, "list, list",
       FuncSORT_PARA_LIST, "src/listfunc.c:SORT_PARA_LIST" },
 
+    { "STABLE_SORT_PARA_LIST", 2, "list, list",
+      FuncSTABLE_SORT_PARA_LIST, "src/listfunc.c:STABLE_SORT_PARA_LIST" },
+
     { "SORT_PARA_LIST_COMP", 3, "list, list, func",
       FuncSORT_PARA_LIST_COMP, "src/listfunc.c:SORT_PARA_LIST_COMP" },
+
+    { "STABLE_SORT_PARA_LIST_COMP", 3, "list, list, func",
+      FuncSTABLE_SORT_PARA_LIST_COMP, "src/listfunc.c:STABLE_SORT_PARA_LIST_COMP" },
 
     { "OnPoints", 2, "pnt, elm",
       FuncOnPoints, "src/listfunc.c:OnPoints" },

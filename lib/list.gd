@@ -1529,6 +1529,10 @@ DeclareOperation( "Sort", [ IsList and IsMutable ] );
 DeclareOperation( "Sort", [ IsList and IsMutable, IsFunction ] );
 DeclareOperation( "SortBy", [IsList and IsMutable, IsFunction ] );
 
+DeclareOperation( "StableSort", [ IsList and IsMutable ] );
+DeclareOperation( "StableSort", [ IsList and IsMutable, IsFunction ] );
+DeclareOperation( "StableSortBy", [IsList and IsMutable, IsFunction ] );
+
 
 #############################################################################
 ##
@@ -1659,6 +1663,11 @@ DeclareGlobalFunction( "PermListList" );
 DeclareOperation( "SortParallel",
     [ IsDenseList and IsMutable, IsDenseList and IsMutable ] );
 DeclareOperation( "SortParallel",
+    [ IsDenseList and IsMutable, IsDenseList and IsMutable, IsFunction ] );
+
+DeclareOperation( "StableSortParallel",
+    [ IsDenseList and IsMutable, IsDenseList and IsMutable ] );
+DeclareOperation( "StableSortParallel",
     [ IsDenseList and IsMutable, IsDenseList and IsMutable, IsFunction ] );
 
 
@@ -2310,4 +2319,3 @@ DeclareGlobalFunction("Variance");
 #############################################################################
 ##
 #E
-
