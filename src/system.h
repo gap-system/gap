@@ -630,6 +630,16 @@ extern UInt SyTimeChildrenSys ( void );
 */
 #define IsDigit(ch)     (isdigit((unsigned int)ch))
 
+
+/****************************************************************************
+**
+*F  IsHexDigit( <ch> ) . . . . . . . . . . . . . . .  is a character a digit
+**
+**  'IsDigit' returns 1 if its character argument is a digit from the ranges
+**  '0..9', 'A..F', or 'a..f' and 0 otherwise.
+*/
+#define IsHexDigit(ch)     (isxdigit((unsigned int)ch))
+
 /****************************************************************************
 **
 *F  IsSpace( <ch> ) . . . . . . . . . . . . . . . .is a character whitespace
@@ -639,6 +649,21 @@ extern UInt SyTimeChildrenSys ( void );
 */
 #define IsSpace(ch)     (isspace((unsigned int)ch))
 
+
+/****************************************************************************
+**
+*F  CharHexDigit( <ch> ) . . . . . . . . . turn a single hex digit into Char 
+**
+*/
+static inline Char CharHexDigit( const Char ch ) {
+    if (ch >= 'a') {
+        return (ch - 'a' + 10);
+    } else if (ch >= 'A') {
+        return (ch - 'A' + 10);
+    } else {
+        return (ch - '0');
+    }
+};
 
 /****************************************************************************
 **

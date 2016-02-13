@@ -1869,6 +1869,13 @@ void GetStr ( void )
       else if ( *TLS(In) == '>'  )  TLS(Value)[i] = '\01';
       else if ( *TLS(In) == '<'  )  TLS(Value)[i] = '\02';
       else if ( *TLS(In) == 'c'  )  TLS(Value)[i] = '\03';
+      else if ( *TLS(In) == 'x'  ) {
+        GET_CHAR(); a = *TLS(In); GET_CHAR(); b = *TLS(In);
+        if (!( IsHexDigit(a) && IsHexDigit(b) )) {
+          SyntaxError("Expecting two hexadecimal digits after \\x in string");
+        }
+        TLS(Value)[i] = CharHexDigit(a)*16 + CharHexDigit(b);
+      }
       else if ( IsDigit( *TLS(In) ) ) {
         a = *TLS(In); GET_CHAR(); b = *TLS(In); GET_CHAR(); c = *TLS(In);
         if (!( IsDigit(b) && IsDigit(c) )){
@@ -2054,6 +2061,18 @@ void GetChar ( void )
     else if ( *TLS(In) == '>'  )  TLS(Value)[0] = '\01';
     else if ( *TLS(In) == '<'  )  TLS(Value)[0] = '\02';
     else if ( *TLS(In) == 'c'  )  TLS(Value)[0] = '\03';
+    else if ( *TLS(In) == 'x'  ) {
+      GET_CHAR(); c = *TLS(In);
+      if (!IsHexDigit(c)) {
+        SyntaxError("Expecting hexadecimal digit in character constant");
+      } 
+      TLS(Value)[0] = CharHexDigit(c) * 16;
+      GET_CHAR(); c = *TLS(In);
+      if (!IsHexDigit(c)) {
+        SyntaxError("Expecting hexadecimal digit in character constant");
+      } 
+      TLS(Value)[0] += CharHexDigit(c);
+    }
     else if ( *TLS(In) >= '0' && *TLS(In) <= '7' ) {
       /* escaped three digit octal numbers are allowed in input */
       c = 64 * (*TLS(In) - '0');
