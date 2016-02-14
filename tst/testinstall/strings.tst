@@ -43,6 +43,12 @@ gap> PrintString(x);
 "abc"
 gap> String(x);
 "abc"
+gap> x:="\xFF";
+"\377"
+gap> x:="\x42\x23\x10\x10\x10";
+"B#\020\020\020"
+gap> x:="A string with \xFF Hex stuff \x42 in it";
+"A string with \377 Hex stuff B in it"
 
 # Empty string
 gap> x:="";
@@ -115,6 +121,12 @@ gap> PrintString(x);
 "'a'"
 gap> String(x);
 "'a'"
+gap> x:='\x42';
+'B'
+gap> x:='\xFF';
+'\377'
+gap> x:='\xab';
+'\253'
 
 # RemoveCharacters
 gap> s := "I love pies pies pies";;
