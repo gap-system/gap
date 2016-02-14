@@ -2,7 +2,7 @@
 <Heading>Changes between &GAP; 4.7 and &GAP; 4.8</Heading>
 
 This chapter contains an overview of the most important changes
-introduced in &GAP; 4.8.1 release (the 2nd beta release of &GAP; 4.8).
+introduced in &GAP; 4.8.2 release (the 1st public release of &GAP; 4.8).
 Later it will also contain information about subsequent update 
 releases for &GAP; 4.8.
 
@@ -16,8 +16,8 @@ and you may use appropriate milestones from
 that were introduced in corresponding &GAP; releases. An overview of the
 most significant ones is provided below.
 
-<Section Label="gap480"> 
-<Heading>&GAP; 4.8.1 (December 2015)</Heading>
+<Section Label="gap482">
+<Heading>&GAP; 4.8.2 (February 2016)</Heading>
 
 <Subsection Label="Changes in the core GAP48 system"> 
 <Heading>Changes in the core &GAP; system introduced in &GAP; 4.8</Heading>
@@ -146,6 +146,10 @@ belong to the <Package>Semigroups</Package> and <Package>Smallsemi</Package> pac
 <Ref Func="Test" BookName="ref"/> with the option to compare the output up to
 whitespaces.
 </Item>
+<Item>The function `ErrorMayQuit`, which differs from
+<Ref Func="Error" BookName="ref"/> by not allowing execution to continue,
+has been renamed to <Ref Func="ErrorNoReturn" BookName="ref"/>.
+</Item>
 </List>
 
 Fixed bugs:
@@ -182,9 +186,17 @@ Including a <C>break</C> or <C>continue</C> statement in a function body
 but not in a loop now gives a syntax error instead of failing at run time.
 </Item>
 <Item>
+<Ref Oper="GroupGeneralMappingByImages" BookName="ref"/> now verifies that
+that image of a mapping is contained in its range.
+</Item>
+<Item>
 Fixed a bug in caching the degree of transformation that could lead to a
 non-identity transformation accidentally changing its value to the identity
 transformation.
+</Item>
+<Item>
+Fixed the problem with using Windows default browser as a help viewer using
+<C>SetHelpViewer("browser");</C>.
 </Item>
 </List>
 
@@ -209,9 +221,23 @@ together with three associated packages
 (all three - by Sebastian Gutsche and Sebastian Posur).
 </Item>
 <Item>
+<Package>Digraphs</Package> package by Jan De Beule, Julius Jonušas,
+James Mitchell, Michael Torpey and Wilf Wilson, which provides
+functionality to work with graphs, digraphs, and multidigraphs.
+</Item>
+<Item>
 <Package>FinInG</Package> package by John Bamberg, Anton Betten,
 Philippe Cara, Jan De Beule, Michel Lavrauw and Max Neunhöffer
 for computation in Finite Incidence Geometry.
+</Item>
+<Item>
+<Package>HeLP</Package> package by Andreas Bächle and Leo Margolis,
+which computes constraints on partial augmentations of torsion units
+in integral group rings using a method developed by Luthar, Passi and
+Hertweck.  The package can be employed to verify the Zassenhaus
+Conjecture and the Prime Graph Question for finite groups, once
+their characters are known. It uses an interface to the software
+package <Package>4ti2</Package> to solve integral linear inequalities.
 </Item>
 <Item>
 <Package>matgrp</Package> package by Alexander Hulpke, which provides
@@ -219,9 +245,27 @@ an interface to the solvable radical functionality for matrix groups,
 building on constructive recognition.
 </Item>
 <Item>
+<Package>NormalizInterface</Package> package by Sebastian Gutsche,
+Max Horn and Christof Söger, which provides a GAP interface to
+<Package>Normaliz</Package>, enabling direct access to the complete
+functionality of <Package>Normaliz</Package>, such as computations
+in affine monoids, vector configurations, lattice polytopes, and
+rational cones.
+</Item>
+<Item>
 <Package>profiling</Package> package by Christopher Jefferson for
 transforming profiles produced by <Ref Func="ProfileLineByLine" BookName="ref"/>
 and <Ref Func="CoverageLineByLine" BookName="ref"/> into a human-readable form.
+</Item>
+<Item>
+<Package>Utils</Package> package by Sebastian Gutsche, Stefan Kohl and
+Christopher Wensley, which provides a collection of utility functions
+gleaned from many packages.
+</Item>
+<Item>
+<Package>XModAlg</Package> package by Zekeriya Arvasi and Alper Odabas,
+which provides a collection of functions for computing with crossed
+modules and Cat1-algebras and morphisms of these structures.
 </Item>
 </List>
 
