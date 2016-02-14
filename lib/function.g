@@ -548,59 +548,6 @@ BIND_GLOBAL( "ReturnFirst", RETURN_FIRST );
 BIND_GLOBAL( "IdFunc", ID_FUNC );
 
 
-#############################################################################
-##
-#M  ViewObj( <func> ) . . . . . . . . . . . . . . . . . . . . . . view method
-##
-InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
-        function ( func )
-    local  locks, nams, narg, i, isvarg;
-    isvarg := false;
-    locks := LOCKS_FUNC(func);
-    if locks <> fail then
-        Print("atomic ");
-    fi;
-    Print("function( ");
-    nams := NAMS_FUNC(func);
-    narg := NARG_FUNC(func);
-    if narg < 0 then
-        isvarg := true;
-        narg := -narg;
-    fi;
-    if narg = 1 and nams <> fail and nams[1] = "arg" then
-        isvarg := true;
-    fi;
-    if narg <> 0 then
-        if nams = fail then
-            Print( "<",narg," unnamed arguments>" );
-        else
-            if locks <> fail then
-                if locks[1] = '\001' then
-                    Print("readonly ");
-                elif locks[1] = '\002' then
-                    Print("readwrite ");
-                fi;
-            fi;
-            Print(nams[1]);
-            for i in [2..narg] do
-                if locks <> fail then
-                    if locks[i] = '\001' then
-                        Print("readonly ");
-                    elif locks[i] = '\002' then
-                        Print("readwrite ");
-                    fi;
-                fi;
-                Print(", ",nams[i]);
-            od;
-        fi;
-        if isvarg then
-            Print("...");
-        fi;
-    fi;    
-    Print(" ) ... end");
-end);
-
-    
 BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
     local   class,  flags,  types,  catok,  repok,  propok,  seenprop,  
             t;
