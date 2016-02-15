@@ -1810,6 +1810,58 @@ void GetNumber ( UInt StartingStatus )
 }
 
 
+/*******************************************************************************
+ **
+ *F  GetEscapedChar()   . . . . . . . . . . . . . . . . get an escaped character
+ **
+ **  'GetEscapedChar' reads an escape sequence from the current input file into
+ **  the variable *dst.
+ **
+ */
+Char GetEscapedChar( void )
+{
+  Char c;
+
+  c = 0;
+
+  if ( *TLS(In) == 'n'  )       c = '\n';
+  else if ( *TLS(In) == 't'  )  c = '\t';
+  else if ( *TLS(In) == 'r'  )  c = '\r';
+  else if ( *TLS(In) == 'b'  )  c = '\b';
+  else if ( *TLS(In) == '>'  )  c = '\01';
+  else if ( *TLS(In) == '<'  )  c = '\02';
+  else if ( *TLS(In) == 'c'  )  c = '\03';
+  else if ( *TLS(In) == '"'  )  c = '"';
+  else if ( *TLS(In) == '\\' )  c = '\\';
+  else if ( *TLS(In) == '\'' )  c = '\'';
+  else if ( *TLS(In) == 'x'  ) {
+    GET_CHAR();
+    if (!IsHexDigit(*TLS(In))) {
+      SyntaxError("Expecting hexadecimal digit");
+    }
+    c = CharHexDigit(*TLS(In)) * 16;
+    GET_CHAR();
+    if (!IsHexDigit(*TLS(In))) {
+      SyntaxError("Expecting hexadecimal digit");
+    }
+    c += CharHexDigit(*TLS(In));
+  } else if ( *TLS(In) >= '0' && *TLS(In) <= '7' ) {
+    /* escaped three digit octal numbers are allowed in input */
+    c = 64 * (*TLS(In) - '0');
+    GET_CHAR();
+    if ( *TLS(In) < '0' || *TLS(In) > '7' )
+      SyntaxError("Expecting octal digit");
+    c = c + 8 * (*TLS(In) - '0');
+    GET_CHAR();
+    if ( *TLS(In) < '0' || *TLS(In) > '7' )
+      SyntaxError("Expecting octal digit");
+      c = c + (*TLS(In) - '0');
+  } else {
+    SyntaxError("Expecting valid escape sequence after \\");
+  }
+  return c;
+}
+
 /****************************************************************************
  **
  *F  GetStr()  . . . . . . . . . . . . . . . . . . . . . . get a string, local
@@ -1833,7 +1885,6 @@ void GetNumber ( UInt StartingStatus )
 void GetStr ( void )
 {
   Int                 i = 0, fetch;
-  Char                a, b, c;
 
   /* Avoid substitution of '?' in beginning of GetLine chunks */
   TLS(HELPSubsOn) = 0;
@@ -1861,29 +1912,9 @@ void GetStr ( void )
         GET_CHAR();
         if  ( *TLS(In) == '\n' )  i--;
         else  {TLS(Value)[i] = '\r'; fetch = 0;}
+      } else {
+          TLS(Value)[i] = GetEscapedChar();
       }
-      else if ( *TLS(In) == 'n'  )  TLS(Value)[i] = '\n';
-      else if ( *TLS(In) == 't'  )  TLS(Value)[i] = '\t';
-      else if ( *TLS(In) == 'r'  )  TLS(Value)[i] = '\r';
-      else if ( *TLS(In) == 'b'  )  TLS(Value)[i] = '\b';
-      else if ( *TLS(In) == '>'  )  TLS(Value)[i] = '\01';
-      else if ( *TLS(In) == '<'  )  TLS(Value)[i] = '\02';
-      else if ( *TLS(In) == 'c'  )  TLS(Value)[i] = '\03';
-      else if ( *TLS(In) == 'x'  ) {
-        GET_CHAR(); a = *TLS(In); GET_CHAR(); b = *TLS(In);
-        if (!( IsHexDigit(a) && IsHexDigit(b) )) {
-          SyntaxError("Expecting two hexadecimal digits after \\x in string");
-        }
-        TLS(Value)[i] = CharHexDigit(a)*16 + CharHexDigit(b);
-      }
-      else if ( IsDigit( *TLS(In) ) ) {
-        a = *TLS(In); GET_CHAR(); b = *TLS(In); GET_CHAR(); c = *TLS(In);
-        if (!( IsDigit(b) && IsDigit(c) )){
-          SyntaxError("Expecting three octal digits after \\ in string");
-        }
-        TLS(Value)[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
-      }
-      else  TLS(Value)[i] = *TLS(In);
     }
 
     /* put normal chars into 'Value' but only if there is room         */
@@ -2046,52 +2077,18 @@ void GetMaybeTripStr ( void )
  */
 void GetChar ( void )
 {
-  Char c;
-
   /* skip '\''                                                           */
   GET_CHAR();
 
   /* handle escape equences                                              */
   if ( *TLS(In) == '\\' ) {
     GET_CHAR();
-    if ( *TLS(In) == 'n'  )       TLS(Value)[0] = '\n';
-    else if ( *TLS(In) == 't'  )  TLS(Value)[0] = '\t';
-    else if ( *TLS(In) == 'r'  )  TLS(Value)[0] = '\r';
-    else if ( *TLS(In) == 'b'  )  TLS(Value)[0] = '\b';
-    else if ( *TLS(In) == '>'  )  TLS(Value)[0] = '\01';
-    else if ( *TLS(In) == '<'  )  TLS(Value)[0] = '\02';
-    else if ( *TLS(In) == 'c'  )  TLS(Value)[0] = '\03';
-    else if ( *TLS(In) == 'x'  ) {
-      GET_CHAR(); c = *TLS(In);
-      if (!IsHexDigit(c)) {
-        SyntaxError("Expecting hexadecimal digit in character constant");
-      } 
-      TLS(Value)[0] = CharHexDigit(c) * 16;
-      GET_CHAR(); c = *TLS(In);
-      if (!IsHexDigit(c)) {
-        SyntaxError("Expecting hexadecimal digit in character constant");
-      } 
-      TLS(Value)[0] += CharHexDigit(c);
-    }
-    else if ( *TLS(In) >= '0' && *TLS(In) <= '7' ) {
-      /* escaped three digit octal numbers are allowed in input */
-      c = 64 * (*TLS(In) - '0');
-      GET_CHAR();
-      if ( *TLS(In) < '0' || *TLS(In) > '7' )
-        SyntaxError("Expecting octal digit in character constant");
-      c = c + 8 * (*TLS(In) - '0');
-      GET_CHAR();
-      if ( *TLS(In) < '0' || *TLS(In) > '7' )
-        SyntaxError("Expecting 3 octal digits in character constant");
-      c = c + (*TLS(In) - '0');
-      TLS(Value)[0] = c;
-    }
-    else                     TLS(Value)[0] = *TLS(In);
+    TLS(Value)[0] = GetEscapedChar();
   }
   else if ( *TLS(In) == '\n' ) {
     SyntaxError("Newline not allowed in character literal");
   }
-  /* put normal chars into 'TLS(Value)'                                       */
+  /* put normal chars into 'TLS(Value)'                                  */
   else {
     TLS(Value)[0] = *TLS(In);
   }
@@ -2099,7 +2096,6 @@ void GetChar ( void )
   /* read the next character                                             */
   GET_CHAR();
 
-  
   /* check for terminating single quote                                  */
   if ( *TLS(In) != '\'' )
     SyntaxError("Missing single quote in character constant");
