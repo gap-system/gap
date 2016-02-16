@@ -2982,6 +2982,12 @@ gap> p := 227;; x := X(GF(p), "x");; f := x^(7^2) - x;;
 gap> PowerMod(x, p, f);
 x^35
 
+#2016/2/4 (AH)
+gap> N := AlternatingGroup(6);; H := AutomorphismGroup(N);;
+gap> G := SemidirectProduct(H, N);;
+gap> Size(Image(Embedding(G, 1)))=Size(H);
+true
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 781280000);
 
