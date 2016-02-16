@@ -4530,6 +4530,7 @@ InstallMethod( KnowsHowToDecompose,
 ##
 InstallGlobalFunction(HasAbelianFactorGroup,function(G,N)
 local gen;
+  Assert(2,IsNormal(G,N) and IsSubgroup(G,N));
   gen:=Filtered(GeneratorsOfGroup(G),i->not i in N);
   return ForAll([1..Length(gen)],
                 i->ForAll([1..i-1],j->Comm(gen[i],gen[j]) in N));
@@ -4537,9 +4538,10 @@ end);
 
 #############################################################################
 ##
-#M  HasSolvableFactorGroup(<G>,<N>)   test whether G/N is abelian
+#M  HasSolvableFactorGroup(<G>,<N>)   test whether G/N is solvable
 ##
 InstallGlobalFunction(HasSolvableFactorGroup,function(G,N)
+  Assert(2,IsNormal(G,N) and IsSubgroup(G,N));
   return ForAny(DerivedSeriesOfGroup(G),x->IsSubset(N,x));
 end);
 

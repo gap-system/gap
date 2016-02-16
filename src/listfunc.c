@@ -148,7 +148,7 @@ Obj FuncADD_LIST3 (
   Int ipos;
   if (pos == (Obj)0)
     ipos = -1;
-  else if (IS_INTOBJ(pos))
+  else if (IS_INTOBJ(pos) && INT_INTOBJ(pos) > 0)
     ipos = INT_INTOBJ(pos);
   else {
     DoOperation3Args( self, list,  obj, pos);
@@ -1676,11 +1676,10 @@ static inline Int GetIntObj( Obj list, UInt pos)
       Pr("panic: internal inconsistency", 0L, 0L);
       SyExit(1);
     }
-  while (!IS_INTOBJ(entry))
+  if (!IS_INTOBJ(entry))
     {
-      entry = ErrorReturnObj("COPY_LIST_ENTRIES: argument %d  must be a small integer, not a %s",
-                             (Int)pos, (Int)InfoBags[TNUM_OBJ(entry)].name,
-                             "you can return a small integer to continue");
+      ErrorMayQuit("COPY_LIST_ENTRIES: argument %d  must be a small integer, not a %s",
+                   (Int)pos, (Int)InfoBags[TNUM_OBJ(entry)].name);
     }
   return INT_INTOBJ(entry);
 }
@@ -1688,10 +1687,10 @@ static inline Int GetIntObj( Obj list, UInt pos)
 Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
 {  
   Obj srclist;
-  UInt srcstart;
+  Int srcstart;
   Int srcinc;
   Obj dstlist;
-  UInt dststart;
+  Int dststart;
   Int dstinc;
   UInt number;
   UInt srcmax;
@@ -1715,14 +1714,13 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
       Pr("panic: internal inconsistency", 0L, 0L);
       SyExit(1);
     }
-  while (!IS_PLIST(srclist))
+  if (!IS_PLIST(srclist))
     {
-      srclist = ErrorReturnObj("COPY_LIST_ENTRIES: source must be a plain list not a %s",
-                               (Int)InfoBags[TNUM_OBJ(srclist)].name, 0L,
-                               "you can return a plain list to continue");
+      ErrorMayQuit("COPY_LIST_ENTRIES: source must be a plain list not a %s",
+                   (Int)InfoBags[TNUM_OBJ(srclist)].name, 0L);
     }
 
-  srcstart = (UInt)GetIntObj(args,2);
+  srcstart = GetIntObj(args,2);
   srcinc = GetIntObj(args,3);
   dstlist = ELM_PLIST(args,4);
   if (!dstlist)
@@ -1732,17 +1730,22 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
     }
   while (!IS_PLIST(dstlist) || !IS_MUTABLE_OBJ(dstlist))
     {
-      dstlist = ErrorReturnObj("COPY_LIST_ENTRIES: destination must be a mutable plain list not a %s",
-                               (Int)InfoBags[TNUM_OBJ(dstlist)].name, 0L,
-                               "you can return a plain list to continue");
+      ErrorMayQuit("COPY_LIST_ENTRIES: destination must be a mutable plain list not a %s",
+                   (Int)InfoBags[TNUM_OBJ(dstlist)].name, 0L);
     }
-  dststart = (UInt)GetIntObj(args,5);
+  dststart = GetIntObj(args,5);
   dstinc = GetIntObj(args,6);
   number = GetIntObj(args,7);
   
   if (number == 0)
     return (Obj) 0;
   
+  if ( srcstart <= 0 || dststart <= 0 ||
+       srcstart + (number-1)*srcinc <= 0 || dststart + (number-1)*dstinc <= 0)
+    {
+      ErrorMayQuit("COPY_LIST_ENTRIES: list indices must be positive integers",0L,0L);
+    }
+
   srcmax = (srcinc > 0) ? srcstart + (number-1)*srcinc : srcstart;
   dstmax = (dstinc > 0) ? dststart + (number-1)*dstinc : dststart;
   

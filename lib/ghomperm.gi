@@ -700,10 +700,16 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
 
     # build short words by an orbit algorithm on genimg
     BuildOrb:=function(genimg)
-    local orb,dict,orbf,T,elm,img,i,n;
-      dict:=NewDictionary(genimg[1][1],false);
-      AddDictionary(dict,One(genimg[1][1]));
-      orb:=[Immutable([One(genimg[1][1]),One(genimg[2][1])])];
+    local a,orb,dict,orbf,T,elm,img,i,n;
+      if Length(genimg[1])>0 then
+	a:=genimg[1][1];
+      else
+	a:=One(Source(hom));
+      fi;
+      dict:=NewDictionary(a,false);
+      a:=One(Source(hom));
+      AddDictionary(dict,a);
+      orb:=[Immutable([a,One(Range(hom))])];
       orbf:=[0];
       i:=1;
       n:=Length(genimg[1]);
