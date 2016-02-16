@@ -1857,7 +1857,7 @@ Char GetEscapedChar( void )
       SyntaxError("Expecting octal digit");
       c = c + (*TLS(In) - '0');
   } else {
-    SyntaxError("Expecting valid escape sequence after \\");
+    SyntaxWarning("Expecting valid escape sequence after \\");
   }
   return c;
 }
