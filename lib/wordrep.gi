@@ -110,10 +110,32 @@ end );
 # code for printing words in factored form. This pattern searching clearly
 # is improvable
 BindGlobal("FindSubstringPowers",function(l,n)
-local new,t,i,step,lstep,z,zz,j,a,k,good,bad,lim;
+local new,t,i,step,lstep,z,zz,j,a,k,good,bad,lim,plim;
   new:=0;
   t:=[];
   z:=Length(l);
+  # first deal with large powers to avoid x^1000 being an obstacle.
+  plim:=9; # length for treating large powers-1
+  j:=1;
+  while j+plim<=Length(l) do
+    if ForAll([1..plim],x->l[j]=l[j+x]) then
+      k:=j+plim;
+      while k<Length(l) and l[j]=l[k+1] do
+	k:=k+1;
+      od;
+      zz:=[0,l[j],k-j+1];
+      a:=Position(t,zz);
+      if a=fail then
+	new:=new+1;
+	t[new]:=zz;
+	a:=new;
+      fi;
+      l:=Concatenation(l{[1..j-1]},[a+n],l{[k+1..Length(l)]});
+    fi;
+    j:=j+1;
+  od;
+  z:=Length(l);
+
   # long matches first, we then treat the subpatterns themselves again
   j:=QuoInt(z,2);
   lstep:=j;
@@ -186,8 +208,8 @@ end);
 # threshold up to which to try.
 PRINTWORDPOWERS:=true;
 
-DoNSAW:=function(l,names)
-local a,n,
+DoNSAW:=function(l,names,tseed)
+local a,n,t,
       word,
       exp,
       i,j,
@@ -204,6 +226,7 @@ local a,n,
     a:=[l,[]];
   fi;
   word:=a[1];
+  a[2]:=Concatenation(tseed,a[2]);
 
   i:= 1;
   str:= "";
@@ -213,10 +236,24 @@ local a,n,
     fi;
     exp:=1;
     if word[i]>n then
-      # decode longer word -- it will occur as power, so use ()
-      Add(str,'(');
-      Append(str,DoNSAW(a[2][word[i]-n],names));
-      Add(str,')');
+      t:=a[2][word[i]-n];
+      # is it a power stored specially?
+      if t[1]=0 then
+	if t[2]<0 then
+	  Append( str, names[ -t[2] ] );
+	  Append( str, "^-" );
+	  Append( str, String(t[3]));
+	else
+	  Append( str, names[ t[2] ] );
+	  Append( str, "^" );
+	  Append( str, String(t[3]));
+	fi;
+      else
+	# decode longer word -- it will occur as power, so use ()
+	Add(str,'(');
+	Append(str,DoNSAW(t,names,Filtered(a[2],x->x[1]=0)));
+	Add(str,')');
+      fi;
     elif word[i]<0 then
       Append( str, names[ -word[i] ] );
       exp:=-1;
@@ -251,7 +288,7 @@ local names,word;
   if Length(word)=0 then
     return "<identity ...>";
   fi;
-  word:=DoNSAW(word,names);
+  word:=DoNSAW(word,names,[]);
   return word;
 end);
 
