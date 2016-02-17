@@ -781,7 +781,13 @@ InstallMethod( DerivedSeriesOfGroup,
     S := [ G ];
     Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
     D := DerivedSubgroup( G );
-    while D <> S[ Length(S) ]  do
+   
+    while
+      # we don't know that the group has no generators
+      (not HasGeneratorsOfGroup(S[Length(S)]) or
+	    Length(GeneratorsOfGroup(S[Length(S)]))>0) and
+      ( (not HasAbelianInvariants(S[Length(S)]) and D <> S[ Length(S) ]) or
+	    Length(AbelianInvariants(S[Length(S)]))>0) do
         Add( S, D );
         Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
         D := DerivedSubgroup( D );

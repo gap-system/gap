@@ -715,6 +715,8 @@ end;
 InstallGlobalFunction(SmallerDegreePermutationRepresentation,function(G)
 local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
   i,cheap,first;
+#if not HasSize(G) then Error("SZ");fi;
+  Info(InfoFactor,1,"Smaller degree for order ",Size(G),", deg: ",NrMovedPoints(G));
   cheap:=ValueOption("cheap");
   if cheap="skip" then
     return IdentityMapping(G);
@@ -722,21 +724,23 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
 
   cheap:=cheap=true;
 
-  # deal with large abelian cases first (which could be direct)
-  hom:=MaximalAbelianQuotient(G);
-  i:=IndependentGeneratorsOfAbelianGroup(Image(hom));
-  o:=List(i,Order);
-  if ValueOption("norecurse")<>true and 
-    Product(o)>20 and Sum(o)*4<NrMovedPoints(G) then
-    Info(InfoFactor,2,"append abelian rep");
-    s:=AbelianGroup(IsPermGroup,o);
-    ihom:=GroupHomomorphismByImagesNC(Image(hom),s,i,GeneratorsOfGroup(s));
-    erg:=SubdirectDiagonalPerms(
-	  List(GeneratorsOfGroup(G),x->Image(ihom,Image(hom,x))),
-	  GeneratorsOfGroup(G));
-    k:=Group(erg);SetSize(k,Size(G));
-    hom:=GroupHomomorphismByImagesNC(G,k,GeneratorsOfGroup(G),erg);
-    return hom*SmallerDegreePermutationRepresentation(k:norecurse);
+  # deal with large abelian components first (which could be direct)
+  if cheap<>true then
+    hom:=MaximalAbelianQuotient(G);
+    i:=IndependentGeneratorsOfAbelianGroup(Image(hom));
+    o:=List(i,Order);
+    if ValueOption("norecurse")<>true and 
+      Product(o)>20 and Sum(o)*4<NrMovedPoints(G) then
+      Info(InfoFactor,2,"append abelian rep");
+      s:=AbelianGroup(IsPermGroup,o);
+      ihom:=GroupHomomorphismByImagesNC(Image(hom),s,i,GeneratorsOfGroup(s));
+      erg:=SubdirectDiagonalPerms(
+	    List(GeneratorsOfGroup(G),x->Image(ihom,Image(hom,x))),
+	    GeneratorsOfGroup(G));
+      k:=Group(erg);SetSize(k,Size(G));
+      hom:=GroupHomomorphismByImagesNC(G,k,GeneratorsOfGroup(G),erg);
+      return hom*SmallerDegreePermutationRepresentation(k:norecurse);
+    fi;
   fi;
 
 
@@ -779,7 +783,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
     fi;
     return IdentityMapping(G);
   # simple test is comparatively cheap for permgrp
-  elif IsSimpleGroup(G) and not IsAbelian(G) then 
+  elif HasIsSimpleGroup(G) and IsSimpleGroup(G) and not IsAbelian(G) then 
     H:=SimpleGroup(ClassicalIsomorphismTypeFiniteSimpleGroup(G));
     if IsPermGroup(H) and NrMovedPoints(H)>=NrMovedPoints(G) then
       return IdentityMapping(G);
