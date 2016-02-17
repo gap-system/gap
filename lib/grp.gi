@@ -2656,7 +2656,7 @@ end);
 ##
 InstallMethod( PCoreOp,
     "generic method for nilpotent group and prime",
-    [ IsGroup and IsNilpotentGroup, IsPosInt ],
+    [ IsGroup and IsNilpotentGroup and IsFinite, IsPosInt ],
     function ( G, p )
     return SylowSubgroup( G, p );
     end );
@@ -2770,7 +2770,7 @@ InstallMethod( SylowSubgroupOp,
 ##
 InstallMethod( SylowSubgroupOp,
     "method for a nilpotent group, and a prime",
-    [ IsGroup and IsNilpotentGroup, IsPosInt ],
+    [ IsGroup and IsNilpotentGroup and IsFinite, IsPosInt ],
     function( G, p )
     local gens, g, ord, S;
 
@@ -2834,7 +2834,7 @@ InstallMethod (HallSubgroupOp, "test trivial cases", true,
 ##
 InstallMethod( HallSubgroupOp,
     "method for a nilpotent group",
-    [ IsGroup and IsNilpotentGroup, IsList ],
+    [ IsGroup and IsNilpotentGroup and IsFinite, IsList ],
     function( G, pi )
     local p, smallpi, S;
 
