@@ -147,7 +147,7 @@ void            SyntaxError (
         /* print the message and the filename, unless it is '*stdin*'          */
         Pr( "Syntax error: %s", (Int)msg, 0L );
         if ( strcmp( "*stdin*", TLS(Input)->name ) != 0 )
-          Pr( " in %s line %d", (Int)TLS(Input)->name, (Int)TLS(Input)->number );
+          Pr( " in %s:%d", (Int)TLS(Input)->name, (Int)TLS(Input)->number );
         Pr( "\n", 0L, 0L );
 
         /* print the current line                                              */
@@ -188,7 +188,7 @@ void            SyntaxWarning (
         /* print the message and the filename, unless it is '*stdin*'          */
         Pr( "Syntax warning: %s", (Int)msg, 0L );
         if ( strcmp( "*stdin*", TLS(Input)->name ) != 0 )
-          Pr( " in %s line %d", (Int)TLS(Input)->name, (Int)TLS(Input)->number );
+          Pr( " in %s:%d", (Int)TLS(Input)->name, (Int)TLS(Input)->number );
         Pr( "\n", 0L, 0L );
 
         /* print the current line                                              */

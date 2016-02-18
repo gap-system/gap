@@ -166,29 +166,29 @@ gap> 1.11111111111111111111111111111111111111;
 1.11111
 gap> .;
 Syntax error: Badly formed number: need a digit before or after the decimal po\
-int in stream line 1
+int in stream:1
 .;
 ^
 gap> .n;
 Syntax error: Badly formed number: need a digit before or after the decimal po\
-int in stream line 1
+int in stream:1
 .n;
 ^
 gap> .q;
 Syntax error: Badly formed number: need a digit before or after the decimal po\
-int in stream line 1
+int in stream:1
 .q;
 ^
 gap> .0n;
 fail
 gap> .0q;
 Syntax error: Badly Formed Number: need at least one digit in the exponent in \
-stream line 1
+stream:1
 .0q;
   ^
 gap> .0qn;
 Syntax error: Badly Formed Number: need at least one digit in the exponent in \
-stream line 1
+stream:1
 .0qn;
   ^
 gap> Unbind(x);
