@@ -125,7 +125,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths;
   gens:=Concatenation(gens,ipcgs);
   imgs:=Concatenation(imgs,List(ipcgs,x->One(Range(hom))));
 
-  if IsPermGroup(U) and AssertionLevel()>0 then
+  if IsPermGroup(U) and AssertionLevel()>1 then
     rest:=GroupHomomorphismByImages(U,Range(hom),gens,imgs);
   else
     RUN_IN_GGMBI:=true; # hack to skip Nice treatment
@@ -995,7 +995,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,prd,k,nk,map,ns,all,hl,hcomp,
       fi;
       p:=Factors(Index(a,from))[1];
       from:=ClosureGroup(from,List(GeneratorsOfGroup(a),x->x^p));
-      Assert(1,HasElementaryAbelianFactorGroup(a,from) and Index(a,from)>1);
+      Assert(2,HasElementaryAbelianFactorGroup(a,from) and Index(a,from)>1);
       Add(ser,from);
     od;
     return ser;
