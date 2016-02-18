@@ -65,7 +65,8 @@ DeclareCategoryCollections( "IsChar" );
 ##  See <Ref Func="IsStringRep"/> below for more details.
 ##  <P/>
 ##  Each character, in particular those which cannot be typed directly from
-##  the keyboard, can also be typed in three digit octal notation.
+##  the keyboard, can also be typed in three digit octal notation, or
+##  two digit hexadecimal notation.
 ##  And for some special characters (like the newline character) there is a
 ##  further possibility to type them,
 ##  see section <Ref Sect="Special Characters"/>.

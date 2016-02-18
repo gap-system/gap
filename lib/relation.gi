@@ -2101,7 +2101,7 @@ InstallMethod(\in, "for element and equivalence class", true,
         # first ensure that <x> is in the right family
         if FamilyObj(x) <>
                 ElementsFamily(FamilyObj(Source(EquivalenceClassRelation(C)))) then
-             Error("incompatible arguments for \in");
+             Error("incompatible arguments for \\in");
         fi;
 
         # now just enumerate the elements of <C> until we come to <x>

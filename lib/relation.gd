@@ -660,8 +660,8 @@ DeclareOperation("StronglyConnectedComponents", [IsBinaryRelation]);
 ##  Special definitions for exponentiation with sets, lists, and Zero
 ##
 DeclareOperation("POW", [IsListOrCollection, IsBinaryRelation]);
-DeclareOperation("\+", [IsBinaryRelation, IsBinaryRelation]);
-DeclareOperation("\-", [IsBinaryRelation, IsBinaryRelation]);
+DeclareOperation("+", [IsBinaryRelation, IsBinaryRelation]);
+DeclareOperation("-", [IsBinaryRelation, IsBinaryRelation]);
 
 #############################################################################
 ##
