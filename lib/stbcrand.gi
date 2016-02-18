@@ -659,26 +659,40 @@ end );
 ##
 ##  tries to factor g as product of cosetreps in S; returns remainder
 ##
-InstallGlobalFunction( SCRSift, function ( S, g )
-    local stb,   # the stabilizer of S we currently work with
-          bpt;   # first point of stb.orbit
+ SCRSiftOld :=  function ( S, g )
+     local stb,   # the stabilizer of S we currently work with
+           bpt;   # first point of stb.orbit
 
-    stb := S;
-    while IsBound( stb.stabilizer ) do
-        bpt := stb.orbit[1];
-        if IsBound( stb.transversal[bpt^g] ) then
-            while bpt <> bpt^g do
-                g := g*stb.transversal[bpt^g];
-            od;
-            stb := stb.stabilizer;
-        else
-            #current g witnesses that input was not in S
-            return g;
-        fi;
-    od;
+     stb := S;
+     while IsBound( stb.stabilizer ) do
+         bpt := stb.orbit[1];
+         if IsBound( stb.transversal[bpt^g] ) then
+             while bpt <> bpt^g do
+                 g := g*stb.transversal[bpt^g];
+             od;
+             stb := stb.stabilizer;
+         else
+             #current g witnesses that input was not in S
+             return g;
+         fi;
+     od;
 
-    return g;
-end );
+     return g;
+ end;
+ 
+ 
+ 
+ InstallGlobalFunction( SCRSift, function(S,g)
+     local result;
+     
+#     return SCRSiftOld(S, g);
+     
+     result :=  SCR_SIFT_HELPER(S, g, Maximum(LargestMovedPoint(g),LargestMovedPoint(S!.generators)));
+     
+#     Assert(2,result = SCRSiftOld(S, g));
+     return result;
+end);
+
 
 
 #############################################################################
