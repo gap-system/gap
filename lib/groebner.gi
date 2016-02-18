@@ -971,7 +971,7 @@ BindGlobal("GAPGBASIS",`rec(
   GroebnerBasis:=function(elms,order)
   local orderext, bas, baslte, fam, t, B, i, j, s;
     orderext:=MonomialExtrepComparisonFun(order);
-    bas:=ShallowCopy(elms);
+    bas:=Filtered(elms,x->not IsZero(x));
     baslte:=List(bas,ExtRepPolynomialRatFun);
     fam:=FamilyObj(bas[1]);
     baslte:=List(baslte,i->i[LeadingMonomialPosExtRep(fam,i,orderext)]);
