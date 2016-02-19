@@ -254,6 +254,140 @@ static Obj GAPInfo;
 
 static UInt WarnOnUnboundGlobalsRNam;
 
+
+void ReadReferenceModifiers( TypSymbolSet follow )
+{
+    char type = ' ';
+    UInt level = 0;
+    UInt narg = 0;
+    UInt rnam  = 0;
+    /* followed by one or more selectors                                   */
+    while ( IS_IN( TLS(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
+        /* <Var> '[' <Expr> ']'  list selector                             */
+        if ( TLS(Symbol) == S_LBRACK ) {
+            Match( S_LBRACK, "[", follow );
+            ReadExpr( S_COMMA|S_RBRACK|follow, 'r' );
+            narg = 1;
+            while ( TLS(Symbol) == S_COMMA) {
+              Match(S_COMMA,",", follow|S_RBRACK);
+              ReadExpr(S_COMMA|S_RBRACK|follow, 'r' );
+              narg++;
+            }
+            Match( S_RBRACK, "]", follow );
+            type = (level == 0 ? '[' : ']');
+        }
+
+        /* <Var> '{' <Expr> '}'  sublist selector                          */
+        else if ( TLS(Symbol) == S_LBRACE ) {
+            Match( S_LBRACE, "{", follow );
+            ReadExpr( S_RBRACE|follow, 'r' );
+            Match( S_RBRACE, "}", follow );
+            type = (level == 0 ? '{' : '}');
+        }
+
+        /* <Var> '![' <Expr> ']'  list selector                            */
+        else if ( TLS(Symbol) == S_BLBRACK ) {
+            Match( S_BLBRACK, "![", follow );
+            ReadExpr( S_RBRACK|follow, 'r' );
+            Match( S_RBRACK, "]", follow );
+            type = (level == 0 ? '<' : '>');
+        }
+
+        /* <Var> '!{' <Expr> '}'  sublist selector                         */
+        else if ( TLS(Symbol) == S_BLBRACE ) {
+            Match( S_BLBRACE, "!{", follow );
+            ReadExpr( S_RBRACE|follow, 'r' );
+            Match( S_RBRACE, "}", follow );
+            type = (level == 0 ? '(' : ')');
+        }
+
+        /* <Var> '.' <Ident>  record selector                              */
+        else if ( TLS(Symbol) == S_DOT ) {
+            Match( S_DOT, ".", follow );
+            if ( TLS(Symbol) == S_IDENT || TLS(Symbol) == S_INT ) {
+                rnam = RNamName( TLS(Value) );
+                Match( TLS(Symbol), "identifier", follow );
+                type = '.';
+            }
+            else if ( TLS(Symbol) == S_LPAREN ) {
+                Match( S_LPAREN, "(", follow );
+                ReadExpr( S_RPAREN|follow, 'r' );
+                Match( S_RPAREN, ")", follow );
+                type = ':';
+            }
+            else {
+                SyntaxError("Record component name expected");
+            }
+            level = 0;
+        }
+
+        /* <Var> '!.' <Ident>  record selector                             */
+        else if ( TLS(Symbol) == S_BDOT ) {
+            Match( S_BDOT, "!.", follow );
+            if ( TLS(Symbol) == S_IDENT || TLS(Symbol) == S_INT ) {
+                rnam = RNamName( TLS(Value) );
+                Match( TLS(Symbol), "identifier", follow );
+                type = '!';
+            }
+            else if ( TLS(Symbol) == S_LPAREN ) {
+                Match( S_LPAREN, "(", follow );
+                ReadExpr( S_RPAREN|follow, 'r' );
+                Match( S_RPAREN, ")", follow );
+                type = '|';
+            }
+            else {
+                SyntaxError("Record component name expected");
+            }
+            level = 0;
+        }
+
+        /* <Var> '(' [ <Expr> { ',' <Expr> } ] ')'  function call          */
+        else if ( TLS(Symbol) == S_LPAREN ) {
+            Match( S_LPAREN, "(", follow );
+            if ( ! READ_ERROR() ) { IntrFuncCallBegin(); }
+            narg = 0;
+            if ( TLS(Symbol) != S_RPAREN && TLS(Symbol) != S_COLON) {
+                ReadExpr( S_RPAREN|follow, 'r' );
+                narg++;
+            }
+            while ( TLS(Symbol) == S_COMMA ) {
+                Match( S_COMMA, ",", follow );
+                ReadExpr( S_RPAREN|follow, 'r' );
+                narg++;
+            }
+            type = 'c';
+            if (TLS(Symbol) == S_COLON ) {
+              Match( S_COLON, ":", follow );
+              if ( TLS(Symbol) != S_RPAREN ) /* save work for empty options */
+                {
+                  ReadFuncCallOptions(S_RPAREN | follow);
+                  type = 'C';
+                }
+            }
+            Match( S_RPAREN, ")", follow );
+        }
+
+    /* so the prefix was a reference                                   */
+  if ( READ_ERROR() ) {}
+    else if ( type == '[' ) { IntrElmList(narg);                    }
+    else if ( type == ']' ) { IntrElmListLevel( narg, level );       }
+    else if ( type == '{' ) { IntrElmsList();               level++; }
+    else if ( type == '}' ) { IntrElmsListLevel( level );   level++; }
+    else if ( type == '<' ) { IntrElmPosObj();                       }
+    else if ( type == '>' ) { IntrElmPosObjLevel( level );           }
+    else if ( type == '(' ) { IntrElmsPosObj();             level++; }
+    else if ( type == ')' ) { IntrElmsPosObjLevel( level ); level++; }
+    else if ( type == '.' ) { IntrElmRecName( rnam );       level=0; }
+    else if ( type == ':' ) { IntrElmRecExpr();             level=0; }
+    else if ( type == '!' ) { IntrElmComObjName( rnam );    level=0; }
+    else if ( type == '|' ) { IntrElmComObjExpr();          level=0; }
+    else if ( type == 'c' || type == 'C' )
+    { IntrFuncCallEnd( 1UL, type == 'C', narg ); level=0; }
+    else
+      SyntaxError("Parse error in modifiers"); // This should never be reached
+    }
+}
+
 void ReadCallVarAss (
     TypSymbolSet        follow,
     Char                mode )
@@ -1614,6 +1748,8 @@ void ReadAtom (
     else {
         Match( S_INT, "expression", follow );
     }
+
+    ReadReferenceModifiers(follow);
 }
 
 
