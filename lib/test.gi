@@ -271,7 +271,7 @@ end;
 ##  | 41
 ##  gap> ss := InputTextString(StringFile(tnam));;
 ##  gap> Test(ss);
-##  ########> Diff in test stream, line 8:
+##  ########> Diff in test stream, line 8
 ##  # Input is:
 ##  a := 13+29;
 ##  # Expected output:
