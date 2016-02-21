@@ -898,7 +898,9 @@ end );
 ##  <Description>
 ##  computes a homomorphism from <A>G</A> into the symmetric group on
 ##  <M>|<A>Omega</A>|</M> points that gives the permutation action of
-##  <A>G</A> on <A>Omega</A>.
+##  <A>G</A> on <A>Omega</A>. (In particular, this homomorphism is a
+##  permutation equivalence, that is the permutation image of a group element
+##  is given by the positions of points in <A>Omega</A>.)
 ##  <P/>
 ##  By default the homomorphism returned by
 ##  <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>
