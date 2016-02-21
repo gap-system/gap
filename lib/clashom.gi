@@ -1807,7 +1807,7 @@ local  classes,    	# classes to be constructed, the result
 	    img:=orb[vp+j]*mats[genum];
     #if img in orb then Error("HUH");fi;
 	    Add(orb,img);
-	    Add(reps,reps[vp+j]*mats[genum]);
+	    Add(reps,reps[vp+j]*gens[genum]);
 	    # repword stays the same!
 	    Add(repwords,repword);
 	  od;
@@ -1943,13 +1943,15 @@ BindGlobal("LiftClassesEATrivRep",
 	    subs:=MTX.Homomorphisms(subs,mo);
 	    orbsub:=Filtered(subs,x->x in orbsub);
 	  fi;
-	  if Length(orbsub)*Length(bas)=Length(bas[1]) then
+	  if Length(orbsub)*Length(bas)=Length(bas[1]) and
+  	    RankMat(Concatenation(orbsub))=Length(bas[1]) then
 	    found:=ssd;
 	    el:=[orbsub,bas,fasize,nsgens,nsimgs,nsfgens,mo];
 
 	    subs:=List([1..Length(orbsub)],x->[(x-1)*ssd+1..x*ssd]);
 	    bas:=ImmutableMatrix(field,Concatenation(orbsub)); # this is the new basis
 	    basinv:=bas^-1;
+  	    Assert(1,basinv<>fail);
 	  else
 	    Info(InfoHomClass,3,"failed ",Length(orbsub));
 	  fi;
