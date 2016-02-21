@@ -343,6 +343,40 @@ InstallMethod( Size,
 
 #############################################################################
 ##
+#M  IsCommutative( <G> ) . . . . . . . . . . . . . . . . . . for a free group
+##
+InstallMethod( IsCommutative,
+    "for a free group",
+    [ IsFreeGroup and HasIsFinitelyGeneratedGroup ],
+    function( G )
+    if not IsFinitelyGeneratedGroup( G ) then
+      return false;
+    fi;
+    TryNextMethod();
+    end );
+
+
+#############################################################################
+##
+#M  IsSolvableGroup( <G> ) . . . . . . . . . . . . . . . . . for a free group
+##
+InstallMethod( IsSolvableGroup,
+    "for a free group",
+    [ IsFreeGroup ],
+    G -> IsFinitelyGeneratedGroup( G ) and IsAbelian( G ) );
+
+
+#############################################################################
+##
+#M  IsFinitelyGeneratedGroup( <G> ) . . . . . . . . . . . .  for a free group
+##
+InstallImmediateMethod( IsFinitelyGeneratedGroup,
+    IsFreeGroup and HasIndexInWholeGroup, 0,
+    G -> IndexInWholeGroup(G) < infinity );
+
+
+#############################################################################
+##
 #M  MagmaGeneratorsOfFamily( <F> )
 ##
 InstallMethod( MagmaGeneratorsOfFamily,
