@@ -1203,7 +1203,7 @@ sub convert_text {
           # \><anything>;   # [<arg>] here is treated as an optional arg
           # \>`<func-with-args>'{<func>![gdfile]} # possibility from
           #                                       # buildman.pe \Declaration
-          if (/^\\>(.*;|`[^\']+\'{[^}!]*!\[[^\]]*\]})/) {
+          if (/^\\>(.*;|`[^\']+\'\{[^}!]*!\[[^\]]*\]})/) {
               ;
           } elsif (/^\\>.*\(/) {
               if (s/^(\\>[^(]*\([^)]*\)[^\[]*)(\[[^\]]*\])/$1/) {
@@ -2164,14 +2164,18 @@ print  "Processed TOC files\n" unless ($opt_s);
 open (TEX, "<${dir}manual.tex") || die "Can't open ${dir}manual.tex";
 getlabs $dir;
 while (<TEX>) {
-  if (/\\UseReferences{([^}]*)}/) { 
+  if (/\\UseReferences\{\/([^}]*)}/) {
+      getlabs "/$1/";
+  } elsif (/\\UseReferences\{([^}]*)}/) {
       getlabs "$dir$1/";
-  } elsif (/\\UseGapDocReferences{([^}]*)}/) { 
+  } elsif (/\\UseGapDocReferences\{\/([^}]*)}/) {
+      getlabs "/$1/";
+  } elsif (/\\UseGapDocReferences\{([^}]*)}/) {
       getlabs "$dir$1/";
 #      ($gapdocbook = $1) =~ s?.*/([^/]*)/doc?$1?;
 #      $gapdocbooks{$gapdocbook} = 1;
 #      print STDERR "GapDoc books: ", keys(%gapdocbooks), "\n";
-  } elsif (/\\Package{([^}]*)}/) {
+  } elsif (/\\Package\{([^}]*)}/) {
       $sharepkg .= "|$1"; 
   }
 }
