@@ -181,8 +181,7 @@ gap> VV:=Semigroup(GeneratorsOfReesZeroMatrixSemigroup(V, [3,13],
 
 #
 gap> V:=Monoid(Random(R));
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, Usage: Monoid(<gen>,...), Monoid(<gens>), Monoid(<D>),
 
 #
 gap> x:=Random(UnderlyingSemigroup(R));;
