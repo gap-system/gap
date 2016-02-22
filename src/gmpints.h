@@ -15,8 +15,6 @@
 #ifndef GAP_GMPINTS_H
 #define GAP_GMPINTS_H
 
-#ifdef USE_GMP
-
 // GMP must be included outside of 'extern C'
 #ifdef GAP_IN_EXTERN_C
 }
@@ -261,8 +259,6 @@ extern Obj AInvInt ( Obj gmp );
 *F  InitInfoInt() . . . . . . . . . . . . . . . .  table of init functions
 */
 StructInitInfo * InitInfoInt ( void );
-
-#endif // USE_GMP
 
 #endif // GAP_GMPINTS_H
 
