@@ -928,6 +928,10 @@ local hom,u;
   fi;
   u:=PreImage(hom,TrivialSubgroup(Range(hom)));
   SetIndexInWholeGroup(u,Size(Range(hom)));
+  if IsFreeGroup(G) and not IsAbelian(G) then
+    SetIsFinite(u,false);
+    SetIsFinitelyGeneratedGroup(u,false);
+  fi;
   return u;
 end);
 
