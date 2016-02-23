@@ -35,7 +35,6 @@ SOURCE= \
     gasman \
     gmpints \
     gvars \
-    integer \
     intfuncs \
     intrprtr \
     iostream \

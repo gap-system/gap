@@ -54,13 +54,13 @@ typedef mp_size_t   TypGMPSize;
 #define NR_SMALL_INT_BITS  (32 - 4)
 #endif
 
-#if GMP_LIMB_BITS != INTEGER_UNIT_SIZE * 8
+#if (GMP_LIMB_BITS != INTEGER_UNIT_SIZE * 8) && !defined(USE_PRECOMPILED)
 #error Aborting compile: unexpected GMP limb size
 #endif
 #if GMP_NAIL_BITS != 0
 #error Aborting compile: GAP does not support non-zero GMP nail size
 #endif
-#ifndef __GNU_MP_RELEASE
+#if !defined(__GNU_MP_RELEASE) && !defined(USE_PRECOMPILED)
  #if __GMP_MP_RELEASE < 50002
  #error Aborting compile: GAP requires GMP 5.0.2 or newer
  #endif

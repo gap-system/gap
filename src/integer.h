@@ -9,16 +9,17 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
-**  This file declares the functions handling arbitrary size integers.
+**  This file is kept for backwards compatibility, the non-GMP code has been
+**  removed.
 */
 
 #ifndef GAP_INTEGER_H
 #define GAP_INTEGER_H
 
-#ifdef USE_GMP /* then use the gmp version of the header file */
- #include "gmpints.h"
-#else
+#if !defined(USE_GMP) && !defined(USE_PRECOMPILED)
  #error "GAP integer code has been removed."
+#else
+ #include "gmpints.h"
 #endif
 
 #endif
