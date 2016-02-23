@@ -363,6 +363,7 @@ InstallMethod( IsCommutative,
 InstallMethod( IsSolvableGroup,
     "for a free group",
     [ IsFreeGroup ],
+    10, # rank it higher than the method in the fr package
     G -> IsAbelian( G ) );
 
 
