@@ -182,14 +182,14 @@ description of each is also available via
 
 * GMP
 
-By default, GAP 4.7 uses the external library GMP (see
-http://www.gmplib.org) for large integer arithmetic, replacing the built-in
-code used in previous versions and achieving a significant speed-up in
-related computations. There is a version of GMP included with the GAP
-archive you downloaded and this will be used unless otherwise requested.
+GAP 4 uses the external library GMP (see http://www.gmplib.org) for large
+integer arithmetic, replacing the built-in code used in previous versions
+and achieving a significant speed-up in related computations. There is a
+version of GMP included with the GAP archive you downloaded and this will
+be used unless otherwise requested.
 You can configure GMP use as follows:
 
-./configure --with-gmp=yes|no|system|"path"
+./configure --with-gmp=yes|system|"path"
 
 If the argument you supply is yes, then the version of GMP bundled with
 this GAP will be used. This is the default. If the argument is system you
@@ -200,8 +200,8 @@ You may instead give the complete path to a directory which contains the
 library. If the argument is no, original GAP large integer functionality
 will be used instead of GMP.
 
-Note that --with-gmp is equivalent to --with-gmp=yes and --without-gmp is
-equivalent to --with-gmp=no.
+Note that --with-gmp is equivalent to --with-gmp=yes, and that the option
+build GAP without GMP has been removed.
 
 * Readline
 
