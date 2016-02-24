@@ -54,8 +54,6 @@
 #include <ctype.h>
 
 
-#ifdef USE_GMP
-
 /* TODO: Remove after Ward2 */
 #ifndef WARD_ENABLED
 
@@ -2699,7 +2697,6 @@ StructInitInfo * InitInfoInt ( void )
 }
 
 #endif /* ! WARD_ENABLED */
-#endif /* USE_GMP */
 
 /****************************************************************************
 **
