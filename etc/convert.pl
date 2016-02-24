@@ -727,8 +727,9 @@ sub tth_math_replace {
 #print STDERR "in: ${tth}\n";
     my $tthorig = $tth;
     # replace <...> by proper TeX
-    while ($tth =~ /(.*[^\\])<(.*[^\\])>(.*)/) {
+    while ($tth =~ /(.*?[^\\])<(.*?[^\\])>(.*)/) {
         $tth= $1."{\\it ".$2."\\/}".$3;
+#print STDERR "tth: ${tth}\n";
     }
     # replace `...' by proper TeX
     while ($tth =~ /(.*[^\\])`(.*[^\\])\'(.*)/) { 
