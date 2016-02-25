@@ -363,16 +363,8 @@ InstallMethod( IsCommutative,
 InstallMethod( IsSolvableGroup,
     "for a free group",
     [ IsFreeGroup ],
-    G -> IsFinitelyGeneratedGroup( G ) and IsAbelian( G ) );
-
-
-#############################################################################
-##
-#M  IsFinitelyGeneratedGroup( <G> ) . . . . . . . . . . . .  for a free group
-##
-InstallImmediateMethod( IsFinitelyGeneratedGroup,
-    IsFreeGroup and HasIndexInWholeGroup, 0,
-    G -> IndexInWholeGroup(G) < infinity );
+    10, # rank it higher than the method in the fr package
+    G -> IsAbelian( G ) );
 
 
 #############################################################################
