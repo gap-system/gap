@@ -785,6 +785,8 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 **  the second list added in.
 */
 
+// Through this section, code of the form (void)(varname); stops
+// various compilers warning about unused variables.
 // These 3 macros are the same for all 4 of the following functions.
 #undef SORT_CREATE_TEMP_BUFFER
 #undef SORT_ASS_BUF_TO_LOCAL
@@ -793,7 +795,7 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 #define SORT_CREATE_TEMP_BUFFER(len) NEW_PLIST( T_PLIST, len * 2 + 1000);
 #define SORT_ASS_BUF_TO_LOCAL(buffer, t, i) \
   t = ELM_PLIST(buffer, 2*(i)); \
-  t##s = ELM_PLIST(buffer,  2*(i)-1);
+  t##s = ELM_PLIST(buffer,  2*(i)-1); (void)(t##s)
 #define SORT_ASS_LOCAL_TO_BUF(buffer, i, j) \
   SET_ELM_PLIST(buffer, 2*(i), j); \
   SET_ELM_PLIST(buffer, 2*(i)-1, j##s); \
@@ -804,7 +806,7 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 #define SORT_FUNC_NAME SORT_PARA_LIST
 #define SORT_FUNC_ARGS Obj list, Obj shadow
 #define SORT_ARGS list, shadow
-#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ;
+#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ; (void)(name##s) ;
 #define SORT_LEN_LIST() LEN_LIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELMV_LIST(list, i); \
@@ -825,7 +827,7 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 #define SORT_FUNC_NAME SortParaDensePlist
 #define SORT_FUNC_ARGS Obj list, Obj shadow
 #define SORT_ARGS list, shadow
-#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ;
+#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ; (void)(name##s) ;
 #define SORT_LEN_LIST() LEN_PLIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELM_PLIST(list, i); \
@@ -848,7 +850,7 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 #define SORT_FUNC_NAME SORT_PARA_LISTComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
 #define SORT_ARGS list, shadow, func
-#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ;
+#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ; (void)(name##s) ;
 #define SORT_LEN_LIST() LEN_LIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELMV_LIST(list, i); \
@@ -869,7 +871,7 @@ Obj HEAP_SORT_PLIST ( Obj self, Obj list )
 #define SORT_FUNC_NAME SortParaDensePlistComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
 #define SORT_ARGS list, shadow, func
-#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ;
+#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ; (void)(name##s) ;
 #define SORT_LEN_LIST() LEN_PLIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELM_PLIST(list, i); \
