@@ -24,7 +24,7 @@ echo '{a=index($0,"`");\
 	while (i<=length(mid)) {\
 	  c=substr(mid,i,1);\
 	  if (c!=tolower(c)){\
-	    if (cap==0) mid2 = mid2 "\\-";\
+	    if (cap==0) mid2 = mid2 "\\\-";\
 	    cap=1;\
 	  }\
 	  else cap=0;\
