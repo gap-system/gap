@@ -213,7 +213,17 @@ end;
 
 #F  # # # # # # # # # # #  verbose try next method  # # # # # # # # # # # # #
 ##
-
+NEXT_VMETHOD_PRINT_INFO := function ( methods, i, arity)
+    local offset;
+    offset := (arity+4)*(i-1)+arity;
+    Print("#I Trying next: ", methods[offset+4]);
+    if FILENAME_FUNC(methods[offset+2]) <> fail then
+        Print(" at ",
+              FILENAME_FUNC(methods[offset+2]), ":",
+              STARTLINE_FUNC(methods[offset+2]));
+    fi;
+    Print("\n");
+end;
 
 
 #############################################################################
@@ -230,7 +240,7 @@ NEXT_VMETHOD_0ARGS := function ( operation, k )
         if methods[4*(i-1)+1]()
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[4*(i-1)+4], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 0);
                 return methods[4*(i-1)+2];
             else
                 j := j + 1;
@@ -255,7 +265,7 @@ NEXT_VMETHOD_1ARGS := function ( operation, k, type1 )
           and methods[5*(i-1)+1]( type1![1] )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[5*(i-1)+5], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 1);
                 return methods[5*(i-1)+3];
             else
                 j := j + 1;
@@ -281,7 +291,7 @@ NEXT_VMETHOD_2ARGS := function ( operation, k, type1, type2 )
           and methods[6*(i-1)+1]( type1![1], type2![1] )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[6*(i-1)+6], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 2);
                 return methods[6*(i-1)+4];
             else
                 j := j + 1;
@@ -308,7 +318,7 @@ NEXT_VMETHOD_3ARGS := function ( operation, k, type1, type2, type3 )
           and methods[7*(i-1)+1]( type1![1], type2![1], type3![1] )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[7*(i-1)+7], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 3);
                 return methods[7*(i-1)+5];
             else
                 j := j + 1;
@@ -338,7 +348,7 @@ NEXT_VMETHOD_4ARGS := function ( operation, k, type1, type2, type3,
                                    type4![1] )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[8*(i-1)+8], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 4);
                 return methods[8*(i-1)+6];
             else
                 j := j + 1;
@@ -369,7 +379,7 @@ NEXT_VMETHOD_5ARGS := function ( operation, k, type1, type2, type3,
                                    type4![1], type5![1] )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[9*(i-1)+9], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 5);
                 return methods[9*(i-1)+7];
             else
                 j := j + 1;
@@ -401,7 +411,7 @@ NEXT_VMETHOD_6ARGS := function ( operation, k, type1, type2, type3,
                                    type4![1], type5![1], type6![1] )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[10*(i-1)+10], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 6);
                 return methods[10*(i-1)+8];
             else
                 j := j + 1;
@@ -447,7 +457,7 @@ VCONSTRUCTOR_0ARGS := function ( operation )
     for i  in [1..LEN_LIST(methods)/4]  do
         if methods[4*(i-1)+1]()
         then
-            Print( "#I  ", methods[4*(i-1)+4], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 0);
             return methods[4*(i-1)+2];
         fi;
     od;
@@ -467,7 +477,7 @@ VCONSTRUCTOR_1ARGS := function ( operation, flags1 )
         if    IS_SUBSET_FLAGS( methods[5*(i-1)+2], flags1 )
           and methods[5*(i-1)+1]( flags1 )
         then
-            Print( "#I  ", methods[5*(i-1)+5], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 1);
             return methods[5*(i-1)+3];
         fi;
     od;
@@ -488,7 +498,7 @@ VCONSTRUCTOR_2ARGS := function ( operation, flags1, type2 )
           and IS_SUBSET_FLAGS( type2![2], methods[6*(i-1)+3] )
           and methods[6*(i-1)+1]( flags1, type2![1] )
         then
-            Print( "#I  ", methods[6*(i-1)+6], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 2);
             return methods[6*(i-1)+4];
         fi;
     od;
@@ -510,7 +520,7 @@ VCONSTRUCTOR_3ARGS := function ( operation, flags1, type2, type3 )
           and IS_SUBSET_FLAGS( type3![2], methods[7*(i-1)+4] )
           and methods[7*(i-1)+1]( flags1, type2![1], type3![1] )
         then
-            Print( "#I  ", methods[7*(i-1)+7], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 3);
             return methods[7*(i-1)+5];
         fi;
     od;
@@ -535,7 +545,7 @@ VCONSTRUCTOR_4ARGS := function ( operation, flags1, type2, type3,
           and  methods[8*(i-1)+1]( flags1, type2![1], type3![1],
                                    type4![1] )
         then
-            Print( "#I  ", methods[8*(i-1)+8], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 4);
             return methods[8*(i-1)+6];
         fi;
     od;
@@ -561,7 +571,7 @@ VCONSTRUCTOR_5ARGS := function ( operation, flags1, type2, type3,
           and  methods[9*(i-1)+1]( flags1, type2![1], type3![1],
                                    type4![1], type5![1] )
         then
-            Print( "#I  ", methods[9*(i-1)+9], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 5);
             return methods[9*(i-1)+7];
         fi;
     od;
@@ -588,7 +598,7 @@ VCONSTRUCTOR_6ARGS := function ( operation, flags1, type2, type3,
           and  methods[10*(i-1)+1]( flags1, type2![1], type3![1],
                                    type4![1], type5![1], type6![1] )
         then
-            Print( "#I  ", methods[10*(i-1)+10], "\n" );
+            VMETHOD_PRINT_INFO(methods, i, 6);
             return methods[10*(i-1)+8];
         fi;
     od;
@@ -627,7 +637,7 @@ NEXT_VCONSTRUCTOR_0ARGS := function ( operation, k )
         if methods[4*(i-1)+1]()
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[4*(i-1)+4], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 0);
                 return methods[4*(i-1)+2];
             else
                 j := j + 1;
@@ -652,7 +662,7 @@ NEXT_VCONSTRUCTOR_1ARGS := function ( operation, k, flags1 )
           and methods[5*(i-1)+1]( flags1 )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[5*(i-1)+5], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 1);
                 return methods[5*(i-1)+3];
             else
                 j := j + 1;
@@ -678,7 +688,7 @@ NEXT_VCONSTRUCTOR_2ARGS := function ( operation, k, flags1, type2 )
           and methods[6*(i-1)+1]( flags1, type2![1] )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[6*(i-1)+6], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 2);
                 return methods[6*(i-1)+4];
             else
                 j := j + 1;
@@ -705,7 +715,7 @@ NEXT_VCONSTRUCTOR_3ARGS := function ( operation, k, flags1, type2, type3 )
           and methods[7*(i-1)+1]( flags1, type2![1], type3![1] )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[7*(i-1)+7], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 3);
                 return methods[7*(i-1)+5];
             else
                 j := j + 1;
@@ -735,7 +745,7 @@ NEXT_VCONSTRUCTOR_4ARGS := function ( operation, k, flags1, type2, type3,
                                    type4![1] )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[8*(i-1)+8], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 4);
                 return methods[8*(i-1)+6];
             else
                 j := j + 1;
@@ -766,7 +776,7 @@ NEXT_VCONSTRUCTOR_5ARGS := function ( operation, k, flags1, type2, type3,
                                    type4![1], type5![1] )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[9*(i-1)+9], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 5);
                 return methods[9*(i-1)+7];
             else
                 j := j + 1;
@@ -798,7 +808,7 @@ NEXT_VCONSTRUCTOR_6ARGS := function ( operation, k, flags1, type2, type3,
                                    type4![1], type5![1], type6![1] )
         then
             if k = j  then
-                Print( "#I  trying next: ", methods[10*(i-1)+10], "\n" );
+                NEXT_VMETHOD_PRINT_INFO(methods, i, 6);
                 return methods[10*(i-1)+8];
             else
                 j := j + 1;
