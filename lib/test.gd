@@ -12,4 +12,5 @@ DeclareGlobalFunction("ParseTestFile");
 DeclareGlobalFunction("RunTests");
 DeclareGlobalFunction("Test");
 DeclareGlobalFunction("TestDirectory");
+DeclareGlobalFunction("TestPackage");
 
