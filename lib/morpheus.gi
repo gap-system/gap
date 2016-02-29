@@ -1587,7 +1587,7 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
     if Size(gal)>1 then
       # Galois
       auts:=Concatenation(auts,
-	List(SmallGeneratingSet(gal),
+	List(MinimalGeneratingSet(gal),
 		s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
 		  Image(hom,
 		    List(PreImagesRepresentative(hom,x),r->List(r,y->Image(s,y))))))));
