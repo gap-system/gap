@@ -35,7 +35,6 @@ void InitGlobalState(GlobalState *state)
     InitExprState(state);
     InitCoderState(state);
     InitOpersState(state);
-    
 
     // RunConstructors?
 }

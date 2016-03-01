@@ -868,12 +868,13 @@ static UInt LastPV = 0; /* This variable contains one of the values
 /* On-demand creation of the PrintObj stack */
 void InitPrintObjStack()
 {
-  if (!TLS(PrintObjThiss)) {
+    InitGlobalBag(&TLS(PrintObjThissObj), "objects.c:PrintObjThissObj");
+    InitGlobalBag(&TLS(PrintObjIndicesObj), "objects.c:PrintObjIndicesObj");
+
     TLS(PrintObjThissObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Obj)+sizeof(Obj));
     TLS(PrintObjThiss) = ADDR_OBJ(TLS(PrintObjThissObj))+1;
     TLS(PrintObjIndicesObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Int)+sizeof(Obj));
     TLS(PrintObjIndices) = (Int *)(ADDR_OBJ(TLS(PrintObjIndicesObj))+1);
-  }
 }
     
 void            PrintObj (
@@ -905,7 +906,6 @@ void            PrintObj (
     /* if <obj> is a subobject, then mark and remember the superobject
        unless ViewObj has done that job already */
     
-    InitPrintObjStack();
     if ( !fromview  && 0 < TLS(PrintObjDepth) ) {
         if ( IS_MARKABLE(TLS(PrintObjThis)) )  MARK( TLS(PrintObjThis) );
         TLS(PrintObjThiss)[TLS(PrintObjDepth)-1]   = TLS(PrintObjThis);
@@ -1028,7 +1028,6 @@ void            ViewObj (
     
     /* if <obj> is a subobject, then mark and remember the superobject     */
 
-    InitPrintObjStack();
 
     if ( 0 < TLS(PrintObjDepth) ) {
         if ( IS_MARKABLE(TLS(PrintObjThis)) )  MARK( TLS(PrintObjThis) );
@@ -1793,7 +1792,8 @@ static Int InitKernel (
     MakeImmutableObjFuncs[ T_COMOBJ ] = MakeImmutableComObj;
     MakeImmutableObjFuncs[ T_POSOBJ ] = MakeImmutablePosObj;
     MakeImmutableObjFuncs[ T_DATOBJ ] = MakeImmutableDatObj;
-      
+
+    InitPrintObjStack();
 
     /* return success                                                      */
     return 0;
