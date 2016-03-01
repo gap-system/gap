@@ -101,8 +101,10 @@ static inline void PopOffsBody( void ) {
 
 static void SetupOffsBodyStackAndLoopStack() {
   // Careful: Malloc without free
+/* Since this mallocs we use a global variable at the moment
   TLS(OffsBodyStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
   TLS(LoopStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
+*/
 }
 
 static inline void PushLoopNesting( void ) {
@@ -3414,7 +3416,7 @@ static Int InitKernel (
 
     /* make the result variable known to Gasman                            */
     InitGlobalBag( &TLS(CodeResult), "CodeResult" );
-    
+
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 
     /* allocate the statements and expressions stacks                      */

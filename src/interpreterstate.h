@@ -185,7 +185,7 @@ typedef struct InterpreterState
   /* Extra storage */
 } InterpreterState;
 
-extern InterpreterState *MainInterpreterState;
+extern InterpreterState *MainInterpreterStatePtr;
 
 void InitInterpreter(void);
 

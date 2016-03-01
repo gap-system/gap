@@ -10,11 +10,12 @@
 
 #include "interpreterstate.h"
 
-InterpreterState *MainInterpreterState;
+// InterpreterState *MainInterpreterState;
 
 void InitInterpreter(void)
 {
-    MainInterpreterState = malloc(sizeof(MainInterpreterState));
+    // Warning: malloc
+    // MainInterpreterState = malloc(sizeof(MainInterpreterState));
 }
 
 void InitInterpreterState(InterpreterState *state)
