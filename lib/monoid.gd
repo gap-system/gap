@@ -111,7 +111,7 @@ DeclareOperation( "MonoidByGenerators", [ IsCollection ] );
 ##
 ##  <#GAPDoc Label="AsMonoid">
 ##  <ManSection>
-##  <Attr Name="AsMonoid" Arg='C'/>
+##  <Oper Name="AsMonoid" Arg='C'/>
 ##
 ##  <Description>
 ##  If <A>C</A> is a collection whose elements form a monoid
@@ -122,7 +122,7 @@ DeclareOperation( "MonoidByGenerators", [ IsCollection ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "AsMonoid", IsCollection );
+DeclareOperation( "AsMonoid", [IsCollection] );
 
 
 #############################################################################
