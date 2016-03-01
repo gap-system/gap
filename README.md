@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/gap-system/gap.svg?branch=master)](https://travis-ci.org/gap-system/gap)
+
 # What is GAP?
 
 GAP is a system for computational discrete algebra, with particular emphasis on
