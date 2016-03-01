@@ -2988,6 +2988,11 @@ gap> G := SemidirectProduct(H, N);;
 gap> Size(Image(Embedding(G, 1)))=Size(H);
 true
 
+#2016/3/1 (AH)
+gap> g:=PSL(6,4);;
+gap> Sum(ConjugacyClasses(g),Size)=Size(g);
+true
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 781280000);
 
