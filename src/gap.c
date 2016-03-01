@@ -3353,14 +3353,14 @@ void InitializeGap (
               SyCacheSize, 0, SyAbortBags );
               InitMsgsFuncBags( SyMsgsBags ); 
 
-    TLS(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-    TLS(CountNams)   = 0;
-    TLS(ReadTop)     = 0;
-    TLS(ReadTilde)   = 0;
-    TLS(CurrLHSGVar) = 0;
-    TLS(IntrCoding) = 0;
+    TLS(StackNams)    = NEW_PLIST( T_PLIST, 16 );
+    TLS(CountNams)    = 0;
+    TLS(ReadTop)      = 0;
+    TLS(ReadTilde)    = 0;
+    TLS(CurrLHSGVar)  = 0;
+    TLS(IntrCoding)   = 0;
     TLS(IntrIgnoring) = 0;
-    TLS(NrError) = 0;
+    TLS(NrError)      = 0;
     TLS(ThrownObject) = 0;
 
     /* get info structures for the build in modules                        */
@@ -3395,6 +3395,8 @@ void InitializeGap (
             }
         }
     }
+
+    InitGlobalState(MainGlobalState);
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);
