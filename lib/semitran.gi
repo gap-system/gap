@@ -365,12 +365,66 @@ function(s)
    x-> en[pos^x]);
 end);
 
-#
+InstallMethod(IsomorphismTransformationMonoid,
+"for a transformation semigroup",
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
+function(S)
+  local id, dom, T, inv;
 
-InstallMethod(IsomorphismTransformationMonoid, 
-"for a semigroup with multiplicative neutral element and generators",
-[IsSemigroup and HasMultiplicativeNeutralElement and HasGeneratorsOfSemigroup],
-IsomorphismTransformationSemigroup);
+  if IsMonoid(S) then
+    return MappingByFunction(S, S, IdFunc, IdFunc);
+  fi;
+
+  if MultiplicativeNeutralElement(S) = fail then
+    ErrorNoReturn("IsomorphismTransformationMonoid: usage,\n",
+                  "the argument <S> must have a multiplicative neutral ",
+                  "element,");
+  fi;
+
+  id := MultiplicativeNeutralElement(S);
+  dom := ImageSetOfTransformation(id, DegreeOfTransformationSemigroup(S));
+
+  T := Monoid(List(GeneratorsOfSemigroup(S),
+                   x -> TransformationOp(x, dom)));
+  UseIsomorphismRelation(S, T);
+
+  inv := function(x)
+    local out, i;
+
+    out := [1 .. DegreeOfTransformationSemigroup(S)];
+    for i in [1 .. Length(dom)] do
+      out[dom[i]] := dom[i ^ x];
+    od;
+    return id * Transformation(out);
+  end;
+
+  return MagmaIsomorphismByFunctionsNC(S,
+                                       T,
+                                       x -> TransformationOp(x, dom),
+                                       inv);
+end);
+
+InstallMethod(IsomorphismTransformationMonoid, "for a semigroup",
+[IsSemigroup],
+function(S)
+  local iso1, inv1, iso2, inv2;
+
+  if MultiplicativeNeutralElement(S) = fail then
+    ErrorNoReturn("IsomorphismTransformationMonoid: usage,\n",
+                  "the semigroup given as first argument must have a ",
+                  "multiplicative neutral element,");
+  fi;
+
+  iso1 := IsomorphismTransformationSemigroup(S);
+  inv1 := InverseGeneralMapping(iso1);
+  iso2 := IsomorphismTransformationMonoid(Range(iso1));
+  inv2 := InverseGeneralMapping(iso2);
+
+  return MagmaIsomorphismByFunctionsNC(S,
+                                       Range(iso2),
+                                       x -> (x ^ iso1) ^ iso2,
+                                       x -> (x ^ inv2) ^ inv1);
+end);
 
 #
 
