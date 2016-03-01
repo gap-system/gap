@@ -3389,6 +3389,9 @@ void LoadBody ( Obj body )
 
 void InitCoderState(GlobalState *state)
 {
+    state->OffsBodyCount = 0;
+    state->LoopNesting = 0;
+    state->LoopStackCount = 0;
     state->StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
     state->StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
 }

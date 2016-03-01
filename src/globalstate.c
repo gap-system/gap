@@ -17,7 +17,7 @@ static UInt MainLoopStack[MAX_FUNC_EXPR_NESTING];
 
 static GlobalState _MainGlobalState;
 
-GlobalState *MainGlobalState;
+GlobalState *MainGlobalState = 0;
 
 void InitMainGlobalState(void)
 {

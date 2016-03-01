@@ -3055,6 +3055,7 @@ static Int InitKernel (
 {
     /* init the completion function                                        */
     /* InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      ); */
+    InitGlobalBag( &TLS(ThrownObject),    "src/gap.c:ThrownObject"      );
 
     /* list of exit functions                                              */
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
