@@ -127,7 +127,7 @@ DeclareOperation( "SemigroupByGenerators", [ IsCollection ] );
 ##
 ##  <#GAPDoc Label="AsSemigroup">
 ##  <ManSection>
-##  <Attr Name="AsSemigroup" Arg='C'/>
+##  <Oper Name="AsSemigroup" Arg='C'/>
 ##
 ##  <Description>
 ##  If <A>C</A> is a collection whose elements form a semigroup
@@ -138,8 +138,7 @@ DeclareOperation( "SemigroupByGenerators", [ IsCollection ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "AsSemigroup", IsCollection );
-
+DeclareOperation( "AsSemigroup", [IsCollection]);
 
 #############################################################################
 ##
