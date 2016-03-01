@@ -3172,12 +3172,12 @@ StructInitInfo * InitInfoScanner ( void )
  *F  DestroyScannerTLS()  . . . . . . . . . . . . . . . . . . . .  destroy TLS
  */
 
-void InitScannerState(InterpreterState *state)
+void InitScannerState(GlobalState *state)
 {
   state->HELPSubsOn = 1;
 }
 
-void DestroyScannerState(InterpreterState *state)
+void DestroyScannerState(GlobalState *state)
 {
 }
 

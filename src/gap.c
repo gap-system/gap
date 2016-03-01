@@ -96,7 +96,7 @@
 #include        "weakptr.h"             /* weak pointers                   */
 #include        "profile.h"             /* profiling                       */
 
-#include        "interpreterstate.h"    /* Global State                    */
+#include        "globalstate.h"    /* Global State                    */
 
 #ifdef GAPMPI
 #include        "hpc/gapmpi.h"          /* ParGAP/MPI                      */
@@ -110,15 +110,6 @@
 
 #include        "intfuncs.h"
 #include        "iostream.h"
-
-
-#define MAX_FUNC_EXPR_NESTING 1024
-
-InterpreterState MainInterpreterState;
-Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
-UInt MainLoopStack[MAX_FUNC_EXPR_NESTING];
-InterpreterState *MainInterpreterStatePtr = &MainInterpreterState;
-
 
 /****************************************************************************
 **
@@ -758,9 +749,7 @@ int main (
   InstallBacktraceHandlers();
 #endif
 
-  MainInterpreterStatePtr = &MainInterpreterState;
-  MainInterpreterStatePtr->OffsBodyStack = MainOffsBodyStack;
-  MainInterpreterStatePtr->LoopStack = MainLoopStack;
+  InitMainGlobalState();
 
 #ifdef HAVE_REALPATH
   if (argc >= 3 && !strcmp(argv[1],"--createstartupscript")) {

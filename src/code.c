@@ -3387,13 +3387,13 @@ void LoadBody ( Obj body )
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
-void InitCoderState(InterpreterState *state)
+void InitCoderState(GlobalState *state)
 {
     state->StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
     state->StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
 }
 
-void DestroyCoderState(InterpreterState *state)
+void DestroyCoderState(GlobalState *state)
 {
 }
 

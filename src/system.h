@@ -1075,11 +1075,11 @@ extern void InitSystem (
             Char *              argv [] );
 
 
-#include "interpreterstate.h"
+#include "globalstate.h"
 
 // FIXME: The TLS macro is for compatibility with the HPC-GAP branch, and helps
 // to keep the diffs between it and master branch small(er).
-#define TLS(x) (MainInterpreterStatePtr->x)
+#define TLS(x) (MainGlobalState->x)
 
 
 #endif // GAP_SYSTEM_H

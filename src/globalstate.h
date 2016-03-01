@@ -1,14 +1,14 @@
 /***********************************************************************
  **
- *W  interpreterstate.h      GAP source                 Markus Pfeiffer
+ *W  globalstate.h      GAP source                 Markus Pfeiffer
  **
  **
  ** This file declares all variables that are considered state for the
  ** interpreter
  **
  */
-#ifndef GAP_INTERPRETER_STATE_H
-#define GAP_INTERPRETER_STATE_H
+#ifndef GAP_GLOBAL_STATE_H
+#define GAP_GLOBAL_STATE_H
 
 #include <stdint.h>
 
@@ -17,7 +17,7 @@
 #include "scanner.h"
 #include "gasman.h"
 
-typedef struct InterpreterState
+typedef struct GlobalState
 {
   /* From intrprtr.c */
   Obj IntrResult;
@@ -183,25 +183,25 @@ typedef struct InterpreterState
   void **FreeList[MAX_GC_PREFIX_DESC+2];
 #endif
   /* Extra storage */
-} InterpreterState;
+} GlobalState;
 
-extern InterpreterState *MainInterpreterStatePtr;
+extern GlobalState *MainGlobalState;
 
-void InitInterpreter(void);
+void InitMainGlobalState(void);
 
-void InitScannerState(InterpreterState *);
-void InitStatState(InterpreterState *);
-void InitExprState(InterpreterState *);
-void InitCoderState(InterpreterState *);
-void InitOpersState(InterpreterState *);
+void InitScannerState(GlobalState *);
+void InitStatState(GlobalState *);
+void InitExprState(GlobalState *);
+void InitCoderState(GlobalState *);
+void InitOpersState(GlobalState *);
 
-void DestroyScannerState(InterpreterState *);
-void DestroyStatState(InterpreterState *);
-void DestroyExprState(InterpreterState *);
-void DestroyCoderState(InterpreterState *);
-void DestroyOpersState(InterpreterState *);
+void DestroyScannerState(GlobalState *);
+void DestroyStatState(GlobalState *);
+void DestroyExprState(GlobalState *);
+void DestroyCoderState(GlobalState *);
+void DestroyOpersState(GlobalState *);
 
-void InitInterpreterState(InterpreterState *state);
-void DestroyInterpreterState(InterpreterState *state);
+void InitGlobalState(GlobalState *state);
+void DestroyGlobalState(GlobalState *state);
 
-#endif // GAP_TLS_H
+#endif // GAP_GLOBAL_STATE_H

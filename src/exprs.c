@@ -2145,12 +2145,12 @@ static Int InitLibrary (
     return 0;
 }
 
-void InitExprState(InterpreterState *state)
+void InitExprState(GlobalState *state)
 {
     state->CurrEvalExprFuncs = EvalExprFuncs;
 }
 
-void DestroyExprState(InterpreterState *state)
+void DestroyExprState(GlobalState *state)
 {
 }
 

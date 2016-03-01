@@ -33,10 +33,10 @@ SOURCE= \
     funcs \
     gap \
     gasman \
+    globalstate \
     gmpints \
     gvars \
     intfuncs \
-    interpreterstate \
     intrprtr \
     iostream \
     listfunc \

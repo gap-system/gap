@@ -2300,12 +2300,12 @@ static Int InitKernel (
     return 0;
 }
 
-void InitStatState(InterpreterState *state)
+void InitStatState(GlobalState *state)
 {
   state->CurrExecStatFuncs = ExecStatFuncs;
 }
 
-void DestroyStatState(InterpreterState *state)
+void DestroyStatState(GlobalState *state)
 {
 }
 
