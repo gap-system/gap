@@ -134,6 +134,16 @@ InstallMethod(ViewString,
 [IsInverseSemigroup and HasGeneratorsOfInverseSemigroup],
 _ViewStringForSemigroups);
 
+InstallMethod(ViewString,
+"for an inverse semigroup with generators as a semigroup",
+[IsInverseSemigroup and HasGeneratorsOfSemigroup],
+_ViewStringForSemigroups);
+
+InstallMethod(ViewString,
+"for an inverse monoid with generators as a semigroup",
+[IsInverseMonoid and HasGeneratorsOfSemigroup],
+_ViewStringForSemigroups);
+
 InstallMethod(ViewString, "for an inverse monoid with generators",
 [IsInverseMonoid and HasGeneratorsOfInverseMonoid],
 _ViewStringForSemigroups);
