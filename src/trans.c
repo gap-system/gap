@@ -4374,8 +4374,10 @@ static Int InitKernel ( StructInitInfo *module )
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* make the buffer bag                                                 */
-    /* InitGlobalBag( &TmpTrans, "src/trans.c:TmpTrans" );		   */
-    
+#ifndef HPCGAP
+     InitGlobalBag( &TmpTrans, "src/trans.c:TmpTrans" );
+#endif
+
     // make the identity trans
     InitGlobalBag( &IdentityTrans, "src/trans.c:IdentityTrans" );
     
@@ -4473,4 +4475,3 @@ StructInitInfo * InitInfoTrans ( void )
 {
     return &module;
 }
-
