@@ -315,9 +315,9 @@ InstallMethod( StabChainOptions, true, [ IsPermGroup ], 0,
 ##
 #V  DefaultStabChainOptions . . . . . .  options record for stabilizer chains
 ##
-InstallValue( DefaultStabChainOptions, AtomicRecord(rec( reduced := true,
+InstallValue( DefaultStabChainOptions,rec( reduced := true,
                                  random := 1000,
-                                tryPcgs := true )));
+                                tryPcgs := true ));
 
 #############################################################################
 ##

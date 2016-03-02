@@ -16,9 +16,7 @@
 #F  PrimeResidues( <m> )  . . . . . . . integers relative prime to an integer
 ##
 BindGlobal( "PrimeResiduesCache",
-        List( [[],[0],[1],[1,2],[1,3],[1,2,3,4],[1,5],[1,2,3,4,5,6]], Immutable ));
-
-MakeImmutable(PrimeResiduesCache);
+    List( [[],[0],[1],[1,2],[1,3],[1,2,3,4],[1,5],[1,2,3,4,5,6]], Immutable ));
 
 InstallGlobalFunction( PrimeResidues, function ( m )
     local  residues, p, i;

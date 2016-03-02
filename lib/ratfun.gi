@@ -23,34 +23,28 @@
 InstallMethod(IndeterminateName,"for rational function families",true,
   [IsPolynomialFunctionsFamily,IsPosInt],0,
 function(fam,nr)
-  atomic readonly fam!.namesIndets do
-    if IsBound(fam!.namesIndets[nr]) then
-      return fam!.namesIndets[nr];
-    else
-      return fail;
-    fi;
-  od;
+  if IsBound(fam!.namesIndets[nr]) then
+    return fam!.namesIndets[nr];
+  else
+    return fail;
+  fi;
 end);
 
 InstallMethod(HasIndeterminateName,"for rational function families",true,
   [IsPolynomialFunctionsFamily,IsPosInt],0,
 function(fam,nr)
-  atomic readonly fam!.namesIndets do
-    return IsBound(fam!.namesIndets[nr]);
-  od;
+  return IsBound(fam!.namesIndets[nr]);
 end);
 
 InstallMethod(SetIndeterminateName,"for rational function families",true,
   [IsPolynomialFunctionsFamily,IsPosInt,IsString],0,
 function(fam,nr,str)
-  atomic fam!.namesIndets do
-    if IsBound(fam!.namesIndets[nr]) and fam!.namesIndets[nr]<>str then
-      Error("indeterminate number ",nr,
-	    " has been baptized already differently");
-    else
-      fam!.namesIndets[nr]:=Immutable(str);
-    fi;
-  od;
+  if IsBound(fam!.namesIndets[nr]) and fam!.namesIndets[nr]<>str then
+    Error("indeterminate number ",nr,
+          " has been baptized already differently");
+  else
+    fam!.namesIndets[nr]:=Immutable(str);
+  fi;
 end);
 
 InstallMethod(SetName,"set name of indeterminate",
@@ -743,7 +737,7 @@ function( efam )
 	  HasExtRepPolynomialRatFun);
 
   # default type for univariate laurent polynomials
-  fam!.threeLaurentPolynomialTypes := MakeImmutable(
+  fam!.threeLaurentPolynomialTypes := 
     [ NewType( fam,
 	  IsLaurentPolynomial
 	  and IsLaurentPolynomialDefaultRep and
@@ -761,7 +755,7 @@ function( efam )
 	    IsLaurentPolynomial and IsLaurentPolynomialDefaultRep and
 	    HasIndeterminateNumberOfLaurentPolynomial and
 	    HasCoefficientsOfLaurentPolynomial and
-	    IsUnivariatePolynomial)] );
+	    IsUnivariatePolynomial)];
 	      
   # default type for univariate rational functions
   fam!.univariateRatfunType := NewType( fam,
@@ -777,10 +771,10 @@ function( efam )
   fi;
 
   # functions to add zipped lists
-  fam!.zippedSum := `[ MONOM_GRLEX, \+ ];
+  fam!.zippedSum := [ MONOM_GRLEX, \+ ];
 
   # functions to multiply zipped lists
-  fam!.zippedProduct := `[ MONOM_PROD,
+  fam!.zippedProduct := [ MONOM_PROD,
 			  MONOM_GRLEX, \+, \* ];
 
   # set the one and zero coefficient
@@ -806,11 +800,11 @@ function( efam )
 
   # we will store separate `one's for univariate polynomials. This will
   # allow to keep univariate calculations in this one indeterminate.
-  fam!.univariateOnePolynomials:=MakeWriteOnceAtomic([]);
-  fam!.univariateZeroPolynomials:=MakeWriteOnceAtomic([]);
+  fam!.univariateOnePolynomials:=[];
+  fam!.univariateZeroPolynomials:=[];
 
   # assign a names list
-  fam!.namesIndets := ShareSpecialObj([]);
+  fam!.namesIndets := [];
 
   # and return
   return fam;

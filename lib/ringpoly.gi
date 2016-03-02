@@ -52,22 +52,20 @@ local reuse, idn, nbound, p, i,str;
       fi;
     elif nbound and reuse and IsBound(rfam!.namesIndets) then
       # is the indeterminate already used?
-      atomic rfam!.namesIndets do
-	p:=Position(rfam!.namesIndets,str);
-	if p<>fail then
-	  if p in avoid then
-	    Info(InfoWarning,1,
+      p:=Position(rfam!.namesIndets,str);
+      if p<>fail then
+        if p in avoid then
+          Info(InfoWarning,1,
   "A variable with the name '", str, "' already exists, yet the variable\n",
   "#I  with this name was explicitly to be avoided. I will create a\n",
   "#I  new variables with the same name.");
 
-	    p:=fail;
-	  else
-	    # reuse the old variable
-	    Add(idn,p);
-	  fi;
-	fi;
-      od;
+          p:=fail;
+        else
+          # reuse the old variable
+          Add(idn,p);
+        fi;
+      fi;
     else
       p:=fail;
     fi;
@@ -121,7 +119,7 @@ function( r, n )
 
     # cache univariate rings - they might be created often
     if not IsBound(r!.univariateRings) then
-      r!.univariateRings:=MakeWriteOnceAtomic([]);
+      r!.univariateRings:=[];
     fi;
 
     if Length(n)=1 

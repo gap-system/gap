@@ -241,8 +241,6 @@ DeclareRepresentation( "IsNullMapMatrix", IsMatrix, [  ] );
 
 BindGlobal( "NullMapMatrix",
     Objectify( NewType( ListsFamily, IsNullMapMatrix ), [  ] ) );
-    
-MakeReadOnly( NullMapMatrix );
 
 InstallMethod( Length,
     "for null map matrix",

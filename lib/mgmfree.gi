@@ -81,22 +81,12 @@ InstallMethod( IsWholeFamily,
 ##  $q = (M'-1) \bmod C(l-1)$ and $p = (M'-q-1 ) / C(l-1)$.
 ##  
 BindGlobal( "SHIFTED_CATALAN", [ 1 ] );
-ShareSpecialObj( SHIFTED_CATALAN );
 
 BindGlobal( "ShiftedCatalan", function( n )
-    local res;
-    atomic readonly SHIFTED_CATALAN do
-      if IsBound( SHIFTED_CATALAN[n] ) then
-        return SHIFTED_CATALAN[n];
-      fi;
-    od;
-    res := Binomial( 2*n-2, n-1 ) / n;   
-    atomic readwrite SHIFTED_CATALAN do
-      if not IsBound( SHIFTED_CATALAN[n] ) then
-        SHIFTED_CATALAN[n] := res;
-      fi;
-      return SHIFTED_CATALAN[n];
-    od;
+    if not IsBound( SHIFTED_CATALAN[n] ) then
+      SHIFTED_CATALAN[n]:= Binomial( 2*n-2, n-1 ) / n;
+    fi;
+    return SHIFTED_CATALAN[n];
 end );
 
 BindGlobal( "ElementNumber_FreeMagma", function( enum, nr )

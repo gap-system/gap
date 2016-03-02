@@ -8,7 +8,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for the elements of the rings $Z/nZ(epsilon)$,
-##  where epsilon is the primitive root of unity of degree m (not depending 
+##  where epsilon is the primitive root of unity of degree m (not depending
 ##  on n).
 ##  The following approach was used to construct such rings. First we create
 ##  a ring of integral cyclotomics in the m-th cyclotomic field. Then we
@@ -97,6 +97,7 @@ function( n, m )
   # Return the ring.
   return R;
 end );
+
 
 #############################################################################
 
