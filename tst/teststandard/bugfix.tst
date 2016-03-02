@@ -2992,6 +2992,8 @@ true
 gap> g:=PSL(6,4);;
 gap> Sum(ConjugacyClasses(g),Size)=Size(g);
 true
+gap> Size(AutomorphismGroup(TransitiveGroup(12,269)));
+14400
 
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 781280000);
