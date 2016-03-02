@@ -17,6 +17,8 @@
 #include "scanner.h"
 #include "gasman.h"
 
+#define MAXPRINTDEPTH 1024L
+
 typedef struct GlobalState
 {
   /* From intrprtr.c */
@@ -150,10 +152,10 @@ typedef struct GlobalState
   Int PrintObjIndex;
   Int PrintObjDepth;
   Int PrintObjFull;
-  Obj PrintObjThissObj;
-  Obj *PrintObjThiss;
-  Obj PrintObjIndicesObj;
-  Int *PrintObjIndices;
+  // HPC-GAP Obj PrintObjThissObj;
+  Obj PrintObjThiss[MAXPRINTDEPTH];
+  // HPG-GAP Obj PrintObjIndicesObj;
+  Int PrintObjIndices[MAXPRINTDEPTH];
 
   /* For serializer.c */
   Obj SerializationObj;

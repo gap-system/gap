@@ -868,6 +868,8 @@ static UInt LastPV = 0; /* This variable contains one of the values
 /* On-demand creation of the PrintObj stack */
 void InitPrintObjStack()
 {
+    /* This is taken from HPC-GAP and does not work like this in GAP
+       since it tries to keep pointers into GASMAN bags
     InitGlobalBag(&TLS(PrintObjThissObj), "objects.c:PrintObjThissObj");
     InitGlobalBag(&TLS(PrintObjIndicesObj), "objects.c:PrintObjIndicesObj");
 
@@ -875,6 +877,7 @@ void InitPrintObjStack()
     TLS(PrintObjThiss) = ADDR_OBJ(TLS(PrintObjThissObj))+1;
     TLS(PrintObjIndicesObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Int)+sizeof(Obj));
     TLS(PrintObjIndices) = (Int *)(ADDR_OBJ(TLS(PrintObjIndicesObj))+1);
+    */
 }
     
 void            PrintObj (
