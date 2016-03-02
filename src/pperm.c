@@ -50,7 +50,7 @@ Obj   EmptyPartialPerm;
 **  The buffer is *not* guaranteed to have any particular value, routines
 **  that require a zero-initialization need to do this at the start.
 */
-Obj TmpPPerm;
+/* TL: Obj TmpPPerm; */
 #define  TmpPPerm TLS(TmpPPerm)
 
 static inline void ResizeTmpPPerm( UInt len ){
