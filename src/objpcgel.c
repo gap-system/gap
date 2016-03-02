@@ -16,7 +16,6 @@
 
 #include        "gvars.h"               /* global variables                */
 #include        "gap.h"                 /* error handling, initialisation  */
-#include        "hpc/tls.h"                 /* thread-local storage            */
 
 #include        "calls.h"               /* generic call mechanism          */
 
@@ -37,6 +36,7 @@
 
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
 
+#include        "hpc/tls.h"             /* thread-local storage            */
 #include	"hpc/thread.h"		/* threads			   */
 
 
