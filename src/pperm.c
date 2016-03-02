@@ -50,7 +50,7 @@ Obj   EmptyPartialPerm;
 **  The buffer is *not* guaranteed to have any particular value, routines
 **  that require a zero-initialization need to do this at the start.
 */
-
+/* TL: Obj TmpPPerm; */
 #define  TmpPPerm TLS(TmpPPerm)
 
 static inline void ResizeTmpPPerm( UInt len ){
@@ -5852,7 +5852,10 @@ static Int InitKernel ( StructInitInfo *module )
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* make the buffer bag                                                 */
-    /* InitGlobalBag( &TmpPPerm, "src/pperm.c:TmpPPerm" );		   */
+#ifndef HPCGAP
+    InitGlobalBag( &TmpPPerm, "src/pperm.c:TmpPPerm" );
+#endif
+
     InitGlobalBag( &EmptyPartialPerm, "src/pperm.c:EmptyPartialPerm" );
 
     /* install the saving functions */
@@ -5976,4 +5979,3 @@ StructInitInfo * InitInfoPPerm ( void )
 {
     return &module;
 }
-
