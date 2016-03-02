@@ -2145,10 +2145,10 @@ gap> str := Concatenation("function()\n",
 gap> s:=InputTextString(str);
 InputTextString(0,66)
 gap> Read(s);
-Syntax error: ) expected in stream:4
+Syntax error: ) expected in stream:14
     v := rec(a := [];);
                     ^
-Syntax error: end expected in stream:5
+Syntax error: end expected in stream:15
 od;
  ^
 
@@ -2332,7 +2332,7 @@ gap> Display(m);
 # 2012/12/17 (SL)
 gap> l := [1,2,3];;
 gap> Unbind(l,1);
-Syntax error: 'Unbind': argument should be followed by ')' in stream:1
+Syntax error: 'Unbind': argument should be followed by ')' in stream:11
 Unbind(l,1);
         ^
 gap> l;
@@ -2610,7 +2610,7 @@ gap> PositionSublist("xyz", "");
 # 2013/08/21 (MH)
 gap> . . . .
 Syntax error: Badly formed number, need a digit before or after the decimal po\
-int in stream:1
+int in stream:11
 . . . .
 ^
 

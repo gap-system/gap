@@ -18,6 +18,7 @@
 #include        "scanner.h"             /* scanner                         */
 
 #include        "gap.h"                 /* error handling, initialisation  */
+#include        "hpc/tls.h"
 
 #include        "gvars.h"               /* global variables                */
 
@@ -47,7 +48,6 @@
 
 #include        "profile.h"
 
-#include        "hpc/tls.h"
 #include        "hpc/thread.h"
 
 #include        "calls.h"               /* function filename, line number  */

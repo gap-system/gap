@@ -68,11 +68,11 @@ atomic function ( readwrite x, readonly y, z )
     return;
 end
 gap> h5 := function(readwrite x, readonly y, z) end;;
-Syntax error: 'readwrite' argument of non-atomic function in stream:1
+Syntax error: 'readwrite' argument of non-atomic function in stream:11
 h5 := function(readwrite x, readonly y, z) end;;
                        ^
 gap> h5 := function(readonly x, readonly y, z) end;;
-Syntax error: 'readonly' argument of non-atomic function in stream:1
+Syntax error: 'readonly' argument of non-atomic function in stream:11
 h5 := function(readonly x, readonly y, z) end;;
                       ^
 gap> STOP_TEST("atomic_basic.tst", 270000);

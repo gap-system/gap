@@ -54,27 +54,27 @@ gap> f(1,2);
 gap> f(1,2,3);
 [ 1, 2, 3 ]
 gap> function(a,b..) end;
-Syntax error: Three dots required for variadic argument list in stream:1
+Syntax error: Three dots required for variadic argument list in stream:11
 function(a,b..) end;
              ^
 gap> function(a...,b) end;
-Syntax error: Only final argument can be variadic in stream:1
+Syntax error: Only final argument can be variadic in stream:11
 function(a...,b) end;
              ^
 gap> function(a..,b) end;
-Syntax error: Three dots required for variadic argument list in stream:1
+Syntax error: Three dots required for variadic argument list in stream:11
 function(a..,b) end;
            ^
 gap> function(a....,b) end;
-Syntax error: ) expected in stream:1
+Syntax error: ) expected in stream:11
 function(a....,b) end;
              ^
 gap> function(a,b....) end;
-Syntax error: ) expected in stream:1
+Syntax error: ) expected in stream:11
 function(a,b....) end;
                ^
 gap> f := function(a,b..) end;
-Syntax error: Three dots required for variadic argument list in stream:1
+Syntax error: Three dots required for variadic argument list in stream:11
 f := function(a,b..) end;
                   ^
 gap> Display(RETURN_FIRST);
@@ -84,7 +84,7 @@ end
 gap> [1..2];
 [ 1, 2 ]
 gap> [1...2];
-Syntax error: only two dots in a range in stream:1
+Syntax error: only two dots in a range in stream:11
 [1...2];
     ^
 gap> f := function(a,arg) return [a,arg]; end;
