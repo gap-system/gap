@@ -240,7 +240,7 @@ Obj FuncRandomListMT(Obj self, Obj mtstr, Obj list)
 **
 **  'HASHKEY_BAG( <obj>, <seed>, <offset>, <maxlen> )'
 **
-**  takes an non-immediate object and a small integer <int> and computes a
+**  takes an non-immediate object and a small integer <seed> and computes a
 **  hash value for the contents of the bag from these. (For this to be
 **  usable in algorithms, we need that objects of this kind are stored uniquely
 **  internally.
