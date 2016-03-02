@@ -3125,7 +3125,7 @@ static Int InitKernel (
     InitGlobalBag(&(TLS(LogFile).stream),        "src/scanner.c:LogFile"        );
     InitGlobalBag(&(TLS(LogStream).stream),      "src/scanner.c:LogStream"      );
     InitGlobalBag(&(TLS(InputLogStream).stream), "src/scanner.c:InputLogStream" );
-    InitGlobalBag(&(TLS(OutputLogStream).stream),"src/scanner.c:outputLogStream");
+    InitGlobalBag(&(TLS(OutputLogStream).stream),"src/scanner.c:OutputLogStream");
 
 
     /* import functions from the library                                   */
