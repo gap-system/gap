@@ -1,0 +1,24 @@
+<Chapter Label="Tasks">
+<Heading>Tasks</Heading>
+
+Tasks provide mid- to high-level functionality for programmers to
+describe asynchronous workflows. A task is an asynchronously or
+synchronously executing job; functions exist to create tasks that are
+executed concurrently, on demand, or in the current thread; to wait for
+their completion, check their status, and retrieve any results.
+
+<P/>
+Here is a simple example of sorting a list in the background:
+
+<Index Key="RunTask"><C>RunTask</C></Index>
+
+<Example>
+gap&gt; task := RunTask(x -&gt; SortedList(x), [3,2,1]);;
+gap&gt; WaitTask(task);
+gap&gt; TaskResult(task);
+[ 1, 2, 3 ]
+</Example>
+
+
+
+</Chapter>
