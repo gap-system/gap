@@ -3255,7 +3255,7 @@ local xset,dom,D,b,t,i,r,binv,pos,kero,dets,roots,dim,f;
   if Length(roots)<=1 then
     # 1 will always be root
     kero:=[One(f)];
-  elif IsNaturalGL(Source(hom)) then
+  elif HasIsNaturalGL(Source(hom)) and IsNaturalGL(Source(hom)) then
     # the full GL clearly will contain the kernel
     kero:=roots; # to skip test
   elif not IsSubset(D,roots) then
