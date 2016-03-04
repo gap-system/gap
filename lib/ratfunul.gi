@@ -1526,8 +1526,13 @@ local   fam, tmp;
 
   # construct the product and check the valuation in case zero divisors
   tmp := CoefficientsOfUnivariateRationalFunction(univ);
-  return UnivariateRationalFunctionByExtRepNC(fam,coef*tmp[1], tmp[2],tmp[3],
-           IndeterminateNumberOfUnivariateRationalFunction(univ));
+  if Length(tmp[1])=0 then
+    return UnivariateRationalFunctionByExtRepNC(fam,[], tmp[2],tmp[3],
+	    IndeterminateNumberOfUnivariateRationalFunction(univ));
+  else
+    return UnivariateRationalFunctionByExtRepNC(fam,coef*tmp[1], tmp[2],tmp[3],
+	    IndeterminateNumberOfUnivariateRationalFunction(univ));
+  fi;
 end );
 
 InstallMethod( \*, "coeff * univariate", IsCoeffsElms,

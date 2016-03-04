@@ -282,16 +282,15 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
   # the cs with N gives a cs for M/N.
   # take the first subnormal subgroup that is not  in N. This will be the
   # subgroup
-  i:=Length(cs);
   u:=fail;
   if Size(N)=1 then
-    u:=cs[Length(cs)-1];
+    u:=cs[2];
   else
-    while u=fail and i>0 do
-      if not IsSubset(N,cs[i]) then
-	u:=ClosureGroup(N,cs[i]);
-      fi;
-      i:=i-1;
+    i:=2;
+    u:=ClosureGroup(N,cs[i]);
+    while Size(u)=Size(M) do
+      i:=i+1;
+      u:=ClosureGroup(N,cs[i]);
     od;
   fi;
 
@@ -302,7 +301,7 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
   Info(InfoHomClass,1,"Factor: ",Index(u,N),"^",n);
   Qhom:=ActionHomomorphism(G,o,"surjective");
   Q:=Image(Qhom,G);
-  Thom:=NaturalHomomorphismByNormalSubgroup(u,N);
+  Thom:=NaturalHomomorphismByNormalSubgroup(M,u);
   T:=Image(Thom);
   if IsSubset(M,norm) then
     # nothing outer possible
@@ -350,14 +349,14 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
   # allow also mapping of `a' by enlarging
   gens:=GeneratorsOfGroup(G);
 
-  if AssertionLevel()>0 then
+  if AssertionLevel()>1 then
     Ehom:=GroupHomomorphismByImages(G,w,gens,genimages);
     Assert(1,fail<>Ehom);
   else
     Ehom:=GroupHomomorphismByImagesNC(G,w,gens,genimages);
   fi;
 
-  return [w,Ehom,a,Image(Thom,u),n];
+  return [w,Ehom,a,Image(Thom,M),n];
 end);
 
 #############################################################################
