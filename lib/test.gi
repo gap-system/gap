@@ -761,7 +761,42 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   return testTotal;
 end);
 
-
+#############################################################################
+##
+## TestPackage( <pkgname> )
+##
+##  <#GAPDoc Label="TestPackage">
+##  <ManSection>
+##  <Func Name="TestPackage" Arg='pkgname'/>
+##  <Description>
+##  It is recommended that a &GAP; package specifies a standard test in its
+##  <F>PackageInfo.g</F> file. If <A>pkgname</A> is a string with the name of
+##  a &GAP; package, then <C>TestDirectory(pkgname)</C> will check if this
+##  package is loadable and has the standard test, and will run this test in
+##  the current &GAP; session.<P/>
+##
+##  The output of the test depends on the particular package, and it also
+##  may depend on the current &GAP; session (loaded packages, state of the
+##  random sources, defined global variables etc.). If you would like to
+##  run the test for the same package in the same setting that is used
+##  for the testing of &GAP; releases, you have to call
+##
+##  <Log><![CDATA[
+##  make testpackage PKGNAME=pkgname
+##  ]]></Log>
+##
+##  in the UNIX shell (without quotes around <A>pkgname</A>). This will run
+##  the standard test for the package <A>pkgname</A> three times in different
+##  settings, and will write test output to three files in the <F>dev/log</F>
+##  directory. These output files will be named in the format
+##  <F>testpackageX_timestamp.pkgname</F>, where <C>X=A</C> for the test
+##  with packages loaded by default, <C>X=1</C> for the test without other
+##  packages (i.e. when &GAP; is started with <C>-A</C> command line option),
+##  and <C>X=2</C> when the test is run with all packages loaded.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 InstallGlobalFunction( "TestPackage", function(pkgname)
 local testfile, str;
 if not IsBound( GAPInfo.PackagesInfo.(pkgname) ) then
