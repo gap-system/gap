@@ -48,13 +48,15 @@
   <#Include SYSTEM "regions.xml">
   <#Include SYSTEM "ui.xml">
   <#Include SYSTEM "aobjects.xml">
-  <!--
-
-threads.txt channels.txt semaphores.txt syncvars.txt serialize.txt zmq.txt zgap.txt lowlevel.txt
-
-MPI_SRC=mpi-overview.txt mpi-marshalling.txt mpi-tasks.txt mpi-handles.txt mpi-lowlevel.txt
-  -->
-
+  <#Include SYSTEM "threads.xml">
+  <#Include SYSTEM "channels.xml">
+  <#Include SYSTEM "semaphores.xml">
+  <#Include SYSTEM "syncvars.xml">
+  <#Include SYSTEM "serialize.xml">
+  <#Include SYSTEM "zmq.xml">
+  <#Include SYSTEM "zgap.xml">
+  <#Include SYSTEM "lowlevel.xml">
+  <#Include SYSTEM "mpi.xml">
 </Body>
 
 <!--

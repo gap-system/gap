@@ -1,0 +1,137 @@
+<Chapter Label="Thread functions">
+  <Heading>Thread functions</Heading>
+
+HPC-GAP has low-level functionality to support explicit creation of threads. In practice, programmers should use
+higher-level functionality, such as tasks, to describe concurrency. The thread functions described here exist to
+facilitate the construction of higher level libraries and are not meant to be used directly.
+
+  <Section Label="CreateThread">
+    <Heading>CreateThread(func [, arg1, ..., argn])</Heading>
+
+New threads are created with the function <C>CreateThread</C>. The thread takes at least one function as its argument
+that it will call in the newly created thread; it also accepts zero or more parameters that will be passed to that
+function.
+
+The function returns a thread object describing the thread.
+
+Only a finite number of threads can be active at a time (that limit is system-dependent). To reclaim the resources
+occupied by one thread, use the <Ref Func="WaitThread"/> function.
+
+  </Section>
+  <Section Label="WaitThread">
+    <Heading>WaitThread</Heading>
+
+The <C>WaitThread</C> function waits for the thread identified by <C>threadID</C> to finish; it does not return any
+value. When it returns, it returns all resources occupied by the thread it waited for, such as thread-local memory and
+operating system structures, to the system.
+
+  </Section>
+  <Section Label="CurrentThread">
+    <Heading>CurrentThread()</Heading>
+
+The <C>CurrentThread</C> function returns the thread object for the current thread.
+
+  </Section>
+  <Section Label="ThreadID">
+    <Heading>ThreadID(thread)</Heading>
+
+The <C>ThreadID</C> function returns a numeric thread id for the given thread. The thread id of the main thread is
+always 0.
+
+<Example><![CDATA[
+gap> CurrentThread();
+<thread #0: running>
+gap> ThreadID(CurrentThread());
+0
+]]></Example>
+
+  </Section>
+  <Section Label="KillThread">
+    <Heading>KillThread(thread)</Heading>
+
+The <C>KillThread</C> function terminates the given thread. Any region locks that the thread currently holds will be
+unlocked. The thread can be specified as a thread object or via its numeric id.
+
+The implementation for <C>KillThread</C> is dependent on the interpreter actually executing statements. Threads
+performing system calls, for example, will not be terminated until the system call returns. Similarly, long-running
+kernel functions will delay termination until the kernel function returns.
+
+Use of <C>CALL_WITH_CATCH</C> will not prevent a thread from being terminated. If you wish to make sure that catch
+handlers will be visited, use <Ref Func="InterruptThread"/> instead. <C>KillThread</C> should be used for threads that
+cannot be controlled anymore in any other way but still eat system resources.
+
+  </Section>
+  <Section Label="PauseThread">
+    <Heading>PauseThread(thread)</Heading>
+
+The <C>PauseThread</C> function suspends execution for the given thread. The thread can be specified as a thread object
+or via its numeric id.
+
+The implementation for <C>PauseThread()</C> is dependent on the interpreter actually executing statements. Threads
+performing system calls, for example, will not pause until the system call returns. Similarly, long-running kernel
+functions will not pause until the kernel function returns.
+
+While a thread is paused, the thread that initiated the pause can access the paused thread&#39;s thread-local region.
+
+<Example><![CDATA[
+gap> loop := function() while true do Sleep(1); od; end;;
+gap> x := fail;;
+gap> th := CreateThread(function() x := [1, 2, 3]; loop(); end);;
+gap> PauseThread(th);
+gap> x;
+[ 1, 2, 3 ]
+]]></Example>
+
+  </Section>
+  <Section Label="ResumeThread">
+    <Heading>ResumeThread(thread)</Heading>
+
+The <C>ResumeThread</C> function resumes execution for the given thread that was paused with <C>PauseThread</C>. The
+thread can be specified as a thread object or via its numeric id.
+
+If the thread isn&#39;t paused, <C>ResumeThread</C> is a no-op.
+
+  </Section>
+  <Section Label="InterruptThread">
+    <Heading>InterruptThread(thread, interrupt)</Heading>
+
+The <C>InterruptThread</C> function calls an interrupt handler for the given thread. The thread can be specified as a
+thread object or via its numeric id. The interrupt is specified as an integer between 0 and <Ref Func="MAX_INTERRUPT"/>.
+
+An interrupt number of zero (or an interrupt number for which no interrupt handler has been set up with <Ref
+Func="SetInterruptHandler"/> will cause the thread to enter a break loop. Otherwise, the respective interrupt handler
+that has been created with <Ref Func="SetInterruptHandler"/> will be called.
+
+The implementation for <C>InterruptThread</C> is dependent on the interpreter actually executing statements. Threads
+performing system calls, for example, will not call interrupt handlers until the system call returns. Similarly,
+long-running kernel functions will delay invocation of the interrupt handler until the kernel function returns.
+
+  </Section>
+  <Section Label="SetInterruptHandler">
+    <Heading>SetInterruptHandler(interrupt, handler)</Heading>
+
+The <C>SetInterruptHandler</C> function allows the programmer to set up interrupt handlers for the current thread. The
+interrupt number must be in the range from 1 to <Ref Func="MAX_INTERRUPT"/> (inclusive); the handler must be a
+parameterless function (or <C>fail</C> to remove a handler).
+
+  </Section>
+  <Section Label="NewInterruptID">
+    <Heading>NewInterruptID()</Heading>
+
+The <C>NewInterruptID</C> function returns a previously unused number (starting at 1). These numbers can be used to
+globally coordinate interrupt numbers.
+
+<Example><![CDATA[
+gap> StopTaskInterrupt := NewInterruptID();
+1
+gap> SetInterruptHandler(StopTaskInterrupt, StopTaskHandler);
+]]></Example>
+
+  </Section>
+  <Section Label="MAX_INTERRUPT">
+    <Heading>MAX_INTERRUPT</Heading>
+
+The global variable <C>MAX_INTERRUPT</C> is an integer containing the maximum value for the interrupt arguments to <Ref
+Func="InterruptThread"/> and <Ref Func="SetInterruptHandler"/>.
+  </Section>
+</Chapter>
