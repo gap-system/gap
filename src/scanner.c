@@ -1875,8 +1875,12 @@ Char GetEscapedChar( void )
     GET_CHAR();
     c += GetOctalDigits();
   } else {
-    SyntaxWarning("Expecting valid escape sequence after \\");
-    c = *TLS(In);
+      /* This warning is currently disabled for backwards compatibility */
+      /*
+      if (IsAlpha(*TLS(In)))
+          SyntaxWarning("Alphabet letter after \\");
+      */
+      c = *TLS(In);
   }
   return c;
 }
