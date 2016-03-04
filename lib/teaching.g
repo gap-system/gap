@@ -910,7 +910,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
     if Size(H)=1 then
       k:=One(H);
     else
-      k:=SmallGeneratingSet(H)[1];
+      k:=MinimalGeneratingSet(H)[1];
     fi;
     c:=Order(k);
     Assert(1,Order(k)=Order(H));

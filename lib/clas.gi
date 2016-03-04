@@ -421,7 +421,7 @@ end);
 
 
 InstallMethod( ConjugacyClasses, "for groups: try random search",
-  [ IsGroup ],
+  [ IsGroup and IsFinite ],
 function(G)
 local cl;
   cl:=ConjugacyClassesForSmallGroup(G);
@@ -433,7 +433,7 @@ local cl;
 end);
 
 InstallMethod( ConjugacyClasses, "try solvable method",
-    [ IsGroup ],
+    [ IsGroup and IsFinite ],
     function( G )
     local   cls,  cl,  c;
 

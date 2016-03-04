@@ -561,10 +561,15 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
     Add(rels,MappedWord(i,fpqg,qimg)/decomp(MappedWord(i,fpqg,qreps)));
   od;
   fp:=f/rels;
+  if HasGeneratorsOfGroup(N) then 
+    di:=GeneratorsOfGroup(N);
+  else
+    di:=[];
+  fi;
   hom2:=GroupHomomorphismByImagesNC(G,fp,
-	 Concatenation(Concatenation(qreps,pcgs),GeneratorsOfGroup(N)),
+	 Concatenation(Concatenation(qreps,pcgs),di),
 	 Concatenation(GeneratorsOfGroup(fp),
-	 List(GeneratorsOfGroup(N),x->One(fp))):noassert);
+	 List(di,x->One(fp))):noassert);
 
   # build decompositioninfo
   di:=rec(gens:=Concatenation(qreps,pcgs),fp:=fp,source:=G);
