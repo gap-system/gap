@@ -1,0 +1,290 @@
+<Chapter Label="Atomic objects">
+  <Heading>Atomic objects</Heading>
+
+HPC-GAP provides a number of atomic object types. These can be accessed by multiple threads concurrently without
+requiring explicit synchronization, but can have non-deterministic behavior for complex operations.
+
+Atomic lists are fixed-size lists; they can be assigned to and read from like normal plain lists.
+
+Atomic records are atomic versions of plain records. Unlike plain records, though, it is not possible to delete elements
+from an atomic record.
+
+The primary use of atomic lists and records is to facilitate storing the result of idempotent operations and to support
+certain low-level operations.
+
+Atomic lists and records can have three different replacement policies: write-once, strict write-once, and rewritable.
+The replacement policy determines whether an already assigned element can be changed. The write-once policy allows
+elements to be assigned only once, with subsequent assignments being ignored; the strict write-once policy allows
+elements also to be assigned only once, but subsequent assignments will raise an error; the rewritable policy allows
+elements to be assigned different values repeatedly. The default for new atomic objects is to be rewritable.
+
+Thread-local records are variants of plain records that are replicated on a per-thread basis.
+
+  <Section Label="Atomic lists">
+    <Heading>Atomic lists</Heading>
+
+Atomic lists are created using the <C>AtomicList</C> or <C>FixedAtomicList</C> functions. After creation, they can be
+used exactly like any other list, except that atomic lists created with <C>FixedAtomicList</C> cannot be resized. Their
+contents can also be read as normal plain lists using <C>FromAtomicList</C>.
+
+<Example><![CDATA[
+gap> a := AtomicList([1,2,4]);
+<atomic list of size 3>
+gap> WaitTask(RunTask(function() a[1] := a[1] + a[2]; end));
+gap> a[1];
+3
+gap> FromAtomicList(a);
+[ 3, 2, 4 ]
+]]></Example>
+
+Because multiple threads can read and write the list concurrently without synchronization, the results of modifying the
+list may be non-deterministic.
+
+It is faster to write to fixed atomic lists than to a resizable atomic list.
+
+    <Subsection Label="AtomicList">
+      <Heading>AtomicList(list | count, obj)</Heading>
+
+<C>AtomicList</C> is used to create a new atomic list. It takes either a plain list as an argument, in which case it
+will create a new atomic list of the same size, populated by the same elements; or it takes a count and an object
+argument. In that case, it creates an atomic list with <C>count</C> elements, each set to the value of <C>obj</C>.
+
+<Example><![CDATA[
+gap> al := AtomicList([3, 1, 4]);
+<atomic list of size 3>
+gap> al[3];
+4
+gap> al := AtomicList(10, `"alpha");
+<atomic list of size 10>
+gap> al[3];
+"alpha"
+gap> WaitTask(RunTask(function() al[3] := `"beta"; end));
+gap> al[3];
+"beta"
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="FixedAtomicList">
+      <Heading>FixedAtomicList(list | count, obj)</Heading>
+
+<C>FixedAtomicList</C> works like <Ref Func="AtomicList"/> except that the resulting list cannot be resized.
+
+    </Subsection>
+    <Subsection Label="MakeFixedAtomicList">
+      <Heading>MakeFixedAtomicList(list)</Heading>
+
+<C>MakeFixedAtomicList</C> turns a resizable atomic list into a fixed atomic list.
+
+<Example><![CDATA[
+gap> a := AtomicList([99]);
+<atomic list of size 1>
+gap> a[2] := 100;
+100
+gap> MakeFixedAtomicList(a);
+<fixed atomic list of size 2>
+gap> a[3] := 101;
+Error, Atomic List Element: <pos>=3 is an invalid index for <list>
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="FromAtomicList">
+      <Heading>FromAtomicList(atomic_list)</Heading>
+
+<C>FromAtomicList</C> returns a plain list containing the same elements as <C>atomic_list</C> at the time of the call.
+Because other threads can write concurrently to that list, the result is not guaranteed to be deterministic.
+
+<Example><![CDATA[
+gap> al := AtomicList([10, 20, 30]);;
+gap> WaitTask(RunTask(function() al[2] := 40; end));
+gap> FromAtomicList(al);
+[ 10, 40, 30 ]
+]]></Example>
+    </Subsection>
+  </Section>
+  <Section Label="ATOMIC_ADDITION">
+    <Heading>ATOMIC_ADDITION(atomic_list, index, value)</Heading>
+
+<C>ATOMIC_ADDITION</C> is a low-level operation that atomically adds <C>value</C> to <C>atomic_list[index]</C>. It
+returns the value of atomic_list[index] after the addition has been performed.
+
+<Example><![CDATA[
+gap> al := FixedAtomicList([4,5,6]);;
+gap> ATOMIC_ADDITION(al, 2, 7);
+12
+gap> FromAtomicList(al);
+[ 4, 12, 6 ]
+]]></Example>
+
+  </Section>
+  <Section Label="COMPARE_AND_SWAP">
+    <Heading>COMPARE_AND_SWAP(atomic_list, index, old, new)</Heading>
+
+<C>COMPARE_AND_SWAP</C> is an atomic operation. It atomically compares <C>atomic_list[index]</C> to <C>old</C> and, if
+they are identical,  replaces the value (in the same atomic step) with <C>new</C>. It returns true if the replacement
+took place, false otherwise.
+
+The primary use of <C>COMPARE_AND_SWAP</C> is to implement certain concurrency primitives; most programmers will not
+need to use it.
+
+  </Section>
+  <Section Label="Atomic records and component objects">
+    <Heading>Atomic records and component objects</Heading>
+
+Atomic records are atomic counterparts to plain records. They support assignment to individual record fields, and
+conversion to and from plain records.
+
+Assignment semantics can be specified on a per-record basis if the assigned record field is already populated, allowing
+either an overwrite, keeping the existing value, or raising an error.
+
+It is not possible to unbind atomic record elements.
+
+Like plain records, atomic records can be converted to component objects using <C>Objectify</C>.
+
+    <Subsection Label="AtomicRecord">
+      <Heading>AtomicRecord([capacity|record])</Heading>
+
+<C>AtomicRecord</C> is used to create a new atomic record. Its single optional argument is either a positive integer,
+denoting the intended capacity (i.e., number of elements to be held) of the record, in which case a new empty atomic
+record with that initial capacity will be created. Alternatively, the caller can provide a plain record with which to
+initially populate the atomic record.
+
+<Example><![CDATA[
+gap> r := AtomicRecord(rec( x := 2 ));
+<atomic record 1/2 full>
+gap> r.y := 3;
+3
+gap> TaskResult(RunTask(function() return r.x + r.y; end));
+5
+gap> [ r.x, r.y ];
+[ 2, 3 ]
+]]></Example>
+
+Any atomic record can later grow beyond its initial capacity. There is no limit to the number of elements it can hold
+other than available memory.
+
+    </Subsection>
+    <Subsection Label="FromAtomicRecord">
+      <Heading>FromAtomicRecord(record)</Heading>
+
+<C>FromAtomicRecord</C> returns a plain record copy of the atomic record <C>record</C>. This copy is shallow; elements
+of <C>record</C> will not also be copied.
+
+<Example><![CDATA[
+gap> r := AtomicRecord();;
+gap> r.x := 1;; r.y := 2;; r.z := 3;;
+gap> FromAtomicRecord(r);
+rec( x := 1, y := 2, z := 3 )
+]]></Example>
+
+    </Subsection>`
+  </Section>
+  <Section Label="Replacement policy functions">
+    <Heading>Replacement policy functions</Heading>
+
+There are three functions that set the replacement policy of an atomic object. All three can also be used with plain
+lists and records, in which case an atomic version of the list or record is first created. This allows programmers to
+elide <C>AtomicList</C> and <C>AtomicRecord</C> calls when the next step is to change their policy.
+
+    <Subsection Label="MakeWriteOnceAtomic">
+      <Heading>MakeWriteOnceAtomic(obj)</Heading>
+
+<C>MakeWriteOnceAtomic</C> takes a list, record, atomic list, atomic record, atomic positional object, or atomic
+component object as its argument. If the argument is a non-atomic list or record, then the function first creates an
+atomic copy of the argument. The function then changes the replacement policy of the object to write-once: if an element
+of the object is already bound, then further attempts to assign to it will be ignored.
+
+    </Subsection>
+    <Subsection Label="MakeStrictWriteOnceAtomic">
+      <Heading>MakeStrictWriteOnceAtomic(obj)</Heading>
+
+<C>MakeStrictWriteOnceAtomic</C> works like <C>MakeWriteOnceAtomic</C>, except that the replacement policy is being
+changed to being strict write-once: if an element is already bound, then further attempts to assign to it will raise an
+error.
+
+    </Subsection>
+    <Subsection Label="MakeReadWriteAtomic">
+      <Heading>MakeReadWriteAtomic(obj)</Heading>
+
+<C>MakeReadWriteAtomic</C> is the inverse of <C>MakeWriteOnceAtomic</C> and <C>MakeStrictWriteOnceAtomic</C> in that the
+replacement policy is being changed to being rewritable: Elements can be replaced even if they are already bound.
+    </Subsection>
+  </Section>
+  <Section Label="Thread-local records">
+    <Heading>Thread-local records</Heading>
+
+Thread-local records allow an easy way to have a separate copy of a record for each indvidual thread that is accessed by
+the same name in each thread.
+
+<Example><![CDATA[
+gap> r := ThreadLocalRecord();; # create new thread-local record
+gap> r.x := 99;;
+gap> WaitThread( CreateThread( function()
+>                              r.x := 100;
+>                              Display(r.x);
+>                              end ) );
+100
+gap> r.x;
+99
+]]></Example>
+
+As can be seen above, even though <C>r.x</C> is overwritten in the second thread, it does not affect the value of
+<C>r.x| in the first thread</C>
+
+    <Subsection Label="ThreadLocalRecord">
+      <Heading>ThreadLocalRecord([defaults [, constructors]])</Heading>
+
+<C>ThreadLocalRecord</C> creates a new thread-local record. It accepts up to two initial arguments. The <C>defaults</C>
+argument is a record of default values with which each thread-local copy is initially populated (this happens on demand,
+so values are not actually read until needed).
+
+The second argument is a record of constructors; parameterless functions that return an initial value for the respective
+element. Constructors are evaluated only once per thread and only if the respective element is accessed without having
+previously been assigned a value.
+
+<Example><![CDATA[
+gap> r := ThreadLocalRecord( rec(x := 99),
+>      rec(y := function() return 101; end));;
+gap> r.x;
+99
+gap> r.y;
+101
+gap> TaskResult(RunTask(function() return r.x; end));
+99
+gap> TaskResult(RunTask(function() return r.y; end));
+101
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="SetTLDefault">
+      <Heading>SetTLDefault(record, name, value)</Heading>
+
+<C>SetTLDefault</C> can be used to set the default value of a record field after its creation. Here, <C>record</C> is an
+atomic record, <C>name</C> is the string of the field name, and <C>value</C> is the value.
+
+<Example><![CDATA[
+gap> r := ThreadLocalRecord();;
+gap> SetTLDefault(r, "x", 314);
+gap> r.x;
+314
+gap> TaskResult(RunTask(function() return r.x; end));
+314
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="SetTLConstructor">
+      <Heading>SetTLConstructor(record, name, func)</Heading>
+
+<C>SetTLConstructor</C> can be used to set the constructor of a thread-local record field after its creation, similar to
+<C>SetTLDefault</C>.
+
+<Example><![CDATA[
+gap> r := ThreadLocalRecord();;
+gap> SetTLConstructor(r, "x", function() return 2718; end);
+gap> r.x;
+2718
+gap> TaskResult(RunTask(function() return r.x; end));
+2718
+]]></Example>
+    </Subsection>
+  </Section>
+  </Chapter>
