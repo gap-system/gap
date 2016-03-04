@@ -20,7 +20,12 @@
     <Email>support@gap-system.org</Email>
     <Homepage>http://www.gap-system.org</Homepage>
   </Author>
-
+  <Author>Reimer Behrends
+    <Email>behrends@gmail.com</Email>
+  </Author>
+  <Author>Vladimir Janjic
+    <Email>vj32@st-andrews.ac.uk</Email>
+  </Author>
   <Copyright>
     Copyright &copyright; (1987-&RELEASEYEAR;)
     for the core part of the &GAP; system by the &GAP; Group.
