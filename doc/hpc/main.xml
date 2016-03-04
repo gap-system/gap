@@ -22,20 +22,20 @@
   </Author>
 
   <Copyright>
-    Copyright &copyright; (1987-&RELEASEYEAR;) 
+    Copyright &copyright; (1987-&RELEASEYEAR;)
     for the core part of the &GAP; system by the &GAP; Group.
     <P/>
-    Most parts of this distribution, including the core part of the &GAP; 
-    system are distributed under the terms of the GNU General Public License, 
-    see <URL>http://www.gnu.org/licenses/gpl.html</URL> or the file 
-    <F>GPL</F> in the <F>etc</F> directory of the &GAP; 
+    Most parts of this distribution, including the core part of the &GAP;
+    system are distributed under the terms of the GNU General Public License,
+    see <URL>http://www.gnu.org/licenses/gpl.html</URL> or the file
+    <F>GPL</F> in the <F>etc</F> directory of the &GAP;
     installation.
     <P/>
     More detailed information about copyright and licenses of parts of this
     distribution can be found in <Ref Sect="Copyright and License" BookName="ref"/>.
     <P/>
     &GAP; is developed over a long time and has many authors and contributors.
-    More detailed information can be found in 
+    More detailed information can be found in
     <Ref Sect="Authors and Maintainers" BookName="ref"/>.
   </Copyright>
 </TitlePage>
@@ -43,8 +43,16 @@
 <TableOfContents/>
 
 <Body>
+  <#Include SYSTEM "tasks.xml">
+  <#Include SYSTEM "vars.xml">
+  <#Include SYSTEM "regions.xml">
+  <#Include SYSTEM "ui.xml">
+  <!--
 
-<#Include SYSTEM "tasks.xml">
+aobjects.txt threads.txt channels.txt semaphores.txt syncvars.txt serialize.txt zmq.txt zgap.txt lowlevel.txt
+
+MPI_SRC=mpi-overview.txt mpi-marshalling.txt mpi-tasks.txt mpi-handles.txt mpi-lowlevel.txt
+  -->
 
 </Body>
 
@@ -57,4 +65,3 @@
 </Book>
 
 <!-- ==================================================================== -->
-

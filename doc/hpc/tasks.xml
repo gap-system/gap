@@ -1,24 +1,355 @@
 <Chapter Label="Tasks">
-<Heading>Tasks</Heading>
+  <Heading>Tasks</Heading>
+  <Section Label="Overview">
+    <Heading>Overview</Heading>
 
-Tasks provide mid- to high-level functionality for programmers to
-describe asynchronous workflows. A task is an asynchronously or
-synchronously executing job; functions exist to create tasks that are
-executed concurrently, on demand, or in the current thread; to wait for
-their completion, check their status, and retrieve any results.
+Tasks provide mid- to high-level functionality for programmers to describe asynchronous workflows. A task is an
+asynchronously or synchronously executing job; functions exist to create tasks that are executed concurrently, on
+demand, or in the current thread; to wait for their completion, check their status, and retrieve any results.
 
-<P/>
 Here is a simple example of sorting a list in the background:
 
-<Index Key="RunTask"><C>RunTask</C></Index>
-
-<Example>
-gap&gt; task := RunTask(x -&gt; SortedList(x), [3,2,1]);;
-gap&gt; WaitTask(task);
-gap&gt; TaskResult(task);
+<Example><![CDATA[
+gap> task := RunTask(x -> SortedList(x), [3,2,1]);;
+gap> WaitTask(task);
+gap> TaskResult(task);
 [ 1, 2, 3 ]
-</Example>
+]]></Example>
 
+<Ref Func="RunTask"/> dispatches a task to run in the background; a task is described by a function and zero or more
+arguments that are passed to <Ref Func="RunTask"/>. <Ref Func="WaitTask"/> waits for the task to complete; and
+<C>TaskResult</C> returns the result of the task.
 
+<Ref Func="TaskResult"/> does an implicit <Ref Func="WaitTask"/>, so the second line above can actually be omitted:
 
+<Example><![CDATA[
+gap> task := RunTask(x -> SortedList(x), [3,2,1]);;
+gap> TaskResult(task);
+[ 1, 2, 3 ]
+]]></Example>
+
+It is simple to run two tasks in parallel. Let&#39;s compute the factorial of 10000 by splitting the work between two
+tasks:
+
+<Example><![CDATA[
+gap> task1 := RunTask(Product, [1..5000]);;
+gap> task2 := RunTask(Product, [5001..10000]);;
+gap> TaskResult(task1) * TaskResult(task2) = Factorial(10000);
+true
+]]></Example>
+
+You can use <Ref Func="DelayTask"/> to delay executing the task until its result is actually needed.
+
+<Example><![CDATA[
+gap> task1 := DelayTask(Product, [1..5000]);;
+gap> task2 := DelayTask(Product, [5001..10000]);;
+gap> WaitTask(task1, task2);
+gap> TaskResult(task1) * TaskResult(task2) = Factorial(10000);
+true
+]]></Example>
+
+Note that <Ref Func="WaitTask"/> is used here to start execution of both tasks; otherwise, <C>task2</C> would not be
+started until <C>TaskResult(task1)</C> has been evaluated.
+
+To start execution of a delayed task, you can also use <C>ExecuteTask</C>. This has no effect if a task has already been
+running.
+
+For convenience, you can also use <Ref Func="ImmediateTask"/> to execute a task synchronously (i.e., the task is started
+immediately and the call does not return until the task has completed).
+
+<Example><![CDATA[
+gap> task := ImmediateTask(x -> SortedList(x), [3,2,1]);;
+gap> TaskResult(task);
+[ 1, 2, 3 ]
+]]></Example>
+
+This is indistinguishable from calling the function directly, but provides the same interface as normal tasks.
+
+Sometimes it can be useful to ignore the result of a task. The <C>RunAsyncTask</C> provides the necessary functionality.
+
+<Example><![CDATA[
+gap> RunAsyncTask(function() Print("Hello, world!\n"); end);;
+Hello, world!
+]]></Example>
+
+Such a task cannot be waited for and its result (if any) is ignored.
+
+Task arguments are generally copied so that both the task that created them and the task that uses them can access the
+data concurrently without fear of race conditions. To avoid copying, arguments should be made shared or public (see the
+relevant parts of the section on ); shared and public arguments will not be copied.
+
+HPC-GAP currently has multiple implementations of the task API. To enable the reference implementation, set the
+environment variable <C>GAP_STDTASKS</C> to a non-empty value before starting GAP.
+  </Section>
+  <Section Label="Running tasks">
+    <Heading>Running tasks</Heading>
+    <Subsection Label="RunTask">
+      <Heading>RunTask(func [, arg1, ..., argn])</Heading>
+
+<C>RunTask</C> prepares a task for execution and starts it. The task will call the function <C>func</C> with arguments
+<C>arg1</C> through <C>argn</C> (if provided). The return value of <C>func</C> is the result of the task.
+
+The <C>RunTask</C> call itself returns a task object that can be used by functions that expect a task argument.
+
+    </Subsection>
+    <Subsection Label="ScheduleTask">
+      <Heading>ScheduleTask(condition, func, [, arg1, ..., argn])</Heading>
+
+<C>ScheduleTask</C> prepares a task for execution, but, unlike <C>RunTask</C> does not start it until <C>condition</C>
+is met. See  on how to construct conditions. Simple examples of conditions are individual tasks (execution occurs after
+the task completes) or lists of tasks (execution occurs after all tasks in the list complete).
+
+<Example><![CDATA[
+gap> t1 := RunTask(x->x*x, 3);;
+gap> t2 := RunTask(x->x*x, 4);;
+gap> t := ScheduleTask([t1, t2], function()
+>           return TaskResult(t1) + TaskResult(t2);
+>    end);
+gap> TaskResult(t);
+25
+]]></Example>
+
+While the above example could also be achieved with <C>RunTask</C> in lieu of <C>ScheduleTask</C>, since
+<C>TaskResult</C> would wait for <C>t1</C> and <C>t2</C> to complete, the above implementation does not actually start
+the final task until the others are complete, making it more efficient, since no additional worker thread needs to be
+occupied.
+
+    </Subsection>
+    <Subsection Label="DelayTask">
+      <Heading>DelayTask(func [, arg1, ..., argn])</Heading>
+
+<C>DelayTask</C> works as <Ref Func="RunTask"/>, but its start is delayed until it is being waited for (including
+implicitly by calling <Ref Func="TaskResult"/>).
+
+    </Subsection>
+    <Subsection Label="RunAsyncTask">
+      <Heading>RunAsyncTask(func [, arg1, ..., argn])</Heading>
+
+<C>RunAsyncTask</C> creates an asynchronous task. It works like <Ref Func="RunTask"/>, except that its result will be
+ignored.
+
+    </Subsection>
+    <Subsection Label="ScheduleAsyncTask">
+      <Heading>ScheduleAsyncTask(condition, func, [, arg1, ..., argn])</Heading>
+
+<C>ScheduleAsyncTask</C> creates an asynchronous task. It works like <Ref Func="ScheduleTask"/>, except that its result will be ignored.
+
+    </Subsection>
+    <Subsection Label="MakeTaskAsync">
+      <Heading>MakeTaskAsync(task)</Heading>
+
+<C>MakeTaskAsync</C> turns a synchronous task into an asynchronous task that cannot be waited for and whose result will
+be ignored.
+
+    </Subsection>
+    <Subsection Label="ImmediateTask">
+      <Heading>ImmediateTask(func [, arg1, ..., argn])</Heading>
+
+<C>ImmediateTask</C> executes the task specified by its arguments synchronously, usually within the current thread.
+
+    </Subsection>
+    <Subsection Label="ExecuteTask">
+      <Heading>ExecuteTask(task)</Heading>
+
+<C>ExecuteTask</C> starts <C>task</C> if it is not already running. It has only an effect if its argument is a task
+returned by <Ref Func="DelayTask"/>; otherwise, it is a no-op.
+
+    </Subsection>
+    <Subsection Label="WaitTask">
+      <Heading>WaitTask(task1, ..., taskn)</Heading>
+
+    </Subsection>
+    <Subsection Label="WaitTask">
+      <Heading>WaitTask(condition)</Heading>
+
+<C>WaitTask</C> waits until <C>task1</C> through <C>taskn</C> have completed; after that, it returns.
+
+Alternatively, a condition can be passed to <C>WaitTask</C> in order to wait until a condition is met. See  on how to
+construct conditions.
+
+    </Subsection>
+    <Subsection Label="WaitTasks">
+      <Heading>WaitTasks(task1, ..., taskn)</Heading>
+
+<C>WaitTasks</C> is an alias for <C>WaitTask</C>.
+
+    </Subsection>
+    <Subsection Label="WaitAnyTask">
+      <Heading>WaitAnyTask(task1, ..., taskn)</Heading>
+
+The <C>WaitAnyTask</C> function waits for any of its arguments to finish, then returns the number of that task.
+
+<Example><![CDATA[
+gap> task1 := DelayTask(x->SortedList(x), [3,2,1]);;
+gap> task2 := DelayTask(x->SortedList(x), [6,5,4]);;
+gap> which := WaitAnyTask(task1, task2);
+2
+gap> if which = 1 then
+>      Display(TaskResult(task1));Display(TaskResult(task2));
+>    else
+>      Display(TaskResult(task2));Display(TaskResult(task1));
+>    fi;
+[ 4, 5, 6 ]
+[ 1, 2, 3 ]
+]]></Example>
+
+One can pass a list of tasks to <C>WaitAnyTask</C> as an argument; <C>WaitAnyTask([task1, ..., taskn])</C> behaves
+identically to <C>WaitAnyTask(task1, ..., taskn)</C>.
+
+    </Subsection>
+    <Subsection Label="TaskResult">
+      <Heading>TaskResult(task)</Heading>
+
+The <C>TaskResult</C> function returns the result of a task. It implicitly does a <C>WaitTask(task)</C> if that is
+necessary. Multiple invocations of <C>TaskResult</C> with the same task argument will not do repeated waits and always
+return the same value.
+
+    </Subsection>
+    <Subsection Label="CurrentTask">
+      <Heading>CurrentTask()</Heading>
+
+The <C>CurrentTask</C> returns the currently running task.
+
+    </Subsection>
+    <Subsection Label="RunningTasks">
+      <Heading>RunningTasks()</Heading>
+
+This function returns the number of currently running tasks. Note that it is only an approximation and can change as new
+tasks are being started by other threads.
+
+    </Subsection>
+    <Subsection Label="TaskStarted">
+      <Heading>TaskStarted(task)</Heading>
+
+This function returns true if the task has started executing (i.e., for any non-delayed task), false otherwise.
+
+    </Subsection>
+    <Subsection Label="TaskFinished">
+      <Heading>TaskFinished(task)</Heading>
+
+This function returns true if the task has finished executing and its result is available, false otherwise.
+
+    </Subsection>
+    <Subsection Label="TaskIsAsync">
+      <Heading>TaskIsAsync(task)</Heading>
+
+This function returns true if the task is asynchronous, true otherwise.
+
+    </Subsection>
+    <Subsection Label="CullIdleTasks">
+      <Heading>CullIdleTasks()</Heading>
+
+      This function terminates unused worker threads.
+
+    </Subsection>
+  </Section>
+  <Section Label="Cancelling tasks">
+    <Heading>Cancelling tasks</Heading>
+
+HPC-GAP uses a cooperative model for task cancellation. A programmer can request the cancellation of another task, but
+it is up to that other task to actually terminate itself. The tasks library has functions to request cancellation, to
+test for the cancellation state of a task, and to perform actions in response to cancellation requests.
+
+    <Subsection Label="CancelTask">
+      <Heading>CancelTask(task)</Heading>
+
+<C>CancelTask</C> submits a request that <C>task</C> is to be cancelled.
+
+    </Subsection>
+    <Subsection Label="TaskCancellationRequested">
+      <Heading>TaskCancellationRequested(task)</Heading>
+
+<C>TaskCancellationRequested</C> returns true if <C>CancelTask</C> has been called for <C>task</C>, false otherwise.
+
+    </Subsection>
+    <Subsection Label="OnTaskCancellation">
+      <Heading>OnTaskCancellation(exit_func)</Heading>
+
+<C>OnTaskCancellation</C> tests if cancellation for the current task has been requested. If so, then <C>exit_func</C>
+will be called (as a parameterless function) and the current task will be aborted. The result of the current task will
+be the value of <C>exit_func()</C>.
+
+Example:
+
+<Example><![CDATA[
+gap> task := RunTask(function()
+>      while true do
+>        OnTaskCancellation(function() return 314; end);
+>      od;
+>    end);
+gap> CancelTask(task);
+gap> TaskResult(task);
+314
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="OnTaskCancellationReturn">
+      <Heading>OnTaskCancellationReturn(value)</Heading>
+
+<C>OnTaskCancellationReturn</C> is a convenience function that does the same as:
+
+<Example><![CDATA[
+OnTaskCancellation(function() return value; end);
+]]></Example>
+
+    </Subsection>
+  </Section>
+  <Section Label="Conditions">
+    <Heading>Conditions</Heading>
+
+<C>ScheduleTask</C> and <C>WaitTask</C> can be made to wait on more complex conditions than just tasks. A condition is
+either a milestone, a task, or a list of milestones and tasks. <C>ScheduleTask</C> starts its task and <C>WaitTask</C>
+returns when the condition has been met. A condition represented by a task is met when the task has completed. A
+condition represented by a milestone is met when the milestone has been achieved (see below). A condition represented by
+a list is met when all conditions in the list have been met.
+
+  </Section>
+  <Section Label="Milestones">
+    <Heading>Milestones</Heading>
+
+Milestones are a way to represent abstract conditions to which multiple tasks can contribute.
+
+    <Subsection Label="NewMilestone">
+      <Heading>NewMilestone([list])</Heading>
+
+The <C>NewMilestone</C> function creates a new milestone. Its argument is a list of targets, which must be a list of
+integers and/or strings. If omitted, the list defaults to <C>[0]</C>.
+
+    </Subsection>
+    <Subsection Label="ContributeToMilestone">
+      <Heading>ContributeToMilestone(milestone, target)</Heading>
+
+The <C>ContributeToMilestone</C> milestone function contributes the specified target to the milestone. Once all targets
+have been contributed to a milestone, it has been achieved.
+
+    </Subsection>
+    <Subsection Label="AchieveMilestone">
+      <Heading>AchieveMilestone(milestone)</Heading>
+
+The <C>AchieveMilestone</C> function allows a program to achieve a milestone in a single step without adding individual
+targets to it. This is most useful in conjunction with the default value for <C>NewMilestone</C>, e.g.
+
+<Example><![CDATA[
+gap> m := NewMilestone();;
+gap> AchieveMilestone(m);
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="IsMilestoneAchieved">
+      <Heading>IsMilestoneAchieved(milestone)</Heading>
+
+The <C>IsMilestoneAchieved</C> tests explicitly if a milestone has been achieved. It returns <C>true</C> on success,
+<C>false</C> otherwise.
+
+<Example><![CDATA[
+gap> m := NewMilestone([1,2]);;
+gap> ContributeToMilestone(m, 1);
+gap> IsMilestoneAchieved(m);
+false
+gap> ContributeToMilestone(m, 2);
+gap> IsMilestoneAchieved(m);
+true
+]]></Example>
+    </Subsection>
+  </Section>
 </Chapter>
