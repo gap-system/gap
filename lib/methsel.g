@@ -29,11 +29,13 @@
 ##
 
 VMETHOD_PRINT_INFO := function ( methods, i, arity)
-    Print("#I  ", methods[(arity+4)*(i-1)+(arity+4)]);
-    if FILENAME_FUNC(methods[(arity+4)*(i-1)+(arity+2)]) <> fail then
+    local offset;
+    offset := (arity+4)*(i-1)+arity;
+    Print("#I  ", methods[offset+4]);
+    if FILENAME_FUNC(methods[offset+2]) <> fail then
         Print(" at ",
-              FILENAME_FUNC(methods[(arity+4)*(i-1)+(arity+2)]), ":",
-              STARTLINE_FUNC(methods[(arity+4)*(i-1)+(arity+2)]));
+              FILENAME_FUNC(methods[offset+2]), ":",
+              STARTLINE_FUNC(methods[offset+2]));
     fi;
     Print("\n");
 end;
