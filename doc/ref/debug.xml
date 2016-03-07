@@ -769,6 +769,9 @@ gaussian.tst               0             10
 
 <#Include Label="Test">
 <#Include Label="TestDirectory">
+
+See also <Ref Func="TestPackage"/> for the information on running standard
+tests for &GAP; packages.
 </Section>
 
 

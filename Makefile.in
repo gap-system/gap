@@ -289,6 +289,33 @@ testpackages: compile
 	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
 	( rm wsp.g )
 
+testpackage: compile
+	mkdir -p dev/log
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackage1", \
+            "$(TESTGAP) -L wsp.g", "false", "$(PKGNAME)" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackageA", \
+            "$(TESTGAPauto) -L wsp.g", "auto", "$(PKGNAME)" );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackage2", \
+            "$(TESTGAP) -L wsp.g", "true", "$(PKGNAME)" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+
 testpackagesload: compile
 	mkdir -p dev/log
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \

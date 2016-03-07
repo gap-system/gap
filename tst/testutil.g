@@ -76,8 +76,8 @@ end;
 ##  is actually managed in the Makefile, and is passed to this function 
 ##  just to be printed in the information messages.
 ##
-BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfile, gap, other )
-    local result, name, entry, pair, testfile;
+BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfile, gap, other, pkgname... )
+    local result, name, entry, pair, testfile, packages;
 
     SizeScreen( [ 1000 ] );
     InitializePackagesInfoRecords( false );
@@ -85,7 +85,19 @@ BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfile, gap, other
     
     Append( result, "TIMESTAMP=`date -u +_%Y-%m-%d-%H-%M`\n" );
 
-    for name in SortedList(ShallowCopy(RecNames(GAPInfo.PackagesInfo))) do 
+    if Length(pkgname)=0 then
+      packages := SortedList(ShallowCopy(RecNames(GAPInfo.PackagesInfo)));
+    else
+      packages := pkgname;
+      if Length(packages) <> 1 or Length(packages[1]) = 0 then
+         Error("Usage: make testpackage PKGNAME=pkgname");
+      fi;
+      if not pkgname[1] in RecNames(GAPInfo.PackagesInfo) then
+         Error("There is no package with the name ", pkgname[1], " installed\n");
+      fi;
+    fi;
+
+    for name in packages do
       for entry in GAPInfo.PackagesInfo.( name ) do
         if IsBound( entry.InstallationPath ) and IsBound( entry.TestFile ) then
           testfile := Filename( DirectoriesPackageLibrary( name, "" ), entry.TestFile );
