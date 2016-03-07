@@ -20,4 +20,17 @@ gap> CallWithTimeoutList(5000,spinFor,[50000,1]);
 [ false ]
 gap> CallWithTimeoutList(50000,spinFor,[1]);
 [ true ]
+gap> spin2 := function(use, timeout) return CallWithTimeout(timeout, spinFor, use); end;
+function( use, timeout ) ... end
+gap> CallWithTimeout(100000, spin2,2000,50000);
+[ true, [ false ] ]
+gap> CallWithTimeout(100000, spin2,50,200000);
+[ true, [ true ] ]
+gap> CallWithTimeout(1000000, spin2,50,200000);
+[ true, [ true ] ]
+gap> CallWithTimeout(10000, spin2,500,200000);
+[ false ]
+gap> ct := 0;; CallWithTimeout(1000000, function() while true do spin2(500,500000); ct := ct+1; od; end);; 2 <= ct; ct <= 10;
+true
+true
 gap> STOP_TEST( "timeout.tst", 330000);
