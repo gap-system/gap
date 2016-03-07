@@ -135,8 +135,33 @@ Obj FILENAME_STAT(Stat stat)
       filename = ELM_PLIST(FilenameCache, filenameid);
   return filename;
 }
-    
-    
+
+
+/****************************************************************************
+**
+** Fill in filename and line of a statement, checking we do not overflow
+** the space we have for storing information
+*/
+Stat fillFilenameLine(Int fileid, Int line, Int size, Int type)
+{
+  Stat stat;
+  if(fileid < 0 || fileid >= (1 << 16))
+  {
+    fileid = (1 << 16) - 1;
+    RegisterProfilingFileOverflowOccured();
+  }
+  if(line < 0 || line >= (1 << 16))
+  {
+    line = (1 << 16) - 1;
+    RegisterProfilingLineOverflowOccured();
+  }
+
+  stat = ((Stat)fileid << 48) + ((Stat)line << 32) +
+          ((Stat)size << 8) + (Stat)type;
+
+  return stat;
+}
+
 /****************************************************************************
 **
 *F  NewStat( <type>, <size> ) . . . . . . . . . . .  allocate a new statement
@@ -173,8 +198,7 @@ Stat NewStatWithLine (
     setup_gapname(TLS(Input));
     
     /* enter type and size                                                 */
-    ADDR_STAT(stat)[-1] = ((Stat)TLS(Input)->gapnameid << 48) + ((Stat)line << 32) +
-                          ((Stat)size << 8) + (Stat)type;
+    ADDR_STAT(stat)[-1] = fillFilenameLine(TLS(Input)->gapnameid, line, size, type);
     RegisterStatWithProfiling(stat);
     /* return the new statement                                            */
     return stat;
@@ -218,9 +242,8 @@ Expr            NewExpr (
     }
 
     /* enter type and size                                                 */
-    ADDR_EXPR(expr)[-1] = ((Stat)TLS(Input)->gapnameid << 48) +
-                          ((Stat)TLS(Input)->number << 32) +
-                          ((Stat)size << 8) + type;
+    ADDR_EXPR(expr)[-1] = fillFilenameLine(TLS(Input)->gapnameid,
+                                           TLS(Input)->number, size, type);
     RegisterStatWithProfiling(expr);
     /* return the new expression                                           */
     return expr;
@@ -3510,6 +3533,3 @@ StructInitInfo * InitInfoCode ( void )
 
 *E  code.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

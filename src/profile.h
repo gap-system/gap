@@ -28,7 +28,8 @@
 StructInitInfo * InitInfoProfile ( void );
 
 void RegisterStatWithProfiling(Stat);
-
+void RegisterProfilingLineOverflowOccured();
+void RegisterProfilingFileOverflowOccured();
 
 void InstallEvalBoolFunc( Int, Obj(*)(Expr));
 void InstallEvalExprFunc( Int, Obj(*)(Expr));
