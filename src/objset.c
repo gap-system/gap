@@ -68,7 +68,7 @@ static Int AlwaysMutable(Obj obj) {
 }
 
 static Int NeverMutable(Obj obj) {
-  return 1;
+  return 0;
 }
 
 static Obj TypeObjSet(Obj obj) {
