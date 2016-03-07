@@ -7,3 +7,6 @@ Explanation
 
 dir-test : A directory containing some example files and sub-directories
            for testing directory enumeration.
+
+long-files : Some very long files, which can use to check profiling doesn't
+             break around 65,536 lines
