@@ -5786,6 +5786,21 @@ Obj FuncCLEAR_CACHE_INFO (
     return 0;
 }
 
+Obj FuncOPERS_SEARCH (
+    Obj                     self,
+    Obj                     Operations,
+    Obj                     opr)
+{
+    Int i;
+    Int len = LEN_PLIST(Operations);
+    for(i = 1; i < len; i += 2)
+    {
+      if(opr == ELM_PLIST(Operations, i))
+        return ELM_PLIST(Operations, i+1);
+    }
+    return False;
+}
+
 /****************************************************************************
 **
 
@@ -6097,7 +6112,10 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CLEAR_CACHE_INFO", 0, "",
       FuncCLEAR_CACHE_INFO, "src/opers.c:CLEAR_CACHE_INFO" },
-    
+
+    { "OPERS_SEARCH", 2, "",
+      FuncOPERS_SEARCH, "src/opers.c:OPERS_SEARCH" },
+
     { "SET_ATTRIBUTE_STORING", 2, "attr, val",
       FuncSET_ATTRIBUTE_STORING, "src/opers.c:SET_ATTRIBUTE_STORING" },
 
