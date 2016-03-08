@@ -3,11 +3,11 @@
   <Section Label="Overview">
     <Heading>Overview</Heading>
 
-Tasks provide mid- to high-level functionality for programmers to describe asynchronous workflows. A task is an
-asynchronously or synchronously executing job; functions exist to create tasks that are executed concurrently, on
-demand, or in the current thread; to wait for their completion, check their status, and retrieve any results.
+    Tasks provide mid- to high-level functionality for programmers to describe asynchronous workflows. A task is an
+    asynchronously or synchronously executing job; functions exist to create tasks that are executed concurrently, on
+    demand, or in the current thread; to wait for their completion, check their status, and retrieve any results.
 
-Here is a simple example of sorting a list in the background:
+    Here is a simple example of sorting a list in the background:
 
 <Example><![CDATA[
 gap> task := RunTask(x -> SortedList(x), [3,2,1]);;
@@ -81,25 +81,27 @@ relevant parts of the section on ); shared and public arguments will not be copi
 HPC-GAP currently has multiple implementations of the task API. To enable the reference implementation, set the
 environment variable <C>GAP_STDTASKS</C> to a non-empty value before starting GAP.
   </Section>
+
   <Section Label="Running tasks">
     <Heading>Running tasks</Heading>
-    <Subsection Label="RunTask">
-      <Heading>RunTask(func [, arg1, ..., argn])</Heading>
+    <ManSection>
+      <Func Name="RunTask" Arg='func [, arg1, ..., argn]'/>
+      <Description>
+        <Ref Func='RunTask'/> prepares a task for execution and starts it. The task will call the function <A>func</A> with arguments
+        <A>arg1</A> through <A>argn</A> (if provided). The return value of <A>func</A> is the result of the task.
 
-<C>RunTask</C> prepares a task for execution and starts it. The task will call the function <C>func</C> with arguments
-<C>arg1</C> through <C>argn</C> (if provided). The return value of <C>func</C> is the result of the task.
+        The <Ref Func='RunTask'/> call itself returns a task object that can be used by functions that expect a task argument.
+      </Description>
+    </ManSection>
 
-The <C>RunTask</C> call itself returns a task object that can be used by functions that expect a task argument.
+    <ManSection>
+      <Func Name="ScheduleTask" Arg='condition, func [, arg1, ...,argn]'/>
+      <Description>
+        <Ref Func='ScheduleTask'/> prepares a task for execution, but, unlike <Ref Func='RunTask'/> does not start it until <A>condition</A>
+        is met. See  on how to construct conditions. Simple examples of conditions are individual tasks, where execution occurs after
+        the task completes, or lists of tasks, where execution occurs after all tasks in the list complete.
 
-    </Subsection>
-    <Subsection Label="ScheduleTask">
-      <Heading>ScheduleTask(condition, func, [, arg1, ..., argn])</Heading>
-
-<C>ScheduleTask</C> prepares a task for execution, but, unlike <C>RunTask</C> does not start it until <C>condition</C>
-is met. See  on how to construct conditions. Simple examples of conditions are individual tasks (execution occurs after
-the task completes) or lists of tasks (execution occurs after all tasks in the list complete).
-
-<Example><![CDATA[
+        <Example><![CDATA[
 gap> t1 := RunTask(x->x*x, 3);;
 gap> t2 := RunTask(x->x*x, 4);;
 gap> t := ScheduleTask([t1, t2], function()
@@ -108,76 +110,80 @@ gap> t := ScheduleTask([t1, t2], function()
 gap> TaskResult(t);
 25
 ]]></Example>
+        While the above example could also be achieved with <Ref Func='RunTask'/> in lieu of <Ref Func='ScheduleTask'/>, since
+        <Ref Func='TaskResult'/> would wait for <A>t1</A> and <A>t2</A> to complete, the above implementation does not actually start
+        the final task until the others are complete, making it more efficient, since no additional worker thread needs to be
+        occupied.
 
-While the above example could also be achieved with <C>RunTask</C> in lieu of <C>ScheduleTask</C>, since
-<C>TaskResult</C> would wait for <C>t1</C> and <C>t2</C> to complete, the above implementation does not actually start
-the final task until the others are complete, making it more efficient, since no additional worker thread needs to be
-occupied.
+      </Description>  
+    </ManSection>
 
-    </Subsection>
-    <Subsection Label="DelayTask">
-      <Heading>DelayTask(func [, arg1, ..., argn])</Heading>
+    <ManSection>
+      <Func Name="DelayTask" Arg='func [, arg1, ..., argn]'/>
+      <Description>
+      <Ref Func="DelayTask"/> works as <Ref Func="RunTask"/>, but its start is delayed until it is being waited for (including
+      implicitly by calling <Ref Func="TaskResult"/>).
+      </Description>
+    </ManSection>
 
-<C>DelayTask</C> works as <Ref Func="RunTask"/>, but its start is delayed until it is being waited for (including
-implicitly by calling <Ref Func="TaskResult"/>).
+    <ManSection>
+      <Func Name="RunAsyncTask" Arg='func [, arg1, ..., argn]'/>
+      <Description>
+        <Ref Func="RunAsyncTask"/> creates an asynchronous task. It works like <Ref Func="RunTask"/>, except that its result will be
+        ignored.
+      </Description> 
+    </ManSection>
 
-    </Subsection>
-    <Subsection Label="RunAsyncTask">
-      <Heading>RunAsyncTask(func [, arg1, ..., argn])</Heading>
+    <ManSection>
+      <Func Name="ScheduleAsyncTask" Arg='condition, func, [, arg1, ..., argn]'/>
+      <Description>
+        <Ref Func="ScheduleAsyncTask"/> creates an asynchronous task. It works like <Ref Func="ScheduleTask"/>,
+        except that its result will be ignored.
+      </Description>
+    </ManSection>
 
-<C>RunAsyncTask</C> creates an asynchronous task. It works like <Ref Func="RunTask"/>, except that its result will be
-ignored.
+    <ManSection>
+      <Func Name="MakeTaskAsync" Arg='task'/>
+      <Description>
+        <Ref Func="MakeTaskAsync"/> turns a synchronous task into an asynchronous task that cannot be waited for and whose result will
+        be ignored.
+      </Description>
+    </ManSection>
 
-    </Subsection>
-    <Subsection Label="ScheduleAsyncTask">
-      <Heading>ScheduleAsyncTask(condition, func, [, arg1, ..., argn])</Heading>
+    <ManSection>
+      <Func Name="ImmediateTask" Arg='func [, arg1, ..., argn]'/>
+      <Description>
+        <Ref Func="ImmediateTask"/> executes the task specified by its arguments synchronously, usually within the current thread.
+      </Description>
+    </ManSection>
 
-<C>ScheduleAsyncTask</C> creates an asynchronous task. It works like <Ref Func="ScheduleTask"/>, except that its result will be ignored.
+    <ManSection>
+      <Func Name="ExecuteTask" Arg='task'/>
+      <Description>
+        <Ref Func="ExecuteTask"/> starts <A>task</A> if it is not already running. It has only an effect if its argument is a task
+        returned by <Ref Func="DelayTask"/>; otherwise, it is a no-op.
+      </Description>
+    </ManSection>
 
-    </Subsection>
-    <Subsection Label="MakeTaskAsync">
-      <Heading>MakeTaskAsync(task)</Heading>
+    <ManSection>
+      <Func Name="WaitTask" Arg='task1,...,taskn'/>
+      <Func Name="WaitTask" Arg='condition'/>
+      <Func Name="WaitTasks" Arg='task1,...,taskn'/>
 
-<C>MakeTaskAsync</C> turns a synchronous task into an asynchronous task that cannot be waited for and whose result will
-be ignored.
+      <Description>
+        <Ref Func="WaitTask"/> waits until <A>task1</A> through <A>taskn</A> have completed; after that, it returns.
 
-    </Subsection>
-    <Subsection Label="ImmediateTask">
-      <Heading>ImmediateTask(func [, arg1, ..., argn])</Heading>
+        Alternatively, a condition can be passed to <Ref Func="WaitTask"/> in order to wait until a condition is met. See  on how to
+        construct conditions.
 
-<C>ImmediateTask</C> executes the task specified by its arguments synchronously, usually within the current thread.
+        <Ref Func="WaitTasks"/> is an alias for <Ref Func="WaitTask"/>.
+      </Description>
+    </ManSection>
 
-    </Subsection>
-    <Subsection Label="ExecuteTask">
-      <Heading>ExecuteTask(task)</Heading>
-
-<C>ExecuteTask</C> starts <C>task</C> if it is not already running. It has only an effect if its argument is a task
-returned by <Ref Func="DelayTask"/>; otherwise, it is a no-op.
-
-    </Subsection>
-    <Subsection Label="WaitTask">
-      <Heading>WaitTask(task1, ..., taskn)</Heading>
-
-    </Subsection>
-    <Subsection Label="WaitTask">
-      <Heading>WaitTask(condition)</Heading>
-
-<C>WaitTask</C> waits until <C>task1</C> through <C>taskn</C> have completed; after that, it returns.
-
-Alternatively, a condition can be passed to <C>WaitTask</C> in order to wait until a condition is met. See  on how to
-construct conditions.
-
-    </Subsection>
-    <Subsection Label="WaitTasks">
-      <Heading>WaitTasks(task1, ..., taskn)</Heading>
-
-<C>WaitTasks</C> is an alias for <C>WaitTask</C>.
-
-    </Subsection>
-    <Subsection Label="WaitAnyTask">
-      <Heading>WaitAnyTask(task1, ..., taskn)</Heading>
-
-The <C>WaitAnyTask</C> function waits for any of its arguments to finish, then returns the number of that task.
+    <ManSection>
+      <Func Name="WaitAnyTask" Arg='task1, ..., taskn'/>
+      <Description>
+        The <Ref Func="WaitAnyTask"/> function waits for any of its arguments to finish, then returns the number of that task.
 
 <Example><![CDATA[
 gap> task1 := DelayTask(x->SortedList(x), [3,2,1]);;
@@ -196,80 +202,89 @@ gap> if which = 1 then
 One can pass a list of tasks to <C>WaitAnyTask</C> as an argument; <C>WaitAnyTask([task1, ..., taskn])</C> behaves
 identically to <C>WaitAnyTask(task1, ..., taskn)</C>.
 
-    </Subsection>
-    <Subsection Label="TaskResult">
-      <Heading>TaskResult(task)</Heading>
+      </Description>
+    </ManSection>
 
-The <C>TaskResult</C> function returns the result of a task. It implicitly does a <C>WaitTask(task)</C> if that is
-necessary. Multiple invocations of <C>TaskResult</C> with the same task argument will not do repeated waits and always
-return the same value.
+    <ManSection>
+      <Func Name="TaskResult" Arg='task'/>
+      <Description>
+        The <Ref Func="TaskResult"/> function returns the result of a task. It implicitly calls <Ref Func="WaitTask"/> if that is
+        necessary. Multiple invocations of <Ref Func="TaskResult"/> with the same task argument will not do repeated waits and always
+        return the same value.
+      </Description>
+    </ManSection>
 
-    </Subsection>
-    <Subsection Label="CurrentTask">
-      <Heading>CurrentTask()</Heading>
+    <ManSection>
+      <Func Name="CurrentTask" Arg=''/>
+      <Description>
+        The <Ref Func="CurrentTask"/> returns the currently running task.
+      </Description>
+    </ManSection>
 
-The <C>CurrentTask</C> returns the currently running task.
+    <ManSection>
+      <Func Name="RunningTasks" Arg=''/>
+      <Description>
+        This function returns the number of currently running tasks. Note that it is only an approximation and can change as new
+        tasks are being started by other threads.
+      </Description>
+    </ManSection>
 
-    </Subsection>
-    <Subsection Label="RunningTasks">
-      <Heading>RunningTasks()</Heading>
+    <ManSection>
+      <Func Name="TaskStarted" Arg='task'/>
+      <Description>
+        This function returns true if the task has started executing (i.e., for any non-delayed task), false otherwise.
+      </Description>
+    </ManSection>
 
-This function returns the number of currently running tasks. Note that it is only an approximation and can change as new
-tasks are being started by other threads.
+    <ManSection>
+      <Func Name="TaskFinished" Arg='task'/>
+      <Description>
+        This function returns true if the task has finished executing and its result is available, false otherwise.
+      </Description>
+    </ManSection>
 
-    </Subsection>
-    <Subsection Label="TaskStarted">
-      <Heading>TaskStarted(task)</Heading>
+    <ManSection>
+      <Func Name="TaskIsAsync" Arg='task'/>
+      <Description>
+        This function returns true if the task is asynchronous, true otherwise.
+      </Description>
+    </ManSection>
 
-This function returns true if the task has started executing (i.e., for any non-delayed task), false otherwise.
-
-    </Subsection>
-    <Subsection Label="TaskFinished">
-      <Heading>TaskFinished(task)</Heading>
-
-This function returns true if the task has finished executing and its result is available, false otherwise.
-
-    </Subsection>
-    <Subsection Label="TaskIsAsync">
-      <Heading>TaskIsAsync(task)</Heading>
-
-This function returns true if the task is asynchronous, true otherwise.
-
-    </Subsection>
-    <Subsection Label="CullIdleTasks">
-      <Heading>CullIdleTasks()</Heading>
-
-      This function terminates unused worker threads.
-
-    </Subsection>
+    <ManSection>
+      <Func Name="CullIdleTasks" Arg=''/>
+      <Description>
+        This function terminates unused worker threads.
+      </Description>
+    </ManSection>
   </Section>
+
   <Section Label="Cancelling tasks">
     <Heading>Cancelling tasks</Heading>
+    HPC-GAP uses a cooperative model for task cancellation. A programmer can request the cancellation of another task, but
+    it is up to that other task to actually terminate itself. The tasks library has functions to request cancellation, to
+    test for the cancellation state of a task, and to perform actions in response to cancellation requests.
 
-HPC-GAP uses a cooperative model for task cancellation. A programmer can request the cancellation of another task, but
-it is up to that other task to actually terminate itself. The tasks library has functions to request cancellation, to
-test for the cancellation state of a task, and to perform actions in response to cancellation requests.
+    <ManSection>
+      <Func Name="CancelTask" Arg='task'/>
+      <Description>
+        <Ref Func="CancelTask"/> submits a request that <A>task</A> is to be cancelled.
+      </Description>
+    </ManSection>
 
-    <Subsection Label="CancelTask">
-      <Heading>CancelTask(task)</Heading>
+    <ManSection>
+      <Func Name="TaskCancellationRequested" Arg='task'/>
+      <Description>
+        <Ref Func="TaskCancellationRequested"/> returns true if <Ref Func="CancelTask"/> has been called for <A>task</A>,
+        false otherwise.
+      </Description>
+    </ManSection>
 
-<C>CancelTask</C> submits a request that <C>task</C> is to be cancelled.
-
-    </Subsection>
-    <Subsection Label="TaskCancellationRequested">
-      <Heading>TaskCancellationRequested(task)</Heading>
-
-<C>TaskCancellationRequested</C> returns true if <C>CancelTask</C> has been called for <C>task</C>, false otherwise.
-
-    </Subsection>
-    <Subsection Label="OnTaskCancellation">
-      <Heading>OnTaskCancellation(exit_func)</Heading>
-
-<C>OnTaskCancellation</C> tests if cancellation for the current task has been requested. If so, then <C>exit_func</C>
-will be called (as a parameterless function) and the current task will be aborted. The result of the current task will
-be the value of <C>exit_func()</C>.
-
-Example:
+    <ManSection>
+      <Func Name="OnTaskCancellation" Arg='exit_func'/>
+      <Description>
+        <Ref Func="OnTaskCancellation"/> tests if cancellation for the current task has been requested. If so,
+        then <A>exit_func</A> will be called (as a parameterless function) and the current task will be aborted.
+        The result of the current task will be the value of <A>exit_func()</A>.
 
 <Example><![CDATA[
 gap> task := RunTask(function()
@@ -281,66 +296,71 @@ gap> CancelTask(task);
 gap> TaskResult(task);
 314
 ]]></Example>
+      </Description>
+    </ManSection>
 
-    </Subsection>
-    <Subsection Label="OnTaskCancellationReturn">
-      <Heading>OnTaskCancellationReturn(value)</Heading>
-
-<C>OnTaskCancellationReturn</C> is a convenience function that does the same as:
-
+    <ManSection>
+      <Func Name="OnTaskCancellationReturn" Arg='value'/>
+      <Description>
+        <Ref Func="OnTaskCancellationReturn"/> is a convenience function that does the same as:
 <Example><![CDATA[
 OnTaskCancellation(function() return value; end);
 ]]></Example>
+      </Description>
+    </ManSection>
 
-    </Subsection>
   </Section>
+
   <Section Label="Conditions">
     <Heading>Conditions</Heading>
 
-<C>ScheduleTask</C> and <C>WaitTask</C> can be made to wait on more complex conditions than just tasks. A condition is
-either a milestone, a task, or a list of milestones and tasks. <C>ScheduleTask</C> starts its task and <C>WaitTask</C>
-returns when the condition has been met. A condition represented by a task is met when the task has completed. A
-condition represented by a milestone is met when the milestone has been achieved (see below). A condition represented by
-a list is met when all conditions in the list have been met.
-
+    <Ref Func="ScheduleTask"/> and <Ref Func="WaitTask"/> can be made to wait on more complex conditions than just tasks.
+    A condition is either a milestone, a task, or a list of milestones and tasks. <Ref Func="ScheduleTask"/> starts its
+    task and <Ref Func="WaitTask"/> returns when the condition has been met.
+    A condition represented by a task is met when the task has completed. A
+    condition represented by a milestone is met when the milestone has been achieved (see below). A condition represented by
+    a list is met when all conditions in the list have been met.
   </Section>
+
   <Section Label="Milestones">
     <Heading>Milestones</Heading>
 
-Milestones are a way to represent abstract conditions to which multiple tasks can contribute.
+    Milestones are a way to represent abstract conditions to which multiple tasks can contribute.
 
-    <Subsection Label="NewMilestone">
-      <Heading>NewMilestone([list])</Heading>
+    <ManSection>
+      <Func Name="NewMilestone" Arg='[list]'/>
+      <Description>
+        The <Ref Func="NewMilestone"/> function creates a new milestone. Its argument is a list of targets,
+        which must be a list of integers and/or strings. If omitted, the list defaults to <C>[0]</C>.
+      </Description>
+    </ManSection>
 
-The <C>NewMilestone</C> function creates a new milestone. Its argument is a list of targets, which must be a list of
-integers and/or strings. If omitted, the list defaults to <C>[0]</C>.
+    <ManSection>
+      <Func Name="ContributeToMilestone" Arg='milestone, target'/>
+      <Description>
+        The <Ref Func="ContributeToMilestone"/> milestone function contributes the specified target to the
+        milestone. Once all targets have been contributed to a milestone, it has been achieved.
+      </Description>
+    </ManSection>
 
-    </Subsection>
-    <Subsection Label="ContributeToMilestone">
-      <Heading>ContributeToMilestone(milestone, target)</Heading>
-
-The <C>ContributeToMilestone</C> milestone function contributes the specified target to the milestone. Once all targets
-have been contributed to a milestone, it has been achieved.
-
-    </Subsection>
-    <Subsection Label="AchieveMilestone">
-      <Heading>AchieveMilestone(milestone)</Heading>
-
-The <C>AchieveMilestone</C> function allows a program to achieve a milestone in a single step without adding individual
-targets to it. This is most useful in conjunction with the default value for <C>NewMilestone</C>, e.g.
-
+    <ManSection>
+      <Func Name="AchieveMilestone" Arg='milestone'/>
+      <Description>
+        The <Ref Func="AchieveMilestone"/> function allows a program to achieve a milestone in a single step
+        without adding individual targets to it. This is most useful in conjunction with the default value for
+        <Ref Func="NewMilestone"/>, e.g.
 <Example><![CDATA[
 gap> m := NewMilestone();;
 gap> AchieveMilestone(m);
 ]]></Example>
-
-    </Subsection>
-    <Subsection Label="IsMilestoneAchieved">
-      <Heading>IsMilestoneAchieved(milestone)</Heading>
-
-The <C>IsMilestoneAchieved</C> tests explicitly if a milestone has been achieved. It returns <C>true</C> on success,
-<C>false</C> otherwise.
-
+      </Description>
+    </ManSection>>
+    
+    <ManSection>
+      <Func Name="IsMilestoneAchieved" Arg='milestone'/>
+      <Description>
+        <Ref Func="IsMilestoneAchieved"/> tests explicitly if a milestone has been achieved. It returns
+        <C>true</C> on success, <C>false</C> otherwise.
 <Example><![CDATA[
 gap> m := NewMilestone([1,2]);;
 gap> ContributeToMilestone(m, 1);
@@ -350,6 +370,7 @@ gap> ContributeToMilestone(m, 2);
 gap> IsMilestoneAchieved(m);
 true
 ]]></Example>
-    </Subsection>
+      </Description>
+    </ManSection>
   </Section>
 </Chapter>
