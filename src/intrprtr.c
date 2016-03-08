@@ -71,7 +71,7 @@
 **  the  statement  that  was  last  interpreted (which   might  have been  a
 **  return-value-statement).
 */
-Obj IntrResult;
+/* TL: Obj IntrResult; */
 
 
 /****************************************************************************
@@ -84,7 +84,7 @@ Obj IntrResult;
 **  If it interpretes a return-void-statement,  it sets 'IntrReturning' to 2.
 **  If it interpretes a quit-statement, it sets 'IntrReturning' to 8.
 */
-UInt IntrReturning;
+/* TL: UInt IntrReturning; */
 
 
 /****************************************************************************
@@ -98,7 +98,7 @@ UInt IntrReturning;
 **
 **  This mode is also used in Info and Assert, when arguments are not printed.
 */
-UInt IntrIgnoring;
+/* TL: UInt IntrIgnoring; */
 
 
 /****************************************************************************
@@ -109,7 +109,7 @@ UInt IntrIgnoring;
 **  The interpreter  switches  to this  mode for  constructs  that it  cannot
 **  directly interpret, such as loops or function bodies.
 */
-UInt IntrCoding;
+/* TL: UInt IntrCoding; */
 
 
 /****************************************************************************
@@ -143,11 +143,11 @@ UInt IntrCoding;
 **  'CountObj' there were active when the current interpreter was started and
 **  which will be made active again when the current interpreter will stop.
 */
-static Obj             IntrState;
+/* TL: Obj             IntrState; */
 
-static Obj             StackObj;
+/* TL: Obj             StackObj; */
 
-static Int             CountObj;
+/* TL: Int             CountObj; */
 
 void            PushObj (
     Obj                 val )
@@ -2906,7 +2906,7 @@ void            IntrIsbHVar (
 **
 *F  IntrAssDVar(<dvar>) . . . . . . . . . . . . interpret assignment to debug
 */
-extern  Obj             ErrorLVars;
+/* TL: extern  Obj             ErrorLVars; */
 
 void            IntrAssDVar (
     UInt                dvar,
@@ -4658,9 +4658,9 @@ void             IntrAssertEnd3Args ( void )
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    InitGlobalBag( &IntrResult, "src/intrprtr.c:IntrResult" );
-    InitGlobalBag( &IntrState,  "src/intrprtr.c:IntrState"  );
-    InitGlobalBag( &StackObj,   "src/intrprtr.c:StackObj"   );
+    InitGlobalBag( &TLS(IntrResult), "src/intrprtr.c:IntrResult" );
+    InitGlobalBag( &TLS(IntrState),  "src/intrprtr.c:IntrState"  );
+    InitGlobalBag( &TLS(StackObj),   "src/intrprtr.c:StackObj"   );
     InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 

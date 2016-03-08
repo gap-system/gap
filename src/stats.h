@@ -63,7 +63,7 @@ static inline UInt EXEC_STAT(Stat stat)
 **  purpose of 'CurrStat' is to make it possible to  point to the location in
 **  case an error is signalled.
 */
-extern  Stat            CurrStat;
+/* TL: extern  Stat            CurrStat; */
 
 
 /****************************************************************************
@@ -95,7 +95,7 @@ extern  Stat            CurrStat;
 **  executed.  It is set  in  'ExecReturnObj' and  used in the  handlers that
 **  interpret functions.
 */
-extern  Obj             ReturnObjStat;
+/* TL: extern  Obj             ReturnObjStat; */
 
 
 extern UInt TakeInterrupt();

@@ -765,7 +765,7 @@ Obj             EvalFunccallXargs (
 **
 */
 
-Int RecursionDepth;
+/* TL: Int RecursionDepth; */
 static UInt RecursionTrapInterval;
 
 static void RecursionDepthTrap( void )
@@ -1394,7 +1394,7 @@ void             PrintFunccallOpts (
 *F  ExecBegin() . . . . . . . . . . . . . . . . . . . . .  begin an execution
 *F  ExecEnd(<error>)  . . . . . . . . . . . . . . . . . . .  end an execution
 */
-Obj             ExecState;
+/* TL: Obj             ExecState; */
 
 void            ExecBegin ( Obj frame )
 {
@@ -1506,7 +1506,7 @@ static Int InitKernel (
     InitCopyGVar("STEVES_TRACING", &STEVES_TRACING);
   
     /* make the global variable known to Gasman                            */
-    InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );
+    InitGlobalBag( &TLS(ExecState), "src/funcs.c:ExecState" );
 
     /* Register the handler for our exported function                      */
     InitHdlrFuncsFromTable( GVarFuncs );

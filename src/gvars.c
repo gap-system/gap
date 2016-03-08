@@ -299,7 +299,7 @@ Obj NameGVarObj ( UInt gvar )
 
 #define NSCHAR '@'
 
-Obj CurrNamespace = 0;
+/* TL: Obj CurrNamespace = 0; */
 
 Obj FuncSET_NAMESPACE(Obj self, Obj str)
 {
@@ -1087,7 +1087,7 @@ static Int InitKernel (
                    "src/gvars.c:FopiesGVars"  );
     InitGlobalBag( &TableGVars,
                    "src/gvars.c:TableGVars" );
-    InitGlobalBag( &CurrNamespace,
+    InitGlobalBag( &TLS(CurrNamespace),
                    "src/gvars.c:CurrNamespace" );
 
     InitHandlerFunc( ErrorMustEvalToFuncHandler,

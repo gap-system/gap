@@ -98,9 +98,9 @@
 
 #include        "saveload.h"            /* saving and loading              */
 
-#include "code.h"		/* coder                           */
-#include "hpc/thread.h"		/* threads			   */
-#include "hpc/tls.h"			/* thread-local storage		   */
+#include	"code.h"		/* coder                           */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"		/* thread-local storage		   */
 
 
 /****************************************************************************

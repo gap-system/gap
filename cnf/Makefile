@@ -33,6 +33,7 @@ SOURCE= \
     funcs \
     gap \
     gasman \
+    globalstate \
     gmpints \
     gvars \
     intfuncs \

@@ -70,29 +70,29 @@
 
 /* the following global variables are documented in scanner.h */
 
-UInt            Symbol;
+/* TL: UInt            Symbol; */
 
-Char            Value [1030];
-UInt            ValueLen;
+/* TL: Char            Value [1030]; */
+/* TL: UInt            ValueLen; */
 
-UInt            NrError;
-UInt            NrErrLine;
+/* TL: UInt            NrError; */
+/* TL: UInt            NrErrLine; */
 
-const Char *    Prompt;
+/* TL: Char *          Prompt; */
 
 Obj             PrintPromptHook = 0;
 Obj             EndLineHook = 0;
 
-TypInputFile    InputFiles [16];
-TypInputFile *  Input;
-Char *          In;
+/* TL: TypInputFile    InputFiles [16]; */
+/* TL: TypInputFile *  Input; */
+/* TL: Char *          In; */
 
-TypOutputFile   OutputFiles [16];
-TypOutputFile * Output;
+/* TL: TypOutputFile   OutputFiles [16]; */
+/* TL: TypOutputFile * Output; */
 
-TypOutputFile * InputLog;
+/* TL: TypOutputFile * InputLog; */
 
-TypOutputFile * OutputLog;
+/* TL: TypOutputFile * OutputLog; */
 
 
 /****************************************************************************
@@ -117,9 +117,9 @@ TypOutputFile * OutputLog;
 **  'TestLine' holds the one line that is read from 'TestInput' to compare it
 **  with a line that is about to be printed to 'TestOutput'.
 */
-static TypInputFile  *TestInput  = 0;
-static TypOutputFile *TestOutput = 0;
-static Char           TestLine[256];
+/* TL: TypInputFile *  TestInput  = 0; */
+/* TL: TypOutputFile * TestOutput = 0; */
+/* TL: Char            TestLine [256]; */
 
 
 /****************************************************************************
@@ -569,7 +569,7 @@ UInt CloseTest ( void )
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-static TypOutputFile LogFile;
+/* TL: static TypOutputFile LogFile; */
 
 UInt OpenLog (
     const Char *        filename )
@@ -599,7 +599,7 @@ UInt OpenLog (
 **
 **  The same as 'OpenLog' but for streams.
 */
-static TypOutputFile LogStream;
+/* TL: static TypOutputFile LogStream; */
 
 UInt OpenLogStream (
     Obj             stream )
@@ -666,7 +666,7 @@ UInt CloseLog ( void )
 **  dependent  how many are too many,  but 16 files  should work  everywhere.
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
-static TypOutputFile InputLogFile;
+/* TL: static TypOutputFile InputLogFile; */
 
 UInt OpenInputLog (
     const Char *        filename )
@@ -695,7 +695,7 @@ UInt OpenInputLog (
 **
 **  The same as 'OpenInputLog' but for streams.
 */
-static TypOutputFile InputLogStream;
+/* TL: static TypOutputFile InputLogStream; */
 
 UInt OpenInputLogStream (
     Obj                 stream )
@@ -765,7 +765,7 @@ UInt CloseInputLog ( void )
 **  dependent how many are  too many,  but  16 files should  work everywhere.
 **  Finally 'OpenOutputLog' will fail if there is already a current logfile.
 */
-static TypOutputFile OutputLogFile;
+/* TL: static TypOutputFile OutputLogFile; */
 
 UInt OpenOutputLog (
     const Char *        filename )
@@ -794,7 +794,7 @@ UInt OpenOutputLog (
 **
 **  The same as 'OpenOutputLog' but for streams.
 */
-static TypOutputFile OutputLogStream;
+/* TL: static TypOutputFile outputLogStream; */
 
 UInt OpenOutputLogStream (
     Obj                 stream )
@@ -848,7 +848,7 @@ UInt CloseOutputLog ( void )
     return 1;
 }
 
-TypOutputFile*  IgnoreStdoutErrout = NULL;
+/* TL: TypOutputFile*  IgnoreStdoutErrout = NULL; */
 
 /****************************************************************************
 **
@@ -1156,7 +1156,7 @@ extern void PutLine2(
     const Char *            line,
     UInt                    len   );
 
-Int HELPSubsOn = 1;
+/* TL: Int HELPSubsOn = 1; */
 
 Char GetLine ( void )
 {
@@ -2396,7 +2396,7 @@ void PutLineTo ( KOutputStream stream, UInt len )
  **  In the later case 'PutChrTo' has to decide where to  split the output line.
  **  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
  */
-Int NoSplitLine = 0;
+/* TL: Int NoSplitLine = 0; */
 
 /* helper function to add a hint about a possible line break;
    a triple (pos, value, indent), such that the minimal (value-pos) wins */
@@ -2933,7 +2933,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 }
 
 
-static KOutputStream TheStream;
+/* TL: static KOutputStream TheStream; */
 
 static void putToTheStream( Char c) {
   PutChrTo(TLS(TheStream), c);
@@ -2959,9 +2959,9 @@ void Pr (
   PrTo(TLS(Output), format, arg1, arg2);
 }
 
-static Char *TheBuffer;
-static UInt TheCount;
-static UInt TheLimit;
+/* TL: static Char *theBuffer; */
+/* TL: static UInt theCount; */
+/* TL: static UInt theLimit; */
 
 static void putToTheBuffer( Char c)
 {
@@ -3016,9 +3016,9 @@ Obj FuncALL_KEYWORDS(Obj self) {
 
 Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
   if (val == False)
-    (TLS(OutputFiles)+1)->format = 0;
+      ((TypOutputFile *)(TLS(OutputFiles)+1))->format = 0;
   else
-    (TLS(OutputFiles)+1)->format = 1;
+      ((TypOutputFile *)(TLS(OutputFiles)+1))->format = 1;
   return val;
 }
 
@@ -3122,10 +3122,10 @@ static Int InitKernel (
     }
 
     /* tell GASMAN about the global bags                                   */
-    InitGlobalBag(&(LogFile.stream),        "src/scanner.c:LogFile"        );
-    InitGlobalBag(&(LogStream.stream),      "src/scanner.c:LogStream"      );
-    InitGlobalBag(&(InputLogStream.stream), "src/scanner.c:InputLogStream" );
-    InitGlobalBag(&(OutputLogStream.stream),"src/scanner.c:OutputLogStream");
+    InitGlobalBag(&(TLS(LogFile).stream),        "src/scanner.c:LogFile"        );
+    InitGlobalBag(&(TLS(LogStream).stream),      "src/scanner.c:LogStream"      );
+    InitGlobalBag(&(TLS(InputLogStream).stream), "src/scanner.c:InputLogStream" );
+    InitGlobalBag(&(TLS(OutputLogStream).stream),"src/scanner.c:OutputLogStream");
 
 
     /* import functions from the library                                   */
@@ -3164,6 +3164,21 @@ static StructInitInfo module = {
 StructInitInfo * InitInfoScanner ( void )
 {
   return &module;
+}
+
+/****************************************************************************
+ **
+ *F  InitScannerTLS() . . . . . . . . . . . . . . . . . . . . . initialize TLS
+ *F  DestroyScannerTLS()  . . . . . . . . . . . . . . . . . . . .  destroy TLS
+ */
+
+void InitScannerState(GlobalState *state)
+{
+  state->HELPSubsOn = 1;
+}
+
+void DestroyScannerState(GlobalState *state)
+{
 }
 
 

@@ -95,6 +95,9 @@
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
 #include        "profile.h"             /* profiling                       */
+
+#include        "globalstate.h"    /* Global State                    */
+
 #ifdef GAPMPI
 #include        "hpc/gapmpi.h"          /* ParGAP/MPI                      */
 #endif
@@ -746,6 +749,8 @@ int main (
   InstallBacktraceHandlers();
 #endif
 
+  InitMainGlobalState();
+
 #ifdef HAVE_REALPATH
   if (argc >= 3 && !strcmp(argv[1],"--createstartupscript")) {
       return DoCreateStartupScript(argc,argv,0);
@@ -1145,7 +1150,7 @@ Obj  ErrorLVars0;
 Obj  ErrorLVars;
 Int  ErrorLLevel;
 
-extern Obj BottomLVars;
+// extern Obj BottomLVars;
 
 
 void DownEnvInner( Int depth )
@@ -1266,7 +1271,7 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
 */
   
 /* syJmp_buf CatchBuffer; */
-Obj ThrownObject = 0;
+/* TL: Obj ThrownObject = 0; */
 
 Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
 {
@@ -1320,8 +1325,8 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
 }
 
 
-UInt UserHasQuit;
-UInt UserHasQUIT;
+/* TL: UInt UserHasQuit; */
+/* TL: UInt UserHasQUIT; */
 UInt SystemErrorCode;
 
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
@@ -3123,7 +3128,8 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* init the completion function                                        */
-    InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      );
+    /* InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      ); */
+    InitGlobalBag( &TLS(ThrownObject),    "src/gap.c:ThrownObject"      );
 
     /* list of exit functions                                              */
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
@@ -3408,7 +3414,6 @@ void InitializeGap (
     UInt                i;
     Int                 ret;
 
-
     /* initialize the basic system and gasman                              */
 #ifdef GAPMPI
     /* ParGAP/MPI needs to call MPI_Init() first to remove command line args */
@@ -3423,6 +3428,15 @@ void InitializeGap (
               SyCacheSize, 0, SyAbortBags );
               InitMsgsFuncBags( SyMsgsBags ); 
 
+    TLS(StackNams)    = NEW_PLIST( T_PLIST, 16 );
+    TLS(CountNams)    = 0;
+    TLS(ReadTop)      = 0;
+    TLS(ReadTilde)    = 0;
+    TLS(CurrLHSGVar)  = 0;
+    TLS(IntrCoding)   = 0;
+    TLS(IntrIgnoring) = 0;
+    TLS(NrError)      = 0;
+    TLS(ThrownObject) = 0;
 
     /* get info structures for the build in modules                        */
     NrModules = 0;
@@ -3456,6 +3470,8 @@ void InitializeGap (
             }
         }
     }
+
+    InitGlobalState(MainGlobalState);
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);

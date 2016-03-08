@@ -1652,7 +1652,7 @@ Obj FuncCompactTypeIDs( Obj self )
 **
 *F  DoOperation( <name> ) . . . . . . . . . . . . . . .  make a new operation
 */
-UInt CacheIndex;
+/* TL: UInt CacheIndex; */
 
 Obj Method0Args;
 Obj NextMethod0Args;
@@ -3084,12 +3084,9 @@ Obj NewOperation (
 
 
 /****************************************************************************
-**
-
-*F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
-*/
-UInt TLS(CacheIndex);
-
+ **
+ *F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
+ */
 Obj Constructor0Args;
 Obj NextConstructor0Args;
 Obj Constructor1Args;
@@ -6412,6 +6409,25 @@ static StructInitInfo module = {
 StructInitInfo * InitInfoOpers ( void )
 {
     return &module;
+}
+
+/****************************************************************************
+**
+*F  InitOpersTLS() . . . . . . . . . . . . . . . . . . . . . . initialize TLS
+*F  DestroyOpersTLS()  . . . . . . . . . . . . . . . . . . . . .  destroy TLS
+*/
+
+void InitOpersState(GlobalState *state)
+{
+  state->MethodCache = NEW_PLIST(T_PLIST, 1);
+  state->MethodCacheItems = ADDR_OBJ(state->MethodCache);
+  state->MethodCacheSize = 1;
+  SET_LEN_PLIST(state->MethodCache, 1);
+}
+
+void DestroyOpersState(GlobalState *state)
+{
+  /* Nothing for now. */
 }
 
 
