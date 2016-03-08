@@ -1185,6 +1185,7 @@ end);
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
 HELP_ADD_BOOK("Changes", "Changes from Earlier Versions", "doc/changes");
+HELP_ADD_BOOK("HPC-GAP", "HPC-GAP Shared Memory Extensions and MPI", "doc/hpc");
 
 
 #############################################################################
