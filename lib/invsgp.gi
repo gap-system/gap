@@ -9,6 +9,9 @@
 ##  This file contains the declaration of operations for inverse semigroups.
 ##
 
+InstallMethod(IsGeneratorsOfInverseSemigroup, "for a list", 
+[IsList], ReturnFalse);
+
 InstallMethod(GeneratorsOfInverseSemigroup,
 "for a group with known generators",
 [IsGroup and HasGeneratorsOfGroup],
