@@ -1349,7 +1349,7 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
    UInt newJumpBuf = 1;
    UInt mayNeedToRestore = 0;
    Int iseconds, imicroseconds;
-   Int curr_seconds, curr_microseconds, curr_nanoseconds;
+   Int curr_seconds = 0, curr_microseconds = 0, curr_nanoseconds = 0;
    Int restore_seconds = 0, restore_microseconds = 0;
    if (!SyHaveAlarms)
      ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
