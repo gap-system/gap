@@ -1101,6 +1101,38 @@ false
 gap> S := FreeSemigroup(1);;
 gap> R := ReesZeroMatrixSemigroup(S, [[S.1]]);;
 
+# Test IsomorphismReesZeroMatrixSemigroup 
+gap> BruteForceIsoCheck := function(iso)
+>   local x, y;
+>   if not IsInjective(iso) or not IsSurjective(iso) then
+>     return false;
+>   fi;
+>   for x in GeneratorsOfSemigroup(Source(iso)) do
+>     for y in GeneratorsOfSemigroup(Source(iso)) do
+>       if x ^ iso * y ^ iso <> (x * y) ^ iso then
+>         return false;
+>       fi;
+>     od;
+>   od;
+>   return true;
+> end;;
+gap> BruteForceInverseCheck := function(map)
+> local inv;
+>   inv := InverseGeneralMapping(map);
+>   return ForAll(Source(map), x -> x = (x ^ map) ^ inv)
+>     and ForAll(Range(map), x -> x = (x ^ inv) ^ map);
+> end;;
+gap> S := Semigroup(Transformation([1, 2, 1, 4, 1, 2]),
+>                   Transformation([1, 3, 1, 5, 1, 3]), 
+>                   Transformation([1, 1, 2, 1, 4, 4]));;
+gap> IsZeroSimpleSemigroup(S);
+true
+gap> map := IsomorphismReesZeroMatrixSemigroup(S);;
+gap> BruteForceIsoCheck(map);
+true
+gap> BruteForceInverseCheck(map);
+true
+
 #
 gap> STOP_TEST( "reesmat.tst", 54100000);
 
