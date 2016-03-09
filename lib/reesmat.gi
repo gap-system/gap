@@ -1390,7 +1390,7 @@ end);
 InstallMethod(IsomorphismReesZeroMatrixSemigroup,
 "for a finite 0-simple", [IsSemigroup],
 function(S)
-  local D, inj;
+  local D, map, inj, inv;
 
   if not (IsZeroSimpleSemigroup(S) and IsFinite(S)) then
     Error("usage: the semigroup must be a finite 0-simple semigroup,");
@@ -1400,11 +1400,27 @@ function(S)
   D := First(GreensDClasses(S),
              x -> not IsMultiplicativeZero(S, Representative(x)));
 
-  inj := _InjectionPrincipalFactor(D, ReesZeroMatrixSemigroup);
+  map := _InjectionPrincipalFactor(D, ReesZeroMatrixSemigroup);
 
-  return MagmaIsomorphismByFunctionsNC(S, Range(inj),
-                                       x -> x ^ inj,
-                                       x -> x ^ InverseGeneralMapping(inj));
+  # the below is necessary since map is not defined on the zero of S 
+  inj := function(x)
+    if x = MultiplicativeZero(S) then
+      return MultiplicativeZero(Range(map));
+    fi;
+    return x ^ map;
+  end;
+  
+  inv := function(x)
+    if x = MultiplicativeZero(Range(map)) then
+      return MultiplicativeZero(S);
+    fi;
+    return x ^ InverseGeneralMapping(map);
+  end;
+
+  return MagmaIsomorphismByFunctionsNC(S, 
+                                       Range(map),
+                                       inj,
+                                       inv);
 end);
 
 #
