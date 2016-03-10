@@ -4,11 +4,13 @@ TMP="$1".tmp
 DST="$1"
 
 # Determine build version and date
-GAP_BUILD_VERSION=`git describe --tags --dirty || echo`
-GAP_BUILD_DATE=`date +"%Y-%m-%d %H:%M:%S (%Z)"`
-if test x"${GAP_BUILD_VERSION}" = x ; then
-  GAP_BUILD_VERSION=unknown
+GAP_BUILD_VERSION=unknown
+if command -v git >/dev/null 2>&1 ; then
+  if test -d .git ; then
+    GAP_BUILD_VERSION=`git describe --tags --dirty || echo`
+  fi
 fi
+GAP_BUILD_DATE=`date +"%Y-%m-%d %H:%M:%S (%Z)"`
 
 # Generate the file
 cat > "$TMP" <<EOF
