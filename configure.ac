@@ -91,18 +91,17 @@ AC_ARG_WITH([gmp],
     e.g. --with-gmp=/usr/local or --with-gmp=/usr]))]
 )
 if test "x$GMP_PREFIX" != x ; then
-  GMP_LIBS=" -L${GMP_PREFIX}/lib"
-  GMP_CFLAGS=" -I${GMP_PREFIX}/include"
+  GMP_LDFLAGS=" -L${GMP_PREFIX}/lib"
+  GMP_CPPFLAGS=" -I${GMP_PREFIX}/include"
 else
-  GMP_LIBS=""
-  GMP_CFLAGS=""
+  GMP_LDFLAGS=""
+  GMP_CPPFLAGS=""
 fi
-GMP_LIBS="${GMP_LIBS} -lgmp"
-AC_SUBST(GMP_LIBS)
-AC_SUBST(GMP_CFLAGS)
+GMP_LDFLAGS="${GMP_LDFLAGS} -lgmp"
+AC_SUBST(GMP_LDFLAGS)
+AC_SUBST(GMP_CPPFLAGS)
 AC_DEFINE([USE_GMP], [1], [for backwards compatibility])
 
-# TODO: still try to build an included GMP ?
 
 dnl
 dnl Find readline

@@ -3,7 +3,8 @@ ACLOCAL_AMFLAGS = -I cnf/m4
 
 bin_PROGRAMS = gap
 
-gap_LDFLAGS = $(LIBREADLINE)
+gap_CPPFLAGS = $(GMP_CPPFLAGS)
+gap_LDFLAGS = $(GMP_LDFLAGS) $(LIBREADLINE)
 
 gap_SOURCES = \
     src/ariths.c \
