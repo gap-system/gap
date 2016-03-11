@@ -3,9 +3,19 @@ ACLOCAL_AMFLAGS = -I cnf/m4
 
 bin_PROGRAMS = gap
 
+# libraries used by GAP
 gap_CPPFLAGS = $(GMP_CPPFLAGS)
 gap_LDFLAGS = $(GMP_LDFLAGS) $(LIBREADLINE)
 
+# In order to enable kernel extensions to invoke arbitrary
+# GAP kernel functions, pass -export-dynamic to libtool
+gap_LDFLAGS += -export-dynamic
+
+# GAP itself should not have any unresolved symbols, so tell
+# libtool about that.
+gap_LDFLAGS += -no-undefined
+
+# standard GAP sources
 gap_SOURCES = \
     src/ariths.c \
     src/backtrace.c \

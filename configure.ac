@@ -243,24 +243,6 @@ AC_SEARCH_LIBS([dlopen], [dl],
     [AC_DEFINE([HAVE_DLOPEN], [1], [define as 1 if you have `dlopen' and `dlsym'])]
 )
 
-if test "$ac_cv_search_dlopen" != "no";  then
-  #GP_PROG_CC_EXPORT_DYNAMIC
-  if test "$gp_cv_prog_cc_export_dynamic" = yes;  then
-    LDFLAGS="$LDFLAGS -export-dynamic"
-  fi
-fi
-
-case "$LIBS" in 
-  *-ldl* )
-    C_DYNLIBS="-ldl"
-    ;;
-  *)
-    C_DYNLIBS=""
-    ;;
-esac;
-
-AC_SUBST(C_DYNLIBS)
-
 
 dnl error handling
 AC_CHECK_HEADERS([errno.h])
