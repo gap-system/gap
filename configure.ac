@@ -73,7 +73,6 @@ AC_DEFINE_UNQUOTED([HAVE_ARITHRIGHTSHIFT],
 # source code using them.
 # C_UNDERSCORE_SYMBOLS   # for loading kernel extensions
 # C_LONG_ALIGN  # unused?
-# HAVE_UNION_WAIT
 # SYS_ARCH
 # GAPARCH
 
@@ -228,7 +227,7 @@ dnl various functions to deal with child processes
 AC_HEADER_SYS_WAIT
 AC_TYPE_PID_T
 AC_FUNC_FORK
-AC_CHECK_FUNCS([popen waitpid wait4])
+AC_CHECK_FUNCS([popen])
 
 dnl signal handling
 AC_CHECK_TYPE([sig_atomic_t], [],
