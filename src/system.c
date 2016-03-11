@@ -50,9 +50,7 @@
 #include        <dirent.h>
 #include        <time.h>
 
-#if HAVE_UNISTD_H                       /* definition of 'R_OK'            */
-# include        <unistd.h>
-#endif
+#include        <unistd.h>              /* definition of 'R_OK'            */
 
 
 #if HAVE_LIBREADLINE

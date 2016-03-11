@@ -64,9 +64,7 @@
 #include        <string.h>              /* string functions                */
 #include        <time.h>                /* time functions                  */
 
-#if HAVE_UNISTD_H                       /* definition of 'R_OK'            */
 # include <unistd.h>
-#endif
 
 
 #if HAVE_SIGNAL_H                       /* signal handling functions       */
