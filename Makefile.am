@@ -102,6 +102,102 @@ gap_SOURCES += \
     src/hpc/zmqgap.c
 endif
 
+#
+# GAP headers
+#
+gapincludedir = $(includedir)/gap
+gapinclude_HEADERS = \
+    src/ariths.h \
+    src/blister.h \
+    src/bool.h \
+    src/calls.h \
+    src/code.h \
+    src/compiled.h \
+    src/compiler.h \
+    src/compstat.h \
+    src/config.h \
+    src/costab.h \
+    src/cyclotom.h \
+    src/dt.h \
+    src/dteval.h \
+    src/exprs.h \
+    src/ffdata.h \
+    src/fibhash.h \
+    src/finfield.h \
+    src/funcs.h \
+    src/gap.h \
+    src/gasman.h \
+    src/globalstate.h \
+    src/gmpints.h \
+    src/gvars.h \
+    src/integer.h \
+    src/intfuncs.h \
+    src/intrprtr.h \
+    src/iostream.h \
+    src/listfunc.h \
+    src/listoper.h \
+    src/lists.h \
+    src/macfloat.h \
+    src/objccoll.h \
+    src/objcftl.h \
+    src/objects.h \
+    src/objfgelm.h \
+    src/objpcgel.h \
+    src/objscoll.h \
+    src/objset.h \
+    src/opers.h \
+    src/permutat.h \
+    src/plist.h \
+    src/pperm.h \
+    src/precord.h \
+    src/profile.h \
+    src/range.h \
+    src/rational.h \
+    src/read.h \
+    src/records.h \
+    src/saveload.h \
+    src/scanner.h \
+    src/sctable.h \
+    src/set.h \
+    src/stats.h \
+    src/streams.h \
+    src/stringobj.h \
+    src/sysfiles.h \
+    src/system.h \
+    src/systhread.h \
+    src/tietze.h \
+    src/trans.h \
+    src/vars.h \
+    src/vec8bit.h \
+    src/vecffe.h \
+    src/vecgf2.h \
+    src/vector.h \
+    src/weakptr.h
+
+
+# The following headers are deliberately not installed 
+noinst_HEADERS = \
+    src/objccoll-impl.h \
+    src/objscoll-impl.h \
+    src/sortbase.h
+
+
+if HPCGAP
+gapinclude_HEADERS += \
+    src/hpc/aobjects.h \
+    src/hpc/atomic.h \
+    src/hpc/boehm_gc.h \
+    src/hpc/gapmpi.h \
+    src/hpc/serialize.h \
+    src/hpc/thread.h \
+    src/hpc/threadapi.h \
+    src/hpc/tls.h \
+    src/hpc/tlsconfig.h \
+    src/hpc/traverse.h \
+    src/hpc/zmqgap.h
+endif
+
+
 $(top_srcdir)/cnf/GAP-VERSION-FILE: FORCE
 	@$(SHELL) $(top_srcdir)/cnf/GAP-VERSION-GEN
 -include $(top_srcdir)/cnf/GAP-VERSION-FILE
