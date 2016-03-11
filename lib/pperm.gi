@@ -229,14 +229,12 @@ InstallMethod(AsPartialPerm, "for a transformation and list",
 [IsTransformation, IsList], 
 function(f, list)
   
-  if not IsSSortedList(list) or not ForAll(list, IsPosInt) 
-    or not ForAll(list, i-> i<=DegreeOfTransformation(f)) then 
-    Error("usage: the second argument must be a set of positive integers ", 
-    "not greater than the degree of the first argument,");
-    return;
+  if not IsSSortedList(list) or not ForAll(list, IsPosInt) then 
+    ErrorNoReturn("usage: the second argument must be a set of positive ",
+                  "integers,"); 
   elif not IsInjectiveListTrans(list, f) then 
-    Error("usage: the first argument must be injective on the second,");
-    return fail;
+    ErrorNoReturn("usage: the first argument must be injective on the ",
+                  "second,");
   fi;
   return PartialPermNC(list, OnTuples(list, f)); 
 end);
@@ -247,27 +245,6 @@ InstallMethod(AsPartialPerm, "for a transformation and positive int",
 [IsTransformation, IsPosInt], 
 function(f, n)
   return AsPartialPerm(f, [1..n]);
-end);
-
-# c method? JDM
-
-InstallMethod(AsPartialPerm, "for a transformation", 
-[IsTransformation],
-function(f)
-  local img, n;
-  n:=DegreeOfTransformation(f);
-  if not n^f=n then 
-    return fail; 
-  fi;
-  return PartialPerm(List([1..n], function(i) 
-    local j;
-    j:=i^f;
-    if j=n then 
-      return 0; 
-    else 
-      return j; 
-    fi;
-  end));
 end);
 
 # n is image of undefined points 
