@@ -120,14 +120,7 @@
 ** Store the current state of the profiler
 */
 
-#ifdef HAVE_GETRUSAGE
-#if HAVE_SYS_TIME_H
-# include       <sys/time.h>            /* definition of 'struct timeval'  */
-#endif
-#if HAVE_SYS_RESOURCE_H
-# include       <sys/resource.h>        /* definition of 'struct rusage'   */
-#endif
-#endif
+#include <sys/time.h>            /* for gettimeofday */
 
 Obj OutputtedFilenameList;
 

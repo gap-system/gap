@@ -57,11 +57,6 @@
 #include        <readline/readline.h>   /* readline for interactive input  */
 #endif
 
-#if HAVE_SYS_TIMES_H                    /* time functions                  */
-# include       <sys/types.h>
-# include       <sys/times.h>
-#endif
-
 #if HAVE_MADVISE
 #include        <sys/mman.h>
 #endif
@@ -486,9 +481,7 @@ UInt SyStopTime;
 */
 #if HAVE_GETRUSAGE && !SYS_IS_CYGWIN32
 
-#if HAVE_SYS_TIME_H
-# include       <sys/time.h>            /* definition of 'struct timeval'  */
-#endif
+#include        <sys/time.h>            /* definition of 'struct timeval'  */
 #if HAVE_SYS_RESOURCE_H
 # include       <sys/resource.h>        /* definition of 'struct rusage'   */
 #endif
