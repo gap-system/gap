@@ -876,6 +876,60 @@ Obj FuncRUNTIMES( Obj     self)
 }
 
 
+
+/****************************************************************************
+**
+*F  FuncNanosecondsSinceEpoch( <self> )
+**
+**  'FuncNanosecondsSinceEpoch' returns an integer which represents the 
+**  number of nanoseconds since some unspecified starting point. This means
+**  that the number returned by this function is not in itself meaningful,
+**  but the difference between the values returned by two consecutive calls
+**  can be used to measure wallclock time.
+**
+**  The accuracy of this is system dependent. For systems that implement
+**  clock_getres, we could get the promised accuracy.
+**
+**  Note that gettimeofday has been marked obsolete in the POSIX standard.
+**  We are using it because it is implemented in most systems still.
+**
+**  If we are using gettimeofday we cannot guarantee the values that
+**  are returned by NanosecondsSinceEpoch to be monotonic.
+**
+*/
+Obj FuncNanosecondsSinceEpoch(Obj self)
+{
+  Obj res, sec, usec;
+
+#if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+  struct timespec ts;
+
+  if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
+    usec = INTOBJ_INT(ts.tv_nsec);
+    sec = INTOBJ_INT(ts.tv_sec);
+    C_PROD(res, sec, INTOBJ_INT(1000000000L));
+    C_SUM_INTOBJS(res, res, usec);
+  } else {
+    res = Fail;
+  }
+#elif defined(HAVE_GETTIMEOFDAY)
+  struct timeval tv;
+
+  if (gettimeofday(&tv, NULL) == 0) {
+    usec = INTOBJ_INT(tv.tv_usec * 1000);
+    sec = INTOBJ_INT(tv.tv_sec);
+    C_PROD(res, sec, INTOBJ_INT(1000000L));
+    C_SUM_INTOBJS(res, res, usec);
+  } else {
+    res = Fail;
+  };
+#else
+  res = Fail
+#endif
+
+  return res;
+}
+
 /****************************************************************************
 **
 *F  FuncSizeScreen( <self>, <args> )  . . . .  internal function 'SizeScreen'
@@ -3025,6 +3079,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "RUNTIMES", 0, "",
       FuncRUNTIMES, "src/gap.c:RUNTIMES" },
+
+    { "NanosecondsSinceEpoch", 0, "",
+      FuncNanosecondsSinceEpoch, "src/gap.c:NanosecondsSinceEpoch" },
 
     { "SizeScreen", -1, "args",
       FuncSizeScreen, "src/gap.c:SizeScreen" },
