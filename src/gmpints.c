@@ -42,11 +42,7 @@
 #include        "intfuncs.h"
 
 #include <stdio.h>
-
-#ifdef HAVE_MATH_H
 #include <math.h>
-#endif
-
 #include <stdlib.h>
 
 #include <assert.h>
