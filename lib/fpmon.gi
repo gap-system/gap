@@ -392,42 +392,13 @@ function(f, s)
   return MagmaHomomorphismByFunctionNC(f, s, e->UnderlyingElement(e)^psi);
 end);
 
-######################################################################
-##
-#M	IsomorphismFpSemigroup(<S>)
-##
-InstallMethod(IsomorphismFpSemigroup,
-	"for an fp monoid", true,
-	[  IsFpMonoid ],0,
-function(s)
+InstallMethod(IsomorphismFpSemigroup, "for an fp monoid", [IsFpMonoid], 
+function(M)
+  local FMtoFS, FStoFM, FM, FS, id, rels, next, S, map, inv, x, rel;
 
-local fm,						# free monoid underlying s
-			fs,						# free semigroup
-                        gensfreemon,    # generators of fm
-			freesmggens,	# generators of fs
-			idgen,				# the generator of fs corresponding to the identity
-			rels,					# relations of the fp monoid s
-			rel,					# a relation from rels
-			smgrels,			# the fp monoid relations rewritten for semigroups
-			smgrel,				# a relation from smgrels
-			i,						# loop variable
-			smg,					# the fp semigroup
-			gens,					# generators of smg
-			id,						# identity of fm
-			isomfun,			# the isomorphism
-			nat,					# homomorphism from fm to s
-			invfun,				# the inverse of isomfun
-			monword2smgword,	
-			smgword2monword;
-
-  ################################################
-  # monword2smgword
-  # Change a word in the free monoid into a word
-  # in the free semigroup. 
-  ################################################
-  monword2smgword := function(id, w)
-    local wlist,    # external rep of the word
-					i;				# loop variable
+  # Convert a word in the free monoid into a word in the free semigroup
+  FMtoFS := function(id, w)
+    local wlist, i;
 
     wlist := ShallowCopy(ExtRepOfObj(w));
 
@@ -435,78 +406,60 @@ local fm,						# free monoid underlying s
       return id;
     fi;
 
-		# have to increment the generators by one to shift
-		# past the identity generator
-		for i in [1..1/2*(Length(wlist))] do
-			wlist[2*i-1] := wlist[2*i-1]+1;
-		od;
-	
+    # have to increment the generators by one to shift past the identity
+    # generator
+    for i in [1 .. 1 / 2 * (Length(wlist))] do
+      wlist[2 * i - 1] := wlist[2 * i - 1] + 1;
+    od;
+
     return ObjByExtRep(FamilyObj(id), wlist);
   end;
 
-  ################################################
-  # smgword2monword
-  # Change a word in the free semigroup into a word
-  # in the free monoid. 
-  ################################################
-	smgword2monword := function(id,w)
-		local wlist;		# external rep of the word
-	
-		wlist := ExtRepOfObj(w); 
-	
-		if Length(wlist)=0 or (wlist=[1,1]) then # it is the identity
-			return id;
-		fi;
-		
-		# have to decrease each entry by one because
-		# of the identity generator
-		
+  # Convert a word in the free semigroup into a word in the free monoid. 
+  FStoFM := function(id, w)
+    local wlist, i;
 
-		return ObjByExtRep(FamilyObj(id),wlist);
-	end;
-		
+    wlist := ExtRepOfObj(w); 
 
-	#################
-	# function proper
+    if Length(wlist) = 0 or (wlist = [1, 1]) then # it is the identity
+      return id;
+    fi;
+    
+    # have to decrease each entry by one because of the identity generator
+    for i in [1 .. 1 / 2 * (Length(wlist))] do
+      wlist[2 * i - 1] := wlist[2 * i - 1] - 1;
+    od;
+    return ObjByExtRep(FamilyObj(id), wlist);
+  end;
+                
+  FM := FreeMonoidOfFpMonoid(M);
+  FS := FreeSemigroup(List(GeneratorsOfSemigroup(FM), String));
 
-	# first we create the fp semigroup
+  id := FS.(Position(GeneratorsOfSemigroup(FM), One(FM)));
 
-	# get the free monoid underlying the given fp monoid
-	fm := FreeMonoidOfFpMonoid(s);
-	# build the free semigroup
-        gensfreemon := List(GeneratorsOfSemigroup( fm ),String);
-	fs := FreeSemigroup(gensfreemon);
+  # Add the relations that make id an identity
+  rels := [[id * id, id]];
+  for x in GeneratorsOfSemigroup(FS) do
+    if x <> id then 
+      Add(rels, [id * x, x]);
+      Add(rels, [x * id, x]);
+    fi;
+  od;
 
-	freesmggens := GeneratorsOfSemigroup(fs);
-	idgen := freesmggens[1];
+  # Rewrite the fp monoid relations as relations over FS
+  for rel in RelationsOfFpMonoid(M) do
+    next := [FMtoFS(id, rel[1]), FMtoFS(id, rel[2])];
+    Add(rels, next);    
+  od;
 
-	# now the relations that make idgen an identity
-	smgrels := [[idgen*idgen,idgen]];
-	for i in [2..Length(freesmggens)] do
-		Add(smgrels, [idgen*freesmggens[i],freesmggens[i]]);
-		Add(smgrels, [freesmggens[i]*idgen,freesmggens[i]]);
-	od;
+  # finally create the fp semigroup
+  S := FS / rels; 
 
-	# now we have to rewrite each of the fp monoid relations
-	# in terms of words in fs 
-	rels := RelationsOfFpMonoid(s);
-	for rel in rels do
-		smgrel := [monword2smgword(idgen,rel[1]),monword2smgword(idgen,rel[2])];
-		Add(smgrels,smgrel);	
-	od;
+  map := x -> ElementOfFpSemigroup(FamilyObj(S.1),
+                                   FMtoFS(id, UnderlyingElement(x)));
 
-	# finally create the fp semigroup
-	smg := FactorFreeSemigroupByRelations(fs,smgrels);
-	gens := GeneratorsOfSemigroup(smg);
+  inv := x -> Image(NaturalHomomorphismByGenerators(FM, M), 
+                    FStoFM(One(FM), UnderlyingElement(x))); 
 
-	isomfun := x -> ElementOfFpSemigroup( FamilyObj(gens[1] ),
-                  monword2smgword( idgen, UnderlyingElement(x)));
-
-	id := One(fm);
-	nat := NaturalHomomorphismByGenerators(fm,s);
-	invfun := x-> Image( nat,smgword2monword(id,UnderlyingElement(x))); 
-
-	return MagmaIsomorphismByFunctionsNC(s,smg,isomfun,invfun);
-
+ return MagmaIsomorphismByFunctionsNC(M, S, map, inv);
 end);
-
