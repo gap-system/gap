@@ -93,17 +93,6 @@
 #define HAVE_DOTGAPRC           1
 #endif
 
-/* Define as 1 if your systems uses '/' as path separator.
-**
-** Currently, we support nothing else. For Windows (or rather: Cygwin), we
-** rely on a small hack which converts the path separator '\' used there
-** on '/' on the fly. Put differently: Systems that use completely different
-**  path separators, or none at all, are currently not supported.
-*/
-#ifndef HAVE_SLASH_SEPARATOR
-#define HAVE_SLASH_SEPARATOR	1
-#endif
-
 
 #define FPUTS_TO_STDERR(str) fputs (str, stderr)
 
