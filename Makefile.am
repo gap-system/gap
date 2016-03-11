@@ -15,6 +15,13 @@ gap_LDFLAGS += -export-dynamic
 # libtool about that.
 gap_LDFLAGS += -no-undefined
 
+# HACK: tell GAP where to search for its library
+# This is a hack, because (a) it is incorrect when doing "make install", 
+# (b) it does not rebuild anything if the source directory is moved.
+# The latter could be ignored, but not the former.
+gap_CPPFLAGS += '-DSYS_DEFAULT_PATHS="$(abs_top_srcdir)"'
+
+
 # standard GAP sources
 gap_SOURCES = \
     src/ariths.c \
