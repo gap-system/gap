@@ -2,6 +2,7 @@
 /Makefile.in
 /aclocal.m4
 /autom4te.cache/
+/cnf/GAP-VERSION-FILE
 /cnf/ar-lib
 /cnf/compile
 /cnf/config.guess
@@ -26,6 +27,8 @@
 /src/stamp-h1
 /src/*.o
 /src/hpc/.deps/
+
+/src/gap_version.h
 
 bin/gap*.sh
 bin/*-*/
