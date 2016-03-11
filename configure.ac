@@ -15,10 +15,9 @@ dnl
 AC_CANONICAL_HOST
 
 # HACK
-AC_DEFINE_UNQUOTED( SYS_ARCH, "fake-gap-arch", [define the name of the architucture] )
-AC_DEFINE_UNQUOTED(CONFIGNAME, "fake-config", [the CONFIGNAME value of the active configuration])
-
-
+AC_DEFINE_UNQUOTED([SYS_ARCH], ["fake-gap-arch"], [define the name of the architucture])
+AC_DEFINE_UNQUOTED([CONFIGNAME], ["fake-config"], [the CONFIGNAME value of the active configuration])
+# GAPARCH ?
 
 dnl
 dnl Setup automake
@@ -73,13 +72,9 @@ AC_DEFINE_UNQUOTED([HAVE_ARITHRIGHTSHIFT],
 # source code using them.
 # C_UNDERSCORE_SYMBOLS   # for loading kernel extensions
 # C_LONG_ALIGN  # unused?
-# SYS_ARCH
-# GAPARCH
 
 
-dnl
 dnl Find GMP
-dnl
 AC_ARG_WITH([gmp],
   [AS_HELP_STRING([--with-gmp=<path>],  
                   [prefix of GMP installation. e.g. /usr/local or /usr])],
@@ -103,9 +98,7 @@ AC_SUBST(GMP_CPPFLAGS)
 AC_DEFINE([USE_GMP], [1], [for backwards compatibility])
 
 
-dnl
 dnl Find readline
-dnl
 AC_ARG_WITH([readline],
   [AS_HELP_STRING([--with-readline],
     [support fancy command line editing @<:@default=check@:>@])],
