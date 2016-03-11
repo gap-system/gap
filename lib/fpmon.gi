@@ -18,38 +18,38 @@
 #M  ElementOfFpMonoid( <fam>, <elm> )
 ##
 InstallMethod( ElementOfFpMonoid,
-	"for a family of f.p. monoid elements, and an assoc. word",
-	true,
-	[ IsElementOfFpMonoidFamily, IsAssocWordWithOne ],
-	0,
-	function( fam, elm )
-		return Objectify( fam!.defaultType, [ Immutable( elm ) ] );
-	end );
+        "for a family of f.p. monoid elements, and an assoc. word",
+        true,
+        [ IsElementOfFpMonoidFamily, IsAssocWordWithOne ],
+        0,
+        function( fam, elm )
+                return Objectify( fam!.defaultType, [ Immutable( elm ) ] );
+        end );
 
 #############################################################################
 ##
 #M  UnderlyingElement( <elm> )  . . . . . . for element of fp monoid 
 ##
 InstallMethod( UnderlyingElement,
-	"for an element of an fp monoid (default repres.)",
-	true,
-	[ IsElementOfFpMonoid and IsPackedElementDefaultRep ],
-	0,
-	obj -> obj![1] );
+        "for an element of an fp monoid (default repres.)",
+        true,
+        [ IsElementOfFpMonoid and IsPackedElementDefaultRep ],
+        0,
+        obj -> obj![1] );
 
 #############################################################################
 ##
 #M  \*( <x1>, <x2> )
 ##
 InstallMethod( \*,
-	"for two elements of a fp monoid",
-	IsIdenticalObj,
-	[ IsElementOfFpMonoid, IsElementOfFpMonoid],
-	0,
-	function( x1, x2 )
-		return ElementOfFpMonoid(FamilyObj(x1),
-						UnderlyingElement(x1)*UnderlyingElement(x2));
-	end );
+        "for two elements of a fp monoid",
+        IsIdenticalObj,
+        [ IsElementOfFpMonoid, IsElementOfFpMonoid],
+        0,
+        function( x1, x2 )
+                return ElementOfFpMonoid(FamilyObj(x1),
+                                                UnderlyingElement(x1)*UnderlyingElement(x2));
+        end );
 
 #############################################################################
 ##
@@ -82,11 +82,11 @@ InstallMethod( \=,
     [ IsElementOfFpMonoid, IsElementOfFpMonoid],
     0,
     function( x1, x2 )
-			local m,rws;
+                        local m,rws;
 
-			m := CollectionsFamily(FamilyObj(x1))!.wholeMonoid;
+                        m := CollectionsFamily(FamilyObj(x1))!.wholeMonoid;
       rws:= ReducedConfluentRewritingSystem(m);
-	
+        
       return ReducedForm(rws, UnderlyingElement(x1)) =
           ReducedForm(rws, UnderlyingElement(x2));
 
@@ -140,16 +140,16 @@ end );
 #M  FpMonoidOfElementOfFpMonoid( <elm> )
 ##
 InstallMethod( FpMonoidOfElementOfFpMonoid,
-	"for an fp monoid element", true,
-	[IsElementOfFpMonoid], 0,
-	elm -> CollectionsFamily(FamilyObj(elm))!.wholeMonoid);
+        "for an fp monoid element", true,
+        [IsElementOfFpMonoid], 0,
+        elm -> CollectionsFamily(FamilyObj(elm))!.wholeMonoid);
 
 #############################################################################
 ##
 #M  FpGrpMonSmgOfFpGrpMonSmgElement( <elm> )
 ##
-##	for an fp monoid element <elm> returns the fp monoid to which
-##	<elm> belongs to 
+##      for an fp monoid element <elm> returns the fp monoid to which
+##      <elm> belongs to 
 ##
 InstallMethod(FpGrpMonSmgOfFpGrpMonSmgElement,
   "for an element of an fp monoid", true,
@@ -210,7 +210,7 @@ function( F, rels )
     if Length(gens) > Length(rels) then
       SetIsFinite(s, false);
     fi;
-	
+        
     return s;
 end);
 
