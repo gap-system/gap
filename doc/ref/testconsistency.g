@@ -88,6 +88,9 @@ r := ParseTreeXMLString(doc[1]);;
 CheckAndCleanGapDocTree(r);
 x := XMLElements( r, types );;
 errcount:=0;
+Print( "****************************************************************\n" );
+Print( "*** Checking types in ManSections \n" );
+Print( "****************************************************************\n" );
 for elt in x do
   name := elt.attributes.Name;
   if not name in [ "IsBound", "Unbind", "Info", "Assert", "TryNextMethod", "QUIT", "-infinity" ] then
@@ -109,6 +112,9 @@ for elt in x do
   fi;
 od;
 
+Print( "****************************************************************\n" );
+Print( "*** Checking types in cross-references \n" );
+Print( "****************************************************************\n" );
 y := XMLElements( r, [ "Ref" ] );
 Print( "Found ", Length(y), " Ref elements " );
 yint := Filtered( y, elt ->
@@ -166,6 +172,7 @@ for elt in y do
   fi;
 od;
 
+Print( "****************************************************************\n" );
 stats:=Collected(List(x, elt -> elt.name));
 Print("Selected ", Length(x), " ManSections of the following types:\n");
 for s in stats do
@@ -181,8 +188,49 @@ if display_warnings then
 else
   Print("To show warnings, use CheckManSectionTypes(doc,true); \n");
 fi;
-
+Print( "****************************************************************\n" );
 return errcount=0;
 end;
 
-QUIT_GAP( CheckManSectionTypes( doc ) );
+
+CheckDocCoverage := function( doc )
+local r, x, with, without, mansect, pos, y;
+r := ParseTreeXMLString(doc[1]);
+CheckAndCleanGapDocTree(r);
+x:=XMLElements( r, ["ManSection"] );;
+with:=0;
+without:=0;
+Print( "****************************************************************\n" );
+Print( "*** Looking for ManSections having no examples \n" );
+Print( "****************************************************************\n" );
+for mansect in x do
+  pos:=OriginalPositionDocument(doc[2],mansect.start);
+  y := XMLElements( mansect, ["Example"] );
+  if Length(y)=0 then
+    if IsBound(mansect.content[1].attributes) and
+      IsBound(mansect.content[1].attributes.Name) then
+      Print( pos[1], ":", pos[2], " : ", mansect.content[1].attributes.Name );
+    elif IsBound(mansect.content[2].attributes) and
+      IsBound(mansect.content[2].attributes.Name) then
+      Print( pos[1], ":", pos[2], " : ", mansect.content[2].attributes.Name );
+    else
+      Print( pos[1], ":", pos[2], " : ", mansect.content[1].content[1].content );
+    fi;
+    without := without + 1;
+    Print("\n");
+  else
+    with := with + 1;
+  fi;
+od;
+Print( "****************************************************************\n" );
+Print( "*** Doc coverage report \n");
+Print( "****************************************************************\n" );
+Print( Length(x), " mansections \n");
+Print( with, " with examples \n");
+Print( without , " without examples \n");
+end;
+
+CheckDocCoverage(doc);
+QUIT_GAP( CheckManSectionTypes(doc) );
+
+
