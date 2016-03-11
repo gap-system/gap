@@ -129,10 +129,13 @@ AS_IF([test "x$with_readline" != xno],
 
 
 dnl
-dnl some user settings
+dnl User settings
 dnl
 
-AC_ARG_ENABLE([hpcgap], [AS_HELP_STRING([--enable-hpcgap], [enable HPC-GAP])])
+dnl HPC-GAP mode
+AC_ARG_ENABLE([hpcgap],
+    [AS_HELP_STRING([--enable-hpcgap], [enable HPC-GAP])],
+    [AC_DEFINE([HPCGAP], [1], [define if building HPC-GAP])])
 AM_CONDITIONAL([HPCGAP], [test x$enable_hpcgap = xyes])
 
 # TODO: --enable-compatibility-mode / --enable-compat-mode
