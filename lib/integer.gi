@@ -464,8 +464,7 @@ end);
 #F  DivisorsInt( <n> )  . . . . . . . . . . . . . . .  divisors of an integer
 ##
 BindGlobal("DivisorsIntCache",
-        List([[1],[1,2],[1,3],[1,2,4],[1,5],[1,2,3,6],[1,7]], Immutable));
-MakeImmutable(DivisorsIntCache);
+        AtomicList(List([[1],[1,2],[1,3],[1,2,4],[1,5],[1,2,3,6],[1,7]], Immutable)));
 
 InstallGlobalFunction(DivisorsInt,function ( n )
     local  divisors, factors, divs;
