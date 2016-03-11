@@ -1068,7 +1068,6 @@ gap> AsPartialPerm(f, [ 1, 2, 3 ] );
       set of positive integer"/> 
     <Meth Name="AsPartialPerm" Arg="f, n" Label="for a transformation and a
       positive integer"/> 
-    <Meth Name="AsPartialPerm" Arg="f" Label="for a transformation"/>
   <Returns>A partial permutation or <K>fail</K>.</Returns>
   <Description>
     A transformation <A>f</A> defines a partial permutation when it is
@@ -1095,33 +1094,19 @@ gap> AsPartialPerm(f, [ 1, 2, 3 ] );
         integer and this set satisfies the
         conditions given above.
       </Item>
-      <Mark>for a transformation</Mark>
-      <Item> 
-        Let <C>n</C> denote the degree of <A>f</A>. If 
-        <C>n^<A>f</A>=n</C> and <A>f</A> is injective on those <C>i</C> such
-        that <C>i^<A>f</A>&lt;>n</C>, then <C>AsPartialPerm</C> returns
-        the partial permutation obtained by restricting <A>f</A> to those
-        <C>i</C> such that <C>i^<A>f</A>&lt;>n</C>.
-      </Item>
     </List>
-
-    <C>AsPartialPerm</C> returns <K>fail</K> if the arguments do not describe a
-    partial permutation.<P/>
 
     The operation <Ref Oper="PartialPermOp"/> can also be used to convert
     transformations into partial permutations.
 
   <Example>
 gap> f:=Transformation( [ 8, 3, 5, 9, 6, 2, 9, 7, 9 ] );;
-gap> AsPartialPerm(f);
-[1,8,7](2,3,5,6)
+gap> AsPartialPerm(f, [1, 2, 3, 5, 8]);
+[1,8,7][2,3,5,6]
 gap> AsPartialPerm(f, 3);
 [1,8][2,3,5]
 gap> AsPartialPerm(f, [ 2 .. 4 ] );
-[2,3,5][4,9]
-gap> f:=Transformation( [ 2, 10, 2, 4, 4, 7, 6, 9, 10, 1 ] );;
-gap> AsPartialPerm(f);
-fail</Example>
+[2,3,5][4,9]</Example>
   </Description>
 </ManSection>
 </Section>
