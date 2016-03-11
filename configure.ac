@@ -45,14 +45,14 @@ LT_PREREQ([2.4.2])
 LT_INIT([disable-static dlopen win32-dll])
 
 dnl
-dnl Check for compiler features, and properties of the host system
+dnl Check for properties of the host system and compiler
 dnl
-AC_C_CONST
-AC_C_INLINE
-AC_C_BIGENDIAN
-# pointer sizes to distinguish 32 and 64 bit systems.
+
+dnl determine pointer sizes to distinguish 32 and 64 bit systems.
 AC_CHECK_SIZEOF([void *])
 
+dnl endianess
+AC_C_BIGENDIAN
 
 AC_MSG_CHECKING([whether right shifts are arithmetic])
 AC_COMPUTE_INT(RIGHTSHIFTMINUSONE, [(-1L >> 1)+1])
