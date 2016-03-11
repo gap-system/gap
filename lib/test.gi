@@ -509,6 +509,10 @@ end);
 ##  <Mark><C>showProgress</C></Mark>
 ##  <Item>Print information about how tests are progressing (defaults to <K>true</K>).
 ##  </Item>
+##  <Mark><C>suppressStatusMessage</C></Mark>
+##  <Item>suppress displaying status messages <C>#I  Errors detected while testing</C> and
+##  <C>#I  No errors detected while testing</C> after the test (defaults to <K>false</K>).
+##  </Item>
 ##  <Mark><C>exitGAP</C></Mark>
 ##  <Item>Rather than returning <K>true</K> or <K>false</K>, exit GAP with the return value
 ##  of GAP set to success or fail, depending on if all tests passed (defaults to <K>false</K>).
@@ -532,6 +536,7 @@ end);
 ##    testOptions := rec()   : Options to pass on to Test
 ##    earlyStop := false     : Stop once one test fails
 ##    showProgress := true   : Show progress
+##    suppressStatusMessage := false: do not print status messages after the test
 ##    recursive := true      : Search through directories recursively
 ##    exitGAP := false       : Exit GAP, setting exit value depending on if tests succeeded
 ##    stonesLimit := infinity: Set limit (in GAPstones) on longest test to be run.
@@ -616,6 +621,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     testOptions := rec(),
     earlyStop := false,
     showProgress := true,
+    suppressStatusMessage := false,
     exitGAP := false,
     stonesLimit := infinity,
     renormaliseStones := false
@@ -692,9 +698,11 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     testResult := Test(files[i].name, opts.testOptions);
     if not(testResult) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
-      if opts.exitGAP then
+      if not opts.suppressStatusMessage then
         # Do not change the next line - it is needed for testing scrips
         Print( "#I  Errors detected while testing\n\n" );
+      fi;
+      if opts.exitGAP then
         QUIT_GAP(1);
       fi;
       return false;
@@ -745,15 +753,21 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       fi;
     od;
   fi;
-  
-  if opts.exitGAP then
+
+  if not opts.suppressStatusMessage then
     if testTotal then
       # Do not change the next line - it is needed for testing scrips
       Print( "#I  No errors detected while testing\n\n" );
-      QUIT_GAP(0);
     else
       # Do not change the next line - it is needed for testing scrips
       Print( "#I  Errors detected while testing\n\n" );
+    fi;
+  fi;
+
+  if opts.exitGAP then
+    if testTotal then
+      QUIT_GAP(0);
+    else
       QUIT_GAP(1);
     fi;
   fi;
