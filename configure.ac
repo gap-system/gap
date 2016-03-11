@@ -14,6 +14,12 @@ dnl Get canonical host information
 dnl
 AC_CANONICAL_HOST
 
+# HACK
+AC_DEFINE_UNQUOTED( SYS_ARCH, "fake-gap-arch", [define the name of the architucture] )
+AC_DEFINE_UNQUOTED(CONFIGNAME, "fake-config", [the CONFIGNAME value of the active configuration])
+
+
+
 dnl
 dnl Setup automake
 dnl
@@ -95,6 +101,7 @@ fi
 GMP_LIBS="${GMP_LIBS} -lgmp"
 AC_SUBST(GMP_LIBS)
 AC_SUBST(GMP_CFLAGS)
+AC_DEFINE([USE_GMP], [1], [for backwards compatibility])
 
 # TODO: still try to build an included GMP ?
 
