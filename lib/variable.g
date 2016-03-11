@@ -191,7 +191,7 @@ BIND_GLOBAL( "InstallFlushableValueFromFunction", function( gvar, func )
 
     # Initialize the variable.
     ret := func();
-    InstallValue(gvar, MigrateObj(ret, gvar) );
+    InstallValue(gvar, ret);
 
     # Install the method to flush the cache.
     InstallMethod( FlushCaches,
@@ -199,7 +199,8 @@ BIND_GLOBAL( "InstallFlushableValueFromFunction", function( gvar, func )
       function()
          local ret;
          ret := func();
-         CLONE_OBJ(gvar, MigrateObj(ret, gvar) );
+         CLONE_OBJ(gvar, ret);
+         gvar := ret;
         TryNextMethod();
       end );
 end );
