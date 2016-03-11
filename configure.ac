@@ -188,8 +188,13 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 
 dnl
-dnl check how to get a pseudo-tty pair
+dnl check for functionality related to child process handling,
+dnl including pseudo TTY support, signals, etc.
 dnl
+
+AC_CHECK_HEADERS([termios.h termio.h sgtty.h])
+AC_CHECK_HEADERS([sys/ioctl.h time.h sys/times.h])
+
 
 # Check for POSIX 98 pty APIs
 AC_CHECK_FUNCS([ptsname grantpt unlockpt posix_openpt])
@@ -209,23 +214,26 @@ AC_SEARCH_LIBS([openpty], [util],
 
 
 dnl check for input/output functions
+AC_CHECK_HEADERS([signal.h])
 AC_CHECK_FUNCS([ttyname select])
 
-dnl check for fork, wait, execute functions
+dnl various functions to deal with child processes
 AC_HEADER_SYS_WAIT
 AC_TYPE_PID_T
 AC_FUNC_FORK
 AC_CHECK_FUNCS([popen waitpid wait4])
 
-dnl check for signal handling
-AC_CHECK_FUNCS([signal sigaction])
+dnl signal handling
+AC_CHECK_TYPE([sig_atomic_t], [],
+    [AC_DEFINE([HAVE_SIG_ATOMIC_T],[],[Check for sig_atomic_t])],
+    [#include <signal.h>]
+)
+AC_CHECK_FUNCS([signal sigaction setpgid])
 
-
-dnl check whether we have setpgid to protect a background child from SIGINT
-AC_CHECK_FUNCS([setpgid])
 
 dnl
 dnl check for dynamic loading of modules
+dnl TODO: replace with libtool code?!
 dnl
 
 AC_CHECK_FUNCS([rld_load])
@@ -253,8 +261,10 @@ esac;
 AC_SUBST(C_DYNLIBS)
 
 
+dnl error handling
+AC_CHECK_HEADERS([errno.h])
+
 dnl check for timing functions
-AC_CHECK_HEADERS([time.h sys/times.h sys/param.h])
 AC_CHECK_FUNCS([times getrusage gettimeofday])
 AC_CHECK_FUNCS([setitimer getitimer])
 AC_CHECK_LIB([rt], [timer_create])
@@ -281,9 +291,6 @@ AC_CHECK_FUNCS([opendir closedir readdir])
 dnl check for math functions
 AC_CHECK_FUNCS([log2 log10 log1p exp2 expm1 exp10 trunc])
 
-
-dnl check for variants of setjmp, longjmp
-
 dnl sigsetjmp is a macro on some platforms, cannot use AC_CHECK_FUNCS
 AC_MSG_CHECKING([for sigsetjmp])
 AC_TRY_LINK([#include <setjmp.h>], [sigjmp_buf t; sigsetjmp(t, 0)],
@@ -300,6 +307,9 @@ AC_TRY_LINK([#include <setjmp.h>], [sigjmp_buf t; _setjmp(t, 0)],
   [AC_MSG_RESULT([no])]
 )
 
+# for rusage
+AC_CHECK_HEADERS([sys/resource.h])
+AC_CHECK_FUNCS([getrusage gettimeofday])
 
 
 dnl
