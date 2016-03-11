@@ -28,6 +28,7 @@ gap_SOURCES = \
     src/finfield.c \
     src/funcs.c \
     src/gap.c \
+    src/gap_version.c \
     src/gasman.c \
     src/globalstate.c \
     src/gmpints.c \
@@ -89,3 +90,18 @@ gap_SOURCES += \
     src/hpc/traverse.c \
     src/hpc/zmqgap.c
 endif
+
+$(top_srcdir)/cnf/GAP-VERSION-FILE: FORCE
+	@$(SHELL) $(top_srcdir)/cnf/GAP-VERSION-GEN
+-include $(top_srcdir)/cnf/GAP-VERSION-FILE
+
+#gap_CPPFLAGS += '-DGAP_VERSION="$(GAP_VERSION)"'
+#
+#$(top_builddir)/src/gap-gap_version.o: $(top_srcdir)/cnf/GAP-VERSION-FILE
+
+BUILT_SOURCES = src/gap_version.h
+CLEANFILES = src/gap_version.h
+src/gap_version.h: $(top_srcdir)/cnf/GAP-VERSION-FILE
+	@echo '#define GAP_VERSION "$(GAP_VERSION)"' >$@
+
+.PHONY: FORCE
