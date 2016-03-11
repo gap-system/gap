@@ -219,7 +219,8 @@ function ( G, p )
 end);
 
 
-InstallMethod( ConjugacyClasses, "alternating",
+InstallMethod( ConjugacyClasses,
+    "alternating",
     true,
     [ IsNaturalAlternatingGroup ], 0,
 function ( G )
@@ -1580,7 +1581,8 @@ local   S,          # <p>-Sylow subgroup of <G>, result
     return S;
 end);
 
-InstallMethod( ConjugacyClasses, "symmetric",
+InstallMethod( ConjugacyClasses,
+    "symmetric",
     true,
     [ IsNaturalSymmetricGroup ], 0,
 function ( G )

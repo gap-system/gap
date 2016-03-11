@@ -417,7 +417,7 @@ end );
 BIND_GLOBAL( "DirectoriesSystemPrograms", function()
     if GAPInfo.DirectoriesPrograms = false  then
         GAPInfo.DirectoriesPrograms :=
-            AtomicList( List( GAPInfo.DirectoriesSystemPrograms, Directory ) );
+            List( GAPInfo.DirectoriesSystemPrograms, Directory );
     fi;
     return GAPInfo.DirectoriesPrograms;
 end );

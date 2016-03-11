@@ -2295,7 +2295,7 @@ DeclareOperation( "TableOfMarksFrobenius", [ IsPosInt, IsPosInt ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BindGlobal( "TableOfMarksComponents", `[
+BindGlobal( "TableOfMarksComponents", [
       "Identifier",                 Identifier,
       "SubsTom",                    SubsTom,
       "MarksTom",                   MarksTom,

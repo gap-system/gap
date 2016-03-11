@@ -26,9 +26,8 @@ BIND_GLOBAL( "MAXSIZE_GF_INTERNAL", 2^16 );
 ##
 #T TYPES_FFE := WeakPointerObj( [] );
 BIND_GLOBAL( "TYPES_FFE", [] );
-ShareSpecialObj( TYPES_FFE );
 BIND_GLOBAL( "TYPES_FFE0", [] );
-ShareSpecialObj( TYPES_FFE0 );
+
 
 #############################################################################
 ##
@@ -45,30 +44,23 @@ ShareSpecialObj( TYPES_FFE0 );
 ##
 BIND_GLOBAL( "TYPE_FFE", function ( p )
     local type, fam;
-    atomic readonly TYPES_FFE do
-      if IsBound( TYPES_FFE[p] ) then
-        return TYPES_FFE[p];
-      fi;
-    od;
+    if IsBound( TYPES_FFE[p] ) then
+      return TYPES_FFE[p];
+    fi;
 #T     if IsBoundElmWPObj( TYPES_FFE, p ) then
 #T       type:= ElmWPObj( TYPES_FFE, p );
 #T       if type <> fail then
 #T         return type;
 #T       fi;
 #T     fi;
-    fam:= NewFamily( "FFEFamily", IS_FFE, 
-                     CanEasilySortElements, CanEasilySortElements );
+    fam:= NewFamily( "FFEFamily",
+    IS_FFE,CanEasilySortElements,CanEasilySortElements );
     SetIsUFDFamily( fam, true );
     SetCharacteristic( fam, p );
     type:= NewType( fam, IS_FFE and IsInternalRep and HasDegreeFFE);
-    atomic readwrite TYPES_FFE do
-      if IsBound( TYPES_FFE[p] ) then
-        return TYPES_FFE[p];
-      fi;    
-      TYPES_FFE[p]:= type;
-#T    SetElmWPObj( TYPES_FFE, p, type );
-      return type;
-    od;  
+    TYPES_FFE[p]:= type;
+#T     SetElmWPObj( TYPES_FFE, p, type );
+    return type;
 end );
 
 
@@ -80,11 +72,9 @@ end );
 ##
 BIND_GLOBAL( "TYPE_FFE0", function ( p )
     local type, fam;
-    atomic readonly TYPES_FFE0 do
-      if IsBound( TYPES_FFE0[p] ) then
-        return TYPES_FFE0[p];
-      fi;
-    od;
+    if IsBound( TYPES_FFE0[p] ) then
+      return TYPES_FFE0[p];
+    fi;
 #T     if IsBoundElmWPObj( TYPES_FFE, p ) then
 #T       type:= ElmWPObj( TYPES_FFE, p );
 #T       if type <> fail then
@@ -94,14 +84,9 @@ BIND_GLOBAL( "TYPE_FFE0", function ( p )
     fam:= FamilyType(TYPE_FFE(p));
     type:= NewType( fam, IS_FFE and IsInternalRep and IsZero and HasIsZero 
                    and HasDegreeFFE );
-    atomic readwrite TYPES_FFE0 do
-      if IsBound( TYPES_FFE0[p] ) then
-        return TYPES_FFE0[p];
-      fi;  
-      TYPES_FFE0[p]:= type;
-#T    SetElmWPObj( TYPES_FFE, p, type );
-      return type;
-    od;  
+    TYPES_FFE0[p]:= type;
+#T     SetElmWPObj( TYPES_FFE, p, type );
+    return type;
 end );
 
 

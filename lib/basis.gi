@@ -675,12 +675,9 @@ InstallGlobalFunction( "InstallHandlingByNiceBasis",
     filter:= ValueGlobal( name );
 
     # Install the detection of the filter.
-    atomic readwrite NiceBasisFiltersInfo do
-      entry:= First( NiceBasisFiltersInfo,
-                     x -> IsIdenticalObj( filter, x[1] ) );
-      Add( entry, record.detect );
-    od;
-    
+    entry:= First( NiceBasisFiltersInfo,
+                   x -> IsIdenticalObj( filter, x[1] ) );
+    Add( entry, record.detect );
     InstallTrueMethod( IsHandledByNiceBasis, filter );
     filter:= IsFreeLeftModule and filter;
 
@@ -710,16 +707,14 @@ InstallGlobalFunction( "CheckForHandlingByNiceBasis",
     function( F, gens, V, zero )
     local triple, value;
     if not IsHandledByNiceBasis( V ) then
-      atomic readonly NiceBasisFiltersInfo do
-        for triple in NiceBasisFiltersInfo do
-          value:= triple[3]( F, gens, V, zero );
-          if value = true then
-            SetFilterObj( V, triple[1] );
-            return;
-          elif value = fail then
-            return;
-          fi;
-        od;
+      for triple in NiceBasisFiltersInfo do
+        value:= triple[3]( F, gens, V, zero );
+        if value = true then
+          SetFilterObj( V, triple[1] );
+          return;
+        elif value = fail then
+          return;
+        fi;
       od;
     fi;
 end );
@@ -881,10 +876,10 @@ InstallHandlingByNiceBasis( "IsSpaceOfRationalFunctions", rec(
 
       # For the zero row vector, catch the case of empty `monomials' list.
       if IsEmpty( monomials ) then
-        info.zerovector := `[ zero ];
+        info.zerovector := [ zero ];
       else
-        info.zerovector := `ListWithIdenticalEntries( Length( monomials ),
-                                                      zero );
+        info.zerovector := ListWithIdenticalEntries( Length( monomials ),
+                                                     zero );
       fi;
 
       return info;
