@@ -556,6 +556,7 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
         function ( func )
     local nams, narg, i, isvarg;
     Print("function( ");
+    isvarg := false;
     nams := NAMS_FUNC(func);
     narg := NARG_FUNC(func);
     if narg < 0 then
