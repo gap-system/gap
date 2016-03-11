@@ -509,57 +509,68 @@ end);
 
 #
 
-InstallMethod(IsomorphismTransformationSemigroup, 
-"for partial perm semigroup",
+InstallMethod(IsomorphismTransformationSemigroup, "for partial perm semigroup",
 [IsPartialPermSemigroup],
-function(s)
-  local n, gens1, m, gens2, iso, u, i;
- 
-  if DomainOfPartialPermCollection(s)=[] then 
-    # semigroup consisting of the empty set
-    return MagmaIsomorphismByFunctionsNC(s, Semigroup(Transformation([1])), 
-    x-> Transformation([1]), x-> PartialPermNC([]));
-  fi;
+function(S)
+  local n, T, inv;
 
-  n:=Maximum(DegreeOfPartialPermCollection(s),
-   CodegreeOfPartialPermCollection(s))+1;
-  gens1:=GeneratorsOfSemigroup(s); 
-  m:=Length(gens1);
-  gens2:=EmptyPlist(m);
+  n := Maximum(DegreeOfPartialPermCollection(S),
+               CodegreeOfPartialPermCollection(S)) + 1;
 
-  for i in [1..m] do 
-    gens2[i]:=AsTransformation(gens1[i], n);
-  od;
+  T := Semigroup(List(GeneratorsOfSemigroup(S), x -> AsTransformation(x, n)));
+  UseIsomorphismRelation(S, T);
 
-  return MagmaIsomorphismByFunctionsNC(s, Semigroup(gens2), 
-   x-> AsTransformation(x, n), AsPartialPerm);
+  inv := function(x)
+    local out, j, i;
+    out := [];
+    for i in [1 .. n - 1] do 
+      j := i ^ x;
+      if j <> n then 
+        out[i] := j;
+      else 
+        out[i] := 0;
+      fi;
+    od;
+    return PartialPerm(out);
+  end;
+
+  return MagmaIsomorphismByFunctionsNC(S, 
+                                       T, 
+                                       x -> AsTransformation(x, n), 
+                                       inv);
 end);
 
-#
-
-InstallMethod(IsomorphismTransformationMonoid, 
-"for partial perm semigroup",
+InstallMethod(IsomorphismTransformationMonoid, "for partial perm semigroup",
 [IsPartialPermSemigroup],
-function(s)
-  local n, gens1, m, gens2, iso, u, i;
+function(S)
+  local n, T, inv;
   
-  if not (IsMonoid(s) or One(s)<>fail) then 
-    Error("usage: the argument should define a monoid,");
-    return;
+  if not (IsMonoid(S) or One(S) <> fail) then 
+    ErrorNoReturn("usage: the argument should define a monoid,");
   fi;
 
-  n:=Maximum(DegreeOfPartialPermCollection(s),
-   CodegreeOfPartialPermCollection(s))+1;
-  gens1:=GeneratorsOfSemigroup(s); 
-  m:=Length(gens1);
-  gens2:=EmptyPlist(m);
+  n := Maximum(DegreeOfPartialPermCollection(S),
+               CodegreeOfPartialPermCollection(S)) + 1;
 
-  for i in [1..m] do 
-    gens2[i]:=AsTransformation(gens1[i], n);
-  od;
+  T := Monoid(List(GeneratorsOfSemigroup(S), x -> AsTransformation(x, n)));
+  UseIsomorphismRelation(S, T);
 
-  return MagmaIsomorphismByFunctionsNC(s, Monoid(gens2), x->
-   AsTransformation(x, n), AsPartialPerm);
+  inv := function(x)
+    local out, j, i;
+    out := [];
+    for i in [1 .. n - 1] do 
+      j := i ^ x;
+      if j <> n then 
+        out[i] := j;
+      else 
+        out[i] := 0;
+      fi;
+    od;
+    return PartialPerm(out);
+  end;
+
+  return MagmaIsomorphismByFunctionsNC(S, 
+                                       T, 
+                                       x -> AsTransformation(x, n), 
+                                       inv);
 end);
-
-#EOF
