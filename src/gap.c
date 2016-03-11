@@ -876,6 +876,31 @@ Obj FuncRUNTIMES( Obj     self)
 }
 
 
+
+/****************************************************************************
+**
+*F  FuncGetTimeOfDay( <self> )
+**
+**  'FuncGetTimeOfDay' implements the function 'GetTimeOfDay'.
+**
+**  'GetTimeOfDay' returns the current time since 1.1.1970 in seconds and
+**  microseconds as per the POSIX specification.
+**  The accuracy of this is system dependent.
+** 
+**  Also note that gettimeofday has been marked obsolete in the POSIX
+**  standard.
+*/
+Obj FuncGetTimeOfDay(Obj self)
+{
+  Obj tmp;
+  struct timeval t;
+  gettimeofday(&t, NULL);
+  tmp = NEW_PREC(0);
+  AssPRec(tmp, RNamName("tv_sec"), ObjInt_Int(t.tv_sec));
+  AssPRec(tmp, RNamName("tv_usec"), ObjInt_Int(t.tv_usec));
+  return tmp; 
+}
+
 /****************************************************************************
 **
 *F  FuncSizeScreen( <self>, <args> )  . . . .  internal function 'SizeScreen'
@@ -3025,6 +3050,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "RUNTIMES", 0, "",
       FuncRUNTIMES, "src/gap.c:RUNTIMES" },
+
+    { "GetTimeOfDay", 0, "",
+      FuncGetTimeOfDay, "src/gap.c:GetTimeOfDay" },
 
     { "SizeScreen", -1, "args",
       FuncSizeScreen, "src/gap.c:SizeScreen" },

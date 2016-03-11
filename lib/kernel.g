@@ -205,6 +205,26 @@ Runtimes := function()
   fi;
   return res;
 end;
+
+
+#############################################################################
+##
+#F  MicrosecondsSinceEpoch()
+##
+##  <ManSection>
+##  <Func Name="MicrosecondsSinceEpoch" Arg=''/>
+##
+##  <Description>
+##  Time since 1.1.1970 in milliseconds
+##  </Description>
+##  </ManSection>
+##
+MicrosecondsSinceEpoch := function()
+  local t;
+  t := GetTimeOfDay();
+  return t.tv_sec * 10^6 + t.tv_usec;
+end;
+
 #############################################################################
 ##
 #E
