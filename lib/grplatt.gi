@@ -1499,6 +1499,9 @@ function (L)
     fi;
 
     grp:=L!.group;
+    if Size(grp)=1 then
+      return [[]]; # trivial group
+    fi;
     # relevant prime powers
     primes:=Set(Factors(Size(grp)));
     ppow:=Collected(Factors(Size(grp)));
