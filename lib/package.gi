@@ -272,7 +272,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
                   elif IsRecord( record.PackageDoc ) then
                     record.PackageDoc:= [ record.PackageDoc ];
                   fi;
-                  Add( GAPInfo.PackagesInfo, `record );
+                  Add( GAPInfo.PackagesInfo, record );
                 fi;
               fi;
             fi;
@@ -291,9 +291,9 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     for r in GAPInfo.PackagesInfo do
       name:= LowercaseString( r.PackageName );
       if IsBound( record.( name ) ) then
-        record.( name ) := `Concatenation( record.( name ), [ r ] );
+        record.( name ) := Concatenation( record.( name ), [ r ] );
       else
-        record.( name ):= `[ r ];
+        record.( name ):= [ r ];
       fi;
     od;
     GAPInfo.PackagesInfo:= record;
