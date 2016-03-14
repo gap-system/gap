@@ -31,7 +31,7 @@
 ##  the field of size $p^d$ is stored in `GALOIS_FIELDS[<p>][<d>]'.
 ##
 InstallFlushableValue( GALOIS_FIELDS, [] );
-ShareSpecialObj( GALOIS_FIELDS );
+
 
 #############################################################################
 ##
@@ -182,16 +182,16 @@ InstallGlobalFunction( FFEFamily, function( p )
 
     if MAXSIZE_GF_INTERNAL < p then
 
-        # large characteristic
-        atomic readonly FAMS_FFE_LARGE do
-            if p in FAMS_FFE_LARGE[1] then                
-                return FAMS_FFE_LARGE[2][ PositionSorted( FAMS_FFE_LARGE[1], p ) ];
-            fi;
-        od;
-        
+      # large characteristic
+      if p in FAMS_FFE_LARGE[1] then
+
+        F:= FAMS_FFE_LARGE[2][ PositionSorted( FAMS_FFE_LARGE[1], p ) ];
+
+      else
+
         F:= NewFamily( "FFEFamily", IsFFE, 
                        CanEasilySortElements,
-                       CanEasilySortElements );
+                       CanEasilySortElements  );
         SetCharacteristic( F, p );
 
         # Store the type for the representation of prime field elements
@@ -205,24 +205,17 @@ InstallGlobalFunction( FFEFamily, function( p )
 
         # The whole family is a unique factorisation domain.
         SetIsUFDFamily( F, true );
-        
-        atomic readwrite FAMS_FFE_LARGE do 
-            if p in FAMS_FFE_LARGE[1] then                
-                return FAMS_FFE_LARGE[2][ PositionSorted( FAMS_FFE_LARGE[1], p ) ];
-            fi;
-            
-            Add( FAMS_FFE_LARGE[1], p );
-            Add( FAMS_FFE_LARGE[2], F );
-            SortParallel( FAMS_FFE_LARGE[1], FAMS_FFE_LARGE[2] );
-            MakeWriteOnceAtomic(F);
-            return F;
-        od;
 
+        Add( FAMS_FFE_LARGE[1], p );
+        Add( FAMS_FFE_LARGE[2], F );
+        SortParallel( FAMS_FFE_LARGE[1], FAMS_FFE_LARGE[2] );
+
+      fi;
 
     else
 
       # small characteristic
-      # (The list `TYPES_FFE' is used to store the types.)
+      # (The list `TYPE_FFE' is used to store the types.)
       F:= FamilyType( TYPE_FFE( p ) );
       if not HasOne( F ) then
 
@@ -233,7 +226,6 @@ InstallGlobalFunction( FFEFamily, function( p )
       fi;
 
     fi;
-    MakeWriteOnceAtomic(F);
     return F;
 end );
 
@@ -326,7 +318,6 @@ end );
 # in Finite field calculations we often ask again and again for the same GF.
 # Therefore cache the last entry.
 GFCACHE:=[0,0];
-MakeThreadLocal("GFCACHE");
 
 InstallGlobalFunction( GaloisField, function ( arg )
     local F,         # the field, result
@@ -483,17 +474,14 @@ InstallGlobalFunction( GaloisField, function ( arg )
     if IsInt( subfield ) then
 
       # The standard field is required.  Look whether it is already stored.
-      
-      atomic readonly GALOIS_FIELDS do
-        if IsBound( GALOIS_FIELDS[p] ) then
-          if IsBound( GALOIS_FIELDS[p][d] ) then
-	        if Length(arg)=1 then
-	            GFCACHE:=[arg[1],GALOIS_FIELDS[p][d]];
-	        fi;
-            return GALOIS_FIELDS[p][d];
-          fi;
+      if not IsBound( GALOIS_FIELDS[p] ) then
+        GALOIS_FIELDS[p]:= [];
+      elif IsBound( GALOIS_FIELDS[p][d] ) then
+        if Length(arg)=1 then
+          GFCACHE:=[arg[1],GALOIS_FIELDS[p][d]];
         fi;
-      od;
+        return GALOIS_FIELDS[p][d];
+      fi;
 
       # Construct the finite field object.
       if d = 1 then
@@ -504,15 +492,7 @@ InstallGlobalFunction( GaloisField, function ( arg )
       fi;
 
       # Store the standard field.
-      atomic readwrite GALOIS_FIELDS do
-        if not IsBound( GALOIS_FIELDS[p] ) then
-          GALOIS_FIELDS[p]:= MigrateObj([],GALOIS_FIELDS);
-          GALOIS_FIELDS[p][d]:= F;
-        elif not IsBound( GALOIS_FIELDS[p][d] ) then
-          GALOIS_FIELDS[p][d]:= F;
-        fi;
-        return GALOIS_FIELDS[p][d];
-      od;  
+      GALOIS_FIELDS[p][d]:= F;
 
     else
 

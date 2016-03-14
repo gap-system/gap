@@ -237,7 +237,7 @@ local k,g,b,ii,m1,m2,t,tt,si,n,m,i,j,r,jj,piv,d,gt,tmp,A,T,TT,kk;
 end);
 
 BindGlobal("BITLISTS_NFIM",
-MakeImmutable( [ [ false, false, false, false, false ], [ true, false, false, false, false ],
+  [ [ false, false, false, false, false ], [ true, false, false, false, false ],
     [ false, true, false, false, false ], [ true, true, false, false, false ],
     [ false, false, true, false, false ], [ true, false, true, false, false ],
     [ false, true, true, false, false ], [ true, true, true, false, false ],
@@ -252,7 +252,7 @@ MakeImmutable( [ [ false, false, false, false, false ], [ true, false, false, fa
     [ false, false, false, true, true ], [ true, false, false, true, true ],
     [ false, true, false, true, true ], [ true, true, false, true, true ],
     [ false, false, true, true, true ], [ true, false, true, true, true ],
-    [ false, true, true, true, true ], [ true, true, true, true, true ] ] ));
+    [ false, true, true, true, true ], [ true, true, true, true, true ] ] );
 
 
 ###########################################################

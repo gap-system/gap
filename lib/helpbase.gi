@@ -11,8 +11,6 @@
 ## and the actual help books.
 ##  
 
-HELP_REGION:=NewSpecialRegion("HELP_REGION");
-
 #############################################################################
 ##  
 #F  # # # # # internal utility functions dealing with strings  # # # # # # #
@@ -67,15 +65,13 @@ BindGlobal( "IsDocumentedWord", function( arg )
   fi;
   simple:= SIMPLE_STRING( word );
   cword:= case( word );
-  atomic readwrite HELP_REGION do
-    for book in HELP_KNOWN_BOOKS[1] do
-      matches:= HELP_GET_MATCHES( [ book ], simple, true );
-      for a in Concatenation( matches ) do
-	match:= case( StripEscapeSequences( a[1].entries[ a[2] ][1] ) );
-	if cword in SplitString( match, "", Difference( match, inid ) ) then
-	  return true;
-	fi;
-      od;
+  for book in HELP_KNOWN_BOOKS[1] do
+    matches:= HELP_GET_MATCHES( [ book ], simple, true );
+    for a in Concatenation( matches ) do
+      match:= case( StripEscapeSequences( a[1].entries[ a[2] ][1] ) );
+      if cword in SplitString( match, "", Difference( match, inid ) ) then
+        return true;
+      fi;
     od;
   od;
   return false;
@@ -97,7 +93,7 @@ end);
 ##    `SuggestedSpellings'.
 
 BindGlobal( "TRANSATL", 
-           `[ [ "atalogue", "atalog" ],
+            [ [ "atalogue", "atalog" ],
               [ "olour", "olor" ],
               [ "entre", "enter" ],
               [ "isation", "ization" ],
@@ -144,7 +140,6 @@ patterns:=[];
 
 # Loop through all spelling patterns to check if there are any matches.
 # Record starting positions and data about matching patters.
-atomic readonly HELP_REGION do
 
 for pattern in TRANSATL do
   # for each pattern we record starting positions and data separately
@@ -221,8 +216,6 @@ topics := List( Cartesian(chop), Concatenation );
 Sort( topics );
 return( topics );
 
-od;
-
 end);
 
 
@@ -247,7 +240,6 @@ end);
 BindGlobal( "FindMultiSpelledHelpEntries", function( )
 local report, pair, word, book, matches, a, match, patterns, i, j, w, pos, nr, hits;
 report:=[];               
-atomic readwrite HELP_REGION do
 for pair in TRANSATL do
   word := pair[1];
   for book in HELP_KNOWN_BOOKS[1] do
@@ -274,13 +266,12 @@ for pair in TRANSATL do
       # same pattern appears more than once.
       hits := Sum(Flat(patterns));
       if hits >= 1 then
-        AddSet( report, `[ hits, book, match ] );
+        AddSet( report, [ hits, book, match ] );
       fi;
     od;
   od;
 od;
 return report;
-od;
 end);
 
 if StripEscapeSequences = 0 then
@@ -298,7 +289,7 @@ fi;
 ##  No form of  normalization is applied to  <a> or <b>, so this  should be done
 ##  before calling MATCH_BEGIN.
 ##  
-InstallGlobalFunction(MATCH_BEGIN, atomic function( readonly a, readonly b ) local p,q;
+InstallGlobalFunction(MATCH_BEGIN, function( a, b ) local p,q;
 
     if Length(a)=0 and Length(b)=0 then
       return true;
@@ -465,7 +456,6 @@ end);
 #                 [short name, long name, 
 #                  directory containing the manual.six file] 
 InstallValue(HELP_KNOWN_BOOKS, [[],[]]);
-LockAndMigrateObj(HELP_KNOWN_BOOKS,HELP_REGION);
 
 # if book with normalized name is already installed, we overwrite, if dir
 # is the same (so short and long can be changed)
@@ -475,10 +465,9 @@ LockAndMigrateObj(HELP_KNOWN_BOOKS,HELP_REGION);
 
 
 InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
-local sortfun, str, hnb, pos;
-# we sort books with main books first and packages alphabetically,
-# (looks a bit lengthy)
-atomic readwrite HELP_REGION do
+  local sortfun, str, hnb, pos;
+  # we sort books with main books first and packages alphabetically,
+  # (looks a bit lengthy)
   sortfun := function(a, b)
     local main, pa, pb;
     main := ["tutorial", "reference", "changes"];
@@ -522,16 +511,15 @@ atomic readwrite HELP_REGION do
     HELP_BOOKS_INFO.(str).bookname := short;
     Unbind(HELP_BOOKS_INFO.(hnb[1][pos]));
   fi;
-  hnb[1][pos] := MigrateObj(str,HELP_REGION);
-  hnb[2][pos] := MigrateObj([short, long, dir],HELP_REGION);
+  hnb[1][pos] := str;
+  hnb[2][pos] := [short, long, dir];
   SortParallel(hnb[1], hnb[2], sortfun);
-od;  
 end);
 
 
 InstallGlobalFunction(HELP_REMOVE_BOOK, function( short )
-local str, pos;
-atomic readwrite HELP_REGION do
+  local str, pos;
+  
   str := SIMPLE_STRING(short);
   pos := Position(HELP_KNOWN_BOOKS[1], str);
   if pos = fail then
@@ -541,7 +529,6 @@ atomic readwrite HELP_REGION do
     Remove (HELP_KNOWN_BOOKS[2], pos);
     Unbind (HELP_BOOKS_INFO.(str));
   fi;
-od;  
 end);
 
 
@@ -571,8 +558,7 @@ end);
 ##  The `default' handler functions will be assigned helpdef.g, see there for
 ##  more details on the interfaces of each of these functions.
 ##  
-InstallValue(HELP_BOOK_HANDLER, AtomicRecord(rec(default:=rec())));
-LockAndMigrateObj(HELP_BOOK_HANDLER,HELP_REGION);
+InstallValue(HELP_BOOK_HANDLER, rec(default:=rec()));
 
 #############################################################################
 ##  
@@ -603,7 +589,6 @@ LockAndMigrateObj(HELP_BOOK_HANDLER,HELP_REGION);
 ##  documentation and the corresponding handler functions.
 ##  
 InstallValue(HELP_BOOKS_INFO, rec());
-LockAndMigrateObj(HELP_BOOKS_INFO,HELP_REGION);
 
 #############################################################################
 ##  
@@ -616,14 +601,12 @@ LockAndMigrateObj(HELP_BOOKS_INFO,HELP_REGION);
 ##  known book.
 ##  
 InstallGlobalFunction(HELP_BOOK_INFO, function( book )
-local pos, bnam, nnam, path, dirs, six, stream, line, handler;
+  local pos, bnam, nnam, path, dirs, six, stream, line, handler;
 
   # if this is already a record return it
   if IsRecord(book)  then
     return book;
   fi;
-
-atomic readwrite HELP_REGION do
   
   book := LowercaseString(book);
   pos := Position(HELP_KNOWN_BOOKS[1], book);
@@ -692,15 +675,14 @@ atomic readwrite HELP_REGION do
     HELP_KNOWN_BOOKS[2][pos][2] := "NOT AVAILABLE (no handler)";
     return fail;
   fi;
-  HELP_BOOKS_INFO.(bnam) := MigrateObj(HELP_BOOK_HANDLER.(handler).ReadSix(stream),HELP_REGION);
+  HELP_BOOKS_INFO.(bnam) := HELP_BOOK_HANDLER.(handler).ReadSix(stream);
   
   # adjust some entries used on the interface level
-  HELP_BOOKS_INFO.(bnam).handler := MigrateObj(handler,HELP_REGION);
+  HELP_BOOKS_INFO.(bnam).handler := handler;
   HELP_BOOKS_INFO.(bnam).bookname := HELP_KNOWN_BOOKS[2][pos][1];
 
   # done
   return HELP_BOOKS_INFO.(bnam);
-od;
 end);
 
 #############################################################################
@@ -724,16 +706,14 @@ end);
 #F  HELP_SHOW_BOOKS( ignored... ) . . . . . . . . . . .  show available books
 ##  
 InstallGlobalFunction(HELP_SHOW_BOOKS, function( arg )
-local books;
-atomic readonly HELP_REGION do
+  local books;
 
   books := ["             Table of currently available help books",
             FILLED_LINE( "short name for ? commands", "Description", '_')];
   Append(books, List(HELP_KNOWN_BOOKS[2], a-> FILLED_LINE(a[1], a[2], ' ')));
   Pager(books);
   return true;
-
-od;  
+  
 end);
 
 #############################################################################
@@ -741,8 +721,7 @@ end);
 #F  HELP_SHOW_CHAPTERS( <book> )  . . . . . . . . . . . . . show all chapters
 ##
 InstallGlobalFunction(HELP_SHOW_CHAPTERS, function(book)
-local info;
-atomic HELP_REGION do
+  local   info;
   # delegate to handler 
   info := HELP_BOOK_INFO(book);
   if info = fail then
@@ -752,8 +731,7 @@ atomic HELP_REGION do
     HELP_LAST.MATCH := 1;
     Pager(HELP_BOOK_HANDLER.(info.handler).ShowChapters(info));
   fi;
-  return true; 
-od;  
+  return true;  
 end);
 
 #############################################################################
@@ -761,8 +739,7 @@ end);
 #F  HELP_SHOW_SECTIONS( <book> )  . . . . . . . . . . . . . show all sections
 ##
 InstallGlobalFunction(HELP_SHOW_SECTIONS, function(book)
-local   info;
-atomic HELP_REGION do
+  local   info;
   # delegate to handler 
   info := HELP_BOOK_INFO(book);
   if info = fail then
@@ -772,8 +749,7 @@ atomic HELP_REGION do
     HELP_LAST.MATCH := 1;
     Pager(HELP_BOOK_HANDLER.(info.handler).ShowSections(info));
   fi;
-  return true;
-od;  
+  return true;  
 end);
 
 #############################################################################
@@ -784,8 +760,7 @@ end);
 ##  <match> is [book, entrynr]
 ##  
 InstallGlobalFunction(HELP_PRINT_MATCH, function(match)
-local book, entrynr, viewer, hv, pos, type, data;
-atomic readonly HELP_REGION do
+  local book, entrynr, viewer, hv, pos, type, data;
   book := HELP_BOOK_INFO(match[1]);
   entrynr := match[2];
   viewer:= UserPreference("HelpViewers");
@@ -816,7 +791,6 @@ atomic readonly HELP_REGION do
   HELP_LAST.MATCH := entrynr;
   HELP_LAST.VIEWER := viewer;
   return true;
-od;  
 end);
 
 #############################################################################
@@ -937,8 +911,7 @@ end);
 ##  remaining ones.
 ##
 InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
-local exact, match, em, b, x, topics, transatl, pair, newtopic;
-atomic readwrite HELP_REGION do
+  local exact, match, em, b, x, topics, transatl, pair, newtopic;
 
   # First we try to produce some suggestions for possible different spellings
   # (see the global variable 'TRANSATL' for the list of spelling patterns).
@@ -980,7 +953,6 @@ atomic readwrite HELP_REGION do
   exact := [];
 
   return [exact, match];
-od;  
 end);
 
 #############################################################################
@@ -989,8 +961,7 @@ end);
 #F  matches or single match directly
 ##  
 InstallGlobalFunction(HELP_SHOW_MATCHES, function( books, topic, frombegin )
-local   exact,  match,  x,  lines,  cnt,  i,  str,  n;
-atomic readwrite HELP_REGION do
+  local   exact,  match,  x,  lines,  cnt,  i,  str,  n;
 
   # first get lists of exact and other matches
   x := HELP_GET_MATCHES( books, topic, frombegin );
@@ -1035,7 +1006,6 @@ atomic readwrite HELP_REGION do
     Pager(rec(lines := lines, formatted := true));
     return true;
   fi;
-od;  
 end);
 
 # choosing one of last shown  list of matches
@@ -1060,8 +1030,6 @@ end);
 ##    - r[6]    URL (or fail)                           "/doc/htm/ch3.html#s4"
 ##    - r[7]    [chnr, secnr, subsecnr]                 [5,14,2] or [3,1,0]
 ##  
-atomic HELP_REGION do
-
 HELP_BOOK_HANDLER.HelpDataRef := function(book, entrynr)
   local    info,  handler,  entry,  chnr,  secnr,  pos,  res,  r;
 
@@ -1108,8 +1076,6 @@ HELP_BOOK_HANDLER.HelpDataRef := function(book, entrynr)
   return res;
 end;
 
-od;
-
 ##  From this info we generate a manual.lab file for a given book.
 ##  Note that the gapmacro format has subsection information in manual.lab
 ##  which is not available in manual.six! So, one cannot properly regenerate
@@ -1140,14 +1106,12 @@ HELP_RING_IDX :=  0;
 HELP_RING_SIZE := 16;
 InstallValue(HELP_BOOK_RING, ListWithIdenticalEntries( HELP_RING_SIZE, 
                                              ["tutorial"] ));
-LockAndMigrateObj(HELP_BOOK_RING,HELP_REGION);                                             
 InstallValue(HELP_TOPIC_RING, ListWithIdenticalEntries( HELP_RING_SIZE, 
                                              "welcome to gap" ));
-LockAndMigrateObj(HELP_TOPIC_RING,HELP_REGION);                                                                                          
 # here we store the last shown topic, initialized with 0 (leading to
 # show "Tutorial: Help", see below)
-InstallValue(HELP_LAST, AtomicRecord( rec(MATCH := 0, BOOK := 0, 
-             NEXT_VIEWER := false, TOPICS := [])));
+InstallValue(HELP_LAST, rec(MATCH := 0, BOOK := 0, 
+             NEXT_VIEWER := false, TOPICS := []));
 NAMES_SYSTEM_GVARS:= "to be defined in init.g";
 
 InstallGlobalFunction(HELP, function( str )
@@ -1168,8 +1132,6 @@ InstallGlobalFunction(HELP, function( str )
   # normalizing for search
   book := SIMPLE_STRING(book);
   str := SIMPLE_STRING(str);
-
-  atomic readwrite HELP_REGION do
   
   # we check if `book' MATCH_BEGINs some of the available books
   books := Filtered(HELP_KNOWN_BOOKS[1], bn-> MATCH_BEGIN(bn, book));
@@ -1292,6 +1254,5 @@ InstallGlobalFunction(HELP, function( str )
      # cases above (?):
      # Print( "Help: Sorry, could not find a match for '", origstr, "'.\n");
   fi;
-  od;  
 end);
 

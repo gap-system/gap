@@ -67,9 +67,9 @@
 ##  </Description>
 ##  </ManSection>
 ##
-GAPInfo.PackagesInfo := AtomicRecord( rec() );
-GAPInfo.PackagesLoaded := AtomicRecord( rec() );
-GAPInfo.PackageLoadingMessages := AtomicList( [] );
+GAPInfo.PackagesInfo := rec();
+GAPInfo.PackagesLoaded := rec();
+GAPInfo.PackageLoadingMessages := [];
 
 
 #############################################################################

@@ -47,8 +47,8 @@ DeclareInfoClass("InfoGlobal");
 ##  escapes
 ##
 
-IdentifierLetters := MakeImmutable(
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_@" );
+IdentifierLetters := 
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_@";
 
 #############################################################################
 ##
@@ -266,7 +266,7 @@ InstallGlobalFunction( TemporaryGlobalVarName,
 end );
 
 
-BindThreadLocal("HIDDEN_GVARS",[]);
+HIDDEN_GVARS:=[];
 
 InstallGlobalFunction(HideGlobalVariables,function(arg)
 local p,i;

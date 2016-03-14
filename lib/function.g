@@ -554,13 +554,9 @@ BIND_GLOBAL( "IdFunc", ID_FUNC );
 ##
 InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
         function ( func )
-    local  locks, nams, narg, i, isvarg;
-    isvarg := false;
-    locks := LOCKS_FUNC(func);
-    if locks <> fail then
-        Print("atomic ");
-    fi;
+    local nams, narg, i, isvarg;
     Print("function( ");
+    isvarg := false;
     nams := NAMS_FUNC(func);
     narg := NARG_FUNC(func);
     if narg < 0 then
@@ -574,22 +570,8 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
         if nams = fail then
             Print( "<",narg," unnamed arguments>" );
         else
-            if locks <> fail then
-                if locks[1] = '\001' then
-                    Print("readonly ");
-                elif locks[1] = '\002' then
-                    Print("readwrite ");
-                fi;
-            fi;
             Print(nams[1]);
             for i in [2..narg] do
-                if locks <> fail then
-                    if locks[i] = '\001' then
-                        Print("readonly ");
-                    elif locks[i] = '\002' then
-                        Print("readwrite ");
-                    fi;
-                fi;
                 Print(", ",nams[i]);
             od;
         fi;
@@ -607,14 +589,12 @@ BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
     class := "Operation";
     if IS_IDENTICAL_OBJ(op,IS_OBJECT) then
         class := "Filter";
-    elif IS_CONSTRUCTOR(op) then
+    elif op in CONSTRUCTORS then
         class := "Constructor";
     elif IsFilter(op) then
         class := "Filter";
         flags := TRUES_FLAGS(FLAGS_FILTER(op));
-	atomic readonly FILTER_REGION do
-            types := INFO_FILTERS{flags};
-	od;
+        types := INFO_FILTERS{flags};
         catok := true;
         repok := true;
         propok := true;

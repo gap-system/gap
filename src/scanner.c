@@ -2224,7 +2224,9 @@ void GetSymbol ( void )
   case '*':   TLS(Symbol) = S_MULT;                        GET_CHAR();  break;
   case '/':   TLS(Symbol) = S_DIV;                         GET_CHAR();  break;
   case '^':   TLS(Symbol) = S_POW;                         GET_CHAR();  break;
+#ifdef HPCGAP
   case '`':   TLS(Symbol) = S_BACKQUOTE;                   GET_CHAR();  break;
+#endif
 
   case '"':                        GET_CHAR(); GetMaybeTripStr();  break;
   case '\'':                                          GetChar();   break;

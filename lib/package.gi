@@ -147,12 +147,7 @@ InstallGlobalFunction( RECORDS_FILE, function( name )
 #F  SetPackageInfo( <record> )
 ##
 InstallGlobalFunction( SetPackageInfo, function( record )
-    local rnam, info;
-    info := rec();
-    for rnam in REC_NAMES(record) do
-      info.(rnam) := Immutable(record.(rnam));
-    od;
-    GAPInfo.PackageInfoCurrent:= info;
+    GAPInfo.PackageInfoCurrent:= record;
     end );
 
 
@@ -184,7 +179,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
       LogPackageLoadingMessage( PACKAGE_DEBUG,
           "exit InitializePackagesInfoRecords (no pkg directories found)",
           "GAP" );
-      GAPInfo.PackagesInfo:= AtomicRecord();
+      GAPInfo.PackagesInfo:= rec();
       return;
     fi;
 
@@ -277,7 +272,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
                   elif IsRecord( record.PackageDoc ) then
                     record.PackageDoc:= [ record.PackageDoc ];
                   fi;
-                  Add( GAPInfo.PackagesInfo, `record );
+                  Add( GAPInfo.PackagesInfo, record );
                 fi;
               fi;
             fi;
@@ -294,14 +289,14 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     # Turn the lists into records.
     record:= rec();
     for r in GAPInfo.PackagesInfo do
-      name:= `LowercaseString( r.PackageName );
+      name:= LowercaseString( r.PackageName );
       if IsBound( record.( name ) ) then
-        record.( name ) := `Concatenation( record.( name ), [ r ] );
+        record.( name ) := Concatenation( record.( name ), [ r ] );
       else
-        record.( name ):= `[ r ];
+        record.( name ):= [ r ];
       fi;
     od;
-    GAPInfo.PackagesInfo:= AtomicRecord(record);
+    GAPInfo.PackagesInfo:= record;
 
     GAPInfo.PackagesInfoInitialized:= true;
     LogPackageLoadingMessage( PACKAGE_DEBUG,
@@ -1519,7 +1514,7 @@ InstallGlobalFunction( LoadPackage, function( arg )
       # inside the package code causes the files to be read more than once.
       for pkgname in cycle do
         pos:= PositionSorted( paths[1], pkgname );
-        GAPInfo.PackagesLoaded.( pkgname ):= MakeImmutable(paths[2][ pos ]);
+        GAPInfo.PackagesLoaded.( pkgname ):= paths[2][ pos ];
 #T Remove the following as soon as the obsolete variable has been removed!
 if IsBoundGlobal( "PACKAGES_VERSIONS" ) then
   ValueGlobal( "PACKAGES_VERSIONS" ).( pkgname ):= paths[2][ pos ][2];
@@ -1690,7 +1685,7 @@ InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
       GAPInfo.RootPaths:= Immutable( Concatenation( GAPInfo.RootPaths,
           rootpaths ) );
       # Clear the cache.
-      GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
+      GAPInfo.DirectoriesLibrary:= rec();
       # Deal with an obsolete variable.
       if IsBoundGlobal( "GAP_ROOT_PATHS" ) then
         MakeReadWriteGlobal( "GAP_ROOT_PATHS" );
@@ -1929,6 +1924,7 @@ fi;
         "GAP" );
     end );
 
+
 #############################################################################
 ##
 #F  GAPDocManualLab(<pkgname>) . create manual.lab for package w/ GAPDoc docs
@@ -1942,11 +1938,7 @@ InstallGlobalFunction( GAPDocManualLabFromSixFile,
     local stream, entries, SecNumber, esctex, file;
 
     stream:= InputTextFile( sixfilepath );
-    
-    atomic readonly HELP_REGION do
-      entries:= HELP_BOOK_HANDLER.GapDocGAP.ReadSix( stream ).entries;
-    od;
-    
+    entries:= HELP_BOOK_HANDLER.GapDocGAP.ReadSix( stream ).entries;
     SecNumber:= function( list )
       if IsEmpty( list ) or list[1] = 0 then
         return "";
@@ -2050,7 +2042,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
 
     if IsString( info ) then
       if IsReadableFile( info ) then
-	Unbind( GAPInfo.PackageInfoCurrent );
+        Unbind( GAPInfo.PackageInfoCurrent );
         Read( info );
         if IsBound( GAPInfo.PackageInfoCurrent ) then
           record:= GAPInfo.PackageInfoCurrent;
@@ -2344,8 +2336,8 @@ InstallGlobalFunction( CheckPackageLoading, function( pkgname )
 ##  </Description>
 ##  </ManSection>
 ##
-GAPInfo.PackagesRestrictions := AtomicRecord(rec(
-  anupq := `rec(
+GAPInfo.PackagesRestrictions := rec(
+  anupq := rec(
     OnInitialization := function( pkginfo )
         if CompareVersionNumbers( pkginfo.Version, "1.3" ) = false then
           return false;
@@ -2365,7 +2357,7 @@ GAPInfo.PackagesRestrictions := AtomicRecord(rec(
         fi;
         end ),
 
-  autpgrp := `rec(
+  autpgrp := rec(
     OnInitialization := function( pkginfo )
         return true;
         end,
@@ -2380,7 +2372,7 @@ GAPInfo.PackagesRestrictions := AtomicRecord(rec(
               "most recent version, see URL\n",
               "      http://www.gap-system.org/Packages/autpgrp.html\n" );
         fi;
-        end ) ));
+        end ) );
 
 
 #############################################################################

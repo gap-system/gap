@@ -24,12 +24,10 @@ InstallMethod( CollectionsFamily,
     coll_req := IsCollection;
     coll_imp := IsObject;
     elms_flags := F!.IMP_FLAGS;
-    atomic readonly CATEGORIES_COLLECTIONS do
-        for tmp  in CATEGORIES_COLLECTIONS  do
-            if IS_SUBSET_FLAGS( elms_flags, FLAGS_FILTER( tmp[1] ) )  then
-                coll_imp := coll_imp and tmp[2];
-            fi;
-        od;
+    for tmp  in CATEGORIES_COLLECTIONS  do
+        if IS_SUBSET_FLAGS( elms_flags, FLAGS_FILTER( tmp[1] ) )  then
+            coll_imp := coll_imp and tmp[2];
+        fi;
     od;
 
     if    ( not HasElementsFamily( F ) )
