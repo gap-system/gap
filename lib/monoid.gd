@@ -17,7 +17,7 @@
 ##
 ##  <#GAPDoc Label="IsMonoid">
 ##  <ManSection>
-##  <Prop Name="IsMonoid" Arg='D'/>
+##  <Filt Name="IsMonoid" Arg='D' Type='Synonym'/>
 ##
 ##  <Description>
 ##  A <E>monoid</E> is a magma-with-one (see&nbsp;<Ref Chap="Magmas"/>)
