@@ -291,7 +291,8 @@ For example, the category test function for partial permutations is
       consists of integers.  <P/>
       
       This function is the analogue in the context of
-      partial permutations of <Ref Func="Permutation" BookName="ref"/> or 
+      partial permutations of <Ref Func="Permutation" BookName="ref" 
+        Label="for a group, an action domain, etc."/> or 
       <Ref Func="TransformationOp"/>.<P/>
       
       If <A>obj</A> does not map the elements of <A>list</A> injectively,
@@ -478,7 +479,7 @@ gap> EmptyPartialPerm();
   finding various attributes of partial permutations.  <P/>
 
   <ManSection>
-    <Attr Name="DegreeOfPartialPerm" Arg="f"/>
+    <Func Name="DegreeOfPartialPerm" Arg="f"/>
     <Attr Name="DegreeOfPartialPermCollection" Arg="coll"/>
     <Returns>A non-negative integer.</Returns>
     <Description>
@@ -499,7 +500,7 @@ gap> DegreeOfPartialPerm(f);
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Attr Name="CodegreeOfPartialPerm" Arg="f"/>
+    <Func Name="CodegreeOfPartialPerm" Arg="f"/>
     <Attr Name="CodegreeOfPartialPermCollection" Arg="coll"/>
     <Returns>A non-negative integer.</Returns>
     <Description>
@@ -519,7 +520,7 @@ gap> CodegreeOfPartialPerm(f);
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Attr Name="RankOfPartialPerm" Arg="f"/>
+    <Func Name="RankOfPartialPerm" Arg="f"/>
     <Attr Name="RankOfPartialPermCollection" Arg="coll"/>
     <Returns>A non-negative integer.</Returns>
     <Description>
@@ -564,7 +565,7 @@ gap> DomainOfPartialPerm(f);
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="ImageOfPartialPermCollection" Arg="coll"/>
+    <Attr Name="ImageOfPartialPermCollection" Arg="coll"/>
     <Returns>A set of positive integers (maybe empty).</Returns>
     <Description>
       The <E>image</E> of a partial permutation collection <A>coll</A> is the
