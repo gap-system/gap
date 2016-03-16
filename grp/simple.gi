@@ -157,6 +157,9 @@ local g;
     Error("`atlasrep' package must be available to construct group ",params[1]);
   fi;
   g:=CallFuncList(ValueGlobal("AtlasGroup"),params);
+  if not IsGroup(g) then
+     Error("The AtlasGroup package could not load a group with parameters ",params);
+  fi;
   SetName(g,params[1]);
   if not '.' in params[1] then
     SetIsSimpleGroup(g,true);
