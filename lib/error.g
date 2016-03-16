@@ -82,7 +82,7 @@ BIND_GLOBAL("Where", function(arg)
     else
         WHERE(ParentLVars(ErrorLVars),depth, ErrorLVars);
     fi;
-    Print("at line ",INPUT_LINENUMBER()," of ",INPUT_FILENAME(),"\n");
+    Print("at ",INPUT_FILENAME(),":",INPUT_LINENUMBER(),"\n");
 end);
 
 OnBreak := Where;
