@@ -76,4 +76,4 @@ gap> h5 := function(readonly x, readonly y, z) end;;
 Syntax error: 'readonly' argument of non-atomic function in stream line 1
 h5 := function(readonly x, readonly y, z) end;;
                       ^
-gap> STOP_TEST("atomic_basic.tst", 270000);
+gap> STOP_TEST("atomic_basic.tst", 260000);
