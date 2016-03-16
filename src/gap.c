@@ -1340,141 +1340,67 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
  }
    
  Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Obj args )
- {
-   Obj res;
-   Obj currLVars;
-   Obj result;
-   Int recursionDepth;
-   Stat currStat;
-   UInt newJumpBuf = 1;
-   UInt mayNeedToRestore = 0;
-   Int iseconds, imicroseconds;
-   Int curr_seconds = 0, curr_microseconds = 0, curr_nanoseconds = 0;
-   Int restore_seconds = 0, restore_microseconds = 0;
-   if (!SyHaveAlarms)
-     ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
-   if (!IS_INTOBJ(seconds) || 0 > INT_INTOBJ(seconds))
-     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
-		  " <seconds> must be a non-negative small integer",0,0);
-   if (!IS_INTOBJ(microseconds) || 0 > INT_INTOBJ(microseconds) || 999999 < INT_INTOBJ(microseconds))
-     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
-		  " <microseconds> must be a non-negative small integer less than 10^9",0,0);
-   iseconds = INT_INTOBJ(seconds);
-   imicroseconds = INT_INTOBJ(microseconds);
-   if (!IS_FUNC(func))
-     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>): <func> must be a function",0,0);
-   if (!IS_LIST(args))
-     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>): <args> must be a list",0,0);
-   if (SyAlarmRunning) {            
-     /* ErrorMayQuit("CALL_WITH_TIMEOUT cannot currently be nested except via break loops."
-	" There is already a timeout running", 0, 0); */
-     SyStopAlarm((UInt *)&curr_seconds, (UInt *)&curr_nanoseconds);
-     curr_microseconds = curr_nanoseconds/1000;
-     if (iseconds > curr_seconds || (iseconds == curr_seconds && imicroseconds > curr_microseconds)) {
-       /* The existing timeout will go off before we would so don't bother to set a timeout
-	  just reset the existing one and call the function */
-       iseconds = curr_seconds;
-       imicroseconds = curr_microseconds;
-       newJumpBuf = 0;
-     } else {
-       /* We would time out before the other function, so we need to
-	  set our timeout, but remember to reset things later */
-       mayNeedToRestore = 1;
-       newJumpBuf = 1;
-     }
-   }
-   if (newJumpBuf) {
-     if (NumAlarmJumpBuffers >= MAX_TIMEOUT_NESTING_DEPTH-1)
-       ErrorMayQuit("Nesting depth of timeouts limited to %i", MAX_TIMEOUT_NESTING_DEPTH, 0L);
-     currLVars = TLS(CurrLVars);
-     currStat = TLS(CurrStat);
-     recursionDepth = TLS(RecursionDepth);
-     if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers++])) {
-       /* Timeout happened */
-       TLS(CurrLVars) = currLVars;
-       TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
-       TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-       TLS(CurrStat) = currStat;
-       TLS(RecursionDepth) = recursionDepth;
-       if (mayNeedToRestore) {
-	 /* In this case we used our ration of CPU time,
-	    so we know how much we need to restore 
-
-	    The jump buffer stack is already taken care of by the time we
-	    get here */
-	 restore_seconds = curr_seconds - iseconds;
-	 restore_microseconds = curr_microseconds - imicroseconds;
-	 if (restore_microseconds < 0) {
-	   restore_microseconds += 1000000;
-	   restore_seconds -= 1;
-	 }
-	 SyInstallAlarm(restore_seconds, 1000*restore_microseconds);
-       }
-       res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,1);
-       SET_ELM_PLIST(res,1,False);
-       SET_LEN_PLIST(res,1);
-       return res;
-     }
-   }
-
-   /* Here we actually call the function */
-   SyInstallAlarm( iseconds, 1000*imicroseconds);
-   result = CallFuncList(func, args);
-    
-   /* if newJumpBuf is false then we didn't set up our own alarm,
-      just  reset the outer one, 
-      and the outer one hasn't gone off yet, so we just return */
-   if (newJumpBuf) {
-     /* Here we did set our own alarm, but it hasn't gone off */
-     Int unused_seconds, unused_microseconds, unused_nanoseconds;
-     SyStopAlarm( (UInt *)&unused_seconds, (UInt *)&unused_nanoseconds);
-     unused_microseconds = unused_nanoseconds/1000;
-     /* Now the alarm might have gone off since we executed the last statement 
-	of func. So */
-     if (SyAlarmHasGoneOff) {
-       SyAlarmHasGoneOff = 0;
-       UnInterruptExecStat();
-     }
-     assert(NumAlarmJumpBuffers);
-     NumAlarmJumpBuffers--;
+{
+    Obj res;
+    Obj currLVars;
+    Obj result;
+    Int recursionDepth;
+    Stat currStat;
       
-     /* If there is an outer timer, we need to reset it */
-     if (mayNeedToRestore) {
-       restore_seconds = curr_seconds - (iseconds - unused_seconds);
-       restore_microseconds = curr_microseconds - (imicroseconds - unused_microseconds);
-       while (restore_microseconds < 0) {
-	 restore_microseconds += 1000000;
-	 restore_seconds -= 1;
-       }
-       while (restore_microseconds > 999999) {
-	 restore_microseconds -= 1000000;
-	 restore_seconds += 1;
-       }
-	
-       /* nasty hack -- if the outer timer was right on the edge of going off
-	  and we try to restore it to zero we will actually stop it */
-       if (!restore_seconds && !restore_microseconds)
-	 restore_microseconds = 1;
-	
-       SyInstallAlarm(restore_seconds, 1000*restore_microseconds);
-     }
-      
-   }
-    
-   /* assemble and return the result */
-   res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE, 2);
-   SET_ELM_PLIST(res,1,True);
-   if (result)
-     {
-       SET_LEN_PLIST(res,2);
-       SET_ELM_PLIST(res,2,result);
-       CHANGED_BAG(res);
-     }
-   else {
-     SET_LEN_PLIST(res,1);
-   }
-   return res;
- }
+    if (!SyHaveAlarms)
+      ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
+    if (!IS_INTOBJ(seconds) || 0 > INT_INTOBJ(seconds))
+      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
+		   " <seconds> must be a non-negative small integer",0,0);
+    if (!IS_INTOBJ(microseconds) || 0 > INT_INTOBJ(microseconds) || 999999999 < INT_INTOBJ(microseconds))
+      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
+		   " <microseconds> must be a non-negative small integer less than 10^9",0,0);
+    if (!IS_FUNC(func))
+      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <func> must be a function",0,0);
+    if (!IS_LIST(args))
+      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <args> must be a list",0,0);
+    if (SyAlarmRunning) {            
+      ErrorMayQuit("CALL_WITH_TIMEOUT cannot currently be nested except via break loops."
+		   " There is already a timeout running", 0, 0); 
+    }
+    if (NumAlarmJumpBuffers >= MAX_TIMEOUT_NESTING_DEPTH-1)
+      ErrorMayQuit("Nesting depth of timeouts via break loops limited to %i", MAX_TIMEOUT_NESTING_DEPTH, 0L);
+    currLVars = TLS(CurrLVars);
+    currStat = TLS(CurrStat);
+    recursionDepth = TLS(RecursionDepth);
+    res = NEW_PLIST( T_PLIST_DENSE+IMMUTABLE, 2 );
+    SET_LEN_PLIST(res, 1);
+    if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers++])) {
+      /* Timeout happened */
+      TLS(CurrLVars) = currLVars;
+      TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
+      TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+      TLS(CurrStat) = currStat;
+      TLS(RecursionDepth) = recursionDepth;
+      SET_ELM_PLIST(res, 1, False);
+    } else {
+      SyInstallAlarm( INT_INTOBJ(seconds), 1000*INT_INTOBJ(microseconds));
+      result = CallFuncList(func, args);
+      /* make sure the alarm is not still running */
+      SyStopAlarm( NULL, NULL);
+      /* Now the alarm might have gone off since we executed the last statement 
+	 of func. So */
+      if (SyAlarmHasGoneOff) {
+	SyAlarmHasGoneOff = 0;
+	UnInterruptExecStat();
+      }
+      assert(NumAlarmJumpBuffers);
+      NumAlarmJumpBuffers--;
+      SET_ELM_PLIST(res,1,True);
+      if (result)
+        {
+          SET_LEN_PLIST(res,2);
+          SET_ELM_PLIST(res,2,result);
+        }
+    }
+    CHANGED_BAG(res);
+    return res;
+}
 
 Obj FuncSTOP_TIMEOUT( Obj self ) {
   UInt seconds, nanoseconds;
