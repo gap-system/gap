@@ -31,7 +31,7 @@ elif IsOperation( op ) then
     class := "Oper";
     if IS_IDENTICAL_OBJ(op,IS_OBJECT) then
         class := "Filt";
-    elif IS_CONSTRUCTOR(op) then
+    elif op in CONSTRUCTORS then
         class := "Constructor"; # seem to never get one
     elif IsFilter(op) then
         class := "Filt";
