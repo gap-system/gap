@@ -1234,6 +1234,38 @@ Obj FuncUpEnv (
   return 0;
 }
 
+Obj FuncExecutingStatementLocation(Obj self, Obj context)
+{
+  Obj currLVars = TLS(CurrLVars);
+  Expr call;
+  Int line;
+  Obj filename;
+  Obj retlist;
+  retlist = Fail;
+  if (context == TLS(BottomLVars))
+    return (Obj) 0;
+  SWITCH_TO_OLD_LVARS(context);
+  call = BRK_CALL_TO();
+  if (
+#if T_PROCCALL_0ARGS
+        ( FIRST_STAT_TNUM <= TNUM_STAT(call)
+                && TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
+#else
+        ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
+#endif
+        ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
+              && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) ) {
+    line = LINE_STAT(call);
+    filename = FILENAME_STAT(call);
+    retlist = NEW_PLIST(T_PLIST, 2);
+    SET_LEN_PLIST(retlist, 2);
+    SET_ELM_PLIST(retlist, 1, filename);
+    SET_ELM_PLIST(retlist, 2, INTOBJ_INT(line));
+    CHANGED_BAG(retlist);
+  }
+  SWITCH_TO_OLD_LVARS( currLVars );
+  return retlist;
+}
 
 Obj FuncPrintExecutingStatement(Obj self, Obj context)
 {
@@ -3113,7 +3145,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "PRINT_CURRENT_STATEMENT", 1, "context",
       FuncPrintExecutingStatement, "src/gap.c:PRINT_CURRENT_STATEMENT" },
 
-  
+    { "CURRENT_STATEMENT_LOCATION", 1, "context",
+      FuncExecutingStatementLocation,
+      "src/gap.c:CURRENT_STATEMENT_LOCATION" },
+
     { 0 }
 
 };

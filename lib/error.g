@@ -113,7 +113,8 @@ Unbind(ErrorInner);
 BIND_GLOBAL("ErrorInner",
         function( arg )
     local   context, mayReturnVoid,  mayReturnObj,  lateMessage,  earlyMessage,  
-            x,  prompt,  res, errorLVars, justQuit, printThisStatement, timeout;
+            x,  prompt,  res, errorLVars, justQuit, printThisStatement, timeout,
+            location;
 
     timeout := STOP_TIMEOUT();
 	context := arg[1].context;
@@ -214,6 +215,9 @@ BIND_GLOBAL("ErrorInner",
             PrintTo("*errout*","\c\n");
         fi;
     else
+        location := CURRENT_STATEMENT_LOCATION(context);
+        if location <> fail then          PrintTo("*errout*", " at ", location[1], ":", location[2]);
+        fi;
         PrintTo("*errout*"," called from\c\n");
     fi;
     if IsBound(OnBreak) and IsFunction(OnBreak) then
