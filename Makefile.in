@@ -412,6 +412,12 @@ testmanuals:
 	  > `date -u +dev/log/testmanuals2_%Y-%m-%d-%H-%M` 2>&1 )
 	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
 
+check-manuals:
+	mkdir -p dev/log
+	((cd doc/ref ; \
+	  echo 'Read("testconsistency.g");' | ../../$(TESTGAP) ) \
+	  > `date -u +dev/log/check_manuals_%Y-%m-%d-%H-%M` 2>&1 )
+
 testupdates:
 	mkdir -p dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
