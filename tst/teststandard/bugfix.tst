@@ -3019,6 +3019,10 @@ true
 gap> Size(Stabilizer(g, [ [1,2], [3,4] ], OnSetsSets));
 4
 
+#2016/3/16 (AH, issue #675)
+gap> G:=Group((1,2,3,4));;Factorization(G,Elements(G)[1]);
+<identity ...>
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 831990000);
 
