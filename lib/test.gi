@@ -785,7 +785,7 @@ end);
 ##  <Description>
 ##  It is recommended that a &GAP; package specifies a standard test in its
 ##  <F>PackageInfo.g</F> file. If <A>pkgname</A> is a string with the name of
-##  a &GAP; package, then <C>TestDirectory(pkgname)</C> will check if this
+##  a &GAP; package, then <C>TestPackage(pkgname)</C> will check if this
 ##  package is loadable and has the standard test, and will run this test in
 ##  the current &GAP; session.<P/>
 ##
