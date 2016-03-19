@@ -273,6 +273,95 @@ modules and Cat1-algebras and morphisms of these structures.
 
 </Section>
 
+
+<Section Label="gap483">
+<Heading>&GAP; 4.8.3 (March 2016)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.8.3">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.8.3</Heading>
+
+New features:
+<List>
+<Item>
+<!-- #647 -->
+New function <Ref Func="TestPackage" BookName="ref"/> to run standard tests
+(if available) for a single package in the current &GAP; session (also callable
+via <C>make testpackage PKGNAME=pkgname</C> to run package tests in the same
+settings that are used for testing &GAP; releases).
+</Item>
+</List>
+
+Improved and extended functionality:
+<List>
+<Item>
+<!-- #670 -->
+<Ref Func="TestDirectory" BookName="ref"/> now prints a special status message
+to indicate the outcome of the test (this is convenient for automated testing).
+If necessary, this message may be suppressed by using the option
+<C>suppressStatusMessage</C>
+</Item>
+<Item>
+<!-- [#655] -->
+Improved output of tracing methods (which may be invoked, for example, with
+<Ref Func="TraceAllMethods" BookName="ref"/>) by displaying filename and line
+number in some more cases.
+</Item>
+</List>
+
+Changed functionality:
+<List>
+<Item>
+<!-- #615 -->
+Fixed some inconsistencies in the usage of
+<Ref Prop="IsGeneratorsOfSemigroup" BookName="ref"/>.
+</Item>
+</List>
+
+Fixed bugs that could lead to incorrect results:
+<List>
+<Item>
+<!-- #626 -->
+Fallback methods for conjugacy classes, that were never intended for infinite
+groups, now use <Ref Prop="IsFinite" BookName="ref"/> filter to prevent them
+being called for infinite groups. [Reported by Gabor Horvath]
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+<!-- #665 -->
+Calculating stabiliser for the alternating group caused a break loop in the
+case when it defers to the corresponding symmetric group.
+</Item>
+<Item>
+<!-- #663 -->
+It was not possible to use <Ref Func="DotFileLatticeSubgroups" BookName="ref"/>
+for a trivial group. [Reported by Sergio Siccha]
+</Item>
+<Item>
+<!-- #648 -->
+A break loop while computing <Ref Attr="AutomorphismGroup" BookName="ref"/> for
+<C>TransitiveGroup(12,269)</C>. [Reported by Ignat Soroko]
+</Item>
+<Item>
+<!-- #622 -->
+A break loop while computing conjugacy classes of <C>PSL(6,4)</C>.
+[Reported by Martin Macaj]
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+<!-- #654 -->
+Fix for using Firefox as a default help viewer with
+<Ref Func="SetHelpViewer" BookName="ref"/>. [Reported by Tom McDonough]
+</Item>
+</List>
+</Subsection>
+</Section>
+
 </Chapter>
 
 
