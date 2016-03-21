@@ -2747,6 +2747,34 @@ local dom,n,t,map;
   return [map,t];
 end);
 
+BindGlobal("TomExtensionNames",function(r)
+local n,pool,ext,sz,lsz,t,f,i;
+  if IsBound(r.tomExtensions) then
+    return t.tomExtensions;
+  fi;
+  n:=r.tomName;
+  pool:=[n];
+  ext:=[];
+  sz:=fail;
+  for i in pool do
+    t:=TableOfMarks(i);
+    if t<>fail then
+      lsz:=Maximum(OrdersTom(t));
+      if sz=fail then sz:=lsz;fi;
+      if lsz>sz then
+	Add(ext,[lsz/sz,i{[Length(n)+2..Length(i)]}]);
+      fi;
+      for f in FusionsTom(t) do
+	if f[1]{[1..Minimum(Length(f[1]),Length(n))]}=n and not f[1] in pool then
+	  Add(pool,f[1]);
+	fi;
+      od;
+    fi;
+  od;
+  r!.tomExtensions:=ext;
+  return ext;
+end);
+
 InstallMethod(TomDataAlmostSimpleRecognition,"generic",true,
   [IsGroup],0,
 function(G)
@@ -2766,7 +2794,7 @@ local T,t,hom,inf,nam,i,aut;
   # simple group
   if Index(G,T)=1 then
     t:=TableOfMarks(nam);
-    if not HasUnderlyingGroup(t) then
+    if t=fail or not HasUnderlyingGroup(t) then
       Info(InfoLattice,2,"Table of marks has no group");
       return fail;
     fi;
@@ -2779,8 +2807,8 @@ local T,t,hom,inf,nam,i,aut;
     return [hom,t];
   fi;
 
-  #extension
-  inf:=Filtered(inf.allExtensions,i->i[1]=Index(G,T));
+  #extensions (as far as tom knows)
+  inf:=Filtered(TomExtensionNames(inf),i->i[1]=Index(G,T));
   for i in inf do
     t:=TableOfMarks(Concatenation(nam,".",i[2]));
     if t<>fail and HasUnderlyingGroup(t) then
@@ -2817,22 +2845,4 @@ local recog,m,len;
   m:=List(m,i->PreImage(recog[1],i));
   return m;
 end);
-
-InstallMethod(LowIndexSubgroups,"finite groups, using iterated maximals",
-  true,[IsGroup and IsFinite,IsPosInt],0,
-function(G,n)
-local m,all,m2;
-  m:=[G];
-  all:=[G];  
-  while Length(m)>0 do
-    m2:=Concatenation(List(m,MaximalSubgroupClassReps));
-    m2:=Unique(Filtered(m2,x->Index(G,x)<=n));
-    m2:=List(SubgroupsOrbitsAndNormalizers(G,m2,false),x->x.representative);
-    m2:=Filtered(m2,x->ForAll(all,y->RepresentativeAction(G,x,y)=fail));
-    Append(all,m2);
-    m:=Filtered(m2,x->Index(G,x)<=n/2); # otherwise subgroups will have too large index
-  od;
-  return all;
-end);
-
 
