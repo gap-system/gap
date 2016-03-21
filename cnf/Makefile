@@ -69,6 +69,7 @@ SOURCE= \
     stringobj \
     sysfiles \
     system \
+    systimers \
     tietze \
     trans \
     vars \

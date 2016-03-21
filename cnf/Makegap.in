@@ -31,7 +31,7 @@ gap:  $(GMP_LIBS)
 endif
 
 # OBJECTS are generated from SOURCE
-OBJECTS=ariths.o backtrace.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_random.o c_type1.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o ffdata.o finfield.o funcs.o gap.o gasman.o globalstate.o gmpints.o gvars.o intfuncs.o intrprtr.o iostream.o listfunc.o listoper.o lists.o macfloat.o objccoll.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objset.o opers.o permutat.o plist.o pperm.o precord.o profile.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o stringobj.o sysfiles.o system.o tietze.o trans.o vars.o vec8bit.o vecffe.o vecgf2.o vector.o weakptr.o $(GAPMPI_OBJ)
+OBJECTS=ariths.o backtrace.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_random.o c_type1.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o ffdata.o finfield.o funcs.o gap.o gasman.o globalstate.o gmpints.o gvars.o intfuncs.o intrprtr.o iostream.o listfunc.o listoper.o lists.o macfloat.o objccoll.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objset.o opers.o permutat.o plist.o pperm.o precord.o profile.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o stringobj.o sysfiles.o system.o systimers.o tietze.o trans.o vars.o vec8bit.o vecffe.o vecgf2.o vector.o weakptr.o $(GAPMPI_OBJ)
 
 
 # compile and link GAP
@@ -601,6 +601,9 @@ system.o: ../../Makefile @srcdir@/system.c @srcdir@/system.h config.h @srcdir@/g
  @srcdir@/code.h @srcdir@/scanner.h @srcdir@/gasman.h @srcdir@/hpc/atomic.h \
  gap_version.h @srcdir@/gap.h @srcdir@/sysfiles.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o system.o -c @srcdir@/system.c
+
+systimers.o: ../../Makefile @srcdir@/systimers.c
+	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o systimers.o -c @srcdir@/systimers.c
 
 tietze.o: ../../Makefile @srcdir@/tietze.c @srcdir@/system.h config.h @srcdir@/globalstate.h \
  @srcdir@/code.h @srcdir@/scanner.h @srcdir@/gasman.h @srcdir@/hpc/atomic.h \
