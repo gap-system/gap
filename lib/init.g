@@ -1082,7 +1082,7 @@ BindGlobal( "ShowPackageInformation", function()
                     "\n" );
       fi;
 
-      Print( " Try '?help' for help. See also  '?copyright' and  '?authors'",
+      Print( " Try '??help' for help. See also '?copyright', '?cite' and '?authors'",
              "\n" );
     fi;
 end );
