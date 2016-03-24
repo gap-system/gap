@@ -4776,8 +4776,10 @@ function(G,elm)
             S:=SC;
             for d in [1..Length(e)] do
               img:=elm[d]; # image base point
-              pos:=pos+val*S.orbitpos[img];
-              val:=val*S.ol;
+              #pos:=pos+val*S.orbitpos[img];
+              #val:=val*S.ol;
+              pos:=pos+val*(Position(S.orbit,img)-1);
+              val:=val*Length(S.orbit);
               #elm:=OnTuples(elm,InverseRepresentative(S,img));
               while img<>S.orbit[1] do
                 te:=S.transversal[img];
@@ -4791,7 +4793,9 @@ function(G,elm)
 
         actobj:=OnTuples;
       fi;
+
     fi;
+
     info.objelm:=objelm;
     info.objnum:=objnum;
     info.numobj:=numobj;

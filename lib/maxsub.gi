@@ -534,17 +534,20 @@ local id,m,epi;
   m:=TomDataMaxesAlmostSimple(G);
   if m<>fail then return m;fi;
 
-  id:=DataAboutSimpleGroup(G);
-  if id.idSimple.series="A" then
-    Info(InfoWarning,1,"Alternating recognition needed!");
-  elif id.idSimple.series="L" then
-    m:=ClassicalMaximals("L",id.idSimple.parameter[1],id.idSimple.parameter[2]);
-    if m<>fail then
-      epi:=EpimorphismFromClassical(G);
-      if epi<>fail then
-	m:=List(m,x->SubgroupNC(Range(epi),
-             List(GeneratorsOfGroup(x),y->ImageElm(epi,y))));
-        return m;
+  if IsSimpleGroup(G) then 
+    # following is stopgap for L
+    id:=DataAboutSimpleGroup(G);
+    if id.idSimple.series="A" then
+      Info(InfoWarning,1,"Alternating recognition needed!");
+    elif id.idSimple.series="L" then
+      m:=ClassicalMaximals("L",id.idSimple.parameter[1],id.idSimple.parameter[2]);
+      if m<>fail then
+	epi:=EpimorphismFromClassical(G);
+	if epi<>fail then
+	  m:=List(m,x->SubgroupNC(Range(epi),
+	      List(GeneratorsOfGroup(x),y->ImageElm(epi,y))));
+	  return m;
+	fi;
       fi;
     fi;
 
