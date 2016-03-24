@@ -1150,6 +1150,14 @@ local cs,	# chief series of G
 	  Thom:=Thom*ActionHomomorphism(T1,MovedPoints(T1),"surjective");
 	fi;
 	T1:=Image(Thom,T[1]);
+	if IsPermGroup(T1) and
+	  NrMovedPoints(T1)>SufficientlySmallDegreeSimpleGroupOrder(Size(T1)) then
+	  Thom:=Thom*SmallerDegreePermutationRepresentation(T1);
+	  Info(InfoHomClass,1,"reduced simple degree ",NrMovedPoints(T1),
+	    " ",NrMovedPoints(Image(Thom)));
+	  T1:=Image(Thom,T[1]);
+	fi;
+
 	autos:=List(GeneratorsOfGroup(S),
 		  i->GroupHomomorphismByImagesNC(T1,T1,GeneratorsOfGroup(T1),
 		    List(GeneratorsOfGroup(T1),

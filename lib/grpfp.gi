@@ -3099,6 +3099,13 @@ InstallMethod(LowIndexSubgroupsFpGroup, "subgroups of full fp group",
   [IsSubgroupFpGroup and IsWholeFamily,IsSubgroupFpGroup,IsPosInt],0,
   DoLowIndexSubgroupsFpGroupViaIterator );
 
+InstallMethod(LowIndexSubgroups, "FpFroups, using LowIndexSubgroupsFpGroup",
+  true,
+  [IsSubgroupFpGroup,IsPosInt],
+  # rank higher than method for finit groups using maximal subgroups
+  SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(IsGroup and IsFinite))),
+  LowIndexSubgroupsFpGroup );
+
 InstallOtherMethod(LowIndexSubgroupsFpGroup,
   "subgroups of full fp group, with exclusion list", IsFamFamXY,
   [IsSubgroupFpGroup and IsWholeFamily,IsSubgroupFpGroup,IsPosInt,IsList],0,
