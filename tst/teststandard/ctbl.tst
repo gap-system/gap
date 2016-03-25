@@ -47,12 +47,12 @@ gap> ClassPositionsOfKernel( TrivialCharacter( t ) );
 gap> if LoadPackage("ctbllib", "1", false) <> fail then  # TestRequires: ctbllib, 1
 >      t1:= CharacterTable( "Cyclic", 2 );
 >      t2:= CharacterTable( "Cyclic", 3 );
->      Print( t1 );
->      Print( t2 );
->      Print( t1 * t1 );
->      Print( ( t1 mod 2 ) * ( t1 mod 2 ) );
->      Print( ( t1 mod 2 ) * t2 );
->      Print( t2 * ( t1 mod 2 ) );
+>      Print( t1, "\n" );
+>      Print( t2, "\n" );
+>      Print( t1 * t1, "\n" );
+>      Print( ( t1 mod 2 ) * ( t1 mod 2 ), "\n" );
+>      Print( ( t1 mod 2 ) * t2, "\n" );
+>      Print( t2 * ( t1 mod 2 ), "\n" );
 >    fi;
 CharacterTable( "C2" )
 CharacterTable( "C3" )
