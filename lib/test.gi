@@ -12,11 +12,12 @@
 ##  end;
 
 InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
-  local lines, inp, pos, outp, ign, i;
+  local lines, inp, pos, outp, reqs, ign, i, p, req;
   lines := SplitString(str, "\n", "");
   inp := [];
   pos := [];
   outp := [];
+  reqs := [];
   ign := [];
   i := 1;
   while i <= Length(lines) do
@@ -53,6 +54,17 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
       Add(inp, lines[i]{[6..Length(lines[i])]});
       Add(inp[Length(inp)], '\n');
       Add(pos, i);
+      p := PositionSublist(lines[i], "# TestRequires:");
+      req := [];
+      if p <> fail then
+        req := SplitString(lines[i]{[p..Length(lines[i])]}, ':');
+        if Length(req) = 2 then
+          req := SplitString(req[2], ',', ' ');
+        else
+          req := [];
+        fi;
+      fi;
+      Add(reqs, req);
       i := i+1;
     elif Length(lines[i]) > 1 and lines[i]{[1..2]} = "> " then
       Append(inp[Length(inp)], lines[i]{[3..Length(lines[i])]});
@@ -67,7 +79,7 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
     fi;
   od;
   Add(pos, ign);
-  return [inp, outp, pos];
+  return [inp, outp, pos, reqs];
 end);
 
 InstallGlobalFunction(ParseTestFile, function(arg)
@@ -87,8 +99,8 @@ InstallGlobalFunction(ParseTestFile, function(arg)
 end);
 
 InstallGlobalFunction(RunTests, function(arg)
-  local tests, opts, breakOnError, inp, outp, pos, cmp, times, ttime, 
-        s, res, fres, t, f, i;
+  local tests, opts, breakOnError, inp, outp, pos, reqs, cmp, times, ttime, 
+        s, req, skip, res, fres, t, f, i;
   # don't enter break loop in case of error during test
   tests := arg[1];
   opts := rec( breakOnError := false, showProgress := false );
@@ -105,6 +117,7 @@ InstallGlobalFunction(RunTests, function(arg)
   inp := tests[1];
   outp := tests[2];
   pos := tests[3];
+  reqs := tests[4];
   cmp := [];
   times := [];
   ttime := Runtime();
@@ -112,6 +125,32 @@ InstallGlobalFunction(RunTests, function(arg)
     if opts.showProgress = true then
       Print("# line ", pos[i], ", input:\n",inp[i]);
     fi;
+    req := reqs[i];
+    skip := false;
+    if Length(req) = 1 then
+      if TestPackageAvailability(req[1]) = fail then
+        skip := true;
+      fi;
+    elif Length(req) = 2 then
+      if TestPackageAvailability(req[1], req[2]) = fail then
+        skip := true;
+      fi;
+    fi;
+
+    if skip then
+      if opts.showProgress = true then
+        if Length(req) = 2 then
+          Print("Skipped: Required package ", req[1], ", version ", req[2],
+                " not available\n");
+        else
+          Print("Skipped: Required package ", req[1], " not available\n");
+        fi;
+      fi;
+      Add(cmp, "");
+      Add(times, -1);  # -1 means skipped
+      continue;
+    fi;
+
     s := InputTextString(inp[i]);
     res := "";
     fres := OutputTextString(res, false);
@@ -126,8 +165,8 @@ InstallGlobalFunction(RunTests, function(arg)
   od;
   # add total time to 'times'
   Add(times, Runtime() - ttime);
-  tests[4] := cmp;
-  tests[5] := times;
+  tests[5] := cmp;
+  tests[6] := times;
   # reset
   BreakOnError := breakOnError;
 end);
@@ -399,14 +438,18 @@ InstallGlobalFunction("Test", function(arg)
   # check for and report differences
   ret := true;
   for i in [1..Length(pf[1])] do
-    if opts.compareFunction(pf[2][i], pf[4][i]) <> true then
+    if pf[6][i] = -1 then
+      # Test skipped
+      continue;
+    fi;
+    if opts.compareFunction(pf[2][i], pf[5][i]) <> true then
       if not opts.ignoreSTOP_TEST or 
          PositionSublist(pf[1][i], "STOP_TEST") <> 1 then
         ret := false;
-        opts.reportDiff(pf[1][i], pf[2][i], pf[4][i], fnam, pf[3][i], pf[5][i]);
+        opts.reportDiff(pf[1][i], pf[2][i], pf[5][i], fnam, pf[3][i], pf[6][i]);
       else
         # print output of STOP_TEST
-        Print(pf[4][i]);
+        Print(pf[5][i]);
       fi;
     fi;
   od;
@@ -428,7 +471,7 @@ InstallGlobalFunction("Test", function(arg)
         Add(new[pf[3][i]], '\n');
       od; 
       if PositionSublist(pf[1][i], "STOP_TEST") <> 1 then
-        Append(new[pf[3][i]], pf[4][i]);
+        Append(new[pf[3][i]], pf[5][i]);
       fi;
     od;
     new := Concatenation(Compacted(new));
@@ -438,7 +481,7 @@ InstallGlobalFunction("Test", function(arg)
   # maybe store the timings into a file
   if IsString(opts.writeTimings) then
     PrintTo(opts.writeTimings, "TEST.Timings.(\"", opts.writeTimings,
-            "\") := \n", pf[5], ";\n");
+            "\") := \n", pf[6], ";\n");
   fi;
 
   # maybe compare timings
@@ -461,20 +504,20 @@ InstallGlobalFunction("Test", function(arg)
       fi;
       for i in [1..Length(pf[1])] do
         if oldtimes[i] >= thr and 
-           AbsInt(oldtimes[i] - pf[5][i])/oldtimes[i] > delta/100 then
-          opts.reportTimeDiff(pf[1][i], fnam, pf[3][i], oldtimes[i], pf[5][i]);
+           AbsInt(oldtimes[i] - pf[6][i])/oldtimes[i] > delta/100 then
+          opts.reportTimeDiff(pf[1][i], fnam, pf[3][i], oldtimes[i], pf[6][i]);
         fi;
       od;
       # compare total times
       len := Length(oldtimes);
       if oldtimes[len] >= thr and
-         AbsInt(oldtimes[len] - pf[5][len])/oldtimes[len] > delta/100 then
-         d := String(Int(100*(pf[5][len] - oldtimes[len])/oldtimes[len]));
+         AbsInt(oldtimes[len] - pf[6][len])/oldtimes[len] > delta/100 then
+         d := String(Int(100*(pf[6][len] - oldtimes[len])/oldtimes[len]));
          if d[1] <> '-' then
            d := Concatenation("+", d);
          fi;
          Print("########> Total time for ", fnam, ":\n");
-         Print("# Old time: ", oldtimes[len],"   New time: ", pf[5][len],
+         Print("# Old time: ", oldtimes[len],"   New time: ", pf[6][len],
          "    (", d, "%)\n");
       fi;
     fi;
