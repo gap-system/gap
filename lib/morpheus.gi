@@ -889,6 +889,8 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     TestRels:=x->true; # to satisfy the code below.
   fi;
 
+  pop:=false; # just to initialize
+
   # backtrack over all classes in clali
   l:=ListWithIdenticalEntries(len,1);
   ind:=len;
