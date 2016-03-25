@@ -509,6 +509,73 @@ Obj ProfileEvalBoolPassthrough(Expr stat)
 }
 
 
+/****************************************************************************
+**
+** This functions check if we overflow either 2^16 lines, or files.
+** In this case profiling will "give up". We print a warning to tell users
+** that this happens.
+**/
+
+Int HaveReportedLineProfileOverflow;
+Int ShouldReportLineProfileOverflow;
+
+Int HaveReportedFileProfileOverflow;
+Int ShouldReportFileProfileOverflow;
+
+// This function only exists to allow testing of these overflow checks
+Obj FuncCLEAR_PROFILE_OVERFLOW_CHECKS(Obj self) {
+  HaveReportedLineProfileOverflow = 0;
+  ShouldReportLineProfileOverflow = 0;
+
+  HaveReportedFileProfileOverflow = 0;
+  ShouldReportFileProfileOverflow = 0;
+  
+  return 0;
+}
+
+void CheckPrintOverflowWarnings() {
+    if(!HaveReportedLineProfileOverflow && ShouldReportLineProfileOverflow)
+    {
+      HaveReportedLineProfileOverflow = 1;
+      Pr("#I Profiling only works on the first 65,535 lines of each file\n"
+         "#I (this warning will only appear once).\n",
+          0L, 0L);
+    }
+    
+    if(!HaveReportedFileProfileOverflow && ShouldReportFileProfileOverflow)
+    {
+      HaveReportedFileProfileOverflow = 1;
+      Pr("#I Profiling only works for the first 65,535 read files\n"
+         "#I (this warning will only appear once).\n",
+          0L, 0L );
+    }
+}
+
+void RegisterProfilingLineOverflowOccured()
+{
+    Int active;
+    HashLock(&profileState);
+    active = profileState_Active;
+    HashUnlock(&profileState);
+    ShouldReportLineProfileOverflow = 1;
+    if(active)
+    {
+        CheckPrintOverflowWarnings();
+    }
+}
+
+void RegisterProfilingFileOverflowOccured()
+{
+    Int active;
+    HashLock(&profileState);
+    active = profileState_Active;
+    HashUnlock(&profileState);
+    ShouldReportFileProfileOverflow = 1;
+    if(active)
+    {
+        CheckPrintOverflowWarnings();
+    }
+}
 
 /****************************************************************************
 **
@@ -603,13 +670,15 @@ Obj FuncACTIVATE_PROFILING (
     if(profileState_Active) {
       return Fail;
     }
-    
+
     if(profileState.profiledPreviously &&
        coverage == True) {
         ErrorMayQuit("Code coverage can only be started once per"
                      " GAP session. Please exit GAP and restart. Sorry.",0,0);
         return Fail;
     }
+
+    CheckPrintOverflowWarnings();
 
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
 
@@ -897,6 +966,8 @@ void RegisterStatWithProfiling(Stat stat)
 }
 
 
+
+
 /****************************************************************************
 **
 
@@ -913,6 +984,8 @@ static StructGVarFunc GVarFuncs [] = {
       FuncACTIVATE_PROFILING, "src/profile.c:ACTIVATE_PROFILING" },
     { "DEACTIVATE_PROFILING", 0, "",
       FuncDEACTIVATE_PROFILING, "src/profile.c:DEACTIVATE_PROFILING" },
+    { "CLEAR_PROFILE_OVERFLOW_CHECKS", 0, "",
+      FuncCLEAR_PROFILE_OVERFLOW_CHECKS, "src/profile.c:CLEAR_PROFILE_OVERFLOW_CHECKS" },
     { "IsLineByLineProfileActive", 0, "",
       FuncIS_PROFILE_ACTIVE, "src/profile.c:IsLineByLineProfileActive" },
     { "ACTIVATE_COLOR_PROFILING", 1, "bool",
