@@ -1,5 +1,3 @@
-#error "This code currently causes hangs on linux. Do not use it."
-
 /* Could live without sigaction but it seems to be pretty universal */
 
 /* This uses the POSIX 2001 API
