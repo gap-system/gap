@@ -29,7 +29,6 @@ gap> if not prof then ProfileLineByLine(Filename(tempdir, "profout.gz")); fi;
 gap> IsLineByLineProfileActive();
 true
 gap> if not prof then UnprofileLineByLine(); fi;
-true
 gap> IsLineByLineProfileActive();
 false
 gap> CLEAR_PROFILE_OVERFLOW_CHECKS();
