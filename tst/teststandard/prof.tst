@@ -28,7 +28,7 @@ gap> if not prof then ProfileLineByLine(Filename(tempdir, "profout.gz")); fi;
 #I (this warning will only appear once).
 gap> IsLineByLineProfileActive();
 true
-gap> UnprofileLineByLine();
+gap> if not prof then UnprofileLineByLine(); fi;
 true
 gap> IsLineByLineProfileActive();
 false
