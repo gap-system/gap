@@ -18,7 +18,7 @@ int SyHaveAlarms = 1;
 /* For now anyway we create one timer at initialisation and use it */
 static timer_t syTimer = 0;
 
-#if SYS_IS_CYGWIN32
+#if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_FREEBSD)
 #define MY_CLOCK CLOCK_REALTIME
 #else
 #define MY_CLOCK CLOCK_THREAD_CPUTIME_ID

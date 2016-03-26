@@ -353,6 +353,11 @@ case "$host_os" in
   *darwin*)
     AC_DEFINE(SYS_IS_DARWIN, 1, [define if this is the Darwin port])
     ;;
+  *freebsd*)
+    # Strictly speaking this should be FreeBSD >= 7.0, but I hope noone
+    # is still running a system that old
+    AC_DEFINE(SYS_IS_FREEBSD, 1, [define if this is the Darwin port])
+    ;;
 esac
 
 dnl #########################################################################

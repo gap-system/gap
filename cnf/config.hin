@@ -412,6 +412,9 @@
 /* define if this is the Darwin port */
 #undef SYS_IS_DARWIN
 
+/* define if this is the Darwin port */
+#undef SYS_IS_FREEBSD
+
 /* use GMP for integers */
 #undef USE_GMP
 
