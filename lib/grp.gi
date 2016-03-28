@@ -1599,6 +1599,8 @@ function( G )
         comp[i] := SubgroupByPcgs( G, sub );
         SetIsPGroup( comp[i], true );
         SetPrimePGroup( comp[i], primes[i] );
+        SetSylowSubgroup(G, primes[i], comp[i]);
+        SetHallSubgroup(G, [primes[i]], comp[i]);
     od;
     return comp;
 end );
@@ -1626,6 +1628,10 @@ function( G )
                            x -> weights[x][3] in pis[i] )};
         sub  := InducedPcgsByPcSequenceNC( spec, gens );
         comp[i] := SubgroupByPcgs( G, sub );
+        SetHallSubgroup(G, pis[i], comp[i]);
+        if Length(pis[i])=1 then
+            SetSylowSubgroup(G, pis[i][1], comp[i]);
+        fi;
     od;
     return comp;
 end );
@@ -2661,6 +2667,13 @@ end);
 ##  <p> subgroup of <G>.  This is the core of the <p> Sylow subgroups.
 ##
 InstallMethod( PCoreOp,
+    "generic method for nilpotent group and prime",
+    [ IsGroup and IsNilpotentGroup and IsFinite, IsPosInt ],
+    function ( G, p )
+    return SylowSubgroup( G, p );
+    end );
+
+InstallMethod( PCoreOp,
     "generic method for group and prime",
     [ IsGroup, IsPosInt ],
     function ( G, p )
@@ -2769,7 +2782,7 @@ InstallMethod( SylowSubgroupOp,
 ##
 InstallMethod( SylowSubgroupOp,
     "method for a nilpotent group, and a prime",
-    [ IsGroup and IsNilpotentGroup, IsPosInt ],
+    [ IsGroup and IsNilpotentGroup and IsFinite, IsPosInt ],
     function( G, p )
     local gens, g, ord, S;
 
@@ -2788,6 +2801,8 @@ InstallMethod( SylowSubgroupOp,
     if Size(S) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
+        SetHallSubgroup(G, [p], S);
+        SetPCore(G, p, S);
     fi;
     return S;
     end );
@@ -2823,6 +2838,27 @@ InstallMethod (HallSubgroupOp, "test trivial cases", true,
             fi;
         fi;
     end);
+
+
+#############################################################################
+##
+#M  HallSubgroupOp( <G>, <pi> ) . . . . . . . . . . . . for a nilpotent group
+##
+InstallMethod( HallSubgroupOp,
+    "method for a nilpotent group",
+    [ IsGroup and IsNilpotentGroup and IsFinite, IsList ],
+    function( G, pi )
+    local p, smallpi, S;
+
+    S := TrivialSubgroup(G);
+    smallpi := [];
+    for p in pi do
+      AddSet(smallpi, p);
+      S := ClosureSubgroupNC(S, SylowSubgroup(G, p));
+      SetHallSubgroup(G, smallpi, S);
+    od;
+    return S;
+    end );
 
 
 ############################################################################
