@@ -30,7 +30,7 @@ gap> List(MaximalNormalSubgroups(D1), StructureDescription);
 [ "D1814400", "C1814400", "D1814400" ]
 gap> D2 := DihedralGroup(IsFpGroup, 360);;
 gap> List(MaximalNormalSubgroups(D2), StructureDescription);
-[ "C180", "D180", "D180" ]
+[ "D180", "D180", "C180" ]
 gap> ForAll(MaximalNormalSubgroups(D2), N -> IsSubgroup(D2, N) and IsNormal(D2, N));
 true
 
