@@ -1019,43 +1019,50 @@ RedispatchOnCondition( FittingSubgroup, true, [IsGroup], [IsFinite], 0);
 ##
 #M  FrattiniSubgroup( <G> ) . . . . . . . . . .  Frattini subgroup of a group
 ##
-InstallMethod( FrattiniSubgroup, "generic method for nilpotent groups",
-            [ IsGroup ],
-            RankFilter( IsGroup and IsNilpotentGroup )
-            - RankFilter( IsGroup ),
+InstallMethod( FrattiniSubgroup, "method for trivial groups",
+            [ IsGroup and IsTrivial ],
 function(G)
-local i, abinv, indgen, p, q, gen, hom, Gf;
-    if IsTrivial(G) then
-      return G;
-    elif IsAbelian(G) then
-        gen := [ ];
-        abinv := AbelianInvariants(G);
-        indgen := IndependentGeneratorsOfAbelianGroup(G);
-        for i in [1..Length(abinv)] do
-            q := abinv[i];
-            if q<>0 and not IsPrime(q) then
-                p := SmallestRootInt(q);
-                Add(gen, indgen[i]^p);
-            fi;
-        od;
-        return SubgroupNC(G, gen);
-    elif IsNilpotentGroup(G) then
-        hom := MaximalAbelianQuotient(G);
-        Gf := Image(hom);
-        SetIsAbelian(Gf, true);
-        return PreImage(hom, FrattiniSubgroup(Gf));
-    else
-        TryNextMethod();
-    fi;
+    return G;
 end);
 
-InstallMethod( FrattiniSubgroup, "generic method for groups", [ IsGroup ],0,
+InstallMethod( FrattiniSubgroup, "for abelian groups",
+            [ IsGroup and IsAbelian ],
+function(G)
+    local i, abinv, indgen, p, q, gen;
+    
+    gen := [ ];
+    abinv := AbelianInvariants(G);
+    indgen := IndependentGeneratorsOfAbelianGroup(G);
+    for i in [1..Length(abinv)] do
+        q := abinv[i];
+        if q<>0 and not IsPrime(q) then
+            p := SmallestRootInt(q);
+            Add(gen, indgen[i]^p);
+        fi;
+    od;
+    return SubgroupNC(G, gen);
+end);
+
+InstallMethod( FrattiniSubgroup, "for nilpotent groups",
+            [ IsGroup and IsNilpotentGroup ],
+function(G)
+    local hom, Gf;
+
+    hom := MaximalAbelianQuotient(G);
+    Gf := Image(hom);
+    SetIsAbelian(Gf, true);
+    return PreImage(hom, FrattiniSubgroup(Gf));
+end);
+
+InstallMethod( FrattiniSubgroup, "generic method for groups",
+            [ IsGroup ],
+            0,
 function(G)
 local m;
     if IsTrivial(G) then
       return G;
     fi;
-    m:=List(ConjugacyClassesMaximalSubgroups(G),C->Core(G,Representative(C)));
+    m := List(ConjugacyClassesMaximalSubgroups(G),C->Core(G,Representative(C)));
     m := Intersection(m);
     if HasIsFinite(G) and IsFinite(G) then
       Assert(2,IsNilpotentGroup(m));
