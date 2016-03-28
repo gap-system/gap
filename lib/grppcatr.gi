@@ -478,6 +478,50 @@ end );
 
 #############################################################################
 ##
+#M  MaximalNormalSubgroups( <G> )
+##
+InstallMethod( MaximalNormalSubgroups, "for solvable groups",
+               [ IsGroup and IsAbelian ],
+               RankFilter( IsGroup and IsAbelian )
+               - RankFilter( IsGroup ),
+function( G )
+    local Gf,     # FactorGroup of G
+          hom,    # homomorphism from G to Gf
+          MaxGf;  # MaximalNormalSubgroups of Gf
+    if not IsPcGroup(G) then
+        # convert it to an Abelian PcGroup with same invariants
+        Gf := AbelianGroup(IsPcGroup, AbelianInvariants(G));
+        hom := IsomorphismGroups(G, Gf);
+        MaxGf := NormalMaximalSubgroups(Gf);
+        return List(MaxGf, N -> PreImage(hom, N));
+    else
+        # for abelian pc groups return all maximal subgroups
+        # NormalMaximalSubgroups seems to omit some unnecessary checks,
+        # hence faster than MaximalSubgroups
+        return NormalMaximalSubgroups(G);
+    fi;
+end);
+
+InstallMethod( MaximalNormalSubgroups, "for solvable groups",
+              [ IsGroup and IsSolvableGroup ],
+              RankFilter( IsGroup and IsSolvableGroup )
+              - RankFilter( IsGroup ),
+function( G )
+    local Gf,     # FactorGroup of G
+          hom,    # homomorphism from G to Gf
+          MaxGf;  # MaximalNormalSubgroups of Gf
+    # every maximal normal subgroup is above the derived subgroup
+    hom := MaximalAbelianQuotient(G);
+    Gf := Image(hom);
+    # One would hope this is true
+    SetIsAbelian(Gf, true);
+    MaxGf := MaximalNormalSubgroups(Gf);
+    return List(MaxGf, N -> PreImage(hom, N));
+end);
+
+
+#############################################################################
+##
 #F  ModifyMinGens( <pcgsG>, <pcgsS>, <pcgsL>, <min> )
 ##
 ModifyMinGens := function( pcgs, pcgsS, pcgsL, min )

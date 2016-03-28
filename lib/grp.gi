@@ -4405,6 +4405,15 @@ InstallMethod( MaximalNormalSubgroups,
 
 end);
 
+#############################################################################
+##
+#M  MaximalNormalSubgroups( <G> )
+##
+InstallMethod( MaximalNormalSubgroups, "for simple groups",
+              [ IsGroup and IsSimpleGroup ], SUM_FLAGS,
+              function(G) return [ TrivialSubgroup(G) ]; end);
+
+
 ##############################################################################
 ##
 #F  MinimalNormalSubgroups(<G>)
