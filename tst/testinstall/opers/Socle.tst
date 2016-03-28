@@ -1,5 +1,21 @@
 gap> START_TEST("Socle.tst");
+gap> Socle(Group(()));
+Group(())
 gap> D := DihedralGroup(8);;
+gap> Socle(D) = ClosureSubgroup(TrivialSubgroup(D), Union(Set(MinimalNormalSubgroups(D), GeneratorsOfGroup)));
+true
+gap> IdGroup(Socle(D));
+[ 2, 1 ]
+gap> Socle(D) = Center(D);
+true
+gap> D := DihedralGroup(IsFpGroup, 8);;
+gap> Socle(D) = ClosureSubgroup(TrivialSubgroup(D), Union(Set(MinimalNormalSubgroups(D), GeneratorsOfGroup)));
+true
+gap> IdGroup(Socle(D));
+[ 2, 1 ]
+gap> Socle(D) = Center(D);
+true
+gap> D := DihedralGroup(IsPcpGroup, 8);;
 gap> Socle(D) = ClosureSubgroup(TrivialSubgroup(D), Union(Set(MinimalNormalSubgroups(D), GeneratorsOfGroup)));
 true
 gap> IdGroup(Socle(D));
@@ -31,9 +47,17 @@ gap> Socle(SymmetricGroup(4)) = Group((1,2)(3,4),(1,3)(2,4));
 true
 gap> IdGroup(Socle(SymmetricGroup(5)));
 [ 60, 5 ]
+gap> IdGroup(Socle(AlternatingGroup(5)));
+[ 60, 5 ]
+gap> G := Group((1,2),(3,4),(5,6),(7,8));;
+gap> IsElementaryAbelian(G);
+true
+gap> Socle(G)=G;
+true
 gap> Socle(PrimitiveGroup(8,3)) = Group([ (1,7)(2,8)(3,5)(4,6), (1,3)(2,4)(5,7)(6,8), (1,2)(3,4)(5,6)(7,8) ]);
 true
 gap> k := 5;; P := SylowSubgroup(SymmetricGroup(4*k), 2);; A := Group((4*k+1, 4*k+2, 4*k+3));; G := ClosureGroup(P, A);;
+gap> IsNilpotentGroup(G);;
 gap> Socle(G) = Group([ (21,22,23), (1,2)(3,4)(5,6)(7,8)(9,10)(11,12)(13,14)(15,16), (17,18)(19,20) ]);
 true
 gap> A := DihedralGroup(16);;
@@ -44,8 +68,22 @@ gap> IdGroup(Socle(D));
 [ 1440, 5958 ]
 gap> Socle(D) = Center(D);
 true
+gap> Socle(FittingSubgroup(SymmetricGroup(4)));
+Group([ (1,4)(2,3), (1,3)(2,4) ])
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)
 > (7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
 gap> Socle(G) = Group([ (3,7)(5,9), (5,11)(7,9), (1,5,3)(7,11,9), (2,8,10)(4,6,12), (4,6)(10,12) ]);
 true
+gap> F := AbelianPcpGroup([0,0,0]);;
+gap> G := F / Subgroup(F, [(F.1*F.2)^180, (F.1*F.2^5)^168]);;
+gap> Socle(G);
+Pcp-group with orders [ 6, 210 ]
+gap> F := FreeGroup("x", "y", "z");;
+gap> x := F.1;; y := F.2;; z := F.3;;
+gap> G := F/[x^(-1)*y^(-1)*x*y, x^(-1)*z^(-1)*x*z, z^(-1)*y^(-1)*z*y, (x*y)^180, (x*y^5)^168];;
+gap> IsAbelian(G);;
+gap> Size(Socle(G));
+1260
+gap> G := HeisenbergPcpGroup(3);; IsNilpotentGroup(G);; Socle(G);
+Pcp-group with orders [  ]
 gap> STOP_TEST("Socle.tst", 10000);
