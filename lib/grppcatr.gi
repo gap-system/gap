@@ -481,42 +481,43 @@ end );
 #M  MaximalNormalSubgroups( <G> )
 ##
 InstallMethod( MaximalNormalSubgroups, "for solvable groups",
-              [ IsGroup ],
-              RankFilter( IsGroup and IsSolvableGroup )
-              - RankFilter( IsGroup ),
-
-  function( G )
+               [ IsGroup and IsAbelian ],
+               RankFilter( IsGroup and IsAbelian )
+               - RankFilter( IsGroup ),
+function( G )
     local Gf,     # FactorGroup of G
           hom,    # homomorphism from G to Gf
           MaxGf;  # MaximalNormalSubgroups of Gf
-
-    if 0 in AbelianInvariants(G) then
-      # (p) is a maximal normal subgroup in Z for every prime p
-      Error("number of maximal normal subgroups is infinity");
-    elif IsAbelian(G) then
-      if not IsPcGroup(G) then
+    if not IsPcGroup(G) then
         # convert it to an Abelian PcGroup with same invariants
         Gf := AbelianGroup(IsPcGroup, AbelianInvariants(G));
         hom := IsomorphismGroups(G, Gf);
         MaxGf := NormalMaximalSubgroups(Gf);
         return List(MaxGf, N -> PreImage(hom, N));
-      else
+    else
         # for abelian pc groups return all maximal subgroups
         # NormalMaximalSubgroups seems to omit some unnecessary checks,
         # hence faster than MaximalSubgroups
         return NormalMaximalSubgroups(G);
-      fi;
-    elif IsSolvableGroup(G) then
-      # every maximal normal subgroup is above the derived subgroup
-      hom := MaximalAbelianQuotient(G);
-      Gf := Image(hom);
-      MaxGf := MaximalNormalSubgroups(Gf);
-      return List(MaxGf, N -> PreImage(hom, N));
-    else
-      # not solvable group
-      TryNextMethod();
     fi;
-  end);
+end);
+
+InstallMethod( MaximalNormalSubgroups, "for solvable groups",
+              [ IsGroup and IsSolvableGroup ],
+              RankFilter( IsGroup and IsSolvableGroup )
+              - RankFilter( IsGroup ),
+function( G )
+    local Gf,     # FactorGroup of G
+          hom,    # homomorphism from G to Gf
+          MaxGf;  # MaximalNormalSubgroups of Gf
+    # every maximal normal subgroup is above the derived subgroup
+    hom := MaximalAbelianQuotient(G);
+    Gf := Image(hom);
+    # One would hope this is true
+    SetIsAbelian(Gf, true);
+    MaxGf := MaximalNormalSubgroups(Gf);
+    return List(MaxGf, N -> PreImage(hom, N));
+end);
 
 
 #############################################################################
