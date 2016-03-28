@@ -1675,43 +1675,87 @@ end );
 
 #############################################################################
 ##
-#M  Socle( <G> )  . . . . . . . . . . . . . . . . for finite nilpotent groups
+#M  Socle( <G> )  . . . . . . . . . . . . . . . . . . . . . for simple groups
 ##
-InstallMethod( Socle, "for finite nilpotent groups",
-              [ IsGroup ],
-              RankFilter( IsGroup and CanComputeSize and IsFinite and
-                          IsNilpotentGroup ) - RankFilter( IsGroup ),
-  function(G)
-    local H, prodH;
+InstallMethod( Socle, "for simple groups",
+              [ IsGroup and IsSimpleGroup ], SUM_FLAGS, IdFunc );
 
-    if not CanComputeSize(G) or not IsFinite(G)
-       or not IsNilpotentGroup(G) then
+#############################################################################
+##
+#M  Socle( <G> )  . . . . . . . . . . . . . . . for elementary abelian groups
+##
+InstallMethod( Socle, "for elementary abelian groups",
+              [ IsGroup and IsElementaryAbelian ], SUM_FLAGS, IdFunc );
+
+#############################################################################
+##
+#M  Socle( <G> ) . . . . . . . . . . . . . . . . . . . . for nilpotent groups
+##
+InstallMethod( Socle, "for nilpotent groups",
+              [ IsGroup ],
+              RankFilter( IsGroup and IsNilpotentGroup and IsFinite )
+              - RankFilter( IsGroup ),
+  function(G)
+    local P, C, size, gen, abinv, indgen, i, p, q, soc;
+
+    # IsNilpotent check might error for fp-groups
+    if not IsAbelian(G) and not IsNilpotentGroup(G) then
       TryNextMethod();
     fi;
 
-    prodH := TrivialSubgroup(G);
-    # now socle is the product of Omega of the Sylow subgroups of the center
-    for H in SylowSystem(Center(G)) do
-      prodH := ClosureSubgroupNC(prodH, Omega(H, PrimePGroup(H)));
-    od;
-
-    # Socle is central in G, set some properties and attributes accordingly
-    SetIsAbelian(prodH, true);
-    if not HasParent(prodH) then
-      SetParent(prodH, G);
-      SetCentralizerInParent(prodH, G);
-      SetIsNormalInParent(prodH, true);
-    elif CanComputeIsSubset(G, Parent(prodH))
-         and IsSubgroup(G, Parent(prodH)) then
-      SetCentralizerInParent(prodH, Parent(prodH));
-      SetIsNormalInParent(prodH, true);
-    elif CanComputeIsSubset(G, Parent(prodH))
-         and IsSubgroup(Parent(prodH), G) and IsNormal(Parent(prodH), G) then
-      # characteristic subgroup of a normal subgroup is normal
-      SetIsNormalInParent(prodH, true);
+    # for finite groups the usual methods are faster
+    # for SylowSystem and Omega
+    if ( CanComputeSize(G) or HasIsFinite(G) ) and IsFinite(G) then
+      soc := TrivialSubgroup(G);
+      # now socle is the product of Omega of Sylow subgroups of the center
+      for P in SylowSystem(Center(G)) do
+        soc := ClosureSubgroupNC(soc, Omega(P, PrimePGroup(P)));
+      od;
+    else
+      # compute generators for the torsion Omega p-subgroups of the center
+      C := Center(G);
+      gen := [ ];
+      abinv := [ ];
+      indgen := [ ];
+      size := 1;
+      for i in [1..Length(AbelianInvariants(C))] do
+        q := AbelianInvariants(C)[i];
+        if q<>0 then
+          p := SmallestRootInt(q);
+          if not IsBound(gen[p]) then
+            gen[p] := [ IndependentGeneratorsOfAbelianGroup(C)[i]^(q/p) ];
+          else
+            Add(gen[p], IndependentGeneratorsOfAbelianGroup(C)[i]^(q/p));
+          fi;
+          size := size * p;
+          Add(abinv, p);
+          Add(indgen, IndependentGeneratorsOfAbelianGroup(C)[i]^(q/p));
+        fi;
+      od;
+      # Socle is the product of the torsion Omega p-groups of the center
+      soc := Subgroup(G, Concatenation(Compacted(gen)));
+      SetSize(soc, size);
+      SetAbelianInvariants(soc, abinv);
+      SetIndependentGeneratorsOfAbelianGroup(soc, indgen);
     fi;
 
-    return prodH;
+    # Socle is central in G, set some properties and attributes accordingly
+    SetIsAbelian(soc, true);
+    if not HasParent(soc) then
+      SetParent(soc, G);
+      SetCentralizerInParent(soc, G);
+      SetIsNormalInParent(soc, true);
+    elif CanComputeIsSubset(G, Parent(soc))
+         and IsSubgroup(G, Parent(soc)) then
+      SetCentralizerInParent(soc, Parent(soc));
+      SetIsNormalInParent(soc, true);
+    elif CanComputeIsSubset(G, Parent(soc))
+         and IsSubgroup(Parent(soc), G) and IsNormal(Parent(soc), G) then
+      # characteristic subgroup of a normal subgroup is normal
+      SetIsNormalInParent(soc, true);
+    fi;
+
+    return soc;
   end);
 
 #############################################################################
@@ -4536,6 +4580,74 @@ InstallMethod (MinimalNormalSubgroups,
    end);
    
    
+#############################################################################
+##
+#M  MinimalNormalSubgroups( <G> )
+##
+InstallMethod( MinimalNormalSubgroups, "for simple groups",
+              [ IsGroup and IsSimpleGroup ], SUM_FLAGS,
+              function(G) return [ G ]; end);
+
+
+#############################################################################
+##
+#M  MinimalNormalSubgroups (<G>)
+##
+InstallMethod( MinimalNormalSubgroups, "for nilpotent groups",
+              [ IsGroup ], RankFilter( IsGroup and IsFinite and IsNilpotentGroup ) - RankFilter( IsGroup ),
+  function(G)
+    local soc, i, p, primes, gen, min, MinimalSubgroupsOfPGroupByGenerators;
+
+    # IsNilpotent check might error for fp-groups
+    if not IsAbelian(G) and not IsNilpotentGroup(G) then
+      TryNextMethod();
+    fi;
+
+    MinimalSubgroupsOfPGroupByGenerators := function(G, p, gen)
+    # G is the big group
+    # p is the prime p
+    # gens is the generators by which the p-group is given
+    local min, tuples, g, h, k;
+
+    min := [ ];
+    if Length(gen[p])=1 then
+      Add(min, Subgroup(G, gen[p]));
+    else
+      g := Remove(gen[p]);
+      for tuples in IteratorOfTuples([0..p-1], Length(gen[p])) do
+        h := g;
+        for i in [1..Length(tuples)] do
+          h := h*gen[p][i]^tuples[i];
+        od;
+        Add(min, Subgroup(G, [h]));
+      od;
+      Append(min, MinimalSubgroupsOfPGroupByGenerators(G, p, gen));
+    fi;
+
+    return min;
+    end;
+
+    soc := Socle(G);
+    primes := [ ];
+    gen := [ ];
+    min := [ ];
+    for i in [1..Length(AbelianInvariants(soc))] do
+      p := AbelianInvariants(soc)[i];
+      AddSet(primes, p);
+      if not IsBound(gen[p]) then
+        gen[p] := [ IndependentGeneratorsOfAbelianGroup(soc)[i] ];
+      else
+        Add(gen[p], IndependentGeneratorsOfAbelianGroup(soc)[i]);
+      fi;
+    od;
+
+    for p in primes do
+      Append(min, MinimalSubgroupsOfPGroupByGenerators(G, p, gen));
+    od;
+    return min;
+  end);
+
+
 #############################################################################
 ##
 #M  SmallGeneratingSet(<G>)
