@@ -44,7 +44,7 @@ gap> Size(MinimalNormalSubgroups(G));
 15
 gap> MinimalNormalSubgroups(PrimitiveGroup(8,3)) = [ Group([ (1,7)(2,8)(3,5)(4,6), (1,3)(2,4)(5,7)(6,8), (1,2)(3,4)(5,6)(7,8) ]) ];
 true
-gap> k := 5;; P := SylowSubgroup(SymmetricGroup(4*k), 2);; A := Group((4*k+1, 4*k+2, 4*k+3));; G := ClosureGroup(P, A);;
+gap> k := 5;; P := SylowSubgroup(SymmetricGroup(4*k), 2);; A := Group((4*k+1, 4*k+2, 4*k+3));; G := ClosureGroup(P, A);; IsNilpotentGroup(G);;
 gap> Set(MinimalNormalSubgroups(G)) = Set([ Group([ (1,2)(3,4)(5,6)(7,8)(9,10)(11,12)(13,14)(15,16) ]), Group([ (17,18)(19,20) ]), Group([ (1,2)(3,4)(5,6)(7,8)(9,10)(11,12)(13,14)(15,16)(17,18)(19,20) ]), Group([ (21,22,23) ]) ]);
 true
 gap> A := DihedralGroup(16);;
@@ -55,9 +55,9 @@ gap> List(MinimalNormalSubgroups(D), IdGroup);
 [ [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], 
   [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], 
   [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], 
-  [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], 
-  [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 3, 1 ], [ 3, 1 ], [ 3, 1 ], [ 3, 1 ], 
-  [ 5, 1 ] ]
+  [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 3, 1 ], [ 3, 1 ], [ 3, 1 ], [ 2, 1 ], 
+  [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 3, 1 ], [ 5, 1 ], [ 2, 1 ], [ 2, 1 ], 
+  [ 2, 1 ] ]
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)(7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
 gap> MinimalNormalSubgroups(G) = Set([ Group([ (6,12)(8,10), (2,10)(4,12), (2,12)(6,10) ]), Group([ (5,11)(7,9), (3,9)(7,11), (1,9,5,11,7) ]) ]);
 true
@@ -73,7 +73,7 @@ gap> F := FreeGroup("x", "y", "z");;
 gap> x := F.1;; y := F.2;; z := F.3;;
 gap> F := FreeGroup("x", "y", "z");;
 gap> x := F.1;; y := F.2;; z := F.3;;
-gap> G := F/[x^(-1)*y^(-1)*x*y, x^(-1)*z^(-1)*x*z, z^(-1)*y^(-1)*z*y, (x*y)^180, (x*y^5)^168];;
+gap> G := F/[x^(-1)*y^(-1)*x*y, x^(-1)*z^(-1)*x*z, z^(-1)*y^(-1)*z*y, (x*y)^180, (x*y^5)^168];; IsAbelian(G);;
 gap> Size(MinimalNormalSubgroups(G));
 9
 gap> MinimalNormalSubgroups(HeisenbergPcpGroup(3));
