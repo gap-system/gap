@@ -1417,6 +1417,10 @@ InstallGlobalFunction( LoadPackage, function( arg )
     if not IsBound( GAPInfo.PackagesInfo.( name ) ) then
       LogPackageLoadingMessage( PACKAGE_DEBUG,
           "no package with this name is installed, return 'fail'", name );
+      if InfoLevel(InfoPackageLoading) < 4 then
+        Info(InfoWarning,1, name, " package is not available. Check that the name is correct");
+        Info(InfoWarning,1, "and it is present in one of the GAP root directories (see '??RootPaths')");
+      fi;
       return fail;
     fi;
 
@@ -1480,6 +1484,12 @@ InstallGlobalFunction( LoadPackage, function( arg )
       else
         LogPackageLoadingMessage( PACKAGE_DEBUG,
             "return from LoadPackage, package is not available", Name );
+        if banner then
+          if InfoLevel(InfoPackageLoading) < 4 then
+            Info(InfoWarning,1, Name, " package is not available. To see further details, enter");
+            Info(InfoWarning,1, "SetInfoLevel(InfoPackageLoading,4); and try to load the package again.");
+          fi;
+        fi;
       fi;
       GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
       return path;
