@@ -1692,16 +1692,10 @@ InstallMethod( Socle, "for elementary abelian groups",
 #M  Socle( <G> ) . . . . . . . . . . . . . . . . . . . . for nilpotent groups
 ##
 InstallMethod( Socle, "for nilpotent groups",
-              [ IsGroup ],
-              RankFilter( IsGroup and IsNilpotentGroup and IsFinite )
-              - RankFilter( IsGroup ),
+              [ IsGroup and IsNilpotentGroup ],
+              SUM_FLAGS,
   function(G)
     local P, C, size, gen, abinv, indgen, i, p, q, soc;
-
-    # IsNilpotent check might error for fp-groups
-    if not IsAbelian(G) and not IsNilpotentGroup(G) then
-      TryNextMethod();
-    fi;
 
     # for finite groups the usual methods are faster
     # for SylowSystem and Omega
@@ -1757,6 +1751,8 @@ InstallMethod( Socle, "for nilpotent groups",
 
     return soc;
   end);
+
+RedispatchOnCondition(Socle, true, [IsGroup], [IsNilpotentGroup], 0);
 
 #############################################################################
 ##
@@ -4594,37 +4590,32 @@ InstallMethod( MinimalNormalSubgroups, "for simple groups",
 #M  MinimalNormalSubgroups (<G>)
 ##
 InstallMethod( MinimalNormalSubgroups, "for nilpotent groups",
-              [ IsGroup ], RankFilter( IsGroup and IsFinite and IsNilpotentGroup ) - RankFilter( IsGroup ),
+              [ IsGroup and IsNilpotentGroup ],
   function(G)
     local soc, i, p, primes, gen, min, MinimalSubgroupsOfPGroupByGenerators;
-
-    # IsNilpotent check might error for fp-groups
-    if not IsAbelian(G) and not IsNilpotentGroup(G) then
-      TryNextMethod();
-    fi;
 
     MinimalSubgroupsOfPGroupByGenerators := function(G, p, gen)
     # G is the big group
     # p is the prime p
     # gens is the generators by which the p-group is given
-    local min, tuples, g, h, k;
+      local min, tuples, g, h, k, i;
 
-    min := [ ];
-    if Length(gen[p])=1 then
-      Add(min, Subgroup(G, gen[p]));
-    else
-      g := Remove(gen[p]);
-      for tuples in IteratorOfTuples([0..p-1], Length(gen[p])) do
-        h := g;
-        for i in [1..Length(tuples)] do
-          h := h*gen[p][i]^tuples[i];
+      min := [ ];
+      if Length(gen[p])=1 then
+        Add(min, Subgroup(G, gen[p]));
+      else
+        g := Remove(gen[p]);
+        for tuples in IteratorOfTuples([0..p-1], Length(gen[p])) do
+          h := g;
+          for i in [1..Length(tuples)] do
+            h := h*gen[p][i]^tuples[i];
+          od;
+          Add(min, Subgroup(G, [h]));
         od;
-        Add(min, Subgroup(G, [h]));
-      od;
-      Append(min, MinimalSubgroupsOfPGroupByGenerators(G, p, gen));
-    fi;
+        Append(min, MinimalSubgroupsOfPGroupByGenerators(G, p, gen));
+      fi;
 
-    return min;
+      return min;
     end;
 
     soc := Socle(G);
@@ -4647,6 +4638,9 @@ InstallMethod( MinimalNormalSubgroups, "for nilpotent groups",
     return min;
   end);
 
+RedispatchOnCondition(MinimalNormalSubgroups, true,
+    [IsGroup],
+    [IsNilpotentGroup], 0);
 
 #############################################################################
 ##
