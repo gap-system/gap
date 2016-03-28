@@ -482,8 +482,6 @@ end );
 ##
 InstallMethod( MaximalNormalSubgroups, "for solvable groups",
                [ IsGroup and IsAbelian ],
-               RankFilter( IsGroup and IsAbelian )
-               - RankFilter( IsGroup ),
 function( G )
     local Gf,     # FactorGroup of G
           hom,    # homomorphism from G to Gf
@@ -504,8 +502,6 @@ end);
 
 InstallMethod( MaximalNormalSubgroups, "for solvable groups",
               [ IsGroup and IsSolvableGroup ],
-              RankFilter( IsGroup and IsSolvableGroup )
-              - RankFilter( IsGroup ),
 function( G )
     local Gf,     # FactorGroup of G
           hom,    # homomorphism from G to Gf
