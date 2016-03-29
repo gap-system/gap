@@ -234,29 +234,54 @@ Obj FuncTransformationNC( Obj self, Obj list ){
 
 
 Obj FuncTransformationListListNC( Obj self, Obj src, Obj ran ){ 
-  UInt    deg, i, s, r;
+  Int     deg, i, s, r;
   Obj     f;
   UInt2*  ptf2;
   UInt4*  ptf4;
 
   if(!IS_SMALL_LIST(src)){
-    ErrorQuit("usage: <src> must be a list (not a %s)", 
-        (Int)TNAM_OBJ(src), 0L);
+    ErrorQuit("TransformationListListNC: <src> must be a list (not a %s)", 
+              (Int)TNAM_OBJ(src), 0L);
   }
   if(!IS_SMALL_LIST(ran)){
-    ErrorQuit("usage: <ran> must be a list (not a %s)", 
-        (Int)TNAM_OBJ(ran), 0L);
+    ErrorQuit("TransformationListListNC: <ran> must be a list (not a %s)", 
+              (Int)TNAM_OBJ(ran), 0L);
   }
   if(LEN_LIST(src)!=LEN_LIST(ran)){
-    ErrorQuit("usage: <src> and <ran> must have equal length,", 0L, 0L);
+    ErrorQuit("TransformationListListNC: <src> and <ran> must have equal length,", 
+              0L, 0L);
   }
 
   deg=0;
   for(i=LEN_LIST(src);1<=i;i--){
-    s=INT_INTOBJ(ELM_LIST(src, i));
-    if(s>deg) deg=s;
-    r=INT_INTOBJ(ELM_LIST(ran, i));
-    if(r>deg) deg=r;
+    if (TNUM_OBJ(ELM_LIST(src, i)) != T_INT) {
+      ErrorQuit("TransformationListListNC: <src>[%d] must be a list (not a %s)", 
+                (Int) i, (Int)TNAM_OBJ(ELM_LIST(src, i)));
+    }
+    s = INT_INTOBJ(ELM_LIST(src, i));
+    if (s < 1) {
+      ErrorQuit("TransformationListListNC: <src>[%d] must be greater than 0", 
+                (Int) i, 0L);
+    }
+
+    if (TNUM_OBJ(ELM_LIST(ran, i)) != T_INT) {
+      ErrorQuit("TransformationListListNC: <ran>[%d] must be a list (not a %s)", 
+                (Int) i, (Int)TNAM_OBJ(ELM_LIST(ran, i)));
+    }
+    r = INT_INTOBJ(ELM_LIST(ran, i));
+    if (r < 1) {
+      ErrorQuit("TransformationListListNC: <ran>[%d] must be greater than 0", 
+                (Int) i, 0L);
+    }
+
+    if (s != r) {
+      if (s > deg) {
+        deg = s;
+      }
+      if (r > deg) {
+        deg = r;
+      }
+    }
   } 
 
   if(deg<=65536){ 
