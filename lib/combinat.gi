@@ -2721,7 +2721,6 @@ end);
 ##
 BindGlobal( "Bernoulli2",
     [-1/2,1/6,0,-1/30,0,1/42,0,-1/30,0,5/66,0,-691/2730,0,7/6] );
-ShareSpecialObj(Bernoulli2);
 
 InstallGlobalFunction(Bernoulli,function ( n )
     local   brn, bin, i, j;
@@ -2733,27 +2732,23 @@ InstallGlobalFunction(Bernoulli,function ( n )
         brn := -1/2;
     elif n mod 2 = 1  then
         brn := 0;
+    elif n <= Length(Bernoulli2)  then
+        brn := Bernoulli2[n];
     else
-        atomic readwrite Bernoulli2 do
-        if n <= Length(Bernoulli2)  then
-            brn := Bernoulli2[n];
-        else
-            for i  in [Length(Bernoulli2)+1..n]  do
-                if i mod 2 = 1  then
-                    Bernoulli2[i] := 0;
-                else
-                    bin := 1;
-                    brn := 1;
-                    for j  in [1..i-1]  do
-                        bin := (i+2-j)/j * bin;
-                        brn := brn + bin * Bernoulli2[j];
-                    od;
-                    Bernoulli2[i] := - brn / (i+1);
-                fi;
-            od;
-            brn := Bernoulli2[n];
-        fi;
+        for i  in [Length(Bernoulli2)+1..n]  do
+            if i mod 2 = 1  then
+                Bernoulli2[i] := 0;
+            else
+                bin := 1;
+                brn := 1;
+                for j  in [1..i-1]  do
+                    bin := (i+2-j)/j * bin;
+                    brn := brn + bin * Bernoulli2[j];
+                od;
+                Bernoulli2[i] := - brn / (i+1);
+            fi;
         od;
+        brn := Bernoulli2[n];
     fi;
     return brn;
 end);

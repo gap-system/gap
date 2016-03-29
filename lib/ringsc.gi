@@ -1176,11 +1176,8 @@ end);
 
 # data base of small rings. (Data taken from the nearring library in SONATA)
 
-BindGlobal("NUMBER_SMALL_RINGS",
-MakeImmutable([1,2,2,11,2,4,2,52,11,4,2,22,2,4,4]));
-
+BindGlobal("NUMBER_SMALL_RINGS",[1,2,2,11,2,4,2,52,11,4,2,22,2,4,4]);
 BindGlobal("SMALL_RINGS_DATA",
-MakeImmutable(
 [[1,1,[1],[]],
 [2,1,[2],[]],[2,2,[2],[[1,1,[1,1]]]],
 [3,1,[3],[]],[3,2,[3],[[1,1,[1,1]]]],
@@ -1269,7 +1266,7 @@ MakeImmutable(
 [14,3,[14],[[1,1,[1,1]]]],[14,4,[14],[[1,1,[7,1]]]],
 [15,1,[15],[]],[15,2,[15],[[1,1,[1,1]]]],[15,3,[15],[[1,1,[9,1]]]],
 [15,4,[15],[[1,1,[10,1]]]]]
-));
+);
 
 InstallGlobalFunction(NumberSmallRings,function(x)
   if IsPosInt(x) then

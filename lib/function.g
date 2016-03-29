@@ -548,20 +548,45 @@ BIND_GLOBAL( "ReturnFirst", RETURN_FIRST );
 BIND_GLOBAL( "IdFunc", ID_FUNC );
 
 
+#############################################################################
+##
+#M  ViewObj( <func> ) . . . . . . . . . . . . . . . . . . . . . . view method
+##
+InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
+        function ( func )
+    local nams, narg, i;
+    Print("function( ");
+    nams := NAMS_FUNC(func);
+    narg := NARG_FUNC(func);
+    if narg < 0 then
+        narg := -narg;
+    fi;
+    if narg <> 0 then
+        if nams = fail then
+            Print( "<",narg," unnamed arguments>" );
+        else
+            Print(nams[1]);
+            for i in [2..narg] do
+                Print(", ",nams[i]);
+            od;
+        fi;
+    fi;    
+    Print(" ) ... end");
+end);
+
+    
 BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
     local   class,  flags,  types,  catok,  repok,  propok,  seenprop,  
             t;
     class := "Operation";
     if IS_IDENTICAL_OBJ(op,IS_OBJECT) then
         class := "Filter";
-    elif IS_CONSTRUCTOR(op) then
+    elif op in CONSTRUCTORS then
         class := "Constructor";
     elif IsFilter(op) then
         class := "Filter";
         flags := TRUES_FLAGS(FLAGS_FILTER(op));
-	atomic readonly FILTER_REGION do
-            types := INFO_FILTERS{flags};
-	od;
+        types := INFO_FILTERS{flags};
         catok := true;
         repok := true;
         propok := true;

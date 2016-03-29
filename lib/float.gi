@@ -31,7 +31,7 @@ MAX_FLOAT_LITERAL_CACHE_SIZE := 0; # cache all float literals by default.
 FLOAT_DEFAULT_REP := fail;
 FLOAT_STRING := fail;
 FLOAT := fail; # holds the constants
-BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", AtomicRecord());
+BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", rec());
 
 InstallGlobalFunction(SetFloats, function(arg)
     local i, r, prec, install;
