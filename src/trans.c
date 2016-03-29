@@ -34,6 +34,7 @@
 *******************************************************************************/
 
 #include        "trans.h"               /* transformations                 */
+#include        <assert.h>
 
 #define MIN(a,b)          (a<b?a:b)
 #define MAX(a,b)          (a<b?b:a)
@@ -65,7 +66,9 @@ static inline UInt4 * ResizeInitTmpTrans( UInt len ){
   return pttmp;
 }
 
-/* find rank, canonical trans same kernel, and img set (unsorted) */
+// Find the rank, flat kernel, and image set (unsorted) of a transformation of
+// degree at most 65536
+
 extern UInt INIT_TRANS2(Obj f){ 
   UInt    deg, rank, i, j;
   UInt2   *ptf;
@@ -74,7 +77,7 @@ extern UInt INIT_TRANS2(Obj f){
 
   deg=DEG_TRANS2(f);
   
-  if(deg==0){//special case for degree 0
+  if(deg==0){ // special case for degree 0
     img=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, 0);
     SET_LEN_PLIST(img, 0);
     IMG_TRANS(f)=img;
@@ -109,6 +112,9 @@ extern UInt INIT_TRANS2(Obj f){
   return rank;
 }
 
+// Find the rank, flat kernel, and image set (unsorted) of a transformation of
+// degree at least 65537
+
 extern UInt INIT_TRANS4(Obj f){ 
   UInt    deg, rank, i, j;
   UInt4   *ptf;
@@ -116,16 +122,6 @@ extern UInt INIT_TRANS4(Obj f){
   Obj     img, ker;
 
   deg=DEG_TRANS4(f);
-  
-  if(deg==0){//special case for degree 0
-    img=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, 0);
-    SET_LEN_PLIST(img, 0);
-    IMG_TRANS(f)=img;
-    KER_TRANS(f)=img;
-    CHANGED_BAG(f);
-    return 0;
-  }
-
   img=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, deg);
   ker=NEW_PLIST(T_PLIST_CYC_NSORT+IMMUTABLE, deg);
   SET_LEN_PLIST(ker, (Int) deg);
@@ -152,7 +148,6 @@ extern UInt INIT_TRANS4(Obj f){
   return rank;
 }
 
-
 static Obj SORT_PLIST_CYC(Obj res){
   Obj     tmp;      
   UInt    h, i, k, len;
@@ -176,11 +171,10 @@ static Obj SORT_PLIST_CYC(Obj res){
 }
 
 /*******************************************************************************
-** GAP functions for transformations
+** GAP functions for debugging purposes only
 *******************************************************************************/
 
-//for debugging...
-Obj FuncHAS_KER_TRANS( Obj self, Obj f ){
+/*Obj FuncHAS_KER_TRANS( Obj self, Obj f ){
   if(IS_TRANS(f)){
     return (KER_TRANS(f)==NULL?False:True);
   } else {
@@ -203,9 +197,14 @@ Obj FuncINT_DEG_TRANS( Obj self, Obj f ){
     return INTOBJ_INT(DEG_TRANS4(f));
   }
   return Fail;
-}
+}*/
 
-/* method for creating transformation */
+/*******************************************************************************
+** GAP functions for transformations
+*******************************************************************************/
+
+// Returns a transformation with list of images <list>
+
 Obj FuncTransformationNC( Obj self, Obj list ){ 
   UInt    i, deg;
   UInt2*  ptf2;
@@ -226,6 +225,8 @@ Obj FuncTransformationNC( Obj self, Obj list ){
   return f; 
 }
 
+// Returns a transformation that maps <src> to <ran>, this does not check that
+// <src> is duplicate-free
 
 Obj FuncTransformationListListNC( Obj self, Obj src, Obj ran ){ 
   Int     deg, i, s, r;
@@ -235,22 +236,22 @@ Obj FuncTransformationListListNC( Obj self, Obj src, Obj ran ){
 
   if(!IS_SMALL_LIST(src)){
     ErrorQuit("TransformationListListNC: <src> must be a list (not a %s)", 
-              (Int)TNAM_OBJ(src), 0L);
+              (Int) TNAM_OBJ(src), 0L);
   }
   if(!IS_SMALL_LIST(ran)){
     ErrorQuit("TransformationListListNC: <ran> must be a list (not a %s)", 
-              (Int)TNAM_OBJ(ran), 0L);
+              (Int) TNAM_OBJ(ran), 0L);
   }
   if(LEN_LIST(src)!=LEN_LIST(ran)){
-    ErrorQuit("TransformationListListNC: <src> and <ran> must have equal length,", 
-              0L, 0L);
+    ErrorQuit("TransformationListListNC: <src> and <ran> must have equal "
+              "length,", 0L, 0L);
   }
 
   deg=0;
   for(i=LEN_LIST(src);1<=i;i--){
     if (TNUM_OBJ(ELM_LIST(src, i)) != T_INT) {
-      ErrorQuit("TransformationListListNC: <src>[%d] must be a list (not a %s)", 
-                (Int) i, (Int)TNAM_OBJ(ELM_LIST(src, i)));
+      ErrorQuit("TransformationListListNC: <src>[%d] must be a list (not a "
+                "%s)", (Int) i, (Int) TNAM_OBJ(ELM_LIST(src, i)));
     }
     s = INT_INTOBJ(ELM_LIST(src, i));
     if (s < 1) {
@@ -259,8 +260,8 @@ Obj FuncTransformationListListNC( Obj self, Obj src, Obj ran ){
     }
 
     if (TNUM_OBJ(ELM_LIST(ran, i)) != T_INT) {
-      ErrorQuit("TransformationListListNC: <ran>[%d] must be a list (not a %s)", 
-                (Int) i, (Int)TNAM_OBJ(ELM_LIST(ran, i)));
+      ErrorQuit("TransformationListListNC: <ran>[%d] must be a list (not a "
+                "%s)", (Int) i, (Int) TNAM_OBJ(ELM_LIST(ran, i)));
     }
     r = INT_INTOBJ(ELM_LIST(ran, i));
     if (r < 1) {
@@ -295,6 +296,9 @@ Obj FuncTransformationListListNC( Obj self, Obj src, Obj ran ){
   }
   return f; 
 }
+
+// Returns the degree of the transformation <f>, i.e. the least value <n> such
+// that <f> fixes [n + 1, n + 2, .. ]
 
 Obj FuncDegreeOfTransformation(Obj self, Obj f){
   UInt    n, i, deg;
@@ -340,29 +344,43 @@ Obj FuncDegreeOfTransformation(Obj self, Obj f){
     }
     return EXT_TRANS(f);
   }
-  ErrorQuit("usage: the argument should be a transformation,", 0L, 0L);
+  ErrorQuit("DegreeOfTransformation: <f> must be a transformation (not a %s)", 
+            (Int) TNAM_OBJ(f), 0L);
   return 0L;
 }
 
+// Returns the rank of transformation, i.e. number of distinct values in 
+// [(1)f .. (n)f] where n = DegreeOfTransformation(f)
 
-/* rank of transformation */
 Obj FuncRANK_TRANS(Obj self, Obj f){ 
   if(TNUM_OBJ(f)==T_TRANS2){ 
     return SumInt(INTOBJ_INT(RANK_TRANS2(f)-DEG_TRANS2(f)), 
           FuncDegreeOfTransformation(self, f)); 
-  } else {
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
     return SumInt(INTOBJ_INT(RANK_TRANS4(f)-DEG_TRANS4(f)), 
           FuncDegreeOfTransformation(self, f)); 
   }
+  ErrorQuit("RANK_TRANS: <f> must be a transformation (not a %s)", 
+            (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 }
 
-/* rank of transformation */
+// Returns the rank of the transformation <f> on [1 .. n], i.e. the number of
+// distinct values in [(1)f .. (n)f] 
+
 Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n){ 
-  UInt    rank, i, m;
+  UInt    rank, i;
+  Int     m;
   UInt2   *ptf2;
   UInt4   *pttmp, *ptf4;
+ 
+  if (TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) < 0) {
+    ErrorQuit("RANK_TRANS_INT: <n> must be a non-negative integer", 
+              0L, 0L);
+    return 0L;
+  }
 
-  m=INT_INTOBJ(n);
+  m = INT_INTOBJ(n);
   if(TNUM_OBJ(f)==T_TRANS2){ 
     if(m>=DEG_TRANS2(f)){
       return INTOBJ_INT(RANK_TRANS2(f)-DEG_TRANS2(f)+m);
@@ -378,8 +396,8 @@ Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n){
       }
       return INTOBJ_INT(rank);
     }
-  } else {
-    if(m>=DEG_TRANS2(f)){
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
+    if(m>=DEG_TRANS4(f)){
       return INTOBJ_INT(RANK_TRANS4(f)-DEG_TRANS4(f)+m);
     } else {
       pttmp=ResizeInitTmpTrans(DEG_TRANS4(f));
@@ -394,13 +412,25 @@ Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n){
       return INTOBJ_INT(rank);
     }
   }
+  ErrorQuit("RANK_TRANS_INT: <f> must be a transformation (not a %s)", 
+            (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 }
+
+// Returns the rank of the transformation <f> on the <list>, i.e. the number of
+// distinct values in [(list[1])f .. (list[n])f], where <list> consists of
+// positive ints 
 
 Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list){ 
   UInt    rank, i, j, len, def;
   UInt2   *ptf2;
   UInt4   *pttmp, *ptf4;
   Obj     pt;
+  
+  if (!IS_LIST(list)) {
+    ErrorQuit("RANK_TRANS_LIST: the second argument must be a list "
+              "(not a %s)", (Int) TNAM_OBJ(list), 0L);
+  }
 
   len=LEN_LIST(list);
   if(TNUM_OBJ(f)==T_TRANS2){ 
@@ -411,7 +441,10 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list){
     for(i=1;i<=len;i++){
       pt=ELM_LIST(list, i);
       if(TNUM_OBJ(pt)!=T_INT||INT_INTOBJ(pt)<1){
-        ErrorQuit("usage: the second argument <list> must be a list of positive\n integers (not a %s)", (Int)TNAM_OBJ(pt), 0L);
+        ErrorQuit("RANK_TRANS_LIST: the second argument <list> must be a "
+                  "list of positive integers (not a %s)", 
+                  (Int) TNAM_OBJ(pt), 
+                  0L);
       }
       j=INT_INTOBJ(pt)-1;
       if(j<=def){
@@ -421,7 +454,8 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list){
         rank++;
       }
     }
-  } else {
+    return INTOBJ_INT(rank);
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
     def=DEG_TRANS4(f);
     pttmp=ResizeInitTmpTrans(def);
     ptf4=ADDR_TRANS4(f);
@@ -429,7 +463,10 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list){
     for(i=1;i<=len;i++){
       pt=ELM_LIST(list, i);
       if(TNUM_OBJ(pt)!=T_INT||INT_INTOBJ(pt)<1){
-        ErrorQuit("usage: the second argument <list> must be a list of positive\n integers (not a %s)", (Int)TNAM_OBJ(pt), 0L);
+        ErrorQuit("RANK_TRANS_LIST: the second argument <list> must be a "
+                  "list of positive integers (not a %s)", 
+                  (Int) TNAM_OBJ(pt),
+                  0L);
       }
       j=INT_INTOBJ(pt)-1;
       if(j<=def){
@@ -439,35 +476,46 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list){
         rank++;
       }
     }
+    return INTOBJ_INT(rank);
   }
-  return INTOBJ_INT(rank);
+
+  ErrorQuit("RANK_TRANS_LIST: the first argument must be a transformation "
+            "(not a %s)", (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 }
 
-/* test if a transformation is the identity. */
+// Test if a transformation is the identity
 
 Obj FuncIS_ID_TRANS(Obj self, Obj f){
-  UInt2*  ptf2=ADDR_TRANS2(f);
-  UInt4*  ptf4=ADDR_TRANS4(f);
+  UInt2*  ptf2;
+  UInt4*  ptf4;
   UInt    deg, i; 
 
   if(TNUM_OBJ(f)==T_TRANS2){
+    ptf2 = ADDR_TRANS2(f);
     deg=DEG_TRANS2(f);
     for(i=0;i<deg;i++){
       if(ptf2[i]!=i){
         return False;
       }
     }
-  } else {
+    return True;
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
+    ptf4 = ADDR_TRANS4(f);
     deg=DEG_TRANS4(f);
     for(i=0;i<deg;i++){
       if(ptf4[i]!=i){
         return False;
       }
     }
+    return True;
   }
-  return True;
+  ErrorQuit("IS_ID_TRANS: the first argument must be a transformation "
+            "(not a %s)", (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 }
 
+// Returns the largest value i such that (i)f <> i or 0 if no such i exists
 
 Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f){
   UInt2   *ptf2;
@@ -487,19 +535,17 @@ Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f){
     }
     return INTOBJ_INT(i);
   }
+  ErrorQuit("LARGEST_MOVED_PT_TRANS: the first argument must be a transformation "
+            "(not a %s)", (Int) TNAM_OBJ(f), 0L);
   return 0L;
 }
 
-// the largest point in [1..LargestMovedPoint(f)]^f
+// Returns the largest value in [(1)f .. (n)f] where n = LargestMovedPoint(f)
 
 Obj FuncLARGEST_IMAGE_PT (Obj self, Obj f){
   UInt2   *ptf2;
   UInt4   *ptf4;
   UInt    i, max, def;
-  
-  if(!IS_TRANS(f)){
-    ErrorQuit("usage: the argument should be a transformation,", 0L, 0L);
-  }
  
   max=0;
   if(TNUM_OBJ(f)==T_TRANS2){
@@ -512,7 +558,8 @@ Obj FuncLARGEST_IMAGE_PT (Obj self, Obj f){
         if(max==def) break;
       }
     }
-  } else {
+    return INTOBJ_INT(max);
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
     def=DEG_TRANS4(f);
     ptf4=ADDR_TRANS4(f);
     for(i=DEG_TRANS4(f);1<=i;i--){ if(ptf4[i-1]!=i-1) break; }
@@ -522,20 +569,30 @@ Obj FuncLARGEST_IMAGE_PT (Obj self, Obj f){
         if(max==def) break;
       }
     }
+    return INTOBJ_INT(max);
   }
-  return INTOBJ_INT(max);
+  ErrorQuit("LARGEST_IMAGE_PT: the first argument must be a transformation "
+            "(not a %s)", (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 }
 
-// returns the wrong answer when applied to the identity
+// Returns the smallest value <i> such that (i)f <> i if it exists, and Fail if
+// not. Note that this differs from the GAP level function which returns
+// infinity if (i)f = i for all i.
+
 Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f){
   UInt2   *ptf2;
   UInt4   *ptf4;
   UInt    i, deg;
- 
+
   if(!IS_TRANS(f)){
-    ErrorQuit("usage: the argument should be a transformation,", 0L, 0L);
+    ErrorQuit("SMALLEST_MOVED_PTS_TRANS: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+    return 0L;
+  } else if (FuncIS_ID_TRANS(self, f) == True) {
+    return Fail;
   }
-  
+ 
   if(TNUM_OBJ(f)==T_TRANS2){
     ptf2=ADDR_TRANS2(f);
     deg=DEG_TRANS2(f);
@@ -548,21 +605,31 @@ Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f){
   return INTOBJ_INT(i);
 }
 
-// the smallest point in [SmallestMovedPoint..LargestMovedPoint(f)]^f
+// Returns the smallest value in [SmallestMovedPoint(f) ..
+// LargestMovedPoint(f)] ^ f if it exists and Fail if it does not. Note that
+// this differs from the GAP level function which returns infinity if (i)f = i
+// for all i.
+
 Obj FuncSMALLEST_IMAGE_PT (Obj self, Obj f){
   UInt2   *ptf2;
   UInt4   *ptf4;
   UInt    i, min, deg;
   
   if(!IS_TRANS(f)){
-    ErrorQuit("usage: the argument should be a transformation,", 0L, 0L);
+    ErrorQuit("SMALLEST_IMAGE_PT: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+    return 0L;
+  } else if (FuncIS_ID_TRANS(self, f) == True) {
+    return Fail;
   }
+  
   if(TNUM_OBJ(f)==T_TRANS2){
     ptf2=ADDR_TRANS2(f);
     deg=DEG_TRANS2(f); 
     min=deg;
     for(i=0;i<deg;i++){ if(ptf2[i]!=i&&ptf2[i]<min) min=ptf2[i]; }
-  } else {
+    return INTOBJ_INT(min+1);
+  } else { 
     ptf4=ADDR_TRANS4(f);
     deg=DEG_TRANS4(f);
     min=deg;
@@ -571,31 +638,34 @@ Obj FuncSMALLEST_IMAGE_PT (Obj self, Obj f){
   return INTOBJ_INT(min+1);
 }
 
- 
+// Returns the number of values <i> in [1 .. n] such that (i)f <> i, where n =
+// DegreeOfTransformation(f)
+
 Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f){
   UInt    nr, i, deg;
   UInt2*  ptf2;
   UInt4*  ptf4;
-
-  if(!IS_TRANS(f)){
-    ErrorQuit("usage: the argument should be a transformation,", 0L, 0L);
-  }
 
   nr=0;
   if(TNUM_OBJ(f)==T_TRANS2){
     ptf2=ADDR_TRANS2(f);
     deg=DEG_TRANS2(f);
     for(i=0;i<deg;i++){ if(ptf2[i]!=i) nr++; }
-  } else {
+    return INTOBJ_INT(nr);
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
     ptf4=ADDR_TRANS4(f);
     deg=DEG_TRANS4(f);
     for(i=0;i<deg;i++){ if(ptf4[i]!=i) nr++; }
+    return INTOBJ_INT(nr);
   }
-  return INTOBJ_INT(nr);
+  ErrorQuit("NR_MOVED_PTS_TRANS: the first argument must be a "
+            "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 }
-
-
  
+// Returns the set of values <i> in [1 .. n] such that (i)f <> i, where n =
+// DegreeOfTransformation(f)
+
 Obj FuncMOVED_PTS_TRANS(Obj self, Obj f){
   UInt    len, deg, i, k;
   Obj     out, tmp;
@@ -603,10 +673,10 @@ Obj FuncMOVED_PTS_TRANS(Obj self, Obj f){
   UInt4   *ptf4;
 
   if(!IS_TRANS(f)){
-    ErrorQuit("usage: the argument should be a transformation,", 0L, 0L);
-  }
-
-  if(FuncIS_ID_TRANS(self, f)==True){
+    ErrorQuit("MOVED_PTS_TRANS: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+    return 0L;
+  } else if(FuncIS_ID_TRANS(self, f)==True){
     out=NEW_PLIST(T_PLIST_EMPTY, 0);
     SET_LEN_PLIST(out, 0);
     return out;
@@ -646,22 +716,38 @@ Obj FuncMOVED_PTS_TRANS(Obj self, Obj f){
   return out;
 }
 
-/* kernel of transformation */
-Obj FuncFLAT_KERNEL_TRANS (Obj self, Obj f){ 
+// Returns the flat kernel of transformation on 
+// [1 .. DegreeOfTransformation(f)]
 
-  if(KER_TRANS(f)==NULL){
-    if(TNUM_OBJ(f)==T_TRANS2){
+Obj FuncFLAT_KERNEL_TRANS (Obj self, Obj f) {
+
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    if (KER_TRANS(f) == NULL) {
       INIT_TRANS2(f);
-    } else {
+    }
+    return KER_TRANS(f);
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
+    if (KER_TRANS(f) == NULL) {
       INIT_TRANS4(f);
     }
+    return KER_TRANS(f);
   }
-  return KER_TRANS(f);
+
+  ErrorQuit("FLAT_KERNEL_TRANS: the first argument must be a "
+            "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 } 
+
+// Returns the flat kernel of the transformation <f> on [1 .. n]
 
 Obj FuncFLAT_KERNEL_TRANS_INT (Obj self, Obj f, Obj n){
   Obj     new, *ptnew, *ptker; 
   UInt    deg, m, i;
+
+  if (TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) < 0) {
+    ErrorQuit("FLAT_KERNEL_TRANS_INT: the second argument must be a "
+              "non-negative integer", 0L, 0L);
+  }
 
   m=INT_INTOBJ(n);
   if(TNUM_OBJ(f)==T_TRANS2){
@@ -692,7 +778,8 @@ Obj FuncFLAT_KERNEL_TRANS_INT (Obj self, Obj f, Obj n){
       }
       return new;
     }
-  }else{
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
+
     if(KER_TRANS(f)==NULL) INIT_TRANS4(f);
     deg=DEG_TRANS4(f);
     if(m==deg){
@@ -721,24 +808,40 @@ Obj FuncFLAT_KERNEL_TRANS_INT (Obj self, Obj f, Obj n){
       return new;
     }
   }
+  ErrorQuit("FLAT_KERNEL_TRANS_INT: the first argument must be a "
+            "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 }
 
-/* image set of transformation */
-Obj FuncIMAGE_SET_TRANS (Obj self, Obj f){ 
-  if(IMG_TRANS(f)==NULL){
-    if(TNUM_OBJ(f)==T_TRANS2){
+// Returns the image set of the transformation f on [1 .. n] where n =
+// DegreeOfTransformation(f)
+
+Obj FuncIMAGE_SET_TRANS (Obj self, Obj f) {
+
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    if (IMG_TRANS(f) == NULL) {
       INIT_TRANS2(f);
-    } else {
+    }
+    if(!IS_SSORT_LIST(IMG_TRANS(f))){
+      return SORT_PLIST_CYC(IMG_TRANS(f));
+    }
+    return IMG_TRANS(f);
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
+    if (IMG_TRANS(f) == NULL) {
       INIT_TRANS4(f);
     }
+    if(!IS_SSORT_LIST(IMG_TRANS(f))){
+      return SORT_PLIST_CYC(IMG_TRANS(f));
+    }
+    return IMG_TRANS(f);
   }
-  if(!IS_SSORT_LIST(IMG_TRANS(f))){
-    return SORT_PLIST_CYC(IMG_TRANS(f));
-  }
-  return IMG_TRANS(f);  
+
+  ErrorQuit("IMAGE_SET_TRANS: the first argument must be a "
+            "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 } 
 
-//the image set of <f> when applied to <1..n> 
+// Returns the image set of the transformation f on [1 .. n]
 
 Obj FuncIMAGE_SET_TRANS_INT (Obj self, Obj f, Obj n){ 
   Obj     im, new; 
@@ -746,6 +849,14 @@ Obj FuncIMAGE_SET_TRANS_INT (Obj self, Obj f, Obj n){
   Obj     *ptnew, *ptim;
   UInt4   *pttmp, *ptf4;
   UInt2   *ptf2;
+
+  if (TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) < 0) {
+    ErrorQuit("IMAGE_SET_TRANS_INT: the second argument must be a "
+              "non-negative integer", 0L, 0L);
+  } else if (!IS_TRANS(f)) {
+    ErrorQuit("IMAGE_SET_TRANS_INT: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  }
 
   m=INT_INTOBJ(n);
   deg=DEG_TRANS(f);
@@ -757,7 +868,6 @@ Obj FuncIMAGE_SET_TRANS_INT (Obj self, Obj f, Obj n){
     SET_LEN_PLIST(new, 0);
     return new;
   } else if(m<deg){
-    //JDM add a check to see if IMAGE_SET_TRANS is known
     pttmp=ResizeInitTmpTrans(deg);
     new=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, m);
     pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
@@ -803,7 +913,7 @@ Obj FuncIMAGE_SET_TRANS_INT (Obj self, Obj f, Obj n){
   return new;
 } 
 
-/* image list of transformation */
+// Returns the image list [(1)f .. (n)f] of the transformation f
 
 Obj FuncIMAGE_TRANS (Obj self, Obj f, Obj n ){ 
   UInt2*    ptf2;
@@ -811,6 +921,14 @@ Obj FuncIMAGE_TRANS (Obj self, Obj f, Obj n ){
   UInt      i, deg, m;
   Obj       out;
   
+  if (TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) < 0) {
+    ErrorQuit("IMAGE_TRANS: the second argument must be a "
+              "non-negative integer", 0L, 0L);
+  } else if (!IS_TRANS(f)) {
+    ErrorQuit("IMAGE_TRANS: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  }
+
   m=INT_INTOBJ(n);
 
   if(m==0){
@@ -819,234 +937,255 @@ Obj FuncIMAGE_TRANS (Obj self, Obj f, Obj n ){
     return out;
   }
 
+  out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, m);
+
   if(TNUM_OBJ(f)==T_TRANS2){
-    out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, m);
     ptf2=ADDR_TRANS2(f);
     deg=MIN(DEG_TRANS2(f), m); 
     for(i=0;i<deg;i++){ 
       SET_ELM_PLIST(out,i+1,INTOBJ_INT(ptf2[i]+1));
     }
-    for(;i<m;i++) SET_ELM_PLIST(out,i+1,INTOBJ_INT(i+1));
-  }else{
-    out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, m);
+  } else { 
     ptf4=ADDR_TRANS4(f);
     deg=MIN(DEG_TRANS4(f), m);
     for(i=0;i<deg;i++){ 
       SET_ELM_PLIST(out,i+1,INTOBJ_INT(ptf4[i]+1));
     }
-    for(;i<m;i++) SET_ELM_PLIST(out,i+1,INTOBJ_INT(i+1));
   }
-
+  for(;i<m;i++) SET_ELM_PLIST(out,i+1,INTOBJ_INT(i+1));
   SET_LEN_PLIST(out,(Int) m);
   return out;
 } 
 
-/* the kernel as a partition of [1..n] */
+// Returns the kernel of a transformation <f> as a partition of [1 .. n] 
 
 Obj FuncKERNEL_TRANS (Obj self, Obj f, Obj n){
-  Obj     ker, flat;
-  UInt    i, j, deg, nr, m, rank, len, min;
+  Obj     ker;
+  UInt    i, j, deg, nr, m, rank, min;
   UInt4*  pttmp;
    
-  if(INT_INTOBJ(n)==0){//special case for the identity
+  if (TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) < 0) {
+    ErrorQuit("KERNEL_TRANS: the second argument must be a "
+              "non-negative integer", 0L, 0L);
+  } else if (!IS_TRANS(f)) {
+    ErrorQuit("KERNEL_TRANS: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  }
+
+  m = INT_INTOBJ(n);
+
+  //special case for the identity
+  if (m == 0) { 
     ker=NEW_PLIST(T_PLIST_EMPTY, 0);
     SET_LEN_PLIST(ker, 0);
     return ker;
   }
   
-  deg=DEG_TRANS(f);
-  rank=RANK_TRANS(f);
-  flat=KER_TRANS(f);
+  deg = DEG_TRANS(f);
+  rank = RANK_TRANS(f);
+  min = MIN(m, deg);
+  nr = (min == m ? rank : rank + m - deg);  // the number of classes
   
-  m=INT_INTOBJ(n);
-  nr=(m<=deg?rank:rank+m-deg);  // the number of classes
-  len=(UInt) deg/nr+1;          // average size of a class
-  min=MIN(m,deg);
-  
-  ker=NEW_PLIST(T_PLIST_HOM_SSORT, nr);
-  pttmp=ResizeInitTmpTrans(nr);
+  ker = NEW_PLIST(T_PLIST_HOM_SSORT, nr);
+  pttmp = ResizeInitTmpTrans(nr);
 
-  nr=0;
+  // RANK_TRANS(f) should install KER_TRANS(f)
+  assert(KER_TRANS(f) != NULL); 
+  
+  nr = 0;
   // read off flat kernel
-  for(i=0;i<min;i++){
-    /* renew the ptrs in case of garbage collection */
-    j=INT_INTOBJ(ELM_PLIST(flat, i+1));
-    if(pttmp[j-1]==0){
+  for (i = 0; i < min; i++) {
+    j = INT_INTOBJ(ELM_PLIST(KER_TRANS(f), i + 1));
+    if (pttmp[j - 1] == 0) {
       nr++;
-      SET_ELM_PLIST(ker, j, NEW_PLIST(T_PLIST_CYC_SSORT, len));
+      SET_ELM_PLIST(ker, j, NEW_PLIST(T_PLIST_CYC_SSORT, 1));
       CHANGED_BAG(ker);
-      pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
+      pttmp = (UInt4 *)(ADDR_OBJ(TmpTrans));
     }
-    AssPlist(ELM_PLIST(ker, j), (Int) ++pttmp[j-1], INTOBJ_INT(i+1));
-    pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
-  }
-  
-  for(i=0;i<nr;i++){
-    SET_LEN_PLIST(ELM_PLIST(ker, i+1), (Int) pttmp[i]);
-    SHRINK_PLIST(ELM_PLIST(ker, i+1), (Int) pttmp[i]);
-    /* beware maybe SHRINK_PLIST will trigger a garbage collection */
+    AssPlist(ELM_PLIST(ker, j), (Int) ++pttmp[j - 1], INTOBJ_INT(i + 1));
+    pttmp = (UInt4 *)(ADDR_OBJ(TmpTrans));
   }
 
-  for(i=deg;i<m;i++){//add trailing singletons if there are any
+  // add trailing singletons, if any
+  for (i = deg; i < m; i++) { 
     SET_ELM_PLIST(ker, ++nr, NEW_PLIST(T_PLIST_CYC_SSORT, 1));
     SET_LEN_PLIST(ELM_PLIST(ker, nr), 1); 
-    SET_ELM_PLIST(ELM_PLIST(ker, nr), 1, INTOBJ_INT(i+1));
+    SET_ELM_PLIST(ELM_PLIST(ker, nr), 1, INTOBJ_INT(i + 1));
     CHANGED_BAG(ker);
   }
   SET_LEN_PLIST(ker, (Int) nr);
   return ker;
 }
 
+// Returns the set (pt)f ^ -1
 
-Obj FuncPREIMAGES_TRANS_INT (Obj self, Obj f, Obj pt){
-  UInt2   *ptf2;
-  UInt4   *ptf4;
+Obj FuncPREIMAGES_TRANS_INT (Obj self, Obj f, Obj pt) {
   UInt    deg, nr, i, j;
   Obj     out;
 
-  deg=DEG_TRANS(f);
+  if (TNUM_OBJ(pt) != T_INT || INT_INTOBJ(pt) < 1) {
+    ErrorQuit("PREIMAGES_TRANS_INT: the second argument must be a "
+              "positive integer", 0L, 0L);
+  } else if (!IS_TRANS(f)) {
+    ErrorQuit("PREIMAGES_TRANS_INT: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  }
 
-  if((UInt) INT_INTOBJ(pt)>deg){
-    out=NEW_PLIST(T_PLIST_CYC, 1);
+  deg = DEG_TRANS(f);
+
+  if (INT_INTOBJ(pt) > deg) {
+    out = NEW_PLIST(T_PLIST_CYC, 1);
     SET_LEN_PLIST(out, 1);
     SET_ELM_PLIST(out, 1, pt);
     return out;
   }
 
-  i=(UInt) INT_INTOBJ(pt)-1;
-  out=NEW_PLIST(T_PLIST_CYC_SSORT, deg);
+  i = INT_INTOBJ(pt) - 1;
+  out = NEW_PLIST(T_PLIST_CYC_SSORT, 0);
+  nr = 0;
 
-  /* renew the ptr in case of garbage collection */
-  nr=0;
-  if(TNUM_OBJ(f)==T_TRANS2){
-    ptf2=ADDR_TRANS2(f);
-    for(j=0;j<deg;j++) if(ptf2[j]==i) SET_ELM_PLIST(out, ++nr, INTOBJ_INT(j+1));
-  }else{
-    ptf4=ADDR_TRANS4(f);
-    for(j=0;j<deg;j++) if(ptf4[j]==i) SET_ELM_PLIST(out, ++nr, INTOBJ_INT(j+1));
-  }
-  if(nr==0){
-    RetypeBag(out, T_PLIST_EMPTY);
-  }
-  SET_LEN_PLIST(out, (Int) nr);
-  SHRINK_PLIST(out, (Int) nr);
-  return out;
-}
-
-// AsTransformation for a permutation <p> and a pos int <n>. This might be
-// quicker if we don't install the kernel etc, but then getting the kernel etc
-// back is slower than it is from here. 
-Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg){
-  UInt2   *ptp2, *ptf2;
-  UInt4   *ptp4, *ptf4;
-  Obj     f, img, *ptimg;
-  UInt    def, dep, i, min, n;
-  
-  n=INT_INTOBJ(deg);
-  if(n==0) return IdentityTrans;
-
-  //find the degree of f
-  def=n;
-  dep=(TNUM_OBJ(p)==T_PERM2?DEG_PERM2(p):DEG_PERM4(p));
-
-  if(n<dep){
-    min=def;
-    if(TNUM_OBJ(p)==T_PERM2){
-      ptp2=ADDR_PERM2(p);
-      for(i=0;i<n;i++){
-        if(ptp2[i]+1>def) def=ptp2[i]+1;
-      }
-    } else {
-      dep=DEG_PERM4(p);
-      ptp4=ADDR_PERM4(p);
-      for(i=0;i<n;i++){
-        if(ptp4[i]+1>def) def=ptp4[i]+1;
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    for (j = 0; j < deg; j++) {
+      if ((ADDR_TRANS2(f))[j]==i) {
+        AssPlist(out, ++nr, INTOBJ_INT(j + 1));
       }
     }
   } else {
-    min=dep;
+    for (j = 0; j < deg; j++) {
+      if ((ADDR_TRANS4(f))[j]==i) {
+        AssPlist(out, ++nr, INTOBJ_INT(j + 1));
+      }
+    }
   }
 
-  img=NEW_PLIST(T_PLIST_CYC_SSORT+IMMUTABLE, def);
-  //create f 
-  if(def<=65536){
-    f=NEW_TRANS2(def);
-    ptimg=ADDR_OBJ(img)+1;
-    ptf2=ADDR_TRANS2(f);
+  if (nr == 0) {
+    RetypeBag(out, T_PLIST_EMPTY);
+    SET_LEN_PLIST(out, 0);
+  }
+
+  return out;
+}
+
+// Returns a transformation <f> such that (i)f = (i)p for all i <= n where <p>
+// is a permutation <p> and <n> is a positive integer. Note that the returned
+// transformation is not necessarily a permutation (mathematically), when n is
+// less than the largest moved point of p.
+
+Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg){
+  UInt2   *ptp2, *ptf2;
+  UInt4   *ptp4, *ptf4;
+  Obj     f;
+  UInt    def, dep, i, min, n;
+  
+  if (TNUM_OBJ(deg) != T_INT || INT_INTOBJ(deg) < 0) {
+    ErrorQuit("AS_TRANS_PERM_INT: the second argument must be a "
+              "non-negative integer", 0L, 0L);
+  } else if (TNUM_OBJ(p) != T_PERM2 && TNUM_OBJ(p) != T_PERM4) {
+    ErrorQuit("AS_TRANS_PERM_INT: the first argument must be a "
+              "permutation (not a %s)", (Int) TNAM_OBJ(p), 0L);
+  }
+
+  n = INT_INTOBJ(deg);
+
+  if (n == 0) {
+    return IdentityTrans;
+  }
+
+  //find the degree of f
+  def = n;
+  dep = (TNUM_OBJ(p) == T_PERM2 ? DEG_PERM2(p) : DEG_PERM4(p));
+
+  if (def < dep) {
+    min = def;
+    if (TNUM_OBJ(p) == T_PERM2) {
+      ptp2 = ADDR_PERM2(p);
+      for (i = 0; i < n; i++) {
+        if (ptp2[i] + 1 > def) {
+          def = ptp2[i] + 1;
+        }
+      }
+    } else {
+      ptp4 = ADDR_PERM4(p);
+      for (i = 0; i < n; i++) {
+        if (ptp4[i] + 1 > def) { 
+          def = ptp4[i] + 1;
+        }
+      }
+    }
+  } else {
+    min = dep;
+    def = dep; // no point in defining <f> to have lots of trailing fixed points
+  }
+
+  if (def <= 65536) {
+    f = NEW_TRANS2(def);
+    ptf2 = ADDR_TRANS2(f);
     
-    if(TNUM_OBJ(p)==T_PERM2){
-      ptp2=ADDR_PERM2(p);
-      for(i=0;i<min;i++){
-        ptf2[i]=ptp2[i];
-        ptimg[i]=INTOBJ_INT(i+1);
+    if (TNUM_OBJ(p) == T_PERM2) {
+      ptp2 = ADDR_PERM2(p);
+      for (i = 0; i < min; i++) {
+        ptf2[i] = ptp2[i];
       }
-    } else { //TNUM_OBJ(p)==T_PERM4
-      ptp4=ADDR_PERM4(p);
-      for(i=0;i<min;i++){
-        ptf2[i]=ptp4[i];
-        ptimg[i]=INTOBJ_INT(i+1);
+    } else { // TNUM_OBJ(p) == T_PERM4
+      ptp4 = ADDR_PERM4(p);
+      for (i = 0; i < min; i++) {
+        ptf2[i] = ptp4[i];
       }
     }
-    for(;i<def;i++){
-      ptf2[i]=i;
-      ptimg[i]=INTOBJ_INT(i+1);
+    for (; i < def; i++) {
+      ptf2[i] = i;
     }
-    IMG_TRANS(f)=img;
-    KER_TRANS(f)=img;
-    CHANGED_BAG(f);
-  } else { //def>65536
-    f=NEW_TRANS4(def);
-    ptimg=ADDR_OBJ(img)+1;
-    ptf4=ADDR_TRANS4(f);
-    
-    if(TNUM_OBJ(p)==T_PERM2){
-      ptp2=ADDR_PERM2(p);
-      for(i=0;i<min;i++){
-        ptf4[i]=ptp2[i];
-        ptimg[i]=INTOBJ_INT(i+1);
-      }
-    } else { //TNUM_OBJ(p)==T_PERM4
-      ptp4=ADDR_PERM4(p);
-      for(i=0;i<min;i++){
-        ptf4[i]=ptp4[i];
-        ptimg[i]=INTOBJ_INT(i+1);
-      }
+  } else { // dep >= def > 65536
+    f = NEW_TRANS4(def);
+    ptf4 = ADDR_TRANS4(f);
+    assert(TNUM_OBJ(p) == T_PERM4);
+    ptp4 = ADDR_PERM4(p);
+    for (i = 0; i < min; i++) {
+      ptf4[i] = ptp4[i];
     }
-    for(;i<def;i++){
-      ptf4[i]=i;
-      ptimg[i]=INTOBJ_INT(i+1);
+    for (; i < def; i++) {
+      ptf4[i] = i;
     }
-    IMG_TRANS(f)=img;
-    KER_TRANS(f)=img;
-    CHANGED_BAG(f);
   }
   
-  SET_LEN_PLIST(img, def);
   return f;
 }
 
-/* AsTransformation for a permutation */
+// Returns a transformation <f> such that (i)f = (i)p for all i <= n where <p>
+// is a permutation <p> and <n> is the largest moved point of <p>. 
 
 Obj FuncAS_TRANS_PERM(Obj self, Obj p){
   UInt2   *ptPerm2;
   UInt4   *ptPerm4;
   UInt    sup;
 
+  if (TNUM_OBJ(p) != T_PERM2 && TNUM_OBJ(p) != T_PERM4) {
+    ErrorQuit("AS_TRANS_PERM: the first argument must be a "
+              "permutation (not a %s)", (Int) TNAM_OBJ(p), 0L);
+  }
+
   //find largest moved point 
-  if(TNUM_OBJ(p)==T_PERM2){
-    ptPerm2=ADDR_PERM2(p);
-    for(sup=DEG_PERM2(p);1<=sup;sup--) if(ptPerm2[sup-1]!=sup-1) break;
+  if (TNUM_OBJ(p) == T_PERM2) {
+    ptPerm2 = ADDR_PERM2(p);
+    for (sup = DEG_PERM2(p); 1 <= sup; sup--) {
+      if (ptPerm2[sup - 1] != sup - 1) {
+        break;
+      }
+    }
     return FuncAS_TRANS_PERM_INT(self, p, INTOBJ_INT(sup));
-  } else { 
+  } else {
     ptPerm4 = ADDR_PERM4(p);
-    for ( sup = DEG_PERM4(p); 1 <= sup; sup-- ) {
-      if ( ptPerm4[sup-1] != sup-1 ) break;
+    for (sup = DEG_PERM4(p); 1 <= sup; sup--) {
+      if (ptPerm4[sup - 1] != sup - 1) {
+        break;
+      }
     }
     return FuncAS_TRANS_PERM_INT(self, p, INTOBJ_INT(sup));
   }
 }
 
-/* converts transformation into permutation of its image if possible */
+// Returns a permutation mathematically equal to the transformation <f> if
+// possible, and returns Fail if it is not possible
 
 Obj FuncAS_PERM_TRANS(Obj self, Obj f){
   UInt2   *ptf2, *ptp2;
@@ -1056,7 +1195,9 @@ Obj FuncAS_PERM_TRANS(Obj self, Obj f){
 
   if(TNUM_OBJ(f)==T_TRANS2){
     deg=DEG_TRANS2(f);
-    if(RANK_TRANS2(f)!=deg) return Fail;
+    if(RANK_TRANS2(f)!=deg) {
+      return Fail;
+    }
     
     p=NEW_PERM2(deg);
     ptp2=ADDR_PERM2(p);
@@ -1068,7 +1209,9 @@ Obj FuncAS_PERM_TRANS(Obj self, Obj f){
     return p;
   }else if (TNUM_OBJ(f)==T_TRANS4){
     deg=DEG_TRANS4(f);
-    if(RANK_TRANS4(f)!=deg) return Fail;
+    if(RANK_TRANS4(f)!=deg){ 
+      return Fail;
+    }
     
     p=NEW_PERM4(deg);
     ptp4=ADDR_PERM4(p);
@@ -1079,7 +1222,8 @@ Obj FuncAS_PERM_TRANS(Obj self, Obj f){
     }
     return p;
   }
-  return Fail;
+  ErrorQuit("AS_PERM_TRANS: the first argument must be a "
+            "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
 }
 
 Obj FuncPERM_IMG_TRANS(Obj self, Obj f){
