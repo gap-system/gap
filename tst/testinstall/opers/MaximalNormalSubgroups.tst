@@ -26,17 +26,18 @@ gap> List(MaximalNormalSubgroups(A),N -> AbelianInvariants(N));
 gap> ForAll(MaximalNormalSubgroups(A), N -> IsSubgroup(A, N) and IsNormal(A, N));
 true
 gap> D1 := DihedralGroup(Factorial(10));;
-gap> List(MaximalNormalSubgroups(D1), StructureDescription);
-[ "D1814400", "C1814400", "D1814400" ]
+gap> SortedList(List(MaximalNormalSubgroups(D1), StructureDescription));
+[ "C1814400", "D1814400", "D1814400" ]
 gap> D2 := DihedralGroup(IsFpGroup, 360);;
-gap> List(MaximalNormalSubgroups(D2), StructureDescription);
-[ "D180", "D180", "C180" ]
+gap> SortedList(List(MaximalNormalSubgroups(D2), StructureDescription));
+[ "C180", "D180", "D180" ]
 gap> ForAll(MaximalNormalSubgroups(D2), N -> IsSubgroup(D2, N) and IsNormal(D2, N));
 true
 
 # some infinite fp-groups
 gap> F := FreeGroup("r", "s");; r := F.1;; s := F.2;;
 gap> G := F/[r^(-1)*s^(-1)*r*s, r^18, s^24];;
+gap> IsNilpotentGroup(G);;
 gap> Length(MaximalNormalSubgroups(G));
 7
 gap> G := F/[s^2, s*r*s*r];;

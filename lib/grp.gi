@@ -4591,6 +4591,11 @@ InstallMethod( MinimalNormalSubgroups, "for simple groups",
 ##
 InstallMethod( MinimalNormalSubgroups, "for nilpotent groups",
               [ IsGroup and IsNilpotentGroup ],
+  # IsGroup and IsFinite ranks higher than IsGroup and IsNilpotentGroup
+  # so we have to increase the rank, otherwise the method for computation
+  # by conjugacy classes above is selected.
+  RankFilter(IsGroup and IsFinite)
+  - RankFilter(IsGroup and IsNilpotentGroup),
   function(G)
     local soc, i, p, primes, gen, min, MinimalSubgroupsOfPGroupByGenerators;
 

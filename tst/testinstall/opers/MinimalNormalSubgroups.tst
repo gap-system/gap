@@ -1,4 +1,5 @@
 gap> START_TEST("Socle.tst");
+gap> A := [];; B := [];; C := [];; D := [];; G := [];;
 gap> MinimalNormalSubgroups(Group(()));
 [  ]
 gap> G := Group(());; NormalSubgroups(G);; MinimalNormalSubgroups(G);
@@ -9,11 +10,6 @@ true
 gap> List(MinimalNormalSubgroups(D), IdGroup);
 [ [ 2, 1 ] ]
 gap> D := DihedralGroup(IsFpGroup, 8);;
-gap> MinimalNormalSubgroups(D) = [ Center(D) ];
-true
-gap> List(MinimalNormalSubgroups(D), IdGroup);
-[ [ 2, 1 ] ]
-gap> D := DihedralGroup(IsPcpGroup, 8);;
 gap> MinimalNormalSubgroups(D) = [ Center(D) ];
 true
 gap> List(MinimalNormalSubgroups(D), IdGroup);
@@ -61,23 +57,11 @@ gap> SortedList(List(MinimalNormalSubgroups(D), IdGroup));
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)(7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
 gap> MinimalNormalSubgroups(G) = Set([ Group([ (6,12)(8,10), (2,10)(4,12), (2,12)(6,10) ]), Group([ (5,11)(7,9), (3,9)(7,11), (1,9,5,11,7) ]) ]);
 true
-gap> F := AbelianPcpGroup([0,0,0]);;
-gap> G := F / Subgroup(F, [(F.1*F.2)^180, (F.1*F.2^5)^168]);;
-gap> MinimalNormalSubgroups(G); 
-[ Pcp-group with orders [ 2 ], Pcp-group with orders [ 2 ], 
-  Pcp-group with orders [ 2 ], Pcp-group with orders [ 3 ], 
-  Pcp-group with orders [ 3 ], Pcp-group with orders [ 3 ], 
-  Pcp-group with orders [ 3 ], Pcp-group with orders [ 5 ], 
-  Pcp-group with orders [ 7 ] ]
-gap> F := FreeGroup("x", "y", "z");;
-gap> x := F.1;; y := F.2;; z := F.3;;
 gap> F := FreeGroup("x", "y", "z");;
 gap> x := F.1;; y := F.2;; z := F.3;;
 gap> G := F/[x^(-1)*y^(-1)*x*y, x^(-1)*z^(-1)*x*z, z^(-1)*y^(-1)*z*y, (x*y)^180, (x*y^5)^168];; IsAbelian(G);;
 gap> Size(MinimalNormalSubgroups(G));
 9
-gap> MinimalNormalSubgroups(HeisenbergPcpGroup(3));
-[  ]
 gap> for G in AllGroups(60) do NormalSubgroups(G);; Print(Collected(List(Set(MinimalNormalSubgroups(G)), IdGroup)), "\n"); od;
 [ [ [ 2, 1 ], 1 ], [ [ 3, 1 ], 1 ], [ [ 5, 1 ], 1 ] ]
 [ [ [ 2, 1 ], 1 ], [ [ 3, 1 ], 1 ], [ [ 5, 1 ], 1 ] ]
