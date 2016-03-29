@@ -362,15 +362,6 @@ Obj FuncRANK_TRANS(Obj self, Obj f){
   }
 }
 
-/* corank of transformation 
-Obj FuncCORANK_TRANS(Obj self, Obj f){ 
-  if(TNUM_OBJ(f)==T_TRANS2){ 
-    return INTOBJ_INT(DEG_TRANS2(f)-RANK_TRANS2(f));
-  } else {
-    return INTOBJ_INT(DEG_TRANS4(f)-RANK_TRANS4(f));
-  }
-}*/
-
 /* rank of transformation */
 Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n){ 
   UInt    rank, i, m;
