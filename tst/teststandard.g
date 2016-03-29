@@ -36,8 +36,8 @@ Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g'.\n",
        "for the next file.\n\n" );
 
 TestDirectory( [
-  Filename( DirectoriesLibrary( "tst" ), "teststandard" ),
-  Filename( DirectoriesLibrary( "tst" ), "testinstall" )],
+  Filename( DirectoriesLibrary( "tst" ), "standard" ),
+  Filename( DirectoriesLibrary( "tst" ), "install" )],
   rec(exitGAP := true) );
   
 # Should never get here
