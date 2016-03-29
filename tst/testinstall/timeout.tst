@@ -1,7 +1,7 @@
 gap> START_TEST("timeout.tst");
 gap> spinFor := function(ms, arg...) local t;
-> t := Runtimes().user_time + Runtimes().system_time;
-> while Runtimes().user_time + Runtimes().system_time < t + ms do od;
+> t := MicrosecondsSinceEpoch() / 1000;
+> while MicrosecondsSinceEpoch() / 1000 < t + ms do od;
 > if Length(arg) >= 1
 > then return arg[1]; else return; fi; end;
 function( ms, arg... ) ... end

@@ -594,7 +594,8 @@ sysfiles.o: ../../Makefile @srcdir@/sysfiles.c @srcdir@/system.h config.h \
  @srcdir@/hpc/atomic.h @srcdir@/sysfiles.h @srcdir@/objects.h @srcdir@/gap.h \
  @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/lists.h @srcdir@/listfunc.h \
  @srcdir@/plist.h @srcdir@/stringobj.h @srcdir@/records.h @srcdir@/bool.h \
- @srcdir@/hpc/thread.h @srcdir@/hpc/tls.h @srcdir@/read.h @srcdir@/compstat.h
+ @srcdir@/hpc/thread.h @srcdir@/hpc/tls.h @srcdir@/read.h @srcdir@/compstat.h \
+ @srcdir@/systimer_null.c
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o sysfiles.o -c @srcdir@/sysfiles.c
 
 system.o: ../../Makefile @srcdir@/system.c @srcdir@/system.h config.h @srcdir@/globalstate.h \

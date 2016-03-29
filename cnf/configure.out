@@ -6104,6 +6104,13 @@ $as_echo "#define SYS_IS_CYGWIN32 1" >>confdefs.h
 $as_echo "#define SYS_IS_DARWIN 1" >>confdefs.h
 
     ;;
+  *freebsd*)
+    # Strictly speaking this should be FreeBSD >= 7.0, but I hope noone
+    # is still running a system that old
+
+$as_echo "#define SYS_IS_FREEBSD 1" >>confdefs.h
+
+    ;;
 esac
 
 
