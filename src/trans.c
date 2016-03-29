@@ -210,33 +210,6 @@ Obj FuncINT_DEG_TRANS( Obj self, Obj f ){
   return Fail;
 }
 
-//this only works when <f> is T_TRANS2 and deg(f)<=m<10
-Obj FuncNUMB_TRANS_INT(Obj self, Obj f, Obj m){
-  UInt                n, a, i, def;
-  UInt2               *ptf2;
-
-  n=INT_INTOBJ(m);  a=0;
-  def=DEG_TRANS2(f);
-  ptf2=ADDR_TRANS2(f);
-  for(i=0;i<def;i++)  a=a*n+ptf2[i];
-  for(;i<n;i++)       a=a*n+i;      
-  return INTOBJ_INT(a+1);  
-}  
- 
-//this only works when <f> is T_TRANS2 and deg(f)<=m<10
-Obj FuncTRANS_NUMB_INT(Obj self, Obj b, Obj m){
-  UInt    n, a, i, q;
-  Obj     f;
-  UInt2*  ptf;
-
-  n=INT_INTOBJ(m);   a=INT_INTOBJ(b)-1;
-  f=NEW_TRANS2(n);   ptf=ADDR_TRANS2(f);
-  for(i=n;0<i;i--){
-    q=a/n;  ptf[i-1]=a-q*n;  a=q; 
-  } 
-  return f;
-}
-
 /* method for creating transformation */
 Obj FuncTransformationNC( Obj self, Obj list ){ 
   UInt    i, deg;
@@ -4132,14 +4105,6 @@ static StructGVarFunc GVarFuncs [] = {
      FuncINT_DEG_TRANS,
     "src/TRANS.c:FuncINT_DEG_TRANS" },
   
-  { "NUMB_TRANS_INT", 2, "f, m",
-     FuncNUMB_TRANS_INT,
-    "src/trans.c:FuncNUMB_TRANS_INT" },
-
-  { "TRANS_NUMB_INT", 2, "f, m",
-     FuncTRANS_NUMB_INT,
-    "src/trans.c:FuncTRANS_NUMB_INT" },
-
   { "TransformationNC", 1, "list",
      FuncTransformationNC,
     "src/trans.c:FuncTransformationNC" },
