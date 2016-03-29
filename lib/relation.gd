@@ -66,7 +66,7 @@
 ##
 ##  <#GAPDoc Label="IsBinaryRelation">
 ##  <ManSection>
-##  <Filt Name="IsBinaryRelation" Arg='R' Type='Category'/>
+##  <Prop Name="IsBinaryRelation" Arg='R'/>
 ##
 ##  <Description>
 ##  is   exactly   the   same   category   as   (i.e.    a    synonym    for)

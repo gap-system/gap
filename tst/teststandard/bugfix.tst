@@ -2857,7 +2857,7 @@ gap> if LoadPackage("tomlib", false) <> fail then
 # Tests requiring CTblLib
 
 # 2005/08/29 (TB)
-gap> LoadPackage("ctbllib", "=0.0");
+gap> LoadPackage("ctbllib", "=0.0",false);
 fail
 
 ##  Bug 18 for fix 4
@@ -3014,8 +3014,19 @@ true
 gap> H:=Image(pa);;Size(H);
 50232960
 
+#2016/3/11 (AH, reported by CJ)
+gap> g := Group([ (1,2,3), (2,3,4) ]);;
+gap> IsAlternatingGroup(g);
+true
+gap> Size(Stabilizer(g, [ [1,2], [3,4] ], OnSetsSets));
+4
+
+#2016/3/16 (AH, issue #675)
+gap> G:=Group((1,2,3,4));;Factorization(G,Elements(G)[1]);
+<identity ...>
+
 #############################################################################
-gap> STOP_TEST( "bugfix.tst", 781280000);
+gap> STOP_TEST( "bugfix.tst", 831990000);
 
 #############################################################################
 ##

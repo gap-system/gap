@@ -500,7 +500,7 @@ local ltfun, ord;
   SetOrderingOnGenerators(ord,alphabet);
 
   alphabet:=List(alphabet,i->GeneratorSyllable(i,1));
-  ord!.alphnums:=`alphabet;
+  ord!.alphnums:=alphabet;
   if IsSSortedList(alphabet) then
     SetLetterRepWordsLessFunc(ord,function(a,b)
       if Length(a)<Length(b) then
@@ -512,7 +512,7 @@ local ltfun, ord;
       fi;
     end);
   else
-    ord!.alphpos:=`List([1..Maximum(alphabet)],i->Position(alphabet,i));
+    ord!.alphpos:=List([1..Maximum(alphabet)],i->Position(alphabet,i));
     SetLetterRepWordsLessFunc(ord,function(a,b)
       if Length(a)<Length(b) then
         return true;

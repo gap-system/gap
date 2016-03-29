@@ -24,7 +24,6 @@ SetComponentsOfDirectProductElementsFamily( EmptyDirectProductElementsFamily,
 
 InstallValue( DIRECT_PRODUCT_ELEMENT_FAMILIES,
     [ [ EmptyDirectProductElementsFamily ] ] );
-ShareSpecialObj( DIRECT_PRODUCT_ELEMENT_FAMILIES );
 
 
 #############################################################################
@@ -40,12 +39,10 @@ InstallMethod( DirectProductElementsFamily,
     local n, tupfams, freepos, len, i, fam, tuplespos,
           tuplesfam,filter,filter2;
 
-    atomic readwrite DIRECT_PRODUCT_ELEMENT_FAMILIES do
-
     n := Length(famlist);
     if not IsBound(DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1]) then
       tupfams:= WeakPointerObj( [] );
-      DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1]:= MigrateObj( tupfams, DIRECT_PRODUCT_ELEMENT_FAMILIES );
+      DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1]:= tupfams;
       freepos:= 1;
     else
       tupfams:= DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1];
@@ -93,7 +90,6 @@ InstallMethod( DirectProductElementsFamily,
     fi;
 
     return tuplesfam;
-    od;
     end );
 
 
@@ -108,9 +104,7 @@ InstallOtherMethod( DirectProductElementsFamily,
     function( empty )
     Info( InfoDirectProductElements, 2,
           "Reused direct product elements family, length 0 ");
-    atomic readonly DIRECT_PRODUCT_ELEMENT_FAMILIES do
-      return DIRECT_PRODUCT_ELEMENT_FAMILIES[1][1];
-    od;
+    return DIRECT_PRODUCT_ELEMENT_FAMILIES[1][1];
     end );
 
 

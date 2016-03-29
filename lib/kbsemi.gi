@@ -438,8 +438,6 @@ end);
 GAPKB_REW.MakeKnuthBendixRewritingSystemConfluent :=
   GKB_MakeKnuthBendixRewritingSystemConfluent;
 
-MakeReadOnly( GAPKB_REW ); 
-
 
 #############################################################################
 ##

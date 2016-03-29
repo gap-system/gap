@@ -67,7 +67,7 @@ gap> f := x -> List([1..x], y -> [y*15,(y+1)*15..(y+5)*15]);; Union(f(10000));
 [ 15, 30 .. 150075 ]
 gap> IsGroup (Union ([SymmetricGroup (4)]));
 true
-gap> STOP_TEST( "union.tst", 35140000);
+gap> STOP_TEST( "union.tst", 36080000);
 
 #############################################################################
 ##
