@@ -23,7 +23,8 @@ gap> f(0);
 65537
 gap> IsLineByLineProfileActive();
 false
-gap> if not prof then ProfileLineByLine(Filename(tempdir, "profout.gz")); fi;
+gap> if not prof then ProfileLineByLine(Filename(tempdir, "profout")); fi;
+#I  Profile filenames must end in .gz to enable compression
 #I Profiling only works on the first 65,535 lines of each file
 #I (this warning will only appear once).
 gap> IsLineByLineProfileActive();
@@ -32,7 +33,8 @@ gap> if not prof then UnprofileLineByLine(); fi;
 gap> IsLineByLineProfileActive();
 false
 gap> CLEAR_PROFILE_OVERFLOW_CHECKS();
-gap> if not prof then ProfileLineByLine(Filename(tempdir, "profout.gz")); fi;
+gap> if not prof then ProfileLineByLine(Filename(tempdir, "profout")); fi;
+#I  Profile filenames must end in .gz to enable compression
 gap> IsLineByLineProfileActive();
 true
 gap> Read(Filename(tempdir, "line-65535.g"));;
