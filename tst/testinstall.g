@@ -34,7 +34,7 @@ Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g'.\n",
        "The `next' time is an approximation of the running time ",
        "for the next file.\n\n" );
 
-TestDirectory( Filename( DirectoriesLibrary( "tst" ), "testinstall" ),
+TestDirectory( Filename( DirectoriesLibrary( "tst" ), "install" ),
                rec(exitGAP := true) );
   
 # Should never get here

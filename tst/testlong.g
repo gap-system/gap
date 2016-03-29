@@ -11,7 +11,7 @@ Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 32g'.\n",
        "The more GAP4stones you get, the faster your system is.\n",
        "\n" );
 
-TestDirectory( Filename( DirectoriesLibrary( "tst" ), "testlong" ),
+TestDirectory( Filename( DirectoriesLibrary( "tst" ), "long" ),
                rec(exitGAP := true) );
   
 # Should never get here
