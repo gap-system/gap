@@ -735,9 +735,9 @@ gap> PreImagesOfTransformation(f, 100);
       The <E>degree</E> of a transformation <A>f</A> is the largest value such
       that <C>n^<A>f</A>&lt;>n</C> or <C>i^<A>f</A>=n</C> for some <C>i&lt;>n</C>.
       Equivalently, the degree of a transformation is the least value <C>n</C>
-      such that <C>[n+1,n+2,...]</C> is fixed pointwise by <A>f</A>.
+      such that <C>[n+1,n+2,...]</C> is fixed pointwise by <A>f</A>.<P/>
 
-      The degree a collection of transformations <A>coll</A> is
+      The degree of a collection of transformations <A>coll</A> is
       the maximum degree of any transformation in <A>coll</A>. 
       <Example><![CDATA[
 gap> DegreeOfTransformation(IdentityTransformation);
