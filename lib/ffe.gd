@@ -226,6 +226,7 @@ DeclareCategoryCollections( "IsFFE" );
 DeclareCategoryCollections( "IsFFECollection" );
 DeclareCategoryCollections( "IsFFECollColl" );
 
+
 #############################################################################
 ##
 #C  IsLexOrderedFFE(<ffe>)
@@ -281,7 +282,6 @@ DeclareCategory("IsLogOrderedFFE", IsFFE);
 InstallTrueMethod(IsLogOrderedFFE, IsFFE and IsInternalRep);
 
 
-
 #############################################################################
 ##
 #C  IsFFEFamily
@@ -323,7 +323,7 @@ DeclareGlobalFunction( "FFEFamily" );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "FAMS_FFE_LARGE", [ [], [] ] );
-ShareSpecialObj( FAMS_FFE_LARGE );
+
 
 #############################################################################
 ##
@@ -342,6 +342,7 @@ ShareSpecialObj( FAMS_FFE_LARGE );
 ##
 DeclareGlobalVariable( "GALOIS_FIELDS",
     "list of lists, GALOIS_FIELDS[p][n] = GF(p^n) if bound" );
+
 
 #############################################################################
 ##

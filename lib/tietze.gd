@@ -42,9 +42,11 @@ TR_TREELAST     :=  7;
 
 #############################################################################
 ##
-##  List of option names
+##  Some global variables.
 ##
-TzOptionNames := `[ "protected", "eliminationsLimit", "expandLimit",
+PrintRecIndent  := "  ";
+
+TzOptionNames := [ "protected", "eliminationsLimit", "expandLimit",
      "generatorsLimit", "lengthLimit", "loopLimit", "printLevel",
      "saveLimit", "searchSimultaneous" ];
 
@@ -2296,3 +2298,4 @@ DeclareGlobalFunction("TzUpdateGeneratorImages");
 #############################################################################
 ##
 #E
+

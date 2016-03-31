@@ -427,7 +427,7 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list){
     rank=0; 
     for(i=1;i<=len;i++){
       pt=ELM_LIST(list, i);
-      if(!TNUM_OBJ(pt)==T_INT||INT_INTOBJ(pt)<1){
+      if(TNUM_OBJ(pt)!=T_INT||INT_INTOBJ(pt)<1){
         ErrorQuit("usage: the second argument <list> must be a list of positive\n integers (not a %s)", (Int)TNAM_OBJ(pt), 0L);
       }
       j=INT_INTOBJ(pt)-1;
@@ -445,7 +445,7 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list){
     rank=0; 
     for(i=1;i<=len;i++){
       pt=ELM_LIST(list, i);
-      if(!TNUM_OBJ(pt)==T_INT||INT_INTOBJ(pt)<1){
+      if(TNUM_OBJ(pt)!=T_INT||INT_INTOBJ(pt)<1){
         ErrorQuit("usage: the second argument <list> must be a list of positive\n integers (not a %s)", (Int)TNAM_OBJ(pt), 0L);
       }
       j=INT_INTOBJ(pt)-1;

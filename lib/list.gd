@@ -1786,6 +1786,7 @@ DeclareOperation( "MaximumList", [ IsList, IsObject ] );
 DeclareOperation( "MinimumList", [ IsList ] );
 DeclareOperation( "MinimumList", [ IsList, IsObject ] );
 
+
 #############################################################################
 ##
 #F  Cartesian( <list1>, <list2> ... ) . . . . . .  cartesian product of lists

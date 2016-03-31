@@ -291,7 +291,9 @@ Transformation( [ 2, 4, 2, 6, 6, 7, 8, 2, 10, 10, 11, 8 ] )
       consists of integers.  <P/>
       
       This function is the analogue in the context of
-      transformations of <Ref Func="Permutation" BookName="ref"/>.  <P/>
+      transformations of 
+      <Ref Func="Permutation" BookName="ref" 
+        Label = "for a group, an action domain, etc."/>.<P/>
       
       If <A>obj</A> does not map elements of <A>list</A> into <A>list</A>, then
       <K>fail</K> is returned.<P/>
@@ -726,7 +728,7 @@ gap> PreImagesOfTransformation(f, 100);
   various properties and attributes of transformations. 
 
   <ManSection>
-    <Attr Name="DegreeOfTransformation" Arg="f"/>
+    <Func Name="DegreeOfTransformation" Arg="f"/>
     <Attr Name="DegreeOfTransformationCollection" Arg="coll"/>
     <Returns>A positive integer.</Returns>
     <Description>
@@ -828,8 +830,8 @@ gap> RankOfTransformation(f, [ 2, 5, 8 ] );
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="MovedPoints" Arg="f" Label="for a transformation"/>
-    <Oper Name="MovedPoints" Arg="coll" Label="for a transformation coll"/>
+    <Attr Name="MovedPoints" Arg="f" Label="for a transformation"/>
+    <Attr Name="MovedPoints" Arg="coll" Label="for a transformation coll"/>
     <Returns>A set of positive integers.</Returns>
     <Description>
       When the argument is a transformation, <C>MovedPoints</C> returns the set
@@ -1006,7 +1008,7 @@ gap> LargestImageOfMovedPoint(f);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
   <ManSection>
-    <Func Name="FlatKernelOfTransformation" Arg="f[, n]"/>
+    <Attr Name="FlatKernelOfTransformation" Arg="f[, n]"/>
     <Returns>The flat kernel of a transformation.</Returns>
     <Description>
       If the kernel classes of the transformation <A>f</A> on
@@ -1254,7 +1256,7 @@ gap> CyclesOfTransformation(f, [ 1 .. 17 ]);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <ManSection>  
-  <Attr Name="CycleTransformationInt" Arg="f, n" /> 
+  <Oper Name="CycleTransformationInt" Arg="f, n" /> 
   <Returns>A list of positive integers.</Returns>
   <Description>
     If <A>f</A> is a transformation and <A>n</A> is a positive
@@ -1307,7 +1309,7 @@ true
 </ManSection>
 
   <ManSection>
-    <Func Name="TrimTransformation" Arg="f[, n]"/>
+    <Oper Name="TrimTransformation" Arg="f[, n]"/>
     <Returns>Nothing.</Returns>
     <Description>
       It can happen that the internal representation of a transformation 
@@ -1437,8 +1439,8 @@ when applied to a transformation semigroup.
 <!-- *************************************************************** -->
 
 <ManSection>
-<Prop Name="IsTransformationSemigroup" Arg="obj"/>
-<Prop Name="IsTransformationMonoid" Arg="obj"/>
+<Filt Name="IsTransformationSemigroup" Arg="obj" Type="Synonym"/> 
+<Filt Name="IsTransformationMonoid" Arg="obj" Type="Synonym"/>
 <Returns><K>true</K> or <K>false</K>.</Returns>
 <Description>
 A <E>transformation semigroup</E> is simply a semigroup consisting of
@@ -1615,7 +1617,7 @@ MappingByFunction( Group([ (1,2,3) ]), <commutative transformation
 </ManSection>
   
 <ManSection>
-<Oper Name="AntiIsomorphismTransformationSemigroup" Arg="S"/>
+<Attr Name="AntiIsomorphismTransformationSemigroup" Arg="S"/>
 <Returns>An anti-isomorphism.</Returns>
 <Description>
   If <A>S</A> is a semigroup, then

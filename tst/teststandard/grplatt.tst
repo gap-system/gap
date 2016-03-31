@@ -189,7 +189,7 @@ gap> Length(MaximalSubgroupClassReps(g));
 6
 
 # thats all, folks
-gap> STOP_TEST( "grplatt.tst", 413800000);
+gap> STOP_TEST( "grplatt.tst", 364210000);
 
 #############################################################################
 ##

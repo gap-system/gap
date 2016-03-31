@@ -238,7 +238,6 @@ BIND_GLOBAL( "TYPES_STRING",
           # T_STRING_SSORT +IMMUTABLE
           ]);
 
-MakeReadOnlyObj( TYPES_STRING );
 
 #############################################################################
 ##
@@ -287,8 +286,7 @@ MakeReadOnlyObj( TYPES_STRING );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "TNUM_EMPTY_STRING",
-    Immutable( [ TNUM_OBJ_INT( "" ), TNUM_OBJ_INT( Immutable( "" ) ) ] ) );
-
+             [ TNUM_OBJ_INT( "" ), TNUM_OBJ_INT( Immutable( "" ) ) ] );
 
 BIND_GLOBAL( "IsEmptyString",
     obj ->     IsString( obj )

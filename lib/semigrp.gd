@@ -16,7 +16,7 @@
 ##
 ##  <#GAPDoc Label="IsSemigroup">
 ##  <ManSection>
-##  <Prop Name="IsSemigroup" Arg='D'/>
+##  <Filt Name="IsSemigroup" Arg='D' Type='Synonym'/>
 ##
 ##  <Description>
 ##  returns <K>true</K> if the object <A>D</A> is a semigroup.

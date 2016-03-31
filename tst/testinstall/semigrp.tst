@@ -445,7 +445,7 @@ gap> S;
 <inverse transformation semigroup of size 36, degree 5 with 3 generators>
 
 #
-gap> STOP_TEST( "semigrp.tst", 1060000);
+gap> STOP_TEST( "semigrp.tst", 1090000);
 
 #############################################################################
 ##

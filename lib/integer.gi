@@ -363,12 +363,9 @@ ADD_SET(Primes2, 4330075309599657322634371042967428373533799534566765522517);
 ADD_SET(Primes2, 549180361199324724418373466271912931710271534073773);
 ADD_SET(Primes2,  85411410016592864938535742262164288660754818699519364051241927961077872028620787589587608357877); 
 
-ShareSpecialObj(Primes2);
-
 InstallFlushableValue(ProbablePrimes2, []);
 IsSSortedList( ProbablePrimes2 );
 
-ShareSpecialObj(ProbablePrimes2);
 #############################################################################
 ##
 #F  BestQuoInt( <n>, <m> )
@@ -464,8 +461,7 @@ end);
 #F  DivisorsInt( <n> )  . . . . . . . . . . . . . . .  divisors of an integer
 ##
 BindGlobal("DivisorsIntCache",
-        List([[1],[1,2],[1,3],[1,2,4],[1,5],[1,2,3,6],[1,7]], Immutable));
-MakeImmutable(DivisorsIntCache);
+List([[1],[1,2],[1,3],[1,2,4],[1,5],[1,2,3,6],[1,7]], Immutable));
 
 InstallGlobalFunction(DivisorsInt,function ( n )
     local  divisors, factors, divs;
@@ -474,10 +470,10 @@ InstallGlobalFunction(DivisorsInt,function ( n )
     if n < 0  then n := -n;  fi;
     if n = 0  then Error("DivisorsInt: <n> must not be 0");  fi;
     if n <= Length(DivisorsIntCache)  then 
-        return DivisorsIntCache[n];  
+      return DivisorsIntCache[n];  
     fi;
     factors := FactorsInt( n );
-    
+
     # recursive function to compute the divisors
     divs := function ( i, m )
         if Length(factors) < i     then return [ m ];
@@ -657,17 +653,14 @@ InstallGlobalFunction(FactorsInt,function ( n )
     od;
 
     # do trial divisions by known primes
-    atomic readonly Primes2 do
     for p  in Primes2  do
         while n mod p = 0  do Add( factors, p );  n := n / p;  od;
         if p^2 > n then break; fi;
         if n = 1  then factors[1] := sign*factors[1];  return factors;  fi;
     od;
-    od;
     
     # do trial divisions by known probable primes (and issue warning, if found)
     tmp := [];
-    atomic readonly ProbablePrimes2 do
     for p  in ProbablePrimes2  do
         while n mod p = 0  do 
           AddSet(tmp, p); 
@@ -675,7 +668,6 @@ InstallGlobalFunction(FactorsInt,function ( n )
           n := n / p;  
         od;
         if n = 1  then break; fi;
-    od;
     od;
     if Length(tmp) > 0 then
         Info(InfoPrimeInt, 1 , 
@@ -819,16 +811,13 @@ InstallMethod( PartialFactorization,
     fi;
 
     # do trial divisions by known primes
-    atomic readonly Primes2 do
     for p in Primes2 do
       while n mod p = 0 do Add( factors, p ); n := n / p; od;
       if n = 1 then CheckAndSortFactors(); return factors; fi;
     od;
-    od;
 
     # do trial divisions by known probable primes
     tmp := [];
-    atomic readonly ProbablePrimes2 do
     for p in ProbablePrimes2 do
       while n mod p = 0 do 
         AddSet(tmp, p); 
@@ -836,8 +825,7 @@ InstallMethod( PartialFactorization,
         n := n / p;  
       od;
       if n = 1 then break; fi;
-  od;
-  od;
+    od;
 
     if n = 1 then CheckAndSortFactors(); return factors; fi;
           
@@ -992,36 +980,24 @@ BindGlobal( "IsProbablyPrimeIntWithFail", function( n )
     # make $n$ positive and handle trivial cases
     if n < 0         then n := -n;       fi;
     if n in Primes   then return true;   fi;
-    atomic readonly Primes2 do
     if n in Primes2  then return true;   fi;
-od;
-atomic readonly ProbablePrimes2 do
-if n in ProbablePrimes2  then return fail;   fi;
-od;
+    if n in ProbablePrimes2  then return fail;   fi;
     if n <= 1000     then return false;  fi;
 
     # do trial divisions by the primes less than 1000
     # faster than anything fancier because $n$ mod <small int> is very fast
     for p  in Primes  do
         if n mod p = 0  then return false;  fi;
-        if n < (p+1)^2  then 
-            atomic readwrite Primes2 do
-            AddSet( Primes2, n );  od; 
-            return true;   fi;
-            
+        if n < (p+1)^2  then AddSet( Primes2, n );  return true;   fi;
     od;
 
     # do trial division by the other known primes
-    atomic readonly Primes2 do
     for p  in Primes2  do
         if n mod p = 0  then return false;  fi;
     od;
-    od;
     # do trial division by the other known probable primes
-    atomic readonly ProbablePrimes2 do
     for p  in ProbablePrimes2  do
         if n mod p = 0  then return false;  fi;
-    od;
     od;
 
     # find $e$ and $o$ odd such that $n-1 = 2^e * o$
@@ -1079,13 +1055,9 @@ InstallGlobalFunction(IsPrimeIntOld,function ( n )
     if res = fail then
       Info(InfoPrimeInt, 1,
            "IsPrimeInt: probably prime, but not proven: ", n);
-      atomic readwrite ProbablePrimes2 do
       AddSet( ProbablePrimes2, n );
-      od;
-  else
-      atomic readwrite Primes2 do
+    else
       AddSet( Primes2, n );
-  od;
     fi;
     return true;
   fi;
@@ -1688,6 +1660,7 @@ InstallMethod( PowerMod,
     function ( Integers, r, e, m )
     return PowerModInt( r, e, m );
     end );
+
 
 #############################################################################
 ##

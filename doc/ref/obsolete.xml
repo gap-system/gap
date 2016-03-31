@@ -244,7 +244,7 @@ systems) in the directory <C>GAPInfo.UserGapRoot</C>.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="obsolete-semigroups-properties">
-  <Heading>Properties of semigroups</Heading>
+  <Heading>Semigroup properties</Heading>
 
   Until Version 4.8 of &GAP; there was inconsistent use of the following
   properties of semigroups: <C>IsGroupAsSemigroup</C>, <C>IsMonoidAsSemigroup</C>, 

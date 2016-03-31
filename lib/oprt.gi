@@ -1088,6 +1088,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	increp,	# do we still want to increase the rep list?
 	incstb;	# do we still want to increase the stabilizer?
 
+  stopat:=fail; # to trigger error if wrong generators
   d:=Immutable(dopr.pnt);
   if IsBound(dopr.act) then
     act:=dopr.act;
@@ -1287,7 +1288,9 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
     od;
 
     if Size(G)/Size(stb)>Length(orb) then
-      #Error("did not really get stabilizer!");
+      if stopat=fail then
+	Error("generators do not match group");
+      fi;
       p:=stopat;
       while p<=Length(orb) do
 	img := act( orb[ p ], acts[ i ] );

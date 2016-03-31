@@ -222,7 +222,8 @@ function ( G, p )
 end);
 
 
-InstallMethod( ConjugacyClasses, "alternating",
+InstallMethod( ConjugacyClasses,
+    "alternating",
     true,
     [ IsNaturalAlternatingGroup ], 0,
 function ( G )
@@ -1015,8 +1016,14 @@ InstallOtherMethod( StabilizerOp,"alternating group", true,
   # the objects might be a group element: rank up	
         RankFilter(IsMultiplicativeElementWithInverse) + 
         RankFilter(IsSolvableGroup),
-        function(g, arg...) 
-    return AlternatingSubgroup(CallFuncList(Stabilizer, Concatenation([SymmetricParentGroup(g)], arg)));
+function(g, arg...) 
+local s;
+  s:=SymmetricParentGroup(g);
+  # we cannot go to the symmetric group if the acting elements are different
+  if arg[2]<>arg[3] or not IsSubset(s,arg[2]) then
+    TryNextMethod();
+  fi;
+  return AlternatingSubgroup(Stabilizer(s,arg[1],GeneratorsOfGroup(s),GeneratorsOfGroup(s),arg[4]));
 end);
 
 
@@ -1605,7 +1612,8 @@ local   S,          # <p>-Sylow subgroup of <G>, result
     return S;
 end);
 
-InstallMethod( ConjugacyClasses, "symmetric",
+InstallMethod( ConjugacyClasses,
+    "symmetric",
     true,
     [ IsNaturalSymmetricGroup ], 0,
 function ( G )

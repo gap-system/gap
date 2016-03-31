@@ -298,7 +298,7 @@ gap> H := Group (h);;
 gap> hom := GroupHomomorphismByImagesNC (G, H, [G.1], [h]);;
 gap> ImagesRepresentative(hom, G.1^2) = h^2;
 true
-gap> STOP_TEST( "mapping.tst", 5520000);
+gap> STOP_TEST( "mapping.tst", 13280000);
 
 #############################################################################
 ##
