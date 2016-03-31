@@ -206,7 +206,7 @@ endif
 
 
 $(top_srcdir)/cnf/GAP-VERSION-FILE: FORCE
-	@$(SHELL) $(top_srcdir)/cnf/GAP-VERSION-GEN
+	@cd $(top_srcdir) && $(SHELL) cnf/GAP-VERSION-GEN
 -include $(top_srcdir)/cnf/GAP-VERSION-FILE
 
 #gap_CPPFLAGS += '-DGAP_VERSION="$(GAP_VERSION)"'
