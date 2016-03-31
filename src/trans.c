@@ -2111,139 +2111,168 @@ Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g){
 // Returns the least m and r such that f ^ (m + r) = f ^ m, where f is a
 // transformation
 
-Obj FuncINDEX_PERIOD_TRANS(Obj self, Obj f){
+Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
   UInt2   *ptf2;
-  UInt4   *ptf4, *ptseen, *ptlast, *ptcurrent, *tmp;
-  UInt    deg, i, current, last, pow, len, j;
+  UInt4   *seen, *stack, *ptf4;
+  UInt    deg, i, pt, end, dist, pow, done_up_to;
   Obj     ord, out;
-  Int     s, t, gcd;
+  Int     s, t, gcd, cyc;
 
-  deg=DEG_TRANS(f);
+  if (!IS_TRANS(f)) {
+    ErrorQuit("INDEX_PERIOD_TRANS: the argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  }
 
-  ResizeTmpTrans(3*deg);
+  deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
-  ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-  ptlast=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-  ptcurrent=(UInt4*)(ADDR_OBJ(TmpTrans))+2*deg;
+  if (deg == 0) {
+    out = NEW_PLIST(T_PLIST_CYC, 2);
 
-  if(TNUM_OBJ(f)==T_TRANS2){
-    ptf2=ADDR_TRANS2(f);
-    last=deg; current=0;
-    for(i=0;i<deg;i++){ptseen[i]=0; ptcurrent[i]=0; ptlast[i]=i; }
-
-    for(i=0;i<last;i++){ /* loop over the last image */
-      if(ptseen[ptf2[ptlast[i]]]==0){
-        ptseen[ptf2[ptlast[i]]]=1;
-        ptcurrent[current++]=ptf2[ptlast[i]];
-      }
-      /* ptcurrent holds the image set of f^pow (unsorted) */
-      /* ptseen is a lookup for membership in ptcurrent */
-    }
-
-    /* find least power of f which is a permutation of its image */
-    for(pow=1;pow<=deg;){
-      last=current; current=0; tmp=ptlast;
-      ptlast=ptcurrent; ptcurrent=tmp;
-
-      for(i=0;i<deg;i++){ ptseen[i]=0; ptcurrent[i]=0;}
-
-      for(i=0;i<last;i++){ /* loop over the last image */
-        if(ptseen[ptf2[ptlast[i]]]==0){
-          ptseen[ptf2[ptlast[i]]]=1;
-          ptcurrent[current++]=ptf2[ptlast[i]];
-        }
-        /* ptcurrent holds the image set of f^pow (unsorted) */
-        /* ptseen is a lookup for membership in ptcurrent */
-      }
-      if(last==current) break;
-      pow++;
-    }
-
-    /* find the order of the perm induced by f on im_set(f^pow) */
-    /* clear the buffer bag (ptlast) */
-    for(i=0;i<deg;i++) ptlast[i]=0;
-    ord=INTOBJ_INT(1);
-    /* loop over all cycles */
-    for(i=0;i<deg;i++){
-      /* if we haven't looked at this cycle so far */
-      if(ptlast[i]==0&&ptseen[i]!=0&&ptf2[i]!=i){
-
-        /* find the length of this cycle                           */
-        len=1;
-        for(j=ptf2[i];j!=i;j=ptf2[j]){ len++; ptlast[j]=1; }
-
-        /* compute the gcd with the previously order ord           */
-        gcd=len;  s=INT_INTOBJ(ModInt(ord,INTOBJ_INT(len)));
-        while (s!= 0){ t=s;  s=gcd%s;  gcd=t; }
-        ord=ProdInt(ord,INTOBJ_INT(len/gcd));
-      }
-    }
-    out=NEW_PLIST(T_PLIST_CYC, 2);
     SET_LEN_PLIST(out, 2);
-    SET_ELM_PLIST(out, 1, INTOBJ_INT(pow));
-    SET_ELM_PLIST(out, 2, ord);
-    return out;
-  } else if(TNUM_OBJ(f)==T_TRANS4){
-    ptf4=ADDR_TRANS4(f);
-    last=deg; current=0;
-    for(i=0;i<deg;i++){ ptseen[i]=0; ptcurrent[i]=0; ptlast[i]=i; }
-
-    for(i=0;i<last;i++){ /* loop over the last image */
-      if(ptseen[ptf4[ptlast[i]]]==0){
-        ptseen[ptf4[ptlast[i]]]=1;
-        ptcurrent[current++]=ptf4[ptlast[i]];
-      }
-      /* ptcurrent holds the image set of f^pow (unsorted) */
-      /* ptseen is a lookup for membership in ptcurrent */
-    }
-
-    /* find least power of f which is a permutation of its image */
-    for(pow=1;pow<=deg;){
-      last=current; current=0; tmp=ptlast;
-      ptlast=ptcurrent; ptcurrent=tmp;
-
-      for(i=0;i<deg;i++){ptseen[i]=0; ptcurrent[i]=0;}
-
-      for(i=0;i<last;i++){ /* loop over the last image */
-        if(ptseen[ptf4[ptlast[i]]]==0){
-          ptseen[ptf4[ptlast[i]]]=1;
-          ptcurrent[current++]=ptf4[ptlast[i]];
-        }
-        /* ptcurrent holds the image set of f^pow (unsorted) */
-        /* ptseen is a lookup for membership in ptcurrent */
-      }
-      if(last==current) break;
-      pow++;
-    }
-
-    /* find the order of the perm induced by f on im_set(f^pow) */
-
-    /* clear the buffer bag (ptlast) */
-    for(i=0;i<deg;i++) ptlast[i]=0;
-    ord=INTOBJ_INT(1);
-
-    /* loop over all cycles */
-    for(i=0;i<deg;i++){
-      /* if we haven't looked at this cycle so far */
-      if(ptlast[i]==0&&ptseen[i]!=0&&ptf4[i]!=i){
-        /* find the length of this cycle                           */
-        len=1;
-        for(j=ptf4[i];j!=i;j=ptf4[j]){ len++; ptlast[j]=1; }
-
-        /* compute the gcd with the previously order ord           */
-        /* Note that since len is single precision, ord % len is to*/
-        gcd=len;  s=INT_INTOBJ(ModInt(ord,INTOBJ_INT(len)));
-        while (s!= 0){ t=s;  s=gcd%s;  gcd=t; }
-        ord=ProdInt(ord,INTOBJ_INT(len/gcd));
-      }
-    }
-    out=NEW_PLIST(T_PLIST_CYC, 2);
-    SET_LEN_PLIST(out, 2);
-    SET_ELM_PLIST(out, 1, INTOBJ_INT(pow));
-    SET_ELM_PLIST(out, 2, ord);
+    SET_ELM_PLIST(out, 1, INTOBJ_INT(0));
+    SET_ELM_PLIST(out, 2, INTOBJ_INT(0));
     return out;
   }
-  return Fail;
+
+  ResizeTmpTrans(2 * deg);
+
+  stack = (UInt4*)(ADDR_OBJ(TmpTrans)); // a stack
+  end = 0;                              // the end of the stack
+
+  // seen[pt] = 0 => haven't seen pt before
+  //
+  // seen[pt] = d where (1 <= d <= deg) 
+  //   => pt belongs to a component we've seen before and (pt)f ^ (d - 1)
+  //   belongs to a cycle
+  //
+  // seen[pt] = deg + 1 => pt belongs to a component not seen before
+  seen  = stack + deg;                  
+  for (i = 0; i < deg; i++) {
+    seen[i] = 0;
+  }
+  pow = 0; 
+  ord = INTOBJ_INT(0);
+
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    ptf2 = ADDR_TRANS2(f);
+    pt = 0;
+    done_up_to = 0;
+    while (pt < deg) {
+      // repeatedly apply f to pt until we see something we've seen already
+      while (seen[pt] == 0) {
+        seen[pt] = deg + 1;
+        stack[end] = pt;
+        end++;
+        pt = ptf2[pt];
+      }
+      if (seen[pt] <= deg) { 
+        // pt belongs to a component we've seen before
+        dist = seen[pt];
+      } else { 
+        // pt belongs to a component we've not seen before
+        cyc = 0; // length of the cycle in this component
+        do {
+          // pop from the stack until we get back to the already seen point
+          end--;
+          seen[stack[end]] = 1; 
+          cyc++;
+        } while (stack[end] != pt);
+
+        if (INT_INTOBJ(ord) == 0) {
+          // this is the first cycle we've found
+          ord = INTOBJ_INT(cyc);
+        } else {
+          // compute the gcd of the cycle length with the previous order ord
+          gcd = cyc;  
+          s = INT_INTOBJ(ModInt(ord, INTOBJ_INT(cyc)));
+          while (s != 0) {
+            t = s;  
+            s = gcd % s;  
+            gcd = t;
+          }
+          ord = ProdInt(ord, INTOBJ_INT(cyc / gcd));
+        }
+        dist = 1;
+      }
+      // record the distances of the points on the stack
+      for (;end > 0;end--) {
+        seen[stack[end - 1]] = ++dist;
+      }
+      if (dist > pow) {
+        pow = dist;
+      }
+      // find an unseen value for pt
+      pt = done_up_to;
+      while (pt < deg && seen[pt] > 0) {
+        pt++;
+      }
+      done_up_to = pt;
+    }
+    pow--;
+  } else {
+    ptf4 = ADDR_TRANS4(f);
+    pt = 0;
+    done_up_to = 0;
+    while (pt < deg) {
+      // repeatedly apply f to pt until we see something we've seen already
+      while (seen[pt] == 0) {
+        seen[pt] = deg + 1;
+        stack[end] = pt;
+        end++;
+        pt = ptf4[pt];
+      }
+      if (seen[pt] <= deg) { 
+        // pt belongs to a component we've seen before
+        dist = seen[pt];
+      } else { 
+        // pt belongs to a component we've not seen before
+        cyc = 0; // length of the cycle in this component
+        do {
+          // pop from the stack until we get back to the already seen point
+          end--;
+          seen[stack[end]] = 1; 
+          cyc++;
+        } while (stack[end] != pt);
+
+        if (INT_INTOBJ(ord) == 0) {
+          // this is the first cycle we've found
+          ord = INTOBJ_INT(cyc);
+        } else {
+          // compute the gcd of the cycle length with the previous order ord
+          gcd = cyc;  
+          s = INT_INTOBJ(ModInt(ord, INTOBJ_INT(cyc)));
+          while (s != 0) {
+            t = s;  
+            s = gcd % s;  
+            gcd = t;
+          }
+          ord = ProdInt(ord, INTOBJ_INT(cyc / gcd));
+        }
+        dist = 1;
+      }
+      // record the distances of the points on the stack
+      for (;end > 0;end--) {
+        seen[stack[end - 1]] = ++dist;
+      }
+      if (dist > pow) {
+        pow = dist;
+      }
+      // find an unseen value for pt
+      pt = done_up_to;
+      while (pt < deg && seen[pt] > 0) {
+        pt++;
+      }
+      done_up_to = pt;
+    }
+    pow--;
+  }
+
+  out = NEW_PLIST(T_PLIST_CYC, 2);
+
+  SET_LEN_PLIST(out, 2);
+  SET_ELM_PLIST(out, 1, INTOBJ_INT(pow));
+  SET_ELM_PLIST(out, 2, ord);
+  return out;
 }
 
 /* the least power of <f> which is an idempotent */
