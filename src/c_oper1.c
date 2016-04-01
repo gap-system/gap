@@ -3333,7 +3333,7 @@ static Obj  HdlrFunc14 (
  }
  /* od */
  
- /* InstallOtherMethod( oper, info, fampred, reqs, val, function ( arg )
+ /* InstallOtherMethod( oper, info, fampred, reqs, val, function ( arg... )
       re := false;
       for i  in [ 1 .. LEN_LIST( reqs ) ]  do
           re := re or IsBound( cond[i] ) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] );
@@ -3565,7 +3565,7 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "InstallMethod", function ( arg )
+ /* BIND_GLOBAL( "InstallMethod", function ( arg... )
       INSTALL_METHOD( arg, true );
       return;
   end ); */
@@ -3581,7 +3581,7 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "InstallOtherMethod", function ( arg )
+ /* BIND_GLOBAL( "InstallOtherMethod", function ( arg... )
       INSTALL_METHOD( arg, false );
       return;
   end ); */
@@ -3895,7 +3895,7 @@ static Obj  HdlrFunc1 (
  C_NEW_STRING( t_1, 10, "2b defined" );
  AssGVar( G_CallFuncList, t_1 );
  
- /* BIND_GLOBAL( "RedispatchOnCondition", function ( arg )
+ /* BIND_GLOBAL( "RedispatchOnCondition", function ( arg... )
       local  oper, info, fampred, reqs, cond, val, re, i;
       if LEN_LIST( arg ) = 5  then
           oper := arg[1];
@@ -3917,7 +3917,7 @@ static Obj  HdlrFunc1 (
       for i  in reqs  do
           val := val - SIZE_FLAGS( WITH_HIDDEN_IMPS_FLAGS( FLAGS_FILTER( i ) ) );
       od;
-      InstallOtherMethod( oper, info, fampred, reqs, val, function ( arg )
+      InstallOtherMethod( oper, info, fampred, reqs, val, function ( arg... )
             re := false;
             for i  in [ 1 .. LEN_LIST( reqs ) ]  do
                 re := re or IsBound( cond[i] ) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] );

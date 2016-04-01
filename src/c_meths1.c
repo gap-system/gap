@@ -4788,7 +4788,7 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( TLS(CurrLVars) );
  AssGVar( G_METHOD__6ARGS, t_1 );
  
- /* METHOD_XARGS := function ( arg )
+ /* METHOD_XARGS := function ( arg... )
       Error( "not supported yet" );
       return;
   end; */
@@ -4982,7 +4982,7 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( TLS(CurrLVars) );
  AssGVar( G_NEXT__METHOD__6ARGS, t_1 );
  
- /* NEXT_METHOD_XARGS := function ( arg )
+ /* NEXT_METHOD_XARGS := function ( arg... )
       Error( "not supported yet" );
       return;
   end; */
@@ -5172,7 +5172,7 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( TLS(CurrLVars) );
  AssGVar( G_CONSTRUCTOR__6ARGS, t_1 );
  
- /* CONSTRUCTOR_XARGS := function ( arg )
+ /* CONSTRUCTOR_XARGS := function ( arg... )
       Error( "not supported yet" );
       return;
   end; */
@@ -5365,7 +5365,7 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( TLS(CurrLVars) );
  AssGVar( G_NEXT__CONSTRUCTOR__6ARGS, t_1 );
  
- /* NEXT_CONSTRUCTOR_XARGS := function ( arg )
+ /* NEXT_CONSTRUCTOR_XARGS := function ( arg... )
       Error( "not supported yet" );
       return;
   end; */

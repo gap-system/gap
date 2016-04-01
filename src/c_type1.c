@@ -4410,7 +4410,7 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "NewFamily", function ( arg )
+ /* BIND_GLOBAL( "NewFamily", function ( arg... )
       if LEN_LIST( arg ) = 1  then
           return NewFamily2( TypeOfFamilies, arg[1] );
       elif LEN_LIST( arg ) = 2  then
@@ -4589,7 +4589,7 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "NewType", function ( arg )
+ /* BIND_GLOBAL( "NewType", function ( arg... )
       local  type;
       if not IsFamily( arg[1] )  then
           Error( "<family> must be a family" );
@@ -4652,7 +4652,7 @@ static Obj  HdlrFunc1 (
  /* Unbind( Subtype ); */
  AssGVar( G_Subtype, 0 );
  
- /* BIND_GLOBAL( "Subtype", function ( arg )
+ /* BIND_GLOBAL( "Subtype", function ( arg... )
       local  p;
       p := READ_LOCK( arg );
       if not IsType( arg[1] )  then
@@ -4708,7 +4708,7 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "SupType", function ( arg )
+ /* BIND_GLOBAL( "SupType", function ( arg... )
       if not IsType( arg[1] )  then
           Error( "<type> must be a type" );
       fi;
@@ -5118,7 +5118,7 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "SetMultipleAttributes", function ( arg )
+ /* BIND_GLOBAL( "SetMultipleAttributes", function ( arg... )
       local  obj, type, flags, attr, val, i, extra, nfilt, nflags;
       obj := arg[1];
       if IsAttributeStoringRep( obj )  then
@@ -5193,7 +5193,7 @@ static Obj  HdlrFunc1 (
  C_NEW_STRING( t_2, 8, "INFO_OWA" );
  CALL_1ARGS( t_1, t_2 );
  
- /* BIND_GLOBAL( "ObjectifyWithAttributes", function ( arg )
+ /* BIND_GLOBAL( "ObjectifyWithAttributes", function ( arg... )
       local  obj, type, flags, attr, val, i, extra, nflags;
       obj := arg[1];
       type := arg[2];
