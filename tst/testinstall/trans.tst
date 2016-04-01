@@ -24,9 +24,45 @@ gap> FlatKernelOfTransformation(g);
 gap> KernelOfTransformation(g);
 [  ]
 
-#provoke garbage collection
-gap> RandomTransformation(3000000);; 
-gap> KernelOfTransformation(g);
+# Test IMAGE_SET_TRANS
+gap> IMAGE_SET_TRANS(IdentityTransformation);
+[  ]
+gap> IMAGE_SET_TRANS(Transformation([1, 2, 1, 4, 5]));
+[ 1, 2, 4, 5 ]
+gap> IMAGE_SET_TRANS(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]));
+[ 1, 2, 4, 5 ]
+gap> IMAGE_SET_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1)) 
+> = [1 .. 65536];
+true
+gap> IMAGE_SET_TRANS("a");
+Error, UNSORTED_IMAGE_SET_TRANS: the argument must be a transformation (not a \
+list (string))
+gap> IMAGE_SET_TRANS(Transformation([2, 1, 2, 4, 5]));
+[ 1, 2, 4, 5 ]
+gap> IMAGE_SET_TRANS(Transformation([4, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]));
+[ 1, 2, 4, 5 ]
+gap> IMAGE_SET_TRANS(Transformation([1], [65537])) 
+> = [2 .. 65537];
+true
+
+# Test IMAGE_SET_TRANS_INT
+gap> IMAGE_SET_TRANS_INT(IdentityTransformation, -1);
+Error, IMAGE_SET_TRANS_INT: the second argument must be a non-negative integer
+gap> IMAGE_SET_TRANS_INT(IdentityTransformation, "a");
+Error, IMAGE_SET_TRANS_INT: the second argument must be a non-negative integer
+gap> IMAGE_SET_TRANS_INT(IdentityTransformation, 10);
+[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+gap> IMAGE_SET_TRANS_INT(IdentityTransformation, 0);
+[  ]
+gap> IMAGE_SET_TRANS_INT(Transformation([1, 2, 1, 4, 5]), 0);
+[  ]
+gap> IMAGE_SET_TRANS_INT(Transformation([2, 1, 1, 4, 5]), 3);
+[ 1, 2 ]
+gap> IMAGE_SET_TRANS_INT(Transformation([2, 1, 1, 4, 5]), 10);
+[ 1, 2, 4, 5, 6, 7, 8, 9, 10 ]
+gap> IMAGE_SET_TRANS_INT(Transformation([1, 2, 1, 4, 5]), 5);
+[ 1, 2, 4, 5 ]
+gap> IMAGE_SET_TRANS_INT(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 0);
 [  ]
 gap> FlatKernelOfTransformation(g);
 [  ]
