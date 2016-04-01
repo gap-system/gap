@@ -184,6 +184,7 @@ static Obj SORT_PLIST_CYC (Obj res) {
   return res;
 }
 
+
 /*******************************************************************************
 ** GAP functions for debugging purposes only
 *******************************************************************************/
@@ -898,32 +899,38 @@ Obj FuncFLAT_KERNEL_TRANS_INT (Obj self, Obj f, Obj n) {
   return 0L;
 }
 
-// Returns the image set of the transformation f on [1 .. n] where n =
-// DegreeOfTransformation(f)
+// Returns the duplicate free list of images of the transformation f on [1 ..
+// n] where n = DegreeOfTransformation(f). Note that this might not be sorted.
 
-Obj FuncIMAGE_SET_TRANS (Obj self, Obj f) {
+Obj FuncUNSORTED_IMAGE_SET_TRANS (Obj self, Obj f) {
 
   if (TNUM_OBJ(f) == T_TRANS2) {
     if (IMG_TRANS(f) == NULL) {
       INIT_TRANS2(f);
-    }
-    if(!IS_SSORT_LIST(IMG_TRANS(f))){
-      return SORT_PLIST_CYC(IMG_TRANS(f));
     }
     return IMG_TRANS(f);
   } else if (TNUM_OBJ(f) == T_TRANS4) {
     if (IMG_TRANS(f) == NULL) {
       INIT_TRANS4(f);
     }
-    if(!IS_SSORT_LIST(IMG_TRANS(f))){
-      return SORT_PLIST_CYC(IMG_TRANS(f));
-    }
     return IMG_TRANS(f);
   }
-
-  ErrorQuit("IMAGE_SET_TRANS: the first argument must be a "
+  ErrorQuit("IMAGE_UNSORTED_TRANS: the first argument must be a "
             "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
-  return 0L;
+   
+}
+
+// Returns the image set of the transformation f on [1 .. n] where n =
+// DegreeOfTransformation(f)
+
+Obj FuncIMAGE_SET_TRANS (Obj self, Obj f) {
+
+  Obj out = FuncUNSORTED_IMAGE_SET_TRANS(self, f);
+
+  if (!IS_SSORT_LIST(out)) {
+    return SORT_PLIST_CYC(out);
+  }
+  return out;
 }
 
 // Returns the image set of the transformation f on [1 .. n]
@@ -4584,6 +4591,10 @@ static StructGVarFunc GVarFuncs [] = {
   { "IMAGE_SET_TRANS", 1, "f",
      FuncIMAGE_SET_TRANS,
     "src/trans.c:FuncIMAGE_SET_TRANS" },
+  
+  { "UNSORTED_IMAGE_SET_TRANS", 1, "f",
+     FuncUNSORTED_IMAGE_SET_TRANS,
+    "src/trans.c:FuncUNSORTED_IMAGE_SET_TRANS" },
 
   { "IMAGE_SET_TRANS_INT", 2, "f, n",
      FuncIMAGE_SET_TRANS_INT,
