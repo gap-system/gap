@@ -204,6 +204,24 @@ gapinclude_HEADERS += \
     src/hpc/zmqgap.h
 endif
 
+if COMPAT_MODE
+# TODO:
+# create the following dirs and files in the build tree:
+#  sysinfo.gap
+#  src/
+#    foo.h    # symlink to $GAPROOT/foo.h
+#  bin/
+#    fakearch-default32/    # or ...64/
+#      config.h             # symlink to ../../src/config.h
+#
+# Content of sysinfo.gap:
+#   GAParch=fake-arch
+#   GAParch_system=fake-arch
+#   GAParch_abi=64-bit
+
+
+endif
+
 
 $(top_srcdir)/cnf/GAP-VERSION-FILE: FORCE
 	@cd $(top_srcdir) && $(SHELL) cnf/GAP-VERSION-GEN
