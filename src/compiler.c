@@ -758,9 +758,11 @@ void            Emit (
     va_start( ap, fmt );
     for ( p = fmt; *p != '\0'; p++ ) {
 
-        /* print an indent                                                 */
-        if ( 0 < EmitIndent2 && *p == '}' ) EmitIndent2--;
-        while ( 0 < EmitIndent2-- )  Pr( " ", 0L, 0L );
+        /* print an indent, except for preprocessor commands               */
+        if ( *fmt != '#' ) {
+            if ( 0 < EmitIndent2 && *p == '}' ) EmitIndent2--;
+            while ( 0 < EmitIndent2-- )  Pr( " ", 0L, 0L );
+        }
 
         /* format an argument                                              */
         if ( *p == '%' ) {
