@@ -296,6 +296,11 @@ dnl check for directory access functions
 AC_HEADER_DIRENT
 AC_CHECK_FUNCS([opendir closedir readdir])
 
+dnl check whether libm / -lm is available and necessary
+AC_SEARCH_LIBS([cos], [m], [], [
+  AC_MSG_ERROR([unable to find the cos() function])
+])
+
 dnl check for math functions
 AC_CHECK_FUNCS([log2 log10 log1p exp2 expm1 exp10 trunc])
 
