@@ -578,45 +578,6 @@ gap> g:=LeftOne(f);;
 gap> ForAll(ImageSetOfTransformation(e), i-> ((i)^f)^g=i);
 false
 
-# TRANS_IMG_CONJ
-gap> f:=RandomTransformation(100000);;
-gap> g:=LeftOne(f);;
-gap> p:=TRANS_IMG_CONJ(f, g);;                                        
-gap> OnTuples(ImageListOfTransformation(f, 100000),p)
-> =ImageListOfTransformation(g, 100000);
-true
-gap> OnTuples(ImageListOfTransformation(g, 100000), p^-1)
-> =ImageListOfTransformation(f, 100000);
-true
-gap> q:=TRANS_IMG_CONJ(g, f);;
-gap> q=p^-1;
-true
-gap> f:=RandomTransformation(100000);;
-gap> g:=LeftOne(f);;
-gap> p:=TRANS_IMG_CONJ(f, g);;
-gap> OnTuples(ImageListOfTransformation(f, 100000), p)
-> =ImageListOfTransformation(g, 100000);
-true
-gap> OnTuples(ImageListOfTransformation(g, 100000), p^-1)
-> =ImageListOfTransformation(f, 100000);
-true
-gap> q:=TRANS_IMG_CONJ(g, f);;
-gap> q=p^-1;
-true
-gap> f:=Transformation( [ 7, 2, 8, 3, 9, 5, 8, 2, 9, 3, 12, 9 ] );;
-gap> g:=LeftOne(f);
-Transformation( [ 1, 2, 3, 4, 5, 6, 3, 2, 5, 4, 11, 5 ] )
-gap> p:=TRANS_IMG_CONJ(f, g); 
-(1,7)(3,4,8)(5,6,9)(11,12)
-gap> OnTuples(ImageListOfTransformation(f), p);                                
-[ 1, 2, 3, 4, 5, 6, 3, 2, 5, 4, 11, 5 ]
-gap> ImageListOfTransformation(g);  
-[ 1, 2, 3, 4, 5, 6, 3, 2, 5, 4, 11, 5 ]
-gap> OnSets(ImageSetOfTransformation(f), p);
-[ 1, 2, 3, 4, 5, 6, 11 ]
-gap> ImageSetOfTransformation(g);
-[ 1, 2, 3, 4, 5, 6, 11 ]
-
 # IndexPeriodOfTransformation, SmallestIdempotentPower
 gap> f:=Transformation( [ 4, 3, 8, 9, 3, 5, 8, 10, 5, 6, 2, 8 ] );;
 gap> x:=IndexPeriodOfTransformation(f);
