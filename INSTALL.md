@@ -185,9 +185,8 @@ are telling GAP that the GMP library is reachable with the standard search
 path, under `/usr` or `/usr/local`.
 
 You may instead give the complete path to a directory which contains the
-library. If the argument is `no`, original GAP large integer functionality
-will be used instead of GMP.
-
+library.
+ 
 Note that --with-gmp is equivalent to --with-gmp=yes, and that the option
 build GAP without GMP has been removed.
 
