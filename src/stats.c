@@ -1638,6 +1638,7 @@ int volatile RealExecStatCopied;
 
 static void CheckAndRespondToAlarm(void) {
   if ( SyAlarmHasGoneOff ) {
+    SyAlarmHasGoneOff = 0;
     assert(NumAlarmJumpBuffers);
     syLongjmp(AlarmJumpBuffers[--NumAlarmJumpBuffers],1);
   }
