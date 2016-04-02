@@ -2726,20 +2726,20 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
         SyntaxError( "; expected");
     }
 
-    /* check for dual semicolon                                            */
-    if ( *TLS(In) == ';' ) {
-        GetSymbol();
-        if (dualSemicolon) *dualSemicolon = 1;
-    }
-    else {
-        if (dualSemicolon) *dualSemicolon = 0;
-    }
-
-    /* end the interpreter                                                 */
-    if ( ! READ_ERROR() ) {
+    /* Note that GetSymbol below potentially calls into the interpreter
+       again, and if an error occurred the interpreter is not in the correct
+       state to execute ReadLine on an input stream, leading to crashes */
+    if (!READ_ERROR()) {
         type = IntrEnd( 0UL );
-    }
-    else {
+
+        /* check for dual semicolon */
+        if ( *TLS(In) == ';' ) {
+            GetSymbol();
+            if (dualSemicolon) *dualSemicolon = 1;
+        } else {
+            if (dualSemicolon) *dualSemicolon = 0;
+        }
+    } else {
         IntrEnd( 1UL );
         type = STATUS_ERROR;
     }
