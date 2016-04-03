@@ -1816,7 +1816,8 @@ InstallMethod( Socle, "for elementary abelian groups",
 ##
 InstallMethod( Socle, "for nilpotent groups",
               [ IsGroup and IsNilpotentGroup ],
-              SUM_FLAGS,
+              RankFilter( IsGroup and IsFinite and IsNilpotentGroup )
+              - RankFilter( IsGroup and IsNilpotentGroup ),
   function(G)
     local P, C, size, gen, abinv, indgen, i, p, q, soc;
 
@@ -4673,6 +4674,14 @@ InstallMethod( MinimalNormalSubgroups,
     function( G )
     local nt, c, r, U;
 
+    # force an IsNilpotent check
+    # should have and IsSolvable check, as well,
+    # but methods for solvable groups are only in CRISP
+    # which aggeressively checks for solvability, anyway
+    if IsNilpotentGroup(G) then
+      return MinimalNormalSubgroups( G );
+    fi;
+
     nt:= [];
     for c in ConjugacyClasses( G ) do
       r:= Representative( c );
@@ -4686,6 +4695,10 @@ InstallMethod( MinimalNormalSubgroups,
     od;
     return nt;
     end );
+
+RedispatchOnCondition(MinimalNormalSubgroups, true,
+    [IsGroup],
+    [IsFinite], 0);
 
 
 #############################################################################
@@ -4723,8 +4736,8 @@ InstallMethod( MinimalNormalSubgroups, "for nilpotent groups",
   # IsGroup and IsFinite ranks higher than IsGroup and IsNilpotentGroup
   # so we have to increase the rank, otherwise the method for computation
   # by conjugacy classes above is selected.
-  RankFilter(IsGroup and IsFinite)
-  - RankFilter(IsGroup and IsNilpotentGroup),
+  RankFilter( IsGroup and IsNilpotentGroup and IsFinite )
+  - RankFilter( IsGroup and IsNilpotentGroup ),
   function(G)
     local soc, i, p, primes, gen, min, MinimalSubgroupsOfPGroupByGenerators;
 

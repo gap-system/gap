@@ -43,6 +43,9 @@ true
 gap> k := 5;; P := SylowSubgroup(SymmetricGroup(4*k), 2);; A := Group((4*k+1, 4*k+2, 4*k+3));; G := ClosureGroup(P, A);; IsNilpotentGroup(G);;
 gap> Set(MinimalNormalSubgroups(G)) = Set([ Group([ (1,2)(3,4)(5,6)(7,8)(9,10)(11,12)(13,14)(15,16) ]), Group([ (17,18)(19,20) ]), Group([ (1,2)(3,4)(5,6)(7,8)(9,10)(11,12)(13,14)(15,16)(17,18)(19,20) ]), Group([ (21,22,23) ]) ]);
 true
+gap> G := SmallGroup(24,12);;
+gap> SortedList(List(MinimalNormalSubgroups(G), IdGroup));
+[ [ 4, 2 ] ]
 gap> A := DihedralGroup(16);;
 gap> B := SmallGroup(27, 3);;
 gap> C := SmallGroup(125, 4);;
