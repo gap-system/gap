@@ -2247,7 +2247,7 @@ local n,i,s;
   # should have and IsSolvable check, as well,
   # but methods for solvable groups are only in CRISP
   # which aggeressively checks for solvability, anyway
-  if IsNilpotentGroup(G) then
+  if (not HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
     return Socle(G);
   fi;
 
