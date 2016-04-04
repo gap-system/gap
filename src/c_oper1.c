@@ -147,6 +147,8 @@ static GVar G_InstallMethod;
 static Obj  GF_InstallMethod;
 static GVar G_PositionSortedOddPositions;
 static Obj  GF_PositionSortedOddPositions;
+static GVar G_Immutable;
+static Obj  GF_Immutable;
 static GVar G_CallFuncList;
 static Obj  GF_CallFuncList;
 
@@ -2769,14 +2771,20 @@ static Obj  HdlrFunc14 (
    t_2 = ElmsListCheck( l_known, t_3 );
    AsssListCheck( l_known, t_1, t_2 );
    
-   /* known[i] := key; */
+   /* known[i] := Immutable( key ); */
    CHECK_INT_POS( l_i )
-   C_ASS_LIST_FPL( l_known, l_i, a_key )
+   t_2 = GF_Immutable;
+   t_1 = CALL_1ARGS( t_2, a_key );
+   CHECK_FUNC_RESULT( t_1 )
+   C_ASS_LIST_FPL( l_known, l_i, t_1 )
    
-   /* known[i + 1] := erg; */
+   /* known[i + 1] := Immutable( erg ); */
    C_SUM_FIA( t_1, l_i, INTOBJ_INT(1) )
    CHECK_INT_POS( t_1 )
-   C_ASS_LIST_FPL( l_known, t_1, l_erg )
+   t_3 = GF_Immutable;
+   t_2 = CALL_1ARGS( t_3, l_erg );
+   CHECK_FUNC_RESULT( t_2 )
+   C_ASS_LIST_FPL( l_known, t_1, t_2 )
    
   }
   /* fi */
@@ -2940,14 +2948,20 @@ static Obj  HdlrFunc16 (
   t_2 = ElmsListCheck( l_known, t_3 );
   AsssListCheck( l_known, t_1, t_2 );
   
-  /* known[i] := key; */
+  /* known[i] := Immutable( key ); */
   CHECK_INT_POS( l_i )
-  C_ASS_LIST_FPL( l_known, l_i, a_key )
+  t_2 = GF_Immutable;
+  t_1 = CALL_1ARGS( t_2, a_key );
+  CHECK_FUNC_RESULT( t_1 )
+  C_ASS_LIST_FPL( l_known, l_i, t_1 )
   
-  /* known[i + 1] := obj; */
+  /* known[i + 1] := Immutable( obj ); */
   C_SUM_FIA( t_1, l_i, INTOBJ_INT(1) )
   CHECK_INT_POS( t_1 )
-  C_ASS_LIST_FPL( l_known, t_1, a_obj )
+  t_3 = GF_Immutable;
+  t_2 = CALL_1ARGS( t_3, a_obj );
+  CHECK_FUNC_RESULT( t_2 )
+  C_ASS_LIST_FPL( l_known, t_1, t_2 )
   
  }
  /* fi */
@@ -3125,8 +3139,8 @@ static Obj  HdlrFunc11 (
           i := PositionSortedOddPositions( known, key );
           if LEN_LIST( known ) < i or known[i] <> key  then
               known{[ i + 2 .. LEN_LIST( known ) + 2 ]} := known{[ i .. LEN_LIST( known ) ]};
-              known[i] := key;
-              known[i + 1] := erg;
+              known[i] := Immutable( key );
+              known[i + 1] := Immutable( erg );
           fi;
       fi;
       return known[i + 1];
@@ -3235,8 +3249,8 @@ static Obj  HdlrFunc11 (
       i := PositionSortedOddPositions( known, key );
       if LEN_LIST( known ) < i or known[i] <> key  then
           known{[ i + 2 .. LEN_LIST( known ) + 2 ]} := known{[ i .. LEN_LIST( known ) ]};
-          known[i] := key;
-          known[i + 1] := obj;
+          known[i] := Immutable( key );
+          known[i + 1] := Immutable( obj );
       fi;
       return;
   end ); */
@@ -4166,8 +4180,8 @@ static Obj  HdlrFunc1 (
                 i := PositionSortedOddPositions( known, key );
                 if LEN_LIST( known ) < i or known[i] <> key  then
                     known{[ i + 2 .. LEN_LIST( known ) + 2 ]} := known{[ i .. LEN_LIST( known ) ]};
-                    known[i] := key;
-                    known[i + 1] := erg;
+                    known[i] := Immutable( key );
+                    known[i + 1] := Immutable( erg );
                 fi;
             fi;
             return known[i + 1];
@@ -4192,8 +4206,8 @@ static Obj  HdlrFunc1 (
             i := PositionSortedOddPositions( known, key );
             if LEN_LIST( known ) < i or known[i] <> key  then
                 known{[ i + 2 .. LEN_LIST( known ) + 2 ]} := known{[ i .. LEN_LIST( known ) ]};
-                known[i] := key;
-                known[i + 1] := obj;
+                known[i] := Immutable( key );
+                known[i + 1] := Immutable( obj );
             fi;
             return;
         end );
@@ -4367,47 +4381,48 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "DeclareAttribute", &GF_DeclareAttribute );
  InitFopyGVar( "InstallMethod", &GF_InstallMethod );
  InitFopyGVar( "PositionSortedOddPositions", &GF_PositionSortedOddPositions );
+ InitFopyGVar( "Immutable", &GF_Immutable );
  InitFopyGVar( "CallFuncList", &GF_CallFuncList );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(52080042)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/oper1.g:FileName(52080042)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(52080042)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](52080042)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(52080042)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](52080042)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(52080042)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](52080042)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(52080042)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](52080042)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(52080042)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](52080042)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(52080042)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](52080042)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(52080042)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](52080042)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(52080042)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](52080042)" );
- InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(52080042)" );
- InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](52080042)" );
- InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(52080042)" );
- InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](52080042)" );
- InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(52080042)" );
- InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](52080042)" );
- InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(52080042)" );
- InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](52080042)" );
- InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(52080042)" );
- InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](52080042)" );
- InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(52080042)" );
- InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](52080042)" );
- InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(52080042)" );
- InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](52080042)" );
- InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/oper1.g:HdlrFunc16(52080042)" );
- InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/oper1.g:NameFunc[16](52080042)" );
- InitHandlerFunc( HdlrFunc17, "GAPROOT/lib/oper1.g:HdlrFunc17(52080042)" );
- InitGlobalBag( &(NameFunc[17]), "GAPROOT/lib/oper1.g:NameFunc[17](52080042)" );
- InitHandlerFunc( HdlrFunc18, "GAPROOT/lib/oper1.g:HdlrFunc18(52080042)" );
- InitGlobalBag( &(NameFunc[18]), "GAPROOT/lib/oper1.g:NameFunc[18](52080042)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-61140867)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/oper1.g:FileName(-61140867)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-61140867)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-61140867)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-61140867)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-61140867)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-61140867)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-61140867)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-61140867)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-61140867)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-61140867)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-61140867)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-61140867)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-61140867)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-61140867)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-61140867)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-61140867)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-61140867)" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-61140867)" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-61140867)" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-61140867)" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-61140867)" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-61140867)" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-61140867)" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-61140867)" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-61140867)" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-61140867)" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-61140867)" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-61140867)" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-61140867)" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-61140867)" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-61140867)" );
+ InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/oper1.g:HdlrFunc16(-61140867)" );
+ InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/oper1.g:NameFunc[16](-61140867)" );
+ InitHandlerFunc( HdlrFunc17, "GAPROOT/lib/oper1.g:HdlrFunc17(-61140867)" );
+ InitGlobalBag( &(NameFunc[17]), "GAPROOT/lib/oper1.g:NameFunc[17](-61140867)" );
+ InitHandlerFunc( HdlrFunc18, "GAPROOT/lib/oper1.g:HdlrFunc18(-61140867)" );
+ InitGlobalBag( &(NameFunc[18]), "GAPROOT/lib/oper1.g:NameFunc[18](-61140867)" );
  
  /* return success */
  return 0;
@@ -4496,6 +4511,7 @@ static Int InitLibrary ( StructInitInfo * module )
  G_DeclareAttribute = GVarName( "DeclareAttribute" );
  G_InstallMethod = GVarName( "InstallMethod" );
  G_PositionSortedOddPositions = GVarName( "PositionSortedOddPositions" );
+ G_Immutable = GVarName( "Immutable" );
  G_CallFuncList = GVarName( "CallFuncList" );
  
  /* record names used in handlers */
@@ -4650,6 +4666,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_DeclareAttribute = GVarName( "DeclareAttribute" );
  G_InstallMethod = GVarName( "InstallMethod" );
  G_PositionSortedOddPositions = GVarName( "PositionSortedOddPositions" );
+ G_Immutable = GVarName( "Immutable" );
  G_CallFuncList = GVarName( "CallFuncList" );
  
  /* record names used in handlers */
@@ -4724,7 +4741,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 52080042,
+ /* crc         = */ -61140867,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,
