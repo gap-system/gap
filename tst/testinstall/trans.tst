@@ -1271,6 +1271,82 @@ gap> COMPONENT_REPS_TRANS("a");
 Error, COMPONENT_REPS_TRANS: the argument must be a transformation (not a list\
  (string))
 
+# NR_COMPONENTS_TRANS
+gap> NR_COMPONENTS_TRANS(Transformation([1, 2, 1]));
+2
+gap> NR_COMPONENTS_TRANS(Transformation([1, 1, 1]));
+1
+gap> NR_COMPONENTS_TRANS(Transformation([1, 1, 2]));
+1
+gap> f := Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]);;
+gap> NR_COMPONENTS_TRANS(f);
+1
+gap> f := Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12, 11, 14, 13, 15,
+>                         16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+>                         31, 30, 29]);;
+gap> NR_COMPONENTS_TRANS(f);
+20
+gap> NR_COMPONENTS_TRANS(IdentityTransformation);
+0
+gap> f :=
+> Transformation([9, 45, 53, 15, 42, 97, 71, 66, 7, 88, 6, 98, 95, 36, 20, 59,
+> 94, 6, 81, 70, 65, 29, 78, 37, 74, 48, 52, 4, 32, 93, 18, 13, 55, 94, 49, 42,
+> 99, 46, 35, 84, 52, 79, 80, 7, 85, 53, 89, 70, 79, 27, 84, 99, 9, 73, 33, 70,
+> 77, 69, 41, 18, 63, 29, 42, 33, 75, 56, 79, 63, 89, 90, 64, 98, 49, 35, 100,
+> 89, 71, 3, 70, 20, 2, 26, 11, 39, 9, 7, 89, 90, 48, 89, 85, 8, 56, 42, 10,
+> 61, 25, 98, 55, 39]);;
+gap> NR_COMPONENTS_TRANS(f);
+3
+gap> f := Transformation([65537 .. 70000], 
+>                        [65537 .. 70000] * 0 + 1) 
+>         * (14918, 184, 141)(14140, 124);;
+gap> NR_COMPONENTS_TRANS(f);
+65533
+gap> NR_COMPONENTS_TRANS("a");
+Error, NR_COMPONENTS_TRANS: the argument must be a transformation (not a list \
+(string))
+
+# COMPONENTS_TRANS
+gap> COMPONENTS_TRANS(Transformation([1, 2, 1]));
+[ [ 1, 3 ], [ 2 ] ]
+gap> COMPONENTS_TRANS(Transformation([1, 1, 1]));
+[ [ 1, 2, 3 ] ]
+gap> COMPONENTS_TRANS(Transformation([1, 1, 2]));
+[ [ 1, 2, 3 ] ]
+gap> COMPONENTS_TRANS(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]));
+[ [ 1, 2, 6, 9, 3, 7, 4, 5, 8, 10 ] ]
+gap> COMPONENTS_TRANS(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12, 11,
+>                                     14, 13, 15, 16, 17, 18, 19, 20, 21, 22,
+>                                     23, 24, 25, 26, 27, 28, 31, 30, 29]));;
+gap> COMPONENTS_TRANS(IdentityTransformation);
+[  ]
+gap> COMPONENTS_TRANS(Transformation([9, 45, 53, 15, 42, 97, 71, 66, 7, 88, 6,
+>                                     98, 95, 36, 20, 59, 94, 6, 81, 70, 65,
+>                                     29, 78, 37, 74, 48, 52, 4, 32, 93, 18,
+>                                     13, 55, 94, 49, 42, 99, 46, 35, 84, 52,
+>                                     79, 80, 7, 85, 53, 89, 70, 79, 27, 84,
+>                                     99, 9, 73, 33, 70, 77, 69, 41, 18, 63,
+>                                     29, 42, 33, 75, 56, 79, 63, 89, 90, 64,
+>                                     98, 49, 35, 100, 89, 71, 3, 70, 20, 2,
+>                                     26, 11, 39, 9, 7, 89, 90, 48, 89, 85, 8,
+>                                     56, 42, 10, 61, 25, 98, 55, 39]));
+[ [ 1, 9, 7, 71, 64, 33, 55, 2, 45, 85, 3, 53, 16, 59, 41, 52, 99, 19, 81, 
+      23, 78, 24, 37, 27, 38, 46, 44, 50, 57, 77, 86, 91 ], 
+  [ 4, 15, 20, 70, 90, 89, 48, 5, 42, 79, 6, 97, 25, 74, 35, 49, 8, 66, 56, 
+      10, 88, 11, 13, 95, 14, 36, 17, 94, 18, 21, 65, 75, 100, 39, 22, 29, 
+      32, 26, 28, 30, 93, 31, 34, 40, 84, 43, 80, 47, 51, 54, 73, 58, 69, 60, 
+      61, 63, 62, 67, 68, 76, 82, 83, 87, 92, 96 ], [ 12, 98, 72 ] ]
+gap> comps := COMPONENTS_TRANS(Transformation([65537 .. 70000], 
+>                                             [65537 .. 70000] * 0 + 1) 
+>                              * (14918, 184, 141)(14140, 124));;
+gap> Length(comps);
+65533
+gap> Union(comps) = [1 .. 70000];
+true
+gap> COMPONENTS_TRANS("a");
+Error, COMPONENTS_TRANS: the argument must be a transformation (not a list (st\
+ring))
+
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;
