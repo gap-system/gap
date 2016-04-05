@@ -2391,16 +2391,18 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
   return out;
 }
 
-// Returns the least integer m such that f^m is an idempotent
+// Returns the least integer m such that f ^ m is an idempotent
 
-Obj FuncSMALLEST_IDEM_POW_TRANS( Obj self, Obj f ){
+Obj FuncSMALLEST_IDEM_POW_TRANS (Obj self, Obj f) {
   Obj x, ind, per, pow;
 
-  x=FuncINDEX_PERIOD_TRANS(self, f);
-  ind=ELM_PLIST(x, 1);
-  per=ELM_PLIST(x, 2);
-  pow=per;
-  while(LtInt(pow, ind)) pow=SumInt(pow, per);
+  x = FuncINDEX_PERIOD_TRANS(self, f);
+  ind = ELM_PLIST(x, 1);
+  per = ELM_PLIST(x, 2);
+  pow = per;
+  while (LtInt(pow, ind)) {
+    pow = SumInt(pow, per);
+  }
   return pow;
 }
 
@@ -2409,86 +2411,97 @@ Obj FuncSMALLEST_IDEM_POW_TRANS( Obj self, Obj f ){
 // kernel of transformation. This assumes (but doesn't check) that <p> is a
 // permutation of [1 .. Length(<ker>)] regardless of its degree.
 
-Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p){
+Obj FuncPOW_KER_PERM (Obj self, Obj ker, Obj p) {
   UInt    len, rank, i, dep;
   Obj     out;
   UInt4   *ptcnj, *ptlkp, *ptp4;
   UInt2   *ptp2;
 
-  len=LEN_LIST(ker);
-  if(len==0){
-    out=NEW_PLIST(T_PLIST_EMPTY+IMMUTABLE, len);
+  len = LEN_LIST(ker);
+
+  if (len == 0) {
+    out = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, len);
     SET_LEN_PLIST(out, len);
     return out;
-  } else {
-    out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
-    SET_LEN_PLIST(out, len);
   }
 
-  ResizeTmpTrans(2*len);
-  ptcnj = (UInt4*) ADDR_OBJ(TmpTrans);
+  out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, len);
+  SET_LEN_PLIST(out, len);
+
+  ResizeTmpTrans(2 * len);
+  ptcnj = (UInt4 *) ADDR_OBJ(TmpTrans);
 
   rank  = 1;
-  ptlkp = ptcnj+len;
+  ptlkp = ptcnj + len;
 
-  if(TNUM_OBJ(p)==T_PERM2){
+  if (TNUM_OBJ(p) == T_PERM2) {
     dep  = DEG_PERM2(p);
     ptp2 = ADDR_PERM2(p);
 
-    if(dep<=len){
+    if (dep <= len) {
       // form the conjugate in ptcnj and init the lookup
-      for(i=0;i<dep;i++){ //<p^-1*g*p> then <g> with ker(<g>)=<ker>
-        ptcnj[ptp2[i]]=ptp2[INT_INTOBJ(ELM_LIST(ker, i+1))-1];
-        ptlkp[i]=0;
+      for (i = 0; i < dep; i++) {
+        // < p ^ - 1 * g * p > then < g > with ker( < g >) = < ker >
+        ptcnj[ptp2[i]] = ptp2[INT_INTOBJ(ELM_LIST(ker, i + 1)) - 1];
+        ptlkp[i] = 0;
       }
-      for(;i<len;i++){
-        ptcnj[i]=IMAGE((UInt) INT_INTOBJ(ELM_LIST(ker, i+1))-1, ptp2, dep);
-        ptlkp[i]=0;
+      for (; i < len; i++) {
+        ptcnj[i] = IMAGE((UInt) INT_INTOBJ(ELM_LIST(ker, i + 1)) - 1, ptp2, dep);
+        ptlkp[i] = 0;
       }
 
-    }else{ //dep>len but p fixes [1..len] setwise
+    } else {
+      //dep > len but p fixes [1..len] setwise
 
       // form the conjugate in ptcnj and init the lookup
-      for(i=0;i<len;i++){ //<p^-1*g*p> then <g> with ker(<g>)=<ker>
-        ptcnj[ptp2[i]]=ptp2[INT_INTOBJ(ELM_LIST(ker, i+1))-1];
-        ptlkp[i]=0;
+      for (i = 0; i < len; i++) {
+        // < p ^ - 1 * g * p > then < g > with ker( < g >) = < ker >
+        ptcnj[ptp2[i]] = ptp2[INT_INTOBJ(ELM_LIST(ker, i + 1)) - 1];
+        ptlkp[i] = 0;
       }
     }
 
     // form the flat kernel
-    for(i=0;i<len;i++){
-      if(ptlkp[ptcnj[i]]==0) ptlkp[ptcnj[i]]=rank++;
-      SET_ELM_PLIST(out, i+1, INTOBJ_INT(ptlkp[ptcnj[i]]));
+    for (i = 0; i < len; i++) {
+      if (ptlkp[ptcnj[i]] == 0) {
+        ptlkp[ptcnj[i]] = rank++;
+      }
+      SET_ELM_PLIST(out, i + 1, INTOBJ_INT(ptlkp[ptcnj[i]]));
     }
     return out;
-  } else if(TNUM_OBJ(p)==T_PERM4){
+  } else if (TNUM_OBJ(p) == T_PERM4) {
     dep  = DEG_PERM4(p);
     ptp4 = ADDR_PERM4(p);
 
-    if(dep<=len){
+    if (dep <= len) {
       // form the conjugate in ptcnj and init the lookup
-      for(i=0;i<dep;i++){ //<p^-1*g*p> then <g> with ker(<g>)=<ker>
-        ptcnj[ptp4[i]]=ptp4[INT_INTOBJ(ELM_LIST(ker, i+1))-1];
-        ptlkp[i]=0;
+      for (i = 0; i < dep; i++) {
+        // < p ^ - 1 * g * p > then < g > with ker( < g >) = < ker >
+        ptcnj[ptp4[i]] = ptp4[INT_INTOBJ(ELM_LIST(ker, i + 1)) - 1];
+        ptlkp[i] = 0;
       }
-      for(;i<len;i++){
-        ptcnj[i]=IMAGE((UInt) INT_INTOBJ(ELM_LIST(ker, i+1))-1, ptp4, dep);
-        ptlkp[i]=0;
+      for (; i < len; i++) {
+        ptcnj[i] = IMAGE((UInt) INT_INTOBJ(ELM_LIST(ker, i + 1)) - 1, ptp4, dep);
+        ptlkp[i] = 0;
       }
 
-    }else{ //dep>len but p fixes [1..len] setwise
+    } else {
+      //dep > len but p fixes [1..len] setwise
 
       // form the conjugate in ptcnj and init the lookup
-      for(i=0;i<len;i++){ //<p^-1*g*p> then <g> with ker(<g>)=<ker>
-        ptcnj[ptp4[i]]=ptp4[INT_INTOBJ(ELM_LIST(ker, i+1))-1];
-        ptlkp[i]=0;
+      for (i = 0; i < len; i++) {
+        // < p ^ - 1 * g * p > then < g > with ker( < g >) = < ker >
+        ptcnj[ptp4[i]] = ptp4[INT_INTOBJ(ELM_LIST(ker, i + 1)) - 1];
+        ptlkp[i] = 0;
       }
     }
 
     // form the flat kernel
-    for(i=0;i<len;i++){
-      if(ptlkp[ptcnj[i]]==0) ptlkp[ptcnj[i]]=rank++;
-      SET_ELM_PLIST(out, i+1, INTOBJ_INT(ptlkp[ptcnj[i]]));
+    for (i = 0; i < len; i++) {
+      if (ptlkp[ptcnj[i]] == 0) {
+        ptlkp[ptcnj[i]] = rank++;
+      }
+      SET_ELM_PLIST(out, i + 1, INTOBJ_INT(ptlkp[ptcnj[i]]));
     }
     return out;
   }
@@ -2507,97 +2520,126 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p){
 // special case should be removed, and [0] should be replaced by [1 .. n] in
 // the Semigroup package.
 
-Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
+Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
   UInt2   *ptf2;
   UInt4   *ptf4, *pttmp;
   UInt    deg, i, j, rank, len;
   Obj     out;
 
-  if(INT_INTOBJ(ELM_LIST(ker, LEN_LIST(ker)))==0){
+  if (INT_INTOBJ(ELM_LIST(ker, LEN_LIST(ker))) == 0) {
     return FuncFLAT_KERNEL_TRANS_INT(self, f, n);
   }
 
-  len=LEN_LIST(ker);
+  len = LEN_LIST(ker);
+  rank = 1;
 
-  rank=1;
-
-  if(TNUM_OBJ(f)==T_TRANS2){
-    deg=INT_INTOBJ(FuncDegreeOfTransformation(self,f));
-    if(len>=deg){
-      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
+    if (len >= deg) {
+      out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, len);
       SET_LEN_PLIST(out, len);
-      pttmp=ResizeInitTmpTrans(len);
-      ptf2=ADDR_TRANS2(f);
-      for(i=0;i<deg;i++){ //<f> then <g> with ker(<g>)=<ker>
-        j=INT_INTOBJ(ELM_LIST(ker, ptf2[i]+1))-1; // f first!
-        if(pttmp[j]==0) pttmp[j]=rank++;
-        SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
+      pttmp = ResizeInitTmpTrans(len);
+      ptf2 = ADDR_TRANS2(f);
+      for (i = 0; i < deg; i++) {
+        // <f> then <g> with ker(<g>) = <ker>
+        j = INT_INTOBJ(ELM_LIST(ker, ptf2[i] + 1)) - 1; // f first!
+        if (pttmp[j] == 0) {
+          pttmp[j] = rank++;
+        }
+        SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
       }
       i++;
-      for(;i<=len;i++){   //just <ker>
-        j=INT_INTOBJ(ELM_LIST(ker,i))-1;
-        if(pttmp[j]==0) pttmp[j]=rank++;
+      for (; i <= len; i++) {
+        //just < ker >
+        j = INT_INTOBJ(ELM_LIST(ker, i)) - 1;
+        if (pttmp[j] == 0) {
+          pttmp[j] = rank++;
+        }
         SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
       }
-    } else {//len<deg
-      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, deg);
+    } else {
+      //len < deg
+      out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, deg);
       SET_LEN_PLIST(out, deg);
-      pttmp=ResizeInitTmpTrans(deg);
-      ptf2=ADDR_TRANS2(f);
-      for(i=0;i<len;i++){  //<f> then <g> with ker(<g>)=<ker>
-        j=INT_INTOBJ(ELM_LIST(ker, ptf2[i]+1))-1; // f first!
-        if(pttmp[j]==0) pttmp[j]=rank++;
-        SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
+      pttmp = ResizeInitTmpTrans(deg);
+      ptf2 = ADDR_TRANS2(f);
+      for (i = 0; i < len; i++) {
+        // <f> then <g> with ker(<g>) = <ker>
+        j = INT_INTOBJ(ELM_LIST(ker, ptf2[i] + 1)) - 1; // f first!
+        if (pttmp[j] == 0) {
+          pttmp[j] = rank++;
+        }
+        SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
       }
-      for(;i<deg;i++){//assume g acts as identity on i
-	if(ptf2[i]+1<=len) {  //refers to a class in ker
-	  j=INT_INTOBJ(ELM_LIST(ker, ptf2[i]+1))-1;
-	  if(pttmp[j]==0) pttmp[j]=rank++;
-	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
-	} else {  //refers to a class outside ker
-	  if(pttmp[ptf2[i]]==0) pttmp[ptf2[i]]=rank++;
-	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[ptf2[i]]));
-	}
+      for (; i < deg; i++) {
+        //assume g acts as identity on i
+        if (ptf2[i] + 1 <= len) {
+          //refers to a class in ker
+          j = INT_INTOBJ(ELM_LIST(ker, ptf2[i] + 1)) - 1;
+          if (pttmp[j] == 0) pttmp[j] = rank++;
+          SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
+        } else {
+          //refers to a class outside ker
+          if (pttmp[ptf2[i]] == 0) {
+            pttmp[ptf2[i]] = rank++;
+          }
+          SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[ptf2[i]]));
+        }
       }
     }
     return out;
   } else if (TNUM_OBJ(f) == T_TRANS4) {
-    deg=INT_INTOBJ(FuncDegreeOfTransformation(self,f));
-    if(len>=deg){
-      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
+    deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
+    if (len >= deg) {
+      out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, len);
       SET_LEN_PLIST(out, len);
-      pttmp=ResizeInitTmpTrans(len);
-      ptf4=ADDR_TRANS4(f);
-      for(i=0;i<deg;i++){ //<f> then <g> with ker(<g>)=<ker>
-        j=INT_INTOBJ(ELM_LIST(ker, ptf4[i]+1))-1; // f first!
-        if(pttmp[j]==0) pttmp[j]=rank++;
-        SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
+      pttmp = ResizeInitTmpTrans(len);
+      ptf4 = ADDR_TRANS4(f);
+      for (i = 0; i < deg; i++) {
+        // < f > then < g > with ker( < g >) = < ker >
+        j = INT_INTOBJ(ELM_LIST(ker, ptf4[i] + 1)) - 1; // f first!
+        if (pttmp[j] == 0) {
+          pttmp[j] = rank++;
+        }
+        SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
       }
       i++;
-      for(;i<=len;i++){   //just <ker>
-        j=INT_INTOBJ(ELM_LIST(ker,i))-1;
-        if(pttmp[j]==0) pttmp[j]=rank++;
+      for (; i <= len; i++) {
+        //just < ker >
+        j = INT_INTOBJ(ELM_LIST(ker, i)) - 1;
+        if (pttmp[j] == 0) {
+          pttmp[j] = rank++;
+        }
         SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
       }
-    } else {//len<deg
-      out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, deg);
+    } else {
+      //len < deg
+      out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, deg);
       SET_LEN_PLIST(out, deg);
-      pttmp=ResizeInitTmpTrans(deg);
-      ptf4=ADDR_TRANS4(f);
-      for(i=0;i<len;i++){  //<f> then <g> with ker(<g>)=<ker>
-        j=INT_INTOBJ(ELM_LIST(ker, ptf4[i]+1))-1; // f first!
-        if(pttmp[j]==0) pttmp[j]=rank++;
-        SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
+      pttmp = ResizeInitTmpTrans(deg);
+      ptf4 = ADDR_TRANS4(f);
+      for (i = 0; i < len; i++) {
+        // < f > then < g > with ker( < g >) = < ker >
+        j = INT_INTOBJ(ELM_LIST(ker, ptf4[i] + 1)) - 1; // f first!
+        if (pttmp[j] == 0) {
+          pttmp[j] = rank++;
+        }
+        SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
       }
-      for(;i<deg;i++){     //just <f>
-	if(ptf4[i]+1<=len) {
-	  j=INT_INTOBJ(ELM_LIST(ker, ptf4[i]+1))-1;
-	  if(pttmp[j]==0) pttmp[j]=rank++;
-	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[j]));
-	} else {
-	  if(pttmp[ptf4[i]]==0) pttmp[ptf4[i]]=rank++;
-	  SET_ELM_PLIST(out, i+1, INTOBJ_INT(pttmp[ptf4[i]]));
-	}
+      for (; i < deg; i++) {
+        //just < f >
+        if (ptf4[i] + 1 <= len) {
+          j = INT_INTOBJ(ELM_LIST(ker, ptf4[i] + 1)) - 1;
+          if (pttmp[j] == 0) {
+            pttmp[j] = rank++;
+          }
+          SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
+        } else {
+          if (pttmp[ptf4[i]] == 0) {
+            pttmp[ptf4[i]] = rank++;
+          }
+          SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[ptf4[i]]));
+        }
       }
     }
     return out;
@@ -2614,63 +2656,93 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
 // transformation g such that g<f> ^ ker(x) = ker(x) = ker(gfx) and the action
 // of g<f> on ker(x) is the identity.
 
-Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f){
+Obj FuncINV_KER_TRANS (Obj self, Obj X, Obj f) {
   Obj     g;
-  UInt2   *ptf2, *ptg2;
-  UInt4   *pttmp, *ptf4, *ptg4;
+  UInt2 * ptf2, *ptg2;
+  UInt4 * pttmp, *ptf4, *ptg4;
   UInt    deg, i, len;
 
-  len=LEN_LIST(X);
+  len = LEN_LIST(X);
   ResizeTmpTrans(len);
 
-  if(TNUM_OBJ(f)==T_TRANS2){
-    deg=DEG_TRANS2(f);
-    if(len<=65536){   // deg(g)<=65536 and g is T_TRANS2
-      g=NEW_TRANS2(len);
-      pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
-      ptf2=ADDR_TRANS2(f);
-      ptg2=ADDR_TRANS2(g);
-      if(deg>=len){
-        // calculate a transversal of f^ker(x)=ker(fx)
-        for(i=0;i<len;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i]+1))-1]=i;
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    deg = DEG_TRANS2(f);
+    if (len <= 65536) {
+      // deg(g) <= 65536 and g is T_TRANS2
+      g = NEW_TRANS2(len);
+      pttmp = (UInt4 *)(ADDR_OBJ(TmpTrans));
+      ptf2 = ADDR_TRANS2(f);
+      ptg2 = ADDR_TRANS2(g);
+      if (deg >= len) {
+        // calculate a transversal of f ^ ker(x) = ker(fx)
+        for (i = 0; i < len; i++) {
+          pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i] + 1)) - 1] = i;
+        }
         // install values in g
-        for(i=len;i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
-      }else{
-        for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i]+1))-1]=i;
-        for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
-        for(i=len;i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+        for (i = len; i >= 1; i--) {
+          ptg2[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
+        }
+      } else {
+        for (i = 0; i < deg; i++) {
+          pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i] + 1)) - 1] = i;
+        }
+        for (; i < len; i++) {
+          pttmp[INT_INTOBJ(ELM_LIST(X, i + 1)) - 1] = i;
+        }
+        for (i = len; i>=1;i--) {
+          ptg2[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
+        }
       }
       return g;
-    } else {        // deg(g) = len > 65536 >= deg and g is T_TRANS4
-      g=NEW_TRANS4(len);
-      pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
-      ptf2=ADDR_TRANS2(f);
-      ptg4=ADDR_TRANS4(g); 
-      for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i]+1))-1]=i;
-      for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
-      for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+    } else {
+      // deg(g) = len > 65536 >= deg and g is T_TRANS4
+      g = NEW_TRANS4(len);
+      pttmp = (UInt4 *)(ADDR_OBJ(TmpTrans));
+      ptf2 = ADDR_TRANS2(f);
+      ptg4 = ADDR_TRANS4(g);
+      for (i = 0; i < deg; i++) {
+        pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i] + 1)) - 1] = i;
+      }
+      for (; i < len; i++) {
+        pttmp[INT_INTOBJ(ELM_LIST(X, i + 1)) - 1] = i;
+      }
+      for (i = len; i >= 1; i--) {
+        ptg4[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
+      }
       return g;
     }
-  } else if(TNUM_OBJ(f)==T_TRANS4){
-    deg=DEG_TRANS4(f);
-    if(len<=65536){   // deg(g)<=65536 and g is T_TRANS2
-      g=NEW_TRANS2(len);
-      pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
-      ptf4=ADDR_TRANS4(f);
-      ptg2=ADDR_TRANS2(g);
-      // calculate a transversal of f^ker(x)=ker(fx)
-      for(i=0;i<len;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
+    deg = DEG_TRANS4(f);
+    if (len <= 65536) {
+      // deg(g) <= 65536 and g is T_TRANS2
+      g = NEW_TRANS2(len);
+      pttmp = (UInt4 *)(ADDR_OBJ(TmpTrans));
+      ptf4 = ADDR_TRANS4(f);
+      ptg2 = ADDR_TRANS2(g);
+      // calculate a transversal of f ^ ker(x) = ker(fx)
+      for (i = 0; i < len; i++) {
+        pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i] + 1)) - 1] = i;
+      }
       // install values in g
-      for(i=len;i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+      for (i = len; i >= 1; i--) {
+        ptg2[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
+      }
       return g;
-    } else {        // deg(g) = len > 65536 >= deg and g is T_TRANS4
-      g=NEW_TRANS4(len);
-      pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
-      ptf4=ADDR_TRANS4(f);
-      ptg4=ADDR_TRANS4(g);
-      for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
-      for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
-      for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
+    } else {
+      // deg(g) = len > 65536 >= deg and g is T_TRANS4
+      g = NEW_TRANS4(len);
+      pttmp = (UInt4 *)(ADDR_OBJ(TmpTrans));
+      ptf4 = ADDR_TRANS4(f);
+      ptg4 = ADDR_TRANS4(g);
+      for (i = 0; i < deg; i++) {
+        pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i] + 1)) - 1] = i;
+      }
+      for (; i < len; i++) {
+        pttmp[INT_INTOBJ(ELM_LIST(X, i + 1)) - 1] = i;
+      }
+      for (i = len; i >= 1; i--) {
+        ptg4[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
+      }
       return g;
     }
   }
@@ -2680,27 +2752,27 @@ Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f){
 }
 
 // Returns true if the transformation <f> is an idempotent and false if it is
-// not. 
+// not.
 
-Obj FuncIS_IDEM_TRANS(Obj self, Obj f){
-  UInt2*  ptf2;
-  UInt4*  ptf4;
+Obj FuncIS_IDEM_TRANS (Obj self, Obj f) {
+  UInt2 * ptf2;
+  UInt4 * ptf4;
   UInt    deg, i;
 
-  if(TNUM_OBJ(f)==T_TRANS2){
-    deg=DEG_TRANS2(f);
-    ptf2=ADDR_TRANS2(f);
-    for(i=0;i<deg;i++){
-      if(ptf2[ptf2[i]]!=ptf2[i]){
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    deg = DEG_TRANS2(f);
+    ptf2 = ADDR_TRANS2(f);
+    for (i = 0; i < deg; i++) {
+      if (ptf2[ptf2[i]] != ptf2[i]) {
         return False;
       }
     }
     return True;
   } else if (TNUM_OBJ(f) == T_TRANS4) {
-    deg=DEG_TRANS4(f);
-    ptf4=ADDR_TRANS4(f);
-    for(i=0;i<deg;i++){
-      if(ptf4[ptf4[i]]!=ptf4[i]){
+    deg = DEG_TRANS4(f);
+    ptf4 = ADDR_TRANS4(f);
+    for (i = 0; i < deg; i++) {
+      if (ptf4[ptf4[i]] != ptf4[i]) {
         return False;
       }
     }
