@@ -2752,139 +2752,140 @@ Obj FuncIS_IDEM_TRANS (Obj self, Obj f) {
   return 0L;
 }
 
-/* returns the least list <out> such that for all <i> in [1..degree(f)]
- * there exists <j> in <out> and a pos int <k> such that <j^(f^k)=i>. */
+// Returns the representatives, in the following sense, of the components of
+// the transformation <f>. For every i in [1 ..  DegreeOfTransformation(<f>)]
+// there exists a representative j and a positive integer k such that i ^ (<f>
+// ^ k) = j. The least number of representatives is returned and these
+// representatives are partitioned according to the component they belong to.
 
-Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f){
-  Obj     out;
-  UInt2   *ptf2;
-  UInt4   *ptf4, *ptseen, *ptlookup, *ptlens, *ptimg;
-  UInt    deg, i, nr, count, m, j, k;
+Obj FuncCOMPONENT_REPS_TRANS (Obj self, Obj f) {
+  UInt   deg, i, nr, pt, index;
+  Obj    img, out, comp;
+  UInt2  *ptf2;
+  UInt4  *seen, *ptf4;
 
-  deg=INT_INTOBJ(FuncDegreeOfTransformation(self, f));
+  if (!IS_TRANS(f)) {
+    ErrorQuit("COMPONENT_REPS_TRANS: the argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  }   
 
-  ResizeTmpTrans(4*deg);
-  out=NEW_PLIST(T_PLIST, deg);
+  deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
-  ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-  ptlookup=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-  ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+2*deg;
-  ptimg=(UInt4*)(ADDR_OBJ(TmpTrans))+3*deg;
+  if (deg == 0) {
+    out = NEW_PLIST(T_PLIST_EMPTY, 0);
+    SET_LEN_PLIST(out, 0);
+    return out;
+  }
 
-  for(i=0;i<deg;i++){ ptseen[i]=0; ptlookup[i]=0; ptlens[i]=0; ptimg[i]=0; }
+  img = FuncUNSORTED_IMAGE_SET_TRANS(self, f);
+  out = NEW_PLIST(T_PLIST, 1);
 
-  if(TNUM_OBJ(f)==T_TRANS2){
-    ptf2=ADDR_TRANS2(f);
+  seen = ResizeInitTmpTrans(deg); 
+  
+  for (i = 1; i <= (UInt) LEN_PLIST(img); i++) {
+    seen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
+  }
+  
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    ptf2 = ADDR_TRANS2(f);
+    nr = 1;
+    for (i = 0; i < deg; i++) {
+      if (seen[i] == 0) { 
+        // i belongs to dom(f) but not im(f)
+        // repeatedly apply f to pt until we see something we've seen already
+        pt = i;
+        do {
+          seen[pt] = nr + 1;
+          pt = ptf2[pt];
+        } while (seen[pt] == 1);
 
-    /* points in the image of f */
-    for(i=0;i<deg;i++) ptimg[ptf2[i]]=1;
+        index = seen[pt];
 
-    nr=0; m=0; count=0;
-
-    /* components corresponding to points not in image */
-    for(i=0;i<deg;i++){
-      if(ptimg[i]==0&&ptseen[i]==0){
-        m++;
-        for(j=i;ptseen[j]==0;j=ptf2[j]){ ptseen[j]=m; count++;}
-        if(ptseen[j]==m){/* new component */
-          k=nr;
-          ptlookup[m-1]=nr;
-          SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC_SSORT, deg-count));
-          CHANGED_BAG(out);
-          ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+2*deg;
-        }else{ /* old component */
-          k=ptlookup[ptseen[j]-1];
-          ptlookup[m-1]=k;
+        if (index != nr + 1) {
+          // pt belongs to a component we've seen before
+          ptf2 = ADDR_TRANS2(f);
+          pt = i;
+          do {
+            seen[pt] = index;
+            pt = ptf2[pt];
+          } while (seen[pt] == nr + 1);
+          comp = ELM_PLIST(out, seen[pt] - 1);
+          AssPlist(comp, LEN_PLIST(comp) + 1, INTOBJ_INT(i + 1));
+        } else {
+          // pt belongs to a component we've not seen before
+          comp = NEW_PLIST(T_PLIST_CYC, 1);
+          SET_LEN_PLIST(comp, 1);
+          SET_ELM_PLIST(comp, 1, INTOBJ_INT(i + 1));
+          AssPlist(out, nr++, comp);
         }
-        AssPlist(ELM_PLIST(out, k+1), ++ptlens[k], INTOBJ_INT(i+1));
+        ptf2 = ADDR_TRANS2(f);
+        seen = (UInt4*)(ADDR_OBJ(TmpTrans));
       }
-      ptf2=ADDR_TRANS2(f);
-      ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-      ptlookup=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-      ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+2*deg;
-      ptimg=(UInt4*)(ADDR_OBJ(TmpTrans))+3*deg;
-    }
-
-    for(i=0;i<nr;i++){
-      SHRINK_PLIST(ELM_PLIST(out, i+1), (Int) ptlens[i]);
-      SET_LEN_PLIST(ELM_PLIST(out, i+1), (Int) ptlens[i]);
-    }
-
-    ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-    ptf2=ADDR_TRANS2(f);
-
-    /* components corresponding to cycles */
-    for(i=0;i<deg;i++){
-      if(ptseen[i]==0){
-        for(j=ptf2[i];j!=i;j=ptf2[j]) ptseen[j]=1;
-
-        SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC_SSORT, 1));
-        SET_LEN_PLIST(ELM_PLIST(out, nr), 1);
-        SET_ELM_PLIST(ELM_PLIST(out, nr), 1, INTOBJ_INT(i+1));
-        CHANGED_BAG(out);
-
-        ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-        ptf2=ADDR_TRANS2(f);
+    } 
+    for (i = 0; i < deg; i++) {
+      if (seen[i] == 1) {
+        // i belongs to a cycle
+        for (pt = i; seen[pt] == 1; pt = ptf2[pt]) {
+          seen[pt] = 0;
+        }
+        comp = NEW_PLIST(T_PLIST_CYC, 1);
+        SET_LEN_PLIST(comp, 1);
+        SET_ELM_PLIST(comp, 1, INTOBJ_INT(i + 1));
+        AssPlist(out, nr++, comp);
+        ptf2 = ADDR_TRANS2(f);
+        seen = (UInt4*)(ADDR_OBJ(TmpTrans));
       }
     }
   } else {
+    ptf4 = ADDR_TRANS4(f);
+    nr = 1;
+    for (i = 0; i < deg; i++) {
+      if (seen[i] == 0) { 
+        // i belongs to dom(f) but not im(f)
+        // repeatedly apply f to pt until we see something we've seen already
+        pt = i;
+        do {
+          seen[pt] = nr + 1;
+          pt = ptf4[pt];
+        } while (seen[pt] == 1);
 
-    ptf4=ADDR_TRANS4(f);
-    /* points in the image of f */
-    for(i=0;i<deg;i++){ ptimg[ptf4[i]]=1; }
+        index = seen[pt];
 
-    nr=0; m=0; count=0;
-
-    /* components corresponding to points not in image */
-    for(i=0;i<deg;i++){
-      if(ptimg[i]==0&&ptseen[i]==0){
-        m++;
-        for(j=i;ptseen[j]==0;j=ptf4[j]){ ptseen[j]=m; count++;}
-        if(ptseen[j]==m){/* new component */
-          k=nr;
-          ptlookup[m-1]=nr;
-          SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC_SSORT, deg-count));
-          CHANGED_BAG(out);
-          ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+2*deg;
-        }else{ /* old component */
-          k=ptlookup[ptseen[j]-1];
-          ptlookup[m-1]=k;
+        if (index != nr + 1) {
+          // pt belongs to a component we've seen before
+          pt = i;
+          do {
+            seen[pt] = index;
+            pt = ptf4[pt];
+          } while (seen[pt] == nr + 1);
+          comp = ELM_PLIST(out, seen[pt] - 1);
+          AssPlist(comp, LEN_PLIST(comp) + 1, INTOBJ_INT(i + 1));
+        } else {
+          // pt belongs to a component we've not seen before
+          comp = NEW_PLIST(T_PLIST_CYC, 1);
+          SET_LEN_PLIST(comp, 1);
+          SET_ELM_PLIST(comp, 1, INTOBJ_INT(i + 1));
+          AssPlist(out, nr++, comp);
         }
-        AssPlist(ELM_PLIST(out, k+1), ++ptlens[k], INTOBJ_INT(i+1));
+        ptf4 = ADDR_TRANS4(f);
+        seen = (UInt4*)(ADDR_OBJ(TmpTrans));
       }
-      ptf4=ADDR_TRANS4(f);
-      ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-      ptlookup=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-      ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+2*deg;
-      ptimg=(UInt4*)(ADDR_OBJ(TmpTrans))+3*deg;
-    }
-
-    for(i=0;i<nr-1;i++){
-      SHRINK_PLIST(ELM_PLIST(out, i+1), (Int) ptlens[i]);
-      SET_LEN_PLIST(ELM_PLIST(out, i+1), (Int) ptlens[i]);
-    }
-
-    ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-    ptf4=ADDR_TRANS4(f);
-
-    /* components corresponding to cycles */
-    for(i=0;i<deg;i++){
-      if(ptseen[i]==0){
-        for(j=ptf4[i];j!=i;j=ptf4[j]) ptseen[j]=1;
-
-        SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC_SSORT, 1));
-        SET_LEN_PLIST(ELM_PLIST(out, nr), 1);
-        SET_ELM_PLIST(ELM_PLIST(out, nr), 1, INTOBJ_INT(i+1));
-        CHANGED_BAG(out);
-
-        ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-        ptf4=ADDR_TRANS4(f);
+    } 
+    for (i = 0; i < deg; i++) {
+      if (seen[i] == 1) {
+        // i belongs to a cycle
+        for (pt = i; seen[pt] == 1; pt = ptf4[pt]) {
+          seen[pt] = 0;
+        }
+        comp = NEW_PLIST(T_PLIST_CYC, 1);
+        SET_LEN_PLIST(comp, 1);
+        SET_ELM_PLIST(comp, 1, INTOBJ_INT(i + 1));
+        AssPlist(out, nr++, comp);
+        ptf4 = ADDR_TRANS4(f);
+        seen = (UInt4*)(ADDR_OBJ(TmpTrans));
       }
     }
   }
-
-  SHRINK_PLIST(out, (Int) nr);
-  SET_LEN_PLIST(out,  (Int) nr);
   return out;
 }
 
