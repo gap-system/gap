@@ -917,7 +917,7 @@ Obj FuncUNSORTED_IMAGE_SET_TRANS (Obj self, Obj f) {
   }
   ErrorQuit("UNSORTED_IMAGE_SET_TRANS: the argument must be a "
             "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
-
+  return 0L;
 }
 
 // Returns the image set of the transformation f on [1 .. n] where n =
