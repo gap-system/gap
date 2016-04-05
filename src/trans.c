@@ -266,7 +266,7 @@ Obj FuncTransformationListListNC (Obj self, Obj src, Obj ran) {
   }
 
   deg = 0;
-  for (i = LEN_LIST(src); 1 <= i; i --) {
+  for (i = LEN_LIST(src); 1 <= i; i--) {
     if (TNUM_OBJ(ELM_LIST(src, i)) != T_INT) {
       ErrorQuit("TransformationListListNC: <src>[%d] must be a list (not a "
                 "%s)", (Int) i, (Int) TNAM_OBJ(ELM_LIST(src, i)));
@@ -2228,8 +2228,8 @@ Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g){
 
 Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
   UInt2   *ptf2;
-  UInt4   *seen, *stack, *ptf4;
-  UInt    deg, i, pt, end, dist, pow, done_up_to;
+  UInt4   *seen, *ptf4;
+  UInt    deg, i, pt, dist, pow, len, last_pt;
   Obj     ord, out;
   Int     s, t, gcd, cyc;
 
@@ -2248,55 +2248,43 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
     SET_ELM_PLIST(out, 2, INTOBJ_INT(0));
     return out;
   }
-
-  ResizeTmpTrans(2 * deg);
-
-  stack = (UInt4*)(ADDR_OBJ(TmpTrans)); // a stack
-  end = 0;                              // the end of the stack
-
-  // seen[pt] = 0 => haven't seen pt before
+  
+  // seen[pt] = 0 -> haven't seen pt before
   //
   // seen[pt] = d where (1 <= d <= deg)
-  //   => pt belongs to a component we've seen before and (pt)f ^ (d - 1)
+  //   -> pt belongs to a component we've seen before and (pt)f ^ (d - 1)
   //   belongs to a cycle
   //
-  // seen[pt] = deg + 1 => pt belongs to a component not seen before
-  seen  = stack + deg;
-  for (i = 0; i < deg; i++) {
-    seen[i] = 0;
-  }
+  // seen[pt] = deg + 1 -> pt belongs to a component not seen before
+  
+  seen = ResizeInitTmpTrans(deg);  
+  
   pow = 0;
-  ord = INTOBJ_INT(0);
+  ord = INTOBJ_INT(1);
 
   if (TNUM_OBJ(f) == T_TRANS2) {
     ptf2 = ADDR_TRANS2(f);
-    pt = 0;
-    done_up_to = 0;
-    while (pt < deg) {
-      // repeatedly apply f to pt until we see something we've seen already
-      while (seen[pt] == 0) {
-        seen[pt] = deg + 1;
-        stack[end] = pt;
-        end++;
-        pt = ptf2[pt];
-      }
-      if (seen[pt] <= deg) {
-        // pt belongs to a component we've seen before
-        dist = seen[pt];
-      } else {
-        // pt belongs to a component we've not seen before
-        cyc = 0; // length of the cycle in this component
-        do {
-          // pop from the stack until we get back to the already seen point
-          end--;
-          seen[stack[end]] = 1;
-          cyc++;
-        } while (stack[end] != pt);
-
-        if (INT_INTOBJ(ord) == 0) {
-          // this is the first cycle we've found
-          ord = INTOBJ_INT(cyc);
+    for (i = 0; i < deg; i++) {
+      if (seen[i] == 0) {
+        len = 0;
+        // repeatedly apply f to pt until we see something we've seen already
+        for (pt = i; seen[pt] == 0; pt = ptf2[pt], len++) {
+          seen[pt] = deg + 1;
+        } 
+        last_pt = pt;
+        if (seen[pt] <= deg) {
+          // pt belongs to a component we've seen before
+          dist = seen[pt] + len; 
+          // the distance of i from the cycle in its component + 1
         } else {
+          // pt belongs to a component we've not seen before
+
+          for (cyc = 0; seen[pt] == deg + 1; pt = ptf2[pt], cyc++) {
+            // go around the cycle again and set the value of seen, 
+            // and get the length of the cycle
+            seen[pt] = 1;
+          } 
+
           // compute the gcd of the cycle length with the previous order ord
           gcd = cyc;
           s = INT_INTOBJ(ModInt(ord, INTOBJ_INT(cyc)));
@@ -2306,53 +2294,41 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
             gcd = t;
           }
           ord = ProdInt(ord, INTOBJ_INT(cyc / gcd));
+          dist = len - cyc + 1;
+          // the distance of i from the cycle in its component + 1
         }
-        dist = 1;
+        if (dist > pow) {
+          pow = dist;
+        }
+        // record the distances of the points from the cycle
+        for (pt = i; pt != last_pt; pt = ptf2[pt]) {
+          seen[pt] = dist--;
+        }
       }
-      // record the distances of the points on the stack
-      for (;end > 0;end--) {
-        seen[stack[end - 1]] = ++dist;
-      }
-      if (dist > pow) {
-        pow = dist;
-      }
-      // find an unseen value for pt
-      pt = done_up_to;
-      while (pt < deg && seen[pt] > 0) {
-        pt++;
-      }
-      done_up_to = pt;
     }
-    pow--;
   } else {
     ptf4 = ADDR_TRANS4(f);
-    pt = 0;
-    done_up_to = 0;
-    while (pt < deg) {
-      // repeatedly apply f to pt until we see something we've seen already
-      while (seen[pt] == 0) {
-        seen[pt] = deg + 1;
-        stack[end] = pt;
-        end++;
-        pt = ptf4[pt];
-      }
-      if (seen[pt] <= deg) {
-        // pt belongs to a component we've seen before
-        dist = seen[pt];
-      } else {
-        // pt belongs to a component we've not seen before
-        cyc = 0; // length of the cycle in this component
-        do {
-          // pop from the stack until we get back to the already seen point
-          end--;
-          seen[stack[end]] = 1;
-          cyc++;
-        } while (stack[end] != pt);
-
-        if (INT_INTOBJ(ord) == 0) {
-          // this is the first cycle we've found
-          ord = INTOBJ_INT(cyc);
+    for (i = 0; i < deg; i++) {
+      if (seen[i] == 0) {
+        len = 0;
+        // repeatedly apply f to pt until we see something we've seen already
+        for (pt = i; seen[pt] == 0; pt = ptf4[pt], len++) {
+          seen[pt] = deg + 1;
+        } 
+        last_pt = pt;
+        if (seen[pt] <= deg) {
+          // pt belongs to a component we've seen before
+          dist = seen[pt] + len; 
+          // the distance of i from the cycle in its component + 1
         } else {
+          // pt belongs to a component we've not seen before
+
+          for (cyc = 0; seen[pt] == deg + 1; pt = ptf4[pt], cyc++) {
+            // go around the cycle again and set the value of seen, 
+            // and get the length of the cycle
+            seen[pt] = 1;
+          } 
+
           // compute the gcd of the cycle length with the previous order ord
           gcd = cyc;
           s = INT_INTOBJ(ModInt(ord, INTOBJ_INT(cyc)));
@@ -2362,30 +2338,24 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
             gcd = t;
           }
           ord = ProdInt(ord, INTOBJ_INT(cyc / gcd));
+          dist = len - cyc + 1;
+          // the distance of i from the cycle in its component + 1
         }
-        dist = 1;
+        if (dist > pow) {
+          pow = dist;
+        }
+        // record the distances of the points from the cycle
+        for (pt = i; pt != last_pt; pt = ptf4[pt]) {
+          seen[pt] = dist--;
+        }
       }
-      // record the distances of the points on the stack
-      for (;end > 0;end--) {
-        seen[stack[end - 1]] = ++dist;
-      }
-      if (dist > pow) {
-        pow = dist;
-      }
-      // find an unseen value for pt
-      pt = done_up_to;
-      while (pt < deg && seen[pt] > 0) {
-        pt++;
-      }
-      done_up_to = pt;
     }
-    pow--;
   }
 
   out = NEW_PLIST(T_PLIST_CYC, 2);
 
   SET_LEN_PLIST(out, 2);
-  SET_ELM_PLIST(out, 1, INTOBJ_INT(pow));
+  SET_ELM_PLIST(out, 1, INTOBJ_INT(--pow));
   SET_ELM_PLIST(out, 2, ord);
   return out;
 }
