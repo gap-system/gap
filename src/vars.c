@@ -3002,8 +3002,18 @@ void VarsAfterCollectBags ( void )
       TLS(PtrLVars) = PTR_BAG( TLS(CurrLVars) );
       TLS(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
+    
+#ifdef TWO_LEVEL_HEADERS
+  int i;
+  for (i=0; i<GVAR_BUCKETS; i++)
+    if (ValGVars[i])
+      PtrGVars[i] = ADDR_OBJ( ValGVars[i] )+1;
+    else
+      break;
+#else
   if (ValGVars)
     PtrGVars = PTR_BAG( ValGVars );
+#endif
 }
 
 /****************************************************************************
