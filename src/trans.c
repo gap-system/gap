@@ -2881,12 +2881,18 @@ Obj FuncCOMPONENT_REPS_TRANS (Obj self, Obj f) {
   return out;
 }
 
-/* the number of components of a transformation (as a functional digraph) */
+// Returns the number of connected components of the transformation <f>,
+// thought of as a functional digraph with DegreeOfTransformation(f) vertices.
 
 Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f){
   UInt    nr, m, i, j, deg;
   UInt2   *ptf2;
   UInt4   *ptseen, *ptf4;
+  
+  if (!IS_TRANS(f)) {
+    ErrorQuit("NR_COMPONENTS_TRANS: the argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  }
 
   deg=INT_INTOBJ(FuncDegreeOfTransformation(self, f));
   ptseen=ResizeInitTmpTrans(deg);
@@ -2901,7 +2907,7 @@ Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f){
         if(ptseen[j]==m) nr++;
       }
     }
-  }else{
+  } else {
     ptf4=ADDR_TRANS4(f);
     for(i=0;i<deg;i++){
       if(ptseen[i]==0){
@@ -2914,80 +2920,117 @@ Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f){
   return INTOBJ_INT(nr);
 }
 
-/* the components of a transformation (as a functional digraph) */
+// Returns the connected components of the transformation <f>, thought of as a
+// functional digraph with DegreeOfTransformation(f) vertices.
 
-Obj FuncCOMPONENTS_TRANS(Obj self, Obj f){
-  UInt    deg, i, nr, m, j;
+Obj FuncCOMPONENTS_TRANS (Obj self, Obj f) {
   UInt2   *ptf2;
-  UInt4   *ptseen, *ptlookup, *ptlens, *ptf4;
-  Obj     out;
+  UInt4   *seen, *ptf4;
+  UInt    deg, i, pt, csize, nr, index, pos;
+  Obj     out, comp;
 
-  deg=INT_INTOBJ(FuncDegreeOfTransformation(self, f));
-  ResizeTmpTrans(3*deg);
-  ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-  ptlookup=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-  ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+2*deg;
+  if (!IS_TRANS(f)) {
+    ErrorQuit("COMPONENTS_TRANS: the argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  }
 
-  for(i=0;i<deg;i++){ ptseen[i]=0; ptlookup[i]=0; ptlens[i]=0; }
+  deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
-  nr=0; m=0;
+  if (deg == 0) {
+    out = NEW_PLIST(T_PLIST_EMPTY, 0);
+    SET_LEN_PLIST(out, 0);
+    return out;
+  }
 
-  if(TNUM_OBJ(f)==T_TRANS2){
-    //find components
-    ptf2=ADDR_TRANS2(f);
-    for(i=0;i<deg;i++){
-      if(ptseen[i]==0){
-        m++;
-        for(j=i;ptseen[j]==0;j=ptf2[j]){ ptseen[j]=m; }
-        if(ptseen[j]==m){
-          ptlookup[m-1]=nr++;
-        }else{
-          ptlookup[m-1]=ptlookup[ptseen[j]-1];
+  seen = ResizeInitTmpTrans(deg);  
+  out = NEW_PLIST(T_PLIST, 1);
+  nr = 0;
+
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    ptf2 = ADDR_TRANS2(f);
+    for (i = 0; i < deg; i++) {
+      if (seen[i] == 0) {
+        // repeatedly apply f to pt until we see something we've seen already
+        csize = 0;
+        pt = i;
+        do {
+          csize++;
+          seen[pt] = deg + 1;
+          pt = ptf2[pt];
+        } while (seen[pt] == 0);
+
+        if (seen[pt] <= deg) {
+          // pt belongs to a component we've seen before
+          index = seen[pt];
+          comp = ELM_PLIST(out, index);
+          pos = LEN_PLIST(comp) + 1;
+          GROW_PLIST(comp, LEN_PLIST(comp) + csize);
+          SET_LEN_PLIST(comp, LEN_PLIST(comp) + csize);
+        } else {
+          // pt belongs to a component we've not seen before
+          index = ++nr;
+          pos = 1;
+
+          comp = NEW_PLIST(T_PLIST_CYC, csize);
+          SET_LEN_PLIST(comp, csize);
+          AssPlist(out, nr, comp);
         }
+        seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+        ptf2 = ADDR_TRANS2(f);
+
+        pt = i;
+        while (seen[pt] == deg + 1) {
+          SET_ELM_PLIST(comp, pos++, INTOBJ_INT(pt + 1));
+          seen[pt] = index;
+          pt = ptf2[pt];
+        }
+        CHANGED_BAG(out);
       }
     }
   } else {
-    //find components
-    ptf4=ADDR_TRANS4(f);
-    for(i=0;i<deg;i++){
-      if(ptseen[i]==0){
-        m++;
-        for(j=i;ptseen[j]==0;j=ptf4[j]){ ptseen[j]=m; }
-        if(ptseen[j]==m){
-          ptlookup[m-1]=nr++;
-        }else{
-          ptlookup[m-1]=ptlookup[ptseen[j]-1];
+    ptf4 = ADDR_TRANS4(f);
+    for (i = 0; i < deg; i++) {
+      if (seen[i] == 0) {
+        // repeatedly apply f to pt until we see something we've seen already
+        csize = 0;
+        pt = i;
+        do {
+          csize++;
+          seen[pt] = deg + 1;
+          pt = ptf4[pt];
+        } while (seen[pt] == 0);
+
+        if (seen[pt] <= deg) {
+          // pt belongs to a component we've seen before
+          index = seen[pt];
+          comp = ELM_PLIST(out, index);
+          pos = LEN_PLIST(comp) + 1;
+          GROW_PLIST(comp, LEN_PLIST(comp) + csize);
+          SET_LEN_PLIST(comp, LEN_PLIST(comp) + csize);
+        } else {
+          // pt belongs to a component we've not seen before
+          index = ++nr;
+          pos = 1;
+
+          comp = NEW_PLIST(T_PLIST_CYC, csize);
+          SET_LEN_PLIST(comp, csize);
+          AssPlist(out, nr, comp);
         }
+        seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+        ptf4 = ADDR_TRANS4(f);
+
+        pt = i;
+        while (seen[pt] == deg + 1) {
+          SET_ELM_PLIST(comp, pos++, INTOBJ_INT(pt + 1));
+          seen[pt] = index;
+          pt = ptf4[pt];
+        }
+        CHANGED_BAG(out);
       }
     }
   }
-
-  out=NEW_PLIST(T_PLIST, nr);
-  SET_LEN_PLIST(out, (Int) nr);
-
-  // install the points in out
-  for(i=0;i<deg;i++){
-    ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-    ptlookup=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-    ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+2*deg;
-
-    m=ptlookup[ptseen[i]-1];
-    if(ptlens[m]==0){
-      SET_ELM_PLIST(out, m+1, NEW_PLIST(T_PLIST_CYC_SSORT, deg));
-      CHANGED_BAG(out);
-      ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+2*deg;
-    }
-    AssPlist(ELM_PLIST(out, m+1), (Int) ++ptlens[m], INTOBJ_INT(i+1));
-  }
-
-  ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+2*deg;
-  for(i=0;i<nr;i++){
-    SHRINK_PLIST(ELM_PLIST(out, i+1), (Int) ptlens[i]);
-    SET_LEN_PLIST(ELM_PLIST(out, i+1), (Int) ptlens[i]);
-  }
   return out;
 }
-
 
 Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt){
   UInt    deg, cpt, len;
