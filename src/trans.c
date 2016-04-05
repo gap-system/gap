@@ -107,7 +107,7 @@ extern UInt INIT_TRANS2 (Obj f) {
   for (i = 0; i < deg; i++) {
     j = ptf[i];
       if (pttmp[j] == 0) {
-        pttmp[j] =++ rank;
+        pttmp[j] = ++rank;
         SET_ELM_PLIST(img, rank, INTOBJ_INT(j + 1));
       }
     SET_ELM_PLIST(ker, i + 1, INTOBJ_INT(pttmp[j]));
@@ -2249,7 +2249,7 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
     SET_ELM_PLIST(out, 2, INTOBJ_INT(0));
     return out;
   }
-  
+
   // seen[pt] = 0 -> haven't seen pt before
   //
   // seen[pt] = d where (1 <= d <= deg)
@@ -2257,9 +2257,9 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
   //   belongs to a cycle
   //
   // seen[pt] = deg + 1 -> pt belongs to a component not seen before
-  
-  seen = ResizeInitTmpTrans(deg);  
-  
+
+  seen = ResizeInitTmpTrans(deg);
+
   pow = 0;
   ord = INTOBJ_INT(1);
 
@@ -2271,20 +2271,20 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
         // repeatedly apply f to pt until we see something we've seen already
         for (pt = i; seen[pt] == 0; pt = ptf2[pt], len++) {
           seen[pt] = deg + 1;
-        } 
+        }
         last_pt = pt;
         if (seen[pt] <= deg) {
           // pt belongs to a component we've seen before
-          dist = seen[pt] + len; 
+          dist = seen[pt] + len;
           // the distance of i from the cycle in its component + 1
         } else {
           // pt belongs to a component we've not seen before
 
           for (cyc = 0; seen[pt] == deg + 1; pt = ptf2[pt], cyc++) {
-            // go around the cycle again and set the value of seen, 
+            // go around the cycle again and set the value of seen,
             // and get the length of the cycle
             seen[pt] = 1;
-          } 
+          }
 
           // compute the gcd of the cycle length with the previous order ord
           gcd = cyc;
@@ -2315,20 +2315,20 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
         // repeatedly apply f to pt until we see something we've seen already
         for (pt = i; seen[pt] == 0; pt = ptf4[pt], len++) {
           seen[pt] = deg + 1;
-        } 
+        }
         last_pt = pt;
         if (seen[pt] <= deg) {
           // pt belongs to a component we've seen before
-          dist = seen[pt] + len; 
+          dist = seen[pt] + len;
           // the distance of i from the cycle in its component + 1
         } else {
           // pt belongs to a component we've not seen before
 
           for (cyc = 0; seen[pt] == deg + 1; pt = ptf4[pt], cyc++) {
-            // go around the cycle again and set the value of seen, 
+            // go around the cycle again and set the value of seen,
             // and get the length of the cycle
             seen[pt] = 1;
-          } 
+          }
 
           // compute the gcd of the cycle length with the previous order ord
           gcd = cyc;
@@ -2416,7 +2416,9 @@ Obj FuncPOW_KER_PERM (Obj self, Obj ker, Obj p) {
         ptlkp[i] = 0;
       }
       for (; i < len; i++) {
-        ptcnj[i] = IMAGE((UInt) INT_INTOBJ(ELM_LIST(ker, i + 1)) - 1, ptp2, dep);
+        ptcnj[i] = IMAGE((UInt) INT_INTOBJ(ELM_LIST(ker, i + 1)) - 1,
+                         ptp2,
+                         dep);
         ptlkp[i] = 0;
       }
 
@@ -2520,7 +2522,7 @@ Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
       }
       i++;
       for (; i <= len; i++) {
-        //just < ker >
+        // just <ker>
         j = INT_INTOBJ(ELM_LIST(ker, i)) - 1;
         if (pttmp[j] == 0) {
           pttmp[j] = rank++;
@@ -2528,7 +2530,7 @@ Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
         SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
       }
     } else {
-      //len < deg
+      // len < deg
       out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, deg);
       SET_LEN_PLIST(out, deg);
       pttmp = ResizeInitTmpTrans(deg);
@@ -2542,14 +2544,14 @@ Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
         SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
       }
       for (; i < deg; i++) {
-        //assume g acts as identity on i
+        // assume g acts as identity on i
         if (ptf2[i] + 1 <= len) {
-          //refers to a class in ker
+          // refers to a class in ker
           j = INT_INTOBJ(ELM_LIST(ker, ptf2[i] + 1)) - 1;
           if (pttmp[j] == 0) pttmp[j] = rank++;
           SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
         } else {
-          //refers to a class outside ker
+          // refers to a class outside ker
           if (pttmp[ptf2[i]] == 0) {
             pttmp[ptf2[i]] = rank++;
           }
@@ -2566,7 +2568,7 @@ Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
       pttmp = ResizeInitTmpTrans(len);
       ptf4 = ADDR_TRANS4(f);
       for (i = 0; i < deg; i++) {
-        // < f > then < g > with ker( < g >) = < ker >
+        // <f> then <g> with ker(<g>) = <ker>
         j = INT_INTOBJ(ELM_LIST(ker, ptf4[i] + 1)) - 1; // f first!
         if (pttmp[j] == 0) {
           pttmp[j] = rank++;
@@ -2575,7 +2577,7 @@ Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
       }
       i++;
       for (; i <= len; i++) {
-        //just < ker >
+        // just <ker>
         j = INT_INTOBJ(ELM_LIST(ker, i)) - 1;
         if (pttmp[j] == 0) {
           pttmp[j] = rank++;
@@ -2583,13 +2585,13 @@ Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
         SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
       }
     } else {
-      //len < deg
+      // len < deg
       out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, deg);
       SET_LEN_PLIST(out, deg);
       pttmp = ResizeInitTmpTrans(deg);
       ptf4 = ADDR_TRANS4(f);
       for (i = 0; i < len; i++) {
-        // < f > then < g > with ker( < g >) = < ker >
+        // <f> then <g> with ker(<g>) = <ker>
         j = INT_INTOBJ(ELM_LIST(ker, ptf4[i] + 1)) - 1; // f first!
         if (pttmp[j] == 0) {
           pttmp[j] = rank++;
@@ -2597,7 +2599,7 @@ Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
         SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
       }
       for (; i < deg; i++) {
-        //just < f >
+        // just <f>
         if (ptf4[i] + 1 <= len) {
           j = INT_INTOBJ(ELM_LIST(ker, ptf4[i] + 1)) - 1;
           if (pttmp[j] == 0) {
@@ -2768,7 +2770,7 @@ Obj FuncCOMPONENT_REPS_TRANS (Obj self, Obj f) {
   if (!IS_TRANS(f)) {
     ErrorQuit("COMPONENT_REPS_TRANS: the argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
-  }   
+  }
 
   deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
@@ -2781,17 +2783,17 @@ Obj FuncCOMPONENT_REPS_TRANS (Obj self, Obj f) {
   img = FuncUNSORTED_IMAGE_SET_TRANS(self, f);
   out = NEW_PLIST(T_PLIST, 1);
 
-  seen = ResizeInitTmpTrans(deg); 
-  
+  seen = ResizeInitTmpTrans(deg);
+
   for (i = 1; i <= (UInt) LEN_PLIST(img); i++) {
     seen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
   }
-  
+
   if (TNUM_OBJ(f) == T_TRANS2) {
     ptf2 = ADDR_TRANS2(f);
     nr = 1;
     for (i = 0; i < deg; i++) {
-      if (seen[i] == 0) { 
+      if (seen[i] == 0) {
         // i belongs to dom(f) but not im(f)
         // repeatedly apply f to pt until we see something we've seen already
         pt = i;
@@ -2822,7 +2824,7 @@ Obj FuncCOMPONENT_REPS_TRANS (Obj self, Obj f) {
         ptf2 = ADDR_TRANS2(f);
         seen = (UInt4*)(ADDR_OBJ(TmpTrans));
       }
-    } 
+    }
     for (i = 0; i < deg; i++) {
       if (seen[i] == 1) {
         // i belongs to a cycle
@@ -2841,7 +2843,7 @@ Obj FuncCOMPONENT_REPS_TRANS (Obj self, Obj f) {
     ptf4 = ADDR_TRANS4(f);
     nr = 1;
     for (i = 0; i < deg; i++) {
-      if (seen[i] == 0) { 
+      if (seen[i] == 0) {
         // i belongs to dom(f) but not im(f)
         // repeatedly apply f to pt until we see something we've seen already
         pt = i;
@@ -2871,7 +2873,7 @@ Obj FuncCOMPONENT_REPS_TRANS (Obj self, Obj f) {
         ptf4 = ADDR_TRANS4(f);
         seen = (UInt4*)(ADDR_OBJ(TmpTrans));
       }
-    } 
+    }
     for (i = 0; i < deg; i++) {
       if (seen[i] == 1) {
         // i belongs to a cycle
@@ -2893,36 +2895,44 @@ Obj FuncCOMPONENT_REPS_TRANS (Obj self, Obj f) {
 // Returns the number of connected components of the transformation <f>,
 // thought of as a functional digraph with DegreeOfTransformation(f) vertices.
 
-Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f){
+Obj FuncNR_COMPONENTS_TRANS (Obj self, Obj f) {
   UInt    nr, m, i, j, deg;
   UInt2   *ptf2;
   UInt4   *ptseen, *ptf4;
-  
+
   if (!IS_TRANS(f)) {
     ErrorQuit("NR_COMPONENTS_TRANS: the argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
   }
 
-  deg=INT_INTOBJ(FuncDegreeOfTransformation(self, f));
-  ptseen=ResizeInitTmpTrans(deg);
-  nr=0; m=0;
+  deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
+  ptseen = ResizeInitTmpTrans(deg);
+  nr = 0; m = 0;
 
-  if(TNUM_OBJ(f)==T_TRANS2){
-    ptf2=ADDR_TRANS2(f);
-    for(i=0;i<deg;i++){
-      if(ptseen[i]==0){
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    ptf2 = ADDR_TRANS2(f);
+    for (i = 0; i < deg; i++) {
+      if (ptseen[i] == 0) {
         m++;
-        for(j=i;ptseen[j]==0;j=ptf2[j]) ptseen[j]=m;
-        if(ptseen[j]==m) nr++;
+        for (j = i; ptseen[j] == 0; j = ptf2[j]) {
+          ptseen[j] = m;
+        }
+        if (ptseen[j] == m) {
+          nr++;
+        }
       }
     }
   } else {
-    ptf4=ADDR_TRANS4(f);
-    for(i=0;i<deg;i++){
-      if(ptseen[i]==0){
+    ptf4 = ADDR_TRANS4(f);
+    for (i = 0; i < deg; i++) {
+      if (ptseen[i] == 0) {
         m++;
-        for(j=i;ptseen[j]==0;j=ptf4[j]) ptseen[j]=m;
-        if(ptseen[j]==m) nr++;
+        for (j = i; ptseen[j] == 0; j = ptf4[j]) {
+          ptseen[j] = m;
+        }
+        if (ptseen[j] == m) {
+          nr++;
+        }
       }
     }
   }
@@ -2951,7 +2961,7 @@ Obj FuncCOMPONENTS_TRANS (Obj self, Obj f) {
     return out;
   }
 
-  seen = ResizeInitTmpTrans(deg);  
+  seen = ResizeInitTmpTrans(deg);
   out = NEW_PLIST(T_PLIST, 1);
   nr = 0;
 
