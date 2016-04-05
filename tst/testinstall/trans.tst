@@ -942,23 +942,43 @@ Error, INV_LIST_TRANS: <list>[2] must be a positive integer (not a integer)
 
 # INDEX_PERIOD_TRANS
 gap> f := Transformation([4, 3, 8, 9, 3, 5, 8, 10, 5, 6, 2, 8]);;
-gap> x := INDEX_PERIOD_TRANS(f);
+gap> val := INDEX_PERIOD_TRANS(f);
 [ 3, 5 ]
-gap> f ^ (x[1] + x[2]) = f ^ x[1];
+gap> ind := val[1];; per := val[2];;
+gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
+>    RankOfTransformation(f ^ ind, DegreeOfTransformation(f));
 true
+gap> f ^ (ind + per) = f ^ ind;
+true
+gap> ForAny([1 .. per - 1], m -> f ^ (ind + m) = f ^ ind);
+false
 gap> f := Transformation([65537 .. 70000], 
 >                        [65537 .. 70000] * 0 + 1) 
 >         * (14918, 184, 141)(14140, 124);;
-gap> x := INDEX_PERIOD_TRANS(f);
+gap> val := INDEX_PERIOD_TRANS(f);
 [ 1, 6 ]
-gap> f ^ (x[1] + x[2]) = f ^ x[1];
+gap> ind := val[1];; per := val[2];;
+gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
+>    RankOfTransformation(f ^ ind, DegreeOfTransformation(f));
 true
+gap> f ^ (ind + per) = f ^ ind;
+true
+gap> ForAny([1 .. per - 1], m -> f ^ (ind + m) = f ^ ind);
+false
 gap> f := Transformation(
 > [5, 23, 27, 8, 21, 49, 36, 33, 4, 44, 3, 49, 48, 18, 10, 30, 47, 3, 41, 35, 
 >  33, 15, 39, 19, 37, 24, 26, 2, 16, 47, 9, 7, 28, 47, 25, 21, 50, 23, 18, 42, 26, 
 >  40, 40, 4, 43, 27, 45, 35, 40, 14]);;
-gap> INDEX_PERIOD_TRANS(f);
+gap> val := INDEX_PERIOD_TRANS(f);
 [ 14, 4 ]
+gap> ind := val[1];; per := val[2];;
+gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
+>    RankOfTransformation(f ^ ind, DegreeOfTransformation(f));
+true
+gap> f ^ (ind + per) = f ^ ind;
+true
+gap> ForAny([1 .. per - 1], m -> f ^ (ind + m) = f ^ ind);
+false
 gap> f ^ 18 = f ^ 14;
 true
 gap> f :=
@@ -968,8 +988,16 @@ gap> f :=
 >  47, 48, 42, 82, 37, 34, 25, 26, 19, 44, 13, 15, 27, 41, 99, 15, 69, 8, 19,
 >  85, 8, 96, 8, 69, 97, 31, 22, 71, 39, 91, 13, 76, 53, 37, 78, 27, 91, 46,
 >  32, 64, 70, 84, 92, 37, 68, 10, 68 ] );;
-gap> INDEX_PERIOD_TRANS(f);
+gap> val := INDEX_PERIOD_TRANS(f);
 [ 10, 42 ]
+gap> ind := val[1];; per := val[2];;
+gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
+>    RankOfTransformation(f ^ ind, DegreeOfTransformation(f));
+true
+gap> f ^ (ind + per) = f ^ ind;
+true
+gap> ForAny([1 .. per - 1], m -> f ^ (ind + m) = f ^ ind);
+false
 gap> f :=
 > Transformation( [ 45, 51, 70, 26, 87, 94, 23, 19, 86, 46, 45, 51, 57, 13, 67,
 >  5, 38, 20, 51, 25, 67, 91, 38, 29, 43, 44, 84, 71, 11, 39, 52, 40, 12, 58,
@@ -977,17 +1005,33 @@ gap> f :=
 >  70, 29, 11, 13, 8, 14, 67, 84, 17, 79, 44, 59, 19, 35, 19, 61, 49, 32, 24,
 >  45, 71, 2, 90, 12, 4, 43, 61, 63, 64, 34, 92, 77, 19, 8, 23, 85, 26, 87, 8,
 >  76, 18, 48, 33, 8, 7, 38, 39 ] );;
-gap> INDEX_PERIOD_TRANS(f);
+gap> val := INDEX_PERIOD_TRANS(f);
 [ 13, 4 ]
-gap> f:=
+gap> ind := val[1];; per := val[2];;
+gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
+>    RankOfTransformation(f ^ ind, DegreeOfTransformation(f));
+true
+gap> f ^ (ind + per) = f ^ ind;
+true
+gap> ForAny([1 .. per - 1], m -> f ^ (ind + m) = f ^ ind);
+false
+gap> f :=
 > Transformation( [ 14, 24, 70, 1, 50, 72, 13, 64, 65, 68, 54, 20, 69, 32, 88,
 >  60, 93, 100, 37, 27, 15, 7, 84, 95, 84, 36, 8, 20, 90, 55, 78, 48, 93, 10,
 >  51, 76, 26, 83, 29, 39, 93, 48, 51, 93, 50, 92, 95, 51, 31, 17, 76, 43, 5,
 >  19, 94, 11, 70, 84, 22, 95, 5, 44, 44, 6, 7, 56, 4, 57, 94, 100, 86, 30,
 >  38, 80, 77, 60, 45, 99, 38, 11, 60, 62, 76, 50, 13, 48, 27, 82, 68, 99, 17,
 >  81, 16, 3, 14, 90, 22, 71, 41, 98 ] );;
-gap> INDEX_PERIOD_TRANS(f);
+gap> val := INDEX_PERIOD_TRANS(f);
 [ 16, 7 ]
+gap> ind := val[1];; per := val[2];;
+gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
+>    RankOfTransformation(f ^ ind, DegreeOfTransformation(f));
+true
+gap> f ^ (ind + per) = f ^ ind;
+true
+gap> ForAny([1 .. per - 1], m -> f ^ (ind + m) = f ^ ind);
+false
 gap> INDEX_PERIOD_TRANS(IdentityTransformation);
 [ 0, 0 ]
 gap> INDEX_PERIOD_TRANS("a");
