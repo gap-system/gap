@@ -17,7 +17,198 @@ gap> SetUserPreference("NotationForTransformations", "input");
 gap> f:=Transformation( [ 2, 2, 4, 2, 8, 5, 10, 10, 4, 3, 9, 9 ] );;
 gap> g:=One(f);
 IdentityTransformation
-gap> ImageSetOfTransformation(g);
+
+# Test DegreeOfTransformation
+gap> f := TransformationListListNC([1, 2], [1, 1]) ^ (3, 4);;
+gap> DegreeOfTransformation(f);
+2
+gap> f := TransformationListListNC([1, 2], [1, 1]) ^ (3, 65537);;
+gap> DegreeOfTransformation(f);
+2
+gap> DegreeOfTransformation(());
+Error, DegreeOfTransformation: <f> must be a transformation (not a permutation\
+ (small))
+
+# Test RANK_TRANS
+gap> RANK_TRANS(Transformation([1, 2, 3]));
+0
+gap> RANK_TRANS(Transformation([1, 2, 1]));
+2
+gap> RANK_TRANS(Transformation([1, 2, 1]) ^ (4, 65537));
+2
+gap> RANK_TRANS("a");
+Error, RANK_TRANS: <f> must be a transformation (not a list (string))
+
+# Test RANK_TRANS_INT
+gap> RANK_TRANS_INT(Transformation([1, 2, 1]), 2);
+2
+gap> RANK_TRANS_INT(Transformation([1, 2, 1]), -2);
+Error, RANK_TRANS_INT: <n> must be a non-negative integer
+gap> RANK_TRANS_INT(Transformation([1, 2, 1]), "a");
+Error, RANK_TRANS_INT: <n> must be a non-negative integer
+gap> RANK_TRANS_INT("a", 2);
+Error, RANK_TRANS_INT: <f> must be a transformation (not a list (string))
+gap> RANK_TRANS_INT(Transformation([65537], [1]), 10);
+10
+
+# Test RANK_TRANS_LIST
+gap> RANK_TRANS_LIST(Transformation([1, 2, 1]), 2);
+Error, RANK_TRANS_LIST: the second argument must be a list (not a integer)
+gap> RANK_TRANS_LIST(Transformation([1, 2, 1]), "a");
+Error, RANK_TRANS_LIST: the second argument <list> must be a list of positive \
+integers (not a character)
+gap> RANK_TRANS_LIST(Transformation([1, 2, 1]) ^ (1, 65537), "a");
+Error, RANK_TRANS_LIST: the second argument <list> must be a list of positive \
+integers (not a character)
+gap> RANK_TRANS_LIST(Transformation([1, 2, 1]), [1, 3]);
+1
+gap> RANK_TRANS_LIST(Transformation([1, 2, 1, 5, 5]), [1 .. 10]);
+7
+gap> RANK_TRANS_LIST("a", [1, 3]);
+Error, RANK_TRANS_LIST: the first argument must be a transformation (not a lis\
+t (string))
+gap> RANK_TRANS_LIST(Transformation([65537], [1]), 
+>                    Concatenation([1], [65536 .. 70000]));
+4464
+
+# Test IS_ID_TRANS
+gap> IS_ID_TRANS(IdentityTransformation);
+true
+gap> IS_ID_TRANS(Transformation([2, 1]) ^ 2);
+true
+gap> IS_ID_TRANS(Transformation([65537, 1], [1, 65537]) ^ 2);
+true
+gap> IS_ID_TRANS(());
+Error, IS_ID_TRANS: the first argument must be a transformation (not a permuta\
+tion (small))
+
+# One, IsOne, IdentityTransformation
+gap> f := Transformation([11, 9, 10, 6, 7, 7, 10, 7, 10, 9, 7, 4]);;
+gap> One(f);
+IdentityTransformation
+gap> IdentityTransformation;
+IdentityTransformation
+gap> One(f) = IdentityTransformation;
+true
+gap> f ^ 0;
+IdentityTransformation
+gap> IsOne(f ^ 0);
+true
+gap> IsOne(IdentityTransformation);
+true
+gap> IsOne(One(f));
+true
+gap> f := Transformation([65537, 1], [1, 65537]);;
+gap> One(f);
+IdentityTransformation
+gap> IdentityTransformation;
+IdentityTransformation
+gap> One(f) = IdentityTransformation;
+true
+gap> f ^ 0;
+IdentityTransformation
+gap> IsOne(f ^ 0);
+true
+gap> IsOne(IdentityTransformation);
+true
+gap> IsOne(One(f));
+true
+
+# Test LARGEST_MOVED_PT_TRANS
+gap> LARGEST_MOVED_PT_TRANS(IdentityTransformation);
+0
+gap> LARGEST_MOVED_PT_TRANS(Transformation([1, 2, 1, 4, 5]));
+3
+gap> LARGEST_MOVED_PT_TRANS(Transformation([65537], [1]));
+65537
+gap> LARGEST_MOVED_PT_TRANS("a");
+Error, LARGEST_MOVED_PT_TRANS: the first argument must be a transformation (no\
+t a list (string))
+
+# Test LARGEST_IMAGE_PT
+gap> LARGEST_IMAGE_PT(IdentityTransformation);
+0
+gap> LARGEST_IMAGE_PT(Transformation([1, 2, 1, 4, 5]));
+2
+gap> LARGEST_IMAGE_PT(Transformation([65537], [1]));
+65536
+gap> LARGEST_IMAGE_PT("a");
+Error, LARGEST_IMAGE_PT: the first argument must be a transformation (not a li\
+st (string))
+
+# Test SMALLEST_MOVED_PT_TRANS
+gap> SMALLEST_MOVED_PT_TRANS(IdentityTransformation);
+fail
+gap> SMALLEST_MOVED_PT_TRANS(Transformation([1, 2, 1, 4, 5]));
+3
+gap> SMALLEST_MOVED_PT_TRANS(Transformation([65537], [1]));
+65537
+gap> SMALLEST_MOVED_PT_TRANS("a");
+Error, SMALLEST_MOVED_PTS_TRANS: the first argument must be a transformation (\
+not a list (string))
+
+# Test SMALLEST_IMAGE_PT
+gap> SMALLEST_IMAGE_PT(IdentityTransformation);
+fail
+gap> SMALLEST_IMAGE_PT(Transformation([1, 2, 1, 4, 5]));
+1
+gap> SMALLEST_IMAGE_PT(Transformation([65537], [1]));
+1
+gap> SMALLEST_IMAGE_PT("a");
+Error, SMALLEST_IMAGE_PT: the first argument must be a transformation (not a l\
+ist (string))
+
+# Test NR_MOVED_PTS_TRANS
+gap> NR_MOVED_PTS_TRANS(IdentityTransformation);
+0
+gap> NR_MOVED_PTS_TRANS(Transformation([1, 2, 1, 4, 5]));
+1
+gap> NR_MOVED_PTS_TRANS(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]));
+7
+gap> NR_MOVED_PTS_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1));
+4464
+gap> NR_MOVED_PTS_TRANS("a");
+Error, NR_MOVED_PTS_TRANS: the first argument must be a transformation (not a \
+list (string))
+
+# Test MOVED_PTS_TRANS
+gap> MOVED_PTS_TRANS(IdentityTransformation);
+[  ]
+gap> MOVED_PTS_TRANS(Transformation([1, 2, 1, 4, 5]));
+[ 3 ]
+gap> MOVED_PTS_TRANS(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]));
+[ 3, 6, 7, 8, 9, 10, 11 ]
+gap> MOVED_PTS_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1)) 
+> = [65537 .. 70000];
+true
+gap> MOVED_PTS_TRANS("a");
+Error, MOVED_PTS_TRANS: the first argument must be a transformation (not a lis\
+t (string))
+
+# Test FLAT_KERNEL_TRANS
+gap> FLAT_KERNEL_TRANS(IdentityTransformation);
+[  ]
+gap> FLAT_KERNEL_TRANS(Transformation([1, 2, 1, 4, 5]));
+[ 1, 2, 1, 3, 4 ]
+gap> FLAT_KERNEL_TRANS(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]));
+[ 1, 2, 1, 3, 4, 1, 1, 1, 1, 1, 1 ]
+gap> FLAT_KERNEL_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1)) 
+> = Concatenation([1 .. 65536], [65537 .. 70000] * 0 + 1);
+true
+gap> FLAT_KERNEL_TRANS("a");
+Error, FLAT_KERNEL_TRANS: the first argument must be a transformation (not a l\
+ist (string))
+
+# Test FLAT_KERNEL_TRANS_INT
+gap> FLAT_KERNEL_TRANS_INT(IdentityTransformation, -1);
+Error, FLAT_KERNEL_TRANS_INT: the second argument must be a non-negative integ\
+er
+gap> FLAT_KERNEL_TRANS_INT(IdentityTransformation, "a");
+Error, FLAT_KERNEL_TRANS_INT: the second argument must be a non-negative integ\
+er
+gap> FLAT_KERNEL_TRANS_INT(IdentityTransformation, 10);
+[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+gap> FLAT_KERNEL_TRANS_INT(IdentityTransformation, 0);
 [  ]
 gap> FlatKernelOfTransformation(g);
 [  ]
@@ -1416,7 +1607,7 @@ t (string))
 gap> INV_LIST_TRANS([1, -1], Transformation([1], [65537]));
 Error, INV_LIST_TRANS: <list>[2] must be a positive integer (not a integer)
 
-# IndexPeriodOfTransformation
+# INDEX_PERIOD_TRANS
 gap> f := Transformation([4, 3, 8, 9, 3, 5, 8, 10, 5, 6, 2, 8]);;
 gap> x := INDEX_PERIOD_TRANS(f);
 [ 3, 5 ]
@@ -1469,6 +1660,197 @@ gap> INDEX_PERIOD_TRANS(IdentityTransformation);
 gap> INDEX_PERIOD_TRANS("a");
 Error, INDEX_PERIOD_TRANS: the argument must be a transformation (not a list (\
 string))
+
+# Test SMALLEST_IDEM_POW_TRANS
+gap> f := Transformation([4, 3, 8, 9, 3, 5, 8, 10, 5, 6, 2, 8]);;
+gap> m := SMALLEST_IDEM_POW_TRANS(f);
+5
+gap> IsIdempotent(f ^ m);
+true
+gap> f ^ (2 * m) = f ^ m;
+true
+gap> f := Transformation([5, 23, 27, 8, 21, 49, 36, 33, 4, 44, 3, 49, 48, 18,
+> 10, 30, 47, 3, 41, 35, 33, 15, 39, 19, 37, 24, 26, 2, 16, 47, 9, 7, 28, 47,
+> 25, 21, 50, 23, 18, 42, 26, 40, 40, 4, 43, 27, 45, 35, 40, 14]);;
+gap> SMALLEST_IDEM_POW_TRANS(f);
+16
+gap> f ^ 32 = f ^ 16;
+true
+gap> ForAny([1 .. 15], x -> f ^ (2 * x) = f ^ x);
+false
+
+# POW_KER_PERM 
+gap> POW_KER_PERM([], (1,2,3));
+[  ]
+gap> POW_KER_PERM([1 .. 5], (1,2,3));
+[ 1, 2, 3, 4, 5 ]
+gap> POW_KER_PERM([1 .. 5] * 1, (1,2,3));
+[ 1, 2, 3, 4, 5 ]
+gap> POW_KER_PERM([1 .. 5] * 0 + 1, (1,2,3));
+[ 1, 1, 1, 1, 1 ]
+gap> POW_KER_PERM([1 .. 3], (1,2,3)(4,5));
+[ 1, 2, 3 ]
+gap> POW_KER_PERM([1 .. 3] * 1, (1,2,3)(4,5));
+[ 1, 2, 3 ]
+gap> POW_KER_PERM([1 .. 3] * 0 + 1, (1,2,3)(4,5));
+[ 1, 1, 1 ]
+gap> POW_KER_PERM([1 .. 3], (1,2,3)(4,5));
+[ 1, 2, 3 ]
+gap> POW_KER_PERM([1 .. 65537], (1, 65537)) = [1 .. 65537];
+true
+gap> POW_KER_PERM([1 .. 65537] * 1, (1, 65537)) = [1 .. 65537];
+true
+gap> POW_KER_PERM([1 .. 65538] * 0 + 1, (1, 65537)) = [1 .. 65538] * 0 + 1;
+true
+gap> POW_KER_PERM([1 .. 100], (1,2,3)(65537, 65538)) = [1 .. 100];
+true
+gap> POW_KER_PERM([1 .. 100] * 1, (1,2,3)(65537, 65538)) = [1 .. 100];
+true
+gap> POW_KER_PERM([1 .. 100] * 0 + 1, (1,2,3)(65537, 65538)) = [1 .. 100] * 0 + 1;
+true
+gap> POW_KER_PERM([1, 2], 1);
+Error, POW_KER_TRANS: the argument must be a permutation (not a integer)
+gap> POW_KER_PERM(1, 2);
+Error, Length: <list> must be a list (not a integer)
+gap> Set(SymmetricGroup(3), p -> POW_KER_PERM([1, 1, 2], p)); 
+[ [ 1, 1, 2 ], [ 1, 2, 1 ], [ 1, 2, 2 ] ]
+gap> Set(SymmetricGroup(3), p -> POW_KER_PERM([1, 2, 3], p)); 
+[ [ 1, 2, 3 ] ]
+gap> Set(SymmetricGroup(3), p -> POW_KER_PERM([1, 1, 1], p)); 
+[ [ 1, 1, 1 ] ]
+
+# ON_KERNEL_ANTI_ACTION
+gap> f := Transformation([84, 99, 9, 73, 33, 70, 77, 69, 41, 18, 63, 29, 42,
+>  33, 75, 56, 79, 63, 89, 90, 64, 98, 49, 35, 89, 71, 3, 70, 20, 2, 26, 11,
+> 39, 9, 7, 89, 90, 48, 89, 85, 8, 56, 42, 10, 61, 25, 98, 55, 39, 92, 62, 21,
+> 34, 57, 44, 14, 14, 92, 53, 64, 59, 84, 12, 87, 78, 10, 83, 30, 32, 53, 44, 68,
+> 73, 2, 86, 23, 48, 47, 14, 79, 93, 15, 23, 76, 34, 97, 77, 55, 11, 33, 47, 91,
+> 87, 87, 67, 93, 18, 59, 86]);;
+gap> g := Transformation([16, 99, 73, 60, 74, 17, 95, 85, 49, 79, 4, 33, 66,
+> 15, 44, 77, 73, 41, 55, 93, 84, 67, 68, 69, 94, 31, 2, 29, 5, 42, 10, 63, 58,
+> 34, 72, 4, 53, 93, 89, 67, 34, 15, 57, 29, 4, 62, 76, 20, 34, 52, 22, 35,
+> 75, 29, 98, 22, 29, 78, 40, 46, 28, 6, 15, 55, 6, 90, 16, 12, 12, 65, 55, 26,
+> 66, 89, 36, 36, 25, 61, 57, 83, 38, 41, 93, 2, 39, 87, 85, 26, 17, 83, 92, 97,
+> 43, 30, 15, 5, 13, 94, 44]);;
+gap> ON_KERNEL_ANTI_ACTION(FlatKernelOfTransformation(g), f, 0);
+[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 11, 5, 13, 14, 15, 11, 16, 17, 18, 
+  19, 9, 20, 16, 18, 21, 6, 22, 23, 24, 25, 26, 3, 27, 16, 17, 28, 16, 29, 
+  30, 14, 11, 31, 32, 19, 19, 33, 26, 34, 35, 36, 9, 37, 37, 11, 11, 34, 38, 
+  18, 39, 1, 40, 30, 41, 31, 22, 42, 43, 38, 37, 8, 4, 23, 44, 45, 28, 46, 
+  11, 15, 47, 2, 45, 13, 9, 48, 7, 33, 25, 5, 46, 49, 30, 30, 50, 47, 10, 39, 
+  44 ]
+gap> last = FlatKernelOfTransformation(f * g);
+true
+gap> f := Transformation([2, 12, 11, 8, 18, 14, 6, 2, 9, 17, 3, 15, 2, 18,
+> 17, 1, 20, 4, 19, 12]) ^ (1, 65537);;
+gap> g := Transformation([11, 12, 9, 13, 20, 20, 2, 14, 18, 20, 7, 3, 19, 9,
+> 18, 20, 18, 11, 5, 16]);;
+gap> ON_KERNEL_ANTI_ACTION(FlatKernelOfTransformation(g, 65537), f, 0)
+> = FlatKernelOfTransformation(f * g, 65537);
+true
+gap> ON_KERNEL_ANTI_ACTION([1 .. 65538], f, 0) 
+> = FlatKernelOfTransformation(f, 65538);
+true
+gap> h := f * g ^ 3 * f * g * f ^ 10;
+<transformation on 65537 pts with rank 65522>
+gap> ON_KERNEL_ANTI_ACTION(FlatKernelOfTransformation(g), h, 0)
+> = FlatKernelOfTransformation(h * g);
+true
+gap> ON_KERNEL_ANTI_ACTION([1 .. 10], 
+>                          Transformation([7, 1, 4, 3, 2, 7, 7, 6, 6, 5]), 0);
+[ 1, 2, 3, 4, 5, 1, 1, 6, 6, 7 ]
+gap> ON_KERNEL_ANTI_ACTION([0], 
+>                          Transformation([7, 1, 4, 3, 2, 7, 7, 6, 6, 5]), 15);
+[ 1, 2, 3, 4, 5, 1, 1, 6, 6, 7, 8, 9, 10, 11, 12 ]
+gap> ON_KERNEL_ANTI_ACTION([0], 
+>                          Transformation([7, 1, 4, 3, 2, 7, 7, 6, 6, 5]), 5);
+[ 1, 2, 3, 4, 5 ]
+gap> ON_KERNEL_ANTI_ACTION([0], 
+>                          Transformation([7, 1, 4, 3, 2, 7, 7, 6, 6, 5]), 10);
+[ 1, 2, 3, 4, 5, 1, 1, 6, 6, 7 ]
+gap> ON_KERNEL_ANTI_ACTION([1 .. 15], 
+>                          Transformation([7, 1, 4, 3, 2, 7, 7, 6, 6, 5]), 0);
+[ 1, 2, 3, 4, 5, 1, 1, 6, 6, 7, 8, 9, 10, 11, 12 ]
+gap> ON_KERNEL_ANTI_ACTION([1 .. 5], 
+>                          Transformation([5, 1, 5, 3, 2, 7, 7, 6, 6, 5]), 0);
+[ 1, 2, 1, 3, 4, 5, 5, 6, 6, 1 ]
+gap> ON_KERNEL_ANTI_ACTION([1 .. 5], IdentityTransformation, 0); 
+[ 1, 2, 3, 4, 5 ]
+gap> ON_KERNEL_ANTI_ACTION([1 .. 5], (), 0);
+Error, ON_KERNEL_ANTI_ACTION: the argument must be a transformation (not a per\
+mutation (small))
+
+# INV_KER_TRANS
+gap> f := Transformation([9, 5, 3, 5, 10, 3, 1, 9, 6, 7]);;
+gap> g := RightOne(f) * (2,4)(3,6,5);                                   
+Transformation( [ 1, 1, 6, 6, 3, 5, 7, 7 ] )
+gap> ker := FlatKernelOfTransformation(g, DegreeOfTransformation(f));
+[ 1, 1, 2, 2, 3, 4, 5, 5, 6, 7 ]
+gap> h := INV_KER_TRANS(ker, f);
+Transformation( [ 7, 7, 6, 6, 4, 9, 10, 10, 8, 5 ] )
+gap> OnKernelAntiAction(OnKernelAntiAction(ker, f), h) = ker;
+true
+gap> h * f * g = g;
+true
+gap> ker := FlatKernelOfTransformation(g, DegreeOfTransformation(f) + 2);
+[ 1, 1, 2, 2, 3, 4, 5, 5, 6, 7, 8, 9 ]
+gap> h := INV_KER_TRANS(ker, f);
+Transformation( [ 7, 7, 6, 6, 4, 9, 10, 10, 8, 5 ] )
+gap> OnKernelAntiAction(OnKernelAntiAction(ker, f), h) = ker;
+true
+gap> h * f * g = g;
+true
+gap> f := AsTransformation((1,2,3));;
+gap> h := INV_KER_TRANS([1 .. 65537], f);
+Transformation( [ 3, 1, 2 ] )
+gap> OnKernelAntiAction(OnKernelAntiAction([1 .. 65537], f), h) = [1 .. 65537];
+true
+gap> h * f * IdentityTransformation = IdentityTransformation;
+true
+gap> f := Transformation([9, 5, 3, 5, 10, 3, 1, 9, 6, 7]) ^ (1, 65537);;
+gap> g := RightOne(f) * (2,4)(3,6,5);;
+gap> ker := FlatKernelOfTransformation(g, DegreeOfTransformation(f));;
+gap> h := INV_KER_TRANS(ker, f);
+<transformation on 65537 pts with rank 65534>
+gap> OnKernelAntiAction(OnKernelAntiAction(ker, f), h) = ker;
+true
+gap> h * f * g = g;
+true
+gap> ker := FlatKernelOfTransformation(g, DegreeOfTransformation(f) + 2);;
+gap> h := INV_KER_TRANS(ker, f);
+<transformation on 65537 pts with rank 65534>
+gap> OnKernelAntiAction(OnKernelAntiAction(ker, f), h) = ker;
+true
+gap> h * f * g = g;
+true
+gap> f := AsTransformation((1,2,65537));;
+gap> h := INV_KER_TRANS([1 .. 65537], f);
+<transformation on 65537 pts with rank 65537>
+gap> OnKernelAntiAction(OnKernelAntiAction([1 .. 65537], f), h) = [1 .. 65537];
+true
+gap> h * f * IdentityTransformation = IdentityTransformation;
+true
+gap> f := AsTransformation((1,2)(3,65537));;
+gap> h := INV_KER_TRANS([1, 2], f);
+Transformation( [ 2, 1 ] )
+gap> h := INV_KER_TRANS([1, 2], [1]);
+Error, INV_KER_TRANS: the argument must be a transformation (not a list (plain\
+,cyc))
+
+# IS_IDEM_TRANS
+gap> IS_IDEM_TRANS(IdentityTransformation);
+true
+gap> IS_IDEM_TRANS(Transformation([1, 2, 1]));
+true
+gap> IS_IDEM_TRANS(Transformation([1, 1, 2]));
+false
+gap> IS_IDEM_TRANS(Transformation([65537], [1]));
+true
+gap> IS_IDEM_TRANS(Transformation([1, 65537], [2, 1]));
+false
+gap> IS_IDEM_TRANS(());
+Error, IS_IDEM_TRANS: the argument must be a transformation (not a permutation\
+ (small))
 
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;

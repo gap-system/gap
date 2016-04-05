@@ -899,7 +899,7 @@ Obj FuncFLAT_KERNEL_TRANS_INT (Obj self, Obj f, Obj n) {
 }
 
 // Returns the duplicate free list of images of the transformation f on [1 ..
-// n] where n = DegreeOfTransformation(f). Note that this might not be sorted.
+// n] where n = DEG_TRANS(f). Note that this might not be sorted.
 
 Obj FuncUNSORTED_IMAGE_SET_TRANS (Obj self, Obj f) {
 
@@ -914,7 +914,7 @@ Obj FuncUNSORTED_IMAGE_SET_TRANS (Obj self, Obj f) {
     }
     return IMG_TRANS(f);
   }
-  ErrorQuit("IMAGE_UNSORTED_TRANS: the first argument must be a "
+  ErrorQuit("UNSORTED_IMAGE_SET_TRANS: the argument must be a "
             "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
 
 }
@@ -2390,7 +2390,7 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
   return out;
 }
 
-/* the least power of <f> which is an idempotent */
+// Returns the least integer m such that f^m is an idempotent
 
 Obj FuncSMALLEST_IDEM_POW_TRANS( Obj self, Obj f ){
   Obj x, ind, per, pow;
@@ -2403,9 +2403,11 @@ Obj FuncSMALLEST_IDEM_POW_TRANS( Obj self, Obj f ){
   return pow;
 }
 
-// the kernel of <f^p> where ker(f)=<ker> (where the length of the output equals
-// the length of <ker>), assumes that <p> is a permutation of <[1..Length(ker)]>
-// regardless of its degree
+// Returns the flat kernel of <p> ^ -1 * f * <p> where f is any transformation
+// such that ker(f) = <ker>, <p> is a permutation and <ker> is itself a flat
+// kernel of transformation. This assumes (but doesn't check) that <p> is a
+// permutation of [1 .. Length(<ker>)] regardless of its degree.
+
 Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p){
   UInt    len, rank, i, dep;
   Obj     out;
@@ -2489,11 +2491,21 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p){
     }
     return out;
   }
-  ErrorQuit("usage: the second argument must be a transformation,", 0L, 0L);
-  return Fail;
+
+  ErrorQuit("POW_KER_TRANS: the argument must be a "
+            "permutation (not a %s)", (Int) TNAM_OBJ(p), 0L);
+  return 0L;
 }
 
-// the kernel obtained by multiplying f by any g with ker(g)=ker
+// Returns the flat kernel of a transformation obtained by multiplying <f> by
+// any transformation with kernel equal to <ker>. If the argument <ker> =
+// [0], then the flat kernel of <f> on [1 .. <n>] is returned. Otherwise, the
+// argument <n> is redundant.
+
+// FIXME this should just always return a flat kernel of length <n>, the
+// special case should be removed, and [0] should be replaced by [1 .. n] in
+// the Semigroup package.
+
 Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
   UInt2   *ptf2;
   UInt4   *ptf4, *pttmp;
@@ -2547,7 +2559,8 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
 	}
       }
     }
-  } else {
+    return out;
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
     deg=INT_INTOBJ(FuncDegreeOfTransformation(self,f));
     if(len>=deg){
       out=NEW_PLIST(T_PLIST_CYC+IMMUTABLE, len);
@@ -2586,15 +2599,19 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n){
 	}
       }
     }
+    return out;
   }
-  return out;
+  ErrorQuit("ON_KERNEL_ANTI_ACTION: the argument must be a "
+            "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 }
 
-/* Let <x> be a transformation with <ker(x)=X> and <ker(fx)=f^ker(x)> has the
- * same number of classes as <ker(x)>. Then INV_KER_TRANS(X, f) returns a
- * transformation <g> such that <gf^ker(x)=ker(x)=ker(gfx)> and the action of
- * <gf> on <ker(x)> is the identity.
- */
+// If <f> is a transformation and <X> is a flat kernel of a transformation,
+// then we denote OnKernelAntiAction(X, f) by f ^ X. Suppose that x is a
+// transformation with ker(x)=<X> and ker(<f>x) = f ^ ker(x) has the same
+// number of classes as ker(x). Then INV_KER_TRANS(X, f) returns a
+// transformation g such that g<f> ^ ker(x) = ker(x) = ker(gfx) and the action
+// of g<f> on ker(x) is the identity.
 
 Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f){
   Obj     g;
@@ -2623,21 +2640,14 @@ Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f){
         for(i=len;i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
       }
       return g;
-    } else {        // deg(g)>65536 and g is T_TRANS4
+    } else {        // deg(g) = len > 65536 >= deg and g is T_TRANS4
       g=NEW_TRANS4(len);
       pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
       ptf2=ADDR_TRANS2(f);
-      ptg4=ADDR_TRANS4(g);
-      if(deg>=len){
-        // calculate a transversal of f^ker(x)=ker(fx)
-        for(i=0;i<len;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i]+1))-1]=i;
-        // install values in g
-        for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
-      }else{
-        for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i]+1))-1]=i;
-        for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
-        for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
-      }
+      ptg4=ADDR_TRANS4(g); 
+      for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i]+1))-1]=i;
+      for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
+      for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
       return g;
     }
   } else if(TNUM_OBJ(f)==T_TRANS4){
@@ -2647,41 +2657,29 @@ Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f){
       pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
       ptf4=ADDR_TRANS4(f);
       ptg2=ADDR_TRANS2(g);
-      if(deg>=len){
-        // calculate a transversal of f^ker(x)=ker(fx)
-        for(i=0;i<len;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
-        // install values in g
-        for(i=len;i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
-      }else{
-        for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
-        for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
-        for(i=len;i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
-      }
+      // calculate a transversal of f^ker(x)=ker(fx)
+      for(i=0;i<len;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
+      // install values in g
+      for(i=len;i>=1;i--) ptg2[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
       return g;
-    } else {        // deg(g)>65536 and g is T_TRANS4
+    } else {        // deg(g) = len > 65536 >= deg and g is T_TRANS4
       g=NEW_TRANS4(len);
       pttmp=(UInt4*)(ADDR_OBJ(TmpTrans));
       ptf4=ADDR_TRANS4(f);
       ptg4=ADDR_TRANS4(g);
-      if(deg>=len){
-        // calculate a transversal of f^ker(x)=ker(fx)
-        for(i=0;i<len;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
-        // install values in g
-        for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
-      }else{
-        for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
-        for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
-        for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
-      }
+      for(i=0;i<deg;i++)  pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i]+1))-1]=i;
+      for(;i<len;i++)     pttmp[INT_INTOBJ(ELM_LIST(X, i+1))-1]=i;
+      for(i=len;i>=1;i--) ptg4[i-1]=pttmp[INT_INTOBJ(ELM_LIST(X, i))-1];
       return g;
     }
-  } else {
-    ErrorQuit("usage: the second argument must be a transformation,", 0L, 0L);
   }
-  return Fail;
+  ErrorQuit("INV_KER_TRANS: the argument must be a "
+            "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 }
 
-/* test if a transformation is an idempotent. */
+// Returns true if the transformation <f> is an idempotent and false if it is
+// not. 
 
 Obj FuncIS_IDEM_TRANS(Obj self, Obj f){
   UInt2*  ptf2;
@@ -2696,7 +2694,8 @@ Obj FuncIS_IDEM_TRANS(Obj self, Obj f){
         return False;
       }
     }
-  } else {
+    return True;
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
     deg=DEG_TRANS4(f);
     ptf4=ADDR_TRANS4(f);
     for(i=0;i<deg;i++){
@@ -2704,8 +2703,11 @@ Obj FuncIS_IDEM_TRANS(Obj self, Obj f){
         return False;
       }
     }
+    return True;
   }
-  return True;
+  ErrorQuit("IS_IDEM_TRANS: the argument must be a "
+            "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 }
 
 /* returns the least list <out> such that for all <i> in [1..degree(f)]
