@@ -1229,6 +1229,48 @@ gap> IS_IDEM_TRANS(());
 Error, IS_IDEM_TRANS: the argument must be a transformation (not a permutation\
  (small))
 
+# COMPONENT_REPS_TRANS
+gap> COMPONENT_REPS_TRANS(Transformation([1, 2, 1]));
+[ [ 3 ], [ 2 ] ]
+gap> COMPONENT_REPS_TRANS(Transformation([1, 1, 1]));
+[ [ 2, 3 ] ]
+gap> COMPONENT_REPS_TRANS(Transformation([1, 1, 2]));
+[ [ 3 ] ]
+gap> f := Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]);;
+gap> COMPONENT_REPS_TRANS(f);
+[ [ 3, 4, 8, 10 ] ]
+gap> f := Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12, 11, 14, 13, 15,
+>                         16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+>                         31, 30, 29]);;
+gap> COMPONENT_REPS_TRANS(f);
+[ [ 2, 7 ], [ 1 ], [ 11 ], [ 13 ], [ 15 ], [ 16 ], [ 17 ], [ 18 ], [ 19 ], 
+  [ 20 ], [ 21 ], [ 22 ], [ 23 ], [ 24 ], [ 25 ], [ 26 ], [ 27 ], [ 28 ], 
+  [ 29 ], [ 30 ] ]
+gap> COMPONENT_REPS_TRANS(IdentityTransformation);
+[  ]
+gap> f :=
+> Transformation([9, 45, 53, 15, 42, 97, 71, 66, 7, 88, 6, 98, 95, 36, 20, 59,
+> 94, 6, 81, 70, 65, 29, 78, 37, 74, 48, 52, 4, 32, 93, 18, 13, 55, 94, 49, 42,
+> 99, 46, 35, 84, 52, 79, 80, 7, 85, 53, 89, 70, 79, 27, 84, 99, 9, 73, 33, 70,
+> 77, 69, 41, 18, 63, 29, 42, 33, 75, 56, 79, 63, 89, 90, 64, 98, 49, 35, 100,
+> 89, 71, 3, 70, 20, 2, 26, 11, 39, 9, 7, 89, 90, 48, 89, 85, 8, 56, 42, 10,
+> 61, 25, 98, 55, 39]);;
+gap> COMPONENT_REPS_TRANS(f);
+[ [ 1, 16, 19, 23, 24, 38, 44, 50, 57, 86, 91 ], 
+  [ 5, 14, 17, 21, 22, 28, 30, 31, 34, 40, 43, 47, 51, 54, 58, 60, 62, 67, 
+      68, 76, 82, 83, 87, 92, 96 ], [ 12, 72 ] ]
+gap> Set(List(ComponentRepsOfTransformation(f), x ->
+> Union(List(x, i -> ComponentTransformationInt(f, i)))))
+> = Set(List(ComponentsOfTransformation(f), AsSSortedList));
+true
+gap> f := Transformation([65537 .. 70000], 
+>                        [65537 .. 70000] * 0 + 1) 
+>         * (14918, 184, 141)(14140, 124);;
+gap> COMPONENT_REPS_TRANS(f);;
+gap> COMPONENT_REPS_TRANS("a");
+Error, COMPONENT_REPS_TRANS: the argument must be a transformation (not a list\
+ (string))
+
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;
