@@ -1353,6 +1353,200 @@ gap> COMPONENTS_TRANS("a");
 Error, COMPONENTS_TRANS: the argument must be a transformation (not a list (st\
 ring))
 
+# COMPONENT_TRANS_INT
+gap> COMPONENT_TRANS_INT(Transformation([1, 2, 1]), 1);
+[ 1 ]
+gap> COMPONENT_TRANS_INT(Transformation([1, 2, 1]), 2);
+[ 2 ]
+gap> COMPONENT_TRANS_INT(Transformation([1, 2, 1]), 3);
+[ 3, 1 ]
+gap> COMPONENT_TRANS_INT(Transformation([1, 2, 1]), 5);
+[ 5 ]
+gap> COMPONENT_TRANS_INT(Transformation([1, 1, 1]), 1);
+[ 1 ]
+gap> COMPONENT_TRANS_INT(Transformation([1, 1, 1]), 2);
+[ 2, 1 ]
+gap> COMPONENT_TRANS_INT(Transformation([1, 1, 1]), 3);
+[ 3, 1 ]
+gap> COMPONENT_TRANS_INT(Transformation([1, 1, 1]), 5);
+[ 5 ]
+gap> COMPONENT_TRANS_INT(Transformation([1, 1, 2]), 1);
+[ 1 ]
+gap> COMPONENT_TRANS_INT(Transformation([1, 1, 2]), 2);
+[ 2, 1 ]
+gap> COMPONENT_TRANS_INT(Transformation([1, 1, 2]), 3);
+[ 3, 2, 1 ]
+gap> COMPONENT_TRANS_INT(Transformation([1, 1, 2]), 5);
+[ 5 ]
+gap> COMPONENT_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 1);
+[ 1, 2, 6, 9 ]
+gap> COMPONENT_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 2);
+[ 2, 6, 9, 1 ]
+gap> COMPONENT_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 3);
+[ 3, 7, 9, 1, 2, 6 ]
+gap> COMPONENT_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 4);
+[ 4, 2, 6, 9, 1 ]
+gap> COMPONENT_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 5);
+[ 5, 6, 9, 1, 2 ]
+gap> COMPONENT_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 6);
+[ 6, 9, 1, 2 ]
+gap> COMPONENT_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 7);
+[ 7, 9, 1, 2, 6 ]
+gap> COMPONENT_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 8);
+[ 8, 1, 2, 6, 9 ]
+gap> COMPONENT_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 9);
+[ 9, 1, 2, 6 ]
+gap> COMPONENT_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 10);
+[ 10, 5, 6, 9, 1, 2 ]
+gap> COMPONENT_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 20);
+[ 20 ]
+gap> COMPONENT_TRANS_INT(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12,
+>                                        11, 14, 13, 15, 16, 17, 18, 19, 20,
+>                                        21, 22, 23, 24, 25, 26, 27, 28, 31,
+>                                        30, 29]), 10);
+[ 10, 6, 4, 9 ]
+gap> COMPONENT_TRANS_INT(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12,
+>                                        11, 14, 13, 15, 16, 17, 18, 19, 20,
+>                                        21, 22, 23, 24, 25, 26, 27, 28, 31,
+>                                        30, 29]), 40);
+[ 40 ]
+gap> COMPONENT_TRANS_INT(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12,
+>                                        11, 14, 13, 15, 16, 17, 18, 19, 20,
+>                                        21, 22, 23, 24, 25, 26, 27, 28, 31,
+>                                        30, 29]), 1);
+[ 1, 3 ]
+gap> COMPONENT_TRANS_INT(IdentityTransformation, 10);
+[ 10 ]
+gap> COMPONENT_TRANS_INT(IdentityTransformation, 0);
+Error, COMPONENT_TRANS_INT: the second argument must be a positive integer (no\
+t a integer)
+gap> COMPONENT_TRANS_INT(IdentityTransformation, "a");
+Error, COMPONENT_TRANS_INT: the second argument must be a positive integer (no\
+t a list (string))
+gap> COMPONENT_TRANS_INT((), 1);
+Error, COMPONENT_TRANS_INT: the first argument must be a transformation (not a\
+ permutation (small))
+gap> COMPONENT_TRANS_INT(Transformation([9, 45, 53, 15, 42, 97, 71, 66, 7, 88, 6,
+>                                     98, 95, 36, 20, 59, 94, 6, 81, 70, 65,
+>                                     29, 78, 37, 74, 48, 52, 4, 32, 93, 18,
+>                                     13, 55, 94, 49, 42, 99, 46, 35, 84, 52,
+>                                     79, 80, 7, 85, 53, 89, 70, 79, 27, 84,
+>                                     99, 9, 73, 33, 70, 77, 69, 41, 18, 63,
+>                                     29, 42, 33, 75, 56, 79, 63, 89, 90, 64,
+>                                     98, 49, 35, 100, 89, 71, 3, 70, 20, 2,
+>                                     26, 11, 39, 9, 7, 89, 90, 48, 89, 85, 8,
+>                                     56, 42, 10, 61, 25, 98, 55, 39]), 1);
+[ 1, 9, 7, 71, 64, 33, 55 ]
+gap> COMPONENT_TRANS_INT(Transformation([65537 .. 70000], 
+>                                       [65537 .. 70000] * 0 + 1) 
+>                        * (14918, 184, 141)(14140, 124), 1);
+[ 1 ]
+gap> COMPONENT_TRANS_INT(Transformation([65537 .. 70000], 
+>                                       [65537 .. 70000] * 0 + 1) 
+>                        * (14918, 184, 141)(14140, 124), 14918);
+[ 14918, 184, 141 ]
+gap> COMPONENT_TRANS_INT(Transformation([65537 .. 70000], 
+>                                       [65537 .. 70000] * 0 + 1) 
+>                        * (14918, 184, 141)(14140, 124), 69999);
+[ 69999, 1 ]
+
+# CYCLE_TRANS_INT
+gap> CYCLE_TRANS_INT(Transformation([1, 2, 1]), 1);
+[ 1 ]
+gap> CYCLE_TRANS_INT(Transformation([1, 2, 1]), 2);
+[ 2 ]
+gap> CYCLE_TRANS_INT(Transformation([1, 2, 1]), 3);
+[ 1 ]
+gap> CYCLE_TRANS_INT(Transformation([1, 2, 1]), 5);
+[ 5 ]
+gap> CYCLE_TRANS_INT(Transformation([1, 1, 1]), 1);
+[ 1 ]
+gap> CYCLE_TRANS_INT(Transformation([1, 1, 1]), 2);
+[ 1 ]
+gap> CYCLE_TRANS_INT(Transformation([1, 1, 1]), 3);
+[ 1 ]
+gap> CYCLE_TRANS_INT(Transformation([1, 1, 1]), 5);
+[ 5 ]
+gap> CYCLE_TRANS_INT(Transformation([1, 1, 2]), 1);
+[ 1 ]
+gap> CYCLE_TRANS_INT(Transformation([1, 1, 2]), 2);
+[ 1 ]
+gap> CYCLE_TRANS_INT(Transformation([1, 1, 2]), 3);
+[ 1 ]
+gap> CYCLE_TRANS_INT(Transformation([1, 1, 2]), 5);
+[ 5 ]
+gap> CYCLE_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 1);
+[ 1, 2, 6, 9 ]
+gap> CYCLE_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 2);
+[ 2, 6, 9, 1 ]
+gap> CYCLE_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 3);
+[ 9, 1, 2, 6 ]
+gap> CYCLE_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 4);
+[ 2, 6, 9, 1 ]
+gap> CYCLE_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 5);
+[ 6, 9, 1, 2 ]
+gap> CYCLE_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 6);
+[ 6, 9, 1, 2 ]
+gap> CYCLE_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 7);
+[ 9, 1, 2, 6 ]
+gap> CYCLE_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 8);
+[ 1, 2, 6, 9 ]
+gap> CYCLE_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 9);
+[ 9, 1, 2, 6 ]
+gap> CYCLE_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 10);
+[ 6, 9, 1, 2 ]
+gap> CYCLE_TRANS_INT(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 20);
+[ 20 ]
+gap> CYCLE_TRANS_INT(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12,
+>                                        11, 14, 13, 15, 16, 17, 18, 19, 20,
+>                                        21, 22, 23, 24, 25, 26, 27, 28, 31,
+>                                        30, 29]), 10);
+[ 10, 6, 4, 9 ]
+gap> CYCLE_TRANS_INT(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12,
+>                                        11, 14, 13, 15, 16, 17, 18, 19, 20,
+>                                        21, 22, 23, 24, 25, 26, 27, 28, 31,
+>                                        30, 29]), 40);
+[ 40 ]
+gap> CYCLE_TRANS_INT(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12,
+>                                        11, 14, 13, 15, 16, 17, 18, 19, 20,
+>                                        21, 22, 23, 24, 25, 26, 27, 28, 31,
+>                                        30, 29]), 1);
+[ 1, 3 ]
+gap> CYCLE_TRANS_INT(IdentityTransformation, 10);
+[ 10 ]
+gap> CYCLE_TRANS_INT(IdentityTransformation, 0);
+Error, CYCLE_TRANS_INT: the second argument must be a positive integer (not a \
+integer)
+gap> CYCLE_TRANS_INT(IdentityTransformation, "a");
+Error, CYCLE_TRANS_INT: the second argument must be a positive integer (not a \
+list (string))
+gap> CYCLE_TRANS_INT((), 1);
+Error, CYCLE_TRANS_INT: the first argument must be a transformation (not a per\
+mutation (small))
+gap> CYCLE_TRANS_INT(Transformation([9, 45, 53, 15, 42, 97, 71, 66, 7, 88, 6,
+>                                     98, 95, 36, 20, 59, 94, 6, 81, 70, 65,
+>                                     29, 78, 37, 74, 48, 52, 4, 32, 93, 18,
+>                                     13, 55, 94, 49, 42, 99, 46, 35, 84, 52,
+>                                     79, 80, 7, 85, 53, 89, 70, 79, 27, 84,
+>                                     99, 9, 73, 33, 70, 77, 69, 41, 18, 63,
+>                                     29, 42, 33, 75, 56, 79, 63, 89, 90, 64,
+>                                     98, 49, 35, 100, 89, 71, 3, 70, 20, 2,
+>                                     26, 11, 39, 9, 7, 89, 90, 48, 89, 85, 8,
+>                                     56, 42, 10, 61, 25, 98, 55, 39]), 1);
+[ 33, 55 ]
+gap> CYCLE_TRANS_INT(Transformation([65537 .. 70000], 
+>                                   [65537 .. 70000] * 0 + 1) 
+>                    * (14918, 184, 141)(14140, 124), 1);
+[ 1 ]
+gap> CYCLE_TRANS_INT(Transformation([65537 .. 70000], 
+>                                   [65537 .. 70000] * 0 + 1) 
+>                    * (14918, 184, 141)(14140, 124), 14918);
+[ 14918, 184, 141 ]
+gap> CYCLE_TRANS_INT(Transformation([65537 .. 70000], 
+>                                   [65537 .. 70000] * 0 + 1) 
+>                    * (14918, 184, 141)(14140, 124), 69999);
+[ 1 ]
+
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;
