@@ -3096,93 +3096,91 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt){
   return out;
 }
 
+// Returns the cycles of the transformation <f>, thought of as a
+// functional digraph with DegreeOfTransformation(f) vertices.
 
-Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list){
-  UInt    deg, pt, len_list, len_out, i, j, m;
-  Obj     out;
+Obj FuncCYCLES_TRANS (Obj self, Obj f) {
   UInt2   *ptf2;
-  UInt4   *ptseen, *ptlens, *ptf4;
+  UInt4   *seen, *ptf4;
+  UInt    deg, i, pt, nr;
+  Obj     out, comp;
 
-  deg=INT_INTOBJ(FuncDegreeOfTransformation(self, f));
-  len_list=LEN_LIST(list);
+  if (!IS_TRANS(f)) {
+    ErrorQuit("CYCLES_TRANS: the argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  }
 
-  ResizeTmpTrans(deg+len_list);
-  out=NEW_PLIST(T_PLIST, len_list);
+  deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
-  ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-  ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
+  if (deg == 0) {
+    out = NEW_PLIST(T_PLIST_EMPTY, 0);
+    SET_LEN_PLIST(out, 0);
+    return out;
+  }
 
-  for(i=0;i<deg;i++){ ptseen[i]=0; ptlens[i]=0; }
-  for(;i<len_list;i++){ ptlens[i]=0; }
+  seen = ResizeInitTmpTrans(deg);
+  out = NEW_PLIST(T_PLIST, 0);
+  nr = 0;
 
-  len_out=0; m=0;
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    ptf2 = ADDR_TRANS2(f);
+    for (i = 0; i < deg; i++) {
+      if (seen[i] == 0) {
+        // repeatedly apply f to pt until we see something we've seen already
+        for (pt = i; seen[pt] == 0; pt = ptf2[pt]) {
+          seen[pt] = 1;
+        } 
+        if (seen[pt] == 1) {
+          // pt belongs to a component we've not seen before
 
-  if(TNUM_OBJ(f)==T_TRANS2){
-    for(i=1;i<=len_list;i++){
-      pt=INT_INTOBJ(ELM_LIST(list, i))-1;
-      if(pt>=deg){
-        SET_ELM_PLIST(out, ++len_out, NEW_PLIST(T_PLIST_CYC, 1));
-        SET_ELM_PLIST(ELM_PLIST(out, len_out), 1, INTOBJ_INT(pt+1));
-        CHANGED_BAG(out);
-        (((UInt4*)(ADDR_OBJ(TmpTrans))+deg)[len_out])++; //ptlens[len_out]++
-      } else {
-        m++;
-        ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-        ptf2=ADDR_TRANS2(f);
-        while(ptseen[pt]==0){ //look for pts already seen
-          ptseen[pt]=m;
-          pt=ptf2[pt];
+          comp = NEW_PLIST(T_PLIST_CYC, 0);
+          AssPlist(out, ++nr, comp);
+
+          seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+          ptf2 = ADDR_TRANS2(f);
+
+          for (; seen[pt] == 1; pt = ptf2[pt]) {
+            seen[pt] = 2;
+            AssPlist(comp, LEN_PLIST(comp) + 1, INTOBJ_INT(pt + 1));
+            seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+            ptf2 = ADDR_TRANS2(f);
+          }
         }
-        if(ptseen[pt]==m){//new cycle
-          j=pt;
-          SET_ELM_PLIST(out, ++len_out, NEW_PLIST(T_PLIST_CYC, 32));
-          CHANGED_BAG(out);
-          ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-          do{ AssPlist(ELM_PLIST(out, len_out), ++ptlens[len_out],
-               INTOBJ_INT(j+1));
-              j=(ADDR_TRANS2(f))[j];
-              ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-          }while(j!=pt);
-        }
+        for (pt = i; seen[pt] == 1; pt = ptf2[pt]) {
+          seen[pt] = 2;
+        } 
       }
     }
   } else {
-    for(i=1;i<=len_list;i++){
-      pt=INT_INTOBJ(ELM_LIST(list, i))-1;
-      if(pt>=deg){
-        SET_ELM_PLIST(out, ++len_out, NEW_PLIST(T_PLIST_CYC, 1));
-        SET_ELM_PLIST(ELM_PLIST(out, len_out), 1, INTOBJ_INT(pt+1));
-        CHANGED_BAG(out);
-        (((UInt4*)(ADDR_OBJ(TmpTrans))+deg)[len_out])++; //ptlens[len_out]++
-      } else {
-        m++;
-        ptseen=(UInt4*)(ADDR_OBJ(TmpTrans));
-        ptf4=ADDR_TRANS4(f);
-        while(ptseen[pt]==0){ //look for pts already seen
-          ptseen[pt]=m;
-          pt=ptf4[pt];
+    ptf4 = ADDR_TRANS4(f);
+    for (i = 0; i < deg; i++) {
+      if (seen[i] == 0) {
+        // repeatedly apply f to pt until we see something we've seen already
+        for (pt = i; seen[pt] == 0; pt = ptf4[pt]) {
+          seen[pt] = 1;
+        } 
+        if (seen[pt] == 1) {
+          // pt belongs to a component we've not seen before
+
+          comp = NEW_PLIST(T_PLIST_CYC, 0);
+          AssPlist(out, ++nr, comp);
+
+          seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+          ptf4 = ADDR_TRANS4(f);
+
+          for (; seen[pt] == 1; pt = ptf4[pt]) {
+            seen[pt] = 2;
+            AssPlist(comp, LEN_PLIST(comp) + 1, INTOBJ_INT(pt + 1));
+            seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+            ptf4 = ADDR_TRANS4(f);
+          }
         }
-        if(ptseen[pt]==m){//new cycle
-          j=pt;
-          SET_ELM_PLIST(out, ++len_out, NEW_PLIST(T_PLIST_CYC, 32));
-          CHANGED_BAG(out);
-          ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-          do{ AssPlist(ELM_PLIST(out, len_out), ++ptlens[len_out],
-               INTOBJ_INT(j+1));
-              j=(ADDR_TRANS4(f))[j];
-              ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-          }while(j!=pt);
-        }
+        for (pt = i; seen[pt] == 1; pt = ptf4[pt]) {
+          seen[pt] = 2;
+        } 
       }
     }
   }
-  ptlens=(UInt4*)(ADDR_OBJ(TmpTrans))+deg;
-  for(i=1;i<=len_out;i++){
-    SHRINK_PLIST (ELM_PLIST(out, i), (Int) ptlens[i]);
-    SET_LEN_PLIST(ELM_PLIST(out, i), (Int) ptlens[i]);
-  }
-  SHRINK_PLIST (out, (Int) len_out);
-  SET_LEN_PLIST(out, (Int) len_out);
   return out;
 }
 
@@ -4868,9 +4866,13 @@ static StructGVarFunc GVarFuncs [] = {
     FuncCYCLE_TRANS_INT,
     "src/trans.c:FuncCYCLE_TRANS_INT" },
 
-  { "CYCLES_TRANS_LIST", 2, "f, pt",
+  { "CYCLES_TRANS", 1, "f",
+    FuncCYCLES_TRANS,
+    "src/trans.c:FuncCYCLES_TRANS" },
+
+  /*{ "CYCLES_TRANS_LIST", 2, "f, pt",
     FuncCYCLES_TRANS_LIST,
-    "src/trans.c:FuncCYCLES_TRANS_LIST" },
+    "src/trans.c:FuncCYCLES_TRANS_LIST" },*/
 
   { "LEFT_ONE_TRANS", 1, "f",
     FuncLEFT_ONE_TRANS,
