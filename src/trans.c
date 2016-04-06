@@ -3184,6 +3184,124 @@ Obj FuncCYCLES_TRANS (Obj self, Obj f) {
   return out;
 }
 
+// Returns the cycles of the transformation <f> contained in the components of
+// any of the elements in <list>. 
+
+Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
+  UInt2   *ptf2;
+  UInt4   *seen, *ptf4;
+  UInt    deg, i, j, pt, nr;
+  Obj     out, comp, list_i;
+
+  if (!IS_TRANS(f)) {
+    ErrorQuit("CYCLES_TRANS_LIST: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  } else if (!IS_LIST(list)) {
+    ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
+              "list (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  }
+
+  deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
+
+  if (LEN_LIST(list) == 0) {
+    out = NEW_PLIST(T_PLIST_EMPTY, 0);
+    SET_LEN_PLIST(out, 0);
+    return out;
+  }
+
+  out = NEW_PLIST(T_PLIST, 0);
+  nr = 0;
+
+  seen = ResizeInitTmpTrans(deg);
+
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    ptf2 = ADDR_TRANS2(f);
+    for (i = 1; i <= (UInt) LEN_LIST(list); i++) {
+      list_i = ELM_LIST(list, i);
+      if (TNUM_OBJ(list_i) != T_INT || INT_INTOBJ(list_i) < 1) {
+        ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
+                  "positive integer (not a %s)", (Int) TNAM_OBJ(list_i), 0L);
+      } 
+      j = INT_INTOBJ(list_i) - 1;
+      if (j >= deg) {
+        comp = NEW_PLIST(T_PLIST_CYC, 1);
+        SET_LEN_PLIST(comp, 1);
+        SET_ELM_PLIST(comp, 1, list_i);
+        AssPlist(out, ++nr, comp);
+        seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+        ptf2 = ADDR_TRANS2(f);
+      } else if (seen[j] == 0) {
+        // repeatedly apply f to pt until we see something we've seen already
+        for (pt = j; seen[pt] == 0; pt = ptf2[pt]) {
+          seen[pt] = 1;
+        } 
+        if (seen[pt] == 1) {
+          // pt belongs to a component we've not seen before
+
+          comp = NEW_PLIST(T_PLIST_CYC, 0);
+          AssPlist(out, ++nr, comp);
+
+          seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+          ptf2 = ADDR_TRANS2(f);
+
+          for (; seen[pt] == 1; pt = ptf2[pt]) {
+            seen[pt] = 2;
+            AssPlist(comp, LEN_PLIST(comp) + 1, INTOBJ_INT(pt + 1));
+            seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+            ptf2 = ADDR_TRANS2(f);
+          }
+        }
+        for (pt = j; seen[pt] == 1; pt = ptf2[pt]) {
+          seen[pt] = 2;
+        } 
+      }
+    }
+  } else {
+    ptf4 = ADDR_TRANS4(f);
+    for (i = 1; i <= (UInt) LEN_LIST(list); i++) {
+      list_i = ELM_LIST(list, i);
+      if (TNUM_OBJ(list_i) != T_INT || INT_INTOBJ(list_i) < 1) {
+        ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
+                  "positive integer (not a %s)", (Int) TNAM_OBJ(list_i), 0L);
+      } 
+      j = INT_INTOBJ(list_i) - 1;
+      if (j >= deg) {
+        comp = NEW_PLIST(T_PLIST_CYC, 1);
+        SET_LEN_PLIST(comp, 1);
+        SET_ELM_PLIST(comp, 1, list_i);
+        AssPlist(out, ++nr, comp);
+        seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+        ptf4 = ADDR_TRANS4(f);
+      } else if (seen[j] == 0) {
+        // repeatedly apply f to pt until we see something we've seen already
+        for (pt = j; seen[pt] == 0; pt = ptf4[pt]) {
+          seen[pt] = 1;
+        } 
+        if (seen[pt] == 1) {
+          // pt belongs to a component we've not seen before
+
+          comp = NEW_PLIST(T_PLIST_CYC, 0);
+          AssPlist(out, ++nr, comp);
+
+          seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+          ptf4 = ADDR_TRANS4(f);
+
+          for (; seen[pt] == 1; pt = ptf4[pt]) {
+            seen[pt] = 2;
+            AssPlist(comp, LEN_PLIST(comp) + 1, INTOBJ_INT(pt + 1));
+            seen = (UInt4*)(ADDR_OBJ(TmpTrans));
+            ptf4 = ADDR_TRANS4(f);
+          }
+        }
+        for (pt = j; seen[pt] == 1; pt = ptf4[pt]) {
+          seen[pt] = 2;
+        } 
+      }
+    }
+  }
+  return out;
+}
+
 /* an idempotent transformation <e> with ker(e)=ker(f) */
 Obj FuncLEFT_ONE_TRANS( Obj self, Obj f){
   Obj   ker, img;
@@ -4870,9 +4988,9 @@ static StructGVarFunc GVarFuncs [] = {
     FuncCYCLES_TRANS,
     "src/trans.c:FuncCYCLES_TRANS" },
 
-  /*{ "CYCLES_TRANS_LIST", 2, "f, pt",
+  { "CYCLES_TRANS_LIST", 2, "f, pt",
     FuncCYCLES_TRANS_LIST,
-    "src/trans.c:FuncCYCLES_TRANS_LIST" },*/
+    "src/trans.c:FuncCYCLES_TRANS_LIST" },
 
   { "LEFT_ONE_TRANS", 1, "f",
     FuncLEFT_ONE_TRANS,

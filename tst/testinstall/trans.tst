@@ -1586,6 +1586,95 @@ gap> Filtered(comps, x -> Size(x) > 1);
 gap> CYCLES_TRANS(0);
 Error, CYCLES_TRANS: the argument must be a transformation (not a integer)
 
+# CYCLES_TRANS_LIST
+gap> CYCLES_TRANS_LIST(Transformation([1, 2, 1]), []);
+[  ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 2, 1]), [1, 3]);
+[ [ 1 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 2, 1]), [1, 2, 3]);
+[ [ 1 ], [ 2 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 2, 1]), [1 .. 3]);
+[ [ 1 ], [ 2 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 2, 1]), [1 .. 10]);
+[ [ 1 ], [ 2 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ], [ 8 ], [ 9 ], [ 10 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 1, 1]), [1]);
+[ [ 1 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 1, 1]), [2]);
+[ [ 1 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 1, 1]), [3]);
+[ [ 1 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 1, 1]), [1 .. 3]);
+[ [ 1 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 1, 1]), [3 .. 10]);
+[ [ 1 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ], [ 8 ], [ 9 ], [ 10 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 1, 2]), [1]);
+[ [ 1 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 1, 2]), [2]);
+[ [ 1 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 1, 2]), [3]);
+[ [ 1 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 1, 2]), [1 .. 3]);
+[ [ 1 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([1, 1, 2]), [3 .. 10]);
+[ [ 1 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ], [ 8 ], [ 9 ], [ 10 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 
+>                                     [1 .. 10]);
+[ [ 1, 2, 6, 9 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 
+>                                     [1 .. 3]);
+[ [ 1, 2, 6, 9 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 
+>                                     [1, 5, 3, 7]);
+[ [ 1, 2, 6, 9 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]), 
+>                                     [1, 5, 3, 7, 12, 13, 14]);
+[ [ 1, 2, 6, 9 ], [ 12 ], [ 13 ], [ 14 ] ]
+gap> CYCLES_TRANS_LIST(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12,
+>                                        11, 14, 13, 15, 16, 17, 18, 19, 20,
+>                                        21, 22, 23, 24, 25, 26, 27, 28, 31,
+>                                        30, 29]), [4 .. 100]);
+[ [ 4, 9, 10, 6 ], [ 11, 12 ], [ 13, 14 ], [ 15 ], [ 16 ], [ 17 ], [ 18 ], 
+  [ 19 ], [ 20 ], [ 21 ], [ 22 ], [ 23 ], [ 24 ], [ 25 ], [ 26 ], [ 27 ], 
+  [ 28 ], [ 29, 31 ], [ 30 ], [ 32 ], [ 33 ], [ 34 ], [ 35 ], [ 36 ], [ 37 ], 
+  [ 38 ], [ 39 ], [ 40 ], [ 41 ], [ 42 ], [ 43 ], [ 44 ], [ 45 ], [ 46 ], 
+  [ 47 ], [ 48 ], [ 49 ], [ 50 ], [ 51 ], [ 52 ], [ 53 ], [ 54 ], [ 55 ], 
+  [ 56 ], [ 57 ], [ 58 ], [ 59 ], [ 60 ], [ 61 ], [ 62 ], [ 63 ], [ 64 ], 
+  [ 65 ], [ 66 ], [ 67 ], [ 68 ], [ 69 ], [ 70 ], [ 71 ], [ 72 ], [ 73 ], 
+  [ 74 ], [ 75 ], [ 76 ], [ 77 ], [ 78 ], [ 79 ], [ 80 ], [ 81 ], [ 82 ], 
+  [ 83 ], [ 84 ], [ 85 ], [ 86 ], [ 87 ], [ 88 ], [ 89 ], [ 90 ], [ 91 ], 
+  [ 92 ], [ 93 ], [ 94 ], [ 95 ], [ 96 ], [ 97 ], [ 98 ], [ 99 ], [ 100 ] ]
+gap> CYCLES_TRANS_LIST(IdentityTransformation, [1 .. 10]);
+[ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ], [ 8 ], [ 9 ], [ 10 ] ]
+gap> CYCLES_TRANS_LIST(IdentityTransformation, [100, 200]);
+[ [ 100 ], [ 200 ] ]
+gap> CYCLES_TRANS_LIST(IdentityTransformation, [5, 1, 2]);
+[ [ 5 ], [ 1 ], [ 2 ] ]
+gap> f := Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1)
+>         * (14918, 184, 141)(14140, 124);;
+gap> CYCLES_TRANS_LIST(f, [1 .. 10]);
+[ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ], [ 8 ], [ 9 ], [ 10 ] ]
+gap> CYCLES_TRANS_LIST(f, [10, 1, 3]);
+[ [ 10 ], [ 1 ], [ 3 ] ]
+gap> CYCLES_TRANS_LIST(f, [65535 .. 70000]);
+[ [ 65535 ], [ 65536 ], [ 1 ] ]
+gap> CYCLES_TRANS_LIST(f, [65535 .. 70001]);
+[ [ 65535 ], [ 65536 ], [ 1 ], [ 70001 ] ]
+gap> CYCLES_TRANS_LIST(f, [-1]);
+Error, CYCLES_TRANS_LIST: the second argument must be a positive integer (not \
+a integer)
+gap> CYCLES_TRANS_LIST(0, [1 .. 10]);
+Error, CYCLES_TRANS_LIST: the first argument must be a transformation (not a i\
+nteger)
+gap> CYCLES_TRANS_LIST(IdentityTransformation, "a");
+Error, CYCLES_TRANS_LIST: the second argument must be a positive integer (not \
+a character)
+gap> CYCLES_TRANS_LIST(IdentityTransformation, ());
+Error, CYCLES_TRANS_LIST: the second argument must be a list (not a transforma\
+tion (small))
+gap> CYCLES_TRANS_LIST(IdentityTransformation, [0, -1]);
+Error, CYCLES_TRANS_LIST: the second argument must be a positive integer (not \
+a integer)
+
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;
