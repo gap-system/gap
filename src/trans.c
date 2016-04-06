@@ -2990,11 +2990,22 @@ Obj FuncCOMPONENTS_TRANS (Obj self, Obj f) {
   return out;
 }
 
+// Returns the list of distinct values [pt, (pt)f, (pt)f ^ 2, ..] where <f> is
+// a transformation and <pt> is a positive integer.
+
 Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt){
   UInt    deg, cpt, len;
   Obj     out;
   UInt2   *ptf2;
   UInt4   *ptseen, *ptf4;
+  
+  if (!IS_TRANS(f)) {
+    ErrorQuit("COMPONENT_TRANS_INT: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  } else if (TNUM_OBJ(pt) != T_INT || INT_INTOBJ(pt) < 1) {
+    ErrorQuit("COMPONENT_TRANS_INT: the second argument must be a "
+              "positive integer (not a %s)", (Int) TNAM_OBJ(pt), 0L);
+  }
 
   deg=INT_INTOBJ(FuncDegreeOfTransformation(self, f));
   cpt=INT_INTOBJ(pt)-1;
@@ -3005,7 +3016,7 @@ Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt){
     SET_ELM_PLIST(out, 1, pt);
     return out;
   }
-  out=NEW_PLIST(T_PLIST_CYC, deg);
+  out=NEW_PLIST(T_PLIST_CYC, 0);
   ptseen=ResizeInitTmpTrans(deg);
 
   len=0;
@@ -3013,27 +3024,37 @@ Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt){
   //install the points
   if(TNUM_OBJ(f)==T_TRANS2){
     ptf2=ADDR_TRANS2(f);
-    do{ SET_ELM_PLIST(out, ++len, INTOBJ_INT(cpt+1));
+    do{ AssPlist(out, ++len, INTOBJ_INT(cpt+1));
         ptseen[cpt]=1;
         cpt=ptf2[cpt];
     }while(ptseen[cpt]==0);
   } else {
     ptf4=ADDR_TRANS4(f);
-    do{ SET_ELM_PLIST(out, ++len, INTOBJ_INT(cpt+1));
+    do{ AssPlist(out, ++len, INTOBJ_INT(cpt+1));
         ptseen[cpt]=1;
         cpt=ptf4[cpt];
     }while(ptseen[cpt]==0);
   }
-  SHRINK_PLIST(out, (Int) len);
   SET_LEN_PLIST(out, (Int) len);
   return out;
 }
+
+// Returns the cycle contained in the component of the transformation <f>
+// containing the positive integer <pt>.
 
 Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt){
   UInt    deg, cpt, len, i;
   Obj     out;
   UInt2   *ptf2;
   UInt4   *ptseen, *ptf4;
+
+  if (!IS_TRANS(f)) {
+    ErrorQuit("CYCLE_TRANS_INT: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  } else if (TNUM_OBJ(pt) != T_INT || INT_INTOBJ(pt) < 1) {
+    ErrorQuit("CYCLE_TRANS_INT: the second argument must be a "
+              "positive integer (not a %s)", (Int) TNAM_OBJ(pt), 0L);
+  }
 
   deg=INT_INTOBJ(FuncDegreeOfTransformation(self, f));
   cpt=INT_INTOBJ(pt)-1;
@@ -3045,7 +3066,7 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt){
     return out;
   }
 
-  out=NEW_PLIST(T_PLIST_CYC, deg);
+  out=NEW_PLIST(T_PLIST_CYC, 0);
   ptseen=ResizeInitTmpTrans(deg);
   len=0;
 
@@ -3057,7 +3078,7 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt){
     }while(ptseen[cpt]==0);
     //find cycle
     i=cpt;
-    do{ SET_ELM_PLIST(out, ++len, INTOBJ_INT(i+1));
+    do{ AssPlist(out, ++len, INTOBJ_INT(i+1));
         i=ptf2[i];
     }while(i!=cpt);
   } else {
@@ -3068,12 +3089,10 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt){
     }while(ptseen[cpt]==0);
     //find cycle
     i=cpt;
-    do{ SET_ELM_PLIST(out, ++len, INTOBJ_INT(i+1));
+    do{ AssPlist(out, ++len, INTOBJ_INT(i+1));
         i=ptf4[i];
     }while(i!=cpt);
   }
-  SHRINK_PLIST (out, (Int) len);
-  SET_LEN_PLIST(out, (Int) len);
   return out;
 }
 
