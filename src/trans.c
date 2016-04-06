@@ -253,15 +253,15 @@ Obj FuncTransformationListListNC (Obj self, Obj src, Obj ran) {
   UInt2*  ptf2;
   UInt4*  ptf4;
 
-  if(!IS_SMALL_LIST(src)){
+  if (!IS_SMALL_LIST(src)) {
     ErrorQuit("TransformationListListNC: <src> must be a list (not a %s)",
               (Int) TNAM_OBJ(src), 0L);
   }
-  if(!IS_SMALL_LIST(ran)){
+  if (!IS_SMALL_LIST(ran)) {
     ErrorQuit("TransformationListListNC: <ran> must be a list (not a %s)",
               (Int) TNAM_OBJ(ran), 0L);
   }
-  if(LEN_LIST(src)!=LEN_LIST(ran)){
+  if (LEN_LIST(src) != LEN_LIST(ran)) {
     ErrorQuit("TransformationListListNC: <src> and <ran> must have equal "
               "length,", 0L, 0L);
   }
@@ -1143,13 +1143,13 @@ Obj FuncPREIMAGES_TRANS_INT (Obj self, Obj f, Obj pt) {
 
   if (TNUM_OBJ(f) == T_TRANS2) {
     for (j = 0; j < deg; j++) {
-      if ((ADDR_TRANS2(f))[j]==i) {
+      if ((ADDR_TRANS2(f))[j] == i) {
         AssPlist(out, ++nr, INTOBJ_INT(j + 1));
       }
     }
   } else {
     for (j = 0; j < deg; j++) {
-      if ((ADDR_TRANS4(f))[j]==i) {
+      if ((ADDR_TRANS4(f))[j] == i) {
         AssPlist(out, ++nr, INTOBJ_INT(j + 1));
       }
     }
@@ -1930,7 +1930,7 @@ Obj FuncINV_TRANS (Obj self, Obj f) {
   if (!IS_TRANS(f)) {
     ErrorQuit("INV_TRANS: the argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
-  } else if (FuncIS_ID_TRANS(self, f)==True) {
+  } else if (FuncIS_ID_TRANS(self, f) == True) {
     return f;
   }
 
@@ -2571,7 +2571,7 @@ Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
 
 // If <f> is a transformation and <X> is a flat kernel of a transformation,
 // then we denote OnKernelAntiAction(X, f) by f ^ X. Suppose that x is a
-// transformation with ker(x)=<X> and ker(<f>x) = f ^ ker(x) has the same
+// transformation with ker(x) = <X> and ker(<f>x) = f ^ ker(x) has the same
 // number of classes as ker(x). Then INV_KER_TRANS(X, f) returns a
 // transformation g such that g<f> ^ ker(x) = ker(x) = ker(gfx) and the action
 // of g<f> on ker(x) is the identity.
@@ -2609,7 +2609,7 @@ Obj FuncINV_KER_TRANS (Obj self, Obj X, Obj f) {
         for (; i < len; i++) {
           pttmp[INT_INTOBJ(ELM_LIST(X, i + 1)) - 1] = i;
         }
-        for (i = len; i>=1;i--) {
+        for (i = len; i >= 1; i--) {
           ptg2[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
         }
       }
@@ -3002,7 +3002,7 @@ Obj FuncCOMPONENTS_TRANS (Obj self, Obj f) {
 // Returns the list of distinct values [pt, (pt)f, (pt)f ^ 2, ..] where <f> is
 // a transformation and <pt> is a positive integer.
 
-Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt){
+Obj FuncCOMPONENT_TRANS_INT (Obj self, Obj f, Obj pt) {
   UInt    deg, cpt, len;
   Obj     out;
   UInt2   *ptf2;
@@ -3016,33 +3016,35 @@ Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt){
               "positive integer (not a %s)", (Int) TNAM_OBJ(pt), 0L);
   }
 
-  deg=INT_INTOBJ(FuncDegreeOfTransformation(self, f));
-  cpt=INT_INTOBJ(pt)-1;
+  deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
+  cpt = INT_INTOBJ(pt) - 1;
 
-  if(cpt>=deg){
-    out=NEW_PLIST(T_PLIST_CYC_SSORT, 1);
+  if (cpt >= deg) {
+    out = NEW_PLIST(T_PLIST_CYC_SSORT, 1);
     SET_LEN_PLIST(out, 1);
     SET_ELM_PLIST(out, 1, pt);
     return out;
   }
-  out=NEW_PLIST(T_PLIST_CYC, 0);
-  ptseen=ResizeInitTmpTrans(deg);
+  out = NEW_PLIST(T_PLIST_CYC, 0);
+  ptseen = ResizeInitTmpTrans(deg);
 
-  len=0;
+  len = 0;
 
   //install the points
-  if(TNUM_OBJ(f)==T_TRANS2){
-    ptf2=ADDR_TRANS2(f);
-    do{ AssPlist(out, ++len, INTOBJ_INT(cpt+1));
-        ptseen[cpt]=1;
-        cpt=ptf2[cpt];
-    }while(ptseen[cpt]==0);
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    ptf2 = ADDR_TRANS2(f);
+    do {
+      AssPlist(out, ++len, INTOBJ_INT(cpt + 1));
+      ptseen[cpt] = 1;
+      cpt = ptf2[cpt];
+    } while (ptseen[cpt] == 0);
   } else {
-    ptf4=ADDR_TRANS4(f);
-    do{ AssPlist(out, ++len, INTOBJ_INT(cpt+1));
-        ptseen[cpt]=1;
-        cpt=ptf4[cpt];
-    }while(ptseen[cpt]==0);
+    ptf4 = ADDR_TRANS4(f);
+    do {
+      AssPlist(out, ++len, INTOBJ_INT(cpt + 1));
+      ptseen[cpt] = 1;
+      cpt = ptf4[cpt];
+    } while (ptseen[cpt] == 0);
   }
   SET_LEN_PLIST(out, (Int) len);
   return out;
@@ -3051,7 +3053,7 @@ Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt){
 // Returns the cycle contained in the component of the transformation <f>
 // containing the positive integer <pt>.
 
-Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt){
+Obj FuncCYCLE_TRANS_INT (Obj self, Obj f, Obj pt) {
   UInt    deg, cpt, len, i;
   Obj     out;
   UInt2   *ptf2;
@@ -3065,42 +3067,46 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt){
               "positive integer (not a %s)", (Int) TNAM_OBJ(pt), 0L);
   }
 
-  deg=INT_INTOBJ(FuncDegreeOfTransformation(self, f));
-  cpt=INT_INTOBJ(pt)-1;
+  deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
+  cpt = INT_INTOBJ(pt) - 1;
 
-  if(cpt>=deg){
-    out=NEW_PLIST(T_PLIST_CYC_SSORT, 1);
+  if (cpt >= deg) {
+    out = NEW_PLIST(T_PLIST_CYC_SSORT, 1);
     SET_LEN_PLIST(out, 1);
     SET_ELM_PLIST(out, 1, pt);
     return out;
   }
 
-  out=NEW_PLIST(T_PLIST_CYC, 0);
-  ptseen=ResizeInitTmpTrans(deg);
-  len=0;
+  out = NEW_PLIST(T_PLIST_CYC, 0);
+  ptseen = ResizeInitTmpTrans(deg);
+  len = 0;
 
-  if(TNUM_OBJ(f)==T_TRANS2){
-    ptf2=ADDR_TRANS2(f);
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    ptf2 = ADDR_TRANS2(f);
     //find component
-    do{ ptseen[cpt]=1;
-        cpt=ptf2[cpt];
-    }while(ptseen[cpt]==0);
+    do {
+      ptseen[cpt] = 1;
+      cpt = ptf2[cpt];
+    } while (ptseen[cpt] == 0);
     //find cycle
-    i=cpt;
-    do{ AssPlist(out, ++len, INTOBJ_INT(i+1));
-        i=ptf2[i];
-    }while(i!=cpt);
+    i = cpt;
+    do {
+      AssPlist(out, ++len, INTOBJ_INT(i + 1));
+      i = ptf2[i];
+    } while (i != cpt);
   } else {
-    ptf4=ADDR_TRANS4(f);
+    ptf4 = ADDR_TRANS4(f);
     //find component
-    do{ ptseen[cpt]=1;
-        cpt=ptf4[cpt];
-    }while(ptseen[cpt]==0);
+    do {
+      ptseen[cpt] = 1;
+      cpt = ptf4[cpt];
+    } while (ptseen[cpt] == 0);
     //find cycle
-    i=cpt;
-    do{ AssPlist(out, ++len, INTOBJ_INT(i+1));
-        i=ptf4[i];
-    }while(i!=cpt);
+    i = cpt;
+    do {
+      AssPlist(out, ++len, INTOBJ_INT(i + 1));
+      i = ptf4[i];
+    } while (i != cpt);
   }
   return out;
 }
@@ -3314,60 +3320,63 @@ Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
 // Returns an idempotent transformation e with ker(e) = ker(f), where <f> is a
 // transformation.
 
-Obj FuncLEFT_ONE_TRANS( Obj self, Obj f){
+Obj FuncLEFT_ONE_TRANS (Obj self, Obj f) {
   Obj   ker, img;
   UInt  rank, n, i;
 
-  if(TNUM_OBJ(f)==T_TRANS2){
-    rank=RANK_TRANS2(f);
-    ker=KER_TRANS(f);
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    rank = RANK_TRANS2(f);
+    ker = KER_TRANS(f);
   } else if (TNUM_OBJ(f) == T_TRANS4) {
-    rank=RANK_TRANS4(f);
-    ker=KER_TRANS(f);
+    rank = RANK_TRANS4(f);
+    ker = KER_TRANS(f);
   } else {
     ErrorQuit("LEFT_ONE_TRANS: the first argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
     return 0L;
   }
 
-  img=NEW_PLIST(T_PLIST_CYC, rank);
-  n=1;
+  img = NEW_PLIST(T_PLIST_CYC, rank);
+  n = 1;
 
-  for(i=1;n<=rank;i++){
-    if((UInt) INT_INTOBJ(ELM_PLIST(ker, i))==n){
+  for (i = 1; n <= rank; i++) {
+    if ((UInt) INT_INTOBJ(ELM_PLIST(ker, i)) == n) {
       SET_ELM_PLIST(img, n++, INTOBJ_INT(i));
     }
   }
 
-  SET_LEN_PLIST(img, (Int) n-1);
+  SET_LEN_PLIST(img, (Int) n - 1);
   return FuncIDEM_IMG_KER_NC(self, img, ker);
 }
 
 // Returns an idempotent transformation e with im(e) = im(f), where <f> is a
 // transformation.
 
-Obj FuncRIGHT_ONE_TRANS( Obj self, Obj f){
+Obj FuncRIGHT_ONE_TRANS (Obj self, Obj f) {
   Obj   ker, img;
   UInt  deg, len, i, j, n;
 
-  if(TNUM_OBJ(f)==T_TRANS2){
-    deg=DEG_TRANS2(f);
+  if (TNUM_OBJ(f) == T_TRANS2) {
+    deg = DEG_TRANS2(f);
   } else if (TNUM_OBJ(f) == T_TRANS4) {
-    deg=DEG_TRANS4(f);
+    deg = DEG_TRANS4(f);
   } else {
     ErrorQuit("RIGHT_ONE_TRANS: the first argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
     return 0L;
   }
 
-  img=FuncIMAGE_SET_TRANS(self, f);
-  ker=NEW_PLIST(T_PLIST_CYC, deg);
+  img = FuncIMAGE_SET_TRANS(self, f);
+  ker = NEW_PLIST(T_PLIST_CYC, deg);
   SET_LEN_PLIST(ker, deg);
-  len=LEN_PLIST(img);
-  j=1; n=0;
+  len = LEN_PLIST(img);
+  j = 1; 
+  n = 0;
 
-  for(i=0;i<deg;i++){
-    if(j<len&&i+1==(UInt) INT_INTOBJ(ELM_PLIST(img, j+1))) j++;
+  for (i = 0; i < deg; i++) {
+    if (j < len && i + 1 == (UInt) INT_INTOBJ(ELM_PLIST(img, j + 1))) {
+      j++;
+    }
     SET_ELM_PLIST(ker, ++n, INTOBJ_INT(j));
   }
   return FuncIDEM_IMG_KER_NC(self, img, ker);
