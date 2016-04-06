@@ -280,7 +280,7 @@ Obj FILENAME_STAT(Stat stat);
                         (((Int)(expr) & 0x03) == 0x01)
 
 #define INTEXPR_INT(indx)       \
-                        ((Expr)(((Int)(indx) << 2) + 0x01))
+                        ((Expr)(((UInt)(indx) << 2) + 0x01))
 
 #define INT_INTEXPR(expr)       \
                         (((Int)(expr)-0x01) >> 2)
