@@ -67,8 +67,8 @@ gap> f := TransformationListListNC([1, 2], [1, 1]) ^ (3, 65537);;
 gap> DegreeOfTransformation(f);
 2
 gap> DegreeOfTransformation(());
-Error, DegreeOfTransformation: <f> must be a transformation (not a permutation\
- (small))
+Error, DegreeOfTransformation: the argument must be a transformation (not a pe\
+rmutation (small))
 
 # Test RANK_TRANS
 gap> RANK_TRANS(Transformation([1, 2, 3]));
@@ -78,7 +78,7 @@ gap> RANK_TRANS(Transformation([1, 2, 1]));
 gap> RANK_TRANS(Transformation([1, 2, 1]) ^ (4, 65537));
 2
 gap> RANK_TRANS("a");
-Error, RANK_TRANS: <f> must be a transformation (not a list (string))
+Error, RANK_TRANS: the argument must be a transformation (not a list (string))
 
 # Test RANK_TRANS_INT
 gap> RANK_TRANS_INT(Transformation([1, 2, 1]), 2);
@@ -347,47 +347,49 @@ gap> IMAGE_SET_TRANS_INT("a", 2);
 Error, IMAGE_SET_TRANS_INT: the first argument must be a transformation (not a\
  list (string))
 
-# Test IMAGE_TRANS
-gap> IMAGE_TRANS(IdentityTransformation, -1);
-Error, IMAGE_TRANS: the second argument must be a non-negative integer
-gap> IMAGE_TRANS(IdentityTransformation, "a");
-Error, IMAGE_TRANS: the second argument must be a non-negative integer
-gap> IMAGE_TRANS(IdentityTransformation, 10);
+# Test IMAGE_LIST_TRANS_INT
+gap> IMAGE_LIST_TRANS_INT(IdentityTransformation, -1);
+Error, IMAGE_LIST_TRANS_INT: the second argument must be a non-negative intege\
+r
+gap> IMAGE_LIST_TRANS_INT(IdentityTransformation, "a");
+Error, IMAGE_LIST_TRANS_INT: the second argument must be a non-negative intege\
+r
+gap> IMAGE_LIST_TRANS_INT(IdentityTransformation, 10);
 [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-gap> IMAGE_TRANS(IdentityTransformation, 0);
+gap> IMAGE_LIST_TRANS_INT(IdentityTransformation, 0);
 [  ]
-gap> IMAGE_TRANS(Transformation([1, 2, 1, 4, 5]), 0);
+gap> IMAGE_LIST_TRANS_INT(Transformation([1, 2, 1, 4, 5]), 0);
 [  ]
-gap> IMAGE_TRANS(Transformation([2, 1, 1, 4, 5]), 3);
+gap> IMAGE_LIST_TRANS_INT(Transformation([2, 1, 1, 4, 5]), 3);
 [ 2, 1, 1 ]
-gap> IMAGE_TRANS(Transformation([2, 1, 1, 4, 5]), 10);
+gap> IMAGE_LIST_TRANS_INT(Transformation([2, 1, 1, 4, 5]), 10);
 [ 2, 1, 1, 4, 5, 6, 7, 8, 9, 10 ]
-gap> IMAGE_TRANS(Transformation([1, 2, 1, 4, 5]), 5);
+gap> IMAGE_LIST_TRANS_INT(Transformation([1, 2, 1, 4, 5]), 5);
 [ 1, 2, 1, 4, 5 ]
-gap> IMAGE_TRANS(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 0);
+gap> IMAGE_LIST_TRANS_INT(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 0);
 [  ]
-gap> IMAGE_TRANS(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 7);
+gap> IMAGE_LIST_TRANS_INT(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 7);
 [ 1, 2, 1, 4, 5, 1, 1 ]
-gap> IMAGE_TRANS(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 14);
+gap> IMAGE_LIST_TRANS_INT(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 14);
 [ 1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1, 12, 13, 14 ]
-gap> IMAGE_TRANS(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 11);
+gap> IMAGE_LIST_TRANS_INT(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 11);
 [ 1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1 ]
-gap> IMAGE_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1), 70000) 
+gap> IMAGE_LIST_TRANS_INT(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1), 70000) 
 > = Concatenation([1 .. 65536], [65537 .. 70000] * 0 + 1);
 true
-gap> IMAGE_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1), 65555) 
+gap> IMAGE_LIST_TRANS_INT(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1), 65555) 
 > = Concatenation([1 .. 65536], [65537 .. 65555] * 0 + 1);
 true
-gap> IMAGE_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1), 70010) 
+gap> IMAGE_LIST_TRANS_INT(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1), 70010) 
 > = Concatenation([1 .. 65536], [65537 .. 70000] * 0 + 1, List([1 .. 10], x -> x + 70000));
 true
-gap> IMAGE_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1), 10);
+gap> IMAGE_LIST_TRANS_INT(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1), 10);
 [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-gap> IMAGE_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1), 0);
+gap> IMAGE_LIST_TRANS_INT(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1), 0);
 [  ]
-gap> IMAGE_TRANS("a", 2);
-Error, IMAGE_TRANS: the first argument must be a transformation (not a list (s\
-tring))
+gap> IMAGE_LIST_TRANS_INT("a", 2);
+Error, IMAGE_LIST_TRANS_INT: the first argument must be a transformation (not \
+a list (string))
 
 # Test KERNEL_TRANS 1
 gap> KERNEL_TRANS(IdentityTransformation, -1);
@@ -744,74 +746,74 @@ false
 gap> IS_INJECTIVE_LIST_TRANS([65536], ImageListOfTransformation(f));
 true
 
-# Test PERM_LEFT_QUO_TRANS_NC
+# Test PermLeftQuoTransformationNC
 gap> f := Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6]);;
-gap> PERM_LEFT_QUO_TRANS_NC(f, f);
+gap> PermLeftQuoTransformationNC(f, f);
 ()
 gap> p := (1, 9, 10, 8)(4, 5, 6);;
-gap> PERM_LEFT_QUO_TRANS_NC(f * p, f);
+gap> PermLeftQuoTransformationNC(f * p, f);
 (1,8,10,9)(4,6,5)
-gap> PERM_LEFT_QUO_TRANS_NC(f * p, f ^ (20, 21));
+gap> PermLeftQuoTransformationNC(f * p, f ^ (20, 21));
 (1,8,10,9)(4,6,5)
-gap> PERM_LEFT_QUO_TRANS_NC(f, f * p);   
+gap> PermLeftQuoTransformationNC(f, f * p);   
 (1,9,10,8)(4,5,6)
 gap> p := (1, 8, 4, 6, 3, 10, 5);;
-gap> PERM_LEFT_QUO_TRANS_NC(f, f * p);
+gap> PermLeftQuoTransformationNC(f, f * p);
 (1,8,4,6,3,10,5)
-gap> PERM_LEFT_QUO_TRANS_NC(f * p, f);                     
+gap> PermLeftQuoTransformationNC(f * p, f);                     
 (1,5,10,3,6,4,8)
 gap> f := Transformation([65537 .. 70000], 
 >                        [65537 .. 70000] * 0 + 1) 
 >         * (1,65, 1414, 13485)(139, 1943, 858, 65536);;
 gap> p := (1, 10, 20)(414, 1441, 59265);; 
-gap> PERM_LEFT_QUO_TRANS_NC(f * p, f) = p ^ -1;
+gap> PermLeftQuoTransformationNC(f * p, f) = p ^ -1;
 true
-gap> PERM_LEFT_QUO_TRANS_NC(f, f * p) = p;   
+gap> PermLeftQuoTransformationNC(f, f * p) = p;   
 true
 gap> f := Transformation([2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5]);;
-gap> PERM_LEFT_QUO_TRANS_NC(f, f * (1, 2, 3));
+gap> PermLeftQuoTransformationNC(f, f * (1, 2, 3));
 (1,2,3)
 gap> g := f * (1, 2, 5);;
-gap> PERM_LEFT_QUO_TRANS_NC(f, g);
+gap> PermLeftQuoTransformationNC(f, g);
 (1,2,5)
-gap> PERM_LEFT_QUO_TRANS_NC(g, f);
+gap> PermLeftQuoTransformationNC(g, f);
 (1,5,2)
 gap> f := Transformation([65537 .. 70000], 
 >                        [65537 .. 70000] * 0 + 1);;
 gap> g := f * (12849, 19491, 3501, 1593)(1341, 19414, 194)(1413, 19);;
-gap> p := PERM_LEFT_QUO_TRANS_NC(f, g);
+gap> p := PermLeftQuoTransformationNC(f, g);
 (19,1413)(194,1341,19414)(1593,12849,19491,3501)
-gap> p := PERM_LEFT_QUO_TRANS_NC(f, g ^ (70001, 70002));
+gap> p := PermLeftQuoTransformationNC(f, g ^ (70001, 70002));
 (19,1413)(194,1341,19414)(1593,12849,19491,3501)
-gap> q := PERM_LEFT_QUO_TRANS_NC(g, f);
+gap> q := PermLeftQuoTransformationNC(g, f);
 (19,1413)(194,19414,1341)(1593,3501,19491,12849)
 gap> p = q ^ -1;
 true
 gap> q = p ^ -1;
 true
-gap> PERM_LEFT_QUO_TRANS_NC((), IdentityTransformation);
-Error, PERM_LEFT_QUO_TRANS_NC: the arguments must both be transformations (not\
- permutation (small) and transformation (small))
-gap> PERM_LEFT_QUO_TRANS_NC(IdentityTransformation, ());
-Error, PERM_LEFT_QUO_TRANS_NC: the arguments must both be transformations (not\
- transformation (small) and permutation (small))
-gap> PERM_LEFT_QUO_TRANS_NC((), ());
-Error, PERM_LEFT_QUO_TRANS_NC: the arguments must both be transformations (not\
- permutation (small) and permutation (small))
+gap> PermLeftQuoTransformationNC((), IdentityTransformation);
+Error, PermLeftQuoTransformationNC: the arguments must both be transformations\
+ (not permutation (small) and transformation (sm
+gap> PermLeftQuoTransformationNC(IdentityTransformation, ());
+Error, PermLeftQuoTransformationNC: the arguments must both be transformations\
+ (not transformation (small) and permutation (sm
+gap> PermLeftQuoTransformationNC((), ());
+Error, PermLeftQuoTransformationNC: the arguments must both be transformations\
+ (not permutation (small) and permutation (small
 gap> g := Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6]);;
 gap> f := (g ^ (2, 20)) * (1, 3, 8)(6, 9);;
-gap> PERM_LEFT_QUO_TRANS_NC(f, g);
+gap> PermLeftQuoTransformationNC(f, g);
 (1,20)(2,8,3)(6,9)
 gap> f := Transformation([3, 8, 1, 9, 1, 3, 10, 5, 10, 6]);;
 gap> g := (f ^ (2, 65537)) *  (1, 3, 8)(6, 9);;
-gap> PERM_LEFT_QUO_TRANS_NC(f, g);
+gap> PermLeftQuoTransformationNC(f, g);
 (1,3,8,2)(6,9)
-gap> PERM_LEFT_QUO_TRANS_NC(g, f);
+gap> PermLeftQuoTransformationNC(g, f);
 (1,65537)(2,8,3)(6,9)
 gap> g := Transformation([65537 .. 70000], 
 >                        [65537 .. 70000] * 0 + 1);;
 gap> f := g ^ (70001, 70002);;
-gap> PERM_LEFT_QUO_TRANS_NC(f, g);
+gap> PermLeftQuoTransformationNC(f, g);
 ()
 
 # Test TRANS_IMG_KER_NC
@@ -883,21 +885,22 @@ true
 gap> IDEM_IMG_KER_NC([5, 4 .. 1], [1 .. 5]);
 IdentityTransformation
 
-# Test INV_TRANS
-gap> INV_TRANS(IdentityTransformation);
+# Test InverseOfTransformation
+gap> InverseOfTransformation(IdentityTransformation);
 IdentityTransformation
 gap> f := Transformation( [ 5, 9, 1, 7, 9, 5, 2, 8, 4, 1 ] );;
-gap> g := INV_TRANS(f);
+gap> g := InverseOfTransformation(f);
 Transformation( [ 3, 7, 1, 9, 1, 1, 4, 8, 2, 1 ] )
 gap> f * g * f = f and g * f * g = g;
 true
 gap> f := Transformation([65537 .. 70000], 
 >                        [65537 .. 70000] * 0 + 1);;
-gap> g := INV_TRANS(f);;
+gap> g := InverseOfTransformation(f);;
 gap> f * g * f = f and g * f * g = g;
 true
-gap> g := INV_TRANS(1);
-Error, INV_TRANS: the argument must be a transformation (not a integer)
+gap> g := InverseOfTransformation(1);
+Error, InverseOfTransformation: the argument must be a transformation (not a i\
+nteger)
 
 # Test INV_LIST_TRANS
 gap> f := Transformation([9, 3, 2, 3, 1, 8, 2, 7, 8, 3, 12, 10]);;
