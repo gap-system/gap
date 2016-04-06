@@ -1231,7 +1231,7 @@ gap> ComponentRepsOfTransformation(f);
   <Attr Name="CyclesOfTransformation" Arg="f[, list]" /> 
   <Returns>A list of lists of positive integers.</Returns>
   <Description> 
-    When the arguments of this function are a transformation<A>f</A> and a list 
+    When the arguments of this function are a transformation <A>f</A> and a list 
     <A>list</A>, it returns a list of the cycles of
     the components of <A>f</A> containing any element of <A>list</A>.<P/>
 
