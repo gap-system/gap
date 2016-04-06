@@ -371,7 +371,7 @@ InstallMethod(ImageSetOfTransformation, "for a transformation and zero",
 #
 
 InstallMethod(ImageListOfTransformation, "for a transformation and pos int", 
-[IsTransformation, IsPosInt], IMAGE_TRANS);
+[IsTransformation, IsPosInt], IMAGE_LIST_TRANS_INT);
 
 #
 
@@ -381,7 +381,7 @@ InstallMethod(ImageListOfTransformation, "for a transformation and zero",
 #
 
 InstallMethod(ImageListOfTransformation, "for a transformation", 
-[IsTransformation], x-> IMAGE_TRANS(x, DegreeOfTransformation(x)));
+[IsTransformation], x-> IMAGE_LIST_TRANS_INT(x, DegreeOfTransformation(x)));
 
 #
 
@@ -441,13 +441,6 @@ InstallOtherMethod(OneMutable, "for a transformation coll",
 
 #
 
-InstallMethod(PermLeftQuoTransformationNC, 
-"for a transformation and transformation",
-[IsTransformation, IsTransformation],
-PERM_LEFT_QUO_TRANS_NC);
-
-#
-
 InstallMethod(PermLeftQuoTransformation, 
 "for a transformation and transformation", [IsTransformation, IsTransformation],
 function(f, g)
@@ -458,7 +451,7 @@ function(f, g)
     Error("usage: the arguments must have equal image set and kernel,");
     return;
   fi;
-  return PERM_LEFT_QUO_TRANS_NC(f, g);
+  return PermLeftQuoTransformationNC(f, g);
 end);
 
 #
@@ -789,11 +782,6 @@ function(arg)
   fi;
   return fail;
 end);
-
-#
-
-InstallMethod(InverseOfTransformation, "for a transformation",
-[IsTransformation], INV_TRANS);
 
 #
 

@@ -85,10 +85,8 @@ DeclareOperation("KernelOfTransformation", [IsTransformation, IsPosInt]);
 DeclareOperation("KernelOfTransformation", [IsTransformation, IsZeroCyc]);
 DeclareOperation("KernelOfTransformation", [IsTransformation, IsBool]);
 
-DeclareOperation("PermLeftQuoTransformationNC",[IsTransformation,
-IsTransformation]);
-DeclareOperation("PermLeftQuoTransformation",[IsTransformation,
-IsTransformation]);
+DeclareOperation("PermLeftQuoTransformation",
+                 [IsTransformation, IsTransformation]);
 DeclareOperation("PreImagesOfTransformation",[IsTransformation, IsPosInt]);
 DeclareSynonym("PreimagesOfTransformation", PreImagesOfTransformation);
 
@@ -113,8 +111,6 @@ DeclareOperation("TransformationOpNC", [IsObject, IsList, IsFunction]);
 DeclareOperation("TransformationOpNC", [IsObject, IsDomain, IsFunction]);
 DeclareOperation("TransformationOpNC", [IsObject, IsList]);
 DeclareOperation("TransformationOpNC", [IsObject, IsDomain]);
-
-DeclareOperation("InverseOfTransformation", [IsTransformation]);
 
 DeclareAttribute("ComponentRepsOfTransformation", IsTransformation);
 DeclareAttribute("NrComponentsOfTransformation", IsTransformation);
