@@ -1675,6 +1675,116 @@ gap> CYCLES_TRANS_LIST(IdentityTransformation, [0, -1]);
 Error, CYCLES_TRANS_LIST: the second argument must be a positive integer (not \
 a integer)
 
+# LEFT_ONE_TRANS
+gap> f := Transformation([7, 7, 7, 9, 5, 3, 9, 7, 5, 6]);;
+gap> e := LEFT_ONE_TRANS(f);
+Transformation( [ 1, 1, 1, 4, 5, 6, 4, 1, 5 ] )
+gap> IsIdempotent(e);
+true
+gap> KernelOfTransformation(e, 10) = KernelOfTransformation(f);
+true
+gap> e * f = f;
+true
+gap> f := Transformation([1, 6, 9, 7, 8, 8, 4, 7, 3]);;
+gap> e := LEFT_ONE_TRANS(f);
+Transformation( [ 1, 2, 3, 4, 5, 5, 7, 4 ] )
+gap> IsIdempotent(e);
+true
+gap> KernelOfTransformation(e, 9) = KernelOfTransformation(f);
+true
+gap> e * f = f;
+true
+gap> f := Transformation([1, 5, 9, 9, 6, 6, 4, 10, 7, 6]);
+Transformation( [ 1, 5, 9, 9, 6, 6, 4, 10, 7, 6 ] )
+gap> e := LEFT_ONE_TRANS(f);
+Transformation( [ 1, 2, 3, 3, 5, 5, 7, 8, 9, 5 ] )
+gap> IsIdempotent(e);
+true
+gap> KernelOfTransformation(e, 10) = KernelOfTransformation(f);
+true
+gap> e * f = f;
+true
+gap> f := Transformation( [ 6, 3, 3, 5, 6, 9, 1, 8, 6, 1 ] )
+>  * (65534,65535)(65537,65538)(65539,65540);
+<transformation on 65540 pts with rank 65536>
+gap> e := LEFT_ONE_TRANS(f);
+Transformation( [ 1, 2, 2, 4, 1, 6, 7, 8, 1, 7 ] )
+gap> IsIdempotent(e);
+true
+gap> KernelOfTransformation(e, 65540) = KernelOfTransformation(f);
+true
+gap> e * f = f;
+true
+gap> f := Transformation( [ 9, 7, 8, 2, 8, 5, 4, 10, 7, 8 ] )
+> * (912,11041,3297,7593,8859)(3214,66460,7897)(70310,8320);
+<transformation on 70310 pts with rank 70307>
+gap> e := LEFT_ONE_TRANS(f);
+Transformation( [ 1, 2, 3, 4, 3, 6, 7, 8, 2, 3 ] )
+gap> IsIdempotent(e);
+true
+gap> KernelOfTransformation(e, 70310) = KernelOfTransformation(f);
+true
+gap> e * f = f;
+true
+gap> LEFT_ONE_TRANS("a");
+Error, LEFT_ONE_TRANS: the first argument must be a transformation (not a list\
+ (string))
+
+# RIGHT_ONE_TRANS
+gap> f := Transformation([7, 7, 7, 9, 5, 3, 9, 7, 5, 6]);;
+gap> e := RIGHT_ONE_TRANS(f);
+Transformation( [ 3, 3, 3, 3, 5, 6, 7, 7, 9, 9 ] )
+gap> IsIdempotent(e);
+true
+gap> ImageSetOfTransformation(e, 10) = ImageSetOfTransformation(f);
+true
+gap> f * e = f;
+true
+gap> f := Transformation([1, 6, 9, 7, 8, 8, 4, 7, 3]);;
+gap> e := RIGHT_ONE_TRANS(f);
+Transformation( [ 1, 1, 3, 4, 4 ] )
+gap> IsIdempotent(e);
+true
+gap> ImageSetOfTransformation(e, 9) = ImageSetOfTransformation(f);
+true
+gap> f * e = f;
+true
+gap> f := Transformation([1, 5, 9, 9, 6, 6, 4, 10, 7, 6]);
+Transformation( [ 1, 5, 9, 9, 6, 6, 4, 10, 7, 6 ] )
+gap> e := RIGHT_ONE_TRANS(f);
+Transformation( [ 1, 1, 1, 4, 5, 6, 7, 7 ] )
+gap> IsIdempotent(e);
+true
+gap> ImageSetOfTransformation(e, 10) = ImageSetOfTransformation(f);
+true
+gap> f * e = f;
+true
+gap> f := Transformation( [ 6, 3, 3, 5, 6, 9, 1, 8, 6, 1 ] )
+>  * (65534,65535)(65537,65538)(65539,65540);
+<transformation on 65540 pts with rank 65536>
+gap> e := RIGHT_ONE_TRANS(f);
+Transformation( [ 1, 1, 3, 3, 5, 6, 6, 8, 9, 9 ] )
+gap> IsIdempotent(e);
+true
+gap> ImageSetOfTransformation(e, 65540) = ImageSetOfTransformation(f);
+true
+gap> f * e = f;
+true
+gap> f := Transformation( [ 9, 7, 8, 2, 8, 5, 4, 10, 7, 8 ] )
+> * (912,11041,3297,7593,8859)(3214,66460,7897)(70310,8320);
+<transformation on 70310 pts with rank 70307>
+gap> e := RIGHT_ONE_TRANS(f);
+Transformation( [ 2, 2, 2, 4, 5, 5 ] )
+gap> IsIdempotent(e);
+true
+gap> ImageSetOfTransformation(e, 70310) = ImageSetOfTransformation(f);
+true
+gap> f * e = f;
+true
+gap> RIGHT_ONE_TRANS("a");
+Error, RIGHT_ONE_TRANS: the first argument must be a transformation (not a lis\
+t (string))
+
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;

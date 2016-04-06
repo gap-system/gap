@@ -3302,7 +3302,9 @@ Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
   return out;
 }
 
-/* an idempotent transformation <e> with ker(e)=ker(f) */
+// Returns an idempotent transformation e with ker(e) = ker(f), where <f> is a
+// transformation.
+
 Obj FuncLEFT_ONE_TRANS( Obj self, Obj f){
   Obj   ker, img;
   UInt  rank, n, i;
@@ -3310,10 +3312,15 @@ Obj FuncLEFT_ONE_TRANS( Obj self, Obj f){
   if(TNUM_OBJ(f)==T_TRANS2){
     rank=RANK_TRANS2(f);
     ker=KER_TRANS(f);
-  } else {
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
     rank=RANK_TRANS4(f);
     ker=KER_TRANS(f);
+  } else {
+    ErrorQuit("LEFT_ONE_TRANS: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+    return 0L;
   }
+
   img=NEW_PLIST(T_PLIST_CYC, rank);
   n=1;
 
@@ -3327,15 +3334,21 @@ Obj FuncLEFT_ONE_TRANS( Obj self, Obj f){
   return FuncIDEM_IMG_KER_NC(self, img, ker);
 }
 
-/* an idempotent transformation <e> with im(e)=im(f) */
+// Returns an idempotent transformation e with im(e) = im(f), where <f> is a
+// transformation.
+
 Obj FuncRIGHT_ONE_TRANS( Obj self, Obj f){
   Obj   ker, img;
   UInt  deg, len, i, j, n;
 
   if(TNUM_OBJ(f)==T_TRANS2){
     deg=DEG_TRANS2(f);
-  } else {
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
     deg=DEG_TRANS4(f);
+  } else {
+    ErrorQuit("RIGHT_ONE_TRANS: the first argument must be a "
+              "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+    return 0L;
   }
 
   img=FuncIMAGE_SET_TRANS(self, f);
