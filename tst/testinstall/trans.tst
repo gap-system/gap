@@ -2214,6 +2214,45 @@ gap> CYCLE_TRANS_INT(Transformation([65537 .. 70000],
 >                    * (14918, 184, 141)(14140, 124), 69999);
 [ 1 ]
 
+# CYCLES_TRANS
+gap> CYCLES_TRANS(Transformation([1, 2, 1]));
+[ [ 1 ], [ 2 ] ]
+gap> CYCLES_TRANS(Transformation([1, 1, 1]));
+[ [ 1 ] ]
+gap> CYCLES_TRANS(Transformation([1, 1, 2]));
+[ [ 1 ] ]
+gap> CYCLES_TRANS(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]));
+[ [ 1, 2, 6, 9 ] ]
+gap> CYCLES_TRANS(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12,
+>                                        11, 14, 13, 15, 16, 17, 18, 19, 20,
+>                                        21, 22, 23, 24, 25, 26, 27, 28, 31,
+>                                        30, 29]));
+[ [ 1, 3 ], [ 9, 10, 6, 4 ], [ 11, 12 ], [ 13, 14 ], [ 15 ], [ 16 ], [ 17 ], 
+  [ 18 ], [ 19 ], [ 20 ], [ 21 ], [ 22 ], [ 23 ], [ 24 ], [ 25 ], [ 26 ], 
+  [ 27 ], [ 28 ], [ 29, 31 ], [ 30 ] ]
+gap> CYCLES_TRANS(IdentityTransformation);
+[  ]
+gap> CYCLES_TRANS(Transformation([9, 45, 53, 15, 42, 97, 71, 66, 7, 88, 6,
+>                                 98, 95, 36, 20, 59, 94, 6, 81, 70, 65,
+>                                 29, 78, 37, 74, 48, 52, 4, 32, 93, 18,
+>                                 13, 55, 94, 49, 42, 99, 46, 35, 84, 52,
+>                                 79, 80, 7, 85, 53, 89, 70, 79, 27, 84,
+>                                 99, 9, 73, 33, 70, 77, 69, 41, 18, 63,
+>                                 29, 42, 33, 75, 56, 79, 63, 89, 90, 64,
+>                                 98, 49, 35, 100, 89, 71, 3, 70, 20, 2,
+>                                 26, 11, 39, 9, 7, 89, 90, 48, 89, 85, 8,
+>                                 56, 42, 10, 61, 25, 98, 55, 39]));
+[ [ 33, 55 ], [ 70, 90, 89, 48 ], [ 98 ] ]
+gap> f := Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1)
+>         * (14918, 184, 141)(14140, 124);;
+gap> comps := CYCLES_TRANS(f);;
+gap> Length(comps) = NR_COMPONENTS_TRANS(f);
+true
+gap> Filtered(comps, x -> Size(x) > 1);
+[ [ 124, 14140 ], [ 141, 14918, 184 ] ]
+gap> CYCLES_TRANS(0);
+Error, CYCLES_TRANS: the argument must be a transformation (not a integer)
+
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;

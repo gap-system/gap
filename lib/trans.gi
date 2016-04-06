@@ -266,10 +266,8 @@ InstallMethod(CycleTransformationInt,
 "for a transformation and positive integer",
 [IsTransformation, IsPosInt], CYCLE_TRANS_INT);
 
-#this could be better JDM, could use ImageSetOfTransformation
-InstallMethod(CyclesOfTransformation, 
-"for a transformation",
-[IsTransformation], f-> CYCLES_TRANS_LIST(f, [1..DegreeOfTransformation(f)]));
+InstallMethod(CyclesOfTransformation, "for a transformation", 
+[IsTransformation], CYCLES_TRANS);
 
 InstallMethod(CyclesOfTransformation, 
 "for a transformation and list",
