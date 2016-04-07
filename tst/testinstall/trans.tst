@@ -2004,7 +2004,7 @@ false
 gap> g < f;
 true
 
-# \*, product, PROD
+# \*, product, PROD: transformation and transformation
 gap> f := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9, 13, 14]);;
 gap> g := Transformation([3, 7, 3, 4, 10, 9, 4, 7, 1, 5, 3, 1]);;
 gap> f * g;
@@ -2025,6 +2025,26 @@ gap> f * g;
 <transformation on 65537 pts with rank 65536>
 gap> g * f;
 <transformation on 65538 pts with rank 65537>
+
+# ^, POW: for a positive integer and a transformation
+gap> 2 ^ Transformation([1, 1]);
+1
+gap> 10 ^ Transformation([1, 1]);
+10
+gap> (2 ^ 60) ^ Transformation([1, 1]);
+1152921504606846976
+gap> (-1) ^ Transformation([1, 1]);
+Error, Tran. Operations: <point> must be a positive integer (not -1)
+gap> 65535 ^ Transformation([65535], [65537]);
+65537
+gap> 1 ^ Transformation([65535], [65537]);
+1
+gap> 65538 ^ Transformation([65535], [65537]);
+65538
+gap> (2 ^ 60) ^ Transformation([65535], [65537]);
+1152921504606846976
+gap> (-1) ^ Transformation([65535], [65537]);
+Error, Tran. Operations: <point> must be a positive integer (not -1)
 
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
