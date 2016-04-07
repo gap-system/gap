@@ -4732,30 +4732,34 @@ Obj OnSetsTrans (Obj set, Obj f){
   Obj    *ptset, *ptres, tmp, res;
   UInt   i, isint, k, h, len;
 
-  res=NEW_PLIST(IS_MUTABLE_PLIST(set)?T_PLIST:T_PLIST+IMMUTABLE,LEN_LIST(set));
-  ADDR_OBJ(res)[0]=ADDR_OBJ(set)[0];
+  res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? 
+                  T_PLIST : T_PLIST + IMMUTABLE, LEN_LIST(set));
+
+  ADDR_OBJ(res)[0] = ADDR_OBJ(set)[0];
 
   /* get the pointer                                                 */
   ptset = ADDR_OBJ(set) + LEN_LIST(set);
   ptres = ADDR_OBJ(res) + LEN_LIST(set);
-  if(TNUM_OBJ(f)==T_TRANS2){
+  if (TNUM_OBJ(f) == T_TRANS2) {
     ptf2 = ADDR_TRANS2(f);
     deg = DEG_TRANS2(f);
     /* loop over the entries of the tuple                              */
     isint = 1;
-    for ( i =LEN_LIST(set) ; 1 <= i; i--, ptset--, ptres-- ) {
-      if ( TNUM_OBJ( *ptset ) == T_INT && 0 < INT_INTOBJ( *ptset ) ) {
-        k = INT_INTOBJ( *ptset );
-        if ( k <= deg ) k = ptf2[k-1] + 1 ;
+    for (i = LEN_LIST(set); 1 <= i; i--, ptset--, ptres--) {
+      if (TNUM_OBJ(*ptset) == T_INT && 0 < INT_INTOBJ(*ptset)) {
+        k = INT_INTOBJ(*ptset);
+        if (k <= deg) {
+          k = ptf2[k - 1] + 1;
+        }
         *ptres = INTOBJ_INT(k);
       } else {
         isint = 0;
-        tmp = POW(*ptset, f );
+        tmp = POW(*ptset, f);
         ptset = ADDR_OBJ(set) + i;
         ptres = ADDR_OBJ(res) + i;
         ptf2 = ADDR_TRANS2(f);
         *ptres = tmp;
-        CHANGED_BAG( res );
+        CHANGED_BAG(res);
       }
     }
   } else {
@@ -4764,14 +4768,16 @@ Obj OnSetsTrans (Obj set, Obj f){
 
     /* loop over the entries of the tuple                              */
     isint = 1;
-    for ( i =LEN_LIST(set) ; 1 <= i; i--, ptset--, ptres-- ) {
-      if ( TNUM_OBJ( *ptset ) == T_INT && 0 < INT_INTOBJ( *ptset ) ) {
-        k = INT_INTOBJ( *ptset );
-        if ( k <= deg ) k = ptf4[k-1] + 1 ;
+    for (i = LEN_LIST(set) ; 1 <= i; i--, ptset--, ptres--) {
+      if (TNUM_OBJ(*ptset) == T_INT && 0 < INT_INTOBJ(*ptset)) {
+        k = INT_INTOBJ(*ptset);
+        if (k <= deg) {
+          k = ptf4[k - 1] + 1;
+        }
         *ptres = INTOBJ_INT(k);
       } else {
         isint = 0;
-        tmp = POW(*ptset, f );
+        tmp = POW(*ptset, f);
         ptset = ADDR_OBJ(set) + i;
         ptres = ADDR_OBJ(res) + i;
         ptf4 = ADDR_TRANS4(f);
@@ -4782,14 +4788,18 @@ Obj OnSetsTrans (Obj set, Obj f){
   }
   // sort the result
   if (isint) {
-    len=LEN_LIST(res);
+    len = LEN_LIST(res);
     // TODO should this use the newer sorting algorithm by CAJ in PR #609?
-    h = 1;  while ( 9*h + 4 < len )  h = 3*h + 1;
-    while ( 0 < h ) {
-      for ( i = h+1; i <= len; i++ ) {
-        tmp = ADDR_OBJ(res)[i];  k = i;
-        while ( h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k-h])) ) {
-          ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k-h];
+    h = 1;  
+    while (9 * h + 4 < len) { 
+      h = 3 * h + 1;
+    }
+    while (0 < h) {
+      for (i = h + 1; i <= len; i++) {
+        tmp = ADDR_OBJ(res)[i];  
+        k = i;
+        while (h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k - h]))) {
+          ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k - h];
           k -= h;
         }
         ADDR_OBJ(res)[k] = tmp;
@@ -4797,8 +4807,8 @@ Obj OnSetsTrans (Obj set, Obj f){
       h = h / 3;
     }
 
-    RetypeBag( res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT :
-        T_PLIST_CYC_SSORT + IMMUTABLE );
+    RetypeBag(res, IS_MUTABLE_PLIST(set) 
+                   ? T_PLIST_CYC_SSORT : T_PLIST_CYC_SSORT + IMMUTABLE);
 
   } else {
     // sort the set with a shellsort
@@ -4820,7 +4830,7 @@ Obj OnSetsTrans (Obj set, Obj f){
       h = h / 3;
     }
   }
-    // remove duplicates, shrink bag if possible
+  // remove duplicates, shrink bag if possible
   if (0 < len) {
     tmp = ADDR_OBJ(res)[1];  
     k = 1;
