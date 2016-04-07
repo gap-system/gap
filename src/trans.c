@@ -3457,8 +3457,10 @@ Obj FuncINV_KER_TRANS (Obj self, Obj X, Obj f) {
 }
 
 /*******************************************************************************
-** GAP kernel functions for transformations
-*******************************************************************************/
+ ******************************************************************************* 
+ * GAP kernel functions for transformations
+ ******************************************************************************* 
+ *******************************************************************************/
 
 // Returns the identity transformation.
 
@@ -3466,143 +3468,176 @@ Obj OneTrans( Obj f ){
   return IdentityTrans;
 }
 
-/* equality for transformations */
+/*******************************************************************************
+** Equality for transformations
+*******************************************************************************/
 
-// the following function is used to check equality of both permutations and
-// transformations, it is written by Chris Jefferson in pull request #280
+// The following function is used to check equality of both permutations and
+// transformations, it is written by Chris Jefferson in pull request #280.
 
-Int             EqPermTrans22 (UInt                degL,
-                               UInt                degR,
-                               UInt2 *             ptLstart,
-                               UInt2 *             ptRstart) {
+Int EqPermTrans22 (UInt   degL, 
+                   UInt   degR, 
+                   UInt2* ptLstart, 
+                   UInt2* ptRstart) {
 
-    UInt2 *             ptL;            /* pointer to the left operand     */
-    UInt2 *             ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
+  UInt2* ptL;            // pointer to the left operand
+  UInt2* ptR;            // pointer to the right operand
+  UInt   p;              // loop variable
 
-    /* if permutations are different sizes, check final element as
-     * early check                                                         */
+  // if perms/trans are different sizes, check final element as an early
+  // check
 
-    if ( degL != degR ) {
-      if ( degL < degR ) {
-        if ( *(ptRstart + degR - 1) != (degR - 1) )
-          return 0L;
+  if (degL != degR) {
+    if (degL < degR) {
+      if (*(ptRstart + degR - 1) != (degR - 1)) {
+        return 0L;
       }
-      else {
-        if ( *(ptLstart + degL - 1) != (degL - 1) )
-          return 0L;
+    } else {
+      if (*(ptLstart + degL - 1) != (degL - 1)) {
+        return 0L;
       }
     }
+  }
 
-    /* search for a difference and return False if you find one          */
-    if ( degL <= degR ) {
-      ptR = ptRstart + degL;
-      for ( p = degL; p < degR; p++ )
-          if ( *(ptR++) !=        p )
-              return 0L;
-
-        if(memcmp(ptLstart, ptRstart, degL * sizeof(UInt2)) != 0)
-            return 0L;
+  // search for a difference and return False if you find one
+  if (degL <= degR) {
+    ptR = ptRstart + degL;
+    for (p = degL; p < degR; p++) {
+      if (*(ptR++) != p) {
+        return 0L;
+      }
     }
-    else {
-        ptL = ptLstart + degR;
-        for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) !=        p )
-                return 0L;
-        if(memcmp(ptLstart, ptRstart, degR * sizeof(UInt2)) != 0)
-          return 0L;
+    if (memcmp(ptLstart, ptRstart, degL * sizeof(UInt2)) != 0) {
+      return 0L;
     }
+  }
+  else {
+    ptL = ptLstart + degR;
+    for (p = degR; p < degL; p++) {
+      if (* (ptL++) != p) {
+        return 0L;
+      }
+    }
+    if (memcmp(ptLstart, ptRstart, degR * sizeof(UInt2)) != 0) {
+      return 0L;
+    }
+  }
 
-    /* otherwise they must be equal                                        */
-    return 1L;
+  // otherwise they must be equal
+  return 1L;
 }
 
-Int             EqPermTrans44 (UInt                degL,
-                               UInt                degR,
-                               UInt4 *             ptLstart,
-                               UInt4 *             ptRstart) {
-    UInt4 *             ptL;            /* pointer to the left operand     */
-    UInt4 *             ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
+Int EqPermTrans44 (UInt   degL, 
+                   UInt   degR, 
+                   UInt4* ptLstart, 
+                   UInt4* ptRstart) {
 
-    /* if permutations/transformation are different sizes, check final element
-     * as early check */
+  UInt4* ptL;            // pointer to the left operand
+  UInt4* ptR;            // pointer to the right operand
+  UInt   p;              // loop variable
 
-    if ( degL != degR ) {
-      if ( degL < degR ) {
-        if ( *(ptRstart + degR - 1) != (degR - 1) )
-          return 0L;
+  // if perms/trans are different sizes, check final element as an early
+  // check
+
+  if (degL != degR) {
+    if (degL < degR) {
+      if (*(ptRstart + degR - 1) != (degR - 1)) {
+        return 0L;
       }
-      else {
-        if ( *(ptLstart + degL - 1) != (degL - 1) )
-          return 0L;
+    } else {
+      if (*(ptLstart + degL - 1) != (degL - 1)) {
+        return 0L;
       }
     }
+  }
 
-    /* search for a difference and return False if you find one          */
-    if ( degL <= degR ) {
-      ptR = ptRstart + degL;
-      for ( p = degL; p < degR; p++ )
-          if ( *(ptR++) !=        p )
-              return 0L;
-
-        if(memcmp(ptLstart, ptRstart, degL * sizeof(UInt4)) != 0)
-            return 0L;
+  // search for a difference and return False if you find one
+  if (degL <= degR) {
+    ptR = ptRstart + degL;
+    for (p = degL; p < degR; p++) {
+      if (*(ptR++) != p) {
+        return 0L;
+      }
     }
-    else {
-        ptL = ptLstart + degR;
-        for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) !=        p )
-                return 0L;
-        if(memcmp(ptLstart, ptRstart, degR * sizeof(UInt4)) != 0)
-          return 0L;
+    if (memcmp(ptLstart, ptRstart, degL * sizeof(UInt4)) != 0) {
+      return 0L;
     }
+  } else {
+    ptL = ptLstart + degR;
+    for (p = degR; p < degL; p++) {
+      if (*(ptL++) != p) {
+        return 0L;
+      }
+    }
+    if (memcmp(ptLstart, ptRstart, degR * sizeof(UInt4)) != 0) {
+      return 0L;
+    }
+  }
 
-    /* otherwise they must be equal                                        */
-    return 1L;
+  // otherwise they must be equal
+  return 1L;
 }
 
-Int             EqTrans22 (Obj opL,
-                           Obj opR ) {
+Int EqTrans22 (Obj opL, Obj opR) {
   return EqPermTrans22(DEG_TRANS2(opL),
                        DEG_TRANS2(opR),
                        ADDR_TRANS2(opL),
                        ADDR_TRANS2(opR));
 }
 
-Int             EqTrans44 (
-    Obj                 opL,
-    Obj                 opR ) {
+Int EqTrans44 (Obj opL, Obj opR) {
   return EqPermTrans44(DEG_TRANS4(opL),
                        DEG_TRANS4(opR),
                        ADDR_TRANS4(opL),
                        ADDR_TRANS4(opR));
 }
 
-Int EqTrans24 (Obj f, Obj g){
+Int EqTrans24 (Obj f, Obj g) {
   UInt   i, def, deg;
   UInt2  *ptf;
   UInt4  *ptg;
 
-  ptf=ADDR_TRANS2(f);   ptg=ADDR_TRANS4(g);
-  def=DEG_TRANS2(f);    deg=DEG_TRANS4(g);
+  ptf = ADDR_TRANS2(f);   
+  ptg = ADDR_TRANS4(g);
+  def = DEG_TRANS2(f);    
+  deg = DEG_TRANS4(g);
   assert(def < deg);
-  for(i=0;i<def;i++) if(*(ptf++)!=*(ptg++)) return 0L;
-  for(;i<deg;i++)    if(*(ptg++)!=i) return 0L;
+
+  for (i = 0; i < def; i++) {
+    if (*(ptf++) != *(ptg++)) {
+      return 0L;
+    }
+  }
+  for (; i < deg; i++) {   
+    if (*(ptg++) != i) {
+      return 0L;
+    }
+  }
 
   return 1L;
 }
 
-Int EqTrans42 (Obj f, Obj g){
+Int EqTrans42 (Obj f, Obj g) {
   UInt   i, def, deg;
   UInt4  *ptf;
   UInt2  *ptg;
 
-  ptf=ADDR_TRANS4(f);   ptg=ADDR_TRANS2(g);
-  def=DEG_TRANS4(f);    deg=DEG_TRANS2(g);
+  ptf = ADDR_TRANS4(f);   
+  ptg = ADDR_TRANS2(g);
+  def = DEG_TRANS4(f);    
+  deg = DEG_TRANS2(g);
   assert(deg < def);
-  for(i=0;i<deg;i++) if(*(ptf++)!=*(ptg++)) return 0L;
-  for(;i<def;i++)    if(*(ptf++)!=i)        return 0L;
+
+  for (i = 0; i < deg; i++) {
+    if (*(ptf++) != *(ptg++)) {
+      return 0L;
+    }
+  }
+  for (; i < def; i++) {   
+    if (*(ptf++) != i) {
+      return 0L;
+    }
+  }
 
   return 1L;
 }
