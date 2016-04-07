@@ -3815,13 +3815,12 @@ Int LtTrans44 (Obj f, Obj g) {
 
 Obj ProdTrans22(Obj f, Obj g){
   UInt2   *ptf, *ptg, *ptfg;
-  UInt    i, def, deg, defg;
+  UInt    i, def, deg;
   Obj     fg;
 
   def =DEG_TRANS2(f);
   deg =DEG_TRANS2(g);
-  defg=MAX(def,deg);
-  fg=NEW_TRANS2(defg);
+  fg=NEW_TRANS2(MAX(def,deg));
 
   ptfg=ADDR_TRANS2(fg);
   ptf =ADDR_TRANS2(f);
@@ -3838,58 +3837,50 @@ Obj ProdTrans22(Obj f, Obj g){
 Obj ProdTrans24(Obj f, Obj g){
   UInt2   *ptf;
   UInt4   *ptg, *ptfg;
-  UInt    i, def, deg, defg;
+  UInt    i, def, deg;
   Obj     fg;
 
   def =DEG_TRANS2(f);
   deg =DEG_TRANS4(g);
-  defg=MAX(def,deg);
-  fg=NEW_TRANS4(defg);
+  assert(def <= deg); 
+  fg=NEW_TRANS4(deg);
 
   ptfg=ADDR_TRANS4(fg);
   ptf =ADDR_TRANS2(f);
   ptg =ADDR_TRANS4(g);
-  if(def<=deg){
-    for(i=0;i<def;i++) *ptfg++=ptg[*ptf++];
-    for(;i<deg;i++) *ptfg++=ptg[i];
-  } else {
-    for(i=0;i<def;i++) *(ptfg++)=IMAGE(ptf[i], ptg, deg);
-  }
+
+  for(i=0;i<def;i++) *ptfg++=ptg[*ptf++];
+  for(;i<deg;i++) *ptfg++=ptg[i];
+
   return fg;
 }
 
 Obj ProdTrans42(Obj f, Obj g){
   UInt4   *ptf, *ptfg;
   UInt2   *ptg;
-  UInt    i, def, deg, defg;
+  UInt    i, def, deg;
   Obj     fg;
 
   def=DEG_TRANS4(f);
   deg=DEG_TRANS2(g);
-  defg=MAX(def,deg);
-  fg=NEW_TRANS4(defg);
+  assert(deg <= def); 
+  fg=NEW_TRANS4(def);
 
   ptfg=ADDR_TRANS4(fg);
   ptf =ADDR_TRANS4(f);
   ptg =ADDR_TRANS2(g);
-  if(def<=deg){
-    for(i=0;i<def;i++) *(ptfg++)=ptg[*(ptf++)];
-    for(;i<deg;i++) *(ptfg++)=ptg[i];
-  } else {
-    for(i=0;i<def;i++) *(ptfg++)=IMAGE(ptf[i], ptg, deg);
-  }
+  for(i=0;i<def;i++) *(ptfg++)=IMAGE(ptf[i], ptg, deg);
   return fg;
 }
 
 Obj ProdTrans44(Obj f, Obj g){
   UInt4   *ptf, *ptg, *ptfg;
-  UInt    i, def, deg, defg;
+  UInt    i, def, deg;
   Obj     fg;
 
   def=DEG_TRANS4(f);
   deg=DEG_TRANS4(g);
-  defg=MAX(def,deg);
-  fg=NEW_TRANS4(defg);
+  fg=NEW_TRANS4(MAX(def, deg));
 
   ptfg=ADDR_TRANS4(fg);
   ptf =ADDR_TRANS4(f);
