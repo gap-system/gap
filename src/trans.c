@@ -4674,39 +4674,43 @@ Obj LQuoPerm4Trans4(Obj opL, Obj opR){
 ** Apply a transformation to a point 
 *******************************************************************************/
 
-Obj PowIntTrans2(Obj i, Obj f){
-  Int    img;
+Obj PowIntTrans2 (Obj i, Obj f) {
+  Int img;
 
-  if(TNUM_OBJ(i)==T_INTPOS) return i;
-
-  img=INT_INTOBJ(i);
-
-  if(img<=0){
-    ErrorQuit("Tran. Operations: <point> must be a positive integer (not %d)",
-              (Int) img, 0L);
+  if (TNUM_OBJ(i) == T_INTPOS) {
+    return i;
   }
 
-  if(img<=DEG_TRANS2(f)){
-    img=(ADDR_TRANS2(f))[img-1]+1;
+  img = INT_INTOBJ(i);
+
+  if (img <= 0) {
+    ErrorQuit("Tran. Operations: <point> must be a positive integer "
+              "(not %d)", (Int) img, 0L);
+  }
+
+  if (img <= DEG_TRANS2(f)) {
+    img = (ADDR_TRANS2(f))[img - 1] + 1;
   }
 
   return INTOBJ_INT(img);
 }
 
-Obj PowIntTrans4(Obj i, Obj f){
+Obj PowIntTrans4 (Obj i, Obj f) {
   Int    img;
 
-  if(TNUM_OBJ(i)==T_INTPOS) return i;
-
-  img=INT_INTOBJ(i);
-
-  if(img<=0){
-    ErrorQuit("Tran. Operations: <point> must be a positive integer (not %d)",
-              (Int) img, 0L);
+  if (TNUM_OBJ(i) == T_INTPOS) {
+    return i;
   }
 
-  if(img<=DEG_TRANS4(f)){
-    img=(ADDR_TRANS4(f))[img-1]+1;
+  img = INT_INTOBJ(i);
+
+  if (img <= 0) {
+    ErrorQuit("Tran. Operations: <point> must be a positive integer (not %d)",
+        (Int) img, 0L);
+  }
+
+  if (img <= DEG_TRANS4(f)) {
+    img = (ADDR_TRANS4(f))[img - 1] + 1;
   }
 
   return INTOBJ_INT(img);
