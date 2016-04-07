@@ -3464,7 +3464,7 @@ Obj FuncINV_KER_TRANS (Obj self, Obj X, Obj f) {
 
 // Returns the identity transformation.
 
-Obj OneTrans( Obj f ){
+Obj OneTrans (Obj f) {
   return IdentityTrans;
 }
 
@@ -3819,86 +3819,116 @@ Int LtTrans44 (Obj f, Obj g) {
 ** Products for transformations
 *******************************************************************************/
 
-Obj ProdTrans22(Obj f, Obj g){
-  UInt2   *ptf, *ptg, *ptfg;
-  UInt    i, def, deg;
-  Obj     fg;
+Obj ProdTrans22 (Obj f, Obj g) {
+  UInt2* ptf, *ptg, *ptfg;
+  UInt   i, def, deg;
+  Obj    fg;
 
-  def =DEG_TRANS2(f);
-  deg =DEG_TRANS2(g);
-  fg=NEW_TRANS2(MAX(def,deg));
+  def = DEG_TRANS2(f);
+  deg = DEG_TRANS2(g);
+  fg = NEW_TRANS2(MAX(def, deg));
 
-  ptfg=ADDR_TRANS2(fg);
-  ptf =ADDR_TRANS2(f);
-  ptg =ADDR_TRANS2(g);
-  if(def<=deg){
-    for(i=0;i<def;i++) *(ptfg++)=ptg[*(ptf++)];
-    for(;i<deg;i++) *(ptfg++)=ptg[i];
+  ptfg = ADDR_TRANS2(fg);
+  ptf = ADDR_TRANS2(f);
+  ptg = ADDR_TRANS2(g);
+
+  if (def <= deg) {
+    for (i = 0; i < def; i++) {
+      *(ptfg++) = ptg[*(ptf++)];
+    }
+    for (; i < deg; i++) {
+      *(ptfg++) = ptg[i];
+    }
   } else {
-    for(i=0;i<def;i++) *(ptfg++)=IMAGE(ptf[i], ptg, deg);
+    for (i = 0; i < def; i++) {
+      *(ptfg++) = IMAGE(ptf[i], ptg, deg);
+    }
   }
   return fg;
 }
 
-Obj ProdTrans24(Obj f, Obj g){
-  UInt2   *ptf;
-  UInt4   *ptg, *ptfg;
-  UInt    i, def, deg;
-  Obj     fg;
+Obj ProdTrans24 (Obj f, Obj g) {
+  UInt2* ptf;
+  UInt4* ptg, *ptfg;
+  UInt   i, def, deg;
+  Obj    fg;
 
-  def =DEG_TRANS2(f);
-  deg =DEG_TRANS4(g);
-  assert(def <= deg); 
-  fg=NEW_TRANS4(deg);
+  def = DEG_TRANS2(f);
+  deg = DEG_TRANS4(g);
 
-  ptfg=ADDR_TRANS4(fg);
-  ptf =ADDR_TRANS2(f);
-  ptg =ADDR_TRANS4(g);
+  assert(def <= deg);
 
-  for(i=0;i<def;i++) *ptfg++=ptg[*ptf++];
-  for(;i<deg;i++) *ptfg++=ptg[i];
+  fg = NEW_TRANS4(deg);
+
+  ptfg = ADDR_TRANS4(fg);
+  ptf = ADDR_TRANS2(f);
+  ptg = ADDR_TRANS4(g);
+
+  for (i = 0; i < def; i++) {
+    *ptfg++ = ptg[ *ptf++];
+  }
+  for (; i < deg; i++) {
+    *ptfg++ = ptg[i];
+  }
 
   return fg;
 }
 
-Obj ProdTrans42(Obj f, Obj g){
-  UInt4   *ptf, *ptfg;
-  UInt2   *ptg;
+Obj ProdTrans42 (Obj f, Obj g) {
+  UInt4 * ptf, *ptfg;
+  UInt2 * ptg;
   UInt    i, def, deg;
   Obj     fg;
 
-  def=DEG_TRANS4(f);
-  deg=DEG_TRANS2(g);
-  assert(deg <= def); 
-  fg=NEW_TRANS4(def);
+  def = DEG_TRANS4(f);
+  deg = DEG_TRANS2(g);
 
-  ptfg=ADDR_TRANS4(fg);
-  ptf =ADDR_TRANS4(f);
-  ptg =ADDR_TRANS2(g);
-  for(i=0;i<def;i++) *(ptfg++)=IMAGE(ptf[i], ptg, deg);
+  assert(deg <= def);
+
+  fg = NEW_TRANS4(def);
+
+  ptfg = ADDR_TRANS4(fg);
+  ptf = ADDR_TRANS4(f);
+  ptg = ADDR_TRANS2(g);
+
+  for (i = 0; i < def; i++) {
+    *(ptfg++) = IMAGE(ptf[i], ptg, deg);
+  }
+
   return fg;
 }
 
-Obj ProdTrans44(Obj f, Obj g){
-  UInt4   *ptf, *ptg, *ptfg;
+Obj ProdTrans44 (Obj f, Obj g) {
+  UInt4 * ptf, *ptg, *ptfg;
   UInt    i, def, deg;
   Obj     fg;
 
-  def=DEG_TRANS4(f);
-  deg=DEG_TRANS4(g);
-  fg=NEW_TRANS4(MAX(def, deg));
+  def = DEG_TRANS4(f);
+  deg = DEG_TRANS4(g);
+  fg = NEW_TRANS4(MAX(def, deg));
 
-  ptfg=ADDR_TRANS4(fg);
-  ptf =ADDR_TRANS4(f);
-  ptg =ADDR_TRANS4(g);
-  if(def<=deg){
-    for(i=0;i<def;i++) *(ptfg++)=ptg[*(ptf++)];
-    for(;i<deg;i++) *(ptfg++)=ptg[i];
+  ptfg = ADDR_TRANS4(fg);
+  ptf = ADDR_TRANS4(f);
+  ptg = ADDR_TRANS4(g);
+
+  if (def <= deg) {
+    for (i = 0; i < def; i++) {
+      *(ptfg++) = ptg[*(ptf++)];
+    }
+    for (; i < deg; i++) {
+      *(ptfg++) = ptg[i];
+    }
   } else {
-    for(i=0;i<def;i++) *(ptfg++)=IMAGE(ptf[i], ptg, deg);
+    for (i = 0; i < def; i++) {
+      *(ptfg++) = IMAGE(ptf[i], ptg, deg);
+    }
   }
   return fg;
 }
+
+/*******************************************************************************
+** Products for transformations
+*******************************************************************************/
 
 /* product of transformation and permutation */
 Obj ProdTrans2Perm2(Obj f, Obj p){ /* p(f(x)) */
