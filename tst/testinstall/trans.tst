@@ -2667,6 +2667,28 @@ false
 gap> g < f;
 true
 
+# \*, product, PROD
+gap> f := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9, 13, 14]);;
+gap> g := Transformation([3, 7, 3, 4, 10, 9, 4, 7, 1, 5, 3, 1]);;
+gap> f * g;
+Transformation( [ 7, 7, 7, 4, 1, 3, 4, 4, 9, 3, 3, 1 ] )
+gap> g * f;
+Transformation( [ 2, 7, 2, 7, 3, 6, 7, 7, 8, 9, 2, 8 ] )
+gap> f := Transformation([1, 2, 1]);;
+gap> g := Transformation([1], [65537]);;
+gap> f * g;
+<transformation on 65537 pts with rank 65535>
+gap> g * f;
+<transformation on 65537 pts with rank 65536>
+gap> g ^ 2;
+<transformation on 65537 pts with rank 65536>
+gap> f := Transformation([1], [65537]);;
+gap> g := Transformation([1], [65538]);;
+gap> f * g;
+<transformation on 65537 pts with rank 65536>
+gap> g * f;
+<transformation on 65538 pts with rank 65537>
+
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;
