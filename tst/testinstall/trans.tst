@@ -1789,72 +1789,220 @@ gap> IsOne(One(f));
 true
 
 # \=, equality, EQ
-gap> f2 := Transformation([2, 6, 7, 2, 6, 13, 9, 9, 13, 1, 11, 1, 13, 12]);;
-gap> g2 := Transformation([5, 3, 8, 12, 1, 11, 9, 9, 4, 14, 10, 5, 10, 6]);;
-gap> f2 = f2;
+gap> f := Transformation([2, 6, 7, 2, 6, 13, 9, 9, 13, 1, 11, 1, 13, 12]);;
+gap> g := Transformation([5, 3, 8, 12, 1, 11, 9, 9, 4, 14, 10, 5, 10, 6]);;
+gap> f = f;
 true
-gap> f2 = g2;
+gap> f = g;
 false
-gap> g2 = f2;
+gap> g = f;
 false
-gap> f2 := Transformation([1, 2, 1]);
+gap> f := Transformation([1, 2, 1]);
 Transformation( [ 1, 2, 1 ] )
-gap> g2 := Transformation([1, 2, 1, 3, 5]);
+gap> g := Transformation([1, 2, 1, 3, 5]);
 Transformation( [ 1, 2, 1, 3 ] )
-gap> f2 = g2;
+gap> f = g;
 false
-gap> f2 := Transformation([1, 2, 1, 4, 5]);
+gap> f := Transformation([1, 2, 1]);
 Transformation( [ 1, 2, 1 ] )
-gap> g2 := Transformation([1, 3, 1]);
+gap> g := Transformation([1, 2, 1, 4, 5]);
+Transformation( [ 1, 2, 1 ] )
+gap> f = g;
+true
+gap> g = f;
+true
+gap> f := Transformation([1, 2, 1, 4, 5]);
+Transformation( [ 1, 2, 1 ] )
+gap> g := Transformation([1, 3, 1]);
 Transformation( [ 1, 3, 1 ] )
-gap> f2 = g2;
+gap> f = g;
 false
-gap> f4 := Transformation([65537], [1]);;
-gap> g4 := Transformation([1], [65537]);;
-gap> f4 = f4;
+gap> f := Transformation([65537], [1]);;
+gap> g := Transformation([1], [65537]);;
+gap> f = f;
 true
-gap> f4 = g4;
+gap> f = g;
 false
-gap> g4 = f4;
+gap> g = f;
 false
-gap> f4 ^ (2, 65537) = Transformation([1, 1]);
+gap> f ^ (2, 65537) = Transformation([1, 1]);
 true
-gap> Transformation([1, 1]) = f4 ^ (2, 65537);
+gap> Transformation([1, 1]) = f ^ (2, 65537);
 true
-gap> f4 ^ (3, 65537) = Transformation([1, 1]);
+gap> f ^ (3, 65537) = Transformation([1, 1]);
 false
-gap> Transformation([1, 1]) = f4 ^ (3, 65537);
+gap> Transformation([1, 1]) = f ^ (3, 65537);
 false
-gap> f4 ^ (3, 65537) = Transformation([1, 1, 2, 2]);
+gap> f ^ (3, 65537) = Transformation([1, 1, 2, 2]);
 false
-gap> Transformation([1, 1, 2, 2]) = f4 ^ (3, 65537);
+gap> Transformation([1, 1, 2, 2]) = f ^ (3, 65537);
 false
-gap> f4 := Transformation([65538], [1]);;
-gap> g4 := Transformation([1], [65537]);;
-gap> f4 = g4;
+gap> f := Transformation([65538], [1]);;
+gap> g := Transformation([1], [65537]);;
+gap> f = g;
 false
-gap> g4 = f4;
+gap> g = f;
 false
-gap> f4 := Transformation([1], [65537]);;
-gap> g4 := AsTransformation((65535, 65536, 65537, 65538)(65539, 65540)) ^ 2;;
-gap> g4 = f4;
+gap> f := Transformation([1], [65537]);;
+gap> g := AsTransformation((65535, 65536, 65537, 65538)(65539, 65540)) ^ 2;;
+gap> g = f;
 false
-gap> f4 = g4;
+gap> f = g;
 false
-gap> f4 := AsTransformation((65535, 2, 65537)(65539, 65540)) ^ 2;;
-gap> g4 := AsTransformation((65535, 65536, 65537));;
-gap> g4 = f4;
+gap> f := AsTransformation((65535, 2, 65537)(65539, 65540)) ^ 2;;
+gap> g := AsTransformation((65535, 65536, 65537));;
+gap> g = f;
 false
-gap> f4 = g4;
+gap> f = g;
 false
-gap> f2 = f4;
+gap> f = f;
+true
+gap> f = f;
+true
+gap> f := Transformation([1, 2, 1]);;
+gap> g := Transformation([1, 2, 3, 4, 5, 6], [1, 2, 1, 5, 4, 65537]);;
+gap> f = g;
 false
-gap> f4 = f2;
+gap> g = f;
 false
-gap> f2 := Transformation([1, 2, 1]);;
-gap> g4 := Transformation([1, 2, 3, 4, 5, 6], [1, 2, 1, 5, 4, 65537]);;
-gap> f2 = g4;
+
+# \<, less than, LT
+gap> f := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9]);;
+gap> g := Transformation([3, 7, 3, 4, 10, 9, 4, 7, 1, 5, 3, 1]);;
+gap> f < f;
 false
+gap> g < g;
+false
+gap> f < g;
+false
+gap> g < f;
+true
+gap> f := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9, 13, 14]);;
+gap> g := Transformation([3, 7, 3, 4, 10, 9, 4, 7, 1, 5, 3, 1]);;
+gap> f < g;
+false
+gap> g < f;
+true
+gap> f := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9]);;
+gap> g := Transformation([3, 7, 3, 4, 10, 9, 4, 7, 1, 5, 3, 1, 13, 14]);;
+gap> f < g;
+false
+gap> g < f;
+true
+gap> f := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9]);;
+gap> g := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9, 9]);;
+gap> f < g;
+false
+gap> g < f;
+true
+gap> f := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9]);;
+gap> g := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9, 14, 13]);;
+gap> f < g;
+true
+gap> g < f;
+false
+gap> f := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9, 9]);;
+gap> g := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9]);;
+gap> f < g;
+true
+gap> g < f;
+false
+gap> f := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9, 13]);;
+gap> g := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9]);;
+gap> f < g;
+false
+gap> g < f;
+false
+gap> f := Transformation([1, 2, 1]);;
+gap> g := Transformation([1], [65537]);;
+gap> f < g;
+true
+gap> g < f;
+false
+gap> f := Transformation([2, 2, 1]);;
+gap> g := Transformation([65537], [1]);;
+gap> f < g;
+false
+gap> g < f;
+true
+gap> f := Transformation([2, 2, 1]);;
+gap> g := Transformation([1, 2, 3, 65537], [2, 2, 1, 1]);;
+gap> f < g;
+false
+gap> g < f;
+true
+gap> f := Transformation([1, 2, 1]);
+Transformation( [ 1, 2, 1 ] )
+gap> g := Transformation([1, 2, 3, 4], [1, 2, 1, 65537]);
+<transformation on 65537 pts with rank 65535>
+gap> f < g;
+true
+gap> g < f;
+false
+gap> f := Transformation([1, 2, 1]);
+Transformation( [ 1, 2, 1 ] )
+gap> g := Transformation([1, 2, 3, 65538, 65537], [1, 2, 1, 65537, 65538]) ^ 2;
+Transformation( [ 1, 2, 1 ] )
+gap> f < g;
+false
+gap> g < f;
+false
+gap> g := Transformation([1, 2, 3, 65538, 65537], 
+>                        [1, 2, 1, 65537, 65538]) ^ 2;;
+gap> g < g;
+false
+gap> f := Transformation([1, 2, 3, 65537, 65538], 
+>                        [1, 1, 1, 65538, 65539]);;
+gap> f < g;
+true
+gap> g < f;
+false
+gap> f := Transformation([1, 2, 3, 65537, 65538], 
+>                        [1, 2, 1, 65538, 65538]);;
+gap> g := Transformation([1, 2, 3, 65537, 65538, 65539], 
+>                        [1, 2, 1, 65538, 65538, 65537]);;
+gap> f < g;
+false
+gap> g < f;
+true
+gap> g := Transformation([1, 2, 3, 65537, 65538, 65539], 
+>                        [1, 2, 1, 65538, 65538, 65539]);;
+gap> f < g;
+false
+gap> g < f;
+false
+gap> f := Transformation([1, 2, 3, 65537, 65538], 
+>                        [1, 2, 1, 65538, 65538]);;
+gap> g := Transformation([1, 2, 3, 65537, 65538, 65539, 65540], 
+>                        [1, 2, 1, 65538, 65538, 65540, 65539]) ^ 2;;
+gap> f < g;
+false
+gap> g < f;
+false
+gap> f := Transformation([1, 2, 3, 65537, 65538], 
+>                        [1, 2, 1, 65538, 65538]);;
+gap> g := Transformation([1, 2, 3, 65537, 65538], 
+>                        [2, 2, 1, 65538, 65538]);;
+gap> f < g;
+true
+gap> g < f;
+false
+gap> f := Transformation([1, 2, 3, 65537, 65538], 
+>                        [1, 2, 1, 65538, 65538]);;
+gap> g := Transformation([1, 2, 3, 65537, 65538, 65539, 65540], 
+>                        [1, 2, 1, 65538, 65538, 65540, 65540]);;
+gap> f < g;
+true
+gap> g < f;
+false
+gap> f := Transformation([1, 2, 3, 65537, 65538, 65539, 65540], 
+>                        [1, 3, 1, 65538, 65538, 65540, 65540]);;
+gap> g := Transformation([1, 2, 3, 65537, 65538], 
+>                        [1, 2, 1, 65538, 65538]);;
+gap> f < g;
+false
+gap> g < f;
+true
 
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
