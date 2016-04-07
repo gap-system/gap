@@ -3450,11 +3450,12 @@ Obj FuncINV_KER_TRANS (Obj self, Obj X, Obj f) {
   return 0L;
 }
 
-/****************************************************************************/
+/*******************************************************************************
+** GAP kernel functions for transformations
+*******************************************************************************/
 
-/* GAP kernel functions */
+// Returns the identity transformation.
 
-/* one for a transformation */
 Obj OneTrans( Obj f ){
   return IdentityTrans;
 }
@@ -3579,16 +3580,10 @@ Int EqTrans24 (Obj f, Obj g){
 
   ptf=ADDR_TRANS2(f);   ptg=ADDR_TRANS4(g);
   def=DEG_TRANS2(f);    deg=DEG_TRANS4(g);
+  assert(def < deg);
+  for(i=0;i<def;i++) if(*(ptf++)!=*(ptg++)) return 0L;
+  for(;i<deg;i++)    if(*(ptg++)!=i) return 0L;
 
-  if(def<=deg){
-    for(i=0;i<def;i++) if(*(ptf++)!=*(ptg++)) return 0L;
-    for(;i<deg;i++)    if(*(ptg++)!=i) return 0L;
-  } else {
-    for(i=0;i<deg;i++) if(*(ptf++)!=*(ptg++)) return 0L;
-    for(;i<def;i++)    if(*(ptf++)!=i) return 0L;
-  }
-
-  /* otherwise they must be equal */
   return 1L;
 }
 
@@ -3599,16 +3594,10 @@ Int EqTrans42 (Obj f, Obj g){
 
   ptf=ADDR_TRANS4(f);   ptg=ADDR_TRANS2(g);
   def=DEG_TRANS4(f);    deg=DEG_TRANS2(g);
+  assert(deg < def);
+  for(i=0;i<deg;i++) if(*(ptf++)!=*(ptg++)) return 0L;
+  for(;i<def;i++)    if(*(ptf++)!=i)        return 0L;
 
-  if(def<=deg){
-    for(i=0;i<def;i++) if(*(ptf++)!=*(ptg++)) return 0L;
-    for(;i<deg;i++)    if(*(ptg++)!=i)        return 0L;
-  } else {
-    for(i=0;i<deg;i++) if(*(ptf++)!=*(ptg++)) return 0L;
-    for(;i<def;i++)    if(*(ptf++)!=i)        return 0L;
-  }
-
-  /* otherwise they must be equal */
   return 1L;
 }
 
