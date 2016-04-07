@@ -137,8 +137,24 @@ extern UInt INIT_TRANS4 (Obj f) {
   UInt4   *ptf;
   UInt4   *pttmp;
   Obj     img, ker;
-
+  
   deg = DEG_TRANS4(f);
+
+  if (deg == 0) {
+    // Special case for degree 0. 
+    
+    // This can't happen with transformations created within this file since a
+    // transformation is of type T_TRANS4 if and only if it has (internal)
+    // degree 65537 or greater. It is included to make the code more robust.
+    
+    img = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+    SET_LEN_PLIST(img, 0);
+    IMG_TRANS(f) = img;
+    KER_TRANS(f) = img;
+    CHANGED_BAG(f);
+    return 0;
+  }
+
   img = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, deg);
   ker = NEW_PLIST(T_PLIST_CYC_NSORT + IMMUTABLE, deg);
   SET_LEN_PLIST(ker, (Int) deg);
@@ -3602,16 +3618,32 @@ Int EqTrans24 (Obj f, Obj g) {
   ptg = ADDR_TRANS4(g);
   def = DEG_TRANS2(f);    
   deg = DEG_TRANS4(g);
-  assert(def < deg);
-
-  for (i = 0; i < def; i++) {
-    if (*(ptf++) != *(ptg++)) {
-      return 0L;
+    
+  if (def <= deg) {
+    for (i = 0; i < def; i++) {
+      if (*(ptf++) != *(ptg++)) {
+        return 0L;
+      }
     }
-  }
-  for (; i < deg; i++) {   
-    if (*(ptg++) != i) {
-      return 0L;
+    for (; i < deg; i++) {   
+      if (*(ptg++) != i) {
+        return 0L;
+      }
+    }
+  } else {
+    // This can't happen with transformations created within this file since a
+    // transformation is of type T_TRANS4 if and only if it has (internal)
+    // degree 65537 or greater. It is included to make the code more robust.
+    
+    for (i = 0; i < deg; i++) {
+      if (*(ptf++) != *(ptg++)) {
+        return 0L;
+      }
+    }
+    for (; i < def; i++) {
+      if (* (ptf++) != i) { 
+        return 0L;
+      }
     }
   }
 
@@ -3627,16 +3659,32 @@ Int EqTrans42 (Obj f, Obj g) {
   ptg = ADDR_TRANS2(g);
   def = DEG_TRANS4(f);    
   deg = DEG_TRANS2(g);
-  assert(deg < def);
 
-  for (i = 0; i < deg; i++) {
-    if (*(ptf++) != *(ptg++)) {
-      return 0L;
+  if (def <= deg) {
+    // This can't happen with transformations created within this file since a
+    // transformation is of type T_TRANS4 if and only if it has (internal)
+    // degree 65537 or greater. It is included to make the code more robust.
+
+    for (i = 0; i < def; i++) {
+      if (* (ptf++) != * (ptg++)) {
+        return 0L;
+      }
     }
-  }
-  for (; i < def; i++) {   
-    if (*(ptf++) != i) {
-      return 0L;
+    for (; i < deg; i++) {
+      if (* (ptg++) != i) {
+        return 0L;
+      }
+    }
+  } else {
+    for (i = 0; i < deg; i++) {
+      if (*(ptf++) != *(ptg++)) {
+        return 0L;
+      }
+    }
+    for (; i < def; i++) {   
+      if (*(ptf++) != i) {
+        return 0L;
+      }
     }
   }
 
@@ -3709,23 +3757,46 @@ Int LtTrans24 (Obj f, Obj g) {
   def = DEG_TRANS2(f);
   deg = DEG_TRANS4(g);
 
-  assert(def < deg);
-
-  for (i = 0; i < def; i++) {
-    if (ptf[i] != ptg[i]) {
-      if (ptf[i] < ptg[i]) {
-        return 1L;
-      } else {
-        return 0L;
+  if (def <= deg) {
+    for (i = 0; i < def; i++) {
+      if (ptf[i] != ptg[i]) {
+        if (ptf[i] < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
       }
     }
-  }
-  for (; i < deg; i++) {
-    if (ptg[i] != i) {
-      if (i < ptg[i]) {
-        return 1L;
-      } else {
-        return 0L;
+    for (; i < deg; i++) {
+      if (ptg[i] != i) {
+        if (i < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
+      }
+    }
+  } else {
+    // This can't happen with transformations created within this file since a
+    // transformation is of type T_TRANS4 if and only if it has (internal)
+    // degree 65537 or greater. It is included to make the code more robust.
+    
+    for (i = 0; i < deg; i++) {
+      if (ptf[i] != ptg[i]) {
+        if (ptf[i] < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
+      }
+      for (; i < def; i++) {
+        if (ptf[i] != i) {
+          if (i > ptf[i]) {
+            return 1L;
+          } else {
+            return 0L;
+          }
+        }
       }
     }
   }
@@ -3742,23 +3813,46 @@ Int LtTrans42 (Obj f, Obj g) {
   def = DEG_TRANS4(f);
   deg = DEG_TRANS2(g);
 
-  assert(deg < def);
+  if (def <= deg) {
+    // This can't happen with transformations created within this file since a
+    // transformation is of type T_TRANS4 if and only if it has (internal)
+    // degree 65537 or greater. It is included to make the code more robust.
 
-  for (i = 0; i < deg; i++) {
-    if (ptf[i] != ptg[i]) {
-      if (ptf[i] < ptg[i]) {
-        return 1L;
-      } else {
-        return 0L;
+    for (i = 0; i < def; i++) {
+      if (ptf[i] != ptg[i]) {
+        if (ptf[i] < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
       }
     }
-  }
-  for (; i < def; i++) {
-    if (ptf[i] != i) {
-      if (i > ptf[i]) {
-        return 1L;
-      } else {
-        return 0L;
+    for (; i < deg; i++) {
+      if (ptg[i] != i) {
+        if (i < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
+      }
+    }
+  } else {
+    for (i = 0; i < deg; i++) {
+      if (ptf[i] != ptg[i]) {
+        if (ptf[i] < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
+      }
+    }
+    for (; i < def; i++) {
+      if (ptf[i] != i) {
+        if (i > ptf[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
       }
     }
   }
@@ -3857,29 +3951,37 @@ Obj ProdTrans24 (Obj f, Obj g) {
   def = DEG_TRANS2(f);
   deg = DEG_TRANS4(g);
 
-  assert(def <= deg);
-
-  fg = NEW_TRANS4(deg);
+  fg = NEW_TRANS4(MAX(def, deg));
 
   ptfg = ADDR_TRANS4(fg);
   ptf = ADDR_TRANS2(f);
   ptg = ADDR_TRANS4(g);
 
-  for (i = 0; i < def; i++) {
-    *ptfg++ = ptg[ *ptf++];
-  }
-  for (; i < deg; i++) {
-    *ptfg++ = ptg[i];
+  if (def <= deg) {
+    for (i = 0; i < def; i++) {
+      *ptfg++ = ptg[*ptf++];
+    }
+    for (; i < deg; i++) {
+      *ptfg++ = ptg[i];
+    }
+  } else {
+    // This can't happen with transformations created within this file since a
+    // transformation is of type T_TRANS4 if and only if it has (internal)
+    // degree 65537 or greater. It is included to make the code more robust.
+    
+    for (i = 0; i < def; i++) {
+      *(ptfg++) = IMAGE(ptf[i], ptg, deg);
+    }
   }
 
   return fg;
 }
 
 Obj ProdTrans42 (Obj f, Obj g) {
-  UInt4 * ptf, *ptfg;
-  UInt2 * ptg;
-  UInt    i, def, deg;
-  Obj     fg;
+  UInt4 *ptf, *ptfg;
+  UInt2 *ptg;
+  UInt  i, def, deg;
+  Obj   fg;
 
   def = DEG_TRANS4(f);
   deg = DEG_TRANS2(g);
@@ -3892,8 +3994,21 @@ Obj ProdTrans42 (Obj f, Obj g) {
   ptf = ADDR_TRANS4(f);
   ptg = ADDR_TRANS2(g);
 
-  for (i = 0; i < def; i++) {
-    *(ptfg++) = IMAGE(ptf[i], ptg, deg);
+  if (def <= deg) {
+    // This can't happen with transformations created within this file since a
+    // transformation is of type T_TRANS4 if and only if it has (internal)
+    // degree 65537 or greater. It is included to make the code more robust.
+    
+    for (i = 0; i < def; i++) {
+      *(ptfg++) = ptg[*(ptf++)];
+    }
+    for (; i < deg; i++) {
+      *(ptfg++) = ptg[i];
+    }
+  } else {
+    for (i = 0; i < def; i++) {
+      *(ptfg++) = IMAGE(ptf[i], ptg, deg);
+    }
   }
 
   return fg;
