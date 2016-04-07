@@ -3640,117 +3640,179 @@ Int EqTrans42 (Obj f, Obj g) {
 ** Less than for transformations
 *******************************************************************************/
 
-Int LtTrans22(Obj f, Obj g){
+Int LtTrans22 (Obj f, Obj g) {
   UInt   i, def, deg;
   UInt2  *ptf, *ptg;
 
-  ptf=ADDR_TRANS2(f);   ptg=ADDR_TRANS2(g);
-  def= DEG_TRANS2(f);   deg= DEG_TRANS2(g);
+  ptf = ADDR_TRANS2(f);
+  ptg = ADDR_TRANS2(g);
+  def = DEG_TRANS2(f);
+  deg = DEG_TRANS2(g);
 
-  if(def<=deg){
-    for(i=0;i<def;i++){
-      if(ptf[i]!=ptg[i]){
-        if(ptf[i]<ptg[i]){ return 1L; } else { return 0L; }
+  if (def <= deg) {
+    for (i = 0; i < def; i++) {
+      if (ptf[i] != ptg[i]) {
+        if (ptf[i] < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
       }
     }
-    for(;i<deg;i++){
-      if(ptg[i]!=i){
-        if(i<ptg[i]){ return 1L; } else { return 0L; }
+    for (; i < deg; i++) {
+      if (ptg[i] != i) {
+        if (i < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
       }
     }
-  } else { //def>deg
-    for(i=0;i<deg;i++){
-      if(ptf[i]!=ptg[i]){
-        if(ptf[i]<ptg[i]){ return 1L; } else { return 0L; }
+  } else {
+    //def > deg
+    for (i = 0; i < deg; i++) {
+      if (ptf[i] != ptg[i]) {
+        if (ptf[i] < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
       }
     }
-    for(;i<def;i++){
-      if(ptf[i]!=i){
-        if(i>ptf[i]){ return 1L; } else { return 0L; }
+    for (; i < def; i++) {
+      if (ptf[i] != i) {
+        if (i > ptf[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
       }
     }
   }
   return 0L;
 }
 
-Int LtTrans24(Obj f, Obj g){
+Int LtTrans24 (Obj f, Obj g) {
   UInt   i, def, deg;
   UInt2  *ptf;
   UInt4  *ptg;
 
-  ptf=ADDR_TRANS2(f);   ptg=ADDR_TRANS4(g);
-  def= DEG_TRANS2(f);   deg= DEG_TRANS4(g);
+  ptf = ADDR_TRANS2(f);
+  ptg = ADDR_TRANS4(g);
+  def = DEG_TRANS2(f);
+  deg = DEG_TRANS4(g);
+
   assert(def < deg);
-  for(i=0;i<def;i++){
-    if(ptf[i]!=ptg[i]){
-      if(ptf[i]<ptg[i]){ return 1L; } else { return 0L; }
+
+  for (i = 0; i < def; i++) {
+    if (ptf[i] != ptg[i]) {
+      if (ptf[i] < ptg[i]) {
+        return 1L;
+      } else {
+        return 0L;
+      }
     }
   }
-  for(;i<deg;i++){
-    if(ptg[i]!=i){
-      if(i<ptg[i]){ return 1L; } else { return 0L; }
+  for (; i < deg; i++) {
+    if (ptg[i] != i) {
+      if (i < ptg[i]) {
+        return 1L;
+      } else {
+        return 0L;
+      }
     }
   }
   return 0L;
 }
 
-Int LtTrans42(Obj f, Obj g){
+Int LtTrans42 (Obj f, Obj g) {
   UInt   i, def, deg;
   UInt4  *ptf;
   UInt2  *ptg;
 
-  ptf=ADDR_TRANS4(f);   ptg=ADDR_TRANS2(g);
-  def= DEG_TRANS4(f);   deg= DEG_TRANS2(g);
+  ptf = ADDR_TRANS4(f);
+  ptg = ADDR_TRANS2(g);
+  def = DEG_TRANS4(f);
+  deg = DEG_TRANS2(g);
+
   assert(deg < def);
 
-  for(i=0;i<deg;i++){
-    if(ptf[i]!=ptg[i]){
-      if(ptf[i]<ptg[i]){ return 1L; } else { return 0L; }
+  for (i = 0; i < deg; i++) {
+    if (ptf[i] != ptg[i]) {
+      if (ptf[i] < ptg[i]) {
+        return 1L;
+      } else {
+        return 0L;
+      }
     }
   }
-  for(;i<def;i++){
-    if(ptf[i]!=i){
-      if(i>ptf[i]){ return 1L; } else { return 0L; }
+  for (; i < def; i++) {
+    if (ptf[i] != i) {
+      if (i > ptf[i]) {
+        return 1L;
+      } else {
+        return 0L;
+      }
     }
   }
   return 0L;
 }
 
-
-Int LtTrans44(Obj f, Obj g){
+Int LtTrans44 (Obj f, Obj g) {
   UInt   i, def, deg;
   UInt4  *ptf, *ptg;
 
-  ptf=ADDR_TRANS4(f);   ptg=ADDR_TRANS4(g);
-  def= DEG_TRANS4(f);   deg= DEG_TRANS4(g);
+  ptf = ADDR_TRANS4(f);
+  ptg = ADDR_TRANS4(g);
+  def = DEG_TRANS4(f);
+  deg = DEG_TRANS4(g);
 
-  if(def<=deg){
-    for(i=0;i<def;i++){
-      if(ptf[i]!=ptg[i]){
-        if(ptf[i]<ptg[i]){ return 1L; } else { return 0L; }
+  if (def <= deg) {
+    for (i = 0; i < def; i++) {
+      if (ptf[i] != ptg[i]) {
+        if (ptf[i] < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
       }
     }
-    for(;i<deg;i++){
-      if(ptg[i]!=i){
-        if(i<ptg[i]){ return 1L; } else { return 0L; }
+    for (; i < deg; i++) {
+      if (ptg[i] != i) {
+        if (i < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
       }
     }
   } else {
-    for(i=0;i<deg;i++){
-      if(ptf[i]!=ptg[i]){
-        if(ptf[i]<ptg[i]){ return 1L; } else { return 0L; }
+    for (i = 0; i < deg; i++) {
+      if (ptf[i] != ptg[i]) {
+        if (ptf[i] < ptg[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
       }
     }
-    for(;i<def;i++){
-      if(ptf[i]!=i){
-        if(i>ptf[i]){ return 1L; } else { return 0L; }
+    for (; i < def; i++) {
+      if (ptf[i] != i) {
+        if (i > ptf[i]) {
+          return 1L;
+        } else {
+          return 0L;
+        }
       }
     }
   }
   return 0L;
 }
 
-/* product of transformations */
+/*******************************************************************************
+** Products for transformations
+*******************************************************************************/
+
 Obj ProdTrans22(Obj f, Obj g){
   UInt2   *ptf, *ptg, *ptfg;
   UInt    i, def, deg, defg;
