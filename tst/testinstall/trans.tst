@@ -123,38 +123,6 @@ gap> IS_ID_TRANS(());
 Error, IS_ID_TRANS: the first argument must be a transformation (not a permuta\
 tion (small))
 
-# One, IsOne, IdentityTransformation
-gap> f := Transformation([11, 9, 10, 6, 7, 7, 10, 7, 10, 9, 7, 4]);;
-gap> One(f);
-IdentityTransformation
-gap> IdentityTransformation;
-IdentityTransformation
-gap> One(f) = IdentityTransformation;
-true
-gap> f ^ 0;
-IdentityTransformation
-gap> IsOne(f ^ 0);
-true
-gap> IsOne(IdentityTransformation);
-true
-gap> IsOne(One(f));
-true
-gap> f := Transformation([65537, 1], [1, 65537]);;
-gap> One(f);
-IdentityTransformation
-gap> IdentityTransformation;
-IdentityTransformation
-gap> One(f) = IdentityTransformation;
-true
-gap> f ^ 0;
-IdentityTransformation
-gap> IsOne(f ^ 0);
-true
-gap> IsOne(IdentityTransformation);
-true
-gap> IsOne(One(f));
-true
-
 # Test LARGEST_MOVED_PT_TRANS
 gap> LARGEST_MOVED_PT_TRANS(IdentityTransformation);
 0
@@ -1787,6 +1755,106 @@ true
 gap> RIGHT_ONE_TRANS("a");
 Error, RIGHT_ONE_TRANS: the first argument must be a transformation (not a lis\
 t (string))
+
+# One, IsOne, IdentityTransformation
+gap> f := Transformation([11, 9, 10, 6, 7, 7, 10, 7, 10, 9, 7, 4]);;
+gap> One(f);
+IdentityTransformation
+gap> IdentityTransformation;
+IdentityTransformation
+gap> One(f) = IdentityTransformation;
+true
+gap> f ^ 0;
+IdentityTransformation
+gap> IsOne(f ^ 0);
+true
+gap> IsOne(IdentityTransformation);
+true
+gap> IsOne(One(f));
+true
+gap> f := Transformation([65537, 1], [1, 65537]);;
+gap> One(f);
+IdentityTransformation
+gap> IdentityTransformation;
+IdentityTransformation
+gap> One(f) = IdentityTransformation;
+true
+gap> f ^ 0;
+IdentityTransformation
+gap> IsOne(f ^ 0);
+true
+gap> IsOne(IdentityTransformation);
+true
+gap> IsOne(One(f));
+true
+
+# \=, equality, EQ
+gap> f2 := Transformation([2, 6, 7, 2, 6, 13, 9, 9, 13, 1, 11, 1, 13, 12]);;
+gap> g2 := Transformation([5, 3, 8, 12, 1, 11, 9, 9, 4, 14, 10, 5, 10, 6]);;
+gap> f2 = f2;
+true
+gap> f2 = g2;
+false
+gap> g2 = f2;
+false
+gap> f2 := Transformation([1, 2, 1]);
+Transformation( [ 1, 2, 1 ] )
+gap> g2 := Transformation([1, 2, 1, 3, 5]);
+Transformation( [ 1, 2, 1, 3 ] )
+gap> f2 = g2;
+false
+gap> f2 := Transformation([1, 2, 1, 4, 5]);
+Transformation( [ 1, 2, 1 ] )
+gap> g2 := Transformation([1, 3, 1]);
+Transformation( [ 1, 3, 1 ] )
+gap> f2 = g2;
+false
+gap> f4 := Transformation([65537], [1]);;
+gap> g4 := Transformation([1], [65537]);;
+gap> f4 = f4;
+true
+gap> f4 = g4;
+false
+gap> g4 = f4;
+false
+gap> f4 ^ (2, 65537) = Transformation([1, 1]);
+true
+gap> Transformation([1, 1]) = f4 ^ (2, 65537);
+true
+gap> f4 ^ (3, 65537) = Transformation([1, 1]);
+false
+gap> Transformation([1, 1]) = f4 ^ (3, 65537);
+false
+gap> f4 ^ (3, 65537) = Transformation([1, 1, 2, 2]);
+false
+gap> Transformation([1, 1, 2, 2]) = f4 ^ (3, 65537);
+false
+gap> f4 := Transformation([65538], [1]);;
+gap> g4 := Transformation([1], [65537]);;
+gap> f4 = g4;
+false
+gap> g4 = f4;
+false
+gap> f4 := Transformation([1], [65537]);;
+gap> g4 := AsTransformation((65535, 65536, 65537, 65538)(65539, 65540)) ^ 2;;
+gap> g4 = f4;
+false
+gap> f4 = g4;
+false
+gap> f4 := AsTransformation((65535, 2, 65537)(65539, 65540)) ^ 2;;
+gap> g4 := AsTransformation((65535, 65536, 65537));;
+gap> g4 = f4;
+false
+gap> f4 = g4;
+false
+gap> f2 = f4;
+false
+gap> f4 = f2;
+false
+gap> f2 := Transformation([1, 2, 1]);;
+gap> g4 := Transformation([1, 2, 3, 4, 5, 6], [1, 2, 1, 5, 4, 65537]);;
+gap> f2 = g4;
+false
 
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
