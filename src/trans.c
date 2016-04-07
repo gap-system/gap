@@ -4676,18 +4676,15 @@ Obj LQuoPerm4Trans4(Obj opL, Obj opR){
 *******************************************************************************/
 
 Obj PowIntTrans2(Obj i, Obj f){
-  UInt    img;
+  Int    img;
 
   if(TNUM_OBJ(i)==T_INTPOS) return i;
-
-  if(TNUM_OBJ(i)!=T_INT){
-    ErrorQuit("usage: the first argument should be a positive integer", 0L, 0L);
-  }
 
   img=INT_INTOBJ(i);
 
   if(img<=0){
-    ErrorQuit("usage: the first argument should be a positive integer", 0L, 0L);
+    ErrorQuit("Tran. Operations: <point> must be a positive integer (not %d)",
+              (Int) img, 0L);
   }
 
   if(img<=DEG_TRANS2(f)){
@@ -4698,18 +4695,15 @@ Obj PowIntTrans2(Obj i, Obj f){
 }
 
 Obj PowIntTrans4(Obj i, Obj f){
-  UInt    img;
+  Int    img;
 
   if(TNUM_OBJ(i)==T_INTPOS) return i;
-
-  if(TNUM_OBJ(i)!=T_INT){
-    ErrorQuit("usage: the first argument should be a positive integer", 0L, 0L);
-  }
 
   img=INT_INTOBJ(i);
 
   if(img<=0){
-    ErrorQuit("usage: the first argument should be a positive integer", 0L, 0L);
+    ErrorQuit("Tran. Operations: <point> must be a positive integer (not %d)",
+              (Int) img, 0L);
   }
 
   if(img<=DEG_TRANS4(f)){
@@ -5261,6 +5255,8 @@ static Int InitKernel ( StructInitInfo *module )
     LQuoFuncs [ T_PERM4  ][ T_TRANS4 ] = LQuoPerm4Trans4;
     PowFuncs  [ T_INT    ][ T_TRANS2 ] = PowIntTrans2;
     PowFuncs  [ T_INT    ][ T_TRANS4 ] = PowIntTrans4;
+    PowFuncs  [ T_INTPOS ][ T_TRANS2 ] = PowIntTrans2;
+    PowFuncs  [ T_INTPOS ][ T_TRANS4 ] = PowIntTrans4;
 
     /* install the 'ONE' function for transformations */
     OneFuncs    [ T_TRANS2 ] = OneTrans;
