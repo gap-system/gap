@@ -2709,6 +2709,33 @@ gap> (2 ^ 60) ^ Transformation([65535], [65537]);
 gap> (-1) ^ Transformation([65535], [65537]);
 Error, Tran. Operations: <point> must be a positive integer (not -1)
 
+# OnSetsTrans: for a transformation
+gap> OnSets([1, 2], Transformation([1, 1]));
+[ 1 ]
+gap> OnSets([1, 2, 10], Transformation([1, 1]));
+[ 1, 10 ]
+gap> OnSets([1, 2, 10, (2 ^ 60)], Transformation([1, 1]));
+[ 1, 10, 1152921504606846976 ]
+gap> OnSets([-1, 1, 2], Transformation([1, 1]));
+Error, Tran. Operations: <point> must be a positive integer (not -1)
+gap> OnSets([65535, 65536, 65537], Transformation([65535], [65537]));
+[ 65536, 65537 ]
+gap> OnSets([1, 2, 10], Transformation([65535], [65537]));
+[ 1, 2, 10 ]
+gap> OnSets([1, 65535, 65538], Transformation([65535], [65537]));
+[ 1, 65537, 65538 ]
+gap> OnSets([1, 2, 10, 65537, (2 ^ 60)], Transformation([65537], [1]));
+[ 1, 2, 10, 1152921504606846976 ]
+gap> OnSets([-1, 1, 2], Transformation([65535], [65537]));
+Error, Tran. Operations: <point> must be a positive integer (not -1)
+gap> OnSets([1, 2, 10, 65535, (2 ^ 60)], Transformation([65535], [5]));
+[ 1, 2, 5, 10, 1152921504606846976 ]
+gap> OnSets([1 .. 20], Transformation([10, 7, 10, 8, 8, 7, 5, 9, 1, 9]));
+[ 1, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]
+gap> OnSets([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 19, 324, 4124, 123124, 2 ^ 60],
+>           Transformation([10, 7, 10, 8, 8, 7, 5, 9, 1, 9]));
+[ 1, 5, 7, 8, 9, 10, 11, 19, 324, 4124, 123124, 1152921504606846976 ]
+
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;

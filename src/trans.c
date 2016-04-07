@@ -180,6 +180,8 @@ extern UInt INIT_TRANS4 (Obj f) {
   return rank;
 }
 
+// TODO should this use the newer sorting algorithm by CAJ in PR #609?
+
 static Obj SORT_PLIST_CYC (Obj res) {
   Obj     tmp;
   UInt    h, i, k, len;
@@ -3510,6 +3512,7 @@ Obj FuncOnPosIntSetsTrans (Obj self, Obj set, Obj f, Obj n){
     }
   }
   // sort the result 
+  // TODO should this use the newer sorting algorithm by CAJ in PR #609?
   len=LEN_LIST(res);
   h = 1;  while ( 9*h + 4 < len )  h = 3*h + 1;
   while ( 0 < h ) {
@@ -4720,7 +4723,8 @@ Obj PowIntTrans4 (Obj i, Obj f) {
 ** Apply a transformation to a set or tuple
 *******************************************************************************/
 
-/* OnSetsTrans for use in FuncOnSets */
+// OnSetsTrans for use in FuncOnSets.
+
 Obj OnSetsTrans (Obj set, Obj f){
   UInt2  *ptf2;
   UInt4  *ptf4;
@@ -4744,8 +4748,14 @@ Obj OnSetsTrans (Obj set, Obj f){
         k = INT_INTOBJ( *ptset );
         if ( k <= deg ) k = ptf2[k-1] + 1 ;
         *ptres = INTOBJ_INT(k);
-      } else {/* this case cannot occur since I think POW is not defined */
-        ErrorQuit("not yet implemented!", 0L, 0L);
+      } else {
+        isint = 0;
+        tmp = POW(*ptset, f );
+        ptset = ADDR_OBJ(set) + i;
+        ptres = ADDR_OBJ(res) + i;
+        ptf2 = ADDR_TRANS2(f);
+        *ptres = tmp;
+        CHANGED_BAG( res );
       }
     }
   } else {
@@ -4759,46 +4769,72 @@ Obj OnSetsTrans (Obj set, Obj f){
         k = INT_INTOBJ( *ptset );
         if ( k <= deg ) k = ptf4[k-1] + 1 ;
         *ptres = INTOBJ_INT(k);
-      } else {/* this case cannot occur since I think POW is not defined */
-        ErrorQuit("not yet implemented!", 0L, 0L);
+      } else {
+        isint = 0;
+        tmp = POW(*ptset, f );
+        ptset = ADDR_OBJ(set) + i;
+        ptres = ADDR_OBJ(res) + i;
+        ptf4 = ADDR_TRANS4(f);
+        *ptres = tmp;
+        CHANGED_BAG(res);
       }
     }
   }
-  /* sort the result */
-  len=LEN_LIST(res);
-  h = 1;  while ( 9*h + 4 < len )  h = 3*h + 1;
-  while ( 0 < h ) {
-    for ( i = h+1; i <= len; i++ ) {
-      tmp = ADDR_OBJ(res)[i];  k = i;
-      while ( h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k-h])) ) {
-        ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k-h];
-        k -= h;
+  // sort the result
+  if (isint) {
+    len=LEN_LIST(res);
+    // TODO should this use the newer sorting algorithm by CAJ in PR #609?
+    h = 1;  while ( 9*h + 4 < len )  h = 3*h + 1;
+    while ( 0 < h ) {
+      for ( i = h+1; i <= len; i++ ) {
+        tmp = ADDR_OBJ(res)[i];  k = i;
+        while ( h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k-h])) ) {
+          ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k-h];
+          k -= h;
+        }
+        ADDR_OBJ(res)[k] = tmp;
       }
-      ADDR_OBJ(res)[k] = tmp;
+      h = h / 3;
     }
-    h = h / 3;
-  }
 
-  /* remove duplicates */
-  if ( 0 < len ) {
-    tmp = ADDR_OBJ(res)[1];  k = 1;
-    for ( i = 2; i <= len; i++ ) {
-      if ( ! EQ( tmp, ADDR_OBJ(res)[i] ) ) {
+    RetypeBag( res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT :
+        T_PLIST_CYC_SSORT + IMMUTABLE );
+
+  } else {
+    // sort the set with a shellsort
+    // TODO should this use the newer sorting algorithm by CAJ in PR #609?
+    len = LEN_LIST(res);
+    h = 1;
+    while (9 * h + 4 < len) {
+      h = 3 * h + 1;
+    }
+    while (0 < h) {
+      for (i = h + 1; i <= len; i++) {
+        tmp = ADDR_OBJ(res)[i];  k = i;
+        while (h < k && LT(tmp, ADDR_OBJ(res)[k - h])) {
+          ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k - h];
+          k -= h;
+        }
+        ADDR_OBJ(res)[k] = tmp;
+      }
+      h = h / 3;
+    }
+  }
+    // remove duplicates, shrink bag if possible
+  if (0 < len) {
+    tmp = ADDR_OBJ(res)[1];  
+    k = 1;
+    for (i = 2; i <= len; i++) {
+      if (!EQ(tmp, ADDR_OBJ(res)[i])) {
         k++;
         tmp = ADDR_OBJ(res)[i];
         ADDR_OBJ(res)[k] = tmp;
       }
     }
-    if ( k < len ) {
-      ResizeBag( res, (k+1)*sizeof(Obj) );
+    if (k < len) {
+      ResizeBag(res, (k + 1) * sizeof(Obj));
       SET_LEN_PLIST(res, k);
     }
-  }
-
-  /* retype if we only have integers */
-  if(isint){
-    RetypeBag( res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT :
-     T_PLIST_CYC_SSORT + IMMUTABLE );
   }
 
   return res;
