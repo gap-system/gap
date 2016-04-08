@@ -2419,6 +2419,39 @@ gap> RIGHT_ONE_TRANS("a");
 Error, RIGHT_ONE_TRANS: the first argument must be a transformation (not a lis\
 t (string))
 
+# TRANS_IMG_CONJ
+gap> f := Transformation([1, 2, 1]);;
+gap> g := Transformation([3, 2, 3, 1]);;
+gap> p := TRANS_IMG_CONJ(f, g);
+(1,3,4)
+gap> OnTuples(ImageListOfTransformation(f, 4), p);
+[ 3, 2, 3, 1 ]
+gap> ImageListOfTransformation(g);
+[ 3, 2, 3, 1 ]
+gap> TRANS_IMG_CONJ(g, f);
+(1,4,3)
+gap> g := Transformation([3, 2, 3, 1]) ^ (5, 65537);;
+gap> TRANS_IMG_CONJ(f, g);
+(1,3,4)
+gap> TRANS_IMG_CONJ(g, f);
+(1,4,3)
+gap> f := Transformation([1, 2, 1]) ^ (5, 65538);;
+gap> TRANS_IMG_CONJ(f, g);
+(1,3,4)
+gap> TRANS_IMG_CONJ(g, f);
+(1,4,3)
+gap> TRANS_IMG_CONJ((), 1);
+Error, TRANS_IMG_CONJ: the arguments must both be transformations (not permuta\
+tion (small) and integer)
+gap> TRANS_IMG_CONJ(f, 1);
+Error, TRANS_IMG_CONJ: the arguments must both be transformations (not transfo\
+rmation (large) and integer)
+gap> f := Transformation([11, 9, 10, 6, 7, 7, 10, 7, 10, 9, 7, 4]);;
+gap> TRANS_IMG_CONJ(f, LeftOne(f));
+(1,6,4,12,11)(2,7,5,9)(3,8,10)
+gap> TRANS_IMG_CONJ(LeftOne(f), f);
+(1,11,12,4,6)(2,9,5,7)(3,10,8)
+
 # One, IsOne, IdentityTransformation
 gap> f := Transformation([11, 9, 10, 6, 7, 7, 10, 7, 10, 9, 7, 4]);;
 gap> One(f);
@@ -2741,4 +2774,4 @@ gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;
 
 #
-gap> STOP_TEST( "trans.tst", 74170000);
+gap> STOP_TEST("trans.tst", 74170000);
