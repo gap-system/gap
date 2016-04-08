@@ -3446,8 +3446,8 @@ Obj FuncOnPosIntSetsTrans (Obj self, Obj set, Obj f, Obj n){
   UInt2  *ptf2;
   UInt4  *ptf4;
   UInt   deg;
-  Obj    *ptset, *ptres, tmp, res;
-  UInt   i, k, h, len;
+  Obj    *ptset, *ptres, res;
+  UInt   i, k;
 
   if(LEN_LIST(set)==0) return set;
 
@@ -3456,7 +3456,8 @@ Obj FuncOnPosIntSetsTrans (Obj self, Obj set, Obj f, Obj n){
   }
 
   PLAIN_LIST(set);
-  res=NEW_PLIST(IS_MUTABLE_PLIST(set)?T_PLIST:T_PLIST+IMMUTABLE,LEN_LIST(set));
+  res=NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT :
+                T_PLIST_CYC_SSORT + IMMUTABLE, LEN_LIST(set));
   ADDR_OBJ(res)[0]=ADDR_OBJ(set)[0];
 
   ptset = ADDR_OBJ(set) + LEN_LIST(set);
@@ -3470,7 +3471,10 @@ Obj FuncOnPosIntSetsTrans (Obj self, Obj set, Obj f, Obj n){
       if ( k <= deg ) k = ptf2[k-1] + 1 ;
       *ptres = INTOBJ_INT(k);
     }
-  } else {
+    SORT_PLIST_CYC(res);
+    REMOVE_DUPS_PLIST_CYC(res);
+    return res;
+  } else if (TNUM_OBJ(f) == T_TRANS4) {
     ptf4 = ADDR_TRANS4(f);
     deg = DEG_TRANS4(f);
     for ( i =LEN_LIST(set) ; 1 <= i; i--, ptset--, ptres-- ) {
@@ -3478,43 +3482,14 @@ Obj FuncOnPosIntSetsTrans (Obj self, Obj set, Obj f, Obj n){
       if ( k <= deg ) k = ptf4[k-1] + 1 ;
       *ptres = INTOBJ_INT(k);
     }
+    SORT_PLIST_CYC(res);
+    REMOVE_DUPS_PLIST_CYC(res);
+    return res;
   }
-  // sort the result 
-  // TODO should this use the newer sorting algorithm by CAJ in PR #609?
-  len=LEN_LIST(res);
-  h = 1;  while ( 9*h + 4 < len )  h = 3*h + 1;
-  while ( 0 < h ) {
-    for ( i = h+1; i <= len; i++ ) {
-      tmp = ADDR_OBJ(res)[i];  k = i;
-      while ( h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k-h])) ) {
-        ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k-h];
-        k -= h;
-      }
-      ADDR_OBJ(res)[k] = tmp;
-    }
-    h = h / 3;
-  }
+  ErrorQuit("OnPosIntSetsTrans: the argument must be a "
+            "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
+  return 0L;
 
-  // remove duplicates
-  if ( 0 < len ) {
-    tmp = ADDR_OBJ(res)[1];  k = 1;
-    for ( i = 2; i <= len; i++ ) {
-      if ( ! EQ( tmp, ADDR_OBJ(res)[i] ) ) {
-        k++;
-        tmp = ADDR_OBJ(res)[i];
-        ADDR_OBJ(res)[k] = tmp;
-      }
-    }
-    if ( k < len ) {
-      ResizeBag( res, (k+1)*sizeof(Obj) );
-      SET_LEN_PLIST(res, k);
-    }
-  }
-
-  RetypeBag( res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT :
-   T_PLIST_CYC_SSORT + IMMUTABLE );
-
-  return res;
 }
 
 /*******************************************************************************
