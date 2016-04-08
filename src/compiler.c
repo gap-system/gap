@@ -758,9 +758,11 @@ void            Emit (
     va_start( ap, fmt );
     for ( p = fmt; *p != '\0'; p++ ) {
 
-        /* print an indent                                                 */
-        if ( 0 < EmitIndent2 && *p == '}' ) EmitIndent2--;
-        while ( 0 < EmitIndent2-- )  Pr( " ", 0L, 0L );
+        /* print an indent, except for preprocessor commands               */
+        if ( *fmt != '#' ) {
+            if ( 0 < EmitIndent2 && *p == '}' ) EmitIndent2--;
+            while ( 0 < EmitIndent2-- )  Pr( " ", 0L, 0L );
+        }
 
         /* format an argument                                              */
         if ( *p == '%' ) {
@@ -3592,6 +3594,10 @@ CVar CompIsbPosObj (
     Emit( "if ( TNUM_OBJ(%c) == T_POSOBJ ) {\n", list );
     Emit( "%c = (%i <= SIZE_OBJ(%c)/sizeof(Obj)-1\n", isb, pos, list );
     Emit( "   && ELM_PLIST(%c,%i) != 0 ? True : False);\n", list, pos );
+    Emit( "#ifdef HPCGAP\n" );
+    Emit( "} else if ( TNUM_OBJ(%c) == T_APOSOBJ ) {\n", list );
+    Emit( "%c = Elm0AList(%c,%i) != 0 ? True : False;\n", isb, list, pos );
+    Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
     Emit( "%c = (ISB_LIST( %c, %i ) ? True : False);\n", isb, list, pos );
     Emit( "}\n" );
@@ -3632,6 +3638,10 @@ CVar CompElmComObjName (
     /* emit the code to select the element of the record                   */
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "%c = ElmPRec( %c, R_%n );\n", elm, record, NAME_RNAM(rnam) );
+    Emit( "#ifdef HPCGAP\n" );
+    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ) {\n", record );
+    Emit( "%c = ElmARecord( %c, R_%n );\n", elm, record, NAME_RNAM(rnam) );
+    Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
     Emit( "%c = ELM_REC( %c, R_%n );\n", elm, record, NAME_RNAM(rnam) );
     Emit( "}\n" );
@@ -3671,6 +3681,10 @@ CVar CompElmComObjExpr (
     /* emit the code to select the element of the record                   */
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "%c = ElmPRec( %c, RNamObj(%c) );\n", elm, record, rnam );
+    Emit( "#ifdef HPCGAP\n" );
+    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
+    Emit( "%c = ElmARecord( %c, RNamObj(%c) );\n", elm, record, rnam );
+    Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
     Emit( "%c = ELM_REC( %c, RNamObj(%c) );\n", elm, record, rnam );
     Emit( "}\n" );
@@ -3712,6 +3726,11 @@ CVar CompIsbComObjName (
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "%c = (IsbPRec( %c, R_%n ) ? True : False);\n",
           isb, record, NAME_RNAM(rnam) );
+    Emit( "#ifdef HPCGAP\n" );
+    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
+    Emit( "%c = (IsbARecord( %c, R_%n ) ? True : False);\n",
+                isb, record, NAME_RNAM(rnam) );
+    Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
     Emit( "%c = (ISB_REC( %c, R_%n ) ? True : False);\n",
           isb, record, NAME_RNAM(rnam) );
@@ -3752,6 +3771,11 @@ CVar CompIsbComObjExpr (
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "%c = (IsbPRec( %c, RNamObj(%c) ) ? True : False);\n",
           isb, record, rnam );
+    Emit( "#ifdef HPCGAP\n" );
+    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
+    Emit( "%c = (IsbARecord( %c, RNamObj(%c) ) ? True : False);\n",
+                isb, record, rnam );
+    Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
     Emit( "%c = (ISB_REC( %c, RNamObj(%c) ) ? True : False);\n",
           isb, record, rnam );
@@ -5197,6 +5221,10 @@ void CompAssComObjName (
     /* emit the code for the assignment                                    */
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "AssPRec( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
+    Emit( "#ifdef HPCGAP\n" );
+    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
+    Emit( "AssARecord( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
+    Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
     Emit( "ASS_REC( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
     Emit( "}\n" );
@@ -5235,6 +5263,10 @@ void CompAssComObjExpr (
     /* emit the code for the assignment                                    */
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "AssPRec( %c, RNamObj(%c), %c );\n", record, rnam, rhs );
+    Emit( "#ifdef HPCGAP\n" );
+    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
+    Emit( "AssARecord( %c, RNamObj(%c), %c );\n", record, rnam, rhs );
+    Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
     Emit( "ASS_REC( %c, RNamObj(%c), %c );\n", record, rnam, rhs );
     Emit( "}\n" );
@@ -5271,6 +5303,10 @@ void CompUnbComObjName (
     /* emit the code for the assignment                                    */
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "UnbPRec( %c, R_%n );\n", record, NAME_RNAM(rnam) );
+    Emit( "#ifdef HPCGAP\n" );
+    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
+    Emit( "UnbARecord( %c, R_%n );\n", record, NAME_RNAM(rnam) );
+    Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
     Emit( "UNB_REC( %c, R_%n );\n", record, NAME_RNAM(rnam) );
     Emit( "}\n" );
@@ -5305,6 +5341,10 @@ void CompUnbComObjExpr (
     /* emit the code for the assignment                                    */
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "UnbPRec( %c, RNamObj(%c) );\n", record, rnam );
+    Emit( "#ifdef HPCGAP\n" );
+    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
+    Emit( "UnbARecord( %c, RNamObj(%c) );\n", record, rnam );
+    Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
     Emit( "UNB_REC( %c, RNamObj(%c) );\n", record, rnam );
     Emit( "}\n" );
