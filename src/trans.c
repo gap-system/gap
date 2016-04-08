@@ -3438,6 +3438,10 @@ Obj FuncINV_KER_TRANS (Obj self, Obj X, Obj f) {
   return 0L;
 }
 
+// Returns the same value as OnSets(set, f) except if set = [0], when the image
+// set of <f> on [1 .. n] is returned instead. If the argument <set> is not
+// [0], then the third argument is ignored.
+
 Obj FuncOnPosIntSetsTrans (Obj self, Obj set, Obj f, Obj n){
   UInt2  *ptf2;
   UInt4  *ptf4;
