@@ -4682,7 +4682,7 @@ Obj PowIntTrans2 (Obj i, Obj f) {
               "(not %d)", (Int) img, 0L);
   }
 
-  if (img <= DEG_TRANS2(f)) {
+  if ((UInt) img <= DEG_TRANS2(f)) {
     img = (ADDR_TRANS2(f))[img - 1] + 1;
   }
 
@@ -4703,7 +4703,7 @@ Obj PowIntTrans4 (Obj i, Obj f) {
         (Int) img, 0L);
   }
 
-  if (img <= DEG_TRANS4(f)) {
+  if ((UInt) img <= DEG_TRANS4(f)) {
     img = (ADDR_TRANS4(f))[img - 1] + 1;
   }
 
