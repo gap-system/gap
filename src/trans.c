@@ -3070,9 +3070,18 @@ Obj FuncINV_LIST_TRANS (Obj self, Obj list, Obj f) {
   return 0L;
 }
 
-/* returns the permutation p conjugating image set f to image set g
- * when ker(f)=ker(g) so that gf^-1(i)=p(i).
- * This is the same as MappingPermListList(IMAGE_TRANS(f), IMAGE_TRANS(g)); */
+// If ker(f) = ker(g), then TRANS_IMG_CONJ returns the permutation p
+// such that i ^ (f ^ -1 * g) = i ^ p for all i in im(f).
+//
+// The permutation returned is the same as:
+//
+//     MappingPermListList(ImageListOfTransformation(f, n), 
+//                         ImageListOfTransformation(g, n));
+//
+// where n = max{DegreeOfTransformation(f), DegreeOfTransformation(g)}.
+// However, this is included to avoid the overhead of producing the image lists
+// of f and g in the above.
+
 Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g){
   Obj     perm;
   UInt2   *ptp2, *ptf2, *ptg2;
@@ -3263,7 +3272,11 @@ Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g){
       }
     }
   }
-  return Fail;
+  ErrorQuit("TRANS_IMG_CONJ: the arguments must both be "
+            "transformations (not %s and %s)",
+            (Int) TNAM_OBJ(f),
+            (Int) TNAM_OBJ(g));
+  return 0L;
 }
 
 // Returns the flat kernel of <p> ^ -1 * f * <p> where f is any transformation
