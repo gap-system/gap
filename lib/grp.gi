@@ -2932,7 +2932,7 @@ InstallMethod( HallSubgroupOp,
     for p in pi do
       AddSet(smallpi, p);
       S := ClosureSubgroupNC(S, SylowSubgroup(G, p));
-      SetHallSubgroup(G, smallpi, S);
+      SetHallSubgroup(G, ShallowCopy(smallpi), S);
     od;
     return S;
     end );
