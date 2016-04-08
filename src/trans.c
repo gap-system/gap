@@ -4784,12 +4784,13 @@ Obj OnSetsTrans (Obj set, Obj f){
   return res;
 }
 
-/* OnTuplesTrans for use in FuncOnTuples */
+// OnTuplesTrans for use in FuncOnTuples 
+
 Obj OnTuplesTrans (Obj tup, Obj f){
   UInt2  *ptf2;
   UInt4  *ptf4;
-  UInt   deg, isint, i, k;
-  Obj    *pttup, *ptres, res;
+  UInt   deg, i, k;
+  Obj    *pttup, *ptres, res, tmp;
 
   res=NEW_PLIST(IS_MUTABLE_PLIST(tup)?T_PLIST:T_PLIST+IMMUTABLE,LEN_LIST(tup));
   ADDR_OBJ(res)[0]=ADDR_OBJ(tup)[0];
@@ -4802,14 +4803,22 @@ Obj OnTuplesTrans (Obj tup, Obj f){
     deg = DEG_TRANS2(f);
 
     /* loop over the entries of the tuple                              */
-    isint=1;
     for ( i =LEN_LIST(tup) ; 1 <= i; i--, pttup--, ptres-- ) {
-      if ( TNUM_OBJ( *pttup ) == T_INT && 0 < INT_INTOBJ( *pttup ) ) {
+      if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
         k = INT_INTOBJ( *pttup );
         if ( k <= deg ) k = ptf2[k-1] + 1 ;
         *ptres = INTOBJ_INT(k);
-      } else {/* this case cannot occur since I think POW is not defined */
-        ErrorQuit("not yet implemented!", 0L, 0L);
+      } else {
+        if (*pttup == NULL) {
+          ErrorQuit("OnTuples for transformation: list must not contain holes",
+                    0L, 0L);
+        }
+        tmp = POW(*pttup, f);
+        pttup = ADDR_OBJ(tup) + i;
+        ptres = ADDR_OBJ(res) + i;
+        ptf2 = ADDR_TRANS2(f);
+        *ptres = tmp;
+        CHANGED_BAG(res);
       }
     }
   } else {
@@ -4817,24 +4826,27 @@ Obj OnTuplesTrans (Obj tup, Obj f){
     deg = DEG_TRANS4(f);
 
     /* loop over the entries of the tuple                              */
-    isint=1;
     for ( i =LEN_LIST(tup) ; 1 <= i; i--, pttup--, ptres-- ) {
-      if ( TNUM_OBJ( *pttup ) == T_INT && 0 < INT_INTOBJ( *pttup ) ) {
+      if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
         k = INT_INTOBJ( *pttup );
         if ( k <= deg ) k = ptf4[k-1] + 1 ;
         *ptres = INTOBJ_INT(k);
-      } else {/* this case cannot occur since I think POW is not defined */
-        ErrorQuit("not yet implemented!", 0L, 0L);
+      } else {
+        if (*pttup == NULL) {
+          ErrorQuit("OnTuples for transformation: list must not contain holes",
+                    0L, 0L);
+        }
+        tmp = POW(*pttup, f);
+        pttup = ADDR_OBJ(tup) + i;
+        ptres = ADDR_OBJ(res) + i;
+        ptf4 = ADDR_TRANS4(f);
+        *ptres = tmp;
+        CHANGED_BAG(res);
       }
     }
   }
-  if(isint){
-    RetypeBag( res, IS_MUTABLE_PLIST(tup) ? T_PLIST_CYC_SSORT :
-     T_PLIST_CYC_SSORT + IMMUTABLE );
-  }
   return res;
 }
-
 
 /******************************************************************************/
 /******************************************************************************/
