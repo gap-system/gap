@@ -181,31 +181,60 @@ extern UInt INIT_TRANS4 (Obj f) {
 }
 
 // TODO should this use the newer sorting algorithm by CAJ in PR #609?
+// 
+// Retyping is the responsibility of the caller.
 
-static Obj SORT_PLIST_CYC (Obj res) {
+static void SORT_PLIST_CYC (Obj res) {
   Obj     tmp;
   UInt    h, i, k, len;
 
   len = LEN_PLIST(res);
-  h = 1;
-  while (9 * h + 4 < len) {
-    h = 3 * h + 1;
-  }
-  while (0 < h) {
-    for (i = h + 1; i <= len; i++) {
-      tmp = ADDR_OBJ(res)[i];
-      k = i;
-      while (h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k - h]))) {
-        ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k - h];
-        k -= h;
-      }
-      ADDR_OBJ(res)[k] = tmp;
+
+  if (0 < len) {
+    h = 1;
+    while (9 * h + 4 < len) {
+      h = 3 * h + 1;
     }
-    h = h / 3;
+    while (0 < h) {
+      for (i = h + 1; i <= len; i++) {
+        tmp = ADDR_OBJ(res)[i];
+        k = i;
+        while (h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k - h]))) {
+          ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k - h];
+          k -= h;
+        }
+        ADDR_OBJ(res)[k] = tmp;
+      }
+      h = h / 3;
+    }
+    CHANGED_BAG(res);
   }
-  RetypeBag(res, T_PLIST_CYC_SSORT + IMMUTABLE);
-  CHANGED_BAG(res);
-  return res;
+}
+
+// Retyping is the responsibility of the caller, this should only be called
+// after a call to SORT_PLIST_CYC.
+
+static void REMOVE_DUPS_PLIST_CYC (Obj res) {
+  Obj     tmp;
+  UInt    i, k, len;
+
+  len = LEN_PLIST(res);
+
+  if (0 < len) {
+    tmp = ADDR_OBJ(res)[1];  
+    k = 1;
+    for (i = 2; i <= len; i++) {
+      if (tmp != ADDR_OBJ(res)[i]) {
+        k++;
+        tmp = ADDR_OBJ(res)[i];
+        ADDR_OBJ(res)[k] = tmp;
+      }
+    }
+    if (k < len) {
+      ResizeBag(res, (k + 1) * sizeof(Obj));
+      SET_LEN_PLIST(res, k);
+    }
+  }
 }
 
 /*******************************************************************************
@@ -981,7 +1010,8 @@ Obj FuncIMAGE_SET_TRANS (Obj self, Obj f) {
   Obj out = FuncUNSORTED_IMAGE_SET_TRANS(self, f);
 
   if (!IS_SSORT_LIST(out)) {
-    return SORT_PLIST_CYC(out);
+    SORT_PLIST_CYC(out);
+    return out;
   }
   return out;
 }
@@ -4670,7 +4700,7 @@ Obj OnSetsTrans (Obj set, Obj f){
   UInt4  *ptf4;
   UInt   deg;
   Obj    *ptset, *ptres, tmp, res;
-  UInt   i, isint, k, h, len;
+  UInt   i, isint, k;
 
   res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? 
                   T_PLIST : T_PLIST + IMMUTABLE, LEN_LIST(set));
@@ -4726,65 +4756,18 @@ Obj OnSetsTrans (Obj set, Obj f){
       }
     }
   }
-  // sort the result
+
+  // sort the result and remove dups
   if (isint) {
-    len = LEN_LIST(res);
-    // TODO should this use the newer sorting algorithm by CAJ in PR #609?
-    h = 1;  
-    while (9 * h + 4 < len) { 
-      h = 3 * h + 1;
-    }
-    while (0 < h) {
-      for (i = h + 1; i <= len; i++) {
-        tmp = ADDR_OBJ(res)[i];  
-        k = i;
-        while (h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k - h]))) {
-          ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k - h];
-          k -= h;
-        }
-        ADDR_OBJ(res)[k] = tmp;
-      }
-      h = h / 3;
-    }
+    SORT_PLIST_CYC(res);
+    REMOVE_DUPS_PLIST_CYC(res);
 
     RetypeBag(res, IS_MUTABLE_PLIST(set) 
                    ? T_PLIST_CYC_SSORT : T_PLIST_CYC_SSORT + IMMUTABLE);
 
   } else {
-    // sort the set with a shellsort
-    // TODO should this use the newer sorting algorithm by CAJ in PR #609?
-    len = LEN_LIST(res);
-    h = 1;
-    while (9 * h + 4 < len) {
-      h = 3 * h + 1;
-    }
-    while (0 < h) {
-      for (i = h + 1; i <= len; i++) {
-        tmp = ADDR_OBJ(res)[i];  k = i;
-        while (h < k && LT(tmp, ADDR_OBJ(res)[k - h])) {
-          ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k - h];
-          k -= h;
-        }
-        ADDR_OBJ(res)[k] = tmp;
-      }
-      h = h / 3;
-    }
-  }
-  // remove duplicates, shrink bag if possible
-  if (0 < len) {
-    tmp = ADDR_OBJ(res)[1];  
-    k = 1;
-    for (i = 2; i <= len; i++) {
-      if (!EQ(tmp, ADDR_OBJ(res)[i])) {
-        k++;
-        tmp = ADDR_OBJ(res)[i];
-        ADDR_OBJ(res)[k] = tmp;
-      }
-    }
-    if (k < len) {
-      ResizeBag(res, (k + 1) * sizeof(Obj));
-      SET_LEN_PLIST(res, k);
-    }
+    SortDensePlist(res);
+    RemoveDupsDensePlist(res);
   }
 
   return res;
