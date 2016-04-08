@@ -5224,7 +5224,7 @@ local GO,q,d,e,b,r,val,agemo,ngens;
     q:=PQuotient(G,p,2,ngens);
   until q<>fail;
   q:=Image(EpimorphismQuotientSystem(q));
-  q:=PCentralSeries(q,p);
+  q:=ShallowCopy(PCentralSeries(q,p));
   if Length(q)=1 then
     Error("Trivial <p> quotient");
   fi;
