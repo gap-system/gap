@@ -1812,122 +1812,99 @@ Obj FuncPERM_IMG_TRANS (Obj self, Obj f) {
 // (unchecked) assumption that im(f) = im(g) and ker(f) = ker(g).
 
 Obj FuncPermLeftQuoTransformationNC (Obj self, Obj f, Obj g) {
-  UInt2   *ptf2, *ptg2, *ptp2;
-  UInt4   *ptf4, *ptg4, *ptp4;
-  UInt    def, deg, i;
+  UInt2   *ptf2, *ptg2;
+  UInt4   *ptf4, *ptg4, *ptp;
+  UInt    def, deg, i, min, max;
   Obj     perm;
 
-  if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS2) {
-    def = DEG_TRANS2(f);
-    deg = DEG_TRANS2(g);
+  if (!IS_TRANS(f) || !IS_TRANS(g)) {
+    ErrorQuit("PermLeftQuoTransformationNC: the arguments must both be "
+              "transformations (not %s and %s)",
+              (Int) TNAM_OBJ(f),
+              (Int) TNAM_OBJ(g));
+  }
 
-    if (def <= deg) {
-      perm = NEW_PERM2(deg);
-      ptp2 = ADDR_PERM2(perm);
-      ptf2 = ADDR_TRANS2(f);
-      ptg2 = ADDR_TRANS2(g);
-      for (i = 0; i < deg; i++) {
-        ptp2[i] = i;
-      }
-      for (i = 0; i < def; i++) {
-        ptp2[ptf2[i]] = ptg2[i];
-      }
-      for (; i < deg; i++) {
-        ptp2[i] = ptg2[i];
-      }
-    } else {
-      //def > deg
-      perm = NEW_PERM2(def);
-      ptp2 = ADDR_PERM2(perm);
-      ptf2 = ADDR_TRANS2(f);
-      ptg2 = ADDR_TRANS2(g);
-      for (i = 0; i < def; i++) {
-        ptp2[i] = i;
-      }
-      for (i = 0; i < deg; i++) {
-        ptp2[ptf2[i]] = ptg2[i];
-      }
-      for (; i < def; i++) {
-        ptp2[ptf2[i]] = i;
-      }
-    }
-    return perm;
-  } else if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS4) {
-    //def < deg
-    def = DEG_TRANS2(f);
-    deg = DEG_TRANS4(g);
-    perm = NEW_PERM4(deg);
-    ptp4 = ADDR_PERM4(perm);
+  def = DEG_TRANS(f);
+  deg = DEG_TRANS(g);
+  min = MIN(def, deg);
+  max = MAX(def, deg);
+  
+  // always return a T_PERM4 to reduce the amount of code here.
+  perm = NEW_PERM4(max);
+  ptp = ADDR_PERM4(perm);
+
+  if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS2) {
     ptf2 = ADDR_TRANS2(f);
-    ptg4 = ADDR_TRANS4(g);
-    for (i = 0; i < deg; i++) {
-      ptp4[i] = i;
+    ptg2 = ADDR_TRANS2(g);
+
+    for (i = 0; i < max; i++) {
+      ptp[i] = i;
     }
-    for (i = 0; i < def; i++) {
-      ptp4[ptf2[i]] = ptg4[i];
+    for (i = 0; i < min; i++) {
+      ptp[ptf2[i]] = ptg2[i];
     }
     for (; i < deg; i++) {
-      ptp4[i] = ptg4[i];
-    }
-    return perm;
-  } else if (TNUM_OBJ(f) == T_TRANS4 && TNUM_OBJ(g) == T_TRANS2) {
-    //def > deg
-    def = DEG_TRANS4(f);
-    deg = DEG_TRANS2(g);
-    perm = NEW_PERM4(def);
-    ptp4 = ADDR_PERM4(perm);
-    ptf4 = ADDR_TRANS4(f);
-    ptg2 = ADDR_TRANS2(g);
-    for (i = 0; i < def; i++) {
-      ptp4[i] = i;
-    }
-    for (i = 0; i < deg; i++) {
-      ptp4[ptf4[i]] = ptg2[i];
+      ptp[i] = ptg2[i];
     }
     for (; i < def; i++) {
-      ptp4[ptf4[i]] = i;
+      ptp[ptf2[i]] = i;
     }
-    return perm;
+  } else if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS4) {
+    ptf2 = ADDR_TRANS2(f);
+    ptg4 = ADDR_TRANS4(g);
+
+    for (i = 0; i < max; i++) {
+      ptp[i] = i;
+    }
+    for (i = 0; i < min; i++) {
+      ptp[ptf2[i]] = ptg4[i];
+    }
+    for (; i < deg; i++) {
+      ptp[i] = ptg4[i];
+    }
+    for (; i < def; i++) {
+      // This can't happen with transformations created within this file since
+      // a transformation is of type T_TRANS4 if and only if it has (internal)
+      // degree 65537 or greater. It is included to make the code more robust.
+      ptp[ptf2[i]] = i;
+    }
+  } else if (TNUM_OBJ(f) == T_TRANS4 && TNUM_OBJ(g) == T_TRANS2) {
+    ptf4 = ADDR_TRANS4(f);
+    ptg2 = ADDR_TRANS2(g);
+
+    for (i = 0; i < max; i++) {
+      ptp[i] = i;
+    }
+    for (i = 0; i < min; i++) {
+      ptp[ptf4[i]] = ptg2[i];
+    }
+    for (; i < deg; i++) {
+      // This can't happen with transformations created within this file since
+      // a transformation is of type T_TRANS4 if and only if it has (internal)
+      // degree 65537 or greater. It is included to make the code more robust.
+      ptp[i] = ptg2[i];
+    }
+    for (; i < def; i++) {
+      ptp[ptf4[i]] = i;
+    }
   } else if (TNUM_OBJ(f) == T_TRANS4 && TNUM_OBJ(g) == T_TRANS4) {
-    def = DEG_TRANS4(f);
-    deg = DEG_TRANS4(g);
-    if (def <= deg) {
-      perm = NEW_PERM4(deg);
-      ptp4 = ADDR_PERM4(perm);
-      ptf4 = ADDR_TRANS4(f);
-      ptg4 = ADDR_TRANS4(g);
-      for (i = 0; i < deg; i++) {
-        ptp4[i] = i;
-      }
-      for (i = 0; i < def; i++) {
-        ptp4[ptf4[i]] = ptg4[i];
-      }
-      for (; i < deg; i++) {
-        ptp4[i] = ptg4[i];
-      }
-    } else {
-      //def > deg
-      perm = NEW_PERM4(def);
-      ptp4 = ADDR_PERM4(perm);
-      ptf4 = ADDR_TRANS4(f);
-      ptg4 = ADDR_TRANS4(g);
-      for (i = 0; i < def; i++) {
-        ptp4[i] = i;
-      }
-      for (i = 0; i < deg; i++) {
-        ptp4[ptf4[i]] = ptg4[i];
-      }
-      for (; i < def; i++) {
-        ptp4[ptf4[i]] = i;
-      }
+    ptf4 = ADDR_TRANS4(f);
+    ptg4 = ADDR_TRANS4(g);
+
+    for (i = 0; i < max; i++) {
+      ptp[i] = i;
     }
-    return perm;
+    for (i = 0; i < min; i++) {
+      ptp[ptf4[i]] = ptg4[i];
+    }
+    for (; i < deg; i++) {
+      ptp[i] = ptg4[i];
+    }
+    for (; i < def; i++) {
+      ptp[ptf4[i]] = i;
+    }
   }
-  ErrorQuit("PermLeftQuoTransformationNC: the arguments must both be "
-            "transformations (not %s and %s)",
-            (Int) TNAM_OBJ(f),
-            (Int) TNAM_OBJ(g));
-  return 0L;
+  return perm;
 }
 
 /*******************************************************************************
