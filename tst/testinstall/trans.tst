@@ -190,6 +190,8 @@ gap> MOVED_PTS_TRANS(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]));
 gap> MOVED_PTS_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1)) 
 > = [65537 .. 70000];
 true
+gap> MOVED_PTS_TRANS(Transformation([2, 3, 1]) ^ 3);
+[  ]
 gap> MOVED_PTS_TRANS("a");
 Error, MOVED_PTS_TRANS: the first argument must be a transformation (not a lis\
 t (string))

@@ -2326,57 +2326,43 @@ Obj FuncNR_MOVED_PTS_TRANS (Obj self, Obj f) {
 // Returns the set of values <i> in [1 .. n] such that (i)f <> i, where n =
 // DegreeOfTransformation(f).
 
-Obj FuncMOVED_PTS_TRANS(Obj self, Obj f){
-  UInt    len, deg, i, k;
-  Obj     out, tmp;
+Obj FuncMOVED_PTS_TRANS (Obj self, Obj f) {
+  UInt    len, deg, i;
+  Obj     out;
   UInt2   *ptf2;
   UInt4   *ptf4;
 
-  if(!IS_TRANS(f)){
+  if (!IS_TRANS(f)) {
     ErrorQuit("MOVED_PTS_TRANS: the first argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
     return 0L;
-  } else if (FuncIS_ID_TRANS(self, f) == True) {
-    out = NEW_PLIST(T_PLIST_EMPTY, 0);
-    SET_LEN_PLIST(out, 0);
-    return out;
-  }
-
+  } 
+  
   len = 0;
   if (TNUM_OBJ(f) == T_TRANS2) {
     deg = DEG_TRANS2(f);
-    out = NEW_PLIST(T_PLIST_CYC_SSORT, deg);
+    out = NEW_PLIST(T_PLIST_CYC_SSORT, 0);
     ptf2 = ADDR_TRANS2(f);
     for (i = 0; i < deg; i++) {
       if (ptf2[i] != i) {
-        SET_ELM_PLIST(out, ++len, INTOBJ_INT(i + 1));
+        AssPlist(out, ++len, INTOBJ_INT(i + 1));
       }
     }
   } else {
     deg = DEG_TRANS4(f);
-    out = NEW_PLIST(T_PLIST_CYC_SSORT, deg);
+    out = NEW_PLIST(T_PLIST_CYC_SSORT, 0);
     ptf4 = ADDR_TRANS4(f);
     for (i = 0; i < deg; i++) {
       if (ptf4[i] != i) {
-        SET_ELM_PLIST(out,++ len, INTOBJ_INT(i + 1));
+        AssPlist(out, ++len, INTOBJ_INT(i + 1));
       }
     }
   }
-
-  // remove duplicates
-  tmp = ADDR_OBJ(out)[1];  k = 1;
-  for (i = 2; i <= len; i++) {
-    if (INT_INTOBJ(tmp) != INT_INTOBJ(ADDR_OBJ(out)[i])) {
-      k++;
-      tmp = ADDR_OBJ(out)[i];
-      ADDR_OBJ(out)[k] = tmp;
-    }
+  
+  if (LEN_PLIST(out) == 0) {
+    RetypeBag(out, T_PLIST_EMPTY);
   }
 
-  if (k < len || len < deg) {
-    ResizeBag(out, (k + 1) * sizeof(Obj));
-  }
-  SET_LEN_PLIST(out, k);
   return out;
 }
 
