@@ -4775,27 +4775,31 @@ Obj OnSetsTrans (Obj set, Obj f){
 
 // OnTuplesTrans for use in FuncOnTuples 
 
-Obj OnTuplesTrans (Obj tup, Obj f){
+Obj OnTuplesTrans (Obj tup, Obj f) {
   UInt2  *ptf2;
   UInt4  *ptf4;
   UInt   deg, i, k;
   Obj    *pttup, *ptres, res, tmp;
 
-  res=NEW_PLIST(IS_MUTABLE_PLIST(tup)?T_PLIST:T_PLIST+IMMUTABLE,LEN_LIST(tup));
-  ADDR_OBJ(res)[0]=ADDR_OBJ(tup)[0];
+  res = NEW_PLIST(IS_MUTABLE_PLIST(tup) ? 
+                  T_PLIST : T_PLIST + IMMUTABLE, LEN_LIST(tup));
 
-  /* get the pointer                                                 */
+  ADDR_OBJ(res)[0] = ADDR_OBJ(tup)[0];
+
   pttup = ADDR_OBJ(tup) + LEN_LIST(tup);
   ptres = ADDR_OBJ(res) + LEN_LIST(tup);
-  if(TNUM_OBJ(f)==T_TRANS2){
+
+  if (TNUM_OBJ(f) == T_TRANS2) {
     ptf2 = ADDR_TRANS2(f);
     deg = DEG_TRANS2(f);
 
-    /* loop over the entries of the tuple                              */
-    for ( i =LEN_LIST(tup) ; 1 <= i; i--, pttup--, ptres-- ) {
+    // loop over the entries of the tuple
+    for (i = LEN_LIST(tup); 1 <= i; i--, pttup--, ptres--) {
       if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
-        k = INT_INTOBJ( *pttup );
-        if ( k <= deg ) k = ptf2[k-1] + 1 ;
+        k = INT_INTOBJ(*pttup);
+        if (k <= deg) {
+          k = ptf2[k - 1] + 1;
+        }
         *ptres = INTOBJ_INT(k);
       } else {
         if (*pttup == NULL) {
@@ -4814,11 +4818,13 @@ Obj OnTuplesTrans (Obj tup, Obj f){
     ptf4 = ADDR_TRANS4(f);
     deg = DEG_TRANS4(f);
 
-    /* loop over the entries of the tuple                              */
-    for ( i =LEN_LIST(tup) ; 1 <= i; i--, pttup--, ptres-- ) {
+    // loop over the entries of the tuple
+    for (i = LEN_LIST(tup); 1 <= i; i--, pttup--, ptres--) {
       if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
-        k = INT_INTOBJ( *pttup );
-        if ( k <= deg ) k = ptf4[k-1] + 1 ;
+        k = INT_INTOBJ(*pttup);
+        if (k <= deg) {
+          k = ptf4[k - 1] + 1;
+        }
         *ptres = INTOBJ_INT(k);
       } else {
         if (*pttup == NULL) {
