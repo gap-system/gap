@@ -2771,6 +2771,40 @@ gap> OnSets([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 19, 324, 4124, 123124, 2 ^ 60],
 >           Transformation([10, 7, 10, 8, 8, 7, 5, 9, 1, 9]));
 [ 1, 5, 7, 8, 9, 10, 11, 19, 324, 4124, 123124, 1152921504606846976 ]
 
+# OnTuplesTrans: for a transformation
+gap> OnTuples([1, 2], Transformation([1, 1]));
+[ 1, 1 ]
+gap> OnTuples([1, 2, 1, 2, 3, 3, 3, 4], Transformation([1, 1]));
+[ 1, 1, 1, 1, 3, 3, 3, 4 ]
+gap> OnTuples([1, 2, 10], Transformation([1, 1]));
+[ 1, 1, 10 ]
+gap> OnTuples([1, 2, 10, (2 ^ 60)], Transformation([1, 1]));
+[ 1, 1, 10, 1152921504606846976 ]
+gap> OnTuples([-1, 1, 2], Transformation([1, 1]));
+Error, Tran. Operations: <point> must be a positive integer (not -1)
+gap> OnTuples([65535, 65536, 65537], Transformation([65535], [65537]));
+[ 65537, 65536, 65537 ]
+gap> OnTuples([1, 2, 10], Transformation([65535], [65537]));
+[ 1, 2, 10 ]
+gap> OnTuples([1, 65535, 65538], Transformation([65535], [65537]));
+[ 1, 65537, 65538 ]
+gap> OnTuples([1, 2, 10, 65537, (2 ^ 60)], Transformation([65537], [1]));
+[ 1, 2, 10, 1, 1152921504606846976 ]
+gap> OnTuples([-1, 1, 2], Transformation([65535], [65537]));
+Error, Tran. Operations: <point> must be a positive integer (not -1)
+gap> OnTuples([1, 2, 10, 65535, (2 ^ 60)], Transformation([65535], [5]));
+[ 1, 2, 10, 5, 1152921504606846976 ]
+gap> OnTuples([1 .. 20], Transformation([10, 7, 10, 8, 8, 7, 5, 9, 1, 9]));
+[ 10, 7, 10, 8, 8, 7, 5, 9, 1, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]
+gap> OnTuples([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 19, 324, 4124, 123124, 2 ^ 60],
+>           Transformation([10, 7, 10, 8, 8, 7, 5, 9, 1, 9]));
+[ 10, 7, 10, 8, 8, 7, 5, 9, 1, 9, 11, 19, 324, 4124, 123124, 
+  1152921504606846976 ]
+gap> OnTuples([1, , 3], Transformation([1, 1]));
+Error, OnTuples for transformation: list must not contain holes
+gap> OnTuples([1, , 3], Transformation([1], [65537]));
+Error, OnTuples for transformation: list must not contain holes
+
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;
