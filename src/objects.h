@@ -125,15 +125,9 @@
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The sum itself is stored in <o>.
 */
-#if HAVE_ARITHRIGHTSHIFT
-#define SUM_INTOBJS(o,l,r)             \
-    ((o) = (Obj)((Int)(l)+(Int)(r)-1), \
-    (((Int)(o) << 1) >> 1) == (Int)(o) )
-#else
 #define SUM_INTOBJS(o,l,r)             \
     ((o) = (Obj)((Int)(l)+(Int)(r)-1), \
      ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
-#endif
 
 
 /****************************************************************************
@@ -144,15 +138,9 @@
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The difference itself is stored in <o>.
 */
-#if HAVE_ARITHRIGHTSHIFT
-#define DIFF_INTOBJS(o,l,r)            \
-    ((o) = (Obj)((Int)(l)-(Int)(r)+1), \
-     (((Int)(o) << 1) >> 1) == (Int)(o) )
-#else
 #define DIFF_INTOBJS(o,l,r)            \
     ((o) = (Obj)((Int)(l)-(Int)(r)+1), \
      ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
-#endif
 
 
 /****************************************************************************
@@ -181,16 +169,11 @@ static inline Obj prod_intobjs(Int l, Int r)
     return (Obj)l;
   prod = ((Int)((UInt)l >> 2) * ((UInt)r-1)+1);
 
-#if HAVE_ARITHRIGHTSHIFT
-  if ((prod << 1)>> 1 !=  prod)
-    return (Obj) 0;
-#else
   if (((((UInt) (prod)) >> (sizeof(UInt)*8-2))-1) <= 1)
     return (Obj) 0;
-#endif
 
-  if ((((Int)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
-      (((Int)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
+  if ((Int)(((UInt)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
+      (Int)(((UInt)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
     return (Obj) prod;
 
 #if HAVE_ARITHRIGHTSHIFT
