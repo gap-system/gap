@@ -2251,7 +2251,7 @@ Obj FuncSMALLEST_MOVED_PT_TRANS (Obj self, Obj f) {
   UInt4   *ptf4;
   UInt    i, deg;
 
-  if(!IS_TRANS(f)){
+  if (!IS_TRANS(f)) {
     ErrorQuit("SMALLEST_MOVED_PTS_TRANS: the first argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
     return 0L;
@@ -2289,7 +2289,7 @@ Obj FuncSMALLEST_IMAGE_PT (Obj self, Obj f) {
   UInt4   *ptf4;
   UInt    i, min, deg;
 
-  if(!IS_TRANS(f)){
+  if (!IS_TRANS(f)) {
     ErrorQuit("SMALLEST_IMAGE_PT: the first argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
     return 0L;
@@ -3449,33 +3449,37 @@ Obj FuncINV_KER_TRANS (Obj self, Obj X, Obj f) {
 // set of <f> on [1 .. n] is returned instead. If the argument <set> is not
 // [0], then the third argument is ignored.
 
-Obj FuncOnPosIntSetsTrans (Obj self, Obj set, Obj f, Obj n){
+Obj FuncOnPosIntSetsTrans (Obj self, Obj set, Obj f, Obj n) {
   UInt2  *ptf2;
   UInt4  *ptf4;
   UInt   deg;
   Obj    *ptset, *ptres, res;
   UInt   i, k;
 
-  if(LEN_LIST(set)==0) return set;
+  if (LEN_LIST(set) == 0) {
+    return set;
+  }
 
-  if(LEN_LIST(set)==1&&INT_INTOBJ(ELM_LIST(set, 1))==0){
+  if (LEN_LIST(set) == 1 && INT_INTOBJ(ELM_LIST(set, 1)) == 0) {
     return FuncIMAGE_SET_TRANS_INT(self, f, n);
   }
 
   PLAIN_LIST(set);
-  res=NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT :
-                T_PLIST_CYC_SSORT + IMMUTABLE, LEN_LIST(set));
-  ADDR_OBJ(res)[0]=ADDR_OBJ(set)[0];
+  res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT :
+                  T_PLIST_CYC_SSORT + IMMUTABLE, LEN_LIST(set));
+  ADDR_OBJ(res)[0] = ADDR_OBJ(set)[0];
 
   ptset = ADDR_OBJ(set) + LEN_LIST(set);
   ptres = ADDR_OBJ(res) + LEN_LIST(set);
 
-  if(TNUM_OBJ(f)==T_TRANS2){
+  if (TNUM_OBJ(f) == T_TRANS2) {
     ptf2 = ADDR_TRANS2(f);
     deg = DEG_TRANS2(f);
-    for ( i =LEN_LIST(set) ; 1 <= i; i--, ptset--, ptres-- ) {
-      k = INT_INTOBJ( *ptset );
-      if ( k <= deg ) k = ptf2[k-1] + 1 ;
+    for (i = LEN_LIST(set); 1 <= i; i--, ptset--, ptres--) {
+      k = INT_INTOBJ(*ptset);
+      if (k <= deg) {
+        k = ptf2[k - 1] + 1;
+      }
       *ptres = INTOBJ_INT(k);
     }
     SORT_PLIST_CYC(res);
@@ -3484,9 +3488,11 @@ Obj FuncOnPosIntSetsTrans (Obj self, Obj set, Obj f, Obj n){
   } else if (TNUM_OBJ(f) == T_TRANS4) {
     ptf4 = ADDR_TRANS4(f);
     deg = DEG_TRANS4(f);
-    for ( i =LEN_LIST(set) ; 1 <= i; i--, ptset--, ptres-- ) {
-      k = INT_INTOBJ( *ptset );
-      if ( k <= deg ) k = ptf4[k-1] + 1 ;
+    for (i = LEN_LIST(set); 1 <= i; i--, ptset--, ptres--) {
+      k = INT_INTOBJ(*ptset);
+      if (k <= deg) {
+        k = ptf4[k - 1] + 1;
+      }
       *ptres = INTOBJ_INT(k);
     }
     SORT_PLIST_CYC(res);
@@ -3496,7 +3502,6 @@ Obj FuncOnPosIntSetsTrans (Obj self, Obj set, Obj f, Obj n){
   ErrorQuit("OnPosIntSetsTrans: the argument must be a "
             "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
   return 0L;
-
 }
 
 /*******************************************************************************
