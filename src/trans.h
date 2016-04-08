@@ -25,6 +25,7 @@
 #include        "precord.h"             /* plain records                   */
 
 #include        "lists.h"               /* generic lists                   */
+#include        "listfunc.h"            /* functions for lists             */
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
