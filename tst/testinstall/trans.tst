@@ -2859,6 +2859,14 @@ gap> OnPosIntSetsTrans([0],
 gap> OnPosIntSetsTrans([0],
 >           Transformation([10, 7, 10, 8, 8, 7, 5, 9, 1, 9]), 20);
 [ 1, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]
+gap> OnPosIntSetsTrans([1], "a", 20);
+Error, OnPosIntSetsTrans: the argument must be a transformation (not a list (s\
+tring))
+gap> OnPosIntSetsTrans([0], "a", 20);
+Error, IMAGE_SET_TRANS_INT: the first argument must be a transformation (not a\
+ list (string))
+gap> OnPosIntSetsTrans(1, "a", 20);
+Error, Length: <list> must be a list (not a integer)
 
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
