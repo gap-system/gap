@@ -3081,202 +3081,143 @@ Obj FuncINV_LIST_TRANS (Obj self, Obj list, Obj f) {
 // However, this is included to avoid the overhead of producing the image lists
 // of f and g in the above.
 
-Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g){
+Obj FuncTRANS_IMG_CONJ (Obj self, Obj f, Obj g) {
   Obj     perm;
-  UInt2   *ptp2, *ptf2, *ptg2;
-  UInt4   *ptsrc, *ptdst, *ptp4, *ptf4, *ptg4;
-  UInt    def, deg, i, j;
+  UInt2   *ptf2, *ptg2;
+  UInt4   *ptsrc, *ptdst, *ptp, *ptf4, *ptg4;
+  UInt    def, deg, i, j, max, min;
 
-  if(TNUM_OBJ(f)==T_TRANS2){
-    def=DEG_TRANS2(f);
-    if(TNUM_OBJ(g)==T_TRANS2){
-      deg=DEG_TRANS2(g);
-      if(def<=deg){
-        perm=NEW_PERM2(deg);
-        ptsrc=ResizeInitTmpTrans(2*deg);
-        ptdst=ptsrc+deg;
+  if (!IS_TRANS(f) || !IS_TRANS(g)) {
+    ErrorQuit("TRANS_IMG_CONJ: the arguments must both be transformations "
+              "(not %s and %s)", (Int) TNAM_OBJ(f), (Int) TNAM_OBJ(g));
+  }
+  
+  def = DEG_TRANS(f);
+  deg = DEG_TRANS(g);
+  max = MAX(def, deg);
+  min = MIN(def, deg);
 
-        ptp2=ADDR_PERM2(perm);
-        ptf2=ADDR_TRANS2(f);
-        ptg2=ADDR_TRANS2(g);
+  // always return a T_PERM4 to reduce the amount of code in this function
+  perm = NEW_PERM4(max);
 
-        for(i=0;i<def;i++){
-          ptsrc[ptf2[i]]=1;
-          ptdst[ptg2[i]]=1;
-          ptp2[ptf2[i]]=ptg2[i];
-        }
-        for(;i<deg;i++){
-          //ptsrc[i]=1;
-          ptdst[ptg2[i]]=1;
-          ptp2[i]=ptg2[i];
-        }
-        j=0;
-        for(i=0;i<def;i++){
-          if(ptsrc[i]==0){
-            while(ptdst[j]!=0){ j++; }
-            ptp2[i]=j;
-            j++;
-          }
-        }
-        return perm;
-      } else {// def>deg
-        perm=NEW_PERM2(def);
-        ptsrc=ResizeInitTmpTrans(2*def);
-        ptdst=ptsrc+def;
+  ptsrc = ResizeInitTmpTrans(2 * max);
+  ptdst = ptsrc + max;
 
-        ptp2=ADDR_PERM2(perm);
-        ptf2=ADDR_TRANS2(f);
-        ptg2=ADDR_TRANS2(g);
+  ptp = ADDR_PERM4(perm);
 
-        for(i=0;i<deg;i++){
-          ptsrc[ptf2[i]]=1;
-          ptdst[ptg2[i]]=1;
-          ptp2[ptf2[i]]=ptg2[i];
-        }
-        for(;i<def;i++){
-          ptsrc[ptf2[i]]=1;
-          ptdst[i]=1;
-          ptp2[ptf2[i]]=i;
-        }
-        j=0;
-        for(i=0;i<def;i++){
-          if(ptsrc[i]==0){
-            while(ptdst[j]!=0){ j++; }
-            ptp2[i]=j;
-            j++;
-          }
-        }
-        return perm;
-      }
-    } else if (TNUM_OBJ(g)==T_TRANS4){ //deg>def
-      deg=DEG_TRANS4(g);
-      perm=NEW_PERM4(deg);
-      ptsrc=ResizeInitTmpTrans(2*deg);
-      ptdst=ptsrc+deg;
-
-      ptp4=ADDR_PERM4(perm);
-      ptf2=ADDR_TRANS2(f);
-      ptg4=ADDR_TRANS4(g);
-
-      for(i=0;i<def;i++){
-        ptsrc[ptf2[i]]=1;
-        ptdst[ptg4[i]]=1;
-        ptp4[ptf2[i]]=ptg4[i];
-      }
-      for(;i<deg;i++){
-        //ptsrc[i]=1;
-        ptdst[ptg4[i]]=1;
-        ptp4[i]=ptg4[i];
-      }
-      j=0;
-      for(i=0;i<def;i++){
-        if(ptsrc[i]==0){
-          while(ptdst[j]!=0){ j++; }
-          ptp4[i]=j;
-          j++;
-        }
-      }
-      return perm;
+  if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS2) {
+    ptf2 = ADDR_TRANS2(f);
+    ptg2 = ADDR_TRANS2(g);
+    
+    for (i = 0; i < min; i++) {
+      ptsrc[ptf2[i]] = 1;
+      ptdst[ptg2[i]] = 1;
+      ptp[ptf2[i]] = ptg2[i];
     }
-  } else if (TNUM_OBJ(f)==T_TRANS4) {
-    def=DEG_TRANS4(f);
 
-    if(TNUM_OBJ(g)==T_TRANS2){ //def>deg
-      deg=DEG_TRANS2(g);
-      perm=NEW_PERM4(def);
+    // if deg = min, then this isn't executed
+    for (; i < deg; i++) {
+      //ptsrc[i] = 1;
+      ptdst[ptg2[i]] = 1;
+      ptp[i] = ptg2[i];
+    }
 
-      ptsrc=ResizeInitTmpTrans(2*def);
-      ptdst=ptsrc+def;
-      ptp4=ADDR_PERM4(perm);
-      ptf4=ADDR_TRANS4(f);
-      ptg2=ADDR_TRANS2(g);
+    // if def = min, then this isn't executed
+    for (; i < def; i++) {
+      ptsrc[ptf2[i]] = 1;
+      ptdst[i] = 1;
+      ptp[ptf2[i]] = i;
+    }
+  } else if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS4) {
+    ptf2 = ADDR_TRANS2(f);
+    ptg4 = ADDR_TRANS4(g);
+    
+    for (i = 0; i < min; i++) {
+      ptsrc[ptf2[i]] = 1;
+      ptdst[ptg4[i]] = 1;
+      ptp[ptf2[i]] = ptg4[i];
+    }
 
-      for(i=0;i<deg;i++){
-        ptsrc[ptf4[i]]=1;
-        ptdst[ptg2[i]]=1;
-        ptp4[ptf4[i]]=ptg2[i];
-      }
-      for(;i<def;i++){
-        ptsrc[ptf4[i]]=1;
-        ptdst[i]=1;
-        ptp4[ptf4[i]]=i;
-      }
-      j=0;
-      for(i=0;i<def;i++){
-        if(ptsrc[i]==0){
-          while(ptdst[j]!=0){ j++; }
-          ptp4[i]=j;
-          j++;
-        }
-      }
-      return perm;
-    } else if (TNUM_OBJ(g)==T_TRANS4){
-      deg=DEG_TRANS4(g);
-      if(def<=deg){
-        perm=NEW_PERM4(deg);
-        ptsrc=ResizeInitTmpTrans(2*deg);
-        ptdst=ptsrc+deg;
+    // if deg = min, then this isn't executed
+    for (; i < deg; i++) {
+      //ptsrc[i] = 1;
+      ptdst[ptg4[i]] = 1;
+      ptp[i] = ptg4[i];
+    }
 
-        ptp4=ADDR_PERM4(perm);
-        ptf4=ADDR_TRANS4(f);
-        ptg4=ADDR_TRANS4(g);
+    // if def = min, then this isn't executed
+    for (; i < def; i++) {
+      // This can't happen with transformations created within this file since
+      // a transformation is of type T_TRANS4 if and only if it has (internal)
+      // degree 65537 or greater. It is included to make the code more robust.
+      ptsrc[ptf2[i]] = 1;
+      ptdst[i] = 1;
+      ptp[ptf2[i]] = i;
+    }
+  } else if (TNUM_OBJ(f) == T_TRANS4 && TNUM_OBJ(g) == T_TRANS2) {
+    ptf4 = ADDR_TRANS4(f);
+    ptg2 = ADDR_TRANS2(g);
+    
+    for (i = 0; i < min; i++) {
+      ptsrc[ptf4[i]] = 1;
+      ptdst[ptg2[i]] = 1;
+      ptp[ptf4[i]] = ptg2[i];
+    }
 
-        for(i=0;i<def;i++){
-          ptsrc[ptf4[i]]=1;
-          ptdst[ptg4[i]]=1;
-          ptp4[ptf4[i]]=ptg4[i];
-        }
-        for(;i<deg;i++){
-          //ptsrc[i]=1;
-          ptdst[ptg4[i]]=1;
-          ptp4[i]=ptg4[i];
-        }
-        j=0;
-        for(i=0;i<def;i++){
-          if(ptsrc[i]==0){
-            while(ptdst[j]!=0){ j++; }
-            ptp4[i]=j;
-            j++;
-          }
-        }
-        return perm;
-      } else {// def>deg
-        perm=NEW_PERM4(def);
-        ptsrc=ResizeInitTmpTrans(2*def);
-        ptdst=ptsrc+def;
+    // if deg = min, then this isn't executed
+    for (; i < deg; i++) {
+      // This can't happen with transformations created within this file since
+      // a transformation is of type T_TRANS4 if and only if it has (internal)
+      // degree 65537 or greater. It is included to make the code more robust.
+      //ptsrc[i] = 1;
+      ptdst[ptg2[i]] = 1;
+      ptp[i] = ptg2[i];
+    }
 
-        ptp4=ADDR_PERM4(perm);
-        ptf4=ADDR_TRANS4(f);
-        ptg4=ADDR_TRANS4(g);
+    // if def = min, then this isn't executed
+    for (; i < def; i++) {
+      ptsrc[ptf4[i]] = 1;
+      ptdst[i] = 1;
+      ptp[ptf4[i]] = i;
+    }
+  } else if (TNUM_OBJ(f) == T_TRANS4 && TNUM_OBJ(g) == T_TRANS4) {
+    ptf4 = ADDR_TRANS4(f);
+    ptg4 = ADDR_TRANS4(g);
+    
+    for (i = 0; i < min; i++) {
+      ptsrc[ptf4[i]] = 1;
+      ptdst[ptg4[i]] = 1;
+      ptp[ptf4[i]] = ptg4[i];
+    }
 
-        for(i=0;i<deg;i++){
-          ptsrc[ptf4[i]]=1;
-          ptdst[ptg4[i]]=1;
-          ptp4[ptf4[i]]=ptg4[i];
-        }
-        for(;i<def;i++){
-          ptsrc[ptf4[i]]=1;
-          ptdst[i]=1;
-          ptp4[ptf4[i]]=i;
-        }
-        j=0;
-        for(i=0;i<def;i++){
-          if(ptsrc[i]==0){
-            while(ptdst[j]!=0){ j++; }
-            ptp4[i]=j;
-            j++;
-          }
-        }
-        return perm;
-      }
+    // if deg = min, then this isn't executed
+    for (; i < deg; i++) {
+      //ptsrc[i] = 1;
+      ptdst[ptg4[i]] = 1;
+      ptp[i] = ptg4[i];
+    }
+
+    // if def = min, then this isn't executed
+    for (; i < def; i++) {
+      ptsrc[ptf4[i]] = 1;
+      ptdst[i] = 1;
+      ptp[ptf4[i]] = i;
     }
   }
-  ErrorQuit("TRANS_IMG_CONJ: the arguments must both be "
-            "transformations (not %s and %s)",
-            (Int) TNAM_OBJ(f),
-            (Int) TNAM_OBJ(g));
-  return 0L;
-}
+
+  // complete the permutation 
+  j = 0;
+  for (i = 0; i < def; i++) {
+    if (ptsrc[i] == 0) {
+      while (ptdst[j] != 0) {
+        j++;
+      }
+      ptp[i] = j;
+      j++;
+    }
+  }
+  return perm;
+}  
 
 // Returns the flat kernel of <p> ^ -1 * f * <p> where f is any transformation
 // such that ker(f) = <ker>, <p> is a permutation and <ker> is itself a flat
