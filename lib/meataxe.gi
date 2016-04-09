@@ -1286,7 +1286,7 @@ SMTX_IrreducibilityTest:=function ( module )
                         bestfacno:=facno;
                      fi;
                   fi;
-		  if trying and deg>1 and count>2 then
+                  if trying and deg>1 and count>2 then
                      Info(InfoMeatAxe,1,"Trying Ivanyos/Lux Method");
                      #first find the appropriate idempotent
                      pfac1:=sfac[facno];
@@ -1297,14 +1297,14 @@ SMTX_IrreducibilityTest:=function ( module )
                      od;
                      pfr:=GcdRepresentation(pfac1, pfac2);
                      idemp:=QuotRemLaurpols(pfr[2]*pfac2, orig_pol, 2);
-		     #Now another random element in the group algebra.
+                     #Now another random element in the group algebra.
                      #and a random vector in the module
                      g2:=Random (F);
                      if IsOne(g2) then
-                          M2:=matrices[1];
-                        else
-                          M2:=g2 * matrices[1];
-                        fi;
+                       M2:=matrices[1];
+                     else
+                       M2:=g2 * matrices[1];
+                     fi;
                      for g1 in [2..ngens] do
                         g2:=Random (F);
                         if IsOne(g2) then
@@ -1326,7 +1326,7 @@ SMTX_IrreducibilityTest:=function ( module )
                      subbasis:=SMTX.SpinnedBasis (v, matrices, F,orig_ngens);
                      Info(InfoMeatAxe,2,"Spun up vector. Dimension = ",
                        Length(subbasis),". Time = ",Runtime()-rt0,".");
-                    if Length(subbasis) < dim and Length(subbasis) <> 0  then
+                     if Length(subbasis) < dim and Length(subbasis) <> 0  then
                        # Proper submodule found 
                        trying:=false;
                        ans:=false;
@@ -1336,7 +1336,7 @@ SMTX_IrreducibilityTest:=function ( module )
                   facno:=facno + 1;
                od; # going through irreducible factors of fixed degree.
                # If trying is false at this stage, then we don't have 
-               #an answer yet, so we have to go onto factors of the next degree.
+               # an answer yet, so we have to go onto factors of the next degree.
                # Now divide p by the factors used if necessary
                if trying and deg < maxdeg then
                   for q in fac do
