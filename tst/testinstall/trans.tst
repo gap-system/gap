@@ -259,8 +259,12 @@ gap> IMAGE_SET_TRANS(IdentityTransformation);
 [  ]
 gap> IMAGE_SET_TRANS(Transformation([1, 2, 1, 4, 5]));
 [ 1, 2, 4, 5 ]
+gap> IsSet(last);
+true
 gap> IMAGE_SET_TRANS(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]));
 [ 1, 2, 4, 5 ]
+gap> IsSet(last);
+true
 gap> IMAGE_SET_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1)) 
 > = [1 .. 65536];
 true
@@ -269,8 +273,12 @@ Error, UNSORTED_IMAGE_SET_TRANS: the argument must be a transformation (not a \
 list (string))
 gap> IMAGE_SET_TRANS(Transformation([2, 1, 2, 4, 5]));
 [ 1, 2, 4, 5 ]
+gap> IsSet(last);
+true
 gap> IMAGE_SET_TRANS(Transformation([4, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]));
 [ 1, 2, 4, 5 ]
+gap> IsSet(last);
+true
 gap> IMAGE_SET_TRANS(Transformation([1], [65537])) 
 > = [2 .. 65537];
 true

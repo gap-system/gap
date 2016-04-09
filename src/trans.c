@@ -1012,6 +1012,8 @@ Obj FuncIMAGE_SET_TRANS (Obj self, Obj f) {
 
   if (!IS_SSORT_LIST(out)) {
     SORT_PLIST_CYC(out);
+    RetypeBag(out, T_PLIST_CYC_SSORT+IMMUTABLE);
+    CHANGED_BAG(out);
     return out;
   }
   return out;
@@ -1072,6 +1074,8 @@ Obj FuncIMAGE_SET_TRANS_INT (Obj self, Obj f, Obj n) {
     SHRINK_PLIST(new, (Int) rank);
     SET_LEN_PLIST(new, (Int) rank);
     SORT_PLIST_CYC(new);
+    RetypeBag(new, T_PLIST_CYC_SSORT);
+    CHANGED_BAG(new);
   } else {
     //m > deg and so m is at least 1!
     im = FuncIMAGE_SET_TRANS(self, f);
