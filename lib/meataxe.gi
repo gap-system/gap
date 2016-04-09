@@ -293,17 +293,6 @@ SMTX.SetFGCentMatMinPoly:=SMTX.Setter("fieldGenCentMatMinPoly");
 
 SMTX.SetDegreeFieldExt:=SMTX.Setter("degreeFieldExt");
 
-LinearCombinationVecs:=function(v,c)
-local i,s;
-  s:=ShallowCopy(c[1]*v[1]);
-  for i in [2..Length(c)] do
-    if not IsZero(c[i]) then
-      AddRowVector(s,v[i],c[i]);
-    fi;
-  od;
-  return s;
-end;
-
 
 #############################################################################
 ##
@@ -3153,8 +3142,7 @@ mats:=m.generators;
       m:=List(Concatenation(m.smashMeataxe.denombasis,
 		      m.smashMeataxe.fakbasis{[1..SMTX.Dimension(m)]}),
 		      ShallowCopy);
-                 #List(m.smashMeataxe.csbasis,
-		 #     i->LinearCombinationVecs(m.smashMeataxe.fakbasis,i)));
+                 #List(m.smashMeataxe.csbasis, i->i*m.smashMeataxe.fakbasis));
       TriangulizeMat(m);
       m:=ImmutableMatrix(F,m);
 #      m:=Filtered(m,i->i<>Zero(i));
@@ -3176,8 +3164,7 @@ mats:=m.generators;
       s.smashMeataxe.denombasis:=m.smashMeataxe.denombasis;
 
       #s.smashMeataxe.csbasis:= IdentityMat(SMTX.Dimension(s), SMTX.Field(s) );
-      s.smashMeataxe.fakbasis:=
-        List(b,i->LinearCombinationVecs(m.smashMeataxe.fakbasis,i));
+      s.smashMeataxe.fakbasis:=b*m.smashMeataxe.fakbasis;
 
       q.smashMeataxe.denombasis:=Concatenation(
         #List(m.smashMeataxe.denombasis,ShallowCopy),
@@ -3185,8 +3172,8 @@ mats:=m.generators;
         #List(s.smashMeataxe.fakbasis{[1..s.dimension]},ShallowCopy));
         s.smashMeataxe.fakbasis{[1..s.dimension]});
       #q.smashMeataxe.csbasis:= IdentityMat(SMTX.Dimension(q), SMTX.Field(q) );
-      q.smashMeataxe.fakbasis:=List(b{[SMTX.Dimension(s)+1..Length(b)]},
-                       i->LinearCombinationVecs(m.smashMeataxe.fakbasis,i));
+      q.smashMeataxe.fakbasis:=List([SMTX.Dimension(s)+1..Length(b)],
+                       i->b[i] * m.smashMeataxe.fakbasis);    
       Add(queue,s);
       Add(queue,q);
     fi;
@@ -3222,7 +3209,7 @@ local cf,u,i,j,f,cl,min,neu,sq,sb,fb,k,nmin,F;
       Info(InfoMeatAxe,3,Length(nmin),"minimal submodules");
       for k in nmin do 
         sq:=Concatenation(List(sb,ShallowCopy), # don't destroy old basis
-	                  List(k,i->LinearCombinationVecs(fb,i)));
+	                  k*fb);
 	TriangulizeMat(sq);
 	sq:=ImmutableMatrix(F,sq);
 	Assert(2,SMTX.InducedAction(m,sq)<>fail);
@@ -3296,7 +3283,7 @@ local a,u,i,nb;
   nb:=a[2];
   nb:=nb{[Length(sub)+1..Length(nb)]}; # the new basis part
   nb:=List(u,i->Concatenation( List( sub, ShallowCopy ),
-                               List(i,j->LinearCombinationVecs(nb,j))));
+                               i*nb));
   u:=[];
   for i in nb do
     TriangulizeMat(i);
