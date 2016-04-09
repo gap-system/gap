@@ -379,7 +379,7 @@ BindGlobal( "Matrix_OrderPolynomialInner", function( fld, mat, vec, vecs)
         p := ShallowCopy(zeroes);
         Add(p,one);
         ConvertToVectorRepNC(p,fld);
-        piv := PositionNot(w,zero,0);
+        piv := PositionNonZero(w,0);
 
         #
         # Strip as far as we can
@@ -391,7 +391,7 @@ BindGlobal( "Matrix_OrderPolynomialInner", function( fld, mat, vec, vecs)
                 AddCoeffs(p, pols[piv], x);
             fi;
             AddRowVector(w, vecs[piv],  x, piv, d);
-            piv := PositionNot(w,zero,piv);
+            piv := PositionNonZero(w,piv);
         od;
 
         #
