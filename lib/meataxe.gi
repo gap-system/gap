@@ -1109,7 +1109,7 @@ SMTX_IrreducibilityTest:=function ( module )
          newgenlist, coefflist, orig_ngens, zero, 
          N, NT, v, subbasis, fac, sfac, pol, orig_pol, q, dim, ndim, i,
          l, trying, deg, facno, bestfacno, F, count, R, rt0,idmat,
-         pfac1, pfac2, pfr, idemp, M2, mat2, mat3;
+         pfac1, pfac2, quotRem, pfr, idemp, M2, mat2, mat3;
 
    rt0:=Runtime ();
    Info(InfoMeatAxe,1,"Calling MeatAxe. All times will be in milliseconds");
@@ -1290,10 +1290,14 @@ SMTX_IrreducibilityTest:=function ( module )
                      Info(InfoMeatAxe,1,"Trying Ivanyos/Lux Method");
                      #first find the appropriate idempotent
                      pfac1:=sfac[facno];
-                     pfac2:= Quotient(R, orig_pol, sfac[facno]);
-                     while QuotRemLaurpols(pfac2, sfac[facno], 2) = Zero(R) do
+                     pfac2:=orig_pol;
+                     while true do
+                       quotRem := QuotRemLaurpols(pfac2, sfac[facno], 3);
+                       if quotRem[2] <> Zero(R) then
+                         break;
+                       fi;
+                       pfac2 := quotRem[1];
                        pfac1:=pfac1*sfac[facno];
-                       pfac2:= Quotient(R, pfac2, sfac[facno]);
                      od;
                      pfr:=GcdRepresentation(pfac1, pfac2);
                      idemp:=QuotRemLaurpols(pfr[2]*pfac2, orig_pol, 2);
