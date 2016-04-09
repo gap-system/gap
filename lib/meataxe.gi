@@ -3121,6 +3121,7 @@ mats:=m.generators;
   F:=SMTX.Field(m);
   one:=One(F);
   b:= IdentityMat(SMTX.Dimension(m),SMTX.Field(m) );
+  ConvertToMatrixRep(b);
   # denombasis: Basis des Kerns
   m.smashMeataxe.denombasis:=[];
   # csbasis: Basis des Moduls
@@ -3174,6 +3175,8 @@ mats:=m.generators;
       #q.smashMeataxe.csbasis:= IdentityMat(SMTX.Dimension(q), SMTX.Field(q) );
       q.smashMeataxe.fakbasis:=List([SMTX.Dimension(s)+1..Length(b)],
                        i->b[i] * m.smashMeataxe.fakbasis);    
+      ConvertToMatrixRep(q.smashMeataxe.fakbasis);
+
       Add(queue,s);
       Add(queue,q);
     fi;
