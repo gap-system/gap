@@ -660,15 +660,27 @@ InstallMethod( LogFFE,
 ##
 #M  RootFFE( <z>, <k> )  . . . . . . . . . . . . . . . . . . for `IsZmodpZObj'
 ##
-InstallMethod(RootFFE,"for modulus rep, using RootMod",true,
-  [IsZmodpZObj and IsModulusRep,IsPosInt],
-function( z, k )
+InstallOtherMethod(RootFFE,"for modulus rep, using RootMod",true,
+  [IsPosInt,IsZmodpZObj and IsModulusRep,IsPosInt],
+function( A, z, k )
 local r,fam;
   fam:=FamilyObj(z);
-  r:=RootMod(z![1],k,fam!.Characteristic);
+  if A<>fam!.Characteristic then
+    TryNextMethod();
+  fi;
+  if k=1 or z![1]=0 or z![1]=1 then return z;fi;
+  r:=RootMod(z![1],k,A);
   if r=fail then return r;fi;
   return ZmodnZObj(fam,r);
 end );
+
+InstallOtherMethod(RootFFE,"for modulus rep",true,
+  [IsZmodpZObj and IsModulusRep,IsPosInt],
+function(z,k)
+  return RootFFE(FamilyObj(z)!.Characteristic,z,k);
+end);
+
+
 
 
 #############################################################################
