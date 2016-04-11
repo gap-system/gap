@@ -89,7 +89,6 @@ DeclareSynonym("PreimagesOfTransformation", PreImagesOfTransformation);
 DeclareOperation("RandomTransformation", [IsPosInt]);
 DeclareOperation("RandomTransformation", [IsPosInt, IsPosInt]);
 
-DeclareOperation("RestrictedTransformation", [IsTransformation, IsList]);
 DeclareAttribute("SmallestIdempotentPower", IsAssociativeElement);
 DeclareOperation("TrimTransformation", [IsTransformation, IsPosInt]);
 DeclareOperation("TrimTransformation", [IsTransformation]);

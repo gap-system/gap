@@ -1234,44 +1234,48 @@ gap> PermutationOfImage(1);
 Error, PermutationOfImage: the first argument must be a transformation (not a \
 integer)
 
-# Test RestrictedTransformationNC
-gap> RestrictedTransformationNC(IdentityTransformation, [1, -1]);
-Error, RestrictedTransformationNC: <list>[2] must be a positive integer (not a\
- integer)
-gap> RestrictedTransformationNC(IdentityTransformation, "a");
-Error, RestrictedTransformationNC: <list>[1] must be a positive integer (not a\
- character)
-gap> RestrictedTransformationNC(IdentityTransformation, [1,, 3]);
+# Test RestrictedTransformation
+gap> RestrictedTransformation(IdentityTransformation, [1, -1]);
+Error, RestrictedTransformation: <list>[2] must be a positive  integer (not a \
+integer)
+gap> RestrictedTransformation(IdentityTransformation, "a");
+Error, RestrictedTransformation: <list>[1] must be a positive  integer (not a \
+character)
+gap> RestrictedTransformation(IdentityTransformation, [1,, 3]);
 Error, List Element: <list>[2] must have an assigned value
-gap> RestrictedTransformationNC(IdentityTransformation, [1 .. 10]);
+gap> RestrictedTransformation(IdentityTransformation, [1 .. 10]);
 IdentityTransformation
-gap> RestrictedTransformationNC(IdentityTransformation, [0]);
-Error, RestrictedTransformationNC: <list>[1] must be a positive integer (not a\
- integer)
-gap> RestrictedTransformationNC(Transformation([1, 2, 1, 4, 5]), [1, 3, 5]);
+gap> RestrictedTransformation(IdentityTransformation, [0]);
+Error, RestrictedTransformation: <list>[1] must be a positive  integer (not a \
+integer)
+gap> RestrictedTransformation(Transformation([1, 2, 1, 4, 5]), [1, 3, 5]);
 Transformation( [ 1, 2, 1 ] )
-gap> RestrictedTransformationNC(Transformation([2, 1, 1, 4, 5]), [1 .. 3]);
+gap> RestrictedTransformation(Transformation([2, 1, 1, 4, 5]), [1 .. 3]);
 Transformation( [ 2, 1, 1 ] )
-gap> RestrictedTransformationNC(Transformation([2, 1, 1, 4, 5]), [1 .. 10]);
+gap> RestrictedTransformation(Transformation([2, 1, 1, 4, 5]), [1 .. 10]);
 Transformation( [ 2, 1, 1 ] )
-gap> RestrictedTransformationNC(Transformation([1, 2, 1, 4, 5]), [1 .. 5]);
+gap> RestrictedTransformation(Transformation([1, 2, 1, 4, 5]), [1 .. 5]);
 Transformation( [ 1, 2, 1 ] )
-gap> RestrictedTransformationNC(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 0);
-Error, RestrictedTransformationNC: the second argument must be a list (not a i\
-nteger)
-gap> RestrictedTransformationNC(Transformation([65537 .. 70000], 
+gap> RestrictedTransformation(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 0);
+Error, RestrictedTransformation: the second argument must be a list (not a int\
+eger)
+gap> RestrictedTransformation(Transformation([65537 .. 70000], 
 >                                    [65537 .. 70000] * 0 + 1), [1 .. 65536]);
 IdentityTransformation
-gap> RestrictedTransformationNC(Transformation([65537 .. 70000], 
+gap> RestrictedTransformation(Transformation([65537 .. 70000], 
 >                                    [65537 .. 70000] * 0 + 1), [65537 .. 65555]);
 <transformation on 65555 pts with rank 65536>
-gap> RestrictedTransformationNC(Transformation([65537 .. 70000], 
+gap> RestrictedTransformation(Transformation([65537 .. 70000], 
 >                                    [65537 .. 70000] * 0 + 1), [1, -1]);
-Error, RestrictedTransformationNC: <list>[2] must be a positive integer (not a\
- integer)
-gap> RestrictedTransformationNC("a", [1 .. 10]);
-Error, RestrictedTransformationNC: the first argument must be a transformation\
- (not a list (string))
+Error, RestrictedTransformation: <list>[2] must be a positive  integer (not a \
+integer)
+gap> RestrictedTransformation("a", [1 .. 10]);
+Error, RestrictedTransformation: the first argument must be a transformation (\
+not a list (string))
+gap> RestrictedTransformation(Transformation([3, 2, 3]), [1]);
+Transformation( [ 3, 2, 3 ] )
+gap> RestrictedTransformation(Transformation([1], [65537]), [1]);
+<transformation on 65537 pts with rank 65536>
 
 # Test AS_TRANS_TRANS
 gap> AS_TRANS_TRANS(IdentityTransformation, -1);
@@ -3499,7 +3503,7 @@ gap> PermLeftQuoTransformation(f, f * (2,11,5,6,9));
 gap> String(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5]));
 "Transformation( [ 2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5 ] )"
 gap> String(IdentityTransformation);
-"<identity transformation>"
+"IdentityTransformation"
 
 # ViewString: for fr style viewing
 gap> SetUserPreference("NotationForTransformations", "fr");

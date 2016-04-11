@@ -1918,14 +1918,14 @@ Obj FuncPermLeftQuoTransformationNC (Obj self, Obj f, Obj g) {
 // Returns a transformation g such that (i)g = (i)f for all i in list, and
 // where (i)g = i for every other value of i.
 
-Obj FuncRestrictedTransformationNC (Obj self, Obj f, Obj list) {
+Obj FuncRestrictedTransformation (Obj self, Obj f, Obj list) {
   UInt    deg, i, k, len;
   UInt2   *ptf2, *ptg2;
   UInt4   *ptf4, *ptg4;
   Obj     g, j;
 
   if (!IS_LIST(list)) {
-    ErrorQuit("RestrictedTransformationNC: the second argument must be a list "
+    ErrorQuit("RestrictedTransformation: the second argument must be a list "
               "(not a %s)", (Int) TNAM_OBJ(list), 0L);
   }
 
@@ -1947,8 +1947,8 @@ Obj FuncRestrictedTransformationNC (Obj self, Obj f, Obj list) {
     for (i = 0; i < len; i++) {
       j = ELM_LIST(list, i + 1);
       if (TNUM_OBJ(j) != T_INT || INT_INTOBJ(j) < 1) {
-        ErrorQuit("RestrictedTransformationNC: <list>[%d] must be a positive integer "
-                  "(not a %s)", (Int) i + 1, (Int) TNAM_OBJ(j));
+        ErrorQuit("RestrictedTransformation: <list>[%d] must be a positive "
+                  " integer (not a %s)", (Int) i + 1, (Int) TNAM_OBJ(j));
       }
       k = INT_INTOBJ(j) - 1;
       if (k < deg) {
@@ -1972,8 +1972,8 @@ Obj FuncRestrictedTransformationNC (Obj self, Obj f, Obj list) {
     for (i = 0; i < len; i++) {
       j = ELM_LIST(list, i + 1);
       if (TNUM_OBJ(j) != T_INT || INT_INTOBJ(j) < 1) {
-        ErrorQuit("RestrictedTransformationNC: <list>[%d] must be a positive integer "
-                  "(not a %s)", (Int) i + 1, (Int) TNAM_OBJ(j));
+        ErrorQuit("RestrictedTransformation: <list>[%d] must be a positive "
+                  " integer (not a %s)", (Int) i + 1, (Int) TNAM_OBJ(j));
       }
       k = INT_INTOBJ(j) - 1;
       if (k < deg) {
@@ -1982,7 +1982,7 @@ Obj FuncRestrictedTransformationNC (Obj self, Obj f, Obj list) {
     }
     return g;
   }
-  ErrorQuit("RestrictedTransformationNC: the first argument must be a "
+  ErrorQuit("RestrictedTransformation: the first argument must be a "
             "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
   return 0L;
 }
@@ -5130,9 +5130,9 @@ static StructGVarFunc GVarFuncs [] = {
      FuncPermutationOfImage,
     "src/trans.c:FuncPermutationOfImage" },
 
-  { "RestrictedTransformationNC", 2, "f, list",
-     FuncRestrictedTransformationNC,
-    "src/trans.c:FuncRestrictedTransformationNC" },
+  { "RestrictedTransformation", 2, "f, list",
+     FuncRestrictedTransformation,
+    "src/trans.c:FuncRestrictedTransformation" },
 
   { "AS_TRANS_TRANS", 2, "f, m",
      FuncAS_TRANS_TRANS,

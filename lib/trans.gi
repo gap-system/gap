@@ -478,20 +478,6 @@ function(deg, rank)
   return Transformation(im);
 end);
 
-InstallMethod(RestrictedTransformation,
-"for transformation and list",
-[IsTransformation, IsList],
-function(f, list)
-
-  if not (IsDenseList(list) and IsDuplicateFree(list)
-          and ForAll(list, IsPosInt)) then
-    ErrorNoReturn("RestrictedTransformation: usage,\n",
-                  "the second argument should be a duplicate-free, dense ",
-                  "list of positive integers,");
-  fi;
-  return RestrictedTransformationNC(f, list);
-end);
-
 InstallMethod(SmallestIdempotentPower, "for a transformation",
 [IsTransformation], SMALLEST_IDEM_POW_TRANS);
 
