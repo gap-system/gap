@@ -2722,11 +2722,11 @@ gap> SmallestImageOfMovedPoint(Transformation([3, 3, 3]));
 gap> S := Semigroup(Transformation([1, 3, 4, 1, 3]),
 >                   Transformation([5, 5, 1, 1, 3]));;
 gap> MovedPoints(S);
-[ 1, 2, 3, 4, 5 ]
+[ 1 .. 5 ]
 gap> MovedPoints(GreensRClassOfElement(S, Transformation([1, 3, 4, 1, 3])));
 [ 2, 3, 4, 5 ]
 gap> MovedPoints(GeneratorsOfSemigroup(S));
-[ 1, 2, 3, 4, 5 ]
+[ 1 .. 5 ]
 
 # NrMovedPoints: for a transformation collection
 gap> S := Semigroup(Transformation([1, 3, 4, 1, 3]),
