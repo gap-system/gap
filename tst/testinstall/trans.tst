@@ -544,57 +544,61 @@ gap> AS_PERM_TRANS(());
 Error, AS_PERM_TRANS: the first argument must be a transformation (not a permu\
 tation (small))
 
-# Test PERM_IMG_TRANS
-gap> PERM_IMG_TRANS(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]));
+# Test PermutationOfImage
+gap> PermutationOfImage(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]));
 fail
-gap> PERM_IMG_TRANS(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6]));
+gap> PermutationOfImage(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6]));
 fail
-gap> PERM_IMG_TRANS(Transformation([65537], [1]));
+gap> PermutationOfImage(Transformation([65537], [1]));
 ()
-gap> PERM_IMG_TRANS(Transformation([1, 2, 3, 4, 5, 6, 7, 8, 9, 1]));
+gap> PermutationOfImage(Transformation([1, 2, 3, 4, 5, 6, 7, 8, 9, 1]));
 ()
-gap> PERM_IMG_TRANS(Transformation([2, 3, 1, 4, 5, 6, 7, 8, 9, 2]));
+gap> PermutationOfImage(Transformation([2, 3, 1, 4, 5, 6, 7, 8, 9, 2]));
 (1,2,3)
-gap> PERM_IMG_TRANS(Transformation([1 .. 65537], x -> x + 1));
+gap> PermutationOfImage(Transformation([1 .. 65537], x -> x + 1));
 fail
-gap> PERM_IMG_TRANS(1);
-Error, PERM_IMG_TRANS: the first argument must be a transformation (not a inte\
-ger)
+gap> PermutationOfImage(1);
+Error, PermutationOfImage: the first argument must be a transformation (not a \
+integer)
 
-# Test RESTRICTED_TRANS
-gap> RESTRICTED_TRANS(IdentityTransformation, [1, -1]);
-Error, RESTRICTED_TRANS: <list>[2] must be a positive integer (not a integer)
-gap> RESTRICTED_TRANS(IdentityTransformation, "a");
-Error, RESTRICTED_TRANS: <list>[1] must be a positive integer (not a character\
-)
-gap> RESTRICTED_TRANS(IdentityTransformation, [1,, 3]);
+# Test RestrictedTransformationNC
+gap> RestrictedTransformationNC(IdentityTransformation, [1, -1]);
+Error, RestrictedTransformationNC: <list>[2] must be a positive integer (not a\
+ integer)
+gap> RestrictedTransformationNC(IdentityTransformation, "a");
+Error, RestrictedTransformationNC: <list>[1] must be a positive integer (not a\
+ character)
+gap> RestrictedTransformationNC(IdentityTransformation, [1,, 3]);
 Error, List Element: <list>[2] must have an assigned value
-gap> RESTRICTED_TRANS(IdentityTransformation, [1 .. 10]);
+gap> RestrictedTransformationNC(IdentityTransformation, [1 .. 10]);
 IdentityTransformation
-gap> RESTRICTED_TRANS(IdentityTransformation, [0]);
-Error, RESTRICTED_TRANS: <list>[1] must be a positive integer (not a integer)
-gap> RESTRICTED_TRANS(Transformation([1, 2, 1, 4, 5]), [1, 3, 5]);
+gap> RestrictedTransformationNC(IdentityTransformation, [0]);
+Error, RestrictedTransformationNC: <list>[1] must be a positive integer (not a\
+ integer)
+gap> RestrictedTransformationNC(Transformation([1, 2, 1, 4, 5]), [1, 3, 5]);
 Transformation( [ 1, 2, 1 ] )
-gap> RESTRICTED_TRANS(Transformation([2, 1, 1, 4, 5]), [1 .. 3]);
+gap> RestrictedTransformationNC(Transformation([2, 1, 1, 4, 5]), [1 .. 3]);
 Transformation( [ 2, 1, 1 ] )
-gap> RESTRICTED_TRANS(Transformation([2, 1, 1, 4, 5]), [1 .. 10]);
+gap> RestrictedTransformationNC(Transformation([2, 1, 1, 4, 5]), [1 .. 10]);
 Transformation( [ 2, 1, 1 ] )
-gap> RESTRICTED_TRANS(Transformation([1, 2, 1, 4, 5]), [1 .. 5]);
+gap> RestrictedTransformationNC(Transformation([1, 2, 1, 4, 5]), [1 .. 5]);
 Transformation( [ 1, 2, 1 ] )
-gap> RESTRICTED_TRANS(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 0);
-Error, RESTRICTED_TRANS: the second argument must be a list (not a integer)
-gap> RESTRICTED_TRANS(Transformation([65537 .. 70000], 
+gap> RestrictedTransformationNC(Transformation([1, 2, 1, 4, 5, 1, 1, 1, 1, 1, 1]), 0);
+Error, RestrictedTransformationNC: the second argument must be a list (not a i\
+nteger)
+gap> RestrictedTransformationNC(Transformation([65537 .. 70000], 
 >                                    [65537 .. 70000] * 0 + 1), [1 .. 65536]);
 IdentityTransformation
-gap> RESTRICTED_TRANS(Transformation([65537 .. 70000], 
+gap> RestrictedTransformationNC(Transformation([65537 .. 70000], 
 >                                    [65537 .. 70000] * 0 + 1), [65537 .. 65555]);
 <transformation on 65555 pts with rank 65536>
-gap> RESTRICTED_TRANS(Transformation([65537 .. 70000], 
+gap> RestrictedTransformationNC(Transformation([65537 .. 70000], 
 >                                    [65537 .. 70000] * 0 + 1), [1, -1]);
-Error, RESTRICTED_TRANS: <list>[2] must be a positive integer (not a integer)
-gap> RESTRICTED_TRANS("a", [1 .. 10]);
-Error, RESTRICTED_TRANS: the first argument must be a transformation (not a li\
-st (string))
+Error, RestrictedTransformationNC: <list>[2] must be a positive integer (not a\
+ integer)
+gap> RestrictedTransformationNC("a", [1 .. 10]);
+Error, RestrictedTransformationNC: the first argument must be a transformation\
+ (not a list (string))
 
 # Test AS_TRANS_TRANS
 gap> AS_TRANS_TRANS(IdentityTransformation, -1);
@@ -677,51 +681,51 @@ gap> IsTrans4Rep(x);
 true
 gap> HASH_FUNC_FOR_TRANS(x, 101);;
 
-# Test IS_INJECTIVE_LIST_TRANS
+# Test IsInjectiveListTrans
 gap> f := Transformation([9, 3, 2, 3, 1, 8, 2, 7, 8, 3, 12, 10]);;
-gap> IS_INJECTIVE_LIST_TRANS([1, 2, 3, 6, 5], f);
+gap> IsInjectiveListTrans([1, 2, 3, 6, 5], f);
 true
-gap> IS_INJECTIVE_LIST_TRANS([1 .. 5], f);     
+gap> IsInjectiveListTrans([1 .. 5], f);     
 false
 gap> f := Transformation([65537 .. 70000], 
 >                        [65537 .. 70000] * 0 + 1);;
-gap> IS_INJECTIVE_LIST_TRANS(ImageSetOfTransformation(f), f);
+gap> IsInjectiveListTrans(ImageSetOfTransformation(f), f);
 true
-gap> IS_INJECTIVE_LIST_TRANS([1 .. RankOfTransformation(f) + 1], f);   
+gap> IsInjectiveListTrans([1 .. RankOfTransformation(f) + 1], f);   
 false
-gap> IS_INJECTIVE_LIST_TRANS([1 .. RankOfTransformation(f) + 1], 
+gap> IsInjectiveListTrans([1 .. RankOfTransformation(f) + 1], 
 >                            ImageListOfTransformation(f));
 false
 gap> f := Transformation([12, 3, 4, 12, 1, 2, 12, 1, 5, 1, 10, 7]);;
-gap> IS_INJECTIVE_LIST_TRANS([1 .. 3], f);                    
+gap> IsInjectiveListTrans([1 .. 3], f);                    
 true
-gap> IS_INJECTIVE_LIST_TRANS([1 .. 4], f);
+gap> IsInjectiveListTrans([1 .. 4], f);
 false
-gap> IS_INJECTIVE_LIST_TRANS([1 .. 4], ImageListOfTransformation(f));
+gap> IsInjectiveListTrans([1 .. 4], ImageListOfTransformation(f));
 false
-gap> IS_INJECTIVE_LIST_TRANS([1 .. 3], ImageListOfTransformation(f));
+gap> IsInjectiveListTrans([1 .. 3], ImageListOfTransformation(f));
 true
 gap> f := Transformation([11, 9, 3, 8, 10, 11, 6, 1, 8, 8, 4, 11]);;
 gap> RankOfTransformation(f);
 8
-gap> IS_INJECTIVE_LIST_TRANS([1 .. 5], f);                           
+gap> IsInjectiveListTrans([1 .. 5], f);                           
 true
-gap> IS_INJECTIVE_LIST_TRANS([1 .. 6], f);
+gap> IsInjectiveListTrans([1 .. 6], f);
 false
 gap> f := Transformation([5, 5, 3, 10, 10, 10, 2, 12, 11, 9, 1, 6]);;
-gap> IS_INJECTIVE_LIST_TRANS([2, 3], f);
+gap> IsInjectiveListTrans([2, 3], f);
 true
-gap> IS_INJECTIVE_LIST_TRANS([2, 3, 4, 7], f);
+gap> IsInjectiveListTrans([2, 3, 4, 7], f);
 true
-gap> IS_INJECTIVE_LIST_TRANS([2, 3, 4, 5, 7], f);
+gap> IsInjectiveListTrans([2, 3, 4, 5, 7], f);
 false
-gap> IS_INJECTIVE_LIST_TRANS([65536], f);
+gap> IsInjectiveListTrans([65536], f);
 true
-gap> IS_INJECTIVE_LIST_TRANS([1 .. 65536], f);
+gap> IsInjectiveListTrans([1 .. 65536], f);
 false
-gap> IS_INJECTIVE_LIST_TRANS([1 .. 65536], ImageListOfTransformation(f));
+gap> IsInjectiveListTrans([1 .. 65536], ImageListOfTransformation(f));
 false
-gap> IS_INJECTIVE_LIST_TRANS([65536], ImageListOfTransformation(f));
+gap> IsInjectiveListTrans([65536], ImageListOfTransformation(f));
 true
 
 # Test PermLeftQuoTransformationNC
@@ -925,9 +929,9 @@ t (string))
 gap> INV_LIST_TRANS([1, -1], Transformation([1], [65537]));
 Error, INV_LIST_TRANS: <list>[2] must be a positive integer (not a integer)
 
-# INDEX_PERIOD_TRANS
+# IndexPeriodOfTransformation
 gap> f := Transformation([4, 3, 8, 9, 3, 5, 8, 10, 5, 6, 2, 8]);;
-gap> val := INDEX_PERIOD_TRANS(f);
+gap> val := IndexPeriodOfTransformation(f);
 [ 3, 5 ]
 gap> ind := val[1];; per := val[2];;
 gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
@@ -940,7 +944,7 @@ false
 gap> f := Transformation([65537 .. 70000], 
 >                        [65537 .. 70000] * 0 + 1) 
 >         * (14918, 184, 141)(14140, 124);;
-gap> val := INDEX_PERIOD_TRANS(f);
+gap> val := IndexPeriodOfTransformation(f);
 [ 1, 6 ]
 gap> ind := val[1];; per := val[2];;
 gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
@@ -954,7 +958,7 @@ gap> f := Transformation(
 > [5, 23, 27, 8, 21, 49, 36, 33, 4, 44, 3, 49, 48, 18, 10, 30, 47, 3, 41, 35, 
 >  33, 15, 39, 19, 37, 24, 26, 2, 16, 47, 9, 7, 28, 47, 25, 21, 50, 23, 18, 42, 26, 
 >  40, 40, 4, 43, 27, 45, 35, 40, 14]);;
-gap> val := INDEX_PERIOD_TRANS(f);
+gap> val := IndexPeriodOfTransformation(f);
 [ 14, 4 ]
 gap> ind := val[1];; per := val[2];;
 gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
@@ -973,7 +977,7 @@ gap> f :=
 >  47, 48, 42, 82, 37, 34, 25, 26, 19, 44, 13, 15, 27, 41, 99, 15, 69, 8, 19,
 >  85, 8, 96, 8, 69, 97, 31, 22, 71, 39, 91, 13, 76, 53, 37, 78, 27, 91, 46,
 >  32, 64, 70, 84, 92, 37, 68, 10, 68 ] );;
-gap> val := INDEX_PERIOD_TRANS(f);
+gap> val := IndexPeriodOfTransformation(f);
 [ 10, 42 ]
 gap> ind := val[1];; per := val[2];;
 gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
@@ -990,7 +994,7 @@ gap> f :=
 >  70, 29, 11, 13, 8, 14, 67, 84, 17, 79, 44, 59, 19, 35, 19, 61, 49, 32, 24,
 >  45, 71, 2, 90, 12, 4, 43, 61, 63, 64, 34, 92, 77, 19, 8, 23, 85, 26, 87, 8,
 >  76, 18, 48, 33, 8, 7, 38, 39 ] );;
-gap> val := INDEX_PERIOD_TRANS(f);
+gap> val := IndexPeriodOfTransformation(f);
 [ 13, 4 ]
 gap> ind := val[1];; per := val[2];;
 gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
@@ -1007,7 +1011,7 @@ gap> f :=
 >  19, 94, 11, 70, 84, 22, 95, 5, 44, 44, 6, 7, 56, 4, 57, 94, 100, 86, 30,
 >  38, 80, 77, 60, 45, 99, 38, 11, 60, 62, 76, 50, 13, 48, 27, 82, 68, 99, 17,
 >  81, 16, 3, 14, 90, 22, 71, 41, 98 ] );;
-gap> val := INDEX_PERIOD_TRANS(f);
+gap> val := IndexPeriodOfTransformation(f);
 [ 16, 7 ]
 gap> ind := val[1];; per := val[2];;
 gap> RankOfTransformation(f ^ (ind - 1), DegreeOfTransformation(f)) > 
@@ -1017,11 +1021,11 @@ gap> f ^ (ind + per) = f ^ ind;
 true
 gap> ForAny([1 .. per - 1], m -> f ^ (ind + m) = f ^ ind);
 false
-gap> INDEX_PERIOD_TRANS(IdentityTransformation);
+gap> IndexPeriodOfTransformation(IdentityTransformation);
 [ 1, 1 ]
-gap> INDEX_PERIOD_TRANS("a");
-Error, INDEX_PERIOD_TRANS: the argument must be a transformation (not a list (\
-string))
+gap> IndexPeriodOfTransformation("a");
+Error, IndexPeriodOfTransformation: the argument must be a transformation (not\
+ a list (string))
 gap> IndexPeriodOfTransformation(Transformation([2, 1]));
 [ 1, 2 ]
 

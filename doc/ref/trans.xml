@@ -500,7 +500,7 @@ IdentityTransformation
 
   <ManSection>
   <Oper Name="RestrictedTransformation" Arg="f, list"/>
-  <Oper Name="RestrictedTransformationNC" Arg="f, list"/>
+  <Func Name="RestrictedTransformationNC" Arg="f, list"/>
   <Returns>A transformation.</Returns>
   <Description>
     <C>RestrictedTransformation</C> returns the new transformation <C>g</C>
@@ -520,7 +520,7 @@ Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )
 </ManSection>
 
   <ManSection>
-  <Attr Name="PermutationOfImage" Arg="f"/>
+  <Func Name="PermutationOfImage" Arg="f"/>
   <Returns>A permutation or <K>fail</K>.</Returns>
   <Description>
     If the transformation <A>f</A> is a permutation of the points in its image,
@@ -644,7 +644,7 @@ gap> PermLeftQuoTransformation(g, f);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
   <ManSection>
-    <Oper Name="IsInjectiveListTrans" Arg="obj, list"/>
+    <Func Name="IsInjectiveListTrans" Arg="obj, list"/>
     <Returns><K>true</K> or <K>false</K>.</Returns>
     <Description>
       The argument <A>obj</A> should be a transformation or the list of images
@@ -1105,7 +1105,7 @@ Transformation( [ 3, 1, 2 ] )
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
   <ManSection> 
-    <Attr Name="IndexPeriodOfTransformation" Arg="f"/> 
+    <Func Name="IndexPeriodOfTransformation" Arg="f"/> 
     <Returns>A pair of positive integers.</Returns> 
     <Description> 
       Returns the least positive integers <C>m</C> and <C>r</C> such that
