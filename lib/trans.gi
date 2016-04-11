@@ -263,9 +263,6 @@ InstallMethod(IsIdempotent, "for a transformation",
 InstallMethod(AsPermutation, "for a transformation",
 [IsTransformation], AS_PERM_TRANS);
 
-InstallMethod(PermutationOfImage, "for a transformation",
-[IsTransformation], PERM_IMG_TRANS);
-
 InstallMethod(AsTransformation, "for a permutation",
 [IsPerm], AS_TRANS_PERM);
 
@@ -344,17 +341,8 @@ end);
 InstallMethod(ImageListOfTransformation, "for a transformation",
 [IsTransformation], x -> IMAGE_LIST_TRANS_INT(x, DegreeOfTransformation(x)));
 
-InstallMethod(IndexPeriodOfTransformation, "for a transformation",
-[IsTransformation], INDEX_PERIOD_TRANS);
-
 InstallMethod(Order, "for a transformation",
-[IsTransformation], x -> Sum(INDEX_PERIOD_TRANS(x)) - 1);
-
-InstallMethod(IsInjectiveListTrans, "for a list and list",
-[IsList, IsList], IS_INJECTIVE_LIST_TRANS);
-
-InstallMethod(IsInjectiveListTrans, "for a list and trans",
-[IsList, IsTransformation], IS_INJECTIVE_LIST_TRANS);
+[IsTransformation], x -> Sum(IndexPeriodOfTransformation(x)) - 1);
 
 InstallMethod(KernelOfTransformation, "for a transformation",
 [IsTransformation], x -> KERNEL_TRANS(x, DegreeOfTransformation(x)));
@@ -514,10 +502,6 @@ function(deg, rank)
   return Transformation(im);
 end);
 
-InstallMethod(RestrictedTransformationNC,
-"for a transformation and list",
-[IsTransformation, IsList], RESTRICTED_TRANS);
-
 InstallMethod(RestrictedTransformation,
 "for transformation and list",
 [IsTransformation, IsList],
@@ -529,7 +513,7 @@ function(f, list)
                   "the second argument should be a duplicate-free, dense ",
                   "list of positive integers,");
   fi;
-  return RESTRICTED_TRANS(f, list);
+  return RestrictedTransformationNC(f, list);
 end);
 
 InstallMethod(SmallestIdempotentPower, "for a transformation",
@@ -554,7 +538,7 @@ InstallMethod(Idempotent, "for a list of pos ints and list of pos ints",
 function(img, ker)
 
   if ForAll(ker, IsPosInt) and ForAll(img, IsPosInt)
-      and Maximum(ker) = Length(img) and IS_INJECTIVE_LIST_TRANS(img, ker)
+      and Maximum(ker) = Length(img) and IsInjectiveListTrans(img, ker)
       and IsSet(img) and ForAll(img, x -> x <= Length(ker)) then
     return IDEM_IMG_KER_NC(img, ker);
   fi;
