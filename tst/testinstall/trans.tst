@@ -2685,11 +2685,11 @@ gap> OnKernelAntiAction([1, ,3], Transformation([1, 3, 4, 1, 3, 5]));
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `OnKernelAntiAction' on 2 arguments
 gap> OnKernelAntiAction([], Transformation([1, 3, 4, 1, 3, 5]));
-Error, OnKernelAntiAction: usage,the first argument <ker> must be
-a non-empty dense list of positive integers,
+Error, OnKernelAntiAction: usage,the first argument <ker> does not
+describe the flat kernel of a transformation,
 gap> OnKernelAntiAction([-1], Transformation([1, 3, 4, 1, 3, 5]));
-Error, OnKernelAntiAction: usage,the first argument <ker> must be
-a non-empty dense list of positive integers,
+Error, OnKernelAntiAction: usage,the first argument <ker> does not
+describe the flat kernel of a transformation,
 gap> OnKernelAntiAction([1, "a"], Transformation([1, 3, 4, 1, 3, 5]));
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `OnKernelAntiAction' on 2 arguments
@@ -2857,6 +2857,160 @@ gap> RandomTransformation(10);;
 gap> f := RandomTransformation(10, 3);;
 gap> RankOfTransformation(f, 10);
 3
+
+# TransformationByImageAndKernel
+gap> TransformationByImageAndKernel([1, 2, 4, 4], [1, 2, 3]);
+fail
+gap> TransformationByImageAndKernel([1, 3, 2, 2], [1, 2, 3]);
+fail
+gap> TransformationByImageAndKernel([1, 2, 2, 3], [1, 2, 3]);
+fail
+gap> TransformationByImageAndKernel([1, 2, 3], [1, 2, 4, 4]);
+fail
+gap> TransformationByImageAndKernel([1, 2, 3], [1, 2, 3, 3]);
+Transformation( [ 1, 2, 3, 3 ] )
+gap> TransformationByImageAndKernel([1, 2, 3], [1, 3, 2, 2]);
+fail
+gap> TransformationByImageAndKernel([2, 1, 3], [1, 2, 3, 3]);
+Transformation( [ 2, 1, 3, 3 ] )
+gap> f := TransformationByImageAndKernel([2, 1, 3], [1, 2, 3, 3]);
+Transformation( [ 2, 1, 3, 3 ] )
+gap> FlatKernelOfTransformation(f);
+[ 1, 2, 3, 3 ]
+gap> ImageSetOfTransformation(f);
+[ 1, 2, 3 ]
+gap> TransformationByImageAndKernel([2, 1, 3], [1, 3, 2, 2]);
+fail
+gap> TransformationByImageAndKernel([1 .. 2], [1, 2, 3, 2]);
+fail
+gap> TransformationByImageAndKernel([1 .. 4], [1, 2, 3, 2]);
+fail
+gap> TransformationByImageAndKernel([1, 2, 4], [1, 2, 3, 2]);
+Transformation( [ 1, 2, 4, 2 ] )
+gap> TransformationByImageAndKernel([1, 2, 5], [1, 2, 3, 2]);
+fail
+gap> TransformationByImageAndKernel([1, 1, 5], [1, 2, 3, 2]);
+fail
+gap> TransformationByImageAndKernel([1, 1, -5], [1, 2, 3, 2]);
+fail
+gap> TransformationByImageAndKernel([1, 1, -5], [1, 2, -3, 2]);
+fail
+
+# Idempotent 
+gap> Idempotent([1, 2, 4, 4], [1, 2, 3]);
+fail
+gap> Idempotent([1, 3, 2, 2], [1, 2, 3]);
+fail
+gap> Idempotent([1, 2, 2, 3], [1, 2, 3]);
+fail
+gap> Idempotent([1, 2, 3], [1, 2, 4, 4]);
+fail
+gap> Idempotent([1, 2, 3], [1, 2, 3, 3]);
+Transformation( [ 1, 2, 3, 3 ] )
+gap> Idempotent([1, 2, 3], [1, 3, 2, 2]);
+fail
+gap> Idempotent([2, 1, 3], [1, 2, 3, 3]);
+fail
+gap> f := Idempotent([2, 1, 3], [1, 2, 3, 3]);
+fail
+gap> f := Idempotent([1, 2, 3], [1, 2, 3, 3]);
+Transformation( [ 1, 2, 3, 3 ] )
+gap> FlatKernelOfTransformation(f);
+[ 1, 2, 3, 3 ]
+gap> ImageSetOfTransformation(f);
+[ 1, 2, 3 ]
+gap> Idempotent([2, 1, 3], [1, 3, 2, 2]);
+fail
+gap> Idempotent([1 .. 2], [1, 2, 3, 2]);
+fail
+gap> Idempotent([1 .. 4], [1, 2, 3, 2]);
+fail
+gap> Idempotent([1, 2, 4], [1, 2, 3, 2]);
+fail
+gap> Idempotent([1, 2, 5], [1, 2, 3, 2]);
+fail
+gap> Idempotent([1, 1, 5], [1, 2, 3, 2]);
+fail
+gap> Idempotent([1, 1, -5], [1, 2, 3, 2]);
+fail
+gap> Idempotent([1, 1, -5], [1, 2, -3, 2]);
+fail
+
+# TransformationOp, TransformationOpNC
+gap> f := Transformation([10, 2, 3, 10, 5, 10, 7, 2, 5, 6]);
+Transformation( [ 10, 2, 3, 10, 5, 10, 7, 2, 5, 6 ] )
+gap> TransformationOp(f, [2, 3]);
+IdentityTransformation
+gap> TransformationOp(f, [1, 2, 3]);
+fail
+gap> S := SemigroupByMultiplicationTable([[1, 1, 1], [1, 1, 1], [1, 1, 2]]);;
+gap> TransformationOp(Elements(S)[1], S, OnRight);
+Transformation( [ 1, 1, 1 ] )
+gap> TransformationOp(Elements(S)[3], S, OnRight);
+Transformation( [ 1, 1, 2 ] )
+gap> f := TransformationOp(Transformation([1, 3, 1]), ["b", "a", "c"],
+> function(i, f) 
+>   return "a";
+> end);
+Transformation( [ 2, 2, 2 ] )
+gap> f := TransformationOp(Transformation([1, 3, 1]), ["c", "b", "a"],
+> function(i, f) 
+>   return "a";
+> end);
+Transformation( [ 3, 3, 3 ] )
+gap> f := TransformationOp(Transformation([1, 3, 1]), [[1, 2], [2, 3], [1, 3]],
+> OnSets);
+fail
+gap> f := TransformationOp(Transformation([1, 2, 1]), [[1, 2], [2, 3]],
+> OnSets);
+Transformation( [ 1, 1 ] )
+gap> f := TransformationOp(Transformation([1, 2, 1]), [[2, 3], [1, 2], [4, 5]],
+> OnSets);
+Transformation( [ 2, 2 ] )
+gap> f := Transformation([10, 2, 3, 10, 5, 10, 7, 2, 5, 6]);
+Transformation( [ 10, 2, 3, 10, 5, 10, 7, 2, 5, 6 ] )
+gap> TransformationOpNC(f, [2, 3]);
+IdentityTransformation
+gap> S := SemigroupByMultiplicationTable([[1, 1, 1], [1, 1, 1], [1, 1, 2]]);;
+gap> TransformationOpNC(Elements(S)[1], S, OnRight);
+Transformation( [ 1, 1, 1 ] )
+gap> TransformationOpNC(Elements(S)[3], S, OnRight);
+Transformation( [ 1, 1, 2 ] )
+gap> f := TransformationOpNC(Transformation([1, 3, 1]), ["b", "a", "c"],
+> function(i, f) 
+>   return "a";
+> end);
+Transformation( [ 2, 2, 2 ] )
+gap> f := TransformationOpNC(Transformation([1, 3, 1]), ["c", "b", "a"],
+> function(i, f) 
+>   return "a";
+> end);
+Transformation( [ 3, 3, 3 ] )
+gap> f := TransformationOpNC(Transformation([1, 2, 1]), [[1, 2], [2, 3]],
+> OnSets);
+Transformation( [ 1, 1 ] )
+gap> f := TransformationOpNC(Transformation([1, 2, 1]), [[2, 3], [1, 2], [4, 5]],
+> OnSets);
+Transformation( [ 2, 2 ] )
+
+# InverseMutable
+gap> InverseMutable(Transformation([2, 2]));
+fail
+gap> InverseMutable(Transformation([2, 3, 1]));
+Transformation( [ 3, 1, 2 ] )
+gap> InverseMutable(IdentityTransformation);
+IdentityTransformation
+
+# AsBinaryRelation
+gap> b := AsBinaryRelation(Transformation([10, 5, 9, 10, 9, 6, 3, 8, 4, 6]));
+Binary Relation on 10 points
+gap> Successors(b);
+[ [ 10 ], [ 5 ], [ 9 ], [ 10 ], [ 9 ], [ 6 ], [ 3 ], [ 8 ], [ 4 ], [ 6 ] ]
+gap> AsTransformation(b);
+Transformation( [ 10, 5, 9, 10, 9, 6, 3, 8, 4, 6 ] )
+gap> AsTransformation(b ^ -1);
+Error, AsTransformation: usage,
+the argument must be a binary relation which is a mapping,
 
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
