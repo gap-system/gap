@@ -499,23 +499,17 @@ IdentityTransformation
   </ManSection>
 
   <ManSection>
-  <Oper Name="RestrictedTransformation" Arg="f, list"/>
-  <Func Name="RestrictedTransformationNC" Arg="f, list"/>
+  <Func Name="RestrictedTransformation" Arg="f, list"/>
   <Returns>A transformation.</Returns>
   <Description>
     <C>RestrictedTransformation</C> returns the new transformation <C>g</C>
     such that <C>i^g=i^<A>f</A></C> for all <C>i</C> in <A>list</A> and 
     such that <C>i^g=i</C> for all <C>i</C> not in <A>list</A>. <P/>
   
-    <C>RestrictedTransformation</C> checks that <A>list</A> is a duplicate
-    free dense list consisting of positive integers, whereas
-    <C>RestrictedTransformationNC</C> performs no checks.
-
     <Example><![CDATA[
-gap> f:=Transformation( [ 2, 10, 5, 9, 10, 9, 6, 3, 8, 4, 6, 5 ] );;
-gap> RestrictedTransformation(f, [ 1, 2, 3, 10, 11, 12 ] );
-Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )
-]]></Example>
+gap> f := Transformation([2, 10, 5, 9, 10, 9, 6, 3, 8, 4, 6, 5]);
+gap> RestrictedTransformation(f, [1, 2, 3, 10, 11, 12]);
+Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )]]></Example>
   </Description>
 </ManSection>
 
