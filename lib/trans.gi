@@ -146,27 +146,15 @@ function(f)
 end);
 
 InstallMethod(OnKernelAntiAction, "for a list and transformation",
-[IsDenseList and IsHomogeneousList, IsTransformation],
+[IsHomogeneousList, IsTransformation],
 function(ker, f)
-  local m, i;
 
-  if Length(ker) = 0 or not IsPosInt(ker[1]) then
+  if not IsFlatKernelOfTransformation(ker) then 
     ErrorNoReturn("OnKernelAntiAction: usage,",
-                  "the first argument <ker> must be\na non-empty dense list ",
-                  "of positive integers,");
+                  "the first argument <ker> does not\ndescribe the ",
+                  "flat kernel of a transformation,");
   fi;
 
-  m := 1;
-  for i in ker do
-    if i > m then
-      if m + 1 <> i then
-        ErrorNoReturn("OnKernelAntiAction: usage,",
-                      "the first argument <ker> does not\ndescribe the ",
-                      "flat kernel of a transformation,");
-      fi;
-      m := m + 1;
-    fi;
-  od;
   return ON_KERNEL_ANTI_ACTION(ker, f, 0);
 end);
 
@@ -297,6 +285,25 @@ InstallMethod(DegreeOfTransformationCollection,
 [IsTransformationCollection],
 function(coll)
   return MaximumList(List(coll, DegreeOfTransformation));
+end);
+
+InstallMethod(IsFlatKernelOfTransformation, "for a homogeneous list",
+[IsHomogeneousList],
+function(ker)
+  local m, i;
+  if Length(ker) = 0 or not IsPosInt(ker[1]) then 
+    return false;
+  fi;
+  m := 1;
+  for i in ker do
+    if i > m then
+      if m + 1 <> i then
+        return false;
+      fi;
+      m := m + 1;
+    fi;
+  od;
+  return true;
 end);
 
 InstallMethod(FlatKernelOfTransformation, "for a transformation",
@@ -488,7 +495,7 @@ InstallMethod(TransformationByImageAndKernel,
  IsCyclotomicCollection and IsDenseList],
 function(img, ker)
 
-  if ForAll(ker, IsPosInt) and ForAll(img, IsPosInt) and
+  if IsFlatKernelOfTransformation(ker) and ForAll(img, IsPosInt) and
       Maximum(ker) = Length(img) and IsDuplicateFreeList(img) and
       ForAll(img, x -> x <= Length(ker)) then
     return TRANS_IMG_KER_NC(img, ker);
@@ -500,7 +507,7 @@ InstallMethod(Idempotent, "for a list of pos ints and list of pos ints",
 [IsCyclotomicCollection, IsCyclotomicCollection],
 function(img, ker)
 
-  if ForAll(ker, IsPosInt) and ForAll(img, IsPosInt)
+  if IsFlatKernelOfTransformation(ker) and ForAll(img, IsPosInt)
       and Maximum(ker) = Length(img) and IsInjectiveListTrans(img, ker)
       and IsSet(img) and ForAll(img, x -> x <= Length(ker)) then
     return IDEM_IMG_KER_NC(img, ker);
@@ -518,7 +525,7 @@ function(f, D, act)
 
   perm := ();
 
-  if IsPlistRep(D) and Length(D)>2 and CanEasilySortElements(D[1]) then
+  if IsPlistRep(D) and Length(D) > 2 and CanEasilySortElements(D[1]) then
     if not IsSSortedList(D) then
       D := ShallowCopy(D);
       perm := Sortex(D);
@@ -620,20 +627,6 @@ function(f, D, act)
   return TransformationOpNC(f, Enumerator(D), act);
 end);
 
-InstallGlobalFunction(TransformationActionNC,
-function(arg)
-  if (IsDomain(arg[2]) or IsList(arg[2])) and IsFunction(arg[3]) then
-    if IsMonoid(arg[1]) then
-      return Monoid(GeneratorsOfMonoid(arg[1]), f ->
-                    TransformationOpNC(f, arg[2], arg[3]));
-    elif IsSemigroup(arg[1]) then
-      return Semigroup(GeneratorsOfSemigroup(arg[1]), f ->
-                       TransformationOpNC(f, arg[2], arg[3]));
-    fi;
-  fi;
-  return fail;
-end);
-
 InstallOtherMethod(InverseMutable, "for a transformation",
 [IsTransformation],
 function(f)
@@ -645,20 +638,20 @@ end);
 
 # binary relations etc...
 
-InstallMethod(AsTransformation, "for relation over [1..n]",
-[IsGeneralMapping],
-function(rel)
-    local ims;
-
-    if not IsEndoGeneralMapping(rel) then
-      ErrorNoReturn("AsTransformation: ", rel, " is not a binary relation");
-    fi;
-    ims := ImagesListOfBinaryRelation(rel);
-    if not ForAll(ims, x -> Length(x) = 1) then
-      return fail;
-    fi;
-    return Transformation(List(ims, x -> x[1]));
-end);
+#InstallMethod(AsTransformation, "for relation over [1..n]",
+#[IsGeneralMapping],
+#function(rel)
+#    local ims;
+#
+#    if not IsEndoGeneralMapping(rel) then
+#      ErrorNoReturn("AsTransformation: ", rel, " is not a binary relation");
+#    fi;
+#    ims := ImagesListOfBinaryRelation(rel);
+#    if not ForAll(ims, x -> Length(x) = 1) then
+#      return fail;
+#    fi;
+#    return Transformation(List(ims, x -> x[1]));
+#end);
 
 InstallMethod(AsTransformation, "for binary relations on points",
 [IsBinaryRelation and IsBinaryRelationOnPointsRep],
@@ -678,14 +671,14 @@ function(t)
   return BinaryRelationByListOfImagesNC(List(img, x -> [x]));
 end);
 
-InstallMethod(\*, "for a general mapping and a transformation",
-[IsGeneralMapping, IsTransformation],
-function(r, t)
-  return r * AsBinaryRelation(t);
-end);
-
-InstallMethod(\*, "for a transformation and a general mapping",
-[IsTransformation, IsGeneralMapping],
-function(t, r)
-  return AsBinaryRelation(t) * r;
-end);
+#InstallMethod(\*, "for a general mapping and a transformation",
+#[IsGeneralMapping, IsTransformation],
+#function(r, t)
+#  return r * AsBinaryRelation(t, DegreeOfBinaryRelation(r));
+#end);
+#
+#InstallMethod(\*, "for a transformation and a general mapping",
+#[IsTransformation, IsGeneralMapping],
+#function(t, r)
+#  return AsBinaryRelation(t, DegreeOfBinaryRelation(r)) * r;
+#end);
