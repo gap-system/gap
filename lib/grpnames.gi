@@ -357,7 +357,7 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
       return Ns;
     fi;
 
-    if not CanComputeSize(G) or not IsFinite(G) then TryNextMethod(); fi;
+    if not IsFinite(G) then TryNextMethod(); fi;
 
     # the KN method performs slower in practice, only called if forced
     if ValueOption("useKN") = true then
