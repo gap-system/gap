@@ -79,8 +79,14 @@ gap> RANK_TRANS(Transformation([1, 2, 1]) ^ (4, 65537));
 2
 gap> RANK_TRANS("a");
 Error, RANK_TRANS: the argument must be a transformation (not a list (string))
+gap> RANK_TRANS(IdentityTransformation);
+0
+gap> RANK_TRANS(Transformation([1 .. 10]));
+0
 
 # Test RANK_TRANS_INT
+gap> RANK_TRANS_INT(Transformation([1, 2, 1]), 0);
+0
 gap> RANK_TRANS_INT(Transformation([1, 2, 1]), 2);
 2
 gap> RANK_TRANS_INT(Transformation([1, 2, 1]), -2);
@@ -105,12 +111,16 @@ gap> RANK_TRANS_LIST(Transformation([1, 2, 1]), [1, 3]);
 1
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1, 5, 5]), [1 .. 10]);
 7
+gap> RANK_TRANS_LIST(Transformation([1, 2, 1, 5, 5]), []);
+0
 gap> RANK_TRANS_LIST("a", [1, 3]);
 Error, RANK_TRANS_LIST: the first argument must be a transformation (not a lis\
 t (string))
 gap> RANK_TRANS_LIST(Transformation([65537], [1]), 
 >                    Concatenation([1], [65536 .. 70000]));
 4464
+gap> RANK_TRANS_LIST(Transformation([65537], [1]), []);
+0
 
 # Test IS_ID_TRANS
 gap> IS_ID_TRANS(IdentityTransformation);
@@ -1646,6 +1656,8 @@ gap> CYCLES_TRANS_LIST(f, [65535 .. 70000]);
 [ [ 65535 ], [ 65536 ], [ 1 ] ]
 gap> CYCLES_TRANS_LIST(f, [65535 .. 70001]);
 [ [ 65535 ], [ 65536 ], [ 1 ], [ 70001 ] ]
+gap> CYCLES_TRANS_LIST(f, [1, , 3]);
+Error, List Element: <list>[2] must have an assigned value
 gap> CYCLES_TRANS_LIST(f, [-1]);
 Error, CYCLES_TRANS_LIST: the second argument must be a positive integer (not \
 a integer)
@@ -1653,14 +1665,14 @@ gap> CYCLES_TRANS_LIST(0, [1 .. 10]);
 Error, CYCLES_TRANS_LIST: the first argument must be a transformation (not a i\
 nteger)
 gap> CYCLES_TRANS_LIST(IdentityTransformation, "a");
-Error, CYCLES_TRANS_LIST: the second argument must be a positive integer (not \
-a character)
+Error, CYCLES_TRANS_LIST: the second argument must be a list of positive integ\
+er (not a character)
 gap> CYCLES_TRANS_LIST(IdentityTransformation, ());
 Error, CYCLES_TRANS_LIST: the second argument must be a list (not a transforma\
 tion (small))
 gap> CYCLES_TRANS_LIST(IdentityTransformation, [0, -1]);
-Error, CYCLES_TRANS_LIST: the second argument must be a positive integer (not \
-a integer)
+Error, CYCLES_TRANS_LIST: the second argument must be a list of positive integ\
+er (not a integer)
 
 # LEFT_ONE_TRANS
 gap> f := Transformation([7, 7, 7, 9, 5, 3, 9, 7, 5, 6]);;
@@ -2603,6 +2615,235 @@ gap> TransformationNumber(5, 2);
 Error, TransformationNumber: usage, the first argument must be at most 4,
 gap> TransformationNumber(2, 0);
 Error, TransformationNumber: usage, the first argument must be at most 1,
+
+# IsGeneratorsOfMagmaWithInverses
+gap> IsGeneratorsOfMagmaWithInverses([Transformation([1, 2, 1])]);
+false
+gap> IsGeneratorsOfMagmaWithInverses([IdentityTransformation,
+>                                     Transformation([1, 2, 1])]);
+false
+gap> IsGeneratorsOfMagmaWithInverses([IdentityTransformation]);
+true
+gap> IsGeneratorsOfMagmaWithInverses([Transformation([2, 3, 1])]);
+true
+gap> IsGeneratorsOfMagmaWithInverses([Transformation([2, 3, 1]), 
+>                                     Transformation([2, 4, 1, 3])]);
+true
+
+# Transformation
+gap> Transformation([4]);
+Error, Transformation: usage, the argument does not describea transformation,
+gap> Transformation([1, 2, 4]);
+Error, Transformation: usage, the argument does not describea transformation,
+
+# TransformationListList
+gap> Transformation([-11, 2], [1, 1]);
+Error, TransformationListList: usage, the argument does not describe a
+transformation,
+gap> Transformation([1, 2], [1, -1]);
+Error, TransformationListList: usage, the argument does not describe a
+transformation,
+gap> Transformation([1, 2], [1]);
+Error, TransformationListList: usage, the argument does not describe a
+transformation,
+gap> Transformation([1, , 2], [1, 2, 3]);
+Error, TransformationListList: usage, the argument does not describe a
+transformation,
+gap> Transformation([1, 2, 2], [1, , 3]);
+Error, TransformationListList: usage, the argument does not describe a
+transformation,
+gap> Transformation([1, 2, 2], [1, 2, 3]);
+Error, TransformationListList: usage, the argument does not describe a
+transformation,
+gap> Transformation([3, 2, 1], [1, 1, 2]);
+Transformation( [ 2, 1, 1 ] )
+
+# TrimTransformation
+gap> f := Transformation([1 .. 65537]);
+IdentityTransformation
+gap> IsTrans4Rep(f);
+true
+gap> TrimTransformation(f);
+gap> IsTrans4Rep(f);
+false
+
+# OnKernelAntiAction
+gap> OnKernelAntiAction([1, ,3], Transformation([1, 3, 4, 1, 3, 5]));
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `OnKernelAntiAction' on 2 arguments
+gap> OnKernelAntiAction([], Transformation([1, 3, 4, 1, 3, 5]));
+Error, OnKernelAntiAction: usage,the first argument <ker> must be
+a non-empty dense list of positive integers,
+gap> OnKernelAntiAction([-1], Transformation([1, 3, 4, 1, 3, 5]));
+Error, OnKernelAntiAction: usage,the first argument <ker> must be
+a non-empty dense list of positive integers,
+gap> OnKernelAntiAction([1, "a"], Transformation([1, 3, 4, 1, 3, 5]));
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `OnKernelAntiAction' on 2 arguments
+gap> OnKernelAntiAction([1, 3], Transformation([1, 3, 4, 1, 3, 5]));
+Error, OnKernelAntiAction: usage,the first argument <ker> does not
+describe the flat kernel of a transformation,
+gap> OnKernelAntiAction([1, 2, 1, 4], Transformation([1, 3, 4, 1, 3, 5]));
+Error, OnKernelAntiAction: usage,the first argument <ker> does not
+describe the flat kernel of a transformation,
+
+# SmallestMovedPoint
+gap> SmallestMovedPoint(IdentityTransformation);
+infinity
+gap> SmallestMovedPoint(Transformation([1 .. 5]));
+infinity
+gap> SmallestMovedPoint(Transformation([1, 2, 1]));
+3
+
+# SmallestImagePoint
+gap> SmallestImageOfMovedPoint(IdentityTransformation);
+infinity
+gap> SmallestImageOfMovedPoint(Transformation([1 .. 5]));
+infinity
+gap> SmallestImageOfMovedPoint(Transformation([1, 2, 1]));
+1
+gap> SmallestImageOfMovedPoint(Transformation([3, 3, 3]));
+3
+
+# MovedPoints: for a transformation collection
+gap> S := Semigroup(Transformation([1, 3, 4, 1, 3]),
+>                   Transformation([5, 5, 1, 1, 3]));;
+gap> MovedPoints(S);
+[ 1, 2, 3, 4, 5 ]
+gap> MovedPoints(GreensRClassOfElement(S, Transformation([1, 3, 4, 1, 3])));
+[ 2, 3, 4, 5 ]
+gap> MovedPoints(GeneratorsOfSemigroup(S));
+[ 1, 2, 3, 4, 5 ]
+
+# NrMovedPoints: for a transformation collection
+gap> S := Semigroup(Transformation([1, 3, 4, 1, 3]),
+>                   Transformation([5, 5, 1, 1, 3]));;
+gap> NrMovedPoints(S);
+5
+gap> NrMovedPoints(GreensRClassOfElement(S, Transformation([1, 3, 4, 1, 3])));
+4
+gap> NrMovedPoints(GeneratorsOfSemigroup(S));
+5
+
+# LargestMovedPoint: for a transformation collection
+gap> S := Semigroup(Transformation([1, 3, 4, 1, 3]),
+>                   Transformation([5, 5, 1, 1, 3]));;
+gap> LargestMovedPoint(S);
+5
+gap> LargestMovedPoint(GreensRClassOfElement(S, Transformation([1, 3, 4, 1, 3])));
+5
+gap> LargestMovedPoint(GeneratorsOfSemigroup(S));
+5
+
+# SmallestMovedPoint: for a transformation collection
+gap> S := Semigroup(Transformation([1, 3, 4, 1, 3]),
+>                   Transformation([5, 5, 1, 1, 3]));;
+gap> SmallestMovedPoint(S);
+1
+gap> SmallestMovedPoint(GreensRClassOfElement(S, Transformation([1, 3, 4, 1, 3])));
+2
+gap> SmallestMovedPoint(GeneratorsOfSemigroup(S));
+1
+
+# LargestImageOfMovedPoint: for a transformation collection
+gap> S := Semigroup(Transformation([1, 3, 4, 1, 3]),
+>                   Transformation([5, 5, 1, 1, 3]));;
+gap> LargestImageOfMovedPoint(S);
+5
+gap> LargestImageOfMovedPoint(GreensRClassOfElement(S, 
+> Transformation([1, 3, 4, 1, 3])));
+4
+gap> LargestImageOfMovedPoint(GeneratorsOfSemigroup(S));
+5
+
+# SmallestImageOfMovedPoint: for a transformation collection
+gap> S := Semigroup(Transformation([1, 3, 4, 1, 3]),
+>                   Transformation([5, 5, 1, 1, 3]));;
+gap> SmallestImageOfMovedPoint(S);
+1
+gap> SmallestImageOfMovedPoint(GreensRClassOfElement(S, 
+> Transformation([1, 3, 4, 1, 3])));
+1
+gap> SmallestImageOfMovedPoint(GeneratorsOfSemigroup(S));
+1
+
+# ConstantTransformation
+gap> ConstantTransformation(1, 10);
+Error, ConstantTransformation: usage, the first argument must be greater than \
+or equal to the second,
+gap> ConstantTransformation(10, 1);
+Transformation( [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] )
+
+# Order 
+gap> f := Transformation([3, 12, 14, 4, 11, 18, 17, 2, 2, 9, 5, 15, 2, 18,
+>                         17, 8, 20, 10, 19, 12]);;
+gap> Order(f);
+10
+gap> Size(Semigroup(f));
+10
+gap> Size(Semigroup(f, f));
+10
+
+# KernelOfTransformation
+gap> f := Transformation([2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5]);;
+gap> KernelOfTransformation(f);
+[ [ 1, 4 ], [ 2, 5 ], [ 3 ], [ 6, 7 ], [ 8, 10 ], [ 9 ], [ 11 ], [ 12 ] ]
+gap> KernelOfTransformation(f, 5);
+[ [ 1, 4 ], [ 2, 5 ], [ 3 ] ]
+gap> KernelOfTransformation(f, 5, false);
+[ [ 1, 4 ], [ 2, 5 ] ]
+gap> KernelOfTransformation(f, 5, true);
+[ [ 1, 4 ], [ 2, 5 ], [ 3 ] ]
+gap> KernelOfTransformation(f, 15);
+[ [ 1, 4 ], [ 2, 5 ], [ 3 ], [ 6, 7 ], [ 8, 10 ], [ 9 ], [ 11 ], [ 12 ], 
+  [ 13 ], [ 14 ], [ 15 ] ]
+gap> KernelOfTransformation(f, false);
+[ [ 1, 4 ], [ 2, 5 ], [ 6, 7 ], [ 8, 10 ] ]
+
+# OneMutable: for a transformation collection
+gap> S := Semigroup(Transformation([1, 3, 4, 1, 3]),
+>                   Transformation([5, 5, 1, 1, 3]));;
+gap> OneMutable(S);
+IdentityTransformation
+gap> OneMutable(GreensRClassOfElement(S, Transformation([1, 3, 4, 1, 3])));
+IdentityTransformation
+gap> OneMutable(GeneratorsOfSemigroup(S));
+IdentityTransformation
+
+# PermLeftQuoTransformation
+gap> f := Transformation([2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5]);;
+gap> PermLeftQuoTransformation(f, f);
+()
+gap> PermLeftQuoTransformation(f, f ^ (1, 2)); # wrong kernel
+Error, PermLeftQuoTransformation: usage, the arguments must have equal
+image set and kernel,
+gap> PermLeftQuoTransformation(f, f * (7, 8)); # wrong image
+Error, PermLeftQuoTransformation: usage, the arguments must have equal
+image set and kernel,
+gap> PermLeftQuoTransformation(f, f * (2,11,5,6,9));
+(2,11,5,6,9)
+
+# String
+gap> String(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5]));
+"Transformation( [ 2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5 ] )"
+gap> String(IdentityTransformation);
+"<identity transformation>"
+
+# ViewString: for fr style viewing
+gap> SetUserPreference("NotationForTransformations", "fr");
+gap> Transformation([10, 11], x -> x ^ 2);
+<transformation: 1,2,3,4,5,6,7,8,9,100,121>
+gap> Transformation([2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5]);
+<transformation: 2,6,7,2,6,9,9,1,11,1,12,5>
+gap> IdentityTransformation;
+<identity transformation>
+gap> SetUserPreference("NotationForTransformations", "input");
+
+# RandomTransformation
+gap> RandomTransformation(10);;
+gap> f := RandomTransformation(10, 3);;
+gap> RankOfTransformation(f, 10);
+3
 
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;

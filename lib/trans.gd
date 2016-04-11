@@ -65,17 +65,14 @@ DeclareOperation("ConstantTransformation", [IsPosInt, IsPosInt]);
 DeclareAttribute("DegreeOfTransformationCollection",
                  IsTransformationCollection);
 DeclareAttribute("FlatKernelOfTransformation", IsTransformation);
-DeclareOperation("FlatKernelOfTransformation", [IsTransformation, IsPosInt]);
-DeclareOperation("FlatKernelOfTransformation", [IsTransformation, IsZeroCyc]);
+DeclareOperation("FlatKernelOfTransformation", [IsTransformation, IsInt]);
 
-DeclareOperation("ImageListOfTransformation", [IsTransformation, IsPosInt]);
-DeclareOperation("ImageListOfTransformation", [IsTransformation, IsZeroCyc]);
+DeclareOperation("ImageListOfTransformation", [IsTransformation, IsInt]);
 DeclareOperation("ImageListOfTransformation", [IsTransformation]);
 
 DeclareSynonym("ListTransformation", ImageListOfTransformation);
 DeclareAttribute("ImageSetOfTransformation", IsTransformation);
-DeclareOperation("ImageSetOfTransformation", [IsTransformation, IsPosInt]);
-DeclareOperation("ImageSetOfTransformation", [IsTransformation, IsZeroCyc]);
+DeclareOperation("ImageSetOfTransformation", [IsTransformation, IsInt]);
 
 DeclareAttribute("KernelOfTransformation", IsTransformation);
 DeclareOperation("KernelOfTransformation",
