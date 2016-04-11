@@ -32,6 +32,11 @@ InstallMethod(NumberTransformation,
 [IsTransformation, IsPosInt],
 function(t, n)
   local a, i;
+  if DegreeOfTransformation(t) > n then 
+    ErrorNoReturn("NumberTransformation: usage,", 
+                  "the second argument must be greater\nthan or equal to the ",
+                  "degree of the transformation,");
+  fi;
   a := 0;
   for i in [1 .. n] do
     a := a * n + i ^ t - 1;
@@ -44,6 +49,12 @@ InstallMethod(TransformationNumber,
 [IsPosInt, IsPosInt],
 function(a, n)
   local l, q, i;
+
+  if a > n ^ n then 
+    ErrorNoReturn("TransformationNumber: usage, ", 
+                  "the first argument must be at most ", n ^ n, ",");
+  fi;
+
   l := EmptyPlist(n);
   a := a - 1; # to be in [0 .. n ^ n - 1]
   for i in [n, n - 1 .. 1] do
@@ -52,6 +63,17 @@ function(a, n)
       a := q[1];
   od;
   return TransformationNC(l);
+end);
+
+InstallMethod(TransformationNumber,
+"for a positive integer and zero",
+[IsPosInt, IsZeroCyc],
+function(a, n)
+  if a > 1 then 
+    ErrorNoReturn("TransformationNumber: usage, ", 
+                  "the first argument must be at most 1,");
+  fi;
+  return IdentityTransformation;
 end);
 
 InstallMethod(LT, "for a transformation and cyclotomic",

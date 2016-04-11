@@ -34,6 +34,7 @@ DeclareOperation("NumberTransformation", [IsTransformation, IsZeroCyc]);
 DeclareOperation("NumberTransformation", [IsTransformation, IsPosInt]);
 DeclareOperation("NumberTransformation", [IsTransformation]);
 DeclareOperation("TransformationNumber", [IsPosInt, IsPosInt]);
+DeclareOperation("TransformationNumber", [IsPosInt, IsZeroCyc]);
 
 DeclareAttribute("MovedPoints", IsTransformation);
 DeclareAttribute("NrMovedPoints", IsTransformation);
