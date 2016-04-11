@@ -1234,8 +1234,8 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
     out = NEW_PLIST(T_PLIST_CYC, 2);
 
     SET_LEN_PLIST(out, 2);
-    SET_ELM_PLIST(out, 1, INTOBJ_INT(0));
-    SET_ELM_PLIST(out, 2, INTOBJ_INT(0));
+    SET_ELM_PLIST(out, 1, INTOBJ_INT(1));
+    SET_ELM_PLIST(out, 2, INTOBJ_INT(1));
     return out;
   }
 
@@ -1249,7 +1249,7 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
 
   seen = ResizeInitTmpTrans(deg);
 
-  pow = 0;
+  pow = 2;
   ord = INTOBJ_INT(1);
 
   if (TNUM_OBJ(f) == T_TRANS2) {
