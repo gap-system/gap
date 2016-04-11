@@ -341,7 +341,7 @@ Transformation( [ 1, 1, 2 ] )
       optional second argument <A>n</A> is not specified, then the degree of
       <A>f</A> is used by default. 
       <Example><![CDATA[
-gap> f := Transformation([3, 3, 5, 3, 3]);
+gap> f := Transformation([3, 3, 5, 3, 3]);;
 gap> NumberTransformation(f, 5);
 1613
 gap> NumberTransformation(f, 10);
@@ -507,7 +507,7 @@ IdentityTransformation
     such that <C>i^g=i</C> for all <C>i</C> not in <A>list</A>. <P/>
   
     <Example><![CDATA[
-gap> f := Transformation([2, 10, 5, 9, 10, 9, 6, 3, 8, 4, 6, 5]);
+gap> f := Transformation([2, 10, 5, 9, 10, 9, 6, 3, 8, 4, 6, 5]);;
 gap> RestrictedTransformation(f, [1, 2, 3, 10, 11, 12]);
 Transformation( [ 2, 10, 5, 4, 5, 6, 7, 8, 9, 4, 6, 5 ] )]]></Example>
   </Description>
@@ -1158,15 +1158,14 @@ gap> SmallestIdempotentPower(f);
     <C>[1..DegreeOfTransformation(f)]</C>.
 
     <Example><![CDATA[
-gap> f:=Transformation( [ 6, 12, 11, 1, 7, 6, 2, 8, 4, 7, 5, 12 ] );
+gap> f := Transformation([6, 12, 11, 1, 7, 6, 2, 8, 4, 7, 5, 12]);
 Transformation( [ 6, 12, 11, 1, 7, 6, 2, 8, 4, 7, 5, 12 ] )
 gap> ComponentsOfTransformation(f);  
-[ [ 1, 4, 6, 9 ], [ 2, 3, 5, 7, 10, 11, 12 ], [ 8 ] ]
-gap> f:=AsTransformation((1,8,2,4,11,5,10)(3,7)(9,12));
+[ [ 1, 6, 4, 9 ], [ 2, 12, 3, 11, 5, 7, 10 ], [ 8 ] ]
+gap> f := AsTransformation((1, 8, 2, 4, 11, 5, 10)(3, 7)(9, 12));
 Transformation( [ 8, 4, 7, 11, 10, 6, 3, 2, 12, 1, 5, 9 ] )
 gap> ComponentsOfTransformation(f);  
-[ [ 1, 2, 4, 5, 8, 10, 11 ], [ 3, 7 ], [ 6 ], [ 9, 12 ] ]
-]]></Example>
+[ [ 1, 8, 2, 4, 11, 5, 10 ], [ 3, 7 ], [ 6 ], [ 9, 12 ] ]]]></Example>
   </Description>
 </ManSection>
 
