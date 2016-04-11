@@ -2569,6 +2569,41 @@ false
 gap> IS_TRANS(FreeSemigroup(1).1);
 false
 
+################################################################################
+# Test GAP level functions
+################################################################################
+#
+# NumberTransformation
+gap> NumberTransformation(Transformation([8, 5, 6, 1, 5, 4, 3, 6, 4, 2]));
+7450432532
+gap> NumberTransformation(Transformation([8, 5, 6, 1, 5, 4, 3, 6, 4, 2]), 0);
+1
+gap> NumberTransformation(IdentityTransformation, 0);
+1
+gap> NumberTransformation(IdentityTransformation, 10);
+123456790
+gap> List(FullTransformationMonoid(3), x -> NumberTransformation(x, 3));
+[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 
+  22, 23, 24, 25, 26, 27 ]
+gap> NumberTransformation(Transformation([1, 2, 1]), 2);
+Error, NumberTransformation: usage,the second argument must be greater
+than or equal to the degree of the transformation,
+
+# TransformationNumber
+gap> List([1 .. 27], x -> TransformationNumber(x, 3)) =
+> AsSet(FullTransformationMonoid(3));
+true
+gap> TransformationNumber(7450432532, 10);
+Transformation( [ 8, 5, 6, 1, 5, 4, 3, 6, 4, 2 ] )
+gap> TransformationNumber(1, 0);
+IdentityTransformation
+gap> TransformationNumber(123456790, 10);
+IdentityTransformation
+gap> TransformationNumber(5, 2);
+Error, TransformationNumber: usage, the first argument must be at most 4,
+gap> TransformationNumber(2, 0);
+Error, TransformationNumber: usage, the first argument must be at most 1,
+
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;
