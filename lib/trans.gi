@@ -110,17 +110,20 @@ function(list)
   if IsDenseList(list) and ForAll(list, i -> IsPosInt(i) and i <= len) then
     return TransformationNC(list);
   fi;
-  return fail;
+  ErrorNoReturn("Transformation: usage, the argument does not describe",
+                "a transformation,");
 end);
 
 InstallMethod(TransformationListList, "for a list and list",
 [IsList, IsList],
 function(src, ran)
   if ForAll(src, IsPosInt) and ForAll(ran, IsPosInt) and IsDenseList(src)
-      and IsDenseList(ran) and Length(ran) = Length(src) then
+      and IsDenseList(ran) and Length(ran) = Length(src)  
+      and IsDuplicateFree(src) then
     return TransformationListListNC(src, ran);
   fi;
-  return fail;
+  ErrorNoReturn("TransformationListList: usage, the argument does not ",
+                "describe a\ntransformation,");
 end);
 
 InstallMethod(Transformation, "for a list and list",
@@ -148,17 +151,17 @@ function(ker, f)
   local m, i;
 
   if Length(ker) = 0 or not IsPosInt(ker[1]) then
-    ErrorNoReturn("OnKernelAntiAction: usage:\n",
-                  "the first argument <ker> must be a non-empty dense list ",
-                  "of\npositive integers,");
+    ErrorNoReturn("OnKernelAntiAction: usage,",
+                  "the first argument <ker> must be\na non-empty dense list ",
+                  "of positive integers,");
   fi;
 
   m := 1;
   for i in ker do
     if i > m then
       if m + 1 <> i then
-        ErrorNoReturn("OnKernelAntiAction: usage:\n",
-                      "the first argument <ker> does not describe the\n",
+        ErrorNoReturn("OnKernelAntiAction: usage,",
+                      "the first argument <ker> does not\ndescribe the ",
                       "flat kernel of a transformation,");
       fi;
       m := m + 1;
@@ -174,19 +177,10 @@ InstallMethod(RankOfTransformation, "for a transformation and pos int",
 [IsTransformation, IsPosInt], RANK_TRANS_INT);
 
 InstallMethod(RankOfTransformation, "for a transformation and zero",
-[IsTransformation, IsZeroCyc],
-function(x, y)
-  return 0;
-end);
+[IsTransformation, IsZeroCyc], RANK_TRANS_INT);
 
 InstallMethod(RankOfTransformation, "for a transformation and dense list",
-[IsTransformation, IsDenseList],
-function(f, list)
-  if IsEmpty(list) then
-    return 0;
-  fi;
-  return RANK_TRANS_LIST(f, list);
-end);
+[IsTransformation, IsDenseList], RANK_TRANS_LIST);
 
 InstallMethod(LargestMovedPoint, "for a transformation",
 [IsTransformation], LARGEST_MOVED_PT_TRANS);
@@ -218,10 +212,10 @@ InstallMethod(MovedPoints, "for a tranformation",
 InstallMethod(NrMovedPoints, "for a tranformation",
 [IsTransformation], NR_MOVED_PTS_TRANS);
 
-InstallMethod(MovedPoints, "for a transformation coll",
+InstallMethod(MovedPoints, "for a transformation collection",
 [IsTransformationCollection], coll -> Union(List(coll, MovedPoints)));
 
-InstallMethod(NrMovedPoints, "for a transformation coll",
+InstallMethod(NrMovedPoints, "for a transformation collection",
 [IsTransformationCollection], coll -> Length(MovedPoints(coll)));
 
 InstallMethod(LargestMovedPoint, "for a transformation collection",
@@ -264,17 +258,8 @@ InstallMethod(CycleTransformationInt,
 InstallMethod(CyclesOfTransformation, "for a transformation",
 [IsTransformation], CYCLES_TRANS);
 
-InstallMethod(CyclesOfTransformation,
-"for a transformation and list",
-[IsTransformation, IsList],
-function(f, list)
-  if IsDenseList(list) and ForAll(list, IsPosInt) then
-    return CYCLES_TRANS_LIST(f, list);
-  fi;
-  ErrorNoReturn("CyclesOfTransformation: usage,\n",
-                "the second argument must be a dense list of positive ",
-                "integers");
-end);
+InstallMethod(CyclesOfTransformation, "for a transformation and list",
+[IsTransformation, IsList], CYCLES_TRANS_LIST);
 
 InstallMethod(IsOne, "for a transformation",
 [IsTransformation], IS_ID_TRANS);
@@ -289,33 +274,20 @@ InstallMethod(AsTransformation, "for a permutation",
 [IsPerm], AS_TRANS_PERM);
 
 InstallMethod(AsTransformation, "for a permutation and positive integer",
-[IsPerm, IsInt],
-function(f, n)
-  if 0 <= n then
-    return AS_TRANS_PERM_INT(f, n);
-  fi;
-  return fail;
-end);
+[IsPerm, IsInt], AS_TRANS_PERM_INT);
 
 InstallMethod(AsTransformation, "for a transformation",
 [IsTransformation], IdFunc);
 
 InstallMethod(AsTransformation, "for a transformation and degree",
-[IsTransformation, IsInt],
-function(f, n)
-  if 0 <= n then
-    return AS_TRANS_TRANS(f, n);
-  fi;
-  return fail;
-end);
+[IsTransformation, IsInt], AS_TRANS_TRANS);
 
 InstallMethod(ConstantTransformation, "for a pos int and pos int",
 [IsPosInt, IsPosInt],
 function(m, n)
   if m < n then
-    ErrorNoReturn("ConstantTransformation: usage,\n",
-                  "the arguments should be positive integers with the first",
-                  " greater\nthan or equal to the second,");
+    ErrorNoReturn("ConstantTransformation: usage, the first argument ", 
+                  "must be greater than or equal to the second,");
   fi;
   return Transformation(ListWithIdenticalEntries(m, n));
 end);
@@ -331,34 +303,16 @@ InstallMethod(FlatKernelOfTransformation, "for a transformation",
 [IsTransformation], x -> FLAT_KERNEL_TRANS_INT(x, DegreeOfTransformation(x)));
 
 InstallMethod(FlatKernelOfTransformation, "for a transformation and pos int",
-[IsTransformation, IsPosInt], FLAT_KERNEL_TRANS_INT);
-
-InstallMethod(FlatKernelOfTransformation, "for a transformation and zero",
-[IsTransformation, IsZeroCyc],
-function(x, y)
-  return [];
-end);
+[IsTransformation, IsInt], FLAT_KERNEL_TRANS_INT);
 
 InstallMethod(ImageSetOfTransformation, "for a transformation",
 [IsTransformation], x -> IMAGE_SET_TRANS_INT(x, DegreeOfTransformation(x)));
 
 InstallMethod(ImageSetOfTransformation, "for a transformation and pos int",
-[IsTransformation, IsPosInt], IMAGE_SET_TRANS_INT);
-
-InstallMethod(ImageSetOfTransformation, "for a transformation and zero",
-[IsTransformation, IsZeroCyc],
-function(x, y)
-  return [];
-end);
+[IsTransformation, IsInt], IMAGE_SET_TRANS_INT);
 
 InstallMethod(ImageListOfTransformation, "for a transformation and pos int",
-[IsTransformation, IsPosInt], IMAGE_LIST_TRANS_INT);
-
-InstallMethod(ImageListOfTransformation, "for a transformation and zero",
-[IsTransformation, IsZeroCyc],
-function(x, y)
-  return [];
-end);
+[IsTransformation, IsInt], IMAGE_LIST_TRANS_INT);
 
 InstallMethod(ImageListOfTransformation, "for a transformation",
 [IsTransformation], x -> IMAGE_LIST_TRANS_INT(x, DegreeOfTransformation(x)));
@@ -389,7 +343,7 @@ function(f, bool)
   return KernelOfTransformation(f, DegreeOfTransformation(f), bool);
 end);
 
-InstallOtherMethod(OneMutable, "for a transformation coll",
+InstallOtherMethod(OneMutable, "for a transformation collection",
 [IsTransformationCollection], coll -> IdentityTransformation);
 
 InstallMethod(PermLeftQuoTransformation,
@@ -400,8 +354,8 @@ function(f, g)
   n := Maximum(DegreeOfTransformation(f), DegreeOfTransformation(g));
   if FlatKernelOfTransformation(f, n) <> FlatKernelOfTransformation(g, n)
       or ImageSetOfTransformation(f, n) <> ImageSetOfTransformation(g, n) then
-    ErrorNoReturn("PermLeftQuoTransformation: usage,\n",
-                  "the arguments must have equal image set and kernel,");
+    ErrorNoReturn("PermLeftQuoTransformation: usage, ",
+                  "the arguments must have equal\nimage set and kernel,");
   fi;
   return PermLeftQuoTransformationNC(f, g);
 end);
@@ -419,7 +373,7 @@ function(f)
   local img, str, i;
 
   if IsOne(f) then
-    return "<identity transformation>";
+    return "IdentityTransformation";
   fi;
   img := ImageListOfTransformation(f, DegreeOfTransformation(f));
   str := ShallowCopy(STRINGIFY("[ ", img[1]));
