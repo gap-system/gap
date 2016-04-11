@@ -1022,10 +1022,12 @@ true
 gap> ForAny([1 .. per - 1], m -> f ^ (ind + m) = f ^ ind);
 false
 gap> INDEX_PERIOD_TRANS(IdentityTransformation);
-[ 0, 0 ]
+[ 1, 1 ]
 gap> INDEX_PERIOD_TRANS("a");
 Error, INDEX_PERIOD_TRANS: the argument must be a transformation (not a list (\
 string))
+gap> IndexPeriodOfTransformation(Transformation([2, 1]));
+[ 1, 2 ]
 
 # Test SMALLEST_IDEM_POW_TRANS
 gap> f := Transformation([4, 3, 8, 9, 3, 5, 8, 10, 5, 6, 2, 8]);;
