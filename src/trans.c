@@ -4097,6 +4097,9 @@ Obj ProdTrans2Perm4(Obj f, Obj p){
     for(i=0;i<def;i++) *(ptfp++)=ptp[*(ptf++)];
     for(;i<dep;i++) *(ptfp++)=ptp[i];
   } else {
+    // I don't know how to create a permutation of type T_PERM4 with
+    // (internal) degree 65536 or less, so this case isn't tested. It is
+    // included to make the code more robust.
     for(i=0;i<def;i++) *(ptfp++)=IMAGE(ptf[i], ptp, dep);
   }
   return fp;
@@ -4156,13 +4159,12 @@ Obj ProdTrans4Perm4(Obj f, Obj p){
 
 Obj ProdPerm2Trans2(Obj p, Obj f){ 
   UInt2   *ptf, *ptp, *ptpf;
-  UInt    i, def, dep, depf;
+  UInt    i, def, dep;
   Obj     pf;
 
   dep =  DEG_PERM2(p);
   def = DEG_TRANS2(f);
-  depf= MAX(def,dep);
-  pf  = NEW_TRANS2(depf);
+  pf  = NEW_TRANS2(MAX(def,dep));
 
   ptpf=ADDR_TRANS2(pf);
   ptf =ADDR_TRANS2(f);
@@ -4180,13 +4182,12 @@ Obj ProdPerm2Trans2(Obj p, Obj f){
 Obj ProdPerm2Trans4(Obj p, Obj f){ 
   UInt4   *ptf, *ptpf;
   UInt2   *ptp;
-  UInt    i, def, dep, depf;
+  UInt    i, def, dep;
   Obj     pf;
 
   dep =  DEG_PERM2(p);
   def = DEG_TRANS4(f);
-  depf= MAX(def,dep);
-  pf  = NEW_TRANS4(depf);
+  pf  = NEW_TRANS4(MAX(def,dep));
 
   ptpf=ADDR_TRANS4(pf);
   ptf =ADDR_TRANS4(f);
@@ -4207,19 +4208,21 @@ Obj ProdPerm2Trans4(Obj p, Obj f){
 Obj ProdPerm4Trans2(Obj p, Obj f){ 
   UInt2   *ptf;
   UInt4   *ptp, *ptpf;
-  UInt    i, def, dep, depf;
+  UInt    i, def, dep;
   Obj     pf;
 
   dep =  DEG_PERM4(p);
   def = DEG_TRANS2(f);
-  depf= MAX(def,dep);
-  pf  = NEW_TRANS4(depf);
+  pf  = NEW_TRANS4(MAX(def,dep));
 
   ptpf=ADDR_TRANS4(pf);
   ptf =ADDR_TRANS2(f);
   ptp = ADDR_PERM4(p);
 
   if(dep<=def){
+    // I don't know how to create a permutation of type T_PERM4 with
+    // (internal) degree 65536 or less, so this case isn't tested. It is
+    // included to make the code more robust.
     for(i=0;i<dep;i++) *(ptpf++)=ptf[*(ptp++)];
     for(;i<def;i++) *(ptpf++)=ptf[i];
   } else {
@@ -4230,13 +4233,12 @@ Obj ProdPerm4Trans2(Obj p, Obj f){
 
 Obj ProdPerm4Trans4(Obj p, Obj f){ 
   UInt4   *ptf, *ptp, *ptpf;
-  UInt    i, def, dep, depf;
+  UInt    i, def, dep;
   Obj     pf;
 
   dep =  DEG_PERM4(p);
   def = DEG_TRANS4(f);
-  depf= MAX(def,dep);
-  pf  = NEW_TRANS4(depf);
+  pf  = NEW_TRANS4(MAX(def,dep));
 
   ptpf=ADDR_TRANS4(pf);
   ptf =ADDR_TRANS4(f);
@@ -4295,6 +4297,9 @@ Obj PowTrans2Perm4(Obj f, Obj p){
   ptp  = ADDR_PERM4(p);
 
   if(def==dep){
+    // I don't know how to create a permutation of type T_PERM4 with
+    // (internal) degree 65536 or less, so this case isn't tested. It is
+    // included to make the code more robust.
     for(i=0;i<decnj;i++) ptcnj[ptp[i]]=ptp[ptf[i]];
   } else {
     for(i=0;i<decnj;i++){
@@ -4320,6 +4325,9 @@ Obj PowTrans4Perm2(Obj f, Obj p){
   ptp  = ADDR_PERM2(p);
 
   if(def==dep){
+    // This can't happen with transformations created within this file since a
+    // transformation is of type T_TRANS4 if and only if it has (internal)
+    // degree 65537 or greater. It is included to make the code more robust.
     for(i=0;i<decnj;i++) ptcnj[ptp[i]]=ptp[ptf[i]];
   } else {
     for(i=0;i<decnj;i++){
@@ -4358,15 +4366,14 @@ Obj PowTrans4Perm4(Obj f, Obj p){
 *******************************************************************************/
 
 Obj QuoTrans2Perm2(Obj f, Obj p){
-  UInt    def, dep, deq, i;
+  UInt    def, dep, i;
   UInt2   *ptf, *ptquo, *ptp;
   UInt4   *pttmp;
   Obj     quo;
 
   def=DEG_TRANS2(f);
   dep= DEG_PERM2(p);
-  deq=MAX(def, dep);
-  quo=NEW_TRANS2( deq );
+  quo=NEW_TRANS2(MAX(def, dep));
   ResizeTmpTrans(SIZE_OBJ(p));
 
   // invert the permutation into the buffer bag
@@ -4388,18 +4395,17 @@ Obj QuoTrans2Perm2(Obj f, Obj p){
 }
 
 Obj QuoTrans2Perm4(Obj f, Obj p){
-  UInt    def, dep, deq, i;
+  UInt    def, dep, i;
   UInt2   *ptf;
   UInt4   *ptquo, *ptp, *pttmp;
   Obj     quo;
 
   def=DEG_TRANS2(f);
   dep= DEG_PERM4(p);
-  deq=MAX(def, dep);
-  quo=NEW_TRANS4( deq );
+  quo=NEW_TRANS4( MAX(def, dep) );
   ResizeTmpTrans(SIZE_OBJ(p));
 
-  /* invert the permutation into the buffer bag */
+  // invert the permutation into the buffer bag
   pttmp = (UInt4*)(ADDR_OBJ(TmpTrans));
   ptp =   ADDR_PERM4(p);
   for(i=0;i<dep;i++) pttmp[*ptp++]=i;
@@ -4412,25 +4418,27 @@ Obj QuoTrans2Perm4(Obj f, Obj p){
     for(i=def;i<dep;i++) *(ptquo++)=pttmp[i];
   }
   else {
+    // I don't know how to create a permutation of type T_PERM4 with
+    // (internal) degree 65536 or less, so this case isn't tested. It is
+    // included to make the code more robust.
     for(i=0;i<def;i++) *(ptquo++)=IMAGE(ptf[i], pttmp, dep );
   }
   return quo;
 }
 
 Obj QuoTrans4Perm2(Obj f, Obj p){
-  UInt    def, dep, deq, i;
+  UInt    def, dep, i;
   UInt4   *ptf, *ptquo, *pttmp;
   UInt2   *ptp;
   Obj     quo;
 
   def=DEG_TRANS4(f);
   dep= DEG_PERM2(p);
-  deq=MAX(def, dep);
-  quo=NEW_TRANS4( deq );
+  quo=NEW_TRANS4(MAX(def, dep));
 
   ResizeTmpTrans(SIZE_OBJ(p));
 
-  /* invert the permutation into the buffer bag */
+  // invert the permutation into the buffer bag
   pttmp = (UInt4*)(ADDR_OBJ(TmpTrans));
   ptp =   ADDR_PERM2(p);
   for(i=0;i<dep;i++) pttmp[*ptp++]=i;
@@ -4439,6 +4447,9 @@ Obj QuoTrans4Perm2(Obj f, Obj p){
   ptquo = ADDR_TRANS4(quo);
 
   if(def<=dep){
+    // This can't happen with transformations created within this file since a
+    // transformation is of type T_TRANS4 if and only if it has (internal)
+    // degree 65537 or greater. It is included to make the code more robust.
     for(i=0;i<def;i++) *(ptquo++)=pttmp[*(ptf++)];
     for(i=def;i<dep;i++) *(ptquo++)=pttmp[i];
   }
@@ -4449,14 +4460,13 @@ Obj QuoTrans4Perm2(Obj f, Obj p){
 }
 
 Obj QuoTrans4Perm4(Obj f, Obj p){
-  UInt    def, dep, deq, i;
+  UInt    def, dep, i;
   UInt4   *ptf, *pttmp, *ptquo, *ptp;
   Obj     quo;
 
   def=DEG_TRANS4(f);
   dep= DEG_PERM4(p);
-  deq=MAX(def, dep);
-  quo=NEW_TRANS4( deq );
+  quo=NEW_TRANS4(MAX(def, dep));
 
   ResizeTmpTrans(SIZE_OBJ(p));
 
@@ -4536,6 +4546,9 @@ Obj LQuoPerm2Trans4(Obj opL, Obj opR){
   }
 
   else {
+    // This can't happen with transformations created within this file since a
+    // transformation is of type T_TRANS4 if and only if it has (internal)
+    // degree 65537 or greater. It is included to make the code more robust.
       for ( p = 0; p < degR; p++ )
           ptM[ *(ptL++) ] = *(ptR++);
       for ( p = degR; p < degL; p++ )
@@ -4561,6 +4574,9 @@ Obj LQuoPerm4Trans2(Obj opL, Obj opR){
   ptM = ADDR_TRANS4(mod);
 
   if ( degL <= degR ) {
+    // I don't know how to create a permutation of type T_PERM4 with
+    // (internal) degree 65536 or less, so this case isn't tested. It is
+    // included to make the code more robust.
       for ( p = 0; p < degL; p++ )
           ptM[ *(ptL++) ] = *(ptR++);
       for ( p = degL; p < degR; p++ )
@@ -4672,13 +4688,12 @@ Obj OnSetsTrans (Obj set, Obj f){
 
   ADDR_OBJ(res)[0] = ADDR_OBJ(set)[0];
 
-  /* get the pointer                                                 */
   ptset = ADDR_OBJ(set) + LEN_LIST(set);
   ptres = ADDR_OBJ(res) + LEN_LIST(set);
   if (TNUM_OBJ(f) == T_TRANS2) {
     ptf2 = ADDR_TRANS2(f);
     deg = DEG_TRANS2(f);
-    /* loop over the entries of the tuple                              */
+    // loop over the entries of the tuple
     isint = 1;
     for (i = LEN_LIST(set); 1 <= i; i--, ptset--, ptres--) {
       if (TNUM_OBJ(*ptset) == T_INT && 0 < INT_INTOBJ(*ptset)) {
@@ -4701,7 +4716,7 @@ Obj OnSetsTrans (Obj set, Obj f){
     ptf4 = ADDR_TRANS4(f);
     deg = DEG_TRANS4(f);
 
-    /* loop over the entries of the tuple                              */
+    // loop over the entries of the tuple
     isint = 1;
     for (i = LEN_LIST(set) ; 1 <= i; i--, ptset--, ptres--) {
       if (TNUM_OBJ(*ptset) == T_INT && 0 < INT_INTOBJ(*ptset)) {
@@ -4808,12 +4823,9 @@ Obj OnTuplesTrans (Obj tup, Obj f) {
   return res;
 }
 
-/******************************************************************************/
-/******************************************************************************/
-
-/* other internal things */
-
-/* so that kernel and image set are preserved during garbage collection */
+/*******************************************************************************
+** Save and load workspace, garbage collection, IS_TRANS
+*******************************************************************************/
 
 void MarkTransSubBags( Obj f ){
   if(IMG_TRANS(f)!=NULL){
@@ -4825,11 +4837,11 @@ void MarkTransSubBags( Obj f ){
   }
 }
 
-/* Save and load */
+// Save and load 
 void SaveTrans2( Obj f){
   UInt2   *ptr;
   UInt    len, i;
-  ptr=ADDR_TRANS2(f); /* save the image list */
+  ptr=ADDR_TRANS2(f); // save the image list 
   len=DEG_TRANS2(f);
   for (i = 0; i < len; i++) SaveUInt2(*ptr++);
 }
@@ -4845,7 +4857,7 @@ void LoadTrans2( Obj f){
 void SaveTrans4( Obj f){
   UInt4   *ptr;
   UInt    len, i;
-  ptr=ADDR_TRANS4(f); /* save the image list */
+  ptr=ADDR_TRANS4(f); // save the image list
   len=DEG_TRANS4(f);
   for (i = 0; i < len; i++) SaveUInt4(*ptr++);
 }
@@ -4876,7 +4888,6 @@ Obj IsTransHandler (
     Obj                 self,
     Obj                 val )
 {
-    /* return 'true' if <val> is a transformation and 'false' otherwise       */
     if ( TNUM_OBJ(val) == T_TRANS2 || TNUM_OBJ(val) == T_TRANS4 ) {
         return True;
     }
