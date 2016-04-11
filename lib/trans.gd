@@ -59,7 +59,6 @@ DeclareAttribute("AsPermutation", IsAssociativeElement);
 
 DeclareAttribute("AsTransformation", IsAssociativeElement);
 DeclareOperation("AsTransformation", [IsAssociativeElement, IsInt]);
-DeclareAttribute("PermutationOfImage", IsTransformation);
 
 DeclareOperation("ConstantTransformation", [IsPosInt, IsPosInt]);
 DeclareAttribute("DegreeOfTransformationCollection",
@@ -77,9 +76,6 @@ DeclareAttribute("ImageSetOfTransformation", IsTransformation);
 DeclareOperation("ImageSetOfTransformation", [IsTransformation, IsPosInt]);
 DeclareOperation("ImageSetOfTransformation", [IsTransformation, IsZeroCyc]);
 
-DeclareAttribute("IndexPeriodOfTransformation", IsTransformation);
-DeclareOperation("IsInjectiveListTrans", [IsList, IsTransformation]);
-DeclareOperation("IsInjectiveListTrans", [IsList, IsList]);
 DeclareAttribute("KernelOfTransformation", IsTransformation);
 DeclareOperation("KernelOfTransformation",
                  [IsTransformation, IsPosInt, IsBool]);
@@ -95,7 +91,6 @@ DeclareSynonym("PreimagesOfTransformation", PreImagesOfTransformation);
 DeclareOperation("RandomTransformation", [IsPosInt]);
 DeclareOperation("RandomTransformation", [IsPosInt, IsPosInt]);
 
-DeclareOperation("RestrictedTransformationNC", [IsTransformation, IsList]);
 DeclareOperation("RestrictedTransformation", [IsTransformation, IsList]);
 DeclareAttribute("SmallestIdempotentPower", IsAssociativeElement);
 DeclareOperation("TrimTransformation", [IsTransformation, IsPosInt]);

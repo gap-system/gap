@@ -1216,7 +1216,7 @@ Obj FuncIS_IDEM_TRANS (Obj self, Obj f) {
 // Returns the least m and r such that f ^ (m + r) = f ^ m, where f is a
 // transformation.
 
-Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
+Obj FuncIndexPeriodOfTransformation (Obj self, Obj f) {
   UInt2   *ptf2;
   UInt4   *seen, *ptf4;
   UInt    deg, i, pt, dist, pow, len, last_pt;
@@ -1224,7 +1224,7 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
   Int     s, t, gcd, cyc;
 
   if (!IS_TRANS(f)) {
-    ErrorQuit("INDEX_PERIOD_TRANS: the argument must be a "
+    ErrorQuit("IndexPeriodOfTransformation: the argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
   }
 
@@ -1355,7 +1355,7 @@ Obj FuncINDEX_PERIOD_TRANS (Obj self, Obj f) {
 Obj FuncSMALLEST_IDEM_POW_TRANS (Obj self, Obj f) {
   Obj x, ind, per, pow;
 
-  x = FuncINDEX_PERIOD_TRANS(self, f);
+  x = FuncIndexPeriodOfTransformation(self, f);
   ind = ELM_PLIST(x, 1);
   per = ELM_PLIST(x, 2);
   pow = per;
@@ -1377,7 +1377,7 @@ Obj FuncSMALLEST_IDEM_POW_TRANS (Obj self, Obj f) {
 // TODO and then rename this IsInjectiveListTrans and remove the functions of
 // this name in lib/trans.gi
 
-Obj FuncIS_INJECTIVE_LIST_TRANS (Obj self, Obj l, Obj t) {
+Obj FuncIsInjectiveListTrans (Obj self, Obj l, Obj t) {
   UInt    n, i, j;
   UInt2   *ptt2;
   UInt4   *pttmp = 0L;
@@ -1746,7 +1746,7 @@ Obj FuncAS_PERM_TRANS (Obj self, Obj f) {
 // Returns the permutation of the image of the transformation <f> induced by
 // <f> if possible, and returns Fail if it is not possible.
 
-Obj FuncPERM_IMG_TRANS (Obj self, Obj f) {
+Obj FuncPermutationOfImage (Obj self, Obj f) {
   UInt2   *ptf2, *ptp2;
   UInt4   *ptf4, *ptp4, *pttmp;
   UInt    deg, rank, i, j;
@@ -1807,7 +1807,7 @@ Obj FuncPERM_IMG_TRANS (Obj self, Obj f) {
     }
     return p;
   }
-  ErrorQuit("PERM_IMG_TRANS: the first argument must be a "
+  ErrorQuit("PermutationOfImage: the first argument must be a "
             "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
   return 0L;
 }
@@ -1919,14 +1919,14 @@ Obj FuncPermLeftQuoTransformationNC (Obj self, Obj f, Obj g) {
 // Returns a transformation g such that (i)g = (i)f for all i in list, and
 // where (i)g = i for every other value of i.
 
-Obj FuncRESTRICTED_TRANS (Obj self, Obj f, Obj list) {
+Obj FuncRestrictedTransformationNC (Obj self, Obj f, Obj list) {
   UInt    deg, i, k, len;
   UInt2   *ptf2, *ptg2;
   UInt4   *ptf4, *ptg4;
   Obj     g, j;
 
   if (!IS_LIST(list)) {
-    ErrorQuit("RESTRICTED_TRANS: the second argument must be a list "
+    ErrorQuit("RestrictedTransformationNC: the second argument must be a list "
               "(not a %s)", (Int) TNAM_OBJ(list), 0L);
   }
 
@@ -1948,7 +1948,7 @@ Obj FuncRESTRICTED_TRANS (Obj self, Obj f, Obj list) {
     for (i = 0; i < len; i++) {
       j = ELM_LIST(list, i + 1);
       if (TNUM_OBJ(j) != T_INT || INT_INTOBJ(j) < 1) {
-        ErrorQuit("RESTRICTED_TRANS: <list>[%d] must be a positive integer "
+        ErrorQuit("RestrictedTransformationNC: <list>[%d] must be a positive integer "
                   "(not a %s)", (Int) i + 1, (Int) TNAM_OBJ(j));
       }
       k = INT_INTOBJ(j) - 1;
@@ -1973,7 +1973,7 @@ Obj FuncRESTRICTED_TRANS (Obj self, Obj f, Obj list) {
     for (i = 0; i < len; i++) {
       j = ELM_LIST(list, i + 1);
       if (TNUM_OBJ(j) != T_INT || INT_INTOBJ(j) < 1) {
-        ErrorQuit("RESTRICTED_TRANS: <list>[%d] must be a positive integer "
+        ErrorQuit("RestrictedTransformationNC: <list>[%d] must be a positive integer "
                   "(not a %s)", (Int) i + 1, (Int) TNAM_OBJ(j));
       }
       k = INT_INTOBJ(j) - 1;
@@ -1983,7 +1983,7 @@ Obj FuncRESTRICTED_TRANS (Obj self, Obj f, Obj list) {
     }
     return g;
   }
-  ErrorQuit("RESTRICTED_TRANS: the first argument must be a "
+  ErrorQuit("RestrictedTransformationNC: the first argument must be a "
             "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
   return 0L;
 }
@@ -5123,13 +5123,13 @@ static StructGVarFunc GVarFuncs [] = {
      FuncAS_PERM_TRANS,
     "src/trans.c:FuncAS_PERM_TRANS" },
 
-  { "PERM_IMG_TRANS", 1, "f",
-     FuncPERM_IMG_TRANS,
-    "src/trans.c:FuncPERM_IMG_TRANS" },
+  { "PermutationOfImage", 1, "f",
+     FuncPermutationOfImage,
+    "src/trans.c:FuncPermutationOfImage" },
 
-  { "RESTRICTED_TRANS", 2, "f, list",
-     FuncRESTRICTED_TRANS,
-    "src/trans.c:FuncRESTRICTED_TRANS" },
+  { "RestrictedTransformationNC", 2, "f, list",
+     FuncRestrictedTransformationNC,
+    "src/trans.c:FuncRestrictedTransformationNC" },
 
   { "AS_TRANS_TRANS", 2, "f, m",
      FuncAS_TRANS_TRANS,
@@ -5139,9 +5139,9 @@ static StructGVarFunc GVarFuncs [] = {
      FuncTRIM_TRANS,
     "src/trans.c:FuncTRIM_TRANS" },
 
-  { "IS_INJECTIVE_LIST_TRANS", 2, "t, l",
-     FuncIS_INJECTIVE_LIST_TRANS,
-    "src/trans.c:FuncIS_INJECTIVE_LIST_TRANS" },
+  { "IsInjectiveListTrans", 2, "t, l",
+     FuncIsInjectiveListTrans,
+    "src/trans.c:FuncIsInjectiveListTrans" },
 
   { "PermLeftQuoTransformationNC", 2, "f, g",
      FuncPermLeftQuoTransformationNC,
@@ -5167,9 +5167,9 @@ static StructGVarFunc GVarFuncs [] = {
      FuncTRANS_IMG_CONJ,
     "src/trans.c:FuncTRANS_IMG_CONJ" },
 
-  { "INDEX_PERIOD_TRANS", 1, "f",
-     FuncINDEX_PERIOD_TRANS,
-    "src/trans.c:FuncINDEX_PERIOD_TRANS" },
+  { "IndexPeriodOfTransformation", 1, "f",
+     FuncIndexPeriodOfTransformation,
+    "src/trans.c:FuncIndexPeriodOfTransformation" },
 
   { "SMALLEST_IDEM_POW_TRANS", 1, "f",
      FuncSMALLEST_IDEM_POW_TRANS,
