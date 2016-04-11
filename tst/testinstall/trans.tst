@@ -950,6 +950,10 @@ gap> f ^ (ind + per) = f ^ ind;
 true
 gap> ForAny([1 .. per - 1], m -> f ^ (ind + m) = f ^ ind);
 false
+gap> f := Transformation([1, 65537, 2, 4, 6], 
+>                        [65537, 2, 3, 5, 7]);;
+gap> IndexPeriodOfTransformation(f);
+[ 3, 1 ]
 gap> f := Transformation(
 > [5, 23, 27, 8, 21, 49, 36, 33, 4, 44, 3, 49, 48, 18, 10, 30, 47, 3, 41, 35, 
 >  33, 15, 39, 19, 37, 24, 26, 2, 16, 47, 9, 7, 28, 47, 25, 21, 50, 23, 18, 42, 26, 
@@ -2064,10 +2068,307 @@ gap> g ^ 2;
 <transformation on 65537 pts with rank 65536>
 gap> f := Transformation([1], [65537]);;
 gap> g := Transformation([1], [65538]);;
-gap> f * g;
+gap> h := f * g;
 <transformation on 65537 pts with rank 65536>
-gap> g * f;
+gap> ForAll([1 .. 65537], i -> (i ^ f) ^ g = i ^ h);  
+true
+gap> h := g * h;
 <transformation on 65538 pts with rank 65537>
+gap> ForAll([1 .. 65538], i -> (i ^ g) ^ f = i ^ h);  
+true
+gap> f := Transformation([3, 2, 4, 4]);;
+gap> g := Transformation([2, 1, 2, 1]);;
+gap> f * g;
+Transformation( [ 2, 1, 1, 1 ] )
+gap> g * f;
+Transformation( [ 2, 3, 2, 3 ] )
+gap> f * g * f * g * f * g; 
+Transformation( [ 2, 1, 1, 1 ] )
+
+# \*, PROD, product: for a transformation and a permutation
+gap> Transformation([1, 4, 2, 1]) * (1, 2);
+Transformation( [ 2, 4, 1, 2 ] )
+gap> Transformation([1, 4, 2, 1]) * (1, 2, 5);
+Transformation( [ 2, 4, 5, 2, 1 ] )
+gap> Transformation([1, 4, 2, 1]) * (1, 65537);
+<transformation on 65537 pts with rank 65536>
+gap> Transformation([1, 4, 2, 1]) * (1, 2, 5);
+Transformation( [ 2, 4, 5, 2, 1 ] )
+gap> Transformation([1], [65537]) * (1, 2, 5);
+<transformation on 65537 pts with rank 65536>
+gap> Transformation([1], [65537]) * (65537, 2);
+<transformation on 65537 pts with rank 65536>
+gap> Transformation([1], [65538]) * (65537, 2);
+<transformation on 65538 pts with rank 65537>
+gap> Transformation([1], [65537]) * (65538, 2);
+<transformation on 65538 pts with rank 65537>
+gap> f := Transformation([8, 1, 9, 7, 7, 6, 4, 2, 2, 4]);;
+gap> p := (1, 2)(7, 9, 6, 5, 1100);;
+gap> g := f * p;
+<transformation on 1100 pts with rank 1097>
+gap> ForAll([1 .. 10], i -> (i ^ f) ^ p = i ^ g);  
+true
+gap> f * (1, 7, 9, 4, 6);
+Transformation( [ 8, 7, 4, 9, 9, 1, 6, 2, 2, 6 ] )
+gap> f * (1, 10, 7, 9, 4, 6);
+Transformation( [ 8, 10, 4, 9, 9, 1, 6, 2, 2, 6 ] )
+gap> f * (1, 11, 7, 9, 4, 6);
+Transformation( [ 8, 11, 4, 9, 9, 1, 6, 2, 2, 6, 7 ] )
+gap> f * (1, 12, 7, 8);
+Transformation( [ 1, 12, 9, 8, 8, 6, 4, 2, 2, 4, 11, 7 ] )
+gap> f * (1, 9, 8, 5)(2, 7, 4, 3, 6, 10);
+Transformation( [ 5, 9, 8, 4, 4, 10, 3, 7, 7, 3 ] )
+gap> f := Transformation([5, 5, 2, 10, 10, 10, 1, 12, 11, 9, 3, 6]);;
+gap> f * (1, 2, 3);
+Transformation( [ 5, 5, 3, 10, 10, 10, 2, 12, 11, 9, 1, 6 ] )
+gap> p := (1, 4, 12, 8)(2, 16, 15, 5, 7, 9, 20, 14, 11, 17, 10)(3, 13, 6, 19);;
+gap> g := f * p;
+Transformation( [ 7, 7, 16, 2, 2, 2, 4, 8, 17, 20, 13, 19, 6, 11, 5, 15, 10,
+  18, 3, 14 ] )
+gap> ForAll([1 .. 20], i -> (i ^ f) ^ p = i ^ g);
+true
+gap> p := (2, 7, 5, 10, 3, 4, 12, 11, 6)(8, 9);;
+gap> f * p;
+Transformation( [ 10, 10, 7, 3, 3, 3, 1, 11, 6, 8, 4, 2 ] )
+gap> p := (1, 2, 3);;
+gap> f * p;
+Transformation( [ 5, 5, 3, 10, 10, 10, 2, 12, 11, 9, 1, 6 ] )
+gap> f := Transformation([8, 1, 9, 7, 7, 6, 4, 2, 2, 4]);;
+gap> f * (1, 10, 2, 3, 6, 7)(11, 15)(12, 17, 19, 16, 20, 18);
+Transformation( [ 8, 10, 9, 1, 1, 7, 4, 3, 3, 4, 15, 17, 13, 14, 11, 20, 19,
+  12, 16, 18 ] )
+
+# \*, PROD, product: for a permutation and a transformation
+gap> (1, 2) * Transformation([1, 4, 2, 1]);
+Transformation( [ 4, 1, 2, 1 ] )
+gap> (1, 2, 5) * Transformation([1, 4, 2, 1]);
+Transformation( [ 4, 5, 2, 1, 1 ] )
+gap> (1, 65537) * Transformation([1, 4, 2, 1]);
+<transformation on 65537 pts with rank 65536>
+gap> (1, 2, 5) * Transformation([1, 4, 2, 1]);
+Transformation( [ 4, 5, 2, 1, 1 ] )
+gap> (1, 2, 3) * Transformation([1], [65537]);
+<transformation on 65537 pts with rank 65536>
+gap> (65537, 2) * Transformation([1], [65537]);
+<transformation on 65537 pts with rank 65536>
+gap> (65537, 2) * Transformation([1], [65538]);
+<transformation on 65538 pts with rank 65537>
+gap> (65538, 2) * Transformation([1], [65537]);
+<transformation on 65538 pts with rank 65537>
+gap> f := Transformation([6, 7, 9, 7, 4, 7, 5, 4, 9, 4]);;
+gap> p := (1, 4, 9, 10, 3, 2, 8)(5, 7);;
+gap> g := p * f;
+Transformation( [ 7, 4, 7, 9, 5, 7, 4, 6, 4, 9 ] )
+gap> () * f = f; 
+true
+gap> p ^ -1 * (p * f) = f;
+true
+gap> ImageSetOfTransformation(f) = ImageSetOfTransformation(g);
+true
+gap> ForAll([1 .. 10], i -> (i ^ p) ^ f = i ^ g);  
+true
+gap> p := (2, 10, 5, 9, 8, 4, 7, 6, 3)(11, 12);;
+gap> p * f = (p * (11, 12)) * f;
+false
+gap> () * f = f; 
+true
+gap> p ^ -1 * (p * f) = f;
+true
+
+# \^, conjugation: for a transformation and a permutation
+gap> Transformation([1, 4, 2, 1]) ^ (1, 2);
+Transformation( [ 4, 2, 1, 2 ] )
+gap> Transformation([1, 4, 2, 1]) ^ (1, 2, 5);
+Transformation( [ 1, 2, 5, 2, 4 ] )
+gap> Transformation([1, 4, 2, 1]) ^ (1, 65537);
+<transformation on 65537 pts with rank 65536>
+gap> Transformation([1, 4, 2, 1]) ^ (1, 2, 5);
+Transformation( [ 1, 2, 5, 2, 4 ] )
+gap> Transformation([1], [65537]) ^ (1, 2, 5);
+<transformation on 65537 pts with rank 65536>
+gap> Transformation([1], [65537]) ^ (65537, 2);
+Transformation( [ 2, 2 ] )
+gap> Transformation([1], [65538]) ^ (65537, 2);
+<transformation on 65538 pts with rank 65537>
+gap> f := Transformation([10, 4, 9, 4, 3, 4, 2, 1, 6, 9]);;
+gap> p := (1, 4, 6)(2, 8)(3, 7, 5);;
+gap> f ^ p;
+Transformation( [ 6, 4, 7, 10, 8, 6, 9, 6, 1, 9 ] )
+gap> f ^ p = p ^ -1 * f * p;
+true
+gap> p := (1, 4, 3, 5)(2, 10, 8)(7, 9)(11, 15, 12, 20, 13)(16, 19, 18, 17);;
+gap> f ^ p;
+Transformation( [ 5, 4, 3, 8, 7, 3, 6, 7, 10, 3 ] )
+gap> f ^ p = p ^ -1 * f * p;
+true
+gap> p := (1, 3, 6, 11, 7, 10, 5, 2)(4, 8, 9);;
+gap> f ^ p;
+Transformation( [ 8, 6, 5, 11, 4, 4, 7, 8, 3, 1, 8 ] )
+gap> f := Transformation([10, 4, 9, 4, 3, 4, 2, 1, 6, 9]);;
+gap> p := (1, 4, 6)(2, 8)(3, 7, 5) * (1, 65537) * (1, 65537);;
+gap> f ^ p;
+Transformation( [ 6, 4, 7, 10, 8, 6, 9, 6, 1, 9 ] )
+gap> f ^ p = p ^ -1 * f * p;
+true
+gap> p := (1,4,3,5)(2,10,8)(7,9)(11,15,12,20,13)(16,19,18,17)*(65536,65537);;
+gap> f ^ p;
+Transformation( [ 5, 4, 3, 8, 7, 3, 6, 7, 10, 3 ] )
+gap> f ^ p = p ^ -1 * f * p;
+true
+gap> Transformation([1, 2, 1]) ^ (1, 2, 3);
+Transformation( [ 2, 2 ] )
+
+# \/, quotient, QUO: for a transformation and a permutation
+gap> f := Transformation([8, 2, 6, 6, 7, 10, 8, 2, 1, 10]);;
+gap> p := (1, 10, 9, 4, 6, 3, 8)(5, 7);;
+gap> f / p;
+Transformation( [ 3, 2, 4, 4, 5, 1, 3, 2, 8, 1 ] )
+gap> f / p = f * p ^ -1;
+true
+gap> f / ();
+Transformation( [ 8, 2, 6, 6, 7, 10, 8, 2, 1, 10 ] )
+gap> f / () = f;
+true
+gap> p := p * (11, 12);;
+gap> f / p;
+Transformation( [ 3, 2, 4, 4, 5, 1, 3, 2, 8, 1, 12, 11 ] )
+gap> p := (1, 2, 3);;
+gap> f / p;
+Transformation( [ 8, 1, 6, 6, 7, 10, 8, 1, 3, 10 ] )
+gap> f / p = f * p ^ -1;
+true
+gap> f := Transformation([8, 2, 6, 6, 7, 10, 8, 2, 1, 10]);;
+gap> p := (1, 65537) ^ 2;;
+gap> f / p;
+Transformation( [ 8, 2, 6, 6, 7, 10, 8, 2, 1, 10 ] )
+gap> f / p = f * p ^ -1;
+true
+gap> p := (1, 10, 3, 6, 4)(2, 7, 5, 8, 9) * (1, 65537) ^ 2;;
+gap> f / p;
+Transformation( [ 5, 9, 3, 3, 2, 1, 5, 9, 4, 1 ] )
+gap> f / p = f * p ^ -1;
+true
+gap> p := (1, 2, 3) * (1, 65537) ^ 2;;
+gap> f / p;
+Transformation( [ 8, 1, 6, 6, 7, 10, 8, 1, 3, 10 ] )
+gap> p := (1, 2, 3) * (11, 12) * (1, 65537) ^ 2;;
+gap> f / p;
+Transformation( [ 8, 1, 6, 6, 7, 10, 8, 1, 3, 10, 12, 11 ] )
+gap> f := Transformation([1], [65538]) / (1, 65537);
+<transformation on 65538 pts with rank 65537>
+gap> MovedPoints(f);
+[ 1, 65537 ]
+gap> OnTuples(MovedPoints(f), f);
+[ 65538, 1 ]
+gap> Transformation([1], [65538]) / (1, 65537) 
+> = Transformation([1], [65538]) * (1, 65537);
+true
+gap> Transformation([1], [65537]) / (1, 65538) 
+> = Transformation([1], [65537]) * (1, 65538);
+true
+gap> f := Transformation([1], [65537]) / (1, 65537);
+<transformation on 65537 pts with rank 65536>
+gap> MovedPoints(f);
+[ 65537 ]
+gap> OnTuples(MovedPoints(f), f);
+[ 1 ]
+gap> Transformation([1], [65537]) / (1, 65537) 
+> = Transformation([1], [65537]) * (1, 65537);
+true
+gap> f := Transformation([1], [65537]) / (1, 2);
+<transformation on 65537 pts with rank 65536>
+gap> MovedPoints(f);
+[ 1, 2 ]
+gap> OnTuples(MovedPoints(f), f);
+[ 65537, 1 ]
+gap> Transformation([1], [65537]) / (1, 2) 
+> = Transformation([1], [65537]) * (1, 2);
+true
+
+# left quotient, LQUO: for a permutation and a transformation
+gap> f := Transformation([8, 2, 6, 6, 7, 10, 8, 2, 1, 10]);;
+gap> p := (1, 10, 9, 4, 6, 3, 8)(5, 7);;
+gap> LQUO(p, f);
+Transformation( [ 2, 2, 10, 1, 8, 6, 7, 6, 10, 8 ] )
+gap> LQUO(p, f) = p ^ -1 * f;
+true
+gap> LQUO((), f);
+Transformation( [ 8, 2, 6, 6, 7, 10, 8, 2, 1, 10 ] )
+gap> LQUO((), f) = f;
+true
+gap> p := p * (11, 12);;
+gap> LQUO(p, f);
+Transformation( [ 2, 2, 10, 1, 8, 6, 7, 6, 10, 8, 12, 11 ] )
+gap> p := (1, 2, 3);;
+gap> LQUO(p, f);
+Transformation( [ 6, 8, 2, 6, 7, 10, 8, 2, 1, 10 ] )
+gap> LQUO(p, f) = p ^ -1 * f;
+true
+gap> f := Transformation([8, 2, 6, 6, 7, 10, 8, 2, 1, 10]);;
+gap> p := (1, 65537) ^ 2;;
+gap> LQUO(p, f);
+Transformation( [ 8, 2, 6, 6, 7, 10, 8, 2, 1, 10 ] )
+gap> LQUO(p, f) = p ^ -1 * f;
+true
+gap> p := (1, 10, 3, 6, 4)(2, 7, 5, 8, 9) * (1, 65537) ^ 2;;
+gap> LQUO(p, f);
+Transformation( [ 6, 1, 10, 10, 8, 6, 2, 7, 2, 8 ] )
+gap> LQUO(p, f) = p ^ -1 * f;
+true
+gap> p := (1, 2, 3) * (1, 65537) ^ 2;;
+gap> LQUO(p, f);
+Transformation( [ 6, 8, 2, 6, 7, 10, 8, 2, 1, 10 ] )
+gap> p := (1, 2, 3) * (11, 12) * (1, 65537) ^ 2;;
+gap> LQUO(p, f);
+Transformation( [ 6, 8, 2, 6, 7, 10, 8, 2, 1, 10, 12, 11 ] )
+gap> f := LQUO((1, 65537), Transformation([1], [65538]));
+<transformation on 65538 pts with rank 65537>
+gap> MovedPoints(f);
+[ 1, 65537 ]
+gap> OnTuples(MovedPoints(f), f);
+[ 65537, 65538 ]
+gap> LQUO((1, 65537), Transformation([1], [65538]))
+> = (1, 65537) * Transformation([1], [65538]);
+true
+gap> f := LQUO((1, 65537), Transformation([1], [65537]));
+<transformation on 65537 pts with rank 65536>
+gap> MovedPoints(f);
+[ 1 ]
+gap> OnTuples(MovedPoints(f), f);
+[ 65537 ]
+gap> LQUO((1, 65537), Transformation([1], [65537])) 
+> = (1, 65537) * Transformation([1], [65537]);
+true
+gap> f := LQUO((1, 2), Transformation([1], [65537]));
+<transformation on 65537 pts with rank 65536>
+gap> MovedPoints(f);
+[ 1, 2 ]
+gap> OnTuples(MovedPoints(f), f);
+[ 2, 65537 ]
+gap> LQUO((1, 2), Transformation([1], [65537]))
+> = (1, 2) * Transformation([1], [65537]);
+true
+gap> LQUO((1, 65538), Transformation([1], [65537]));
+<transformation on 65538 pts with rank 65537>
+gap> f := Transformation([1, 6, 9, 5, 1, 4, 6, 1, 1, 2]);;
+gap> p := (1, 2, 3);;
+gap> LQUO(p, f);
+Transformation( [ 9, 1, 6, 5, 1, 4, 6, 1, 1, 2 ] )
+gap> LQUO(p, f) = p ^ -1 * f;
+true
+gap> p := (1, 2, 3)(10, 11);;
+gap> LQUO(p, f) = p ^ -1 * f;
+true
+gap> p := (1, 6, 7, 5, 2, 9, 4, 10, 3, 8);;
+gap> LQUO(p, f) = p ^ -1 * f;
+true
+gap> f := Transformation([7, 3, 10, 3, 6, 10, 5, 2, 8, 7]);;
+gap> p := (1, 9, 7, 8, 6, 10, 2, 5, 4, 3);
+(1,9,7,8,6,10,2,5,4,3)
+gap> p := p * (1, 65538) ^ 2;
+(1,9,7,8,6,10,2,5,4,3)
+gap> LQUO(p, f) = p ^ -1 * f;
+true
 
 # ^, POW: for a positive integer and a transformation
 gap> 2 ^ Transformation([1, 1]);
@@ -2117,6 +2418,11 @@ gap> OnSets([1 .. 20], Transformation([10, 7, 10, 8, 8, 7, 5, 9, 1, 9]));
 gap> OnSets([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 19, 324, 4124, 123124, 2 ^ 60],
 >           Transformation([10, 7, 10, 8, 8, 7, 5, 9, 1, 9]));
 [ 1, 5, 7, 8, 9, 10, 11, 19, 324, 4124, 123124, 1152921504606846976 ]
+gap> f := Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]);;
+gap> OnSets([1 .. 11], f);
+[ 1, 2, 5, 6, 7, 9, 11 ]
+gap> OnSets([1 .. 10], f);
+[ 1, 2, 5, 6, 7, 9 ]
 
 # OnTuplesTrans: for a transformation
 gap> OnTuples([], Transformation([1, 1]));
@@ -2153,6 +2459,9 @@ gap> OnTuples([1, , 3], Transformation([1, 1]));
 Error, OnTuples for transformation: list must not contain holes
 gap> OnTuples([1, , 3], Transformation([1], [65537]));
 Error, OnTuples for transformation: list must not contain holes
+gap> f := Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]);;
+gap> OnTuples([1 .. 10], f);
+[ 2, 6, 7, 2, 6, 9, 9, 1, 1, 5 ]
 
 # OnPosIntSetsTrans: for a transformation
 gap> OnPosIntSetsTrans([], Transformation([1, 1]), 0);
@@ -2212,6 +2521,56 @@ Error, IMAGE_SET_TRANS_INT: the first argument must be a transformation (not a\
  list (string))
 gap> OnPosIntSetsTrans(1, "a", 20);
 Error, Length: <list> must be a list (not a integer)
+
+# MarkSubbags2
+gap> f := Transformation([2, 2, 4, 2, 8, 5, 10, 10, 4, 3, 9, 9]);;
+gap> ImageSetOfTransformation(f);
+[ 2, 3, 4, 5, 8, 9, 10 ]
+gap> FlatKernelOfTransformation(f);
+[ 1, 1, 2, 1, 3, 4, 5, 5, 2, 6, 7, 7 ]
+gap> KernelOfTransformation(f);
+[ [ 1, 2, 4 ], [ 3, 9 ], [ 5 ], [ 6 ], [ 7, 8 ], [ 10 ], [ 11, 12 ] ]
+gap> g := One(f);;
+gap> ImageSetOfTransformation(g);
+[  ]
+gap> FlatKernelOfTransformation(g);
+[  ]
+gap> KernelOfTransformation(g);
+[  ]
+gap> GASMAN("collect");
+gap> ImageSetOfTransformation(f);
+[ 2, 3, 4, 5, 8, 9, 10 ]
+gap> FlatKernelOfTransformation(f);
+[ 1, 1, 2, 1, 3, 4, 5, 5, 2, 6, 7, 7 ]
+gap> KernelOfTransformation(f);
+[ [ 1, 2, 4 ], [ 3, 9 ], [ 5 ], [ 6 ], [ 7, 8 ], [ 10 ], [ 11, 12 ] ]
+gap> KernelOfTransformation(g);
+[  ]
+gap> FlatKernelOfTransformation(g);
+[  ]
+gap> ImageSetOfTransformation(g);
+[  ]
+
+# MarkTrans4SubBags
+gap> f := Transformation([65535 .. 65538], [65535 .. 65538] * 0 + 1);;
+gap> imglist := ImageListOfTransformation(f);;
+gap> imgset := ShallowCopy(ImageSetOfTransformation(f));;
+gap> ker := ShallowCopy(FlatKernelOfTransformation(f));;
+gap> GASMAN("collect");
+gap> ImageSetOfTransformation(f) = imgset;
+true
+gap> ImageListOfTransformation(f) = imglist;   
+true
+gap> FlatKernelOfTransformation(f) = ker;
+true
+
+# IS_TRANS
+gap> IS_TRANS(IdentityTransformation);
+true
+gap> IS_TRANS(());
+false
+gap> IS_TRANS(FreeSemigroup(1).1);
+false
 
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
