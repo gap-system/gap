@@ -137,16 +137,16 @@ extern UInt INIT_TRANS4 (Obj f) {
   UInt4   *ptf;
   UInt4   *pttmp;
   Obj     img, ker;
-  
+
   deg = DEG_TRANS4(f);
 
   if (deg == 0) {
-    // Special case for degree 0. 
-    
+    // Special case for degree 0.
+
     // This can't happen with transformations created within this file since a
     // transformation is of type T_TRANS4 if and only if it has (internal)
     // degree 65537 or greater. It is included to make the code more robust.
-    
+
     img = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
     SET_LEN_PLIST(img, 0);
     IMG_TRANS(f) = img;
@@ -182,7 +182,7 @@ extern UInt INIT_TRANS4 (Obj f) {
 }
 
 // TODO should this use the newer sorting algorithm by CAJ in PR #609?
-// 
+//
 // Retyping is the responsibility of the caller.
 
 static void SORT_PLIST_CYC (Obj res) {
@@ -222,7 +222,7 @@ static void REMOVE_DUPS_PLIST_CYC (Obj res) {
   len = LEN_PLIST(res);
 
   if (0 < len) {
-    tmp = ADDR_OBJ(res)[1];  
+    tmp = ADDR_OBJ(res)[1];
     k = 1;
     for (i = 2; i <= len; i++) {
       if (tmp != ADDR_OBJ(res)[i]) {
@@ -544,7 +544,7 @@ Obj FuncRIGHT_ONE_TRANS (Obj self, Obj f) {
   ker = NEW_PLIST(T_PLIST_CYC, deg);
   SET_LEN_PLIST(ker, deg);
   len = LEN_PLIST(img);
-  j = 1; 
+  j = 1;
   n = 0;
 
   for (i = 0; i < deg; i++) {
@@ -982,7 +982,7 @@ Obj FuncPREIMAGES_TRANS_INT (Obj self, Obj f, Obj pt) {
 ** GAP level functions for the image sets and lists of a transformation
 *******************************************************************************/
 
-// Returns the duplicate free list of images of the transformation f on 
+// Returns the duplicate free list of images of the transformation f on
 // [1 .. n] where n = DEG_TRANS(f). Note that this might not be sorted.
 
 Obj FuncUNSORTED_IMAGE_SET_TRANS (Obj self, Obj f) {
@@ -1533,7 +1533,7 @@ Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
         SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
       }
       return out;
-    } 
+    }
     ErrorQuit("ON_KERNEL_ANTI_ACTION: the length of the first "
               "argument must be at least %d", (Int) deg, 0L);
     return 0L;
@@ -1832,7 +1832,7 @@ Obj FuncPermLeftQuoTransformationNC (Obj self, Obj f, Obj g) {
   deg = DEG_TRANS(g);
   min = MIN(def, deg);
   max = MAX(def, deg);
-  
+
   // always return a T_PERM4 to reduce the amount of code here.
   perm = NEW_PERM4(max);
   ptp = ADDR_PERM4(perm);
@@ -2132,7 +2132,7 @@ Obj FuncHASH_FUNC_FOR_TRANS (Obj self, Obj f, Obj data) {
       return INTOBJ_INT((HASHKEY_BAG_NC(f,
                                         (UInt4) 255,
                                         3 * sizeof(Obj),
-                                        (int) 4 * deg) 
+                                        (int) 4 * deg)
                                           % (INT_INTOBJ(data))) + 1);
     }
   }
@@ -2347,8 +2347,8 @@ Obj FuncMOVED_PTS_TRANS (Obj self, Obj f) {
     ErrorQuit("MOVED_PTS_TRANS: the first argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
     return 0L;
-  } 
-  
+  }
+
   len = 0;
   if (TNUM_OBJ(f) == T_TRANS2) {
     deg = DEG_TRANS2(f);
@@ -2369,7 +2369,7 @@ Obj FuncMOVED_PTS_TRANS (Obj self, Obj f) {
       }
     }
   }
-  
+
   if (LEN_PLIST(out) == 0) {
     RetypeBag(out, T_PLIST_EMPTY);
   }
@@ -2685,7 +2685,7 @@ Obj FuncCOMPONENT_TRANS_INT (Obj self, Obj f, Obj pt) {
   Obj     out;
   UInt2   *ptf2;
   UInt4   *ptseen, *ptf4;
-  
+
   if (!IS_TRANS(f)) {
     ErrorQuit("COMPONENT_TRANS_INT: the first argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
@@ -2826,7 +2826,7 @@ Obj FuncCYCLES_TRANS (Obj self, Obj f) {
         // repeatedly apply f to pt until we see something we've seen already
         for (pt = i; seen[pt] == 0; pt = ptf2[pt]) {
           seen[pt] = 1;
-        } 
+        }
         if (seen[pt] == 1) {
           // pt belongs to a component we've not seen before
 
@@ -2845,7 +2845,7 @@ Obj FuncCYCLES_TRANS (Obj self, Obj f) {
         }
         for (pt = i; seen[pt] == 1; pt = ptf2[pt]) {
           seen[pt] = 2;
-        } 
+        }
       }
     }
   } else {
@@ -2855,7 +2855,7 @@ Obj FuncCYCLES_TRANS (Obj self, Obj f) {
         // repeatedly apply f to pt until we see something we've seen already
         for (pt = i; seen[pt] == 0; pt = ptf4[pt]) {
           seen[pt] = 1;
-        } 
+        }
         if (seen[pt] == 1) {
           // pt belongs to a component we've not seen before
 
@@ -2874,7 +2874,7 @@ Obj FuncCYCLES_TRANS (Obj self, Obj f) {
         }
         for (pt = i; seen[pt] == 1; pt = ptf4[pt]) {
           seen[pt] = 2;
-        } 
+        }
       }
     }
   }
@@ -2882,7 +2882,7 @@ Obj FuncCYCLES_TRANS (Obj self, Obj f) {
 }
 
 // Returns the cycles of the transformation <f> contained in the components of
-// any of the elements in <list>. 
+// any of the elements in <list>.
 
 Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
   UInt2   *ptf2;
@@ -2918,7 +2918,7 @@ Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
       if (TNUM_OBJ(list_i) != T_INT || INT_INTOBJ(list_i) < 1) {
         ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
                   "positive integer (not a %s)", (Int) TNAM_OBJ(list_i), 0L);
-      } 
+      }
       j = INT_INTOBJ(list_i) - 1;
       if (j >= deg) {
         comp = NEW_PLIST(T_PLIST_CYC, 1);
@@ -2931,7 +2931,7 @@ Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
         // repeatedly apply f to pt until we see something we've seen already
         for (pt = j; seen[pt] == 0; pt = ptf2[pt]) {
           seen[pt] = 1;
-        } 
+        }
         if (seen[pt] == 1) {
           // pt belongs to a component we've not seen before
 
@@ -2950,7 +2950,7 @@ Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
         }
         for (pt = j; seen[pt] == 1; pt = ptf2[pt]) {
           seen[pt] = 2;
-        } 
+        }
       }
     }
   } else {
@@ -2960,7 +2960,7 @@ Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
       if (TNUM_OBJ(list_i) != T_INT || INT_INTOBJ(list_i) < 1) {
         ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
                   "positive integer (not a %s)", (Int) TNAM_OBJ(list_i), 0L);
-      } 
+      }
       j = INT_INTOBJ(list_i) - 1;
       if (j >= deg) {
         comp = NEW_PLIST(T_PLIST_CYC, 1);
@@ -2973,7 +2973,7 @@ Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
         // repeatedly apply f to pt until we see something we've seen already
         for (pt = j; seen[pt] == 0; pt = ptf4[pt]) {
           seen[pt] = 1;
-        } 
+        }
         if (seen[pt] == 1) {
           // pt belongs to a component we've not seen before
 
@@ -2992,7 +2992,7 @@ Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
         }
         for (pt = j; seen[pt] == 1; pt = ptf4[pt]) {
           seen[pt] = 2;
-        } 
+        }
       }
     }
   }
@@ -3072,7 +3072,7 @@ Obj FuncINV_LIST_TRANS (Obj self, Obj list, Obj f) {
 //
 // The permutation returned is the same as:
 //
-//     MappingPermListList(ImageListOfTransformation(f, n), 
+//     MappingPermListList(ImageListOfTransformation(f, n),
 //                         ImageListOfTransformation(g, n));
 //
 // where n = max{DegreeOfTransformation(f), DegreeOfTransformation(g)}.
@@ -3089,7 +3089,7 @@ Obj FuncTRANS_IMG_CONJ (Obj self, Obj f, Obj g) {
     ErrorQuit("TRANS_IMG_CONJ: the arguments must both be transformations "
               "(not %s and %s)", (Int) TNAM_OBJ(f), (Int) TNAM_OBJ(g));
   }
-  
+
   def = DEG_TRANS(f);
   deg = DEG_TRANS(g);
   max = MAX(def, deg);
@@ -3106,7 +3106,7 @@ Obj FuncTRANS_IMG_CONJ (Obj self, Obj f, Obj g) {
   if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS2) {
     ptf2 = ADDR_TRANS2(f);
     ptg2 = ADDR_TRANS2(g);
-    
+
     for (i = 0; i < min; i++) {
       ptsrc[ptf2[i]] = 1;
       ptdst[ptg2[i]] = 1;
@@ -3129,7 +3129,7 @@ Obj FuncTRANS_IMG_CONJ (Obj self, Obj f, Obj g) {
   } else if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS4) {
     ptf2 = ADDR_TRANS2(f);
     ptg4 = ADDR_TRANS4(g);
-    
+
     for (i = 0; i < min; i++) {
       ptsrc[ptf2[i]] = 1;
       ptdst[ptg4[i]] = 1;
@@ -3155,7 +3155,7 @@ Obj FuncTRANS_IMG_CONJ (Obj self, Obj f, Obj g) {
   } else if (TNUM_OBJ(f) == T_TRANS4 && TNUM_OBJ(g) == T_TRANS2) {
     ptf4 = ADDR_TRANS4(f);
     ptg2 = ADDR_TRANS2(g);
-    
+
     for (i = 0; i < min; i++) {
       ptsrc[ptf4[i]] = 1;
       ptdst[ptg2[i]] = 1;
@@ -3181,7 +3181,7 @@ Obj FuncTRANS_IMG_CONJ (Obj self, Obj f, Obj g) {
   } else if (TNUM_OBJ(f) == T_TRANS4 && TNUM_OBJ(g) == T_TRANS4) {
     ptf4 = ADDR_TRANS4(f);
     ptg4 = ADDR_TRANS4(g);
-    
+
     for (i = 0; i < min; i++) {
       ptsrc[ptf4[i]] = 1;
       ptdst[ptg4[i]] = 1;
@@ -3203,7 +3203,7 @@ Obj FuncTRANS_IMG_CONJ (Obj self, Obj f, Obj g) {
     }
   }
 
-  // complete the permutation 
+  // complete the permutation
   j = 0;
   for (i = 0; i < def; i++) {
     if (ptsrc[i] == 0) {
@@ -3215,7 +3215,7 @@ Obj FuncTRANS_IMG_CONJ (Obj self, Obj f, Obj g) {
     }
   }
   return perm;
-}  
+}
 
 // Returns the flat kernel of <p> ^ -1 * f * <p> where f is any transformation
 // such that ker(f) = <ker>, <p> is a permutation and <ker> is itself a flat
@@ -3486,9 +3486,9 @@ Obj FuncOnPosIntSetsTrans (Obj self, Obj set, Obj f, Obj n) {
 }
 
 /*******************************************************************************
- ******************************************************************************* 
+ *******************************************************************************
  * GAP kernel functions for transformations
- ******************************************************************************* 
+ *******************************************************************************
  *******************************************************************************/
 
 // Returns the identity transformation.
@@ -3504,9 +3504,9 @@ Obj OneTrans (Obj f) {
 // The following function is used to check equality of both permutations and
 // transformations, it is written by Chris Jefferson in pull request #280.
 
-Int EqPermTrans22 (UInt   degL, 
-                   UInt   degR, 
-                   UInt2* ptLstart, 
+Int EqPermTrans22 (UInt   degL,
+                   UInt   degR,
+                   UInt2* ptLstart,
                    UInt2* ptRstart) {
 
   UInt2* ptL;            // pointer to the left operand
@@ -3556,9 +3556,9 @@ Int EqPermTrans22 (UInt   degL,
   return 1L;
 }
 
-Int EqPermTrans44 (UInt   degL, 
-                   UInt   degR, 
-                   UInt4* ptLstart, 
+Int EqPermTrans44 (UInt   degL,
+                   UInt   degR,
+                   UInt4* ptLstart,
                    UInt4* ptRstart) {
 
   UInt4* ptL;            // pointer to the left operand
@@ -3626,18 +3626,18 @@ Int EqTrans24 (Obj f, Obj g) {
   UInt2  *ptf;
   UInt4  *ptg;
 
-  ptf = ADDR_TRANS2(f);   
+  ptf = ADDR_TRANS2(f);
   ptg = ADDR_TRANS4(g);
-  def = DEG_TRANS2(f);    
+  def = DEG_TRANS2(f);
   deg = DEG_TRANS4(g);
-    
+
   if (def <= deg) {
     for (i = 0; i < def; i++) {
       if (*(ptf++) != *(ptg++)) {
         return 0L;
       }
     }
-    for (; i < deg; i++) {   
+    for (; i < deg; i++) {
       if (*(ptg++) != i) {
         return 0L;
       }
@@ -3646,14 +3646,14 @@ Int EqTrans24 (Obj f, Obj g) {
     // This can't happen with transformations created within this file since a
     // transformation is of type T_TRANS4 if and only if it has (internal)
     // degree 65537 or greater. It is included to make the code more robust.
-    
+
     for (i = 0; i < deg; i++) {
       if (*(ptf++) != *(ptg++)) {
         return 0L;
       }
     }
     for (; i < def; i++) {
-      if (* (ptf++) != i) { 
+      if (* (ptf++) != i) {
         return 0L;
       }
     }
@@ -3667,9 +3667,9 @@ Int EqTrans42 (Obj f, Obj g) {
   UInt4  *ptf;
   UInt2  *ptg;
 
-  ptf = ADDR_TRANS4(f);   
+  ptf = ADDR_TRANS4(f);
   ptg = ADDR_TRANS2(g);
-  def = DEG_TRANS4(f);    
+  def = DEG_TRANS4(f);
   deg = DEG_TRANS2(g);
 
   if (def <= deg) {
@@ -3693,7 +3693,7 @@ Int EqTrans42 (Obj f, Obj g) {
         return 0L;
       }
     }
-    for (; i < def; i++) {   
+    for (; i < def; i++) {
       if (*(ptf++) != i) {
         return 0L;
       }
@@ -3792,7 +3792,7 @@ Int LtTrans24 (Obj f, Obj g) {
     // This can't happen with transformations created within this file since a
     // transformation is of type T_TRANS4 if and only if it has (internal)
     // degree 65537 or greater. It is included to make the code more robust.
-    
+
     for (i = 0; i < deg; i++) {
       if (ptf[i] != ptg[i]) {
         if (ptf[i] < ptg[i]) {
@@ -3980,7 +3980,7 @@ Obj ProdTrans24 (Obj f, Obj g) {
     // This can't happen with transformations created within this file since a
     // transformation is of type T_TRANS4 if and only if it has (internal)
     // degree 65537 or greater. It is included to make the code more robust.
-    
+
     for (i = 0; i < def; i++) {
       *(ptfg++) = IMAGE(ptf[i], ptg, deg);
     }
@@ -4010,7 +4010,7 @@ Obj ProdTrans42 (Obj f, Obj g) {
     // This can't happen with transformations created within this file since a
     // transformation is of type T_TRANS4 if and only if it has (internal)
     // degree 65537 or greater. It is included to make the code more robust.
-    
+
     for (i = 0; i < def; i++) {
       *(ptfg++) = ptg[*(ptf++)];
     }
@@ -4058,98 +4058,122 @@ Obj ProdTrans44 (Obj f, Obj g) {
 ** Products for a transformation and permutation
 *******************************************************************************/
 
-Obj ProdTrans2Perm2(Obj f, Obj p){ 
-  UInt2   *ptf, *ptp, *ptfp;
-  UInt    i, def, dep;
-  Obj     fp;
+Obj ProdTrans2Perm2 (Obj f, Obj p) {
+  UInt2 *ptf, *ptp, *ptfp;
+  UInt  i, def, dep;
+  Obj   fp;
 
-  dep =  DEG_PERM2(p);
+  dep = DEG_PERM2(p);
   def = DEG_TRANS2(f);
-  fp  = NEW_TRANS2(MAX(def,dep));
+  fp  = NEW_TRANS2(MAX(def, dep));
 
-  ptfp=ADDR_TRANS2(fp);
-  ptf =ADDR_TRANS2(f);
+  ptfp = ADDR_TRANS2(fp);
+  ptf = ADDR_TRANS2(f);
   ptp = ADDR_PERM2(p);
 
-  if(def<=dep){
-    for(i=0;i<def;i++) *(ptfp++)=ptp[*(ptf++)];
-    for(;i<dep;i++) *(ptfp++)=ptp[i];
+  if (def <= dep) {
+    for (i = 0; i < def; i++) {
+      *(ptfp++) = ptp[*(ptf++)];
+    }
+    for (; i < dep; i++) {
+      *(ptfp++) = ptp[i];
+    }
   } else {
-    for(i=0;i<def;i++) *(ptfp++)=IMAGE(ptf[i], ptp, dep);
+    for(i=0;i<def;i++) {
+      *(ptfp++) = IMAGE(ptf[i], ptp, dep);
+    }
   }
   return fp;
 }
 
-Obj ProdTrans2Perm4(Obj f, Obj p){ 
-  UInt2   *ptf;
-  UInt4   *ptp, *ptfp;
-  UInt    i, def, dep;
-  Obj     fp;
+Obj ProdTrans2Perm4 (Obj f, Obj p) {
+  UInt2 *ptf;
+  UInt4 *ptp, *ptfp;
+  UInt  i, def, dep;
+  Obj   fp;
 
-  dep =  DEG_PERM4(p);
+  dep = DEG_PERM4(p);
   def = DEG_TRANS2(f);
-  fp  = NEW_TRANS4(MAX(def,dep));
+  fp  = NEW_TRANS4(MAX(def, dep));
 
-  ptfp=ADDR_TRANS4(fp);
-  ptf =ADDR_TRANS2(f);
+  ptfp = ADDR_TRANS4(fp);
+  ptf = ADDR_TRANS2(f);
   ptp = ADDR_PERM4(p);
 
-  if(def<=dep){
-    for(i=0;i<def;i++) *(ptfp++)=ptp[*(ptf++)];
-    for(;i<dep;i++) *(ptfp++)=ptp[i];
+  if (def <= dep) {
+    for (i = 0; i < def; i++) {
+      *(ptfp++) = ptp[*(ptf++)];
+    }
+    for (; i < dep; i++) {
+      *(ptfp++) = ptp[i];
+    }
   } else {
     // I don't know how to create a permutation of type T_PERM4 with
     // (internal) degree 65536 or less, so this case isn't tested. It is
     // included to make the code more robust.
-    for(i=0;i<def;i++) *(ptfp++)=IMAGE(ptf[i], ptp, dep);
+    for (i = 0; i < def; i++) {
+      *(ptfp++) = IMAGE(ptf[i], ptp, dep);
+    }
   }
   return fp;
 }
 
-Obj ProdTrans4Perm2(Obj f, Obj p){ 
-  UInt4   *ptf, *ptfp;
-  UInt2   *ptp;
-  UInt    i, def, dep;
-  Obj     fp;
+Obj ProdTrans4Perm2 (Obj f, Obj p) {
+  UInt4 *ptf, *ptfp;
+  UInt2 *ptp;
+  UInt  i, def, dep;
+  Obj   fp;
 
-  dep =  DEG_PERM2(p);
+  dep = DEG_PERM2(p);
   def = DEG_TRANS4(f);
-  fp  = NEW_TRANS4(MAX(def,dep));
+  fp  = NEW_TRANS4(MAX(def, dep));
 
-  ptfp=ADDR_TRANS4(fp);
-  ptf =ADDR_TRANS4(f);
+  ptfp = ADDR_TRANS4(fp);
+  ptf = ADDR_TRANS4(f);
   ptp = ADDR_PERM2(p);
 
-  if(def<=dep){
+  if (def <= dep) {
     // This can't happen with transformations created within this file since a
     // transformation is of type T_TRANS4 if and only if it has (internal)
     // degree 65537 or greater. It is included to make the code more robust.
-    for(i=0;i<def;i++) *(ptfp++)=ptp[*(ptf++)];
-    for(;i<dep;i++) *(ptfp++)=ptp[i];
+    for (i = 0; i < def; i++) {
+      *(ptfp++) = ptp[*(ptf++)];
+    }
+    for (; i < dep; i++) {
+      *(ptfp++) = ptp[i];
+    }
   } else {
-    for(i=0;i<def;i++) *(ptfp++)=IMAGE(ptf[i], ptp, dep);
+    for (i = 0; i < def; i++) {
+      *(ptfp++) = IMAGE(ptf[i], ptp, dep);
+    }
   }
   return fp;
 }
 
-Obj ProdTrans4Perm4(Obj f, Obj p){
-  UInt4   *ptf, *ptp, *ptfp;
-  UInt    i, def, dep;
-  Obj     fp;
+Obj ProdTrans4Perm4 (Obj f, Obj p) {
+  UInt4 *ptf, *ptp, *ptfp;
+  UInt  i, def, dep;
+  Obj   fp;
 
-  dep =  DEG_PERM4(p);
+  dep = DEG_PERM4(p);
   def = DEG_TRANS4(f);
-  fp  = NEW_TRANS4(MAX(def,dep));
+  fp  = NEW_TRANS4(MAX(def, dep));
 
-  ptfp=ADDR_TRANS4(fp);
-  ptf =ADDR_TRANS4(f);
+  ptfp = ADDR_TRANS4(fp);
+  ptf = ADDR_TRANS4(f);
   ptp = ADDR_PERM4(p);
 
-  if(def<=dep){
-    for(i=0;i<def;i++) *(ptfp++)=ptp[*(ptf++)];
-    for(;i<dep;i++) *(ptfp++)=ptp[i];
+  if (def <= dep) {
+    for (i = 0; i < def; i++) {
+      *(ptfp++) = ptp[*(ptf++)];
+    }
+    for (; i < dep; i++) {
+      *(ptfp++) = ptp[i];
+    }
   } else {
-    for(i=0;i<def;i++) *(ptfp++)=IMAGE(ptf[i], ptp, dep);
+    for (i = 0; i < def; i++) {
+      *(ptfp++) = IMAGE(ptf[i], ptp, dep);
+    }
   }
   return fp;
 }
@@ -4158,40 +4182,46 @@ Obj ProdTrans4Perm4(Obj f, Obj p){
 ** Products for a permutation and transformation
 *******************************************************************************/
 
-Obj ProdPerm2Trans2(Obj p, Obj f){ 
-  UInt2   *ptf, *ptp, *ptpf;
-  UInt    i, def, dep;
-  Obj     pf;
+Obj ProdPerm2Trans2 (Obj p, Obj f) {
+  UInt2 *ptf, *ptp, *ptpf;
+  UInt  i, def, dep;
+  Obj   pf;
 
-  dep =  DEG_PERM2(p);
+  dep = DEG_PERM2(p);
   def = DEG_TRANS2(f);
-  pf  = NEW_TRANS2(MAX(def,dep));
+  pf  = NEW_TRANS2(MAX(def, dep));
 
-  ptpf=ADDR_TRANS2(pf);
-  ptf =ADDR_TRANS2(f);
+  ptpf = ADDR_TRANS2(pf);
+  ptf = ADDR_TRANS2(f);
   ptp = ADDR_PERM2(p);
 
-  if(dep<=def){
-    for(i=0;i<dep;i++) *(ptpf++)=ptf[*(ptp++)];
-    for(;i<def;i++) *(ptpf++)=ptf[i];
+  if (dep <= def) {
+    for (i = 0; i < dep; i++) {
+      *(ptpf++) = ptf[*(ptp++)];
+    }
+    for (; i < def; i++) {
+      *(ptpf++) = ptf[i];
+    }
   } else {
-    for(i=0;i<dep;i++) *(ptpf++)=IMAGE(ptp[i], ptf, def);
+    for (i = 0; i < dep; i++) {
+      *(ptpf++) = IMAGE(ptp[i], ptf, def);
+    }
   }
   return pf;
 }
 
-Obj ProdPerm2Trans4(Obj p, Obj f){ 
-  UInt4   *ptf, *ptpf;
-  UInt2   *ptp;
-  UInt    i, def, dep;
-  Obj     pf;
+Obj ProdPerm2Trans4 (Obj p, Obj f) {
+  UInt4 *ptf, *ptpf;
+  UInt2 *ptp;
+  UInt  i, def, dep;
+  Obj   pf;
 
-  dep =  DEG_PERM2(p);
+  dep = DEG_PERM2(p);
   def = DEG_TRANS4(f);
-  pf  = NEW_TRANS4(MAX(def,dep));
+  pf  = NEW_TRANS4(MAX(def, dep));
 
-  ptpf=ADDR_TRANS4(pf);
-  ptf =ADDR_TRANS4(f);
+  ptpf = ADDR_TRANS4(pf);
+  ptf = ADDR_TRANS4(f);
   ptp = ADDR_PERM2(p);
 
   if(dep<=def){
@@ -4206,7 +4236,7 @@ Obj ProdPerm2Trans4(Obj p, Obj f){
   return pf;
 }
 
-Obj ProdPerm4Trans2(Obj p, Obj f){ 
+Obj ProdPerm4Trans2 (Obj p, Obj f) {
   UInt2   *ptf;
   UInt4   *ptp, *ptpf;
   UInt    i, def, dep;
@@ -4216,40 +4246,52 @@ Obj ProdPerm4Trans2(Obj p, Obj f){
   def = DEG_TRANS2(f);
   pf  = NEW_TRANS4(MAX(def,dep));
 
-  ptpf=ADDR_TRANS4(pf);
-  ptf =ADDR_TRANS2(f);
+  ptpf = ADDR_TRANS4(pf);
+  ptf = ADDR_TRANS2(f);
   ptp = ADDR_PERM4(p);
 
-  if(dep<=def){
+  if (dep <= def) {
     // I don't know how to create a permutation of type T_PERM4 with
     // (internal) degree 65536 or less, so this case isn't tested. It is
     // included to make the code more robust.
-    for(i=0;i<dep;i++) *(ptpf++)=ptf[*(ptp++)];
-    for(;i<def;i++) *(ptpf++)=ptf[i];
+    for (i = 0; i < dep; i++) {
+      *(ptpf++) = ptf[*(ptp++)];
+    }
+    for (; i < def; i++) {
+      *(ptpf++) = ptf[i];
+    }
   } else {
-    for(i=0;i<dep;i++) *(ptpf++)=IMAGE(ptp[i], ptf, def);
+    for (i = 0; i < dep; i++) {
+      *(ptpf++) = IMAGE(ptp[i], ptf, def);
+    }
   }
   return pf;
 }
 
-Obj ProdPerm4Trans4(Obj p, Obj f){ 
+Obj ProdPerm4Trans4 (Obj p, Obj f) {
   UInt4   *ptf, *ptp, *ptpf;
   UInt    i, def, dep;
   Obj     pf;
 
-  dep =  DEG_PERM4(p);
+  dep = DEG_PERM4(p);
   def = DEG_TRANS4(f);
-  pf  = NEW_TRANS4(MAX(def,dep));
+  pf  = NEW_TRANS4(MAX(def, dep));
 
-  ptpf=ADDR_TRANS4(pf);
-  ptf =ADDR_TRANS4(f);
+  ptpf = ADDR_TRANS4(pf);
+  ptf = ADDR_TRANS4(f);
   ptp = ADDR_PERM4(p);
 
-  if(dep<=def){
-    for(i=0;i<dep;i++) *(ptpf++)=ptf[*(ptp++)];
-    for(;i<def;i++) *(ptpf++)=ptf[i];
+  if (dep <= def) {
+    for (i = 0; i < dep; i++) {
+      *(ptpf++) = ptf[*(ptp++)];
+    }
+    for (; i < def; i++) {
+      *(ptpf++) = ptf[i];
+    }
   } else {
-    for(i=0;i<dep;i++) *(ptpf++)=IMAGE(ptp[i], ptf, def);
+    for (i = 0; i < dep; i++) {
+      *(ptpf++) = IMAGE(ptp[i], ptf, def);
+    }
   }
   return pf;
 }
@@ -4258,105 +4300,113 @@ Obj ProdPerm4Trans4(Obj p, Obj f){
 ** Conjugate a transformation f by a permutation p: p ^ -1 * f * p
 *******************************************************************************/
 
-Obj PowTrans2Perm2(Obj f, Obj p){
-  UInt2   *ptf, *ptp, *ptcnj;
-  UInt    i, def, dep, decnj;
-  Obj     cnj;
+Obj PowTrans2Perm2 (Obj f, Obj p) {
+  UInt2 *ptf, *ptp, *ptcnj;
+  UInt  i, def, dep, decnj;
+  Obj   cnj;
 
-  dep  =  DEG_PERM2(p);
+  dep  = DEG_PERM2(p);
   def  = DEG_TRANS2(f);
-  decnj=MAX(dep,def);
+  decnj = MAX(dep, def);
   cnj  = NEW_TRANS2(decnj);
 
-  ptcnj=ADDR_TRANS2(cnj);
-  ptf  =ADDR_TRANS2(f);
+  ptcnj = ADDR_TRANS2(cnj);
+  ptf  = ADDR_TRANS2(f);
   ptp  = ADDR_PERM2(p);
 
-  if(def==dep){
-    for(i=0;i<decnj;i++) ptcnj[ptp[i]]=ptp[ptf[i]];
+  if (def == dep) {
+    for (i = 0; i < decnj; i++) {
+      ptcnj[ptp[i]] = ptp[ptf[i]];
+    }
   } else {
-    for(i=0;i<decnj;i++){
-      ptcnj[IMAGE(i, ptp, dep)]=IMAGE(IMAGE(i, ptf, def), ptp, dep);
+    for (i = 0; i < decnj; i++) {
+      ptcnj[IMAGE(i, ptp, dep)] = IMAGE(IMAGE(i, ptf, def), ptp, dep);
     }
   }
   return cnj;
 }
 
-Obj PowTrans2Perm4(Obj f, Obj p){
-  UInt2   *ptf;
-  UInt4   *ptp, *ptcnj;
-  UInt    i, def, dep, decnj;
-  Obj     cnj;
+Obj PowTrans2Perm4 (Obj f, Obj p) {
+  UInt2 *ptf;
+  UInt4 *ptp, *ptcnj;
+  UInt  i, def, dep, decnj;
+  Obj   cnj;
 
-  dep  =  DEG_PERM4(p);
+  dep  = DEG_PERM4(p);
   def  = DEG_TRANS2(f);
-  decnj=MAX(dep,def);
+  decnj = MAX(dep, def);
   cnj  = NEW_TRANS4(decnj);
 
-  ptcnj=ADDR_TRANS4(cnj);
-  ptf  =ADDR_TRANS2(f);
+  ptcnj = ADDR_TRANS4(cnj);
+  ptf  = ADDR_TRANS2(f);
   ptp  = ADDR_PERM4(p);
 
-  if(def==dep){
+  if (def == dep) {
     // I don't know how to create a permutation of type T_PERM4 with
     // (internal) degree 65536 or less, so this case isn't tested. It is
     // included to make the code more robust.
-    for(i=0;i<decnj;i++) ptcnj[ptp[i]]=ptp[ptf[i]];
+    for (i = 0; i < decnj; i++) {
+      ptcnj[ptp[i]] = ptp[ptf[i]];
+    }
   } else {
-    for(i=0;i<decnj;i++){
-      ptcnj[IMAGE(i, ptp, dep)]=IMAGE(IMAGE(i, ptf, def), ptp, dep);
+    for (i = 0; i < decnj; i++) {
+      ptcnj[IMAGE(i, ptp, dep)] = IMAGE(IMAGE(i, ptf, def), ptp, dep);
     }
   }
   return cnj;
 }
 
-Obj PowTrans4Perm2(Obj f, Obj p){
-  UInt2   *ptp;
-  UInt4   *ptf, *ptcnj;
-  UInt    i, def, dep, decnj;
-  Obj     cnj;
+Obj PowTrans4Perm2 (Obj f, Obj p) {
+  UInt2 *ptp;
+  UInt4 *ptf, *ptcnj;
+  UInt  i, def, dep, decnj;
+  Obj   cnj;
 
-  dep  =  DEG_PERM2(p);
+  dep  = DEG_PERM2(p);
   def  = DEG_TRANS4(f);
-  decnj=MAX(dep,def);
+  decnj = MAX(dep, def);
   cnj  = NEW_TRANS4(decnj);
 
-  ptcnj=ADDR_TRANS4(cnj);
-  ptf  =ADDR_TRANS4(f);
+  ptcnj = ADDR_TRANS4(cnj);
+  ptf  = ADDR_TRANS4(f);
   ptp  = ADDR_PERM2(p);
 
-  if(def==dep){
+  if (def == dep) {
     // This can't happen with transformations created within this file since a
     // transformation is of type T_TRANS4 if and only if it has (internal)
     // degree 65537 or greater. It is included to make the code more robust.
-    for(i=0;i<decnj;i++) ptcnj[ptp[i]]=ptp[ptf[i]];
+    for (i = 0; i < decnj; i++) {
+      ptcnj[ptp[i]] = ptp[ptf[i]];
+    }
   } else {
-    for(i=0;i<decnj;i++){
-      ptcnj[IMAGE(i, ptp, dep)]=IMAGE(IMAGE(i, ptf, def), ptp, dep);
+    for (i = 0; i < decnj; i++) {
+      ptcnj[IMAGE(i, ptp, dep)] = IMAGE(IMAGE(i, ptf, def), ptp, dep);
     }
   }
   return cnj;
 }
 
-Obj PowTrans4Perm4(Obj f, Obj p){
-  UInt4   *ptf, *ptp, *ptcnj;
-  UInt    i, def, dep, decnj;
-  Obj     cnj;
+Obj PowTrans4Perm4 (Obj f, Obj p) {
+  UInt4 *ptf, *ptp, *ptcnj;
+  UInt  i, def, dep, decnj;
+  Obj   cnj;
 
-  dep  =  DEG_PERM4(p);
+  dep  = DEG_PERM4(p);
   def  = DEG_TRANS4(f);
-  decnj=MAX(dep,def);
+  decnj = MAX(dep, def);
   cnj  = NEW_TRANS4(decnj);
 
-  ptcnj=ADDR_TRANS4(cnj);
-  ptf  =ADDR_TRANS4(f);
+  ptcnj = ADDR_TRANS4(cnj);
+  ptf  = ADDR_TRANS4(f);
   ptp  = ADDR_PERM4(p);
 
-  if(def==dep){
-    for(i=0;i<decnj;i++) ptcnj[ptp[i]]=ptp[ptf[i]];
+  if (def == dep) {
+    for (i = 0; i < decnj; i++) {
+      ptcnj[ptp[i]] = ptp[ptf[i]];
+    }
   } else {
-    for(i=0;i<decnj;i++){
-      ptcnj[IMAGE(i, ptp, dep)]=IMAGE(IMAGE(i, ptf, def), ptp, dep);
+    for (i = 0; i < decnj; i++) {
+      ptcnj[IMAGE(i, ptp, dep)] = IMAGE(IMAGE(i, ptf, def), ptp, dep);
     }
   }
   return cnj;
@@ -4366,125 +4416,157 @@ Obj PowTrans4Perm4(Obj f, Obj p){
 ** Quotient a transformation f by a permutation p: f * p ^ -1
 *******************************************************************************/
 
-Obj QuoTrans2Perm2(Obj f, Obj p){
-  UInt    def, dep, i;
-  UInt2   *ptf, *ptquo, *ptp;
-  UInt4   *pttmp;
-  Obj     quo;
+Obj QuoTrans2Perm2 (Obj f, Obj p) {
+  UInt  def, dep, i;
+  UInt2 *ptf, *ptquo, *ptp;
+  UInt4 *pttmp;
+  Obj   quo;
 
-  def=DEG_TRANS2(f);
-  dep= DEG_PERM2(p);
-  quo=NEW_TRANS2(MAX(def, dep));
+  def = DEG_TRANS2(f);
+  dep = DEG_PERM2(p);
+  quo = NEW_TRANS2(MAX(def, dep));
   ResizeTmpTrans(SIZE_OBJ(p));
 
   // invert the permutation into the buffer bag
-  pttmp = (UInt4*)(ADDR_OBJ(TmpTrans));
-  ptp =   ADDR_PERM2(p);
-  for(i=0;i<dep;i++) pttmp[*ptp++]=i;
+  pttmp = (UInt4 *)(ADDR_OBJ(TmpTrans));
+  ptp = ADDR_PERM2(p);
+  for (i = 0; i < dep; i++) {
+    pttmp[*ptp++] = i;
+  }
 
-  ptf   = ADDR_TRANS2(f);
+  ptf = ADDR_TRANS2(f);
   ptquo = ADDR_TRANS2(quo);
 
-  if(def<=dep){
-    for(i=0;i<def;i++) *(ptquo++)=pttmp[*(ptf++)];
-    for(i=def;i<dep;i++) *(ptquo++)=pttmp[i];
+  if (def <= dep) {
+    for (i = 0; i < def; i++) {
+      *(ptquo++) = pttmp[*(ptf++)];
+    }
+    for (i = def; i < dep; i++) {
+      *(ptquo++) = pttmp[i];
+    }
   }
   else {
-    for(i=0;i<def;i++) *(ptquo++)=IMAGE(ptf[i], pttmp, dep );
+    for (i = 0; i < def; i++) {
+      *(ptquo++) = IMAGE(ptf[i], pttmp, dep);
+    }
   }
   return quo;
 }
 
-Obj QuoTrans2Perm4(Obj f, Obj p){
-  UInt    def, dep, i;
-  UInt2   *ptf;
-  UInt4   *ptquo, *ptp, *pttmp;
-  Obj     quo;
+Obj QuoTrans2Perm4 (Obj f, Obj p) {
+  UInt  def, dep, i;
+  UInt2 *ptf;
+  UInt4 *ptquo, *ptp, *pttmp;
+  Obj   quo;
 
-  def=DEG_TRANS2(f);
-  dep= DEG_PERM4(p);
-  quo=NEW_TRANS4( MAX(def, dep) );
+  def = DEG_TRANS2(f);
+  dep = DEG_PERM4(p);
+  quo = NEW_TRANS4( MAX(def, dep));
   ResizeTmpTrans(SIZE_OBJ(p));
 
   // invert the permutation into the buffer bag
-  pttmp = (UInt4*)(ADDR_OBJ(TmpTrans));
-  ptp =   ADDR_PERM4(p);
-  for(i=0;i<dep;i++) pttmp[*ptp++]=i;
+  pttmp = (UInt4 *)(ADDR_OBJ(TmpTrans));
+  ptp = ADDR_PERM4(p);
+  for (i = 0; i < dep; i++) {
+    pttmp[*ptp++] = i;
+  }
 
-  ptf   = ADDR_TRANS2(f);
+  ptf = ADDR_TRANS2(f);
   ptquo = ADDR_TRANS4(quo);
 
-  if(def<=dep){
-    for(i=0;i<def;i++) *(ptquo++)=pttmp[*(ptf++)];
-    for(i=def;i<dep;i++) *(ptquo++)=pttmp[i];
+  if (def <= dep) {
+    for (i = 0; i < def; i++) {
+      *(ptquo++) = pttmp[*(ptf++)];
+    }
+    for (i = def; i < dep; i++) {
+      *(ptquo++) = pttmp[i];
+    }
   }
   else {
     // I don't know how to create a permutation of type T_PERM4 with
     // (internal) degree 65536 or less, so this case isn't tested. It is
     // included to make the code more robust.
-    for(i=0;i<def;i++) *(ptquo++)=IMAGE(ptf[i], pttmp, dep );
+    for (i = 0; i < def; i++) {
+      *(ptquo++) = IMAGE(ptf[i], pttmp, dep);
+    }
   }
   return quo;
 }
 
-Obj QuoTrans4Perm2(Obj f, Obj p){
-  UInt    def, dep, i;
-  UInt4   *ptf, *ptquo, *pttmp;
-  UInt2   *ptp;
-  Obj     quo;
+Obj QuoTrans4Perm2 (Obj f, Obj p) {
+  UInt  def, dep, i;
+  UInt4 *ptf, *ptquo, *pttmp;
+  UInt2 *ptp;
+  Obj   quo;
 
-  def=DEG_TRANS4(f);
-  dep= DEG_PERM2(p);
-  quo=NEW_TRANS4(MAX(def, dep));
+  def = DEG_TRANS4(f);
+  dep = DEG_PERM2(p);
+  quo = NEW_TRANS4(MAX(def, dep));
 
   ResizeTmpTrans(SIZE_OBJ(p));
 
   // invert the permutation into the buffer bag
-  pttmp = (UInt4*)(ADDR_OBJ(TmpTrans));
-  ptp =   ADDR_PERM2(p);
-  for(i=0;i<dep;i++) pttmp[*ptp++]=i;
+  pttmp = (UInt4 *)(ADDR_OBJ(TmpTrans));
+  ptp = ADDR_PERM2(p);
+  for (i = 0; i < dep; i++) {
+    pttmp[*ptp++] = i;
+  }
 
-  ptf   = ADDR_TRANS4(f);
+  ptf = ADDR_TRANS4(f);
   ptquo = ADDR_TRANS4(quo);
 
-  if(def<=dep){
+  if (def <= dep) {
     // This can't happen with transformations created within this file since a
     // transformation is of type T_TRANS4 if and only if it has (internal)
     // degree 65537 or greater. It is included to make the code more robust.
-    for(i=0;i<def;i++) *(ptquo++)=pttmp[*(ptf++)];
-    for(i=def;i<dep;i++) *(ptquo++)=pttmp[i];
+    for (i = 0; i < def; i++) {
+      *(ptquo++) = pttmp[*(ptf++)];
+    }
+    for (i = def; i < dep; i++) {
+      *(ptquo++) = pttmp[i];
+    }
   }
   else {
-    for(i=0;i<def;i++) *(ptquo++)=IMAGE(ptf[i], pttmp, dep );
+    for (i = 0; i < def; i++) {
+      *(ptquo++) = IMAGE(ptf[i], pttmp, dep);
+    }
   }
   return quo;
 }
 
-Obj QuoTrans4Perm4(Obj f, Obj p){
-  UInt    def, dep, i;
-  UInt4   *ptf, *pttmp, *ptquo, *ptp;
-  Obj     quo;
+Obj QuoTrans4Perm4 (Obj f, Obj p) {
+  UInt  def, dep, i;
+  UInt4 *ptf, *pttmp, *ptquo, *ptp;
+  Obj   quo;
 
-  def=DEG_TRANS4(f);
-  dep= DEG_PERM4(p);
-  quo=NEW_TRANS4(MAX(def, dep));
+  def = DEG_TRANS4(f);
+  dep = DEG_PERM4(p);
+  quo = NEW_TRANS4(MAX(def, dep));
 
   ResizeTmpTrans(SIZE_OBJ(p));
 
-  // invert the permutation into the buffer bag 
-  pttmp = (UInt4*)(ADDR_OBJ(TmpTrans));
-  ptp =   ADDR_PERM4(p);
-  for(i=0;i<dep;i++) pttmp[*ptp++]=i;
+  // invert the permutation into the buffer bag
+  pttmp = (UInt4 *)(ADDR_OBJ(TmpTrans));
+  ptp = ADDR_PERM4(p);
+  for (i = 0; i < dep; i++) {
+    pttmp[*ptp++] = i;
+  }
 
-  ptf   = ADDR_TRANS4(f);
+  ptf = ADDR_TRANS4(f);
   ptquo = ADDR_TRANS4(quo);
 
-  if(def<=dep){
-    for(i=0;i<def;i++) *(ptquo++)=pttmp[*(ptf++)];
-    for(i=def;i<dep;i++) *(ptquo++)=pttmp[i];
+  if (def <= dep) {
+    for (i = 0; i < def; i++) {
+      *(ptquo++) = pttmp[ * (ptf++)];
+    }
+    for (i = def; i < dep; i++) {
+      *(ptquo++) = pttmp[i];
+    }
   }
   else {
-    for(i=0;i<def;i++) *(ptquo++)=IMAGE(ptf[i], pttmp, dep );
+    for (i = 0; i < def; i++) {
+      *(ptquo++) = IMAGE(ptf[i], pttmp, dep);
+    }
   }
   return quo;
 }
@@ -4493,7 +4575,7 @@ Obj QuoTrans4Perm4(Obj f, Obj p){
 ** Left quotient a transformation f by a permutation p: p ^ -1 * f
 *******************************************************************************/
 
-Obj LQuoPerm2Trans2(Obj opL, Obj opR){
+Obj LQuoPerm2Trans2 (Obj opL, Obj opR) {
   UInt   degL, degR, degM, p;
   Obj    mod;
   UInt2  *ptL, *ptR, *ptM;
@@ -4501,30 +4583,32 @@ Obj LQuoPerm2Trans2(Obj opL, Obj opR){
   degL = DEG_PERM2(opL);
   degR = DEG_TRANS2(opR);
   degM = degL < degR ? degR : degL;
-  mod = NEW_TRANS2( degM );
+  mod = NEW_TRANS2( degM);
 
   ptL = ADDR_PERM2(opL);
   ptR = ADDR_TRANS2(opR);
   ptM = ADDR_TRANS2(mod);
 
-  if ( degL <= degR ) {
-      for ( p = 0; p < degL; p++ )
-          ptM[ *(ptL++) ] = *(ptR++);
-      for ( p = degL; p < degR; p++ )
-          ptM[ p ] = *(ptR++);
-  }
-
-  else {
-      for ( p = 0; p < degR; p++ )
-          ptM[ *(ptL++) ] = *(ptR++);
-      for ( p = degR; p < degL; p++ )
-          ptM[ *(ptL++) ] = p;
+  if (degL <= degR) {
+    for (p = 0; p < degL; p++) {
+      ptM[*(ptL++)] = *(ptR++);
+    }
+    for (p = degL; p < degR; p++) {
+      ptM[p] = *(ptR++);
+    }
+  } else {
+    for (p = 0; p < degR; p++) {
+      ptM[*(ptL++) ] = *(ptR++);
+    }
+    for (p = degR; p < degL; p++) {
+      ptM[*(ptL++) ] = p;
+    }
   }
 
   return mod;
 }
 
-Obj LQuoPerm2Trans4(Obj opL, Obj opR){
+Obj LQuoPerm2Trans4 (Obj opL, Obj opR) {
   UInt   degL, degR, degM, p;
   Obj    mod;
   UInt2  *ptL;
@@ -4533,33 +4617,35 @@ Obj LQuoPerm2Trans4(Obj opL, Obj opR){
   degL = DEG_PERM2(opL);
   degR = DEG_TRANS4(opR);
   degM = degL < degR ? degR : degL;
-  mod = NEW_TRANS4( degM );
+  mod = NEW_TRANS4(degM);
 
   ptL = ADDR_PERM2(opL);
   ptR = ADDR_TRANS4(opR);
   ptM = ADDR_TRANS4(mod);
 
-  if ( degL <= degR ) {
-      for ( p = 0; p < degL; p++ )
-          ptM[ *(ptL++) ] = *(ptR++);
-      for ( p = degL; p < degR; p++ )
-          ptM[ p ] = *(ptR++);
-  }
-
-  else {
+  if (degL <= degR) {
+    for (p = 0; p < degL; p++) {
+      ptM[*(ptL++) ] = *(ptR++);
+    }
+    for (p = degL; p < degR; p++) {
+      ptM[p] = *(ptR++);
+    }
+  } else {
     // This can't happen with transformations created within this file since a
     // transformation is of type T_TRANS4 if and only if it has (internal)
     // degree 65537 or greater. It is included to make the code more robust.
-      for ( p = 0; p < degR; p++ )
-          ptM[ *(ptL++) ] = *(ptR++);
-      for ( p = degR; p < degL; p++ )
-          ptM[ *(ptL++) ] = p;
+    for (p = 0; p < degR; p++) {
+      ptM[*(ptL++) ] = *(ptR++);
+    }
+    for (p = degR; p < degL; p++) {
+      ptM[*(ptL++) ] = p;
+    }
   }
 
   return mod;
 }
 
-Obj LQuoPerm4Trans2(Obj opL, Obj opR){
+Obj LQuoPerm4Trans2 (Obj opL, Obj opR) {
   UInt   degL, degR, degM, p;
   Obj    mod;
   UInt4  *ptL, *ptM;
@@ -4574,27 +4660,29 @@ Obj LQuoPerm4Trans2(Obj opL, Obj opR){
   ptR = ADDR_TRANS2(opR);
   ptM = ADDR_TRANS4(mod);
 
-  if ( degL <= degR ) {
+  if (degL <= degR) {
     // I don't know how to create a permutation of type T_PERM4 with
     // (internal) degree 65536 or less, so this case isn't tested. It is
     // included to make the code more robust.
-      for ( p = 0; p < degL; p++ )
-          ptM[ *(ptL++) ] = *(ptR++);
-      for ( p = degL; p < degR; p++ )
-          ptM[ p ] = *(ptR++);
-  }
-
-  else {
-      for ( p = 0; p < degR; p++ )
-          ptM[ *(ptL++) ] = *(ptR++);
-      for ( p = degR; p < degL; p++ )
-          ptM[ *(ptL++) ] = p;
+    for (p = 0; p < degL; p++) {
+      ptM[*(ptL++) ] = *(ptR++);
+    }
+    for (p = degL; p < degR; p++) {
+      ptM[p] = *(ptR++);
+    }
+  } else {
+    for (p = 0; p < degR; p++) {
+      ptM[*(ptL++) ] = *(ptR++);
+    }
+    for (p = degR; p < degL; p++) {
+      ptM[*(ptL++)] = p;
+    }
   }
 
   return mod;
 }
 
-Obj LQuoPerm4Trans4(Obj opL, Obj opR){
+Obj LQuoPerm4Trans4 (Obj opL, Obj opR) {
   UInt   degL, degR, degM, p;
   Obj    mod;
   UInt4  *ptL, *ptR, *ptM;
@@ -4602,31 +4690,33 @@ Obj LQuoPerm4Trans4(Obj opL, Obj opR){
   degL = DEG_PERM4(opL);
   degR = DEG_TRANS4(opR);
   degM = degL < degR ? degR : degL;
-  mod = NEW_TRANS4( degM );
+  mod = NEW_TRANS4( degM);
 
   ptL = ADDR_PERM4(opL);
   ptR = ADDR_TRANS4(opR);
   ptM = ADDR_TRANS4(mod);
 
-  if ( degL <= degR ) {
-      for ( p = 0; p < degL; p++ )
-          ptM[ *(ptL++) ] = *(ptR++);
-      for ( p = degL; p < degR; p++ )
-          ptM[ p ] = *(ptR++);
-  }
-
-  else {
-      for ( p = 0; p < degR; p++ )
-          ptM[ *(ptL++) ] = *(ptR++);
-      for ( p = degR; p < degL; p++ )
-          ptM[ *(ptL++) ] = p;
+  if (degL <= degR) {
+    for (p = 0; p < degL; p++) {
+      ptM[*(ptL++)] = *(ptR++);
+    }
+    for (p = degL; p < degR; p++) {
+      ptM[p] = *(ptR++);
+    }
+  } else {
+    for (p = 0; p < degR; p++) {
+      ptM[*(ptL++) ] = *(ptR++);
+    }
+    for (p = degR; p < degL; p++) {
+      ptM[*(ptL++)] = p;
+    }
   }
 
   return mod;
 }
 
 /*******************************************************************************
-** Apply a transformation to a point 
+** Apply a transformation to a point
 *******************************************************************************/
 
 Obj PowIntTrans2 (Obj i, Obj f) {
@@ -4684,7 +4774,7 @@ Obj OnSetsTrans (Obj set, Obj f){
   Obj    *ptset, *ptres, tmp, res;
   UInt   i, isint, k;
 
-  res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? 
+  res = NEW_PLIST(IS_MUTABLE_PLIST(set) ?
                   T_PLIST : T_PLIST + IMMUTABLE, LEN_LIST(set));
 
   ADDR_OBJ(res)[0] = ADDR_OBJ(set)[0];
@@ -4743,7 +4833,7 @@ Obj OnSetsTrans (Obj set, Obj f){
     SORT_PLIST_CYC(res);
     REMOVE_DUPS_PLIST_CYC(res);
 
-    RetypeBag(res, IS_MUTABLE_PLIST(set) 
+    RetypeBag(res, IS_MUTABLE_PLIST(set)
                    ? T_PLIST_CYC_SSORT : T_PLIST_CYC_SSORT + IMMUTABLE);
 
   } else {
@@ -4754,7 +4844,7 @@ Obj OnSetsTrans (Obj set, Obj f){
   return res;
 }
 
-// OnTuplesTrans for use in FuncOnTuples 
+// OnTuplesTrans for use in FuncOnTuples
 
 Obj OnTuplesTrans (Obj tup, Obj f) {
   UInt2  *ptf2;
@@ -4762,7 +4852,7 @@ Obj OnTuplesTrans (Obj tup, Obj f) {
   UInt   deg, i, k;
   Obj    *pttup, *ptres, res, tmp;
 
-  res = NEW_PLIST(IS_MUTABLE_PLIST(tup) ? 
+  res = NEW_PLIST(IS_MUTABLE_PLIST(tup) ?
                   T_PLIST : T_PLIST + IMMUTABLE, LEN_LIST(tup));
 
   ADDR_OBJ(res)[0] = ADDR_OBJ(tup)[0];
@@ -4828,76 +4918,79 @@ Obj OnTuplesTrans (Obj tup, Obj f) {
 ** Save and load workspace, garbage collection, IS_TRANS
 *******************************************************************************/
 
-void MarkTransSubBags( Obj f ){
-  if(IMG_TRANS(f)!=NULL){
+void MarkTransSubBags (Obj f) {
+  if (IMG_TRANS(f) != NULL) {
     MARK_BAG(IMG_TRANS(f));
     MARK_BAG(KER_TRANS(f));
   }
-  if(EXT_TRANS(f)!=NULL){
+  if (EXT_TRANS(f) != NULL) {
     MARK_BAG(EXT_TRANS(f));
   }
 }
 
-// Save and load 
-void SaveTrans2( Obj f){
+// Save and load
+void SaveTrans2 (Obj f) {
   UInt2   *ptr;
   UInt    len, i;
-  ptr=ADDR_TRANS2(f); // save the image list 
-  len=DEG_TRANS2(f);
-  for (i = 0; i < len; i++) SaveUInt2(*ptr++);
+  ptr = ADDR_TRANS2(f); // save the image list
+  len = DEG_TRANS2(f);
+  for (i = 0; i < len; i++) {
+    SaveUInt2(*ptr++);
+  }
 }
 
-void LoadTrans2( Obj f){
+void LoadTrans2 (Obj f) {
   UInt2   *ptr;
   UInt    len, i;
-  len=DEG_TRANS2(f);
-  ptr=ADDR_TRANS2(f);
-  for (i = 0; i < len; i++) *ptr++=LoadUInt2();
+  len = DEG_TRANS2(f);
+  ptr = ADDR_TRANS2(f);
+  for (i = 0; i < len; i++) {
+    *ptr++ = LoadUInt2();
+  }
 }
 
-void SaveTrans4( Obj f){
+void SaveTrans4 (Obj f) {
   UInt4   *ptr;
   UInt    len, i;
-  ptr=ADDR_TRANS4(f); // save the image list
-  len=DEG_TRANS4(f);
-  for (i = 0; i < len; i++) SaveUInt4(*ptr++);
+  ptr = ADDR_TRANS4(f); // save the image list
+  len = DEG_TRANS4(f);
+  for (i = 0; i < len; i++) {
+    SaveUInt4(*ptr++);
+  }
 }
 
-void LoadTrans4( Obj f){
+void LoadTrans4 (Obj f) {
   UInt4   *ptr;
   UInt    len, i;
-  len=DEG_TRANS4(f);
-  ptr=ADDR_TRANS4(f);
-  for (i = 0; i < len; i++) *ptr++=LoadUInt4();
+  len = DEG_TRANS4(f);
+  ptr = ADDR_TRANS4(f);
+  for (i = 0; i < len; i++) {
+    *ptr++=LoadUInt4();
+  }
 }
 
 Obj TYPE_TRANS2;
 
-Obj TypeTrans2(Obj f){
+Obj TypeTrans2 (Obj f) {
   return TYPE_TRANS2;
 }
 
 Obj TYPE_TRANS4;
 
-Obj TypeTrans4(Obj f){
+Obj TypeTrans4 (Obj f) {
   return TYPE_TRANS4;
 }
 
 Obj IsTransFilt;
 
-Obj IsTransHandler (
-    Obj                 self,
-    Obj                 val )
-{
-    if ( TNUM_OBJ(val) == T_TRANS2 || TNUM_OBJ(val) == T_TRANS4 ) {
-        return True;
-    }
-    else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
-        return False;
-    }
-    else {
-        return DoFilter( self, val );
-    }
+Obj IsTransHandler (Obj self, Obj val) {
+  if (TNUM_OBJ(val) == T_TRANS2 || TNUM_OBJ(val) == T_TRANS4) {
+    return True;
+  } else if (TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM) {
+    return False;
+  } else {
+    return DoFilter( self, val);
+  }
 }
 
 /*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * */
