@@ -66,6 +66,7 @@ DeclareAttribute("DegreeOfTransformationCollection",
                  IsTransformationCollection);
 DeclareAttribute("FlatKernelOfTransformation", IsTransformation);
 DeclareOperation("FlatKernelOfTransformation", [IsTransformation, IsInt]);
+DeclareProperty("IsFlatKernelOfTransformation", IsHomogeneousList);
 
 DeclareOperation("ImageListOfTransformation", [IsTransformation, IsInt]);
 DeclareOperation("ImageListOfTransformation", [IsTransformation]);
