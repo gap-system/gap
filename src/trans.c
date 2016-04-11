@@ -2916,7 +2916,8 @@ Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
       list_i = ELM_LIST(list, i);
       if (TNUM_OBJ(list_i) != T_INT || INT_INTOBJ(list_i) < 1) {
         ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
-                  "positive integer (not a %s)", (Int) TNAM_OBJ(list_i), 0L);
+                  "list of positive integer (not a %s)", 
+                  (Int) TNAM_OBJ(list_i), 0L);
       }
       j = INT_INTOBJ(list_i) - 1;
       if (j >= deg) {
