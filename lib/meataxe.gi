@@ -293,17 +293,6 @@ SMTX.SetFGCentMatMinPoly:=SMTX.Setter("fieldGenCentMatMinPoly");
 
 SMTX.SetDegreeFieldExt:=SMTX.Setter("degreeFieldExt");
 
-LinearCombinationVecs:=function(v,c)
-local i,s;
-  s:=ShallowCopy(c[1]*v[1]);
-  for i in [2..Length(c)] do
-    if not IsZero(c[i]) then
-      AddRowVector(s,v[i],c[i]);
-    fi;
-  od;
-  return s;
-end;
-
 
 #############################################################################
 ##
@@ -1120,7 +1109,7 @@ SMTX_IrreducibilityTest:=function ( module )
          newgenlist, coefflist, orig_ngens, zero, 
          N, NT, v, subbasis, fac, sfac, pol, orig_pol, q, dim, ndim, i,
          l, trying, deg, facno, bestfacno, F, count, R, rt0,idmat,
-         pfac1, pfac2, pfr, idemp, M2, mat2, mat3;
+         pfac1, pfac2, quotRem, pfr, idemp, M2, mat2, mat3;
 
    rt0:=Runtime ();
    Info(InfoMeatAxe,1,"Calling MeatAxe. All times will be in milliseconds");
@@ -1297,25 +1286,29 @@ SMTX_IrreducibilityTest:=function ( module )
                         bestfacno:=facno;
                      fi;
                   fi;
-		  if trying and deg>1 and count>2 then
+                  if trying and deg>1 and count>2 then
                      Info(InfoMeatAxe,1,"Trying Ivanyos/Lux Method");
                      #first find the appropriate idempotent
                      pfac1:=sfac[facno];
-                     pfac2:= Quotient(R, orig_pol, sfac[facno]);
-                     while QuotRemLaurpols(pfac2, sfac[facno], 2) = Zero(R) do
+                     pfac2:=orig_pol;
+                     while true do
+                       quotRem := QuotRemLaurpols(pfac2, sfac[facno], 3);
+                       if quotRem[2] <> Zero(R) then
+                         break;
+                       fi;
+                       pfac2 := quotRem[1];
                        pfac1:=pfac1*sfac[facno];
-                       pfac2:= Quotient(R, pfac2, sfac[facno]);
                      od;
                      pfr:=GcdRepresentation(pfac1, pfac2);
                      idemp:=QuotRemLaurpols(pfr[2]*pfac2, orig_pol, 2);
-		     #Now another random element in the group algebra.
+                     #Now another random element in the group algebra.
                      #and a random vector in the module
                      g2:=Random (F);
                      if IsOne(g2) then
-                          M2:=matrices[1];
-                        else
-                          M2:=g2 * matrices[1];
-                        fi;
+                       M2:=matrices[1];
+                     else
+                       M2:=g2 * matrices[1];
+                     fi;
                      for g1 in [2..ngens] do
                         g2:=Random (F);
                         if IsOne(g2) then
@@ -1337,7 +1330,7 @@ SMTX_IrreducibilityTest:=function ( module )
                      subbasis:=SMTX.SpinnedBasis (v, matrices, F,orig_ngens);
                      Info(InfoMeatAxe,2,"Spun up vector. Dimension = ",
                        Length(subbasis),". Time = ",Runtime()-rt0,".");
-                    if Length(subbasis) < dim and Length(subbasis) <> 0  then
+                     if Length(subbasis) < dim and Length(subbasis) <> 0  then
                        # Proper submodule found 
                        trying:=false;
                        ans:=false;
@@ -1347,7 +1340,7 @@ SMTX_IrreducibilityTest:=function ( module )
                   facno:=facno + 1;
                od; # going through irreducible factors of fixed degree.
                # If trying is false at this stage, then we don't have 
-               #an answer yet, so we have to go onto factors of the next degree.
+               # an answer yet, so we have to go onto factors of the next degree.
                # Now divide p by the factors used if necessary
                if trying and deg < maxdeg then
                   for q in fac do
@@ -3132,6 +3125,7 @@ mats:=m.generators;
   F:=SMTX.Field(m);
   one:=One(F);
   b:= IdentityMat(SMTX.Dimension(m),SMTX.Field(m) );
+  ConvertToMatrixRep(b);
   # denombasis: Basis des Kerns
   m.smashMeataxe.denombasis:=[];
   # csbasis: Basis des Moduls
@@ -3153,8 +3147,7 @@ mats:=m.generators;
       m:=List(Concatenation(m.smashMeataxe.denombasis,
 		      m.smashMeataxe.fakbasis{[1..SMTX.Dimension(m)]}),
 		      ShallowCopy);
-                 #List(m.smashMeataxe.csbasis,
-		 #     i->LinearCombinationVecs(m.smashMeataxe.fakbasis,i)));
+                 #List(m.smashMeataxe.csbasis, i->i*m.smashMeataxe.fakbasis));
       TriangulizeMat(m);
       m:=ImmutableMatrix(F,m);
 #      m:=Filtered(m,i->i<>Zero(i));
@@ -3176,8 +3169,7 @@ mats:=m.generators;
       s.smashMeataxe.denombasis:=m.smashMeataxe.denombasis;
 
       #s.smashMeataxe.csbasis:= IdentityMat(SMTX.Dimension(s), SMTX.Field(s) );
-      s.smashMeataxe.fakbasis:=
-        List(b,i->LinearCombinationVecs(m.smashMeataxe.fakbasis,i));
+      s.smashMeataxe.fakbasis:=b*m.smashMeataxe.fakbasis;
 
       q.smashMeataxe.denombasis:=Concatenation(
         #List(m.smashMeataxe.denombasis,ShallowCopy),
@@ -3185,8 +3177,10 @@ mats:=m.generators;
         #List(s.smashMeataxe.fakbasis{[1..s.dimension]},ShallowCopy));
         s.smashMeataxe.fakbasis{[1..s.dimension]});
       #q.smashMeataxe.csbasis:= IdentityMat(SMTX.Dimension(q), SMTX.Field(q) );
-      q.smashMeataxe.fakbasis:=List(b{[SMTX.Dimension(s)+1..Length(b)]},
-                       i->LinearCombinationVecs(m.smashMeataxe.fakbasis,i));
+      q.smashMeataxe.fakbasis:=List([SMTX.Dimension(s)+1..Length(b)],
+                       i->b[i] * m.smashMeataxe.fakbasis);    
+      ConvertToMatrixRep(q.smashMeataxe.fakbasis);
+
       Add(queue,s);
       Add(queue,q);
     fi;
@@ -3222,7 +3216,7 @@ local cf,u,i,j,f,cl,min,neu,sq,sb,fb,k,nmin,F;
       Info(InfoMeatAxe,3,Length(nmin),"minimal submodules");
       for k in nmin do 
         sq:=Concatenation(List(sb,ShallowCopy), # don't destroy old basis
-	                  List(k,i->LinearCombinationVecs(fb,i)));
+	                  k*fb);
 	TriangulizeMat(sq);
 	sq:=ImmutableMatrix(F,sq);
 	Assert(2,SMTX.InducedAction(m,sq)<>fail);
@@ -3296,7 +3290,7 @@ local a,u,i,nb;
   nb:=a[2];
   nb:=nb{[Length(sub)+1..Length(nb)]}; # the new basis part
   nb:=List(u,i->Concatenation( List( sub, ShallowCopy ),
-                               List(i,j->LinearCombinationVecs(nb,j))));
+                               i*nb));
   u:=[];
   for i in nb do
     TriangulizeMat(i);
