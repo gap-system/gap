@@ -2645,9 +2645,9 @@ true
 
 # Transformation
 gap> Transformation([4]);
-Error, Transformation: usage, the argument does not describea transformation,
+Error, Transformation: usage, the argument does not describe a transformation,
 gap> Transformation([1, 2, 4]);
-Error, Transformation: usage, the argument does not describea transformation,
+Error, Transformation: usage, the argument does not describe a transformation,
 
 # TransformationListList
 gap> Transformation([-11, 2], [1, 1]);

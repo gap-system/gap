@@ -110,7 +110,7 @@ function(list)
   if IsDenseList(list) and ForAll(list, i -> IsPosInt(i) and i <= len) then
     return TransformationNC(list);
   fi;
-  ErrorNoReturn("Transformation: usage, the argument does not describe",
+  ErrorNoReturn("Transformation: usage, the argument does not describe ",
                 "a transformation,");
 end);
 
