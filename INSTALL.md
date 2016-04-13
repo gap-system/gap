@@ -341,6 +341,12 @@ If you want to run a more advanced check (this is not required and may take
 up to an hour), you can read `teststandard.g` which is an extended test script
 performing all tests from the tst directory.
 
+GAP will exit after this test with the corresponding exit code (this is
+useful for automated testing). If you want to run a more advanced check
+(this is not required and may take up to an hour), you can start a new
+GAP session and read `teststandard.g` which is an extended test script
+performing all tests from the `tst` directory.
+
     gap> Read( Filename( DirectoriesLibrary( "tst" ), "teststandard.g" ) );
 
 The test requires about 1 GB of memory and runs about one hour on an
