@@ -153,13 +153,14 @@ stored using 16-bit integers and to <C>IsTrans4Rep</C> if it is stored using
     <Oper Name="Transformation" Arg="list, func" 
       Label="for a list and function"/>
     <Oper Name="TransformationList" Arg="list" Label="for an image list"/>
-    <Returns>A transformation or <K>fail</K>.</Returns>
+    <Returns>A transformation.</Returns>
     <Description>
       <C>TransformationList</C> returns the transformation <C>f</C> such that
       <C>i^<A>f</A>=<A>list</A>[i]</C> if <C>i</C> is between <C>1</C> and the
       length of <A>list</A> and <C>i^<A>f</A>=i</C> if <C>i</C> is larger than
-      the length of <A>list</A>. <C>TransformationList</C> will return
-      <K>fail</K> if <A>list</A> is not dense, if <A>list</A> contains an
+      the length of <A>list</A>. An error will occur in
+      <C>TransformationList</C>
+      if <A>list</A> is not dense, if <A>list</A> contains an
       element which is not a positive integer, or if <A>list</A> contains an
       integer not in <C>[1..Length(<A>list</A>)]</C>. <P/>
   
@@ -194,7 +195,7 @@ gap> SetUserPreference("NotationForTransformations", "input");
       Label="for a source and destination"/>
     <Oper Name="TransformationListList" Arg="src, dst"
       Label="for a source and destination"/>
-    <Returns>A transformation or <K>fail</K>.</Returns>
+    <Returns>A transformation.</Returns>
     <Description>
       If <A>src</A> and <A>dst</A> are lists of positive integers of the same
       length, such that <A>src</A> contains no  element  twice, then 
