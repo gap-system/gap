@@ -1511,6 +1511,10 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
      }
    }
 
+   /* The next timeout was too close, this is a bit of a hack, just as below */
+   if ((iseconds==0) && (imicroseconds==0)) {
+      imicroseconds = 1;
+   }
    /* Here we actually call the function */
    SyInstallAlarm( iseconds, 1000*imicroseconds);
    result = CallFuncList(func, args);
