@@ -2838,6 +2838,26 @@ gap> ExternalSubset(extS);
 
 #############################################################################
 #
+#  Changes 4.8.3 -> 4.8.4
+
+#2016/04/14 (Chris Jefferson)
+gap> a := "abc";
+"abc"
+gap> b := "def";
+"def"
+gap> IsSortedList(a);
+true
+gap> IsSortedList(b);
+true
+gap> c := Concatenation(b,a);
+"defabc"
+gap> HasIsSortedList(c);
+false
+gap> IsSortedList(c);
+false
+
+#############################################################################
+#
 # Tests requiring loading some packages must be performed at the end.
 # Do not put tests that do not need any packages below this line.
 #
