@@ -3999,8 +3999,6 @@ Obj ProdTrans42 (Obj f, Obj g) {
   def = DEG_TRANS4(f);
   deg = DEG_TRANS2(g);
 
-  assert(deg <= def);
-
   fg = NEW_TRANS4(def);
 
   ptfg = ADDR_TRANS4(fg);
