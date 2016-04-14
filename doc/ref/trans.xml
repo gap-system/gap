@@ -63,31 +63,29 @@ approach formerly used in &GAP; and it is also useful in the
 
 Transformations are displayed, by default, using the list
 <C>[ 1 ^ f .. n ^ f ]</C> where <C>n</C> is the degree of <C>f</C>.
-This behaviour differs from versions of &GAP; earlier than 4.7.  See
-Section <Ref Sect="sect:DisplayingTransformations"/> for more
-information.
+This behaviour differs from that of versions of &GAP; earlier than 4.7.
+See Section <Ref Sect="sect:DisplayingTransformations"/> for more information.
 <P/>
 
 The <E>rank</E> of a transformation on the positive integers up to
 <C>n</C> is the number of distinct points in <C>[ 1 ^ f .. n ^ f ]</C>.
 The <E>kernel</E> of a transformation <C>f</C> on <C>[ 1 .. n ]</C> is
-the equivalence relation on <C>[ 1 .. n ]</C> consisting of those 
-<C>(i, j)</C> such that  <C>i ^ f = j ^ f</C>.  The kernel of a
-transformation is represented in two ways: as a partition of 
+the equivalence relation on <C>[ 1 .. n ]</C> consisting of those pairs
+<C>(i, j)</C> of positive integers such that  <C>i ^ f = j ^ f</C>.  The
+kernel of a transformation is represented in two ways: as a partition of
 <C>[ 1 .. n ]</C> or as the image list of a transformation <C>g</C> such
 that the kernel of <C>g</C> on <C>[ 1 .. n ]</C> equals the kernel of
 <C>f</C> and <C>j ^ g = i</C> for all <C>j</C> in <C>i</C>th class. The
-latter is referred to as the flat kernel of <C>f</C>. For any given
-transformation and value <C>n</C>, there is a unique transformation with
-this property.
+latter is referred to as the <E>flat kernel</E> of <C>f</C>. For any
+given transformation <C>f</C> and value <C>n</C>, there is a unique
+transformation <C>g</C> with this property.
 <P/>
 
 A <E>functional digraph</E> is a directed graph where every vertex has
 out-degree <M>1</M>.  A transformation <A>f</A> can be thought of as a
 functional digraph with vertices the positive integers and edges from
 <C>i</C> to <C>i ^ f</C> for every <C>i</C>. A <E>component</E> of a
-transformation is defined as a component and a <E>cycle</E> is just a
-cycle (or strongly connected component) of the corresponding functional
+transformation is defined as a component of the corresponding functional
 digraph.  More specifically, <C>i</C> and <C>j</C> are in the same
 component if and only if there are <M>i = v_0, v_1, \ldots, v_n = j</M>
 such that either <M>v_{k+1}=v_{k}^f</M> or <M>v_{k}=v_{k+1}^f</M> for
@@ -99,17 +97,17 @@ there are <M>i=v_0, v_1, \ldots, v_n=i</M> such that either
 <P/>
 
 Internally, &GAP; stores a transformation <C>f</C> as a list consisting
-of the images <C>i ^ f</C> of the points in <C>i</C> less than some value,
+of the images <C>i ^ f</C> for all values of <C>i</C> less than a value
 which is at least the degree of <C>f</C> and which is determined at the
-time of creation.  When the degree of a transformation <C>f</C> is at
-most 65536, the images of points under <C>f</C> are stored as 16-bit
-integers, the kernel and image set are subobjects of <C>f</C> which are
-plain lists of &GAP; integers.  When the degree of <C>f</C> is greater
-than 65536, the images of points under <C>f</C> are stored as 32-bit
-integers; the kernel and image set are stored in the same way as before.
-A transformation belongs to <C>IsTrans2Rep</C> if it is stored using
-16-bit integers and to <C>IsTrans4Rep</C> if it is stored using 32-bit
-integers.  
+time of the creation of <C>f</C>. When the degree of a transformation
+<C>f</C> is at most 65536, the images of points under <C>f</C> are
+stored as 16-bit integers, the kernel and image set are subobjects of
+<C>f</C> which are plain lists of &GAP; integers.  When the degree of
+<C>f</C> is greater than 65536, the images of points under <C>f</C> are
+stored as 32-bit integers; the kernel and image set are stored in the
+same way as before.  A transformation belongs to <C>IsTrans2Rep</C> if
+it is stored using 16-bit integers and to <C>IsTrans4Rep</C> if it is
+stored using 32-bit integers.  
 <P/>
 
 <Section>
@@ -177,9 +175,10 @@ integers.
       <C>[ 1 .. Length( <A>list</A> ) ]</C>. 
       <P/>
   
-      This is the analogue in the context of transformations of 
-      <Ref Func="PermList"/>. <C>Transformation</C> is a synonym of
-      <C>TransformationList</C> when the argument is a list. 
+      <C>TransformationList</C> is the analogue in the context of
+      transformations of <Ref Func="PermList"/>. <C>Transformation</C>
+      is a synonym of <C>TransformationList</C> when the argument is a
+      list. 
       <P/>
 
       When the arguments are a list of positive integers <A>list</A> and
@@ -221,10 +220,11 @@ gap> SetUserPreference( "NotationForTransformations", "input" );
       <A>src</A> and <A>dst</A>. 
       <P/>
 
-      This is the analogue in the context of transformations of 
-      <Ref Func="MappingPermListList"/>. <C>Transformation</C> is a
-      synonym of <C>TransformationListList</C> when its arguments are two
-      lists of positive integers.
+      <C>TransformationListList</C> is the analogue in the context of
+      transformations of <Ref Func="MappingPermListList"/>.
+      <C>Transformation</C> is a synonym of
+      <C>TransformationListList</C> when its arguments are two lists of
+      positive integers.
     <Example><![CDATA[
 gap> Transformation( [ 10, 11 ],[ 11, 12 ] );
 Transformation( [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 12 ] )
@@ -241,10 +241,10 @@ Transformation( [ 4, 5, 6, 4, 5, 6 ] )
       Label="for an image and kernel"/>
     <Returns>A transformation or <K>fail</K>.</Returns>
     <Description>
-      <C>Transformation</C> returns the transformation <C>f</C>
-      <C>i ^ f = <A>im</A>[<A>ker</A>[i]]</C> for <C>i</C> in the range
+      This operation returns the transformation <C>f</C> where <C>i ^ f
+        = <A>im</A>[<A>ker</A>[i]]</C> for <C>i</C> in the range 
       <C>[ 1 .. Length( <A>ker</A> ) ]</C>. This transformation has flat
-      kernel equal to <A>ker</A> and image set equal to
+      kernel equal to <A>ker</A> and image set equal to 
       <C>Set( <A>im</A> )</C>.
       <P/>
 
@@ -274,8 +274,6 @@ Transformation( [ 1, 3, 8, 1, 3, 1, 3, 4 ] )
       <Ref Oper="Idempotent"/> returns the idempotent transformation
       with image set <A>im</A> and flat kernel <A>ker</A> if such a
       transformation exists and <K>fail</K> if it does not. 
-      <P/>
-      
       More specifically, a transformation is returned when the argument
       <A>im</A> is a set of positive integers and <A>ker</A> is the flat
       kernel of a transformation with rank equal to the length of
@@ -479,7 +477,7 @@ Transformation( [ 4, 4, 4, 4, 4, 4 ] )
       <P/>
 
       If <A>f</A> is a transformation and <A>n</A> is not specified or
-      equals a is greater than or equal to the degree of <A>f</A>, then
+      is greater than or equal to the degree of <A>f</A>, then
       <A>f</A> is returned.
     </Item> 
 
@@ -506,7 +504,7 @@ Transformation( [ 4, 4, 4, 4, 4, 4 ] )
     <Mark>for binary relations</Mark>
     <Item>
       In the case that <A>f</A> is a binary relation, which defines 
-      a transformation, then <C>AsTransformation</C> returns that
+      a transformation, <C>AsTransformation</C> returns that
       transformation. 
     </Item>
   </List>
@@ -615,7 +613,7 @@ gap> PermutationOfImage( f );
       This operation requires essentially the same number of steps as
       multiplying a transformation by a permutation, which is
       approximately one third of the number required to first invert
-      <A>g</A>, take the produce with <A>f</A>, and then the product
+      <A>g</A>, take the product with <A>f</A>, and then the product
       with <A>g</A>. 
     </Item>
 
@@ -637,7 +635,7 @@ gap> PermutationOfImage( f );
       transformation and <A>g</A> is a permutation.  This operation
       requires essentially the same number of steps as multiplying a
       transformation by a permutation, which is approximately half the
-      number required to first invert <A>g</A> and then take the produce
+      number required to first invert <A>g</A> and then take the product
       with <A>f</A>. 
     </Item>
 
@@ -651,7 +649,7 @@ gap> PermutationOfImage( f );
       transformation and <A>g</A> is a permutation. This operation uses
       essentially the same number of steps as multiplying a
       transformation by a permutation, which is approximately half the
-      number required to first invert <A>g</A> and then take the produce
+      number required to first invert <A>g</A> and then take the product
       with <A>f</A>. 
     </Item>
 
@@ -1403,11 +1401,12 @@ true
       It can happen that the internal representation of a transformation
       uses more memory than necessary. For example, this can happen when
       composing transformations where it is possible that the resulting
-      transformation <A>f</A> has belongs to <C>IsTrans4Rep</C> and has
-      its images stored as 32-bit integers, while none of its moved
+      transformation <A>f</A> belongs to <C>IsTrans4Rep</C> and 
+      stores its images as 32-bit integers, while none of its moved
       points exceeds 65536. The purpose of <C>TrimTransformation</C> is
       to change the internal representation of such an <A>f</A> to
-      remove the trailing fixed points.
+      remove the trailing fixed points in the internal representation of
+      <A>f</A>.
       <P/>
 
       If the optional second argument <A>n</A> is provided, then the
@@ -1465,14 +1464,14 @@ false
     preferences. 
     <P/>
 
-    If <C>f</C> is a transformation where degree <C>n</C> exceeds the
-    value of the user preference <C>TransformationDisplayLimit</C>, then
-    <C>f</C> is displayed as: 
-    <Log>&lt;transformation on n pts with rank r></Log> 
-    where <C>r</C> is the rank of <C>f</C> relative to <C>n</C>.  The
-    idea is to abbreviate the display of transformations defined on many
-    points. The default value for the <C>TransformationDisplayLimit</C>
-    is <C>100</C>. 
+    If <C>f</C> is a transformation where the degree <C>n</C> of
+    <C>f</C> exceeds the value of the user preference
+    <C>TransformationDisplayLimit</C>, then <C>f</C> is displayed as:
+    <Log>&lt;transformation on n pts with rank r></Log> where <C>r</C>
+    is the rank of <C>f</C> relative to <C>n</C>.  The idea is to
+    abbreviate the display of transformations defined on many points.
+    The default value for the <C>TransformationDisplayLimit</C> is
+    <C>100</C>. 
     <P/>
 
     If the degree of <C>f</C> does not exceed the value of
@@ -1533,7 +1532,7 @@ functions and methods for computing with semigroups of transformations.
 In particular, <Package>Semigroups</Package> contains more efficient
 methods than those available in the &GAP; library (and in many cases
 more efficient than any other software) for creating semigroups of
-transformations, calculating their Green"s classes, size, elements,
+transformations, calculating their Green's classes, size, elements,
 group of units, minimal ideal, small generating sets, testing
 membership, finding the inverses of a regular element, factorizing
 elements over the generators, and more. 
@@ -1655,7 +1654,7 @@ gap> FullTransformationSemigroup( 1234 );
 <Description>
   If the transformation semigroup <A>S</A> of degree <C>n</C> contains
   every transformation of degree at most <C>n</C>, then
-  <C>IsFullTransformationSemigroup</C> return <K>true</K> and otherwise
+  <C>IsFullTransformationSemigroup</C> returns <K>true</K> and otherwise
   it returns <K>false</K>.
   <P/>
 
