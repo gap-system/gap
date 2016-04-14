@@ -278,6 +278,7 @@ void PREFIXNAME(QuickSort)(SORT_FUNC_ARGS, Int start, Int end, Int depth) {
 
 void SORT_FUNC_NAME(SORT_FUNC_ARGS) {
   Int len = SORT_LEN_LIST();
+  SORT_FILTER_CHECKS();
   PREFIXNAME(QuickSort)(SORT_ARGS, 1, len, CLog2Int(len) * 2 + 2);
 }
 
@@ -332,7 +333,7 @@ void PREFIXNAME(MergeRanges)(SORT_FUNC_ARGS, Int b1, Int e1, Int e2,
 void PREFIXNAME(Merge)(SORT_FUNC_ARGS) {
   Int len = SORT_LEN_LIST();
   Obj buf = SORT_CREATE_TEMP_BUFFER(len);
-
+  SORT_FILTER_CHECKS();
   Int stepsize = 24;
   Int i;
   /* begin with splitting into small steps we insertion sort */

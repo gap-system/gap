@@ -18,6 +18,41 @@ gap> CheckSort := function(list, sorted)
 >  listcpy := DEEP_COPY_OBJ(list); Sort(listcpy, function (a,b) return a > b; end);
 >  if listcpy <> Reversed(sorted) then Print("Fail 4 : ", listcpy, list, sorted); fi;
 >  end;;
+gap> # Check filters are correctly set/unset with various sortings (and merge sortings)
+gap> CheckFiltersInner := function(list, isSort, isSSort, revisSort, revisSsort, sorter)
+>  sorter(list);
+>  if IsSortedList(list) <> isSort then
+>   Print("fail isSorted : '", list, "'", isSort, "\n");
+>  fi;
+>  if IsSSortedList(list) <> isSSort then
+>   Print("fail isSSorted : ", list, "\n");
+>  fi;
+>  sorter(list, function(x, y) return x < y; end);
+>  if IsSortedList(list) <> isSort then
+>   Print("fail isSorted 2 : '", list, "'", isSort, "\n");
+>  fi;
+>  if IsSSortedList(list) <> isSSort then
+>   Print("fail isSSorted 2 : ", list, "\n");
+>  fi;
+>  sorter(list, function(x, y) return x > y; end);
+>  if IsSortedList(list) <> revisSort then
+>   Print("fail isSorted 3 : ", list, "\n");
+>  fi;
+>  if IsSSortedList(list) <> revisSsort then
+>   Print("fail isSSorted 3 : ", list, "\n");
+>  fi;
+>  sorter(list, function(x, y) return x < y; end);
+>  if IsSortedList(list) <> isSort then
+>   Print("fail isSorted 4 : '", list, "'", isSort, "\n");
+>  fi;
+>  if IsSSortedList(list) <> isSSort then
+>   Print("fail isSSorted 4 : ", list, "\n");
+>  fi;
+> end;;
+gap> CheckFilters := function(list, isSort, isSSort, revisSort, revisSsort)
+> CheckFiltersInner(list, isSort, isSSort, revisSort, revisSsort, Sort);
+> CheckFiltersInner(list, isSort, isSSort, revisSort, revisSsort, StableSort);
+> end;;
 gap> for i in [0..500] do CheckSort([1..i],[1..i]); od;
 
 # Want to make sure GAP doesn't know the list is sorted
@@ -27,6 +62,8 @@ gap> for i in [0..500] do CheckSort([i,i-1..-i],[-i..i]); od;
 gap> for i in [0..500] do
 >      for j in [0..10] do
 >        CheckSort(Shuffle([1..i]), [1..i]);
+>        CheckFilters([1..i], true, true, i <= 1, i <= 1);
+>        CheckFilters(Shuffle([1..i]), true, true, i <= 1, i <= 1);
 >      od;
 >    od;
 gap> for i in [0..100] do
@@ -34,6 +71,7 @@ gap> for i in [0..100] do
 >        l := Concatenation(List([0..j], x -> List([0..i], y -> x)));
 >        l2 := Shuffle(List(l));
 >        CheckSort(l2, l);
+>        CheckFilters(l, true, i = 0, j = 0, i = 0 and j = 0);
 >      od;
 >    od;
 
@@ -49,6 +87,8 @@ gap> for i in [0..100] do
 >          Print("StringFail");
 >        fi;
 >        CheckSort(l2, l);
+>        CheckFilters(l, true, i <= 1 or j <= 0,
+>          i=0 or j<=1 or (i <= 1 and j <= 1), i=0 or j=0 or (i <= 1 and j <= 1));
 >      od;
 >    od;
 
@@ -61,6 +101,7 @@ gap> for i in [0..100] do
 >          Print("BlistFail");
 >        fi;
 >        CheckSort(l2, l);
+>        CheckFilters(l, true, i<=1 and j<=1, i = 0 or j = 0, i+j <= 1);
 >      od;
 >    od;
 
@@ -101,3 +142,47 @@ gap> for i in [0..26] do
 >        CheckSortParallel(CHARS_LALPHA{[1..i]},Random(SymmetricGroup([1..i])), i);
 >      od;
 >    od;
+gap> # Pass two lists, where reverse-ordering x orders y
+gap> ParallelFilterCheckInner := function(x,y, strict, sorter)
+> sorter(x, y);
+> if not(IsSortedList(x)      and IsSSortedList(x)=strict and
+>       not(IsSortedList(y)) and not(IsSSortedList(y)) ) then
+>    Print("ParFilter1 fail", x, y, strict);
+> fi;
+> sorter(x, y, function(x,y) return x > y; end);
+> if not(IsSortedList(y)      and IsSSortedList(y)=strict and
+>        not(IsSortedList(x)) and not(IsSSortedList(x)) ) then
+>    Print("ParFilter2 fail", x, y, strict);
+> fi;
+> sorter(x, y, function(x,y) return x < y; end);
+> if not(IsSortedList(x)      and IsSSortedList(x)=strict and
+>       not(IsSortedList(y)) and not(IsSSortedList(y)) ) then
+>    Print("ParFilter3 fail", x, y, strict);
+> fi;
+> sorter(x, y);
+> if not(IsSortedList(x)      and IsSSortedList(x)=strict and
+>       not(IsSortedList(y)) and not(IsSSortedList(y)) ) then
+>    Print("ParFilter4 fail", x, y, strict);
+> fi;
+> end;;
+gap> ParallelFilterCheck := function(x,y,strict)
+> ParallelFilterCheckInner(x,y,strict, SortParallel);
+> ParallelFilterCheckInner(x,y,strict, StableSortParallel);
+> end;;
+gap> x := [1..10];;
+gap> y := [10,9..1];;
+gap> ParallelFilterCheck(x, y, true);
+gap> x := [1,1,1,2,2,2];;
+gap> y := [2,2,2,1,1,1];;
+gap> ParallelFilterCheck(x, y, false);
+gap> x := "abcdef";;
+gap> y := Reversed(x);;
+gap> ParallelFilterCheck(x, y, true);
+gap> y := [6,5..1];;
+gap> ParallelFilterCheck(x, y, true);
+gap> x := "aabbccddeeff";;
+gap> y := Reversed(x);;
+gap> ParallelFilterCheck(x, y, false);
+gap> y := [6,6,5,5,4,4,3,3,2,2,1,1];;
+gap> ParallelFilterCheck(x, y, false);
+gap> STOP_TEST("sort.tst", 1);
