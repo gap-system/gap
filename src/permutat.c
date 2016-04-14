@@ -4335,7 +4335,7 @@ Obj             OnSetsPerm (
             }
             if ( k < len ) {
                 ResizeBag( res, (k+1)*sizeof(Obj) );
-                ADDR_OBJ(res)[0] = INTOBJ_INT(k);
+                SET_LEN_PLIST(res, k);
             }
         }
 
