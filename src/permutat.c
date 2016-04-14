@@ -4112,6 +4112,7 @@ Obj             OnTuplesPerm (
     UInt                lmp;            /* largest moved point             */
     UInt                i, k;           /* loop variables                  */
 
+    tmp = NULL; /* stop compiler from complaining */
     /* make a bag for the result and initialize pointers                   */
     res = NEW_PLIST( IS_MUTABLE_PLIST(tup) ? T_PLIST : T_PLIST + IMMUTABLE,
 		     LEN_LIST(tup) );
@@ -4128,11 +4129,11 @@ Obj             OnTuplesPerm (
 
         /* loop over the entries of the tuple                              */
         for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if (IS_INTOBJ(*ptTup)) {
+            if (IS_INTOBJ(*ptTup) && (0 < INT_INTOBJ(*ptTup))) {
                 k = INT_INTOBJ( *ptTup );
-                if ( k <= 0 || k > lmp )
+                if (k > lmp) {
                     tmp = *ptTup;
-                else
+                } else
                     tmp = INTOBJ_INT( ptPrm2[k-1] + 1 );
                 *ptRes = tmp;
             }
@@ -4163,11 +4164,11 @@ Obj             OnTuplesPerm (
 
         /* loop over the entries of the tuple                              */
         for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if (IS_INTOBJ(*ptTup)) {
+            if (IS_INTOBJ(*ptTup) && (0 < INT_INTOBJ(*ptTup))) {
                 k = INT_INTOBJ( *ptTup );
-                if ( k <= 0 || k > lmp )
+                if (k > lmp) {
                     tmp = *ptTup;
-                else
+                } else
                     tmp = INTOBJ_INT( ptPrm4[k-1] + 1 );
                 *ptRes = tmp;
             }
