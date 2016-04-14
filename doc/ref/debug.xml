@@ -382,6 +382,17 @@ hour/minute format.
 </Description>
 </ManSection>
 
+<ManSection>
+<Func Name="NanosecondsSinceEpoch" Arg=''/>
+<Description>
+<Ref Func="NanosecondsSinceEpoch"/> returns the time in nanoseconds
+that has passed since some fixed, but unspecified time in the past.
+
+This function is appropriate for doing wallclock time measurements.
+
+The actual resolution depends on the system that &GAP; is run on.
+</Description>
+</ManSection>
 
 <ManSection>
 <Var Name="time"/>
