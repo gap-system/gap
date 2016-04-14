@@ -916,7 +916,8 @@ Obj FuncNanosecondsSinceEpoch(Obj self)
   struct timeval tv;
 
   if (gettimeofday(&tv, NULL) == 0) {
-    usec = INTOBJ_INT(tv.tv_usec * 1000);
+    usec = INTOBJ_INT(tv.tv_usec);
+    C_PROD(usec,usec,INTOBJ_INT(1000));
     sec = INTOBJ_INT(tv.tv_sec);
     C_PROD(res, sec, INTOBJ_INT(1000000L));
     C_SUM_INTOBJS(res, res, usec);
