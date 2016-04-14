@@ -1596,16 +1596,16 @@ gap> Size(S);
 81
 gap> IsomorphismTransformationSemigroup(S);;
 gap> S := SymmetricInverseSemigroup(4);
-<symmetric inverse semigroup on 4 pts>
+<symmetric inverse monoid of degree 4>
 gap> IsomorphismTransformationMonoid(S);
-MappingByFunction( <symmetric inverse semigroup on 4 pts>, 
-<transformation monoid on 5 pts with 4 generators>
+MappingByFunction( <symmetric inverse monoid of degree 4>,
+<transformation monoid of degree 5 with 4 generators>
  , function( x ) ... end, <Operation "AsPartialPerm"> )
 gap> G := Group((1,2,3));
 Group([ (1,2,3) ])
 gap> IsomorphismTransformationMonoid(G);
-MappingByFunction( Group([ (1,2,3) ]), <commutative transformation 
- monoid on 3 pts with 1 generator>
+MappingByFunction( Group([ (1,2,3) ]), <commutative transformation
+ monoid of degree 3 with 1 generator>
  , function( x ) ... end, function( x ) ... end )]]></Log>
 </Description>
 </ManSection>
