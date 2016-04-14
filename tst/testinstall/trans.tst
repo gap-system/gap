@@ -110,7 +110,7 @@ integers (not a character)
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1]), [1, 3]);
 1
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1, 5, 5]), [1 .. 10]);
-7
+8
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1, 5, 5]), []);
 0
 gap> RANK_TRANS_LIST("a", [1, 3]);
@@ -118,7 +118,7 @@ Error, RANK_TRANS_LIST: the first argument must be a transformation (not a lis\
 t (string))
 gap> RANK_TRANS_LIST(Transformation([65537], [1]), 
 >                    Concatenation([1], [65536 .. 70000]));
-4464
+4465
 gap> RANK_TRANS_LIST(Transformation([65537], [1]), []);
 0
 

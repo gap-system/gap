@@ -709,8 +709,8 @@ Obj FuncRANK_TRANS_LIST (Obj self, Obj f, Obj list) {
                   0L);
       }
       j = INT_INTOBJ(pt) - 1;
-      if (j <= def) {
-        j = ptf2[INT_INTOBJ(ELM_LIST(list, i)) - 1];
+      if (j < def) {
+        j = ptf2[j];
         if (pttmp[j] == 0) {
           rank++;
           pttmp[j] = 1;
@@ -734,8 +734,8 @@ Obj FuncRANK_TRANS_LIST (Obj self, Obj f, Obj list) {
                   0L);
       }
       j = INT_INTOBJ(pt) - 1;
-      if (j <= def) {
-        j = ptf4[INT_INTOBJ(ELM_LIST(list, i)) - 1];
+      if (j < def) {
+        j = ptf4[j];
         if (pttmp[j] == 0) {
           rank++;
           pttmp[j] = 1;
