@@ -2,7 +2,8 @@
 
 set -e
 
-# You need 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
+# You need at least 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
+# Some packages also need a C++ compiler.
 # Run this script from the 'pkg' subdirectory of your GAP installation.
 
 # Contact support@gap-system.org for questions and complaints.
@@ -18,12 +19,6 @@ else
 fi
 
 # Package-specific info:
-
-# == Linboxing
-#  Easy, if prerequisites are installed. You may get GNU GMP
-#  (http://gmplib.org/) and BLAS (http://www.netlib.org/blas/)
-#  via packages in your Linux distribution. But you probably need to
-#  install LinBox (http://www.linalg.org/download.html) yourself.
 
 if [ $# -eq 0 ]
   then
@@ -51,16 +46,18 @@ if ! (cd $SUBDIR && [ -f $GAPDIR/sysinfo.gap ])
 fi
 
 if (cd $SUBDIR && grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null) ; then
-  echo Building with 32-bit ABI
+  echo "Building with 32-bit ABI"
   ABI32=YES
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi;
 
-echo Attempting to build GAP packages.
-echo Note that many GAP packages require extra programs to be installed,
-echo and some are quite difficult to build. Please read the documentation for
-echo packages which fail to build correctly, and only worry about packages
-echo you require!
+cat <<EOF
+Attempting to build GAP packages.
+Note that many GAP packages require extra programs to be installed,
+and some are quite difficult to build. Please read the documentation for
+packages which fail to build correctly, and only worry about packages
+you require!
+EOF
 
 build_carat() {
 (
@@ -102,7 +99,7 @@ $MAKE
 }
 
 build_fail() {
-  echo = Failed to build $dir
+  echo "= Failed to build $dir"
 }
 
 run_configure_and_make() {
@@ -123,7 +120,7 @@ run_configure_and_make() {
 for dir in `ls -d */`
 do
     if [ -e $dir/PackageInfo.g ]; then
-      echo ==== Building $dir
+      echo "==== Building $dir"
       case $dir in
         anupq*)
           (cd $dir && ./configure $CONFIGFLAGS && $MAKE $CONFIGFLAGS) || build_fail
