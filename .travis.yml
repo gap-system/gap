@@ -16,6 +16,9 @@ matrix:
     - os: linux
       env: TEST_SUITE=makemanuals
       compiler: gcc
+    - os: linux
+      env: TEST_SUITE=testtravis ABI=32
+      compiler: gcc
 
 # Change this to your needs
 addons:
