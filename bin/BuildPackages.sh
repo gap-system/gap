@@ -66,7 +66,6 @@ build_carat() {
 # this out until a user complains.
 # It is not possible to move around compiled binaries because these have the
 # path to some data files burned in.
-cd carat
 tar xzpf carat-2.1b1.tgz
 rm -f bin
 ln -s carat-2.1b1/bin bin
@@ -89,7 +88,6 @@ $MAKE TOPDIR=`pwd` CFLAGS='-O2'
 
 build_cohomolo() {
 (
-cd $dir
 ./configure $GAPDIR
 cd standalone/progs.d
 cp makefile.orig makefile
@@ -125,46 +123,60 @@ do
     if [ -e $dir/PackageInfo.g ]; then
       dir="${dir%/}"
       echo "==== Checking $dir"
+      (  # start subshell
+      set -e
+      cd $dir
       case $dir in
         atlasrep*)
-          (cd $dir && chmod 1777 datagens dataword) || build_fail
+          chmod 1777 datagens dataword
         ;;
 
         carat*)
-          build_carat || build_fail
+          build_carat
         ;;
 
         cohomolo*)
-          build_cohomolo || build_fail
+          build_cohomolo
         ;;
 
         fplsa*)
-          (cd $dir && ./configure $GAPDIR && $MAKE CC="gcc -O2 ") || build_fail
+          ./configure $GAPDIR &&
+          $MAKE CC="gcc -O2 "
         ;;
 
         kbmag*)
-          (cd $dir && ./configure $GAPDIR && $MAKE COPTS="-O2 -g") || build_fail
+          ./configure $GAPDIR &&
+          $MAKE COPTS="-O2 -g"
         ;;
 
         NormalizInterface*)
-          (cd $dir && ./build-normaliz.sh $GAPDIR && run_configure_and_make) || build_fail
+          ./build-normaliz.sh $GAPDIR &&
+          run_configure_and_make
         ;;
 
         pargap*)
-          (cd $dir && ./configure $GAPDIR && $MAKE && cp bin/pargap.sh $GAPDIR/bin && rm -f ALLPKG) || build_fail
+          ./configure $GAPDIR &&
+          $MAKE &&
+          cp bin/pargap.sh $GAPDIR/bin &&
+          rm -f ALLPKG
         ;;
 
         xgap*)
-          (cd $dir && ./configure && $MAKE && rm -f $GAPDIR/bin/xgap.sh && cp bin/xgap.sh $GAPDIR/bin) || build_fail
+          ./configure &&
+          $MAKE &&
+          rm -f $GAPDIR/bin/xgap.sh &&
+          cp bin/xgap.sh $GAPDIR/bin
         ;;
 
         simpcomp*)
         ;;
         
         *)
-          (cd $dir && run_configure_and_make) || build_fail
+          run_configure_and_make
         ;;
       esac;
+      ) || build_fail
+      # end subshell
     else
       echo "$dir is not a GAP package -- no PackageInfo.g"
     fi;
