@@ -899,16 +899,15 @@ Obj FuncRUNTIMES( Obj     self)
 */
 Obj FuncNanosecondsSinceEpoch(Obj self)
 {
-  Obj res, sec, usec;
+  Obj res;
 
 #if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
   struct timespec ts;
 
   if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
-    usec = INTOBJ_INT(ts.tv_nsec);
-    sec = INTOBJ_INT(ts.tv_sec);
-    C_PROD(res, sec, INTOBJ_INT(1000000000L));
-    C_SUM_INTOBJS(res, res, usec);
+    res = ObjInt_Int(ts.tv_sec);
+    res = ProdInt(res, ObjInt_Int(1000000000L));
+    res = SumInt(res, ObjInt_Int(ts.tv_nsec));
   } else {
     res = Fail;
   }
@@ -916,11 +915,10 @@ Obj FuncNanosecondsSinceEpoch(Obj self)
   struct timeval tv;
 
   if (gettimeofday(&tv, NULL) == 0) {
-    usec = INTOBJ_INT(tv.tv_usec);
-    C_PROD(usec,usec,INTOBJ_INT(1000));
-    sec = INTOBJ_INT(tv.tv_sec);
-    C_PROD(res, sec, INTOBJ_INT(1000000L));
-    C_SUM_INTOBJS(res, res, usec);
+    res = ObjInt_Int(tv.tv_sec);
+    res = ProdInt(res, ObjInt_Int(1000000L));
+    res = SumInt(res, ObjInt_Int(tv.tv_used));
+    res = ProdInt(res, ObjInt_Int(1000L));
   } else {
     res = Fail;
   };
