@@ -110,10 +110,11 @@ run_configure_and_make() {
   fi;
   if [ -f configure ]; then
     if grep Autoconf ./configure > /dev/null; then
-      ./configure $CONFIGFLAGS --with-gaproot=$GAPDIR && $MAKE
+      ./configure $CONFIGFLAGS --with-gaproot=$GAPDIR
     else
-      ./configure $GAPDIR && $MAKE
+      ./configure $GAPDIR
     fi;
+    $MAKE
   else
     echo "No building required for ${dir%/}"
   fi;
