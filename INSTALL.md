@@ -30,7 +30,7 @@ mostly by offering precompiled binaries are:
 
 Note, however, that these are updated independently and may not yet provide
 the latest GAP release. Further details are available on the GAP website
-here: http://www.gap-system.org/Download/alternatives.html.
+here: <http://www.gap-system.org/Download/alternatives.html>.
 
 
 1 Installation Overview
@@ -50,7 +50,7 @@ To get maximum benefit from GAP and from various packages, we recommend
 that in addition a C++ compiler is available, and it may be useful
 to install a number of other free software libraries (and their associated
 development tools) although they are not required for basic operation. See
-http://www.gap-system.org/Download/tools.html for more details.
+<http://www.gap-system.org/Download/tools.html> for more details.
 
 The installation consists of 5 easy steps:
 
@@ -77,7 +77,7 @@ common problems with the installation.
 =====================
 
 You can get archives for the GAP distribution from the GAP website
-http://www.gap-system.org. You need to download one of the archives
+<http://www.gap-system.org>. You need to download one of the archives
 named in the format
 
 	gap4rXpY_<timestamp>.<archive_type>
@@ -172,7 +172,7 @@ description of each is also available via
 -----
 
 By default, GAP uses the external library GMP (see
-http://www.gmplib.org) for large integer arithmetic, replacing the built-in
+<http://www.gmplib.org>) for large integer arithmetic, replacing the built-in
 code used in previous versions and achieving a significant speed-up in
 related computations. There is a version of GMP included with the GAP
 archive you downloaded and this will be used unless otherwise requested.
@@ -195,8 +195,8 @@ is equivalent to `--with-gmp=no`.
 * Readline
 ----------
 
-GAP now also uses the external library Readline (see
-http://www.gnu.org/software/readline) for better command line
+GAP optionally also uses the external library Readline (see
+<http://www.gnu.org/software/readline>) for better command line
 editing. GAP will use this library by default if it is available on
 your system. You can configure Readline use as follows:
 
@@ -399,7 +399,7 @@ file provided with the corresponding package.
 If you have problems with package installations please contact the package
 authors as listed in the packages README file. Many GAP packages have their
 own development repositories and issue trackers, details of which could be
-found at https://gap-packages.github.io/.
+found at <https://gap-packages.github.io/>.
 
 
 8 Finish Installation and Cleanup
@@ -408,7 +408,7 @@ found at https://gap-packages.github.io/.
 Congratulations, your installation is finished.
 
 Once the installation is complete, we would like to ask you to send us a
-short note to support@gap-system.org, telling us about the installation.
+short note to <support@gap-system.org>, telling us about the installation.
 (This is just a courtesy; we like to know how many people are using GAP and
 get feedback regarding difficulties (hopefully none) that users may have
 had with installation.)
@@ -417,7 +417,7 @@ We also suggest that you subscribe to our GAP Forum mailing list; see the
 GAP web pages for details. Whenever there is a bug fix or new release of
 GAP this is where it is announced. The GAP Forum also deals with user
 questions of a general nature; bug reports and other problems you have
-while installing and/or using GAP should be sent to support@gap-system.org.
+while installing and/or using GAP should be sent to <support@gap-system.org>.
 
 If you are new to GAP, you might want to read through the following two
 sections for information about the documentation.
@@ -447,8 +447,8 @@ files are included in the directory `gap4rX/doc` in the subdirectories
 
 If you want to use these manual files with the help system from your GAP
 session you may check (or make sure) that your system provides some
-additional software like xpdf (http://www.foolabs.com/xpdf/) or acroread
-(http://www.adobe.com/products/acrobat/readstep.html).
+additional software like [xpdf](http://www.foolabs.com/xpdf/) or
+[acroread](http://www.adobe.com/products/acrobat/readstep.html).
 
 To complete beginners, we suggest you read (parts of) the tutorial first
 for an introduction to GAP 4. Then start to use the system with extensive
@@ -467,7 +467,7 @@ the help system which provides useful search features.
 
 This section lists a few common problems when installing or running GAP and
 their remedies. Also see the FAQ list on the GAP web pages at
-http://www.gap-system.org/Faq/faq.html
+<http://www.gap-system.org/Faq/faq.html>.
 
 * GAP starts with a warning `hmm, I cannot find lib/init.g`
 
@@ -548,7 +548,7 @@ can type POW(a,b) for a^b.)
 
 You might want to try different shells, starting each of the three .bat
 files in the `bin` directory: `gap.bat`. `gaprxvt.bat` and `gapcmd.bat`.
-Also, http://www.gap-system.org/Faq/faq.html#4 might give a remedy.
+Also, <http://www.gap-system.org/Faq/faq.html#4> might give a remedy.
 
 * GAP does not work in the remote desktop
 
@@ -563,7 +563,7 @@ version installed (use "Find"), delete the older one (and probably copy the
 newer one in both places).
 
 If all these remedies fail or you encountered a bug please send a mail to
-support@gap-system.org. Please give:
+<support@gap-system.org>. Please give:
 * a (short, if possible) self-contained excerpt of a GAP session containing
   both input and output that illustrates your problem (including comments
   of why you think it is a bug); and
@@ -620,7 +620,7 @@ If you do wish to use another compiler, you should run the command `make
 clean` in the GAP root directory, set the environment variable `CC` to
 the name of your preferred compiler and then rerun configure and make.
 You may have to experiment to determine the best values for `CFLAGS`
-and/or `COPTS` as described above. Please let us (support@gap-system.org)
+and/or `COPTS` as described above. Please let us (<support@gap-system.org>)
 know the results of your experiments.
 
 We also recommend that you install a C++ compiler before compiling GAP;
@@ -705,7 +705,7 @@ the actual path to the GAP root directory in the Windows format. Please avoid
 introducing new line breaks when editing (i.e. do not use a text editor which
 automatically wraps long lines).
 
-Please contact support@gap-system.org if you need further information.
+Please contact <support@gap-system.org> if you need further information.
 
 
 Wishing you fun and success using GAP,
