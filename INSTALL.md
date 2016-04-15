@@ -17,7 +17,7 @@ GAP INSTALLATION INSTRUCTIONS
 14. Expert Windows Installation
 
 These are the installation instructions for the GAP source distribution
-on UNIX (which covers Linux and OS X), and for the GAP binary distribution
+on Unix (which covers Linux and OS X), and for the GAP binary distribution
 for Windows.
 
 Alternative installation methods which aim to simplify the installation
@@ -61,7 +61,7 @@ The installation consists of five easy steps:
 3. Compile the kernel (unless a binary has been provided already)
 4. Test the installation
 5. Compile the packages that require it.
-   (some of them will only work under Unix and OS X).
+   (some of them will only work under Unix).
 
 Installation will always install the new version of GAP. If you are
 worried about losing the old version, you can keep an existing installation
@@ -85,9 +85,9 @@ named in the format
 for GAP 4.X.Y. The `<timestamp>` is updated whenever there is a change
 to the GAP system or any package.
 
-If you use Unix or OS X, you can use the `.tar.gz`, `.tar.bz2` or `.zip`
-archives containing the GAP source distribution. Such archive will unpack
-to the directory named `gap4rX`.
+If you use Unix (including OS X), you can use the `.tar.gz`, `.tar.bz2` or
+`.zip` archives containing the GAP source distribution. Such archive will
+unpack to the directory named `gap4rX`.
 
 If you use Windows, then use the `.exe` installer which contains binaries
 for GAP and some packages and provides the standard installation procedure.
@@ -99,13 +99,13 @@ for GAP and some packages and provides the standard installation procedure.
 The exact method of unpacking will vary dependently on the operating system
 and the type of archive used.
 
-* Unix, OS X
-------------
+* Unix (including OS X)
+-----------------------
 
-Under Unix or OS X unpack the archive `gap4rXpY_<timestamp>`
-in whatever place you want GAP to reside.
+Under Unix style operating systems (such as Linux and OS X), unpack the
+archive `gap4rXpY_<timestamp>` in whatever place you want GAP to reside.
 
-(If you unpack the archive as root user under UNIX, make sure that you
+(If you unpack the archive as root user under Unix, make sure that you
 issue the command `umask 022` before, to ensure that users will have
 permissions to read the files.)
 
@@ -127,9 +127,9 @@ it in a directory named like `C:\Users\alice\My Documents\gap4rX` or
 =============
 
 For the Windows version the unpacking process will already have put
-binaries in place. Under Unix and OS X you will have to compile such a
-binary yourself. (OS X users: please see section "GAP for OS X"
-below for information about compilation)
+binaries in place. Under Unix you will have to compile such a binary
+yourself. (OS X users: please see section "GAP for OS X" below for
+additional information about compilation)
 
 Change to the directory `gap4rX` (which you just created by unpacking).
 To get started quickly you may simply build GAP with default settings
@@ -267,8 +267,8 @@ The configure options just described may be combined as you like or omitted.
 6 Testing the installation
 ==========================
 
-You are now at a point where you can start GAP for the first time. Unix and
-OS X users should type
+You are now at a point where you can start GAP for the first time. Unix
+users (including those on OS X) should type
 
     ./bin/gap.sh
 
@@ -590,7 +590,7 @@ that might affect the compilation (in particular `CC`, `LD`, `CFLAGS`,
 12 Optimization and Compiler Options
 ====================================
 
-Because of the large variety of different versions of UNIX and different
+Because of the large variety of different versions of Unix and different
 compilers it is possible that the configure process will not chose best
 possible optimisation level, but you might need to tell make about it.
 
@@ -700,7 +700,7 @@ say `E:`, the easiest way would be just to use `E:\gap4rX`.
 
 If you need to edit a `*.bat` file to specify the path to your GAP installation
 manually, you will have to replace substrings `/c/gap4rX/` by the actual path
-to the GAP root directory in the UNIX format, and substrings `C:\gap4rX\` by
+to the GAP root directory in the Unix format, and substrings `C:\gap4rX\` by
 the actual path to the GAP root directory in the Windows format. Please avoid
 introducing new line breaks when editing (i.e. do not use a text editor which
 automatically wraps long lines).
