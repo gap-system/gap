@@ -116,14 +116,15 @@ run_configure_and_make() {
     fi;
     $MAKE
   else
-    echo "No building required for ${dir%/}"
+    echo "No building required for $dir"
   fi;
 }
 
 for dir in `ls -d */`
 do
     if [ -e $dir/PackageInfo.g ]; then
-      echo "==== Checking ${dir%/}"
+      dir="${dir%/}"
+      echo "==== Checking $dir"
       case $dir in
         atlasrep*)
           (cd $dir && chmod 1777 datagens dataword) || build_fail
