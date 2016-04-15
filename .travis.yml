@@ -23,6 +23,7 @@ matrix:
 # Change this to your needs
 addons:
   apt_packages:
+  - ia32-libs
   - libgmp3-dev
   - texlive-latex-base
   - texlive-latex-recommended
