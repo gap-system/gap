@@ -20,13 +20,6 @@ set -e
 # Even if it doesn't work completely automatically for you, you may get
 # an idea what to do for a complete installation of GAP.
 
-if ! [ x`which gmake` = "x" ] ; then
-  MAKE=gmake
-else
-  MAKE=make
-fi
-
-# Package-specific info:
 
 if [ $# -eq 0 ]
   then
@@ -60,6 +53,15 @@ if (cd $SUBDIR && grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null) ; then
   ABI32=YES
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi;
+
+# Many package require GNU make. So use gmake if available,
+# for improved compatibility with *BSD systems where "make"
+# is BSD make, not GNU make.
+if ! [ x`which gmake` = "x" ] ; then
+  MAKE=gmake
+else
+  MAKE=make
+fi
 
 cat <<EOF
 Attempting to build GAP packages.
