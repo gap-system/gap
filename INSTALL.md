@@ -46,7 +46,8 @@ program.
 Installing the GAP distribution with all the packages and full data
 libraries takes about 1.6 GB of disk space and (except on Windows) will
 require a C compiler (gcc is recommended) to be installed on your system.
-To get maximum benefit from GAP and from various packages it may be useful
+To get maximum benefit from GAP and from various packages, we recommend
+that in addition a C++ compiler is available, and it may be useful
 to install a number of other free software libraries (and their associated
 development tools) although they are not required for basic operation. See
 http://www.gap-system.org/Download/tools.html for more details.
@@ -59,7 +60,7 @@ The installation consists of 5 easy steps:
   probably already done this.
 * Compile the kernel (unless a binary has been provided already)
 * Test the installation
-* Compile the packages that include C code
+* Compile the packages that require it.
   (some of them will only work under Unix and OS X).
 
 Installation will always install the new version of GAP. If you are
@@ -621,6 +622,10 @@ the name of your preferred compiler and then rerun configure and make.
 You may have to experiment to determine the best values for `CFLAGS`
 and/or `COPTS` as described above. Please let us (support@gap-system.org)
 know the results of your experiments.
+
+We also recommend that you install a C++ compiler before compiling GAP;
+while GAP itself does not need it, there are GAP packages which do
+require a C++ compiler.
 
 
 13 GAP for OS X
