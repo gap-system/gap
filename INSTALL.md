@@ -215,15 +215,20 @@ pasting text very slow. If you have that version of the readline library,
 this delay be avoided by pressing a key (e.g. space) during the paste, or
 you may prefer to build GAP without readline to avoid this issue entirely.
 
-Build mode
-----------
+Build 32-bit vs. 64-bit binaries
+--------------------------------
 
 GAP will attempt to build in 32-bit mode on 32-bit machines and in 64-bit
 mode on 64-bit machines. On a 64-bit machine, you can tell GAP to build in
 32-bit instead, if you wish. In that case, GMP will also be built in 32-bit
 mode. You can configure the build mode as follows:
 
-    ./configure ABI=32|64
+    ./configure ABI=32
+
+or
+
+    ./configure ABI=64
+
 
 The value of the argument determines the build mode GAP will attempt to
 use. Note that building in 64-bit mode on a 32-bit architecture is not
