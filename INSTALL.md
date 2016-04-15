@@ -1,5 +1,5 @@
 GAP INSTALLATION INSTRUCTIONS
-----------------------------------------------------
+=============================
 
 1. Installation Overview
 2. Getting the Archive
@@ -99,8 +99,8 @@ for GAP and some packages and provides the standard installation procedure.
 The exact method of unpacking will vary dependently on the operating system
 and the type of archive used.
 
-* Unix (including OS X)
------------------------
+Unix (including OS X)
+---------------------
 
 Under Unix style operating systems (such as Linux and OS X), unpack the
 archive `gap4rXpY_<timestamp>` in whatever place you want GAP to reside.
@@ -109,8 +109,8 @@ archive `gap4rXpY_<timestamp>` in whatever place you want GAP to reside.
 issue the command `umask 022` before, to ensure that users will have
 permissions to read the files.)
 
-* Windows
----------
+Windows
+-------
 
 If you are using the `.exe` installer, simply download and run it. It will
 offer a standard installation procedure, during which you will be able to
@@ -168,8 +168,8 @@ description of each is also available via
 
     ./configure --help
 
-* GMP
------
+GMP
+---
 
 By default, GAP uses the external library GMP (see
 <http://www.gmplib.org>) for large integer arithmetic, replacing the built-in
@@ -192,8 +192,8 @@ will be used instead of GMP.
 Note that `--with-gmp` is equivalent to `--with-gmp=yes` and `--without-gmp`
 is equivalent to `--with-gmp=no`.
 
-* Readline
-----------
+Readline
+--------
 
 GAP optionally also uses the external library Readline (see
 <http://www.gnu.org/software/readline>) for better command line
@@ -215,8 +215,8 @@ pasting text very slow. If you have that version of the readline library,
 this delay be avoided by pressing a key (e.g. space) during the paste, or
 you may prefer to build GAP without readline to avoid this issue entirely.
 
-* Build mode
-------------
+Build mode
+----------
 
 GAP will attempt to build in 32-bit mode on 32-bit machines and in 64-bit
 mode on 64-bit machines. On a 64-bit machine, you can tell GAP to build in
@@ -246,8 +246,8 @@ these can be called directly to choose the version you want. The link
 The configure step creates the `Makefile`, needed for the make command. You
 should not need to provide any arguments to `make` in order to build GAP.
 
-* Configuration name
---------------------
+Configuration name
+------------------
 
 In order to facilitate having several builds of GAP side-by-side, perhaps
 in the case that you have both 32 and 64-bit builds or for other different
@@ -469,7 +469,7 @@ This section lists a few common problems when installing or running GAP and
 their remedies. Also see the FAQ list on the GAP web pages at
 <http://www.gap-system.org/Faq/faq.html>.
 
-* GAP starts with a warning `hmm, I cannot find lib/init.g`
+### GAP starts with a warning `hmm, I cannot find lib/init.g`
 
 You either started only the binary or did not edit the shell script/batch
 file to give the correct library path. You must start the binary with the
@@ -480,13 +480,13 @@ command line option
 where `<path>` is the path to the GAP home directory (see Section "Command
 Line Options" of the GAP Reference manual).
 
-* When starting, GAP produces error messages about undefined variables.
+### When starting, GAP produces error messages about undefined variables.
 
 You might have a `.gaprc` file in your home directory that was used by
 GAP 4.4 but is not compatible with later releases. See section "The gap.ini
 and gaprc files" in Section "Running GAP" of the GAP Reference manual.
 
-* GAP stops with an error message `exceeded the permitted memory`.
+### GAP stops with an error message `exceeded the permitted memory`.
 
 Your job required more memory than is permitted by default (this is a
 safety feature to avoid single jobs wrecking a multi-user system.) You can
@@ -494,7 +494,7 @@ type `return;` to continue, if the error message happens repeatedly it might
 be better to start the job anew and use the command line option `-o` to set a
 higher memory limit.
 
-* GAP stops with an error message: `cannot extend the workspace any more`.
+### GAP stops with an error message: `cannot extend the workspace any more`.
 
 Your calculation exceeded the available memory. Most likely you asked GAP
 to do something which required more memory than you have (as listing all
@@ -504,7 +504,7 @@ much memory GAP uses. If this is below what your machine has available
 extending the workspace is impossible. Start GAP with more memory or use
 the `-a` option to pre-allocate initially a large piece of workspace.
 
-* GAP is not able to allocate memory above a certain limit
+### GAP is not able to allocate memory above a certain limit
 
 In a 32-bit mode GAP is unable to use over 4 GB of memory. In fact, since
 some address space is needed for system purposes, it is likely that GAP
@@ -516,14 +516,14 @@ collisions with system libraries located by default at an address within
 the workspace. (Under Linux for example, 1 GB is a typical limit.) You can
 compile a static binary using make static.
 
-* Recompilation fails or the new binary crashes.
+### Recompilation fails or the new binary crashes.
 
 Call make clean and restart the configure / make process completely from
 scratch. (It is possible that the operating system and/or compiler got
 upgraded in the meantime and so the existing .o files cannot be used any
 longer.
 
-* A calculation runs into an error `no method found`.
+### A calculation runs into an error `no method found`.
 
 GAP is not able to execute a certain operation with the given arguments.
 Besides the possibility of bugs in the library this means two things:
@@ -537,43 +537,46 @@ manual.
 
 Problems specific to Windows
 
-* The ^-key or "-key cannot be entered.
+### The ^-key or "-key cannot be entered.
 
 This is a problem if you are running a keyboard driver for some non-english
 languages. These drivers catch the ^ character to produce the French
 circumflex accent and do not pass it properly to GAP. No fix is known. (One
 can type POW(a,b) for a^b.)
 
-* Cut and Paste does not work
+### Cut and Paste does not work
 
 You might want to try different shells, starting each of the three .bat
 files in the `bin` directory: `gap.bat`. `gaprxvt.bat` and `gapcmd.bat`.
 Also, <http://www.gap-system.org/Faq/faq.html#4> might give a remedy.
 
-* GAP does not work in the remote desktop
+### GAP does not work in the remote desktop
 
 GAP can not be started in the Windows Command Prompt shell (via `gapcmd.bat`)
 in the remote desktop. To start GAP in the remote desktop, use scripts
 `gap.bat` or `gaprxvt.bat` which should work in such setting.
 
-* You get an error message about the `cygwin1.dll`
+### You get an error message about the `cygwin1.dll`
 
 GAP comes with a version of this dynamic library. If you have another
 version installed (use "Find"), delete the older one (and probably copy the
 newer one in both places).
 
+### Something else went wrong
+
 If all these remedies fail or you encountered a bug please send a mail to
 <support@gap-system.org>. Please give:
+
 * a (short, if possible) self-contained excerpt of a GAP session containing
   both input and output that illustrates your problem (including comments
   of why you think it is a bug); and
-* state the type of machine, operating system, (compiler used, if
-  UNIX/Linux) and version of GAP you are using (the line from the GAP
+* state the type of machine, the operating system, which compiler you used
+  (if any), and the version of GAP you are using (the line from the GAP
   banner starting with
 
-    GAP, Version 4.X.Y...
+        GAP, Version 4.X.Y...
 
-when GAP starts up, supplies the information required).
+  when GAP starts up, supplies the information required).
 
 
 11 Known Problems of the Configure Process
