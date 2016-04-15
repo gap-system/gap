@@ -4,29 +4,55 @@ matrix:
     - os: linux
       env: TEST_SUITE=testtravis
       compiler: gcc
+      addons:
+        apt_packages:
+          - libgmp-dev
     - os: osx
       env: TEST_SUITE=testtravis
       compiler: clang
+      addons:
+        apt_packages:
+         - libgmp-dev
     - os: linux
       env: TEST_SUITE=testinstall
       compiler: gcc
+      addons:
+        apt_packages:
+         - libgmp-dev
     - os: linux
       env: TEST_SUITE=testbugfix
       compiler: gcc
+      addons:
+        apt_packages:
+         - libgmp-dev
     - os: linux
       env: TEST_SUITE=makemanuals
       compiler: gcc
+      addons:
+        apt_packages:
+         - libgmp-dev
+         - texlive-latex-base
+         - texlive-latex-recommended
+         - texlive-latex-extra
+         - texlive-extra-utils
+         - texlive-fonts-recommended
+         - texlive-fonts-extra
+    - os: linux
+      env: TEST_SUITE=testtravis ABI=32
+      compiler: gcc
+      addons: 
+        apt_packages:
+          - libgmp-dev:i386
+          - gcc-multilib
+    - os: linux
+      env: TEST_SUITE=testinstall ABI=32
+      compiler: gcc
+      addons: 
+        apt_packages:
+          - libgmp-dev:i386
+          - gcc-multilib
 
-# Change this to your needs
-addons:
-  apt_packages:
-  - libgmp3-dev
-  - texlive-latex-base
-  - texlive-latex-recommended
-  - texlive-latex-extra
-  - texlive-extra-utils
-  - texlive-fonts-recommended
-  - texlive-fonts-extra
+
 script:
   - ./configure --with-gmp=system
   - make
