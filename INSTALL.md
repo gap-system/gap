@@ -1,5 +1,5 @@
 GAP INSTALLATION INSTRUCTIONS
-----------------------------------------------------
+=============================
 
 1. Installation Overview
 2. Getting the Archive
@@ -17,7 +17,7 @@ GAP INSTALLATION INSTRUCTIONS
 14. Expert Windows Installation
 
 These are the installation instructions for the GAP source distribution
-on UNIX (which covers Linux and OS X), and for the GAP binary distribution
+on Unix (which covers Linux and OS X), and for the GAP binary distribution
 for Windows.
 
 Alternative installation methods which aim to simplify the installation
@@ -30,7 +30,7 @@ mostly by offering precompiled binaries are:
 
 Note, however, that these are updated independently and may not yet provide
 the latest GAP release. Further details are available on the GAP website
-here: http://www.gap-system.org/Download/alternatives.html.
+here: <http://www.gap-system.org/Download/alternatives.html>.
 
 
 1 Installation Overview
@@ -46,21 +46,22 @@ program.
 Installing the GAP distribution with all the packages and full data
 libraries takes about 1.6 GB of disk space and (except on Windows) will
 require a C compiler (gcc is recommended) to be installed on your system.
-To get maximum benefit from GAP and from various packages it may be useful
+To get maximum benefit from GAP and from various packages, we recommend
+that in addition a C++ compiler is available, and it may be useful
 to install a number of other free software libraries (and their associated
 development tools) although they are not required for basic operation. See
-http://www.gap-system.org/Download/tools.html for more details.
+<http://www.gap-system.org/Download/tools.html> for more details.
 
-The installation consists of 5 easy steps:
+The installation consists of five easy steps:
 
-* Get the archive suitable for your system
-* Unpack the archive in the directory where you wish to install GAP
-  If you are reading this file as part of a GAP installation, you have
-  probably already done this.
-* Compile the kernel (unless a binary has been provided already)
-* Test the installation
-* Compile the packages that include C code
-  (some of them will only work under Unix and OS X).
+1. Get the archive suitable for your system
+2. Unpack the archive in the directory where you wish to install GAP
+   If you are reading this file as part of a GAP installation, you have
+   probably already done this.
+3. Compile the kernel (unless a binary has been provided already)
+4. Test the installation
+5. Compile the packages that require it.
+   (some of them will only work under Unix).
 
 Installation will always install the new version of GAP. If you are
 worried about losing the old version, you can keep an existing installation
@@ -76,7 +77,7 @@ common problems with the installation.
 =====================
 
 You can get archives for the GAP distribution from the GAP website
-http://www.gap-system.org. You need to download one of the archives
+<http://www.gap-system.org>. You need to download one of the archives
 named in the format
 
 	gap4rXpY_<timestamp>.<archive_type>
@@ -84,9 +85,9 @@ named in the format
 for GAP 4.X.Y. The `<timestamp>` is updated whenever there is a change
 to the GAP system or any package.
 
-If you use Unix or OS X, you can use the `.tar.gz`, `.tar.bz2` or `.zip`
-archives containing the GAP source distribution. Such archive will unpack
-to the directory named `gap4rX`.
+If you use Unix (including OS X), you can use the `.tar.gz`, `.tar.bz2` or
+`.zip` archives containing the GAP source distribution. Such archive will
+unpack to the directory named `gap4rX`.
 
 If you use Windows, then use the `.exe` installer which contains binaries
 for GAP and some packages and provides the standard installation procedure.
@@ -98,18 +99,18 @@ for GAP and some packages and provides the standard installation procedure.
 The exact method of unpacking will vary dependently on the operating system
 and the type of archive used.
 
-* Unix, OS X
-------------
+Unix (including OS X)
+---------------------
 
-Under Unix or OS X unpack the archive `gap4rXpY_<timestamp>`
-in whatever place you want GAP to reside.
+Under Unix style operating systems (such as Linux and OS X), unpack the
+archive `gap4rXpY_<timestamp>` in whatever place you want GAP to reside.
 
-(If you unpack the archive as root user under UNIX, make sure that you
+(If you unpack the archive as root user under Unix, make sure that you
 issue the command `umask 022` before, to ensure that users will have
 permissions to read the files.)
 
-* Windows
----------
+Windows
+-------
 
 If you are using the `.exe` installer, simply download and run it. It will
 offer a standard installation procedure, during which you will be able to
@@ -126,9 +127,9 @@ it in a directory named like `C:\Users\alice\My Documents\gap4rX` or
 =============
 
 For the Windows version the unpacking process will already have put
-binaries in place. Under Unix and OS X you will have to compile such a
-binary yourself. (OS X users: please see section "GAP for OS X"
-below for information about compilation)
+binaries in place. Under Unix you will have to compile such a binary
+yourself. (OS X users: please see section "GAP for OS X" below for
+additional information about compilation)
 
 Change to the directory `gap4rX` (which you just created by unpacking).
 To get started quickly you may simply build GAP with default settings
@@ -167,11 +168,11 @@ description of each is also available via
 
     ./configure --help
 
-* GMP
------
+GMP
+---
 
 By default, GAP uses the external library GMP (see
-http://www.gmplib.org) for large integer arithmetic, replacing the built-in
+<http://www.gmplib.org>) for large integer arithmetic, replacing the built-in
 code used in previous versions and achieving a significant speed-up in
 related computations. There is a version of GMP included with the GAP
 archive you downloaded and this will be used unless otherwise requested.
@@ -191,11 +192,11 @@ will be used instead of GMP.
 Note that `--with-gmp` is equivalent to `--with-gmp=yes` and `--without-gmp`
 is equivalent to `--with-gmp=no`.
 
-* Readline
-----------
+Readline
+--------
 
-GAP now also uses the external library Readline (see
-http://www.gnu.org/software/readline) for better command line
+GAP optionally also uses the external library Readline (see
+<http://www.gnu.org/software/readline>) for better command line
 editing. GAP will use this library by default if it is available on
 your system. You can configure Readline use as follows:
 
@@ -214,15 +215,20 @@ pasting text very slow. If you have that version of the readline library,
 this delay be avoided by pressing a key (e.g. space) during the paste, or
 you may prefer to build GAP without readline to avoid this issue entirely.
 
-* Build mode
-------------
+Build 32-bit vs. 64-bit binaries
+--------------------------------
 
 GAP will attempt to build in 32-bit mode on 32-bit machines and in 64-bit
 mode on 64-bit machines. On a 64-bit machine, you can tell GAP to build in
 32-bit instead, if you wish. In that case, GMP will also be built in 32-bit
 mode. You can configure the build mode as follows:
 
-    ./configure ABI=32|64
+    ./configure ABI=32
+
+or
+
+    ./configure ABI=64
+
 
 The value of the argument determines the build mode GAP will attempt to
 use. Note that building in 64-bit mode on a 32-bit architecture is not
@@ -245,8 +251,8 @@ these can be called directly to choose the version you want. The link
 The configure step creates the `Makefile`, needed for the make command. You
 should not need to provide any arguments to `make` in order to build GAP.
 
-* Configuration name
---------------------
+Configuration name
+------------------
 
 In order to facilitate having several builds of GAP side-by-side, perhaps
 in the case that you have both 32 and 64-bit builds or for other different
@@ -266,8 +272,8 @@ The configure options just described may be combined as you like or omitted.
 6 Testing the installation
 ==========================
 
-You are now at a point where you can start GAP for the first time. Unix and
-OS X users should type
+You are now at a point where you can start GAP for the first time. Unix
+users (including those on OS X) should type
 
     ./bin/gap.sh
 
@@ -371,34 +377,24 @@ You can skip this compilation now and do it later -- GAP will work fine,
 but the capabilities of the affected packages won't be available.
 
 In general, each package contains a `README` file that contains information
-about the package and the necessary installation. Typically the
-installation for a package consists of changing to the packages directory
-and issuing the commands `./configure ; make` (or, for some older packages
-`./configure ../.. ; make` in the packages directory. This has to be done
-separately for every package, and their `README` files should tell exactly
-which commands to use.
+about the package and the necessary installation. Typically, for a package
+that requires compilation, the installation steps consist of changing to
+the packages directory and issuing the commands `./configure && make` in
+the packages directory. This has to be done separately for every package,
+and their `README` files should tell exactly which commands to use.
 
-To help with this tedious process, we provide a shell script that will
-compile most of the packages that require compilation on UNIX systems
-(including Linux and OS X) with sufficiently many libraries, headers
-and tools available. To use it, download and run in the `pkg` directory
-one of the shell scripts
+To help with this tedious process, we ship a shell script called
+`bin/BuildPackages.sh` that will compile most of the packages that require
+compilation on Unix systems (including Linux and OS X) with sufficiently
+many libraries, headers and tools available. To use it, change to the
+`gap4rX/pkg` directory and execute the script like this:
 
-    http://www.gap-system.org/Download/InstPackages.sh
-
-for the 64-bit GAP installation or
-
-    http://www.gap-system.org/Download/InstPackages32.sh
-
-for the 32-bit GAP installation (you will need to call `chmod u+x` to make
-it executable first). You may also copy and paste it into the shell line by
-line. If something doesn't work on your system, please, refer to the `README`
-file provided with the corresponding package.
+    ../bin/BuildPackages.sh
 
 If you have problems with package installations please contact the package
 authors as listed in the packages README file. Many GAP packages have their
 own development repositories and issue trackers, details of which could be
-found at https://gap-packages.github.io/.
+found at <https://gap-packages.github.io/>.
 
 
 8 Finish Installation and Cleanup
@@ -407,7 +403,7 @@ found at https://gap-packages.github.io/.
 Congratulations, your installation is finished.
 
 Once the installation is complete, we would like to ask you to send us a
-short note to support@gap-system.org, telling us about the installation.
+short note to <support@gap-system.org>, telling us about the installation.
 (This is just a courtesy; we like to know how many people are using GAP and
 get feedback regarding difficulties (hopefully none) that users may have
 had with installation.)
@@ -416,7 +412,7 @@ We also suggest that you subscribe to our GAP Forum mailing list; see the
 GAP web pages for details. Whenever there is a bug fix or new release of
 GAP this is where it is announced. The GAP Forum also deals with user
 questions of a general nature; bug reports and other problems you have
-while installing and/or using GAP should be sent to support@gap-system.org.
+while installing and/or using GAP should be sent to <support@gap-system.org>.
 
 If you are new to GAP, you might want to read through the following two
 sections for information about the documentation.
@@ -446,8 +442,8 @@ files are included in the directory `gap4rX/doc` in the subdirectories
 
 If you want to use these manual files with the help system from your GAP
 session you may check (or make sure) that your system provides some
-additional software like xpdf (http://www.foolabs.com/xpdf/) or acroread
-(http://www.adobe.com/products/acrobat/readstep.html).
+additional software like [xpdf](http://www.foolabs.com/xpdf/) or
+[acroread](http://www.adobe.com/products/acrobat/readstep.html).
 
 To complete beginners, we suggest you read (parts of) the tutorial first
 for an introduction to GAP 4. Then start to use the system with extensive
@@ -466,9 +462,9 @@ the help system which provides useful search features.
 
 This section lists a few common problems when installing or running GAP and
 their remedies. Also see the FAQ list on the GAP web pages at
-http://www.gap-system.org/Faq/faq.html
+<http://www.gap-system.org/Faq/faq.html>.
 
-* GAP starts with a warning `hmm, I cannot find lib/init.g`
+### GAP starts with a warning `hmm, I cannot find lib/init.g`
 
 You either started only the binary or did not edit the shell script/batch
 file to give the correct library path. You must start the binary with the
@@ -479,13 +475,13 @@ command line option
 where `<path>` is the path to the GAP home directory (see Section "Command
 Line Options" of the GAP Reference manual).
 
-* When starting, GAP produces error messages about undefined variables.
+### When starting, GAP produces error messages about undefined variables.
 
 You might have a `.gaprc` file in your home directory that was used by
 GAP 4.4 but is not compatible with later releases. See section "The gap.ini
 and gaprc files" in Section "Running GAP" of the GAP Reference manual.
 
-* GAP stops with an error message `exceeded the permitted memory`.
+### GAP stops with an error message `exceeded the permitted memory`.
 
 Your job required more memory than is permitted by default (this is a
 safety feature to avoid single jobs wrecking a multi-user system.) You can
@@ -493,7 +489,7 @@ type `return;` to continue, if the error message happens repeatedly it might
 be better to start the job anew and use the command line option `-o` to set a
 higher memory limit.
 
-* GAP stops with an error message: `cannot extend the workspace any more`.
+### GAP stops with an error message: `cannot extend the workspace any more`.
 
 Your calculation exceeded the available memory. Most likely you asked GAP
 to do something which required more memory than you have (as listing all
@@ -503,7 +499,7 @@ much memory GAP uses. If this is below what your machine has available
 extending the workspace is impossible. Start GAP with more memory or use
 the `-a` option to pre-allocate initially a large piece of workspace.
 
-* GAP is not able to allocate memory above a certain limit
+### GAP is not able to allocate memory above a certain limit
 
 In a 32-bit mode GAP is unable to use over 4 GB of memory. In fact, since
 some address space is needed for system purposes, it is likely that GAP
@@ -515,14 +511,14 @@ collisions with system libraries located by default at an address within
 the workspace. (Under Linux for example, 1 GB is a typical limit.) You can
 compile a static binary using make static.
 
-* Recompilation fails or the new binary crashes.
+### Recompilation fails or the new binary crashes.
 
 Call make clean and restart the configure / make process completely from
 scratch. (It is possible that the operating system and/or compiler got
 upgraded in the meantime and so the existing .o files cannot be used any
 longer.
 
-* A calculation runs into an error `no method found`.
+### A calculation runs into an error `no method found`.
 
 GAP is not able to execute a certain operation with the given arguments.
 Besides the possibility of bugs in the library this means two things:
@@ -536,43 +532,46 @@ manual.
 
 Problems specific to Windows
 
-* The ^-key or "-key cannot be entered.
+### The ^-key or "-key cannot be entered.
 
 This is a problem if you are running a keyboard driver for some non-english
 languages. These drivers catch the ^ character to produce the French
 circumflex accent and do not pass it properly to GAP. No fix is known. (One
 can type POW(a,b) for a^b.)
 
-* Cut and Paste does not work
+### Cut and Paste does not work
 
 You might want to try different shells, starting each of the three .bat
 files in the `bin` directory: `gap.bat`. `gaprxvt.bat` and `gapcmd.bat`.
-Also, http://www.gap-system.org/Faq/faq.html#4 might give a remedy.
+Also, <http://www.gap-system.org/Faq/faq.html#4> might give a remedy.
 
-* GAP does not work in the remote desktop
+### GAP does not work in the remote desktop
 
 GAP can not be started in the Windows Command Prompt shell (via `gapcmd.bat`)
 in the remote desktop. To start GAP in the remote desktop, use scripts
 `gap.bat` or `gaprxvt.bat` which should work in such setting.
 
-* You get an error message about the `cygwin1.dll`
+### You get an error message about the `cygwin1.dll`
 
 GAP comes with a version of this dynamic library. If you have another
 version installed (use "Find"), delete the older one (and probably copy the
 newer one in both places).
 
+### Something else went wrong
+
 If all these remedies fail or you encountered a bug please send a mail to
-support@gap-system.org. Please give:
+<support@gap-system.org>. Please give:
+
 * a (short, if possible) self-contained excerpt of a GAP session containing
   both input and output that illustrates your problem (including comments
   of why you think it is a bug); and
-* state the type of machine, operating system, (compiler used, if
-  UNIX/Linux) and version of GAP you are using (the line from the GAP
+* state the type of machine, the operating system, which compiler you used
+  (if any), and the version of GAP you are using (the line from the GAP
   banner starting with
 
-    GAP, Version 4.X.Y...
+        GAP, Version 4.X.Y...
 
-when GAP starts up, supplies the information required).
+  when GAP starts up, supplies the information required).
 
 
 11 Known Problems of the Configure Process
@@ -589,7 +588,7 @@ that might affect the compilation (in particular `CC`, `LD`, `CFLAGS`,
 12 Optimization and Compiler Options
 ====================================
 
-Because of the large variety of different versions of UNIX and different
+Because of the large variety of different versions of Unix and different
 compilers it is possible that the configure process will not chose best
 possible optimisation level, but you might need to tell make about it.
 
@@ -619,19 +618,22 @@ If you do wish to use another compiler, you should run the command `make
 clean` in the GAP root directory, set the environment variable `CC` to
 the name of your preferred compiler and then rerun configure and make.
 You may have to experiment to determine the best values for `CFLAGS`
-and/or `COPTS` as described above. Please let us (support@gap-system.org)
+and/or `COPTS` as described above. Please let us (<support@gap-system.org>)
 know the results of your experiments.
+
+We also recommend that you install a C++ compiler before compiling GAP;
+while GAP itself does not need it, there are GAP packages which do
+require a C++ compiler.
 
 
 13 GAP for OS X
 ===================
 
-We hope that a binary distribution for some recent version(s) of OS X
-will be available shortly. In the meantime, since OS X is built on top
-of a variant of Unix, you should follow the Unix installations to compile
-GAP; then you will be able to use all features of GAP as well as all
-packages. However for installation you might need a basic knowledge of
-Unix.
+Currently we provide no precompiler binary distribution for OS X. However,
+since OS X is an operating system in the Unix family, you can follow the
+Unix installation guidelines to compile GAP; then you will be able to use
+all features of GAP as well as all packages. However for installation you
+might need a basic knowledge of Unix.
 
 The following are a couple of notes and remarks about this:
 
@@ -640,12 +642,10 @@ First, note that you should get the Unix type GAP archives, i.e. one of
 (you won't be able to compile the program as given in the `-win.zip` archive).
 
 Next, you will need a compiler and build tools like `make`. These tools are
-included in the "XCode" app(lication) which is generally not installed by
-default on a new Mac. You may be able to install this application by
-running an installer package already on your system (look at the Installer
-folder under Applications) but if not you can get it from Apple by
-registering as a developer (see http://developer.apple.com), or by
-downloading it from the App Store.
+included in the "Xcode" application which is not installed by default on a
+new Mac. On all recent versions of OS X, you can install it for free via
+the App Store. For older versions for OS X, you may need to register with
+Apple as a developer and download it from <http://developer.apple.com>.
 
 To compile and run GAP you will have to open the Terminal application and
 type the necessary Unix commands into its window. The Terminal application
@@ -695,12 +695,12 @@ say `E:`, the easiest way would be just to use `E:\gap4rX`.
 
 If you need to edit a `*.bat` file to specify the path to your GAP installation
 manually, you will have to replace substrings `/c/gap4rX/` by the actual path
-to the GAP root directory in the UNIX format, and substrings `C:\gap4rX\` by
+to the GAP root directory in the Unix format, and substrings `C:\gap4rX\` by
 the actual path to the GAP root directory in the Windows format. Please avoid
 introducing new line breaks when editing (i.e. do not use a text editor which
 automatically wraps long lines).
 
-Please contact support@gap-system.org if you need further information.
+Please contact <support@gap-system.org> if you need further information.
 
 
 Wishing you fun and success using GAP,

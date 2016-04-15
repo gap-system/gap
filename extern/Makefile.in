@@ -4,8 +4,14 @@ endif
 CFLAGS=@CFLAGS@ @ABI_CFLAGS@ $(COPTS)
 LDFLAGS=@LDFLAGS@ $(LOPTS)
 CC=@CC@
+CXX=@CXX@
 GAPARCH=@GAPARCH@
 MPFRVER=2.3.1
+ifdef CXX
+GMP_EXTRA_FLAGS=--enable-cxx
+else
+GMP_EXTRA_FLAGS=
+endif
 
 all: $(MAKE_GMP)
 
@@ -33,7 +39,7 @@ gmp_config: ../../../extern/gmp-$(GMP_VER)
 	    echo ""; \
 	    echo "Configuring GMP. Logging to bin/$(GAPARCH)/extern/gmp-$(GMP_VER)/build_log. Please wait... "; \
 	    echo ""; \
-	    ./configure --prefix=`pwd`/../../bin/$(GAPARCH)/extern/gmp-$(GMP_VER) --enable-cxx ABI=$(ABI) \
+	    ./configure --prefix=`pwd`/../../bin/$(GAPARCH)/extern/gmp-$(GMP_VER) $(GMP_EXTRA_FLAGS) ABI=$(ABI) \
 	     > ../../bin/$(GAPARCH)/extern/gmp-$(GMP_VER)/build_log 2>&1; \
 	    rm -f LASTBUILD*; \
 	    touch LASTBUILD.$(GAPARCH); \
