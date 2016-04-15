@@ -122,10 +122,6 @@ do
     if [ -e $dir/PackageInfo.g ]; then
       echo "==== Building $dir"
       case $dir in
-        anupq*)
-          (cd $dir && ./configure $CONFIGFLAGS && $MAKE $CONFIGFLAGS) || build_fail
-        ;;
-
         atlasrep*)
           (cd $dir && chmod 1777 datagens dataword) || build_fail
         ;;
