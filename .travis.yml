@@ -16,14 +16,10 @@ matrix:
     - os: linux
       env: TEST_SUITE=makemanuals
       compiler: gcc
-    - os: linux
-      env: TEST_SUITE=testtravis ABI=32
-      compiler: gcc
 
 # Change this to your needs
 addons:
   apt_packages:
-  - ia32-libs
   - libgmp3-dev
   - texlive-latex-base
   - texlive-latex-recommended
