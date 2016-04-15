@@ -337,10 +337,6 @@ number of lines with output about the progress of the tests, for example:
 
     #I  No errors detected while testing
 
-If you want to run a more advanced check (this is not required and may take
-up to an hour), you can read `teststandard.g` which is an extended test script
-performing all tests from the tst directory.
-
 GAP will exit after this test with the corresponding exit code (this is
 useful for automated testing). If you want to run a more advanced check
 (this is not required and may take up to an hour), you can start a new
