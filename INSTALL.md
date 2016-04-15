@@ -377,29 +377,19 @@ You can skip this compilation now and do it later -- GAP will work fine,
 but the capabilities of the affected packages won't be available.
 
 In general, each package contains a `README` file that contains information
-about the package and the necessary installation. Typically the
-installation for a package consists of changing to the packages directory
-and issuing the commands `./configure ; make` (or, for some older packages
-`./configure ../.. ; make` in the packages directory. This has to be done
-separately for every package, and their `README` files should tell exactly
-which commands to use.
+about the package and the necessary installation. Typically, for a package
+that requires compilation, the installation steps consist of changing to
+the packages directory and issuing the commands `./configure && make` in
+the packages directory. This has to be done separately for every package,
+and their `README` files should tell exactly which commands to use.
 
-To help with this tedious process, we provide a shell script that will
-compile most of the packages that require compilation on UNIX systems
-(including Linux and OS X) with sufficiently many libraries, headers
-and tools available. To use it, download and run in the `pkg` directory
-one of the shell scripts
+To help with this tedious process, we ship a shell script called
+`bin/BuildPackages.sh` that will compile most of the packages that require
+compilation on Unix systems (including Linux and OS X) with sufficiently
+many libraries, headers and tools available. To use it, change to the
+`gap4rX/pkg` directory and execute the script like this:
 
-    http://www.gap-system.org/Download/InstPackages.sh
-
-for the 64-bit GAP installation or
-
-    http://www.gap-system.org/Download/InstPackages32.sh
-
-for the 32-bit GAP installation (you will need to call `chmod u+x` to make
-it executable first). You may also copy and paste it into the shell line by
-line. If something doesn't work on your system, please, refer to the `README`
-file provided with the corresponding package.
+    ../bin/BuildPackages.sh
 
 If you have problems with package installations please contact the package
 authors as listed in the packages README file. Many GAP packages have their
