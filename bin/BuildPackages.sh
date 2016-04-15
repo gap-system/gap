@@ -89,7 +89,7 @@ $MAKE TOPDIR=`pwd` CFLAGS='-O2'
 
 build_cohomolo() {
 (
-cd cohomolo
+cd $dir
 ./configure $GAPDIR
 cd standalone/progs.d
 cp makefile.orig makefile
