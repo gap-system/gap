@@ -917,7 +917,7 @@ Obj FuncNanosecondsSinceEpoch(Obj self)
   if (gettimeofday(&tv, NULL) == 0) {
     res = ObjInt_Int(tv.tv_sec);
     res = ProdInt(res, ObjInt_Int(1000000L));
-    res = SumInt(res, ObjInt_Int(tv.tv_used));
+    res = SumInt(res, ObjInt_Int(tv.tv_usec));
     res = ProdInt(res, ObjInt_Int(1000L));
   } else {
     res = Fail;
