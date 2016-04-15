@@ -310,18 +310,13 @@ void            AssGVar (
     /* assign name to a function                                           */
     if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
 	if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
-	    name = NameGVar(gvar);
-	    /*CCC        onam = NEW_STRING(strlen(name));
-	      strncat( CSTR_STRING(onam), name, strlen(name) ); CCC*/
-	    len = strlen(name);
-	    C_NEW_STRING_DYN(onam, name);
+	    onam = CopyToStringRep(NameGVarObj(gvar));
 	    RESET_FILT_LIST( onam, FN_IS_MUTABLE );
 	    NAME_FUNC(val) = onam;
 	    CHANGED_BAG(val);
 	}
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
-        name = NameGVar(gvar);
-        C_NEW_STRING_DYN(onam, name);
+	      onam = CopyToStringRep(NameGVarObj(gvar));
         RESET_FILT_LIST( onam, FN_IS_MUTABLE );
         NAME_FUNC(val) = onam;
         CHANGED_BAG(val);
@@ -435,8 +430,8 @@ Char *          NameGVar (
 {
     UInt gvar_bucket = GVAR_BUCKET(gvar);
     UInt gvar_index  = GVAR_INDEX(gvar);
-
-    return CSTR_STRING( ELM_PLIST( NameGVars[gvar_bucket], gvar_index ) );
+    Obj str = ELM_PLIST( NameGVars[gvar_bucket], gvar_index );
+    return CSTR_STRING(str);
 }
 
 Obj NewGVarBucket() {
@@ -501,6 +496,7 @@ UInt GVarName (
         }
     }
 
+    
     /* start looking in the table at the following hash position           */
     pos = 0;
     for ( p = name; *p != '\0'; p++ ) {
@@ -553,6 +549,7 @@ UInt GVarName (
         }
         SET_ELM_PLIST(ValGVars[gvar_bucket], gvar_index, 0);
         SET_ELM_PLIST(NameGVars[gvar_bucket], gvar_index, string);
+        CHANGED_BAG(NameGVars[gvar_bucket]);
         SET_ELM_PLIST(WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(1));
         SET_ELM_PLIST(ExprGVars[gvar_bucket], gvar_index, 0);
         SET_ELM_PLIST(CopiesGVars[gvar_bucket], gvar_index, 0);
@@ -577,6 +574,7 @@ UInt GVarName (
                 pos = (pos % SizeGVars) + 1;
             }
             SET_ELM_PLIST( TableGVars, pos, gvar2 );
+            CHANGED_BAG(TableGVars);
             }
         }
     }
@@ -1440,8 +1438,8 @@ static Int InitKernel (
     }
     InitGlobalBag( &TableGVars,
                    "src/gvars.c:TableGVars" );
-    /* InitGlobalBag( &CurrNamespace,
-                   "src/gvars.c:CurrNamespace" ); */
+    InitGlobalBag( &TLS(CurrNamespace),
+                   "src/gvars.c:CurrNamespace" );
 
     InitHandlerFunc( ErrorMustEvalToFuncHandler,
                      "src/gvars.c:ErrorMustEvalToFuncHandler" );
