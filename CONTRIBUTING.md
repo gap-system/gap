@@ -116,11 +116,11 @@ to create a GitHub account, see below for an alternative.
         $ make testinstall
         $ make teststandard
 
- * Push your changes to a topic branch in your fork of the repository.
+* Push your changes to a topic branch in your fork of the repository.
 
         $ git push origin fix/master/my_contrib
 
- * Go to GitHub and submit a pull request to GAP.
+* Go to GitHub and submit a pull request to GAP.
 
 From there you will have to wait on one of the GAP committers to respond to
 the request. This response might be an accept or some
