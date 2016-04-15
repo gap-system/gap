@@ -52,16 +52,16 @@ to install a number of other free software libraries (and their associated
 development tools) although they are not required for basic operation. See
 <http://www.gap-system.org/Download/tools.html> for more details.
 
-The installation consists of 5 easy steps:
+The installation consists of five easy steps:
 
-* Get the archive suitable for your system
-* Unpack the archive in the directory where you wish to install GAP
-  If you are reading this file as part of a GAP installation, you have
-  probably already done this.
-* Compile the kernel (unless a binary has been provided already)
-* Test the installation
-* Compile the packages that require it.
-  (some of them will only work under Unix and OS X).
+1. Get the archive suitable for your system
+2. Unpack the archive in the directory where you wish to install GAP
+   If you are reading this file as part of a GAP installation, you have
+   probably already done this.
+3. Compile the kernel (unless a binary has been provided already)
+4. Test the installation
+5. Compile the packages that require it.
+   (some of them will only work under Unix and OS X).
 
 Installation will always install the new version of GAP. If you are
 worried about losing the old version, you can keep an existing installation
