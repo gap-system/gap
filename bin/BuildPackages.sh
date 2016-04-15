@@ -2,9 +2,17 @@
 
 set -e
 
+# This script attempts to build all GAP packages contained in the current
+# directory. Normally, you should run this script from the 'pkg'
+# subdirectory of your GAP installation.
+
+# You can also run it from other locations, but then you need to tell the
+# script where your GAP root directory is, by passing it as first argument
+# to the script. By default, the script assumes that the parent of the
+# current working directory is the GAP root directory.
+
 # You need at least 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
 # Some packages also need a C++ compiler.
-# Run this script from the 'pkg' subdirectory of your GAP installation.
 
 # Contact support@gap-system.org for questions and complaints.
 
@@ -42,6 +50,8 @@ SUBDIR=`ls -d */ | head -n 1`
 if ! (cd $SUBDIR && [ -f $GAPDIR/sysinfo.gap ])
   then
     echo "$GAPDIR is not the root of a gap installation (no sysinfo.gap)"
+    echo "Please provide the absolute path of your GAP root directory as"
+    echo "first argument to this script."
     exit 1
 fi
 
