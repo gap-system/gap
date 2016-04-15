@@ -146,6 +146,10 @@ do
           (cd $dir && ./configure $GAPDIR && $MAKE COPTS="-O2 -g") || build_fail
         ;;
 
+        NormalizInterface*)
+          (cd $dir && ./build-normaliz.sh $GAPDIR && run_configure_and_make) || build_fail
+        ;;
+
         pargap*)
           (cd $dir && ./configure $GAPDIR && $MAKE && cp bin/pargap.sh $GAPDIR/bin && rm -f ALLPKG) || build_fail
         ;;
