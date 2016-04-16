@@ -4451,7 +4451,7 @@ Obj QuoPPerm22(Obj f, Obj g){
       }
     }
   }
-  CODEG_PPERM2(quo)=codeg;
+  CODEG_PPERM4(quo)=codeg;
   return quo;
 }
 
