@@ -2747,10 +2747,11 @@ InstallGlobalFunction(Union, function(arg)
     if useUnion2 then
         u := Union2(tounite[1],tounite[2]);
         for i in [3..Length(tounite)] do
-            if IsMutable(u) then
-                UniteSet(u,tounite[i]);
+            x := tounite[i];
+            if IsSet(u) and IsMutable(u) and IsList(x) then
+                UniteSet(u,x);
             else
-                u := Union2(u,tounite[i]);
+                u := Union2(u,x);
             fi;
         od;
         IS_RANGE(u);
