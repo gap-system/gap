@@ -1462,7 +1462,16 @@ Int8 SyNanosecondsSinceEpoch()
 {
   Int8 res;
 
-#if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+#if defined(SYS_IS_DARWIN)
+  static mach_timebase_info_data_t timeinfo;
+  if ( timeinfo.denom == 0 ) {
+    (void) mach_timebase_info(&timeinfo);
+  }
+  res = mach_absolute_time();
+
+  res *= timeinfo.numer;
+  res /= timeinfo.denom;
+#elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
   struct timespec ts;
 
   if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
