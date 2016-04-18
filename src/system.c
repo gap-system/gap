@@ -67,6 +67,10 @@
 #include        <sys/mman.h>
 #endif
 
+#if SYS_IS_DARWIN
+#include        <mach/mach_time.h>
+#endif
+
 /****************************************************************************
 **  The following function is from profile.c. We put a prototype here
 **  Rather than #include "profile.h" to avoid pulling in large chunks
@@ -1430,6 +1434,60 @@ void SyExit (
     UInt                ret )
 {
         exit( (int)ret );
+}
+
+/****************************************************************************
+**
+*F  SyNanosecondsSinceEpoch()
+**
+**  'SyNanosecondsSinceEpoch' returns a 64-bit integer which represents the
+**  number of nanoseconds since some unspecified starting point. This means
+**  that the number returned by this function is not in itself meaningful,
+**  but the difference between the values returned by two consecutive calls
+**  can be used to measure wallclock time.
+**
+**  The accuracy of this is system dependent. For systems that implement
+**  clock_getres, we could get the promised accuracy.
+**
+**  Note that gettimeofday has been marked obsolete in the POSIX standard.
+**  We are using it because it is implemented in most systems still.
+**
+**  If we are using gettimeofday we cannot guarantee the values that
+**  are returned by SyNanosecondsSinceEpoch to be monotonic.
+**
+**  Returns -1 to represent failure
+**
+*/
+Int8 SyNanosecondsSinceEpoch()
+{
+  Int8 res;
+
+#if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+  struct timespec ts;
+
+  if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
+    res = ts.tv_sec;
+    res *= 1000000000L;
+    res += ts.tv_nsec;
+  } else {
+    res = -1;
+  }
+#elif defined(HAVE_GETTIMEOFDAY)
+  struct timeval tv;
+
+  if (gettimeofday(&tv, NULL) == 0) {
+    res = tv.tv_sec;
+    res *= 1000000L;
+    res += tv.tv_usec;
+    res *= 1000;
+  } else {
+    res = -1;
+  };
+#else
+  res = -1;
+#endif
+
+  return res;
 }
 
 /****************************************************************************

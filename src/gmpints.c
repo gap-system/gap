@@ -375,6 +375,31 @@ Obj ObjInt_UInt( UInt i )
   }
 }
 
+Obj ObjInt_Int8( Int8 i )
+{
+  int neg = 0;
+  if(i < 0) {
+    neg = 1;
+    i = -i;
+  }
+  UInt lower = (UInt8)i;
+  UInt upper = ((UInt8)i) >> sizeof(UInt)*8;
+  Obj total = ObjInt_UInt(lower);
+    
+  if(upper != 0) {
+    Obj upper_obj = ObjInt_UInt(upper);
+    Obj mult_obj = ProdInt(INTOBJ_INT(65536), INTOBJ_INT(65536));
+    upper_obj = ProdInt(upper_obj, mult_obj);
+    total = SumInt(total, upper_obj);
+  }
+  
+  if(neg) {
+    total = AInvInt(total);
+  }
+  
+  return total;
+}
+
 
 /****************************************************************************
 **
