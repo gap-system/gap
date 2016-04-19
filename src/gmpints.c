@@ -375,6 +375,10 @@ Obj ObjInt_UInt( UInt i )
   }
 }
 
+#ifdef SYS_IS_64_BIT
+Obj ObjInt_Int8( Int8 i )
+{ return ObjInt_Int(i); }
+#else
 Obj ObjInt_Int8( Int8 i )
 {
   int neg = 0;
@@ -399,7 +403,7 @@ Obj ObjInt_Int8( Int8 i )
   
   return total;
 }
-
+#endif
 
 /****************************************************************************
 **
