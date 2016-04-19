@@ -2375,6 +2375,12 @@ gap> RestrictedPartialPerm(EmptyPartialPerm(), [1,2,3,4]);
 gap> RestrictedPartialPerm(PartialPerm([1],[1]), [2,3,4]);                     
 <empty partial perm>
 
+# Test for bug in QuoPPerm2 as reported by Bill Allombert
+gap> x := PartialPerm([70000], [1]);
+[70000,1]
+gap> CodegreeOfPartialPerm(x / x);
+70000
+
 #
 gap> SetUserPreference("PartialPermDisplayLimit", display);;
 gap> SetUserPreference("NotationForPartialPerm", notationpp);;
