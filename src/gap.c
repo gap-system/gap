@@ -881,52 +881,21 @@ Obj FuncRUNTIMES( Obj     self)
 **
 *F  FuncNanosecondsSinceEpoch( <self> )
 **
-**  'FuncNanosecondsSinceEpoch' returns an integer which represents the 
-**  number of nanoseconds since some unspecified starting point. This means
-**  that the number returned by this function is not in itself meaningful,
-**  but the difference between the values returned by two consecutive calls
-**  can be used to measure wallclock time.
-**
-**  The accuracy of this is system dependent. For systems that implement
-**  clock_getres, we could get the promised accuracy.
-**
-**  Note that gettimeofday has been marked obsolete in the POSIX standard.
-**  We are using it because it is implemented in most systems still.
-**
-**  If we are using gettimeofday we cannot guarantee the values that
-**  are returned by NanosecondsSinceEpoch to be monotonic.
+**  'FuncNanosecondsSinceEpoch' returns an integer which represents the
+**  number of nanoseconds since some unspecified starting point. This
+**  function wraps SyNanosecondsSinceEpoch.
 **
 */
 Obj FuncNanosecondsSinceEpoch(Obj self)
 {
-  Obj res;
+  Int8 val = SyNanosecondsSinceEpoch();
 
-#if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
-  struct timespec ts;
-
-  if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
-    res = ObjInt_Int(ts.tv_sec);
-    res = ProdInt(res, ObjInt_Int(1000000000L));
-    res = SumInt(res, ObjInt_Int(ts.tv_nsec));
-  } else {
-    res = Fail;
+  if(val == -1) {
+    return Fail;
   }
-#elif defined(HAVE_GETTIMEOFDAY)
-  struct timeval tv;
-
-  if (gettimeofday(&tv, NULL) == 0) {
-    res = ObjInt_Int(tv.tv_sec);
-    res = ProdInt(res, ObjInt_Int(1000000L));
-    res = SumInt(res, ObjInt_Int(tv.tv_usec));
-    res = ProdInt(res, ObjInt_Int(1000L));
-  } else {
-    res = Fail;
-  };
-#else
-  res = Fail
-#endif
-
-  return res;
+  else {
+    return ObjInt_Int8(val);
+  }
 }
 
 /****************************************************************************
