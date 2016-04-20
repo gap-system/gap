@@ -1031,7 +1031,11 @@ extern void SyExit (
 **  Returns -1 to represent failure
 **
 */
-Int8 SyNanosecondsSinceEpoch();
+extern Int8 SyNanosecondsSinceEpoch();
+extern Int8 SyNanosecondsSinceEpochResolution();
+
+extern const char * const SyNanosecondsSinceEpochMethod;
+extern const Int SyNanosecondsSinceEpochMonotonic;
 
 /****************************************************************************
 **

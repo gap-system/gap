@@ -1500,6 +1500,77 @@ Int8 SyNanosecondsSinceEpoch()
   return res;
 }
 
+
+/****************************************************************************
+**
+*V  SyNanosecondsSinceEpochMethod
+*V  SyNanosecondsSinceEpochMonotonic
+**  
+**  These constants give information about the method used to obtain
+**  NanosecondsSinceEpoch, and whether the values returned are guaranteed
+**  to be monotonic.
+*/
+#if defined(SYS_IS_DARWIN)
+  const char * const SyNanosecondsSinceEpochMethod = "mach_absolute_time";
+  const Int SyNanosecondsSinceEpochMonotonic = 1;
+#elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+  const char * const SyNanosecondsSinceEpochMethod = "clock_gettime";
+  const Int SyNanosecondsSinceEpochMonotonic = 1;
+#elif defined(HAVE_GETTIMEOFDAY)
+  const char * const SyNanosecondsSinceEpochMethod = "gettimeofday";
+  const Int SyNanosecondsSinceEpochMonotonic = 0;
+#else
+  const char * const SyNanosecondsSinceEpochMethod = "unsupported";
+  const Int SyNanosecondsSinceEpochMonotonic = 0;
+#endif
+
+
+/****************************************************************************
+**
+*F  SyNanosecondsSinceEpochResolution()
+**
+**  'SyNanosecondsSinceEpochResolution' returns a 64-bit integer which
+**  represents the resolution in nanoseconds of the timer used for
+**  SyNanosecondsSinceEpoch. 
+**
+**  If the return value is positive then the value has been returned
+**  by the operating system can can probably be relied on. If the 
+**  return value is negative it is just an estimate (as in the case
+**  of gettimeofday we have no way to get the exact resolution so we
+**  just pretend that the resolution is 1000 nanoseconds).
+**
+**  A result of 0 signifies inability to obtain any sensible value.
+*/
+Int8 SyNanosecondsSinceEpochResolution()
+{
+  Int8 res;
+
+#if defined(SYS_IS_DARWIN)
+  static mach_timebase_info_data_t timeinfo;
+  if ( timeinfo.denom == 0 ) {
+    (void) mach_timebase_info(&timeinfo);
+  }
+  res = timeinfo.numer;
+  res /= timeinfo.denom;
+#elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+  struct timespec ts;
+
+  if (clock_getres(CLOCK_MONOTONIC, &ts) == 0) {
+    res = ts.tv_sec;
+    res *= 1000000000L;
+    res += ts.tv_nsec;
+  } else {
+    res = 0;
+  }
+#elif defined(HAVE_GETTIMEOFDAY)
+  res = -1000;
+#else
+  res = 0;
+#endif
+
+  return res;
+}
+
 /****************************************************************************
 **
 *F  SySetGapRootPath( <string> )  . . . . . . . . .  set the root directories
