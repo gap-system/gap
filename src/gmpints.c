@@ -345,9 +345,10 @@ Obj GMPorINTOBJ_INT( Int i )
   if ( (-(1L<<NR_SMALL_INT_BITS) <= i) && (i < 1L<<NR_SMALL_INT_BITS )) {
     return INTOBJ_INT(i);
   }
-    else if (i < 0 ) {
+  else if (i < 0 ) {
     gmp = NewBag( T_INTNEG, sizeof(TypLimb) );
-    }
+    i = -i;
+  }
   else {
     gmp = NewBag( T_INTPOS, sizeof(TypLimb) );
   }
