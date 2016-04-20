@@ -261,7 +261,7 @@ Obj FuncGMP_NORMALIZE( Obj self, Obj gmp )
 Obj GMP_NORMALIZE ( Obj gmp )
 {
   TypGMPSize size;
-  if IS_INTOBJ( gmp ) {
+  if (IS_INTOBJ( gmp )) {
     return gmp;
   }
   for ( size = SIZE_INT(gmp); size != (TypGMPSize)1; size-- ) {
@@ -375,35 +375,31 @@ Obj ObjInt_UInt( UInt i )
   }
 }
 
-#ifdef SYS_IS_64_BIT
-Obj ObjInt_Int8( Int8 i )
-{ return ObjInt_Int(i); }
-#else
 Obj ObjInt_Int8( Int8 i )
 {
-  int neg = 0;
-  if(i < 0) {
-    neg = 1;
-    i = -i;
+#ifdef SYS_IS_64_BIT
+  return ObjInt_Int(i);
+#else
+  if (i == (Int4)i) {
+    return ObjInt_Int((Int4)i);
   }
-  UInt lower = (UInt8)i;
-  UInt upper = ((UInt8)i) >> sizeof(UInt)*8;
-  Obj total = ObjInt_UInt(lower);
-    
-  if(upper != 0) {
-    Obj upper_obj = ObjInt_UInt(upper);
-    Obj mult_obj = ProdInt(INTOBJ_INT(65536), INTOBJ_INT(65536));
-    upper_obj = ProdInt(upper_obj, mult_obj);
-    total = SumInt(total, upper_obj);
+
+  /* we need two limbs to store this integer */
+  assert( sizeof(TypLimb) == 4 );
+  Obj gmp;
+  if (i >= 0) {
+     gmp = NewBag( T_INTPOS, 2 * sizeof(TypLimb) );
+  } else {
+     gmp = NewBag( T_INTNEG, 2 * sizeof(TypLimb) );
+     i = -i;
   }
-  
-  if(neg) {
-    total = AInvInt(total);
-  }
-  
-  return total;
-}
+
+  TypLimb *ptr = ADDR_INT(gmp);
+  ptr[0] = (UInt4)i;
+  ptr[1] = ((UInt8)i) >> 32;
+  return gmp;
 #endif
+}
 
 /****************************************************************************
 **
