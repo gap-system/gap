@@ -1,6 +1,7 @@
 #############################################################################
 ##
-#W  grpnames.gi                                                   Stefan Kohl
+#W  grpnames.gi                                                 Gábor Horváth
+##                                                                Stefan Kohl
 ##                                                             Markus Püschel
 ##                                                            Sebastian Egner
 ##
@@ -709,56 +710,137 @@ InstallGlobalFunction(DirectFactorsOfGroupKN,
 
 #############################################################################
 ##
-#M  SemidirectFactorsOfGroup( <G> ) . . . . . . . . . . . . .  generic method
+#M  SemidirectDecompositions( <G> ) . . . . . . . . . . . . .  generic method
 ##
-InstallMethod( SemidirectFactorsOfGroup,
-               "generic method", true, [ IsGroup ], 0,
+InstallGlobalFunction(SemidirectDecompositionsOfFiniteGroup, function( arg )
 
-  function ( G )
+  local  G, Ns, fullNs, method, NHs, i, N, H, NH; #, sizes;
 
-    local  Hs, Ns, H, N, sizeH, sizeN, firstHN, HNs;
+  method := "all";
+  if Length(arg) = 1 and IsGroup(arg[1]) then
+    G := arg[1];
+    fullNs := true;
+  elif Length(arg) = 2 and IsGroup(arg[1]) and arg[2] in ["all",
+                                                          "any", "str"] then
+    G := arg[1];
+    method := arg[2];
+    fullNs := true;
+  elif Length(arg) = 2 and IsGroup(arg[1]) and IsList(arg[2])
+      and ForAll( Set(arg[2]), N ->
+                              IsSubgroup(arg[1], N) and IsNormal(arg[1], N))
+      then
+    G := arg[1];
+    Ns := ShallowCopy(arg[2]);
+    fullNs := false;
+  elif Length(arg) = 3 and IsGroup(arg[1]) and IsList(arg[2])
+      and ForAll( Set(arg[2]), N ->
+                              IsSubgroup(arg[1], N) and IsNormal(arg[1], N))
+      and arg[3] in ["all", "any", "str"] then
+    G := arg[1];
+    Ns := ShallowCopy(arg[2]);
+    method := arg[3];
+    fullNs := false;
+  else
+    Error("usage: SemidirectDecompositionsOfFiniteGroup(<G> [, <Ns>] [, <mthd>])");
+  fi;
 
-    if not IsFinite(G) then TryNextMethod(); fi;
-
-    # representatives of non-1-or-G subgroups
-    Hs := ConjugacyClassesSubgroups(G);
-    Hs := List(Hs{[2..Length(Hs)-1]}, Representative);
-
-    # non-1-or-G normal subgroups
-    Ns := Reversed( Filtered(Hs, H -> IsNormal(G, H)) );
-
-    # find first decomposition
-    firstHN := function ()
-
-      local H, N, sizeNs;
-
-      sizeNs := List(Ns, Size);
-      for H in Hs do
-        if Size(G)/Size(H) in sizeNs then
-          for N in Filtered(Ns, N -> Size(N) = Size(G)/Size(H)) do
-            if IsTrivial(NormalIntersection(N, H)) then
-              return Size(H);
-            fi;
-          od;
-        fi;
-      od;
-      return 0;
-    end;
-
-    sizeH := firstHN();
-    if sizeH = 0 then return [ ]; fi;
-
-    # find all minimal decompositions
-    sizeN := Size(G)/sizeH;
-    HNs := [ ];
-    for H in Filtered(Hs, H -> Size(H) = sizeH) do
-      for N in Filtered(Ns, N -> Size(N) = sizeN) do
-        if IsTrivial(NormalIntersection(N, H)) then
-          Add(HNs, [H, N]);
-        fi;
-      od;
+  if HasSemidirectDecompositions(G) then
+    NHs := [ ];
+    for NH in SemidirectDecompositions(G) do
+      N := NH[1];
+      H := NH[2];
+      if method in [ "any", "str" ] and not IsTrivial(N)
+        and not IsTrivial(H) and
+        ( not IsBound(Ns) or N in Ns ) then
+        return [ N, H ];
+      elif method="all" and
+        ( not IsBound(Ns) or N in Ns ) then
+        AddSet(NHs, [ N, H ]);
+      fi;
     od;
-    return HNs;
+    if method in [ "any", "str" ] then
+      return fail;
+    elif method = "all" then
+      return NHs;
+    fi;
+  fi;
+
+  if method in [ "any", "str" ] then
+    if HasSemidirectProductInfo(G) then
+      N := Image(Embedding(G, 2));
+      H := Image(Embedding(G, 1));
+      if not IsTrivial(N) and not IsTrivial(H) and
+        ( not IsBound(Ns) or N in Ns ) then
+        return [ N, H ];
+      fi;
+    fi;
+    N := NormalHallSubgroupsFromSylows(G, "any");
+    if N <> fail then
+      # by the Schur-Zassenhaus theorem there must exist a complement
+      if method = "any" then
+        H := ComplementClassesRepresentatives(G, N)[1];
+        return [ N, H ];
+      # only the isomorphism type of the complement is interesting
+      elif method = "str" then
+        Assert(1, Length( ComplementClassesRepresentatives(G, N) ) > 0);
+        return [ N, G/N ];
+      fi;
+    fi;
+  fi;
+
+  # simple groups have no nontrivial normal subgroups
+  if IsSimpleGroup(G) then
+    if method in [ "any", "str" ] then
+      return fail;
+    elif method = "all" then
+      return [ [TrivialSubgroup(G), G], [G, TrivialSubgroup(G)] ];
+    fi;
+  fi;
+
+  if not IsBound(Ns) then
+    Ns := ShallowCopy(NormalSubgroups(G));
+  fi;
+# does not seem to make things faster
+#  if method in [ "any", "str" ] then
+#    sizes := List(Ns, Size);
+#    SortParallel(sizes, Ns);
+#    Ns := Reversed(Ns);
+#  fi;
+
+  NHs := [ ];
+  for N in Ns do
+    H := ComplementClassesRepresentatives(G, N);
+    if Length(H)>0 then
+      if method in ["any", "str"] and not IsTrivial(N)
+                                  and not IsTrivial(H[1]) then
+        return [ N, H[1] ];
+      else
+        for i in [1..Length(H)] do
+          AddSet( NHs, [ N, H[i] ] );
+        od;
+      fi;
+    fi;
+  od;
+  if method in [ "any", "str" ] then
+    # no nontrivial decompositions exist
+    if fullNs then
+      SetSemidirectDecompositions(G,
+                      [ [TrivialSubgroup(G), G], [G, TrivialSubgroup(G)] ]);
+    fi;
+    return fail;
+  else
+    if fullNs then
+      SetSemidirectDecompositions(G, NHs);
+    fi;
+    return NHs;
+  fi;
+end);
+
+InstallMethod( SemidirectDecompositions,
+               "generic method", true, [ IsGroup and IsFinite ], 0,
+
+  function( G )
+    return SemidirectDecompositionsOfFiniteGroup(G);
   end );
 
 #############################################################################
@@ -1495,10 +1577,10 @@ InstallMethod( GLUnderlyingField,
 
 #############################################################################
 ##
-#M  StructureDescription( <G> ) . . . . . . . . . . . . . .  for finite group
+#M  StructureDescription( <G> ) . . . . . . . . . for abelian or finite group
 ##
 InstallMethod( StructureDescription,
-               "for finite groups", true, [ IsGroup ], 0,
+               "for abelian or finite groups", true, [ IsGroup ], 0,
 
   function ( G )
 
@@ -1517,16 +1599,14 @@ InstallMethod( StructureDescription,
            dname,        # name for derived subgroup of G
            series,       # series of simple groups
            parameter,    # parameters of G in series
-           HNs,          # minimal [H, N] decompositions
-           HNs1,         # HN's with prefered H or N
-           HNs1Names,    # names of products in HNs1
-           HN, H, N,     # semidirect factors of G
-           HNname,       # name of HN
+           NH, H, N, N1, # semidirect factors of G
            len,          # maximal number of direct factors
            g,            # an element of G
            id,           # id of G in the library of perfect groups
            short,        # short / long output format
-           i;            # counter
+           i,            # counter
+           primes,       # prime divisors of Size(G)
+           pi;           # subset of primes
 
     insertsep := function ( strs, sep, brack )
 
@@ -1568,8 +1648,6 @@ InstallMethod( StructureDescription,
       return name;
     end;
 
-    if not IsFinite(G) then TryNextMethod(); fi;
-
     short := ValueOption("short") = true;
 
     # fetch name from precomputed list, if available
@@ -1595,6 +1673,8 @@ InstallMethod( StructureDescription,
                                          n->Concatenation("C",String(n))),
                                     " x ",""));
     fi;
+
+    if not IsFinite(G) then TryNextMethod(); fi;
 
     # special case alternating group
     if   IsAlternatingGroup(G)
@@ -1691,49 +1771,9 @@ InstallMethod( StructureDescription,
     fi;
 
     # semidirect product decomposition
-    HNs := SemidirectFactorsOfGroup( G );
-    if Length(HNs) > 0 then
-
-      # prefer abelian H; abelian N; many direct factors in N; phi injective
-      HNs1 := Filtered(HNs, HN -> IsAbelian(HN[1])); 
-      if Length(HNs1) > 0 then HNs := HNs1; fi;
-      HNs1 := Filtered(HNs, HN -> IsAbelian(HN[2]));
-      if Length(HNs1) > 0 then
-        HNs := HNs1;
-        len := Maximum( List(HNs, HN -> Length(AbelianInvariants(HN[2]))) );
-        HNs := Filtered(HNs, HN -> Length(AbelianInvariants(HN[2])) = len);
-      fi;
-      HNs1 := Filtered(HNs, HN -> Length(DirectFactorsOfGroup(HN[2])) > 1);
-      if Length(HNs1) > 0 then
-        HNs := HNs1;
-        len := Maximum(List(HNs,HN -> Length(DirectFactorsOfGroup(HN[2]))));
-        HNs := Filtered(HNs,HN -> Length(DirectFactorsOfGroup(HN[2]))=len);
-      fi;
-      HNs1 := Filtered(HNs, HN -> IsTrivial(Centralizer(HN[1],HN[2])));
-      if Length(HNs1) > 0 then HNs := HNs1; fi;
-      if Length(HNs) > 1 then
-
-        # decompose the pairs [H, N] and remove isomorphic copies
-        HNs1      := [];
-        HNs1Names := [];
-        for HN in HNs do
-          HNname := Concatenation(StructureDescription(HN[1]),
-                                  StructureDescription(HN[2]));
-          if not HNname in HNs1Names then
-            Add(HNs1,      HN);
-            Add(HNs1Names, HNname);
-          fi;
-        od;
-        HNs := HNs1;
-
-        if Length(HNs) > 1 then
-          Info(InfoWarning,2,"Warning! Non-unique semidirect product:");
-          Info(InfoWarning,2,List(HNs,HN -> List(HN,StructureDescription)));
-        fi;
-      fi;
-
-      H := HNs[1][1]; N := HNs[1][2];
-
+    NH := SemidirectDecompositionsOfFiniteGroup( G, "str" );
+    if NH <> fail then
+      H := NH[2]; N := NH[1];
       return insertsep([StructureDescription(N),
                         StructureDescription(H)]," : ","x:.");
     fi;
