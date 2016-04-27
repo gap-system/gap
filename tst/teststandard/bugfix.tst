@@ -2984,6 +2984,54 @@ gap> p := 227;; x := X(GF(p), "x");; f := x^(7^2) - x;;
 gap> PowerMod(x, p, f);
 x^35
 
+#2016/2/4 (AH)
+gap> N := AlternatingGroup(6);; H := AutomorphismGroup(N);;
+gap> G := SemidirectProduct(H, N);;
+gap> Size(Image(Embedding(G, 1)))=Size(H);
+true
+
+#2016/3/1 (AH)
+gap> g:=PSL(6,4);;
+gap> Sum(ConjugacyClasses(g),Size)=Size(g);
+true
+gap> Size(AutomorphismGroup(TransitiveGroup(12,269)));
+14400
+
+#2016/3/3 (AH, reported by DFH)
+gap> G:=Group([[[0,1,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,0,0],
+> [0,0,1,0,0,0,0,0,0],[0,0,0,0,0,1,0,0,0],[0,0,0,0,1,0,0,0,0],
+> [0,0,0,0,0,0,0,1,0],[0,0,0,0,0,0,1,0,0],
+> [1,1,Z(4)^2,Z(4)^2,Z(4)^2,Z(4)^2,0,0,1]],
+> [[0,0,1,0,0,0,0,0,0],[Z(4)^2,Z(4),Z(4),0,0,0,0,0,0],
+> [Z(4),Z(4)^2,Z(4),0,0,0,0,0,0],[0,0,0,0,1,0,0,0,0],
+> [Z(4),Z(4),Z(4),1,1,0,0,0,0],[0,0,0,0,0,0,1,0,0],[1,1,1,0,0,1,1,0,0],
+> [0,0,0,0,0,0,0,0,1],[Z(4),Z(4),Z(4),0,0,0,0,1,1]]]*Z(4)^0);;
+gap> pa:=ProjectiveActionHomomorphismMatrixGroup(G);;  
+gap> r:=PseudoRandom(G);;                                       
+gap> a:=PreImagesRepresentative(pa,ImagesRepresentative(pa,r));; 
+gap> Order(r/a) in [1,3];
+true
+gap> H:=Image(pa);;Size(H);
+50232960
+
+#2016/3/11 (AH, reported by CJ)
+gap> g := Group([ (1,2,3), (2,3,4) ]);;
+gap> IsAlternatingGroup(g);
+true
+gap> Size(Stabilizer(g, [ [1,2], [3,4] ], OnSetsSets));
+4
+
+#2016/3/16 (AH, issue #675)
+gap> G:=Group((1,2,3,4));;Factorization(G,Elements(G)[1]);
+<identity ...>
+
+#2016/04/27 (FL, bug reported on support list)
+gap> l := [1,,,5];;
+gap> Remove(l);
+5
+gap> l;
+[ 1 ]
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 781280000);
 
