@@ -1085,6 +1085,15 @@ true
 gap> IsFinite(S);
 true
 
+# Test bug in IsFinite for RMS or RZMS created over a free group
+gap> S := FreeGroup(1);;
+gap> R := ReesMatrixSemigroup(S, [[S.1]]);;
+gap> IsFinite(R);
+false
+gap> R := ReesZeroMatrixSemigroup(S, [[S.1]]);;
+gap> IsFinite(R);
+false
+
 #
 gap> STOP_TEST( "reesmat.tst", 54100000);
 

@@ -38,16 +38,30 @@ function(R)
   TryNextMethod();
 end);
 
+InstallImmediateMethod(IsFinite, IsReesMatrixSubsemigroup, 0,
+function(R)
+  if IsBound(ElementsFamily(FamilyObj(R))!.IsFinite) then
+    return ElementsFamily(FamilyObj(R))!.IsFinite;
+  fi;
+  TryNextMethod();
+end);
+
 InstallMethod(IsFinite, "for a Rees matrix subsemigroup",
 [IsReesMatrixSubsemigroup], 
 function(R)
-  return IsFinite(ParentAttr(R));
+  if (not IsIdenticalObj(R, ParentAttr(R))) and HasIsFinite(ParentAttr(R)) then 
+    return IsFinite(ParentAttr(R));
+  fi;
+  TryNextMethod();
 end);
 
 InstallMethod(IsFinite, "for a Rees 0-matrix subsemigroup",
 [IsReesZeroMatrixSubsemigroup], 
 function(R)
-  return IsFinite(ParentAttr(R));
+  if (not IsIdenticalObj(R, ParentAttr(R))) and HasIsFinite(ParentAttr(R)) then 
+    return IsFinite(ParentAttr(R));
+  fi;
+  TryNextMethod();
 end);
 
 #
@@ -239,6 +253,10 @@ function(S, mat)
 
   fam := NewFamily( "ReesMatrixSemigroupElementsFamily",
           IsReesMatrixSemigroupElement);
+
+  if HasIsFinite(S) then
+    fam!.IsFinite := IsFinite(S);
+  fi;
 
   # create the Rees matrix semigroup
   R := Objectify( NewType( CollectionsFamily( fam ), IsWholeFamily and
