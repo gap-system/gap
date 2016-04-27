@@ -3065,6 +3065,13 @@ x_1+Z(2)^0
 gap> RandomPrimitivePolynomial(2,1,13);
 x_13+Z(2)^0
 
+#2016/04/27 (FL, bug reported on support list)
+gap> l := [1,,,5];;
+gap> Remove(l);
+5
+gap> l;
+[ 1 ]
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 831990000);
 
