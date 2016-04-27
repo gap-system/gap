@@ -3045,6 +3045,13 @@ gap> Size(Stabilizer(g, [ [1,2], [3,4] ], OnSetsSets));
 gap> G:=Group((1,2,3,4));;Factorization(G,Elements(G)[1]);
 <identity ...>
 
+#2016/04/27 (FL, bug reported on support list)
+gap> l := [1,,,5];;
+gap> Remove(l);
+5
+gap> l;
+[ 1 ]
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 831990000);
 
