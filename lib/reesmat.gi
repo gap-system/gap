@@ -334,8 +334,9 @@ function(S, mat)
   # cannot set IsZeroSimpleSemigroup to be <true> here since the matrix may
   # contain a row or column consisting entirely of 0s!
   # WW Also S might not be a simple semigroup (which is necessary)!
-
-  GeneratorsOfSemigroup(R);
+  if IsGroup(S) or (HasIsFinite(S) and IsFinite(S)) then 
+    GeneratorsOfSemigroup(R);
+  fi;
   SetIsSimpleSemigroup(R, false);
   return R;
 end);
