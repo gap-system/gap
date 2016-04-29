@@ -501,6 +501,44 @@ local   fam,zero,  tmp,  indn,  val,  sum,  i;
   fi;
 end );
 
+# test whether family b occurs anywhere as a coefficients family of a.
+BindGlobal("CoefficientsFamilyEmbedded",function(a,b)
+  while HasCoefficientsFamily(a) do
+    a:=CoefficientsFamily(a);
+    if a=b then
+      return true;
+    fi;
+  od;
+  return false;
+end);
+
+InstallMethod( \+, "coeff(embed) + laurent", true,
+    [ IsRingElement, IsUnivariateRationalFunction and IsLaurentPolynomial ], 0,
+function(c,l)
+  if IsRat(c) #natural map from rationals into arbitrary rings
+    or # Adding elements of a smaller coefficient ring that is naturally embedded
+     CoefficientsFamilyEmbedded(FamilyObj(l),FamilyObj(c))
+    then
+    return SumCoeffLaurpol(c*FamilyObj(l)!.oneCoefficient,l);
+  else
+    TryNextMethod();
+  fi;
+end);
+
+InstallMethod( \+, "laurent + coeff(embed)", true,
+    [ IsUnivariateRationalFunction and IsLaurentPolynomial, IsRingElement ], 0,
+function(l,c)
+  if IsRat(c) #natural map from rationals into arbitrary rings
+    or # Adding elements of a smaller coefficient ring that is naturally embedded
+     CoefficientsFamilyEmbedded(CoefficientsFamily(FamilyObj(l)),FamilyObj(c))
+    then
+    return SumCoeffLaurpol(c*FamilyObj(l)!.oneCoefficient,l);
+  else
+    TryNextMethod();
+  fi;
+end);
+
+# these should be ranked higher than the previous two
 InstallMethod( \+, "coeff + laurent", IsCoeffsElms,
     [ IsRingElement, IsUnivariateRationalFunction and IsLaurentPolynomial ], 0,
     SumCoeffLaurpol);
@@ -508,18 +546,6 @@ InstallMethod( \+, "coeff + laurent", IsCoeffsElms,
 InstallMethod( \+, "laurent + coeff", IsElmsCoeffs,
     [ IsUnivariateRationalFunction and IsLaurentPolynomial, IsRingElement ], 0,
     function(l,c) return SumCoeffLaurpol(c,l); end);
-
-InstallMethod( \+, "coeff(embed) + laurent", true,
-    [ IsRingElement, IsUnivariateRationalFunction and IsLaurentPolynomial ], 0,
-function(c,l)
-  return SumCoeffLaurpol(c*FamilyObj(l)!.oneCoefficient,l);
-end);
-
-InstallMethod( \+, "laurent + coeff(embed)", true,
-    [ IsUnivariateRationalFunction and IsLaurentPolynomial, IsRingElement ], 0,
-function(l,c)
-  return SumCoeffLaurpol(c*FamilyObj(l)!.oneCoefficient,l);
-end);
 
 
 #############################################################################
