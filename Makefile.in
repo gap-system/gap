@@ -208,17 +208,17 @@ distclean:
 manuals:
 	( echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAPauto) )
 	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
 	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
 	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
 	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
 	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
 	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
-          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
 	( rm doc/wsp.g )
 
 
@@ -226,23 +226,23 @@ testinstall:
 	mkdir -p dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
 	        ReadGapRoot( "tst/testutil.g" ); \
-            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) > \
-            `date -u +dev/log/testinstall1_%Y-%m-%d-%H-%M` )
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testinstall1_%Y-%m-%d-%H-%M` )
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
 	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
-            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) > \
-            `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
 
 teststandard:
 	mkdir -p dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
 	        ReadGapRoot( "tst/testutil.g" ); \
-          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) > \
-            `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
 	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
-          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) > \
-            `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
 
 teststandardrenormalize:
 	( echo 'TestDirectory("tst", rec(renormaliseStones := true));' | $(TESTGAP) )
