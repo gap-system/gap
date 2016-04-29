@@ -3051,6 +3051,20 @@ gap> Intersection(D, []);
 gap> Intersection([], D);
 [  ]
 
+#2016/04/29 (FL, bug reported on support list)
+gap> Collected(List([1..200], i-> RandomPrimitivePolynomial(2,2)));
+[ [ x_1^2+x_1+Z(2)^0, 200 ] ]
+
+#another bug, detected when fixing the previous one (FL)
+gap> RandomPrimitivePolynomial(2,2,100);
+x_100^2+x_100+Z(2)^0
+
+#and a third bug (FL)
+gap> RandomPrimitivePolynomial(2,1);
+x_1+Z(2)^0
+gap> RandomPrimitivePolynomial(2,1,13);
+x_13+Z(2)^0
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 831990000);
 
