@@ -3043,6 +3043,14 @@ gap> Size(Stabilizer(g, [ [1,2], [3,4] ], OnSetsSets));
 gap> G:=Group((1,2,3,4));;Factorization(G,Elements(G)[1]);
 <identity ...>
 
+#2016/5/2 (MP)
+gap> S := FullTransformationMonoid(2);;
+gap> D := GreensDClassOfElement(S, IdentityTransformation);;
+gap> Intersection(D, []);
+[  ]
+gap> Intersection([], D);
+[  ]
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 831990000);
 
