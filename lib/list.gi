@@ -457,14 +457,14 @@ InstallOtherMethod(
 InstallOtherMethod( Random,
     "for a dense small list",
     [ IsList and IsDenseList and IsSmallList ],
-    RANDOM_LIST );
+    RandomList );
 
 InstallOtherMethod( Random,
     "for a dense (small) list",
     [ IsList and IsDenseList ],
     function( list )
     if IsSmallList( list ) then
-      return RANDOM_LIST( list );
+      return RandomList( list );
     else
       TryNextMethod();
     fi;
