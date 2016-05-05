@@ -202,36 +202,6 @@ UInt4 nextrandMT_int32(UInt4* mt)
     return y;
 }
 
-
-Obj FuncRandomListMT(Obj self, Obj mtstr, Obj list)
-{
-  Int len, a, lg;
-  UInt4 *mt;
-  while ((! IsStringConv(mtstr)) || GET_LEN_STRING(mtstr) < 2500) {
-     mtstr = ErrorReturnObj(
-         "<mtstr> must be a string with at least 2500 characters, ",
-         0L, 0L,
-         "you can replace <mtstr> via 'return <mtstr>;'" );
-  }
-  while (! IS_LIST(list)) {
-     list = ErrorReturnObj(
-         "<list> must be a list, not a %s",
-         (Int)TNAM_OBJ(list), 0L,
-         "you can replace <list> via 'return <list>;'" );
-  }
-  len = LEN_LIST(list);
-  if (len == 0) return Fail;
-  mt = (UInt4*) CHARS_STRING(mtstr);
-  lg = 31 - CLog2Int(len);
-  for (a = nextrandMT_int32(mt) >> lg;
-       a >= len;
-       a = nextrandMT_int32(mt) >> lg
-    );
-  return ELM_LIST(list, a+1);
-}
-
-
-
 /****************************************************************************
 **
 *F  FuncHASHKEY_BAG(<self>,<obj>,<seed>,<offset>,<maxlen>)
@@ -677,9 +647,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "InitRandomMT", 1, "initstr",
       FuncInitRandomMT, "src/integer.c:InitRandomMT" },
-
-    { "RandomListMT", 2, "mtstr, list",
-      FuncRandomListMT, "src/integer.c:RandomListMT" },
 
     { 0 }
 

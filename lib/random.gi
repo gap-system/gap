@@ -190,7 +190,7 @@ InstallMethod(Reset, [IsMersenneTwister, IsObject], function(rs, seed)
 end);
 
 InstallMethod(Random, [IsMersenneTwister, IsList], function(rs, list)
-  return RandomListMT(rs!.state, list);
+  return list[Random(rs, 1, Length(list))];
 end);
 
 InstallMethod(Random, [IsMersenneTwister, IsInt, IsInt], function(rs, a, b)
