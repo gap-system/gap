@@ -187,7 +187,8 @@ DeclareCategory("IsGAPRandomSource", IsRandomSource);
 DeclareCategory("IsMersenneTwister", IsRandomSource);
 
 DeclareGlobalVariable( "GlobalRandomSource" );
-DeclareGlobalVariable( "GlobalMersenneTwister" );
+# this declaration is in coll.gi because it is needed for RandomList
+# DeclareGlobalVariable( "GlobalMersenneTwister" );
 
 #############################################################################
 ##  

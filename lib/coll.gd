@@ -1694,7 +1694,7 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareSynonym( "RandomList", RANDOM_LIST);
+DeclareGlobalFunction( "RandomList" );
 
 
 #############################################################################
