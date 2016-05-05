@@ -2368,6 +2368,16 @@ InstallOtherMethod( Intersection2,
     [ IsList, IsList ],
     IntersectionSet );
 
+InstallOtherMethod( Intersection2,
+    "for two lists or collections, the second being empty",
+    [ IsListOrCollection, IsListOrCollection and IsEmpty ],
+    function(C1, C2) return []; end);
+
+InstallOtherMethod( Intersection2,
+    "for two lists or collections, the first being empty",
+    [ IsListOrCollection and IsEmpty, IsListOrCollection ],
+    function(C1, C2) return []; end);
+
 InstallMethod( Intersection2,
     "for two collections in the same family, both lists",
     IsIdenticalObj,

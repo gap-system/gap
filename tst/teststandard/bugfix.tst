@@ -3062,6 +3062,14 @@ gap> Remove(l);
 gap> [l, Length(l)];
 [ [ 1, 2,, [  ] ], 4 ]
 
+#2016/5/2 (MP)
+gap> S := FullTransformationMonoid(2);;
+gap> D := GreensDClassOfElement(S, IdentityTransformation);;
+gap> Intersection(D, []);
+[  ]
+gap> Intersection([], D);
+[  ]
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 831990000);
 
