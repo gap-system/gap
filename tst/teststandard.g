@@ -37,7 +37,9 @@ Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g'.\n",
 
 TestDirectory( [
   Filename( DirectoriesLibrary( "tst" ), "teststandard" ),
-  Filename( DirectoriesLibrary( "tst" ), "testinstall" )],
+  Filename( DirectoriesLibrary( "tst" ), "testinstall" ),
+  Filename( DirectoriesLibrary( "tst" ), 
+       Concatenation("test", String(8*GAPInfo.BytesPerVariable), "bit"))],
   rec(exitGAP := true) );
   
 # Should never get here
