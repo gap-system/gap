@@ -1593,7 +1593,7 @@ InstallGlobalFunction( ImageKernelBlocksHomomorphism, function( hom, H,par )
             i,  j;      # loop variables
     
     D := Enumerator( UnderlyingExternalSet( hom ) );
-    S := CopyStabChain( StabChainMutable( H ) );
+    S := CopyStabChain( StabChainImmutable( H ) );
     full := IsIdenticalObj( H, Source( hom ) );
     if full  then
         SetStabChainMutable( hom, S );
@@ -1761,7 +1761,7 @@ InstallGlobalFunction( PreImageSetStabBlocksHomomorphism, function( hom, I )
 
     # if <I> is trivial then preimage is the kernel of <hom>
     if IsEmpty( I.genlabels )  then
-        H := CopyStabChain( StabChainMutable(
+        H := CopyStabChain( StabChainImmutable(
                  KernelOfMultiplicativeGeneralMapping( hom ) ) );
 
     # else begin with the preimage $H_{block[i]}$ of the stabilizer  $I_{i}$,
@@ -2095,4 +2095,3 @@ end );
 #############################################################################
 ##
 #E
-

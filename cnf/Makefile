@@ -11,6 +11,7 @@ CC=cc
 
 SOURCE= \
     ariths \
+    backtrace \
     blister \
     bool \
     c_filt1 \
@@ -27,13 +28,14 @@ SOURCE= \
     dt \
     dteval \
     exprs \
+    ffdata \
     finfield \
     funcs \
     gap \
     gasman \
+    globalstate \
     gmpints \
     gvars \
-    integer \
     intfuncs \
     intrprtr \
     iostream \
@@ -47,6 +49,7 @@ SOURCE= \
     objfgelm \
     objpcgel \
     objscoll \
+    objset \
     opers \
     permutat \
     plist \
@@ -63,9 +66,10 @@ SOURCE= \
     set \
     stats \
     streams \
-    string \
+    stringobj \
     sysfiles \
     system \
+    systimers \
     tietze \
     trans \
     vars \

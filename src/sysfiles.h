@@ -316,6 +316,7 @@ extern int SyHaveAlarms;
 extern volatile int SyAlarmRunning;
 extern volatile int SyAlarmHasGoneOff;
 
+extern void SyInitAlarm( void );
 extern void SyInstallAlarm( UInt seconds, UInt nanoseconds);
 extern void SyStopAlarm( UInt *seconds, UInt *nanoseconds);
 

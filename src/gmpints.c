@@ -35,7 +35,7 @@
 #include        "precord.h"             /* plain records                   */
 
 #include        "lists.h"               /* generic lists                   */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
 
@@ -53,8 +53,6 @@
 #include <string.h>
 #include <ctype.h>
 
-
-#ifdef USE_GMP
 
 /* TODO: Remove after Ward2 */
 #ifndef WARD_ENABLED
@@ -2699,7 +2697,6 @@ StructInitInfo * InitInfoInt ( void )
 }
 
 #endif /* ! WARD_ENABLED */
-#endif /* USE_GMP */
 
 /****************************************************************************
 **

@@ -28,7 +28,7 @@
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "calls.h"               /* generic call mechanism          */
 
 #include        "code.h"                /* coder                           */
@@ -49,8 +49,8 @@
 
 #include        "opers.h"               /* generic operations              */
 #include        "gvars.h"
-#include        "thread.h"              /* threads                         */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/thread.h"          /* threads                         */
+#include        "hpc/tls.h"             /* thread-local storage            */
 
 #include        "vars.h"                /* variables                       */
 
@@ -765,7 +765,7 @@ Obj             EvalFunccallXargs (
 **
 */
 
-Int RecursionDepth;
+/* TL: Int RecursionDepth; */
 static UInt RecursionTrapInterval;
 
 static void RecursionDepthTrap( void )
@@ -1394,7 +1394,7 @@ void             PrintFunccallOpts (
 *F  ExecBegin() . . . . . . . . . . . . . . . . . . . . .  begin an execution
 *F  ExecEnd(<error>)  . . . . . . . . . . . . . . . . . . .  end an execution
 */
-Obj             ExecState;
+/* TL: Obj             ExecState; */
 
 void            ExecBegin ( Obj frame )
 {
@@ -1506,7 +1506,7 @@ static Int InitKernel (
     InitCopyGVar("STEVES_TRACING", &STEVES_TRACING);
   
     /* make the global variable known to Gasman                            */
-    InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );
+    InitGlobalBag( &TLS(ExecState), "src/funcs.c:ExecState" );
 
     /* Register the handler for our exported function                      */
     InitHdlrFuncsFromTable( GVarFuncs );

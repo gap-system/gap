@@ -485,6 +485,8 @@ DeclareOperation("GroebnerBasis",
 DeclareOperation("GroebnerBasis",[IsPolynomialRingIdeal,IsMonomialOrdering]);
 DeclareGlobalFunction("GroebnerBasisNC");
 
+DeclareSynonym("GrobnerBasis",GroebnerBasis);
+
 #############################################################################
 ##
 #O  ReducedGroebnerBasis( <L>, <O> )
@@ -533,6 +535,7 @@ DeclareOperation("ReducedGroebnerBasis",
   [IsHomogeneousList and IsRationalFunctionCollection,IsMonomialOrdering]);
 DeclareOperation("ReducedGroebnerBasis",
   [IsPolynomialRingIdeal,IsMonomialOrdering]);
+DeclareSynonym("ReducedGrobnerBasis",ReducedGroebnerBasis);
 
 #############################################################################
 ##

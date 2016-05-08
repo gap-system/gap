@@ -38,7 +38,7 @@
 
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
 #include        "calls.h"
@@ -47,9 +47,9 @@
 
 #include        "exprs.h"               /* expressions                     */
 
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 #include        "profile.h"             /* installing methods              */
-#include        "aobjects.h"            /* atomic objects                  */
+#include        "hpc/aobjects.h"            /* atomic objects                  */
 
 #include        "vars.h"                /* variables                       */
 
@@ -969,6 +969,9 @@ Obj             EvalPermExpr (
                     "you can replace <expr> via 'return <expr>;'" );
             }
             c = INT_INTOBJ(val);
+	    if (c > MAX_DEG_PERM4)
+	      ErrorMayQuit( "Permutation literal exceeds maximum permutatuion degree -- %i vs %i",
+			    c, MAX_DEG_PERM4);
 
             /* if necessary resize the permutation                         */
             if ( SIZE_OBJ(perm)/sizeof(UInt4) < c ) {
@@ -2140,6 +2143,15 @@ static Int InitLibrary (
 {
     GVAR_FLOAT_LITERAL_CACHE = GVarName("FLOAT_LITERAL_CACHE");
     return 0;
+}
+
+void InitExprState(GlobalState *state)
+{
+    state->CurrEvalExprFuncs = EvalExprFuncs;
+}
+
+void DestroyExprState(GlobalState *state)
+{
 }
 
 /****************************************************************************

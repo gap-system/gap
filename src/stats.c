@@ -32,7 +32,7 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "bool.h"                /* booleans                        */
 
@@ -49,8 +49,8 @@
 
 #include        <assert.h>
 
-#include	"tls.h"
-#include	"thread.h"
+#include	"hpc/tls.h"
+#include	"hpc/thread.h"
 
 #include        "vars.h"                /* variables                       */
 
@@ -101,7 +101,7 @@ UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  purpose of 'CurrStat' is to make it possible to  point to the location in
 **  case an error is signalled.
 */
-Stat            CurrStat;
+/* TL: Stat            CurrStat; */
 
 
 /****************************************************************************
@@ -112,7 +112,7 @@ Stat            CurrStat;
 **  executed.  It is set  in  'ExecReturnObj' and  used in the  handlers that
 **  interpret functions.
 */
-Obj             ReturnObjStat;
+/* TL: Obj             ReturnObjStat; */
 
 
 /****************************************************************************
@@ -1638,6 +1638,7 @@ int volatile RealExecStatCopied;
 
 static void CheckAndRespondToAlarm(void) {
   if ( SyAlarmHasGoneOff ) {
+    SyAlarmHasGoneOff = 0;
     assert(NumAlarmJumpBuffers);
     syLongjmp(AlarmJumpBuffers[--NumAlarmJumpBuffers],1);
   }
@@ -2211,7 +2212,7 @@ static Int InitKernel (
     /* furthermore, statements are no longer bags                          */
     /* InitGlobalBag( &CurrStat );                                         */
 
-    InitGlobalBag( &ReturnObjStat, "src/stats.c:ReturnObjStat" );
+    InitGlobalBag( &TLS(ReturnObjStat), "src/stats.c:ReturnObjStat" );
 
     /* connect to external functions                                       */
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );
@@ -2298,6 +2299,15 @@ static Int InitKernel (
 
     /* return success                                                      */
     return 0;
+}
+
+void InitStatState(GlobalState *state)
+{
+  state->CurrExecStatFuncs = ExecStatFuncs;
+}
+
+void DestroyStatState(GlobalState *state)
+{
 }
 
 

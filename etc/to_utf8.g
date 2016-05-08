@@ -22,7 +22,7 @@ TRANS := [["fuer ","für "],["Schoenert", "Schönert"],
 ConvertDirToUTF8 := function(dir)
   local cont, ff, s, u, ss, f, a, notouch;
   notouch := [".in",".shi",".tex",".bib",".dvi",".gz",
-             ".zoo",".ps",".msk",".html",
+             ".ps",".msk",".html",
              ];
   cont := DirectoryContents(dir);
   cont := Filtered(cont, f-> f <> "." and f <> "..");

@@ -672,7 +672,7 @@ BindGlobal("SaveCommandLineHistory", function(arg)
     if IsExistingFile(GAPInfo.UserGapRoot) then
       fnam := Concatenation(GAPInfo.UserGapRoot, "/history");
     else
-      fnam := USER_HOME_EXPAND("~/.gap_hist");
+      fnam := UserHomeExpand("~/.gap_hist");
     fi;
   fi;
   if true in arg then
@@ -706,7 +706,7 @@ BindGlobal("ReadCommandLineHistory", function(arg)
     if IsExistingFile(GAPInfo.UserGapRoot) then
       fnam := Concatenation(GAPInfo.UserGapRoot, "/history");
     else
-      fnam := USER_HOME_EXPAND("~/.gap_hist");
+      fnam := UserHomeExpand("~/.gap_hist");
     fi;
   fi;
   s := StringFile(fnam);

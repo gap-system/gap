@@ -270,7 +270,7 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
       Add(res.formats, "pdf");
     fi;
   fi;
-  res.directories := Directory(fname{[1..Length(fname)-10]});  
+  res.directories := [ Directory(fname{[1..Length(fname)-10]}) ];
   return res;
 end;
 

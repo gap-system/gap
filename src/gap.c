@@ -29,8 +29,6 @@
 #include        "scanner.h"             /* scanner                         */
 
 #include        "gap.h"                 /* error handling, initialisation  */
-#include        "tls.h"                 /* thread-local storage            */
-
 #include        "read.h"                /* reader                          */
 
 #include        "gvars.h"               /* global variables                */
@@ -62,7 +60,7 @@
 #include        "vecffe.h"              /* functions for fin field vectors */
 #include        "blister.h"             /* boolean lists                   */
 #include        "range.h"               /* ranges                          */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "vecgf2.h"              /* functions for GF2 vectors       */
 #include        "vec8bit.h"             /* functions for other compressed
                                            GF(q) vectors                   */
@@ -97,13 +95,16 @@
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
 #include        "profile.h"             /* profiling                       */
+
+#include        "globalstate.h"    /* Global State                    */
+
 #ifdef GAPMPI
-#include        "gapmpi.h"              /* ParGAP/MPI                      */
+#include        "hpc/gapmpi.h"          /* ParGAP/MPI                      */
 #endif
 
-#include        "thread.h"
-#include        "tls.h"
-#include        "aobjects.h"
+#include        "hpc/thread.h"
+#include        "hpc/tls.h"
+#include        "hpc/aobjects.h"
 
 #include        "vars.h"                /* variables                       */
 
@@ -743,6 +744,13 @@ int main (
   Obj                 func;                   /* function (compiler)     */
   Int4                crc;                    /* crc of file to compile  */
 
+#ifdef PRINT_BACKTRACE
+  void InstallBacktraceHandlers();
+  InstallBacktraceHandlers();
+#endif
+
+  InitMainGlobalState();
+
 #ifdef HAVE_REALPATH
   if (argc >= 3 && !strcmp(argv[1],"--createstartupscript")) {
       return DoCreateStartupScript(argc,argv,0);
@@ -867,6 +875,59 @@ Obj FuncRUNTIMES( Obj     self)
   return res;
 }
 
+
+
+/****************************************************************************
+**
+*F  FuncNanosecondsSinceEpoch( <self> )
+**
+**  'FuncNanosecondsSinceEpoch' returns an integer which represents the 
+**  number of nanoseconds since some unspecified starting point. This means
+**  that the number returned by this function is not in itself meaningful,
+**  but the difference between the values returned by two consecutive calls
+**  can be used to measure wallclock time.
+**
+**  The accuracy of this is system dependent. For systems that implement
+**  clock_getres, we could get the promised accuracy.
+**
+**  Note that gettimeofday has been marked obsolete in the POSIX standard.
+**  We are using it because it is implemented in most systems still.
+**
+**  If we are using gettimeofday we cannot guarantee the values that
+**  are returned by NanosecondsSinceEpoch to be monotonic.
+**
+*/
+Obj FuncNanosecondsSinceEpoch(Obj self)
+{
+  Obj res;
+
+#if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+  struct timespec ts;
+
+  if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
+    res = ObjInt_Int(ts.tv_sec);
+    res = ProdInt(res, ObjInt_Int(1000000000L));
+    res = SumInt(res, ObjInt_Int(ts.tv_nsec));
+  } else {
+    res = Fail;
+  }
+#elif defined(HAVE_GETTIMEOFDAY)
+  struct timeval tv;
+
+  if (gettimeofday(&tv, NULL) == 0) {
+    res = ObjInt_Int(tv.tv_sec);
+    res = ProdInt(res, ObjInt_Int(1000000L));
+    res = SumInt(res, ObjInt_Int(tv.tv_usec));
+    res = ProdInt(res, ObjInt_Int(1000L));
+  } else {
+    res = Fail;
+  };
+#else
+  res = Fail
+#endif
+
+  return res;
+}
 
 /****************************************************************************
 **
@@ -1142,7 +1203,7 @@ Obj  ErrorLVars0;
 Obj  ErrorLVars;
 Int  ErrorLLevel;
 
-extern Obj BottomLVars;
+// extern Obj BottomLVars;
 
 
 void DownEnvInner( Int depth )
@@ -1226,6 +1287,38 @@ Obj FuncUpEnv (
   return 0;
 }
 
+Obj FuncExecutingStatementLocation(Obj self, Obj context)
+{
+  Obj currLVars = TLS(CurrLVars);
+  Expr call;
+  Int line;
+  Obj filename;
+  Obj retlist;
+  retlist = Fail;
+  if (context == TLS(BottomLVars))
+    return (Obj) 0;
+  SWITCH_TO_OLD_LVARS(context);
+  call = BRK_CALL_TO();
+  if (
+#if T_PROCCALL_0ARGS
+        ( FIRST_STAT_TNUM <= TNUM_STAT(call)
+                && TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
+#else
+        ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
+#endif
+        ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
+              && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) ) {
+    line = LINE_STAT(call);
+    filename = FILENAME_STAT(call);
+    retlist = NEW_PLIST(T_PLIST, 2);
+    SET_LEN_PLIST(retlist, 2);
+    SET_ELM_PLIST(retlist, 1, filename);
+    SET_ELM_PLIST(retlist, 2, INTOBJ_INT(line));
+    CHANGED_BAG(retlist);
+  }
+  SWITCH_TO_OLD_LVARS( currLVars );
+  return retlist;
+}
 
 Obj FuncPrintExecutingStatement(Obj self, Obj context)
 {
@@ -1263,7 +1356,7 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
 */
   
 /* syJmp_buf CatchBuffer; */
-Obj ThrownObject = 0;
+/* TL: Obj ThrownObject = 0; */
 
 Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
 {
@@ -1317,8 +1410,8 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
 }
 
 
-UInt UserHasQuit;
-UInt UserHasQUIT;
+/* TL: UInt UserHasQuit; */
+/* TL: UInt UserHasQUIT; */
 UInt SystemErrorCode;
 
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
@@ -1340,67 +1433,145 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
  }
    
  Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Obj args )
-{
-    Obj res;
-    Obj currLVars;
-    Obj result;
-    Int recursionDepth;
-    Stat currStat;
+ {
+   Obj res;
+   Obj currLVars;
+   Obj result;
+   Int recursionDepth;
+   Stat currStat;
+   UInt newJumpBuf = 1;
+   UInt mayNeedToRestore = 0;
+   Int iseconds, imicroseconds;
+   Int curr_seconds= 0, curr_microseconds=0, curr_nanoseconds=0;
+   Int restore_seconds = 0, restore_microseconds = 0;
+   if (!SyHaveAlarms)
+     ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
+   if (!IS_INTOBJ(seconds) || 0 > INT_INTOBJ(seconds))
+     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
+		  " <seconds> must be a non-negative small integer",0,0);
+   if (!IS_INTOBJ(microseconds) || 0 > INT_INTOBJ(microseconds) || 999999 < INT_INTOBJ(microseconds))
+     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
+		  " <microseconds> must be a non-negative small integer less than 10^9",0,0);
+   iseconds = INT_INTOBJ(seconds);
+   imicroseconds = INT_INTOBJ(microseconds);
+   if (!IS_FUNC(func))
+     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>): <func> must be a function",0,0);
+   if (!IS_LIST(args))
+     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>): <args> must be a list",0,0);
+   if (SyAlarmRunning) {            
+     /* ErrorMayQuit("CALL_WITH_TIMEOUT cannot currently be nested except via break loops."
+	" There is already a timeout running", 0, 0); */
+     SyStopAlarm((UInt *)&curr_seconds, (UInt *)&curr_nanoseconds);
+     curr_microseconds = curr_nanoseconds/1000;
+     if (iseconds > curr_seconds || (iseconds == curr_seconds && imicroseconds > curr_microseconds)) {
+       /* The existing timeout will go off before we would so don't bother to set a timeout
+	  just reset the existing one and call the function */
+       iseconds = curr_seconds;
+       imicroseconds = curr_microseconds;
+       newJumpBuf = 0;
+     } else {
+       /* We would time out before the other function, so we need to
+	  set our timeout, but remember to reset things later */
+       mayNeedToRestore = 1;
+       newJumpBuf = 1;
+     }
+   }
+   if (newJumpBuf) {
+     if (NumAlarmJumpBuffers >= MAX_TIMEOUT_NESTING_DEPTH-1)
+       ErrorMayQuit("Nesting depth of timeouts limited to %i", MAX_TIMEOUT_NESTING_DEPTH, 0L);
+     currLVars = TLS(CurrLVars);
+     currStat = TLS(CurrStat);
+     recursionDepth = TLS(RecursionDepth);
+     if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers++])) {
+       /* Timeout happened */
+       TLS(CurrLVars) = currLVars;
+       TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
+       TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+       TLS(CurrStat) = currStat;
+       TLS(RecursionDepth) = recursionDepth;
+       if (mayNeedToRestore) {
+	 /* In this case we used our ration of CPU time,
+	    so we know how much we need to restore 
+
+	    The jump buffer stack is already taken care of by the time we
+	    get here */
+	 restore_seconds = curr_seconds - iseconds;
+	 restore_microseconds = curr_microseconds - imicroseconds;
+	 if (restore_microseconds < 0) {
+	   restore_microseconds += 1000000;
+	   restore_seconds -= 1;
+	 }
+	 SyInstallAlarm(restore_seconds, 1000*restore_microseconds);
+       }
+       res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,1);
+       SET_ELM_PLIST(res,1,False);
+       SET_LEN_PLIST(res,1);
+       return res;
+     }
+   }
+
+   /* The next timeout was too close, this is a bit of a hack, just as below */
+   if ((iseconds==0) && (imicroseconds==0)) {
+      imicroseconds = 1;
+   }
+   /* Here we actually call the function */
+   SyInstallAlarm( iseconds, 1000*imicroseconds);
+   result = CallFuncList(func, args);
+    
+   /* if newJumpBuf is false then we didn't set up our own alarm,
+      just  reset the outer one, 
+      and the outer one hasn't gone off yet, so we just return */
+   if (newJumpBuf) {
+     /* Here we did set our own alarm, but it hasn't gone off */
+     Int unused_seconds, unused_microseconds, unused_nanoseconds;
+     SyStopAlarm( (UInt *)&unused_seconds, (UInt *)&unused_nanoseconds);
+     unused_microseconds = unused_nanoseconds/1000;
+     /* Now the alarm might have gone off since we executed the last statement 
+	of func. So */
+     if (SyAlarmHasGoneOff) {
+       SyAlarmHasGoneOff = 0;
+       UnInterruptExecStat();
+     }
+     assert(NumAlarmJumpBuffers);
+     NumAlarmJumpBuffers--;
       
-    if (!SyHaveAlarms)
-      ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
-    if (!IS_INTOBJ(seconds) || 0 > INT_INTOBJ(seconds))
-      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
-		   " <seconds> must be a non-negative small integer",0,0);
-    if (!IS_INTOBJ(microseconds) || 0 > INT_INTOBJ(microseconds) || 999999999 < INT_INTOBJ(microseconds))
-      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
-		   " <microseconds> must be a non-negative small integer less than 10^9",0,0);
-    if (!IS_FUNC(func))
-      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <func> must be a function",0,0);
-    if (!IS_LIST(args))
-      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <args> must be a list",0,0);
-    if (SyAlarmRunning) {            
-      ErrorMayQuit("CALL_WITH_TIMEOUT cannot currently be nested except via break loops."
-		   " There is already a timeout running", 0, 0); 
-    }
-    if (NumAlarmJumpBuffers >= MAX_TIMEOUT_NESTING_DEPTH-1)
-      ErrorMayQuit("Nesting depth of timeouts via break loops limited to %i", MAX_TIMEOUT_NESTING_DEPTH, 0L);
-    currLVars = TLS(CurrLVars);
-    currStat = TLS(CurrStat);
-    recursionDepth = TLS(RecursionDepth);
-    res = NEW_PLIST( T_PLIST_DENSE+IMMUTABLE, 2 );
-    SET_LEN_PLIST(res, 1);
-    if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers++])) {
-      /* Timeout happened */
-      TLS(CurrLVars) = currLVars;
-      TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
-      TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-      TLS(CurrStat) = currStat;
-      TLS(RecursionDepth) = recursionDepth;
-      SET_ELM_PLIST(res, 1, False);
-    } else {
-      SyInstallAlarm( INT_INTOBJ(seconds), 1000*INT_INTOBJ(microseconds));
-      result = CallFuncList(func, args);
-      /* make sure the alarm is not still running */
-      SyStopAlarm( NULL, NULL);
-      /* Now the alarm might have gone off since we executed the last statement 
-	 of func. So */
-      if (SyAlarmHasGoneOff) {
-	SyAlarmHasGoneOff = 0;
-	UnInterruptExecStat();
-      }
-      assert(NumAlarmJumpBuffers);
-      NumAlarmJumpBuffers--;
-      SET_ELM_PLIST(res,1,True);
-      if (result)
-        {
-          SET_LEN_PLIST(res,2);
-          SET_ELM_PLIST(res,2,result);
-        }
-    }
-    CHANGED_BAG(res);
-    return res;
-}
+     /* If there is an outer timer, we need to reset it */
+     if (mayNeedToRestore) {
+       restore_seconds = curr_seconds - (iseconds - unused_seconds);
+       restore_microseconds = curr_microseconds - (imicroseconds - unused_microseconds);
+       while (restore_microseconds < 0) {
+	 restore_microseconds += 1000000;
+	 restore_seconds -= 1;
+       }
+       while (restore_microseconds > 999999) {
+	 restore_microseconds -= 1000000;
+	 restore_seconds += 1;
+       }
+	
+       /* nasty hack -- if the outer timer was right on the edge of going off
+	  and we try to restore it to zero we will actually stop it */
+       if (!restore_seconds && !restore_microseconds)
+	 restore_microseconds = 1;
+	
+       SyInstallAlarm(restore_seconds, 1000*restore_microseconds);
+     }
+      
+   }
+    
+   /* assemble and return the result */
+   res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE, 2);
+   SET_ELM_PLIST(res,1,True);
+   if (result)
+     {
+       SET_LEN_PLIST(res,2);
+       SET_ELM_PLIST(res,2,result);
+       CHANGED_BAG(res);
+     }
+   else {
+     SET_LEN_PLIST(res,1);
+   }
+   return res;
+ }
 
 Obj FuncSTOP_TIMEOUT( Obj self ) {
   UInt seconds, nanoseconds;
@@ -1975,11 +2146,10 @@ Obj FuncGASMAN (
     Char                buf[41];
 
     /* check the argument                                                  */
-    while ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
-        args = ErrorReturnObj(
+    if ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
+        ErrorMayQuit(
             "usage: GASMAN( \"display\"|\"displayshort\"|\"clear\"|\"collect\"|\"message\"|\"partial\" )",
-            0L, 0L,
-            "you can replace the argument list <args> via 'return <args>;'" );
+            0L, 0L);
     }
 
     /* loop over the arguments                                             */
@@ -2223,6 +2393,9 @@ Obj FuncOBJ_HANDLE (
 /****************************************************************************
 **
 *F  FuncHANDLE_OBJ( <self>, <obj> ) . . . . . .  expert function 'HANDLE_OBJ'
+**
+**  This is a very quick function which returns a unique integer for each object
+**  non-identical objects will have different handles. The integers may be large.
 */
 Obj FuncHANDLE_OBJ (
     Obj                 self,
@@ -2245,6 +2418,10 @@ Obj FuncHANDLE_OBJ (
     return hnum;
 }
 
+/* This function does quite  a similar job to HANDLE_OBJ, but (a) returns 0 for all 
+immediate objects (small integers or ffes) and (b) returns reasonably small results
+(roughly in teh range from 1 to the max number of objects that have existed in this session */
+
 Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
 {
     if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
@@ -2254,6 +2431,7 @@ Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
     }
 }
 
+/* Returns a measure of the size of a GAP function */
 Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
 {
     Obj body;
@@ -2905,6 +3083,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "RUNTIMES", 0, "",
       FuncRUNTIMES, "src/gap.c:RUNTIMES" },
 
+    { "NanosecondsSinceEpoch", 0, "",
+      FuncNanosecondsSinceEpoch, "src/gap.c:NanosecondsSinceEpoch" },
+
     { "SizeScreen", -1, "args",
       FuncSizeScreen, "src/gap.c:SizeScreen" },
 
@@ -3024,7 +3205,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "PRINT_CURRENT_STATEMENT", 1, "context",
       FuncPrintExecutingStatement, "src/gap.c:PRINT_CURRENT_STATEMENT" },
 
-  
+    { "CURRENT_STATEMENT_LOCATION", 1, "context",
+      FuncExecutingStatementLocation,
+      "src/gap.c:CURRENT_STATEMENT_LOCATION" },
+
     { 0 }
 
 };
@@ -3039,7 +3223,8 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* init the completion function                                        */
-    InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      );
+    /* InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      ); */
+    InitGlobalBag( &TLS(ThrownObject),    "src/gap.c:ThrownObject"      );
 
     /* list of exit functions                                              */
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
@@ -3324,7 +3509,6 @@ void InitializeGap (
     UInt                i;
     Int                 ret;
 
-
     /* initialize the basic system and gasman                              */
 #ifdef GAPMPI
     /* ParGAP/MPI needs to call MPI_Init() first to remove command line args */
@@ -3339,6 +3523,15 @@ void InitializeGap (
               SyCacheSize, 0, SyAbortBags );
               InitMsgsFuncBags( SyMsgsBags ); 
 
+    TLS(StackNams)    = NEW_PLIST( T_PLIST, 16 );
+    TLS(CountNams)    = 0;
+    TLS(ReadTop)      = 0;
+    TLS(ReadTilde)    = 0;
+    TLS(CurrLHSGVar)  = 0;
+    TLS(IntrCoding)   = 0;
+    TLS(IntrIgnoring) = 0;
+    TLS(NrError)      = 0;
+    TLS(ThrownObject) = 0;
 
     /* get info structures for the build in modules                        */
     NrModules = 0;
@@ -3372,6 +3565,8 @@ void InitializeGap (
             }
         }
     }
+
+    InitGlobalState(MainGlobalState);
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);

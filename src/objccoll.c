@@ -22,7 +22,7 @@
 
 #include        "gvars.h"               /* global variables                */
 #include        "gap.h"                 /* error handling, initialisation  */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"             /* thread-local storage            */
 
 #include        "calls.h"               /* generic call mechanism          */
 
@@ -34,11 +34,10 @@
 #include        "precord.h"             /* plain records                   */
 
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
-#include        "thread.h"              /* threads                         */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/thread.h"              /* threads                         */
 
 #include        "objfgelm.h"            /* objects of free groups          */
 

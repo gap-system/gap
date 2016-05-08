@@ -271,7 +271,7 @@ end;
 ##  | 41
 ##  gap> ss := InputTextString(StringFile(tnam));;
 ##  gap> Test(ss);
-##  ########> Diff in test stream, line 8:
+##  ########> Diff in test stream, line 8
 ##  # Input is:
 ##  a := 13+29;
 ##  # Expected output:
@@ -329,8 +329,12 @@ InstallGlobalFunction("Test", function(arg)
              if d[1] <> '-' then
                d := Concatenation("+", d);
              fi;
-             Print("########> Time diff in ",
-                   fnam,", line ",line,":\n");
+             Print("########> Time diff in ");
+             if IsStream(fnam) then
+               Print("test stream, line ",line,"\n");
+             else
+               Print(fnam,":",line,"\n");
+             fi;
              Print("# Input:\n", inp);
              Print("# Old time: ", oldt,"   New time: ", newt,
              "    (", d, "%)\n");
@@ -338,11 +342,12 @@ InstallGlobalFunction("Test", function(arg)
            rewriteToFile := false,
            breakOnError := false,
            reportDiff := function(inp, expout, found, fnam, line, time)
+             Print("########> Diff in ");
              if IsStream(fnam) then
-               fnam := "test stream";
+               Print("test stream, line ",line,"\n");
+             else
+               Print(fnam,":",line,"\n");
              fi;
-             Print("########> Diff in ",
-                   fnam,", line ",line,":\n");
              Print("# Input is:\n", inp);
              Print("# Expected output:\n", expout);
              Print("# But found:\n", found);

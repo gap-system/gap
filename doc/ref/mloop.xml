@@ -81,7 +81,7 @@ error message of the following form
 <P/>
 <Log><![CDATA[
 gap> 1 * ;
-Syntax error: expression expected
+Syntax error: Expression expected
 1 * ;
     ^
 ]]></Log>

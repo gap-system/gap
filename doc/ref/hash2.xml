@@ -101,7 +101,7 @@ gap> RepresentationsOfObject(d);
 gap> d:=NewDictionary((1,2,3),true,Elements(SymmetricGroup(5)));;
 gap> RepresentationsOfObject(d);
 [ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
-  "IsPositionDictionary", "IsPositionDictionary" ]
+  "IsPositionDictionary", "IsPositionLookupDictionary" ]
 ]]></Example>
 (Just indicating <C>SymmetricGroup(5)</C> as a third parameter would still keep
 the first storage method, as indexing would be too expensive if no explicit
@@ -122,7 +122,7 @@ gap> RepresentationsOfObject(d);
 gap> d:=NewDictionary(Zero(v),true,v);;
 gap> RepresentationsOfObject(d);
 [ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
-  "IsPositionDictionary", "IsPositionDictionary" ]
+  "IsPositionDictionary", "IsPositionLookupDictionary" ]
 ]]></Example>
 
 </Section>

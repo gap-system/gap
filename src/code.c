@@ -36,7 +36,7 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "funcs.h"               /* functions                       */
 
@@ -45,9 +45,9 @@
 #include        "saveload.h"            /* saving and loading              */
 #include        "read.h"                /* to access stack of for loop globals */
 #include        "gvars.h"
-#include        "thread.h"              /* threads                         */
-#include        "tls.h"                 /* thread-local storage            */
-#include	"aobjects.h"		/* atomic objects		   */
+#include        "hpc/thread.h"              /* threads                         */
+#include        "hpc/tls.h"                 /* thread-local storage            */
+#include        "hpc/aobjects.h"		/* atomic objects		   */
 
 #include        "vars.h"                /* variables                       */
 
@@ -61,7 +61,7 @@
 **
 **  'PtrBody' is a pointer to the current body.
 */
-Stat * PtrBody;
+/* TL: Stat * PtrBody; */
 
 /****************************************************************************
 **
@@ -80,16 +80,14 @@ Obj FilenameCache;
 **  coding.
 */
 #define MAX_FUNC_EXPR_NESTING 1024
+/* TL: Stat OffsBody; */
 
+/* TL: Stat OffsBodyStack[1024]; */
+/* TL: UInt OffsBodyCount = 0; */
 
-Stat OffsBody;
-
-Stat OffsBodyStack[MAX_FUNC_EXPR_NESTING];
-UInt OffsBodyCount = 0;
-
-UInt LoopNesting = 0;
-UInt LoopStack[MAX_FUNC_EXPR_NESTING];
-UInt LoopStackCount = 0;
+/* TL: UInt LoopNesting = 0; */
+/* TL: UInt LoopStack[MAX_FUNC_EXPR_NESTING]; */
+/* TL: UInt LoopStackCount = 0; */
 
 static inline void PushOffsBody( void ) {
   assert(TLS(OffsBodyCount) <= MAX_FUNC_EXPR_NESTING-1);
@@ -99,6 +97,14 @@ static inline void PushOffsBody( void ) {
 static inline void PopOffsBody( void ) {
   assert(TLS(OffsBodyCount));
   TLS(OffsBody) = TLS(OffsBodyStack)[--TLS(OffsBodyCount)];
+}
+
+static void SetupOffsBodyStackAndLoopStack() {
+  // Careful: Malloc without free
+/* Since this mallocs we use a global variable at the moment
+  TLS(OffsBodyStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
+  TLS(LoopStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
+*/
 }
 
 static inline void PushLoopNesting( void ) {
@@ -257,7 +263,7 @@ Expr            NewExpr (
 **  'CodeResult'  is the result  of the coding, i.e.,   the function that was
 **  coded.
 */
-Obj CodeResult;
+/* TL: Obj CodeResult; */
 
 
 /****************************************************************************
@@ -278,9 +284,9 @@ Obj CodeResult;
 **  'PopStat' returns the  top statement from the  statements  stack and pops
 **  it.  It is an error if the stack is empty.
 */
-Bag StackStat;
+/* TL: Bag StackStat; */
 
-Int CountStat;
+/* TL: Int CountStat; */
 
 void PushStat (
     Stat                stat )
@@ -372,9 +378,9 @@ Stat PopSeqStat (
 **  'PopExpr' returns the top expressions from the expressions stack and pops
 **  it.  It is an error if the stack is empty.
 */
-Bag StackExpr;
+/* TL: Bag StackExpr; */
 
-Int CountExpr;
+/* TL: Int CountExpr; */
 
 void PushExpr (
     Expr                expr )
@@ -554,7 +560,7 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
 **
 **  ...only function expressions inbetween...
 */
-Bag CodeLVars;
+/* TL: Bag CodeLVars; */
 
 void CodeBegin ( void )
 {
@@ -767,7 +773,7 @@ void CodeFuncExprEnd (
 
     /* get the function expression                                         */
     fexp = CURR_FUNC;
-    assert(!LoopNesting);
+    assert(!TLS(LoopNesting));
     
     /* get the body of the function                                        */
     /* push an addition return-void-statement if neccessary                */
@@ -817,6 +823,7 @@ void CodeFuncExprEnd (
     PopLoopNesting();
     
     /* restore the remembered offset                                       */
+    TLS(OffsBody) = BRK_CALL_TO();
     PopOffsBody();
 
     /* if this was inside another function definition, make the expression */
@@ -1332,7 +1339,7 @@ void            CodeBreak ( void )
     Stat                stat;           /* break-statement, result         */
 
     if (!TLS(LoopNesting))
-      SyntaxError("break statement not enclosed in a loop");
+      SyntaxError("'break' statement not enclosed in a loop");
     
     /* allocate the break-statement                                        */
     stat = NewStat( T_BREAK, 0 * sizeof(Expr) );
@@ -1353,7 +1360,7 @@ void            CodeContinue ( void )
     Stat                stat;           /* continue-statement, result         */
 
     if (!TLS(LoopNesting))
-      SyntaxError("continue statement not enclosed in a loop");
+      SyntaxError("'continue' statement not enclosed in a loop");
 
     /* allocate the continue-statement                                        */
     stat = NewStat( T_CONTINUE, 0 * sizeof(Expr) );
@@ -3403,6 +3410,19 @@ void LoadBody ( Obj body )
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
+void InitCoderState(GlobalState *state)
+{
+    state->OffsBodyCount = 0;
+    state->LoopNesting = 0;
+    state->LoopStackCount = 0;
+    state->StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
+    state->StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
+}
+
+void DestroyCoderState(GlobalState *state)
+{
+}
+
 /****************************************************************************
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
@@ -3421,8 +3441,8 @@ static Int InitKernel (
     MakeBagTypePublic(T_BODY);
 
     /* make the result variable known to Gasman                            */
-    InitGlobalBag( &CodeResult, "CodeResult" );
-    
+    InitGlobalBag( &TLS(CodeResult), "CodeResult" );
+
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 
     /* allocate the statements and expressions stacks                      */
@@ -3432,6 +3452,8 @@ static Int InitKernel (
     /* some functions and globals needed for float conversion */
     InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
+    // InstallTLSHandler(SetupOffsBodyStackAndLoopStack, NULL);
+    SetupOffsBodyStackAndLoopStack();
 
     /* return success                                                      */
     return 0;
@@ -3530,6 +3552,5 @@ StructInitInfo * InitInfoCode ( void )
 
 /****************************************************************************
 **
-
 *E  code.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

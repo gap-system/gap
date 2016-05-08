@@ -293,55 +293,56 @@ function(S)
   return MagmaHomomorphismByFunctionNC(S, InverseMonoid(gens), iso);
 end);
 
-#JDM improve this
-
 InstallMethod(IsomorphismPartialPermMonoid,
-"for a transformation semigroup",
+"for a transformation semigroup with generators",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
-function(s)
-  local iso;
+function(S)
+  local map, deg, iso, T;
 
-  if not IsInverseMonoid(s) and MultiplicativeNeutralElement(s)=fail then
-    Error("usage: the argument should be an inverse semigroup with ",  
-     "a mult. neutral element,");
-    return;
+  if not IsInverseSemigroup(S) or MultiplicativeNeutralElement(S) = fail then
+    ErrorNoReturn("usage: the argument should be an inverse semigroup with ",
+                  "a\nmultiplicative neutral element,");
   fi;
 
-  iso:=function(f)
-  local dom, img;
-    dom:=ImageSetOfTransformation(InversesOfSemigroupElement(s, f)[1], 
-      DegreeOfTransformationSemigroup(s));
-    img:=List(dom, i-> i^f);
-    return PartialPermNC(dom, img);
+  map := IsomorphismTransformationMonoid(S);
+  deg := DegreeOfTransformationSemigroup(Range(map));
+
+  iso := function(x)
+    local y, dom;
+    y := InversesOfSemigroupElement(Range(map), x ^ map)[1];
+    dom := ImageSetOfTransformation(y, deg);
+    return PartialPerm(dom, List(dom, i -> i ^ x));
   end;
 
-  return MagmaHomomorphismByFunctionNC(s,
-   InverseMonoid(List(GeneratorsOfSemigroup(s), iso)), iso);
-end);
+  T := InverseMonoid(List(GeneratorsOfSemigroup(S), iso));
+  UseIsomorphismRelation(S, T);
 
-#JDM improve this
+  return MagmaHomomorphismByFunctionNC(S, T, iso);
+end);
 
 InstallMethod(IsomorphismPartialPermSemigroup,
 "for a transformation semigroup",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
-function(s)
-  local iso;
+function(S)
+  local deg, iso, T;
 
-  if not IsInverseSemigroup(s) then
-    Error("usage: the argument should be an inverse semigroup,");
-    return;
+  if not IsInverseSemigroup(S) then
+    ErrorNoReturn("usage: the argument should be an inverse semigroup,");
   fi;
 
-  iso:=function(f)
-    local dom, img;
-    dom:=ImageSetOfTransformation(InversesOfSemigroupElement(s, f)[1], 
-      DegreeOfTransformationSemigroup(s));
-    img:=List(dom, i-> i^f);
-    return PartialPermNC(dom, img);
+  deg := DegreeOfTransformationSemigroup(S);
+
+  iso := function(x)
+    local y, dom;
+    y := InversesOfSemigroupElement(S, x)[1];
+    dom := ImageSetOfTransformation(y, deg);
+    return PartialPerm(dom, List(dom, i -> i ^ x));
   end;
 
-  return MagmaHomomorphismByFunctionNC(s,
-   InverseSemigroup(List(GeneratorsOfSemigroup(s), iso)), iso);
+  T := InverseSemigroup(List(GeneratorsOfSemigroup(S), iso));
+  UseIsomorphismRelation(S, T);
+
+  return MagmaHomomorphismByFunctionNC(S, T, iso);
 end);
 
 #

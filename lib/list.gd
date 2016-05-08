@@ -134,6 +134,8 @@ BIND_GLOBAL( "MAX_SIZE_LIST_INTERNAL", 2^(8*GAPInfo.BytesPerVariable-4) - 1 );
 ##  <#/GAPDoc>
 ##
 DeclareAttributeKernel( "Length", IsList, LENGTH );
+InstallTrueMethod(HasLength,IsPlistRep);
+
 
 
 #############################################################################
@@ -505,14 +507,14 @@ InstallTrueMethod( IsSortedList, IsSSortedList );
 InstallTrueMethod( IsSSortedList, IsList and IsEmpty );
 
 
-#T #############################################################################
-#T ##
-#T #p  IsNSortedList( <list> )
-#T ##
-#T ##  returns `true' if the list <list> is not sorted (see~"IsSortedList").
-#T ##
-#T DeclarePropertyKernel( "IsNSortedList", IsDenseList, IS_NSORT_LIST );
-#T (is currently not really supported)
+ #############################################################################
+ ##
+ #p  IsNSortedList( <list> )
+ ##
+ ##  returns `true' if the list <list> is not sorted (see~"IsSortedList").
+ ##
+ DeclarePropertyKernel( "IsNSortedList", IsDenseList, IS_NSORT_LIST );
+
 
 
 #############################################################################
@@ -1529,6 +1531,10 @@ DeclareOperation( "Sort", [ IsList and IsMutable ] );
 DeclareOperation( "Sort", [ IsList and IsMutable, IsFunction ] );
 DeclareOperation( "SortBy", [IsList and IsMutable, IsFunction ] );
 
+DeclareOperation( "StableSort", [ IsList and IsMutable ] );
+DeclareOperation( "StableSort", [ IsList and IsMutable, IsFunction ] );
+DeclareOperation( "StableSortBy", [IsList and IsMutable, IsFunction ] );
+
 
 #############################################################################
 ##
@@ -1659,6 +1665,11 @@ DeclareGlobalFunction( "PermListList" );
 DeclareOperation( "SortParallel",
     [ IsDenseList and IsMutable, IsDenseList and IsMutable ] );
 DeclareOperation( "SortParallel",
+    [ IsDenseList and IsMutable, IsDenseList and IsMutable, IsFunction ] );
+
+DeclareOperation( "StableSortParallel",
+    [ IsDenseList and IsMutable, IsDenseList and IsMutable ] );
+DeclareOperation( "StableSortParallel",
     [ IsDenseList and IsMutable, IsDenseList and IsMutable, IsFunction ] );
 
 
@@ -2309,4 +2320,3 @@ DeclareGlobalFunction("Median");
 #############################################################################
 ##
 #E
-

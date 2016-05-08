@@ -23,7 +23,7 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
 #include        "blister.h"             /* boolean lists                   */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "vecgf2.h"              /* GF2 vectors                     */
 
@@ -36,8 +36,8 @@
 #include        "code.h"                /* Needed for TakeInterrupt */
 #include        "stats.h"
 
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 #include        <assert.h>
 
@@ -3112,9 +3112,6 @@ Obj FuncTRANSPOSED_GF2MAT( Obj self, Obj mat)
 *F  FuncNUMBER_VECGF2( <self>, <vect> )
 **
 */
-
-#ifdef USE_GMP
-
 Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
 {
   UInt len,nd,i;
@@ -3186,124 +3183,6 @@ Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
   }
 
 }
-
-#else
-
-Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
-{
-  UInt len,nd,i,nonz;
-  UInt head,a;
-  UInt off,off2;		/* 0 based */
-  Obj zahl;  /* the long number */
-  UInt *num;
-  UInt *vp;
-  len = LEN_GF2VEC(vec);
-  num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
-  off = (len -1) % BIPEB + 1; /* number of significant bits in last word */
-  off2 = BIPEB - off;         /* number of insignificant bits in last word */
-
-  /* mask out the last bits */
-#ifdef SYS_IS_64_BIT
-  *num &= 0xffffffffffffffff >> off2;
-#else
-  *num &= 0xffffffff >> off2;
-#endif
-
-  if (len <=NR_SMALL_INT_BITS) 
-    /* it still fits into a small integer */
-    return INTOBJ_INT(revertbits(*num,len));
-  else {
-    /* we might have to build a long integer */
-
-    /* the number of words we need. A word is two digits */
-    nd = ((len-1)/NR_DIGIT_BITS/2)+1;
-
-    /* zahl = NewBag( T_INTPOS, nd*sizeof(UInt) ); */
-       zahl = NewBag( T_INTPOS, (((nd+1)>>1)<<1)*sizeof(UInt) );
-    /* +1)>>1)<<1: round up to next even number 
-     legacy long ints always have a multiple of 4 digits. */
-
-    /* garbage collection might lose pointer */
-    num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
-
-    vp = (UInt *)ADDR_OBJ(zahl); /* the place we write to */
-    nonz=0; /* last non-zero position */ 
-    i=1;
-
-    if (off!=BIPEB) {
-      head = revertbits(*num,off); /* the last 'off' bits, reverted */
-      while (i<nd) {
-	/* next word */
-	num--;
-	*vp = head; /* the bits left from last word */
-	a = revertbits(*num,BIPEB); /* the full word reverted */
-	head = a>>off2; /* next head: trailing `off' bits */
-	a =a << off; /* the rest of the word */
-	*vp |=a;
-#ifdef WORDS_BIGENDIAN
-	*vp = (*vp >> NR_DIGIT_BITS) | (*vp << NR_DIGIT_BITS);
-#endif
-	if (*vp != 0) {nonz=i;} 
-	vp++;
-	i++;
-      }
-      *vp = head; /* last head bits */
-#ifdef WORDS_BIGENDIAN
-      *vp = (*vp >> NR_DIGIT_BITS) | (*vp << NR_DIGIT_BITS);
-#endif
-      vp++;
-      if (head !=0) {
-	nonz=i; 
-      }
-    }
-    else {
-      while (i<=nd) {
-        *vp=revertbits(*num--,BIPEB);
-	if (*vp != 0) {nonz=i;} 
-#ifdef WORDS_BIGENDIAN
-      *vp = (*vp >> NR_DIGIT_BITS) | (*vp << NR_DIGIT_BITS);
-#endif
-	vp++;
-	i++;
-      }
-    }
-
-
-    i=nd%2; 
-    if (i==1) { 
-      *vp=0; /* erase the trailing two digits if existing */
-      nd++; /* point to the last position */
-    }
-
-    if ((nonz<=1)) {
-      /* there were only entries in the first word. Can we make it a small
-       * int? */
-      num = (UInt*)ADDR_OBJ(zahl);
-      head = *num;
-#ifdef WORDS_BIGENDIAN
-      head = (head >> NR_DIGIT_BITS) | (head << NR_DIGIT_BITS);
-#endif
-      if (0==(head & (((UInt)15L)<<NR_SMALL_INT_BITS))) {
-	return INTOBJ_INT(head);
-      }
-    }
-
-    /* if there are mult. of 2 words of zero entries we have to remove them */
-    if ((nd>2) && ((nd-1)>nonz)) {
-      /* get the length */
-      while ((nd>2) && ((nd-1)>nonz)) {
-	nd -= 2;
-      } 
-      ResizeBag(zahl,nd*sizeof(UInt)); 
-
-    }
-    return zahl;
-  }
-
-}
-
-#endif
-
 
 /****************************************************************************
 **

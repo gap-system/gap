@@ -38,23 +38,22 @@
 #include        "precord.h"             /* plain records                   */
 
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
 
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 
-#include        "tls.h"                 /* thread-local storage            */
-
 #include        "vars.h"                /* variables                       */
-
-
-#include        "aobjects.h"            /* atomic objects                  */
 #include        "saveload.h"            /* saving and loading              */
 
-#include	    "thread.h"		        /* threads                         */
+#include        "hpc/aobjects.h"        /* atomic objects                  */
+#include        "hpc/thread.h"          /* threads                         */
+#include        "hpc/tls.h"             /* thread-local storage            */
+
 #include        "profile.h"             /* installing methods              */
+
 
 
 /****************************************************************************
@@ -69,7 +68,7 @@
 **  'CHANGED_BAG' for  each of such change.  Instead we wait until  a garbage
 **  collection begins  and then  call  'CHANGED_BAG'  in  'BeginCollectBags'.
 */
-Bag CurrLVars;
+/* TL: Bag CurrLVars; */
 
 
 /****************************************************************************
@@ -81,7 +80,7 @@ Bag CurrLVars;
 **  have to check for the bottom, slowing it down.
 **
 */
-Bag BottomLVars;
+/* TL: Bag BottomLVars; */
 
 
 /****************************************************************************
@@ -94,7 +93,7 @@ Bag BottomLVars;
 **  Since   a   garbage collection may  move   this  bag  around, the pointer
 **  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
 */
-Obj * PtrLVars;
+/* TL: Obj * PtrLVars; */
 
 
 /****************************************************************************
@@ -3107,8 +3106,8 @@ static Int InitKernel (
     TLS(CurrLVars) = (Bag) 0;
 
     /* make 'CurrLVars' known to Gasman                                    */
-    InitGlobalBag( &CurrLVars,   "src/vars.c:CurrLVars"   );
-    InitGlobalBag( &BottomLVars, "src/vars.c:BottomLVars" );
+    InitGlobalBag( &TLS(CurrLVars),   "src/vars.c:CurrLVars"   );
+    InitGlobalBag( &TLS(BottomLVars), "src/vars.c:BottomLVars" );
 
     /* install the marking functions for local variables bag               */
     InfoBags[ T_LVARS ].name = "values bag";

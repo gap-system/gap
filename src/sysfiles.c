@@ -33,14 +33,14 @@
 #include        "listfunc.h"            /* functions for generic lists     */
 
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "records.h"             /* generic records                 */
 #include        "bool.h"                /* Global True and False           */
 
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 #include        <assert.h>
 #include        <fcntl.h>
@@ -134,26 +134,17 @@ Int SyFindOrLinkGapRootFile (
     Int4                crc_gap,
     TypGRF_Data *       result )
 {
-    UInt4               crc_dyn = 0;
     UInt4               crc_sta = 0;
     Int                 found_gap = 0;
-    Int                 found_dyn = 0;
     Int                 found_sta = 0;
     Char                tmpbuffer[256];
     Char *              tmp;
     Char                module[256];
     Char                name[256];
-    StructInitInfo *    info_dyn = 0;
+
     StructInitInfo *    info_sta = 0;
     Int                 k;
 
-#if HAVE_DLOPEN
-    const Char *        p;
-    const Char *        dot;
-    Int                 pos;
-    Int                 pot = 0;
-    InitInfoFunc        init;
-#endif
 
     /* find the GAP file                                                   */
     result->pathname[0] = '\0';
@@ -191,90 +182,9 @@ Int SyFindOrLinkGapRootFile (
     }
 
 
-    /* try to find any dynamically loadable module for filename            */
-#if HAVE_DLOPEN
-    pos = strlen(filename);
-    p   = filename + pos;
-    dot = 0;
-    while ( filename <= p && *p != '/' ) {
-        if ( *p == '.' ) {
-            dot = p;
-            pot = pos;
-        }
-        p--;
-        pos--;
-    }
-    strxcpy( module, "bin/", sizeof(module) );
-    strxcat( module, SyArchitecture, sizeof(module) );
-    strxcat( module, "/compiled/", sizeof(module) );
-    if ( dot ) {
-        if ( p < filename ) {
-            strxcat( module, dot+1, sizeof(module) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, filename, sizeof(module), pot );
-        }
-        else {
-            strxncat( module, filename, sizeof(module), pos );
-            strxcat( module, "/", sizeof(module) );
-            strxcat( module, dot+1, sizeof(module) );
-            strxncat( module, filename+pos, sizeof(module), pot-pos );
-        }
-    }
-    else {
-        strxcat( module, filename, sizeof(module) );
-    }
-    strxcat( module, ".so", sizeof(module) );
-    tmp = SyFindGapRootFile(module, tmpbuffer);
-
-    /* special handling for the case of package files */
-    if (!tmp && !strncmp(filename, "pkg", 3)) {
-        Char pkgname[16];
-        const Char *p2;
-        Char *p1;
-        p2 = filename + 4; /* after the pkg/ */
-        p1 = pkgname;
-        while (*p2 != '\0' && *p2 != '/')
-          *p1++ = *p2++;
-        *p1 = '\0';
-
-        module[0] = '\0';
-        strxcat( module, "pkg/", sizeof(module) );
-        strxncat( module, pkgname, sizeof(module), p1 - pkgname + 1 );
-        strxcat( module, "/bin/", sizeof(module) );
-        strxcat( module, SyArchitecture, sizeof(module) );
-        strxcat( module, "/compiled/", sizeof(module) );
-        if ( dot ) {
-          if ( p <= p2 ) {
-            strxncat( module, dot+1, sizeof(module), strlen(dot+1) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, p2+1, sizeof(module), pot - (p2 + 1 - filename) );
-          }
-          else {
-            strxncat( module, p2+1, sizeof(module), pos - (p2 +1 - filename) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, dot+1, sizeof(module), strlen(dot+1) );
-            strxncat( module, filename+pos, sizeof(module), pot-pos );
-          }
-        }
-        else {
-          strxcat( module, p2, sizeof(module) );
-        }
-        strxcat( module, ".so", sizeof(module) );
-        tmp = SyFindGapRootFile(module, tmpbuffer);
-
-     }
-    if ( tmp ) {
-        init = SyLoadModule(tmp);
-        if ( ( (Int)init & 1 ) == 0 ) {
-            info_dyn  = (*init)();
-            crc_dyn   = info_dyn->crc;
-            found_dyn = 1;
-        }
-    }
-#endif
 
     /* check if we have to compute the crc                                 */
-    if ( found_gap && ( found_dyn || found_sta ) ) {
+    if ( found_gap && ( found_sta ) ) {
         if ( crc_gap == 0 ) {
             crc_gap = SyGAPCRC(name);
         } else if ( SyCheckCRCCompiledModule ) {
@@ -286,10 +196,6 @@ Int SyFindOrLinkGapRootFile (
 
 
     /* now decide what to do                                               */
-    if ( found_gap && found_dyn && crc_gap != crc_dyn ) {
-        Pr("#W Dynamic module %s has CRC mismatch, ignoring\n", (Int) filename, 0);
-        found_dyn = 0;
-    }
     if ( found_gap && found_sta && crc_gap != crc_sta ) {
         Pr("#W Static module %s has CRC mismatch, ignoring\n", (Int) filename, 0);
         found_sta = 0;
@@ -298,20 +204,12 @@ Int SyFindOrLinkGapRootFile (
         result->module_info = info_sta;
         return 2;
     }
-    if ( found_gap && found_dyn ) {
-        *(StructInitInfo**)result = info_dyn;
-        return 1;
-    }
     if ( found_gap ) {
         return 3;
     }
     if ( found_sta ) {
         result->module_info = info_sta;
         return 2;
-    }
-    if ( found_dyn ) {
-        result->module_info = info_dyn;
-        return 1;
     }
     return 0;
 }
@@ -1359,223 +1257,6 @@ UInt SyIsIntr ( void )
     return isIntr;
 }
 
-
-/* Code for Timeouts */
-
-volatile int SyAlarmRunning = 0;
-volatile int SyAlarmHasGoneOff = 0;
-
-#endif
-
-#if HAVE_TIMER_CREATE && HAVE_SIGACTION
-
-/* Could live without sigaction but it seems to be pretty universal */
-
-/* This uses the POSIX 2001 API
-   which allows per-thread timing and minimises risk of
-   interference with other code using timers.
-
-   Sadly it's not always available, so we have an alternative implementation
-   below using the odler setitimer interface */
-
-/* Handler for the Alarm signal */
-
-int SyHaveAlarms = 1;
-
-/* This API lets us pick wich signal to use */
-#define TIMER_SIGNAL SIGVTALRM
-
-
-/* For now anyway we create one timer at initialisation and use it */
-static timer_t syTimer = 0;
-
-#if SYS_IS_CYGWIN32
-#define MY_CLOCK CLOCK_REALTIME
-#else
-#define MY_CLOCK CLOCK_THREAD_CPUTIME_ID
-#endif
-
-static void SyInitAlarm( void ) {
-/* Create the CPU timer used for timeouts */
-  struct sigevent se;
-  se.sigev_notify = SIGEV_SIGNAL;
-  se.sigev_signo = TIMER_SIGNAL;
-  se.sigev_value.sival_int = 0x12345678;
-  if (timer_create( MY_CLOCK, &se, &syTimer)) {
-    Pr("#E  Could not create interval timer. Timeouts will not be supported\n",0L,0L);
-    SyHaveAlarms = 0;
-  }
-}
-
-static void syAnswerAlarm ( int signr, siginfo_t * si, void *context)
-{
-    /* interrupt the executor                                             
-       Later we might want to do something cleverer with throwing an 
-       exception or dealing better if this isn't our timer     */
-  assert( signr == TIMER_SIGNAL);
-  assert( si->si_signo == TIMER_SIGNAL);
-  assert( si->si_code == SI_TIMER);
-  assert( si->si_value.sival_int == 0x12345678 );
-  SyAlarmRunning = 0;
-  SyAlarmHasGoneOff = 1;
-  InterruptExecStat();
-}
-
- 
-void SyInstallAlarm ( UInt seconds, UInt nanoseconds )
-{
-  struct sigaction sa;
-  
-  sa.sa_handler = NULL;
-  sa.sa_sigaction = syAnswerAlarm;
-  sigemptyset(&(sa.sa_mask));
-  sa.sa_flags = SA_RESETHAND | SA_SIGINFO | SA_RESTART;
-  
-  /* First install the handler */
-  if (sigaction( TIMER_SIGNAL, &sa, NULL ))
-    {
-      ErrorReturnVoid("Could not set handler for alarm signal",0L,0L,"you can return to ignore");
-      return;
-    }
-
-  
-  struct itimerspec tv;
-  tv.it_value.tv_sec = (time_t)seconds;
-  tv.it_value.tv_nsec = (long)nanoseconds;
-  tv.it_interval.tv_sec = (time_t)0;
-  tv.it_interval.tv_nsec = 0L;
-  
-  SyAlarmRunning = 1;
-  SyAlarmHasGoneOff = 0;
-  if (timer_settime(syTimer, 0, &tv, NULL)) {
-    signal(TIMER_SIGNAL, SIG_DFL);
-    ErrorReturnVoid("Could not set interval timer", 0L, 0L, "you can return to ignore");
-  }
-  return;
-}
-
-void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
-  struct itimerspec tv, buf;
-  tv.it_value.tv_sec = (time_t)0;
-  tv.it_value.tv_nsec = 0L;
-  tv.it_interval.tv_sec = (time_t)0;
-  tv.it_interval.tv_nsec = 0L;
-
-  timer_settime(syTimer, 0, &tv, &buf);
-  SyAlarmRunning = 0;
-  signal(TIMER_SIGNAL, SIG_IGN);
-
-  if (seconds)
-    *seconds = (UInt)buf.it_value.tv_sec;
-  if (nanoseconds)
-    *nanoseconds = (UInt)buf.it_value.tv_nsec;
-  return;
-}
-
-#else
-#if HAVE_SETITIMER && HAVE_SIGACTION
-
-/* Using setitimer and getitimer from sys/time.h */
-/* again sigaction could be replaced by signal if that was useful
- sigaction is just a bit more robust */
-
-/* Handler for the Alarm signal */
-
-int SyHaveAlarms = 1;
-
-
-static void SyInitAlarm( void ) {
-  /* No initialisation in this case */
-  return; 
-}
-
-static void syAnswerAlarm ( int signr, siginfo_t * si, void *context)
-{
-    /* interrupt the executor                                             
-       Later we might want to do something cleverer with throwing an 
-       exception or dealing better if this isn't our timer     */
-  assert( signr == SIGVTALRM);
-  assert( si->si_signo == SIGVTALRM);
-  SyAlarmRunning = 0;
-  SyAlarmHasGoneOff = 1;
-  InterruptExecStat();
-}
-
- 
-void SyInstallAlarm ( UInt seconds, UInt nanoseconds )
-{
-  struct sigaction sa;
-  
-  sa.sa_handler = NULL;
-  sa.sa_sigaction = syAnswerAlarm;
-  sigemptyset(&(sa.sa_mask));
-  sa.sa_flags = SA_RESETHAND | SA_SIGINFO | SA_RESTART;
-
-  
-  /* First install the handler */
-  if (sigaction( SIGVTALRM, &sa, NULL ))
-    {
-      ErrorReturnVoid("Could not set handler for alarm signal",0L,0L,"you can return to ignore");
-      return;
-    }
-
-  
-  struct itimerval tv;
-  tv.it_value.tv_sec = (time_t)seconds;
-  tv.it_value.tv_usec = (suseconds_t)(nanoseconds/1000);
-  tv.it_interval.tv_sec = (time_t)0;
-  tv.it_interval.tv_usec = (suseconds_t)0L;
-  
-  SyAlarmRunning = 1;
-  SyAlarmHasGoneOff = 0;
-  if (setitimer(ITIMER_VIRTUAL, &tv, NULL)) {
-    signal(SIGVTALRM, SIG_IGN);
-    ErrorReturnVoid("Could not set interval timer", 0L, 0L, "you can return to ignore");
-  }
-  return;
-}
-
-void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
-  struct itimerval tv, buf;
-  tv.it_value.tv_sec = (time_t)0;
-  tv.it_value.tv_usec = (suseconds_t)0L;
-  tv.it_interval.tv_sec = (time_t)0;
-  tv.it_interval.tv_usec = (suseconds_t)0L;
-
-  setitimer(ITIMER_VIRTUAL, &tv, &buf);
-  SyAlarmRunning = 0;
-  signal(SIGVTALRM, SIG_IGN);
-
-  if (seconds)
-    *seconds = (UInt)buf.it_value.tv_sec;
-  if (nanoseconds)
-    *nanoseconds = 1000*(UInt)buf.it_value.tv_usec;
-  return;
-}
-
-#else
-int SyHaveAlarms = 0;
-
-/* stub implementations */
-
-static void SyInitAlarm( void ) {
-  /* No initialisation in this case */
-  return; 
-}
-
- 
-void SyInstallAlarm ( UInt seconds, UInt nanoseconds )
-{
-  assert(0);
-  return;
-}
-
-void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
-  assert(0);
-  return;
-}
-
-#endif
 #endif
 
 

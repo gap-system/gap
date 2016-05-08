@@ -21,7 +21,7 @@
 #include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "calls.h"               /* generic call mechanism          */
 #include        "code.h"                /* coder                           */
 
@@ -36,8 +36,8 @@
 
 #include        "read.h"                /* reader                          */
 
-#include	"tls.h"
-#include	"thread.h"
+#include	"hpc/tls.h"
+#include	"hpc/thread.h"
 
 #include        "vars.h"                /* variables                       */
 
@@ -56,7 +56,7 @@
 **
 #define READ_ERROR()    (TLS(NrError) || (TLS(NrError)+=sySetjmp(TLS(ReadJmpError))))
 */
-syJmp_buf         ReadJmpError;
+/* TL: syJmp_buf         ReadJmpError; */
 
 
 /****************************************************************************
@@ -73,9 +73,9 @@ syJmp_buf         ReadJmpError;
 **  'CountNams' is the number of local variables names lists currently on the
 **  stack.
 */
-Obj             StackNams;
+/* TL: Obj             StackNams; */
 
-UInt            CountNams;
+/* TL: UInt            CountNams; */
 
 
 /****************************************************************************
@@ -91,9 +91,9 @@ UInt            CountNams;
 **  'ReadTilde' is 1 if the reader has read a  reference to the global variable
 **  '~' within the current outmost list or record expression.
 */
-UInt            ReadTop;
+/* TL: UInt            ReadTop; */
 
-UInt            ReadTilde;
+/* TL: UInt            ReadTilde; */
 
 
 /****************************************************************************
@@ -104,7 +104,7 @@ UInt            ReadTilde;
 **  to prevent undefined global variable  warnings, when reading a  recursive
 **  function.
 */
-UInt            CurrLHSGVar;
+/* TL: UInt            CurrLHSGVar; */
 
 
 /****************************************************************************
@@ -131,8 +131,8 @@ void ReadAtom (
     TypSymbolSet        follow,
     Char                mode );
 
-static UInt CurrentGlobalForLoopVariables[100];
-static UInt CurrentGlobalForLoopDepth;
+/* TL: static UInt CurrentGlobalForLoopVariables[100]; */
+/* TL: static UInt CurrentGlobalForLoopDepth; */
 
 void PushGlobalForLoopVariable( UInt var)
 {
@@ -190,8 +190,8 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
 */
 extern Obj ExprGVars;
-extern Obj ErrorLVars;
-extern Obj BottomLVars;
+/* TL: extern Obj ErrorLVars; */
+/* TL: extern Obj BottomLVars; */
 
 /* This function reads the options part at the end of a function call
    The syntax is
@@ -216,7 +216,7 @@ void ReadFuncCallOption( TypSymbolSet follow )
     if ( ! READ_ERROR() ) { IntrFuncCallOptionsBeginElmExpr(); }
   }
   else {
-    SyntaxError("identifier expected");
+    SyntaxError("Identifier expected");
   }
   if ( TLS(Symbol) == S_ASSIGN )
     {
@@ -254,6 +254,140 @@ static Obj GAPInfo;
 
 static UInt WarnOnUnboundGlobalsRNam;
 
+
+void ReadReferenceModifiers( TypSymbolSet follow )
+{
+    char type = ' ';
+    UInt level = 0;
+    UInt narg = 0;
+    UInt rnam  = 0;
+    /* followed by one or more selectors                                   */
+    while ( IS_IN( TLS(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
+        /* <Var> '[' <Expr> ']'  list selector                             */
+        if ( TLS(Symbol) == S_LBRACK ) {
+            Match( S_LBRACK, "[", follow );
+            ReadExpr( S_COMMA|S_RBRACK|follow, 'r' );
+            narg = 1;
+            while ( TLS(Symbol) == S_COMMA) {
+              Match(S_COMMA,",", follow|S_RBRACK);
+              ReadExpr(S_COMMA|S_RBRACK|follow, 'r' );
+              narg++;
+            }
+            Match( S_RBRACK, "]", follow );
+            type = (level == 0 ? '[' : ']');
+        }
+
+        /* <Var> '{' <Expr> '}'  sublist selector                          */
+        else if ( TLS(Symbol) == S_LBRACE ) {
+            Match( S_LBRACE, "{", follow );
+            ReadExpr( S_RBRACE|follow, 'r' );
+            Match( S_RBRACE, "}", follow );
+            type = (level == 0 ? '{' : '}');
+        }
+
+        /* <Var> '![' <Expr> ']'  list selector                            */
+        else if ( TLS(Symbol) == S_BLBRACK ) {
+            Match( S_BLBRACK, "![", follow );
+            ReadExpr( S_RBRACK|follow, 'r' );
+            Match( S_RBRACK, "]", follow );
+            type = (level == 0 ? '<' : '>');
+        }
+
+        /* <Var> '!{' <Expr> '}'  sublist selector                         */
+        else if ( TLS(Symbol) == S_BLBRACE ) {
+            Match( S_BLBRACE, "!{", follow );
+            ReadExpr( S_RBRACE|follow, 'r' );
+            Match( S_RBRACE, "}", follow );
+            type = (level == 0 ? '(' : ')');
+        }
+
+        /* <Var> '.' <Ident>  record selector                              */
+        else if ( TLS(Symbol) == S_DOT ) {
+            Match( S_DOT, ".", follow );
+            if ( TLS(Symbol) == S_IDENT || TLS(Symbol) == S_INT ) {
+                rnam = RNamName( TLS(Value) );
+                Match( TLS(Symbol), "identifier", follow );
+                type = '.';
+            }
+            else if ( TLS(Symbol) == S_LPAREN ) {
+                Match( S_LPAREN, "(", follow );
+                ReadExpr( S_RPAREN|follow, 'r' );
+                Match( S_RPAREN, ")", follow );
+                type = ':';
+            }
+            else {
+                SyntaxError("Record component name expected");
+            }
+            level = 0;
+        }
+
+        /* <Var> '!.' <Ident>  record selector                             */
+        else if ( TLS(Symbol) == S_BDOT ) {
+            Match( S_BDOT, "!.", follow );
+            if ( TLS(Symbol) == S_IDENT || TLS(Symbol) == S_INT ) {
+                rnam = RNamName( TLS(Value) );
+                Match( TLS(Symbol), "identifier", follow );
+                type = '!';
+            }
+            else if ( TLS(Symbol) == S_LPAREN ) {
+                Match( S_LPAREN, "(", follow );
+                ReadExpr( S_RPAREN|follow, 'r' );
+                Match( S_RPAREN, ")", follow );
+                type = '|';
+            }
+            else {
+                SyntaxError("Record component name expected");
+            }
+            level = 0;
+        }
+
+        /* <Var> '(' [ <Expr> { ',' <Expr> } ] ')'  function call          */
+        else if ( TLS(Symbol) == S_LPAREN ) {
+            Match( S_LPAREN, "(", follow );
+            if ( ! READ_ERROR() ) { IntrFuncCallBegin(); }
+            narg = 0;
+            if ( TLS(Symbol) != S_RPAREN && TLS(Symbol) != S_COLON) {
+                ReadExpr( S_RPAREN|follow, 'r' );
+                narg++;
+            }
+            while ( TLS(Symbol) == S_COMMA ) {
+                Match( S_COMMA, ",", follow );
+                ReadExpr( S_RPAREN|follow, 'r' );
+                narg++;
+            }
+            type = 'c';
+            if (TLS(Symbol) == S_COLON ) {
+              Match( S_COLON, ":", follow );
+              if ( TLS(Symbol) != S_RPAREN ) /* save work for empty options */
+                {
+                  ReadFuncCallOptions(S_RPAREN | follow);
+                  type = 'C';
+                }
+            }
+            Match( S_RPAREN, ")", follow );
+        }
+
+    /* so the prefix was a reference                                   */
+  if ( READ_ERROR() ) {}
+    else if ( type == '[' ) { IntrElmList(narg);                    }
+    else if ( type == ']' ) { IntrElmListLevel( narg, level );       }
+    else if ( type == '{' ) { IntrElmsList();               level++; }
+    else if ( type == '}' ) { IntrElmsListLevel( level );   level++; }
+    else if ( type == '<' ) { IntrElmPosObj();                       }
+    else if ( type == '>' ) { IntrElmPosObjLevel( level );           }
+    else if ( type == '(' ) { IntrElmsPosObj();             level++; }
+    else if ( type == ')' ) { IntrElmsPosObjLevel( level ); level++; }
+    else if ( type == '.' ) { IntrElmRecName( rnam );       level=0; }
+    else if ( type == ':' ) { IntrElmRecExpr();             level=0; }
+    else if ( type == '!' ) { IntrElmComObjName( rnam );    level=0; }
+    else if ( type == '|' ) { IntrElmComObjExpr();          level=0; }
+    else if ( type == 'c' || type == 'C' )
+    { IntrFuncCallEnd( 1UL, type == 'C', narg ); level=0; }
+    else
+      SyntaxError("Parse error in modifiers"); // This should never be reached
+    }
+}
+
 void ReadCallVarAss (
     TypSymbolSet        follow,
     Char                mode )
@@ -273,7 +407,7 @@ void ReadCallVarAss (
 
     /* all variables must begin with an identifier                         */
     if ( TLS(Symbol) != S_IDENT ) {
-        SyntaxError( "identifier expected" );
+        SyntaxError( "Identifier expected" );
         return;
     }
 
@@ -366,7 +500,7 @@ void ReadCallVarAss (
 	  return;
 	}
       else
-	SyntaxError("function literal in impossible context");
+	SyntaxError("Function literal in impossible context");
     }
 
     /* check whether this is an unbound global variable                    */
@@ -386,7 +520,7 @@ void ReadCallVarAss (
              ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
       && ! SyCompilePlease )
     {
-        SyntaxWarning("unbound global variable");
+        SyntaxWarning("Unbound global variable");
     }
 
     /* check whether this is a reference to the global variable '~'        */
@@ -469,7 +603,7 @@ void ReadCallVarAss (
                 type = ':';
             }
             else {
-                SyntaxError("record component name expected");
+                SyntaxError("Record component name expected");
             }
             level = 0;
         }
@@ -489,7 +623,7 @@ void ReadCallVarAss (
                 type = '|';
             }
             else {
-                SyntaxError("record component name expected");
+                SyntaxError("Record component name expected");
             }
             level = 0;
         }
@@ -598,7 +732,7 @@ void ReadCallVarAss (
         else if ( type == ':' ) { IntrUnbRecExpr();               }
         else if ( type == '!' ) { IntrUnbComObjName( rnam );      }
         else if ( type == '|' ) { IntrUnbComObjExpr();            }
-        else { SyntaxError("illegal operand for 'Unbind'");       }
+        else { SyntaxError("Illegal operand for 'Unbind'");       }
     }
 
 
@@ -615,7 +749,7 @@ void ReadCallVarAss (
         else if ( type == ':' ) { IntrIsbRecExpr();               }
         else if ( type == '!' ) { IntrIsbComObjName( rnam );      }
         else if ( type == '|' ) { IntrIsbComObjExpr();            }
-        else { SyntaxError("illegal operand for 'IsBound'");      }
+        else { SyntaxError("Illegal operand for 'IsBound'");      }
     }
 
 }
@@ -994,16 +1128,16 @@ void ReadListExpr (
 
     /* incorrect place for three dots                                      */
     if (TLS(Symbol) == S_DOTDOTDOT) {
-            SyntaxError("only two dots in a range");
+            SyntaxError("Only two dots in a range");
     }
 
     /* '..' <Expr> ']'                                                     */
     if ( TLS(Symbol) == S_DOTDOT ) {
         if ( pos != nr ) {
-            SyntaxError("must have no unbound entries in range");
+            SyntaxError("Must have no unbound entries in range");
         }
         if ( 2 < nr ) {
-            SyntaxError("must have at most 2 entries before '..'");
+            SyntaxError("Must have at most 2 entries before '..'");
         }
         range = 1;
         Match( S_DOTDOT, "..", follow );
@@ -1013,7 +1147,7 @@ void ReadListExpr (
         if ( ! READ_ERROR() ) { IntrListExprEndElm(); }
         nr++;
         if ( TLS(ReadTop) == 1 && TLS(ReadTilde) == 1 ) {
-            SyntaxError("sorry, '~' not allowed in range");
+            SyntaxError("Sorry, '~' not allowed in range");
         }
     }
 
@@ -1073,7 +1207,7 @@ void ReadRecExpr (
 	  if ( ! READ_ERROR() ) { IntrRecExprBeginElmExpr(); }
         }
         else {
-	  SyntaxError("identifier expected");
+	  SyntaxError("Identifier expected");
         }
         Match( S_ASSIGN, ":=", follow );
         ReadExpr( S_RPAREN|follow, 'r' );
@@ -1224,7 +1358,7 @@ void ReadFuncExpr (
 
 	    for ( i = 1; i <= narg; i++ ) {
 		if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
-		    SyntaxError("name used for two arguments");
+		    SyntaxError("Name used for two arguments");
 		}
 	    }
         C_NEW_STRING_DYN( name, TLS(Value) );
@@ -1245,7 +1379,7 @@ void ReadFuncExpr (
         Match( S_LOCAL, "local", follow );
         for ( i = 1; i <= narg; i++ ) {
             if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
-                SyntaxError("name used for argument and local");
+                SyntaxError("Name used for argument and local");
             }
         }
         C_NEW_STRING_DYN( name, TLS(Value) );
@@ -1258,12 +1392,12 @@ void ReadFuncExpr (
             Match( S_COMMA, ",", follow );
             for ( i = 1; i <= narg; i++ ) {
                 if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
-                    SyntaxError("name used for argument and local");
+                    SyntaxError("Name used for argument and local");
                 }
             }
             for ( i = narg+1; i <= narg+nloc; i++ ) {
                 if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
-                    SyntaxError("name used for two locals");
+                    SyntaxError("Name used for two locals");
                 }
             }
             C_NEW_STRING_DYN( name, TLS(Value) );
@@ -1614,6 +1748,8 @@ void ReadAtom (
     else {
         Match( S_INT, "expression", follow );
     }
+
+    ReadReferenceModifiers(follow);
 }
 
 
@@ -2469,7 +2605,7 @@ UInt ReadStats (
 
 *V  ReadEvalResult  . . . . . . . . result of reading one command immediately
 */
-Obj ReadEvalResult;
+/* TL: Obj ReadEvalResult; */
 
 
 /****************************************************************************
@@ -2590,20 +2726,20 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
         SyntaxError( "; expected");
     }
 
-    /* check for dual semicolon                                            */
-    if ( *TLS(In) == ';' ) {
-        GetSymbol();
-        if (dualSemicolon) *dualSemicolon = 1;
-    }
-    else {
-        if (dualSemicolon) *dualSemicolon = 0;
-    }
-
-    /* end the interpreter                                                 */
-    if ( ! READ_ERROR() ) {
+    /* Note that GetSymbol below potentially calls into the interpreter
+       again, and if an error occurred the interpreter is not in the correct
+       state to execute ReadLine on an input stream, leading to crashes */
+    if (!READ_ERROR()) {
         type = IntrEnd( 0UL );
-    }
-    else {
+
+        /* check for dual semicolon */
+        if ( *TLS(In) == ';' ) {
+            GetSymbol();
+            if (dualSemicolon) *dualSemicolon = 1;
+        } else {
+            if (dualSemicolon) *dualSemicolon = 0;
+        }
+    } else {
         IntrEnd( 1UL );
         type = STATUS_ERROR;
     }
@@ -2695,7 +2831,7 @@ UInt ReadEvalFile ( void )
             Match( S_COMMA, ",", 0L );
             for ( i = 1; i <= nloc; i++ ) {
                 if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
-                    SyntaxError("name used for two locals");
+                    SyntaxError("Name used for two locals");
                 }
             }
             C_NEW_STRING_DYN( name, TLS(Value) );
@@ -2921,8 +3057,8 @@ static Int InitKernel (
 {
     TLS(ErrorLVars) = (UInt **)0;
     TLS(CurrentGlobalForLoopDepth) = 0;
-    InitGlobalBag( &ReadEvalResult, "src/read.c:ReadEvalResult" );
-    InitGlobalBag( &StackNams,      "src/read.c:StackNams"      );
+    InitGlobalBag( &TLS(ReadEvalResult), "src/read.c:ReadEvalResult" );
+    InitGlobalBag( &TLS(StackNams),      "src/read.c:StackNams"      );
     InitCopyGVar( "GAPInfo", &GAPInfo);
     /* return success                                                      */
     return 0;

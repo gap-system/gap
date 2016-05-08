@@ -49,7 +49,7 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
 
@@ -57,7 +57,7 @@
 
 #include        "code.h"
 
-#include	"tls.h"
+#include        "hpc/tls.h"
 
 #include        "vars.h"                /* TLS(BottomLVars) for execution contexts */
 

@@ -100,7 +100,8 @@ BindGlobal( "TRANSATL",
               [ "ise", "ize" ],
               [ "abeling", "abelling" ],
               [ "olvable", "oluble" ],
-              [ "yse", "yze" ] ] );
+              [ "yse", "yze" ],
+	      [ "roebner", "robner"]] );
 
 
 #############################################################################

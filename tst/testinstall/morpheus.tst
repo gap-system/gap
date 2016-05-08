@@ -11,7 +11,6 @@
 ##
 gap> START_TEST("morpheus.tst");
 gap> g:=Group((1,2,3,4),(1,3));;
-gap> LoadPackage("autpgrp", false);;
 gap> a:=AutomorphismGroup(g);;
 gap> inn:=InnerAutomorphismsAutomorphismGroup(a);;
 gap> iso1:=IsomorphismGroups(a,g);;

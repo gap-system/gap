@@ -15,7 +15,11 @@ function( G )
 local   pcgs,r,hom,A,iso,p,i;
   
   r:=RadicalGroup(G);
-  hom:=NaturalHomomorphismByNormalSubgroup(G,r);
+  if Size(r)=1 then
+    hom:=IdentityMapping(G);
+  else
+    hom:=NaturalHomomorphismByNormalSubgroup(G,r);
+  fi;
   
   pcgs := TryPcgsPermGroup( G,r, false, false, true );
   if not IsPcgs( pcgs )  then

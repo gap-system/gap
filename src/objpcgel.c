@@ -16,7 +16,6 @@
 
 #include        "gvars.h"               /* global variables                */
 #include        "gap.h"                 /* error handling, initialisation  */
-#include        "tls.h"                 /* thread-local storage            */
 
 #include        "calls.h"               /* generic call mechanism          */
 
@@ -25,19 +24,20 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "ariths.h"              /* basic arithmetic                */
 #include        "bool.h"                /* booleans                        */
 
 #include        "code.h"                /* coder                           */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objscoll.h"            /* single collector                */
 
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
 
-#include	"thread.h"		/* threads			   */
+#include        "hpc/tls.h"             /* thread-local storage            */
+#include	"hpc/thread.h"		/* threads			   */
 
 
 /****************************************************************************

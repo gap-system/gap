@@ -140,20 +140,6 @@ DeclareOperation( "GroupString", [IsGroup,IsString] );
 
 #############################################################################
 ##
-#A  NameIsomorphismClass( <G> ) . . . . . . . . . . . . . . . .  experimental
-##
-##  <ManSection>
-##  <Attr Name="NameIsomorphismClass" Arg='G'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareAttribute( "NameIsomorphismClass", IsGroup );
-
-
-#############################################################################
-##
 #P  IsCyclic( <G> )
 ##
 ##  <#GAPDoc Label="IsCyclic">
@@ -1728,7 +1714,7 @@ DeclareAttribute( "NilpotencyClassOfGroup", IsGroup );
 ##  that are maximal among the proper normal subgroups.
 ##  <Example><![CDATA[
 ##  gap> MaximalNormalSubgroups( g );
-##  [ Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]) ]
+##  [ Group([ (1,2,3), (2,3,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3179,8 +3165,8 @@ KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
 ##  <M>V \geq </M><A>U</A>. If <A>U</A> is subnormal, <M>V =</M> <A>U</A>.
 ##  <Example><![CDATA[
 ##  gap> s:=SubnormalSeries(g,Group((1,2)(3,4)));
-##  [ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,4)(2,3) ]),
-##    Group([ (1,2)(3,4) ]) ]
+##  [ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,3)(2,4) ]), 
+##   Group([ (1,2)(3,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3285,6 +3271,45 @@ KeyDependentOperation( "SylowComplement", IsGroup, IsPosInt, "prime" );
 ##  <#/GAPDoc>
 ##
 KeyDependentOperation( "HallSubgroup", IsGroup, IsList, ReturnTrue );
+
+
+#############################################################################
+##
+#F  NormalHallSubgroupsFromSylows( <G>[, <method>] )
+##
+##  <ManSection>
+##  <Func Name="NormalHallSubgroupsFromSylows" Arg="G[, method]"/>
+##
+##  <Description>
+##    Computes all normal Hall subgroups, that is all normal subgroups
+##    <A>N</A> for which the size of <A>N</A> is relatively prime to the
+##    index of <A>N</A> in <A>G</A>.
+##
+##    Sometimes it is not desirable to compute all normal Hall subgroups. The
+##    user can express such a wish by using the <A>method</A> <Q>"any"</Q>.
+##    Then NormalHallSubgroupsFromSylows returns a nontrivial normal Hall
+##    subgroup, if there is one, and returns fail, otherwise.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "NormalHallSubgroupsFromSylows", [ IsGroup ] );
+
+
+#############################################################################
+##
+#A  NormalHallSubgroups( <G> )
+##
+##  <ManSection>
+##  <Attr Name="NormalHallSubgroups" Arg="G"/>
+##
+##  <Description>
+##    Returns a list of all normal Hall subgroups, that is of all normal
+##    subgroups <A>N</A> for which the size of <A>N</A> is relatively prime
+##    to the index of <A>N</A> in <A>G</A>.
+##  </Description>
+##  </ManSection>
+##
+DeclareAttribute( "NormalHallSubgroups", IsGroup );
 
 
 #############################################################################
@@ -4148,7 +4173,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
 ##        [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens );;
-##  #I  the image group has 2 gens and 10 rels of total length 126
+##  #I  the image group has 2 gens and 10 rels of total length 128
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens : 
 ##  >                                           method := "regular");;
 ##  #I  the image group has 2 gens and 6 rels of total length 56
@@ -4354,6 +4379,40 @@ DeclareFilter("IsGroupOfFamily");
 DeclareGlobalFunction("Group_PseudoRandom");
 
 DeclareGlobalFunction("GroupEnumeratorByClosure");
+
+############################################################################
+##
+#O  LowIndexSubgroups( <G>, <index> )
+##
+##  <#GAPDoc Label="LowIndexSubgroups">
+##  <ManSection>
+##  <Oper Name="LowIndexSubgroups"
+##   Arg='G, index'/>
+##  <Oper Name="LowIndexSubgroups" Arg='G, index'/>
+##
+##  <Description>
+##  These operations computes representatives of the conjugacy classes of
+##  subgroups of the group <A>G</A> that 
+##  index less than or equal to
+##  <A>index</A>.
+##  <P/>
+##  For finitely presented groups this operation simply defaults to
+##  <C>LowIndexSubgroupsFpGroup</C>. In other cases, it uses repeated
+##  calculation of maximal subgroups.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> g:=TransitiveGroup(18,950);;
+##  gap> l:=LowIndexSubgroups(g,20);;Collected(List(l,x->Index(g,x)));
+##  [ [ 1, 1 ], [ 2, 1 ], [ 5, 1 ], [ 6, 1 ], [ 10, 2 ], [ 12, 3 ], [ 15, 1 ], 
+##    [ 16, 2 ], [ 18, 1 ], [ 20, 9 ] ]
+##  ]]></Example>
+##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "LowIndexSubgroups",
+    [ IsGroup, IsPosInt ] );
 
 #############################################################################
 ##

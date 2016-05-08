@@ -95,12 +95,11 @@ AC_ARG_WITH(gmp,
 USE_GMP=yes
 case "$with_gmp" in
   no)
-    GMP_CFLAGS=""
-    GMP_LIBS=""
-    MAKE_GMP=""
-    USE_GMP=no
+    AC_MSG_ERROR([GMP is required to build GAP. You can specify "--with-gmp=yes" to build the default version of GMP shipped with GAP,
+                  "--with-gmp=system" to use the default system search paths "/usr" and "/usr/local", or a path to a precompiled
+                  version of GMP. The option "--with-gmp=no" to compile GAP without GMP is no longer supported.])
     ;;
-  yes | 6.0.0a | 5.0.5 | 5.0.4)
+  yes | 6.0.0a)
     if test "$with_gmp" = "yes" ; then
       with_gmp="6.0.0a"
     fi;
@@ -134,7 +133,7 @@ if test "$MAKE_GMP" = "gmp" ; then
       if test `gcc -dumpversion` = "4.3.2" ; then
         AC_MSG_ERROR([The version of gcc found on your system is known to
                        miscompile GMP on 64-bit machines. Please use another
-                       compiler or build GAP without GMP.])
+                       compiler.])
       fi
     fi
   fi
@@ -142,7 +141,7 @@ if test "$MAKE_GMP" = "gmp" ; then
   if test "$m4_PRESENT" = "no"; then
     AC_MSG_ERROR([You have requested that GAP be built with GMP but this
                    requires m4, which has not been detected on your system.
-                   Please install m4 or build without GMP.])
+                   Please install m4.])
   fi
   case "$target" in
     arm*)

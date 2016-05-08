@@ -41,31 +41,31 @@
 #include        "precord.h"             /* plain records                   */
 
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
 
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 #include        "objfgelm.h"            /* objects of free groups          */
 
 #include        "objscoll.h"            /* single collector                */
 
 #include        "objccoll.h"            /* combinatorial collector         */
-#include        "thread.h"
+#include        "hpc/thread.h"
 
 /****************************************************************************
 **
 *F * * * * * * * * * * * * local defines and typedefs * * * * * * * * * * * *
 */
 
-Obj SC_NW_STACK;
-Obj SC_LW_STACK;
-Obj SC_PW_STACK;
-Obj SC_EW_STACK;
-Obj SC_GE_STACK;
-Obj SC_CW_VECTOR;
-Obj SC_CW2_VECTOR;
-UInt SC_MAX_STACK_SIZE;
+/* TL: Obj SC_NW_STACK; */
+/* TL: Obj SC_LW_STACK; */
+/* TL: Obj SC_PW_STACK; */
+/* TL: Obj SC_EW_STACK; */
+/* TL: Obj SC_GE_STACK; */
+/* TL: Obj SC_CW_VECTOR; */
+/* TL: Obj SC_CW2_VECTOR; */
+/* TL: UInt SC_MAX_STACK_SIZE; */
 
 /****************************************************************************
 **
@@ -103,7 +103,7 @@ typedef struct {
 #define SingleCollectWord   C8Bits_SingleCollectWord
 #define Solution            C8Bits_Solution
 #define UIntN               UInt1
-#include "src/objscoll-impl.h"
+#include "objscoll-impl.h"
 
 /****************************************************************************
 **
@@ -125,7 +125,7 @@ FinPowConjCol C8Bits_SingleCollector = {
 #define SingleCollectWord   C16Bits_SingleCollectWord
 #define Solution            C16Bits_Solution
 #define UIntN               UInt2
-#include "src/objscoll-impl.h"
+#include "objscoll-impl.h"
 
 /****************************************************************************
 **
@@ -147,7 +147,7 @@ FinPowConjCol C16Bits_SingleCollector = {
 #define SingleCollectWord   C32Bits_SingleCollectWord
 #define Solution            C32Bits_Solution
 #define UIntN               UInt4
-#include "src/objscoll-impl.h"
+#include "objscoll-impl.h"
 
 /****************************************************************************
 **
@@ -822,13 +822,13 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    InitGlobalBag( &SC_NW_STACK, "SC_NW_STACK" );
-    InitGlobalBag( &SC_LW_STACK, "SC_LW_STACK" );
-    InitGlobalBag( &SC_PW_STACK, "SC_PW_STACK" );
-    InitGlobalBag( &SC_EW_STACK, "SC_EW_STACK" );
-    InitGlobalBag( &SC_GE_STACK, "SC_GE_STACK" );
-    InitGlobalBag( &SC_CW_VECTOR, "SC_CW_VECTOR" );
-    InitGlobalBag( &SC_CW2_VECTOR, "SC_CW2_VECTOR" );
+    InitGlobalBag( &TLS(SC_NW_STACK), "SC_NW_STACK" );
+    InitGlobalBag( &TLS(SC_LW_STACK), "SC_LW_STACK" );
+    InitGlobalBag( &TLS(SC_PW_STACK), "SC_PW_STACK" );
+    InitGlobalBag( &TLS(SC_EW_STACK), "SC_EW_STACK" );
+    InitGlobalBag( &TLS(SC_GE_STACK), "SC_GE_STACK" );
+    InitGlobalBag( &TLS(SC_CW_VECTOR), "SC_CW_VECTOR" );
+    InitGlobalBag( &TLS(SC_CW2_VECTOR), "SC_CW2_VECTOR" );
 
     /* return success                                                      */
     return 0;

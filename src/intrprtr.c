@@ -46,7 +46,7 @@
 
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
 #include        "funcs.h"               /* functions                       */
@@ -54,9 +54,9 @@
 
 #include        "intrprtr.h"            /* interpreter                     */
 
-#include	"tls.h"
-#include	"thread.h"
-#include	"aobjects.h"		/* atomic objects		   */
+#include	"hpc/tls.h"
+#include	"hpc/thread.h"
+#include	"hpc/aobjects.h"		/* atomic objects		   */
 
 #include        "vars.h"                /* variables                       */
 
@@ -71,7 +71,7 @@
 **  the  statement  that  was  last  interpreted (which   might  have been  a
 **  return-value-statement).
 */
-Obj IntrResult;
+/* TL: Obj IntrResult; */
 
 
 /****************************************************************************
@@ -84,7 +84,7 @@ Obj IntrResult;
 **  If it interpretes a return-void-statement,  it sets 'IntrReturning' to 2.
 **  If it interpretes a quit-statement, it sets 'IntrReturning' to 8.
 */
-UInt IntrReturning;
+/* TL: UInt IntrReturning; */
 
 
 /****************************************************************************
@@ -98,7 +98,7 @@ UInt IntrReturning;
 **
 **  This mode is also used in Info and Assert, when arguments are not printed.
 */
-UInt IntrIgnoring;
+/* TL: UInt IntrIgnoring; */
 
 
 /****************************************************************************
@@ -109,7 +109,7 @@ UInt IntrIgnoring;
 **  The interpreter  switches  to this  mode for  constructs  that it  cannot
 **  directly interpret, such as loops or function bodies.
 */
-UInt IntrCoding;
+/* TL: UInt IntrCoding; */
 
 
 /****************************************************************************
@@ -143,11 +143,11 @@ UInt IntrCoding;
 **  'CountObj' there were active when the current interpreter was started and
 **  which will be made active again when the current interpreter will stop.
 */
-static Obj             IntrState;
+/* TL: Obj             IntrState; */
 
-static Obj             StackObj;
+/* TL: Obj             StackObj; */
 
-static Int             CountObj;
+/* TL: Int             CountObj; */
 
 void            PushObj (
     Obj                 val )
@@ -1226,7 +1226,7 @@ void            IntrBreak ( void )
 
     /* otherwise must be coding                                            */
     if ( TLS(IntrCoding) == 0 )
-      ErrorQuit("A break statement can only appear inside a loop",0L,0L);
+      ErrorQuit("'break' statement can only appear inside a loop",0L,0L);
     else
       CodeBreak();
     return;
@@ -1251,7 +1251,7 @@ void            IntrContinue ( void )
 
     /* otherwise must be coding                                            */
     if ( TLS(IntrCoding) == 0 )
-      ErrorQuit("A continue statement can only appear inside a loop",0L,0L);
+      ErrorQuit("'continue' statement can only appear inside a loop",0L,0L);
     else
       CodeContinue();
     return;
@@ -1943,7 +1943,7 @@ void            IntrIntExpr (
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeIntExpr( str ); return; }
 
-
+    
     /* get the signs, if any                                                */
     sign = 1;
     i = 0;
@@ -1996,60 +1996,21 @@ void            IntrIntExpr (
 void            IntrLongIntExpr (
     Obj               string )
 {
-    Obj                 val;            /* value = <upp> * <pow> + <low>   */
-    Obj                 upp;            /* upper part                      */
-    Int                 pow;            /* power                           */
-    Int                 low;            /* lower part                      */
-    Int                 sign;           /* is the integer negative         */
-    UInt                i;              /* loop variable                   */
-    UChar *              str;            /* temp pointer                    */
+    Obj                 ret;            /* integer encoded as GAP obj      */
     /* ignore or code                                                      */
     if ( TLS(IntrReturning) > 0 ) { return; }
     if ( TLS(IntrIgnoring)  > 0 ) { return; }
     if ( TLS(IntrCoding)    > 0 ) { CodeLongIntExpr( string ); return; }
 
-
-    /* get the signs, if any                                                */
-    str = CHARS_STRING(string);
-    sign = 1;
-    i = 0;
-    while ( str[i] == '-' ) {
-        sign = - sign;
-        i++;
-    }
-
-    /* collect the digits in groups of 8                                   */
-    low = 0;
-    pow = 1;
-    upp = INTOBJ_INT(0);
-    while ( str[i] != '\0' ) {
-        low = 10 * low + str[i] - '0';
-        pow = 10 * pow;
-        if ( pow == 100000000L ) {
-            upp = PROD(upp,INTOBJ_INT(pow) );
-            upp = SUM(upp  , INTOBJ_INT(sign*low) );
-            str = CHARS_STRING(string);
-            pow = 1;
-            low = 0;
-        }
-        i++;
-    }
-
-    /* compose the integer value                                           */
-    val = 0;
-    if ( upp == INTOBJ_INT(0) ) {
-        val = INTOBJ_INT(sign*low);
-    }
-    else if ( pow == 1 ) {
-        val = upp;
-    }
-    else {
-        upp =  PROD( upp, INTOBJ_INT(pow) );
-        val = SUM( upp , INTOBJ_INT(sign*low) );
+    ret = IntStringInternal(string);
+    
+    if ( ret == Fail ) {
+        /* This should never happen */
+        ErrorQuit("Int: Invalid parsing (internal error)", 0, 0);
     }
 
     /* push the integer value                                              */
-    PushObj( val );
+    PushObj( ret );
 }
 
 /****************************************************************************
@@ -2215,6 +2176,11 @@ void            IntrPermCycle (
                 (Int)TNAM_OBJ(val), 0L );
         }
         c = INT_INTOBJ(val);
+	if (c > MAX_DEG_PERM4)
+	  ErrorQuit( "Permutation literal exceeds maximum permutation degree -- %i vs %i",
+		     c, MAX_DEG_PERM4);
+	
+	  
 
         /* if necessary resize the permutation                             */
         if ( SIZE_OBJ(perm)/sizeof(UInt4) < c ) {
@@ -2940,7 +2906,7 @@ void            IntrIsbHVar (
 **
 *F  IntrAssDVar(<dvar>) . . . . . . . . . . . . interpret assignment to debug
 */
-extern  Obj             ErrorLVars;
+/* TL: extern  Obj             ErrorLVars; */
 
 void            IntrAssDVar (
     UInt                dvar,
@@ -2966,7 +2932,6 @@ void            IntrAssDVar (
 
     /* assign the right hand side                                          */
     currLVars = TLS(CurrLVars);
-    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
@@ -4693,9 +4658,9 @@ void             IntrAssertEnd3Args ( void )
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    InitGlobalBag( &IntrResult, "src/intrprtr.c:IntrResult" );
-    InitGlobalBag( &IntrState,  "src/intrprtr.c:IntrState"  );
-    InitGlobalBag( &StackObj,   "src/intrprtr.c:StackObj"   );
+    InitGlobalBag( &TLS(IntrResult), "src/intrprtr.c:IntrResult" );
+    InitGlobalBag( &TLS(IntrState),  "src/intrprtr.c:IntrState"  );
+    InitGlobalBag( &TLS(StackObj),   "src/intrprtr.c:StackObj"   );
     InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 

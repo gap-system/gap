@@ -33,6 +33,9 @@ doc/*/manual.six
 
 pkg/
 extern/gmp*/
+bootstrap-pkg-minimal.tar.gz
+bootstrap-pkg-full.tar.gz
+
 
 dev/log
 
@@ -42,9 +45,13 @@ dev/log
 doc/gapmacrodoc.aux
 doc/gapmacrodoc.example-1.tst
 doc/gapmacrodoc.idx
+doc/gapmacrodoc.dvi
 doc/gapmacrodoc.lab
 doc/gapmacrodoc.log
 doc/gapmacrodoc.pdf
 doc/gapmacrodoc.six
 doc/gapmacrodoc.synctex.gz
 doc/gapmacrodoc.toc
+doc/wsp.g
+
+src/TAGS

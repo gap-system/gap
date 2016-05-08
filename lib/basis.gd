@@ -893,7 +893,6 @@ InstallGlobalFunction( "DeclareHandlingByNiceBasis", function( name, info )
     NiceBasisFiltersInfo[1]:= [ ValueGlobal( name ), info ];
 end );
 
-
 #############################################################################
 ##
 #F  IsGenericFiniteSpace( <V> )
@@ -1184,4 +1183,3 @@ DeclareGlobalFunction( "BasisWithReplacedLeftModule" );
 #############################################################################
 ##
 #E
-

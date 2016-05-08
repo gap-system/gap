@@ -37,7 +37,7 @@
 
 #include        "plist.h"               /* plain lists                     */
 #include        "blister.h"             /* boolean lists                   */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 #include        "range.h"               /* ranges                          */
 
 #include        "records.h"             /* generic records                 */
@@ -48,11 +48,11 @@
 #include        "listfunc.h"   
 #include        "integer.h"   
 
-#include        "tls.h"                 /* thread-local storage            */
-#include        "thread.h"              /* threads                         */
-#include        "aobjects.h"            /* atomic objects                  */
+#include        "hpc/tls.h"             /* thread-local storage            */
+#include        "hpc/thread.h"          /* threads                         */
+#include        "hpc/aobjects.h"        /* atomic objects                  */
 
-#include        "atomic.h"
+#include        "hpc/atomic.h"
 
 /****************************************************************************
 **
@@ -1215,10 +1215,25 @@ Obj NewAndFilter (
     Obj                 getter;
     Obj                 flags;
 
+    Int                 str_len;
+    Obj                 str;
+    char*               s;
+
     if ( oper1 == ReturnTrueFilter && oper2 == ReturnTrueFilter )
         return ReturnTrueFilter;
 
-    getter = NewFunctionT( T_FUNCTION, SIZE_OPER, StringAndFilter, 1,
+    str_len = GET_LEN_STRING(NAME_FUNC(oper1)) + GET_LEN_STRING(NAME_FUNC(oper2)) + 8;
+    str = NEW_STRING(str_len);
+    s = CSTR_STRING(str);
+    s[0] = '(';
+    s[1] = 0;
+    strlcat(s, CSTR_STRING(NAME_FUNC(oper1)), str_len);
+    strlcat(s, " and ", str_len);
+    strlcat(s, CSTR_STRING(NAME_FUNC(oper2)), str_len);
+    strlcat(s, ")", str_len);
+    SET_LEN_STRING(str, str_len - 1);
+
+    getter = NewFunctionT( T_FUNCTION, SIZE_OPER, str, 1,
                            ArglistObj, DoAndFilter );
     FLAG1_FILT(getter)  = oper1;
     FLAG2_FILT(getter)  = oper2;
@@ -1637,7 +1652,7 @@ Obj FuncCompactTypeIDs( Obj self )
 **
 *F  DoOperation( <name> ) . . . . . . . . . . . . . . .  make a new operation
 */
-UInt CacheIndex;
+/* TL: UInt CacheIndex; */
 
 Obj Method0Args;
 Obj NextMethod0Args;
@@ -3069,12 +3084,9 @@ Obj NewOperation (
 
 
 /****************************************************************************
-**
-
-*F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
-*/
-UInt TLS(CacheIndex);
-
+ **
+ *F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
+ */
 Obj Constructor0Args;
 Obj NextConstructor0Args;
 Obj Constructor1Args;
@@ -6397,6 +6409,25 @@ static StructInitInfo module = {
 StructInitInfo * InitInfoOpers ( void )
 {
     return &module;
+}
+
+/****************************************************************************
+**
+*F  InitOpersTLS() . . . . . . . . . . . . . . . . . . . . . . initialize TLS
+*F  DestroyOpersTLS()  . . . . . . . . . . . . . . . . . . . . .  destroy TLS
+*/
+
+void InitOpersState(GlobalState *state)
+{
+  state->MethodCache = NEW_PLIST(T_PLIST, 1);
+  state->MethodCacheItems = ADDR_OBJ(state->MethodCache);
+  state->MethodCacheSize = 1;
+  SET_LEN_PLIST(state->MethodCache, 1);
+}
+
+void DestroyOpersState(GlobalState *state)
+{
+  /* Nothing for now. */
 }
 
 

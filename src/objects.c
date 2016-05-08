@@ -36,15 +36,15 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
 
-#include        "aobjects.h"            /* atomic objects                  */
-#include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-//#include	"traverse.h"		/* object traversal		   */
-#include	"tls.h"			/* thread-local storage		   */
+#include        "hpc/aobjects.h"        /* atomic objects                  */
+#include        "code.h"                /* coder                           */
+#include        "hpc/thread.h"          /* threads			                   */
+//#include	"traverse.h"		            /* object traversal		   */
+#include        "hpc/tls.h"             /* thread-local storage		   */
 
 
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
@@ -809,18 +809,18 @@ Obj FuncMakeImmutable( Obj self, Obj obj)
 **
 **  'PrintObj' prints the object <obj>.
 */
-Obj PrintObjThis;
+/* TL: Obj PrintObjThis; */
 
-Int PrintObjIndex;
+/* TL: Int PrintObjIndex; */
 
-Int PrintObjFull;
+/* TL: Int PrintObjFull; */
 
-Int PrintObjDepth;
+/* TL: Int PrintObjDepth; */
 
 #define MAXPRINTDEPTH 1024L
-Obj PrintObjThiss [MAXPRINTDEPTH];
+/* TL: Obj PrintObjThiss [MAXPRINTDEPTH]; */
 
-Int PrintObjIndices [MAXPRINTDEPTH];
+/* TL: Int PrintObjIndices [MAXPRINTDEPTH]; */
 
 /****************************************************************************
 **
@@ -865,6 +865,21 @@ static UInt LastPV = 0; /* This variable contains one of the values
 			   PrintObj or ViewObj still open (0), or the
 			   innermost such is Print (1) or View (2) */
 
+/* On-demand creation of the PrintObj stack */
+void InitPrintObjStack()
+{
+    /* This is taken from HPC-GAP and does not work like this in GAP
+       since it tries to keep pointers into GASMAN bags
+    InitGlobalBag(&TLS(PrintObjThissObj), "objects.c:PrintObjThissObj");
+    InitGlobalBag(&TLS(PrintObjIndicesObj), "objects.c:PrintObjIndicesObj");
+
+    TLS(PrintObjThissObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Obj)+sizeof(Obj));
+    TLS(PrintObjThiss) = ADDR_OBJ(TLS(PrintObjThissObj))+1;
+    TLS(PrintObjIndicesObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Int)+sizeof(Obj));
+    TLS(PrintObjIndices) = (Int *)(ADDR_OBJ(TLS(PrintObjIndicesObj))+1);
+    */
+}
+    
 void            PrintObj (
     Obj                 obj )
 {
@@ -1015,6 +1030,8 @@ void            ViewObj (
     LastPV = 2;
     
     /* if <obj> is a subobject, then mark and remember the superobject     */
+
+
     if ( 0 < TLS(PrintObjDepth) ) {
         if ( IS_MARKABLE(TLS(PrintObjThis)) )  MARK( TLS(PrintObjThis) );
         TLS(PrintObjThiss)[TLS(PrintObjDepth)-1]   = TLS(PrintObjThis);
@@ -1778,7 +1795,8 @@ static Int InitKernel (
     MakeImmutableObjFuncs[ T_COMOBJ ] = MakeImmutableComObj;
     MakeImmutableObjFuncs[ T_POSOBJ ] = MakeImmutablePosObj;
     MakeImmutableObjFuncs[ T_DATOBJ ] = MakeImmutableDatObj;
-      
+
+    InitPrintObjStack();
 
     /* return success                                                      */
     return 0;

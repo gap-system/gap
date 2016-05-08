@@ -34,11 +34,11 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 
 /****************************************************************************
@@ -739,7 +739,7 @@ static Int InitLibrary (
     SET_LEN_PLIST( NamesRNam, 0 );
 
     /* make the hash list of record names                                  */
-    SizeRNam = 997;
+    SizeRNam = 14033;
     HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
     MakeBagPublic(HashRNam);
     SET_LEN_PLIST( HashRNam, SizeRNam );

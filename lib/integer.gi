@@ -700,7 +700,7 @@ InstallGlobalFunction(FactorsInt,function ( n )
     if 0 < Length(tmp[2])  then
       if ValueOption("quiet")<>true then
         len := Length(tmp[2]);
-        if LoadPackage("FactInt") = true then
+        if IsPackageMarkedForLoading("FactInt")  then
 ##            # in general cases we should proceed with the found factors:
 ##            while len > 0 do
 ##              Append(tmp[1], Factors(tmp[2][len]));

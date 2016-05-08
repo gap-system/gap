@@ -41,13 +41,13 @@
 #include        "precord.h"             /* plain records                   */
 
 #include        "lists.h"               /* generic lists                   */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
 
 #include        "code.h"                /* coder                           */
-#include        "thread.h"              /* threads                         */
-#include        "tls.h"                 /* thread-local storage            */
+#include        "hpc/thread.h"              /* threads                         */
+#include        "hpc/tls.h"                 /* thread-local storage            */
 
 
 #include <stdio.h>
@@ -240,7 +240,7 @@ Obj FuncRandomListMT(Obj self, Obj mtstr, Obj list)
 **
 **  'HASHKEY_BAG( <obj>, <seed>, <offset>, <maxlen> )'
 **
-**  takes an non-immediate object and a small integer <int> and computes a
+**  takes an non-immediate object and a small integer <seed> and computes a
 **  hash value for the contents of the bag from these. (For this to be
 **  usable in algorithms, we need that objects of this kind are stored uniquely
 **  internally.
@@ -652,6 +652,83 @@ Obj FuncJenkinsHash(Obj self, Obj op, Obj size)
   return FuncHASHKEY_BAG(self, op, INTOBJ_INT(0L), INTOBJ_INT(0L), size);
 }
 
+Obj IntStringInternal( Obj string )
+{
+        Obj                 val;            /* value = <upp> * <pow> + <low>   */
+        Obj                 upp;            /* upper part                      */
+        Int                 pow;            /* power                           */
+        Int                 low;            /* lower part                      */
+        Int                 sign;           /* is the integer negative         */
+        UInt                i;              /* loop variable                   */
+        UChar *             str;            /* temp pointer                    */
+        
+        /* get the signs, if any                                                */
+        str = CHARS_STRING(string);
+        sign = 1;
+        i = 0;
+        while ( str[i] == '-' ) {
+            sign = - sign;
+            i++;
+        }
+
+        /* collect the digits in groups of 8                                   */
+        low = 0;
+        pow = 1;
+        upp = INTOBJ_INT(0);
+        do {
+            if( str[i] < '0' || str[i] > '9') {
+                return Fail;
+            }
+            low = 10 * low + str[i] - '0';
+            pow = 10 * pow;
+            if ( pow == 100000000L ) {
+                upp = PROD(upp, INTOBJ_INT(pow) );
+                upp = SUM(upp, INTOBJ_INT(sign*low) );
+                // Regrab, in case garbage collection occurred.
+                str = CHARS_STRING(string);
+                pow = 1;
+                low = 0;
+            }
+            i++;
+        } while ( str[i] != '\0' );
+
+        /* compose the integer value                                           */
+        val = 0;
+        if ( upp == INTOBJ_INT(0) ) {
+            val = INTOBJ_INT(sign*low);
+        }
+        else if ( pow == 1 ) {
+            val = upp;
+        }
+        else {
+            upp =  PROD( upp, INTOBJ_INT(pow) );
+            val = SUM( upp , INTOBJ_INT(sign*low) );
+        }
+
+        /* push the integer value                                              */
+        return val;
+}
+
+/****************************************************************************
+**
+*F  FuncINT_STRING( <self>, <string> ) . . . .  convert a string to an integer
+**
+**  `FuncINT_STRING' returns an integer representing the string, or
+**  fail if the string is not a valid integer.
+**
+*/
+Obj FuncINT_STRING ( Obj self, Obj string )
+{
+    if( !IS_STRING(string) ) {
+        return Fail;
+    }
+
+    if( !IS_STRING_REP(string) ) {
+        string = CopyToStringRep(string);
+    }
+
+    return IntStringInternal(string);
+}
 
 /****************************************************************************
 **
@@ -680,6 +757,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "RandomListMT", 2, "mtstr, list",
       FuncRandomListMT, "src/integer.c:RandomListMT" },
+
+    { "INT_STRING", 1, "string",
+      FuncINT_STRING, "src/integer.c:INT_STRING" },
 
     { 0 }
 

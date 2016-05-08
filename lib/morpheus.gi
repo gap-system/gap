@@ -1885,10 +1885,10 @@ local A;
   elif (not HasIsPGroup(G)) and IsPGroup(G) then
     #if G did not yet know to be a P-group, but is -- redispatch to catch the
     #`autpgroup' package method. This will be called at most once.
-    LoadPackage("autpgrp"); # try to load the package if it exists
+    #LoadPackage("autpgrp"); # try to load the package if it exists
     return AutomorphismGroup(G);
   elif IsNilpotentGroup(G) and not IsPGroup(G) then
-    LoadPackage("autpgrp"); # try to load the package if it exists
+    #LoadPackage("autpgrp"); # try to load the package if it exists
     A:=AutomorphismGroupNilpotentGroup(G);
   elif IsSolvableGroup(G) then
     if HasIsFrattiniFree(G) and IsFrattiniFree(G) then

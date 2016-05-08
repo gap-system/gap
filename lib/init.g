@@ -235,72 +235,6 @@ CallAndInstallPostRestore( function()
     ASS_GVAR( "BreakOnError", not GAPInfo.CommandLineOptions.T );
 end);
 
-
-#############################################################################
-##
-#F  ReadOrComplete( <name> )  . . . . . . . . . . . . read file or completion
-####
-##COMPLETABLE_FILES := [];
-##COMPLETED_FILES   := [];
-##
-##ReadOrComplete := function( name )
-##    local check;
-##
-##    READED_FILES := [];
-##    check        := CHECK_INSTALL_METHOD;
-##
-##    # use completion files
-##    if not GAPInfo.CommandLineOptions.N then
-##
-##        # do not check installation and use cached ranks
-##        CHECK_INSTALL_METHOD := false;
-##        RankFilter           := RANK_FILTER_COMPLETION;
-##
-##        # check for the completion file
-##        if not READ_GAP_ROOT( ReplacedString( name, ".g", ".co" ) ) then
-##
-##            # set filter functions to store
-##            IS_READ_OR_COMPLETE  := true;
-##            CHECK_INSTALL_METHOD := check;
-##            RankFilter           := RANK_FILTER_STORE;
-##            RANK_FILTER_LIST     := [];
-##
-##            # read the original file
-##            InfoRead1( "#I  reading ", name, "\n" );
-##            if not READ_GAP_ROOT( name ) then
-##                Error( "cannot read or complete file ", name );
-##            fi;
-##            ADD_LIST( COMPLETABLE_FILES, [ name, READED_FILES, RANK_FILTER_LIST ] );
-##
-##        # file completed
-##        else
-##            ADD_LIST( COMPLETED_FILES, name );
-##            InfoRead1( "#I  completed ", name, "\n" );
-##        fi;
-##
-##    else
-##
-##        # set `RankFilter' to hash the ranks
-##        IS_READ_OR_COMPLETE := true;
-##        RankFilter          := RANK_FILTER_STORE;
-##        RANK_FILTER_LIST    := [];
-##
-##        # read the file
-##        if not READ_GAP_ROOT( name ) then
-##            Error( "cannot read file ", name );
-##        fi;
-##        ADD_LIST( COMPLETABLE_FILES, [ name, READED_FILES, RANK_FILTER_LIST ] );
-##    fi;
-##
-##    # reset rank and filter functions
-##    IS_READ_OR_COMPLETE  := false;
-##    CHECK_INSTALL_METHOD := check;
-##    RankFilter           := RANK_FILTER;
-##    Unbind(RANK_FILTER_LIST);
-##    Unbind(READED_FILES);
-##end;
-##
-
 ReadOrComplete := function(name)
     InfoRead1( "#I  reading ", name, "\n" );
     if not READ_GAP_ROOT( name ) then
@@ -362,6 +296,8 @@ CallAndInstallPostRestore( function()
         haveint[i]:= IntHexString( have[i] );
         needint[i]:= IntHexString( need[i] );
       od;
+      Print( "Current kernel version:   ", haveint[1], ".", haveint[2], ".", haveint[3], "\n" );
+      Print( "Library requires version: ", needint[1], ".", needint[2], ".", needint[3], "\n" );
 
       if haveint > needint then
         # kernel newer
@@ -543,16 +479,6 @@ CallAndInstallPostRestore( function()
     return fail;
   end;
 
-
-  ##  i := Length (str)-Length (sub) + 1;
-  ##  while i > 0 do
-  ##      if str{[i..i+Length(sub)-1]}=sub then
-  ##          return i;
-  ##      fi;
-  ##  od;
-  ##  return fail;
-  ##end;
-        
   # we leave the GAPInfo.TermEncodingOverwrite for gaprc
   # for a moment, but don't document it - doesn't work with 
   # loaded workspaces
@@ -679,7 +605,6 @@ CallAndInstallPostRestore( function()
         
      
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
-    #Print (" Loading the library ... (see '?Saving and Loading' to start GAP faster)\n");
     Print (" Loading the library \c");
 fi;
 
@@ -756,51 +681,6 @@ TypeObj(IMPLICATIONS[1]);
 #T and what about implications installed in packages?
 #T (put later installations to the front?)
 
-
-#############################################################################
-##
-##  Set the defaults of `GAPInfo.UserPreferences'.
-##
-##  We locate the first file `gap.ini' in GAP root directories,
-##  and read it if available.
-##  This must be done before `GAPInfo.UserPreferences' is used.
-##  Some of the preferences require an initialization,
-##  but this cannot be called before the complete library has been loaded.
-##
-
-# The following function is not recommended anymore.
-# Give a warning but do what the function was expected to do.
-BindGlobal( "SetUserPreferences", function( arg )
-    local name, record;
-    
-    Info( InfoWarning, 1, "");
-    Info( InfoWarning, 1, Concatenation( [
-          "The call to 'SetUserPreferences' (probably in a 'gap.ini' file)\n",
-          "#I  should be replaced by individual 'SetUserPreference' calls,\n",
-          "#I  which are package specific.\n",
-          "#I  Try 'WriteGapIniFile()'." ] ) );
- 
-    # Set the new values.
-    if Length( arg ) = 1 then
-      record:= arg[1];
-      if not IsBound(GAPInfo.UserPreferences.gapdoc) then
-        GAPInfo.UserPreferences.gapdoc := rec();
-      fi;
-      if not IsBound(GAPInfo.UserPreferences.gap) then
-        GAPInfo.UserPreferences.gap := rec();
-      fi;
-      for name in RecNames( record ) do
-        if name in [ "HTMLStyle", "TextTheme", "UseMathJax" ] then
-          GAPInfo.UserPreferences.gapdoc.( name ):= record.( name );
-        else
-          GAPInfo.UserPreferences.gap.( name ):= record.( name );
-        fi;
-      od;
-    fi;
-    end );
-
-# SetUserPreferences();
-
 # Here are a few general user preferences which may be useful for 
 # various purposes. They are self-explaining.
 DeclareUserPreference( rec(
@@ -826,7 +706,6 @@ DeclareUserPreference( rec(
 CallAndInstallPostRestore( function()
     READ_GAP_ROOT( "gap.ini" );
 end );
-
 
 #############################################################################
 ##
@@ -856,7 +735,6 @@ CallAndInstallPostRestore( function()
       GAPInfo.Read_obsolete_gd:= true;
     fi;
 end );
-
 
 #############################################################################
 ##

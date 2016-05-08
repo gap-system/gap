@@ -68,11 +68,6 @@ SMALL_GROUP_FUNCS[ 1 ] := function( size, i, inforec )
     if i > 1 then
         Error( "there is just 1 group of size ", size );
     fi;
-    if size = 1 then 
-        g := TrivialGroup( IsPcGroup );
-        SetNameIsomorphismClass( g, Concatenation( "c", String( size ) ) );
-        return g;
-    fi;
     return CyclicGroup( size );
 end;
 
@@ -126,15 +121,6 @@ SMALL_GROUP_FUNCS[ 3 ] := function( size, i, inforec )
 
     g := PcGroupFpGroup( F / rels );
 
-    if typ = "pq" then 
-        SetNameIsomorphismClass( g, Concatenation( "c", String( size ) ) );
-    elif size = 6 then
-        SetNameIsomorphismClass( g, "S3" );
-    elif p = 2 then
-        SetNameIsomorphismClass( g, Concatenation( "D", String( size ) ) );
-    else
-        SetNameIsomorphismClass( g, Concatenation(String(q),":",String(p)) );
-    fi;
     return g;
 end;
 
@@ -145,7 +131,7 @@ end;
 ## order p^3
 ##
 SMALL_GROUP_FUNCS[ 4 ] := function( size, i, inforec )
-    local F, gens, p, rels, g, name;
+    local F, gens, p, rels, g;
 
     if i > 5 then
         Error( "there are just 5 groups of size ", size );
@@ -157,34 +143,22 @@ SMALL_GROUP_FUNCS[ 4 ] := function( size, i, inforec )
 
     if i = 1 then 
         rels := [ gens[1]^p / gens[2], gens[2]^p / gens[3], gens[3]^p ];
-        name := Concatenation( "c", String( size ) );
     elif i = 2 then 
         rels := [ gens[1]^p / gens[3], gens[2]^p, gens[3]^p ];
-        name := Concatenation( String( p ), "x", String( p^2 ) );
     elif i = 3 then 
         rels := [ gens[1]^p, gens[2]^p, gens[3]^p,
                   Comm( gens[2], gens[1] ) / gens[3] ];
-        if size = 8 then
-            name := "D8";
-        else
-            name := Concatenation( String( p ), "^2:", String( p ) );
-        fi;
     elif i = 4 then 
         rels := [ gens[1]^p/gens[3], gens[2]^p, gens[3]^p,
                   Comm( gens[2], gens[1] ) / gens[3] ];
         if size = 8 then
             rels[ 2 ] := gens[2]^2/gens[3];
-            name := "Q8";
-        else
-            name := Concatenation( String( p^2 ), ":", String( p ) );
         fi;
     elif i = 5 then 
         rels := [ gens[1]^p, gens[2]^p, gens[3]^p ];
-        name := Concatenation( String( p ), "^3" );
     fi;
         
     g := PcGroupFpGroup( F / rels );
-    SetNameIsomorphismClass( g, name );
     return g;
 end;
 
@@ -196,7 +170,7 @@ end;
 ## order p ^ 2 * q
 ##
 SMALL_GROUP_FUNCS[ 5 ] := function( size, i, inforec )
-    local n, typ, F, gens, rels, p, q, co, root, name, g;
+    local n, typ, F, gens, rels, p, q, co, root, g;
 
     if not IsBound( inforec.types ) then
         inforec := NUMBER_SMALL_GROUPS_FUNCS[ 5 ]( size, inforec );
@@ -214,30 +188,21 @@ SMALL_GROUP_FUNCS[ 5 ] := function( size, i, inforec )
     typ := inforec.types[ i ];
     if typ = "ppq" then
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ p, gens[ 3 ] ^ q ];
-        name := Concatenation( String( p ), "^2x", String( q ) );
     elif typ = "p2q" then
         rels := [ gens[ 1 ] ^ p / gens[ 3 ] , gens[ 2 ] ^ q, gens[ 3 ] ^ p ];
-        name := Concatenation( "c", String( size ) );
     elif typ = "Dpqxp" then
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ p, gens[ 3 ] ^ q,
                   gens[3] ^ gens[1] /
                   gens[3] ^ ( PrimitiveRootMod(q) ^ ( (q-1)/p ) mod q ) ];
-        if p = 2 then
-            name := Concatenation( "D", String( size ) );
-        else
-            name := Concatenation( String(q),":", String(p),"x", String(p) );
-        fi;
     elif typ = "a4" then
         rels := [ gens[ 1 ] ^ 3, gens[ 2 ] ^ 2, gens[ 3 ] ^ 2,
                   gens[ 2 ] ^ gens[ 1 ] / gens[ 3 ],
                   gens[ 3 ] ^ gens[ 1 ] / gens[ 2 ] * gens[ 3 ] ];
-        name := "A4";
     elif typ = "Gp2q" then
         rels := [ gens[ 1 ] ^ p / gens[ 2 ], gens[ 2 ] ^ p,
                   gens[ 3 ] ^ q,
                   gens[3] ^ gens[1] /
                   gens[3] ^ ( PrimitiveRootMod(q) ^ ( (q-1)/p ) mod q ) ];
-        name := Concatenation( String( p*q ), ".", String( p ) );
     else 
         # Hp2q
         root := PrimitiveRootMod(q);
@@ -247,11 +212,9 @@ SMALL_GROUP_FUNCS[ 5 ] := function( size, i, inforec )
                   gens[3] ^ ( root ^ ( (q-1)/p^2 ) mod q ),
                   gens[3] ^ gens[2] /
                   gens[3] ^ ( root ^ ( (q-1)/p ) mod q ) ];
-        name := Concatenation( String( q ), ":", String( p*p ) );
     fi;
         
     g := PcGroupFpGroup( F / rels );
-    SetNameIsomorphismClass( g, name );
     return g;
 end;
 
@@ -262,7 +225,7 @@ end;
 ## order p * q ^ 2
 ##
 SMALL_GROUP_FUNCS[ 6 ] := function( size, i, inforec )
-    local n, typ, F, gens, rels, p, q, root, base, vec, name, g;
+    local n, typ, F, gens, rels, p, q, root, base, vec, g;
 
     if not IsBound( inforec.types ) then
         inforec := NUMBER_SMALL_GROUPS_FUNCS[ 6 ]( size, inforec );
@@ -280,21 +243,12 @@ SMALL_GROUP_FUNCS[ 6 ] := function( size, i, inforec )
     typ := inforec.types[ i ];
     if typ = "pqq" then
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ q, gens[ 3 ] ^ q ];
-        name := Concatenation( String( p ), "x", String( q ), "^2" );
     elif typ = "pq2" then
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ q / gens[ 3 ], gens[ 3 ] ^ q ];
-        name := Concatenation( "c", String( size ) );
     elif typ = "Dpqxq" then
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ q, gens[ 3 ] ^ q,
                   gens[3] ^ gens[1] /
                   gens[3] ^ ( PrimitiveRootMod(q) ^ ( (q-1)/p ) mod q ) ];
-        if q = 3 then
-            name := "S3x3";
-        elif p = 2 then
-            name := Concatenation( "D", String( p*q ), "x", String( q ) );
-        else
-            name := Concatenation( String(q),":", String(p),"x", String(q) );
-        fi;
     elif typ = "Mpq2" then
         root := PrimitiveRootMod( q ^ 2 );
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ q / gens[ 3 ], gens[ 3 ] ^ q,
@@ -303,7 +257,6 @@ SMALL_GROUP_FUNCS[ 6 ] := function( size, i, inforec )
                   gens[3] ^ QuoInt( root ^ ( q*(q-1)/p ) mod ( q^2 ), q ) ),
                   gens[3] ^ gens[1] /
                   gens[3] ^ ( root ^ ( (q-1)/p ) mod q ) ];
-        name := Concatenation( String( q^2 ), ":", String( p ) );
     elif typ = "Npq2" then
         base := CanonicalBasis( GF( q ^ 2 ) );
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ q, gens[ 3 ] ^ q ];
@@ -311,7 +264,6 @@ SMALL_GROUP_FUNCS[ 6 ] := function( size, i, inforec )
         Add( rels, gens[2]^gens[1] / ( gens[2]^vec[1] * gens[3]^vec[2] ) );
         vec  := IntVecFFE( Coefficients( base, Z(q^2) ^ ( (q^2-1)/p+1 ) ) );
         Add( rels, gens[3]^gens[1] / ( gens[2]^vec[1] * gens[3]^vec[2] ) );
-        name := Concatenation( String( q ), "^2:", String( p ) );
     elif IsInt( typ ) then
         # Kpq2( 1 ) or Lpq2( >1 )
         root := PrimitiveRootMod( q ) ^ ( (q-1)/p );
@@ -321,9 +273,6 @@ SMALL_GROUP_FUNCS[ 6 ] := function( size, i, inforec )
     fi;
         
     g := PcGroupFpGroup( F / rels );
-    if IsBound( name ) then
-        SetNameIsomorphismClass( g, name );
-    fi;
     return g;
 end;
 
@@ -334,7 +283,7 @@ end;
 ## order p * q * r
 ##
 SMALL_GROUP_FUNCS[ 7 ] := function( size, i, inforec )
-    local n, typ, F, gens, rels, p, q, r, root, r1, r2, g, name;
+    local n, typ, F, gens, rels, p, q, r, root, r1, r2, g;
 
     if not IsBound( inforec.types ) then
         inforec := NUMBER_SMALL_GROUPS_FUNCS[ 7 ]( size, inforec );
@@ -353,38 +302,23 @@ SMALL_GROUP_FUNCS[ 7 ] := function( size, i, inforec )
     typ := inforec.types[ i ];
     if typ = "pqr" then
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ q, gens[ 3 ] ^ r ];
-        name := Concatenation( "c", String( size ) );
     elif typ = "Dpqxr" then
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ r, gens[ 3 ] ^ q,
                   gens[3] ^ gens[1] /
                   gens[3] ^ ( PrimitiveRootMod(q) ^ ( (q-1)/p ) mod q ) ];
-        if q = 3 then
-            name := Concatenation( "S3x", String( r ) );
-        elif p = 2 then
-            name := Concatenation( "D", String( p*q ), "x", String( r ) );
-        else
-            name := Concatenation( String(q),":",String(p),"x",String(r) );
-        fi;
     elif typ = "Dprxq" then
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ q, gens[ 3 ] ^ r,
                   gens[3] ^ gens[1] /
                   gens[3] ^ ( PrimitiveRootMod(r) ^ ( (r-1)/p ) mod r ) ];
-        if p = 2 then
-            name := Concatenation( "D", String( p*r ), "x", String( q ) );
-        else
-            name := Concatenation( String(r),":",String(p),"x",String(q) );
-        fi;
     elif typ = "Dqrxp" then
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ q, gens[ 3 ] ^ r,
                   gens[3] ^ gens[2] /
                   gens[3] ^ ( PrimitiveRootMod(r) ^ ( (r-1)/q ) mod r ) ];
-        name := Concatenation( String(r),":",String(q),"x",String(p) );
     elif typ = "Hpqr" then
         root := PrimitiveRootMod( r );
         rels := [ gens[ 1 ] ^ p, gens[ 2 ] ^ q, gens[ 3 ] ^ r,
                   gens[3] ^ gens[1] / gens[ 3 ] ^ ( root^((r-1)/p) mod r ),
                   gens[3] ^ gens[2] / gens[ 3 ] ^ ( root^((r-1)/q) mod r ) ];
-        name := Concatenation( String(r),":",String(p*q) );
     elif IsInt( typ ) then
         # Gpqr
         r1 := First( [2..r-1], t -> t^p mod r = 1 );
@@ -395,9 +329,6 @@ SMALL_GROUP_FUNCS[ 7 ] := function( size, i, inforec )
     fi;
         
     g := PcGroupFpGroup( F / rels );
-    if IsBound( name ) then
-        SetNameIsomorphismClass( g, name );
-    fi;
     return g;
 end;
 

@@ -156,7 +156,7 @@ dnl ## check for timing functions
 dnl ##
 
 AC_CHECK_HEADERS( time.h sys/times.h sys/param.h )
-AC_CHECK_FUNCS( times getrusage gettimeofday )
+AC_CHECK_FUNCS( times getrusage gettimeofday clock_gettime clock_getres )
 AC_CHECK_FUNCS( setitimer getitimer)
 AC_CHECK_LIB( [rt], [timer_create])
 AC_CHECK_FUNCS( timer_settime timer_gettime timer_create )

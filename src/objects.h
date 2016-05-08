@@ -71,7 +71,7 @@
 **  'INTOBJ_INT' converts the C integer <i> to an (immediate) integer object.
 */
 #define INTOBJ_INT(i) \
-    ((Obj)(((Int)(i) << 2) + 0x01))
+    ((Obj)(((UInt)(i) << 2) + 0x01))
 
 
 /****************************************************************************
@@ -125,15 +125,9 @@
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The sum itself is stored in <o>.
 */
-#if HAVE_ARITHRIGHTSHIFT
-#define SUM_INTOBJS(o,l,r)             \
-    ((o) = (Obj)((Int)(l)+(Int)(r)-1), \
-    (((Int)(o) << 1) >> 1) == (Int)(o) )
-#else
 #define SUM_INTOBJS(o,l,r)             \
     ((o) = (Obj)((Int)(l)+(Int)(r)-1), \
      ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
-#endif
 
 
 /****************************************************************************
@@ -144,15 +138,9 @@
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The difference itself is stored in <o>.
 */
-#if HAVE_ARITHRIGHTSHIFT
-#define DIFF_INTOBJS(o,l,r)            \
-    ((o) = (Obj)((Int)(l)-(Int)(r)+1), \
-     (((Int)(o) << 1) >> 1) == (Int)(o) )
-#else
 #define DIFF_INTOBJS(o,l,r)            \
     ((o) = (Obj)((Int)(l)-(Int)(r)+1), \
      ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
-#endif
 
 
 /****************************************************************************
@@ -181,16 +169,11 @@ static inline Obj prod_intobjs(Int l, Int r)
     return (Obj)l;
   prod = ((Int)((UInt)l >> 2) * ((UInt)r-1)+1);
 
-#if HAVE_ARITHRIGHTSHIFT
-  if ((prod << 1)>> 1 !=  prod)
-    return (Obj) 0;
-#else
   if (((((UInt) (prod)) >> (sizeof(UInt)*8-2))-1) <= 1)
     return (Obj) 0;
-#endif
 
-  if ((((Int)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
-      (((Int)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
+  if ((Int)(((UInt)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
+      (Int)(((UInt)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
     return (Obj) prod;
 
 #if HAVE_ARITHRIGHTSHIFT
@@ -344,8 +327,14 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define LAST_LIST_TNUM          (T_STRING_SSORT+IMMUTABLE)
 #define LAST_IMM_MUT_TNUM       LAST_LIST_TNUM
 
+/* Object sets and maps */
+#define FIRST_OBJSET_TNUM       (LAST_LIST_TNUM+1)
+#define T_OBJSET                (FIRST_OBJSET_TNUM+0)
+#define T_OBJMAP                (FIRST_OBJSET_TNUM+2)
+#define LAST_OBJSET_TNUM        (T_OBJMAP+IMMUTABLE)
+
 /* IMMUTABLE is not used for external types but keep the parity */
-#define FIRST_EXTERNAL_TNUM     (LAST_LIST_TNUM+1)
+#define FIRST_EXTERNAL_TNUM     (LAST_OBJSET_TNUM+1)
 #define T_COMOBJ                (FIRST_EXTERNAL_TNUM+ 0)
 #define T_POSOBJ                (FIRST_EXTERNAL_TNUM+ 1)
 #define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
@@ -353,9 +342,9 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
      /* #define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 4)
         remove to get parity right */
 
-/* reserve space for 50 package TNUMs */
+/* reserve space for 48 package TNUMs */
 #define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
-#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+53)
+#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+51)
 
 #define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
 #define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
@@ -692,12 +681,12 @@ extern void PrintObj (
 **  is the function '<func>(<obj>)' that should be called to print the object
 **  <obj> of this type.
 */
-extern Obj  PrintObjThis;
+/* TL: extern Obj  PrintObjThis; */
 
-extern Int  PrintObjIndex;
-extern Int  PrintObjDepth;
+/* TL: extern Int  PrintObjIndex; */
+/* TL: extern Int  PrintObjDepth; */
 
-extern Int  PrintObjFull;
+/* TL: extern Int  PrintObjFull; */
 
 extern void (* PrintObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 

@@ -48,13 +48,13 @@
 #include        "lists.h"               /* generic lists                   */
 
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "bool.h"                /* booleans                        */
 
-#include        "tls.h"                 /* thread-local storage            */
-#include        "thread.h"              /* threads                         */
-#include        "aobjects.h"            /* atomic objects                  */
+#include        "hpc/tls.h"                 /* thread-local storage            */
+#include        "hpc/thread.h"              /* threads                         */
+#include        "hpc/aobjects.h"            /* atomic objects                  */
 
 /****************************************************************************
 **
@@ -299,7 +299,7 @@ Obj NameGVarObj ( UInt gvar )
 
 #define NSCHAR '@'
 
-Obj CurrNamespace = 0;
+/* TL: Obj CurrNamespace = 0; */
 
 Obj FuncSET_NAMESPACE(Obj self, Obj str)
 {
@@ -1087,7 +1087,7 @@ static Int InitKernel (
                    "src/gvars.c:FopiesGVars"  );
     InitGlobalBag( &TableGVars,
                    "src/gvars.c:TableGVars" );
-    InitGlobalBag( &CurrNamespace,
+    InitGlobalBag( &TLS(CurrNamespace),
                    "src/gvars.c:CurrNamespace" );
 
     InitHandlerFunc( ErrorMustEvalToFuncHandler,
@@ -1188,7 +1188,7 @@ static Int InitLibrary (
     SET_LEN_PLIST( FopiesGVars, 0 );
 
     /* make the list of global variables                                   */
-    SizeGVars  = 997;
+    SizeGVars  = 14033;
     TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
     SET_LEN_PLIST( TableGVars, SizeGVars );
 

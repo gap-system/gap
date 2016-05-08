@@ -47,8 +47,8 @@ MAX_SIZE_TRANSVERSAL := 100000;
 BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
   local GC, UC, noyet, orbs, domain, GCC, UCC, ac, nc, bpt, enum, i;
 
-    GC := CopyStabChain( StabChainMutable( G ) );
-    UC := CopyStabChain( StabChainMutable( U ) );
+    GC := CopyStabChain( StabChainImmutable( G ) );
+    UC := CopyStabChain( StabChainImmutable( U ) );
     noyet:=ValueOption("noascendingchain")<>true;
     if not IsTrivial( G )  then
         orbs := ShallowCopy( OrbitsDomain( U, MovedPoints( G ) ) );

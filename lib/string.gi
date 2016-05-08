@@ -350,35 +350,7 @@ InstallMethod( Int,
     true,
     [ IsString ],
     0,
-
-function( str )
-    local   z,  d,  i,  s;
- 
-    # use kernel parser for longer strings:
-    if Length(str) > 30 then
-      z := EvalString(str);
-      if IsInt(z) then
-        return z;
-      else
-        Error("not string of integer: ", str, "\n");
-      fi;
-    fi;
-
-    d := 1;
-    while IsBound( str[d] ) and str[d] = '-'  do
-        d := d + 1;
-    od;
-    z := 0;
-    for i  in [ d .. Length( str ) ]  do
-        # this is quite fast since it is done in a kernel loop
-        s := Position( CHARS_DIGITS, str[i] );
-        if s = fail  then
-            return fail;
-        fi;
-        z := 10 * z + (s - 1);
-    od;
-    return z * (-1) ^ (d - 1);
-end );
+    INT_STRING );
 
 
 #############################################################################
@@ -975,7 +947,7 @@ InstallGlobalFunction(PrintCSV,function(arg)
     q:=false;
     if not IsString(s) then
       s:=String(s);
-    elif IsString(s) and Int(s)<>fail and AbsInt(Int(s))>10^7 then
+    elif IsString(s) and ForAll(s,x->x in CHARS_DIGITS or x in "+-") and Int(s)<>fail and AbsInt(Int(s))>10^9 then
       q:=true;
     fi;
 

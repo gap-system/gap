@@ -67,24 +67,6 @@ end );
 #F SMALL_GROUPS_INFORMATION[ 1 ]( size, smav, num )
 ##
 SMALL_GROUPS_INFORMATION[ 1 ] := function( size, smav, num )
-    local all, i;
-
-    all := AllSmallGroups( size );
-    for i in [ 1 .. Length( all ) ] do
-        if HasNameIsomorphismClass( all[ i ] ) then
-            Print("    ",i," is of type ",NameIsomorphismClass(all[i]),".\n");
-        else
-            if HasNameIsomorphismClass( all[ i - 1 ] ) then
-                Print( "    ", i, " - ", Length(all)-1, " are of types " );
-                if smav.func = 6 then
-                    Print( smav.q,":",smav.p,"+",smav.q,":",smav.p,".\n" );
-                else
-                    Print( smav.q,":",smav.p,"+",smav.r,":",smav.p,".\n" );
-                fi;
-            fi;
-        fi;
-    od;
-        
     Print("\n");
     Print("  The groups whose order factorises in at most 3 primes \n");
     Print("  have been classified by O. Hoelder. This classification is \n");

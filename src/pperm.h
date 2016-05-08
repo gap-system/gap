@@ -27,15 +27,15 @@
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
 
 #include        "set.h"                 /* sets                            */
 
 #include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"			/* thread-local storage		   */
 
 #ifndef GAP_PPERM_H
 #define GAP_PPERM_H

@@ -1890,18 +1890,42 @@ local G,	# group
 
 		# get affine action on cocycles that represents conjugation
 		if Size(vs)>10 then
-		  qhom:=GroupHomomorphismByImagesNC(ocr.group,
-	                  Range(ocr.factorfphom),
-			  Concatenation(
-			    MappingGeneratorsImages(ocr.factorfphom)[1],
-			    GeneratorsOfGroup(M)),
-			  Concatenation(
-			    MappingGeneratorsImages(ocr.factorfphom)[2],
-			    List(GeneratorsOfGroup(M),
-			      x->One(Range(ocr.factorfphom)))));
-                  Assert(2,GroupHomomorphismByImages(Source(qhom),Range(qhom),
+
+		  if IsModuloPcgs(ocr.generators) then
+		    # cohomology by pcgs -- factorfphom was not used
+		    k:=PcGroupWithPcgs(ocr.generators);
+		    k:=Image(IsomorphismFpGroup(k));
+
+		    qhom:=GroupHomomorphismByImagesNC(ocr.group,k,
+			    Concatenation(ocr.generators,
+			      ocr.modulePcgs,
+			      GeneratorsOfGroup(M)),
+			    Concatenation(GeneratorsOfGroup(k),
+			      List(ocr.modulePcgs,x->One(k)),
+			      List(GeneratorsOfGroup(M),x->One(k)) ));
+
+		  else 
+                    # generators should correspond to factorfphom
+		    # comment out as homomorphism is different
+		    # Assert(1,List(ocr.generators,
+		    #  x->ImagesRepresentative(ocr.factorfphom,x))
+		    #  =GeneratorsOfGroup(Range(ocr.factorfphom)));
+
+		    qhom:=GroupHomomorphismByImagesNC(ocr.group,
+			    Range(ocr.factorfphom),
+			    Concatenation(
+			      MappingGeneratorsImages(ocr.factorfphom)[1],
+			      GeneratorsOfGroup(M)),
+			    Concatenation(
+			      MappingGeneratorsImages(ocr.factorfphom)[2],
+			      List(GeneratorsOfGroup(M),
+				x->One(Range(ocr.factorfphom)))));
+
+		  fi;
+		  Assert(2,GroupHomomorphismByImages(Source(qhom),Range(qhom),
 		    MappingGeneratorsImages(qhom)[1],
 		    MappingGeneratorsImages(qhom)[2])<>fail);
+
 		  opr:=function(cyc,elm)
 		  local l,i,lc,lw;
 		    l:=ocr.cocycleToList(cyc);
@@ -2726,6 +2750,34 @@ local dom,n,t,map;
   return [map,t];
 end);
 
+BindGlobal("TomExtensionNames",function(r)
+local n,pool,ext,sz,lsz,t,f,i;
+  if IsBound(r.tomExtensions) then
+    return t.tomExtensions;
+  fi;
+  n:=r.tomName;
+  pool:=[n];
+  ext:=[];
+  sz:=fail;
+  for i in pool do
+    t:=TableOfMarks(i);
+    if t<>fail then
+      lsz:=Maximum(OrdersTom(t));
+      if sz=fail then sz:=lsz;fi;
+      if lsz>sz then
+	Add(ext,[lsz/sz,i{[Length(n)+2..Length(i)]}]);
+      fi;
+      for f in FusionsTom(t) do
+	if f[1]{[1..Minimum(Length(f[1]),Length(n))]}=n and not f[1] in pool then
+	  Add(pool,f[1]);
+	fi;
+      od;
+    fi;
+  od;
+  r!.tomExtensions:=ext;
+  return ext;
+end);
+
 InstallMethod(TomDataAlmostSimpleRecognition,"generic",true,
   [IsGroup],0,
 function(G)
@@ -2745,7 +2797,7 @@ local T,t,hom,inf,nam,i,aut;
   # simple group
   if Index(G,T)=1 then
     t:=TableOfMarks(nam);
-    if not HasUnderlyingGroup(t) then
+    if t=fail or not HasUnderlyingGroup(t) then
       Info(InfoLattice,2,"Table of marks has no group");
       return fail;
     fi;
@@ -2758,8 +2810,8 @@ local T,t,hom,inf,nam,i,aut;
     return [hom,t];
   fi;
 
-  #extension
-  inf:=Filtered(inf.allExtensions,i->i[1]=Index(G,T));
+  #extensions (as far as tom knows)
+  inf:=Filtered(TomExtensionNames(inf),i->i[1]=Index(G,T));
   for i in inf do
     t:=TableOfMarks(Concatenation(nam,".",i[2]));
     if t<>fail and HasUnderlyingGroup(t) then

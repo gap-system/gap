@@ -23,7 +23,7 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
 #include        "blister.h"             /* boolean lists                   */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "vector.h"              /* vectors */
 #include        "listoper.h"              /* default list ops */
@@ -39,17 +39,18 @@
 
 #include        "code.h"               /* for TakeInterrupt */
 #include        "stats.h" 
-#include	"aobjects.h"		/* atomic objects */
-#include	"thread.h"
-#include	"tls.h"
+
+#include        "hpc/aobjects.h"       /* atomic objects */
+#include        "hpc/thread.h"
+#include        "hpc/tls.h"
 
 #ifndef DEBUG
 #ifndef NDEBUG
 #define NDEBUG 1
 #endif
 #endif
-#include        <assert.h>
 
+#include <assert.h>
 #include <stdio.h>
 
 /****************************************************************************

@@ -1,6 +1,6 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
-#include "src/compiled.h"
+#include "compiled.h"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -132,20 +132,16 @@ static GVar G_POS__NUMB__TYPE;
 static Obj  GC_POS__NUMB__TYPE;
 static GVar G_NEW__TYPE;
 static Obj  GF_NEW__TYPE;
-static GVar G_POS__FIRST__FREE__TYPE;
-static Obj  GC_POS__FIRST__FREE__TYPE;
 static GVar G_IsFamily;
 static Obj  GF_IsFamily;
-static GVar G_NewType2;
-static Obj  GF_NewType2;
-static GVar G_TypeOfTypes;
-static Obj  GC_TypeOfTypes;
 static GVar G_NewType3;
 static Obj  GF_NewType3;
+static GVar G_TypeOfTypes;
+static Obj  GC_TypeOfTypes;
 static GVar G_NewType4;
 static Obj  GF_NewType4;
-static GVar G_NewType5;
-static Obj  GF_NewType5;
+static GVar G_POS__FIRST__FREE__TYPE;
+static Obj  GC_POS__FIRST__FREE__TYPE;
 static GVar G_Subtype2;
 static Obj  GF_Subtype2;
 static GVar G_Subtype3;
@@ -209,9 +205,9 @@ static RNam R_nTYPES;
 static RNam R_HASH__SIZE;
 
 /* information for the functions */
-static Obj  NameFunc[38];
-static Obj  NamsFunc[38];
-static Int  NargFunc[38];
+static Obj  NameFunc[36];
+static Obj  NamsFunc[36];
+static Int  NargFunc[36];
 static Obj  DefaultName;
 static Obj FileName;
 
@@ -301,6 +297,10 @@ static Obj  HdlrFunc4 (
  CHECK_BOUND( t_1, "name" )
  if ( TNUM_OBJ(a_obj) == T_COMOBJ ) {
   AssPRec( a_obj, RNamObj(t_1), a_val );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(a_obj) == T_ACOMOBJ ) {
+  AssARecord( a_obj, RNamObj(t_1), a_val );
+#endif
  }
  else {
   ASS_REC( a_obj, RNamObj(t_1), a_val );
@@ -529,6 +529,10 @@ static Obj  HdlrFunc5 (
  /* family!.NAME := name; */
  if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
   AssPRec( l_family, R_NAME, a_name );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
+  AssARecord( l_family, R_NAME, a_name );
+#endif
  }
  else {
   ASS_REC( l_family, R_NAME, a_name );
@@ -537,6 +541,10 @@ static Obj  HdlrFunc5 (
  /* family!.REQ_FLAGS := req_filter; */
  if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
   AssPRec( l_family, R_REQ__FLAGS, a_req__filter );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
+  AssARecord( l_family, R_REQ__FLAGS, a_req__filter );
+#endif
  }
  else {
   ASS_REC( l_family, R_REQ__FLAGS, a_req__filter );
@@ -545,6 +553,10 @@ static Obj  HdlrFunc5 (
  /* family!.IMP_FLAGS := imp_filter; */
  if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
   AssPRec( l_family, R_IMP__FLAGS, a_imp__filter );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
+  AssARecord( l_family, R_IMP__FLAGS, a_imp__filter );
+#endif
  }
  else {
   ASS_REC( l_family, R_IMP__FLAGS, a_imp__filter );
@@ -555,6 +567,10 @@ static Obj  HdlrFunc5 (
  SET_LEN_PLIST( t_1, 0 );
  if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
   AssPRec( l_family, R_TYPES, t_1 );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
+  AssARecord( l_family, R_TYPES, t_1 );
+#endif
  }
  else {
   ASS_REC( l_family, R_TYPES, t_1 );
@@ -563,6 +579,10 @@ static Obj  HdlrFunc5 (
  /* family!.nTYPES := 0; */
  if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
   AssPRec( l_family, R_nTYPES, INTOBJ_INT(0) );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
+  AssARecord( l_family, R_nTYPES, INTOBJ_INT(0) );
+#endif
  }
  else {
   ASS_REC( l_family, R_nTYPES, INTOBJ_INT(0) );
@@ -571,6 +591,10 @@ static Obj  HdlrFunc5 (
  /* family!.HASH_SIZE := 32; */
  if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
   AssPRec( l_family, R_HASH__SIZE, INTOBJ_INT(32) );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
+  AssARecord( l_family, R_HASH__SIZE, INTOBJ_INT(32) );
+#endif
  }
  else {
   ASS_REC( l_family, R_HASH__SIZE, INTOBJ_INT(32) );
@@ -581,6 +605,10 @@ static Obj  HdlrFunc5 (
  SET_LEN_PLIST( t_1, 0 );
  if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
   AssPRec( l_family, R_TYPES__LIST__FAM, t_1 );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
+  AssARecord( l_family, R_TYPES__LIST__FAM, t_1 );
+#endif
  }
  else {
   ASS_REC( l_family, R_TYPES__LIST__FAM, t_1 );
@@ -589,6 +617,10 @@ static Obj  HdlrFunc5 (
  /* family!.TYPES_LIST_FAM[27] := 0; */
  if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
   t_1 = ElmPRec( l_family, R_TYPES__LIST__FAM );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ) {
+  t_1 = ElmARecord( l_family, R_TYPES__LIST__FAM );
+#endif
  }
  else {
   t_1 = ELM_REC( l_family, R_TYPES__LIST__FAM );
@@ -936,6 +968,10 @@ static Obj  HdlrFunc11 (
  /* cache := family!.TYPES; */
  if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
   t_1 = ElmPRec( a_family, R_TYPES );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
+  t_1 = ElmARecord( a_family, R_TYPES );
+#endif
  }
  else {
   t_1 = ELM_REC( a_family, R_TYPES );
@@ -948,6 +984,10 @@ static Obj  HdlrFunc11 (
  CHECK_FUNC_RESULT( t_3 )
  if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
   t_4 = ElmPRec( a_family, R_HASH__SIZE );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
+  t_4 = ElmARecord( a_family, R_HASH__SIZE );
+#endif
  }
  else {
   t_4 = ELM_REC( a_family, R_HASH__SIZE );
@@ -1096,6 +1136,10 @@ static Obj  HdlrFunc11 (
  /* if 3 * family!.nTYPES > family!.HASH_SIZE then */
  if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
   t_3 = ElmPRec( a_family, R_nTYPES );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
+  t_3 = ElmARecord( a_family, R_nTYPES );
+#endif
  }
  else {
   t_3 = ELM_REC( a_family, R_nTYPES );
@@ -1103,6 +1147,10 @@ static Obj  HdlrFunc11 (
  C_PROD_FIA( t_2, INTOBJ_INT(3), t_3 )
  if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
   t_3 = ElmPRec( a_family, R_HASH__SIZE );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
+  t_3 = ElmARecord( a_family, R_HASH__SIZE );
+#endif
  }
  else {
   t_3 = ELM_REC( a_family, R_HASH__SIZE );
@@ -1118,6 +1166,10 @@ static Obj  HdlrFunc11 (
   /* ncl := 3 * family!.HASH_SIZE + 1; */
   if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
    t_3 = ElmPRec( a_family, R_HASH__SIZE );
+#ifdef HPCGAP
+  } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
+   t_3 = ElmARecord( a_family, R_HASH__SIZE );
+#endif
   }
   else {
    t_3 = ELM_REC( a_family, R_HASH__SIZE );
@@ -1165,6 +1217,10 @@ static Obj  HdlrFunc11 (
   /* family!.HASH_SIZE := ncl; */
   if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
    AssPRec( a_family, R_HASH__SIZE, l_ncl );
+#ifdef HPCGAP
+  } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ ) {
+   AssARecord( a_family, R_HASH__SIZE, l_ncl );
+#endif
   }
   else {
    ASS_REC( a_family, R_HASH__SIZE, l_ncl );
@@ -1173,6 +1229,10 @@ static Obj  HdlrFunc11 (
   /* family!.TYPES := ncache; */
   if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
    AssPRec( a_family, R_TYPES, l_ncache );
+#ifdef HPCGAP
+  } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ ) {
+   AssARecord( a_family, R_TYPES, l_ncache );
+#endif
   }
   else {
    ASS_REC( a_family, R_TYPES, l_ncache );
@@ -1201,6 +1261,10 @@ static Obj  HdlrFunc11 (
  /* family!.nTYPES := family!.nTYPES + 1; */
  if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
   t_2 = ElmPRec( a_family, R_nTYPES );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
+  t_2 = ElmARecord( a_family, R_nTYPES );
+#endif
  }
  else {
   t_2 = ELM_REC( a_family, R_nTYPES );
@@ -1208,6 +1272,10 @@ static Obj  HdlrFunc11 (
  C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
   AssPRec( a_family, R_nTYPES, t_1 );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ ) {
+  AssARecord( a_family, R_nTYPES, t_1 );
+#endif
  }
  else {
   ASS_REC( a_family, R_nTYPES, t_1 );
@@ -1226,45 +1294,6 @@ static Obj  HdlrFunc11 (
 
 /* handler for function 12 */
 static Obj  HdlrFunc12 (
- Obj  self,
- Obj  a_typeOfTypes,
- Obj  a_family )
-{
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Bag oldFrame;
- OLD_BRK_CURR_STAT
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
- 
- /* return NEW_TYPE( typeOfTypes, family, family!.IMP_FLAGS, false ); */
- t_2 = GF_NEW__TYPE;
- if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-  t_3 = ElmPRec( a_family, R_IMP__FLAGS );
- }
- else {
-  t_3 = ELM_REC( a_family, R_IMP__FLAGS );
- }
- t_4 = False;
- t_1 = CALL_4ARGS( t_2, a_typeOfTypes, a_family, t_3, t_4 );
- CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return t_1;
- 
- /* return; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 13 */
-static Obj  HdlrFunc13 (
  Obj  self,
  Obj  a_typeOfTypes,
  Obj  a_family,
@@ -1293,6 +1322,10 @@ static Obj  HdlrFunc13 (
  t_6 = GF_AND__FLAGS;
  if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
   t_7 = ElmPRec( a_family, R_IMP__FLAGS );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
+  t_7 = ElmARecord( a_family, R_IMP__FLAGS );
+#endif
  }
  else {
   t_7 = ELM_REC( a_family, R_IMP__FLAGS );
@@ -1317,8 +1350,8 @@ static Obj  HdlrFunc13 (
  return 0;
 }
 
-/* handler for function 14 */
-static Obj  HdlrFunc14 (
+/* handler for function 13 */
+static Obj  HdlrFunc13 (
  Obj  self,
  Obj  a_typeOfTypes,
  Obj  a_family,
@@ -1348,6 +1381,10 @@ static Obj  HdlrFunc14 (
  t_6 = GF_AND__FLAGS;
  if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
   t_7 = ElmPRec( a_family, R_IMP__FLAGS );
+#ifdef HPCGAP
+ } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
+  t_7 = ElmARecord( a_family, R_IMP__FLAGS );
+#endif
  }
  else {
   t_7 = ELM_REC( a_family, R_IMP__FLAGS );
@@ -1371,73 +1408,8 @@ static Obj  HdlrFunc14 (
  return 0;
 }
 
-/* handler for function 15 */
-static Obj  HdlrFunc15 (
- Obj  self,
- Obj  a_typeOfTypes,
- Obj  a_family,
- Obj  a_filter,
- Obj  a_data,
- Obj  a_stuff )
-{
- Obj l_type = 0;
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Obj t_5 = 0;
- Obj t_6 = 0;
- Obj t_7 = 0;
- Obj t_8 = 0;
- Obj t_9 = 0;
- Bag oldFrame;
- OLD_BRK_CURR_STAT
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
- 
- /* type := NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), data ); */
- t_2 = GF_NEW__TYPE;
- t_4 = GF_WITH__IMPS__FLAGS;
- t_6 = GF_AND__FLAGS;
- if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-  t_7 = ElmPRec( a_family, R_IMP__FLAGS );
- }
- else {
-  t_7 = ELM_REC( a_family, R_IMP__FLAGS );
- }
- t_9 = GF_FLAGS__FILTER;
- t_8 = CALL_1ARGS( t_9, a_filter );
- CHECK_FUNC_RESULT( t_8 )
- t_5 = CALL_2ARGS( t_6, t_7, t_8 );
- CHECK_FUNC_RESULT( t_5 )
- t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
- t_1 = CALL_4ARGS( t_2, a_typeOfTypes, a_family, t_3, a_data );
- CHECK_FUNC_RESULT( t_1 )
- l_type = t_1;
- 
- /* type![POS_FIRST_FREE_TYPE] := stuff; */
- t_1 = GC_POS__FIRST__FREE__TYPE;
- CHECK_BOUND( t_1, "POS_FIRST_FREE_TYPE" )
- CHECK_INT_SMALL_POS( t_1 )
- C_ASS_POSOBJ( l_type, INT_INTOBJ(t_1), a_stuff )
- 
- /* return type; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return l_type;
- 
- /* return; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 16 */
-static Obj  HdlrFunc16 (
+/* handler for function 14 */
+static Obj  HdlrFunc14 (
  Obj  self,
  Obj  a_arg )
 {
@@ -1448,7 +1420,6 @@ static Obj  HdlrFunc16 (
  Obj t_4 = 0;
  Obj t_5 = 0;
  Obj t_6 = 0;
- Obj t_7 = 0;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -1475,97 +1446,54 @@ static Obj  HdlrFunc16 (
  }
  /* fi */
  
- /* if LEN_LIST( arg ) = 1 then */
+ /* if LEN_LIST( arg ) = 2 then */
  t_3 = GF_LEN__LIST;
  t_2 = CALL_1ARGS( t_3, a_arg );
  CHECK_FUNC_RESULT( t_2 )
- t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(1) ));
+ t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
  if ( t_1 ) {
   
-  /* type := NewType2( TypeOfTypes, arg[1] ); */
-  t_2 = GF_NewType2;
+  /* type := NewType3( TypeOfTypes, arg[1], arg[2] ); */
+  t_2 = GF_NewType3;
   t_3 = GC_TypeOfTypes;
   CHECK_BOUND( t_3, "TypeOfTypes" )
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
-  t_1 = CALL_2ARGS( t_2, t_3, t_4 );
+  C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
+  t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
   CHECK_FUNC_RESULT( t_1 )
   l_type = t_1;
   
  }
  
- /* elif LEN_LIST( arg ) = 2 then */
+ /* elif LEN_LIST( arg ) = 3 then */
  else {
   t_3 = GF_LEN__LIST;
   t_2 = CALL_1ARGS( t_3, a_arg );
   CHECK_FUNC_RESULT( t_2 )
-  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
+  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(3) ));
   if ( t_1 ) {
    
-   /* type := NewType3( TypeOfTypes, arg[1], arg[2] ); */
-   t_2 = GF_NewType3;
+   /* type := NewType4( TypeOfTypes, arg[1], arg[2], arg[3] ); */
+   t_2 = GF_NewType4;
    t_3 = GC_TypeOfTypes;
    CHECK_BOUND( t_3, "TypeOfTypes" )
    C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
    C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
-   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
+   C_ELM_LIST_FPL( t_6, a_arg, INTOBJ_INT(3) )
+   t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, t_6 );
    CHECK_FUNC_RESULT( t_1 )
    l_type = t_1;
    
   }
   
-  /* elif LEN_LIST( arg ) = 3 then */
+  /* else */
   else {
-   t_3 = GF_LEN__LIST;
-   t_2 = CALL_1ARGS( t_3, a_arg );
-   CHECK_FUNC_RESULT( t_2 )
-   t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(3) ));
-   if ( t_1 ) {
-    
-    /* type := NewType4( TypeOfTypes, arg[1], arg[2], arg[3] ); */
-    t_2 = GF_NewType4;
-    t_3 = GC_TypeOfTypes;
-    CHECK_BOUND( t_3, "TypeOfTypes" )
-    C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
-    C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
-    C_ELM_LIST_FPL( t_6, a_arg, INTOBJ_INT(3) )
-    t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, t_6 );
-    CHECK_FUNC_RESULT( t_1 )
-    l_type = t_1;
-    
-   }
    
-   /* elif LEN_LIST( arg ) = 4 then */
-   else {
-    t_3 = GF_LEN__LIST;
-    t_2 = CALL_1ARGS( t_3, a_arg );
-    CHECK_FUNC_RESULT( t_2 )
-    t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(4) ));
-    if ( t_1 ) {
-     
-     /* type := NewType5( TypeOfTypes, arg[1], arg[2], arg[3], arg[4] ); */
-     t_2 = GF_NewType5;
-     t_3 = GC_TypeOfTypes;
-     CHECK_BOUND( t_3, "TypeOfTypes" )
-     C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
-     C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
-     C_ELM_LIST_FPL( t_6, a_arg, INTOBJ_INT(3) )
-     C_ELM_LIST_FPL( t_7, a_arg, INTOBJ_INT(4) )
-     t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, t_7 );
-     CHECK_FUNC_RESULT( t_1 )
-     l_type = t_1;
-     
-    }
-    
-    /* else */
-    else {
-     
-     /* Error( "usage: NewType( <family> [, <filter> [, <data> ]] )" ); */
-     t_1 = GF_Error;
-     C_NEW_STRING( t_2, 51, "usage: NewType( <family> [, <filter> [, <data> ]] )" );
-     CALL_1ARGS( t_1, t_2 );
-     
-    }
-   }
+   /* Error( "usage: NewType( <family>, <filter> [, <data> ] )" ); */
+   t_1 = GF_Error;
+   C_NEW_STRING( t_2, 48, "usage: NewType( <family>, <filter> [, <data> ] )" );
+   CALL_1ARGS( t_1, t_2 );
+   
   }
  }
  /* fi */
@@ -1582,8 +1510,8 @@ static Obj  HdlrFunc16 (
  return 0;
 }
 
-/* handler for function 17 */
-static Obj  HdlrFunc17 (
+/* handler for function 15 */
+static Obj  HdlrFunc15 (
  Obj  self,
  Obj  a_type,
  Obj  a_filter )
@@ -1650,6 +1578,10 @@ static Obj  HdlrFunc17 (
   if ( TNUM_OBJ(a_type) == T_POSOBJ ) {
    t_5 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_type)/sizeof(Obj)-1
       && ELM_PLIST(a_type,INT_INTOBJ(l_i)) != 0 ? True : False);
+#ifdef HPCGAP
+  } else if ( TNUM_OBJ(a_type) == T_APOSOBJ ) {
+   t_5 = Elm0AList(a_type,INT_INTOBJ(l_i)) != 0 ? True : False;
+#endif
   }
   else {
    t_5 = (ISB_LIST( a_type, INT_INTOBJ(l_i) ) ? True : False);
@@ -1678,8 +1610,8 @@ static Obj  HdlrFunc17 (
  return 0;
 }
 
-/* handler for function 18 */
-static Obj  HdlrFunc18 (
+/* handler for function 16 */
+static Obj  HdlrFunc16 (
  Obj  self,
  Obj  a_type,
  Obj  a_filter,
@@ -1743,6 +1675,10 @@ static Obj  HdlrFunc18 (
   if ( TNUM_OBJ(a_type) == T_POSOBJ ) {
    t_5 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_type)/sizeof(Obj)-1
       && ELM_PLIST(a_type,INT_INTOBJ(l_i)) != 0 ? True : False);
+#ifdef HPCGAP
+  } else if ( TNUM_OBJ(a_type) == T_APOSOBJ ) {
+   t_5 = Elm0AList(a_type,INT_INTOBJ(l_i)) != 0 ? True : False;
+#endif
   }
   else {
    t_5 = (ISB_LIST( a_type, INT_INTOBJ(l_i) ) ? True : False);
@@ -1771,8 +1707,8 @@ static Obj  HdlrFunc18 (
  return 0;
 }
 
-/* handler for function 19 */
-static Obj  HdlrFunc19 (
+/* handler for function 17 */
+static Obj  HdlrFunc17 (
  Obj  self,
  Obj  a_arg )
 {
@@ -1854,8 +1790,8 @@ static Obj  HdlrFunc19 (
  return 0;
 }
 
-/* handler for function 20 */
-static Obj  HdlrFunc20 (
+/* handler for function 18 */
+static Obj  HdlrFunc18 (
  Obj  self,
  Obj  a_type,
  Obj  a_filter )
@@ -1917,6 +1853,10 @@ static Obj  HdlrFunc20 (
   if ( TNUM_OBJ(a_type) == T_POSOBJ ) {
    t_5 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_type)/sizeof(Obj)-1
       && ELM_PLIST(a_type,INT_INTOBJ(l_i)) != 0 ? True : False);
+#ifdef HPCGAP
+  } else if ( TNUM_OBJ(a_type) == T_APOSOBJ ) {
+   t_5 = Elm0AList(a_type,INT_INTOBJ(l_i)) != 0 ? True : False;
+#endif
   }
   else {
    t_5 = (ISB_LIST( a_type, INT_INTOBJ(l_i) ) ? True : False);
@@ -1945,8 +1885,8 @@ static Obj  HdlrFunc20 (
  return 0;
 }
 
-/* handler for function 21 */
-static Obj  HdlrFunc21 (
+/* handler for function 19 */
+static Obj  HdlrFunc19 (
  Obj  self,
  Obj  a_type,
  Obj  a_filter,
@@ -2005,6 +1945,10 @@ static Obj  HdlrFunc21 (
   if ( TNUM_OBJ(a_type) == T_POSOBJ ) {
    t_5 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_type)/sizeof(Obj)-1
       && ELM_PLIST(a_type,INT_INTOBJ(l_i)) != 0 ? True : False);
+#ifdef HPCGAP
+  } else if ( TNUM_OBJ(a_type) == T_APOSOBJ ) {
+   t_5 = Elm0AList(a_type,INT_INTOBJ(l_i)) != 0 ? True : False;
+#endif
   }
   else {
    t_5 = (ISB_LIST( a_type, INT_INTOBJ(l_i) ) ? True : False);
@@ -2033,8 +1977,8 @@ static Obj  HdlrFunc21 (
  return 0;
 }
 
-/* handler for function 22 */
-static Obj  HdlrFunc22 (
+/* handler for function 20 */
+static Obj  HdlrFunc20 (
  Obj  self,
  Obj  a_arg )
 {
@@ -2116,8 +2060,8 @@ static Obj  HdlrFunc22 (
  return 0;
 }
 
-/* handler for function 23 */
-static Obj  HdlrFunc23 (
+/* handler for function 21 */
+static Obj  HdlrFunc21 (
  Obj  self,
  Obj  a_K )
 {
@@ -2142,8 +2086,8 @@ static Obj  HdlrFunc23 (
  return 0;
 }
 
-/* handler for function 24 */
-static Obj  HdlrFunc24 (
+/* handler for function 22 */
+static Obj  HdlrFunc22 (
  Obj  self,
  Obj  a_K )
 {
@@ -2161,6 +2105,68 @@ static Obj  HdlrFunc24 (
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
+ 
+ /* return; */
+ RES_BRK_CURR_STAT();
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
+/* handler for function 23 */
+static Obj  HdlrFunc23 (
+ Obj  self,
+ Obj  a_K )
+{
+ Obj t_1 = 0;
+ Obj t_2 = 0;
+ Bag oldFrame;
+ OLD_BRK_CURR_STAT
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ REM_BRK_CURR_STAT();
+ SET_BRK_CURR_STAT(0);
+ 
+ /* return K![POS_DATA_TYPE]; */
+ t_2 = GC_POS__DATA__TYPE;
+ CHECK_BOUND( t_2, "POS_DATA_TYPE" )
+ CHECK_INT_SMALL_POS( t_2 )
+ C_ELM_POSOBJ_NLE( t_1, a_K, INT_INTOBJ(t_2) );
+ RES_BRK_CURR_STAT();
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return t_1;
+ 
+ /* return; */
+ RES_BRK_CURR_STAT();
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
+/* handler for function 24 */
+static Obj  HdlrFunc24 (
+ Obj  self,
+ Obj  a_K,
+ Obj  a_data )
+{
+ Obj t_1 = 0;
+ Bag oldFrame;
+ OLD_BRK_CURR_STAT
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ REM_BRK_CURR_STAT();
+ SET_BRK_CURR_STAT(0);
+ 
+ /* K![POS_DATA_TYPE] := data; */
+ t_1 = GC_POS__DATA__TYPE;
+ CHECK_BOUND( t_1, "POS_DATA_TYPE" )
+ CHECK_INT_SMALL_POS( t_1 )
+ C_ASS_POSOBJ( a_K, INT_INTOBJ(t_1), a_data )
+ 
+ /* return; */
+ RES_BRK_CURR_STAT();
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
  
  /* return; */
  RES_BRK_CURR_STAT();
@@ -2201,68 +2207,6 @@ static Obj  HdlrFunc25 (
 /* handler for function 26 */
 static Obj  HdlrFunc26 (
  Obj  self,
- Obj  a_K,
- Obj  a_data )
-{
- Obj t_1 = 0;
- Bag oldFrame;
- OLD_BRK_CURR_STAT
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
- 
- /* K![POS_DATA_TYPE] := data; */
- t_1 = GC_POS__DATA__TYPE;
- CHECK_BOUND( t_1, "POS_DATA_TYPE" )
- CHECK_INT_SMALL_POS( t_1 )
- C_ASS_POSOBJ( a_K, INT_INTOBJ(t_1), a_data )
- 
- /* return; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
- 
- /* return; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 27 */
-static Obj  HdlrFunc27 (
- Obj  self,
- Obj  a_K )
-{
- Obj t_1 = 0;
- Obj t_2 = 0;
- Bag oldFrame;
- OLD_BRK_CURR_STAT
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
- 
- /* return K![POS_DATA_TYPE]; */
- t_2 = GC_POS__DATA__TYPE;
- CHECK_BOUND( t_2, "POS_DATA_TYPE" )
- CHECK_INT_SMALL_POS( t_2 )
- C_ELM_POSOBJ_NLE( t_1, a_K, INT_INTOBJ(t_2) );
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return t_1;
- 
- /* return; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 28 */
-static Obj  HdlrFunc28 (
- Obj  self,
  Obj  a_obj )
 {
  Obj t_1 = 0;
@@ -2294,8 +2238,8 @@ static Obj  HdlrFunc28 (
  return 0;
 }
 
-/* handler for function 29 */
-static Obj  HdlrFunc29 (
+/* handler for function 27 */
+static Obj  HdlrFunc27 (
  Obj  self,
  Obj  a_obj )
 {
@@ -2328,8 +2272,8 @@ static Obj  HdlrFunc29 (
  return 0;
 }
 
-/* handler for function 30 */
-static Obj  HdlrFunc30 (
+/* handler for function 28 */
+static Obj  HdlrFunc28 (
  Obj  self,
  Obj  a_obj )
 {
@@ -2362,8 +2306,8 @@ static Obj  HdlrFunc30 (
  return 0;
 }
 
-/* handler for function 31 */
-static Obj  HdlrFunc31 (
+/* handler for function 29 */
+static Obj  HdlrFunc29 (
  Obj  self,
  Obj  a_type,
  Obj  a_obj )
@@ -2456,8 +2400,8 @@ static Obj  HdlrFunc31 (
  return 0;
 }
 
-/* handler for function 32 */
-static Obj  HdlrFunc32 (
+/* handler for function 30 */
+static Obj  HdlrFunc30 (
  Obj  self,
  Obj  a_type,
  Obj  a_obj )
@@ -2566,8 +2510,8 @@ static Obj  HdlrFunc32 (
  return 0;
 }
 
-/* handler for function 33 */
-static Obj  HdlrFunc33 (
+/* handler for function 31 */
+static Obj  HdlrFunc31 (
  Obj  self,
  Obj  a_obj,
  Obj  a_filter )
@@ -2843,8 +2787,8 @@ static Obj  HdlrFunc33 (
  return 0;
 }
 
-/* handler for function 34 */
-static Obj  HdlrFunc34 (
+/* handler for function 32 */
+static Obj  HdlrFunc32 (
  Obj  self,
  Obj  a_obj,
  Obj  a_filter )
@@ -3028,8 +2972,8 @@ static Obj  HdlrFunc34 (
  return 0;
 }
 
-/* handler for function 35 */
-static Obj  HdlrFunc35 (
+/* handler for function 33 */
+static Obj  HdlrFunc33 (
  Obj  self,
  Obj  a_obj,
  Obj  a_filter,
@@ -3076,8 +3020,8 @@ static Obj  HdlrFunc35 (
  return 0;
 }
 
-/* handler for function 36 */
-static Obj  HdlrFunc36 (
+/* handler for function 34 */
+static Obj  HdlrFunc34 (
  Obj  self,
  Obj  a_arg )
 {
@@ -3275,6 +3219,10 @@ static Obj  HdlrFunc36 (
      CHECK_FUNC_RESULT( t_6 )
      if ( TNUM_OBJ(l_obj) == T_COMOBJ ) {
       AssPRec( l_obj, RNamObj(t_5), t_6 );
+#ifdef HPCGAP
+     } else if ( TNUM_OBJ(l_obj) == T_ACOMOBJ ) {
+      AssARecord( l_obj, RNamObj(t_5), t_6 );
+#endif
      }
      else {
       ASS_REC( l_obj, RNamObj(t_5), t_6 );
@@ -3454,8 +3402,8 @@ static Obj  HdlrFunc36 (
  return 0;
 }
 
-/* handler for function 37 */
-static Obj  HdlrFunc37 (
+/* handler for function 35 */
+static Obj  HdlrFunc35 (
  Obj  self,
  Obj  a_arg )
 {
@@ -4060,31 +4008,16 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "NewType2", function ( typeOfTypes, family )
-      return NEW_TYPE( typeOfTypes, family, family!.IMP_FLAGS, false );
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "NewType2" );
- t_3 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
- ENVI_FUNC( t_3 ) = TLS(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(263);
- ENDLINE_BODY(t_4) = INTOBJ_INT(268);
- FILENAME_BODY(t_4) = FileName;
- BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS(CurrLVars) );
- CALL_2ARGS( t_1, t_2, t_3 );
- 
  /* BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
       return NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), false );
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 8, "NewType3" );
- t_3 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
+ t_3 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(271);
- ENDLINE_BODY(t_4) = INTOBJ_INT(278);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(263);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(270);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4095,29 +4028,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 8, "NewType4" );
- t_3 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
+ t_3 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(281);
- ENDLINE_BODY(t_4) = INTOBJ_INT(288);
- FILENAME_BODY(t_4) = FileName;
- BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS(CurrLVars) );
- CALL_2ARGS( t_1, t_2, t_3 );
- 
- /* BIND_GLOBAL( "NewType5", function ( typeOfTypes, family, filter, data, stuff )
-      local  type;
-      type := NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), data );
-      type![POS_FIRST_FREE_TYPE] := stuff;
-      return type;
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 8, "NewType5" );
- t_3 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
- ENVI_FUNC( t_3 ) = TLS(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(292);
- ENDLINE_BODY(t_4) = INTOBJ_INT(303);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(273);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(280);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4128,26 +4043,22 @@ static Obj  HdlrFunc1 (
       if not IsFamily( arg[1] )  then
           Error( "<family> must be a family" );
       fi;
-      if LEN_LIST( arg ) = 1  then
-          type := NewType2( TypeOfTypes, arg[1] );
-      elif LEN_LIST( arg ) = 2  then
+      if LEN_LIST( arg ) = 2  then
           type := NewType3( TypeOfTypes, arg[1], arg[2] );
       elif LEN_LIST( arg ) = 3  then
           type := NewType4( TypeOfTypes, arg[1], arg[2], arg[3] );
-      elif LEN_LIST( arg ) = 4  then
-          type := NewType5( TypeOfTypes, arg[1], arg[2], arg[3], arg[4] );
       else
-          Error( "usage: NewType( <family> [, <filter> [, <data> ]] )" );
+          Error( "usage: NewType( <family>, <filter> [, <data> ] )" );
       fi;
       return type;
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 7, "NewType" );
- t_3 = NewFunction( NameFunc[16], NargFunc[16], NamsFunc[16], HdlrFunc16 );
+ t_3 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(306);
- ENDLINE_BODY(t_4) = INTOBJ_INT(338);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(283);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(307);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4165,11 +4076,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 8, "Subtype2" );
- t_3 = NewFunction( NameFunc[17], NargFunc[17], NamsFunc[17], HdlrFunc17 );
+ t_3 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(351);
- ENDLINE_BODY(t_4) = INTOBJ_INT(365);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(320);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(334);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4187,11 +4098,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 8, "Subtype3" );
- t_3 = NewFunction( NameFunc[18], NargFunc[18], NamsFunc[18], HdlrFunc18 );
+ t_3 = NewFunction( NameFunc[16], NargFunc[16], NamsFunc[16], HdlrFunc16 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(368);
- ENDLINE_BODY(t_4) = INTOBJ_INT(382);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(337);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(351);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4213,11 +4124,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 7, "Subtype" );
- t_3 = NewFunction( NameFunc[19], NargFunc[19], NamsFunc[19], HdlrFunc19 );
+ t_3 = NewFunction( NameFunc[17], NargFunc[17], NamsFunc[17], HdlrFunc17 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(386);
- ENDLINE_BODY(t_4) = INTOBJ_INT(400);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(355);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(369);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4235,11 +4146,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 8, "SupType2" );
- t_3 = NewFunction( NameFunc[20], NargFunc[20], NamsFunc[20], HdlrFunc20 );
+ t_3 = NewFunction( NameFunc[18], NargFunc[18], NamsFunc[18], HdlrFunc18 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(414);
- ENDLINE_BODY(t_4) = INTOBJ_INT(428);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(383);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(397);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4257,11 +4168,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 8, "SupType3" );
- t_3 = NewFunction( NameFunc[21], NargFunc[21], NamsFunc[21], HdlrFunc21 );
+ t_3 = NewFunction( NameFunc[19], NargFunc[19], NamsFunc[19], HdlrFunc19 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(431);
- ENDLINE_BODY(t_4) = INTOBJ_INT(445);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(400);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(414);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4280,11 +4191,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 7, "SupType" );
- t_3 = NewFunction( NameFunc[22], NargFunc[22], NamsFunc[22], HdlrFunc22 );
+ t_3 = NewFunction( NameFunc[20], NargFunc[20], NamsFunc[20], HdlrFunc20 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(448);
- ENDLINE_BODY(t_4) = INTOBJ_INT(462);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(417);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(431);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4295,11 +4206,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 10, "FamilyType" );
- t_3 = NewFunction( NameFunc[23], NargFunc[23], NamsFunc[23], HdlrFunc23 );
+ t_3 = NewFunction( NameFunc[21], NargFunc[21], NamsFunc[21], HdlrFunc21 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(476);
- ENDLINE_BODY(t_4) = INTOBJ_INT(476);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(445);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(445);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4310,11 +4221,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 9, "FlagsType" );
- t_3 = NewFunction( NameFunc[24], NargFunc[24], NamsFunc[24], HdlrFunc24 );
+ t_3 = NewFunction( NameFunc[22], NargFunc[22], NamsFunc[22], HdlrFunc22 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(490);
- ENDLINE_BODY(t_4) = INTOBJ_INT(490);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(459);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(459);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4325,11 +4236,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 8, "DataType" );
- t_3 = NewFunction( NameFunc[25], NargFunc[25], NamsFunc[25], HdlrFunc25 );
+ t_3 = NewFunction( NameFunc[23], NargFunc[23], NamsFunc[23], HdlrFunc23 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(506);
- ENDLINE_BODY(t_4) = INTOBJ_INT(506);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(475);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(475);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4341,11 +4252,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 11, "SetDataType" );
- t_3 = NewFunction( NameFunc[26], NargFunc[26], NamsFunc[26], HdlrFunc26 );
+ t_3 = NewFunction( NameFunc[24], NargFunc[24], NamsFunc[24], HdlrFunc24 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(508);
- ENDLINE_BODY(t_4) = INTOBJ_INT(510);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(477);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(479);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4356,11 +4267,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 10, "SharedType" );
- t_3 = NewFunction( NameFunc[27], NargFunc[27], NamsFunc[27], HdlrFunc27 );
+ t_3 = NewFunction( NameFunc[25], NargFunc[25], NamsFunc[25], HdlrFunc25 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(524);
- ENDLINE_BODY(t_4) = INTOBJ_INT(524);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(493);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(493);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4385,11 +4296,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 8, "FlagsObj" );
- t_3 = NewFunction( NameFunc[28], NargFunc[28], NamsFunc[28], HdlrFunc28 );
+ t_3 = NewFunction( NameFunc[26], NargFunc[26], NamsFunc[26], HdlrFunc26 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(623);
- ENDLINE_BODY(t_4) = INTOBJ_INT(623);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(592);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(592);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4400,11 +4311,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 7, "DataObj" );
- t_3 = NewFunction( NameFunc[29], NargFunc[29], NamsFunc[29], HdlrFunc29 );
+ t_3 = NewFunction( NameFunc[27], NargFunc[27], NamsFunc[27], HdlrFunc27 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(637);
- ENDLINE_BODY(t_4) = INTOBJ_INT(637);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(606);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(606);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4415,11 +4326,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 9, "SharedObj" );
- t_3 = NewFunction( NameFunc[30], NargFunc[30], NamsFunc[30], HdlrFunc30 );
+ t_3 = NewFunction( NameFunc[28], NargFunc[28], NamsFunc[28], HdlrFunc28 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(651);
- ENDLINE_BODY(t_4) = INTOBJ_INT(651);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(620);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(620);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4441,11 +4352,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 10, "SetTypeObj" );
- t_3 = NewFunction( NameFunc[31], NargFunc[31], NamsFunc[31], HdlrFunc31 );
+ t_3 = NewFunction( NameFunc[29], NargFunc[29], NamsFunc[29], HdlrFunc29 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(665);
- ENDLINE_BODY(t_4) = INTOBJ_INT(678);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(634);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(647);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4506,11 +4417,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 13, "ChangeTypeObj" );
- t_3 = NewFunction( NameFunc[32], NargFunc[32], NamsFunc[32], HdlrFunc32 );
+ t_3 = NewFunction( NameFunc[30], NargFunc[30], NamsFunc[30], HdlrFunc30 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(702);
- ENDLINE_BODY(t_4) = INTOBJ_INT(717);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(671);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(686);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4564,11 +4475,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 12, "SetFilterObj" );
- t_3 = NewFunction( NameFunc[33], NargFunc[33], NamsFunc[33], HdlrFunc33 );
+ t_3 = NewFunction( NameFunc[31], NargFunc[31], NamsFunc[31], HdlrFunc31 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(741);
- ENDLINE_BODY(t_4) = INTOBJ_INT(779);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(710);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(748);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4606,11 +4517,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 14, "ResetFilterObj" );
- t_3 = NewFunction( NameFunc[34], NargFunc[34], NamsFunc[34], HdlrFunc34 );
+ t_3 = NewFunction( NameFunc[32], NargFunc[32], NamsFunc[32], HdlrFunc32 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(801);
- ENDLINE_BODY(t_4) = INTOBJ_INT(823);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(770);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(792);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4633,11 +4544,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 13, "SetFeatureObj" );
- t_3 = NewFunction( NameFunc[35], NargFunc[35], NamsFunc[35], HdlrFunc35 );
+ t_3 = NewFunction( NameFunc[33], NargFunc[33], NamsFunc[33], HdlrFunc33 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(839);
- ENDLINE_BODY(t_4) = INTOBJ_INT(845);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(808);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(814);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4686,11 +4597,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 21, "SetMultipleAttributes" );
- t_3 = NewFunction( NameFunc[36], NargFunc[36], NamsFunc[36], HdlrFunc36 );
+ t_3 = NewFunction( NameFunc[34], NargFunc[34], NamsFunc[34], HdlrFunc34 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(866);
- ENDLINE_BODY(t_4) = INTOBJ_INT(918);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(835);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(887);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4765,11 +4676,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 23, "ObjectifyWithAttributes" );
- t_3 = NewFunction( NameFunc[37], NargFunc[37], NamsFunc[37], HdlrFunc37 );
+ t_3 = NewFunction( NameFunc[35], NargFunc[35], NamsFunc[35], HdlrFunc35 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(965);
- ENDLINE_BODY(t_4) = INTOBJ_INT(1030);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(934);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(999);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -4857,13 +4768,11 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "FLUSH_ALL_METHOD_CACHES", &GF_FLUSH__ALL__METHOD__CACHES );
  InitCopyGVar( "POS_NUMB_TYPE", &GC_POS__NUMB__TYPE );
  InitFopyGVar( "NEW_TYPE", &GF_NEW__TYPE );
- InitCopyGVar( "POS_FIRST_FREE_TYPE", &GC_POS__FIRST__FREE__TYPE );
  InitFopyGVar( "IsFamily", &GF_IsFamily );
- InitFopyGVar( "NewType2", &GF_NewType2 );
- InitCopyGVar( "TypeOfTypes", &GC_TypeOfTypes );
  InitFopyGVar( "NewType3", &GF_NewType3 );
+ InitCopyGVar( "TypeOfTypes", &GC_TypeOfTypes );
  InitFopyGVar( "NewType4", &GF_NewType4 );
- InitFopyGVar( "NewType5", &GF_NewType5 );
+ InitCopyGVar( "POS_FIRST_FREE_TYPE", &GC_POS__FIRST__FREE__TYPE );
  InitFopyGVar( "Subtype2", &GF_Subtype2 );
  InitFopyGVar( "Subtype3", &GF_Subtype3 );
  InitFopyGVar( "SupType2", &GF_SupType2 );
@@ -4893,82 +4802,78 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "Objectify", &GF_Objectify );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/type1.g:DefaultName(-36845939)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/type1.g:FileName(-36845939)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/type1.g:HdlrFunc1(-36845939)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/type1.g:NameFunc[1](-36845939)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/type1.g:HdlrFunc2(-36845939)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/type1.g:NameFunc[2](-36845939)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/type1.g:HdlrFunc3(-36845939)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/type1.g:NameFunc[3](-36845939)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/type1.g:HdlrFunc4(-36845939)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/type1.g:NameFunc[4](-36845939)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/type1.g:HdlrFunc5(-36845939)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/type1.g:NameFunc[5](-36845939)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/type1.g:HdlrFunc6(-36845939)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/type1.g:NameFunc[6](-36845939)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/type1.g:HdlrFunc7(-36845939)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/type1.g:NameFunc[7](-36845939)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/type1.g:HdlrFunc8(-36845939)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/type1.g:NameFunc[8](-36845939)" );
- InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/type1.g:HdlrFunc9(-36845939)" );
- InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/type1.g:NameFunc[9](-36845939)" );
- InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/type1.g:HdlrFunc10(-36845939)" );
- InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/type1.g:NameFunc[10](-36845939)" );
- InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/type1.g:HdlrFunc11(-36845939)" );
- InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/type1.g:NameFunc[11](-36845939)" );
- InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/type1.g:HdlrFunc12(-36845939)" );
- InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/type1.g:NameFunc[12](-36845939)" );
- InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/type1.g:HdlrFunc13(-36845939)" );
- InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/type1.g:NameFunc[13](-36845939)" );
- InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/type1.g:HdlrFunc14(-36845939)" );
- InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/type1.g:NameFunc[14](-36845939)" );
- InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/type1.g:HdlrFunc15(-36845939)" );
- InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/type1.g:NameFunc[15](-36845939)" );
- InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/type1.g:HdlrFunc16(-36845939)" );
- InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/type1.g:NameFunc[16](-36845939)" );
- InitHandlerFunc( HdlrFunc17, "GAPROOT/lib/type1.g:HdlrFunc17(-36845939)" );
- InitGlobalBag( &(NameFunc[17]), "GAPROOT/lib/type1.g:NameFunc[17](-36845939)" );
- InitHandlerFunc( HdlrFunc18, "GAPROOT/lib/type1.g:HdlrFunc18(-36845939)" );
- InitGlobalBag( &(NameFunc[18]), "GAPROOT/lib/type1.g:NameFunc[18](-36845939)" );
- InitHandlerFunc( HdlrFunc19, "GAPROOT/lib/type1.g:HdlrFunc19(-36845939)" );
- InitGlobalBag( &(NameFunc[19]), "GAPROOT/lib/type1.g:NameFunc[19](-36845939)" );
- InitHandlerFunc( HdlrFunc20, "GAPROOT/lib/type1.g:HdlrFunc20(-36845939)" );
- InitGlobalBag( &(NameFunc[20]), "GAPROOT/lib/type1.g:NameFunc[20](-36845939)" );
- InitHandlerFunc( HdlrFunc21, "GAPROOT/lib/type1.g:HdlrFunc21(-36845939)" );
- InitGlobalBag( &(NameFunc[21]), "GAPROOT/lib/type1.g:NameFunc[21](-36845939)" );
- InitHandlerFunc( HdlrFunc22, "GAPROOT/lib/type1.g:HdlrFunc22(-36845939)" );
- InitGlobalBag( &(NameFunc[22]), "GAPROOT/lib/type1.g:NameFunc[22](-36845939)" );
- InitHandlerFunc( HdlrFunc23, "GAPROOT/lib/type1.g:HdlrFunc23(-36845939)" );
- InitGlobalBag( &(NameFunc[23]), "GAPROOT/lib/type1.g:NameFunc[23](-36845939)" );
- InitHandlerFunc( HdlrFunc24, "GAPROOT/lib/type1.g:HdlrFunc24(-36845939)" );
- InitGlobalBag( &(NameFunc[24]), "GAPROOT/lib/type1.g:NameFunc[24](-36845939)" );
- InitHandlerFunc( HdlrFunc25, "GAPROOT/lib/type1.g:HdlrFunc25(-36845939)" );
- InitGlobalBag( &(NameFunc[25]), "GAPROOT/lib/type1.g:NameFunc[25](-36845939)" );
- InitHandlerFunc( HdlrFunc26, "GAPROOT/lib/type1.g:HdlrFunc26(-36845939)" );
- InitGlobalBag( &(NameFunc[26]), "GAPROOT/lib/type1.g:NameFunc[26](-36845939)" );
- InitHandlerFunc( HdlrFunc27, "GAPROOT/lib/type1.g:HdlrFunc27(-36845939)" );
- InitGlobalBag( &(NameFunc[27]), "GAPROOT/lib/type1.g:NameFunc[27](-36845939)" );
- InitHandlerFunc( HdlrFunc28, "GAPROOT/lib/type1.g:HdlrFunc28(-36845939)" );
- InitGlobalBag( &(NameFunc[28]), "GAPROOT/lib/type1.g:NameFunc[28](-36845939)" );
- InitHandlerFunc( HdlrFunc29, "GAPROOT/lib/type1.g:HdlrFunc29(-36845939)" );
- InitGlobalBag( &(NameFunc[29]), "GAPROOT/lib/type1.g:NameFunc[29](-36845939)" );
- InitHandlerFunc( HdlrFunc30, "GAPROOT/lib/type1.g:HdlrFunc30(-36845939)" );
- InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/type1.g:NameFunc[30](-36845939)" );
- InitHandlerFunc( HdlrFunc31, "GAPROOT/lib/type1.g:HdlrFunc31(-36845939)" );
- InitGlobalBag( &(NameFunc[31]), "GAPROOT/lib/type1.g:NameFunc[31](-36845939)" );
- InitHandlerFunc( HdlrFunc32, "GAPROOT/lib/type1.g:HdlrFunc32(-36845939)" );
- InitGlobalBag( &(NameFunc[32]), "GAPROOT/lib/type1.g:NameFunc[32](-36845939)" );
- InitHandlerFunc( HdlrFunc33, "GAPROOT/lib/type1.g:HdlrFunc33(-36845939)" );
- InitGlobalBag( &(NameFunc[33]), "GAPROOT/lib/type1.g:NameFunc[33](-36845939)" );
- InitHandlerFunc( HdlrFunc34, "GAPROOT/lib/type1.g:HdlrFunc34(-36845939)" );
- InitGlobalBag( &(NameFunc[34]), "GAPROOT/lib/type1.g:NameFunc[34](-36845939)" );
- InitHandlerFunc( HdlrFunc35, "GAPROOT/lib/type1.g:HdlrFunc35(-36845939)" );
- InitGlobalBag( &(NameFunc[35]), "GAPROOT/lib/type1.g:NameFunc[35](-36845939)" );
- InitHandlerFunc( HdlrFunc36, "GAPROOT/lib/type1.g:HdlrFunc36(-36845939)" );
- InitGlobalBag( &(NameFunc[36]), "GAPROOT/lib/type1.g:NameFunc[36](-36845939)" );
- InitHandlerFunc( HdlrFunc37, "GAPROOT/lib/type1.g:HdlrFunc37(-36845939)" );
- InitGlobalBag( &(NameFunc[37]), "GAPROOT/lib/type1.g:NameFunc[37](-36845939)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/type1.g:DefaultName(27670565)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/type1.g:FileName(27670565)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/type1.g:HdlrFunc1(27670565)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/type1.g:NameFunc[1](27670565)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/type1.g:HdlrFunc2(27670565)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/type1.g:NameFunc[2](27670565)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/type1.g:HdlrFunc3(27670565)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/type1.g:NameFunc[3](27670565)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/type1.g:HdlrFunc4(27670565)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/type1.g:NameFunc[4](27670565)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/type1.g:HdlrFunc5(27670565)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/type1.g:NameFunc[5](27670565)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/type1.g:HdlrFunc6(27670565)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/type1.g:NameFunc[6](27670565)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/type1.g:HdlrFunc7(27670565)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/type1.g:NameFunc[7](27670565)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/type1.g:HdlrFunc8(27670565)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/type1.g:NameFunc[8](27670565)" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/type1.g:HdlrFunc9(27670565)" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/type1.g:NameFunc[9](27670565)" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/type1.g:HdlrFunc10(27670565)" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/type1.g:NameFunc[10](27670565)" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/type1.g:HdlrFunc11(27670565)" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/type1.g:NameFunc[11](27670565)" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/type1.g:HdlrFunc12(27670565)" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/type1.g:NameFunc[12](27670565)" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/type1.g:HdlrFunc13(27670565)" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/type1.g:NameFunc[13](27670565)" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/type1.g:HdlrFunc14(27670565)" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/type1.g:NameFunc[14](27670565)" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/type1.g:HdlrFunc15(27670565)" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/type1.g:NameFunc[15](27670565)" );
+ InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/type1.g:HdlrFunc16(27670565)" );
+ InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/type1.g:NameFunc[16](27670565)" );
+ InitHandlerFunc( HdlrFunc17, "GAPROOT/lib/type1.g:HdlrFunc17(27670565)" );
+ InitGlobalBag( &(NameFunc[17]), "GAPROOT/lib/type1.g:NameFunc[17](27670565)" );
+ InitHandlerFunc( HdlrFunc18, "GAPROOT/lib/type1.g:HdlrFunc18(27670565)" );
+ InitGlobalBag( &(NameFunc[18]), "GAPROOT/lib/type1.g:NameFunc[18](27670565)" );
+ InitHandlerFunc( HdlrFunc19, "GAPROOT/lib/type1.g:HdlrFunc19(27670565)" );
+ InitGlobalBag( &(NameFunc[19]), "GAPROOT/lib/type1.g:NameFunc[19](27670565)" );
+ InitHandlerFunc( HdlrFunc20, "GAPROOT/lib/type1.g:HdlrFunc20(27670565)" );
+ InitGlobalBag( &(NameFunc[20]), "GAPROOT/lib/type1.g:NameFunc[20](27670565)" );
+ InitHandlerFunc( HdlrFunc21, "GAPROOT/lib/type1.g:HdlrFunc21(27670565)" );
+ InitGlobalBag( &(NameFunc[21]), "GAPROOT/lib/type1.g:NameFunc[21](27670565)" );
+ InitHandlerFunc( HdlrFunc22, "GAPROOT/lib/type1.g:HdlrFunc22(27670565)" );
+ InitGlobalBag( &(NameFunc[22]), "GAPROOT/lib/type1.g:NameFunc[22](27670565)" );
+ InitHandlerFunc( HdlrFunc23, "GAPROOT/lib/type1.g:HdlrFunc23(27670565)" );
+ InitGlobalBag( &(NameFunc[23]), "GAPROOT/lib/type1.g:NameFunc[23](27670565)" );
+ InitHandlerFunc( HdlrFunc24, "GAPROOT/lib/type1.g:HdlrFunc24(27670565)" );
+ InitGlobalBag( &(NameFunc[24]), "GAPROOT/lib/type1.g:NameFunc[24](27670565)" );
+ InitHandlerFunc( HdlrFunc25, "GAPROOT/lib/type1.g:HdlrFunc25(27670565)" );
+ InitGlobalBag( &(NameFunc[25]), "GAPROOT/lib/type1.g:NameFunc[25](27670565)" );
+ InitHandlerFunc( HdlrFunc26, "GAPROOT/lib/type1.g:HdlrFunc26(27670565)" );
+ InitGlobalBag( &(NameFunc[26]), "GAPROOT/lib/type1.g:NameFunc[26](27670565)" );
+ InitHandlerFunc( HdlrFunc27, "GAPROOT/lib/type1.g:HdlrFunc27(27670565)" );
+ InitGlobalBag( &(NameFunc[27]), "GAPROOT/lib/type1.g:NameFunc[27](27670565)" );
+ InitHandlerFunc( HdlrFunc28, "GAPROOT/lib/type1.g:HdlrFunc28(27670565)" );
+ InitGlobalBag( &(NameFunc[28]), "GAPROOT/lib/type1.g:NameFunc[28](27670565)" );
+ InitHandlerFunc( HdlrFunc29, "GAPROOT/lib/type1.g:HdlrFunc29(27670565)" );
+ InitGlobalBag( &(NameFunc[29]), "GAPROOT/lib/type1.g:NameFunc[29](27670565)" );
+ InitHandlerFunc( HdlrFunc30, "GAPROOT/lib/type1.g:HdlrFunc30(27670565)" );
+ InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/type1.g:NameFunc[30](27670565)" );
+ InitHandlerFunc( HdlrFunc31, "GAPROOT/lib/type1.g:HdlrFunc31(27670565)" );
+ InitGlobalBag( &(NameFunc[31]), "GAPROOT/lib/type1.g:NameFunc[31](27670565)" );
+ InitHandlerFunc( HdlrFunc32, "GAPROOT/lib/type1.g:HdlrFunc32(27670565)" );
+ InitGlobalBag( &(NameFunc[32]), "GAPROOT/lib/type1.g:NameFunc[32](27670565)" );
+ InitHandlerFunc( HdlrFunc33, "GAPROOT/lib/type1.g:HdlrFunc33(27670565)" );
+ InitGlobalBag( &(NameFunc[33]), "GAPROOT/lib/type1.g:NameFunc[33](27670565)" );
+ InitHandlerFunc( HdlrFunc34, "GAPROOT/lib/type1.g:HdlrFunc34(27670565)" );
+ InitGlobalBag( &(NameFunc[34]), "GAPROOT/lib/type1.g:NameFunc[34](27670565)" );
+ InitHandlerFunc( HdlrFunc35, "GAPROOT/lib/type1.g:HdlrFunc35(27670565)" );
+ InitGlobalBag( &(NameFunc[35]), "GAPROOT/lib/type1.g:NameFunc[35](27670565)" );
  
  /* return success */
  return 0;
@@ -5048,13 +4953,11 @@ static Int InitLibrary ( StructInitInfo * module )
  G_FLUSH__ALL__METHOD__CACHES = GVarName( "FLUSH_ALL_METHOD_CACHES" );
  G_POS__NUMB__TYPE = GVarName( "POS_NUMB_TYPE" );
  G_NEW__TYPE = GVarName( "NEW_TYPE" );
- G_POS__FIRST__FREE__TYPE = GVarName( "POS_FIRST_FREE_TYPE" );
  G_IsFamily = GVarName( "IsFamily" );
- G_NewType2 = GVarName( "NewType2" );
- G_TypeOfTypes = GVarName( "TypeOfTypes" );
  G_NewType3 = GVarName( "NewType3" );
+ G_TypeOfTypes = GVarName( "TypeOfTypes" );
  G_NewType4 = GVarName( "NewType4" );
- G_NewType5 = GVarName( "NewType5" );
+ G_POS__FIRST__FREE__TYPE = GVarName( "POS_FIRST_FREE_TYPE" );
  G_Subtype2 = GVarName( "Subtype2" );
  G_Subtype3 = GVarName( "Subtype3" );
  G_SupType2 = GVarName( "SupType2" );
@@ -5128,49 +5031,49 @@ static Int InitLibrary ( StructInitInfo * module )
  NargFunc[11] = 4;
  NameFunc[12] = DefaultName;
  NamsFunc[12] = 0;
- NargFunc[12] = 2;
+ NargFunc[12] = 3;
  NameFunc[13] = DefaultName;
  NamsFunc[13] = 0;
- NargFunc[13] = 3;
+ NargFunc[13] = 4;
  NameFunc[14] = DefaultName;
  NamsFunc[14] = 0;
- NargFunc[14] = 4;
+ NargFunc[14] = -1;
  NameFunc[15] = DefaultName;
  NamsFunc[15] = 0;
- NargFunc[15] = 5;
+ NargFunc[15] = 2;
  NameFunc[16] = DefaultName;
  NamsFunc[16] = 0;
- NargFunc[16] = -1;
+ NargFunc[16] = 3;
  NameFunc[17] = DefaultName;
  NamsFunc[17] = 0;
- NargFunc[17] = 2;
+ NargFunc[17] = -1;
  NameFunc[18] = DefaultName;
  NamsFunc[18] = 0;
- NargFunc[18] = 3;
+ NargFunc[18] = 2;
  NameFunc[19] = DefaultName;
  NamsFunc[19] = 0;
- NargFunc[19] = -1;
+ NargFunc[19] = 3;
  NameFunc[20] = DefaultName;
  NamsFunc[20] = 0;
- NargFunc[20] = 2;
+ NargFunc[20] = -1;
  NameFunc[21] = DefaultName;
  NamsFunc[21] = 0;
- NargFunc[21] = 3;
+ NargFunc[21] = 1;
  NameFunc[22] = DefaultName;
  NamsFunc[22] = 0;
- NargFunc[22] = -1;
+ NargFunc[22] = 1;
  NameFunc[23] = DefaultName;
  NamsFunc[23] = 0;
  NargFunc[23] = 1;
  NameFunc[24] = DefaultName;
  NamsFunc[24] = 0;
- NargFunc[24] = 1;
+ NargFunc[24] = 2;
  NameFunc[25] = DefaultName;
  NamsFunc[25] = 0;
  NargFunc[25] = 1;
  NameFunc[26] = DefaultName;
  NamsFunc[26] = 0;
- NargFunc[26] = 2;
+ NargFunc[26] = 1;
  NameFunc[27] = DefaultName;
  NamsFunc[27] = 0;
  NargFunc[27] = 1;
@@ -5179,10 +5082,10 @@ static Int InitLibrary ( StructInitInfo * module )
  NargFunc[28] = 1;
  NameFunc[29] = DefaultName;
  NamsFunc[29] = 0;
- NargFunc[29] = 1;
+ NargFunc[29] = 2;
  NameFunc[30] = DefaultName;
  NamsFunc[30] = 0;
- NargFunc[30] = 1;
+ NargFunc[30] = 2;
  NameFunc[31] = DefaultName;
  NamsFunc[31] = 0;
  NargFunc[31] = 2;
@@ -5191,19 +5094,13 @@ static Int InitLibrary ( StructInitInfo * module )
  NargFunc[32] = 2;
  NameFunc[33] = DefaultName;
  NamsFunc[33] = 0;
- NargFunc[33] = 2;
+ NargFunc[33] = 3;
  NameFunc[34] = DefaultName;
  NamsFunc[34] = 0;
- NargFunc[34] = 2;
+ NargFunc[34] = -1;
  NameFunc[35] = DefaultName;
  NamsFunc[35] = 0;
- NargFunc[35] = 3;
- NameFunc[36] = DefaultName;
- NamsFunc[36] = 0;
- NargFunc[36] = -1;
- NameFunc[37] = DefaultName;
- NamsFunc[37] = 0;
- NargFunc[37] = -1;
+ NargFunc[35] = -1;
  
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
@@ -5287,13 +5184,11 @@ static Int PostRestore ( StructInitInfo * module )
  G_FLUSH__ALL__METHOD__CACHES = GVarName( "FLUSH_ALL_METHOD_CACHES" );
  G_POS__NUMB__TYPE = GVarName( "POS_NUMB_TYPE" );
  G_NEW__TYPE = GVarName( "NEW_TYPE" );
- G_POS__FIRST__FREE__TYPE = GVarName( "POS_FIRST_FREE_TYPE" );
  G_IsFamily = GVarName( "IsFamily" );
- G_NewType2 = GVarName( "NewType2" );
- G_TypeOfTypes = GVarName( "TypeOfTypes" );
  G_NewType3 = GVarName( "NewType3" );
+ G_TypeOfTypes = GVarName( "TypeOfTypes" );
  G_NewType4 = GVarName( "NewType4" );
- G_NewType5 = GVarName( "NewType5" );
+ G_POS__FIRST__FREE__TYPE = GVarName( "POS_FIRST_FREE_TYPE" );
  G_Subtype2 = GVarName( "Subtype2" );
  G_Subtype3 = GVarName( "Subtype3" );
  G_SupType2 = GVarName( "SupType2" );
@@ -5365,49 +5260,49 @@ static Int PostRestore ( StructInitInfo * module )
  NargFunc[11] = 4;
  NameFunc[12] = DefaultName;
  NamsFunc[12] = 0;
- NargFunc[12] = 2;
+ NargFunc[12] = 3;
  NameFunc[13] = DefaultName;
  NamsFunc[13] = 0;
- NargFunc[13] = 3;
+ NargFunc[13] = 4;
  NameFunc[14] = DefaultName;
  NamsFunc[14] = 0;
- NargFunc[14] = 4;
+ NargFunc[14] = -1;
  NameFunc[15] = DefaultName;
  NamsFunc[15] = 0;
- NargFunc[15] = 5;
+ NargFunc[15] = 2;
  NameFunc[16] = DefaultName;
  NamsFunc[16] = 0;
- NargFunc[16] = -1;
+ NargFunc[16] = 3;
  NameFunc[17] = DefaultName;
  NamsFunc[17] = 0;
- NargFunc[17] = 2;
+ NargFunc[17] = -1;
  NameFunc[18] = DefaultName;
  NamsFunc[18] = 0;
- NargFunc[18] = 3;
+ NargFunc[18] = 2;
  NameFunc[19] = DefaultName;
  NamsFunc[19] = 0;
- NargFunc[19] = -1;
+ NargFunc[19] = 3;
  NameFunc[20] = DefaultName;
  NamsFunc[20] = 0;
- NargFunc[20] = 2;
+ NargFunc[20] = -1;
  NameFunc[21] = DefaultName;
  NamsFunc[21] = 0;
- NargFunc[21] = 3;
+ NargFunc[21] = 1;
  NameFunc[22] = DefaultName;
  NamsFunc[22] = 0;
- NargFunc[22] = -1;
+ NargFunc[22] = 1;
  NameFunc[23] = DefaultName;
  NamsFunc[23] = 0;
  NargFunc[23] = 1;
  NameFunc[24] = DefaultName;
  NamsFunc[24] = 0;
- NargFunc[24] = 1;
+ NargFunc[24] = 2;
  NameFunc[25] = DefaultName;
  NamsFunc[25] = 0;
  NargFunc[25] = 1;
  NameFunc[26] = DefaultName;
  NamsFunc[26] = 0;
- NargFunc[26] = 2;
+ NargFunc[26] = 1;
  NameFunc[27] = DefaultName;
  NamsFunc[27] = 0;
  NargFunc[27] = 1;
@@ -5416,10 +5311,10 @@ static Int PostRestore ( StructInitInfo * module )
  NargFunc[28] = 1;
  NameFunc[29] = DefaultName;
  NamsFunc[29] = 0;
- NargFunc[29] = 1;
+ NargFunc[29] = 2;
  NameFunc[30] = DefaultName;
  NamsFunc[30] = 0;
- NargFunc[30] = 1;
+ NargFunc[30] = 2;
  NameFunc[31] = DefaultName;
  NamsFunc[31] = 0;
  NargFunc[31] = 2;
@@ -5428,19 +5323,13 @@ static Int PostRestore ( StructInitInfo * module )
  NargFunc[32] = 2;
  NameFunc[33] = DefaultName;
  NamsFunc[33] = 0;
- NargFunc[33] = 2;
+ NargFunc[33] = 3;
  NameFunc[34] = DefaultName;
  NamsFunc[34] = 0;
- NargFunc[34] = 2;
+ NargFunc[34] = -1;
  NameFunc[35] = DefaultName;
  NamsFunc[35] = 0;
- NargFunc[35] = 3;
- NameFunc[36] = DefaultName;
- NamsFunc[36] = 0;
- NargFunc[36] = -1;
- NameFunc[37] = DefaultName;
- NamsFunc[37] = 0;
- NargFunc[37] = -1;
+ NargFunc[35] = -1;
  
  /* return success */
  return 0;
@@ -5455,7 +5344,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -36845939,
+ /* crc         = */ 27670565,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

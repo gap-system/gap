@@ -1032,12 +1032,17 @@ local m,s,g,i,j,rel,gen,img,fin,hom,gens;
     SetAbelianInvariants(f,AbelianInvariantsOfList(DiagonalOfMat(s.normal)));
    
     if Length(m[1])>s.rank then
+      img:=[];
       for i in [1..s.rank] do  
+	Add(img,s.normal[i][i]);
         Add(rel,g.(i)^s.normal[i][i]);
       od;
+      Append(img,ListWithIdenticalEntries(Length(gen)-s.rank,0));
+      SetAbelianInvariants(f,img);
       g:=g/rel;
       fin:=false;
     else  
+      SetAbelianInvariants(f,DiagonalOfMat(s.normal));
       g:=AbelianGroup(DiagonalOfMat(s.normal));
       fin:=true;
     fi;
@@ -1056,6 +1061,7 @@ local m,s,g,i,j,rel,gen,img,fin,hom,gens;
     g:=g/rel;
     fin:=Length(gen)=0;
     img:=GeneratorsOfGroup(g);
+    SetAbelianInvariants(f,ListWithIdenticalEntries(Length(gen),0));
   fi;
 
   SetIsFinite(g,fin);

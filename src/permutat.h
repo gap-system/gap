@@ -32,6 +32,15 @@
 
 #define IMAGE(i,pt,dg)  (((i) < (dg)) ? (pt)[(i)] : (i))
 
+#ifdef SYS_IS_64_BIT
+#define MAX_DEG_PERM4 ((1L<<32)-1)
+#else
+#define MAX_DEG_PERM4 ((1L<<28)-1)
+#endif
+
+#define IS_PERM2(perm)  (TNUM_OBJ(perm) == T_PERM2)
+#define IS_PERM4(perm)  (TNUM_OBJ(perm) == T_PERM4)
+
 /****************************************************************************
 **
 *V  IdentityPerm  . . . . . . . . . . . . . . . . . . .  identity permutation

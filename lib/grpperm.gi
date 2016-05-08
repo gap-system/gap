@@ -1422,6 +1422,7 @@ local   S;
   if Size(S) > 1 then
     SetIsPGroup( S, true );
     SetPrimePGroup( S, p );
+    SetHallSubgroup(G, [p], S);
   fi;
   return S;
 end );
@@ -1595,15 +1596,14 @@ end );
 ##
 InstallMethod( FrattiniSubgroup,"for permgrp", true, [ IsPermGroup ], 0,
     function( G )
-    local   fac,  p,  l,  k,  i,  j;
+    local   p,  l,  k,  i,  j;
 
-    fac := Set( FactorsInt( Size( G ) ) );
-    if Length( fac ) > 1  then
+    if not IsPGroup( G ) then
         TryNextMethod();
-    elif fac[1]=1 then
+    elif IsTrivial( G ) then
       return G;
     fi;
-    p := fac[ 1 ];
+    p := PrimePGroup( G );
     l := GeneratorsOfGroup( G );
     k := [ l[1]^p ];
     for i  in [ 2 .. Length(l) ]  do

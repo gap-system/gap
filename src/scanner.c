@@ -56,13 +56,13 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"              /* plain lists                     */
-#include        "string.h"              /* strings                         */
+#include        "stringobj.h"              /* strings                         */
 
 #include        "opers.h"               /* DoFilter...                     */
 #include        "read.h"                /* Call0ArgsInNewReader            */
 
-#include	"tls.h"
-#include	"thread.h"
+#include	"hpc/tls.h"
+#include	"hpc/thread.h"
 
 #include <assert.h>
 #include <limits.h>
@@ -70,29 +70,29 @@
 
 /* the following global variables are documented in scanner.h */
 
-UInt            Symbol;
+/* TL: UInt            Symbol; */
 
-Char            Value [1030];
-UInt            ValueLen;
+/* TL: Char            Value [1030]; */
+/* TL: UInt            ValueLen; */
 
-UInt            NrError;
-UInt            NrErrLine;
+/* TL: UInt            NrError; */
+/* TL: UInt            NrErrLine; */
 
-const Char *    Prompt;
+/* TL: Char *          Prompt; */
 
 Obj             PrintPromptHook = 0;
 Obj             EndLineHook = 0;
 
-TypInputFile    InputFiles [16];
-TypInputFile *  Input;
-Char *          In;
+/* TL: TypInputFile    InputFiles [16]; */
+/* TL: TypInputFile *  Input; */
+/* TL: Char *          In; */
 
-TypOutputFile   OutputFiles [16];
-TypOutputFile * Output;
+/* TL: TypOutputFile   OutputFiles [16]; */
+/* TL: TypOutputFile * Output; */
 
-TypOutputFile * InputLog;
+/* TL: TypOutputFile * InputLog; */
 
-TypOutputFile * OutputLog;
+/* TL: TypOutputFile * OutputLog; */
 
 
 /****************************************************************************
@@ -117,9 +117,9 @@ TypOutputFile * OutputLog;
 **  'TestLine' holds the one line that is read from 'TestInput' to compare it
 **  with a line that is about to be printed to 'TestOutput'.
 */
-static TypInputFile  *TestInput  = 0;
-static TypOutputFile *TestOutput = 0;
-static Char           TestLine[256];
+/* TL: TypInputFile *  TestInput  = 0; */
+/* TL: TypOutputFile * TestOutput = 0; */
+/* TL: Char            TestLine [256]; */
 
 
 /****************************************************************************
@@ -147,7 +147,7 @@ void            SyntaxError (
         /* print the message and the filename, unless it is '*stdin*'          */
         Pr( "Syntax error: %s", (Int)msg, 0L );
         if ( strcmp( "*stdin*", TLS(Input)->name ) != 0 )
-          Pr( " in %s line %d", (Int)TLS(Input)->name, (Int)TLS(Input)->number );
+          Pr( " in %s:%d", (Int)TLS(Input)->name, (Int)TLS(Input)->number );
         Pr( "\n", 0L, 0L );
 
         /* print the current line                                              */
@@ -168,7 +168,7 @@ void            SyntaxError (
 
 /****************************************************************************
 **
-*F  SyntaxWarning( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
+*F  SyntaxWarning( <msg> )  . . . . . . . . . . . . . . raise a syntax warning
 **
 */
 void            SyntaxWarning (
@@ -188,7 +188,7 @@ void            SyntaxWarning (
         /* print the message and the filename, unless it is '*stdin*'          */
         Pr( "Syntax warning: %s", (Int)msg, 0L );
         if ( strcmp( "*stdin*", TLS(Input)->name ) != 0 )
-          Pr( " in %s line %d", (Int)TLS(Input)->name, (Int)TLS(Input)->number );
+          Pr( " in %s:%d", (Int)TLS(Input)->name, (Int)TLS(Input)->number );
         Pr( "\n", 0L, 0L );
 
         /* print the current line                                              */
@@ -569,7 +569,7 @@ UInt CloseTest ( void )
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-static TypOutputFile LogFile;
+/* TL: static TypOutputFile LogFile; */
 
 UInt OpenLog (
     const Char *        filename )
@@ -599,7 +599,7 @@ UInt OpenLog (
 **
 **  The same as 'OpenLog' but for streams.
 */
-static TypOutputFile LogStream;
+/* TL: static TypOutputFile LogStream; */
 
 UInt OpenLogStream (
     Obj             stream )
@@ -666,7 +666,7 @@ UInt CloseLog ( void )
 **  dependent  how many are too many,  but 16 files  should work  everywhere.
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
-static TypOutputFile InputLogFile;
+/* TL: static TypOutputFile InputLogFile; */
 
 UInt OpenInputLog (
     const Char *        filename )
@@ -695,7 +695,7 @@ UInt OpenInputLog (
 **
 **  The same as 'OpenInputLog' but for streams.
 */
-static TypOutputFile InputLogStream;
+/* TL: static TypOutputFile InputLogStream; */
 
 UInt OpenInputLogStream (
     Obj                 stream )
@@ -765,7 +765,7 @@ UInt CloseInputLog ( void )
 **  dependent how many are  too many,  but  16 files should  work everywhere.
 **  Finally 'OpenOutputLog' will fail if there is already a current logfile.
 */
-static TypOutputFile OutputLogFile;
+/* TL: static TypOutputFile OutputLogFile; */
 
 UInt OpenOutputLog (
     const Char *        filename )
@@ -794,7 +794,7 @@ UInt OpenOutputLog (
 **
 **  The same as 'OpenOutputLog' but for streams.
 */
-static TypOutputFile OutputLogStream;
+/* TL: static TypOutputFile outputLogStream; */
 
 UInt OpenOutputLogStream (
     Obj                 stream )
@@ -848,7 +848,7 @@ UInt CloseOutputLog ( void )
     return 1;
 }
 
-TypOutputFile*  IgnoreStdoutErrout = NULL;
+/* TL: TypOutputFile*  IgnoreStdoutErrout = NULL; */
 
 /****************************************************************************
 **
@@ -1156,7 +1156,7 @@ extern void PutLine2(
     const Char *            line,
     UInt                    len   );
 
-Int HELPSubsOn = 1;
+/* TL: Int HELPSubsOn = 1; */
 
 Char GetLine ( void )
 {
@@ -1678,7 +1678,7 @@ void GetNumber ( UInt StartingStatus )
                        c != 'd' && c != 'Q')) {
 
       if (!seenADigit)
-        SyntaxError("Badly formed number, need a digit before or after the decimal point");
+        SyntaxError("Badly formed number: need a digit before or after the decimal point");
       /* We allow one letter on the end of the numbers -- could be an i,
        C99 style */
       if (!wasEscaped) {
@@ -1711,7 +1711,7 @@ void GetNumber ( UInt StartingStatus )
        left the previous loop because of overflow */
     if (IsAlpha(c)) {
         if (!seenADigit)
-          SyntaxError("Badly formed number, need a digit before or after the decimal point");
+          SyntaxError("Badly formed number: need a digit before or after the decimal point");
         seenExp = 1;
         TLS(Value)[i++] = c;
         c = GetCleanedChar(&wasEscaped);
@@ -1733,7 +1733,7 @@ void GetNumber ( UInt StartingStatus )
        deal with the end of token case */
     if (!seenExp) {
       if (!seenADigit)
-        SyntaxError("Badly formed number, need a digit before or after the decimal point");
+        SyntaxError("Badly formed number: need a digit before or after the decimal point");
       /* Might be a conversion marker */
       if (!wasEscaped) {
         if (IsAlpha(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' && c != 'q' && c != 'Q') {
@@ -1803,7 +1803,7 @@ void GetNumber ( UInt StartingStatus )
 
   /* Otherwise this is the end of the token */
   if (!seenExpDigit)
-    SyntaxError("Badly Formed Number, need at least one digit in the exponent");
+    SyntaxError("Badly Formed Number: need at least one digit in the exponent");
   TLS(Symbol) = S_FLOAT;
   TLS(Value)[i] = '\0';
   return;
@@ -1872,7 +1872,7 @@ void GetStr ( void )
       else if ( IsDigit( *TLS(In) ) ) {
         a = *TLS(In); GET_CHAR(); b = *TLS(In); GET_CHAR(); c = *TLS(In);
         if (!( IsDigit(b) && IsDigit(c) )){
-          SyntaxError("expecting three octal digits after \\ in string");
+          SyntaxError("Expecting three octal digits after \\ in string");
         }
         TLS(Value)[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
       }
@@ -1896,9 +1896,9 @@ void GetStr ( void )
 
   /* check for error conditions                                          */
   if ( *TLS(In) == '\n'  )
-    SyntaxError("string must not include <newline>");
+    SyntaxError("String must not include <newline>");
   if ( *TLS(In) == '\377' )
-    SyntaxError("string must end with \" before end of file");
+    SyntaxError("String must end with \" before end of file");
 
   /* set length of string, set 'Symbol' and skip trailing '"'            */
   TLS(ValueLen) = i;
@@ -1975,7 +1975,7 @@ void GetTripStr ( void )
 
   /* check for error conditions                                          */
   if ( *TLS(In) == '\377' )
-    SyntaxError("string must end with \" before end of file");
+    SyntaxError("String must end with \" before end of file");
 
   /* set length of string, set 'Symbol' and skip trailing '"'            */
   TLS(ValueLen) = i;
@@ -2059,18 +2059,18 @@ void GetChar ( void )
       c = 64 * (*TLS(In) - '0');
       GET_CHAR();
       if ( *TLS(In) < '0' || *TLS(In) > '7' )
-        SyntaxError("expecting octal digit in character constant");
+        SyntaxError("Expecting octal digit in character constant");
       c = c + 8 * (*TLS(In) - '0');
       GET_CHAR();
       if ( *TLS(In) < '0' || *TLS(In) > '7' )
-        SyntaxError("expecting 3 octal digits in character constant");
+        SyntaxError("Expecting 3 octal digits in character constant");
       c = c + (*TLS(In) - '0');
       TLS(Value)[0] = c;
     }
     else                     TLS(Value)[0] = *TLS(In);
   }
   else if ( *TLS(In) == '\n' ) {
-    SyntaxError("newline not allowed in character literal");
+    SyntaxError("Newline not allowed in character literal");
   }
   /* put normal chars into 'TLS(Value)'                                       */
   else {
@@ -2083,7 +2083,7 @@ void GetChar ( void )
   
   /* check for terminating single quote                                  */
   if ( *TLS(In) != '\'' )
-    SyntaxError("missing single quote in character constant");
+    SyntaxError("Missing single quote in character constant");
 
   /* skip the closing quote                                              */
   TLS(Symbol) = S_CHAR;
@@ -2398,7 +2398,7 @@ void PutLineTo ( KOutputStream stream, UInt len )
  **  In the later case 'PutChrTo' has to decide where to  split the output line.
  **  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
  */
-Int NoSplitLine = 0;
+/* TL: Int NoSplitLine = 0; */
 
 /* helper function to add a hint about a possible line break;
    a triple (pos, value, indent), such that the minimal (value-pos) wins */
@@ -2935,7 +2935,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 }
 
 
-static KOutputStream TheStream;
+/* TL: static KOutputStream TheStream; */
 
 static void putToTheStream( Char c) {
   PutChrTo(TLS(TheStream), c);
@@ -2961,9 +2961,9 @@ void Pr (
   PrTo(TLS(Output), format, arg1, arg2);
 }
 
-static Char *TheBuffer;
-static UInt TheCount;
-static UInt TheLimit;
+/* TL: static Char *theBuffer; */
+/* TL: static UInt theCount; */
+/* TL: static UInt theLimit; */
 
 static void putToTheBuffer( Char c)
 {
@@ -3018,9 +3018,9 @@ Obj FuncALL_KEYWORDS(Obj self) {
 
 Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
   if (val == False)
-    (TLS(OutputFiles)+1)->format = 0;
+      ((TypOutputFile *)(TLS(OutputFiles)+1))->format = 0;
   else
-    (TLS(OutputFiles)+1)->format = 1;
+      ((TypOutputFile *)(TLS(OutputFiles)+1))->format = 1;
   return val;
 }
 
@@ -3124,10 +3124,10 @@ static Int InitKernel (
     }
 
     /* tell GASMAN about the global bags                                   */
-    InitGlobalBag(&(LogFile.stream),        "src/scanner.c:LogFile"        );
-    InitGlobalBag(&(LogStream.stream),      "src/scanner.c:LogStream"      );
-    InitGlobalBag(&(InputLogStream.stream), "src/scanner.c:InputLogStream" );
-    InitGlobalBag(&(OutputLogStream.stream),"src/scanner.c:OutputLogStream");
+    InitGlobalBag(&(TLS(LogFile).stream),        "src/scanner.c:LogFile"        );
+    InitGlobalBag(&(TLS(LogStream).stream),      "src/scanner.c:LogStream"      );
+    InitGlobalBag(&(TLS(InputLogStream).stream), "src/scanner.c:InputLogStream" );
+    InitGlobalBag(&(TLS(OutputLogStream).stream),"src/scanner.c:OutputLogStream");
 
 
     /* import functions from the library                                   */
@@ -3166,6 +3166,21 @@ static StructInitInfo module = {
 StructInitInfo * InitInfoScanner ( void )
 {
   return &module;
+}
+
+/****************************************************************************
+ **
+ *F  InitScannerTLS() . . . . . . . . . . . . . . . . . . . . . initialize TLS
+ *F  DestroyScannerTLS()  . . . . . . . . . . . . . . . . . . . .  destroy TLS
+ */
+
+void InitScannerState(GlobalState *state)
+{
+  state->HELPSubsOn = 1;
+}
+
+void DestroyScannerState(GlobalState *state)
+{
 }
 
 
