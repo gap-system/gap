@@ -189,23 +189,38 @@ InstallMethod(Reset, [IsMersenneTwister, IsObject], function(rs, seed)
   return old;
 end);
 
+BindGlobal("MERSENNE_RANDOM_INT", function(rs, val)
+  local nrbits, res;
+  if val < 0 then
+    return fail;
+  fi;
+  if val = 0 then
+    return val;
+  fi;
+  nrbits := Log2Int(val) + 1;
+  repeat
+    res := RandomIntegerMT(rs!.state, nrbits);
+  until res < val;
+  return res;
+end);
+
 InstallMethod(Random, [IsMersenneTwister, IsList], function(rs, list)
-  return RandomListMT(rs!.state, list);
+  local rand;
+  rand := MERSENNE_RANDOM_INT(rs, Length(list)-1);
+  if rand = fail then
+    return fail;
+  fi;
+  return list[rand+1];
 end);
 
 InstallMethod(Random, [IsMersenneTwister, IsInt, IsInt], function(rs, a, b)
-  local d, nrbits, res;
+  local d, rand;
   d := b-a+1;
-  if d < 0 then
+  rand := MERSENNE_RANDOM_INT(rs, d);
+  if rand = fail then
     return fail;
-  elif d = 0 then
-    return a;
   fi;
-  nrbits := Log2Int(d) + 1;
-  repeat
-    res := RandomIntegerMT(rs!.state, nrbits);
-  until res < d;
-  return res + a;
+  return rand + a;
 end);
 
 # One global Mersenne twister random source, can be used to overwrite
@@ -227,4 +242,3 @@ InstallMethod( Random,
 function(low, high)
   return Random(GlobalMersenneTwister, low, high);
 end );
-
