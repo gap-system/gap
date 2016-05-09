@@ -524,12 +524,10 @@ InstallGlobalFunction( IsCheapConwayPolynomial, function( p, n )
 end );
 
 # arg: F, n[, i]
-InstallGlobalFunction( RandomPrimitivePolynomial, function(arg)
-  local F, n, i, pol, FF, one, fac, a;
-  F := arg[1];
-  n := arg[2];
-  if Length(arg) > 2 then
-    i := arg[3];
+InstallGlobalFunction( RandomPrimitivePolynomial, function(F, n, varnum...)
+  local i, pol, FF, one, fac, a, zero;
+  if Length(varnum) > 0 then
+    i := varnum[1];
   else
     i := 1;
   fi;
@@ -539,16 +537,20 @@ InstallGlobalFunction( RandomPrimitivePolynomial, function(arg)
   if IsInt(F) then
     F := GF(F);
   fi;
-  repeat pol := RandomPol(F, n, i);
+  if n=1 and Size(F)=2 then
+    return Indeterminate(F, i) + One(F);
+  fi;
+  repeat pol := RandomPol(F, n);
   until IsIrreducibleRingElement(PolynomialRing(F), pol);
   FF := AlgebraicExtension(F, pol);
   one := One(FF);
+  zero := Zero(FF);
   fac:=List(Set(Factors(Size(FF)-1)), p-> (Size(FF)-1)/p);
   repeat 
     a := Random(FF);
-  until ForAll(fac, d-> a^d <> one);
-  return MinimalPolynomial(F, a);
-end );
+  until a <> zero and ForAll(fac, d-> a^d <> one);
+  return MinimalPolynomial(F, a, i);
+end);
 
 ##  # utility to write new data files in case of extensions
 ##  printConwayData := function(f)
