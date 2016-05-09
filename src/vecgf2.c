@@ -111,6 +111,75 @@ Obj GF2One;
 Obj GF2Zero;
 
 
+/****************************************************************************
+**
+*F * * * * * * * * * * * * arithmetic operations  * * * * * * * * * * * * * *
+*/
+
+static inline void AddGF2VecToGF2Vec(
+  UInt *	ptS,
+  UInt *	ptV,
+  UInt		len)
+{
+  register UInt ct;
+  ct = (len+BIPEB-1)/BIPEB;
+  while ( ct-- ) {
+    *ptS++ ^= *ptV++;
+  }
+}
+
+/****************************************************************************
+**
+*F  AddCoeffsGF2VecGF2Vec( <sum>, <vec> ) . . . . . . . .  add <vec> to <sum>
+**
+**  `AddCoeffsGF2VecGF2Vec' adds  the   entries of <vec>  to <sum>.    If the
+**  length  are not equal the  missing entries are  assumed  to be zero.  The
+**  position of the rightmost Z(2) is returned.
+*/
+
+UInt RightMostOneGF2Vec (
+    Obj                 vec )
+{
+    UInt                len;
+
+    len = LEN_GF2VEC(vec);
+    while ( 0 < len ) {
+        if ( BLOCK_ELM_GF2VEC(vec,len) == 0 )
+	    len = BIPEB*((len-1)/BIPEB);
+        else if ( BLOCK_ELM_GF2VEC(vec,len) & MASK_POS_GF2VEC(len) )
+            break;
+	else
+	  len--;
+    }
+    return len;
+}
+
+
+Obj AddCoeffsGF2VecGF2Vec (
+    Obj                 sum,
+    Obj                 vec )
+{
+    UInt *              ptS;
+    UInt *              ptV;
+    UInt                len;
+
+    /* get the length                                                      */
+    len = LEN_GF2VEC(vec);
+    
+    /* grow <sum> is necessary                                             */
+    if ( LEN_GF2VEC(sum) < len ) {
+        ResizeBag( sum, SIZE_PLEN_GF2VEC(len) );
+        SET_LEN_GF2VEC( sum, len );
+    }
+
+    /* add <vec> to <sum>                                                  */
+    ptS = BLOCKS_GF2VEC(sum);
+    ptV = BLOCKS_GF2VEC(vec);
+    AddGF2VecToGF2Vec(ptS, ptV, len);
+    return INTOBJ_INT(RightMostOneGF2Vec(sum));
+}
+
+
 
 
 static inline UInt highbits( UInt word, UInt howmany) 
@@ -341,77 +410,6 @@ void CopySection_GF2Vecs(Obj src, Obj dest, UInt smin, UInt dmin, UInt nelts)
     return;
   }
 }
-
-
-/****************************************************************************
-**
-*F * * * * * * * * * * * * arithmetic operations  * * * * * * * * * * * * * *
-*/
-
-static inline void AddGF2VecToGF2Vec(
-  UInt *	ptS,
-  UInt *	ptV,
-  UInt		len)
-{
-  register UInt ct;
-  ct = (len+BIPEB-1)/BIPEB;
-  while ( ct-- ) {
-    *ptS++ ^= *ptV++;
-  }
-}
-
-/****************************************************************************
-**
-*F  AddCoeffsGF2VecGF2Vec( <sum>, <vec> ) . . . . . . . .  add <vec> to <sum>
-**
-**  `AddCoeffsGF2VecGF2Vec' adds  the   entries of <vec>  to <sum>.    If the
-**  length  are not equal the  missing entries are  assumed  to be zero.  The
-**  position of the rightmost Z(2) is returned.
-*/
-
-UInt RightMostOneGF2Vec (
-    Obj                 vec )
-{
-    UInt                len;
-
-    len = LEN_GF2VEC(vec);
-    while ( 0 < len ) {
-        if ( BLOCK_ELM_GF2VEC(vec,len) == 0 )
-	    len = BIPEB*((len-1)/BIPEB);
-        else if ( BLOCK_ELM_GF2VEC(vec,len) & MASK_POS_GF2VEC(len) )
-            break;
-	else
-	  len--;
-    }
-    return len;
-}
-
-
-Obj AddCoeffsGF2VecGF2Vec (
-    Obj                 sum,
-    Obj                 vec )
-{
-    UInt *              ptS;
-    UInt *              ptV;
-    UInt                len;
-
-    /* get the length                                                      */
-    len = LEN_GF2VEC(vec);
-    
-    /* grow <sum> is necessary                                             */
-    if ( LEN_GF2VEC(sum) < len ) {
-        ResizeBag( sum, SIZE_PLEN_GF2VEC(len) );
-        SET_LEN_GF2VEC( sum, len );
-    }
-
-    /* add <vec> to <sum>                                                  */
-    ptS = BLOCKS_GF2VEC(sum);
-    ptV = BLOCKS_GF2VEC(vec);
-    AddGF2VecToGF2Vec(ptS, ptV, len);
-    return INTOBJ_INT(RightMostOneGF2Vec(sum));
-}
-
-
 
 /****************************************************************************
 **
@@ -2949,7 +2947,8 @@ Obj FuncPOSITION_NONZERO_GF2VEC3(
 
 
 
-Obj FuncCOPY_SECTION_GF2VECS(Obj self, Obj src, Obj dest, Obj from, Obj to, Obj howmany) {
+Obj FuncCOPY_SECTION_GF2VECS(Obj self, Obj src, Obj dest, Obj from, Obj to, Obj howmany) 
+{
   Int   ifrom;
   Int   ito;
   Int   ihowmany;
@@ -2974,7 +2973,6 @@ Obj FuncCOPY_SECTION_GF2VECS(Obj self, Obj src, Obj dest, Obj from, Obj to, Obj 
   CopySection_GF2Vecs(src, dest, (UInt)ifrom, (UInt)ito, (UInt)ihowmany);
   return (Obj) 0;
 }
-
 
 
 /****************************************************************************
@@ -4525,11 +4523,6 @@ Obj FuncDETERMINANT_LIST_GF2VECS( Obj self, Obj mat)
     }
   return (len == TriangulizeListGF2Vecs( mat , 0)) ? GF2One : GF2Zero;
 }
-
-
-
-
-
 
 /****************************************************************************
 **
