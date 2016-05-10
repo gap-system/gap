@@ -1255,7 +1255,7 @@ Int IsSSortStringYes (
 **
 *F  IsPossString(<list>)  . . . . .  positions list test function for strings
 **
-**  'IsPossString' returns 0, since every stringobj.contains no integers.
+**  'IsPossString' returns 0, since every string contains no integers.
 **
 **  'IsPossString' is the function in 'TabIsPossList' for strings.
 */
@@ -1297,7 +1297,7 @@ Obj PosString (
     /* get the length of <list>                                            */
     lenList = GET_LEN_STRING( list );
 
-    /* a stringobj.contains only characters */
+    /* a string contains only characters */
     if (TNUM_OBJ(val) != T_CHAR) return Fail;
     
     /* val as C character   */
@@ -2112,7 +2112,7 @@ static StructBagNames BagNames[] = {
   { T_CHAR,                           "character"                      },
   { T_STRING,                         "list (string)"                  },
   { T_STRING              +IMMUTABLE, "list (string,imm)"              },
-  { T_STRING      +COPYING,           "list (stringobj.copied)"           },
+  { T_STRING      +COPYING,           "list (string,copied)"           },
   { T_STRING      +COPYING+IMMUTABLE, "list (string,imm,copied)"       },
   { T_STRING_SSORT,                   "list (string,ssort)"            },
   { T_STRING_SSORT        +IMMUTABLE, "list (string,ssort,imm)"        },
