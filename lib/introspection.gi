@@ -42,3 +42,43 @@ function(type)
                      " filters : \n        ",
                      JoinStringsWithSeparator(flags, ",\n        ") );
 end);
+
+DeclareGlobalFunction("IsCategory");
+InstallGlobalFunction( IsCategory,
+function(x)
+    local fid;
+    for fid in [1..Length(FILTERS)] do
+        if (FILTERS[fid] = x)
+           and (INFO_FILTERS[fid] in FNUM_CATS) then
+            return true;
+        fi;
+    od;
+    return false;
+end);
+
+DeclareGlobalFunction("FilterByName");
+InstallGlobalFunction( FilterByName,
+function(name)
+    local fid;
+    for fid in FILTERS do
+        if NAME_FUNC(FILTERS[fid]) = name then
+            return FILTERS[fid];
+        fi;
+    od;
+    return fail;
+end);
+
+DeclareGlobalFunction("CategoryByName");
+InstallGlobalFunction( CategoryByName,
+function(name)
+    local fid;
+
+    for fid in CATS_AND_REPS do
+        if (INFO_FILTERS[fid] in FNUM_CATS) and
+           (NAME_FUNC(FILTERS[fid]) = name) then
+            return FILTERS[fid];
+        fi;
+    od;
+    return fail;
+end);
+

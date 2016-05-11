@@ -2,7 +2,9 @@
 ##
 #X  introspection of types
 ##
-ReadLib( "introspection.gi"  );
+
+ReadLib("introspection.gd");
+ReadLib("introspection.gi");
 
 ############################################################################
 ##
