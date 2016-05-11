@@ -1627,11 +1627,11 @@ DeclareGlobalFunction( "ReflectionMat" );
 ##  <A>R</A>, which defaults to <Ref Var="Integers"/>.
 ##  <Example><![CDATA[
 ##  gap> m := RandomInvertibleMat(4);
-##  [ [ 1, -2, -1, 0 ], [ 1, 0, 1, -1 ], [ 0, 2, 0, 4 ], 
-##    [ -1, -3, 1, -4 ] ]
+##  [ [ -4, 1, 0, -1 ], [ -1, -1, 1, -1 ], [ 1, -2, -1, -2 ], 
+##    [ 0, -1, 2, -2 ] ]
 ##  gap> m^-1;
-##  [ [ 1/4, 1/2, -1/8, -1/4 ], [ -1/3, 0, -1/3, -1/3 ], 
-##    [ -1/12, 1/2, 13/24, 5/12 ], [ 1/6, 0, 5/12, 1/6 ] ]
+##  [ [ -1/8, -11/24, 1/24, 1/4 ], [ 1/4, -13/12, -1/12, 1/2 ], 
+##    [ -1/8, 5/24, -7/24, 1/4 ], [ -1/4, 3/4, -1/4, -1/2 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1676,9 +1676,9 @@ DeclareGlobalFunction( "RandomMat" );
 ##  entries that is invertible over the integers.
 ##  <Example><![CDATA[
 ##  gap> m := RandomUnimodularMat(3);
-##  [ [ 1, 0, 0 ], [ 156, -39, -25 ], [ -100, 25, 16 ] ]
+##  [ [ -5, 1, 0 ], [ 12, -2, -1 ], [ -14, 3, 0 ] ]
 ##  gap> m^-1;
-##  [ [ 1, 0, 0 ], [ 4, 16, 25 ], [ 0, -25, -39 ] ]
+##  [ [ -3, 0, 1 ], [ -14, 0, 5 ], [ -8, -1, 2 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
