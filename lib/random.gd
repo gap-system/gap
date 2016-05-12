@@ -114,12 +114,12 @@ DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
 ##  <Example><![CDATA[
 ##  gap> seed := State(GlobalMersenneTwister);;
 ##  gap> List([1..10],i->Random(Integers));
-##  [ -1, -3, -2, 1, -2, -1, 0, 1, 0, 1 ]
+##  [ 2, -1, -2, -1, -1, 1, -4, 1, 0, -1 ]
 ##  gap> List([1..10],i->Random(Integers));
-##  [ -1, 0, 2, 0, 4, -1, -3, 1, -4, -1 ]
+##  [ -1, -1, 1, -1, 1, -2, -1, -2, 0, -1 ]
 ##  gap> Reset(GlobalMersenneTwister, seed);;
 ##  gap> List([1..10],i->Random(Integers));
-##  [ -1, -3, -2, 1, -2, -1, 0, 1, 0, 1 ]
+##  [ 2, -1, -2, -1, -1, 1, -4, 1, 0, -1 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -217,7 +217,7 @@ DeclareGlobalVariable( "GlobalRandomSource" );
 ##  gap> l1 = List([1..10000], i-> Random(rs1, [1..6])); 
 ##  false
 ##  gap> n := Random(rs1, 1, 2^220);
-##  1598617776705343302477918831699169150767442847525442557699717518961
+##  1077726777923092117987668044202944212469136000816111066409337432400
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
