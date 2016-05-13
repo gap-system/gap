@@ -2,26 +2,14 @@ language: c
 matrix:
   include:
     - os: linux
-      env: TEST_SUITE=testtravis
+      env: TEST_SUITE=test-core-quick
       compiler: gcc
       addons:
         apt_packages:
           - libgmp-dev
     - os: osx
-      env: TEST_SUITE=testtravis
+      env: TEST_SUITE=test-core-quick
       compiler: clang
-      addons:
-        apt_packages:
-         - libgmp-dev
-    - os: linux
-      env: TEST_SUITE=testinstall
-      compiler: gcc
-      addons:
-        apt_packages:
-         - libgmp-dev
-    - os: linux
-      env: TEST_SUITE=testbugfix
-      compiler: gcc
       addons:
         apt_packages:
          - libgmp-dev
@@ -38,14 +26,7 @@ matrix:
          - texlive-fonts-recommended
          - texlive-fonts-extra
     - os: linux
-      env: TEST_SUITE=testtravis ABI=32
-      compiler: gcc
-      addons: 
-        apt_packages:
-          - libgmp-dev:i386
-          - gcc-multilib
-    - os: linux
-      env: TEST_SUITE=testinstall ABI=32
+      env: TEST_SUITE=test-core-quick ABI=32
       compiler: gcc
       addons: 
         apt_packages:
