@@ -1,4 +1,0 @@
-
-##  (C) Frank Lübeck
-${BINPATH}/gap64 -L ${GAP_DIR}/bin/ws64gap4 "$@"
-

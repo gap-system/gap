@@ -1,6 +1,0 @@
-#!/bin/bash
-
-##  (C) Frank Lübeck
-
-exec rsync --port 8731 --daemon --config rsyncd.conf 
-
