@@ -3094,6 +3094,7 @@ static Int PostRestore (
     Last2             = GVarName( "last2" );
     Last3             = GVarName( "last3" );
     Time              = GVarName( "time"  );
+    AssGVar(Time, INTOBJ_INT(0));
     QUITTINGGVar      = GVarName( "QUITTING" );
     
     /* return success                                                      */
