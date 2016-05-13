@@ -6,7 +6,16 @@
 ##  and types.
 ##
 
+#X enumerators for
+#X   filters, categories, representations,
+#X   properties,
+
 DeclareGlobalFunction("IsCategory");
 
 DeclareGlobalFunction("FilterByName");
 DeclareGlobalFunction("CategoryByName");
+
+
+#X This needs a better name
+DeclareGlobalFunction("DeclareObject");
+

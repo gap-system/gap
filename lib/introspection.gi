@@ -35,7 +35,6 @@ function(type)
     flags := NamesFilter( TRUES_FLAGS( type![2] ) );
     data := type![ POS_DATA_TYPE ];
 
-
     return STRINGIFY("type\n",
                      " family: \n        ",
                      ViewString(family), "\n",
@@ -43,7 +42,6 @@ function(type)
                      JoinStringsWithSeparator(flags, ",\n        ") );
 end);
 
-DeclareGlobalFunction("IsCategory");
 InstallGlobalFunction( IsCategory,
 function(x)
     local fid;
@@ -56,7 +54,6 @@ function(x)
     return false;
 end);
 
-DeclareGlobalFunction("FilterByName");
 InstallGlobalFunction( FilterByName,
 function(name)
     local fid;
@@ -68,11 +65,9 @@ function(name)
     return fail;
 end);
 
-DeclareGlobalFunction("CategoryByName");
 InstallGlobalFunction( CategoryByName,
 function(name)
     local fid;
-
     for fid in CATS_AND_REPS do
         if (INFO_FILTERS[fid] in FNUM_CATS) and
            (NAME_FUNC(FILTERS[fid]) = name) then
@@ -81,4 +76,39 @@ function(name)
     od;
     return fail;
 end);
+
+InstallGlobalFunction( DeclareObject,
+function(name, super, repfilter, attributes, properties)
+    local cat
+        , familyname, fam
+        , repname, rep
+        , typename, type
+        , att, prop;
+
+    #X Check whether name exists,
+    #X check whether name is empty
+    cat := NewCategory(name, IsObject);
+    BindGlobal(name, cat);
+
+    familyname := Concatenation(name, "Family");
+    fam := NewFamily(familyname);
+    BindGlobal(familyname, fam);
+
+    repname := Concatenation(name, "Rep");
+    rep := NewRepresentation(repname, cat and repfilter, []);
+    BindGlobal(repname, rep);
+
+    for att in attributes do
+        DeclareAttribute(att, cat);
+    od;
+
+    for prop in properties do
+        DeclareProperty(prop, cat);
+    od;
+
+    typename := Concatenation(name, "Type");
+    type := NewType(fam, rep);
+    BindGlobal(typename, type);
+end);
+
 
