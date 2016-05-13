@@ -2,26 +2,14 @@ language: c
 matrix:
   include:
     - os: linux
-      env: TEST_SUITE=testtravis
+      env: TEST_SUITE=test-core-quick
       compiler: gcc
       addons:
         apt_packages:
           - libgmp-dev
     - os: osx
-      env: TEST_SUITE=testtravis
+      env: TEST_SUITE=test-core-quick
       compiler: clang
-      addons:
-        apt_packages:
-         - libgmp-dev
-    - os: linux
-      env: TEST_SUITE=testinstall
-      compiler: gcc
-      addons:
-        apt_packages:
-         - libgmp-dev
-    - os: linux
-      env: TEST_SUITE=testbugfix
-      compiler: gcc
       addons:
         apt_packages:
          - libgmp-dev
@@ -38,14 +26,7 @@ matrix:
          - texlive-fonts-recommended
          - texlive-fonts-extra
     - os: linux
-      env: TEST_SUITE=testtravis ABI=32
-      compiler: gcc
-      addons: 
-        apt_packages:
-          - libgmp-dev:i386
-          - gcc-multilib
-    - os: linux
-      env: TEST_SUITE=testinstall ABI=32
+      env: TEST_SUITE=test-core-quick ABI=32
       compiler: gcc
       addons: 
         apt_packages:
@@ -55,7 +36,6 @@ matrix:
 
 script:
   - ./configure --with-gmp=system
-  - make
+  - make -j
   - make bootstrap-pkg-full
-  - if [ $TEST_SUITE = 'makemanuals' ]; then if [ $TRAVIS_OS_NAME = 'linux' ]; then make manuals ; cat doc/*/make_manuals.out ; if [ `cat doc/*/make_manuals.out | grep -c "manual.lab written"` != '3' ]; then echo "Build failed"; exit 1; fi; fi; fi
-  - if [ $TEST_SUITE != 'makemanuals' ]; then echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh | tee testlog.txt | grep --colour=always -E "########> Diff|$"; cat testlog.txt | tail -n 2 | grep "total"; ( ! grep "########> Diff" testlog.txt ); fi
+  - make $TEST_SUITE

@@ -232,32 +232,51 @@ manuals: compile
           ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
 	( rm doc/wsp.g )
 
-check: compile
-	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); \
-            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) )
+check: test-core-quick
 
-testinstall: compile
+test-core-quick: compile
 	mkdir -p dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); \
-            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
-            tee `date -u +dev/log/testinstall1_%Y-%m-%d-%H-%M` )
-	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
-            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
-            tee `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
+		ReadGapRoot( "tst/testutil.g" ); \
+		ReadGapRoot( "tst/core/quick.g" );' | $(TESTGAP) | \
+		tee `date -u +dev/log/test-core-quick_%Y-%m-%d-%H-%M` )
 
-teststandard: compile
+test-core-full: compile
 	mkdir -p dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); \
-          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
-            tee `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
+                ReadGapRoot( "tst/testutil.g" ); \
+                ReadGapRoot( "tst/core/full.g" );' | $(TESTGAP) | \
+                tee `date -u +dev/log/test-core-full_%Y-%m-%d-%H-%M` )
+        
+test-core-intense: compile
+	mkdir -p dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
-          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
-            tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
+                ReadGapRoot( "tst/testutil.g" ); \
+                ReadGapRoot( "tst/core/full.g" );' | $(TESTGAP) | \
+                tee `date -u +dev/log/test-core-intense_%Y-%m-%d-%H-%M` )
+            
+test-dist-quick: compile
+	mkdir -p dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+                ReadGapRoot( "tst/testutil.g" ); \
+                ReadGapRoot( "tst/dist/quick.g" );' | $(TESTGAP) | \
+                tee `date -u +dev/log/test-dist-quick_%Y-%m-%d-%H-%M` )
+            
+test-dist-full: compile
+	mkdir -p dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+                ReadGapRoot( "tst/testutil.g" ); \
+                ReadGapRoot( "tst/dist/full.g" );' | $(TESTGAP) | \
+                tee `date -u +dev/log/test-dist-full%Y-%m-%d-%H-%M` )
+         
+test-dist-intense: compile
+	mkdir -p dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+                ReadGapRoot( "tst/testutil.g" ); \
+                ReadGapRoot( "tst/dist/intense.g" );' | $(TESTGAP) | \
+                tee `date -u +dev/log/test-dist-intense%Y-%m-%d-%H-%M` )
+
+check: test-core-quick
 
 teststandardrenormalize: compile
 	( echo 'TestDirectory("tst", rec(renormaliseStones := true));' | $(TESTGAP) )
