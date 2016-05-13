@@ -1,0 +1,78 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% [Required] When the change was checked in, format 'yyyy/mm/dd':
+!! Date
+2014/12/05
+
+% [Required] Initials should suffice here:
+!! Changed by
+CAJ
+
+% [Optional] Only if applicable:
+! Reported by
+Matt Fayers
+
+% [Required] Choose one or more entries and/or add new ones;
+% but always use either the 'Fix:' or the 'New:' prefix
+!! Type of Change
+Fix: wrong result
+
+% [Required] For the description use plain text
+!! Description
+Union sometimes produces incorrect answers on ranges which go downwards.
+
+% [Optional, but highly desirable] If possible, provide some code
+% in test file format which allows to check if a change was applied
+% to an installation. Provide input and output, including prompts,
+% exactly as in a GAP session.
+! Test Code
+gap> Union([2],[3],[5,1..1]);
+[ 1, 2, 3, 5 ]
+
+% [Optional] If possible, provide some information about a temporary fix,
+% workaround etc., maybe with a link to some longer description or a file
+% with some code. Use plain text here.
+! Prefetch
+The required patch to fix this is short, add the following code to the start
+of JoinRanges in lib/coll.gi:2538
+
+  # Make ranges run upwards
+  if da < 0 then
+    x:=a1;a1:=a0;a0:=x;da:=-da;
+  fi;
+  
+  if db < 0 then
+    x:=b1;b1:=b0;b0:=x;db:=-db;
+  fi;
+
+
+% [Required] Describe here how to find out where the changes were made.
+%
+% - for immediate changes in the stable branch, it is sufficient to just 
+%   specify changed file(s) instead of the hexadecimal changeset id. Note
+%   thet adding the entry describing the change should be a part of the 
+%   same commit as the change itself, so that adding/merging/backing out 
+%   these changes will keep dev/Update in sync. If you will revisit this 
+%   change before the next GAP release, you may consider updating its entry
+%   in dev/Update file, specifying the full hexadecimal changeset id
+%   (160-bit identifier) of the previous change(s).
+%
+% - for changes made in feature branches, the change to dev/Update should
+%   be made in the same feature branch, so it will be merged into default
+%   or stable branch together with actual changes and reverting the merge
+%   will also revert the dev/Update file. It is sufficient to specify here 
+%   just the name of the feature branch. Instead of that, you may also put 
+%   there the full hexadecimal changeset id (160-bit identifier) of the 
+%   latest revision of the code in this branch before the merge (this is
+%   especially relevant to feature branches that were merged into release
+%   branches multiple times during their lifetime, so without changeset id
+%   it would be quite difficult to find corresponding changesets).
+%
+% Since by default, Mercurial displays only the first 12 characters of
+% the full hexadecimal changeset id, to see the full version, use --debug
+% option, e.g. 'hg --debug log'. Do not use the short revision number
+% since it makes sense only within your clone.
+!! Changeset
+181970c22002
+
+% [Required] Finish your entry with this:
+!! End

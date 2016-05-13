@@ -1,0 +1,232 @@
+<Chapter Label="Floats">
+<Heading>Floats</Heading>
+
+Starting with version 4.5, &GAP; has built-in support for
+floating-point numbers in machine format, and allows package to
+implement arbitrary-precision floating-point arithmetic in a uniform
+manner. For now, one such package, <Package>Float</Package> exists,
+and is based on the arbitrary-precision routines
+in <Package>mpfr</Package>.
+
+<P/> A word of caution: &GAP; deals primarily with algebraic objects,
+which can be represented exactly in a computer. Numerical imprecision
+means that floating-point numbers do not form a ring in the strict
+&GAP; sense, because addition is in general not associative
+(<C>(1.0e-100+1.0)-1.0</C> is not the same
+as <C>1.0e-100+(1.0-1.0)</C>, in the default precision setting).
+
+<P/> Most algorithms in &GAP; which require ring elements will
+therefore not be applicable to floating-point elements. In some cases,
+such a notion would not even make any sense (what is the greatest
+common divisor of two floating-point numbers?)
+
+<Section><Heading>A sample run</Heading>
+
+Floating-point numbers can be input into &GAP; in the standard
+floating-point notation:
+<P/>
+<Example><![CDATA[
+gap> 3.14;
+3.14
+gap> last^2/6;
+1.64327
+gap> h := 6.62606896e-34;
+6.62607e-34
+gap> pi := 4*Atan(1.0);
+3.14159
+gap> hbar := h/(2*pi);
+1.05457e-34
+]]></Example>
+
+<P/> Floating-point numbers can also be created using <C>Float</C>,
+from strings or rational numbers; and can be converted back
+using <C>String,Rat,Int</C>.
+
+<P/> &GAP; allows rational and floating-point numbers to be mixed in
+the elementary operations <C>+,-,*,/</C>. However, floating-point
+numbers and rational numbers may not be compared. Conversions are
+performed using the creator <C>Float</C>:
+<P/>
+<Example><![CDATA[
+gap> Float("3.1416");
+3.1416
+gap> Float(355/113);
+3.14159
+gap> Rat(last);
+355/113
+gap> Rat(0.33333);
+1/3
+gap> Int(1.e10);
+10000000000
+gap> Int(1.e20);
+100000000000000000000
+gap> Int(1.e30);
+1000000000000000019884624838656
+]]></Example>
+</Section>
+
+<Section><Heading>Methods</Heading>
+
+Floating-point numbers may be directly input, as in any usual
+mathematical software or language; with the exception that every
+floating-point number must contain a decimal
+digit. Therefore <C>.1</C>, <C>.1e1</C>, <C>-.999</C> etc. are all valid
+&GAP; inputs.
+<P/>
+
+Floating-point numbers so entered in &GAP; are stored as strings. They
+are converted to floating-point when they are first used. This means that,
+if the floating-point precision is increased, the constants are
+reevaluated to fit the new format.
+<P/>
+
+Floating-point numbers may be followed by an underscore, as
+in <C>1._</C>. This means that they are to be immediately converted to
+the current floating-point format. The underscore may be followed by a
+single letter, which specifies which format/precision to use. By
+default, &GAP; has a single floating-point handler, with fixed (53
+bits) precision, and its format specifier is <C>'l'</C> as
+in <C>1._l</C>. Higher-precision floating-point computations is
+available via external packages; <Package>float</Package> for example.
+<P/>
+
+A record, <Ref Var="FLOAT" Label="constants"/>,
+contains all relevant constants for the
+current floating-point format; see its documentation for details.
+Typical fields are <C>FLOAT.MANT_DIG=53</C>, the
+constant <C>FLOAT.VIEW_DIG=6</C> specifying the number of digits to
+view, and <C>FLOAT.PI</C> for the constant <M>\pi</M>. The constants
+have the same name as their C counterparts, except for the missing
+initial <C>DBL_</C> or <C>M_</C>.
+<P/>
+
+Floating-point numbers may be created using the single function
+<Ref Func="Float"/>, which accepts as arguments rational, string,
+or floating-point numbers. Floating-point numbers may
+also be created, in any floating-point representation, using
+<Ref Func="NewFloat"/> as in <C>NewFloat(IsIEEE754FloatRep,355/113)</C>,
+by supplying the category filter of the desired new floating-point number;
+or using <Ref Func="MakeFloat"/> as in <C>NewFloat(1.0,355/113)</C>,
+by supplying a sample floating-point number.
+<P/>
+
+Floating-point numbers may also be converted to other &GAP; formats
+using the usual commands <Ref Oper="Int"/>, <Ref Oper="Rat"/>,
+<Ref Oper="String"/>.
+<P/>
+
+Exact conversion to and from floating-point format may be done using
+external representations. The "external representation" of a
+floating-point number <C>x</C> is a pair <C>[m,e]</C> of integers,
+such that <C>x=m*2^(-1+e-LogInt(AbsInt(m),2))</C>. Conversion to and from
+external representation is performed as usual using
+<Ref Oper="ExtRepOfObj"/> and <Ref Oper="ObjByExtRep"/>:
+<Example><![CDATA[
+gap> ExtRepOfObj(3.14);
+[ 7070651414971679, 2 ]
+gap> ObjByExtRep(IEEE754FloatsFamily,last);
+3.14
+]]></Example>
+<P/>
+
+Computations with floating-point numbers never raise any
+error. Division by zero is allowed, and produces a signed
+infinity. Illegal operations, such as <C>0./0.</C>,
+produce <K>NaN</K>'s (not-a-number); this is the only floating-point
+number <C>x</C> such that <C>not EqFloat(x+0.0,x)</C>.
+<P/>
+
+The IEEE754 standard requires <K>NaN</K> to be non-equal to itself. On
+the other hand, &GAP; requires every object to be equal to itself. To
+respect the IEEE754 standard, the function <Ref Oper="EqFloat"/>
+should be used instead of <C>=</C>.
+<P/>
+
+The category a floating-point belongs to can be checked using the
+filters <Ref Filt="IsFinite"/>, <Ref Filt="IsPInfinity"/>,
+<Ref Filt="IsNInfinity"/>, <Ref Filt="IsXInfinity"/>,
+<Ref Filt="IsNaN"/>.
+<P/>
+
+Comparisons between floating-point numbers and rationals are
+explicitly forbidden. The rationale is that objects belonging to
+different families should in general not be comparable in
+&GAP;. Floating-point numbers are also approximations of real numbers,
+and don't follow the same rules; consider for example, using the
+default &GAP; implementation of floating-point numbers,
+<Example><![CDATA[
+gap> 1.0/3.0 = Float(1/3);
+true
+gap> (1.0/3.0)^5 = Float((1/3)^5);
+false
+]]></Example>
+<P/>
+
+<#Include Label="FLOAT_UNARY">
+<#Include Label="Float">
+
+</Section>
+
+<Section><Heading>High-precision-specific methods</Heading>
+
+&GAP; provides a mechanism for packages to implement new
+floating-point numerical interfaces. The following describes that
+mechanism, actual examples of packages are documented separately.
+<P/>
+
+A package must create a record with fields (all optional) <List>
+<Mark>creator</Mark> <Item>a function converting strings to floating-point;</Item>
+<Mark>eager</Mark> <Item>a character allowing immediate conversion
+  to floating-point;</Item>
+<Mark>objbyextrep</Mark> <Item>a function creating a floating-point
+  number out of a list <C>[mantissa,exponent]</C>;</Item>
+<Mark>filter</Mark> <Item>a filter for the new floating-point objects;</Item>
+<Mark>constants</Mark> <Item>a record containing numerical constants,
+  such as <C>MANT_DIG</C>, <C>MAX</C>, <C>MIN</C>, <C>NAN</C>.</Item>
+</List>
+<P/>
+
+The package must install methods <C>Int</C>, <C>Rat</C>, <C>String</C>
+for its objects, and
+creators <C>NewFloat(filter,IsRat)</C>, <C>NewFloat(IsString)</C>.
+<P/>
+
+It must then install methods for all arithmetic and numerical
+operations: <C>PLUS</C>, <C>Exp</C>, ...
+<P/>
+
+The user chooses that implementation by calling
+<Ref Func="SetFloats"/> with the record as argument, and with an
+optional second argument requesting a precision in binary digits.
+
+</Section>
+
+<Section><Heading>Complex arithmetic</Heading>
+
+Complex arithmetic may be implemented in packages, and is present
+in <Package>float</Package>. Complex numbers are treated as usual
+numbers; they may be input with an extra "i" as in <C>-0.5+0.866i</C>.
+<P/>
+
+Methods should then be implemented for <C>Norm</C>, <C>RealPart</C>,
+<C>ImaginaryPart</C>, <C>ComplexConjugate</C>, ...
+
+</Section>
+
+<Section><Heading>Interval-specific methods</Heading>
+
+Interval arithmetic may also be implemented in packages. Intervals
+are in fact efficient implementations of sets of real numbers. The
+only non-trivial issue is how they should be compared. The standard
+<C>EQ</C> tests if the intervals are equal; however, it is usually
+more useful to know if intervals overlap, or are disjoint, or are
+contained in each other. The methods provided by the package should
+include <C>Sup,Inf,Mid,DiameterOfInterval,Overlaps,IsSubset,IsDisjoint</C>.
+<P/>
+
+Note the usual convention that intervals are compared as
+in <M>[a,b]\le[c,d]</M> if and only if <M>a\le c</M> and <M>b\le
+d</M>.
+</Section>
+
+</Chapter>

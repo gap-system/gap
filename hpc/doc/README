@@ -1,0 +1,130 @@
+To build the manuals type:
+
+  ./make_doc
+
+in this directory. (Don't run: make  ... the Makefile is not up-to-date.)
+
+If you have problems look in the HOWTOS directory (specifically:
+../HOWTOS/manual.HOWTO) for details of the software needed on your
+system to build the manuals. If you have tee on your system you might 
+like to run make_doc again piping the output through tee e.g. if your shell
+is tcsh then:
+
+  ./make_doc |& tee doc.log
+
+will direct standard output and standard error both to the file doc.log and
+display it on the screen. This gives you the chance to look at diagnostics 
+later at leisure, that have rushed past your eyes.
+
+Below, we'll attempt to diagnose some problems that might arise:
+
+---------------------------------------------------------------------------
+* I get make error messages:
+make: ../../etc/buildman.pe: Command not found
+make: *** [._number] Error 127
+
+SOLUTION: Check first that you do have etc/buildman.pe and it's executable.
+(etc is ../etc relative to the doc directory). Almost certainly your
+problem is that perl is somewhere other than in /usr/bin. Do: 
+
+  which perl
+
+and edit the first line of etc/buildman.pe to reflect the correct path.
+While you're at it fix etc/convert.pl too (same fix). Also, do:
+
+  perl -v
+
+to check what version of perl you have (you need perl5, and it probably
+needs to be perl 5.004_004 or later).
+---------------------------------------------------------------------------
+* I get TeX error messages:
+! TeX capacity exceeded, sorry [pool size=94767].
+
+SOLUTION: See HOWTOS/manual.HOWTO for this one. Essentially you need to
+increase the pool_size (250000 is known to be enough).
+---------------------------------------------------------------------------
+* I get awk error messages:
+Hyphenating long index entries
+awk: syntax error near line 1
+awk: illegal statement near line 1
+awk: syntax error near line 5
+awk: illegal statement near line 5
+
+DIAGNOSIS: This problem used to occur when doc/manualindex was run, with
+the awk on SUNs with SunOS 5.5 (which doesn't understand the `match'
+command). 
+SOLUTION: Update doc/manualindex (the latest version uses `index' instead
+of `match'). While you are at it, update doc/htm/onehtmlindex (this had the
+same problem.)
+---------------------------------------------------------------------------
+* I get TeX error messages:
+Chapter `Index' .
+(manual.ind
+! Undefined control sequence.
+l.1 \begin
+          {theindex}
+?
+
+DIAGNOSIS: This happens if the manual.mst file is missing in any of doc/ext
+doc/new doc/prg doc/ref doc/tut. When doc/manualindex is executed it calls
+makeindex. Without manual.mst present makeindex produces a LaTeX style
+index with \begin{index} .. \end{index} which TeX doesn't understand.
+SOLUTION: Ensure the manual.mst file is present.
+---------------------------------------------------------------------------
+* I get TeX error messages:
+! Undefined control sequence.
+<argument> \kernttindent 
+                         \\input ../gapmacro.tex
+\typewriter ...e {\writetyper \chardef `=96 \tt #1
+                                                  }
+\cloparen ...ule \relax }\noindent \typewriter #1'
+                                                  }
+l.32 \){\kernttindent\\input ../gapmacro.tex}
+
+?
+
+DIAGNOSIS: This happens with older versions of doc/gapmacro.tex that haven't
+defined \kernttindent (when tex-ing the ext manual).
+SOLUTION: Update doc/gapmacro.tex.
+---------------------------------------------------------------------------
+* I get empty (except for the cover page) fullindex.dvi, fullindex.ps,
+  fullindex.pdf
+
+DIAGNOSIS: This used to occur when awk on a system was actually mawk
+(which doesn't recognise the string "\{" as being the same as "{").
+SOLUTION: Update doc/allmanualsindex.
+---------------------------------------------------------------------------
+* I get perl warning messages:
+Value of <HANDLE> construct can be "0"; test with defined() at ../../etc/convert.pl line 338.
+Value of <HANDLE> construct can be "0"; test with defined() at ../../etc/convert.pl line 65535.
+Value of <HANDLE> construct can be "0"; test with defined() at ../../etc/convert.pl line 1033.
+Name "main::betb" used only once: possible typo at ../../etc/convert.pl line 1106.
+
+DIAGNOSIS: These are from bugs in an old version of etc/convert.pl.
+SOLUTION: Update etc/convert.pl.
+---------------------------------------------------------------------------
+* I get a perl warning message like:
+!! tth: not in path.
+which: no tth in (/opt/kde/bin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/usr/openwin/bin:/usr/games:.:/usr/share/texmf/bin)
+... Maths formulae will vanish! Install tth or avoid -t option.
+
+DIAGNOSIS: The message says it all; etc/convert.pl, when called with the -t
+option, uses tth (TeX to HTML) to convert maths formulae (anything appearing
+in $...$ or $$...$$).
+SOLUTION: Either install tth (see HOWTOS/manual.HOWTO) or do the generation
+of the HTML docs manually without the -t option (change to directory doc/htm
+and do:
+
+  ../../etc/convert.pl -c ../XXX XXX
+
+for XXX replaced by ext, new, prg, ref and tut in succession).
+---------------------------------------------------------------------------
+Most other warning/error messages can be ignored e.g.
+Creating B all manuals index.
+fgrep: ext/indxB.htm: No such file or directory
+
+This fgrep error message is normal ... since the ext manual has no B
+index entries, there is no ext/indxB.htm. The script doc/htm/onehtmlindex
+doesn't do anything particularly clever in looking for the manual index files 
+for each letter, and behaves correctly when fgrep fails to find a file.
+---------------------------------------------------------------------------

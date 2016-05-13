@@ -1,0 +1,20 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/11/13
+! Changed by
+BH
+! Reported by
+AH
+! Type of Change
+Fix: efficiency issue
+Fix: internal data corruption
+! Description
+Additional code to make sure that the HomePcgs of a perm group
+is in IsPcgsPermGroupRep in more cases, this should improve 
+efficiency.
+
+Also fixed two potential problems in NorSerPermPcgs, one corrupting
+some internal data and one possibly mixing up different pcgs. 
+! Changeset
+0cb10d526d39b5b89579baef9aa8488ac5be8415
+! End

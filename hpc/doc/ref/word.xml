@@ -1,0 +1,71 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  word.msk                    GAP documentation               Thomas Breuer -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: word.msk,v 1.5 2002/04/15 10:02:34 sal Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Words">
+<Heading>Words</Heading>
+
+<#Include Label="[1]{word}">
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Categories of Words and Nonassociative Words">
+<Heading>Categories of Words and Nonassociative Words</Heading>
+
+<#Include Label="IsWord">
+<#Include Label="IsWordCollection">
+<#Include Label="IsNonassocWord">
+<#Include Label="IsNonassocWordCollection">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Comparison of Words">
+<Heading>Comparison of Words</Heading>
+
+<#Include Label="[2]{word}">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations for Words">
+<Heading>Operations for Words</Heading>
+
+<#Include Label="[3]{word}">
+<#Include Label="MappedWord">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Free Magmas">
+<Heading>Free Magmas</Heading>
+
+<#Include Label="[4]{word}">
+<#Include Label="FreeMagma">
+<#Include Label="FreeMagmaWithOne">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="External Representation for Nonassociative Words">
+<Heading>External Representation for Nonassociative Words</Heading>
+
+<#Include Label="[5]{word}">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

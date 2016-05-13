@@ -1,0 +1,845 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  Update                      GAP Maintenance
+%%
+%%
+%Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file is intended to list the changes that will be published with
+%%  the next update of GAP.
+%%  The information is used for producing the announcement of the update,
+%%  the additions to `tst/bugfix.tst', and an HTML page that lists the
+%%  known bugs and intended new features.
+%%
+%%  For adding a change, just copy one of the templates below to the end of the
+%%  file, and enter the relevant information.
+%%
+%%  Formal rules for this file, to allow simple parsing by a script:
+%%          - lines starting with `%' are comments and are ignored
+%%          - lines starting with `!' describe the type of information
+%%            in the following lines until the next `!'-line
+%%          - each entry must be finished with an `! End' line, otherwise
+%%            the order of entries is irrelevant
+%%          - the text behind the `!' is case and whitespace insensitive
+%%
+
+%%%%%%%%%%%%  short template without comments, below is a longer one  %%%%%%%%
+! Date
+
+! Changed by
+
+! Reported by
+
+! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+Fix: crash
+Fix: internal data corruption
+Fix: wrong documentation
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+! Description
+
+! Test Code
+
+! Prefetch
+
+! Changed Files
+
+! End
+
+
+
+%%%%%%%%%%%%  Template with explanatory comments    %%%%%%%%%%%%%%%%%%%%%%%%%%
+% When the change was checked in, format 'yyyy/mm/dd':
+! Date
+
+% Initials should suffice here:
+! Changed by
+
+% Only if applicable:
+! Reported by
+
+% Choose one or more entries and/or add new ones; but always use either
+% the 'Fix:' or the 'New:' prefix
+! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+Fix: crash
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+% For the description use (X)HTML (preferred) or plain text:
+% For HTML use in particular the following markup:
+%     for package names: <span class="pkgname">...</span>
+%     for GAP names: <span class="code">...</span>
+! Description
+
+% If possible, provide some code in test file format which allows to check
+% if a change was applied to an installation. Provide input and output,
+% including prompts, exactly as in a GAP session.
+! Test Code
+
+% If possible, provide some information about a temporary fix, workaround,
+% ..., maybe with a link to some longer description or a file with some
+% code. Use (X)HTML here.
+! Prefetch
+
+% White space separated list of paths relative to the GAP root directory.
+% (This is implicitly contained in the data of the CVS repository, but in
+% case of problems after changes it may be convenient to have this
+% information here.)
+! Changed Files
+
+% Finish your entry with this:
+! End
+
+
+%%%%%%
+! Date
+4/2/06
+! Changed by
+AH
+! Reported by
+I.Soroko
+! Type of Change
+Fix: wrong result
+! Description
+When prescribing a subgroup to be included, the low index algorithm for fp
+groups sometimes returned subgroups which are in fact conjugate. (No
+subgroups are missing.)
+! Test Code
+gap> F:=FreeGroup("x","y","z");;
+gap> x:=F.1;;y:=F.2;;z:=F.3;;
+gap> rels:=[x^2,y^2,z^4,Comm(z^-2,x),(z*x)^4,Comm(z^-1,y)^2,
+> (y*x)^4,(Comm(z,y)*x)^2,(Comm(y,z^-1)*x)^2,(y*z)^6,
+> z^-1*y*z^-1*x*z*y*z^-1*x*z*y*z^-1*x*z*y*z*x,y*z*x*z*y*x*y*z^-1*x*y*z^-1*x*y*z*x*y*z^-1*x];;
+gap> G:=F/rels;;
+gap> x:=G.1;;y:=G.2;;z:=G.3;;
+gap> s3:=Subgroup(G,[ z*y*z*y^-1, z^-1*y*z^-1*y^-1, y*z*x*z^-1*y^-1*x^-1,
+> z*x*y*z*x^-1*y^-1 ]);;
+gap> L:=LowIndexSubgroupsFpGroup(G,s3,4);;
+gap> Assert(0,Length(L)=27);
+! Changed Files
+lib/grpfp.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/04/07
+! Changed by
+TB
+! Reported by
+Peter Mayr
+! Type of Change
+Fix: inappropriate error message
+! Description
+Two special methods for the operation
+<mixer manual="Reference: CompositionMapping2"><span class="code">
+CompositionMapping2</span></mixer> were not correct,
+such that composing (and multiplying) certain group homomorphisms
+did not work.
+! Test Code
+gap> G:= SymmetricGroup(3);;
+gap> m:= InnerAutomorphism( G, (1,2) );;
+gap> n:= TransformationRepresentation( InnerAutomorphism( G, (1,2,3) ) );;
+gap> m * n;;  n * m;;
+! Changed Files
+lib/fastendo.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/04/11
+! Changed by
+TB
+! Reported by
+Jack Schmidt
+! Type of Change
+Fix: wrong documentation
+! Description
+In the definition of
+<mixer manual="Reference: FrobeniusCharacterValue"><span class="code">
+FrobeniusCharacterValue</span></mixer>, it had been stated erroneously
+that the value must lie in the field of p<sup>n</sup>-th roots of unity;
+the correct condition is that the value must lie in the field of
+(p<sup>n</sup>-1)-th roots of unity.
+! Changed Files
+lib/ctblfuns.gd
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/04/18
+! Changed by
+TB
+! Reported by
+J"urgen M"uller
+! Type of Change
+Fix: wrong result
+! Description
+The function <mixer manual="Reference: Decomposition"><span class="code">
+Decomposition</span></mixer> returned coefficient vectors also in certain
+situations where in fact no decomposition exists.
+This happened only if the matrix entered as the first argument
+contained irrational values
+and a row in the matrix entered as the second argument did not respect the
+algebraic conjugacy relations between the columns of the first argument.
+So there was no problem for the usual cases that the two matrices are
+integral or that they are lists of Brauer characters.
+! Test Code
+gap> Decomposition( [ [1,1], [E(3),E(3)^2] ], [ [1,-1] ], 1 );
+[ fail ]
+! Changed Files
+lib/zlattice.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/04/18
+! Changed by
+SK
+! Type of Change
+Fix: inappropriate error message
+! Description
+The function <mixer manual="Reference: DirectProduct"><span class="code">
+DirectProduct</span></mixer> failed when one of the factors was known to be
+infinite.
+! Test Code
+gap> gp := FreeGroup(1);; Size(gp);;  
+gap> DirectProduct(gp,gp);
+<fp group of size infinity on the generators [ f1, f2 ]>
+! Changed Files
+lib/gprd.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/05/10
+! Changed by
+AH
+! Reported by
+S.Bouc
+! Type of Change
+Fix: wrong result
+! Description
+PC group homomorphisms can claim a wrong kernel after composition.
+! Changed Files
+lib/ghompcgs.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/05/12
+! Changed by
+TB
+! Reported by
+Gabor Nagy
+! Type of Change
+Fix: wrong result
+! Description
+The return value of <mixer manual="Reference: OctaveAlgebra">
+<span class="code">OctaveAlgebra</span></mixer> had an inconsistent
+defining structure constants table for the case of coefficients fields
+not containing the integer zero.
+! Test Code
+gap> Center( OctaveAlgebra( GF(13) ) );;
+! Changed Files
+lib/algsc.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/06/01
+! Changed by
+Max
+! Reported by
+Ákos Seress
+! Type of Change
+Fix: efficiency issue
+! Description
+For a linear action homomorphism <span class="code">PreImageElm</span>
+was very slow because there was no good method to check for injectivity,
+which is needed for nearly all good methods for 
+<span class="code">PreImageElm</span>. This change adds such a new
+method for <span class="code">IsInjective</span>.
+! Changed Files
+lib/oprt.gi
+! End
+
+%%%%%%%%%%%%  short template without comments, below is a longer one  %%%%%%%%
+! Date
+8/6/06
+
+! Changed by
+SL
+
+! Reported by
+Michael Hartley
+
+! Type of Change
+Fix: crash
+
+! Description
+The command line option -x allowed arguments > 256 which
+can then result in internal buffers overflowing.
+
+Can't really test it except by starting gap -x 300 and checking SizeScreen();
+With the fix it is [256,24], without it was [300,24]
+! Changed Files
+sys/system.c
+
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/06/09
+! Changed by
+AH
+! Type of Change
+Fix: inappropriate error message
+! Description
+Rare errors in the complement routine for permutation groups.
+! Changed Files
+lib/grpcompl.gi
+! End
+
+
+%%%%%%%%%%%%  short template without comments, below is a longer one  %%%%%%%%
+! Date
+2006/06/19
+! Changed by
+SK
+! Type of Change
+New: new functionality
+! Description
+A function <span class="code">Positions</span> with underlying operation
+<span class="code">PositionsOp</span>, which returns the list
+of all positions at which a given object appears in a given list.
+! Test Code
+gap> Positions([1,2,1,2,3,2,2],2);
+[ 2, 4, 6, 7 ]
+gap> Positions([1,2,1,2,3,2,2],4);
+[  ]
+! Changed Files
+lib/list.gd
+lib/list.gi
+doc/build/lists.msk
+! End
+
+%%%%%%%%%%%%  short template without comments, below is a longer one  %%%%%%%%
+! Date
+2006/07/06
+! Changed by
+SL
+! Reported by
+
+! Type of Change
+New: changed functionality
+
+! Description
+
+LogFFE now returns  `fail' when the element is not a power of the base
+
+! Test Code
+
+gap> z := Z(3,10);;
+gap> LogFFE(z,z^2);
+fail
+gap> z := Z(3,11);;
+gap> LogFFE(z,z^2);
+fail
+
+
+! Prefetch
+
+! Changed Files
+
+lib/ffe.gd 
+lib/ffeconway.gi
+src/finfield.c
+
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/07/07
+! Changed by
+AH
+! Type of Change
+Fix: efficiency
+! Description
+Blocks code now uses jellyfish-style random elements to avoid bad schreier
+trees
+! Changed Files
+lib/oprtperm.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/07/25
+! Changed by
+AH
+! Type of Change
+Fix: wrong result
+! Description
+The manual guarantees that a conjugator automorphism has a conjugating
+element in the group if possible. This was not guaranteed.
+! Test Code
+gap> g:=TransitiveGroup(10,8);;
+gap> ConjugatorOfConjugatorIsomorphism(ConjugatorAutomorphism(g,(4,9)));
+(1,6)(2,7)(3,8)(5,10)
+! Changed Files
+lib/ghom.g?
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/07/26
+! Changed by
+AH
+! Type of Change
+Fix: wrong result (2nd)
+! Description
+StabChain for symmetric groups gave a wrong result if fixed points were
+prescribed for base.
+! Changed Files
+lib/gpprmsya.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/07/27
+! Changed by
+SK
+! Type of Change
+Fix: inappropriate error message
+New: extended functionality
+! Description
+A method for <span class="code">IsPolycyclicGroup</span> has been added.
+Such a method was missing so far.
+! Test Code
+gap> IsPolycyclicGroup(SymmetricGroup(4));
+true
+gap> IsPolycyclicGroup(SymmetricGroup(5));
+false
+gap> IsPolycyclicGroup(Group([[1,1],[0,1]]));
+true
+gap> IsPolycyclicGroup(Group([[1,1],[0,1]],[[0,1],[1,0]]));
+false
+! Changed Files
+lib/grp.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/07/28
+! Changed by
+RFM
+! Type of Change
+Fix: inappropriate error message
+New: new functionality
+! Description
+Corrected <span class="code">EpimorphismSchurCover</span> to handle
+the trivial group correctly.
+Added new methods that follow immediately from computing 
+the Schur Cover of a group. The attribute 
+<span class="code">Epicentre</span>, the operations
+<span class="code">NonabelianExteriorSquare</span> and
+<span class="code">EpimorphismNonabelianExteriorSquare</span>, and
+the property <span class="code">IsCentralFactor</span> are added to the 
+library with documentation and references.
+! Test Code
+gap> g := CyclicGroup(1);; 
+gap> SchurCover(g);;        
+gap> sc := SchurCover(g);;
+gap> IdGroup(sc);
+gap> epi := EpimorphismSchurCover(g);;
+gap> Image(epi)=g;
+true
+gap> IdGroup(Source(epi));
+[ 1, 1 ]
+gap> G := SmallGroup(27,3);;
+gap> IsCentralFactor(G);
+gap> true
+gap> AbelianInvariantsMultiplier(G);
+[ 3, 3 ]
+gap> AbelianInvariants(Kernel(EpimorphismNonabelianExteriorSquare(G)));
+[ 3, 3 ]
+gap> ec := Epicentre(DirectProduct(CyclicGroup(25),CyclicGroup(5)));;
+gap> IsTrivial(ec);
+false
+gap> ec := Epicentre(DirectProduct(CyclicGroup(3),CyclicGroup(3)));; 
+gap> IsTrivial(ec);
+true
+! Changed Files
+lib/schur.gd
+lib/schur.gi
+doc/manual.bib
+doc/build/groups.msk
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/16
+! Changed by
+FL
+! Type of Change
+New: new functionality
+New: improved documentation
+
+! Description
+It is now allowed to continue long integers, strings or identifiers by
+ending a line with a backslash or with a backslash and carriage return
+character. So, files with <span class="pkgname">GAP</span> code and 
+DOS/Windows-style  line breaks  are now valid input on all architectures.
+! Test Code
+gap> EvalString("1234\\\r\n567");
+1234567
+! Changed Files
+src/scanner.c
+doc/build/mloop.msk
+doc/build/string.msk
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/16
+! Changed by
+FL
+! Type of Change
+New: extended functionality
+! Description
+The command line for starting the session and the system environment are now
+available in <span class="code">GAPInfo.SystemCommandLine</span> and
+<span class="code">GAPInfo.SystemEnvironment</span>.
+! Test Code
+gap> IsBound(GAPInfo.SystemEnvironment);
+true
+! Changed Files
+src/gap.c
+lib/system.g
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/19
+! Changed by
+Max
+! Type of Change
+Fix: wrong result with respect to mutability
+! Description
+Contrary to what is documented the function 
+<span class="code">POW_OBJ_INT</span> returned an immutable result for
+<span class="code">POW_OBJ_INT(m,1)</span> for a mutable object
+<span class="code">m</span>. This is triggered by the code
+<span class="code">m^1</span>.
+! Test Code
+gap> m := [[1]];;
+gap> IsMutable(m^1);
+true
+! Changed Files
+src/integer.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/19
+! Changed by
+Max
+! Type of Change
+Fix: inappropriate error message
+! Description
+Display the correct expression in a call stack trace
+if an operation was called somewhere up due to the evaluation
+of a unary or binary operation.
+! Changed Files
+src/exprs.c
+src/gap.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/19
+! Changed by
+Max
+! Type of Change
+Fix: cleanup
+! Description
+Made <span class="code">StripMemory</span> an operation rather than a 
+global function. Added <span class="code">ForgetMemory</span> operation.
+! Test Code
+gap> IsOperation(StripMemory);
+true
+! Changed Files
+lib/memory.gd
+lib/memory.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/22
+! Changed by
+Max
+! Type of Change
+Fix: wrong result (only internally visible)
+! Description
+Fixed the bug that the type of a blist was computed wrongly: The
+type previously had <span class="code">IS_PLIST_REP</span> instead 
+of <span class="code">IS_BLIST_REP</span> in its filter list.
+! Test Code
+gap> "IS_BLIST_REP" in NamesFilter(TypeObj(BlistList([1,2],[2]))![2]);
+true
+! Changed Files
+lib/list.g
+src/blister.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/22
+! Changed by
+Max
+! Type of Change
+Fix: preparations for transformation to new vectors/matrices
+! Description
+Adjust things slightly to make later conversion to new vectors/matrices
+easier. Nothing of this should be visible.
+! Changed Files
+lib/matrix.gd
+lib/matrix.gi
+lib/vecmat.gi
+lib/vecgf2.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/22
+! Changed by
+Max
+! Type of Change
+Fix: wrong result
+! Description
+PseudoRandom for a group had a problem if the group had lots of equal
+generators. The produced elements were extremely bad distributed in 
+that case. This is now fixed for the case that elements of the group
+can easily be sorted.
+! Changed Files
+lib/grp.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/25
+! Changed by
+FL
+! Reported by
+AK
+! Type of Change
+Fix: wrong documentation
+! Description
+Corrected some details in the documentation of the <span
+class="pkgname">GAP</span> language.
+! Changed Files
+doc/build/language.msk
+! End
+! Date
+2006/08/28
+! Changed by
+FL
+! Type of Change
+New: new functionality
+! Description
+Names of all bound global variable and all component names are available 
+on <span class="pkgname">GAP</span> level.
+! Test Code
+gap> Length(IDENTS_BOUND_GVARS());;
+gap> Length(ALL_RNAMES());;        
+! Changed Files
+src/gvars.c
+src/records.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/28
+! Changed by
+FL
+! Reported by
+Radu Silviu
+! Type of Change
+Fix: efficiency issue
+! Description
+Now <span class="code">PositionSorted</span> is much faster on long mutable 
+plain lists. (The former operation is substituted by a function and a new
+operation <span class="code">PositionSortedOp</span>.)
+! Test Code
+gap> for i in [1..10000] do a := PositionSorted(l,[i]); od; time1 := time;;
+gap> l := Immutable(l);;
+gap> for i in [1..10000] do a := PositionSorted(l,[i]); od; time2 := time;;
+gap> time1 < 2*time2; # time1 and time2 should be about the same
+true
+! Changed Files
+lib/list.gd
+lib/list.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/28
+! Changed by
+FL
+! Type of Change
+New: extended data
+! Description
+Added a few new Conway polynomials computed by Kate Minola and John Bray.
+! Test Code
+gap> IsCheapConwayPolynomial(2,100);
+true
+! Changed Files
+lib/conwdat1.g
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+28/8/06
+! Changed by
+SL
+! Reported by
+Robert Morse
+! Type of Change
+Fix: wrong result
+
+! Description
+Wrong results for GcdInt for some arguments on 64 bit systems only.
+
+! Test Code
+
+gap> a := -70170876888665790351719387465587751111897440176;;
+gap> b := -24507694029460834590427275534096897425026491796;;
+gap> GcdInt(a,b);
+4
+
+! Prefetch
+
+! Changed Files
+src/integer.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/28
+! Changed by
+FL
+! Type of Change
+New: new functionality and improved performance 
+
+! Description
+There is a new concept of <em>random sources</em>, see <span
+class="code">IsRandomSource</span>, which provides random number 
+generators which are independent of each other. </p>
+<p>There is kernel code for the Mersenne twister random number generator
+(based on the code by Makoto Matsumoto distributed 
+<a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html">here</a>).
+It provides fast 32 bit pseudo random integers with a period of length 
+2^19937-1
+and a 623-dimensional equidistribution. The library methods for random
+elements of lists and for random (long) integers (<span
+class="code">Random(low, high)</span>) are using the Mersenne twister now. 
+! Test Code
+gap> Random(GlobalMersenneTwister,[1..6]);;
+! Changed Files
+lib/coll.gd
+lib/coll.gi
+lib/integer.gi
+lib/list.gi
+lib/read1.g
+lib/read3.g
+lib/random.gd
+lib/random.gi
+lib/profile.g
+src/integer.c
+doc/build/coll.msk
+doc/build/config.coll
+doc/build/config.number
+doc/build/integers.msk
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/29
+! Changed by
+AH
+! Reported by
+Steve Costenoble
+! Type of Change
+Fix: wrong result
+! Description
+`Orbits' did not respect a special `PositionCanonical' method for right
+transversals.
+! Changed Files
+lib/oprt.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/29
+! Changed by
+FL
+! Type of Change
+New: improved functionality and documentation
+! Description
+In line editing mode (usual input mode without -n option) in lines starting
+with <span class="code">gap&gt; </span>, <span class="code">&gt; </span> or
+<span class="code">brk&gt; </span> this beginning part is immediately
+removed. This is a convenient feature that allows one to cut and paste
+input lines from other sessions or from manual examples into the current 
+session.
+! Changed Files
+src/sysfiles.c
+doc/build/mloop.msk
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/08/29
+! Changed by
+FL (and AH)
+! Type of Change
+Fix: inappropriate error message
+! Description
+Now it is possible to switch repeated warnings off when working with
+iterative polynomial rings.
+! Test Code
+gap> IsBound(ITER_POLY_WARN);
+true
+! Changed Files
+lib/ratfunul.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/09/12
+! Changed by
+Max
+! Reported by
+John McDermott
+! Type of Change
+Fix: crash
+! Description
+When using a saved workspace an internal variable was not properly
+initialized. The new Mersenne twister random method could crash
+in this case. This bug did not exist in previous released versions
+of GAP.
+! Changed Files
+src/integer.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

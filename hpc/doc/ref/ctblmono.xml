@@ -1,0 +1,91 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  ctblmono.msk                GAP documentation               Thomas Breuer -->
+<!-- %A                                                         & Erzsébet Horváth -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: ctblmono.msk,v 1.14 2006/03/07 16:14:25 jjm Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Monomiality Questions">
+<Heading>Monomiality Questions</Heading>
+
+This chapter describes functions dealing with the monomiality
+of finite (solvable) groups and their characters.
+<P/>
+<#Include Label="[1]{ctblmono}">
+<P/>
+Several <E>examples</E> in this chapter use the symmetric group <M>S_4</M>
+and the special linear group <M>SL(2,3)</M>.
+For running the examples, you must first define the groups,
+for example as follows.
+<P/>
+<Example><![CDATA[
+gap> S4:= SymmetricGroup( 4 );;  SetName( S4, "S4" );
+gap> Sl23:= SL( 2, 3 );;
+]]></Example>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:InfoMonomial">
+<Heading>InfoMonomial (Info Class)</Heading>
+
+<#Include Label="InfoMonomial">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Character Degrees and Derived Length">
+<Heading>Character Degrees and Derived Length</Heading>
+
+<#Include Label="Alpha">
+<#Include Label="Delta">
+<#Include Label="IsBergerCondition">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Primitivity of Characters">
+<Heading>Primitivity of Characters</Heading>
+
+<#Include Label="TestHomogeneous">
+<#Include Label="IsPrimitiveCharacter">
+<#Include Label="TestQuasiPrimitive">
+<#Include Label="TestInducedFromNormalSubgroup">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Testing Monomiality">
+<Heading>Testing Monomiality</Heading>
+
+<#Include Label="[2]{ctblmono}">
+<#Include Label="TestMonomial">
+<#Include Label="TestMonomialUseLattice">
+<#Include Label="IsMonomialNumber">
+<#Include Label="TestMonomialQuick">
+<#Include Label="TestSubnormallyMonomial">
+<#Include Label="TestRelativelySM">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Minimal Nonmonomial Groups">
+<Heading>Minimal Nonmonomial Groups</Heading>
+
+<#Include Label="IsMinimalNonmonomial">
+<#Include Label="MinimalNonmonomialGroup">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

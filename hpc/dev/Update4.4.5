@@ -1,0 +1,1203 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  Update                      GAP Maintenance
+%%
+%%
+%Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file is intended to list the changes that will be published with
+%%  the next update of GAP.
+%%  The information is used for producing the announcement of the update,
+%%  the additions to `tst/bugfix.tst', and an HTML page that lists the
+%%  known bugs and intended new features.
+%%
+%%  For adding a change, just copy one of the templates below to the end of the
+%%  file, and enter the relevant information.
+%%
+%%  Formal rules for this file, to allow simple parsing by a script:
+%%          - lines starting with `%' are comments and are ignored
+%%          - lines starting with `!' describe the type of information
+%%            in the following lines until the next `!'-line
+%%          - each entry must be finished with an `! End' line, otherwise
+%%            the order of entries is irrelevant
+%%          - the text behind the `!' is case and whitespace insensitive
+%%
+
+%%%%%%%%%%%%  short template without comments, below is a longer one  %%%%%%%%
+! Date
+
+! Changed by
+
+! Reported by
+
+! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+! Description
+
+! Test Code
+
+! Prefetch
+
+! Changed Files
+
+! End
+
+
+
+%%%%%%%%%%%%  Template with explanatory comments    %%%%%%%%%%%%%%%%%%%%%%%%%%
+% When the change was checked in, format 'yyyy/mm/dd':
+! Date
+
+% Initials should suffice here:
+! Changed by
+
+% Only if applicable:
+! Reported by
+
+% Choose one or more entries and/or add new ones; but always use either
+% the 'Fix:' or the 'New:' prefix
+! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+% For the description use (X)HTML (preferred) or plain text:
+% For HTML use in particular the following markup:
+%     for package names: <span class="pkgname">...</span>
+%     for GAP names: <span class="code">...</span>
+! Description
+
+% If possible, provide some code in test file format which allows to check
+% if a change was applied to an installation. Provide input and output,
+% including prompts, exactly as in a GAP session.
+! Test Code
+
+% If possible, provide some information about a temporary fix, workaround,
+% ..., maybe with a link to some longer description or a file with some
+% code. Use (X)HTML here.
+! Prefetch
+
+% White space separated list of paths relative to the GAP root directory.
+% (This is implicitly contained in the data of the CVS repository, but in
+% case of problems after changes it may be convenient to have this
+% information here.)
+! Changed Files
+
+% Finish your entry with this:
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/01/05
+
+! Changed by
+TB
+
+! Type of Change
+Fix: wrong result
+! Description
+
+<mixer manual="Reference: GroupWithGenerators"><span 
+class="code">GroupWithGenerators</span></mixer> returned a meaningless group
+object instead of signaling an error
+when it was called with an empty list of generators.
+
+! Changed Files
+lib/ctblfuns.gi
+
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/01/06
+! Changed by
+AH
+! Reported by
+Jack Schmidt
+! Type of Change
+Fix: inappropriate error message
+! Description
+A rare problem with the choice of prime in the Dixon-Schneider Algorithm
+for computing the character table of a group.
+! Changed Files
+lib/ctblgrp.gi
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/01/06
+! Changed by
+TB
+! Type of Change
+Fix: inappropriate error message
+! Description
+<mixer manual="Reference: DirectProduct">
+<span class="code">DirectProduct</span></mixer> for trivial permutation groups
+returned a strange object.
+! Test Code
+gap> One( DirectProduct( Group( [], () ), Group( [], () ) ) );;
+! Prefetch
+Read <a href="http://www.math.rwth-aachen.de/~Thomas.Breuer/gapfix/fix_gprdperm_4_4_4">
+this file</a> in order to fix the bug.
+! Changed Files
+lib/gprdperm.gi
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/01/06
+! Changed by
+TB
+! Type of Change
+Fix: wrong result
+! Description
+When computing preimages under an embedding into a direct product
+of permutation groups,
+if the element was not in the image of the embedding then
+a permutation had been returned instead of <span class="code">fail</span>.
+! Test Code
+gap> emb:= Embedding( DirectProduct( Group( (1,2) ), Group( (1,2) ) ), 1 );;
+gap> PreImagesRepresentative( emb, (1,2)(3,4) );
+fail
+! Prefetch
+Read <a href="http://www.math.rwth-aachen.de/~Thomas.Breuer/gapfix/fix_gprdperm_4_4_4">
+this file</a> in order to fix the bug.
+! Changed Files
+lib/gprdperm.gi
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/01/18
+! Changed by
+AH
+! Type of Change
+Fix: infinite loop
+! Description
+A problem with <mixer manual="Reference: PolynomialReduction">
+<span class="code">PolynomialReduction</span></mixer> running into
+an infinite loop.
+! Changed Files
+lib/groebner.gi
+lib/ratfun.gd
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/02/21
+! Changed by
+TB
+! Reported by
+Pasha Zusmanovich
+! Type of Change
+Fix: inappropriate error message
+! Description
+Adding linear mappings with different image domains was not possible.
+! Test Code 
+gap> v:= VectorSpace( Rationals, [ [ 1 ] ] );;
+gap> x:= LeftModuleHomomorphismByImages( v, v, Basis( v ), Basis( v ) );;
+gap> x + 0*x;;
+! Prefetch
+Read <a href="http://www.math.rwth-aachen.de/~Thomas.Breuer/gapfix/fix_vspchom_4_4_4">
+this file</a> in order to fix the bug.
+! Changed Files
+lib/vspchom.gi
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/02/21
+! Changed by
+TB
+! Reported by
+Laurent Bartholdi
+! Type of Change
+Fix: inappropriate error message
+! Description
+Multiplying group ring elements with rationals was not possible.
+! Test Code
+gap> a:= GroupRing( GF(2), Group( (1,2) ) );;
+gap> 1/3 * a.1;;  a.1 * (1/3);;
+! Prefetch
+Read <a href="http://www.math.rwth-aachen.de/~Thomas.Breuer/gapfix/fix_mgmring_4_4_4">
+this file</a> in order to fix the bug.
+! Changed Files
+lib/mgmring.gi
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/02/26
+! Changed by
+AH
+! Reported by
+Jack Schmidt
+! Type of Change
+Fix: inappropriate error message
+! Description
+<mixer manual="Reference: Random">
+<span class="code">Random</span></mixer> now works for finite fields of size
+larger than 2<sup>28</sup>.
+! Test Code
+gap> Random(GF(26831423036065352611));;
+! Changed Files
+lib/fieldfin.gi
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/03/05
+! Changed by
+AH
+! Reported by
+Jack Schmidt
+! Type of Change
+Fix: wrong result
+! Description
+Two problems with <mixer manual="Reference: PowerMod">
+<span class="code">PowerMod</span></mixer> for polynomials.
+! Test Code
+gap> x:=X(Rationals);;
+gap> PowerMod(x,3,x^2);
+0
+gap> PowerMod(x,1,x);
+0
+! Changed Files
+lib/listcoef.gi
+lib/ratfunul.gi
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/03/31
+! Changed by
+TB
+! Reported by
+Alexander Konovalov
+! Type of Change
+Fix: wrong result
+! Description
+Some methods for computing the sum of ideals returned the first summand
+instead of the sum.
+! Test Code
+gap> R:= Integers mod 6;;
+gap> Size( Ideal( R, [ Zero( R ) ] ) + Ideal( R, [ 2 * One( R ) ] ) );
+3
+! Prefetch
+Read <a href="http://www.math.rwth-aachen.de/~Thomas.Breuer/gapfix/fix_ideal_4_4_4">
+this file</a> in order to fix the bug.
+! Changed Files
+lib/ideal.gi
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/12
+! Changed by
+AH
+! Type of Change
+Fix: wrong result
+! Description
+Wrong result in <mixer manual="Reference: Intersection">
+<span class="code">Intersection</span></mixer> for PC groups.
+! Test Code
+gap> f:=FreeGroup(IsSyllableWordsFamily,8);;
+gap> g:=GeneratorsOfGroup(f);;
+gap> g1:=g[1];;
+gap> g2:=g[2];;
+gap> g3:=g[3];;
+gap> g4:=g[4];;
+gap> g5:=g[5];;
+gap> g6:=g[6];;
+gap> g7:=g[7];;
+gap> g8:=g[8];;
+gap> rws:=SingleCollector(f,[ 2, 3, 2, 3, 2, 3, 2, 3 ]);;
+gap> r:=[
+gap>   [1,g4*g6],
+gap>   [3,g4],
+gap>   [5,g6*g8^2],
+gap>   [7,g8],
+gap> ];;
+gap> for x in r do SetPower(rws,x[1],x[2]);od;
+gap> G:= GroupByRwsNC(rws);;
+gap> f1:=G.1;;
+gap> f2:=G.2;;
+gap> f3:=G.3;;
+gap> f4:=G.4;;
+gap> f5:=G.5;;
+gap> f6:=G.6;;
+gap> f7:=G.7;;
+gap> f8:=G.8;;
+gap> a:=Subgroup(G,[f3*f6*f8^2, f5*f6*f8^2, f7*f8, f4*f6^2*f8 ]);;
+gap> b:=Subgroup(G,[f2^2*f4^2*f6*f7*f8^2, f2*f4*f6^2*f8^2, f5*f6^2*f8,
+>                   f2^2*f6^2*f8, f2*f3*f4, f2^2]);;
+gap> Size(Intersection(a,b))=Number(a,i->i in b);
+true
+! Changed Files
+lib/grppcint.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/12
+! Changed by
+FL (includes a fix in dev-version by Burkhard)
+! Reported by
+Warwick Harvey 
+! Type of Change
+Fix: GAP crash
+! Description
+Some code and comments in the <span class="pkgname">GAP</span>
+kernel assumed that there is no garbage
+collection during the core printing function <span class="code">Pr</span>, 
+which is not correct.
+This could cause  <span class="pkgname">GAP</span> in rare cases to 
+crash during printing permutations, cyclotomics or strings with zero bytes.
+! Test Code
+## the less memory GAP has, the earlier the following crashed GAP  
+#out := OutputTextFile("/dev/null",false);
+#g := SymmetricGroup(1000000);
+#for i in [1..100] do  
+#    Print(i, " \c");
+#    r := PseudoRandom(g);
+#    PrintTo(out, "Coset representative is ", r, "\n");
+#od;
+! Changed Files
+src/{permutat,string,cyclotom,finfield}.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/12
+! Changed by
+FL
+! Reported by
+Kenn Heinrich
+! Type of Change
+Fix: bug with inappropriate error message
+! Description
+Fixed <mixer manual="Reference: IntHexString">
+<span class="code">IntHexString</span></mixer> to accept 
+arguments not in <span class="code">IsStringRep</span>; the argument is
+now first converted if necessary.
+! Test Code
+gap> IntHexString(['a','1']);
+161
+! Prefetch
+As workaround apply 'ConvertToStringRep' to arguments of 'IntHexString'.
+! Changed Files
+src/integer.c
+doc/build/string.msk
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/13
+! Changed by
+FL
+! Type of Change
+New: extended functionality, improved documentation
+! Description
+Several changes for <mixer manual="Reference: ConwayPolynomial">
+<span class="code">ConwayPolynomial</span></mixer>:
+<ul>
+<li> many new pre-computed polynomials </li>
+<li> put data in several separate files (only read when needed) </li>
+<li> added info on origins of pre-computed polynomials </li>
+<li> improved performance of <mixer manual="Reference: ConwayPolynomial">
+<span class="code">ConwayPolynomial</span></mixer> and 
+<mixer manual="Reference: IsPrimitivePolynomial">
+<span class="code">IsPrimitivePolynomial</span></mixer> for p &lt; 256  </li>
+<li> improved documentation of <span class="code">ConwayPolynomial</span> </li>
+<li> added and documented new functions 
+<mixer manual="Reference: IsCheapConwayPolynomial">
+<span class="code">IsCheapConwayPolynomial</span></mixer> and
+<mixer manual="Reference: RandomPrimitivePolynomial">
+<span class="code">RandomPrimitivePolynomial</span></mixer>  </li>
+</ul>
+! Test Code
+gap> IsCheapConwayPolynomial(5,96);
+false
+! Changed Files
+doc/build/fieldfin.msk                                                   
+doc/manual.bib                                                           
+lib/polyconw.g{i,d}                                                      
+lib/conwdat{1,2,3}.g                                                     
+lib/upoly.gi                                                             
+lib/ctblfuns.g{d,i}                                                      
+lib/obsolete.g                                                               
+lib/integer.gi                                                               
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/15
+! Changed by
+TB
+! Type of Change
+Fix: wrong result
+New: extended functionality
+! Description
+The function <mixer manual="Reference: CompareVersionNumbers">
+<span class="code">CompareVersionNumbers</span></mixer> erroneously
+ignored leading non-digit characters.
+<br />
+A new feature in the corrected version is an optional third argument
+<span class="code">"equal"</span>, which causes the function to return
+<span class="code">true</span> only if the first two arguments describe
+equal version numbers;
+documentation is available in the ext-manual.
+This new feature is used in <mixer manual="Reference: LoadPackage">
+<span class="code">LoadPackage</span></mixer>,
+now one can require a specific version of a package.
+<br />
+The library code still contained parts of the handling of completion files
+for packages, which does not work and therefore had already been removed
+from the documentation.
+This code has now been removed.
+<br />
+Now a new component <span class="code">PreloadFile</span> is supported in
+<mixer manual="Extending: The PackageInfo.g File">
+<span class="code">PackageInfo.g</span></mixer> files;
+if it is bound then the file in question is read immediately before the
+package or its documentation is loaded.
+! Test Code
+gap> CompareVersionNumbers( "1.0", ">=9.9" );
+false
+! Changed Files
+lib/init.g
+lib/obsolete.g
+lib/package.g
+lib/system.g
+doc/ext/gappkg.tex
+pkg/example/PackageInfo.g
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/21
+! Changed by
+FL
+! Type of Change
+New: extended functionality
+! Description
+Added method for <mixer manual="Reference: NormalBase">
+<span class="code">NormalBase</span></mixer> for extensions of finite fields.
+! Test Code
+gap> NormalBase( GF(3^6) );
+[ Z(3^6)^2, Z(3^6)^6, Z(3^6)^18, Z(3^6)^54, Z(3^6)^162, Z(3^6)^486 ]
+gap>  NormalBase( GF( GF(8), 2 ) );
+[ Z(2^6), Z(2^6)^8 ]
+! Changed Files
+lib/fieldfin.gi
+doc/build/fields.msk
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/21
+! Changed by
+FL
+! Type of Change
+New: extended functionality
+! Description
+Added more help viewers for the HTML version of the documentation (firefox,
+mozilla, konqueror, w3m, safari).
+! Test Code
+gap> IsBound(HELP_VIEWER_INFO.firefox);
+true
+! Changed Files
+lib/helpview.gi
+lib/read4.g
+lib/init.g
+doc/ref/help.tex
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/21
+! Changed by
+FL
+! Type of Change
+New: new functionality
+! Description
+New function <mixer manual="Reference: ColorPrompt">
+<span class="code">ColorPrompt</span></mixer>. (Users of former versions
+of a <span class="code">colorprompt.g</span> file: Now you just need a 
+<span class="code">ColorPrompt(true);</span> in your 
+<span class="code">.gaprc</span> file.)
+! Changed Files
+lib/colorprompt.g
+lib/read8.g 
+doc/build/config.install 
+doc/build/run.msk 
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/03/08
+! Changed by
+AH
+! Reported by
+Juergen Mueller
+! Type of Change
+Fix: unwanted side effect
+! Description
+Univariate polynomial creators did modify the coefficient list passed.
+! Test code
+gap> p:=[0,1];
+[ 0, 1 ]
+gap> UnivariatePolynomial(Rationals,p);
+x_1
+gap> p;
+[ 0, 1 ]
+! Changed Files
+lib/ratfunul.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/26
+! Changed by
+Max
+! Reported by
+Ákos Seress and Max Neunhöffer
+! Type of Change
+Fix: cleanup of library code
+! Description
+The library code for stabilizer chains contained quite some
+explicit references to the identity <span class="code">()</span>.
+This is unfortunate if one works with permutation groups, the
+elements of which are not plain permutations but objects which
+carry additional information like a memory, how they were obtained
+from the group generators. For such cases it is much cleaner to
+use the <span class="code">One(...)</span> operation instead of
+<span class="code">()</span>, such that the library code can be
+used for a richer class of group objects. This fix contains only
+rather trivial changes <span class="code">()</span> to 
+<span class="code">One(...)</span> which were carefully checked by me. The
+tests for permutation groups all run without a problem. However, it is
+relatively difficult to provide test code for this particular change,
+since the "improvement" only shows up when one generates new group
+objects. This is for example done in the package 
+<span class="pkgname">recog</span> which is in preparation.
+! Changed Files
+lib/stbc.gi 
+lib/stbcrand.gi
+! End
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/26
+
+! Changed by
+SL, FL
+
+! Type of Change
+New: new functionality
+New: improved documentation
+
+! Description
+
+Specialised kernel functions to support <span class="pkgname">GUAVA
+2.0</span>.  <span class="pkgname">GAP</span> will only load <span
+class="pkgname">GUAVA</span> in version at least 2.002 after this update.
+
+! Test code
+gap> AClosestVectorCombinationsMatFFEVecFFECoords;
+<Operation "AClosestVectorCombinationsMatFFEVecFFECoords">
+gap> ConstituentsPolynomial;
+function( p ) ... end
+
+! Changed Files
+src/vecgf2.c
+src/vec8bit.c
+lib/listcoef.g{d,i}
+lib/ratfun.g{d,i}
+lib/package.g
+! End
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/26
+
+! Changed by
+SL
+
+! Reported by
+Steve Linton
+
+! Type of Change
+Fix: segfault
+
+! Description
+
+Using <span class="code">{}</span> to select elements of a known 
+inhomogenous dense list
+produced a list that might falsely claim to be known inhomogenous,
+which could lead to a segfault if the list typing code tried to mark
+it homogenous, since the code intended to catch such errors also had a bug.
+
+! Test Code
+
+# too complicated to construct
+
+! Changed Files
+src/lists.h 
+src/plist.c
+
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/27
+! Changed by
+TB
+! Type of Change
+Fix: inappropriate error message
+! Description
+The record for the generic iterator construction of subspaces domains
+of non-row spaces was not complete.
+! Test Code
+gap> Iterator( Subspaces( VectorSpace( GF(2), [ X( GF(2) ) ] ) ) );;
+! Changed Files
+lib/vspc.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/27
+! Changed by
+TB
+! Type of Change
+Fix: wrong result
+! Description
+The result of <mixer manual="Reference: String">
+<span class="code">String</span></mixer> for strings not in
+<mixer manual="Reference: IsStringRep">
+<span class="code">IsStringRep</span></mixer> that occur as list entries
+or record components was erroneously missing the doublequotes around the
+strings.
+! Test Code
+gap> String( [ [ '1' ] ] );  String( rec( a:= [ '1' ] ) );
+"[ \"1\" ]"
+"rec( a := \"1\" )"
+! Changed Files
+lib/list.gi
+lib/record.g
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/04/27
+! Changed by
+TB
+! Type of Change
+New: improved functionality
+! Description
+Now there is a kernel function <span class="code">CYC_LIST</span>
+for converting a list of rationals into a cyclotomic,
+without arithmetics overhead.
+! Test Code
+gap> IsBound( CYC_LIST );
+true
+! Changed Files
+src/cyclotom.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/03
+! Changed by
+BH
+! Reported by
+Alexander Konovalov
+! Type of Change
+Fix: inappropriate error message
+Fix: wrong results might be possible
+! Description
+This bug causes <mixer manual="Reference: InducedPcgs">
+<span class="code">InducedPcgs(pcgs, H)</span></mixer> to return a pcgs
+which is not induced wrt. the parent pcgs of <span class="code">pcgs</span>. 
+This may cause unpredictable behaviour, e.&nbsp;g. when 
+<span class="code">SiftedPcElement</span> is used subsequently.
+! Test Code
+gap> LoadPackage ("crisp");
+true
+gap> F:=FreeGroup("a","b","c");;
+gap> a:=F.1;;b:=F.2;;c:=F.3;;
+gap> G:=F/[a^12,b^2*a^6,c^2*a^6,b^-1*a*b*a,c^-1*a*c*a^-7,c^-1*b*c*a^-9*b^-1];;
+gap> pcgs := PcgsElementaryAbelianSeries (G);;
+gap> ser := ChiefSeries (G);;
+gap> List (ser, H -> ParentPcgs (InducedPcgs (pcgs, H)) = ParentPcgs (pcgs));
+[ true, true, true, true, true, true ]
+gap> List (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H)) = ParentPcgs(HomePcgs (H)));
+[ true, true, true, true, true, true ]
+gap> List (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H)) = HomePcgs (H));
+[ true, true, true, true, true, true ]
+gap> G2:=Image(IsomorphismPermGroup(G));;
+gap> pcgs := PcgsElementaryAbelianSeries (G2);;
+gap> ser := ChiefSeries (G2);;
+gap> List (ser, H -> ParentPcgs (InducedPcgs (pcgs, H)) = pcgs);
+[ true, true, true, true, true, true ]
+gap> List (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H)) = ParentPcgs(HomePcgs (H)));
+[ true, true, true, true, true, true ]
+gap> List (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H)) = HomePcgs (H));
+[ true, true, true, true, true, true ]
+gap> 
+! Changed Files
+lib/grppc.gi
+lib/pcgsperm.gi
+% Finish your entry with this:
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/03
+! Changed by
+SK
+! Type of Change
+New: extended functionality
+! Description
+New functions <mixer manual="Reference: ContinuedFractionExpansionOfRoot">
+<span class="code">ContinuedFractionExpansionOfRoot</span></mixer> and
+<mixer manual="Reference: ContinuedFractionApproximationOfRoot">
+<span class="code">ContinuedFractionApproximationOfRoot</span></mixer> 
+for computing continued
+fraction expansions and continued fraction approximations of real roots
+of polynomials with integer coefficients.
+! Test Code
+gap> x := Indeterminate(Integers);;
+gap> ContinuedFractionExpansionOfRoot(x^2-7,20);
+[ 2, 1, 1, 1, 4, 1, 1, 1, 4, 1, 1, 1, 4, 1, 1, 1, 4, 1, 1, 1 ]
+gap> ContinuedFractionExpansionOfRoot(x^2-7,0);
+[ 2, 1, 1, 1, 4 ]
+gap> ContinuedFractionExpansionOfRoot(x^3-2,20);
+[ 1, 3, 1, 5, 1, 1, 4, 1, 1, 8, 1, 14, 1, 10, 2, 1, 4, 12, 2, 3 ]
+gap> ContinuedFractionExpansionOfRoot(x^5-x-1,50);
+[ 1, 5, 1, 42, 1, 3, 24, 2, 2, 1, 16, 1, 11, 1, 1, 2, 31, 1, 12, 5, 1, 7, 11, 
+  1, 4, 1, 4, 2, 2, 3, 4, 2, 1, 1, 11, 1, 41, 12, 1, 8, 1, 1, 1, 1, 1, 9, 2, 
+  1, 5, 4 ]
+gap> ContinuedFractionApproximationOfRoot(x^2-2,10);
+3363/2378
+gap> 3363^2-2*2378^2;
+1
+gap> z := ContinuedFractionApproximationOfRoot(x^5-x-1,20);
+499898783527/428250732317
+gap> z^5-z-1;
+486192462527432755459620441970617283/
+14404247382319842421697357558805709031116987826242631261357
+! Changed Files
+lib/contfrac.gd
+lib/contfrac.gi
+lib/read3.g
+lib/read5.g
+doc/build/numtheor.msk
+doc/build/config.number
+doc/build/config.testall
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/03
+! Changed by
+SK
+! Type of Change
+New: extended functionality
+! Description
+A method for computing structure descriptions for finite groups,
+available via <mixer manual="Reference: StructureDescription">
+<span class="code">StructureDescription</span></mixer>.
+! Test Code
+gap> l := AllSmallGroups(12);;
+gap> List(l,StructureDescription);; l;
+[ C3 : C4, C12, A4, D12, C6 x C2 ]
+gap> List(AllSmallGroups(40),G->StructureDescription(G:short));
+[ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "(10x2):2", "20x2",
+  "5xD8", "5xQ8", "2x(5:4)", "2^2xD10", "10x2^2" ]
+gap> List(AllTransitiveGroups(DegreeAction,6),G->StructureDescription(G:short));
+[ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3", "(3^2):4",
+  "2xS4", "A5", "(S3xS3):2", "S5", "A6", "S6" ]
+gap> StructureDescription(PSL(4,2));
+"A8"
+! Changed Files
+lib/grpnames.g
+lib/grpnames.gd
+lib/grpnames.gi
+lib/read3.g
+lib/read5.g
+doc/build/groups.msk
+doc/build/config.groups
+doc/build/config.testall
+doc/tut/authors.tex
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/03
+! Changed by
+BE
+! Type of Change
+Fix: wrong result
+! Description
+Fixed a bug in 
+<span class="code">SmallGroupsInformation(512)</span>.
+! Test Code
+gap> SmallGroupsInformation(512);
+
+  There are 10494213 groups of order 512.
+     1 is cyclic. 
+     2 - 10 have rank 2 and p-class 3.
+     11 - 386 have rank 2 and p-class 4.
+     387 - 1698 have rank 2 and p-class 5.
+     1699 - 2008 have rank 2 and p-class 6.
+     2009 - 2039 have rank 2 and p-class 7.
+     2040 - 2044 have rank 2 and p-class 8.
+     2045 has rank 3 and p-class 2.
+     2046 - 29398 have rank 3 and p-class 3.
+     29399 - 30617 have rank 3 and p-class 4.
+     30618 - 31239 have rank 3 and p-class 3.
+     31240 - 56685 have rank 3 and p-class 4.
+     56686 - 60615 have rank 3 and p-class 5.
+     60616 - 60894 have rank 3 and p-class 6.
+     60895 - 60903 have rank 3 and p-class 7.
+     60904 - 67612 have rank 4 and p-class 2.
+     67613 - 387088 have rank 4 and p-class 3.
+     387089 - 419734 have rank 4 and p-class 4.
+     419735 - 420500 have rank 4 and p-class 5.
+     420501 - 420514 have rank 4 and p-class 6.
+     420515 - 6249623 have rank 5 and p-class 2.
+     6249624 - 7529606 have rank 5 and p-class 3.
+     7529607 - 7532374 have rank 5 and p-class 4.
+     7532375 - 7532392 have rank 5 and p-class 5.
+     7532393 - 10481221 have rank 6 and p-class 2.
+     10481222 - 10493038 have rank 6 and p-class 3.
+     10493039 - 10493061 have rank 6 and p-class 4.
+     10493062 - 10494173 have rank 7 and p-class 2.
+     10494174 - 10494200 have rank 7 and p-class 3.
+     10494201 - 10494212 have rank 8 and p-class 2.
+     10494213 is elementary abelian.
+
+  This size belongs to layer 7 of the SmallGroups library. 
+  IdSmallGroup is not available for this size. 
+ 
+! Changed Files
+small/small7/smlgp7.g
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/03
+! Changed by
+BE
+! Type of Change
+New: extended functionality
+New: improved documentation
+! Description
+This change contains the new, extended version of the 
+<span class="pkgname">SmallGroups</span>  package.
+For example, the groups of orders p<sup>4</sup>, p<sup>5</sup>, p<sup>6</sup> 
+for arbitrary primes p, the
+groups of square-free order and the groups of cube-free order at most 50000
+are included now. For more detailed information see the announcement of the
+extended package. 
+! Test Code
+gap> NumberSmallGroups(5^6);
+684
+gap> NumberSmallGroups(5*7*9*11*13);
+22
+! Changed Files
+small/small2/smlgp2.g
+small/small3/smlgp3.g
+small/small7/smlgp7.g
+small/small8/smlgp8.g
+small/id2/idgrp2.g
+small/README
+small/readsml.g
+small/small.gd
+small/small.gi
+small/smlgp1.g
+small/smlinfo.gi
+small/small9/*
+small/small10/*
+small/id9/*
+small/id10/*
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/04
+! Changed by
+SL
+! Reported by
+Frank Lübeck
+! Type of Change
+Fix: wrong result
+
+! Description
+<mixer manual="Reference: PowerModCoeffs">
+<span class="code">PowerModCoeffs</span></mixer> with exponent 
+1 for compressed vectors
+did not reduce (a copy of) the input vector before returning it.
+
+! Test Code
+gap> c := [1,1,0,1]*Z(2);
+[ Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0 ]
+gap> m := [1,1]*Z(2);
+[ Z(2)^0, Z(2)^0 ]
+gap> PowerModCoeffs(c, 1, m);
+[ Z(2)^0 ]
+gap> ConvertToVectorRep(c, 2);
+2
+gap> ConvertToVectorRep(m, 2);
+2
+gap> Print(PowerModCoeffs(c, 1, m), "\n");
+[ Z(2)^0 ]
+
+! Changed Files
+lib/vecmat.gi
+lib/vec8bit.gi
+
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/05
+! Changed by
+TB
+! Type of Change
+New: new functionality
+! Description
+The function <span class="code">ShowPackageVariables</span> gives
+an overview of the global variables in a package.
+It is thought as a utility for package authors and referees.
+(It uses the new function <span class="code">IsDocumentedVariable</span>.)
+! Test Code
+gap> IsBound( ShowPackageVariables );
+true
+! Changed Files
+lib/function.g
+lib/helpbase.gi
+lib/package.g
+doc/build/function.msk
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/05
+! Changed by
+TB
+! Type of Change
+New: extended functionality
+New: new functionality
+New: improved documentation
+! Description
+The mechanisms for testing <span class="pkgname">GAP</span> has been improved:
+<ul>
+<li> The information whether a test file belongs to the list in
+  <span class="code">tst/testall.g</span> is now stored in the test file
+  itself.</li>
+<li> Some targets for testing have been added to the
+  <span class="code">Makefile</span> in the GAP root directory,
+  the output of the tests goes to the new directory
+  <span class="code">dev/log</span>.</li>
+<li> Utility functions for testing are in the new file
+  <span class="code">tst/testutil.g</span>.
+  Now the loops over (some or all) files <span class="code">tst/*.tst</span>
+  can be performed with a function call, and the file
+  <span class="code">tst/testall.g</span> can be created automatically;
+  the file <span class="code">tst/testfull.g</span> is now obsolete.
+  The remormalization of the scaling factors can now be done using a GAP
+  function, so the file <span class="code">tst/renorm.g</span> is
+  obsolete.</li>
+<li> Now the functions <span class="code">START_TEST</span>
+  and <span class="code">STOP_TEST</span> use components in 
+  <span class="code">GAPInfo</span> instead of own globals,
+  and the random number generator is always reset in
+  <span class="code">START_TEST</span>.</li>
+<li> <span class="code">GAPInfo.SystemInformation</span> now takes two
+  arguments, now one can use it easier in the tests.</li>
+</ul>
+! Test Code 
+gap> IsReadableFile( Filename( DirectoriesLibrary( "tst" ), "testutil.g" ) );
+true
+! Changed Files
+Makefile.in
+lib/init.g
+lib/profile.g
+lib/system.g
+tst/testall.g
+tst/testutil.g
+tst/*.tst
+tst/renorm.g (removed)
+tst/testfull.g (removed)
+doc/dev/testing.xml
+doc/build/config.install
+doc/build/install.msk
+doc/ext/document.tex
+doc/test/*
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/06
+! Changed by
+TB
+! Type of Change
+New: extended functionality
+! Description
+<mixer manual="Reference: MultiplicationTable">
+<span class="code">MultiplicationTable</span></mixer> is now an attribute,
+and the construction of a magma, monoid, etc. from multiplication tables
+has been unified.
+! Test Code
+gap> IsBound( HasMultiplicationTable );
+true
+! Changed Files
+lib/grptbl.gd
+lib/grptbl.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/06
+! Changed by
+SL
+! Reported by
+Alexander Hulpke
+! Type of Change
+Fix: wrong result
+! Description
+Sorting a mutable non-plain list (e.g., a compressed matrix over 
+fields of order &lt; 257) could potentially destroy that object.
+! Test Code
+gap> A:=[[Z(2)]];; ConvertToMatrixRep(A,2);;
+gap> Sort(A); A;
+<a 1x1 matrix over GF2>
+! Changed Files
+src/listfunc.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/09
+! Changed by
+TB
+! Type of Change
+Fix: inappropriate error message
+! Description
+When a workspace has been created without packages
+(<span class="code">-A</span> option) and is loaded into a 
+<span class="pkgname">GAP</span> session without packages (same option)
+then an error message is printed.
+! Test Code
+# call: gap -A
+# gap> SaveWorkspace( "wsp" );;
+# call: gap -A -L wsp
+! Changed Files
+lib/init.g
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/09
+! Changed by
+FL
+! Type of Change
+Fix: inappropriate messages
+New: improved documentation
+! Description
+So far the functions <mixer manual="Reference: IsPrimeInt">
+<span class="code">IsPrimeInt</span></mixer> and 
+<mixer manual="Reference: IsProbablyPrimeInt">
+<span class="code">IsProbablyPrimeInt</span></mixer> are essentially the
+same except that <span class="code">IsPrimeInt</span> issues an additional 
+warning when (non-proven) probable primes are considered as primes.
+<br />
+These warnings now print the probable primes in question as well;  if a 
+probable prime is used several times then the warning is also printed
+several times; there is no longer a warning for some known large primes;
+the warnings can be switched off. See 
+<mixer manual="Reference: IsPrimeInt">
+<span class="code">?Ref: IsPrimeInt</span></mixer> for more details.
+<br />
+If we get a reasonable primality test in <span class="pkgname">GAP</span>
+we will change the definition of <span class="code">IsPrimeInt</span>
+to do a proper test.
+
+! Test Code
+gap> NextPrimeInt(23482648263482364926498249);
+#I  IsPrimeInt: probably prime, but not proven: 23482648263482364926498251
+23482648263482364926498251
+! Changed Files
+lib/integer.g{d,i}
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2005/05/09
+! Changed by
+Colva, FL (for 4R4)
+! Reported by
+Robert F Bailey
+! Type of Change
+Fix: wrong group names
+! Description
+Corrected some names of primitive groups in degree 26.
+! Test Code
+gap> L:=AllPrimitiveGroups(NrMovedPoints,26,Size,[1..2^28-1]);
+[ PSL(2,25), PGL(2,25), PZL(2,25), PSL(2,25).2, PYL(2,25) ]
+! Changed Files
+prim/grps/prim1.grp
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+! Date
+2005/05/10
+! Changed by
+AH
+! Reported by
+Thomas Breuer
+! Type of Change
+Fix: wrong result 
+! Description
+Under rare circumstances computing
+the closure of a permutation group by a normalizing element could produce a
+corrupt stabilizer chain. (The underlying algorithm uses random elements,
+probability of failure was below 1 percent)
+! Changed Files
+lib/stbcrand.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

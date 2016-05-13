@@ -1,0 +1,193 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  vspc.msk                     GAP documentation            Willem de Graaf -->
+<!-- %A                                                              Thomas Breuer -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: vspc.msk,v 1.23 2003/07/21 19:49:06 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Vector Spaces">
+<Heading>Vector Spaces</Heading>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:IsLeftVectorSpace">
+<Heading>IsLeftVectorSpace (Filter)</Heading>
+
+<#Include Label="IsLeftVectorSpace">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Constructing Vector Spaces">
+<Heading>Constructing Vector Spaces</Heading>
+
+<#Include Label="VectorSpace">
+<#Include Label="Subspace">
+<#Include Label="AsVectorSpace">
+<#Include Label="AsSubspace">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations and Attributes for Vector Spaces">
+<Heading>Operations and Attributes for Vector Spaces</Heading>
+
+<#Include Label="GeneratorsOfLeftVectorSpace">
+<#Include Label="TrivialSubspace">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Domains of Subspaces of Vector Spaces">
+<Heading>Domains of Subspaces of Vector Spaces</Heading>
+
+<#Include Label="Subspaces">
+<#Include Label="IsSubspacesVectorSpace">
+
+<!-- %T The domains of subspaces are useful for example because groups and algebras -->
+<!-- %T act on their sets of elements. -->
+<!-- %T (show an example) -->
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Bases of Vector Spaces">
+<Heading>Bases of Vector Spaces</Heading>
+
+<#Include Label="[1]{basis}">
+<#Include Label="IsBasis">
+<#Include Label="Basis">
+<!-- %T show the use of the <Q>no check</Q> version -->
+<#Include Label="CanonicalBasis">
+<#Include Label="RelativeBasis">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations for Vector Space Bases">
+<Heading>Operations for Vector Space Bases</Heading>
+
+<#Include Label="BasisVectors">
+<#Include Label="UnderlyingLeftModule">
+<#Include Label="Coefficients">
+<#Include Label="LinearCombination">
+<#Include Label="EnumeratorByBasis">
+<#Include Label="IteratorByBasis">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations for Special Kinds of Bases">
+<Heading>Operations for Special Kinds of Bases</Heading>
+
+<#Include Label="IsCanonicalBasis">
+<#Include Label="IsIntegralBasis">
+<#Include Label="IsNormalBasis">
+<!-- % add an example of a non-integral basis; -->
+<!-- % for that, add a method that takes an integral basis, -->
+<!-- % and inspects the basechange matrix -->
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Mutable Bases">
+<Heading>Mutable Bases</Heading>
+
+<#Include Label="[1]{basismut}">
+<#Include Label="IsMutableBasis">
+<#Include Label="MutableBasis">
+<#Include Label="NrBasisVectors">
+<#Include Label="ImmutableBasis">
+<#Include Label="IsContainedInSpan">
+<#Include Label="CloseMutableBasis">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Row and Matrix Spaces">
+<Heading>Row and Matrix Spaces</Heading>
+
+<Index>row spaces</Index>
+<Index>matrix spaces</Index>
+
+<#Include Label="IsRowSpace">
+<#Include Label="IsMatrixSpace">
+<#Include Label="IsGaussianSpace">
+<#Include Label="FullRowSpace">
+<#Include Label="FullMatrixSpace">
+<#Include Label="DimensionOfVectors">
+<#Include Label="IsSemiEchelonized">
+<#Include Label="SemiEchelonBasis">
+<#Include Label="IsCanonicalBasisFullRowModule">
+<#Include Label="IsCanonicalBasisFullMatrixModule">
+<#Include Label="NormedRowVectors">
+<#Include Label="SiftedVector">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Vector Space Homomorphisms">
+<Heading>Vector Space Homomorphisms</Heading>
+
+<#Include Label="[1]{vspchom}">
+<#Include Label="LeftModuleGeneralMappingByImages">
+<#Include Label="LeftModuleHomomorphismByImages">
+<!-- % add an example for fin. fields! -->
+<#Include Label="LeftModuleHomomorphismByMatrix">
+<!-- % show images! -->
+<#Include Label="NaturalHomomorphismBySubspace">
+<!-- % show the computation of images etc.! -->
+<#Include Label="Hom">
+<#Include Label="End">
+<#Include Label="IsFullHomModule">
+<#Include Label="IsPseudoCanonicalBasisFullHomModule">
+<#Include Label="IsLinearMappingsModule">
+<!-- % example: Create a space, show some computations! -->
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Vector Spaces Handled By Nice Bases">
+<Heading>Vector Spaces Handled By Nice Bases</Heading>
+
+<#Include Label="[2]{basis}">
+<#Include Label="NiceFreeLeftModule">
+<#Include Label="NiceVector">
+<#Include Label="NiceFreeLeftModuleInfo">
+<#Include Label="NiceBasis">
+<#Include Label="IsBasisByNiceBasis">
+<#Include Label="IsHandledByNiceBasis">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="How to Implement New Kinds of Vector Spaces">
+<Heading>How to Implement New Kinds of Vector Spaces</Heading>
+
+<!-- % put this into the <C>prg</C> or <C>ext</C> manual? -->
+<#Include Label="DeclareHandlingByNiceBasis">
+<#Include Label="NiceBasisFiltersInfo">
+<#Include Label="CheckForHandlingByNiceBasis">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

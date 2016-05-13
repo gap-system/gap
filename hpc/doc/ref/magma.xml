@@ -1,0 +1,128 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  magma.msk                  GAP documentation                Thomas Breuer -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: magma.msk,v 1.10 2002/04/15 10:02:30 sal Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Magmas">
+<Heading>Magmas</Heading>
+
+This chapter deals with domains
+(see&nbsp;<Ref Chap="Domains and their Elements"/>)
+that are closed under multiplication <C>*</C>.
+Following&nbsp;<Cite Key="Bourbaki70"/>, we call them <E>magmas</E> in &GAP;.
+Together with the domains closed under addition <C>+</C>
+(see&nbsp;<Ref Chap="Additive Magmas"/>),
+they are the basic algebraic structures;
+every semigroup,
+monoid (see&nbsp;<Ref Chap="Semigroups"/>),
+group (see&nbsp;<Ref Chap="Groups"/>),
+ring (see&nbsp;<Ref Chap="Rings"/>),
+or field (see&nbsp;<Ref Chap="Fields and Division Rings"/>) is a magma.
+In the cases of a <E>magma-with-one</E> or <E>magma-with-inverses</E>,
+additional multiplicative structure is present,
+see&nbsp;<Ref Sect="Magma Categories"/>.
+For functions to create free magmas, see&nbsp;<Ref Sect="Free Magmas"/>.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Magma Categories">
+<Heading>Magma Categories</Heading>
+
+<#Include Label="IsMagma">
+<#Include Label="IsMagmaWithOne">
+<#Include Label="IsMagmaWithInversesIfNonzero">
+<#Include Label="IsMagmaWithInverses">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Magma Generation">
+<Heading>Magma Generation</Heading>
+
+This section describes
+functions that create magmas from generators
+(see <Ref Func="Magma"/>, <Ref Func="MagmaWithOne"/>,
+<Ref Func="MagmaWithInverses"/>),
+the underlying operations for which methods can be installed
+(see <Ref Func="MagmaByGenerators"/>, <Ref Func="MagmaWithOneByGenerators"/>,
+<Ref Func="MagmaWithInversesByGenerators"/>),
+functions for forming submagmas
+(see <Ref Func="Submagma"/>, <Ref Func="SubmagmaWithOne"/>,
+<Ref Func="SubmagmaWithInverses"/>),
+and functions that form a magma equal to a given collection
+(see <Ref Func="AsMagma"/>, <Ref Func="AsSubmagma"/>).
+<P/>
+<Ref Func="InjectionZeroMagma"/> creates a new magma which is the original
+magma with a zero adjoined.
+
+<#Include Label="Magma">
+<#Include Label="MagmaWithOne">
+<#Include Label="MagmaWithInverses">
+<#Include Label="MagmaByGenerators">
+<#Include Label="MagmaWithOneByGenerators">
+<#Include Label="MagmaWithInversesByGenerators">
+<#Include Label="Submagma">
+<#Include Label="SubmagmaWithOne">
+<#Include Label="SubmagmaWithInverses">
+<#Include Label="AsMagma">
+<#Include Label="AsSubmagma">
+<#Include SYSTEM="mgmadj.xml">
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Magmas Defined by Multiplication Tables">
+<Heading>Magmas Defined by Multiplication Tables</Heading>
+
+The most elementary (but of course usually not recommended) way to implement
+a magma with only few elements is via a multiplication table.
+
+<#Include Label="MagmaByMultiplicationTable">
+<#Include Label="MagmaWithOneByMultiplicationTable">
+<#Include Label="MagmaWithInversesByMultiplicationTable">
+<#Include Label="MagmaElement">
+<#Include Label="MultiplicationTable">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Attributes and Properties for Magmas">
+<Heading>Attributes and Properties for Magmas</Heading>
+
+<E>Note</E> that <Ref Func="IsAssociative"/> and <Ref Func="IsCommutative"/>
+always refer to the multiplication of a domain.
+If a magma <A>M</A> has also an <E>additive structure</E>,
+e.g., if <A>M</A> is a ring (see&nbsp;<Ref Chap="Rings"/>),
+then the addition <C>+</C> is always assumed to be associative and
+commutative,
+see&nbsp;<Ref Sect="Arithmetic Operations for Elements"/>.
+
+<#Include Label="GeneratorsOfMagma">
+<#Include Label="GeneratorsOfMagmaWithOne">
+<#Include Label="GeneratorsOfMagmaWithInverses">
+<#Include Label="Centralizer">
+<#Include Label="Centre">
+<#Include Label="Idempotents">
+<#Include Label="IsAssociative">
+<#Include Label="IsCentral">
+<#Include Label="IsCommutative">
+<#Include Label="MultiplicativeNeutralElement">
+<#Include Label="MultiplicativeZero">
+<#Include Label="SquareRoots">
+<#Include Label="TrivialSubmagmaWithOne">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+
+

@@ -1,0 +1,45 @@
+<Chapter Label="Synchronization variables">
+  <Heading>Synchronization variables</Heading>
+
+Synchronization variables (also often called dataflow variables in the literature) are variables that can be written
+only once; attempts to read the variable block until it has been written to.
+
+Synchronization variables are created with <Ref Func="CreateSyncVar"/>, written with <Ref Func="SyncWrite"/> and read
+with <Ref Func="SyncRead"/>.
+
+<Example><![CDATA[
+gap> sv := CreateSyncVar();;
+gap> RunAsyncTask(function()
+>      Sleep(10);
+>      SyncWrite(sv, MakeImmutable([1, 2, 3]));
+>    end);;
+gap> SyncRead(sv);
+[ 1, 2, 3 ]
+]]></Example>
+
+  <Section Label="CreateSyncVar()">
+    <Heading>CreateSyncVar()</Heading>
+
+The function <C>CreateSyncVar</C> takes no arguments. It returns a new synchronization variable. There is no need to
+deallocate it; the garbage collector will free the memory and all related resources when it is no longer accessible.
+
+  </Section>
+  <Section Label="SyncWrite">
+    <Heading>SyncWrite(syncvar, obj)</Heading>
+
+<C>SyncWrite</C> attempts to assign the value <C>obj</C> to <C>syncvar</C>. If <C>syncvar</C> has been previously
+assigned a value, the call will fail with a runtime error; otherwise, <C>obj</C> will be assigned to <C>syncvar</C>.
+
+In order to make sure that the recipient can read the result, the <C>obj</C> argument should not be a thread-local
+object; it should be public, read-only, or shared.
+
+  </Section>
+  <Section Label="SyncRead(syncvar)">
+    <Heading>SyncRead(syncvar)</Heading>
+
+<C>SyncRead</C> reads the value previously assigned to <C>syncvar</C> with <C>SyncWrite</C>. If no value has been
+assigned yet, it blocks. It returns the assigned value.
+
+
+  </Section>
+</Chapter>

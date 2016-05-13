@@ -1,0 +1,712 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  string.msk                  GAP documentation            Martin Schönert -->
+<!-- %A                                                           Alexander Hulpke -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: string.msk,v 1.36 2006/08/16 10:21:03 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Strings and Characters">
+<Heading>Strings and Characters</Heading>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:IsChar">
+<Heading>IsChar and IsString</Heading>
+
+<Index Subkey="strings">type</Index>
+<Index>doublequotes</Index>
+<Index>singlequotes</Index>
+
+<#Include Label="IsChar">
+<#Include Label="IsString">
+
+<Subsection Label="subsect:strings as lists">
+<Heading>Strings As Lists</Heading>
+
+Note that a string is just a special case of a list.
+So everything that is possible for lists (see&nbsp;<Ref Chap="Lists"/>)
+is also possible for strings.
+Thus you can access the characters in such a string
+(see&nbsp;<Ref Sect="List Elements"/>),
+test for membership (see&nbsp;<Ref Sect="Membership Test for Collections"/>),
+ask for the length, concatenate strings
+(see&nbsp;<Ref Func="Concatenation" Label="for several lists"/>),
+form substrings etc.
+You can even assign to a mutable string
+(see&nbsp;<Ref Sect="List Assignment"/>).
+Of course unless you assign a character in such a way that the list stays
+dense,
+the resulting list will no longer be a string.
+<P/>
+<Example><![CDATA[
+gap> Length( s2 );
+12
+gap> s2[2];
+'e'
+gap> 'a' in s2;
+false
+gap> s2[2] := 'a';;  s2;
+"Hallo world."
+gap> s1{ [1..4] };
+"Hell"
+gap> Concatenation( s1{ [ 1 .. 6 ] }, s1{ [ 1 .. 4 ] } );
+"Hello Hell"
+]]></Example>
+
+</Subsection>
+
+<ManSection>
+<Heading>Printing Strings</Heading>
+<Meth Name="ViewObj" Arg="str" Label="for a string"/>
+<Meth Name="PrintObj" Arg="str" Label="for a string"/>
+
+<Description>
+If a string is displayed by <Ref Func="View"/>,
+for example as result of an evaluation (see&nbsp;<Ref Sect="Main Loop"/>),
+or by <Ref Func="ViewObj"/> and <Ref Func="PrintObj"/>,
+it is displayed with enclosing doublequotes.
+(But note that there is an ambiguity for the empty string which is also an
+empty list of arbitrary &GAP; objects;
+it is only printed like a string if it was input as empty string or converted
+to a string with <Ref Func="ConvertToStringRep"/>.)
+<!--  no longer true since we consider UTF-8 standard, but support latinX
+The difference between <Ref Func="ViewObj" Label="for a string"/> and
+<Ref Func="PrintObj" Label="for a string"/> is that the latter prints
+<E>all</E> non-printable and non-ASCII characters in three digit octal
+notation, while  <Ref Func="ViewObj" Label="for a string"/> sends all
+printable characters to the output stream.
+-->
+The output of <Ref Func="PrintObj" Label="for a string"/> can be read back
+into &GAP;.
+<P/>
+Strings behave differently from other &GAP; objects with respect to
+<Ref Func="Print"/>, <Ref Func="PrintTo"/>, or <Ref Func="AppendTo"/>.
+These commands <E>interpret</E> a string in the sense that they essentially
+send the characters of the string directly to the output stream/file.
+(But depending on  the type of the stream and the presence of some special
+characters used as hints for line breaks there may be sent some additional
+newline (or backslash and newline) characters.
+<!-- % XXX Should the characters \< and \> and their use with <C>Print</C> be documented? -->
+<P/>
+<Example><![CDATA[
+gap> s4:= "abc\"def\nghi";;
+gap> View( s4 );  Print( "\n" );
+"abc\"def\nghi"
+gap> ViewObj( s4 );  Print( "\n" );
+"abc\"def\nghi"
+gap> PrintObj( s4 );  Print( "\n" );
+"abc\"def\nghi"
+gap> Print( s4 );  Print( "\n" );
+abc"def
+ghi
+gap> s := "German uses strange characters: äöüß\n";
+"German uses strange characters: äöüß\n"
+gap> Print(s);
+German uses strange characters: äöüß
+gap> PrintObj(s);  Print( "\n" );
+"German uses strange characters: \303\244\303\266\303\274\303\237\n"
+]]></Example>
+<P/>
+<Log><![CDATA[
+gap> s := "\007";
+"\007"
+gap> Print(s); # rings bell in many terminals
+]]></Log>
+<P/>
+Note that only those line breaks are printed by <Ref Func="Print"/> that are
+contained in the string
+(<C>\n</C> characters, see&nbsp;<Ref Sect="Special Characters"/>),
+as is shown in the example below.
+<P/>
+<Log><![CDATA[
+gap> s1;
+"Hello world."
+gap> Print( s1 );
+Hello world.gap> Print( s1, "\n" );
+Hello world.
+gap> Print( s1, "\nnext line\n" );
+Hello world.
+next line
+]]></Log>
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Special Characters">
+<Heading>Special Characters</Heading>
+
+<Index>escaped characters</Index>
+<Index>special character sequences</Index>
+
+There are a number of <E>special character sequences</E> that can be used
+between the singlequotes of a character literal or between the
+doublequotes of a string literal to specify characters. 
+They consist of two characters.
+The first is a backslash <C>\</C>. The second may be any character.
+If it is an octal digit (from <C>0</C> to <C>7</C>) there must be two more
+such digits. The meaning is given in the following list
+<P/>
+<List>
+<Mark><C>\n</C></Mark>
+<Item>
+    <E>newline character</E>.
+    This is the character that, at least on UNIX systems,
+    separates lines in a text file.
+    Printing of this character in a string has the effect of moving
+    the cursor down one line and back to the beginning of the line.
+</Item>
+<Mark>
+<Index><C>\"</C></Index>
+<Index>doublequote character</Index>
+<C>\"</C></Mark>
+<Item>
+    <E>doublequote character</E>.
+    Inside a string a doublequote must be escaped by the backslash,
+    because it is otherwise interpreted as end of the string.
+</Item>
+<Mark>
+<Index><C>\'</C></Index>
+<Index>singlequote character</Index>
+<C>\'</C></Mark>
+<Item>
+    <E>singlequote character</E>.
+    Inside a character a singlequote must escaped by the backslash,
+    because it is otherwise interpreted as end of the character.
+</Item>
+<Mark>
+<Index><C>\\</C></Index>
+<Index>backslash character</Index>
+<C>\\</C></Mark>
+<Item>
+    <E>backslash character</E>.
+    Inside a string a backslash must be escaped by another backslash,
+    because it is otherwise interpreted as first character of
+    an escape sequence.
+</Item>
+<Mark>
+<Index><C>\b</C></Index>
+<Index>backspace character</Index>
+<C>\b</C></Mark>
+<Item>
+    <E>backspace character</E>.
+    Printing this character should have the effect of moving the cursor
+    back one character.  Whether it works or not is system dependent
+    and should not be relied upon.
+</Item>
+<Mark>
+<Index><C>\r</C></Index>
+<Index>carriage return character</Index>
+<C>\r</C></Mark>
+<Item>
+    <E>carriage return character</E>.
+    Printing this character should have the effect of moving the cursor
+    back to the beginning of the same line.  Whether this works or not
+    is again system dependent.
+</Item>
+<Mark>
+<Index><C>\c</C></Index>
+<Index>flush character</Index>
+<C>\c</C></Mark>
+<Item>
+    <E>flush character</E>.
+    This character is not printed.
+    Its purpose is to flush the output queue.
+    Usually &GAP; waits until it sees a <C>newline</C> before it prints a
+    string.
+    If you want to display a string that does not include this character
+    use <C>\c</C>.
+</Item>
+<Mark>
+<Index><C>\XYZ</C></Index>
+<Index>octal character codes</Index>
+<C>\XYZ</C></Mark>
+<Item>
+    with <C>X</C>, <C>Y</C>, <C>Z</C> three octal digits.
+    This is translated to the character corresponding to the number
+    <C>X * 64 + Y * 8 + Z modulo 256</C>.
+    This can be used to specify and store arbitrary binary data as a string
+    in &GAP;.
+</Item>
+<Mark>
+<Index>escaping non-special characters</Index>
+other</Mark>
+<Item>
+    For any other character the backslash is simply ignored.
+</Item>
+</List>
+<P/>
+Again, if the line is displayed as result of an evaluation,
+those escape sequences are displayed in the same way that they are input. 
+<P/>
+Only  <Ref Func="Print"/>, <Ref Func="PrintTo"/>, or <Ref Func="AppendTo"/>
+send the characters directly to the output stream.
+<P/>
+<Example><![CDATA[
+gap> "This is one line.\nThis is another line.\n";
+"This is one line.\nThis is another line.\n"
+gap> Print( last );
+This is one line.
+This is another line.
+]]></Example>
+<P/>
+Note in particular that it is not  allowed to enclose a <A>newline</A> inside
+the string.
+You can use the  special character sequence <C>\n</C> to write strings that
+include <A>newline</A> characters.
+If, however, an input string is too long to fit on a single line it is
+possible to <E>continue</E> it over several lines.
+In this case the last character of each input line, except the last line must
+be a backslash.
+Both backslash and <A>newline</A> are thrown away by &GAP; while reading the
+string.
+Note that the same continuation mechanism is available for identifiers and
+integers, see&nbsp;<Ref Sect="Special Rules for Input Lines"/>.
+
+The rules on escaping are ignored in a triple quoted string, see <Ref
+Sect="Triple Quoted String"/>
+
+</Section>
+
+<Section Label="Triple Quoted String">
+<Heading>Triple Quoted Strings</Heading>
+
+
+Another method of entering strings in GAP is triple quoted strings.
+Triple quoted strings ignore the rules on escaping given in <Ref
+Sect="Special Characters"/>. Triple quoted strings begin an end with
+three doublequotes. Inside the triple quotes no escaping is done,
+and the string continues, including newlines, until three doublequotes
+are found.
+<P/>
+<Example><![CDATA[
+gap> """Print("\n")""";
+"Print(\"\\n\")"
+]]></Example>
+
+Triple quoted strings are represented internally identically to all other
+strings, they only provide an alternative method of giving strings to GAP.
+
+Triple quoted strings still follow GAP's line editing rules 
+(<Ref Sect="Special Rules for Input Lines"/>), which state that in normal
+line editing mode, lines starting <C>gap> </C>, <C>> </C> or <C>brk> </C> will
+have this beginning part removed.
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Internally Represented Strings">
+<Heading>Internally Represented Strings</Heading>
+
+<Index Subkey="to a string">convert</Index>
+<#Include Label="IsStringRep">
+<#Include Label="ConvertToStringRep">
+<#Include Label="CopyToStringRep">
+<#Include Label="IsEmptyString">
+
+<ManSection>
+<Func Arg="len" Name="EmptyString" />
+<Returns>a string</Returns>
+<Func Arg="str" Name="ShrinkAllocationString" />
+<Returns>nothing</Returns>
+
+<Description>
+The function <Ref Func="EmptyString"/> returns an empty string in
+internal representation which
+has enough memory allocated for <A>len</A> characters. This can be useful
+for creating and filling a string with a known number of entries. 
+<P/>
+The function <Ref Func="ShrinkAllocationString"/> gives back to &GAP;s
+memory manager the physical memory which is allocated for the string
+<A>str</A> in internal representation but not needed by its current 
+number of characters.
+<P/>
+These functions are intended for saving some of &GAP;s memory in certain 
+situations, see the explanations and the example for the analogeous
+functions <Ref Func="EmptyPlist"/> and <Ref Func="ShrinkAllocationPlist"/> 
+for plain lists.
+</Description>
+</ManSection>
+
+<#Include Label="CharsFamily">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Recognizing Characters">
+<Heading>Recognizing Characters</Heading>
+
+<#Include Label="IsDigitChar">
+<#Include Label="IsLowerAlphaChar">
+<#Include Label="IsUpperAlphaChar">
+<#Include Label="IsAlphaChar">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Comparisons of Strings">
+<Heading>Comparisons of Strings</Heading>
+
+<ManSection>
+<Meth Name="\=" Arg='string1, string2' Label="for two strings"/>
+
+<Description>
+<Index Subkey="equality of">strings</Index>
+<Index Subkey="inequality of">strings</Index>
+The equality operator <C>=</C> returns <K>true</K> if the two strings
+<A>string1</A> and <A>string2</A> are equal and <K>false</K> otherwise.
+The inequality operator <C>&lt;></C> returns <K>true</K> if the two strings
+<A>string1</A> and <A>string2</A> are not equal and <K>false</K> otherwise.
+<P/>
+<Example><![CDATA[
+gap> "Hello world.\n" = "Hello world.\n";
+true
+gap> "Hello World.\n" = "Hello world.\n"; # comparison is case sensitive
+false
+gap> "Hello world." = "Hello world.\n";  # first string has no <newline>
+false
+gap> "Goodbye world.\n" = "Hello world.\n";
+false
+gap> [ 'a', 'b' ] = "ab";
+true
+]]></Example>
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Meth Name="\&lt;" Arg='string1, string2' Label="for two strings"/>
+
+<Description>
+<Index Subkey="lexicographic ordering of">strings</Index>
+The ordering of strings is lexicographically according to the order
+implied by the underlying, system dependent, character set.
+<P/>
+<Example><![CDATA[
+gap> "Hello world.\n" < "Hello world.\n";  # the strings are equal
+false
+gap> # in ASCII capitals range before small letters:
+gap> "Hello World." < "Hello world.";
+true
+gap> "Hello world." < "Hello world.\n";  # prefixes are always smaller
+true
+gap> # G comes before H, in ASCII at least:
+gap> "Goodbye world.\n" < "Hello world.\n";
+true
+]]></Example>
+<P/>
+Strings can be compared via <C>&lt;</C> with certain &GAP; objects that are
+not strings, see&nbsp;<Ref Sect="Comparisons"/> for the details.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations to Produce or Manipulate Strings">
+<Heading>Operations to Produce or Manipulate Strings</Heading>
+
+For the possibility to print &GAP; objects to strings,
+see&nbsp;<Ref Sect="String Streams"/>.
+
+<#Include Label="DisplayString">
+
+<ManSection>
+<Var Name="DEFAULTDISPLAYSTRING"/>
+<Description>
+    This is the default value for <Ref Oper="DisplayString"/>.
+</Description>
+</ManSection>
+
+<#Include Label="ViewString">
+
+<ManSection>
+<Var Name="DEFAULTVIEWSTRING"/>
+<Description>
+    This is the default value for <Ref Oper="ViewString"/>.
+</Description>
+</ManSection>
+
+<#Include Label="PrintString">
+<#Include Label="String">
+
+<#Include Label="StripLineBreakCharacters">
+
+<ManSection>
+<Func Name="HexStringInt" Arg='int'/>
+
+<Description>
+returns a string which represents the integer <A>int</A> with hexa-decimal
+digits (using <C>A</C> to <C>F</C> as digits <C>10</C> to <C>15</C>).
+The inverse translation can be achieved with <Ref Func="IntHexString"/>.
+</Description>
+</ManSection>
+
+<#Include Label="StringPP">
+<#Include Label="WordAlp">
+<#Include Label="LowercaseString">
+<#Include Label="SplitString">
+<#Include Label="ReplacedString">
+
+<ManSection>
+<Func Name="NormalizeWhitespace" Arg='string'/>
+
+<Description>
+This function changes the string <A>string</A> in place.
+The characters <C> </C> (space), <C>\n</C>, <C>\r</C> and <C>\t</C> are
+considered as <E>white space</E>.
+Leading and trailing white space characters in <A>string</A> are removed.
+Sequences of white space characters between other characters are replaced by
+a single space character.
+<P/>
+See <Ref Func="NormalizedWhitespace"/> for a non-destructive version.
+<Example><![CDATA[ 
+gap> s := "   x y \n\n\t\r  z\n   \n";
+"   x y \n\n\t\r  z\n   \n"
+gap> NormalizeWhitespace(s);
+gap> s;
+"x y z"
+]]></Example>
+</Description>
+</ManSection>
+
+<#Include Label="NormalizedWhitespace">
+
+<ManSection>
+<Func Name="RemoveCharacters" Arg='string, chars'/>
+<Description>
+Both arguments must be strings. This function efficiently removes all 
+characters given in <A>chars</A> from <A>string</A>.
+<Example>
+gap> s := "ab c\ndef\n\ng    h i .\n";
+"ab c\ndef\n\ng    h i .\n"
+gap> RemoveCharacters(s, " \n\t\r"); # remove all whitespace characters
+gap> s;
+"abcdefghi."
+</Example>
+</Description>
+</ManSection>
+
+<#Include Label="JoinStringsWithSeparator">
+<#Include Label="Chomp">
+<#Include Label="StartsWith">
+        
+The following two functions convert basic strings to lists of numbers and
+vice versa. They are useful for examples of text encryption.
+<#Include Label="NumbersString">
+<#Include Label="StringNumbers">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Character Conversion">
+<Heading>Character Conversion</Heading>
+
+The following functions convert characters in their internal integer values
+and vice versa. Note that the number corresponding to a particular character
+might depend on the system used. While most systems use an extension of
+ASCII, in particular character values outside the range <C>[ 32 .. 126 ]</C>
+might differ between architectures.
+<P/>
+
+<ManSection>
+<Func Name="IntChar" Arg='char'/>
+
+<Description>
+returns an integer value in the range <C>[ 0 .. 255 ]</C> that corresponds
+to <A>char</A>.
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="CharInt" Arg='int'/>
+
+<Description>
+returns a character that corresponds to the integer value <A>int</A>,
+which must be in the range <C>[ 0 .. 255 ]</C>.
+<P/>
+<Example><![CDATA[
+gap> c:=CharInt(65);
+'A'
+gap> IntChar(c);
+65
+]]></Example>
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="SIntChar" Arg='char'/>
+
+<Description>
+returns a signed integer value in the range <C>[ -128 .. 127 ]</C> that
+corresponds to <A>char</A>.
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="CharSInt" Arg='int'/>
+
+<Description>
+returns a character which corresponds to the signed integer value <A>int</A>,
+which must be in the range <C>[ -128 .. 127 ]</C>.
+<P/>
+The signed and unsigned integer functions behave the same for values in the
+range <C>[ 0 .. 127 ]</C>.
+<P/>
+<Example><![CDATA[
+gap> SIntChar(c);
+65
+gap> c:=CharSInt(-20);;
+gap> SIntChar(c);
+-20
+gap> IntChar(c);
+236
+gap> SIntChar(CharInt(255));
+-1
+]]></Example>
+</Description>
+</ManSection>
+
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations to Evaluate Strings">
+<Heading>Operations to Evaluate Strings</Heading>
+
+<ManSection>
+<Attr Name="Int" Arg='str' Label="for strings"/>
+<Attr Name="Rat" Arg='str' Label="for strings"/>
+<Func Name="IntHexString" Arg='str'/>
+
+<Description>
+<Index Subkey="strings">evaluation</Index>
+return either an integer (<Ref Func="Int" Label="for strings"/> and
+<Ref Func="IntHexString"/>),
+or a rational (<Ref Func="Rat" Label="for strings"/>) as represented by the
+string <A>str</A>.
+<Ref Func="Int" Label="for strings"/> returns <K>fail</K> if non-digit
+characters occur in <A>str</A>.
+For <Ref Func="Rat" Label="for strings"/>, the argument string may start with
+the sign character <C>-</C>,
+followed by either a sequence of digits or by two sequences of digits
+that are separated by one of the characters <C>/</C> or <C>.</C>,
+where the latter stands for a decimal dot.
+(The methods only evaluate numbers but do <E>not</E> perform arithmetic!)
+<P/>
+<Ref Func="IntHexString"/> evaluates an integer written with hexa-decimal
+digits.
+Here the letters <C>a</C>-<C>f</C> or <C>A</C>-<C>F</C> are used as
+<E>digits</E> <M>10</M> to <M>15</M>.
+An error occurs when a wrong character is found in the string.
+This function can be used (together with <Ref Func="HexStringInt"/>) for
+efficiently storing and reading large integers from respectively into &GAP;.
+Note that the translation between integers and their hexa-decimal
+representation costs linear computation time in terms of the number of
+digits, while translation from and into decimal representation needs
+substantial computations.
+If <A>str</A> is not in compact string representation then
+<Ref Func="ConvertToStringRep"/> is applied to it as side effect.
+<P/>
+<Example><![CDATA[
+gap> Int("12345")+1;
+12346
+gap> Int("123/45");
+fail
+gap> Int("1+2");
+fail
+gap> Int("-12");
+-12
+gap> Rat("123/45");
+41/15
+gap> Rat( "123.45" );
+2469/20
+gap> IntHexString("-abcdef0123456789");
+-12379813738877118345
+gap> HexStringInt(last);
+"-ABCDEF0123456789"
+]]></Example>
+</Description>
+</ManSection>
+
+<#Include Label="Ordinal">
+<#Include Label="EvalString">
+<#Include Label="CrcString">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Calendar Arithmetic">
+<Heading>Calendar Arithmetic</Heading>
+
+<#Include Label="[2]{string}">
+<#Include Label="DaysInYear">
+<#Include Label="DaysInMonth">
+<#Include Label="DMYDay">
+<#Include Label="DayDMY">
+<#Include Label="WeekDay">
+<#Include Label="StringDate">
+<#Include Label="HMSMSec">
+<#Include Label="SecHMSM">
+<#Include Label="StringTime">
+<#Include Label="SecondsDMYhms">
+<#Include Label="DMYhmsSeconds">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Obtaining LaTeX Representations of Objects">
+<Heading>Obtaining LaTeX Representations of Objects</Heading>
+<Index Subkey="for GAP objects">LaTeX</Index>
+
+For the purpose of generating &LaTeX; source code with &GAP; it is 
+recommended to add new functions which will print the &LaTeX; source 
+or return &LaTeX; strings for further processing.
+<P/>
+
+An alternative approach could be based on methods for the default &LaTeX; 
+representation for each appropriate type of objects. However, there is
+no clear notion of a default &LaTeX; code for any non-trivial mathematical
+object; moreover, different output may be required in different contexts.
+<P/>
+
+While customisation of such an operation may require changes in a variety 
+of methods that may be distributed all over the library, the user will 
+have a clean overview of the whole process of &LaTeX; code generation if 
+it is contained in a single function. Furthermore, there may be kinds of 
+objects which are not detected by the method selection, or there may be 
+a need in additional parameters specifying requirements for the output.
+<P/>
+
+This is why having a special purpose function for each particular case 
+is more suitable. &GAP; provides several functions that produce &LaTeX; 
+strings for those situations where this is nontrivial and reasonable. 
+A useful example is <Ref Func="LaTeXStringDecompositionMatrix"/> from
+the &GAP; library, others can be found entering <C>?LaTeX</C> at the 
+&GAP; prompt. Package authors are encouraged to add an index entry 
+<C>LaTeX</C> to the documentation of all &LaTeX; string producing functions.
+This way, entering <C>?LaTeX</C> will give an overview of all documented 
+functionality in this direction.
+ 
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->

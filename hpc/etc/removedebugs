@@ -1,0 +1,4 @@
+#!/bin/sh
+fgrep -v "#!@+DbGt%&" $1 > $1.temporary
+cp $1 $1.debugversion
+mv $1.temporary $1

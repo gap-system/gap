@@ -1,0 +1,417 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  opers.tex                 GAP documentation            Heiko Theißen -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: opers.tex,v 4.23 2006/03/07 15:30:55 jjm Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
+<!-- %% -->
+<!-- %%  This file contains a tutorial introduction to operations. -->
+<!-- %% -->
+<P/>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Chapter Label="Operations and Methods">
+<Heading>Operations and Methods</Heading>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Attributes">
+<Heading>Attributes</Heading>
+
+In the  preceding chapters, we have  seen how to obtain information about
+mathematical objects in &GAP;: We have to pass the object as an argument
+to a function. For example, if <A>G</A> is a group one can call
+<C>Size( <A>G</A> )</C>, and the function will return a value,
+in our example an integer  which is the  size of <A>G</A>. Computing
+the size  of a  group generally  requires  a substantial amount  of work,
+therefore it seems desirable to store the size somewhere once it has been
+calculated. You should imagine that &GAP; stores  the size in some place
+associated  with the object  <A>G</A> when <C>Size( <A>G</A>  )</C>
+is executed for the
+first time, and if this function  call is executed  again later, the size
+is simply looked up and returned, without further computation.
+<P/>
+<Index Subkey="of an attribute">getter</Index>
+<Index Subkey="of an attribute">setter</Index>
+<Index Subkey="of an attribute">tester</Index>
+<Index>methods</Index>
+This means that the behavior of the function
+<Ref Func="Size" BookName="ref"/> has to  depend on
+whether the size for the argument <A>G</A> is already known,  and if not, that
+the size  must be  stored after it  has been  calculated. These two extra
+tasks are done by two other functions that accompany <C>Size( <A>G</A> )</C>,
+namely the <E>tester</E> <C>HasSize( <A>G</A> )</C>
+and the <E>setter</E> <C>SetSize( <A>G</A>, <A>size</A> )</C>.
+The tester returns <K>true</K> or <K>false</K> according to
+whether <A>G</A> has already stored its size,
+and the setter puts <A>size</A> into
+a place from where <A>G</A> can directly look it up.
+The function <Ref Func="Size" BookName="ref"/> itself is called the
+<E>getter</E>,
+and from the preceding discussion we see
+that there must really be at least two <E>methods</E> for the getter:
+One method is used when the tester returns <K>false</K>;
+it is the method which first does the real computation and then executes
+the setter with the computed value.
+A second method is used when the tester returns <K>true</K>;
+it simply returns the stored value.
+This second method is also called the <E>system getter</E>.
+&GAP; functions for which several methods can be available
+are called <E>operations</E>,
+so <Ref Func="Size" BookName="ref"/> is an example of an operation.
+<P/>
+<Example><![CDATA[
+gap> G := Group(List([1..3], i-> Random(SymmetricGroup(53))));;
+gap> Size( G ); time > 0; # the time may of course vary on your machine
+4274883284060025564298013753389399649690343788366813724672000000000000
+true
+gap> Size( G ); time;
+4274883284060025564298013753389399649690343788366813724672000000000000
+0
+]]></Example>
+<P/>
+The convenient thing  for the user  is that  &GAP; automatically chooses
+the right method  for the getter, i.e.,  it calls a real-work getter at
+most once  and the system getter  in all subsequent occurrences. <E>At most
+once</E> because the value of a function call like <C>Size( <A>G</A> )</C>
+can also be set for <A>G</A> before the getter is called at all;
+for example, one can call the setter directly if one knows the size.
+<P/>
+The size of a group is an example of a class of things  which in &GAP;
+are called <E>attributes</E>.
+Every attribute in  &GAP; is represented by  a triple  of a getter,  a
+setter   and a  tester.  When a  new  attribute  is  declared, all  three
+functions are created together and  the getter contains references to the
+other two.  This is necessary because when  the getter is called, it must
+first  consult the tester,   and perhaps execute the  setter  in the end.
+Therefore the getter could be implemented as follows:
+<Log><![CDATA[
+getter := function( obj )
+local   value;
+    if tester( obj )  then
+        value := system_getter( obj );
+    else
+        value := real_work_getter( obj );
+        setter( obj, value );
+    fi;
+    return value;
+end;
+]]></Log>
+The  only  function which  depends on   the  mathematical  nature  of the
+attribute  is  the  real-work getter,  and this   is  of course  what the
+programmer of  an  attribute has to  install.  In both cases,  the getter
+returns  the same value, which  we also call  the  value of the attribute
+(properly: the value of the attribute for the object <C>obj</C>).
+By the way:
+The names for setter and tester of an attribute are always composed from
+the prefix <C>Set</C> resp.&nbsp;<C>Has</C> and the name of the getter.
+<P/>
+As a (not typical) example, note that the &GAP; function
+<Ref Func="Random" BookName="ref"/>,
+although it takes only one argument, is of course <E>not</E> an attribute,
+because otherwise the first random element of a group would be stored by
+the setter and returned over and over again by the system getter
+every time <Ref Func="Random" BookName="ref"/> is called in the sequel.
+<P/>
+There is a general important rule about attributes: <E>Once the value of an
+attribute for an object has been set, it cannot be reset, i.e., it cannot
+be changed any more.</E> This is achieved by having two methods not only for
+the getter but also for the setter: If an object already has an attribute
+value stored, i.e., if the tester  returns <K>true</K>, the setter simply does
+nothing.
+<P/>
+<Example><![CDATA[
+gap> G := SymmetricGroup(8);; Size(G);
+40320
+gap> SetSize( G, 0 ); Size( G );
+40320
+]]></Example>
+<P/>
+<E>Summary.</E> In this section  we have introduced attributes as triples
+of getter, setter   and tester and    we have explained how  these  three
+functions work together behind  the  scene to provide automatic  storage
+and look-up of  values that have once been  calculated. We have seen that
+there can be several methods for  the   same function  among which &GAP;
+automatically selects an appropriate one.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Properties and Filters">
+<Heading>Properties and Filters</Heading>
+
+<Index>filters</Index>
+<Index Subkey="selection">methods</Index>
+Certain attributes, like <Ref Func="IsAbelian" BookName="ref"/>,
+are boolean-valued. Such attributes
+are known to &GAP; as <E>properties</E>, because their values are stored in a
+slightly different way.   A property also  has a  getter, a  setter and a
+tester, but  in this case,  the  getter as well  as the  tester returns a
+boolean value. Therefore &GAP;  stores   both values  in the same   way,
+namely as bits  in a boolean  list, thereby treating property getters and
+all testers (of attributes or properties) uniformly. These boolean-valued
+functions  are called  <E>filters</E>.  You can imagine  a filter  as a switch
+which is  set either  to <K>true</K> or  to <K>false</K>.  For every  &GAP; object
+there is a boolean list which has reserved a  bit for every filter &GAP;
+knows  about. Strictly speaking, there   is one bit for every  <E>simple
+filter</E>, and these  simple filters can be  combined with <C>and</C> to form
+other filters (which are then <K>true</K> if and only if all the corresponding
+bits are set to <K>true</K>).
+For example, the filter <C>IsPermGroup and IsSolvableGroup</C> is made up from
+several simple filters.
+<P/>
+Since they allow only two values, the bits which represent filters can be
+compared very quickly, and the scheme by which &GAP; chooses the method,
+e.g., for a getter or a setter (as we have seen in the previous section),
+is mostly based  on the examination of filters,  not on the examination
+of other  attribute   values. Details  of   this <E>method selection</E>   are
+described in chapter&nbsp;<Ref Chap="Method Selection" BookName="ref"/>.
+<P/>
+We  only present the following  rule  of  thumb here:
+Each installed method for an attribute, say <Ref Func="Size" BookName="ref"/>,
+has a <Q>required filter</Q>, which is made  up from certain simple filters
+which must yield <K>true</K> for the argument <A>obj</A> for this method to be
+applicable.
+To execute a call of <C>Size( <A>obj</A> )</C>, &GAP; selects among all applicable
+methods the one whose required filter combines the most simple filters;
+the idea behind is that the more an algorithm requires of <A>obj</A>,
+the more efficient it is expected to be.
+For example, if <A>obj</A> is a permutation group that is not (known to be)
+solvable,
+a method  with required filter <C>IsPermGroup and IsSolvableGroup</C> is not
+applicable, whereas a method with required filter
+<Ref Func="IsPermGroup" BookName="ref"/> can be chosen.
+On the other hand, if <A>obj</A> was  known to be solvable,
+the method with required filter <C>IsPermGroup and IsSolvableGroup</C>
+would be preferred to the one with required filter
+<Ref Func="IsPermGroup" BookName="ref"/>.
+<P/>
+It may happen that a method is applicable for a given argument
+but cannot compute the desired value.
+In such cases, the method will execute the statement <C>TryNextMethod();</C>,
+<Index Key="TryNextMethod"><C>TryNextMethod</C></Index>
+and &GAP; calls the next applicable method.
+For example, <Cite Key="Sims90b"/> describes an algorithm to compute the size
+of a solvable permutation group, which can be used also to decide
+whether or not a permutation group is solvable.
+Suppose that the function <C>size_solvable</C> implements this algorithm,
+and that is returns the order of the group if it is solvable and
+<K>fail</K> otherwise.
+Then we can install the following method for
+<Ref Func="Size" BookName="ref"/> with required
+filter <Ref Func="IsPermGroup" BookName="ref"/>.
+<Log><![CDATA[
+function( G )
+local  value;
+    value := size_solvable( G );
+    if value <> fail  then  return value;
+                      else  TryNextMethod();  fi;
+end;
+]]></Log>
+This method can then be tried on every permutation group (whether known
+to be  solvable or  not),  and it would  include a  mandatory solvability
+test.
+<P/>
+If no applicable method  (or no next applicable  method) is found, &GAP;
+stops with an error message of the form 
+<Log><![CDATA[
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `Size' on 1 arguments called from
+... lines deleted here ...
+]]></Log>
+<P/>
+You would get an error message as above if you asked for <C>Size( 1 )</C>. 
+The message simply says that there is no method installed for calculating
+the size of <C>1</C>.
+Section <Ref Sect="Recovery from NoMethodFound-Errors" BookName="ref"/>
+contains more information on how to deal with these messages.
+<P/>
+<E>Summary.</E> In this section we have introduced properties as special
+attributes, and filters as the general concept behind property getters
+and attribute testers.
+The values of the filters of an object govern how the object is treated
+in the selection of methods for operations.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Immediate and True Methods">
+<Heading>Immediate and True Methods</Heading>
+
+<Index Subkey="immediate">methods</Index>
+<Index Subkey="true">methods</Index>
+In the example in Section&nbsp;<Ref Sect="Properties and Filters"/>,
+we have mentioned that the operation <Ref Func="Size" BookName="ref"/> has a
+method  for solvable permutation  groups that is  so  far superior to the
+method for  general permutation groups that  it seems worthwhile to try it
+even if nothing  is  known about solvability   of the group of which  the
+<Ref Func="Size" BookName="ref"/> is to be calculated.
+There are other examples where certain
+methods are even <Q>cheaper</Q> to execute. For example,  if the size of a
+group is known  it is easy to check  whether  it is  odd, and  if so, the
+Feit-Thompson  theorem allows us to set
+<Ref Func="IsSolvableGroup" BookName="ref"/> to <K>true</K> for
+this group.   &GAP; utilizes   this  celebrated  theorem  by  having  an
+<E>immediate  method</E> for <Ref Func="IsSolvableGroup" BookName="ref"/>
+with required filter <C>HasSize</C>
+which checks parity of the size and either sets
+<Ref Func="IsSolvableGroup" BookName="ref"/> or does
+nothing, i.e.,   calls <C>TryNextMethod()</C>.   These immediate  methods  are
+executed  automatically for an  object  whenever the   value of a  filter
+changes, so solvability of a group will automatically be detected when an
+odd size has been calculated for it (and therefore the value of <C>HasSize</C>
+for that group has changed to <K>true</K>).
+<P/>
+Some methods are  even more immediate,   because they do not  require any
+calculation  at all: They  allow a filter to  be set if another filter is
+also set. In other words,   they  model a mathematical implication   like
+<C>IsGroup and IsCyclic</C> implies <C>IsSolvableGroup</C>  and   such
+implications  can be installed  in &GAP;  as  <E>true methods</E>. To execute
+true methods, &GAP; only needs to do  some bookkeeping with its filters,
+therefore true methods are much faster than immediate methods.
+<P/>
+How immediate and true methods are installed is described in 
+<Ref Sect="Immediate Methods" BookName="ref"/> and
+<Ref Sect="Logical Implications" BookName="ref"/>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations and Method Selection">
+<Heading>Operations and Method Selection</Heading>
+
+<Index>operations</Index>
+The method selection  is not only  used to  select  methods for attribute
+getters but also for arbitrary <E>operations</E>, which can have more than one
+argument.  In this case,   there is a   required filter for each argument
+(which must yield <K>true</K>  for the corresponding  arguments).
+<P/>
+Additionally, a method with at least two arguments may require a certain
+relation between the arguments,
+which is expressed in terms of the <E>families</E> of the arguments.
+For example, the methods for  <C>ConjugateGroup( <A>grp</A>, <A>elm</A> )</C>
+require that <A>elm</A>  lies in the family   of elements from  which
+<A>grp</A> is made, i.e., that  the family of  <A>elm</A> equals the
+<Q>elements family</Q>  of <A>grp</A>.
+<P/>
+For permutation groups, the situation is quite easy:
+all permutations form  one family,
+<Ref Var="PermutationsFamily" BookName="ref"/>,
+and each collection of permutations,
+for example each permutation group, each coset of a permutation group,
+or each dense list of permutations,
+lies in <C>CollectionsFamily( PermutationsFamily )</C>.
+<P/>
+For other kinds of group elements, the situation can be different.
+Every call of <Ref Func="FreeGroup" BookName="ref"/> constructs a new family
+of free group elements.
+&GAP; refuses to compute <C>One( FreeGroup( 1 ) ) * One( FreeGroup( 1 ) )</C>
+because the two operands of the multiplication lie in different families
+and no method is installed for this case.
+<P/>
+For further information on family relations,
+see <Ref Sect="Families" BookName="ref"/>.
+<P/>
+<Index Key="KnownPropertiesOfObject"><C>KnownPropertiesOfObject</C></Index>
+<Index Key="KnownTruePropertiesOfObject"><C>KnownTruePropertiesOfObject</C></Index>
+<Index Key="KnownAttributesOfObject"><C>KnownAttributesOfObject</C></Index>
+If you want to know  which properties are already known for an object
+<A>obj</A>, or which properties are known to be true, you can use the
+functions <C>KnownPropertiesOfObject( <A>obj</A> )</C> resp.
+<C>KnownTruePropertiesOfObject( <A>obj</A> )</C>.
+This will print a list of names
+of properties. These names are also the identifiers of the property
+getters, by which you can retrieve the value of the properties (and
+confirm that they are really <K>true</K>). Analogously, there is the function
+<Ref Func="KnownAttributesOfObject" BookName="ref"/> which lists the names
+of the known attributes, leaving out the properties.
+<P/>
+<Index Key="ApplicableMethod"><C>ApplicableMethod</C></Index>
+Since &GAP; lets you know what it already  knows about an object, it is
+only natural  that   it also  lets   you know what  methods  it considers
+applicable for a certain method, and in  what order it  will try them (in
+case <C>TryNextMethod()</C>  occurs).
+<C>ApplicableMethod( <A>opr</A>, [ arg_1, arg_2, ... ] )</C>
+returns the  first  applicable method for the  call
+<C><A>opr</A>( arg_1, arg_2, ... )</C>.
+More  generally,
+<C>ApplicableMethod( <A>opr</A>, [ ... ], 0, <A>nr</A> )</C>
+returns the <A>nr</A>th applicable method (i.e.,
+the one that would be chosen after <M><A>nr</A>-1</M> calls of
+<C>TryNextMethod</C>) and if <A>nr</A><C> = "all"</C>,
+the sorted list  of  all applicable methods is returned.
+For  details,  see
+<Ref Sect="Applicable Methods and Method Selection" BookName="ref"/>.
+<P/>
+<Index Key="TraceMethods"><C>TraceMethods</C></Index>
+If you want to see which methods  are chosen for certain operations while
+&GAP;  code is being executed, you can call the function 
+<Ref Func="TraceMethods" BookName="ref" Label="for a list of operations"/>
+with a list of these operations as arguments.
+<P/>
+<Log><![CDATA[
+gap> TraceMethods( [ Size ] );
+gap> g:= Group( (1,2,3), (1,2) );;  Size( g );
+#I  Size: for a permutation group
+#I  Setter(Size): system setter
+#I  Size: system getter
+#I  Size: system getter
+6
+]]></Log>
+<P/>
+The system getter is called once to fetch  the freshly computed value for
+returning  to the user.  The  second  call is  triggered by  an immediate
+method. To  find out  by which,  we can trace   the immediate  methods by
+saying <C>TraceImmediateMethods( true )</C>.
+<P/>
+<Log><![CDATA[
+gap> TraceImmediateMethods( true );
+gap> g:= Group( (1,2,3), (1,2) );;
+#I  immediate: Size
+#I  immediate: IsCyclic
+#I  immediate: IsCommutative
+#I  immediate: IsTrivial
+gap> Size( g );
+#I  Size: for a permutation group
+#I  immediate: IsNonTrivial
+#I  immediate: Size
+#I  immediate: IsFreeAbelian
+#I  immediate: IsTorsionFree
+#I  immediate: IsNonTrivial
+#I  immediate: GeneralizedPcgs
+#I  Setter(Size): system setter
+#I  Size: system getter
+#I  immediate: IsPerfectGroup
+#I  Size: system getter
+#I  immediate: IsEmpty
+6
+gap> TraceImmediateMethods( false );
+gap> UntraceMethods( [ Size ] );
+]]></Log>
+<P/>
+The last two lines switch off tracing  again.
+We now  see that the system getter was called by the immediate method for
+<Ref Func="IsPerfectGroup" BookName="ref"/>. 
+Also the above-mentioned immediate method for
+<Ref Func="IsSolvableGroup" BookName="ref"/>
+was not used because the solvability of <C>g</C> was already found out during
+the size calculation
+(cf.&nbsp;the example in Section&nbsp;<Ref Sect="Properties and Filters"/>).
+<P/>
+<E>Summary.</E>  In this section  and the  last we have  looked some  more
+behind the  scenes and seen  that &GAP; automatically executes immediate
+and true  methods  to deduce  information about  objects  that is cheaply
+available.  We  have seen how   this  can be  supervised  by tracing  the
+methods.
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

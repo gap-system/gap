@@ -1,0 +1,261 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  weakptr.tex              GAP documentation               Steve Linton -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: weakptr.tex,v 4.13 2006/06/28 15:32:35 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright 1997,  The GAP Project -->
+<!-- %% -->
+<!-- %%  This file describes the use of weak pointers -->
+<!-- %% -->
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Chapter Label="Weak Pointers">
+<Heading>Weak Pointers</Heading>
+
+This chapter describes the use of the kernel feature of <E>weak pointers</E>.
+This feature is primarily intended for use only in &GAP; internals, and
+should be used extremely carefully otherwise.
+<P/>
+The GASMAN garbage collector is the part of the kernel that manages memory in
+the users workspace.  It will  normally only reclaim  the storage used by  an
+object when the object cannot be reached as a subobject of any &GAP; variable,
+or from any reference in the kernel.
+We say that any link to object <M>a</M> from object <M>b</M>
+<Q>keeps object <M>a</M> alive</Q>, as long as <M>b</M> is alive.
+It is occasionally convenient, however, to have a link to an object
+which <E>does not keep it alive</E>, and this is a weak pointer.
+The most common use is in caches, and similar structures,
+where it is only necessary to remember how to solve problem <M>x</M>
+as long as some other link to <M>x</M> exists.
+<P/>
+The  following section <Ref Sect="Weak Pointer Objects"/> describes
+the semantics of the objects that contain weak pointers.
+Following sections describe the functions available to manipulate them.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Weak Pointer Objects">
+<Heading>Weak Pointer Objects</Heading>
+
+A <E>weak pointer object</E> is similar to a mutable plain list,
+except that it does not keep its subobjects alive during a garbage collection.
+From the &GAP; viewpoint this means that its entries may become unbound,
+apparently spontaneously, at any time.
+Considerable care is therefore needed in programming with such an object.
+
+
+<ManSection>
+<Func Name="WeakPointerObj" Arg="list"/>
+
+<Description>
+<Ref Func="WeakPointerObj"/> returns a weak pointer object which contains
+the same subobjects as the list <A>list</A>,
+that is it returns a <E>shallow</E> weak copy of <A>list</A>.
+<P/>
+<Example><![CDATA[
+gap> w := WeakPointerObj( [ 1, , [2,3], fail, rec( a := 1) ] );
+WeakPointerObj( [ 1, , [ 2, 3 ], fail, rec( a := 1 ) ] )
+]]></Example>
+<P/>
+After some computations involving garbage collections
+(but not necessarily in the <E>first</E> garbage collection after
+the above assignment),
+&GAP; will notice that the list and the record stored in <C>w</C>
+are not referenced by other objects than <C>w</C>,
+and that therefore these entries may disappear.
+<P/>
+<Log><![CDATA[
+gap> GASMAN("collect");
+
+... (perhaps more computations and garbage collections) ...
+
+gap> GASMAN("collect");
+gap> w;
+WeakPointerObj( [ 1, , , fail ] )
+]]></Log>
+<P/>
+Note that <C>w</C> has failed to keep its list and record subobjects alive
+during the garbage collections.
+Certain subobjects, such as small integers and elements of small finite
+fields, are not stored in the workspace,
+and so are not subject to garbage collection, while certain other objects,
+such as the Boolean values, are always reachable from global variables
+or the kernel and so are never garbage collected.
+<P/>
+Subobjects reachable without going through a weak pointer object do not
+evaporate, as in:
+<P/>
+<Example><![CDATA[
+gap> w := WeakPointerObj( [ 1, , , fail ] );
+WeakPointerObj( [ 1, , , fail ] )
+gap> l := [1,2,3];;
+gap> w[1] := l;;
+gap> w;
+WeakPointerObj( [ [ 1, 2, 3 ], , , fail ] )
+gap> GASMAN("collect");
+gap> w;                
+WeakPointerObj( [ [ 1, 2, 3 ], , , fail ] )
+]]></Example>
+<P/>
+Note also that the global variables <C>last</C>, <C>last2</C> and <C>last3</C>
+will keep things alive &ndash;this can be confusing when debugging.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Low Level Access Functions for Weak Pointer Objects">
+<Heading>Low Level Access Functions for Weak Pointer Objects</Heading>
+
+<Index>ElmWPObj</Index>
+<ManSection>
+<Func Name="SetElmWPObj" Arg="wp, pos, val"/>
+<Func Name="UnbindElmWPObj" Arg="wp, pos"/>
+<Func Name="ElmWPObj" Arg="wp, pos"/>
+<Func Name="IsBoundElmWPObj" Arg="wp, pos"/>
+<Func Name="LengthWPObj" Arg="wp"/>
+
+<Description>
+The functions <Ref Func="SetElmWPObj"/> and
+<Ref Func="UnbindElmWPObj"/> set and unbind entries in a weak pointer object.
+<P/>
+The function <Ref Func="ElmWPObj"/> returns the element at position
+<A>pos</A> of the weak pointer object <A>wp</A>, if there is one,
+and <K>fail</K> otherwise.
+A return value of <K>fail</K> can thus arise either because
+(a) the value <K>fail</K> is stored at position <A>pos</A>, or
+(b) no value is stored at position <A>pos</A>.
+Since <K>fail</K> cannot vanish in a garbage collection, these two cases can
+safely be distinguished by a <E>subsequent</E> call to
+<Ref Func="IsBoundElmWPObj"/>,
+which returns <K>true</K> if there is currently a value bound at position
+<A>pos</A> of <A>wp</A> and <K>false</K> otherwise.
+<P/>
+Note that it is <E>not</E> safe to write:
+<P/>
+<C>if IsBoundElmWPObj(w,i) then x:= ElmWPObj(w,i); fi;</C>
+<P/>
+and treat <C>x</C> as reliably containing a value taken from <C>w</C>,
+as a badly timed garbage collection could leave <C>x</C> containing
+<K>fail</K>.
+Instead use
+<P/>
+<C>x := ElmWPObj(w,i); if x &lt;> fail or IsBoundElmWPObj(w,i) then . . .</C>.
+<P/>
+Here is an example.
+<P/>
+<Example><![CDATA[
+gap> w := WeakPointerObj( [ 1, , [2,3], fail, rec() ] );   
+WeakPointerObj( [ 1, , [ 2, 3 ], fail, rec(  ) ] )
+gap> SetElmWPObj(w,5,[]);
+gap> w;
+WeakPointerObj( [ 1, , [ 2, 3 ], fail, [  ] ] )
+gap> UnbindElmWPObj(w,1);
+gap> w;
+WeakPointerObj( [ , , [ 2, 3 ], fail, [  ] ] )
+gap> ElmWPObj(w,3);      
+[ 2, 3 ]
+gap> ElmWPObj(w,1);
+fail
+]]></Example>
+<P/>
+Now after some computations and garbage collections <M>\ldots</M>
+<P/>
+<Example><![CDATA[
+gap> 2;;3;;4;;GASMAN("collect"); # clear last, last2, last3
+]]></Example>
+<P/>
+<M>\ldots</M> we get the following.
+<P/>
+<Log><![CDATA[
+gap> ElmWPObj(w,3);          
+fail
+gap> w;
+WeakPointerObj( [ , , , fail ] )
+gap> ElmWPObj(w,4);
+fail
+gap> IsBoundElmWPObj(w,3);
+false
+gap> IsBoundElmWPObj(w,4);
+true
+]]></Log>
+</Description>
+</ManSection>
+
+</Section>
+
+    
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Accessing Weak Pointer Objects as Lists">
+<Heading>Accessing Weak Pointer Objects as Lists</Heading>
+
+Weak pointer objects are members of <C>ListsFamily</C>
+and the categories <Ref Func="IsList"/>
+and <Ref Func="IsMutable"/>.
+Methods based  on  the low-level functions in  the previous
+section, are  installed for the list  access operations,  enabling them to be
+used as lists.    However, it is  <E>not recommended</E>  that  these be used   in
+programming. They   are  supplied mainly as   a convenience  for  interactive
+working, and   may not be   safe, since functions  and methods  for lists may
+assume that after <C>IsBound(w[i])</C> returns <K>true</K>,
+access to <C>w[i]</C> is safe.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Copying Weak Pointer Objects">
+<Heading>Copying Weak Pointer Objects</Heading>
+
+A <Ref Func="ShallowCopy"/> method is installed,
+which makes a new weak pointer object
+containing the same objects as the original.
+<P/>
+It is possible to apply <Ref Func="StructuralCopy"/>
+to a weak pointer object, obtaining
+a new weak  pointer object containing copies of  the objects in the original. 
+This <E>may not be safe</E> if a badly timed garbage collection occurs during
+copying.
+<P/>
+Applying <Ref Func="Immutable"/> to a weak pointer object
+produces an immutable plain
+list containing immutable copies of the objects contained in the weak pointer
+object. An immutable weak pointer object is a contradiction in terms.
+ 
+</Section>
+ 
+ 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="The GASMAN Interface for Weak Pointer Objects">
+<Heading>The GASMAN Interface for Weak Pointer Objects</Heading>
+
+The key support for weak pointers is in the files <F>src/gasman.c</F> and
+<F>src/gasman.h</F>.
+This document assumes familiarity with the rest of the operation of GASMAN.
+A kernel type (tnum) of bags which are intended to act as weak pointers to
+their subobjects must meet three conditions.
+Firstly, the marking function installed for that tnum must use
+<C>MarkBagWeakly</C> for those subbags, rather than <C>MARK_BAG</C>.
+Secondly, before any access to such a subbag, it must be checked with
+<C>IS_WEAK_DEAD_BAG</C>.
+If that returns <K>true</K>, then the subbag has evaporated in a recent garbage
+collection and must not be accessed.
+Typically the reference to it should be removed.
+Thirdly, a <E>sweeping function</E> must be installed for that tnum
+which copies the bag, removing all references to dead weakly held subbags.
+<P/>
+The files <F>src/weakptr.c</F> and <F>src/weakptr.h</F> use this interface
+to support weak pointer objects.
+Other objects with weak behaviour could be implemented in a similar way.
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

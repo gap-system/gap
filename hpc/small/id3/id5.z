@@ -1,0 +1,45 @@
+#############################################################################
+##
+#W  id5.z                  GAP library of id's             Hans Ulrich Besche
+##
+
+ID_GROUP_TREE.next[5]:=
+rec(
+  fp:= [ 1, 2 ],
+  next:= [ rec(
+    fp:= [ 23, 28, 29, 30, 32 ],
+    next:= [ rec(
+      fp:= [ 10 ],
+      next:= [ rec(
+        fp:= [ 130, 132 ],
+        next:= [ 100, 101 ] ) ] ), rec(
+      fp:= [ 11 ],
+      next:= [ rec(
+        fp:= [ 145, 146 ],
+        next:= [ 117, 118 ] ) ] ), rec(
+      fp:= [ 4 ],
+      next:= [ rec(
+        fp:= [ 103, 104 ],
+        next:= [ 124, 126 ] ) ] ), rec(
+      fp:= [ 3 ],
+      next:= [ rec(
+        fp:= [ 90, 93 ],
+        next:= [ 128, 130 ] ) ] ), rec(
+      fp:= [ 4 ],
+      next:= [ rec(
+        fp:= [ 96, 97 ],
+        next:= [ 136, 137 ] ) ] ) ] ), rec(
+    fp:= [ 12, 15, 37 ],
+    next:= [ rec(
+      fp:= [ 2 ],
+      next:= [ rec(
+        fp:= [ 76, 79 ],
+        next:= [ 212, 213 ] ) ] ), rec(
+      fp:= [ 1 ],
+      next:= [ rec(
+        fp:= [ 70, 71 ],
+        next:= [ 216, 217 ] ) ] ), rec(
+      fp:= [ 2 ],
+      next:= [ rec(
+        fp:= [ 201, 202 ],
+        next:= [ 232, 231 ] ) ] ) ] ) ] );

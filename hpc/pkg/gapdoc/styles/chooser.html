@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>GAPDoc Style Chooser</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="GAPDoc2HTML" />
+<link rel="stylesheet" type="text/css" href="manual.css" />
+<script src="manual.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+<!-- find current value of name nam in form -->
+function currval(nam) {
+  var chform = document.forms[0].elements;
+  for (var i=0; chform.length > i; i++) {
+    if (chform[i].name == nam && chform[i].type == "radio" &&
+        chform[i].checked == true)
+      return chform[i].value;
+  }
+  return "";
+}
+
+<!-- find style from current values in form -->
+function getstyle() {
+  var choices = ["toggle","colorprompt","tocside","font","justify"]; 
+  var style = "";
+  for (var i=0; choices.length > i; i++) {
+    var a = currval(choices[i]);
+    if (a.length > 0) {
+      if (style.length > 0)
+        style = style + ",";
+      style = style + a;
+    }
+  }
+  if (style.length == 0)
+    style = "default";
+  return style;
+}
+
+<!-- adjust the back link -->
+function f() {
+  addr = window.location.search.split("=")[1];
+  addr = addr + "?GAPDocStyle=" + getstyle();
+  document.getElementsByName("backLINK")[0].href = addr;
+}
+function resetf() {
+  addr = window.location.search.split("=")[1];
+  addr = addr + "?GAPDocStyle=default";
+  document.getElementsByName("backLINK")[0].href = addr;
+}
+
+<!-- initialize form from GAPDocStyle cookie -->
+function initform() {
+  var style = valueString(document.cookie, "GAPDocStyle");
+  if (style != 0 && style.length > 0 && style.length != "default") {
+    stlist = style.split(",");
+    var chform = document.forms[0].elements;
+    for (var i=0; chform.length > i; i++) {
+      if (chform[i].type == "radio") {
+        for (var j=0; stlist.length > j; j++) {
+          if (chform[i].value == stlist[j]) 
+            chform[i].checked = true;
+        }
+      }
+    }
+  }
+}
+
+</script>
+</head>
+<body class="chooser">
+
+<h2>Setting preferences for GAPDoc manuals</h2>
+
+<form name="SetGAPDocHTMLStyle" action="">
+<p>
+<input name="reset" type="reset" value="Reset to defaults" 
+onclick="javascript:resetf()"/>
+</p>
+<p>
+Unfold subsections in menus only by mouse clicks: 
+<input type="radio" name="toggle" value="" checked="checked"
+onclick="javascript:f()"/> no (default) 
+&nbsp;&nbsp;&nbsp;
+<input type="radio" name="toggle" value="toggless"
+onclick="javascript:f()"/> yes 
+</p>
+<p>
+Show GAP examples as in sessions with <code>ColorPrompt(true)</code>: 
+<input type="radio" name="colorprompt" value="" checked="checked"
+onclick="javascript:f()"/> yes 
+(default) &nbsp;&nbsp;&nbsp;
+<input type="radio" name="colorprompt" value="nocolorprompt"
+onclick="javascript:f()"/> no 
+</p>
+<p>
+Display side of table of contents within chapters: 
+<input type="radio" name="tocside" value="" checked="checked"
+onclick="javascript:f()"/> right (default) &nbsp;&nbsp;&nbsp;
+<input type="radio" name="tocside" value="lefttoc"
+onclick="javascript:f()"/> left 
+</p>
+<p>
+Main document font: 
+<input type="radio" name="font" value="" checked="checked"
+onclick="javascript:f()"/> Helvetica/sans 
+serif (default) &nbsp;&nbsp;&nbsp;
+<input type="radio" name="font" value="times"
+onclick="javascript:f()"/> Times/serif
+</p>
+<p>
+Paragraph formatting: 
+<input type="radio" name="justify" value="" checked="checked"
+onclick="javascript:f()"/> left-right 
+justified (default) &nbsp;&nbsp;&nbsp;
+<input type="radio" name="justify" value="ragged"
+onclick="javascript:f()"/> ragged right 
+</p>
+</form>
+<p>
+<a name="backLINK" href=""><strong>Apply settings to last page.</strong></a>
+</p>
+<script type="text/javascript">
+initform();
+f();
+</script>
+
+</body>
+</html>

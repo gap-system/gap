@@ -1,0 +1,217 @@
+#############################################################################
+##
+#W  sml512.co              GAP library of groups           Hans Ulrich Besche
+##                                               Bettina Eick, Eamonn O'Brien
+##
+
+SMALL_GROUP_LIB[ 512 ][ 93 ] := `[
+"%%%%%%%%(G85J:e1)<,,/D%/D//)%%!}lD>-!}xD0k!}t/0k!}w/0k!}u/0k!}x/0k!}tM0k!}w\
+M0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!}&G.^",
+"%%%%%%%%(G85J:e1)<,,8b%/F//)%%!}uHD>>!}xHD0k!}t3D0k!}w3D0k!}u3D0k!}x3D0k!}t\
+QD0k!}wQD0k!}uQD0k!}xQD0k!}t%/0k!}w%/0k!}u%/0k!}x%/0k!}tD/0k!}wD/0]",
+"%%%%%%%%(G85J:e1)<,,%%%/E//)%%!}PD>+!}uD0k!}xD0k!}t/0k!}w/0k!}u/0k!}x/0k!}t\
+M0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}eG/e",
+"%%%%%%%%(G85J:e1)<,,8%%/E//)%%!}wG>D!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}t\
+P0k!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!}u&0k!}x&0k!}tE0k!z)E-X",
+"%%%%%%%%(G85J:e1)<,,/%%/E//)%%!}wD>.!}uD0k!}xD0k!}t/0k!}w/0k!}u/0k!}x/0k!}t\
+M0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0K",
+"%%%%%%%%(G85J:e1)<,,8b%/E//)%%!}kH%>=!}wH%0k!}uH%0k!}xH%0k!}t3%0k!}w3%0k!}u\
+3%0k!}x3%0k!}tQ%0k!}wQ%0k!}uQ%0k!}xQ%0k!}t%D0k!}w%D0k!}u%D0k!}x%D0k!}bDD/E",
+"%%%%%%%%(G85J:e1)<,,%D%/E//)%%!}tD>9!}wD0k!}uD0k!}xD0k!}t/0k!}w/0k!}u/0k!}x\
+/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0j",
+"%%%%%%%%(G85J:e1)<,,8D%/E//)%% QQ)A!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u2\
+0k!}x20k!}tP0k!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!}u&0k!}x&07",
+"%%%%%%%%(G85J:e1)<,,/D%/E//)%%!}o%>-!}tD0k!}wD0k!}uD0k!}xD0k!}t/0k!}w/0k!}u\
+/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}*).^",
+"%%%%%%%%(G85J:e1)<,,8b%/F/8,,%!}x*Q%>>!}tHQ%0k!}wHQ%0k!}uHQ%0k!}xHQ%0k!}t3Q\
+%0k!}w3Q%0k!}u3Q%0k!}x3Q%0k!}tQQ%0k!}wQQ%0k!}uQQ%0k!}xQQ%0k!}t%%D0k!}w%%D0k!\
+}u%%D0]",
+"%%%%%%%%(G85J:e1)<,,%%%/D/%%)%!}N%>+!}x%0k!}tD0k!}wD0k!}uD0k!}xD0k!}t/0k!}w\
+/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}c)/e",
+"%%%%%%%%(G85J:e1)<,,8%%/D/%%)%!}u)>D!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w\
+20k!}u20k!}x20k!}tP0k!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!z&&-X",
+"%%%%%%%%(G85J:e1)<,,/%%/D/%%)%!}u%>.!}x%0k!}tD0k!}wD0k!}uD0k!}xD0k!}t/0k!}w\
+/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0K",
+"%%%%%%%%(G85J:e1)<,,8b%/D/%%)%!}n*%>=!}u*%0k!}x*%0k!}tH%0k!}wH%0k!}uH%0k!}x\
+H%0k!}t3%0k!}w3%0k!}u3%0k!}x3%0k!}tQ%0k!}wQ%0k!}uQ%0k!}xQ%0k!}t%D0k!}e%D/E",
+"%%%%%%%%(G85J:e1)<,,%D%/D/%%)%!}w%>9!}u%0k!}x%0k!}tD0k!}wD0k!}uD0k!}xD0k!}t\
+/0k!}w/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0j",
+"%%%%%%%%(G85J:e1)<,,8D%/D/%%)% QM)A!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG\
+0k!}t20k!}w20k!}u20k!}x20k!}tP0k!}wP0k!}uP0k!}xP0k!}t&07",
+"%%%%%%%%(G85J:e1)<,,/D%/D/%%)%!}k%>-!}w%0k!}u%0k!}x%0k!}tD0k!}wD0k!}uD0k!}x\
+D0k!}t/0k!}w/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}%).^",
+"%%%%%%%%(G85J:e1)<,)/D%/D/%%)%!}t%>>!}w%0k!}u%0k!}x%0k!}tD0k!}wD0k!}uD0k!}x\
+D0k!}t/0k!}w/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0]",
+"%%%%%%%%(G85J:e1)<,,8b%kD/%%)%!}QQD>+!}t%/0k!}w%/0k!}u%/0k!}x%/0k!}tD/0k!}w\
+D/0k!}uD/0k!}xD/0k!}t//0k!}w//0k!}u//0k!}x//0k!}tM/0k!}wM/0k!}uM/0k!}fM//e",
+"%%%%%%%%(G85J:e1)<,,%%%MD/%%)%!}xM>D!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!}u\
+G0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}tP0k!}wP0k!}uP0k!z*P-X",
+"%%%%%%%%(G85J:e1)<,,8%%MD/%%)%!}xP>.!}t&0k!}w&0k!}u&0k!}x&0k!}tE0k!}wE0k!}u\
+E0k!}xE0k!}t00k!}w00k!}u00k!}x00k!}tN0k!}wN0k!}uN0K",
+"%%%%%%%%(G85J:e1)<,,/%%MD/%%)%!}lM>=!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}w\
+G0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}tP0k!}wP0k!}cP/E",
+"%%%%%%%%(G85J:e1)<,,8b%MD/%%)%!}uQ%>9!}xQ%0k!}t%D0k!}w%D0k!}u%D0k!}x%D0k!}t\
+DD0k!}wDD0k!}uDD0k!}xDD0k!}t/D0k!}w/D0k!}u/D0k!}x/D0k!}tMD0k!}wMD0j",
+"%%%%%%%%(G85J:e1)<,,%D%MD/%%)% QPMA!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG\
+0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}tP0k!}wP07",
+"%%%%%%%%(G85J:e1)<,,8D%MD/%%)%!}nP>-!}uP0k!}xP0k!}t&0k!}w&0k!}u&0k!}x&0k!}t\
+E0k!}wE0k!}uE0k!}xE0k!}t00k!}w00k!}u00k!}x00k!}tN0k!})N.^",
+"%%%%%%%%(G85J:e1)<,,/D%MD/%%)%!}wM>>!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}t\
+G0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}tP0]",
+"%%%%%%%%(G85J:e1)<,,8b%kD/8%)%!}MQM>+!}wQM0k!}uQM0k!}xQM0k!}t%)0k!}w%)0k!}u\
+%)0k!}x%)0k!}tD)0k!}wD)0k!}uD)0k!}xD)0k!}t/)0k!}w/)0k!}u/)0k!}x/)0k!}bM)/e",
+"%%%%%%%%(G85J:e1)<,,%%%/D//%)%!}tM>D!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x\
+)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20k!z%P-X",
+"%%%%%%%%(G85J:e1)<,,8%%/D//%)%!}tP>.!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!}u&0k!}x\
+&0k!}tE0k!}wE0k!}uE0k!}xE0k!}t00k!}w00k!}u00k!}x00K",
+"%%%%%%%%(G85J:e1)<,,/%%/D//%)%!}o/>=!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u\
+)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}f2/E",
+"%%%%%%%%(G85J:e1)<,,8b%/D//%)%!}x3%>9!}tQ%0k!}wQ%0k!}uQ%0k!}xQ%0k!}t%D0k!}w\
+%D0k!}u%D0k!}x%D0k!}tDD0k!}wDD0k!}uDD0k!}xDD0k!}t/D0k!}w/D0k!}u/D0j",
+"%%%%%%%%(G85J:e1)<,,%D%/D//%)% QN/A!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)\
+0k!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u207",
+"%%%%%%%%(G85J:e1)<,,8D%/D//%)%!}l2>-!}x20k!}tP0k!}wP0k!}uP0k!}xP0k!}t&0k!}w\
+&0k!}u&0k!}x&0k!}tE0k!}wE0k!}uE0k!}xE0k!}t00k!}w00k!}&0.^",
+"%%%%%%%%(G85J:e1)<,,/D%/D//%)%!}u/>>!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w\
+)0k!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20]",
+"%%%%%%%%(G85J:e1)<,,8b%kD//%)%!}P3D>+!}u3D0k!}x3D0k!}tQD0k!}wQD0k!}uQD0k!}x\
+QD0k!}t%/0k!}w%/0k!}u%/0k!}x%/0k!}tD/0k!}wD/0k!}uD/0k!}xD/0k!}t//0k!}e///e",
+"%%%%%%%%(G85J:e1)<,,%%%MD//%)%!}w/>D!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t\
+)0k!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!z)2-X",
+"%%%%%%%%(G85J:e1)<,,8%%MD//%)%!}w2>.!}u20k!}x20k!}tP0k!}wP0k!}uP0k!}xP0k!}t\
+&0k!}w&0k!}u&0k!}x&0k!}tE0k!}wE0k!}uE0k!}xE0k!}t00K",
+"%%%%%%%%(G85J:e1)<,,/%%MD//%)%!}k/>=!}w/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}x\
+M0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}b2/E",
+"%%%%%%%%(G85J:e1)<,,8b%MD//%)%!}t3%>9!}w3%0k!}u3%0k!}x3%0k!}tQ%0k!}wQ%0k!}u\
+Q%0k!}xQ%0k!}t%D0k!}w%D0k!}u%D0k!}x%D0k!}tDD0k!}wDD0k!}uDD0k!}xDD0j",
+"%%%%%%%%(G85J:e1)<,,%D%MD//%)% QQDA!}t/0k!}w/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM\
+0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG07",
+"%%%%%%%%(G85J:e1)<,,8D%MD//%)%!}oG>-!}t20k!}w20k!}u20k!}x20k!}tP0k!}wP0k!}u\
+P0k!}xP0k!}t&0k!}w&0k!}u&0k!}x&0k!}tE0k!}wE0k!}uE0k!}*E.^",
+"%%%%%%%%(G85J:e1)<,,/D%MD//%)%!}xD>>!}t/0k!}w/0k!}u/0k!}x/0k!}tM0k!}wM0k!}u\
+M0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!}uG0]",
+"%%%%%%%%(G85J:e1)<,,8b%kD/8,)%!}NHP>+!}xHP0k!}t3P0k!}w3P0k!}u3P0k!}x3P0k!}t\
+QP0k!}wQP0k!}uQP0k!}xQP0k!}t%&0k!}w%&0k!}u%&0k!}x%&0k!}tD&0k!}wD&0k!}cD&/e",
+"%%%%%%%%(G85J:e1)<,,%%%/D/%))%!}uD>D!}xD0k!}t/0k!}w/0k!}u/0k!}x/0k!}tM0k!}w\
+M0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!z&G-X",
+"%%%%%%%%(G85J:e1)<,,8%%/D/%))%!}uG>.!}xG0k!}t20k!}w20k!}u20k!}x20k!}tP0k!}w\
+P0k!}uP0k!}xP0k!}t&0k!}w&0k!}u&0k!}x&0k!}tE0k!}wE0K",
+"%%%%%%%%(G85J:e1)<,,/%%/D/%))%!}nD>=!}uD0k!}xD0k!}t/0k!}w/0k!}u/0k!}x/0k!}t\
+M0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}eG/E",
+"%%%%%%%%(G85J:e1)<,,8b%/D/%))%!}wH%>9!}uH%0k!}xH%0k!}t3%0k!}w3%0k!}u3%0k!}x\
+3%0k!}tQ%0k!}wQ%0k!}uQ%0k!}xQ%0k!}t%D0k!}w%D0k!}u%D0k!}x%D0k!}tDD0j",
+"%%%%%%%%(G85J:e1)<,,%D%/D/%))% QMDA!}wD0k!}uD0k!}xD0k!}t/0k!}w/0k!}u/0k!}x/\
+0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG07",
+"%%%%%%%%(G85J:e1)<,,8D%/D/%))%!}kG>-!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x\
+20k!}tP0k!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!}u&0k!}x&0k!}%E.^",
+"%%%%%%%%(G85J:e1)<,,/D%/D/%))%!}tD>>!}wD0k!}uD0k!}xD0k!}t/0k!}w/0k!}u/0k!}x\
+/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0]",
+"%%%%%%%%(G85J:e1)<,,8b%kD/%))%!}Q*D>+!}tHD0k!}wHD0k!}uHD0k!}xHD0k!}t3D0k!}w\
+3D0k!}u3D0k!}x3D0k!}tQD0k!}wQD0k!}uQD0k!}xQD0k!}t%/0k!}w%/0k!}u%/0k!}f%//e",
+"%%%%%%%%(G85J:e1)<,,%%%MD/%))%!}x%>D!}tD0k!}wD0k!}uD0k!}xD0k!}t/0k!}w/0k!}u\
+/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!z*)-X",
+"%%%%%%%%(G85J:e1)<,,8%%MD/%))%!}x)>.!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u\
+20k!}x20k!}tP0k!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!}u&0K",
+"%%%%%%%%(G85J:e1)<,,/%%MD/%))%!}l%>=!}x%0k!}tD0k!}wD0k!}uD0k!}xD0k!}t/0k!}w\
+/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}c)/E",
+"%%%%%%%%(G85J:e1)<,,8b%MD/%))%!}u*%>9!}x*%0k!}tH%0k!}wH%0k!}uH%0k!}xH%0k!}t\
+3%0k!}w3%0k!}u3%0k!}x3%0k!}tQ%0k!}wQ%0k!}uQ%0k!}xQ%0k!}t%D0k!}w%D0j",
+"%%%%%%%%(G85J:e1)<,,%D%MD/%))% QP%A!}u%0k!}x%0k!}tD0k!}wD0k!}uD0k!}xD0k!}t/\
+0k!}w/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)07",
+"%%%%%%%%(G85J:e1)<,,8D%MD/%))%!}n)>-!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t\
+20k!}w20k!}u20k!}x20k!}tP0k!}wP0k!}uP0k!}xP0k!}t&0k!})&.^",
+"%%%%%%%%(G85J:e1)<,,/D%MD/%))%!}w%>>!}u%0k!}x%0k!}tD0k!}wD0k!}uD0k!}xD0k!}t\
+/0k!}w/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0]",
+"%%%%%%%%(G85J:e1)<,,8b%kD/8))%!}M*M>+!}w*M0k!}u*M0k!}x*M0k!}tHM0k!}wHM0k!}u\
+HM0k!}xHM0k!}t3M0k!}w3M0k!}u3M0k!}x3M0k!}tQM0k!}wQM0k!}uQM0k!}xQM0k!}b%)/e",
+"%%%%%%%%(G85J:e1)<,,%%%/D//))%!}t%>D!}w%0k!}u%0k!}x%0k!}tD0k!}wD0k!}uD0k!}x\
+D0k!}t/0k!}w/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!z%)-X",
+"%%%%%%%%(G85J:e1)<,)%%%/D//))%!}t%>.!}w%0k!}u%0k!}x%0k!}tD0k!}wD0k!}uD0k!}x\
+D0k!}t/0k!}w/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0K",
+"%%%%%%%%(G85J:e1)<,,8%%/D//))%!}oP>=!}t&0k!}w&0k!}u&0k!}x&0k!}tE0k!}wE0k!}u\
+E0k!}xE0k!}t00k!}w00k!}u00k!}x00k!}tN0k!}wN0k!}uN0k!}fN/E",
+"%%%%%%%%(G85J:e1)<,,/%%/D//))%!}xM>9!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!}u\
+G0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}tP0k!}wP0k!}uP0j",
+"%%%%%%%%(G85J:e1)<,,8b%/D//))% QNQ%A!}xQ%0k!}t%D0k!}w%D0k!}u%D0k!}x%D0k!}tD\
+D0k!}wDD0k!}uDD0k!}xDD0k!}t/D0k!}w/D0k!}u/D0k!}x/D0k!}tMD0k!}wMD0k!}uMD07",
+"%%%%%%%%(G85J:e1)<,,%D%/D//))%!}lM>-!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}w\
+G0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}tP0k!}wP0k!}&P.^",
+"%%%%%%%%(G85J:e1)<,,8D%/D//))%!}uP>>!}xP0k!}t&0k!}w&0k!}u&0k!}x&0k!}tE0k!}w\
+E0k!}uE0k!}xE0k!}t00k!}w00k!}u00k!}x00k!}tN0k!}wN0]",
+"%%%%%%%%(G85J:e1)<,,/D%/D//))%!}PM>+!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}t\
+G0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}tP0k!}eP/e",
+"%%%%%%%%(G85J:e1)<,,8b%kD//))%!}wQD>D!}uQD0k!}xQD0k!}t%/0k!}w%/0k!}u%/0k!}x\
+%/0k!}tD/0k!}wD/0k!}uD/0k!}xD/0k!}t//0k!}w//0k!}u//0k!}x//0k!}tM/0k!z)M/-X",
+"%%%%%%%%(G85J:e1)<,,%%%MD//))%!}wM>.!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}t\
+G0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}tP0K",
+"%%%%%%%%(G85J:e1)<,,8%%MD//))%!}kP>=!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!}u&0k!}x\
+&0k!}tE0k!}wE0k!}uE0k!}xE0k!}t00k!}w00k!}u00k!}x00k!}bN/E",
+"%%%%%%%%(G85J:e1)<,,/%%MD//))%!}tM>9!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x\
+)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20j",
+"%%%%%%%%(G85J:e1)<,,8b%MD//))% QQ3%A!}tQ%0k!}wQ%0k!}uQ%0k!}xQ%0k!}t%D0k!}w%\
+D0k!}u%D0k!}x%D0k!}tDD0k!}wDD0k!}uDD0k!}xDD0k!}t/D0k!}w/D0k!}u/D0k!}x/D07",
+"%%%%%%%%(G85J:e1)<,,%D%MD//))%!}o/>-!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u\
+)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}*2.^",
+"%%%%%%%%(G85J:e1)<,,8D%MD//))%!}x2>>!}tP0k!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!}u\
+&0k!}x&0k!}tE0k!}wE0k!}uE0k!}xE0k!}t00k!}w00k!}u00]",
+"%%%%%%%%(G85J:e1)<,,/D%MD//))%!}N/>+!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w\
+)0k!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}c2/e",
+"%%%%%%%%(I87j:e1)<,,8bbkDtA,,%!j5u3GND>D!j5x3GND0k!j5tQGND0k!j5wQGND0k!j5uQ\
+GND0k!j5xQGND0k!sKt%0)%0k!sKw%0)%0k!sKu%0)%0k!sKx%0)%0k!sKtD0)%0k!sKwD0)%0k!\
+sKuD0)%0k!sKxD0)%0k sKt/0)%%I6Y.QAdM^2E(K8[0SCf,O=b4WGj)L9]1TDg->Xk!sKw/0)%0\
+k!sKc/0)%/e",
+"%%%%%%%%(H86-:e1)<,,%%D/DD)%%%!}u/>D }x/%I6.QAdM2E(K8[0SCf,O=b4WGj)L9]1TgPc\
+5!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t\
+20k!}w20k!}u2/r",
+"%%%%%%%%(H86-:e1)<,,8%D/DD)%%%!}l2=c!}x20k!}tP0k!}wP0k!}uP0k!}xP0k!}t&0k!}w\
+&0k!}u&0k!}x&0k!}tE0k!}wE0k!}uE0k!}xE0k!}t00k!}w00k!}&0.B",
+"%%%%%%%%(H86-:e1)<,,/%D/DD)%%%!}u/=y!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w\
+)0k!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20R",
+"%%%%%%%%(H86-:e1)<,,8bD/DD)%%%!}P3%=a!}u3%0k!}x3%0k!}tQ%0k!}wQ%0k!}uQ%0k!}x\
+Q%0k!}t%D0k!}w%D.4 }u%D%IY.QAd*Uh(K8[0SCf,O=b4WGj)L9]1TD->X!}x%D0k!}tDD0k!}w\
+DD0k!}uDD0k!}xDD0k!}w/D0k!}u/D0k!}%MD.^",
+"%%%%%%%%(H86-:e1)<,,%DD/DD)%%%!}tM>>!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x\
+)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20]",
+"%%%%%%%%(H86-:e1)<,,8DD/DD)%%%!}Q2>+!}tP0k!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!}u\
+&0k!}x&0k!}tE0k!}wE0k!}uE0k!}xE0k!}t00k!}w00k!}u00k!}f0/e",
+"%%%%%%%%(H86-:e1)<,,/DD/DD)%%%!}x/>D!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u\
+)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!z*2-X",
+"%%%%%%%%(H86-:e1)<,,8bDkDD)%%%!}x3D>.!}tQD0k!}wQD0k!}uQD0k!}xQD0k!}t%/0k!}x\
+%/0k!}tD/0k!}wD/0k!}uD/0k!}xD/0k }w//%I6.QAdM2E(K8[0SCf,O=b4WGj)L9]1TgPc5 }u\
+//%I6Y.QAdM^2E(K8[0SCf,O=b4WGj)L9]1TDg->Xk!}tM/0k!}wM/0k!}uM/0k!}xM//r",
+"%%%%%%%%(H86-:e1)<,,%%DMDD)%%%!}oM=c!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!}u\
+G0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}tP0k!}wP0k!}uP0k!}*P.B",
+"%%%%%%%%(H86-:e1)<,,8%DMDD)%%%!}xP=y!}t&0k!}w&0k!}u&0k!}x&0k!}tE0k!}wE0k!}u\
+E0k!}xE0k!}t00k!}w00k!}u00k!}x00k!}tN0k!}wN0k!}uN0R",
+"%%%%%%%%(H86-:e1)<,,/%DMDD)%%%!}NM=a!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}w\
+G0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}tP0k!}wP0k!}cP/T",
+"%%%%%%%%(H86-:e1)<,,8bDMDD)%%%!}uQ%>&!}xQ%0k }t%D%IY.QAd*Uh(K8[0SCf,O=b4WGj\
+)L9]1TD->X!}x%D.4!}tDD0k!}wDD0k!}uDD0k!}xDD0k!}tMD0k!}wMD0k!}uMD0k!}xMD0k!}t\
+)D0k!}w)D0k!}u)D0k!}x)D0k!}tGD0]",
+"%%%%%%%%(H86-:e1)<,,8DDMDD)%%%!}MG>+!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x\
+20k!}tP0k!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!}u&0k!}x&0k!}bE/e",
+"%%%%%%%%(H86-:e1)<,,/DDMDD)%%%!}tD>D!}wD0k!}uD0k!}xD0k!}t/0k!}w/0k!}u/0k!}x\
+/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!z%G-X",
+"%%%%%%%%(H86-:e1)<,,8bDkFD)%%%!}tHM>.!}wHM0k!}uHM0k!}xHM0k!}t3M0k!}w3M0k!}u\
+3M0k!}x3M0k!}tQM0k!}wQM0k!}uQM0k!}xQM0k!}tD).4 }wD)%I6Y.QA*:U(K8[0SCf,O=b4WG\
+j)L]1TDg-Xk!}uD)0k!}xD)0k!}tM)/r",
+"%%%%%%%%(H86-:e1)<,,%%D/ED)%%%!}kM=c!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x\
+)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}%P.B",
+"%%%%%%%%(H86-:e1)<,,8%D/ED)%%%!}tP=y!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!}u&0k!}x\
+&0k!}tE0k!}wE0k!}uE0k!}xE0k!}t00k!}w00k!}u00k!}x00R",
+"%%%%%%%%(H86-:e1)<,,/%D/ED)%%%!}Q/=a!}tM0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u\
+)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t20k!}w20k!}u20k!}f2/T",
+"%%%%%%%%(H86-:e1)<,,8bD/ED)%%%!}x3%>&!}tQ%0k!}wQ%0k!}uQ%0k!}xQ%0k!}uDD0k!}x\
+DD0k }tMD%I6Y.QdM^2(K8[0SCf,O=b4WGj)L91TDgP5H }wMD%I6Y.QAdM^2E(K8[0SCf,O=b4W\
+Gj)L9]1TDg->Xk!}uMD0k!}xMD0k!}t)D0k!}w)D0k!}u)D0k!}x)D0k!}tGD0k!}wGD0]",
+"%%%%%%%%(H86-:e1)<,,8DD/ED)%%%!}PG>+!}uG0k!}xG0k!}t20k!}w20k!}u20k!}x20k!}t\
+P0k!}wP0k!}uP0k!}xP0k!}t&0k!}w&0k!}u&0k!}x&0k!}tE0k!}eE/e",
+"%%%%%%%%(H86-:e1)<,,/DD/ED)%%%!}wD>D!}uD0k!}xD0k!}t/0k!}w/0k!}u/0k!}x/0k!}t\
+M0k!}wM0k!}uM0k!}xM0k!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!z)G-X",
+"%%%%%%%%(H86-:e1)<,,8bDkED)%%%!}wHD>.!}uHD0k!}xHD0k!}t3D0k!}w3D0k!}u3D0k!}x\
+3D0k!}tQD0k!}wQD0k!}uQD0k!}xQD0k!}uD/.4 }xD/%I6Y.QA*:U(K8[0SCf,O=b4WGj)L]1TD\
+g-Xk!}uM/0k!}xM/0k!}t)/0k!}w)//r",
+"%%%%%%%%(H86-:e1)<,,8%DMED)%%%!}n)=c!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k!}t\
+20k!}w20k!}u20k!}x20k!}tP0k!}wP0k!}uP0k!}xP0k!}t&0k!})&.B",
+"%%%%%%%%(H86-:e1)<,,/%DMED)%%%!}w%=y!}u%0k!}x%0k!}tD0k!}wD0k!}uD0k!}xD0k!}t\
+/0k!}w/0k!}u/0k!}x/0k!}tM0k!}wM0k!}uM0k!}xM0k!}t)0R" ];

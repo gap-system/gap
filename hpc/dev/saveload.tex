@@ -1,0 +1,458 @@
+\documentclass[11pt]{article}
+\usepackage{a4wide}
+\title{Saving and Loading Workspaces}
+\author{Steve Linton}
+\begin{document}
+\maketitle
+
+This is an attempt to gather ideas and issues relating to save load of
+workspaces (and, to a lesser extent objects). A while back, Martin
+sent me some notes on saving and loading workspaces, which make up
+appendix A.
+
+\textbf{Notes in bold describe updates and decisions, September 1997}.
+
+\section{What to Aim For}
+
+It would be nice to save a workspace so that it can be used across GAP
+versions, machine architectures, etc. This, however, seems to be very
+hard. It would be nice to allow ``checkpoint'' saving from inside GAP
+code, but this, again seems rather hard.
+
+We aim, then, to allow saving and restoring from the outermost GAP
+prompt, creating a binary file that can be read back into another GAP
+session on a CPU of the same word length \textbf{(and possible the
+same byte-sex)} using the same kernel and libraries. 
+
+
+\section{Saving Bags}
+
+Martin's note (appendix) is based around the idea that each object can
+be written out and read in a way that depends on its GASMAN type
+alone. The main implication of this is that we must be able to
+distinguish Bags from pointers into the kernel from binary data. To
+work across 32 bit or 64 bit architectures, we would have, within binary
+data, to distinguish bytestreams from wordstreams (and possibly also
+shortstreams) and bitstreams. \textbf{At present we do not do this,
+but we should detect when the architectures are incompatible.} 
+
+There are a few possible problem cases:
+
+\begin{description}
+\item{Data  Objects} Here we already implemement a ban on Bags,
+so that Copy works safely, but we still have endianness problems. The
+suggested solution is that the kind of a DATAOBJ should supply C
+functions to save it and load it (is there a chicken and egg problem
+with loading?). If this were extended to marking and copying then the
+ban on Bags could actually be lifted. An alternative is to split
+\verb|T_DATAOBJ| into types for word-sequences, short-sequences,
+byte-sequences and bit-streams, or to store this information somewhere in
+the type.
+
+\textbf{Resolving this is postponed.}
+
+\item{String Literals in Function Bodies} \textbf{These should be
+saved byte-wise, while everything (?) else is saved UInt wise (since a
+Stat and an Expr are UInts). Once again a byte-sex problem. Resolution
+is easy but tedious -- parse the body properly and save each statement
+or expression according to its type}
+
+\item{Functions} The body field of function bags is used for a few
+different purposes (for example by Operations and by Getter/Setter
+functions for flags) and in some cases may not be a bag
+\textbf{Actually no, it's always a bag}. Operations are also the same
+type as functions, but longer. \textbf{This can be solved in the
+saving and loading methods for} \verb|T_FUNCTION|, \textbf{by looking
+at the length}
+\end{description}
+
+\section{Links Between the Kernel and Workspace}
+
+This is certainly the hardest problem to solve in doing save/load.
+
+\subsection{Kernel to Workspace}
+
+If a kernel includes significant numbers of compiled files, then it
+contains a lot of bag identifiers stored in kernel variables. Most of
+these are created by \verb|InitCopyGVar| or
+\verb|InitFopyGVar|. Incidentally, we observed that these do not need
+to be roots for marking live bags in garbage collection, or before
+saving, as the bags they point to are always reachable from the global
+variables bag. After loading a saved workspace, however, we need to
+reset all these pointers to point to the proper objects in the loaded
+workspace.  The best way to do this seems to be for
+\verb|InitCopyGVar| to store the name of the global variable and the
+address of the C pointer in a kernel table. \textbf{This is done. It
+requires a change in specification for InitCopyGVar to take the GVar
+name (as a kernel string) rather than the number}. After loading, this
+table can be used to find the bags to which these pointers should
+point. No data need be saved to support this. If the saved workspace
+does not contain a global variable of which the kernel is trying to
+keep a copy it is created, unbound. \textbf{This is done by
+RestoreCopyFopyInfo}
+
+The other case are pointers established with \verb|InitGlobal| which
+can point to any bag. In this case, \verb|InitGlobal| should take an
+extra argument, a C string, which will be stored in the globals table
+already kept by GASMAN. \textbf{Also done}. The saved workspace will
+contain these strings, and numbers of the bags (or the immediate
+integer or FFE values) to which the corresponding C globals should
+point. The pointers from the kernel can thus be restored following a
+load. The strings are there to match things up nicely. If the saved
+workspace contains too many or too few entries in this table then this
+is probably a fatal error, if they are simply in the wrong order, it
+should probably be a warning.
+
+\subsection{Workspace to Kernel}
+
+The only place this can happen, we believe, is in function
+handlers. All function handlers will have to be declared in the
+kernel, giving an identifying string, as for globals, and recorded in
+a kernel table. \textbf{This is done}. Order of declaration is not a reliable identifier
+here, because compiled library files may be loaded in different
+orders. In debug mode, all handler installations should check that the
+handler has been declared.
+
+\textbf{In fact it happens in one other place. In the lists of Copies
+and Fopies, pointers to kernel variables are stored in Plists instead
+of Bag IDs. Since this information does not need to be saved, we
+delete it with RemoveCopyFopyInfo before the garbage collection that
+precedes saving, and restore it with RestoreCopyFopyInfo afterwards.}
+
+\textbf{Since there is a small risk of a bag containing this data not
+being deleted by a garbage collection (GASMAN is conservative) we must
+do something with a bag containing bad subbags. We warn about it and write
+zeros.}
+
+\subsection{Subtler Links}
+
+\textbf{A likely source of further problems is data located in the
+workspace, but describing the state of the kernel. An example was the
+LoadedModuleInfo list, now moved into the kernel.  Such data needs to
+be preserved across a load (by being stashed in the kernel or
+otherwise) or reconstructed afterwards.}
+
+\subsection{Workspace to World}
+
+A problem arises with objects in the saved workspace which refer to
+objects in the outside world -- file names, directory names and streams
+connected to open files or running processes.
+
+As a first attempt, we propose to simply preserve file and directory
+paths created by the user intact. On the other hand, we should ensure
+that the binaries path and GAP root path survive across a load. This
+cannot cause any problems worse than those caused by files being
+deleted or moved behind the systems back, which should, at least,
+produce graceful failure. \textbf{Frank is looking at this}
+
+Open streams are more troublesome, and, initially, we should simply
+refuse to save a workspace containing them. \textbf{Frank will provide
+a way to detect that such things exist before starting a save}.
+
+
+\subsection{Interaction with the Compiler}
+
+{\bf The saved workspace will contain a record of all the compiled
+modules that were linked at the time of saving. These will be stored
+relative to the GAP root. For modules loaded from
+absolute pathnames (ie user-compiled modules) the pathname will be
+saved.
+
+At the start of the loading process, the system will try to load all
+of these modules. Failure prevents loading the workspace (perhaps the
+user is prompted for an alternative path \TeX\ style).}
+
+
+If the loading kernel includes compiled versions of library files that
+had been loaded into the saved workspace, then the uncompiled version
+loaded will overwrite the compiled one, rendering it useless. \verb|.gi|
+files can probably be reloaded, catching the compiled version. Can
+this be made safe?
+
+\subsection{Grander Schemes -- Not for 4.1}
+
+It would be nice to save and load individual objects in a standardised
+way, and/or to save and load the users part of the workspace without
+the library. The basic trick to doing this is to identify global
+variables whose contents are immutable and have not changed since they
+were loaded from the library. These might then be saved by name,
+rather than saving the contents.
+
+One question is whether, when saving an object, account should be
+taken of links to global variables whose contents \emph{have}
+changed. In other words, if I have an object whose contents include a
+reference to the global variable ``Minimum'', I have changed
+``Minimum'', and I save the object, do I expect the changed value of
+``Minimum'' to be saved with it? What about extra methods added for
+operations referenced by a saved object. My own view is that such
+changes should be ignored when saving an object, but taken account of
+when saving the workspace.
+
+One further remark is that it would really be nice to impose a bit
+more structure on the library name-space, for example along the lines
+of Common LISP's ``packages''. This might provide a framework for a
+clearer split between the system library and the users variations.
+
+\section{Revised Saving and Loading Procedure}
+
+All of this section is new and should be thought of as bold.
+
+\subsection{Saving}
+
+\begin{enumerate}
+\item Check validity of path
+\item Call RemoveCopyFopyInfo
+\item Full garbage collection
+\item Walk the heap, numbering bags in their link words
+\item Sort the kernel handlers table by address
+\item Write file header including:
+\begin{itemize}
+\item A magic number so that the file can be recognised as a GAP
+workspace
+\item Full details -- version, architecture, etc of the saving system
+\item Word length and a string to allow byte-sex to be determined.
+\item Number of loaded modules, bags, globals
+\item Total bag size
+\end{itemize}
+\item Write the relative or full pathnames of all linked
+compiled modules
+\item Write the cookies and the bag numbers corresponding to, all
+globals (but not Copy/Fopys).
+\item Write all bags, using Tnum based dispatching to:
+\begin{itemize}
+\item Record data as itself, using SaveByte, SaveShort, etc.
+\item Record immediate objects as themselves
+\item Record bag ids by the number of the bag identified (found in the
+link word), shifted left 2, to allow for immediate data
+\item Replace bad bag ids by zero
+\item Record handlers by the associated cookie
+\end{itemize}
+\item Perhaps write a checksum
+\item Close the file
+\item Clean up the bags
+\item Call RestoreCopyFopyInfo
+\end{enumerate}
+
+
+\subsection{Loading}
+
+This happens in GAP initialization. 
+
+\begin{enumerate}
+\item Get GAP sufficiently started up to:
+\begin{itemize}
+\item Have all globals, handlers and Copy/Fopy locations registered
+\item Be able to load/link compiled modules enough to get \emph{their}
+globals, handlers and Copy/Fopy locations registered
+\item Be able to do whatever is necessary with streams and so on
+\item Be able to use GASMAN
+\end{itemize}
+Frank will provide a way to do this. Essentially by running the usual
+InitXxx() sequence, but with a global variable set to indicate the
+status.
+\item Open the saved workspace
+\item Check the magic numbers, byte-sex check, GAP version, etc.
+\item Check that the heap is large enough. 
+\item Read the list of loaded modules and try to load/link them enough
+to get their globals, Copy/Fopy locations and handlers. Failure is
+a fatal error. 
+\item Sort the list of handlers by cookie
+\item Sort the list of globals by cookie
+\item For each saved global:
+\begin{itemize}
+\item Look up the cookie to find an address. A failure is a fatal error.
+\item Store the id of the appropriate bag at that address. Note that
+this can be recovered from the bag number only, since all
+masterpointers are the same size.
+\item Note in the table that that particular global has been loaded
+\end{itemize}
+\item Check that every global has been given a value. If not, a fatal error.
+\item Read the saved bags and write them over everything on the heap
+dispatching based on the saved tnum.
+\begin{itemize}
+\item Recovering data unchanged
+\item Replacing bag numbers by bagids (once again, these are
+determined directly by the numbers)
+\item Recovering immediate objects unchanged
+\item looking up handler cookies in the table. A failure is a fatal
+error
+\end{itemize}
+\item Close the file
+\item Call RestoreCopyFopyInfo
+\item Possibly some magic to correct file and directory names to be
+relative to the new GAP root and executables path. 
+\item Somehow set the record straight about loaded compiled modules
+\item Do any remaining steps of GAP startup, noting that there is no
+need to do the remaining parts of module initialization, or to read
+init.g or .gaprc.
+\item Pray devoutly
+\end{enumerate}
+
+
+
+
+
+\begin{small}
+\section*{Appendix A\\ Martin's Message}
+
+
+
+\begin{verbatim}
+Format of the GAP Workspace
+===========================
+
+ .--- 4 byte ---.
+
++----------------+ HEADER
+|  GAP_          |
+|  4.<rel>       |  <rel> is the two-digit zero-filled release number
+|  .<fix>_       |  <fix> is the two-digit zero-filled fixlevel number
+|  WS4\0         |  'WS4' is 32 bit workspace, 'WS8' is 64 bit workspace
++----------------+
+
++----------------+ INFOS (all entries are in 4 bytes)
+|  INFO          |
+|  S__\0         |
++----------------+
+|  <nr-global>   |  total number of globally referenced bags
++----------------+
+|  <nr-objs>     |  total number of objects in the heap (not immediate objects)
++----------------+
+|  <size-objs>   |  total size of data areas and padding (to 4 byte boundaries)
++----------------+
+|  <max-bagidx>  |  maximal bag index (needed size of masterpointer area)
++----------------+
+
++----------------+ GLOBALS (entries are 4 bytes)
+|  GLOB          |
+|  ALS\0         |
++----------------+
+|  <bagidx-1>     |  bag identifier of the first bag referenced
++----------------+  by the first global variable of the kernel
+|                |
+
+|                |
+
+|                |
++----------------+
+|  <bagidx-n>    | (<n> = <nr-global>)
++----------------+
+
++----------------+ OJBECTS (size-type entries are 4 bytes)
+|  OBJE          |
+|  CTS\0         |
++----------------+ FIRST OBJECT
+|  <size-type-1> |
++----------------+
+|                |
+
+|  <data-1>      |
+
+|                |
++----------------+
+|  <size-type-2> |
++----------------+
+|                |
+
+|  <data-2>      |
+
+|                |
++----------------+
+|                |
+
+|                |
+
+|                |
+
+|                |
+
+|                |
+
+|                |
+
+|                |
++----------------+
+
+
+Actions of SaveWS
+=================
+
+    call CollectGarb( "FULL" )
+
+    store in LINK for each object its number (walking bodies area)
+
+    writes out HEADER, INFOS, GLOBALS
+
+    for each <obj> (walking bodies area)
+
+        write size-type field
+
+        call (*SaveFuncs[TYPE_OBJ(<obj>)])( <obj> )
+
+            this save-function must save data area of <obj>
+            (may save more or less than the data area,
+            it must only be possible for the load-function
+            to figure everything out in a left-to-right read;
+            must not allocate anything)
+
+                SaveChar, SaveUChar
+                    saved as bytes
+                SaveInt1, SaveUInt1
+                    saved as bytes
+                SaveInt2, SaveUInt2
+                    saved as 2 bytes, least significant byte first
+                SaveInt4, SaveUInt4
+                    saved as 4 bytes, least significant byte first
+                SaveBag
+                    saved as 4 bytes, with tag
+                    00 for heap objects,       30 bits are index as above
+                    01 for immediate integers, 30 bits are as usual
+                    10 for immediate ffes,     30 bits are as usual
+                SaveHdrl
+                    saved as 4 bytes, interpreted as index into kernel list
+
+    restore all LINKS again (walking masterpointer area)
+
+
+Actions of LoadWS
+=================
+
+    make certain we are called from top level
+
+    throws away everything
+
+    reads HEADER, INFOS
+
+    allocates large enough masterpointer area and bodies area
+
+    read GLOBALS
+
+    for each <obj>
+
+        read size-type field
+
+        set up master pointer, link field, size-type-field
+
+        call (*LoadFuncs[TYPE_OBJ(<obj>)])( <obj>, <size>, <type> )
+
+            this load-function must load data area of <obj>
+            (must call the following functions in exactly the
+            same sequence in which the save-function called the
+            corresponding savers)
+
+                LoadChar, LoadUChar
+                LoadInt1, LoadUInt1
+                LoadInt2, LoadUInt2
+                LoatInt4, LoadUInt4
+                LoadBag
+                LoadHdlr
+
+    maybe do some additional magic before returning
+\end{verbatim}
+\end{small}
+\end{document}
+
+
+
+
+

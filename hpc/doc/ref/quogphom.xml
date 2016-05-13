@@ -1,0 +1,74 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  quogphom.msk               GAP documentation               Gene Cooperman -->
+<!-- %A							     and Scott Murray -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: quogphom.msk,v 1.8 2004/02/24 21:56:29 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Quotient groups by homomorphisms">
+<Heading>Quotient groups by homomorphisms (preliminary)</Heading>
+
+<#Include Label="[1]{quogphom}">
+<P/>
+<E>The functions and operations described in this chapter have been added
+very recently and are still undergoing development. It is conceivable that
+names of variants of the functionality might change in future versions. If
+you plan to use these functions in your own code, please contact us.</E>
+<P/>
+<#Include Label="IsHomCoset">
+<#Include Label="IsHomCosetToPerm">
+<#Include Label="IsHomCosetToPermRep">
+<#Include Label="IsHomCosetToMatrix">
+<#Include Label="IsHomCosetToMatrixRep">
+<#Include Label="IsHomCosetToFp">
+<#Include Label="IsHomCosetToFpRep">
+<#Include Label="IsHomCosetToTuple">
+<#Include Label="IsHomCosetToTupleRep">
+<#Include Label="IsHomCosetToAdditiveElt">
+<#Include Label="IsHomCosetToAdditiveEltRep">
+<#Include Label="IsHomCosetToObjectRep">
+<P/>
+It also has one property for each kind of source.
+<#Include Label="IsHomCosetOfPerm">
+<#Include Label="IsHomCosetOfMatrix">
+<#Include Label="IsHomCosetOfFp">
+<#Include Label="IsHomCosetOfTuple">
+<#Include Label="IsHomCosetOfAdditiveElt">
+<P/>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Creating hom cosets and quotient groups">
+<Heading>Creating hom cosets and quotient groups</Heading>
+
+<#Include Label="HomCoset">
+<#Include Label="HomCosetWithImage">
+<#Include Label="QuotientGroupHom">
+<#Include Label="QuotientGroupByHomomorphism">
+<#Include Label="QuotientGroupByImages">
+<#Include Label="QuotientGroupByImagesNC">
+<P/>
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations on hom cosets">
+<Heading>Operations on hom cosets</Heading>
+
+<#Include Label="Homomorphism">[quogphom]!{for quotient groups by homomorphisms}
+<#Include Label="SourceElt">
+<#Include Label="ImageElt">
+<#Include Label="CanonicalElt">
+<#Include Label="Source">
+<#Include Label="Range">
+<#Include Label="ImagesSource">
+<P/>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+<P/>
+</Section>
+</Chapter>
+

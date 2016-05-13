@@ -1,0 +1,468 @@
+This file lists all library files (in lib/) together with the names of
+the corresponding modules and their maintainers, as given in dev/MODULES
+(The files read*.* have been omitted).
+
+
+ addcoset.gd
+ addcoset.gi
+ addgphom.gd
+ addgphom.gi
+ addmagma.gd
+ addmagma.gi
+ algebra.gd
+ algebra.gi
+ algfld.gd
+ algfld.gi
+ algfp.gd
+ algfp.gi
+ alghom.gd
+ alghom.gi
+ alglie.gd    Lie algebras  Willem de Graaf
+ alglie.gi    Lie algebras  Willem de Graaf
+ algliess.gi  Lie algebras  Willem de Graaf
+ algmat.gi
+ algrep.gd
+ algrep.gi
+ algsc.gd
+ algsc.gi
+ arith.gd
+ arith.gi
+ assert.gd
+ assert.gi
+ attr.gd
+ attr.gi
+ basicim.gd
+ basicim.gi
+ basis.gd
+ basis.gi
+ basismut.gd
+ basismut.gi
+ boolean.g
+ circle.gd
+ circle.gi
+ clas.gd
+ clas.gi
+ clashom.gd   Classes in nonsolvable groups  Alexander Hulpke
+ clashom.gi   Classes in nonsolvable groups  Alexander Hulpke
+ claspcgs.gi
+ clasperm.gi
+ coll.gd
+ coll.gi
+ combinat.gd
+ combinat.gi
+ compat3a.g
+ compat3b.g
+ compat3c.g
+ compat3d.g
+ compiler.g
+ consistency.g
+ contfrac.gd
+ contfrac.gi
+ conwdat1.g
+ conwdat2.g
+ conwdat3.g 
+ csetgrp.gd   Cosets and Double Cosets  Alexander Hulpke
+ csetgrp.gi   Cosets and Double Cosets  Alexander Hulpke
+ csetpc.gi    Cosets and Double Cosets  Alexander Hulpke
+ csetperm.gi  Cosets and Double Cosets  Alexander Hulpke
+ ctblauto.gd
+ ctblauto.gi
+ ctblfuns.gd
+ ctblfuns.gi
+ ctbl.gd
+ ctbl.gi
+ ctblgrp.gd   Dixon-Schneider Algorithm  Alexander Hulpke
+ ctblgrp.gi   Dixon-Schneider Algorithm  Alexander Hulpke
+ ctbllatt.gd
+ ctbllatt.gi
+ ctblmaps.gd  Possible Class Fusions, Possible Power Maps  Thomas Breuer
+ ctblmaps.gi  Possible Class Fusions, Possible Power Maps  Thomas Breuer
+ ctblmoli.gd
+ ctblmoli.gi
+ ctblmono.gd  Monomiality Questions  Thomas Breuer
+ ctblmono.gi  Monomiality Questions  Thomas Breuer
+ ctblpc.gi    Dixon-Schneider Algorithm  Alexander Hulpke
+ ctblperm.gi  Dixon-Schneider Algorithm  Alexander Hulpke
+ ctblpope.gd  Possible Permutation Characters  Thomas Breuer
+ ctblpope.gi  Possible Permutation Characters  Thomas Breuer
+ ctblsolv.gd  Characters and Character Degrees of certain solvable groups  Thomas Breuer
+ ctblsolv.gi  Characters and Character Degrees of certain solvable groups  Thomas Breuer
+ ctblsymm.gd
+ ctblsymm.gi
+ cyclotom.g   Cyclotomics  Thomas Breuer
+ cyclotom.gd  Cyclotomics  Thomas Breuer
+ cyclotom.gi  Cyclotomics  Thomas Breuer
+ debug.g
+ demo.g
+ dict.gd      Group actions  Alexander Hulpke
+ dict.gi      Group actions  Alexander Hulpke
+ domain.gd
+ domain.gi
+ dt.g
+ extaset.gd
+ extlset.gd
+ extrset.gd
+ extuset.gd
+ factgrp.gd   Factor groups  Alexander Hulpke
+ factgrp.gi   Factor groups  Alexander Hulpke
+ fampred.g
+ fastendo.gd
+ fastendo.gi
+ ffe.g
+ ffe.gd
+ ffe.gi
+ fieldfin.gi
+ field.gd
+ field.gi
+ files.gd
+ files.gi
+ filter1.g
+ filter.g
+ flag.g
+ fldabnum.gd  Cyclotomics  Thomas Breuer
+ fldabnum.gi  Cyclotomics  Thomas Breuer
+ float.g
+ fpmon.gd     Finitely presented monoids and semigroups  James Mitchell
+ fpmon.gi     Finitely presented monoids and semigroups  James Mitchell
+ fpsemi.gd    Finitely presented monoids and semigroups  James Mitchell
+ fpsemi.gi    Finitely presented monoids and semigroups  James Mitchell
+ function.g
+ galois.gd    Identification of Galois groups  Alexander Hulpke
+ galois.gi    Identification of Galois groups  Alexander Hulpke
+ gasman.gd
+ gasman.gi
+ gaussian.gi
+ ghomfp.gd    Homomorphisms for finitely presented groups  Alexander Hulpke
+ ghomfp.gi    Homomorphisms for finitely presented groups  Alexander Hulpke
+ ghom.gd
+ ghom.gi
+ ghompcgs.gd
+ ghompcgs.gi
+ ghomperm.gd  Permutation group homomorphisms (except of function `RelatorsPermGroupHom') Ákos Seress, Alexander Hulpke
+ ghomperm.gi  Permutation group homomorphisms (except of function `RelatorsPermGroupHom') Ákos Seress, Alexander Hulpke
+ global.g
+ global.gd
+ global.gi
+ gpfpiso.gi
+ gpprmsya.gd
+ gpprmsya.gi
+ gprd.gd
+ gprd.gi
+ gprdpc.gi
+ gprdperm.gi
+ gptransv.gd
+ gptransv.gi
+ groebner.gd
+ groebner.gi
+ grpchain.gd
+ grpchain.gi
+ grpcompl.gi  1-Cohomology and Complements  Alexander Hulpke
+ grpffmat.gd  Classical Groups  Thomas Breuer, Stefan Kohl, Frank Lübeck
+ grpffmat.gi  Classical Groups  Thomas Breuer, Stefan Kohl, Frank Lübeck
+ grpfp.gd     Finitely presented groups  Volkmar Felsch, Alexander Hulpke
+ grpfp.gi     Finitely presented groups  Volkmar Felsch, Alexander Hulpke
+ grpfree.gd
+ grpfree.gi
+ grp.gd
+ grp.gi
+ grplatt.gd   Subgroup lattice  Alexander Hulpke
+ grplatt.gi   Subgroup lattice  Alexander Hulpke
+ grpmat.gd
+ grpmat.gi
+ grpnames.g   Structure Descriptions for Finite Groups  Stefan Kohl
+ grpnames.gd  Structure Descriptions for Finite Groups  Stefan Kohl
+ grpnames.gi  Structure Descriptions for Finite Groups  Stefan Kohl
+ grpnice.gd
+ grpnice.gi
+ grppcatr.gi  Properties and attributes of finite pc groups  Bettina Eick
+ grppcaut.gd  Automorphism groups of finite pc groups  Bettina Eick
+ grppcaut.gi  Automorphism groups of finite pc groups  Bettina Eick
+ grppccom.gd  1-Cohomology and Complements  Alexander Hulpke
+ grppccom.gi  1-Cohomology and Complements  Alexander Hulpke
+ grppcext.gd  Twocohomology and extensions of finite pc groups  Bettina Eick
+ grppcext.gi  Twocohomology and extensions of finite pc groups  Bettina Eick
+ grppcfp.gd
+ grppcfp.gi
+ grppc.gd
+ grppc.gi
+ grppcint.gi  Intersection of subgroups of finite pc groups  Bettina Eick
+ grppclat.gd  Subgroup lattice for solvable groups  Alexander Hulpke
+ grppclat.gi  Subgroup lattice for solvable groups  Alexander Hulpke
+ grppcnrm.gd
+ grppcnrm.gi
+ grppcprp.gi  Properties and attributes of finite pc groups  Bettina Eick
+ grppcrep.gd  Irreducible Modules over finite fields for finite pc groups  Bettina Eick
+ grppcrep.gi  Irreducible Modules over finite fields for finite pc groups  Bettina Eick
+ grpperm.gd
+ grpperm.gi
+ grpprmcs.gd
+ grpprmcs.gi
+ grpramat.gd
+ grpramat.gi
+ grpreps.gd
+ grpreps.gi
+ grptbl.gd
+ grptbl.gi
+ hash.gd
+ hash.gi
+ helpbase.gd  The Help System  Frank Lübeck
+ helpbase.gi  The Help System  Frank Lübeck
+ helpdef.gd   The Help System  Frank Lübeck
+ helpdef.gi   The Help System  Frank Lübeck
+ helpt2t.gd   Documentation Utilities  Greg Gamble
+ helpt2t.gi   Documentation Utilities  Greg Gamble
+ helpview.gd  The Help System  Frank Lübeck
+ helpview.gi  The Help System  Frank Lübeck
+ idealalg.gi
+ ideal.gd
+ ideal.gi
+ info.gd
+ info.gi
+ init.g
+ integer.gd
+ integer.gi
+ kbsemi.gd    Finitely presented monoids and semigroups  James Mitchell
+ kbsemi.gi    Finitely presented monoids and semigroups  James Mitchell
+ kernel.g
+ lbutil.g
+ liefam.gd
+ liefam.gi
+ lierep.gd    Lie algebras  Willem de Graaf
+ lierep.gi    Lie algebras  Willem de Graaf
+ listcoef.gd
+ listcoef.gi
+ list.g
+ list.gd
+ list.gi
+ magma.gd
+ magma.gi
+ mapphomo.gd
+ mapphomo.gi
+ mapping.gd
+ mapping.gi
+ mapprep.gi
+ mat8bit.gd
+ mat8bit.gi
+ matblock.gd
+ matblock.gi
+ matint.gd
+ matint.gi
+ matrix.gd
+ matrix.gi
+ meatauto.gi
+ meataxe.gd
+ meataxe.gi
+ methsel1.g
+ methsel2.g
+ methsel.g
+ methwhy.g
+ mgmadj.gd
+ mgmadj.gi
+ mgmcong.gd   Congruences of magmas, semigroups and monoids  Robert F. Morse
+ mgmcong.gi   Congruences of magmas, semigroups and monoids  Robert F. Morse
+ mgmfree.gi
+ mgmhom.gd
+ mgmhom.gi
+ mgmideal.gd
+ mgmideal.gi
+ mgmring.gd
+ mgmring.gi
+ modfree.gi
+ module.gd
+ module.gi
+ modulmat.gi
+ modulrow.gi
+ monofree.gi
+ monoid.gd
+ monoid.gi
+ morpheus.gd  Homomorphism search  Alexander Hulpke
+ morpheus.gi  Homomorphism search  Alexander Hulpke
+ nilpquot.gi
+ numtheor.gd
+ numtheor.gi
+ object.gd
+ object.gi
+ obsolete.g
+ oldmatint.gi
+ onecohom.gd  1-Cohomology and Complements  Alexander Hulpke
+ onecohom.gi  1-Cohomology and Complements  Alexander Hulpke
+ oper1.g
+ oper.g
+ oprt.gd      Group actions  Alexander Hulpke
+ oprt.gi      Group actions  Alexander Hulpke
+ oprtglat.gd
+ oprtglat.gi
+ oprtpcgs.gi  Group actions  Alexander Hulpke
+ oprtperm.gi  Group actions  Alexander Hulpke
+ options.gd
+ options.gi
+ orders.gd    Finitely presented monoids and semigroups  James Mitchell
+ orders.gi    Finitely presented monoids and semigroups  James Mitchell
+ other.gd
+ other.gi
+ overload.g
+ package.g
+ padics.gd
+ padics.gi
+ pager.gd     The Help System  Frank Lübeck
+ pager.gi     The Help System  Frank Lübeck
+ partitio.gd
+ partitio.gi
+ pcgscomp.gi
+ pcgs.gd
+ pcgs.gi
+ pcgsind.gd
+ pcgsind.gi
+ pcgsmodu.gd
+ pcgsmodu.gi
+ pcgsnice.gi
+ pcgspcg.gd
+ pcgspcg.gi
+ pcgsperm.gd  Permutation Group Pcgs  Alexander Hulpke
+ pcgsperm.gi  Permutation Group Pcgs  Alexander Hulpke
+ pcgsspec.gd  Special Pcgs for finite pc groups  Bettina Eick
+ pcgsspec.gi  Special Pcgs for finite pc groups  Bettina Eick
+ permdeco.gd
+ permdeco.gi
+ permutat.g
+ polyconw.gd
+ polyconw.gi
+ polyfinf.gd  Rational Functions  Alexander Hulpke
+ polyfinf.gi  Rational Functions  Alexander Hulpke
+ polyrat.gd   Rational Functions  Alexander Hulpke
+ polyrat.gi   Rational Functions  Alexander Hulpke
+ pquot.gd
+ pquot.gi
+ primality.gd
+ primality.gi
+ process.gd
+ process.gi
+ profile.g
+ proto.gd
+ proto.gi
+ quogphom.gd
+ quogphom.gi
+ quotsys.gd
+ randiso2.gi  Isomorphism testing with random methods  Hans Ulrich Besche, Bettina Eick
+ randiso.gd   Isomorphism testing with random methods  Hans Ulrich Besche, Bettina Eick
+ randiso.gi   Isomorphism testing with random methods  Hans Ulrich Besche, Bettina Eick
+ random.g
+ ratfun1.gi   Rational Functions  Alexander Hulpke
+ ratfun.gd    Rational Functions  Alexander Hulpke
+ ratfun.gi    Rational Functions  Alexander Hulpke
+ ratfunul.gi  Rational Functions  Alexander Hulpke
+ rational.gi
+ readsl.g
+ record.g
+ reesmat.gd
+ reesmat.gi
+ relation.gd  Binary Relations  Robert F. Morse
+ relation.gi  Binary Relations  Robert F. Morse
+ reread.g
+ ring.gd
+ ring.gi
+ ringpoly.gd  Rational Functions  Alexander Hulpke
+ ringpoly.gi  Rational Functions  Alexander Hulpke
+ rss.gd
+ rss.gi
+ rvecempt.gd
+ rvecempt.gi
+ rwsdt.gi
+ rws.gd
+ rws.gi
+ rwsgrp.gd
+ rwsgrp.gi
+ rwspcclt.gd
+ rwspcclt.gi
+ rwspccoc.gi
+ rwspcgrp.gd
+ rwspcgrp.gi
+ rwspcsng.gi
+ rwssmg.gd    Finitely presented monoids and semigroups  James Mitchell
+ rwssmg.gi    Finitely presented monoids and semigroups  James Mitchell
+ schur.gd     Multiplier and Schur cover  Werner Nickel, Alexander Hulpke
+ schur.gi     Multiplier and Schur cover  Werner Nickel, Alexander Hulpke
+ semicong.gd  Congruences of magmas, semigroups and monoids  Robert F. Morse
+ semicong.gi  Congruences of magmas, semigroups and monoids  Robert F. Morse
+ semigrp.gd
+ semigrp.gi
+ semiquo.gd
+ semiquo.gi
+ semirel.gd   Semigroup relations  Robert F. Morse
+ semirel.gi   Semigroup relations  Robert F. Morse
+ semiring.gd
+ semitran.gd  Transformation semigroups  Robert F. Morse
+ semitran.gi  Transformation semigroups  Robert F. Morse
+ set.gd
+ set.gi
+ sgpres.gd    Subgroup presentations  Volkmar Felsch
+ sgpres.gi    Subgroup presentations  Volkmar Felsch
+ smgideal.gd
+ smgideal.gi
+ smgrpfre.gi
+ solmxgrp.gd
+ solmxgrp.gi
+ sparselist.gd
+ sparselistgen.gi
+ sparselistsorted.gi
+ sparsevectorsorted.gi
+ stbcbckt.gd  Partition Backtrack algorithm  Alexander Hulpke
+ stbcbckt.gi  Partition Backtrack algorithm  Alexander Hulpke
+ stbc.gd      Stabilizer Chains  Ákos Seress, Alexander Hulpke
+ stbc.gi      Stabilizer Chains  Ákos Seress, Alexander Hulpke
+ stbcrand.gi  Random Schreier-Sims / Permutation group composition series  Ákos Seress
+ straight.gd
+ straight.gi
+ streams.gd
+ streams.gi
+ string.g     Strings and Characters  Frank Lübeck
+ string.gd    Strings and Characters  Frank Lübeck
+ string.gi    Strings and Characters  Frank Lübeck
+ system.g
+ tcsemi.gd    Finitely presented monoids and semigroups  James Mitchell
+ tcsemi.gi    Finitely presented monoids and semigroups  James Mitchell
+ tietze.gd    Tietze transformations  Volkmar Felsch
+ tietze.gi    Tietze transformations  Volkmar Felsch
+ tom.gd
+ tom.gi
+ trans.gd     Transformation semigroups  Robert F. Morse
+ trans.gi     Transformation semigroups  Robert F. Morse
+ tuples.gd
+ tuples.gi
+ twocohom.gd  Twocohomology and extensions of finite pc groups  Bettina Eick
+ twocohom.gi  Twocohomology and extensions of finite pc groups  Bettina Eick
+ type1.g
+ type.g
+ unknown.gd
+ unknown.gi
+ upoly.gd     Rational Functions  Alexander Hulpke
+ upoly.gi     Rational Functions  Alexander Hulpke
+ upolyirr.gi  Classical Groups  Thomas Breuer, Stefan Kohl, Frank Lübeck
+ utils.gd
+ utils.gi
+ variable.g
+ vec8bit.gd
+ vec8bit.gi
+ vecmat.gd
+ vecmat.gi
+ vspc.gd
+ vspc.gi
+ vspchom.gd
+ vspchom.gi
+ vspcmat.gi
+ vspcrow.gi
+ wordass.gd
+ wordass.gi
+ word.gd
+ word.gi
+ wordlett.gi
+ wordrep.gi
+ wpobj.g
+ wpobj.gd
+ wpobj.gi
+ zlattice.gd
+ zlattice.gi
+ zmodnze.gd
+ zmodnze.gi
+ zmodnz.gd
+ zmodnz.gi

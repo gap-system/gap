@@ -1,0 +1,354 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  Update                      GAP Maintenance
+%%
+%%
+%Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file is intended to list the changes that will be published with
+%%  the next update of GAP.
+%%  The information is used for producing the announcement of the update,
+%%  the additions to `tst/bugfix.tst', and an HTML page that lists the
+%%  known bugs and intended new features.
+%%
+%%  For adding a change, just copy one of the templates below to the end of the
+%%  file, and enter the relevant information.
+%%
+%%  Formal rules for this file, to allow simple parsing by a script:
+%%          - lines starting with `%' are comments and are ignored
+%%          - lines starting with `!' describe the type of information
+%%            in the following lines until the next `!'-line
+%%          - each entry must be finished with an `! End' line, otherwise
+%%            the order of entries is irrelevant
+%%          - the text behind the `!' is case and whitespace insensitive
+%%
+
+%%%%%%%%%%%%  short template without comments, below is a longer one  %%%%%%%%
+! Date
+
+! Changed by
+
+! Reported by
+
+! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+Fix: crash
+Fix: internal data corruption
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+! Description
+
+! Test Code
+
+! Prefetch
+
+! Changed Files
+
+! End
+
+
+
+%%%%%%%%%%%%  Template with explanatory comments    %%%%%%%%%%%%%%%%%%%%%%%%%%
+% When the change was checked in, format 'yyyy/mm/dd':
+! Date
+
+% Initials should suffice here:
+! Changed by
+
+% Only if applicable:
+! Reported by
+
+% Choose one or more entries and/or add new ones; but always use either
+% the 'Fix:' or the 'New:' prefix
+! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+Fix: crash
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+% For the description use (X)HTML (preferred) or plain text:
+% For HTML use in particular the following markup:
+%     for package names: <span class="pkgname">...</span>
+%     for GAP names: <span class="code">...</span>
+! Description
+
+% If possible, provide some code in test file format which allows to check
+% if a change was applied to an installation. Provide input and output,
+% including prompts, exactly as in a GAP session.
+! Test Code
+
+% If possible, provide some information about a temporary fix, workaround,
+% ..., maybe with a link to some longer description or a file with some
+% code. Use (X)HTML here.
+! Prefetch
+
+% White space separated list of paths relative to the GAP root directory.
+% (This is implicitly contained in the data of the CVS repository, but in
+% case of problems after changes it may be convenient to have this
+% information here.)
+! Changed Files
+
+% Finish your entry with this:
+! End
+
+###########################################################################
+! Date
+2012/06/05
+! Changed by
+MH
+! Type of Change
+Fix: infinite recursion
+! Description
+Fixed an old bug in CommutatorSubgroup for fp groups. It was causing
+infinite recursions, and could for example also be triggered by computing
+automorphism groups.
+! Test Code
+gap> F:=FreeGroup(3);;
+gap> G:=F/[F.1^2,F.2^2,F.3^2,(F.1*F.2)^3, (F.2*F.3)^3, (F.1*F.3)^2];;
+gap> U:=Subgroup(G, [G.3*G.1*G.3*G.2*G.1*G.3*G.2*G.3*G.1*G.3*G.1*G.3]);;
+gap> StructureDescription(CommutatorSubgroup(G, U));
+"C2 x C2"
+gap> StructureDescription(AutomorphismGroup(G));
+"S4"
+! Changed Files
+lib/grpfp.gi
+tst/bugfix.tst
+! End
+###########################################################################
+! Date
+2012/06/15
+! Changed by
+AH
+! Reported by
+Ignat Soroko
+! Type of Change
+Fix: crash
+! Description
+For small primes (compact fields) ZmodnZObj(r,p) now returns the
+corresponding FFE to avoid crashes when compacting matrices.
+! Test Code
+gap> gens:=[[[1,1],[0,1]], [[1,0],[1,1]]] * ZmodnZObj(1,7);
+[ [ [ Z(7)^0, Z(7)^0 ], [ 0*Z(7), Z(7)^0 ] ], [ [ Z(7)^0, 0*Z(7) ], [ Z(7)^0, Z(7)^0 ] ] ]
+gap> gens:=List(Immutable(gens),i->ImmutableMatrix(GF(7),i));;
+! Changed Files
+lib/vec8bit.gd
+lib/zmodnz.gi
+! End
+###########################################################################
+! Date
+2012/06/15
+! Changed by
+AH
+! Reported by
+Jakob Kroeker
+! Type of Change
+Fix: internal data corruption
+! Description
+Previously, the list of factors of a polynomial was mutable, and hence could
+be accidentally corrupted by callers. Now the list of irreducible factors 
+is stored immutable. To deal with implicit reliance on old code, always a
+shallow copy is returned.
+! Test Code
+gap> rng := PolynomialRing(Rationals, ["x","y"]);
+Rationals[x,y]
+gap> ind := IndeterminatesOfPolynomialRing(rng);
+[ x, y ]
+gap> x := ind[1];
+x
+gap> y := ind[2];
+y
+gap> pol:=5*(x+1)^2 ;
+5*x^2+10*x+5
+gap> factors := Factors(pol);
+[ 5*x+5, x+1 ]
+gap> factors[2] := y;
+y
+gap> factors[1] := [];
+[  ]
+gap> Factors( pol ); #bug
+[ 5*x+5, x+1 ]
+! Changed Files
+lib/algfld.gi
+lib/cyclotom.gi
+lib/polyfinf.gi
+lib/polyrat.gi
+lib/ratfun.gi
+lib/upoly.gi
+! End
+###########################################################################
+! Date
+2012/06/18
+! Changed by
+FL
+! Type of Change
+Fix: improved functionality
+! Description
+<span class="code">WriteGapIniFile</span>: On Windows the written
+<span class="code">gap.ini</span> file now has Windows style line breaks.
+
+An info message is now printed if an existing <span
+class="code">gap.ini</span> file was moved to a backup file
+<span class="code">gap.ini.bak</span>.
+! Changed Files
+lib/userpref.g
+! End
+###########################################################################
+! Date
+2012/06/18
+! Changed by
+FL
+! Reported by
+Klaus Lux
+! Type of Change
+Fix: library function to work with package objects
+! Description
+Computing high powers of matrices ran into an error for matrices in the
+format of the <span class="package">cvec</span> package. Now the library
+function also works with these matrices.
+! Test Code
+gap> mat := [[Z(2)]];;
+gap> ConvertToMatrixRep(mat,2);
+2
+gap> cmat := CMat(mat);
+<cmat 1x1 over GF(2,1)>
+gap> cmat^1000;
+<cmat 1x1 over GF(2,1)>
+! Changed Files
+lib/matrix.gi
+! End
+###########################################################################
+! Date
+2012/06/18
+! Changed by
+MH
+! Type of Change
+Fix: allow more than 128 subprocesses on certain systems
+! Description
+Partially rewrote the pseudo tty code which is responsible for spawning
+subprocesses. This mechanism is for example used by anupq and nq to
+compute group quotients via an external program. Previously, on Mac OS X
+this could be done precisely 128 times, and then an error would occur.
+That is, you could e.g. compute 128 nilpotent quotients, and then you had
+to restart gap to compute more.
+This also affected other systems, such as OpenBSD, where it now also works
+correctly.
+! Test Code
+gap> LoadPackage("anupq");
+true
+gap> for i in [1..192] do Q := Pq( FreeGroup(2) : Prime := 3, ClassBound := 1 ); od;
+! Changed Files
+cnf/config.hin
+cnf/configure.in
+cnf/configure.out
+src/iostream.c
+! End
+###########################################################################
+! Date
+2012/06/25
+! Changed by
+MH
+! Type of Change
+Fix: avoid a bug in GNU readline 6.2
+! Description
+On Mac OS X, using a gap compiled against GNU readline 6.2, pasting text
+into the terminal session would result in this text appearing very slowly,
+with a 0.1 sec delay between each "keystroke". This is not the case with
+versions 6.1 and older, and has been reported to the GNU readline team. In
+the meantime, we work around this issue in most situations by setting
+rl_event_hook only if OnCharReadHookActive is set.
+! Changed Files
+src/sysfiles.c
+! End
+###########################################################################
+! Date
+2012/07/05
+! Changed by
+FL
+! Reported by
+James Mitchell
+! Type of Change
+Fix: break loop
+! Description
+ShowUserPreferences ran into a break loop in case of several undeclared 
+user preferences.
+! Changed Files
+lib/userpref.g
+! End
+###########################################################################
+! Date
+2012/07/06
+! Changed by
+FL
+! Type of Change
+Fix: configuration
+! Description
+The CTblLib and TomLib packages are removed from the list of suggested
+packages of the core part of GAP. Instead they are added to the default list
+of the user preference "PackagesToLoad". This way it is possible to
+configure GAP to not load these packages via changing the default value
+of "PackagesToLoad".
+! Changed Files
+lib/system.g
+lib/packages.gi
+! End
+###########################################################################
+! Date
+2012/07/06
+! Changed by
+FL
+! Type of Change
+Fix: failed GAP start
+! Description
+GAP did not start correctly if the user preference "InfoPackageLoadingLevel"
+was set to a number >= 3. The reason is that PrintFormattedString
+was called before it was installed. The current fix is a temporary solution. 
+! Changed Files
+lib/info.gi
+! End
+###########################################################################
+! Date
+2012/07/13
+! Changed by
+TB
+! Type of Change
+Fix: wrong result
+! Description
+The function <span class="code">IsDocumentedWord</span> tested the given word
+against strings obtained by splitting help matches at non-letter characters.
+This way, variable names containing underscores or digits were erroneously
+not regarded as documented,
+and certain substrings of these names were erroneously regarded as documented.
+! Test Code
+gap> IsDocumentedWord( "d" );
+false
+gap> # "d_N" is documented
+gap> IsDocumentedWord( "last2" );
+true
+gap> # in the earlier version, the match 'last2' had been replaced by 'last'
+gap> # before the comparison
+! Changed Files
+lib/helpbase.gi
+! End
+###########################################################################
+! Date
+2012/07/13
+! Changed by
+AK
+! Type of Change
+Fix: break loop
+! Description
+On Windows, it was not possible to use the default Windows browser as a help
+viewer.
+! Changed Files
+lib/helpview.gi
+! End
+###########################################################################

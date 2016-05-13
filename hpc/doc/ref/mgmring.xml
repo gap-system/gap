@@ -1,0 +1,93 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  mgmring.msk                  GAP documentation              Thomas Breuer -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: mgmring.msk,v 1.6 2002/04/15 10:02:30 sal Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+
+<Chapter Label="Magma Rings">
+<Heading>Magma Rings</Heading>
+
+<#Include Label="[1]{mgmring}">
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Free Magma Rings">
+<Heading>Free Magma Rings</Heading>
+
+<#Include Label="FreeMagmaRing">
+<#Include Label="GroupRing">
+<#Include Label="IsFreeMagmaRing">
+<#Include Label="IsFreeMagmaRingWithOne">
+<#Include Label="IsGroupRing">
+<#Include Label="UnderlyingMagma">
+<#Include Label="AugmentationIdeal">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Elements of Free Magma Rings">
+<Heading>Elements of Free Magma Rings</Heading>
+
+<#Include Label="[2]{mgmring}">
+<#Include Label="IsMagmaRingObjDefaultRep">
+<#Include Label="IsElementOfFreeMagmaRing">
+<#Include Label="IsElementOfFreeMagmaRingFamily">
+<#Include Label="CoefficientsAndMagmaElements">
+<#Include Label="ZeroCoefficient">
+<#Include Label="ElementOfMagmaRing">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Natural Embeddings related to Magma Rings">
+<Heading>Natural Embeddings related to Magma Rings</Heading>
+
+<#Include Label="[3]{mgmring}">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Magma Rings modulo Relations">
+<Heading>Magma Rings modulo Relations</Heading>
+
+<#Include Label="[4]{mgmring}">
+<#Include Label="IsElementOfMagmaRingModuloRelations">
+<#Include Label="IsElementOfMagmaRingModuloRelationsFamily">
+<#Include Label="NormalizedElementOfMagmaRingModuloRelations">
+<#Include Label="IsMagmaRingModuloRelations">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Magma Rings modulo the Span of a Zero Element">
+<Heading>Magma Rings modulo the Span of a Zero Element</Heading>
+
+<#Include Label="IsElementOfMagmaRingModuloSpanOfZeroFamily">
+<#Include Label="IsMagmaRingModuloSpanOfZero">
+<#Include Label="MagmaRingModuloSpanOfZero">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Technical Details about the Implementation of Magma Rings">
+<Heading>Technical Details about the Implementation of Magma Rings</Heading>
+
+<#Include Label="[5]{mgmring}">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

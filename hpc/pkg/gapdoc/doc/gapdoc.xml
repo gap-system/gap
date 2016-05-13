@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd">
+
+
+<!-- The documentation to the GAPDoc system. 
+     Copyright 2000-2012 by Frank Lübeck and Max Neunhöffer
+     Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
+     
+<Book Name="GAPDoc"> 
+
+<TitlePage>
+  <Title>&GAPDoc;</Title>
+  <Version>( Version 
+<#Include SYSTEM "../version">
+ )
+  </Version>
+  <Author> Frank Lübeck 
+    <Email>Frank.Luebeck@Math.RWTH-Aachen.De</Email>
+    <Homepage>http://www.math.rwth-aachen.de/~Frank.Luebeck</Homepage>
+  </Author>
+  <Author> Max Neunhöffer 
+    <Email>neunhoef at mcs.st-and.ac.uk</Email>
+    <Homepage>http://www-groups.mcs.st-and.ac.uk/~neunhoef/</Homepage>
+  </Author>
+  <Date>February 2012</Date>
+  <Copyright> <Index>License</Index>
+              &copyright; 2000-2012 by Frank Lübeck and Max Neunhöffer <P/>
+              &GAPDoc;  is free software; you can redistribute it
+              and/or modify it under the terms of the <URL Text="GNU
+              General Public License">http://www.fsf.org/licenses/gpl.html</URL>              as published by the Free Software Foundation;
+              either version 2 of the License, or (at your option) any
+              later version.
+  </Copyright>
+
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+
+<Ignore Remark="set SizeScreen for Example's">
+<Example>
+gap> SizeScreen([72,40]);;
+</Example>
+</Ignore>
+
+<#Include SYSTEM "intro.xml">
+
+<#Include SYSTEM "enter.xml">
+
+<#Include SYSTEM "refdtd.xml">
+
+<#Include SYSTEM "distr.xml">
+
+<#Include SYSTEM "conv.xml">
+
+<#Include SYSTEM "textutil.xml">
+
+<#Include SYSTEM "bibutil.xml">
+
+
+</Body>
+
+<Appendix Label="app:3k+1"><Heading>The File <F>3k+1.xml</F></Heading>
+
+Here is the complete source of the example &GAPDoc; document <F>3k+1.xml</F>
+discussed in Section&nbsp;<Ref Sect="sec:3k+1expl" />.
+
+<Listing Type="3k+1.xml">
+<![CDATA[<#Include SYSTEM "../3k+1/3k+1.xml">]]></Listing>
+</Appendix>
+
+<Appendix Label="GAPDocdtd">
+<Heading>The File <F>gapdoc.dtd</F></Heading>
+
+For  easier reference  we  repeat  here the  complete  content  of the  file
+<F>gapdoc.dtd</F>.
+
+<Listing Type="gapdoc.dtd">
+<![CDATA[<#Include SYSTEM "../gapdoc.dtd">
+]]></Listing>
+
+</Appendix>
+
+<Appendix Label="bibxmlextdtd">
+<Heading>The File <F>bibxmlext.dtd</F></Heading>
+
+For  easier reference  we  repeat  here the  complete  content  of the  file
+<F>bibxmlext.dtd</F> which is explained in <Ref Sect="BibXMLformat"/>.
+
+<Listing Type="bibxmlext.dtd">
+<![CDATA[<#Include SYSTEM "../bibxmlext.dtd">
+]]></Listing>
+
+</Appendix>
+<Bibliography Databases="gapdocbib.xml" />
+
+<TheIndex/>
+
+</Book>
+
+<!-- ==================================================================== -->
+

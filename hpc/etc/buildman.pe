@@ -1,0 +1,888 @@
+#!/usr/bin/perl
+
+@msfiles = ();
+@gdfiles = ();
+$DIR = ".";
+$LIB=".";
+$check=0;
+
+if ( @ARGV && $ARGV[0] =~ /-f/  ) {
+    open( COF, "$ARGV[1]" );
+    while ( $line = <COF> ) {
+        chomp $line;
+        if ( $line =~ /DIR/ ) {
+            @words = split /=/, $line;
+            $DIR = $words[1];
+            $DIR =~ s/[; "]//g;
+            print "DIR set to $DIR\n";
+        } elsif ( $line =~ /LIB/ ) {
+            @words = split /=/, $line;
+            $LIB = $words[1];
+            $LIB =~ s/[; "]//g;
+            print "LIB set to $LIB\n";
+        } elsif ( $line =~ /msfiles/ ) {
+            @words = split /=/, $line;
+            $files = $words[1];
+            while ( !( $line =~ /;/ ) ) { $line = <COF>; $files .= $line; }
+            $files =~ s/[\(\);\n" ]//g;
+            @msfiles = split /,/, $files;
+        } elsif ( $line =~ /gdfiles/ ) {
+            @words = split /=/, $line;
+            $files = $words[1];
+            while ( !( $line =~ /;/ ) ) { $line = <COF>; $files .= $line; }
+            $files =~ s/[\(\);\n" ]//g;
+            @gdfiles = split /,/, $files;
+        } elsif ( $line =~ /check/ ) {
+            # the manual builder should produce a file `notfound'.
+            $check = 1;
+        } elsif ( $line =~ /=/ ) {
+            # assignment of {{variable}} replacements
+            @varass = split /=/, $line;
+            $defaults{$varass[0]} = $varass[1];
+        }
+    }
+}    
+
+
+sub coll_and_fam {
+# cope with `DeclareCategoryFamily' and `DeclareCategoryCollection'
+
+    if ($line =~ "DeclareCategoryFamily") {
+        @lipa = split /\"/, $line;
+        $line = $lipa[1].":= NewCategory(\"".$lipa[1]."Family\");";
+    }
+
+    if ($line =~ "DeclareCategoryCollection") {
+        @lipa = split /\"/, $line;
+        if ($lipa[1] =~ "Collection") {
+            $lipa[1] =~ s/Collection//g;
+            $line = $lipa[1] . "CollColl := NewCategory(\"" .
+                    $lipa[1] . "CollColl\",IsObject);";
+        } else {
+            $line = $lipa[1] . "Collection := NewCategory(\"" .
+                    $lipa[1] . "Collection\",IsObject);";
+        }
+    }
+}
+
+
+sub read_table {
+    foreach $file ( @gdfiles ) {
+        $currread = ($file =~ /\.(g|tbd|tmd)/ ) ? $file : "$file.gd";
+        open( GDF, "$LIB/$currread") ? do {print "reading $LIB/$currread\n";
+                                           $readon=1;}
+                                     : do {print "$LIB/$currread not found.\n";
+                                           $readon=0;};
+
+        while ( ($readon) && ($line = <GDF>) ) {
+            if ( $line =~ /^#[CAPOFVR]/ ) {       
+                # We look for lines of form:
+                # #<code>  <func-name>( <args> ) . . <description>
+                # #<code>  <var-name>  . . . . . . . <description>
+                # where <code> is a letter in "CAPOFVR".
+                $nfun = 0;       #no. of functions in the block
+                @code = ();      #CAPOFVR codes of the functions
+                @fdec = ();      #things of form: <func-name>( <args> ) 
+                                 #or:             <var-name>
+                @ldes = ();      #things of form: <description>
+                                 #with dots and superfluous spaces stripped out
+                                 #... which we don't currently use.
+                while ( $line =~ /^#([CAPOFVR])/ ) {
+                    $code[++$nfun] = $1;
+
+# The following piece of code is for long declarations that use several lines.
+# It is assumed that such a long declaration contains "(" on the first line 
+# and ")" on some line below.
+
+                    $des = $line;
+                    if ( $line =~ /\(/ ) {
+                        while ( !( $line =~ /\)/ ) ) { 
+                            ($line = <GDF>) =~ s/^#[CAPOFVR]\s*/ /; 
+                            if ($line =~ /^##\s*$/) {
+                                $des =~ m/^#([A-Z])\s*([^\(]*)/;
+                                #Is it better to die or print an error message?
+                                #... I opted for print error message + try to
+                                #recover, because people don't read error
+                                #messages ... right or wrong? - GG
+                                #die "Closing bracket missing for ". 
+                                #    "$1 definition of $2\n".
+                                #    "near line $. of $LIB/$currread\n";
+                                print STDERR "Closing bracket missing for ", 
+                                             "$1 definition of $2\n",
+                                             "near line $. of $LIB/$currread\n",
+                                             "... attempting to recover by ",
+                                             "inserting needed closing ",
+                                             "bracket.\n";
+                                $line .= ") ";
+                            }
+                            $des =~ s/[%]*$/%/;
+                            $des .= $line; 
+                        }
+                    }
+
+                    ( $des =~ /#[A-Z]\s*(\w+(\s*\([^\)]*\))?)(.*)/ )
+                        || die "syntax error near line $. of $LIB/$currread\n";
+                    ($fdec[$nfun] = $1) =~ s/\s*\(/\(/;
+                    ($ldes[$nfun] = $3) =~ s/[.]//g;
+                    $ldes[$nfun] =~ s/^\s+//;
+                    $ldes[$nfun] =~ s/\s+/ /g;
+                    #print STDERR "fdec: $fdec[$nfun], ldes: $ldes[$nfun]\n";
+
+                    $line = <GDF>;
+                }
+
+                $code[0] = $nfun;          
+                $fdec[0] = $nfun; 
+                $ldes[0] = $nfun;
+
+                @words = split /\(/, $fdec[1];
+                $key = $words[0];
+                $key .= "@"; $key .= $file; 
+
+                if ( ( %{ $tab{$key} } ) ) {
+                    print "DUPLICATE DEFINITION OF $key\n";
+                }
+
+                @args = ();
+                $args[0] = $nfun;
+          
+                for ($k=1; $k <= $nfun; ++$k ) {
+                    @argsk = ();
+                    $argsk[0] = 0;
+                    if ( $fdec[$k] =~ /\(/ ) {
+                        @aa = split /\(/, $fdec[$k];
+                        $w = $aa[1];
+                        @aa = split /\)/, $w;
+                        $w = $aa[0];
+                        if (!$w) { $w= " ";}
+                        @aa = split /,/, $w;
+                        $noa = 0;
+
+                        foreach $a ( @aa ) {
+                            ++$noa;
+                            $argsk[$noa] = $a;
+                        }
+                    }
+
+                    $argsk[0] = $noa;
+                    $args[$k] = [ @argsk ];
+                }
+
+                $expl = "";
+                while ( ($line = <GDF>) =~ /^#/  ) {
+                    if ( !( $line =~ /^#T/ ) ) {
+                        $line =~ s/^[#]*//g;
+                        # remove two leading spaces
+                        # Hmmm! ... This doesn't require any spaces!!
+                        $line =~ s/^ //;
+                        $line =~ s/^ //;
+                        $expl .= $line;
+                    }
+                }
+
+                @impl = ();
+                $impl[0] = $nfun;
+                @ipmt = ();
+                $ipmt[0] = $nfun;
+                $ww0 = "";
+                for ($k=1; $k <= $nfun; ++$k) {
+                    $ww1 = $ww0;
+                    if ( $fdec[$k] =~ /\(/ ) { 
+                        @ww = split /\(/, $fdec[$k]; 
+                        $ww0 = $ww[0];
+                    } else { 
+                        $ww0 = $fdec[$k];
+                    } 
+
+# If the 'new' declaration is not the same as the old one, then we look for a
+# new implementation line (otherwise we do not).
+
+                    if ( !( $ww0 =~ /^$ww1$/ ) ) { 
+                        coll_and_fam();
+                        while ( !( $line =~ /$ww0/ ) ) { 
+                            eof( GDF ) && die "$ww0 is declared but there ".
+                                              "is no implementation line\n... ",
+                                              "near line $. of $LIB/$currread\n";
+                            $line = <GDF>; 
+                            coll_and_fam();
+                        } 
+
+                        $defn = $line;
+                        while ( !( $line  =~ /;/ ) ) { 
+                            $line = <GDF>;
+                            $defn .= $line;
+                        }
+                    }
+
+                    @implk = ();
+                    $implk[0] = 0;
+                    $j = 0;
+                    @words = split /,/, $defn;          
+                    foreach $w ( @words ) {
+                        if ( !( $w =~ /\(/ ) ) {
+                            ++$implk[0];
+                            ++$j;
+                            $implkj = "";
+                            @wds = split / and /, $w;
+                            foreach $v ( @wds ) {
+                                $v =~ s/\)|\[|\]|;| |\n//g;
+                                if ( $implkj =~ /\w/ ) { 
+                                    $implkj .= ", ".$v;
+                                } else { 
+                                    $implkj .= $v; 
+                                }
+                            }
+
+                            $implk[$j] = $implkj;
+                        } 
+                    }      
+
+                    $impl[$k] = [ @implk ];
+
+                    @words = split /\(/, $defn;
+                    $w = $words[0];
+                    if ( $w =~ /:=/ ) {
+                        @wds = split /:=/, $w;
+                        $v = $wds[1];
+                    } else {
+                        $v = $words[0];
+                    }
+                    $ipmt[$k] = $v;
+                }
+
+# Some default filling in of tester and setter (if such objects are found 
+# later on, they will be inserted).
+
+                @test = ();
+                @sett = ();
+#               $ntes = 0; $nset = 0;
+                $test[0]=0; $sett[0]=0;
+                $tab{$key}{test} = [ @test ];
+                $tab{$key}{sett} = [ @sett ];   
+                $tab{$key}{expl} = $expl;
+                $tab{$key}{code} = [ @code ];
+                $tab{$key}{args} = [ @args ];
+                $tab{$key}{fdec} = [ @fdec ];
+                $tab{$key}{ldes} = [ @ldes ]; 
+                $tab{$key}{impl} = [ @impl ];
+                $tab{$key}{ipmt} = [ @ipmt ];
+                $tab{$key}{file} = $currread;
+            }
+# The arrays sett and test are bags of setters and testers respectively. This
+# means that they can appear in any order, it cannot be assumed that they
+# correspond to the order in which the fdecs appear (for instance).
+
+# setter and tester are now declared automatically
+#           if ( $line =~ /Set/ ) {
+#               ++$nset;
+#               ++$sett[0];
+#               @words = split /:=/, $line;
+#               $w = $words[0];
+#               $w =~ s/ //g;
+#               $sett[$nset] = $w;
+#               $tab{$key}{sett} = [ @sett ];
+#           } elsif ( $line =~ /Has/ ) {
+#               ++$ntes;
+#               ++$test[0];
+#               @words = split /:=/, $line;
+#               $w = $words[0];
+#               $w =~ s/ //g;
+#               $test[$ntes] = $w;
+#               $tab{$key}{test} = [ @test ];
+#           } 
+         
+            if ( $line =~ /#[0-9]/ ) {
+                @chars = split //, $line;
+                $hnum = $chars[1];
+                for ($k=2; ($c=$chars[$k]) =~ /[0-9]/; ++$k) { $hnum .= $c; }
+          
+                $htxt = "";
+                while ( ($line = <GDF>) =~ /^#/ ) {
+                    if ( $line =~ /##/ ) {
+                        $line =~ s/#//g;
+                        # remove 1 or two leading spaces
+                        $line =~ s/^ //g;
+                        $line =~ s/^ //g;
+                        $htxt .= $line;
+                    }
+                }
+                $clef = "_h".$file;
+                $tab{$clef}{$hnum} = $htxt;
+            }          
+        }
+
+        if ( open( GIF, "$LIB/$file.gi" ) ) { 
+            print "reading $LIB/$file.gi\n";
+            $currread="$file.gi";
+            $key = ""; $gide="";
+            $first = 1;
+            while ( $line = <GIF> ) {
+                if ( $line =~ /#[CAPOFVRM]/ ) {
+                    if ( $first == 1 ) {      
+                        $first = 0;
+                        if ( $tab{$key} ) {
+                            $tab{$key}{gide} = $gide; 
+                            $tab{$key}{meth} = [ @meth ];
+                        }
+                        @words = split /\(/, $line;
+                        $key = $words[0];
+                        $key =~ s/#[CAPOFVRM]| //g;
+                        $gide = "";
+                   
+                        @mlines = ();
+                        $nom = 0;
+                        $insm = 0;
+                        @meth = (0);
+                    }
+
+                    if ( $line =~ /#M/ ) {
+                        ++$nom;
+                        $mlines[0] = $nom;
+                        $mlines[$nom] = $line;
+                    }
+                } elsif ( $first == 0 ) { 
+                    $first =1; 
+                } 
+           
+# The next lines of code handle the #M declarations that must go into the 
+# manual from the .gi file. We assume:
+#
+#    * there are as many #M declarations in the header as Install(Other)Method
+#      lines,
+#    * if a method is installed by InstallOtherMethod, and it contains
+#      comments in the body ( #+ lines ), then the corresponding declaration
+#      goes into the manual.
+# 
+# In all comment lines in the body of an InstallOtherMethod, the string
+# NUMBER will be replaced by the number (integer) that reflects the position
+# of this declaration in the list of all declarations.
+
+                if ( $line =~ /Install(Other|)Method/ ) {
+                    ++$insm;
+                    $argres = "";
+
+                    if ( $insm <= $nom ) {
+                        $foundres = 0;
+                        $hascom = 0;
+                        $end = 0;
+                        $occurass = 0;
+
+                        while ( $end == 0 ) {
+                            if ( $line =~ /:=/ ) { $occurass = 1; }
+                            if ( $line =~ /^(#\+)/ ) {
+                                $hascom = 1;
+                                $line =~ s/^(#\+)/ /;
+                                @words = split ' ', $line;
+                                foreach $w ( @words ) { 
+                                    if ( !($w=~/\n/) ) {$gide .= ($w." ");} 
+                                } 
+                                $gide .= "\n";
+                            } elsif ( $foundres == 0 && $line =~ /\[/ ) {
+                                $argres = $line;
+                                while ( !( $line =~ /\]/ ) ) { 
+                                    $line = <GIF>; $argres .= $line; 
+                                }
+                                $met = $argres;
+                                $met =~ s/\\\[//g;
+                                if ( $met =~ /\[/ ) {
+                                    @words = split /\[|\]/, $met;
+                                    $met = $words[1];
+                                    $met =~ s/,|\n/ /g;
+                                    $meth[0] = $insm;
+                                    $meth[$insm] = $met;
+                                    $foundres = 1;
+                                }
+                            }
+                            if ( ( $line =~ /\);/ && $occurass == 0 ) 
+                                 || $line =~ /end.*\);/ ) { 
+                                $end = 1;
+                            }  else { 
+                                $line = <GIF>; 
+                            }
+                        }
+
+                        if ( $hascom == 1 ) { 
+                            if ( $tab{$key} ) {
+                                @code = @{ $tab{$key}{code} };
+                                @fdec = @{ $tab{$key}{fdec} };
+                                @args = @{ $tab{$key}{args} };
+                                @ldes = @{ $tab{$key}{ldes} };
+                                @impl = @{ $tab{$key}{impl} };
+                            } else {
+                                @code = ();
+                                @fdec = ();
+                                @args = ();
+                                @ldes = ();
+                                @impl = ();
+                                $code[0] = 0;
+                                $tab{$key}{expl} = "";
+                            }
+
+                            $nfun = $code[0];
+                            ++$nfun;
+                            $gide =~ s/NUMBER/$nfun/g;
+                            $code[0] = $nfun;
+                            $code[$nfun] = "M";
+                            $tab{$key}{code} = [ @code ];
+
+                            @words = split /\)/, $mlines[$insm];
+                            $w = $words[0];
+                            $w .= "\)";
+                            $w =~ s/#M| //g;
+                            $fdec[$nfun] = $w;
+                            $fdec[0] = $nfun;
+                            $tab{$key}{fdec} = [ @fdec ]; 
+                        
+                            @argsk = ();
+                            $argsk[0] = 0;
+                            @aa = split /</, $w;
+                            $noa = 0;
+
+                            foreach $a ( @aa ) {
+                                if ( $a =~ />/ ) {
+                                    ++$noa;
+                                    $a =~ s/>| |,|\)//g;
+                                    $argsk[$noa] = $a;
+                                }
+                            }
+
+                            $argsk[0] = $noa;
+                            $args[0] = $nfun;
+                            $args[$nfun] = [ @argsk ];
+                            $tab{$key}{args} = [ @args ];
+
+                            $w = $words[1];
+                            $w =~ s/\.|  |\n//g;
+                            $ldes[0] = $nfun;
+                            $ldes[$nfun] = $w;
+                            $tab{$key}{ldes} = [ @ldes ];
+
+                            $argres =~ s/\].*/\]/;
+                            @implk = ();
+                            $implk[0] = 0;
+                            $j = 0;
+                            @words = split /,/, $argres;          
+                            foreach $w ( @words ) {
+                                ++$implk[0];
+                                ++$j;
+                                $implkj = "";
+                                @wds = split / and /, $w;
+                                foreach $v ( @wds ) {
+                                    $v =~ s/\)|\[|\]|;| |\n//g;
+                                    if ( $implkj =~ /\w/ ) { 
+                                        $implkj .= ", ".$v;
+                                    } else { 
+                                        $implkj .= $v; 
+                                    }
+                                }
+
+                                $implk[$j] = $implkj;
+                            }      
+
+                            $impl[$nfun] = [ @implk ];
+                            $impl[0] = $nfun;
+                            $tab{$key}{impl} = [ @impl ];
+                        }
+                    } else {
+                        $meth[0] = $insm;
+                        $foundres = 0;
+                        while ( $foundres == 0 ) {
+                            while ( !( $line =~ /\[/ ) ) {
+                                $line = <GIF>; 
+                            }
+                            $met = "  ".$line;
+                            while ( !( $line =~ /\]/ ) ) {
+                                $line = <GIF>;
+                                $met .= $line;
+                            }
+                            $met =~ s/\\\[//g;
+                            if ( $met =~ /\[/ ) {
+                                @words = split /\[|\]/, $met;
+                                $met = $words[1];
+                                $met =~ s/, |\n//g;
+                                $meth[$insm] = $met;
+                                $foundres = 1;
+                            } else { 
+                                $line = <GIF>;
+                            }
+                        }          
+                    }
+                }
+
+                if ( $line =~ /^(#\+)/ ) {
+                    $line =~ s/^(#\+)/ /;
+                    @words = split ' ', $line;
+                    foreach $w ( @words ) { 
+                        if ( !($w=~/\n/) ) {$gide .= ($w." ");} 
+                    } 
+                    $gide .= "\n";
+                }
+            }
+            if ( $tab{$key} ) {
+                $tab{$key}{gide} = $gide; 
+                $tab{$key}{meth} = [ @meth ];
+            }      
+        }   
+
+        if ( open( GFI, "$file.g" ) ) { 
+            $key = ""; $gdes="";
+            while ( $line = <GFI> ) {
+                if ( $tab{$key} ) { $tab{$key}{gdes} = $gdes; }
+
+                if ( $line =~ /#[CAPOFVR]/ ) {
+                    @words = split /\(/, $line;
+                    $key = $words[0];
+                    $key =~ s/#[CAPOFVR]| //g;
+                    $gdes = "";
+                }  
+   
+                if ( $line =~ /^(#\+)/ ) {
+                    $line =~ s/^(#\+)/ /;
+                    @words = split ' ', $line;
+                    foreach $w ( @words ) { 
+                        if ( !($w=~/\n/) ) {$gdes .= ($w." ");} 
+                    } 
+                    $gdes .= "\n";
+                }
+            }
+            if ( $tab{$key} ) { $tab{$key}{gdes} = $gdes; }      
+        }   
+    close GDF;
+    }               
+    %tab;
+}
+
+           
+sub make_tex {
+
+    print "Reading files...\n";
+    %tab = {};
+    %tab = read_table();
+
+    foreach $msfile (@msfiles) {
+        open( MSK, "<$msfile.msk" ) 
+            || die "Cannot open manual skeleton file $msfile.msk";
+
+        # if the `tex' file does already exist, make it writable
+        chmod 0644, "$DIR/$msfile.tex";
+
+        open( TEX, ">$DIR/$msfile.tex" )
+            || die "Cannot open TeX output file $DIR/$msfile.tex.";
+
+        print "Composing the TeX file $msfile.tex\n";
+        print TEX "% This file was created automatically from $msfile.msk.\n",
+                  "% DO NOT EDIT!\n";
+
+      SCANMSK: while ( $line = <MSK> ) {
+            # treat the {{...}} replacements
+            while ( $line =~ /{{([^}]*)}}/ ) {
+                $key = $1;
+                if ( $key =~ /date/ ) {
+                    $replace=`date +"%d %B %Y"`;
+                } elsif ( $key =~ /year/ ) {
+                    $replace=`date +"%Y"`;
+                } elsif ( $defaults{$key} ) {
+                    $replace=$defaults{$key};
+                } else {
+                    die "$key has no replacement value"; 
+                }
+                $line =~ s/{{$key}}/$replace/;
+            }
+
+            # Now deal with the `Declaration' mechanism.
+
+# The following is the most we ever need to match:
+# \Declaration{<func-name>}[<gdfile>]{<label>}!{<sub-entry>}@{<index-entry>}
+# Each of [<gdfile>], {<label>}, !{<sub-entry>} and @{<index-entry>} is
+# optional.
+#
+# [<gdfile>] tells the buildman.pe in which .gd file it should look for 
+# <func-name> (useful if it exists in more than one .gd file) ... it is 
+# also used as a sub-entry if !{<sub-entry>} is not present.
+            if ( $line =~ /\\Declaration/ ) {
+                ($' =~ /\{([^}]*)\}         # $1 = <func-name>
+                        (\[([^\]]*)\])?     # $3 = <gdfile> (without [])
+                        (\{[^}]*\})?        # $4 = {<label>}
+                        (!\{[^}]*\})?       # $5 = !{<sub-entry>}
+                        (@\{[^}]*\})?       # $6 = @{index-entry>}
+                        \s*$/x ) 
+                   || die "syntax problem with line:\n$line".
+                          "... line $. of $msfile.msk\n"; 
+                $key        = $1;                     # <func-name>
+                $gdfile     = (defined $3) ? $3 : ""; # <gdfile>
+                $label      = (defined $4) ? $4 : ""; # {<label>}
+                $subentry   = (defined $5) ? $5 : ""; # !{<sub-entry>}
+                $indexentry = (defined $6) ? $6 : ""; # @{index-entry>}
+                #print STDERR "line: $line", "key: $key\ngdfile: $gdfile\n",
+                #             "label: $label\n", "subentry: $subentry\n",
+                #             "indexentry: $indexentry\n";
+
+                $nokeys = 0;
+                %info = ();
+
+              CHKINFO: 
+                foreach $k ( keys %tab ) { #each $k is of form: <key>@<gdfile>
+                    #print STDERR "k: $k, key: $key\n";
+                    if ( $k =~ /^$key\@/ ) {
+        
+                        #print STDERR "match ... k: $k, key: $key\n";
+                        if ( $gdfile ne "" ) {
+                            #print STDERR "k: $k, gdfile: $gdfile\n";
+                            if ( $k =~ /\@$gdfile$/ ) {
+                                #print STDERR "match ... k:$k, gdfile:$gdfile\n";
+                                %info = %{ $tab{$k} };
+                                $tab{$k}{used} = 1;
+                                $nokeys++;
+                            }
+                        } else { 
+                            # so there was no gd file specified in the decl.
+                            if ( $nokeys > 0 ) { 
+                                print STDERR "!!$key on line $. of $msfile.msk ",
+                                             "OCCURS IN MORE THAN ONE .gd FILE",
+                                             "\n... taking first one found.\n";
+                                last CHKINFO;
+                            } else {
+                                %info = %{ $tab{$k} };
+                                $tab{$k}{used}= 1;
+                                $nokeys++;
+                            }
+                        }
+                    }
+                }
+ 
+                if ( %info == () ) {
+                    print STDERR 
+                          "!! key: $key NOT FOUND IN THE .gd FILES LISTED!!\n",
+                          "line: $line", "... line $. of $msfile.msk ignored.\n";
+                    next SCANMSK;
+                }
+
+                # $tab{$key}{used} = 1;
+
+                @code = @{ $info{code} };     
+                @fdec = @{ $info{fdec} };
+                @ldes = @{ $info{ldes} };
+
+                for ($k=1; $k <= $fdec[0]; ++$k ) {
+                    $fd = $fdec[$k];
+      
+                    # Add M to <code> if an attribute that's mutable
+                    $mut = "";
+                    if ( $code[$k] =~ /A/ ) {
+                        @impl = @{ $info{impl} };
+                        @implk = @{ $impl[$k] };
+                        if ( $implk[$implk[0]] =~ /muta/ ) { $mut = "M"; }
+                    }
+                        
+                    # Add S to <code> if an attribute or property that's a setter
+                    # Add T to <code> if an attribute or property that's a tester
+                    # ... don't think any of this happens anymore.
+                    $st = ""; $ts = ""; 
+                    if ( $code[$k] =~ /[AP]/ ) {
+                        ($name = $fd) =~ s/(\w+)\s*\(.*/$1/;
+                        #print STDERR "fd: $fd, name: $name\n";
+                        foreach $s ( @{ $info{sett} } ) {
+                            if ( $s =~ /$fd/ ) { 
+                                $st = "S"; 
+                                last;
+                            }
+                        }
+
+                        foreach $t ( @{ $info{test} } ) {
+                            if ( $t =~ /$name/ ) { 
+                                $ts = "T"; 
+                                last;
+                            }
+                        }
+                    }
+
+                    # A space before the bracket is *bad* for the index
+                    $fd =~ s/\s*\(\s*/\( /;
+                    $fd =~ s/\s*\)/ \)/;
+                    $fd =~ s/,\s*/, /g;
+
+                    #print STDERR "fd: $fd\n";
+                    if ( $label eq "" && $indexentry ne "") {
+                        print STDERR "\Declaration has no {<label>} but has ",
+                                     "\@{<index-entry} on\n", "line: $line",
+                                     "... line $. of $msfile.msk.\n";
+                        # make a guess at what $label ought to be             
+                        ($label = $indexentry) =~ s/[@`'<>]//g;
+                    } elsif ( "$subentry" eq "!{}" ) {
+                        # special case to avoid [<gdfile>] sub-entries
+                        $subentry = "";
+                    } elsif ( "$label$subentry" eq "" && $fd =~ /[(]/ &&
+                              $gdfile ne "" ) {
+                        $fd =~ /(\w*)/;
+                        $label = "{$1![$gdfile]}"; # gapmacro.tex treats the
+                                                   # !... part as <sub-entry>
+                        $indexentry = "@\{`$1'!`[$gdfile]'}";
+                    }
+
+                    if ( $label ne "") {
+                        print TEX "\\>`$fd'$label$subentry$indexentry";
+                    } elsif ( $fd =~ /[(]/ ) {
+                        print TEX "\\>$fd$subentry$indexentry";
+                    } elsif ( $code[$k] =~ /V/ ) {
+                        #GG : gapmacro.tex now copes with this specially
+                        print TEX "\\>`$fd'";
+                    } else {
+                        print STDERR "!!Argumentless $code[$k] ",
+                                     "declaration: $fd\n";
+                                     "corresponding to line: $line",
+                                     "... line $. of $msfile.msk.\n";
+                        print TEX "\\>`$fd'{$fd}$subentry@\{`$fd'}",
+                    }
+                    #was: print TEX " $code[$k]$st$ts$mut $ldes[$k]\n";
+                    print TEX " $code[$k]$st$ts$mut\n";
+                }
+
+                print TEX "\n$info{expl}\n";
+
+                if ( $info{gide} ) { print TEX "$info{gide}\n"; }
+
+                if ( $info{gdes} ) { print TEX "$info{gdes}\n"; }
+ 
+            } elsif ( $line =~ /\\beginexample/ ) {
+                print TEX "\\beginexample\n";
+                while ( !( ($line = <MSK>) =~ /\\endexample/ ) ) {
+                    print TEX $line;
+                }
+
+                print TEX "\\endexample\n";
+            } elsif ( $line =~ /\\(Requirements|Implications)/ ) {
+                @impl = @{ $info{impl} };
+                @args = @{ $info{args} };
+
+                print TEX "\\beginitems\n";
+                $lev = 1;
+                if ( $line =~ /\\Requirements/ ) { 
+                    print TEX "Requirements: "; 
+                } else { 
+                    if ( $line =~ /\[.*\]/ ) {
+                        @words = split /\[/, $line;
+                        $w = $words[1];
+                        @chars = split //, $w;
+                        $lev = "";
+                        for ($k=0; !( ($c=$chars[$k])=~/\]/ ); ++$k) { 
+                            $lev .= $c; 
+                        }
+                    }
+                    if ( $lev == 1 )    { print TEX "Implies: "; } 
+                    elsif ( $lev == 2 ) { print TEX "Implied by: "; }
+                }
+
+                if ( $lev == 1 ) {
+                    for ($k=1; $k <= $args[0]; ++$k ) {
+# If two consecutive function declarations are the same, then we don't want
+# two of the same requirement lines.
+
+                        @words = split /\(/, $fdec[$k];
+                        $w = $words[0];
+                        if ( !( $k>1 && $fdec[$k-1] =~ /^$w\(/ ) ) {
+                            print TEX " & ";      
+                            for ($j=1; $j <= $args[$k][0]; ++$j ) {
+                                if ( $j <= $impl[$k][0] ) {
+                                    $arg = $args[$k][$j];
+                                    $con = $impl[$k][$j];
+                                    @cons = split /, /, $con;
+                                    $fl = 1;
+                                    foreach $c ( @cons ) {
+                                        $c .= "\( $arg \)";
+                                        if ($fl==1) { $fl = 0; }
+                                        else        { $c = " and ".$c; }
+                                        print TEX $c;
+                                    }
+                                }
+                                print TEX " ";
+                            }
+                            print TEX "\n";
+                        }
+                    }
+                    print TEX "\\enditems\n"; 
+                }
+          
+                if ( $lev == 2 ) {
+                    @keys = keys %tab;
+                    for ($k=1; $k <= $fdec[0]; ++$k) {
+                        print TEX " & "; 
+                        @words = split /\(/, $fdec[$k];
+                        $w = $words[0];
+                        $w =~ s/ //g; 
+                        foreach $clef ( @keys ) { 
+                            if ( !( $clef =~/^_h/ ) ) {
+                                %tb = %{ $tab{$clef} };
+                                if ( $tb{code}[1] =~ /C/ ) {
+                                    @imp = @{ $tb{impl} };
+                                    for ($j=1; $j<=$tb{code}[0]; ++$j ) {
+                                        $im = $imp[$j][1];
+                                        if ( $im =~ /$w/ ) { 
+                                            $fd = $tb{fdec}[$j];
+                                            @fds = split /\(/, $fd;
+                                            $fd = $fds[0];
+                                            print TEX "$fd~";
+                                        } 
+                                    }
+                                }
+                            }
+                        }
+                        print TEX "\n";
+                    }
+                    print TEX "\\enditems\n";
+                }
+            } elsif ( $line =~ /\\FileHeader/ ) {
+                if ( $line =~ /\[.+\]/ ) {
+                    @words = split /\[|\]/, $line;
+                    $hnum = $words[1];
+                    $hnum =~ s/ //g;
+                } else {
+                    $hnum = "1";
+                }
+
+                @words = split /{|}/, $line;
+                $file = $words[1];
+                $file =~ s/ //g;
+                $clef = "_h".$file;
+                if (!$tab{$clef}) {
+                    print "THERE DOES NOT SEEM TO BE A HEADER IN $file.gd\n";
+                }
+                print TEX $tab{$clef}{$hnum}."\n";
+
+            } elsif ( $line =~ /\\Methods/ ) {
+                if ( @meth = @{ $info{meth} } ) { 
+                    print TEX "\\beginitems\n";
+                    print TEX "Methods\: ";
+                    for ($k=1; $k<=$meth[0]; ++$k) {  
+                        print TEX " & "; 
+                        print TEX "$meth[$k]\n";
+                    }
+                    print TEX "\\enditems\n";
+                } else { 
+                    print "No methods found for $key\n";
+                }
+            } else { 
+                print TEX $line; 
+            }    
+        }
+
+        # change the permission  to forbid writing
+        chmod 0444, "$DIR/$msfile.tex";
+        close MSK;
+    } 
+
+    if ( $check!=0 ) {
+        open( ERR, ">notfound" ) || die "Cannot open `notfound'\n";
+    
+        @kk = sort(keys %tab);
+        foreach $key (@kk) {
+            if ( ! $tab{$key}{used} ) {
+                print ERR "$tab{$key}{file}: \t$key\n";
+            }
+        }
+        print "\n\nThe file `notfound' contains ",
+              "a list of unused declarations\n";
+    }
+}
+
+make_tex();
+ 

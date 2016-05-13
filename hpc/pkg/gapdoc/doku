@@ -1,0 +1,6 @@
+rm -f doku.tar doku.tar.gz
+tar cvf doku.tar `ls {3k+1,doc,example}/manual.{dvi,ps,pdf,six} {3k+1,doc,example}/ch*.txt {3k+1,doc,example}/*.tex {3k+1,doc,example}/*.pnr {3k+1,doc,example}/ch*.html`
+
+gzip -9 doku.tar
+ls -l doku.tar.gz
+

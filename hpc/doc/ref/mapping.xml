@@ -1,0 +1,258 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  mapping.msk                  GAP documentation              Thomas Breuer -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: mapping.msk,v 1.20 2002/04/15 10:02:30 sal Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Mappings">
+<Heading>Mappings</Heading>
+
+<Index Subkey="as in mathematics">functions</Index>
+<Index>relations</Index>
+A <E>mapping</E> in &GAP; is what is called a <Q>function</Q> in mathematics.
+&GAP; also implements <E>generalized mappings</E> in which one element might
+have several images, these can be imagined as subsets of the cartesian
+product and are often called <Q>relations</Q>.
+<P/>
+Most operations are declared for general mappings and therefore this manual
+often  refers to <Q>(general) mappings</Q>, unless you deliberately need the
+generalization you can ignore the <Q>general</Q> bit and just read
+it as <Q>mappings</Q>.
+<P/>
+<#Include Label="[1]{mapping}">
+<P/>
+For mappings which preserve an algebraic structure a <E>kernel</E> is
+defined.
+Depending on the structure preserved the operation to compute this kernel is
+called differently,
+see Section&nbsp;<Ref Sect="Mappings which are Compatible with Algebraic Structures"/>.
+<P/>
+Some technical details of general mappings are described in
+section&nbsp;<Ref Sect="General Mappings"/>.
+
+<!-- %%  The general support for mappings is due to Thomas Breuer. -->
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:IsDirectProductElement">
+<Heading>IsDirectProductElement (Filter)</Heading>
+
+<#Include Label="IsDirectProductElement">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Creating Mappings">
+<Heading>Creating Mappings</Heading>
+
+<#Include Label="GeneralMappingByElements">
+<#Include Label="MappingByFunction">
+<#Include Label="InverseGeneralMapping">
+<#Include Label="CompositionMapping">
+<#Include Label="CompositionMapping2">
+<#Include Label="IsCompositionMappingRep">
+<#Include Label="ConstituentsCompositionMapping">
+<#Include Label="ZeroMapping">
+<#Include Label="IdentityMapping">
+<#Include Label="Embedding">
+<#Include Label="Projection">
+<#Include Label="RestrictedMapping">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Properties and Attributes of (General) Mappings">
+<Heading>Properties and Attributes of (General) Mappings</Heading>
+
+<#Include Label="IsTotal">
+<#Include Label="IsSingleValued">
+<#Include Label="IsMapping">
+<#Include Label="IsInjective">
+<#Include Label="IsSurjective">
+<#Include Label="IsBijective">
+<#Include Label="Range">
+<#Include Label="Source">
+<#Include Label="UnderlyingRelation">
+<#Include Label="UnderlyingGeneralMapping">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Images under Mappings">
+<Heading>Images under Mappings</Heading>
+
+<#Include Label="ImagesSource">
+<#Include Label="ImagesRepresentative">
+<#Include Label="ImagesElm">
+<#Include Label="ImagesSet">
+<#Include Label="ImageElm">
+<#Include Label="Image">
+<#Include Label="Images">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Preimages under Mappings">
+<Heading>Preimages under Mappings</Heading>
+
+<#Include Label="PreImagesRange">
+<#Include Label="PreImagesElm">
+<#Include Label="PreImageElm">
+<#Include Label="PreImagesRepresentative">
+<#Include Label="PreImagesSet">
+<#Include Label="PreImage">
+<#Include Label="PreImages">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Arithmetic Operations for General Mappings">
+<Heading>Arithmetic Operations for General Mappings</Heading>
+
+<#Include Label="[3]{mapping}">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Mappings which are Compatible with Algebraic Structures">
+<Heading>Mappings which are Compatible with Algebraic Structures</Heading>
+
+From an algebraical point of view, the most important mappings are those
+which are compatible with a structure. For Magmas, Groups and Rings, &GAP;
+supports the following four types of such mappings:
+<P/>
+<Enum>
+<Item>
+  General mappings that respect multiplication
+</Item>
+<Item>
+  General mappings that respect addition
+</Item>
+<Item>
+  General mappings that respect scalar mult.
+</Item>
+<Item>
+  General mappings that respect multiplicative and additive structure
+</Item>
+</Enum>
+<P/>
+(Very technical note:
+&GAP; defines categories <C>IsSPGeneralMapping</C> and
+<C>IsNonSPGeneralMapping</C>.
+The distinction between these is orthogonal to the structure compatibility
+described here and should not be confused.)
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Magma Homomorphisms">
+<Heading>Magma Homomorphisms</Heading>
+
+<#Include Label="IsMagmaHomomorphism">
+<#Include Label="MagmaHomomorphismByFunctionNC">
+<#Include Label="NaturalHomomorphismByGenerators">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Mappings that Respect Multiplication">
+<Heading>Mappings that Respect Multiplication</Heading>
+
+<#Include Label="RespectsMultiplication">
+<#Include Label="RespectsOne">
+<#Include Label="RespectsInverses">
+<#Include Label="IsGroupGeneralMapping">
+<#Include Label="KernelOfMultiplicativeGeneralMapping">
+<#Include Label="CoKernelOfMultiplicativeGeneralMapping">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Mappings that Respect Addition">
+<Heading>Mappings that Respect Addition</Heading>
+
+<#Include Label="RespectsAddition">
+<#Include Label="RespectsAdditiveInverses">
+<#Include Label="RespectsZero">
+<#Include Label="IsAdditiveGroupGeneralMapping">
+<#Include Label="KernelOfAdditiveGeneralMapping">
+<#Include Label="CoKernelOfAdditiveGeneralMapping">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Linear Mappings">
+<Heading>Linear Mappings</Heading>
+
+Also see Sections&nbsp;<Ref Sect="Mappings that Respect Multiplication"/>,
+<Ref Sect="Mappings that Respect Addition"/>,
+and <Ref Func="KernelOfMultiplicativeGeneralMapping"/>,
+<Ref Func="CoKernelOfMultiplicativeGeneralMapping"/>.
+
+<#Include Label="RespectsScalarMultiplication">
+<#Include Label="IsLeftModuleGeneralMapping">
+<#Include Label="IsLinearMapping">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Ring Homomorphisms">
+<Heading>Ring Homomorphisms</Heading>
+
+<#Include Label="IsRingGeneralMapping">
+<#Include Label="IsRingWithOneGeneralMapping">
+<#Include Label="IsAlgebraGeneralMapping">
+<#Include Label="IsAlgebraWithOneGeneralMapping">
+<#Include Label="IsFieldHomomorphism">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="General Mappings">
+<Heading>General Mappings</Heading>
+
+<#Include Label="IsGeneralMapping">
+<#Include Label="IsConstantTimeAccessGeneralMapping">
+<#Include Label="IsEndoGeneralMapping">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Technical Matters Concerning General Mappings">
+<Heading>Technical Matters Concerning General Mappings</Heading>
+
+<#Include Label="[2]{mapping}">
+<P/>
+<#Include Label="[4]{mapping}">
+<#Include Label="IsSPGeneralMapping">
+<#Include Label="IsGeneralMappingFamily">
+<#Include Label="FamilyRange">
+<#Include Label="FamilySource">
+<#Include Label="FamiliesOfGeneralMappingsAndRanges">
+<#Include Label="GeneralMappingsFamily">
+<#Include Label="TypeOfDefaultGeneralMapping">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

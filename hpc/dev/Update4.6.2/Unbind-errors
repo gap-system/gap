@@ -1,0 +1,30 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!! Date
+2012/12/17
+!! Changed by
+SL
+! Reported by
+FL
+!! Type of Change
+Fix: inappropriate error message
+
+!! Description
+
+Syntax errors such as Unbind(x,1) had the unhelpful
+property that x got unbound before the syntax error
+was reported. Add a specific check to catch this and
+similar cases a little earlier
+
+! Test Code
+gap> l := [1,2,3];;
+gap> Unbind(l,1);
+Syntax error: 'Unbind': argument should be followed by ')' in stream line 1
+Unbind(l,1);
+        ^
+gap> l;
+[ 1, 2, 3 ]
+! Prefetch
+
+!! Changeset
+
+!! End

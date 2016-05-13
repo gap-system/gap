@@ -1,0 +1,38 @@
+#!/bin/bash
+# this script collects the i686 and x86_64 installations into one
+# directory for the rsync server
+
+#export Orig_i686=/users/luebeck/build45/gap4r5
+export Orig_i686=137.226.152.51:/users/luebeck/build45/gap4r5
+#export Orig_x86_64=beteigeuze:/cache/rsync/gap4r5
+export Orig_x86_64=137.226.152.52:/users/luebeck/build45/gap4r5
+
+export DEST=/users/luebeck/rsyncdata/gap/linux/
+
+
+echo collecting in $DEST . . .
+mkdir -p $DEST
+cd $DEST
+
+# first update to currently distributed version, then collect into this copy
+mkdir -p gap4r5XXX
+cd gap4r5XXX
+rsync -av --delete ../gap4r5/ ./
+
+# in this order we get Makefile's and so on from i686 architecture
+# (first with --delete like starting from scratch, but second without!)
+# options like -a, but without -t and using checksums to decide update
+echo syncing x86_64 version from $Orig_x86_64
+rsync -c -rlpgoD -v --delete $Orig_x86_64/  ./
+echo syncing i686 version from $Orig_i686
+rsync -c -rlpgoD -v $Orig_i686/  ./
+
+# marker that gap4r5XXX is the new version
+cd ..
+rm -f XXXisnew XXXisold
+touch XXXisnew
+
+echo "New collection is in gap4r5XXX; test it and if ok:"
+echo "     cd "`pwd`
+echo "     ./swapwithXXX"
+

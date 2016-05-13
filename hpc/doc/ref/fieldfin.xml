@@ -1,0 +1,195 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  fieldfin.msk                  GAP documentation             Thomas Breuer -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: fieldfin.msk,v 1.27 2006/03/07 22:57:27 sal Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Finite Fields">
+<Heading>Finite Fields</Heading>
+
+This chapter describes the special functionality which exists in &GAP; for
+finite fields and their elements.
+Of course the general functionality for fields
+(see Chapter&nbsp;<Ref Chap="Fields and Division Rings"/>) also applies
+to finite fields.
+<P/>
+In the following, the term <E>finite field element</E> is used to denote
+&GAP; objects in the category <Ref Func="IsFFE"/>,
+and <E>finite field</E> means a field consisting of such elements.
+Note that in principle we must distinguish these fields from (abstract)
+finite fields.
+For example, the image of the embedding of a finite field into a field of
+rational functions in the same characteristic is of course a finite field
+but its elements are not in <Ref Func="IsFFE"/>,
+and in fact &GAP; does currently not support such fields.
+<P/>
+Special representations exist for row vectors and matrices over small
+finite fields
+(see sections&nbsp;<Ref Sect="Row Vectors over Finite Fields"/>
+and&nbsp;<Ref Sect="Matrices over Finite Fields"/>).
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Finite Field Elements">
+<Heading>Finite Field Elements</Heading>
+
+<#Include Label="IsFFE">
+<#Include Label="Z">
+<#Include Label="IsLexOrderedFFE">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations for Finite Field Elements">
+<Heading>Operations for Finite Field Elements</Heading>
+
+<#Include Label="[2]{ffe}">
+<#Include Label="DegreeFFE">
+<#Include Label="LogFFE">
+<#Include Label="IntFFE">
+<#Include Label="IntFFESymm">
+<#Include Label="IntVecFFE">
+<#Include Label="AsInternalFFE">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Creating Finite Fields">
+<Heading>Creating Finite Fields</Heading>
+
+<#Include Label="DefaultField:ffe">
+<#Include Label="GaloisField">
+<#Include Label="PrimitiveRoot">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Frobenius Automorphisms">
+<Heading>Frobenius Automorphisms</Heading>
+
+<#Include Label="FrobeniusAutomorphism">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Conway Polynomials">
+<Heading>Conway Polynomials</Heading>
+
+<#Include Label="ConwayPolynomial">
+<#Include Label="IsCheapConwayPolynomial">
+<#Include Label="RandomPrimitivePolynomial">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Printing, Viewing and Displaying Finite Field Elements">
+<Heading>Printing, Viewing and Displaying Finite Field Elements</Heading>
+
+<ManSection>
+<Meth Name="ViewObj" Arg="z" Label="for a ffe"/>
+<Meth Name="PrintObj" Arg="z" Label="for a ffe"/>
+<Meth Name="Display" Arg="z" Label="for a ffe"/>
+
+<Description>
+Internal finite field elements are viewed, printed and displayed (see
+section <Ref Sect="View and Print"/> for the distinctions between these
+operations) as powers of the primitive root (except for the zero
+element, which is displayed as 0 times the primitive root). Thus:
+<P/>
+<Example><![CDATA[
+gap> Z(2);
+Z(2)^0
+gap> Z(5)+Z(5);
+Z(5)^2
+gap> Z(256);
+Z(2^8)
+gap> Zero(Z(125));
+0*Z(5)
+]]></Example>
+<P/>
+Note also that each element is displayed as an element of the field it
+generates, and that the size of the field is printed as a power
+of the characteristic.
+<P/>
+Elements of larger fields are printed as &GAP; expressions which
+represent them as sums of low powers of the primitive root:
+<P/>
+<Example><![CDATA[
+gap> Print( Z(3,20)^100, "\n" );
+2*Z(3,20)^2+Z(3,20)^4+Z(3,20)^6+Z(3,20)^7+2*Z(3,20)^9+2*Z(3,20)^10+2*Z\
+(3,20)^12+2*Z(3,20)^15+2*Z(3,20)^17+Z(3,20)^18+Z(3,20)^19
+gap> Print( Z(3,20)^((3^20-1)/(3^10-1)), "\n" );
+Z(3,20)^3+2*Z(3,20)^4+2*Z(3,20)^7+Z(3,20)^8+2*Z(3,20)^10+Z(3,20)^11+2*\
+Z(3,20)^12+Z(3,20)^13+Z(3,20)^14+Z(3,20)^15+Z(3,20)^17+Z(3,20)^18+2*Z(\
+3,20)^19
+gap> Z(3,20)^((3^20-1)/(3^10-1)) = Z(3,10);
+true
+]]></Example>
+<P/>
+Note from the second example above, that these elements are not always
+written over the smallest possible field before being output.
+<P/>
+The <Ref Func="ViewObj" Label="for a ffe"/> and
+<Ref Func="Display" Label="for a ffe"/> methods
+for these large finite field elements use a slightly more compact,
+but mathematically equivalent representation.
+The primitive root is represented by <C>z</C>; its <M>i</M>-th power by
+<C>z</C><M>i</M> and <M>k</M> times this power by <M>k</M><C>z</C><M>i</M>. 
+<P/>
+<Example><![CDATA[
+gap> Z(5,20)^100;
+z2+z4+4z5+2z6+z8+3z9+4z10+3z12+z13+2z14+4z16+3z17+2z18+2z19
+]]></Example>
+<P/>
+This output format is always used for <Ref Func="Display" Label="for a ffe"/>.
+For <Ref Func="ViewObj" Label="for a ffe"/> it is used only if its length
+would not exceed the number of lines specified in the user preference 
+<C>ViewLength</C> (see <Ref Func="SetUserPreference"/>. Longer output is 
+replaced by <C>&lt;&lt;an element of GF(<A>p</A>, <A>d</A>)>></C>.
+<P/>
+<Example><![CDATA[
+gap> Z(2,409)^100000;
+<<an element of GF(2, 409)>>
+gap> Display(Z(2,409)^100000);
+z2+z3+z4+z5+z6+z7+z8+z10+z11+z13+z17+z19+z20+z29+z32+z34+z35+z37+z40+z\
+45+z46+z48+z50+z52+z54+z55+z58+z59+z60+z66+z67+z68+z70+z74+z79+z80+z81\
++z82+z83+z86+z91+z93+z94+z95+z96+z98+z99+z100+z101+z102+z104+z106+z109\
++z110+z112+z114+z115+z118+z119+z123+z126+z127+z135+z138+z140+z142+z143\
++z146+z147+z154+z159+z161+z162+z168+z170+z171+z173+z174+z181+z182+z183\
++z186+z188+z189+z192+z193+z194+z195+z196+z199+z202+z204+z205+z207+z208\
++z209+z211+z212+z213+z214+z215+z216+z218+z219+z220+z222+z223+z229+z232\
++z235+z236+z237+z238+z240+z243+z244+z248+z250+z251+z256+z258+z262+z263\
++z268+z270+z271+z272+z274+z276+z282+z286+z288+z289+z294+z295+z299+z300\
++z301+z302+z303+z304+z305+z306+z307+z308+z309+z310+z312+z314+z315+z316\
++z320+z321+z322+z324+z325+z326+z327+z330+z332+z335+z337+z338+z341+z344\
++z348+z350+z352+z353+z356+z357+z358+z360+z362+z364+z366+z368+z372+z373\
++z374+z375+z378+z379+z380+z381+z383+z384+z386+z387+z390+z395+z401+z402\
++z406+z408
+]]></Example>
+<P/>
+Finally note that elements of large prime fields are stored and
+displayed as residue class objects. So
+<P/>
+<Example><![CDATA[
+gap> Z(65537);
+ZmodpZObj( 3, 65537 )
+]]></Example>
+</Description>
+</ManSection>
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

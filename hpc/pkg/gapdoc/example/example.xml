@@ -1,0 +1,1090 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+ [ <!ENTITY see '<Alt Only="LaTeX">$\to$</Alt><Alt Not="LaTeX">&#8594;</Alt>'>
+ ]>
+
+<Book Name="GAPDoc Example">
+
+<TitlePage>
+  <Title>A Complete Example (&see; <Ref Sect="One"/>)</Title>
+  <Subtitle>Every element shows up</Subtitle>
+  <Version>Version <#Include SYSTEM "../version"></Version>
+  <TitleComment>
+  If the subtitle ist not sufficient, this &lt;TitleComment> 
+  element can be used for a slightly longer text on the front page.
+  </TitleComment>
+  <Author>Frank Lübeck 
+          <Email>Frank.Luebeck@Math.RWTH-Aachen.De</Email> 
+  </Author>
+  <Author> Max Neunhöffer 
+          <Email>neunhoef at mcs.st-and.ac.uk</Email>
+  </Author>
+  <Date>February 2012</Date>
+  <Address>
+  Lehrstuhl D für Mathematik<Br/> Templergraben 
+  64<Br/> 52062 Aachen<Br/> (Germany)
+  </Address>
+  <Abstract>This document tries to use all elements that exist in &GAPDoc;.
+            In addition, the final output not only contains the usual
+            content, but also an appendix with the source text. There
+            are also links from the usual content to the corresponding
+            source text. This should enable new users to learn &GAPDoc;
+            quickly.
+  </Abstract>
+  <Copyright>&copyright; 2000-2012 by Frank Lübeck and Max Neunhöffer
+  </Copyright>
+  <Acknowledgements>We thank Lehrstuhl D für Mathematik.
+  </Acknowledgements>
+  <Colophon>This is the Colophon page.
+  </Colophon>
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+  Text before chapter <Ref Chap="First"/>. (&see; <Ref Sect="Two"/>)
+
+<Chapter Label="First"><Heading>Sectioning Elements</Heading>
+
+  Text before the section <Ref Sect="FirstSect"/>. (&see; <Ref Sect="Two"/>)
+
+ <Label Name="ThreeBack"/>
+ <Section Label="FirstSect"><Heading>Normal subsections</Heading>
+  
+  [&see; <Ref Sect="Three"/>]
+
+  <Subsection Label="Asub"><Heading>A subsection</Heading>
+
+   This is text in the first subsection.
+
+  </Subsection>
+
+  <Subsection Label="Another"><Heading>Another subsection</Heading>
+  
+   This is text in the second subsection. This subsection 
+   has a label, such that one can reference it.
+
+  </Subsection>
+
+ </Section>
+
+ <Section><Heading>ManSections</Heading>
+ <Label Name="FourBack"/>
+ 
+  [&see; <Ref Sect="Four"/>]
+
+  <ManSection>
+   <Func Name="f" Arg="x[,y]" Comm="calculates something"/>
+   <Returns>an element in <Ref Filt="IsBlubb" /> or <K>fail</K>.</Returns>
+   <Description>
+    This function calculates something.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Meth Name="\^\{\}\[\]\&lt;\&amp;" Arg="c" 
+         Label="for nothing" Comm="tricky name"/>
+   <Description>
+    This method is for an operation with a tricky name.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Oper Name="MyOperation" Arg="x" Comm="calculates something"/>
+   <Description>
+    The operation <Ref Oper="MyOperation"/> operates on <Arg>x</Arg>.
+   </Description>
+  </ManSection>
+   
+  <ManSection>
+   <Meth Name="MyOperation" Label="First" Arg="x" 
+         Comm="generic method"/>
+   <Description>
+    This method calculates something by the generic method.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Meth Name="MyOperation" Label="for bla" Arg="x[, good_hint]"
+         Comm="for bla arguments"/>
+   <Description>
+    This is the super-fast method for the operation
+    <Ref Oper="MyOperation"/> if the argument <A>x</A> is in the
+    representation <Ref Filt="IsBla"/>. It will become even faster if
+    the optional argument <A>good_hint</A> is given.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Filt Name="IsBla" Arg="obj" Comm="representation bla"
+         Type="representation"/>
+   <Description>
+    For objects in this representation there is a super-fast method
+    (see <Ref Meth="MyOperation" Label="for bla"/>) for the operation
+    <Ref Oper="MyOperation"/>.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Prop Name="IsBlubb" Arg="obj" Comm="property, whether object is blubb"/>
+   <Description>
+    A property.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Attr Name="NumberBlobbs" Arg="obj" Comm="number of blobbs"/>
+   <Description>
+    An attribute. Number of blobbs.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Var Name="AllBlibbs" Comm="list of all blibbs in the system"/>
+   <Description>
+    This global variable holds a list of all blibbs.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Fam Name="BlibbsFamily" Comm="family of blibbs"/>
+   <Description>
+    Family of all blibbs.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <InfoClass Name="InfoBlibbs" Comm="InfoClass for the library of blibbs"/>
+   <Description>
+    This info class is used throughout the library of blibbs.
+   </Description>
+  </ManSection>
+    
+ </Section>
+
+</Chapter>
+
+
+<Chapter><Heading>Other Markup</Heading>
+<Label Name="FiveBack"/>
+
+<Section><Heading>Various types of text</Heading>
+
+[&see; <Ref Sect="Five"/>]<P/>
+
+In this section we present examples for all the various types of text
+that are possible in &GAPDoc;: 
+<List>
+ <Item>
+  <Emph>This</Emph> is <E>emphasized</E>.</Item>
+ <Item>
+  <E>Keywords</E> are typeset like <Keyword>this</Keyword> and <K>that</K>.
+  </Item>
+ <Item>
+  <E>Arguments</E> of functions have an element. They look like this: 
+    <Arg>x</Arg> and <A>y</A>.</Item>
+ <Item> 
+  <E>Code</E> can be written with the Code element: 
+    <Code>if x = y then Print("Equal"); fi;</Code> or
+    <C>while true do Print("Hello"); od;</C>.</Item> 
+ <Item>
+  <E>Filenames</E> have their own element:
+    <File>/usr/local/ca/gap4r2</File> or <F>pkg/xgap/doc</F>.</Item>
+ <Item>
+  <E>Buttons</E>, <E>menus</E>, <E>menu entries</E>, and such things
+    are also supported: <B>OK</B> or <Button>Cancel</Button>.</Item>
+ <Item>
+  <E>Packages</E> are typeset like this: 
+    <Package>Small Groups Library</Package>
+ </Item>
+ <Item>
+  <E>Quoted</E> text: <Q>This is a text in quotes.</Q>
+ </Item>
+</List>
+
+<E>Paragraphs</E> are separated by the empty <C>Par</C> or <C>P</C> element.
+<Par/><E>Alternatives</E> for different output formats:
+
+<Alt Only="LaTeX">This is &LaTeX; output.</Alt>
+<Alt Not="LaTeX">This is other than &LaTeX; output, namely:
+<Alt Only="HTML"><![CDATA[<b>HTML</b>]]></Alt>
+<Alt Only="Text">Text</Alt> output.</Alt>
+
+<P/>
+
+<Label Name="SixBack"/>
+There are also three elements to typeset <Q>verbatim-like</Q> text.
+(&see; <Ref Sect="Six"/>)<P/>
+The first is a <E>Listing</E>:
+
+<Listing Type="GAP code">
+<![CDATA[Sieve := function(n)
+  # Returns the primes less than n
+  local l,p,i;
+  l := [1..n]; Unbind(l[1]);
+  p := 2;
+  while p^2 <= n do
+      if IsBound(l[p]) then
+          i := 2 * p;
+          while i <= n do Unbind(l[i]); i := i + p; od;
+      fi;
+      p := p + 1;
+  od;
+  return Compacted(l);
+end;]]>
+</Listing>
+
+Here is a <E>Log</E> of a &GAP; session using this function:
+
+<Log>
+gap&gt; Sieve(100);
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
+  67, 71, 73, 79, 83, 89, 97 ]
+gap&gt; Length(last);
+25
+</Log>
+
+Here is a &GAP; <E>Example</E> session that is automatically tested:
+
+<Example>
+gap&gt; s := Size(CharacterTable("M"));
+808017424794512875886459904961710757005754368000000000
+gap&gt; s &lt; 10^53;                     
+false
+gap&gt; s &lt; 10^54;
+true
+</Example>
+
+</Section>
+
+<Section><Heading>Formulae</Heading>
+<Label Name="SevenBack"/>
+ 
+ [&see; <Ref Sect="Seven"/>]<P/>
+
+There are three types of formulae. <P/>
+The first is the <E>normal math mode</E> of &LaTeX;: 
+
+<Math>b_i \cdot b_j = \sum_{k=1}^d h_{ijk} b_k</Math>. 
+
+Then there are <E>displayed formulae</E>:
+<Display>
+   \Longrightarrow \quad \left(\sum_{i=1}^d x_i b_i \right) \cdot
+   \left(\sum_{j=1}^d y_j b_j \right) =
+   \sum_{k=1}^d \left( \sum_{i,j} x_i y_j h_{ijk} \right) b_k 
+</Display>
+
+If possible,  use the <C>Alt</C> element  to specify a better  readable text
+version of such a formula as in the following example:<P/>
+
+<Alt Not="Text,HTML"><Display>
+   \Longrightarrow \quad \left(\sum_{i=1}^d x_i b_i \right) \cdot
+   \left(\sum_{j=1}^d y_j b_j \right) =
+   \sum_{k=1}^d \left( \sum_{i,j} x_i y_j h_{ijk} \right) b_k 
+</Display></Alt>
+<Alt Only="Text,HTML"><Verb>
+         d                d                 d   
+       -----            -----             -----  -----                 
+        \                \                 \      \                    
+ ==> (   )  x_i b_i )(    )  y_j b_j ) =    )  (   )  x_i y_j h_ijk ) b_k
+        /                /                 /      /                    
+       -----            -----             -----  -----                
+       i = 1            j = 1             k = 1   i,j                
+</Verb><P/></Alt>
+
+For small formulae without <Q>difficult</Q> parts use the <C>M</C>
+element: <M>b_i</M>,
+<M>x^2</M>, <M>x^2 + 2x + 1 = (x + 1)^2</M>. Note that here whitespace 
+matters for text (or HTML) output.<P/>
+
+Here are two formulae containing less than characters which are special 
+characters for XML: 
+<M><![CDATA[a < b < c < d]]></M> and  <M>e &lt; f</M>.
+<P/>
+
+Using the <C>Mode</C> attribute of a <C>Display</C> element formulae 
+like
+<Display Mode="M">a \longrightarrow a \bmod m\prime</Display>
+can also be displayed nicely in text and HTML output.
+</Section>
+
+
+<Section Label="Cross"><Heading>Crossreferencing</Heading>
+<Label Name="EightBack"/>
+
+[&see; <Ref Sect="Eight"/>]<P/>
+
+<Label Name="there"/>
+
+In this section we demonstrate various references to parts of this
+document. Here is a reference to this section: <Ref Sect="Cross"/>.
+Here is a reference to chapter <Ref Chap="First"/>, to appendix
+<Ref Appendix="Appendix"/>, and to subsection <Ref Subsect="Asub"/>. 
+<P/>
+
+We distinguish among others references 
+ to functions (see <Ref Func="f"/>), 
+ to methods with tricky name (see 
+                 <Ref Meth="\^\{\}\[\]\&lt;\&amp;" Label="for nothing"/>),
+ to operations (see <Ref Oper="MyOperation"/>), 
+ to methods (see <Ref Meth="MyOperation" Label="First"/> or 
+                 <Ref Meth="MyOperation" Label="for bla"/>), 
+ to filters (see <Ref Filt="IsBla"/>), 
+ to properties (see <Ref Prop="IsBlubb"/>),
+ to attributes (see <Ref Attr="NumberBlobbs"/>), 
+ to variables (<Ref Var="AllBlibbs"/>), 
+ to families (see <Ref Fam="BlibbsFamily"/>),
+ and to info classes (see <Ref InfoClass="InfoBlibbs"/>).
+<P/>
+
+There are also references to labels: see <Ref Text="here" Label="there"/>,
+to other books: see <Ref Sect="What is a DTD" BookName="GAPDoc"/> or
+<Ref Oper="IsSubgroup" BookName="ref"/> in the &GAP; reference
+manual.
+<P/>
+
+References to sections come in two styles: 
+<Ref Chap="First" Style="Number"/>
+or <Ref Chap="First" Style="Text"/>.
+<P/>
+
+Another type of cross referencing is bibliography. Here is a 
+citation: <Cite Key="CR1" Where="(5.22)"/> is an interesting lemma.
+<P/>
+
+There are also URLs:<P/>
+
+<URL>http://www.math.rwth-aachen.de/</URL><P/>
+
+Email addresses have a special element:
+<Email>Frank.Luebeck@Math.RWTH-Aachen.De</Email>
+<P/>
+
+and Homepages another one:
+<Homepage>http://www-groups.mcs.st-and.ac.uk/~neunhoef/</Homepage>
+<P/>
+And here is a link to the <URL>
+<Link>http://www.math.rwth-aachen.de/~Frank.Luebeck/gap/EDIM/index.html#ARCHS</Link>
+<LinkText><Package>EDIM</Package> 
+archives</LinkText></URL>.
+<P/>
+
+One can generate index entries as follows (look up the words 
+<Q>&TeX;-UserGroup</Q>, <Q>RWTH</Q>, <Q>Aachen, Hauptbahnhof</Q>, and
+<Q>&GAP;, <Package>GAPDoc</Package></Q>).
+<Index Key="TeX-Usergroup">&TeX;-UserGroup</Index>
+<Index Key="Aachen" Subkey="Hauptbahnhof">Aachen</Index>
+<Index Key="GAP" Subkey="GAPDoc">&GAP;<Subkey>
+<Package>GAPDoc</Package></Subkey></Index>
+<Index>RWTH</Index>
+
+</Section>
+
+
+<Section><Heading>Lists and Tables</Heading>
+<Label Name="NineBack"/>
+
+[&see; <Ref Sect="Nine"/>]<P/>
+
+There are
+<List>
+ <Item>lists</Item>
+ <Item>enumerations, and</Item>
+ <Item>tables</Item>
+</List>
+or:
+<Enum>
+ <Item>lists</Item>
+ <Item>enumerations, and</Item>
+ <Item>tables</Item>
+</Enum>
+or with marks:
+<List>
+ <Mark>lists:</Mark><Item> not numbered</Item>
+ <Mark>enumerations:</Mark><Item> numbered</Item>
+ <Mark>tables:</Mark><Item> two-dimensional</Item>
+</List>
+
+Lists can also be nested:
+<Enum>
+ <Item>
+   <Enum>
+     <Item>first item of inner enumeration </Item>
+     <Item>second item of inner enumeration </Item>
+   </Enum>
+ </Item>
+ <Item>
+   <List>
+     <Item>first item of inner list </Item>
+     <Item>second item of inner list </Item>
+   </List>
+  </Item>
+</Enum>
+
+Here is a <E>table</E>:
+
+<Table Align="|r|c|l|">
+ <Caption>Prices</Caption>
+ <HorLine/>
+  <Row>
+   <Item>Object</Item><Item>Price</Item><Item>available</Item>
+  </Row>
+ <HorLine/>
+ <HorLine/>
+  <Row>
+   <Item>Shoe</Item><Item>$1,00</Item><Item>there</Item>
+  </Row>
+ <HorLine/>
+  <Row>
+   <Item>Hat</Item><Item>$2,00</Item><Item>not there</Item>
+  </Row>
+ <HorLine/>
+</Table>
+
+</Section>
+
+
+<Section><Heading>Entities and Special Characters</Heading>
+<Label Name="TenBack"/>
+
+[&see; <Ref Sect="Ten"/>]<P/>
+
+Here is a table of special characters, the first two are special for
+XML and must be typed in by entities in &GAPDoc; documents. The other 
+characters are special for &LaTeX; but in &GAPDoc; they can be typed
+directly. 
+
+<Table Align="|c|c|c|c|c|c|c|c|c|c|c|c|c|" Label="charsInCDATA"> 
+ <Caption>Special characters in character data</Caption>
+ <HorLine/> <Row> 
+  <Item><C>&amp;</C></Item>
+  <Item><C>&lt;</C></Item>
+  <Item><C>></C></Item>
+  <Item><C>#</C></Item>
+  <Item><C>$</C></Item>
+  <Item><C>%</C></Item>
+  <Item><C>~</C></Item>
+  <Item><C>\</C></Item>   
+  <Item><C>{</C></Item>
+  <Item><C>}</C></Item>
+  <Item><C>_</C></Item>
+  <Item><C>^</C></Item>
+  <Item><C>&nbsp;</C></Item>
+ </Row> <HorLine/>
+</Table>
+
+And here are the predefined entities in &GAPDoc;:
+
+<Table Align="|l|l|">
+<Caption>Predefined Entities in the &GAPDoc; system</Caption>
+<HorLine/>
+<Row> <Item><C>&amp;GAP;</C></Item>       <Item>&GAP;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;GAPDoc;</C></Item>    <Item>&GAPDoc;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;TeX;</C></Item>       <Item>&TeX;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;LaTeX;</C></Item>     <Item>&LaTeX;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;BibTeX;</C></Item>    <Item>&BibTeX;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;MeatAxe;</C></Item>   <Item>&MeatAxe;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;XGAP;</C></Item>      <Item>&XGAP;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;copyright;</C></Item> <Item>&copyright;</Item> </Row>
+<HorLine/>
+</Table>
+
+And some more for mathematical symbols: 
+&CC;, &ZZ;, &NN;, &PP;, &QQ;, &HH;, &RR;.
+
+</Section>
+
+</Chapter>
+
+</Body>
+
+<Appendix Label="Appendix">
+<Heading>An Appendix</Heading>
+<Label Name="ElevenBack"/>
+
+[&see; <Ref Sect="Eleven"/>]<P/>
+
+This is an appendix. 
+</Appendix>
+
+<Appendix Label="Source"><Heading>The Source</Heading>
+
+<Section Label="One"><Heading>TitlePage (Source)</Heading>
+
+<Listing>
+<![CDATA[<TitlePage>
+  <Title>A Complete Example (&see; <Ref Sect="One"/>)</Title>
+  <Subtitle>Every element shows up</Subtitle>
+  <Version>Version <#Include SYSTEM "../version"></Version>
+  <TitleComment>
+  If the subtitle ist not sufficient, this &lt;TitleComment> 
+  element can be used for a slightly longer text on the front page.
+  </TitleComment>
+  <Author>Frank Lübeck 
+          <Email>Frank.Luebeck@Math.RWTH-Aachen.De</Email> 
+  </Author>
+  <Author> Max Neunhöffer 
+          <Email>neunhoef at mcs.st-and.ac.uk</Email>
+  </Author>
+  <Date>September 2011</Date>
+  <Address>
+  Lehrstuhl D für Mathematik<Br/> Templergraben 
+  64<Br/> 52062 Aachen<Br/> (Germany)
+  </Address>
+  <Abstract>This document tries to use all elements that exist in &GAPDoc;.
+            In addition, the final output not only contains the usual
+            content, but also an appendix with the source text. There
+            are also links from the usual content to the corresponding
+            source text. This should enable new users to learn &GAPDoc;
+            quickly.
+  </Abstract>
+  <Copyright>&copyright; 2000-2011 by Frank Lübeck and Max Neunhöffer
+  </Copyright>
+  <Acknowledgements>We thank Lehrstuhl D für Mathematik.
+  </Acknowledgements>
+  <Colophon>This is the Colophon page.
+  </Colophon>
+</TitlePage>]]>
+</Listing>
+
+</Section>
+
+
+<Section Label="Two"><Heading>Before First Chapter (Source)</Heading>
+
+<Listing>
+<![CDATA[<TableOfContents/>
+
+<Body>
+
+  Text before chapter <Ref Chap="First"/>.
+
+<Chapter Label="First"><Heading>Sectioning Elements</Heading>
+
+  Text before the section <Ref Sect="FirstSect"/>.]]>
+</Listing>
+
+</Section>
+
+
+<Section Label="Three">
+<Heading>First Chapter (Source)</Heading>
+
+[<Ref  Label="ThreeBack"/>]
+
+<Listing>
+<![CDATA[<Section Label="FirstSect"><Heading>Normal subsections</Heading>
+
+  <Subsection Label="Asub"><Heading>A subsection</Heading>
+
+   This is text in the first subsection.
+
+  </Subsection>
+
+  <Subsection Label="Another"><Heading>Another subsection</Heading>
+   
+   This is text in the second subsection. This subsection 
+   has a label, such that one can reference it.
+
+  </Subsection>
+
+ </Section>]]>
+</Listing>
+
+</Section>
+
+
+<Section Label="Four"><Heading>ManSections (Source)</Heading>
+
+[<Ref Label="FourBack"/>]
+
+<Listing>
+<![CDATA[<Section><Heading>ManSections</Heading>
+
+  <ManSection>
+   <Func Name="f" Arg="x[,y]" Comm="calculates something"/>
+   <Returns>an element in <Ref Filt="IsBlubb" /> or <K>fail</K>.</Returns>
+   <Description>
+    This function calculates something.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Meth Name="\^\{\}\[\]\&lt;\&amp;" Arg="c" 
+         Label="for nothing" Comm="tricky name"/>
+   <Description>
+    This method is for an operation with a tricky name.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Oper Name="MyOperation" Arg="x" Comm="calculates something"/>
+   <Description>
+    The operation <Ref Oper="MyOperation"/> operates on <Arg>x</Arg>.
+   </Description>
+  </ManSection>
+   
+  <ManSection>
+   <Meth Name="MyOperation" Label="First" Arg="x" 
+         Comm="generic method"/>
+   <Description>
+    This method calculates something by the generic method.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Meth Name="MyOperation" Label="for bla" Arg="x[, good_hint]"
+         Comm="for bla arguments"/>
+   <Description>
+    This is the super-fast method for the operation
+    <Ref Oper="MyOperation"/> if the argument <A>x</A> is in the
+    representation <Ref Filt="IsBla"/>. It will become even faster if
+    the optional argument <A>good_hint</A> is given.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Filt Name="IsBla" Arg="obj" Comm="representation bla"
+         Type="representation"/>
+   <Description>
+    For objects in this representation there is a super-fast method
+    (see <Ref Meth="MyOperation" Label="for bla"/>) for the operation
+    <Ref Oper="MyOperation"/>.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Prop Name="IsBlubb" Arg="obj" Comm="property, whether object is blubb"/>
+   <Description>
+    A property.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Attr Name="NumberBlobbs" Arg="obj" Comm="number of blobbs"/>
+   <Description>
+    An attribute. Number of blobbs.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Var Name="AllBlibbs" Comm="list of all blibbs in the system"/>
+   <Description>
+    This global variable holds a list of all blibbs.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Fam Name="BlibbsFamily" Comm="family of blibbs"/>
+   <Description>
+    Family of all blibbs.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <InfoClass Name="InfoBlibbs" Comm="InfoClass for the library of blibbs"/>
+   <Description>
+    This info class is used throughout the library of blibbs.
+   </Description>
+  </ManSection>
+    
+ </Section>]]>
+</Listing>
+
+</Section>
+
+
+<Section Label="Five"><Heading>Various Types of Text (Source)</Heading>
+
+[<Ref Label="FiveBack"/>]
+
+<Listing>
+<![CDATA[<Chapter><Heading>Other Markup</Heading>
+
+<Section><Heading>Various types of text</Heading>
+
+In this section we present examples for all the various types of text
+that are possible in &GAPDoc;: 
+<List>
+ <Item>
+  <Emph>This</Emph> is <E>emphasized</E>.</Item>
+ <Item>
+  <E>Keywords</E> are typeset like <Keyword>this</Keyword> and <K>that</K>.
+  </Item>
+ <Item>
+  <E>Arguments</E> of functions have an element. They look like this: 
+    <Arg>x</Arg> and <A>y</A>.</Item>
+ <Item> 
+  <E>Code</E> can be written with the Code element: 
+    <Code>if x = y then Print("Equal"); fi;</Code> or
+    <C>while true do Print("Hello"); od;</C>.</Item> 
+ <Item>
+  <E>Filenames</E> have their own element:
+    <File>/usr/local/ca/gap4r2</File> or <F>pkg/xgap/doc</F>.</Item>
+ <Item>
+  <E>Buttons</E>, <E>menus</E>, <E>menu entries</E>, and such things
+    are also supported: <B>OK</B> or <Button>Cancel</Button>.</Item>
+ <Item>
+  <E>Packages</E> are typeset like this: 
+    <Package>Small Groups Library</Package>
+ </Item>
+ <Item>
+  <E>Quoted</E> text: <Q>This is a text in quotes.</Q>
+ </Item>
+</List>
+
+<E>Paragraphs</E> are separated by the empty <C>Par</C> or <C>P</C> element.
+<Par/><E>Alternatives</E> for different output formats:
+
+<Alt Only="LaTeX">This is &LaTeX; output.</Alt>
+<Alt Not="LaTeX">This is other than &LaTeX; output, namely:
+<Alt Only="HTML"><![CDATA[<b>HTML</b>]]>]<![CDATA[]></Alt>
+<Alt Only="Text">Text</Alt> output.</Alt>
+
+<P/>]]>
+</Listing>
+
+</Section>
+
+
+<Section Label="Six"><Heading>Verbatim-like text (Source)</Heading>
+
+[<Ref Label="SixBack"/>]
+
+<Listing>
+<![CDATA[There are also three elements to typeset <Q>verbatim-like</Q> text.
+<P/>
+The first is a <E>Listing</E>:
+
+<Listing Type="GAP code">
+<![CDATA[Sieve := function(n)
+  # Returns the primes less than n
+  local l,p,i;
+  l := [1..n]; Unbind(l[1]);
+  p := 2;
+  while p^2 <= n do
+      if IsBound(l[p]) then
+          i := 2 * p;
+          while i <= n do Unbind(l[i]); i := i + p; od;
+      fi;
+      p := p + 1;
+  od;
+  return Compacted(l);
+end;]]>]<![CDATA[]>
+</Listing>
+
+Here is a <E>Log</E> of a &GAP; session using this function:
+
+<Log>
+gap&gt; Sieve(100);
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
+  67, 71, 73, 79, 83, 89, 97 ]
+gap&gt; Length(last);
+25
+</Log>
+
+Here is a &GAP; <E>Example</E> session that is automatically tested:
+
+<Example>
+gap&gt; s := Size(CharacterTable("M"));
+808017424794512875886459904961710757005754368000000000
+gap&gt; s &lt; 10^53;                     
+false
+gap&gt; s &lt; 10^54;
+true
+</Example>
+
+</Section>]]>
+</Listing>
+
+</Section>
+
+
+<Section Label="Seven"><Heading>Formulae (Source)</Heading>
+
+[<Ref Label="SevenBack"/>]
+
+<Listing>
+<![CDATA[<Section><Heading>Formulae</Heading>
+
+There are three types of formulae. <P/>
+The first is the <E>normal math mode</E> of &LaTeX;: 
+
+<Math>b_i \cdot b_j = \sum_{k=1}^d h_{ijk} b_k</Math>. 
+
+Then there are <E>displayed formulae</E>:
+<Display>
+   \Longrightarrow \quad \left(\sum_{i=1}^d x_i b_i \right) \cdot
+   \left(\sum_{j=1}^d y_j b_j \right) =
+   \sum_{k=1}^d \left( \sum_{i,j} x_i y_j h_{ijk} \right) b_k 
+</Display>
+
+If possible,  use the <C>Alt</C> element  to specify a better  readable text
+version of such a formula as in the following example:<P/>
+
+<Alt Not="Text,HTML"><Display>
+   \Longrightarrow \quad \left(\sum_{i=1}^d x_i b_i \right) \cdot
+   \left(\sum_{j=1}^d y_j b_j \right) =
+   \sum_{k=1}^d \left( \sum_{i,j} x_i y_j h_{ijk} \right) b_k 
+</Display></Alt>
+<Alt Only="Text,HTML"><Verb>
+         d                d                 d   
+       -----            -----             -----  -----                 
+        \                \                 \      \                    
+ ==> (   )  x_i b_i )(    )  y_i b_i ) =    )  (   )  x_i y_j h_ijk ) b_k
+        /                /                 /      /                    
+       -----            -----             -----  -----                
+       i = 1            i = 1             k = 1   i,j                
+</Verb><P/></Alt>
+
+For small formulae without <Q>difficult</Q> parts use the <C>M</C>
+element: <M>b_i</M>,
+<M>x^2</M>, <M>x^2 + 2x + 1 = (x + 1)^2</M>. Note that here whitespace 
+matters for text (or HTML) output).<P/>
+
+Here are two formulae containing less than characters which are special
+characters for XML:
+<M><![CDATA[a < b < c < d]]]]>&gt;<![CDATA[</M> and  <M>e &lt; f</M>.
+</Section>]]>
+</Listing>
+
+</Section>
+
+
+<Section Label="Eight"><Heading>Crossreferencing (Source)</Heading>
+
+[<Ref Label="EightBack"/>]
+
+<Listing>
+<![CDATA[<Section Label="Cross"><Heading>Crossreferencing</Heading>
+
+<Label Name="there"/>
+
+In this section we demonstrate various references to parts of this
+document. Here is a reference to this section: <Ref Sect="Cross"/>.
+Here is a reference to chapter <Ref Chap="First"/>, to appendix
+<Ref Appendix="Appendix"/>, and to subsection <Ref Subsect="Asub"/>. 
+<P/>
+
+We distinguish among others references 
+ to functions (see <Ref Func="f"/>), 
+ to methods with tricky name (see 
+                 <Ref Meth="\^\{\}\[\]\&lt;\&amp;" Label="for nothing"/>),
+ to operations (see <Ref Oper="MyOperation"/>), 
+ to methods (see <Ref Meth="MyOperation" Label="First"/> or 
+                 <Ref Meth="MyOperation" Label="for bla"/>), 
+ to filters (see <Ref Filt="IsBla"/>), 
+ to properties (see <Ref Prop="IsBlubb"/>),
+ to attributes (see <Ref Attr="NumberBlobbs"/>), 
+ to variables (<Ref Var="AllBlibbs"/>), 
+ to families (see <Ref Fam="BlibbsFamily"/>),
+ and to info classes (see <Ref InfoClass="InfoBlibbs"/>).
+<P/>
+
+There are also references to labels: see <Ref Text="here" Label="there"/>,
+to other books: see <Ref Sect="syntaxXML" BookName="gapdoc"/> or
+<Ref Oper="IsSubgroup" BookName="ref"/> in the &GAP; reference
+manual.
+<P/>
+
+References to sections come in two styles: 
+<Ref Chap="First" Style="Number"/>
+or <Ref Chap="First" Style="Text"/>.
+<P/>
+
+Another type of cross referencing is bibliography. Here is a 
+citation: <Cite Key="CR1" Where="(5.22)"/> is an interesting lemma.
+<P/>
+
+There are also URLs:<P/>
+
+<URL>http://www.math.rwth-aachen.de/LDfM/</URL><P/>
+
+Email addresses have a special element:
+<Email>Frank.Luebeck@Math.RWTH-Aachen.De</Email>
+<P/>
+
+and Homepages another one:
+<Homepage>http://www-groups.mcs.st-and.ac.uk/~neunhoef/</Homepage>
+<P/>
+
+One can generate index entries as follows (look up the words 
+<Q>&TeX;-UserGroup</Q>, <Q>RWTH</Q>, and <Q>Aachen, Hauptbahnhof</Q>).
+<Index Key="TeX-Usergroup">&TeX;-UserGroup</Index>
+<Index Key="Aachen" Subkey="Hauptbahnhof">Aachen</Index>
+<Index>RWTH</Index>
+
+</Section>]]>
+</Listing>
+
+</Section>
+
+
+<Section Label="Nine"><Heading>Lists and Tables (Source)</Heading>
+
+[<Ref Label="NineBack"/>]
+
+<Listing>
+<![CDATA[<Section><Heading>Lists and Tables</Heading>
+
+There are
+<List>
+ <Item>lists</Item>
+ <Item>enumerations, and</Item>
+ <Item>tables</Item>
+</List>
+or:
+<Enum>
+ <Item>lists</Item>
+ <Item>enumerations, and</Item>
+ <Item>tables</Item>
+</Enum>
+or with marks:
+<List>
+ <Mark>lists:</Mark><Item> not numbered</Item>
+ <Mark>enumerations:</Mark><Item> numbered</Item>
+ <Mark>tables:</Mark><Item> two-dimensional</Item>
+</List>
+
+Lists can also be nested:
+<Enum>
+ <Item>
+   <Enum>
+     <Item>first item of inner enumeration </Item>
+     <Item>second item of inner enumeration </Item>
+   </Enum>
+ </Item>
+ <Item>
+   <List>
+     <Item>first item of inner list </Item>
+     <Item>second item of inner list </Item>
+   </List>
+  </Item>
+</Enum>
+
+Here is a <E>table</E>:
+
+<Table Align="|r|c|l|">
+ <Caption>Prices</Caption>
+ <HorLine/>
+  <Row>
+   <Item>Object</Item><Item>Price</Item><Item>available</Item>
+  </Row>
+ <HorLine/>
+ <HorLine/>
+  <Row>
+   <Item>Shoe</Item><Item>$1,00</Item><Item>there</Item>
+  </Row>
+ <HorLine/>
+  <Row>
+   <Item>Hat</Item><Item>$2,00</Item><Item>not there</Item>
+  </Row>
+ <HorLine/>
+</Table>
+
+</Section>]]>
+</Listing>
+
+</Section>
+
+
+<Section Label="Ten">
+<Heading>Entities and Special Characters (Source)</Heading>
+
+[<Ref Label="TenBack"/>]
+
+<Listing>
+<![CDATA[<Section><Heading>Entities and Special Characters</Heading>
+<Label Name="TenBack"/>
+
+[&see; <Ref Sect="Ten"/>]<P/>
+
+Here is a table of special characters, the first two are special for
+XML and must be typed in by entities in &GAPDoc; documents. The other 
+characters are special for &LaTeX; but in &GAPDoc; they can be typed
+directly. 
+
+<Table Align="|c|c|c|c|c|c|c|c|c|c|c|c|c|" Label="charsInCDATA"> 
+ <Caption>Special characters in character data</Caption>
+ <HorLine/> <Row> 
+  <Item><C>&amp;</C></Item>
+  <Item><C>&lt;</C></Item>
+  <Item><C>></C></Item>
+  <Item><C>#</C></Item>
+  <Item><C>$</C></Item>
+  <Item><C>%</C></Item>
+  <Item><C>~</C></Item>
+  <Item><C>\</C></Item>   
+  <Item><C>{</C></Item>
+  <Item><C>}</C></Item>
+  <Item><C>_</C></Item>
+  <Item><C>^</C></Item>
+  <Item><C>&nbsp;</C></Item>
+ </Row> <HorLine/>
+</Table>
+
+And here are the predefined entities in &GAPDoc;:
+
+<Table Align="|l|l|">
+<Caption>Predefined Entities in the &GAPDoc; system</Caption>
+<HorLine/>
+<Row> <Item><C>&amp;GAP;</C></Item>       <Item>&GAP;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;GAPDoc;</C></Item>    <Item>&GAPDoc;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;TeX;</C></Item>       <Item>&TeX;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;LaTeX;</C></Item>     <Item>&LaTeX;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;BibTeX;</C></Item>    <Item>&BibTeX;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;MeatAxe;</C></Item>   <Item>&MeatAxe;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;XGAP;</C></Item>      <Item>&XGAP;</Item> </Row>
+<HorLine/>
+<Row> <Item><C>&amp;copyright;</C></Item> <Item>&copyright;</Item> </Row>
+<HorLine/>
+</Table>
+
+And some more for mathematical symbols: 
+&CC;, &ZZ;, &NN;, &PP;, &QQ;, &HH;, &RR;.
+
+</Section>
+
+</Chapter>
+
+</Body>]]>
+</Listing>
+
+</Section>
+
+
+<Section Label="Eleven"><Heading>Appendix (Source)</Heading>
+
+[<Ref Label="ElevenBack"/>]
+
+<Listing Type="GAPDoc source">
+<![CDATA[<Appendix><Heading>An Appendix</Heading>
+
+This is an appendix.
+</Appendix>]]>
+</Listing>
+
+</Section>
+
+</Appendix>
+
+<Bibliography Databases="examplebib.xml" Style="alpha"/>
+<TheIndex/>
+
+</Book>
+

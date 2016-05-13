@@ -1,0 +1,45 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/11/21
+! Changed by
+SL
+! Reported by
+SK
+! Type of Change
+Fix: infinite loop
+
+! Description
+
+For a semigroup of associative words that is not the full semigroup of
+all associative words, the methods for Size and IsTrivial call one
+another.
+
+This change introduces an immediate method for Size based on the 
+generators (it's always 0, 1 or infinity).
+
+The original reported bug now runs into a slightly more reasonable No
+Method Found error.
+
+! Test Code
+gap> s := FreeSemigroup("a","b");
+<free semigroup on the generators [ a, b ]>
+gap> t := Subsemigroup(s,[s.1]);
+<semigroup with 1 generator>
+gap> t := Subsemigroup(s,[s.1]);
+<semigroup with 1 generator>
+gap> HasSize(t);
+true
+gap> Size(t);
+infinity
+gap> t := Subsemigroup(s,[]);
+<semigroup with 0 generators>
+gap> HasSize(t);
+true
+gap> Size(t);
+0
+
+! Prefetch
+
+! Changeset
+
+! End

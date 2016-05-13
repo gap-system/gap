@@ -1,0 +1,32 @@
+#!/bin/sh
+
+GAC=bin/`grep GAParch= sysinfo.gap | sed -e s/GAParch=//`/gac
+
+echo Assuming to be in the GAP root directory . . .
+
+# Run in GAP root directory to make the statically compiled files.
+# Note that the files lib/*.g must be checked in before docomp is run,
+# because their CRCs are changed when they are checked in.
+#
+compileme() {
+  inter=`mktemp /tmp/cfile.XXXXXX`
+  dest=src/c_$2.c
+  $GAC -C -r -ffast-plain-lists -ffast-int-arith -o $inter lib/$1.g
+  echo "#ifndef AVOID_PRECOMPILED" >| $dest
+#  sed -e "/\"${1}\.g\"/ s/\"/\"GAPROOT\/lib\//" $inter >> $dest
+  cat $inter >> $dest
+  echo "#endif" >> $dest
+  rm $inter
+}
+
+echo c_oper1
+compileme oper1 oper1
+echo c_methsel1
+compileme methsel1 meths1
+echo c_type1
+compileme type1 type1
+echo c_filter1
+compileme filter1 filt1
+echo c_random
+compileme random random
+

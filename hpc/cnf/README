@@ -1,0 +1,16 @@
+
+In this directory, the only files to edit are
+
+aclocal.m4 -- local autoconf functions
+config.hin -- config.h input file
+configure.in -- autoconf main input
+gac.in -- skeleton gac script
+Makefile -- for this directory
+Makegap.bottom -- stuff for the end of Makegap.in
+Makegap.top -- stuff for thr top of Makegap.in
+
+gap.bai, gapcmd.bai, gaprxvt.bai -- configure input for cygwin bat files
+
+everything else is machine-generated.	
+
+SL

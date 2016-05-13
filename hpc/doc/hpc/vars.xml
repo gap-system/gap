@@ -1,0 +1,69 @@
+<Chapter Label="Variables in HPC-GAP">
+  <Heading>Variables in HPC-GAP</Heading>
+
+Variables with global scope have revised semantics in HPC-GAP in order to address concurrency issues. The normal
+semantics of global variables that are only accessed by a single thread remain unaltered.
+
+  <Section Label="Global variables">
+    <Heading>Global variables</Heading>
+
+Global variables in HPC-GAP an be accessed by all threads concurrently without explicit synchronization. Concurrent
+access is safe, but it is not deterministic. If multiple threads attempt to modify the same global variable
+simultaneously, the resulting value of the variable is random; it will be one of the values assigned by a thread, but it
+is impossible to predict with certainty which specific one will be assigned.
+
+  </Section>
+  <Section Label="Thread-local variables">
+    <Heading>Thread-local variables</Heading>
+
+HPC-GAP supports the notion of thread-local variables. Thread-local variables are (after being declared as such)
+accessed and modified like global variables. However, unlike global variables, each thread can assign a distinct value
+to a thread-local variable.
+
+<Example><![CDATA[
+gap> MakeThreadLocal("x");
+gap> x := 1;;
+gap> WaitTask(RunTask(function() x := 2; end));
+gap> x;
+1
+]]></Example>
+
+As can be seen here, the assignment to <C>x</C> in a separate thread does not overwrite the value of <C>x</C> in the
+main thread.
+
+  </Section>
+  <Section Label="MakeThreadLocal">
+    <Heading>MakeThreadLocal(name)</Heading>
+
+<C>MakeThreadLocal</C> makes the variable described by the string <C>name</C> a thread-local variable. It normally does
+not give it an initial value; either explicit per-thread assignment or a call to <Ref Func="BindThreadLocal"/> or <Ref
+Func="BindThreadLocalConstructor"/> to provide a default value is necessary.
+
+If a global variable with the same name exists and is bound at the time of the call, its value will be used as the
+default value as though <Ref Func="BindThreadLocal"/> had been called with that value as its second argument.
+
+  </Section>
+  <Section Label="BindThreadLocal">
+    <Heading>BindThreadLocal(name, obj)</Heading>
+
+<C>BindThreadLocal</C> gives the thread-local variable described by the string <C>name</C> the default value <C>obj</C>.
+The first time the thread-local variable is accessed in a thread thereafter, it will yield <C>obj</C> as its value if it
+hasn&#39;t been assigned a specific value yet.
+
+  </Section>
+  <Section Label="BindThreadLocalConstructor">
+    <Heading>BindThreadLocalConstructor(name, func)</Heading>
+
+<C>BindThreadLocal</C> gives the thread-local variable described by the string <C>name</C> the constructor <C>func</C>.
+The first time the thread-local variable is accessed in a thread thereafter, it will yield <C>func()</C> as its value if
+it hasn&#39;t been assigned a specific value yet.
+
+  </Section>
+  <Section Label="ThreadVar">
+    <Heading>ThreadVar</Heading>
+
+All thread-local variables are stored in the thread-local record <C>ThreadVar</C>. Thus, if <C>x</C> is a thread-local
+variable, using <C>ThreadVar.x</C> is the same as using <C>x</C>.
+
+  </Section>
+</Chapter>

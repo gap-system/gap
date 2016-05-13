@@ -1,0 +1,1651 @@
+<Chapter Label="DTD">
+<Heading>The Document Type Definition</Heading>
+
+In this chapter  we first explain what a <Q>document  type definition</Q> is
+and then describe  <F>gapdoc.dtd</F> in detail. That file  together with the
+current chapter define how  a &GAPDoc; document has to look  like. It can be
+found in the main directory of the  &GAPDoc; package and it is reproduced in
+Appendix&nbsp;<Ref Appendix="GAPDocdtd" />.<P/>
+
+We do  not give many examples  in this chapter  which is more intended  as a
+formal  reference for  all &GAPDoc;  elements. Instead  we provide  an extra
+document with book name <C>GAPDocExample</C> (also accessible from the &GAP;
+online  help). This  uses  all  the constructs  introduced  in this  chapter
+and  you can  easily  compare the  source  code  and how  it  looks like  in
+the  different output  formats. Furthermore  recall that  many basic  things
+about  XML markup  were already  explained  by example  in the  introductory
+chapter&nbsp;<Ref Chap="ch:intro" />.
+
+<Section><Heading>What is a DTD?</Heading>
+
+A  document type  definition (DTD)  is a  formal declaration  of how  an XML
+document has  to be structured. It  is itself structured such  that programs
+that handle documents can read it and treat the documents accordingly. There
+are for example  parsers and validity checkers that use  the DTD to validate
+an XML document, see&nbsp;<Ref Subsect="XMLvalid"/>. <P/>
+
+The  main thing  a  DTD does  is  to  specify which  elements  may occur  in
+documents  of a  certain document  type, how  they can  be nested,  and what
+attributes they can or must have. So, for each element there is a rule. <P/>
+
+Note that a DTD can <E>not</E>  ensure that a document which is <Q>valid</Q>
+also makes sense to the converters!  It only says something about the formal
+structure of the document. <P/>
+
+For  the remaining  part of  this chapter  we have  divided the  elements of
+&GAPDoc; documents into several subsets, each  of which will be discussed in
+one of the next sections. <P/>
+
+See the following three subsections to learn by example, how a DTD works. We
+do not want to be too formal  here, but just enable the reader to understand
+the  declarations  in <F>gapdoc.dtd</F>.  For  precise  descriptions of  the
+syntax of DTD's see again the official standard in: <P/>
+
+&nbsp;&nbsp;<URL>http://www.xml.com/axml/axml.html</URL><P/>
+
+</Section>
+
+
+<Section><Heading>Overall Document Structure</Heading>
+
+A &GAPDoc; document contains on its  top level exactly one element with name
+<C>Book</C>. This element is declared in the DTD as follows:
+
+<Subsection><Heading><C>&lt;Book></C></Heading>
+<Index Key="Book"><C>Book</C></Index>
+
+<Listing Type="From gapdoc.dtd"><![CDATA[
+<!ELEMENT Book (TitlePage,
+                TableOfContents?,
+                Body,
+                Appendix*,
+                Bibliography?,
+                TheIndex?)>
+<!ATTLIST Book Name CDATA #REQUIRED>]]>
+</Listing>
+
+After the  keyword <C>ELEMENT</C> and the  name <C>Book</C> there is  a list
+in  parentheses.  This is  a  comma  separated  list  of names  of  elements
+which  can occur  (in  the given  order)  in the  content  of a  <C>Book</C>
+element.  Each  name  in  such  a  list  can  be  followed  by  one  of  the
+characters <Q><C>?</C></Q>, <Q><C>*</C></Q> or <Q><C>+</C></Q>, meaning that
+the corresponding element  can occur zero or one time,  an arbitrary  number
+of times,  or at least once,  respectively. Without such an  extra character
+the corresponding  element must occur exactly  once. Instead of one  name in
+this  list  there  can  also  be  a list  of  elements  names  separated  by
+<Q><C>|</C></Q> characters, this  denotes any element with one  of the names
+(i.e., <Q><C>|</C></Q> means <Q>or</Q>).<P/>
+
+So, the <C>Book</C>  element must contain first  a <C>TitlePage</C> element,
+then an optional <C>TableOfContents</C> element, then a <C>Body</C> element,
+then  zero  or more  elements  of  type  <C>Appendix</C>, then  an  optional
+<C>Bibliography</C>  element,  and  finally  an  optional  element  of  type
+<C>TheIndex</C>.<P/>
+
+Note that <Emph>only</Emph> these elements are allowed in the content of the
+<C>Book</C> element.  No other elements  or text  is allowed in  between. An
+exception of this is that there may be whitespace between the end tag of one
+and the  start tag of  the next  element - this  should be ignored  when the
+document is processed to some output format. An element like this is called
+an element with <Q>element content</Q>.<P/>
+
+The  second  declaration starts  with  the  keyword <C>ATTLIST</C>  and  the
+element  name  <C>Book</C>. After  that  there  is  a triple  of  whitespace
+separated parameters  (in general an  arbitrary number of such  triples, one
+for each allowed attribute name). The  first (<C>Name</C>) is the name of an
+attribute for  a <C>Book</C>  element. The  second (<C>CDATA</C>)  is always
+the  same  for  all  of  our  declarations,  it  means  that  the  value  of
+the  attribute  consists  of  <Q>character  data</Q>.  The  third  parameter
+<C>#REQUIRED</C> means that  this attribute must be  specified with any
+<C>Book</C> element.  Later we will  also see optional attributes  which are
+declared as <C>#IMPLIED</C>. </Subsection>
+
+<Subsection><Heading><C>&lt;TitlePage></C></Heading>
+<Index Key="TitlePage"><C>TitlePage</C></Index>
+
+<Listing Type="From gapdoc.dtd"><![CDATA[
+<!ELEMENT TitlePage (Title, Subtitle?, Version?, TitleComment?, 
+                     Author+, Date?, Address?, Abstract?, Copyright?, 
+                     Acknowledgements? , Colophon? )>]]>
+</Listing>
+
+Within this element  information for the title page is  collected. Note that
+more than  one author  can be  specified. The elements  must appear  in this
+order because there  is no sensible way  to specify in a  DTD something like
+<Q>the following elements may occur in  any order but each exactly once</Q>.
+<P/>
+
+Before going on with the other elements inside the <C>Book</C> element we
+explain the elements for the title page. 
+</Subsection>
+
+<Subsection Label="Title"><Heading><C>&lt;Title></C></Heading>
+<Index Key="Title"><C>Title</C></Index>
+
+<Label Name="Text"/>
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Title (%Text;)*>]]>
+</Listing>
+
+Here   is  the   last  construct   you  need   to  understand   for  reading
+<F>gapdoc.dtd</F>.   The   expression  <Q><C>%Text;</C></Q>   is   a
+so-called <Q>parameter entity</Q>.  It is something like a  macro within the
+DTD. It is defined as follows:
+
+<Label Name="InnerText"/>
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ENTITY % Text "%InnerText; | List | Enum | Table">]]>
+</Listing>
+This means, that every occurrence of <Q><C>%Text;</C></Q> in the DTD 
+is replaced by the expression 
+<Label Name="Innertext"/>
+<Listing Type="From gapdoc.dtd"><![CDATA[%InnerText; | List | Enum | Table]]>
+</Listing>
+which is then expanded further because of the following definition:
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ENTITY % InnerText "#PCDATA |
+                      Alt |
+                      Emph | E |
+                      Par | P | Br |
+                      Keyword | K | Arg | A | Quoted | Q | Code | C | 
+                      File | F | Button | B | Package |
+                      M | Math | Display | 
+                      Example | Listing | Log | Verb |
+                      URL | Email | Homepage | Address | Cite | Label | 
+                      Ref | Index" >]]> 
+</Listing>
+
+These are the only two parameter entities we are using. They expand to lists
+of  element names  which are  explained in  the sequel  <Emph>and</Emph> the
+keyword  <C>#PCDATA</C>  (concatenated  with  the  <Q>or</Q>  character
+<Q><C>|</C></Q>). <P/>
+
+So, the element (<C>Title</C>) is  of so-called <Q>mixed content</Q>: It can
+contain <E>parsed character  data</E> which does not  contain further markup
+(<C>#PCDATA</C>) or  any of the  other above mentioned  elements. Mixed
+content must always have the  asterisk qualifier (like in <C>Title</C>) such
+that any sequence of elements (of the  above list) and character data can be
+contained in a <C>Title</C> element. <P/>
+
+The <C>%Text;</C> parameter entity is used in all places 
+in the DTD, where <Q>normal text</Q> should be allowed, including lists,
+enumerations, and tables, but <E>no</E> sectioning elements. <P/>
+
+The <C>%InnerText;</C> parameter entity is used in all places
+in the DTD, where <Q>inner text</Q> should be allowed. This means, that no 
+structures like lists, enumerations, and tables are allowed. This is used
+for example in headings. <P/>
+
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Subtitle></C></Heading>
+<Index Key="Subtitle"><C>Subtitle</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Subtitle (%Text;)*>]]>
+</Listing>
+
+Contains the subtitle of the document.
+</Subsection>
+
+
+<Subsection Label="Version"><Heading><C>&lt;Version></C></Heading>
+<Index Key="Version"><C>Version</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Version (#PCDATA|Alt)*>]]>
+</Listing>
+
+Note that the version can only  contain character data and no further markup
+elements (except for <C>Alt</C>, which  is necessary to resolve the entities
+described in <Ref Subsect="GDent"/>). The converters will <E>not</E> put the
+word <Q>Version</Q> in front of the text in this element.
+
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;TitleComment></C></Heading>
+<Index Key="TitleComment"><C>TitleComment</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT TitleComment (%Text;)*>]]>
+</Listing>
+
+Sometimes a title  and subtitle are not sufficient to  give a rough idea
+about the content  of a package. In this case  use this optional element
+to  specify an  additional text  for the  front page  of the  book. This
+text  should be  short, use  the <C>Abstract</C>  element (see&nbsp;<Ref
+Subsect="elAbstract"/>) for longer explanations.
+
+</Subsection>
+
+<Subsection><Heading><C>&lt;Author></C></Heading>
+<Index Key="Author"><C>Author</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Author (%Text;)*>    <!-- There may be more than one Author! -->]]>
+</Listing>
+
+As noted  in the comment there  may be more  than one element of  this type.
+This  element   should  contain  the  name of  an  author  and  probably  an
+<C>Email</C>-address  and/or WWW-<C>Homepage</C>  element  for this  author,
+see&nbsp;<Ref Subsect="elEmail" /> and&nbsp;<Ref Subsect="elHomepage" />.
+You can also specify an individual postal address here, instead of using
+the <C>Address</C> element described below, see&nbsp;<Ref
+Subsect="elAddress" />.
+
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Date></C></Heading>
+<Index Key="Date"><C>Date</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Date (#PCDATA)>]]>
+</Listing>
+
+Only character data is allowed in this element which gives a date for the
+document. No automatic formatting is done. 
+</Subsection>
+
+<Subsection Label="elAddress"><Heading><C>&lt;Address></C></Heading>
+<Index Key="Date"><C>Address</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Address (#PCDATA|Alt|Br)*>]]>
+</Listing>
+
+This optional  element can be  used to specify  a postal address  of the
+author  or the  authors. If  there  are several  authors with  different
+addresses then put the  <C>Address</C> elements inside the <C>Author</C>
+elements. <P/>
+
+Use the <C>Br</C> element (see&nbsp;<Ref Subsect="Br"/>) to mark the line 
+breaks in the usual formatting of the address on a letter.<P/>
+
+Note that often it is not necessary to use this element because a postal
+address is easy to find via a link to a personal web page.
+
+</Subsection>
+
+
+<Subsection Label="elAbstract"><Heading><C>&lt;Abstract></C></Heading>
+<Index Key="Abstract"><C>Abstract</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Abstract (%Text;)*>]]>
+</Listing>
+
+This element contains an abstract of the whole book.
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Copyright></C></Heading>
+<Index Key="Copyright"><C>Copyright</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Copyright (%Text;)*>]]>
+</Listing>
+
+This   element    is   used   for    the   copyright   notice.    Note   the
+<C>&amp;copyright;</C>    entity    as    described   in    section    <Ref
+Subsect="GDent"/>.
+
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Acknowledgements></C></Heading>
+<Index Key="Acknowledgements"><C>Acknowledgements</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Acknowledgements (%Text;)*>]]>
+</Listing>
+
+This element contains the acknowledgements.
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Colophon></C></Heading>
+<Index Key="Colophon"><C>Colophon</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Colophon (%Text;)*>]]>
+</Listing>
+
+The <Q>colophon</Q> page is used to say something about the history of a
+document. 
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;TableOfContents></C></Heading>
+<Index Key="TableOfContents"><C>TableOfContents</C></Index>
+
+<Listing Type="From gapdoc.dtd"><![CDATA[
+<!ELEMENT TableOfContents EMPTY>]]>
+</Listing>
+
+This element may occur in the <C>Book</C> element after the <C>TitlePage</C>
+element. If  it is present,  a table of  contents is generated  and inserted
+into  the  document. Note  that  because  this  element  is declared  to  be
+<C>EMPTY</C> one can use the abbreviation
+
+<Listing Type="Example">
+<![CDATA[<TableOfContents/>]]>
+</Listing>
+
+to denote this empty element.
+
+</Subsection>
+
+<Subsection Label="Bibliography"><Heading><C>&lt;Bibliography></C>
+</Heading>
+<Index Key="Bibliography"><C>Bibliography</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Bibliography EMPTY>
+<!ATTLIST Bibliography Databases CDATA #REQUIRED
+                       Style CDATA #IMPLIED>]]>
+</Listing>
+
+This  element  may   occur  in  the  <C>Book</C>  element   after  the  last
+<C>Appendix</C>  element.  If  it  is present,  a  bibliography  section  is
+generated  and inserted  into the  document. The  attribute <C>Databases</C>
+must be  specified, the names of several data files can be specified,
+separated by commas.<P/>
+
+Two kinds of files can be specified in <C>Databases</C>: The first are
+&BibTeX; files as defined in&nbsp;<Cite Key="La85" Where="Appendix B"/>.
+Such files must have a name with extension <F>.bib</F>, and in
+<C>Databases</C> the name must be given <E>without</E> this extension.
+The second are files in BibXMLext format as defined in Section&nbsp;<Ref 
+Sect="BibXMLformat"/>. These files must have an extension <F>.xml</F>
+and in <C>Databases</C> the <E>full</E> name  must be specified.<P/>
+
+We suggest to use the BibXMLext format because it allows to produce
+potentially nicer bibliography entries in text and HTML documents.<P/>
+
+A bibliography style  may be  specified with  the <C>Style</C>  attribute. The
+optional <C>Style</C>  attribute (for &LaTeX;  output of the  document) must
+also  be  specified  without  the  <F>.bst</F>  extension  (the  default  is
+<C>alpha</C>). See also  section <Ref Subsect="Cite"/> for  a description of
+the <C>Cite</C>  element which  is used  to include  bibliography references
+into the text. <P/>
+
+</Subsection>
+
+<Subsection Label="TheIndex"><Heading><C>&lt;TheIndex></C></Heading>
+<Index Key="TheIndex"><C>TheIndex</C></Index>
+
+<Listing Type="From gapdoc.dtd"><![CDATA[<!ELEMENT TheIndex EMPTY>]]></Listing>
+
+This   element   may   occur   in  the   <C>Book</C>   element   after   the
+<C>Bibliography</C> element.  If it  is present, an  index is  generated and
+inserted into the document. There  are elements in &GAPDoc; which implicitly
+generate  index entries  (e.g.,  <C>Func</C> (<Ref  Subsect="Func" />))  and
+there  is an  element <C>Index</C> (<Ref Subsect="Index"  />) for explicitly
+adding index entries.
+
+</Subsection>
+
+</Section>
+
+<Section><Heading>Sectioning Elements</Heading>
+
+A  &GAPDoc;  book  is  divided into  <E>chapters</E>,  <E>sections</E>,  and
+<E>subsections</E>.  The idea  is  of  course, that  a  chapter consists  of
+sections, which  in turn  consist of  subsections. However  for the  sake of
+flexibility, the  rules are  not too restrictive.  Firstly, text  is allowed
+everywhere  in the  body of  the document  (and not  only within  sections).
+Secondly, the  chapter level may be  omitted. The exact rules  are described
+below. <P/>
+
+<E>Appendices</E>   are   a  flavor   of   chapters,  occurring  after   all
+regular   chapters.  There   is  a   special  type   of  subsection   called
+<Q><C>ManSection</C></Q>. This is a subsection devoted to the description of
+a function, operation or variable. It is  analogous to a manpage in the UNIX
+environment. Usually each function, operation, method, and so on should have
+its own <C>ManSection</C>. <P/>
+
+Cross referencing is  done on the level  of <C>Subsection</C>s, respectively
+<C>ManSection</C>s. The topics  in &GAP;'s online help are  also pointing to
+subsections. So, they should not be too long.<P/>
+
+We start our description of the sectioning elements <Q>top-down</Q>:
+
+<Subsection><Heading><C>&lt;Body></C></Heading>
+<Index Key="Body"><C>Body</C></Index>
+
+The <C>Body</C> element  marks the main part of the  document. It must occur
+after the <C>TableOfContents</C> element. There  is a big difference between
+<E>inside</E> and  <E>outside</E> of this  element: Whereas regular  text is
+allowed nearly  everywhere in the  <C>Body</C> element and  its subelements,
+this  is  not  true  for  the <E>outside</E>.  This  has  also  implications
+on  the handling  of  whitespace. <E>Outside</E>  superfluous whitespace  is
+usually  ignored  when it  occurs  between  elements. <E>Inside</E>  of  the
+<C>Body</C>  element whitespace  matters because  character data  is allowed
+nearly everywhere. Here is the definition in the DTD:
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Body  ( %Text;| Chapter | Section )*>]]>
+</Listing>
+
+The fact  that <C>Chapter</C> and  <C>Section</C> elements are  allowed here
+leads  to  the  possibility  to  omit the  chapter  level  entirely  in  the
+document. For  a description of <C>%Text;</C>  see <Ref Label="Text"
+Text="here"/>.<P/>
+
+(Remark:   The  purpose   of  this   element  is   to  make   sure  that   a
+<Emph>valid</Emph> &GAPDoc; document has  a correct overall structure, which
+is only possible when the top element <C>Book</C> has element content.)
+
+</Subsection>
+
+<Subsection Label="Chapter"><Heading><C>&lt;Chapter></C></Heading>
+<Index Key="Chapter"><C>Chapter</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Chapter (%Text;| Heading | Section)*>
+<!ATTLIST Chapter Label CDATA #IMPLIED>    <!-- For reference purposes -->]]>
+</Listing>
+
+A <C>Chapter</C> element can have a <C>Label</C> attribute, such that this
+chapter can be referenced later on with a <C>Ref</C> element (see section
+<Ref Subsect="Ref"/>). Note that you have to specify a label to reference
+the chapter as there is no automatic labelling!<P/>
+
+<C>Chapter</C>   elements   can  contain   text   (for   a  description   of
+<C>%Text;</C> see  <Ref Label="Text"  Text="here"/>), <C>Section</C>
+elements, and  <C>Heading</C> elements.<P/>
+
+The  following <Emph>additional</Emph>  rule  cannot be  stated  in the  DTD
+because we want  a <C>Chapter</C> element to have mixed  content. There must
+be  <Emph>exactly one</Emph>  <C>Heading</C> element  in the  <C>Chapter</C>
+element, containing the heading of the chapter. Here is its definition:
+
+</Subsection>
+
+<Subsection Label="Heading"><Heading><C>&lt;Heading></C></Heading>
+<Index Key="Heading"><C>Heading</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Heading (%InnerText;)*>]]>
+</Listing>
+
+This  element  is  used  for  headings  in  <C>Chapter</C>,  <C>Section</C>,
+<C>Subsection</C>,  and  <C>Appendix</C>  elements.   It  may  only  contain
+<C>%InnerText;</C>   (for  a   description   see  <Ref   Text="here"
+Label="InnerText"/>).<P/>
+
+Each of  the mentioned sectioning  elements must contain exactly  one direct
+<C>Heading</C>  element  (i.e.,  one  which  is  not  contained  in  another
+sectioning element).
+
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Appendix></C></Heading>
+<Index Key="Appendix"><C>Appendix</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Appendix (%Text;| Heading | Section)*>
+<!ATTLIST Appendix Label CDATA #IMPLIED>   <!-- For reference purposes -->]]>
+</Listing>
+
+The <C>Appendix</C>  element behaves  exactly like a  <C>Chapter</C> element
+(see <Ref Subsect="Chapter"/>)  except for the position  within the document
+and the numbering. While chapters are counted with numbers (1., 2., 3., ...)
+the appendices are counted with capital letters (A., B., ...). <P/>
+
+Again there is an optional <C>Label</C> attribute used for references. 
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Section></C></Heading>
+<Index Key="Section"><C>Section</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Section (%Text;| Heading | Subsection | ManSection)*>
+<!ATTLIST Section Label CDATA #IMPLIED>    <!-- For reference purposes -->]]>
+</Listing>
+
+A <C>Section</C> element  can have a <C>Label</C> attribute,  such that this
+section can  be referenced later on  with a <C>Ref</C> element  (see section
+<Ref Subsect="Ref"/>).  Note that you have  to specify a label  to reference
+the section as there is no automatic labelling!<P/>
+
+<C>Section</C>   elements   can  contain   text   (for   a  description   of
+<C>%Text;</C> see  <Ref Label="Text"  Text="here"/>), <C>Heading</C>
+elements, and subsections. <P/>
+
+There must be exactly one  direct <C>Heading</C> element in a <C>Section</C>
+element, containing the heading of the section. <P/>
+
+Note  that  a  subsection  is   either  a  <C>Subsection</C>  element  or  a
+<C>ManSection</C> element.
+
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Subsection></C></Heading>
+<Index Key="Subsection"><C>Subsection</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Subsection (%Text;| Heading)*>
+<!ATTLIST Subsection Label CDATA #IMPLIED> <!-- For reference purposes -->]]>
+</Listing>
+
+The <C>Subsection</C> element  can have a <C>Label</C>  attribute, such that
+this subsection  can be referenced later  on with a <C>Ref</C>  element (see
+section <Ref  Subsect="Ref"/>). Note  that you  have to  specify a  label to
+reference the subsection as there is no automatic labelling!<P/>
+
+<C>Subsection</C>   elements   can   contain   text   (for   a   description
+of   <C>%Text;</C>  see   <Ref   Label="Text"  Text="here"/>),   and
+<C>Heading</C> elements.<P/>
+
+There  must be  exactly one  <C>Heading</C> element  in a  <C>Subsection</C>
+element, containing the heading of the subsection. <P/>
+
+Another type of subsection is a <C>ManSection</C>, explained now:
+</Subsection>
+
+</Section>
+
+<Section Label="sec:mansect">
+<Heading>ManSection&ndash;a special kind of subsection</Heading>
+
+<C>ManSection</C>s are intended to describe a function, operation, method,
+variable, or some other technical instance. It is analogous to a manpage
+in the UNIX environment. 
+
+<Subsection><Heading><C>&lt;ManSection></C></Heading>
+<Index Key="ManSection"><C>ManSection</C></Index>
+<Index Key="Description"><C>Description</C></Index>
+<Index Key="Returns"><C>Returns</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT ManSection ( Heading?, 
+                      ((Func, Returns?) | (Oper, Returns?) | 
+                       (Meth, Returns?) | (Filt, Returns?) | 
+                       (Prop, Returns?) | (Attr, Returns?) |
+                       Var | Fam | InfoClass)+, Description )>
+<!ATTLIST ManSection Label CDATA #IMPLIED> <!-- For reference purposes -->
+
+<!ELEMENT Returns (%Text;)*>
+<!ELEMENT Description (%Text;)*>]]>
+</Listing>
+
+The <C>ManSection</C> element  can have a <C>Label</C>  attribute, such that
+this subsection  can be referenced later  on with a <C>Ref</C>  element (see
+section <Ref Subsect="Ref"/>). But this is probably rarely necessary because
+the elements <C>Func</C> and so  on (explained below) generate automatically
+labels for cross referencing.<P/>
+
+The  content  of  a  <C>ManSection</C>  element  is  one  or  more  elements
+describing  certain  items  in  &GAP;,  each  of  them  optionally  followed
+by  a  <C>Returns</C> element,  followed  by  a <C>Description</C>  element,
+which contains  <C>%Text;</C> (see <Ref  Label="Text" Text="here"/>)
+describing it. (Remember to include examples  in the description as often as
+possible,  see&nbsp;<Ref Subsect="Log"  />). The  classes of  items &GAPDoc;
+knows  of are:  functions (<C>Func</C>),  operations (<C>Oper</C>),  methods
+(<C>Meth</C>), filters  (<C>Filt</C>), properties  (<C>Prop</C>), attributes
+(<C>Attr</C>),  variables  (<C>Var</C>),  families  (<C>Fam</C>),  and  info
+classes  (<C>InfoClass</C>).  One  <C>ManSection</C>  should  only  describe
+several of such items when these are very closely related. <P/>
+
+Each element for  an item corresponding to a &GAP;  function can be followed
+by a <C>Returns</C>  element. In output versions of the  document the string
+<Q>Returns: </Q> will be  put in front of the content text.  The text in the
+<C>Returns</C> element  should usually  be a  short hint  about the  type of
+object returned  by the function. This  is intended to give  a good mnemonic
+for the  use of a  function (together  with a good  choice of names  for the
+formal arguments).<P/>
+
+<C>ManSection</C>s are also sectioning  elements which count as subsections.
+Usually there  should be  no <C>Heading</C>-element in  a <C>ManSection</C>,
+in  that  case   a  heading  is  generated  automatically   from  the  first
+<C>Func</C>-like  element. Sometimes  this default  behaviour does  not look
+appropriate, for  example when there are  several <C>Func</C>-like elements.
+For such cases an optional <C>Heading</C> is allowed.
+
+</Subsection>
+
+<Subsection Label="Func"><Heading><C>&lt;Func></C></Heading>
+<Index Key="Func"><C>Func</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Func EMPTY>
+<!ATTLIST Func Name  CDATA #REQUIRED
+               Label CDATA #IMPLIED
+               Arg   CDATA #REQUIRED
+               Comm  CDATA #IMPLIED>]]>
+</Listing>
+
+This element is used within a <C>ManSection</C> element to specify the usage
+of a  function. The <C>Name</C> attribute  is required and its  value is the
+name of the function. The value  of the <C>Arg</C> attribute (also required)
+contains  the full  list of  arguments including  optional parts,  which are
+denoted  by  square  brackets.  The  argument  names  can  be  separated  by
+whitespace,  commas  or the  square  brackets  for the  optional  arguments,
+like <C><![CDATA["grp[, elm]"]]></C> or <C><![CDATA["xx[y[z] ]"]]></C>. If
+&GAP; options are used, this can be  followed by a colon <C>:</C> and one or
+more assignments, like <C><![CDATA["n[, r]: tries := 100"]]></C>. <P/>
+
+The  name of  the function  is  also used  as label  for cross  referencing.
+When  the name  of the  function  appears in  the  text of  the document  it
+should <E>always</E> be written with  the <C>Ref</C>  element, see&nbsp;<Ref
+Subsect="Ref" />. This allows to use a unique typesetting style for function
+names and automatic cross referencing.<P/>
+
+If the  optional <C>Label</C>  attribute is  given, it  is appended  (with a
+colon <C>:</C> in between) to the name of the function for cross referencing
+purposes. The text of the label can also appear in the document text. So, it
+should be a kind of short explanation.
+
+<Listing Type="Example">
+<![CDATA[<Func Arg="x[, y]" Name="LibFunc" Label="for my objects"/>]]>
+</Listing>
+
+The  optional <C>Comm</C>  attribute should  be a  short description  of the
+function,  usually  at  most  one  line  long  (this  is  currently  nowhere
+used).<P/>
+
+This element  automatically produces  an index  entry with  the name  of the
+function and, if present, the text of the <C>Label</C> attribute as subentry
+(see also&nbsp;<Ref Subsect="TheIndex" /> and&nbsp;<Ref Subsect="Index" />).
+
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Oper></C></Heading>
+<Index Key="Oper"><C>Oper</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Oper EMPTY>
+<!ATTLIST Oper Name  CDATA #REQUIRED
+               Label CDATA #IMPLIED
+               Arg   CDATA #REQUIRED
+               Comm  CDATA #IMPLIED>]]>
+</Listing>
+
+This element is used within a <C>ManSection</C> element to specify the usage
+of an operation. The  attributes are used exactly in the same  way as in the
+<C>Func</C> element (see <Ref Subsect="Func"/>). <P/>
+
+Note  that multiple  descriptions  of  the same  operation  may  occur in  a
+document because  there may  be several  declarations in  &GAP;. Furthermore
+there  may  be several  <C>ManSection</C>s  for  methods of  this  operation
+(see&nbsp;<Ref  Subsect="Meth"  />)  which  also  use  the  same  name.  For
+reference  purposes these  must be  distinguished by  different <C>Label</C>
+attributes.
+
+</Subsection>
+
+
+<Subsection Label="Meth"><Heading><C>&lt;Meth></C></Heading>
+<Index Key="Meth"><C>Meth</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Meth EMPTY>
+<!ATTLIST Meth Name  CDATA #REQUIRED
+               Label CDATA #IMPLIED
+               Arg   CDATA #REQUIRED
+               Comm  CDATA #IMPLIED>]]>
+</Listing>
+
+This element is used within a <C>ManSection</C> element to specify the
+usage of a method. The attributes are used exactly in the same
+way as in the <C>Func</C> element (see <Ref Subsect="Func"/>). <P/>
+
+Frequently,  an  operation  is  implemented by  several  different  methods.
+Therefore it seems to be interesting to document them independently. This is
+possible  by using  the same  method name  in different  <C>ManSection</C>s.
+It  is  however  required  that   these  subsections  and  those  describing
+the  corresponding operation  are  distinguished  by different  <C>Label</C>
+attributes.
+
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Filt></C></Heading>
+<Index Key="Filt"><C>Filt</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Filt EMPTY>
+<!ATTLIST Filt Name  CDATA #REQUIRED
+               Label CDATA #IMPLIED
+               Arg   CDATA #IMPLIED
+               Comm  CDATA #IMPLIED
+               Type  CDATA #IMPLIED>]]>
+</Listing>
+
+This element is used within a <C>ManSection</C> element to specify the
+usage of a filter. The first four attributes are used in the same
+way as in the <C>Func</C> element (see <Ref Subsect="Func"/>),
+except that the <C>Arg</C> attribute is optional. <P/>
+
+The <C>Type</C> attribute can be any string, but it is thought to be
+something like <Q><C>Category</C></Q> or <Q><C>Representation</C></Q>.
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Prop></C></Heading>
+<Index Key="Prop"><C>Prop</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Prop EMPTY>
+<!ATTLIST Prop Name  CDATA #REQUIRED
+               Label CDATA #IMPLIED
+               Arg   CDATA #REQUIRED
+               Comm  CDATA #IMPLIED>]]>
+</Listing>
+
+This element is used within a <C>ManSection</C> element to specify the
+usage of a property. The attributes are used exactly in the same
+way as in the <C>Func</C> element (see <Ref Subsect="Func"/>). <P/>
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Attr></C></Heading>
+<Index Key="Attr"><C>Attr</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Attr EMPTY>
+<!ATTLIST Attr Name  CDATA #REQUIRED
+               Label CDATA #IMPLIED
+               Arg   CDATA #REQUIRED
+               Comm  CDATA #IMPLIED>]]>
+</Listing>
+
+This element is used within a <C>ManSection</C> element to specify the usage
+of an  attribute (in  &GAP;). The  attributes are used  exactly in  the same
+way  as  in  the  <C>Func</C>  element  (see  <Ref  Subsect="Func"/>).  <P/>
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Var></C></Heading>
+<Index Key="Var"><C>Var</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Var  EMPTY>
+<!ATTLIST Var  Name  CDATA #REQUIRED
+               Label CDATA #IMPLIED
+               Comm  CDATA #IMPLIED>]]>
+</Listing>
+
+This element is used within a <C>ManSection</C> element to document 
+a global variable. The attributes are used exactly in the same
+way as in the <C>Func</C> element (see <Ref Subsect="Func"/>) except
+that there is no <C>Arg</C> attribute. <P/>
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Fam></C></Heading>
+<Index Key="Fam"><C>Fam</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Fam  EMPTY>
+<!ATTLIST Fam  Name  CDATA #REQUIRED
+               Label CDATA #IMPLIED
+               Comm  CDATA #IMPLIED>]]>
+</Listing>
+
+This element is used within a <C>ManSection</C> element to document
+a family. The attributes are used exactly in the same
+way as in the <C>Func</C> element (see <Ref Subsect="Func"/>) except
+that there is no <C>Arg</C> attribute. <P/>
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;InfoClass></C></Heading>
+<Index Key="InfoClass"><C>InfoClass</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT InfoClass EMPTY>
+<!ATTLIST InfoClass Name  CDATA #REQUIRED
+                    Label CDATA #IMPLIED
+                    Comm  CDATA #IMPLIED>]]>
+</Listing>
+
+This element is used within a <C>ManSection</C> element to document
+an info class. The attributes are used exactly in the same
+way as in the <C>Func</C> element (see <Ref Subsect="Func"/>) except
+that there is no <C>Arg</C> attribute. <P/>
+</Subsection>
+</Section>
+
+
+<Section><Heading>Cross Referencing and Citations</Heading>
+
+Cross referencing in the &GAPDoc; system is somewhat different to
+the usual &LaTeX; cross referencing in so far, that a reference
+knows <Q>which type of object</Q> it is referencing. For example a
+<Q>reference to a function</Q> is distinguished from a <Q>reference to
+a chapter</Q>. The idea of this is, that the markup must contain this
+information such that the converters can produce better output. The HTML
+converter can for example typeset a function reference just as the name
+of the function with a link to the description of the function, or a
+chapter reference as a number with a link in the other case.<P/>
+
+Referencing is done with the <C>Ref</C> element:
+
+
+<Subsection Label="Ref"><Heading><C>&lt;Ref></C></Heading>
+<Index Key="Ref"><C>Ref</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Ref EMPTY>
+<!ATTLIST Ref Func      CDATA #IMPLIED
+              Oper      CDATA #IMPLIED
+              Meth      CDATA #IMPLIED
+              Filt      CDATA #IMPLIED
+              Prop      CDATA #IMPLIED
+              Attr      CDATA #IMPLIED
+              Var       CDATA #IMPLIED
+              Fam       CDATA #IMPLIED
+              InfoClass CDATA #IMPLIED
+              Chap      CDATA #IMPLIED
+              Sect      CDATA #IMPLIED
+              Subsect   CDATA #IMPLIED
+              Appendix  CDATA #IMPLIED
+              Text      CDATA #IMPLIED
+
+              Label     CDATA #IMPLIED
+              BookName  CDATA #IMPLIED
+              Style (Text | Number) #IMPLIED>  <!-- normally automatic -->]]>
+</Listing>
+
+The  <C>Ref</C>  element is  defined  to  be  <C>EMPTY</C>.  If one  of  the
+attributes <C>Func</C>, <C>Oper</C>,  <C>Meth</C>, <C>Prop</C>, <C>Attr</C>,
+<C>Var</C>,   <C>Fam</C>,    <C>InfoClass</C>,   <C>Chap</C>,   <C>Sect</C>,
+<C>Subsect</C>,  <C>Appendix</C> is  given then  there must  be exactly  one
+of  these,  making  the  reference  one to  the  corresponding  object.  The
+<C>Label</C> attribute  can be specified  in addition to make  the reference
+unique, for example  if more than one  method with a given  name is present.
+(Note that  there is no way  to specify in the  DTD that exactly one  of the
+first listed attributes must be given, this is an additional rule.)<P/>
+
+A   reference  to   a   <C>Label</C>  element   defined   below  (see   <Ref
+Subsect="Label"/>)  is  done  by   giving  the  <C>Label</C>  attribute  and
+optionally  the  <C>Text</C>  attribute.  If the  <C>Text</C>  attribute  is
+present its value is typeset in  place of the <C>Ref</C> element, if linking
+is possible  (for example  in HTML).  If this is  not possible,  the section
+number is  typeset. This type  of reference is  also used for  references to
+tables (see <Ref Subsect="Table"/>).<P/>
+
+<!--
+Optionally an external reference into another book can be specified by using
+the  <C>BookName</C>  attribute. In  this  case  the <C>Label</C>  attribute
+<E>must</E> be specified and refers to a  search string as in the &GAP; help
+system. It  is guaranteed that the  reference points to the  position in the
+other book, that the &GAP; help system finds as first match if one types the
+value of the <C>Label</C> element after a question mark.<P/>
+-->
+
+An  external reference  into  another book  can be  specified  by using  the
+<C>BookName</C> attribute.  In this case  the <C>Label</C> attribute  or, if
+this  is not  given, the  function  or section  like attribute,  is used  to
+resolve the reference. The generated reference  points to the first hit when
+asking <Q>?book name: label</Q> inside &GAP;.<P/>
+
+The optional attribute <C>Style</C> can take only the values <C>Text</C> and
+<C>Number</C>. It  can be used  with references  to sectioning units  and it
+gives a hint  to the converter programs, whether an  explicit section number
+is generated or  text. Normally all references to  sections generate numbers
+and references  to a  &GAP; object  generate the  name of  the corresponding
+object with  some additional  link or sectioning  information, which  is the
+behavior of <C>Style="Text"</C>. In  case <C>Style="Number"</C> in all cases
+an explicit section number is generated. So
+
+<Listing Type="Example">
+<![CDATA[<Ref Subsect="Func" Style="Text"/> described in section 
+<Ref Subsect="Func" Style="Number"/>]]>
+</Listing>
+
+produces: <Ref Subsect="Func" Style="Text"/> described in section 
+<Ref Subsect="Func" Style="Number"/>.
+</Subsection>
+
+<Subsection Label="Label"><Heading><C>&lt;Label></C></Heading>
+<Index Key="Label"><C>Label</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Label EMPTY>
+<!ATTLIST Label Name CDATA #REQUIRED>]]>
+</Listing>
+
+This element is used to define a label for referencing a certain position in
+the document,  if this is  possible. If an  exact reference is  not possible
+(like in a printed version of the document) a reference to the corresponding
+subsection  is generated.  The value  of the  <C>Name</C> attribute  must be
+unique under all <C>Label</C> elements.
+
+</Subsection>
+
+
+<Subsection Label="Cite"><Heading><C>&lt;Cite></C></Heading>
+<Index Key="Cite"><C>Cite</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Cite EMPTY>
+<!ATTLIST Cite Key CDATA #REQUIRED
+               Where CDATA #IMPLIED>]]>
+</Listing>
+
+This  element  is   for  bibliography  citations.  It   is  <C>EMPTY</C>  by
+definition. The attribute  <C>Key</C> is the key for a  lookup in a &BibTeX;
+database that  has to be  specified in the <C>Bibliography</C>  element (see
+<Ref  Subsect="Bibliography"/>). The  value  of  the <C>Where</C>  attribute
+specifies  the position  in the  document  as in  the corresponding  &LaTeX;
+syntax <C>\cite[Where value]{Key value}</C>.
+</Subsection>
+
+
+<Subsection Label="Index"><Heading><C>&lt;Index></C></Heading>
+<Index Key="Index"><C>Index</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Index (%InnerText;|Subkey)*>
+<!ATTLIST Index Key    CDATA #IMPLIED
+                Subkey CDATA #IMPLIED>
+<!ELEMENT Subkey (%InnerText;)*>]]>
+</Listing>
+
+This  element generates  an  index entry.  The text  within  the element  is
+typeset  in the  index  entry, which  is  sorted under  the  value, that  is
+specified in  the <C>Key</C> and  <C>Subkey</C> attributes. If they  are not
+specified, the typeset text itself is used as the key. <P/>
+
+A subkey can be specified in the simpler version  as an attribute, but
+then no further markup can be used for the subkey. Optionally, the
+subkey text can be given in a <C>Subkey</C> element, in this case the
+attribute value is used for sorting but the typeset text is taken from
+the content of <C>Subkey</C>.<P/>
+
+Note that all <C>Func</C> and  similar elements automatically generate index
+entries. If the <C>TheIndex</C> element  (<Ref Subsect="TheIndex" />) is not
+present in the document all <C>Index</C> elements are ignored.
+
+</Subsection>
+
+
+<Subsection Label="URL"><Heading><C>&lt;URL></C></Heading>
+<Index Key="URL"><C>URL</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT URL (#PCDATA|Alt|Link|LinkText)*>  <!-- Link, LinkText
+     variant for case where text needs further markup -->
+<!ATTLIST URL Text CDATA #IMPLIED>   <!-- This is for output formats
+                                          that have links like HTML -->
+<!ELEMENT Link     (%InnerText;)*> <!-- the URL -->
+<!ELEMENT LinkText (%InnerText;)*> <!-- text for links, can contain markup -->
+]]>
+</Listing>
+
+This element is for references into the internet. 
+It specifies an URL and optionally a text which can be used for a link 
+(like in HTML or PDF versions of the document). This can be specified in
+two ways: Either the URL is given as element content and the text is
+given in the optional <C>Text</C> attribute (in this case the text
+cannot contain further markup), or the element contains the two elements
+<C>Link</C> and <C>LinkText</C> which in turn contain the URL and the
+text, respectively. The default value for the text is the URL itself.
+</Subsection>
+
+
+<Subsection Label="elEmail"><Heading><C>&lt;Email></C></Heading>
+<Index Key="Email"><C>Email</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Email (#PCDATA|Alt|Link|LinkText)*>]]>
+</Listing>
+
+This element type is the special case of an URL specifying an email
+address. The content of the element should be the email address without
+any prefix like <Q><C>mailto:</C></Q>. This address is typeset by all
+converters, also without any prefix. In the case of an output document 
+format like HTML the converter can produce a link with a 
+<Q><C>mailto:</C></Q> prefix.
+</Subsection>
+
+
+<Subsection Label="elHomepage"><Heading><C>&lt;Homepage></C></Heading>
+<Index Key="Homepage"><C>Homepage</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Homepage (#PCDATA|Alt|Link|LinkText)*>]]>
+</Listing>
+
+This element type  is the special case of an  URL specifying a WWW-homepage.
+</Subsection>
+
+</Section>
+
+<Section><Heading>Structural Elements like Lists</Heading>
+
+The &GAPDoc; system offers some limited access to structural elements
+like lists, enumerations, and tables. Although it is possible to use
+all &LaTeX; constructs one always has to think about other output
+formats. The elements in this section are guaranteed to produce something
+reasonable in all output formats.
+
+
+<Subsection Label="List"><Heading><C>&lt;List></C></Heading>
+<Index Key="List"><C>List</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT List ( ((Mark,Item)|(BigMark,Item)|Item)+ )>
+<!ATTLIST List Only CDATA #IMPLIED
+               Not  CDATA #IMPLIED>]]>
+</Listing>
+
+This element produces a list. Each item in the list corresponds to
+an <C>Item</C> element. Every <C>Item</C> element is optionally preceded
+by a <C>Mark</C> element. The content of this is used as a marker for the
+item. Note that this marker can be a whole word or even a sentence. It will
+be typeset in some emphasized fashion and most converters will provide
+some indentation for the rest of the item. <P/>
+
+The <C>Only</C> and <C>Not</C> attributes can be used to specify, that 
+the list is included into the output by only one type of converter 
+(<C>Only</C>) or all but one type of converter (<C>Not</C>). Of course
+at most one of the two attributes may occur in one element. The following
+values are allowed as of now: <Q><C>LaTeX</C></Q>, <Q><C>HTML</C></Q>,
+and <Q><C>Text</C></Q>. See also the <C>Alt</C> element in 
+<Ref Subsect="Alt"/> for more about text alternatives for certain
+converters.
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Mark></C></Heading>
+<Index Key="Mark"><C>Mark</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Mark ( %InnerText;)*>]]>
+</Listing>
+
+This element is used in the <C>List</C> element to mark items. See
+<Ref Subsect="List"/> for an explanation.
+
+</Subsection>
+
+
+<Subsection Label="Item"><Heading><C>&lt;Item></C></Heading>
+<Index Key="Item"><C>Item</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Item ( %Text;)*>]]>
+</Listing>
+
+This element is used in the <C>List</C>, <C>Enum</C>, and <C>Table</C>
+elements to specify the items. See sections <Ref Subsect="List"/>,
+<Ref Subsect="Enum"/>, and <Ref Subsect="Table"/> for further information.
+
+</Subsection>
+
+
+<Subsection Label="Enum"><Heading><C>&lt;Enum></C></Heading>
+<Index Key="Enum"><C>Enum</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Enum ( Item+ )>
+<!ATTLIST Enum Only CDATA #IMPLIED
+               Not  CDATA #IMPLIED>]]>
+</Listing>
+
+This   element   is   used   like  the   <C>List</C>   element   (see   <Ref
+Subsect="List"/>)  except that  the items  must not  have marks  attached to
+them. Instead, the items are numbered automatically. The same comments about
+the <C>Only</C> and <C>Not</C> attributes as above apply.
+
+</Subsection>
+
+
+<Subsection Label="Table"><Heading><C>&lt;Table></C></Heading>
+<Index Key="Table"><C>Table</C></Index>
+
+<Index Key="Caption"><C>&lt;Caption></C></Index>
+<Index Key="Row"><C>&lt;Row></C></Index>
+<Index Key="Align"><C>&lt;Align></C></Index>
+<Index Key="HorLine"><C>&lt;HorLine></C></Index>
+<Index Key="Item in Table"><C>&lt;Item></C> in <C>&lt;Table></C></Index>
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Table ( Caption?, (Row | HorLine)+ )>
+<!ATTLIST Table Label   CDATA #IMPLIED
+                Only    CDATA #IMPLIED
+                Not     CDATA #IMPLIED
+                Align   CDATA #REQUIRED>
+                <!-- We allow | and l,c,r, nothing else -->
+<!ELEMENT Row   ( Item+ )>
+<!ELEMENT HorLine EMPTY>
+<!ELEMENT Caption ( %InnerText;)*>]]>
+</Listing>
+
+A table in &GAPDoc; consists of an optional <C>Caption</C> element followed
+by a sequence of <C>Row</C> and <C>HorLine</C> elements. A <C>HorLine</C>
+element produces a horizontal line in the table. A <C>Row</C> element
+consists of a sequence of <C>Item</C> elements as they also occur in 
+<C>List</C> and <C>Enum</C> elements. The <C>Only</C> and <C>Not</C>
+attributes have the same functionality as described in the <C>List</C>
+element in <Ref Subsect="List"/>. <P/>
+
+The <C>Align</C> attribute is written like a &LaTeX; tabular alignment
+specifier but only the letters <Q><C>l</C></Q>, <Q><C>r</C></Q>,
+<Q><C>c</C></Q>, and <Q><C>|</C></Q> are allowed meaning left alignment,
+right alignment, centered alignment, and a vertical line as delimiter
+between columns respectively. <P/>
+
+If the <C>Label</C> attribute is there, one can reference the table
+with the <C>Ref</C> element (see <Ref Subsect="Ref"/>) using its
+<C>Label</C> attribute.<P/>
+
+Usually only simple  tables should be used. If you  want a complicated table
+in the  &LaTeX; output  you should  provide alternatives  for text  and HTML
+output.  Note that  in HTML-4.0  there is  no possibility  to interpret  the
+<Q><C>|</C></Q> column  separators and <C>HorLine</C> elements  as intended.
+There are lines between all columns and rows or no lines at all.
+
+</Subsection>
+
+</Section>
+
+<Section><Heading>Types of Text</Heading>
+
+This section covers the markup of text. Various types of <Q>text</Q> exist. 
+The following elements are used in the &GAPDoc; system to mark them.
+They mostly come in pairs, one long name which is easier to remember
+and a shortcut to make the markup <Q>lighter</Q>. <P/>
+
+Most of the following elements are thought to contain only character
+data and no further markup elements. It is however necessary to
+allow <C>Alt</C> elements to resolve the entities described in section
+<Ref Subsect="GDent"/>.
+
+<Subsection><Heading><C>&lt;Emph></C> and <C>&lt;E></C></Heading>
+<Index Key="Emph"><C>Emph</C></Index>
+<Index Key="E"><C>E</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Emph (%InnerText;)*>    <!-- Emphasize something -->
+<!ELEMENT E    (%InnerText;)*>    <!-- the same as shortcut -->]]>
+</Listing>
+
+This element is used to emphasize some piece of text. It may contain
+<C>%InnerText;</C> (see <Ref Text="here" Label="InnerText"/>). 
+</Subsection>
+
+<Subsection><Heading><C>&lt;Quoted></C> and <C>&lt;Q></C></Heading>
+<Index Key="Quoted"><C>Quoted</C></Index>
+<Index Key="Q"><C>Q</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Quoted (%InnerText;)*>   <!-- Quoted (in quotes) text -->
+<!ELEMENT Q (%InnerText;)*>        <!-- Quoted text (shortcut) -->]]>
+</Listing>
+
+This element  is used to put  some piece of text  into <Q>&nbsp;</Q>-quotes.
+It   may   contain    <C>%InnerText;</C>   (see   <Ref   Text="here"
+Label="InnerText"/>).
+
+</Subsection>
+
+
+<Subsection><Heading><C>&lt;Keyword></C> and <C>&lt;K></C></Heading>
+<Index Key="Keyword"><C>Keyword</C></Index>
+<Index Key="K"><C>K</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Keyword (#PCDATA|Alt)*>  <!-- Keyword -->
+<!ELEMENT K (#PCDATA|Alt)*>        <!-- Keyword (shortcut) -->]]>
+</Listing>
+
+This element is used to mark something as a <E>keyword</E>. Usually this
+will be a &GAP; keyword such as <Q><K>if</K></Q> or <Q><K>for</K></Q>.
+No further markup elements are allowed within this element except for
+the <C>Alt</C> element, which is necessary. 
+</Subsection>
+
+<Subsection Label="Arg"><Heading><C>&lt;Arg></C> and 
+                                 <C>&lt;A></C></Heading>
+<Index Key="Arg"><C>Arg</C></Index>
+<Index Key="A"><C>A</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Arg (#PCDATA|Alt)*>      <!-- Argument -->
+<!ELEMENT A (#PCDATA|Alt)*>        <!-- Argument (shortcut) -->]]>
+</Listing>
+
+This  element is  used inside  <C>Description</C>s in  <C>ManSection</C>s to
+mark something as an <E>argument</E> (of a function, operation, or such). It
+is guaranteed that the converters typeset those exactly as in the definition
+of functions. No further markup elements are allowed within this element.
+
+</Subsection>
+
+<Subsection Label="Code"><Heading><C>&lt;Code></C> and 
+                                  <C>&lt;C></C></Heading>
+<Index Key="Code"><C>Code</C></Index>
+<Index Key="C"><C>C</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Code (#PCDATA|Arg|Alt)*>     <!-- GAP code -->
+<!ELEMENT C (#PCDATA|Arg|Alt)*>        <!-- GAP code (shortcut) -->]]>
+</Listing>
+
+This element is  used to mark something  as a piece of  <E>code</E> like for
+example a  &GAP; expression.  It is guaranteed  that the  converters typeset
+this  exactly  as  in  the  <C>Listing</C>  element  (compare  section  <Ref
+Subsect="Listing"/>).  The only further markup elements  allowed within  this
+element are <C>&lt;Arg></C> elements (see <Ref Subsect="Arg"/>).
+
+</Subsection>
+
+<Subsection><Heading><C>&lt;File></C> and <C>&lt;F></C></Heading>
+<Index Key="File"><C>File</C></Index>
+<Index Key="F"><C>F</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT File (#PCDATA|Alt)*>     <!-- Filename -->
+<!ELEMENT F (#PCDATA|Alt)*>        <!-- Filename (shortcut) -->]]>
+</Listing>
+
+This  element  is  used  to  mark   something  as  a  <E>filename</E>  or  a
+<E>pathname</E> in  the file system. No further markup elements  are allowed
+within this element.
+
+</Subsection>
+
+<Subsection><Heading><C>&lt;Button></C> and <C>&lt;B></C></Heading>
+<Index Key="Button"><C>Button</C></Index>
+<Index Key="B"><C>B</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Button (#PCDATA|Alt)*>   <!-- "Button" (also Menu, Key, ...) -->
+<!ELEMENT B (#PCDATA|Alt)*>        <!-- "Button" (shortcut) -->]]>
+</Listing>
+
+This element is  used to mark something  as a <E>button</E>. It  can also be
+used  for other  items  in  a graphical  user  interface like  <E>menus</E>,
+<E>menu entries</E>, or <E>keys</E>. No  further markup elements are allowed
+within this element.
+
+</Subsection>
+
+<Subsection><Heading><C>&lt;Package></C></Heading>
+<Index Key="Package"><C>Package</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Package (#PCDATA|Alt)*>   <!-- A package name -->]]>
+</Listing>
+
+This element is used  to mark something as a name  of a <E>package</E>. This
+is for  example used to define  the entities &GAP;, &XGAP;  or &GAPDoc; (see
+section  <Ref Subsect="GDent"/>).  No  further markup  elements are  allowed
+within this element.
+
+</Subsection>
+
+
+<Subsection Label="Listing"><Heading><C>&lt;Listing></C></Heading>
+<Index Key="Listing"><C>Listing</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Listing (#PCDATA)>  <!-- This is just for GAP code listings -->
+<!ATTLIST Listing Type CDATA #IMPLIED> <!-- a comment about the type of
+                                            listed code, may appear in
+                                            output -->]]>
+</Listing>
+
+This element is  used to embed listings of programs  into the document. Only
+character  data and  no  other  elements are  allowed  in  the content.  You
+should  <E>not</E> use  the  character entities  described  in section  <Ref
+Subsect="GDent"/> but instead type the characters directly. Only the general
+XML rules  from section  <Ref Sect="EnterXML"/>  apply. Note  especially the
+usage  of <C>&lt;![CDATA[</C>  sections described  there. It  is guaranteed
+that all  converters use a  fixed width font for  typesetting <C>Listing</C>
+elements. Compare also the usage of the <C>Code</C> and <C>C</C> elements in
+<Ref Subsect="Code"/>. <P/>
+
+The <C>Type</C> attribute contains a comment  about the type of listed code.
+It may appear in the output.
+
+</Subsection>
+
+
+<Subsection Label="Log"><Heading><C>&lt;Log></C> and
+                                 <C>&lt;Example></C></Heading>
+<Index Key="Log"><C>Log</C></Index>
+<Index Key="Example"><C>Example</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Example (#PCDATA)>  <!-- This is subject to the automatic 
+                                   example checking mechanism -->
+<!ELEMENT Log (#PCDATA)>      <!-- This not -->]]>
+</Listing>
+
+These two elements behave exactly  like the <C>Listing</C> element (see <Ref
+Subsect="Listing"/>). They are thought for protocols  of &GAP; sessions. The
+only difference between the two is that <C>Example</C> sections are intended
+to be subject  to an automatic manual checking mechanism  used to ensure the
+correctness of the &GAP; manual whereas <C>Log</C> is not touched by this
+(see section <Ref Sect="Sec:TestExample"/> for checking tools).
+<P/>
+To get a good layout of the examples for display in a standard terminal we
+suggest to use <C>SizeScreen([72]);</C> (see <Ref Func="SizeScreen" 
+BookName="Reference"/>) in your &GAP; session before producing the content
+of <C>Example</C> elements.
+</Subsection>
+
+<Subsection Label="Verb"><Heading><C>&lt;Verb></C></Heading>
+
+There is one further type of verbatim-like element. 
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Verb  (#PCDATA)> ]]>
+</Listing>
+
+The  content of  such an  element is  guaranteed to  be put  into an  output
+version exactly as it  is using some fixed width font.  Before the content a
+new line is started. If the line after  the end of the start tag consists of
+whitespace only then this part of the content is skipped.<P/>
+
+This element is intended to be  used together with the <C>Alt</C> element to
+specify  pre-formatted  ASCII  alternatives for  complicated  <C>Display</C>
+formulae or <C>Table</C>s.
+
+</Subsection>
+
+</Section>
+<Section Label="MathForm"><Heading>Elements for Mathematical Formulae</Heading>
+
+<Subsection Label="Math"><Heading><C>&lt;Math></C> 
+                              and <C>&lt;Display></C></Heading>
+<Index Key="Math"><C>Math</C></Index>
+<Index Key="Display"><C>Display</C></Index>
+
+<Listing Type="From gapdoc.dtd"><![CDATA[
+<!-- Normal TeX math mode formula -->
+<!ELEMENT Math (#PCDATA|A|Arg|Alt)*>   
+<!-- TeX displayed math mode formula -->
+<!ELEMENT Display (#PCDATA|A|Arg|Alt)*>
+<!-- Mode="M" causes <M>-style formatting -->
+<!ATTLIST Display Mode CDATA #IMPLIED>]]>
+</Listing>
+
+These elements are  used for mathematical formulae. As  described in section
+<Ref Sect="GDformulae"/> they correspond to  &LaTeX;'s math and display math
+mode  respectively.<P/>
+
+The formulae  are typed in  as in  &LaTeX;, <E>except</E> that  the standard
+XML  entities,   see&nbsp;<Ref  Subsect="XMLent"   />  (in   particular  the
+characters  <C>&lt;</C> and  <C>&amp;</C>), must  be escaped  - either  by
+using  the  corresponding  entities  or by  enclosing  the  formula  between
+<Q><C>&lt;![CDATA[</C></Q> and  <Q><C>]]&gt;</C></Q>. (The  main reference
+for &LaTeX; is <Cite Key="La85" />.)<P/>
+
+It is also possible to use some unicode characters for mathematical
+symbols directly, provided that it can be translated by <Ref Func="Encode" /> into <C>"LaTeX"</C> encoding and that <Ref Func="SimplifiedUnicodeString"/> with arguments <C>"latin1"</C> and <C>"single"</C> returns something sensible.
+Currently, we support entities <C>&amp;CC;</C>, <C>&amp;ZZ;</C>,
+<C>&amp;NN;</C>, <C>&amp;PP;</C>, <C>&amp;QQ;</C>, <C>&amp;HH;</C>,
+<C>&amp;RR;</C> for the corresponding black board bold letters 
+&CC;, &ZZ;, &NN;,&PP;, &QQ;, &HH; and  &RR;, respectively.
+<P/>
+
+The only  element type that  is allowed within  the formula elements  is the
+<C>Arg</C> or <C>A</C> element (see  <Ref Subsect="Arg"/>), which is used to
+typeset identifiers that are arguments to &GAP; functions or operations.<P/>
+
+If  a <C>Display</C>  element has  an attribute  <C>Mode</C> with  value
+<C>"M"</C>,  then  the formula  is  formatted  as in  <C>M</C>  elements
+(see&nbsp;<Ref Subsect="M"  />). Otherwise in  text and HTML  output the
+formula is shown as &LaTeX; source code.<P/>
+
+For  simple formulae  (and  you should  try to  make  all your  formulae
+simple!)  attempt to  use the  <C>M</C> element  or the  <C>Mode="M"</C>
+attribute  in  <C>Display</C>   for  which  there  is   a  well  defined
+translation  into text,  which  can be  used for  text  and HTML  output
+versions of the  document. So, if possible try to  avoid the <C>Math</C>
+elements and <C>Display</C> elements without attribute or provide useful
+text  substitutes  for  complicated  formulae  via  <C>Alt</C>  elements
+(see&nbsp;<Ref Subsect="Alt" /> and&nbsp;<Ref Subsect="Verb" />).
+
+</Subsection>
+
+
+<Subsection Label="M"><Heading><C>&lt;M></C></Heading>
+<Index Key="M"><C>M</C></Index>
+
+<Listing Type="From gapdoc.dtd"><![CDATA[
+<!-- Math with well defined translation to text output -->
+<!ELEMENT M (#PCDATA|A|Arg|Alt)*>]]>
+</Listing>
+
+The <Q><C>M</C></Q>  element type  is intended for  formulae in  the running
+text for which there is a sensible text version. For the &LaTeX; version of
+a &GAPDoc;  document the <C>M</C>  and <C>Math</C> elements  are equivalent.
+The  remarks in  <Ref Subsect="Math"  />  about special  characters and  the
+<C>Arg</C> element  apply here as  well. A  document which has  all formulae
+enclosed in <C>M</C>  elements can be well readable in  text terminal output
+and printed output versions.<P/>
+
+Compared to former versions of &GAPDoc; many more formulae can be put into
+<C>M</C> elements. Most modern terminal emulations support unicode characters
+and many mathematical symbols can now be represented by such characters.
+But even if a terminal can only display ASCII characters, the user will see
+some not too bad representation of a formula.<P/>
+
+As examples, here are some  &LaTeX;  macros which have  a  sensible 
+ASCII  translation and  are
+guaranteed to be translated accordingly by text (and HTML) converters 
+(for a full list of handled Macros see <C>RecFields(TEXTMTRANSLATIONS)</C>):
+
+<Table Align="|l|l|">
+ <Caption>&LaTeX; macros with special text translation</Caption>
+ <HorLine/>
+  <Row><Item>\ast</Item>           <Item><C>*</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\bf</Item>     <Item><C></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\bmod</Item>           <Item><C>mod</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\cdot</Item>           <Item><C>*</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\colon</Item>           <Item><C>:</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\equiv</Item>          <Item><C>=</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\geq</Item>            <Item><C>>=</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\germ</Item>     <Item><C></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\hookrightarrow</Item>     <Item><C>-></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\iff</Item> <Item><C>&lt;=></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\langle</Item>         <Item><C>&lt;</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\ldots</Item>          <Item><C>...</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\left</Item>           <Item><C>&nbsp;</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\leq</Item>            <Item><C>&lt;=</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\leftarrow</Item>      <Item><C>&lt;-</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\Leftarrow</Item> <Item><C>&lt;=</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\limits</Item>         <Item><C>&nbsp;</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\longrightarrow</Item> <Item><C>--></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\Longrightarrow</Item> <Item><C>==></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\mapsto</Item>         <Item><C>-></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\mathbb</Item>         <Item><C>&nbsp;</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\mathop</Item>         <Item><C>&nbsp;</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\mid</Item>            <Item><C>|</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\pmod</Item>           <Item><C>mod</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\prime</Item>           <Item><C>'</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\rangle</Item>         <Item><C>></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\right</Item>          <Item><C>&nbsp;</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\rightarrow</Item>     <Item><C>-></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\Rightarrow</Item> <Item><C>=></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\rm, \sf, \textrm, \text</Item>     <Item><C></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\setminus</Item>     <Item><C>\</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\thinspace</Item>     <Item><C> </C></Item></Row>
+ <HorLine/>
+  <Row><Item>\times</Item>     <Item><C>x</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\to</Item>             <Item><C>-></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\vert</Item>     <Item><C>|</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\!</Item>     <Item><C></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\,</Item>     <Item><C></C></Item></Row>
+ <HorLine/>
+  <Row><Item>\;</Item>     <Item><C>&nbsp;</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\{</Item>     <Item><C>{</C></Item></Row>
+ <HorLine/>
+  <Row><Item>\}</Item>     <Item><C>}</C></Item></Row>
+ <HorLine/>
+
+</Table>
+
+In all other macros only the  backslash is removed (except for some macros
+describing more exotic symbols). Whitespace is normalized
+(to one blank)  but not removed. Note  that whitespace is not  added, so you
+may  want to  add a  few more  spaces than  you usually  do in  your &LaTeX;
+documents.<P/>
+
+Braces  <C>{}</C> are  removed  in general,  however pairs  of
+double braces are converted to one pair of braces. This can be used to write
+<C>&lt;M>x^{12}&lt;/M></C> 
+for <C>x^12</C> and
+<C>&lt;M>x_{{i+1}}&lt;/M></C> 
+for <C>x_{i+1}</C>.  <P/>
+
+
+</Subsection>
+
+
+</Section>
+
+<Section Label="sec:misc">
+<Heading>Everything else</Heading>
+
+<Subsection Label="Alt"><Heading><C>&lt;Alt></C></Heading>
+<Index Key="Alt"><C>Alt</C></Index>
+
+This  element  is   used  to  specify  alternatives   for  different  output
+formats within  normal text. See  also sections <Ref  Subsect="List"/>, <Ref
+Subsect="Enum"/>, and  <Ref Subsect="Table"/> for alternatives  in lists and
+tables.
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Alt (%InnerText;)*>  <!-- This is only to allow "Only" and
+                                    "Not" attributes for normal text -->
+<!ATTLIST Alt Only CDATA #IMPLIED
+              Not  CDATA #IMPLIED>]]>
+</Listing>
+
+Of course exactly one  of the two attributes must occur  in one element. The
+attribute values must be one word or a list of words, separated by spaces or
+commas. The words  which are currently recognized by  the converter programs
+contained  in  &GAPDoc;  are: <Q><C>LaTeX</C></Q>,  <Q><C>HTML</C></Q>,  and
+<Q><C>Text</C></Q>. If the <C>Only</C> attribute  is specified then only the
+corresponding converter  will include  the content of  the element  into the
+output document. If the <C>Not</C>  attribute is specified the corresponding
+converter will ignore the content of the element. You can use other words to
+specify special alternatives for other converters of &GAPDoc; documents.<P/>
+
+We fix  a rule for  handling the content of  an <C>Alt</C> element  with 
+<C>Only</C> attribute. 
+In  their content code for the corresponding output format is included
+directly. So, in case of HTML the content is HTML code, in case of
+&LaTeX; the content is &LaTeX; code. The converters don't apply any
+handling of special  characters to this content. <P/>
+
+Within  the element  only <C>%InnerText;</C>  (see <Ref  Text="here"
+Label="InnerText"/>) is  allowed. This  is to  ensure that  the same  set of
+chapters, sections, and subsections show up in all output formats.
+
+</Subsection>
+
+
+<Subsection Label="Par"><Heading><C>&lt;Par></C> and 
+                                 <C>&lt;P></C></Heading>
+<Index Key="Par"><C>Par</C></Index>
+<Index Key="P"><C>P</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Par EMPTY>    <!-- this is intentionally empty! -->
+<!ELEMENT P EMPTY>      <!-- the same as shortcut  -->]]>
+</Listing>
+
+This <C>EMPTY</C>  element marks  the boundary of  paragraphs. Note  that an
+empty line  in the input  does not  mark a new  paragraph as opposed  to the
+&LaTeX; convention.<P/>
+
+(Remark:  it would  be much  easier to  parse a  document and  to understand
+its  sectioning and  paragraph structure  when  there was  an element  whose
+<E>content</E> is  the text of a  paragraph. But in practice  many paragraph
+boundaries  are implicitly  clear which  would make  it somewhat  painful to
+enclose each  paragraph in extra tags.  The introduction of the  <C>P</C> or
+<C>Par</C>  elements  as above  delegates  this  pain  to  the writer  of  a
+conversion program for &GAPDoc; documents.)
+
+</Subsection>
+
+<Subsection Label="Br"><Heading><C>&lt;Br></C></Heading>
+<Index Key="Br"><C>Br</C></Index>
+
+<Listing Type="From gapdoc.dtd"> 
+<![CDATA[<!ELEMENT Br EMPTY>     <!-- a forced line break  -->]]>
+</Listing>
+
+This element can be used to force a line break in the output versions of
+a &GAPDoc; element, it does not start a new paragraph. 
+Please, do not use this instead of a <C>Par</C> element, this would
+often lead to ugly output versions of your document.
+
+</Subsection> 
+
+<Subsection Label="Ignore"><Heading><C>&lt;Ignore></C></Heading>
+<Index Key="Ignore"><C>Ignore</C></Index>
+
+<Listing Type="From gapdoc.dtd"> 
+<![CDATA[<!ELEMENT Ignore (%Text;| Chapter | Section | Subsection | ManSection |
+                  Heading)*>
+<!ATTLIST Ignore Remark CDATA #IMPLIED>]]>
+</Listing>
+
+This element can appear anywhere. Its content is ignored by the standard
+converters. It can be used, for example, to include data which are not
+part of the actual &GAPDoc; document, like source code, or to make
+not finished parts of the document invisible.
+<P/>
+
+Of course, one can use special converter programs which extract the
+contents of <C>Ignore</C> elements. Information on the type of the
+content can be stored in the optional attribute <C>Remark</C>.
+
+</Subsection> 
+
+</Section>
+</Chapter>
+

@@ -1,0 +1,94 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  combinat.msk                GAP documentation            Martin Schönert -->
+<!-- %A                                                           Alexander Hulpke -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: combinat.msk,v 1.19 2002/09/04 11:27:01 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Combinatorics">
+<Heading>Combinatorics</Heading>
+
+This chapter describes functions that deal with combinatorics.
+We mainly concentrate on two areas.
+One is about <E>selections</E>,
+that is the ways one can select elements from a set.
+The other is about <E>partitions</E>,
+that is the ways one can partition a set into the union of pairwise disjoint
+subsets.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Combinatorial Numbers">
+<Heading>Combinatorial Numbers</Heading>
+
+<#Include Label="Factorial">
+<#Include Label="Binomial">
+<#Include Label="Bell">
+<#Include Label="Bernoulli">
+<#Include Label="Stirling1">
+<#Include Label="Stirling2">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Combinations, Arrangements and Tuples">
+<Heading>Combinations, Arrangements and Tuples</Heading>
+
+<#Include Label="Combinations">
+<#Include Label="IteratorOfCombinations">
+<#Include Label="NrCombinations">
+<#Include Label="Arrangements">
+<#Include Label="NrArrangements">
+<#Include Label="UnorderedTuples">
+<#Include Label="NrUnorderedTuples">
+<#Include Label="Tuples">
+<#Include Label="EnumeratorOfTuples">
+<#Include Label="IteratorOfTuples">
+<#Include Label="NrTuples">
+<#Include Label="PermutationsList">
+<#Include Label="NrPermutationsList">
+<#Include Label="Derangements">
+<#Include Label="NrDerangements">
+<#Include Label="PartitionsSet">
+<#Include Label="NrPartitionsSet">
+<#Include Label="Partitions">
+<#Include Label="IteratorOfPartitions">
+<#Include Label="NrPartitions">
+<#Include Label="OrderedPartitions">
+<#Include Label="NrOrderedPartitions">
+<#Include Label="PartitionsGreatestLE">
+<#Include Label="PartitionsGreatestEQ">
+<#Include Label="RestrictedPartitions">
+<#Include Label="NrRestrictedPartitions">
+<#Include Label="SignPartition">
+<#Include Label="AssociatedPartition">
+<#Include Label="PowerPartition">
+<#Include Label="PartitionTuples">
+<#Include Label="NrPartitionTuples">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Fibonacci and Lucas Sequences">
+<Heading>Fibonacci and Lucas Sequences</Heading>
+
+<#Include Label="Fibonacci">
+<#Include Label="Lucas">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Permanent of a Matrix">
+<Heading>Permanent of a Matrix</Heading>
+
+<#Include Label="Permanent">
+
+</Section>
+</Chapter>
+

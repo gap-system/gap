@@ -1,0 +1,359 @@
+\documentclass{article}
+\usepackage{times}
+\usepackage{a4wide}
+\usepackage{amsfonts}
+\parindent 0pt
+\parskip0.5\medskipamount
+\title{Arithmetic of Lists and Matrices\\
+A Description of what the Kernel does and Notes on Implementing the
+New Functionality}
+\author{Steve Linton}
+\begin{document}
+\maketitle
+\section{Basics -- jump tables}
+
+When the interpreter evaluates an arithmetic expression it reaches a
+range of functions such as EvalAInv (\verb|exprs.c|), and from there
+(and elsewhere in the kernel) the macros such as AINV and SUM
+(\verb|ariths.h|) are called. These despatch through the kernel jump
+tables such as \verb|SumFuncs|. Exceptionally, \verb|EvalSum|, \verb|EvalDiff| and
+\verb|EvalProd| fast-track the case of two small integer arguments and
+small integer result. 
+
+The jump tables  are indexed by the TNUMs of their
+one or two arguments. Certain entries, relating entirely to kernel
+objects (types in the range \verb|FIRST_REAL_TNUM| to
+\verb|LAST_VIRTUAL_TNUM| are installed there, permanently. 
+Certain additional entries are initialized via a call to function like
+\verb|InstallZeroObject|. This takes one argument specifying whether
+to install the verbose or silent versions of the functions. These
+\verb|InstallXXXObject| functions also also called by
+\verb|ChangeDoOperations| when tracing is enabled or disabled. They
+set the table entries for the cases when one or more argument  is of
+type between \verb|FIRST_EXTERNAL_TNUM| and \verb|LAST_EXTERNAL_TNUM|
+or of types \verb|T_OBJECT|, \verb|T_PREC| or \verb|T_PREC+IMMUTABLE|.
+
+
+The values installed by default are usually the kernel functions
+\verb|XXXObject| which simply call |DoOperation| for the appropriate
+operations. There are a few exceptions, for purely internal objects:
+\verb|DiffDefault|, \verb|QuoDefault|, \verb|LQuoDefault| and
+\verb|CommDefault|, \verb|PowDefault|  are installed, reducing these
+operations (\verb|POW| in its conjugate sense) to simpler
+ones. \verb|QuoDefault| and \verb|LQuoDefault|, but not the others
+include a mutability adjustment on the intermediate value.
+
+\section{TNUM's of Lists}
+
+Kernel lists have TNUM's between \verb|FIRST_LIST_TNUM| and
+\verb|LAST_LIST_TNUM| within that range \verb|FIRST_PLIST_TNUM| up to
+\verb|LAST_PLIST_TNUM| are plain lists, about which various things may
+or may not be known. The rest includes, ranges, blists and strings,
+which don't trouble us here.  Important to note is that many plist
+tnum's are ``incomplete'' meaning that there is unknown (or
+unstorable) information about the list which could change its
+behaviour. Note that not knowing sortedness does not make a list
+incomplete, as sortedness never affects the results of operations.
+
+Non-kernel objects which are lists will have tnum \verb|T_COMOBJ|,
+\verb|T_POSOBJ| or \verb|T_DATOBJ| and a type containing
+\verb|IsList|. While they are almost always dealt with in the library,
+plain lists containing them may need to be thought about in the
+kernel.
+
+After these come the ``virtual'' TNUMS \verb|T_OBJECT|, \verb|T_MAT_CYC| and
+\verb|T_MAT_FFE|. I think these are used to report non-stored or
+non-storable information about lists during arithmetic method
+selection, but we will come to this.
+
+\section{Special Jump Table Entries for Lists}
+
+\subsection{In listoper.c}
+
+\verb|listoper.c| installs some entries in the jump tables,
+overwriting what was there before. This is controlled by a vector
+\verb|CAT| which classifies all TNUMs (including the virtual ones)
+into: scalar, vector, matrix, empty, ``nothing'' (non-arithmetic types)
+and incomplete.
+
+\textbf{Note:} Some types are labelled incomplete which probably
+should not be: \verb|T_PLIST_NDENSE| and \verb|T_PLIST_DENSE_NHOM_*|. These should
+probably be ``nothing'' (ie install no kernel methods). 
+
+For Zero and AInv, the methods installed are then \verb|XxxList| for
+incomplete types and XxxListDefault for all other non-scalar types. 
+XxxxList, calls \verb|XTNum| to get more information about the list
+and then redispatches. XXXListDefault does element-by-element zeroing
+or negation, calling ZERO or AINV on each list entry. 
+
+For One, the functions are OneList for incomplete types and OneMatrix
+for matrices. Inv is similar. PowMatrixInt is installed for powering
+of matrices by integers of any sign. 
+
+For Sum, there are four functions, SumList, which redispatches and
+SumListScl, SumSclList and SumListList which implement the three
+possible addition algorithms. SumList is installed if either argument
+is incomplete, else SumListScl or SumListScl if one argument is a
+scalar and the other not, else SumListList if both are vectors or
+empty or matrices. Diff is like Sum.
+
+For Prod, there are again four functions, ProdList redespatches,
+ProdListScl and ProdSclList do the obvious and ProdListList is inner
+product. ProdList is installed if either argument is incomplete,
+ProdListScl or ProdSclList if just one argument is scalar,
+ProdListList for vector* anything else, ProdListScl
+for matrix * vector and ProdSclList for matrix * empty. 
+
+Quo just has QuoList installed if eithert argument is incomplete,
+likewise Lquo and Pow. Additionally ProdListList is installed for
+\verb|vector ^ matrix|, and PowDefault (conjugate) for matrix * matrix. Comm
+is like Quo.
+
+\subsection{In vector.c and vecffe.c}
+
+In \verb|vector.c|, special methods are installed for arithmetic with
+arguments of TNum \verb|T_PLIST_CYC_*| and/or \verb|T_INT| for Sum, Diff and
+Prod. Also \verb|ProductVectorMatrix| is installed for vectors and
+\verb|T_MAT_CYC|.
+
+In \verb|vecffe.c| something very similar is done for
+\verb|T_PLIST_FFE| and relatives and the corresponding matrix type.
+
+
+
+\section{XTNum extended despatch}
+
+XTNum is defined in lists.c. It's behaviour is controlled by entries
+in the IsXTNumListFuncs jump table. These are boolean (C style)
+unctions, possibly defined for types from \verb|FIRST_REAL_TNUM| up to
+\verb|LAST_VIRTUAL_TNUM|. Each one is tried in reverse TNUM order, with
+\verb|T_OBJECT| as the fallback.
+
+In fact, only a few functions are installed, in vector.c and
+vecffe.c. In the order in which they are tried, this is for \verb|T_MAT_FFE|,
+\verb|IsXTNumMatFFE|, for \verb|T_MAT_CYC|, \verb|IsXTNumMatCyc|, for \verb|T_PLIST_FFE|
+\verb|IsXTNumPlistFFE| and for \verb|T_PLIST_CYC|, \verb|IsXTNumPlistCyc| and finally
+\verb|IsXTNumEmpty| for \verb|T_PLIST_EMPTY|. The two for vector types also change
+the TNUM of the list appropriately. The two for matrix types call the
+corresponding vector testers on each row.
+
+\section{Determining the Type of Plists}
+If either before or after extended dispatching, we fall into one of
+the cases where no kernel method is installed, we usually come to one
+of the handlers like SumObjects, which calls out to the SUM operation,
+in the library. Note that some things, like replacing a - b by a +
+AInv(b), may happen first as noted above.
+
+The operation dispatcher will then immediately determine the types of
+the arguments, which, for internal objects takes us to the kernel
+jump table \verb|TypeObjFuncs|. For plain lists, the relevant entries
+in this are installed in \verb|plist.c|. There are a lot of
+these. Rather than rewrite it, I copy here the  explanation from
+\verb|plist.c|.
+\begin{verbatim}
+/****************************************************************************
+**
+*F  TypePlist(<list>) . . . . . . . . . . . . . . . . .  kind of a plain list
+**
+**  'TypePlist' returns the kind of the plain list <list>.
+**
+**  'TypePlist' is the function in 'TypeObjFuncs' for plain lists.
+**
+**  TypePlist works with KTnumPlist to determine the type of a plain list
+**  Considerable care is needed to deal with self-referential lists. This is
+**  basically achieved with the TESTING flag in the Tnum. This must be set in
+**  the "current" list before triggering determination of the Type (or KTnum)
+**  of any sublist.
+**
+**  KTnumPlist determined the "true" Tnum of the list, taking account of such
+**  factors as denseness, homogeneity and so on. It modifies the stored Tnum
+**  of the list to the most informative "safe" value, allowing for the
+**  mutability of the list entries (and preserving TESTING).
+**
+**  Here begins a new attempt by Steve to describe how it all works:
+**
+**  We begin with the TNUMs attached to the objects. They are defined in
+**  objects.h and consist of the following, each of which can be qualified by
+**  adding the constant IMMUTABLE.
+**
+**   T_PLIST                    nothing is known
+**   T_PLIST_NDENSE             known to have a hole
+**   T_PLIST_DENSE              known only not to have a hole
+**   T_PLIST_DENSE_NHOM         known to be dense but not homogenous *  **
+**   T_PLIST_DENSE_NHOM_SSORT   dense, non-hom but strictly sorted
+**   T_PLIST_DENSE_NHOM_NSORT   dense, non-hom, known not be be sorted
+**   T_PLIST_EMPTY              the empty list
+**   T_PLIST_HOM                known to be homogenous *
+**   T_PLIST_HOM_NSORT           etc
+**   T_PLIST_HOM_SSORT           etc
+**   T_PLIST_TAB                known to be a table  *
+**   T_PLIST_TAB_NSORT           etc
+**   T_PLIST_TAB_SSORT           etc
+**   T_PLIST_TAB_RECT           known to be a rectangular table  *
+**   T_PLIST_TAB_RECT_NSORT      etc
+**   T_PLIST_TAB_RECT_SSORT      etc
+**   T_PLIST_CYC                known to be a list of constant kernel cyclotomics
+**   T_PLIST_CYC_NSORT           etc
+**   T_PLIST_CYC_SSORT           etc
+**   T_PLIST_FFE                known to be a list of kernel FFEs
+**
+**   * -- these tnums can only be safely given when none of the elements of the list
+**        is mutable
+**   ** -- dense recursive lists (have themselves as a (possibly nested) subobject)
+**         appear here
+**
+**  There are 10 functions entered in TypeObjFuncs:
+**      1. TypePlist
+**      2. TypePlistNDenseMut/Imm
+**      3. TypePlistDenseMut/Imm
+**      4. TypePlistDenseNHomMut/Imm
+**      5. TypePlistDenseNHomSSortMut/Imm
+**      6. TypePlistDenseNHomNSortMut/Imm
+**      7. TypePlistEmptyMut/Imm
+**      8. TypePlistHom     -- also handles Tab and RectTab
+**      9. TypePlistCyc
+**      10.TypePlistFfe
+**
+**     Of these:
+**         3 is actually an alias of 1
+**         2,4, 5, 6 and 7  simply return a fixed type
+**         Thus 1, 8, 9 and 10 have work to do.
+**
+**     9 and 10 look up the exact TNUM in a table associated with the element
+**        family to find the type, calling out to a GAP function to make each type
+**        for the first time.
+**
+**     1 and 8 now get really complicated. This is because they now have to
+**     check properties of the list which may be currently true, but not yet
+**     known, and possibly not storable due to the presence of mutable
+**     elements in the list. If we didn't do this, a lot of matrix stuff
+**     wouldn't work
+**
+**     8 is the simpler. It calls KTnumHomPlist, which checks whether we
+**     should really be in T_PLIST_CYC, T_PLIST_FFE or T_PLIST_TAB and if so,
+**     changes the TNUM appropriately and returns the new tnum.  The only
+**     time this is slow is a homogenous list of lists which looks like a
+**     table until the very last entry which has the wrong length. This
+**     should be rare.
+**     
+**     1 is the real nightmare, because it has to handle recursive mutable
+**     lists, lists with mutable subobjects, etc.  We now concentrate on this
+**     case.
+**
+**     The entry point is the function TypePlistWithKTnum, which returns both
+**     the type and the ktnum of the list. This must be done in one function
+**     to avoid an exponential slowdown for deeply nested lists. This
+**     function is mutually recursive with KTnumPlist, which also returns two
+**     pieces of information: the ktnum of the list and, if it is homogenous,
+**     the family of the elements.
+**
+**     recursive lists (ie lists which are there own subobjects are detected
+**     using the TESTING tnums. Any list being examined must have TESTING added to
+**     its tnum BEFORE any element of it is examined.
+**
+**     
+**
+*/
+\end{verbatim}
+
+What is relevant for our purposes, is that this code, taking advantage
+of the information already stored about the list, walks the structure
+of it, as far as necessary to determine it's ``transient'' TNUM (ie
+the TNUM that it really deserves, but which might not be storable
+thanks to the presence of mutable subobjects) storing as much
+information along the way as it can. After that, the type is just
+looked up in global variables for non-homogenous lists. For
+homogeneous lists, the lookup is done in data stored in the lists
+family. 
+
+\section{Library Methods for List Arithmetic}
+
+The main place where generic methods for list arithmetic are installed
+seems to be in \verb|list.gi|. For Zero, methods are installed for any
+dense small list, and for IsListDefault and
+IsAdditiveElementWithZeroList (the kernel function \verb|ZERO_LIST_DEFAULT|,
+which essentially just calls our old friend ZeroListDefault). Another
+method checks dense lists to see if they are small but don't know it
+yet. \textbf{Query:} why isn't the kernel method installed for any
+dense small list, instead of a library method.
+
+For Additive inverse, the story is similar, except that the kernel
+method \textbf{is} installed for any dense small list.
+
+
+For difference, various methods are installed which come back to the
+kernel \verb|DIFF_LIST_SCL_DEFAULT| and \verb|DIFF_SCL_LIST_DEFAULT|,
+which call the functions we have already seen. There are also some
+library functions which handle non-dense lists.
+
+For list difference, there is a library method which handles non-dense
+lists and the kernel is called for appropriately types lists in
+IsListDefault.
+
+The kernel \verb|ONE_MATRIX| is installed for small ordinary matrices.
+
+For inverse, there is \verb|INV_MATRIX| which makes no assumptions,
+and \verb|INV_MAT_DEFAULT| which assumes plain lists.
+
+There is a general installation of PROD as a method for POW for 
+\verb|vector ^ matrix|.
+
+Sum seems to parallel difference. 
+
+A whole mass of method are installed for *. 
+
+\section{How to Proceed?}
+
+\subsection{The end of XTNums?}
+
+An obvious question is whether the whole XTNum system really serves
+any purpose.  If it were removed, then incomplete lists would fall
+through to the library, and the type determination would do a
+reasonable job of completing the TNum and storing appropriate
+results. Indeed, it would probably do a better job than the XTNum
+stuff because it has been worked on more recently. For instance the
+XTNum of an immutable 2x2 integer matrix is incorrect. 
+
+The cost is that method selection (presumably a cache hit) would be
+needed to trigger the efficient kernel methods for cyclotomic and FFE
+matrices. I think this is probably acceptable.
+
+The whole virtual types machinery can then go.
+
+This is implemented
+
+\subsection{Implementing the New Rules}
+
+So, we want to revise the existing kernel functions to implement the
+left, right, ptwise and inner rules, as now specified. We need to
+select an appropriate set of special cases, for which we might, for
+instance require denseness, to haev extra-fast routines. All of these
+routines are exported from the kernel and installed in the library as
+methods with appropriate requirements. 
+
+Similarly, we need to revise existing library methods, both for their
+semantics and their installation.
+
+We also need some catch-all methods in the library that actually
+compute nesting depths in difficult cases. 
+
+We also need to check in which cases the TNUMs alone allow us to
+choose one of the kernel methods, and install them in the jump tables.
+
+
+\subsection{Another Thing}
+
+More testing/programming is needed around fully mutable compressed
+matrices, compressed locked vectors, etc.
+
+
+
+
+
+\end{document}
+
+
+
+
+
+

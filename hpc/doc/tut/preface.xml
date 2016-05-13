@@ -1,0 +1,58 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  preface.tex               GAP documentation         Joachim Neubueser -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: preface.tex,v 4.44 2006/06/27 21:37:08 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright (C) 1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
+<!-- %% -->
+<!-- %%  This file contains the preface of the GAP tutorial. -->
+<!-- %% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Chapter Label="Preface">
+<Heading>Preface</Heading>
+
+Welcome to &GAP;. This preface serves not only to introduce this
+manual, <Q>the &GAP; Tutorial</Q>, but also as an introduction to the
+system as a whole.
+<P/>
+&GAP; stands  for  <E>Groups, Algorithms  and Programming</E>.  The  name was
+chosen to reflect  the aim of  the  system, which  is introduced in  this
+tutorial manual.  Since  that  choice,  the  system has become   somewhat
+broader,    and  you will  also   find information   about algorithms and
+programming  for other   algebraic structures,   such as semigroups   and
+algebras.
+<P/>
+In addition to this manual, there is the <E>&GAP; Reference Manual</E> 
+<Alt Only="HTML">(see <Ref BookName="ref" Label="Preface"/>)</Alt>
+containing detailed documentation of the mathematical functionality of &GAP;,
+and the manual called <E><Q>&GAP; - Changes from Earlier Versions</Q></E>
+<Alt Only="HTML">(see <Ref BookName="Changes" Label="Preface"/>)</Alt>
+which describes most essential changes from previous &GAP; releases.
+<P/>
+A lot of the functionality of the system and a number of
+contributed extensions are provided as <Q>&GAP; packages</Q>
+and each of these has its own manual.
+<P/>
+Subsequent sections of this preface explain the structure of the
+system and list sources of further information about &GAP;.
+<P/>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="The GAP System">
+<Heading>The &GAP; System</Heading>
+<#Include SYSTEM "../ref/overview.xml">
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Further Information about GAP">
+<Heading>Further Information about &GAP;</Heading>
+<#Include SYSTEM "../ref/moreinfo.xml">
+</Section>
+
+</Chapter>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

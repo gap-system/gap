@@ -1,0 +1,447 @@
+#############################################################################
+
+REAL LIST TYPES
+===============
+
+T_PLIST
+-------
+a list, for which no additional information is known
+
+T_PLIST_NDENSE
+--------------
+a list with holes
+
+T_PLIST_DENSE
+-------------
+a dense list, which is mutable
+
+T_PLIST_DENSE_NHOM
+------------------
+a dense list, which contains immutables and is not homogeneous
+
+T_PLIST_EMPTY
+-------------
+a list of length zero
+
+T_PLIST_HOM
+-----------
+a dense list, which contains immutable and is homogeneous and not a table
+
+T_PLIST_HOM_NSORT
+-----------------
+a dense list, which contains immutable and is homogeneous and not a table and
+is known to be unsorted.  NSORT means that the list is not strictly
+sorted.
+
+T_PLIST_HOM_SSORT
+-----------------
+a dense list, which contains immutable and is homogeneous and not a table and
+is known to be strictly sorted
+
+T_PLIST_TAB
+-----------
+a dense list, which contains immutable and is homogeneous and a table;  a table
+is a list of lists of equal lengths which not empty
+
+T_PLIST_TAB_NSORT
+-----------------
+a dense list, which contains immutable and is homogeneous and a table and
+is known to be unsorted
+
+T_PLIST_TAB_SSORT
+-----------------
+a dense list, which contains immutable and is homogeneous and a table and
+is known to be strictly sorted
+
+T_PLIST_CYC
+-----------
+a dense list, which only contains objects of type <= T_CYC
+
+T_PLIST_CYC_NSORT
+-----------------
+a dense list, which only contains objects of type <= T_CYC  and
+is known to be unsorted
+
+T_PLIST_CYC_SSORT
+-----------------
+a dense list, which only contains objects of type <= T_CYC  and
+is known to be strictly sorted
+
+T_RANGE_NSORT
+-------------
+a dense list, which knows that it is a list of integers of equal distance and
+is known to be unsorted
+
+T_RANGE_SSORT
+-------------
+a dense list, which knows that it is a list of integers of equal distance and
+is known to be strictly sorted
+
+T_VECFFE
+--------
+not supported yet
+
+T_VECFFE_NSORT
+--------------
+not supported yet
+
+T_VECFFE_SSORT
+--------------
+not supported yet
+
+T_BLIST
+-------
+a dense list, which knows that it is a list of booleans
+
+T_BLIST_NSORT
+-------------
+a dense list, which knows that it is a list of booleans and is known
+to be unsorted
+
+T_BLIST_SSORT
+-------------
+a dense list, which knows that it is a list of booleans and is known
+to be strictly sorted
+
+T_STRING
+--------
+a dense list, which knows that it is a list of characters
+
+T_STRING_NSORT
+--------------
+a dense list, which knows that it is a list of characters and is known
+to be unsorted
+
+T_STRING_SSORT
+--------------
+a dense list, which knows that it is a list of characters and is known
+to be strictly sorted
+
+#############################################################################
+
+VIRTUAL LIST TYPES
+==================
+
+T_MAT_CYC
+---------
+a non-empty, dense list of lists of equal lengths which can be
+converted into lists of type T_PLIST_CYC*
+
+T_MAT_FFE
+---------
+not supported yet
+
+++ T_MATRIX
+-----------
+a non-empty, dense list of lists of equal lengths which contain
+only objects of type <= LAST_CONSTANT_TYPE
+
+++ T_VECTOR
+-----------
+a non-empty, dense list of objects of type <= LAST_CONSTANT_TYPE
+
+++ T_LISTX
+----------
+a list which is neither a T_MATRIX nor a T_VECTOR
+
+#############################################################################
+
+IsXType( <list> )
+=================
+'XType' is used to refine the arithmetic, i.e., it is used to jump
+through the sum, prod, ... tables.
+
+T_PLIST_EMPTY
+-------------
+if <list> is a list of length zero
+
+T_PLIST_CYC
+-----------
+if <list> is a list of objects <= T_CYC
+
+T_MAT_CYC
+---------
+if <list> is a non-empty, dense list of lists of equal lengths which can be
+converted into lists of type T_PLIST_CYC*
+
+#############################################################################
+
+T_PLIST     |Empty    |SSort    |NSort     |Dense     |NDense|Homog    |NHomog    |Table    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+T_PLIST     |EMPTY    |HOM_SSORT|T_PLIST   |DENSE     |NDENSE|HOM      |T_PLIST   |TAB      |
+NDENSE      |error    |error    |NDENSE    |error     |NDENSE|error    |NDENSE    |error    |
+DENSE       |EMPTY    |HOM_SSORT|DENSE     |DENSE     |error |HOM      |DENSE_NHOM|TAB      |
+DENSE_NHOM  |error    |error    |DENSE_NHOM|DENSE_NHOM|error |error    |DENSE_NHOM|error    |
+EMPTY       |EMPTY    |EMPTY    |error     |EMPTY     |error |EMPTY    |error     |error    |
+HOM         |EMPTY    |HOM_SSORT|HOM_NSORT |HOM       |error |HOM      |error     |TAB      |
+HOM_NSORT   |error    |error    |HOM_NSORT |HOM_NSORT |error |HOM_NSORT|error     |TAB_NSORT|
+HOM_SSORT   |EMPTY    |HOM_SSORT|error     |HOM_SSORT |error |HOM_SSORT|error     |TAB_SSORT|
+TAB         |error    |TAB_SSORT|TAB_NSORT |TAB       |error |TAB      |error     |TAB      |
+TAB_NSORT   |error    |error    |TAB_NSORT |TAB_NSORT |error |TAB_NSORT|error     |TAB_NSORT|
+TAB_SSORT   |error    |TAB_SSORT|error     |TAB_SSORT |error |TAB_SSORT|error     |TAB_SSORT|
+CYC         |CYC      |CYC_SSORT|CYC_NSORT |CYC       |error |CYC      |error     |error    |
+CYC_NSORT   |error    |error    |CYC_NSORT |CYC_NSORT |error |CYC_NSORT|error     |error    |
+CYC_SSORT   |CYC_SSORT|CYC_SSORT|error     |CYC_SSORT |error |CYC_SSORT|error     |error    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+
+T_RANGE     |Empty    |SSort    |NSort     |Dense     |NDense|Homog    |NHomog    |Table    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+SSORT	    |error    |SSORT    |error     |SSORT     |error |SSORT    |error     |error    |
+NSORT       |error    |error    |NSORT     |NSORT     |error |NSORT    |error     |error    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+
+T_STRING    |Empty    |SSort    |NSort     |Dense     |NDense|Homog    |NHomog    |Table    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+T_STRING    |T_STRING |SSORT    |NSORT     |T_STRING  |error |T_STRING |error     |error    |
+NSORT       |error    |error    |NSORT     |NSORT     |error |NSORT    |error     |error    |
+SSORT       |SSORT    |SSORT    |error     |SSORT     |error |SSORT    |error     |error    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+
+T_BLIST     |Empty    |SSort    |NSort     |Dense     |NDense|Homog    |NHomog    |Table    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+T_BLIST     |T_BLIST  |SSORT    |NSORT     |T_BLIST   |error |T_BLIST  |error     |error    |
+NSORT       |error    |error    |NSORT     |NSORT     |error |NSORT    |error     |error    |
+SSORT       |SSORT    |SSORT    |error     |SSORT     |error |SSORT    |error     |error    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+
+
+#############################################################################
+
+PROD
+====
+
+ariths.c
+--------
+   ( FIRST_REAL - LAST_VIRTUAL ) * ( FIRST_REAL - LAST_VIRTUAL )
+   = undefined
+
+   ( FIRST_EXTERNAL - LAST_EXTERNAL ) * ( FIRST_REAL - LAST_VIRTUAL )
+    = ProdObject ( goto Library )
+
+   ( FIRST_REAL - LAST_VIRTUAL ) * ( FIRST_EXTERNAL - LAST_EXTERNAL )
+   = ProdObject ( goto Library )
+
+++ LISTX * ( FIRST_REAL - LAST_VIRTUAL )
+   = ProdObject ( goto Library )
+
+++ ( FIRST_REAL - LAST_VIRTUAL ) * LISTX
+   = ProdObject ( goto Library )
+
+integer.c
+---------
+   ( INT - INTNEG ) * ( FIRST - CONSTANT - LAST_CONSTANT )
+   = ProdIntObj
+
+?? ( INT - INTNEG ) * ( FIRST_RECORD - LAST_RECORD )
+   = ProdIntObj
+
+?? ( INT - INTNEG ) * ( FIRST_LIST - LAST_LIST )
+   = ProdIntObj
+
+?? ( INT - INTNEG ) * ( FIRST_VIRTUAL - LAST_VIRTUAL )
+   = ProdIntObj
+
+   ( INT - INTNEG ) * ( INT - INTNEG )
+   = ProdInt
+
+rational.c
+----------
+   ( RAT, INT - INTNEG ) * RAT
+   = ProdRat
+
+   RAT * ( RAT, INT - INTNEG )
+   = ProdRat
+
+cyclotom.c
+----------
+   CYC * CYC
+   = ProdCyc
+
+   ( RAT, INT - INTNEG ) * CYC
+   = ProdCycInt
+
+   CYC * ( RAT, INT - INTNEG )
+   = ProdCycInt
+
+finfield_c
+----------
+   FFE * FFE
+   = ProdFFEFFE
+
+   INT * FFE
+   = ProdIntFFE
+
+   FFE * INT
+   = ProdFFEInt
+
+++ FFE * ( INTPOS, INTNEG )
+
+++ ( INTPOS, INTNEG ) * FFE
+
+permutat.c
+----------
+   PERM2 * PERM2
+   = ProdPerm22
+
+   PERM2 * PERM4
+   = ProdPerm24
+
+   PERM4 * PERM2
+   = ProdPerm42
+
+   PERM4 * PERM4
+   = ProdPerm44
+
+precord.c
+---------
+   ( FIRST_REAL - LAST_REAL ) * PREC
+   = ProdPRec
+
+   ( FIRST_VIRTUAL - LAST_VIRTUAL ) * PREC
+   = ProdPRec
+
+   PREC * ( FIRST_REAL - LAST_REAL )
+   = ProdPRec
+
+   PREC * ( FIRST_VIRTUAL - LAST_VIRTUAL )
+   = ProdPRec
+
+listoper.c
+----------
+   s = scalar ( INT - INTNEG, RAT, CYC, FFE, PERM2, PERM4, PREC )
+   i = incomplete type ( PLIST-PLIST_DENSE_NHOM, PLIST_HOME-PLIST_TAB_SSORT )
+   e = empty list ( PLIST_EMPTY )
+   v = vector ( PLIST_CYC - T_VECFFE_SSORT )
+   m = matrix type ( T_MAT_CYC, T_MAT_FFE )
+++ x = external type ( T_COMOBJ, T_POSOBJ, T_DATOBJ )
+
+++ x * ( FIRST_REAL - LAST_VIRTUAL )
+   = do not change the entry
+
+++ ( FIRST_REAL - LAST_VIRTUAL ) * x
+   = do not change the entry
+
+   i * ( FIRST_REAL - LAST_VIRTUAL )
+   = ProdList (call XType for both operands)
+
+   ( FIRST_REAL - LAST_VIRTUAL ) * i
+   = ProdList (call XType for both operands)
+
+   ( not s and not i ) * s
+   = ProdListScl
+
+   s * ( not s and not i )
+   = ProdSclList
+
+   v * ( FIRST_REAL - LAST_VIRTUAL and not i and not s )
+   = ProdListList
+
+   ( FIRST_REAL - LAST_VIRTUAL and not i and not s and v ) * m
+   = ProdListScl
+
+   m * v
+   = ProdListScl
+
+   m * e
+   = ProdSclList
+
+vector.c
+--------
+   ( PLIST_CYC - PLIST_CYC_SORT ) * T_INT
+   = ProdVectorInt
+
+   INT * ( PLIST_CYC - PLIST_CYC_SORT )
+   = ProdIntVector
+
+   ( PLIST_CYC - PLIST_CYC_SORT ) * ( PLIST_CYC - PLIST_CYC_SORT )
+   = ProdVectorVector
+
+   ( PLIST_CYC - PLIST_CYC_SORT ) * T_MAT_CYC
+   = ProdVectorMatrix
+
+List Packages
+-------------
+
+IS_listtype_REP( <list> )
+--------------------------
+return true if <list> is of "listtype"
+
+
+IsListtype( <list> )
+--------------------
+return true if <list> could be converted into "listtype"
+
+
+IsListtypeConv( <list> )
+------------------------
+return true if <list> could be converted into "listtype".  Convert in this
+case
+
+
+ConvListtype( <list> )
+----------------------
+convert into "listtype".  If <list> does not pass "IsListtype"
+anything can happen.
+
+
+ClearFiltsTNums[ <tnum> ]
+-------------------------
+contains the type number corresponding to <tnum> without any
+filters set.
+
+
+SetFiltListTNums[ <tnum> ][ <fnum> ]
+------------------------------------
+set filter number <fnum> for an object of type number <tnum> by encoding
+it into the type number.
+
+
+ResetFiltListTNums[ <tnum> ][ <fnum> ]
+--------------------------------------
+reset filter number <fnum> for an object of type number <tnum> by encoding
+it into the type number.
+
+
+HasFiltListTNums[ <tnum> ][ <fnum> ]
+------------------------------------
+check filter number <fnum> for an object of type number <tnum>.
+
+
+SET_FILT_LIST( <list>, <fnum> )
+-------------------------------
+encode "set filter" in tnum of <list>
+
+
+RESET_FILT_LIST( <list>, <fnum> )
+---------------------------------
+encode "reset filter" in tnum of <list>
+
+
+HAS_FILT_LIST( <list>, <fnum> )
+-------------------------------
+check if filter <fnum> is known for <list>
+
+
+filter numbers
+--------------
+FN_IS_MUTABLE:          mutable list
+FN_IS_EMPTY:            empty list
+FN_IS_SSORT:            strictly sorted
+FN_IS_NSORT:            not strictly sorted
+FN_IS_DENSE:            dense
+FN_IS_NDENSE:           not dense
+FN_IS_HOMOG:            homogeneous
+FN_IS_NHOMOG:           not homogeneous
+FN_IS_TABLE:            table
+
+
+PLIST TNums
+-----------
+EMPTY:			empty list
+SSORT:			dense, homogeneous, strictly sorted
+NSORT:			dense, not empty, homogeneous, not sorted
+DENSE:			dense
+NDENSE:			not dense, not empty
+HOMOG:			dense, homogeneous
+NHOM:			dense, not empty, not homogeneous
+TAB:			dense, not empty, homogeneous, table

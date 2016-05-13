@@ -1,0 +1,2145 @@
+<Chapter Label="HistoryOfGAP44"> 
+<Heading>Overview of updates for &GAP; 4.4</Heading>
+
+This chapter lists changes in the main system (excluding packages) 
+that have been corrected or added in bugfixes and updates for 
+&GAP; 4.4.
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<Section Label="fix442"> 
+<Heading>&GAP; 4.4 Bugfix 2 (April 2004)</Heading>
+
+Fixed bugs which could lead to crashes:
+<List>              
+<Item>
+A crash when incorrect types of arguments are passed to <C>FileString</C>.
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>A bug in <C>DerivedSubgroupTom</C> and <C>DerivedSubgroupsTom</C>.
+</Item>
+<Item>An error in the inversion of certain <C>ZmodnZObj</C> elements.
+</Item>
+<Item>A wrong display string of the numerator in rational 
+functions returned by <C>MolienSeriesWithGivenDenominator</C> 
+(in the case that the constant term of this numerator is zero).
+</Item>
+</List>
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+
+<Section Label="fix443">
+<Heading>&GAP; 4.4 Bugfix 3 (May 2004)</Heading>
+
+Fixed bugs which could produce wrong results:
+
+<List>
+<Item>Incorrect setting of system variables (e.g., home directory 
+and command line options) after loading a workspace.
+</Item>
+<Item>Wrong handling of integer literals within functions or loops 
+on 64-bit architectures (only integers in the range from 
+<M>2^{28}</M> to <M>2^{60}</M>).
+</Item>
+</List>
+
+Fixed bugs which could lead to crashes:
+
+<List>
+<Item>A problem in the installation of the multiplication routine 
+for matrices that claimed to be applicable for more general list 
+multiplications.
+</Item>
+<Item>A problem when computing weight distributions of codes with 
+weights &gt; <M>2^{28}</M>.
+</Item>
+</List>
+
+Other fixed bugs:
+
+<List>
+<Item>Problems with the online help with some manual sections.
+</Item>
+<Item>Problems of the online help on Windows systems.
+</Item>
+<Item>A problem in <C>GQuotients</C> when mapping from a finitely 
+presented group which has a free direct factor.
+</Item>
+<Item>A bug in the function <C>DisplayRevision</C>.
+</Item>
+<Item>The trivial finitely presented group on no generators was not 
+recognized as finitely presented.
+</Item>
+<Item>A problem with <C>Process</C>.
+</Item>
+<Item>A problem when intersecting subgroups of finitely presented 
+groups that are represented in <Q>quotient representation</Q> with 
+the quotient not apermutation group.
+</Item>
+<Item>A bug in the generic <C>Intersection2</C> method for vector 
+spaces, in the case that both spaces are trivial.
+</Item>
+<Item>Enable ReeGroup(q) for <M>q = 3</M>.
+</Item>
+</List>
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+
+<Section Label="fix444">
+<Heading>&GAP; 4.4 Bugfix 4 (December 2004)</Heading>
+
+Fixed bugs which could produce wrong results:
+
+<List>
+<Item>
+An error in the <C>Order</C> method for matrices over 
+cyclotomic fields which caused this method to return <C>infinity</C> 
+for matrices of finite order in certain cases.
+</Item>
+<Item>
+Representations computed by <C>IrreducibleRepresentations</C>
+in characteristic 0 erraneously claimed to be faithful. 
+</Item>
+<Item>A primitive representation of degree 574 for PSL(2,41) 
+has been missing in the classification on which the &GAP; 
+library was built. 
+</Item>
+<Item> 
+A bug in <C>Append</C> for compressed vectors over GF(2): if the 
+length of the result is 1 mod 32 (or 64) the last entry was 
+forgotten to copy.
+</Item>
+<Item> 
+A problem with the Ree group Ree(3) of size 1512 claiming 
+to be simple.
+</Item>
+<Item>
+An error in the membership test for groups 
+GU(n,q) and SU(n,q) for non-prime <M>q</M>.
+</Item>
+<Item>
+An error in the kernel code for ranges which caused e.g.
+<C>-1 in [1..2]</C> to return <K>true</K>.
+</Item>
+<Item>
+An error recording boolean lists in saved workspaces.
+</Item>
+<Item>
+A problem in the selection function for primitive and
+transitive groups if no degree is given.
+</Item>
+<Item>
+<C>ReducedConfluentRewritingSystem</C> 
+returning a cached result that might
+not conform to the ordering specified.
+</Item>
+</List>
+
+Other fixed bugs:
+
+<List>
+<Item> 
+A problem with the function <C>SuggestUpdates</C> to check for 
+the most recent version of packages available.
+</Item>
+<Item> 
+A problem that caused <C>MatrixOfAction</C> to produce an error when
+the algebra module was constructed as a direct sum.
+</Item>
+<Item> 
+Problems with computing <M>n</M>-th power maps of character tables,
+where n is negative and the table does not yet store its irreducible
+characters.
+</Item>
+<Item>
+Element conjugacy in large-base permutation groups sometimes was
+unnecessarily inefficient.
+</Item>
+<Item>
+A missing method for getting the letter representation of an associate
+word in straight line program representation.
+</Item>
+<Item>
+A problem with the construction of vector space bases where the given list 
+of basis vectors is itself an object that was returned by <C>Basis</C>.
+</Item>
+<Item> 
+A problem of <C>AbelianInvariantsMultiplier</C> insisting that a result of
+<C>IsomorphismFpGroup</C> is known to be surjective.
+</Item>
+<Item> 
+An error in the routine for <C>Resultant</C> 
+if one of the polynomials has degree zero.
+</Item>
+</List>
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+
+<Section Label="fix445">
+<Heading>&GAP; 4.4 Update 5 (May 2005)</Heading>
+
+Fixed bugs which could produce wrong results:
+<List>
+<Item>
+<Ref BookName="ref" Func="GroupWithGenerators"/> 
+returned a meaningless group object instead of signaling an error
+when it was called with an empty list of generators.
+</Item>
+<Item>
+When computing preimages under an embedding into a direct product
+of permutation groups, if the element was not in the image of the 
+embedding then a permutation had been returned instead 
+of <C>fail</C>.
+</Item>
+<Item>
+Two problems with <Ref BookName="ref" Func="PowerMod"/> 
+for polynomials. [Reported by Jack Schmidt]
+</Item>
+<Item>
+Some methods for computing the sum of ideals returned the first 
+summand instead of the sum. [Reported by Alexander Konovalov]
+</Item>
+<Item>
+Wrong result in <Ref BookName="ref" Func="Intersection"/> for pc groups.
+</Item>
+<Item>
+The function <Ref BookName="ref" Func="CompareVersionNumbers"/> 
+erroneously ignored leading non-digit characters.
+<P/>
+A new feature in the corrected version is an optional third argument
+<C>"equal"</C>, which causes the function to return
+<C>true</C> only if the first two arguments describe
+equal version numbers; documentation is available in the ext-manual.
+This new feature is used in <Ref BookName="ref" Func="LoadPackage"/>,
+now one can require a specific version of a package.
+<P/>
+The library code still contained parts of the handling of completion 
+files for packages, which does not work and therefore had already 
+been removed from the documentation. This code has now been removed.
+<P/>
+Now a new component <C>PreloadFile</C> is supported in
+<Ref BookName="ref" Func="The PackageInfo.g File"/> files;
+if it is bound then the file in question is read immediately before the
+package or its documentation is loaded.
+</Item>
+<Item>
+The result of <Ref BookName="ref" Func="String"/> for strings not 
+in <Ref BookName="ref" Func="IsStringRep"/> that occur as list 
+entries or record components was erroneously missing the double
+quotes around the strings.
+</Item>
+<Item>
+A bug which caused <Ref BookName="ref" Func="InducedPcgs"/> to 
+return a pcgs which is not induced wrt. the parent pcgs of 
+<C>pcgs</C>. This may cause unpredictable behaviour, e.&nbsp;g. 
+when <C>SiftedPcElement</C> is used subsequently. 
+[Reported by Alexander Konovalov]
+</Item>
+<Item>
+Fixed a bug in <C>SmallGroupsInformation(512)</C>.
+</Item>
+<Item>
+<Ref BookName="ref" Func="PowerModCoeffs"/> with exponent 1 for 
+compressed vectors did not reduce (a copy of) the input vector 
+before returning it. [Reported by Frank Lübeck]
+</Item>
+<Item>
+Sorting a mutable non-plain list (e.g., a compressed matrix over 
+fields of order &lt; 257) could potentially destroy that object. 
+[Reported by Alexander Hulpke]
+</Item>
+<Item>
+Under rare circumstances computing the closure of a permutation 
+group by a normalizing element could produce a corrupted stabilizer 
+chain. (The underlying algorithm uses random elements, probability 
+of failure was below 1 percent). [Reported by Thomas Breuer]
+</Item>
+</List>
+
+Fixed bugs which could lead to crashes:
+<List>
+<Item>
+Some code and comments in the &GAP; kernel assumed that there is no 
+garbage collection during the core printing function <C>Pr</C>, 
+which is not correct. This could cause &GAP; in rare cases to 
+crash during printing permutations, cyclotomics or strings with 
+zero bytes. [Reported by Warwick Harvey]
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+
+<Item>
+A rare problem with the choice of prime in the Dixon-Schneider 
+algorithm for computing the character table of a group. 
+[Reported by Jack Schmidt]
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="DirectProduct"/> for trivial permutation 
+groups returned a strange object.
+</Item>
+
+<Item>
+A problem with <Ref BookName="ref" Func="PolynomialReduction"/> 
+running into an infinite loop.
+</Item>
+
+<Item>
+Adding linear mappings with different image domains 
+was not possible. [Reported by Pasha Zusmanovich]
+</Item>
+
+<Item>
+Multiplying group ring elements with rationals was not 
+possible. [Reported by Laurent Bartholdi]
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="Random"/>
+now works for finite fields of size
+larger than <M>2^{28}</M>. [Reported by Jack Schmidt]
+</Item>
+
+<Item>
+Univariate polynomial creators did modify the coefficient 
+list passed. [Reported by Jürgen Müller]
+</Item>
+
+<Item>
+Fixed <Ref BookName="ref" Func="IntHexString"/> to accept 
+arguments not in <C>IsStringRep</C>; the argument is
+now first converted if necessary. [Reported by Kenn Heinrich]
+</Item>
+
+<Item>
+The library code for stabilizer chains contained quite some
+explicit references to the identity <C>()</C>.
+This is unfortunate if one works with permutation groups, the
+elements of which are not plain permutations but objects which
+carry additional information like a memory, how they were obtained
+from the group generators. For such cases it is much cleaner to
+use the <C>One(...)</C> operation instead of <C>()</C>, such that 
+the library code can be used for a richer class of group objects. 
+This fix contains only rather trivial changes <C>()</C> to 
+<C>One(...)</C> which were carefully checked by me. The
+tests for permutation groups all run without a problem. However, it is
+relatively difficult to provide test code for this particular change,
+since the "improvement" only shows up when one generates new group
+objects. This is for example done in the package 
+<Package>recog</Package> which is in preparation. 
+[Reported by Akos Seress and Max Neunhöffer]
+</Item>
+
+<Item>
+Using <C>{}</C> to select elements of a known inhomogenous dense list
+produced a list that might falsely claim to be known inhomogenous,
+which could lead to a segfault if the list typing code tried to mark
+it homogenous, since the code intended to catch such errors also had 
+a bug. [Reported by Steve Linton]
+</Item>
+
+<Item>
+The record for the generic iterator construction of subspaces domains
+of non-row spaces was not complete.
+</Item>
+
+<Item>
+When a workspace has been created without packages(<C>-A</C> option) 
+and is loaded into a &GAP; session without packages (same option)
+then an error message is printed.
+</Item>
+
+<Item>
+So far the functions <Ref BookName="ref" Func="IsPrimeInt"/> and 
+<Ref BookName="ref" Func="IsProbablyPrimeInt"/> are essentially the
+same except that <C>IsPrimeInt</C> issues an additional 
+warning when (non-proven) probable primes are considered as primes.
+<P/>
+These warnings now print the probable primes in question as well;  
+if a probable prime is used several times then the warning is also 
+printed several times; there is no longer a warning for some known 
+large primes; the warnings can be switched off. See 
+<Ref BookName="ref" Func="IsPrimeInt"/> for more details.
+<P/>
+If we get a reasonable primality test in &GAP; we will change the 
+definition of <C>IsPrimeInt</C> to do a proper test.
+</Item>
+
+<Item>
+Corrected some names of primitive groups in degree 26. 
+[Reported by Robert F. Bailey]
+</Item>
+
+</List>
+
+New or improved functionality:
+<List>
+
+<Item>
+Several changes for <Ref BookName="ref" Func="ConwayPolynomial"/>:
+<List>
+<Item> many new pre-computed polynomials </Item>
+<Item> put data in several separate files (only read when needed) </Item>
+<Item> added info on origins of pre-computed polynomials </Item>
+<Item> improved performance of <Ref BookName="ref" Func="ConwayPolynomial"/>
+and <Ref BookName="ref" Func="IsPrimitivePolynomial"/> for p &lt; 256 </Item>
+<Item> improved documentation of <C>ConwayPolynomial</C> </Item>
+<Item> added and documented new functions 
+<Ref BookName="ref" Func="IsCheapConwayPolynomial"/> and
+<Ref BookName="ref" Func="RandomPrimitivePolynomial"/>
+</Item>
+</List>
+</Item>
+
+<Item>
+Added method for <Ref BookName="ref" Func="NormalBase"/>
+for extensions of finite fields.
+</Item>
+
+<Item>
+Added more help viewers for the HTML version of the documentation 
+(firefox, mozilla, konqueror, w3m, safari).
+</Item>
+
+<Item>
+New function <Ref BookName="ref" Func="ColorPrompt"/>. 
+(Users of former versions of a <C>colorprompt.g</C> file: 
+Now you just need a <C>ColorPrompt(true);</C> in your 
+<C>.gaprc</C> file.)
+</Item>
+
+<Item>
+
+Specialised kernel functions to support <Package>GUAVA</Package>
+2.0. &GAP; will only load <Package>GUAVA</Package> 
+in version at least 2.002 after this update.
+
+</Item>
+
+<Item>
+Now there is a kernel function <C>CYC_LIST</C>
+for converting a list of rationals into a cyclotomic,
+without arithmetics overhead.
+</Item>
+
+<Item>
+New functions 
+<Ref BookName="ref" Func="ContinuedFractionExpansionOfRoot"/> and
+<Ref BookName="ref" Func="ContinuedFractionApproximationOfRoot"/>
+for computing continued fraction expansions and continued fraction 
+approximations of real roots of polynomials with integer coefficients.
+</Item>
+
+<Item>
+A method for computing structure descriptions for finite groups,
+available via <Ref BookName="ref" Func="StructureDescription"/>.
+</Item>
+
+<Item>
+This change contains the new, extended version of the 
+<Package>SmallGroups</Package> package. For example, the groups of 
+orders <M>p^4</M>, <M>p^5</M>, <M>p^6</M> for arbitrary primes 
+<M>p</M>, the groups of square-free order and the groups of 
+cube-free order at most 50000 are included now. For more detailed 
+information see the announcement of the extended package. 
+</Item>
+
+<Item>
+The function <C>ShowPackageVariables</C> gives
+an overview of the global variables in a package.
+It is thought as a utility for package authors and referees.
+(It uses the new function <C>IsDocumentedVariable</C>.)
+</Item>
+
+<Item>
+The mechanisms for testing &GAP; has been improved:
+<List>
+<Item> The information whether a test file belongs to the list in
+  <C>tst/testall.g</C> is now stored in the test file
+  itself.</Item>
+<Item> Some targets for testing have been added to the
+  <C>Makefile</C> in the &GAP; root directory,
+  the output of the tests goes to the new directory
+  <C>dev/log</C>.</Item>
+<Item> Utility functions for testing are in the new file
+  <C>tst/testutil.g</C>.
+  Now the loops over (some or all) files <C>tst/*.tst</C>
+  can be performed with a function call, and the file
+  <C>tst/testall.g</C> can be created automatically;
+  the file <C>tst/testfull.g</C> is now obsolete.
+  The remormalization of the scaling factors can now be done using a &GAP;
+  function, so the file <C>tst/renorm.g</C> is
+  obsolete.</Item>
+<Item> Now the functions <C>START_TEST</C>
+  and <C>STOP_TEST</C> use components in 
+  <C>GAPInfo</C> instead of own globals,
+  and the random number generator is always reset in
+  <C>START_TEST</C>.</Item>
+<Item> <C>GAPInfo.SystemInformation</C> now takes two
+  arguments, now one can use it easier in the tests.</Item>
+</List>
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="MultiplicationTable"/> is now an attribute,
+and the construction of a magma, monoid, etc. from multiplication 
+tables has been unified.
+</Item>
+</List>
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+
+<Section Label="fix446">
+<Heading>&GAP; 4.4 Update 6 (September 2005)</Heading>
+
+Attribution  of bugfixes  and  improved functionalities  to those  who
+reported or  provided these, respectively, is  still fairly incomplete
+and inconsistent with this update. We apologise for this fact and will
+discuss until the next update how to improve this feature.
+<P/>
+
+Fixed bugs which could produce wrong results:
+<List>
+
+<Item>
+The perfect group library does not contain any information 
+on the trivial group, so the trivial group must be handled 
+specially. <Ref BookName="ref" Func="PerfectGroup"/> and
+<C>NrPerfectLibraryGroups</C> were changed
+to indicate that the trivial group is not part of the library.
+</Item>
+
+<Item>
+The descriptions of <C>PerfectGroup(734832,3)</C>
+and <C>PerfectGroup(864000,3)</C> were corrected
+in the <Ref BookName="ref" Func="Finite Perfect Groups"/>
+library of perfect groups.
+</Item>
+
+<Item>
+The functions 
+<Ref BookName="ref" Func="EpimorphismSchurCover"/> and
+<Ref BookName="ref" Func="AbelianInvariantsMultiplier"/>
+may have produced wrong results without warning
+[Reported by Colin Ingalls]. These problems are fixed.
+However, the methods currently used can be expected to 
+be slower than the ones used before; we hope to fix this 
+in the next version of &GAP;.
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="DerivedSubgroup"/> and 
+<Ref BookName="ref" Func="CommutatorSubgroup"/> for permutation 
+groups sometimes returned groups with an incorrect stabilizer 
+chain due to a missing verification step after a random Schreier Sims.
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="NaturalHomomorphismByNormalSubgroup"/>
+for FpGroups did unnecessary rewrites.
+</Item>
+
+<Item>
+The alternating group <M>A_3</M> incorrectly claimed to be not simple.
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="ExponentSyllable"/> for straight line 
+program elements gave a wrong result.
+
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="PrimePGroup"/> is defined to return 
+<C>fail</C> for trivial groups, but if the group was constructed 
+as a factor or subgroup of a known <M>p</M>-group, the value of 
+<M>p</M> was retained.
+</Item>
+
+<Item>
+The functions <Ref BookName="ref" Func="TestPackageAvailability"/>
+and <Ref BookName="ref" Func="LoadPackage"/> did not work correctly 
+when one asked for a 
+particular version of the package, via a version number starting with
+the character <C>=</C>, in the sense that a version
+with a larger version number was loaded if it was available. 
+[Reported by Burkhard Höfling]
+</Item>
+
+<Item>
+The generator names constructed by
+<Ref BookName="ref" Func="AlgebraByStructureConstants"/> 
+were nonsense.
+</Item>
+
+<Item>
+The undocumented function (but recently advertised on gap-dev) 
+<C>COPY_LIST_ENTRIES</C> did not handle overlapping source and
+destination areas correctly in some cases.
+</Item>
+
+<Item>
+The elements in a free magma ring have the filter
+<Ref BookName="ref" Func="IsAssociativeElement"/> set
+whenever the elements in the underlying magma and in 
+the coefficients ring have this filter set. 
+[Reported by Randy Cone]
+</Item>
+
+<Item>
+The function <Ref BookName="ref" Func="InstallValue"/> must not 
+be used for objects in the filter <C>IsFamily</C> because these
+objects are compared via <Ref BookName="ref" Func="IsIdenticalObj"/>. 
+[Reported by Max Neunhöffer]
+</Item>
+
+</List>
+
+Fixed bugs which could lead to crashes:
+<List>
+
+<Item>
+Problem in composition series for permutation groups for 
+non-Frobenius groups with regular point stabilizer.
+</Item>
+
+<Item>
+After lots of computations with compressed GF(2) vectors 
+&GAP; occasionally crashed. The reason were three missing 
+<C>CHANGED_BAG</C>s in <C>SemiEchelonPListGF2Vecs</C>.
+They were missing, because a garbage collection could be 
+triggered during the computation such that newly created bags 
+could become <Q>old</Q>. It is not possible to provide test 
+code because the error condition cannot easily be reproduced. 
+[Reported by Klaus Lux]
+</Item>
+
+<Item>
+Minor bug that crashed &GAP;:
+The type of <C>IMPLICATIONS</C>
+could not be determined in a fresh session. [Reported by Marco Costantini]
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="Assert"/>
+caused an infinite loop if called
+as the first line of a function called from another function. 
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+
+<Item>
+Wrong choice of prime in Dixon-Schneider if prime is bigger than 
+group order (if group has large exponent).
+</Item>
+
+<Item>
+Groebner basis code ran into problems when comparing monomial 
+orderings.
+</Item>
+
+<Item>
+When testing for conjugacy of a primitive group to an imprimitive 
+group,&GAP; runs into an error in EARNS calculation. 
+[Reported by John Jones]
+</Item>
+
+<Item>
+The centre of a magma is commonly defined to be the set of elements 
+that commute and associate with all elements. The previous definition
+left out <Q>associate</Q> and caused problems with extending the 
+functionality to nonassociative loops. [Reported by Petr Vojtechovsky]
+</Item>
+
+<Item>
+New kernel methods for taking the intersection and difference between
+sets of substantially different sizes give a big performance increase.
+</Item>
+
+<Item>
+The commands
+<Ref BookName="ref" Func="IsNaturalSymmetricGroup"/> and
+<Ref BookName="ref" Func="IsNaturalAlternatingGroup"/> are faster and 
+should run much less
+often into inefficient tests.
+</Item>
+
+<Item>
+The perfect group library, see 
+<Ref BookName="ref" Func="Finite Perfect Groups"/>, is split into 
+several files which are loaded and unloaded to keep memory usage 
+down. The global variable <C>PERFSELECT</C> is a blist which
+indicates which orders are currently loaded. An off-by-one error 
+wrongly added the last order of the previous file into the list of 
+valid orders when a new file was loaded. A subsequent access to 
+this order raises an error.
+</Item>
+
+<Item>
+Up to now, the method installed for testing the membership of rationals
+in the field of rationals via <Ref BookName="ref" Func="IsRat"/>
+was not called; instead a more general method was used that called
+<Ref BookName="ref" Func="Conductor"/> and thus was much slower.
+Now the special method has been ranked up by changing the requirements
+in the method installation.
+</Item>
+
+<Item>
+Fixed a bug in <C>APPEND_VEC8BIT</C>, which was triggered in the 
+following situation: Let <C>e</C> be the number of field elements 
+stored in one byte. If a compressed 8bit-vector <C>v</C> had length 
+not divisible by <C>e</C> and another compressed 8-bit vector 
+<C>w</C> was appended, such that the sum of the lengths became 
+divisible by <C>e</C>, then one 0 byte too much was written, which 
+destroyed the <C>TNUM</C> of the next &GAP; object in memory. 
+[Reported by Klaus Lux]
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="PermutationCycle"/> returned <C>fail</C> 
+if the cycle was not a contiguous subset of the specified domain. 
+[Reported by Luc Teirlinck]
+</Item>
+
+<Item>
+Now <Ref BookName="ref" Func="Inverse"/> correctly returns 
+<C>fail</C> for zeros in finite fields (and does no longer 
+enter a break loop).
+</Item>
+
+<Item>
+Up to now, <Ref BookName="ref" Func="CharacterDegrees"/> ignored the attribute
+<Ref BookName="ref" Func="Irr"/>
+if the argument was a group that knew that it was solvable.
+</Item>
+
+<Item>
+The function <C>Debug</C> now prints a meaningful message
+if the user tries to debug an operation.
+Also, the help file for <C>vi</C> is now available in
+the case of several &GAP; root directories.
+</Item>
+
+<Item>
+It is no longer possible to create corrupt objects via ranges of 
+length &gt;<M>2^{28}</M>, resp. &gt;<M>2^{60}</M> (depending on 
+the architecture). The limitation concerning the arguments of 
+ranges is documented. [Reported by Stefan Kohl]
+</Item>
+
+<Item>
+Now <Ref BookName="ref" Func="IsElementaryAbelian"/> and
+<Ref BookName="ref" Func="ClassPositionsOfMinimalNormalSubgroups"/>
+are available for ordinary character tables. Now the operation
+<Ref BookName="ref" Func="CharacterTableIsoclinic"/> is 
+an attribute, and there is another new attribute
+<Ref BookName="ref" Func="SourceOfIsoclinicTable"/> that points back to the
+original table; this is used for computing the Brauer tables of those 
+tables in the character table library that are computed using
+<C>CharacterTableIsoclinic</C>.
+Now <Ref BookName="ref" Func="ClassPositionsOfDerivedSubgroup"/> 
+avoids calling <Ref BookName="ref" Func="Irr"/>,
+since <Ref BookName="ref" Func="LinearCharacters"/> is sufficient.
+Now <Ref BookName="ref" Func="ClassPositionsOfElementaryAbelianSeries"/>
+works also for the table of the trivial group.
+Restrictions of character objects know that they are characters.
+<P/>
+A few formulations in the documentation concerning character tables have
+been improved slightly.
+</Item>
+
+<Item>
+Up to now, <Ref BookName="ref" Func="IsPGroup"/> has rarely been set. 
+Now many basic operations such as <Ref BookName="ref" Func="SylowSubgroup"/> 
+set this attribute on the returned result.
+</Item>
+
+<Item>
+Computing an enumerator for a semigroup required too much time
+because it used all elements instead of the given generators. 
+[Reported by Manuel Delgado]
+</Item>
+
+<Item>
+Avoid potential error message when working with automorphism groups.
+</Item>
+
+<Item>
+Fixed wrong page references in manual indices.
+</Item>
+
+<Item>
+Make <C>MutableCopyMat</C> an operation and install 
+the former function which does call <Ref BookName="ref" Func="List"/> with
+<Ref BookName="ref" Func="ShallowCopy"/> the default method for lists. Also
+use this in a few appropriate places.
+</Item>
+
+<Item>
+An old DEC compiler doesn't like C preprocessor directives that are 
+preceded by whitespace. Removed such whitespace. [Reported by Chris Wensley]
+</Item>
+
+</List>
+
+
+New or improved functionality:
+
+<List>
+
+<Item>
+The primitive groups library has been extended to degree 2499.
+</Item>
+
+<Item>
+New operation 
+<Ref BookName="ref" Func="Remove"/>
+and extended functionality of
+<Ref BookName="ref" Func="Add"/> with
+an optional argument giving the position of the insertion. They are based
+on an efficient kernel function <C>COPY_LIST_ENTRIES</C>.
+</Item>
+
+<Item>
+Added fast kernel implementation of Tarjan's 
+algorithm for strongly connected components of a 
+directed graph. 
+</Item>
+
+<Item>
+Now <Ref BookName="ref" Func="IsProbablyPrimeInt"/> can be used with larger numbers. 
+(Made internal function <C>TraceModQF</C> non-recursive.)
+</Item>
+
+<Item>
+A new operation <Ref BookName="ref" Func="PadicValuation"/> 
+and a corresponding method for rationals.
+</Item>
+
+<Item>
+A new operation <Ref BookName="ref" Func="PartialFactorization"/> has been
+added, and a corresponding method for integers has been installed.
+This method allows one to specify the amount of work to be spent on looking
+for factors.
+</Item>
+
+<Item>
+The generators of full s. c. algebras can now be accessed 
+with the dot operator. [Reported by Marcus Bishop]
+</Item>
+
+<Item>
+New Conway polynomials computed by Kate Minola, John Bray, Richard Parker.
+</Item>
+
+<Item>
+A new attribute <Ref BookName="ref" Func="EpimorphismFromFreeGroup"/>.
+The code has been written by Alexander Hulpke.
+</Item>
+
+<Item>
+The functions
+<Ref BookName="ref" Func="Lambda"/>,
+<Ref BookName="ref" Func="Phi"/>,
+<Ref BookName="ref" Func="Sigma"/>, and
+<Ref BookName="ref" Func="Tau"/>
+have been turned into operations, to admit the installation of methods
+for arguments other than integers.
+</Item>
+
+<Item>
+Up to now, one could assign only lists with
+<Ref BookName="ref" Func="InstallFlushableValue"/>.
+Now also records are admitted.
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="InstallMethod"/> now admits entering a list of
+strings instead of a list of required filters.
+Each such string must evaluate to a filter when used as the argument of
+<Ref BookName="ref" Func="EvalString"/>.
+The advantage of this variant is that these strings are used to compose
+an info string (which is shown by <C>ApplicableMethod</C>)
+that reflects exactly the required filters.
+</Item>
+
+<Item>
+In test files that are read with <C>ReadTest</C>,
+the assertion level is set to 2 between <C>START_TEST</C>
+and <C>STOP_TEST</C>.
+This may result in runtimes for the tests that are substantially longer
+than the usual runtimes with default assertion level 0.
+In particular this is the reason why some of the standard test files require
+more time in &GAP; 4.4.6 than in
+&GAP; 4.4.5.
+</Item>
+
+<Item>
+Some very basic functionality for floats.
+</Item>
+
+</List>
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+
+<Section Label="fix447">
+<Heading>&GAP; 4.4 Update 7 (March 2006)</Heading>
+
+New or improved functionality:
+
+<List>
+
+<Item>
+The <Ref BookName="ref" Func="Display"/>
+ functionality for character tables has been extended by addition 
+of an option to show power maps and centralizer orders in a format
+similar to that used in the ATLAS.
+Furthermore the options handling is now hierarchical,
+in order to admit more flexible overloading.
+</Item>
+
+<Item>
+For the function <Ref BookName="ref" Func="LowIndexSubgroupsFpGroup"/>,
+there is now an iterator variant
+<C>LowIndexSubgroupsFpGroupIterator</C>.
+[Suggested (and based on code contributed) by Michael Hartley]
+</Item>
+
+<Item>
+Semigroup functionality in &GAP; has been improved 
+and extended. Green's relations are now stored differently, making the system 
+more amenable to new methods for computing these relations in special cases. 
+It is now possible to calculate 
+Green's classes etc. without computing the entire semigroup or necessarily 
+loading the package <Package>MONOID</Package>. 
+Furthermore, the Froidure-Pin algorithm has now been implemented in 
+&GAP;. 
+</Item>
+
+<Item>
+Functionality for creating free products of any list of groups for which 
+a finite presentation can be determined had been added. This
+function returns a finitely presented group. This functionality includes
+the <C>Embedding</C> operation.
+
+As an application of this new code a specialized direct product 
+operation has been added for finitely presented groups which 
+returns a finitely presented group. This application includes 
+<C>Embedding</C> and <C>Projection</C> functionality.
+</Item>
+
+<Item>
+Some new Straight Line Program (SLP) functionality has been added. 
+The new functions take given SLPs and create new ones by restricting
+to a subset of the results, or to an intermediate result or by calculating
+the product of the results of two SLPs.
+</Item>
+
+<Item>
+New code has been added to allow group elements with memory;
+that is, they store
+automatically how they were derived from some given set of generators.
+Note that there is not yet documentation for this functionality,
+but some packages already use it.
+</Item>
+
+<Item>
+New code has been added to handle matrices and vectors in such a way that 
+they do not change their representation in a generic manner.
+</Item>
+
+<Item>
+The <Ref BookName="ref" Func="Irr"/>
+method for <M>p</M>-solvable <M>p</M>-modular Brauer tables now keeps 
+the order of the irreducibles in the ordinary table.
+</Item>
+
+<Item>
+&GAP; can now handle any finite field for which the 
+Conway polynomial is known or can be computed. 
+</Item>
+
+<Item>
+New Conway polynomials provided by John Bray and Kate Minola have been added.
+</Item>
+
+<Item>
+The <C>ReadTest</C>
+ methods for strings (filenames) and streams now automatically set
+the screen width (see <Ref BookName="ref" Func="SizeScreen"/>) to 80 before the tests,
+and reset it afterwards.
+</Item>
+
+<Item>
+Now a few more checks are done during the <C>configure</C>
+phase of compiling for future use of some I/O functions of the C-library
+in a package. Also the path to the &GAP; binaries for the &GAP; compiler is 
+now handled via autoconf. Finally, now <C>autoconf</C>
+version 2.59 is used.
+</Item>
+
+</List>
+
+Fixed bugs which could produce wrong results:
+
+<List>
+
+<Item>
+Some technical errors in the functions for compressed vectors and matrices
+which could lead to corruption of internal data structures and so to crashes
+or conceivably to wrong results. [Reported by Roman Schmied]
+</Item>
+
+<Item>
+A potential problem in the generic method for the undocumented operation
+<C>DirectFactorsOfGroup</C>:
+It was silently assumed that
+<Ref BookName="ref" Func="NormalSubgroups"/>
+delivers the trivial subgroup as first and
+the whole group as last entry of the resulting list.
+</Item>
+
+<Item>
+The code for sublists of compressed vectors created by <C>vec{range}</C> may write 
+one byte beyond the space allocated for the new vector, overwriting part of the next
+object in the workspace. Thanks to Jack Schmidt for narrowing down the problem.
+</Item>
+
+<Item>
+Given a class function object of value zero, an 
+<Ref BookName="ref" Func="Arithmetic Operations for Class Functions"/> 
+method for a class function
+erroneously did not return <C>fail</C>. 
+[Reported by Jack Schmidt]
+</Item>
+
+<Item>
+The <Ref BookName="ref" Func="Arithmetic Operations for Class Functions"/> 
+method for a class function
+erroneously returned a finite number if one of the values
+was nonreal, not a cyclotomic integer, and had norm 1.
+</Item>
+
+<Item>
+Two missing perfect groups were added, and the permutation degree lowered on
+the perfect groups with the largest degrees. [Reported by Jack Schmidt]
+</Item>
+
+<Item>
+When a character table was displayed with
+<Ref BookName="ref" Func="Printing Character Tables"/>,
+the centralizer order displayed for the first class shown
+was not correct if it did not involve
+all prime divisors of the group. [Reported by Jack Schmidt]
+</Item>
+
+<Item>
+The first argument of the function <Ref BookName="ref" Func="VectorSpace"/> must be a field.
+This is checked from now on. [Reported by Laurent Bartholdi]
+</Item>
+
+<Item>
+Up to now, it was possible to create a group object from a semigroup of
+cyclotomics using <Ref BookName="ref" Func="AsGroup"/>,
+although groups of cyclotomics are not admissible. [Reported by Alexander Konovalov]
+</Item>
+
+<Item>
+The documentation of 
+<C>CharacteristicPolynomial(F,mat)</C> 
+was ambiguous if
+<C>FieldOfMatrix(mat) &lt;= F &lt; 
+DefaultFieldOfMatrix(mat)</C>.
+In particular, the
+result was representation dependent. This was fixed by introducing a second
+field which specifies the vector space which mat acts upon.  [Reported by Jack Schmidt]
+</Item>
+
+<Item>
+<C>AssociatedReesMatrixSemigroupOfDClass</C> produced an incorrect 
+sandwich matrix for the semigroup created. This matrix is an
+attribute set when creating the Rees matrix semigroup but is 
+not used for creating the semigroup. The incorrect result was returned
+when <C>SandwichMatrix</C> was called. [Reported by Nelson Silva and Joao Araujo]
+</Item>
+
+<Item>
+The literal <C>"compiled"</C> was given an incorrect length. The 
+kernel was then unable to find compiled library code as the search
+path was incorrect. Also the documentation example had an error in 
+the path used to invoke the <F>gac</F> compiler.
+</Item>
+
+<Item>
+The twisting group in a generic wreath product might
+have had intransitive action. [Reported by Laurent Bartholdi]
+</Item>
+
+<Item>
+There was an arithmetic bug in the polynomial reduction code.
+</Item>
+</List>
+
+
+Fixed bugs which could lead to crashes:
+
+<List>
+
+<Item>
+Bug 1 in the list of fixed bugs which could lead to wrong results
+could also potentially lead to crashes.
+</Item>
+
+</List>
+
+
+Other fixed bugs:
+
+<List>
+
+<Item>
+The matrices of invariant forms stored as values of the attributes
+<Ref BookName="ref" Func="InvariantBilinearForm"/>,
+<Ref BookName="ref" Func="InvariantQuadraticForm"/>, and
+<Ref BookName="ref" Func="InvariantSesquilinearForm"/>,
+for matrix groups over finite fields,
+are now in the (compressed) format returned by
+<Ref BookName="ref" Func="ImmutableMatrix"/>.
+</Item>
+
+<Item>
+<C>String</C> now returns an immutable string, 
+by making a copy before changing the argument. 
+</Item>
+
+<Item>
+<C>permutation^0</C> and <C>permutation^1</C> were not handled with 
+special code in the kernel, hence were very slow for big permutations.
+[Reported by Max Neunhöffer]
+</Item>
+
+<Item>
+Added code to cache the induced pcgs for an arbitrary parent pcgs. (This code
+was formerly part of the <Package>CRISP</Package> package.)
+</Item>
+
+<Item>
+This fix consists of numerous changes to improve support for 
+direct products, including:
+- new methods for <C>PcgsElementaryAbelianSeries</C>,
+<C>PcgsChiefSeries</C>,
+<C>ExponentsOfPcElement</C>, 
+<C>DepthOfPcElement</C> for direct products
+- fixed <C>EnumeratorOfPcgs</C> to test for membership first
+- new methods for membership test in groups which have an induced pcgs
+- added <C>GroupOfPcgs</C> attribute to pcgs in various methods
+- fixed declarations of <C>PcgsElementaryAbelianSeries</C>, 
+<C>PcgsChiefSeries</C>
+(the declared argument was a pcgs, not a group) [Reported by Roman Schmied]
+</Item>
+
+<Item>
+Corrected a term ordering problem encountered by the basis construction
+code for finite dimensional vector spaces of multivariate rational 
+functions. [Reported by Jan Draisma]
+</Item>
+
+<Item>
+When the factor of a finite dimensional group ring by an ideal was formed,
+a method intended for free algebras modulo relations was used,
+and the returned factor algebra could be used for (almost) nothing. 
+[Reported by Heiko Dietrich]
+</Item>
+
+<Item>
+Up to now, <Ref BookName="ref" Func="PowerMap"/> ran into an error
+when one asked for the n-th power map where n was not a small integer.
+This happened in some &GAP; library functions
+if the exponent of the character table in question was not a small integer.
+</Item>
+
+<Item>
+Up to now, the test whether a finite field element was contained in a group
+of finite field elements ran into an error if the element was not in the
+field generated by the group elements. [Reported by Heiko Dietrich]
+</Item>
+
+<Item>
+Conjugacy classes of natural (special) linear groups are now always returned
+with trivial class first.
+</Item>
+
+<Item>
+Up to now, it could happen that <Ref BookName="ref" Func="CheckFixedPoints"/> 
+reduced an entry in its
+second argument to a list containing only one integer
+but did not replace the list by that integer;
+according to the conventions, this replacement should be done.
+</Item>
+
+<Item> 
+The functions <C>PrintTo</C> and 
+<C>AppendTo</C> did not work correctly for streams.
+[Reported by Marco Costantini]
+</Item>
+
+<Item>
+The function <C>Basis</C> did not return a value
+when it was called with the argument <C>Rationals</C>.
+[Reported by Klaus Lux]
+</Item>
+
+<Item>
+For certain matrix groups, the function
+<C>StructureDescription</C> raised an error message.
+The reason for this was that a trivial method for
+<C>IsGeneralLinearGroup</C> for matrix groups in
+<C>lib/grpmat.gi</C> which is ranked higher than
+the nontrivial method for generic groups in
+<C>lib/grpnames.gi</C> called the operation
+<C>IsNaturalGL</C>, for which there was no nontrivial
+method available. [Reported by Nilo de Roock]
+</Item>
+
+<Item> 
+Action on sets of length 1 was not correctly handled. 
+[Reported by Mathieu Dutour]
+</Item>
+
+<Item>
+Now <C>WriteByte</C> admits writing zero characters to
+all streams. [Reported by Marco Costantini]
+</Item>
+
+<Item>
+The conjugacy test for subgroups tests for elementary abelian regular 
+normal subgroup (EARNS) conjugacy. The fix will 
+catch this in the case that the second group has no EARNS. 
+[Reported by Andrew Johnson]
+</Item>
+
+<Item>
+So far, the UNIX installation didn't result in a correct gap.sh if the 
+installation path contained space characters. Now it should handle this 
+case correctly, as well as other unusual characters in path names 
+(except for double quotes).
+</Item>
+
+</List>
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+
+<Section Label="fix448">
+<Heading>&GAP; 4.4 Update 8 (September 2006)</Heading>
+
+New or improved functionality:
+
+<List>
+
+<Item>
+A function <Ref BookName="ref" Func="Positions"/> with underlying operation
+<C>PositionsOp</C>, which returns the list
+of all positions at which a given object appears in a given list.
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="LogFFE"/> 
+now returns  <C>fail</C> 
+when the element is not a power of the base.
+</Item>
+
+<Item>
+It is now allowed to continue long integers, strings or identifiers by
+ending a line with a backslash or with a backslash and carriage return
+character. So, files with &GAP; code and 
+DOS/Windows-style  line breaks  are now valid input on all architectures.
+</Item>
+
+<Item>
+The command line for starting the session and the system environment are now
+available in <C>GAPInfo.SystemCommandLine</C> and
+<C>GAPInfo.SystemEnvironment</C>.
+</Item>
+
+<Item>
+Names of all bound global variables and all component names are available 
+on &GAP; level.
+</Item>
+
+<Item>
+Added a few new Conway polynomials computed by Kate Minola and John Bray.
+</Item>
+
+<Item>
+There is a new concept of <E>random sources</E>, see 
+<Ref BookName="ref" Func="IsRandomSource"/>, which provides random number 
+generators which are independent of each other.
+There is kernel code for the Mersenne twister random number generator
+(based on the code by Makoto Matsumoto distributed at
+<URL>http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html</URL>).
+It provides fast 32-bit pseudorandom integers with a period of length 
+<M>2^{19937}-1</M>
+and a 623-dimensional equidistribution. The library methods for random
+elements of lists and for random (long) integers are using the Mersenne 
+twister now.<P/>
+</Item>
+
+<Item>
+In line editing mode (usual input mode without -n option) in lines starting
+with <C>gap&gt; </C>, <C>&gt; </C> or
+<C>brk&gt; </C> this beginning part is immediately
+removed. This is a convenient feature that allows one to cut and paste
+input lines from other sessions or from manual examples into the current 
+session.
+</Item>
+</List>
+
+Fixed bugs which could produce wrong results:
+
+<List>
+
+<Item>
+The function <Ref BookName="ref" Func="Decomposition"/> 
+returned coefficient vectors also in certain
+situations where in fact no decomposition exists.
+This happened only if the matrix entered as the first argument
+contained irrational values
+and a row in the matrix entered as the second argument did not respect the
+algebraic conjugacy relations between the columns of the first argument.
+So there was no problem for the usual cases that the two matrices are
+integral or that they are lists of Brauer characters. [Reported by Jürgen Müller]
+</Item>
+
+<Item>
+PC group homomorphisms can claim a wrong kernel after 
+composition. [Reported by Serge Bouc]
+</Item>
+
+<Item>
+The return value of <Ref BookName="ref" Func="OctaveAlgebra"/> had an inconsistent
+defining structure constants table for the case of coefficients fields
+not containing the integer zero. [Reported by Gábor Nagy]
+</Item>
+
+<Item>
+The manual guarantees that a conjugator automorphism has a conjugating
+element in the group if possible. This was not guaranteed.
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="StabChain"/>
+for symmetric groups gave a wrong result if fixed points were
+prescribed for base.
+</Item>
+
+<Item>
+Contrary to what is documented the function 
+<C>POW_OBJ_INT</C> returned an immutable result for
+<C>POW_OBJ_INT(m,1)</C> for a mutable object
+<C>m</C>. This is triggered by the code
+<C>m^1</C>.
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="PseudoRandom"/> for a group 
+had a problem if the group had lots of equal
+generators. The produced elements were extremely poorly distributed in 
+that case. This is now fixed for the case that elements of the group
+can easily be sorted.
+</Item>
+
+<Item>
+Fixed the bug that the type of a boolean list (see 
+<Ref BookName="ref" Func="More about Boolean Lists"/>)
+was computed wrongly: The type previously had <C>IS_PLIST_REP</C> 
+instead of <C>IS_BLIST_REP</C> in its filter list.
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="Orbits"/> 
+did not respect a special <Ref BookName="ref" Func="PositionCanonical"/> method for right
+transversals. [Reported by Steve Costenoble]
+</Item>
+
+<Item>
+Wrong results for <Ref BookName="ref" Func="GcdInt"/> 
+for some arguments on 64 bit systems only.
+ [Reported by Robert Morse]
+</Item>
+
+<Item>
+When prescribing a subgroup to be included, the low index algorithm for fp
+groups sometimes returned subgroups which are in fact conjugate. (No
+subgroups are missing.) [Reported by Ignaz Soroko]
+</Item>
+</List>
+
+
+Fixed bugs which could lead to crashes:
+
+<List>
+
+<Item>
+The command line option <C>-x</C> allowed 
+arguments > 256 which
+can then result in internal buffers overflowing. Now bigger numbers
+in the argument are equivalent to <C>-x 256</C>.
+<!-- 
+Can't really test it except by starting gap -x 300 and checking SizeScreen();
+With the fix it is [256,24], without it was [300,24]. -->
+[Reported by Michael Hartley]
+</Item>
+</List>
+
+
+Other fixed bugs:
+
+<List>
+
+<Item>
+Two special methods for the operation
+<Ref BookName="ref" Func="CompositionMapping2"/> were not correct,
+such that composing (and multiplying) certain group homomorphisms
+did not work. [Reported by Peter Mayr]
+</Item>
+
+<Item>
+In the definition of
+<Ref BookName="ref" Func="FrobeniusCharacterValue"/>, it had been stated erroneously
+that the value must lie in the field of <M>p^n</M>-th roots of unity;
+the correct condition is that the value must lie in the field of
+<M>(p^n-1)</M>-th roots of unity. [Reported by Jack Schmidt]
+</Item>
+
+<Item>
+The function <Ref BookName="ref" Func="DirectProduct"/> failed when one of the factors was known to be
+infinite.
+</Item>
+
+<Item>
+For a linear action homomorphism <C>PreImageElm</C>
+was very slow because there was no good method to check for injectivity,
+which is needed for nearly all good methods for 
+<C>PreImageElm</C>. This change adds such a new
+method for <C>IsInjective</C>. [Reported by Akos Seress]
+</Item>
+
+<Item>
+Rare errors in the complement routine for permutation groups.
+</Item>
+
+<Item>
+Blocks code now uses jellyfish-style random elements to avoid bad Schreier
+trees.
+</Item>
+
+<Item>
+A method for <Ref BookName="ref" Func="IsPolycyclicGroup"/> has been added.
+Such a method was missing so far.
+</Item>
+
+<Item>
+Corrected <Ref BookName="ref" Func="EpimorphismSchurCover"/> to handle
+the trivial group correctly.
+Added new methods that follow immediately from computing 
+the Schur Cover of a group. The attribute 
+<Ref BookName="ref" Func="Epicentre"/>, the operations
+<Ref BookName="ref" Func="NonabelianExteriorSquare"/> and
+<Ref BookName="ref" Func="EpimorphismNonabelianExteriorSquare"/>, and
+the property <Ref BookName="ref" Func="IsCentralFactor"/> are added to the 
+library with documentation and references.
+</Item>
+
+<Item>
+Display the correct expression in a call stack trace
+if an operation was called somewhere up due to the evaluation
+of a unary or binary operation.
+</Item>
+
+<Item>
+Made <C>StripMemory</C> an operation rather than a 
+global function. Added <C>ForgetMemory</C> operation.
+</Item>
+
+<Item>
+Adjust things slightly to make later conversion to new vectors/matrices
+easier. Nothing of this should be visible.
+</Item>
+
+<Item>
+Corrected some details in the documentation of the &GAP; 
+language. [Reported by Alexander Konovalov]
+</Item>
+
+<Item>
+Now <Ref BookName="ref" Func="PositionSorted"/> is much faster on long mutable 
+plain lists. (The former operation is substituted by a function and a new
+operation <C>PositionSortedOp</C>.) [Reported by Silviu Radu]
+</Item>
+
+<Item>
+Now it is possible to switch repeated warnings off when working with
+iterative polynomial rings.
+</Item>
+</List>
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+
+<Section Label="fix449">
+<Heading>&GAP; 4.4 Update 9 (November 2006)</Heading>
+
+Fixed bugs which could produce wrong results:
+
+<List>
+
+<Item>
+The methods of
+<Ref BookName="ref" Func="ReadByte"/>
+for reading from files or  terminals returned wrong
+results for characters in the range <C>[128..255]</C>. 
+[Reported by Yevgen Muntyan]
+</Item>
+</List>
+
+
+Other fixed bugs:
+
+<List>
+
+<Item>
+A method for the operation
+<Ref BookName="ref" Func="PseudoRandom"/> did not succeed.
+</Item>
+
+<Item>
+A fix for <C>Orbits</C> with a set of points as a seed.
+</Item>
+
+<Item>
+Added a generic method such that <Ref BookName="ref" Func="Positions"/> 
+works with all types of lists.
+</Item>
+
+<Item>
+Fixed a problem in choosing the prime in the Dixon-Schneider algorithm. 
+[Reported by Toshio Sumi]
+</Item>
+</List>
+
+New or improved functionality:
+
+<List>
+
+<Item>
+<C>ReducedOrdinary</C> was used in the manual, but was not documented, 
+being a synonym for the documented <C>ReducedCharacters</C>. Changed 
+manual examples to use the latter form. [Reported by Vahid Dabbaghian]
+</Item>
+</List>
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+
+<Section Label="fix4410">
+<Heading>&GAP; 4.4 Update 10 (October 2007)</Heading>
+
+
+New or improved functionality:
+
+<List>
+
+<Item>
+Files in the <F>cnf</F> directory of the &GAP;
+distribution are now archived as binary files. Now &GAP;
+can be installed with UNIX or with WINDOWS style
+line breaks on any system and should work without problems.
+</Item>
+
+<Item>
+Since large finite fields are available,
+some restrictions in the code for computing irreducible modules
+over finite fields are no longer necessary.
+(They had been introduced in order to give better error messages.)
+</Item>
+
+<Item>
+Made PositionSublist faster in case the search string does not contain
+repetitive patterns.
+</Item>
+
+<Item>
+The function <C>MakeImmutable</C> now returns
+its argument.
+</Item>
+
+<Item>
+Dynamically loaded modules now work on Mac OS X. As a consequence,
+this allows to work with the Browse, EDIM and IO packages on Mac OS X.
+</Item>
+
+<Item>
+Introduced <C>ViewObj</C> and
+<C>PrintObj</C> methods for algebraic number fields. Made
+them applicable to <C>AlgebraicExtension</C> by adding the
+property <C>IsNumberField</C> in the infinite field case.
+</Item>
+
+<Item>
+The function
+<Ref BookName="ref" Func="CharacterTableRegular"/>
+is documented now.
+</Item>
+
+<Item>
+The function
+<Ref BookName="ref" Func="ScalarProduct"/>
+now accepts also Brauer characters as arguments.
+</Item>
+
+<Item>
+The function
+<Ref BookName="ref" Func="QuaternionAlgebra"/>
+now accepts also a list of field elements instead of a field.
+Also, now the comparison of return values (w.r.t. equality, containment)
+yields <C>true</C> if the parameters coincide and the
+ground fields fit.
+</Item>
+
+<Item>
+The function
+<Ref BookName="ref" Func="RemoveCharacters"/> is now documented.
+</Item>
+
+<Item>
+Lists in &GAP; sometimes occupy memory for
+possible additional entries. Now plain lists and strings read by &GAP; 
+and the lists returned by <Ref BookName="ref" Func="List"/>
+only occupy the memory they really need. For more details see the
+documentation of the new function 
+<Ref BookName="ref" Func="EmptyPlist"/>.
+</Item>
+
+<Item>
+There are some new Conway polynomials in characteristic 2 and 3 provided by 
+Kate Minola.
+</Item>
+
+<Item>
+A new operation <C>MemoryUsage</C> determines the
+memory usage in bytes of an object and all its subobjects. It does
+not consider families and types but handles arbitrary self-referential
+structures of objects.
+</Item>
+</List>
+
+
+Fixed bugs which could produce wrong results:
+
+<List>
+
+<Item>
+When forming the semidirect product of a matrix group with a vector space
+over a non-prime field
+the embedding of the vector space gave a wrong result. [Reported by anvita21]
+</Item>
+
+<Item>
+DefaultRing failed for constant polynomials over nonprime fields. 
+[Reported by Stefan Kohl]
+</Item>
+
+<Item>
+The method in ffeconway.gi that gets coefficients WRT to the 
+canonical basis of the field from the representation is only correct
+if the basis is over the prime field. Added a TryNextMethod if this 
+is not the case. [Reported by Alla Detinko]
+</Item>
+
+<Item>
+
+Creating a large (><M>2^{16}</M>) field over a non-prime subfield went 
+completely wrong. [Reported by Jack Schmidt, from Alla Detinko]
+</Item>
+
+<Item>
+A method for Coefficients for Conway polynomial FFEs 
+didn't check that the basis provided was the canonical basis of
+the RIGHT field. 
+ [Reported by Bettina Eick]
+</Item>
+
+<Item>
+An elementary abelian series was calculated wrongly. [Reported by N. Sieben]
+</Item>
+
+<Item>
+Orbits on sets of transformations failed.
+</Item>
+
+<Item>
+Wrong methods for <Ref BookName="ref" Func="GeneratorsOfRing"/>
+and <Ref BookName="ref" Func="GeneratorsOfRingWithOne"/>
+have been removed. These methods were based on the assumption
+that one can obtain a set of ring generators by taking the
+union of a known set of field generators, the set of the
+inverses of these field generators and&nbsp;{1}.
+</Item>
+
+<Item>
+The name of a group of order 117600 and degree 50 was
+incorrect in the <Ref BookName="ref" Func="Primitive Permutation Groups"/>
+Primitive Permutation Groups library.  In particular, a group
+was wrongly labelled as PGL(2, 49).
+</Item>
+
+<Item>
+There was a possible error in <C>SubgroupsSolvableGroup</C> when computing 
+subgroups within a subgroup.
+</Item>
+
+<Item>
+An error in 2-Cohomology computation for pc groups was fixed.
+</Item>
+
+<Item>
+<C>IsConjugate</C> used normality in a wrong supergroup
+</Item>
+</List>
+
+
+Fixed bugs which could lead to crashes:
+
+<List>
+
+<Item>
+&GAP; crashed when the 
+<C>PATH</C> environment variable was not set. [Reported by Robert F. Morse]
+</Item>
+
+<Item>
+&GAP; could crash when started with option <C>-x 1</C>. 
+Now the number of columns is initialized with at
+least&nbsp;2. [Reported by Robert F. Morse]
+</Item>
+
+<Item>
+After loading a saved workspace &GAP; 
+crashed when one tried to slice
+a compressed vector over a field with 2 &lt; q &lt;= 256 elements, which had
+already existed in the saved workspace. [Reported by Laurent Bartholdi]
+</Item>
+
+<Item>
+<C>FFECONWAY.WriteOverSmallestCommonField</C> tripped up when the common 
+field is smaller than the field over which some of the vector elements 
+are written, because it did a test based on the degree of the element, 
+not the field it is written over. [Reported by Thomas Breuer]
+</Item>
+
+<Item>
+
+Fixed the following error:
+When an FFE in the Conway polynomial representation actually lied in a 
+field that is handled in the internal representation (eg <M>GF(3)</M>) 
+and you tried to write it over a bigger field that is ALSO handled 
+internally (eg <M>GF(9)</M>) you got an element written over the larger 
+field, but in the Conway polynomial representation, which is forbidden.
+ [Reported by Jack Schmidt]
+</Item>
+
+<Item>
+Attempting to compress a vector containing elements of a small finite field
+represented as elements of a bigger (external) field caused a
+segfault. [Reported by Edmund Robertson]
+</Item>
+
+<Item>
+&GAP; crashed when <C>BlistList</C> was called with a range and a list 
+containing large integers or non-integers. [Reported by Laurent Bartholdi]
+</Item>
+
+<Item>
+&GAP; no longer crashes when <C>OnTuples</C> is called with a list that 
+contains holes. [Reported by Thomas Breuer]
+</Item>
+</List>
+
+
+Other fixed bugs:
+
+<List>
+
+<Item>
+<C>Socle</C> for the trivial group could produce an error message.
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="DirectoryContents"/> ran into an error for immutable strings
+without trailing slash as argument. [Reported by Thomas Breuer]
+</Item>
+
+<Item>
+The functions <Ref BookName="ref" Func="IsInjective"/>
+and <Ref BookName="ref" Func="IsSingleValued"/>
+did not work for general linear mappings with trivial (pre)image. 
+[Reported by Alper Odabas]
+</Item>
+
+<Item>
+Creating an enumerator for a prime field with more than 65536 elements ran 
+into an infinite recursion. [Reported by Akos Seress]
+</Item>
+
+<Item>
+The performance of <C>List</C>, <C>Filtered</C>, <C>Number</C>, 
+<C>ForAll</C> and <C>ForAny</C> if
+applied to non-internally represented lists was improved. Also 
+the performance of iterators for lists was slightly improved.
+</Item>
+
+<Item>
+Finite field elements now know that they can be sorted easily which
+improves performance in certain lookups.
+</Item>
+
+<Item>
+A method for <Ref BookName="ref" Func="IsSubset"/>
+was missing for the case that exactly one argument
+is an inhomogeneous list. [Reported by Laurent Bartholdi]
+</Item>
+
+<Item>
+Long integers in expressions are now printed (was not yet implemented). 
+[Reported by Thomas Breuer]
+</Item>
+
+<Item>
+Fixed kernel function for printing records.
+</Item>
+
+<Item>
+New C library interfaces (e.g., to ncurses in the <Package>Browse</Package>
+package) need some more memory to be allocated with <C>malloc</C>. The 
+default value of &GAP; <C>-a</C> option is now <C>2m></C>.
+</Item>
+
+<Item>
+Avoid warnings about pointer types by newer gcc compilers.
+</Item>
+
+<Item>
+<C>IsBound(l[pos])</C> was failing for a large integer <A>pos</A> 
+only when coded (e.g. in a loop or function body).
+</Item>
+
+<Item>
+<C>ZmodpZObj</C> is now a synonym for
+<C>ZmodnZObj</C> such that from now on such
+objects print in a way that can be read back into &GAP;.
+</Item>
+
+<Item>
+The outdated note that binary streams are not yet implemented has been
+removed.
+</Item>
+</List>
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+<Section Label="fix4411">
+<Heading>&GAP; 4.4 Update 11 (December 2008)</Heading>
+
+Fixed bugs which could produce wrong results:
+
+<List>
+
+<Item>
+<Ref BookName="ref" Func="MemoryUsage"/> on objects with no subobjects left them in the cache and
+thus reported 0 in subsequent calls to MemoryUsage for the same
+object. [Reported by Stefan Kohl]
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="Irr"/> might be missing characters. [Reported by Angel del Rio]
+</Item>
+
+<Item>
+Up to now, it was allowed to call the function
+<Ref BookName="ref" Func="FullMatrixAlgebraCentralizer"/>
+with a field and a list of matrices such that the entries of the matrices
+were not contained in the field;
+in this situation, the result did not fit to the documentation.
+Now the entries of the matrices are required to lie in the field,
+if not then an error is signaled.
+</Item>
+
+<Item>
+For those finite fields that are regarded as field extensions over
+non-prime fields (one can construct such fields with
+<Ref BookName="ref" Func="AsField"/>),
+the function <Ref BookName="ref" Func="DefiningPolynomial"/>
+erroneously returned a polynomial w.r.t. the extension of 
+the prime field. [Reported by Stefan Kohl]
+</Item>
+
+<Item>
+Since the release of &GAP; 4.4.10,
+the return values of the function
+<Ref BookName="ref" Func="QuaternionAlgebra"/>
+were not consistent w.r.t. the attribute
+<Ref BookName="ref" Func="GeneratorsOfAlgebra"/>;
+the returned list could have length four or five.
+Now always the list of elements of the canonical basis is returned.
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="MonomialGrevlexOrdering"/>
+calculated a wrong ordering in certain cases. [Reported by Paul Smith]
+</Item>
+
+<Item>
+The (&GAP; kernel) method for the operation
+<Ref BookName="ref" Func="IntersectSet"/> for ranges had two bugs,
+which could yield a result range with either too few or too many elements.
+As a consequence, for example the <Ref BookName="ref" Func="Intersection"/>
+results for ranges could be
+wrong. [Reported by Matthew Fayers]
+</Item>
+
+<Item>
+Fixed a bug in the short-form display of elements of larger finite fields, a bug in some
+cross-field conversions and some inefficiencies and a missing method in the 
+<Ref BookName="ref" Func="LogFFE"/> code. [Reported by Jia Huang]
+</Item>
+
+<Item>
+In rare cases <Ref BookName="ref" Func="SmithNormalFormIntegerMatTransforms"/>
+returned a wrong normal form (the version without transforming matrices 
+did not have this problem). This is fixed. [Reported by Alexander Hulpke]
+</Item>
+
+<Item>
+The variant of the function <Ref BookName="ref" Func="StraightLineProgram"/>
+that takes a string
+as its first argument returned wrong results if the last character of this
+string was a closing bracket.
+</Item>
+
+<Item>
+The code for central series in a permutation group used too tight a bound
+and thus falsely return a nilpotent permutation group as non-nilpotent.
+</Item>
+</List>
+
+
+Fixed bugs which could lead to crashes:
+
+<List>
+
+<Item>
+Under certain circumstances the kernel code for position in blists
+would access a memory location just after the end of the blist. If
+this location was not accessible, a crash could result. This was corrected
+and the code was cleaned up. [Reported by Alexander Hulpke]
+</Item>
+</List>
+
+
+Other fixed bugs:
+
+<List>
+
+<Item>
+The function <Ref BookName="ref" Func="IsomorphismTypeInfoFiniteSimpleGroup"/>
+can be called with a positive integer instead of a group,
+and then returns information about the simple group(s) of this order.
+(This feature is currently undocumented.)
+For the argument 1, however, it ran into an infinite loop.
+</Item>
+
+<Item>
+A lookup in an empty dictionary entered a break loop. 
+Now returns <C>fail</C>. [Reported by Laurent Bartholdi]
+</Item>
+
+<Item>
+The c++ keyword <C>and</C> can no longer be used as a macro parameter 
+in the kernel. [Reported by Paul Smith]
+</Item>
+
+<Item>
+The operation <Ref BookName="ref" Func="KernelOfMultiplicativeGeneralMapping"/> has
+methods designed to handle maps between permutation groups in a two-step approach,
+but did not reliably trigger the second step.  This has now been fixed, preventing
+a slow infinite loop repeating the first step.  This was normally only seen
+as part of a larger calculation.
+</Item>
+
+<Item>
+There were two methods for the operation
+<Ref BookName="ref" Func="Intersection2"/>
+which have implicitly assumed
+that finiteness of a collection can always be decided. Now, these methods
+check for <Ref BookName="ref" Func="IsFinite"/> and
+<Ref BookName="ref" Func="CanComputeSize"/> prior to calling
+<Ref BookName="ref" Func="IsFinite"/>.
+</Item>
+
+<Item>
+Made error message in case of corrupted help book information
+(manual.six file) shorter and more informative.  [Reported by Alexander Hulpke]
+</Item>
+
+<Item>
+&GAP; cannot call methods with more than six
+arguments.
+Now the functions <Ref BookName="ref" Func="NewOperation"/>,
+<Ref BookName="ref" Func="DeclareOperation"/>, and
+<Ref BookName="ref" Func="InstallMethod"/>
+signal an error if one attempts to declare an operation or to install
+a method with more than six arguments.
+</Item>
+
+<Item>
+Up to now, <Ref BookName="ref" Func="IsOne"/>
+had a special method for general
+mappings, which was much worse than the generic method;
+this special method has now been removed.
+</Item>
+
+<Item>
+When printing elements of an algebraic extension parentheses around
+coefficients were missing. [Reported by Maxim Hendriks]
+</Item>
+</List>
+
+
+New or improved functionality:
+
+<List>
+
+<Item>
+Make dynamic loading of modules possible on CYGWIN using a DLL based
+approach. Also move to using autoconf version 2.61.
+</Item>
+
+<Item>
+One can now call
+<Ref BookName="ref" Func="Basis"/>,
+<Ref BookName="ref" Func="Iterator"/>
+etc. with the return value of the function
+<Ref BookName="ref" Func="AlgebraicExtension"/>.
+</Item>
+
+<Item>
+The function <Ref BookName="ref" Func="FrobeniusCharacterValue"/>
+returned <C>fail</C> for results that require
+a finite field with more than 65536 elements.
+Meanwhile &GAP; can handle larger finite fields,
+so this restriction was removed.
+(It is still possible that
+<Ref BookName="ref" Func="FrobeniusCharacterValue"/> returns <C>fail</C>.)
+</Item>
+
+<Item>
+Methods for testing membership in general linear groups and special linear
+groups over the integers have been added. 
+</Item>
+
+<Item>
+Methods for <Ref BookName="ref" Func="String"/> and
+<C>ViewString</C> for full row modules have
+been added. Further, a default method for
+<Ref BookName="ref" Func="IsRowModule"/>
+has been
+added, which returns 
+<C>false</C> for objects
+which are not free left modules.
+</Item>
+
+<Item>
+A <C>ViewString</C> method for objects with name
+has been added.
+</Item>
+
+<Item>
+The method for <Ref BookName="ref" Func="View"/>
+for polynomial rings has been improved, and methods for
+<Ref BookName="ref" Func="String"/> and
+<C>ViewString</C> for polynomial rings
+have been added.
+</Item>
+
+<Item>
+<Ref BookName="ref" Func="Binomial"/> now works with huge <C>n</C>.
+</Item>
+
+<Item>
+The function <Ref BookName="ref" Func="InducedClassFunctionsByFusionMap"/>
+is now documented.
+</Item>
+
+<Item>
+The return values of the function
+<Ref BookName="ref" Func="QuaternionAlgebra"/>
+now store that they are division rings (if optional parameters are given
+then of course ths depends on these parameters).
+</Item>
+</List>
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+<Section Label="fix4412">
+<Heading>&GAP; 4.4 Update 12 (December 2008)</Heading>
+
+Fixed bugs which could lead to crashes:
+
+<List>
+<Item>
+A bug whereby leaving an incomplete statement on a 
+line (for instance typing while and then return)
+when prompt colouring was in use could lead to &GAP;
+crashing.
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+A bug which made the command-line editor unusable
+in a 64-bit version of &GAP; on Mac&nbsp;OS&nbsp;X.
+</Item>
+</List>
+
+</Section>
+
+</Chapter>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<!-- %% --> 
+<!-- %E -->
