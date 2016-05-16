@@ -87,7 +87,7 @@ function(name, super, repfilter, attributes, properties)
 
     #X Check whether name exists,
     #X check whether name is empty
-    cat := NewCategory(name, IsObject);
+    cat := NewCategory(name, super);
     BindGlobal(name, cat);
 
     familyname := Concatenation(name, "Family");
