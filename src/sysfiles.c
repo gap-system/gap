@@ -1413,9 +1413,6 @@ static void syAnswerAlarm ( int signr, siginfo_t * si, void *context)
        Later we might want to do something cleverer with throwing an 
        exception or dealing better if this isn't our timer     */
   assert( signr == TIMER_SIGNAL);
-  assert( si->si_signo == TIMER_SIGNAL);
-  assert( si->si_code == SI_TIMER);
-  assert( si->si_value.sival_int == 0x12345678 );
   SyAlarmRunning = 0;
   SyAlarmHasGoneOff = 1;
   InterruptExecStat();
