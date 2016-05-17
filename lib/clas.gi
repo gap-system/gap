@@ -389,6 +389,20 @@ local xset,i,cl,c,p,s;
   return cl;
 end);
 
+InstallGlobalFunction(ConjugacyClassesByHomomorphicImage,function(G,hom)
+local H,cl,a,c;
+  H:=Image(hom,G);
+  cl:=[];
+  for c in ConjugacyClasses(H) do
+    a:=ConjugacyClass(G,PreImagesRepresentative(hom,Representative(c)));
+    if HasStabilizerOfExternalSet(c) then
+      SetStabilizerOfExternalSet(a,PreImage(hom,StabilizerOfExternalSet(c)));
+    fi;
+    Add(cl,a);
+  od;
+  return cl;
+end);
+
 #############################################################################
 ##
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . .  of a group
