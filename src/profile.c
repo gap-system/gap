@@ -128,9 +128,6 @@
 # include       <sys/resource.h>        /* definition of 'struct rusage'   */
 #endif
 #endif
-#ifdef HAVE_GETTIMEOFDAY
-# include       <sys/time.h>            /* for gettimeofday                */
-#endif
 
 Obj OutputtedFilenameList;
 
@@ -160,9 +157,8 @@ struct ProfileState
   struct StatementLocation lastOutputted;
   int lastOutputtedExec;
 
-#if defined(HAVE_GETRUSAGE) || defined(HAVE_GETTIMEOFDAY)
-  struct timeval lastOutputtedTime;
-#endif
+  Int8 lastOutputtedTime;
+
   int useGetTimeOfDay;
 
   int minimumProfileTick;
@@ -361,6 +357,22 @@ static inline UInt getFilenameId(Stat stat)
   return id;
 }
 
+static inline Int8 CPUmicroseconds()
+{
+#if defined(HAVE_GETTIMEOFDAY)
+  struct timeval timebuf;
+  struct rusage buf;
+
+  getrusage( RUSAGE_SELF, &buf );
+  timebuf = buf.ru_utime;
+
+  return (Int8)timebuf.tv_sec * 1000000 + (Int8)timebuf.tv_usec;
+#else
+  // Should never get here!
+  abort();
+#endif
+}
+
 // exec : are we executing this statement
 // visit: Was this statement previously visited (that is, executed)
 static inline void outputStat(Stat stat, int exec, int visited)
@@ -368,16 +380,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
   UInt line;
   int nameid;
 
-  int ticks = 0;
-#if defined(HAVE_GETTIMEOFDAY)
-  struct timeval timebuf;
-#else
-#if defined(HAVE_GETRUSAGE)
-  struct timeval timebuf;
-  struct rusage buf;
-#endif
-#endif
-
+  Int8 ticks = 0, newticks = 0;
 
   HashLock(&profileState);
   // Explicitly skip these two cases, as they are often specially handled
@@ -400,29 +403,15 @@ static inline void outputStat(Stat stat, int exec, int visited)
   {
 
     if(profileState.OutputRepeats) {
-
       if(profileState.useGetTimeOfDay) {
-#if defined(HAVE_GETTIMEOFDAY)
-        gettimeofday(&timebuf, 0);
-#else
-        abort(); // should never be reached
-#endif
+        newticks = SyNanosecondsSinceEpoch() / 1000;
       }
       else {
-#if defined(HAVE_GETRUSAGE)
-        struct rusage buf;
-        getrusage( RUSAGE_SELF, &buf );
-        timebuf = buf.ru_utime;
-#else
-        abort(); // should never be reached
-#endif
+        newticks = CPUmicroseconds();
       }
 
+      ticks = newticks - profileState.lastOutputtedTime;
 
-#if defined(HAVE_GETTIMEOFDAY) || defined(HAVE_GETRUSAGE)
-      ticks = (timebuf.tv_sec - profileState.lastOutputtedTime.tv_sec) * 1000000 +
-              (timebuf.tv_usec - profileState.lastOutputtedTime.tv_usec);
-#endif
       // Basic sanity check
       if(ticks < 0)
         ticks = 0;
@@ -438,9 +427,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
         ticks -= ticksDone;
         fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"FileId\":%d}\n",
                 exec ? 'E' : 'R', ticksDone, (int)line, (int)nameid);
-#if defined(HAVE_GETRUSAGE) || defined(HAVE_GETTIMEOFDAY)
-        profileState.lastOutputtedTime = timebuf;
-#endif
+        profileState.lastOutputtedTime = newticks;
         profileState.lastNotOutputted.line = -1;
         profileState.lastOutputted.line = line;
         profileState.lastOutputted.fileID = nameid;
@@ -626,13 +613,11 @@ void enableAtStartup(char* filename, Int repeats)
     profileState.lastNotOutputted.line = -1;
 #ifdef HAVE_GETTIMEOFDAY
     profileState.useGetTimeOfDay = 1;
-    gettimeofday(&(profileState.lastOutputtedTime), 0);
+    profileState.lastOutputtedTime = SyNanosecondsSinceEpoch() / 1000;
 #else
 #ifdef HAVE_GETRUSAGE
     profileState.useGetTimeOfDay = 0;
-    struct rusage buf;
-    getrusage( RUSAGE_SELF, &buf );
-    profileState.lastOutputtedTime = buf.ru_utime;
+    profileState.lastOutputtedTime = CPUmicroseconds();
 #endif
 #endif
 
@@ -759,20 +744,10 @@ Obj FuncACTIVATE_PROFILING (
     profileState.lastNotOutputted.line = -1;
 
     if(wallTime == True) {
-#ifdef HAVE_GETTIMEOFDAY
-        gettimeofday(&(profileState.lastOutputtedTime), 0);
-#else
-        abort(); // this should never be reached
-#endif
+        profileState.lastOutputtedTime = SyNanosecondsSinceEpoch() / 1000;
     }
     else {
-#ifdef HAVE_GETRUSAGE
-        struct rusage buf;
-        getrusage( RUSAGE_SELF, &buf );
-        profileState.lastOutputtedTime = buf.ru_utime;
-#else
-        abort(); // this should never be reached
-#endif
+        profileState.lastOutputtedTime = CPUmicroseconds();
     }
 
     outputVersionInfo();
