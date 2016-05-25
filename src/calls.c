@@ -1300,7 +1300,8 @@ void PrintFunction (
     Obj                 oldLVars;       /* terrible hack                   */
     UInt                i;              /* loop variable                   */
     UInt                isvarg;         /* does function have varargs?     */
-
+    
+    UInt                outputtedfunc;  /* Have we outputted function?     */
     isvarg = 0;
 
     if ( IS_OPERATION(func) ) {
@@ -1348,7 +1349,27 @@ void PrintFunction (
 
         /* print the body                                                  */
         if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) ) {
-            Pr("<<kernel or compiled code>>",0L,0L);
+            outputtedfunc = 0;
+            if ( BODY_FUNC(func) ) {
+                Obj body = BODY_FUNC(func);
+                if ( GET_FILENAME_BODY(body) ) {
+                    if ( GET_LOCATION_BODY(body) ) {
+                        Pr("<<kernel code from %s:%s>>",
+                            (Int)CSTR_STRING(GET_FILENAME_BODY(body)),
+                            (Int)CSTR_STRING(GET_LOCATION_BODY(body)));
+                            outputtedfunc = 1;
+                    }
+                    else if ( GET_STARTLINE_BODY(body) ) {
+                        Pr("<<compiled GAP code from %s:%d>>",
+                            (Int)CSTR_STRING(GET_FILENAME_BODY(body)),
+                            INT_INTOBJ(GET_STARTLINE_BODY(body)));
+                            outputtedfunc = 1;
+                    }
+                }
+            }
+            if(!outputtedfunc) {
+                Pr("<<kernel or compiled code>>",0L,0L);
+            }
         }
         else {
             SWITCH_TO_NEW_LVARS( func, narg, NLOC_FUNC(func),
@@ -1799,7 +1820,7 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj fn =  FILENAME_BODY(BODY_FUNC(func));
+        Obj fn =  GET_FILENAME_BODY(BODY_FUNC(func));
 #ifndef WARD_ENABLED
         if (fn) {
             return fn;
@@ -1810,7 +1831,6 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
 }
 
 Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
-
     /* check the argument                                                  */
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
@@ -1818,7 +1838,7 @@ Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj sl = STARTLINE_BODY(BODY_FUNC(func));
+        Obj sl = GET_STARTLINE_BODY(BODY_FUNC(func));
         if (sl)
             return sl;
     }
@@ -1826,7 +1846,6 @@ Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
 }
 
 Obj FuncENDLINE_FUNC(Obj self, Obj func) {
-
     /* check the argument                                                  */
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
@@ -1834,13 +1853,27 @@ Obj FuncENDLINE_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj el = ENDLINE_BODY(BODY_FUNC(func));
+        Obj el = GET_ENDLINE_BODY(BODY_FUNC(func));
         if (el)
             return el;
     }
     return Fail;
 }
 
+Obj FuncLOCATION_FUNC(Obj self, Obj func) {
+    /* check the argument                                                  */
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
+        ErrorQuit( "<func> must be a function", 0L, 0L );
+        return 0;
+    }
+
+    if (BODY_FUNC(func)) {
+        Obj sl = GET_LOCATION_BODY(BODY_FUNC(func));
+        if (sl)
+            return sl;
+    }
+    return Fail;
+}
 
 /****************************************************************************
 **
@@ -2028,6 +2061,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "FILENAME_FUNC", 1, "func", 
       FuncFILENAME_FUNC, "src/calls.c:FILENAME_FUNC" },
+
+    { "LOCATION_FUNC", 1, "func", 
+      FuncLOCATION_FUNC, "src/calls.c:LOCATION_FUNC" },
 
     { "STARTLINE_FUNC", 1, "func", 
       FuncSTARTLINE_FUNC, "src/calls.c:STARTLINE_FUNC" },

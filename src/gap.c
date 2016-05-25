@@ -2612,6 +2612,25 @@ void InitGVarAttrsFromTable (
     }
 }
 
+void SetupFuncInfo(Obj func, const Char* cookie)
+{
+    const Char* pos = strchr(cookie, ':');
+    if ( pos ) {
+        Obj filename, start;
+        Obj body_bag = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+        char buffer[512];
+        Int len = 511<(pos-cookie)?511:pos-cookie;
+        memcpy(buffer, cookie, len);
+        buffer[len] = 0;
+        C_NEW_STRING_DYN(filename, buffer);
+        C_NEW_STRING_DYN(start, pos+1);
+        SET_FILENAME_BODY(body_bag, filename);
+        SET_LOCATION_BODY(body_bag, start);
+        BODY_FUNC(func) = body_bag;
+        CHANGED_BAG(body_bag);
+        CHANGED_BAG(func);
+    }
+}
 
 /****************************************************************************
 **
@@ -2666,11 +2685,12 @@ void InitGVarFuncsFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        AssGVar( gvar,
-            NewFunction( NameGVarObj( gvar ),
-                         tab[i].nargs,
-                         ArgStringToList( tab[i].args ),
-                         tab[i].handler ) );
+        Obj func = NewFunction( NameGVarObj( gvar ),
+                                tab[i].nargs,
+                                ArgStringToList( tab[i].args ),
+                                tab[i].handler );
+        SetupFuncInfo( func, tab[i].cookie );
+        AssGVar( gvar, func );
         MakeReadOnlyGVar( gvar );
     }
 }

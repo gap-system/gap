@@ -1275,9 +1275,9 @@ CVar CompFuncExpr (
     Emit( "ENVI_FUNC( %c ) = TLS(CurrLVars);\n", func );
     tmp = CVAR_TEMP( NewTemp( "body" ) );
     Emit( "%c = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );\n", tmp );
-    Emit( "STARTLINE_BODY(%c) = INTOBJ_INT(%d);\n", tmp, INT_INTOBJ(STARTLINE_BODY(BODY_FUNC(fexp))));
-    Emit( "ENDLINE_BODY(%c) = INTOBJ_INT(%d);\n", tmp, INT_INTOBJ(ENDLINE_BODY(BODY_FUNC(fexp))));
-    Emit( "FILENAME_BODY(%c) = FileName;\n",tmp);
+    Emit( "SET_STARTLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_STARTLINE_BODY(BODY_FUNC(fexp))));
+    Emit( "SET_ENDLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_ENDLINE_BODY(BODY_FUNC(fexp))));
+    Emit( "SET_FILENAME_BODY(%c, FileName);\n",tmp);
     Emit( "BODY_FUNC(%c) = %c;\n", func, tmp );
     FreeTemp( TEMP_CVAR( tmp ) );
 

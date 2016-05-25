@@ -265,9 +265,9 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_1 ) = TLS(CurrLVars);
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_2) = INTOBJ_INT(23);
- ENDLINE_BODY(t_2) = INTOBJ_INT(27);
- FILENAME_BODY(t_2) = FileName;
+ SET_STARTLINE_BODY(t_2, INTOBJ_INT(23));
+ SET_ENDLINE_BODY(t_2, INTOBJ_INT(27));
+ SET_FILENAME_BODY(t_2, FileName);
  BODY_FUNC(t_1) = t_2;
  CHANGED_BAG( TLS(CurrLVars) );
  AssGVar( G_RANDOM__LIST, t_1 );
@@ -288,9 +288,9 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_1 ) = TLS(CurrLVars);
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_2) = INTOBJ_INT(29);
- ENDLINE_BODY(t_2) = INTOBJ_INT(39);
- FILENAME_BODY(t_2) = FileName;
+ SET_STARTLINE_BODY(t_2, INTOBJ_INT(29));
+ SET_ENDLINE_BODY(t_2, INTOBJ_INT(39));
+ SET_FILENAME_BODY(t_2, FileName);
  BODY_FUNC(t_1) = t_2;
  CHANGED_BAG( TLS(CurrLVars) );
  AssGVar( G_RANDOM__SEED, t_1 );
