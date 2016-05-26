@@ -129,6 +129,7 @@ OBJECTS="\
     plist.o \
     pperm.o \
     precord.o \
+    profile.o \
     range.o \
     rational.o \
     read.o \
