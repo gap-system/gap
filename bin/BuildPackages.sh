@@ -139,6 +139,11 @@ do
       set -e
       cd $dir
       case $dir in
+        anupq*)
+          ./configure CFLAGS=-m32 LDFLAGS=-m32 &&
+          $MAKE CFLAGS=-m32 LOPTS=-m32
+        ;;
+
         atlasrep*)
           chmod 1777 datagens dataword
         ;;
