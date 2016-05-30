@@ -167,7 +167,7 @@ AbelianInvariantsSubgroupFpGroup := AbelianInvariantsSubgroupFpGroupRrs;
 ##
 ##  <#GAPDoc Label="AugmentedCosetTableInWholeGroup">
 ##  <ManSection>
-##  <Oper Name="AugmentedCosetTableInWholeGroup" Arg='H[, gens]'/>
+##  <Func Name="AugmentedCosetTableInWholeGroup" Arg='H[, gens]'/>
 ##
 ##  <Description>
 ##  For a subgroup <A>H</A> of a finitely presented group, this function

@@ -102,7 +102,7 @@ DeclareGlobalFunction("AbstractWordTietzeWord");
 ##
 ##  <#GAPDoc Label="TietzeWordAbstractWord">
 ##  <ManSection>
-##  <Func Name="TietzeWordAbstractWord" Arg='word, fgens'/>
+##  <Oper Name="TietzeWordAbstractWord" Arg='word, fgens'/>
 ##
 ##  <Description>
 ##  assumes <A>fgens</A> to be a list of free group generators
@@ -110,7 +110,7 @@ DeclareGlobalFunction("AbstractWordTietzeWord");
 ##  It converts <A>word</A> into a Tietze word,
 ##  i. e., a list of positive or negative generator numbers.
 ##  <P/>
-##  This function simply calls <Ref Func="LetterRepAssocWord"/>.
+##  This function simply calls <Ref Oper="LetterRepAssocWord"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
