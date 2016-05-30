@@ -3101,6 +3101,11 @@ gap> Remove(l);
 gap> [l, Length(l)];
 [ [ 1, 2,, [  ] ], 4 ]
 
+#2016/05/30 (CJ, bug reported github #798)
+gap> sc := StabChainOp(Group((1,2)), rec(base := [3,2], reduced := false));;
+gap> SCRSift(sc, (1,2));
+()
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 831990000);
 

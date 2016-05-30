@@ -4823,10 +4823,18 @@ Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
     Obj orb = ElmPRec(stb,RN_orbit);
     Int bpt = INT_INTOBJ(ELM_LIST(orb,1))-1;
     Int im;
-    if (useP2)
-      im = (Int)ADDR_PERM2(result)[bpt];
-    else
-      im = (Int)ADDR_PERM4(result)[bpt];
+
+    if (useP2) {
+        UInt2* ptrResult = ADDR_PERM2(result);
+        UInt degResult = DEG_PERM2(result);
+        im = (Int)(IMAGE(bpt, ptrResult, degResult));
+    }
+    else {
+        UInt4* ptrResult = ADDR_PERM4(result);
+        UInt degResult = DEG_PERM2(result);
+        im = (Int)(IMAGE(bpt, ptrResult, degResult));
+    }
+
     if (!(t = ELM0_LIST(trans,im+1)))
       break;
     else {
