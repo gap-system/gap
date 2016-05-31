@@ -216,7 +216,7 @@ InstallTrueMethod(CanEasilyTestMembership, IsSubgroupFgGroup and IsWholeFamily);
 ##
 ##  <#GAPDoc Label="IsFpGroup">
 ##  <ManSection>
-##  <Func Name="IsFpGroup" Arg='G'/>
+##  <Filt Name="IsFpGroup" Arg='G'/>
 ##
 ##  <Description>
 ##  is a synonym for

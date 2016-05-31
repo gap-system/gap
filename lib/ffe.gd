@@ -168,8 +168,8 @@
 ##
 ##  <#GAPDoc Label="DefaultField:ffe">
 ##  <ManSection>
-##  <Meth Name="DefaultField" Arg='list' Label="for finite field elements"/>
-##  <Meth Name="DefaultRing" Arg='list' Label="for finite field elements"/>
+##  <Func Name="DefaultField" Arg='list' Label="for finite field elements"/>
+##  <Func Name="DefaultRing" Arg='list' Label="for finite field elements"/>
 ##
 ##  <Description>
 ##  <Ref Func="DefaultField" Label="for finite field elements"/> and

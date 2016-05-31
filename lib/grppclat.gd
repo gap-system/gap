@@ -68,7 +68,7 @@ DeclareGlobalFunction("InvariantElementaryAbelianSeries");
 ##
 ##  <#GAPDoc Label="InducedAutomorphism">
 ##  <ManSection>
-##  <Oper Name="InducedAutomorphism" Arg='epi, aut'/>
+##  <Func Name="InducedAutomorphism" Arg='epi, aut'/>
 ##
 ##  <Description>
 ##  Let <A>aut</A> be an automorphism of a group <M>G</M> and <A>epi</A> be

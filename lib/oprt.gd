@@ -1927,7 +1927,7 @@ DeclareOperation( "PermutationCycleOp",
 ##
 ##  <#GAPDoc Label="Cycle">
 ##  <ManSection>
-##  <Oper Name="Cycle" Arg='g, Omega, pnt[, act]'/>
+##  <Func Name="Cycle" Arg='g, Omega, pnt[, act]'/>
 ##
 ##  <Description>
 ##  returns a list of the points in the cycle of <A>pnt</A> under the action
@@ -1947,7 +1947,7 @@ DeclareOperation( "CycleOp", [ IsObject, IsList, IsObject, IsFunction ] );
 ##
 ##  <#GAPDoc Label="Cycles">
 ##  <ManSection>
-##  <Oper Name="Cycles" Arg='g, Omega[, act]'/>
+##  <Func Name="Cycles" Arg='g, Omega[, act]'/>
 ##
 ##  <Description>
 ##  returns a list of the cycles (as lists of points) of the action of the
@@ -1967,7 +1967,7 @@ DeclareOperation( "CyclesOp", [ IsObject, IsList, IsFunction ] );
 ##
 ##  <#GAPDoc Label="CycleLength">
 ##  <ManSection>
-##  <Oper Name="CycleLength" Arg='g, Omega, pnt[, act]'/>
+##  <Func Name="CycleLength" Arg='g, Omega, pnt[, act]'/>
 ##
 ##  <Description>
 ##  returns the length of the cycle of <A>pnt</A> under the action of the element
