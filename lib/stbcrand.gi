@@ -975,15 +975,15 @@ InstallGlobalFunction( SCRRandomString, function ( n )
     local i, j,     # loop variables
           k,        # number of 28 long substrings
           rnd,      # the random number which would be created by Random
-          string;   # the random string constructed
+          string,   # the random string constructed
+          range;    # Upper value of range used for getting ints
 
+    range := 2^28-1;
+    
     string:=[];
     k:=QuoInt(n-1,28);
     for i in [0..k-1] do
-        # follow steps in Random to create a random number < 2^28
-        R_N := R_N mod 55 + 1;
-        R_X[R_N] := (R_X[R_N] + R_X[(R_N+30) mod 55+1]) mod 2^28;
-        rnd:=R_X[R_N];
+        rnd := Random(0,range);
         # use each bit of rnd
         for j in [1 .. 28] do
             string[28*i+j] := rnd mod 2;
@@ -992,9 +992,7 @@ InstallGlobalFunction( SCRRandomString, function ( n )
     od;
 
     # construct last <= 28 bits  of string
-    R_N := R_N mod 55 + 1;
-    R_X[R_N] := (R_X[R_N] + R_X[(R_N+30) mod 55+1]) mod 2^28;
-    rnd:=R_X[R_N];
+    rnd := Random(0, range);
     for j in [28*k+1 .. n] do
         string[j] := rnd mod 2;
         rnd := QuoInt(rnd,2);
