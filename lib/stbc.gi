@@ -1806,6 +1806,9 @@ function(S)
 
     lstack := ListStabChain(S);
     Remove(lstack);
+    while Length(lstack) > 0 and Length(lstack[Length(lstack)].orbit) = 1 do
+        Remove(lstack);
+    od;
     r := rec (
           stack := lstack
         , pos := List(lstack, x -> 1)
