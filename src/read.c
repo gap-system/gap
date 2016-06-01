@@ -403,7 +403,7 @@ void ReadCallVarAss (
     volatile UInt       level = 0;      /* number of '{}' selectors        */
     volatile UInt       rnam  = 0;      /* record component name           */
     volatile UInt       narg  = 0;      /* number of arguments             */
-
+    Char                varname[MAX_VALUE_LEN]; /* copy of variable name   */
 
     /* all variables must begin with an identifier                         */
     if ( TLS(Symbol) != S_IDENT ) {
@@ -485,7 +485,9 @@ void ReadCallVarAss (
     /* get the variable as a global variable                               */
     if ( type == ' ' ) {
         type = 'g';
-        var = GVarName( TLS(Value) );
+        /* we do not want to call GVarName on this value until after we
+         * have checked if this is the argument to a lambda function       */
+        strlcpy(varname, TLS(Value), sizeof(varname));
     }
 
     /* match away the identifier, now that we know the variable            */
@@ -501,6 +503,11 @@ void ReadCallVarAss (
 	}
       else
 	SyntaxError("Function literal in impossible context");
+    }
+
+    /* Now we know this isn't a lambda function, look up the name          */
+    if ( type == 'g' ) {
+        var = GVarName( varname );
     }
 
     /* check whether this is an unbound global variable                    */
