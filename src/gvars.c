@@ -684,10 +684,14 @@ Obj FuncIDENTS_GVAR (
     /*QQ extern Obj          NameGVars;   */
     Obj                 copy;
     UInt                i;
+    Obj                 strcopy;
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
     for ( i = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
-        SET_ELM_PLIST( copy, i, ELM_PLIST( NameGVars, i ) );
+        /* Copy the string here, because we do not want members of NameGVars
+         * accessable to users, as these strings must not be changed */
+        strcopy = CopyToStringRep( ELM_PLIST( NameGVars, i ) );
+        SET_ELM_PLIST( copy, i, strcopy );
     }
     SET_LEN_PLIST( copy, LEN_PLIST(NameGVars) );
     return copy;
@@ -699,11 +703,16 @@ Obj FuncIDENTS_BOUND_GVARS (
     /*QQ extern Obj          NameGVars;   */
     Obj                 copy;
     UInt                i, j;
+    Obj                 strcopy;
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
     for ( i = 1, j = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
         if ( VAL_GVAR( i ) || ELM_PLIST( ExprGVars, i )) {
-           SET_ELM_PLIST( copy, j, ELM_PLIST( NameGVars, i ) );
+           /* Copy the string here, because we do not want members of
+            * NameGVars accessable to users, as these strings must not be
+            * changed */
+           strcopy = CopyToStringRep( ELM_PLIST( NameGVars, i ) );
+           SET_ELM_PLIST( copy, j, strcopy );
            j++;
         }
     }
