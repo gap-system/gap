@@ -34,7 +34,21 @@ WeakPointerObj( [ 1, , 10995116277760000000000, ,
 gap> UnbindElmWPObj(w,9); LengthWPObj(w);
 7
 gap> 1;;2;;3;;
+gap> truevec := [1,,2^40*10^10,(1,5,6),[2,3,4],fail,SymmetricGroup(5),];;
+gap> wcopies := List([1..1000], x -> WeakPointerObj([1,,2^40*10^10,(1,5,6),[2,3,4],fail,SymmetricGroup(5),]));;
 gap> GASMAN("collect");
+gap> ForAll(wcopies, x -> LengthWPObj(x) = 6 or LengthWPObj(x) = 7);
+true
+gap> ForAny(wcopies, x -> LengthWPObj(x) = 6);
+true
+gap> ForAll(wcopies, x -> x[1] = 1 and x[6] = fail);
+true
+gap> ForAll([2,3,4,5,7], x -> ForAny(wcopies, y -> not(IsBound(y[x]))));
+true
+gap> ForAll([3,4,5,7], x -> ForAny(wcopies, y -> not(IsBound(y[x])) or y[x] = truevec[x]));
+true
+gap> # Take a filtered list
+gap> w := First(wcopies, x -> ForAll([2,3,4,5,7], y -> not(IsBound(x[y])) ) );;
 gap> Print(w,"\n");
 WeakPointerObj( [ 1, , , , , fail ] )
 gap> LengthWPObj(w);
