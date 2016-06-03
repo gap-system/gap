@@ -9,6 +9,7 @@ function()
     return rec( line := INPUT_LINENUMBER(),
                 file := INPUT_FILENAME() );
 end);
+BIND_GLOBAL( "BIND_LOCS", [] );
 ReadLib( "filter.g"    );
 ReadLib( "filter1.g"   );
 ReadLib( "oper.g"      );

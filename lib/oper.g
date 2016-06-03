@@ -1675,12 +1675,15 @@ end );
 ##  mechanism.
 ##
 BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", [] );
+BIND_GLOBAL( "GLOBAL_FUNCTION_DECL_LOCS", [] );
+BIND_GLOBAL( "GLOBAL_FUNCTION_INST_LOCS", [] );
 
 BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
     local   name;
 
     name := arg[1];
     ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
+    ADD_SET( GLOBAL_FUNCTION_DECL_LOCS, [IMMUTABLE_COPY_OBJ(name), CURRENT_LOCATION()]);
     BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
 end );
 
@@ -1702,6 +1705,7 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
       Error("you cannot install a global function for another global ",
             "function,\nuse `DeclareSynonym' instead!");
     fi;
+    ADD_SET( GLOBAL_FUNCTION_INST_LOCS, [NAME_FUNC(oper), CURRENT_LOCATION()]);
     INSTALL_METHOD_ARGS( oper, func );
 end );
 
