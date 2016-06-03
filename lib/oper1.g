@@ -23,6 +23,11 @@
 RUN_IMMEDIATE_METHODS_CHECKS := 0;
 RUN_IMMEDIATE_METHODS_HITS   := 0;
 
+# This is a bit of a hack, after all I could try and store this in the methods
+# information list, but adding an entry there is dangerous, because everyone
+# implicitly assumes the entries to be in groups of 5.
+METHOD_LOCATIONS :=  [];
+
 BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
 
     local   flagspos,   # list of `true' positions in `flags'
@@ -227,8 +232,17 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
               ": <method> must be a function, `true', or `false'" );
     fi;
     methods[i+(narg+3)] := rank;
-
     methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
+    # This is a horrible hack because I don't want to change the length
+    # of METHODS_OPERATION at the moment
+    ADD_LIST( METHOD_LOCATIONS,
+              [ opr,
+                method,
+                narg,
+                flags,
+                rank,
+                rec( line := INPUT_LINENUMBER(), file := INPUT_FILENAME() ) ] );
+
 
     # flush the cache
     CHANGED_METHODS_OPERATION( opr, narg );

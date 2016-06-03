@@ -37,7 +37,6 @@
 DeclareOperation( "FiltersType", [ IsType ] );
 DeclareOperation( "FiltersObj", [ IsObject ] );
 
-
 #############################################################################
 ##
 #F  IsCategory( <object> )
@@ -108,3 +107,21 @@ DeclareGlobalFunction( "IsProperty" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 DeclareGlobalFunction( "CategoryByName" );
+
+
+#############################################################################
+##
+#F  LocationOfDeclaration( <object> )
+##
+##  Find the location of the declaration of <object>.
+##
+##  <#GAPDoc Label="LocationOfDeclaration">
+##  <ManSection>
+##  <Func Name="LocationofDeclaration" Arg='object'/>
+##
+##  <Description>
+##  returns the location of the declaration of <A>object</A> if it is known.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+DeclareGlobalFunction( "LocationOfDeclaration" );

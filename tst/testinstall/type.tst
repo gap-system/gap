@@ -51,3 +51,11 @@ gap> FilterByName("IsCommutative");
 <Property "IsCommutative">
 gap> CategoryByName("IsMagma");
 <Category "IsMagma">
+
+#
+gap> r := LocationOfDeclaration(IsCommutative);;
+gap> IsRecord(r);
+true
+gap> IsBound(r.file); IsBound(r.line);
+true
+true

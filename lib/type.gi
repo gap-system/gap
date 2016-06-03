@@ -197,3 +197,29 @@ function(name)
     return fail;
 end);
 
+InstallGlobalFunction( LocationOfDeclaration,
+function(object)
+    local fid;
+    if IsFilter(object) then
+        fid := IdOfFilter(object);
+        if fid <> fail then
+            if IsBound(FILTERS_LOCATIONS[fid]) then
+                return FILTERS_LOCATIONS[fid];
+            fi;
+        fi;
+    fi;
+    if IsOperation(object) then
+        fid := Position(OPERATIONS, object);
+        if fid <> fail then
+            if IsBound(OPERATIONS_LOCATIONS[fid + 1]) then
+                return OPERATIONS_LOCATIONS[fid + 1];
+            fi;
+        fi;
+    fi;
+
+    fid := PositionProperty(BIND_LOCS, x -> x[1] = NAME_FUNC(object));
+    if fid <> fail then
+        return BIND_LOCS[fid][2];
+    fi;
+    return fail;
+end);

@@ -342,18 +342,22 @@ BIND_GLOBAL( "DeclareSynonym", function( name, value )
             INFO_DEBUG( 1, "multiple declarations for synonym `", name, "'\n" );
         fi;
     else
+        ADD_LIST(BIND_LOCS, [name, CURRENT_LOCATION()]);
         BIND_GLOBAL( name, value );
     fi;
 end );
 
 BIND_GLOBAL( "DeclareSynonymAttr", function( name, value )
     local nname;
+    ADD_LIST(BIND_LOCS, [name, CURRENT_LOCATION()]);
     DeclareSynonym( name, value );
     nname:= "Set";
     APPEND_LIST_INTR( nname, name );
+    ADD_LIST(BIND_LOCS, [nname, CURRENT_LOCATION()]);
     DeclareSynonym( nname, Setter( value ) );
     nname:= "Has";
     APPEND_LIST_INTR( nname, name );
+    ADD_LIST(BIND_LOCS, [nname, CURRENT_LOCATION()]);
     DeclareSynonym( nname, Tester( value ) );
 end );
 

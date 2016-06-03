@@ -31,7 +31,7 @@ CLEAR_IMP_CACHE := fail;
 ##  filter with number <i> resp.  its rank.
 ##
 BIND_GLOBAL( "FILTERS", [] );
-
+BIND_GLOBAL( "FILTERS_LOCATIONS", [] );
 
 #############################################################################
 ##
@@ -234,6 +234,7 @@ BIND_GLOBAL( "NewFilter", function( arg )
 
     # Do some administrational work.
     FILTERS[ FLAG1_FILTER( filter ) ] := filter;
+    FILTERS_LOCATIONS[ FLAG1_FILTER( filter ) ] := CURRENT_LOCATION();
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( filter ) );
     RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
     INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
