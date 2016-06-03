@@ -111,4 +111,10 @@ function(name, super, repfilter, attributes, properties)
     BindGlobal(typename, type);
 end);
 
-
+InstallGlobalFunction( CurrentLocation,
+function()
+    return rec(
+        file := INPUT_FILENAME(),
+        line := INPUT_LINENUMBER()
+    );
+end);

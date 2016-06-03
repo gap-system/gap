@@ -19,3 +19,5 @@ DeclareGlobalFunction("CategoryByName");
 #X This needs a better name
 DeclareGlobalFunction("DeclareObject");
 
+
+DeclareGlobalFunction("CurrentLocation");
