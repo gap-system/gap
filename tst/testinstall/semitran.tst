@@ -32,5 +32,21 @@ true
 gap> ForAll(Range(map), x -> (x ^ inv) ^ map = x);
 true
 
+# Test IsFullTransformationSemigroup in trivial cases
+gap> IsFullTransformationSemigroup(Semigroup(Transformation([1])));
+true
+gap> IsFullTransformationSemigroup(Semigroup(Transformation([1, 1])));
+false
+
+# Test IsomorphismTransformationMonoid for a perm group
+gap> G := Group((2,3)(5,6)(8,9)(11,12)(14,15)(17,18)(20,21)(23,24)
+> (26,27)(29,30));;
+gap> map := IsomorphismTransformationMonoid(G);;
+gap> inv := InverseGeneralMapping(map);;
+gap> ForAll(G, x -> (x ^ map) ^ inv = x);
+true
+gap> ForAll(Range(map), x -> (x ^ inv) ^ map = x);
+true
+
 #
 gap> STOP_TEST( "semitran.tst", 10000);
