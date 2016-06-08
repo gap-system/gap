@@ -280,19 +280,14 @@ end);
 InstallMethod(IsomorphismTransformationMonoid, 
 "for a perm group with generators",
 [IsPermGroup and HasGeneratorsOfGroup], 
-function(g)
-  local s, conj;
+function(G)
+  local S;
   
-  s:=Monoid(List(GeneratorsOfGroup(g), 
-   x-> TransformationOp(x, MovedPoints(g))));
-  
-  UseIsomorphismRelation(g, s);
+  S := Monoid(List(GeneratorsOfGroup(G), AsTransformation));
+  UseIsomorphismRelation(G, S);
+  SetIsGroupAsSemigroup(S, true);
 
-  conj:=MappingPermListList([1..NrMovedPoints(g)], MovedPoints(g));
-
-  return MagmaIsomorphismByFunctionsNC(g, s, 
-   x-> TransformationOp(x, MovedPoints(g)), 
-   x-> Permutation(x, [1..NrMovedPoints(g)])^conj);
+  return MagmaIsomorphismByFunctionsNC(G, S, AsTransformation, AsPermutation);
 end);
 
 #
@@ -300,17 +295,14 @@ end);
 InstallMethod(IsomorphismTransformationSemigroup, 
 "for a perm group with generators",
 [IsPermGroup and HasGeneratorsOfGroup], 
-function(g)
-  local s, conj;
+function(G)
+  local S;
   
-  s:=Semigroup(List(GeneratorsOfGroup(g), 
-   x-> TransformationOp(x, MovedPoints(g))));
-  UseIsomorphismRelation(g, s);
-  conj:=MappingPermListList([1..NrMovedPoints(g)], MovedPoints(g));
+  S := Semigroup(List(GeneratorsOfGroup(G), AsTransformation));
+  UseIsomorphismRelation(G, S);
+  SetIsGroupAsSemigroup(S, true);
 
-  return MagmaIsomorphismByFunctionsNC(g, s, 
-   x-> TransformationOp(x, MovedPoints(g)), 
-   x-> Permutation(x, [1..NrMovedPoints(g)])^conj);
+  return MagmaIsomorphismByFunctionsNC(G, S, AsTransformation, AsPermutation);
 end);
 
 #
@@ -419,6 +411,7 @@ function(S)
   inv1 := InverseGeneralMapping(iso1);
   iso2 := IsomorphismTransformationMonoid(Range(iso1));
   inv2 := InverseGeneralMapping(iso2);
+  UseIsomorphismRelation(S, Range(iso2));
 
   return MagmaIsomorphismByFunctionsNC(S,
                                        Range(iso2),
