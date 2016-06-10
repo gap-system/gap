@@ -692,6 +692,7 @@ Obj FuncIDENTS_GVAR (
          * accessable to users, as these strings must not be changed */
         strcopy = CopyToStringRep( ELM_PLIST( NameGVars, i ) );
         SET_ELM_PLIST( copy, i, strcopy );
+        CHANGED_BAG( copy );
     }
     SET_LEN_PLIST( copy, LEN_PLIST(NameGVars) );
     return copy;
@@ -713,6 +714,7 @@ Obj FuncIDENTS_BOUND_GVARS (
             * changed */
            strcopy = CopyToStringRep( ELM_PLIST( NameGVars, i ) );
            SET_ELM_PLIST( copy, j, strcopy );
+           CHANGED_BAG( copy );
            j++;
         }
     }
