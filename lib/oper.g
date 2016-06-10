@@ -146,7 +146,14 @@ BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "OPERATIONS", [] );
-
+BIND_GLOBAL( "OPERATIONS_LOCATIONS", []);
+BIND_GLOBAL( "ADD_OPERATION",
+function(oper, filt)
+    ADD_LIST(OPERATIONS, oper);
+    ADD_LIST(OPERATIONS, filt);
+    OPERATIONS_LOCATIONS[LENGTH(OPERATIONS)] :=
+             [ CURRENT_LOCATION() ];
+end);
 
 #############################################################################
 ##
@@ -564,8 +571,7 @@ BIND_GLOBAL( "NewOperation", function ( name, filters )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
-    ADD_LIST( OPERATIONS, oper );
-    ADD_LIST( OPERATIONS, [ filt ] );
+    ADD_OPERATION( oper, [ filt ] );
     return oper;
 end );
 
@@ -615,8 +621,7 @@ BIND_GLOBAL( "NewConstructor", function ( name, filters )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
     ADD_LIST( CONSTRUCTORS, oper );
-    ADD_LIST( OPERATIONS,   oper );
-    ADD_LIST( OPERATIONS,   [ filt ] );
+    ADD_OPERATION( oper, [ filt ] );
     return oper;
 end );
 
@@ -701,6 +706,7 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
         fi;
       else
         ADD_LIST( OPERATIONS[ pos+1 ], filt );
+        ADD_LIST( OPERATIONS_LOCATIONS[ pos + 1 ], CURRENT_LOCATION());
       fi;
 
     else
@@ -745,8 +751,7 @@ BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
 
-    ADD_LIST( OPERATIONS, oper );
-    ADD_LIST( OPERATIONS, [ filt ] );
+    ADD_OPERATION( oper, [ filt ] );
 end );
 
 
@@ -799,7 +804,7 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
 
       pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
       ADD_LIST( OPERATIONS[ pos+1 ], filt );
-
+      ADD_LIST( OPERATIONS_LOCATIONS[ pos + 1 ], CURRENT_LOCATION() );
     else
 
       # The operation is new.
@@ -843,8 +848,7 @@ BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
     od;
 
     ADD_LIST( CONSTRUCTORS, oper );
-    ADD_LIST( OPERATIONS,   oper );
-    ADD_LIST( OPERATIONS,   [ filt ] );
+    ADD_OPERATION( oper, [ filt ] );
 end );
 
 
@@ -881,7 +885,8 @@ BIND_GLOBAL( "RUN_ATTR_FUNCS",
     for func in ATTR_FUNCS do
         func( name, filter, getter, setter, tester, mutflag );
     od;
-    ADD_LIST( ATTRIBUTES, [ name, filter, getter, setter, tester, mutflag ] );
+    ADD_LIST( ATTRIBUTES, [ name, filter, getter, setter, tester, mutflag,
+                            CURRENT_LOCATION() ] );
 end );
 
 
@@ -910,16 +915,13 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     tester := TESTER_FILTER( getter );
 
     # add getter, setter and tester to the list of operations
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS,
-              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_OBJECT ) ] ] );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
+    ADD_OPERATION( getter, [ [ FLAGS_FILTER(filter) ] ] );
+    ADD_OPERATION( setter, [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_OBJECT ) ] ] );
+    ADD_OPERATION( tester, [ [ FLAGS_FILTER(filter) ] ] );
 
     # store the information about the filter
     FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+    FILTERS_LOCATIONS[ FLAG2_FILTER( tester ) ] := CURRENT_LOCATION();
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
     INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
 
@@ -1006,13 +1008,12 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
           setter := SETTER_FILTER( getter );
           tester := TESTER_FILTER( getter );
 
-          ADD_LIST( OPERATIONS, setter );
-          ADD_LIST( OPERATIONS, [ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ] );
-          ADD_LIST( OPERATIONS, tester );
-          ADD_LIST( OPERATIONS, [ [ flags ] ] );
+          ADD_OPERATION( setter, [ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ] );
+          ADD_OPERATION( tester, [ [ flags ] ] );
 
           # install the default functions
           FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+          FILTERS_LOCATIONS[ FLAG2_FILTER( tester ) ] := CURRENT_LOCATION();
           IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
 
           # the <tester> is newly made, therefore  the cache cannot contain a  flag
@@ -1034,6 +1035,7 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
 BIND_GLOBAL( "NewAttribute", function ( arg )
     local   name, filter, flags, mutflag, getter, setter, tester, rank;
 
+    # Print("Attribute: ", CurrentLocation(), "\n");
     # construct getter, setter and tester
     name   := arg[1];
     filter := arg[2];
@@ -1057,8 +1059,7 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     else
         rank := 1;
     fi;
-    ADD_LIST(OPERATIONS,getter);
-    ADD_LIST(OPERATIONS, [ [ flags ] ]);
+    ADD_OPERATION(getter, [ [ flags ] ] );
     OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
     # store the information about the filtera
     # And return the getter
@@ -1233,18 +1234,16 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
 
     # add getter, setter and tester to the list of operations
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS,
-              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_BOOL ) ] ] );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
+    ADD_OPERATION( getter, [ [ FLAGS_FILTER(filter) ] ] );
+    ADD_OPERATION( setter, [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_BOOL ) ] ] );
+    ADD_OPERATION( tester, [ [ FLAGS_FILTER(filter) ] ] );
 
     # install the default functions
     FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
+    FILTERS_LOCATIONS[ FLAG1_FILTER( getter ) ]:= CURRENT_LOCATION();
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
     FILTERS[ FLAG2_FILTER( getter ) ]:= tester;
+    FILTERS_LOCATIONS[ FLAG2_FILTER( getter ) ]:= CURRENT_LOCATION();
     INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
     INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
 
@@ -1309,20 +1308,19 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     tester := TESTER_FILTER( getter );
 
     # add getter, setter and tester to the list of operations
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ [ flags ] ] );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, [ [ flags, FLAGS_FILTER( IS_BOOL ) ] ] );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ [ flags ] ] );
+    ADD_OPERATION( getter, [ [ flags ] ] );
+    ADD_OPERATION( setter, [ [ flags, FLAGS_FILTER( IS_BOOL ) ] ] );
+    ADD_OPERATION( tester, [ [ flags ] ] );
 
     # store the property getters
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
 
     # install the default functions
     FILTERS[ FLAG1_FILTER( getter ) ] := getter;
+    FILTERS_LOCATIONS[ FLAG1_FILTER( getter ) ] := CURRENT_LOCATION();
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
     FILTERS[ FLAG2_FILTER( getter ) ] := tester;
+    FILTERS_LOCATIONS[ FLAG2_FILTER( getter ) ] := CURRENT_LOCATION();
     INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
     INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
 
@@ -1677,12 +1675,15 @@ end );
 ##  mechanism.
 ##
 BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", [] );
+BIND_GLOBAL( "GLOBAL_FUNCTION_DECL_LOCS", [] );
+BIND_GLOBAL( "GLOBAL_FUNCTION_INST_LOCS", [] );
 
 BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
     local   name;
 
     name := arg[1];
     ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
+    ADD_SET( GLOBAL_FUNCTION_DECL_LOCS, [IMMUTABLE_COPY_OBJ(name), CURRENT_LOCATION()]);
     BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
 end );
 
@@ -1704,6 +1705,7 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
       Error("you cannot install a global function for another global ",
             "function,\nuse `DeclareSynonym' instead!");
     fi;
+    ADD_SET( GLOBAL_FUNCTION_INST_LOCS, [NAME_FUNC(oper), CURRENT_LOCATION()]);
     INSTALL_METHOD_ARGS( oper, func );
 end );
 

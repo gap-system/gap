@@ -337,17 +337,21 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "DeclareSynonym", function( name, value )
+    ADD_LIST(BIND_LOCS, [name, CURRENT_LOCATION()]);
     BIND_GLOBAL( name, value );
 end );
 
 BIND_GLOBAL( "DeclareSynonymAttr", function( name, value )
     local nname;
+    ADD_LIST(BIND_LOCS, [name, CURRENT_LOCATION()]);
     BIND_GLOBAL( name, value );
     nname:= "Set";
     APPEND_LIST_INTR( nname, name );
+    ADD_LIST(BIND_LOCS, [nname, CURRENT_LOCATION()]);
     BIND_GLOBAL( nname, Setter( value ) );
     nname:= "Has";
     APPEND_LIST_INTR( nname, name );
+    ADD_LIST(BIND_LOCS, [nname, CURRENT_LOCATION()]);
     BIND_GLOBAL( nname, Tester( value ) );
 end );
 

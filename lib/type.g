@@ -63,6 +63,7 @@ BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
     if not IS_IDENTICAL_OBJ( cat, IS_OBJECT ) then
         ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
         FILTERS[ FLAG1_FILTER( cat ) ] := cat;
+        FILTERS_LOCATIONS[ FLAG1_FILTER( cat ) ] := CURRENT_LOCATION();
         IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
         INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
         RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
@@ -113,6 +114,7 @@ BIND_GLOBAL( "NewCategory", function ( arg )
     # Do some administrational work.
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
     FILTERS[ FLAG1_FILTER( cat ) ] := cat;
+    FILTERS_LOCATIONS[ FLAG1_FILTER( cat ) ] := CURRENT_LOCATION();
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
 
     if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
@@ -178,6 +180,7 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
     fi;
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
     FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
+    FILTERS_LOCATIONS[ FLAG1_FILTER( rep ) ] := CURRENT_LOCATION();
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
     RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
@@ -266,6 +269,7 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     # Do some administrational work.
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
     FILTERS[ FLAG1_FILTER( rep ) ] := rep;
+    FILTERS_LOCATIONS[ FLAG1_FILTER( rep ) ] := CURRENT_LOCATION();
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
     RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
