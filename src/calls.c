@@ -1513,6 +1513,7 @@ Obj FuncCALL_FUNC (
 **  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
 */
 Obj CallFuncListOper;
+Obj CallFuncListWrapOper;
 
 Obj CallFuncList ( Obj func, Obj list )
 {
@@ -1574,14 +1575,37 @@ Obj FuncCALL_FUNC_LIST (
     Obj                 func,
     Obj                 list )
 {
-  /* check that the second argument is a list                            */
-    while ( ! IS_SMALL_LIST( list ) ) {
-        list = ErrorReturnObj(
-            "CallFuncList: <list> must be a small list",
-            0L, 0L,
-            "you can replace <list> via 'return <list>;'" );
+    /* check that the second argument is a list                            */
+    if ( ! IS_SMALL_LIST( list ) ) {
+       ErrorMayQuit("CallFuncList: <list> must be a small list", 0L, 0L);
     }
     return CallFuncList(func, list);
+}
+
+Obj FuncCALL_FUNC_LIST_WRAP (
+    Obj                 self,
+    Obj                 func,
+    Obj                 list )
+{
+    Obj retval, retlist;
+    /* check that the second argument is a list                            */
+    if ( ! IS_SMALL_LIST( list ) ) {
+       ErrorMayQuit("CallFuncListWrap: <list> must be a small list", 0L, 0L);
+    }
+    retval = CallFuncList(func, list);
+
+    if (retval == 0)
+    {
+        retlist = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+    }
+    else
+    {
+        retlist = NEW_PLIST(T_PLIST, 1);
+        SET_LEN_PLIST(retlist, 1);
+        SET_ELM_PLIST(retlist, 1, retval);
+        CHANGED_BAG(retlist);
+    }
+    return retlist;
 }
 
 /****************************************************************************
@@ -2017,6 +2041,9 @@ static StructGVarOper GVarOpers [] = {
     { "CALL_FUNC_LIST", 2, "func, list", &CallFuncListOper,
       FuncCALL_FUNC_LIST, "src/calls.c:CALL_FUNC_LIST" },
 
+    { "CALL_FUNC_LIST_WRAP", 2, "func, list", &CallFuncListWrapOper,
+      FuncCALL_FUNC_LIST_WRAP, "src/calls.c:CALL_FUNC_LIST_WRAP" },
+
     { "NAME_FUNC", 1, "func", &NAME_FUNC_Oper,
       FuncNAME_FUNC, "src/calls.c:NAME_FUNC" },
 
@@ -2073,6 +2100,7 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ENDLINE_FUNC", 1, "func", 
       FuncENDLINE_FUNC, "src/calls.c:ENDLINE_FUNC" },
+
     { 0 }
 
 };

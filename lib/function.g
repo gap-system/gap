@@ -322,6 +322,7 @@ BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 ##  <#GAPDoc Label="CallFuncList">
 ##  <ManSection>
 ##  <Oper Name="CallFuncList" Arg='func, args'/>
+##  <Oper Name="CallFuncListWrap" Arg='func, args'/>
 ##
 ##  <Description>
 ##  returns the result, when calling function <A>func</A> with the arguments
@@ -374,6 +375,17 @@ BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 ##  gap> PrintDigits( 1, 9, 7, 3, 2 );
 ##  [ 1, 9, 7, 3, 2 ]
 ##  ]]></Example>
+##  <Ref Oper="CallFuncListWrap"/> differs only in that the result is a list.
+##  This returned list is empty if the called function returned no value,
+##  else it contains the returned value as it's single member. This allows
+##  wrapping functions which may, or may not return a value.
+##
+##  <Example><![CDATA[
+##  gap> CallFuncListWrap( x -> x, [1] );
+##  [ 1 ]
+##  gap> CallFuncListWrap( function(x) end, [1] );
+##  [ ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -382,6 +394,7 @@ BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 ##
 UNBIND_GLOBAL("CallFuncList"); # was declared 2b defined
 DeclareOperationKernel( "CallFuncList", [IS_OBJECT, IS_LIST], CALL_FUNC_LIST );
+DeclareOperationKernel( "CallFuncListWrap", [IS_OBJECT, IS_LIST], CALL_FUNC_LIST_WRAP );
 
 
 #############################################################################
