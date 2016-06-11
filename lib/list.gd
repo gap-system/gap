@@ -164,8 +164,8 @@ InstallTrueMethod(HasLength,IsPlistRep);
 ##  false
 ##  ]]></Example>
 ##
-##  <C>IsBound(<A>list</A>[<A>ix1</A>,<A>ix2</A>,...]</C> is a short-hand for  
-##  <C>IsBound(<A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]]</C>   
+##  <C>IsBound(<A>list</A>[<A>ix1</A>,<A>ix2</A>,...])</C> is a short-hand for
+##  <C>IsBound(<A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]])</C>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -237,8 +237,8 @@ DeclareOperationKernel( "Elm0List",
 ##  and there would be no way to tell
 ##  <Ref Func="Unbind" Label="unbind a list entry"/>
 ##  which component to remove.
-##  <C>Unbind(<A>list</A>[<A>ix1</A>,<A>ix2</A>,...]</C> is a short-hand for  
-##  <C>Unbind(<A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]]</C>   
+##  <C>Unbind(<A>list</A>[<A>ix1</A>,<A>ix2</A>,...])</C> is a short-hand for
+##  <C>Unbind(<A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]])</C>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
