@@ -551,13 +551,19 @@ void ReadCallVarAss (
         }
     }
 
+#ifdef HPCGAP
+#define ASSIGN_ERROR_MESSAGE ":= or ::="
+#else
+#define ASSIGN_ERROR_MESSAGE ":="
+#endif
+
     /* if we need a statement                                              */
     else if ( mode == 's' || (mode == 'x' && IS_IN(TLS(Symbol), S_ASSIGN)) ) {
         if ( type != 'c' && type != 'C') {
 	    if (TLS(Symbol) != S_ASSIGN)
-	      Match( S_INCORPORATE, ":= or ::=", follow);
+	      Match( S_INCORPORATE, ASSIGN_ERROR_MESSAGE, follow);
 	    else
-	      Match( S_ASSIGN, ":= or ::=", follow );
+	      Match( S_ASSIGN, ASSIGN_ERROR_MESSAGE, follow );
             if ( TLS(CountNams) == 0 || !TLS(IntrCoding) ) { TLS(CurrLHSGVar) = (type == 'g' ? var : 0); }
             ReadExpr( follow, 'r' );
         }
