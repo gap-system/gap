@@ -52,8 +52,8 @@ representation, the system will display the group accordingly.
 <P/>
 <Example><![CDATA[
 gap> a8 := DerivedSubgroup( s8 );
-Group([ (1,2,3), (2,3,4), (2,4)(3,5), (2,6,4), (2,4)(5,7), 
-  (2,8,6,4)(3,5) ])
+Group([ (1,2,3), (2,4,3), (2,4,5), (2,5,6,3,4), (3,7,4), (2,6)
+(4,7,8,5) ])
 gap> Size( a8 ); IsAbelian( a8 ); IsPerfect( a8 );
 20160
 false
@@ -378,7 +378,7 @@ gap> ophom2 := ActionHomomorphism( op, op2 );;
 gap> composition := ophom * ophom2;;
 gap> stab := Stabilizer( op2, 2 );;
 gap> preim := PreImages( composition, stab );
-Group([ (1,4,2), (3,6,7), (3,8,5,7,6), (1,4)(7,8) ])
+Group([ (1,2,4), (6,7,8), (3,6,8), (5,8,6), (1,2)(3,8) ])
 ]]></Example>
 <P/>
 Alternatively, it is possible to create action homomorphisms immediately
@@ -458,12 +458,10 @@ by right multiplication.
 <Example><![CDATA[
 gap> cosets:=RightCosets(a8,norm);;
 gap> op:=Action(a8,cosets,OnRight);
-Group([ (1,2,3)(4,6,5)(7,8,9)(10,12,11)(13,14,15), 
-  (1,3,2)(4,9,13)(5,11,7)(6,15,10)(8,12,14), 
-  (1,13)(2,7)(3,10)(4,11)(5,15)(6,9), 
-  (1,8,13)(2,7,12)(3,9,5)(4,14,11)(6,10,15), 
-  (2,3)(4,14)(5,7)(8,13)(9,12)(10,15), 
-  (1,8)(2,3,11,6)(4,12,10,15)(5,7,14,9) ])
+Group([ (1,2,3)(4,6,5)(7,8,9)(10,12,11)(13,14,15), (1,2,3)(4,13,9)
+(5,7,11)(6,10,15)(8,14,12), (1,11,6)(2,15,4)(3,9,5)(7,13,10)
+(8,12,14), (1,10,12,3,13)(2,7,15,14,5)(4,6,8,9,11), (1,12,15)(2,10,5)
+(3,11,8)(4,9,13)(6,14,7), (1,4,13,10)(2,15,14,3)(5,12,11,6)(7,9) ])
 gap> NrMovedPoints(op);
 15
 ]]></Example>
@@ -533,12 +531,10 @@ produce the action of a group on cosets of a subgroup and is in general the
 most efficient way of creating this action.
 <Example><![CDATA[
 gap> Action(a8,RightTransversal(a8,norm),OnRight);
-Group([ (1,2,3)(4,6,5)(7,8,9)(10,12,11)(13,14,15), 
-  (1,3,2)(4,9,13)(5,11,7)(6,15,10)(8,12,14), 
-  (1,13)(2,7)(3,10)(4,11)(5,15)(6,9), 
-  (1,8,13)(2,7,12)(3,9,5)(4,14,11)(6,10,15), 
-  (2,3)(4,14)(5,7)(8,13)(9,12)(10,15), 
-  (1,8)(2,3,11,6)(4,12,10,15)(5,7,14,9) ])
+Group([ (1,2,3)(4,6,5)(7,8,9)(10,12,11)(13,14,15), (1,2,3)(4,13,9)
+(5,7,11)(6,10,15)(8,14,12), (1,11,6)(2,15,4)(3,9,5)(7,13,10)
+(8,12,14), (1,10,12,3,13)(2,7,15,14,5)(4,6,8,9,11), (1,12,15)(2,10,5)
+(3,11,8)(4,9,13)(6,14,7), (1,4,13,10)(2,15,14,3)(5,12,11,6)(7,9) ])
 ]]></Example>
 <P/>
 
@@ -1178,7 +1174,7 @@ gap> niceaut := NiceObject( aut );
 Group([ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ])
 gap> IsomorphismGroups( niceaut, SymmetricGroup( 4 ) );
 [ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ] -> 
-[ (1,3,2,4), (1,2,4), (1,2)(3,4), (1,4)(2,3) ]
+[ (1,2,4,3), (1,2,3), (1,4)(2,3), (1,2)(3,4) ]
 ]]></Example>
 <P/>
 The range of  a nice monomorphism is  in most cases a permutation  group,
