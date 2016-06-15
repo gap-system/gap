@@ -47,11 +47,14 @@ ReadSmall( "readsml.g","small groups" );
 # callable, even if the library is unavailable.
 InstallGlobalFunction(TransitiveGroupsAvailable,deg->false);
 
-TRANS_AVAILABLE:=ReadTrans( "trans.gd","transitive groups" );
-TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.grp",
-                                        "transitive groups" );
-TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.gi",
-                                        "transitive groups" );
+# only load component if not available as package
+if TestPackageAvailability("transgrp")=fail then
+  TRANS_AVAILABLE:=ReadTrans( "trans.gd","transitive groups" );
+  TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.grp",
+					  "transitive groups" );
+  TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.gi",
+					  "transitive groups" );
+fi;
 
 #############################################################################
 ##
