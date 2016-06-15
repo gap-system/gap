@@ -660,6 +660,8 @@ end);
 ##  dom   a set of elements on which automorphisms act faithful
 ##  aut   Subgroup of already known automorphisms
 ##  condition function that must return `true' on the homomorphism.
+##  setrun  If set to true approximate a run through sets by having the
+##          class indices increasing.
 ##
 ##  action is a number whose bit-representation indicates the action to be
 ##  taken:
@@ -727,7 +729,7 @@ end;
 InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       mp,cen,i,j,imgs,ok,size,l,hom,cenis,reps,repspows,sortrels,genums,wert,p,
-      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond,outerorder;
+      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond,outerorder,setrun;
 
   len:=Length(clali);
   if ForAny(clali,i->Length(i)=0) then
@@ -752,6 +754,12 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     outerorder:=params.outerorder;
   else
     outerorder:=false;
+  fi;
+
+  if IsBound(params.setrun) then
+    setrun:=params.setrun;
+  else
+    setrun:=false;
   fi;
 
 
@@ -1107,7 +1115,13 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     # 'free for increment'
     l[ind]:=l[ind]+1;
     while ind>0 and l[ind]>Length(clali[ind]) do
-      l[ind]:=1;
+      if setrun and ind>1 then
+	# if we are running through sets, approximate by having the
+	# l-indices increasing
+	l[ind]:=Minimum(l[ind-1]+1,Length(clali[ind]));
+      else
+	l[ind]:=1;
+      fi;
       ind:=ind-1;
       if ind>0 then
 	l[ind]:=l[ind]+1;
