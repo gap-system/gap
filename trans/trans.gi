@@ -22,7 +22,7 @@ local dom,deg,S,p,ps,perm,startp,sdps,nsdps,i,j,k,l,m,n,part,
     return p;
   fi;
 
-  if deg>TRANSDEGREES then
+  if not TransitiveGroupsAvailable(deg) then
     TryNextMethod();
   fi;
 

@@ -20,6 +20,11 @@ ReadOrComplete( "lib/read8.g" ); # overloaded operations, compiler interface
 ReadLib( "colorprompt.g"  );
 
 
+# Galois group identification
+
+ReadLib("galois.gd");
+ReadLib("galois.gi");
+
 #############################################################################
 ##
 ##  Load data libraries
@@ -37,17 +42,16 @@ ReadSmall( "readsml.g","small groups" );
 ##
 #X  Read transitive groups library
 ##
+
+# first assign TransitiveGroupsAvailable to a dummy function to make it
+# callable, even if the library is unavailable.
+InstallGlobalFunction(TransitiveGroupsAvailable,deg->false);
+
 TRANS_AVAILABLE:=ReadTrans( "trans.gd","transitive groups" );
 TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.grp",
                                         "transitive groups" );
 TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.gi",
                                         "transitive groups" );
-
-if TRANS_AVAILABLE then
-  ReadLib("galois.gd"); # the Galois group identification relies on the list
-                        # of transitive groups
-  ReadLib("galois.gi");
-fi;
 
 #############################################################################
 ##
