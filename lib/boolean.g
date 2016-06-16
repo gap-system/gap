@@ -80,6 +80,8 @@ InstallMethod( String,
       return "false";
     elif bool = fail  then
       return "fail";
+    elif bool = NoReturn then
+      return "<no return value>";
     else
       Error( "unknown boolean <bool>" );
     fi;

@@ -457,11 +457,8 @@ Obj             EvalFunccall0args (
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
+    if ( result == 0 ) {
+            result = NoReturn;
     }
     return result;
 }
@@ -489,11 +486,8 @@ Obj             EvalFunccall1args (
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
+    if ( result == 0 ) {
+            result = NoReturn;
     }
     return result;
 }
@@ -524,11 +518,8 @@ Obj             EvalFunccall2args (
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
+    if ( result == 0 ) {
+            result = NoReturn;
     }
     return result;
 }
@@ -561,11 +552,8 @@ Obj             EvalFunccall3args (
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
+    if ( result == 0 ) {
+            result = NoReturn;
     }
     return result;
 }
@@ -599,11 +587,8 @@ Obj             EvalFunccall4args (
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
+    if ( result == 0 ) {
+            result = NoReturn;
     }
     return result;
 }
@@ -640,11 +625,8 @@ Obj             EvalFunccall5args (
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
+    if ( result == 0 ) {
+            result = NoReturn;
     }
     return result;
 }
@@ -683,11 +665,8 @@ Obj             EvalFunccall6args (
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
+    if ( result == 0 ) {
+            result = NoReturn;
     }
     return result;
 }
@@ -724,11 +703,8 @@ Obj             EvalFunccallXargs (
                                        READ() and the user quit from a break
                                        loop inside it */
       ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
+    if ( result == 0 ) {
+            result = NoReturn;
     }
     return result;
 }
