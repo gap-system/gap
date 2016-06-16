@@ -173,6 +173,10 @@ gap> orbs := Orbits( a8, pairs, OnPairs );; Length( orbs );
 2
 gap> u56 := Stabilizer( a8, orbs[2][1], OnPairs );; Index( a8, u56 );
 56
+gap> g:=TransitiveGroup(12,250);;
+gap> hom:=IsomorphismPcGroup(g);;
+gap> Length(ConjugacyClassesByHomomorphicImage(g,hom));
+65
 gap> STOP_TEST( "grpperm.tst", 1814420000);
 
 #############################################################################
