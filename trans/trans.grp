@@ -328,6 +328,9 @@ local l;
 end);
 
 InstallGlobalFunction(NrTransitiveGroups, function(deg)
+  if deg=1 then
+    return 0;
+  fi;
   if not(deg in [1..TRANSDEGREES]) then
     return fail;
   fi;
@@ -341,6 +344,9 @@ InstallGlobalFunction( TransitiveGroup, function(deg,num)
   local gens,i,l,g,s;
   if not(deg in [1..TRANSDEGREES]) then
     Error("degree must be in [1..",TRANSDEGREES,"]");
+  fi;
+  if deg=1 then
+    return fail;
   fi;
   if not IsBound(TRANSLENGTHS[deg]) then
     TransGrpLoad(deg,num);
