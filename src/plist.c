@@ -1628,6 +1628,11 @@ void            AssPlist (
     Int                 pos,
     Obj                 val )
 {
+    if (val == 0L) {
+        UnbPlist(list, pos);
+        return;
+    }
+
     /* resize the list if necessary                                        */
     if ( LEN_PLIST( list ) < pos ) {
         GROW_PLIST( list, pos );
@@ -1646,6 +1651,11 @@ void            AssPlistXXX (
 {
   Int len;
   
+    if (val == 0L) {
+        UnbPlist(list, pos);
+        return;
+    }
+
     /* the list will probably loose its flags/properties                   */
     CLEAR_FILTS_LIST(list);
 
@@ -1672,6 +1682,10 @@ void AssPlistCyc   (
 {
   Int len;
   
+  if (val == 0L) {
+      UnbPlist(list, pos);
+      return;
+  }
   
   /* resize the list if necessary                                        */
   len = LEN_PLIST( list );
@@ -1710,6 +1724,11 @@ void AssPlistFfe   (
 {
     Int len;
   
+    if (val == 0L) {
+        UnbPlist(list, pos);
+        return;
+    }
+
     /* resize the list if necessary                                        */
     len = LEN_PLIST( list );
     if ( len < pos ) {
@@ -1772,6 +1791,11 @@ void AssPlistDense (
 {
   Int len;
   
+  if (val == 0L) {
+      UnbPlist(list, pos);
+      return;
+  }
+
   /* the list will probably loose its flags/properties                   */
   CLEAR_FILTS_LIST(list);
   
@@ -1801,6 +1825,11 @@ void AssPlistHomog (
   Int len;
   Obj fam;
   
+  if (val == 0L) {
+      UnbPlist(list, pos);
+      return;
+  }
+
   /* the list may loose its flags/properties                   */
   CLEAR_FILTS_LIST(list);
   
@@ -1877,6 +1906,10 @@ void AssPlistEmpty (
     Int                 pos,
     Obj                 val )
 {
+    if (val == 0L) {
+        return;
+    }
+
     /* if <pos> is large than one use `AssPlistDense'                        */
     if ( 1 != pos ) {
         AssPlistDense( list, pos, val );

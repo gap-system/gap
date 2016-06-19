@@ -1152,22 +1152,28 @@ UInt            ExecAssList (
     if (IS_POS_INTOBJ(pos)) {
         p = INT_INTOBJ(pos);
 
-        /* special case for plain list                                     */
-        if ( TNUM_OBJ(list) == T_PLIST ) {
-            if ( LEN_PLIST(list) < p ) {
-                GROW_PLIST( list, p );
-                SET_LEN_PLIST( list, p );
+        if (rhs == 0) {
+            UNB_LIST( list, p );
+        } else {
+            /* special case for plain list                                  */
+            if ( TNUM_OBJ(list) == T_PLIST ) {
+                if ( LEN_PLIST(list) < p ) {
+                    GROW_PLIST( list, p );
+                    SET_LEN_PLIST( list, p );
+                }
+                SET_ELM_PLIST( list, p, rhs );
+                CHANGED_BAG( list );
             }
-            SET_ELM_PLIST( list, p, rhs );
-            CHANGED_BAG( list );
-        }
-
-        /* generic case                                                    */
-        else {
-            ASS_LIST( list, p, rhs );
+            /* generic case                                                 */
+            else {
+                ASS_LIST( list, p, rhs );
+            }
         }
     } else {
-        ASSB_LIST(list, pos, rhs);
+        if (rhs == 0)
+            UNBB_LIST( list, pos );
+        else
+          ASSB_LIST( list, pos, rhs );
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2309,17 +2315,21 @@ UInt            ExecAssPosObj (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* special case for plain list                                         */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
-        WriteGuard(list);
-        if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
-            ResizeBag( list, (p+1) * sizeof(Obj) );
-        }
-        SET_ELM_PLIST( list, p, rhs );
-        CHANGED_BAG( list );
-    }
-    /* generic case                                                        */
-    else {
-        ASS_LIST( list, p, rhs );
+    if (rhs == 0) {
+        UNB_LIST( list, p );
+    } else {
+       if ( TNUM_OBJ(list) == T_POSOBJ ) {
+           WriteGuard(list);
+           if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
+               ResizeBag( list, (p+1) * sizeof(Obj) );
+           }
+           SET_ELM_PLIST( list, p, rhs );
+           CHANGED_BAG( list );
+       }
+       /* generic case                                                        */
+       else {
+           ASS_LIST( list, p, rhs );
+       }
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2560,11 +2570,15 @@ UInt            ExecAssComObjName (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        AssPRec( record, rnam, rhs );
-    }
-    else {
-        ASS_REC( record, rnam, rhs );
+    if (rhs == 0) {
+        UNB_REC( record, rnam );
+    } else {
+        if ( TNUM_OBJ(record) == T_COMOBJ ) {
+            AssPRec( record, rnam, rhs );
+        }
+        else {
+            ASS_REC( record, rnam, rhs );
+        }
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2596,12 +2610,16 @@ UInt            ExecAssComObjExpr (
     /* evaluate the right hand side                                        */
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
-    /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        AssPRec( record, rnam, rhs );
-    }
-    else {
-        ASS_REC( record, rnam, rhs );
+    if (rhs == 0) {
+        UNB_REC( record, rnam );
+    } else {
+        /* assign the right hand side to the element of the record         */
+        if ( TNUM_OBJ(record) == T_COMOBJ ) {
+            AssPRec( record, rnam, rhs );
+        }
+        else {
+            ASS_REC( record, rnam, rhs );
+        }
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
