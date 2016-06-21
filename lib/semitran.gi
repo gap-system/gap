@@ -305,56 +305,45 @@ function(G)
   return MagmaIsomorphismByFunctionsNC(G, S, AsTransformation, AsPermutation);
 end);
 
-#
+# Isomorphism from an arbitrary semigroup with generators to a transformation
+# semigroup, fall back method
 
-InstallMethod(IsomorphismTransformationSemigroup, 
-"for a semigroup with generators",
-[IsSemigroup and HasGeneratorsOfSemigroup],
-function( s )
-  local en, act, gens;
+InstallMethod(IsomorphismTransformationSemigroup, "for a semigroup",
+[IsSemigroup],
+function(S)
+  local en, gens, dom, act, pos, T;
 
-  en:=EnumeratorSorted(s);
+  en := EnumeratorSorted(S);
   
-  act:=function(i, x)
-    if i<=Length(en) then 
-      return Position(en, en[i]*x);
-    fi;
-    return Position(en, x);
-  end;
-  
-  gens := List(GeneratorsOfSemigroup(s), 
-   x-> TransformationOp(x, [1..Length(en)+1], act));
+  if HasGeneratorsOfSemigroup(S) then 
+    gens := GeneratorsOfSemigroup(S);
+  else
+    gens := en;
+  fi;
 
-  return MagmaIsomorphismByFunctionsNC( s, Semigroup( gens ), 
-   x-> TransformationOp(x, [1..Length(en)+1], act), 
-   x-> en[(Length(en)+1)^x]);
-end);
+  if HasMultiplicativeNeutralElement(S) 
+    and MultiplicativeNeutralElement(S) <> fail then 
+    dom := en;
+    act := OnRight;
+    pos := Position(en, MultiplicativeNeutralElement(S));
+  else 
+    dom := [1 .. Length(en) + 1];
+    act := function(i, x)
+      if i <= Length(en) then 
+        return Position(en, en[i] * x);
+      fi;
+      return Position(en, x);
+    end;
+    pos := Length(en) + 1;
+  fi;
 
-#
+  T := Semigroup(List(gens, x -> TransformationOp(x, dom, act)));
+  UseIsomorphismRelation(S, T);
 
-InstallMethod(IsomorphismTransformationSemigroup,
-"for a semigroup with multiplicative neutral element and generators",
-[IsSemigroup and HasMultiplicativeNeutralElement and HasGeneratorsOfSemigroup],
-function(s)
-  local en, act, gens, pos;
-
-  en:=EnumeratorSorted(s);
-  
-  act:=function(i, x)
-    if i<=Length(en) then 
-      return Position(en, en[i]*x);
-    fi;
-    return Position(en, x);
-  end;
-  
-  gens := List(GeneratorsOfSemigroup(s), 
-   x-> TransformationOp(x, [1..Length(en)], act));
-  
-  pos:=Position(en, MultiplicativeNeutralElement(s));
-
-  return MagmaIsomorphismByFunctionsNC( s, Semigroup( gens ), 
-   x-> TransformationOp(x, [1..Length(en)], act), 
-   x-> en[pos^x]);
+  return MagmaIsomorphismByFunctionsNC(S, 
+                                       T, 
+                                       x -> TransformationOp(x, dom, act), 
+                                       x -> en[pos ^ x]);
 end);
 
 InstallMethod(IsomorphismTransformationMonoid,
@@ -419,28 +408,6 @@ function(S)
                                        x -> (x ^ inv2) ^ inv1);
 end);
 
-#
-
-InstallMethod(IsomorphismTransformationSemigroup, "for a semigroup",
-[IsSemigroup],
-function( s )
-  local en, act, gens;
-
-  en:=EnumeratorSorted(s);
-  
-  act:=function(i, x)
-    if i<=Length(en) then 
-      return Position(en, en[i]*x);
-    fi;
-    return Position(en, x);
-  end;
-  
-  gens := List(en, x-> TransformationOp(x, [1..Length(en)+1], act));
-
-  return MagmaIsomorphismByFunctionsNC( s, Semigroup( gens ), 
-   x-> TransformationOp(x, [1..Length(en)+1], act), 
-   x-> en[(Length(en)+1)^x]);
-end);
 
 #
 
@@ -448,31 +415,6 @@ InstallMethod(IsomorphismTransformationSemigroup, "for a transformation semigrou
 [IsTransformationSemigroup], 
 function(S)
   return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
-end);
-
-#
-
-InstallMethod(IsomorphismTransformationSemigroup,
-"for a semigroup with multiplicative neutral element",
-[IsSemigroup and HasMultiplicativeNeutralElement],
-function(s)
-  local en, act, gens, pos;
-
-  en:=EnumeratorSorted(s);
-  
-  act:=function(i, x)
-    if i<=Length(en) then 
-      return Position(en, en[i]*x);
-    fi;
-    return Position(en, x);
-  end;
-  
-  gens := List(en, x-> TransformationOp(x, [1..Length(en)], act));
-  pos:=Position(en, MultiplicativeNeutralElement(s));
-
-  return MagmaIsomorphismByFunctionsNC( s, Semigroup( gens ), 
-   x-> TransformationOp(x, [1..Length(en)], act), 
-   x-> en[pos^x]);
 end);
 
 #
