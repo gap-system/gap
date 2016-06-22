@@ -84,4 +84,9 @@ DeclareAttribute("RankOfPartialPermCollection", IsPartialPermCollection);
 DeclareAttribute("DomainOfPartialPermCollection", IsPartialPermCollection);
 DeclareAttribute("ImageOfPartialPermCollection", IsPartialPermCollection);
 
+DeclareAttribute("OneImmutable", IsPartialPermCollection);
+DeclareOperation("OneMutable", [IsPartialPermCollection]);
+DeclareAttribute("ZeroImmutable", IsPartialPermCollection);
+DeclareOperation("ZeroMutable", [IsPartialPermCollection]);
+
 InstallTrueMethod(IsGeneratorsOfInverseSemigroup, IsPartialPermCollection);

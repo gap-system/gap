@@ -31,24 +31,52 @@ function(S)
                        "\<\< ");
 end);
 
-InstallMethod(One, "for a partial perm semigroup with generators",
+InstallMethod(OneMutable, "for a partial perm semigroup",
+[IsPartialPermSemigroup], OneImmutable);
+
+InstallOtherMethod(OneImmutable, "for a partial perm semigroup with generators",
 [IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
 function(S)
   local x;
 
-  x := One(GeneratorsOfSemigroup(S));
+  x := OneImmutable(GeneratorsOfSemigroup(S));
   if x in S then
     return x;
   fi;
   return fail;
 end);
 
-#
+InstallOtherMethod(OneImmutable, "for a partial perm semigroup",
+[IsPartialPermSemigroup],
+function(S)
+  local x;
 
-InstallMethod(One, "for a partial perm monoid with generators", 
+  x := OneImmutable(AsList(S));
+  if x in S then
+    return x;
+  fi;
+  return fail;
+end);
+
+InstallOtherMethod(OneImmutable, "for a partial perm monoid with generators", 
 [IsPartialPermMonoid and HasGeneratorsOfSemigroup],
-function(s)
-  return One(GeneratorsOfSemigroup(s));
+function(S)
+  return One(GeneratorsOfSemigroup(S));
+end);
+
+InstallMethod(ZeroMutable, "for a partial perm semigroup",
+[IsPartialPermSemigroup], ZeroImmutable);
+
+InstallMethod(ZeroImmutable, "for a partial perm semigroup with generators",
+[IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
+function(S)
+  local x;
+
+  x := ZeroImmutable(GeneratorsOfSemigroup(S));
+  if x in S then
+    return x;
+  fi;
+  return fail;
 end);
 
 #
@@ -136,32 +164,6 @@ InstallMethod(SmallestMovedPoint, "for a partial perm semigroup",
 InstallMethod(SmallestImageOfMovedPoint, "for a partial perm semigroup",
 [IsPartialPermSemigroup], 
 s-> SmallestImageOfMovedPoint(GeneratorsOfSemigroup(s)));
-
-#
-
-InstallOtherMethod(OneMutable, "for a partial perm semigroup",
-[IsPartialPermSemigroup],
-function(s)
-  local  one;
-  one := One(GeneratorsOfSemigroup(s));
-  if one in s then
-    return one;
-  fi;
-  return fail;
-end);
-
-#
-
-InstallOtherMethod(ZeroMutable, "for a partial perm semigroup",
-[IsPartialPermSemigroup],
-function(s)
-  local  zero;
-  zero := Zero(GeneratorsOfSemigroup(s));
-  if zero in s then
-    return zero;
-  fi;
-  return fail;
-end);
 
 #
 
