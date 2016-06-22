@@ -236,7 +236,7 @@ end);
 #
 
 InstallMethod(Enumerator, "for a full transformation semigroup",
-[IsFullTransformationSemigroup], 5, 
+[IsFullTransformationSemigroup], SUM_FLAGS, 
 #to beat the method for an acting semigroup with generators
 function(S)
   local n, Membership, PrintObj;
@@ -268,7 +268,7 @@ function(S)
     end,
 
     PrintObj:=function(enum)
-      Print("<enumerator of full transformation semigroup on ", n," pts>");
+      Print("<enumerator of full transformation semigroup of degree ", n,">");
     end));
 end);
 
