@@ -2157,10 +2157,6 @@ Obj FuncHAS_IMG_PPERM( Obj self, Obj f ){
 
 /* GAP kernel functions */
 
-Obj ZeroPPerm(Obj f){
-  return EmptyPartialPerm;
-}
-
 // an idempotent partial perm on the union of the domain and image 
 Obj OnePPerm( Obj f){
   Obj     g, img, dom;
@@ -5932,12 +5928,6 @@ static Int InitKernel ( StructInitInfo *module )
     LQuoFuncs [ T_PPERM2  ][ T_PPERM4 ] = LQuoPPerm24;
     LQuoFuncs [ T_PPERM4  ][ T_PPERM2 ] = LQuoPPerm42;
     LQuoFuncs [ T_PPERM4  ][ T_PPERM4 ] = LQuoPPerm44;
-    
-    /* install the zero function for partial perms */
-    ZeroFuncs [T_PPERM2] = ZeroPPerm;
-    ZeroFuncs [T_PPERM4] = ZeroPPerm;
-    ZeroMutFuncs [T_PPERM2] = ZeroPPerm;
-    ZeroMutFuncs [T_PPERM4] = ZeroPPerm;
     
     /* install the one function for partial perms */
     OneFuncs [T_PPERM2] = OnePPerm;

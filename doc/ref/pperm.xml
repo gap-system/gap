@@ -130,7 +130,7 @@ The fundamental attributes of a partial permutation are:
   union of its domain and its image, and the <E>zero</E> of a partial
   permutation is just the empty partial permutation; see 
   <Ref Oper="One" Label="for a partial perm"/> and
-  <Ref Oper="Zero" Label="for a partial perm"/>.
+  <Ref Oper="MultiplicativeZero" Label="for a partial perm"/>.
   <P/>
 
   If <C>S</C> is an arbitrary inverse semigroup, the <E>natural partial
@@ -980,15 +980,15 @@ gap> One(f);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <ManSection>
-  <Meth Name="Zero" Arg="f" Label="for a partial perm"/>
+  <Meth Name="MultiplicativeZero" Arg="f" Label="for a partial perm"/>
   <Returns>The empty partial permutation.</Returns>
   <Description>
-    As described in <Ref Attr="ZeroImmutable" BookName="ref"/>,
+    As described in <Ref Attr="MultiplicativeZero" BookName="ref"/>,
     <C>Zero</C> returns the multiplicative zero element of the partial
     permutation <A>f</A>, which is the empty partial permutation. 
     <Example>
-gap> f:=PartialPerm([ 1, 2, 3, 4, 5, 7, 10 ], [ 3, 7, 9, 6, 1, 10, 2 ]);;
-gap> Zero(f);
+gap> f := PartialPerm([ 1, 2, 3, 4, 5, 7, 10 ], [ 3, 7, 9, 6, 1, 10, 2 ]);;
+gap> MultiplicativeZero(f);
 &lt;empty partial perm></Example>
   </Description>
 </ManSection>
