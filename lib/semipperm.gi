@@ -222,88 +222,109 @@ function(s)
   return gens;
 end);
 
-# isomorphisms
+# Isomorphism from an arbitrary inverse semigroup/monoid to a partial perm
+# semigroup/monoid, this is the fall back method
 
-#
-
-InstallMethod(IsomorphismPartialPermSemigroup, 
-"for a semigroup with generators",
-[IsSemigroup and HasGeneratorsOfSemigroup],
+InstallMethod(IsomorphismPartialPermSemigroup, "for a semigroup",
+[IsSemigroup],
 function(S)
-  local elts, iso, gens;
+  local set, iso, gens, T;
 
   if not IsInverseSemigroup(S) then 
-    return fail;
+    ErrorNoReturn("IsomorphismPartialPermSemigroup: usage,\n",
+                  "the argument must be an inverse semigroup,");
   fi;
   
-  elts:=AsSSortedList(S);
-
-  iso:=function(x)
-    local dom, y;
-    y:=InversesOfSemigroupElement(S, x)[1];
-    dom:=Set(elts*y);
-    return PartialPermNC(List(dom, y-> Position(elts, y)),
-     List(List(dom, y-> y*x), y-> Position(elts, y)));
-  end;
-
-  gens:=ShallowCopy(GeneratorsOfSemigroup(S));
-  Apply(gens, iso);
-  return MagmaHomomorphismByFunctionNC(S, InverseSemigroup(gens), iso);
-end);
-
-#
-
-InstallMethod(IsomorphismPartialPermMonoid, 
-"for a monoid with generators",
-[IsMonoid and HasGeneratorsOfMonoid],
-function(S)
-  local elts, iso, gens;
-
-  if not IsInverseSemigroup(S) then 
-    return fail;
-  fi;
-  
-  elts:=AsSSortedList(S);
-
-  iso:=function(x)
-    local dom, y;
-    y:=InversesOfSemigroupElement(S, x)[1];
-    dom:=Set(elts*y);
-    return PartialPermNC(List(dom, y-> Position(elts, y)),
-     List(List(dom, y-> y*x), y-> Position(elts, y)));
-  end;
-
-  gens:=ShallowCopy(GeneratorsOfMonoid(S));
-  Apply(gens, iso);
-  return MagmaHomomorphismByFunctionNC(S, InverseMonoid(gens), iso);
-end);
-
-InstallMethod(IsomorphismPartialPermMonoid,
-"for a transformation semigroup with generators",
-[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
-function(S)
-  local map, deg, iso, T;
-
-  if not IsInverseSemigroup(S) or MultiplicativeNeutralElement(S) = fail then
-    ErrorNoReturn("usage: the argument should be an inverse semigroup with ",
-                  "a\nmultiplicative neutral element,");
-  fi;
-
-  map := IsomorphismTransformationMonoid(S);
-  deg := DegreeOfTransformationSemigroup(Range(map));
+  set := AsSet(S);
 
   iso := function(x)
-    local y, dom;
-    y := InversesOfSemigroupElement(Range(map), x ^ map)[1];
-    dom := ImageSetOfTransformation(y, deg);
-    return PartialPerm(dom, List(dom, i -> i ^ x));
+    local dom;
+    dom := Set(set * InversesOfSemigroupElement(S, x)[1]);
+    return PartialPermNC(List(dom, y -> Position(set, y)),
+                         List(List(dom, y -> y * x), 
+                              y -> Position(set, y)));
   end;
 
-  T := InverseMonoid(List(GeneratorsOfSemigroup(S), iso));
+  if HasGeneratorsOfSemigroup(S) then 
+    gens := GeneratorsOfSemigroup(S);
+  else
+    gens := set;
+  fi;
+  
+  T := InverseSemigroup(List(gens, iso));
   UseIsomorphismRelation(S, T);
 
   return MagmaHomomorphismByFunctionNC(S, T, iso);
 end);
+
+InstallMethod(IsomorphismPartialPermMonoid, "for a semigroup",
+[IsSemigroup],
+function(S)
+  local iso1, inv1, iso2, inv2;
+
+  if MultiplicativeNeutralElement(S) = fail then
+    ErrorNoReturn("IsomorphismPartialPermMonoid: usage,\n",
+                  "the argument must be a semigroup with a ",
+                  "multiplicative neutral element,");
+  elif not IsInverseSemigroup(S) then
+    ErrorNoReturn("IsomorphismPartialPermMonoid: usage,\n",
+                  "the argument must be an inverse semigroup,");
+  fi;
+
+  iso1 := IsomorphismTransformationMonoid(S);
+  inv1 := InverseGeneralMapping(iso1);
+  iso2 := IsomorphismPartialPermSemigroup(Range(iso1));
+  inv2 := InverseGeneralMapping(iso2);
+  UseIsomorphismRelation(S, Range(iso2));
+
+  return MagmaIsomorphismByFunctionsNC(S,
+                                       Range(iso2),
+                                       x -> (x ^ iso1) ^ iso2,
+                                       x -> (x ^ inv2) ^ inv1);
+end);
+
+# Isomorphisms from a partial perm semigroups/monoids to a partial perm
+# semigroup/monoid 
+
+InstallMethod(IsomorphismPartialPermSemigroup, "for a partial perm semigroup",
+[IsPartialPermSemigroup],
+function(S)
+  return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
+end);
+
+InstallMethod(IsomorphismPartialPermMonoid, "for a partial perm monoid", 
+[IsPartialPermMonoid], 
+function(S)
+  return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
+end);
+
+InstallMethod(IsomorphismPartialPermMonoid, 
+"for a partial perm semigroup",
+[IsPartialPermSemigroup],
+function(S)
+  local T;
+
+  if MultiplicativeNeutralElement(S) = fail then
+    ErrorNoReturn("IsomorphismPartialPermMonoid: usage,\n",
+                  "the argument must be a semigroup with a ",
+                  "multiplicative neutral element,");
+  fi;
+
+  # In this case One(S) = MultiplicativeNeutralElement(S), but we want to make
+  # sure that the range of the returned isomorphism is really a monoid
+
+  if IsInverseSemigroup(S) and HasGeneratorsOfInverseSemigroup(S) then 
+    T := AsInverseMonoid(S);
+  else 
+    T := AsMonoid(S);
+  fi;
+  UseIsomorphismRelation(S, T);
+
+  return MagmaIsomorphismByFunctionsNC(S, T, IdFunc, IdFunc); 
+end);
+
+# Isomorphism from an inverse transformation semigroup/monoid to a partial perm
+# semigroup/monoid
 
 InstallMethod(IsomorphismPartialPermSemigroup,
 "for a transformation semigroup",
@@ -312,7 +333,8 @@ function(S)
   local deg, iso, T;
 
   if not IsInverseSemigroup(S) then
-    ErrorNoReturn("usage: the argument should be an inverse semigroup,");
+    ErrorNoReturn("IsomorphismPartialPermSemigroup: usage,\n",
+                  "the argument must be an inverse semigroup,");
   fi;
 
   deg := DegreeOfTransformationSemigroup(S);
@@ -330,65 +352,42 @@ function(S)
   return MagmaHomomorphismByFunctionNC(S, T, iso);
 end);
 
-#
-
-InstallMethod(IsomorphismPartialPermMonoid, "for a perm group",
-[IsPermGroup],
-function(g)
-  local dom;
-  dom:=MovedPoints(g);
-  return MagmaIsomorphismByFunctionsNC(g,
-   InverseMonoid(List(GeneratorsOfGroup(g), p-> AsPartialPerm(p, dom))), 
-   p-> AsPartialPerm(p, dom), f-> AsPermutation(f));
-end);
-
-#
-
-InstallMethod(IsomorphismPartialPermSemigroup, "for a perm group",
-[IsPermGroup],
-function(g)
-  local dom;
-  dom:=MovedPoints(g);
-  return MagmaIsomorphismByFunctionsNC(g,
-   InverseSemigroup(List(GeneratorsOfGroup(g), p-> AsPartialPerm(p, dom))), 
-   p-> AsPartialPerm(p, dom), f-> AsPermutation(f));
-end);
-
-#
-
-InstallMethod(IsomorphismPartialPermSemigroup, "for a partial perm semigroup",
-[IsPartialPermSemigroup],
-function(S)
-  return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
-end);
-
-#
-
-InstallMethod(IsomorphismPartialPermMonoid, "for a partial perm monoid", 
-[IsPartialPermMonoid], 
-function(s)
-  return MagmaIsomorphismByFunctionsNC(s, s, IdFunc, IdFunc);
-end);
-
-#
+# Isomorphisms from perm groups to partial perm semigroups/monoids
 
 InstallMethod(IsomorphismPartialPermMonoid, 
-"for a partial perm semigroup",
-[IsPartialPermSemigroup],
-function(s)
-  local t;
+"for a perm group with generators",
+[IsPermGroup and HasGeneratorsOfGroup],
+function(G)
+  local dom, S;
 
-  if IsInverseSemigroup(s) then 
-    t:=AsInverseMonoid(s);
-  else 
-    t:=AsMonoid(s);
-  fi;
-  if t=fail then 
-    return fail;
-  fi;
-  return MagmaIsomorphismByFunctionsNC(s, t, IdFunc, IdFunc); 
+  dom := MovedPoints(G);
+  S := InverseMonoid(List(GeneratorsOfGroup(G), p -> AsPartialPerm(p, dom)));
+  UseIsomorphismRelation(G, S);
+  SetIsGroupAsSemigroup(S, true);
+
+  return MagmaIsomorphismByFunctionsNC(G, 
+                                       S, 
+                                       p -> AsPartialPerm(p, dom), 
+                                       AsPermutation);
 end);
 
+InstallMethod(IsomorphismPartialPermSemigroup,
+"for a perm group with generators",
+[IsPermGroup and HasGeneratorsOfGroup],
+function(G)
+  local dom, S;
+
+  dom := MovedPoints(G);
+  S := InverseSemigroup(List(GeneratorsOfGroup(G), 
+                             p -> AsPartialPerm(p, dom)));
+  UseIsomorphismRelation(G, S);
+  SetIsGroupAsSemigroup(S, true);
+
+  return MagmaIsomorphismByFunctionsNC(G, 
+                                       S, 
+                                       p -> AsPartialPerm(p, dom), 
+                                       AsPermutation);
+end);
 #
 
 InstallMethod(SymmetricInverseSemigroup, "for a integer",
