@@ -729,8 +729,11 @@ end;
 InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       mp,cen,i,j,imgs,ok,size,l,hom,cenis,reps,repspows,sortrels,genums,wert,p,
-      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond,outerorder,setrun;
+      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond,outerorder,setrun,
+      finsrc;
 
+  finsrc:=IsBound(params.from) and HasIsFinite(params.from)
+          and IsFinite(params.from);
   len:=Length(clali);
   if ForAny(clali,i->Length(i)=0) then
     return []; # trivial case: no images for generator
@@ -803,16 +806,26 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     free:=GeneratorsOfGroup(FreeGroup(Length(gens)));
     mfw:=MorFroWords(free);
     # get some more
-    if Product(List(gens,Order))<2000 then
+    if finsrc and Product(List(gens,Order))<2000 then
       for i in Cartesian(List(gens,i->[1..Order(i)])) do
 	Add(mfw,Product(List([1..Length(gens)],z->free[z]^i[z])));
       od;
     fi;
-    rels:=List(mfw,i->[i,Order(MappedWord(i,free,gens))]);
+    rels:=[];
+    for i in mfw do
+      p:=Order(MappedWord(i,free,gens));
+      if p<>infinity then
+        Add(rels,[i,p]);
+      fi;
+    od;
+    if Length(rels)=0 then
+      rels:=false;
+    fi;
   else
     rels:=false;
   fi;
 
+  pows:=[];
   if rels<>false then
     # sort the relators according to the generators they contain
     genums:=List(free,i->GeneratorSyllable(i,1));
@@ -840,9 +853,10 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     for i in [1..len] do
       Sort(sortrels[i],function(x,y) return x[3]<y[3];end);
     od;
-    offset:=1-Minimum(List(Filtered(pows,i->Length(i)>0),
-                           i->i[1])); # smallest occuring index
-
+    if Length(pows)>0 then
+      offset:=1-Minimum(List(Filtered(pows,i->Length(i)>0),
+			    i->i[1])); # smallest occuring index
+    fi;
     # test the relators at level tlev and set imgs
     TestRels:=function(tlev)
     local rel,k,j,p,start,gn,ex;
@@ -920,7 +934,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       fi;
     fi;
 
-    if not skip then
+    if pows<>fail and not skip then
       if rels<>false and IsPermGroup(range) then
 	# and precompute the powers
 	repspows:=List([1..len],i->[]);

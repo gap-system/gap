@@ -987,7 +987,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   fi;
 
   params:=rec(gens:=bg,from:=H);
-  # find all embeddings
+  # find all homs
   emb:=MorClassLoop(G,bi,params,
     # all homs = 1+8
     9); 
