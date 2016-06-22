@@ -167,19 +167,23 @@ end);
 
 InstallGlobalFunction(MeetOfPartialPerms, 
 function(arg)
-  local meet, i;
+  local meet, i, empty;
+
   if IsPartialPermCollection(arg[1]) then 
     return CallFuncList(MeetOfPartialPerms, AsList(arg[1]));
   elif not IsPartialPermCollection(arg) then 
-    Error("usage: the argument should be a collection of partial perms,");
+    Error("usage: the argument should be a collection of partial perms, ");
     return;
   fi;
 
-  meet:=arg[1]; i:=1;
-  repeat
-    i:=i+1;
-    meet:=MEET_PPERMS(meet, arg[i]);
-  until i=Length(arg) or meet=EmptyPartialPerm();
+  meet := arg[1]; 
+  i := 1;
+  empty := EmptyPartialPerm();
+
+  while i < Length(arg) and meet <> empty do
+    i := i + 1;
+    meet := MEET_PPERMS(meet, arg[i]);
+  od;
     
   return meet;
 end);
