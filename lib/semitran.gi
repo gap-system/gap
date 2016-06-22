@@ -108,7 +108,7 @@ InstallMethod(DegreeOfTransformationSemigroup,
 function(S)
   if not IsEmpty(GeneratorsOfGroup(S)) then 
     return DegreeOfTransformationCollection(GeneratorsOfGroup(S));
-  else 
+  else # What is an example where this can happen?
     return DegreeOfTransformationCollection(GeneratorsOfSemigroup(S));
   fi;
 end);
@@ -122,10 +122,12 @@ function( h )
   local enum, permgroup, i, perm, j, elts;
 
   if not(IsFinite(h)) then
+    # What is an example where this can happen?
     TryNextMethod();
   fi;
 
   if not( IsGroupHClass(h) ) then
+    # What is an example where this can happen?
     Error("can only create isomorphisms of group H-classes");
     return;
   fi;
@@ -149,7 +151,7 @@ function( h )
   return MappingByFunction( h, permgroup, a -> elts[Position( enum, a )]);
 end);
 
-#
+# TODO can this be removed? It doesn't seem to work
 
 InstallMethod(IsomorphismTransformationSemigroup,
 "for a semigroup of general mappings",
