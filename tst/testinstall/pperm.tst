@@ -670,6 +670,18 @@ gap> g:=PartialPermNC([100001,2,3,4,5]);
 [1,100001](2)(3)(4)(5)
 gap> MeetOfPartialPerms(f,g);
 <identity partial perm on [ 2, 3, 4, 5 ]>
+gap> MeetOfPartialPerms(PartialPerm([1]));
+<identity partial perm on [ 1 ]>
+gap> MeetOfPartialPerms(PartialPerm([1]), PartialPerm([2]));
+<empty partial perm>
+gap> MeetOfPartialPerms(PartialPerm([1]), PartialPerm([1, 2]));
+<identity partial perm on [ 1 ]>
+gap> MeetOfPartialPerms([]);
+Error, usage: the argument should be a collection of partial perms, 
+gap> MeetOfPartialPerms([PartialPerm([1]), PartialPerm([1, 2])]);
+<identity partial perm on [ 1 ]>
+gap> MeetOfPartialPerms(SymmetricInverseMonoid(3));
+<empty partial perm>
 
 # RestrictedPartialPerm
 gap> f:=PartialPermNC([100000,2,3,4,5]);
