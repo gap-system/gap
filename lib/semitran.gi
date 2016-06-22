@@ -74,17 +74,14 @@ function(S)
                    DegreeOfTransformationSemigroup(S), ">");
 end);
 
-#
-
 InstallMethod(AsMonoid,
 "for transformation semigroup with generators",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 function(S)
-  if One(S)<>fail then
-    return Monoid(GeneratorsOfSemigroup(S));
-  else
+  if MultiplicativeNeutralElement(S) = fail then 
     return fail;
   fi;
+  return Range(IsomorphismTransformationMonoid(S));
 end);
 
 #
@@ -275,38 +272,8 @@ function(S)
     end));
 end);
 
-# isomorphisms and anti-isomorphisms
-
-InstallMethod(IsomorphismTransformationMonoid, 
-"for a perm group with generators",
-[IsPermGroup and HasGeneratorsOfGroup], 
-function(G)
-  local S;
-  
-  S := Monoid(List(GeneratorsOfGroup(G), AsTransformation));
-  UseIsomorphismRelation(G, S);
-  SetIsGroupAsSemigroup(S, true);
-
-  return MagmaIsomorphismByFunctionsNC(G, S, AsTransformation, AsPermutation);
-end);
-
-#
-
-InstallMethod(IsomorphismTransformationSemigroup, 
-"for a perm group with generators",
-[IsPermGroup and HasGeneratorsOfGroup], 
-function(G)
-  local S;
-  
-  S := Semigroup(List(GeneratorsOfGroup(G), AsTransformation));
-  UseIsomorphismRelation(G, S);
-  SetIsGroupAsSemigroup(S, true);
-
-  return MagmaIsomorphismByFunctionsNC(G, S, AsTransformation, AsPermutation);
-end);
-
-# Isomorphism from an arbitrary semigroup with generators to a transformation
-# semigroup, fall back method
+# Isomorphism from an arbitrary semigroup to a transformation semigroup, this
+# is the fall back method
 
 InstallMethod(IsomorphismTransformationSemigroup, "for a semigroup",
 [IsSemigroup],
@@ -346,6 +313,35 @@ function(S)
                                        x -> en[pos ^ x]);
 end);
 
+# Isomorphism from an IsMonoidAsSemigroup to a transformation monoid, this
+# is the fall back method
+
+InstallMethod(IsomorphismTransformationMonoid, "for a semigroup",
+[IsSemigroup],
+function(S)
+  local iso1, inv1, iso2, inv2;
+
+  if MultiplicativeNeutralElement(S) = fail then
+    ErrorNoReturn("IsomorphismTransformationMonoid: usage,\n",
+                  "the argument must be a semigroup with a ",
+                  "multiplicative neutral element,");
+  fi;
+
+  iso1 := IsomorphismTransformationSemigroup(S);
+  inv1 := InverseGeneralMapping(iso1);
+  iso2 := IsomorphismTransformationMonoid(Range(iso1));
+  inv2 := InverseGeneralMapping(iso2);
+  UseIsomorphismRelation(S, Range(iso2));
+
+  return MagmaIsomorphismByFunctionsNC(S,
+                                       Range(iso2),
+                                       x -> (x ^ iso1) ^ iso2,
+                                       x -> (x ^ inv2) ^ inv1);
+end);
+
+# Isomorphism from an IsMonoidAsSemigroup transformation semigroup to a
+# transformation monoid
+
 InstallMethod(IsomorphismTransformationMonoid,
 "for a transformation semigroup",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
@@ -358,8 +354,8 @@ function(S)
 
   if MultiplicativeNeutralElement(S) = fail then
     ErrorNoReturn("IsomorphismTransformationMonoid: usage,\n",
-                  "the argument <S> must have a multiplicative neutral ",
-                  "element,");
+                  "the argument must be a semigroup with a ",
+                  "multiplicative neutral element,");
   fi;
 
   id := MultiplicativeNeutralElement(S);
@@ -385,64 +381,12 @@ function(S)
                                        inv);
 end);
 
-InstallMethod(IsomorphismTransformationMonoid, "for a semigroup",
-[IsSemigroup],
-function(S)
-  local iso1, inv1, iso2, inv2;
-
-  if MultiplicativeNeutralElement(S) = fail then
-    ErrorNoReturn("IsomorphismTransformationMonoid: usage,\n",
-                  "the semigroup given as first argument must have a ",
-                  "multiplicative neutral element,");
-  fi;
-
-  iso1 := IsomorphismTransformationSemigroup(S);
-  inv1 := InverseGeneralMapping(iso1);
-  iso2 := IsomorphismTransformationMonoid(Range(iso1));
-  inv2 := InverseGeneralMapping(iso2);
-  UseIsomorphismRelation(S, Range(iso2));
-
-  return MagmaIsomorphismByFunctionsNC(S,
-                                       Range(iso2),
-                                       x -> (x ^ iso1) ^ iso2,
-                                       x -> (x ^ inv2) ^ inv1);
-end);
-
-
-#
-
-InstallMethod(IsomorphismTransformationSemigroup, "for a transformation semigroup", 
+InstallMethod(IsomorphismTransformationSemigroup, 
+"for a transformation semigroup", 
 [IsTransformationSemigroup], 
 function(S)
   return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
 end);
-
-#
-
-InstallMethod(AntiIsomorphismTransformationSemigroup,
-"for a semigroup with generators",
-[IsSemigroup and HasGeneratorsOfSemigroup],
-function(s)
-  local en, act, gens;
-
-  en:=EnumeratorSorted(s);
-  
-  act:=function(i, x)
-    if i<=Length(en) then 
-      return Position(en, x*en[i]);
-    fi;
-    return Position(en, x);
-  end;
-  
-  gens := List( GeneratorsOfSemigroup( s ), x-> 
-   TransformationOp(x, [1..Length(en)+1], act));
-
-  return MagmaIsomorphismByFunctionsNC( s, Semigroup( gens ), 
-   x-> TransformationOp(x, [1..Length(en)+1], act), 
-   x-> en[(Length(en)+1)^x]);
-end);
-
-#
 
 InstallMethod(IsomorphismTransformationSemigroup, "for partial perm semigroup",
 [IsPartialPermSemigroup],
@@ -481,7 +425,11 @@ function(S)
   local n, T, inv;
   
   if not (IsMonoid(S) or One(S) <> fail) then 
-    ErrorNoReturn("usage: the argument should define a monoid,");
+    ErrorNoReturn("IsomorphismTransformationMonoid: usage,\n",
+                  "the argument must be a semigroup with a ",
+                  "multiplicative neutral element,");
+    # in the case of partial perm semigroups having a One is the equivalent to
+    # having a MultiplicativeNeutralElement
   fi;
 
   n := Maximum(DegreeOfPartialPermCollection(S),
@@ -508,4 +456,73 @@ function(S)
                                        T, 
                                        x -> AsTransformation(x, n), 
                                        inv);
+end);
+
+# Isomorphisms from perm groups to transformation semigroups/monoids
+
+InstallMethod(IsomorphismTransformationMonoid, 
+"for a perm group with generators",
+[IsPermGroup and HasGeneratorsOfGroup], 
+function(G)
+  local S;
+  
+  S := Monoid(List(GeneratorsOfGroup(G), AsTransformation));
+  UseIsomorphismRelation(G, S);
+  SetIsGroupAsSemigroup(S, true);
+
+  return MagmaIsomorphismByFunctionsNC(G, S, AsTransformation, AsPermutation);
+end);
+
+InstallMethod(IsomorphismTransformationSemigroup, 
+"for a perm group with generators",
+[IsPermGroup and HasGeneratorsOfGroup], 
+function(G)
+  local S;
+  
+  # The next line has to use Semigroup instead of Monoid so that S has the
+  # correct set of generators
+  S := Semigroup(List(GeneratorsOfGroup(G), AsTransformation));
+  UseIsomorphismRelation(G, S);
+  SetIsGroupAsSemigroup(S, true);
+
+  return MagmaIsomorphismByFunctionsNC(G, S, AsTransformation, AsPermutation);
+end);
+
+InstallMethod(AntiIsomorphismTransformationSemigroup, "for a semigroup",
+[IsSemigroup],
+function(S)
+  local en, gens, dom, act, pos, T;
+
+  en := EnumeratorSorted(S);
+  
+  if HasGeneratorsOfSemigroup(S) then 
+    gens := GeneratorsOfSemigroup(S);
+  else
+    gens := en;
+  fi;
+
+  if HasMultiplicativeNeutralElement(S) 
+    and MultiplicativeNeutralElement(S) <> fail then 
+    dom := en;
+    act := function(pt, x)
+      return x * pt;
+    end;
+    pos := Position(en, MultiplicativeNeutralElement(S));
+  else 
+    dom := [1 .. Length(en) + 1];
+    act := function(i, x)
+      if i <= Length(en) then 
+        return Position(en, x * en[i]);
+      fi;
+      return Position(en, x);
+    end;
+    pos := Length(en) + 1;
+  fi;
+
+  T := Semigroup(List(gens, x -> TransformationOp(x, dom, act)));
+
+  return MagmaIsomorphismByFunctionsNC(S, 
+                                       T, 
+                                       x -> TransformationOp(x, dom, act), 
+                                       x -> en[pos ^ x]);
 end);
