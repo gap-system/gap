@@ -74,12 +74,13 @@ function(S)
                    DegreeOfTransformationSemigroup(S), ">");
 end);
 
-# FIXME 
-
 InstallMethod(AsMonoid,
 "for transformation semigroup with generators",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 function(S)
+  if MultiplicativeNeutralElement(S) = fail then 
+    return fail;
+  fi;
   return Range(IsomorphismTransformationMonoid(S));
 end);
 
