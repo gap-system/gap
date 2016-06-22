@@ -137,7 +137,7 @@ s-> ImageOfPartialPermCollection(GeneratorsOfSemigroup(s)));
 
 InstallMethod(FixedPointsOfPartialPerm, "for a partial perm semigroup",
 [IsPartialPermSemigroup],
-s-> MovedPoints(GeneratorsOfSemigroup(s)));
+s-> FixedPointsOfPartialPerm(GeneratorsOfSemigroup(s)));
 
 InstallMethod(MovedPoints, "for a partial perm semigroup",
 [IsPartialPermSemigroup],

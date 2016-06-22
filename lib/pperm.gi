@@ -716,7 +716,7 @@ InstallMethod(MovedPoints, "for a partial perm coll",
 [IsPartialPermCollection], coll-> Union(List(coll, MovedPoints)));
 
 InstallMethod(NrFixedPoints, "for a partial perm coll",
-[IsPartialPermCollection], coll-> Length(MovedPoints(coll)));
+[IsPartialPermCollection], coll-> Length(FixedPointsOfPartialPerm(coll)));
 
 InstallMethod(NrMovedPoints, "for a partial perm coll",
 [IsPartialPermCollection], coll-> Length(MovedPoints(coll)));
