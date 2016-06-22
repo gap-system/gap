@@ -2407,6 +2407,16 @@ gap> x := PartialPerm([70000], [1]);
 gap> CodegreeOfPartialPerm(x / x);
 70000
 
+# Test Zero and MultiplicativeZeroOp
+gap> x := PartialPerm([1, 2, 4, 7, 9], [5, 3, 7, 4, 9]);;
+gap> Zero(x);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `ZeroMutable' on 1 arguments
+gap> MultiplicativeZeroOp(x);
+<empty partial perm>
+gap> MultiplicativeZero(x);
+<empty partial perm>
+
 #
 gap> SetUserPreference("PartialPermDisplayLimit", display);;
 gap> SetUserPreference("NotationForPartialPerm", notationpp);;

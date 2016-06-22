@@ -31,24 +31,35 @@ function(S)
                        "\<\< ");
 end);
 
-InstallMethod(One, "for a partial perm semigroup with generators",
-[IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
+InstallMethod(OneMutable, "for a partial perm semigroup",
+[IsPartialPermSemigroup], OneImmutable);
+
+# The next method matches more than one declaration, hence the
+# InstallOtherMethod to avoid warnings on startup
+
+InstallOtherMethod(OneImmutable, "for a partial perm semigroup",
+[IsPartialPermSemigroup],
 function(S)
   local x;
+  if HasGeneratorsOfSemigroup(S) then 
+    x := OneImmutable(GeneratorsOfSemigroup(S));
+  else 
+    x := OneImmutable(AsList(S));
+  fi;
 
-  x := One(GeneratorsOfSemigroup(S));
   if x in S then
     return x;
   fi;
   return fail;
 end);
 
-#
+# The next method matches more than one declaration, hence the
+# InstallOtherMethod to avoid warnings on startup
 
-InstallMethod(One, "for a partial perm monoid with generators", 
-[IsPartialPermMonoid and HasGeneratorsOfSemigroup],
-function(s)
-  return One(GeneratorsOfSemigroup(s));
+InstallOtherMethod(OneImmutable, "for a partial perm monoid", 
+[IsPartialPermMonoid],
+function(S)
+  return One(GeneratorsOfSemigroup(S));
 end);
 
 #
@@ -136,32 +147,6 @@ InstallMethod(SmallestMovedPoint, "for a partial perm semigroup",
 InstallMethod(SmallestImageOfMovedPoint, "for a partial perm semigroup",
 [IsPartialPermSemigroup], 
 s-> SmallestImageOfMovedPoint(GeneratorsOfSemigroup(s)));
-
-#
-
-InstallOtherMethod(OneMutable, "for a partial perm semigroup",
-[IsPartialPermSemigroup],
-function(s)
-  local  one;
-  one := One(GeneratorsOfSemigroup(s));
-  if one in s then
-    return one;
-  fi;
-  return fail;
-end);
-
-#
-
-InstallOtherMethod(ZeroMutable, "for a partial perm semigroup",
-[IsPartialPermSemigroup],
-function(s)
-  local  zero;
-  zero := Zero(GeneratorsOfSemigroup(s));
-  if zero in s then
-    return zero;
-  fi;
-  return fail;
-end);
 
 #
 

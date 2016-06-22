@@ -762,21 +762,14 @@ InstallMethod(SmallestImageOfMovedPoint, "for a partial perm collection",
 [IsPartialPermCollection], 
 coll-> Minimum(List(coll, SmallestImageOfMovedPoint)));
 
-InstallOtherMethod(One, "for a partial perm coll", 
+InstallMethod(OneImmutable, "for a partial perm coll", 
 [IsPartialPermCollection], 
 function(x)
-  return JoinOfIdempotentPartialPermsNC(List(x, One)); 
+  return JoinOfIdempotentPartialPermsNC(List(x, OneImmutable)); 
 end);
 
-InstallOtherMethod(OneMutable, "for a partial perm coll", 
-[IsPartialPermCollection], 
-function(x)
-  return JoinOfIdempotentPartialPermsNC(List(x, One)); 
-end);
+InstallMethod(OneMutable, "for a partial perm coll", 
+[IsPartialPermCollection], OneImmutable);
 
-#
-
-InstallOtherMethod(ZeroMutable, "for a partial perm coll",
-[IsPartialPermCollection], MeetOfPartialPerms);
-
-#EOF
+InstallMethod(MultiplicativeZeroOp, "for a partial perm",
+[IsPartialPerm], x -> PartialPerm([]));

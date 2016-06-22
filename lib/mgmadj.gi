@@ -10,6 +10,12 @@
 ##  This file contains generic methods for magmas with zero adjoined.
 ##
 
+InstallMethod(MultiplicativeZero, "for a multiplicative element with zero",
+[IsMultiplicativeElementWithZero], 
+function(x)
+  return MultiplicativeZeroOp(x);
+end);
+
 InstallMethod( IsMultiplicativeZero,
 "for magma with multiplicative zero and multiplicative element",
 IsCollsElms,
