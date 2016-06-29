@@ -67,6 +67,8 @@ Error := function( arg )
     JUMP_TO_CATCH("early error");
 end;
 
+ErrorNoReturn := Error;
+
 ErrorInner := function(arg)
     local x;
     Print("Error before error-handling is initialized: ");

@@ -274,6 +274,8 @@ BIND_GLOBAL("Error",
                                arg);
 end);
 
+Unbind(ErrorNoReturn);
+
 BIND_GLOBAL("ErrorNoReturn",
        function ( arg )
     ErrorInner( rec(
