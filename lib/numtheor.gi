@@ -1384,17 +1384,25 @@ InstallGlobalFunction( TwoSquares, function ( n )
 end );
 
 
-InstallGlobalFunction(PPart,function(n,p)
-local a;
-  if not IsPrimeInt(p) or not IsPosInt(n) then
+InstallGlobalFunction(PValuation,function(n,p)
+local a,v;
+  if not IsPrimeInt(p) or not IsRat(n) then
     Error("wrong parameters");
   fi;
+  if IsZero(n) then 
+    return infinity;
+  elif not IsInt(n) then
+    return PValuation(NumeratorRat(n),p)-PValuation(DenominatorRat(n),p);
+  elif n<0 then n:=-n;
+  fi;
   a:=1;
+  v:=0;
   while n mod p=0 do
     a:=a*p;
+    v:=v+1;
     n:=n/p;
   od;
-  return a;
+  return v;
 end);
 
 #T ##########################################################################

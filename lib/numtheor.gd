@@ -786,27 +786,30 @@ DeclareGlobalFunction( "TwoSquares" );
 
 #############################################################################
 ##
-#F  PPart( <n>, <p> ) . . . . . . . . . . . prime part of integer
+#F  PValuation( <n>, <p> ) . . . . . . . . . . . prime part exponent
 ##
-##  <#GAPDoc Label="PPart">
+##  <#GAPDoc Label="PValuation">
 ##  <ManSection>
-##  <Func Name="PPart" Arg='n, p'/>
+##  <Func Name="PValuation" Arg='n, p'/>
 ##
 ##  <Description>
-##  For a positive integer <A>n</A> and a prime <A>p</A> this function returns
-##  the <A>p</A>-part of <A>n</A>,
-##  that is the largest power of <A>p</A> that divides <A>n</A>.
+##  For an integer <A>n</A> and a prime <A>p</A> this function returns
+##  the <A>p</A>-valuation of <A>n</A>,
+##  that is the exponent <M>e</M> such that <M>p^e</M> is the largest
+##  power of <A>p</A> that divides <A>n</A>.
+##  The valuation of zero is infinity.
+##  
 ##  <Example><![CDATA[
-##  gap> PPart(100,2);
-##  4
-##  gap> PPart(100,3);
-##  1
+##  gap> PValuation(100,2);
+##  2
+##  gap> PValuation(100,3);
+##  0
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "PPart" );
+DeclareGlobalFunction( "PValuation" );
 
 
 #############################################################################
