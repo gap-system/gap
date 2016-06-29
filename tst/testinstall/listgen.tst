@@ -12,6 +12,14 @@ gap> List( [ 1 .. 10 ], x -> x^2 );
 [ 1, 4, 9, 16, 25, 36, 49, 64, 81, 100 ]
 gap> List( [ 2, 1, 2, 1 ], x -> x - 1 );
 [ 1, 0, 1, 0 ]
+gap> List();
+Error, usage: List( <C>[, <func>] )
+gap> List([1..10], x->x^2, "extra argument");
+Error, usage: List( <C>[, <func>] )
+gap> List([,1,,3,4], x->x>2);
+[ , false,, true, true ]
+gap> IsMutable(List([1,2,3],x->x^2));
+true
 gap> Flat( List( [ 1 .. 5 ], x -> [ 1 .. x ] ) );
 [ 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 5 ]
 gap> Reversed( [ 1, 2, 1, 2 ] );
