@@ -122,7 +122,7 @@ DeclareOperation("IsLowerTriangularMat",[IsMatrix]);
 ##
 ##  <#GAPDoc Label="DiagonalOfMat">
 ##  <ManSection>
-##  <Oper Name="DiagonalOfMat" Arg='mat'/>
+##  <Func Name="DiagonalOfMat" Arg='mat'/>
 ##
 ##  <Description>
 ##  returns the diagonal of the matrix <A>mat</A>. If <A>mat</A> is not a

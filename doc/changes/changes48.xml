@@ -362,6 +362,117 @@ Fix for using Firefox as a default help viewer with
 </Subsection>
 </Section>
 
+<Section Label="gap484">
+<Heading>&GAP; 4.8.4 (June 2016)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.8.4">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.8.4</Heading>
+
+New features:
+<List>
+<Item>
+<!-- #737 -->
+The &GAP; distribution now includes <F>bin/BuildPackages.sh</F>, a script which
+can be started from the <F>pkg</F> directory via <C>../bin/BuildPackages.sh</C>
+and will attempt to build as many packages as possible. It replaces the
+<F>InstPackages.sh</F> script which was not a part of the &GAP; distribution
+and had to be downloaded separately from the &GAP; website. The new script is
+more robust and simplifies adding new packages with binaries, as it requires no
+adjustments if the new package supports the standard <C>./configure; make</C>
+build procedure.
+</Item>
+</List>
+
+Improved and extended functionality:
+<List>
+<Item>
+<!-- #678 -->
+<Ref Func="SimpleGroup" BookName="ref"/> now produces more informative error
+message in the case when <Ref Func="AtlasGroup" BookName="AtlasRep"/> could
+not load the requested group.
+</Item>
+<Item>
+<!-- #610 -->
+An info message with the suggestion to use
+<Ref InfoClass="InfoPackageLoading" BookName="ref"/> will now be displayed
+when <Ref Func="LoadPackage" BookName="ref"/> returns <K>fail</K>
+(unless &GAP; is started with <C>-b</C> option).
+</Item>
+<Item>
+<!-- #728 -->
+The build system will now enable C++ support in GMP
+only if a working C++ compiler is detected.
+</Item>
+<Item>
+<!-- #757 -->
+More checks were added when embedding coefficient rings or rational numbers
+into polynomial rings in order to forbid adding polynomials in different
+characteristic.
+</Item>
+</List>
+
+Fixed bugs that could lead to crashes:
+<List>
+<Item>
+<!-- #685 -->
+Fixed the crash in <C>--cover</C> mode when reading files
+with more than 65,536 lines.
+</Item>
+</List>
+
+Fixed bugs that could lead to incorrect results:
+<List>
+<Item>
+<!-- #741 -->
+Fixed an error in the code for partial permutations that
+occurred on big-endian systems. [Reported by Bill Allombert]
+</Item>
+<Item>
+<!-- #766 -->
+Fixed the kernel method for <Ref Oper="Remove" BookName="ref"/> with
+one argument, which failed to reduce the length of a list to the
+position of the last bound entry. [Reported by Peter Schauenburg]
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+<!-- #679 -->
+Fixed the break loop while using <Ref Oper="Factorization" BookName="ref"/>
+on permutation groups by removing some old code that relied on further caching
+in <C>Factorization</C>. [Reported by Grahame Erskine]
+</Item>
+<Item>
+<!-- #681 -->
+Fixed a problem with computation of maximal subgroups in an almost
+simple group. [Reported by Ramon Esteban Romero]
+</Item>
+<Item>
+<!-- #773 -->
+Added missing methods for <Ref Oper="Intersection2" BookName="ref"/>
+when one of the arguments is an empty list. [Reported by Wilf Wilson]
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+<!-- #770 -->
+Fixed several bugs in <Ref Func="RandomPrimitivePolynomial" BookName="ref"/>.
+[Reported by Nusa Zidaric]
+</Item>
+<Item>
+<!-- #781 -->
+Fixed several problems with <Ref Oper="Random" BookName="ref"/>
+on long lists in 64-bit GAP installations.
+</Item>
+</List>
+
+</Subsection>
+
+</Section>
+
 </Chapter>
 
 

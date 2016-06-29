@@ -2893,7 +2893,7 @@ DeclareOperation( "IsCharacteristicSubgroup", [IsGroup,IsGroup] );
 ##
 ##  <#GAPDoc Label="IsPNilpotent">
 ##  <ManSection>
-##  <Func Name="IsPNilpotent" Arg='G, p'/>
+##  <Oper Name="IsPNilpotent" Arg='G, p'/>
 ##
 ##  <Description>
 ##  A group is <M>p</M>-nilpotent if it possesses a normal <M>p</M>-complement.
@@ -2910,7 +2910,7 @@ KeyDependentOperation( "IsPNilpotent", IsGroup, IsPosInt, "prime" );
 ##
 ##  <#GAPDoc Label="IsPSolvable">
 ##  <ManSection>
-##  <Func Name="IsPSolvable" Arg='G, p'/>
+##  <Oper Name="IsPSolvable" Arg='G, p'/>
 ##
 ##  <Description>
 ##  A finite group is <M>p</M>-solvable if every chief factor either has
@@ -3112,7 +3112,7 @@ KeyDependentOperation( "PCentralSeries", IsGroup, IsPosInt, "prime" );
 ##
 ##  <#GAPDoc Label="PRump">
 ##  <ManSection>
-##  <Func Name="PRump" Arg='G, p'/>
+##  <Oper Name="PRump" Arg='G, p'/>
 ##
 ##  <Description>
 ##  For a prime <M>p</M>, the <E><A>p</A>-rump</E> of a group <A>G</A> is
@@ -4052,8 +4052,8 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##
 ##  <#GAPDoc Label="IsomorphismFpGroupByGenerators">
 ##  <ManSection>
-##  <Attr Name="IsomorphismFpGroupByGenerators" Arg='G,gens[,string]'/>
-##  <Attr Name="IsomorphismFpGroupByGeneratorsNC" Arg='G,gens,string'/>
+##  <Func Name="IsomorphismFpGroupByGenerators" Arg='G,gens[,string]'/>
+##  <Oper Name="IsomorphismFpGroupByGeneratorsNC" Arg='G,gens,string'/>
 ##
 ##  <Description>
 ##  returns an isomorphism from a finite group <A>G</A>
@@ -4297,7 +4297,7 @@ DeclareGlobalFunction( "PowerMapOfGroupWithInvariants" );
 ##
 ##  <#GAPDoc Label="HasAbelianFactorGroup">
 ##  <ManSection>
-##  <Oper Name="HasAbelianFactorGroup" Arg='G, N'/>
+##  <Func Name="HasAbelianFactorGroup" Arg='G, N'/>
 ##
 ##  <Description>
 ##  tests whether <A>G</A> <M>/</M> <A>N</A> is abelian
@@ -4340,7 +4340,7 @@ DeclareGlobalFunction("HasSolvableFactorGroup");
 ##
 ##  <#GAPDoc Label="HasElementaryAbelianFactorGroup">
 ##  <ManSection>
-##  <Oper Name="HasElementaryAbelianFactorGroup" Arg='G, N'/>
+##  <Func Name="HasElementaryAbelianFactorGroup" Arg='G, N'/>
 ##
 ##  <Description>
 ##  tests whether <A>G</A> <M>/</M> <A>N</A> is elementary abelian

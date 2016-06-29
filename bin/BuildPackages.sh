@@ -78,23 +78,16 @@ build_carat() {
 # this out until a user complains.
 # It is not possible to move around compiled binaries because these have the
 # path to some data files burned in.
-tar xzpf carat-2.1b1.tgz
-rm -f bin
+zcat carat-2.1b1.tgz | tar pxf -
 ln -s carat-2.1b1/bin bin
-cd carat-2.1b1/functions
-# Install the include Gmp first.
-# (If you have already Gmp on your system, you can delete the file
-# gmp-*.tar.gz and delete the target 'Gmp' from the target 'ALL' in
-# carat-2.1b1/Makefile.)
-tar xzpf gmp-*.tar.gz
-cd ..
-$MAKE TOPDIR=`pwd` Links
-# Note that Gmp may use processor specific code, so this step may not be ok
-# for a network installation if you want to use the package on older computers
-# as well.
-$MAKE TOPDIR=`pwd` Gmp
-# And now the actual Carat programs.
-$MAKE TOPDIR=`pwd` CFLAGS='-O2'
+cd carat-2.1b1
+make TOPDIR=`pwd`
+chmod -R a+rX .
+cd bin
+aa=`./config.guess`
+for x in "`ls -d1 $GAPDIR/bin/${aa}*`"; do
+ ln -s "$aa" "`basename $x`"
+done
 )
 }
 
