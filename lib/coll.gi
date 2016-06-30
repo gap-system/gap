@@ -727,8 +727,8 @@ InstallGlobalFunction( List,
     function( arg )
     local tnum, C, func, res, i, elm, l;
     l := Length(arg);
-    if l = 0 then
-      Error( "usage: List( <C>[, <func>] )" );
+    if l = 0 or l > 2 then
+      ErrorNoReturn( "usage: List( <C>[, <func>] )" );
     fi;
     tnum:= TNUM_OBJ_INT( arg[1] );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
