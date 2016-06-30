@@ -1682,7 +1682,7 @@ end );
 ##  If the print level is set to 0, then the printout of the 'DecodeTree'
 ##  command will be suppressed.
 ##
-InstallGlobalFunction( PresentationSubgroupMtc,
+BindGlobal( "ORIGINAL_PresentationSubgroupMtc",
     function ( arg )
 
     local aug, G, gens, H, i, printlevel, ngens, string, T;
@@ -2798,6 +2798,1092 @@ local t;
     t.secondaryWords:=Immutable(aug.secondaryWords);
   fi;
   return t;
+end);
+
+
+# New version of MTC based on DFH's book
+
+NEWTC_Compress:=function(DATA,purge)
+local ct,c,a,b,offset,x,to,p,dw,doa,aug;
+  doa:=DATA.augmented;
+  dw:=IsBound(DATA.with);
+  ct:=DATA.ct;
+  if doa then
+    aug:=DATA.aug;
+  fi;
+  p:=DATA.p;
+  offset:=DATA.offset;
+  c:=0;
+  to:=[];
+
+  for a in [1..DATA.n] do
+    if p[a]=a then
+      c:=c+1;
+      to[a]:=c;
+      if c<>a then
+	for x in DATA.A do
+	  if ct[x+offset][a]<>0 then;
+	    b:=ct[x+offset][a];
+	    if b=a then b:=c;fi;
+	    ct[x+offset][c]:=b;
+	    ct[-x+offset][b]:=c;
+	    if doa then
+	      # transfer augemented entry
+	      aug[x+offset][c]:=aug[x+offset][a];
+	    fi;
+	  else
+	    # clear out
+	    ct[x+offset][c]:=0;
+	    if doa then
+	      Unbind(aug[x+offset][c]);
+	    fi;
+	  fi;
+	od;
+	if dw then
+	  DATA.with[c]:=DATA.with[a];
+	  b:=DATA.from[a];
+	  while b<>to[b] do
+	    b:=to[b];
+	  od;
+	  DATA.from[c]:=b;
+	fi;
+      fi;
+    else
+      b:=a;
+      while p[b]<>b do
+	b:=p[b];
+      od;
+      to[a]:=b;
+    fi;
+  od;
+  if purge then
+    for x in DATA.A do
+      for a in [Length(ct[x+offset]),Length(ct[x+offset])-1..c+1] do
+	Unbind(ct[x+offset][a]);
+	if doa then
+	  Unbind(aug[x+offset][a]);
+	fi;
+      od;
+    od;
+    if dw then
+      for a in [Length(DATA.with),Length(DATA.with)-1..c+1] do
+	Unbind(DATA.with[a]);
+	Unbind(DATA.from[a]);
+      od;
+    fi;
+  fi;
+
+  if IsBound(DATA.ds) then
+    for x in DATA.ds do
+      a:=to[x[1]];
+	while x[1]<>a do
+        x[1]:=a;
+	a:=to[a];
+      od;
+    od;
+    Assert(2,Maximum(List(DATA.ds,x->x[1]))<=c);
+  fi;
+
+  DATA.n:=c;
+  DATA.p:=[1..DATA.n];
+  if doa then
+    DATA.pp:=ListWithIdenticalEntries(DATA.n,DATA.one);
+  fi;
+  DATA.dead:=0;
+end;
+
+NEWTC_Define:=function(DATA,i,a)
+# both augmented or not
+local c,o,n,j,au;
+  n:=DATA.n;
+  o:=DATA.offset;
+  c:=DATA.ct;
+  n:=n+1;
+  DATA.n:=n;
+  if n>DATA.limit then
+    Error( "the coset enumeration has defined more ",
+	    "than ", DATA.limit, " cosets\n");
+    DATA.limit:=DATA.limit*2;
+    DATA.limtrigger:=Int(9/10*DATA.limit);
+  fi;
+  DATA.p[n]:=n;
+  # clear out
+  for j in DATA.A do
+    c[j+o][n]:=0;
+  od;
+  c[a+o][i]:=n;
+  c[o-a][n]:=i;
+  if DATA.augmented then
+    DATA.aug[a+o][i]:=DATA.one;
+    DATA.aug[o-a][n]:=DATA.one;
+    DATA.pp[n]:=DATA.one;
+  fi;
+
+  Add(DATA.deductions,[i,a]);
+  #if IsBound(DATA.ds) then Add(DATA.ds,[i,a]); fi;
+  DATA.defcount:=DATA.defcount+1;
+  if IsBound(DATA.with) then
+    if DATA.with[i]=-a then Error("bleh!");fi;
+    DATA.with[n]:=a;
+    DATA.from[n]:=i;
+  fi;
+  #ForAny(DATA.A,x->ForAny([1..Length(c[x+o])],y->not
+  #  IsBound(c[x+o][y]))) then
+  #  Error("hehe");
+  #fi;
+end;
+
+NEWTC_Coincidence:=function(DATA,a,b)
+local Rep,Merge,ct,offset,l,q,i,c,x,d,p,mu,nu;
+
+  Rep:=function(kappa)
+  local lambda,rho,mu;
+    lambda:=kappa;
+    rho:=p[lambda];
+    while rho<>lambda do
+      lambda:=rho;rho:=p[lambda];
+    od;
+    mu:=kappa;rho:=p[mu];
+    while rho<>lambda do
+      p[mu]:=lambda;mu:=rho;rho:=p[mu];
+    od;
+    return lambda;
+  end;
+
+  Merge:=function(k,a)
+  local phi,psi,mu,nu;
+    phi:=Rep(k);
+    psi:=Rep(a);
+    if phi<>psi then
+      mu:=Minimum(phi,psi);
+      nu:=Maximum(phi,psi);
+      p[nu]:=mu;
+      l:=l+1;
+      q[l]:=nu;
+      DATA.dead:=DATA.dead+1;
+    fi;
+  end;
+
+  ct:=DATA.ct;
+  offset:=DATA.offset;
+  p:=DATA.p;
+  l:=0;
+  q:=[];
+  Merge(a,b);i:=1;
+  while i<=l do
+    c:=q[i];
+    i:=i+1;
+    #RemoveSet(DATA.omega,c);
+    for x in DATA.A do
+      if ct[x+offset][c]<>0 then
+	d:=ct[x+offset][c];
+	ct[-x+offset][d]:=0;
+	mu:=Rep(c);
+	nu:=Rep(d);
+	if ct[x+offset][mu]<>0 then
+	  Merge(nu,ct[x+offset][mu]);
+	elif ct[-x+offset][nu]<>0 then
+	  Merge(mu,ct[-x+offset][nu]);
+	else
+	  ct[x+offset][mu]:=nu;
+	  ct[-x+offset][nu]:=mu;
+	  Add(DATA.deductions,[mu,x]);
+	fi;
+      fi;
+    od;
+  od;
+  #Error("coinc\n");
+end;
+
+NEWTC_ModifiedCoincidence:=function(DATA,a,b,w)
+local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
+
+  Sekundant:=function(w)
+    if Length(w)<=1 then
+      return w;
+    fi;
+    DATA.secount:=DATA.secount+1;
+    DATA.secondary[DATA.secount]:=w;
+    return [DATA.secount];
+  end;
+
+  MRep:=function(kappa)
+  local lambda,rho,mu,s;
+    lambda:=kappa;
+    rho:=p[lambda];
+    if rho=lambda then
+      return lambda;
+    fi;
+
+    s:=[]; # new array to trace back compression path
+    while rho<>lambda do
+      s[rho]:=lambda;
+      lambda:=rho;rho:=p[lambda];
+    od;
+    rho:=s[lambda];
+    while rho<>kappa do
+      mu:=rho;
+      rho:=s[mu];
+      p[rho]:=lambda;
+      pp[rho]:=Sekundant(WordProductLetterRep(pp[rho],pp[mu]));
+    od;
+    return lambda;
+  end;
+
+  MMerge:=function(k,a,w)
+  local phi,psi,mu,nu;
+    phi:=MRep(k);
+    psi:=MRep(a);
+    if phi>psi then
+      p[phi]:=psi;
+      pp[phi]:=Sekundant(WordProductLetterRep(-Reversed(pp[k]),w,pp[a]));
+      l:=l+1;
+      q[l]:=phi;
+      DATA.dead:=DATA.dead+1;
+    elif psi>phi then
+      p[psi]:=phi;
+      pp[psi]:=Sekundant(WordProductLetterRep(-Reversed(pp[a]),-Reversed(w),pp[k]));
+      l:=l+1;
+      q[l]:=psi;
+      DATA.dead:=DATA.dead+1;
+    fi;
+  end;
+
+  ct:=DATA.ct;
+  aug:=DATA.aug;
+  offset:=DATA.offset;
+  p:=DATA.p;
+  pp:=DATA.pp;
+  l:=0;
+  q:=[];
+  MMerge(a,b,w);i:=1;
+  while i<=l do
+    c:=q[i];
+    i:=i+1;
+    for x in DATA.A do
+      if ct[x+offset][c]<>0 then
+	d:=ct[x+offset][c];
+	ct[-x+offset][d]:=0;
+	mu:=MRep(c);
+	nu:=MRep(d);
+	if ct[x+offset][mu]<>0 then
+	  v:=WordProductLetterRep(-Reversed(pp[d]),-Reversed(aug[x+offset][c]),
+		pp[c],aug[x+offset][mu]);
+	  MMerge(nu,ct[x+offset][mu],v);
+	elif ct[-x+offset][nu]<>0 then
+	  v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],
+		pp[d],aug[-x+offset][nu]);
+	  MMerge(mu,ct[-x+offset][nu],v);
+	else
+	  ct[x+offset][mu]:=nu;
+	  ct[-x+offset][nu]:=mu;
+	  v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],pp[d]);
+	  aug[x+offset][mu]:=v;
+	  aug[-x+offset][nu]:=-Reversed(v);
+	  Add(DATA.deductions,[mu,x]);
+	fi;
+      fi;
+    od;
+  od;
+  # pp is not needed any longer
+  for i in q do
+    Unbind(pp[i]);
+  od;
+end;
+
+# superseded by kernel function, left here for debugging purposes.
+NEWTC_ObsoleteFailScan:=function(c,offset,alpha,w)
+local f,b,r,i,j;
+  f:=alpha;i:=1;
+  r:=Length(w);
+  # forward scan
+  while i<=r and c[w[i]+offset][f]<>0 do
+    f:=c[w[i]+offset][f];
+    i:=i+1;
+  od;
+  if i>r then
+    if f<>alpha then
+      return true;
+    fi;
+    return false;
+  fi;
+
+  #backward scan
+  b:=alpha;j:=r;
+  while j>=i and c[-w[j]+offset][b]<>0 do
+    b:=c[-w[j]+offset][b];
+    j:=j-1;
+  od;
+  if j<=i then 
+    return true;
+  fi;
+  return false;
+end;
+
+NEWTC_Scan:=function(DATA,alpha,w)
+local c,offset,f,b,r,i,j,t;
+  c:=DATA.ct;
+  offset:=DATA.offset;
+  t:=TC_QUICK_SCAN(c,offset,alpha,w,DATA.scandata);
+
+  if t=false then return; fi;
+
+  r:=Length(w);
+  i:=DATA.scandata[1]; # result of forward scan
+  f:=DATA.scandata[2];
+  if i>r then
+    if f<>alpha then
+      NEWTC_Coincidence(DATA,f,alpha);
+    fi;
+    return;
+  fi;
+
+  j:=DATA.scandata[3]; # result of backward scan
+  b:=DATA.scandata[4];
+  if j<i then 
+    NEWTC_Coincidence(DATA,f,b);
+  elif j=i then 
+    # deduction
+    c[w[i]+offset][f]:=b;
+    c[-w[i]+offset][b]:=f;
+    Add(DATA.deductions,[f,w[i]]);
+  fi;
+  return;
+
+
+# the following is the original, old, code including loops. It is left here
+# for debugging purposes
+
+#  f:=alpha;i:=1;
+#  r:=Length(w);
+#  # forward scan
+#  while i<=r and c[w[i]+offset][f]<>0 do
+#    f:=c[w[i]+offset][f];
+#    i:=i+1;
+#  od;
+#  if i>r then
+#    if f<>alpha then
+#      Coincidence(DATA,f,alpha);
+#    fi;
+#    return;
+#  fi;
+#
+#  #backward scan
+#  b:=alpha;j:=r;
+#  while j>=i and c[-w[j]+offset][b]<>0 do
+#    b:=c[-w[j]+offset][b];
+#    j:=j-1;
+#  od;
+#  if j<i then 
+#    Coincidence(DATA,f,b);
+#  elif j=i then 
+#    # deduction
+#    c[w[i]+offset][f]:=b;
+#    c[-w[i]+offset][b]:=f;
+#    Add(DATA.deductions,[f,w[i]]);
+#  fi;
+
+end;
+
+NEWTC_ModifiedScan:=function(DATA,alpha,w,y)
+local c,offset,f,b,r,i,j,fp,bp,t;
+  c:=DATA.ct;
+  offset:=DATA.offset;
+  t:=TC_QUICK_SCAN(c,offset,alpha,w,DATA.scandata);
+  if t=false then return; fi;
+
+  f:=alpha;i:=1;
+  fp:=DATA.one;
+  r:=Length(w);
+  # forward scan
+  while i<=r and c[w[i]+offset][f]<>0 do
+    fp:=WordProductLetterRep(fp,DATA.aug[w[i]+offset][f]);
+    f:=c[w[i]+offset][f];
+    i:=i+1;
+  od;
+  if i>r then
+    if f<>alpha then
+      NEWTC_ModifiedCoincidence(DATA,f,alpha,WordProductLetterRep(-Reversed(fp),y));
+    fi;
+    return;
+  fi;
+
+  #backward scan
+  b:=alpha;j:=r;
+  bp:=y;
+  while j>=i and c[-w[j]+offset][b]<>0 do
+    bp:=WordProductLetterRep(bp,DATA.aug[-w[j]+offset][b]);
+    b:=c[-w[j]+offset][b];
+    j:=j-1;
+  od;
+  if j<i then 
+    NEWTC_ModifiedCoincidence(DATA,f,b,WordProductLetterRep(-Reversed(fp),bp));
+  elif j=i then 
+    # deduction
+    c[w[i]+offset][f]:=b;
+    c[-w[i]+offset][b]:=f;
+    DATA.aug[w[i]+offset][f]:=WordProductLetterRep(-Reversed(fp),bp);
+    DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
+    Add(DATA.deductions,[f,w[i]]);
+  fi;
+end;
+
+NEWTC_ScanAndFill:=function(DATA,alpha,w)
+local c,offset,f,b,r,i,j;
+  c:=DATA.ct;
+  offset:=DATA.offset;
+  r:=Length(w);
+  f:=alpha;i:=1;
+  b:=alpha;j:=r;
+  while true do
+    # forward scan
+    while i<=r and c[w[i]+offset][f]<>0 do
+      f:=c[w[i]+offset][f];
+      i:=i+1;
+    od;
+    if i>r then
+      if f<>alpha then
+	NEWTC_Coincidence(DATA,f,alpha);
+      fi;
+      return;
+    fi;
+
+    #backward scan
+    while j>=i and c[-w[j]+offset][b]<>0 do
+      b:=c[-w[j]+offset][b];
+      j:=j-1;
+    od;
+    if j<i then 
+      NEWTC_Coincidence(DATA,f,b);
+    elif j=i then 
+      # deduction
+      c[w[i]+offset][f]:=b;
+      c[-w[i]+offset][b]:=f;
+      Add(DATA.deductions,[f,w[i]]);
+    else
+      NEWTC_Define(DATA,f,w[i]);
+    fi;
+  od;
+end;
+
+NEWTC_ModifiedScanAndFill:=function(DATA,alpha,w,y)
+local c,offset,f,b,r,i,j,fp,bp;
+  c:=DATA.ct;
+  offset:=DATA.offset;
+  f:=alpha;i:=1;
+  fp:=DATA.one;
+  r:=Length(w);
+  b:=alpha;j:=r; 
+  bp:=y;
+  while true do #N
+    # forward scan
+    while i<=r and c[w[i]+offset][f]<>0 do
+      fp:=WordProductLetterRep(fp,DATA.aug[w[i]+offset][f]);
+      f:=c[w[i]+offset][f];
+      i:=i+1;
+    od;
+    if i>r then
+      if f<>alpha then
+	NEWTC_ModifiedCoincidence(DATA,f,alpha,WordProductLetterRep(-Reversed(fp),y));
+      fi;
+      return;
+    fi;
+
+    #backward scan
+    while j>=i and c[-w[j]+offset][b]<>0 do
+      bp:=WordProductLetterRep(bp,DATA.aug[-w[j]+offset][b]);
+      b:=c[-w[j]+offset][b];
+      j:=j-1;
+    od;
+    if j<i then 
+      NEWTC_ModifiedCoincidence(DATA,f,b,WordProductLetterRep(-Reversed(fp),bp));
+    elif j=i then 
+      # deduction
+      c[w[i]+offset][f]:=b;
+      c[-w[i]+offset][b]:=f;
+      DATA.aug[w[i]+offset][f]:=WordProductLetterRep(-Reversed(fp),bp);
+      DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
+      Add(DATA.deductions,[f,w[i]]);
+    else
+      NEWTC_Define(DATA,f,w[i]);
+    fi;
+  od;
+end;
+
+NEWTC_ProcessDeductions:=function(DATA)
+# both augmented and not
+local ded,offset,pair,alpha,x,p,w;
+  ded:=DATA.deductions;
+  offset:=DATA.offset;
+  p:=DATA.p;
+  while Length(ded)>0 do
+    pair:=ded[Length(ded)];
+    Unbind(ded[Length(ded)]);
+    alpha:=pair[1];x:=pair[2];
+    if p[alpha]=alpha then
+      for w in DATA.ccr[x+offset] do
+	if DATA.augmented then
+	  NEWTC_ModifiedScan(DATA,alpha,w,DATA.one);
+	else
+	  NEWTC_Scan(DATA,alpha,w);
+	fi;
+	if p[alpha]<alpha then 
+	  break; # coset has been eliminated
+	fi;
+      od;
+    fi;
+    if p[alpha]=alpha then
+      alpha:=DATA.ct[x+offset][alpha]; # beta
+      if p[alpha]=alpha then
+	for w in DATA.ccr[x+offset] do
+	  if DATA.augmented then
+	    NEWTC_ModifiedScan(DATA,alpha,w,DATA.one);
+	  else
+	    NEWTC_Scan(DATA,alpha,w);
+	  fi;
+	  if p[alpha]<alpha then 
+	    break; # coset has been eliminated
+	  fi;
+	od;
+      fi;
+    fi;
+  od;
+end;
+
+NEWTC_DoCosetEnum:=function(freegens,freerels,subgens,aug,trace)
+local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
+  oldead,with,collapse,j,from,pp,PERCFACT;
+
+  PERCFACT:=100;
+
+  m:=Length(freegens);
+  A:=List(freegens,LetterRepAssocWord);
+  Assert(0,ForAll(A,x->Length(x)=1 and x[1]>0));
+  if List(A,x->x[1])<>[1..m] then
+    Error("noncanonical generator order not yet possible");
+  fi;
+  offset:=m+1;
+  rels:=ShallowCopy(freerels);
+  SortBy(rels,Length);
+  ri:=Union(rels,List(rels,x->x^-1));
+  ri:=List(ri,LetterRepAssocWord);
+  SortBy(ri,Length);
+
+  # cyclic conjugates, sort by first letter
+  ccr:=List([1..2*m+1],x->[]);
+  for i in ri do
+    r:=i;
+    while not r in ccr[offset+r[1]] do
+      AddSet(ccr[offset+r[1]],Immutable(r));
+      r:=Concatenation(r{[2..Length(r)]},r{[1]});
+    od;
+  od;
+
+  # coset table in slightly different format: row (offset+x) is for
+  # generator x
+  ct:=List([1..offset+m],x->[0]);Unbind(ct[offset]);
+  A:=Concatenation([1..m],-[1..m]);
+
+  n:=1;
+  p:=[1];
+  collapse:=[];
+  DATA:=rec(ct:=ct,p:=p,ccr:=ccr,rels:=List(rels,LetterRepAssocWord),
+	 subgens:=List(subgens,x->LetterRepAssocWord(UnderlyingElement(x))),
+	 n:=n,offset:=offset,A:=A,limit:=2^23,
+	 deductions:=[],dead:=0,defcount:=0,
+	 # a global list for the kernel scan function to return 4 variables
+	 scandata:=[0,0,0,0]);
+
+  i:=ValueOption("limit");
+  if i<>fail and Int(i)<>fail then
+    DATA.limit:=i;
+  fi;
+  DATA.limtrigger:=Int(9/10*DATA.limit);
+
+  if aug<>false then
+    DATA.one:=[];
+    aug:=List([1..offset+m],x->[]);Unbind(aug[offset]);
+    pp:=[DATA.one]; 
+    DATA.aug:=aug;
+    DATA.pp:=pp;
+    DATA.secondary:=[];
+    DATA.secount:=Length(subgens); # last to be used
+    DATA.augmented:=true;
+  else
+    DATA.augmented:=false;
+  fi;
+
+  if trace<>false then
+    with:=[0]; # generator by which a coset was defined
+    DATA.with:=with;
+    from:=[0];
+    DATA.from:=from;
+  fi;
+  Info( InfoFpGroup, 2, " \t defined\t deleted\t alive\t\t  maximal");
+
+  for w in [1..Length(subgens)] do
+    if DATA.augmented then
+      NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgens[w],[w]);
+    else
+      NEWTC_ScanAndFill(DATA,1,DATA.subgens[w]);
+    fi;
+  od;
+  NEWTC_ProcessDeductions(DATA);
+
+  # words we want to trace early (as they might reduce the number of
+  # definitions
+  if trace<>false then
+    #trace:=Concatenation(trace,ri); #don't seem to help
+    for w in trace do
+      if IsList(w[1]) then
+	w:=w[1]; # get word from value
+      fi;
+      i:=1;
+      for a in w do
+	if ct[a+offset][i]=0 then
+	  NEWTC_Define(DATA,i,a);
+	  NEWTC_ProcessDeductions(DATA);
+	  i:=p[i]; # in case there is a change
+	fi;
+	i:=ct[a+offset][i];
+      od;
+    od;
+  fi;
+
+  i:=1;
+  while i<=DATA.n do
+    for a in A do
+      if p[i]=i then
+	if ct[a+offset][i]=0 then
+	  NEWTC_Define(DATA,i,a);
+	  oldead:=DATA.dead;
+	  NEWTC_ProcessDeductions(DATA);
+	  if PERCFACT*(DATA.dead-oldead)>DATA.n then
+	    if DATA.n>1000 then
+	      Info( InfoFpGroup, 2, "\t", DATA.defcount, "\t\t", DATA.dead,
+	      "\t\t", DATA.n-DATA.dead, "\t\t", DATA.n );
+	    fi;
+	    if IsBound(DATA.with) then
+	      # collapse -- find collapse word
+	      # in two different ways (as they can differ after compression)
+
+	      # first trace through the coset table, this uses the prior
+	      # reductions
+	      j:=i;
+	      while j<>p[j] do
+		j:=p[j];
+	      od;
+	      w:=[a]; # last letter added
+	      while j<>1 do
+		Assert(2,j=p[j]);
+		Add(w,with[j]);
+		Assert(2,0<>ct[-with[j]+offset][j]);
+		j:=ct[-with[j]+offset][j]; # unapply this generator
+	      od;
+
+	      # free reduce -- partial collapse can lead to not free cancellation
+	      # and fix order
+	      w:=Reversed(FreelyReducedLetterRepWord(w));
+	      #w1:=w;
+
+	      j:=PositionProperty(collapse,x->x[1]=w);
+	      if j=fail then
+		Add(collapse,[w,DATA.dead-oldead]); # word that caused a collapse
+	      else
+		collapse[j][2]:=Maximum(collapse[j][2],DATA.dead-oldead);
+	      fi;
+
+	      # now use the `from' list (which does not collapse under
+	      # coincidences, only under compression) and not the coset table,
+	      #  as it # keeps the old definition order, not yet using coincidence
+	      j:=i;
+	      w:=[a]; # last letter added
+	      while j<>1 do
+		Add(w,with[j]);
+		j:=from[j];
+	      od;
+
+	      # free reduce -- partial collapse can lead to not free
+	      # cancellation and fix order
+	      w:=Reversed(FreelyReducedLetterRepWord(w));
+
+	      j:=PositionProperty(collapse,x->x[1]=w);
+	      if j=fail then
+		Add(collapse,[w,DATA.dead-oldead]); # word caused collapse
+	      else
+		collapse[j][2]:=Maximum(collapse[j][2],DATA.dead-oldead);
+	      fi;
+
+	      Info(InfoFpGroup,3,"collapse ",DATA.dead-oldead);
+
+	    fi;
+	  fi;
+
+	fi;
+      fi;
+    od;
+
+    # at least 33% trash (3=1+1/0.3, 11=1+1/0.1), or over limtrigger and
+    # at least 2% trash
+    if
+      2*DATA.n>DATA.limit and ( 4*DATA.dead>DATA.n or 
+      (51*DATA.dead>DATA.n and DATA.n>DATA.limtrigger) )  then
+      Info( InfoFpGroup, 2, "\t", DATA.defcount, "\t\t", DATA.dead,
+      "\t\t", DATA.n-DATA.dead, "\t\t", DATA.n );
+      i:=Number([1..i],x->p[x]=x);
+      NEWTC_Compress(DATA,false);
+      p:=DATA.p;
+      if DATA.augmented then
+	pp:=DATA.pp;
+      fi;
+      if DATA.n>DATA.limtrigger then
+	DATA.limtrigger:=Maximum(DATA.limit-1,DATA.n+2);
+      fi;
+    fi;
+
+    i:=i+1;
+  od;
+
+  NEWTC_Compress(DATA,true);
+  DATA.index:=DATA.n;
+
+  if Length(collapse)>0 then
+    Info(InfoFpGroup,3,DATA.defcount," definitions");
+    # which collapses gave at least 1%
+    collapse:=Filtered(collapse,x->x[2]*PERCFACT>DATA.n and not x in trace and
+	       # not prefix of any trace
+	       not ForAny(trace,y->y[1]{[1..Minimum(Length(x),Length(y[1]))]}=x
+	       # or proper prefix of another in collapse
+	       and not ForAny(collapse,y->Length(y)>Length(x) and
+		y{[1..Length(x)]}=x)));
+    if Length(collapse)>0 then
+      # give list for improvement
+      # type is c_ollapse
+      return
+      rec(type:="c",collapse:=collapse,limit:=DATA.limit,defcount:=DATA.defcount,data:=DATA);
+    fi;
+  fi;
+
+  return rec(type:="t",limit:=DATA.limit,defcount:=DATA.defcount,data:=DATA);
+
+end;
+
+#freegens,fgreerels,subgens,doaugmented,trace
+InstallGlobalFunction(NEWTC_CosetEnumerator,function(arg)
+local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
+  freegens:=arg[1];
+  freerels:=arg[2];
+  subgens:=arg[3];
+  aug:=IsBound(arg[4]);
+  trace:=IsBound(arg[5]);
+  if aug<>false then
+    aug:=arg[4];
+  fi;
+  if aug<>false then
+    # if augmented, optimize by default
+    if trace=false then
+      trace:=[];
+    else
+      trace:=arg[5];
+    fi;
+  elif trace<>false then
+    trace:=arg[5];
+  fi;
+  start:=Runtime();
+  if aug and trace=false then
+    e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,aug,trace);
+  else
+    e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,false,trace);
+    bastime:=Runtime()-start;
+    bl:=e.defcount;
+    bw:=[];
+    ldc:=infinity;
+    up:=0;
+    start:=Runtime();
+    first:=true;
+    while trace<>false and e.type="c" and (up<=2 or
+      2*(Runtime()-start)<=bastime) do
+      #up<=2 do
+      ldc:=e.defcount;
+      if first=true then
+	first:=e.defcount;
+	Info(InfoFpGroup,1,"optimize definition sequence");
+      fi;
+      Append(trace,e.collapse);
+      SortBy(trace,x->-x[2]);
+      e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,false,trace:
+	  # that's what we had last time -- no need to whine
+	  limit:=e.limit);
+      if e.defcount<bl then
+	bl:=e.defcount;
+	bw:=ShallowCopy(trace);
+      fi;
+
+      # 2% improvement threshold
+      if 102/100*e.defcount<=ldc then
+	up:=0;
+	start:=Runtime();
+      else
+	up:=up+1;
+      fi;
+    od;
+    if first<>true then
+      Info(InfoFpGroup,1,"Reduced ",first," definitions to ",e.defcount);
+    fi;
+    if aug then 
+      # finally do the augmented with best
+      e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,true,bw:
+	  # that's what we had last time -- no need to whine
+	  limit:=e.limit);
+    fi;
+  fi;
+  if not aug then
+    # return the ordinary coset table in standard formatting
+    up:=[];
+    for start in [1..Length(freegens)] do
+      Add(up,start+e.data.offset);
+      Add(up,-start+e.data.offset);
+    od;
+    ldc:=e.data.ct{up};
+    StandardizeTable(ldc);
+    return ldc;
+  fi;
+  e.data.isNewAugmentedTable:=true;
+  return e.data;
+end);  
+
+NEWTC_Rewrite:=function(DATA,start,w)
+local offset,c,i,j;
+  offset:=DATA.offset;
+  c:=[];
+  i:=start;
+  for j in w do
+    c:=WordProductLetterRep(c,DATA.aug[j+offset][i]);
+    i:=DATA.ct[j+offset][i];
+  od;
+  return c;
+end;
+
+NEWTC_ReplacedStringCyclic:=function(s,r)
+local p,new,start;
+  if Length(s)<Length(r) then
+    return s;
+  fi;
+  # TODO: Cyclic
+  p:=PositionSublist(s,r);
+  if p<>fail then
+    new:=s{[1..p-1]};
+    start:=p+Length(r);
+    p:=PositionSublist(s,r,start);
+    while p<>fail do
+      new:=WordProductLetterRep(new,s{[start..p-1]});
+      start:=p+Length(r);
+      p:=PositionSublist(s,r,start);
+    od;
+    new:=WordProductLetterRep(new,s{[start..Length(s)]});
+    return new;
+  else
+    return s;
+  fi;
+end;
+
+
+# DATA, [parameter,string]
+# parameter is: 
+# 1: Do a quick reduction without trying to eliminate all secondary gens.
+InstallGlobalFunction("NEWTC_PresentationMTC",function(arg)
+local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
+  subnum,bad,warn,parameter,str;
+
+  DATA:=arg[1];
+  if Length(arg)=1 then
+    parameter:=0;
+  else
+    parameter:=arg[2];
+  fi;
+  if Length(arg)>2 then
+    str:=arg[3];
+  else
+    str:="%";
+  fi;
+
+
+  offset:=DATA.offset;
+  rels:=[];
+  subnum:=Length(DATA.subgens);
+  for i in [1..subnum] do
+    r:=WordProductLetterRep(NEWTC_Rewrite(DATA,1,DATA.subgens[i]),[-i]);
+    if Length(r)>0 then
+      Add(rels,r);
+    fi;
+  od;
+
+  stack:=[];
+  for i in [1..DATA.n] do
+    for w in DATA.rels do
+      r:=NEWTC_Rewrite(DATA,i,w);
+      # reduce with others
+      for j in rels do
+	r:=NEWTC_ReplacedStringCyclic(r,j);
+	r:=NEWTC_ReplacedStringCyclic(r,-Reversed(j));
+      od;
+      if Length(r)>0 then
+	Add(stack,r);
+	while Length(stack)>0 do
+	  r:=stack[Length(stack)];
+	  Unbind(stack[Length(stack)]);
+	  ri:=-Reversed(r);
+	  rset:=Set([r,ri]);
+	  # reduce others
+	  j:=1;
+	  while j<=Length(rels) do
+	    s:=rels[j];
+	    for re in rset do;
+	      s:=NEWTC_ReplacedStringCyclic(s,re);
+	    od;
+	    if not IsIdenticalObj(s,rels[j]) then
+	      if Length(s)>0 then
+		Add(stack,s);
+	      fi;
+	      rels:=WordProductLetterRep(rels{[1..j-1]},rels{[j+1..Length(rels)]});
+	    else
+	      j:=j+1;
+	    fi;
+	  od;
+
+	  Add(rels,r);
+	  SortBy(rels,Length);
+
+	  # does it occur in the augmented table?
+	  for a in DATA.A do
+	    for j in [1..DATA.n] do
+	      s:=DATA.aug[a+offset][j];
+	      if Length(s)>=Length(r) then
+		for re in rset do
+		  s:=NEWTC_ReplacedStringCyclic(s,re);
+		od;
+		DATA.aug[a+offset][j]:=s;
+	      fi;
+	    od;
+	  od;
+	od;
+      fi;
+    od;
+  od;
+
+  # add definitions of secondary generators
+  for i in [subnum+1..DATA.secount] do
+    r:=WordProductLetterRep(DATA.secondary[i],[-i]);
+    Add(rels,r);
+  od;
+
+  f:=FreeGroup(DATA.secount,str);
+  fam:=FamilyObj(One(f));
+  rels:=List(rels,x->AssocWordByLetterRep(fam,x));
+  pres:=PresentationFpGroup(f/rels);
+  TzOptions(pres).protected:=subnum;
+  TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup);
+  if parameter=1 then
+    TzSearch(pres);
+    TzOptions(pres).lengthLimit:=pres!.tietze[TZ_TOTAL]+1;
+  fi;
+  TzGoGo(pres);
+  if IsEvenInt(parameter) and Length(GeneratorsOfPresentation(pres))>subnum then
+    warn:=true;
+    # Help Tietze with elimination
+    bad:=Reversed(List(GeneratorsOfPresentation(pres)
+	  {[subnum+1..Length(GeneratorsOfPresentation(pres))]},
+	  x->LetterRepAssocWord(x)[1]));
+    for i in bad do
+      r:=DATA.secondary[i];
+      re:=true;
+      while re do
+	s:=[];
+	re:=false;
+	for j in r do
+	  if AbsInt(j)>subnum then
+	    re:=true;
+	    if j>0 then
+	      Append(s,DATA.secondary[j]);
+	    else
+	      Append(s,-Reversed(DATA.secondary[-j]));
+	    fi;
+	  else
+	    Add(s,j);
+	  fi;
+	od;
+	Info(InfoFpGroup,2,"Length =",Length(s));
+	r:=s;
+	if warn and Length(s)>10*Sum(rels,Length) then
+	  warn:=false;
+	  Error(
+	    "Trying to eliminate all auxillary generators might cause the\n",
+	    "size of the presentation to explode. Proceed at risk!");
+	fi;
+      od;
+      r:=AssocWordByLetterRep(fam,Concatenation(r,[-i]));
+      AddRelator(pres,r);
+      TzSearch(pres);
+      TzEliminate(pres,i);
+    od;
+    Assert(1,Length(GeneratorsOfPresentation)=subnum);
+    
+  fi;
+  r:=List(GeneratorsOfPresentation(pres){
+      [subnum+1..Length(GeneratorsOfPresentation(pres))]},
+        x->LetterRepAssocWord(x)[1]);
+  pres!.secondarywords:=r;
+  return pres;
+end);
+
+#############################################################################
+##
+#M  PresentationSubgroupMtc(<G>, <H> [,<string>] [,<print level>] ) . . . . .
+#M                                               Tietze record for a subgroup
+##
+##  'PresentationSubgroupMtc' uses the Modified Todd-Coxeter coset represent-
+##  ative enumeration method  to compute a presentation  (i.e. a presentation
+##  record) for a subgroup H of a finitely presented group G.  The generators
+##  in the resulting presentation will be named   <string>1, <string>2, ... ,
+##  the default string is `\"_x\"'.
+##
+InstallGlobalFunction( PresentationSubgroupMtc,function ( arg )
+  local G,H,string,printlevel,DATA,i;
+
+  # check the first two arguments to be a finitely presented group and a
+  # subgroup of that group.
+  G := arg[1];
+  if not ( IsSubgroupFpGroup( G ) and IsGroupOfFamily( G ) ) then
+      Error( "<G> must be a finitely presented group" );
+  fi;
+  H := arg[2];
+  if not IsSubgroupFpGroup( H ) or FamilyObj( H ) <> FamilyObj( G ) then
+      Error( "<H> must be a subgroup of <G>" );
+  fi;
+
+  # initialize the generators name string and the print level.
+  string := "_x";
+  printlevel := 1;
+
+  # get the optional parameters.
+  for i in [ 3 .. 4 ] do
+      if Length( arg ) >= i then
+	  if IsInt( arg[i] ) then printlevel := arg[i];
+	  elif IsString( arg[i] ) then string := arg[i];
+	  else
+	      Error( "optional parameter must be a string or an integer" );
+	  fi;
+      fi;
+  od;
+
+  DATA:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(G),
+	  RelatorsOfFpGroup(G),
+	  List(GeneratorsOfGroup(H),UnderlyingElement),true,
+
+	  # for compatibility, do not try the optimization
+	  false);
+
+  return NEWTC_PresentationMTC(DATA,0,string);
 end);
 
 #############################################################################

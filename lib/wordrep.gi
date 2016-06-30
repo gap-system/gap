@@ -1558,6 +1558,49 @@ local l,gens,g,i,p;
 
 end );
 
+InstallGlobalFunction(FreelyReducedLetterRepWord,function(w)
+local i;
+  i:=1;
+  while i<Length(w) do
+    if w[i]=-w[i+1] then
+      w:=Concatenation(w{[1..i-1]},w{[i+2..Length(w)]});
+      # there could be cancellation of previous
+      if i>1 then
+	i:=i-1;
+      fi;
+    else
+      i:=i+1;
+    fi;
+  od;
+  return w;
+end);
+
+InstallGlobalFunction(WordProductLetterRep,function(arg)
+local l,r,i,j,b,p;
+  l:=arg[1];
+  for p in [2..Length(arg)] do
+    r:=arg[p];
+    b:=Length(r);
+    if Length(l)=0 then l:=r;
+    elif b>0 then
+      # find cancellation
+      i:=Length(l);
+      j:=1;
+      while i>0 and j<=b and l[i]=-r[j] do
+	i:=i-1;j:=j+1;
+      od;
+      if j>b then
+	l:=l{[1..i]};
+      elif i=0 then
+	l:=r{[j..b]};
+      else
+	l:=Concatenation(l{[1..i]},r{[j..b]});
+      fi;
+    fi;
+  od;
+  return l;
+end);
+
 
 #############################################################################
 ##
