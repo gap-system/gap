@@ -67,5 +67,5 @@ script:
   - make bootstrap-pkg-full
   - if [ $TEST_SUITE = 'makemanuals' ]; then if [ $TRAVIS_OS_NAME = 'linux' ]; then make manuals ; cat doc/*/make_manuals.out ; if [ `cat doc/*/make_manuals.out | grep -c "manual.lab written"` != '3' ]; then echo "Build failed"; exit 1; fi; fi; fi
   - if [ $TEST_SUITE != 'makemanuals' ]; then echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh | tee testlog.txt | grep --colour=always -E "########> Diff|$"; cat testlog.txt | tail -n 2 | grep "total"; ( ! grep "########> Diff" testlog.txt ); fi
-  - if [ $TEST_SUITE = 'testcoverage' ]; then echo "Read(\"tst/testinstall.g\"); quit;" | sh bin/gap.sh ; cd bin/x86* ; gcov -o . ../../src/* ; fi
+  - if [ $TEST_SUITE = 'testcoverage' ]; then echo "Read(\"tst/testinstall.g\"); quit;" | sh bin/gap.sh --cover gapcover.json ; cd bin/x86* ; gcov -o . ../../src/* ; fi
 
