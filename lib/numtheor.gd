@@ -784,6 +784,33 @@ DeclareGlobalFunction( "MoebiusMu" );
 ##
 DeclareGlobalFunction( "TwoSquares" );
 
+#############################################################################
+##
+#F  PValuation( <n>, <p> ) . . . . . . . . . . . prime part exponent
+##
+##  <#GAPDoc Label="PValuation">
+##  <ManSection>
+##  <Func Name="PValuation" Arg='n, p'/>
+##
+##  <Description>
+##  For an integer <A>n</A> and a prime <A>p</A> this function returns
+##  the <A>p</A>-valuation of <A>n</A>,
+##  that is the exponent <M>e</M> such that <M>p^e</M> is the largest
+##  power of <A>p</A> that divides <A>n</A>.
+##  The valuation of zero is infinity.
+##  
+##  <Example><![CDATA[
+##  gap> PValuation(100,2);
+##  2
+##  gap> PValuation(100,3);
+##  0
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "PValuation" );
+
 
 #############################################################################
 ##

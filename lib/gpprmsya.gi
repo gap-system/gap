@@ -12,12 +12,6 @@
 ##  This file contains the methods for symmetric and alternating groups
 ##
 
-# xref to transgrp library
-if not IsBound(TRANSDEGREES) then
-  TRANSDEGREES:=0;
-fi;
-
-
 #############################################################################
 ##
 #M  <perm> in <nat-alt-grp>
@@ -1140,12 +1134,12 @@ local b, bl,prop;
     p:=[Length(s)];
 
     # type of action on blocks
-    if TRANS_AVAILABLE=true and Length(dom)/Length(s)<=TRANSDEGREES then
+    if TransitiveGroupsAvailable(Length(dom)/Length(s)) then
       Add(p,TransitiveIdentification(Action(G,Orbit(G,s,OnSets),OnSets)));
     fi;
 
     # type of action on blocks
-    if TRANS_AVAILABLE=true and Length(s)<=TRANSDEGREES then
+    if TransitiveGroupsAvailable(Length(s)) then
       Add(p,TransitiveIdentification(Action(Stabilizer(G,s,OnSets),s)));
     fi;
 
@@ -1248,7 +1242,7 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
 
       syll:=SymmetricGroup(ll);
       # if the degrees are small enough, even get local types
-      if ll>1 and TRANS_AVAILABLE=true and ll<=TRANSDEGREES then
+      if ll>1 and TransitiveGroupsAvailable(ll) then
 	Info(InfoGroup,1,"Length ",ll," sort by types");
 	act:=[];
 	typ:=[];

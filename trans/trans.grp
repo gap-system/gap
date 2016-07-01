@@ -291,6 +291,14 @@ local Tbak,Fbak,flg,sel,i,fname;
   TRANSSHAPEFREQS[deg]:=[];
 end);
 
+InstallGlobalFunction(TransitiveGroupsAvailable,function(deg)
+  if deg>TRANSDEGREES then
+    return false;
+  fi;
+  TransGrpLoad(deg,0); # to set up variables
+  return true;
+end);
+
 BIND_GLOBAL("TRANSGrp",function(deg,nr)
   if not IsBound(TRANSGRP[deg]) or not IsBound(TRANSGRP[deg][nr]) then
     TransGrpLoad(deg,nr);
@@ -306,6 +314,9 @@ end);
 
 BIND_GLOBAL("TRANSProperties",function(deg,nr)
 local l;
+  if not TransitiveGroupsAvailable(deg) then 
+    Error("Transitive Groups of degree ",deg," are not available");
+  fi;
   if not IsBound(TRANSPROPERTIES[deg]) or
     not IsBound(TRANSPROPERTIES[deg][nr]) then
     TransGrpLoad(deg,nr);
@@ -331,11 +342,8 @@ InstallGlobalFunction(NrTransitiveGroups, function(deg)
   if deg=1 then
     return 0;
   fi;
-  if not(deg in [1..TRANSDEGREES]) then
-    return fail;
-  fi;
-  if not IsBound(TRANSLENGTHS[deg]) then
-    TransGrpLoad(deg,0);
+  if not TransitiveGroupsAvailable(deg) then
+    return 0;
   fi;
   return TRANSLENGTHS[deg];
 end);

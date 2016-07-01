@@ -463,7 +463,7 @@ end );
 InstallMethod( AscendingChainOp, "PermGroup", IsIdenticalObj,
   [IsPermGroup,IsPermGroup],0,
 function(G,U)
-local s,c,mp,o,i,step;
+local s,c,mp,o,i,step,a;
   s:=G;
   c:=[G];
   repeat
@@ -477,7 +477,12 @@ local s,c,mp,o,i,step;
 	Info(InfoCoset,2,"AC: orbit");
 	o:=ShallowCopy(OrbitsDomain(U,o[i]));
 	Sort(o,function(a,b) return Length(a)<Length(b);end);
-	s:=Stabilizer(s,Set(o[1]),OnSets);
+	# union of same length -- smaller index
+	a:=Union(Filtered(o,x->Length(x)=Length(o[1])));
+	if Length(a)=Sum(o,Length) then
+	  a:=Set(o[1]);
+	fi;
+	s:=Stabilizer(s,a,OnSets);
 	step:=true;
       elif Index(G,U)>NrMovedPoints(U) 
 	  and IsPrimitive(s,o[i]) and not IsPrimitive(U,o[i]) then

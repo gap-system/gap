@@ -310,8 +310,8 @@ local clT,	# classes T
 	  dc:=[One(T)];
 	else
 
-	  Assert(1,IsSubgroup(T,clT[k][2]));
-	  Assert(1,IsSubgroup(T,C));
+	  Assert(2,IsSubgroup(T,clT[k][2]));
+	  Assert(2,IsSubgroup(T,C));
 
 	  dc:=List(DoubleCosetRepsAndSizes(T,clT[k][2],C),i->i[1]);
 	fi;
@@ -461,7 +461,7 @@ local clT,	# classes T
   Info(InfoHomClass,1,"fused to ",Length(newreps)," inner classes");
   clF:=newreps;
   clin:=ShallowCopy(clF);
-  Assert(1,Sum(clin,i->Index(F,i[2]))=Size(M));
+  Assert(2,Sum(clin,i->Index(F,i[2]))=Size(M));
   clout:=[];
 
   # outer classes
@@ -660,11 +660,11 @@ local clT,	# classes T
 			   RepresentativeAction(localcent_r,
 						 Image(projections[i],limg),
 						 Representative(clTR[p][3])));
-		  Assert(1,Image(projections[i],opfun(repres,con))
+		  Assert(2,Image(projections[i],opfun(repres,con))
 			   =Representative(clTR[p][3]));
 		  Add(trans,con);
 		  for stgen in GeneratorsOfGroup(clTR[p][2]) do
-		    Assert( 1, IsOne( Image( projections[i],
+		    Assert( 2, IsOne( Image( projections[i],
 				   opfun(repres,con*stgen/con)/repres ) ) );
 		    stab:=ClosureGroup(stab,con*stgen/con);
 		  od;
@@ -695,7 +695,7 @@ local clT,	# classes T
 			# now try whether we actually can add orbits to make up
 			# that length
 			diff:=minlen-Sum(orb,i->Size(i[3]));
-			Assert(1,diff>=0);
+			Assert(2,diff>=0);
 			# filter those remaining classes small enough to make
 			# up the length
 			smacla:=Filtered(select,i->Size(clTR[i][3])<=diff);
@@ -893,7 +893,7 @@ local clT,	# classes T
 	  fi;
 
 
-	  Assert(1,ForAll(GeneratorsOfGroup(stab),
+	  Assert(2,ForAll(GeneratorsOfGroup(stab),
                 j -> IsOne( Image(projections[i],opfun(repres,j)/repres) )));
 
 	  # correct stabilizer to element stabilizer
@@ -940,7 +940,7 @@ local clT,	# classes T
     Info(InfoHomClass,1,"fused to ",Length(newreps)," classes");
   od;
   
-  Assert(1,Sum(clout,i->Index(F,i[2]))=Size(F)-Size(M));
+  Assert(2,Sum(clout,i->Index(F,i[2]))=Size(F)-Size(M));
 
   Info(InfoHomClass,2,Length(clin)," inner classes, total size =",
         Sum(clin,i->Index(F,i[2])));
@@ -951,7 +951,7 @@ local clT,	# classes T
 
   Info(InfoHomClass,1,"returning ",Length(clF)," classes");
 
-  Assert(1,Sum(clF,i->Index(F,i[2]))=Size(F));
+  Assert(2,Sum(clF,i->Index(F,i[2]))=Size(F));
   return clF;
 
 end);
@@ -1202,7 +1202,7 @@ local cs,	# chief series of G
 	od;
 
 	F:=Subgroup(w,genimages);
-	if AssertionLevel()>0 then
+	if AssertionLevel()>=2 then
 	  Fhom:=GroupHomomorphismByImages(G,F,GeneratorsOfGroup(G),genimages);
 	  Assert(1,fail<>Fhom);
 	else
@@ -1245,8 +1245,8 @@ local cs,	# chief series of G
 	fi;
       fi; # true orbit of T.
 
-      Assert(1,Sum(clF,i->Index(F,i[2]))=Size(F));
-      Assert(1,ForAll(clF,i->Centralizer(F,i[1])=i[2]));
+      Assert(2,Sum(clF,i->Index(F,i[2]))=Size(F));
+      Assert(2,ForAll(clF,i->Centralizer(F,i[1])=i[2]));
 
       # 3) combine to form classes of sdp 
 
@@ -1276,7 +1276,7 @@ local cs,	# chief series of G
 	      elm:=j[1]*PreImagesRepresentative(FMhom,
 			  LeftQuotient(Image(Fhom,j[1]),k[1]));
 	      zentr:=Intersection(j[2],PreImage(Fhom,k[2]));
-	      Assert(2,ForAll(GeneratorsOfGroup(zentr),
+	      Assert(3,ForAll(GeneratorsOfGroup(zentr),
 		      i->Comm(i,elm) in N));
 	      Add(ncl,[elm,zentr]);
 	    od;
@@ -1336,7 +1336,7 @@ local cs,	# chief series of G
 		      zentr:=PreImage(Fhom,k[2]^l1);
 		      zentr:=Intersection(zentr,l[2]);
 
-		      Assert(2,ForAll(GeneratorsOfGroup(zentr),
+		      Assert(3,ForAll(GeneratorsOfGroup(zentr),
 			      i->Comm(i,elm) in N));
 
 		      Info(InfoHomClass,4,"new class, order ",Order(elm),
@@ -1366,7 +1366,7 @@ local cs,	# chief series of G
   if Length(cs)<3 then
     Info(InfoHomClass,1,"Fitting free factor returns ",Length(cl)," classes");
   fi;
-  Assert( 1, Sum( List( cl, pair -> Size(G) / Size( pair[2] ) ) ) = Size(G) );
+  Assert( 2, Sum( List( cl, pair -> Size(G) / Size( pair[2] ) ) ) = Size(G) );
   return cl;
 end);
 
@@ -1636,7 +1636,7 @@ BindGlobal("LiftClassesEANonsolvGeneral",
   for b in orb do
     rep := PcElementByExponentsNC( Npcgs, Npcgs{ cg.baseComplement },
 		    b.rep{ ran } );
-    #Assert(2,ForAll(GeneratorsOfGroup(stabsub),i->Comm(i,h*rep) in NT));
+    #Assert(3,ForAll(GeneratorsOfGroup(stabsub),i->Comm(i,h*rep) in NT));
     stabrad:=ShallowCopy(b.stabradgens);
 #Print("startdep=",List(stabrad,x->DepthOfPcElement(PPcgs,x)),"\n");
 #if ForAny(stabrad,x->Order(x)=1) then Error("HUH3"); fi;
@@ -1988,6 +1988,7 @@ BindGlobal("LiftClassesEATrivRep",
     subs:=List([1..Length(orbsub)],x->[(x-1)*ssd+1..x*ssd]);
     bas:=ImmutableMatrix(field,Concatenation(orbsub)); # this is the new basis
     basinv:=bas^-1;
+    Assert(1,basinv<>fail);
 
   fi;
 
@@ -2193,8 +2194,8 @@ if miss<>1 then
   return fail;Error("HEH?");fi;
     Info(InfoHomClass,3,"Fused ",Length(norb),"*",norb[1].len," ",
       Number(orb,x->IsBound(x))," left");
-    Assert(0,ForAll(rsgens,x->norb[1].rep*bas*npcgsact(x)*basinv=norb[1].rep));
-    Assert(0,ForAll(sgens,x->norb[1].rep*bas*npcgsact(x)*basinv=norb[1].rep));
+    Assert(1,ForAll(rsgens,x->norb[1].rep*bas*npcgsact(x)*basinv=norb[1].rep));
+    Assert(1,ForAll(sgens,x->norb[1].rep*bas*npcgsact(x)*basinv=norb[1].rep));
 #if ForAny(rsgens,x->Order(x)=1) then Error("HUH5"); fi;
 
     a:=[h*PcElementByExponents(Npcgs,norb[1].rep*bas),rsgens,sgens,sfgens,
@@ -2375,7 +2376,7 @@ local r,	#radical
       SetSize(r,Size(G)/i[2]);
     else
       d:=SubgroupByFittingFreeData(G,i[3],i[4],i[2]);
-      Assert(1,Size(d)=i[5]);
+      Assert(2,Size(d)=i[5]);
       Assert(2,Centralizer(G,i[1])=d);
       SetSize(d,i[5]);
       r:=ConjugacyClass(G,i[1],d);
@@ -3086,7 +3087,7 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
     fi;
   od;
 
-  Assert(1,ForAll(classes,i->i[1] in H and IsSubset(H,i[2])));
+  Assert(2,ForAll(classes,i->i[1] in H and IsSubset(H,i[2])));
   return classes;
 
 end);
@@ -3231,12 +3232,12 @@ BindGlobal("GeneralStepCanEANSNonsolv",function( H, N,NT, C,h,reps,repo,nostab )
     stab:=stab^map; # stabilize minimal element
     mi:=PcElementByExponentsNC(N,mi{ran});
 
-    Assert(1,ForAll(GeneratorsOfGroup(stab),x->Comm(x,h*mi) in NT));
+    Assert(2,ForAll(GeneratorsOfGroup(stab),x->Comm(x,h*mi) in NT));
 
     ngrp:=[[repo[i]],h*mi,stab];
     Add(repgps,ngrp);
     newreps[repo[i]]:=[repsofi[1]^map,repsofi[2]*map,Length(repgps)];
-    Assert(1,LeftQuotient(h*mi*One(NT),repsofi[1]^map) in NT);
+    Assert(2,LeftQuotient(h*mi*One(NT),repsofi[1]^map) in NT);
 
     for i in ShallowCopy(sel) do
       q:=LookupDictionary(dict,repvec[i]);
@@ -3246,7 +3247,7 @@ BindGlobal("GeneralStepCanEANSNonsolv",function( H, N,NT, C,h,reps,repo,nostab )
 	Add(ngrp[1],repo[i]);
 	map:=LeftQuotient(SchreierVectorProduct(q),mimap);
 	newreps[repo[i]]:=[repsofi[1]^map,repsofi[2]*map,Length(repgps)];
-	Assert(1,LeftQuotient(h*mi,repsofi[1]^map) in NT);
+	Assert(2,LeftQuotient(h*mi,repsofi[1]^map) in NT);
       fi;
     od;
 
@@ -3331,7 +3332,7 @@ local  classes,    	# classes to be constructed, the result
 
     C := Stabilizer( C, v, v[1],GeneratorsOfGroup(C), mats,OnPoints );
   fi;
-  Assert(1,Size(cl[2])/Size(C)=Size(f)^r);
+  Assert(2,Size(cl[2])/Size(C)=Size(f)^r);
 
   if Length(com.factorspace)=0 then
     if reduce<>fail then
@@ -3354,7 +3355,7 @@ local  classes,    	# classes to be constructed, the result
     od;
   fi;
 
-  Assert(1,ForAll(classes,i->i[1] in H and IsSubset(H,i[2])));
+  Assert(2,ForAll(classes,i->i[1] in H and IsSubset(H,i[2])));
   return classes;
 end);
 
@@ -3427,7 +3428,7 @@ local r,	#radical
       else
 	new:=GeneralStepClEANSNonsolv(G,mpcgs,AsSubgroup(G,N),i);
       fi;
-      Assert(1,ForAll(new,
+      Assert(2,ForAll(new,
                   i->ForAll(GeneratorsOfGroup(i[2]),j->Comm(j,i[1]) in N)));
       Info(InfoHomClass,2,Length(new)," new classes");
       ncl:=Concatenation(ncl,new);
@@ -3449,7 +3450,7 @@ local r,	#radical
       r:=ConjugacyClass(G,i[1]);
       SetSize(r,Size(G)/i[2]);
     else
-      Assert(1,Centralizer(G,i[1])=i[2]);
+      Assert(2,Centralizer(G,i[1])=i[2]);
       r:=ConjugacyClass(G,i[1],i[2]);
     fi;
     Add(ncl,r);

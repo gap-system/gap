@@ -161,6 +161,14 @@ gap> Int(['-', '1', '2', '3']);
 -123
 gap> Int(['1', '2', '\000', '3']);
 12
+gap> PValuation(0,2);
+infinity
+gap> PValuation(100,2);
+2
+gap> PValuation(100,3);
+0
+gap> PValuation(13/85,5); 
+-1
 gap> STOP_TEST( "intarith.tst", 290000);
 
 #############################################################################

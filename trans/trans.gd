@@ -9,6 +9,18 @@
 ##  This file contains the declarations for the transitive groups library
 ##
 
+# ensure that the dummy binds from the library are killed
+MakeReadWriteGlobal("TransitiveGroupsAvailable");
+Unbind(TransitiveGroupsAvailable);
+MakeReadWriteGlobal("NrTransitiveGroups");
+Unbind(NrTransitiveGroups);
+MakeReadWriteGlobal("TransitiveGroup");
+Unbind(TransitiveGroup);
+MakeReadWriteGlobal("TRANSProperties");
+Unbind(TRANSProperties);
+MakeReadWriteGlobal("TRANSSHAPEFREQS");
+Unbind(TRANSSHAPEFREQS);
+
 #############################################################################
 ##
 #F  TransitiveGroup(<deg>,<nr>)
@@ -29,6 +41,8 @@
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("TransitiveGroup");
+
+DeclareGlobalFunction("TransitiveGroupsAvailable");
 
 #############################################################################
 ##
