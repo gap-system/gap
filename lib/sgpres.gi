@@ -3668,7 +3668,6 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
   aug:=rec(isNewAugmentedTable:=true,
 	   n:=e.data.n,
 	   A:=e.data.A,
-	   from:=e.data.from,
 	   index:=e.data.index,
 	   rels:=e.data.rels,
 	   ct:=e.data.ct,
@@ -3680,6 +3679,9 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
            subgword:=e.data.subgword,
            offset:=e.data.offset
 	      );
+  if IsBound(e.data.from) then
+    aug.from:=e.data.from;
+  fi;
   return aug;
 end);  
 

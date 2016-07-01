@@ -871,6 +871,15 @@ local aug,w,p,pres,f,fam,G;
 	true);
 
   pres:=NEWTC_PresentationMTC(aug,1,"%");
+  if Length(GeneratorsOfPresentation(pres))>Length(gens) then
+    aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
+	  RelatorsOfFpGroup(w),
+	  List(GeneratorsOfGroup(u),UnderlyingElement),
+	  true,false);
+
+    pres:=NEWTC_PresentationMTC(aug,0,"%");
+  fi;
+  Assert(0,Length(GeneratorsOfPresentation(pres))=Length(gens));
 
   # old code
 #  if HasGeneratorsOfGroup(u) and IsIdenticalObj(GeneratorsOfGroup(u),gens) then
