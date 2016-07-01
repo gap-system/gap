@@ -2766,36 +2766,51 @@ end);
 ##  augmented coset table data. It must not be applied to augmented coset
 ##  tables which are not of type 2.)
 InstallGlobalFunction(CopiedAugmentedCosetTable,function(aug)
-local t;
-  t:=rec(
-	  isAugmentedCosetTable:=true,
-	  type:=aug.type,
-	  tableType:=aug.tableType,
-	  groupGenerators:=aug.groupGenerators,
-	  groupRelators:=aug.groupRelators,
-	  cosetTable:=aug.cosetTable,
-	  cosetFactorTable:=aug.cosetFactorTable,
-	  primaryGeneratorWords:=aug.primaryGeneratorWords,
-	  tree:=aug.tree,
-	  treeNumbers:=aug.treeNumbers,
-	  numberOfSubgroupGenerators:=aug.numberOfSubgroupGenerators,
-	  nameOfSubgroupGenerators:=aug.nameOfSubgroupGenerators,
-	  subgroupGenerators:=aug.subgroupGenerators
-	);
-  if IsBound(aug.conversionList) then
-    t.conversionList:=aug.conversionList;
-  fi;
-  if IsBound(aug.primarySubgroupGenerators) then
-    t.primarySubgroupGenerators:=Immutable(aug.primarySubgroupGenerators);
-  fi;
-  if IsBound(aug.subgroupRelators) then
-    t.subgroupRelators:=Immutable(aug.subgroupRelators);
-  fi;
-  if IsBound(aug.translationTable) then
-    t.translationTable:=Immutable(aug.translationTable);
-  fi;
-  if IsBound(aug.secondaryWords) then
-    t.secondaryWords:=Immutable(aug.secondaryWords);
+local t,j;
+  if IsBound(aug.isNewAugmentedTable) then
+    t:=rec(isNewAugmentedTable:=true);
+    for j in 
+      [ "A", "aug", "ct", "defcount", "from", "homgenims", "homgens",
+      "index", "n", "offset", "primaryImages", "rels",
+      "secondary", "secount", "secondaryImages", "subgens" ] do
+      if IsBound(aug.(j)) then
+	t.(j):=aug.(j);
+      fi;
+    od;
+  else
+    # old version
+    t:=rec(
+	    isAugmentedCosetTable:=true,
+	    type:=aug.type,
+	    tableType:=aug.tableType,
+	    groupGenerators:=aug.groupGenerators,
+	    groupRelators:=aug.groupRelators,
+	    cosetTable:=aug.cosetTable,
+	    cosetFactorTable:=aug.cosetFactorTable,
+	    primaryGeneratorWords:=aug.primaryGeneratorWords,
+	    tree:=aug.tree,
+	    treeNumbers:=aug.treeNumbers,
+	    numberOfSubgroupGenerators:=aug.numberOfSubgroupGenerators,
+	    nameOfSubgroupGenerators:=aug.nameOfSubgroupGenerators,
+	    subgroupGenerators:=aug.subgroupGenerators
+	  );
+    if IsBound(aug.secondaryWords) then
+      t.secondaryWords:=Immutable(aug.secondaryWords);
+    fi;
+
+    if IsBound(aug.conversionList) then
+      t.conversionList:=aug.conversionList;
+    fi;
+    if IsBound(aug.primarySubgroupGenerators) then
+      t.primarySubgroupGenerators:=Immutable(aug.primarySubgroupGenerators);
+    fi;
+    if IsBound(aug.subgroupRelators) then
+      t.subgroupRelators:=Immutable(aug.subgroupRelators);
+    fi;
+    if IsBound(aug.translationTable) then
+      t.translationTable:=Immutable(aug.translationTable);
+    fi;
+
   fi;
   return t;
 end);
@@ -3388,7 +3403,8 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
   p:=[1];
   collapse:=[];
   DATA:=rec(ct:=ct,p:=p,ccr:=ccr,rels:=List(rels,LetterRepAssocWord),
-	 subgens:=List(subgens,x->LetterRepAssocWord(UnderlyingElement(x))),
+         subgens:=subgens,
+	 subgword:=List(subgens,x->LetterRepAssocWord(UnderlyingElement(x))),
 	 n:=n,offset:=offset,A:=A,limit:=2^23,
 	 deductions:=[],dead:=0,defcount:=0,
 	 # a global list for the kernel scan function to return 4 variables
@@ -3423,9 +3439,9 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
 
   for w in [1..Length(subgens)] do
     if DATA.augmented then
-      NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgens[w],[w]);
+      NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],[w]);
     else
-      NEWTC_ScanAndFill(DATA,1,DATA.subgens[w]);
+      NEWTC_ScanAndFill(DATA,1,DATA.subgword[w]);
     fi;
   od;
   NEWTC_ProcessDeductions(DATA);
@@ -3648,12 +3664,30 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
     StandardizeTable(ldc);
     return ldc;
   fi;
-  e.data.isNewAugmentedTable:=true;
-  return e.data;
+
+  aug:=rec(isNewAugmentedTable:=true,
+	   n:=e.data.n,
+	   A:=e.data.A,
+	   from:=e.data.from,
+	   index:=e.data.index,
+	   rels:=e.data.rels,
+	   ct:=e.data.ct,
+	   aug:=e.data.aug,
+	   defcount:=e.data.defcount,
+	   secount:=e.data.secount,
+	   secondary:=e.data.secondary,
+	   subgens:=e.data.subgens,
+           subgword:=e.data.subgword,
+           offset:=e.data.offset
+	      );
+  return aug;
 end);  
 
-NEWTC_Rewrite:=function(DATA,start,w)
-local offset,c,i,j;
+NEWTC_Rewrite:=function(arg)
+local DATA,start,w,offset,c,i,j;
+  DATA:=arg[1];
+  start:=arg[2];
+  w:=arg[3];
   offset:=DATA.offset;
   c:=[];
   i:=start;
@@ -3661,6 +3695,9 @@ local offset,c,i,j;
     c:=WordProductLetterRep(c,DATA.aug[j+offset][i]);
     i:=DATA.ct[j+offset][i];
   od;
+  if Length(arg)>3 and arg[4]<>i then
+    Error("Trace did not end at expected coset");
+  fi;
   return c;
 end;
 
@@ -3712,7 +3749,7 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
   rels:=[];
   subnum:=Length(DATA.subgens);
   for i in [1..subnum] do
-    r:=WordProductLetterRep(NEWTC_Rewrite(DATA,1,DATA.subgens[i]),[-i]);
+    r:=WordProductLetterRep(NEWTC_Rewrite(DATA,1,DATA.subgword[i]),[-i]);
     if Length(r)>0 then
       Add(rels,r);
     fi;
