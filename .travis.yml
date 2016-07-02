@@ -2,29 +2,37 @@ language: c
 matrix:
   include:
     - os: linux
-      env: TEST_SUITE=testtravis
+      env: TEST_SUITE=testinstall CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
       compiler: gcc
       addons:
         apt_packages:
           - libgmp-dev
+      after_success:
+          - bash <(curl -s https://codecov.io/bash)
+    - os: linux
+      env: TEST_SUITE=testtravis CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
+      compiler: gcc
+      addons:
+        apt_packages:
+          - libgmp-dev
+      after_success:
+          - bash <(curl -s https://codecov.io/bash)
     - os: osx
-      env: TEST_SUITE=testtravis
+      env: TEST_SUITE=testtravis CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
       compiler: clang
       addons:
         apt_packages:
          - libgmp-dev
+      after_success:
+          - bash <(curl -s https://codecov.io/bash)
     - os: linux
-      env: TEST_SUITE=testinstall
+      env: TEST_SUITE=testbugfix  CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
       compiler: gcc
       addons:
         apt_packages:
          - libgmp-dev
-    - os: linux
-      env: TEST_SUITE=testbugfix
-      compiler: gcc
-      addons:
-        apt_packages:
-         - libgmp-dev
+      after_success:
+          - bash <(curl -s https://codecov.io/bash)
     - os: linux
       env: TEST_SUITE=makemanuals
       compiler: gcc
@@ -44,28 +52,16 @@ matrix:
         apt_packages:
           - libgmp-dev:i386
           - gcc-multilib
-    - os: linux
-      env: TEST_SUITE=testinstall ABI=32
-      compiler: gcc
-      addons: 
-        apt_packages:
-          - libgmp-dev:i386
-          - gcc-multilib
-    - os: linux
-      env: TEST_SUITE=testcoverage CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
-      compiler: gcc
-      addons: 
-        apt_packages:
-          - libgmp-dev
       after_success:
           - bash <(curl -s https://codecov.io/bash)
- 
 
 script:
   - ./configure --with-gmp=system
   - make
   - make bootstrap-pkg-full
-  - if [ $TEST_SUITE = 'makemanuals' ]; then if [ $TRAVIS_OS_NAME = 'linux' ]; then make manuals ; cat doc/*/make_manuals.out ; if [ `cat doc/*/make_manuals.out | grep -c "manual.lab written"` != '3' ]; then echo "Build failed"; exit 1; fi; fi; fi
-  - if [ $TEST_SUITE != 'makemanuals' ]; then echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh | tee testlog.txt | grep --colour=always -E "########> Diff|$"; cat testlog.txt | tail -n 2 | grep "total"; ( ! grep "########> Diff" testlog.txt ); fi
-  - if [ $TEST_SUITE = 'testcoverage' ]; then echo "Read(\"tst/testinstall.g\"); quit;" | sh bin/gap.sh --cover gapcover.json ; cd bin/x86* ; gcov -o . ../../src/* ; fi
+  - if [[ x"$ABI" != "x32" ]] ; then cd pkg/io* ; ./configure ; make ; cd ../.. ; cd pkg/profiling* ; ./configure ; make ; cd ../.. ; fi
+  - if [[ $TEST_SUITE = 'makemanuals' && $TRAVIS_OS_NAME = 'linux' ]]; then make manuals ; cat doc/*/make_manuals.out ; if [ `cat doc/*/make_manuals.out | grep -c "manual.lab written"` != '3' ]; then echo "Build failed"; exit 1; fi; fi
+  - if [[ $TEST_SUITE != 'makemanuals' && x"$ABI" != "x32" ]]; then echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh --cover coverage | tee testlog.txt | grep --colour=always -E "########> Diff|$" ; echo "CoverToJson(\"coverage\", \"coverage.json\"); quit;" | sh bin/gap.sh etc/cover2json.g ; cd bin/x86* ; gcov -o . ../../src/* ; cat testlog.txt | tail -n 2 | grep "total"; ( ! grep "########> Diff" testlog.txt ) ; fi
+  - if [[ $TEST_SUITE != 'makemanuals' && x"$ABI" = "x32" ]]; then echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh | tee testlog.txt | grep --colour=always -E "########> Diff|$" ; cat testlog.txt | tail -n 2 | grep "total"; ( ! grep "########> Diff" testlog.txt ) ; fi
+  
 
