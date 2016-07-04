@@ -13,8 +13,8 @@
 ##  &GAP; contains a library of primitive permutation groups which includes,
 ##  up to permutation isomorphism (i.e., up to conjugacy in the corresponding
 ##  symmetric group),
-##  all  primitive  permutation groups of  degree <M>&lt;&nbsp;2500</M>,
-##  calculated in <Cite Key="RoneyDougal05"/>,
+##  all  primitive  permutation groups of  degree <M>&lt;&nbsp;4096</M>,
+##  calculated in <Cite Key="RoneyDougal05"/> and <Cite Key="CRDQ11"/>,
 ##  in particular,
 ##  <List>
 ##  <Item>
@@ -99,7 +99,8 @@ DeclareComponent("prim","3.0");
 ##  returns the primitive permutation  group of degree <A>deg</A> with number <A>nr</A>
 ##  from the list. 
 ##  <P/>
-##  The arrangement of the groups differs from the arrangement of primitive
+##  The arrangement of the groups of degrees not greater than 50
+##  differs from the arrangement of primitive
 ##  groups in the list of C.&nbsp;Sims, which was used in &GAP;&nbsp;3. See
 ##  <Ref Func="SimsNo"/>.
 ##  </Description>
