@@ -167,20 +167,23 @@ end);
 
 InstallGlobalFunction(MeetOfPartialPerms, 
 function(arg)
-  local meet, i;
+  local meet, i, empty;
 
   if IsPartialPermCollection(arg[1]) then 
     return CallFuncList(MeetOfPartialPerms, AsList(arg[1]));
   elif not IsPartialPermCollection(arg) then 
-    Error("usage: the argument should be a collection of partial perms,");
+    Error("usage: the argument should be a collection of partial perms, ");
     return;
   fi;
 
-  meet:=arg[1]; i:=1;
-  repeat
-    i:=i+1;
-    meet:=MEET_PPERMS(meet, arg[i]);
-  until i=Length(arg) or meet=EmptyPartialPerm();
+  meet := arg[1]; 
+  i := 1;
+  empty := EmptyPartialPerm();
+
+  while i < Length(arg) and meet <> empty do
+    i := i + 1;
+    meet := MEET_PPERMS(meet, arg[i]);
+  od;
     
   return meet;
 end);
@@ -226,14 +229,12 @@ InstallMethod(AsPartialPerm, "for a transformation and list",
 [IsTransformation, IsList], 
 function(f, list)
   
-  if not IsSSortedList(list) or not ForAll(list, IsPosInt) 
-    or not ForAll(list, i-> i<=DegreeOfTransformation(f)) then 
-    Error("usage: the second argument must be a set of positive integers ", 
-    "not greater than the degree of the first argument,");
-    return;
+  if not IsSSortedList(list) or not ForAll(list, IsPosInt) then 
+    ErrorNoReturn("usage: the second argument must be a set of positive ",
+                  "integers,"); 
   elif not IsInjectiveListTrans(list, f) then 
-    Error("usage: the first argument must be injective on the second,");
-    return fail;
+    ErrorNoReturn("usage: the first argument must be injective on the ",
+                  "second,");
   fi;
   return PartialPermNC(list, OnTuples(list, f)); 
 end);
@@ -244,27 +245,6 @@ InstallMethod(AsPartialPerm, "for a transformation and positive int",
 [IsTransformation, IsPosInt], 
 function(f, n)
   return AsPartialPerm(f, [1..n]);
-end);
-
-# c method? JDM
-
-InstallMethod(AsPartialPerm, "for a transformation", 
-[IsTransformation],
-function(f)
-  local img, n;
-  n:=DegreeOfTransformation(f);
-  if not n^f=n then 
-    return fail; 
-  fi;
-  return PartialPerm(List([1..n], function(i) 
-    local j;
-    j:=i^f;
-    if j=n then 
-      return 0; 
-    else 
-      return j; 
-    fi;
-  end));
 end);
 
 # n is image of undefined points 
@@ -740,7 +720,7 @@ InstallMethod(MovedPoints, "for a partial perm coll",
 [IsPartialPermCollection], coll-> Union(List(coll, MovedPoints)));
 
 InstallMethod(NrFixedPoints, "for a partial perm coll",
-[IsPartialPermCollection], coll-> Length(MovedPoints(coll)));
+[IsPartialPermCollection], coll-> Length(FixedPointsOfPartialPerm(coll)));
 
 InstallMethod(NrMovedPoints, "for a partial perm coll",
 [IsPartialPermCollection], coll-> Length(MovedPoints(coll)));
@@ -759,21 +739,17 @@ InstallMethod(SmallestImageOfMovedPoint, "for a partial perm collection",
 [IsPartialPermCollection], 
 coll-> Minimum(List(coll, SmallestImageOfMovedPoint)));
 
-InstallOtherMethod(One, "for a partial perm coll", 
+InstallMethod(OneImmutable, "for a partial perm coll", 
 [IsPartialPermCollection], 
-function(x)
-  return JoinOfIdempotentPartialPermsNC(List(x, One)); 
+function(coll)
+  return JoinOfIdempotentPartialPermsNC(List(coll, OneImmutable)); 
 end);
 
-InstallOtherMethod(OneMutable, "for a partial perm coll", 
-[IsPartialPermCollection], 
-function(x)
-  return JoinOfIdempotentPartialPermsNC(List(x, One)); 
-end);
+InstallMethod(OneMutable, "for a partial perm coll", 
+[IsPartialPermCollection], OneImmutable);
 
-#
-
-InstallOtherMethod(ZeroMutable, "for a partial perm coll",
+InstallMethod(ZeroImmutable, "for a partial perm coll",
 [IsPartialPermCollection], MeetOfPartialPerms);
 
-#EOF
+InstallMethod(ZeroMutable, "for a partial perm coll",
+[IsPartialPermCollection], ZeroImmutable);

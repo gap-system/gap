@@ -213,7 +213,8 @@ DeclareAttribute("RelationsOfFpMonoid",IsFpMonoid);
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareAttribute("IsomorphismFpMonoid",IsMonoid);
+
+DeclareAttribute("IsomorphismFpMonoid",IsSemigroup);
 
 ############################################################################
 ##

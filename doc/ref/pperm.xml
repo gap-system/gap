@@ -1068,7 +1068,6 @@ gap> AsPartialPerm(f, [ 1, 2, 3 ] );
       set of positive integer"/> 
     <Meth Name="AsPartialPerm" Arg="f, n" Label="for a transformation and a
       positive integer"/> 
-    <Meth Name="AsPartialPerm" Arg="f" Label="for a transformation"/>
   <Returns>A partial permutation or <K>fail</K>.</Returns>
   <Description>
     A transformation <A>f</A> defines a partial permutation when it is
@@ -1095,33 +1094,19 @@ gap> AsPartialPerm(f, [ 1, 2, 3 ] );
         integer and this set satisfies the
         conditions given above.
       </Item>
-      <Mark>for a transformation</Mark>
-      <Item> 
-        Let <C>n</C> denote the degree of <A>f</A>. If 
-        <C>n^<A>f</A>=n</C> and <A>f</A> is injective on those <C>i</C> such
-        that <C>i^<A>f</A>&lt;>n</C>, then <C>AsPartialPerm</C> returns
-        the partial permutation obtained by restricting <A>f</A> to those
-        <C>i</C> such that <C>i^<A>f</A>&lt;>n</C>.
-      </Item>
     </List>
-
-    <C>AsPartialPerm</C> returns <K>fail</K> if the arguments do not describe a
-    partial permutation.<P/>
 
     The operation <Ref Oper="PartialPermOp"/> can also be used to convert
     transformations into partial permutations.
 
   <Example>
 gap> f:=Transformation( [ 8, 3, 5, 9, 6, 2, 9, 7, 9 ] );;
-gap> AsPartialPerm(f);
-[1,8,7](2,3,5,6)
+gap> AsPartialPerm(f, [1, 2, 3, 5, 8]);
+[1,8,7][2,3,5,6]
 gap> AsPartialPerm(f, 3);
 [1,8][2,3,5]
 gap> AsPartialPerm(f, [ 2 .. 4 ] );
-[2,3,5][4,9]
-gap> f:=Transformation( [ 2, 10, 2, 4, 4, 7, 6, 9, 10, 1 ] );;
-gap> AsPartialPerm(f);
-fail</Example>
+[2,3,5][4,9]</Example>
   </Description>
 </ManSection>
 </Section>
@@ -1687,17 +1672,17 @@ false]]></Example>
 </ManSection>
 
 <ManSection>
-  <Attr Name="IsomorphismPartialPermMonoid" Arg="S"/>
   <Attr Name="IsomorphismPartialPermSemigroup" Arg="S"/>
+  <Attr Name="IsomorphismPartialPermMonoid" Arg="S"/>
   <Returns>An isomorphism.</Returns>
   <Description>
     <C>IsomorphismPartialPermSemigroup(<A>S</A>)</C>
-     returns an isomorphism from the inverse semigroup or group <A>S</A> to an
+     returns an isomorphism from the inverse semigroup <A>S</A> to an
      inverse semigroup of partial permutations.<P/>
 
      <C>IsomorphismPartialPermMonoid(<A>S</A>)</C> returns an isomorphism from
-     the inverse monoid or group <A>S</A> to an inverse monoid of partial
-     permutations.<P/> 
+     the inverse semigroup <A>S</A> to an inverse monoid of partial
+     permutations, if possible.<P/> 
      
      We only describe <C>IsomorphismPartialPermMonoid</C>,
      the corresponding statements for <C>IsomorphismPartialPermSemigroup</C>
@@ -1726,11 +1711,11 @@ false]]></Example>
 
       <Mark>Transformation semigroups</Mark>
       <Item>
-        If <A>S</A> is a transformation semigroup satisfying 
-        <Ref Prop="IsInverseMonoid"/>, then
+        If <A>S</A> is a transformation semigroup which is mathematically a
+        monoid but which does not necessarily belong to the category <Ref Filt
+          = "IsMonoid"/>, then
         <C>IsomorphismPartialPermMonoid</C> returns an isomorphism from
-        <A>S</A> to an inverse monoid of partial permutations on a subset of
-        <C>[1 .. DegreeOfTransformationSemigroup(<A>S</A>)]</C>.
+        <A>S</A> to an inverse monoid of partial permutations.
       </Item>
     </List>
     <Example><![CDATA[
@@ -1740,9 +1725,10 @@ gap> S := InverseSemigroup(
 gap> IsMonoid(S); 
 false
 gap> iso := IsomorphismPartialPermMonoid(S);
-MappingByFunction( <inverse partial perm semigroup of rank 5 with 2 
- generators>, <inverse partial perm monoid of rank 5 with 2 
- generators>, function( object ) ... end, function( object ) ... end )
+MappingByFunction( <inverse partial perm semigroup of size 508, 
+ rank 5 with 2 generators>, <inverse partial perm monoid of size 508, 
+ rank 5 with 2 generators>
+ , function( object ) ... end, function( object ) ... end )
 gap> Size(S);
 508
 gap> Size(Range(iso));
@@ -1751,17 +1737,17 @@ gap> G := Group((1,2)(3,8)(4,6)(5,7), (1,3,4,7)(2,5,6,8), (1,4)(2,6)(3,7)(5,8));
 gap> IsomorphismPartialPermSemigroup(G);
 MappingByFunction( Group([ (1,2)(3,8)(4,6)(5,7), (1,3,4,7)
 (2,5,6,8), (1,4)(2,6)(3,7)
-(5,8) ]), <inverse partial perm semigroup of rank 8 with 3 generators>
- , function( p ) ... end, function( f ) ... end )
+(5,8) ]), <partial perm group of rank 8 with 3 generators>
+, function( p ) ... end, <Attribute "AsPermutation"> )
 gap> S := Semigroup(Transformation( [ 2, 5, 1, 7, 3, 7, 7 ] ), 
 > Transformation( [ 3, 6, 5, 7, 2, 1, 7 ] ) );;
 gap> iso := IsomorphismPartialPermMonoid(S);;
 gap> MultiplicativeNeutralElement(S) ^ iso;
-<identity partial perm on [ 1, 2, 3, 5, 6, 7 ]>
+<identity partial perm on [ 1, 2, 3, 4, 5, 6 ]>
 gap> One(Range(iso));
-<identity partial perm on [ 1, 2, 3, 5, 6, 7 ]>
+<identity partial perm on [ 1, 2, 3, 4, 5, 6 ]>
 gap> MovedPoints(Range(iso));
-[ 1, 2, 3, 5, 6 ]]]></Example>
+[ 1 .. 5 ]]]></Example>
   </Description>
 </ManSection>
 </Section>

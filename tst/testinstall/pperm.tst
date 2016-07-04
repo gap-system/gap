@@ -2260,8 +2260,6 @@ gap> AsTransformation(f);
 <transformation: 6,2,5,10,4,7,8,9,10>
 gap> AsTransformation(f, 12);
 <transformation: 6,2,5,12,4,7,8,9,12,10,12>
-gap> AsPartialPerm(last);
-[1,6,7,8,9][3,5,4](2)(10)
 gap> f;
 [1,6,7,8,9][3,5,4](2)(10)
 gap> f:=PartialPermNC([ 1, 3, 4, 5, 6, 9 ], [ 9, 10, 5, 7, 2, 8 ]);;
@@ -2269,8 +2267,6 @@ gap> AsTransformation(f);
 <transformation: 9,11,10,5,7,2,11,11,8,11>
 gap> AsTransformation(f);
 <transformation: 9,11,10,5,7,2,11,11,8,11>
-gap> AsPartialPerm(last)=f;
-true
 gap> OnTuples([1..DegreeOfPartialPerm(f)], f);
 [ 9, 10, 5, 7, 2, 8 ]
 gap> g:=PartialPermNC([ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 19 ],

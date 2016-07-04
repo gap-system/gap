@@ -444,6 +444,18 @@ gap> Size(S);
 gap> S;
 <inverse transformation semigroup of size 36, degree 5 with 3 generators>
 
+# Check correct view method is used for inverse semigroups without
+# GeneratorsOfInverseSemigroup
+gap> S := Semigroup(Transformation([1, 2, 3, 4, 5, 6, 7, 7, 7]), 
+>                   Transformation([4, 6, 3, 6, 6, 6, 7, 7, 7]),
+>                   Transformation([4, 5, 6, 1, 6, 6, 7, 7, 7]), 
+>                   Transformation([6, 6, 3, 1, 6, 6, 7, 7, 7]), 
+>                   Transformation([4, 6, 6, 1, 2, 6, 7, 7, 7]));;
+gap> IsInverseSemigroup(S);
+true
+gap> S;
+<inverse transformation semigroup of size 17, degree 9 with 5 generators>
+
 #
 gap> STOP_TEST( "semigrp.tst", 1090000);
 
