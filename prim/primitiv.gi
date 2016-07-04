@@ -356,6 +356,9 @@ InstallMethod(SimsNo,"via `PrimitiveIdentification'",true,[IsPermGroup],0,
 function(grp)
 local dom;
   dom:=MovedPoints(grp);
+  if NrMovedPoints(grp) > 50 then
+    Error("SimsNo is defined only for primitive groups of degree <= 50");
+  fi;
   if not IsTransitive(grp,dom) and IsPrimitive(grp,dom) then
     Error("Group must operate primitively");
   fi;

@@ -214,9 +214,10 @@ DeclareGlobalFunction( "OnePrimitiveGroup" );
 ##  <Attr Name="SimsNo" Arg='G'/>
 ##
 ##  <Description>
-##  If <A>G</A> is a primitive group obtained by <Ref Func="PrimitiveGroup"/>
-##  (respectively one of the selection functions) this attribute contains the
-##  number of the isomorphic group in the original list of C.&nbsp;Sims.
+##  If <A>G</A> is a primitive group of degree not greater than 50,
+##  obtained by <Ref Func="PrimitiveGroup"/>
+##  (respectively one of the selection functions), then this attribute contains
+##  the number of the isomorphic group in the original list of C.&nbsp;Sims.
 ##  (This is the arrangement as it was used in &GAP;&nbsp;3.)
 ##  <P/>
 ##  <Example><![CDATA[
