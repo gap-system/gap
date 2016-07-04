@@ -505,7 +505,7 @@ local arglis,i,j,a,b,l,p,deg,gut,g,grp,nr,f,RFL,ind,it;
   od;
 
   if f then
-    Print( "#W  AllPrimitiveGroups: Degree restricted to [ 1 .. ",
+    Print( "#W  AllPrimitiveGroups: Degree restricted to [ 2 .. ",
            PRIMRANGE[ Length( PRIMRANGE ) ], " ]\n" );
   fi;
 
