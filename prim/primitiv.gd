@@ -84,7 +84,7 @@
 ##
 ## tell GAP about the component
 ##
-DeclareComponent("prim","2.1");
+DeclareComponent("prim","3.0");
 
 
 #############################################################################
