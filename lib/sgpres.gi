@@ -2816,7 +2816,15 @@ local t,j;
 end);
 
 
-# New version of MTC based on DFH's book
+# New implemention of the Modified Todd-Coxeter (MTC) algorithm, based on
+# Chapter 5  of the "Handbook of Computational Group Theory", by Derek F.
+# Holt (refered # to as "Handbook" from here on). Function names after the
+# NEWTC_ agree with those of sections 5.2, 5.3 of the Handbook.
+
+# the tables produced internally are indexed at rec.offset+k for generator
+# number k, that is in the form ...,-2,-1,empty,1,2,...
+# This avoids lots of even/od decisions and the cost of the empty list is
+# neglegible.
 
 NEWTC_Compress:=function(DATA,purge)
 local ct,c,a,b,offset,x,to,p,dw,doa,aug;
@@ -2916,6 +2924,7 @@ local c,o,n,j,au;
   n:=n+1;
   DATA.n:=n;
   if n>DATA.limit then
+    if ValueOption("quiet")=true then return fail;fi;
     Error( "the coset enumeration has defined more ",
 	    "than ", DATA.limit, " cosets\n");
     DATA.limit:=DATA.limit*2;
@@ -2946,6 +2955,7 @@ local c,o,n,j,au;
   #  IsBound(c[x+o][y]))) then
   #  Error("hehe");
   #fi;
+  return true; # indicating no quiet fail
 end;
 
 NEWTC_Coincidence:=function(DATA,a,b)
@@ -3013,8 +3023,9 @@ end;
 NEWTC_ModifiedCoincidence:=function(DATA,a,b,w)
 local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
 
+  # decide whether secondary generators will be introduced
   Sekundant:=function(w)
-    if Length(w)<=1 then
+    if Length(w)<=1 or DATA.isCyclicMtcTable=true then
       return w;
     fi;
     DATA.secount:=DATA.secount+1;
@@ -3040,7 +3051,11 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
       mu:=rho;
       rho:=s[mu];
       p[rho]:=lambda;
-      pp[rho]:=Sekundant(WordProductLetterRep(pp[rho],pp[mu]));
+      if DATA.isCyclicMtcTable then
+	pp[rho]:=pp[rho]+pp[mu];
+      else
+	pp[rho]:=Sekundant(WordProductLetterRep(pp[rho],pp[mu]));
+      fi;
     od;
     return lambda;
   end;
@@ -3051,13 +3066,21 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
     psi:=MRep(a);
     if phi>psi then
       p[phi]:=psi;
-      pp[phi]:=Sekundant(WordProductLetterRep(-Reversed(pp[k]),w,pp[a]));
+      if DATA.isCyclicMtcTable then
+	pp[phi]:=-pp[k]+w+pp[a];
+      else
+	pp[phi]:=Sekundant(WordProductLetterRep(-Reversed(pp[k]),w,pp[a]));
+      fi;
       l:=l+1;
       q[l]:=phi;
       DATA.dead:=DATA.dead+1;
     elif psi>phi then
       p[psi]:=phi;
-      pp[psi]:=Sekundant(WordProductLetterRep(-Reversed(pp[a]),-Reversed(w),pp[k]));
+      if DATA.isCyclicMtcTable then
+	pp[psi]:=-pp[a]-w+pp[k];
+      else
+	pp[psi]:=Sekundant(WordProductLetterRep(-Reversed(pp[a]),-Reversed(w),pp[k]));
+      fi;
       l:=l+1;
       q[l]:=psi;
       DATA.dead:=DATA.dead+1;
@@ -3082,19 +3105,33 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
 	mu:=MRep(c);
 	nu:=MRep(d);
 	if ct[x+offset][mu]<>0 then
-	  v:=WordProductLetterRep(-Reversed(pp[d]),-Reversed(aug[x+offset][c]),
+	  if DATA.isCyclicMtcTable then
+	    v:=-pp[d]-aug[x+offset][c]+pp[c]+aug[x+offset][mu];
+	  else
+	    v:=WordProductLetterRep(-Reversed(pp[d]),-Reversed(aug[x+offset][c]),
 		pp[c],aug[x+offset][mu]);
+	  fi;
 	  MMerge(nu,ct[x+offset][mu],v);
 	elif ct[-x+offset][nu]<>0 then
-	  v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],
-		pp[d],aug[-x+offset][nu]);
+	  if DATA.isCyclicMtcTable then
+	    v:=-pp[c]+aug[x+offset][c]+pp[d]+aug[-x+offset][nu];
+	  else
+	    v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],
+		  pp[d],aug[-x+offset][nu]);
+	  fi;
 	  MMerge(mu,ct[-x+offset][nu],v);
 	else
 	  ct[x+offset][mu]:=nu;
 	  ct[-x+offset][nu]:=mu;
-	  v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],pp[d]);
-	  aug[x+offset][mu]:=v;
-	  aug[-x+offset][nu]:=-Reversed(v);
+	  if DATA.isCyclicMtcTable then
+	    v:=-pp[c]+aug[x+offset][c]+pp[d];
+	    aug[x+offset][mu]:=v;
+	    aug[-x+offset][nu]:=-v;
+	  else
+	    v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],pp[d]);
+	    aug[x+offset][mu]:=v;
+	    aug[-x+offset][nu]:=-Reversed(v);
+	  fi;
 	  Add(DATA.deductions,[mu,x]);
 	fi;
       fi;
@@ -3106,8 +3143,8 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
   od;
 end;
 
-# superseded by kernel function, left here for debugging purposes.
-NEWTC_ObsoleteFailScan:=function(c,offset,alpha,w)
+# superseded by kernel function TC_QUICK_SCAN, left here for debugging purposes.
+NEWTC_QuickScanLibraryVersion:=function(c,offset,alpha,w)
 local f,b,r,i,j;
   f:=alpha;i:=1;
   r:=Length(w);
@@ -3118,6 +3155,7 @@ local f,b,r,i,j;
   od;
   if i>r then
     if f<>alpha then
+      w[1]:=i;w[2]:=f;
       return true;
     fi;
     return false;
@@ -3130,6 +3168,7 @@ local f,b,r,i,j;
     j:=j-1;
   od;
   if j<=i then 
+    w[1]:=i;w[2]:=f;w[3]:=j;w[4]:=b;
     return true;
   fi;
   return false;
@@ -3212,13 +3251,21 @@ local c,offset,f,b,r,i,j,fp,bp,t;
   r:=Length(w);
   # forward scan
   while i<=r and c[w[i]+offset][f]<>0 do
-    fp:=WordProductLetterRep(fp,DATA.aug[w[i]+offset][f]);
+    if DATA.isCyclicMtcTable then
+      fp:=fp+DATA.aug[w[i]+offset][f];
+    else
+      fp:=WordProductLetterRep(fp,DATA.aug[w[i]+offset][f]);
+    fi;
     f:=c[w[i]+offset][f];
     i:=i+1;
   od;
   if i>r then
     if f<>alpha then
-      NEWTC_ModifiedCoincidence(DATA,f,alpha,WordProductLetterRep(-Reversed(fp),y));
+      if DATA.isCyclicMtcTable then
+	NEWTC_ModifiedCoincidence(DATA,f,alpha,-fp+y);
+      else
+	NEWTC_ModifiedCoincidence(DATA,f,alpha,WordProductLetterRep(-Reversed(fp),y));
+      fi;
     fi;
     return;
   fi;
@@ -3227,18 +3274,31 @@ local c,offset,f,b,r,i,j,fp,bp,t;
   b:=alpha;j:=r;
   bp:=y;
   while j>=i and c[-w[j]+offset][b]<>0 do
-    bp:=WordProductLetterRep(bp,DATA.aug[-w[j]+offset][b]);
+    if DATA.isCyclicMtcTable then
+      bp:=bp+DATA.aug[-w[j]+offset][b];
+    else
+      bp:=WordProductLetterRep(bp,DATA.aug[-w[j]+offset][b]);
+    fi;
     b:=c[-w[j]+offset][b];
     j:=j-1;
   od;
   if j<i then 
-    NEWTC_ModifiedCoincidence(DATA,f,b,WordProductLetterRep(-Reversed(fp),bp));
+    if DATA.isCyclicMtcTable then
+      NEWTC_ModifiedCoincidence(DATA,f,b,-fp+bp);
+    else
+      NEWTC_ModifiedCoincidence(DATA,f,b,WordProductLetterRep(-Reversed(fp),bp));
+    fi;
   elif j=i then 
     # deduction
     c[w[i]+offset][f]:=b;
     c[-w[i]+offset][b]:=f;
-    DATA.aug[w[i]+offset][f]:=WordProductLetterRep(-Reversed(fp),bp);
-    DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
+    if DATA.isCyclicMtcTable then
+      DATA.aug[w[i]+offset][f]:=-fp+bp;
+      DATA.aug[-w[i]+offset][b]:=-bp+fp;
+    else
+      DATA.aug[w[i]+offset][f]:=WordProductLetterRep(-Reversed(fp),bp);
+      DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
+    fi;
     Add(DATA.deductions,[f,w[i]]);
   fi;
 end;
@@ -3293,7 +3353,11 @@ local c,offset,f,b,r,i,j,fp,bp;
   while true do #N
     # forward scan
     while i<=r and c[w[i]+offset][f]<>0 do
-      fp:=WordProductLetterRep(fp,DATA.aug[w[i]+offset][f]);
+      if DATA.isCyclicMtcTable then
+	fp:=fp+DATA.aug[w[i]+offset][f];
+      else
+	fp:=WordProductLetterRep(fp,DATA.aug[w[i]+offset][f]);
+      fi;
       f:=c[w[i]+offset][f];
       i:=i+1;
     od;
@@ -3306,18 +3370,31 @@ local c,offset,f,b,r,i,j,fp,bp;
 
     #backward scan
     while j>=i and c[-w[j]+offset][b]<>0 do
-      bp:=WordProductLetterRep(bp,DATA.aug[-w[j]+offset][b]);
+      if DATA.isCyclicMtcTable then
+	bp:=bp+DATA.aug[-w[j]+offset][b];
+      else
+	bp:=WordProductLetterRep(bp,DATA.aug[-w[j]+offset][b]);
+      fi;
       b:=c[-w[j]+offset][b];
       j:=j-1;
     od;
     if j<i then 
-      NEWTC_ModifiedCoincidence(DATA,f,b,WordProductLetterRep(-Reversed(fp),bp));
+      if DATA.isCyclicMtcTable then
+	NEWTC_ModifiedCoincidence(DATA,f,b,-fp+bp);
+      else
+	NEWTC_ModifiedCoincidence(DATA,f,b,WordProductLetterRep(-Reversed(fp),bp));
+      fi;
     elif j=i then 
       # deduction
       c[w[i]+offset][f]:=b;
       c[-w[i]+offset][b]:=f;
-      DATA.aug[w[i]+offset][f]:=WordProductLetterRep(-Reversed(fp),bp);
-      DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
+      if DATA.isCyclicMtcTable then
+	DATA.aug[w[i]+offset][f]:=-fp+bp;
+	DATA.aug[-w[i]+offset][b]:=-bp+fp;
+      else
+	DATA.aug[w[i]+offset][f]:=WordProductLetterRep(-Reversed(fp),bp);
+	DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
+      fi;
       Add(DATA.deductions,[f,w[i]]);
     else
       NEWTC_Define(DATA,f,w[i]);
@@ -3366,7 +3443,7 @@ local ded,offset,pair,alpha,x,p,w;
 end;
 
 NEWTC_DoCosetEnum:=function(freegens,freerels,subgens,aug,trace)
-local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
+local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
   oldead,with,collapse,j,from,pp,PERCFACT;
 
   PERCFACT:=100;
@@ -3417,7 +3494,14 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
   DATA.limtrigger:=Int(9/10*DATA.limit);
 
   if aug<>false then
-    DATA.one:=[];
+
+    if ValueOption("cyclic")<>fail and Length(subgens)=1 then
+      DATA.isCyclicMtcTable:=true;
+      DATA.one:=0;
+    else
+      DATA.isCyclicMtcTable:=false;
+      DATA.one:=[];
+    fi;
     aug:=List([1..offset+m],x->[]);Unbind(aug[offset]);
     pp:=[DATA.one]; 
     DATA.aug:=aug;
@@ -3425,6 +3509,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
     DATA.secondary:=[];
     DATA.secount:=Length(subgens); # last to be used
     DATA.augmented:=true;
+
   else
     DATA.augmented:=false;
   fi;
@@ -3439,7 +3524,11 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
 
   for w in [1..Length(subgens)] do
     if DATA.augmented then
-      NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],[w]);
+      if DATA.isCyclicMtcTable then
+	NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],1);
+      else
+	NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],[w]);
+      fi;
     else
       NEWTC_ScanAndFill(DATA,1,DATA.subgword[w]);
     fi;
@@ -3457,7 +3546,8 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
       i:=1;
       for a in w do
 	if ct[a+offset][i]=0 then
-	  NEWTC_Define(DATA,i,a);
+	  dr:=NEWTC_Define(DATA,i,a);
+	  if dr=fail then return fail;fi;
 	  NEWTC_ProcessDeductions(DATA);
 	  i:=p[i]; # in case there is a change
 	fi;
@@ -3471,7 +3561,8 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
     for a in A do
       if p[i]=i then
 	if ct[a+offset][i]=0 then
-	  NEWTC_Define(DATA,i,a);
+	  dr:=NEWTC_Define(DATA,i,a);
+	  if dr=fail then return fail;fi;
 	  oldead:=DATA.dead;
 	  NEWTC_ProcessDeductions(DATA);
 	  if PERCFACT*(DATA.dead-oldead)>DATA.n then
@@ -3539,11 +3630,13 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
       fi;
     od;
 
-    # at least 33% trash (3=1+1/0.3, 11=1+1/0.1), or over limtrigger and
-    # at least 2% trash
-    if
-      2*DATA.n>DATA.limit and ( 4*DATA.dead>DATA.n or 
+    # conditions for compression: Over half the table used, and
+    if 2*DATA.n>DATA.limit and 
+      # at least 33% trash (4=1+1/0.33)
+      ( 4*DATA.dead>DATA.n or 
+      # over limtrigger and at least 2% (55=1+1/0.02) trash
       (51*DATA.dead>DATA.n and DATA.n>DATA.limtrigger) )  then
+
       Info( InfoFpGroup, 2, "\t", DATA.defcount, "\t\t", DATA.dead,
       "\t\t", DATA.n-DATA.dead, "\t\t", DATA.n );
       i:=Number([1..i],x->p[x]=x);
@@ -3560,7 +3653,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
     i:=i+1;
   od;
 
-  NEWTC_Compress(DATA,true);
+  NEWTC_Compress(DATA,true); # always compress at the end
   DATA.index:=DATA.n;
 
   if Length(collapse)>0 then
@@ -3585,6 +3678,8 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,
 end;
 
 #freegens,fgreerels,subgens,doaugmented,trace
+# Options: limit, quiet (return fail if run out of space)
+# cyclic (if given and 1 generator do special case of cyclic rewriting)
 InstallGlobalFunction(NEWTC_CosetEnumerator,function(arg)
 local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
   freegens:=arg[1];
@@ -3608,8 +3703,10 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
   start:=Runtime();
   if aug and trace=false then
     e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,aug,trace);
+    if e=fail then return fail;fi;
   else
     e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,false,trace);
+    if e=fail then return fail;fi;
     bastime:=Runtime()-start;
     bl:=e.defcount;
     bw:=[];
@@ -3630,6 +3727,7 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
       e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,false,trace:
 	  # that's what we had last time -- no need to whine
 	  limit:=e.limit);
+      if e=fail then return fail;fi;
       if e.defcount<bl then
 	bl:=e.defcount;
 	bw:=ShallowCopy(trace);
@@ -3651,6 +3749,7 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
       e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,true,bw:
 	  # that's what we had last time -- no need to whine
 	  limit:=e.limit);
+      if e=fail then return fail;fi;
     fi;
   fi;
   if not aug then
@@ -3666,11 +3765,13 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
   fi;
 
   aug:=rec(isNewAugmentedTable:=true,
+	   isCyclicMtcTable:=e.data.isCyclicMtcTable,
 	   n:=e.data.n,
 	   A:=e.data.A,
 	   index:=e.data.index,
 	   rels:=e.data.rels,
 	   ct:=e.data.ct,
+	   one:=e.data.one,
 	   aug:=e.data.aug,
 	   defcount:=e.data.defcount,
 	   secount:=e.data.secount,
@@ -3691,10 +3792,14 @@ local DATA,start,w,offset,c,i,j;
   start:=arg[2];
   w:=arg[3];
   offset:=DATA.offset;
-  c:=[];
+  c:=DATA.one;
   i:=start;
   for j in w do
-    c:=WordProductLetterRep(c,DATA.aug[j+offset][i]);
+    if DATA.isCyclicMtcTable then
+      c:=c+DATA.aug[j+offset][i];
+    else
+      c:=WordProductLetterRep(c,DATA.aug[j+offset][i]);
+    fi;
     i:=DATA.ct[j+offset][i];
   od;
   if Length(arg)>3 and arg[4]<>i then
@@ -3708,7 +3813,9 @@ local p,new,start;
   if Length(s)<Length(r) then
     return s;
   fi;
-  # TODO: Cyclic
+  # TODO: Replace cyclically, that is allow the substring to hang out over the
+  # end and start again. This is easiest done by having a cylci version of
+  # `PositionSublist'.
   p:=PositionSublist(s,r);
   if p<>fail then
     new:=s{[1..p-1]};
@@ -3727,10 +3834,27 @@ local p,new,start;
 end;
 
 
+InstallGlobalFunction(NEWTC_CyclicSubgroupOrder,function(DATA)
+local rels,r,i,w;
+
+  rels:=0;
+  r:=NEWTC_Rewrite(DATA,1,DATA.subgword[1])-1;
+  rels:=Gcd(rels,r);
+
+  for i in [1..DATA.n] do
+    for w in DATA.rels do
+      r:=NEWTC_Rewrite(DATA,i,w);
+      rels:=Gcd(rels,r);
+    od;
+  od;
+
+  return rels;
+end);
+
 # DATA, [parameter,string]
 # parameter is: 
 # 1: Do a quick reduction without trying to eliminate all secondary gens.
-InstallGlobalFunction("NEWTC_PresentationMTC",function(arg)
+InstallGlobalFunction(NEWTC_PresentationMTC,function(arg)
 local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
   subnum,bad,warn,parameter,str;
 
@@ -3748,8 +3872,9 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
 
 
   offset:=DATA.offset;
-  rels:=[];
   subnum:=Length(DATA.subgens);
+  rels:=[];
+
   for i in [1..subnum] do
     r:=WordProductLetterRep(NEWTC_Rewrite(DATA,1,DATA.subgword[i]),[-i]);
     if Length(r)>0 then
@@ -3809,6 +3934,7 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
       fi;
     od;
   od;
+
 
   # add definitions of secondary generators
   for i in [subnum+1..DATA.secount] do
