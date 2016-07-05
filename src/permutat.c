@@ -2984,6 +2984,11 @@ Obj             FuncCycleStructurePerm (
 	list=NEW_PLIST(T_PLIST,max-1);
 	SET_LEN_PLIST(list,max-1);
         ptList = ADDR_OBJ(list);
+
+        /* Recalculate after possible GC */
+        scratch2=ADDR_PERM2(TmpPerm);
+        offset2=(UInt2*)((UInt)scratch2+(bytes));
+
 	for (pnt=1;pnt<=max-1;pnt++) { ptList[pnt]=0; } /* clean out */
 
 	for (cnt=0; cnt<ende;cnt++) {
@@ -3054,6 +3059,11 @@ Obj             FuncCycleStructurePerm (
 	list=NEW_PLIST(T_PLIST,max-1);
 	SET_LEN_PLIST(list,max-1);
         ptList = ADDR_OBJ(list);
+
+        /* Recalculate after possible GC */
+        scratch4=ADDR_PERM4(TmpPerm);
+        offset4=(UInt4*)((UInt)scratch4+(bytes));
+
 	for (pnt=1;pnt<max;pnt++) { ptList[pnt]=0; } /* clean out */
 
 	for (cnt=0; cnt<ende;cnt++) {
