@@ -2121,7 +2121,7 @@ end );
 ##
 InstallMethod(ONanScottType,"primitive permgroups",true,[IsPermGroup],0,
 function(G)
-local dom,s,cs,t,ts,o;
+local dom,s,cs,t,ts,o,m,stb;
   dom:=MovedPoints(G);
   if not IsPrimitive(G,dom) then
     Error("<G> must be primitive");
@@ -2134,34 +2134,46 @@ local dom,s,cs,t,ts,o;
   elif Length(dom)=Size(s) then
     return "5";
   else
-    # now get one simple factor of the socle
+    # so the group now is of type 3 or 4. Next we determine a simple socle
+    # factor and a direct product of all but one socle factor.
+    # simple socle factor.
+
+    # as default stab chain chooes pts lexicographically, this is likely a
+    # stored stabilizer
+    stb:=Stabilizer(s,SmallestMovedPoint(s));
     cs:=CompositionSeries(s);
-    # if the group is diagonal, the diagonal together with a maximal socle
-    # normal subgroup generates the whole socle, so this normal subgroup
-    # acts transitively. For product type this is not the case.
     t:=cs[Length(cs)-1];
-    if IsTransitive(t,dom) then
-      # type 3
-      if Length(cs)=3 and IsNormal(G,t) then
-	# intransitive on 2 components:
+    m:=cs[2];
+
+    # now test Dixon&Mortimer, p.126, Case 1: R1 (projection of pt. stab
+    # onto one direct factor) is proper subgroup of T1.
+    
+    #if Size(ClosureSubgroup(m,stb))<Size(s) then
+    # Since m is normal, this projection is a proper subgroup iff m does not
+    # act transitively
+    if not IsTransitive(m,dom) then
+      return "4c"; # Product action of type 2 with transitive
+    fi;
+
+    #  Now we are in case 2, R1=T1. Group must be diagonal (3) or product
+    #  action of diagonal with transitive (4). For diagonal case the point
+    #  stabilizer must have the order of t, for product case it must be a
+    #  power of the order of t
+    if Size(stb)=Size(t) then # type 3
+      # in the a case the socle is not minimal
+      #if Size(NormalClosure(G,t))<Size(s) then
+      if Length(Orbit(G,t))<Length(cs)-1 then 
 	return "3a";
       else
-	return "3b";
+        return "3b";
       fi;
     else
-      # type 4
-      ts:=Orbit(G,t);
-      if Length(ts)=2 and NormalClosure(G,t)<>s then
-        return "4a";
-      fi;
-      # find the block on the T's first: Those t which keep the orbit are
-      # glued together diagonally
-      o:=Orbit(t,dom[1]);
-      ts:=Filtered(ts,i->i=t or IsSubset(o,Orbit(i,dom[1])));
-      if Length(ts)=1 then
-        return "4c"; 
+      # Same argument as for 3:
+      #if Size(NormalClosure(G,t))<Size(s) then
+      if Length(Orbit(G,t))<Length(cs)-1 then 
+	return "4a";
       else
-	return "4b";
+        return "4b";
       fi;
     fi;
   fi;
