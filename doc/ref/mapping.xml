@@ -52,6 +52,7 @@ section&nbsp;<Ref Sect="General Mappings"/>.
 <#Include Label="GeneralMappingByElements">
 <#Include Label="MappingByFunction">
 <#Include Label="InverseGeneralMapping">
+<#Include Label="RestrictedInverseGeneralMapping">
 <#Include Label="CompositionMapping">
 <#Include Label="CompositionMapping2">
 <#Include Label="IsCompositionMappingRep">

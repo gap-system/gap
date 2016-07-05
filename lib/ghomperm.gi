@@ -1272,23 +1272,12 @@ InstallGlobalFunction( StabChainPermGroupToPermGroupGeneralMappingByImages,
            [ 1 .. n ], One( Source( hom ) ), conperminv, hom,
            CoKernelOfMultiplicativeGeneralMapping );
 
-    #if  NrMovedPoints(longgroup)<=10000 and (
-    #   (not HasInverseGeneralMapping( hom )
-    #   or not HasStabChainMutable( InverseGeneralMapping( hom ) )
-    #   or not HasKernelOfMultiplicativeGeneralMapping( hom ) 
-    #   ) then
-    #    MakeStabChainLong( InverseGeneralMapping( hom ),
-    #            StabChainOp( longgroup, [ n + 1 .. n + k ] ),
-    #            [ n + 1 .. n + k ], conperminv, One( Source( hom ) ), hom,
-    #            KernelOfMultiplicativeGeneralMapping );
-    #fi;
-
-    if  NrMovedPoints(longgroup)<=10000 and (
+    if  NrMovedPoints(longgroup)<=10000 and 
        (not HasRestrictedInverseGeneralMapping( hom )
        or not HasStabChainMutable( RestrictedInverseGeneralMapping( hom ) )
        or not HasKernelOfMultiplicativeGeneralMapping( hom ) 
        ) then
-        MakeStabChainLong( RestructedInverseGeneralMapping( hom ),
+        MakeStabChainLong( RestrictedInverseGeneralMapping( hom ),
                 StabChainOp( longgroup, [ n + 1 .. n + k ] ),
                 [ n + 1 .. n + k ], conperminv, One( Source( hom ) ), hom,
                 KernelOfMultiplicativeGeneralMapping );
