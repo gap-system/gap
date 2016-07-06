@@ -356,6 +356,9 @@ InstallMethod(SimsNo,"via `PrimitiveIdentification'",true,[IsPermGroup],0,
 function(grp)
 local dom;
   dom:=MovedPoints(grp);
+  if NrMovedPoints(grp) > 50 then
+    Error("SimsNo is defined only for primitive groups of degree <= 50");
+  fi;
   if not IsTransitive(grp,dom) and IsPrimitive(grp,dom) then
     Error("Group must operate primitively");
   fi;
@@ -505,7 +508,7 @@ local arglis,i,j,a,b,l,p,deg,gut,g,grp,nr,f,RFL,ind,it;
   od;
 
   if f then
-    Print( "#W  AllPrimitiveGroups: Degree restricted to [ 1 .. ",
+    Print( "#W  AllPrimitiveGroups: Degree restricted to [ 2 .. ",
            PRIMRANGE[ Length( PRIMRANGE ) ], " ]\n" );
   fi;
 
