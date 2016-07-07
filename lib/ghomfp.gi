@@ -218,16 +218,7 @@ local u,aug,hgu,mapi,w;
   aug.primaryImages:=List(aug.subgens,
                           i->aug.homgenims[Position(hgu,i)]);
 
-  # # try to re-use an existing augmented coset table:
-  # aug:=AugmentedCosetTableInWholeGroup(u,mapi[1]);
-  # if not IsSubset(hgu,aug.primaryGeneratorWords) then
-  #   # we don't know what to do with the extra primary words, so enforce MTC
-  #   # version
-  #   aug:=AugmentedCosetTableMtcInWholeGroup(
-  #          SubgroupNC(FamilyObj(u)!.wholeGroup,mapi[1]));
-  # fi;
-  # as we add homomorphism specific entries, lets be safe and copy.
-  # aug:=CopiedAugmentedCosetTable(aug);
+  # TODO: possibly re-use an existing augmented table stored already
 
   TrySecondaryImages(aug);
 
@@ -880,29 +871,6 @@ local aug,w,p,pres,f,fam,G;
     pres:=NEWTC_PresentationMTC(aug,0,"%");
   fi;
   Assert(0,Length(GeneratorsOfPresentation(pres))=Length(gens));
-
-  # old code
-#  if HasGeneratorsOfGroup(u) and IsIdenticalObj(GeneratorsOfGroup(u),gens) then
-#    aug:=AugmentedCosetTableMtcInWholeGroup(u);
-#  else
-#    w:=FamilyObj(u)!.wholeGroup;
-#    aug:=AugmentedCosetTableMtc(w,SubgroupNC(w,gens),2,"%");
-#    # do not store the generators for the subgroup (the user could do this
-#    # himself if he wanted), the danger of consequential errors due to a
-#    # wrong <gens> list is too high.
-#  fi;
-#
-#  # force computation of words for the secondary generators
-#  SecondaryGeneratorWordsAugmentedCosetTable(aug);
-#
-#  # create a tietze object to reduce the presentation a bit
-#  if not IsBound(aug.subgroupRelators) then
-#    aug.subgroupRelators := RewriteSubgroupRelators( aug, aug.groupRelators);
-#  fi;
-#  aug:=CopiedAugmentedCosetTable(aug);
-#  pres := PresentationAugmentedCosetTable( aug,nam,0,true );
-#  TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup);
-#  DecodeTree(pres);
 
   # new free group
   f:=FpGroupPresentation(pres);
