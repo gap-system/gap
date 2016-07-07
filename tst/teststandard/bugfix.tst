@@ -3106,6 +3106,10 @@ gap> sc := StabChainOp(Group((1,2)), rec(base := [3,2], reduced := false));;
 gap> SCRSift(sc, (1,2));
 ()
 
+# 2016/07/07 (MP, bug reported by email)
+gap> Intersection([]);
+[  ]
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 831990000);
 
