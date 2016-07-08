@@ -2473,6 +2473,9 @@ InstallGlobalFunction( Intersection, function ( arg )
     # unravel the argument list if necessary
     if Length(arg) = 1  then
         arg := arg[1];
+        if IsEmpty(arg) then
+            return [];
+        fi;
     fi;
 
     # start with the first domain or list
