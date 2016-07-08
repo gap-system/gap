@@ -5493,12 +5493,16 @@ void CompFunc (
     Obj                 fexs;           /* function expression list        */
     Bag                 oldFrame;       /* old frame                       */
     Int                 i;              /* loop variable                   */
+    Int                 prevarargs;     /* we have varargs with a prefix   */
 
     /* get the number of arguments and locals                              */
     narg = NARG_FUNC(func);
+    prevarargs = 0;
+    if(narg < -1) prevarargs = 1;
     if (narg < 0) {
         narg = -narg;
     }
+
     nloc = NLOC_FUNC(func);
 
     /* in the first pass allocate the info bag                             */
@@ -5542,7 +5546,7 @@ void CompFunc (
         Emit( " Obj  self )\n" );
         Emit( "{\n" );
     }
-    else if ( narg <= 6 ) {
+    else if ( narg <= 6 && !prevarargs ) {
         Emit( "static Obj  HdlrFunc%d (\n", NR_INFO(info) );
         Emit( " Obj  self,\n" );
         for ( i = 1; i < narg; i++ ) {
@@ -5586,6 +5590,15 @@ void CompFunc (
         for ( i = 1; i <= narg; i++ ) {
             Emit( "%c = ELM_PLIST( args, %d );\n", CVAR_LVAR(i), i );
         }
+    }
+
+   if ( prevarargs ) {
+        Emit( "CHECK_NR_AT_LEAST_ARGS( %d, args )\n", narg );
+        for ( i = 1; i < narg; i++ ) {
+            Emit( "%c = ELM_PLIST( args, %d );\n", CVAR_LVAR(i), i );
+        }
+        Emit( "Obj x_temp_range = Range2Check(INTOBJ_INT(%d), INTOBJ_INT(LEN_PLIST(args)));\n", narg);
+        Emit( "%c = ELMS_LIST(args , x_temp_range);\n", CVAR_LVAR(narg));
     }
 
     /* emit the code to switch to a new frame for outer functions          */
