@@ -60,17 +60,23 @@ fi;
 ##
 #X  Read primitive groups library
 ##
-PRIM_AVAILABLE:=ReadPrim( "primitiv.gd","primitive groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.gd","irreducible solvable groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.grp",
-                                     "primitive groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.gi",
-                                     "primitive groups" );
 
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.grp","irreducible solvable groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.gi","irreducible solvable groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "cohorts.grp","irreducible solvable groups" );
+# only load component if not available as package
+if TestPackageAvailability("primgrp")=fail then
+  PRIM_AVAILABLE:=ReadPrim( "primitiv.gd","primitive groups" );
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.gd","irreducible solvable groups" );
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.grp",
+                                       "primitive groups" );
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.gi",
+                                       "primitive groups" );
 
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.grp",
+                                       "irreducible solvable groups" );
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.gi",
+                                       "irreducible solvable groups" );
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "cohorts.grp",
+                                       "irreducible solvable groups" );
+fi;
 
 #############################################################################
 ##
