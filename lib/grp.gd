@@ -434,6 +434,32 @@ InstallFactorMaintenance( IsPGroup,
 
 InstallTrueMethod( IsPGroup, IsGroup and IsTrivial );
 InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
+#############################################################################
+##
+#P  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
+##
+##  <#GAPDoc Label="IsPowerfulPGroup">
+##  <ManSection>
+##  <Prop Name="IsPowerfulPGroup" Arg='G'/>
+##
+##  <Description>
+##  <Index Key="powerful p-group"><M>powerful p</M>-group</Index>
+##  A <E> powerful <M>p</M>-group</E> is a finite group whose order
+##  (see&nbsp;<Ref Func="Size"/>) is of ...blahblahblah the form <M>p^n</M> for a prime
+##  integer <M>p</M> and a nonnegative integer <M>n</M>.
+##  <Ref Prop="IsPGroup"/> returns <K>true</K> if <A>G</A> is a
+##  <M>p</M>-group, and <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsPowerfulPGroup", IsGroup );
+
+#Quotients of powerful of powerful p groups are powerful
+InstallFactorMaintenance( IsPowerfulPGroup,
+    IsPowerfulPGroup, IsGroup, IsGroup );
+#abelian p-groups are powerful
+InstallTrueMethod( IsPowerfulPGroup, IsPGroup and IsAbelian );
 
 
 #############################################################################

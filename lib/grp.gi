@@ -236,6 +236,28 @@ InstallMethod( IsPGroup,
       return IS_PGROUP_FOR_NILPOTENT( G );
     fi;
     end );
+#############################################################################
+##
+#M  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
+##
+     
+  
+InstallMethod( IsPowerfulPGroup,
+    "generic method checks inclusion of commutator subgroup in agemo subgroup",
+    [ IsGroup ],
+     function( G )
+    local p;
+    if IsPGroup( G ) = false then
+      return false;
+    else
+      p:=Factors(Size( G ))[1];
+      if p = 2 then 
+        return IsSubgroup(Agemo(G,4),DerivedSubgroup( G ));
+      else 
+        return IsSubgroup(Agemo(G,p), DerivedSubgroup( G ));
+      fi; 
+    fi;
+    end);                                              
 
 
 #############################################################################
