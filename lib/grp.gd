@@ -1653,7 +1653,7 @@ DeclareAttribute( "InvariantForm", IsGroup );
 ##  This series is defined by setting
 ##  <M>G_1 = <A>G</A></M> and for <M>i \geq 0</M>,
 ##  <M>G_{{i+1}} = [G_i,<A>G</A>] G_j^p</M>,
-##  where <M>j</M> is the smallest integer <M>\geq i/p</M>.
+##  where <M>j</M> is the smallest integer <M>> i/p</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
