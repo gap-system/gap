@@ -168,4 +168,7 @@ gap> ForAll(PrimeDivisors(s), p -> HasPrimePGroup(SylowSubgroup(G, p)));
 true
 gap> ForAll(PrimeDivisors(s), p -> p=PrimePGroup(SylowSubgroup(G, p)));
 true
+gap> JenningsSeries(CyclicGroup(4));
+[ <pc group of size 4 with 2 generators>, Group([ f2 ]), 
+  Group([ <identity> of ... ]) ]
 gap> STOP_TEST("pgroups.tst", 10000);
