@@ -168,4 +168,36 @@ gap> ForAll(PrimeDivisors(s), p -> HasPrimePGroup(SylowSubgroup(G, p)));
 true
 gap> ForAll(PrimeDivisors(s), p -> p=PrimePGroup(SylowSubgroup(G, p)));
 true
+gap> G:=CyclicGroup(9);;
+gap> HasIsPowerfulPGroup(G);
+true
+gap> IsPowerfulPGroup(G);
+true
+gap> G:=CyclicGroup(10);;
+gap> IsPowerfulPGroup(G);
+Error, <G> must be a p-group
+gap> G:=SmallGroup(243,11);;
+gap> HasIsPowerfulPGroup(G);
+false
+gap> IsPowerfulPGroup(G);
+true
+gap> N:=NormalSubgroups(G)[3];;
+gap> H:=FactorGroup(G,N);;
+gap> HasIsPowerfulPGroup(H);
+true
+gap> IsPowerfulPGroup(H);
+true
+gap> myList:=AllSmallGroups(5^4);;
+gap> Length(Filtered(myList,g->IsPowerfulPGroup(g)));
+9
+gap> newList:=AllSmallGroups(5^4);;
+gap> for g in newList do
+> RankPGroup(g);
+> Agemo(g,5);
+> od;
+gap> Length(Filtered(newList,g->IsPowerfulPGroup(g)));
+9
+gap> myList:=AllSmallGroups(2^4);;
+gap> Length(Filtered(myList,g->IsPowerfulPGroup(g)));
+6
 gap> STOP_TEST("pgroups.tst", 10000);

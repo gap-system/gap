@@ -436,19 +436,24 @@ InstallTrueMethod( IsPGroup, IsGroup and IsTrivial );
 InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 #############################################################################
 ##
-#P  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
+#P  IsPowerfulPGroup( <G> ) . . . . . . . . . is a group a powerful p-group ?
 ##
 ##  <#GAPDoc Label="IsPowerfulPGroup">
 ##  <ManSection>
 ##  <Prop Name="IsPowerfulPGroup" Arg='G'/>
 ##
 ##  <Description>
-##  <Index Key="powerful p-group"><M>powerful p</M>-group</Index>
-##  A <E> powerful <M>p</M>-group</E> is a finite group whose order
-##  (see&nbsp;<Ref Func="Size"/>) is of ...blahblahblah the form <M>p^n</M> for a prime
-##  integer <M>p</M> and a nonnegative integer <M>n</M>.
-##  <Ref Prop="IsPGroup"/> returns <K>true</K> if <A>G</A> is a
-##  <M>p</M>-group, and <K>false</K> otherwise.
+##  <Index Key="PowerfulPGroup">Powerful <M> p</M>-group</Index>
+##  A finite p-group <A>G</A> is said to be a Powerful <M>p</M>-group if the 
+##  commutator subgroup <M>[<A>G</A>,<A>G</A>]</M> is contained in
+##  <M><A>G</A>^{p}</M> if the prime <M>p</M> is odd, or if
+##  <M>[<A>G</A>,<A>G</A>]</M> is contained in <M><A>G</A>^{4}</M> 
+##  if<M> p = 2</M>. The subgroup <M><A>G</A>^{p}</M> is called the first 
+##  Agemo subgroup, (see&nbsp;<Ref Func="Agemo"/>).
+##  <Ref Prop="IsPowerfulPGroup"/> returns <K>true</K> if <A>G</A> is a 
+##  powerful <M>p</M>-group, and <K>false</K> otherwise. 
+##  <E>Note: </E>This function returns <K>true</K> if <A>G</A> is the trivial 
+##  group.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -460,8 +465,6 @@ InstallFactorMaintenance( IsPowerfulPGroup,
     IsPowerfulPGroup, IsGroup, IsGroup );
 #abelian p-groups are powerful
 InstallTrueMethod( IsPowerfulPGroup, IsPGroup and IsAbelian );
-
-
 #############################################################################
 ##
 #A  PrimePGroup( <G> )

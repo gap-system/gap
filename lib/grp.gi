@@ -240,6 +240,29 @@ InstallMethod( IsPGroup,
 ##
 #M  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
 ##
+InstallMethod( IsPowerfulPGroup,
+    "use characterisation of ",
+    [ IsGroup and HasRankPGroup and HasComputedOmegas ],
+     function( G )
+    local p;
+    if (IsTrivial(G)) then
+	return true;
+    else
+	p:=PrimePGroup(G);
+	if (p>3) then
+		if (RankPGroup(G)=Log(Order(Omega(G,p)),p)) then
+			return true;
+		else
+			return false;
+		fi;
+	else
+	TryNextMethod();
+	fi;
+    fi;
+
+
+      
+    end);
      
   
 InstallMethod( IsPowerfulPGroup,
@@ -248,11 +271,15 @@ InstallMethod( IsPowerfulPGroup,
      function( G )
     local p;
     if IsPGroup( G ) = false then
-      return false;
+      ErrorNoReturn( "<G> must be a p-group" );
+    elif IsTrivial(G) then
+      return true;
+	
     else
-      p:=Factors(Size( G ))[1];
+    
+      p:=PrimePGroup(G);
       if p = 2 then 
-        return IsSubgroup(Agemo(G,4),DerivedSubgroup( G ));
+        return IsSubgroup(Agemo(G,2,2),DerivedSubgroup( G ));
       else 
         return IsSubgroup(Agemo(G,p), DerivedSubgroup( G ));
       fi; 
@@ -1063,6 +1090,17 @@ function(G)
         fi;
     od;
     return SubgroupNC(G, gen);
+end);
+
+InstallMethod( FrattiniSubgroup, "for powerful p-groups",
+            [ IsPGroup and IsPowerfulPGroup and HasComputedAgemos ],100,
+function(G)
+    local p;
+#If the group is powerful and has computed agemos, then no work needs
+#to be done, since FrattiniSubgroup(G)=Agemo(G,p) in this case
+#by properties of powerful p-groups.
+	p:=PrimePGroup(G);
+	return Agemo(G,p);
 end);
 
 InstallMethod( FrattiniSubgroup, "for nilpotent groups",
