@@ -148,7 +148,7 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
   flags:=[];
   fams:=[];
   for i in obj do
-    if IsFilter(i) or IsIdenticalObj( i, IsObject ) then
+    if IsFilter(i) then
       Add(flags,FLAGS_FILTER(i));
       Add(fams,fail);
     elif IsType(i) then

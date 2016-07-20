@@ -302,9 +302,12 @@ end );
 ##
 ##  function to test whether <x> is a filter.
 ##  (This is *not* a filter itself!.)
+##  We handle IsObject as a special case, as it is equal to ReturnTrue,
+##  as all objects satisfy IsObject!
 ##
 BIND_GLOBAL( "IsFilter",
-    x -> IS_OPERATION( x ) and ( FLAG1_FILTER( x ) <> 0 or x in FILTERS ) );
+    x -> IS_IDENTICAL_OBJ(x, IS_OBJECT) or
+         ( IS_OPERATION( x ) and ( FLAG1_FILTER( x ) <> 0 or x in FILTERS ) ) ) ;
 
 
 ## Global Rank declarations
