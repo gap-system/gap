@@ -1947,13 +1947,24 @@ Obj FuncWRITE_STRING_FILE_NC (
     Obj             fid,
     Obj             str )
 {
-    Int             len = 0, ret;
+    Int             len = 0, l, ret;
+    char            *ptr;
 
     /* don't check the argument                                            */
     
     len = GET_LEN_STRING(str);
-    ret = write( syBuf[INT_INTOBJ(fid)].echo, CHARS_STRING(str), len);
-    return (ret == len)?True : Fail;
+    ptr = CSTR_STRING(str);
+    while (len > 0) {
+      l = (len > 1048576) ? 1048576 : len;
+      ret = write( syBuf[INT_INTOBJ(fid)].echo, CHARS_STRING(str), l);
+      if (ret == -1) {
+        SySetErrorNo();
+        return Fail;
+      }
+      len -= ret;
+      ptr += ret;
+    }
+    return True;
 }
 
 
