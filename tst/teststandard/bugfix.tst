@@ -3110,6 +3110,10 @@ gap> SCRSift(sc, (1,2));
 gap> Intersection([]);
 [  ]
 
+# 2016/07/20 (CJ, github issue #861)
+gap> IsFilter(IsObject);
+true
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 831990000);
 
