@@ -241,7 +241,7 @@ InstallMethod( IsPGroup,
 #M  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
 ##
 InstallMethod( IsPowerfulPGroup,
-    "use characterisation of ",
+    "use characterisation of powerful p-groups based on rank ",
     [ IsGroup and HasRankPGroup and HasComputedOmegas ],
      function( G )
     local p;
@@ -249,6 +249,9 @@ InstallMethod( IsPowerfulPGroup,
 	return true;
     else
 	p:=PrimePGroup(G);
+	#We use the less known characterisation of powerful p groups
+	# for p>3 by Jon Gonzalez-Sanchez, Amaia Zugadi-Reizabal
+	# can be found in 'A characterization of powerful p-groups'
 	if (p>3) then
 		if (RankPGroup(G)=Log(Order(Omega(G,p)),p)) then
 			return true;
