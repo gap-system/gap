@@ -36,7 +36,9 @@ ReadLib("galois.gi");
 #X  Read library of groups of small order
 #X  Read identification routine
 ##
-ReadSmall( "readsml.g","small groups" );
+if TestPackageAvailability("smallgrp")=fail then
+  ReadSmall( "readsml.g","small groups" );
+fi;
 
 #############################################################################
 ##
