@@ -93,6 +93,12 @@ true
 gap> f:=PartialPermNC([1..100000]);;
 gap> IsIdempotent(f);
 true
+gap> f := PartialPerm([], []);
+<empty partial perm>
+gap> IndexPeriodOfPartialPerm(f);
+[ 1, 1 ]
+gap> SmallestIdempotentPower(f);
+1
 
 # ComponentsOfPartialPerm, NrComponentsOfPartialPerm, 
 # ComponentRepsOfPartialPerm and ComponentPartialPermInt
@@ -114,6 +120,14 @@ true
 gap> List(ComponentRepsOfPartialPerm(f), i-> ComponentPartialPermInt(f, i))
 > =ComponentsOfPartialPerm(f);
 true
+gap> f := PartialPerm([], []);
+<empty partial perm>
+gap> ComponentsOfPartialPerm(f);
+[  ]
+gap> ComponentRepsOfPartialPerm(f);
+[  ]
+gap> NrComponentsOfPartialPerm(f);
+0
 
 # FixedPointsOfPartialPerm, MovedPoints, 
 # NrFixedPoints, NrMovedPoints
