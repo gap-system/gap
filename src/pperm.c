@@ -267,6 +267,8 @@ Obj FuncSparsePartialPermNC( Obj self, Obj dom, Obj img ){
   UInt2 *ptf2;
   UInt4 *ptf4;
 
+  if(LEN_LIST(dom)==0) return EmptyPartialPerm;
+
   rank=LEN_LIST(dom);
   deg=INT_INTOBJ(ELM_LIST(dom, rank));
   
@@ -551,6 +553,13 @@ Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f){
   Obj     dom, img, out;
  
   n=MAX(DEG_PPERM(f), CODEG_PPERM(f));
+
+  if (n == 0) {
+    out = NEW_PLIST(T_PLIST_EMPTY, 0);
+    SET_LEN_PLIST(out, 0);
+    return out;
+  }
+
   ResizeTmpPPerm(n);
   ptseen=(UInt4*)(ADDR_OBJ(TmpPPerm));
   for(i=0;i<n;i++) ptseen[i]=0; 
@@ -696,8 +705,15 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f){
   UInt4   *ptseen;
   Obj     dom, img, out;
 
-  // init the buffer
   n=MAX(DEG_PPERM(f), CODEG_PPERM(f));
+
+  if (n == 0) {
+    out = NEW_PLIST(T_PLIST_EMPTY, 0);
+    SET_LEN_PLIST(out, 0);
+    return out;
+  }
+
+  // init the buffer
   ResizeTmpPPerm(n);
   ptseen=(UInt4*)(ADDR_OBJ(TmpPPerm));
   for(i=0;i<n;i++) ptseen[i]=0; 
