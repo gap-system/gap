@@ -386,6 +386,18 @@ extern void PrintFunction (
 
 
 /****************************************************************************
+*
+*F  FuncIsKernelFunction( <self>, <func> ) . . . . . . . .  print a function
+**
+**  'FuncIsKernelFunction' returns Fail if <func> is not a function, True if
+**  <func> is a function, and is installed as a kernel function, and False
+**  otherwise.
+*/
+extern Obj FuncIsKernelFunction(
+                        Obj self,
+                        Obj func);
+
+/****************************************************************************
 **
 *F  FuncCALL_FUNC_LIST( <self>, <func>, <list> )  . . . . . . call a function
 **

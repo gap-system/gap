@@ -1348,7 +1348,7 @@ void PrintFunction (
         }
 
         /* print the body                                                  */
-        if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) ) {
+        if (FuncIsKernelFunction(0L, func) == True) {
             outputtedfunc = 0;
             if ( BODY_FUNC(func) ) {
                 Obj body = BODY_FUNC(func);
@@ -1915,7 +1915,10 @@ Obj FuncUNPROFILE_FUNC(
 Obj FuncIsKernelFunction(Obj self, Obj func) {
   if (!IS_FUNC(func))
     return Fail;
-  else return (BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == 0) ? True : False;
+  else 
+    return ((BODY_FUNC(func) == 0) ||
+            (SIZE_OBJ(BODY_FUNC(func))
+             == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj))) ? True : False;
 }
 
 Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
