@@ -1243,7 +1243,7 @@ end);
 InstallMethod( NaturalHomomorphismByIdeal,"polynomial rings",IsIdenticalObj,
     [ IsPolynomialRing,IsRing],
 function(R,I)
-  local ord,b,ind,num,c,corners,i,j,a,bound,mon,n,monb,dim,sc,k,l,char,hom;
+local ord,b,ind,num,c,corners,i,j,a,rem,bound,mon,n,monb,dim,sc,k,l,char,hom;
   if not IsIdeal(R,I) then
     Error("I is not an ideal!");
   fi;
@@ -1300,10 +1300,12 @@ function(R,I)
 	a[i]:=a[i]+1;
       fi;
     od;
+
     if i>0 then
       if ForAny(corners,x->ForAll([1..n],j->x[j]<=a[j])) then
 	# set last coordinate to become 0 again
 	a[n]:=bound[n];
+	i:=n;
       else
 	Add(mon,ShallowCopy(a));
 	i:=Length(a);
@@ -1320,7 +1322,8 @@ function(R,I)
   sc:=EmptySCTable(dim,0);
   for i in [1..dim] do
     for j in [1..dim] do
-      a:=PolynomialReducedRemainder(mon[i]*mon[j],b,ord);
+      rem:=PolynomialReducedRemainder(mon[i]*mon[j],b,ord);
+      a:=rem;
       if not IsZero(a) then
 	a:=Coefficients(monb,a);
 	if char>0 then
