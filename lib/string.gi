@@ -781,6 +781,11 @@ InstallGlobalFunction(StringFile, function(name)
     return fail;
   fi;
   str := READ_STRING_FILE(f![1]);
+  if str = fail then
+    CloseStream(f);
+    Error("in StringFile: ", LastSystemError().message, "\n");
+    return fail;
+  fi;
   CloseStream(f);
   return str;
 end);
@@ -803,7 +808,11 @@ InstallGlobalFunction(FileString, function(arg)
     return fail;
   fi;
   IS_STRING_CONV(str);
-  WRITE_STRING_FILE_NC(out![1], str);
+  if WRITE_STRING_FILE_NC(out![1], str) = fail then
+    CloseStream(out);
+    Error("in FileString: ", LastSystemError().message, "\n");
+    return fail;
+  fi;
   CloseStream(out);
   return Length(str);
 end);
