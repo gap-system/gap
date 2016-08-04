@@ -3265,6 +3265,68 @@ Obj FuncLOWINDEX_PREPARE_RELS (
 
 /****************************************************************************
 **
+*F  FuncTC_QUICK_SCAN( <c>,<o>,<alpha>,<w>)
+**
+*/
+Obj FuncTC_QUICK_SCAN (
+    Obj                 self,
+    Obj                 c,              /* table */
+    Obj                 o,              /* offset */
+    Obj                 a,              /* alpha */
+    Obj                 w,              /* word */
+    Obj                 result )        /* result list */
+{
+  Int f,b,ff,bb,r,i,j,alpha,offset;
+
+  alpha=INT_INTOBJ(a);
+  offset=INT_INTOBJ(o);
+
+  f=alpha;i=1;
+  r=LEN_PLIST(w);
+
+  /*  # forward scan */
+  /*  while i<=r and c[w[i]+offset][f]<>0 do */
+  while ((i<=r) && 
+    ((ff=INT_INTOBJ(ELM_PLIST(ELM_PLIST(c,INT_INTOBJ(ELM_PLIST(w,i))+offset),f)))
+        !=0) ) {
+    /*    f:=c[w[i]+offset][f];  Use extra variable so old f remains if
+     *    i-condition triggered */
+    f=ff;
+    i++;  
+  }
+
+  if (i>r) {
+    if (f!=alpha) {
+      SET_ELM_PLIST(result,1,INTOBJ_INT(i));
+      SET_ELM_PLIST(result,2,INTOBJ_INT(f));
+      return True;
+    }
+    return False;
+  }
+
+/*  #backward scan */
+  b=alpha; j=r;
+  /*  while j>=i and c[-w[j]+offset][b]<>0 do */
+  while ((j>=i) && 
+    ((bb=INT_INTOBJ(ELM_PLIST(ELM_PLIST(c,-INT_INTOBJ(ELM_PLIST(w,j))+offset),b)))
+      !=0) ) {
+
+  /*    b:=c[-w[j]+offset][b];  implicitly done*/
+    b=bb;
+    j--;
+   }
+  if (j<=i) {
+    SET_ELM_PLIST(result,1,INTOBJ_INT(i));
+    SET_ELM_PLIST(result,2,INTOBJ_INT(f));
+    SET_ELM_PLIST(result,3,INTOBJ_INT(j));
+    SET_ELM_PLIST(result,4,INTOBJ_INT(b));
+    return True;
+  }
+  return False;
+}
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
@@ -3317,6 +3379,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "LOWINDEX_PREPARE_RELS", 1, "rels",
       FuncLOWINDEX_PREPARE_RELS, "src/costab.c:LOWINDEX_PREPARE_RELS" },
+
+    { "TC_QUICK_SCAN", 5, "table, offset, alpha, word, result",
+      FuncTC_QUICK_SCAN, "src/costab.c:TC_QUICK_SCAN" },
 
     { 0 }
 
