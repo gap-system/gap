@@ -1770,6 +1770,19 @@ void ErrorQuitNrArgs (
 
 /****************************************************************************
 **
+*F  ErrorQuitNrAtLeastArgs( <narg>, <args> ) . . . . . . not enough arguments
+*/
+void ErrorQuitNrAtLeastArgs (
+    Int                 narg,
+    Obj                 args )
+{
+    ErrorQuit(
+        "Function Calls: number of arguments must be at least %d (not %d)",
+        narg, LEN_PLIST( args ) );
+}
+
+/****************************************************************************
+**
 *F  ErrorQuitRange3( <first>, <second>, <last> ) . . divisibility
 */
 void ErrorQuitRange3 (
