@@ -44,6 +44,8 @@ gap> false and true;
 false
 gap> false and false;
 false
+gap> TNUM_OBJ(fail)[2];
+"boolean or fail"
 gap> STOP_TEST( "boolean.tst", 250000);
 
 #############################################################################
