@@ -1976,7 +1976,7 @@ void            AsssListLevel (
                 }
                 if ( LEN_LIST( poss ) != LEN_LIST( obj ) ) {
                     obj = ErrorReturnObj(
-     "List Assigments: <objs> must have the same length as <positions> (%d)",
+     "List Assignments: <objs> must have the same length as <positions> (%d)",
                         LEN_LIST( poss ), 0L,
                         "you can replace <objs> via 'return <objs>;'" );
                 }

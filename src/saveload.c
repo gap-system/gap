@@ -924,7 +924,7 @@ static void PrSavedObj( UInt x)
   if ((x & 3) == 1)
     Pr("Immediate  integer %d\n", INT_INTOBJ((Obj)x),0L);
   else if ((x & 3) == 2)
-    Pr("Immedate FFE %d %d\n", VAL_FFE(x), SIZE_FF(FLD_FFE(x)));
+    Pr("Immediate FFE %d %d\n", VAL_FFE(x), SIZE_FF(FLD_FFE(x)));
   else
     Pr("Reference to bag number %d\n",x>>2,0L);
 }
