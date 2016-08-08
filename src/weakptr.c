@@ -627,7 +627,7 @@ void CleanObjWPObjCopy (
 *F  FinalizeWeapPointerObj( <wpobj> )
 */
 
-#ifdef BOEHM_GC
+#ifndef BOEHM_GC
 void FinalizeWeakPointerObj( Obj wpobj )
 {
     volatile Obj keep = wpobj;
