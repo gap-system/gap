@@ -3383,6 +3383,8 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
     CompletionBar(InfoFpGroup,2,"Coset Loop: ",i/DATA.n);
     for w in DATA.rels do
       r:=NEWTC_Rewrite(DATA,i,w);
+      MakeCanonical(r);
+
       # reduce with others
       for j in rels do
 	r:=NEWTC_ReplacedStringCyclic(r,j);
@@ -3488,7 +3490,7 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
       TzSearch(pres);
       TzEliminate(pres,i);
     od;
-    Assert(1,Length(GeneratorsOfPresentation)=subnum);
+    Assert(1,Length(GeneratorsOfPresentation(pres))=subnum);
     
   fi;
   r:=List(GeneratorsOfPresentation(pres){
