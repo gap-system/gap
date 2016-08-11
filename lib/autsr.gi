@@ -477,3 +477,21 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
 end);
 
+# pathetic isomorphism test, based on the automorphism group of GxH. This is
+# only of use as long as we don't yet have a Cannon/Holt version of
+# isomorphism available and there are many generators
+BindGlobal("PatheticIsomorphism",function(G,H)
+local d,a,map;
+  d:=DirectProduct(G,H);
+  a:=AutomorphismGroup(d);
+  map:=RepresentativeAction(a,Image(Embedding(d,1)),
+    Image(Embedding(d,2)),
+    function(sub,hom)
+      return Image(hom,sub);
+    end);
+  if map=fail then return fail;fi;
+  return GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
+    List(GeneratorsOfGroup(G),x->PreImagesRepresentative(Embedding(d,2),
+         Image(map,Image(Embedding(d,1),x)))));
+end);
+
