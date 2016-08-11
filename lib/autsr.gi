@@ -142,15 +142,65 @@ end);
 # main automorphism method -- currently still using factor groups, but
 # nevertheless faster..
 BindGlobal("AutomGrpSR",function(G)
-local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,b,fratsim,AQ,OQ,Zm,D,innC,
-      bas,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,cond,sub,AQI,AQP,AQiso,comiso,extra,mo;
+local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
+      b,fratsim,AQ,OQ,Zm,D,innC,bas,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,
+      cond,sub,AQI,AQP,AQiso,rf,res,resperm,proj,
+      comiso,extra,mo,rada,makeaqiso,ind,lastperm;
+
+  makeaqiso:=function();
+    AQiso:=IsomorphismPermGroup(AQ);
+    AQP:=Image(AQiso,AQ);
+    # force degree down
+    a:=Size(AQP);
+    AQP:=Group(SmallGeneratingSet(AQP));
+    SetSize(AQP,a);
+    a:=SmallerDegreePermutationRepresentation(AQP:cheap);
+    if NrMovedPoints(Image(a))<NrMovedPoints(AQP) then
+      Info(InfoMorph,2,"Permdegree reduced ",
+	    NrMovedPoints(AQP),"->",NrMovedPoints(Image(a)));
+      AQiso:=AQiso*a;
+      AQP:=Image(a,AQP);
+    fi;
+  end;
 
   ff:=FittingFreeLiftSetup(G);
   r:=ff.radical;
   # find series through r
 
   # derived and then primes and then elementary abelian
-  d:=Reversed(DerivedSeriesOfGroup(r));
+  d:=ValueOption("series");
+  if d=fail then
+    d:=DerivedSeriesOfGroup(r);
+    # refine
+    d:=RefinedSubnormalSeries(d,Centre(r));
+    for i in Set(Factors(Size(r))) do
+      u:=PCore(r,i);
+      d:=RefinedSubnormalSeries(d,u);
+      j:=1;
+      repeat
+        v:=Agemo(u,i,j);
+	if Size(v)>1 then
+	  d:=RefinedSubnormalSeries(d,v);
+	fi;
+	j:=j+1;
+      until Size(v)=1;
+      j:=1;
+      repeat
+        v:=Omega(u,i,j);
+	if Size(v)<Size(u) then
+	  d:=RefinedSubnormalSeries(d,v);
+	fi;
+	j:=j+1;
+      until Size(v)=Size(u);
+
+    od;
+    Assert(1,ForAll([1..Length(d)-1],x->Size(d[x])<>Size(d[x+1])));
+
+    d:=Reversed(d);
+  else
+    d:=ShallowCopy(d);
+    SortBy(d,Size); # in case reversed order....
+  fi;
 
   ser:=[TrivialSubgroup(G)];
   for i in d{[2..Length(d)]} do
@@ -172,12 +222,15 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,b,frat
     od;
   od;
 
+  rada:=fail;
+
   ser:=Reversed(ser);
   i:=1;
   hom:=ff.factorhom;
   Q:=Image(hom,G);
   AQ:=AutomorphismGroupFittingFree(Q);
   AQI:=InnerAutomorphismsAutomorphismGroup(AQ);
+  lastperm:=fail;
   while i<Length(ser) do
     # ensure that the step is OK
     lhom:=hom;
@@ -262,8 +315,14 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,b,frat
     od;
 
     B:=[];
-    AQiso:=IsomorphismPermGroup(AQ);
-    AQP:=Image(AQiso,AQ);
+
+    if lastperm<>fail then
+      AQiso:=lastperm;
+      AQP:=Image(AQiso,AQ);
+    else
+      makeaqiso();
+
+    fi;
 
     if split then
       maut:=MTX.ModuleAutomorphisms(mo);
@@ -360,6 +419,55 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,b,frat
     SetInnerAutomorphismsAutomorphismGroup(A,AQI);
 
     AQ:=A;
+
+    # do we use induced radical automorphisms to help next step?
+    if Size(KernelOfMultiplicativeGeneralMapping(hom))>1 and
+      # potentially large GL
+      Size(GL(Length(MPcgs),RelativeOrders(MPcgs)[1]))>10^10 and
+      # automorphism size really grew from B/C-bit
+      Size(A)/Size(AQP)*Index(AQP,sub)>10^10
+     then
+      if rada=fail then
+	rada:=AutomorphismGroup(r);
+      fi;
+      rf:=Image(hom,r);
+      Info(InfoMorph,2,"Use radical automorphisms for reduction");
+
+      makeaqiso();
+      B:=MappingGeneratorsImages(AQiso);
+      C:=List(B[1],x->
+        GroupHomomorphismByImagesNC(rf,rf,GeneratorsOfGroup(rf),
+	  List(GeneratorsOfGroup(rf),y->ImagesRepresentative(x,y))));
+      res:=Group(C);
+      SetIsFinite(res,true);
+      SetIsGroupOfAutomorphismsFiniteGroup(res,true);
+
+      ind:=List(GeneratorsOfGroup(rada),x->
+        GroupHomomorphismByImagesNC(rf,rf,GeneratorsOfGroup(rf),
+	  List(GeneratorsOfGroup(rf),y->ImagesRepresentative(hom,ImagesRepresentative(x,PreImagesRepresentative(hom,y))))));
+      ind:=SubgroupNC(res,ind);
+      #SetIsFinite(ind,true);
+      #SetIsAutomorphismGroup(ind,true);
+      #SetIsGroupOfAutomorphismsFiniteGroup(ind,true);
+
+      if Size(ind)*100<Size(res) then
+        # reduce to subgroup that induces valid automorphisms
+	Info(InfoMorph,1,"Reduce by factor ",Size(res)/Size(ind));
+        resperm:=IsomorphismPermGroup(res);
+	proj:=GroupHomomorphismByImagesNC(AQP,Image(resperm),
+	  B[2],List(C,x->ImagesRepresentative(resperm,x)));
+	C:=PreImage(proj,Image(resperm,ind));
+	C:=List(SmallGeneratingSet(C),x->PreImagesRepresentative(AQiso,x));
+	AQ:=Group(C);
+	SetIsFinite(AQ,true);
+	SetIsGroupOfAutomorphismsFiniteGroup(AQ,true);
+        makeaqiso();
+      fi;
+
+      lastperm:=AQiso;
+    else
+      lastperm:=fail;
+    fi;
 
 
     i:=i+1;
