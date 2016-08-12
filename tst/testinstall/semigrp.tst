@@ -453,6 +453,8 @@ gap> S := Monoid(Transformation([1, 2, 3, 4, 5, 6, 7, 7, 7]),
 >                Transformation([4, 6, 6, 1, 2, 6, 7, 7, 7]));;
 gap> IsInverseSemigroup(S);
 true
+gap> Size(S);
+18
 gap> S;
 <inverse transformation monoid of size 18, degree 9 with 5 generators>
 
