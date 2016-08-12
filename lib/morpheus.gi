@@ -2019,8 +2019,19 @@ local m;
       and IsSolvableGroup(G) and Size(G) <= 2000 then
       return IsomorphismSolvableSmallGroups(G,H);
     fi;
-  elif Length(ConjugacyClasses(G))<>Length(ConjugacyClasses(H)) then
+  elif AbelianInvariants(G)<>AbelianInvariants(H) then
     return fail;
+  elif Collected(List(ConjugacyClasses(G),
+          x->[Order(Representative(x)),Size(x)]))
+	<>Collected(List(ConjugacyClasses(H),
+	  x->[Order(Representative(x)),Size(x)])) then
+    return fail;
+  fi;
+
+  if Length(AbelianInvariants(G))>3 and Size(RadicalGroup(G))>1 then
+    # In place until a proper implementation of Cannon/Holt automorphism is
+    # made available.
+    return PatheticIsomorphism(G,H);
   fi;
 
   m:=Morphium(G,H,false);
