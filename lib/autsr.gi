@@ -148,6 +148,7 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       comiso,extra,mo,rada,makeaqiso,ind,lastperm;
 
   makeaqiso:=function();
+    Info(InfoMorph,3,"Permrep of AQ ",Size(AQ));
     AQiso:=IsomorphismPermGroup(AQ);
     AQP:=Image(AQiso,AQ);
     # force degree down
@@ -228,6 +229,17 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
   i:=1;
   hom:=ff.factorhom;
   Q:=Image(hom,G);
+  if IsPermGroup(Q) and NrMovedPoints(Q)/Size(Q)*Size(Socle(Q))
+	>SufficientlySmallDegreeSimpleGroupOrder(Size(Q)) then
+    # just in case the radical factor hom is inherited.
+    Q:=SmallerDegreePermutationRepresentation(Q);
+    Info(InfoMorph,3,"Radical factor degree reduced ",NrMovedPoints(Range(hom)),
+	      " -> ",NrMovedPoints(Range(Q)));
+    hom:=hom*Q;
+    Q:=Image(hom,G);
+  fi; 
+			  
+
   AQ:=AutomorphismGroupFittingFree(Q);
   AQI:=InnerAutomorphismsAutomorphismGroup(AQ);
   lastperm:=fail;
