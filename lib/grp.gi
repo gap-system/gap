@@ -5006,9 +5006,9 @@ end);
 
 #############################################################################
 ##
-#M  CharacteristicSubgroups( <G> )
+#M  CharacteristicSubgroupsLib( <G> )
 ##
-InstallMethod(CharacteristicSubgroups,"use automorphisms",true,[IsGroup],
+InstallMethod(CharacteristicSubgroupsLib,"use automorphisms",true,[IsGroup],
   G->Filtered(NormalSubgroups(G),x->IsCharacteristicSubgroup(G,x)));
 
 InstallTrueMethod( CanComputeSize, HasSize );
