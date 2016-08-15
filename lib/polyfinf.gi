@@ -583,7 +583,7 @@ local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg,t,pb;
   # <phi>(m) gives ( minpol of 1^(1/m) )( F.char )
   # cache values
   if not IsBound(F!.FFPUBOVAL) then
-    F!.FFPUBOVAL:=[ [PrimePowersInt( Characteristic(F)-1 ),[]] ];
+    F!.FFPUBOVAL:=MakeWriteOnceAtomic([ MakeReadOnly([PrimePowersInt( Characteristic(F)-1 ),[]]) ]);
   fi;
 
   L:=F!.FFPUBOVAL;
@@ -623,7 +623,7 @@ local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg,t,pb;
 	  if Length(good[1])<Length(a) then
 	    Info(InfoWarning,1,"disregarded nonfactorable",bad);
 	  else
-	    L[m]:=good;
+	    L[m]:=MakeReadOnly(good);
 	  fi;
       else
 	good:=L[m];
