@@ -176,23 +176,25 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     d:=RefinedSubnormalSeries(d,Centre(r));
     for i in Set(Factors(Size(r))) do
       u:=PCore(r,i);
-      d:=RefinedSubnormalSeries(d,u);
-      j:=1;
-      repeat
-        v:=Agemo(u,i,j);
-	if Size(v)>1 then
-	  d:=RefinedSubnormalSeries(d,v);
-	fi;
-	j:=j+1;
-      until Size(v)=1;
-      j:=1;
-      repeat
-        v:=Omega(u,i,j);
-	if Size(v)<Size(u) then
-	  d:=RefinedSubnormalSeries(d,v);
-	fi;
-	j:=j+1;
-      until Size(v)=Size(u);
+      if Size(u)>1 then
+	d:=RefinedSubnormalSeries(d,u);
+	j:=1;
+	repeat
+	  v:=Agemo(u,i,j);
+	  if Size(v)>1 then
+	    d:=RefinedSubnormalSeries(d,v);
+	  fi;
+	  j:=j+1;
+	until Size(v)=1;
+	j:=1;
+	repeat
+	  v:=Omega(u,i,j);
+	  if Size(v)<Size(u) then
+	    d:=RefinedSubnormalSeries(d,v);
+	  fi;
+	  j:=j+1;
+	until Size(v)=Size(u);
+      fi;
 
     od;
     Assert(1,ForAll([1..Length(d)-1],x->Size(d[x])<>Size(d[x+1])));
