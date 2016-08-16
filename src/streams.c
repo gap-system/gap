@@ -1973,10 +1973,13 @@ Obj FuncREAD_STRING_FILE (
     Obj             fid )
 {
     Char            buf[32769];
-    Int             ret, len, l;
+    Int             ret, len;
     UInt            lstr;
     Obj             str;
+#if !defined(SYS_IS_CYGWIN32)
+    Int              l;
     char            *ptr;
+#endif
 
     /* check the argument                                                  */
     while ( ! IS_INTOBJ(fid) ) {
@@ -1986,9 +1989,8 @@ Obj FuncREAD_STRING_FILE (
             "you can replace <fid> via 'return <fid>;'" );
     }
 
-#if ! SYS_IS_CYGWIN32
+#if !defined(SYS_IS_CYGWIN32) && defined(HAVE_STAT)
     /* fstat seems completely broken under CYGWIN */
-#if HAVE_STAT
     /* first try to get the whole file as one chunk, this avoids garbage
        collections because of the GROW_STRING calls below    */
     {
@@ -2019,12 +2021,12 @@ Obj FuncREAD_STRING_FILE (
         }
     }
 #endif
-#endif
     /* read <fid> until we see  eof   (in 32kB pieces)                     */
     str = NEW_STRING(0);
     len = 0;
-    while (1) {
-        if ( (ret = read( syBuf[INT_INTOBJ(fid)].fp , buf, 32768)) <= 0 ) {
+    do { 
+        ret = read( syBuf[INT_INTOBJ(fid)].fp , buf, 32768);
+        if (ret < 0) {
             SySetErrorNo();
             return Fail;
         }
@@ -2034,7 +2036,7 @@ Obj FuncREAD_STRING_FILE (
         memcpy( CHARS_STRING(str)+lstr, buf, ret );
 	*(CHARS_STRING(str)+lstr+ret) = '\0';
 	SET_LEN_STRING(str, lstr+ret);
-    }
+    } while(ret > 0);
 
     /* fix the length of <str>                                             */
     len = GET_LEN_STRING(str);
