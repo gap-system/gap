@@ -145,11 +145,21 @@ BindGlobal("AutomGrpSR",function(G)
 local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       b,fratsim,AQ,OQ,Zm,D,innC,bas,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,
       cond,sub,AQI,AQP,AQiso,rf,res,resperm,proj,
-      comiso,extra,mo,rada,makeaqiso,ind,lastperm;
+      comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase;
+
+  actbase:=ValueOption("autactbase");
 
   makeaqiso:=function();
+    if HasIsomorphismPermGroup(AQ) then
+      AQiso:=IsomorphismPermGroup(AQ);
+    elif HasNiceMonomorphism(AQ) and IsPermGroup(Range(NiceMonomorphism(AQ))) then
+      AQiso:=NiceMonomorphism(AQ);
+    elif actbase<>fail then
+      AQiso:=IsomorphismPermGroup(AQ:autactbase:=List(actbase,x->Image(hom,x)));
+    else
+      AQiso:=IsomorphismPermGroup(AQ);
+    fi;
     Info(InfoMorph,3,"Permrep of AQ ",Size(AQ));
-    AQiso:=IsomorphismPermGroup(AQ);
     AQP:=Image(AQiso,AQ);
     # force degree down
     a:=Size(AQP);
@@ -424,6 +434,9 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     Append(gens,B);
     Append(gens,A);
 
+    for j in gens do
+      SetIsBijective(j,true);
+    od;
     A:=Group(gens);
     SetIsAutomorphismGroup(A,true);
     SetIsGroupOfAutomorphismsFiniteGroup(A,true);
@@ -431,8 +444,11 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     AQI:=SubgroupNC(A,innB);
     SetInnerAutomorphismsAutomorphismGroup(A,AQI);
-
     AQ:=A;
+    # use the actbase for order computations
+    if actbase<>fail then
+      Size(A:autactbase:=List(actbase,x->Image(hom,x)));
+    fi;
 
     # do we use induced radical automorphisms to help next step?
     if Size(KernelOfMultiplicativeGeneralMapping(hom))>1 and
@@ -459,6 +475,7 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       ind:=List(GeneratorsOfGroup(rada),x->
         GroupHomomorphismByImagesNC(rf,rf,GeneratorsOfGroup(rf),
 	  List(GeneratorsOfGroup(rf),y->ImagesRepresentative(hom,ImagesRepresentative(x,PreImagesRepresentative(hom,y))))));
+      Size(ind:autactbase:=fail); # disable autactbase transfer
       ind:=SubgroupNC(res,ind);
       #SetIsFinite(ind,true);
       #SetIsAutomorphismGroup(ind,true);
@@ -466,7 +483,7 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
       if Size(ind)*100<Size(res) then
         # reduce to subgroup that induces valid automorphisms
-	Info(InfoMorph,1,"Reduce by factor ",Size(res)/Size(ind));
+	Info(InfoMorph,1,"Radical autos reduce by factor ",Size(res)/Size(ind));
         resperm:=IsomorphismPermGroup(res);
 	proj:=GroupHomomorphismByImagesNC(AQP,Image(resperm),
 	  B[2],List(C,x->ImagesRepresentative(resperm,x)));
@@ -495,17 +512,116 @@ end);
 # only of use as long as we don't yet have a Cannon/Holt version of
 # isomorphism available and there are many generators
 BindGlobal("PatheticIsomorphism",function(G,H)
-local d,a,map;
+local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
+      iso,api,good,gens,pre;
+  possibly:=function(a,b)
+    if Size(a)<>Size(b) then
+      return false;
+    fi;
+    if AbelianInvariants(a)<>AbelianInvariants(b) then
+      return false;
+    fi;
+    if Size(a)<1000 and Size(a)<>512 and IdGroup(a)<>IdGroup(b) then
+      return false;
+    fi;
+    return true;
+  end;
+
+  asAutomorphism:=function(sub,hom)
+    return Image(hom,sub);
+  end;
+
+  # go through factors of characteristic series to keep orbits short.
+  cG:=CharacteristicSubgroupsLib(G);
+  nG:=[];
+  cH:=ShallowCopy(CharacteristicSubgroupsLib(H));
+  if Length(cG)<>Length(cH) then
+    return fail;
+  fi;
+  SortBy(cH,Size);
+  nH:=[];
+  i:=1;
+  good:=[1..Length(cH)];
+  while i<=Length(cH) do
+    if i in good and Size(cH[i])>1 and Size(cH[i])<Size(H) then
+      sel:=Filtered([1..Length(cG)],x->possibly(cG[x],cH[i]));
+      if Length(sel)=0 then
+	return fail;
+      elif Length(sel)=1 then
+	Add(nG,cG[sel[1]]);
+	Add(nH,cH[i]);
+      else
+	u:=TrivialSubgroup(G);
+	for j in sel do
+	  u:=ClosureGroup(u,cG[j]);
+	od;
+	sel:=Concatenation([i],Filtered([i+1..Length(cH)],
+                                 x->possibly(cH[i],cH[x])));
+	v:=TrivialSubgroup(H);
+	for j in sel do
+	  u:=ClosureGroup(v,cH[j]);
+	od;
+	if Size(u)<>Size(v) then
+	  return fail;
+	fi;
+	good:=Difference(good,sel);
+	if Size(u)<Size(G) then
+	  Add(nG,u);
+	  Add(nH,v);
+	fi;
+      fi;
+    fi;
+    i:=i+1;
+  od;
+
   d:=DirectProduct(G,H);
-  a:=AutomorphismGroup(d);
-  map:=RepresentativeAction(a,Image(Embedding(d,1)),
-    Image(Embedding(d,2)),
-    function(sub,hom)
-      return Image(hom,sub);
-    end);
-  if map=fail then return fail;fi;
+  e1:=Embedding(d,1);
+  e2:=Embedding(d,2);
+  # combine images of characteristic factors, reverse order
+  cG:=[];
+  for i in [Length(nG),Length(nG)-1..1] do
+    Add(cG,ClosureGroup(Image(e1,nG[i]),Image(e2,nH[i])));
+  od;
+
+  K:=[Image(e1,G),Image(e2,H)];
+  a:=AutomorphismGroup(d:autactbase:=K);
+  iso:=IsomorphismPermGroup(a:autactbase:=K);
+  api:=Image(iso);
+  #if NrMovedPoints(api)>5000 then
+  #  K:=SmallerDegreePermutationRepresentation(api);
+  #  Info(InfoMorph,2,"Permdegree reduced ",
+#	  NrMovedPoints(api),"->",NrMovedPoints(Image(K)));
+#    iso:=iso*K;
+#    api:=Image(iso);
+#  fi;
+
+  # now work in reverse through the characteristic factors
+  conj:=One(a);
+  K:=Image(e1,G);
+  L:=Image(e2,H);
+  Add(cG,TrivialSubgroup(d));
+  for i in cG do
+    u:=ClosureGroup(i,K);
+    v:=ClosureGroup(i,L);
+    if u<>v then
+      gens:=SmallGeneratingSet(api);
+      pre:=List(gens,x->PreImagesRepresentative(iso,x));
+      map:=RepresentativeAction(SubgroupNC(a,pre),u,v,asAutomorphism);
+      if map=fail then
+	return fail;
+      fi;
+      conj:=conj*map;
+      K:=Image(map,K);
+
+      u:=Stabilizer(api,v,gens,pre,asAutomorphism);
+      Info(InfoMorph,1,"Factor ",Size(d)/Size(i),": ",
+	  "reduce by ",Size(api)/Size(u));
+      api:=u;
+    fi;
+  od;
+
   return GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
-    List(GeneratorsOfGroup(G),x->PreImagesRepresentative(Embedding(d,2),
-         Image(map,Image(Embedding(d,1),x)))));
+    List(GeneratorsOfGroup(G),x->PreImagesRepresentative(e2,
+         Image(conj,Image(e1,x)))));
 end);
 

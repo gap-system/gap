@@ -234,7 +234,8 @@ end);
 ##
 # try to find a small faithful action for an automorphism group
 InstallGlobalFunction(AssignNiceMonomorphismAutomorphismGroup,function(au,g)
-local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv, v, val, o, i, comb, best;
+local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
+v, val, o, i, comb, best,actbase;
 
   hom:=fail;
   allinner:=HasIsAutomorphismGroup(au) and IsAutomorphismGroup(au);
@@ -378,10 +379,14 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
 	  fi;
 	od;
       else
+	actbase:=ValueOption("autactbase");
+	if actbase=fail then
+	  actbase:=[g];
+	fi;
 	repeat
 	  cnt:=cnt+1;
 	  repeat
-	    r:=Random(g);
+	    r:=Random(Random(actbase));
 	  until not r in u;
 	  # force prime power order
 	  if not IsPrimePowerInt(Order(r)) then
@@ -1924,7 +1929,9 @@ local A;
     if HasIsFrattiniFree(G) and IsFrattiniFree(G) then
       A:=AutomorphismGroupFrattFreeGroup(G);
     else
-      A:=AutomorphismGroupSolvableGroup(G);
+      # currently autactbase does not work well, as the representation might
+      # change.
+      A:=AutomorphismGroupSolvableGroup(G:autactbase:=fail);
     fi;
   elif Size(RadicalGroup(G))=1 and IsPermGroup(G) then
     # essentially a normalizer when suitably embedded 
