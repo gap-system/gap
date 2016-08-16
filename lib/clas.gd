@@ -432,13 +432,6 @@ DeclareGlobalFunction( "RationalClassesSolvableGroup" );
 
 DeclareGlobalFunction( "CentralizerSizeLimitConsiderFunction" );
 
-DeclareGlobalFunction( "CompleteGaloisGroupPElement" );
-DeclareGlobalFunction( "RatClasPElmArrangeClasses" );
-DeclareGlobalFunction( "SortRationalClasses" );
-DeclareGlobalFunction( "FusionRationalClassesPSubgroup" );
-DeclareGlobalFunction( "RationalClassesPElements" );
-DeclareGlobalFunction( "RationalClassesPermGroup" );
-
 
 #############################################################################
 ##
