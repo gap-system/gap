@@ -1976,7 +1976,7 @@ Obj FuncREAD_STRING_FILE (
     Int             ret, len;
     UInt            lstr;
     Obj             str;
-#if !defined(SYS_IS_CYGWIN32)
+#if !defined(SYS_IS_CYGWIN32) && defined(HAVE_STAT)
     Int              l;
     char            *ptr;
 #endif
@@ -2020,7 +2020,7 @@ Obj FuncREAD_STRING_FILE (
             return str;
         }
     }
-#endif
+#else
     /* read <fid> until we see  eof   (in 32kB pieces)                     */
     str = NEW_STRING(0);
     len = 0;
@@ -2045,7 +2045,8 @@ Obj FuncREAD_STRING_FILE (
     /* and return */
 
     syBuf[INT_INTOBJ(fid)].ateof = 1;
-    return len == 0 ? Fail : str;
+    return str;
+#endif
 }
 
 /****************************************************************************
