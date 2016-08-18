@@ -406,9 +406,6 @@ void ChildStatusChanged( int whichsig )
 
 Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 {
-/*  Int             j;       / loop variables                  */
-/*  char            c[8];    / buffer for communication        */
-/*  int             n;       / return value of 'select'        */
     int             slave;   /* pipe to child                   */
     Int            stream;
 
@@ -428,12 +425,12 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     /* Get a stream record */
     stream = NewStream();
     if (stream == -1)
-      return -1;
+        return -1;
     
     /* open pseudo terminal for communication with gap */
     if ( OpenPty(&PtyIOStreams[stream].ptyFD, &slave) )
     {
-        Pr( "open pseudo tty failed\n", 0L, 0L);
+        Pr( "open pseudo tty failed (errno %d)\n", errno, 0);
         FreeStream(stream);
         return -1;
     }
@@ -442,7 +439,7 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 #if HAVE_TERMIOS_H
     if ( tcgetattr( slave, &tst ) == -1 )
     {
-        Pr( "tcgetattr on slave pty failed\n", 0L, 0L);
+        Pr( "tcgetattr on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
 
     }
@@ -455,13 +452,13 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     tst.c_oflag    &= ~(ONLCR);
     if ( tcsetattr( slave, TCSANOW, &tst ) == -1 )
     {
-        Pr("tcsetattr on slave pty failed\n", 0, 0 );
+        Pr("tcsetattr on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
 #elif HAVE_TERMIO_H
     if ( ioctl( slave, TCGETA, &tst ) == -1 )
     {
-        Pr( "ioctl TCGETA on slave pty failed\n");
+        Pr( "ioctl TCGETA on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
     tst.c_cc[VINTR] = 0377;
@@ -475,20 +472,20 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     tst.c_lflag    &= ~(ECHO|ICANON);
     if ( ioctl( slave, TCSETAW, &tst ) == -1 )
     {
-        Pr( "ioctl TCSETAW on slave pty failed\n");
+        Pr( "ioctl TCSETAW on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
 #elif HAVE_SGTTY_H
     if ( ioctl( slave, TIOCGETP, (char*)&tst ) == -1 )
     {
-        Pr( "ioctl TIOCGETP on slave pty failed\n");
+        Pr( "ioctl TIOCGETP on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
     tst.sg_flags |= RAW;
     tst.sg_flags &= ~ECHO;
     if ( ioctl( slave, TIOCSETN, (char*)&tst ) == -1 )
     {
-        Pr( "ioctl on TIOCSETN slave pty failed\n");
+        Pr( "ioctl on TIOCSETN slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
 #endif
@@ -533,7 +530,7 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     /* check if the fork was successful */
     if ( PtyIOStreams[stream].childPID == -1 )
     {
-        Pr( "Panic: cannot fork to subprocess.\n", 0, 0);
+        Pr( "Panic: cannot fork to subprocess (errno %d).\n", errno, 0);
         goto cleanup;
     }
     close(slave);
