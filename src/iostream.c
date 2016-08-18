@@ -129,7 +129,11 @@ typedef struct {
                      implying that the child has vanished under our noses */
 } PtyIOStream;
 
+/* maximal number of pseudo ttys we will allocate */
 #define MAX_PTYS 64
+
+/* maximal length of argument string for CREATE_PTY_IOSTREAM */
+#define MAX_ARGS 1000
 
 static PtyIOStream PtyIOStreams[MAX_PTYS];
 static Int FreePtyIOStreams;
@@ -580,8 +584,6 @@ void HandleChildStatusChanges( UInt pty)
   HashUnlock(PtyIOStreams);
 }
 
-#define MAX_ARGS 1000
-
 Obj FuncCREATE_PTY_IOSTREAM( Obj self, Obj dir, Obj prog, Obj args )
 {
   Obj  allargs[MAX_ARGS+1];
@@ -661,9 +663,6 @@ Int ReadFromPty2( UInt stream, Char *buf, Int maxlen, UInt block)
 }
   
   
-
-extern int errno;
-
 UInt WriteToPty ( UInt stream, Char *buf, Int len )
 {
     Int         res;
