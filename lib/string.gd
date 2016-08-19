@@ -354,6 +354,7 @@ DeclareGlobalFunction( "StringTime" );
 ##  <Description>
 ##  returns a string representing the prime factor decomposition
 ##  of the integer <A>int</A>.
+##  See also <Ref Func="PrintFactorsInt"/>.
 ##  <Example><![CDATA[
 ##  gap> StringPP(40320);
 ##  "2^7*3^2*5*7"

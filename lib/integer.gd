@@ -990,6 +990,7 @@ DeclareGlobalFunction( "SmallestRootInt" );
 ##  <Description>
 ##  prints the prime factorization of the integer <A>n</A> in human-readable
 ##  form.
+##  See also <Ref Func="StringPP"/>.
 ##  <Example><![CDATA[
 ##  gap> PrintFactorsInt( Factorial( 7 ) ); Print( "\n" );
 ##  2^4*3^2*5*7
