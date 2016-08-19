@@ -1001,21 +1001,6 @@ DeclareGlobalFunction( "SmallestRootInt" );
 ##
 DeclareGlobalFunction( "PrintFactorsInt" );
 
-#############################################################################
-##
-#F  PowerDecompositions( <n> )
-##
-##  <ManSection>
-##  <Func Name="PowerDecompositions" Arg='n'/>
-##
-##  <Description>
-##  returns a list of all nontrivial decompositions of the integer <A>n</A>
-##  as a power of integers.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction( "PowerDecompositions" );
-
 DeclareGlobalFunction( "TraceModQF" ); # forward declaration
 
 
