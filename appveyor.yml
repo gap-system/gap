@@ -6,7 +6,7 @@ install:
 
 # scripts that run after cloning repository
 build_script:
-  - 'C:/cygwin/bin/bash -lc "cd /cygdrive/c/projects/gap ; ./configure --with-gmp=system && make cygwin && make bootstrap-pkg-full"'
+  - 'C:/cygwin/bin/bash -lc "cd $APPVEYOR_BUILD_FOLDER ; ./configure --with-gmp=system && make cygwin && make bootstrap-pkg-full"'
 
 test_script:
-  - 'C:/cygwin/bin/bash -lc "cd /cygdrive/c/projects/gap ; make testinstall"'
+  - 'C:/cygwin/bin/bash -lc "cd $APPVEYOR_BUILD_FOLDER ; make testinstall"'
