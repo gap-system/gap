@@ -1967,20 +1967,10 @@ Obj FuncWRITE_STRING_FILE_NC (
     return True;
 }
 
-
 Obj FuncREAD_STRING_FILE (
     Obj             self,
     Obj             fid )
 {
-    Char            buf[32769];
-    Int             ret, len;
-    UInt            lstr;
-    Obj             str;
-#if !defined(SYS_IS_CYGWIN32) && defined(HAVE_STAT)
-    Int              l;
-    char            *ptr;
-#endif
-
     /* check the argument                                                  */
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
@@ -1988,65 +1978,10 @@ Obj FuncREAD_STRING_FILE (
             (Int)TNAM_OBJ(fid), 0L,
             "you can replace <fid> via 'return <fid>;'" );
     }
-
-#if !defined(SYS_IS_CYGWIN32) && defined(HAVE_STAT)
-    /* fstat seems completely broken under CYGWIN */
-    /* first try to get the whole file as one chunk, this avoids garbage
-       collections because of the GROW_STRING calls below    */
-    {
-        struct stat fstatbuf;
-        if ( syBuf[INT_INTOBJ(fid)].pipe == 0 &&
-            fstat( syBuf[INT_INTOBJ(fid)].fp, &fstatbuf) == 0 ) {
-            if((off_t)(Int)fstatbuf.st_size != fstatbuf.st_size) {
-                ErrorMayQuit(
-                    "The file is too big to fit the current workspace",
-                    (Int)0, (Int)0);
-            }
-            len = (Int) fstatbuf.st_size;
-            str = NEW_STRING( len );
-            CHARS_STRING(str)[len] = '\0';
-            SET_LEN_STRING(str, len);
-            ptr = CSTR_STRING(str);
-            while (len > 0) {
-              l = (len > 1048576) ? 1048576 : len;
-              ret = read( syBuf[INT_INTOBJ(fid)].fp, ptr, l);
-              if (ret == -1) {
-                SySetErrorNo();
-                return Fail;
-              }
-              len -= ret;
-              ptr += ret;
-            }
-            return str;
-        }
+    if ( syBuf[INT_INTOBJ(fid)].pipe == 1 ) {
+        ErrorMayQuit("<fid> is a pipe, not a file", 0L, 0L);
     }
-#else
-    /* read <fid> until we see  eof   (in 32kB pieces)                     */
-    str = NEW_STRING(0);
-    len = 0;
-    do { 
-        ret = read( syBuf[INT_INTOBJ(fid)].fp , buf, 32768);
-        if (ret < 0) {
-            SySetErrorNo();
-            return Fail;
-        }
-        len += ret;
-        GROW_STRING( str, len );
-	lstr = GET_LEN_STRING(str);
-        memcpy( CHARS_STRING(str)+lstr, buf, ret );
-	*(CHARS_STRING(str)+lstr+ret) = '\0';
-	SET_LEN_STRING(str, lstr+ret);
-    } while(ret > 0);
-
-    /* fix the length of <str>                                             */
-    len = GET_LEN_STRING(str);
-    ResizeBag( str, SIZEBAG_STRINGLEN(len) );
-
-    /* and return */
-
-    syBuf[INT_INTOBJ(fid)].ateof = 1;
-    return str;
-#endif
+    return SyReadStringFile(INT_INTOBJ(fid));
 }
 
 /****************************************************************************

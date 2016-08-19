@@ -630,6 +630,15 @@ extern void syWinPut (
     const Char *        cmd,
     const Char *        str );
 
+/***************************************************************************
+ **
+ *F SyReadFileString( <fid> )
+ **   - read file given by <fid> file into a string
+ */
+
+extern Obj SyReadStringFile (
+    Int fid );
+
 
      
 /****************************************************************************

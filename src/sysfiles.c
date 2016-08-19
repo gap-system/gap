@@ -4024,7 +4024,82 @@ Char * SyTmpdir ( const Char * hint )
 #endif
 #endif
 
+#if !defined(SYS_IS_CYGWIN32) && defined(HAVE_STAT)
+/* fstat seems completely broken under CYGWIN */
+/* first try to get the whole file as one chunk, this avoids garbage
+   collections because of the GROW_STRING calls below    */
+Obj SyReadStringFile(Int fid)
+{
+    Int             ret, len;
+    Obj             str;
+    Int             l;
+    char            *ptr;
+    struct stat     fstatbuf;
 
+    if( fstat( syBuf[fid].fp, &fstatbuf) == 0 ) {
+        if((off_t)(Int)fstatbuf.st_size != fstatbuf.st_size) {
+            ErrorMayQuit(
+                "The file is too big to fit the current workspace",
+                (Int)0, (Int)0);
+        }
+        len = (Int) fstatbuf.st_size;
+        str = NEW_STRING( len );
+        CHARS_STRING(str)[len] = '\0';
+        SET_LEN_STRING(str, len);
+        ptr = CSTR_STRING(str);
+        while (len > 0) {
+            l = (len > 1048576) ? 1048576 : len;
+            ret = read( syBuf[fid].fp, ptr, l);
+            if (ret == -1) {
+                SySetErrorNo();
+                return Fail;
+            }
+            len -= ret;
+            ptr += ret;
+        }
+        syBuf[fid].ateof = 1;
+        return str;
+    } else {
+        SySetErrorNo();
+        return Fail;
+    }
+}
+
+#else
+
+Obj SyReadStringFile(Int fid)
+{
+    Char            buf[32769];
+    Int             ret, len;
+    UInt            lstr;
+    Obj             str;
+
+    /* read <fid> until we see  eof   (in 32kB pieces)                     */
+    str = NEW_STRING(0);
+    len = 0;
+    do {
+        ret = read( syBuf[fid].fp , buf, 32768);
+        if (ret < 0) {
+            SySetErrorNo();
+            return Fail;
+        }
+        len += ret;
+        GROW_STRING( str, len );
+        lstr = GET_LEN_STRING(str);
+        memcpy( CHARS_STRING(str)+lstr, buf, ret );
+        *(CHARS_STRING(str)+lstr+ret) = '\0';
+        SET_LEN_STRING(str, lstr+ret);
+    } while(ret > 0);
+
+    /* fix the length of <str>                                             */
+    len = GET_LEN_STRING(str);
+    ResizeBag( str, SIZEBAG_STRINGLEN(len) );
+
+    syBuf[fid].ateof = 1;
+    return str;
+}
+
+#endif
 
 /****************************************************************************
 **
