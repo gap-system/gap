@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Continous integration testing script
 
@@ -22,13 +22,13 @@ else
         cd pkg/io*
         ./configure
         make
-        cd ../.
+        cd ../..
         cd pkg/profiling*
         ./configure
         make
         cd ../..
         echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" |\
-            sh bin/gap.sh --cover cover |\
+            sh bin/gap.sh --cover coverage |\
             tee testlog.txt |\
             grep --colour=always -E "########> Diff|$"
         echo "CoverToJson(\"coverage\", \"coverage.json\"); quit;" |\
