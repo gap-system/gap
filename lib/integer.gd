@@ -855,9 +855,12 @@ DeclareGlobalFunction( "PrevPrimeInt" );
 ##  <M>[ p_1, e_1, \ldots, p_k, e_k ]</M> with
 ##  <A>n</A> = <M>p_1^{{e_1}} \cdot p_2^{{e_2}} \cdot ... \cdot p_k^{{e_k}}</M>.
 ##  <P/>
+##  For negative integers, the absolute value is taken. Zero is not allowed as input.
 ##  <Example><![CDATA[
 ##  gap> PrimePowersInt( Factorial( 7 ) );
 ##  [ 2, 4, 3, 2, 5, 1, 7, 1 ]
+##  gap> PrimePowersInt( 1 );
+##  [  ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
