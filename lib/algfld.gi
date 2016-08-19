@@ -200,7 +200,7 @@ local f,p,nam,e,fam,colf;
   fi;
 
   # AH: Noch VR-Eigenschaften!
-  SetDimension( e, DegreeOverPrimeField( e ) );
+  SetDimension( e, DegreeOfUnivariateLaurentPolynomial( p ) );
 
   SetOne(e,One(fam));
   SetZero(e,Zero(fam));

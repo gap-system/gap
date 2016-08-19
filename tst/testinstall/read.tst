@@ -71,4 +71,13 @@ gap> SeekPositionStream(x, 3);
 true
 gap> ReadAll(x);
 "lo\ngoodbye\ni like pies\n"
+gap> StringFile(Filename( DirectoriesLibrary("tst"), "example.txt" ));
+"hello\ngoodbye\ni like pies\n"
+gap> dir := DirectoryTemporary();;
+gap> FileString( Filename(dir, "tmp1"), "Hello, world!");
+13
+gap> StringFile( Filename(dir, "tmp2"));
+fail
+gap> StringFile( Filename(dir, "tmp1"));
+"Hello, world!"
 gap> STOP_TEST( "read.tst", 220000);

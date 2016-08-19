@@ -51,6 +51,8 @@ gap> ViewString(true); ViewString(false); ViewString(fail);
 "true"
 "false"
 "fail"
+gap> TNUM_OBJ(fail)[2];
+"boolean or fail"
 gap> STOP_TEST( "boolean.tst", 250000);
 
 #############################################################################
