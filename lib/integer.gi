@@ -1227,19 +1227,13 @@ InstallGlobalFunction(PrimePowersInt,function( n )
     local   p,  pows,  lst;
 
     if n = 1  then
-	return [];
+        return [];
     elif n = 0  then
     	Error( "<n> must be non zero" );
     elif n < 0  then
     	n := -1 * n;
     fi;
-    lst  := Factors( Integers, n );
-    pows := [];
-    for p  in Set( lst )  do
-	Add( pows, p );
-        Add( pows, Number( lst, x -> x = p ) );
-    od;
-    return pows;
+    return Flat(Collected(FactorsInt(n)));
 
 end);
 
@@ -1887,27 +1881,7 @@ InstallMethod( \in,
 #F  PrintFactorsInt( <n> )  . . . . . . . . print factorization of an integer
 ##
 InstallGlobalFunction(PrintFactorsInt,function ( n )
-    local decomp, i;
-
-    if -4 < n and n < 4 then
-        Print( n );
-    else
-        decomp := Collected( Factors( AbsInt( n ) ) );
-        if n > 0 then
-            Print( decomp[1][1] );
-        else
-            Print( -decomp[1][1] );
-        fi;
-        if decomp[1][2] > 1 then
-            Print( "^", decomp[1][2] );
-        fi;
-        for i in [ 2 .. Length( decomp ) ] do
-            Print( "*", decomp[i][1] );
-            if decomp[i][2] > 1 then
-                Print( "^", decomp[i][2] );
-            fi;
-        od;
-    fi;
+    Print( StringPP( n ) );
 end);
 
 #############################################################################
