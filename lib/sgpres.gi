@@ -2731,7 +2731,7 @@ local c,offset,f,b,r,i,j;
   r:=Length(w);
   f:=alpha;i:=1;
   b:=alpha;j:=r;
-  while true do
+  while i<=j do
     # forward scan
     while i<=r and c[w[i]+offset][f]<>0 do
       f:=c[w[i]+offset][f];
@@ -2750,12 +2750,14 @@ local c,offset,f,b,r,i,j;
       j:=j-1;
     od;
     if j<i then 
+
       NEWTC_Coincidence(DATA,f,b);
     elif j=i then 
       # deduction
       c[w[i]+offset][f]:=b;
       c[-w[i]+offset][b]:=f;
       Add(DATA.deductions,[f,w[i]]);
+      return;
     else
       NEWTC_Define(DATA,f,w[i]);
     fi;
@@ -2771,7 +2773,7 @@ local c,offset,f,b,r,i,j,fp,bp;
   r:=Length(w);
   b:=alpha;j:=r; 
   bp:=y;
-  while true do #N
+  while i<=j do #N
     # forward scan
     while i<=r and c[w[i]+offset][f]<>0 do
       if DATA.useAddition then
@@ -2817,6 +2819,7 @@ local c,offset,f,b,r,i,j,fp,bp;
 	DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
       fi;
       Add(DATA.deductions,[f,w[i]]);
+      return;
     else
       NEWTC_Define(DATA,f,w[i]);
     fi;
@@ -2966,6 +2969,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
       NEWTC_ScanAndFill(DATA,1,DATA.subgword[w]);
     fi;
   od;
+
   NEWTC_ProcessDeductions(DATA);
 
   # words we want to trace early (as they might reduce the number of
