@@ -71,7 +71,8 @@ gap> SeekPositionStream(x, 3);
 true
 gap> ReadAll(x);
 "lo\ngoodbye\ni like pies\n"
-gap> StringFile(Filename( DirectoriesLibrary("tst"), "example.txt" ));
+gap> x := StringFile(Filename( DirectoriesLibrary("tst"), "example.txt" ));;
+gap> ReplacedString(x, "\r\n", "\n");
 "hello\ngoodbye\ni like pies\n"
 gap> dir := DirectoryTemporary();;
 gap> FileString( Filename(dir, "tmp1"), "Hello, world!");
