@@ -858,17 +858,17 @@ local aug,w,p,pres,f,fam,G;
   w:=FamilyObj(u)!.wholeGroup;
   aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
 	RelatorsOfFpGroup(w),
-	List(GeneratorsOfGroup(u),UnderlyingElement),
+	List(gens,UnderlyingElement),
 	true);
 
-  pres:=NEWTC_PresentationMTC(aug,1,"%");
+  pres:=NEWTC_PresentationMTC(aug,1,nam);
   if Length(GeneratorsOfPresentation(pres))>Length(gens) then
     aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
 	  RelatorsOfFpGroup(w),
-	  List(GeneratorsOfGroup(u),UnderlyingElement),
+	  List(gens,UnderlyingElement),
 	  true,false);
 
-    pres:=NEWTC_PresentationMTC(aug,0,"%");
+    pres:=NEWTC_PresentationMTC(aug,0,nam);
   fi;
   Assert(0,Length(GeneratorsOfPresentation(pres))=Length(gens));
 
