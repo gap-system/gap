@@ -142,10 +142,10 @@ end);
 # main automorphism method -- currently still using factor groups, but
 # nevertheless faster..
 BindGlobal("AutomGrpSR",function(G)
-local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
+local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       b,fratsim,AQ,OQ,Zm,D,innC,bas,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,
-      cond,sub,AQI,AQP,AQiso,rf,res,resperm,proj,
-      comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase;
+      cond,sub,AQI,AQP,AQiso,rf,res,resperm,proj,Aperm,Apa,precond,ac,
+      comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase,somechar;
 
   actbase:=ValueOption("autactbase");
 
@@ -153,7 +153,7 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     if HasIsomorphismPermGroup(AQ) then
       AQiso:=IsomorphismPermGroup(AQ);
     elif HasNiceMonomorphism(AQ) and IsPermGroup(Range(NiceMonomorphism(AQ))) then
-      AQiso:=NiceMonomorphism(AQ);
+      AQiso:=NiceMonomorphism(AQ:autactbase:=fail);
     elif actbase<>fail then
       AQiso:=IsomorphismPermGroup(AQ:autactbase:=List(actbase,x->Image(hom,x)));
     else
@@ -184,6 +184,12 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     d:=DerivedSeriesOfGroup(r);
     # refine
     d:=RefinedSubnormalSeries(d,Centre(r));
+    somechar:=ValueOption("someCharacteristics");
+    if somechar<>fail then
+      for i in somechar do
+	d:=RefinedSubnormalSeries(d,i);
+      od;
+    fi;
     for i in Set(Factors(Size(r))) do
       u:=PCore(r,i);
       if Size(u)>1 then
@@ -252,10 +258,11 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
   fi; 
 			  
 
-  AQ:=AutomorphismGroupFittingFree(Q);
+  AQ:=AutomorphismGroupFittingFree(Q:someCharacteristics:=fail);
   AQI:=InnerAutomorphismsAutomorphismGroup(AQ);
   lastperm:=fail;
   while i<Length(ser) do
+    Assert(2,ForAll(GeneratorsOfGroup(AQ),x->Size(Source(x))=Size(Q)));
     # ensure that the step is OK
     lhom:=hom;
     OQ:=Q;
@@ -368,11 +375,17 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       # test condition for lifting, also add corresponding automorphism
       comiso:=GroupHomomorphismByImagesNC(ocr.complement,OQ,gens,List(gens,x->ImagesRepresentative(q,x)));
 
+      precond:=fail;
+      mo:=GModuleByMats(LinearActionLayer(gens,MPcgs),mo.field);
       cond:=function(perm)
       local aut,newgens,mo2,iso,a;
+        if perm in Aperm then
+	  return true;
+	fi;
         aut:=PreImagesRepresentative(AQiso,perm);
-	newgens:=List(GeneratorsOfGroup(Q),
-	  x->PreImagesRepresentative(q,Image(aut,ImagesRepresentative(q,x))));
+	newgens:=List(gens,x->PreImagesRepresentative(comiso,
+	  ImagesRepresentative(aut,ImagesRepresentative(comiso,x))));
+
         mo2:=GModuleByMats(LinearActionLayer(newgens,MPcgs),mo.field);
 	iso:=MTX.IsomorphismModules(mo,mo2);
 	if iso=fail then
@@ -381,12 +394,13 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	  # build associated auto
 
 	  a:=GroupHomomorphismByImagesNC(Q,Q,Concatenation(gens,MPcgs),
-	          Concatenation(List(gens,x->PreImagesRepresentative(comiso,
-		        ImagesRepresentative(aut,ImagesRepresentative(comiso,x)))),
+	          Concatenation(newgens,
                    List(MPcgs,x->PcElementByExponents(MPcgs,
 		     (ExponentsOfPcElement(MPcgs,x)*One(mo.field))*iso  ))));
 	 Assert(2,IsBijective(a));
          Add(A,a);
+	 Add(Apa,perm);
+	 Aperm:=ClosureGroup(Aperm,perm);
          return true;
 	fi;
       end;
@@ -397,8 +411,23 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
       ocr:=AGTFPrepareAutomLift( Q, MPcgs, q );
 
+      precond:=function(perm)
+      local aut,newgens,mo2,iso,a;
+        if perm in Aperm then
+	  return true;
+	fi;
+        aut:=PreImagesRepresentative(AQiso,perm);
+	newgens:=List(GeneratorsOfGroup(Q),
+	  x->PreImagesRepresentative(q,Image(aut,ImagesRepresentative(q,x))));
+        mo2:=GModuleByMats(LinearActionLayer(newgens,MPcgs),mo.field);
+	return MTX.IsomorphismModules(mo,mo2)<>fail;
+      end;
+
       cond:=function(perm)
       local aut,newgens,mo2,iso,a;
+        if perm in Aperm then
+	  return true;
+	fi;
         aut:=PreImagesRepresentative(AQiso,perm);
 	newgens:=List(GeneratorsOfGroup(Q),
 	  x->PreImagesRepresentative(q,Image(aut,ImagesRepresentative(q,x))));
@@ -411,9 +440,13 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
 	  a:=AGTFAutomLift(ocr,q,aut,iso);
 	  if a=fail then
+	    #Print("test failed\n");
 	    return false;
 	  else
 	    Add(A,a);
+	    Add(Apa,perm);
+	    Aperm:=ClosureGroup(Aperm,perm);
+	    #Print("test succeeded\n");
 	    return true;
 	  fi;
 	fi;
@@ -423,8 +456,67 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     # find A using the set condition
     A:=[];
-    sub:=SubgroupProperty(AQP,cond,
-      SubgroupNC(AQP,List(GeneratorsOfGroup(AQI),x->ImagesRepresentative(AQiso,x))));
+    Apa:=[];
+    # note: we do not include AQI here, so might need to add later
+    Aperm:=SubgroupNC(AQP,List(GeneratorsOfGroup(AQI),
+	    x->ImagesRepresentative(AQiso,x)));
+
+    # try to find some further generators
+    if Size(AQP)/Size(Aperm)>100 then
+      for j in Pcgs(RadicalGroup(AQP)) do
+	cond(j);
+      od;
+      for j in GeneratorsOfGroup(AQP) do
+	cond(j);
+      od;
+    fi;
+
+    sub:=AQP;
+    #if Size(KernelOfMultiplicativeGeneralMapping(hom))=1 then
+    #  Error("trigger");
+    #fi;
+    if precond<>fail and not ForAll(GeneratorsOfGroup(sub),precond) then
+      sub:=SubgroupProperty(sub,precond,Aperm);
+    fi;
+    sub:=SubgroupProperty(sub,cond,Aperm);
+
+
+    #if Size(AQP)/Size(Aperm)>1000 then
+    #  ac:=AscendingChain(AQP,Aperm);
+    #  List(Union(List(ac,GeneratorsOfGroup)),cond); # try generators...
+    #  if Size(Aperm)>Size(ac[1]) then
+#	ac:=Unique(List(ac,x->ClosureGroup(Aperm,x)));
+#      fi;
+#      for j in [2..Length(ac)] do
+#	if Size(ac[j])/Size(Aperm)<10000 then
+#	  sub:=SubgroupProperty(ac[j],cond,Aperm);
+#	  Info(InfoMorph,3,"IteratedSearch ",j," :",Size(ac[j])/Size(Aperm),
+#	    " Good ",Size(sub)/Size(ac[j-1])," Not:",Size(ac[j])/Size(sub));
+#	else
+#	  sub:=Aperm;
+#	fi;
+#
+#        if Size(sub)>Size(ac[j-1]) then
+#	  for k in [j+1..Length(ac)] do
+#	    ac[k]:=ClosureGroup(ac[k],sub);
+#	  od;
+#	fi;
+#      od;
+#      Error("hooray");
+#    fi;
+
+    Aperm:=Group(Apa,());
+    j:=1;
+    while Size(Aperm)<Size(sub) do
+      ac:=InnerAutomorphism(OQ,Image(q,GeneratorsOfGroup(Q)[j]));
+      k:=ImagesRepresentative(AQiso,ac);
+      if not k in Aperm then
+	Aperm:=ClosureGroup(Aperm,k);
+	Add(A,InnerAutomorphism(Q,GeneratorsOfGroup(Q)[j]));
+      fi;
+      j:=j+1;
+    od;
+
     Info(InfoMorph,2,"Lift Index ",Size(AQP)/Size(sub));
 
     # now make the new automorphism group
@@ -434,6 +526,7 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     Append(gens,B);
     Append(gens,A);
 
+    Assert(2,ForAll(gens,IsBijective));
     for j in gens do
       SetIsBijective(j,true);
     od;
@@ -452,14 +545,42 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     # do we use induced radical automorphisms to help next step?
     if Size(KernelOfMultiplicativeGeneralMapping(hom))>1 and
-      # potentially large GL
-      Size(GL(Length(MPcgs),RelativeOrders(MPcgs)[1]))>10^10 and
-      # automorphism size really grew from B/C-bit
-      Size(A)/Size(AQP)*Index(AQP,sub)>10^10
+      Size(A)>10^8 
+      #(
+      ## potentially large GL
+      #Size(GL(Length(MPcgs),RelativeOrders(MPcgs)[1]))>10^10 and
+      ## automorphism size really grew from B/C-bit
+      ##Size(A)/Size(AQP)*Index(AQP,sub)>10^10) )
      then
+
+      # hook for using existing characteristics to reduce for next step
+      #if somechar<>fail then
+      #  u:=Filtered(Unique(List(somechar,x->Image(hom,x))),x->Size(x)>1);
+      #  Error("ZZZ");
+      #fi;
+
       if rada=fail then
-	rada:=AutomorphismGroup(r);
+	ind:=SmallerDegreePermutationRepresentation(r);
+	rada:=AutomorphismGroup(Image(ind,r):someCharacteristics:=fail,actbase:=fail);
+	# we only consider those homomorphism that stabilize the series we use
+	for k in List(ser,x->Image(ind,x)) do
+	  if ForAny(GeneratorsOfGroup(rada),x->Image(x,k)<>k) then
+	    Info(InfoMorph,3,"radical automorphism stabilizer");
+	    rada:=Stabilizer(rada,k,function(sub,hom) 
+	      return Image(hom,sub);end);
+	  fi;
+	od;
+	if Source(ind)<>Range(ind) then
+	  # move back to bad degree
+	  rada:=Group(List(GeneratorsOfGroup(rada),
+	    x-> InducedAutomorphism(InverseGeneralMapping(ind),x)));
+	fi;
       fi;
+
+
+
+
+
       rf:=Image(hom,r);
       Info(InfoMorph,2,"Use radical automorphisms for reduction");
 
@@ -472,11 +593,19 @@ local ff,r,d,ser,u,v,i,j,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       SetIsFinite(res,true);
       SetIsGroupOfAutomorphismsFiniteGroup(res,true);
 
-      ind:=List(GeneratorsOfGroup(rada),x->
-        GroupHomomorphismByImagesNC(rf,rf,GeneratorsOfGroup(rf),
-	  List(GeneratorsOfGroup(rf),y->ImagesRepresentative(hom,ImagesRepresentative(x,PreImagesRepresentative(hom,y))))));
-      Size(ind:autactbase:=fail); # disable autactbase transfer
+      ind:=[];
+      for j in GeneratorsOfGroup(rada) do
+	k:=GroupHomomorphismByImagesNC(rf,rf,
+          GeneratorsOfGroup(rf),
+	  List(GeneratorsOfGroup(rf),
+	    y->ImagesRepresentative(hom,ImagesRepresentative(j,
+	         PreImagesRepresentative(hom,y)))));
+	Assert(2,IsBijective(k));
+        Add(ind,k);
+      od;
+
       ind:=SubgroupNC(res,ind);
+      Size(ind:autactbase:=fail); # disable autactbase transfer
       #SetIsFinite(ind,true);
       #SetIsAutomorphismGroup(ind,true);
       #SetIsGroupOfAutomorphismsFiniteGroup(ind,true);
@@ -584,7 +713,7 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
   od;
 
   K:=[Image(e1,G),Image(e2,H)];
-  a:=AutomorphismGroup(d:autactbase:=K);
+  a:=AutomorphismGroup(d:autactbase:=K,someCharacteristics:=cG);
   iso:=IsomorphismPermGroup(a:autactbase:=K);
   api:=Image(iso);
   #if NrMovedPoints(api)>5000 then
