@@ -149,7 +149,8 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
   actbase:=ValueOption("autactbase");
 
-  makeaqiso:=function();
+  makeaqiso:=function()
+  local a,b;
     if HasIsomorphismPermGroup(AQ) then
       AQiso:=IsomorphismPermGroup(AQ);
     elif HasNiceMonomorphism(AQ) and IsPermGroup(Range(NiceMonomorphism(AQ))) then
@@ -167,10 +168,15 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     SetSize(AQP,a);
     a:=SmallerDegreePermutationRepresentation(AQP:cheap);
     if NrMovedPoints(Image(a))<NrMovedPoints(AQP) then
-      Info(InfoMorph,2,"Permdegree reduced ",
+      Info(InfoMorph,3,"Permdegree reduced ",
 	    NrMovedPoints(AQP),"->",NrMovedPoints(Image(a)));
       AQiso:=AQiso*a;
-      AQP:=Image(a,AQP);
+      b:=Image(a,AQP);
+      if Length(GeneratorsOfGroup(b))>Length(GeneratorsOfGroup(AQP)) then
+	b:=Group(List(GeneratorsOfGroup(AQP),x->ImagesRepresentative(a,x)));
+	SetSize(b,Size(AQP));
+      fi;
+      AQP:=b;
     fi;
   end;
 
@@ -293,7 +299,6 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     hom:=hom*Q;
     Q:=Image(hom,G);
   fi; 
-			  
 
   AQ:=AutomorphismGroupFittingFree(Q:someCharacteristics:=fail);
   AQI:=InnerAutomorphismsAutomorphismGroup(AQ);
@@ -310,6 +315,14 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       N:=ser[i+1];
       hom:=NaturalHomomorphismByNormalSubgroup(G,N);
       Q:=Image(hom,G);
+      # degree reduction called for?
+      if Size(N)>1 and IsPermGroup(Q) and NrMovedPoints(Q)^2>Size(Q) then
+	q:=SmallerDegreePermutationRepresentation(Q);
+	Info(InfoMorph,3,"reduced permrep Q ",NrMovedPoints(Q)," -> ",
+	     NrMovedPoints(Range(q)));
+	hom:=hom*q;
+	Q:=Image(hom,G);
+      fi;
       Mim:=Image(hom,M);
       MPcgs:=Pcgs(Mim);
       q:=GroupHomomorphismByImagesNC(Q,OQ,
@@ -386,10 +399,9 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     if lastperm<>fail then
       AQiso:=lastperm;
-      AQP:=Image(AQiso,AQ);
+      AQP:=Group(List(GeneratorsOfGroup(AQ),x->ImagesRepresentative(AQiso,x))); 
     else
       makeaqiso();
-
     fi;
 
     if split then
@@ -517,7 +529,8 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     # desperately try to grab some further generators
     #stablim(sub,cond,10000)=false then
-    if Size(sub)/Size(Aperm)>100000 then Error("HundredK"); fi;
+
+    #if Size(sub)/Size(Aperm)>100000 then Error("HundredK"); fi;
     sub:=SubgroupProperty(sub,cond,Aperm);
 
     Aperm:=Group(Apa,());
@@ -553,10 +566,12 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     AQI:=SubgroupNC(A,innB);
     SetInnerAutomorphismsAutomorphismGroup(A,AQI);
     AQ:=A;
-    # use the actbase for order computations
-    if actbase<>fail then
-      Size(A:autactbase:=List(actbase,x->Image(hom,x)));
-    fi;
+    makeaqiso();
+
+     # use the actbase for order computations
+    #if actbase<>fail then
+    #  Size(A:autactbase:=List(actbase,x->Image(hom,x)));
+    #fi;
 
     # do we use induced radical automorphisms to help next step?
     if Size(KernelOfMultiplicativeGeneralMapping(hom))>1 and
@@ -567,14 +582,6 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       ## automorphism size really grew from B/C-bit
       ##Size(A)/Size(AQP)*Index(AQP,sub)>10^10) )
      then
-
-      # # hook for using existing characteristics to reduce for next step
-      # if somechar<>fail then
-      #   u:=Filtered(Unique(List(somechar,x->Image(hom,x))),x->Size(x)>1);
-#	if ForAny(u,s->ForAny(GeneratorsOfGroup(AQ),h->Image(h,s)<>s)) then
-	  #Error("ZZZ");
-	#fi;
-      #fi;
 
       if rada=fail then
 	ind:=IsomorphismPcGroup(r);
@@ -604,6 +611,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       res:=Group(C);
       SetIsFinite(res,true);
       SetIsGroupOfAutomorphismsFiniteGroup(res,true);
+      Size(res:autactbase:=fail); # disable autactbase transfer
 
       ind:=[];
       for j in GeneratorsOfGroup(rada) do
@@ -636,11 +644,38 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
         makeaqiso();
       fi;
 
+      # # hook for using existing characteristics to reduce for next step
+      if somechar<>fail then
+        u:=Filtered(Unique(List(somechar,x->Image(hom,x))),x->Size(x)>1);
+	u:=Filtered(u,s->ForAny(GeneratorsOfGroup(AQ),h->Image(h,s)<>s));
+	if Length(u)>0 then
+	  SortBy(u,Size);
+	  C:=MappingGeneratorsImages(AQiso);
+	  for j in u do
+	    C:=Stabilizer(AQP,j,C[2],C[1],
+	      function(sub,hom) return Image(hom,sub);end);
+	    Info(InfoMorph,1,"Stabilize characteristic subgroup ",Size(j),
+	      " :",Size(AQP)/Size(C) );
+	    B:=Size(C);
+	    C:=SmallGeneratingSet(C);
+	    AQP:=Group(C);
+	    SetSize(AQP,B);
+	    C:=[List(C,x->PreImagesRepresentative(AQiso,x)),C];
+	  od;
+	  AQ:=Group(C[1]);
+	  SetIsFinite(AQ,true);
+	  SetIsGroupOfAutomorphismsFiniteGroup(AQ,true);
+	  SetSize(AQ,Size(AQP));
+	  #AQP:=Group(C[2]); # ensure small gen set
+	  #SetSize(AQP,Size(AQ));
+	  makeaqiso();
+	fi;
+      fi;
+
       lastperm:=AQiso;
     else
       lastperm:=fail;
     fi;
-
 
     i:=i+1;
   od;
@@ -720,8 +755,37 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
   e2:=Embedding(d,2);
   # combine images of characteristic factors, reverse order
   cG:=[];
-  for i in [Length(nG),Length(nG)-1..1] do
+  nG:=Reversed(nG);
+  nH:=Reversed(nH);
+  for i in [1..Length(nG)] do
     Add(cG,ClosureGroup(Image(e1,nG[i]),Image(e2,nH[i])));
+  od;
+  nG:=Concatenation([TrivialSubgroup(G)],nG);
+  nH:=Concatenation([TrivialSubgroup(H)],nH);
+
+  for i in [2..Length(nG)] do
+    K:=Filtered([1..Length(nG)],x->Size(nG[x])*2=Size(nG[i]) 
+	  and IsSubset(nG[i],nG[x]));
+    if Length(K)>0 then
+      K:=K[1];
+      # We are seeking an isomorphism, not the full automorphism group of
+      # GxG. It is thus sufficient, if we find the subgroup Aut(G)\wr 2.
+
+      
+      # We now found that G and H have two characteristic subgroups A<B with
+      # [B:A]=2. An isomorphism swapping G and H will need to map B to B and
+      # A to A. Furthermore, in the factor modulo A_G xA_H, a generator of
+      # B_G must be swappes with a generator of B_H. 
+      # This implies that A_G\times A_H, together with the diagonal of B is
+      # characteristic in Aut(A)\wr 2. We thus may add this subgroup as
+      # ``characteristic'' to improve the series.
+    
+      Add(cG,ClosureGroup(
+	ClosureGroup(Image(e1,nG[K]),Image(e2,nH[K])),
+	  Image(e1,First(GeneratorsOfGroup(nG[i]),x->not x in nG[K]))
+	 *Image(e2,First(GeneratorsOfGroup(nH[i]),x->not x in nH[K]))));
+
+    fi;
   od;
 
   K:=[Image(e1,G),Image(e2,H)];
