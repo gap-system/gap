@@ -9,7 +9,7 @@
 ##  This  file  contains an implementation of the Cannon/Holt automorphism
 ##  group algorithm.
 
-BindGlobal("AGTFPrepareAutomLift",function(G,pcgs,nat)
+BindGlobal("AGSRPrepareAutomLift",function(G,pcgs,nat)
 local ocr, fphom, fpg, free, len, dim, tmp, L0, S, R, rels, mat, r, RS, i, g, v;
 
   ocr:=rec(group:=G,modulePcgs:=pcgs);
@@ -91,7 +91,7 @@ local n,i;
 
 end);
 
-BindGlobal("AGTFAutomLift",function(ocr,nat,fhom,miso)
+BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
   local v, rels, genimages, v1, psim, w, s, t, l, hom, i, e, j,ep,phom;
 
   v:=[];
@@ -145,7 +145,7 @@ BindGlobal("AutomGrpSR",function(G)
 local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       b,fratsim,AQ,OQ,Zm,D,innC,bas,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,
       cond,sub,AQI,AQP,AQiso,rf,res,resperm,proj,Aperm,Apa,precond,ac,
-      comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase,somechar;
+      comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase,somechar,stablim;
 
   actbase:=ValueOption("autactbase");
 
@@ -172,6 +172,43 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       AQiso:=AQiso*a;
       AQP:=Image(a,AQP);
     fi;
+  end;
+
+  stablim:=function(gp,cond,lim)
+  local no,same,sz,ac,i,sub;
+    same:=true;
+    repeat
+      sz:=Size(Aperm);
+      if Size(gp)/Size(Aperm)>lim then
+        no:=Normalizer(gp,Aperm);
+	if Size(no)>Size(Aperm) and Size(no)<Size(gp) then
+	  stablim(no,cond,lim);
+	fi;
+      else
+	no:=Aperm;
+      fi;
+      if Size(gp)/Size(Aperm)>lim then
+	ac:=AscendingChain(gp,Aperm);
+	List(Union(List(ac,GeneratorsOfGroup)),cond); # try generators...
+	if Size(Aperm)>sz then
+	  ac:=Unique(List(ac,x->ClosureGroup(Aperm,x)));
+	fi;
+	
+	i:=First([Length(ac),Length(ac)-1..1],x->Size(ac[x])/sz<=lim);
+	sub:=ac[i];
+      else
+	sub:=gp;
+      fi;
+      if Size(sub)>Size(Aperm) and not IsSubset(no,sub) then
+	SubgroupProperty(sub,cond,Aperm);
+      fi;
+      same:=Size(Aperm)=sz;
+      if not same then
+	Info(InfoMorph,3,"stablim improves by ",Size(Aperm)/sz,
+	" remaining ",Size(gp)/Size(Aperm));
+      fi;
+    until same;
+    return sub=gp;
   end;
 
   ff:=FittingFreeLiftSetup(G);
@@ -409,7 +446,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       # there is no B in the nonsplit case
       B:=[];
 
-      ocr:=AGTFPrepareAutomLift( Q, MPcgs, q );
+      ocr:=AGSRPrepareAutomLift( Q, MPcgs, q );
 
       precond:=function(perm)
       local aut,newgens,mo2,iso,a;
@@ -437,8 +474,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	  return false;
 	else
 	  # build associated auto
-
-	  a:=AGTFAutomLift(ocr,q,aut,iso);
+	  a:=AGSRAutomLift(ocr,q,aut,iso);
 	  if a=fail then
 	    #Print("test failed\n");
 	    return false;
@@ -478,32 +514,11 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     if precond<>fail and not ForAll(GeneratorsOfGroup(sub),precond) then
       sub:=SubgroupProperty(sub,precond,Aperm);
     fi;
+
+    # desperately try to grab some further generators
+    #stablim(sub,cond,10000)=false then
+    if Size(sub)/Size(Aperm)>100000 then Error("HundredK"); fi;
     sub:=SubgroupProperty(sub,cond,Aperm);
-
-
-    #if Size(AQP)/Size(Aperm)>1000 then
-    #  ac:=AscendingChain(AQP,Aperm);
-    #  List(Union(List(ac,GeneratorsOfGroup)),cond); # try generators...
-    #  if Size(Aperm)>Size(ac[1]) then
-#	ac:=Unique(List(ac,x->ClosureGroup(Aperm,x)));
-#      fi;
-#      for j in [2..Length(ac)] do
-#	if Size(ac[j])/Size(Aperm)<10000 then
-#	  sub:=SubgroupProperty(ac[j],cond,Aperm);
-#	  Info(InfoMorph,3,"IteratedSearch ",j," :",Size(ac[j])/Size(Aperm),
-#	    " Good ",Size(sub)/Size(ac[j-1])," Not:",Size(ac[j])/Size(sub));
-#	else
-#	  sub:=Aperm;
-#	fi;
-#
-#        if Size(sub)>Size(ac[j-1]) then
-#	  for k in [j+1..Length(ac)] do
-#	    ac[k]:=ClosureGroup(ac[k],sub);
-#	  od;
-#	fi;
-#      od;
-#      Error("hooray");
-#    fi;
 
     Aperm:=Group(Apa,());
     j:=1;
@@ -553,33 +568,30 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       ##Size(A)/Size(AQP)*Index(AQP,sub)>10^10) )
      then
 
-      # hook for using existing characteristics to reduce for next step
-      #if somechar<>fail then
-      #  u:=Filtered(Unique(List(somechar,x->Image(hom,x))),x->Size(x)>1);
-      #  Error("ZZZ");
+      # # hook for using existing characteristics to reduce for next step
+      # if somechar<>fail then
+      #   u:=Filtered(Unique(List(somechar,x->Image(hom,x))),x->Size(x)>1);
+#	if ForAny(u,s->ForAny(GeneratorsOfGroup(AQ),h->Image(h,s)<>s)) then
+	  #Error("ZZZ");
+	#fi;
       #fi;
 
       if rada=fail then
-	ind:=SmallerDegreePermutationRepresentation(r);
+	ind:=IsomorphismPcGroup(r);
 	rada:=AutomorphismGroup(Image(ind,r):someCharacteristics:=fail,actbase:=fail);
 	# we only consider those homomorphism that stabilize the series we use
 	for k in List(ser,x->Image(ind,x)) do
 	  if ForAny(GeneratorsOfGroup(rada),x->Image(x,k)<>k) then
 	    Info(InfoMorph,3,"radical automorphism stabilizer");
+	    NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
 	    rada:=Stabilizer(rada,k,function(sub,hom) 
 	      return Image(hom,sub);end);
 	  fi;
 	od;
-	if Source(ind)<>Range(ind) then
-	  # move back to bad degree
-	  rada:=Group(List(GeneratorsOfGroup(rada),
-	    x-> InducedAutomorphism(InverseGeneralMapping(ind),x)));
-	fi;
+	# move back to bad degree
+	rada:=Group(List(GeneratorsOfGroup(rada),
+	  x-> InducedAutomorphism(InverseGeneralMapping(ind),x)));
       fi;
-
-
-
-
 
       rf:=Image(hom,r);
       Info(InfoMorph,2,"Use radical automorphisms for reduction");
