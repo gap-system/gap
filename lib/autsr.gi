@@ -605,13 +605,9 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
       makeaqiso();
       B:=MappingGeneratorsImages(AQiso);
-      C:=List(B[1],x->
+      res:=List(B[1],x->
         GroupHomomorphismByImagesNC(rf,rf,GeneratorsOfGroup(rf),
 	  List(GeneratorsOfGroup(rf),y->ImagesRepresentative(x,y))));
-      res:=Group(C);
-      SetIsFinite(res,true);
-      SetIsGroupOfAutomorphismsFiniteGroup(res,true);
-      Size(res:autactbase:=fail); # disable autactbase transfer
 
       ind:=[];
       for j in GeneratorsOfGroup(rada) do
@@ -624,18 +620,23 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
         Add(ind,k);
       od;
 
-      ind:=SubgroupNC(res,ind);
-      Size(ind:autactbase:=fail); # disable autactbase transfer
-      #SetIsFinite(ind,true);
-      #SetIsAutomorphismGroup(ind,true);
-      #SetIsGroupOfAutomorphismsFiniteGroup(ind,true);
+      C:=Group(Concatenation(res,ind)); # to guarantee common parent
+      SetIsFinite(C,true);
+      SetIsGroupOfAutomorphismsFiniteGroup(C,true);
+      Size(C:autactbase:=fail,someCharacteristics:=fail); # disable autactbase transfer
+      res:=SubgroupNC(C,res);
+      ind:=SubgroupNC(C,ind);
+      # this should now go via the niceo of C
+      Size(ind:autactbase:=fail,someCharacteristics:=fail);
+      Size(res:autactbase:=fail,someCharacteristics:=fail);
+      ind:=Intersection(res,ind); # only those we care about
 
       if Size(ind)*100<Size(res) then
         # reduce to subgroup that induces valid automorphisms
 	Info(InfoMorph,1,"Radical autos reduce by factor ",Size(res)/Size(ind));
-        resperm:=IsomorphismPermGroup(res);
+        resperm:=IsomorphismPermGroup(C);
 	proj:=GroupHomomorphismByImagesNC(AQP,Image(resperm),
-	  B[2],List(C,x->ImagesRepresentative(resperm,x)));
+	  B[2],List(GeneratorsOfGroup(res),x->ImagesRepresentative(resperm,x)));
 	C:=PreImage(proj,Image(resperm,ind));
 	C:=List(SmallGeneratingSet(C),x->PreImagesRepresentative(AQiso,x));
 	AQ:=Group(C);
