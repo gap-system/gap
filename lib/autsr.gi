@@ -141,11 +141,17 @@ end);
 
 # main automorphism method -- currently still using factor groups, but
 # nevertheless faster..
+
+# option somechar may be a list of characterstic subgroups, or a record with
+# component subgroups, orbits
 BindGlobal("AutomGrpSR",function(G)
 local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       b,fratsim,AQ,OQ,Zm,D,innC,bas,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,
       cond,sub,AQI,AQP,AQiso,rf,res,resperm,proj,Aperm,Apa,precond,ac,
-      comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase,somechar,stablim;
+      comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase,somechar,stablim,
+      scharorb,asAutom,jorb,jorpo,substb;
+
+  asAutom:=function(sub,hom) return Image(hom,sub);end;
 
   actbase:=ValueOption("autactbase");
 
@@ -227,8 +233,15 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     d:=DerivedSeriesOfGroup(r);
     # refine
     d:=RefinedSubnormalSeries(d,Centre(r));
+    scharorb:=fail;
     somechar:=ValueOption("someCharacteristics");
     if somechar<>fail then
+      if IsRecord(somechar) then
+	if IsBound(somechar.orbits) then
+	  scharorb:=somechar.orbits;
+	fi;
+	somechar:=somechar.subgroups;
+      fi;
       for i in somechar do
 	d:=RefinedSubnormalSeries(d,i);
       od;
@@ -591,8 +604,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	  if ForAny(GeneratorsOfGroup(rada),x->Image(x,k)<>k) then
 	    Info(InfoMorph,3,"radical automorphism stabilizer");
 	    NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
-	    rada:=Stabilizer(rada,k,function(sub,hom) 
-	      return Image(hom,sub);end);
+	    rada:=Stabilizer(rada,k,asAutom);
 	  fi;
 	od;
 	# move back to bad degree
@@ -631,7 +643,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       Size(res:autactbase:=fail,someCharacteristics:=fail);
       ind:=Intersection(res,ind); # only those we care about
 
-      if Size(ind)*100<Size(res) then
+      if Size(ind)<Size(res) then
         # reduce to subgroup that induces valid automorphisms
 	Info(InfoMorph,1,"Radical autos reduce by factor ",Size(res)/Size(ind));
         resperm:=IsomorphismPermGroup(C);
@@ -649,19 +661,51 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       if somechar<>fail then
         u:=Filtered(Unique(List(somechar,x->Image(hom,x))),x->Size(x)>1);
 	u:=Filtered(u,s->ForAny(GeneratorsOfGroup(AQ),h->Image(h,s)<>s));
+	SortBy(u,Size);
+	Info(InfoMorph,1,"Forced characteristics ",List(u,Size));
+
+	if scharorb<>fail then
+	  # these are subgroups for which certain orbits must be stabilized.
+	  C:=List(Reversed(scharorb),x->List(x,y->Image(hom,y)));
+	  C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(Q));
+	  Info(InfoMorph,1,"Forced orbits ",List(C,x->Size(x[1])));
+	  Append(u,C);
+	fi;
+
 	if Length(u)>0 then
-	  SortBy(u,Size);
 	  C:=MappingGeneratorsImages(AQiso);
 	  for j in u do
-	    C:=Stabilizer(AQP,j,C[2],C[1],
-	      function(sub,hom) return Image(hom,sub);end);
-	    Info(InfoMorph,1,"Stabilize characteristic subgroup ",Size(j),
-	      " :",Size(AQP)/Size(C) );
-	    B:=Size(C);
-	    C:=SmallGeneratingSet(C);
-	    AQP:=Group(C);
-	    SetSize(AQP,B);
-	    C:=[List(C,x->PreImagesRepresentative(AQiso,x)),C];
+	    if IsList(j) then
+	      # stabilizer set of subgroups
+	      jorb:=Orbit(AQP,j[1],C[2],C[1],asAutom);
+	      jorpo:=[Position(jorb,j[1]),Position(jorb,j[2])];
+	      if jorpo[2]=fail then
+	        Append(jorb,Orbit(AQP,j[1],C[2],C[1],asAutom));
+		jorpo[2]:=Position(jorb,j[2]);
+	      fi;
+	      if Length(jorb)>Length(j) then
+		B:=ActionHomomorphism(AQP,jorb,C[2],C[1],asAutom); 
+		substb:=PreImage(B,Stabilizer(Image(B),Set(jorpo),OnSets));
+		Info(InfoMorph,2,"Stabilize characteristic orbit ",Size(j[1]),
+		  " :",Size(AQP)/Size(substb) );
+	      else
+	        substb:=AQP;
+	      fi;
+
+
+	    else
+	      substb:=Stabilizer(AQP,j,C[2],C[1],asAutom);
+	      Info(InfoMorph,2,"Stabilize characteristic subgroup ",Size(j),
+		" :",Size(AQP)/Size(substb) );
+	    fi;
+	    if Size(substb)<Size(AQP) then
+	      B:=Size(substb);
+	      substb:=SmallGeneratingSet(substb);
+	      AQP:=Group(substb);
+	      SetSize(AQP,B);
+	      C:=[List(substb,x->PreImagesRepresentative(AQiso,x)),substb];
+	    fi;
+
 	  od;
 	  AQ:=Group(C[1]);
 	  SetIsFinite(AQ,true);
@@ -790,7 +834,11 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
   od;
 
   K:=[Image(e1,G),Image(e2,H)];
-  a:=AutomorphismGroup(d:autactbase:=K,someCharacteristics:=cG);
+  # we also fix the *pairs* of the characteristic subgroups as orbits. Again
+  # this must happen in Aut(G)\wr 2, and reduces the size of the group.
+  a:=AutomorphismGroup(d:autactbase:=K,someCharacteristics:=
+    rec(subgroups:=cG,
+        orbits:=List([1..Length(nG)],x->[Image(e1,nG[x]),Image(e2,nH[x])])));
   iso:=IsomorphismPermGroup(a:autactbase:=K);
   api:=Image(iso);
   #if NrMovedPoints(api)>5000 then
