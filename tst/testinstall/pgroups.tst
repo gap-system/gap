@@ -175,7 +175,7 @@ gap> IsPowerfulPGroup(G);
 true
 gap> G:=CyclicGroup(10);;
 gap> IsPowerfulPGroup(G);
-Error, <G> must be a p-group
+false
 gap> G:=SmallGroup(243,11);;
 gap> HasIsPowerfulPGroup(G);
 false

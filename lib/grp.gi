@@ -274,7 +274,7 @@ InstallMethod( IsPowerfulPGroup,
      function( G )
     local p;
     if IsPGroup( G ) = false then
-      ErrorNoReturn( "<G> must be a p-group" );
+      return false;
     elif IsTrivial(G) then
       return true;
 	
