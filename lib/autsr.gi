@@ -543,7 +543,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     # desperately try to grab some further generators
     #stablim(sub,cond,10000)=false then
 
-    #if Size(sub)/Size(Aperm)>100000 then Error("HundredK"); fi;
+    #if Size(sub)/Size(Aperm)>1000000 then Error("Million"); fi;
     sub:=SubgroupProperty(sub,cond,Aperm);
 
     Aperm:=Group(Apa,());
@@ -674,6 +674,11 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
 	if Length(u)>0 then
 	  C:=MappingGeneratorsImages(AQiso);
+	  if C[2]<>GeneratorsOfGroup(AQP) then
+	    C:=[List(GeneratorsOfGroup(AQP),
+	             x->PreImagesRepresentative(AQiso,x)),
+		     GeneratorsOfGroup(AQP)];
+	  fi;
 	  for j in u do
 	    if IsList(j) then
 	      # stabilizer set of subgroups
@@ -685,7 +690,9 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	      fi;
 	      if Length(jorb)>Length(j) then
 		B:=ActionHomomorphism(AQP,jorb,C[2],C[1],asAutom); 
-		substb:=PreImage(B,Stabilizer(Image(B),Set(jorpo),OnSets));
+		substb:=Group(List(C[2],x->ImagesRepresentative(B,x)),());
+		substb:=Stabilizer(substb,Set(jorpo),OnSets);
+		substb:=PreImage(B,substb);
 		Info(InfoMorph,2,"Stabilize characteristic orbit ",Size(j[1]),
 		  " :",Size(AQP)/Size(substb) );
 	      else
