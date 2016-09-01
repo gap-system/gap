@@ -56,6 +56,7 @@ ReadLib( "info.gd"     );
 ReadLib( "assert.gd"   );
 ReadLib( "files.gd"    );
 ReadLib( "streams.gd"  );
+ReadLib( "show.gd"     );
 
 ReadLib( "matobj1.gd"   );
 ReadLib( "vecmat.gd"   );
