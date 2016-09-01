@@ -921,6 +921,25 @@ DeclareOperation( "ChiefSeriesUnderAction", [ IsGroup, IsGroup ] );
 ##
 DeclareOperation( "ChiefSeriesThrough", [ IsGroup, IsList ] );
 
+#############################################################################
+##
+#F  RefinedSubnormalSeries( <ser>, <n> )
+##
+##  <#GAPDoc Label="RefinedSubnormalSeries">
+##  <ManSection>
+##  <Oper Name="RefinedSubnormalSeries" Arg='ser,n'/>
+##
+##  <Description>
+##  If <A>ser</A> is a subnormal series of a group <A>G</A>, and <A>n</A> is a
+##  normal subgroup, this function returns the series obtained by refining with
+##  <A>n</A>, that is closures and intersections are inserted at the appropriate
+##  place.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "RefinedSubnormalSeries" );
+
 
 #############################################################################
 ##
@@ -1782,6 +1801,29 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "NormalSubgroups", IsGroup );
+
+#############################################################################
+##
+#A  CharacteristicSubgroupsLib( <G> )
+##
+##  <#GAPDoc Label="CharacteristicSubgroupsLib">
+##  <ManSection>
+##  <Attr Name="CharacteristicSubgroupsLib" Arg='G'/>
+##
+##  <Description>
+##  returns a list of all characteristic subgroups of <A>G</A>, that is
+##  subgroups that are invariant under all automorphisms.
+##  <Example><![CDATA[
+##  gap> g:=SymmetricGroup(4);;NormalSubgroups(g);
+##  [ Sym( [ 1 .. 4 ] ), Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
+##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
+##  ]]></Example>
+##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "CharacteristicSubgroupsLib", IsGroup );
 
 
 #############################################################################

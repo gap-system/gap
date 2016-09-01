@@ -10,6 +10,14 @@ gap> DeclareGlobalVariable("foo73");
 gap> InstallValue(foo73,true);
 Error, InstallValue: value cannot be immediate, boolean or character
 
+# Reported by Sohail Iqbal on 2008/10/15, added by AK on 2010/10/03
+gap> f:=FreeGroup("s","t");; s:=f.1;; t:=f.2;;
+gap> g:=f/[s^4,t^4,(s*t)^2,(s*t^3)^2];;
+gap> CharacterTable(g);
+CharacterTable( <fp group of size 16 on the generators [ s, t ]> )
+gap> Length(Irr(g));
+10
+
 ##  Check if ConvertToMatrixRepNC works properly. BH
 ##
 gap> mat := [[1,0,1,1],[0,1,1,1]]*One(GF(2));
@@ -1778,14 +1786,6 @@ gap> x:= [ [ Z(9), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ];;
 gap> y:= [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(9) ] ];;
 gap> IsConjugate( G, x, y );
 true
-
-# Reported by Sohail Iqbal on 2008/10/15, added by AK on 2010/10/03
-gap> f:=FreeGroup("s","t");; s:=f.1;; t:=f.2;;
-gap> g:=f/[s^4,t^4,(s*t)^2,(s*t^3)^2];;
-gap> CharacterTable(g);
-CharacterTable( <fp group of size 16 on the generators [ s, t ]> )
-gap> Length(Irr(g));
-10
 
 # 2010/10/06 (TB)
 gap> EU(7,2);

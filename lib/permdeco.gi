@@ -20,6 +20,15 @@ local   pcgs,r,hom,A,iso,p,i;
   else
     hom:=NaturalHomomorphismByNormalSubgroup(G,r);
   fi;
+
+  A:=Image(hom);
+  if IsPermGroup(A) and NrMovedPoints(A)/Size(A)*Size(Socle(A))
+      >SufficientlySmallDegreeSimpleGroupOrder(Size(A)) then
+    A:=SmallerDegreePermutationRepresentation(A);
+    Info(InfoGroup,3,"Radical factor degree reduced ",NrMovedPoints(Image(hom)),
+         " -> ",NrMovedPoints(Image(A)));
+    hom:=hom*A;
+  fi;
   
   pcgs := TryPcgsPermGroup( G,r, false, false, true );
   if not IsPcgs( pcgs )  then

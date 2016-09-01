@@ -644,6 +644,45 @@ InstallMethod( ChiefSeries,
 
 #############################################################################
 ##
+#M  RefinedSubnormalSeries( <ser>,<n> ) 
+##
+InstallGlobalFunction("RefinedSubnormalSeries",function(ser,sub)
+local new,i,c;
+  new:=[];
+  i:=1;
+  if not IsSubset(ser[1],sub) then
+    sub:=Intersection(ser[1],sub);
+  fi;
+  while i<=Length(ser) and IsSubset(ser[i],sub) do
+    Add(new,ser[i]);
+    i:=i+1;
+  od;
+  while i<=Length(ser) and not IsSubset(sub,ser[i]) do
+    c:=ClosureGroup(sub,ser[i]);
+    if Size(new[Length(new)])>Size(c) then
+      Add(new,c);
+    fi;
+    if Size(new[Length(new)])>Size(ser[i]) then
+      Add(new,ser[i]);
+    fi;
+    sub:=Intersection(sub,ser[i]);
+    i:=i+1;
+  od;
+  if Size(sub)<Size(new[Length(new)]) and i<=Length(ser) and Size(sub)>Size(ser[i]) then
+    Add(new,sub);
+  fi;
+  while i<=Length(ser) do
+    Add(new,ser[i]);
+    i:=i+1;
+  od;
+  Assert(1,ForAll([1..Length(new)-1],x->Size(new[x])<>Size(new[x+1])));
+  return new;
+end);
+
+
+
+#############################################################################
+##
 #M  CommutatorFactorGroup( <G> )  . . . .  commutator factor group of a group
 ##
 InstallMethod( CommutatorFactorGroup,
@@ -4964,6 +5003,13 @@ function(G,U)
   fi;
   return AsList(ConjugacyClassSubgroups(G,U));
 end);
+
+#############################################################################
+##
+#M  CharacteristicSubgroupsLib( <G> )
+##
+InstallMethod(CharacteristicSubgroupsLib,"use automorphisms",true,[IsGroup],
+  G->Filtered(NormalSubgroups(G),x->IsCharacteristicSubgroup(G,x)));
 
 InstallTrueMethod( CanComputeSize, HasSize );
 

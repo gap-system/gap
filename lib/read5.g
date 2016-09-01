@@ -198,6 +198,7 @@ ReadLib( "schursym.gi");
 # files dealing with nice monomorphism
 ReadLib( "grpnice.gi"  );
 
+ReadLib( "autsr.gi"    );
 ReadLib( "morpheus.gi" );
 ReadLib( "grplatt.gi"  );
 ReadLib( "oprtglat.gi" );

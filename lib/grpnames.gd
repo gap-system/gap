@@ -132,6 +132,25 @@ DeclareAttribute( "DirectFactorsOfGroup", IsGroup );
 
 #############################################################################
 ##
+#A  CharacteristicFactorsOfGroup( <G> ) . decomposition into a direct product
+##
+##  <#GAPDoc Label="CharacteristicFactorsOfGroup">
+##  <ManSection>
+##  <Attr Name="CharacteristicFactorsOfGroup" Arg="G"/>
+##
+##  <Description>
+##    For a finite group this function returns a list 
+##    of characteristic subgroups [<A>G1</A>, .., <A>Gr</A>] such
+##    that <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
+##    is a direct product of characteristic subgroups.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "CharacteristicFactorsOfGroup", IsGroup );
+
+#############################################################################
+##
 #F  DirectFactorsOfGroupFromList( <G>, <Ns>, <MinNs> )
 ##
 ##  <ManSection>

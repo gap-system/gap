@@ -458,6 +458,45 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
     return DirectFactorsOfGroupFromList(G, Ns, MinNs);
   end);
 
+InstallMethod(CharacteristicFactorsOfGroup, "generic method", true,
+                        [ IsGroup ], 0,
+function(G)
+local Ns,MinNs,sel,a,sz,j,gs,g,N;
+
+  Ns := ShallowCopy(CharacteristicSubgroupsLib(G));
+  SortBy(Ns,Size);
+  MinNs:=[];
+  sel:=[2..Length(Ns)-1];
+  while Length(sel)>0 do
+    a:=sel[1];
+    sz:=Size(Ns[a]);
+    RemoveSet(sel,sel[1]);
+    Add(MinNs,Ns[a]);
+    for j in ShallowCopy(sel) do
+      if Size(Ns[j])>sz and Size(Ns[j]) mod sz=0 and IsSubset(Ns[j],Ns[a]) then
+	RemoveSet(sel,j);
+      fi;
+    od;
+  od;
+
+  if Length(MinNs)= 1 then
+    # size of MinNs is an upper bound to the number of components
+    return [ G ];
+  fi;
+
+  gs := [ ];
+  for N in MinNs do
+    g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+    if g <> fail then
+      AddSet(gs, g);
+    fi;
+  od;
+  # normal subgroup containing all minimal subgroups cannot have complement
+  Ns := Filtered(Ns, N -> not IsSubset(N, gs));
+
+  return DirectFactorsOfGroupFromList(G, Ns, MinNs);
+end);
+
 InstallGlobalFunction( DirectFactorsOfGroupFromList,
 
   function ( G, NList, MinList )

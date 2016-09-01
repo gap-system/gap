@@ -234,7 +234,8 @@ end);
 ##
 # try to find a small faithful action for an automorphism group
 InstallGlobalFunction(AssignNiceMonomorphismAutomorphismGroup,function(au,g)
-local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv, v, val, o, i, comb, best;
+local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
+v, val, o, i, comb, best,actbase;
 
   hom:=fail;
   allinner:=HasIsAutomorphismGroup(au) and IsAutomorphismGroup(au);
@@ -378,10 +379,14 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
 	  fi;
 	od;
       else
+	actbase:=ValueOption("autactbase");
+	if actbase=fail then
+	  actbase:=[g];
+	fi;
 	repeat
 	  cnt:=cnt+1;
 	  repeat
-	    r:=Random(g);
+	    r:=Random(Random(actbase));
 	  until not r in u;
 	  # force prime power order
 	  if not IsPrimePowerInt(Order(r)) then
@@ -1924,11 +1929,15 @@ local A;
     if HasIsFrattiniFree(G) and IsFrattiniFree(G) then
       A:=AutomorphismGroupFrattFreeGroup(G);
     else
-      A:=AutomorphismGroupSolvableGroup(G);
+      # currently autactbase does not work well, as the representation might
+      # change.
+      A:=AutomorphismGroupSolvableGroup(G:autactbase:=fail);
     fi;
   elif Size(RadicalGroup(G))=1 and IsPermGroup(G) then
     # essentially a normalizer when suitably embedded 
     A:=AutomorphismGroupFittingFree(G);
+  elif Size(RadicalGroup(G))>1 then
+    A:=AutomGrpSR(G);
   else
     A:=AutomorphismGroupMorpheus(G);
   fi;
@@ -2017,8 +2026,19 @@ local m;
       and IsSolvableGroup(G) and Size(G) <= 2000 then
       return IsomorphismSolvableSmallGroups(G,H);
     fi;
-  elif Length(ConjugacyClasses(G))<>Length(ConjugacyClasses(H)) then
+  elif AbelianInvariants(G)<>AbelianInvariants(H) then
     return fail;
+  elif Collected(List(ConjugacyClasses(G),
+          x->[Order(Representative(x)),Size(x)]))
+	<>Collected(List(ConjugacyClasses(H),
+	  x->[Order(Representative(x)),Size(x)])) then
+    return fail;
+  fi;
+
+  if Length(AbelianInvariants(G))>3 and Size(RadicalGroup(G))>1 then
+    # In place until a proper implementation of Cannon/Holt automorphism is
+    # made available.
+    return PatheticIsomorphism(G,H);
   fi;
 
   m:=Morphium(G,H,false);
