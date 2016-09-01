@@ -787,7 +787,7 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
                                  x->possibly(cH[i],cH[x])));
 	v:=TrivialSubgroup(H);
 	for j in sel do
-	  u:=ClosureGroup(v,cH[j]);
+	  v:=ClosureGroup(v,cH[j]);
 	od;
 	if Size(u)<>Size(v) then
 	  return fail;
