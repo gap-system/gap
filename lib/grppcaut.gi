@@ -873,8 +873,17 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H, 
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
           auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
-          gensA, new,as;
+          gensA, new,as,somechar,someorb,asAuto;
 
+    asAuto:=function(sub,hom) return Image(hom,sub);end;
+
+    somechar:=ValueOption("someCharacteristics");
+    if somechar<>fail then
+      someorb:=somechar.orbits;
+      somechar:=somechar.subgroups;
+    else
+      someorb:=fail;
+    fi;
     # get LG series
     spec    := SpecialPcgs(G);
     weights := LGWeights( spec );
@@ -1036,6 +1045,21 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
                 SetSize( A, tmp );
             fi;
         fi;
+
+      if somechar<>fail then
+	B:=List(somechar,x->SubgroupNC(H,List(GeneratorsOfGroup(x),x->PcElementByExponents(pcgsH,ExponentsOfPcElement(spec,x){[1..Length(pcgsH)]}))));
+	B:=Unique(B);
+	B:=Filtered(B,x->ForAny(GeneratorsOfGroup(A),y->x<>asAuto(x,y)));
+	if Length(B)>0 then
+	  SortBy(B,Size);
+	  tmp:=Size(A);
+	  for e in B do
+	    A:=Stabilizer(A,e,asAuto);
+	  od;
+	  Info(InfoAutGrp,2,"given chars reduce by ",tmp/Size(A));
+	fi;
+      fi;
+
     od; 
 
     # the last step
