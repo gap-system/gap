@@ -567,12 +567,21 @@ end);
 
 InstallGlobalFunction(EXReducePermutationActionPairs,function(r)
 local hom, sel, u, gens, i;
-  hom:=SmallerDegreePermutationRepresentation(r.permgroup);
-  if NrMovedPoints(Image(hom))<NrMovedPoints(r.permgroup) then
+  if IsSolvableGroup(r.permgroup) then
+    hom:=IsomorphismPcGroup(r.permgroup);
     r.permgroup:=Image(hom,r.permgroup);
     r.permgens:=List(r.permgens,i->Image(hom,i));
     if IsBound(r.isomorphism) then
       r.isomorphism:=InverseGeneralMapping(hom)*r.isomorphism;
+    fi;
+  else
+    hom:=SmallerDegreePermutationRepresentation(r.permgroup);
+    if NrMovedPoints(Image(hom))<NrMovedPoints(r.permgroup) then
+      r.permgroup:=Image(hom,r.permgroup);
+      r.permgens:=List(r.permgens,i->Image(hom,i));
+      if IsBound(r.isomorphism) then
+	r.isomorphism:=InverseGeneralMapping(hom)*r.isomorphism;
+      fi;
     fi;
   fi;
   # try to reduce nr. of generators
