@@ -2035,7 +2035,7 @@ local m;
     return fail;
   fi;
 
-  if Length(AbelianInvariants(G))>3 and Size(RadicalGroup(G))>1 then
+  if (Length(AbelianInvariants(G))>2 or Length(SmallGeneratingSet(G))>2) and Size(RadicalGroup(G))>1 then
     # In place until a proper implementation of Cannon/Holt automorphism is
     # made available.
     return PatheticIsomorphism(G,H);
