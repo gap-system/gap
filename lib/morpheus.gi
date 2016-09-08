@@ -1931,7 +1931,7 @@ local A;
     else
       # currently autactbase does not work well, as the representation might
       # change.
-      A:=AutomorphismGroupSolvableGroup(G:autactbase:=fail);
+      A:=AutomorphismGroupSolvableGroup(G);
     fi;
   elif Size(RadicalGroup(G))=1 and IsPermGroup(G) then
     # essentially a normalizer when suitably embedded 

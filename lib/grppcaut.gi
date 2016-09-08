@@ -552,7 +552,7 @@ NormalizingReducedGL := function( spec, s, n, M )
     S := B;
 
     # in case that we cannot compute a perm rep of pgl
-    if p^d > 10000 then
+    if p^d > 100000 then
         return S;
     fi;
 
@@ -873,16 +873,18 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H, 
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
           auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
-          gensA, new,as,somechar,someorb,asAuto;
+          gensA, new,as,somechar,someorb,asAutom,autactbase;
 
-    asAuto:=function(sub,hom) return Image(hom,sub);end;
+    asAutom:=function(sub,hom) return Image(hom,sub);end;
 
+    autactbase:=ValueOption("autactbase");
+    PushOptions(rec(autactbase:=fail)); # remove this option from concern
     somechar:=ValueOption("someCharacteristics");
     if somechar<>fail then
-      someorb:=somechar.orbits;
+      scharorb:=somechar.orbits;
       somechar:=somechar.subgroups;
     else
-      someorb:=fail;
+      scharorb:=fail;
     fi;
     # get LG series
     spec    := SpecialPcgs(G);
@@ -1049,15 +1051,33 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
       if somechar<>fail then
 	B:=List(somechar,x->SubgroupNC(H,List(GeneratorsOfGroup(x),x->PcElementByExponents(pcgsH,ExponentsOfPcElement(spec,x){[1..Length(pcgsH)]}))));
 	B:=Unique(B);
-	B:=Filtered(B,x->ForAny(GeneratorsOfGroup(A),y->x<>asAuto(x,y)));
+	B:=Filtered(B,x->ForAny(GeneratorsOfGroup(A),y->x<>asAutom(x,y)));
 	if Length(B)>0 then
 	  SortBy(B,Size);
 	  tmp:=Size(A);
+	  if autactbase<>fail then
+	    e:=List(autactbase,x->SubgroupNC(H,List(GeneratorsOfGroup(x),x->PcElementByExponents(pcgsH,ExponentsOfPcElement(spec,x){[1..Length(pcgsH)]}))));
+	    NiceMonomorphism(A:autactbase:=e);
+	  fi;
 	  for e in B do
-	    A:=Stabilizer(A,e,asAuto);
+	    A:=Stabilizer(A,e,asAutom);
 	  od;
 	  Info(InfoAutGrp,2,"given chars reduce by ",tmp/Size(A));
 	fi;
+      fi;
+      # as yet disabled
+      if false and scharorb<>fail then
+	# these are subgroups for which certain orbits must be stabilized.
+	B:=List(Reversed(scharorb),x->List(x,x->Group(List(GeneratorsOfGroup(x),
+	  y->PcElementByExponents(pcgsH,ExponentsOfPcElement(spec,y){
+	    [1..Length(pcgsH)]} )),One(H))));
+	B:=Filtered(B,x->Size(x[1])>1 and Size(x[1])<Size(H));
+	for e in B do
+	  tmp:=Orbits(A,e,asAutom);
+	  if Length(tmp)>Length(e) then
+	    Error("eng");
+	  fi;
+	od;
       fi;
 
     od; 
@@ -1080,6 +1100,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     od;
     B := GroupByGenerators( autos );
     SetSize( B, Size(A) );
+    PopOptions(); # undo the added `fail'
     return B;
 end);
 
