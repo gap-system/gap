@@ -270,7 +270,7 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
       gens:=stabp;
       mats:=List(stabm,i->MappedWord(i,freegens,mats));
       shadows:=List(stabm,i->MappedWord(i,freegens,shadows));
-      if AssertionLevel()>0 and action=false or action=OnRight then
+      if AssertionLevel()>0 and (action=false or action=OnRight) then
 	    ind:=[dims[bp]+1..dim];
 	    acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
 	    nv:=vec{ind};
@@ -310,7 +310,7 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
 	  bp:=bp+offset;
 
 	fi;
-	if AssertionLevel()>0 then
+	if AssertionLevel()>0 and (action=false or action=OnRight) then
 	  ind:=[dims[bp]+1..dim];
 	  acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
 	  nv:=vec{ind};
