@@ -52,7 +52,10 @@ InducedActionFactor := function( mats, fac, low )
 end;
 
 VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
-  local PrunedBasis, f, lim, mo, dim, bas, newbas, dims, q, bp, ind, affine, acts, nv, stb, idx, idxh, incstb, incperm, notinc, free, freegens, stabp, stabm, dict, orb, tp, tm, p, img, sch, incpermstop, sz, sel, nbas, offset, i;
+  local PrunedBasis, f, lim, mo, dim, bas, newbas, dims, q, bp, ind, affine,
+  acts, nv, stb, idx, idxh, incstb, incperm, notinc, free, freegens, stabp,
+  stabm, dict, orb, tp, tm, p, img, sch, incpermstop, sz, sel, nbas, offset,
+  i,action,lineflag;
 
   PrunedBasis:=function(p)
   local b,q,i;
@@ -73,7 +76,7 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
   lim:=2;
   mo:=GModuleByMats(mats,f);
   dim:=mo.dimension;
-  bas:=PrunedBasis(MTX.BasesCompositionSeries(mo));
+  bas:=PrunedBasis(MTX.BasesCSSmallDimDown(mo));
 
   # form new basis of space
   newbas:=ShallowCopy(bas[2]);
@@ -92,6 +95,8 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
   vec:=vec*q;
 
   bp:=Length(dims)-1;
+  action:=false;
+  lineflag:=true;
   while bp>=1 do
     ind:=[dims[bp]+1..dims[bp+1]];
     q:=[dims[bp+1]+1..dim];
@@ -100,11 +105,25 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
       ind:=[dims[bp]+1..dim];
     else
       affine:=List(mats,i->vec{q}*(i{q}{ind}));
+      if ForAll(affine,IsZero) then
+	affine:=false;
+      fi;
     fi;
     Info(InfoMatOrb,2,"Acting dimension ",ind);
     acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
     nv:=vec{ind};
-    
+
+    if affine=false then
+      if lineflag and Size(mo.field)>2 then
+	action:=OnLines;
+	nv:=NormedRowVector(nv);
+      else
+	action:=OnRight;
+      fi;
+    else
+      action:=false;
+    fi;
+
     if (affine=false and ForAny([1..Length(acts)],i->nv*acts[i]<>nv))
     or (affine<>false and ForAny([1..Length(acts)],i->nv*acts[i]+affine[i]<>nv))
       then
@@ -120,15 +139,18 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
       stabp:=[];
       stabm:=[];
       dict:=NewDictionary(nv,true,f^Length(nv));
+
+      MakeImmutable(nv);
       orb:=[nv];
       AddDictionary(dict,nv,1);
       tp:=[One(group)];
       tm:=[One(free)];
       p:=1;
+
       while incstb and p<=Length(orb) do
 	for i in [1..Length(gens)] do
-	  if affine=false then
-	    img:=orb[p]*acts[i];
+	  if action<>false then
+	    img:=action(orb[p],acts[i]);
 	  else
 	    img:=orb[p]*acts[i]+affine[i];
 	  fi;
@@ -192,14 +214,14 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
 	p:=p+1;
       od;
       #sz:=Maximum(Difference(DivisorsInt(sz),[sz]));
-      if Length(orb)<=idxh then
+      if Length(orb)<=idxh and Length(orb)<idx then
 	Info(InfoWarning,1,"too small stabilizer");
 	p:=incpermstop;
 	sz:=Size(group)/Length(orb);
 	while Size(stb)<sz do
 	  for i in [1..Length(gens)] do
-	    if affine=false then
-	      img:=orb[p]*acts[i];
+	    if action<>false then
+	      img:=action(orb[p],acts[i]);
 	    else
 	      img:=orb[p]*acts[i]+affine[i];
 	    fi;
@@ -248,7 +270,7 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
       gens:=stabp;
       mats:=List(stabm,i->MappedWord(i,freegens,mats));
       shadows:=List(stabm,i->MappedWord(i,freegens,shadows));
-      if AssertionLevel()>0 then
+      if AssertionLevel()>0 and action=false or action=OnRight then
 	    ind:=[dims[bp]+1..dim];
 	    acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
 	    nv:=vec{ind};
@@ -262,7 +284,7 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
 	acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
 	mo:=GModuleByMats(acts,f);
 	#if not MTX.IsIrreducible(mo) then
-	nbas:=PrunedBasis(MTX.BasesCompositionSeries(mo));
+	nbas:=PrunedBasis(MTX.BasesCSSmallDimDown(mo));
 	offset:=Length(nbas)-bp;
         if offset>0 then
 	  #nbas:=nbas{[2..Length(nbas)]};
@@ -297,7 +319,12 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
 
       fi;
     fi;
-    bp:=bp-1;
+    if action<>OnLines then
+      bp:=bp-1;
+      lineflag:=true;
+    else
+      lineflag:=false;
+    fi;
   od;
   Assert(1,ForAll(mats,i->vec*i=vec));
   return rec(stabilizer:=group,
@@ -873,7 +900,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H, 
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
           auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
-          gensA, new,as,somechar,someorb,asAutom,autactbase;
+          gensA, new,as,somechar,scharorb,asAutom,autactbase;
 
     asAutom:=function(sub,hom) return Image(hom,sub);end;
 
@@ -1054,6 +1081,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 	B:=Filtered(B,x->ForAny(GeneratorsOfGroup(A),y->x<>asAutom(x,y)));
 	if Length(B)>0 then
 	  SortBy(B,Size);
+	  SetIsGroupOfAutomorphismsFiniteGroup(A,true);
 	  tmp:=Size(A);
 	  if autactbase<>fail then
 	    e:=List(autactbase,x->SubgroupNC(H,List(GeneratorsOfGroup(x),x->PcElementByExponents(pcgsH,ExponentsOfPcElement(spec,x){[1..Length(pcgsH)]}))));

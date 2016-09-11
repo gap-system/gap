@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  auttf.gi                GAP library                      Alexander Hulpke
+#W  autsr.gi                GAP library                      Alexander Hulpke
 #W                                                           Soley Jonsdottir
 ##
 ##
