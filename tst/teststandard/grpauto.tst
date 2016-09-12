@@ -54,6 +54,20 @@ gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
 
 #
+# maximalAbelian took memory
+#
+gap> G:=PcGroupCode(
+> 4241001241648612707217598260832611111859648363850009814061412466747,
+> 18144);;
+gap> H:=PcGroupCode(
+> 8452751797183492013365034036870074746315874486014489856228688347195,
+> 18144);;
+gap> IsomorphismGroups(G,H);
+fail
+gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
+false
+
+#
 # from here on needs 4GB
 #
 # hard-iso4
@@ -72,6 +86,3 @@ false
 
 gap> STOP_TEST( "grpauto.tst", 1814420000);
 
-#############################################################################
-##
-#E

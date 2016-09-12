@@ -575,7 +575,7 @@ local hom, sel, u, gens, i;
       r.isomorphism:=InverseGeneralMapping(hom)*r.isomorphism;
     fi;
   else
-    hom:=SmallerDegreePermutationRepresentation(r.permgroup);
+    hom:=SmallerDegreePermutationRepresentation(r.permgroup:cheap);
     if NrMovedPoints(Image(hom))<NrMovedPoints(r.permgroup) then
       r.permgroup:=Image(hom,r.permgroup);
       r.permgens:=List(r.permgens,i->Image(hom,i));
