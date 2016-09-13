@@ -68,6 +68,18 @@ gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
 
 #
+# Full GL on module needs to be reduced
+#
+gap> G:=PcGroupCode(1083775118752032412701115313901099867559962870543,
+> 11664);;
+gap> H:=PcGroupCode(542004979975587406537467217880858737939706807055,
+> 11664);;
+gap> IsomorphismGroups(G,H);
+fail
+gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
+false
+
+#
 # from here on needs 4GB
 #
 # hard-iso4

@@ -900,9 +900,16 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H, 
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
           auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
-          gensA, new,as,somechar,scharorb,asAutom,autactbase;
+          gensA, new,as,somechar,scharorb,asAutom,autactbase,
+	  quotimg,eN,field;
 
     asAutom:=function(sub,hom) return Image(hom,sub);end;
+
+    # image of subgroup in quotient by pcgs
+    quotimg:=function(F,pcgs,U)
+      return SubgroupNC(F,List(GeneratorsOfGroup(U),
+        x->PcElementByExponents(pcgs,ExponentsOfPcElement(spec,x){[1..Length(pcgs)]})));
+    end;
 
     autactbase:=ValueOption("autactbase");
     PushOptions(rec(autactbase:=fail)); # remove this option from concern
@@ -929,6 +936,35 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
                   dimension := first[2]-1,
                   generators := [] );
     B     := NormalizingReducedGL( spec, 1, first[2], M );
+
+    if somechar<>fail then
+      C:=List(somechar,x->quotimg(F,FamilyPcgs(F),x));
+      C:=List(C,x->[x]);
+      if scharorb<>fail then
+	Append(C,List(scharorb,x->List(x,x->quotimg(F,FamilyPcgs(F),x))));
+      fi;
+      C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(F));
+      C:=List(C,Set);
+      D:=Unique(C);
+      field:=DefaultFieldOfMatrixGroup(B);
+      for C in D do
+	C:=List(C,x->List(SmallGeneratingSet(x),
+	    x->ExponentsOfPcElement(FamilyPcgs(F),x)*One(field)));
+	C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
+	xset:=Orbit(B,C[1],OnSubspacesByCanonicalBasis);
+	C:=Filtered(C,x->x in xset);
+	if Length(xset)>Length(C) then
+	  hom:=ActionHomomorphism(B,xset,OnSubspacesByCanonicalBasis,
+	    "surjective");
+	  C:=List(C,x->Position(xset,x));
+
+	  e:=Size(B);
+	  B:=PreImage(hom,Stabilizer(Image(hom),C,OnSets));
+	  Info(InfoAutGrp,2,"characteristics reduce ",e,
+	    " to ",Size(B));
+	fi;
+      od;
+    fi;
     A     := AutomorphismGroupElAbGroup( F, B );
     SetIsGroupOfAutomorphismsFiniteGroup(A,true);
 
@@ -949,7 +985,11 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
         ocr   := rec( group := H, generators := pcgsH );
         # we will modify the generators later!
 
+
         pcgsN := InducedPcgsByPcSequenceNC( pcgsH, pcgsH{[s..n-1]} );
+        eN:=SubgroupNC(G,InducedPcgsByPcSequenceNC( spec, spec{[s..m]}));
+	field:=GF(RelativeOrders(pcgsN)[1]);
+
         ocr.modulePcgs := pcgsN;
 	ocr.generators:=ocr.generators mod NumeratorOfModuloPcgs(pcgsN);
 
@@ -962,14 +1002,50 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
         mats := LinearOperationLayer( H, pcgsH{[1..s-1]}, pcgsN );
         M    := GModuleByMats( mats, GF( p ) );
                   
-        # compatible / inducible pairs
-        if weights[s][2] = 1 then
-            Info( InfoAutGrp, 2,"compute reduced gl ");
-            B := NormalizingReducedGL( spec, s, n, M );
+	# compatible / inducible pairs
+	Info( InfoAutGrp, 2,"compute reduced gl ");
+	B := NormalizingReducedGL( spec, s, n, M );
+	# A and B will not be used later, so it is no problem to 
+	# replace them by other groups with fewer generators
+	B:=SubgroupNC(B,SmallGeneratingSet(B));
 
-	    # A and B will not be used later, so it is no problem to 
-	    # replace them by other groups with fewer generators
-            B:=SubgroupNC(B,SmallGeneratingSet(B));
+	if somechar<>fail then
+	  e:=Product(RelativeOrders(pcgsN));
+	  D:=List(somechar,x->quotimg(H,pcgsH,Intersection(x,eN)));
+	  D:=List(D,x->[x]);
+	  # do something ...
+
+	  if scharorb<>fail then
+	    Append(D,List(scharorb,
+	      x->List(x,x->quotimg(H,pcgsH,Intersection(x,eN)))));
+	  fi;
+
+	  D:=Filtered(D,x->Size(x[1])>1 and Size(x[1])<e);
+	  D:=Unique(List(D,Set));
+
+	  for C in D do
+	    C:=List(C,x->List(SmallGeneratingSet(x),
+	      x->ExponentsOfPcElement(pcgsH,x){[s..n-1]}*One(field)));
+	    C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
+	    xset:=Orbit(B,C[1],OnSubspacesByCanonicalBasis);
+	    C:=Filtered(C,x->x in xset);
+	    if Length(xset)>Length(C) then
+	      hom:=ActionHomomorphism(B,xset,OnSubspacesByCanonicalBasis,
+		"surjective");
+	      C:=List(C,x->Position(xset,x));
+
+	      e:=Size(B);
+	      B:=PreImage(hom,Stabilizer(Image(hom),C,OnSets));
+	      Info(InfoAutGrp,2,"characteristics reduce ",e,
+		" to ",Size(B));
+	    fi;
+	  od;
+	fi;
+
+        if weights[s][2] = 1 then
+            #Info( InfoAutGrp, 2,"compute reduced gl ");
+            #B := NormalizingReducedGL( spec, s, n, M );
+
 	    if HasPcgs(A) 
 	     and Length(Pcgs(A))<Length(GeneratorsOfGroup(A)) then
 	      as:=Size(A);
@@ -985,11 +1061,9 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 				  Length(GeneratorsOfGroup(D))," generators");
             C := CompatiblePairs( F, M, D );
         else
-            Info( InfoAutGrp, 2,"compute reduced gl ");
-            B := NormalizingReducedGL( spec, s, n, M );
+            #Info( InfoAutGrp, 2,"compute reduced gl ");
+            #B := NormalizingReducedGL( spec, s, n, M );
 
-	    # A and B will not be used later, so it is no problem to 
-            B:=SubgroupNC(B,SmallGeneratingSet(B));
 	    if HasPcgs(A) 
 	     and Length(Pcgs(A))<Length(GeneratorsOfGroup(A)) then
 	      as:=Size(A);
@@ -1076,7 +1150,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
         fi;
 
       if somechar<>fail then
-	B:=List(somechar,x->SubgroupNC(H,List(GeneratorsOfGroup(x),x->PcElementByExponents(pcgsH,ExponentsOfPcElement(spec,x){[1..Length(pcgsH)]}))));
+	B:=List(somechar,x->quotimg(H,pcgsH,x));
 	B:=Unique(B);
 	B:=Filtered(B,x->ForAny(GeneratorsOfGroup(A),y->x<>asAutom(x,y)));
 	if Length(B)>0 then
@@ -1084,7 +1158,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 	  SetIsGroupOfAutomorphismsFiniteGroup(A,true);
 	  tmp:=Size(A);
 	  if autactbase<>fail then
-	    e:=List(autactbase,x->SubgroupNC(H,List(GeneratorsOfGroup(x),x->PcElementByExponents(pcgsH,ExponentsOfPcElement(spec,x){[1..Length(pcgsH)]}))));
+	    e:=List(autactbase,x->quotimg(H,pcgsH,x));
 	    NiceMonomorphism(A:autactbase:=e);
 	  fi;
 	  for e in B do
@@ -1093,12 +1167,11 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 	  Info(InfoAutGrp,2,"given chars reduce by ",tmp/Size(A));
 	fi;
       fi;
+
       # as yet disabled
       if false and scharorb<>fail then
 	# these are subgroups for which certain orbits must be stabilized.
-	B:=List(Reversed(scharorb),x->List(x,x->Group(List(GeneratorsOfGroup(x),
-	  y->PcElementByExponents(pcgsH,ExponentsOfPcElement(spec,y){
-	    [1..Length(pcgsH)]} )),One(H))));
+	B:=List(Reversed(scharorb),x->List(x,x->quotimg(H,pcgsH,x)));
 	B:=Filtered(B,x->Size(x[1])>1 and Size(x[1])<Size(H));
 	for e in B do
 	  tmp:=Orbits(A,e,asAutom);

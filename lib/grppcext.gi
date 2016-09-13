@@ -511,24 +511,26 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt;
     IsGroupOfAutomorphismsFiniteGroup(ag);
     p1iso:=IsomorphismPermGroup(ag);
     agp:=Range(p1iso);
-    opt:=rec(limit:=s);
+    opt:=rec(limit:=s,random:=1);
     if HasBaseOfGroup(agp) then
       opt.knownBase:=BaseOfGroup(agp);
     fi;
     #p1iso:=p1iso*SmallerDegreePermutationRepresentation(agp);
     EraseNaturalHomomorphismsPool(agp);
     if s>1 then
+      repeat
       u:=Group(());
-      gens:=[];
-      for i in GeneratorsOfGroup(agp) do
-	if Size(u)<s and not i in u then
-	  Add(gens,i);
-	  u:=DoClosurePrmGp(u,[i],opt);
+	gens:=[];
+	for i in GeneratorsOfGroup(agp) do
+	  if Size(u)<s and not i in u then
+	    Add(gens,i);
+	    u:=DoClosurePrmGp(u,[i],opt);
+	  fi;
+	od;
+	if HasBaseOfGroup(agp) then
+	  SetBaseOfGroup(u,BaseOfGroup(agp));
 	fi;
-      od;
-      if HasBaseOfGroup(agp) then
-	SetBaseOfGroup(u,BaseOfGroup(agp));
-      fi;
+      until Size(u)=s;
       agp:=u;
     else
       gens:=GeneratorsOfGroup(agp);
