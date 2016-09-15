@@ -896,12 +896,38 @@ end;
 ##
 #F AutomorphismGroupSolvableGroup( G )
 ##
+
+# shoul db emore generic -- test whether orbit length exceeds limit
+BindGlobal("OrbitIsLonger",function(acts,pnt,act,lim)
+local orb,d,gen,i,p,D;
+  # try to find a domain
+  D:=DomainForAction(pnt,acts,act);
+  pnt:=Immutable(pnt);
+  d:=NewDictionary(pnt,false,D);
+  orb := [ pnt ];
+  AddDictionary(d,pnt);
+  for p in orb do
+    for gen in acts do
+      i:=act(p,gen);
+      MakeImmutable(i);
+      if not KnowsDictionary(d,i) then
+	Add( orb, i );
+	if Length(orb)>lim then
+	  return true;
+	fi;
+	AddDictionary(d,i);
+      fi;
+    od;
+  od;
+  return false;
+end);
+
 InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H, 
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
           auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
           gensA, new,as,somechar,scharorb,asAutom,autactbase,
-	  quotimg,eN,field;
+	  quotimg,eN,field,act;
 
     asAutom:=function(sub,hom) return Image(hom,sub);end;
 
@@ -951,11 +977,24 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 	C:=List(C,x->List(SmallGeneratingSet(x),
 	    x->ExponentsOfPcElement(FamilyPcgs(F),x)*One(field)));
 	C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
-	xset:=Orbit(B,C[1],OnSubspacesByCanonicalBasis);
-	C:=Filtered(C,x->x in xset);
+
+	if Length(C)=1 and
+	  ForAny(GeneratorsOfGroup(B),
+	     x->ForAny(C[1],y->SolutionMat(C[1],y*x)=fail)) 
+	     and OrbitIsLonger(GeneratorsOfGroup(B),
+	       OnSubspacesByCanonicalBasis(C[1],One(B)),
+	      OnSubspacesByCanonicalBasis,Size(F)*2/3)
+	     then
+	  C:=NormedVectors(VectorSpace(field,C[1]));
+	  act:=OnLines;
+	  xset:=Union(Orbits(B,C,act));
+	else
+	  act:=OnSubspacesByCanonicalBasis;
+	  xset:=Orbit(B,C[1],act);
+	  C:=Filtered(C,x->x in xset);
+	fi;
 	if Length(xset)>Length(C) then
-	  hom:=ActionHomomorphism(B,xset,OnSubspacesByCanonicalBasis,
-	    "surjective");
+	  hom:=ActionHomomorphism(B,xset,act,"surjective");
 	  C:=List(C,x->Position(xset,x));
 
 	  e:=Size(B);
