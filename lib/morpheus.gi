@@ -156,6 +156,16 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
     i:=i+1;
   od;
 
+  if not IsTransitive(syno,MovedPoints(syno)) then
+    return fail;
+    # # characteristic product?
+    # w:=Orbits(syno,MovedPoints(syno));
+    # n:=List(w,x->Stabilizer(g,Difference(MovedPoints(g),x),OnTuples));
+    # if ForAll(n,x->ForAll(GeneratorsOfGroup(au),y->Image(y,x)=x)) then
+    #   Error("WR5");
+    # fi;
+  fi;
+
   cen:=Centralizer(syno,g);
   Info(InfoMorph,2,"|syno|=",Size(syno)," |cen|=",Size(cen));
   if Size(cen)>1 then
