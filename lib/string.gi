@@ -233,42 +233,28 @@ end);
 ##
 #F  StringPP( <int> ) . . . . . . . . . . . . . . . . . . . . P1^E1 ... Pn^En
 ##
-InstallGlobalFunction(StringPP , function( n )
-    local   l, p, e, i, prime, str;
+InstallGlobalFunction(StringPP, function( n )
+    local str, facs, i;
 
-    if n = 1  then
-        return "1";
-    elif n = -1  then
-        return "-1";
-    elif n = 0  then
-        return "0";
-    elif n < 0  then
-        l := FactorsInt( -n );
-	str := "-";
-    else
-        l := FactorsInt( n );
-	str := "";
-    fi;
-    p := [];
-    e := [];
-    for prime  in Set( l )  do
-        Add( p, prime );
-        Add( e, Length( Filtered( l, x -> prime = x ) ) );
-    od;
-
-    if e[ 1 ] = 1   then
-        str := Concatenation( str, String( p[ 1 ] ) );
-    else
-        str := Concatenation( str, String( p[ 1 ] ),
-	                                 "^", String( e[ 1 ] ) );
+    # hand special cases (in particular 0, 1, -1)
+    if n in [-3..3] then
+        return String( n );
     fi;
 
-    for i  in [ 2 .. Length( p ) ]  do
-        if e[ i ] = 1  then
-	    str := Concatenation( str, "*", String( p[ i ] ) );
-        else
-	    str := Concatenation( str, "*", String( p[ i ] ),
-	                                     "^", String( e[ i ] ) );
+    if n < 0  then
+        n := -n;
+        str := "-";
+    else
+        str := "";
+    fi;
+
+    facs := Collected( FactorsInt( n ) );
+    for i in [ 1 .. Length( facs ) ] do
+        if i > 1 then Append( str, "*" ); fi;
+        Append( str, String( facs[ i ][ 1 ] ) );
+        if facs[ i ][ 2 ] > 1 then
+            Append( str, "^" );
+            Append( str, String( facs[ i ][ 2 ] ) );
         fi;
     od;
 

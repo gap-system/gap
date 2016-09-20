@@ -711,6 +711,23 @@ BindGlobal("ANMAXPRIMS", [[],[],[],[],[],[1],[5],[],[9],[6],[6],
 [],[],[5,8],[],[4],[],[],[],[],[],[1],[2],[],[],[1],[],[],[],[],[],[1],[],[2],
 [],[],[],[1],[],[],[],[],[],[1],[],[1],[2],[],[],[],[],[1],[]]);
 
+
+# This function returns a list of all nontrivial decompositions of the
+# integer <A>n</A> as a power of integers.
+BindGlobal("PowerDecompositions",function(n)
+local d,i,r;
+  i:=2;
+  d:=[];
+  repeat
+    r:=RootInt(n,i);
+    if n=r^i then
+      Add(d,[r,i]);
+    fi;
+    i:=i+1;
+  until r<2;
+  return d;
+end);
+
 InstallGlobalFunction(MaximalSubgroupsSymmAlt,function(arg)
 local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
   G:=arg[1];

@@ -1227,19 +1227,13 @@ InstallGlobalFunction(PrimePowersInt,function( n )
     local   p,  pows,  lst;
 
     if n = 1  then
-	return [];
+        return [];
     elif n = 0  then
     	Error( "<n> must be non zero" );
     elif n < 0  then
     	n := -1 * n;
     fi;
-    lst  := Factors( Integers, n );
-    pows := [];
-    for p  in Set( lst )  do
-	Add( pows, p );
-        Add( pows, Number( lst, x -> x = p ) );
-    od;
-    return pows;
+    return Flat(Collected(FactorsInt(n)));
 
 end);
 
@@ -1887,27 +1881,7 @@ InstallMethod( \in,
 #F  PrintFactorsInt( <n> )  . . . . . . . . print factorization of an integer
 ##
 InstallGlobalFunction(PrintFactorsInt,function ( n )
-    local decomp, i;
-
-    if -4 < n and n < 4 then
-        Print( n );
-    else
-        decomp := Collected( Factors( AbsInt( n ) ) );
-        if n > 0 then
-            Print( decomp[1][1] );
-        else
-            Print( -decomp[1][1] );
-        fi;
-        if decomp[1][2] > 1 then
-            Print( "^", decomp[1][2] );
-        fi;
-        for i in [ 2 .. Length( decomp ) ] do
-            Print( "*", decomp[i][1] );
-            if decomp[i][2] > 1 then
-                Print( "^", decomp[i][2] );
-            fi;
-        od;
-    fi;
+    Print( StringPP( n ) );
 end);
 
 #############################################################################
@@ -1923,20 +1897,6 @@ InstallOtherMethod(Iterator, "more helpful error for integers", true,
         function(n) 
     Error("You cannot loop over the integer ",n,
           " did you mean the range [1..",n,"]");
-end);
-
-InstallGlobalFunction(PowerDecompositions,function(n)
-local d,i,r;
-  i:=2;
-  d:=[];
-  repeat
-    r:=RootInt(n,i);
-    if n=r^i then
-      Add(d,[r,i]);
-    fi;
-    i:=i+1;
-  until r<2;
-  return d;
 end);
 
 ##  The behaviour of View(String) for large integers can be configured via a

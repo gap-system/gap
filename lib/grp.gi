@@ -2642,6 +2642,12 @@ InstallMethod( NormalClosureOp,
     return N;
     end );
 
+InstallMethod( NormalClosureOp, "trivial subgroup",
+  IsIdenticalObj, [ IsGroup, IsGroup and IsTrivial ], SUM_FLAGS,
+function(G,U)
+  return U;
+end);
+
 #############################################################################
 ##
 #M  NormalIntersection( <G>, <U> )  . . . . . intersection with normal subgrp
