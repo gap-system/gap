@@ -236,6 +236,58 @@ InstallMethod( IsPGroup,
       return IS_PGROUP_FOR_NILPOTENT( G );
     fi;
     end );
+#############################################################################
+##
+#M  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
+##
+InstallMethod( IsPowerfulPGroup,
+    "use characterisation of powerful p-groups based on rank ",
+    [ IsGroup and HasRankPGroup and HasComputedOmegas ],
+     function( G )
+    local p;
+    if (IsTrivial(G)) then
+	return true;
+    else
+	p:=PrimePGroup(G);
+	#We use the less known characterisation of powerful p groups
+	# for p>3 by Jon Gonzalez-Sanchez, Amaia Zugadi-Reizabal
+	# can be found in 'A characterization of powerful p-groups'
+	if (p>3) then
+		if (RankPGroup(G)=Log(Order(Omega(G,p)),p)) then
+			return true;
+		else
+			return false;
+		fi;
+	else
+	TryNextMethod();
+	fi;
+    fi;
+
+
+      
+    end);
+     
+  
+InstallMethod( IsPowerfulPGroup,
+    "generic method checks inclusion of commutator subgroup in agemo subgroup",
+    [ IsGroup ],
+     function( G )
+    local p;
+    if IsPGroup( G ) = false then
+      return false;
+    elif IsTrivial(G) then
+      return true;
+	
+    else
+    
+      p:=PrimePGroup(G);
+      if p = 2 then 
+        return IsSubgroup(Agemo(G,2,2),DerivedSubgroup( G ));
+      else 
+        return IsSubgroup(Agemo(G,p), DerivedSubgroup( G ));
+      fi; 
+    fi;
+    end);                                              
 
 
 #############################################################################
@@ -1080,6 +1132,17 @@ function(G)
         fi;
     od;
     return SubgroupNC(G, gen);
+end);
+
+InstallMethod( FrattiniSubgroup, "for powerful p-groups",
+            [ IsPGroup and IsPowerfulPGroup and HasComputedAgemos ],100,
+function(G)
+    local p;
+#If the group is powerful and has computed agemos, then no work needs
+#to be done, since FrattiniSubgroup(G)=Agemo(G,p) in this case
+#by properties of powerful p-groups.
+	p:=PrimePGroup(G);
+	return Agemo(G,p);
 end);
 
 InstallMethod( FrattiniSubgroup, "for nilpotent groups",
