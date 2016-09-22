@@ -897,7 +897,7 @@ end;
 #F AutomorphismGroupSolvableGroup( G )
 ##
 
-# shoul db emore generic -- test whether orbit length exceeds limit
+# should be more generic -- test whether orbit length exceeds limit
 BindGlobal("OrbitIsLonger",function(acts,pnt,act,lim)
 local orb,d,gen,i,p,D;
   # try to find a domain
@@ -920,6 +920,64 @@ local orb,d,gen,i,p,D;
     od;
   od;
   return false;
+end);
+
+# another function that should be more general and has space for improvement.
+BindGlobal("SubspaceStabilizerMatrixGroup",function(G,bas)
+local f,act,xset,stb,hom,n,m,l,i;
+  n:=DimensionOfMatrixGroup(G);
+  if Length(bas)=0 or ForAll(GeneratorsOfGroup(G),
+	     x->ForAll(bas,y->SolutionMat(bas,y*x)<>fail)) then
+    # space is fixed
+    return G;
+  fi;
+  bas:=OnSubspacesByCanonicalBasis(bas,One(G)); # canonical form
+  f:=DefaultFieldOfMatrixGroup(G);
+  if IsNaturalGL(G) then
+    # write down stabilizer
+    l:=Length(bas);
+    act:=BaseSteinitzVectors(IdentityMat(n,f),
+	  bas);
+    act:=Concatenation(bas,act.factorspace);
+    stb:=[];
+    # subspace
+    for i in GeneratorsOfGroup(GL(l,f)) do
+      m:=IdentityMat(n,f);
+      m{[1..l]}{[1..l]}:=i;
+      Add(stb,m);
+    od;
+    # factor
+    for i in GeneratorsOfGroup(GL(n-l,f)) do
+      m:=IdentityMat(n,f);
+      m{[l+1..n]}{[l+1..n]}:=i;
+      Add(stb,m);
+    od;
+    # mixer
+    m:=IdentityMat(n,f);
+    m[l+1][1]:=One(f);
+    Add(stb,m);
+    stb:=List(stb,x->x^act); # base change
+    stb:=Group(stb);
+    SetSize(stb,Size(GL(l,f))*Size(GL(n-l,f))*Size(f)^(l*(n-l)));
+    Info(InfoMatOrb,2,"reduced full GL by ",Size(G)/Size(stb));
+    return stb;
+  fi;
+  if not OrbitIsLonger(GeneratorsOfGroup(G),bas,OnSubspacesByCanonicalBasis,
+	   Size(f)^QuoInt(Length(bas[1]),2)) then
+    #just plain
+    act:=OnSubspacesByCanonicalBasis;
+    xset:=Orbit(G,bas,act);
+    stb:=[Position(xset,bas)];
+  else
+    act:=OnLines;
+    stb:=NormedVectors(VectorSpace(f,bas));
+    xset:=Union(Orbits(G,stb,act));
+    stb:=Set(List(stb,x->Position(xset,x)));
+  fi;
+  hom:=ActionHomomorphism(G,xset,act,"surjective");
+  act:=PreImage(hom,Stabilizer(Image(hom),stb,OnSets));
+  Info(InfoMatOrb,2,"reduce ",Size(G), " to ",Size(act));
+  return act;
 end);
 
 InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
@@ -964,46 +1022,46 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     B     := NormalizingReducedGL( spec, 1, first[2], M );
 
     if somechar<>fail then
-      C:=List(somechar,x->quotimg(F,FamilyPcgs(F),x));
-      C:=List(C,x->[x]);
-      if scharorb<>fail then
-	Append(C,List(scharorb,x->List(x,x->quotimg(F,FamilyPcgs(F),x))));
-      fi;
-      C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(F));
-      C:=List(C,Set);
-      D:=Unique(C);
       field:=DefaultFieldOfMatrixGroup(B);
-      for C in D do
-	C:=List(C,x->List(SmallGeneratingSet(x),
-	    x->ExponentsOfPcElement(FamilyPcgs(F),x)*One(field)));
-	C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
-
-	if Length(C)=1 and
-	  ForAny(GeneratorsOfGroup(B),
-	     x->ForAny(C[1],y->SolutionMat(C[1],y*x)=fail)) 
-	     and OrbitIsLonger(GeneratorsOfGroup(B),
-	       OnSubspacesByCanonicalBasis(C[1],One(B)),
-	      OnSubspacesByCanonicalBasis,Size(F)*2/3)
-	     then
-	  C:=NormedVectors(VectorSpace(field,C[1]));
-	  act:=OnLines;
-	  xset:=Union(Orbits(B,C,act));
-	else
-	  act:=OnSubspacesByCanonicalBasis;
-	  xset:=Orbit(B,C[1],act);
-	  C:=Filtered(C,x->x in xset);
-	fi;
-	if Length(xset)>Length(C) then
-	  hom:=ActionHomomorphism(B,xset,act,"surjective");
-	  C:=List(C,x->Position(xset,x));
-
-	  e:=Size(B);
-	  B:=PreImage(hom,Stabilizer(Image(hom),C,OnSets));
-	  Info(InfoAutGrp,2,"characteristics reduce ",e,
-	    " to ",Size(B));
-	fi;
+      C:=List(somechar,x->quotimg(F,FamilyPcgs(F),x));
+      C:=List(C,x->List(SmallGeneratingSet(x),
+	  x->ExponentsOfPcElement(FamilyPcgs(F),x)*One(field)));
+      C:=Filtered(C,x->Length(x)>0);
+      C:=List(C,x->Filtered(OnSubspacesByCanonicalBasis(x,One(B)),
+	      y->not IsZero(y)));
+      C:=Unique(C);
+      for D in C do
+	B:=SubspaceStabilizerMatrixGroup(B,D);
       od;
+      if scharorb<>fail then
+	C:=List(scharorb,x->List(x,x->quotimg(F,FamilyPcgs(F),x)));
+	C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(F));
+	C:=List(C,Set);
+	D:=Unique(C);
+	for C in D do
+	  C:=List(C,x->List(SmallGeneratingSet(x),
+	      x->ExponentsOfPcElement(FamilyPcgs(F),x)*One(field)));
+	  C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
+
+	  if Length(C)=1 then
+	    B:=SubspaceStabilizerMatrixGroup(B,C[1]);
+	  else
+	    act:=OnSubspacesByCanonicalBasis;
+	    xset:=Orbit(B,C[1],act);
+	    C:=Filtered(C,x->x in xset);
+	    if Length(xset)>Length(C) then
+	      hom:=ActionHomomorphism(B,xset,act,"surjective");
+	      C:=List(C,x->Position(xset,x));
+	      e:=Size(B);
+	      B:=PreImage(hom,Stabilizer(Image(hom),C,OnSets));
+	      Info(InfoAutGrp,2,"characteristics reduce ",e,
+		" to ",Size(B));
+	    fi;
+	  fi;
+	od;
+      fi;
     fi;
+
     A     := AutomorphismGroupElAbGroup( F, B );
     SetIsGroupOfAutomorphismsFiniteGroup(A,true);
 
@@ -1049,36 +1107,46 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 	B:=SubgroupNC(B,SmallGeneratingSet(B));
 
 	if somechar<>fail then
+	  field:=GF(RelativeOrders(pcgsN)[1]);
 	  e:=Product(RelativeOrders(pcgsN));
-	  D:=List(somechar,x->quotimg(H,pcgsH,Intersection(x,eN)));
-	  D:=List(D,x->[x]);
-	  # do something ...
+	  C:=List(somechar,x->quotimg(H,pcgsH,Intersection(x,eN)));
 
-	  if scharorb<>fail then
-	    Append(D,List(scharorb,
-	      x->List(x,x->quotimg(H,pcgsH,Intersection(x,eN)))));
-	  fi;
-
-	  D:=Filtered(D,x->Size(x[1])>1 and Size(x[1])<e);
-	  D:=Unique(List(D,Set));
-
-	  for C in D do
-	    C:=List(C,x->List(SmallGeneratingSet(x),
+	  C:=List(C,x->List(SmallGeneratingSet(x),
 	      x->ExponentsOfPcElement(pcgsH,x){[s..n-1]}*One(field)));
-	    C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
-	    xset:=Orbit(B,C[1],OnSubspacesByCanonicalBasis);
-	    C:=Filtered(C,x->x in xset);
-	    if Length(xset)>Length(C) then
-	      hom:=ActionHomomorphism(B,xset,OnSubspacesByCanonicalBasis,
-		"surjective");
-	      C:=List(C,x->Position(xset,x));
-
-	      e:=Size(B);
-	      B:=PreImage(hom,Stabilizer(Image(hom),C,OnSets));
-	      Info(InfoAutGrp,2,"characteristics reduce ",e,
-		" to ",Size(B));
-	    fi;
+	  C:=Filtered(C,x->Length(x)>0);
+	  C:=List(C,x->Filtered(OnSubspacesByCanonicalBasis(x,One(B)),
+		  y->not IsZero(y)));
+	  C:=Unique(C);
+	  for D in C do
+	    B:=SubspaceStabilizerMatrixGroup(B,D);
 	  od;
+	  if scharorb<>fail then
+	    C:=List(scharorb,
+	      x->List(x,x->quotimg(H,pcgsH,Intersection(x,eN))));
+	    C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(F));
+	    D:=Unique(List(C,Set));
+	    for C in D do
+	      C:=List(C,x->List(SmallGeneratingSet(x),
+		x->ExponentsOfPcElement(pcgsH,x){[s..n-1]}*One(field)));
+	      C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
+
+	      if Length(C)=1 then
+		B:=SubspaceStabilizerMatrixGroup(B,C[1]);
+	      else
+		act:=OnSubspacesByCanonicalBasis;
+		xset:=Orbit(B,C[1],act);
+		C:=Filtered(C,x->x in xset);
+		if Length(xset)>Length(C) then
+		  hom:=ActionHomomorphism(B,xset,act,"surjective");
+		  C:=List(C,x->Position(xset,x));
+		  e:=Size(B);
+		  B:=PreImage(hom,Stabilizer(Image(hom),C,OnSets));
+		  Info(InfoAutGrp,2,"characteristics reduce ",e,
+		    " to ",Size(B));
+		fi;
+	      fi;
+	    od;
+	  fi;
 	fi;
 
         if weights[s][2] = 1 then

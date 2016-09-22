@@ -87,6 +87,15 @@ fail
 gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
 
+gap> G:=PcGroupCode(18738408935379049727906755356708168311565445686261463850856,
+> 21952);;
+gap> H:=PcGroupCode(18738408935359210460657231881739776911013615108923450662760,
+> 21952);;
+gap> IsomorphismGroups(G,H);
+fail
+gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
+false
+
 #
 # Too hard work for permiso
 #
