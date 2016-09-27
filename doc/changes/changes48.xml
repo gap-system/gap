@@ -473,6 +473,73 @@ on long lists in 64-bit GAP installations.
 
 </Section>
 
+<Section Label="gap485">
+<Heading>&GAP; 4.8.5 (September 2016)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.8.5">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.8.5</Heading>
+
+Improved and extended functionality:
+<List>
+<Item>
+<!-- #827 -->
+The error messages produced when an unexpected <K>fail</K> is returned were
+made more clear by explicitly telling that the result should not be boolean
+or <K>fail</K> (before it only said <Q>not a boolean</Q>).
+</Item>
+<Item>
+<!-- #797 -->
+For consistency, both <Ref Func="NrTransitiveGroups" BookName="ref" /> and
+<Ref Func="TransitiveGroup" BookName="ref" /> now disallow the transitive
+group of degree 1.
+</Item>
+</List>
+
+Fixed bugs that could lead to incorrect results:
+<List>
+<Item>
+<!-- #869 -->
+A bug in the code for algebraic field extensions over non-prime fields that
+may cause, for example, a list of all elements of the extension not being
+a duplicate-free. [Reported by Huta Gana]
+</Item>
+<Item>
+<!-- #875 -->
+So far, <Ref Func="FileString" BookName="GAPDoc" /> only wrote files of sizes
+less than 2G and did not indicate an error in case of larger strings. Now
+strings of any length can be written, and in the case of a failure
+the corresponding system error is shown.
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+<!-- #877 -->
+<Ref Oper="NaturalHomomorphismByIdeal" BookName="ref" /> was not reducing
+monomials before forming a quotient ring, causing a break loop on some
+inputs. [Reported by Dmytro Savchuk]
+</Item>
+<Item>
+<!-- #867 -->
+A bug in <Ref Func="DefaultInfoHandler" BookName="ref" /> caused
+a break loop on startup with the setting
+<C>SetUserPreference( "InfoPackageLoadingLevel", 4 )</C>`.
+[Reported by Mathieu Dutour]
+</Item>
+<Item>
+<!-- #801 -->
+The <Ref Oper="Iterator" BookName="ref" /> for permutation groups was broken
+when the <Ref Attr="StabChainMutable" Label="for a group" BookName="ref" />
+of the group was not reduced, which can reasonably happen as the result of
+various algorithms.
+</Item>
+</List>
+
+</Subsection>
+
+</Section>
+
 </Chapter>
 
 
