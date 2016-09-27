@@ -290,7 +290,7 @@ local   G,		   # group
     G:=arg[1];
     noperf:=false;
     zuppofunc:=false;
-    if Length(arg)>1 and IsFunction(arg[2]) then
+    if Length(arg)>1 and (IsFunction(arg[2]) or IsList(arg[2])) then
       func:=arg[2];
       Info(InfoLattice,1,"lattice discarding function active!");
       if IsList(func) then
