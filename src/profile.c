@@ -122,6 +122,10 @@
 
 #include <sys/time.h>            /* for gettimeofday */
 
+#if HAVE_SYS_RESOURCE_H
+# include       <sys/resource.h>        /* definition of 'struct rusage'   */
+#endif
+
 Obj OutputtedFilenameList;
 
 struct StatementLocation
