@@ -84,6 +84,7 @@ gap_SOURCES = \
     src/stringobj.c \
     src/sysfiles.c \
     src/system.c \
+    src/systimers.c \
     src/tietze.c \
     src/trans.c \
     src/vars.c \
