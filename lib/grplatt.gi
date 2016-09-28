@@ -51,16 +51,22 @@ function (G,func)
 local   zuppos,            # set of zuppos,result
 	c,                 # a representative of a class of elements
 	o,                 # its order
+	h,                 # the subgroup < c > of G
 	N,                 # normalizer of < c >
 	t;                 # loop variable
+
+  if HasZuppos(G) then
+    return Filtered(Zuppos(G), c -> func(Subgroup(G,[c])));
+  fi;
 
   # compute the zuppos
   zuppos:=[One(G)];
   for c in List(ConjugacyClasses(G),Representative)  do
     o:=Order(c);
-    if func(Group(c)) and IsPrimePowerInt(o)  then
+    h:=Subgroup(G,[c]);
+    if IsPrimePowerInt(o) and func(h)  then
       if ForAll([2..o],i -> Gcd(o,i) <> 1 or not c^i in zuppos) then
-	N:=Normalizer(G,Subgroup(G,[c]));
+	N:=Normalizer(G,h);
 	for t in RightTransversal(G,N)  do
 	  Add(zuppos,c^t);
 	od;
