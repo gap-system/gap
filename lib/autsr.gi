@@ -170,7 +170,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     AQP:=Image(AQiso,AQ);
     # force degree down
     a:=Size(AQP);
-    AQP:=Group(SmallGeneratingSet(AQP));
+    AQP:=Group(SmallGeneratingSet(AQP),One(AQP));
     SetSize(AQP,a);
     a:=SmallerDegreePermutationRepresentation(AQP:cheap);
     if NrMovedPoints(Image(a))<NrMovedPoints(AQP) then
