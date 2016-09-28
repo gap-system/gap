@@ -88,7 +88,7 @@ InstallMethod( MinimalGeneratingSet,"cyclic groups",true,
     RankFilter(IsFinite and IsPcGroup),
 function ( G )
 local g;
-  if Size(G)=1 then return [];fi;
+  if IsTrivial(G) then return []; fi;
   g:=Product(IndependentGeneratorsOfAbelianGroup(G),One(G));
   Assert( 1, Index(G,Subgroup(G,[g])) = 1 );
   return [g];
@@ -408,9 +408,9 @@ InstallMethod( IsNilpotentGroup,
 #M  IsPerfectGroup( <G> ) . . . . . . . . . . . .  test if a group is perfect
 ##
 InstallImmediateMethod( IsPerfectGroup,
-    IsGroup and IsSolvableGroup and HasSize,
+    IsSolvableGroup and HasIsTrivial,
     0,
-    grp -> Size( grp ) = 1 );
+    IsTrivial );
 
 InstallMethod( IsPerfectGroup,
     "method for finite groups",
