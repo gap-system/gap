@@ -1758,7 +1758,7 @@ ListXHelp := function ( result, gens, i, vals, l )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val  in gen  do
                 vals[l+1] := val;
                 ListXHelp( result, gens, i+1, vals, l+1 );
@@ -1766,7 +1766,7 @@ ListXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1785,7 +1785,7 @@ BIND_GLOBAL( "ListXHelp2", function ( result, gens, i, val1, val2 )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             vals := [ val1, val2 ];
             for val3  in gen  do
                 vals[3] := val3;
@@ -1794,7 +1794,7 @@ BIND_GLOBAL( "ListXHelp2", function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1812,13 +1812,13 @@ BIND_GLOBAL( "ListXHelp1", function ( result, gens, i, val1 )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val2  in gen  do
                 ListXHelp2( result, gens, i+1, val1, val2 );
             od;
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1836,13 +1836,13 @@ BIND_GLOBAL( "ListXHelp0", function ( result, gens, i )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val1  in gen  do
                 ListXHelp1( result, gens, i+1, val1 );
             od;
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1872,7 +1872,7 @@ SetXHelp := function ( result, gens, i, vals, l )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val  in gen  do
                 vals[l+1] := val;
                 SetXHelp( result, gens, i+1, vals, l+1 );
@@ -1880,7 +1880,7 @@ SetXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1899,7 +1899,7 @@ BIND_GLOBAL( "SetXHelp2", function ( result, gens, i, val1, val2 )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             vals := [ val1, val2 ];
             for val3  in gen  do
                 vals[3] := val3;
@@ -1908,7 +1908,7 @@ BIND_GLOBAL( "SetXHelp2", function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1926,13 +1926,13 @@ BIND_GLOBAL( "SetXHelp1", function ( result, gens, i, val1 )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val2  in gen  do
                 SetXHelp2( result, gens, i+1, val1, val2 );
             od;
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1950,13 +1950,13 @@ BIND_GLOBAL( "SetXHelp0", function ( result, gens, i )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val1  in gen  do
                 SetXHelp1( result, gens, i+1, val1 );
             od;
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1986,7 +1986,7 @@ SumXHelp := function ( result, gens, i, vals, l )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val  in gen  do
                 vals[l+1] := val;
                 result := SumXHelp( result, gens, i+1, vals, l+1 );
@@ -1994,7 +1994,7 @@ SumXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2018,7 +2018,7 @@ BIND_GLOBAL( "SumXHelp2", function ( result, gens, i, val1, val2 )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             vals := [ val1, val2 ];
             for val3  in gen  do
                 vals[3] := val3;
@@ -2027,7 +2027,7 @@ BIND_GLOBAL( "SumXHelp2", function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2050,13 +2050,13 @@ BIND_GLOBAL( "SumXHelp1", function ( result, gens, i, val1 )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val2  in gen  do
                 result := SumXHelp2( result, gens, i+1, val1, val2 );
             od;
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2079,13 +2079,13 @@ BIND_GLOBAL( "SumXHelp0", function ( result, gens, i )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val1  in gen  do
                 result := SumXHelp1( result, gens, i+1, val1 );
             od;
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2120,7 +2120,7 @@ ProductXHelp := function ( result, gens, i, vals, l )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val  in gen  do
                 vals[l+1] := val;
                 result := ProductXHelp( result, gens, i+1, vals, l+1 );
@@ -2128,7 +2128,7 @@ ProductXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2152,7 +2152,7 @@ BIND_GLOBAL( "ProductXHelp2", function ( result, gens, i, val1, val2 )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             vals := [ val1, val2 ];
             for val3  in gen  do
                 vals[3] := val3;
@@ -2161,7 +2161,7 @@ BIND_GLOBAL( "ProductXHelp2", function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2184,13 +2184,13 @@ BIND_GLOBAL( "ProductXHelp1", function ( result, gens, i, val1 )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val2  in gen  do
                 result := ProductXHelp2( result, gens, i+1, val1, val2 );
             od;
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2213,13 +2213,13 @@ BIND_GLOBAL( "ProductXHelp0", function ( result, gens, i )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val1  in gen  do
                 result := ProductXHelp1( result, gens, i+1, val1 );
             od;
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
