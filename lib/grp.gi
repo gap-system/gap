@@ -62,6 +62,27 @@ InstallMethod( IsCyclic,
     fi;
     end );
 
+InstallMethod( Size,
+    "for a cyclic group",
+    [ IsGroup and IsCyclic and HasGeneratorsOfGroup ],
+    -RankFilter(HasGeneratorsOfGroup),
+function(G)
+  local gens;
+  if HasMinimalGeneratingSet(G) then
+    gens:=MinimalGeneratingSet(G);
+  else
+    gens:=GeneratorsOfGroup(G);
+  fi;
+  if Length(gens) = 1 and gens[1] <> One(G) then
+    SetMinimalGeneratingSet(G,gens);
+    return Order(gens[1]);
+  elif Length(gens) <= 1 then
+    SetMinimalGeneratingSet(G,[]);
+    return 1;
+  fi;
+  TryNextMethod();
+end);
+
 InstallMethod( MinimalGeneratingSet,"cyclic groups",true,
     [ IsGroup and IsCyclic and IsFinite ],
     RankFilter(IsFinite and IsPcGroup),
