@@ -2266,8 +2266,10 @@ Int ISINITREADLINE = 0;
 Int current_rl_fid;
 int charreadhook_rl ( void )
 {
+#if HAVE_SELECT
   if (OnCharReadHookActive != (Obj) 0)
     HandleCharReadHook(syBuf[current_rl_fid].fp);
+#endif
   return 0;
 }
 
@@ -2310,8 +2312,10 @@ Char * readlineFgets (
 
   /* read at most as much as we can buffer */
   rl_num_chars_to_read = length-2;
+#if HAVE_SELECT
   /* hook to read from other channels */
   rl_event_hook = (OnCharReadHookActive != (Obj) 0) ? charreadhook_rl : 0;
+#endif
   /* now do the real work */
   doingReadline = 1;
   rlres = readline(TLS(Prompt));
