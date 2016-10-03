@@ -632,15 +632,19 @@ extern void syWinPut (
 
 /***************************************************************************
  **
- *F SyReadFileString( <fid> )
- **   - read file given by <fid> file into a string
+ *F SyReadStringFid( <fid> )
+ **   - read file given by <fid> into a string
+ *F SyReadStringFile( <fid> )
+ **   - read file given by <fid> into a string, only rely on read()
+ *F SyReadStringFileStat( <fid> )
+ **   - read file given by <fid> into a string, use stat() to determine
+ **     size of file before reading. This does not work for pipes
  */
 
-extern Obj SyReadStringFile (
-    Int fid );
+extern Obj SyReadStringFid(Int fid);
+extern Obj SyReadStringFile(Int fid);
+extern Obj SyReadStringFileGeneric(Int fid);
 
-
-     
 /****************************************************************************
 **
 

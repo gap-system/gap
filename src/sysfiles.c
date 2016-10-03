@@ -4024,11 +4024,43 @@ Char * SyTmpdir ( const Char * hint )
 #endif
 #endif
 
+Obj SyReadStringFile(Int fid)
+{
+    Char            buf[32769];
+    Int             ret, len;
+    UInt            lstr;
+    Obj             str;
+
+    /* read <fid> until we see  eof   (in 32kB pieces)                     */
+    str = NEW_STRING(0);
+    len = 0;
+    do {
+        ret = read( syBuf[fid].fp , buf, 32768);
+        if (ret < 0) {
+            SySetErrorNo();
+            return Fail;
+        }
+        len += ret;
+        GROW_STRING( str, len );
+        lstr = GET_LEN_STRING(str);
+        memcpy( CHARS_STRING(str)+lstr, buf, ret );
+        *(CHARS_STRING(str)+lstr+ret) = '\0';
+        SET_LEN_STRING(str, lstr+ret);
+    } while(ret > 0);
+
+    /* fix the length of <str>                                             */
+    len = GET_LEN_STRING(str);
+    ResizeBag( str, SIZEBAG_STRINGLEN(len) );
+
+    syBuf[fid].ateof = 1;
+    return str;
+}
+
 #if !defined(SYS_IS_CYGWIN32) && defined(HAVE_STAT)
 /* fstat seems completely broken under CYGWIN */
 /* first try to get the whole file as one chunk, this avoids garbage
    collections because of the GROW_STRING calls below    */
-Obj SyReadStringFile(Int fid)
+Obj SyReadStringFileStat(Int fid)
 {
     Int             ret, len;
     Obj             str;
@@ -4065,41 +4097,24 @@ Obj SyReadStringFile(Int fid)
     }
 }
 
+Obj SyReadStringFid(Int fid)
+{
+    if(syBuf[fid].pipe == 1) {
+        return SyReadStringFile(fid);
+    } else {
+        return SyReadStringFileStat(fid);
+    }
+}
+
 #else
 
-Obj SyReadStringFile(Int fid)
-{
-    Char            buf[32769];
-    Int             ret, len;
-    UInt            lstr;
-    Obj             str;
-
-    /* read <fid> until we see  eof   (in 32kB pieces)                     */
-    str = NEW_STRING(0);
-    len = 0;
-    do {
-        ret = read( syBuf[fid].fp , buf, 32768);
-        if (ret < 0) {
-            SySetErrorNo();
-            return Fail;
-        }
-        len += ret;
-        GROW_STRING( str, len );
-        lstr = GET_LEN_STRING(str);
-        memcpy( CHARS_STRING(str)+lstr, buf, ret );
-        *(CHARS_STRING(str)+lstr+ret) = '\0';
-        SET_LEN_STRING(str, lstr+ret);
-    } while(ret > 0);
-
-    /* fix the length of <str>                                             */
-    len = GET_LEN_STRING(str);
-    ResizeBag( str, SIZEBAG_STRINGLEN(len) );
-
-    syBuf[fid].ateof = 1;
-    return str;
+Obj SyReadStringFid(Int fid) {
+    return SyReadStringFile(fid);
 }
 
 #endif
+
+
 
 /****************************************************************************
 **
