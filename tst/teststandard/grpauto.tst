@@ -78,6 +78,7 @@ gap> IsomorphismGroups(G,H);
 fail
 gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
+
 gap> G:=PcGroupCode(731609193963915469349479836674438288113664000126400,
 > 15744);;
 gap> H:=PcGroupCode(11518455149767885147152053318976713124993564672000126400,
@@ -91,6 +92,15 @@ gap> G:=PcGroupCode(18738408935379049727906755356708168311565445686261463850856,
 > 21952);;
 gap> H:=PcGroupCode(18738408935359210460657231881739776911013615108923450662760,
 > 21952);;
+gap> IsomorphismGroups(G,H);
+fail
+gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
+false
+
+gap> G:=PcGroupCode(49879636940338958988550512603242447645113136854728735,
+> 15552);;
+gap> H:=PcGroupCode(99756065499714436414025572353196660756647930654752799,
+> 15552);;
 gap> IsomorphismGroups(G,H);
 fail
 gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
@@ -111,8 +121,6 @@ gap> Size(AutomorphismGroup(G));
 2880000
 
 #
-# from here on needs 4GB
-#
 # hard-iso4
 #
 gap> G:=PcGroupCode(
@@ -124,6 +132,9 @@ fail
 gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
 
+#
+# from here on needs 4GB
+#
 # permutation example
 gap> gp1:=Group(
 > (1,23,6,64,38)(2,42,18,19,11)(3,7,30,49,50)(4,14,20,45,46)(5,9,21,41,58,34, 
