@@ -760,6 +760,8 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
   end;
 
   # go through factors of characteristic series to keep orbits short.
+  AutomorphismGroup(G:someCharacteristics:=fail);
+  AutomorphismGroup(H:someCharacteristics:=fail);
   cG:=CharacteristicSubgroupsLib(G);
   nG:=[];
   cH:=ShallowCopy(CharacteristicSubgroupsLib(H));

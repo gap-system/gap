@@ -1020,19 +1020,20 @@ end;
 
 SpaceAndOrbitStabilizer:=function(n,field,spaces,osporb)
 local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
-      gens,one,spl,ngens,m,sz,a,sporb;
+      gens,one,spl,ngens,m,sz,a,sporb,notyet;
 
   spaceincl:=function(big,small)
     return RankMat(Concatenation(big,small))=Length(big);
   end;
 
   outvecs:=function(space,new)
-    return Filtered(new,x->Length(space)=0 or SolutionMat(space,x)=fail);
+    return BaseSteinitzVectors(new,space).factorspace;
   end;
 
   one:=IdentityMat(n,field);
   sub:=[]; # space so far
-  spaces:=List(spaces,x->OnSubspacesByCanonicalBasis(x,one));
+  spaces:=Unique(List(spaces,x->OnSubspacesByCanonicalBasis(x,one)));
+
   SortBy(spaces,Length);
   if not ForAny(spaces,x->Length(x)=n) then
     Add(spaces,List(one,ShallowCopy));
@@ -1065,69 +1066,77 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
       od;
     od; 
     if Length(new)>0 then
-      spaces:=Concatenation(spaces,new);
+      new:=List(new,x->OnSubspacesByCanonicalBasis(x,one)); # canonize
+      spaces:=Set(Concatenation(spaces,new));
       l:=Length(spaces);
       SortBy(spaces,Length);
     fi;
   until Length(new)=0;
 
+  notyet:=[];
   gens:=[];
   sz:=1;
 
   while Length(sub)<n do
     # find minimal ones above yet
-    min:=Filtered([1..l],x->[yet,x] in incl and 
-       ForAll(incl,y->y[1] in done or y[2]<>x));
+    min:=Filtered([1..l],x->[yet,x] in incl);
+    min:=Filtered(min,x->not ForAny(min,y->[y,x] in incl));
     rans:=[];
     sofar:=ShallowCopy(sub);
     for i in min do
-      Add(done,i);
+      AddSet(done,i);
       if spaceincl(sofar,spaces[i]) then
-        Error("Not yet done! Fixed subspaces force diagonal action");
+	# somewhat diagonal -- stabilize later.
+	Add(notyet,spaces[i]);
+	Add(rans,fail);
+      else
+	new:=outvecs(sub,spaces[i]);
+	Add(rans,[Length(sofar)+1..Length(sofar)+Length(new)]);
+	Append(sofar,new);
       fi;
-      new:=outvecs(sub,spaces[i]);
-      Add(rans,[Length(sofar)+1..Length(sofar)+Length(new)]);
-      Append(sofar,new);
     od;
 
     ngens:=[];
     # now go through each space and add a GL (or GL\wr) in that space
     for i in [1..Length(min)] do
-      spl:=[];
-      for j in sporb do
-        s:=List(j,x->SumIntersectionMat(Concatenation(sub,x),
-	  Concatenation(sub,sofar{rans[i]}))[2]);
-        s:=Filtered(s,x->Length(x)>Length(sub) and Length(x)<
-	  Length(rans[i])+Length(sub));
-        if Length(s)>2 then
-	  Error("sporblen>2 not yet done");
-	elif Length(s)=2 then
-	  Add(spl,s);
-	fi;
-      od;
-      if Length(spl)>0 then
-	spl:=spl[1]; # so far only use one...
-	# new basis vectors
-	a:=[];
-	for j in spl do
-	  Add(a,outvecs(sub,j));
+      if rans[i]<>fail then
+	spl:=[];
+	for j in sporb do
+	  s:=List(j,x->SumIntersectionMat(Concatenation(sub,x),
+	    Concatenation(sub,sofar{rans[i]}))[2]);
+	  s:=Filtered(s,x->Length(x)>Length(sub) and Length(x)<
+	    Length(rans[i])+Length(sub));
+	  if Length(s)>2 then
+	    Error("sporblen>2 not yet done");
+	  elif Length(s)=2 then
+	    Add(spl,s);
+	  fi;
 	od;
-	if Sum(a,Length)<>Length(rans[i]) then Error("badbasis"); fi;
-	if Length(a[1])<>Length(a[2]) then Error("differentdim!");fi;
-	sofar{rans[i]}:=Concatenation(a);
+	if Length(spl)>0 then
+	  spl:=spl[1]; # so far only use one...
+	  # new basis vectors
+	  a:=[];
+	  for j in spl do
+	    Add(a,outvecs(sub,j));
+	  od;
+	  Assert(1,Sum(a,Length)=Length(rans[i]));
+	  Assert(1,Length(a[1])=Length(a[2]));
+	  sofar{rans[i]}:=Concatenation(a);
 
-	a:=MatWreathProduct(GL(Length(a[1]),field),SymmetricGroup(Length(a)));
-      else
-	# make a GL on the space
-	a:=GL(Length(rans[i]),field);
+	  a:=MatWreathProduct(GL(Length(a[1]),field),SymmetricGroup(Length(a)));
+	else
+	  # make a GL on the space
+	  a:=GL(Length(rans[i]),field);
+	fi;
+
+	sz:=sz*Size(a);
+	for k in GeneratorsOfGroup(a) do
+	  m:=List(one,ShallowCopy);
+	  m{rans[i]}{rans[i]}:=k;
+	  Add(ngens,m);
+	od;
       fi;
 
-      sz:=sz*Size(a);
-      for k in GeneratorsOfGroup(a) do
-	m:=List(one,ShallowCopy);
-	m{rans[i]}{rans[i]}:=k;
-	Add(ngens,m);
-      od;
     od;
 
     if yet>0 then
@@ -1152,7 +1161,11 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
     sub:=sofar;
     yet:=First([1..l],x->Length(sub)=Length(spaces[x]) and
 	  spaceincl(sub,spaces[x]));
-    Add(done,yet);
+    AddSet(done,yet);
+    # any others that are included?
+    for i in Filtered([1..l],x->[x,yet] in incl) do
+      AddSet(done,i);
+    od;
     # remove sporb's that are too small
     sporb:=Filtered(sporb,x->not ForAll(x,y->spaceincl(sub,y)));
     Append(gens,ngens);
@@ -1161,6 +1174,11 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
   gens:=List(gens,x->x^sub);
   a:=Group(gens);
   SetSize(a,sz);
+  # are there diagonals we did not deal with?
+  for i in notyet do
+    a:=Stabilizer(a,i,OnSubspacesByCanonicalBasis);
+  od;
+
   if Length(osporb)>1 then
     # we only stabilized one pair so far
     for i in osporb do
@@ -1257,10 +1275,9 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     B := NormalizingReducedGL( spec, 1, first[2], M, B );
 
     Assert(2,
-      ForAll(spaces,x->Length(Orbit(B,x,OnSubspacesByCanonicalBasis)=1)));
+      ForAll(spaces,x->Length(Orbit(B,x,OnSubspacesByCanonicalBasis))=1));
     Assert(2,
-      ForAll(sporb,x->Length(Orbit(B,x[1],OnSubspacesByCanonicalBasis)=1)
-           <=Length(x)));
+      ForAll(sporb,x->Length(Orbit(B,x[1],OnSubspacesByCanonicalBasis))<=Length(x)));
 
 # not needed any longer -- fixed
 #    if somechar<>fail then
@@ -1394,10 +1411,9 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 	B:=SubgroupNC(B,SmallGeneratingSet(B));
 
 	Assert(2,
-	  ForAll(spaces,x->Length(Orbit(B,x,OnSubspacesByCanonicalBasis)=1)));
+	  ForAll(spaces,x->Length(Orbit(B,x,OnSubspacesByCanonicalBasis))=1));
 	Assert(2,
-	  ForAll(sporb,x->Length(Orbit(B,x[1],OnSubspacesByCanonicalBasis)=1)
-	      <=Length(x)));
+	  ForAll(sporb,x->Length(Orbit(B,x[1],OnSubspacesByCanonicalBasis))<=Length(x)));
 
 	# not needed any longer
 #	if somechar<>fail then
