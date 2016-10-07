@@ -592,6 +592,7 @@ InstallMethod( SubgroupByPcgs, "subgroup with pcgs",
 function( G, pcgs )
     local U;
     U := SubgroupNC( G, AsList( pcgs ) );
+    SetSize(U,Product(RelativeOrders(pcgs)));
     SetPcgs( U, pcgs );
     SetGroupOfPcgs (pcgs, U);
     # home pcgs will be inherited
