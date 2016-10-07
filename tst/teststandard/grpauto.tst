@@ -42,6 +42,19 @@ gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
 
 #
+# Many Spaces
+#
+
+gap> G:=PcGroupCode(338681823291028181778801710348121147721184790127576437,
+> 29160);;
+gap> H:=PcGroupCode(338681822494525443798297952136327929199594863010776437,
+> 29160);;
+gap> IsomorphismGroups(G,H);
+fail
+gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
+false
+
+#
 # hard-iso3
 #
 gap> G:=PcGroupCode(

@@ -1018,12 +1018,23 @@ local bas,n,one,new,a,b,g;
   return new;
 end;
 
-SpaceAndOrbitStabilizer:=function(n,field,spaces,osporb)
+SpaceAndOrbitStabilizer:=function(n,field,ospaces,osporb)
 local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
-      gens,one,spl,ngens,m,sz,a,sporb,notyet;
+      gens,one,spl,ngens,m,sz,a,sporb,notyet,canonicalform,doonedim,spaces;
+
+  # move in function to allow global treatment (or replacement)
+  canonicalform:=function(space)
+    if Length(space)=0 then
+      return space;
+    else
+      space:=TriangulizedMat(space);
+      space:=Filtered(space,x->not IsZero(x));
+      return space;
+    fi;
+  end;
 
   spaceincl:=function(big,small)
-    return RankMat(Concatenation(big,small))=Length(big);
+    return canonicalform(big)=canonicalform(Concatenation(big,small));
   end;
 
   outvecs:=function(space,new)
@@ -1032,19 +1043,36 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
 
   one:=IdentityMat(n,field);
   sub:=[]; # space so far
-  spaces:=Unique(List(spaces,x->OnSubspacesByCanonicalBasis(x,one)));
+  spaces:=Unique(List(ospaces,canonicalform));
 
   SortBy(spaces,Length);
   if not ForAny(spaces,x->Length(x)=n) then
     Add(spaces,List(one,ShallowCopy));
   fi;
 
-  osporb:=List(osporb,x->List(x,x->OnSubspacesByCanonicalBasis(x,one)));
+  osporb:=List(osporb,x->List(x,canonicalform));
   sporb:=List(osporb,ShallowCopy);
   l:=Length(spaces);
 
   # inclusion relation, tests
+  doonedim:=true;
   repeat
+    if doonedim and Number(spaces,x->Length(x)=1)>=n then
+      yet:=[];
+      new:=[];
+      i:=1;
+      while Length(yet)<n do
+	if not spaceincl(yet,spaces[i]) then
+	  Add(new,spaces[i]);
+	  yet:=canonicalform(Concatenation(yet,spaces[i]));
+	fi;
+	i:=i+1;
+      od;
+      spaces:=new;
+      l:=Length(spaces);
+      doonedim:=false;
+    fi;
+
     yet:=0;
     done:=[0];
     incl:=List([1..l],x->[0,x]);
@@ -1056,9 +1084,9 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
 	else
 	  # check for meet/join closed
 	  s:=SumIntersectionMat(spaces[i],spaces[j]);
+	  s:=List(s,canonicalform);
 	  for k in s do
-	    if Length(k)>0 and not ForAny(spaces,x->Length(x)=Length(k) and
-	      RankMat(Concatenation(x,k))=Length(x)) then
+	    if Length(k)>0 and not ForAny(spaces,x->x=k) then
 	      Add(new,k);
 	    fi;
 	  od;
@@ -1066,7 +1094,6 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
       od;
     od; 
     if Length(new)>0 then
-      new:=List(new,x->OnSubspacesByCanonicalBasis(x,one)); # canonize
       spaces:=Set(Concatenation(spaces,new));
       l:=Length(spaces);
       SortBy(spaces,Length);
@@ -1178,6 +1205,13 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
   for i in notyet do
     a:=Stabilizer(a,i,OnSubspacesByCanonicalBasis);
   od;
+
+  # and any we left?
+  if doonedim=false then
+    for i in ospaces do
+      a:=Stabilizer(a,i,OnSubspacesByCanonicalBasis);
+    od;
+  fi;
 
   if Length(osporb)>1 then
     # we only stabilized one pair so far
