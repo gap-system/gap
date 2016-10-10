@@ -1195,6 +1195,19 @@ end);
 
 #############################################################################
 ##
+#M  CharacteristicSubgroupsLib( <G> )
+##
+InstallMethod(CharacteristicSubgroupsLib,"solvable, automorphisms",true,
+  [IsGroup and IsSolvableGroup],0,
+function(G)
+local A,s;
+  A:=AutomorphismGroup(G);
+  s:=SubgroupsSolvableGroup(G,rec(normal:=true,actions:=GeneratorsOfGroup(A)));
+  return Filtered(s,x->IsCharacteristicSubgroup(G,x));
+end);
+
+#############################################################################
+##
 #M  LatticeSubgroups(<G>)  . . . . . . . . . .  lattice of subgroups
 ##
 InstallMethod(LatticeSubgroups,"elementary abelian extension",true,

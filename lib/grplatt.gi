@@ -2326,7 +2326,7 @@ local rt,op,a,l,i,j,u,max,subs;
   return rec(subgroups:=List(a,i->ClosureGroup(U,rt{i})),inclusions:=max);
 end);
 
-InstallMethod(IntermediateSubgroups,"blocks for coset operation",
+InstallMethod(IntermediateSubgroups,"using maximal subgroups",
   IsIdenticalObj, [IsGroup,IsGroup],
   1, # better than previous if index larger
 function(G,U)
