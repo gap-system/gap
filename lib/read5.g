@@ -3,6 +3,8 @@
 #X  now read all the implementation parts
 ##
 
+ReadLib( "type.gi"     );
+
 ReadLib( "rvecempt.gi" );
 ReadLib( "ratfun1.gi"  );
 ReadLib( "matrix.gi"   );
