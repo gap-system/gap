@@ -831,6 +831,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 	u:=SubgroupNC(G,pcgs{idx});
       until ForAll(GeneratorsOfGroup(u),
 	i->ForAll(GeneratorsOfGroup(A),j->Image(j,i) in u));
+
       Ggens:=InducedPcgsByPcSequence(pcgs,pcgs{idx});
       tup:=M.generators{idx};
 
@@ -866,7 +867,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 	# not being perfect is not likely to do a hash conflict
 	pows:=List([0..Length(tup)],x->pows^x);
 
-	tmp:=[D, rec(hashfun:= lst->lst*pows),tup, gens,genimgs, f ];
+	tmp:=[D, rec(hashfun:= lst->lst*pows),tup, gens,newimgs, f ];
 
 	#  use `op' to get in the fake domain with the hashfun
 	tmp := StabilizerOp( D, rec(hashfun:= lst->lst*pows),tup,

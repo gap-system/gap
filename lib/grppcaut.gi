@@ -1228,14 +1228,42 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
   return a;
 end;
 
-
+PcgsCharacteristicTails:=function(G,aut)
+local gens,ser,new,pcgs,f,mo,i,j,k,s;
+  gens:=GeneratorsOfGroup(aut);
+  ser:=InvariantElementaryAbelianSeries(G,gens);
+  new:=[G];
+  for i in [2..Length(ser)] do
+    pcgs:=ModuloPcgs(ser[i-1],ser[i]);
+    f:=GF(RelativeOrders(pcgs)[1]);
+    mo:=List(gens,x->List(pcgs,y->ExponentsOfPcElement(pcgs,y^x))*One(f));
+    mo:=GModuleByMats(mo,f);
+    for j in
+      Reversed(Filtered(MTX.BasesCompositionSeries(mo),
+        x->Length(x)<Length(pcgs))) do
+      s:=ser[i];
+      for k in j do
+	s:=ClosureSubgroupNC(s,PcElementByExponents(pcgs,List(k,Int)));
+      od;
+      Add(new,s);
+    od;
+  od;
+  # build pcgs
+  ser:=[];
+  for i in [2..Length(new)] do
+    pcgs:=ModuloPcgs(new[i-1],new[i]);
+    Append(ser,pcgs);
+  od;
+  pcgs:=PcgsByPcSequence(FamilyObj(One(G)),ser);
+  return pcgs;
+end;
 
 InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H, 
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
           auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
           gensA, new,as,somechar,scharorb,asAutom,autactbase,
-	  quotimg,eN,field,act,spaces,sporb;
+	  quotimg,eN,field,act,spaces,sporb,npcgs,nM;
 
     asAutom:=function(sub,hom) return Image(hom,sub);end;
 
@@ -1510,7 +1538,21 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
             Info( InfoAutGrp, 2,"compute compatible pairs in group of size ",
                                   Size(A), " x ",Size(B),", ",
 				  Length(GeneratorsOfGroup(D))," generators");
-            C := CompatiblePairs( F, M, D );
+            
+            if Size(D)>10^10 then
+	      # translate to different pcgs to make tails A-invariant
+	      npcgs:=PcgsCharacteristicTails(F,A);
+	      C:=GroupWithGenerators(npcgs);
+	      SetPcgs(C,npcgs);
+	      Assert(1,Pcgs(C)=npcgs); # ensure no magic took place
+	      as:=GroupHomomorphismByImagesNC(F,Group(M.generators),
+	            Pcgs(F),M.generators);
+              nM:=rec(field:=M.field,dimension:=M.dimension,
+		      generators:=List(npcgs,x->ImagesRepresentative(as,x)));
+	      C:=CompatiblePairs(C,nM,D);
+	    else
+	      C := CompatiblePairs( F, M, D );
+	    fi;
         else
             #Info( InfoAutGrp, 2,"compute reduced gl ");
             #B := MormalizingReducedGL( spec, s, n, M );
