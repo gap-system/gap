@@ -1,0 +1,207 @@
+
+<Chapter Label="ch:bibutil">
+<Heading>Utilities for Bibliographies</Heading>
+
+A  standard for  collecting  references (in  particular to  mathematical
+texts) is &BibTeX; 
+(<URL>http://www.ctan.org/tex-archive/biblio/bibtex/distribs/doc/</URL>). 
+A disadvantage of &BibTeX; is that the format of the
+data is specified  with the use by  &LaTeX; in mind. The  data format is
+less suited  for conversion to other  document types like plain  text or
+HTML.<P/>
+
+In the first section we describe  utilities for using data from &BibTeX;
+files in &GAP;. <P/>
+
+In  the  second  section  we  introduce a  new  XML  based  data  format
+BibXMLext for bibliographies which  seems better suited for other
+tasks than using it with &LaTeX;. <P/>
+
+Another section  will describe  utilities to deal  with BibXMLext
+data in &GAP;.
+
+
+<Section Label="ParseBib">
+<Heading>Parsing &BibTeX; Files</Heading>
+
+Here are  functions for  parsing, normalizing  and printing  reference lists
+in  &BibTeX;  format. The  reference  describing  this format  is&nbsp;<Cite
+Key="La85" Where="Appendix B"/>.
+
+<#Include Label="ParseBibFiles">
+
+<#Include Label="NormalizeNameAndKey">
+
+<#Include Label="WriteBibFile">
+
+<#Include Label="InfoBibTools">
+
+</Section>
+
+<Section Label="BibXMLformat">
+<Heading>The BibXMLext Format</Heading>
+
+Bibliographical data in &BibTeX; files have the disadvantage that the
+actual data are given in &LaTeX; syntax. This makes it difficult to use
+the data for anything but for &LaTeX;, say for representations of the
+data as plain text or HTML. For example: mathematical formulae are in
+&LaTeX; <C>$</C> environments,  non-ASCII characters can be
+specified in many strange ways, and how to specify URLs for links if the
+output format allows them?<P/>
+
+Here we propose an XML data format for bibliographical data which
+addresses these problems, it is called BibXMLext. In the next 
+section we describe some tools for
+generating (an approximation to) this data format from &BibTeX; data,
+and for using data given in BibXMLext format for various
+purposes. <P/>
+
+The first motivation for this development was the handling of
+bibliographical data in &GAPDoc;, but the format and the tools are certainly 
+useful for other purposes as well.<P/>
+
+We started from a DTD <F>bibxml.dtd</F> which is publicly available, say
+from <URL>http://bibtexml.sf.net/</URL>. This is essentially a
+reformulation of the definition of the &BibTeX; format, including
+several of some widely used further fields. This has already the
+advantage that a generic XML parser can check  the validity of the
+data entries, for example for missing compulsary fields in entries.
+We applied the following changes and extensions to define the
+DTD for BibXMLext, stored in the file <F>bibxmlext.dtd</F> which can 
+be found in the root directory of this &GAPDoc; package (and in Appendix
+<Ref Appendix="bibxmlextdtd"/>):
+
+<List >
+<Mark>names</Mark>
+<Item>Lists of names in the <C>author</C> and <C>editor</C> fields in
+&BibTeX; are difficult to parse. Here they must be given by a sequence
+of <C>&lt;name></C>-elements which each contain an optional <C>&lt;first></C>-
+and a <C>&lt;last></C>-element for the first and last names,
+respectively.</Item>
+<Mark><C>&lt;M></C> and <C>&lt;Math></C></Mark>
+<Item>These elements enclose mathematical formulae, the content is
+&LaTeX; code (without the <C>$</C>). These should be handled in
+the same way as the elements with the same names in &GAPDoc;, see
+<Ref Subsect="M"/> and <Ref Subsect="Math"/>. In particular, simple
+formulae which have a well defined plain text representation can be
+given in <C>&lt;M></C>-elements.</Item>
+<Mark>Encoding</Mark>
+<Item>Note that in XML files we can use the full range of unicode
+characters, see <URL>http://www.unicode.org/</URL>. All non-ASCII
+characters should be specified as unicode characters. This makes dealing
+with special characters easy for plain text or HTML, only for use with 
+&LaTeX; some sort of translation is necessary.</Item>
+<Mark><C>&lt;URL></C></Mark>
+<Item>These elements are allowed everywhere in the text and should be
+represented by links in converted formats which allow this. It is used
+in the same way as the element with the same name in &GAPDoc;, see
+<Ref Subsect="URL"/>.</Item>
+<Mark><C>&lt;Alt Only="..."></C> and <C>&lt;Alt Not="..."></C></Mark>
+<Item>Sometimes information should be given in different ways, depending
+on the output format of the data. This is possible with the 
+<C>&lt;Alt></C>-elements with the same definition as in &GAPDoc;, see
+<Ref Subsect="Alt"/>.
+</Item>
+<Mark><C>&lt;C></C></Mark>
+<Item>This element should be used to protect text from case changes by
+converters (the extra <C>{}</C> characters in &BibTeX;
+title fields).</Item>
+<Mark><C>&lt;string key="..." value="..."/></C> and 
+<C>&lt;value key="..."/></C></Mark>
+<Item>The <C>&lt;string></C>-element defines key-value pairs which can
+be used in any field via the <C>&lt;value></C>-element (not only for
+whole fields but also parts of the text).</Item>
+<Mark><C>&lt;other type="..."></C></Mark>
+<Item>This is a generic element for fields which are otherwise not
+supported. An arbitrary number of them is allowed for each entry, so any
+kind of additional data can be added to entries.</Item>
+<Mark><C>&lt;Wrap Name="..."></C></Mark>
+<Item>This generic element is allowed inside all fields. This markup will be 
+just ignored (but not the element content) by our standard tools. But
+it can be a useful hook for introducing arbitrary further markup 
+(and our tools can easily be extended to handle it).</Item>
+<Mark>Extra entities</Mark>
+<Item>The DTD defines the standard XML entities (<Ref
+Subsect="XMLspchar"/> and the entities <C>&amp;nbsp;</C> (non-breakable
+space), <C>&amp;ndash;</C> and <C>&amp;copyright;</C>. 
+Use <C>&amp;ndash;</C> in page ranges.
+</Item>
+</List>
+
+For further details of the DTD we refer to the file <F>bibxmlext.dtd</F>
+itself which is shown in appendix <Ref Appendix="bibxmlextdtd"/>. That
+file also recalls some information from the &BibTeX; documentation on how
+the standard fields of entries should be used. Which entry types and
+which fields are supported (and the ordering of the fields which is
+fixed by a DTD) can be either read off the DTD, or within &GAP; one can use 
+the function <Ref Func="TemplateBibXML"/> to get templates for the
+various entry types.
+<P/>
+
+Here is an example of a BibXMLext document:
+<Listing Type="doc/testbib.xml"><![CDATA[
+<#Include SYSTEM "testbib.xml">
+]]></Listing>
+
+There is a standard XML header and a <C>DOCTYPE</C> declaration
+refering to the <F>bibxmlext.dtd</F> DTD mentioned above. Local
+entities could be defined in the <C>DOCTYPE</C> tag as shown in the
+example in <Ref Subsect="GDent"/>. The actual content of the document is
+inside a <C>&lt;file></C>-element, it consists of <C>&lt;string></C>- and
+<C>&lt;entry></C>-elements. Several of the BibXMLext markup features are
+shown. We will use this input document for some examples below.
+</Section>
+
+<Section Label="BibXMLtools">
+<Heading>Utilities for BibXMLext data</Heading>
+
+<Subsection Label="Subsect:IntroXMLBib">
+<Heading>Translating &BibTeX; to BibXMLext</Heading>
+First we describe a tool which can  translate bibliography entries from
+&BibTeX; data to BibXMLext <C>&lt;entry></C>-elements. It also does some
+validation of the data. In some
+cases it is desirable to improve the result by hand afterwards 
+(editing formulae, adding <C>&lt;URL></C>-elements, translating
+non-ASCII characters to unicode, ...).<P/>
+See <Ref Func="WriteBibXMLextFile"/> below for how to write the results 
+to a BibXMLext file.
+</Subsection>
+
+<#Include Label="StringBibAsXMLext">
+
+The following functions allow parsing of data which are already in
+BibXMLext format.
+
+<#Include Label="ParseBibXMLextString">
+
+<#Include Label="WriteBibXMLextFile">
+
+<Subsection Label="Subsect:RecBib">
+<Heading>Bibliography Entries as Records</Heading>
+For working with BibXMLext entries we find it convenient to first
+translate the parse tree of an entry, as returned by <Ref
+Func="ParseBibXMLextFiles"/>, to a record with the field names of the
+entry as components whose value is the content of the field as string.
+These strings are generated with respect to a result type. The records are
+generated by the following function which can be customized by the user.
+</Subsection>
+
+<#Include Label="RecBibXMLEntry">
+
+<#Include Label="AddHandlerBuildRecBibXMLEntry">
+
+<#Include Label="StringBibXMLEntry">
+
+The following command may be useful to generate completly new
+bibliography entries in BibXMLext format. It also informs about the
+supported entry types and field names.
+
+<#Include Label="TemplateBibXML">
+
+</Section>
+
+<#Include Label="SearchMRSection">
+
+</Chapter>
+
+

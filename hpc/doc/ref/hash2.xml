@@ -1,0 +1,243 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  dict.msk                  GAP documentation               Gene Cooperman -->
+<!-- %A							         Scott Murray -->
+<!-- %A	        					     Alexander Hulpke -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: hash2.msk,v 1.9 2005/08/06 13:09:06 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Dictionaries and General Hash Tables">
+<Heading>Dictionaries and General Hash Tables</Heading>
+
+People and computers spend a large amount of time with searching.
+Dictionaries are an abstract data structure which facilitates searching for
+objects. Depending on the kind of objects the implementation will use a
+variety of possible internal storage methods that will aim to provide the
+fastest possible access to objects. These internal methods include
+<P/>
+<List>
+<Mark>Hash Tables</Mark>
+<Item>
+  for objects for which a hash function has been defined.
+</Item>
+<Mark>Direct Indexing</Mark>
+<Item>
+  if the domain is small and cheaply enumerable
+</Item>
+<Mark>Sorted Lists</Mark>
+<Item>
+  if a total order can be computed easily
+</Item>
+<Mark>Plain lists</Mark>
+<Item>
+  for objects for which nothing but an equality test is available.
+</Item>
+</List>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Using Dictionaries">
+<Heading>Using Dictionaries</Heading>
+
+The standard way to use dictionaries is to first create a dictionary (using
+<Ref Func="NewDictionary"/>, and then to store objects (and associated information) in
+it and look them up. 
+<P/>
+For the creation of objects the user has to make a few choices: Is the
+dictionary only to be used to check whether objects are known already, or
+whether associated information is to be stored with the objects. This second
+case is called a <E>lookup dictionary</E> and is selected by the second parameter
+of <Ref Func="NewDictionary"/>.
+<P/>
+The second choice is to indicate which kind of objects are to be stored. This
+choice will decide the internal storage used. This kind of objects is
+specified by the first parameter to <Ref Func="NewDictionary"/>, which is a <Q>sample</Q>
+object. 
+<P/>
+In some cases however such a sample object is not specific enough. For
+example when storing vectors over a finite field, it would not be clear
+whether all vectors will be over a prime field or over a field extension.
+Such an issue can be resolved by indicating in an (optional)  third
+parameter to
+<Ref Func="NewDictionary"/> a <E>domain</E> which has to be a collection that will
+contain all objects to be used with this dictionary. (Such a domain may also
+be used internally to decide that direct indexing can be used).
+<P/>
+The reason for this choice of giving two parameters is that in some cases no
+suitable collection of objects has been defined in &GAP; - for example for
+permutations there is no object representing the symmetric group on
+infinitely many points.
+<P/>
+Once a dictionary has been created, it is possible to use
+<Ref Oper="RepresentationsOfObject"/> to check which representation is used by &GAP;.
+<P/>
+In the following example, we create a dictionary to store permutations with
+associated information.
+<Example><![CDATA[
+gap> d:=NewDictionary((1,2,3),true);;
+gap> AddDictionary(d,(1,2),1);
+gap> AddDictionary(d,(5,6),9);
+gap> AddDictionary(d,(4,7),2);
+gap> LookupDictionary(d,(5,6));
+9
+gap> LookupDictionary(d,(5,7));
+fail
+]]></Example>
+A typical example of this use would be in an orbit algorithm. The dictionary
+would be used to store the elements known in the orbit together with their
+respective orbit positions.
+<P/>
+We observe that this dictionary is stored internally by a sorted list. On
+the other hand, if we have an explicit, sorted element list, direct indexing
+is to be used.
+<Example><![CDATA[
+gap> RepresentationsOfObject(d);
+[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
+  "IsListDictionary", "IsListLookupDictionary", "IsSortDictionary", 
+  "IsSortLookupDictionary" ]
+gap> d:=NewDictionary((1,2,3),true,Elements(SymmetricGroup(5)));;
+gap> RepresentationsOfObject(d);
+[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
+  "IsPositionDictionary", "IsPositionDictionary" ]
+]]></Example>
+(Just indicating <C>SymmetricGroup(5)</C> as a third parameter would still keep
+the first storage method, as indexing would be too expensive if no explicit
+element list is known.)
+<P/>
+The same effect happens in the following example, in which we work with
+vectors: Indicating only a vector only enables sorted index, as it cannot be
+known whether all vectors will be defined over the prime field. On the other
+hand, providing the vector space (and thus limiting the domain) enables
+the use of hashing (which will be faster).
+<Example><![CDATA[
+gap> v:=GF(2)^7;;
+gap> d:=NewDictionary(Zero(v),true);;                            
+gap> RepresentationsOfObject(d);
+[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
+  "IsListDictionary", "IsListLookupDictionary", "IsSortDictionary", 
+  "IsSortLookupDictionary" ]
+gap> d:=NewDictionary(Zero(v),true,v);;
+gap> RepresentationsOfObject(d);
+[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
+  "IsPositionDictionary", "IsPositionDictionary" ]
+]]></Example>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Dictionaries">
+<Heading>Dictionaries</Heading>
+
+This section contains the formal declarations for dictionaries. For
+information on how to use them, please refer to the previous
+section&nbsp;<Ref Sect="Using Dictionaries"/>.
+
+<#Include Label="[1]{dict}">
+<#Include Label="[2]{dict}">
+<#Include Label="NewDictionary">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Dictionaries via Binary Lists">
+<Heading>Dictionaries via Binary Lists</Heading>
+
+As there are situations where the approach via binary lists is explicitly
+desired, such dictionaries can be created deliberately.
+
+<#Include Label="DictionaryByPosition">
+<#Include Label="IsDictionary">
+<#Include Label="IsLookupDictionary">
+<#Include Label="AddDictionary">
+<#Include Label="KnowsDictionary">
+<#Include Label="LookupDictionary">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="General Hash Tables">
+<Heading>General Hash Tables</Heading>
+
+These sections describe some particularities for hash tables. These are
+intended mainly for extending the implementation - programs requiring hash
+functionality ought to use the dictionary interface described above.
+<P/>
+We hash by keys and also store a value.  Keys    
+cannot be removed from the table, but the corresponding value can be 
+changed.  Fast access to last hash index allows you to efficiently store 
+more than one array of values &ndash;this facility should be used with care.
+<P/>
+This code works for any kind of object, provided you have a 
+<Ref Oper="DenseIntKey"/> method to convert the key into a positive integer.  
+This method should ideally be implemented efficiently in the core.
+<P/>Note that, for efficiency, it is currently impossible to create a 
+hash table with non-positive integers.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Hash keys">
+<Heading>Hash keys</Heading>
+
+The crucial step of hashing is to transform key objects into integers such
+that equal objects produce the same integer.
+<P/>
+The actual function used will vary very much on the type of objects. However
+&GAP; provides already key functions for some commonly encountered objects.
+
+<#Include Label="DenseIntKey">
+<#Include Label="SparseIntKey">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Dense hash tables">
+<Heading>Dense hash tables</Heading>
+
+Dense hash tables are used for hashing dense sets without collisions, 
+in particular integers. 
+Keys are stored as an unordered list and values as an 
+array with holes. The position of a value is given by 
+the function returned by <Ref Oper="DenseIntKey"/>,
+and so <C>KeyIntDense</C> must be one-to-one.  
+
+<#Include Label="DenseHashTable">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Sparse hash tables">
+<Heading>Sparse hash tables</Heading>
+
+Sparse hash tables are used for hashing sparse sets.  
+Stores keys as an array with fail 
+denoting an empty position, stores values as an array with holes.
+Uses 
+the result of calling <Ref Oper="SparseIntKey"/>) of the key.
+<C>DefaultHashLength</C>
+is the default starting hash table length; the table is doubled 
+when it becomes half full.
+<P/>
+In sparse hash tables, the integer obtained from the hash key is then
+transformed to an index position by taking it modulo the length of the hash
+array.
+
+<#Include Label="SparseHashTable">
+<#Include Label="DoubleHashArraySize">
+
+</Section>
+</Chapter>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

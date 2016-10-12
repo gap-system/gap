@@ -17,23 +17,9 @@
 **  dependent  functions.  This file contains  all system dependent functions
 **  except file and stream operations, which are implemented in "sysfiles.c".
 **  The following labels determine which operating system is actually used.
-**
-**  Under UNIX autoconf  is used to check  various features of  the operating
-**  system and the compiler.  Should you have problem compiling GAP check the
-**  file "bin/CPU-VENDOR-OS/config.h" after you have done a
-**
-**     ./configure ; make config
-**
-**  in the root directory.  And then do a
-**
-**     make compile
-**
-**  to compile and link GAP.
 */
 
 #include        "system.h"              /* system dependent part           */
-
-#include        "gap_version.h"         /* SCM information                 */
 
 #include        "gap.h"                 /* get UserHasQUIT                 */
 
@@ -50,18 +36,11 @@
 #include        <dirent.h>
 #include        <time.h>
 
-#if HAVE_UNISTD_H                       /* definition of 'R_OK'            */
-# include        <unistd.h>
-#endif
+#include        <unistd.h>              /* definition of 'R_OK'            */
 
 
 #if HAVE_LIBREADLINE
 #include        <readline/readline.h>   /* readline for interactive input  */
-#endif
-
-#if HAVE_SYS_TIMES_H                    /* time functions                  */
-# include       <sys/types.h>
-# include       <sys/times.h>
 #endif
 
 #if HAVE_MADVISE
@@ -87,19 +66,6 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
 ** will be replaced by string matching by distribution wrapping scripts.
 */
 const Char * SyKernelVersion = "4.dev";
-
-/****************************************************************************
-**
-*V  SyBuildVersion  . . . . . . . . . . . . . . . . source version for build 
-*V  SyBuildDate . . . . . . . . . . . . . . . . . . . date and time of build 
-** GAP_BUILD_VERSION is defined in a generated header file gap_version.h,
-** and will typically contain the tag and commit SHA that was used to build
-** the executable.
-**
-** This variable will replace SyKernelVersion above.
-*/
-const Char * SyBuildVersion  = GAP_BUILD_VERSION;
-const Char * SyBuildDateTime = GAP_BUILD_DATETIME;
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
@@ -488,9 +454,7 @@ UInt SyStopTime;
 */
 #if HAVE_GETRUSAGE && !SYS_IS_CYGWIN32
 
-#if HAVE_SYS_TIME_H
-# include       <sys/time.h>            /* definition of 'struct timeval'  */
-#endif
+#include        <sys/time.h>            /* definition of 'struct timeval'  */
 #if HAVE_SYS_RESOURCE_H
 # include       <sys/resource.h>        /* definition of 'struct rusage'   */
 #endif
@@ -1588,10 +1552,15 @@ Int8 SyNanosecondsSinceEpochResolution()
 /****************************************************************************
 **
 *f  SySetGapRootPath( <string> )
+**
+** This function assumes that the system uses '/' as path separator.
+** Currently, we support nothing else. For Windows (or rather: Cygwin), we
+** rely on a small hack which converts the path separator '\' used there
+** on '/' on the fly. Put differently: Systems that use completely different
+**  path separators, or none at all, are currently not supported.
 */
-#if HAVE_SLASH_SEPARATOR 
 
-void SySetGapRootPath( const Char * string )
+static void SySetGapRootPath( const Char * string )
 {
     const Char *          p;
     Char *          q;
@@ -1672,8 +1641,6 @@ void SySetGapRootPath( const Char * string )
     }
     return; 
 }
-
-#endif
 
 
 /****************************************************************************
@@ -2149,7 +2116,7 @@ void InitSystem (
 usage:
  FPUTS_TO_STDERR("usage: gap [OPTIONS] [FILES]\n");
  FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version ");
- FPUTS_TO_STDERR(SyKernelVersion);
+ FPUTS_TO_STDERR(SyBuildVersion);
  FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("       use '-h' option to get help.\n");
  FPUTS_TO_STDERR("\n");

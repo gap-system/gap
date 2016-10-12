@@ -1,0 +1,104 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  fields.msk                   GAP documentation              Thomas Breuer -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: fields.msk,v 1.18 2005/04/21 09:38:23 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Fields and Division Rings">
+<Heading>Fields and Division Rings</Heading>
+
+<#Include Label="[1]{field}">
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Generating Fields">
+<Heading>Generating Fields</Heading>
+
+<#Include Label="IsDivisionRing">
+<#Include Label="IsField">
+<#Include Label="Field">
+<#Include Label="DefaultField">
+<#Include Label="DefaultFieldByGenerators">
+<#Include Label="GeneratorsOfDivisionRing">
+<#Include Label="GeneratorsOfField">
+<#Include Label="DivisionRingByGenerators">
+<#Include Label="AsDivisionRing">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Subfields of Fields">
+<Heading>Subfields of Fields</Heading>
+
+<#Include Label="Subfield">
+<#Include Label="FieldOverItselfByGenerators">
+<#Include Label="PrimitiveElement">
+<#Include Label="PrimeField">
+<#Include Label="IsPrimeField">
+<#Include Label="DegreeOverPrimeField">
+<#Include Label="DefiningPolynomial">
+<#Include Label="RootOfDefiningPolynomial">
+<#Include Label="FieldExtension">
+<#Include Label="Subfields">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Galois Action">
+<Heading>Galois Action</Heading>
+
+<#Include Label="[2]{field}">
+<P/>
+<#Include Label="[3]{field}">
+
+<Index Key="IsFieldControlledByGaloisGroup"><C>IsFieldControlledByGaloisGroup</C></Index>
+<#Include Label="GaloisGroup:field">
+
+<ManSection>
+<Func Name="MinimalPolynomial" Arg='F, z[, ind]' Label="over a field"/>
+
+<Description>
+returns the minimal polynomial of <A>z</A> over the field <A>F</A>.
+This is a generator of the ideal in <M><A>F</A>[x]</M> of all polynomials
+which vanish on <A>z</A>.
+(This definition is consistent with the general definition of
+<Ref Func="MinimalPolynomial"/> for rings.)
+<P/>
+<Example><![CDATA[
+gap> MinimalPolynomial( Rationals, E(8) );
+x_1^4+1
+gap> MinimalPolynomial( CF(4), E(8) );
+x_1^2+(-E(4))
+gap> MinimalPolynomial( CF(8), E(8) );
+x_1+(-E(8))
+]]></Example>
+</Description>
+</ManSection>
+
+
+<#Include Label="TracePolynomial">
+<#Include Label="Norm">
+<#Include Label="Trace">
+<#Include Label="Conjugates">
+<#Include Label="NormalBase">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- <Section Label="Field Homomorphisms"> -->
+<!-- <Heading>Field Homomorphisms</Heading> -->
+<!-- </Section> -->
+
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

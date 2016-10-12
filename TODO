@@ -1,0 +1,158 @@
+NOTE:
+
+This document is currently not being updated, instead a Trello page
+is being used to keep track of the build system TODOs
+
+
+
+
+
+Note: the priorities listed below are only temporary, for the prototype phase.
+E.g. Windows is listed under "Low" because for the prototype, it's not a goal.
+
+
+# High priority / to be done next
+
+* add fake GAP arch for compatibility mode
+
+
+# Medium priority
+
+* add back support for building the manuals
+
+* add back support for "make check" and other test commands
+
+* make out-of-tree builds work with packages using kernel extensions
+
+* implement compatibility mode for unmodified packages with kernel extension
+  and/or standalone executables
+
+* implement "new" build mode for packages with kernel extension (based on out-of-tree builds for packages ?!? details unclear)
+
+* Test several use cases:
+  * Single config, in-tree build
+  * Single config, in-tree build in compatibility mode
+  * out-of-tree builds
+  * out-of-tree builds in compatibility mode
+  * either of the above together with "make install"
+
+* Teach GAP to "find itself", and use that to guess the location of the library.
+
+  - one very simple step towards this is to store the $(top_srcdir)
+    as a string in the GAP source, then use that as a default path (instead of PWD)
+    to find the GAP library. Specifically, 
+      SYS_DEFAULT_PATHS
+    can be used for this purpose.
+  - However, upon "make install", we don't want $(top_srcdir) anymore, but rather
+    something like $prefix/share/gap (or so)...
+    This would require recompiling a file during installation...
+  - in addition, the GAP executable could try to figure out its own location,
+    and search relative to that. While this is not possible in a 100% portable
+    fashion, even a 90% solution would help a lot.
+    In fact, DoFindMyself() already implements something like this?!
+
+
+# Low priority
+
+* add back windows support
+
+* Implement custom package root dirs (independent of GAP root dirs)
+  (Max already has a local branch implementing most of this)
+
+
+* Merge SyStackAlign, SYS_STACK_ALIGN, C_LONG_ALIGN, C_STACK_ALIGN and StackAlignBags.
+  A non-const global is a bad idea for this, so just keep one.
+
+
+* Get rid of build date/time -- it usually won't be accurate, and is of limited use anyway -- it's not the build date that is important, but rather the commit from which the build was made.
+  We might still want to display a date for *releases*, to give people an idea
+  how old they are
+  So I propose to replace GAPInfo.BuildDateTime by GAPInfo.ReleaseDateTime,
+  which can (and will) be unbound for non-releases
+  
+  Affected variables:
+    GAPInfo.BuildDateTime
+    GAPInfo.KernelInfo.BUILD_DATETIME
+    SyBuildDateTime
+    GAPInfo.Date
+
+* Replace SyKernelVersion fully by SyBuildVersion ?!
+   Places where this might be problematic:
+
+   1. The workspace handling code, which does a strict match on the
+      version number; so workspaces would be broken with any commit...
+      Which you might consider a bug or a feature...
+   2. The code comparing the library and the kernel version.
+
+   Both of the above issues are currently "solved" (or ignored, depending on how
+   you look at it) by setting the kernel and library versions to "4.dev" in
+   all non-release builds.
+  
+   Affected variables:
+   - GAP.Version
+   - GAP.NeedKernelVersion
+   - GAPInfo.KernelVersion
+   - GAPInfo.BuildVersion
+   - GAPInfo.KernelInfo.KERNEL_VERSION
+   - GAPInfo.KernelInfo.BUILD_VERSION
+
+* Update the copyright headers in all *.c and *.h files:
+  - remove obsolete refs to persons
+  - update copyright for GAP group to 2002-2016
+  - mention that the license is GPL 2 or later
+  - ... ?
+
+* GAP uses the rather unusual convention that its typedefs "Int" and "UInt" take up 8 bytes on 64 bit systems, unlike "int" and "unsigned int", which usually stay at 4 bytes (32 bits).
+  This can lead to very nasty bugs due to people not checking the definition of the type and then using it incorrectly.
+
+  Instead, we should consider switching the whole codebase to use stdint.h types with explicit sizes, like int32_t, uint64_t, etc.
+
+  Of course also more advanced types could be used, like this:
+    uint_least32_t
+    uint_fast32_t
+    intptr_t
+    intmax_t  (this might be the closes to our current "Int")
+  
+  and of course classics like
+  
+    ptrdiff_t
+    size_t
+
+* USE_PRECOMPILED  -- seems to be used to include the headers without a (proper) config.h?
+  -> instead, we perhaps need to provide a gap_config.h which is safe for system-wide
+     installation, and would allow us to get rid of this hack
+    
+
+# unsorted tasks
+
+
+
+
+
+* Implement full support for HPC-GAP mode
+  - #define HAVE_NATIVE_TLS properly
+  - #define HPCGAP
+- if HPCGAP mode is on, use the contents of the GAPROOT/hpc directory
+as an additional GAPROOT, before the regular GAPROOT; this will allow
+us to have a duplicate copy of the GAP library in there, and
+slowly remove files from hpc/lib etc. as they are merged into lib/
+(caveat:  having hpc/lib/hpc/ around is quite confusing... perhaps
+name the outer directory differently, e.g. "hpcgap", to help a bit)
+ 
+* What about HAVE_NATIVE_TLS, how and when to set it?
+  Reimer writes:
+
+Gar nicht. Das ist eine Option, die man explizit nutzen kann, wenn man
+will. Da sie aber i.a. langsamer ist, wird sie nicht verwendet, außer
+man schiebt sie explizit in CFLAGS rein. Sie existiert nur, so dass sie
+im Notfall verwendet werden kann.
+
+Das würde hauptsächlich auf Architekturen zutreffen, die weder gcc noch
+clang nutzen und wo daher die Methode mit __builtin_frame_address(0)
+nicht zugänglich ist UND zusätzlich die portable Alternative auch noch
+langsamer ist ODER wo diese aus irgendwelchen Gründen nicht
+funktioniert.
+
+Ansonsten ist die Option für einige Testszenarien potentiell interessant.
+
+

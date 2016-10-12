@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE file SYSTEM "bibxmlext.dtd">
+<file>
+<string key="j" value="Important Journal"/>
+<entry id="AB2000"><article>
+  <author>
+    <name><first>Fritz A.</first><last>First</last></name>
+    <name><first>X. Y.</first><last>Sec&#x0151;nd</last></name>
+  </author>  
+  <title>The <Wrap Name="Package"> <C>F</C>ritz</Wrap> package for the 
+         formula <M>x^y - l_{{i+1}} \rightarrow \mathbb{R}</M></title>
+  <journal><value key="j"/></journal>
+  <year>2000</year>
+  <number>13</number>
+  <pages>13&ndash;25</pages>
+  <note>Online data at <URL Text="Bla Bla Publisher">
+                  http://www.publish.com/~ImpJ/123#data</URL></note>
+  <other type="mycomment">very useful</other>
+</article></entry>
+</file>

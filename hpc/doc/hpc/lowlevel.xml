@@ -1,0 +1,228 @@
+<Chapter Label="Low-level functionality">
+  <Heading>Low-level functionality</Heading>
+
+The functionality described in this section should only be used by experts, and even by those only with caution
+(especially the parts that relate to the memory model).
+
+Not only is it possible to crash or hang the GAP kernel, it can happen in ways that are very difficult to reproduce,
+leading to software defects that are discovered only long after deployment of a package and then become difficult to
+correct.
+
+The performance benefit of using these primitives is generally minimal; while concurrency can induce some overhead, the
+benefit from micromanaging concurrency in an interpreted language such as GAP is likely to be small.
+
+These low-level primitives exist primarily for the benefit of kernel programmers; it allows them to prototype new kernel
+functionality in GAP before implementing it in C.
+
+  <Section Label="Explicit lock and unlock primitives">
+    <Heading>Explicit lock and unlock primitives</Heading>
+
+The <C>LOCK</C> operation combined with <C>UNLOCK</C> is a low-level interface for the functionality of the  statement.
+
+  <Subsection Label="LOCK">
+    <Heading>LOCK([arg_1, ..., arg_n])</Heading>
+
+<C>LOCK</C> takes zero or more pairs of parameters, where each is either an object or a boolean value. If an argument is
+an object, the region containing it will be locked. If an argument is the boolean value <C>false</C>, all subsequent
+locks will be read locks; if it is the boolean value <C>true</C>, all subsequent locks will be write locks. If the first
+argument is not a boolean value, all locks until the first boolean value will be write locks.
+
+Locks are managed internally as a stack of locked regions; <C>LOCK</C> returns an integer indicating a pointer to the
+top of the stack; this integer is used later by the <C>UNLOCK</C> operation to unlock locks on the stack up to that
+position. If <C>LOCK</C> should fail for some reason, it will return <C>fail</C>.
+
+Calling <C>LOCK()</C> with no parameters returns the current lock stack pointer.
+
+  </Subsection>
+  <Subsection Label="TRYLOCK">
+    <Heading>TRYLOCK([arg_1, ..., arg_n])</Heading>
+
+<C>TRYLOCK</C> works similarly to <C>LOCK</C>. If it cannot acquire all region locks, it returns <C>fail</C> and does
+not lock any regions. Otherwise, its semantics are identical to <C>LOCK</C>.
+
+  </Subsection>
+  <Subsection Label="UNLOCK">
+    <Heading>UNLOCK(stackpos)</Heading>
+
+<C>UNLOCK</C> unlocks all regions on the stack at <C>stackpos</C> or higher and sets the stack pointer to
+<C>stackpos</C>.
+
+<Example><![CDATA[
+gap> l1 := ShareObj([1,2,3]);;
+gap> l2 := ShareObj([4,5,6]);;
+gap> p := LOCK(l1);
+0
+gap> LOCK(l2);
+1
+gap> UNLOCK(p); # unlock both RegionOf(l1) and RegionOf(l2)
+gap> LOCK(); # current stack pointer
+0
+]]></Example>
+  </Subsection>
+  </Section>
+  <Section Label="Hash locks">
+    <Heading>Hash locks</Heading>
+
+HPC-GAP supports <E>hash locks</E>; internally, the kernel maintains a fixed size array of locks; objects are mapped to
+a lock via hash function. The hash function is based on the object reference, not its contents (except for short
+integers and finite field elements).
+
+<Example><![CDATA[
+gap> l := [ 1, 2, 3];;
+gap> f := l -> Sum(l);;
+gap> HASH_LOCK(l);   # lock 'l'
+gap> f(l);           # do something with 'l'
+6
+gap> HASH_UNLOCK(l); # unlock 'l'
+]]></Example>
+
+Hash locks should only be used for very short operations, since there is a chance that two concurrently locked objects
+map to the same hash value, leading to unnecessary contention.
+
+Hash locks are unrelated to the locks used by the <C>atomic</C> statements and the <C>LOCK</C> and <C>UNLOCK</C>
+primitives.
+
+    <Subsection Label="HASH_LOCK">
+      <Heading>HASH_LOCK(obj)</Heading>
+
+<C>HASH_LOCK</C> obtains the read-write lock for the hash value associated with <C>obj</C>.
+
+    </Subsection>
+    <Subsection Label="HASH_UNLOCK">
+      <Heading>HASH_UNLOCK(obj)</Heading>
+
+<C>HASH_UNLOCK</C> releases the read-write lock for the hash value associated with <C>obj</C>.
+
+    </Subsection>
+    <Subsection Label="HASH_LOCK_SHARED">
+      <Heading>HASH_LOCK_SHARED(obj)</Heading>
+
+<C>HASH_LOCK_SHARED</C> obtains the read-only lock for the hash value associated with <C>obj</C>.
+
+    </Subsection>
+    <Subsection Label="HASH_UNLOCK_SHARED">
+      <Heading>HASH_UNLOCK_SHARED(obj)</Heading>
+
+<C>HASH_UNLOCK_SHARED</C> releases the read-only lock for the hash value associated with <C>obj</C>.
+    </Subsection>
+  </Section>
+  <Section Label="Migration to the public region">
+    <Heading>Migration to the public region</Heading>
+
+HPC-GAP allows migration of arbitrary objects to the public region. This functionality is potentially dangerous; for
+example, if two threads try resize a plain list simultaneously, this can result in memory corruption.
+
+Accordingly, such data should never be accessed except through operations that protect accesses through locks, memory
+barriers, or other mechanisms.
+
+    <Subsection Label="MAKE_PUBLIC">
+      <Heading>MAKE_PUBLIC(obj)</Heading>
+
+<C>MAKE_PUBLIC</C> makes <C>obj</C> and all its subobjects members of the public region.
+
+    </Subsection>
+    <Subsection Label="MAKE_PUBLIC_NORECURSE">
+      <Heading>MAKE_PUBLIC_NORECURSE(obj)</Heading>
+
+<C>MAKE_PUBLIC_NORECURSE</C> makes <C>obj</C>, but not any of its subobjects members of the public region.
+    </Subsection>
+  </Section>
+  <Section Label="Memory barriers">
+    <Heading>Memory barriers</Heading>
+
+The memory models of some processors do no guarantee that read and writes reflect accesses to main memory in the same
+order in which the processor performed them; for example, code may write variable v1 first, and v2 second; but the cache
+line containing v2 is flushed to main memory first so that other processors see the change to v2 before the change to
+v1.
+
+Memory barriers can be used to prevent such counter-intuitive reordering of memory accesses.
+
+    <Subsection Label="ORDERED_WRITE">
+      <Heading>ORDERED_WRITE(expr)</Heading>
+
+The <C>ORDERED_WRITE</C> function guarantees that all writes that occur prior to its execution or during the evaluation
+of <C>expr</C> become visible to other processors before any of the code executed after.
+
+Example:
+
+<Example><![CDATA[
+gap> y:=0;; f := function() y := 1; return 2; end;;
+gap> x := ORDERED_WRITE(f());
+2
+]]></Example>
+
+Here, the write barrier ensure that the assignment to <C>y</C> that occurs during the call of <C>f()</C> becomes visible
+to other processors before or at the same time as the assignment to <C>x</C>.
+
+This can also be done differently, with the same semantics:
+
+<Example><![CDATA[
+gap> t := f();; # temporary variable
+gap> ORDERED_WRITE(0);; # dummy argument
+gap> x := t;
+2
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="ORDERED_READ">
+      <Heading>ORDERED_READ(expr)</Heading>
+
+Conversely, the <C>ORDERED_READ</C> function ensures that reads that occur before its call or during the evaluation of
+<C>expr</C> are not reordered with respects to memory reads occurring after it.
+    </Subsection>
+  </Section>
+  <Section Label="Object manipulation">
+    <Heading>Object manipulation</Heading>
+
+There are two new functions to exchange a pair of objects.
+
+    <Subsection Label="SWITCH_OBJ">
+      <Heading>SWITCH_OBJ(obj1, obj2)</Heading>
+
+<C>SWITCH_OBJ</C> exchanges its two arguments. All variables currently referencing <C>obj1</C> will reference
+<C>obj2</C> instead after the operation completes, and vice versa. Both objects stay within their previous regions.
+
+<Example><![CDATA[
+gap> a := [ 1, 2, 3];;
+gap> b := [ 4, 5, 6];;
+gap> SWITCH_OBJ(a, b);
+gap> a;
+[ 4, 5, 6 ]
+gap> b;
+[ 1, 2, 3 ]
+]]></Example>
+
+The function requires exclusive access to both objects, which may necessitate using an atomic statement, e.g.:
+
+<Example><![CDATA[
+gap> a := ShareObj([ 1, 2, 3]);;
+gap> b := ShareObj([ 4, 5, 6]);;
+gap> atomic a, b do SWITCH_OBJ(a, b); od;
+gap> atomic readonly a do Display(a); od;
+[ 4, 5, 6 ]
+gap> atomic readonly b do Display(b); od;
+[ 1, 2, 3 ]
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="FORCE_SWITCH_OBJ">
+      <Heading>FORCE_SWITCH_OBJ(obj1, obj2)</Heading>
+
+<C>FORCE_SWITCH_OBJ</C> works like <Ref Func="SWITCH_OBJ"/>, except that it can also exchange objects in the public
+region:
+
+<Example><![CDATA[
+gap> a := ShareObj([ 1, 2, 3]);;
+gap> b := MakeImmutable([ 4, 5, 6]);;
+gap> atomic a do FORCE_SWITCH_OBJ(a, b); od;
+gap> a;
+[ 4, 5, 6 ]
+]]></Example>
+
+This function should be used with extreme caution and only with public objects for which only the current thread has a
+reference. Otherwise, undefined behavior and crashes can result from other threads accessing the public object
+concurrently.
+
+    </Subsection>
+  </Section>
+</Chapter>

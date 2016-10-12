@@ -1,0 +1,58 @@
+<Chapter Label="Semaphores">
+  <Heading>Semaphores</Heading>
+
+  Semaphores are synchronized counters; they can also be used to simulate locks.
+
+  <Section Label="CreateSemaphore">
+    <Heading>CreateSemaphore([value])</Heading>
+
+The function <C>CreateSemaphore</C> takes an optional argument, which defaults to zero. It is the counter with which the
+semaphore is initialized.
+
+<Example><![CDATA[
+gap> sem := CreateSemaphore(1);
+<semaphore 0x1108e81c0: count = 1>
+]]></Example>
+
+  </Section>
+  <Section Label="WaitSemaphore">
+    <Heading>WaitSemaphore(sem);</Heading>
+
+<C>WaitSemaphore</C> receives a previously created semaphore as its argument. If the semaphore&#39;s counter is greater
+than zero, it decrements the counter and returns; if the counter is zero, it waits until another thread increases it via
+<C>SignalSemaphore</C>, then decrements the counter and returns.
+
+<Example><![CDATA[
+gap> sem := CreateSemaphore(1);
+<semaphore 0x1108e81c0: count = 1>
+gap> WaitSemaphore(sem);
+gap> sem;
+<semaphore 0x1108e81c0: count = 0>
+]]></Example>
+
+  </Section>
+  <Section Label="SignalSemaphore">
+    <Heading>SignalSemaphore(sem)</Heading>
+
+<C>SignalSemaphore</C> receives a previously created semaphore as its argument. It increments the semaphore&#39;s
+counter and returns.
+
+<Example><![CDATA[
+gap> sem := CreateSemaphore(1);
+<semaphore 0x1108e81c0: count = 1>
+gap> WaitSemaphore(sem);
+gap> sem;
+<semaphore 0x1108e81c0: count = 0>
+gap> SignalSemaphore(sem);
+gap> sem;
+<semaphore 0x1108e81c0: count = 1>
+]]></Example>
+
+  </Section>
+  <Section Label="Simulating locks">
+    <Heading>Simulating locks</Heading>
+
+In order to use semaphores to simulate locks, create a semaphore with an initial value of 1. <C>WaitSemaphore</C> is
+then equivalent to a lock operation, <C>SignalSemaphore</C> is equivalent to an unlock operation.
+  </Section>
+</Chapter>

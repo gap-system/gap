@@ -1,0 +1,40 @@
+diff -cr gc-7.4.2/configure gc-7.4.2-new/configure
+*** gc-7.4.2/configure	2014-06-03 21:08:54.000000000 +0100
+--- gc-7.4.2-new/configure	2016-01-15 12:25:04.000000000 +0000
+***************
+*** 15892,15898 ****
+          THREADDLLIBS=-pthread
+          AM_CFLAGS="$AM_CFLAGS -pthread"
+          ;;
+!      *-*-freebsd*)
+          { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"FreeBSD does not yet fully support threads with Boehm GC.\"" >&5
+  $as_echo "$as_me: WARNING: \"FreeBSD does not yet fully support threads with Boehm GC.\"" >&2;}
+          $as_echo "#define GC_FREEBSD_THREADS 1" >>confdefs.h
+--- 15892,15898 ----
+          THREADDLLIBS=-pthread
+          AM_CFLAGS="$AM_CFLAGS -pthread"
+          ;;
+!      *-*-freebsd*|*-*-dragonfly*)
+          { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"FreeBSD does not yet fully support threads with Boehm GC.\"" >&5
+  $as_echo "$as_me: WARNING: \"FreeBSD does not yet fully support threads with Boehm GC.\"" >&2;}
+          $as_echo "#define GC_FREEBSD_THREADS 1" >>confdefs.h
+diff -cr gc-7.4.2/include/gc_config_macros.h gc-7.4.2-new/include/gc_config_macros.h
+*** gc-7.4.2/include/gc_config_macros.h	2014-06-03 07:08:02.000000000 +0100
+--- gc-7.4.2-new/include/gc_config_macros.h	2016-01-15 12:25:04.000000000 +0000
+***************
+*** 244,250 ****
+    /* Only single-argument form of 'alloc_size' attribute is used.       */
+  # if defined(__GNUC__) && (__GNUC__ > 4 \
+          || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3 && !defined(__ICC)) \
+!         || __clang_major__ > 3 \
+          || (__clang_major__ == 3 && __clang_minor__ >= 2))
+  #   define GC_ATTR_ALLOC_SIZE(argnum) __attribute__((__alloc_size__(argnum)))
+  # else
+--- 244,250 ----
+    /* Only single-argument form of 'alloc_size' attribute is used.       */
+  # if defined(__GNUC__) && (__GNUC__ > 4 \
+          || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3 && !defined(__ICC)) \
+!         || (__clang_major__ > 3 && __clang_major__ < 6 ) \
+          || (__clang_major__ == 3 && __clang_minor__ >= 2))
+  #   define GC_ATTR_ALLOC_SIZE(argnum) __attribute__((__alloc_size__(argnum)))
+  # else

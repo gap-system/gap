@@ -1,0 +1,30 @@
+diff -cr /usr/local/lib/gap4r8/pkg/automata/gap/aut-def.gi automata/gap/aut-def.gi
+*** /usr/local/lib/gap4r8/pkg/automata/gap/aut-def.gi	2011-11-19 08:09:23.000000000 +0000
+--- automata/gap/aut-def.gi	2014-05-24 20:45:24.000000000 +0100
+***************
+*** 91,97 ****
+              alph[Length(alph)] := '@';
+          fi;
+  
+!         F!.alphabet := alph;
+      else
+          if Type = "epsilon" then
+              if not Alphabet[Length(Alphabet)] = '@' then
+--- 91,97 ----
+              alph[Length(alph)] := '@';
+          fi;
+  
+!         F!.alphabet := MakeImmutable(alph);
+      else
+          if Type = "epsilon" then
+              if not Alphabet[Length(Alphabet)] = '@' then
+***************
+*** 193,198 ****
+--- 193,199 ----
+                 initial := ListInitial,
+                 accepting := ListAccepting,
+                 transitions := TT );
++     MakeImmutable(aut);
+  
+      A := Objectify( NewType( F, IsAutomatonObj and 
+                   IsAutomatonRep and IsAttributeStoringRep ),

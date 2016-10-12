@@ -48,41 +48,27 @@
 #include	"hpc/thread.h"		/* threads			   */
 #include	"hpc/tls.h"			/* thread-local storage		   */
 
-#include <stdio.h>                      /* standard input/output functions */
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
-#ifdef HAVE_SYS_STAT_H
+#include <sys/types.h>
 #include <sys/stat.h>
-#endif
-
-#if HAVE_SYS_TIME_H
-#include  <sys/time.h>
-#endif
-
-#if HAVE_UNISTD_H
+#include <sys/time.h>
 #include <unistd.h>
-#endif
+
+#include <signal.h>
+#include <fcntl.h>
+
 
 #if HAVE_ERRNO_H
-#include <errno.h>
-#endif
-
-#if HAVE_SIGNAL_H
-#include <signal.h>
-#endif
-
-#if HAVE_FCNTL_H
-#include <fcntl.h>
+# include       <errno.h>
+#else
+extern int errno;
 #endif
 
 #if HAVE_TERMIOS_H
 #include <termios.h>
-#endif
-
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
 #endif
 
 #if HAVE_SYS_WAIT_H
@@ -97,10 +83,6 @@
 #else
 #define assert( a ) do if (!(a)) {fprintf(stderr,"Assertion failed at line %d file %s\n",__LINE__,__FILE__); abort();} while (0)
 #endif
-#endif
-
-#if HAVE_SYS_STAT_H
-#include <sys/stat.h>
 #endif
 
 #if HAVE_UTIL_H

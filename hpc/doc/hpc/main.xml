@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- %W  main.xml        GAP 4 Tutorial        ... -->
+<!-- %Y  Copyright 1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+   [ <!ENTITY HPC "<Package>HPC</Package>">
+     <!ENTITY mdash "<Alt Only='HTML'>&#8212;</Alt><Alt Not='HTML'>---</Alt>">
+<#Include SYSTEM "../versiondata">
+   ]>
+
+<?LaTeX ExtraPreamble="
+"?>
+
+<Book Name="hpc">
+<TitlePage>
+  <Title>HPC-GAP &mdash; Reference Manual</Title>
+  <Version>Release &VERSIONNUMBER;, &RELEASEDAY;</Version>
+  <Author>The GAP Group
+    <Email>support@gap-system.org</Email>
+    <Homepage>http://www.gap-system.org</Homepage>
+  </Author>
+  <Author>Reimer Behrends
+    <Email>behrends@gmail.com</Email>
+  </Author>
+  <Author>Vladimir Janjic
+    <Email>vj32@st-andrews.ac.uk</Email>
+  </Author>
+  <Copyright>
+    Copyright &copyright; (1987-&RELEASEYEAR;)
+    for the core part of the &GAP; system by the &GAP; Group.
+    <P/>
+    Most parts of this distribution, including the core part of the &GAP;
+    system are distributed under the terms of the GNU General Public License,
+    see <URL>http://www.gnu.org/licenses/gpl.html</URL> or the file
+    <F>GPL</F> in the <F>etc</F> directory of the &GAP;
+    installation.
+    <P/>
+    More detailed information about copyright and licenses of parts of this
+    distribution can be found in <Ref Sect="Copyright and License" BookName="ref"/>.
+    <P/>
+    &GAP; is developed over a long time and has many authors and contributors.
+    More detailed information can be found in
+    <Ref Sect="Authors and Maintainers" BookName="ref"/>.
+  </Copyright>
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+  <#Include SYSTEM "tasks.xml">
+  <#Include SYSTEM "vars.xml">
+  <#Include SYSTEM "regions.xml">
+  <#Include SYSTEM "ui.xml">
+  <#Include SYSTEM "aobjects.xml">
+  <#Include SYSTEM "threads.xml">
+  <#Include SYSTEM "channels.xml">
+  <#Include SYSTEM "semaphores.xml">
+  <#Include SYSTEM "syncvars.xml">
+  <#Include SYSTEM "serialize.xml">
+  <#Include SYSTEM "zmq.xml">
+  <#Include SYSTEM "zgap.xml">
+  <#Include SYSTEM "lowlevel.xml">
+  <#Include SYSTEM "mpi.xml">
+</Body>
+
+<!--
+<Bibliography Databases="../manualbib.xml"/>
+-->
+
+<!-- <TheIndex/> -->
+
+</Book>
+
+<!-- ==================================================================== -->

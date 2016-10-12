@@ -1,0 +1,79 @@
+
+
+
+<Chapter Label="ch:util">
+<Heading>String and Text Utilities</Heading>
+
+
+<Section Label="TextUtil">
+<Heading>Text Utilities</Heading>
+
+This  section describes  some utility  functions for  handling texts  within
+&GAP;. They are used  by  the  functions in the &GAPDoc;  package but may be
+useful for other  purposes as well. We start with  some variables containing
+useful strings and  go on with functions for parsing  and reformatting text.
+<P/>
+
+<#Include Label="CharsColls">
+
+<#Include Label="TextAttr">
+
+<#Include Label="WrapTextAttribute">
+
+<#Include Label="FormatParagraph">
+
+<#Include Label="SubstitutionSublist">
+
+<!-- moved into GAP library
+<#Include Label="NormalizedWhitespace">
+-->
+<#Include Label="StripBeginEnd">
+
+<#Include Label="StripEscapeSequences">
+
+<#Include Label="RepeatedString">
+
+<#Include Label="NumberDigits">
+
+<#Include Label="PositionMatchingDelimiter">
+
+<#Include Label="WordsString">
+
+<#Include Label="Base64String">
+
+</Section>
+
+<Section Label="sec:Unicode">
+<Heading>Unicode Strings</Heading>
+The &GAPDoc; package provides some tools to deal with unicode characters
+and strings. These can be used for recoding text strings between various
+encodings.
+
+<#Include Label="Unicode">
+
+<#Include Label="Encode">
+
+<#Include Label="WidthUTF8String">
+
+</Section>
+
+<Section Label="PrintUtil">
+<Heading>Print Utilities</Heading>
+
+The following  printing utilities  turned out to  be useful  for interactive
+work with texts in &GAP;. But they  are more general and so we document them
+here.
+
+<#Include Label="PrintTo1">
+
+<#Include Label="StringPrint">
+
+<#Include Label="PrintFormattedString">
+
+<#Include Label="Page">
+
+<#Include Label="StringFile">
+
+</Section>
+</Chapter>
+
