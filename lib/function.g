@@ -582,10 +582,9 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
     Print(" ) ... end");
 end);
 
-    
-BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
-    local   class,  flags,  types,  catok,  repok,  propok,  seenprop,  
-            t;
+BIND_GLOBAL( "VIEW_STRING_OPERATION",    function ( op )
+    local   class,  flags,  types,  catok,  repok,  propok,  seenprop,
+            t, res;
     class := "Operation";
     if IS_IDENTICAL_OBJ(op,IS_OBJECT) then
         class := "Filter";
@@ -624,14 +623,32 @@ BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
         # op is an attribute
         class := "Attribute";
     fi;
-    Print("<",class," \"",NAME_FUNC(op),"\">");
-          end);  
-    
+
+    # Horrible.
+    res := "<";
+    APPEND_LIST(res, class);
+    APPEND_LIST(res, " \"");
+    APPEND_LIST(res, NAME_FUNC(op));
+    APPEND_LIST(res, "\">");
+    return res;
+end);
+
+BIND_GLOBAL( "PRINT_OPERATION",
+function ( op )
+    Print(VIEW_STRING_OPERATION(op));
+end);
+
 InstallMethod( ViewObj,
     "for an operation",
     [ IsOperation ],
     PRINT_OPERATION );
-    
+
+InstallMethod( ViewString,
+    "for an operation",
+    [ IsOperation ],
+function(op)
+    return VIEW_STRING_OPERATION(op);
+end);
 
 #############################################################################
 ##
