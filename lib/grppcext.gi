@@ -857,7 +857,8 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 
 	baspt:=Position(elmlist,One(u));
 	# describe how second part acts on matrices by conjugation
-	newimgs:=List(genimgs,x->[x[1],Permutation(x[2],elmlist,OnPoints)]);
+	newimgs:=List(genimgs,
+	  x->DirectProductElement([x[1],Permutation(x[2],elmlist,OnPoints)]));
 	Assert(1,ForAll(newimgs,x->x[2]<>fail));
 
 	tup:=List(tup,x->Position(elmlist,x));
