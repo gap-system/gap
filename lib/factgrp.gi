@@ -314,9 +314,31 @@ local G,pool,p,comb,i,c,perm,l,isi,N,discard,ab;
   if Length(arg)>1 then
     N:=arg[2];
     p:=Filtered(p,i->IsSubset(pool.ker[i],N));
+    if Length(p)=0 then
+      return;
+    fi;
+    SortParallel(List(pool.ker{p},Size),p);
+    if Size(pool.ker[p[1]])=Size(N) and Length(p)>3 then
+      # N in pool
+      c:=pool.cost[p[1]];
+      p:=Filtered(p,x->pool.cost[x]<c);
+    fi;
   else
     N:=fail;
   fi;
+
+  # minimal ones
+  c:=Filtered([1..Length(p)],
+      x->not ForAny([1..x-1],y->IsSubset(pool.ker[p[x]],pool.ker[p[y]])));
+  c:=p{c};
+  if Size(Intersection(pool.ker{c}))>Size(N) then
+    # cannot reach N
+    return; 
+  elif Length(p)>20 or Size(N)=1 then
+    p:=c; # use only minimal ones if there is lots
+  fi;
+
+  #if Length(p)>20 then Error("hier!");fi;
 
   # do the abelians extra.
   p:=Filtered(p,x->not HasAbelianFactorGroup(G,pool.ker[x]));
