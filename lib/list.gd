@@ -1515,10 +1515,16 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  <Example><![CDATA[
 ##  gap> list := [ 5, 4, 6, 1, 7, 5 ];; Sort( list ); list;
 ##  [ 1, 4, 5, 5, 6, 7 ]
+##  gap> SortBy(list, x -> x mod 3);
+##  gap> list; # Sorted by mod 3
+##  [ 6, 1, 4, 7, 5, 5]
 ##  gap> list := [ [0,6], [1,2], [1,3], [1,5], [0,4], [3,4] ];;
 ##  gap> Sort( list, function(v,w) return v*v < w*w; end );
 ##  gap> list;  # sorted according to the Euclidean distance from [0,0]
 ##  [ [ 1, 2 ], [ 1, 3 ], [ 0, 4 ], [ 3, 4 ], [ 1, 5 ], [ 0, 6 ] ]
+##  gap> SortBy( list, function(v) return v[1] + v[2]; end );
+##  gap> list;  # sorted according to Manhattan distance from [0,0]
+##  [ [ 1, 2 ], [ 1, 3 ], [ 0, 4 ], [ 1, 5 ], [ 0, 6 ], [ 3, 4 ] ]
 ##  gap> list := [ [0,6], [1,3], [3,4], [1,5], [1,2], [0,4], ];;
 ##  gap> Sort( list, function(v,w) return v[1] < w[1]; end );
 ##  gap> # note the random order of the elements with equal first component:
