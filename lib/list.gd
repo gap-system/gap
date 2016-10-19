@@ -1476,7 +1476,8 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  <ManSection>
 ##  <Oper Name="Sort" Arg='list[, func]'/>
 ##  <Oper Name="SortBy" Arg='list, func'/>
-##
+##  <Oper Name="StableSort" Arg='list, [func]'/>
+##  <Oper Name="StableSortBy" Arg='list, [func]'/>
 ##  <Description>
 ##  <Ref Oper="Sort"/> sorts the list <A>list</A> in increasing order.
 ##  In the one argument form <Ref Oper="Sort"/> uses the operator <C>&lt;</C>
@@ -1490,8 +1491,9 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  <K>true</K> if the first is regarded as strictly smaller than the second,
 ##  and <K>false</K> otherwise.
 ##  <P/>
-##  Note that, in cases where it is applicable, <Ref Oper="SortBy"/> is likely to be more
-##  efficient.
+##  <Ref Oper="StableSort"/> behaves identically to <Ref Oper="Sort"/>, except
+##  that <Ref Oper="StableSort"/> will keep elements which compare equal in the
+##  same relative order, while <Ref Oper="Sort"/> may change their relative order.
 ##  <P/>
 ##  <Ref Oper="Sort"/> does not return anything,
 ##  it just changes the argument <A>list</A>.
@@ -1499,10 +1501,16 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  Use <Ref Func="Reversed"/> if you want to get a new list that is
 ##  sorted in decreasing order.
 ##  <P/>
-##  It is possible to sort lists that contain multiple elements which compare
-##  equal.
-##  It is not guaranteed that those elements keep their relative order,
-##  i.e., <Ref Oper="Sort"/> is not stable.
+##  <Ref Oper="SortBy"/> sorts the list <A>list</A> into an order such that
+##  <C>func(list[i]) &lt;= func(list[i+1])</C> for all relevant
+##  <A>i</A>. <A>func</A> must thus be a function on one argument which returns
+##  values that can be compared.  Each <C>func(list[i])</C> is computed just
+##  once and stored, making this more efficient than using the two-argument
+##  version of <Ref Oper="Sort"/> in many cases.
+##  <P/>
+##  <Ref Oper="StableSortBy"/> behaves the same as <Ref Oper="SortBy"/> except that,
+## like <Ref Oper="StableSort"/>, it keeps pairs of values which compare equal when
+## <C>func</C> is applied to them in the same relative order.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> list := [ 5, 4, 6, 1, 7, 5 ];; Sort( list ); list;
@@ -1517,12 +1525,6 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  gap> list;
 ##  [ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
 ##  ]]></Example>
-##  <Ref Oper="SortBy"/> sorts the list <A>list</A> into an order such that
-##  <C>func(list[i]) &lt;= func(list[i+1])</C> for all relevant
-##  <A>i</A>. <A>func</A> must thus be a function on one argument which returns
-##  values that can be compared.  Each <C>func(list[i])</C> is computed just
-##  once and stored, making this more efficient than using the two-argument
-##  version of <Ref Oper="Sort"/> in many cases.  
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1638,13 +1640,18 @@ DeclareGlobalFunction( "PermListList" );
 ##  <#GAPDoc Label="SortParallel">
 ##  <ManSection>
 ##  <Oper Name="SortParallel" Arg='list1, list2[, func]'/>
+##  <Oper Name="StableSortParallel" Arg='list1, list2[, func]'/>
 ##
 ##  <Description>
-##  sorts the list <A>list1</A> in increasing order
+##  <Ref Oper="SortParallel"/> sorts the list <A>list1</A> in increasing order
 ##  just as <Ref Func="Sort"/> does.
 ##  In parallel it applies the same exchanges that are necessary to sort
 ##  <A>list1</A> to the list <A>list2</A>,
 ##  which must of course have at least as many elements as <A>list1</A> does.
+##  <P/>
+##  <Ref Oper="StableSortParallel"/> behaves identically to
+##  <Ref Oper="SortParallel"/>, except it keeps elements in <A>list1</A> which
+##  compare equal in the same relative order.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
@@ -1657,7 +1664,8 @@ DeclareGlobalFunction( "PermListList" );
 ##  ]]></Example>
 ##  <P/>
 ##  Note that <C>[ 7, 3, 2, 9, 5, 8 ]</C> or <C>[ 7, 3, 9, 2, 5, 8 ]</C>
-##  are possible results.
+##  are possible results. <Ref Oper="StableSortParallel"/> will always
+##  return <C>[ 7, 3, 2, 9, 5, 8]</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
