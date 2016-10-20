@@ -74,8 +74,10 @@ typedef struct GlobalState
   TypInputFile *  TestInput;
   TypOutputFile * TestOutput;
   TypOutputFile * IgnoreStdoutErrout;
+#ifdef HPCGAP
   Obj		  DefaultOutput;
   Obj		  DefaultInput;
+#endif
   Char            TestLine [256];
   TypOutputFile LogFile;
   TypOutputFile LogStream;
