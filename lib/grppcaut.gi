@@ -1539,7 +1539,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
                                   Size(A), " x ",Size(B),", ",
 				  Length(GeneratorsOfGroup(D))," generators");
             
-            if Size(D)>10^10 then
+            if Size(D)>10^10 and Size(A)>4 then
 	      # translate to different pcgs to make tails A-invariant
 	      npcgs:=PcgsCharacteristicTails(F,A);
 	      C:=GroupWithGenerators(npcgs);
