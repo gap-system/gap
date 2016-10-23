@@ -545,7 +545,7 @@ end);
 BADINDEX:=1000; # the index that is too big
 GenericFindActionKernel:=function(arg)
 local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, bv, badi,
-totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
+totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
 
   G:=arg[1];
   N:=arg[2];
@@ -657,7 +657,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
 	fi;
 	totalcnt:=totalcnt+1;
 	if KnownNaturalHomomorphismsPool(G,N) and
-	  Minimum(Index(G,v),knowi)<20000 
+	  Minimum(Index(G,v),knowi)<100000 
 	     and 5*totalcnt>Minimum(Index(G,v),knowi,1000) then
 	  # interupt if we're already quite good
 	  interupt:=true;
@@ -695,7 +695,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
       if Size(cor)>Size(N) and IsSubset(cor,N) and not cor in badcores then
 	Add(badcores,cor);
       fi;
-      # store known information(we do't act, just store the subgroup.
+      # store known information(we do't act, just store the subgroup).
       # Thus this is fairly cheap
       pool.dotriv:=true;
       zzz:=AddNaturalHomomorphismsPool(G,cor,u,Index(G,u));
@@ -708,6 +708,17 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
       zzz:=DegreeNaturalHomomorphismsPool(G,N);
 
       Info(InfoFactor,3,"  ext ",cnt,": ",Index(G,u)," best degree:",zzz);
+      if Size(cor)>Size(N) and Index(G,u)*2<knowi and
+      ValueOption("inmax")=fail then
+        max:=Filtered(MaximalSubgroupClassReps(u:inmax),
+	  x->IndexNC(G,x)<knowi and IsSubset(x,N)); 
+        for i in max do
+	  cor:=Core(G,i);
+	  AddNaturalHomomorphismsPool(G,cor,i,Index(G,i));
+	od;
+	zzz:=DegreeNaturalHomomorphismsPool(G,N);
+	Info(InfoFactor,3,"  Maxes: ",Length(max)," best degree:",zzz);
+      fi;
     else
       zzz:=DegreeNaturalHomomorphismsPool(G,N);
     fi;
