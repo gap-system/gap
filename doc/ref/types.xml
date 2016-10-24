@@ -160,6 +160,7 @@ as well as sections&nbsp;<Ref Sect="Logical Implications"/>,
 </ManSection>
 
 <#Include Label="ShowImpliedFilters">
+<#Include Label="FiltersType">
 
 </Section>
 

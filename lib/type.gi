@@ -3,13 +3,29 @@
 #W  type.gi                     GAP library
 ##
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
-#Y  Copyright (C) 2002 The GAP Group
+#Y  Copyright (C) 2016 The GAP Group
 ##
 ##  This file implements some additional functions relating to types and
 ##  families.
 ##
+
+#############################################################################
+##
+#M  FiltersType( <type> )
+##
+##  Return list of filters set in the given type.
+##
+InstallMethod(FiltersType, "for a type", [ IsType ],
+    type -> FILTERS{ TRUES_FLAGS(type![2]) });
+
+#############################################################################
+##
+#M  FiltersObj( <object> )
+##
+##  Return list of filters set in the type of <object>.
+##
+InstallMethod(FiltersObj, "for an object", [ IsObject ],
+    obj -> FiltersType(TypeObj(obj)));
 
 #############################################################################
 ##
@@ -129,8 +145,3 @@ function ( type )
     fi;
     return res;
 end);
-
-
-
-
-
