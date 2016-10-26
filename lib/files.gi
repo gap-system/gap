@@ -60,6 +60,8 @@ function( str )
     return Objectify( DirectoryType, [str] );
 end );
 
+# Make Directory() idempotent, like String() and Int()
+InstallOtherMethod( Directory, "directory", [ IsDirectory ], IdFunc );
 
 #############################################################################
 ##
