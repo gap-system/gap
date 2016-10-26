@@ -481,20 +481,6 @@ end );
 
 #############################################################################
 ##
-#F  SharedType( <K> ) . . . . . . . . . . . . . . shared data of the type <K>
-##
-##  <ManSection>
-##  <Func Name="SharedType" Arg='K'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "SharedType", K -> K![ POS_DATA_TYPE ] );
-
-
-#############################################################################
-##
 #F  TypeObj( <obj> )  . . . . . . . . . . . . . . . . . . . type of an object
 ##
 ##  <#GAPDoc Label="TypeObj">
@@ -604,20 +590,6 @@ BIND_GLOBAL( "FlagsObj", obj -> FlagsType( TypeObj( obj ) ) );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "DataObj", obj -> DataType( TypeObj( obj ) ) );
-
-
-#############################################################################
-##
-#F  SharedObj( <obj> )  . . . . . . . . . . . . . .  shared data of an object
-##
-##  <ManSection>
-##  <Func Name="SharedObj" Arg='obj'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "SharedObj", obj -> SharedType( TypeObj( obj ) ) );
 
 
 #############################################################################
