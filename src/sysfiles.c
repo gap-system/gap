@@ -392,11 +392,11 @@ Obj FuncCrcString( Obj self, Obj str ) {
 
 /****************************************************************************
 **
-*F  SyLoadModule( <name> )  . . . . . . . . . . . . link a module dynamically
+*F  SyLoadModule( <name>, <func> )  . . . . . . . . .  load a compiled module
 */
 
 /* some compiles define symbols beginning with an underscore               */
-/* but Mac OSX's dlopen adds one in for free!                              */
+/* but dlopen() on Mac OS X adds one in for free!                              */
 #if C_UNDERSCORE_SYMBOLS
 #if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
 # define SYS_INIT_DYNAMIC       "Init__Dynamic"
@@ -423,25 +423,25 @@ Obj FuncCrcString( Obj self, Obj str ) {
 #define RTLD_LAZY               1
 #endif
 
-InitInfoFunc SyLoadModule ( const Char * name )
+Int SyLoadModule( const Char * name, InitInfoFunc * func )
 {
     void *          init;
     void *          handle;
 
+    *func = 0;
+
     handle = dlopen( name, RTLD_LAZY | RTLD_GLOBAL);
-#if 0
-    if ( handle == 0 )  return (InitInfoFunc) 1;
-#else
     if ( handle == 0 ) {
       Pr("#W dlopen() error: %s\n", (long) dlerror(), 0L);
-      return (InitInfoFunc) 1;
+      return 1;
     }
-#endif
 
     init = dlsym( handle, SYS_INIT_DYNAMIC );
-    if ( init == 0 )  return (InitInfoFunc) 3;
+    if ( init == 0 )
+      return 3;
 
-    return (InitInfoFunc) init;
+    *func = (InitInfoFunc) init;
+    return 0;
 }
 
 #endif
@@ -455,23 +455,26 @@ InitInfoFunc SyLoadModule ( const Char * name )
 
 #include <mach-o/rld.h>
 
-InitInfoFunc SyLoadModule ( const Char * name )
+InitInfoFunc SyLoadModule( const Char * name, InitInfoFunc * func )
 {
     const Char *    names[2];
     unsigned long   init;
 
+    *func = 0;
+
     names[0] = name;
     names[1] = 0;
     if ( rld_load( 0, 0,  names, 0 ) == 0 ) {
-        return (InitInfoFunc) 1;
+        return 1;
     }
     if ( rld_lookup( 0, SYS_INIT_DYNAMIC, &init ) == 0 ) {
-        return (InitInfoFunc) 3;
+        return 3;
     }
     if ( rld_forget_symbol( 0, SYS_INIT_DYNAMIC ) == 0 ) {
-        return (InitInfoFunc) 5;
+        return 5;
     }
-    return (InitInfoFunc) init;
+    *func = (InitInfoFunc) init;
+    return 0;
 }
 
 #endif
@@ -483,9 +486,10 @@ InitInfoFunc SyLoadModule ( const Char * name )
 */
 #if !HAVE_DLOPEN && !HAVE_RLD_LOAD
 
-InitInfoFunc SyLoadModule ( const Char * name )
+Int SyLoadModule( const Char * name, InitInfoFunc * func )
 {
-    return (InitInfoFunc) 7;
+    *func = 0;
+    return 7;
 }
 
 #endif
