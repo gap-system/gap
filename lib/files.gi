@@ -38,7 +38,7 @@ BindGlobal( "DirectoryType", NewType(
 
 #############################################################################
 ##
-#M  Directory( <str> )  . . . . . . . . . . .  create a new directpory object
+#M  Directory( <str> )  . . . . . . . . . . . . create a new directory object
 ##
 InstallMethod( Directory,
     "string",
