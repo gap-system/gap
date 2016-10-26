@@ -432,7 +432,7 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
-*F  FLAGS_TYPE( <type> )  . . . . . . . . . . .  flags boolean list of a type
+*F  FLAGS_TYPE( <type> ) . . . . . . . . . . . . flags boolean list of a type
 **
 **  'FLAGS_TYPE' returns the flags boolean list of the type <type>.
 */
@@ -441,13 +441,12 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
-*F  SHARED_TYPE( <type> ) . . . . . . . . . . . . . . . shared data of a type
+*F  DATA_TYPE( <type> ) . . . . . . . . . . . . . . . . shared data of a type
 **
-**  'SHARED_TYPE' returns the shared data of the type <type>.
-XXX nowhere used, throw away??? (FL)
+**  'DATA_TYPE' returns the shared data of the type <type>.
+**  Not used by the GAP kernel right now, but useful for kernel extensions.
 */
-/* #define SHARED_TYPE(type)       ELM_PLIST( type, 3 )
-*/                        
+#define DATA_TYPE(type)       ELM_PLIST( type, 3 )
                         
 /****************************************************************************
 **
