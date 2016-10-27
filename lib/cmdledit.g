@@ -751,10 +751,117 @@ GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR(' ')) :=
                 GAPInfo.CommandLineEditFunctions.Functions.SpaceDeletePrompt;
 BindKeysToGAPHandler(" ");
 
+# These methods implement 'extender' for standard case sensitive and
+# case insensitive matching.
+# These methods take a list of candidates (cand), and the current
+# partially written identifier from the command line. They return a
+# replacement for 'identifier'. This extends 'identifier'
+# to include all characters which occur in all members of cand.
+# In the case-insensitive case this matching is done case-insensitively,
+# and we also change the existing letters of the identifier to match
+# identifers.
+# When there is no extension or change, these methods return 'fail'.
+BindGlobal("STANDARD_EXTENDERS", rec(
+  caseSensitive := function(cand, word)
+      local i, j, c, match;
+      i := Length(word);
+      while true do
+        if i = Length(cand[1]) then
+          break;
+        fi;
+        c := cand[1][i+1];
+        match := true;
+        for j in [2..Length(cand)] do
+          if Length(cand[j]) <= i or cand[j][i+1] <> c then
+            match := false;
+            break;
+          fi;
+        od;
+        if not match then
+          break;
+        else
+          i := i+1;
+        fi;
+      od;
+      if i > Length(word) then
+        return cand[1]{[1..i]};
+      else
+        return fail;
+      fi;
+    end,
+
+    caseInsensitive := function(cand, word)
+      local i, j, c, lowword, filtequal, match;
+      # Check if exactly 'word' exists, ignoring case.
+      lowword := LowercaseString(word);
+      # If there are several equal words, just pick the first one...
+      filtequal := First(cand, a -> LowercaseString(a) = lowword);
+      if filtequal <> fail then
+        return filtequal;
+      fi;
+      i := Length(word);
+      while true do
+        if i = Length(cand[1]) then
+          break;
+        fi;
+        c := LowercaseChar(cand[1][i+1]);
+        match := true;
+        for j in [2..Length(cand)] do
+          if Length(cand[j]) <= i or LowercaseChar(cand[j][i+1]) <> c then
+            match := false;
+            break;
+          fi;
+        od;
+        if not match then
+          break;
+        else
+          i := i+1;
+        fi;
+      od;
+      if i >= Length(word) then
+        return cand[1]{[1..i]};
+      else
+        return fail;
+      fi;
+    end,
+));
+
 # C-i: Completion as GAP level function
 GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
-  local cf, pos, word, idbnd, i, cmps, r, searchlist, cand, c, j;
-  # check if Ctrl-i was hit repeatedly in a row
+    local cf, pos, word, wordplace, idbnd, i, cmps, r, searchlist, cand, c, j,
+          completeFilter, completeExtender, extension;
+
+      completeFilter := function(filterlist, partial)
+        local pref, lowpartial;
+        pref := UserPreference("Autocompleter");
+        if pref = "case-insensitive" then
+          lowpartial := LowercaseString(partial);
+          return Filtered(filterlist,
+                          a -> PositionSublist(LowercaseString(a), lowpartial) = 1);
+        elif pref = "default" then
+          return Filtered(filterlist, a-> PositionSublist(a, partial) = 1);
+        elif IsRecord(pref) and IsFunction(pref.completer) then
+          return pref.completer(filterlist, partial);
+        else
+          ErrorNoReturn("Invalid setting of UserPreference 'Autocompleter'");
+        fi;
+    end;
+
+    completeExtender := function(filterlist, partial)
+      local pref;
+      pref := UserPreference("Autocompleter");
+      if pref = "case-insensitive" then
+        return STANDARD_EXTENDERS.caseInsensitive(filterlist, partial);
+      elif pref = "default" then
+        return STANDARD_EXTENDERS.caseSensitive(filterlist, partial);
+      elif IsRecord(pref) and IsFunction(pref.extender) then
+        return pref.extender(filterlist, partial);
+      else
+        ErrorNoReturn("Invalid setting of UserPreference 'Autocompleter'");
+      fi;
+    end;
+
+    # check if Ctrl-i was hit repeatedly in a row
   cf := GAPInfo.CommandLineEditFunctions;
   if Length(l)=6 and l[6] = true and cf.LastKey = 9 then
     cf.tabcount := cf.tabcount + 1;
@@ -776,7 +883,8 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
   while pos > 0 and l[3][pos] in IdentifierLetters do 
     pos := pos-1;
   od;
-  word := l[3]{[pos+1..l[4]-1]};
+  wordplace := [pos+1, l[4]-1];
+  word := l[3]{[wordplace[1]..wordplace[2]]};
   # see if we are in the case of a component name
   while pos > 0 and l[3][pos] in " \n\t\r" do
     pos := pos-1;
@@ -827,11 +935,11 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
     searchlist := idbnd;
   fi;
 
-  cand := Filtered(searchlist, a-> PositionSublist(a, word) = 1);
+  cand := completeFilter(searchlist, word);
   #  in component name search we try again with all names if this is empty
   if IsBound(cf.tabcompnam) and Length(cand) = 0 and cf.tabcount < 3 then
     searchlist := ALL_RNAMES();
-    cand := Filtered(searchlist, a-> PositionSublist(a, word) = 1);
+    cand := completeFilter(searchlist, word);
   fi;
 
   if (not IsBound(cf.tabcompnam) and cf.tabcount = 2) or 
@@ -847,31 +955,13 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
   if Length(cand) = 0 then
     return [];
   elif Length(cand) = 1 then
-    return [cand[1]{[Length(word)+1..Length(cand[1])]}];
+      return [ wordplace[1], wordplace[2]+1, cand[1]{[1..Length(cand[1])]}];
   fi;
-  i := Length(word);
-  while true do
-    if i = Length(cand[1]) then
-      break;
-    fi;
-    c := cand[1][i+1];
-    for j in [2..Length(cand)] do
-      if Length(cand[j]) > i and cand[j][i+1] = c then
-        j := j+1;
-      else
-        break;
-      fi;
-    od;
-    if j <= Length(cand) then
-      break;
-    else
-      i := i+1;
-    fi;
-  od;
-  if i > Length(word) then
-    return [cand[1]{[Length(word)+1..i]}];
-  else
+  extension := completeExtender(cand, word);
+  if extension = fail then
     return [];
+  else
+    return [ wordplace[1], wordplace[2] + 1, extension ];
   fi;
 end;
 GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('I') mod 32) :=

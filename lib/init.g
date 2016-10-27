@@ -659,6 +659,23 @@ DeclareUserPreference( rec(
   check:= val -> IsInt( val ) and 0 <= val,
   ) );
 
+DeclareUserPreference( rec(
+  name := "Autocompleter",
+  description := [
+                   "Set how names are filtered during tab-autocomplete, \
+this can be: \"default\": case-sensitive matching. \"case-insensitive\": \
+case-insensitive matching, or a record with two components named 'filter' and \
+'completer', which are both functions which take two arguments. \
+'filter' takes a list of names and a partial identifier and returns \
+all the members of 'names' which are a valid extension of the partial \
+identifier. 'completer' takes a list of names and a partial identifier and \
+returns the partial identifier as extended as possible (it may also change \
+the identifier, for example to correct the case, or spelling mistakes), or \
+returns 'fail' to leave the existing partial identifier."],
+  default := "default",
+  ) );
+
+
 CallAndInstallPostRestore( function()
     READ_GAP_ROOT( "gap.ini" );
 end );
