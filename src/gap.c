@@ -222,10 +222,10 @@ char *original_argv0;
 static char **sysargv;
 static char **sysenviron;
 
-/* TL:
-Obj ShellContext = 0;
-Obj BaseShellContext = 0;
-UInt ShellContextDepth;
+/*
+TL: Obj ShellContext = 0;
+TL: Obj BaseShellContext = 0;
+TL: UInt ShellContextDepth;
 */
 
 Obj Shell ( Obj context, 
@@ -1203,13 +1203,13 @@ Obj FuncWindowCmd (
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
 
-/* TL:
-Obj  ErrorLVars0;    
-Obj  ErrorLVars;
-Int  ErrorLLevel;
+/*
+TL: Obj  ErrorLVars0;
+TL: Obj  ErrorLVars;
+TL: Int  ErrorLLevel;
 */
 
-// extern Obj BottomLVars;
+// TL: extern Obj BottomLVars;
 
 
 void DownEnvInner( Int depth )
