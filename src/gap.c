@@ -222,10 +222,11 @@ char *original_argv0;
 static char **sysargv;
 static char **sysenviron;
 
+/* TL:
 Obj ShellContext = 0;
 Obj BaseShellContext = 0;
 UInt ShellContextDepth;
-
+*/
 
 Obj Shell ( Obj context, 
             UInt canReturnVoid,
