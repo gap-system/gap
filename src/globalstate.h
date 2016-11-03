@@ -29,7 +29,9 @@ typedef struct GlobalState
   Obj IntrState;
   Obj StackObj;
   Int CountObj;
+#if defined(HPCGAP)
   UInt PeriodicCheckCount;
+#endif
 
   /* From gvar.c */
   Obj CurrNamespace;
@@ -38,7 +40,9 @@ typedef struct GlobalState
   Bag BottomLVars;
   Bag CurrLVars;
   Obj *PtrLVars;
+#if defined(HPCGAP)
   Bag LVarsPool[16];
+#endif
 
   /* From read.c */
   syJmp_buf ReadJmpError;
@@ -74,7 +78,7 @@ typedef struct GlobalState
   TypInputFile *  TestInput;
   TypOutputFile * TestOutput;
   TypOutputFile * IgnoreStdoutErrout;
-#ifdef HPCGAP
+#if defined(HPCGAP)
   Obj		  DefaultOutput;
   Obj		  DefaultInput;
 #endif
@@ -156,15 +160,17 @@ typedef struct GlobalState
   Int PrintObjFull;
   // HPC-GAP Obj PrintObjThissObj;
   Obj PrintObjThiss[MAXPRINTDEPTH];
-  // HPG-GAP Obj PrintObjIndicesObj;
+  // HPC-GAP Obj PrintObjIndicesObj;
   Int PrintObjIndices[MAXPRINTDEPTH];
 
+#if defined(HPCGAP)
   /* For serializer.c */
   Obj SerializationObj;
   UInt SerializationIndex;
   void *SerializationDispatcher;
   Obj SerializationRegistry;
   Obj SerializationStack;
+#endif
 
   /* For objscoll*, objccoll* */
   Obj SC_NW_STACK;
@@ -176,10 +182,12 @@ typedef struct GlobalState
   Obj SC_CW2_VECTOR;
   UInt SC_MAX_STACK_SIZE;
 
+#if defined(HPCGAP)
   /* Profiling */
   UInt CountActive;
   UInt LocksAcquired;
   UInt LocksContended;
+#endif
 
   /* Allocation */
 #ifdef BOEHM_GC
