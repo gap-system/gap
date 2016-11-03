@@ -1202,9 +1202,11 @@ Obj FuncWindowCmd (
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
 
+/* TL:
 Obj  ErrorLVars0;    
 Obj  ErrorLVars;
 Int  ErrorLLevel;
+*/
 
 // extern Obj BottomLVars;
 
