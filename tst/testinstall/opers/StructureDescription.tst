@@ -26,6 +26,10 @@ gap> StructureDescription(G);
 "A5 x A5"
 
 ##
+## This example currently breaks, as both N and G/N are non-solvable.
+## ComplementClassesRepresentatives currently does not handle such groups,
+## and thus neither does SemidirectDecompositions or StructureDescription.
+##
 ## gap> G := Group([ (6,7,8,9,10), (8,9,10), (1,2)(6,7), (1,2,3,4,5)(6,7,8,9,10) ]);;
 ## gap> StructureDescription(G);
 ## "A5 : S5"
@@ -63,6 +67,8 @@ gap> List(AllSmallNonabelianSimpleGroups([1..1000000]), StructureDescription);
 gap> StructureDescription(AbelianGroup([0,2,3,4,5,6,7,8,9,10]));
 "C0 x C2520 x C60 x C6 x C2 x C2"
 
+##
+## Currently the value "short" does not work for infinite abelian groups.
 ##
 ##gap> StructureDescription(AbelianGroup([0,2,3,4,5,6,7,8,9,10]):short);
 ##"0x2520x60x6x2x2"
