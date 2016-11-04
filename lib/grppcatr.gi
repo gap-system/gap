@@ -482,30 +482,33 @@ end );
 ##
 InstallMethod( MaximalNormalSubgroups, "for abelian groups",
                [ IsGroup and IsAbelian ],
-               # IsGroup and IsFinite ranks higher than
-               # IsGroup and IsAbelian, so we have to increase the
-               # rank, otherwise the method for normal subgroup computation
-               # is selected.
+               # IsGroup and IsFinite ranks higher than IsGroup and IsAbelian,
+               # so we have to increase the rank, otherwise the method for
+               # normal subgroup computation is selected.
                RankFilter( IsGroup and IsFinite and IsAbelian )
                - RankFilter( IsGroup and IsAbelian ),
 function( G )
     local Gf,     # FactorGroup of G
           hom,    # homomorphism from G to Gf
           MaxGf,  # MaximalNormalSubgroups of Gf
-          AbInv;  # Abelian invariants of G
+          AbInv;  # abelian invariants of G
     if not IsPcGroup(G) then
         AbInv := AbelianInvariants(G);
         if 0 in AbInv then
             # (p) is a maximal normal subgroup in Z for every prime p
             Error("number of maximal normal subgroups is infinity");
         else
-            # convert it to an Abelian PcGroup with same invariants
+            # convert it to an abelian PcGroup with same invariants
             Gf := AbelianGroup(IsPcGroup, AbInv);
             hom := IsomorphismGroups(G, Gf);
+            # for abelian groups all maximal normal subgroup are also
+            # normal maximal subgroups and vice-versa
             MaxGf := NormalMaximalSubgroups(Gf);
             return List(MaxGf, N -> PreImage(hom, N));
         fi;
     else
+        # for abelian groups all maximal normal subgroup are also
+        # normal maximal subgroups and vice-versa
         # for abelian pc groups return all maximal subgroups
         # NormalMaximalSubgroups seems to omit some unnecessary checks,
         # hence faster than MaximalSubgroups
