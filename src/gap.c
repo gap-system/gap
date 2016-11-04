@@ -215,7 +215,6 @@ static char **sysenviron;
 /*
 TL: Obj ShellContext = 0;
 TL: Obj BaseShellContext = 0;
-TL: UInt ShellContextDepth;
 */
 
 Obj Shell ( Obj context, 
@@ -242,7 +241,6 @@ Obj Shell ( Obj context,
   TLS(ShellContext) = context;
   oldBaseShellContext = TLS(BaseShellContext);
   TLS(BaseShellContext) = context;
-  TLS(ShellContextDepth) = 0;
   oldRecursionDepth = TLS(RecursionDepth);
   
   /* read-eval-print loop                                                */
@@ -1209,14 +1207,12 @@ void DownEnvInner( Int depth )
     depth = 0;
     TLS(ErrorLVars) = TLS(ErrorLVars0);
     TLS(ErrorLLevel) = 0;
-    TLS(ShellContextDepth) = 0;
     TLS(ShellContext) = TLS(BaseShellContext);
   }
   else if ( depth < 0 ) {
     depth = -TLS(ErrorLLevel) + depth;
     TLS(ErrorLVars) = TLS(ErrorLVars0);
     TLS(ErrorLLevel) = 0;
-    TLS(ShellContextDepth) = 0;
     TLS(ShellContext) = TLS(BaseShellContext);
   }
   
@@ -1227,7 +1223,6 @@ void DownEnvInner( Int depth )
     TLS(ErrorLVars) = PTR_BAG(TLS(ErrorLVars))[2];
     TLS(ErrorLLevel)--;
     TLS(ShellContext) = PTR_BAG(TLS(ShellContext))[2];
-    TLS(ShellContextDepth)--;
     depth--;
   }
 }
