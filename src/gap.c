@@ -156,32 +156,22 @@ UInt Time;
 **  is not yet defined, or the fallback methods not yet installed. To avoid
 **  this problem, we check, and use PrintObj if there is a problem
 **
-**  We also install a hook to use the GAP level function 'CustomView' if
-**  it exists. This can for example be used to restrict the amount of output
-**  or to show long output in a pager or .....
-**  
 **  This function also supplies the \n after viewing.
 */
 UInt ViewObjGVar;
-UInt CustomViewGVar;
 
 void ViewObjHandler ( Obj obj )
 {
   volatile Obj        func;
-  volatile Obj        cfunc;
   syJmp_buf             readJmpError;
 
   /* get the functions                                                   */
   func = ValAutoGVar(ViewObjGVar);
-  cfunc = ValAutoGVar(CustomViewGVar);
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
   memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
   if ( ! READ_ERROR() ) {
-    if ( cfunc != 0 && TNUM_OBJ(cfunc) == T_FUNCTION ) {
-      CALL_1ARGS(cfunc, obj);
-    }
-    else if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
+    if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
       ViewObj(obj);
     }
     else {
@@ -3314,7 +3304,6 @@ static Int PostRestore (
 
     /* construct the `ViewObj' variable                                    */
     ViewObjGVar = GVarName( "ViewObj" ); 
-    CustomViewGVar = GVarName( "CustomView" ); 
 
     /* construct the last and time variables                               */
     Last              = GVarName( "last"  );
