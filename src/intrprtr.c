@@ -2962,7 +2962,6 @@ void            IntrUnbDVar (
     /* assign the right hand side                                          */
     currLVars = TLS(CurrLVars);
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
-    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
     ASS_HVAR( dvar, (Obj)0 );
@@ -3026,7 +3025,6 @@ void            IntrIsbDVar (
 
     /* get the value                                                       */
     currLVars = TLS(CurrLVars);
-    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
