@@ -2934,7 +2934,7 @@ void            IntrAssDVar (
     currLVars = TLS(CurrLVars);
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
+      SWITCH_TO_OLD_LVARS( PARENT_LVARS(TLS(CurrLVars)) );
     ASS_HVAR( dvar, rhs );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
@@ -2963,7 +2963,7 @@ void            IntrUnbDVar (
     currLVars = TLS(CurrLVars);
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
+      SWITCH_TO_OLD_LVARS( PARENT_LVARS(TLS(CurrLVars)) );
     ASS_HVAR( dvar, (Obj)0 );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
@@ -2998,7 +2998,7 @@ void            IntrRefDVar (
     currLVars = TLS(CurrLVars);
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
+      SWITCH_TO_OLD_LVARS( PARENT_LVARS(TLS(CurrLVars)) );
     val = OBJ_HVAR( dvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
     if ( val == 0 ) {
@@ -3027,7 +3027,7 @@ void            IntrIsbDVar (
     currLVars = TLS(CurrLVars);
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
+      SWITCH_TO_OLD_LVARS( PARENT_LVARS(TLS(CurrLVars)) );
     val = OBJ_HVAR( dvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
