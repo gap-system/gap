@@ -499,8 +499,8 @@ function( G )
             Error("number of maximal normal subgroups is infinity");
         else
             # convert it to an abelian PcGroup with same invariants
-            Gf := AbelianGroup(IsPcGroup, AbInv);
-            hom := IsomorphismGroups(G, Gf);
+            hom := IsomorphismPcGroup(G);
+            Gf := Image(hom);
             # for abelian groups all maximal normal subgroup are also
             # normal maximal subgroups and vice-versa
             MaxGf := NormalMaximalSubgroups(Gf);
