@@ -823,7 +823,7 @@ void CodeFuncExprEnd (
     assert(!TLS(LoopNesting));
     
     /* get the body of the function                                        */
-    /* push an addition return-void-statement if neccessary                */
+    /* push an additional return-void-statement if neccessary              */
     /* the function interpreters depend on each function ``returning''     */
     if ( nr == 0 ) {
         CodeReturnVoid();
