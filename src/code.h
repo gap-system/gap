@@ -26,7 +26,7 @@
 **  If 'Stat' is different  from 'Expr', then  a lot of things will  probably
 **  break.
 */
-#define Stat            UInt8
+typedef UInt8 Stat;
 
 
 /****************************************************************************
@@ -255,7 +255,7 @@ Obj FILENAME_STAT(Stat stat);
 **  If 'Expr' is different  from 'Stat', then  a lot of things will  probably
 **  break.
 */
-#define Expr            Stat
+typedef Stat Expr;
 
 
 /****************************************************************************
