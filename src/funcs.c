@@ -816,11 +816,9 @@ Obj DoExecFunc0args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     REMEMBER_LOCKSTACK();
-
     OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
-    
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 0, NLOC_FUNC(func), oldLvars );
@@ -1175,17 +1173,18 @@ Obj             DoExecFuncXargs (
 
 
 
-Obj DoPartialUnWrapFunc(Obj func, Obj args) {
-  
-  Bag                 oldLvars;       /* old values bag                  */
-  OLD_BRK_CURR_STAT                   /* old executing statement         */
-    UInt                named;            /* number of arguments             */
-  UInt                i;              /* loop variable                   */
-  UInt len;
-  Obj argx;
+Obj DoPartialUnWrapFunc(Obj func, Obj args)
+{
+    Bag                 oldLvars;       /* old values bag                  */
+    REMEMBER_LOCKSTACK();
+    OLD_BRK_CURR_STAT                   /* old executing statement         */
+    UInt                named;          /* number of arguments             */
+    UInt                i;              /* loop variable                   */
+    UInt len;
+    Obj argx;
 
 
-      named = ((UInt)-NARG_FUNC(func))-1;
+    named = ((UInt)-NARG_FUNC(func))-1;
     len = LEN_PLIST(args);
 
     if (named > len) { /* Can happen for > 6 arguments */
@@ -1193,28 +1192,32 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args) {
       return DoOperation2Args(CallFuncListOper, func, argx);
     }
 
-    CHECK_RECURSION_BEFORE    
+    CHECK_RECURSION_BEFORE
+
+    /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, named+1, NLOC_FUNC(func), oldLvars );
 
     for (i = 1; i <= named; i++) {
       ASS_LVAR(i, ELM_PLIST(args,i));
     }
     for (i = named+1; i <= len; i++) {
-    SET_ELM_PLIST(args, i-named, ELM_PLIST(args,i));
-  }
-  SET_LEN_PLIST(args, len-named);
-  ASS_LVAR(named+1, args);
+      SET_ELM_PLIST(args, i-named, ELM_PLIST(args,i));
+    }
+    SET_LEN_PLIST(args, len-named);
+    ASS_LVAR(named+1, args);
+
     /* execute the statement sequence                                      */
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+    CLEAR_LOCK_STACK();
 
    /* remove the link to the calling function, in case this values bag
        stays alive due to higher variable reference */
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
