@@ -55,8 +55,6 @@ typedef struct GlobalState
   UInt CurrentGlobalForLoopVariables[100];
   UInt CurrentGlobalForLoopDepth;
   Obj ExprGVars;
-  Obj ErrorLVars;
-  Obj ErrorLVars0;
   Obj ReadEvalResult;
 
   /* From scanner.c */
@@ -151,6 +149,8 @@ typedef struct GlobalState
   Obj ShellContext;
   Obj BaseShellContext;
   Int ErrorLLevel;
+  Obj ErrorLVars;
+  Obj ErrorLVars0;
 
   /* From objects.c */
   Obj PrintObjThis;

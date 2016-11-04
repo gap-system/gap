@@ -76,8 +76,6 @@ typedef struct ThreadLocalStorage
   UInt CurrentGlobalForLoopVariables[100];
   UInt CurrentGlobalForLoopDepth;
   Obj ExprGVars;
-  Obj ErrorLVars;
-  Obj ErrorLVars0;
   Obj ReadEvalResult;
 
   /* From scanner.c */
@@ -170,6 +168,8 @@ typedef struct ThreadLocalStorage
   Obj ShellContext;
   Obj BaseShellContext;
   Int ErrorLLevel;
+  Obj ErrorLVars;
+  Obj ErrorLVars0;
 
   /* From objects.c */
 

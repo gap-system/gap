@@ -1192,41 +1192,37 @@ Obj FuncWindowCmd (
 */
 
 /*
-TL: Obj  ErrorLVars0;
-TL: Obj  ErrorLVars;
-TL: Int  ErrorLLevel;
+TL: Obj  ErrorLVars0;   // the initial ErrorLVars value, i.e. for the lvars were the break occurred
+TL: Obj  ErrorLVars;    // ErrorLVars as modified by DownEnv / UpEnv
+TL: Int  ErrorLLevel;   // record where on the stack ErrorLVars is relative to the top, i.e. ErrorLVars0
 */
-
-// TL: extern Obj BottomLVars;
-
 
 void DownEnvInner( Int depth )
 {
-  /* if we really want to go up                                          */
-  if ( depth < 0 && -TLS(ErrorLLevel) <= -depth ) {
-    depth = 0;
-    TLS(ErrorLVars) = TLS(ErrorLVars0);
-    TLS(ErrorLLevel) = 0;
-    TLS(ShellContext) = TLS(BaseShellContext);
-  }
-  else if ( depth < 0 ) {
-    depth = -TLS(ErrorLLevel) + depth;
+  /* if we are asked to go up ... */
+  if ( depth < 0 ) {
+    /* ... we determine which level we are supposed to end up on ... */
+    depth = TLS(ErrorLLevel) + depth;
+    if (depth < 0) {
+      depth = 0;
+    }
+    /* ... then go back to the top, and later go down to the appropriate level. */
     TLS(ErrorLVars) = TLS(ErrorLVars0);
     TLS(ErrorLLevel) = 0;
     TLS(ShellContext) = TLS(BaseShellContext);
   }
   
-  /* now go down                                                         */
+  /* now go down */
   while ( 0 < depth
           && TLS(ErrorLVars) != TLS(BottomLVars)
           && PARENT_LVARS(TLS(ErrorLVars)) != TLS(BottomLVars) ) {
     TLS(ErrorLVars) = PARENT_LVARS(TLS(ErrorLVars));
-    TLS(ErrorLLevel)--;
+    TLS(ErrorLLevel)++;
     TLS(ShellContext) = PTR_BAG(TLS(ShellContext))[2];
     depth--;
   }
 }
-  
+
 Obj FuncDownEnv (
                  Obj                 self,
                  Obj                 args )
@@ -1249,8 +1245,6 @@ Obj FuncDownEnv (
   }
 
   DownEnvInner( depth);
-
-  /* return nothing                                                      */
   return 0;
 }
 
