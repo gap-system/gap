@@ -2963,8 +2963,6 @@ Obj FuncParentLVars( Obj self, Obj lvars )
                (Int)TNAM_OBJ(lvars), 0L );
     return 0;
   }
-  if (lvars == TLS(BottomLVars))
-    return Fail;
   return PARENT_LVARS(lvars);
 }
 
@@ -3326,6 +3324,7 @@ static Int InitLibrary (
     TLS(BottomLVars) = NewBag( T_LVARS, 3*sizeof(Obj) );
     tmpFunc = NewFunctionC( "bottom", 0, "", 0 );
     FUNC_LVARS( TLS(BottomLVars) ) = tmpFunc;
+    PARENT_LVARS(TLS(BottomLVars)) = Fail;
     tmpBody = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
     BODY_FUNC( tmpFunc ) = tmpBody;
 
