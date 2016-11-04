@@ -760,8 +760,6 @@ int main (
   sysenviron = environ;
   
   /* Initialize assorted variables in this file */
-  /*   BreakOnError = 1;
-       ErrorCount = 0; */
   NrImportedGVars = 0;
   NrImportedFuncs = 0;
   TLS(UserHasQUIT) = 0;
