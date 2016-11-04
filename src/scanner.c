@@ -313,9 +313,12 @@ void Match (
 **  It is not neccessary to open the initial input  file, 'InitScanner' opens
 **  '*stdin*' for  that purpose.  This  file on   the other   hand  cannot be
 **  closed by 'CloseInput'.
+**
+** OpenInput_Internal adds an extra parameter, FirstOpen, which should be
+** set to true the first time a stream is opened.
 */
-UInt OpenInput (
-    const Char *        filename )
+UInt OpenInput_Internal (
+    const Char *        filename, UInt FirstOpen )
 {
     Int                 file;
 
@@ -333,13 +336,14 @@ UInt OpenInput (
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( TLS(Input)+1 != TLS(InputFiles) ) {
+    if ( ! FirstOpen ) {
         TLS(Input)->ptr    = TLS(In);
         TLS(Input)->symbol = TLS(Symbol);
+        TLS(Input)++;
     }
 
     /* enter the file identifier and the file name                         */
-    TLS(Input)++;
+
     TLS(Input)->isstream = 0;
     TLS(Input)->file = file;
     if (strcmp("*errin*", filename) && strcmp("*stdin*", filename))
@@ -359,30 +363,40 @@ UInt OpenInput (
     return 1;
 }
 
+UInt OpenInput (
+    const Char *        filename)
+{
+    return OpenInput_Internal(filename, 0);
+}
+
 
 /****************************************************************************
 **
 *F  OpenInputStream( <stream> ) . . . . . . .  open a stream as current input
 **
 **  The same as 'OpenInput' but for streams.
+**
+**  OpenInputStream_Internal adds an extra parameter, FirstOpen, which should
+**  be set to true the first time a stream is opened.
 */
 Obj IsStringStream;
 
-UInt OpenInputStream (
-    Obj                 stream )
+UInt OpenInputStream_Internal (
+    Obj                 stream, UInt FirstOpen )
 {
     /* fail if we can not handle another open input file                   */
     if ( TLS(Input)+1 == TLS(InputFiles)+(sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])) )
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( TLS(Input)+1 != TLS(InputFiles) ) {
+    if ( ! FirstOpen ) {
         TLS(Input)->ptr    = TLS(In);
         TLS(Input)->symbol = TLS(Symbol);
+        TLS(Input)++;
     }
 
     /* enter the file identifier and the file name                         */
-    TLS(Input)++;
+
     TLS(Input)->isstream = 1;
     TLS(Input)->stream = stream;
     TLS(Input)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
@@ -407,6 +421,11 @@ UInt OpenInputStream (
     return 1;
 }
 
+UInt OpenInputStream (
+    Obj                 stream)
+{
+    return OpenInputStream_Internal(stream, 0);
+}
 
 /****************************************************************************
 **
@@ -3091,8 +3110,7 @@ static Int InitKernel (
     Int                 i;
 
     TLS(Input) = TLS(InputFiles);
-    TLS(Input)--;
-    (void)OpenInput(  "*stdin*"  );
+    (void)OpenInput_Internal(  "*stdin*", 1  );
     TLS(Input)->echo = 1; /* echo stdin */
     TLS(Output) = 0L;
     (void)OpenOutput( "*stdout*" );
