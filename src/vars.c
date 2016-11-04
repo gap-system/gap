@@ -2958,6 +2958,11 @@ Obj FuncGetBottomLVars( Obj self )
 
 Obj FuncParentLVars( Obj self, Obj lvars )
 {
+  if (TNUM_OBJ(lvars) != T_LVARS) {
+    ErrorQuit( "<lvars> must be an lvars (not a %s)",
+               (Int)TNAM_OBJ(lvars), 0L );
+    return 0;
+  }
   if (lvars == TLS(BottomLVars))
     return Fail;
   return PARENT_LVARS(lvars);
