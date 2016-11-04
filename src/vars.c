@@ -3321,13 +3321,13 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    Obj                 tmp;
+    Obj tmpFunc, tmpBody;
 
     TLS(BottomLVars) = NewBag( T_LVARS, 3*sizeof(Obj) );
-    tmp = NewFunctionC( "bottom", 0, "", 0 );
-    FUNC_LVARS(TLS(BottomLVars)) = tmp;
-    tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-    BODY_FUNC( FUNC_LVARS(TLS(BottomLVars)) ) = tmp;
+    tmpFunc = NewFunctionC( "bottom", 0, "", 0 );
+    FUNC_LVARS( TLS(BottomLVars) ) = tmpFunc;
+    tmpBody = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+    BODY_FUNC( tmpFunc ) = tmpBody;
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
