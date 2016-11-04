@@ -472,7 +472,7 @@ void ReadCallVarAss (
 	    break;
 	  }
       }
-      lvars0 = PTR_BAG( lvars0 )[2];
+      lvars0 = PARENT_LVARS( lvars0 );
       nest0++;
 	if (nest0 >= 65536)
 	  {

@@ -44,10 +44,6 @@
 /* TL: extern  Bag             CurrLVars; */
 
 
-
-
-
-
 /****************************************************************************
 **
 *V  BottomLVars . . . . . . . . . . . . . . . . .  bottom local variables bag
@@ -71,6 +67,22 @@
 **  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
 */
 /* TL: extern  Obj *           PtrLVars; */
+
+
+/****************************************************************************
+**
+*F  FUNC_LVARS . . . . . . . . . . . function to which the given lvars belong
+**
+*/
+#define FUNC_LVARS(lvars)       (ADDR_OBJ(lvars)[0])
+
+
+/****************************************************************************
+**
+*F  PARENT_LVARS . . . . . . . . . . . . . .  parent lvars of the given lvars
+**
+*/
+#define PARENT_LVARS(lvars)     (ADDR_OBJ(lvars)[2])
 
 
 /****************************************************************************

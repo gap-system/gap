@@ -1219,8 +1219,8 @@ void DownEnvInner( Int depth )
   /* now go down                                                         */
   while ( 0 < depth
           && TLS(ErrorLVars) != TLS(BottomLVars)
-          && PTR_BAG(TLS(ErrorLVars))[2] != TLS(BottomLVars) ) {
-    TLS(ErrorLVars) = PTR_BAG(TLS(ErrorLVars))[2];
+          && PARENT_LVARS(TLS(ErrorLVars)) != TLS(BottomLVars) ) {
+    TLS(ErrorLVars) = PARENT_LVARS(TLS(ErrorLVars));
     TLS(ErrorLLevel)--;
     TLS(ShellContext) = PTR_BAG(TLS(ShellContext))[2];
     depth--;
