@@ -124,8 +124,7 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 #ifndef NO_BRK_CALLS
 #define BRK_CALL_TO()                   ((Expr)(Int)(TLS(PtrLVars)[1]))
 #define SET_BRK_CALL_TO(expr)           SetBrkCallTo(expr, __FILE__, __LINE__)
-#endif
-#ifdef  NO_BRK_CALLS
+#else
 #define BRK_CALL_TO()                   /* do nothing */
 #define SET_BRK_CALL_TO(expr)           /* do nothing */
 #endif
@@ -139,8 +138,7 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 #ifndef NO_BRK_CALLS
 #define BRK_CALL_FROM()                 (TLS(PtrLVars)[2])
 #define SET_BRK_CALL_FROM(lvars)        (TLS(PtrLVars)[2] = (lvars))
-#endif
-#ifdef  NO_BRK_CALLS
+#else
 #define BRK_CALL_FROM()                 /* do nothing */
 #define SET_BRK_CALL_FROM(lvars)        /* do nothing */
 #endif
