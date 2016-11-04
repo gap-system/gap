@@ -1427,22 +1427,12 @@ void            ExecEnd (
         /* the state must be primal again                                  */
         assert( TLS(CurrStat)  == 0 );
 
-        /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS(ExecState))[3]) ));
-        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS(ExecState))[2] );
-        TLS(ExecState) = ADDR_OBJ(TLS(ExecState))[1];
-
     }
 
-    /* otherwise clean up the mess                                         */
-    else {
-
-        /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS(ExecState))[3]) ));
-        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS(ExecState))[2] );
-        TLS(ExecState) = ADDR_OBJ(TLS(ExecState))[1];
-
-    }
+    /* switch back to the old state                                    */
+    SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS(ExecState))[3]) ));
+    SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS(ExecState))[2] );
+    TLS(ExecState) = ADDR_OBJ(TLS(ExecState))[1];
 }
 
 /****************************************************************************
