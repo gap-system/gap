@@ -1237,7 +1237,7 @@ Obj FuncDownEnv (
     ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( TLS(ErrorLVars) == 0 ) {
+  if ( TLS(ErrorLVars) == TLS(BottomLVars) ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
@@ -1261,7 +1261,7 @@ Obj FuncUpEnv (
     ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( TLS(ErrorLVars) == 0 ) {
+  if ( TLS(ErrorLVars) == TLS(BottomLVars) ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
