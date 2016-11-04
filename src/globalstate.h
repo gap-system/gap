@@ -150,7 +150,6 @@ typedef struct GlobalState
   UInt UserHasQUIT;
   Obj ShellContext;
   Obj BaseShellContext;
-  UInt ShellContextDepth;
   Int ErrorLLevel;
 
   /* From objects.c */
