@@ -1213,7 +1213,7 @@ function( G, N )
   if IsSolvableGroup(N) or HasSolvableFactorGroup(G, N) then
     TryNextMethod();
   fi;
-  Error("Cannot compute complements if both N and G/N are nonsolvable");
+  Error("cannot compute complements if both N and G/N are nonsolvable");
 end);
 
 
