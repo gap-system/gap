@@ -597,19 +597,34 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
      then
 
       if rada=fail then
-	ind:=IsomorphismPcGroup(r);
-	rada:=AutomorphismGroup(Image(ind,r):someCharacteristics:=fail,actbase:=fail);
-	# we only consider those homomorphism that stabilize the series we use
-	for k in List(ser,x->Image(ind,x)) do
-	  if ForAny(GeneratorsOfGroup(rada),x->Image(x,k)<>k) then
-	    Info(InfoMorph,3,"radical automorphism stabilizer");
-	    NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
-	    rada:=Stabilizer(rada,k,asAutom);
-	  fi;
-	od;
-	# move back to bad degree
-	rada:=Group(List(GeneratorsOfGroup(rada),
-	  x-> InducedAutomorphism(InverseGeneralMapping(ind),x)));
+	if IsElementaryAbelian(r) and Size(r)>1 then
+	  B:=Pcgs(r);
+	  rf:=GF(RelativeOrders(B)[1]);
+	  ind:=Filtered(ser,x->IsSubset(r,x) and Size(x)>1 and Size(x)<Size(r)); 
+	  ind:=List(ind,x->List(GeneratorsOfGroup(x),y->ExponentsOfPcElement(B,y)));
+	  ind:=List(ind,x->x*One(rf));
+	  ind:=SpaceAndOrbitStabilizer(Length(B),rf,ind,[]);
+	  rada:=List(GeneratorsOfGroup(ind),x->
+	    GroupHomomorphismByImagesNC(r,r,B,List(x,y->PcElementByExponents(B,List(y,Int)))));
+	  rada:=Group(rada);
+	  SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
+	  NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
+	else
+	  ind:=IsomorphismPcGroup(r);
+	  rada:=AutomorphismGroup(Image(ind,r):someCharacteristics:=fail,actbase:=fail);
+	  # we only consider those homomorphism that stabilize the series we use
+	  for k in List(ser,x->Image(ind,x)) do
+	    if ForAny(GeneratorsOfGroup(rada),x->Image(x,k)<>k) then
+	      Info(InfoMorph,3,"radical automorphism stabilizer");
+	      NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
+	      rada:=Stabilizer(rada,k,asAutom);
+	    fi;
+	  od;
+	  # move back to bad degree
+	  rada:=Group(List(GeneratorsOfGroup(rada),
+	    x-> InducedAutomorphism(InverseGeneralMapping(ind),x)));
+
+	fi;
       fi;
 
       rf:=Image(hom,r);

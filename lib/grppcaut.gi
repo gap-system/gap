@@ -1018,7 +1018,7 @@ local bas,n,one,new,a,b,g;
   return new;
 end;
 
-SpaceAndOrbitStabilizer:=function(n,field,ospaces,osporb)
+InstallGlobalFunction(SpaceAndOrbitStabilizer,function(n,field,ospaces,osporb)
 local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
       gens,one,spl,ngens,m,sz,a,sporb,notyet,canonicalform,doonedim,spaces;
 
@@ -1226,7 +1226,7 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
     od;
   fi;
   return a;
-end;
+end);
 
 PcgsCharacteristicTails:=function(G,aut)
 local gens,ser,new,pcgs,f,mo,i,j,k,s;
