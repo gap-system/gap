@@ -65,6 +65,10 @@ gap> x := F.1;; y := F.2;; z := F.3;;
 gap> G := F/[x^(-1)*y^(-1)*x*y, x^(-1)*z^(-1)*x*z, z^(-1)*y^(-1)*z*y, (x*y)^180, (x*y^5)^168];; IsAbelian(G);;
 gap> Size(MinimalNormalSubgroups(G));
 9
+gap> G := F/[x^2, y^2, x^(-1)*y^(-1)*x*y, z];;
+gap> IsFinite(G);;
+gap> Size(MinimalNormalSubgroups(G));
+3
 gap> for G in AllGroups(60) do NormalSubgroups(G);; Print(Collected(List(Set(MinimalNormalSubgroups(G)), IdGroup)), "\n"); od;
 [ [ [ 2, 1 ], 1 ], [ [ 3, 1 ], 1 ], [ [ 5, 1 ], 1 ] ]
 [ [ [ 2, 1 ], 1 ], [ [ 3, 1 ], 1 ], [ [ 5, 1 ], 1 ] ]
