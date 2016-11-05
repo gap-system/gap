@@ -1759,8 +1759,9 @@ DeclareAttribute( "NilpotencyClassOfGroup", IsGroup );
 ##
 ##  <Description>
 ##  is a list containing those proper normal subgroups of the group <A>G</A>
-##  that are maximal among the proper normal subgroups. Gives error if there
-##  are infinitely many maximal normal subgroups.
+##  that are maximal among the proper normal subgroups. Gives error if
+##  <A>G</A>/<A>G'</A> is infinite, yielding infinitely many maximal normal
+##  subgroups.
 ##
 ##  Note, that the maximal normal subgroups of a group <A>G</A> can be
 ##  computed more efficiently if the character table of <A>G</A> is known or
