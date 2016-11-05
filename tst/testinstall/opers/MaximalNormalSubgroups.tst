@@ -42,6 +42,14 @@ gap> Length(MaximalNormalSubgroups(G));
 gap> G := F/[s^2, s*r*s*r];;
 gap> Length(MaximalNormalSubgroups(G));
 3
+gap> G := F/[s^2];;
+gap> MaximalNormalSubgroups(G);
+Error, number of maximal normal subgroups is infinity
+gap> G := F/[s^2, r*s*r^(-1)*s^(-1)];;
+gap> MaximalNormalSubgroups(G);
+Error, number of maximal normal subgroups is infinity
+gap> MaximalNormalSubgroups( AbelianGroup( [ 0 ] ) );
+Error, number of maximal normal subgroups is infinity
 
 # a finite fp-group
 gap> G := F/[r^12, s^2, r*s*r^(-1)*s^(-1)];;
