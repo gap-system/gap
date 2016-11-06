@@ -219,7 +219,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
   info := HELP_BOOK_INFO(book);
   chap := HELP_CHAPTER_INFO( book, chapter );
   if chap = fail  then
-      return;
+      return fail;
   fi;
 
   # store lines
