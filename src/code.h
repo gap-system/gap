@@ -511,7 +511,7 @@ Obj FILENAME_STAT(Stat stat);
 **  'CodeResult'  is the result  of the coding, i.e.,   the function that was
 **  coded.
 */
-extern  Obj             CodeResult;
+/* TL: extern  Obj             CodeResult; */
 
 
 /****************************************************************************

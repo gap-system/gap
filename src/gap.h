@@ -209,9 +209,9 @@ extern void ErrorReturnVoid (
             Int                 arg2,
             const Char *        msg2 );
 
-extern Obj ErrorLVars;
-extern Obj ErrorLVars0;
-
+/* TL: extern Obj ErrorLVars;
+   TL: extern Obj ErrorLVars0;
+ */
 
 /****************************************************************************
 **
