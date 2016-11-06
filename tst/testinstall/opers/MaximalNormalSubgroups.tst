@@ -28,9 +28,9 @@ true
 gap> D1 := DihedralGroup(Factorial(10));;
 gap> SortedList(List(MaximalNormalSubgroups(D1), StructureDescription));
 [ "C1814400", "D1814400", "D1814400" ]
-gap> D2 := DihedralGroup(IsFpGroup, 360);;
+gap> D2 := DihedralGroup(IsFpGroup, 36);;
 gap> SortedList(List(MaximalNormalSubgroups(D2), StructureDescription));
-[ "C180", "D180", "D180" ]
+[ "C18", "D18", "D18" ]
 gap> ForAll(MaximalNormalSubgroups(D2), N -> IsSubgroup(D2, N) and IsNormal(D2, N));
 true
 
