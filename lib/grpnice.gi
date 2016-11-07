@@ -233,6 +233,14 @@ end );
 ##
 InstallTrueMethod(CanEasilyTestMembership,IsHandledByNiceMonomorphism);
 
+
+#############################################################################
+##
+#M  CanComputeSizeAnySubgroup( <permgroup> )
+##
+InstallTrueMethod(CanComputeSizeAnySubgroup,IsHandledByNiceMonomorphism);
+
+
 #############################################################################
 ##
 #M  AbelianInvariants( <G> )  . . . . . . . . . abelian invariants of a group
