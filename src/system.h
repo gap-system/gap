@@ -650,22 +650,6 @@ extern UInt SyTimeChildrenSys ( void );
 */
 #define IsSpace(ch)     (isspace((unsigned int)ch))
 
-
-/****************************************************************************
-**
-*F  CharHexDigit( <ch> ) . . . . . . . . . turn a single hex digit into Char 
-**
-*/
-static inline Char CharHexDigit( const Char ch ) {
-    if (ch >= 'a') {
-        return (ch - 'a' + 10);
-    } else if (ch >= 'A') {
-        return (ch - 'A' + 10);
-    } else {
-        return (ch - '0');
-    }
-};
-
 /****************************************************************************
 **
 *F  SyIntString( <string> ) . . . . . . . . extract a C integer from a string

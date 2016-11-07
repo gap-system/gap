@@ -1833,6 +1833,22 @@ static inline Char GetOctalDigits( void )
     return c;
 }
 
+
+/****************************************************************************
+ **
+ *F  CharHexDigit( <ch> ) . . . . . . . . . turn a single hex digit into Char
+ **
+ */
+static inline Char CharHexDigit( const Char ch ) {
+    if (ch >= 'a') {
+        return (ch - 'a' + 10);
+    } else if (ch >= 'A') {
+        return (ch - 'A' + 10);
+    } else {
+        return (ch - '0');
+    }
+};
+
 Char GetEscapedChar( void )
 {
   Char c;
@@ -1875,7 +1891,9 @@ Char GetEscapedChar( void )
     GET_CHAR();
     c += GetOctalDigits();
   } else {
-      /* This warning is currently disabled for backwards compatibility */
+      /* Following discussions on pull-request #612, this warning is currently
+         disabled for backwards compatibility; some code relies on this behaviour
+         and tests break with the warning enabled */
       /*
       if (IsAlpha(*TLS(In)))
           SyntaxWarning("Alphabet letter after \\");
