@@ -200,18 +200,18 @@ ReadLib( "schursym.gi");
 # files dealing with nice monomorphism
 ReadLib( "grpnice.gi"  );
 
-ReadLib( "autsr.gi"    );
-ReadLib( "morpheus.gi" );
-ReadLib( "grplatt.gi"  );
-ReadLib( "oprtglat.gi" );
-ReadLib( "grppclat.gi" );
-
 # fitting free library
 ReadLib( "fitfree.gi"  );
 ReadLib( "permdeco.gi" );
 ReadLib( "clashom.gi"  );
 ReadLib( "maxsub.gi"   );
 ReadLib( "norad.gi"    );
+
+ReadLib( "autsr.gi"    );
+ReadLib( "morpheus.gi" );
+ReadLib( "grplatt.gi"  );
+ReadLib( "oprtglat.gi" );
+ReadLib( "grppclat.gi" );
 
 ReadLib( "grppcaut.gi" );
 

@@ -710,7 +710,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
       Info(InfoFactor,3,"  ext ",cnt,": ",Index(G,u)," best degree:",zzz);
       if Size(cor)>Size(N) and Index(G,u)*2<knowi and
       ValueOption("inmax")=fail then
-        max:=Filtered(MaximalSubgroupClassReps(u:inmax),
+        max:=Filtered(MaximalSubgroupClassReps(u:inmax,cheap),
 	  x->IndexNC(G,x)<knowi and IsSubset(x,N)); 
         for i in max do
 	  cor:=Core(G,i);

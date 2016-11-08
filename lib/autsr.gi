@@ -149,7 +149,12 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       b,fratsim,AQ,OQ,Zm,D,innC,bas,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,
       cond,sub,AQI,AQP,AQiso,rf,res,resperm,proj,Aperm,Apa,precond,ac,
       comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase,somechar,stablim,
-      scharorb,asAutom,jorb,jorpo,substb;
+      scharorb,asAutom,jorb,jorpo,substb,isBadPermrep,ma;
+
+  # criterion for when to force degree reduction
+  isBadPermrep:=function(g)
+    return NrMovedPoints(g)^2>Size(g)*Index(g,DerivedSubgroup(g));
+  end;
 
   asAutom:=function(sub,hom) return Image(hom,sub);end;
 
@@ -172,18 +177,21 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     a:=Size(AQP);
     AQP:=Group(SmallGeneratingSet(AQP),One(AQP));
     SetSize(AQP,a);
-    a:=SmallerDegreePermutationRepresentation(AQP:cheap);
-    if NrMovedPoints(Image(a))<NrMovedPoints(AQP) then
-      Info(InfoMorph,3,"Permdegree reduced ",
-	    NrMovedPoints(AQP),"->",NrMovedPoints(Image(a)));
-      AQiso:=AQiso*a;
-      b:=Image(a,AQP);
-      if Length(GeneratorsOfGroup(b))>Length(GeneratorsOfGroup(AQP)) then
-	b:=Group(List(GeneratorsOfGroup(AQP),x->ImagesRepresentative(a,x)));
-	SetSize(b,Size(AQP));
+    if isBadPermrep(AQP) then
+      a:=SmallerDegreePermutationRepresentation(AQP:cheap);
+      if NrMovedPoints(Image(a))<NrMovedPoints(AQP) then
+	Info(InfoMorph,3,"Permdegree reduced ",
+	      NrMovedPoints(AQP),"->",NrMovedPoints(Image(a)));
+	AQiso:=AQiso*a;
+	b:=Image(a,AQP);
+	if Length(GeneratorsOfGroup(b))>Length(GeneratorsOfGroup(AQP)) then
+	  b:=Group(List(GeneratorsOfGroup(AQP),x->ImagesRepresentative(a,x)));
+	  SetSize(b,Size(AQP));
+	fi;
+	AQP:=b;
       fi;
-      AQP:=b;
     fi;
+
   end;
 
   stablim:=function(gp,cond,lim)
@@ -313,6 +321,8 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     Q:=Image(hom,G);
   fi; 
 
+  ma:=MaximalSubgroupClassesSol(G);
+
   AQ:=AutomorphismGroupFittingFree(Q:someCharacteristics:=fail);
   AQI:=InnerAutomorphismsAutomorphismGroup(AQ);
   lastperm:=fail;
@@ -329,19 +339,41 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       hom:=NaturalHomomorphismByNormalSubgroup(G,N);
       Q:=Image(hom,G);
       # degree reduction called for?
-      if Size(N)>1 and IsPermGroup(Q) and NrMovedPoints(Q)^2>Size(Q) then
+      if Size(N)>1 and isBadPermrep(Q) then
+	#if NrMovedPoints(Q)>15000 then Error("egad!");fi;
 	q:=SmallerDegreePermutationRepresentation(Q);
 	Info(InfoMorph,3,"reduced permrep Q ",NrMovedPoints(Q)," -> ",
 	     NrMovedPoints(Range(q)));
 	hom:=hom*q;
 	Q:=Image(hom,G);
       fi;
+
+      # inherit radical factor map
+      q:=GroupHomomorphismByImagesNC(Q,Range(ff.factorhom),
+	List(GeneratorsOfGroup(G),x->ImagesRepresentative(hom,x)),
+	List(GeneratorsOfGroup(G),x->ImagesRepresentative(ff.factorhom,x)));
+      b:=Image(hom,ff.radical);
+      SetRadicalGroup(Q,b);
+      AddNaturalHomomorphismsPool(Q,b,q);
+
+      # Use known maximals for Frattini
+      for j in ma do
+        D:=Image(hom,j);
+	if not IsSubset(D,b) then
+	  b:=Core(Q,NormalIntersection(b,D));
+	fi;
+      od;
+      SetIsNilpotentGroup(b,true);
+      SetFrattiniSubgroup(Q,b);
+
+      # M-factor
       Mim:=Image(hom,M);
       MPcgs:=Pcgs(Mim);
       q:=GroupHomomorphismByImagesNC(Q,OQ,
 	List(GeneratorsOfGroup(G),x->ImagesRepresentative(hom,x)),
 	List(GeneratorsOfGroup(G),x->ImagesRepresentative(lhom,x)));
       AddNaturalHomomorphismsPool(Q,Mim,q);
+
       mo:=GModuleByMats(LinearActionLayer(GeneratorsOfGroup(Q),MPcgs),GF(RelativeOrders(MPcgs)[1]));
       # is the extension split?
       ocr:=OneCocycles(Q,Mim);
