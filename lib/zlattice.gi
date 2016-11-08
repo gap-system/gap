@@ -1331,7 +1331,7 @@ InstallGlobalFunction( ShortestVectors, function( arg )
        c.vectors[anz][i] := w;
     od;
     if checkpositiv and neg then
-       c.vectors[anz] := [];
+       Unbind(c.vectors[anz]);
        anz := anz - 1;
     else
        c.norms[anz] := dam;
