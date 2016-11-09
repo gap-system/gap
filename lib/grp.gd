@@ -1759,10 +1759,22 @@ DeclareAttribute( "NilpotencyClassOfGroup", IsGroup );
 ##
 ##  <Description>
 ##  is a list containing those proper normal subgroups of the group <A>G</A>
-##  that are maximal among the proper normal subgroups.
+##  that are maximal among the proper normal subgroups. Gives error if
+##  <A>G</A>/<A>G'</A> is infinite, yielding infinitely many maximal normal
+##  subgroups.
+##
+##  Note, that the maximal normal subgroups of a group <A>G</A> can be
+##  computed more efficiently if the character table of <A>G</A> is known or
+##  if <A>G</A> is known to be abelian or solvable (even if infinite). So if
+##  the character table is needed, anyhow, or <A>G</A> is suspected to be
+##  abelian or solvable, then these should be computed before computing the
+##  maximal normal subgroups.
 ##  <Example><![CDATA[
 ##  gap> MaximalNormalSubgroups( g );
 ##  [ Group([ (1,2,3), (2,3,4) ]) ]
+##  gap> f := FreeGroup("x", "y");; x := f.1;; y := f.2;;
+##  gap> List(MaximalNormalSubgroups(f/[x^2, y^2]), GeneratorsOfGroup);
+##  [ [ x, y*x*y^-1 ], [ y, x*y*x^-1 ], [ y*x^-1 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

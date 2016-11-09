@@ -4582,9 +4582,14 @@ end);
 ##  anyhow,you should compute it before computing the maximal normal
 ##  subgroups.
 ##
+##  *Note* that for abelian and solvable groups the maximal normal subgroups
+##  can be computed very quickly. Thus if you suspect your group to be
+##  abelian or solvable, then check it before computing the maximal normal
+##  subgroups.
+##
 InstallMethod( MaximalNormalSubgroups,
     "generic search",
-    [ IsGroup ],
+    [ IsGroup and IsFinite ],
     function(G)
     local
           maximal, # list of maximal normal subgroups,result
@@ -4611,6 +4616,10 @@ InstallMethod( MaximalNormalSubgroups,
 
 end);
 
+RedispatchOnCondition( MaximalNormalSubgroups, true,
+    [ IsGroup ],
+    [ IsFinite ], 0);
+
 #############################################################################
 ##
 #M  MaximalNormalSubgroups( <G> )
@@ -4618,6 +4627,23 @@ end);
 InstallMethod( MaximalNormalSubgroups, "for simple groups",
               [ IsGroup and IsSimpleGroup ], SUM_FLAGS,
               function(G) return [ TrivialSubgroup(G) ]; end);
+
+
+#############################################################################
+##
+#M  MaximalNormalSubgroups( <G> )
+##
+InstallMethod( MaximalNormalSubgroups, "general method selection",
+              [ IsGroup ],
+    function(G)
+
+    if 0 in AbelianInvariants(G) then
+      # (p) is a maximal normal subgroup in Z for every prime p
+      Error("number of maximal normal subgroups is infinity");
+    else
+      TryNextMethod();
+    fi;
+end);
 
 
 ##############################################################################
@@ -4723,8 +4749,8 @@ InstallMethod( MinimalNormalSubgroups, "for nilpotent groups",
   # IsGroup and IsFinite ranks higher than IsGroup and IsNilpotentGroup
   # so we have to increase the rank, otherwise the method for computation
   # by conjugacy classes above is selected.
-  RankFilter(IsGroup and IsFinite)
-  - RankFilter(IsGroup and IsNilpotentGroup),
+  RankFilter( IsGroup and IsFinite and IsNilpotentGroup )
+  - RankFilter( IsGroup and IsNilpotentGroup ),
   function(G)
     local soc, i, p, primes, gen, min, MinimalSubgroupsOfPGroupByGenerators;
 
