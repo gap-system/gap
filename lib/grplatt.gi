@@ -2238,11 +2238,20 @@ InstallMethod(NormalSubgroups,"homomorphism principle perm groups",true,
 ##
 #M  Socle(<G>)
 ##
-InstallMethod(Socle,"from normal subgroups",true,[IsGroup],0,
+InstallMethod(Socle,"from normal subgroups",true,[IsGroup and IsFinite],0,
 function(G)
 local n,i,s;
   if Size(G)=1 then return G;fi;
-  # deal with lareg EA socle factor for fitting free
+
+  # force an IsNilpotent check
+  # should have and IsSolvable check, as well,
+  # but methods for solvable groups are only in CRISP
+  # which aggeressively checks for solvability, anyway
+  if (not HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
+    return Socle(G);
+  fi;
+
+  # deal with large EA socle factor for fitting free
 
   # this could be a bit shorter.
   if Size(RadicalGroup(G))=1 then

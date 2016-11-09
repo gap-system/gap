@@ -57,9 +57,14 @@ true
 gap> Socle(PrimitiveGroup(8,3)) = Group([ (1,7)(2,8)(3,5)(4,6), (1,3)(2,4)(5,7)(6,8), (1,2)(3,4)(5,6)(7,8) ]);
 true
 gap> k := 5;; P := SylowSubgroup(SymmetricGroup(4*k), 2);; A := Group((4*k+1, 4*k+2, 4*k+3));; G := ClosureGroup(P, A);;
-gap> IsNilpotentGroup(G);;
 gap> Socle(G) = Group([ (21,22,23), (1,2)(3,4)(5,6)(7,8)(9,10)(11,12)(13,14)(15,16), (17,18)(19,20) ]);
 true
+gap> G := Group([ (1,2,3,5,4), (1,3)(2,4)(6,7) ]);;
+gap> Socle(G) = Group((1,2,3),(3,4,5),(6,7));
+true
+gap> G := SmallGroup(24,12);;
+gap> IdGroup(Socle(G));
+[ 4, 2 ]
 gap> A := DihedralGroup(16);;
 gap> B := SmallGroup(27, 3);;
 gap> C := SmallGroup(125, 4);;
@@ -80,4 +85,8 @@ gap> G := F/[x^(-1)*y^(-1)*x*y, x^(-1)*z^(-1)*x*z, z^(-1)*y^(-1)*z*y, (x*y)^180,
 gap> IsAbelian(G);;
 gap> Size(Socle(G));
 1260
+gap> G := F/[x^2, y^2, x^(-1)*y^(-1)*x*y, z];;
+gap> IsFinite(G);;
+gap> Size(Socle(G));
+4
 gap> STOP_TEST("Socle.tst", 10000);
