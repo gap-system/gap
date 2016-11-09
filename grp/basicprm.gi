@@ -394,8 +394,9 @@ function( filters, dom )
 	if Length(dom)<5000 then
 	  SetSize( sym, Factorial(Length(dom)) );
 	fi;
-        SetMovedPoints(   sym, dom );
-        SetNrMovedPoints( sym, Length(dom) );
+        SetMovedPoints(    sym, dom );
+        SetNrMovedPoints(  sym, Length(dom) );
+        SetIsPerfectGroup( sym, false );
     fi;
     SetIsPrimitiveAffine( sym, Length( dom ) < 5 );
     SetIsSymmetricGroup( sym, true );

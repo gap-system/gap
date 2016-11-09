@@ -412,6 +412,11 @@ InstallImmediateMethod( IsPerfectGroup,
     0,
     IsTrivial );
 
+InstallImmediateMethod( IsPerfectGroup,
+    IsGroup and HasIsAbelian and IsSimpleGroup,
+    0,
+    grp -> not IsAbelian( grp ) );
+
 InstallMethod( IsPerfectGroup,
     "method for finite groups",
     [ IsGroup and IsFinite ],
