@@ -447,7 +447,7 @@ end );
 
 ###########################################################################
 ##
-#F  Calcrepsn(<n>, <avec>, <pr>, <max>
+#F  Calcrepsn(<n>, <avec>, <pr>, <max>)
 ##
 ##  'Calcrepsn' returns the polynomials f_{n1}1,..,f_{nm} which have to be
 ##  evaluated when computing word*g_n^(y_n).  Here m denotes the composition 
