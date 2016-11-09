@@ -288,8 +288,8 @@ SMALL_GROUPS_INFORMATION[ 21 ] := function( size, smav, num )
    Print( "      with order p^6 for p >= 5 is based on the Easterfield \n");
    Print( "      list, corrected by Newman, O'Brien and Vaughan-Lee (2004).\n");
    Print( "      It differs only in the addition of groups in isoclinism \n"); 
-   Print( "      family $\Phi_{13}$, in using the James (1980) presentations \n");
-   Print( "      for the groups in $\Phi_{19}$, and a small number of \n");
+   Print( "      family $\\Phi_{13}$, in using the James (1980) presentations \n");
+   Print( "      for the groups in $\\Phi_{19}$, and a small number of \n");
    Print( "      typographical amendments. The linear ordering employed is \n");
    Print( "      very close to that of Easterfield. \n \n");
 

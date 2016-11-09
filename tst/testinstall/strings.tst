@@ -43,6 +43,34 @@ gap> PrintString(x);
 "abc"
 gap> String(x);
 "abc"
+gap> x:="\0xFF";
+"\377"
+gap> x:="\0x42\0x23\0x10\0x10\0x10";
+"B#\020\020\020"
+gap> x:="A string with \0xFF Hex stuff \0x42 in it";
+"A string with \377 Hex stuff B in it"
+gap> "\0yab";
+Syntax error: Expecting hexadecimal escape, or two more octal digits in stream\
+:1
+"\0yab";
+  ^
+gap> "\090";
+Syntax error: Expecting hexadecimal escape, or two more octal digits in stream\
+:1
+"\090";
+  ^
+gap> "\0x1g";
+Syntax error: Expecting hexadecimal digit in stream:1
+"\0x1g";
+    ^
+gap> '\0x1bc';
+Syntax error: Missing single quote in character constant in stream:1
+'\0x1bc';
+     ^
+Syntax error: ; expected in stream:2
+^
+gap> "\0x1bc";
+"\033c"
 
 # Empty string
 gap> x:="";
@@ -115,6 +143,12 @@ gap> PrintString(x);
 "'a'"
 gap> String(x);
 "'a'"
+gap> x:='\0x42';
+'B'
+gap> x:='\0xFF';
+'\377'
+gap> x:='\0xab';
+'\253'
 
 # RemoveCharacters
 gap> s := "I love pies pies pies";;

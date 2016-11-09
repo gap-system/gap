@@ -475,7 +475,7 @@ function ( ffe )
 local   str, log,deg,char;
   char:=Characteristic(ffe);
   if   IsZero( ffe )  then
-    str := Concatenation("0\*Z(",String(char),")");
+    str := Concatenation("0*Z(",String(char),")");
   else
     str := Concatenation("Z(",String(char));
     deg:=DegreeFFE(ffe);
