@@ -73,8 +73,8 @@ gap> IdGroup(Socle(D));
 [ 1440, 5958 ]
 gap> Socle(D) = Center(D);
 true
-gap> Socle(FittingSubgroup(SymmetricGroup(4)));
-Group([ (1,4)(2,3), (1,3)(2,4) ])
+gap> Socle(FittingSubgroup(SymmetricGroup(4))) = Group([ (1,4)(2,3), (1,3)(2,4) ]);
+true
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)
 > (7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
 gap> Socle(G) = Group([ (3,7)(5,9), (5,11)(7,9), (1,5,3)(7,11,9), (2,8,10)(4,6,12), (4,6)(10,12) ]);
