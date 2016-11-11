@@ -133,7 +133,7 @@ do
       cd $dir
       case $dir in
         anupq*)
-          ./configure CFLAGS=-m32 LDFLAGS=-m32 &&
+          ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR &&
           $MAKE CFLAGS=-m32 LOPTS=-m32
         ;;
 
@@ -172,7 +172,7 @@ do
         ;;
 
         xgap*)
-          ./configure &&
+          ./configure --with-gaproot=$GAPDIR &&
           $MAKE &&
           rm -f $GAPDIR/bin/xgap.sh &&
           cp bin/xgap.sh $GAPDIR/bin
