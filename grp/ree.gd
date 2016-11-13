@@ -36,6 +36,8 @@ DeclareConstructor( "ReeGroupCons", [ IsGroup, IsInt ] );
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>
 ##  and the generating matrices are based on&nbsp;<Cite Key="KLM01"/>.
 ##  (No particular choice of a generating set is guaranteed.)
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> ReeGroup( 27 );

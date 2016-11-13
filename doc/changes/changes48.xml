@@ -540,6 +540,27 @@ various algorithms.
 
 </Section>
 
+<Section Label="gap486">
+<Heading>&GAP; 4.8.6 (November 2016)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.8.6">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.8.6</Heading>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+<!-- #910 -->
+Fixed regression in the &GAP; kernel code introduced in &GAP; 4.8.5 and
+breaking <Ref Func="StringFile" BookName="gapdoc"/> ability to work
+with compressed files. [Reported by Bill Allombert]
+</Item>
+</List>
+
+</Subsection>
+
+</Section>
+
+
 </Chapter>
 
 

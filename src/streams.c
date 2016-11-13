@@ -1978,10 +1978,7 @@ Obj FuncREAD_STRING_FILE (
             (Int)TNAM_OBJ(fid), 0L,
             "you can replace <fid> via 'return <fid>;'" );
     }
-    if ( syBuf[INT_INTOBJ(fid)].pipe == 1 ) {
-        ErrorMayQuit("<fid> is a pipe, not a file", 0L, 0L);
-    }
-    return SyReadStringFile(INT_INTOBJ(fid));
+    return SyReadStringFid(INT_INTOBJ(fid));
 }
 
 /****************************************************************************
