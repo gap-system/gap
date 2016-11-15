@@ -243,13 +243,19 @@ InstallGlobalFunction( FreeMonoid, function( arg )
       M:= MonoidByGenerators( [], One(F) );
       SetIsFinite(M, true);
       SetIsTrivial(M, true);
+      SetIsCommutative(M, true);
     elif IsFinite( names ) then
       M:= MonoidByGenerators( List( [ 1 .. Length( names ) ],
                               i -> ObjByExtRep( F, 1, 1, [ i, 1 ] ) ) );
       SetIsTrivial( M, false );
+      if Length(names) > 1 then
+          SetIsCommutative(M, false);
+      fi;
     else
       M:= MonoidByGenerators( InfiniteListOfGenerators( F ) );
       SetIsTrivial( M, false );
+      SetIsFinite( M, false );
+      SetIsCommutative(M, false );
     fi;
 
     SetIsFreeMonoid( M, true);
