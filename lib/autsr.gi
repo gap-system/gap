@@ -729,7 +729,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	  for j in u do
 	    if IsList(j) then
 	      # stabilizer set of subgroups
-	      jorb:=Orbit(AQP,j[1],C[2],C[1],asAutom);
+	      jorb:=ShallowCopy(Orbit(AQP,j[1],C[2],C[1],asAutom));
 	      jorpo:=[Position(jorb,j[1]),Position(jorb,j[2])];
 	      if jorpo[2]=fail then
 	        Append(jorb,Orbit(AQP,j[1],C[2],C[1],asAutom));
