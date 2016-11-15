@@ -54,10 +54,11 @@ Obj   EmptyPartialPerm;
 #define  TmpPPerm TLS(TmpPPerm)
 
 static inline void ResizeTmpPPerm( UInt len ){
-  if (TmpPPerm == (Obj)0) 
-    TmpPPerm = NewBag(T_PPERM4, len*sizeof(UInt4));
-  else if (SIZE_BAG(TmpPPerm) < len*sizeof(UInt4))
-    ResizeBag(TmpPPerm,len*sizeof(UInt4));
+  if (TmpPPerm == (Obj)0) {
+    TmpPPerm = NewBag(T_PPERM4, (len + 1) * sizeof(UInt4) + 2 * sizeof(Obj));
+  } else if (SIZE_OBJ(TmpPPerm) < (len + 1) * sizeof(UInt4) + 2 * sizeof(Obj)) {
+    ResizeBag(TmpPPerm,(len + 1) * sizeof(UInt4) + 2 * sizeof(Obj));
+  }
 }
 
 /*******************************************************************************
