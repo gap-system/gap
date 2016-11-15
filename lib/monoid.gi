@@ -301,6 +301,13 @@ function( arg )
   return MonoidByGenerators(out);
 end);
 
+InstallMethod( IsFinitelyGeneratedMonoid, "for a monoid",
+               [ IsMonoid and HasGeneratorsOfMonoid ],
+function(M)
+    return IsFinite(GeneratorsOfMonoid(M));
+end);
+
+
 #############################################################################
 ##
 #E
