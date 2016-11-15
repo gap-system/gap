@@ -132,9 +132,6 @@ DeclareCategory( "IsMagmaWithInverses",
 InstallTrueMethod( IsMagmaWithInverses,
     IsFiniteOrderElementCollection and IsMagma );
 
-InstallTrueMethod( IsMagmaWithInverses, IsMagmaWithOne and IsTrivial );
-
-
 #############################################################################
 ##
 #a  One( <D> )
