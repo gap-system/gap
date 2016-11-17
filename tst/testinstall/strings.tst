@@ -181,6 +181,20 @@ gap> RemoveCharacters(s, " ");
 gap> s;
 "Ilovepiespiespies"
 
+# Lowercase - Uppercase
+gap> List("abcxyzABCXYZ\n\t !019?\377\000$", LowercaseChar);
+"abcxyzabcxyz\n\t !019?\377\000$"
+gap> List("abcxyzABCXYZ\n\t !019?\377\000$", UppercaseChar);
+"ABCXYZABCXYZ\n\t !019?\377\000$"
+gap> UppercaseString("abcxyzABCXYZ\n\t !019?\377\000$");
+"ABCXYZABCXYZ\n\t !019?\377\000$"
+gap> LowercaseString("abcxyzABCXYZ\n\t !019?\377\000$");
+"abcxyzabcxyz\n\t !019?\377\000$"
+gap> UppercaseString("");
+""
+gap> LowercaseString("");
+""
+
 # StringRep
 gap> OldCopyToStringRep := function(s)
 >    local tmp;

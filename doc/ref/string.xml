@@ -467,6 +467,9 @@ The inverse translation can be achieved with <Ref Func="IntHexString"/>.
 <#Include Label="StringPP">
 <#Include Label="WordAlp">
 <#Include Label="LowercaseString">
+<#Include Label="LowercaseChar">
+<#Include Label="UppercaseString">
+<#Include Label="UppercaseChar">
 <#Include Label="SplitString">
 <#Include Label="ReplacedString">
 

@@ -287,44 +287,56 @@ InstallGlobalFunction(WordAlp , function( alpha, nr )
     return Reversed( word );
 end);
 
+BindGlobal("LOWERCASETRANSTABLE", (function()
+    local l;
+    l := List([0..255], CHAR_INT);
+    l{1+[65..90]} := l{1+[97..122]};
+    l{1+[192..214]} := l{33+[192..214]};
+    l{1+[216..221]} := l{33+[216..221]};
+    return Immutable(l);
+end)());
+
+BindGlobal("UPPERCASETRANSTABLE", (function()
+    local l;
+    l := List([0..255], CHAR_INT);
+    l{1+[97..122]} := l{1+[65..90]};
+    l{33+[192..214]} := l{1+[192..214]};
+    l{33+[216..221]} := l{1+[216..221]};
+    return Immutable(l);
+end)());
+
 #############################################################################
 ##
 #F  LowercaseString( <string> ) . . . string consisting of lower case letters
 ##
-LOWERCASETRANSTABLE := 0;
+
 InstallGlobalFunction(LowercaseString , function( str )
   local res;
-  # initialize translation table before first use
-  if LOWERCASETRANSTABLE = 0 then
-    LOWERCASETRANSTABLE := List([0..255], CHAR_INT);
-    LOWERCASETRANSTABLE{1+[65..90]} := LOWERCASETRANSTABLE{1+[97..122]};
-    LOWERCASETRANSTABLE{1+[192..214]} := LOWERCASETRANSTABLE{33+[192..214]};
-    LOWERCASETRANSTABLE{1+[216..221]} := LOWERCASETRANSTABLE{33+[216..221]};
-  fi;
-  # now delegate to kernels TranslateString
+  # delegate to kernels TranslateString
   res := ShallowCopy(str);
   TranslateString(res, LOWERCASETRANSTABLE);
   return res;
+end);
+
+InstallGlobalFunction(LowercaseChar , function( c )
+  return LOWERCASETRANSTABLE[IntChar(c)+1];
 end);
 
 #############################################################################
 ##
 #F  UppercaseString( <string> ) . . . string consisting of upper case letters
 ##
-UPPERCASETRANSTABLE := 0;
+
 InstallGlobalFunction(UppercaseString , function( str )
   local res;
-  # initialize translation table before first use
-  if UPPERCASETRANSTABLE = 0 then
-    UPPERCASETRANSTABLE := List([0..255], CHAR_INT);
-    UPPERCASETRANSTABLE{1+[97..122]} := UPPERCASETRANSTABLE{1+[65..90]};
-    UPPERCASETRANSTABLE{33+[192..214]} := UPPERCASETRANSTABLE{1+[192..214]};
-    UPPERCASETRANSTABLE{33+[216..221]} := UPPERCASETRANSTABLE{1+[216..221]};
-  fi;
-  # now delegate to kernels TranslateString
+  # delegate to kernels TranslateString
   res := ShallowCopy(str);
   TranslateString(res, UPPERCASETRANSTABLE);
   return res;
+end);
+
+InstallGlobalFunction(UppercaseChar , function( c )
+  return UPPERCASETRANSTABLE[IntChar(c)+1];
 end);
 
 #############################################################################
