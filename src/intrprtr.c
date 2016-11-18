@@ -165,6 +165,28 @@ void            PushObj (
     CHANGED_BAG(   TLS(StackObj) );
 }
 
+/* Special marker value to denote that a function returned no value, so we
+ * can produce a useful error message. This value only ever appears on the
+ * stack, and should never be visible outside the Push and Pop methods below
+ *
+ * The only place other than these methods which access the stack is
+ * the permutation reader, but it only directly accesses values it wrote,
+ * so it will not see this magic value. */
+Obj VoidReturnMarker;
+
+void            PushFunctionVoidReturn ( void )
+{
+    /* there must be a stack, it must not be underfull or overfull         */
+    assert( TLS(StackObj) != 0 );
+    assert( 0 <= TLS(CountObj) && TLS(CountObj) == LEN_PLIST(TLS(StackObj)) );
+
+    /* count up and put the void value onto the stack                      */
+    TLS(CountObj)++;
+    GROW_PLIST(    TLS(StackObj), TLS(CountObj) );
+    SET_LEN_PLIST( TLS(StackObj), TLS(CountObj) );
+    SET_ELM_PLIST( TLS(StackObj), TLS(CountObj), (Obj)&VoidReturnMarker );
+}
+
 void            PushVoidObj ( void )
 {
     /* there must be a stack, it must not be underfull or overfull         */
@@ -192,6 +214,11 @@ Obj             PopObj ( void )
     SET_LEN_PLIST( TLS(StackObj), TLS(CountObj)-1  );
     TLS(CountObj)--;
 
+    if(val == (Obj)&VoidReturnMarker) {
+        ErrorQuit(
+            "Function call: <func> must return a value",
+            0L, 0L );
+    }
     /* return the popped value (which must be non-void)                    */
     assert( val != 0 );
     return val;
@@ -210,6 +237,11 @@ Obj             PopVoidObj ( void )
     SET_ELM_PLIST( TLS(StackObj), TLS(CountObj), 0 );
     SET_LEN_PLIST( TLS(StackObj), TLS(CountObj)-1  );
     TLS(CountObj)--;
+
+    /* Treat a function which returned no value the same as 'void'         */
+    if(val == (Obj)&VoidReturnMarker) {
+        val = 0;
+    }
 
     /* return the popped value (which may be void)                         */
     return val;
@@ -436,19 +468,12 @@ void            IntrFuncCallEnd (
       }
     }
 
-    /* check the return value                                              */
-    if ( funccall && val == 0 ) {
-        ErrorQuit(
-            "Function call: <func> must return a value",
-            0L, 0L );
-    }
-
     if (options)
       CALL_0ARGS(PopOptions);
 
     /* push the value onto the stack                                       */
     if ( val == 0 )
-        PushVoidObj();
+        PushFunctionVoidReturn();
     else
         PushObj( val );
 }
