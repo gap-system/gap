@@ -1573,6 +1573,74 @@ InstallMethod( PositionProperty,
 
 #############################################################################
 ##
+#M  PositionMaximum(<list>[, <func>]) .  position of the largest element
+#M  PositionMinimum(<list>[, <func>]) .  position of the smallest element
+##
+
+InstallGlobalFunction( PositionMaximum,
+    function ( args... )
+    local list, func, i, bestval, bestindex, ival;
+
+    if Length(args) < 1 or Length(args) > 2
+       or not(IsList(args[1]))
+       or (Length(args) = 2 and not(IsFunction(args[2]))) then
+        ErrorNoReturn("Usage: PositionMaximum(<list>, [<func>])");
+    fi;
+
+    list := args[1];
+    if Length(args) = 2 then
+        func := args[2];
+    else
+        func := IdFunc;
+    fi;
+
+    bestindex := fail;
+    for i in [ 1 .. Length( list ) ] do
+        if IsBound( list[i] ) then
+            ival := func ( list[ i ] );
+
+            if not( IsBound(bestval) ) or ival > bestval then
+                bestval := ival;
+                bestindex := i;
+            fi;
+        fi;
+    od;
+    return bestindex;
+    end );
+
+InstallGlobalFunction( PositionMinimum,
+    function ( args... )
+    local list, func, i, bestval, bestindex, ival;
+
+    if Length(args) < 1 or Length(args) > 2
+       or not(IsList(args[1]))
+       or (Length(args) = 2 and not(IsFunction(args[2]))) then
+        ErrorNoReturn("Usage: PositionMinimum(<list>, [<func>])");
+    fi;
+
+    list := args[1];
+    if Length(args) = 2 then
+        func := args[2];
+    else
+        func := IdFunc;
+    fi;
+
+    bestindex := fail;
+    for i in [ 1 .. Length( list ) ] do
+        if IsBound( list[i] ) then
+            ival := func ( list[ i ] );
+
+            if not( IsBound(bestval) ) or ival < bestval then
+                bestval := ival;
+                bestindex := i;
+            fi;
+        fi;
+    od;
+    return bestindex;
+    end );
+
+#############################################################################
+##
 #M  PositionsProperty(<list>,<func>)  . positions of elements with a property
 ##
 InstallMethod( PositionsProperty,

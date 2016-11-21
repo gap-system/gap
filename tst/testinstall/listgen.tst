@@ -90,6 +90,42 @@ gap> MinimumList( [ 1, 2 .. 20 ] );
 1
 gap> MinimumList( [ 10, 8 .. 2 ] );
 2
+gap> PositionMaximum([2,4,6,4,2,6]);
+3
+gap> PositionMaximum([2,4,6,4,2,6], x -> -x);
+1
+gap> PositionMinimum([2,4,6,4,2,6]);
+1
+gap> PositionMinimum([2,4,6,4,2,6], x -> -x);
+3
+gap> PositionMaximum();
+Error, Usage: PositionMaximum(<list>, [<func>])
+gap> PositionMaximum(2);
+Error, Usage: PositionMaximum(<list>, [<func>])
+gap> PositionMaximum([1,2], 2);
+Error, Usage: PositionMaximum(<list>, [<func>])
+gap> PositionMaximum([1,2], x -> x, 2);
+Error, Usage: PositionMaximum(<list>, [<func>])
+gap> PositionMinimum();
+Error, Usage: PositionMinimum(<list>, [<func>])
+gap> PositionMinimum([1,2], 2);
+Error, Usage: PositionMinimum(<list>, [<func>])
+gap> PositionMinimum(2);
+Error, Usage: PositionMinimum(<list>, [<func>])
+gap> PositionMinimum([1,2], x -> x, 2);
+Error, Usage: PositionMinimum(<list>, [<func>])
+gap> PositionMaximum([]);
+fail
+gap> PositionMaximum([,,,]);
+fail
+gap> PositionMaximum([2,,4,,6]);
+5
+gap> PositionMinimum([2,,4,,6]);
+1
+gap> PositionMinimum([,,,]);
+fail
+gap> PositionMinimum([]);
+fail
 gap> String( l );
 "[ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]"
 gap> String( [ 1 .. 10 ] );
