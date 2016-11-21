@@ -869,6 +869,44 @@ DeclareGlobalFunction( "PositionSet" );
 DeclareOperation( "PositionProperty", [ IsList, IsFunction ] );
 DeclareOperation( "PositionProperty", [ IsList, IsFunction, IS_INT ] );
 
+#############################################################################
+##
+#O  PositionMaximum( <list> [, <func>] )
+#O  PositionMinimum( <list> [, <func>] )
+##
+##  <#GAPDoc Label="PositionMaximum">
+##  <ManSection>
+##  <Func Name="PositionMaximum" Arg='list [, func]'/>
+##  <Func Name="PositionMinimum" Arg='list [, func]'/>
+##
+##  <Description>
+##  returns the position of maximum (with <Ref Func="PositionMaximum"/>) or
+##  minimum (with <Ref Func="PositionMinimum"/>) entry in the list <A>list</A>.
+##  If a second argument <A>func</A> is passed, then return instead the position
+##  of the largest/smallest entry in <C>List( <A>list</A> , <A>func</A> )</C>.
+##  If several entries of the list are equal
+##  to the maximum/minimum, the first such position is returned.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> PositionMaximum( [2,4,-6,2,4] );
+##  2
+##  gap> PositionMaximum( [2,4,-6,2,4], x -> -x);
+##  3
+##  gap> PositionMinimum( [2,4,-6,2,4] );
+##  3
+##  gap> PositionMinimum( [2,4,-6,2,4], x -> -x);
+##  2
+##  ]]></Example>
+##  <P/>
+##  <Ref Func="Maximum" Label="for various objects"/> and 
+##  <Ref Func="Minimum" Label="for various objects"/>
+##  allow you to find the maximum or minimum element of a list directly.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "PositionMaximum" );
+DeclareGlobalFunction( "PositionMinimum" );
 
 #############################################################################
 ##
@@ -1717,6 +1755,7 @@ DeclareOperation( "StableSortParallel",
 ##  gap> Maximum( [1,2], [0,15], [1,5], [2,-11] );  
 ##  [ 2, -11 ]
 ##  ]]></Example>
+##  To get the index of the maximum element use <Ref Func="PositionMaximum"/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1759,6 +1798,7 @@ DeclareGlobalFunction( "Maximum" );
 ##  gap> Minimum( [ 1, 2 ], [ 0, 15 ], [ 1, 5 ], [ 2, -11 ] );
 ##  [ 0, 15 ]
 ##  ]]></Example>
+##  To get the index of the minimum element use <Ref Func="PositionMinimum"/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
