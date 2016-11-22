@@ -333,13 +333,16 @@ UInt OpenInput (
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( TLS(Input)+1 != TLS(InputFiles) ) {
+    if (TLS(Input) != 0) {
         TLS(Input)->ptr    = TLS(In);
         TLS(Input)->symbol = TLS(Symbol);
     }
 
     /* enter the file identifier and the file name                         */
-    TLS(Input)++;
+    if (TLS(Input) == 0)
+        TLS(Input) = TLS(InputFiles);
+    else
+        TLS(Input)++;
     TLS(Input)->isstream = 0;
     TLS(Input)->file = file;
     if (strcmp("*errin*", filename) && strcmp("*stdin*", filename))
@@ -375,11 +378,11 @@ UInt OpenInputStream (
     if ( TLS(Input)+1 == TLS(InputFiles)+(sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])) )
         return 0;
 
+    assert(TLS(Input) != 0);
+
     /* remember the current position in the current file                   */
-    if ( TLS(Input)+1 != TLS(InputFiles) ) {
-        TLS(Input)->ptr    = TLS(In);
-        TLS(Input)->symbol = TLS(Symbol);
-    }
+    TLS(Input)->ptr    = TLS(In);
+    TLS(Input)->symbol = TLS(Symbol);
 
     /* enter the file identifier and the file name                         */
     TLS(Input)++;
@@ -903,10 +906,10 @@ UInt OpenOutput (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    if (TLS(Output) == 0L)
-      TLS(Output) = TLS(OutputFiles);
+    if (TLS(Output) == 0)
+        TLS(Output) = TLS(OutputFiles);
     else
-      TLS(Output)++;
+        TLS(Output)++;
     TLS(Output)->file     = file;
     TLS(Output)->line[0]  = '\0';
     TLS(Output)->pos      = 0;
@@ -939,6 +942,7 @@ UInt OpenOutputStream (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
+    assert(TLS(Output) != 0);
     TLS(Output)++;
     TLS(Output)->stream   = stream;
     TLS(Output)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
@@ -1030,6 +1034,7 @@ UInt OpenAppend (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
+    assert(TLS(Output) != 0);
     TLS(Output)++;
     TLS(Output)->file     = file;
     TLS(Output)->line[0]  = '\0';
@@ -3090,11 +3095,11 @@ static Int InitKernel (
 {
     Int                 i;
 
-    TLS(Input) = TLS(InputFiles);
-    TLS(Input)--;
+    TLS(Input) = 0;
     (void)OpenInput(  "*stdin*"  );
     TLS(Input)->echo = 1; /* echo stdin */
-    TLS(Output) = 0L;
+
+    TLS(Output) = 0;
     (void)OpenOutput( "*stdout*" );
 
     TLS(InputLog)  = 0;  TLS(OutputLog)  = 0;
