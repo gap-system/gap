@@ -2833,9 +2833,13 @@ InstallGlobalFunction( Stabilizer, function( arg )
     fi;
 end );
 
-InstallMethod( StabilizerOp,
+InstallOtherMethod( StabilizerOp,
         "`OrbitStabilizerAlgorithm' with domain",true,
-        OrbitishReq, 0,
+        [ IsGroup , IsObject,
+	  IsObject,
+          IsList,
+          IsList,
+          IsFunction ], 0,
 function( G, D, d, gens, acts, act )
 local   orbstab;
   

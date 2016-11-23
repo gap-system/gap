@@ -156,6 +156,16 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
     i:=i+1;
   od;
 
+  if not IsTransitive(syno,MovedPoints(syno)) then
+    return fail;
+    # # characteristic product?
+    # w:=Orbits(syno,MovedPoints(syno));
+    # n:=List(w,x->Stabilizer(g,Difference(MovedPoints(g),x),OnTuples));
+    # if ForAll(n,x->ForAll(GeneratorsOfGroup(au),y->Image(y,x)=x)) then
+    #   Error("WR5");
+    # fi;
+  fi;
+
   cen:=Centralizer(syno,g);
   Info(InfoMorph,2,"|syno|=",Size(syno)," |cen|=",Size(cen));
   if Size(cen)>1 then
@@ -1931,7 +1941,7 @@ local A;
     else
       # currently autactbase does not work well, as the representation might
       # change.
-      A:=AutomorphismGroupSolvableGroup(G:autactbase:=fail);
+      A:=AutomorphismGroupSolvableGroup(G);
     fi;
   elif Size(RadicalGroup(G))=1 and IsPermGroup(G) then
     # essentially a normalizer when suitably embedded 
@@ -2035,7 +2045,7 @@ local m;
     return fail;
   fi;
 
-  if Length(AbelianInvariants(G))>3 and Size(RadicalGroup(G))>1 then
+  if (Length(AbelianInvariants(G))>2 or Length(SmallGeneratingSet(G))>2) and Size(RadicalGroup(G))>1 then
     # In place until a proper implementation of Cannon/Holt automorphism is
     # made available.
     return PatheticIsomorphism(G,H);

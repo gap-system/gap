@@ -3190,6 +3190,65 @@ mats:=m.generators;
 end;
 SMTX.BasesCompositionSeries:=SMTX_BasesCompositionSeries;
 
+# composition series with small steps
+SMTX_BasesCSSmallDimUp:=function(m)
+local cf,dim,b,den,sub,i,s,q,found,qb;
+  cf:=List(SMTX.CollectedFactors(m),x->[x[1],x[2]]); # so we can overwrite
+  SortBy(cf,x->x[1].dimension);
+  dim:=m.dimension;
+  b:= IdentityMat(SMTX.Dimension(m),SMTX.Field(m) );
+  ConvertToMatrixRep(b);
+  den:=0;
+  sub:=[[]];
+  q:=m;
+  while den<dim do
+    i:=1;
+    found:=false;
+    while i<=Length(cf) and found=false do
+      if cf[i][2]>0 then # can we still get this module?
+	s:=MTX.Homomorphisms(cf[i][1],q);
+	if Length(s)>0 then
+	  # found one
+	  cf[i][2]:=cf[i][2]-1;
+	  found:=true;
+	  s:=s[1];
+	  if Length(s)=q.dimension then
+	    # on top
+	    Add(sub,TriangulizedMat(b));
+	    den:=dim;
+	  else
+	    TriangulizeMat(s);
+	    qb:=b{[den+1..Length(b)]}; # basis
+	    qb:=List(s,x->x*qb);
+	    qb:=Concatenation(b{[1..den]},qb);
+	    qb:=TriangulizedMat(qb);
+	    Add(sub,qb);
+	    s:=SMTX.InducedAction(q,s,3);
+	    b:=Concatenation(b{[1..den]},s[3]*b{[den+1..Length(b)]});
+	    den:=den+Length(qb);
+	    q:=s[2];
+	    den:=Length(qb);
+	  fi;
+	fi;
+      fi;
+      i:=i+1;
+    od;
+  od;
+  return sub;
+end;
+SMTX.BasesCSSmallDimUp:=SMTX_BasesCSSmallDimUp;
+
+SMTX_BasesCSSmallDimDown:=function(m)
+local d,sub;
+  d:=MTX.DualModule(m);
+  sub:=SMTX_BasesCSSmallDimUp(d);
+  return Concatenation([[]],
+    Reversed(List(sub{[2..Length(sub)-1]},x->SMTX.DualizedBasis(m,x))),
+    [IdentityMat(m.dimension,m.field)]);
+
+end;
+SMTX.BasesCSSmallDimDown:=SMTX_BasesCSSmallDimDown;
+
 SMTX_BasesSubmodules:=function(m)
 local cf,u,i,j,f,cl,min,neu,sq,sb,fb,k,nmin,F;
   F:=SMTX.Field(m);

@@ -1525,6 +1525,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
            missing,     # if a correct base was provided by input, missing
                        # contains those points of it which are not in 
                        # constructed base
+           cnt,        # iteration counter
            correct;     # boolean; true if a correct base is given
 
 # warning:  options.base should be compatible with BaseOfGroup(G)
@@ -1647,6 +1648,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
             fi;
         od;
 
+	cnt:=0;
         ready := false; 
         while not ready do 
           if    IsBound(options.limit)
@@ -1668,6 +1670,15 @@ InstallGlobalFunction( ClosureRandomPermGroup,
               elif options.random = 1000 then 
                   G.restored := SCRRestoredRecord(G);
                   result := VerifySGS( G.restored, missing, correct );
+		  cnt:=cnt+1;
+		  if cnt>99 then
+		    # in rare cases this loop iterates for a very long time.
+		    # In this case, rather create a new chain, than try to
+		    # fix the problematic one
+		    #Error("infinite loop?");
+		    return StabChainRandomPermGroup(G.generators,G.identity,
+		            options);
+		  fi;
               elif options.random > 0 then 
                   result := SCRStrongGenTest
                           (G,param,orbits,basesize,base,correct,missing);
@@ -1695,6 +1706,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
 		Unbind(G.restored); 
                 SCRMakeStabStrong (G,new,param,orbits,
                         where,basesize,base,correct,missing,true);
+		#Print("D ",SizeStabChain(G),"\n");
               fi;
           fi;
         od; 

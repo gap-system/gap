@@ -1091,7 +1091,12 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 
 	  if pcgs=false then
 	    lmpc:=ModuloPcgs(ser[i-1],nts[j]);
-	    npcgs:=ModuloPcgs(nts[j],ser[i]);
+	    if Size(nts[j])=1 and Size(ser[i])=1 then
+	      # avoid degenerate case
+	      npcgs:=Pcgs(nts[j]);
+	    else
+	      npcgs:=ModuloPcgs(nts[j],ser[i]);
+	    fi;
 	  else
 	    if IsTrivial(nts[j]) then
 	      lmpc:=pcgs[i-1];
@@ -2321,7 +2326,7 @@ local rt,op,a,l,i,j,u,max,subs;
   return rec(subgroups:=List(a,i->ClosureGroup(U,rt{i})),inclusions:=max);
 end);
 
-InstallMethod(IntermediateSubgroups,"blocks for coset operation",
+InstallMethod(IntermediateSubgroups,"using maximal subgroups",
   IsIdenticalObj, [IsGroup,IsGroup],
   1, # better than previous if index larger
 function(G,U)

@@ -394,7 +394,7 @@ end);
 # here in case the generic normalizer code is still missing improvements
 BindGlobal("MaxesCalcNormalizer",function(P,U)
 local map, s, b, bl, bb, sp;
-  map:=SmallerDegreePermutationRepresentation(P);
+  map:=SmallerDegreePermutationRepresentation(P:inmax);
   if Range(map)=P then
     map:=fail;
   else

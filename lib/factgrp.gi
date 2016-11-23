@@ -314,9 +314,31 @@ local G,pool,p,comb,i,c,perm,l,isi,N,discard,ab;
   if Length(arg)>1 then
     N:=arg[2];
     p:=Filtered(p,i->IsSubset(pool.ker[i],N));
+    if Length(p)=0 then
+      return;
+    fi;
+    SortParallel(List(pool.ker{p},Size),p);
+    if Size(pool.ker[p[1]])=Size(N) and Length(p)>3 then
+      # N in pool
+      c:=pool.cost[p[1]];
+      p:=Filtered(p,x->pool.cost[x]<c);
+    fi;
   else
     N:=fail;
   fi;
+
+  # minimal ones
+  c:=Filtered([1..Length(p)],
+      x->not ForAny([1..x-1],y->IsSubset(pool.ker[p[x]],pool.ker[p[y]])));
+  c:=p{c};
+  if Size(Intersection(pool.ker{c}))>Size(N) then
+    # cannot reach N
+    return; 
+  elif Length(p)>20 or Size(N)=1 then
+    p:=c; # use only minimal ones if there is lots
+  fi;
+
+  #if Length(p)>20 then Error("hier!");fi;
 
   # do the abelians extra.
   p:=Filtered(p,x->not HasAbelianFactorGroup(G,pool.ker[x]));
@@ -523,7 +545,7 @@ end);
 BADINDEX:=1000; # the index that is too big
 GenericFindActionKernel:=function(arg)
 local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, bv, badi,
-totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
+totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
 
   G:=arg[1];
   N:=arg[2];
@@ -635,7 +657,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
 	fi;
 	totalcnt:=totalcnt+1;
 	if KnownNaturalHomomorphismsPool(G,N) and
-	  Minimum(Index(G,v),knowi)<20000 
+	  Minimum(Index(G,v),knowi)<100000 
 	     and 5*totalcnt>Minimum(Index(G,v),knowi,1000) then
 	  # interupt if we're already quite good
 	  interupt:=true;
@@ -673,7 +695,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
       if Size(cor)>Size(N) and IsSubset(cor,N) and not cor in badcores then
 	Add(badcores,cor);
       fi;
-      # store known information(we do't act, just store the subgroup.
+      # store known information(we do't act, just store the subgroup).
       # Thus this is fairly cheap
       pool.dotriv:=true;
       zzz:=AddNaturalHomomorphismsPool(G,cor,u,Index(G,u));
@@ -686,6 +708,17 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
       zzz:=DegreeNaturalHomomorphismsPool(G,N);
 
       Info(InfoFactor,3,"  ext ",cnt,": ",Index(G,u)," best degree:",zzz);
+      if Size(cor)>Size(N) and Index(G,u)*2<knowi and
+      ValueOption("inmax")=fail then
+        max:=Filtered(MaximalSubgroupClassReps(u:inmax,cheap),
+	  x->IndexNC(G,x)<knowi and IsSubset(x,N)); 
+        for i in max do
+	  cor:=Core(G,i);
+	  AddNaturalHomomorphismsPool(G,cor,i,Index(G,i));
+	od;
+	zzz:=DegreeNaturalHomomorphismsPool(G,N);
+	Info(InfoFactor,3,"  Maxes: ",Length(max)," best degree:",zzz);
+      fi;
     else
       zzz:=DegreeNaturalHomomorphismsPool(G,N);
     fi;

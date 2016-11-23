@@ -90,8 +90,10 @@ InstallMethod( IsNaturalGL,
     0,
 
 function( grp )
-    return Size( grp ) = Size( GL( DimensionOfMatrixGroup( grp ),
-                   Size( FieldOfMatrixGroup( grp ) ) ) );
+  return MTX.IsAbsolutelyIrreducible(
+    GModuleByMats(GeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp))) and
+   Size( grp ) = Size( GL( DimensionOfMatrixGroup( grp ),
+		  Size( FieldOfMatrixGroup( grp ) ) ) );
 end );
 
 InstallMethod( IsNaturalSL,
@@ -101,12 +103,14 @@ InstallMethod( IsNaturalSL,
     0,
 
 function( grp )
-    local gen, d, f;
-    f := FieldOfMatrixGroup( grp );
-    d := DimensionOfMatrixGroup( grp );
-    gen := GeneratorsOfGroup( grp );
-    return ForAll(gen, x-> DeterminantMat(x) = One(f)) 
-             and Size(grp) = Size(SL(d, Size(f)));
+local gen, d, f;
+  f := FieldOfMatrixGroup( grp );
+  d := DimensionOfMatrixGroup( grp );
+  gen := GeneratorsOfGroup( grp );
+  return MTX.IsAbsolutelyIrreducible(
+    GModuleByMats(GeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp))) and
+    ForAll(gen, x-> DeterminantMat(x) = One(f)) 
+	    and Size(grp) = Size(SL(d, Size(f)));
 end );
 
 
