@@ -809,6 +809,10 @@ InstallGlobalFunction(SemidirectDecompositionsOfFiniteGroup, function( arg )
 
   NHs := [ ];
   for N in Ns do
+    if not IsSolvableGroup(N) and not HasSolvableFactorGroup(G, N) then
+      # compute subgroup lattice, currently no other method for complement
+      ConjugacyClassesSubgroups(G);;
+    fi;
     H := ComplementClassesRepresentatives(G, N);
     if Length(H)>0 then
       if method in ["any", "str"] and not IsTrivial(N)
