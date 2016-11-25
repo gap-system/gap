@@ -24,7 +24,7 @@
 ##  <#/GAPDoc>
 ##
 
-Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g'.\n",
+Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g -K 2g'.\n",
        "The more GAP4stones you get, the faster your system is.\n",
        "The runtime of the following tests (in general) increases.\n",
        "******************************************************************\n",
