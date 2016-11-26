@@ -809,21 +809,18 @@ void     ReduceWord( Obj      x,
                      (prel = ELM_PLIST( powers, gen) )  != 0  )
                 {
                     if ( ( IS_INTOBJ(quo) && INT_INTOBJ(quo) >= INT_INTOBJ(potenz) )   ||
+                         INT_INTOBJ(mod) == 0 ||
                          TNUM_OBJ(quo) == T_INTPOS    )
                     {
-                        help = Powerred(  prel,
-                                          QuoInt(quo, potenz),
-                                          pcp    );
-                        help = Multiplyboundred( help, x, i+2, flag, pcp);
+                        quo = QuoInt(quo, potenz);
                     }
                     else
                     {
-                        quo = INT_INTOBJ(mod) == 0? QuoInt(quo,potenz):SumInt(QuoInt(quo, potenz),INTOBJ_INT(-1));
-                        help = Powerred(  prel, 
-                                          quo, 
-                                          pcp );
-                        help = Multiplyboundred( help, x, i+2, flag, pcp);
+                        quo = QuoInt(quo, potenz);
+                        quo = SumInt(quo, INTOBJ_INT(-1));
                     }
+                    help = Powerred(prel, quo, pcp);
+                    help = Multiplyboundred(help, x, i+2, flag, pcp);
                     len = LEN_PLIST(help);
                     for (j=1; j<=len; j++)
                         SET_ELM_PLIST(x, j+i+1, ELM_PLIST(help, j) );
