@@ -24,9 +24,6 @@ gap> StructureDescription(PSL(4,2));
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)(7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
 gap> StructureDescription(G);
 "A5 x A5"
-gap> G := Group([ (6,7,8,9,10), (8,9,10), (1,2)(6,7), (1,2,3,4,5)(6,7,8,9,10) ]);;
-gap> StructureDescription(G);
-"A5 : S5"
 gap> N := PSL(2,32);; aut := SylowSubgroup(AutomorphismGroup(N),5);;
 gap> G := SemidirectProduct(aut, N);; StructureDescription(G);
 "PSL(2,32) : C5"
