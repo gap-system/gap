@@ -151,12 +151,11 @@ GAPInfo.UseReadline := true;
 ##  <A>fname</A> and <Emph>prepends</Emph> them  to the current command line
 ##  history.
 ##  <P/>
-##  By  default  an  arbitrary  number  of input  lines  is  stored  in  the
-##  command  line  history.  For  very   long  &GAP;  sessions  or  if  <Ref
-##  Func="SaveCommandLineHistory"/> and <Ref Func="ReadCommandLineHistory"/>
-##  are used repeatedly  it can be sensible to restrict  the number of saved
-##  lines via <C>SetUserPreference("HistoryMaxLines", num);</C>
-##  to a non negative number <C>num</C> (the default is <K>infinity</K>).
+##  By  default, the command line history stores up to 1000 input lines.
+##  command  line  history. This number may be restricted or enlarged via
+##  via <C>SetUserPreference("HistoryMaxLines", num);</C> which may be set
+##  to a non negative number <C>num</C> to store up to <C>num</C> input
+##  lines or to <K>infinity</K> to store arbitrarily many lines.
 ##  An automatic storing and restoring  of the command line history can
 ##  be configured via 
 ##  <C>SetUserPreference("SaveAndRestoreHistory", true);</C>.
@@ -435,11 +434,12 @@ command line history.",
     "If SaveAndRestoreHistory is true then GAP saves its command line history \
 before terminating a GAP session, and prepends the stored history when GAP is \
 started. If this is enabled it is suggested to set HistoryMaxLines to some \
-finite value.",
+finite value. It is also possible to set HistoryMaxLines to infinity to keep \
+arbitrarily many lines.",
     "These preferences are ignored if GAP was not compiled with \
 readline support.",
     ],
-  default:= [infinity, false],
+  default:= [1000, false],
   check:= function(max, save) 
     return ((IsInt( max ) and 0 <= max) or max = infinity) 
            and save in [true, false];

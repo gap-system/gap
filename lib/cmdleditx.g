@@ -100,7 +100,7 @@ end);
 
 # init empty history
 BindGlobal("CommandLineHistory", [1]);
-MaxCommandLineHistory := 0;
+MaxCommandLineHistory := 1000;
 
 # history position from previous line
 LastPosCLH := 1;
