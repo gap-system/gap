@@ -1216,7 +1216,7 @@ void DownEnvInner( Int depth )
           && PARENT_LVARS(TLS(ErrorLVars)) != TLS(BottomLVars) ) {
     TLS(ErrorLVars) = PARENT_LVARS(TLS(ErrorLVars));
     TLS(ErrorLLevel)++;
-    TLS(ShellContext) = PTR_BAG(TLS(ShellContext))[2];
+    TLS(ShellContext) = PARENT_LVARS(TLS(ShellContext));
     depth--;
   }
 }
