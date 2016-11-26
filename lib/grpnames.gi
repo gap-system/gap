@@ -1604,10 +1604,15 @@ InstallMethod( StructureDescription,
            series,       # series of simple groups
            parameter,    # parameters of G in series
            NH, H, N, N1, # semidirect factors of G
+           NHs,          # [N, H] decompositions
+           NHname,       # name of NH
+           NHs1,         # NH's with preferred N and H
+           NHs1Names,    # names of products in NHs1
            len,          # maximal number of direct factors
            g,            # an element of G
            id,           # id of G in the library of perfect groups
            short,        # short / long output format
+           nice,         # nice output (slower)
            i,            # counter
            primes,       # prime divisors of Size(G)
            pi;           # subset of primes
@@ -1653,6 +1658,7 @@ InstallMethod( StructureDescription,
     end;
 
     short := ValueOption("short") = true;
+    nice := ValueOption("nice") = true;
 
     # fetch name from precomputed list, if available
     if ValueOption("recompute") <> true and Size(G) <= 2000 then
@@ -1775,11 +1781,66 @@ InstallMethod( StructureDescription,
     fi;
 
     # semidirect product decomposition
-    NH := SemidirectDecompositionsOfFiniteGroup( G, "str" );
-    if NH <> fail then
-      H := NH[2]; N := NH[1];
-      return insertsep([StructureDescription(N),
-                        StructureDescription(H)]," : ","x:.");
+    if not nice then
+      NH := SemidirectDecompositionsOfFiniteGroup( G, "str" );
+      if NH <> fail then
+        H := NH[2]; N := NH[1];
+        return insertsep([StructureDescription(N),
+                          StructureDescription(H)]," : ","x:.");
+      fi;
+    else
+      NHs := [ ];
+      for NH in SemidirectDecompositionsOfFiniteGroup( G, "all" ) do
+        if not IsTrivial( NH[1] ) and not IsTrivial( NH[2] ) then
+          AddSet(NHs, [ NH[1], NH[2] ]);
+        fi;
+      od;
+      if Length(NHs) > 0 then
+
+        # prefer abelian H; abelian N; many direct factors in N; phi injective
+        NHs1 := Filtered(NHs, NH -> IsAbelian(NH[2]));
+        if Length(NHs1) > 0 then NHs := NHs1; fi;
+        NHs1 := Filtered(NHs, NH -> IsAbelian(NH[1]));
+        if Length(NHs1) > 0 then
+          NHs := NHs1;
+          len := Maximum( List(NHs, NH -> Length(AbelianInvariants(NH[1]))) );
+          NHs := Filtered(NHs, NH -> Length(AbelianInvariants(NH[1])) = len);
+        fi;
+        NHs1 := Filtered(NHs, NH -> Length(DirectFactorsOfGroup(NH[1])) > 1);
+        if Length(NHs1) > 0 then
+          NHs := NHs1;
+          len := Maximum(List(NHs,NH -> Length(DirectFactorsOfGroup(NH[1]))));
+          NHs := Filtered(NHs,NH -> Length(DirectFactorsOfGroup(NH[1]))=len);
+        fi;
+        NHs1 := Filtered(NHs, NH -> IsTrivial(Centralizer(NH[2],NH[1])));
+        if Length(NHs1) > 0 then NHs := NHs1; fi;
+        if Length(NHs) > 1 then
+
+          # decompose the pairs [N, H] and remove isomorphic copies
+          NHs1      := [];
+          NHs1Names := [];
+          for NH in NHs do
+            NHname := insertsep([StructureDescription(NH[1]),
+                                 StructureDescription(NH[2])],
+                                                                " : ","x:.");
+            if not NHname in NHs1Names then
+              Add(NHs1,      NH);
+              Add(NHs1Names, NHname);
+            fi;
+          od;
+          NHs := NHs1;
+
+          if Length(NHs) > 1 then
+            Info(InfoWarning,2,"Warning! Non-unique semidirect product:");
+            Info(InfoWarning,2,List(NHs,NH -> List(NH,StructureDescription)));
+          fi;
+        fi;
+
+        H := NHs[1][2]; N := NHs[1][1];
+
+        return insertsep([StructureDescription(N:nice),
+                          StructureDescription(H:nice)]," : ","x:.");
+      fi;
     fi;
 
     # non-splitting, non-simple group

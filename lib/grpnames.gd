@@ -748,6 +748,38 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##      <M>H</M>.
 ##    </Item>
 ##    </List>
+##    The option <Q>nice</Q> is recognized. If this option is set, then all
+##    semidirect products are computed in order to find a possibly nicer
+##    presentation. Note, that this may take a long time.
+##    If the option <Q>nice</Q> is set, then GAP would select a pair
+##    <M>N</M>, <M>H</M> with the following preferences:
+##    <List>
+##    <Mark>1.</Mark>
+##    <Item>
+##      <M>H</M> is abelian
+##    </Item>
+##    <Mark>2.</Mark>
+##    <Item>
+##      <M>N</M> is abelian
+##    </Item>
+##    <Mark>2a.</Mark>
+##    <Item>
+##      <M>N</M> has many abelian invariants
+##    </Item>
+##    <Mark>3.</Mark>
+##    <Item>
+##      <M>N</M> is a direct product
+##    </Item>
+##    <Mark>3a.</Mark>
+##    <Item>
+##      <M>N</M> has many direct factors
+##    </Item>
+##    <Mark>4.</Mark>
+##    <Item>
+##      <M>\phi: H \rightarrow</M> Aut(<M>N</M>),
+##      <M>h \mapsto (n \mapsto n^h)</M> is injective.
+##    </Item>
+##    </List>
 ##  </Item>
 ##  <Mark>6.</Mark>
 ##  <Item>

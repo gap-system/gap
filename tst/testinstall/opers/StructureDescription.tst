@@ -31,7 +31,11 @@ gap> G := Group(GeneratorsOfGroup(G));; StructureDescription(G);
 "PSL(2,32) : C5"
 gap> StructureDescription(GL(2,3));
 "GL(2,3)"
+gap> StructureDescription(GL(2,3):recompute);
+"GL(2,3)"
 gap> StructureDescription(SL(2,3));
+"SL(2,3)"
+gap> StructureDescription(SL(2,3):recompute);
 "SL(2,3)"
 gap> StructureDescription(SL(3,3));
 "PSL(3,3)"
@@ -56,6 +60,16 @@ gap> List(AllSmallNonabelianSimpleGroups([1..1000000]), StructureDescription);
   "O(5,4)" ]
 gap> StructureDescription(AbelianGroup([0,2,3,4,5,6,7,8,9,10]));
 "C0 x C2520 x C60 x C6 x C2 x C2"
+gap> infolevel:=InfoLevel(InfoWarning);; SetInfoLevel(InfoWarning,2);
+gap> StructureDescription(SmallGroup(48,16):recompute,nice);
+#I  Warning! Non-unique semidirect product:
+#I  [ [ "C3 : Q8", "C2" ], [ "C3 : C8", "C2" ] ]
+"(C3 : Q8) : C2"
+gap> StructureDescription(SmallGroup(64,17):recompute,nice);
+#I  Warning! Non-unique semidirect product:
+#I  [ [ "C4 x C2", "C8" ], [ "C8 x C2", "C4" ] ]
+"(C4 x C2) : C8"
+gap> SetInfoLevel(InfoWarning,infolevel);
 
 ##
 ## Currently the value "short" does not work for infinite abelian groups.
