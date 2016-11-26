@@ -72,4 +72,6 @@ fail
 gap> N := PSL(2,32);; aut := SylowSubgroup(AutomorphismGroup(N),5);;
 gap> G := SemidirectProduct(aut, N);; StructureDescription(G);
 "PSL(2,32) : C5"
+gap> SemidirectDecompositionsOfFiniteGroup(G, "any", "full");
+Error, usage: SemidirectDecompositionsOfFiniteGroup(<G> [, <Ns>] [, <mthd>])
 gap> STOP_TEST("Semidirectdecompositions.tst", 10000);
