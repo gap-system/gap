@@ -74,4 +74,9 @@ gap> G := SemidirectProduct(aut, N);; StructureDescription(G);
 "PSL(2,32) : C5"
 gap> SemidirectDecompositionsOfFiniteGroup(G, "any", "full");
 Error, usage: SemidirectDecompositionsOfFiniteGroup(<G> [, <Ns>] [, <mthd>])
+gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)(7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
+gap> infolevel:=InfoLevel(InfoPerformance);; SetInfoLevel(InfoPerformance,0);
+gap> Length(SemidirectDecompositions(G));
+8
+gap> SetInfoLevel(InfoPerformance,infolevel);
 gap> STOP_TEST("Semidirectdecompositions.tst", 10000);
