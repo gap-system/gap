@@ -1613,8 +1613,10 @@ InstallMethod( StructureDescription,
            id,           # id of G in the library of perfect groups
            short,        # short / long output format
            nice,         # nice output (slower)
-           i,            # counter
+           i,j,          # counters
            primes,       # prime divisors of Size(G)
+           d,            # divisor of Size(G)
+           k,            # maximal power of d in Size(G)
            pi;           # subset of primes
 
     insertsep := function ( strs, sep, brack )
@@ -1637,22 +1639,24 @@ InstallMethod( StructureDescription,
       return s;
     end;
 
-    cycsaspowers := function ( name )
+    cycsaspowers := function ( name, cycsizes )
 
-      local  p, k, q;
+      local  d, k, j, n;
 
       if not short then return name; fi;
       RemoveCharacters(name," ");
-      for q in Filtered(Reversed(DivisorsInt(Size(G))),
-                        IsPrimePowerInt)
-      do
-        p := SmallestRootInt(q); k := LogInt(q,p);
-        if k > 1 then
-          name := ReplacedString(name,insertsep(List([1..k],
-                    i->Concatenation("C",String(p))),"x",""),
-                    Concatenation(String(p),"^",String(k)));
-        fi;
-      od;
+        cycsizes := Collected(cycsizes);
+        for n in cycsizes
+        do
+          d := n[1]; k := n[2];
+          if k > 1 then
+            for j in Reversed([2..k]) do
+              name := ReplacedString(name,insertsep(List([1..j],
+                        i->Concatenation("C",String(d))),"x",""),
+                        Concatenation(String(d),"^",String(j)));
+            od;
+          fi;
+        od;
       RemoveCharacters(name,"C");
       return name;
     end;
@@ -1666,7 +1670,21 @@ InstallMethod( StructureDescription,
         i := IdGroup(G)[2];
         if IsBound(NAMES_OF_SMALL_GROUPS[Size(G)][i]) then
           name := ShallowCopy(NAMES_OF_SMALL_GROUPS[Size(G)][i]);
-          return cycsaspowers(name);
+          cycsizes := [];
+          if short then
+          # DivisorsInt is rather slow, but we only call it for small groups
+            for d in Reversed(DivisorsInt(Size(G))) do
+              if d >1 then
+                k := LogInt(Size(G), d);
+                if k>1 then
+                  for j in [1..k] do
+                    Add(cycsizes, d);
+                  od;
+                fi;
+              fi;
+            od;
+          fi;
+          return cycsaspowers(name, cycsizes);
         fi;
       fi;
     fi;
@@ -1681,7 +1699,7 @@ InstallMethod( StructureDescription,
       cycsizes := Filtered(cycsizes,n->n<>1);
       return cycsaspowers(insertsep(List(cycsizes,
                                          n->Concatenation("C",String(n))),
-                                    " x ",""));
+                                    " x ",""), cycsizes);
     fi;
 
     if not IsFinite(G) then TryNextMethod(); fi;
@@ -1771,7 +1789,7 @@ InstallMethod( StructureDescription,
         cycsizes := Filtered(cycsizes,n->n<>1);
         cycname  := cycsaspowers(insertsep(List(cycsizes,
                                  n->Concatenation("C",String(n))),
-                                 " x ",":."));
+                                 " x ",":."), cycsizes);
       else cycname := ""; fi;
       noncyclics := Difference(Gs,cyclics);
       noncycname := insertsep(List(noncyclics,StructureDescription),

@@ -5,6 +5,10 @@ gap> List(l, StructureDescription);; l;
 gap> List(AllSmallGroups(40),G->StructureDescription(G:short));
 [ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "(10x2):2", "20x2", 
   "5xD8", "5xQ8", "2x(5:4)", "2^2xD10", "10x2^2" ]
+gap> StructureDescription(SmallGroup(36, 14):short);
+"6^2"
+gap> StructureDescription(SmallGroup(216, 174):short,recompute);
+"6^2xS3"
 gap> List(AllSmallGroups(60), G -> StructureDescription(G:recompute));
 [ "C5 x (C3 : C4)", "C3 x (C5 : C4)", "C3 : (C5 : C4)", "C60", "A5", 
   "C3 x (C5 : C4)", "C3 : (C5 : C4)", "S3 x D10", "C5 x A4", "C6 x D10", 
@@ -58,6 +62,8 @@ gap> List(AllSmallNonabelianSimpleGroups([1..1000000]), StructureDescription);
   "O(5,4)" ]
 gap> StructureDescription(AbelianGroup([0,0,0,2,3,4,5,6,7,8,9,10]));
 "C0 x C0 x C0 x C2520 x C60 x C6 x C2 x C2"
+gap> StructureDescription(AbelianGroup([0,0,0,2,3,4,5,6,7,8,9,10]):short);
+"0^3x2520x60x6x2^2"
 gap> infolevel:=InfoLevel(InfoWarning);; SetInfoLevel(InfoWarning,2);
 gap> StructureDescription(SmallGroup(48,16):recompute,nice);
 #I  Warning! Non-unique semidirect product:
@@ -68,10 +74,4 @@ gap> StructureDescription(SmallGroup(64,17):recompute,nice);
 #I  [ [ "C4 x C2", "C8" ], [ "C8 x C2", "C4" ] ]
 "(C4 x C2) : C8"
 gap> SetInfoLevel(InfoWarning,infolevel);
-
-##
-## Currently the value "short" does not work for infinite abelian groups.
-##
-##gap> StructureDescription(AbelianGroup([0,0,0,2,3,4,5,6,7,8,9,10]):short);
-##"0^3x2520x60x6x2^2"
 gap> STOP_TEST("StructureDescription.tst", 10000);
