@@ -620,7 +620,8 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     # do we use induced radical automorphisms to help next step?
     if Size(KernelOfMultiplicativeGeneralMapping(hom))>1 and
-      Size(A)>10^8 
+      Size(A)>10^8 and (IsAbelian(r) or
+      Length(AbelianInvariants(r))<10)
       #(
       ## potentially large GL
       #Size(GL(Length(MPcgs),RelativeOrders(MPcgs)[1]))>10^10 and
