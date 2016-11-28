@@ -63,8 +63,6 @@ gap> H:=PcGroupCode(
 > 2361539190251190837914203692538788582942691934753704906691,20000);;
 gap> IsomorphismGroups(G,H);
 fail
-gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
-false
 
 #
 # maximalAbelian took memory
