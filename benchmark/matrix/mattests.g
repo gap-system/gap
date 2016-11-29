@@ -52,14 +52,18 @@ else
         local z, q, m, mats, i, j;    
         z:= PrimitiveRoot( F );
         q := Size(F);
-        m:= NullMat( d, d, F );
-        for i in [1..d] do
-            for j in [1..d] do
-                if (i+j) mod q <> 0 then
-                    m[i][j]:= z^(i-1)*z^(j-1);
-                fi;
-            od;
-        od;
+        if d = 1 then
+          m := IdentityMat( d, F );
+        else
+          m:= NullMat( d, d, F );
+          for i in [1..d] do
+              for j in [1..d] do
+                  if (i+j) mod q <> 0 then
+                      m[i][j]:= z^(i-1)*z^(j-1);
+                  fi;
+              od;
+          od;
+        fi;
         mats := [];
         mats[1] := List(m, PlainListCopy);
         mats[2] := List(mats[1], Immutable);
@@ -283,8 +287,7 @@ RunTestAllFields:= function(  test, fields, cutoff, wmats )
 end;
 
 
-Test:= function( arg)
-    
+RunAllTests:= function( arg )
     local   qs, cutoff, tt, fields, wmats;    
     qs := arg[1];
     cutoff := arg[2];
