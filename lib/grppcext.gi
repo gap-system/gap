@@ -643,7 +643,7 @@ end);
 InstallGlobalFunction( CompatiblePairs, function( arg )
 local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
   K2, f, tmp, Ggens, pcgs, l, idx, u, tup,Dos,elmlist,preimlist,pows,
-  baspt,newimgs,i,j;
+  baspt,newimgs,i,j,basicact;
 
     # catch arguments
     G := arg[1];
@@ -769,19 +769,22 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 
     # compute stabilizer of M.generators in D
     Ggens:=Pcgs(G);
+
+    basicact:=function( tup, elm )
+    local gens;
+      #gens := List( tup[1], x -> PreImagesRepresentative( elm[1], x ) );
+      #gens := List( gens, x -> MappedPcElement( x, tup[1], tup[2] ) );
+      gens := List( Ggens, x -> PreImagesRepresentative( elm[1], x ) );
+      gens := List( gens, x -> MappedPcElement( x, Ggens, tup ) );
+      gens := List( gens, x -> x ^ elm[2] );
+      return gens;
+      #return Tuple( [tup[1], gens] );
+    end;
+
     if Size(G)>20000 then
       # if G is too large we cannot write out elements
       elmlist:=fail; 
-      f := function( tup, elm )
-      local gens;
-	#gens := List( tup[1], x -> PreImagesRepresentative( elm[1], x ) );
-	#gens := List( gens, x -> MappedPcElement( x, tup[1], tup[2] ) );
-	gens := List( Ggens, x -> PreImagesRepresentative( elm[1], x ) );
-	gens := List( gens, x -> MappedPcElement( x, Ggens, tup ) );
-	gens := List( gens, x -> x ^ elm[2] );
-	return gens;
-	#return Tuple( [tup[1], gens] );
-      end;
+      f:=basicact;
     else
 
       elmlist:=[];
@@ -844,35 +847,44 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 	elmlist:=Elements(u);
 	tmp:=GeneratorsOfGroup(u);
 	i:=1;
-	while i<=Length(tmp) do
+	while elmlist<>fail and i<=Length(tmp) do
 	  for j in genimgs do
-	    if not tmp[i]^j[2] in elmlist then
+	    if elmlist<>fail and not tmp[i]^j[2] in elmlist then
 	      u:=ClosureGroup(u,tmp[i]^j[2]);
-	      elmlist:=Elements(u);
-	      tmp:=GeneratorsOfGroup(u);
+	      if Size(u)>50000 then
+		# catch cases of too many elements.
+	        elmlist:=fail;
+		f:=basicact;
+	      else
+		elmlist:=Elements(u);
+		tmp:=GeneratorsOfGroup(u);
+	      fi;
 	    fi;
 	  od;
 	  i:=i+1;
 	od;
 
-	baspt:=Position(elmlist,One(u));
-	# describe how second part acts on matrices by conjugation
-	newimgs:=List(genimgs,
-	  x->DirectProductElement([x[1],Permutation(x[2],elmlist,OnPoints)]));
-	Assert(1,ForAll(newimgs,x->x[2]<>fail));
+	if elmlist<>fail then
+	  baspt:=Position(elmlist,One(u));
+	  # describe how second part acts on matrices by conjugation
+	  newimgs:=List(genimgs,
+	    x->DirectProductElement([x[1],Permutation(x[2],elmlist,OnPoints)]));
+	  Assert(1,ForAll(newimgs,x->x[2]<>fail));
 
-	tup:=List(tup,x->Position(elmlist,x));
-	elmlist:=List(elmlist,x->Permutation(x,elmlist,OnRight));
+	  tup:=List(tup,x->Position(elmlist,x));
+	  elmlist:=List(elmlist,x->Permutation(x,elmlist,OnRight));
 
-	pows:=NextPrimeInt(Length(elmlist)-20); # we are likely sparse, so
-	# not being perfect is not likely to do a hash conflict
-	pows:=List([0..Length(tup)],x->pows^x);
+	  pows:=NextPrimeInt(Length(elmlist)-20); # we are likely sparse, so
+	  # not being perfect is not likely to do a hash conflict
+	  pows:=List([0..Length(tup)],x->pows^x);
 
-	tmp:=[D, rec(hashfun:= lst->lst*pows),tup, gens,newimgs, f ];
-
-	#  use `op' to get in the fake domain with the hashfun
-	tmp := StabilizerOp( D, rec(hashfun:= lst->lst*pows),tup,
-	  gens,newimgs, f );
+	  tmp:=[D, rec(hashfun:= lst->lst*pows),tup, gens,newimgs, f ];
+	  #  use `op' to get in the fake domain with the hashfun
+	  tmp := StabilizerOp( D, rec(hashfun:= lst->lst*pows),tup,
+	    gens,newimgs, f );
+	else
+	  tmp := Stabilizer( D, tup,gens,genimgs, f );
+        fi;
       else
 	tmp := Stabilizer( D, tup,gens,genimgs, f );
       fi;

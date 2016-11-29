@@ -542,7 +542,7 @@ local id,m,epi;
     # following is stopgap for L
     id:=DataAboutSimpleGroup(G);
     if id.idSimple.series="A" then
-      Info(InfoLattice,1,"Alternating recognition needed!");
+      Info(InfoPerformance,1,"Alternating recognition needed!");
     elif id.idSimple.series="L" then
       m:=ClassicalMaximals("L",id.idSimple.parameter[1],id.idSimple.parameter[2]);
       if m<>fail then
