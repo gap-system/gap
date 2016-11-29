@@ -417,7 +417,7 @@ DeclareGlobalFunction( "LowercaseString" );
 ##
 ##  <#GAPDoc Label="LowercaseChar">
 ##  <ManSection>
-##  <Func Name="LowercaseString" Arg='character'/>
+##  <Func Name="LowercaseChar" Arg='character'/>
 ##
 ##  <Description>
 ##  Returns the lowercase version of the character <A>character</A>.
@@ -455,7 +455,7 @@ DeclareGlobalFunction( "UppercaseString" );
 ##
 ##  <#GAPDoc Label="UppercaseChar">
 ##  <ManSection>
-##  <Func Name="UppercaseString" Arg='character'/>
+##  <Func Name="UppercaseChar" Arg='character'/>
 ##
 ##  <Description>
 ##  Returns the uppercase version of the character <A>character</A>.
