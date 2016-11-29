@@ -1,4 +1,4 @@
-#description Construct and test all groups of orders from 1 to 100
+#description Construct and test all groups of orders from 257 to 511
 #author Alexander Konovalov
 #timelimit 1
 #cmdlineops
@@ -15,8 +15,11 @@ for i in [257..511] do
     ConstructAndTestAllGroups( i );
 od;
     
+Print("*** RUNTIME ",Runtime()-starttime,"\n");
+
 if has_errors then
   Print("*** FAIL\n");
+  QUIT_GAP(1);
+else
+  QUIT_GAP(0);
 fi;
-
-Print("*** RUNTIME ",Runtime()-starttime,"\n");

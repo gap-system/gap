@@ -16,3 +16,4 @@ for i in [1..6] do
 od;
 
 Print("*** RUNTIME ",Runtime()-starttime,"\n");
+QUIT_GAP(0);

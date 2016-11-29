@@ -9,8 +9,10 @@ Read("mintransind.g");
 Read("examine4");
 starttime:=0;
 l:=Length(MakeTransitiveGroups(16));
+Print("*** RUNTIME ",Runtime()-starttime,"\n");
 if l<>1954 then
   Print("*** FAIL\n");
+  QUIT_GAP(1);
+else
+  QUIT_GAP(0);
 fi;
-Print("*** RUNTIME ",Runtime()-starttime,"\n");
-
