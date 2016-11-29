@@ -14,8 +14,11 @@ for s in [1..128] do
 od;
 Print("\n");
 
+Print("*** RUNTIME ",Runtime()-starttime,"\n");
+
 if has_errors then
   Print("*** FAIL\n");
+  QUIT_GAP(1);
+else
+  QUIT_GAP(0);
 fi;
-
-Print("*** RUNTIME ",Runtime()-starttime,"\n");

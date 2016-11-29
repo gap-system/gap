@@ -2,9 +2,6 @@
 #author Alexander Konovalov
 #timelimit 1
 #cmdlineops
-#packages: SCSCP (for error handling with CALL_AND_CATCH)
-
-ReadPackage("scscp/lib/errors.g");
 
 has_errors := false;
 Read("testprim.g");
@@ -16,8 +13,11 @@ for s in [36..37] do
 od;
 Print("\n");
 
+Print("*** RUNTIME ",Runtime()-starttime,"\n");
+
 if has_errors then
   Print("*** FAIL\n");
+  QUIT_GAP(1);
+else
+  QUIT_GAP(0);
 fi;
-
-Print("*** RUNTIME ",Runtime()-starttime,"\n");
