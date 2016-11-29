@@ -57,21 +57,23 @@ DeclareGlobalFunction("Factorial");
 ##  returns the <E>binomial coefficient</E>
 ##  <Index Subkey="binomial">coefficient</Index>
 ##  <Index Subkey="binomial">number</Index>
-##  <M>{{n \choose k}}</M> of integers <A>n</A> and <A>k</A>,
-##  which is defined as <M>n! / (k! (n-k)!)</M>
-##  (see <Ref Func="Factorial"/>).
-##  We define <M>{{0 \choose 0}} = 1, {{n \choose  k}} = 0</M> if
-##  <M>k &lt; 0</M> or <M>n &lt; k</M>,
-##  and <M>{{n \choose k}} = (-1)^k {{-n+k-1 \choose k}}</M>
-##  if <M>n &lt; 0</M>,
-##  which is consistent with the equivalent definition
-##  <M>{{n \choose k}} = {{n-1 \choose k}} + {{n-1 \choose k-1}}</M>.
+##  <M>{{n \choose k}}</M> of integers <A>n</A> and <A>k</A>. This is defined by
+##  the conditions <M>{{n \choose k}} = 0</M> for <M>k &lt; 0</M>,
+##  <M>{{0 \choose k}} = 0</M> for <M>k \neq 0</M>, <M>{{0 \choose 0}} =
+##  1</M> and the relation 
+##  <M>{{n \choose k}} = {{n-1 \choose k}} + {{n-1 \choose k-1}}</M>
+##  for all <M>n</M> and <M>k</M>.
 ##  <P/>
-##  <M>{{n \choose k}}</M> is the number of combinations with <M>k</M>
-##  elements, i.e.,
-##  the number of subsets with <M>k</M> elements, of a set with <M>n</M>
+##  There are many ways of describing this function. For example,
+##  if <M>n \geq 0</M> and <M>0 \leq k \leq n</M>, then
+##  <M>{{n \choose k}} = n! / (k! (n-k)!)</M> and for <M>n &lt; 0</M> and
+##  <M>k \geq 0</M> we have <M>{{n \choose k}} = 
+##  (-1)^k {{-n+k-1 \choose k}}</M>.
+##  <P/>
+##  If <M>n \geq 0</M> then <M>{{n \choose k}}</M> is
+##  the number of subsets with <M>k</M> elements of a set with <M>n</M>
 ##  elements.
-##  <M>{{n \choose k}}</M> is the coefficient of the term <M>x^k</M> of the
+##  Also, <M>{{n \choose k}}</M> is the coefficient of <M>x^k</M> in the
 ##  polynomial <M>(x + 1)^n</M>,
 ##  which is the generating function for <M>{{n \choose .}}</M>,
 ##  hence the name.
