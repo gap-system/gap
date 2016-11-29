@@ -620,7 +620,8 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     # do we use induced radical automorphisms to help next step?
     if Size(KernelOfMultiplicativeGeneralMapping(hom))>1 and
-      Size(A)>10^8 
+      Size(A)>10^8 and (IsAbelian(r) or
+      Length(AbelianInvariants(r))<10)
       #(
       ## potentially large GL
       #Size(GL(Length(MPcgs),RelativeOrders(MPcgs)[1]))>10^10 and
@@ -786,7 +787,7 @@ end);
 # pathetic isomorphism test, based on the automorphism group of GxH. This is
 # only of use as long as we don't yet have a Cannon/Holt version of
 # isomorphism available and there are many generators
-BindGlobal("PatheticIsomorphism",function(G,H)
+InstallGlobalFunction(PatheticIsomorphism,function(G,H)
 local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
       iso,api,good,gens,pre;
   possibly:=function(a,b)
@@ -805,6 +806,28 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
   asAutomorphism:=function(sub,hom)
     return Image(hom,sub);
   end;
+
+  # TODO: use matgrp package
+  if not (IsPermGroup(G) or IsPcGroup(G))  then
+    i:=IsomorphismPermGroup(G);
+    iso:=PatheticIsomorphism(Image(i,G),H);
+    if iso=fail then
+      return iso;
+    else
+      return i*iso;
+    fi;
+  fi;
+
+  # TODO: use matgrp package
+  if not (IsPermGroup(H) or IsPcGroup(H)) then
+    i:=IsomorphismPermGroup(H);
+    iso:=PatheticIsomorphism(G,Image(i,H));
+    if iso=fail then
+      return iso;
+    else
+      return iso*InverseGeneralMapping(i);
+    fi;
+  fi;
 
   # go through factors of characteristic series to keep orbits short.
   AutomorphismGroup(G:someCharacteristics:=fail);

@@ -2011,6 +2011,15 @@ InstallMethod( InnerAutomorphismsAutomorphismGroup,
 InstallGlobalFunction(IsomorphismGroups,function(G,H)
 local m;
 
+  if not HasIsFinite(G) or not HasIsFinite(H) then
+    Info(InfoWarning,1,"Forcing finiteness test");
+    IsFinite(G);
+    IsFinite(H);
+  fi;
+  if not IsFinite(G) and IsFinite(H) then
+    Error("cannot test isomorphism of infinite groups");
+  fi;
+
   #AH: Spezielle Methoden ?
   if Size(G)=1 then
     if Size(H)<>1 then
