@@ -44,7 +44,6 @@ false
 #
 # Many Spaces
 #
-
 gap> G:=PcGroupCode(338681823291028181778801710348121147721184790127576437,
 > 29160);;
 gap> H:=PcGroupCode(338681822494525443798297952136327929199594863010776437,
@@ -53,16 +52,6 @@ gap> IsomorphismGroups(G,H);
 fail
 gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
-
-#
-# hard-iso3
-#
-gap> G:=PcGroupCode(
-> 47230783805023816758284073850775753212570866553716206981615555,20000);;
-gap> H:=PcGroupCode(                                                          
-> 2361539190251190837914203692538788582942691934753704906691,20000);;
-gap> IsomorphismGroups(G,H);
-fail
 
 #
 # maximalAbelian took memory
@@ -90,6 +79,7 @@ fail
 gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
 
+#
 gap> G:=PcGroupCode(731609193963915469349479836674438288113664000126400,
 > 15744);;
 gap> H:=PcGroupCode(11518455149767885147152053318976713124993564672000126400,
@@ -99,6 +89,7 @@ fail
 gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
 
+#
 gap> G:=PcGroupCode(18738408935379049727906755356708168311565445686261463850856,
 > 21952);;
 gap> H:=PcGroupCode(18738408935359210460657231881739776911013615108923450662760,
@@ -178,8 +169,4 @@ gap> gp2:=Group(
 > 91,95));;
 gap> IsomorphismGroups(gp1,gp2)<>fail;
 true
-
-
-
 gap> STOP_TEST( "grpauto.tst", 1814420000);
-
