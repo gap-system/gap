@@ -105,24 +105,6 @@ gap> H:=PcGroupCode(18738408935359210460657231881739776911013615108923450662760,
 > 21952);;
 gap> IsomorphismGroups(G,H);
 fail
-gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
-false
-
-gap> G:=PcGroupCode(49879636940338958988550512603242447645113136854728735,
-> 15552);;
-gap> H:=PcGroupCode(99756065499714436414025572353196660756647930654752799,
-> 15552);;
-gap> IsomorphismGroups(G,H);
-fail
-
-gap> G:=PcGroupCode(332848340429713177703937106393386549730621978799427644\
-> 9522931868718664965834145193694164732290560710717,15552);;
-gap> H:=PcGroupCode(66567520563199644616783412765969002195501090553565952956323\
-> 68577721969603293838088502897313780378654781,15552);;
-gap> IsomorphismGroups(G,H);
-fail
-gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
-false
 
 #
 # Too hard work for permiso
@@ -150,9 +132,6 @@ fail
 gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
 
-#
-# from here on needs 4GB
-#
 # permutation example
 gap> gp1:=Group(
 > (1,23,6,64,38)(2,42,18,19,11)(3,7,30,49,50)(4,14,20,45,46)(5,9,21,41,58,34, 
