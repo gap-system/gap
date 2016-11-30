@@ -1186,6 +1186,9 @@ DeclareAttribute( "MaximalSubgroups", IsGroup );
 ##
 DeclareAttribute("MaximalSubgroupClassReps",IsGroup);
 
+# utility function in maximal subgroups code
+DeclareGlobalFunction("DoMaxesTF");
+
 #############################################################################
 ##
 #F  MaximalPropertySubgroups( <G>, <prop> )
