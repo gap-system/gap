@@ -153,6 +153,7 @@ DeclareAttribute("AlternatingSubgroup",IsPermGroup);
 ##
 DeclareAttribute("OrbitStabilizingParentGroup",IsPermGroup);
 
+DeclareGlobalFunction("NormalizerParentSA");
 
 #############################################################################
 ##
