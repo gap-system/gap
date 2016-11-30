@@ -54,32 +54,6 @@ gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
 
 #
-# maximalAbelian took memory
-#
-gap> G:=PcGroupCode(
-> 4241001241648612707217598260832611111859648363850009814061412466747,
-> 18144);;
-gap> H:=PcGroupCode(
-> 8452751797183492013365034036870074746315874486014489856228688347195,
-> 18144);;
-gap> IsomorphismGroups(G,H);
-fail
-gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
-false
-
-#
-# Full GL on module needs to be reduced
-#
-gap> G:=PcGroupCode(1083775118752032412701115313901099867559962870543,
-> 11664);;
-gap> H:=PcGroupCode(542004979975587406537467217880858737939706807055,
-> 11664);;
-gap> IsomorphismGroups(G,H);
-fail
-gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
-false
-
-#
 gap> G:=PcGroupCode(731609193963915469349479836674438288113664000126400,
 > 15744);;
 gap> H:=PcGroupCode(11518455149767885147152053318976713124993564672000126400,
