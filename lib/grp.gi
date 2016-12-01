@@ -2535,7 +2535,7 @@ local n,a;
   fi;
   # computing the automorphism group is quite expensive. We therefore test
   # first whether there are image candidates
-  if not IsAbelian(G) then #(otherwise there might be to many normal sgrps)
+  if not IsAbelian(G) and not HasAutomorphismGroup(G) then #(otherwise there might be to many normal sgrps)
     n:=NormalSubgroups(G);
     n:=Filtered(n,i->Size(i)=Size(H)); # probably do further tests here
     if Length(n)=1 then
