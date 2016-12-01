@@ -1183,7 +1183,31 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
   o:=ShallowCopy(Orbits(u,dom));
   Info(InfoGroup,1,"SymmAlt normalizer: orbits ",List(o,Length));
 
-  if Length(o)=1 and IsPrimitive(u,dom) then
+  if Length(o)=1 and IsAbelian(u) then
+    b:=List(Set(Factors(Size(u))),p->Omega(SylowSubgroup(u,p),p,1));
+    if Length(b)=1 and IsTransitive(b[1],dom) then
+      # elementary abelian, regular -- construct the correct AGL
+      b:=b[1];
+      bas:=Pcgs(b);
+      pg:=Centralizer(s,b);
+      for i in GeneratorsOfGroup(GL(Length(bas),RelativeOrders(bas)[1])) do
+	w:=GroupHomomorphismByImagesNC(b,b,bas,
+	  List([1..Length(bas)],x->PcElementByExponents(bas,i[x])));
+	w:=List(dom,x->1^Image(w,First(Elements(b),a->1^a=x)));
+	w:=PermList(w);
+	pg:=ClosureGroup(pg,w);
+      od;
+      return pg;
+    else
+      SortBy(b,Size);
+      b:=Reversed(b); # larger ones should give most reduction.
+      pg:=NormalizerParentSA(s,b[1]);
+      for i in [2..Length(b)] do
+	pg:=Normalizer(pg,b[i]);
+      od;
+      return pg;
+    fi;
+  elif Length(o)=1 and IsPrimitive(u,dom) then
     # natural symmetric/alternating
     if IsNormal(s,u) then
       return s;
@@ -1218,30 +1242,7 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
       pg:=ClosureGroup(pg,i);
     od;
     return pg;
-  elif Length(o)=1 and IsAbelian(u) then
-    b:=List(Set(Factors(Size(u))),p->Omega(SylowSubgroup(u,p),p,1));
-    if Length(b)=1 and IsTransitive(b[1],dom) then
-      # elementary abelian, regular -- construct the correct AGL
-      b:=b[1];
-      bas:=Pcgs(b);
-      pg:=Centralizer(s,b);
-      for i in GeneratorsOfGroup(GL(Length(bas),RelativeOrders(bas)[1])) do
-	w:=GroupHomomorphismByImagesNC(b,b,bas,
-	  List([1..Length(bas)],x->PcElementByExponents(bas,i[x])));
-	w:=List(dom,x->1^Image(w,First(Elements(b),a->1^a=x)));
-	w:=PermList(w);
-	pg:=ClosureGroup(pg,w);
-      od;
-      return pg;
-    else
-      SortBy(b,Size);
-      b:=Reversed(b); # larger ones should give most reduction.
-      pg:=NormalizerParentSA(s,b[1]);
-      for i in [2..Length(b)] do
-	pg:=Normalizer(pg,b[i]);
-      od;
-      return pg;
-    fi;
+
   elif Length(o)=1 then
 
     b0:=AllNormalizerfixedBlockSystem(u,o[1]);

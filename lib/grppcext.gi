@@ -517,7 +517,8 @@ IsCocycle := function( coc, cohom )
 end;
 
 InstallGlobalFunction(EXPermutationActionPairs,function(D)
-local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt;
+local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
+      gp2,pc1,pc2;
   if HasDirectProductInfo(D) then
     ag:=DirectProductInfo(D).groups[1];
     s:=Size(ag);
@@ -530,55 +531,76 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt;
     IsGroupOfAutomorphismsFiniteGroup(ag);
     p1iso:=IsomorphismPermGroup(ag);
     agp:=Image(p1iso);
-    opt:=rec(limit:=s,random:=1);
-    if HasBaseOfGroup(agp) then
-      opt.knownBase:=BaseOfGroup(agp);
-    fi;
-    #p1iso:=p1iso*SmallerDegreePermutationRepresentation(agp);
-    EraseNaturalHomomorphismsPool(agp);
-    if s>1 then
-      repeat
-	u:=Group(());
-	gens:=[];
-	for i in GeneratorsOfGroup(agp) do
-	  if Size(u)<s and not i in u then
-	    Add(gens,i);
-	    u:=DoClosurePrmGp(u,[i],opt);
-	  fi;
-	od;
-	if HasBaseOfGroup(agp) then
-	  SetBaseOfGroup(u,BaseOfGroup(agp));
-	fi;
-	#Print("rep ",Size(u)," ",s,"\n");
-      until Size(u)=s;
-      agp:=u;
-    else
-      gens:=GeneratorsOfGroup(agp);
-    fi;
-    Info( InfoMatOrb, 1, "found ",Length(gens)," generators");
 
+    # are both groups solvable?
     p2iso:=IsomorphismPermGroup(DirectProductInfo(D).groups[2]);
-    DP:=DirectProduct(agp,ImagesSource(p2iso));
-    SetIsSolvableGroup(DP,IsSolvableGroup(agp)
-      and IsSolvableGroup(ImagesSource(p2iso)));
-    p1:=Projection(DP,1);
-    p2:=Projection(DP,2);
-    if IsSolvableGroup(DP) then
+    gp2:=ImagesSource(p2iso);
+    if IsSolvableGroup(gp2) and IsSolvableGroup(agp) then
+      # both groups are solvable -- go solvable
+      pc1:=IsomorphismPcGroup(agp);
+      pc2:=IsomorphismPcGroup(gp2);
+      DP:=DirectProduct(ImagesSource(pc1),ImagesSource(pc2));
+      p1:=Projection(DP,1);
+      p2:=Projection(DP,2);
       gens:=Pcgs(DP);
+
+      genimgs:=List(gens,
+	  i->ImagesRepresentative(Embedding(D,1),
+	  PreImagesRepresentative(p1iso,
+	    PreImagesRepresentative(pc1,ImagesRepresentative(p1,i))))
+	    *ImagesRepresentative(Embedding(D,2),
+		PreImagesRepresentative(p2iso,
+		PreImagesRepresentative(pc2,ImagesRepresentative(p2,i)))) );
+
     else
-      gens:=GeneratorsOfGroup(DP);
+      opt:=rec(limit:=s,random:=1);
+      if HasBaseOfGroup(agp) then
+	opt.knownBase:=BaseOfGroup(agp);
+      fi;
+      #p1iso:=p1iso*SmallerDegreePermutationRepresentation(agp);
+      EraseNaturalHomomorphismsPool(agp);
+      if s>1 then
+	repeat
+	  u:=Group(());
+	  gens:=[];
+	  for i in GeneratorsOfGroup(agp) do
+	    if Size(u)<s and not i in u then
+	      Add(gens,i);
+	      u:=DoClosurePrmGp(u,[i],opt);
+	    fi;
+	  od;
+	  if HasBaseOfGroup(agp) then
+	    SetBaseOfGroup(u,BaseOfGroup(agp));
+	  fi;
+	  #Print("rep ",Size(u)," ",s,"\n");
+	until Size(u)=s;
+	agp:=u;
+      else
+	gens:=GeneratorsOfGroup(agp);
+      fi;
+      Info( InfoMatOrb, 1, "found ",Length(gens)," generators");
+
+      DP:=DirectProduct(agp,gp2);
+#      SetIsSolvableGroup(DP,IsSolvableGroup(agp)
+#	and IsSolvableGroup(ImagesSource(p2iso)));
+      p1:=Projection(DP,1);
+      p2:=Projection(DP,2);
+#      if IsSolvableGroup(DP) then
+#	gens:=Pcgs(DP);
+#      else
+	gens:=GeneratorsOfGroup(DP);
+#      fi;
+      Unbind(ag);Unbind(agp);
+
+      genimgs:=List(gens,
+	  i->ImagesRepresentative(Embedding(D,1),
+		PreImagesRepresentative(p1iso,ImagesRepresentative(p1,i)))
+	    *ImagesRepresentative(Embedding(D,2),
+		PreImagesRepresentative(p2iso,ImagesRepresentative(p2,i))) );
+
     fi;
-    Unbind(ag);Unbind(agp);
-
-    genimgs:=List(gens,
-	i->ImagesRepresentative(Embedding(D,1),
-	      PreImagesRepresentative(p1iso,ImagesRepresentative(p1,i)))
-	  *ImagesRepresentative(Embedding(D,2),
-	      PreImagesRepresentative(p2iso,ImagesRepresentative(p2,i))) );
-
     triso:=GroupHomomorphismByImagesNC(DP,D,gens,genimgs);
     SetIsBijective(triso,true);
-    D:=DP;
     return rec(pairgens:=genimgs,
 	       permgens:=gens,
                isomorphism:=triso,
