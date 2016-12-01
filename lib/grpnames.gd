@@ -1,6 +1,7 @@
 #############################################################################
 ##
-#W  grpnames.gd                                                   Stefan Kohl
+#W  grpnames.gd                                                 Gábor Horváth
+##                                                                Stefan Kohl
 ##                                                             Markus Püschel
 ##                                                            Sebastian Egner
 ##
@@ -286,17 +287,56 @@ DeclareGlobalFunction( "DirectFactorsOfGroupKN", IsGroup );
 
 #############################################################################
 ##
-#A  SemidirectFactorsOfGroup( <G> ) . decomposition into a semidirect product
+#F  SemidirectDecompositionsOfFiniteGroup( <G>[, <L>][, <method>] )
 ##
 ##  <ManSection>
-##  <Attr Name="SemidirectFactorsOfGroup" Arg="G"/>
+##  <Func Name="SemidirectDecompositionsOfFiniteGroup" Arg="G[, L][, method]"/>
 ##
 ##  <Description>
-##    A list [[<A>H1</A>, <A>N1</A>], .., [<A>Hr</A>, <A>Nr</A>]] of all
-##    direct or semidirect decompositions with minimal <A>H</A>:
-##    <A>G</A> = <A>Hi</A> semidirect <A>Ni</A> and |<A>Hi</A>| = |<A>Hj</A>|
-##    is minimal with respect to all semidirect products.
-##    Note that this function also recognizes direct products.
+##    Computes all conjugacy classes of complements to the normal subgroups
+##    in the list <A>L</A>. If <A>L</A> is not given, then it is considered
+##    to be the list of all normal subgroups of G.
+##
+##    Sometimes it is not desirable to compute complements to all normal
+##    subgroups, but rather to some. The user can express such a wish by
+##    using the <A>method</A> <Q>"any"</Q>.
+##
+##    With the <A>method</A> <Q<"all"</Q>,
+##    SemidirectDecompositionsOfFiniteGroup computes all conjugacy classes
+##    of complement subgroups to all normal subgroups in <A>L</A>, and
+##    returns a list [[<A>N1</A>, <A>H1</A>], .., [<A>Nr</A>, <A>Hr</A>]] of
+##    all direct or semidirect decompositions, where <A>Ni</A> are from
+##    <A>L</A>.
+##
+##    If <A>method</A> <Q>"any"</Q> is used, then
+##    SemidirectDecompositionsOfFiniteGroup returns [ <A>N</A>, <A>H</A> ]
+##    for some nontrivial <A>N</A> in <A>L</A> if exists, and returns fail
+##    otherwise. In particular, it first looks if $<A>G</A> is defined as a
+##    nontrivial semidirect product, and if yes, then it returns the two
+##    factors. Second, it looks for a nontrivial normal Hall subgroup, and
+##    if finds any, then will compute a complement to it. Otherwise it goes
+##    through the list <A>L</A>.
+##
+##    The <A>method</A> <Q>"str"</Q> differs from the <A>method</A>
+##    <Q>"any</Q> by not computing normal complement to a normal Hall
+##    subgroup <A>N</A>, and in this case returns [ <A>N</A>, <A>G/N</A> ].
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "SemidirectDecompositionsOfFiniteGroup", IsGroup );
+
+#############################################################################
+##
+#A  SemidirectDecompositions( <G> )
+##
+##  <ManSection>
+##  <Attr Name="SemidirectDecompositions" Arg="G"/>
+##
+##  <Description>
+##    A list [[<A>N1</A>, <A>H1</A>], .., [<A>Nr</A>, <A>Hr</A>]] of all
+##    direct or semidirect decompositions up to conjugacy classes of
+##    <A>Hi</A>. Note that this function also recognizes direct products,
+##    and it may take a very long time to run for particular groups.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -335,7 +375,7 @@ DeclareGlobalFunction( "DirectFactorsOfGroupKN", IsGroup );
 ##    3. Die Form von psi wie oben angegeben kann durch berechnen
 ##       von psi(h)(n) nachgepr"uft werden.
 ##
-DeclareAttribute( "SemidirectFactorsOfGroup", IsGroup );
+DeclareAttribute( "SemidirectDecompositions", IsGroup );
 
 #############################################################################
 ##
@@ -665,13 +705,14 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  <Mark>1.</Mark>
 ##  <Item>
 ##    Lookup in a precomputed list, if the order of <A>G</A> is not
-##    larger than 100 and not equal to 64.
+##    larger than 100 and not equal to 64 or 96.
 ##  </Item>
 ##  <Mark>2.</Mark>
 ##  <Item>
 ##    If <A>G</A> is abelian, then decompose it into cyclic factors
 ##    in <Q>elementary divisors style</Q>. For example,
 ##    <C>"C2 x C3 x C3"</C> is <C>"C6 x C3"</C>.
+##    For infinite abelian groups, <C>"C0"</C> denotes the group of integers.
 ##  </Item>
 ##  <Mark>3.</Mark>
 ##  <Item>
@@ -689,6 +730,29 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##    Recognize semidirect products <A>G</A>=<M>N</M>:<M>H</M>,
 ##    where <M>N</M> is normal.
 ##    Select a pair <M>N</M>, <M>H</M> with the following preferences:
+##    <List>
+##    <Mark>1.</Mark>
+##    <Item>
+##      if <A>G</A> is defined as a semidirect product of <M>N</M>, <M>H</M>
+##      then select <M>N</M>, <M>H</M>,
+##    </Item>
+##    <Mark>2.</Mark>
+##    <Item>
+##      if <A>G</A> is solvable, then select a solvable normal Hall subgroup
+##      <M>N</M>, if exists, and consider the semidirect decomposition of
+##      <M>N</M> and <M>G/N</M>,
+##    </Item>
+##    <Mark>3.</Mark>
+##    <Item>
+##      find any nontrivial normal subgroup <M>N</M> which has a complement
+##      <M>H</M>.
+##    </Item>
+##    </List>
+##    The option <Q>nice</Q> is recognized. If this option is set, then all
+##    semidirect products are computed in order to find a possibly nicer
+##    presentation. Note, that this may take a long time.
+##    If the option <Q>nice</Q> is set, then GAP would select a pair
+##    <M>N</M>, <M>H</M> with the following preferences:
 ##    <List>
 ##    <Mark>1.</Mark>
 ##    <Item>
@@ -712,7 +776,7 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##    </Item>
 ##    <Mark>4.</Mark>
 ##    <Item>
-##      <M>\phi: H \rightarrow</M> Aut(<M>N</M>), 
+##      <M>\phi: H \rightarrow</M> Aut(<M>N</M>),
 ##      <M>h \mapsto (n \mapsto n^h)</M> is injective.
 ##    </Item>
 ##    </List>
@@ -759,12 +823,14 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  gap> List(l,StructureDescription);; l;
 ##  [ C3 : C4, C12, A4, D12, C6 x C2 ]
 ##  gap> List(AllSmallGroups(40),G->StructureDescription(G:short));
-##  [ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "(10x2):2", 
+##  [ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "5:D8",
 ##    "20x2", "5xD8", "5xQ8", "2x(5:4)", "2^2xD10", "10x2^2" ]
 ##  gap> List(AllTransitiveGroups(DegreeAction,6),
 ##  >         G->StructureDescription(G:short));
 ##  [ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3", 
-##    "(3^2):4", "2xS4", "A5", "(S3xS3):2", "S5", "A6", "S6" ]
+##    "(3^2):4", "2xS4", "A5", "(3^2):D8", "S5", "A6", "S6" ]
+##  gap> StructureDescription(AbelianGroup([0,2,3]));
+##  "C0 x C6"
 ##  gap> StructureDescription(PSL(4,2));
 ##  "A8"
 ##  ]]></Example>

@@ -6,7 +6,7 @@ gap> for n in [1..Length(NAMES_OF_SMALL_GROUPS)] do
 >     G := SmallGroup(n, i);
 >     descA := NAMES_OF_SMALL_GROUPS[n][i];
 >     G := Subgroup(G, GeneratorsOfGroup(G));
->     descB := StructureDescription(G : recompute := true);
+>     descB := StructureDescription(G : recompute := true, nice := true);
 >     if descA <> descB then
 >       Print([n,i], ": bad description ", descB, ", should be ", descA, "\n");
 >       AddSet(bad, [n,i]);
