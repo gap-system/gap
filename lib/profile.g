@@ -1080,6 +1080,10 @@ START_TEST := function( name )
     if GAPInfo.TestData.AssertionLevel < 2 then
         SetAssertionLevel( 2 );
     fi;
+    GAPInfo.TestData.InfoPerformanceLevel:= InfoLevel( InfoPerformance );
+    if GAPInfo.TestData.InfoPerformanceLevel > 0 then
+        SetInfoLevel( InfoPerformance, 0 );
+    fi;
 end;
 
 STOP_TEST := function( file, fac )
@@ -1097,6 +1101,7 @@ STOP_TEST := function( file, fac )
       Print( "GAP4stones: infinity\n" );
     fi;
     SetAssertionLevel( GAPInfo.TestData.AssertionLevel );
+    SetInfoLevel( InfoPerformance, GAPInfo.TestData.InfoPerformanceLevel );
     Unbind( GAPInfo.TestData.AssertionLevel );
     Unbind( GAPInfo.TestData.START_TIME );
     Unbind( GAPInfo.TestData.START_NAME );
