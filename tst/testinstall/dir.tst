@@ -3,11 +3,12 @@ gap> base := Filename( DirectoriesLibrary( "tst" ), "example-dir");;
 gap> dirbase := Directory(base);;
 gap> badbase := Concatenation(base,"cheeseababababab");;
 gap> baddirbase := Directory(badbase);;
-gap> dirs := [base, dirbase, badbase, baddirbase];;
+gap> file := Filename( DirectoriesLibrary( "tst" ), "example.txt");;
+gap> dirs := [base, dirbase, badbase, baddirbase, file];;
 gap> List(dirs, IsDirectoryPath);
-[ true, true, false, false ]
+[ true, true, fail, fail, false ]
 gap> List(dirs, IsDirectory);
-[ false, true, false, true ]
+[ false, true, false, true, false ]
 gap> DirectoryHome() = Directory("~") or ARCH_IS_WINDOWS();
 true
 gap> ForAll([DirectoryHome, DirectoryDesktop,DirectoryCurrent],
