@@ -3755,7 +3755,7 @@ Int SyIsDirectoryPath ( const Char * name )
     SyClearErrorNo();
     if ( stat( name, &buf ) == -1 ) {
         SySetErrorNo();
-        return -1;
+        return -2;
     }
     return S_ISDIR(buf.st_mode) ? 0 : -1;
 }
