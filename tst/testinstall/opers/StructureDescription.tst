@@ -1,10 +1,27 @@
 gap> START_TEST("StructureDescription.tst");
+
+## Examples from manual
 gap> l := AllSmallGroups(12);;
 gap> List(l, StructureDescription);; l;
 [ C3 : C4, C12, A4, D12, C6 x C2 ]
 gap> List(AllSmallGroups(40),G->StructureDescription(G:short));
 [ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "(10x2):2", "20x2", 
   "5xD8", "5xQ8", "2x(5:4)", "2^2xD10", "10x2^2" ]
+gap> List(AllTransitiveGroups(DegreeAction, 6), G -> StructureDescription(G:short));
+[ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3", "(3^2):4", 
+  "2xS4", "A5", "(S3xS3):2", "S5", "A6", "S6" ]
+gap> StructureDescription(SmallGroup(504,7));
+"C7 : (C9 x Q8)"
+gap> StructureDescription(SmallGroup(504,7):nice);
+"(C7 : Q8) : C9"
+gap> StructureDescription(AbelianGroup([0,2,3]));
+"C0 x C6"
+gap> StructureDescription(AbelianGroup([0,0,0,2,3,6]):short);
+"0^3x6^2"
+gap> StructureDescription(PSL(4,2));
+"A8"
+
+## More tests
 gap> StructureDescription(SmallGroup(36, 14):short);
 "6^2"
 gap> StructureDescription(SmallGroup(216, 174):short,recompute);
@@ -16,16 +33,11 @@ gap> List(AllSmallGroups(60), G -> StructureDescription(G:recompute));
 gap> List(AllPrimitiveGroups(DegreeAction, 8), StructureDescription);
 [ "(C2 x C2 x C2) : C7", "(C2 x C2 x C2) : (C7 : C3)", 
   "(C2 x C2 x C2) : PSL(3,2)", "PSL(3,2)", "PSL(3,2) : C2", "A8", "S8" ]
-gap> List(AllTransitiveGroups(DegreeAction, 6), G -> StructureDescription(G:short));
-[ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3", "(3^2):4", 
-  "2xS4", "A5", "(S3xS3):2", "S5", "A6", "S6" ]
-gap> StructureDescription(PSL(4,2));
-"A8"
+gap> StructureDescription(AbelianGroup([0,0,0,2,3,6]):short);
+"0^3x6^2"
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)(7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
-gap> infolevel:=InfoLevel(InfoPerformance);; SetInfoLevel(InfoPerformance,0);
 gap> StructureDescription(G);
 "A5 x A5"
-gap> SetInfoLevel(InfoPerformance,infolevel);
 gap> N := PSL(2,32);; aut := SylowSubgroup(AutomorphismGroup(N),5);;
 gap> G := SemidirectProduct(aut, N);; StructureDescription(G);
 "PSL(2,32) : C5"
