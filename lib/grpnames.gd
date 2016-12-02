@@ -823,14 +823,20 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  gap> List(l,StructureDescription);; l;
 ##  [ C3 : C4, C12, A4, D12, C6 x C2 ]
 ##  gap> List(AllSmallGroups(40),G->StructureDescription(G:short));
-##  [ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "5:D8",
+##  [ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "(10x2):2",
 ##    "20x2", "5xD8", "5xQ8", "2x(5:4)", "2^2xD10", "10x2^2" ]
 ##  gap> List(AllTransitiveGroups(DegreeAction,6),
 ##  >         G->StructureDescription(G:short));
 ##  [ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3", 
-##    "(3^2):4", "2xS4", "A5", "(3^2):D8", "S5", "A6", "S6" ]
+##    "(3^2):4", "2xS4", "A5", "(S3xS3):2", "S5", "A6", "S6" ]
+##  gap> StructureDescription(SmallGroup(504,7));
+##  "C7 : (C9 x Q8)"
+##  gap> StructureDescription(SmallGroup(504,7):nice);
+##  "(C7 : Q8) : C9"
 ##  gap> StructureDescription(AbelianGroup([0,2,3]));
 ##  "C0 x C6"
+##  gap> StructureDescription(AbelianGroup([0,0,0,2,3,6]):short);
+##  "0^3x6^2"
 ##  gap> StructureDescription(PSL(4,2));
 ##  "A8"
 ##  ]]></Example>
