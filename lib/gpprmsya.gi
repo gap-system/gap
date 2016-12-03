@@ -1197,7 +1197,7 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
 	w:=PermList(w);
 	pg:=ClosureGroup(pg,w);
       od;
-      return pg;
+      return Intersection(s,pg);
     else
       SortBy(b,Size);
       b:=Reversed(b); # larger ones should give most reduction.
@@ -1205,7 +1205,7 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
       for i in [2..Length(b)] do
 	pg:=Normalizer(pg,b[i]);
       od;
-      return pg;
+      return Intersection(s,pg);
     fi;
   elif Length(o)=1 and IsPrimitive(u,dom) then
     # natural symmetric/alternating
@@ -1241,7 +1241,7 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
     for i in ll do
       pg:=ClosureGroup(pg,i);
     od;
-    return pg;
+    return Intersection(s,pg);
 
   elif Length(o)=1 then
 
