@@ -36,8 +36,6 @@ gap> IsomorphismGroups(G,H);
 fail
 gap> IsomorphismGroups(G,K);
 fail
-gap> IsomorphismGroups(H,K);
-fail
 gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
 false
 
