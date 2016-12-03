@@ -1438,8 +1438,8 @@ DeclareAttribute( "DerivedSeriesOfGroup", IsGroup );
 ##  is the largest abelian factor group of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;
-##  gap> DerivedSubgroup(g);
-##  Group([ (1,3,2), (2,4,3) ])
+##  gap> DerivedSubgroup(g) = Group([ (1,3,2), (2,4,3) ]);
+##  true
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2131,8 +2131,8 @@ DeclareAttribute( "SmallGeneratingSet", IsGroup );
 ##  its smallest normal subgroup <M>N</M> such that the factor group
 ##  <M><A>G</A> / N</M> is supersolvable.
 ##  <Example><![CDATA[
-##  gap> SupersolvableResiduum(g);
-##  Group([ (1,3)(2,4), (1,4)(2,3) ])
+##  gap> SupersolvableResiduum(g) = Group([ (1,3)(2,4), (1,4)(2,3) ]);
+##  true
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3078,10 +3078,10 @@ DeclareOperation( "IsSubnormal", [ IsGroup, IsGroup ] );
 ##  The normal closure of <A>U</A> in <A>G</A> is the smallest normal subgroup 
 ##  of the closure of <A>G</A> and <A>U</A> which contains <A>U</A>.
 ##  <Example><![CDATA[
-##  gap> NormalClosure(g,Subgroup(g,[(1,2,3)]));
-##  Group([ (1,2,3), (2,3,4) ])
-##  gap> NormalClosure(g,Group((3,4,5)));
-##  Group([ (3,4,5), (1,5,4), (1,2,5) ])
+##  gap> NormalClosure(g,Subgroup(g,[(1,2,3)])) = Group([ (1,2,3), (2,3,4) ]);
+##  true
+##  gap> NormalClosure(g,Group((3,4,5))) = Group([ (3,4,5), (1,5,4), (1,2,5) ]);
+##  true
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3247,9 +3247,11 @@ KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
 ##  series that descends from <A>G</A> to a subnormal subgroup
 ##  <M>V \geq </M><A>U</A>. If <A>U</A> is subnormal, <M>V =</M> <A>U</A>.
 ##  <Example><![CDATA[
-##  gap> s:=SubnormalSeries(g,Group((1,2)(3,4)));
-##  [ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,3)(2,4) ]), 
-##    Group([ (1,2)(3,4) ]) ]
+##  gap> s:=SubnormalSeries(g,Group((1,2)(3,4))) =
+##  > [ Group([ (1,2,3,4), (1,2) ]),
+##  >   Group([ (1,2)(3,4), (1,3)(2,4) ]),
+##  >   Group([ (1,2)(3,4) ]) ];
+##  true
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
