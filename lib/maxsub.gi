@@ -760,9 +760,6 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
   return m;
 end);
 
-# declare as the function calls itself recursively.
-DeclareGlobalFunction("DoMaxesTF");
-
 InstallGlobalFunction(DoMaxesTF,function(arg)
 local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
   a1emb,a2emb,anew,wnew,e1,e2,emb,a1,a2,mm;

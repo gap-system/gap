@@ -1169,7 +1169,7 @@ local b, bl,prop;
   return List(b,x->Set(Orbit(G,Set(dom{x}),OnSets)));
 end);
 
-BindGlobal("NormalizerParentSA",function(s,u)
+InstallGlobalFunction(NormalizerParentSA,function(s,u)
 local dom, issym, o, b, beta, alpha, emb, nb, na, w, perm, pg, l, is, ie, ll,
 syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
 
@@ -1183,8 +1183,68 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
   o:=ShallowCopy(Orbits(u,dom));
   Info(InfoGroup,1,"SymmAlt normalizer: orbits ",List(o,Length));
 
-  # transitive?
-  if Length(o)=1 then
+  if Length(o)=1 and IsAbelian(u) then
+    b:=List(Set(Factors(Size(u))),p->Omega(SylowSubgroup(u,p),p,1));
+    if Length(b)=1 and IsTransitive(b[1],dom) then
+      # elementary abelian, regular -- construct the correct AGL
+      b:=b[1];
+      bas:=Pcgs(b);
+      pg:=Centralizer(s,b);
+      for i in GeneratorsOfGroup(GL(Length(bas),RelativeOrders(bas)[1])) do
+	w:=GroupHomomorphismByImagesNC(b,b,bas,
+	  List([1..Length(bas)],x->PcElementByExponents(bas,i[x])));
+	w:=List(dom,x->1^Image(w,First(Elements(b),a->1^a=x)));
+	w:=PermList(w);
+	pg:=ClosureGroup(pg,w);
+      od;
+      return pg;
+    else
+      SortBy(b,Size);
+      b:=Reversed(b); # larger ones should give most reduction.
+      pg:=NormalizerParentSA(s,b[1]);
+      for i in [2..Length(b)] do
+	pg:=Normalizer(pg,b[i]);
+      od;
+      return pg;
+    fi;
+  elif Length(o)=1 and IsPrimitive(u,dom) then
+    # natural symmetric/alternating
+    if IsNormal(s,u) then
+      return s;
+    fi;
+    # can there be more in the normalizer -- primitive groups
+    b:=Socle(u);
+    if IsElementaryAbelian(b) then
+      return NormalizerParentSA(s,b);
+    fi;
+    # nonabelian socle
+    if false and # so far disable -- need discussion on wisdom of approach
+      Length(dom)<2500 and PRIM_AVAILABLE then
+      # use library
+      beta:=Factorial(Length(dom))/2;
+      w:=CallFuncList(ValueGlobal("AllPrimitiveGroups"),
+	  [NrMovedPoints,Length(dom),IsSolvableGroup,false,
+	  x->Size(x)>Size(u) and Size(x) mod Size(u)=0 and
+	  Size(x)<beta,true]);
+      if Length(w)=0 then
+	return u; # must be self-normalizing
+      fi;
+    fi;
+    # find right automorphisms (socle cannot have centralizer)
+    w:=AutomorphismGroup(b);
+    opg:=NaturalHomomorphismByNormalSubgroupNC(w,
+	  InnerAutomorphismsAutomorphismGroup(w));
+    ll:=List(Elements(Image(opg)),x->PreImagesRepresentative(opg,x));
+    ll:=Filtered(ll,IsConjugatorAutomorphism);
+    ll:=List(ll,ConjugatorInnerAutomorphism);
+    pg:=b;
+    for i in ll do
+      pg:=ClosureGroup(pg,i);
+    od;
+    return pg;
+
+  elif Length(o)=1 then
+
     b0:=AllNormalizerfixedBlockSystem(u,o[1]);
     if b0=fail then
       # none -- no improvement
@@ -1253,7 +1313,8 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
 	# rearrange
 	for i in Set(typ) do
 	  sel:=Filtered([is..ie-1],j->typ[j]=i);
-	  bas:=Normalizer(syll,act[sel[1]]);
+	  bas:=NormalizerParentSA(syll,act[sel[1]]);
+	  bas:=Normalizer(bas,act[sel[1]]);
 	  w:=WreathProduct(bas,SymmetricGroup(Length(sel)));
 	  wdom:=[1..ll*Length(sel)];
 	  comp:=WreathProductInfo(w).components;

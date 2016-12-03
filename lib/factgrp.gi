@@ -504,6 +504,7 @@ local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
       allb:=ShallowCopy(RepresentativesMinimalBlocks(Go,mov));
       for j in allb do
 	b:=Orbit(G,i{j},OnSets);
+
 	Add(bl,Immutable(Set(b)));
 	# also one finer blocks (as we iterate only once)
 	newb:=Blocks(Go,Blocks(Go,mov,j),OnSets);
@@ -513,6 +514,7 @@ local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
 	    Add(allb,newb);
 	  fi;
 	fi;
+
       od;
 
       #if Length(i)<500 and Size(Go)>10*Length(i) then
@@ -533,6 +535,43 @@ local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
     od;
 
     pool.GopDone:=true;
+  fi;
+
+end);
+
+BindGlobal("DoActionBlocksForKernel",
+function(G,mustfaithful)
+local pool, dom, o, bl, op, Go, j, b, i,allb,newb,movl;
+
+  dom:=MovedPoints(G);
+  # orbits
+  o:=OrbitsDomain(G,dom);
+  o:=Set(List(o,Set));
+
+
+  # all good blocks
+  bl:=dom;
+  allb:=ShallowCopy(RepresentativesMinimalBlocks(G,dom));
+  for j in allb do
+    if Length(dom)/Length(j)<Length(bl) and
+      Size(Core(mustfaithful,Stabilizer(mustfaithful,j,OnSets)))=1
+      then
+	b:=Orbit(G,j,OnSets);
+	bl:=b;
+	# also one finer blocks (as we iterate only once)
+	newb:=Blocks(G,b,OnSets);
+	if Length(newb)>1 then
+	  newb:=Union(newb[1]);
+	  if not newb in allb then
+	    Add(allb,newb);
+	  fi;
+	fi;
+    fi;
+  od;
+  if Length(bl)<Length(dom) then
+    return bl;
+  else
+    return fail;
   fi;
 
 end);
@@ -708,10 +747,15 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
       zzz:=DegreeNaturalHomomorphismsPool(G,N);
 
       Info(InfoFactor,3,"  ext ",cnt,": ",Index(G,u)," best degree:",zzz);
-      if Size(cor)>Size(N) and Index(G,u)*2<knowi and
-      ValueOption("inmax")=fail then
-        max:=Filtered(MaximalSubgroupClassReps(u:inmax,cheap),
-	  x->IndexNC(G,x)<knowi and IsSubset(x,N)); 
+      if cnt<10 and Size(cor)>Size(N) and Index(G,u)*2<knowi and
+	ValueOption("inmax")=fail then
+	if IsSubset(RadicalGroup(u),N) and Size(N)<Size(RadicalGroup(u)) then
+	  # only affine ones are needed, rest will have wrong kernel
+	  max:=DoMaxesTF(u,["1"]:inmax,cheap);
+	else
+	  max:=MaximalSubgroupClassReps(u:inmax,cheap);
+	fi;
+        max:=Filtered(max,x->IndexNC(G,x)<knowi and IsSubset(x,N)); 
         for i in max do
 	  cor:=Core(G,i);
 	  AddNaturalHomomorphismsPool(G,cor,i,Index(G,i));
@@ -747,7 +791,7 @@ end;
 ##
 InstallGlobalFunction(SmallerDegreePermutationRepresentation,function(G)
 local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
-  i,cheap,first;
+  i,cheap,first,k2;
 #if not HasSize(G) then Error("SZ");fi;
   Info(InfoFactor,1,"Smaller degree for order ",Size(G),", deg: ",NrMovedPoints(G));
   cheap:=ValueOption("cheap");
@@ -799,12 +843,28 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
       Sort(o,function(a,b)return Length(a)>Length(b);end);
     od;
 
+    Sort(o,function(a,b)return Length(a)<Length(b);end);
+
     erg:=List(GeneratorsOfGroup(G),i->());
+    k:=G;
     for i in [1..Length(o)] do
       Info(InfoFactor,1,"Try to shorten orbit ",i," Length ",Length(o[i]));
       s:=ActionHomomorphism(G,o[i],OnPoints,"surjective");
-      Range(s);
+      k2:=Image(s,k);
+      k:=Stabilizer(k,o[i],OnTuples);
+      H:=Range(s);
+
+      # is there an action that is good enough for improving the overall
+      # kernel, even if it is not faithful? If so use the best of them.
+      b:=DoActionBlocksForKernel(H,k2);
+      if b<>fail then
+	Info(InfoFactor,2,"Blocks for kernel reduce to ",Length(b));
+	b:=ActionHomomorphism(H,b,OnSets,"surjective");
+	s:=s*b;
+      fi;
+
       s:=s*SmallerDegreePermutationRepresentation(Image(s));
+      Info(InfoFactor,1,"Shortened to ",NrMovedPoints(Range(s)));
       erg:=SubdirectDiagonalPerms(erg,List(GeneratorsOfGroup(G),i->Image(s,i)));
     od;
     if NrMovedPoints(erg)<NrMovedPoints(G) then
@@ -874,7 +934,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
     if map<>fail and Image(map)<>H then
       improve:=true;
       H:=Image(map);
-      Info(InfoFactor,2," improved to degree ",NrMovedPoints(H));
+      Info(InfoFactor,2,"improved to degree ",NrMovedPoints(H));
       hom:=hom*map;
       ihom:=H;
     fi;
