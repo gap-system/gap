@@ -592,7 +592,12 @@ BIND_GLOBAL( "VIEW_STRING_OPERATION",    function ( op )
         class := "Constructor";
     elif IsFilter(op) then
         class := "Filter";
-        flags := TRUES_FLAGS(FLAGS_FILTER(op));
+        flags := FLAGS_FILTER(op);
+        if flags <> false then
+            flags := TRUES_FLAGS(FLAGS_FILTER(op));
+        else
+            flags := [];
+        fi;
         types := INFO_FILTERS{flags};
         catok := true;
         repok := true;
