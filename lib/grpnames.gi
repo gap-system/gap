@@ -862,6 +862,10 @@ InstallMethod( SemidirectDecompositions,
     return SemidirectDecompositionsOfFiniteGroup(G);
   end );
 
+RedispatchOnCondition( SemidirectDecompositions, true,
+    [ IsGroup ],
+    [ IsFinite ], 0);
+
 #############################################################################
 ##
 #M  DecompositionTypesOfGroup( <G> ) . . . . . . . . . . . . . generic method
