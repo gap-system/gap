@@ -832,9 +832,9 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
   # go through factors of characteristic series to keep orbits short.
   AutomorphismGroup(G:someCharacteristics:=fail);
   AutomorphismGroup(H:someCharacteristics:=fail);
-  cG:=CharacteristicSubgroupsLib(G);
+  cG:=CharacteristicSubgroups(G);
   nG:=[];
-  cH:=ShallowCopy(CharacteristicSubgroupsLib(H));
+  cH:=ShallowCopy(CharacteristicSubgroups(H));
   if Length(cG)<>Length(cH) then
     return fail;
   fi;

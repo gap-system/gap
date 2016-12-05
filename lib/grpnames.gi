@@ -464,7 +464,7 @@ InstallMethod(CharacteristicFactorsOfGroup, "generic method", true,
 function(G)
 local Ns,MinNs,sel,a,sz,j,gs,g,N;
 
-  Ns := ShallowCopy(CharacteristicSubgroupsLib(G));
+  Ns := ShallowCopy(CharacteristicSubgroups(G));
   SortBy(Ns,Size);
   MinNs:=[];
   sel:=[2..Length(Ns)-1];
