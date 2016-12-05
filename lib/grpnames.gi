@@ -1598,45 +1598,12 @@ InstallMethod( GLUnderlyingField,
 ##
 #M  StructureDescription( <G> ) . . . . . . . . . for abelian or finite group
 ##
-InstallMethod( StructureDescription,
-               "for abelian or finite groups", true, [ IsGroup ], 0,
+BindGlobal( "SD_insertsep", # function to join parts of name
+    function ( strs, sep, brack )
 
-  function ( G )
+      local  short, s, i;
 
-    local  G1,           # the group G reconstructed; result
-           Hs,           # split factors of G
-           Gs,           # factors of G
-           cyclics,      # cyclic factors of G
-           cycsizes,     # sizes of cyclic factors of G
-           noncyclics,   # noncyclic factors of G
-           cycname,      # part of name corresponding to cyclics
-           noncycname,   # part of name corresponding to noncyclics
-           insertsep,    # function to join parts of name
-           cycsaspowers, # function to write C2 x C2 x C2 as 2^3, etc.
-           name,         # buffer for computed name
-           cname,        # name for centre of G
-           dname,        # name for derived subgroup of G
-           series,       # series of simple groups
-           parameter,    # parameters of G in series
-           NH, H, N, N1, # semidirect factors of G
-           NHs,          # [N, H] decompositions
-           NHname,       # name of NH
-           NHs1,         # NH's with preferred N and H
-           NHs1Names,    # names of products in NHs1
-           len,          # maximal number of direct factors
-           g,            # an element of G
-           id,           # id of G in the library of perfect groups
-           short,        # short / long output format
-           nice,         # nice output (slower)
-           i,j,          # counters
-           primes,       # prime divisors of Size(G)
-           d,            # divisor of Size(G)
-           k,            # maximal power of d in Size(G)
-           pi;           # subset of primes
-
-    insertsep := function ( strs, sep, brack )
-
-      local  s, i;
+      short := ValueOption("short") = true;
 
       if strs = [] then return ""; fi;
       strs := Filtered(strs,str->str<>"");
@@ -1652,12 +1619,14 @@ InstallMethod( StructureDescription,
       od;
       if short then RemoveCharacters(s," "); fi;
       return s;
-    end;
+    end);
 
-    cycsaspowers := function ( name, cycsizes )
+BindGlobal( "SD_cycsaspowers", # function to write C2 x C2 x C2 as 2^3, etc.
+    function ( name, cycsizes )
 
-      local  d, k, j, n;
+      local  short, d, k, j, n;
 
+      short := ValueOption("short") = true;
       if not short then return name; fi;
       RemoveCharacters(name," ");
         cycsizes := Collected(cycsizes);
@@ -1666,7 +1635,7 @@ InstallMethod( StructureDescription,
           d := n[1]; k := n[2];
           if k > 1 then
             for j in Reversed([2..k]) do
-              name := ReplacedString(name,insertsep(List([1..j],
+              name := ReplacedString(name,SD_insertsep(List([1..j],
                         i->Concatenation("C",String(d))),"x",""),
                         Concatenation(String(d),"^",String(j)));
             od;
@@ -1674,7 +1643,108 @@ InstallMethod( StructureDescription,
         od;
       RemoveCharacters(name,"C");
       return name;
-    end;
+    end);
+
+BindGlobal( "StructureDescriptionForAbelianGroups", # for abelian groups
+
+  function ( G )
+
+    local  cycsizes;     # sizes of cyclic factors of G
+
+    # special case trivial group
+    if IsTrivial(G) then return "1"; fi;
+
+    # special case abelian group
+    cycsizes := AbelianInvariants(G);
+    cycsizes := Reversed(ElementaryDivisorsMat(DiagonalMat(cycsizes)));
+    cycsizes := Filtered(cycsizes,n->n<>1);
+    return SD_cycsaspowers(SD_insertsep(List(cycsizes,
+                                             n->Concatenation("C",String(n))),
+                                        " x ",""), cycsizes);
+  end );
+
+BindGlobal( "StructureDescriptionForFiniteSimpleGroups", # for simple groups
+
+  function ( G )
+
+    local  name,         # buffer for computed name
+           series,       # series of simple groups
+           parameter;    # parameters of G in series
+
+    # special case abelian group
+    if IsAbelian(G) then return StructureDescriptionForAbelianGroups(G); fi;
+
+    # special case alternating group
+    if   IsAlternatingGroup(G)
+    then return Concatenation("A",String(AlternatingDegree(G))); fi;
+
+    # special case PSL
+    if IsPSL(G) then
+      return Concatenation("PSL(",String(PSLDegree(G)),",",
+                                  String(Size(PSLUnderlyingField(G))),")");
+    fi;
+
+    name := SplitString(IsomorphismTypeInfoFiniteSimpleGroup(G).name," ");
+    name := name[1];
+    if Position(name,',') = fail then RemoveCharacters(name,"()"); else
+      series    := IsomorphismTypeInfoFiniteSimpleGroup(G).series;
+      parameter := IsomorphismTypeInfoFiniteSimpleGroup(G).parameter;
+      if   series = "2A" then
+        name := Concatenation("PSU(",String(parameter[1]+1),",",
+                                     String(parameter[2]),")");
+      elif series = "B" then
+        name := Concatenation("O(",String(2*parameter[1]+1),",",
+                                   String(parameter[2]),")");
+      elif series = "2B" then
+        name := Concatenation("Sz(",String(parameter),")");
+      elif series = "C" then
+        name := Concatenation("PSp(",String(2*parameter[1]),",",
+                                     String(parameter[2]),")");
+      elif series = "D" then
+        name := Concatenation("O+(",String(2*parameter[1]),",",
+                                    String(parameter[2]),")");
+      elif series = "2D" then
+        name := Concatenation("O-(",String(2*parameter[1]),",",
+                                    String(parameter[2]),")");
+      elif series = "3D" then
+        name := Concatenation("3D(4,",String(parameter),")");
+      elif series in ["2F","2G"] and parameter > 2 then
+        name := Concatenation("Ree(",String(parameter),")");
+      fi;
+    fi;
+    return name;
+  end );
+
+BindGlobal( "StructureDescriptionForFiniteGroups", # for finite groups
+
+  function ( G )
+
+    local  G1,           # the group G reconstructed; result
+           Hs,           # split factors of G
+           Gs,           # factors of G
+           cyclics,      # cyclic factors of G
+           cycsizes,     # sizes of cyclic factors of G
+           noncyclics,   # noncyclic factors of G
+           cycname,      # part of name corresponding to cyclics
+           noncycname,   # part of name corresponding to noncyclics
+           name,         # buffer for computed name
+           cname,        # name for centre of G
+           dname,        # name for derived subgroup of G
+           NH, H, N, N1, # semidirect factors of G
+           NHs,          # [N, H] decompositions
+           NHname,       # name of NH
+           NHs1,         # NH's with preferred N and H
+           NHs1Names,    # names of products in NHs1
+           len,          # maximal number of direct factors
+           g,            # an element of G
+           id,           # id of G in the library of perfect groups
+           short,        # short / long output format
+           nice,         # nice output (slower)
+           i,j,          # counters
+           primes,       # prime divisors of Size(G)
+           d,            # divisor of Size(G)
+           k,            # maximal power of d in Size(G)
+           pi;           # subset of primes
 
     short := ValueOption("short") = true;
     nice := ValueOption("nice") = true;
@@ -1699,7 +1769,7 @@ InstallMethod( StructureDescription,
               fi;
             od;
           fi;
-          return cycsaspowers(name, cycsizes);
+          return SD_cycsaspowers(name, cycsizes);
         fi;
       fi;
     fi;
@@ -1708,16 +1778,7 @@ InstallMethod( StructureDescription,
     if IsTrivial(G) then return "1"; fi;
 
     # special case abelian group
-    if IsAbelian(G) then
-      cycsizes := AbelianInvariants(G);
-      cycsizes := Reversed(ElementaryDivisorsMat(DiagonalMat(cycsizes)));
-      cycsizes := Filtered(cycsizes,n->n<>1);
-      return cycsaspowers(insertsep(List(cycsizes,
-                                         n->Concatenation("C",String(n))),
-                                    " x ",""), cycsizes);
-    fi;
-
-    if not IsFinite(G) then TryNextMethod(); fi;
+    if IsAbelian(G) then return StructureDescriptionForAbelianGroups(G); fi;
 
     # special case alternating group
     if   IsAlternatingGroup(G)
@@ -1759,35 +1820,7 @@ InstallMethod( StructureDescription,
 
     # other simple group
     if IsSimpleGroup(G) then
-      name := SplitString(IsomorphismTypeInfoFiniteSimpleGroup(G).name," ");
-      name := name[1];
-      if Position(name,',') = fail then RemoveCharacters(name,"()"); else
-        series    := IsomorphismTypeInfoFiniteSimpleGroup(G).series;
-        parameter := IsomorphismTypeInfoFiniteSimpleGroup(G).parameter;
-        if   series = "2A" then
-          name := Concatenation("PSU(",String(parameter[1]+1),",",
-                                       String(parameter[2]),")");
-        elif series = "B" then
-          name := Concatenation("O(",String(2*parameter[1]+1),",",
-                                     String(parameter[2]),")");
-        elif series = "2B" then
-          name := Concatenation("Sz(",String(parameter),")");
-        elif series = "C" then
-          name := Concatenation("PSp(",String(2*parameter[1]),",",
-                                       String(parameter[2]),")");
-        elif series = "D" then
-          name := Concatenation("O+(",String(2*parameter[1]),",",
-                                      String(parameter[2]),")");
-        elif series = "2D" then
-          name := Concatenation("O-(",String(2*parameter[1]),",",
-                                      String(parameter[2]),")");
-        elif series = "3D" then
-          name := Concatenation("3D(4,",String(parameter),")");
-        elif series in ["2F","2G"] and parameter > 2 then
-          name := Concatenation("Ree(",parameter,")");
-        fi;
-      fi;
-      return name;
+      return StructureDescriptionForFiniteSimpleGroups(G);
     fi;
 
     # direct product decomposition
@@ -1802,15 +1835,15 @@ InstallMethod( StructureDescription,
       if cyclics <> [] then
         cycsizes := ElementaryDivisorsMat(DiagonalMat(List(cyclics,Size)));
         cycsizes := Filtered(cycsizes,n->n<>1);
-        cycname  := cycsaspowers(insertsep(List(cycsizes,
-                                 n->Concatenation("C",String(n))),
-                                 " x ",":."), cycsizes);
+        cycname  := SD_cycsaspowers(SD_insertsep(List(cycsizes,
+                                    n->Concatenation("C",String(n))),
+                                    " x ",":."), cycsizes);
       else cycname := ""; fi;
       noncyclics := Difference(Gs,cyclics);
-      noncycname := insertsep(List(noncyclics,StructureDescription),
-                              " x ",":.");
+      noncycname := SD_insertsep(List(noncyclics,StructureDescription),
+                                 " x ",":.");
 
-      return insertsep([cycname,noncycname]," x ",":.");
+      return SD_insertsep([cycname,noncycname]," x ",":.");
     fi;
 
     # semidirect product decomposition
@@ -1818,8 +1851,8 @@ InstallMethod( StructureDescription,
       NH := SemidirectDecompositionsOfFiniteGroup( G, "str" );
       if NH <> fail then
         H := NH[2]; N := NH[1];
-        return insertsep([StructureDescription(N),
-                          StructureDescription(H)]," : ","x:.");
+        return SD_insertsep([StructureDescription(N),
+                             StructureDescription(H)]," : ","x:.");
       fi;
     else
       NHs := [ ];
@@ -1853,8 +1886,8 @@ InstallMethod( StructureDescription,
           NHs1      := [];
           NHs1Names := [];
           for NH in NHs do
-            NHname := insertsep([StructureDescription(NH[1]),
-                                 StructureDescription(NH[2])],
+            NHname := SD_insertsep([StructureDescription(NH[1]),
+                                    StructureDescription(NH[2])],
                                                                 " : ","x:.");
             if not NHname in NHs1Names then
               Add(NHs1,      NH);
@@ -1871,29 +1904,30 @@ InstallMethod( StructureDescription,
 
         H := NHs[1][2]; N := NHs[1][1];
 
-        return insertsep([StructureDescription(N:nice),
-                          StructureDescription(H:nice)]," : ","x:.");
+        return SD_insertsep([StructureDescription(N:nice),
+                             StructureDescription(H:nice)]," : ","x:.");
       fi;
     fi;
 
     # non-splitting, non-simple group
     if not IsTrivial(Centre(G)) then
-      cname := insertsep([StructureDescription(Centre(G)),
-                          StructureDescription(G/Centre(G))]," . ","x:.");
+      cname := SD_insertsep([StructureDescription(Centre(G)),
+                             StructureDescription(G/Centre(G))]," . ","x:.");
     fi;
     if not IsPerfectGroup(G) then
-      dname := insertsep([StructureDescription(DerivedSubgroup(G)),
-                          StructureDescription(G/DerivedSubgroup(G))],
-                         " . ","x:.");
+      dname := SD_insertsep([StructureDescription(DerivedSubgroup(G)),
+                             StructureDescription(G/DerivedSubgroup(G))],
+                            " . ","x:.");
     fi;
     if   IsBound(cname) and IsBound(dname) and cname <> dname
     then return Concatenation(cname," = ",dname);
     elif IsBound(cname) then return cname;
     elif IsBound(dname) then return dname;
     elif not IsTrivial(FrattiniSubgroup(G))
-    then return insertsep([StructureDescription(FrattiniSubgroup(G)),
-                           StructureDescription(G/FrattiniSubgroup(G))],
-                          " . ","x:.");
+    then return SD_insertsep([StructureDescription(FrattiniSubgroup(G)),
+                              StructureDescription(G/FrattiniSubgroup(G))],
+                             " . ","x:.");
+    # this does not happen for Size(G)<645120
     elif     IsPosInt(NrPerfectGroups(Size(G)))
          and not Size(G) in [ 86016, 368640, 737280 ]
     then
@@ -1906,6 +1940,26 @@ InstallMethod( StructureDescription,
                 "semidirect product of smaller groups>");
     fi;
   end );
+
+InstallMethod( StructureDescription, "for abelian groups",
+               true, [ IsGroup and IsAbelian ], 0,
+               StructureDescriptionForAbelianGroups );
+
+RedispatchOnCondition( StructureDescription, true,
+    [ IsGroup ],
+    [ IsAbelian ], 0);
+
+InstallMethod( StructureDescription, "for finite simple groups",
+               true, [ IsGroup and IsFinite and IsSimpleGroup ], 0,
+               StructureDescriptionForFiniteSimpleGroups );
+
+InstallMethod( StructureDescription, "for finite groups",
+               true, [ IsGroup and IsFinite ], 0,
+               StructureDescriptionForFiniteGroups );
+
+RedispatchOnCondition( StructureDescription, true,
+    [ IsGroup ],
+    [ IsFinite ], 0);
 
 #############################################################################
 ##
