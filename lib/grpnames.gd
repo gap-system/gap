@@ -74,6 +74,22 @@ DeclareGlobalFunction( "UnionIfCanEasilySortElements", IsList );
 
 #############################################################################
 ##
+#F  AddSetIfCanEasilySortElements( <list>, <object> ) . . . . generic method
+##
+##  <ManSection>
+##  <Func Name="AddSetIfCanEasilySortElements" Arg="list, obj"/>
+##
+##  <Description>
+##    Adds the <A>obj</A> to the list <A>list</A>. If CanEasilySortElements
+##    is true for <A>list</A> and <A>list</A> is a set, then AddSet is used
+##    instead of Add. Does not return anything, but changes <list>.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "AddSetIfCanEasilySortElements", IsList );
+
+#############################################################################
+##
 #O  NormalComplement( <G>, <N> ) . . . . . . . . . . . generic method
 ##
 ##  <#GAPDoc Label="NormalComplement">

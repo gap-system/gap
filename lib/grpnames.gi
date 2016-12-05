@@ -95,6 +95,21 @@ InstallGlobalFunction( UnionIfCanEasilySortElements,
 
 #############################################################################
 ##
+#M  AddSetIfCanEasilySortElements( <list>[, <obj> ) . . . . . generic method
+##
+InstallGlobalFunction( AddSetIfCanEasilySortElements,
+
+  function( list, obj )
+
+    if CanEasilySortElements( list ) and IsSet( list ) then
+      AddSet( list, obj );
+    else
+      Add( list, obj );
+    fi;
+  end);
+
+#############################################################################
+##
 #M  NormalComplement( <G>, <N> ) . . . . . . . . . . . generic method
 ##
 InstallMethod( NormalComplement,
@@ -260,7 +275,7 @@ InstallMethod(DirectFactorsOfGroup,
         for N in DfMinNs do
           g := First(GeneratorsOfGroup(N), g -> g<>One(N));
           if g <> fail then
-            AddSet(gs, g);
+            AddSetIfCanEasilySortElements(gs, g);
           fi;
         od;
         # normal subgroup containing all minimal subgroups cannot have complement in H
@@ -323,7 +338,7 @@ InstallMethod(DirectFactorsOfGroup, "if normal subgroups are computed", true,
     for N in MinNs do
       g := First(GeneratorsOfGroup(N), g -> g<>One(N));
       if g <> fail then
-        AddSet(gs, g);
+        AddSetIfCanEasilySortElements(gs, g);
       fi;
     od;
     # normal subgroup containing all minimal subgroups cannot have complement
@@ -450,7 +465,7 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
     for N in MinNs do
       g := First(GeneratorsOfGroup(N), g -> g<>One(N));
       if g <> fail then
-        AddSet(gs, g);
+        AddSetIfCanEasilySortElements(gs, g);
       fi;
     od;
     # normal subgroup containing all minimal subgroups cannot have complement
@@ -489,7 +504,7 @@ local Ns,MinNs,sel,a,sz,j,gs,g,N;
   for N in MinNs do
     g := First(GeneratorsOfGroup(N), g -> g<>One(N));
     if g <> fail then
-      AddSet(gs, g);
+      AddSetIfCanEasilySortElements(gs, g);
     fi;
   od;
   # normal subgroup containing all minimal subgroups cannot have complement
@@ -515,7 +530,7 @@ InstallGlobalFunction( DirectFactorsOfGroupFromList,
     for N in MinNs do
       g := First(GeneratorsOfGroup(N), g -> g<>One(N));
       if g <> fail then
-        AddSet(gs, g);
+        AddSetIfCanEasilySortElements(gs, g);
       fi;
     od;
     # normal subgroup containing all minimal subgroups cannot have complement
@@ -629,10 +644,10 @@ InstallGlobalFunction(DirectFactorsOfGroupKN,
               g := a*b;
               if g<>b*a then
                 com := false;
-                AddSet(preedges, [c1, c2]);
+                AddSetIfCanEasilySortElements(preedges, [c1, c2]);
                 break;
               else
-                AddSet(prod, g);
+                AddSetIfCanEasilySortElements(prod, g);
               fi;
             od;
             if not com then
@@ -644,7 +659,7 @@ InstallGlobalFunction(DirectFactorsOfGroupKN,
             b := Representative(c2);
             c3 := ConjugacyClass(G, a*b);
             if Size(c3)=Size(prod) then
-              AddSet(RedCl, c3);
+              AddSetIfCanEasilySortElements(RedCl, c3);
             fi;
           fi;
         fi;
@@ -755,7 +770,7 @@ InstallGlobalFunction(SemidirectDecompositionsOfFiniteGroup, function( arg )
         return [ N, H ];
       elif method="all" and
         ( not IsBound(Ns) or N in Ns ) then
-        AddSet(NHs, [ N, H ]);
+        AddSetIfCanEasilySortElements(NHs, [ N, H ]);
       fi;
     od;
     if method in [ "any", "str" ] then
@@ -820,7 +835,7 @@ InstallGlobalFunction(SemidirectDecompositionsOfFiniteGroup, function( arg )
         return [ N, H[1] ];
       else
         for i in [1..Length(H)] do
-          AddSet( NHs, [ N, H[i] ] );
+          AddSetIfCanEasilySortElements( NHs, [ N, H[i] ] );
         od;
       fi;
     fi;
@@ -1808,9 +1823,9 @@ InstallMethod( StructureDescription,
       fi;
     else
       NHs := [ ];
-      for NH in SemidirectDecompositionsOfFiniteGroup( G, "all" ) do
+      for NH in SemidirectDecompositions( G ) do
         if not IsTrivial( NH[1] ) and not IsTrivial( NH[2] ) then
-          AddSet(NHs, [ NH[1], NH[2] ]);
+          AddSetIfCanEasilySortElements(NHs, [ NH[1], NH[2] ]);
         fi;
       od;
       if Length(NHs) > 0 then
