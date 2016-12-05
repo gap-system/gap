@@ -839,6 +839,14 @@ AttributeMethodByNiceMonomorphism( Size,
 
 #############################################################################
 ##
+#M  StructureDescription( <G> )
+##
+AttributeMethodByNiceMonomorphism( StructureDescription,
+    [ IsGroup ] );
+
+
+#############################################################################
+##
 #M  SubnormalSeries( <G>, <U> ) . subnormal series from a group to a subgroup
 ##
 GroupSeriesMethodByNiceMonomorphismCollColl( SubnormalSeriesOp,

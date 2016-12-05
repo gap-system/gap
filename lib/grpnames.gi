@@ -1967,18 +1967,6 @@ RedispatchOnCondition( StructureDescription, true,
 
 #############################################################################
 ##
-#M  StructureDescription( <G> ) . . . . . . . . . . .  for group by nice mono
-##
-InstallMethod( StructureDescription,
-               "for groups handled by nice monomorphism", true, 
-			   [ IsGroup and IsHandledByNiceMonomorphism], 0,
-	function ( G )
-		return StructureDescription ( NiceObject ( G ) );
-	end );
-	
-
-#############################################################################
-##
 #M  ViewObj( <G> ) . . . . . . . . for group with known structure description
 ##
 InstallMethod( ViewObj,
