@@ -1214,13 +1214,13 @@ end);
 #M  LatticeSubgroups(<G>)  . . . . . . . . . .  lattice of subgroups
 ##
 InstallMethod(LatticeSubgroups,"elementary abelian extension",true,
-  [IsGroup],
+  [IsGroup and IsFinite and CanComputeFittingFree],
   # want to be better than cyclic extension.
   1,
 function(G)
 local s,i,c,classes, lattice,map,GI;
 
-  if not IsSolvableGroup(G) then #or not CanEasilyComputePcgs(G) then
+  if Size(G)=1 or not IsSolvableGroup(G) then #or not CanEasilyComputePcgs(G) then
     TryNextMethod();
   fi;
   if not IsPcGroup(G) or IsPermGroup(G) then

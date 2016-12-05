@@ -44,6 +44,7 @@ InstallTrueMethod(IsFinite,CanComputeFittingFree);
 InstallTrueMethod(IsGroup,CanComputeFittingFree);
 
 InstallTrueMethod(CanComputeFittingFree, IsPermGroup);
+InstallTrueMethod(CanComputeFittingFree, IsPcGroup);
 
 
 
@@ -81,6 +82,7 @@ InstallTrueMethod(CanComputeFittingFree, IsPermGroup);
 ##  The record may hold other components that are germane to the recognition
 ##  setup. These components may not be modified by user code.
 DeclareAttribute("FittingFreeLiftSetup",IsGroup);
+InstallTrueMethod(CanComputeFittingFree,HasFittingFreeLiftSetup);
 
 #############################################################################
 ##

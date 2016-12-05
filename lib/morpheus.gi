@@ -1946,7 +1946,7 @@ local A;
   elif Size(RadicalGroup(G))=1 and IsPermGroup(G) then
     # essentially a normalizer when suitably embedded 
     A:=AutomorphismGroupFittingFree(G);
-  elif Size(RadicalGroup(G))>1 then
+  elif Size(RadicalGroup(G))>1 and CanComputeFittingFree(G) then
     A:=AutomGrpSR(G);
   else
     A:=AutomorphismGroupMorpheus(G);

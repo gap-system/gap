@@ -2957,7 +2957,7 @@ end );
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . of perm group
 ##
 InstallMethod( ConjugacyClasses, "TF Method", true,
-  [ IsGroup and IsFinite and HasFittingFreeLiftSetup],OVERRIDENICE,
+  [ IsGroup and IsFinite and CanComputeFittingFree],OVERRIDENICE,
 function(G)
   if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
   return ConjugacyClassesViaRadical(G);
