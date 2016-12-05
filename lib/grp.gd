@@ -1845,11 +1845,11 @@ DeclareAttribute( "NormalSubgroups", IsGroup );
 
 #############################################################################
 ##
-#A  CharacteristicSubgroupsLib( <G> )
+#A  CharacteristicSubgroups( <G> )
 ##
-##  <#GAPDoc Label="CharacteristicSubgroupsLib">
+##  <#GAPDoc Label="CharacteristicSubgroups">
 ##  <ManSection>
-##  <Attr Name="CharacteristicSubgroupsLib" Arg='G'/>
+##  <Attr Name="CharacteristicSubgroups" Arg='G'/>
 ##
 ##  <Description>
 ##  returns a list of all characteristic subgroups of <A>G</A>, that is
@@ -1864,7 +1864,7 @@ DeclareAttribute( "NormalSubgroups", IsGroup );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "CharacteristicSubgroupsLib", IsGroup );
+DeclareAttribute( "CharacteristicSubgroups", IsGroup );
 
 
 #############################################################################

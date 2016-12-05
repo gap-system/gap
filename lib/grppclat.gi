@@ -1195,9 +1195,9 @@ end);
 
 #############################################################################
 ##
-#M  CharacteristicSubgroupsLib( <G> )
+#M  CharacteristicSubgroups( <G> )
 ##
-InstallMethod(CharacteristicSubgroupsLib,"solvable, automorphisms",true,
+InstallMethod(CharacteristicSubgroups,"solvable, automorphisms",true,
   [IsGroup and IsSolvableGroup],0,
 function(G)
 local A,s;
