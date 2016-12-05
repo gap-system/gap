@@ -332,6 +332,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
           i,
           rank,
           method,
+	  oreqs,
           req, reqs, match, j, k, imp, notmatch;
 
     # Check the arguments.
@@ -498,6 +499,8 @@ BIND_GLOBAL( "INSTALL_METHOD",
 
       else
 
+	oreqs:=reqs;
+
         # If the requirements match *more than one* declaration
         # then a warning is raised by `INFO_DEBUG'.
         for k in [ j+1 .. LEN_LIST( req ) ] do
@@ -510,7 +513,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
                 break;
               fi;
             od;
-            if match then
+            if match and reqs<>oreqs then
               INFO_DEBUG( 1,
               		"method installed for ", NAME_FUNC(opr), 
                     " matches more than one declaration" );
