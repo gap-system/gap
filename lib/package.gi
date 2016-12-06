@@ -1192,6 +1192,9 @@ InstallGlobalFunction( ReadPackage, function( arg )
     if   Length( arg ) = 1 then
       # Guess the package name.
       pos:= Position( arg[1], '/' );
+      if pos = fail then
+        ErrorNoReturn(arg[1], " is not a filename in the form 'package/filepath'");
+      fi;
       relpath:= arg[1]{ [ pos+1 .. Length( arg[1] ) ] };
       pkgname:= LowercaseString( arg[1]{ [ 1 .. pos-1 ] } );
       namespace := GAPInfo.PackagesInfo.(pkgname)[1].PackageName;
