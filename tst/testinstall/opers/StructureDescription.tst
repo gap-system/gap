@@ -72,6 +72,20 @@ gap> List(AllSmallNonabelianSimpleGroups([1..1000000]), StructureDescription);
   "PSL(2,89)", "PSL(3,5)", "M22", "PSL(2,97)", "PSL(2,101)", "PSL(2,103)", 
   "HJ", "PSL(2,107)", "PSL(2,109)", "PSL(2,113)", "PSL(2,121)", "PSL(2,125)", 
   "O(5,4)" ]
+gap> G := FactorGroup(Sp(6,3), Center(Sp(6,3)));;
+gap> StructureDescription(G);
+"PSp(6,3)"
+gap> StructureDescription(Omega(1,8,2));
+"O+(8,2)"
+gap> StructureDescription(Omega(-1,8,2));
+"O-(8,2)"
+gap> List(AllPrimitiveGroups(DegreeAction, 819, Size, 211341312, IsSimple, true), StructureDescription);
+[ "3D(4,2)" ]
+gap> G := Ree(27);;
+gap> HasIsFinite(G) and IsFinite(G) and HasIsSimpleGroup(G) and IsSimple(G);
+true
+gap> StructureDescriptionForFiniteSimpleGroups(Ree(27));
+"Ree(27)"
 gap> StructureDescription(AbelianGroup([0,0,0,2,3,4,5,6,7,8,9,10]));
 "C0 x C0 x C0 x C2520 x C60 x C6 x C2 x C2"
 gap> StructureDescription(AbelianGroup([0,0,0,2,3,4,5,6,7,8,9,10]):short);
@@ -86,4 +100,11 @@ gap> StructureDescription(SmallGroup(64,17):recompute,nice);
 #I  [ [ "C4 x C2", "C8" ], [ "C8 x C2", "C4" ] ]
 "(C4 x C2) : C8"
 gap> SetInfoLevel(InfoWarning,infolevel);
+gap> F := FreeGroup("r", "s");; r := F.1;; s := F.2;;
+gap> G := F/[s^2, r^3, s*r*s*r];;
+gap> StructureDescription(G);
+"S3"
+gap> G := F/[s*r*s^(-1)*r^(-1)];;
+gap> StructureDescription(G);
+"C0 x C0"
 gap> STOP_TEST("StructureDescription.tst", 10000);

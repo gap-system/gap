@@ -1931,9 +1931,9 @@ BindGlobal( "StructureDescriptionForFiniteGroups", # for finite groups
     then return SD_insertsep([StructureDescription(FrattiniSubgroup(G)),
                               StructureDescription(G/FrattiniSubgroup(G))],
                              " . ","x:.");
-    # this does not happen for Size(G)<645120
     elif     IsPosInt(NrPerfectGroups(Size(G)))
          and not Size(G) in [ 86016, 368640, 737280 ]
+    # this does not happen for Size(G)<10^6
     then
          id := PerfectIdentification(G);
          return Concatenation("PerfectGroup(",String(id[1]),",",
