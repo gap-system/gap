@@ -508,6 +508,7 @@ end;
 if not IsBound( MyFingerprint ) then MyFingerprint := false; fi;
 
 FingerprintSmall := function( G, U )
+    Info(InfoPerformance,2,"Using Small Groups Library");
     return [IdGroup( U ), Size( CommutatorSubgroup(G,U) )];
 end;
 
@@ -536,7 +537,8 @@ Fingerprint := function ( G, U )
     if not IsBool( MyFingerprint ) then
         return MyFingerprint( G, U );
     fi;
-    if ID_AVAILABLE( Size( U ) ) <> fail then 
+    if ID_AVAILABLE( Size( U ) ) <> fail and
+      ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
         return FingerprintSmall( G, U );
     elif Size( U ) <= 1000 then
         return FingerprintMedium( G, U );

@@ -2038,7 +2038,9 @@ local m;
 
   if Size(G)<>Size(H) then
     return fail;
-  elif ID_AVAILABLE(Size(G)) <> fail then
+  elif ID_AVAILABLE(Size(G)) <> fail
+    and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+    Info(InfoPerformance,2,"Using Small Groups Library");
     if IdGroup(G)<>IdGroup(H) then
       return fail;
     elif ValueOption("hard")=fail 

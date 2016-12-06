@@ -2605,13 +2605,18 @@ end);
 
 InstallGlobalFunction("SubdirectSubgroups",function(D)
 local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,proj,emb,u,pos,
-      subs,s,t,i,j,k,myid,myfgi,iso,dc,f,no,ind,g,hom;
+      subs,s,t,i,j,k,myid,myfgi,iso,dc,f,no,ind,g,hom,uselib;
+
+  uselib:=ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true;
+  if uselib then
+    Info(InfoPerformance,2,"Using Small Groups Library");
+  fi;
 
   fgi:=function(gp,nor)
   local idx,hom,l,f;
     idx:=Index(gp,nor);
     hom:=NaturalHomomorphismByNormalSubgroup(gp,nor);
-    if idx>1000 or idx=512 then
+    if idx>1000 or idx=512 or not uselib then
       l:=[idx,fail];
     else
       l:=ShallowCopy(IdGroup(gp/nor));
@@ -2685,7 +2690,7 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,proj,emb,u,pos,
 	for k in no do
 	  hom:=NaturalHomomorphismByNormalSubgroup(j[1],k.representative);
 	  f:=Image(hom);
-	  if Size(f)<1000 and Size(f)<>512 then
+	  if Size(f)<1000 and Size(f)<>512 and uselib then
 	    myid:=ShallowCopy(IdGroup(f));
 	  else
 	    myid:=[Size(f),fail];
