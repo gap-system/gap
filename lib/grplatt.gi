@@ -2755,7 +2755,9 @@ InstallGlobalFunction("SubgroupsTrivialFitting",function(G)
 	if tom<>fail then
 	  go:=ImagesSource(tom[1]);
 	  tom:=tom[2];
-	  if tom<>fail then
+	  if tom<>fail and
+	   ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+	    Info(InfoPerformance,2,"Using Table of Marks Library");
 	    Info(InfoLattice,1, "Fetching subgroups of simple ",
 	      Identifier(tom)," from table of marks");
 	    len:=LengthsTom(tom);
@@ -2827,9 +2829,11 @@ local dom,n,t,map;
     map:=ConjugatorIsomorphism(G,map);
   fi;
 
-  if IsPackageMarkedForLoading("tomlib","")<>true then
+  if IsPackageMarkedForLoading("tomlib","")<>true or
+          ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true then
     return fail; # no tomlib available
   fi;
+  Info(InfoPerformance,2,"Using Table of Marks Library");
   t:=TableOfMarks(Concatenation("A",String(n)));
   if t=fail then
     return fail;
@@ -2875,9 +2879,11 @@ local T,t,hom,inf,nam,i,aut;
   # missing?
   if inf=fail then return fail;fi;
 
-  if IsPackageMarkedForLoading("tomlib","")<>true then # force tomlib load
+  if IsPackageMarkedForLoading("tomlib","")<>true or # force tomlib load
+          ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true then
     return fail; # no tomlib available
   fi;
+  Info(InfoPerformance,2,"Using Table of Marks Library");
 
   nam:=inf.tomName;
 
@@ -2918,7 +2924,9 @@ end);
 InstallGlobalFunction(TomDataMaxesAlmostSimple,function(G)
 local recog,m;
   recog:=TomDataAlmostSimpleRecognition(G);
-  if recog=fail then return fail; fi;
+  if recog=fail then
+    return fail;
+  fi;
   m:=List(MaximalSubgroupsTom(recog[2])[1],i->RepresentativeTom(recog[2],i));
   Info(InfoLattice,1,"Recognition found ",Length(m)," classes");
   m:=List(m,i->PreImage(recog[1],i));
@@ -2928,7 +2936,9 @@ end);
 InstallGlobalFunction(TomDataSubgroupsAlmostSimple,function(G)
 local recog,m,len;
   recog:=TomDataAlmostSimpleRecognition(G);
-  if recog=fail then return fail; fi;
+  if recog=fail then
+    return fail;
+  fi;
   len:=LengthsTom(recog[2]);
   m:=List([1..Length(len)],i->RepresentativeTom(recog[2],i));
   Info(InfoLattice,1,"Recognition found ",Length(m)," classes");

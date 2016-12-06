@@ -559,6 +559,13 @@ CallAndInstallPostRestore( function()
        ShowKernelInformation();
      fi;
      end );
+
+#############################################################################
+##
+##  Name of option to avoid precomputed data libraries -- made a variable so
+##  it can still be changed easily
+##
+BindGlobal("NO_PRECOMPUTED_DATA_OPTION","NoPrecomputedData");
         
      
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then

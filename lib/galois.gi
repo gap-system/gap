@@ -541,6 +541,7 @@ end);
 InstallGlobalFunction(ProbabilityShapes,function(arg)
 local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,k,a,anz,pm,
       cnt,cand,d,alt,p,g,weg,fac;
+  Info(InfoPerformance,2,"Using Transitive Groups Library");
   f:=arg[1];
   f:=f/LeadingCoefficient(f);
   if not(IsIrreducible(f)) then
@@ -703,6 +704,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
       GrabCodedLengths,UnParOrbits,cnt,polring,basring,indet,indnum,
       extring,lpos;
 
+  Info(InfoPerformance,2,"Using Transitive Groups Library");
   GetProperty := function(l,prop)
   local i;
     for i in l{[9..Length(l)]} do
