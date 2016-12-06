@@ -1367,9 +1367,16 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
       Error(
         "failed due to incomplete information in the Holt/Plesken library");
     fi;
+
     cl:=Filtered(ConjugacyClasses(G),i->Representative(i) in D);
     Info(InfoLattice,2,Length(cl)," classes of ",
          Length(ConjugacyClasses(G))," to consider");
+
+    if Length(un)>0 and ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true then
+      Error("Cannot get perfect subgroups without data library!");
+    elif Length(un)>0 then
+      Info(InfoPerformance,2,"Using Perfect Groups Library");
+    fi;
 
     r:=[];
     for i in un do
