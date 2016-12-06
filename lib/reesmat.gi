@@ -189,7 +189,7 @@ function(R)
   J:=Set(List(gens, x-> x![3]));
 
   return ForAll(GeneratorsOfReesMatrixSemigroupNC(ParentAttr(R), I, 
-    Semigroup(List(Elements(R), x-> x![2])), J), x-> x in R);
+    Semigroup(List(AsSSortedList(R), x-> x![2])), J), x-> x in R);
 end);
 
 #
@@ -227,7 +227,7 @@ function(R)
     Remove(gens, pos);
   fi;
   
-  elts:=ShallowCopy(Elements(R)); 
+  elts:=ShallowCopy(AsSSortedList(R)); 
   RemoveSet(elts, MultiplicativeZero(R));
 
   I:=Set(List(gens, x-> x![1]));
@@ -648,7 +648,7 @@ function(R)
     return fail;
   fi;
 
-  gens:=List(Elements(R), x-> x![2]);
+  gens:=List(AsSSortedList(R), x-> x![2]);
 
   if IsGeneratorsOfMagmaWithInverses(gens) then 
     i:=1;
@@ -680,7 +680,7 @@ function(R)
   fi;
 
   #remove the 0
-  gens:=Filtered(Elements(R), x-> x![1]<>0);
+  gens:=Filtered(AsSSortedList(R), x-> x![1]<>0);
   Apply(gens, x-> x![2]);
   gens := Set(gens);
   

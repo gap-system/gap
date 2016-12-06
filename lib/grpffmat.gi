@@ -755,7 +755,7 @@ local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
 
   StabChainMutable(PG);; # needed anyhow and will speed up images under act
   z:=Size(Centre(G));
-  zel:=Filtered(Elements(Centre(G)),x->Order(x)>1);
+  zel:=Filtered(AsSSortedList(Centre(G)),x->Order(x)>1);
   cl:=ConjugacyClasses(G);
   if IsNaturalGL(G) then
     goal:=NrConjugacyClassesPGL(Length(One(G)),

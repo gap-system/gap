@@ -437,7 +437,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 	  Concatenation(TriangulizedMat(BasisVectors(Basis(space)))),
 	  false,
 	  OnSubspacesByCanonicalBasisConcatenations:
-	induce:=rec(obj:=Elements(space),
+	induce:=rec(obj:=AsSSortedList(space),
 		    subact:=subact,allobj:=ovecs,allact:=OnLines,
 		    lvecs:=xlvecs,
 		    action:=OnRight,
@@ -674,7 +674,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 		  # running through all nonzero scalars.
 
 		  # reverse lookup list
-		  nonzero:=Difference(Elements(f),[Zero(f)]);
+		  nonzero:=Difference(AsSSortedList(f),[Zero(f)]);
 		  dims:=List([1..Length(vecs)],
 		    x->PositionProperty(clusters,y->x in y));
 		  Info(InfoFitFree,3,"clusters=",

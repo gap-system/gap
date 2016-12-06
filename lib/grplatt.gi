@@ -1995,7 +1995,7 @@ local G,	# group
 		  # take only vectors with last entry one
 		  vs:=[];
 		  if Length(mat)>0 then
-		    for k in Elements(VectorSpace(ocr.field,mat)) do
+		    for k in AsList(VectorSpace(ocr.field,mat)) do
 		      if IsOne(k[Length(k)]) then
 			Add(vs,k{[1..Length(vsb)]}*vsb);
 		      fi;

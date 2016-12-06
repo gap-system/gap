@@ -251,7 +251,7 @@ function(S)
     return fail;
   fi;
   
-  elts:=Elements(S);
+  elts:=AsSSortedList(S);
 
   iso:=function(x)
     local dom, y;
@@ -278,7 +278,7 @@ function(S)
     return fail;
   fi;
   
-  elts:=Elements(S);
+  elts:=AsSSortedList(S);
 
   iso:=function(x)
     local dom, y;
@@ -459,7 +459,7 @@ InstallMethod(NaturalPartialOrder,
 function(s)
   local elts, p, n, out, i, j;
 
-  elts:=ShallowCopy(Elements(s));  
+  elts:=ShallowCopy(AsSSortedList(s));  
   p:=Sortex(elts, ShortLexLeqPartialPerm)^-1; 
   n:=Length(elts);
   out:=List([1..n], x-> []);
@@ -483,7 +483,7 @@ InstallMethod(ReverseNaturalPartialOrder,
 function(s)
   local elts, p, n, out, i, j;
 
-  elts:=ShallowCopy(Elements(s));  
+  elts:=ShallowCopy(AsSSortedList(s));  
   p:=Sortex(elts, ShortLexLeqPartialPerm)^-1; 
   n:=Length(elts);
   out:=List([1..n], x-> []);

@@ -791,7 +791,7 @@ InstallMethod( StandardWreathProduct,"generic groups", true,
  [ IsGroup, IsGroup ], 0,
 function(G,H)
 local iso;
-  iso:=ActionHomomorphism(H,Elements(H),OnRight,"surjective");
+  iso:=ActionHomomorphism(H,AsSSortedList(H),OnRight,"surjective");
   return WreathProduct(G,H,iso);
 end);
 
