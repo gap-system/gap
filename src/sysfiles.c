@@ -3680,7 +3680,13 @@ Char * SyTmpdir( const Char * hint )
 {
   static char name[1024];
   static const char *base = TMPDIR_BASE;
-  strxcpy(name, base, sizeof(name));
+  char * env_tmpdir;
+  if ((env_tmpdir = getenv("TMPDIR")) != NULL) {
+    strxcpy(name, env_tmpdir, sizeof(name));
+    strxcat(name, "/", sizeof(name));
+  }
+  else
+    strxcpy(name, base, sizeof(name));
   if (hint)
     strxcat(name, hint, sizeof(name));
   else
