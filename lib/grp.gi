@@ -417,6 +417,10 @@ InstallImmediateMethod( IsPerfectGroup,
     0,
     grp -> not IsAbelian( grp ) );
 
+InstallMethod( IsPerfectGroup, "for groups having abelian invariants",
+    [ IsGroup and HasAbelianInvariants ],
+    grp -> Length( AbelianInvariants( grp ) ) = 0 );
+
 InstallMethod( IsPerfectGroup,
     "method for finite groups",
     [ IsGroup and IsFinite ],
@@ -533,13 +537,22 @@ InstallMethod( IsSolvableGroup,
     "generic method for groups",
     [ IsGroup ],
     function ( G )
-    local   S;          # derived series of <G>
+    local   S,          # derived series of <G>
+            isAbelian,  # true if <G> is abelian
+            isSolvable; # true if <G> is solvable
 
     # compute the derived series of <G>
     S := DerivedSeriesOfGroup( G );
 
     # the group is solvable if the derived series reaches the trivial group
-    return IsTrivial( S[ Length( S ) ] );
+    isSolvable := IsTrivial( S[ Length( S ) ] );
+
+    # set IsAbelian filter
+    isAbelian := isSolvable and Length( S ) <= 2;
+    Assert(3, IsAbelian(G) = isAbelian);
+    SetIsAbelian(G, isAbelian);
+
+    return isSolvable;
     end );
 
 
@@ -900,15 +913,34 @@ InstallMethod( DerivedSeriesOfGroup,
     D := DerivedSubgroup( G );
    
     while
-      # we don't know that the group has no generators
-      (not HasGeneratorsOfGroup(S[Length(S)]) or
-	    Length(GeneratorsOfGroup(S[Length(S)]))>0) and
-      ( (not HasAbelianInvariants(S[Length(S)]) and D <> S[ Length(S) ]) or
-	    Length(AbelianInvariants(S[Length(S)]))>0) do
+      (not HasIsTrivial(S[Length(S)]) or
+	    not IsTrivial(S[Length(S)])) and
+      (
+        (not HasIsPerfectGroup(S[Length(S)]) and
+         not HasAbelianInvariants(S[Length(S)]) and D <> S[ Length(S) ]) or
+        (HasIsPerfectGroup(S[Length(S)]) and not IsPerfectGroup(S[Length(S)]))
+        or (HasAbelianInvariants(S[Length(S)])
+                            and Length(AbelianInvariants(S[Length(S)])) > 0)
+      ) do
         Add( S, D );
         Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
         D := DerivedSubgroup( D );
     od;
+
+    # set filters if the last term is known to be trivial
+    if HasIsTrivial(S[Length(S)]) and IsTrivial(S[Length(S)]) then
+      SetIsSolvableGroup(G, true);
+      if Length(S) <=2 then
+        Assert(2, IsAbelian(G));
+        SetIsAbelian(G, true);
+      fi;
+    fi;
+
+    # set IsAbelian filter if length of derived series is more than 2
+    if Length(S) > 2 then
+      Assert(2, not IsAbelian(G));
+      SetIsAbelian(G, false);
+    fi;
 
     # return the series when it becomes stable
     return S;
