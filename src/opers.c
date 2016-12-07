@@ -1205,7 +1205,6 @@ Obj DoAndFilter (
     return True;
 }
 
-static Obj StringAndFilter;
 static Obj ArglistObj;
 
 Obj NewAndFilter (
@@ -6129,7 +6128,6 @@ static Int InitKernel (
 
   NextTypeID = 0;
   CountFlags = 0;
-    InitGlobalBag( &StringAndFilter,    "src/opers.c:StringAndFilter"    );
     InitGlobalBag( &StringFilterSetter, "src/opers.c:StringFilterSetter" );
     InitGlobalBag( &ArglistObj,         "src/opers.c:ArglistObj"         );
     InitGlobalBag( &ArglistObjVal,      "src/opers.c:ArglistObjVal"      );
@@ -6340,9 +6338,6 @@ static Int InitLibrary (
     Obj                 str;
 
     /* share between uncompleted functions                                 */
-    C_NEW_STRING_CONST( StringAndFilter, "<<and-filter>>" );
-    RESET_FILT_LIST( StringAndFilter, FN_IS_MUTABLE );
-
     C_NEW_STRING_CONST( StringFilterSetter, "<<filter-setter>>" );
     RESET_FILT_LIST( StringFilterSetter, FN_IS_MUTABLE );
 
