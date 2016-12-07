@@ -1218,6 +1218,11 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
     for i in osporb do
       # assumption: orbit is not too long... (i.e. TODO: improve)
       m:=Orbit(a,i[1],OnSubspacesByCanonicalBasis);
+      for yet in i do
+	if not yet in m then
+	  m:=Union(m,Orbit(a,yet,OnSubspacesByCanonicalBasis));
+	fi;
+      od;
       if Length(m)>Length(i) then
         yet:=ActionHomomorphism(a,m,OnSubspacesByCanonicalBasis,"surjective");
 	sub:=Stabilizer(Image(yet),Set(List(i,x->Position(m,x))),OnSets);
