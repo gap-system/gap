@@ -2141,7 +2141,6 @@ void InitSystem (
     SyStartTime = SyTime();
 
 
-
     /* now we start                                                        */
     return;
 

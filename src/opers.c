@@ -2131,7 +2131,6 @@ Obj DoOperation4Args (
     Int                 i;
     Obj                 prec;
 
-
     /* get the types of the arguments                                      */
     type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
     type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
@@ -2148,7 +2147,6 @@ Obj DoOperation4Args (
 
       /* recalculate cache each pass, in case of GC     */
       cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
-
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -2248,7 +2246,6 @@ Obj DoOperation5Args (
     Int                 i;
     Obj                 prec;
     Obj                 margs;
-
 
     /* get the types of the arguments                                      */
     type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
@@ -2383,7 +2380,6 @@ Obj DoOperation6Args (
     Obj                 margs;
     Int                 i;
     Obj                 prec;
-
 
     /* get the types of the arguments                                      */
     type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
@@ -5584,7 +5580,7 @@ Obj FuncCHANGED_METHODS_OPERATION (
     Obj                 narg )
 {
     Obj *               cache;
-    Bag			        cacheBag;
+    Bag                 cacheBag;
     Int                 n;
     Int                 i;
 
