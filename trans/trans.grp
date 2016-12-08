@@ -369,7 +369,7 @@ InstallGlobalFunction( TransitiveGroup, function(deg,num)
     Error("maximal number of groups of degree ",deg," is ",
            TRANSLENGTHS[deg]);
   fi;
- 
+
   # special case: Symmetric and Alternating Group
   s:=Factorial(deg);
   if TRANSProperties(deg,num)[1]=s then

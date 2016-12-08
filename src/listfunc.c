@@ -45,9 +45,10 @@
 #include        "set.h"                 /* plain sets                      */
 #include        "range.h"               /* ranges                          */
 #include        "code.h"
+
 #include        "hpc/thread.h"
-#include	      "hpc/tls.h"
-#include	      "hpc/aobjects.h"        /* atomic objects		   */
+#include        "hpc/tls.h"
+#include        "hpc/aobjects.h"        /* atomic objects                  */
 
 #include                <string.h>
 #include                <stdlib.h> 
@@ -93,13 +94,13 @@ extern Obj FuncADD_LIST3(
     Obj                 self,
     Obj                 list,
     Obj                 obj,
-    Obj			pos );
+    Obj                 pos );
 
 
 void            AddPlist3 (
     Obj                 list,
     Obj                 obj,
-    Int 		pos )
+    Int                 pos )
 {
   UInt len;
 
@@ -117,14 +118,14 @@ void            AddPlist3 (
       pos = len + 1;
     if ( len == 0) {
         AssPlistEmpty( list, pos, obj );
-	return;
+        return;
     }
     if (pos <= len) {
       GROW_PLIST(list, len+1);
       SET_LEN_PLIST(list, len+1);
       memmove((void *)(ADDR_OBJ(list) + pos+1),
-	      (const void *)(ADDR_OBJ(list) + pos),
-	      (size_t)(sizeof(Obj)*(len - pos + 1)));
+              (const void *)(ADDR_OBJ(list) + pos),
+              (size_t)(sizeof(Obj)*(len - pos + 1)));
     }
     ASS_LIST( list, pos, obj);
 }
@@ -171,14 +172,14 @@ Obj FuncADD_LIST3 (
 
 
 Obj FuncADD_LIST (
-		  Obj self,
-		  Obj list,
-		  Obj obj)
+                  Obj self,
+                  Obj list,
+                  Obj obj)
 {
   FuncADD_LIST3(self, list, obj, (Obj)0);
   return (Obj) 0;
 }
-		   
+
 
 /****************************************************************************
 **
@@ -1951,7 +1952,7 @@ Obj FuncHORSPOOL_LISTS(Obj self,Obj wrep, Obj subrep, Obj pre)
 static StructGVarOper GVarOpers [] = {
 
   /*    { "ADD_LIST", 2, "list, val", &AddListOper,
-	FuncADD_LIST, "src/listfunc.c:ADD_LIST" }, */
+        FuncADD_LIST, "src/listfunc.c:ADD_LIST" }, */
 
     { "ADD_LIST", -1, "list, obj", &AddListOper,
       DoOperation0Args, "src/listfunc.c:ADD_LIST" },

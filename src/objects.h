@@ -348,7 +348,7 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 #define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
 #define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
-#define LAST_VIRTUAL_TNUM LAST_EXTERNAL_TNUM
+#define LAST_VIRTUAL_TNUM       LAST_EXTERNAL_TNUM
 
 #define FIRST_COPYING_TNUM      (LAST_REAL_TNUM + 1)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)

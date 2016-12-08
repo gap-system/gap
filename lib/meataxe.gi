@@ -2546,7 +2546,7 @@ SMTX_IsomorphismComp:=function (module1, module2, action)
    fac:=SMTX.AlgElCharPolFac (module1);
    mat:=Value (fac, M,M^0);
    Info(InfoMeatAxe,2,"Calculating nullspace for second module.");
-   N:=NullspaceMat (mat);
+   N:=NullspaceMat(mat);
    if Length (N) <> SMTX.AlgElNullspaceDimension(module1) then
       Info(InfoMeatAxe,2,"Null space dimensions different.");
       return fail;
@@ -2841,7 +2841,7 @@ SMTX_Homomorphisms:= function (m1, m2)
    else
       rels:=TransposedMat (rels);
    fi;
-   N:=NullspaceMat (rels);
+   N:=NullspaceMat(rels);
    for k in N do
      ConvertToVectorRep(k,F);
    od;
@@ -3827,4 +3827,4 @@ SMTX_OrthogonalSign:=function(gm)
     fi;
 end;
         
-SMTX.OrthogonalSign:=SMTX_OrthogonalSign;        
+SMTX.OrthogonalSign:=SMTX_OrthogonalSign;
