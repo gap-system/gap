@@ -7035,7 +7035,7 @@ COHORTS_PRIMITIVE_GROUPS[2499]:= [
 [ rec( series:= "A", parameter:= 2499, width:= 1),[ 1, 2 ]]];
 
 MakeReadOnlyGlobal("COHORTS_PRIMITIVE_GROUPS");
-
+MakeImmutable(COHORTS_PRIMITIVE_GROUPS);
 
 BindGlobal("PRIMITIVE_INDICES_MAGMA",
 [[],[1],[1,2],[1,2],[1,2,3,4,5],[1,2,3,4],
@@ -7496,3 +7496,5 @@ BindGlobal("PRIMITIVE_INDICES_MAGMA",
 [1,2],[1,2],[13,14,1,2,3,4,5,6,7,8,9,10,11,12],
 [1,2,3,4],[1,2]]
 );
+
+MakeImmutable("PRIMITIVE_INDICES_MAGMA");
