@@ -53,6 +53,15 @@ extern Obj SuPeRfail;
 
 /****************************************************************************
 **
+*V   NoReturn  . . . . . . . . . . . . . . . . . . . . . . .  superfail value
+**
+**  'NoReturn' is a special value returned by functions which would otherwise
+**  return no value.
+*/
+extern Obj NoReturn;
+
+/****************************************************************************
+**
 *V  Undefined  . . . . . . . . . . . . . . . . . . . . . . . undefined value
 **
 **  'Undefined' is a special object that is used in lieu of (Obj) 0 in places

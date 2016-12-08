@@ -77,6 +77,8 @@ Obj Fail;
 */
 Obj SuPeRfail;
 
+Obj NoReturn;
+
 /****************************************************************************
 **
 *V  Undefined  . . . . . . . . . . . . . . . . . . . . . . . undefined value
@@ -127,6 +129,9 @@ void PrintBool (
     }
     else if ( bool == SuPeRfail ) {
         Pr( "SuPeRfail", 0L, 0L );
+    }
+    else if ( bool == NoReturn ) {
+        Pr( "<no return value>", 0L, 0L );
     }
     else if ( bool == Undefined ) {
         Pr( "Undefined", 0L, 0L );
@@ -416,6 +421,7 @@ static Int InitKernel (
     InitGlobalBag( &False, "src/bool.c:FALSE" );
     InitGlobalBag( &Fail,  "src/bool.c:FAIL"  );
     InitGlobalBag( &SuPeRfail,  "src/bool.c:SUPERFAIL"  );
+    InitGlobalBag( &NoReturn,  "src/bool.c:NORETURN"  );
     InitGlobalBag( &Undefined,  "src/bool.c:UNDEFINED"  );
 
     /* install the saving functions                                       */
@@ -464,6 +470,12 @@ static Int InitLibrary (
     SuPeRfail  = NewBag( T_BOOL, 0L );
     gvar = GVarName( "SuPeRfail" );
     AssGVar( gvar, SuPeRfail );
+    MakeReadOnlyGVar(gvar);
+
+    /* `NoReturn' ditto                       */
+    NoReturn  = NewBag( T_BOOL, 0L );
+    gvar = GVarName( "NoReturn" );
+    AssGVar( gvar, NoReturn );
     MakeReadOnlyGVar(gvar);
 
     /* Undefined is an internal value */

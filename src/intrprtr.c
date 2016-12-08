@@ -438,9 +438,7 @@ void            IntrFuncCallEnd (
 
     /* check the return value                                              */
     if ( funccall && val == 0 ) {
-        ErrorQuit(
-            "Function call: <func> must return a value",
-            0L, 0L );
+        val = NoReturn;
     }
 
     if (options)
