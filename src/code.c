@@ -3499,7 +3499,6 @@ static Int InitKernel (
     /* some functions and globals needed for float conversion */
     InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
-    // InstallTLSHandler(SetupOffsBodyStackAndLoopStack, NULL);
     SetupOffsBodyStackAndLoopStack();
 
     /* return success                                                      */

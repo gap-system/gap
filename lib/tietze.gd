@@ -44,8 +44,6 @@ TR_TREELAST     :=  7;
 ##
 ##  Some global variables.
 ##
-PrintRecIndent  := "  ";
-
 TzOptionNames := [ "protected", "eliminationsLimit", "expandLimit",
      "generatorsLimit", "lengthLimit", "loopLimit", "printLevel",
      "saveLimit", "searchSimultaneous" ];
