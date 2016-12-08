@@ -1223,7 +1223,8 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
       return NormalizerParentSA(s,b);
     fi;
     # nonabelian socle
-    if PrimitiveGroupsAvailable(Length(dom)) then
+    if PrimitiveGroupsAvailable(Length(dom)) 
+      and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
       Info(InfoPerformance,2,"Using Primitive Groups Library");
       # use library
       beta:=Factorial(Length(dom))/2;
@@ -2136,7 +2137,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
   fi;
   dom:=Set(MovedPoints(G));
   n:=Length(dom);
-  if  #ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true or
+  if  ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true or
    not PrimitiveGroupsAvailable(n) then
     return fail;
   fi;
