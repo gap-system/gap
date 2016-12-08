@@ -931,14 +931,14 @@ InstallMethod( DerivedSeriesOfGroup,
     if HasIsTrivial(S[Length(S)]) and IsTrivial(S[Length(S)]) then
       SetIsSolvableGroup(G, true);
       if Length(S) <=2 then
-        Assert(2, IsAbelian(G));
+        Assert(3, IsAbelian(G));
         SetIsAbelian(G, true);
       fi;
     fi;
 
     # set IsAbelian filter if length of derived series is more than 2
     if Length(S) > 2 then
-      Assert(2, not IsAbelian(G));
+      Assert(3, not IsAbelian(G));
       SetIsAbelian(G, false);
     fi;
 
