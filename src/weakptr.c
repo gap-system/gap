@@ -44,41 +44,6 @@
 
 /****************************************************************************
 **
-*F  GROW_WPOBJ(<wp>,<plen>) . make sure a weak pointer object is large enough
-**
-**  'GROW_WPOBJ' grows the weak pointer   object <wp> if necessary  to
-**  ensure that it has room for at least <plen> elements.
-**
-**  Note that 'GROW_WPOBJ' is a macro, so do not call it with arguments that
-**  have side effects.  */
-
-#define GROW_WPOBJ(wp,plen)   ((plen) < SIZE_OBJ(wp)/sizeof(Obj) ? \
-                                 0L : GrowWPObj(wp,plen) )
-
-Int GrowWPObj (
-               Obj                 wp,
-               UInt                need )
-{
-  UInt                plen;           /* new physical length             */
-  UInt                good;           /* good new physical length        */
-
-    /* find out how large the object should become                     */
-    good = 5 * (SIZE_OBJ(wp)/sizeof(Obj)-1) / 4 + 4;
-
-    /* but maybe we need more                                              */
-    if ( need < good ) { plen = good; }
-    else               { plen = need; }
-
-    /* resize the plain list                                               */
-    ResizeBag( wp, ((plen)+1)*sizeof(Obj) );
-
-    /* return something (to please some C compilers)                       */
-    return 0L;
-}
-
-
-/****************************************************************************
-**
 *F  STORE_LEN_WPOBJ(<wp>,<len>) . . . . . . .  set the length of a WP object
 **
 **  'STORE_LEN_WPOBJ' sets the length of  the WP object  <wp> to <len>.
@@ -128,6 +93,40 @@ Int GrowWPObj (
 
 #define ELM_WPOBJ(list,pos)             (ADDR_OBJ(list)[pos])
 
+
+/****************************************************************************
+**
+*F  GROW_WPOBJ(<wp>,<plen>) . make sure a weak pointer object is large enough
+**
+**  'GROW_WPOBJ' grows the weak pointer   object <wp> if necessary  to
+**  ensure that it has room for at least <plen> elements.
+**
+**  Note that 'GROW_WPOBJ' is a macro, so do not call it with arguments that
+**  have side effects.  */
+
+#define GROW_WPOBJ(wp,plen)   ((plen) < SIZE_OBJ(wp)/sizeof(Obj) ? \
+                                 0L : GrowWPObj(wp,plen) )
+
+Int GrowWPObj (
+               Obj                 wp,
+               UInt                need )
+{
+  UInt                plen;           /* new physical length             */
+  UInt                good;           /* good new physical length        */
+
+    /* find out how large the object should become                     */
+    good = 5 * (SIZE_OBJ(wp)/sizeof(Obj)-1) / 4 + 4;
+
+    /* but maybe we need more                                              */
+    if ( need < good ) { plen = good; }
+    else               { plen = need; }
+
+    /* resize the plain list                                               */
+    ResizeBag( wp, ((plen)+1)*sizeof(Obj) );
+
+    /* return something (to please some C compilers)                       */
+    return 0L;
+}
 
 
 /****************************************************************************
