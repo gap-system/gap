@@ -6367,6 +6367,7 @@ static Int InitLibrary (
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
     C_NEW_STRING_CONST(TRY_NEXT_METHOD, "TRY_NEXT_METHOD");
+    RetypeBag(TRY_NEXT_METHOD, T_STRING+IMMUTABLE);
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
     /* init filters and functions                                          */

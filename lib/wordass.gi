@@ -1094,7 +1094,7 @@ end);
 
 # functions to read a presentation as written in print
 # actual evaluation function
-BindGlobal("PPVWCD",Union(CHARS_DIGITS,"+-"));
+BindGlobal("PPVWCD",Immutable(Union(CHARS_DIGITS,"+-")));
 BindGlobal("PPValWord",function(gens,nams,s)
 local ValNum, DoValWord, w;
 

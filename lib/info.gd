@@ -138,7 +138,7 @@ DeclareGlobalFunction("DefaultInfoHandler");
 ##  
 DeclareGlobalFunction("SetInfoOutput");
 DeclareGlobalFunction("SetDefaultInfoOutput");
-BIND_GLOBAL("DefaultInfoOutput", "*Print*");
+BIND_GLOBAL("DefaultInfoOutput", MakeImmutable("*Print*"));
 
 #############################################################################
 ##
