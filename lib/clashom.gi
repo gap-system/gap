@@ -169,6 +169,7 @@ local clT,	# classes T
       smare,
       ppos,
       maxdiff,
+      cystr,
       again,	# run orbit again to get all
       trymap,	# operation to try
       skip,	# skip (if u=ug)
@@ -429,7 +430,10 @@ local clT,	# classes T
   # further fusion among bars
   newreps:=[];
   Info(InfoHomClass,2,"computing centralizers");
+  k:=0;
   for bar in bars do
+    k:=k+1;
+    CompletionBar(InfoHomClass,3,"Color Bars ",k/Length(bars));
     b1:=Immutable(bar[1]);
     select:=Filtered([1..Length(reps)],i->colourbar[i]=b1);
     if Length(select)>1 then
@@ -457,6 +461,7 @@ local clT,	# classes T
       fi;
     od;
   od;
+  CompletionBar(InfoHomClass,3,"Color Bars ",false);
 
   Info(InfoHomClass,1,"fused to ",Length(newreps)," inner classes");
   clF:=newreps;
@@ -564,11 +569,25 @@ local clT,	# classes T
 
 	# put small classes to the top (to be sure to hit them and make
 	# large local stabilizers)
-	Sort(clTR,function(a,b) return Size(a[3])<Size(b[3]);end);
+	SortBy(clTR,x->Size(x[3]));
 
 	Info(InfoHomClass,3,Length(clTR)," local classes");
 
+	cystr:=[];
+	for p in [1..Length(clTR)] do
+	  repres:=Immutable(CycleStructurePerm(Representative(clTR[p][3])));
+	  select:=First(cystr,x->x[1]=repres);
+	  if select=fail then
+	    Add(cystr,[repres,[p]]);
+	  else
+	    AddSet(select[2],p);
+	  fi;
+	od;
+
 	cengen:=GeneratorsOfGroup(centralizers[j]);
+	if Length(cengen)>10 then
+	  cengen:=SmallGeneratingSet(centralizers[j]);
+	fi;
 	#cengen:=Filtered(cengen,i->not i in localcent_r);
 
 	while Length(clTR)>0 do
@@ -632,12 +651,13 @@ local clT,	# classes T
                 else
 		  # we have the stabilizer and thus are only interested in
 		  # getting new elements.
-		  ppos:=PositionProperty(select,
-			   i->Size(clTR[i][3])<=maxdiff and img in clTR[i][3]);
+		  p:=CycleStructurePerm(img);
+		  ppos:=First(First(cystr,x->x[1]=p)[2],
+			   i->i in select and
+			   Size(clTR[i][3])<=maxdiff and img in clTR[i][3]);
 		  if ppos=fail then
 		    p:="ignore"; #to avoid the first case
 		  else
-		    ppos:=select[ppos]; # get the right value
 		    p:=fail; # go to first case
 		  fi;
 		fi;
@@ -646,6 +666,7 @@ local clT,	# classes T
 		  if ppos=fail then
 		    p:=First(select,
 			   i->Size(clTR[i][3])<=maxdiff and img in clTR[i][3]);
+		    #if p=fail then Error("nanu"); fi;
                   else
 		    p:=ppos;
 		  fi;
@@ -653,21 +674,27 @@ local clT,	# classes T
 		  RemoveSet(select,p);
 		  Add(orb,clTR[p]);
 
-		  #change the transversal element to map to the representative
-		  con:=trans[orpo]*gen;
-		  limg:=opfun(repres,con);
-		  con:=con*PreImagesRepresentative(centrhom,
-			   RepresentativeAction(localcent_r,
-						 Image(projections[i],limg),
-						 Representative(clTR[p][3])));
-		  Assert(2,Image(projections[i],opfun(repres,con))
-			   =Representative(clTR[p][3]));
-		  Add(trans,con);
-		  for stgen in GeneratorsOfGroup(clTR[p][2]) do
-		    Assert( 2, IsOne( Image( projections[i],
-				   opfun(repres,con*stgen/con)/repres ) ) );
-		    stab:=ClosureGroup(stab,con*stgen/con);
-		  od;
+		  if trans[orpo]=false then
+		    Add(trans,false);
+		  else
+		    #change the transversal element to map to the representative
+		    con:=trans[orpo]*gen;
+		    limg:=opfun(repres,con);
+		    con:=con*PreImagesRepresentative(centrhom,
+			    RepresentativeAction(localcent_r,
+						  Image(projections[i],limg),
+						  Representative(clTR[p][3])));
+		    Assert(2,Image(projections[i],opfun(repres,con))
+			    =Representative(clTR[p][3]));
+
+		    Add(trans,con);
+
+		    for stgen in GeneratorsOfGroup(clTR[p][2]) do
+		      Assert( 2, IsOne( Image( projections[i],
+				    opfun(repres,con*stgen/con)/repres ) ) );
+		      stab:=ClosureGroup(stab,con*stgen/con);
+		    od;
+		  fi;
 
 		  # compute new minimum length
 
@@ -762,9 +789,10 @@ local clT,	# classes T
 		    pf:=Length(smacla);
 		    remainlen:=List(clTR{smacla},i->Size(i[3]));
 
-		    Info(InfoHomClass,3,
-			"This is the true orbit length (missing ",
-			maxdiff,")");
+		    CompletionBar(InfoHomClass,3,"trueorb ",1-maxdiff/minlen);
+		    #Info(InfoHomClass,3,
+		#	"This is the true orbit length (missing ",
+		#	maxdiff,")");
 
 		    if Size(stab)*Sum(orb,i->Size(i[3]))
 		        =Size(centralizers[j]) then
@@ -839,7 +867,7 @@ local clT,	# classes T
 			      Info(InfoHomClass,3,"Completed orbit (hard)");
 			    fi;
 			  fi;
-			else
+			elif Length(combl)>0 then
 			  combl:=combl[1];
 			  orb:=Concatenation(orb,clTR{smacla{combl}});
 			  select:=Difference(select,smacla{combl});
@@ -862,6 +890,43 @@ local clT,	# classes T
 	      (Sum(orb,i->Size(i[3]))*Size(stab))/Size(centralizers[j])),
 	      " orbit consists of ",Length(orb)," suborbits, iterating");
 
+	      if stabtrue then
+		# we know stabilizer, just need to find orbit. As these are
+		# likely small additions, search in reverse.
+		for p in select do
+		  for genpos in [1..Length(cengen)] do
+		    gen:=Random(centralizers_r[j])*cengen[genpos];
+		    img:=Image(projections[i],opfun(clTR[p][1],gen));
+		    orpo:=CycleStructurePerm(img);
+		    ppos:=First(First(cystr,x->x[1]=orpo)[2],
+			   i->not i in select and
+			   img in clTR[i][3]);
+                    if ppos<>fail and p in select then
+		      # so the image is in clTR[ppos] which must be in orb
+		      ppos:=Position(orb,clTR[ppos]);
+		      Info(InfoHomClass,3,"found new orbit addition ",p);
+		      Add(orb,clTR[p]);
+
+#	#change the transversal element to map to the representative
+#	con:=trans[ppos]*RepresentativeAction(localcent_r,
+#	      Representative(orb[ppos][3]),img)/gen;
+#	if not Image(projections[i],opfun(repres,con))
+#		=Representative(clTR[p][3]) then
+#	  Error("wrong rep");
+#	fi;
+#	Add(trans,con);
+                      # cannot easily do transversal this way.
+		      Add(trans,false);
+
+		      RemoveSet(select,p);
+		    fi;
+		  od;
+		od;
+
+
+	      fi;
+	     
+
 	      orpo:=1;
 	      again:=again+1;
 	    fi;
@@ -869,6 +934,10 @@ local clT,	# classes T
 	  Info(InfoHomClass,2,"Stabsize = ",Size(stab),
 		", centstabsize = ",Size(orb[1][2]));
 	  clTR:=clTR{select};
+	  # fix index positions
+	  for p in cystr do
+	    p[2]:=Filtered(List(p[2],x->Position(select,x)),IsInt);
+	  od;
 
 	  Info(InfoHomClass,2,"orbit consists of ",Length(orb)," suborbits,",
 	       Length(clTR)," classes left.");
@@ -2957,7 +3026,7 @@ end );
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . of perm group
 ##
 InstallMethod( ConjugacyClasses, "TF Method", true,
-  [ IsGroup and IsFinite and HasFittingFreeLiftSetup],OVERRIDENICE,
+  [ IsGroup and IsFinite and CanComputeFittingFree],OVERRIDENICE,
 function(G)
   if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
   return ConjugacyClassesViaRadical(G);

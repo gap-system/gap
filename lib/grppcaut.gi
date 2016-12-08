@@ -1218,6 +1218,11 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
     for i in osporb do
       # assumption: orbit is not too long... (i.e. TODO: improve)
       m:=Orbit(a,i[1],OnSubspacesByCanonicalBasis);
+      for yet in i do
+	if not yet in m then
+	  m:=Union(m,Orbit(a,yet,OnSubspacesByCanonicalBasis));
+	fi;
+      od;
       if Length(m)>Length(i) then
         yet:=ActionHomomorphism(a,m,OnSubspacesByCanonicalBasis,"surjective");
 	sub:=Stabilizer(Image(yet),Set(List(i,x->Position(m,x))),OnSets);
@@ -1262,7 +1267,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H, 
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
           auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
-          gensA, new,as,somechar,scharorb,asAutom,autactbase,
+          gensA, new,as,somechar,scharorb,asAutom,actbase,
 	  quotimg,eN,field,act,spaces,sporb,npcgs,nM;
 
     asAutom:=function(sub,hom) return Image(hom,sub);end;
@@ -1273,8 +1278,8 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
         x->PcElementByExponents(pcgs,ExponentsOfPcElement(spec,x){[1..Length(pcgs)]})));
     end;
 
-    autactbase:=ValueOption("autactbase");
-    PushOptions(rec(autactbase:=fail)); # remove this option from concern
+    actbase:=ValueOption("autactbase");
+    PushOptions(rec(actbase:=fail)); # remove this option from concern
     somechar:=ValueOption("someCharacteristics");
     if somechar<>fail then
       scharorb:=somechar.orbits;
@@ -1390,9 +1395,23 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     A     := AutomorphismGroupElAbGroup( F, B );
     SetIsGroupOfAutomorphismsFiniteGroup(A,true);
 
+    # for first step
+    H:=F;
+    pcgsH:=Pcgs(H);
+
     # run down series
     for i in [2..Length(first)-1] do
 
+	if Length(GeneratorsOfGroup(A))>0 and not HasNiceMonomorphism(A) then
+	  if Source(A.1)<>H then
+	    Error("shit");
+	  fi;
+	  if actbase<>fail then
+	    e:=List(actbase,x->quotimg(H,pcgsH,x));
+	    NiceMonomorphism(A:autactbase:=e);
+	  fi;
+
+	fi;
         # get factor
         s := first[i];
         n := first[i+1];
@@ -1650,8 +1669,8 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 	  SortBy(B,Size);
 	  SetIsGroupOfAutomorphismsFiniteGroup(A,true);
 	  tmp:=Size(A);
-	  if autactbase<>fail then
-	    e:=List(autactbase,x->quotimg(H,pcgsH,x));
+	  if actbase<>fail then
+	    e:=List(actbase,x->quotimg(H,pcgsH,x));
 	    NiceMonomorphism(A:autactbase:=e);
 	  fi;
 	  for e in B do

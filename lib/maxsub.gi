@@ -332,7 +332,8 @@ end);
 ##
 #M  FrattiniSubgroup( <G> ) . . . . . . . . . .  Frattini subgroup of a group
 ##
-InstallMethod( FrattiniSubgroup, "Using radical", [ IsGroup ],0,
+InstallMethod( FrattiniSubgroup, "Using radical",
+[ IsGroup and CanComputeFittingFree ],0,
 function(G)
 local m,f,i;
   if IsTrivial(G) then
@@ -760,9 +761,6 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
   return m;
 end);
 
-# declare as the function calls itself recursively.
-DeclareGlobalFunction("DoMaxesTF");
-
 InstallGlobalFunction(DoMaxesTF,function(arg)
 local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
   a1emb,a2emb,anew,wnew,e1,e2,emb,a1,a2,mm;
@@ -939,10 +937,10 @@ end);
 #F  MaximalSubgroupClassReps(<G>) . . . . TF method
 ##
 InstallMethod(MaximalSubgroupClassReps,"TF method",true,
-  [IsGroup and IsFinite and HasFittingFreeLiftSetup],OVERRIDENICE,DoMaxesTF);
+  [IsGroup and IsFinite and CanComputeFittingFree],OVERRIDENICE,DoMaxesTF);
 
-InstallMethod(MaximalSubgroupClassReps,"perm group",true,
-  [IsPermGroup and IsFinite],0,DoMaxesTF);
+#InstallMethod(MaximalSubgroupClassReps,"perm group",true,
+#  [IsPermGroup and IsFinite],0,DoMaxesTF);
 
 BindGlobal("NextLevelMaximals",function(g,l)
 local m;

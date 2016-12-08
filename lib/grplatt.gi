@@ -911,7 +911,6 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
       c:=SubgroupsTrivialFitting(G);
       c:=makesubgroupclasses(G,c);
       u:=[List(c,Representative),List(c,StabilizerOfExternalSet)];
-      #return LatticeByCyclicExtension(G);
     fi;
   else
     hom:=NaturalHomomorphismByNormalSubgroupNC(G,ser[1]);
@@ -1231,8 +1230,15 @@ end);
 ##
 #M  LatticeSubgroups(<G>)  . . . . . . . . . .  lattice of subgroups
 ##
-InstallMethod(LatticeSubgroups,"via radical",true,[IsGroup],0,
-  LatticeViaRadical);
+InstallMethod(LatticeSubgroups,"via radical",true,[IsGroup and
+  IsFinite and CanComputeFittingFree],0, LatticeViaRadical );
+
+InstallMethod(LatticeSubgroups,"cyclic extension",true,[IsGroup and
+  IsFinite],0, LatticeByCyclicExtension );
+
+RedispatchOnCondition( LatticeSubgroups, true,
+    [ IsGroup ], [ IsFinite ], 0 );
+
 
 #############################################################################
 ##

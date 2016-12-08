@@ -12,6 +12,16 @@
 gap> START_TEST("grpauto.tst");
 
 #
+gap> G:=PcGroupCode(2664057732308087629446918084678644731357911420184737672,
+> 6272);;
+gap> H:=PcGroupCode(849169324138369034371257796152864931485540637536648, 
+> 6272);;
+gap> IsomorphismGroups(G,H);
+fail
+gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
+false
+
+#
 # hard-iso
 #
 gap> G:=PcGroupCode(589146814442329838036024080610343654876506937853710969\
