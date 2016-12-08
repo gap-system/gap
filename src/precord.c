@@ -493,6 +493,11 @@ void AssPRec (
     UInt                len;            /* length of <rec>                 */
     UInt                i;              /* loop variable                   */
 
+    if (val == 0) {
+        UnbPRec( rec, rnam );
+        return;
+    }
+
     /* get the length of the record                                        */
     len = LEN_PREC( rec );
 

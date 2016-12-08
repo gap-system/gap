@@ -432,7 +432,11 @@ Obj             AssRecHandler (
     Obj                 rnam,
     Obj                 obj )
 {
-    ASS_REC( rec, INT_INTOBJ(rnam), obj );
+    if (obj == 0) {
+        UNB_REC( rec, INT_INTOBJ(rnam) );
+    } else {
+        ASS_REC( rec, INT_INTOBJ(rnam), obj );
+    }
     return 0;
 }
 
@@ -453,7 +457,11 @@ void            AssRecObject (
     UInt                rnam,
     Obj                 val )
 {
-    DoOperation3Args( AssRecOper, obj, INTOBJ_INT(rnam), val );
+    if (val == 0) {
+      UNB_REC( obj, rnam );
+    } else {
+      DoOperation3Args( AssRecOper, obj, INTOBJ_INT(rnam), val );
+    }
 }
 
 

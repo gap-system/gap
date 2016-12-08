@@ -155,7 +155,7 @@ void            PushObj (
     /* there must be a stack, it must not be underfull or overfull         */
     assert( TLS(StackObj) != 0 );
     assert( 0 <= TLS(CountObj) && TLS(CountObj) == LEN_PLIST(TLS(StackObj)) );
-    assert( val != 0 );
+    /* assert( val != 0 ); */
 
     /* count up and put the value onto the stack                           */
     TLS(CountObj)++;
@@ -193,7 +193,7 @@ Obj             PopObj ( void )
     TLS(CountObj)--;
 
     /* return the popped value (which must be non-void)                    */
-    assert( val != 0 );
+    /* assert( val != 0 ); */
     return val;
 }
 
@@ -437,19 +437,19 @@ void            IntrFuncCallEnd (
     }
 
     /* check the return value                                              */
-    if ( funccall && val == 0 ) {
+/*    if ( funccall && val == 0 ) {
         ErrorQuit(
             "Function call: <func> must return a value",
             0L, 0L );
-    }
+    }  */
 
     if (options)
       CALL_0ARGS(PopOptions);
 
     /* push the value onto the stack                                       */
-    if ( val == 0 )
+/*    if ( val == 0 )
         PushVoidObj();
-    else
+    else */
         PushObj( val );
 }
 
@@ -3158,9 +3158,15 @@ void            IntrAssList ( Int narg )
 
       /* assign to the element of the list                                   */
       if (IS_POS_INTOBJ(pos)) {
-        ASS_LIST( list, INT_INTOBJ(pos), rhs );
+        if (rhs == 0)
+          UNB_LIST( list, INT_INTOBJ(pos) );
+        else
+          ASS_LIST( list, INT_INTOBJ(pos), rhs );
       } else {
-        ASSB_LIST(list, pos, rhs);
+        if (rhs == 0)
+          UNBB_LIST( list, pos );
+        else
+          ASSB_LIST(list, pos, rhs);
       }
       break;
 
@@ -3181,7 +3187,10 @@ void            IntrAssList ( Int narg )
       }
       SET_LEN_PLIST(ixs, narg);
       list = PopObj();
-      ASSB_LIST(list, ixs, rhs);
+      if (rhs == 0) 
+        UNBB_LIST(list, ixs);
+      else
+        ASSB_LIST(list, ixs, rhs);
     }
       
     /* push the right hand side again                                      */
@@ -3248,7 +3257,7 @@ void            IntrAssListLevel (
 
     /* get right hand sides (checking is done by 'AssListLevel')           */
     rhss = PopObj();
-
+    
     ixs = NEW_PLIST(T_PLIST, narg);
     for (i = narg; i > 0; i--) {
       /* get and check the position                                          */
@@ -3263,7 +3272,10 @@ void            IntrAssListLevel (
     lists = PopObj();
 
     /* assign the right hand sides to the elements of several lists        */
-    AssListLevel( lists, ixs, rhss, level );
+    if (rhss == 0)
+      UNBB_LIST( lists, ixs );
+    else
+      AssListLevel( lists, ixs, rhss, level );
 
     /* push the assigned values again                                      */
     PushObj( rhss );
@@ -3575,7 +3587,7 @@ void            IntrAssRecName (
 
     /* get the right hand side                                             */
     rhs = PopObj();
-
+    
     /* get the record (checking is done by 'ASS_REC')                      */
     record = PopObj();
 
@@ -3796,15 +3808,19 @@ void            IntrAssPosObj ( void )
     list = PopObj();
 
     /* assign to the element of the list                                   */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
-        if ( SIZE_OBJ(list)/sizeof(Obj) - 1 < p ) {
-            ResizeBag( list, (p+1) * sizeof(Obj) );
-        }
-        SET_ELM_PLIST( list, p, rhs );
-        CHANGED_BAG( list );
-    }
-    else {
-        ASS_LIST( list, p, rhs );
+    if (rhs == 0) {
+      UNB_LIST(list, p);
+    } else {
+      if ( TNUM_OBJ(list) == T_POSOBJ ) {
+          if ( SIZE_OBJ(list)/sizeof(Obj) - 1 < p ) {
+              ResizeBag( list, (p+1) * sizeof(Obj) );
+          }
+          SET_ELM_PLIST( list, p, rhs );
+          CHANGED_BAG( list );
+      }
+      else {
+          ASS_LIST( list, p, rhs );
+      }
     }
 
     /* push the right hand side again                                      */
@@ -4181,13 +4197,17 @@ void            IntrAssComObjName (
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    switch (TNUM_OBJ(record)) {
-      case T_COMOBJ:
-        AssPRec( record, rnam, rhs );
-        break;
-      default:
-        ASS_REC( record, rnam, rhs );
-        break;
+    if (rhs == 0) {
+      UNB_REC( record, rnam );
+    } else {
+      switch (TNUM_OBJ(record)) {
+        case T_COMOBJ:
+          AssPRec( record, rnam, rhs );
+          break;
+        default:
+          ASS_REC( record, rnam, rhs );
+          break;
+      }
     }
 
     /* push the assigned value                                             */
@@ -4216,13 +4236,17 @@ void            IntrAssComObjExpr ( void )
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    switch (TNUM_OBJ(record)) {
-      case T_COMOBJ:
-        AssPRec( record, rnam, rhs );
-        break;
-      default:
-        ASS_REC( record, rnam, rhs );
-        break;
+    if (rhs == 0) {
+      UNB_REC( record, rnam );
+    } else {
+      switch (TNUM_OBJ(record)) {
+        case T_COMOBJ:
+          AssPRec( record, rnam, rhs );
+          break;
+        default:
+          ASS_REC( record, rnam, rhs );
+          break;
+      }
     }
 
     /* push the assigned value                                             */
