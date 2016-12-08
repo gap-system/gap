@@ -189,7 +189,7 @@ end;
 ##  If the optional argument <Arg>optrec</Arg> is given it must be a record.
 ##  The following components of <Arg>optrec</Arg> are recognized and can change
 ##  the default behaviour of <Ref Func="Test" />:
-##  <List >
+##  <List>
 ##  <Mark><C>ignoreComments</C></Mark>
 ##  <Item>If set to <K>false</K> then no lines in <Arg>fname</Arg>
 ##  are ignored as explained above (default is <K>true</K>).</Item>
