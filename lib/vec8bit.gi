@@ -14,7 +14,7 @@
 ##
 #V  `TYPES_VEC8BIT . . . . . . . . prepared types for compressed GF(q) vectors
 ##
-##  A length 2 list of length 257 lists. TYPES_VEC8BIT[1][q] will be the type
+##  A length 4 list of length 257 lists. TYPES_VEC8BIT[1][q] will be the type
 ##  of mutable vectors over GF(q), TYPES_VEC8BIT[2][q] is the type of 
 ##  immutable vectors and TYPES_VEC8BIT[3][q] the type of locked vectors
 ##  The 257th position is bound to 1 to stop the lists

@@ -42,7 +42,7 @@ TR_TREELAST     :=  7;
 
 #############################################################################
 ##
-##  Some global variables.
+##  List of option names
 ##
 TzOptionNames := [ "protected", "eliminationsLimit", "expandLimit",
      "generatorsLimit", "lengthLimit", "loopLimit", "printLevel",

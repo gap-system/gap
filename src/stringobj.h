@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*W  string.h                    GAP source                   Martin Schönert
+*W  stringobj.h                 GAP source                   Martin Schönert
 **
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
@@ -23,8 +23,8 @@
 **  installed in the appropriate tables by 'InitString'.
 */
 
-#ifndef GAP_STRING_H
-#define GAP_STRING_H
+#ifndef GAP_STRINGOBJ_H
+#define GAP_STRINGOBJ_H
 
 #include <string.h>  /* for memcpy */
 
