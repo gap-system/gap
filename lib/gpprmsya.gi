@@ -12,9 +12,6 @@
 ##  This file contains the methods for symmetric and alternating groups
 ##
 
-# up to which degree may we use the primitive groups library?
-BindGlobal("PRIMITIVE_GROUPLIB_RANGE",2499); 
-
 #############################################################################
 ##
 #M  <perm> in <nat-alt-grp>
@@ -1221,8 +1218,8 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
       return NormalizerParentSA(s,b);
     fi;
     # nonabelian socle
-    if false and # so far disable -- need discussion on wisdom of approach
-      Length(dom)<=PRIMITIVE_GROUPLIB_RANGE and PRIM_AVAILABLE then
+    if PrimitiveGroupsAvailable(Length(dom)) then
+      Info(InfoPerformance,2,"Using Primitive Groups Library");
       # use library
       beta:=Factorial(Length(dom))/2;
       w:=CallFuncList(ValueGlobal("AllPrimitiveGroups"),
@@ -2132,7 +2129,8 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
   fi;
   dom:=Set(MovedPoints(G));
   n:=Length(dom);
-  if not (n<=PRIMITIVE_GROUPLIB_RANGE and PRIM_AVAILABLE) then
+  if  #ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true or
+   not PrimitiveGroupsAvailable(n) then
     return fail;
   fi;
 
@@ -2310,7 +2308,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
   od;
 
   # type (f): Almost simple
-  if n>PRIMITIVE_GROUPLIB_RANGE then
+  if not PrimitiveGroupsAvailable(n) then
     Error("tables missing");
   elif n>999 then
     # all type 2 nonalt groups of right parity

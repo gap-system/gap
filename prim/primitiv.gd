@@ -79,13 +79,11 @@
 ##  increasing size, though it holds for many degrees.)
 ##  <#/GAPDoc>
 
-
 #############################################################################
 ##
 ## tell GAP about the component
 ##
 DeclareComponent("prim","3.0");
-
 
 #############################################################################
 ##
@@ -109,6 +107,13 @@ DeclareComponent("prim","3.0");
 ##
 UnbindGlobal("PrimitiveGroup");
 DeclareGlobalFunction( "PrimitiveGroup" );
+
+# Availability test for the library
+# ensure that the dummy binds from the library are killed
+MakeReadWriteGlobal("PrimitiveGroupsAvailable");
+Unbind(PrimitiveGroupsAvailable);
+DeclareGlobalFunction("PrimitiveGroupsAvailable");
+
 
 
 #############################################################################

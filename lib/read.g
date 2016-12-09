@@ -63,6 +63,10 @@ fi;
 #X  Read primitive groups library
 ##
 
+# first assign PrimitiveGroupsAvailable to a dummy function to make it
+# callable, even if the library is unavailable.
+InstallGlobalFunction(PrimitiveGroupsAvailable,deg->false);
+
 # only load component if not available as package
 if TestPackageAvailability("primgrp")=fail then
   PRIM_AVAILABLE:=ReadPrim( "primitiv.gd","primitive groups" );
