@@ -201,6 +201,11 @@ Int LengthWPObj(Obj wp)
 
 Obj FuncLengthWPObj(Obj self, Obj wp)
 {
+  if (TNUM_OBJ(wp) != T_WPOBJ)
+    {
+      ErrorMayQuit("LengthWPObj: argument must be a weak pointer object, not a %s",
+                   (Int)TNAM_OBJ(wp), 0);
+    }
   return INTOBJ_INT(LengthWPObj(wp));
 }
 
@@ -216,7 +221,24 @@ Obj FuncLengthWPObj(Obj self, Obj wp)
 
 Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 {
+  if (TNUM_OBJ(wp) != T_WPOBJ)
+    {
+      ErrorMayQuit("SetElmWPObj: First argument must be a weak pointer object, not a %s",
+                   (Int)TNAM_OBJ(wp), 0);
+    }
+
+  if (!IS_INTOBJ(pos))
+    {
+      ErrorMayQuit("SetElmWPObj: Position must be a small integer, not a %s",
+                (Int)TNAM_OBJ(pos),0L);
+    }
+
   UInt ipos = INT_INTOBJ(pos);
+  if (ipos < 1)
+    {
+      ErrorMayQuit("SetElmWPObj: Position must be a positive integer",0L,0L);
+    }
+  
   if (LengthWPObj(wp)  < ipos)
     {
       GROW_WPOBJ(wp, ipos);
@@ -239,7 +261,24 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 
 Int IsBoundElmWPObj( Obj wp, Obj pos)
 {
+  if (TNUM_OBJ(wp) != T_WPOBJ)
+    {
+      ErrorMayQuit("IsBoundElmWPObj: First argument must be a weak pointer object, not a %s",
+                   (Int)TNAM_OBJ(wp), 0);
+    }
+
+  if (!IS_INTOBJ(pos))
+    {
+      ErrorMayQuit("IsBoundElmWPObj: Position must be a small integer, not a %s",
+                (Int)TNAM_OBJ(pos),0L);
+    }
+
   UInt ipos = INT_INTOBJ(pos);
+  if (ipos < 1)
+    {
+      ErrorMayQuit("IsBoundElmWPObj: Position must be a positive integer",0L,0L);
+    }
+
   Obj elm;
   if ( LengthWPObj(wp) < ipos ) 
     {
@@ -282,9 +321,27 @@ Obj FuncIsBoundElmWPObj( Obj self, Obj wp, Obj pos)
 
 Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 {
+  if (TNUM_OBJ(wp) != T_WPOBJ)
+    {
+      ErrorMayQuit("UnbindElmWPObj: First argument must be a weak pointer object, not a %s",
+                   (Int)TNAM_OBJ(wp), 0);
+    }
+
+  if (!IS_INTOBJ(pos))
+    {
+      ErrorMayQuit("UnbindElmWPObj: Position must be a small integer, not a %s",
+                (Int)TNAM_OBJ(pos),0L);
+    }
+
+  UInt ipos = INT_INTOBJ(pos);
+  if (ipos < 1)
+    {
+      ErrorMayQuit("UnbindElmWPObj: Position must be a positive integer",0L,0L);
+    }
+
   Int len = LengthWPObj(wp);
-  if ( INT_INTOBJ(pos) <= len ) {
-    ELM_WPOBJ( wp, INT_INTOBJ(pos)) =  0;
+  if ( ipos <= len ) {
+    ELM_WPOBJ( wp, ipos) =  0;
   }
   return 0;
 }
@@ -306,7 +363,25 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 Obj FuncElmWPObj( Obj self, Obj wp, Obj pos)
 {
   Obj elm;
+
+  if (TNUM_OBJ(wp) != T_WPOBJ)
+    {
+      ErrorMayQuit("ElmWPObj: First argument must be a weak pointer object, not a %s",
+                   (Int)TNAM_OBJ(wp), 0);
+    }
+
+  if (!IS_INTOBJ(pos))
+    {
+      ErrorMayQuit("ElmWPObj: Position must be a small integer, not a %s",
+                (Int)TNAM_OBJ(pos),0L);
+    }
+
   UInt ipos = INT_INTOBJ(pos);
+  if (ipos < 1)
+    {
+      ErrorMayQuit("ElmWPObj: Position must be a positive integer",0L,0L);
+    }
+
   if ( STORED_LEN_WPOBJ(wp) < ipos ) 
     {
       return Fail;
