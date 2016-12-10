@@ -292,6 +292,9 @@ local Tbak,Fbak,flg,sel,i,fname;
 end);
 
 InstallGlobalFunction(TransitiveGroupsAvailable,function(deg)
+  if not IsPosInt(deg) then
+    Error("degree must be a positive integer");
+  fi;
   if deg>TRANSDEGREES then
     return false;
   fi;
@@ -342,8 +345,11 @@ InstallGlobalFunction(NrTransitiveGroups, function(deg)
   if deg=1 then
     return 0;
   fi;
+  if not IsPosInt(deg) then
+    Error("degree must be a positive integer");
+  fi;
   if not TransitiveGroupsAvailable(deg) then
-    return 0;
+    return fail;
   fi;
   return TRANSLENGTHS[deg];
 end);
