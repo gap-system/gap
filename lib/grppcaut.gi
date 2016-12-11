@@ -991,7 +991,7 @@ local f,act,xset,stb,hom,n,m,l,i;
   return act;
 end);
 
-# construct subgroup of GL that stabilizes the spaces given and fixes teh
+# construct subgroup of GL that stabilizes the spaces given and fixes the
 # listed spaceorbits.
 
 # auxillary
@@ -1020,9 +1020,10 @@ end;
 
 InstallGlobalFunction(SpaceAndOrbitStabilizer,function(n,field,ospaces,osporb)
 local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
-      gens,one,spl,ngens,m,sz,a,sporb,notyet,canonicalform,doonedim,spaces;
+      gens,one,spl,ngens,m,sz,a,sporb,notyet,canonicalform,doonedim,spaces,
+      sofars,b,act,pairs,direct,subs,allstab;
 
-  # move in function to allow global treatment (or replacement)
+  # replace later by better functions
   canonicalform:=function(space)
     if Length(space)=0 then
       return space;
@@ -1038,7 +1039,8 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
   end;
 
   outvecs:=function(space,new)
-    return BaseSteinitzVectors(new,space).factorspace;
+    return BaseSteinitzVectors(canonicalform(Concatenation(new,space)),space).factorspace;
+
   end;
 
   one:=IdentityMat(n,field);
@@ -1049,93 +1051,131 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
   if not ForAny(spaces,x->Length(x)=n) then
     Add(spaces,List(one,ShallowCopy));
   fi;
-
-  osporb:=List(osporb,x->List(x,canonicalform));
-  sporb:=List(osporb,ShallowCopy);
   l:=Length(spaces);
 
-  # inclusion relation, tests
-  doonedim:=true;
-  repeat
-    if doonedim and Number(spaces,x->Length(x)=1)>=n then
-      yet:=[];
-      new:=[];
+  sporb:=List(osporb,ShallowCopy);
+  sporb:=List(sporb,x->List(x,canonicalform));
+  allstab:=[];
+
+  # do not aim to produce the whole lattice, but ony layers of subspaces that
+  # are invariant and always intersect in the next lower layer. (Then deal
+  # with the rest by stabilizer).
+  # The reason behind this is that the whole lattice could be huge. Also do
+  # so layer by layer.
+
+  # As c(a\cap b)<>ca\cap cb in general, there is little value in preserving
+  # intersections between rounds
+
+  sub:=[]; # basis
+  sofar:=[]; # space spanned so far (canonized)
+
+  gens:=[]; # matrix gens, in new basis (sub)
+  sz:=1;
+  notyet:=[]; # unstabilized yet (if there are diagonals)
+
+  while Length(sofar)<n do
+
+    new:=Filtered(spaces,x->Length(x)>Length(sofar));
+    l:=Length(new);
+    min:=[1..Length(new)];
+    pairs:=Concatenation(List([1..l],x->List([x+1..l],y->[x,y])));
+
+    # we try to find a direct sum structure (modulo sofar).
+    # But since we do not form closures, there could still be intersections,
+    # e.g. if <1,0,0>, <0,1,0> and <(1,1,0),(1,1,1)>,
+    # Thus, when trying to form a direct sum modulo sofar, we could still find
+    # some not minimal, so we might need to iterate
+
+    repeat
+      direct:=true;
       i:=1;
-      while Length(yet)<n do
-	if not spaceincl(yet,spaces[i]) then
-	  Add(new,spaces[i]);
-	  yet:=canonicalform(Concatenation(yet,spaces[i]));
+
+      while i<=Length(pairs) do
+	# intersect
+	s:=SumIntersectionMat(new[pairs[i][1]],new[pairs[i][2]])[2];
+	s:=canonicalform(s);
+	if Length(s)>Length(sofar) then
+	  # are intersectants not minimal
+	  if Length(s)<Length(new[pairs[i][1]]) then
+	    RemoveSet(min,pairs[i][1]);
+	  fi;
+	  if Length(s)<Length(new[pairs[i][2]]) then
+	    RemoveSet(min,pairs[i][2]);
+	  fi;
+	  # is intersection new?
+	  if not ForAny(new,x->Length(x)=Length(s) and s=x) then
+	    j:=pairs[i];
+	    # clean out pairs to save memory?
+	    if i*4>Length(pairs) then
+	      pairs:=pairs{[i..Length(pairs)]};
+	      i:=0;
+	    fi;
+
+	    if Length(s)>Length(sofar)+1 then
+	      Append(pairs,
+		List(Difference([1..Length(new)],j),x->[x,l+1]));
+	    fi;
+	    Add(new,s);
+	    l:=l+1;
+	    AddSet(min,l);
+	    # new intersection
+	  fi;
 	fi;
 	i:=i+1;
       od;
-      spaces:=new;
-      l:=Length(spaces);
-      doonedim:=false;
-    fi;
+      pairs:=pairs{[i..Length(pairs)]};
+      # now new{min} is a list of spaces that are minimal wrt intersection.
 
-    yet:=0;
-    done:=[0];
-    incl:=List([1..l],x->[0,x]);
-    new:=[];
-    for i in [1..l] do
-      for j in [i+1..l] do
-	if spaceincl(spaces[j],spaces[i]) then
-	  AddSet(incl,[i,j]);
+      subs:=List(sub,ShallowCopy);
+      sofars:=List(sofar,ShallowCopy);
+      rans:=[];
+      SortBy(min,x->Length(new[x]));
+      i:=1;
+      incl:=[];
+      done:=[];
+      while direct and i<=Length(min) do
+	s:=SumIntersectionMat(sofars,new[min[i]]);
+	if Length(s[2])=Length(sofar) then
+	  # trivial intersection (modulo), just add new vectors
+	  j:=outvecs(sofar,new[min[i]]);
+	  rans[i]:=[Length(subs)+1..Length(s[1])];
+if Length(rans[i])=0 then Error("EGAD");fi;
+	  Append(subs,j);
+	  Append(sofars,j);
+	  sofars:=canonicalform(sofars);
+	elif Length(s[2])=Length(new[min[i]]) then
+	  # space is contained in direct sum so far -- don't grow
+	  rans[i]:=fail;
 	else
-	  # check for meet/join closed
-	  s:=SumIntersectionMat(spaces[i],spaces[j]);
-	  s:=List(s,canonicalform);
-	  for k in s do
-	    if Length(k)>0 and not ForAny(spaces,x->x=k) then
-	      Add(new,k);
-	    fi;
-	  od;
+	  # there is a new intersection, we did not yet know. Add it
+	  if Length(s[2])>Length(sofar)+1 then
+	    Append(pairs,List(Difference([1..Length(new)],[min[i]]),x->[x,l+1]));
+	  fi;
+	  l:=l+1;
+	  Add(new,s[2]);
+	  AddSet(done,min[i]);
+	  AddSet(incl,l); # i is not minimal
+	  direct:=false;
 	fi;
+	i:=i+1;
       od;
-    od; 
-    if Length(new)>0 then
-      spaces:=Set(Concatenation(spaces,new));
-      l:=Length(spaces);
-      SortBy(spaces,Length);
-    fi;
-  until Length(new)=0;
-
-  notyet:=[];
-  gens:=[];
-  sz:=1;
-
-  while Length(sub)<n do
-    # find minimal ones above yet
-    min:=Filtered([1..l],x->[yet,x] in incl);
-    min:=Filtered(min,x->not ForAny(min,y->[y,x] in incl));
-    rans:=[];
-    sofar:=ShallowCopy(sub);
-    for i in min do
-      AddSet(done,i);
-      if spaceincl(sofar,spaces[i]) then
-	# somewhat diagonal -- stabilize later.
-	Add(notyet,spaces[i]);
-	Add(rans,fail);
-      else
-	new:=outvecs(sub,spaces[i]);
-	Add(rans,[Length(sofar)+1..Length(sofar)+Length(new)]);
-	Append(sofar,new);
+      if direct=false then
+	min:=Union(Difference(Set(min),done),incl);
       fi;
-    od;
+    until direct;
 
-    ngens:=[];
-    # now go through each space and add a GL (or GL\wr) in that space
+    # now min and associated rans give us the spaces to add
+    Append(allstab,new{min});
+
+    # go through each needed space and add a GL (or GL\wr) in that space
     for i in [1..Length(min)] do
       if rans[i]<>fail then
 	spl:=[];
 	for j in sporb do
-	  s:=List(j,x->SumIntersectionMat(Concatenation(sub,x),
-	    Concatenation(sub,sofar{rans[i]}))[2]);
-	  s:=Filtered(s,x->Length(x)>Length(sub) and Length(x)<
-	    Length(rans[i])+Length(sub));
-	  if Length(s)>2 then
-	    Error("sporblen>2 not yet done");
-	  elif Length(s)=2 then
+	  s:=List(j,x->SumIntersectionMat(x,new[min[i]])[2]);
+	  # if the dimension changes, its hard to be clever
+	  if Length(Set(List(s,Length)))>1 and
+	    Length(s[1])>Length(sofar) and Length(s[1])<Length(new[min[i]]) then
 	    Add(spl,s);
 	  fi;
 	od;
@@ -1144,76 +1184,97 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
 	  # new basis vectors
 	  a:=[];
 	  for j in spl do
-	    Add(a,outvecs(sub,j));
+	    Add(a,outvecs(sofar,j));
 	  od;
-	  Assert(1,Sum(a,Length)=Length(rans[i]));
-	  Assert(1,Length(a[1])=Length(a[2]));
-	  sofar{rans[i]}:=Concatenation(a);
-
-	  a:=MatWreathProduct(GL(Length(a[1]),field),SymmetricGroup(Length(a)));
+	  if Sum(a,Length)=Length(rans[i]) then
+	    # otherwise its strange and we can't do...
+	    Append(sub,Concatenation(a)); # basis vectors for product
+	    a:=MatWreathProduct(GL(Length(a[1]),field),SymmetricGroup(Length(a)));
+	  else
+	    a:=GL(Length(rans[i]),field);
+	    Append(sub,subs{rans[i]}); # use the existing basis vectors
+	  fi;
 	else
 	  # make a GL on the space
 	  a:=GL(Length(rans[i]),field);
+	  Append(sub,subs{rans[i]}); # use the existing basis vectors
 	fi;
 
 	sz:=sz*Size(a);
 	for k in GeneratorsOfGroup(a) do
 	  m:=List(one,ShallowCopy);
 	  m{rans[i]}{rans[i]}:=k;
-	  Add(ngens,m);
+	  Add(gens,m);
 	od;
+      else
+	# mark that we need to stabilizer this space as well
+        Add(notyet,new[min[i]]); 
       fi;
 
     od;
 
-    if yet>0 then
-      sz:=sz*Size(field)^(Length(sub)*(Length(sofar)-Length(sub)));
+    if Length(sofar)>0 then
+      sz:=sz*Size(field)^(Length(sofar)*(Length(sub)-Length(sofar)));
       # add generators for the bimodule.
-      rans:=[1..Length(sub)];
+      rans:=[1..Length(sofar)];
       s:=List(gens,x->x{rans}{rans});
       s:=RedmatSpanningIndices(s);
 
-      rans:=[Length(sub)+1..Length(sofar)];
-      t:=List(ngens,x->TransposedMat(x{rans}{rans}));
+      rans:=[Length(sofar)+1..Length(sub)];
+      t:=List(gens,x->TransposedMat(x{rans}{rans}));
       t:=RedmatSpanningIndices(t);
       for i in s do
         for j in t do
 	  m:=List(one,ShallowCopy);
-	  m[Length(sub)+j][i]:=One(field);
-	  Add(ngens,m);
+	  m[Length(sofar)+j][i]:=One(field);
+	  Add(gens,m);
 	od;
       od;
     fi;
 
-    sub:=sofar;
-    yet:=First([1..l],x->Length(sub)=Length(spaces[x]) and
-	  spaceincl(sub,spaces[x]));
-    AddSet(done,yet);
-    # any others that are included?
-    for i in Filtered([1..l],x->[x,yet] in incl) do
-      AddSet(done,i);
-    od;
-    # remove sporb's that are too small
-    sporb:=Filtered(sporb,x->not ForAll(x,y->spaceincl(sub,y)));
-    Append(gens,ngens);
+    sofar:=canonicalform(List(sub,ShallowCopy));
+    if Length(sofar)<n then
+      # move spaces to images in factor
+      new:=[];
+      for i in spaces do
+	a:=canonicalform(Concatenation(sofar,i));
+	if not a in new then
+	  Add(new,a);
+	fi;
+      od;
+      spaces:=new;
+      new:=[];
+      for i in sporb do
+	a:=List(i,x->canonicalform(Concatenation(sofar,x)));
+	a:=Set(a);
+	if not ForAny(new,x->x=a) then
+	  Add(new,a);
+	fi;
+      od;
+      sporb:=new;
+      #Print(Collected(List(spaces,Length)),"\n");
+    fi;
+
   od;
+
+  gens:=Filtered(gens,x->not IsOne(x));
+  spl:=gens;
 
   gens:=List(gens,x->x^sub);
-  a:=Group(gens);
+  a:=Group(gens,one);
   SetSize(a,sz);
-  # are there diagonals we did not deal with?
+
+  # are there diagonals we did not deal with, also original spaces?
+  Append(notyet,ospaces);
+  SortBy(notyet,Length);
   for i in notyet do
-    a:=Stabilizer(a,i,OnSubspacesByCanonicalBasis);
+    a:=Stabilizer(a,canonicalform(i),OnSubspacesByCanonicalBasis);
+    Add(allstab,canonicalform(i));
   od;
 
-  # and any we left?
-  if doonedim=false then
-    for i in ospaces do
-      a:=Stabilizer(a,i,OnSubspacesByCanonicalBasis);
-    od;
-  fi;
+  done:=a;
 
-  if Length(osporb)>1 then
+  if Length(osporb)>0 then
     # we only stabilized one pair so far
     for i in osporb do
       # assumption: orbit is not too long... (i.e. TODO: improve)
@@ -1230,6 +1291,40 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
       fi;
     od;
   fi;
+
+  # test for correctness. This is not an assertion for two reasons:
+  # - Assertions also turn on heavy checks for homomophisms that can slow
+  # the whole calculation down beyond reasonable
+  # - This is a hard test which would slow testing down, implying that the
+  # tests would be thrown out of the standard test suite.
+  if ValueOption("TestSpaces")=true and
+   Size(field)^n<=10^5 then
+   # test
+   Print("Test\n");
+   b:=GL(n,field);
+   # fixing spaces is projective
+   yet:=NormedVectors(field^n);
+   act:=ActionHomomorphism(b,yet,OnLines,"surjective");
+   b:=Image(act,b);
+   spaces:=ShallowCopy(ospaces);
+   SortBy(spaces,Length);
+   for i in spaces do
+      i:=Set(List(NormedVectors(VectorSpace(field,i)),x->Position(yet,x)));
+      b:=Stabilizer(b,i,OnSets);
+      Print("Stab ",Size(b),"\n");
+    od;
+    for i in osporb do
+      i:=List(i,x->Set(List(NormedVectors(VectorSpace(field,x)),x->Position(yet,x))));
+      b:=Stabilizer(b,Union(i),OnSets);
+      b:=Stabilizer(b,Set(i),OnSetsSets);
+    od;
+
+    b:=PreImage(act,b);
+    if b<>a then Error("WRONG");fi;
+    Print("Test succeeded\n");
+  fi;
+
+
   return a;
 end);
 
@@ -1490,11 +1585,6 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 	# A and B will not be used later, so it is no problem to 
 	# replace them by other groups with fewer generators
 	B:=SubgroupNC(B,SmallGeneratingSet(B));
-
-	Assert(2,
-	  ForAll(spaces,x->Length(Orbit(B,x,OnSubspacesByCanonicalBasis))=1));
-	Assert(2,
-	  ForAll(sporb,x->Length(Orbit(B,x[1],OnSubspacesByCanonicalBasis))<=Length(x)));
 
 	# not needed any longer
 #	if somechar<>fail then
