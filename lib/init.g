@@ -14,7 +14,6 @@
 Revision := rec();
 
 
-    
 #############################################################################
 ##
 #1 Temporary error handling until we are able to read error.g
@@ -207,9 +206,9 @@ RANK_FILTER_LIST         := [];
 RANK_FILTER_LIST_CURRENT := fail;
 RANK_FILTER_COUNT        := fail;
 
-RANK_FILTER_COMPLETION   := Error;	# defined in "filter.g"
-RANK_FILTER_STORE        := Error;	# defined in "filter.g"
-RANK_FILTER              := Error;	# defined in "filter.g"
+RANK_FILTER_COMPLETION   := Error;      # defined in "filter.g"
+RANK_FILTER_STORE        := Error;      # defined in "filter.g"
+RANK_FILTER              := Error;      # defined in "filter.g"
 RankFilter               := Error;      # defined in "filter.g"
 
 
@@ -325,22 +324,22 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
 
         error := not READ_GAP_ROOT(libname);
 
-	if error then
-	  if LEN_LIST( arg )=1 then
-	    Error( "the library file '", name, "' must exist and ",
-		   "be readable");
-	  else
-	    return false;
-	  fi;
-	elif path<>"pkg" then
-	  # check the revision entry
+        if error then
+          if LEN_LIST( arg )=1 then
+            Error( "the library file '", name, "' must exist and ",
+                   "be readable");
+          else
+            return false;
+          fi;
+        elif path<>"pkg" then
+          # check the revision entry
           ext := SHALLOW_COPY_OBJ(prefix);
-	  APPEND_LIST_INTR(ext,ReplacedString( name, ".", "_" ));
+          APPEND_LIST_INTR(ext,ReplacedString( name, ".", "_" ));
         fi;
 
-      if LEN_LIST(arg)>1 then
-	return true;
-      fi;
+        if LEN_LIST(arg)>1 then
+          return true;
+        fi;
 
     end;
 end);
@@ -368,13 +367,13 @@ NONAVAILABLE_FUNC:=function(arg)
 local s;
   if LENGTH(arg)=0 then
     return function(arg)
-	    Error("this function is not available");
-	  end;
+            Error("this function is not available");
+          end;
   else
     s:=arg[1];
     return function(arg)
-	    Error("the ",s," is required but not installed");
-	  end;
+            Error("the ",s," is required but not installed");
+          end;
   fi;
 end;
 
@@ -665,6 +664,7 @@ DeclareUserPreference( rec(
 CallAndInstallPostRestore( function()
     READ_GAP_ROOT( "gap.ini" );
 end );
+
 
 #############################################################################
 ##
