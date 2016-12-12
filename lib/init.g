@@ -203,10 +203,6 @@ ReadGapRoot( "lib/global.g" );
 ##
 ReadGapRoot( "lib/system.g" );
 
-IS_READ_OR_COMPLETE := false;
-
-READED_FILES := [];
-
 RANK_FILTER_LIST         := [];
 RANK_FILTER_LIST_CURRENT := fail;
 RANK_FILTER_COUNT        := fail;
@@ -243,23 +239,6 @@ ReadOrComplete := function(name)
         Error( "cannot read file ", name );
     fi;
 end;
-
-#############################################################################
-##
-#F  READ_CHANGED_GAP_ROOT( <name> ) . . . . . .  completion file is out-dated
-##
-READ_CHANGED_GAP_ROOT := function( name )
-    local   rankFilter;
-
-    rankFilter := RankFilter;
-    RankFilter := RANK_FILTER;
-    Print( "#W  inconsistent completion for \"", name, "\"\n" );
-    if not READ_GAP_ROOT(name)  then
-        Error( "cannot read file ", name );
-    fi;
-    RankFilter := rankFilter;
-end;
-
 
 #############################################################################
 ##
@@ -336,39 +315,15 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
     fi;
 
     return function( arg )
-        local  name,  ext,  libname, error, rflc, rfc;
+        local  name,  ext,  libname, error;
 
-	error:=false;
-	name:=arg[1];
+        name := arg[1];
         # create a filename from <path> and <name>
         libname := SHALLOW_COPY_OBJ(path);
         APPEND_LIST_INTR( libname, "/" );
         APPEND_LIST_INTR( libname, name );
 
-        # we are completing, store the filename and filter ranks
-        if IS_READ_OR_COMPLETE  then
-            ADD_LIST( READED_FILES, libname );
-            if IsBound(RANK_FILTER_LIST_CURRENT) then
-                rflc := RANK_FILTER_LIST_CURRENT;
-            fi;
-            if IsBound(RANK_FILTER_COUNT) then
-                rfc := RANK_FILTER_COUNT;
-            fi;
-            RANK_FILTER_LIST_CURRENT := [];
-            RANK_FILTER_COUNT := 0;
-            ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
-            error:=not READ_GAP_ROOT(libname);
-            Unbind(RANK_FILTER_LIST_CURRENT);
-            if IsBound(rflc) then
-                RANK_FILTER_LIST_CURRENT := rflc;
-            fi;
-            Unbind(RANK_FILTER_COUNT);
-            if IsBound(rfc) then
-                RANK_FILTER_COUNT := rfc;
-            fi;
-        else
-            error:=not READ_GAP_ROOT(libname);
-        fi;
+        error := not READ_GAP_ROOT(libname);
 
 	if error then
 	  if LEN_LIST( arg )=1 then
