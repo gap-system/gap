@@ -288,57 +288,37 @@ gap>
 #T# Checking for correct non-removal of one from generating sets in
 # SemigroupByGenerators JDM
 gap> S := Semigroup(PartialPerm([1]));
-<trivial partial perm group of rank 1 with 1 generator>
+<trivial partial perm monoid of rank 1 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfMonoid(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfGroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfInverseSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfInverseMonoid(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> S := Semigroup(IdentityTransformation);
-<trivial transformation group of degree 0 with 1 generator>
+<trivial transformation monoid of degree 0 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfMonoid(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfGroup(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfInverseSemigroup(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfInverseMonoid(S);
 [ IdentityTransformation ]
 
 #T# Checking for correct non-removal of one from generating sets in
 # MonoidByGenerators JDM
 gap> S := Monoid(PartialPerm([1]));
-<trivial partial perm group of rank 1 with 1 generator>
+<trivial partial perm monoid of rank 1 with 1 generator>
 gap> S := Monoid(PartialPerm([1]));
-<trivial partial perm group of rank 1 with 1 generator>
+<trivial partial perm monoid of rank 1 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfMonoid(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfGroup(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfInverseSemigroup(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfInverseMonoid(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> S := Monoid(IdentityTransformation);
-<trivial transformation group of degree 0 with 1 generator>
+<trivial transformation monoid of degree 0 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfMonoid(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfGroup(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfInverseSemigroup(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfInverseMonoid(S);
 [ IdentityTransformation ]
 
 #T# Checking for correct non-removal of one from generating sets in
@@ -349,19 +329,11 @@ gap> GeneratorsOfSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfMonoid(S);
 [ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfGroup(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfInverseSemigroup(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfInverseMonoid(S);
-[ <identity partial perm on [ 1 ]> ]
 gap> S := InverseSemigroup(IdentityTransformation);
 <trivial transformation group of degree 0 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfMonoid(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfGroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfInverseSemigroup(S);
 [ IdentityTransformation ]
@@ -376,8 +348,6 @@ gap> GeneratorsOfSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfMonoid(S);
 [ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfGroup(S);
-[ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfInverseSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfInverseMonoid(S);
@@ -387,8 +357,6 @@ gap> S := InverseMonoid(IdentityTransformation);
 gap> GeneratorsOfSemigroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfMonoid(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfGroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfInverseSemigroup(S);
 [ IdentityTransformation ]
