@@ -57,6 +57,7 @@ matrix:
 
 script:
   - ./configure --with-gmp=system
-  - make
+  - make config
+  - make -j4
   - make bootstrap-pkg-full
   - bash etc/ci.sh
