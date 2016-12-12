@@ -1174,7 +1174,7 @@ if Length(rans[i])=0 then Error("EGAD");fi;
 	for j in sporb do
 	  s:=List(j,x->SumIntersectionMat(x,new[min[i]])[2]);
 	  # if the dimension changes, its hard to be clever
-	  if Length(Set(List(s,Length)))>1 and
+	  if Length(Set(List(s,Length)))=1 and
 	    Length(s[1])>Length(sofar) and Length(s[1])<Length(new[min[i]]) then
 	    Add(spl,s);
 	  fi;
