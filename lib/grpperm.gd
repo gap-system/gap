@@ -339,6 +339,23 @@ DeclareAttribute( "TransitiveIdentification", IsPermGroup );
 
 #############################################################################
 ##
+#F  PrimitiveGroupsAvailable(<deg>)
+##
+##  <ManSection>
+##  <Func Name="PrimitiveGroupsAvailable" Arg='deg'/>
+##
+##  <Description>
+##  To offer a clearer interface to the primitive groups library, this
+##  function checks whether the primitive groups of degree <A>deg</A> are
+##  available to load and will, if needed, load basic data structures for
+##  this degree.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "PrimitiveGroupsAvailable" );
+
+#############################################################################
+##
 #A  PrimitiveIdentification( <G> )
 ##
 ##  <#GAPDoc Label="PrimitiveIdentification">

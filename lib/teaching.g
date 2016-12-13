@@ -448,7 +448,7 @@ DeclareGlobalFunction("SetExecutionObject");
 
 InstallGlobalFunction(CosetDecomposition,function(G,S)
 local i,l,e,t;
-  e:=Elements(S);
+  e:=AsSSortedList(S);
   l:=[e];
   for i in RightTransversal(G,S) do
     if not i in S then
@@ -693,7 +693,7 @@ InstallGlobalFunction(ShowMultiplicationTable,function(arg)
 local obj,op;
   obj:=arg[1];
   if not IsList(obj) then
-    obj:=Elements(obj);
+    obj:=AsSSortedList(obj);
   fi;
   op:=\*;
   if Length(arg)>1 and IsInt(arg[2]) then
@@ -706,7 +706,7 @@ InstallGlobalFunction(ShowAdditionTable,function(arg)
 local obj,op;
   obj:=arg[1];
   if not IsList(obj) then
-    obj:=Elements(obj);
+    obj:=AsSSortedList(obj);
   fi;
   op:=\+;
   if Length(arg)>1 and IsInt(arg[2]) then
@@ -863,7 +863,7 @@ BindGlobal("GallianCyclic",function(n,a)
   if Gcd(a,n)<>1 then
     Error("a must be coprime to n");
   fi;
-  return Elements(Group(a*One(Integers mod n)));
+  return AsSSortedList(Group(a*One(Integers mod n)));
 end);
 
 BindGlobal("GallianOrderFrequency",function(G)
@@ -888,7 +888,7 @@ local c,l,i;
   l:=[];
   for i in c do
     if CycleStructurePerm(Representative(i))=s then
-      l:=Union(l,Elements(i));
+      l:=Union(l,AsSSortedList(i));
     fi;
   od;
   return l;
@@ -1013,7 +1013,7 @@ BindGlobal("AllEndomorphisms",G->AllHomomorphisms(G,G));
 
 BindGlobal("GallianHomoDn",AllEndomorphisms);
 
-BindGlobal("AllAutomorphisms",G->Elements(AutomorphismGroup(G)));
+BindGlobal("AllAutomorphisms",G->AsSSortedList(AutomorphismGroup(G)));
 
 BindGlobal("GallianAutoDn",AllAutomorphisms);
 

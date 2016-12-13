@@ -529,10 +529,15 @@ end);
 
 BindGlobal("MaxesAlmostSimple",function(G)
 local id,m,epi;
-  # which cases can we deal with already?
-  if IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G) then
+  # Are just finding out that a group is symmetric or alternating?
+  # if so, try tu use method that uses data library
+  if not (HasIsNaturalSymmetricGroup(G) or HasIsNaturalAlternatingGroup(G))
+    and (IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G)) then
     Info(InfoLattice,1,"MaxesAlmostSimple: Use S_n/A_n");
-    return MaximalSubgroupClassReps(G);
+    m:=MaximalSubgroupsSymmAlt(G,false);
+    if m<>fail then
+      return m;
+    fi;
   fi;
 
   # does the table of marks have it?

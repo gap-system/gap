@@ -764,7 +764,7 @@ local rcls, cl, mark, rep, c, o, cop, same, sub, pow, p, i, j,closure,
   if Length(Filtered(cl,x->Size(x)<10))<10000 then
     # trigger for cheap element test
     for i in [1..Length(cl)] do
-      if Size(cl[i])<10 then Elements(cl[i]);fi;
+      if Size(cl[i])<10 then AsSSortedList(cl[i]);fi;
     od;
   fi;
 

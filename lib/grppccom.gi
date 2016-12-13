@@ -1017,7 +1017,7 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
 	  p^Length(bas.factorspace)," Complements");
 	elm:=VectorSpace(GF(p),bas.factorspace,Zero(ocr.oneCocycles));
 	if Length(bas.factorspace)=0 then
-	  elm:=Elements(elm);
+	  elm:=AsSSortedList(elm);
 	else
 	  elm:=Enumerator(elm);
 	fi;

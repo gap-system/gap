@@ -3757,8 +3757,8 @@ SMTX_OrthogonalSign:=function(gm)
     z:=Zero(k);
     lo:=[o];
     lzo:=[z,o];
-    lines:=List(Elements(FullRowSpace(k,2)),x -> Concatenation(lo,x));
-    Append(lines,List(Elements(k), x-> Concatenation(lzo,[x])));
+    lines:=List(AsSSortedList(FullRowSpace(k,2)),x -> Concatenation(lo,x));
+    Append(lines,List(AsSSortedList(k), x-> Concatenation(lzo,[x])));
     Add(lines,[z,z,o]);
     
     #

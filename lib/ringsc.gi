@@ -290,7 +290,7 @@ local fam,r,w,l,o;
   r:=fam!.fullSCRing;
   if One(r)=fail then return fail;fi;
   if IsFinite(r) then
-    r:=Filtered(Elements(r),y->x*y=One(r) and y*x=One(r));
+    r:=Filtered(AsSSortedList(r),y->x*y=One(r) and y*x=One(r));
     if Length(r)>0 then
       return r[1];
     else

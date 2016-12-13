@@ -79,13 +79,11 @@
 ##  increasing size, though it holds for many degrees.)
 ##  <#/GAPDoc>
 
-
 #############################################################################
 ##
 ## tell GAP about the component
 ##
 DeclareComponent("prim","3.0");
-
 
 #############################################################################
 ##
@@ -109,6 +107,13 @@ DeclareComponent("prim","3.0");
 ##
 UnbindGlobal("PrimitiveGroup");
 DeclareGlobalFunction( "PrimitiveGroup" );
+
+# Availability test for the library
+# ensure that the dummy binds from the library are killed
+MakeReadWriteGlobal("PrimitiveGroupsAvailable");
+Unbind(PrimitiveGroupsAvailable);
+DeclareGlobalFunction("PrimitiveGroupsAvailable");
+
 
 
 #############################################################################
@@ -263,27 +268,6 @@ DeclareAttribute( "SimsNo", IsPermGroup );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalVariable("PrimitiveIndexIrreducibleSolvableGroup");
-
-#############################################################################
-##
-#F  MaximalSubgroupsSymmAlt( <grp> [,<onlyprimitive>] )
-##
-##  <ManSection>
-##  <Func Name="MaximalSubgroupsSymmAlt" Arg='grp [,onlyprimitive]'/>
-##
-##  <Description>
-##  For a symmetric or alternating group <A>grp</A>, this function returns
-##  representatives of the classes of maximal subgroups.
-##  <P/>
-##  If the parameter <A>onlyprimitive</A> is given and set to <K>true</K> only the
-##  primitive maximal subgroups are computed.
-##  <P/>
-##  No parameter test is performed. (The function relies on the primitive
-##  groups library for its functionality.)
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction("MaximalSubgroupsSymmAlt");
 
 
 #############################################################################

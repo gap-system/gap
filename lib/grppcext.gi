@@ -866,7 +866,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 
 	# ensure wa also account for action
 	u:=Group(tup);
-	elmlist:=Elements(u);
+	elmlist:=AsSSortedList(u);
 	tmp:=GeneratorsOfGroup(u);
 	i:=1;
 	while elmlist<>fail and i<=Length(tmp) do
@@ -878,7 +878,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 	        elmlist:=fail;
 		f:=basicact;
 	      else
-		elmlist:=Elements(u);
+		elmlist:=AsSSortedList(u);
 		tmp:=GeneratorsOfGroup(u);
 	      fi;
 	    fi;

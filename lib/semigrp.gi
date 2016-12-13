@@ -245,7 +245,7 @@ function(S, x)
     Error("usage: the 2nd argument must be an element of the 1st,");
     return;
   fi;
-  return Filtered(Elements(S), y -> x * y * x = x and y * x * y = y);
+  return Filtered(AsSSortedList(S), y -> x * y * x = x and y * x * y = y);
 end);
 
 #
