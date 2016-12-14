@@ -2332,7 +2332,7 @@ Int HasAvailableBytes( UInt fid )
       syBuf[fid].fp == -1)
     return -1;
 
-  if (syBuf[fid].bufno > 0)
+  if (syBuf[fid].bufno >= 0)
     {
       bufno = syBuf[fid].bufno;
       if (syBuffers[bufno].bufstart < syBuffers[bufno].buflen)
