@@ -3039,7 +3039,7 @@ Obj FuncGetBottomLVars( Obj self )
 
 Obj FuncParentLVars( Obj self, Obj lvars )
 {
-  if (TNUM_OBJ(lvars) != T_LVARS) {
+  if (TNUM_OBJ(lvars) != T_LVARS && TNUM_OBJ(lvars) != T_HVARS) {
     ErrorQuit( "<lvars> must be an lvars (not a %s)",
                (Int)TNAM_OBJ(lvars), 0L );
     return 0;
