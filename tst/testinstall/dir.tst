@@ -18,4 +18,4 @@ gap> SortedList(DirectoryContents(dirTest));
 [ ".", "..", "A", "B", "C", "D" ]
 gap> SortedList(DirectoryContents(Directory(dirTest)));
 [ ".", "..", "A", "B", "C", "D" ]
-gap> STOP_TEST("dir.tst", 1);
+gap> STOP_TEST("dir.tst", 270000);

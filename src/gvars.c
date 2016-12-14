@@ -232,7 +232,6 @@ void            AssGVar (
     Obj                 cops;           /* list of internal copies         */
     Obj *               copy;           /* one copy                        */
     UInt                i;              /* loop variable                   */
-    Char *              name;           /* name of a function              */
     Obj                 onam;           /* object of <name>                */
     Int                 len;            /* length of string                */
     UInt		gvar_bucket = GVAR_BUCKET(gvar);
@@ -302,19 +301,8 @@ void            AssGVar (
 
     /* assign name to a function                                           */
     if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
-	if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
-	    name = NameGVar(gvar);
-	    /*CCC        onam = NEW_STRING(strlen(name));
-	      strncat( CSTR_STRING(onam), name, strlen(name) ); CCC*/
-	    len = strlen(name);
-	    C_NEW_STRING_DYN(onam, name);
-	    RESET_FILT_LIST( onam, FN_IS_MUTABLE );
-	    NAME_FUNC(val) = onam;
-	    CHANGED_BAG(val);
-	}
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
-        name = NameGVar(gvar);
-        C_NEW_STRING_DYN(onam, name);
+        onam = CopyToStringRep(NameGVarObj(gvar));
         RESET_FILT_LIST( onam, FN_IS_MUTABLE );
         NAME_FUNC(val) = onam;
         CHANGED_BAG(val);
@@ -891,7 +879,8 @@ Obj FuncIDENTS_GVAR (
     /*QQ extern Obj          NameGVars;   */
     Obj                 copy;
     UInt                i;
-    UInt		num_gvars;
+    Obj                 strcopy;
+    UInt                num_gvars;
 
     LockGVars(0);
     num_gvars = CountGVars;
@@ -899,8 +888,12 @@ Obj FuncIDENTS_GVAR (
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, num_gvars );
     for ( i = 1;  i <= num_gvars;  i++ ) {
-        SET_ELM_PLIST( copy, i,
-	  ELM_PLIST( NameGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) ) );
+        /* Copy the string here, because we do not want members of NameGVars
+         * accessable to users, as these strings must not be changed */
+        strcopy = CopyToStringRep( ELM_PLIST( NameGVars[GVAR_BUCKET(i)],
+                                              GVAR_INDEX(i) ) );
+        SET_ELM_PLIST( copy, i, strcopy );
+        CHANGED_BAG( copy );
     }
     SET_LEN_PLIST( copy, num_gvars );
     return copy;
@@ -912,7 +905,8 @@ Obj FuncIDENTS_BOUND_GVARS (
     /*QQ extern Obj          NameGVars;   */
     Obj                 copy;
     UInt                i, j;
-    UInt		num_gvars;
+    Obj                 strcopy;
+    UInt                num_gvars;
 
     LockGVars(0);
     num_gvars = CountGVars;
@@ -922,8 +916,13 @@ Obj FuncIDENTS_BOUND_GVARS (
     for ( i = 1, j = 1;  i <= num_gvars;  i++ ) {
         if ( VAL_GVAR( i ) ||
 	     ELM_PLIST( ExprGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) )) {
-           SET_ELM_PLIST( copy, j,
-	     ELM_PLIST( NameGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) ) );
+           /* Copy the string here, because we do not want members of
+            * NameGVars accessable to users, as these strings must not be
+            * changed */
+           strcopy = CopyToStringRep( ELM_PLIST( NameGVars[GVAR_BUCKET(i)],
+                                                 GVAR_INDEX(i) ) );
+           SET_ELM_PLIST( copy, j, strcopy );
+           CHANGED_BAG( copy );
            j++;
         }
     }
@@ -1524,7 +1523,7 @@ static Int InitLibrary (
         "ErrorMustHaveAssObj", -1L,"args", ErrorMustHaveAssObjHandler );
 
     /* make the list of global variables                                   */
-    SizeGVars  = 997;
+    SizeGVars  = 14033;
     TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
     MakeBagPublic(TableGVars);
     SET_LEN_PLIST( TableGVars, SizeGVars );

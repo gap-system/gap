@@ -149,7 +149,7 @@ DeclareAttribute("OccuringVariableIndices",IsMonomialOrdering);
 ##
 ##  <#GAPDoc Label="LeadingMonomialOfPolynomial">
 ##  <ManSection>
-##  <Func Name="LeadingMonomialOfPolynomial" Arg='pol,ord'/>
+##  <Oper Name="LeadingMonomialOfPolynomial" Arg='pol,ord'/>
 ##
 ##  <Description>
 ##  returns the leading monomial (with respect to the ordering <A>ord</A>)
@@ -207,7 +207,7 @@ DeclareOperation("LeadingCoefficientOfPolynomial",
 ##
 ##  <#GAPDoc Label="LeadingTermOfPolynomial">
 ##  <ManSection>
-##  <Func Name="LeadingTermOfPolynomial" Arg='pol,ord'/>
+##  <Oper Name="LeadingTermOfPolynomial" Arg='pol,ord'/>
 ##
 ##  <Description>
 ##  returns the leading term (with respect to the ordering <A>ord</A>)
@@ -448,7 +448,7 @@ DeclareGlobalFunction("PolynomialReducedRemainder");
 ##   Label="for a list and a monomial ordering"/>
 ##  <Oper Name="GroebnerBasis" Arg='I, O'
 ##   Label="for an ideal and a monomial ordering"/>
-##  <Oper Name="GroebnerBasisNC" Arg='L, O'/>
+##  <Func Name="GroebnerBasisNC" Arg='L, O'/>
 ##
 ##  <Description>
 ##  Let <A>O</A> be a monomial ordering and <A>L</A> be a list of polynomials
@@ -484,6 +484,8 @@ DeclareOperation("GroebnerBasis",
   [IsHomogeneousList and IsRationalFunctionCollection,IsMonomialOrdering]);
 DeclareOperation("GroebnerBasis",[IsPolynomialRingIdeal,IsMonomialOrdering]);
 DeclareGlobalFunction("GroebnerBasisNC");
+
+DeclareSynonym("GrobnerBasis",GroebnerBasis);
 
 #############################################################################
 ##
@@ -533,6 +535,7 @@ DeclareOperation("ReducedGroebnerBasis",
   [IsHomogeneousList and IsRationalFunctionCollection,IsMonomialOrdering]);
 DeclareOperation("ReducedGroebnerBasis",
   [IsPolynomialRingIdeal,IsMonomialOrdering]);
+DeclareSynonym("ReducedGrobnerBasis",ReducedGroebnerBasis);
 
 #############################################################################
 ##

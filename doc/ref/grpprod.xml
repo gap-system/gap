@@ -147,7 +147,7 @@ the embeddings in the product and the projections from the product.
 Depending on the kind of product only some of these are defined.
 <P/>
 <ManSection>
-<Func Name="Embedding" Arg='P, nr' Label="for group products"/>
+<Oper Name="Embedding" Arg='P, nr' Label="for group products"/>
 
 <Description>
 returns the <A>nr</A>-th embedding in the group product <A>P</A>.
@@ -157,7 +157,7 @@ manual section for the appropriate product.
 </ManSection>
 
 <ManSection>
-<Func Name="Projection" Arg='P, nr' Label="for group products"/>
+<Oper Name="Projection" Arg='P, nr' Label="for group products"/>
 
 <Description>
 returns the (<A>nr</A>-th) projection of the group product <A>P</A>.

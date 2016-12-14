@@ -29,7 +29,7 @@ DeclareInfoClass("InfoGalois");
 ##
 ##  <#GAPDoc Label="GaloisType">
 ##  <ManSection>
-##  <Func Name="GaloisType" Arg='f[,cand]'/>
+##  <Attr Name="GaloisType" Arg='f'/>
 ##
 ##  <Description>
 ##  Let <A>f</A> be an irreducible polynomial with rational coefficients. This

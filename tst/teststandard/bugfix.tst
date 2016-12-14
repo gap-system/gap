@@ -10,6 +10,14 @@ gap> DeclareGlobalVariable("foo73");
 gap> InstallValue(foo73,true);
 Error, InstallValue: value cannot be immediate, boolean or character
 
+# Reported by Sohail Iqbal on 2008/10/15, added by AK on 2010/10/03
+gap> f:=FreeGroup("s","t");; s:=f.1;; t:=f.2;;
+gap> g:=f/[s^4,t^4,(s*t)^2,(s*t^3)^2];;
+gap> CharacterTable(g);
+CharacterTable( <fp group of size 16 on the generators [ s, t ]> )
+gap> Length(Irr(g));
+10
+
 ##  Check if ConvertToMatrixRepNC works properly. BH
 ##
 gap> mat := [[1,0,1,1],[0,1,1,1]]*One(GF(2));
@@ -648,19 +656,6 @@ gap> z^5-z-1;
 486192462527432755459620441970617283/
 14404247382319842421697357558805709031116987826242631261357
 
-# 2005/05/03 (SK)
-gap> l := AllSmallGroups(12);;
-gap> List(l,StructureDescription);; l;
-[ C3 : C4, C12, A4, D12, C6 x C2 ]
-gap> List(AllSmallGroups(40),G->StructureDescription(G:short));
-[ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "(10x2):2", "20x2", 
-  "5xD8", "5xQ8", "2x(5:4)", "2^2xD10", "10x2^2" ]
-gap> List(AllTransitiveGroups(DegreeAction,6),G->StructureDescription(G:short));
-[ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3", "(3^2):4", 
-  "2xS4", "A5", "(S3xS3):2", "S5", "A6", "S6" ]
-gap> StructureDescription(PSL(4,2));
-"A8"
-
 # 2005/05/03 (BE)
 gap> NumberSmallGroups(5^6);
 684
@@ -1084,11 +1079,11 @@ gap> testG :=
 >       return (Group(M1));
 >    end;;
 gap> StructureDescription(testG(8,2));
-"(C8 x C4) : C2"
+"((C8 x C2) : C2) : C2"
 gap> StructureDescription(testG(8,3));
 "C3 x QD16"
 gap> StructureDescription(testG(8,4));
-"(C16 x C4) : C2"
+"((C16 x C2) : C2) : C2"
 
 # 2006/02/27 (AH)
 gap> RepresentativeAction(Group(()), [1], [2], OnSets);;
@@ -1778,14 +1773,6 @@ gap> x:= [ [ Z(9), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ];;
 gap> y:= [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(9) ] ];;
 gap> IsConjugate( G, x, y );
 true
-
-# Reported by Sohail Iqbal on 2008/10/15, added by AK on 2010/10/03
-gap> f:=FreeGroup("s","t");; s:=f.1;; t:=f.2;;
-gap> g:=f/[s^4,t^4,(s*t)^2,(s*t^3)^2];;
-gap> CharacterTable(g);
-CharacterTable( <fp group of size 16 on the generators [ s, t ]> )
-gap> Length(Irr(g));
-10
 
 # 2010/10/06 (TB)
 gap> EU(7,2);
@@ -2613,6 +2600,8 @@ Syntax error: Badly formed number, need a digit before or after the decimal po\
 int in stream:1
 . . . .
 ^
+Syntax error: Record component name expected in stream:2
+^
 
 # 2013/08/29 (MH)
 gap> record := rec( foo := "bar" );
@@ -2877,7 +2866,7 @@ gap> if LoadPackage("tomlib", false) <> fail then
 # Tests requiring CTblLib
 
 # 2005/08/29 (TB)
-gap> LoadPackage("ctbllib", "=0.0");
+gap> LoadPackage("ctbllib", "=0.0",false);
 fail
 
 ##  Bug 18 for fix 4
@@ -3049,11 +3038,124 @@ gap> G:=Group((1,2,3,4));;Factorization(G,Elements(G)[1]);
 gap> l := [1,,,5];;
 gap> Remove(l);
 5
-gap> l;
-[ 1 ]
+gap> [l, Length(l)];
+[ [ 1 ], 1 ]
+gap> l := [,,,"x"];;
+gap> Remove(l);
+"x"
+gap> [l, Length(l)];
+[ [  ], 0 ]
+gap> l := [1,2,,[],"x"];;
+gap> Remove(l);
+"x"
+gap> [l, Length(l)];
+[ [ 1, 2,, [  ] ], 4 ]
+
+#2016/5/2 (MP)
+gap> S := FullTransformationMonoid(2);;
+gap> D := GreensDClassOfElement(S, IdentityTransformation);;
+gap> Intersection(D, []);
+[  ]
+gap> Intersection([], D);
+[  ]
+
+#2016/04/29 (FL, bug reported on support list)
+gap> Collected(List([1..200], i-> RandomPrimitivePolynomial(2,2)));
+[ [ x_1^2+x_1+Z(2)^0, 200 ] ]
+
+#another bug, detected when fixing the previous one (FL)
+gap> RandomPrimitivePolynomial(2,2,100);
+x_100^2+x_100+Z(2)^0
+
+#and a third bug (FL)
+gap> RandomPrimitivePolynomial(2,1);
+x_1+Z(2)^0
+gap> RandomPrimitivePolynomial(2,1,13);
+x_13+Z(2)^0
+
+#2016/04/27 (FL, bug reported on support list)
+gap> l := [1,,,5];;
+gap> Remove(l);
+5
+gap> [l, Length(l)];
+[ [ 1 ], 1 ]
+gap> l := [,,,"x"];;
+gap> Remove(l);
+"x"
+gap> [l, Length(l)];
+[ [  ], 0 ]
+gap> l := [1,2,,[],"x"];;
+gap> Remove(l);
+"x"
+gap> [l, Length(l)];
+[ [ 1, 2,, [  ] ], 4 ]
+
+#2016/05/30 (CJ, bug reported github #798)
+gap> sc := StabChainOp(Group((1,2)), rec(base := [3,2], reduced := false));;
+gap> SCRSift(sc, (1,2));
+()
+
+# 2016/07/07 (MP, bug reported by email)
+gap> Intersection([]);
+[  ]
+
+# 2016/07/20 (CJ, github issue #861)
+gap> IsFilter(IsObject);
+true
+
+#2016/8/1 (#869)
+gap> x:=X(GF(4));;e:=AlgebraicExtension(GF(4),x^3+x+1);;
+gap> Length(Elements(e));
+64
+gap> Length(Set(Elements(e)));
+64
+
+#2016/8/4 (AH, Reported by D. Savchuk)
+gap> r1:=PolynomialRing(GF(2),3);
+GF(2)[x_1,x_2,x_3]
+gap> x_1:=r1.1;;x_2:=r1.2;;x_3:=r1.3;;
+gap> I:=Ideal(r1,[x_1^2-x_2,x_2^2-x_1,x_1*x_2-x_3]);;
+gap> Size(r1/I);
+16
+gap> r1:=PolynomialRing(GF(2),4);;
+gap> x_1:=r1.1;;x_2:=r1.2;;x_3:=r1.3;;x_4:=r1.4;;
+gap> rels:=[x_1^2+x_2,x_1*x_2+x_3,x_1*x_3+x_4, x_1*x_4+x_1,x_2^2+x_4,
+>   x_2*x_3+x_1,x_2*x_4+x_2,x_3^2+x_2,x_3*x_4+x_3,x_4^2+x_4];;
+gap> Size(r1/Ideal(r1,rels));
+32
+
+# 2016/8/18 (AH)
+gap> src := FreeGroup(3);;
+gap> src := src / [src.3*src.1];;
+gap> SetReducedMultiplication(src);
+gap> f1:=src.1;;f2:=src.2;;f3:=src.3;;
+gap> gens := [ f1, f2, f2^-1*f3*f2 ];;
+gap> fp := IsomorphismFpGroupByGeneratorsNC(src,gens,"F");;
+gap> dst := Image(fp);;wrd:=RelatorsOfFpGroup(dst)[1];;
+gap> m:=MappedWord(wrd,GeneratorsOfGroup(FreeGroupOfFpGroup(dst)),gens);       
+<identity ...>
+
+# 2016/8/22 (AH)
+gap> g:=Group((1,2,4,3)(5,7,6,8)(9,11,10,13)(12,16,14,15)(17,19,18,20)       
+> (21,23,22,24)(25,31,36,39,35,27)(26,30,37,38,33,28)(29,32,34)
+> (40,41,42,43,44),
+> (1,3,6)(2,5,4)(7,9,12)(8,10,14)(11,15,17)(13,16,18)(19,21,24)
+> (20,22,23)(25,28,34)(26,33,37)(29,35,38)(30,32,36)(45,46,47,48,49));;
+gap> Size(FrattiniSubgroup(g));
+2
+
+# 2016/11/08 (MP), #838, output of OrthognalEmbeddings is very long
+gap> g := [ [ 6, 2, 2, 2, 2, 2, 0, 0, 0, 0 ], [ 2, 4, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 2, 0, 4, 0, 0, 0, 2, 0, 0, 0 ], 
+> [ 2, 0, 0, 4, 0, 0, 0, 2, 0, 0 ], [ 2, 0, 0, 0, 4, 0, 0, 0, 2, 0 ], [ 2, 0, 0, 0, 0, 4, 0, 0, 0, 2 ], 
+> [ 0, 0, 2, 0, 0, 0, 6, 0, 0, 0 ], [ 0, 0, 0, 2, 0, 0, 0, 6, 0, 0 ], [ 0, 0, 0, 0, 2, 0, 0, 0, 6, 0 ], 
+> [ 0, 0, 0, 0, 0, 2, 0, 0, 0, 6 ] ];;
+gap> oe := OrthogonalEmbeddings(g, "positive");;
+gap> Length(oe.vectors); Length(oe.solutions);
+159
+0
 
 #############################################################################
-gap> STOP_TEST( "bugfix.tst", 781280000);
+gap> STOP_TEST( "bugfix.tst", 831990000);
 
 #############################################################################
 ##

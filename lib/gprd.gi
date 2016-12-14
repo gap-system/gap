@@ -209,7 +209,7 @@ end );
 #M  IsNilpotentGroup( <D> )
 ##
 InstallMethod( IsNilpotentGroup, "for direct products",
-               [IsGroup and HasDirectProductInfo],
+               [IsGroup and HasDirectProductInfo], 30,
 function( D )
     return ForAll( DirectProductInfo( D ).groups, IsNilpotentGroup );
 end );
@@ -791,7 +791,7 @@ InstallMethod( StandardWreathProduct,"generic groups", true,
  [ IsGroup, IsGroup ], 0,
 function(G,H)
 local iso;
-  iso:=ActionHomomorphism(H,Elements(H),OnRight,"surjective");
+  iso:=ActionHomomorphism(H,AsSSortedList(H),OnRight,"surjective");
   return WreathProduct(G,H,iso);
 end);
 

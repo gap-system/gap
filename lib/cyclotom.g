@@ -381,11 +381,11 @@ SetIsUFDFamily( CyclotomicsFamily, true );
 ##
 ##  <#GAPDoc Label="E">
 ##  <ManSection>
-##  <Func Name="E" Arg='n'/>
+##  <Oper Name="E" Arg='n'/>
 ##
 ##  <Description>
 ##  <Index>roots of unity</Index>
-##  <Ref Func="E"/> returns the primitive <A>n</A>-th root of unity
+##  <Ref Oper="E"/> returns the primitive <A>n</A>-th root of unity
 ##  <M>e_n = \exp(2\pi i/n)</M>.
 ##  Cyclotomics are usually entered as sums of roots of unity,
 ##  with rational coefficients,
@@ -481,27 +481,19 @@ InstallMethod( PrintObj,
 
 InstallMethod( \=,
     "for cyclotomic and `infinity'",
-    IsIdenticalObj, [ IsCyc, IsInfinity ], ReturnFalse );
+    IsIdenticalObj, [ IsCyclotomic, IsInfinity ], ReturnFalse );
 
 InstallMethod( \=,
     "for `infinity' and cyclotomic",
-    IsIdenticalObj, [ IsInfinity, IsCyc ], ReturnFalse );
-
-InstallMethod( \=,
-    "for `infinity' and `infinity'",
-    IsIdenticalObj, [ IsInfinity, IsInfinity ], ReturnTrue );
+    IsIdenticalObj, [ IsInfinity, IsCyclotomic ], ReturnFalse );
 
 InstallMethod( \<,
     "for cyclotomic and `infinity'",
-    IsIdenticalObj, [ IsCyc, IsInfinity ], ReturnTrue );
+    IsIdenticalObj, [ IsCyclotomic, IsInfinity ], ReturnTrue );
 
 InstallMethod( \<,
     "for `infinity' and cyclotomic",
-    IsIdenticalObj, [ IsInfinity, IsCyc ], ReturnFalse );
-
-InstallMethod( \<,
-    "for `infinity' and `infinity'",
-    IsIdenticalObj, [ IsInfinity, IsInfinity ], ReturnFalse );
+    IsIdenticalObj, [ IsInfinity, IsCyclotomic ], ReturnFalse );
 
 DeclareCategory( "IsNegInfinity", IsCyclotomic );
 
@@ -515,43 +507,20 @@ InstallMethod( PrintObj,
 
 InstallMethod( \=,
     "for cyclotomic and `-infinity'",
-    IsIdenticalObj, [ IsCyc, IsNegInfinity ], ReturnFalse );
+    IsIdenticalObj, [ IsCyclotomic, IsNegInfinity ], ReturnFalse );
 
 InstallMethod( \=,
     "for `-infinity' and cyclotomic",
-    IsIdenticalObj, [ IsNegInfinity, IsCyc ], ReturnFalse );
-
-InstallMethod( \=,
-    "for `infinity' and `-infinity'",
-    IsIdenticalObj, [ IsInfinity, IsNegInfinity ], ReturnFalse );
-
-InstallMethod( \=,
-    "for `-infinity' and `infinity'",
-    IsIdenticalObj, [ IsNegInfinity, IsInfinity ], ReturnFalse );
-
-InstallMethod( \=,
-    "for `-infinity' and `-infinity'",
-    IsIdenticalObj, [ IsNegInfinity, IsNegInfinity ], ReturnTrue );
+    IsIdenticalObj, [ IsNegInfinity, IsCyclotomic ], ReturnFalse );
 
 InstallMethod( \<,
     "for cyclotomic and `-infinity'",
-    IsIdenticalObj, [ IsCyc, IsNegInfinity ], ReturnFalse );
+    IsIdenticalObj, [ IsCyclotomic, IsNegInfinity ], ReturnFalse );
 
 InstallMethod( \<,
     "for `-infinity' and cyclotomic",
-    IsIdenticalObj, [ IsNegInfinity, IsCyc ], ReturnTrue );
+    IsIdenticalObj, [ IsNegInfinity, IsCyclotomic ], ReturnTrue );
 
-InstallMethod( \<,
-    "for `infinity' and `-infinity'",
-    IsIdenticalObj, [ IsInfinity, IsNegInfinity ], ReturnFalse );
-
-InstallMethod( \<,
-    "for `-infinity' and `infinity'",
-    IsIdenticalObj, [ IsNegInfinity, IsInfinity ], ReturnTrue );
-
-InstallMethod( \<,
-    "for `infinity' and `infinity'",
-    IsIdenticalObj, [ IsInfinity, IsInfinity ], ReturnFalse );
 
 InstallMethod( AdditiveInverseOp,
     "for `infinity'",
@@ -958,10 +927,10 @@ InstallMethod( Order,
 ##
 ##  <#GAPDoc Label="Int:cyclotomics">
 ##  <ManSection>
-##  <Func Name="Int" Arg='cyc' Label="for a cyclotomic"/>
+##  <Meth Name="Int" Arg='cyc' Label="for a cyclotomic"/>
 ##  
 ##  <Description>
-##  The operation <Ref Func="Int" Label="for a cyclotomic"/>
+##  The operation <Ref Meth="Int" Label="for a cyclotomic"/>
 ##  can be used to find a cyclotomic integer near to an arbitrary cyclotomic,
 ##  by applying <Ref Attr="Int"/> to the coefficients.
 ##  <P/>

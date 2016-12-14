@@ -221,7 +221,7 @@ InstallIsomorphismMaintenance( GaloisStabilizer,
 ##  <#GAPDoc Label="Rationals">
 ##  <ManSection>
 ##  <Var Name="Rationals"/>
-##  <Prop Name="IsRationals" Arg='obj'/>
+##  <Filt Name="IsRationals" Arg='obj'/>
 ##
 ##  <Description>
 ##  <Ref Var="Rationals"/> is the field <M>&QQ;</M> of rational integers,
@@ -231,7 +231,7 @@ InstallIsomorphismMaintenance( GaloisStabilizer,
 ##  chapters&nbsp;<Ref Chap="Fields and Division Rings"/>
 ##  and&nbsp;<Ref Chap="Abelian Number Fields"/>.
 ##  <P/>
-##  <Ref Prop="IsRationals"/> returns <K>true</K> for a prime field that
+##  <Ref Filt="IsRationals"/> returns <K>true</K> for a prime field that
 ##  consists of cyclotomic numbers
 ##  &ndash;for example the &GAP; object <Ref Var="Rationals"/>&ndash;
 ##  and <K>false</K> for all other &GAP; objects.

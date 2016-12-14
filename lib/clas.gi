@@ -389,6 +389,20 @@ local xset,i,cl,c,p,s;
   return cl;
 end);
 
+InstallGlobalFunction(ConjugacyClassesByHomomorphicImage,function(G,hom)
+local H,cl,a,c;
+  H:=Image(hom,G);
+  cl:=[];
+  for c in ConjugacyClasses(H) do
+    a:=ConjugacyClass(G,PreImagesRepresentative(hom,Representative(c)));
+    if HasStabilizerOfExternalSet(c) then
+      SetStabilizerOfExternalSet(a,PreImage(hom,StabilizerOfExternalSet(c)));
+    fi;
+    Add(cl,a);
+  od;
+  return cl;
+end);
+
 #############################################################################
 ##
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . .  of a group
@@ -421,7 +435,7 @@ end);
 
 
 InstallMethod( ConjugacyClasses, "for groups: try random search",
-  [ IsGroup ],
+  [ IsGroup and IsFinite ],
 function(G)
 local cl;
   cl:=ConjugacyClassesForSmallGroup(G);
@@ -433,7 +447,7 @@ local cl;
 end);
 
 InstallMethod( ConjugacyClasses, "try solvable method",
-    [ IsGroup ],
+    [ IsGroup and IsFinite ],
     function( G )
     local   cls,  cl,  c;
 
@@ -750,7 +764,7 @@ local rcls, cl, mark, rep, c, o, cop, same, sub, pow, p, i, j,closure,
   if Length(Filtered(cl,x->Size(x)<10))<10000 then
     # trigger for cheap element test
     for i in [1..Length(cl)] do
-      if Size(cl[i])<10 then Elements(cl[i]);fi;
+      if Size(cl[i])<10 then AsSSortedList(cl[i]);fi;
     od;
   fi;
 

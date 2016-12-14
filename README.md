@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/gap-system/gap.svg?branch=master)](https://travis-ci.org/gap-system/gap) [![Code Coverage](https://codecov.io/github/gap-system/gap/coverage.svg?branch=master&token=)](https://codecov.io/gh/gap-system/gap)
+
 # What is GAP?
 
 GAP is a system for computational discrete algebra, with particular emphasis on
@@ -32,8 +34,7 @@ by the following two commands
 Now, if you do not have a GAP package archive yet, we recommend that you
 bootstrap the stable versions of packages by executing on of the the following
 commands. Whether you choose to `bootstrap-pkg-minimal` or `bootstrap-pkg-full`
-depends on your needs for development. More information on the topic of how
-to handle the `pkg` subdirectory can be found [here]().
+depends on your needs for development.
 
 ```
 # make bootstrap-pkg-minimal

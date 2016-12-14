@@ -283,6 +283,30 @@ DeclareAttribute( "AllBlocks", IsPermGroup );
 
 #############################################################################
 ##
+#F  TransitiveGroupsAvailable(<deg>)
+##
+##  <ManSection>
+##  <Func Name="TransitiveGroupsAvailable" Arg='deg'/>
+##
+##  <Description>
+##  To offer a clearer interface to the transitive groups library, this
+##  function checks whether the transitive groups of degree <A>deg</A> are
+##  available to load and will, if needed, load basic data structures for
+##  this degree.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "TransitiveGroupsAvailable" );
+
+# dummy declarations to satisfy library references to transitive groups
+# library
+DeclareGlobalFunction( "NrTransitiveGroups", "placeholder for transgrp package" );
+DeclareGlobalFunction( "TransitiveGroup", "placeholder for transgrp package" );
+DeclareGlobalFunction( "TRANSProperties", "placeholder for transgrp package" );
+DeclareGlobalVariable( "TRANSSHAPEFREQS", "placeholder for transgrp package" );
+
+#############################################################################
+##
 #A  TransitiveIdentification( <G> )
 ##
 ##  <#GAPDoc Label="TransitiveIdentification">
@@ -312,6 +336,23 @@ DeclareAttribute( "AllBlocks", IsPermGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "TransitiveIdentification", IsPermGroup );
+
+#############################################################################
+##
+#F  PrimitiveGroupsAvailable(<deg>)
+##
+##  <ManSection>
+##  <Func Name="PrimitiveGroupsAvailable" Arg='deg'/>
+##
+##  <Description>
+##  To offer a clearer interface to the primitive groups library, this
+##  function checks whether the primitive groups of degree <A>deg</A> are
+##  available to load and will, if needed, load basic data structures for
+##  this degree.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "PrimitiveGroupsAvailable" );
 
 #############################################################################
 ##

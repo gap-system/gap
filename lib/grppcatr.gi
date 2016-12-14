@@ -134,7 +134,10 @@ InstallMethod( FrattiniSubgroup,
     0,
 
 function( G )
-    return Core( G, PrefrattiniSubgroup( G ) );
+    G := Core( G, PrefrattiniSubgroup( G ) );
+    Assert( 2, IsNilpotentGroup( G) );
+    SetIsNilpotentGroup( G, true );
+    return G;
 end);
 
 
@@ -261,16 +264,24 @@ InstallMethod( SylowComplementOp,
     80,
 
 function( G, p )
-    local   spec,  weights,  gens,  i,  S;
+    local   spec,  weights,  gens,  i,  S,  pi;
 
     spec := SpecialPcgs( G );
     weights := LGWeights( spec );
     gens := [];
+    pi := [];
     for i in [1..Length(spec)] do
-        if weights[i][3] <> p then Add( gens, spec[i] ); fi;
+        if weights[i][3] <> p then
+            Add( gens, spec[i] );
+            AddSet( pi, weights[i][3] );
+        fi;
     od;
     gens := InducedPcgsByPcSequenceNC( spec, gens );
     S := SubgroupByPcgs( G, gens );
+    SetHallSubgroup( G, pi, S );
+    if Length( pi ) = 1 then
+        SetSylowSubgroup( G, pi[1], S );
+    fi;
     return S;
 end );
 
@@ -306,6 +317,7 @@ function( G, p )
     if Size(S) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
+        SetHallSubgroup(G, [p], S);
     fi;
     return S;
 end );
@@ -462,6 +474,72 @@ function( G )
     return max;
 
 end );
+
+
+#############################################################################
+##
+#M  MaximalNormalSubgroups( <G> )
+##
+InstallMethod( MaximalNormalSubgroups, "for abelian groups",
+               [ IsGroup and IsAbelian ],
+               # IsGroup and IsFinite ranks higher than IsGroup and IsAbelian,
+               # so we have to increase the rank, otherwise the method for
+               # normal subgroup computation is selected.
+               RankFilter( IsGroup and IsFinite and IsAbelian )
+               - RankFilter( IsGroup and IsAbelian ),
+function( G )
+    local Gf,     # FactorGroup of G
+          hom,    # homomorphism from G to Gf
+          MaxGf,  # MaximalNormalSubgroups of Gf
+          AbInv;  # abelian invariants of G
+    if not IsPcGroup(G) then
+        AbInv := AbelianInvariants(G);
+        if 0 in AbInv then
+            # (p) is a maximal normal subgroup in Z for every prime p
+            Error("number of maximal normal subgroups is infinity");
+        else
+            # convert it to an abelian PcGroup with same invariants
+            hom := IsomorphismPcGroup(G);
+            Gf := Image(hom);
+            # for abelian groups all maximal normal subgroup are also
+            # normal maximal subgroups and vice-versa
+            MaxGf := NormalMaximalSubgroups(Gf);
+            return List(MaxGf, N -> PreImage(hom, N));
+        fi;
+    else
+        # for abelian groups all maximal normal subgroup are also
+        # normal maximal subgroups and vice-versa
+        # for abelian pc groups return all maximal subgroups
+        # NormalMaximalSubgroups seems to omit some unnecessary checks,
+        # hence faster than MaximalSubgroups
+        return NormalMaximalSubgroups(G);
+    fi;
+end);
+
+InstallMethod( MaximalNormalSubgroups, "for solvable groups",
+              [ IsGroup and IsSolvableGroup ],
+               # IsGroup and IsFinite ranks higher than
+               # IsGroup and IsSolvableGroup, so we have to increase the
+               # rank, otherwise the method for normal subgroup computation
+               # is selected.
+               RankFilter( IsGroup and IsFinite and IsSolvableGroup )
+               - RankFilter( IsGroup and IsSolvableGroup ),
+function( G )
+    local Gf,     # FactorGroup of G
+          hom,    # homomorphism from G to Gf
+          MaxGf;  # MaximalNormalSubgroups of Gf
+    # every maximal normal subgroup is above the derived subgroup
+    hom := MaximalAbelianQuotient(G);
+    Gf := Image(hom);
+    # One would hope this is true
+    SetIsAbelian(Gf, true);
+    MaxGf := MaximalNormalSubgroups(Gf);
+    return List(MaxGf, N -> PreImage(hom, N));
+end);
+
+RedispatchOnCondition( MaximalNormalSubgroups, true,
+    [ IsGroup ],
+    [ IsSolvableGroup ], 0);
 
 
 #############################################################################

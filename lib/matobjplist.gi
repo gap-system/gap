@@ -1172,6 +1172,20 @@ InstallMethod( CopySubMatrix, "for two plist matrices and four lists",
     od;
   end );
 
+InstallOtherMethod( CopySubMatrix,
+  "for two plists -- fallback in case of bad rep.",
+  [ IsPlistRep, IsPlistRep and IsMutable,
+    IsList, IsList, IsList, IsList ],
+  function( m, n, srcrows, dstrows, srccols, dstcols )
+    local i;
+    # in this representation all access probably has to go through the
+    # generic method selection, so it is not clear whether there is an
+    # improvement in moving this into the kernel.
+    for i in [1..Length(srcrows)] do
+        n[dstrows[i]]{dstcols}:=m[srcrows[i]]{srccols};
+    od;
+  end );
+
 InstallMethod( CopySubMatrix,
   "for a plist matrix and a checking plist matrix and four lists",
   [ IsPlistMatrixRep,

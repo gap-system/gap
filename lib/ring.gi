@@ -176,9 +176,7 @@ InstallMethod( IsZeroSquaredRing,
 ##
 InstallImmediateMethod( IsZeroMultiplicationRing,
     IsRingWithOne and HasIsTrivial, 0,
-    function( R )
-    return IsTrivial(R);
-    end );
+    IsTrivial );
 
 
 #############################################################################

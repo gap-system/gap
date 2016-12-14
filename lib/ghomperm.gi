@@ -700,10 +700,16 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
 
     # build short words by an orbit algorithm on genimg
     BuildOrb:=function(genimg)
-    local orb,dict,orbf,T,elm,img,i,n;
-      dict:=NewDictionary(genimg[1][1],false);
-      AddDictionary(dict,One(genimg[1][1]));
-      orb:=[Immutable([One(genimg[1][1]),One(genimg[2][1])])];
+    local a,orb,dict,orbf,T,elm,img,i,n;
+      if Length(genimg[1])>0 then
+	a:=genimg[1][1];
+      else
+	a:=One(Source(hom));
+      fi;
+      dict:=NewDictionary(a,false);
+      a:=One(Source(hom));
+      AddDictionary(dict,a);
+      orb:=[Immutable([a,One(Range(hom))])];
       orbf:=[0];
       i:=1;
       n:=Length(genimg[1]);
@@ -1587,7 +1593,7 @@ InstallGlobalFunction( ImageKernelBlocksHomomorphism, function( hom, H,par )
             i,  j;      # loop variables
     
     D := Enumerator( UnderlyingExternalSet( hom ) );
-    S := CopyStabChain( StabChainMutable( H ) );
+    S := CopyStabChain( StabChainImmutable( H ) );
     full := IsIdenticalObj( H, Source( hom ) );
     if full  then
         SetStabChainMutable( hom, S );
@@ -1755,7 +1761,7 @@ InstallGlobalFunction( PreImageSetStabBlocksHomomorphism, function( hom, I )
 
     # if <I> is trivial then preimage is the kernel of <hom>
     if IsEmpty( I.genlabels )  then
-        H := CopyStabChain( StabChainMutable(
+        H := CopyStabChain( StabChainImmutable(
                  KernelOfMultiplicativeGeneralMapping( hom ) ) );
 
     # else begin with the preimage $H_{block[i]}$ of the stabilizer  $I_{i}$,
@@ -2089,4 +2095,3 @@ end );
 #############################################################################
 ##
 #E
-

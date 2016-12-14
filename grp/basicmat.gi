@@ -538,6 +538,7 @@ SylowSubgroupOfNaturalGL := function( gl, p )
   SetSize( syl, p^PadicValuation( Size(gl), p ) );
   SetIsPGroup( syl, true );
   SetPrimePGroup( syl, p );
+  SetHallSubgroup(gl, [p], syl);
   Assert( 2, Size( Group( GeneratorsOfGroup( syl ) ) ) = Size( syl ) );
   return syl;
 end;

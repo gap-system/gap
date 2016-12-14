@@ -66,9 +66,15 @@ Error := function( arg )
     JUMP_TO_CATCH("early error");
 end;
 
-ErrorInner := function(options, message)
+ErrorNoReturn := Error;
+
+ErrorInner := function(arg)
+    local x;
     Print("Error before error-handling is initialized: ");
-    Print(message);
+    for x in [6..LENGTH(arg)] do
+      Print(arg[x]);
+    od;
+    Print("\n");
     JUMP_TO_CATCH("early error");
 end;
 
@@ -188,19 +194,13 @@ end;
 ReadGapRoot( "lib/kernel.g" );
 ReadGapRoot( "lib/global.g" );
 
+
 #############################################################################
 ##
 ##  Read architecture dependent data and other globals, such as version
 ##  information.
 ##
-
-
-
 ReadGapRoot( "lib/system.g" );
-
-##IS_READ_OR_COMPLETE := false;
-## commented out - was needed by the completion mechanism
-## READED_FILES := [];
 
 FILTER_REGION	 	 := NEW_REGION("filter region", -1);
 atomic FILTER_REGION do
@@ -209,9 +209,9 @@ od;
 RANK_FILTER_LIST_CURRENT := fail;
 RANK_FILTER_COUNT        := fail;
 
-RANK_FILTER_COMPLETION   := Error;	# defined in "filter.g"
-RANK_FILTER_STORE        := Error;	# defined in "filter.g"
-RANK_FILTER              := Error;	# defined in "filter.g"
+RANK_FILTER_COMPLETION   := Error;      # defined in "filter.g"
+RANK_FILTER_STORE        := Error;      # defined in "filter.g"
+RANK_FILTER              := Error;      # defined in "filter.g"
 RankFilter               := Error;      # defined in "filter.g"
 
 
@@ -252,98 +252,12 @@ CallAndInstallPostRestore( function()
     BindThreadLocal( "LastErrorMessage", "" );
 end);
 
-
-
-#############################################################################
-##
-#F  ReadOrComplete( <name> )  . . . . . . . . . . . . read file or completion
-####
-##COMPLETABLE_FILES := [];
-##COMPLETED_FILES   := [];
-##
-##ReadOrComplete := function( name )
-##    local check;
-##
-##    READED_FILES := [];
-##    check        := CHECK_INSTALL_METHOD;
-##
-##    # use completion files
-##    if not GAPInfo.CommandLineOptions.N then
-##
-##        # do not check installation and use cached ranks
-##        CHECK_INSTALL_METHOD := false;
-##        RankFilter           := RANK_FILTER_COMPLETION;
-##
-##        # check for the completion file
-##        if not READ_GAP_ROOT( ReplacedString( name, ".g", ".co" ) ) then
-##
-##            # set filter functions to store
-##            IS_READ_OR_COMPLETE  := true;
-##            CHECK_INSTALL_METHOD := check;
-##            RankFilter           := RANK_FILTER_STORE;
-##            RANK_FILTER_LIST     := [];
-##
-##            # read the original file
-##            InfoRead1( "#I  reading ", name, "\n" );
-##            if not READ_GAP_ROOT( name ) then
-##                Error( "cannot read or complete file ", name );
-##            fi;
-##            ADD_LIST( COMPLETABLE_FILES, [ name, READED_FILES, RANK_FILTER_LIST ] );
-##
-##        # file completed
-##        else
-##            ADD_LIST( COMPLETED_FILES, name );
-##            InfoRead1( "#I  completed ", name, "\n" );
-##        fi;
-##
-##    else
-##
-##        # set `RankFilter' to hash the ranks
-##        IS_READ_OR_COMPLETE := true;
-##        RankFilter          := RANK_FILTER_STORE;
-##        RANK_FILTER_LIST    := [];
-##
-##        # read the file
-##        if not READ_GAP_ROOT( name ) then
-##            Error( "cannot read file ", name );
-##        fi;
-##        ADD_LIST( COMPLETABLE_FILES, [ name, READED_FILES, RANK_FILTER_LIST ] );
-##    fi;
-##
-##    # reset rank and filter functions
-##    IS_READ_OR_COMPLETE  := false;
-##    CHECK_INSTALL_METHOD := check;
-##    RankFilter           := RANK_FILTER;
-##    Unbind(RANK_FILTER_LIST);
-##    Unbind(READED_FILES);
-##end;
-##
-
 ReadOrComplete := function(name)
     InfoRead1( "#I  reading ", name, "\n" );
     if not READ_GAP_ROOT( name ) then
         Error( "cannot read file ", name );
     fi;
 end;
-
-#############################################################################
-##
-#F  READ_CHANGED_GAP_ROOT( <name> ) . . . . . .  completion file is out-dated
-##
-##READ_CHANGED_GAP_ROOT := function( name )
-##    local   rankFilter;
-##
-##    atomic FILTER_REGION do
-##	rankFilter := RankFilter;
-##	RankFilter := RANK_FILTER;
-##	Print( "#W  inconsistent completion for \"", name, "\"\n" );
-##	if not READ_GAP_ROOT(name)  then
-##	    Error( "cannot read file ", name );
-##	fi;
-##	RankFilter := rankFilter;
-##    od;
-##end;
-##
 
 #############################################################################
 ##
@@ -382,6 +296,8 @@ CallAndInstallPostRestore( function()
         haveint[i]:= IntHexString( have[i] );
         needint[i]:= IntHexString( need[i] );
       od;
+      Print( "Current kernel version:   ", haveint[1], ".", haveint[2], ".", haveint[3], "\n" );
+      Print( "Library requires version: ", needint[1], ".", needint[2], ".", needint[3], "\n" );
 
       if haveint > needint then
         # kernel newer
@@ -418,58 +334,32 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
     fi;
 
     return function( arg )
-        local  name,  ext,  libname, error, rflc, rfc;
+        local  name,  ext,  libname, error;
 
-	error:=false;
-	name:=arg[1];
+        name := arg[1];
         # create a filename from <path> and <name>
         libname := SHALLOW_COPY_OBJ(path);
         APPEND_LIST_INTR( libname, "/" );
         APPEND_LIST_INTR( libname, name );
 
-        # we are completing, store the filename and filter ranks
-##        if IS_READ_OR_COMPLETE  then
-##	    atomic FILTER_REGION do
-##		ADD_LIST( READED_FILES, libname );
-##		if IsBound(RANK_FILTER_LIST_CURRENT) then
-##		    rflc := RANK_FILTER_LIST_CURRENT;
-##		fi;
-##		if IsBound(RANK_FILTER_COUNT) then
-##		    rfc := RANK_FILTER_COUNT;
-##		fi;
-##		RANK_FILTER_LIST_CURRENT := [];
-##		RANK_FILTER_COUNT := 0;
-##		ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
-##		error:=not READ_GAP_ROOT(libname);
-##		Unbind(RANK_FILTER_LIST_CURRENT);
-##		if IsBound(rflc) then
-##		    RANK_FILTER_LIST_CURRENT := rflc;
-##		fi;
-##		Unbind(RANK_FILTER_COUNT);
-##		if IsBound(rfc) then
-##		    RANK_FILTER_COUNT := rfc;
-##		fi;
-##	    od;
-##        else
-            error:=not READ_GAP_ROOT(libname);
-##        fi;
+        error := not READ_GAP_ROOT(libname);
 
-	if error then
-	  if LEN_LIST( arg )=1 then
-	    Error( "the library file '", name, "' must exist and ",
-		   "be readable");
-	  else
-	    return false;
-	  fi;
-	elif path<>"pkg" then
-	  # check the revision entry
+        if error then
+          if LEN_LIST( arg )=1 then
+            Error( "the library file '", name, "' must exist and ",
+                   "be readable");
+          else
+            return false;
+          fi;
+        elif path<>"pkg" then
+          # check the revision entry
           ext := SHALLOW_COPY_OBJ(prefix);
-	  APPEND_LIST_INTR(ext,ReplacedString( name, ".", "_" ));
+          APPEND_LIST_INTR(ext,ReplacedString( name, ".", "_" ));
         fi;
 
-      if LEN_LIST(arg)>1 then
-	return true;
-      fi;
+        if LEN_LIST(arg)>1 then
+          return true;
+        fi;
 
     end;
 end);
@@ -497,13 +387,13 @@ NONAVAILABLE_FUNC:=function(arg)
 local s;
   if LENGTH(arg)=0 then
     return function(arg)
-	    Error("this function is not available");
-	  end;
+            Error("this function is not available");
+          end;
   else
     s:=arg[1];
     return function(arg)
-	    Error("the ",s," is required but not installed");
-	  end;
+            Error("the ",s," is required but not installed");
+          end;
   fi;
 end;
 
@@ -566,16 +456,6 @@ CallAndInstallPostRestore( function()
     return fail;
   end;
 
-
-  ##  i := Length (str)-Length (sub) + 1;
-  ##  while i > 0 do
-  ##      if str{[i..i+Length(sub)-1]}=sub then
-  ##          return i;
-  ##      fi;
-  ##  od;
-  ##  return fail;
-  ##end;
-        
   # we leave the GAPInfo.TermEncodingOverwrite for gaprc
   # for a moment, but don't document it - doesn't work with 
   # loaded workspaces
@@ -696,8 +576,6 @@ BindGlobal( "ShowKernelInformation", function()
     fi;
 end );
 
-
-
 # delay printing the banner, if -L option was passed (LB)
 
 
@@ -711,7 +589,6 @@ CallAndInstallPostRestore( function()
         
      
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
-    #Print (" Loading the library ... (see '?Saving and Loading' to start GAP faster)\n");
     Print (" Loading the library \c");
 fi;
 
@@ -793,51 +670,6 @@ od;
 #T and what about implications installed in packages?
 #T (put later installations to the front?)
 
-
-#############################################################################
-##
-##  Set the defaults of `GAPInfo.UserPreferences'.
-##
-##  We locate the first file `gap.ini' in GAP root directories,
-##  and read it if available.
-##  This must be done before `GAPInfo.UserPreferences' is used.
-##  Some of the preferences require an initialization,
-##  but this cannot be called before the complete library has been loaded.
-##
-
-# The following function is not recommended anymore.
-# Give a warning but do what the function was expected to do.
-BindGlobal( "SetUserPreferences", function( arg )
-    local name, record;
-    
-    Info( InfoWarning, 1, "");
-    Info( InfoWarning, 1, Concatenation( [
-          "The call to 'SetUserPreferences' (probably in a 'gap.ini' file)\n",
-          "#I  should be replaced by individual 'SetUserPreference' calls,\n",
-          "#I  which are package specific.\n",
-          "#I  Try 'WriteGapIniFile()'." ] ) );
- 
-    # Set the new values.
-    if Length( arg ) = 1 then
-      record:= arg[1];
-      if not IsBound(GAPInfo.UserPreferences.gapdoc) then
-        GAPInfo.UserPreferences.gapdoc := rec();
-      fi;
-      if not IsBound(GAPInfo.UserPreferences.gap) then
-        GAPInfo.UserPreferences.gap := rec();
-      fi;
-      for name in RecNames( record ) do
-        if name in [ "HTMLStyle", "TextTheme", "UseMathJax" ] then
-          GAPInfo.UserPreferences.gapdoc.( name ):= record.( name );
-        else
-          GAPInfo.UserPreferences.gap.( name ):= record.( name );
-        fi;
-      od;
-    fi;
-    end );
-
-# SetUserPreferences();
-
 # Here are a few general user preferences which may be useful for 
 # various purposes. They are self-explaining.
 DeclareUserPreference( rec(
@@ -894,7 +726,6 @@ CallAndInstallPostRestore( function()
     fi;
 end );
 
-
 #############################################################################
 ##
 ##  Autoload packages (suppressing banners).
@@ -914,6 +745,7 @@ if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
   Print ("and packages ...\n");
 fi;
 CallAndInstallPostRestore( AutoloadPackages );
+
 
 ############################################################################
 ##
@@ -1107,7 +939,7 @@ BindGlobal( "ShowPackageInformation", function()
                     "\n" );
       fi;
 
-      Print( " Try '?help' for help. See also  '?copyright' and  '?authors'",
+      Print( " Try '??help' for help. See also '?copyright', '?cite' and '?authors'",
              "\n" );
     fi;
 end );

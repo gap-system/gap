@@ -81,7 +81,7 @@ DeclareCategoryKernel( "IsOperation",
 ##
 ##  <#GAPDoc Label="FunctionsFamily">
 ##  <ManSection>
-##  <Var Name="FunctionsFamily"/>
+##  <Fam Name="FunctionsFamily"/>
 ##
 ##  <Description>
 ##  is the family of all functions.
@@ -129,7 +129,7 @@ BIND_GLOBAL( "TYPE_OPERATION",
 ##
 ##  <#GAPDoc Label="NameFunction">
 ##  <ManSection>
-##  <Func Name="NameFunction" Arg='func'/>
+##  <Oper Name="NameFunction" Arg='func'/>
 ##
 ##  <Description>
 ##  returns the name of a function. For operations, this is the name used in
@@ -186,7 +186,7 @@ DeclareOperationKernel( "SetNameFunction", [IS_OBJECT, IS_STRING], SET_NAME_FUNC
 ##
 ##  <#GAPDoc Label="NumberArgumentsFunction">
 ##  <ManSection>
-##  <Func Name="NumberArgumentsFunction" Arg='func'/>
+##  <Oper Name="NumberArgumentsFunction" Arg='func'/>
 ##
 ##  <Description>
 ##  returns the number of arguments the function <A>func</A> accepts.
@@ -220,7 +220,7 @@ DeclareOperationKernel( "NumberArgumentsFunction", [IS_OBJECT], NARG_FUNC );
 ##
 ##  <#GAPDoc Label="NamesLocalVariablesFunction">
 ##  <ManSection>
-##  <Func Name="NamesLocalVariablesFunction" Arg='func'/>
+##  <Oper Name="NamesLocalVariablesFunction" Arg='func'/>
 ##
 ##  <Description>
 ##  returns a mutable list of strings;
@@ -600,10 +600,9 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
     Print(" ) ... end");
 end);
 
-    
-BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
-    local   class,  flags,  types,  catok,  repok,  propok,  seenprop,  
-            t;
+BIND_GLOBAL( "VIEW_STRING_OPERATION",    function ( op )
+    local   class,  flags,  types,  catok,  repok,  propok,  seenprop,
+            t, res;
     class := "Operation";
     if IS_IDENTICAL_OBJ(op,IS_OBJECT) then
         class := "Filter";
@@ -611,10 +610,15 @@ BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
         class := "Constructor";
     elif IsFilter(op) then
         class := "Filter";
-        flags := TRUES_FLAGS(FLAGS_FILTER(op));
-	atomic readonly FILTER_REGION do
+        flags := FLAGS_FILTER(op);
+        if flags <> false then
+            flags := TRUES_FLAGS(FLAGS_FILTER(op));
+        else
+            flags := [];
+        fi;
+        atomic readonly FILTER_REGION do
             types := INFO_FILTERS{flags};
-	od;
+        od;
         catok := true;
         repok := true;
         propok := true;
@@ -644,14 +648,32 @@ BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
         # op is an attribute
         class := "Attribute";
     fi;
-    Print("<",class," \"",NAME_FUNC(op),"\">");
-          end);  
-    
+
+    # Horrible.
+    res := "<";
+    APPEND_LIST(res, class);
+    APPEND_LIST(res, " \"");
+    APPEND_LIST(res, NAME_FUNC(op));
+    APPEND_LIST(res, "\">");
+    return res;
+end);
+
+BIND_GLOBAL( "PRINT_OPERATION",
+function ( op )
+    Print(VIEW_STRING_OPERATION(op));
+end);
+
 InstallMethod( ViewObj,
     "for an operation",
     [ IsOperation ],
     PRINT_OPERATION );
-    
+
+InstallMethod( ViewString,
+    "for an operation",
+    [ IsOperation ],
+function(op)
+    return VIEW_STRING_OPERATION(op);
+end);
 
 #############################################################################
 ##

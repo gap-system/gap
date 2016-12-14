@@ -93,6 +93,12 @@ true
 gap> f:=PartialPermNC([1..100000]);;
 gap> IsIdempotent(f);
 true
+gap> f := PartialPerm([], []);
+<empty partial perm>
+gap> IndexPeriodOfPartialPerm(f);
+[ 1, 1 ]
+gap> SmallestIdempotentPower(f);
+1
 
 # ComponentsOfPartialPerm, NrComponentsOfPartialPerm, 
 # ComponentRepsOfPartialPerm and ComponentPartialPermInt
@@ -114,6 +120,14 @@ true
 gap> List(ComponentRepsOfPartialPerm(f), i-> ComponentPartialPermInt(f, i))
 > =ComponentsOfPartialPerm(f);
 true
+gap> f := PartialPerm([], []);
+<empty partial perm>
+gap> ComponentsOfPartialPerm(f);
+[  ]
+gap> ComponentRepsOfPartialPerm(f);
+[  ]
+gap> NrComponentsOfPartialPerm(f);
+0
 
 # FixedPointsOfPartialPerm, MovedPoints, 
 # NrFixedPoints, NrMovedPoints
@@ -2020,9 +2034,9 @@ true
 gap> CodegreeOfPartialPerm(f)<=DegreeOfPartialPerm(g);
 true
 gap> f^g;
-[4,3][7,2][9,5,1](6)
+[2,8][5,6,3](7)
 gap> g^-1*f*g;
-[4,3][7,2][9,5,1](6)
+[2,8][5,6,3](7)
 
 # PowPPerm24, Case 4 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)> deg(g)
 gap> f:=RandomPartialPerm(30);; DomainOfPartialPerm(f);;
@@ -2387,4 +2401,4 @@ gap> SetUserPreference("NotationForPartialPerm", notationpp);;
 gap> SetUserPreference("NotationForTransformations", notationt);;
 
 #
-gap> STOP_TEST( "pperm.tst", 45280000);
+gap> STOP_TEST( "pperm.tst", 42710000);

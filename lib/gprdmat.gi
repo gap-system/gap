@@ -47,7 +47,7 @@ local l,f,dim,gens,off,g,d,m,a,range,rans,G,compgens,cg;
     d:=DimensionOfMatrixGroup(g);
     range:=[off+1..off+d];
     for m in GeneratorsOfGroup(g) do
-      a:=MutableIdentityMat(dim,f);
+      a:=IdentityMat(dim,f);
       a{range}{range}:=m;
       a:=ImmutableMatrix(f,a);
       Add(gens,a);
@@ -133,7 +133,7 @@ InstallMethod(ImagesRepresentative,"matrix direct product embedding",
 function(emb,m)
 local info,a;
   info:=emb!.info;
-  a:=MutableIdentityMat(info.dimension,info.field);
+  a:=IdentityMat(info.dimension,info.field);
   a{emb!.range}{emb!.range}:=m;
   return ImmutableMatrix(info.field,a);
 end);
@@ -150,7 +150,7 @@ function(emb,g)
 local info,a,b;
   info := emb!.info;
   b:=g{emb!.range}{emb!.range};
-  a:=MutableIdentityMat(info.dimension,info.field);
+  a:=IdentityMat(info.dimension,info.field);
   a{emb!.range}{emb!.range}:=b;
   if g=a then
     return b;
@@ -212,7 +212,7 @@ InstallMethod(PreImagesRepresentative,"matrix direct product projection",
 function(prj,m)
 local info,a;
   info:=prj!.info;
-  a:=MutableIdentityMat(info.dimension,info.field);
+  a:=IdentityMat(info.dimension,info.field);
   a{prj!.range}{prj!.range}:=m;
   return ImmutableMatrix(info.field,a);
 end);
@@ -262,7 +262,7 @@ local f,n,m,Agens,Bgens,emb,i,j,a,g,dim,rans,range;
     range:=[(j-1)*n+1..j*n];
     Add(rans,range);
     for i in GeneratorsOfGroup(A) do
-      a:=MutableIdentityMat(n*m,f);
+      a:=IdentityMat(n*m,f);
       a{range}{range}:=i;
       Add(Agens,a);
     od;
@@ -356,7 +356,7 @@ InstallMethod( ImagesRepresentative,
 function( emb, m )
 local info,a;
   info:=emb!.info;
-  a:=MutableIdentityMat(info.dimension,info.field);
+  a:=IdentityMat(info.dimension,info.field);
   a{emb!.range}{emb!.range}:=m;
   return ImmutableMatrix(info.field,a);
 end);
@@ -373,7 +373,7 @@ function( emb, g )
 local info,a,b;
   info := emb!.info;
   b:=g{emb!.range}{emb!.range};
-  a:=MutableIdentityMat(info.dimension,info.field);
+  a:=IdentityMat(info.dimension,info.field);
   a{emb!.range}{emb!.range}:=b;
   if g=a then
     return b;
@@ -411,5 +411,40 @@ local  info,proj,H;
 
   info.projection:=proj;
   return proj;
+end);
+
+# tensor wreath -- dimension d^e This is not a faithful representation of
+# the tensor product if the matrix group has a center.
+DeclareGlobalFunction("TensorWreathProduct");
+
+InstallGlobalFunction(TensorWreathProduct,function(M,P)
+local d,e,f,s,dim,gens,mimgs,pimgs,tup,act,a,g,i;
+  d:=Length(One(M));
+  f:=DefaultFieldOfMatrixGroup(M);
+  e:=LargestMovedPoint(P);
+  s:=SymmetricGroup(e);
+  dim:=d^e;
+  gens:=[];
+  mimgs:=[];
+  for g in GeneratorsOfGroup(M) do
+    a:=NullMat(dim,dim,f);
+    for i in [1..dim/d] do
+      tup:=[1..d]+(i-1)*d;
+      a{tup}{tup}:=g;
+    od;
+    a:=ImmutableMatrix(f,a);
+    Add(gens,a);
+    Add(mimgs,a);
+  od;
+  tup:=List(Tuples([1..d],e),Reversed); # reverse to be consistent with Magma
+  act:=ActionHomomorphism(s,tup,Permuted,"surjective");
+  pimgs:=[];
+  for g in GeneratorsOfGroup(P) do
+    a:=PermutationMat(Image(act,g),dim,f);
+    a:=ImmutableMatrix(f,a);
+    Add(gens,a);
+    Add(pimgs,a);
+  od;
+  return Group(gens);
 end);
 

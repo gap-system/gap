@@ -238,7 +238,7 @@ redirected.
 </ManSection>
 
 <ManSection>
-<Var Name="InfoWarning"/>
+<InfoClass Name="InfoWarning"/>
 
 <Description>
 is an info class to which general warnings are sent at level 1,
@@ -382,6 +382,41 @@ hour/minute format.
 </Description>
 </ManSection>
 
+
+
+<ManSection>
+<Func Name="NanosecondsSinceEpoch" Arg=''/>
+<Func Name="NanosecondsSinceEpochInfo" Arg=''/>
+<Description>
+<Ref Func="NanosecondsSinceEpoch"/> returns the time in nanoseconds
+that has passed since some fixed, but unspecified time in the past.
+
+This function is appropriate for doing wallclock time measurements.
+
+The actual resolution depends on the system that &GAP; is run on.
+Information about the used timers can be obtained by calling
+<Ref Func="NanosecondsSinceEpochInfo"/>, which returns a record
+containing members <C>Method</C>, <C>Monotonic</C>, <C>Reliable</C>
+and <C>Resolution</C>.
+
+<P/>
+<C>Method</C> is a string describing the method used to obtain timer
+values. This will usually contain the name of the syscall used.
+<P/>
+<C>Monotonic</C> is a boolean. If it is <C>true</C>, then the values
+returned by <Ref Func="NanosecondsSinceEpoch"/> are guaranteed to be
+strictly monotonically increasing between two calls, if it is <C>false</C>
+then there is no such guarantee.
+<P/>
+<C>Resolution</C> is an integer reflecting the resolution of the timer
+used in nanoseconds.
+<P/>
+<C>Reliable</C> is a boolean. If it is <C>true</C> then the
+value <C>Resolution</C> is deemed reliable in the sense that it was
+obtained by querying the operating system, otherwise <C>Resolution</C>
+should be treated as an estimate.
+</Description>
+</ManSection>
 
 <ManSection>
 <Var Name="time"/>
@@ -769,6 +804,9 @@ gaussian.tst               0             10
 
 <#Include Label="Test">
 <#Include Label="TestDirectory">
+
+See also <Ref Func="TestPackage"/> for the information on running standard
+tests for &GAP; packages.
 </Section>
 
 

@@ -1116,6 +1116,8 @@ Obj FuncREAD_GAP_ROOT (
     Obj                 self,
     Obj                 filename )
 {
+    Char filenamecpy[4096];
+
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
@@ -1124,8 +1126,10 @@ Obj FuncREAD_GAP_ROOT (
             "you can replace <filename> via 'return <filename>;'" );
     }
 
+    /* Copy to avoid garbage collection moving string                      */
+    strlcpy(filenamecpy, CSTR_STRING(filename), 4096);
     /* try to open the file                                                */
-    return READ_GAP_ROOT(CSTR_STRING(filename)) ? True : False;
+    return READ_GAP_ROOT(filenamecpy) ? True : False;
 }
 
 
@@ -1943,25 +1947,30 @@ Obj FuncWRITE_STRING_FILE_NC (
     Obj             fid,
     Obj             str )
 {
-    Int             len = 0, ret;
+    Int             len = 0, l, ret;
+    char            *ptr;
 
     /* don't check the argument                                            */
     
     len = GET_LEN_STRING(str);
-    ret = write( syBuf[INT_INTOBJ(fid)].echo, CHARS_STRING(str), len);
-    return (ret == len)?True : Fail;
+    ptr = CSTR_STRING(str);
+    while (len > 0) {
+      l = (len > 1048576) ? 1048576 : len;
+      ret = write( syBuf[INT_INTOBJ(fid)].echo, ptr, l);
+      if (ret == -1) {
+        SySetErrorNo();
+        return Fail;
+      }
+      len -= ret;
+      ptr += ret;
+    }
+    return True;
 }
-
 
 Obj FuncREAD_STRING_FILE (
     Obj             self,
     Obj             fid )
 {
-    Char            buf[20001];
-    Int             ret, len;
-    UInt            lstr;
-    Obj             str;
-
     /* check the argument                                                  */
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
@@ -1969,56 +1978,7 @@ Obj FuncREAD_STRING_FILE (
             (Int)TNAM_OBJ(fid), 0L,
             "you can replace <fid> via 'return <fid>;'" );
     }
-
-#if ! SYS_IS_CYGWIN32
-    /* fstat seems completely broken under CYGWIN */
-#if HAVE_STAT
-    /* first try to get the whole file as one chunk, this avoids garbage
-       collections because of the GROW_STRING calls below    */
-    {
-        struct stat fstatbuf;
-        if ( syBuf[INT_INTOBJ(fid)].pipe == 0 &&
-            fstat( syBuf[INT_INTOBJ(fid)].fp, &fstatbuf) == 0 ) {
-            if((off_t)(Int)fstatbuf.st_size != fstatbuf.st_size) {
-                ErrorMayQuit(
-                    "The file is too big to fit the current workspace",
-                    (Int)0, (Int)0);
-            }
-            len = (Int) fstatbuf.st_size;
-            str = NEW_STRING( len );
-            ret = read( syBuf[INT_INTOBJ(fid)].fp, 
-                        CHARS_STRING(str), len);
-            CHARS_STRING(str)[ret] = '\0';
-            SET_LEN_STRING(str, ret);
-            if ( (off_t) ret == fstatbuf.st_size ) {
-                 return str;
-            }
-        }
-    }
-#endif
-#endif
-    /* read <fid> until we see  eof   (in 20kB pieces)                     */
-    str = NEW_STRING(0);
-    len = 0;
-    while (1) {
-        if ( (ret = read( syBuf[INT_INTOBJ(fid)].fp , buf, 20000)) <= 0 )
-            break;
-        len += ret;
-        GROW_STRING( str, len );
-	lstr = GET_LEN_STRING(str);
-        memcpy( CHARS_STRING(str)+lstr, buf, ret );
-	*(CHARS_STRING(str)+lstr+ret) = '\0';
-	SET_LEN_STRING(str, lstr+ret);
-    }
-
-    /* fix the length of <str>                                             */
-    len = GET_LEN_STRING(str);
-    ResizeBag( str, SIZEBAG_STRINGLEN(len) );
-
-    /* and return */
-
-    syBuf[INT_INTOBJ(fid)].ateof = 1;
-    return len == 0 ? Fail : str;
+    return SyReadStringFid(INT_INTOBJ(fid));
 }
 
 /****************************************************************************

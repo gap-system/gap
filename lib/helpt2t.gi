@@ -184,7 +184,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
   # did we get the section only via a keyword?
   if Length(arg)>3 then
     key:=arg[4];
-    p:=Position(key,'\!');
+    p:=Position(key,'!');
     if p=fail then
       subkey:="";
     else
@@ -196,20 +196,20 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
     if subkey="" then
       ssectypes := 
         [ # \><key>(...)
-          [ " ", key, " ", "(", ")", "^\!"],
+          [ " ", key, " ", "(", ")", "^!"],
           # \>`<key>' V
           [ Concatenation("`",key,"' "), "^{", " ", "V" ],
           # \>`...'{<key>}
-          [ " ", "`", "'", " ", Concatenation("{",key,"}"), "^\!" ] ];
+          [ " ", "`", "'", " ", Concatenation("{",key,"}"), "^!" ] ];
     else
       ssectypes := 
         [ # \><key>(...)!{<subkey>}
-          [ " ", key, " ", "(", ")", " ", "\!", " ", 
+          [ " ", key, " ", "(", ")", " ", "!", " ",
             Concatenation("{", subkey, "}") ],
           # \>`...'{<key>!<subkey>}
-          [ " ", "`", "'", " ", Concatenation("{",key,"\!",subkey,"}"), "^\!" ],
+          [ " ", "`", "'", " ", Concatenation("{",key,"!",subkey,"}"), "^!" ],
           # \>`...'{<key>}!{<subkey>}
-          [ " ", "`", "'", " ", Concatenation("{",key,"}\!{",subkey,"}"), "^\!"]            ];
+          [ " ", "`", "'", " ", Concatenation("{",key,"}!{",subkey,"}"), "^!"] ];
     fi;
   else
     key:=fail;
@@ -219,7 +219,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
   info := HELP_BOOK_INFO(book);
   chap := HELP_CHAPTER_INFO( book, chapter );
   if chap = fail  then
-      return;
+      return fail;
   fi;
 
   # store lines

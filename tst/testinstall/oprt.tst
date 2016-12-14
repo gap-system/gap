@@ -39,14 +39,14 @@ gap> Blocks(eo);
 gap> RepresentativesMinimalBlocks(eo);
 [ [ 1, 5, 9 ], [ 1, 7 ] ]
 gap> MaximalBlocks(eo);
-[ [ 1, 3, 5, 7, 9, 11 ], [ 2, 4, 6, 8, 10, 12 ] ]
+[ [ 1, 3 .. 11 ], [ 2, 4 .. 12 ] ]
 gap> eo:=ExternalOrbit(G,[1..12],1,OnPoints);
 1^G
 gap> IsTransitive(eo); 
 true
 gap> Blocks(eo);
 [ [ 1, 5, 9 ], [ 2, 6, 10 ], [ 3, 7, 11 ], [ 4, 8, 12 ] ]
-gap> STOP_TEST( "oprt.tst", 450000);
+gap> STOP_TEST( "oprt.tst", 430000);
 
 #############################################################################
 ##

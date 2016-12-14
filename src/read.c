@@ -403,7 +403,7 @@ void ReadCallVarAss (
     volatile UInt       level = 0;      /* number of '{}' selectors        */
     volatile UInt       rnam  = 0;      /* record component name           */
     volatile UInt       narg  = 0;      /* number of arguments             */
-
+    Char                varname[MAX_VALUE_LEN]; /* copy of variable name   */
 
     /* all variables must begin with an identifier                         */
     if ( TLS(Symbol) != S_IDENT ) {
@@ -472,7 +472,7 @@ void ReadCallVarAss (
 	    break;
 	  }
       }
-      lvars0 = PTR_BAG( lvars0 )[2];
+      lvars0 = PARENT_LVARS( lvars0 );
       nest0++;
 	if (nest0 >= 65536)
 	  {
@@ -485,7 +485,9 @@ void ReadCallVarAss (
     /* get the variable as a global variable                               */
     if ( type == ' ' ) {
         type = 'g';
-        var = GVarName( TLS(Value) );
+        /* we do not want to call GVarName on this value until after we
+         * have checked if this is the argument to a lambda function       */
+        strlcpy(varname, TLS(Value), sizeof(varname));
     }
 
     /* match away the identifier, now that we know the variable            */
@@ -501,6 +503,11 @@ void ReadCallVarAss (
 	}
       else
 	SyntaxError("Function literal in impossible context");
+    }
+
+    /* Now we know this isn't a lambda function, look up the name          */
+    if ( type == 'g' ) {
+        var = GVarName( varname );
     }
 
     /* check whether this is an unbound global variable                    */
@@ -520,9 +527,7 @@ void ReadCallVarAss (
              ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
       && ! SyCompilePlease )
     {
-        SyntaxError("warning: unbound global variable");
-        TLS(NrError)--;
-        TLS(NrErrLine)--;
+        SyntaxWarning("Unbound global variable");
     }
 
     /* check whether this is a reference to the global variable '~'        */
@@ -687,13 +692,19 @@ void ReadCallVarAss (
         }
     }
 
+#ifdef HPCGAP
+#define ASSIGN_ERROR_MESSAGE ":= or ::="
+#else
+#define ASSIGN_ERROR_MESSAGE ":="
+#endif
+
     /* if we need a statement                                              */
     else if ( mode == 's' || (mode == 'x' && IS_IN(TLS(Symbol), S_ASSIGN)) ) {
         if ( type != 'c' && type != 'C') {
 	    if (TLS(Symbol) != S_ASSIGN)
-	      Match( S_INCORPORATE, ":= or ::=", follow);
+	      Match( S_INCORPORATE, ASSIGN_ERROR_MESSAGE, follow);
 	    else
-	      Match( S_ASSIGN, ":= or ::=", follow );
+	      Match( S_ASSIGN, ASSIGN_ERROR_MESSAGE, follow );
             if ( TLS(CountNams) == 0 || !TLS(IntrCoding) ) { TLS(CurrLHSGVar) = (type == 'g' ? var : 0); }
             ReadExpr( follow, 'r' );
         }
@@ -2751,21 +2762,21 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
         SyntaxError( "; expected");
     }
 
-    /* check for dual semicolon                                            */
-    if ( *TLS(In) == ';' ) {
-        GetSymbol();
-        if (dualSemicolon) *dualSemicolon = 1;
-    }
-    else {
-        if (dualSemicolon) *dualSemicolon = 0;
-    }
-
-    /* end the interpreter                                                 */
-    if ( ! READ_ERROR() ) {
+    /* Note that GetSymbol below potentially calls into the interpreter
+       again, and if an error occurred the interpreter is not in the correct
+       state to execute ReadLine on an input stream, leading to crashes */
+    if (!READ_ERROR()) {
         type = IntrEnd( 0UL );
         PopRegionAutoLocks(lockSP);
-    }
-    else {
+
+        /* check for dual semicolon */
+        if ( *TLS(In) == ';' ) {
+            GetSymbol();
+            if (dualSemicolon) *dualSemicolon = 1;
+        } else {
+            if (dualSemicolon) *dualSemicolon = 0;
+        }
+    } else {
         IntrEnd( 1UL );
         type = STATUS_ERROR;
         PopRegionLocks(lockSP);

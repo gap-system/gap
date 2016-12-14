@@ -160,6 +160,7 @@ as well as sections&nbsp;<Ref Sect="Logical Implications"/>,
 </ManSection>
 
 <#Include Label="ShowImpliedFilters">
+<#Include Label="FiltersType">
 
 </Section>
 
@@ -473,7 +474,7 @@ means to set the values of <A>prop1</A> and <A>prop2</A> to <K>true</K> for this
 <P/>
 <Example><![CDATA[
 gap> prop:= IsFinite and IsCommutative;
-<Property "<<and-filter>>">
+<Property "(IsFinite and IsCommutative)">
 gap> g:= Group( (1,2,3), (4,5) );;
 gap> Tester( prop )( g );
 false

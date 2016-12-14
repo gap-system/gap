@@ -830,11 +830,11 @@ DeclareSynonym("IndeterminateOfLaurentPolynomial",
 ##
 ##  <#GAPDoc Label="IndeterminateNumberOfLaurentPolynomial">
 ##  <ManSection>
-##  <Func Name="IndeterminateNumberOfLaurentPolynomial" Arg='pol'/>
+##  <Attr Name="IndeterminateNumberOfLaurentPolynomial" Arg='pol'/>
 ##
 ##  <Description>
 ##  Is a synonym for
-##  <Ref Func="IndeterminateNumberOfUnivariateRationalFunction"/>.
+##  <Ref Attr="IndeterminateNumberOfUnivariateRationalFunction"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1196,7 +1196,7 @@ DeclareGlobalFunction("MonomialExtGrlexLess");
 ##
 ##  <#GAPDoc Label="LeadingMonomial">
 ##  <ManSection>
-##  <Func Name="LeadingMonomial" Arg='pol'/>
+##  <Oper Name="LeadingMonomial" Arg='pol'/>
 ##
 ##  <Description>
 ##  returns the leading monomial (with respect to the ordering given by
@@ -1452,11 +1452,11 @@ DeclareGlobalFunction("TryGcdCancelExtRepPolynomials");
 
 #############################################################################
 ##
-#O  HeuristicCancelPolynomials(<fam>,<ext1>,<ext2>)
+#O  HeuristicCancelPolynomialsExtRep(<fam>,<ext1>,<ext2>)
 ##
-##  <#GAPDoc Label="HeuristicCancelPolynomials">
+##  <#GAPDoc Label="HeuristicCancelPolynomialsExtRep">
 ##  <ManSection>
-##  <Oper Name="HeuristicCancelPolynomials" Arg='fam,ext1,ext2'/>
+##  <Oper Name="HeuristicCancelPolynomialsExtRep" Arg='fam,ext1,ext2'/>
 ##
 ##  <Description>
 ##  is called by <Ref Func="TryGcdCancelExtRepPolynomials"/> to perform the

@@ -1,4 +1,4 @@
-set set TERMINFO=/cygdrive/c/gap4dev/terminfo
+set TERMINFO=@gapdir@/terminfo
 set CYGWIN=nodosfilewarning
 set LANG=en_US.UTF-8
 set HOME=%HOMEDRIVE%%HOMEPATH%

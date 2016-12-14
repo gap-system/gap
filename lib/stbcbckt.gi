@@ -829,7 +829,7 @@ InstallGlobalFunction( EmptyRBase, function( G, Omega, P )
         if IsIdenticalObj( G[ 1 ], G[ 2 ] )  then
             rbase.level2 := true;
         else
-            rbase.level2 := CopyStabChain( StabChainMutable( G[ 2 ] ) );
+            rbase.level2 := CopyStabChain( StabChainImmutable( G[ 2 ] ) );
             rbase.lev2   := [  ];
         fi;
         G := G[ 1 ];
@@ -841,7 +841,7 @@ InstallGlobalFunction( EmptyRBase, function( G, Omega, P )
 #        rbase.fix   := [  ];
 #        rbase.level := NrMovedPoints( G );
 #    else
-        rbase.chain := CopyStabChain( StabChainMutable( G ) );
+        rbase.chain := CopyStabChain( StabChainImmutable( G ) );
         rbase.level := rbase.chain;
 #    fi;
     
@@ -1547,8 +1547,8 @@ InstallGlobalFunction( PartitionBacktrack,
         
         # In   the representative case,   assign  to <L>  and <R>  stabilizer
         # chains.
-        L := ListStabChain( CopyStabChain( StabChainMutable( L ) ) );
-        R := ListStabChain( CopyStabChain( StabChainMutable( R ) ) );
+        L := ListStabChain( CopyStabChain( StabChainImmutable( L ) ) );
+        R := ListStabChain( CopyStabChain( StabChainImmutable( R ) ) );
 
     fi;
     
@@ -2846,14 +2846,20 @@ end );
 ##
 #M  PartitionStabilizerPermGroup(<G>,<part>)
 ##
+##  This really should be a backtrack on its own
 InstallGlobalFunction( PartitionStabilizerPermGroup, function(G,part)
-local pl,i,p,W,op,S;
+local pl,single,i,p,W,op,S;
 
   # first separate the sets of different lengths
   pl:=Set(List(part,Length));
+  single:=[];
   for i in [1..Length(pl)] do
     pl[i]:=Filtered(part,j->Length(j)=pl[i]);
-    G:=Stabilizer(G,Set(Concatenation(pl[i])),OnSets);
+    Add(single,Set(Concatenation(pl[i])));
+  od;
+  SortBy(single,Length);
+  for i in single do
+    G:=Stabilizer(G,i,OnSets);
   od;
 
   # now pl is a list of lists of sets of the same length, sorted in

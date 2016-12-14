@@ -124,11 +124,11 @@
 ##  In order to find a system program use <Ref Func="DirectoriesSystemPrograms"/>
 ##  together with <Ref Oper="Filename" Label="for a directory and a string"/>.
 ##  <P/>
-##  <Example><![CDATA[
+##  <Log><![CDATA[
 ##  gap> path := DirectoriesSystemPrograms();;
 ##  gap> date := Filename( path, "date" );
 ##  "/bin/date"
-##  ]]></Example>
+##  ]]></Log>
 ##  <P/>
 ##  The next example shows how to execute <C>date</C> with no argument and no input, 
 ##  and collect the output into a string stream.

@@ -805,7 +805,7 @@ DeclareCategory( "IsBasisOfWeightRepElementSpace", IsBasis );
 ##
 ##  <#GAPDoc Label="HighestWeightModule">
 ##  <ManSection>
-##  <Func Name="HighestWeightModule" Arg='L, wt'/>
+##  <Oper Name="HighestWeightModule" Arg='L, wt'/>
 ##
 ##  <Description>
 ##  returns the highest weight module with highest weight <A>wt</A> of the

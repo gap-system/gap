@@ -189,7 +189,8 @@ InstallMethod( Factors, "polynomial over a finite field",
 
 function(R,f)
 local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,  
-	facs,  h,  q,  char,  r;
+	facs,  h,  q,  char,  r,
+	gc, hc, fam, val;
 
   # parse the arguments
   cr := CoefficientsRing(R);
@@ -266,14 +267,64 @@ local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,
     fi;
 
     if DegreeOfLaurentPolynomial(g)>0 then
+      # Above w computed a square free factorization of k/g = k/k' in facs.
+      # Now determine how often each factor h in facs divides g, by repeatedly
+      # dividing g by h.
+      #
+      # The code for this is basically equivalent to the commented out code
+      # snippet below; however, it avoids converting coefficient lists to
+      # polynomials and back again during each loop iteration. This has a
+      # significant performance effect if the polynomial is divided by a
+      # larger power of a given divisor polynomial.
+      #
+      # for h in ShallowCopy(facs)  do
+      #   q := Quotient( g, h );
+      #   while q <> fail  do
+      #     Add( facs, h );
+      #     g := q;
+      #     q := Quotient( g, h );
+      #   od;
+      # od;
+
+      # convert g to coefficients list
+      fam := FamilyObj( g );
+      gc := CoefficientsOfLaurentPolynomial( g );
+      if gc[2] > 0 then
+        gc := ShiftedCoeffs(gc[1],gc[2]);
+      else
+        # the call to ShallowCopy below is necessary to ensure gc is mutable,
+        # so that QUOTREM_LAURPOLS_LISTS can modify it
+        gc := ShallowCopy(gc[1]);
+      fi;
+
+      # perform repeated divisions by the factors in facs
       for h in ShallowCopy(facs)  do
-	q := Quotient( g, h );
-	while q <> fail  do
-	  Add( facs, h );
-	  g := q;
-	  q := Quotient( g, h );
-	od;
+        # convert h to coefficients list
+        hc := CoefficientsOfLaurentPolynomial(h);
+        if hc[2] > 0 then
+          hc := ShiftedCoeffs(hc[1], hc[2]);
+        else
+          # calling ShallowCopy here is not necessary, but results in a
+          # considerable speed boost
+          hc := ShallowCopy(hc[1]);
+        fi;
+
+        # divide g by h as long as there is no remainder
+        while true do
+          # perform the actual division; since QUOTREM_LAURPOLS_LISTS modifies
+          # its first argument, we pass a copy of gc in; this is necessary to
+          # correctly handle the final iteration, in which division by h fails
+          q := QUOTREM_LAURPOLS_LISTS( ShallowCopy(gc), hc );
+          if not IsZero( q[2] ) then break; fi;
+          Add( facs, h );
+          gc := q[1];
+        od;
       od;
+
+      # convert coefficients list back into a polynomial
+      val := RemoveOuterCoeffs( gc, fam!.zeroCoefficient );
+      g := LaurentPolynomialByExtRepNC( fam, gc, val, ind );
+
     fi;
     if 0=DegreeOfLaurentPolynomial(g) then
       if not IsOne(g) then

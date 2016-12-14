@@ -222,7 +222,7 @@ a comparison function for a family of FpGroup elements.
 
 
 <ManSection>
-<Func Name="UnderlyingElement" Arg='elm' Label="fp group elements"/>
+<Oper Name="UnderlyingElement" Arg='elm' Label="fp group elements"/>
 
 <Description>
 Let <A>elm</A> be an element of a group whose elements are represented as
@@ -321,7 +321,7 @@ which is based on the <Package>XGAP</Package> package.
 <#Include Label="TracedCosetFpGroup">
 
 <ManSection>
-<Func Name="FactorCosetAction" Arg='G, H' Label="for fp groups"/>
+<Oper Name="FactorCosetAction" Arg='G, H' Label="for fp groups"/>
 
 <Description>
 returns the action of <A>G</A> on the cosets of its subgroup <A>H</A>.

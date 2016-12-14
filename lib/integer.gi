@@ -474,10 +474,10 @@ InstallGlobalFunction(DivisorsInt,function ( n )
     if n < 0  then n := -n;  fi;
     if n = 0  then Error("DivisorsInt: <n> must not be 0");  fi;
     if n <= Length(DivisorsIntCache)  then 
-        return DivisorsIntCache[n];  
+      return DivisorsIntCache[n];  
     fi;
     factors := FactorsInt( n );
-    
+
     # recursive function to compute the divisors
     divs := function ( i, m )
         if Length(factors) < i     then return [ m ];
@@ -708,7 +708,7 @@ InstallGlobalFunction(FactorsInt,function ( n )
     if 0 < Length(tmp[2])  then
       if ValueOption("quiet")<>true then
         len := Length(tmp[2]);
-        if LoadPackage("FactInt") = true then
+        if IsPackageMarkedForLoading("FactInt")  then
 ##            # in general cases we should proceed with the found factors:
 ##            while len > 0 do
 ##              Append(tmp[1], Factors(tmp[2][len]));
@@ -1255,19 +1255,13 @@ InstallGlobalFunction(PrimePowersInt,function( n )
     local   p,  pows,  lst;
 
     if n = 1  then
-	return [];
+        return [];
     elif n = 0  then
     	Error( "<n> must be non zero" );
     elif n < 0  then
     	n := -1 * n;
     fi;
-    lst  := Factors( Integers, n );
-    pows := [];
-    for p  in Set( lst )  do
-	Add( pows, p );
-        Add( pows, Number( lst, x -> x = p ) );
-    od;
-    return pows;
+    return Flat(Collected(FactorsInt(n)));
 
 end);
 
@@ -1689,6 +1683,7 @@ InstallMethod( PowerMod,
     return PowerModInt( r, e, m );
     end );
 
+
 #############################################################################
 ##
 #M  Quotient( <Integers>, <n>, <m> )  . . . . . . .  quotient of two integers
@@ -1914,27 +1909,7 @@ InstallMethod( \in,
 #F  PrintFactorsInt( <n> )  . . . . . . . . print factorization of an integer
 ##
 InstallGlobalFunction(PrintFactorsInt,function ( n )
-    local decomp, i;
-
-    if -4 < n and n < 4 then
-        Print( n );
-    else
-        decomp := Collected( Factors( AbsInt( n ) ) );
-        if n > 0 then
-            Print( decomp[1][1] );
-        else
-            Print( -decomp[1][1] );
-        fi;
-        if decomp[1][2] > 1 then
-            Print( "^", decomp[1][2] );
-        fi;
-        for i in [ 2 .. Length( decomp ) ] do
-            Print( "*", decomp[i][1] );
-            if decomp[i][2] > 1 then
-                Print( "^", decomp[i][2] );
-            fi;
-        od;
-    fi;
+    Print( StringPP( n ) );
 end);
 
 #############################################################################
@@ -1950,20 +1925,6 @@ InstallOtherMethod(Iterator, "more helpful error for integers", true,
         function(n) 
     Error("You cannot loop over the integer ",n,
           " did you mean the range [1..",n,"]");
-end);
-
-InstallGlobalFunction(PowerDecompositions,function(n)
-local d,i,r;
-  i:=2;
-  d:=[];
-  repeat
-    r:=RootInt(n,i);
-    if n=r^i then
-      Add(d,[r,i]);
-    fi;
-    i:=i+1;
-  until r<2;
-  return d;
 end);
 
 ##  The behaviour of View(String) for large integers can be configured via a

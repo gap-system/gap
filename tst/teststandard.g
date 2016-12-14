@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  testall.g                   GAP library                      Frank Celler
+#W  teststandard.g                   GAP library                      Frank Celler
 ##
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
@@ -24,7 +24,7 @@
 ##  <#/GAPDoc>
 ##
 
-Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g'.\n",
+Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g -K 2g'.\n",
        "The more GAP4stones you get, the faster your system is.\n",
        "The runtime of the following tests (in general) increases.\n",
        "******************************************************************\n",
@@ -37,9 +37,10 @@ Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g'.\n",
 
 TestDirectory( [
   Filename( DirectoriesLibrary( "tst" ), "teststandard" ),
-  Filename( DirectoriesLibrary( "tst" ), "testinstall" )],
-  rec( exitGAP := true,
-       testOptions := rec(compareFunction := "uptowhitespace") ) );
+  Filename( DirectoriesLibrary( "tst" ), "testinstall" ),
+  Filename( DirectoriesLibrary( "tst" ), 
+       Concatenation("test", String(8*GAPInfo.BytesPerVariable), "bit"))],
+  rec(exitGAP := true) );
   
 # Should never get here
 FORCE_QUIT_GAP(1);

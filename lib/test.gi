@@ -279,7 +279,7 @@ end;
 ##  | 41
 ##  gap> ss := InputTextString(StringFile(tnam));;
 ##  gap> Test(ss);
-##  ########> Diff in test stream, line 8:
+##  ########> Diff in test stream, line 8
 ##  # Input is:
 ##  a := 13+29;
 ##  # Expected output:
@@ -337,8 +337,12 @@ InstallGlobalFunction("Test", function(arg)
              if d[1] <> '-' then
                d := Concatenation("+", d);
              fi;
-             Print("########> Time diff in ",
-                   fnam,", line ",line,":\n");
+             Print("########> Time diff in ");
+             if IsStream(fnam) then
+               Print("test stream, line ",line,"\n");
+             else
+               Print(fnam,":",line,"\n");
+             fi;
              Print("# Input:\n", inp);
              Print("# Old time: ", oldt,"   New time: ", newt,
              "    (", d, "%)\n");
@@ -346,11 +350,12 @@ InstallGlobalFunction("Test", function(arg)
            rewriteToFile := false,
            breakOnError := false,
            reportDiff := function(inp, expout, found, fnam, line, time)
+             Print("########> Diff in ");
              if IsStream(fnam) then
-               fnam := "test stream";
+               Print("test stream, line ",line,"\n");
+             else
+               Print(fnam,":",line,"\n");
              fi;
-             Print("########> Diff in ",
-                   fnam,", line ",line,":\n");
              Print("# Input is:\n", inp);
              Print("# Expected output:\n", expout);
              Print("# But found:\n", found);
@@ -517,6 +522,10 @@ end);
 ##  <Mark><C>showProgress</C></Mark>
 ##  <Item>Print information about how tests are progressing (defaults to <K>true</K>).
 ##  </Item>
+##  <Mark><C>suppressStatusMessage</C></Mark>
+##  <Item>suppress displaying status messages <C>#I  Errors detected while testing</C> and
+##  <C>#I  No errors detected while testing</C> after the test (defaults to <K>false</K>).
+##  </Item>
 ##  <Mark><C>exitGAP</C></Mark>
 ##  <Item>Rather than returning <K>true</K> or <K>false</K>, exit GAP with the return value
 ##  of GAP set to success or fail, depending on if all tests passed (defaults to <K>false</K>).
@@ -540,6 +549,7 @@ end);
 ##    testOptions := rec()   : Options to pass on to Test
 ##    earlyStop := false     : Stop once one test fails
 ##    showProgress := true   : Show progress
+##    suppressStatusMessage := false: do not print status messages after the test
 ##    recursive := true      : Search through directories recursively
 ##    exitGAP := false       : Exit GAP, setting exit value depending on if tests succeeded
 ##    stonesLimit := infinity: Set limit (in GAPstones) on longest test to be run.
@@ -624,6 +634,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     testOptions := rec(),
     earlyStop := false,
     showProgress := true,
+    suppressStatusMessage := false,
     exitGAP := false,
     stonesLimit := infinity,
     renormaliseStones := false
@@ -700,9 +711,11 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     testResult := Test(files[i].name, opts.testOptions);
     if not(testResult) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
-      if opts.exitGAP then
+      if not opts.suppressStatusMessage then
         # Do not change the next line - it is needed for testing scrips
         Print( "#I  Errors detected while testing\n\n" );
+      fi;
+      if opts.exitGAP then
         QUIT_GAP(1);
       fi;
       return false;
@@ -753,18 +766,98 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       fi;
     od;
   fi;
-  
-  if opts.exitGAP then
+
+  if not opts.suppressStatusMessage then
     if testTotal then
       # Do not change the next line - it is needed for testing scrips
       Print( "#I  No errors detected while testing\n\n" );
-      QUIT_GAP(0);
     else
       # Do not change the next line - it is needed for testing scrips
       Print( "#I  Errors detected while testing\n\n" );
+    fi;
+  fi;
+
+  if opts.exitGAP then
+    if testTotal then
+      QUIT_GAP(0);
+    else
       QUIT_GAP(1);
     fi;
   fi;
   
   return testTotal;
+end);
+
+#############################################################################
+##
+## TestPackage( <pkgname> )
+##
+##  <#GAPDoc Label="TestPackage">
+##  <ManSection>
+##  <Func Name="TestPackage" Arg='pkgname'/>
+##  <Description>
+##  It is recommended that a &GAP; package specifies a standard test in its
+##  <F>PackageInfo.g</F> file. If <A>pkgname</A> is a string with the name of
+##  a &GAP; package, then <C>TestPackage(pkgname)</C> will check if this
+##  package is loadable and has the standard test, and will run this test in
+##  the current &GAP; session.<P/>
+##
+##  The output of the test depends on the particular package, and it also
+##  may depend on the current &GAP; session (loaded packages, state of the
+##  random sources, defined global variables etc.). If you would like to
+##  run the test for the same package in the same setting that is used
+##  for the testing of &GAP; releases, you have to call
+##
+##  <Log><![CDATA[
+##  make testpackage PKGNAME=pkgname
+##  ]]></Log>
+##
+##  in the UNIX shell (without quotes around <A>pkgname</A>). This will run
+##  the standard test for the package <A>pkgname</A> three times in different
+##  settings, and will write test output to three files in the <F>dev/log</F>
+##  directory. These output files will be named in the format
+##  <F>testpackageX_timestamp.pkgname</F>, where <C>X=A</C> for the test
+##  with packages loaded by default, <C>X=1</C> for the test without other
+##  packages (i.e. when &GAP; is started with <C>-A</C> command line option),
+##  and <C>X=2</C> when the test is run with all packages loaded.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+InstallGlobalFunction( "TestPackage", function(pkgname)
+local testfile, str;
+if not IsBound( GAPInfo.PackagesInfo.(pkgname) ) then
+    Print("#I  No package with the name ", pkgname, " is available\n");
+    return;
+elif LoadPackage( pkgname ) = fail then
+    Print( "#I ", pkgname, " package can not be loaded\n" );
+    return;
+elif not IsBound( GAPInfo.PackagesInfo.(pkgname)[1].TestFile ) then
+    Print("#I No standard tests specified in ", pkgname, " package, version ",
+          GAPInfo.PackagesInfo.(pkgname)[1].Version,  "\n");
+    return;
+else
+    testfile := Filename( DirectoriesPackageLibrary( pkgname, "" ), 
+                          GAPInfo.PackagesInfo.(pkgname)[1].TestFile );
+    str:= StringFile( testfile );
+    if not IsString( str ) then
+        Print( "#I Test file `", testfile, "' for package `", pkgname, 
+        " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version, " is not readable\n" );
+        return;
+    fi;
+    if EndsWith(testfile,".tst") then
+        if Test( testfile, rec(compareFunction := "uptowhitespace") ) then
+            Print( "#I  No errors detected while testing package ", pkgname,
+                   " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version, 
+                   "\n#I  using the test file `", testfile, "'\n");
+        else
+            Print( "#I  Errors detected while testing package ", pkgname, 
+                   " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version, 
+                   "\n#I  using the test file `", testfile, "'\n");
+        fi;
+    elif not READ( testfile ) then
+        Print( "#I Test file `", testfile, "' for package `", pkgname,
+        " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version, " is not readable\n" );
+    fi;
+fi;
 end);

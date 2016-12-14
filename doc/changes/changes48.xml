@@ -2,7 +2,7 @@
 <Heading>Changes between &GAP; 4.7 and &GAP; 4.8</Heading>
 
 This chapter contains an overview of the most important changes
-introduced in &GAP; 4.8.1 release (the 2nd beta release of &GAP; 4.8).
+introduced in &GAP; 4.8.2 release (the 1st public release of &GAP; 4.8).
 Later it will also contain information about subsequent update 
 releases for &GAP; 4.8.
 
@@ -16,8 +16,8 @@ and you may use appropriate milestones from
 that were introduced in corresponding &GAP; releases. An overview of the
 most significant ones is provided below.
 
-<Section Label="gap480"> 
-<Heading>&GAP; 4.8.1 (December 2015)</Heading>
+<Section Label="gap482">
+<Heading>&GAP; 4.8.2 (February 2016)</Heading>
 
 <Subsection Label="Changes in the core GAP48 system"> 
 <Heading>Changes in the core &GAP; system introduced in &GAP; 4.8</Heading>
@@ -146,6 +146,10 @@ belong to the <Package>Semigroups</Package> and <Package>Smallsemi</Package> pac
 <Ref Func="Test" BookName="ref"/> with the option to compare the output up to
 whitespaces.
 </Item>
+<Item>The function `ErrorMayQuit`, which differs from
+<Ref Func="Error" BookName="ref"/> by not allowing execution to continue,
+has been renamed to <Ref Func="ErrorNoReturn" BookName="ref"/>.
+</Item>
 </List>
 
 Fixed bugs:
@@ -182,9 +186,17 @@ Including a <C>break</C> or <C>continue</C> statement in a function body
 but not in a loop now gives a syntax error instead of failing at run time.
 </Item>
 <Item>
+<Ref Oper="GroupGeneralMappingByImages" BookName="ref"/> now verifies that
+that image of a mapping is contained in its range.
+</Item>
+<Item>
 Fixed a bug in caching the degree of transformation that could lead to a
 non-identity transformation accidentally changing its value to the identity
 transformation.
+</Item>
+<Item>
+Fixed the problem with using Windows default browser as a help viewer using
+<C>SetHelpViewer("browser");</C>.
 </Item>
 </List>
 
@@ -209,9 +221,23 @@ together with three associated packages
 (all three - by Sebastian Gutsche and Sebastian Posur).
 </Item>
 <Item>
+<Package>Digraphs</Package> package by Jan De Beule, Julius Jonušas,
+James Mitchell, Michael Torpey and Wilf Wilson, which provides
+functionality to work with graphs, digraphs, and multidigraphs.
+</Item>
+<Item>
 <Package>FinInG</Package> package by John Bamberg, Anton Betten,
 Philippe Cara, Jan De Beule, Michel Lavrauw and Max Neunhöffer
 for computation in Finite Incidence Geometry.
+</Item>
+<Item>
+<Package>HeLP</Package> package by Andreas Bächle and Leo Margolis,
+which computes constraints on partial augmentations of torsion units
+in integral group rings using a method developed by Luthar, Passi and
+Hertweck.  The package can be employed to verify the Zassenhaus
+Conjecture and the Prime Graph Question for finite groups, once
+their characters are known. It uses an interface to the software
+package <Package>4ti2</Package> to solve integral linear inequalities.
 </Item>
 <Item>
 <Package>matgrp</Package> package by Alexander Hulpke, which provides
@@ -219,15 +245,321 @@ an interface to the solvable radical functionality for matrix groups,
 building on constructive recognition.
 </Item>
 <Item>
+<Package>NormalizInterface</Package> package by Sebastian Gutsche,
+Max Horn and Christof Söger, which provides a GAP interface to
+<Package>Normaliz</Package>, enabling direct access to the complete
+functionality of <Package>Normaliz</Package>, such as computations
+in affine monoids, vector configurations, lattice polytopes, and
+rational cones.
+</Item>
+<Item>
 <Package>profiling</Package> package by Christopher Jefferson for
 transforming profiles produced by <Ref Func="ProfileLineByLine" BookName="ref"/>
 and <Ref Func="CoverageLineByLine" BookName="ref"/> into a human-readable form.
+</Item>
+<Item>
+<Package>Utils</Package> package by Sebastian Gutsche, Stefan Kohl and
+Christopher Wensley, which provides a collection of utility functions
+gleaned from many packages.
+</Item>
+<Item>
+<Package>XModAlg</Package> package by Zekeriya Arvasi and Alper Odabas,
+which provides a collection of functions for computing with crossed
+modules and Cat1-algebras and morphisms of these structures.
 </Item>
 </List>
 
 </Subsection>
 
 </Section>
+
+
+<Section Label="gap483">
+<Heading>&GAP; 4.8.3 (March 2016)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.8.3">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.8.3</Heading>
+
+New features:
+<List>
+<Item>
+<!-- #647 -->
+New function <Ref Func="TestPackage" BookName="ref"/> to run standard tests
+(if available) for a single package in the current &GAP; session (also callable
+via <C>make testpackage PKGNAME=pkgname</C> to run package tests in the same
+settings that are used for testing &GAP; releases).
+</Item>
+</List>
+
+Improved and extended functionality:
+<List>
+<Item>
+<!-- #670 -->
+<Ref Func="TestDirectory" BookName="ref"/> now prints a special status message
+to indicate the outcome of the test (this is convenient for automated testing).
+If necessary, this message may be suppressed by using the option
+<C>suppressStatusMessage</C>
+</Item>
+<Item>
+<!-- [#655] -->
+Improved output of tracing methods (which may be invoked, for example, with
+<Ref Func="TraceAllMethods" BookName="ref"/>) by displaying filename and line
+number in some more cases.
+</Item>
+</List>
+
+Changed functionality:
+<List>
+<Item>
+<!-- #615 -->
+Fixed some inconsistencies in the usage of
+<Ref Prop="IsGeneratorsOfSemigroup" BookName="ref"/>.
+</Item>
+</List>
+
+Fixed bugs that could lead to incorrect results:
+<List>
+<Item>
+<!-- #626 -->
+Fallback methods for conjugacy classes, that were never intended for infinite
+groups, now use <Ref Prop="IsFinite" BookName="ref"/> filter to prevent them
+being called for infinite groups. [Reported by Gabor Horvath]
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+<!-- #665 -->
+Calculating stabiliser for the alternating group caused a break loop in the
+case when it defers to the corresponding symmetric group.
+</Item>
+<Item>
+<!-- #663 -->
+It was not possible to use <Ref Func="DotFileLatticeSubgroups" BookName="ref"/>
+for a trivial group. [Reported by Sergio Siccha]
+</Item>
+<Item>
+<!-- #648 -->
+A break loop while computing <Ref Attr="AutomorphismGroup" BookName="ref"/> for
+<C>TransitiveGroup(12,269)</C>. [Reported by Ignat Soroko]
+</Item>
+<Item>
+<!-- #622 -->
+A break loop while computing conjugacy classes of <C>PSL(6,4)</C>.
+[Reported by Martin Macaj]
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+<!-- #654 -->
+Fix for using Firefox as a default help viewer with
+<Ref Func="SetHelpViewer" BookName="ref"/>. [Reported by Tom McDonough]
+</Item>
+</List>
+</Subsection>
+</Section>
+
+<Section Label="gap484">
+<Heading>&GAP; 4.8.4 (June 2016)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.8.4">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.8.4</Heading>
+
+New features:
+<List>
+<Item>
+<!-- #737 -->
+The &GAP; distribution now includes <F>bin/BuildPackages.sh</F>, a script which
+can be started from the <F>pkg</F> directory via <C>../bin/BuildPackages.sh</C>
+and will attempt to build as many packages as possible. It replaces the
+<F>InstPackages.sh</F> script which was not a part of the &GAP; distribution
+and had to be downloaded separately from the &GAP; website. The new script is
+more robust and simplifies adding new packages with binaries, as it requires no
+adjustments if the new package supports the standard <C>./configure; make</C>
+build procedure.
+</Item>
+</List>
+
+Improved and extended functionality:
+<List>
+<Item>
+<!-- #678 -->
+<Ref Func="SimpleGroup" BookName="ref"/> now produces more informative error
+message in the case when <Ref Func="AtlasGroup" BookName="AtlasRep"/> could
+not load the requested group.
+</Item>
+<Item>
+<!-- #610 -->
+An info message with the suggestion to use
+<Ref InfoClass="InfoPackageLoading" BookName="ref"/> will now be displayed
+when <Ref Func="LoadPackage" BookName="ref"/> returns <K>fail</K>
+(unless &GAP; is started with <C>-b</C> option).
+</Item>
+<Item>
+<!-- #728 -->
+The build system will now enable C++ support in GMP
+only if a working C++ compiler is detected.
+</Item>
+<Item>
+<!-- #757 -->
+More checks were added when embedding coefficient rings or rational numbers
+into polynomial rings in order to forbid adding polynomials in different
+characteristic.
+</Item>
+</List>
+
+Fixed bugs that could lead to crashes:
+<List>
+<Item>
+<!-- #685 -->
+Fixed the crash in <C>--cover</C> mode when reading files
+with more than 65,536 lines.
+</Item>
+</List>
+
+Fixed bugs that could lead to incorrect results:
+<List>
+<Item>
+<!-- #741 -->
+Fixed an error in the code for partial permutations that
+occurred on big-endian systems. [Reported by Bill Allombert]
+</Item>
+<Item>
+<!-- #766 -->
+Fixed the kernel method for <Ref Oper="Remove" BookName="ref"/> with
+one argument, which failed to reduce the length of a list to the
+position of the last bound entry. [Reported by Peter Schauenburg]
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+<!-- #679 -->
+Fixed the break loop while using <Ref Oper="Factorization" BookName="ref"/>
+on permutation groups by removing some old code that relied on further caching
+in <C>Factorization</C>. [Reported by Grahame Erskine]
+</Item>
+<Item>
+<!-- #681 -->
+Fixed a problem with computation of maximal subgroups in an almost
+simple group. [Reported by Ramon Esteban Romero]
+</Item>
+<Item>
+<!-- #773 -->
+Added missing methods for <Ref Oper="Intersection2" BookName="ref"/>
+when one of the arguments is an empty list. [Reported by Wilf Wilson]
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+<!-- #770 -->
+Fixed several bugs in <Ref Func="RandomPrimitivePolynomial" BookName="ref"/>.
+[Reported by Nusa Zidaric]
+</Item>
+<Item>
+<!-- #781 -->
+Fixed several problems with <Ref Oper="Random" BookName="ref"/>
+on long lists in 64-bit GAP installations.
+</Item>
+</List>
+
+</Subsection>
+
+</Section>
+
+<Section Label="gap485">
+<Heading>&GAP; 4.8.5 (September 2016)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.8.5">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.8.5</Heading>
+
+Improved and extended functionality:
+<List>
+<Item>
+<!-- #827 -->
+The error messages produced when an unexpected <K>fail</K> is returned were
+made more clear by explicitly telling that the result should not be boolean
+or <K>fail</K> (before it only said <Q>not a boolean</Q>).
+</Item>
+<Item>
+<!-- #797 -->
+For consistency, both <Ref Func="NrTransitiveGroups" BookName="ref" /> and
+<Ref Func="TransitiveGroup" BookName="ref" /> now disallow the transitive
+group of degree 1.
+</Item>
+</List>
+
+Fixed bugs that could lead to incorrect results:
+<List>
+<Item>
+<!-- #869 -->
+A bug in the code for algebraic field extensions over non-prime fields that
+may cause, for example, a list of all elements of the extension not being
+a duplicate-free. [Reported by Huta Gana]
+</Item>
+<Item>
+<!-- #875 -->
+So far, <Ref Func="FileString" BookName="GAPDoc" /> only wrote files of sizes
+less than 2G and did not indicate an error in case of larger strings. Now
+strings of any length can be written, and in the case of a failure
+the corresponding system error is shown.
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+<!-- #877 -->
+<Ref Oper="NaturalHomomorphismByIdeal" BookName="ref" /> was not reducing
+monomials before forming a quotient ring, causing a break loop on some
+inputs. [Reported by Dmytro Savchuk]
+</Item>
+<Item>
+<!-- #867 -->
+A bug in <Ref Func="DefaultInfoHandler" BookName="ref" /> caused
+a break loop on startup with the setting
+<C>SetUserPreference( "InfoPackageLoadingLevel", 4 )</C>`.
+[Reported by Mathieu Dutour]
+</Item>
+<Item>
+<!-- #801 -->
+The <Ref Oper="Iterator" BookName="ref" /> for permutation groups was broken
+when the <Ref Attr="StabChainMutable" Label="for a group" BookName="ref" />
+of the group was not reduced, which can reasonably happen as the result of
+various algorithms.
+</Item>
+</List>
+
+</Subsection>
+
+</Section>
+
+<Section Label="gap486">
+<Heading>&GAP; 4.8.6 (November 2016)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.8.6">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.8.6</Heading>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+<!-- #910 -->
+Fixed regression in the &GAP; kernel code introduced in &GAP; 4.8.5 and
+breaking <Ref Func="StringFile" BookName="gapdoc"/> ability to work
+with compressed files. [Reported by Bill Allombert]
+</Item>
+</List>
+
+</Subsection>
+
+</Section>
+
 
 </Chapter>
 

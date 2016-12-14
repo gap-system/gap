@@ -113,7 +113,6 @@ Text="http://hutchinson.belmont.ma.us/tth/">http://hutchinson.belmont.ma.us/tth/
 -->
 <Item>a C-compiler and <C>make</C></Item>
 <Item>
-<!-- <C>zoo</C>, <C>unzoo</C> (from the &GAP; site),--> 
 <C>tar</C>, <C>gzip</C>, <C>bzip2</C>, <C>zip</C>, 
 and <C>python</C> (for repacking into the various formats)</Item>
 <Item>an installed &GAP;</Item>

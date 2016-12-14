@@ -13,7 +13,7 @@
 **  The deep thought polynomials are stored in the list <dtpols> where
 **  <dtpols>[i] contains the polynomials f_{i1},...,f_{in}.
 **  <dtpols>[i] is a record consisting of the components <evlist> and
-**  <evlistvec>. <evlist> is a list of all deep thought monomials occuring
+**  <evlistvec>. <evlist> is a list of all deep thought monomials occurring
 **  in the polynomials f_{i1},...,f_{in}. <evlistvec>is a list of vectors
 **  describing the coefficients of the corresponding deep thought monomials
 **  in the polynomials f_{i1},..,f_{in}. For example when a pair [j,k]
@@ -115,7 +115,7 @@ void       MultGen(
                   j < len2;
                   j+=2    )
             {
-                /* and add the result multiplicated with the right coefficient
+                /* and add the result multiplied by the right coefficient
                 ** to <xk>[ <help>[j] ].                                    */
                 prod = ProdInt( ord, ELM_PLIST(  help, j+1 ) );
                 sum2 = SumInt(ELM_PLIST( xk, CELM( help,j ) ),
@@ -200,7 +200,7 @@ void        Multbound(
 
 Obj       Multiplybound(
                      Obj      x,
-                     Obj      y,       
+                     Obj      y,
                      Int      anf,
                      Int      end,
                      Obj      dtpols  )
@@ -389,7 +389,7 @@ Obj      Solution( Obj       x,
 
     if ( LEN_PLIST(x) == 0)
         return y;
-    /* first deal with the case that <x> and <y> ly in the centre of the
+    /* first deal with the case that <x> and <y> lie in the centre of the
     ** group defined by <dtpols>.                                       */
     if ( IS_INTOBJ( ELM_PLIST( dtpols, CELM(x, 1) )  )  &&
          CELM( dtpols, CELM(x, 1) ) == 0                &&
@@ -527,7 +527,7 @@ Obj       Commutator( Obj     x,
 **
 *F  Conjugate( <x>, <y>, <dtpols> )
 **
-**  Conjugate returns <x>^<y> for the words <x> and <y> by evaluating the 
+**  Conjugate returns <x>^<y> for the words <x> and <y> by evaluating the
 **  deep thought polynomials <dtpols>. The result is an ordered word.
 */
 
@@ -618,7 +618,7 @@ Obj       Powerred( Obj       x,
 **
 *F  Solutionred( <x>, <y>, <pcp> )
 **
-**  Solutionred returns the solution af the equation <x>*a = <y>.  The result
+**  Solutionred returns the solution of the equation <x>*a = <y>.  The result
 **  is an ordered word with the additional property that all word exponents
 **  are reduced modulo the generator orders given by the deep thought
 **  rewriting system <pcp>.
@@ -809,21 +809,18 @@ void     ReduceWord( Obj      x,
                      (prel = ELM_PLIST( powers, gen) )  != 0  )
                 {
                     if ( ( IS_INTOBJ(quo) && INT_INTOBJ(quo) >= INT_INTOBJ(potenz) )   ||
+                         INT_INTOBJ(mod) == 0 ||
                          TNUM_OBJ(quo) == T_INTPOS    )
                     {
-                        help = Powerred(  prel,
-                                          QuoInt(quo, potenz),
-                                          pcp    );
-                        help = Multiplyboundred( help, x, i+2, flag, pcp);
+                        quo = QuoInt(quo, potenz);
                     }
                     else
                     {
-                        quo = INT_INTOBJ(mod) == 0? QuoInt(quo,potenz):SumInt(QuoInt(quo, potenz),INTOBJ_INT(-1));
-                        help = Powerred(  prel, 
-                                          quo, 
-                                          pcp );
-                        help = Multiplyboundred( help, x, i+2, flag, pcp);
+                        quo = QuoInt(quo, potenz);
+                        quo = SumInt(quo, INTOBJ_INT(-1));
                     }
+                    help = Powerred(prel, quo, pcp);
+                    help = Multiplyboundred(help, x, i+2, flag, pcp);
                     len = LEN_PLIST(help);
                     for (j=1; j<=len; j++)
                         SET_ELM_PLIST(x, j+i+1, ELM_PLIST(help, j) );
@@ -935,7 +932,7 @@ Obj      FuncDTSolution( Obj     self,
 *F  DTCommutator( <x>, <y>, <pcp> )
 **
 **  DTCommutator returns the commutator of the words <x> and <y>.  The result
-**  is reduced with respect to the deep thought rewriting sytem <pcp>.
+**  is reduced with respect to the deep thought rewriting system <pcp>.
 */
 
 Obj        FuncDTCommutator( Obj      self,
@@ -961,7 +958,7 @@ Obj        FuncDTCommutator( Obj      self,
 *F  Conjugate( <x>, <y>, <pcp> ).
 **
 **  Conjugate returns <x>^<y> for the words <x> and <y>.  The result is
-**  ewduced with respect to the deep thought rewriting system <pcp>.
+**  reduced with respect to the deep thought rewriting system <pcp>.
 */
 
 Obj        FuncDTConjugate( Obj      self,

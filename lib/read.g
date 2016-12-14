@@ -20,6 +20,11 @@ ReadOrComplete( "lib/read8.g" ); # overloaded operations, compiler interface
 ReadLib( "colorprompt.g"  );
 
 
+# Galois group identification
+
+ReadLib("galois.gd");
+ReadLib("galois.gi");
+
 #############################################################################
 ##
 ##  Load data libraries
@@ -31,39 +36,53 @@ ReadLib( "colorprompt.g"  );
 #X  Read library of groups of small order
 #X  Read identification routine
 ##
-ReadSmall( "readsml.g","small groups" );
+if TestPackageAvailability("smallgrp")=fail then
+  ReadSmall( "readsml.g","small groups" );
+fi;
 
 #############################################################################
 ##
 #X  Read transitive groups library
 ##
-TRANS_AVAILABLE:=ReadTrans( "trans.gd","transitive groups" );
-TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.grp",
-                                        "transitive groups" );
-TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.gi",
-                                        "transitive groups" );
 
-if TRANS_AVAILABLE then
-  ReadLib("galois.gd"); # the Galois group identification relies on the list
-                        # of transitive groups
-  ReadLib("galois.gi");
+# first assign TransitiveGroupsAvailable to a dummy function to make it
+# callable, even if the library is unavailable.
+InstallGlobalFunction(TransitiveGroupsAvailable,deg->false);
+
+# only load component if not available as package
+if TestPackageAvailability("transgrp")=fail then
+  TRANS_AVAILABLE:=ReadTrans( "trans.gd","transitive groups" );
+  TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.grp",
+					  "transitive groups" );
+  TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.gi",
+					  "transitive groups" );
 fi;
 
 #############################################################################
 ##
 #X  Read primitive groups library
 ##
-PRIM_AVAILABLE:=ReadPrim( "primitiv.gd","primitive groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.gd","irreducible solvable groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.grp",
-                                     "primitive groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.gi",
-                                     "primitive groups" );
 
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.grp","irreducible solvable groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.gi","irreducible solvable groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "cohorts.grp","irreducible solvable groups" );
+# first assign PrimitiveGroupsAvailable to a dummy function to make it
+# callable, even if the library is unavailable.
+InstallGlobalFunction(PrimitiveGroupsAvailable,deg->false);
 
+# only load component if not available as package
+if TestPackageAvailability("primgrp")=fail then
+  PRIM_AVAILABLE:=ReadPrim( "primitiv.gd","primitive groups" );
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.gd","irreducible solvable groups" );
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.grp",
+                                       "primitive groups" );
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.gi",
+                                       "primitive groups" );
+
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.grp",
+                                       "irreducible solvable groups" );
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.gi",
+                                       "irreducible solvable groups" );
+  PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "cohorts.grp",
+                                       "irreducible solvable groups" );
+fi;
 
 #############################################################################
 ##

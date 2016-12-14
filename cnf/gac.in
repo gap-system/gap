@@ -31,6 +31,8 @@
 ##
 ##  The option '-o <output>' tells 'gac' to name the output file <output>.
 ##
+##  The option '-save-temps' tells 'gac' to not delete any intermediate files
+##
 ##  The option  '-ffast-int-arith' tells  'gac' to emit  code for  arithmetic
 ##  operations, which works faster if both  operands are  small integers  and
 ##  slower otherwise.
@@ -129,6 +131,7 @@ OBJECTS="\
     plist.o \
     pperm.o \
     precord.o \
+    profile.o \
     range.o \
     rational.o \
     read.o \
@@ -285,8 +288,12 @@ process_gap_file () {
   gap_compile $c_file ${gap_compile_in} $gap_compile_id ${gap_compile_name}
   if [ $comp_howfar != "c_code" ]; then
     process_c_file $name $c_file
-    echo rm -f $c_file
-    rm -f $c_file
+    if [ "$savetemps" = "true" ]; then
+        echo "Leaving C file " $c_file
+    else
+        echo rm -f $c_file
+        rm -f $c_file
+    fi
   fi
 }
 
@@ -295,8 +302,12 @@ process_gap_file () {
 #F  clean_up
 ##
 clean_up () {
-    echo rm -f ${temps_c} ${temps_o}
-    rm -f ${temps_c} ${temps_o}
+     if [ "$savetemps" = "true" ]; then
+        echo "Leaving files on cleanup: " ${temps_c} ${temps_o}
+    else
+        echo rm -f ${temps_c} ${temps_o}
+        rm -f ${temps_c} ${temps_o}
+    fi
 }
 trap "clean_up" 2 3
 
@@ -315,6 +326,7 @@ comp_howfar="link"
 comp_static_root_relative="no"
 output=""
 inputs=""
+savetemps="false"
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -328,6 +340,8 @@ while [ $# -gt 0 ]; do
     -o|--output)          shift; output="$1";;
   
     -r)                   comp_static_root_relative="yes";;
+
+    -save-temps)          savetemps="true";;
 
     -ffast-int-arith)     if [ "X${gap_options}" = "X" ]; then
                               gap_options="-U FAST_INT_ARITH"
@@ -433,8 +447,12 @@ make_compstat () {
     echo "};"                                            >> ${gactmp}/$$compstat.c
     temps_o="${gactmp}/$$compstat.o ${temps_o}"
     c_compile ${gactmp}/$$compstat.o ${gactmp}/$$compstat.c "${c_options}"
-    echo rm -f ${gactmp}/$$compstat.c
-    rm -f ${gactmp}/$$compstat.c
+    if [ "$savetemps" = "true" ]; then
+        echo "Leaving temp file " ${gactmp}/$$compstat.c
+    else
+        echo rm -f ${gactmp}/$$compstat.c
+        rm -f ${gactmp}/$$compstat.c
+    fi
     objects="${gactmp}/$$compstat.o ${objects}"
 }
 
@@ -508,11 +526,16 @@ if [ $comp_howfar = "link" ]; then
         c_link_dyn ${output} "${objects}"
     fi
     
-    echo rm -f ${temps_o}
-    rm -f ${temps_o}
+    if [ "$savetemps" = "true" ]; then
+        echo "Leaving object files " ${temps_o}
+    else
+        echo rm -f ${temps_o}
+        rm -f ${temps_o}
+    fi
 fi
 
 #Remove temporary directory.
 #We may assume it is empty at this stage.
-rmdir "${gactmp}"
-
+if [ "$savetemps" = "false" ]; then
+    rmdir "${gactmp}"
+fi

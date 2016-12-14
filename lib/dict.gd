@@ -353,7 +353,7 @@ IsSortLookupDictionary:=NewRepresentation("IsSortLookupDictionary",
 ##
 IsPositionDictionary:=NewRepresentation("IsPositionDictionary",
   IsDictionaryDefaultRep,["domain","blist"] );
-IsPositionLookupDictionary:=NewRepresentation("IsPositionDictionary",
+IsPositionLookupDictionary:=NewRepresentation("IsPositionLookupDictionary",
   IsPositionDictionary and IsLookupDictionary,
   ["domain","blist","vals"] );
 
@@ -694,4 +694,3 @@ DeclareOperation( "SetHashEntry", [ IsHash and IsMutable, IsObject, IsObject ] )
 ##DeclareOperation( "AddHashEntryAtLastIndex", [ IsHash and IsMutable, IsObject ] );
 
 #E
-

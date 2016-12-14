@@ -855,7 +855,7 @@ typedef struct {
 **  current input character.  It points into the buffer 'Input->line'.
 */
 
-/* extern TypInputFile    InputFiles [16]; */
+/* TL: extern TypInputFile    InputFiles [16]; */
 /* TL: extern TypInputFile *  Input; */
 /* TL: extern Char *          In; */
 

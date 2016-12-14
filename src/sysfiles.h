@@ -70,10 +70,14 @@ extern Int4 SyGAPCRC(
 
 /****************************************************************************
 **
-*F  SyLoadModule( <name> )  . . . . . . . . . . . . .  load a compiled module
+*F  SyLoadModule( <name>, <func> )  . . . . . . . . .  load a compiled module
+**
+**  This function attempts to load a compiled module <name>.
+**  If successful, it returns 0, and sets <func> to a pointer to the init
+**  function of the module. In case of an error, <func> is set to 0, and the
+**  return value indicates which error occurred.
 */
-extern InitInfoFunc SyLoadModule(
-            const Char *    name );
+extern Int SyLoadModule( const Char * name, InitInfoFunc * func );
 
 
 /****************************************************************************
@@ -345,6 +349,7 @@ extern int SyHaveAlarms;
 extern volatile int SyAlarmRunning;
 extern volatile int SyAlarmHasGoneOff;
 
+extern void SyInitAlarm( void );
 extern void SyInstallAlarm( UInt seconds, UInt nanoseconds);
 extern void SyStopAlarm( UInt *seconds, UInt *nanoseconds);
 
@@ -659,8 +664,21 @@ extern void syWinPut (
     const Char *        cmd,
     const Char *        str );
 
+/***************************************************************************
+ **
+ *F SyReadStringFid( <fid> )
+ **   - read file given by <fid> into a string
+ *F SyReadStringFile( <fid> )
+ **   - read file given by <fid> into a string, only rely on read()
+ *F SyReadStringFileStat( <fid> )
+ **   - read file given by <fid> into a string, use stat() to determine
+ **     size of file before reading. This does not work for pipes
+ */
 
-     
+extern Obj SyReadStringFid(Int fid);
+extern Obj SyReadStringFile(Int fid);
+extern Obj SyReadStringFileGeneric(Int fid);
+
 /****************************************************************************
 **
 

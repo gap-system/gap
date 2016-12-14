@@ -250,6 +250,24 @@ DeclareGlobalFunction( "ConjugacyClassesByOrbits" );
 # `noaction' option is not set, otherwise it returns `fail'.
 DeclareGlobalFunction( "ConjugacyClassesForSmallGroup" );
 
+#############################################################################
+##
+#F  ConjugacyClassesByHomomorphicImage( <G>, <hom> )
+##
+##  <#GAPDoc Label="ConjugacyClassesByHomomorphicImage">
+##  <ManSection>
+##  <Func Name="ConjugacyClassesByHomomorphicImage" Arg='G,hom'/>
+##
+##  <Description>
+##  computes the classes of the group <A>G</A> through the image of <A>G</A>
+##  under the homomorphism <A>hom</A>.
+##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "ConjugacyClassesByHomomorphicImage" );
+
 DeclareGlobalFunction( "GroupByPrimeResidues" );
 
 DeclareGlobalFunction( "ConjugacyClassesTry" );
@@ -413,13 +431,6 @@ DeclareGlobalFunction( "RationalClassesSolvableGroup" );
 ##
 
 DeclareGlobalFunction( "CentralizerSizeLimitConsiderFunction" );
-
-DeclareGlobalFunction( "CompleteGaloisGroupPElement" );
-DeclareGlobalFunction( "RatClasPElmArrangeClasses" );
-DeclareGlobalFunction( "SortRationalClasses" );
-DeclareGlobalFunction( "FusionRationalClassesPSubgroup" );
-DeclareGlobalFunction( "RationalClassesPElements" );
-DeclareGlobalFunction( "RationalClassesPermGroup" );
 
 
 #############################################################################

@@ -51,16 +51,22 @@ function (G,func)
 local   zuppos,            # set of zuppos,result
 	c,                 # a representative of a class of elements
 	o,                 # its order
+	h,                 # the subgroup < c > of G
 	N,                 # normalizer of < c >
 	t;                 # loop variable
+
+  if HasZuppos(G) then
+    return Filtered(Zuppos(G), c -> func(Subgroup(G,[c])));
+  fi;
 
   # compute the zuppos
   zuppos:=[One(G)];
   for c in List(ConjugacyClasses(G),Representative)  do
     o:=Order(c);
-    if func(Group(c)) and IsPrimePowerInt(o)  then
+    h:=Subgroup(G,[c]);
+    if IsPrimePowerInt(o) and func(h)  then
       if ForAll([2..o],i -> Gcd(o,i) <> 1 or not c^i in zuppos) then
-	N:=Normalizer(G,Subgroup(G,[c]));
+	N:=Normalizer(G,h);
 	for t in RightTransversal(G,N)  do
 	  Add(zuppos,c^t);
 	od;
@@ -290,7 +296,7 @@ local   G,		   # group
     G:=arg[1];
     noperf:=false;
     zuppofunc:=false;
-    if Length(arg)>1 and IsFunction(arg[2]) then
+    if Length(arg)>1 and (IsFunction(arg[2]) or IsList(arg[2])) then
       func:=arg[2];
       Info(InfoLattice,1,"lattice discarding function active!");
       if IsList(func) then
@@ -905,7 +911,6 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
       c:=SubgroupsTrivialFitting(G);
       c:=makesubgroupclasses(G,c);
       u:=[List(c,Representative),List(c,StabilizerOfExternalSet)];
-      #return LatticeByCyclicExtension(G);
     fi;
   else
     hom:=NaturalHomomorphismByNormalSubgroupNC(G,ser[1]);
@@ -1085,7 +1090,12 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 
 	  if pcgs=false then
 	    lmpc:=ModuloPcgs(ser[i-1],nts[j]);
-	    npcgs:=ModuloPcgs(nts[j],ser[i]);
+	    if Size(nts[j])=1 and Size(ser[i])=1 then
+	      # avoid degenerate case
+	      npcgs:=Pcgs(nts[j]);
+	    else
+	      npcgs:=ModuloPcgs(nts[j],ser[i]);
+	    fi;
 	  else
 	    if IsTrivial(nts[j]) then
 	      lmpc:=pcgs[i-1];
@@ -1220,8 +1230,15 @@ end);
 ##
 #M  LatticeSubgroups(<G>)  . . . . . . . . . .  lattice of subgroups
 ##
-InstallMethod(LatticeSubgroups,"via radical",true,[IsGroup],0,
-  LatticeViaRadical);
+InstallMethod(LatticeSubgroups,"via radical",true,[IsGroup and
+  IsFinite and CanComputeFittingFree],0, LatticeViaRadical );
+
+InstallMethod(LatticeSubgroups,"cyclic extension",true,[IsGroup and
+  IsFinite],0, LatticeByCyclicExtension );
+
+RedispatchOnCondition( LatticeSubgroups, true,
+    [ IsGroup ], [ IsFinite ], 0 );
+
 
 #############################################################################
 ##
@@ -1499,6 +1516,9 @@ function (L)
     fi;
 
     grp:=L!.group;
+    if Size(grp)=1 then
+      return [[]]; # trivial group
+    fi;
     # relevant prime powers
     primes:=Set(Factors(Size(grp)));
     ppow:=Collected(Factors(Size(grp)));
@@ -1975,7 +1995,7 @@ local G,	# group
 		  # take only vectors with last entry one
 		  vs:=[];
 		  if Length(mat)>0 then
-		    for k in Elements(VectorSpace(ocr.field,mat)) do
+		    for k in AsList(VectorSpace(ocr.field,mat)) do
 		      if IsOne(k[Length(k)]) then
 			Add(vs,k{[1..Length(vsb)]}*vsb);
 		      fi;
@@ -2229,11 +2249,20 @@ InstallMethod(NormalSubgroups,"homomorphism principle perm groups",true,
 ##
 #M  Socle(<G>)
 ##
-InstallMethod(Socle,"from normal subgroups",true,[IsGroup],0,
+InstallMethod(Socle,"from normal subgroups",true,[IsGroup and IsFinite],0,
 function(G)
 local n,i,s;
   if Size(G)=1 then return G;fi;
-  # deal with lareg EA socle factor for fitting free
+
+  # force an IsNilpotent check
+  # should have and IsSolvable check, as well,
+  # but methods for solvable groups are only in CRISP
+  # which aggeressively checks for solvability, anyway
+  if (not HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
+    return Socle(G);
+  fi;
+
+  # deal with large EA socle factor for fitting free
 
   # this could be a bit shorter.
   if Size(RadicalGroup(G))=1 then
@@ -2303,9 +2332,70 @@ local rt,op,a,l,i,j,u,max,subs;
   return rec(subgroups:=List(a,i->ClosureGroup(U,rt{i})),inclusions:=max);
 end);
 
+InstallMethod(IntermediateSubgroups,"using maximal subgroups",
+  IsIdenticalObj, [IsGroup,IsGroup],
+  1, # better than previous if index larger
+function(G,U)
+local uind,subs,incl,i,j,k,m,gens,t,c,p;
+  if (not IsFinite(G)) and Index(G,U)=infinity then
+    TryNextMethod();
+  fi;
+  uind:=IndexNC(G,U);
+  if uind<200 then
+    TryNextMethod();
+  fi;
+  subs:=[G]; #subgroups so far
+  incl:=[];
+  i:=1;
+  gens:=SmallGeneratingSet(U);
+  while i<=Length(subs) do
+    # find all maximals containing U
+    m:=MaximalSubgroupClassReps(subs[i]);
+    m:=Filtered(m,x->IndexNC(subs[i],U) mod IndexNC(subs[i],x)=0);
+    Info(InfoLattice,1,"Subgroup ",i,", Order ",Size(subs[i]),": ",Length(m),
+      " maxes");
+    for j in m do
+      t:=RightTransversal(subs[i],Normalizer(subs[i],j)); # conjugates
+      for k in t do
+        if ForAll(gens,x->k*x/k in j) then
+	  # U is contained in j^k
+	  c:=j^k;
+	  Assert(1,IsSubset(c,U));
+	  #is it U?
+	  if uind=IndexNC(G,c) then
+	    Add(incl,[0,i]);
+	  else
+	    # is it new?
+	    p:=PositionProperty(subs,x->IndexNC(G,x)=IndexNC(G,c) and
+	      ForAll(GeneratorsOfGroup(c),y->y in x));
+	    if p<>fail then 
+	      Add(incl,[p,i]);
+	    else
+	      Add(subs,c);
+	      Add(incl,[Length(subs),i]);
+	    fi;
+	  fi;
+	fi;
+      od;
+    od;
+    i:=i+1;
+  od;
+  # rearrange
+  c:=List(subs,x->IndexNC(x,U));
+  p:=Sortex(c);
+  subs:=Permuted(subs,p);
+  subs:=subs{[1..Length(subs)-1]}; # remove whole group
+  for i in incl do
+    if i[1]>0 then i[1]:=i[1]^p; fi;
+    if i[2]>0 then i[2]:=i[2]^p; fi;
+  od;
+  Sort(incl);
+  return rec(inclusions:=incl,subgroups:=subs);
+end);
+
 InstallMethod(IntermediateSubgroups,"normal case",
   IsIdenticalObj, [IsGroup,IsGroup],
-  1,# better than the previous method
+  2,# better than the previous methods
 function(G,N)
 local hom,F,cl,cls,lcl,sub,sel,unsel,i,j,rmNonMax;
   if not IsNormal(G,N) then
@@ -2747,6 +2837,34 @@ local dom,n,t,map;
   return [map,t];
 end);
 
+BindGlobal("TomExtensionNames",function(r)
+local n,pool,ext,sz,lsz,t,f,i;
+  if IsBound(r.tomExtensions) then
+    return t.tomExtensions;
+  fi;
+  n:=r.tomName;
+  pool:=[n];
+  ext:=[];
+  sz:=fail;
+  for i in pool do
+    t:=TableOfMarks(i);
+    if t<>fail then
+      lsz:=Maximum(OrdersTom(t));
+      if sz=fail then sz:=lsz;fi;
+      if lsz>sz then
+	Add(ext,[lsz/sz,i{[Length(n)+2..Length(i)]}]);
+      fi;
+      for f in FusionsTom(t) do
+	if f[1]{[1..Minimum(Length(f[1]),Length(n))]}=n and not f[1] in pool then
+	  Add(pool,f[1]);
+	fi;
+      od;
+    fi;
+  od;
+  r!.tomExtensions:=ext;
+  return ext;
+end);
+
 InstallMethod(TomDataAlmostSimpleRecognition,"generic",true,
   [IsGroup],0,
 function(G)
@@ -2766,7 +2884,7 @@ local T,t,hom,inf,nam,i,aut;
   # simple group
   if Index(G,T)=1 then
     t:=TableOfMarks(nam);
-    if not HasUnderlyingGroup(t) then
+    if t=fail or not HasUnderlyingGroup(t) then
       Info(InfoLattice,2,"Table of marks has no group");
       return fail;
     fi;
@@ -2779,8 +2897,8 @@ local T,t,hom,inf,nam,i,aut;
     return [hom,t];
   fi;
 
-  #extension
-  inf:=Filtered(inf.allExtensions,i->i[1]=Index(G,T));
+  #extensions (as far as tom knows)
+  inf:=Filtered(TomExtensionNames(inf),i->i[1]=Index(G,T));
   for i in inf do
     t:=TableOfMarks(Concatenation(nam,".",i[2]));
     if t<>fail and HasUnderlyingGroup(t) then

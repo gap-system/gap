@@ -386,7 +386,7 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* install the marking functions for boolean values                    */
-    InfoBags[ T_BOOL ].name = "boolean";
+    InfoBags[ T_BOOL ].name = "boolean or fail";
     InitMarkFuncBags( T_BOOL, MarkNoSubBags );
 
     /* init filters and functions                                          */
