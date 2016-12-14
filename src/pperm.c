@@ -54,10 +54,11 @@ Obj   EmptyPartialPerm;
 #define  TmpPPerm TLS(TmpPPerm)
 
 static inline void ResizeTmpPPerm( UInt len ){
-  if (TmpPPerm == (Obj)0) 
-    TmpPPerm = NewBag(T_PPERM4, len*sizeof(UInt4));
-  else if (SIZE_BAG(TmpPPerm) < len*sizeof(UInt4))
-    ResizeBag(TmpPPerm,len*sizeof(UInt4));
+  if (TmpPPerm == (Obj)0) {
+    TmpPPerm = NewBag(T_PPERM4, (len + 1) * sizeof(UInt4) + 2 * sizeof(Obj));
+  } else if (SIZE_OBJ(TmpPPerm) < (len + 1) * sizeof(UInt4) + 2 * sizeof(Obj)) {
+    ResizeBag(TmpPPerm,(len + 1) * sizeof(UInt4) + 2 * sizeof(Obj));
+  }
 }
 
 /*******************************************************************************
@@ -266,6 +267,8 @@ Obj FuncSparsePartialPermNC( Obj self, Obj dom, Obj img ){
   Obj   f;
   UInt2 *ptf2;
   UInt4 *ptf4;
+
+  if(LEN_LIST(dom)==0) return EmptyPartialPerm;
 
   rank=LEN_LIST(dom);
   deg=INT_INTOBJ(ELM_LIST(dom, rank));
@@ -551,6 +554,13 @@ Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f){
   Obj     dom, img, out;
  
   n=MAX(DEG_PPERM(f), CODEG_PPERM(f));
+
+  if (n == 0) {
+    out = NEW_PLIST(T_PLIST_EMPTY, 0);
+    SET_LEN_PLIST(out, 0);
+    return out;
+  }
+
   ResizeTmpPPerm(n);
   ptseen=(UInt4*)(ADDR_OBJ(TmpPPerm));
   for(i=0;i<n;i++) ptseen[i]=0; 
@@ -696,8 +706,15 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f){
   UInt4   *ptseen;
   Obj     dom, img, out;
 
-  // init the buffer
   n=MAX(DEG_PPERM(f), CODEG_PPERM(f));
+
+  if (n == 0) {
+    out = NEW_PLIST(T_PLIST_EMPTY, 0);
+    SET_LEN_PLIST(out, 0);
+    return out;
+  }
+
+  // init the buffer
   ResizeTmpPPerm(n);
   ptseen=(UInt4*)(ADDR_OBJ(TmpPPerm));
   for(i=0;i<n;i++) ptseen[i]=0; 

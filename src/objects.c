@@ -40,28 +40,26 @@
 
 #include        "saveload.h"            /* saving and loading              */
 
-#include        "hpc/aobjects.h"            /* atomic objects                  */
-#include	"code.h"		/* coder                           */
-#include	"hpc/thread.h"		/* threads			   */
-#include	"traverse.h"		/* object traversal		   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
+#include        "hpc/aobjects.h"        /* atomic objects                  */
+#include        "code.h"                /* coder                           */
+#include        "hpc/thread.h"          /* threads                         */
+#include        "traverse.h"            /* object traversal                */
+#include        "hpc/tls.h"             /* thread-local storage            */
 
 
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
 
-
-/**************************************************************************
- * **
- * **
- * *F  RegisterPackageTNUM( <name>, <typeObjFunc> )
- * **
- * **  Allocates a TNUM for use by a package. The parameters <name> and
- * **  <typeObjFunc> are used to initialize the relevant entries in the
- * **  InfoBags and TypeObjFuncs arrays.
- * **
- * **  If allocation fails (e.g. because no more TNUMs are available),
- * **  a negative value is returned.
- * */
+/****************************************************************************
+**
+*F  RegisterPackageTNUM( <name>, <typeObjFunc> )
+**
+**  Allocates a TNUM for use by a package. The parameters <name> and
+**  <typeObjFunc> are used to initialize the relevant entries in the
+**  InfoBags and TypeObjFuncs arrays.
+**
+**  If allocation fails (e.g. because no more TNUMs are available),
+**  a negative value is returned.
+*/
 Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) )
 {
     HashLock(0);
@@ -77,6 +75,7 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) )
 
     return tnum;
 }
+
 
 /****************************************************************************
 **
@@ -2082,7 +2081,7 @@ static Int InitKernel (
     MakeImmutableObjFuncs[ T_COMOBJ ] = MakeImmutableComObj;
     MakeImmutableObjFuncs[ T_POSOBJ ] = MakeImmutablePosObj;
     MakeImmutableObjFuncs[ T_DATOBJ ] = MakeImmutableDatObj;
-      
+
 
     /* return success                                                      */
     return 0;

@@ -495,11 +495,12 @@ end );
 ##  #I  immediate: IsCommutative
 ##  #I  immediate: IsTrivial
 ##  gap> Size( g );
+##  #I  immediate: IsPerfectGroup
 ##  #I  immediate: IsNonTrivial
 ##  #I  immediate: Size
 ##  #I  immediate: IsNonTrivial
-##  #I  immediate: GeneralizedPcgs
 ##  #I  immediate: IsPerfectGroup
+##  #I  immediate: GeneralizedPcgs
 ##  #I  immediate: IsEmpty
 ##  6
 ##  gap> UntraceImmediateMethods( );

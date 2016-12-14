@@ -1,4 +1,6 @@
-/* Generate tables for finite fields. */
+/* Generate ffdata.{c,h} for finite fields, used in
+   finfield.c
+ */
 
 #include <stdio.h>
 #include <string.h>

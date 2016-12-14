@@ -13,8 +13,8 @@
 ##  &GAP; contains a library of primitive permutation groups which includes,
 ##  up to permutation isomorphism (i.e., up to conjugacy in the corresponding
 ##  symmetric group),
-##  all  primitive  permutation groups of  degree <M>&lt;&nbsp;2500</M>,
-##  calculated in <Cite Key="RoneyDougal05"/>,
+##  all  primitive  permutation groups of  degree <M>&lt;&nbsp;4096</M>,
+##  calculated in <Cite Key="RoneyDougal05"/> and <Cite Key="CRDQ11"/>,
 ##  in particular,
 ##  <List>
 ##  <Item>
@@ -79,13 +79,11 @@
 ##  increasing size, though it holds for many degrees.)
 ##  <#/GAPDoc>
 
-
 #############################################################################
 ##
 ## tell GAP about the component
 ##
-DeclareComponent("prim","2.1");
-
+DeclareComponent("prim","3.0");
 
 #############################################################################
 ##
@@ -99,7 +97,8 @@ DeclareComponent("prim","2.1");
 ##  returns the primitive permutation  group of degree <A>deg</A> with number <A>nr</A>
 ##  from the list. 
 ##  <P/>
-##  The arrangement of the groups differs from the arrangement of primitive
+##  The arrangement of the groups of degrees not greater than 50
+##  differs from the arrangement of primitive
 ##  groups in the list of C.&nbsp;Sims, which was used in &GAP;&nbsp;3. See
 ##  <Ref Func="SimsNo"/>.
 ##  </Description>
@@ -108,6 +107,13 @@ DeclareComponent("prim","2.1");
 ##
 UnbindGlobal("PrimitiveGroup");
 DeclareGlobalFunction( "PrimitiveGroup" );
+
+# Availability test for the library
+# ensure that the dummy binds from the library are killed
+MakeReadWriteGlobal("PrimitiveGroupsAvailable");
+Unbind(PrimitiveGroupsAvailable);
+DeclareGlobalFunction("PrimitiveGroupsAvailable");
+
 
 
 #############################################################################
@@ -214,9 +220,10 @@ DeclareGlobalFunction( "OnePrimitiveGroup" );
 ##  <Attr Name="SimsNo" Arg='G'/>
 ##
 ##  <Description>
-##  If <A>G</A> is a primitive group obtained by <Ref Func="PrimitiveGroup"/>
-##  (respectively one of the selection functions) this attribute contains the
-##  number of the isomorphic group in the original list of C.&nbsp;Sims.
+##  If <A>G</A> is a primitive group of degree not greater than 50,
+##  obtained by <Ref Func="PrimitiveGroup"/>
+##  (respectively one of the selection functions), then this attribute contains
+##  the number of the isomorphic group in the original list of C.&nbsp;Sims.
 ##  (This is the arrangement as it was used in &GAP;&nbsp;3.)
 ##  <P/>
 ##  <Example><![CDATA[
@@ -261,27 +268,6 @@ DeclareAttribute( "SimsNo", IsPermGroup );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalVariable("PrimitiveIndexIrreducibleSolvableGroup");
-
-#############################################################################
-##
-#F  MaximalSubgroupsSymmAlt( <grp> [,<onlyprimitive>] )
-##
-##  <ManSection>
-##  <Func Name="MaximalSubgroupsSymmAlt" Arg='grp [,onlyprimitive]'/>
-##
-##  <Description>
-##  For a symmetric or alternating group <A>grp</A>, this function returns
-##  representatives of the classes of maximal subgroups.
-##  <P/>
-##  If the parameter <A>onlyprimitive</A> is given and set to <K>true</K> only the
-##  primitive maximal subgroups are computed.
-##  <P/>
-##  No parameter test is performed. (The function relies on the primitive
-##  groups library for its functionality.)
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction("MaximalSubgroupsSymmAlt");
 
 
 #############################################################################

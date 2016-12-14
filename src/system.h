@@ -29,6 +29,8 @@
 /* include C library stdlib.h to ensure size_t etc. is defined. */
 #include <stdlib.h>
 
+
+
 /****************************************************************************
 **
 *D  user edit-able defines
@@ -638,6 +640,16 @@ extern UInt SyTimeChildrenSys ( void );
 */
 #define IsDigit(ch)     (isdigit((unsigned int)ch))
 
+
+/****************************************************************************
+**
+*F  IsHexDigit( <ch> ) . . . . . . . . . . . . . . .  is a character a digit
+**
+**  'IsDigit' returns 1 if its character argument is a digit from the ranges
+**  '0..9', 'A..F', or 'a..f' and 0 otherwise.
+*/
+#define IsHexDigit(ch)     (isxdigit((unsigned int)ch))
+
 /****************************************************************************
 **
 *F  IsSpace( <ch> ) . . . . . . . . . . . . . . . .is a character whitespace
@@ -646,7 +658,6 @@ extern UInt SyTimeChildrenSys ( void );
 **  carriage return, linefeed or vertical tab
 */
 #define IsSpace(ch)     (isspace((unsigned int)ch))
-
 
 /****************************************************************************
 **
@@ -1014,6 +1025,35 @@ typedef struct {
 */
 extern void SyExit (
     UInt                ret );
+
+
+/****************************************************************************
+**
+*F  SyNanosecondsSinceEpoch()
+**
+**  'SyNanosecondsSinceEpoch' returns a 64-bit integer which represents the
+**  number of nanoseconds since some unspecified starting point. This means
+**  that the number returned by this function is not in itself meaningful,
+**  but the difference between the values returned by two consecutive calls
+**  can be used to measure wallclock time.
+**
+**  The accuracy of this is system dependent. For systems that implement
+**  clock_getres, we could get the promised accuracy.
+**
+**  Note that gettimeofday has been marked obsolete in the POSIX standard.
+**  We are using it because it is implemented in most systems still.
+**
+**  If we are using gettimeofday we cannot guarantee the values that
+**  are returned by SyNanosecondsSinceEpoch to be monotonic.
+**
+**  Returns -1 to represent failure
+**
+*/
+extern Int8 SyNanosecondsSinceEpoch();
+extern Int8 SyNanosecondsSinceEpochResolution();
+
+extern const char * const SyNanosecondsSinceEpochMethod;
+extern const Int SyNanosecondsSinceEpochMonotonic;
 
 /****************************************************************************
 **

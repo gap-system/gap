@@ -37,6 +37,17 @@ fi
 AC_DEFINE_UNQUOTED([HAVE_ARITHRIGHTSHIFT],[$HAVE_ARITHRIGHTSHIFT],
   [define as 1 if >> for long int behaves like an arithmetic right shift for negative numbers])
 
+# autoconf may set CXX to g++ even if there is no working C++ compiler.
+# So verify that CXX really is able to compile C++ code.
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+  [[#include <iostream>
+    #ifndef __cplusplus
+    #error "broken C++"
+    #endif]])],,
+  [CXX=;])
+AC_LANG_POP([C++])
+
 #
 # Assume that cross-compiling is for 32 bit systems 
 # (alpha/NT will have to wait)
@@ -145,7 +156,7 @@ dnl ## check for timing functions
 dnl ##
 
 AC_CHECK_HEADERS( time.h sys/times.h sys/param.h )
-AC_CHECK_FUNCS( times getrusage gettimeofday )
+AC_CHECK_FUNCS( times getrusage gettimeofday clock_gettime clock_getres )
 AC_CHECK_FUNCS( setitimer getitimer)
 AC_CHECK_LIB( [rt], [timer_create])
 AC_CHECK_FUNCS( timer_settime timer_gettime timer_create )
@@ -370,6 +381,7 @@ dnl ## generate a makefile
 dnl ##
 
 AC_SUBST(CC)
+AC_SUBST(CXX)
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)

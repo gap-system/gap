@@ -172,6 +172,14 @@ extern void ErrorQuitNrArgs (
 
 /****************************************************************************
 **
+*F  ErrorQuitNrAtLeastArgs( <narg>, <args> ) . . . . . . not enough arguments
+*/
+extern void ErrorQuitNrAtLeastArgs (
+    Int                 narg,
+    Obj                 args );
+
+/****************************************************************************
+**
 *F  ErrorQuitRange3( <first>, <second>, <last> ) . . .divisibility rules
 */
 extern void ErrorQuitRange3 (
@@ -201,9 +209,9 @@ extern void ErrorReturnVoid (
             Int                 arg2,
             const Char *        msg2 );
 
-extern Obj ErrorLVars;
-extern Obj ErrorLVars0;
-
+/* TL: extern Obj ErrorLVars;
+   TL: extern Obj ErrorLVars0;
+ */
 
 /****************************************************************************
 **

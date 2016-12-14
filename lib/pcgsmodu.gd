@@ -105,7 +105,7 @@ DeclareOperation( "ModuloPcgs", [ IsGroup, IsGroup ] );
 ##  gap> NumeratorOfModuloPcgs(P);
 ##  [ (1,2,3,4,5), (1,2) ]
 ##  gap> DenominatorOfModuloPcgs(P);
-##  [ (1,3,2), (2,4,3), (2,3)(4,5) ]
+##  [ (1,3,2), (1,4,3), (2,5,4) ]
 ##  gap> RelativeOrders(P);
 ##  [ 2 ]
 ##  gap> ExponentsOfPcElement( P, (1,2,3,4,5) );

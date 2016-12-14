@@ -349,6 +349,7 @@ as they depend on a parameter.
 <#Include Label="IsFinitelyGeneratedGroup">
 <#Include Label="IsSubsetLocallyFiniteGroup">
 <#Include Label="IsPGroup">
+<#Include Label="IsPowerfulPGroup">
 <#Include Label="PrimePGroup">
 <#Include Label="PClassPGroup">
 <#Include Label="RankPGroup">

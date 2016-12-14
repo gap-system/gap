@@ -189,6 +189,8 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/tuples.gd",
     "../../lib/twocohom.gd",
     "../../lib/type.g",
+    "../../lib/type.gd",
+    "../../lib/type.gi",
     "../../lib/type1.g",
     "../../lib/unknown.gd",
     "../../lib/upoly.gd",

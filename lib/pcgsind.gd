@@ -412,7 +412,7 @@ DeclareOperation(
 ##
 ##  <#GAPDoc Label="CorrespondingGeneratorsByModuloPcgs">
 ##  <ManSection>
-##  <Oper Name="CorrespondingGeneratorsByModuloPcgs" Arg='mpcgs, imgs'/>
+##  <Func Name="CorrespondingGeneratorsByModuloPcgs" Arg='mpcgs, imgs'/>
 ##
 ##  <Description>
 ##  Let <A>mpcgs</A> be a modulo pcgs for a factor of a group <M>G</M>

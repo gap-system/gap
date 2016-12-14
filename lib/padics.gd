@@ -234,7 +234,7 @@ DeclareOperation( "ShiftedPadicNumber", [ IsPadicNumber, IsInt ] );
 ##
 ##  <#GAPDoc Label="PurePadicNumberFamily">
 ##  <ManSection>
-##  <Oper Name="PurePadicNumberFamily" Arg='p, precision'/>
+##  <Func Name="PurePadicNumberFamily" Arg='p, precision'/>
 ##
 ##  <Description>
 ##  returns the family of pure <M>p</M>-adic numbers over the

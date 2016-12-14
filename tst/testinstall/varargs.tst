@@ -79,7 +79,15 @@ f := function(a,b..) end;
                   ^
 gap> Display(RETURN_FIRST);
 function ( object... )
-    <<kernel or compiled code>>
+    <<kernel code from src/gap.c:RETURN_FIRST>>
+end
+gap> Print(INSTALL_METHOD,"\n");
+function ( <<arg-1>>, <<arg-2>> )
+    <<compiled GAP code from GAPROOT/lib/oper1.g:322>>
+end
+gap> Display(InstallMethod);
+function ( <<arg-1>>... )
+    <<compiled GAP code from GAPROOT/lib/oper1.g:282>>
 end
 gap> [1..2];
 [ 1, 2 ]
@@ -91,4 +99,4 @@ gap> f := function(a,arg) return [a,arg]; end;
 function( a, arg ) ... end
 gap> f(1,2);
 [ 1, 2 ]
-gap> STOP_TEST("varargs.tst", 1);
+gap> STOP_TEST("varargs.tst", 260000);

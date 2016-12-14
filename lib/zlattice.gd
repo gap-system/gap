@@ -120,7 +120,7 @@ DeclareGlobalFunction( "StandardScalarProduct" );
 ##
 ##  <#GAPDoc Label="Decomposition">
 ##  <ManSection>
-##  <Func Name="Decomposition" Arg='A, B, depth'/>
+##  <Oper Name="Decomposition" Arg='A, B, depth'/>
 ##
 ##  <Description>
 ##  For a <M>m \times n</M> matrix <A>A</A> of cyclotomics that has rank

@@ -121,28 +121,6 @@ Int LtMacfloat (
 
 /****************************************************************************
 **
-*F  IsMacfloatFilt( <self>, <obj> ) . . . . . . . . . .  test for a macfloatean value
-**
-**  'IsMacfloatFilt' implements the internal filter 'IsMacfloat'.
-**
-**  'IsMacfloat( <obj> )'
-**
-**  'IsMacfloat'  returns  'true'  if  <obj>  is   a macfloatean  value  and  'false'
-**  otherwise.
-*/
-Obj IsMacfloatFilt;
-
-Obj IsMacfloatHandler (
-    Obj                 self,
-    Obj                 obj )
-{
-  return IS_MACFLOAT(obj) ? True : False;
-}
-
-
-
-/****************************************************************************
-**
 *F  SaveMacfloat( <macfloat> ) . . . . . . . . . . . . . . . . . . . . save a Macfloatean 
 **
 */
@@ -472,23 +450,8 @@ Obj FuncFREXP_MACFLOAT( Obj self, Obj f)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-
-/****************************************************************************
-**
-
-*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
-*/
-static StructGVarFilt GVarFilts [] = {
-
-    { "IS_MACFLOAT", "obj", &IsMacfloatFilt,
-      IsMacfloatHandler, "src/macfloat.c:IS_MACFLOAT" },
-
-    { 0 }
-
-};
 
 
 /****************************************************************************
@@ -563,7 +526,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -576,8 +538,7 @@ static Int InitKernel (
     InitMarkFuncBags( T_MACFLOAT, MarkNoSubBags );
     MakeBagTypePublic( T_MACFLOAT );
 
-    /* init filters and functions                                          */
-    InitHdlrFiltsFromTable( GVarFilts );
+    /* init functions */
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* install the type function                                           */
@@ -641,11 +602,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-/*  UInt            gvar; */
-/*  Obj             tmp;  */
-
-    /* init filters and functions                                          */
-    InitGVarFiltsFromTable( GVarFilts );
+    /* init functions */
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* return success                                                      */
@@ -680,6 +637,5 @@ StructInitInfo * InitInfoMacfloat ( void )
 
 /****************************************************************************
 **
-
 *E  macfloat.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

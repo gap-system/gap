@@ -9,7 +9,6 @@
 **  This file contains the GAP interface for thread primitives.
 */
 #include        <assert.h>
-#include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 #include        <string.h>              /* memcpy */
 #include        <stdlib.h>
 
@@ -17,46 +16,16 @@
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
 
 #include        "gap.h"                 /* error handling, initialisation  */
-
-#include        "read.h"                /* reader                          */
 #include        "gvars.h"               /* global variables                */
-
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
-#include        "ariths.h"              /* basic arithmetic                */
-
-#include        "integer.h"             /* integers                        */
 #include        "bool.h"                /* booleans                        */
-
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
-
 #include        "lists.h"               /* generic lists                   */
-#include        "listoper.h"            /* operations for generic lists    */
-#include        "listfunc.h"            /* functions for generic lists     */
 #include        "plist.h"               /* plain lists                     */
 
-#include        "code.h"                /* coder                           */
+#include        "fibhash.h"
 
-#include        "exprs.h"               /* expressions                     */
-#include        "stats.h"               /* statements                      */
-#include        "funcs.h"               /* functions                       */
-
-#include	"fibhash.h"
-
-#include	"stringobj.h"
-
-#include        "hpc/thread.h"
-#include        "hpc/tls.h"
-#include        "vars.h"                /* variables                       */
-
-
-#include        "intrprtr.h"            /* interpreter                     */
-
-#include        "compiler.h"            /* compiler                        */
+#include        "hpc/tls.h"             /* thread-local storage            */
 
 #include        "objset.h"
 
@@ -672,8 +641,8 @@ static Obj FuncOBJ_SET(Obj self, Obj arg) {
       len = LEN_LIST(list);
       for (i = 1; i <= len; i++) {
         Obj obj = ELM_LIST(list, i);
-	if (obj)
-	  AddObjSet(result, obj);
+        if (obj)
+          AddObjSet(result, obj);
       }
       return result;
     default:
@@ -801,8 +770,8 @@ static Obj FuncOBJ_MAP(Obj self, Obj arg) {
       for (i = 1; i <= len; i += 2) {
         Obj key = ELM_LIST(list, i);
         Obj value = ELM_LIST(list, i+1);
-	if (key && value)
-	  AddObjMap(result, key, value);
+        if (key && value)
+          AddObjMap(result, key, value);
       }
       return result;
     default:
@@ -1047,7 +1016,7 @@ static StructInitInfo module = {
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    0                         		/* postRestore                    */
+    PostRestore                         /* postRestore                    */
 };
 
 StructInitInfo * InitInfoObjSets ( void )

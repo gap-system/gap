@@ -2,28 +2,59 @@ language: c
 matrix:
   include:
     - os: linux
-      env: TEST_SUITE=testtravis
+      env: TEST_SUITE=testinstall CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
       compiler: gcc
+      addons:
+        apt_packages:
+          - libgmp-dev
+#      after_success:
+#          - bash <(curl -s https://codecov.io/bash)
+    - os: linux
+      env: TEST_SUITE=testtravis CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
+      compiler: gcc
+      addons:
+        apt_packages:
+          - libgmp-dev
+#      after_success:
+#          - bash <(curl -s https://codecov.io/bash)
     - os: osx
-      env: TEST_SUITE=testtravis
+      env: TEST_SUITE=testtravis CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
       compiler: clang
+      addons:
+        apt_packages:
+         - libgmp-dev
+#      after_success:
+#          - bash <(curl -s https://codecov.io/bash)
     - os: linux
-      env: TEST_SUITE=testinstall
+      env: TEST_SUITE=testbugfix  CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
       compiler: gcc
+      addons:
+        apt_packages:
+         - libgmp-dev
+#      after_success:
+#          - bash <(curl -s https://codecov.io/bash)
     - os: linux
-      env: TEST_SUITE=testbugfix
+      env: TEST_SUITE=makemanuals
       compiler: gcc
+      addons:
+        apt_packages:
+         - libgmp-dev
+         - texlive-latex-base
+         - texlive-latex-recommended
+         - texlive-latex-extra
+         - texlive-extra-utils
+         - texlive-fonts-recommended
+         - texlive-fonts-extra
+    - os: linux
+      env: TEST_SUITE=testtravis ABI=32
+      compiler: gcc
+      addons: 
+        apt_packages:
+          - libgmp-dev:i386
+          - gcc-multilib
+#      after_success:
+#          - bash <(curl -s https://codecov.io/bash)
 
-# Change this to your needs
-addons:
-  apt_packages:
-  - libgmp3-dev
-  - texlive-latex-base
-  - texlive-latex-recommended
-  - texlive-latex-extra
-  - texlive-extra-utils
-  - texlive-fonts-recommended
-  - texlive-fonts-extra
 script:
   - git clone --depth=50 https://github.com/gap-system/ward extern/ward
   - ./make.hpc WARD="extern/ward" GMP=system ZMQ=no
@@ -44,3 +75,10 @@ script:
   - echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" | sh bin/gap.sh -S | tee testlog.txt | grep --colour=always -E "########> Diff|$"
   - cat testlog.txt | grep "total"
   - ( ! grep "########> Diff" testlog.txt )
+
+# TODO: merge the above with the master build system (in particular, integrate with codecov
+#  - ./configure --with-gmp=system
+#  - make config
+#  - make -j4
+#  - make bootstrap-pkg-full
+#  - bash etc/ci.sh

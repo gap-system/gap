@@ -643,7 +643,7 @@ DeclareInfoClass( "InfoTom" );
 ##
 ##  <#GAPDoc Label="TableOfMarksFamily">
 ##  <ManSection>
-##  <Var Name="TableOfMarksFamily"/>
+##  <Fam Name="TableOfMarksFamily"/>
 ##
 ##  <Description>
 ##  Each table of marks belongs to this family.
@@ -1889,7 +1889,7 @@ DeclareAttribute( "StraightLineProgramsTom", IsTableOfMarks );
 ##
 ##  <#GAPDoc Label="IsTableOfMarksWithGens">
 ##  <ManSection>
-##  <Func Name="IsTableOfMarksWithGens" Arg='tom'/>
+##  <Filt Name="IsTableOfMarksWithGens" Arg='tom'/>
 ##
 ##  <Description>
 ##  This filter shall express the union of the filters

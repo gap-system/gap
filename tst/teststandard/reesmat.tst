@@ -181,8 +181,7 @@ gap> VV:=Semigroup(GeneratorsOfReesZeroMatrixSemigroup(V, [3,13],
 
 #
 gap> V:=Monoid(Random(R));
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, Usage: Monoid(<gen>,...), Monoid(<gens>), Monoid(<D>),
 
 #
 gap> x:=Random(UnderlyingSemigroup(R));;
@@ -610,8 +609,11 @@ gap> Length(GreensDClasses(UUU));
 4
 gap> Size(V);
 33
-gap> Vt:=Range(IsomorphismTransformationSemigroup(V));
-<transformation semigroup of degree 34 with 5 generators>
+gap> Vt:=Range(IsomorphismTransformationSemigroup(V));;
+gap> Length(GeneratorsOfSemigroup(Vt));
+5
+gap> DegreeOfTransformationSemigroup(Vt);
+34
 gap> Size(Vt);
 33
 gap> Representative(R);
@@ -1086,8 +1088,21 @@ true
 gap> IsFinite(S);
 true
 
+# Test bug in IsFinite for RMS or RZMS created over a free group
+gap> S := FreeGroup(1);;
+gap> R := ReesMatrixSemigroup(S, [[S.1]]);;
+gap> IsFinite(R);
+false
+gap> R := ReesZeroMatrixSemigroup(S, [[S.1]]);;
+gap> IsFinite(R);
+false
+
+# Test bug in creation of RZMS over a free semigroup
+gap> S := FreeSemigroup(1);;
+gap> R := ReesZeroMatrixSemigroup(S, [[S.1]]);;
+
 #
-gap> STOP_TEST( "reesmat.tst", 57630000);
+gap> STOP_TEST( "reesmat.tst", 54100000);
 
 #############################################################################
 ##

@@ -405,7 +405,7 @@ end );
 ##
 ##  <#GAPDoc Label="ImmutableMatrix">
 ##  <ManSection>
-##  <Func Name="ImmutableMatrix" Arg='field, matrix[, change]'/>
+##  <Oper Name="ImmutableMatrix" Arg='field, matrix[, change]'/>
 ##
 ##  <Description>
 ##  returns an immutable matrix equal to <A>matrix</A> which is in the optimal

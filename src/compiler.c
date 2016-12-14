@@ -47,7 +47,7 @@
 
 #include        "compiler.h"            /* compiler                        */
 
-#include        "hpc/tls.h"                 /* thread-local storage            */
+#include        "hpc/tls.h"             /* thread-local storage            */
 
 #include        "vars.h"                /* variables                       */
 
@@ -752,7 +752,10 @@ void            Emit (
     if ( CompPass != 2 )  return;
 
     /* get the information bag                                             */
-    narg = (NARG_FUNC( CURR_FUNC ) != -1 ? NARG_FUNC( CURR_FUNC ) : 1);
+    narg = NARG_FUNC( CURR_FUNC );
+    if (narg < 0) {
+        narg = -narg;
+    }
 
     /* loop over the format string                                         */
     va_start( ap, fmt );
@@ -1275,9 +1278,9 @@ CVar CompFuncExpr (
     Emit( "ENVI_FUNC( %c ) = TLS(CurrLVars);\n", func );
     tmp = CVAR_TEMP( NewTemp( "body" ) );
     Emit( "%c = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );\n", tmp );
-    Emit( "STARTLINE_BODY(%c) = INTOBJ_INT(%d);\n", tmp, INT_INTOBJ(STARTLINE_BODY(BODY_FUNC(fexp))));
-    Emit( "ENDLINE_BODY(%c) = INTOBJ_INT(%d);\n", tmp, INT_INTOBJ(ENDLINE_BODY(BODY_FUNC(fexp))));
-    Emit( "FILENAME_BODY(%c) = FileName;\n",tmp);
+    Emit( "SET_STARTLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_STARTLINE_BODY(BODY_FUNC(fexp))));
+    Emit( "SET_ENDLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_ENDLINE_BODY(BODY_FUNC(fexp))));
+    Emit( "SET_FILENAME_BODY(%c, FileName);\n",tmp);
     Emit( "BODY_FUNC(%c) = %c;\n", func, tmp );
     FreeTemp( TEMP_CVAR( tmp ) );
 
@@ -3774,7 +3777,7 @@ CVar CompIsbComObjExpr (
     Emit( "#ifdef HPCGAP\n" );
     Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
     Emit( "%c = (IsbARecord( %c, RNamObj(%c) ) ? True : False);\n",
-                isb, record, rnam );        
+                isb, record, rnam );
     Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
     Emit( "%c = (ISB_REC( %c, RNamObj(%c) ) ? True : False);\n",
@@ -5490,9 +5493,16 @@ void CompFunc (
     Obj                 fexs;           /* function expression list        */
     Bag                 oldFrame;       /* old frame                       */
     Int                 i;              /* loop variable                   */
+    Int                 prevarargs;     /* we have varargs with a prefix   */
 
     /* get the number of arguments and locals                              */
-    narg = (NARG_FUNC(func) != -1 ? NARG_FUNC(func) : 1);
+    narg = NARG_FUNC(func);
+    prevarargs = 0;
+    if(narg < -1) prevarargs = 1;
+    if (narg < 0) {
+        narg = -narg;
+    }
+
     nloc = NLOC_FUNC(func);
 
     /* in the first pass allocate the info bag                             */
@@ -5536,7 +5546,7 @@ void CompFunc (
         Emit( " Obj  self )\n" );
         Emit( "{\n" );
     }
-    else if ( narg <= 6 ) {
+    else if ( narg <= 6 && !prevarargs ) {
         Emit( "static Obj  HdlrFunc%d (\n", NR_INFO(info) );
         Emit( " Obj  self,\n" );
         for ( i = 1; i < narg; i++ ) {
@@ -5580,6 +5590,15 @@ void CompFunc (
         for ( i = 1; i <= narg; i++ ) {
             Emit( "%c = ELM_PLIST( args, %d );\n", CVAR_LVAR(i), i );
         }
+    }
+
+   if ( prevarargs ) {
+        Emit( "CHECK_NR_AT_LEAST_ARGS( %d, args )\n", narg );
+        for ( i = 1; i < narg; i++ ) {
+            Emit( "%c = ELM_PLIST( args, %d );\n", CVAR_LVAR(i), i );
+        }
+        Emit( "Obj x_temp_range = Range2Check(INTOBJ_INT(%d), INTOBJ_INT(LEN_PLIST(args)));\n", narg);
+        Emit( "%c = ELMS_LIST(args , x_temp_range);\n", CVAR_LVAR(narg));
     }
 
     /* emit the code to switch to a new frame for outer functions          */
@@ -5676,7 +5695,7 @@ Int CompileFunc (
 
     /* emit code to include the interface files                            */
     Emit( "/* C file produced by GAC */\n" );
-    Emit( "#include \"src/compiled.h\"\n" );
+    Emit( "#include \"compiled.h\"\n" );
 
     /* emit code for global variables                                      */
     Emit( "\n/* global variables used in handlers */\n" );

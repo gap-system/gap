@@ -497,7 +497,9 @@ end);
 ##
 BindGlobal("ShapeFrequencies",function(n,i)
 local g,fu,j,k,ps,pps,sh;
-  TransGrpLoad(n,0);
+  if not TransitiveGroupsAvailable(n) then
+    Error("Transitive groups of degree ",n," are not available");
+  fi;
  atomic TRANSREGION do
   if not IsBound(TRANSSHAPEFREQS[n]) then
     TRANSSHAPEFREQS[n]:=[];
@@ -547,14 +549,18 @@ local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,k,a,anz,pm,
     Error("f must be irreducible");
   fi;
   n:=DegreeOfUnivariateLaurentPolynomial(f);
+  if not TransitiveGroupsAvailable(n) then
+    Error("Transitive groups of degree ",n," are not available");
+  fi;
   fac:=3;
   if n>11 then
     fac:=7;
   elif n>7 then
     fac:=5;
   fi;
+
  atomic TRANSREGION do
-  cand:=[1..TRANSLENGTHS[n]];
+  cand:=[1..NrTransitiveGroups(n)];
   if Length(arg)=2 then
     weg:=arg[2];
   else
@@ -606,7 +612,7 @@ local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,k,a,anz,pm,
 	  pps:=Reversed(pps);
           fu[Position(sh,pps)-1]:=true;
         od;
-      elif ForAny([1..TRANSLENGTHS[n]],i->TRANSProperties(n,i)[5]=fu) then
+      elif ForAny([1..NrTransitiveGroups(n)],i->TRANSProperties(n,i)[5]=fu) then
         keineu:=keineu+1;
       fi;
     fi;
@@ -676,7 +682,7 @@ local n,i,sh,fu,ps,pps,ind,keineu,avoid,cf;
 	  pps:=Reversed(pps);
           fu[Position(sh,pps)-1]:=true;
         od;
-      elif ForAny([1..TRANSLENGTHS[n]],i->TRANSProperties(n,i)[5]=fu) then
+      elif ForAny([1..NrTransitiveGroups(n)],i->TRANSProperties(n,i)[5]=fu) then
         keineu:=keineu+1;
       fi;
     fi;
@@ -691,6 +697,10 @@ end);
 #############################################################################
 ##
 #F  GaloisType(<pol>,[<cands>]) . . . . . . . . . . . . . compute Galois type
+##
+##  The optional 2nd argument may be used to restrict the range of transitive
+##  permutation groups that will be considered as possible Galois groups.
+##  The use of the 2nd argument is experimental and is not documented.
 ##
 BindGlobal("DoGaloisType",function(arg)
 local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
@@ -802,9 +812,13 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
     Error("f must be irreducible");
   fi;
   n:=DegreeOfUnivariateLaurentPolynomial(f);
+  if not TransitiveGroupsAvailable(n) then
+    Error("Transitive groups of degree ",n," are not available");
+  fi;
+
  atomic TRANSREGION do
   if Length(arg)=1 then
-    cand:=[1..TRANSLENGTHS[n]];
+    cand:=[1..NrTransitiveGroups(n)];
   else
     cand:=arg[2];
   fi;
@@ -820,7 +834,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   orbs:=[];
 
   # 2Set-Orbit Lengths
-  co:=List([1..TRANSLENGTHS[n]],i->TRANSProperties(n,i)[6]);
+  co:=List([1..NrTransitiveGroups(n)],i->TRANSProperties(n,i)[6]);
   if Length(Set(co{cand}))>1 then
     Info(InfoGalois,1,"2-Set Resolvent");
     #degs:=List(co,GrabCodedLengths);
@@ -846,7 +860,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   fi;
 
   # 2Seq-Orbit Lengths
-  co:=List([1..TRANSLENGTHS[n]],i->TRANSProperties(n,i)[7]);
+  co:=List([1..NrTransitiveGroups(n)],i->TRANSProperties(n,i)[7]);
   if Length(Set(co{cand}))>1 then
     Info(InfoGalois,1,"2-Seq Resolvent");
     #degs:=List(co,GrabCodedLengths);
@@ -872,7 +886,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   fi;
 
   # 3Set-Orbit Lengths
-  co:=List([1..TRANSLENGTHS[n]],i->TRANSProperties(n,i)[8]);
+  co:=List([1..NrTransitiveGroups(n)],i->TRANSProperties(n,i)[8]);
   if n>=5 and Length(Set(co{cand}))>1 then
     Info(InfoGalois,1,"3-Set Resolvent");
 

@@ -103,7 +103,7 @@
 **  ensure that it has room for at least <plen> elements.
 **
 **  Note that 'GROW_WPOBJ' is a macro, so do not call it with arguments that
-**  have sideeffects.  */
+**  have side effects.  */
 
 #define GROW_WPOBJ(wp,plen)   ((plen) < SIZE_OBJ(wp)/sizeof(Obj) ? \
                                  0L : GrowWPObj(wp,plen) )
@@ -133,8 +133,8 @@ Int GrowWPObj (
       volatile Obj tmp = ELM_WPOBJ(wp, i);
       MEMBAR_READ();
       if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, i)) {
-	FORGET_WP(&ELM_WPOBJ(wp, i));
-	REGISTER_WP(&ELM_WPOBJ(copy, i), tmp);
+        FORGET_WP(&ELM_WPOBJ(wp, i));
+        REGISTER_WP(&ELM_WPOBJ(copy, i), tmp);
       }
       ELM_WPOBJ(wp, i) = 0;
       ELM_WPOBJ(copy, i) = tmp;
@@ -145,7 +145,6 @@ Int GrowWPObj (
     /* return something (to please some C compilers)                       */
     return 0L;
 }
-
 
 
 /****************************************************************************
@@ -179,7 +178,7 @@ Obj FuncWeakPointerObj( Obj self, Obj list ) {
       ELM_WPOBJ(wp,i) = tmp;
 #ifdef BOEHM_GC
       if (IS_BAG_REF(tmp))
-	REGISTER_WP(&ELM_WPOBJ(wp, i), tmp);
+        REGISTER_WP(&ELM_WPOBJ(wp, i), tmp);
 #endif
       CHANGED_BAG(wp);          /* this must be here in case list is 
                                  in fact an object and causes a GC in the 
@@ -244,6 +243,11 @@ Int LengthWPObj(Obj wp)
 
 Obj FuncLengthWPObj(Obj self, Obj wp)
 {
+  if (TNUM_OBJ(wp) != T_WPOBJ)
+    {
+      ErrorMayQuit("LengthWPObj: argument must be a weak pointer object, not a %s",
+                   (Int)TNAM_OBJ(wp), 0);
+    }
   return INTOBJ_INT(LengthWPObj(wp));
 }
 
@@ -259,7 +263,24 @@ Obj FuncLengthWPObj(Obj self, Obj wp)
 
 Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 {
+  if (TNUM_OBJ(wp) != T_WPOBJ)
+    {
+      ErrorMayQuit("SetElmWPObj: First argument must be a weak pointer object, not a %s",
+                   (Int)TNAM_OBJ(wp), 0);
+    }
+
+  if (!IS_INTOBJ(pos))
+    {
+      ErrorMayQuit("SetElmWPObj: Position must be a small integer, not a %s",
+                (Int)TNAM_OBJ(pos),0L);
+    }
+
   UInt ipos = INT_INTOBJ(pos);
+  if (ipos < 1)
+    {
+      ErrorMayQuit("SetElmWPObj: Position must be a positive integer",0L,0L);
+    }
+  
 #ifdef BOEHM_GC
   /* Ensure reference remains visible to GC in case val is
    * stored in a register and the register is reused before
@@ -299,7 +320,24 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 
 Int IsBoundElmWPObj( Obj wp, Obj pos)
 {
+  if (TNUM_OBJ(wp) != T_WPOBJ)
+    {
+      ErrorMayQuit("IsBoundElmWPObj: First argument must be a weak pointer object, not a %s",
+                   (Int)TNAM_OBJ(wp), 0);
+    }
+
+  if (!IS_INTOBJ(pos))
+    {
+      ErrorMayQuit("IsBoundElmWPObj: Position must be a small integer, not a %s",
+                (Int)TNAM_OBJ(pos),0L);
+    }
+
   UInt ipos = INT_INTOBJ(pos);
+  if (ipos < 1)
+    {
+      ErrorMayQuit("IsBoundElmWPObj: Position must be a positive integer",0L,0L);
+    }
+
 #ifdef BOEHM_GC
   volatile
 #endif
@@ -353,21 +391,38 @@ Obj FuncIsBoundElmWPObj( Obj self, Obj wp, Obj pos)
 
 Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 {
+  if (TNUM_OBJ(wp) != T_WPOBJ)
+    {
+      ErrorMayQuit("UnbindElmWPObj: First argument must be a weak pointer object, not a %s",
+                   (Int)TNAM_OBJ(wp), 0);
+    }
+
+  if (!IS_INTOBJ(pos))
+    {
+      ErrorMayQuit("UnbindElmWPObj: Position must be a small integer, not a %s",
+                (Int)TNAM_OBJ(pos),0L);
+    }
+
+  UInt ipos = INT_INTOBJ(pos);
+  if (ipos < 1)
+    {
+      ErrorMayQuit("UnbindElmWPObj: Position must be a positive integer",0L,0L);
+    }
+
   Int len = LengthWPObj(wp);
-  if ( INT_INTOBJ(pos) <= len ) {
-    Int p = INT_INTOBJ(pos);
+  if ( ipos <= len ) {
 #ifndef BOEHM_GC
-    ELM_WPOBJ( wp, p) =  0;
+    ELM_WPOBJ( wp, ipos) =  0;
 #else
     /* Ensure the result is visible on the stack in case a garbage
      * collection happens after the read.
      */
-    volatile Obj tmp = ELM_WPOBJ(wp, p);
+    volatile Obj tmp = ELM_WPOBJ(wp, ipos);
     MEMBAR_READ();
-    if (ELM_WPOBJ(wp, p)) {
+    if (ELM_WPOBJ(wp, ipos)) {
       if (IS_BAG_REF(tmp))
-	FORGET_WP( &ELM_WPOBJ(wp, p));
-      ELM_WPOBJ( wp, p) =  0;
+        FORGET_WP( &ELM_WPOBJ(wp, ipos));
+      ELM_WPOBJ( wp, ipos) =  0;
     }
 #endif
   }
@@ -390,11 +445,29 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 
 Obj FuncElmWPObj( Obj self, Obj wp, Obj pos)
 {
-  UInt ipos = INT_INTOBJ(pos);
 #ifdef BOEHM_GC
   volatile
 #endif
   Obj elm;
+
+  if (TNUM_OBJ(wp) != T_WPOBJ)
+    {
+      ErrorMayQuit("ElmWPObj: First argument must be a weak pointer object, not a %s",
+                   (Int)TNAM_OBJ(wp), 0);
+    }
+
+  if (!IS_INTOBJ(pos))
+    {
+      ErrorMayQuit("ElmWPObj: Position must be a small integer, not a %s",
+                (Int)TNAM_OBJ(pos),0L);
+    }
+
+  UInt ipos = INT_INTOBJ(pos);
+  if (ipos < 1)
+    {
+      ErrorMayQuit("ElmWPObj: Position must be a positive integer",0L,0L);
+    }
+
   if ( LengthWPObj(wp) < ipos ) 
     {
       return Fail;
@@ -561,8 +634,8 @@ void MakeImmutableWPObj( Obj obj )
     MEMBAR_READ();
     if (IS_BAG_REF(tmp)) {
       if (ELM_WPOBJ(obj, i)) {
-	FORGET_WP(&ELM_WPOBJ(obj, i));
-	len = i;
+        FORGET_WP(&ELM_WPOBJ(obj, i));
+        len = i;
       }
     } else {
       len = i;

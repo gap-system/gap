@@ -8,10 +8,6 @@
 #############################################################################
 ##
 
-InstallTrueMethod(IsGeneratorsOfInverseSemigroup, IsPartialPermCollection);
-
-#
-
 InstallMethod(IsGeneratorsOfMagmaWithInverses,
  "for a partial perm collection",
 [IsPartialPermCollection],

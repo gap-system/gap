@@ -79,11 +79,10 @@
 #include        "stringobj.h"              /* strings                         */
 
 #include	"code.h"		/* coder                           */
-#include	"hpc/aobjects.h"		/* atomic access to plists	   */
-#include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
 
-#include	"ffdata.h"		/* pre-computed finite field data  */
+#include	"hpc/aobjects.h"	/* atomic access to plists	   */
+#include	"hpc/thread.h"		/* threads			   */
+#include	"hpc/tls.h"		/* thread-local storage		   */
 
 
 /****************************************************************************

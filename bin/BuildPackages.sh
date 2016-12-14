@@ -2,8 +2,17 @@
 
 set -e
 
-# You need 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
-# Run this script from the 'pkg' subdirectory of your GAP installation.
+# This script attempts to build all GAP packages contained in the current
+# directory. Normally, you should run this script from the 'pkg'
+# subdirectory of your GAP installation.
+
+# You can also run it from other locations, but then you need to tell the
+# script where your GAP root directory is, by passing it as first argument
+# to the script. By default, the script assumes that the parent of the
+# current working directory is the GAP root directory.
+
+# You need at least 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
+# Some packages also need a C++ compiler.
 
 # Contact support@gap-system.org for questions and complaints.
 
@@ -11,19 +20,6 @@ set -e
 # Even if it doesn't work completely automatically for you, you may get
 # an idea what to do for a complete installation of GAP.
 
-if ! [ x`which gmake` = "x" ] ; then
-  MAKE=gmake
-else
-  MAKE=make
-fi
-
-# Package-specific info:
-
-# == Linboxing
-#  Easy, if prerequisites are installed. You may get GNU GMP
-#  (http://gmplib.org/) and BLAS (http://www.netlib.org/blas/)
-#  via packages in your Linux distribution. But you probably need to
-#  install LinBox (http://www.linalg.org/download.html) yourself.
 
 if [ $# -eq 0 ]
   then
@@ -47,20 +43,33 @@ SUBDIR=`ls -d */ | head -n 1`
 if ! (cd $SUBDIR && [ -f $GAPDIR/sysinfo.gap ])
   then
     echo "$GAPDIR is not the root of a gap installation (no sysinfo.gap)"
+    echo "Please provide the absolute path of your GAP root directory as"
+    echo "first argument to this script."
     exit 1
 fi
 
 if (cd $SUBDIR && grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null) ; then
-  echo Building with 32-bit ABI
+  echo "Building with 32-bit ABI"
   ABI32=YES
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi;
 
-echo Attempting to build GAP packages.
-echo Note that many GAP packages require extra programs to be installed,
-echo and some are quite difficult to build. Please read the documentation for
-echo packages which fail to build correctly, and only worry about packages
-echo you require!
+# Many package require GNU make. So use gmake if available,
+# for improved compatibility with *BSD systems where "make"
+# is BSD make, not GNU make.
+if ! [ x`which gmake` = "x" ] ; then
+  MAKE=gmake
+else
+  MAKE=make
+fi
+
+cat <<EOF
+Attempting to build GAP packages.
+Note that many GAP packages require extra programs to be installed,
+and some are quite difficult to build. Please read the documentation for
+packages which fail to build correctly, and only worry about packages
+you require!
+EOF
 
 build_carat() {
 (
@@ -69,30 +78,21 @@ build_carat() {
 # this out until a user complains.
 # It is not possible to move around compiled binaries because these have the
 # path to some data files burned in.
-cd carat
-tar xzpf carat-2.1b1.tgz
-rm -f bin
+zcat carat-2.1b1.tgz | tar pxf -
 ln -s carat-2.1b1/bin bin
-cd carat-2.1b1/functions
-# Install the include Gmp first.
-# (If you have already Gmp on your system, you can delete the file
-# gmp-*.tar.gz and delete the target 'Gmp' from the target 'ALL' in
-# carat-2.1b1/Makefile.)
-tar xzpf gmp-*.tar.gz
-cd ..
-$MAKE TOPDIR=`pwd` Links
-# Note that Gmp may use processor specific code, so this step may not be ok
-# for a network installation if you want to use the package on older computers
-# as well.
-$MAKE TOPDIR=`pwd` Gmp
-# And now the actual Carat programs.
-$MAKE TOPDIR=`pwd` CFLAGS='-O2'
+cd carat-2.1b1
+make TOPDIR=`pwd`
+chmod -R a+rX .
+cd bin
+aa=`./config.guess`
+for x in "`ls -d1 $GAPDIR/bin/${aa}*`"; do
+ ln -s "$aa" "`basename $x`"
+done
 )
 }
 
 build_cohomolo() {
 (
-cd cohomolo
 ./configure $GAPDIR
 cd standalone/progs.d
 cp makefile.orig makefile
@@ -102,7 +102,7 @@ $MAKE
 }
 
 build_fail() {
-  echo = Failed to build $dir
+  echo "= Failed to build $dir"
 }
 
 run_configure_and_make() {
@@ -113,57 +113,80 @@ run_configure_and_make() {
   fi;
   if [ -f configure ]; then
     if grep Autoconf ./configure > /dev/null; then
-      ./configure $CONFIGFLAGS --with-gaproot=$GAPDIR && $MAKE
+      ./configure $CONFIGFLAGS --with-gaproot=$GAPDIR
     else
-      ./configure $GAPDIR && $MAKE
+      ./configure $GAPDIR
     fi;
+    $MAKE
+  else
+    echo "No building required for $dir"
   fi;
 }
 
 for dir in `ls -d */`
 do
     if [ -e $dir/PackageInfo.g ]; then
-      echo ==== Building $dir
+      dir="${dir%/}"
+      echo "==== Checking $dir"
+      (  # start subshell
+      set -e
+      cd $dir
       case $dir in
         anupq*)
-          (cd $dir && ./configure $CONFIGFLAGS && $MAKE $CONFIGFLAGS) || build_fail
+          ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR &&
+          $MAKE CFLAGS=-m32 LOPTS=-m32
         ;;
 
         atlasrep*)
-          (cd $dir && chmod 1777 datagens dataword) || build_fail
+          chmod 1777 datagens dataword
         ;;
 
         carat*)
-          build_carat || build_fail
+          build_carat
         ;;
 
         cohomolo*)
-          build_cohomolo || build_fail
+          build_cohomolo
         ;;
 
         fplsa*)
-          (cd $dir && ./configure $GAPDIR && $MAKE CC="gcc -O2 ") || build_fail
+          ./configure $GAPDIR &&
+          $MAKE CC="gcc -O2 "
         ;;
 
         kbmag*)
-          (cd $dir && ./configure $GAPDIR && $MAKE COPTS="-O2 -g") || build_fail
+          ./configure $GAPDIR &&
+          $MAKE COPTS="-O2 -g"
+        ;;
+
+        NormalizInterface*)
+          ./build-normaliz.sh $GAPDIR &&
+          run_configure_and_make
         ;;
 
         pargap*)
-          (cd $dir && ./configure $GAPDIR && $MAKE && cp bin/pargap.sh $GAPDIR/bin && rm -f ALLPKG) || build_fail
+          ./configure $GAPDIR &&
+          $MAKE &&
+          cp bin/pargap.sh $GAPDIR/bin &&
+          rm -f ALLPKG
         ;;
 
         xgap*)
-          (cd $dir && ./configure && $MAKE && rm -f $GAPDIR/bin/xgap.sh && cp bin/xgap.sh $GAPDIR/bin) || build_fail
+          ./configure --with-gaproot=$GAPDIR &&
+          $MAKE &&
+          rm -f $GAPDIR/bin/xgap.sh &&
+          cp bin/xgap.sh $GAPDIR/bin
         ;;
 
         simpcomp*)
         ;;
         
         *)
-          (cd $dir && run_configure_and_make) || build_fail
+          run_configure_and_make
         ;;
       esac;
+      ) || build_fail
+      # end subshell
     else
       echo "$dir is not a GAP package -- no PackageInfo.g"
     fi;

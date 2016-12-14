@@ -95,6 +95,7 @@ package and not by users of a package.
 
 <#Include Label="ReadPackage">
 <#Include Label="TestPackageAvailability">
+<#Include Label="TestPackage">
 <#Include Label="InstalledPackageVersion">
 <#Include Label="DirectoriesPackageLibrary">
 <#Include Label="DirectoriesPackagePrograms">

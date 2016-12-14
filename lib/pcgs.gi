@@ -1623,6 +1623,7 @@ local G,e,ind,s,m,i,p;
   if not IsSolvableGroup(G) then
     Error("<G> must be solvable");
   fi;
+  IsFinite(G); # trigger finiteness test
   e:=ElementaryAbelianSeriesLargeSteps(param);
   ind:=[];
   s:=[];

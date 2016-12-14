@@ -54,13 +54,13 @@ typedef mp_size_t   TypGMPSize;
 #define NR_SMALL_INT_BITS  (32 - 4)
 #endif
 
-#if GMP_LIMB_BITS != INTEGER_UNIT_SIZE * 8
+#if (GMP_LIMB_BITS != INTEGER_UNIT_SIZE * 8) && !defined(USE_PRECOMPILED)
 #error Aborting compile: unexpected GMP limb size
 #endif
 #if GMP_NAIL_BITS != 0
 #error Aborting compile: GAP does not support non-zero GMP nail size
 #endif
-#ifndef __GNU_MP_RELEASE
+#if !defined(__GNU_MP_RELEASE) && !defined(USE_PRECOMPILED)
  #if __GMP_MP_RELEASE < 50002
  #error Aborting compile: GAP requires GMP 5.0.2 or newer
  #endif
@@ -73,7 +73,7 @@ typedef mp_size_t   TypGMPSize;
 
 
 /**************************************************************************
-** The following two functions convert a C Int or UInt respectively into
+** The following two functions convert Int, UInt or Int8 respectively into
 ** a GAP integer, either an immediate, small integer if possible or 
 ** otherwise a new GAP bag with TNUM T_INTPOS or T_INTNEG.
 **
@@ -84,6 +84,7 @@ typedef mp_size_t   TypGMPSize;
 
 Obj ObjInt_Int(Int i);
 Obj ObjInt_UInt(UInt i);
+Obj ObjInt_Int8(Int8 i);
 
 /****************************************************************************
 **

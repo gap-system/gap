@@ -75,6 +75,7 @@ extern "C" {
 
 
 #include        "intrprtr.h"            /* interpreter                     */
+#include        "globalstate.h"    /* */
 
 #include        "compiler.h"            /* compiler                        */
 
@@ -131,6 +132,8 @@ typedef UInt    RNam;
 #define CHECK_NR_ARGS(narg,args) \
  if ( narg != LEN_PLIST(args) ) ErrorQuitNrArgs(narg,args);
 
+#define CHECK_NR_AT_LEAST_ARGS(narg,args) \
+ if ( narg - 1 > LEN_PLIST(args) ) ErrorQuitNrAtLeastArgs(narg - 1,args);
 
 /* higher variables, should go into 'vars.c' * * * * * * * * * * * * * * * */
 

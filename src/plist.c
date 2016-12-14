@@ -231,6 +231,7 @@ Int KTNumPlist (
                                      only test this one for PLIST elements */
     Int                 areMut  = 0;    /* are <list>s elms mutable        */
     Int                 len     = 0;    /* if so, this is the length       */
+    Obj                 typeObj = 0;    /* type of <list>s elements        */
     Obj                 family  = 0;    /* family of <list>s elements      */
     Int                 lenList;        /* length of <list>                */
     Obj                 elm, x;         /* one element of <list>           */
@@ -242,10 +243,12 @@ Int KTNumPlist (
     Int                 knownNDense;    /* set true if the list is already
 					   known not to be dense */
     UInt                ktnumFirst;
+    Obj                 loopTypeObj = 0; /* typeObj in loop               */
 
     if (!CheckWriteAccess(list)) {
       return TNUM_OBJ(list);
     }
+
     /* if list has `TESTING' keep that                                     */
     testing = TEST_OBJ_FLAG(list, TESTING);
 
@@ -282,16 +285,19 @@ Int KTNumPlist (
     else {
 	if (!testing) SET_OBJ_FLAG(list, TESTING|TESTED);
 
-	if (IS_PLIST(elm))
-	  family = FAMILY_TYPE( TypePlistWithKTNum(elm, &ktnumFirst));
+	if (IS_PLIST(elm)) {
+	    typeObj = TypePlistWithKTNum(elm, &ktnumFirst);
+	    family = FAMILY_TYPE( typeObj );
+	}
 	else
-	  {
-	    family  = FAMILY_TYPE( TYPE_OBJ(elm) );
+	{
+	    typeObj =  TYPE_OBJ(elm);
+	    family  = FAMILY_TYPE( typeObj );
 	    ktnumFirst = 0;
-	  }
-        isHom   = 1;
-        areMut  = IS_MUTABLE_OBJ(elm);
-        if ( ktnumFirst >= T_PLIST_HOM ||
+	}
+	isHom   = 1;
+	areMut  = IS_MUTABLE_OBJ(elm);
+	if ( ktnumFirst >= T_PLIST_HOM ||
 	     ( ktnumFirst == 0 && IS_HOMOG_LIST( elm) )) {
 
 	  /* entry is a homogenous list, so this miught be a table */
@@ -308,8 +314,17 @@ Int KTNumPlist (
 	if (!testing) CLEAR_OBJ_FLAG(list, TESTING);
     }
 
+    i = 2;
+    /* scan quickly through any initial INTOBJs                            */
+    if ( IS_INTOBJ(ELM_PLIST(list, 1)) ) {
+        /* We have already marked list as not table, not rect */
+        while(i <= lenList && IS_INTOBJ(ELM_PLIST( list, i ))) {
+            i++;
+        }
+    }
+
     /* loop over the list                                                  */
-    for ( i = 2; isDense && (isHom || ! areMut) && i <= lenList; i++ ) {
+    for ( ; isDense && (isHom || ! areMut) && i <= lenList; i++ ) {
         elm = ELM_PLIST( list, i );
         if ( elm == 0 ) {
             isDense = 0;
@@ -324,15 +339,33 @@ Int KTNumPlist (
             isHom   = 0;
             areMut  = (areMut || IS_MUTABLE_PLIST(elm));
             isTable = 0;
-	    isRect = 0;
+            isRect = 0;
         }
         else {
-            isHom   = (isHom && family == FAMILY_TYPE( TYPE_OBJ(elm) ));
+            if(isHom) {
+                loopTypeObj = TYPE_OBJ(elm);
+                if ( loopTypeObj != typeObj && FAMILY_TYPE(loopTypeObj) != family ) {
+                    isHom = 0;
+                    isTable = 0;
+                    isRect = 0;
+                }
+                if ( isTable ) {
+                    /* IS_PLIST first, as it is much cheaper */
+                    if (!(IS_PLIST(elm) || IS_LIST(elm))) {
+                        isTable = 0;
+                        isRect = 0;
+                    }
+                    if( isRect ) {
+                        if( !(IS_PLIST(elm) && LEN_PLIST(elm) == len) ) {
+                            isRect = 0;
+                        }
+                    }
+                }
+            }
             areMut  = (areMut || IS_MUTABLE_OBJ(elm));
-            isTable = isTable && IS_LIST(elm); /*(isTable && IS_SMALL_LIST(elm) && LEN_LIST(elm) == len); */
-	    isRect = isRect && IS_PLIST(elm) && LEN_PLIST(elm) == len;
         }
     }
+
     /* if we know it is not dense */
     if (knownNDense)
       isDense = 0;

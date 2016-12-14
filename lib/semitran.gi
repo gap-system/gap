@@ -214,13 +214,16 @@ InstallMethod(IsFullTransformationSemigroup, "for a transformation semigroup",
 [IsTransformationSemigroup],
 function(s)
   local n, t;
+  
+  n := DegreeOfTransformationSemigroup(s);
 
-  n:=DegreeOfTransformationSemigroup(s);
-  if HasSize(s) then
+  if n = 0 and HasIsTrivial(s) and IsTrivial(s) then 
+    return true;
+  elif HasSize(s) then
     return Size(s)=n^n;
   fi;
 
-  t:=FullTransformationSemigroup(n);
+  t:=FullTransformationSemigroup(DegreeOfTransformationSemigroup(s));
   return ForAll(GeneratorsOfSemigroup(t), x-> x in s);
 end);
 

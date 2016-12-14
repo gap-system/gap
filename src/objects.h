@@ -202,16 +202,11 @@ static inline Obj prod_intobjs(Int l, Int r)
     return (Obj)l;
   prod = ((Int)((UInt)l >> 2) * ((UInt)r-1)+1);
 
-#if HAVE_ARITHRIGHTSHIFT
-  if ((prod << 1)>> 1 !=  prod)
-    return (Obj) 0;
-#else
   if (((((UInt) (prod)) >> (sizeof(UInt)*8-2))-1) <= 1)
     return (Obj) 0;
-#endif
 
-  if ((((Int)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
-      (((Int)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
+  if ((Int)(((UInt)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
+      (Int)(((UInt)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
     return (Obj) prod;
 
 #if HAVE_ARITHRIGHTSHIFT
@@ -380,10 +375,10 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define LAST_IMM_MUT_TNUM       LAST_LIST_TNUM
 
 /* Object sets and maps */
-#define FIRST_OBJSET_TNUM	(LAST_LIST_TNUM+1)
-#define T_OBJSET		(FIRST_OBJSET_TNUM+0)
-#define T_OBJMAP		(FIRST_OBJSET_TNUM+2)
-#define LAST_OBJSET_TNUM	(T_OBJMAP+IMMUTABLE)
+#define FIRST_OBJSET_TNUM       (LAST_LIST_TNUM+1)
+#define T_OBJSET                (FIRST_OBJSET_TNUM+0)
+#define T_OBJMAP                (FIRST_OBJSET_TNUM+2)
+#define LAST_OBJSET_TNUM        (T_OBJMAP+IMMUTABLE)
 
 /* IMMUTABLE is not used for external types but keep the parity */
 #define FIRST_EXTERNAL_TNUM     (LAST_OBJSET_TNUM+1)
@@ -396,29 +391,29 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 
 /* The next two TNUMA are BOTH external AND shared! */
-#define FIRST_SHARED_TNUM	(T_WPOBJ+1)
-#define T_APOSOBJ 		(FIRST_SHARED_TNUM+ 0)
-#define T_ACOMOBJ 		(FIRST_SHARED_TNUM+ 1)
+#define FIRST_SHARED_TNUM       (T_WPOBJ+1)
+#define T_APOSOBJ               (FIRST_SHARED_TNUM+ 0)
+#define T_ACOMOBJ               (FIRST_SHARED_TNUM+ 1)
 
 /* Primitive types */
-#define T_THREAD		(FIRST_SHARED_TNUM+ 2)
-#define T_MUTEX			(FIRST_SHARED_TNUM+ 3)
-#define T_CONDVAR		(FIRST_SHARED_TNUM+ 4)
-#define T_RWLOCK		(FIRST_SHARED_TNUM+ 5)
-#define T_MONITOR		(FIRST_SHARED_TNUM+ 6)
-#define T_REGION		(FIRST_SHARED_TNUM+ 7)
+#define T_THREAD                (FIRST_SHARED_TNUM+ 2)
+#define T_MUTEX                 (FIRST_SHARED_TNUM+ 3)
+#define T_CONDVAR               (FIRST_SHARED_TNUM+ 4)
+#define T_RWLOCK                (FIRST_SHARED_TNUM+ 5)
+#define T_MONITOR               (FIRST_SHARED_TNUM+ 6)
+#define T_REGION                (FIRST_SHARED_TNUM+ 7)
 /* User-programmable types */
-#define T_LOCK			(FIRST_SHARED_TNUM+ 8)
-#define T_SEMAPHORE		(FIRST_SHARED_TNUM+ 9)
-#define T_CHANNEL		(FIRST_SHARED_TNUM+ 10)
-#define T_BARRIER		(FIRST_SHARED_TNUM+ 11)
-#define T_SYNCVAR		(FIRST_SHARED_TNUM+ 12)
-#define T_FIXALIST		(FIRST_SHARED_TNUM+ 13)
-#define T_ALIST			(FIRST_SHARED_TNUM+ 14)
-#define T_AREC 			(FIRST_SHARED_TNUM+ 15)
-#define T_AREC_INNER 		(FIRST_SHARED_TNUM+ 16)
-#define T_TLREC 		(FIRST_SHARED_TNUM+ 17)
-#define T_TLREC_INNER 		(FIRST_SHARED_TNUM+ 18)
+#define T_LOCK                  (FIRST_SHARED_TNUM+ 8)
+#define T_SEMAPHORE             (FIRST_SHARED_TNUM+ 9)
+#define T_CHANNEL               (FIRST_SHARED_TNUM+ 10)
+#define T_BARRIER               (FIRST_SHARED_TNUM+ 11)
+#define T_SYNCVAR               (FIRST_SHARED_TNUM+ 12)
+#define T_FIXALIST              (FIRST_SHARED_TNUM+ 13)
+#define T_ALIST                 (FIRST_SHARED_TNUM+ 14)
+#define T_AREC                  (FIRST_SHARED_TNUM+ 15)
+#define T_AREC_INNER            (FIRST_SHARED_TNUM+ 16)
+#define T_TLREC                 (FIRST_SHARED_TNUM+ 17)
+#define T_TLREC_INNER           (FIRST_SHARED_TNUM+ 18)
 
 /* reserve space for 40 package TNUMs */
 #define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
@@ -426,10 +421,10 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 #define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
 
-#define LAST_SHARED_TNUM	(LAST_EXTERNAL_TNUM)
+#define LAST_SHARED_TNUM        LAST_EXTERNAL_TNUM
 
 #define LAST_REAL_TNUM          LAST_SHARED_TNUM
-#define LAST_VIRTUAL_TNUM 	LAST_SHARED_TNUM
+#define LAST_VIRTUAL_TNUM       LAST_SHARED_TNUM
 
 #define FIRST_COPYING_TNUM      (LAST_REAL_TNUM + 1)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)
@@ -521,7 +516,7 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
-*F  FLAGS_TYPE( <type> )  . . . . . . . . . . .  flags boolean list of a type
+*F  FLAGS_TYPE( <type> ) . . . . . . . . . . . . flags boolean list of a type
 **
 **  'FLAGS_TYPE' returns the flags boolean list of the type <type>.
 */
@@ -530,13 +525,12 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
-*F  SHARED_TYPE( <type> ) . . . . . . . . . . . . . . . shared data of a type
+*F  DATA_TYPE( <type> ) . . . . . . . . . . . . . . . . shared data of a type
 **
-**  'SHARED_TYPE' returns the shared data of the type <type>.
-XXX nowhere used, throw away??? (FL)
+**  'DATA_TYPE' returns the shared data of the type <type>.
+**  Not used by the GAP kernel right now, but useful for kernel extensions.
 */
-/* #define SHARED_TYPE(type)       ELM_PLIST( type, 3 )
-*/                        
+#define DATA_TYPE(type)       ELM_PLIST( type, 3 )
                         
 /****************************************************************************
 **

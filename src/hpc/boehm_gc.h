@@ -435,8 +435,8 @@ Bag NewBag (
     if (TLS(PtrLVars)) {
       bag[2] = (void *)(CURR_FUNC);
       if (TLS(CurrLVars) != TLS(BottomLVars)) {
-        Obj plvars = ADDR_OBJ(TLS(CurrLVars))[2];
-	bag[3] = (void *) (ADDR_OBJ(plvars)[0]);
+        Obj plvars = PARENT_LVARS(TLS(CurrLVars));
+        bag[3] = (void *) (FUNC_LVARS(plvars));
       }
     }
 #endif

@@ -7,11 +7,14 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 
+DeclareGlobalFunction("SpaceAndOrbitStabilizer");
+
 #############################################################################
 ##
 #P IsFrattiniFree
 ##
 DeclareProperty( "IsFrattiniFree", IsGroup );
+
 
 DeclareGlobalFunction("AutomorphismGroupNilpotentGroup");
 DeclareGlobalFunction("AutomorphismGroupSolvableGroup");

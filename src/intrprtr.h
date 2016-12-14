@@ -64,7 +64,7 @@
 **  statements enclosing a return statement. Actions from these statements
 **  are ignored.
 */
-extern UInt IntrReturning;
+/* TL: extern UInt IntrReturning; */
 
 /****************************************************************************
 **

@@ -288,6 +288,38 @@ DeclareCategory( "IsWLetterWordsFamily", IsLetterWordsFamily );
 
 #############################################################################
 ##
+#F  WordProductLetterRep( <w1>,<w2>,... ) . construct word from external repr.
+##
+##  <ManSection>
+##  <Func Name="WordProductLetterRep" Arg='<w1>,<w2>,...'/>
+##
+##  <Description>
+##  Given lists that are letter representations of words, this function
+##  calculates the product, maintaining that the result is freely reduced
+##  if the input is.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "WordProductLetterRep" );
+
+#############################################################################
+##
+#F  FreelyReducedLetterRepWord( <w> ) . free reduction
+##
+##  <ManSection>
+##  <Func Name="FreelyReducedLetterRepWord" Arg='<w1>,<w2>,...'/>
+##
+##  <Description>
+##  Given lists that is the  letter representation of a word, this function
+##  returns a freely reduced version.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "FreelyReducedLetterRepWord" );
+
+
+#############################################################################
+##
 #T  IsFreeSemigroup( <obj> )
 #T  IsFreeMonoid( <obj> )
 #C  IsFreeGroup( <obj> )
@@ -332,7 +364,7 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 ##
 ##  <#GAPDoc Label="AssignGeneratorVariables">
 ##  <ManSection>
-##  <Func Name="AssignGeneratorVariables" Arg='G'/>
+##  <Oper Name="AssignGeneratorVariables" Arg='G'/>
 ##
 ##  <Description>
 ##  If <A>G</A> is a group, whose generators are represented by symbols (for 
@@ -371,7 +403,7 @@ DeclareOperation( "AssignGeneratorVariables", [IsDomain] );
 ##
 ##  <#GAPDoc Label="[2]{wordass}">
 ##  <ManSection>
-##  <Func Name="\=" Arg='w1, w2' Label="for associative words"/>
+##  <Oper Name="\=" Arg='w1, w2' Label="for associative words"/>
 ##
 ##  <Description>
 ##  <Index Subkey="associative words">equality</Index>
@@ -405,7 +437,7 @@ DeclareOperation( "AssignGeneratorVariables", [IsDomain] );
 ##  </ManSection>
 ##
 ##  <ManSection>
-##  <Func Name="\&lt;" Arg='w1, w2' Label="for associative words"/>
+##  <Oper Name="\&lt;" Arg='w1, w2' Label="for associative words"/>
 ##
 ##  <Description>
 ##  <Index Subkey="associative words">smaller</Index>

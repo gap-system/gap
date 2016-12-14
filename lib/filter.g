@@ -304,6 +304,8 @@ end );
 ##
 ##  function to test whether <x> is a filter.
 ##  (This is *not* a filter itself!.)
+##  We handle IsObject as a special case, as it is equal to ReturnTrue,
+##  as all objects satisfy IsObject!
 ##
 BIND_GLOBAL( "IS_FILTER_ATOMIC", function(x)
     atomic readonly FILTER_REGION do
@@ -312,8 +314,8 @@ BIND_GLOBAL( "IS_FILTER_ATOMIC", function(x)
 end);
 
 BIND_GLOBAL( "IsFilter",
-    x -> IS_OPERATION( x ) and
-         ( FLAG1_FILTER( x ) <> 0 or IS_FILTER_ATOMIC(x) ) );
+    x -> IS_IDENTICAL_OBJ(x, IS_OBJECT) or
+         ( IS_OPERATION( x ) and ( FLAG1_FILTER( x ) <> 0 or IS_FILTER_ATOMIC(x) ) ) );
 
 
 ## Global Rank declarations

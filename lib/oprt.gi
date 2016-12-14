@@ -1088,6 +1088,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	increp,	# do we still want to increase the rep list?
 	incstb;	# do we still want to increase the stabilizer?
 
+  stopat:=fail; # to trigger error if wrong generators
   d:=Immutable(dopr.pnt);
   if IsBound(dopr.act) then
     act:=dopr.act;
@@ -1287,7 +1288,9 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
     od;
 
     if Size(G)/Size(stb)>Length(orb) then
-      #Error("did not really get stabilizer!");
+      if stopat=fail then
+	Error("generators do not match group");
+      fi;
       p:=stopat;
       while p<=Length(orb) do
 	img := act( orb[ p ], acts[ i ] );
@@ -2830,9 +2833,13 @@ InstallGlobalFunction( Stabilizer, function( arg )
     fi;
 end );
 
-InstallMethod( StabilizerOp,
+InstallOtherMethod( StabilizerOp,
         "`OrbitStabilizerAlgorithm' with domain",true,
-        OrbitishReq, 0,
+        [ IsGroup , IsObject,
+	  IsObject,
+          IsList,
+          IsList,
+          IsFunction ], 0,
 function( G, D, d, gens, acts, act )
 local   orbstab;
   
@@ -3250,19 +3257,19 @@ local xset,dom,D,b,t,i,r,binv,pos,kero,dets,roots,dim,f;
   roots:=Set(RootsOfUPol(f,X(f)^dim-1));
 
   D:=List(GeneratorsOfGroup(Source(hom)),DeterminantMat);
-  D:=Elements(Group(D));
+  D:=AsSSortedList(Group(D));
 
   if Length(roots)<=1 then
     # 1 will always be root
     kero:=[One(f)];
-  elif IsNaturalGL(Source(hom)) then
+  elif HasIsNaturalGL(Source(hom)) and IsNaturalGL(Source(hom)) then
     # the full GL clearly will contain the kernel
     kero:=roots; # to skip test
   elif not IsSubset(D,roots) then
     # even the kernel determinants are not reached, so clearly kernel not in
     return fail;
   else
-    kero:=List(Elements(KernelOfMultiplicativeGeneralMapping(hom)),x->x[1][1]^dim);
+    kero:=List(AsSSortedList(KernelOfMultiplicativeGeneralMapping(hom)),x->x[1][1]^dim);
   fi;
   
   if not IsSubset(kero,roots) then
@@ -3272,7 +3279,7 @@ local xset,dom,D,b,t,i,r,binv,pos,kero,dets,roots,dim,f;
 
   dets:=[];
   roots:=[];
-  for i in Filtered(Elements(f),x->not IsZero(x)) do
+  for i in Filtered(AsSSortedList(f),x->not IsZero(x)) do
     b:=i^dim;
     if not b in dets then
       Add(dets,b);

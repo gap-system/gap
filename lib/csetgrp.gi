@@ -609,10 +609,14 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 	  G1:=act[1];
 	  a1:=act[2];
 	else
+	  #Print(maxidx(c),obj,Length(Orbit(G,obj,act))," ",
+	  #          Length(Orbit(a,obj,act)),"\n");
 	  G1:=Stabilizer(G,obj,act);
-	  a1:=Stabilizer(a,obj,act);
+	  if Index(G,G1)<maxidx(c) then
+	    a1:=Stabilizer(a,obj,act);
+	  fi;
 	fi;
-	if Index(G,a1)<maxidx(c) and (
+	if Index(G,G1)<maxidx(c) and (
 	  maxidx(c)>badlimit or Size(a1)>Size(c[1])) then
 	  c1:=AscendingChain(G1,a1:refineChainActionLimit:=actlimit);
 	  if maxidx(c1)<maxidx(c) then
@@ -639,7 +643,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
       tryfct(p,OnPoints); 
 	  
       for i in Orbits(Stabilizer(a,p),Difference(MovedPoints(a),[p])) do
-	tryfct([i[1],p],OnSets);
+	tryfct(Set([i[1],p]),OnSets);
       od;
 	  
     fi;

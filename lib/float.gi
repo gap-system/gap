@@ -108,6 +108,10 @@ BindGlobal("INSTALLFLOATCONSTRUCTORS", function(arg)
     InstallMethod(NewFloat, [filter,IsInfinity], -1, function(filter,obj)
         return Inverse(NewFloat(filter,0));
     end);
+
+    InstallMethod(NewFloat, [filter,IsNegInfinity], -1, function(filter,obj)
+        return -Inverse(NewFloat(filter,0));
+    end);
     
     InstallMethod(NewFloat, [filter,IsList], -1, function(filter,mantexp)
         if mantexp[1]=0 then
@@ -131,6 +135,10 @@ BindGlobal("INSTALLFLOATCONSTRUCTORS", function(arg)
     
     InstallMethod(MakeFloat, [filter,IsInfinity], -1, function(filter,obj)
         return Inverse(MakeFloat(filter,0));
+    end);
+
+    InstallMethod(MakeFloat, [filter,IsNegInfinity], -1, function(filter,obj)
+        return -Inverse(MakeFloat(filter,0));
     end);
     
     InstallMethod(MakeFloat, [filter,IsList], -1, function(filter,mantexp)

@@ -135,8 +135,8 @@ end );
 ##  G. Havas and B. Majewski, Integer Matrix Diagonalization, JSC, to appear
 ##
 ##  Moved to obsoletes in May 2003.
-##  Not used in any of the redistributed packages (12/2012)
 ##
+##  not used in any redistributed package (01/2016)
 DeclareGlobalFunction( "DiagonalizeIntMatNormDriven" );
 
 
@@ -158,34 +158,32 @@ DeclareGlobalFunction( "DiagonalizeIntMatNormDriven" );
 ##  They can be removed as soon as none of the available packages calls them.
 ##
 BindGlobal( "DeclarePackage", Ignore );
-# 12/2012: still used in cohomolo, fplsa, itc, kbmag, qaos
+# 01/2016: still used in fplsa, itc, qaos
 BindGlobal( "DeclareAutoPackage", Ignore );
-# 12/2012: still used in automgrp, liealgdb, quagroup, sophus
+# 01/2016: still used in automgrp, liealgdb
 BindGlobal( "DeclarePackageAutoDocumentation", Ignore );
-# 12/2012: still used in cohomolo, fplsa, itc
+# 01/2016: still used in fplsa, itc
 BindGlobal( "DeclarePackageDocumentation", Ignore );
-# 12/2012: still used in kbmag, qaos, quagroup
+# 01/2016: still used in qaos
 BindGlobal( "ReadPkg", ReadPackage );
-# 12/2012: still used in automgrp, cohomolo, ctbllib, fplsa, fwtree, 
-# grpconst, guava, itc, kbmag, nq, pargap, qaos, quagroup, singular, xgap
+# 01/2016: still used in automgrp, ctbllib, fplsa, fwtree, grpconst, guava,
+# Hap (HapCocyclic), itc, modisom, pargap, qaos, xgap
 BindGlobal( "RequirePackage", LoadPackage );
-# 12/2012: still used (sometimes in examples or documentation) in ace, 
-# anupq, autpgrp, crisp, cryst, ctbllib, edim, fwtree, genss, hecke, itc, 
-# kbmag, nq, polycyclic, qaos, recogbase, repsn, singular, tomlib, toric, 
-# unipot, xgap
+# 01/2016: still used (sometimes in examples or documentation) in ace,
+# autpgrp, edim, fwtree, hecke, itc, liepring, polycyclic, qaos, repsn,
+# sglppow, singular, tomlib, toric, unipot, xgap
 
 
 #############################################################################
 ##
-#V  KERNEL_VERSION
-#V  VERSION
-#V  GAP_ARCHITECTURE - still used by gbnp, rcwa, resclasses, singular (12/2012)
-#V  GAP_ROOT_PATHS - still used by forms, aclib (README), xgap (12/2012)
-#V  DEBUG_LOADING
-#V  BANNER - still used by cubefree, loops, quagroup (12/2012)
-#V  QUIET - still used by cubefree, loops, quagroup (12/2012)
-#V  LOADED_PACKAGES - still used by anupq and GUAVA (12/2012)
-#V  PACKAGES_VERSIONS - still used by anupq package (12/2012)
+#V  KERNEL_VERSION   - not used in any redistributed package (01/2016)
+#V  VERSION          - not used in any redistributed package (01/2016)
+#V  GAP_ARCHITECTURE - still used by gbnp, singular (01/2016)
+#V  GAP_ROOT_PATHS   - still used by finings, forms, xgap (01/2016)
+#V  DEBUG_LOADING    - still used by the GAP kernel itself (01/2016)
+#V  BANNER           - still used by cubefree, loops, quagroup (01/2016)
+#V  QUIET            - still used by cubefree, loops, quagroup (01/2016)
+#V  LOADED_PACKAGES  - still used by GUAVA (01/2016)
 ##
 ##  Up to GAP 4.3,
 ##  these global variables were used instead of the record `GAPInfo'.
@@ -206,7 +204,7 @@ BindGlobal( "PACKAGES_VERSIONS", rec() );
 #A  NormedVectors( <V> )
 ##
 ##  Moved to obsoletes in May 2003. 
-##  Still used in autpgrp, ctbllib, polycyclic, sophus.
+##  Still used in autpgrp, ctbllib, matgrp, sophus. (01/2016)
 ##
 DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors", "4.8" );
 
@@ -254,9 +252,9 @@ DeclareObsoleteSynonym( "FormattedString", "String", "4.8" );
 ##  The following names should be still available and regarded as obsolescent
 ##  in GAP 4.5, and should be removed in GAP 4.6.
 ##
-#F  IsTuple( ... ) - still used by genss package (12/2012)
-#F  Tuple( ... ) - still used by anupq, cubefree, fr, gpd, grpconst, openmath, 
-##                 sonata (12/2012)
+#F  IsTuple( ... ) - not used in any redistributed package (01/2016)
+#F  Tuple( ... ) - still used by cubefree, gpd, grpconst, openmath,
+##                 sonata (01/2016)
 ##
 DeclareObsoleteSynonym( "IsTuple", "IsDirectProductElement", "4.8" );
 DeclareObsoleteSynonym( "Tuple", "DirectProductElement", "4.8" );
@@ -324,11 +322,11 @@ end);
 DeclareObsoleteSynonym( "StatusRandom", "StateRandom", "4.8" );
 
 # synonym formerly declared in factgrp.gd
-# Moved to obsoletes in October 2011, still used by xgap (12/2012)
+# Moved to obsoletes in October 2011, still used by xgap (01/2016)
 DeclareObsoleteSynonym( "FactorCosetOperation", "FactorCosetAction", "4.8" );
 
 # synonym retained for backwards compatibility with GAP 4.4.
-# Moved to obsoletes in April 2012. Still used by grpconst, irredsol (12/2012)
+# Moved to obsoletes in April 2012. Still used by grpconst, hap (01/2016)
 DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives", "4.8" );
 
 
@@ -353,6 +351,7 @@ DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives",
 ##  </Description>
 ##  </ManSection>
 ##
+##  not used in any redistributed package (01/2016)
 DeclareOperation( "ShrinkCoeffs", [ IsMutable and IsList ] );
 
 
@@ -362,6 +361,7 @@ DeclareOperation( "ShrinkCoeffs", [ IsMutable and IsList ] );
 ##
 ##  was supported until GAP 4.4, obsolescent in GAP 4.5.
 ##
+##  not used in any redistributed package (01/2016)
 BindGlobal( "ExcludeFromAutoload", function( arg )
     Info( InfoWarning, 1,
           "the function `ExcludeFromAutoload' is not supported anymore,\n",
@@ -372,8 +372,7 @@ BindGlobal( "ExcludeFromAutoload", function( arg )
 
 #############################################################################
 ##
-#V  PAGER - still checked by Browse if it is bound (12/2012)
-#V  POST_RESTORE_FUNCS - still used by grape (12/2012)
+#V  POST_RESTORE_FUNCS - still used by grape (01/2016)
 ##
 ##  were supported until GAP 4.4, obsolescent in GAP 4.5.
 ##
@@ -435,6 +434,7 @@ DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 ##  In GAP 4.5, one can use the function `CharacterTableWithStoredGroup'
 ##  instead of `ConnectGroupAndCharacterTable'.
 ##
+##  not used in any redistributed package (01/2016)
 DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
 
 
@@ -456,6 +456,7 @@ DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+## still used by autpgrp, float, modisom (01/2016)
 DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat", "4.8" );
 
 
@@ -477,6 +478,7 @@ DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat", "4.8" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+## still used by grpconst, guava, liepring, modisom, qpa, singular (01/2016)
 DeclareObsoleteSynonym( "MutableNullMat", "NullMat", "4.8" );
 
 #############################################################################
@@ -524,6 +526,7 @@ end);
 ##
 ## Deprecated in GAP >= 4.8
 ##
+## still used by GAPDoc (01/2016)
 DeclareOperation("PositionFirstComponent",[IsList,IsObject]);
 
 #############################################################################
@@ -540,6 +543,15 @@ BindGlobal( "ReadTest", function( fn )
         "#I  by Test( <filename>, rec( compareFunction := \"uptowhitespace\" ))\n");
   Test( fn, rec( compareFunction := "uptowhitespace" ));
 end);
+
+#############################################################################
+##
+#F  USER_HOME_EXPAND
+##
+##  This got a nicer name before is became documented.
+##
+## still used by Browse, ctbllib, profiling, resclasses (01/2016)
+DeclareGlobalFunction( "USER_HOME_EXPAND" );
 
 #############################################################################
 ##

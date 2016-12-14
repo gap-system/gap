@@ -212,11 +212,40 @@ end);
 ##  (iterated) `stabilizer' component of a bigger chain.
 ##
 InstallGlobalFunction(CopyStabChain,function( C1 )
-    local   C,Xlabels,  S,  len,  xlab,  need,  poss,  i;
+    local   C,Xlabels,  S,  len,  xlab,  need,  poss,  i, copyChain;
+
+    copyChain := function(C, labelorig, labelcpy)
+        local obj, r, objNum, objPos, l;
+        obj := rec();
+        # Need to do labels first
+        objNum := MASTER_POINTER_NUMBER(C.labels);
+        objPos := Position(labelorig, objNum);
+        if objPos <> fail then
+            obj.labels := labelcpy[objPos];
+        else
+            Add(labelorig, objNum);
+            l := List(C.labels);
+            Add(labelcpy, l);
+            obj.labels := l;
+        fi;
+
+        for r in RecNames(C) do
+            if r = "stabilizer" then
+                obj.(r) := copyChain(C.(r), labelorig, labelcpy);
+            elif r = "labels" then
+                ;# skip
+            elif IsList(C.(r)) then
+                obj.(r) := List(C.(r));
+            else
+                obj.(r) := C.(r);
+            fi;
+        od;
+        return obj;
+    end;
 
     # To begin with, make a deep copy.
-    C := StructuralCopy( C1 );
-    
+    C := copyChain( C1, [], [] );
+
     # First pass: Collect the necessary genlabels.
     Xlabels := [  ];
     S := C;
@@ -1777,6 +1806,9 @@ function(S)
 
     lstack := ListStabChain(S);
     Remove(lstack);
+    while Length(lstack) > 0 and Length(lstack[Length(lstack)].orbit) = 1 do
+        Remove(lstack);
+    od;
     r := rec (
           stack := lstack
         , pos := List(lstack, x -> 1)
@@ -1813,4 +1845,3 @@ end);
 #############################################################################
 ##
 #E
-

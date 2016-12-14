@@ -396,7 +396,7 @@ end);
 
 InstallMethod(Size, "for Green's classes", true, [IsGreensClass], 0,
 function(class)
-   return Size(Elements(class));
+   return Size(AsSSortedList(class));
 end);
 
 #################
@@ -412,7 +412,7 @@ function(elm, class)
   if elm=Representative(class) then
      return true;
   fi;
-  return elm in Elements(class);
+  return elm in AsSSortedList(class);
 end);
 
 #################
@@ -548,9 +548,9 @@ local rrel, sc, i, classes, x, rc;
    SetInternalRepGreensRelation(rrel, sc); classes:=[];
 
    for i in [1..Length(sc)] do
-     rc:=GreensRClassOfElement(semi, Elements(semi)[sc[i][1]]);
+     rc:=GreensRClassOfElement(semi, AsSSortedList(semi)[sc[i][1]]);
      Add(classes, rc);
-     SetAsSSortedList(classes[i], Elements(semi){sc[i]});
+     SetAsSSortedList(classes[i], AsSSortedList(semi){sc[i]});
      SetSize(classes[i], Size(sc[i]));
    od;
 
@@ -579,9 +579,9 @@ InstallOtherMethod(GreensLClasses, "for a semigroup", true, [IsSemigroup], 0,
    SetInternalRepGreensRelation(lrel, sc); classes:=[];
 
    for i in [1..Length(sc)] do
-     lc:=GreensLClassOfElement(semi,Elements(semi)[sc[i][1]]);
+     lc:=GreensLClassOfElement(semi,AsSSortedList(semi)[sc[i][1]]);
      Add(classes, lc);
-     SetAsSSortedList(lc, Elements(semi){sc[i]});
+     SetAsSSortedList(lc, AsSSortedList(semi){sc[i]});
      SetSize(lc, Size(sc[i]));
    od;
 
@@ -609,7 +609,7 @@ function(semi)
   lrel:=GreensLRelation(semi); rrel:=GreensRRelation(semi);
   INT_L:=InternalRepGreensRelation(lrel);
   INT_R:=InternalRepGreensRelation(rrel);
-  elts:=Elements(semi);
+  elts:=AsSSortedList(semi);
 
   #these are to collect the R and L-classes that comprise the D-class
   INT_Rclasses:=[]; INT_Lclasses:=[]; INT_Dclasses:=[];
@@ -1284,7 +1284,7 @@ InstallMethod(ImagesRepresentative, "for semigroup homomorphism by images",
               FamSourceEqFamElm,
               [IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep, IsMultiplicativeElement],
 function(hom, elt)
-  return hom!.imgslist[Position(Elements(Source(hom)), elt)];
+  return hom!.imgslist[Position(AsSSortedList(Source(hom)), elt)];
 end);
 
 ########
@@ -1304,7 +1304,7 @@ function(hom, x)
 
   preimgs:=List([1..Length(imgs)], function(y)
   if imgs[y]=x then
-    return Elements(Source(hom))[y];
+    return AsSSortedList(Source(hom))[y];
   else
     return fail;
   fi;
@@ -1368,7 +1368,8 @@ InstallMethod(InverseGeneralMapping, "for semigroup homomorphism by images",
               0,
 function(iso)
 
-  return SemigroupHomomorphismByImagesNC(Range(iso), Source(iso), List(Elements(Range(iso)), x-> Elements(Source(iso))[Position(iso!.imgslist, x)]));
+  return SemigroupHomomorphismByImagesNC(Range(iso), Source(iso),
+  List(AsSSortedList(Range(iso)), x-> AsSSortedList(Source(iso))[Position(iso!.imgslist, x)]));
 
 end);
 

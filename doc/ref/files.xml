@@ -98,90 +98,6 @@ or to overwrite some &GAP; files. See <Ref Sect="sect:gap.ini"/>
 for more information how to do this.
 <P/>
 
-<!--
-  FL: An example how to overwrite the library file lib/files.gd doesn't
-      look useful for me. We should not encourage users to make use
-      of this possibility. That it can be done in principle as described below
-      is also clear from the shorter description above.
-
-<Index Key=".gap directory"><F>.gap</F> directory</Index>
-
-
-When starting &GAP; it is possible to specify various directories as
-root directories.  In &GAP;'s view of the world these directories are
-merged into one meta-directory.  This directory is called <E>&GAP; root
-directory</E> in the following.
-<P/>
-For example, suppose that <C>root1;root2;...</C> is passed as argument
-to <C>-l</C> when &GAP; is started and &GAP; wants to locate a file
-<F>lib/group.gd</F> in the &GAP; root directory.
-If the command line option <C>-r</C> is not given then &GAP; will first
-check if the file exists in the <F>.gap</F> subdirectory of the user's
-home directory. On Mac OS X, the directory <F>Library/Preferences/GAP</F>
-in the user's home directory will be searched next.
-If the command line option <C>-r</C> is given or if the file does not
-exist inside <F>.gap</F> (or <F>Library/Preferences/GAP</F>) 
-then the directory <C>root1</C> is checked next,
-and if the file is not found there, <C>root2</C> is checked, and so on.
-<P/>
-This layout makes it possible to have one system-wide installation of &GAP;
-which is read-only but still allows users to modify individual files.
-Therefore instead of constructing an absolute path name to a file
-you should always use <Ref Func="DirectoriesLibrary"/> or
-<Ref Func="DirectoriesPackageLibrary"/> together with
-<Ref Func="Filename" Label="for a directory and a string"/>
-to construct a filename for a file in the &GAP; root directory.
-<P/>
-<E>For example</E>,
-suppose that the system-wide installation lives in <F>/usr/local/lib/gap4</F>
-and you want to modify the file <F>lib/files.gd</F> without disturbing the
-system installation.
-<P/>
-The simplest way to achieve this is to create a directory <F>.gap</F>
-in your home directory, and a subdirectory <F>lib</F> which contains
-the modified <F>lib/files.gd</F>.
-Afterwards, when you start &GAP; then the modified file is read
-instead of <F>/usr/local/lib/gap4/lib/files.gd</F>,
-except if the <C>-r</C> command line option
-(see <Ref Sect="Command Line Options"/>) is given.
-<P/>
-As an alternative to the <F>.gap</F> directory,
-you can also use another directory which then must be mentioned in the
-directories that are passed as argument to <C>-l</C>.
-This variant can be useful if the changed files shall be used by several
-users.
-For example, you may create a new directory <F>/home/myhome/gap</F>
-containing a subdirectory <F>lib</F> which contains the modified
-<F>lib/files.gd</F>.
-<P/>
-The directory/file structure now looks like
-<P/>
-<Log><![CDATA[
-/usr/local/lib/gap4/
-/usr/local/lib/gap4/lib/
-/usr/local/lib/gap4/lib/files.gd
-/home/myhome/gap/
-/home/myhome/gap/lib
-/home/myhome/gap/lib/files.gd
-]]></Log>
-<P/>
-
-If you start &GAP; using (under UNIX)
-<P/>
-<Log><![CDATA[
-you@unix> gap -l '/home/myhome/gap;/usr/local/lib/gap4'
-]]></Log>
-<P/>
-then the file <F>/home/myhome/gap/lib/files.gd</F> will be used whenever
-&GAP; references the file with filename <F>lib/files.gd</F> relative to
-the &GAP; root directory.
-<P/>
-This setup also allows one to easily install new &GAP; packages or bugfixes
-even if no write access to the system &GAP; installation is possible.
-Simply unpack the files into your <F>.gap</F> directory
-or into <F>/home/myhome/gap</F>, respectively.
--->
-
 </Section>
 
 
@@ -198,7 +114,6 @@ or into <F>/home/myhome/gap</F>, respectively.
 <#Include Label="DirectoryContents">
 <#Include Label="DirectoryDesktop">
 <#Include Label="DirectoryHome">
-
 </Section>
 
 
@@ -475,6 +390,7 @@ can be used to get information about the error.
 </Description>
 </ManSection>
 
+<#Include Label="UserHomeExpand">
 
 <#Include Label="Reread">
 
@@ -485,4 +401,3 @@ can be used to get information about the error.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-

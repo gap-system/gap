@@ -165,7 +165,7 @@ This is not verified by &GAP; and results are unpredictable otherwise.
 <#Include Label="OnIndeterminates">
 
 <ManSection>
-<Func Name="Permuted" Arg='list, perm' Label="as a permutation action"/>
+<Meth Name="Permuted" Arg='list, perm' Label="as a permutation action"/>
 
 <Description>
 The following example demonstrates <Ref Func="Permuted"/> being used

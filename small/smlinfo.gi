@@ -67,24 +67,6 @@ end );
 #F SMALL_GROUPS_INFORMATION[ 1 ]( size, smav, num )
 ##
 SMALL_GROUPS_INFORMATION[ 1 ] := function( size, smav, num )
-    local all, i;
-
-    all := AllSmallGroups( size );
-    for i in [ 1 .. Length( all ) ] do
-        if HasNameIsomorphismClass( all[ i ] ) then
-            Print("    ",i," is of type ",NameIsomorphismClass(all[i]),".\n");
-        else
-            if HasNameIsomorphismClass( all[ i - 1 ] ) then
-                Print( "    ", i, " - ", Length(all)-1, " are of types " );
-                if smav.func = 6 then
-                    Print( smav.q,":",smav.p,"+",smav.q,":",smav.p,".\n" );
-                else
-                    Print( smav.q,":",smav.p,"+",smav.r,":",smav.p,".\n" );
-                fi;
-            fi;
-        fi;
-    od;
-        
     Print("\n");
     Print("  The groups whose order factorises in at most 3 primes \n");
     Print("  have been classified by O. Hoelder. This classification is \n");
@@ -312,8 +294,8 @@ SMALL_GROUPS_INFORMATION[ 21 ] := function( size, smav, num )
    Print( "      with order p^6 for p >= 5 is based on the Easterfield \n");
    Print( "      list, corrected by Newman, O'Brien and Vaughan-Lee (2004).\n");
    Print( "      It differs only in the addition of groups in isoclinism \n"); 
-   Print( "      family $\Phi_{13}$, in using the James (1980) presentations \n");
-   Print( "      for the groups in $\Phi_{19}$, and a small number of \n");
+   Print( "      family $\\Phi_{13}$, in using the James (1980) presentations \n");
+   Print( "      for the groups in $\\Phi_{19}$, and a small number of \n");
    Print( "      typographical amendments. The linear ordering employed is \n");
    Print( "      very close to that of Easterfield. \n \n");
 

@@ -21,11 +21,10 @@ local dom,deg,S,p,ps,perm,startp,sdps,nsdps,i,j,k,l,m,n,part,
   if deg<5 then 
     return p;
   fi;
- atomic readonly TRANSREGION do
-  if deg>TRANSDEGREES then
+
+  if not TransitiveGroupsAvailable(deg) then
     TryNextMethod();
   fi;
- od;
   
   S:=SymmetricGroup(deg);
 
