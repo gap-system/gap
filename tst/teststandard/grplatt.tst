@@ -187,6 +187,10 @@ gap> g:=Group(
 >     31)(19,41)(20,28)(21,24) ]);;
 gap> Length(MaximalSubgroupClassReps(g));
 6
+gap> Length(ConjugacyClassesSubgroups(SymmetricGroup(7)));
+96
+gap> Length(ConjugacyClassesSubgroups(SymmetricGroup(7):NoPrecomputedData));
+96
 
 # thats all, folks
 gap> STOP_TEST( "grplatt.tst", 364210000);

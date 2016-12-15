@@ -797,8 +797,12 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
     if AbelianInvariants(a)<>AbelianInvariants(b) then
       return false;
     fi;
-    if Size(a)<1000 and Size(a)<>512 and IdGroup(a)<>IdGroup(b) then
-      return false;
+    if Size(a)<1000 and Size(a)<>512
+     and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+      Info(InfoPerformance,2,"Using Small Groups Library");
+      if IdGroup(a)<>IdGroup(b) then
+	return false;
+      fi;
     fi;
     return true;
   end;

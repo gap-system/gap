@@ -1130,17 +1130,22 @@ local b, bl,prop;
   # what properties can we find easily
   prop:=function(s)
   local p;
-  s:=Set(dom{s});
+
+    s:=Set(dom{s});
     p:=[Length(s)];
 
-    # type of action on blocks
-    if TransitiveGroupsAvailable(Length(dom)/Length(s)) then
-      Add(p,TransitiveIdentification(Action(G,Orbit(G,s,OnSets),OnSets)));
-    fi;
+    if  ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+      Info(InfoPerformance,2,"Using Transitive Groups Library");
 
-    # type of action on blocks
-    if TransitiveGroupsAvailable(Length(s)) then
-      Add(p,TransitiveIdentification(Action(Stabilizer(G,s,OnSets),s)));
+      # type of action on blocks
+      if TransitiveGroupsAvailable(Length(dom)/Length(s)) then
+	Add(p,TransitiveIdentification(Action(G,Orbit(G,s,OnSets),OnSets)));
+      fi;
+
+      # type of action on blocks
+      if TransitiveGroupsAvailable(Length(s)) then
+	Add(p,TransitiveIdentification(Action(Stabilizer(G,s,OnSets),s)));
+      fi;
     fi;
 
     if Length(p)=1 then
@@ -1218,7 +1223,8 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
       return NormalizerParentSA(s,b);
     fi;
     # nonabelian socle
-    if PrimitiveGroupsAvailable(Length(dom)) then
+    if PrimitiveGroupsAvailable(Length(dom)) 
+      and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
       Info(InfoPerformance,2,"Using Primitive Groups Library");
       # use library
       beta:=Factorial(Length(dom))/2;
@@ -1302,7 +1308,9 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
 
       syll:=SymmetricGroup(ll);
       # if the degrees are small enough, even get local types
-      if ll>1 and TransitiveGroupsAvailable(ll) then
+      if ll>1 and TransitiveGroupsAvailable(ll) 
+        and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+	Info(InfoPerformance,2,"Using Transitive Groups Library");
 	Info(InfoGroup,1,"Length ",ll," sort by types");
 	act:=[];
 	typ:=[];
@@ -2129,7 +2137,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
   fi;
   dom:=Set(MovedPoints(G));
   n:=Length(dom);
-  if  #ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true or
+  if  ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true or
    not PrimitiveGroupsAvailable(n) then
     return fail;
   fi;

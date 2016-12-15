@@ -1367,9 +1367,16 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
       Error(
         "failed due to incomplete information in the Holt/Plesken library");
     fi;
+
     cl:=Filtered(ConjugacyClasses(G),i->Representative(i) in D);
     Info(InfoLattice,2,Length(cl)," classes of ",
          Length(ConjugacyClasses(G))," to consider");
+
+    if Length(un)>0 and ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true then
+      Error("Cannot get perfect subgroups without data library!");
+    elif Length(un)>0 then
+      Info(InfoPerformance,2,"Using Perfect Groups Library");
+    fi;
 
     r:=[];
     for i in un do
@@ -2598,13 +2605,18 @@ end);
 
 InstallGlobalFunction("SubdirectSubgroups",function(D)
 local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,proj,emb,u,pos,
-      subs,s,t,i,j,k,myid,myfgi,iso,dc,f,no,ind,g,hom;
+      subs,s,t,i,j,k,myid,myfgi,iso,dc,f,no,ind,g,hom,uselib;
+
+  uselib:=ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true;
+  if uselib then
+    Info(InfoPerformance,2,"Using Small Groups Library");
+  fi;
 
   fgi:=function(gp,nor)
   local idx,hom,l,f;
     idx:=Index(gp,nor);
     hom:=NaturalHomomorphismByNormalSubgroup(gp,nor);
-    if idx>1000 or idx=512 then
+    if idx>1000 or idx=512 or not uselib then
       l:=[idx,fail];
     else
       l:=ShallowCopy(IdGroup(gp/nor));
@@ -2678,7 +2690,7 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,proj,emb,u,pos,
 	for k in no do
 	  hom:=NaturalHomomorphismByNormalSubgroup(j[1],k.representative);
 	  f:=Image(hom);
-	  if Size(f)<1000 and Size(f)<>512 then
+	  if Size(f)<1000 and Size(f)<>512 and uselib then
 	    myid:=ShallowCopy(IdGroup(f));
 	  else
 	    myid:=[Size(f),fail];
@@ -2755,7 +2767,9 @@ InstallGlobalFunction("SubgroupsTrivialFitting",function(G)
 	if tom<>fail then
 	  go:=ImagesSource(tom[1]);
 	  tom:=tom[2];
-	  if tom<>fail then
+	  if tom<>fail and
+	   ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+	    Info(InfoPerformance,2,"Using Table of Marks Library");
 	    Info(InfoLattice,1, "Fetching subgroups of simple ",
 	      Identifier(tom)," from table of marks");
 	    len:=LengthsTom(tom);
@@ -2827,9 +2841,11 @@ local dom,n,t,map;
     map:=ConjugatorIsomorphism(G,map);
   fi;
 
-  if IsPackageMarkedForLoading("tomlib","")<>true then
+  if IsPackageMarkedForLoading("tomlib","")<>true or
+          ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true then
     return fail; # no tomlib available
   fi;
+  Info(InfoPerformance,2,"Using Table of Marks Library");
   t:=TableOfMarks(Concatenation("A",String(n)));
   if t=fail then
     return fail;
@@ -2875,9 +2891,11 @@ local T,t,hom,inf,nam,i,aut;
   # missing?
   if inf=fail then return fail;fi;
 
-  if IsPackageMarkedForLoading("tomlib","")<>true then # force tomlib load
+  if IsPackageMarkedForLoading("tomlib","")<>true or # force tomlib load
+          ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true then
     return fail; # no tomlib available
   fi;
+  Info(InfoPerformance,2,"Using Table of Marks Library");
 
   nam:=inf.tomName;
 
@@ -2918,7 +2936,9 @@ end);
 InstallGlobalFunction(TomDataMaxesAlmostSimple,function(G)
 local recog,m;
   recog:=TomDataAlmostSimpleRecognition(G);
-  if recog=fail then return fail; fi;
+  if recog=fail then
+    return fail;
+  fi;
   m:=List(MaximalSubgroupsTom(recog[2])[1],i->RepresentativeTom(recog[2],i));
   Info(InfoLattice,1,"Recognition found ",Length(m)," classes");
   m:=List(m,i->PreImage(recog[1],i));
@@ -2928,7 +2948,9 @@ end);
 InstallGlobalFunction(TomDataSubgroupsAlmostSimple,function(G)
 local recog,m,len;
   recog:=TomDataAlmostSimpleRecognition(G);
-  if recog=fail then return fail; fi;
+  if recog=fail then
+    return fail;
+  fi;
   len:=LengthsTom(recog[2]);
   m:=List([1..Length(len)],i->RepresentativeTom(recog[2],i));
   Info(InfoLattice,1,"Recognition found ",Length(m)," classes");

@@ -68,7 +68,9 @@ local l,iso,fp,stbc,gens;
   # use the perfect groups library
   PerfGrpLoad(Size(G));
   if Size(G)<10^6 and IsRecord(PERFRec) and
+     ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true and
      not Size(G) in Union(PERFRec.notAvailable,PERFRec.notKnown) then
+    Info(InfoPerformance,2,"Using Perfect Groups Library");
     # loop over the groups
     for l in List([1..NrPerfectGroups(Size(G))],
                   i->PerfectGroup(IsPermGroup,Size(G),i)) do
