@@ -67,10 +67,16 @@ gap> '\0x1bc';
 Syntax error: Missing single quote in character constant in stream:1
 '\0x1bc';
      ^
-Syntax error: ; expected in stream:2
-^
 gap> "\0x1bc";
 "\033c"
+gap> '
+Syntax error: Character literal must not include <newline> in stream:1
+'
+^
+gap> "
+Syntax error: String must not include <newline> in stream:1
+"
+^
 
 # Empty string
 gap> x:="";
