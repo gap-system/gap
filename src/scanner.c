@@ -2126,32 +2126,32 @@ void GetChar ( void )
   /* skip '\''                                                           */
   GET_CHAR();
 
-  /* handle escape equences                                              */
-  if ( *TLS(In) == '\\' ) {
-    GET_CHAR();
-    TLS(Value)[0] = GetEscapedChar();
-  }
-  else if ( *TLS(In) == '\n' ) {
-    SyntaxError("Newline not allowed in character literal");
-  }
-  /* put normal chars into 'TLS(Value)'                                  */
-  else {
-    TLS(Value)[0] = *TLS(In);
-  }
-
-  /* read the next character                                             */
-  GET_CHAR();
-
-  /* check for terminating single quote                                  */
-  if ( *TLS(In) != '\'' )
-    SyntaxError("Missing single quote in character constant");
-
-  /* skip the closing quote                                              */
+  /* Make sure symbol is set */
   TLS(Symbol) = S_CHAR;
-  if ( *TLS(In) == '\'' )  GET_CHAR();
 
+  /* handle escape equences                                              */
+  if ( *TLS(In) == '\n' ) {
+    SyntaxError("Character literal must not include <newline>");
+  } else {
+    if ( *TLS(In) == '\\' ) {
+      GET_CHAR();
+      TLS(Value)[0] = GetEscapedChar();
+    } else {
+      /* put normal chars into 'TLS(Value)' */
+      TLS(Value)[0] = *TLS(In);
+    }
+
+    /* read the next character */
+    GET_CHAR();
+
+    /* check for terminating single quote, and skip */
+    if ( *TLS(In) == '\'' ) {
+      GET_CHAR();
+    } else {
+      SyntaxError("Missing single quote in character constant");
+    }
+  }
 }
-
 
 /****************************************************************************
  **
