@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+LOGDIR=log
+if [ ! -d "$LOGDIR" ]
+  then
+  mkdir -p $LOGDIR
+fi
+LOGFILE=buildpackages
+FAILPKGFILE=fail
+
+build_all_packages() {
+
 set -e
 
 # This script attempts to build all GAP packages contained in the current
@@ -39,7 +49,9 @@ if [ -f gapicon.bmp ]
 fi
 
 # We need any subdirectory, to test if $GAPDIR is right
-SUBDIR=`ls -d */ | head -n 1`
+# dangerous to parse output of ls
+#SUBDIR=`ls -d */ | head -n 1`
+SUBDIR=`find -L ./ -maxdepth 1 -mindepth 1 -type d | sed 's|./||' | head -n 1`
 if ! (cd $SUBDIR && [ -f $GAPDIR/sysinfo.gap ])
   then
     echo "$GAPDIR is not the root of a gap installation (no sysinfo.gap)"
@@ -69,6 +81,7 @@ Note that many GAP packages require extra programs to be installed,
 and some are quite difficult to build. Please read the documentation for
 packages which fail to build correctly, and only worry about packages
 you require!
+Logging into $LOGDIR/$LOGFILE.log
 EOF
 
 build_carat() {
@@ -85,6 +98,7 @@ make TOPDIR=`pwd`
 chmod -R a+rX .
 cd bin
 aa=`./config.guess`
+# TODO dangerous to parse output of ls, use find instead
 for x in "`ls -d1 $GAPDIR/bin/${aa}*`"; do
  ln -s "$aa" "`basename $x`"
 done
@@ -102,7 +116,9 @@ $MAKE
 }
 
 build_fail() {
-  echo "= Failed to build $dir"
+  echo ""
+  echo "=* Failed to build $dir"
+  echo "$dir" >> "$LOGDIR/$FAILPKGFILE.log"
 }
 
 run_configure_and_make() {
@@ -123,10 +139,16 @@ run_configure_and_make() {
   fi;
 }
 
-for dir in `ls -d */`
+date >> $LOGDIR/$FAILPKGFILE.log
+while read dir in
 do
     if [ -e $dir/PackageInfo.g ]; then
       dir="${dir%/}"
+
+buildpackage() {
+      echo""
+      date
+      echo ""
       echo "==== Checking $dir"
       (  # start subshell
       set -e
@@ -186,8 +208,33 @@ do
         ;;
       esac;
       ) || build_fail
+}
+
+      (buildpackage > >(tee $LOGDIR/$dir.out) 2> >(tee $LOGDIR/$dir.err >&2) )> >(tee $LOGDIR/$dir.log ) 2>&1
       # end subshell
+      # remove superfluous log files if there was no error message
+      if [ ! -s "$LOGDIR/$dir.err" ]
+        then
+        rm -f "$LOGDIR/$dir.err"
+        rm -f "$LOGDIR/$dir.out"
+      fi
     else
       echo "$dir is not a GAP package -- no PackageInfo.g"
-    fi;
-done;
+    fi
+done < <(find -L ./ -maxdepth 1 -mindepth 1 -type d | sed 's|./||')
+
+echo "" >> $LOGDIR/$FAILPKGFILE.log
+echo ""
+echo "Output logged into pkg/$LOGDIR/$LOGFILE.log"
+echo "Packages failed to build are in pkg/$LOGDIR/$FAILPKGFILE.log"
+}
+
+# Log error to .err, output to .out, everything to .log
+( build_all_packages > >(tee $LOGDIR/$LOGFILE.out) 2> >(tee $LOGDIR/$LOGFILE.err >&2) )> >( tee $LOGDIR/$LOGFILE.log ) 2>&1
+
+# remove superfluous buildpackages log files if there was no error message
+if [ ! -s "$LOGDIR/$LOGFILE.err" ]
+  then
+  rm -f "$LOGDIR/$LOGFILE.err"
+  rm -f "$LOGDIR/$LOGFILE.out"
+fi
