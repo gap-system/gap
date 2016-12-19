@@ -1484,6 +1484,9 @@ end);
 ##
 InstallGlobalFunction(ComplementClassesRepresentativesEA,function(g,n)
 local oc,l;
+  if Size(g)=Size(n) then
+    return TrivialSubgroup(g);
+  fi;
   oc:=OneCocycles(g,n);
   if not oc.isSplitExtension  then
     return [];
