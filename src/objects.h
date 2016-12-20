@@ -71,7 +71,7 @@
 **  'INTOBJ_INT' converts the C integer <i> to an (immediate) integer object.
 */
 #define INTOBJ_INT(i) \
-    ((Obj)(((UInt)(i) << 2) + 0x01))
+    ((Obj)(((UInt)(Int)(i) << 2) + 0x01))
 
 
 /****************************************************************************
