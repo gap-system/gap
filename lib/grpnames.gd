@@ -24,8 +24,8 @@
 ##
 ##  <Description>
 ##    For normal subgroups <A>U</A> and <A>V</A> of <A>G</A>,
-##    IsTrivialNormalIntersection returns
-##    true if <A>U</A> and <A>V</A> intersect trivially, and false otherwise.
+##    <Ref Oper="IsTrivialNormalIntersection"/> returns <K>true</K> if
+##    <A>U</A> and <A>V</A> intersect trivially, and <K>false</K> otherwise.
 ##    The result is undefined if either <A>U</A> or <A>V</A> is not a normal
 ##    subgroup of G.
 ##  </Description>
@@ -42,15 +42,17 @@ DeclareOperation( "IsTrivialNormalIntersection",
 ##  <Func Name="IsTrivialNormalIntersectionInList" Arg="MinNs, U, V"/>
 ##
 ##  <Description>
-##    For groups <A>U</A> and <A>V</A>, IsTrivialNormalIntersection returns
-##    false if for any group H in list <A>MinNs</A> both <A>U</A> and
-##    <A>V</A> contains the first nontrivial generator of H. Otherwise, the
-##    result is true.
-##    This operation is useful if it is already known that the intersection
+##    For groups <A>U</A> and <A>V</A>,
+##    <Ref Func="IsTrivialNormalIntersectionInList"/> returns <K>false</K>
+##    if for any group <M>H</M> in list <A>MinNs</A> both <A>U</A> and
+##    <A>V</A> contains the first nontrivial generator of <M>H</M>.
+##    Otherwise, the result is <K>true</K>.
+##    This function is useful if it is already known that the intersection
 ##    of <A>U</A> and <A>V</A> is either trivial, or contains at least one
 ##    group from <A>MinNs</A>.
 ##    For example if <A>U</A> and <A>V</A> are normal subgroups of a group
-##    G and <A>MinNs</A>=MinimalNormalSubgroups(G).
+##    <M>G</M> and
+##    <A>MinNs</A>=<Ref Attr="MinimalNormalSubgroups"/>(<M>G</M>).
 ##  </Description>
 ##  </ManSection>
 ##
@@ -65,8 +67,10 @@ DeclareGlobalFunction( "IsTrivialNormalIntersectionInList",
 ##  <Func Name="UnionIfCanEasilySortElements" Arg="L1[, L2, ... ]"/>
 ##
 ##  <Description>
-##    Return the union of <A>Li</A> if CanEasilySortElements is true for all
-##    elements of all <A>Li</A>, and the concatenation of them, otherwise.
+##    Returns the <Ref Func="Union"/> of <A>Li</A> if
+##    <Ref Prop="CanEasilySortElements"/> is <K>true</K> for all elements
+##    of all <A>Li</A>, and the <Ref Func="Concatenation"/> of them,
+##    otherwise.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -80,9 +84,11 @@ DeclareGlobalFunction( "UnionIfCanEasilySortElements", IsList );
 ##  <Func Name="AddSetIfCanEasilySortElements" Arg="list, obj"/>
 ##
 ##  <Description>
-##    Adds the <A>obj</A> to the list <A>list</A>. If CanEasilySortElements
-##    is true for <A>list</A> and <A>list</A> is a set, then AddSet is used
-##    instead of Add. Does not return anything, but changes <list>.
+##    Adds the <A>obj</A> to the list <A>list</A>. If
+##    <Ref Prop="CanEasilySortElements"/> is <K>true</K> for <A>list</A>
+##    and <A>list</A> is a set, then <Ref Oper="AddSet"/> is used instead
+##    of <Ref Oper="Add"/>. Does not return anything, but changes
+##    <A>list</A>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -98,11 +104,11 @@ DeclareGlobalFunction( "AddSetIfCanEasilySortElements", IsList );
 ##
 ##  <Description>
 ##    Gives a normal complement to the normal subgroup <A>N</A> in <A>G</A>
-##    if exists, <C>fail</C> otherwise.
+##    if exists, <K>fail</K> otherwise.
 ##    In theory it finds the normal complement for infinite <A>G</A>,
 ##    but can have an infinite loop if <A>G</A>/<A>N</A> is abelian and
 ##    <A>N</A> is infinite.
-##    NormalComplementsNC does not check if <A>N</A> is a normal
+##    <C>NormalComplementsNC</C> does not check if <A>N</A> is a normal
 ##    subgroup of <A>G</A>.
 ##  </Description>
 ##  </ManSection>
@@ -282,7 +288,7 @@ DeclareGlobalFunction( "DirectFactorsOfGroupFromList",
 
 #############################################################################
 ##
-#F  DirectFactorsOfGroupKN( <G> ) . . . . decomposition into a direct product
+#F  DirectFactorsOfGroupByKN( <G> ) . . . decomposition into a direct product
 ##
 ##  <ManSection>
 ##  <Func Name="DirectFactorsOfGroupKN" Arg="G"/>
@@ -299,7 +305,7 @@ DeclareGlobalFunction( "DirectFactorsOfGroupFromList",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "DirectFactorsOfGroupKN", IsGroup );
+DeclareGlobalFunction( "DirectFactorsOfGroupByKN", IsGroup );
 
 #############################################################################
 ##
@@ -327,7 +333,7 @@ DeclareGlobalFunction( "DirectFactorsOfGroupKN", IsGroup );
 ##    If <A>method</A> <Q>"any"</Q> is used, then
 ##    SemidirectDecompositionsOfFiniteGroup returns [ <M>N</M>, <M>H</M> ]
 ##    for some nontrivial <M>N</M> in <A>L</A> if exists, and returns
-##    <C>fail</C> otherwise. In particular, it first looks if $<A>G</A> is
+##    <K>fail</K> otherwise. In particular, it first looks if $<A>G</A> is
 ##    defined as a nontrivial semidirect product, and if yes, then it
 ##    returns the two factors. Second, it looks for a nontrivial normal
 ##    Hall subgroup, and if finds any, then will compute a complement to
@@ -336,7 +342,7 @@ DeclareGlobalFunction( "DirectFactorsOfGroupKN", IsGroup );
 ##    The <A>method</A> <Q>"str"</Q> differs from the <A>method</A>
 ##    <Q>"any</Q> by not computing normal complement to a normal Hall
 ##    subgroup <M>N</M>, and in this case returns
-##    [ <M>N</M>, <A>G</A>/<M>N</M> ].
+##    [ <M>N</M>, <M><A>G</A>/N</M> ].
 ##  </Description>
 ##  </ManSection>
 ##
@@ -757,7 +763,7 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##    <Item>
 ##      if <A>G</A> is solvable, then select a solvable normal Hall subgroup
 ##      <M>N</M>, if exists, and consider the semidirect decomposition of
-##      <M>N</M> and <A>G</A>/<M>N</M>,
+##      <M>N</M> and <M><A>G</A>/N</M>,
 ##    </Item>
 ##    <Mark>3.</Mark>
 ##    <Item>
@@ -768,7 +774,7 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##    The option <Q>nice</Q> is recognized. If this option is set, then all
 ##    semidirect products are computed in order to find a possibly nicer
 ##    presentation. Note, that this may take a very long time if <A>G</A> has
-##    many normal subgroups, e.g. if <A>G</A>/<A>G</A>' has many cyclic
+##    many normal subgroups, e.g. if <M><A>G</A>/<A>G</A>'</M> has many cyclic
 ##    factors.
 ##    If the option <Q>nice</Q> is set, then GAP would select a pair
 ##    <M>N</M>, <M>H</M> with the following preferences:
@@ -804,8 +810,8 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  <Item>
 ##    Fall back to non-splitting extensions:
 ##    If the centre or the commutator factor group is non-trivial,
-##    write <A>G</A> as Z(<A>G</A>).<A>G</A>/Z(<A>G</A>) or
-##    <A>G</A>'.<A>G</A>/<A>G</A>', respectively.
+##    write <A>G</A> as <M>Z(<A>G</A>)</M>.<M><A>G</A>/Z(<A>G</A>)</M> or
+##    <M><A>G</A>'</M>.<M><A>G</A>/<A>G</A>'</M>, respectively.
 ##    Otherwise if the Frattini subgroup is non-trivial, write <A>G</A>
 ##    as <M>\Phi</M>(<A>G</A>).<A>G</A>/<M>\Phi</M>(<A>G</A>).
 ##  </Item>

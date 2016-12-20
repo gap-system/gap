@@ -377,7 +377,7 @@ InstallMethod(DirectFactorsOfGroup, "generic method", true,
 
     # the KN method performs slower in practice, only called if forced
     if ValueOption("useKN") = true then
-      return DirectFactorsOfGroupKN(G);
+      return DirectFactorsOfGroupByKN(G);
     fi;
 
     # nilpotent groups are direct products of Sylow subgroups
@@ -568,7 +568,7 @@ InstallGlobalFunction( DirectFactorsOfGroupFromList,
     return [ G ];
   end );
 
-InstallGlobalFunction(DirectFactorsOfGroupKN,
+InstallGlobalFunction(DirectFactorsOfGroupByKN,
 
   function(G)
 
@@ -702,7 +702,7 @@ InstallGlobalFunction(DirectFactorsOfGroupKN,
         Z1 := Centralizer(G, prodK);
         # Z1 is nonabelian <==> contains a nonabelian factor
         if not IsAbelian(Z1) then
-          N := First(DirectFactorsOfGroupKN(Z1), x-> not IsAbelian(x));
+          N := First(DirectFactorsOfGroupByKN(Z1), x-> not IsAbelian(x));
           # not sure if IsNormal(G, N) should be checked
 
           # this certainly can be done better,
@@ -712,7 +712,7 @@ InstallGlobalFunction(DirectFactorsOfGroupKN,
           if B <> fail then
             # N is direct indecomposable by construction
             return UnionIfCanEasilySortElements([N],
-                                                  DirectFactorsOfGroupKN(B));
+                                                  DirectFactorsOfGroupByKN(B));
           fi;
         fi;
       fi;

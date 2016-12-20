@@ -51,7 +51,7 @@ gap> List(DirectFactorsOfGroup(G), IdGroup);
 [ [ 8, 3 ], [ 8, 3 ] ]
 gap> List(DirectFactorsOfGroup(SmallGroup(64,226):useKN), IdGroup);
 [ [ 8, 3 ], [ 8, 3 ] ]
-gap> List(DirectFactorsOfGroupKN(SmallGroup(8,5)), IdGroup);
+gap> List(DirectFactorsOfGroupByKN(SmallGroup(8,5)), IdGroup);
 [ [ 2, 1 ], [ 2, 1 ], [ 2, 1 ] ]
 gap> D := DihedralGroup(12);; NormalSubgroups(D);;
 gap> List(DirectFactorsOfGroup(D), IdGroup);
@@ -64,7 +64,7 @@ gap> List(DirectFactorsOfGroup(G), IdGroup);
 [ [ 48, 1 ] ]
 gap> DirectFactorsOfGroup(Group(()));
 [ Group(()) ]
-gap> DirectFactorsOfGroupKN(Group(()));
+gap> DirectFactorsOfGroupByKN(Group(()));
 [ Group(()) ]
 gap> F := FreeGroup("x","y");; x := F.1;; y := F.2;;
 gap> DirectFactorsOfGroup(F/[x*y*x^(-1)*y^(-1)]);
