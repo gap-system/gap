@@ -3152,6 +3152,10 @@ gap> Length(oe.vectors); Length(oe.solutions);
 159
 0
 
+# 2016/12/20 (MH)
+gap> Z(6,3);
+Error, Z: <q> must be a positive prime power
+
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 831990000);
 
