@@ -1953,7 +1953,7 @@ Obj FuncZ2 ( Obj self, Obj p, Obj d)
 static StructGVarFilt GVarFilts [] = {
 
     { "IS_FFE", "obj", &IsFFEFilt,
-      FuncIS_FFE, "src/finifield.c:IS_FFE" },
+      FuncIS_FFE, "src/finfield.c:IS_FFE" },
 
     { 0 }
 
@@ -1967,19 +1967,19 @@ static StructGVarFilt GVarFilts [] = {
 static StructGVarFunc GVarFuncs [] = {
 
     { "CHAR_FFE_DEFAULT", 1, "z",
-      FuncCHAR_FFE_DEFAULT, "src/finifield.c:CHAR_FFE_DEFAULT" },
+      FuncCHAR_FFE_DEFAULT, "src/finfield.c:CHAR_FFE_DEFAULT" },
 
     { "DEGREE_FFE_DEFAULT", 1, "z",
-      FunDEGREE_FFE_DEFAULT, "src/finifield.c:DEGREE_FFE_DEFAULT" },
+      FunDEGREE_FFE_DEFAULT, "src/finfield.c:DEGREE_FFE_DEFAULT" },
 
     { "LOG_FFE_DEFAULT", 2, "z, root",
-      FuncLOG_FFE_DEFAULT, "src/finifield.c:LOG_FFE_DEFAULT" },
+      FuncLOG_FFE_DEFAULT, "src/finfield.c:LOG_FFE_DEFAULT" },
 
     { "INT_FFE_DEFAULT", 1, "z",
-      FuncINT_FFE_DEFAULT, "src/finifield.c:INT_FFE_DEFAULT" },
+      FuncINT_FFE_DEFAULT, "src/finfield.c:INT_FFE_DEFAULT" },
 
     { "Z", 1, "q",
-      FuncZ, "src/finifield.c:Z" },
+      FuncZ, "src/finfield.c:Z" },
 
     { 0 }
 
@@ -2008,7 +2008,7 @@ static Int InitKernel (
     InitGlobalBag( &SuccFF, "src/finfield.c:SuccFF" );
     InitGlobalBag( &TypeFF, "src/finfield.c:TypeFF" );
     InitGlobalBag( &TypeFF0, "src/finfield.c:TypeFF0" );
-    InitGlobalBag( &IntFF, "src/finifield.c:IntFF" );
+    InitGlobalBag( &IntFF, "src/finfield.c:IntFF" );
 
     /* install the functions that handle overflow                          */
     ImportFuncFromLibrary( "SUM_FFE_LARGE",  &SUM_FFE_LARGE  );
