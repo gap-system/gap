@@ -1928,7 +1928,10 @@ Obj FuncZ2 ( Obj self, Obj p, Obj d)
             {
               /* get the finite field                                                */
               ff = FiniteField( ip, id );
-              
+
+              if (ff == 0)
+                ErrorMayQuit("Z: <q> must be a positive prime power", 0, 0);
+
               /* make the root                                                       */
               return NEW_FFE( ff, (ip == 2 && id == 1 ? 1 : 2) );
             }
