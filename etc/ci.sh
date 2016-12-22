@@ -2,6 +2,12 @@
 
 # Continous integration testing script
 
+# This is currently only used for Travis CI integration, see .travis.yml
+# for details. In addition, it can be run manually, to simulate what
+# happens in the CI environment locally (say, for debugging purposes).
+
+set -ex
+
 if [[ $TEST_SUITE = 'makemanuals' && $TRAVIS_OS_NAME = 'linux' ]]
 then
     make manuals
@@ -12,12 +18,15 @@ then
         exit 1
     fi
 else
+    if [ ! -f  tst/${TEST_SUITE}.g ]
+    then
+        echo "Could not read test suite tst/${TEST_SUITE}.g"
+        exit 1
+    fi
+
     if [[ x"$ABI" == "x32" ]]
     then
-        echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" |\
-           sh bin/gap.sh |\
-           tee testlog.txt |\
-           grep --colour=always -E "########> Diff|$"
+        sh bin/gap.sh tst/${TEST_SUITE}.g
     else
         cd pkg/io*
         ./configure
@@ -27,15 +36,12 @@ else
         ./configure
         make
         cd ../..
-        echo "Read(\"tst/${TEST_SUITE}.g\"); quit;" |\
-            sh bin/gap.sh --cover coverage |\
-            tee testlog.txt |\
-            grep --colour=always -E "########> Diff|$"
-        echo "CoverToJson(\"coverage\", \"coverage.json\"); quit;" |\
-            sh bin/gap.sh etc/cover2json.g
+
+        sh bin/gap.sh --cover coverage tst/${TEST_SUITE}.g
+
+        # generate coverage report
+        sh bin/gap.sh -b etc/cover2json.g
         cd bin/x86* ; gcov -o . ../../src/*
         cd ../..
-    fi;
-    cat testlog.txt | tail -n 2 |\
-        grep "total"; ( ! grep "########> Diff" testlog.txt )
+    fi
 fi;
