@@ -141,90 +141,92 @@ run_configure_and_make() {
   fi
 }
 
-date >> "$LOGDIR/$FAILPKGFILE.log"
-for dir in $(find -L . -maxdepth 1 -mindepth 1 -type d)
-do
-  if [[ -e "$dir/PackageInfo.g" ]]
-  then
-    dir="${dir%/}"
-    dir="${dir##*/}"
+buildpackage() {
+  # requires one argument which is the package directory
+  dir="$1"
+  echo ""
+  date
+  echo ""
+  echo "==== Checking $dir"
+  (  # start subshell
+  set -e
+  cd "$dir"
+  case "$dir" in
+    anupq*)
+      ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR &&
+      "$MAKE" CFLAGS=-m32 LOPTS=-m32
+    ;;
 
-    buildpackage() {
-      echo ""
-      date
-      echo ""
-      echo "==== Checking $dir"
-      (  # start subshell
-      set -e
-      cd "$dir"
-      case "$dir" in
-        anupq*)
-          ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR &&
-          "$MAKE" CFLAGS=-m32 LOPTS=-m32
-        ;;
+    atlasrep*)
+      chmod 1777 datagens dataword
+    ;;
 
-        atlasrep*)
-          chmod 1777 datagens dataword
-        ;;
+    carat*)
+      build_carat
+    ;;
 
-        carat*)
-          build_carat
-        ;;
+    cohomolo*)
+      build_cohomolo
+    ;;
 
-        cohomolo*)
-          build_cohomolo
-        ;;
+    fplsa*)
+      ./configure "$GAPDIR" &&
+      "$MAKE" CC="gcc -O2 "
+    ;;
 
-        fplsa*)
-          ./configure "$GAPDIR" &&
-          "$MAKE" CC="gcc -O2 "
-        ;;
+    kbmag*)
+      ./configure "$GAPDIR" &&
+      "$MAKE" COPTS="-O2 -g"
+    ;;
 
-        kbmag*)
-          ./configure "$GAPDIR" &&
-          "$MAKE" COPTS="-O2 -g"
-        ;;
+    NormalizInterface*)
+      ./build-normaliz.sh "$GAPDIR" &&
+      run_configure_and_make
+    ;;
 
-        NormalizInterface*)
-          ./build-normaliz.sh "$GAPDIR" &&
-          run_configure_and_make
-        ;;
+    pargap*)
+      ./configure "$GAPDIR" &&
+      "$MAKE" &&
+      cp bin/pargap.sh "$GAPDIR/bin" &&
+      rm -f ALLPKG
+    ;;
 
-        pargap*)
-          ./configure "$GAPDIR" &&
-          "$MAKE" &&
-          cp bin/pargap.sh "$GAPDIR/bin" &&
-          rm -f ALLPKG
-        ;;
+    xgap*)
+      ./configure --with-gaproot="$GAPDIR" &&
+      "$MAKE" &&
+      rm -f "$GAPDIR/bin/xgap.sh" &&
+      cp bin/xgap.sh "$GAPDIR/bin"
+    ;;
 
-        xgap*)
-          ./configure --with-gaproot="$GAPDIR" &&
-          "$MAKE" &&
-          rm -f "$GAPDIR/bin/xgap.sh" &&
-          cp bin/xgap.sh "$GAPDIR/bin"
-        ;;
+    simpcomp*)
+    ;;
 
-        simpcomp*)
-        ;;
-        
-        *)
-          run_configure_and_make
-        ;;
-      esac
-      ) || build_fail
+    *)
+      run_configure_and_make
+    ;;
+  esac
+  ) || build_fail
 }
 
-      (buildpackage > >(tee "$LOGDIR/$dir.out") 2> >(tee "$LOGDIR/$dir.err" >&2) )> >(tee "$LOGDIR/$dir.log" ) 2>&1
-      # end subshell
-      # remove superfluous log files if there was no error message
-      if [[ ! -s "$LOGDIR/$dir.err" ]]
-      then
-        rm -f "$LOGDIR/$dir.err"
-        rm -f "$LOGDIR/$dir.out"
-      fi
-    else
-      echo "$dir is not a GAP package -- no PackageInfo.g"
+date >> "$LOGDIR/$FAILPKGFILE.log"
+for PKG in $(find -L . -maxdepth 1 -mindepth 1 -type d)
+do
+  if [[ -e "$PKG/PackageInfo.g" ]]
+  then
+    PKG="${PKG%/}"
+    PKG="${PKG##*/}"
+
+    (buildpackage "$PKG" > >(tee "$LOGDIR/$PKG.out") 2> >(tee "$LOGDIR/$PKG.err" >&2) )> >(tee "$LOGDIR/$PKG.log" ) 2>&1
+
+    # remove superfluous log files if there was no error message
+    if [[ ! -s "$LOGDIR/$PKG.err" ]]
+    then
+      rm -f "$LOGDIR/$PKG.err"
+      rm -f "$LOGDIR/$PKG.out"
     fi
+  else
+    echo "$PKG is not a GAP package -- no PackageInfo.g"
+  fi
 done
 
 echo "" >> "$LOGDIR/$FAILPKGFILE.log"
