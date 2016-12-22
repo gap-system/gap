@@ -2,11 +2,11 @@
 
 set -e
 
-LOGDIR=log
+LOGDIR="log"
 mkdir -p "$LOGDIR"
 
-LOGFILE=buildpackages
-FAILPKGFILE=fail
+LOGFILE="buildpackages"
+FAILPKGFILE="fail"
 
 build_all_packages() {
 
@@ -29,26 +29,26 @@ build_all_packages() {
 # an idea what to do for a complete installation of GAP.
 
 
-if [ $# -eq 0 ]
-  then
-    echo "Assuming default GAP location: ../.."
-    GAPDIR=../..
-  else
-    echo "Using GAP location: $1"
-    GAPDIR="$1"
+if [[ "$#" -eq 0 ]]
+then
+  echo "Assuming default GAP location: ../.."
+  GAPDIR="../.."
+else
+  echo "Using GAP location: $1"
+  GAPDIR="$1"
 fi
 
 # Is someone trying to run us from inside the 'bin' directory?
-if [ -f gapicon.bmp ]
-  then
-    echo "This script must be run from inside the pkg directory"
-    echo "Type: cd ../pkg; ../bin/BuildPackages.sh"
-    exit 1
+if [[ -f "gapicon.bmp" ]]
+then
+  echo "This script must be run from inside the pkg directory"
+  echo "Type: cd ../pkg; ../bin/BuildPackages.sh"
+  exit 1
 fi
 
 # We need any subdirectory, to test if $GAPDIR is right
 SUBDIR="$(find -L . -maxdepth 1 -mindepth 1 -type d | head -n 1)"
-if ! (cd $SUBDIR && [[ -f $GAPDIR/sysinfo.gap ]])
+if ! (cd "$SUBDIR" && [[ -f "$GAPDIR/sysinfo.gap" ]])
 then
   echo "$GAPDIR is not the root of a gap installation (no sysinfo.gap)"
   echo "Please provide the absolute path of your GAP root directory as"
@@ -56,19 +56,21 @@ then
   exit 1
 fi
 
-if (cd $SUBDIR && grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null) ; then
+if (cd "$SUBDIR" && grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null)
+then
   echo "Building with 32-bit ABI"
-  ABI32=YES
+  ABI32="YES"
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
-fi;
+fi
 
 # Many package require GNU make. So use gmake if available,
 # for improved compatibility with *BSD systems where "make"
 # is BSD make, not GNU make.
-if ! [ x`which gmake` = "x" ] ; then
-  MAKE=gmake
+if ! [[ "x$(which gmake)" = "x" ]]
+then
+  MAKE="gmake"
 else
-  MAKE=make
+  MAKE="make"
 fi
 
 cat <<EOF
@@ -77,7 +79,7 @@ Note that many GAP packages require extra programs to be installed,
 and some are quite difficult to build. Please read the documentation for
 packages which fail to build correctly, and only worry about packages
 you require!
-Logging into $LOGDIR/$LOGFILE.log
+Logging into ./$LOGDIR/$LOGFILE.log
 EOF
 
 build_carat() {
@@ -90,24 +92,25 @@ build_carat() {
 zcat carat-2.1b1.tgz | tar pxf -
 ln -s carat-2.1b1/bin bin
 cd carat-2.1b1
-make TOPDIR=`pwd`
+make TOPDIR="$(pwd)"
 chmod -R a+rX .
 cd bin
-aa=`./config.guess`
+aa=$(./config.guess)
 # TODO dangerous to parse output of ls, use find instead
-for x in "`ls -d1 $GAPDIR/bin/${aa}*`"; do
- ln -s "$aa" "`basename $x`"
+for x in "$(ls -d1 $GAPDIR/bin/${aa}*)"
+do
+  ln -s "$aa" "$(basename $x)"
 done
 )
 }
 
 build_cohomolo() {
 (
-./configure $GAPDIR
+./configure "$GAPDIR"
 cd standalone/progs.d
 cp makefile.orig makefile
 cd ../..
-$MAKE
+"$MAKE"
 )
 }
 
@@ -120,19 +123,22 @@ build_fail() {
 run_configure_and_make() {
   # We want to know if this is an autoconf configure script
   # or not, without actually executing it!
-  if [ -f autogen.sh ] && ! [ -f configure ] ; then
+  if [[ -f autogen.sh ]] && ! [[ -f configure ]]
+  then
     ./autogen.sh
-  fi;
-  if [ -f configure ]; then
-    if grep Autoconf ./configure > /dev/null; then
-      ./configure $CONFIGFLAGS --with-gaproot=$GAPDIR
+  fi
+  if [[ -f "configure" ]]
+  then
+    if grep Autoconf ./configure > /dev/null
+    then
+      ./configure "$CONFIGFLAGS" --with-gaproot="$GAPDIR"
     else
-      ./configure $GAPDIR
-    fi;
-    $MAKE
+      ./configure "$GAPDIR"
+    fi
+    "$MAKE"
   else
     echo "No building required for $dir"
-  fi;
+  fi
 }
 
 date >> "$LOGDIR/$FAILPKGFILE.log"
@@ -150,11 +156,11 @@ do
       echo "==== Checking $dir"
       (  # start subshell
       set -e
-      cd $dir
-      case $dir in
+      cd "$dir"
+      case "$dir" in
         anupq*)
           ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR &&
-          $MAKE CFLAGS=-m32 LOPTS=-m32
+          "$MAKE" CFLAGS=-m32 LOPTS=-m32
         ;;
 
         atlasrep*)
@@ -170,32 +176,32 @@ do
         ;;
 
         fplsa*)
-          ./configure $GAPDIR &&
-          $MAKE CC="gcc -O2 "
+          ./configure "$GAPDIR" &&
+          "$MAKE" CC="gcc -O2 "
         ;;
 
         kbmag*)
-          ./configure $GAPDIR &&
-          $MAKE COPTS="-O2 -g"
+          ./configure "$GAPDIR" &&
+          "$MAKE" COPTS="-O2 -g"
         ;;
 
         NormalizInterface*)
-          ./build-normaliz.sh $GAPDIR &&
+          ./build-normaliz.sh "$GAPDIR" &&
           run_configure_and_make
         ;;
 
         pargap*)
-          ./configure $GAPDIR &&
-          $MAKE &&
-          cp bin/pargap.sh $GAPDIR/bin &&
+          ./configure "$GAPDIR" &&
+          "$MAKE" &&
+          cp bin/pargap.sh "$GAPDIR/bin" &&
           rm -f ALLPKG
         ;;
 
         xgap*)
-          ./configure --with-gaproot=$GAPDIR &&
-          $MAKE &&
-          rm -f $GAPDIR/bin/xgap.sh &&
-          cp bin/xgap.sh $GAPDIR/bin
+          ./configure --with-gaproot="$GAPDIR" &&
+          "$MAKE" &&
+          rm -f "$GAPDIR/bin/xgap.sh" &&
+          cp bin/xgap.sh "$GAPDIR/bin"
         ;;
 
         simpcomp*)
@@ -204,7 +210,7 @@ do
         *)
           run_configure_and_make
         ;;
-      esac;
+      esac
       ) || build_fail
 }
 
@@ -212,7 +218,7 @@ do
       # end subshell
       # remove superfluous log files if there was no error message
       if [[ ! -s "$LOGDIR/$dir.err" ]]
-        then
+      then
         rm -f "$LOGDIR/$dir.err"
         rm -f "$LOGDIR/$dir.out"
       fi
@@ -233,7 +239,7 @@ echo "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
 
 # remove superfluous buildpackages log files if there was no error message
 if [[ ! -s "$LOGDIR/$LOGFILE.err" ]]
-  then
+then
   rm -f "$LOGDIR/$LOGFILE.err"
   rm -f "$LOGDIR/$LOGFILE.out"
 fi
