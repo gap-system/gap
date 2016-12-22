@@ -1,9 +1,11 @@
-# This file is only here temporarily until
-# its functionality has been published as part
-# of the profiling package.
+if LoadPackage("profiling") <> true then
+    Print("ERROR: could not load profiling package");
+    FORCE_QUIT_GAP(1);
+fi;
 
-LoadPackage("profiling");
-
+# CoverToJson is only here temporarily until its functionality has been
+# published as part of the profiling package.
+if not IsBound(CoverToJson) then
 CoverToJson := function(data, outfile)
     local outstream, lineinfo, prev, file, lines;
 
@@ -44,4 +46,7 @@ CoverToJson := function(data, outfile)
     IO_Write(outstream, "} }");
     IO_Close(outstream);
 end;
+fi;
 
+CoverToJson("coverage", "coverage.json");
+QUIT_GAP(0);
