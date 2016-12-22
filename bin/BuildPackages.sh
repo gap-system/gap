@@ -153,7 +153,7 @@ buildpackage() {
   cd "$dir"
   case "$dir" in
     anupq*)
-      ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR &&
+      ./configure "CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR"
       "$MAKE" CFLAGS=-m32 LOPTS=-m32
     ;;
 
@@ -170,31 +170,31 @@ buildpackage() {
     ;;
 
     fplsa*)
-      ./configure "$GAPDIR" &&
+      ./configure "$GAPDIR"
       "$MAKE" CC="gcc -O2 "
     ;;
 
     kbmag*)
-      ./configure "$GAPDIR" &&
+      ./configure "$GAPDIR"
       "$MAKE" COPTS="-O2 -g"
     ;;
 
     NormalizInterface*)
-      ./build-normaliz.sh "$GAPDIR" &&
+      ./build-normaliz.sh "$GAPDIR"
       run_configure_and_make
     ;;
 
     pargap*)
-      ./configure "$GAPDIR" &&
-      "$MAKE" &&
-      cp bin/pargap.sh "$GAPDIR/bin" &&
+      ./configure "$GAPDIR"
+      "$MAKE"
+      cp bin/pargap.sh "$GAPDIR/bin"
       rm -f ALLPKG
     ;;
 
     xgap*)
-      ./configure --with-gaproot="$GAPDIR" &&
-      "$MAKE" &&
-      rm -f "$GAPDIR/bin/xgap.sh" &&
+      ./configure --with-gaproot="$GAPDIR"
+      "$MAKE"
+      rm -f "$GAPDIR/bin/xgap.sh"
       cp bin/xgap.sh "$GAPDIR/bin"
     ;;
 
