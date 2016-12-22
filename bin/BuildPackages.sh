@@ -2,11 +2,11 @@
 
 set -e
 
-LOGDIR="log"
+LOGDIR=log
 mkdir -p "$LOGDIR"
 
-LOGFILE="buildpackages"
-FAILPKGFILE="fail"
+LOGFILE=buildpackages
+FAILPKGFILE=fail
 
 build_all_packages() {
 
@@ -39,7 +39,7 @@ else
 fi
 
 # Is someone trying to run us from inside the 'bin' directory?
-if [[ -f "gapicon.bmp" ]]
+if [[ -f gapicon.bmp ]]
 then
   echo "This script must be run from inside the pkg directory"
   echo "Type: cd ../pkg; ../bin/BuildPackages.sh"
@@ -59,7 +59,7 @@ fi
 if (cd "$SUBDIR" && grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null)
 then
   echo "Building with 32-bit ABI"
-  ABI32="YES"
+  ABI32=YES
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi
 
@@ -68,9 +68,9 @@ fi
 # is BSD make, not GNU make.
 if ! [[ "x$(which gmake)" = "x" ]]
 then
-  MAKE="gmake"
+  MAKE=gmake
 else
-  MAKE="make"
+  MAKE=make
 fi
 
 cat <<EOF
