@@ -230,6 +230,8 @@ dnl ##
 AC_HEADER_STAT
 AC_CHECK_FUNCS( access stat fstat lstat unlink mkdir rmdir mkdtemp mkstemp link rename chmod dup dup2 realpath )
 
+AC_SYS_LARGEFILE
+
 dnl #########################################################################
 dnl ##
 dnl ## check for socket access functions
