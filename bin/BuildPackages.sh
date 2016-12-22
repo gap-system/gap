@@ -224,8 +224,6 @@ do
       rm -f "$LOGDIR/$PKG.err"
       rm -f "$LOGDIR/$PKG.out"
     fi
-  else
-    echo "$PKG is not a GAP package -- no PackageInfo.g"
   fi
 done
 
