@@ -74,17 +74,14 @@ function(S)
                    DegreeOfTransformationSemigroup(S), ">");
 end);
 
-#
-
 InstallMethod(AsMonoid,
 "for transformation semigroup with generators",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 function(S)
-  if One(S)<>fail then
-    return Monoid(GeneratorsOfSemigroup(S));
-  else
+  if MultiplicativeNeutralElement(S) = fail then 
     return fail;
   fi;
+  return Range(IsomorphismTransformationMonoid(S));
 end);
 
 #
