@@ -44,8 +44,6 @@ gap> Size(R);
 1501
 gap> ForAll(R, x-> x in R);
 true
-gap> Representative(R);
-(1,(1,2)(3,5)(4,6),6)
 gap> Representative(R) in R;
 true
 gap> RMSElement(R, 25, (), 10);
@@ -614,8 +612,6 @@ gap> DegreeOfTransformationSemigroup(Vt);
 34
 gap> Size(Vt);
 33
-gap> Representative(R);
-(1,(1,2),3)
 gap> Representative(R) in R;
 true
 gap> Representative(S);
@@ -675,10 +671,7 @@ gap> Size(V);
 33
 gap> IsSimpleSemigroup(V);
 false
-gap> enum:=Enumerator(R);
-<enumerator of Rees 0-matrix semigroup>
-gap> enum[1];
-0
+gap> enum:=Enumerator(R);;
 gap> ForAll(enum, x-> x in R);
 true
 gap> Length(enum);
@@ -689,8 +682,7 @@ gap> ForAll(enum, x-> enum[Position(enum, x)]=x);
 true
 gap> ForAll([1..Length(enum)], i-> Position(enum, enum[i])=i);
 true
-gap> enum[1];
-0
+gap> enum[1];;
 gap> enum:=Enumerator(S);
 <enumerator of <subsemigroup of 7x6 Rees 0-matrix semigroup with 12 generators
   >>
