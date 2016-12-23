@@ -8,7 +8,7 @@ mkdir -p "$LOGDIR"
 LOGFILE=buildpackages
 FAILPKGFILE=fail
 
-build_all_packages() {
+build_packages() {
 
 # This script attempts to build all GAP packages contained in the current
 # directory. Normally, you should run this script from the 'pkg'
@@ -29,15 +29,6 @@ build_all_packages() {
 # an idea what to do for a complete installation of GAP.
 
 
-if [[ "$#" -eq 0 ]]
-then
-  echo "Assuming default GAP location: ../.."
-  GAPDIR="../.."
-else
-  echo "Using GAP location: $1"
-  GAPDIR="$1"
-fi
-
 # Is someone trying to run us from inside the 'bin' directory?
 if [[ -f gapicon.bmp ]]
 then
@@ -46,9 +37,45 @@ then
   exit 1
 fi
 
-# We need any subdirectory, to test if $GAPDIR is right
-SUBDIR="$(find -L . -maxdepth 1 -mindepth 1 -type d | head -n 1)"
-if ! (cd "$SUBDIR" && [[ -f "$GAPDIR/sysinfo.gap" ]])
+# CURDIR
+CURDIR="$(pwd)"
+
+# GAPDIR
+if [[ "$#" -ge 1 ]]
+then
+  case "$1" in
+    --with-gaproot=*)
+      GAPDIR="$(sed 's|--with-gaproot=||' <<< $1)"
+      shift
+    ;;
+
+    *)
+      cd ..
+      GAPDIR="$(pwd)"
+      cd "$CURDIR"
+    ;;
+  esac
+else
+  cd ..
+  GAPDIR="$(pwd)"
+  cd "$CURDIR"
+fi
+echo "Using GAP location: $GAPDIR"
+
+# pakcages to build
+if [[ "$#" -ge 1 ]]
+then
+  # last arguments are packages to build
+  PACKAGES=("$@")
+else
+  # if there are no arguments, then build all packages
+  shopt -s nullglob
+  PACKAGES=(*)
+  shopt -u nullglob
+fi
+
+# We need to test if $GAPDIR is right
+if ! [[ -f "$GAPDIR/sysinfo.gap" ]]
 then
   echo "$GAPDIR is not the root of a gap installation (no sysinfo.gap)"
   echo "Please provide the absolute path of your GAP root directory as"
@@ -56,7 +83,7 @@ then
   exit 1
 fi
 
-if (cd "$SUBDIR" && grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null)
+if (grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null)
 then
   echo "Building with 32-bit ABI"
   ABI32=YES
@@ -97,6 +124,7 @@ chmod -R a+rX .
 cd bin
 aa=$(./config.guess)
 # TODO dangerous to parse output of ls, use find instead
+# or better yet, use 'shopt -s nullglob' as with the packages
 for x in "$(ls -d1 $GAPDIR/bin/${aa}*)"
 do
   ln -s "$aa" "$(basename $x)"
@@ -116,8 +144,8 @@ cd ../..
 
 build_fail() {
   echo ""
-  echo "=* Failed to build $dir"
-  echo "$dir" >> "$LOGDIR/$FAILPKGFILE.log"
+  echo "=* Failed to build $PKG"
+  echo "$PKG" >> "$LOGDIR/$FAILPKGFILE.log"
 }
 
 run_configure_and_make() {
@@ -137,21 +165,21 @@ run_configure_and_make() {
     fi
     "$MAKE"
   else
-    echo "No building required for $dir"
+    echo "No building required for $PKG"
   fi
 }
 
-buildpackage() {
+build_one_package() {
   # requires one argument which is the package directory
-  dir="$1"
+  PKG="$1"
   echo ""
   date
   echo ""
-  echo "==== Checking $dir"
+  echo "==== Checking $PKG"
   (  # start subshell
   set -e
-  cd "$dir"
-  case "$dir" in
+  cd "$CURDIR/$PKG"
+  case "$PKG" in
     anupq*)
       ./configure "CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR"
       "$MAKE" CFLAGS=-m32 LOPTS=-m32
@@ -209,14 +237,13 @@ buildpackage() {
 }
 
 date >> "$LOGDIR/$FAILPKGFILE.log"
-for PKG in $(find -L . -maxdepth 1 -mindepth 1 -type d)
+for PKG in "${PACKAGES[@]}"
 do
-  if [[ -e "$PKG/PackageInfo.g" ]]
+  PKG="${PKG%/}"
+  PKG="${PKG##*/}"
+  if [[ -e "$CURDIR/$PKG/PackageInfo.g" ]]
   then
-    PKG="${PKG%/}"
-    PKG="${PKG##*/}"
-
-    (buildpackage "$PKG" > >(tee "$LOGDIR/$PKG.out") 2> >(tee "$LOGDIR/$PKG.err" >&2) )> >(tee "$LOGDIR/$PKG.log" ) 2>&1
+    (build_one_package "$PKG" > >(tee "$LOGDIR/$PKG.out") 2> >(tee "$LOGDIR/$PKG.err" >&2) )> >(tee "$LOGDIR/$PKG.log" ) 2>&1
 
     # remove superfluous log files if there was no error message
     if [[ ! -s "$LOGDIR/$PKG.err" ]]
@@ -243,7 +270,7 @@ echo "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
 }
 
 # Log error to .err, output to .out, everything to .log
-( build_all_packages "$@" > >(tee "$LOGDIR/$LOGFILE.out") 2> >(tee "$LOGDIR/$LOGFILE.err" >&2) )> >( tee "$LOGDIR/$LOGFILE.log" ) 2>&1
+( build_packages "$@" > >(tee "$LOGDIR/$LOGFILE.out") 2> >(tee "$LOGDIR/$LOGFILE.err" >&2) )> >( tee "$LOGDIR/$LOGFILE.log" ) 2>&1
 
 # remove superfluous buildpackages log files if there was no error message
 if [[ ! -s "$LOGDIR/$LOGFILE.err" ]]
