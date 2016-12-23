@@ -8,6 +8,22 @@ mkdir -p "$LOGDIR"
 LOGFILE=buildpackages
 FAILPKGFILE=fail
 
+# print notices in green
+notice() {
+    printf "\033[32m%s\033[0m\n" "$@"
+}
+
+# print warnings in yellow
+warning() {
+    printf "\033[33mWARNING: %s\033[0m\n" "$@"
+}
+
+# print error in red and exit
+error() {
+    printf "\033[31mERROR: %s\033[0m\n" "$@"
+    exit 1
+}
+
 build_packages() {
 
 # This script attempts to build all GAP packages contained in the current
@@ -32,9 +48,8 @@ build_packages() {
 # Is someone trying to run us from inside the 'bin' directory?
 if [[ -f gapicon.bmp ]]
 then
-  echo "This script must be run from inside the pkg directory"
-  echo "Type: cd ../pkg; ../bin/BuildPackages.sh"
-  exit 1
+  error "This script must be run from inside the pkg directory" \
+        "Type: cd ../pkg; ../bin/BuildPackages.sh"
 fi
 
 # CURDIR
@@ -60,7 +75,7 @@ else
   GAPDIR="$(pwd)"
   cd "$CURDIR"
 fi
-echo "Using GAP location: $GAPDIR"
+notice "Using GAP location: $GAPDIR"
 
 # pakcages to build
 if [[ "$#" -ge 1 ]]
@@ -77,15 +92,14 @@ fi
 # We need to test if $GAPDIR is right
 if ! [[ -f "$GAPDIR/sysinfo.gap" ]]
 then
-  echo "$GAPDIR is not the root of a gap installation (no sysinfo.gap)"
-  echo "Please provide the absolute path of your GAP root directory as"
-  echo "first argument to this script."
-  exit 1
+  error "$GAPDIR is not the root of a gap installation (no sysinfo.gap)" \
+        "Please provide the absolute path of your GAP root directory as" \
+        "first argument to this script."
 fi
 
 if [[ "$(grep -c 'ABI_CFLAGS=-m32' $GAPDIR/Makefile)" -ge 1 ]]
 then
-  echo "Building with 32-bit ABI"
+  notice "Building with 32-bit ABI"
   ABI32=YES
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi
@@ -100,14 +114,13 @@ else
   MAKE=make
 fi
 
-cat <<EOF
-Attempting to build GAP packages.
-Note that many GAP packages require extra programs to be installed,
-and some are quite difficult to build. Please read the documentation for
-packages which fail to build correctly, and only worry about packages
-you require!
-Logging into ./$LOGDIR/$LOGFILE.log
-EOF
+notice \
+"Attempting to build GAP packages." \
+"Note that many GAP packages require extra programs to be installed," \
+"and some are quite difficult to build. Please read the documentation for" \
+"packages which fail to build correctly, and only worry about packages" \
+"you require!" \
+"Logging into ./$LOGDIR/$LOGFILE.log"
 
 build_carat() {
 (
@@ -161,7 +174,7 @@ cd ../..
 
 build_fail() {
   echo ""
-  echo "=* Failed to build $PKG"
+  warning "Failed to build $PKG"
   echo "$PKG" >> "$LOGDIR/$FAILPKGFILE.log"
 }
 
@@ -182,7 +195,7 @@ run_configure_and_make() {
     fi
     "$MAKE"
   else
-    echo "No building required for $PKG"
+    notice "No building required for $PKG"
   fi
 }
 
@@ -192,7 +205,7 @@ build_one_package() {
   echo ""
   date
   echo ""
-  echo "==== Checking $PKG"
+  notice "==== Checking $PKG"
   (  # start subshell
   set -e
   cd "$CURDIR/$PKG"
@@ -281,8 +294,8 @@ done
 
 echo "" >> "$LOGDIR/$FAILPKGFILE.log"
 echo ""
-echo "Output logged into ./$LOGDIR/$LOGFILE.log"
-echo "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
+notice "Output logged into ./$LOGDIR/$LOGFILE.log"
+notice "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
 # end of build_all_packages
 }
 
