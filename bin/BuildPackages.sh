@@ -24,6 +24,11 @@ error() {
     exit 1
 }
 
+# print stderr error in red but do not exit
+std_error() {
+    printf "\033[31mERROR: %s\033[0m\n" "$@"
+}
+
 build_packages() {
 
 # This script attempts to build all GAP packages contained in the current
@@ -211,7 +216,7 @@ build_one_package() {
   cd "$CURDIR/$PKG"
   case "$PKG" in
     anupq*)
-      ./configure "CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR"
+      ./configure "CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR" && \
       "$MAKE" CFLAGS=-m32 LOPTS=-m32
     ;;
 
@@ -228,31 +233,31 @@ build_one_package() {
     ;;
 
     fplsa*)
-      ./configure "$GAPDIR"
+      ./configure "$GAPDIR" && \
       "$MAKE" CC="gcc -O2 "
     ;;
 
     kbmag*)
-      ./configure "$GAPDIR"
+      ./configure "$GAPDIR" && \
       "$MAKE" COPTS="-O2 -g"
     ;;
 
     NormalizInterface*)
-      ./build-normaliz.sh "$GAPDIR"
+      ./build-normaliz.sh "$GAPDIR" && \
       run_configure_and_make
     ;;
 
     pargap*)
-      ./configure "$GAPDIR"
-      "$MAKE"
-      cp bin/pargap.sh "$GAPDIR/bin"
+      ./configure "$GAPDIR" && \
+      "$MAKE" && \
+      cp bin/pargap.sh "$GAPDIR/bin" && \
       rm -f ALLPKG
     ;;
 
     xgap*)
-      ./configure --with-gaproot="$GAPDIR"
-      "$MAKE"
-      rm -f "$GAPDIR/bin/xgap.sh"
+      ./configure --with-gaproot="$GAPDIR" && \
+      "$MAKE" && \
+      rm -f "$GAPDIR/bin/xgap.sh" && \
       cp bin/xgap.sh "$GAPDIR/bin"
     ;;
 
@@ -273,7 +278,15 @@ do
   PKG="${PKG##*/}"
   if [[ -e "$CURDIR/$PKG/PackageInfo.g" ]]
   then
-    (build_one_package "$PKG" > >(tee "$LOGDIR/$PKG.out") 2> >(tee "$LOGDIR/$PKG.err" >&2) )> >(tee "$LOGDIR/$PKG.log" ) 2>&1
+    (build_one_package "$PKG" \
+     > >(tee "$LOGDIR/$PKG.out") \
+    2> >(while read line
+         do \
+           std_error "$line"
+         done \
+         > >(tee "$LOGDIR/$PKG.err" >&2) \
+         ) \
+    )> >(tee "$LOGDIR/$PKG.log" ) 2>&1
 
     # remove superfluous log files if there was no error message
     if [[ ! -s "$LOGDIR/$PKG.err" ]]
@@ -300,7 +313,15 @@ notice "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
 }
 
 # Log error to .err, output to .out, everything to .log
-( build_packages "$@" > >(tee "$LOGDIR/$LOGFILE.out") 2> >(tee "$LOGDIR/$LOGFILE.err" >&2) )> >( tee "$LOGDIR/$LOGFILE.log" ) 2>&1
+( build_packages "$@" \
+ > >(tee "$LOGDIR/$LOGFILE.out") \
+2> >(while read line
+     do \
+       std_error "$line"
+     done \
+     > >(tee "$LOGDIR/$LOGFILE.err" >&2) \
+    ) \
+)> >( tee "$LOGDIR/$LOGFILE.log" ) 2>&1
 
 # remove superfluous buildpackages log files if there was no error message
 if [[ ! -s "$LOGDIR/$LOGFILE.err" ]]
