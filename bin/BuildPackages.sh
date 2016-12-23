@@ -83,7 +83,7 @@ then
   exit 1
 fi
 
-if (grep 'ABI_CFLAGS=-m32' $GAPDIR/Makefile > /dev/null)
+if [[ "$(grep -c 'ABI_CFLAGS=-m32' $GAPDIR/Makefile)" -ge 1 ]]
 then
   echo "Building with 32-bit ABI"
   ABI32=YES
@@ -253,7 +253,7 @@ do
     fi
 
     # remove log files if package needed no compilation
-    if [[ $(grep -c 'No building required for' "$LOGDIR/$PKG.log") -ge 1 ]]
+    if [[ "$(grep -c 'No building required for' $LOGDIR/$PKG.log)" -ge 1 ]]
     then
       rm -f "$LOGDIR/$PKG.err"
       rm -f "$LOGDIR/$PKG.out"
