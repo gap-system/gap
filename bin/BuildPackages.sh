@@ -117,18 +117,35 @@ build_carat() {
 # It is not possible to move around compiled binaries because these have the
 # path to some data files burned in.
 zcat carat-2.1b1.tgz | tar pxf -
-ln -s carat-2.1b1/bin bin
+# If the symbolic link does not exist then create it.
+# Does not check if bin exists already with some content or as a file, etc.
+# Thus this code is unstable, but should be corrected by package author
+# and not by this script.
+if [[ ! -L ./bin ]]
+then
+  ln -s ./carat-2.1b1/bin ./bin
+fi
 cd carat-2.1b1
 make TOPDIR="$(pwd)"
 chmod -R a+rX .
 cd bin
-aa=$(./config.guess)
-# TODO dangerous to parse output of ls, use find instead
-# or better yet, use 'shopt -s nullglob' as with the packages
-for x in "$(ls -d1 $GAPDIR/bin/${aa}*)"
-do
-  ln -s "$aa" "$(basename $x)"
-done
+# This sets GAParch as it should be.
+# Alternatively, one could check $GAPDIR/bin for all directories instead.
+source "$GAPDIR/sysinfo.gap"
+# If the symbolic link does not exist then create it.
+if [[ ! -L ./"$GAParch" ]]
+then
+  shopt -s nullglob
+  # We assume that there is only one appropriate directory....
+  for archdir in *
+  do
+    if [[ -d "$archdir" ]] && [[ ! -L "$archdir" ]]
+    then
+      ln -s ./"$archdir" ./"$GAParch"
+    fi
+  done
+  shopt -u nullglob
+fi
 )
 }
 
