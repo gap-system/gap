@@ -37,8 +37,11 @@ build_packages() {
 
 # You can also run it from other locations, but then you need to tell the
 # script where your GAP root directory is, by passing it as first argument
-# to the script. By default, the script assumes that the parent of the
-# current working directory is the GAP root directory.
+# to the script with '--with-gaproot='. By default, the script assumes that
+# the parent of the current working directory is the GAP root directory.
+
+# If arguments are added, then they are considered packages. In that case
+# only these packages will be built, and all others are ignored.
 
 # You need at least 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
 # Some packages also need a C++ compiler.
@@ -61,11 +64,12 @@ fi
 CURDIR="$(pwd)"
 
 # GAPDIR
+GAPDIR=""
 if [[ "$#" -ge 1 ]]
 then
   case "$1" in
     --with-gaproot=*)
-      GAPDIR="$(sed 's|--with-gaproot=||' <<< $1)"
+      GAPDIR=$(sed 's|--with-gaproot=||' <<< "$1")
       shift
     ;;
 
@@ -75,14 +79,31 @@ then
       cd "$CURDIR"
     ;;
   esac
-else
-  cd ..
+fi
+if [[ -z "$GAPDIR" ]]
+then
+  pushd ..
   GAPDIR="$(pwd)"
-  cd "$CURDIR"
+  popd
 fi
 notice "Using GAP location: $GAPDIR"
 
-# pakcages to build
+# We need to test if $GAPDIR is right
+if ! [[ -f "$GAPDIR/sysinfo.gap" ]]
+then
+  error "$GAPDIR is not the root of a gap installation (no sysinfo.gap)" \
+        "Please provide the absolute path of your GAP root directory as" \
+        "first argument with '--with-gaproot=' to this script."
+fi
+
+if [[ "$(grep -c 'ABI_CFLAGS=-m32' $GAPDIR/Makefile)" -ge 1 ]]
+then
+  notice "Building with 32-bit ABI"
+  ABI32=YES
+  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
+fi
+
+# packages to build
 if [[ "$#" -ge 1 ]]
 then
   # last arguments are packages to build
@@ -92,21 +113,6 @@ else
   shopt -s nullglob
   PACKAGES=(*)
   shopt -u nullglob
-fi
-
-# We need to test if $GAPDIR is right
-if ! [[ -f "$GAPDIR/sysinfo.gap" ]]
-then
-  error "$GAPDIR is not the root of a gap installation (no sysinfo.gap)" \
-        "Please provide the absolute path of your GAP root directory as" \
-        "first argument to this script."
-fi
-
-if [[ "$(grep -c 'ABI_CFLAGS=-m32' $GAPDIR/Makefile)" -ge 1 ]]
-then
-  notice "Building with 32-bit ABI"
-  ABI32=YES
-  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi
 
 # Many package require GNU make. So use gmake if available,
@@ -151,13 +157,13 @@ cd bin
 # Alternatively, one could check $GAPDIR/bin for all directories instead.
 source "$GAPDIR/sysinfo.gap"
 # If the symbolic link does not exist then create it.
-if [[ ! -L ./"$GAParch" ]]
+if [[ ! -L "$GAParch" ]]
 then
   shopt -s nullglob
   # We assume that there is only one appropriate directory....
   for archdir in *
   do
-    if [[ -d "$archdir" ]] && [[ ! -L "$archdir" ]]
+    if [[ -d "$archdir" && ! -L "$archdir" ]]
     then
       ln -s ./"$archdir" ./"$GAParch"
     fi
@@ -186,7 +192,7 @@ build_fail() {
 run_configure_and_make() {
   # We want to know if this is an autoconf configure script
   # or not, without actually executing it!
-  if [[ -f autogen.sh ]] && ! [[ -f configure ]]
+  if [[ -f autogen.sh && ! -f configure ]]
   then
     ./autogen.sh
   fi
@@ -215,6 +221,8 @@ build_one_package() {
   set -e
   cd "$CURDIR/$PKG"
   case "$PKG" in
+    # All but the last lines should end by '&&', otherwise (for some reason)
+    # some packages that fail to build will not get reported in the logs.
     anupq*)
       ./configure "CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR" && \
       "$MAKE" CFLAGS=-m32 LOPTS=-m32
@@ -274,7 +282,11 @@ build_one_package() {
 date >> "$LOGDIR/$FAILPKGFILE.log"
 for PKG in "${PACKAGES[@]}"
 do
+  # cut off the ending slash (if exists)
   PKG="${PKG%/}"
+  # cut off everything before the first slash to only keep the package name
+  # (these two commands are mainly to accomodate the logs better,
+  # as they make no difference with changing directories)
   PKG="${PKG##*/}"
   if [[ -e "$CURDIR/$PKG/PackageInfo.g" ]]
   then
