@@ -568,12 +568,120 @@ local   grp,  pcgs,  U,  oldlen,  series,  y,  w,
 
   pcgs := PcgsStabChainSeries( filter, grp, series, 1,true);
 
-  SetIsSolvableGroup( grp, true );
-  SetPcgs( grp, pcgs );
-  SetHomePcgs( grp, pcgs );
+  if Set(GeneratorsOfGroup(grp))=Set(pcseq) then
+    SetIsSolvableGroup( grp, true );
+    SetPcgs( grp, pcgs );
+    SetHomePcgs( grp, pcgs );
+  fi;
   SetGroupOfPcgs (pcgs, grp);
   return pcgs;
 end);
+
+# arbitrary pc sequence pcgs for perm group. Construct pcgs from it using
+# variant of sims' algorithm, then use translation of exponents.
+InstallMethod(PcgsByPcSequenceNC,"perm group, Sims' algorithm",true,
+  [IsFamily,IsHomogeneousList and IsPermCollection],0,
+
+function( efam, pcs )
+    local   rws,  pfa,  pcgs,  pag,  id,  g,  dg,  i,  new,
+    ord,codepths,pagpow,sorco,filter;
+
+    # quick check
+    if not IsIdenticalObj( efam, ElementsFamily(FamilyObj(pcs)) )  then
+        Error( "elements family of <pcs> does not match <efam>" );
+    fi;
+
+    if ForAll(pcs,IsOne) then
+      TryNextMethod(); # degenerate case
+    fi;
+
+    pfa := PermgroupSuggestPcgs(Group(pcs),pcs);
+    if pfa=fail then
+      TryNextMethod();
+    fi;
+
+    if pfa=pcs then
+      # is it by happenstance the one we want?
+      return pfa;
+
+    else
+      # make a sorted/unsorted pcgs
+
+      # sort the elements according to the depth wrt pfa
+      pag := [];
+      new := [];
+      ord := [];
+      id  := One(pcs[1]);
+      for i  in [ Length(pcs), Length(pcs)-1 .. 1 ]  do
+	g  := pcs[i];
+	dg := DepthOfPcElement( pfa, g );
+	while g <> id and IsBound(pag[dg])  do
+	  g  := ReducedPcElement( pfa, g, pag[dg] );
+	  dg := DepthOfPcElement( pfa, g );
+	od;
+	if g <> id  then
+	  pag[dg] := g;
+	  new[dg] := i;
+	  ord[i]  := RelativeOrderOfPcElement( pfa, g );
+	fi;
+      od;
+      if not IsHomogeneousList(ord) then
+	Error("not all relative orders given");
+      fi;
+
+      filter:=IsPcgs;
+
+      if IsSSortedList(new) and Length(new)=Length(pfa) then
+	filter:=filter and IsSortedPcgsRep;
+      else
+	filter:=filter and IsUnsortedPcgsRep;
+      fi;
+
+      # we have the same sequence, same depths, just changed by
+      # multiplying elements of a lower level
+      pcgs := PcgsByPcSequenceCons( IsPcgsDefaultRep, filter,
+		  efam, pcs,[] );
+
+      pcgs!.sortedPcSequence := pag;
+      pcgs!.newDepths        := new;
+      pcgs!.sortingPcgs      := pfa;
+
+      # Precompute the leading coeffs and the powers of pag up to the
+      # relative order
+      pagpow:=[];
+      sorco:=[];
+      for i in [1..Length(pag)] do
+	if IsBound(pag[i]) then
+	  pagpow[i]:=
+	    List([1..RelativeOrderOfPcElement(pfa,pag[i])-1],j->pag[i]^j);
+	  sorco[i]:=LeadingExponentOfPcElement(pfa,pag[i]);
+	fi;
+      od;
+      pcgs!.sortedPcSeqPowers:=pagpow;
+      pcgs!.sortedPcSequenceLeadCoeff:=sorco;
+
+      # codepths[i]: the minimum pcgs-depth that can be implied by pag-depth i
+      codepths:=[];
+      for dg in [1..Length(new)] do
+	g:=Length(new)+1;
+	for i in [dg..Length(new)] do
+	  if IsBound(new[i]) and new[i]<g then
+	    g:=new[i];
+	  fi;
+	od;
+	codepths[dg]:=g;
+      od;
+      pcgs!.minimumCodepths:=codepths;
+      SetRelativeOrders( pcgs, ord );
+      if IsSortedPcgsRep(pcgs) then
+	pcgs!.inversePowers:=
+		      List([1..Length(pfa)],i->(1/sorco[i]) mod ord[i]);
+      fi;
+  fi;
+
+  return pcgs;
+
+end );
 
 #############################################################################
 ##
