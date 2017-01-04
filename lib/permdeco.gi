@@ -12,7 +12,7 @@
 
 InstallMethod( FittingFreeLiftSetup, "permutation", true, [ IsPermGroup ],0,
 function( G )
-local   pcgs,r,hom,A,iso,p,i;
+local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
   
   r:=RadicalGroup(G);
   if Size(r)=1 then
@@ -34,6 +34,85 @@ local   pcgs,r,hom,A,iso,p,i;
   if not IsPcgs( pcgs )  then
     return fail;
   fi;
+
+  # do we have huge steps? Refine.
+  limit:=10^5;
+  depths:=IndicesEANormalSteps(pcgs);
+  ords:=RelativeOrders(pcgs);
+
+  # can we simply use the existing Pcgs?
+  A:=List([2..Length(depths)],x->Product(ords{[depths[x-1]..depths[x]-1]}));
+  good:=true;
+  while Length(A)>0 and Maximum(A)>limit and good do
+    A:=depths[Position(A,Maximum(A))];
+    p:=Filtered([A+1..Length(pcgs)],x->IsNormal(G,SubgroupNC(G,pcgs{[x..Length(pcgs)]})));
+    # maximal split in middle
+    if Length(p)>0 then
+      i:=List(p,x->[(x-A)*(18-x),x]);
+      Sort(i);
+      p:=i[Length(i)][2]; # best split
+      depths:=Concatenation(Filtered(depths,x->x<=A),[p],
+	        Filtered(depths,x->x>A));
+    else
+      good:=false;
+    fi;
+    A:=List([2..Length(depths)],x->Product(ords{[depths[x-1]..depths[x]-1]}));
+  od;
+
+  # still bad?
+  good:=true;
+  if Length(A)>0 and Maximum(A)>limit and good then
+    A:=depths[Position(A,Maximum(A))];
+    p:=ords[A];
+    A:=[A..depths[Position(depths,A)+1]-1];
+    pc:=InducedPcgsByPcSequence(pcgs,pcgs{[A[1]..Length(pcgs)]}) mod
+	InducedPcgsByPcSequence(pcgs,pcgs{[A[Length(A)]+1..Length(pcgs)]});
+    mo:=LinearActionLayer(G,pc);
+    mo:=GModuleByMats(mo,GF(p));
+    b:=MTX.BasesCompositionSeries(mo);
+    if Length(b)>2 then
+      new:=[1];
+      start:=1;
+      for i in [2..Length(b)] do
+	if p^Length(b[i])/start>limit then
+	  if i-1 in new then
+	    Add(new,i);
+	    start:=p^Length(b[i]);
+	  else
+	    Add(new,i-1);
+	    start:=p^Length(b[i-1]);
+	  fi;
+	fi;
+      od;
+      if not Length(b) in new then
+	Add(new,Length(b));
+      fi;
+
+      # now form pc elements
+      np:=[];
+      for i in [2..Length(new)] do
+	start:=BaseSteinitzVectors(b[new[i]],b[new[i-1]]).factorspace;
+	start:=List(start,x->PcElementByExponents(pc,List(x,Int)));
+	Add(np,start);
+      od;
+      np:=Reversed(np);
+      b:=A[1];
+      pc:=Concatenation(pcgs{[1..b-1]},
+	   Concatenation(np),
+	   pcgs{[A[Length(A)]+1..Length(pcgs)]});
+
+      pcgs:=PermgroupSuggestPcgs(G,pc);
+      #depths:=Concatenation(Filtered(depths,x->x<=b),
+#	       List([1..Length(np)-1],x->b+Sum(List(np{[1..x]},Length))),
+#	       Filtered(depths,x->x>A[Length(A)]));
+      depths:=IndicesEANormalSteps(pcgs);
+      ords:=RelativeOrders(pcgs);
+    else
+      good:=false;
+    fi;
+    A:=List([2..Length(depths)],x->Product(ords{[depths[x-1]..depths[x]-1]}));
+  fi;
+
   if not HasPcgsElementaryAbelianSeries(r) then
     SetPcgsElementaryAbelianSeries(r,pcgs);
   fi;
@@ -43,7 +122,7 @@ local   pcgs,r,hom,A,iso,p,i;
   iso := GroupHomomorphismByImagesNC( r, A, pcgs, GeneratorsOfGroup( A ));
   SetIsBijective( iso, true );
   return rec(pcgs:=pcgs,
-             depths:=IndicesEANormalSteps(pcgs),
+             depths:=depths,
 	     radical:=r,
 	     pcisom:=iso,
 	     factorhom:=hom);

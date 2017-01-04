@@ -23,7 +23,7 @@ DeclareRepresentation( "IsMemberPcSeriesPermGroup",
 #F  AddNormalizingElementPcgs( <G>, <z> ) . . . . . cyclic extension for pcgs
 ##
 InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
-    local   S,  A,  pos,  relord,
+  local   S,  A,  pos,  relord,
             pnt,  orb,  l,  L,  n,  m,  img,  i,  f,  p,  edg;
 
     StretchImportantSLPElement(z);
@@ -362,7 +362,6 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
     series := [ U ];
     series[ 1 ].relativeOrders := [  ];
 
-step:="W";
     if not IsTrivial( grp )  then
         
         # The derived  length of  <G> was  bounded by  Dixon. The  nilpotency
@@ -437,6 +436,143 @@ step:="W";
         fi;
     fi;
     return pcgs;
+end);
+
+## Based on `TryPcgsPermGroup', a method for PcgsByPcSequence
+
+BindGlobal("ExtendSeriesPGParticular", function(
+            G,       # the group in which factors are to be normal
+            series,  # the series being constructed
+            adds)     # the elements to be added to `series[ <lev> ]'
+			
+  local   M0,  M1,  C,  X,  oldX,  T,  t,  u,  w,  r,  done,
+	  ord,  p,ap,s;
+  
+  # As series  need not be   fastest-descending, prepare to add  a new
+  # group to the list.
+  M1 := series[ 1 ];
+  M0 := StructuralCopy( M1 );
+  X := [  ];
+  r := 1;
+
+  # find next elt to add
+  ap:=1;
+  while MembershipTestKnownBase(M0,G,adds[ap])=true do
+    ap:=ap+1;
+    if ap>Length(adds) then
+      return fail; # nothing to add
+    fi;
+  od;
+  s:=adds[ap];
+
+  # find prime.
+  ord:=Factors(Order( s ));
+  p:=First(Set(ord),x->MembershipTestKnownBase(M0,G,s^x)=true);
+
+  # Loop over adds
+  ap:=ap-1;
+  C := [s];
+  while not IsEmpty( C )  do
+    t := C[ 1 ];
+    if not MembershipTestKnownBase( M0, G, t )  then
+      
+      # Form  all necessary  commutators with  <t>   and for elementary
+      # abelian factors also a <p>th power.
+      T := SSortedList( X );
+      done := false;
+      while not done  and  not IsEmpty( T ) do
+	if not IsEmpty( T )  then
+	  u := T[ 1 ];        RemoveSet( T, u );
+	  w := Comm( t, u );
+	else
+	  done := true;
+	  w := t ^ p;
+	fi;
+    
+	# If   the commutator or  power  is not  in <M1>, 
+	# it was not a proper pcgs
+	if not MembershipTestKnownBase( M1, G, w )  then
+	  return w;
+	fi;
+	
+      od;
+      
+      ap:=ap+1;
+      t:=adds[ap];
+
+      # Add <t> to <M0> and register its conjugates.
+      if AddNormalizingElementPcgs( M0, t )  then
+	Add( X, t );
+      fi;
+      Append( C, List( GeneratorsOfGroup( G ), g -> t ^ g ) );
+
+    else
+      # this t is done with
+      C := C{ [ 2 .. Length( C ) ] };
+    fi;
+  od;
+
+  if not IsEmpty( X )  then
+    Add( series, M0, 1 );
+  fi;
+
+  return true;
+end );
+
+InstallGlobalFunction(PermgroupSuggestPcgs,function(G,pcseq)
+local   grp,  pcgs,  U,  oldlen,  series,  y,  w,  
+	bound,  deg,  step,  i,  S,  filter,gens;
+
+  U := TrivialSubgroup( G );
+  G := [ G, U ]; 
+  # Otherwise start  with stabilizer chain  of  <U> with identical `labels'
+  # components on all levels.
+  U := EmptyStabChain( [  ], One( U ) );
+
+  # The `genlabels' at every level of $U$ must be sets.
+  S := U;
+  while not IsEmpty( S.genlabels )  do
+    Sort( S.genlabels );
+    S := S.stabilizer;
+  od;
+
+  grp := G[ 1 ];
+  
+  series := [ U ];
+  series[ 1 ].relativeOrders := [  ];
+
+  # The derived  length of  <G> was  bounded by  Dixon. The  nilpotency
+  # class of <G> is at most Max( log_p(d)-1 ).
+  deg := NrMovedPoints( grp );
+  bound := Int( LogInt( deg ^ 5, 3 ) / 2 );
+  if HasSize( grp ) and Length( FactorsInt( Size( grp ) ) ) < bound  then
+    bound:=Length( FactorsInt( Size( grp ) ) );
+  fi;
+
+  pcseq:=Reversed(pcseq); # build up
+
+  # can do repeat-until as group is not trivial
+  repeat
+    w := ExtendSeriesPGParticular( G[1], series, pcseq);
+    if w <> true  and w<>fail then
+      # if it fails the pcgs does not fit an elementary
+      # abelian series. In this case we need to defer to the
+      # generic approach.
+      return fail;
+    fi;
+    #Print(List(series,SizeStabChain),":",Length(series[1].labels),":",List(series[1].labels,x->Position(pcseq,x)),"\n");
+  until w=fail;
+
+  # Construct the pcgs object.
+  filter := IsPcgsPermGroupRep and IsPcgsElementaryAbelianSeries;
+
+  pcgs := PcgsStabChainSeries( filter, grp, series, 1,true);
+
+  SetIsSolvableGroup( grp, true );
+  SetPcgs( grp, pcgs );
+  SetHomePcgs( grp, pcgs );
+  SetGroupOfPcgs (pcgs, grp);
+  return pcgs;
 end);
 
 #############################################################################
