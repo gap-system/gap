@@ -564,8 +564,8 @@ InstallMethod( RandomHashKey, "for dense hash tables", true,
 ##
 ##  Default starting hash table size
 ##
-DefaultHashLength := 2^7;
-BindGlobal("HASH_RANGE",[0..DefaultHashLength-2]);
+DefaultHashLength := 2^8;
+BindGlobal("HASH_RANGE",[0..2^7-2]);
 
 #############################################################################
 ##
@@ -573,10 +573,16 @@ BindGlobal("HASH_RANGE",[0..DefaultHashLength-2]);
 ##
 InstallGlobalFunction( SparseHashTable,
 function(arg)
-      local Rec,T;
+local Rec,T,len;
 
-  Rec := rec( KeyArray := ListWithIdenticalEntries( DefaultHashLength, fail ),
-          ValueArray := [], LengthArray := DefaultHashLength, NumberKeys := 0 );
+  len:=DefaultHashLength;
+  if Length(arg)>1 then
+    len:=arg[2];
+  fi;
+
+
+  Rec := rec( KeyArray := ListWithIdenticalEntries( len, fail ),
+          ValueArray := [], LengthArray := len, NumberKeys := 0 );
 
   if Length(arg)>0 then
     T:=Objectify( DefaultSparseHashWithIKRepType, Rec );
