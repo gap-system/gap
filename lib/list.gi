@@ -4046,10 +4046,18 @@ InstallMethod(IntersectSet,
 
 InstallGlobalFunction(Average,l->1/Length(l)*Sum(l));
 
-InstallGlobalFunction(Median,function(l)
+InstallGlobalFunction(Median,
+function(l)
   l:=ShallowCopy(l);
   Sort(l);
   return l[Int((Length(l)+1)/2)];
+end);
+
+InstallGlobalFunction(Variance,
+function(l)
+    local avg;
+    avg := Average(l);
+    return Average(List(l, x -> (x-avg)^2));
 end);
 
 #############################################################################
