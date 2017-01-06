@@ -778,8 +778,7 @@ local module,sub,  ans, dim, subdim, F,qmodule;
    module:=arg[1];
    sub:=arg[2];
 
-   sub:=List(sub,ShallowCopy);
-   TriangulizeMat(sub);
+   sub:=TriangulizedMat(sub);
 
    subdim:=Length(sub);
    dim:=SMTX.Dimension(module);
@@ -819,8 +818,7 @@ end;
 SMTX.InducedActionFactorModuleWithBasis:=function(module,sub)
 local ans, dim, subdim, F,qmodule;
 
-   sub:=List(sub,ShallowCopy);
-   TriangulizeMat(sub);
+   sub:=TriangulizedMat(sub);
 
    subdim:=Length(sub);
    dim:=SMTX.Dimension(module);
@@ -981,8 +979,7 @@ local mat, sub, subdim, dim, F, ans;
    mat:=arg[1];
    sub:=arg[2];
 
-   sub:=List(sub,ShallowCopy);
-   TriangulizeMat(sub);
+   sub:=TriangulizedMat(sub);
 
    subdim:=Length(sub);
    dim:=Length(mat);
@@ -1403,8 +1400,7 @@ SMTX_RandomIrreducibleSubGModule:=function( module )
       # this is done by triangulization
       F:=SMTX.Field(module);
       subbasis2:=ranSub[1] * subbasis;
-      subbasis2:=List(subbasis2,ShallowCopy);
-      TriangulizeMat(subbasis2);
+      subbasis2:=TriangulizedMat(subbasis2);
 
       # But now since we've normed the basis subbasis2,
       # the matrices of the submodule ranSub[2] are given with respect to
@@ -2993,8 +2989,7 @@ SMTX_MinimalSubGModules:=function(arg)
          for k in [sr..er] do
             sub:=sub + elF[coeff[k]] * homs[k];
          od;
-         sub:=List(sub,ShallowCopy);
-         TriangulizeMat(sub);
+         sub:=TriangulizedMat(sub);
          Add(submodules, ImmutableMatrix(F,sub));
 
          # Move on to next set of coefficients if any
