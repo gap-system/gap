@@ -1169,12 +1169,12 @@ SMTX_IrreducibilityTest:=function ( module )
 
       M:=SMTX.SMCoRaEl(matrices,ngens,newgenlist,dim,F);
 
-      idmat:=matrices[1]^0;
       ngens:=Length(matrices);
 
       coefflist:=M[2];
       pol:=M[3];
-      M:=M[1];
+      M:=ImmutableMatrix(F,M[1]);
+      idmat:=M^0;
 
       orig_pol:=pol;
       Info(InfoMeatAxe,2,"Evaluated characteristic polynomial. Time = ",
@@ -1229,9 +1229,7 @@ SMTX_IrreducibilityTest:=function ( module )
                # Now go through the factors and attempt to find a submodule
                facno:=1; l:=Length (sfac);
                while facno <= l and trying do
-                  mat:=Value (sfac[facno], M,idmat);
-                  MakeImmutable(mat);
-                  ConvertToMatrixRep(mat,F);
+                  mat:=Value(sfac[facno], M,idmat);
                   Info(InfoMeatAxe,2,"Evaluated matrix on factor. Time = ",
                        Runtime()-rt0,".");
                   N:=NullspaceMat (mat);
@@ -1316,9 +1314,7 @@ SMTX_IrreducibilityTest:=function ( module )
                      Info(InfoMeatAxe,2,
                          "Evaluated second random element in algebra.");
                      v:=Random(FullRowSpace(F,dim));
-                     mat2:=Value (idemp, M,idmat);
-                     MakeImmutable(mat2);
-                     ConvertToMatrixRep(mat2,F);
+                     mat2:=Value(idemp, M,idmat);
                      mat3:=mat2*M2*mat2;
                      v:=v*(M*mat3 - mat3*M);
                      #This vector might lie in a proper subspace!
@@ -1474,8 +1470,7 @@ SMTX_RandomIrreducibleSubGModule:=function ( module )
          ngens:=ngens + 1;
          matrices[ngens]:=matrices[genpair[1]] * matrices[genpair[2]];
       od;
-      M:= ImmutableMatrix(F,NullMat(dim,dim,Zero(F)));
-      for i in [1..ngens] do M:=M + el[2][i] * matrices[i]; od;
+      M:=ImmutableMatrix(F,Sum([1..ngens], i-> el[2][i] * matrices[i]));
       SMTX.SetAlgElMat(submodule2,M);
       N:=NullspaceMat(Value(fac,M,M^0));
       SMTX.SetAlgElNullspaceVec(submodule2,N[1]);
@@ -1498,7 +1493,7 @@ SMTX.RandomIrreducibleSubGModule:=SMTX_RandomIrreducibleSubGModule;
 SMTX_GoodElementGModule:=function ( module )
 local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
       fac, sfac, pol, oldpol,  q, deg, i, l,
-      trying, dim, mindim, F, R, count, rt0;
+      trying, dim, mindim, F, R, count, rt0, idmat;
 
    rt0:=Runtime ();
    if not SMTX.IsMTXModule(module) or not SMTX.IsIrreducible(module) then
@@ -1546,6 +1541,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
       coefflist:=M[2];
       pol:=M[3];
       M:=M[1];
+      idmat:=M^0;
 
       Info(InfoMeatAxe,2,"Evaluated characteristic polynomial. Time = ",
            Runtime()-rt0,".");
@@ -1572,9 +1568,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
          if trying and deg <= mindim then
             i:=1;
             while i <= l and trying do
-               mat:=Value (fac[i], M,M^0);
-               MakeImmutable(mat);
-               ConvertToMatrixRep(mat,F);
+               mat:=Value (fac[i], M,idmat);
                Info(InfoMeatAxe,2,"Evaluated matrix on factor. Time = ",
                     Runtime()-rt0,".");
                N:=NullspaceMat(mat);
@@ -2234,7 +2228,7 @@ end;
 ## composition factor.
 ##
 SMTX_Distinguish:=function ( cf, i )
-   local el, genpair, ngens, orig_ngens, mat, matsi, mats, M,
+   local el, genpair, ngens, orig_ngens, mat, matsi, mats, M, idmat,
          dimi, dim, F, fac, sfac, p, q, oldp, found, extdeg, j, k,
          lcf, lf, x, y, wno, deg, trying, N, fact, R;
 
@@ -2245,6 +2239,7 @@ SMTX_Distinguish:=function ( cf, i )
    R:=PolynomialRing (F);
    matsi:=ShallowCopy(cf[i][1].generators);
    dimi:=SMTX.Dimension (cf[i][1]);
+   idmat:=matsi[1]^0;
 
    #First check that the existing nullspace has dim. 1 over centralising field.
    SMTX.GoodElementGModule (cf[i][1]);
@@ -2263,14 +2258,9 @@ SMTX_Distinguish:=function ( cf, i )
             ngens:=ngens + 1;
             mats[ngens]:=mats[genpair[1]] * mats[genpair[2]];
          od;
-         M:=ImmutableMatrix(F, NullMat (dim, dim, F) );
-         for k in [1..ngens] do
-            M:=M + el[2][k] * mats[k];
-         od;
+         M:=ImmutableMatrix(F,Sum([1..ngens], k -> el[2][k] * mats[k]));
          ngens:=orig_ngens;
-         mat:=Value (fact, M,M^0);
-         MakeImmutable(mat);
-         ConvertToMatrixRep(mat,F);
+         mat:=Value (fact, M,idmat);
          if RankMat (mat) < dim then
             found:=false;
             Info(InfoMeatAxe,2,"Current element failed on factor ", j);
@@ -2304,10 +2294,7 @@ SMTX_Distinguish:=function ( cf, i )
       el[2]:=[];
       for j in [1..ngens] do el[2][j]:=Random (F); od;
       #First evaluate on cf[i][1].
-      M:=ImmutableMatrix(F, NullMat (dimi, dimi, F) );
-      for k in [1..ngens] do
-         M:=M + el[2][k] * matsi[k];
-      od;
+      M:=ImmutableMatrix(F,Sum([1..ngens], k ->  el[2][k] * matsi[k]));
       p:=CharacteristicPolynomialMatrixNC (F,M,1);
       #That is necessary in case p is defined over a smaller field that F.
       oldp:=p;
@@ -2330,10 +2317,8 @@ SMTX_Distinguish:=function ( cf, i )
          if trying and deg <= extdeg then
             j:=1;
             while j <= lf and trying do
-               mat:=Value (fac[j], M,M^0);
-               MakeImmutable(mat);
-               ConvertToMatrixRep(mat,F);
-               N:=NullspaceMat (mat);
+               mat:=Value(fac[j], M,idmat);
+               N:=NullspaceMat(mat);
                if Length (N) = extdeg then
                   trying:=false;
                   SMTX.SetAlgEl(cf[i][1], el);
@@ -2369,13 +2354,8 @@ SMTX_Distinguish:=function ( cf, i )
                   ngens:=ngens + 1;
                   mats[ngens]:=mats[genpair[1]] * mats[genpair[2]];
                od;
-               M:=ImmutableMatrix(F, NullMat (dim, dim, F) );
-               for k in [1..ngens] do
-                  M:=M + el[2][k] * mats[k];
-               od;
-               mat:=Value (fact, M,M^0);
-               MakeImmutable(mat);
-               ConvertToMatrixRep(mat,F);
+               M:=ImmutableMatrix(F,Sum([1..ngens], k -> el[2][k] * mats[k]));
+               mat:=Value (fact, M,idmat);
                if RankMat (mat) < dim then
                   found:=false;
                   Info(InfoMeatAxe,2,"Failed on factor ", j);
@@ -2422,10 +2402,8 @@ SMTX_MinimalSubGModule:=function ( module, cf, i )
       ngens:=ngens + 1;
       mats[ngens]:=mats[genpair[1]] * mats[genpair[2]];
    od;
-   M:=ImmutableMatrix(F, NullMat (dim, dim, F) );
-   for k in [1..ngens] do
-      M:=M + el[2][k] * mats[k];
-   od;
+   
+   M:=ImmutableMatrix(F,Sum([1..ngens], k -> el[2][k] * mats[k]));
    #Now throw away extra generators of module
    for k in [orig_ngens + 1..ngens] do
       Unbind (mats[k]);
@@ -2518,10 +2496,7 @@ SMTX_IsomorphismComp:=function (module1, module2, action)
       ngens:=ngens + 1;
       matrices2[ngens]:=matrices2[genpair[1]] * matrices2[genpair[2]];
    od;
-   M:=ImmutableMatrix(F, NullMat(dim, dim, F) );
-   for i in [1..ngens] do
-      M:=M + el[2][i] * matrices2[i];
-   od;
+   M:=ImmutableMatrix(F,Sum([1..ngens], i -> el[2][i] * matrices2[i]));
    # Having done that, we no longer want the extra generators of module2, 
    # so we throw them away again.
    for i in [orig_ngens + 1..ngens] do
@@ -2659,10 +2634,7 @@ SMTX_Homomorphisms:= function (m1, m2)
       ngens:=ngens + 1;
       mats2[ngens]:=mats2[genpair[1]] * mats2[genpair[2]];
    od;
-   mat:=ImmutableMatrix(F, NullMat(dim2, dim2, F) );
-   for i in [1..ngens] do
-      mat:=mat + el[2][i] * mats2[i];
-   od;
+   mat:=ImmutableMatrix(F,Sum([1..ngens], i -> el[2][i] * mats2[i]));
    # Having done that, we no longer want the extra generators of m2,
    # so we throw them away again.
    for i in [orig_ngens + 1..ngens] do
@@ -2672,8 +2644,6 @@ SMTX_Homomorphisms:= function (m1, m2)
 
    fac:=SMTX.AlgElCharPolFac (m1);
    mat:=Value (fac, mat,mat^0);
-   MakeImmutable(mat);
-   ConvertToMatrixRep(mat,F);
    Info(InfoMeatAxe,2,"Calculating nullspace for second module.");
    N:=NullspaceMat (mat);
    imlen:=Length (N);
@@ -2830,13 +2800,9 @@ SMTX_Homomorphisms:= function (m1, m2)
    fi;
    N:=NullspaceMat(rels);
    ans:=[];
-   for k in [1..Length (N)] do
-      vec:=N[k];
-      mat:=ImmutableMatrix(F, NullMat (dim1, dim2, F) );
-      for i in [1..imlen] do
-         mat:=mat + vec[i] * imbases[i];
-      od;
-      ans[k]:=mat;
+   for vec in N do
+      mat:=ImmutableMatrix(F, Sum([1..imlen], i -> vec[i] * imbases[i]));
+      Add(ans, mat);
    od;
 
    return ans;
@@ -2987,8 +2953,7 @@ SMTX_Homomorphism:=function(module1, module2, mat)
     Error("matrix has wrong size for a homomorphism");
   fi;
   #Check if it is a homorphism
-  MakeImmutable(mat);
-  ConvertToMatrixRep(mat,F);
+  mat:=ImmutableMatrix(F,mat);
   for i in [1..ng] do
     for j in [1..dim1] do
       if gens1[i][j] * mat <> mat[j] * gens2[i] then
@@ -3390,7 +3355,7 @@ SMTX_SpanOfMinimalSubGModules:=function (m1, m2)
      mat:=Concatenation(mat,homs[i]);
    od;
    TriangulizeMat(mat);
-   MakeImmutable(mat);
+   mat:=ImmutableMatrix(m1.field,mat);
    return mat;
 end;
 SMTX.SpanOfMinimalSubGModules:=SMTX_SpanOfMinimalSubGModules;
@@ -3407,7 +3372,7 @@ local cf, mat, i;
      mat:=Concatenation(mat,SMTX_SpanOfMinimalSubGModules(cf[i],module));
    od;
    TriangulizeMat(mat);
-   MakeImmutable(mat);
+   mat:=ImmutableMatrix(module.field,mat);
    return mat;
 end;
 SMTX.BasisSocle:=SMTX_BasisSocle;
@@ -3535,8 +3500,7 @@ SMTX_InvariantBilinearForm:=function ( module  )
        SMTX.SetInvariantBilinearForm(module, fail);
        return fail; 
    fi;
-   ConvertToMatrixRep(iso,module.field);
-   MakeImmutable(iso);
+   iso:=ImmutableMatrix(module.field, iso);
    SMTX.SetInvariantBilinearForm(module, iso);
    return iso;
 end;
@@ -3547,8 +3511,7 @@ SMTX.MatrixUnderFieldAuto:=function(matrix, r)
 # raise every component of matrix to r-th power
   local mat;
   mat:=List( matrix, x -> List(x, y->y^r) );
-  ConvertToMatrixRep(mat, GF(r^2));
-  MakeImmutable(mat);
+  mat:=ImmutableMatrix(GF(r^2), mat);
   return mat;
 end;
 
@@ -3610,8 +3573,7 @@ SMTX_InvariantSesquilinearForm:=function ( module  )
      Error("Form does not seem to be of the right kind (not (q-1)st root)!");
    fi;
    iso:=Z(q)^(l/(r-1)) * iso;
-   ConvertToMatrixRep(iso,GF(q));
-   MakeImmutable(iso);
+   iso:=ImmutableMatrix(GF(q), iso);
    SMTX.SetInvariantSesquilinearForm(module, iso);
    return iso;
 end;
@@ -3681,8 +3643,7 @@ SMTX_InvariantQuadraticForm:=function ( module  )
          qf[j][i]:=qf[i][j] + qf[j][i];
          qf[i][j]:=z;
        od; od;
-       ConvertToMatrixRep(qf,f);
-       MakeImmutable(qf);
+       qf:=ImmutableMatrix(f,qf);
        SMTX.SetInvariantQuadraticForm(module, qf);
        return qf;
      fi;
