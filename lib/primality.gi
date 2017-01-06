@@ -981,9 +981,9 @@ function(N)
       AddSet(Primes2,N);
       AddSet(PrimesProofs,[N,ret]);
     else
-          Info(InfoPrimeInt, 1,
-         "IsPrimeInt: probably prime, but not proven: ", N);
-          AddSet( ProbablePrimes2, N );
+      Info(InfoPrimeInt, 1,
+           "IsPrimeInt: probably prime, but not proven: ", N);
+      AddSet( ProbablePrimes2, N );
     fi;
     return true;
   fi;

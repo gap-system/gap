@@ -318,7 +318,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
           i := i + 7;
       od;
-      
+
       # Now is a good time to see if the method is already there 
       if REREADING then
           replace := false;

@@ -472,9 +472,9 @@ local out,w,w0,i;
     PrintTo(out,s," ");
     for i in [1..w] do
       if v>0 then
-	PrintTo(out,"#");
+        PrintTo(out,"#");
       else
-	PrintTo(out," ");
+        PrintTo(out," ");
       fi;
       v:=v-1;
     od;

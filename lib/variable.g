@@ -179,10 +179,10 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
       INFO_DEBUG( 1,
           "please use `BindGlobal' for the family object ",
           value!.NAME, ", not `InstallValue'" );
-   fi;
-   if TNUM_OBJ_INT(value) in UNCLONEABLE_TNUMS then
+    fi;
+    if TNUM_OBJ_INT(value) in UNCLONEABLE_TNUMS then
        Error("InstallValue: value cannot be immediate, boolean or character");
-   fi;
+    fi;
     CLONE_OBJ (gvar, value);
 end);
 

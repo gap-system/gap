@@ -706,7 +706,7 @@ InstallGlobalFunction( NewObjectMarker, function()
   return marks;
 end);
 
-InstallGlobalFunction( MarkObject, function(marks, obj)
+InstallGlobalFunction(MarkObject, function(marks, obj)
   local id, res;
   id := MASTER_POINTER_NUMBER(obj);
   if id > Length(marks.marks) then

@@ -554,6 +554,7 @@ InstallMethod( \+,
     "for `-infinity' and `-infinity'",
     IsIdenticalObj, [ IsNegInfinity, IsNegInfinity ], function(x,y) return -infinity; end );
 
+
 #############################################################################
 ##
 #P  IsIntegralCyclotomic( <obj> ) . . . . . . . . . . .  integral cyclotomics

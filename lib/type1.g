@@ -907,7 +907,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
     local obj, type, flags, attr, val, i, extra,  nflags;
     obj := arg[1];
     type := arg[2];
-    flags := FlagsType( type);
+    flags := FlagsType(type);
     extra := [];
     
     if not IS_SUBSET_FLAGS(
@@ -953,14 +953,14 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
                     flags , 
                     DataType(type)), obj);
         else
-            Objectify( type, obj);
+            Objectify( type, obj );
         fi;
     fi;
     for i in [1,3..LEN_LIST(extra)-1] do
         if (Tester(extra[i])(obj)) then
-	  INFO_OWA( "#W  Supplied type has tester of ",NAME_FUNC(extra[i]),
-		    "with non-standard setter\n" );
-	  ResetFilterObj(obj, Tester(extra[i]));
+            INFO_OWA( "#W  Supplied type has tester of ",NAME_FUNC(extra[i]),
+                      "with non-standard setter\n" );
+            ResetFilterObj(obj, Tester(extra[i]));
 #T If there is an immediate method relying on an attribute
 #T whose tester is set to `true' in `type'
 #T and that has a special setter
@@ -974,4 +974,3 @@ end );
 #############################################################################
 ##
 #E
-
