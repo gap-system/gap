@@ -2325,7 +2325,7 @@ void            IntrListExprBegin (
         old = VAL_GVAR( Tilde );
         if ( old != 0 ) { PushObj( old ); }
         else            { PushVoidObj();  }
-        AssGVar( Tilde, list );
+        AssGVarUnsafe( Tilde, list );
     }
 
     /* push the list                                                       */
@@ -2398,7 +2398,7 @@ void            IntrListExprEnd (
     if ( top ) {
         list = PopObj();
         old = PopVoidObj();
-        AssGVar( Tilde, old );
+        AssGVarUnsafe( Tilde, old );
         PushObj( list );
     }
 
@@ -2538,7 +2538,7 @@ void            IntrRecExprBegin (
         old = VAL_GVAR( Tilde );
         if ( old != 0 ) { PushObj( old ); }
         else            { PushVoidObj();  }
-        AssGVar( Tilde, record );
+        AssGVarUnsafe( Tilde, record );
     }
 
     /* push the record                                                     */
@@ -2621,7 +2621,7 @@ void            IntrRecExprEnd (
     if ( top ) {
         record = PopObj();
         old = PopVoidObj();
-        AssGVar( Tilde, old );
+        AssGVarUnsafe( Tilde, old );
         PushObj( record );
     }
 }

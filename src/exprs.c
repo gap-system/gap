@@ -1087,13 +1087,13 @@ Obj             EvalListTildeExpr (
     list = ListExpr1( expr );
 
     /* assign the list to '~'                                              */
-    AssGVar( Tilde, list );
+    AssGVarUnsafe( Tilde, list );
 
     /* evaluate the subexpressions into the list value                     */
     ListExpr2( list, expr );
 
     /* restore old value of '~'                                            */
-    AssGVar( Tilde, tilde );
+    AssGVarUnsafe( Tilde, tilde );
 
     /* return the list value                                               */
     return list;
@@ -1441,13 +1441,13 @@ Obj             EvalRecTildeExpr (
     rec = RecExpr1( expr );
 
     /* assign the record value to the variable '~'                         */
-    AssGVar( Tilde, rec );
+    AssGVarUnsafe( Tilde, rec );
 
     /* evaluate the subexpressions into the record value                   */
     RecExpr2( rec, expr );
 
     /* restore the old value of '~'                                        */
-    AssGVar( Tilde, tilde );
+    AssGVarUnsafe( Tilde, tilde );
 
     /* return the record value                                             */
     return rec;
