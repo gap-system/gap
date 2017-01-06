@@ -753,8 +753,6 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     return C;
 end );
 
-BindGlobal("PG_EMPTY_OPT",rec());
-
 InstallOtherMethod( ClosureGroup,"permgroup, elements, options",
     true,
     [ IsPermGroup, IsList and IsPermCollection, IsRecord ], 0,
@@ -769,13 +767,13 @@ end );
 InstallMethod( ClosureGroup, "permgroup, element",true,
   [ IsPermGroup, IsPerm ], 0,
 function( G, g )
-  return DoClosurePrmGp( G, [ g ], PG_EMPTY_OPT );
+  return DoClosurePrmGp( G, [ g ], rec() );
 end );
 
 InstallMethod( ClosureGroup, "permgroup, elements",true,
         [ IsPermGroup, IsList and IsPermCollection ], 0,
 function( G, gens )
-  return DoClosurePrmGp( G, gens, PG_EMPTY_OPT );
+  return DoClosurePrmGp( G, gens, rec() );
 end );
 
 InstallOtherMethod( ClosureGroup, "permgroup, element, options",true,
