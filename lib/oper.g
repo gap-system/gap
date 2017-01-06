@@ -64,6 +64,8 @@ BIND_GLOBAL( "CATS_AND_REPS", [] );
 ##
 BIND_GLOBAL( "CONSTRUCTORS", [] );
 
+BIND_GLOBAL( "IS_CONSTRUCTOR", op -> op in CONSTRUCTORS );
+
 
 #############################################################################
 ##
@@ -785,7 +787,7 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
       # The constructor has already been declared.
       # If it was not created as a constructor
       # then ask for re-declaration as an ordinary operation.
-      if not gvar in CONSTRUCTORS then
+      if not IS_CONSTRUCTOR(gvar) then
         Error( "operation `", name, "' was not created as a constructor" );
       fi;
 

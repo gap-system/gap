@@ -125,7 +125,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     local   methods,  narg,  i,  k,  tmp, replace, match, j;
 
     # add the number of filters required for each argument
-    if opr in CONSTRUCTORS  then
+    if IS_CONSTRUCTOR(opr) then
         if 0 < LEN_LIST(flags)  then
             rank := rank - RankFilter( flags[ 1 ] );
         fi;

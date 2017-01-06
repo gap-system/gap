@@ -588,7 +588,7 @@ BIND_GLOBAL( "VIEW_STRING_OPERATION",    function ( op )
     class := "Operation";
     if IS_IDENTICAL_OBJ(op,IS_OBJECT) then
         class := "Filter";
-    elif op in CONSTRUCTORS then
+    elif IS_CONSTRUCTOR(op) then
         class := "Constructor";
     elif IsFilter(op) then
         class := "Filter";
