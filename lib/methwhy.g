@@ -125,7 +125,7 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
     Error("usage: ApplicableMethodTypes(<opr>,<arglist>[,<verbosity>[,<nr>]])");
   fi;
   oper:=arg[1];
-  isconstructor:=oper in CONSTRUCTORS;
+  isconstructor:=IS_CONSTRUCTOR(oper);
   obj:=arg[2];
   if Length(arg)>2 then
     verbos:=arg[3];
@@ -243,7 +243,7 @@ local i,l;
   fi;
   l:=ShallowCopy(arg[2]);
   for i in [1..Length(l)] do
-    if i=1 and arg[1] in CONSTRUCTORS then
+    if i=1 and IS_CONSTRUCTOR(arg[1]) then
       l[i]:=l[i];
     else
       l[i]:=TypeObj(l[i]);

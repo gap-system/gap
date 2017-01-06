@@ -125,7 +125,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     local   methods,  narg,  i,  k,  tmp, replace, match, j;
 
     # add the number of filters required for each argument
-    if opr in CONSTRUCTORS  then
+    if IS_CONSTRUCTOR(opr) then
         if 0 < LEN_LIST(flags)  then
             rank := rank - RankFilter( flags[ 1 ] );
         fi;
@@ -826,8 +826,8 @@ BIND_GLOBAL( "KeyDependentOperation",
             if LEN_LIST( known ) < i or known[i] <> key then
                 known{ [ i + 2 .. LEN_LIST( known ) + 2 ] }:=
                     known{ [ i .. LEN_LIST( known ) ] };
-                known[  i  ]:= Immutable(key);
-                known[ i+1 ]:= Immutable(erg);
+                known[  i  ]:= IMMUTABLE_COPY_OBJ(key);
+                known[ i+1 ]:= IMMUTABLE_COPY_OBJ(erg);
             fi;
         fi;
         return known[ i+1 ];
@@ -868,8 +868,8 @@ BIND_GLOBAL( "KeyDependentOperation",
             if LEN_LIST( known ) < i or known[i] <> key then
                 known{ [ i + 2 .. LEN_LIST( known ) + 2 ] }:=
                 known{ [ i .. LEN_LIST( known ) ] };
-                known[  i  ]:= Immutable(key);
-                known[ i+1 ]:= Immutable(obj);
+                known[  i  ]:= IMMUTABLE_COPY_OBJ(key);
+                known[ i+1 ]:= IMMUTABLE_COPY_OBJ(obj);
             fi;
         end );
 end );

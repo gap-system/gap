@@ -64,6 +64,8 @@ BIND_GLOBAL( "CATS_AND_REPS", [] );
 ##
 BIND_GLOBAL( "CONSTRUCTORS", [] );
 
+BIND_GLOBAL( "IS_CONSTRUCTOR", op -> op in CONSTRUCTORS );
+
 
 #############################################################################
 ##
@@ -207,17 +209,17 @@ IGNORE_IMMEDIATE_METHODS := false;
 
 #############################################################################
 ##
-#F  INSTALL_IMMEDIATE_METHOD( <oper>, <name>, <filter>, <rank>, <method> )
+#F  INSTALL_IMMEDIATE_METHOD( <oper>, <info>, <filter>, <rank>, <method> )
 ##
 ##  <ManSection>
-##  <Func Name="INSTALL_IMMEDIATE_METHOD" Arg='oper, name, filter, rank, method'/>
+##  <Func Name="INSTALL_IMMEDIATE_METHOD" Arg='oper, info, filter, rank, method'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
 ##
 BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
-    function( oper, desc, filter, rank, method )
+    function( oper, info, filter, rank, method )
 
     local   flags,
             relev,
@@ -318,14 +320,14 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
           i := i + 7;
       od;
-      
+
       # Now is a good time to see if the method is already there 
       if REREADING then
           replace := false;
           k := i;
           while k < LEN_LIST(IMMEDIATES[j]) and 
             rank = IMMEDIATES[j][k+5] do
-              if desc = IMMEDIATES[j][k+7] and
+              if info = IMMEDIATES[j][k+7] and
                  oper = IMMEDIATES[j][k+1] and
                  FLAGS_FILTER( filter ) = IMMEDIATES[j][k+4] then
                   replace := true;
@@ -349,7 +351,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       IMMEDIATES[j][i+4] := FLAGS_FILTER( filter );
       IMMEDIATES[j][i+5] := rank;
       IMMEDIATES[j][i+6] := LEN_LIST( IMMEDIATE_METHODS );
-      IMMEDIATES[j][i+7] := IMMUTABLE_COPY_OBJ(desc);
+      IMMEDIATES[j][i+7] := IMMUTABLE_COPY_OBJ(info);
 
     od;
 
@@ -785,7 +787,7 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
       # The constructor has already been declared.
       # If it was not created as a constructor
       # then ask for re-declaration as an ordinary operation.
-      if not gvar in CONSTRUCTORS then
+      if not IS_CONSTRUCTOR(gvar) then
         Error( "operation `", name, "' was not created as a constructor" );
       fi;
 

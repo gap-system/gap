@@ -96,6 +96,8 @@ InstallValue(CompositeSPP2,
   7306561, 7820201, 8036033, 8095447, 8725753, 9006401,
   9056501, 9371251, 9729301, 9863461 ]);
 
+MakeImmutable(CompositeSPP2);
+
 ##############################################################################
 ##
 ##  Caches - install flushable values into the cache if they are not already
@@ -979,9 +981,9 @@ function(N)
       AddSet(Primes2,N);
       AddSet(PrimesProofs,[N,ret]);
     else
-          Info(InfoPrimeInt, 1,
-         "IsPrimeInt: probably prime, but not proven: ", N);
-          AddSet( ProbablePrimes2, N );
+      Info(InfoPrimeInt, 1,
+           "IsPrimeInt: probably prime, but not proven: ", N);
+      AddSet( ProbablePrimes2, N );
     fi;
     return true;
   fi;

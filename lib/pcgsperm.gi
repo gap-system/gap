@@ -1125,7 +1125,7 @@ InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     # routines).
     pcgs:=PcgsElementaryAbelianSeries(G);
     if not IsPcgs( pcgs )  then
-	return fail;
+        return fail;
     fi;
 
     # Construct the pcp group <A> and the bijection between <A> and <G>.

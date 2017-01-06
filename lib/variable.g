@@ -179,10 +179,10 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
       INFO_DEBUG( 1,
           "please use `BindGlobal' for the family object ",
           value!.NAME, ", not `InstallValue'" );
-   fi;
-   if TNUM_OBJ_INT(value) in UNCLONEABLE_TNUMS then
-       Error("InstallValue: value cannot be immediate, boolean or character");
-   fi;
+    fi;
+    if TNUM_OBJ_INT(value) in UNCLONEABLE_TNUMS then
+       Error("InstallValue: <value> cannot be immediate, boolean or character");
+    fi;
     CLONE_OBJ (gvar, value);
 end);
 
@@ -210,7 +210,7 @@ BIND_GLOBAL( "InstallFlushableValue", function( gvar, value )
     local initval;
 
     if not ( IS_LIST( value ) or IS_REC( value ) ) then
-      Error( "<value> must be a list or a record" );
+      Error( "InstallFlushableValue: <value> must be a list or a record" );
     fi;
 
     # Make a structural copy of the initial value.

@@ -403,7 +403,7 @@ InstallMethod( ViewObj,
 ##
 #V  DEFAULTVIEWSTRING . . . . . . . . . default string returned by ViewString
 ##
-BIND_GLOBAL("DEFAULTVIEWSTRING", "<object>");
+BIND_GLOBAL("DEFAULTVIEWSTRING", MakeImmutable("<object>"));
 
 
 #############################################################################
@@ -607,7 +607,7 @@ end );
 ##
 #V  DEFAULTDISPLAYSTRING . . . . . . default string returned by DisplayString
 ##
-BIND_GLOBAL("DEFAULTDISPLAYSTRING", "<object>\n");
+BIND_GLOBAL("DEFAULTDISPLAYSTRING", MakeImmutable("<object>\n"));
 
 
 #############################################################################
@@ -706,7 +706,7 @@ InstallGlobalFunction( NewObjectMarker, function()
   return marks;
 end);
 
-InstallGlobalFunction( MarkObject, function(marks, obj)
+InstallGlobalFunction(MarkObject, function(marks, obj)
   local id, res;
   id := MASTER_POINTER_NUMBER(obj);
   if id > Length(marks.marks) then

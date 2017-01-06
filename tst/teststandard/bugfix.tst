@@ -8,7 +8,7 @@
 gap> START_TEST("bugfixes test");
 gap> DeclareGlobalVariable("foo73");
 gap> InstallValue(foo73,true);
-Error, InstallValue: value cannot be immediate, boolean or character
+Error, InstallValue: <value> cannot be immediate, boolean or character
 
 # Reported by Sohail Iqbal on 2008/10/15, added by AK on 2010/10/03
 gap> f:=FreeGroup("s","t");; s:=f.1;; t:=f.2;;

@@ -101,11 +101,6 @@ BIND_GLOBAL( "Tester", TESTER_FILTER );
 
 
 
-
-
-
-
-
 #############################################################################
 ##
 #F  InstallTrueMethodNewFilter( <to>, <from> )
