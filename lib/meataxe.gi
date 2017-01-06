@@ -24,7 +24,6 @@ local l,f,dim,m;
       Error("matrices and field do not fit together");
   fi;
   l:=List(l,i->ImmutableMatrix(f,i));
-  MakeImmutable(l);
 
   if ForAny(l,i->Length(i)<>Length(i[1])) or
     Length(Set(List(l,Length)))>1 then
@@ -42,7 +41,7 @@ local l,f,dim,m;
     m.smashMeataxe:=rec(isZeroGens:=true);
   fi;
   m.dimension:=dim;
-  m.generators:=l;
+  m.generators:=MakeImmutable(l);
   m.IsOverFiniteField:= Size(f)<>infinity and IsFFECollCollColl(l);
   return m;
 end);
