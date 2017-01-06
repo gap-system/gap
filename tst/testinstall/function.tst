@@ -156,4 +156,24 @@ gap> f := ({x,y...} -> [x,y]);
 function( x, y... ) ... end
 gap> f(2,3);
 [ 2, [ 3 ] ]
+gap> function(a,a) end;
+Syntax error: Name used for two arguments in stream:1
+function(a,a) end;
+           ^
+gap> function(a,b,a) end;
+Syntax error: Name used for two arguments in stream:1
+function(a,b,a) end;
+             ^
+gap> function(a,b) local c,c; end;
+Syntax error: Name used for two locals in stream:1
+function(a,b) local c,c; end;
+                      ^
+gap> function(a,b) local c,b,c; end;
+Syntax error: Name used for argument and local in stream:1
+function(a,b) local c,b,c; end;
+                      ^
+gap> function(a,b) local b,c,b,c; end;
+Syntax error: Name used for argument and local in stream:1
+function(a,b) local b,c,b,c; end;
+                    ^
 gap> STOP_TEST("function.tst", 1);
