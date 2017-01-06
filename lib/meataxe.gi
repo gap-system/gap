@@ -3066,11 +3066,8 @@ mats:=m.generators;
   one:=One(F);
   b:= IdentityMat(SMTX.Dimension(m),SMTX.Field(m) );
   ConvertToMatrixRep(b);
-  # denombasis: Basis des Kerns
+  # denombasis: basis of the kernel
   m.smashMeataxe.denombasis:=[];
-  # csbasis: Basis des Moduls
-  #m.smashMeataxe.csbasis:=b;
-
   # fakbasis: Urbilder der Basis, bzgl. derer csbasis angegeben wird
   # the first <dimension> vectors of <fakbasis> are the right ones.
   m.smashMeataxe.fakbasis:=b;
@@ -3086,18 +3083,11 @@ mats:=m.generators;
       m:=List(Concatenation(m.smashMeataxe.denombasis,
 		      m.smashMeataxe.fakbasis{[1..SMTX.Dimension(m)]}),
 		      ShallowCopy);
-                 #List(m.smashMeataxe.csbasis, i->i*m.smashMeataxe.fakbasis));
       TriangulizeMat(m);
       m:=ImmutableMatrix(F,m);
-#      m:=Filtered(m,i->i<>Zero(i));
-#if ForAny(m,i->i=Zero(i)) then
-#  Error("zero!");
-#fi;
-#Assert(1,ForAll(m,i->ForAll(mats,j->SolutionMat(m,i*j)<>fail)));
       Add(ser,m);
     else
       b:=SMTX.Subbasis(m);
-#Assert(1,ForAll(b,i->ForAll(m.generators,j->SolutionMat(b,i*j)<>fail)));
       s:=SMTX.InducedAction(m,b,3);
       q:=s[2];
       b:=s[3];
@@ -3107,15 +3097,11 @@ mats:=m.generators;
       Info(InfoMeatAxe,1,"chopped ",SMTX.Dimension(s),"\\", SMTX.Dimension(q));
       s.smashMeataxe.denombasis:=m.smashMeataxe.denombasis;
 
-      #s.smashMeataxe.csbasis:= IdentityMat(SMTX.Dimension(s), SMTX.Field(s) );
       s.smashMeataxe.fakbasis:=b*m.smashMeataxe.fakbasis;
 
       q.smashMeataxe.denombasis:=Concatenation(
-        #List(m.smashMeataxe.denombasis,ShallowCopy),
         m.smashMeataxe.denombasis,
-        #List(s.smashMeataxe.fakbasis{[1..s.dimension]},ShallowCopy));
         s.smashMeataxe.fakbasis{[1..s.dimension]});
-      #q.smashMeataxe.csbasis:= IdentityMat(SMTX.Dimension(q), SMTX.Field(q) );
       q.smashMeataxe.fakbasis:=List([SMTX.Dimension(s)+1..Length(b)],
                        i->b[i] * m.smashMeataxe.fakbasis);    
       ConvertToMatrixRep(q.smashMeataxe.fakbasis);
