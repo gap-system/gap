@@ -102,7 +102,7 @@ BIND_GLOBAL( "NEW_FAMILY",
     # cannot use 'Objectify', because 'IsList' may not be defined yet
     family := rec();
     SET_TYPE_COMOBJ( family, type );
-    family!.NAME            := name;
+    family!.NAME            := IMMUTABLE_COPY_OBJ(name);
     family!.REQ_FLAGS       := req_filter;
     family!.IMP_FLAGS       := imp_filter;
     family!.TYPES           := [];

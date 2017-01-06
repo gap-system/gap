@@ -3929,6 +3929,10 @@ local BLISTFT,BLISTIND;
   HEXBYTES1:=ShallowCopy(HEXBYTES);
   BLISTBYTES1:=ShallowCopy(BLISTBYTES);
   SortParallel(HEXBYTES1,BLISTBYTES1);
+  MakeImmutable(BLISTBYTES);
+  MakeImmutable(BLISTBYTES1);
+  MakeImmutable(HEXBYTES);
+  MakeImmutable(HEXBYTES1);
 end);
 
 InstallGlobalFunction(HexStringBlist,function(b)

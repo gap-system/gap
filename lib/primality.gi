@@ -96,6 +96,8 @@ InstallValue(CompositeSPP2,
   7306561, 7820201, 8036033, 8095447, 8725753, 9006401,
   9056501, 9371251, 9729301, 9863461 ]);
 
+MakeImmutable(CompositeSPP2);
+
 ##############################################################################
 ##
 ##  Caches - install flushable values into the cache if they are not already
