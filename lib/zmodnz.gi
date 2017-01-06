@@ -62,6 +62,18 @@ InstallMethod( ZmodnZObj,
     end );
 
 InstallOtherMethod( ZmodnZObj,
+    "for family of elements in Z/nZ (nonprime), and rational",
+    [ IsZmodnZObjNonprimeFamily, IsRat ],
+    function( Fam, val )
+    local m;
+    m:= Fam!.Characteristic;
+    if GcdInt( DenominatorRat( val ), m ) <> 1 then
+      return fail;
+    fi;
+    return Objectify( Fam!.typeOfZmodnZObj, [ val mod m ] );
+    end );
+
+InstallOtherMethod( ZmodnZObj,
     "for family of FFE elements, and integer",
     [ IsFFEFamily, IsInt ],
     function( Fam, residue )
@@ -278,30 +290,14 @@ InstallMethod( \+,
     "for element in Z/nZ (ModulusRep) and rational",
     [ IsZmodnZObj and IsModulusRep, IsRat ],
     function( x, y )
-    local Fam, m;
-    Fam := FamilyObj( x );
-    m:= Fam!.Characteristic;
-    if GcdInt( DenominatorRat( y ), m ) = 1 then
-      return Objectify( Fam!.typeOfZmodnZObj,
-                        [ ( x![1] + y ) mod m ] );
-    else
-      return fail;
-    fi;
+    return ZmodnZObj( FamilyObj( x ), x![1] + y );
     end );
 
 InstallMethod( \+,
     "for rational and element in Z/nZ (ModulusRep)",
     [ IsRat, IsZmodnZObj and IsModulusRep ],
     function( x, y )
-    local Fam, m;
-    Fam := FamilyObj( y );
-    m:= Fam!.Characteristic;
-    if GcdInt( DenominatorRat( x ), m ) = 1 then
-      return Objectify( Fam!.typeOfZmodnZObj,
-                        [ ( x + y![1] ) mod m ] );
-    else
-      return fail;
-    fi;
+    return ZmodnZObj( FamilyObj( y ), x + y![1] );
     end );
 
 InstallMethod( \+,
@@ -352,30 +348,14 @@ InstallMethod( \-,
     "for element in Z/nZ (ModulusRep) and rational",
     [ IsZmodnZObj and IsModulusRep, IsRat ],
     function( x, y )
-    local Fam, m;
-    Fam := FamilyObj( x );
-    m:= Fam!.Characteristic;
-    if GcdInt( DenominatorRat( y ), m ) = 1 then
-      return Objectify( Fam!.typeOfZmodnZObj,
-                        [ ( x![1] - y ) mod m ] );
-    else
-      return fail;
-    fi;
+    return ZmodnZObj( FamilyObj( x ), x![1] - y );
     end );
 
 InstallMethod( \-,
     "for rational and element in Z/nZ (ModulusRep)",
     [ IsRat, IsZmodnZObj and IsModulusRep ],
     function( x, y )
-    local Fam, m;
-    Fam := FamilyObj( y );
-    m:= Fam!.Characteristic;
-    if GcdInt( DenominatorRat( x ), m ) = 1 then
-      return Objectify( Fam!.typeOfZmodnZObj,
-                        [ ( x - y![1] ) mod m ] );
-    else
-      return fail;
-    fi;
+    return ZmodnZObj( FamilyObj( y ), x - y![1] );
     end );
 
 InstallMethod( \-,
@@ -426,30 +406,14 @@ InstallMethod( \*,
     "for element in Z/nZ (ModulusRep) and rational",
     [ IsZmodnZObj and IsModulusRep, IsRat ],
     function( x, y )
-    local Fam, m;
-    Fam := FamilyObj( x );
-    m:= Fam!.Characteristic;
-    if GcdInt( DenominatorRat( y ), m ) = 1 then
-      return Objectify( Fam!.typeOfZmodnZObj,
-                        [ ( x![1] * y ) mod m ] );
-    else
-      return fail;
-    fi;
+    return ZmodnZObj( FamilyObj( x ), x![1] * y );
     end );
 
 InstallMethod( \*,
     "for rational and element in Z/nZ (ModulusRep)",
     [ IsRat, IsZmodnZObj and IsModulusRep ],
     function( x, y )
-    local Fam, m;
-    Fam := FamilyObj( y );
-    m:= Fam!.Characteristic;
-    if GcdInt( DenominatorRat( x ), m ) = 1 then
-      return Objectify( Fam!.typeOfZmodnZObj,
-                        [ ( x * y![1] ) mod m ] );
-    else
-      return fail;
-    fi;
+    return ZmodnZObj( FamilyObj( y ), x * y![1] );
     end );
 
 InstallMethod( \*,
@@ -521,30 +485,14 @@ InstallMethod( \/,
     "for element in Z/nZ (ModulusRep) and rational",
     [ IsZmodnZObj and IsModulusRep, IsRat ],
     function( x, y )
-    local Fam, m;
-    Fam := FamilyObj( x );
-    m:= Fam!.Characteristic;
-    if GcdInt( NumeratorRat( y ), m ) = 1 then
-      return Objectify( Fam!.typeOfZmodnZObj,
-                        [ ( x![1] / y ) mod m ] );
-    else
-      return fail;
-    fi;
+    return ZmodnZObj( FamilyObj( x ), x![1] / y );
     end );
 
 InstallMethod( \/,
     "for rational and element in Z/nZ (ModulusRep)",
     [ IsRat, IsZmodnZObj and IsModulusRep ],
     function( x, y )
-    local Fam, m;
-    Fam := FamilyObj( y );
-    m:= Fam!.Characteristic;
-    if GcdInt( DenominatorRat( x ), m ) = 1 then
-      return Objectify( Fam!.typeOfZmodnZObj,
-                        [ ( x / y![1] ) mod m ] );
-    else
-      return fail;
-    fi;
+    return ZmodnZObj( FamilyObj( y ), x / y![1] );
     end );
 
 InstallMethod( \/,
