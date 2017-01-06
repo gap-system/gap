@@ -97,9 +97,8 @@ InstallMethod( ZmodnZObj,
     function( residue, n )
     if n in PRIMES_COMPACT_FIELDS then
       return residue*Z(n)^0;
-    else
-      return ZmodnZObj( ElementsFamily( FamilyObj( ZmodnZ( n ) ) ), residue );
     fi;
+    return ZmodnZObj( ElementsFamily( FamilyObj( ZmodnZ( n ) ) ), residue );
     end );
 
 
@@ -216,11 +215,10 @@ InstallMethod( \<,
       return y![1] <> 0;
     elif y![1] = 0 then
       return false;
-    else
-      p:= Characteristic( x );
-      r:= PrimitiveRootMod( p );
-      return LogMod( x![1], r, p ) < LogMod( y![1], r, p );
     fi;
+    p:= Characteristic( x );
+    r:= PrimitiveRootMod( p );
+    return LogMod( x![1], r, p ) < LogMod( y![1], r, p );
     end );
 
 InstallMethod( \<,
@@ -429,7 +427,7 @@ InstallMethod( \/,
         return fail;
     fi;
     return ZmodnZObj( Fam, q );
-end );
+    end );
 
 InstallMethod( \/,
     "for integer and element in Z/nZ (ModulusRep)",
@@ -443,7 +441,7 @@ InstallMethod( \/,
         return fail;
     fi;
     return ZmodnZObj( Fam, q );
-end );
+    end );
 
 InstallMethod( \/,
     "for element in Z/nZ (ModulusRep) and rational",
@@ -843,12 +841,11 @@ InstallMethod( \in,
     res := Int( res );
     if GcdInt( res, m ) <> 1  then
         return false;
-    elif m mod 2 <> 0  and  IsPrimePowerInt( m )  then
-        return LogMod( res, PrimitiveRootMod( m ), m ) mod
-               ( Phi( m ) / Size( G ) ) = 0;
-    else
+    elif IsEvenInt(m) or not IsPrimePowerInt( m ) then
         TryNextMethod();
     fi;
+    return LogMod( res, PrimitiveRootMod( m ), m ) mod
+           ( Phi( m ) / Size( G ) ) = 0;
 end );
 
 
@@ -858,11 +855,10 @@ end );
 #M  Enumerator( <R> )  . . . . . . . . . . . . . . . . enumerator for Z / n Z
 ##
 BindGlobal( "ElementNumber_ZmodnZ", function( enum, nr )
-    if nr <= enum!.size then
-      return Objectify( enum!.type, [ nr - 1 ] );
-    else
+    if nr > enum!.size then
       Error( "<enum>[", nr, "] must have an assigned value" );
     fi;
+    return Objectify( enum!.type, [ nr - 1 ] );
     end );
 
 BindGlobal( "NumberElement_ZmodnZ", function( enum, elm )
