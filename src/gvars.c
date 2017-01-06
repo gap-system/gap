@@ -174,6 +174,29 @@ Obj             ErrorMustHaveAssObjHandler (
 
 static Obj REREADING;                   /* Copy of GAP global variable REREADING */
 
+/****************************************************************************
+**
+** AssGVarUnsafe(<gvar>,<val>)
+**
+** Assign to a global variable with no safety checks
+** - Does not check if the variable is readonly
+** - Does not check if it is automatic, has internal copies or fopies
+**
+** The current main use of this function is to handle the `~` variable,
+** both for speed and because it is marked read-only to avoid users editing
+** it.
+*/
+
+void            AssGVarUnsafe (
+    UInt                gvar,
+    Obj                 val )
+{
+    /* assign the value to the global variable                             */
+    VAL_GVAR(gvar) = val;
+    CHANGED_BAG( ValGVars );
+
+}
+
 void            AssGVar (
     UInt                gvar,
     Obj                 val )
@@ -186,10 +209,16 @@ void            AssGVar (
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
             (ELM_PLIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
-        ErrorReturnVoid(
-            "Variable: '%s' is read only",
-            (Int)CSTR_STRING( ELM_PLIST(NameGVars,gvar) ), 0L,
-            "you can 'return;' after making it writable" );
+            
+        if(gvar == Tilde) {
+                ErrorMayQuit("'~' cannot be assigned",0L,0L);
+        }
+        else {
+            ErrorReturnVoid(
+                "Variable: '%s' is read only",
+                (Int)CSTR_STRING( ELM_PLIST(NameGVars,gvar) ), 0L,
+                "you can 'return;' after making it writable" );
+        }
     }
 
     /* assign the value to the global variable                             */
@@ -1134,6 +1163,8 @@ static Int PostRestore (
     /* create the global variable '~'                                      */
     Tilde = GVarName( "~" );
 
+    /* stop unauthorised changes to '~'                                    */
+    MakeReadOnlyGVar(Tilde);
 
     /* update fopies and copies                                            */
     UpdateCopyFopyInfo();

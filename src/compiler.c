@@ -2610,13 +2610,13 @@ CVar CompListTildeExpr (
     list = CompListExpr1( expr );
 
     /* assign the list to '~'                                              */
-    Emit( "AssGVar( Tilde, %c );\n", list );
+    Emit( "AssGVarUnsafe( Tilde, %c );\n", list );
 
     /* evaluate the subexpressions into the list value                     */
     CompListExpr2( list, expr );
 
     /* restore old value of '~'                                            */
-    Emit( "AssGVar( Tilde, %c );\n", tilde );
+    Emit( "AssGVarUnsafe( Tilde, %c );\n", tilde );
     if ( IS_TEMP_CVAR( tilde ) )  FreeTemp( TEMP_CVAR( tilde ) );
 
     /* return the list value                                               */
@@ -2828,13 +2828,13 @@ CVar CompRecTildeExpr (
     rec = CompRecExpr1( expr );
 
     /* assign the record value to the variable '~'                         */
-    Emit( "AssGVar( Tilde, %c );\n", rec );
+    Emit( "AssGVarUnsafe( Tilde, %c );\n", rec );
 
     /* evaluate the subexpressions into the record value                   */
     CompRecExpr2( rec, expr );
 
     /* restore the old value of '~'                                        */
-    Emit( "AssGVar( Tilde, %c );\n", tilde );
+    Emit( "AssGVarUnsafe( Tilde, %c );\n", tilde );
     if ( IS_TEMP_CVAR( tilde ) )  FreeTemp( TEMP_CVAR( tilde ) );
 
     /* return the record value                                             */
