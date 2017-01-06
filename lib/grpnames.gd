@@ -24,8 +24,8 @@
 ##
 ##  <Description>
 ##    For normal subgroups <A>U</A> and <A>V</A> of <A>G</A>,
-##    IsTrivialNormalIntersection returns
-##    true if <A>U</A> and <A>V</A> intersect trivially, and false otherwise.
+##    <Ref Oper="IsTrivialNormalIntersection"/> returns <K>true</K> if
+##    <A>U</A> and <A>V</A> intersect trivially, and <K>false</K> otherwise.
 ##    The result is undefined if either <A>U</A> or <A>V</A> is not a normal
 ##    subgroup of G.
 ##  </Description>
@@ -42,15 +42,17 @@ DeclareOperation( "IsTrivialNormalIntersection",
 ##  <Func Name="IsTrivialNormalIntersectionInList" Arg="MinNs, U, V"/>
 ##
 ##  <Description>
-##    For groups <A>U</A> and <A>V</A>, IsTrivialNormalIntersection returns
-##    false if for any group H in list <A>MinNs</A> both <A>U</A> and
-##    <A>V</A> contains the first nontrivial generator of H. Otherwise, the
-##    result is true.
-##    This operation is useful if it is already known that the intersection
+##    For groups <A>U</A> and <A>V</A>,
+##    <Ref Func="IsTrivialNormalIntersectionInList"/> returns <K>false</K>
+##    if for any group <M>H</M> in list <A>MinNs</A> both <A>U</A> and
+##    <A>V</A> contains the first nontrivial generator of <M>H</M>.
+##    Otherwise, the result is <K>true</K>.
+##    This function is useful if it is already known that the intersection
 ##    of <A>U</A> and <A>V</A> is either trivial, or contains at least one
 ##    group from <A>MinNs</A>.
 ##    For example if <A>U</A> and <A>V</A> are normal subgroups of a group
-##    G and <A>MinNs</A>=MinimalNormalSubgroups(G).
+##    <M>G</M> and
+##    <A>MinNs</A>=<Ref Attr="MinimalNormalSubgroups"/>(<M>G</M>).
 ##  </Description>
 ##  </ManSection>
 ##
@@ -65,12 +67,32 @@ DeclareGlobalFunction( "IsTrivialNormalIntersectionInList",
 ##  <Func Name="UnionIfCanEasilySortElements" Arg="L1[, L2, ... ]"/>
 ##
 ##  <Description>
-##    Return the union of <A>Li</A> if CanEasilySortElements is true for all
-##    elements of all <A>Li</A>, and the concatenation of them, otherwise.
+##    Returns the <Ref Func="Union"/> of <A>Li</A> if
+##    <Ref Prop="CanEasilySortElements"/> is <K>true</K> for all elements
+##    of all <A>Li</A>, and the <Ref Func="Concatenation"/> of them,
+##    otherwise.
 ##  </Description>
 ##  </ManSection>
 ##
 DeclareGlobalFunction( "UnionIfCanEasilySortElements", IsList );
+
+#############################################################################
+##
+#F  AddSetIfCanEasilySortElements( <list>, <object> ) . . . . generic method
+##
+##  <ManSection>
+##  <Func Name="AddSetIfCanEasilySortElements" Arg="list, obj"/>
+##
+##  <Description>
+##    Adds the <A>obj</A> to the list <A>list</A>. If
+##    <Ref Prop="CanEasilySortElements"/> is <K>true</K> for <A>list</A>
+##    and <A>list</A> is a set, then <Ref Oper="AddSet"/> is used instead
+##    of <Ref Oper="Add"/>. Does not return anything, but changes
+##    <A>list</A>.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "AddSetIfCanEasilySortElements", IsList );
 
 #############################################################################
 ##
@@ -82,11 +104,11 @@ DeclareGlobalFunction( "UnionIfCanEasilySortElements", IsList );
 ##
 ##  <Description>
 ##    Gives a normal complement to the normal subgroup <A>N</A> in <A>G</A>
-##    if exists, fail otherwise.
+##    if exists, <K>fail</K> otherwise.
 ##    In theory it finds the normal complement for infinite <A>G</A>,
-##    but can have an infinite loop if <A>G/N</A> is abelian and <A>N</A> is
-##    infinite.
-##    NormalComplementsNC does not check if <A>N</A> is a normal
+##    but can have an infinite loop if <A>G</A>/<A>N</A> is abelian and
+##    <A>N</A> is infinite.
+##    <C>NormalComplementsNC</C> does not check if <A>N</A> is a normal
 ##    subgroup of <A>G</A>.
 ##  </Description>
 ##  </ManSection>
@@ -110,8 +132,8 @@ DeclareOperation( "NormalComplementNC", [IsGroup, IsGroup]);
 ##  <Attr Name="DirectFactorsOfGroup" Arg="G"/>
 ##
 ##  <Description>
-##    A (sorted if possible) list of factors [<A>G1</A>, .., <A>Gr</A>] such
-##    that <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
+##    A (sorted if possible) list of factors [<M>G_1</M>, .., <M>G_r</M>] such
+##    that <A>G</A> = <M>G_1</M> x .. x <M>G_r</M> and none of the <M>G_i</M>
 ##    is a direct product.
 ##    If <A>G</A> is an infinite abelian group, then it returns an unsorted
 ##    list of the factors. DirectFactorsOfGroup currently cannot compute the
@@ -141,8 +163,8 @@ DeclareAttribute( "DirectFactorsOfGroup", IsGroup );
 ##
 ##  <Description>
 ##    For a finite group this function returns a list 
-##    of characteristic subgroups [<A>G1</A>, .., <A>Gr</A>] such
-##    that <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
+##    of characteristic subgroups [<M>G_1</M>, .., <M>G_r</M>] such
+##    that <A>G</A> = <M>G_1</M> x .. x <M>G_r</M> and none of the <M>G_i</M>
 ##    is a direct product of characteristic subgroups.
 ##  </Description>
 ##  </ManSection>
@@ -158,9 +180,9 @@ DeclareAttribute( "CharacteristicFactorsOfGroup", IsGroup );
 ##  <Func Name="DirectFactorsOfGroup" Arg="G, Ns, MinNs"/>
 ##
 ##  <Description>
-##    A (sorted if possible) list of factors [<A>G1</A>, .., <A>Gr</A>] such
-##    that <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
-##    is a direct product, and all the factors <A>Gi</A> are from the list
+##    A (sorted if possible) list of factors [<M>G_1</M>, .., <M>G_r</M>] such
+##    that <A>G</A> = <M>G_1</M> x .. x <M>G_r</M> and none of the <M>G_i</M>
+##    is a direct product, and all the factors <M>G_i</M> are from the list
 ##    <A>Ns</A>. The list <A>MinNs</A> is supposed to be a list such that the
 ##    intersection of any two groups from <A>Ns</A> is either trivial or
 ##    contains a group from <A>MinNs</A>.
@@ -266,14 +288,14 @@ DeclareGlobalFunction( "DirectFactorsOfGroupFromList",
 
 #############################################################################
 ##
-#A  DirectFactorsOfGroupKN( <G> ) . . . . decomposition into a direct product
+#F  DirectFactorsOfGroupByKN( <G> ) . . . decomposition into a direct product
 ##
 ##  <ManSection>
 ##  <Func Name="DirectFactorsOfGroupKN" Arg="G"/>
 ##
 ##  <Description>
-##    A (sorted if possible) list of factors [<A>G1</A>, .., <A>Gr</A>] such
-##    that <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
+##    A (sorted if possible) list of factors [<M>G_1</M>, .., <M>G_r</M>] such
+##    that <M>G</M> = <M>G_1</M> x .. x <M>G_r</M> and none of the <M>G_i</M>
 ##    is a direct product.
 ##    This is the implementation of the algorithm described in
 ##    Neeraj Kayal and Timur Nezhmetdinov, Factoring Groups Efficiently,
@@ -283,7 +305,7 @@ DeclareGlobalFunction( "DirectFactorsOfGroupFromList",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "DirectFactorsOfGroupKN", IsGroup );
+DeclareGlobalFunction( "DirectFactorsOfGroupByKN", IsGroup );
 
 #############################################################################
 ##
@@ -304,22 +326,23 @@ DeclareGlobalFunction( "DirectFactorsOfGroupKN", IsGroup );
 ##    With the <A>method</A> <Q<"all"</Q>,
 ##    SemidirectDecompositionsOfFiniteGroup computes all conjugacy classes
 ##    of complement subgroups to all normal subgroups in <A>L</A>, and
-##    returns a list [[<A>N1</A>, <A>H1</A>], .., [<A>Nr</A>, <A>Hr</A>]] of
-##    all direct or semidirect decompositions, where <A>Ni</A> are from
+##    returns a list [[<M>N1</M>, <M>H1</M>], .., [<M>Nr</M>, <M>Hr</M>]] of
+##    all direct or semidirect decompositions, where <M>Ni</M> are from
 ##    <A>L</A>.
 ##
 ##    If <A>method</A> <Q>"any"</Q> is used, then
-##    SemidirectDecompositionsOfFiniteGroup returns [ <A>N</A>, <A>H</A> ]
-##    for some nontrivial <A>N</A> in <A>L</A> if exists, and returns fail
-##    otherwise. In particular, it first looks if $<A>G</A> is defined as a
-##    nontrivial semidirect product, and if yes, then it returns the two
-##    factors. Second, it looks for a nontrivial normal Hall subgroup, and
-##    if finds any, then will compute a complement to it. Otherwise it goes
-##    through the list <A>L</A>.
+##    SemidirectDecompositionsOfFiniteGroup returns [ <M>N</M>, <M>H</M> ]
+##    for some nontrivial <M>N</M> in <A>L</A> if exists, and returns
+##    <K>fail</K> otherwise. In particular, it first looks if $<A>G</A> is
+##    defined as a nontrivial semidirect product, and if yes, then it
+##    returns the two factors. Second, it looks for a nontrivial normal
+##    Hall subgroup, and if finds any, then will compute a complement to
+##    it. Otherwise it goes through the list <A>L</A>.
 ##
 ##    The <A>method</A> <Q>"str"</Q> differs from the <A>method</A>
 ##    <Q>"any</Q> by not computing normal complement to a normal Hall
-##    subgroup <A>N</A>, and in this case returns [ <A>N</A>, <A>G/N</A> ].
+##    subgroup <M>N</M>, and in this case returns
+##    [ <M>N</M>, <M><A>G</A>/N</M> ].
 ##  </Description>
 ##  </ManSection>
 ##
@@ -333,9 +356,9 @@ DeclareGlobalFunction( "SemidirectDecompositionsOfFiniteGroup", IsGroup );
 ##  <Attr Name="SemidirectDecompositions" Arg="G"/>
 ##
 ##  <Description>
-##    A list [[<A>N1</A>, <A>H1</A>], .., [<A>Nr</A>, <A>Hr</A>]] of all
+##    A list [[<M>N_1</M>, <M>H_1</M>], .., [<M>N_r</M>, <M>H_r</M>]] of all
 ##    direct or semidirect decompositions up to conjugacy classes of
-##    <A>Hi</A>. Note that this function also recognizes direct products,
+##    <M>H_i</M>. Note that this function also recognizes direct products,
 ##    and it may take a very long time to run for particular groups.
 ##  </Description>
 ##  </ManSection>
@@ -628,7 +651,7 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  <Attr Name="StructureDescription" Arg="G"/>
 ##
 ##  <Description>
-##  The method for <Ref Func="StructureDescription"/> exhibits a structure
+##  The method for <Ref Attr="StructureDescription"/> exhibits a structure
 ##  of the given group <A>G</A> to some extent, using the strategy outlined
 ##    below. The idea is to return a possibly short string which gives some
 ##    insight in the structure of the considered group. It is intended
@@ -638,12 +661,12 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  chief factors is not described -- often not the most useful way to describe
 ##  a group.<P/>
 ##
-##  The string returned by <Ref Func="StructureDescription"/> is
+##  The string returned by <Ref Attr="StructureDescription"/> is
 ##  <B>not</B> an isomorphism invariant: non-isomorphic groups can have the
 ##  same string value, and two isomorphic groups in different representations
 ##  can produce different strings.
 ##
-##  The value returned by <Ref Func="StructureDescription"/> is a string of
+##  The value returned by <Ref Attr="StructureDescription"/> is a string of
 ##  the following form: <P/>
 ##  <Listing><![CDATA[
 ##    StructureDescription(<G>) ::=
@@ -685,20 +708,20 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##                                          ; Frattini factor group
 ##  ]]></Listing>
 ##  <P/>
-##  Note that the <Ref Func="StructureDescription"/> is only <E>one</E>
+##  Note that the <Ref Attr="StructureDescription"/> is only <E>one</E>
 ##  possible way of building up the given group from smaller pieces. <P/>
 ##
 ##  The option <Q>short</Q> is recognized - if this option is set, an
 ##  abbreviated output format is used (e.g. <C>"6x3"</C> instead of
 ##  <C>"C6 x C3"</C>). <P/>
 ##
-##  If the <Ref Func="Name"/> attribute is not bound, but
-##  <Ref Func="StructureDescription"/> is, <Ref Func="View"/> prints the
-##  value of the attribute <Ref Func="StructureDescription"/>.
+##  If the <Ref Attr="Name"/> attribute is not bound, but
+##  <Ref Attr="StructureDescription"/> is, <Ref Func="View"/> prints the
+##  value of the attribute <Ref Attr="StructureDescription"/>.
 ##  The <Ref Func="Print"/>ed representation of a group is not affected
-##  by computing a <Ref Func="StructureDescription"/>. <P/>
+##  by computing a <Ref Attr="StructureDescription"/>. <P/>
 ##
-##  The strategy used to compute a <Ref Func="StructureDescription"/> is
+##  The strategy used to compute a <Ref Attr="StructureDescription"/> is
 ##  as follows:
 ##  <P/>
 ##  <List>
@@ -740,7 +763,7 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##    <Item>
 ##      if <A>G</A> is solvable, then select a solvable normal Hall subgroup
 ##      <M>N</M>, if exists, and consider the semidirect decomposition of
-##      <M>N</M> and <M>G/N</M>,
+##      <M>N</M> and <M><A>G</A>/N</M>,
 ##    </Item>
 ##    <Mark>3.</Mark>
 ##    <Item>
@@ -750,7 +773,9 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##    </List>
 ##    The option <Q>nice</Q> is recognized. If this option is set, then all
 ##    semidirect products are computed in order to find a possibly nicer
-##    presentation. Note, that this may take a long time.
+##    presentation. Note, that this may take a very long time if <A>G</A> has
+##    many normal subgroups, e.g. if <M><A>G</A>/<A>G</A>'</M> has many cyclic
+##    factors.
 ##    If the option <Q>nice</Q> is set, then GAP would select a pair
 ##    <M>N</M>, <M>H</M> with the following preferences:
 ##    <List>
@@ -785,8 +810,8 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  <Item>
 ##    Fall back to non-splitting extensions:
 ##    If the centre or the commutator factor group is non-trivial,
-##    write <A>G</A> as Z(<A>G</A>).<A>G</A>/Z(<A>G</A>) or
-##    <A>G</A>'.<A>G</A>/<A>G</A>', respectively.
+##    write <A>G</A> as <M>Z(<A>G</A>)</M>.<M><A>G</A>/Z(<A>G</A>)</M> or
+##    <M><A>G</A>'</M>.<M><A>G</A>/<A>G</A>'</M>, respectively.
 ##    Otherwise if the Frattini subgroup is non-trivial, write <A>G</A>
 ##    as <M>\Phi</M>(<A>G</A>).<A>G</A>/<M>\Phi</M>(<A>G</A>).
 ##  </Item>
@@ -798,7 +823,7 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##    situation.
 ##  </Item>
 ##  </List>
-##  Note that <Ref Func="StructureDescription"/> is <E>not</E> intended
+##  Note that <Ref Attr="StructureDescription"/> is <E>not</E> intended
 ##  to be a research tool, but rather an educational tool. The reasons for
 ##  this are as follows:
 ##  <List>
@@ -813,7 +838,7 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##    <Mark>2.</Mark>
 ##    <Item>
 ##      In particular many <M>p</M>-groups have very <Q>similar</Q>
-##      structure, and <Ref Func="StructureDescription"/> can only
+##      structure, and <Ref Attr="StructureDescription"/> can only
 ##      exhibit a little of it. Changing this would likely make the
 ##      output not essentially easier to read than a pc presentation.
 ##    </Item>

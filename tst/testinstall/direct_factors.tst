@@ -5,6 +5,8 @@ true
 gap> U := Df[1];; V := Df[2];;
 gap> NormalComplement(D, U)=V;
 true
+gap> NormalComplement(Group((1,2),(1,2,3)), Group((1,2)));
+Error, N must be a normal subgroup of G
 gap> IsTrivialNormalIntersection(D, U, V);
 true
 gap> U := Center(D);; V := Centralizer(D, DerivedSubgroup(D));;
@@ -49,6 +51,8 @@ gap> List(DirectFactorsOfGroup(G), IdGroup);
 [ [ 8, 3 ], [ 8, 3 ] ]
 gap> List(DirectFactorsOfGroup(SmallGroup(64,226):useKN), IdGroup);
 [ [ 8, 3 ], [ 8, 3 ] ]
+gap> List(DirectFactorsOfGroupByKN(SmallGroup(8,5)), IdGroup);
+[ [ 2, 1 ], [ 2, 1 ], [ 2, 1 ] ]
 gap> D := DihedralGroup(12);; NormalSubgroups(D);;
 gap> List(DirectFactorsOfGroup(D), IdGroup);
 [ [ 6, 1 ], [ 2, 1 ] ]
@@ -59,6 +63,8 @@ gap> G := SmallGroup(48, 1);; NormalSubgroups(G);;
 gap> List(DirectFactorsOfGroup(G), IdGroup);
 [ [ 48, 1 ] ]
 gap> DirectFactorsOfGroup(Group(()));
+[ Group(()) ]
+gap> DirectFactorsOfGroupByKN(Group(()));
 [ Group(()) ]
 gap> F := FreeGroup("x","y");; x := F.1;; y := F.2;;
 gap> DirectFactorsOfGroup(F/[x*y*x^(-1)*y^(-1)]);

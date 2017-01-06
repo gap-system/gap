@@ -77,4 +77,8 @@ Error, usage: SemidirectDecompositionsOfFiniteGroup(<G> [, <Ns>] [, <mthd>])
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)(7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
 gap> Length(SemidirectDecompositions(G));
 8
+gap> F := FreeGroup("r", "s");; r := F.1;; s := F.2;;
+gap> G := F/[s^2, r^3, s*r*s*r];;
+gap> Length(SemidirectDecompositions(G));
+3
 gap> STOP_TEST("Semidirectdecompositions.tst", 10000);

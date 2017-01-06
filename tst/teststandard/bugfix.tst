@@ -1078,12 +1078,12 @@ gap> testG :=
 >               [ [     -1,        0 ], [     0,      -1 ] ]];
 >       return (Group(M1));
 >    end;;
-gap> StructureDescription(testG(8,2));
-"((C8 x C2) : C2) : C2"
+gap> StructureDescription(testG(8,2):nice);
+"(C8 x C4) : C2"
 gap> StructureDescription(testG(8,3));
 "C3 x QD16"
-gap> StructureDescription(testG(8,4));
-"((C16 x C2) : C2) : C2"
+gap> StructureDescription(testG(8,4):nice);
+"(C16 x C4) : C2"
 
 # 2006/02/27 (AH)
 gap> RepresentativeAction(Group(()), [1], [2], OnSets);;
