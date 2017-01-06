@@ -3096,11 +3096,11 @@ local cf,dim,b,den,sub,i,s,q,found,qb;
             Add(sub,TriangulizedMat(b));
             den:=dim;
           else
-            TriangulizeMat(s);
+            s:=TriangulizedMat(s);
             qb:=b{[den+1..Length(b)]}; # basis
             qb:=List(s,x->x*qb);
             qb:=Concatenation(b{[1..den]},qb);
-            qb:=TriangulizedMat(qb);
+            TriangulizeMat(qb);
             Add(sub,qb);
             s:=SMTX.InducedAction(q,s,3);
             b:=Concatenation(b{[1..den]},s[3]*b{[den+1..Length(b)]});
