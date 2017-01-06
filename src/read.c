@@ -1316,6 +1316,9 @@ struct ArgList ReadFuncArgList(
             SET_LEN_STRING(locks, 1);
             GetSymbol();
         }
+        if ( strcmp("~", TLS(Value)) == 0 ) {
+                SyntaxError("~ is not a valid name for an argument");
+        }
         C_NEW_STRING_DYN( name, TLS(Value) );
         narg += 1;
         ASS_LIST( nams, narg, name );
@@ -1366,6 +1369,9 @@ struct ArgList ReadFuncArgList(
             if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
                 SyntaxError("Name used for two arguments");
             }
+        }
+        if ( strcmp("~", TLS(Value)) == 0 ) {
+                SyntaxError("~ is not a valid name for an argument");
         }
         C_NEW_STRING_DYN( name, TLS(Value) );
         narg += 1;
@@ -1452,6 +1458,9 @@ void ReadFuncExpr (
                 SyntaxError("Name used for argument and local");
             }
         }
+        if ( strcmp("~", TLS(Value)) == 0 ) {
+                SyntaxError("~ is not a valid name for a local identifier");
+        }
         C_NEW_STRING_DYN( name, TLS(Value) );
         nloc += 1;
         ASS_LIST( nams, narg+nloc, name );
@@ -1469,6 +1478,9 @@ void ReadFuncExpr (
                 if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
                     SyntaxError("Name used for two locals");
                 }
+            }
+            if ( strcmp("~", TLS(Value)) == 0 ) {
+                SyntaxError("~ is not a valid name for a local identifier");
             }
             C_NEW_STRING_DYN( name, TLS(Value) );
             nloc += 1;
