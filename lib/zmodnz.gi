@@ -914,7 +914,7 @@ InstallGlobalFunction( ZmodpZ, function( p )
     if not IsPrimeInt( p ) then
       Error( "<p> must be a prime" );
     fi;
-    return ZmodpZNC( p );
+    return ZmodpZNC( AbsInt( p ) );
 end );
 
 InstallGlobalFunction( ZmodpZNC, function( p )

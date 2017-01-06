@@ -30,6 +30,8 @@ Error, <n> must be an integer
 #
 gap> ZmodpZ(2);
 GF(2)
+gap> ZmodpZ(-3);
+GF(3)
 gap> ZmodpZ(4);
 Error, <p> must be a prime
 
