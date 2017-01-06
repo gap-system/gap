@@ -2092,7 +2092,7 @@ end;
 ##
 SMTX_CollectedFactors:= function ( module )
   local field,dim, factors, factorsout, queue, cmod, new,
-      d, i, j, l, lq, lf, q, smod, ds, homs, mat;
+      d, i, j, l, lf, q, smod, ds, homs, mat;
    if SMTX.IsMTXModule (module) = false then
       return Error ("Argument is not a module.");
    fi;
@@ -2110,12 +2110,10 @@ SMTX_CollectedFactors:= function ( module )
    queue:=[module];
    #queue is the list of modules awaiting processing.
 
-   while Length (queue) > 0 do
-      lq:=Length (queue);
-      cmod:=queue[lq];
-      Unbind (queue[lq]);
+   while Length(queue) > 0 do
+      cmod:=Remove(queue);
       d:=SMTX.Dimension(cmod);
-      Info(InfoMeatAxe,3,"Length of queue = ", lq, ", dim = ", d, ".");
+      Info(InfoMeatAxe,3,"Length of queue = ", Length(queue)+1, ", dim = ", d, ".");
 
       if SMTX.IsIrreducible (cmod) then
          Info(InfoMeatAxe,2,"Irreducible: ");
@@ -2139,7 +2137,6 @@ SMTX_CollectedFactors:= function ( module )
       else
          Info(InfoMeatAxe,2,"Reducible.");
          #module is reducible. Add sub- and quotient-modules to queue.
-         lq:=Length (queue);
 	 q:=SMTX.InducedAction(cmod,
 		  SMTX.Subbasis (cmod),3);
          smod:=q[1];
@@ -2159,7 +2156,7 @@ SMTX_CollectedFactors:= function ( module )
 	   mat:=ImmutableMatrix(field,mat);
 	   if Length(mat)<cmod.dimension then
 	     # there is still some factor left
-	     queue[lq+1]:=SMTX.InducedActionFactorModule(cmod, mat);
+	     Add(queue, SMTX.InducedActionFactorModule(cmod, mat));
 	   fi;
 
            Info(InfoMeatAxe,2,
@@ -2185,7 +2182,8 @@ SMTX_CollectedFactors:= function ( module )
            fi;
 	   
          else
-           queue[lq + 1]:=smod; queue[lq + 2]:=q[2];
+           Add(queue, smod);
+           Add(queue, q[2]);
          fi;
       fi;
    od;
@@ -3087,8 +3085,7 @@ mats:=m.generators;
   ser:=[[]];
   queue:=[m];
   while Length(queue)>0 do
-    m:=queue[1];
-    queue:=queue{[2..Length(queue)]};
+    m:=Remove(queue);
     if SMTX.IsIrreducible(m) then
       mo:=m;
       Info(InfoMeatAxe,3,SMTX.Dimension(m)," ",
