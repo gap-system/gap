@@ -826,8 +826,8 @@ BIND_GLOBAL( "KeyDependentOperation",
             if LEN_LIST( known ) < i or known[i] <> key then
                 known{ [ i + 2 .. LEN_LIST( known ) + 2 ] }:=
                     known{ [ i .. LEN_LIST( known ) ] };
-                known[  i  ]:= Immutable(key);
-                known[ i+1 ]:= Immutable(erg);
+                known[  i  ]:= IMMUTABLE_COPY_OBJ(key);
+                known[ i+1 ]:= IMMUTABLE_COPY_OBJ(erg);
             fi;
         fi;
         return known[ i+1 ];
@@ -868,8 +868,8 @@ BIND_GLOBAL( "KeyDependentOperation",
             if LEN_LIST( known ) < i or known[i] <> key then
                 known{ [ i + 2 .. LEN_LIST( known ) + 2 ] }:=
                 known{ [ i .. LEN_LIST( known ) ] };
-                known[  i  ]:= Immutable(key);
-                known[ i+1 ]:= Immutable(obj);
+                known[  i  ]:= IMMUTABLE_COPY_OBJ(key);
+                known[ i+1 ]:= IMMUTABLE_COPY_OBJ(obj);
             fi;
         end );
 end );
