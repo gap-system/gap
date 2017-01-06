@@ -1929,14 +1929,14 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
       fi;
       # Now try to extend basisB to a basis for the whole module, by
       # translating it by the generating matrices.
-      P:=basisB;
       Info(InfoMeatAxe,2,"Trying to extend basis to whole module.");
-      if SMTX.CompleteBasis(matrices,P) then
+      if SMTX.CompleteBasis(matrices,basisB) then
          # We succeeded in extending the basis (might not have done).
          # So now we have a full basis, which we think of now as a base
  	 # change matrix.
          Info(InfoMeatAxe,2,"Succeeded. Calculating centralising matrix.");
          newmatrices:=[];
+         P:=ImmutableMatrix(F,basisB);
          Pinv:=P^-1;
          for i in [1..Length (matrices)] do
             newmatrices[i]:=P * matrices[i] * Pinv;
@@ -1951,6 +1951,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
                od;
             od;
          od;
+         centmat := ImmutableMatrix(F, centmat);
          Info(InfoMeatAxe,2,"Checking that it centralises the generators.");
          # Check centralizing.
          looking:=true;
@@ -1965,7 +1966,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
 	    Info(InfoMeatAxe,2,"It did!");
             SMTX.SetDegreeFieldExt(module, e);
             #SetAbsReducibleFlag (module, true);
-            SMTX.SetCentMat (module, P^-1 * centmat * P); # get the base right
+            SMTX.SetCentMat (module, Pinv * centmat * P); # get the base right
             # We will also record the minimal polynomial of C0 (and hence of
 	    # centmat) in case we need it at some future date.
             SMTX.SetCentMatMinPoly (module, MinimalPolynomialMatrixNC(F,C0,1));
@@ -2067,7 +2068,6 @@ SMTX.FieldGenCentMat:=function ( module )
     # Finally recalculate centmat and its minimal polynomial.
     centmat:=SMTX.CentMat (module);
     newcentmat:=Value (genpol, centmat,centmat^0);
-    ConvertToMatrixRep(newcentmat,q);
     SMTX.SetFGCentMat (module, newcentmat);
     SMTX.SetFGCentMatMinPoly(module,MinimalPolynomialMatrixNC(F,newcentmat,1));
     # Ugh! That was very inefficient - should work out the min poly using
