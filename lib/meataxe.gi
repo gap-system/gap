@@ -3238,7 +3238,7 @@ SMTX_BasisInOrbit:=function( module  )
    leadpos:=SubGModLeadPos(ans,dim,subdim,zero);
 
    i:=1;
-   while i <= subdim do
+   while i <= subdim and subdim < dim do
       for l in [1..ngens] do
          m:=matrices[l];
          # apply generator m to submodule generator i
@@ -3254,7 +3254,9 @@ SMTX_BasisInOrbit:=function( module  )
          od;
 
          j:=1;
-         while j <= dim and normedw[j] = zero do j:=j + 1; od;
+         while j <= dim and normedw[j] = zero do
+            j:=j + 1;
+         od;
          if j <= dim then
             # we have found a new generator of the submodule
             subdim:=subdim + 1;
@@ -3263,14 +3265,17 @@ SMTX_BasisInOrbit:=function( module  )
             Add( ans, w );
             Add( normedans, normedw );
             if subdim = dim then
-               ans:=ImmutableMatrix(F,ans);
-               SMTX.SetBasisInOrbit(module,ans);
-               return ans;
+               break;
             fi;
          fi;
       od;
       i:=i + 1;
    od;
+
+   Assert(0, subdim = dim);
+   ans:=ImmutableMatrix(F,ans);
+   SMTX.SetBasisInOrbit(module,ans);
+   return ans;
 end;
 SMTX.BasisInOrbit:=SMTX_BasisInOrbit;
 
