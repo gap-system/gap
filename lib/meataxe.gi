@@ -1237,7 +1237,6 @@ SMTX_IrreducibilityTest:=function ( module )
                        Runtime()-rt0,".");
                   N:=NullspaceMat (mat);
                   v:=N[1];
-                  ConvertToVectorRep(v,F);
                   ndim:=Length (N);
 
                   Info(InfoMeatAxe,2,"Evaluated nullspace. Dimension = ",
@@ -1263,7 +1262,6 @@ SMTX_IrreducibilityTest:=function ( module )
                      Info(InfoMeatAxe,2,"Transposed matrices. Time = ",
                           Runtime()-rt0,".");
                      NT:=NullspaceMat (mat);
-                     ConvertToVectorRep(NT[1],F);
                      Info(InfoMeatAxe,2,"Evaluated nullspace. Dimension = ",
                           Length(NT),". Time = ",Runtime()-rt0, ".");
                      subbasis:=SMTX.SpinnedBasis(NT[1],tmatrices,F,orig_ngens);
@@ -1481,7 +1479,6 @@ SMTX_RandomIrreducibleSubGModule:=function ( module )
       for i in [1..ngens] do M:=M + el[2][i] * matrices[i]; od;
       SMTX.SetAlgElMat(submodule2,M);
       N:=NullspaceMat(Value(fac,M,M^0));
-      ConvertToVectorRep(N[1],F);
       SMTX.SetAlgElNullspaceVec(submodule2,N[1]);
       return [subbasis2, submodule2];
    fi;
@@ -1590,7 +1587,6 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
                   SMTX.SetAlgElMat (module, M);
                   SMTX.SetAlgElCharPol (module, oldpol);
                   SMTX.SetAlgElCharPolFac (module, fac[i]);
-		  ConvertToVectorRep(N[1],F);
                   SMTX.SetAlgElNullspaceVec(module, N[1]);
                   SMTX.SetAlgElNullspaceDimension (module, Length (N));
                fi;
@@ -2345,7 +2341,6 @@ SMTX_Distinguish:=function ( cf, i )
                   SMTX.SetAlgElMat(cf[i][1], M);
                   SMTX.SetAlgElCharPol (cf[i][1], oldp);
                   SMTX.SetAlgElCharPolFac (cf[i][1], fac[j]);
-		  ConvertToVectorRep(N[1],F);
                   SMTX.SetAlgElNullspaceVec(cf[i][1], N[1]);
                fi;
                j:=j + 1;
@@ -2440,7 +2435,6 @@ SMTX_MinimalSubGModule:=function ( module, cf, i )
    fact:=SMTX.AlgElCharPolFac(cf[i][1]);
    mat:=Value (fact, M,M^0);
    N:=NullspaceMat (mat);
-   ConvertToVectorRep(N[1],F);
    return (SMTX.SpinnedBasis (N[1], mats,F, ngens));
 
 end;
@@ -2556,7 +2550,6 @@ SMTX_IsomorphismComp:=function (module1, module2, action)
    Info(InfoMeatAxe,2,"Spinning up in direct sum.");
    matrices:=SMTX.MatrixSum (matrices1, matrices2);
    v1:=SMTX.AlgElNullspaceVec(module1);
-   ConvertToVectorRep(N[1],F);
    v2:=N[1];
    v:=Concatenation (v1, v2);
    basis:=SMTX.SpinnedBasis (v, matrices, F);
@@ -2684,17 +2677,13 @@ SMTX_Homomorphisms:= function (m1, m2)
    ConvertToMatrixRep(mat,F);
    Info(InfoMeatAxe,2,"Calculating nullspace for second module.");
    N:=NullspaceMat (mat);
-   N:=ImmutableMatrix(F,N);
    imlen:=Length (N);
    Info(InfoMeatAxe,2,"Dimension = ", imlen, ".");
    if imlen = 0 then
       return [];
    fi;
 
-   imbases:=[];
-   for i in [1..imlen] do
-      imbases[i]:=[N[i]];
-   od;
+   imbases:=List(N, vec -> [vec]);
 
    # Now the main algorithm starts. We are going to spin the vectors in m1bas
    # under the action of the module generators, norming as we go. Every
@@ -2841,9 +2830,6 @@ SMTX_Homomorphisms:= function (m1, m2)
       rels:=TransposedMat (rels);
    fi;
    N:=NullspaceMat(rels);
-   for k in N do
-     ConvertToVectorRep(k,F);
-   od;
    ans:=[];
    for k in [1..Length (N)] do
       vec:=N[k];
