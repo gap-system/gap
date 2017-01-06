@@ -1032,7 +1032,6 @@ local g1,g2,coefflist,M,pol;
   # Take a random linear sum of the existing generators as new generator.
   # Record the sum in coefflist
   coefflist:=[Random(F)];
-  #M:=NullMat(dim, dim, F);
   M:=coefflist[1]*matrices[1];
   for g1 in [2..ngens] do
      g2:=Random (F);
@@ -1318,7 +1317,6 @@ SMTX_IrreducibilityTest:=function ( module )
                      mat3:=mat2*M2*mat2;
                      v:=v*(M*mat3 - mat3*M);
                      #This vector might lie in a proper subspace!
-                     ConvertToVectorRep(v,F);
                      subbasis:=SMTX.SpinnedBasis (v, matrices, F,orig_ngens);
                      Info(InfoMeatAxe,2,"Spun up vector. Dimension = ",
                        Length(subbasis),". Time = ",Runtime()-rt0,".");
@@ -1634,8 +1632,7 @@ local   L, d, p, M, one, zero, R, h, v, w, i, j, nd, ans,
    one :=One(A[1][1]);
    zero:=Zero(one);
    d:=Length ( A );
-   M:=ListWithIdenticalEntries(Length(A[1]),zero);
-   Add ( M, M[1] );
+   M:=ListWithIdenticalEntries(Length(A[1]) + 1,zero);
    ConvertToVectorRep(M,DefaultField(v));
 
    # L[i] (length d) will contain a vector with head entry 1 at position i,
@@ -3000,10 +2997,9 @@ SMTX_MinimalSubGModules:=function (arg)
    edimhom:=dimhom / e;
    submodules:=[];
    count:=0;
-   coeff:=[];
    elF:=AsList(F);
    q:=Length (elF);
-   for i in [1..dimhom] do coeff[i]:=1; od;
+   coeff:=ListWithIdenticalEntries(dimhom,1);
 
    #coeff[i] will be an integer in the range [1..q] corresponding to the
    #field element elF[coeff[i]].
@@ -3128,7 +3124,7 @@ mats:=m.generators;
       Add(queue,q);
     fi;
   od;
-  Sort(ser,function(a,b) return Length(a)<Length(b);end);
+  SortBy(ser,Length);
   return ser;
 end;
 SMTX.BasesCompositionSeries:=SMTX_BasesCompositionSeries;
@@ -3417,7 +3413,6 @@ SMTX_BasisInOrbit:=function ( module  )
 
    zero:=Zero(F);
    v:=IdentityMat(dim,F)[1];
-   ConvertToVectorRep(v,F);
    ans:=[v];
    normedans:=[v];
    subdim:=1;
