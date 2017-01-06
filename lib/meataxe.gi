@@ -2147,10 +2147,7 @@ SMTX_CollectedFactors:= function ( module )
            homs:=SMTX.Homomorphisms( smod, cmod); # must have length >0
 
 	   # build the submodule formed by their images
-	   mat:=homs[1];
-	   for i in [2..Length(homs)] do
-	     mat:=Concatenation(mat,homs[i]);
-	   od;
+	   mat:=Concatenation(homs);
 	   TriangulizeMat(mat);
 	   mat:=Filtered(mat,i->not IsZero(i));
 	   mat:=ImmutableMatrix(field,mat);
@@ -3347,10 +3344,7 @@ SMTX_SpanOfMinimalSubGModules:=function (m1, m2)
      return homs[1];
    fi;
    #The span of the images of homs is what we want!
-   mat:=homs[1];
-   for i in [2..Length(homs)] do
-     mat:=Concatenation(mat,homs[i]);
-   od;
+   mat:=Concatenation(homs);
    TriangulizeMat(mat);
    mat:=ImmutableMatrix(m1.field,mat);
    return mat;
@@ -3360,14 +3354,10 @@ SMTX.SpanOfMinimalSubGModules:=SMTX_SpanOfMinimalSubGModules;
 SMTX_BasisSocle:=function(module)
 local cf, mat, i;
    cf:=SMTX.CollectedFactors(module);
-   cf:=List(cf,i->i[1]);
-   mat:=SMTX.SpanOfMinimalSubGModules(cf[1],module);
+   mat:=Concatenation(List(cf,i->SMTX_SpanOfMinimalSubGModules(i[1],module)));
    if Length(cf) = 1 then
      return mat;
    fi;
-   for i in [2..Length(cf)] do
-     mat:=Concatenation(mat,SMTX_SpanOfMinimalSubGModules(cf[i],module));
-   od;
    TriangulizeMat(mat);
    mat:=ImmutableMatrix(module.field,mat);
    return mat;
