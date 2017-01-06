@@ -1344,6 +1344,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     Obj res;
     Obj currLVars;
     Obj result;
+    Obj tilde;
     Int recursionDepth;
     Stat currStat;
     if (!IS_FUNC(func))
@@ -1354,6 +1355,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     currLVars = TLS(CurrLVars);
     currStat = TLS(CurrStat);
     recursionDepth = TLS(RecursionDepth);
+    tilde = VAL_GVAR(Tilde);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     if (sySetjmp(TLS(ReadJmpError))) {
       SET_LEN_PLIST(res,2);
@@ -1366,6 +1368,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       TLS(CurrStat) = currStat;
       TLS(RecursionDepth) = recursionDepth;
+      AssGVarUnsafe(Tilde, tilde);
     } else {
       result = CallFuncList(func, args);
       SET_ELM_PLIST(res,1,True);

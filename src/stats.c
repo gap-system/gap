@@ -1798,8 +1798,9 @@ void ClearError ( void )
         }
     }
 
-    /* reset <TLS(NrError)>                                                     */
+    /* reset <TLS(NrError)> and Tilde                                      */
     TLS(NrError) = 0;
+    AssGVarUnsafe(Tilde, 0);
 }
 
 /****************************************************************************
