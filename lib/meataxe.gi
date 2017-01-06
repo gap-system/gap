@@ -3206,9 +3206,8 @@ end);
 SMTX.DualizedBasis:=function(module,sub)
 local F,M;
   F:=DefaultFieldOfMatrix(sub);
-  M:=NullspaceMat(TransposedMat(sub));
-  M:=List(M,ShallowCopy);
-  TriangulizeMat(M);
+  M:=TransposedMatMutable(sub);
+  M:=TriangulizedNullspaceMatDestructive(M);
   M:=ImmutableMatrix(F,M);
   return M;
 end;
