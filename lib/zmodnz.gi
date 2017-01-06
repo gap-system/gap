@@ -827,10 +827,6 @@ InstallMethod( Units,
     return G;
 end );
 
-#InstallTrueMethod( IsHandledByNiceMonomorphism,
-#        IsGroup and IsZmodnZObjNonprimeCollection );
-#T what is going on here?
-
 
 #############################################################################
 ##
