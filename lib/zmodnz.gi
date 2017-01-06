@@ -151,7 +151,7 @@ InstallMethod( String,
     IsZmodnZObjNonprimeFamily,
     [ IsZmodnZObj and IsModulusRep ],
     function( x )
-      return Concatenation( "ZmodnZObj(", String(x![1]), ",", 
+      return Concatenation( "ZmodnZObj(", String(x![1]), ",",
       String(FamilyObj( x )!.Characteristic), ")" );
     end );
 
@@ -159,7 +159,7 @@ InstallMethod( String,
     "for element in Z/pZ (ModulusRep)",
     [ IsZmodpZObj and IsModulusRep ],
     function( x )
-      return Concatenation( "ZmodpZObj(", String(x![1]), ",", 
+      return Concatenation( "ZmodpZObj(", String(x![1]), ",",
       String(FamilyObj( x )!.Characteristic), ")" );
     end );
 
@@ -530,6 +530,7 @@ InstallMethod( InverseOp,
     return inv;
     end );
 
+
 #############################################################################
 ##
 #M  Order( <obj> )  . . . . . . . . . . . . . . . . . . . . for `IsZmodpZObj'
@@ -545,6 +546,7 @@ InstallMethod( Order,
     fi;
     return ord;
     end );
+
 
 #############################################################################
 ##
@@ -567,6 +569,7 @@ InstallMethod( LogFFE,
     function( n, r )
     return LogMod( n![1], r![1], Characteristic( n ) );
     end );
+
 
 #############################################################################
 ##
@@ -593,8 +596,6 @@ function(z,k)
 end);
 
 
-
-
 #############################################################################
 ##
 #M  Int( <obj> )  . . . . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
@@ -604,15 +605,14 @@ InstallMethod( Int,
     [ IsZmodnZObj and IsModulusRep ],
     z -> z![1] );
 
+
 #############################################################################
 ##
 #M IntFFE( <obj> )  . .  . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
 ##
-
 InstallMethod(IntFFE,
         [IsZmodpZObj and IsModulusRep],
         x->x![1]);
-        
 
 
 #############################################################################
@@ -631,11 +631,11 @@ local n;
   fi;
 end);
 
+
 #############################################################################
 ##
 #M  Z(p) ... return a primitive root
 ##
-
 InstallMethod(ZOp,
         [IsPosInt],
         function(p)
@@ -653,7 +653,7 @@ InstallMethod(ZOp,
     return ZmodnZObj(f!.primitiveRootModP,p);
 end);
 
-        
+
 
 
 #############################################################################
@@ -804,6 +804,7 @@ InstallMethod( IsUnit,
     return GcdInt( elm![1], FamilyObj( elm )!.Characteristic ) = 1;
     end );
 
+
 #############################################################################
 ##
 #M  Units( <R> )  . . . . . . . . . . . . . . . . . method for full ring Z/nZ
@@ -813,7 +814,7 @@ InstallMethod( Units,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing ],
     function( R )
     local   G,  gens;
-    
+
     gens := GeneratorsPrimeResidues( Size( R ) ).generators;
     if not IsEmpty( gens )  and  gens[ 1 ] = 1  then
         gens := gens{ [ 2 .. Length( gens ) ] };
