@@ -844,14 +844,7 @@ InstallMethod( AsList,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
     RankFilter( IsRing ),
-    function( R )
-    local F;
-    F:= ElementsFamily( FamilyObj( R ) );
-    F:= List( [ 0 .. Size( R ) - 1 ], x -> ZmodnZObj( F, x ) );
-    SetAsSSortedList( R, F );
-    SetIsSSortedList( F, true );
-    return F;
-    end );
+    AsSSortedList );
 
 InstallMethod( AsSSortedList,
     "for full ring Z/nZ",
