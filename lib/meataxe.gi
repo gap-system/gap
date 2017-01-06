@@ -540,8 +540,7 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
 	   fi;
 
 	od;
-	i:=ShallowCopy(newg);
-	i:=ImmutableMatrix(F,i);
+	i:=ImmutableMatrix(F,newg);
 	Add (smatrices, i);
 	Add (nmatrices, newgn); # will still be added to
      od;
