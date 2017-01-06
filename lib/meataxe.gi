@@ -490,9 +490,6 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
      for i in [1..dim] do
         if cfleadpos[i] = 0 then
            k:=k + 1;
-           #w:=[];
-           #for m in [1..dim] do w[m]:=zero; od;
-           #w[i]:=one;
            w:=onem[i];
            leadpos[k]:=i;
            Add(sub, w);
@@ -514,13 +511,11 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
         newg:=[]; newgn:=[];
         for i in [1..subdim] do
            im:=ShallowCopy(sub[i] * g);
-           #newim:=[]; newimn:=[];
            newim:=ShallowCopy(zerov);
            for j in [1..subdim] do
              k:=im[leadpos[j]];
-             newim[j]:=k; #newimn[j]:=k;
+             newim[j]:=k;
              if k<> zero then
-               #im:=im - k * sub[j];
                AddRowVector(im,sub[j],-k);
              fi;
            od;
@@ -531,7 +526,6 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
            Add(newg, newim);
 
            if c then
-             #for j in [subdim + 1..dim] do newimn[j]:=zero; od;
              newimn:=ShallowCopy(zeroc);
              newimn{[1..subdim]}:=newim;
              Add(newgn, newimn);
@@ -559,7 +553,6 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
         newgn:=nmatrices[ct];
         for i in [subdim + 1..dim] do
           im:=ShallowCopy(sub[i] * g);
-          #newim:=[]; newimn:=[];
           newim:=ShallowCopy(zerov);
           newimn:=ShallowCopy(zeroc);
           for j in [1..dim] do
@@ -568,7 +561,6 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
               newim[j - subdim]:=k;
             fi;
             if k <> zero then
-              #im:=im - k * sub[j];
               AddRowVector(im,sub[j],-k);
               if c then
                 newimn[j]:=k;
@@ -1352,13 +1344,6 @@ SMTX_IrreducibilityTest:=function( module )
 
    od;  # main loop
 
-   # das kommt in die eigentliche Methode!
-   #if ans = true then
-   #   SMTX.SetReducibleFlag(module, false);
-   #else
-   #   SMTX.SetReducibleFlag(module, true);
-   #fi;
-
    Info(InfoMeatAxe,1,"Total time = ",Runtime()-rt0," milliseconds.");
    return ans;
 
@@ -1391,14 +1376,6 @@ SMTX_RandomIrreducibleSubGModule:=function( module )
    fi;
 
    # now call an irreducibility test that will compute a new subbasis
-
-#AH Do we really want to keep old flags? What are they good for?
-#      copymodule:=Copy(module);
-#      UndoReducibleFlag(copymodule);
-#      # Do this to avoid changing the flags in the original module
-#      # We need to undo the reducible falgs before calling IsIrreducible
-#      # so that it actually runs and doesn't merely select the submodule
-#      # already listed as a field of module.
 
    i:=SMTX.IrreducibilityTest(module);
 
@@ -1440,15 +1417,7 @@ SMTX_RandomIrreducibleSubGModule:=function( module )
       # Some will be the same # as in ranSub[2], but some are affected by
       # the base change, or at least part of it, since the flags gets
       # screwed up by the base change.
-      # We need to set the following flags:-
-
-      # ReducibleFlag
-      # AlgEl(el), AlgElMat(M), AlgElCharPol(p),
-      # AlgElCharPolFac(fac), AlgElNullspaceDimension(ndim), and
-      # AlgElNullspaceVec(v).
-      # Most of these can simply be copied.
-#AHSetReducibleFlag(submodule2, false);
-
+      # We need to set the following flags:
       el:=SMTX.AlgEl(ranSub[2]);
       SMTX.SetAlgEl(submodule2,el);
       SMTX.SetAlgElCharPol(submodule2,SMTX.AlgElCharPol(ranSub[2]));
@@ -1849,7 +1818,6 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    Info(InfoMeatAxe,2,"GCD of module and nullspace dimensions = ", gcd, ".");
    if gcd = 1 then
       SMTX.SetDegreeFieldExt(module,1);
-      #SetAbsReducibleFlag(module, false);
       return true;
    fi;
    div:=DivisorsInt(gcd);
@@ -1960,7 +1928,6 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
          if looking then
             Info(InfoMeatAxe,2,"It did!");
             SMTX.SetDegreeFieldExt(module, e);
-            #SetAbsReducibleFlag(module, true);
             SMTX.SetCentMat(module, Pinv * centmat * P); # get the base right
             # We will also record the minimal polynomial of C0 (and hence of
             # centmat) in case we need it at some future date.
@@ -1976,7 +1943,6 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    Info(InfoMeatAxe,2,
      "Tried all divisors. Must be absolutely irreducible.");
    SMTX.SetDegreeFieldExt(module, 1);
-   #SetAbsReducibleFlag(module, false);
    return true;
 end;
 SMTX.AbsoluteIrreducibilityTest:=SMTX_AbsoluteIrreducibilityTest;
@@ -2425,11 +2391,6 @@ SMTX_IsomorphismComp:=function(module1, module2, action)
    local matrices, matrices1, matrices2, F, R, dim, swapmodule, genpair,
          swapped, orig_ngens, i, j, el, p, fac, ngens, M, mat, v1, v2, v,
          N, basis, basis1, basis2;
-
-  #CCC:=[ShallowCopy(module1),ShallowCopy(module2),ShallowCopy(action)];
-  #CCC[1].smashMeataxe:=ShallowCopy(CCC[1].smashMeataxe);
-  #CCC[2].smashMeataxe:=ShallowCopy(CCC[2].smashMeataxe);
-  #Print(CCC,"\n");
 
    if SMTX.IsMTXModule(module1) = false then
       Error("Argument is not a module.");
