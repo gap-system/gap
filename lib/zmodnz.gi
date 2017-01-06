@@ -113,7 +113,7 @@ InstallMethod( ObjByExtRep,
     "for family of elements in Z/nZ (nonprime), and integer",
     [ IsZmodnZObjNonprimeFamily, IsInt ],
     function( Fam, residue )
-    return ZmodnZObj( Fam, residue mod Fam!.Characteristic );
+    return ZmodnZObj( Fam, residue );
     end );
 
 
@@ -260,30 +260,21 @@ InstallMethod( \+,
     IsIdenticalObj,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function( x, y )
-    local Fam;
-    Fam := FamilyObj( x );
-    return Objectify( Fam!.typeOfZmodnZObj,
-                      [ ( x![1] + y![1] ) mod Fam!.Characteristic ] );
+    return ZmodnZObj( FamilyObj( x ), x![1] + y![1] );
     end );
 
 InstallMethod( \+,
     "for element in Z/nZ (ModulusRep) and integer",
     [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
-    local Fam;
-    Fam := FamilyObj( x );
-    return Objectify( Fam!.typeOfZmodnZObj,
-                      [ ( x![1] + y ) mod Fam!.Characteristic ] );
+    return ZmodnZObj( FamilyObj( x ), x![1] + y );
     end );
 
 InstallMethod( \+,
     "for integer and element in Z/nZ (ModulusRep)",
     [ IsInt, IsZmodnZObj and IsModulusRep ],
     function( x, y )
-    local Fam;
-    Fam := FamilyObj( y );
-    return Objectify( Fam!.typeOfZmodnZObj,
-                      [ ( x + y![1] ) mod Fam!.Characteristic ] );
+    return ZmodnZObj( FamilyObj( y ), x + y![1] );
     end );
 
 InstallMethod( \+,
@@ -318,30 +309,21 @@ InstallMethod( \-,
     IsIdenticalObj,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function( x, y )
-    local Fam;
-    Fam := FamilyObj( x );
-    return Objectify( Fam!.typeOfZmodnZObj,
-                      [ ( x![1] - y![1] ) mod Fam!.Characteristic ] );
+    return ZmodnZObj( FamilyObj( x ), x![1] - y![1] );
     end );
 
 InstallMethod( \-,
     "for element in Z/nZ (ModulusRep) and integer",
     [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
-    local Fam;
-    Fam := FamilyObj( x );
-    return Objectify( Fam!.typeOfZmodnZObj,
-                      [ ( x![1] - y ) mod Fam!.Characteristic ] );
+    return ZmodnZObj( FamilyObj( x ), x![1] - y );
     end );
 
 InstallMethod( \-,
     "for integer and element in Z/nZ (ModulusRep)",
     [ IsInt, IsZmodnZObj and IsModulusRep ],
     function( x, y )
-    local Fam;
-    Fam := FamilyObj( y );
-    return Objectify( Fam!.typeOfZmodnZObj,
-                      [ ( x - y![1] ) mod Fam!.Characteristic ] );
+    return ZmodnZObj( FamilyObj( y ), x - y![1] );
     end );
 
 InstallMethod( \-,
@@ -376,30 +358,21 @@ InstallMethod( \*,
     IsIdenticalObj,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function( x, y )
-    local Fam;
-    Fam := FamilyObj( x );
-    return Objectify( Fam!.typeOfZmodnZObj,
-                      [ ( x![1] * y![1] ) mod Fam!.Characteristic ] );
+    return ZmodnZObj( FamilyObj( x ), x![1] * y![1] );
     end );
 
 InstallMethod( \*,
     "for element in Z/nZ (ModulusRep) and integer",
     [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
-    local Fam;
-    Fam := FamilyObj( x );
-    return Objectify( Fam!.typeOfZmodnZObj,
-                      [ ( x![1] * y ) mod Fam!.Characteristic ] );
+    return ZmodnZObj( FamilyObj( x ), x![1] * y );
     end );
 
 InstallMethod( \*,
     "for integer and element in Z/nZ (ModulusRep)",
     [ IsInt, IsZmodnZObj and IsModulusRep ],
     function( x, y )
-    local Fam;
-    Fam := FamilyObj( y );
-    return Objectify( Fam!.typeOfZmodnZObj,
-                      [ ( x * y![1] ) mod Fam!.Characteristic ] );
+    return ZmodnZObj( FamilyObj( y ), x * y![1] );
     end );
 
 InstallMethod( \*,
@@ -440,11 +413,8 @@ InstallMethod( \/,
                  Fam!.Characteristic );
     if q = fail then
         return fail;
-    else
-        # Avoid to touch the rational arithmetics.
-        return Objectify( Fam!.typeOfZmodnZObj,
-                       [ q ] );
     fi;
+    return ZmodnZObj( Fam, q );
     end );
 
 InstallMethod( \/,
@@ -457,11 +427,8 @@ InstallMethod( \/,
                  Fam!.Characteristic );
     if q = fail then
         return fail;
-    else
-        # Avoid to touch the rational arithmetics.
-        return Objectify( Fam!.typeOfZmodnZObj,
-                       [ q ] );
     fi;
+    return ZmodnZObj( Fam, q );
 end );
 
 InstallMethod( \/,
@@ -474,11 +441,8 @@ InstallMethod( \/,
                  Fam!.Characteristic );
     if q = fail then
         return fail;
-    else
-        # Avoid to touch the rational arithmetics.
-        return Objectify( Fam!.typeOfZmodnZObj,
-                       [ q ] );
     fi;
+    return ZmodnZObj( Fam, q );
 end );
 
 InstallMethod( \/,
@@ -514,8 +478,8 @@ InstallMethod( \^,
     function( x, n )
     local Fam;
     Fam := FamilyObj( x );
-    return Objectify( Fam!.typeOfZmodnZObj,
-                  [ PowerModInt( x![1], n, Fam!.Characteristic ) ] );
+    return ZmodnZObj( Fam,
+                  PowerModInt( x![1], n, Fam!.Characteristic ) );
     end );
 
 
