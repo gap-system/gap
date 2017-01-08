@@ -27,6 +27,7 @@ functions.
 <#Include Label="NamesLocalVariablesFunction">
 <#Include Label="FilenameFunc">
 <#Include Label="StartlineFunc">
+<#Include Label="LocationFunc">
 <#Include Label="PageSource">
 
 </Section>
