@@ -197,7 +197,7 @@ BindGlobal( "AlternatingGroup", function ( arg )
       return  AlternatingGroupCons( arg[1], arg[2] );
     fi;
   fi;
-  Error( "usage:  AlternatingGroup( [<filter>, ]<deg> )" );
+  Error( "usage: AlternatingGroup( [<filter>, ]<deg> )" );
 
 end );
 
@@ -659,7 +659,7 @@ BindGlobal( "SymmetricGroup", function ( arg )
       return  SymmetricGroupCons( arg[1], arg[2] );
     fi;
   fi;
-  Error( "usage:  SymmetricGroup( [<filter>, ]<deg> )" );
+  Error( "usage: SymmetricGroup( [<filter>, ]<deg> )" );
 
 end );
 
