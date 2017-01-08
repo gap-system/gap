@@ -255,8 +255,9 @@ ReadLib( "other.gi");
 
 ReadLib( "gasman.gi");
 
-ReadLib( "function.gi");
+ReadLib("memusage.gi");
 
+ReadLib( "function.gi");
 
 # floateans, now really install all handlers
 ReadLib( "float.gi" );
