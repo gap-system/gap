@@ -376,6 +376,18 @@
 /* Define to 1 if you have the `_setjmp' function. */
 #undef HAVE__SETJMP
 
+/* Define to 1 if the system has the `__builtin_smulll_overflow' built-in
+   function */
+#undef HAVE___BUILTIN_SMULLL_OVERFLOW
+
+/* Define to 1 if the system has the `__builtin_smull_overflow' built-in
+   function */
+#undef HAVE___BUILTIN_SMULL_OVERFLOW
+
+/* Define to 1 if the system has the `__builtin_smul_overflow' built-in
+   function */
+#undef HAVE___BUILTIN_SMUL_OVERFLOW
+
 /* define as 1 on Itanium architecture to flush and mark register stack */
 #undef ITANIUM
 
@@ -396,6 +408,15 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* The size of `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* The size of `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* The size of `long long', as computed by sizeof. */
+#undef SIZEOF_LONG_LONG
 
 /* The size of `void *', as computed by sizeof. */
 #undef SIZEOF_VOID_P

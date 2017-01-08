@@ -152,6 +152,33 @@
 **  The product itself is stored in <o>.
 */
 
+
+#if SIZEOF_VOID_P == SIZEOF_INT && HAVE___BUILTIN_SMUL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+static inline Obj prod_intobjs(int l, int r)
+{
+  int prod;
+  if (__builtin_smul_overflow(l >> 1, r ^ 1, &prod))
+    return (Obj) 0;
+  return (Obj) ((prod >> 1) ^ 1);
+}
+#elif SIZEOF_VOID_P == SIZEOF_LONG && HAVE___BUILTIN_SMULL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+static inline Obj prod_intobjs(long l, long r)
+{
+  long prod;
+  if (__builtin_smull_overflow(l >> 1, r ^ 1, &prod))
+    return (Obj) 0;
+  return (Obj) ((prod >> 1) ^ 1);
+}
+#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && HAVE___BUILTIN_SMULLL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+static inline Obj prod_intobjs(long long l, long long r)
+{
+  long long prod;
+  if (__builtin_smulll_overflow(l >> 1, r ^ 1, &prod))
+    return (Obj) 0;
+  return (Obj) ((prod >> 1) ^ 1);
+}
+#else
+
 #ifdef SYS_IS_64_BIT
 #define HALF_A_WORD 32
 #else
@@ -186,6 +213,7 @@ static inline Obj prod_intobjs(Int l, Int r)
 
   return (Obj) 0;
 }
+#endif
 
 #define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)), \
                                   (o) != (Obj) 0)
