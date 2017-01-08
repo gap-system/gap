@@ -4,7 +4,7 @@
 ##
 ##
 ##
-##  Some tests for permutation groups and friends
+##  Some tests for permutation groups and friends(takes a few seconds to run)
 ##
 gap> START_TEST("permgrp.tst");
 gap> Size(Normalizer(SymmetricGroup(100),PrimitiveGroup(100,1)));

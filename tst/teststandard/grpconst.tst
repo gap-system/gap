@@ -5,7 +5,8 @@
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testinstall.g: why?
+##  Exclude from testinstall.g because it loads the grpconst package
+##  TODO: this should be moved into grpconst package 
 ##
 
 gap> START_TEST("grpconst.tst");

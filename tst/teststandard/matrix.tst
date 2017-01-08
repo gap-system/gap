@@ -6,7 +6,7 @@
 ##
 #Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
 ##  
-##  Exclude from testinstall.g: why?
+##  Exclude from testinstall.g: why? (takes a few seconds to run)
 ##
 gap> START_TEST("matrix.tst");
 gap> ##

@@ -7,7 +7,7 @@
 ##
 ##  This  file  tests the subgroup lattice program
 ##
-##  Exclude from testinstall.g: why?
+##  Exclude from testinstall.g as it takes considerable time.
 ##
 gap> START_TEST("grplatt.tst");
 gap> g:=PerfectGroup(IsPermGroup,95040);;

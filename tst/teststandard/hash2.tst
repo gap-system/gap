@@ -6,7 +6,7 @@
 #Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Test orbit algorithms, which use hashing
-##  Exclude from testinstall.g: why?
+##  Exclude from testinstall.g as it takes considerable time.
 ##
 gap> START_TEST("hash2.tst");
 gap> g:=GL(20,2);;
