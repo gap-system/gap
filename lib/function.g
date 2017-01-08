@@ -314,6 +314,47 @@ BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
 BIND_GLOBAL( "StartlineFunc", STARTLINE_FUNC );
 BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 
+#############################################################################
+##
+##  <#GAPDoc Label="LocationFunc">
+##  <ManSection>
+##  <Func Name="LocationFunc" Arg='func'/>
+##
+##  <Description>
+##  Let <A>func</A> be a function.
+##  Returns a string describing the location of <A>func</A>, or an empty
+##  string if the information cannot be found. This uses the information
+##  provided by <Ref Func="FilenameFunc"/> and <Ref Func="StartlineFunc"/>
+##  <P/>
+##  <Log><![CDATA[
+##  gap> FilenameFunc( Intersection );
+##  "... some path ... gap/lib/coll.gi:2467"
+##  # String is an attribute, so no information is stored
+##  gap> FilenameFunc( String );
+##  ""
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "LocationFunc", function(x)
+    local nam, line, ret;
+    # If someone passes something which isn't a true function,
+    # like a method or attribute, just return.
+    if not(IS_FUNCTION(x)) then
+        return "";
+    fi;
+    nam := FILENAME_FUNC(x);
+    line := STARTLINE_FUNC(x);
+    ret := "";
+    if nam <> fail and line <> fail then
+        APPEND_LIST(ret, nam);
+        APPEND_LIST(ret, ":");
+        APPEND_LIST(ret, STRING_INT(line));
+    fi;
+    return ret;
+end);
+
 
 #############################################################################
 ##
