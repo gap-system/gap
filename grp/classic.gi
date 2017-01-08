@@ -403,7 +403,7 @@ BindGlobal( "Oplus45", function()
 
     # construct the group without calling 'Group'
     g := [ phi*tau2, tau*eichler*delta ];
-    g:=List(g,i->ImmutableMatrix(f,i),true);
+    g:=List(g,i->ImmutableMatrix(f,i));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, 4 );
     SetFieldOfMatrixGroup( g, f );
