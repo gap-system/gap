@@ -25,6 +25,8 @@ gap> ReeGroup(IsPermGroup,2);
 Error, Usage: ReeGroup(<filter>,3^(1+2m))
 gap> ReeGroup(9);
 Error, Usage: ReeGroup(<filter>,3^(1+2m))
+gap> ReeGroup(3,9);
+Error, usage: ReeGroup( [<filter>, ] <m> )
 
 #
 gap> ReeGroup(IsFpGroup,3);
