@@ -327,10 +327,10 @@ BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 ##  provided by <Ref Func="FilenameFunc"/> and <Ref Func="StartlineFunc"/>
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> FilenameFunc( Intersection );
+##  gap> LocationFunc( Intersection );
 ##  "... some path ... gap/lib/coll.gi:2467"
 ##  # String is an attribute, so no information is stored
-##  gap> FilenameFunc( String );
+##  gap> LocationFunc( String );
 ##  ""
 ##  ]]></Log>
 ##  </Description>
