@@ -40,7 +40,14 @@ else
         sh bin/gap.sh --cover coverage tst/${TEST_SUITE}.g
 
         # generate coverage report
-        sh bin/gap.sh -b etc/cover2json.g
+        sh bin/gap.sh -q <<GAPInput
+            if LoadPackage("profiling") <> true then
+                Print("ERROR: could not load profiling package");
+                FORCE_QUIT_GAP(1);
+            fi;
+            OutputJsonCoverage("coverage", "coverage.json");
+            QUIT_GAP(0);
+GAPInput
         cd bin/x86* ; gcov -o . ../../src/*
         cd ../..
     fi
