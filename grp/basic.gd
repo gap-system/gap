@@ -479,7 +479,7 @@ BindGlobal( "FreeAbelianGroup", function ( arg )
       return FreeAbelianGroupCons( arg[1], arg[2] );
     fi;
   fi;
-  Error( "usage: FreeAbelianGroup( [<filter>, ]<size> )" );
+  Error( "usage: FreeAbelianGroup( [<filter>, ]<rank> )" );
 
 end );
 
