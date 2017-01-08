@@ -25,6 +25,8 @@ gap> SuzukiGroup(IsPermGroup,3);
 Error, <q> must be a non-square power of 2
 gap> SuzukiGroup(4);
 Error, <q> must be a non-square power of 2
+gap> SuzukiGroup(2,4);
+Error, usage: SuzukiGroup( [<filter>, ] <q> )
 
 #
 gap> SuzukiGroup(IsFpGroup,2);
