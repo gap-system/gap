@@ -5,7 +5,7 @@
 ##
 #Y  Copyright (C)  1997
 ##
-##  Exclude from testinstall.g: why?
+##  Exclude from testinstall.g as it takes considerable time.
 ##
 gap> START_TEST("grpperm.tst");
 gap> G1 := TrivialSubgroup (Group ((1,2)));;

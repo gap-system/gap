@@ -7,7 +7,8 @@
 ##
 ##
 
-## The independence test is not really correct because the simple groups iterator is not required to output the finite simple groups in order.
+## The independence test is not really correct because the simple groups
+## iterator is not required to output the finite simple groups in order.
 
 gap> START_TEST("simplegrpit.tst");
 gap> it := SimpleGroupsIterator(1);

@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testinstall.g: why?
-##
 gap> START_TEST("package.tst");
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )
