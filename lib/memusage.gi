@@ -123,6 +123,12 @@ InstallMethod( MemoryUsage, "generic fallback method",
                 mem := mem + MemoryUsage(s);
             fi;
         od;
+    elif TNUM_OBJ_INT(o) >= FIRST_EXTERNAL_TNUM then
+        # Since we are in the fallback method, clearly there is no
+        # MemoryUsage method installed for the given object.
+        Info(InfoWarning, 1, "No MemoryUsage method installed for ",
+                             TNUM_OBJ(o)[2],
+                             ", reported usage may be too low" );
     fi;
     MU_Finalize();
     return mem;
