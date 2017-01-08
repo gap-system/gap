@@ -138,9 +138,6 @@ BindGlobal( "AbelianGroup", function ( arg )
 
     if Length(arg) = 2  then
       return AbelianGroupCons( arg[1], arg[2] );
-
-    elif Length(arg) = 3  then
-      return AbelianGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: AbelianGroup( [<filter>, ]<ints> )" );
@@ -263,9 +260,6 @@ BindGlobal( "CyclicGroup", function ( arg )
 
     if Length(arg) = 2  then
       return CyclicGroupCons( arg[1], arg[2] );
-
-    elif Length(arg) = 3  then
-      return CyclicGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: CyclicGroup( [<filter>, ]<size> )" );
@@ -320,9 +314,6 @@ BindGlobal( "DihedralGroup", function ( arg )
 
     if Length(arg) = 2  then
       return DihedralGroupCons( arg[1], arg[2] );
-
-    elif Length(arg) = 3  then
-      return DihedralGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: DihedralGroup( [<filter>, ]<size> )" );
@@ -380,9 +371,6 @@ BindGlobal( "QuaternionGroup", function ( arg )
 
     if Length(arg) = 2  then
       return QuaternionGroupCons( arg[1], arg[2] );
-
-    elif Length(arg) = 3  then
-      return QuaternionGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: QuaternionGroup( [<filter>, ]<size> )" );
@@ -437,9 +425,6 @@ BindGlobal( "ElementaryAbelianGroup", function ( arg )
 
     if Length(arg) = 2  then
       return ElementaryAbelianGroupCons( arg[1], arg[2] );
-
-    elif Length(arg) = 3  then
-      return ElementaryAbelianGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: ElementaryAbelianGroup( [<filter>, ]<size> )" );
@@ -492,9 +477,6 @@ BindGlobal( "FreeAbelianGroup", function ( arg )
 
     if Length(arg) = 2  then
       return FreeAbelianGroupCons( arg[1], arg[2] );
-
-    elif Length(arg) = 3  then
-      return FreeAbelianGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: FreeAbelianGroup( [<filter>, ]<size> )" );
@@ -560,9 +542,6 @@ BindGlobal( "ExtraspecialGroup", function ( arg )
 
     if Length(arg) = 3  then
       return ExtraspecialGroupCons( arg[1], arg[2], arg[3] );
-
-    elif Length(arg) = 4  then
-      return ExtraspecialGroupCons( arg[1], arg[2], arg[3], arg[4] );
     fi;
   fi;
   Error( "usage: ExtraspecialGroup( [<filter>, ]<order>, <exponent> )" );
@@ -616,9 +595,6 @@ BindGlobal( "MathieuGroup", function( arg )
 
     if Length( arg ) = 2 then
       return MathieuGroupCons( arg[1], arg[2] );
-
-    elif Length( arg ) = 3 then
-      return MathieuGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: MathieuGroup( [<filter>, ]<degree> )" );
