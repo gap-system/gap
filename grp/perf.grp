@@ -14,7 +14,7 @@
 #F  PerfGrpLoad(<size>)  force loading of secondary files, return index
 ##
 InstallGlobalFunction( PerfGrpLoad, function(sz)
-local p,sel,i,pos;
+local p,pos;
   if PERFRec=fail then
     ReadGrp("perf0.grp");
   fi;
@@ -23,30 +23,12 @@ local p,sel,i,pos;
   if pos=fail then
     return fail;
   fi;
-  if PERFSELECT[pos] then
+  if IsBound(PERFGRP[pos]) then
     return pos;
   fi;
   # get the file number
   p:=PositionSorted(PERFRec.covered,pos);
-  if SizeBlist(PERFSELECT)>50 then
-    # throw away old to free memory
-    sel:=Filtered([1..PERFRec.length],i->PERFSELECT[i]);
-    sel:=sel{[1..Length(sel)-25]};
-    for i in sel do
-      Unbind(PERFGRP[i]);
-      PERFSELECT[i]:=false;
-    od;
-  fi;
   ReadGrp(Concatenation("perf",String(p),".grp"));
-  # store loaded info
-  if p=1 then
-    p:=[0,PERFRec.covered[p]];
-  else
-    p:=PERFRec.covered{[p-1,p]};
-  fi;
-  for i in [p[1]+1..p[2]] do
-    PERFSELECT[i]:=true;
-  od;
   return pos;
 end );
 

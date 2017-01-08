@@ -11,7 +11,6 @@
 
 
 PERFRec := fail; # indicator that perf0.grp is not loaded
-PERFSELECT := [];
 PERFGRP := [];
 
 
