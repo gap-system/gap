@@ -763,27 +763,42 @@ InstallGlobalFunction( MU_Finalize, function (  )
   fi;
 end );
 
-InstallMethod( MemoryUsage, "fallback method for objs without subobjs",
+InstallMethod( MemoryUsage, "generic fallback method",
   [ IsObject ],
   function( o )
-    local mem;
-    mem := SHALLOW_SIZE(o);
-    if mem = 0 then 
+    local mem,known,i,s;
+
+    if SHALLOW_SIZE(o) = 0 then
         return MU_MemPointer;
-    else
-        # a proper object, thus we have to add it to the database
-        # to not count it again!
-        if not(MU_AddToCache(o)) then
-            mem := mem + MU_MemBagHeader + MU_MemPointer;
-            # This is for the bag, the header, and the master pointer
-        else 
-            mem := 0;   # already counted
-        fi;
-        if MEMUSAGECACHE.depth = 0 then   
-            # we were the first to be called, thus we have to do the cleanup
-            ClearObjectMarker( MEMUSAGECACHE );
-        fi;
     fi;
+
+    if MU_AddToCache( o ) then
+        return 0;    # already counted
+    fi;
+
+    MEMUSAGECACHE.depth := MEMUSAGECACHE.depth + 1;
+
+    # Count the bag, the header, and the master pointer
+    mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
+    if IS_POSOBJ(o) then
+        # Again the bag, its header, and the master pointer
+        for i in [1..LEN_POSOBJ(o)] do
+            if IsBound(o![i]) then
+                if SHALLOW_SIZE(o![i]) > 0 then    # a subobject!
+                    mem := mem + MemoryUsage(o![i]);
+                fi;
+            fi;
+        od;
+    elif IS_COMOBJ(o) then
+        # Again the bag, its header, and the master pointer
+        for i in NamesOfComponents(o) do
+            s := o!.(i);
+            if SHALLOW_SIZE(s) > 0 then    # a subobject!
+                mem := mem + MemoryUsage(s);
+            fi;
+        od;
+    fi;
+    MU_Finalize();
     return mem;
   end );
 
@@ -820,49 +835,6 @@ InstallMethod( MemoryUsage, "for a record",
         # Again the bag, its header, and the master pointer
         for i in RecFields(o) do
             s := o.(i);
-            if SHALLOW_SIZE(s) > 0 then    # a subobject!
-                mem := mem + MemoryUsage(s);
-            fi;
-        od;
-        MU_Finalize();
-        return mem;
-    fi;
-    return 0;    # already counted
-  end );
-
-InstallMethod( MemoryUsage, "for a positional object",
-  [ IsPositionalObjectRep ],
-  function( o )
-    local mem,known,i;
-    known := MU_AddToCache( o );
-    if known = false then    # not yet known
-        MEMUSAGECACHE.depth := MEMUSAGECACHE.depth + 1;
-        mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
-        # Again the bag, its header, and the master pointer
-        for i in [1..(SHALLOW_SIZE(o)/MU_MemPointer)-1] do
-            if IsBound(o![i]) then
-                if SHALLOW_SIZE(o![i]) > 0 then    # a subobject!
-                    mem := mem + MemoryUsage(o![i]);
-                fi;
-            fi;
-        od;
-        MU_Finalize();
-        return mem;
-    fi;
-    return 0;    # already counted
-  end );
-
-InstallMethod( MemoryUsage, "for a component object",
-  [ IsComponentObjectRep ],
-  function( o )
-    local mem,known,i,s;
-    known := MU_AddToCache( o );
-    if known = false then    # not yet known
-        MEMUSAGECACHE.depth := MEMUSAGECACHE.depth + 1;
-        mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
-        # Again the bag, its header, and the master pointer
-        for i in NamesOfComponents(o) do
-            s := o!.(i);
             if SHALLOW_SIZE(s) > 0 then    # a subobject!
                 mem := mem + MemoryUsage(s);
             fi;

@@ -1519,11 +1519,6 @@ gap> d:=NewDictionary(3213,true);;
 gap> LookupDictionary(d,4);
 fail
 
-# 2007/12/14 (MN)
-gap> a := [1..100];;
-gap> MemoryUsage(a)=MemoryUsage(a);
-true
-
 # 2008/01/02 (AH)
 gap> G:=SmallGroup(1308,1);
 <pc group of size 1308 with 4 generators>
