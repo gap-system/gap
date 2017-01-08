@@ -129,4 +129,14 @@ gap> PerfectGroup(77760, 1);
 A5 # 2^4 3^4 [1]
 
 #
+# construct all perfect groups, to verify this works
+# TODO: slow (takes a few seconds), move to teststandard?
+#
+gap> for n in SizesPerfectGroups() do
+>   for i in [1..NumberPerfectLibraryGroups(n)] do
+>     PerfectGroup(n, i);
+>   od;
+> od;
+
+#
 gap> STOP_TEST("perfectgroups.tst", 10000);
