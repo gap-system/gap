@@ -154,11 +154,8 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
        Gi:=Image(rep,G);
      fi;
      Info(InfoGroup,2,"Trying degree ",NrMovedPoints(Gi));
-     repi:=InverseGeneralMapping(rep);
-     maps:=List(sel,x->repi*autos[x]*rep);
-     for v in maps do
-       SetIsBijective(v,true);
-     od;
+     maps:=List(sel,x->InducedAutomorphism(rep,autos[x]));
+     #for v in maps do SetIsBijective(v,true); od;
      if ForAll(maps,IsConjugatorAutomorphism) then
 	# the representation extends
 	v:=List( maps, ConjugatorOfConjugatorIsomorphism );
@@ -186,6 +183,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
 
 	fi;
      else
+       #Error("ZZZ");
        Info(InfoGroup,2,"Does not work");
      fi;
      return fail;
@@ -233,11 +231,13 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
 
     # otherwise go to new small deg rep
     G:=Image(iso,G);
-    autos:=List(autos,x->InverseGeneralMapping(iso)*x*iso);
+    autos:=List(autos,x->InducedAutomorphism(iso,x));
   fi;
 
-  # test the automorphisms that are not conjugator
-  seln:=Filtered(sel,x->not IsConjugatorAutomorphism(autos[x]));
+  # test the automorphisms that are not inner. (The conjugator automorphisms
+  # have no reason to be normal in all automoirphisms, so this will not
+  # work.)
+  seln:=Filtered(sel,x->not IsInnerAutomorphism(autos[x]));
 
   # autos{seln} generates the non-perm automorphism group. Enumerate
   # use that automorphism is conjugator is stabilizer is conjugate
@@ -246,18 +246,19 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   i:=1;
   while i<=Length(stabs) do
     for j in seln do
-      map:=outs[i]*autos[j];
       sub:=Image(autos[j],stabs[i]);
       p:=0;
       found:=fail;
       while found=fail and p<Length(stabs) do
 	p:=p+1;
 	found:=RepresentativeAction(G,sub,stabs[p]);
+	#Print(j," maps ",i," to ",p,"\n");
       od;
 
       if found=fail then
 	# new copy
 	Add(stabs,sub);
+	map:=outs[i]*autos[j];
 	Add(outs,map);
       fi;
 
@@ -279,7 +280,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   for i in GeneratorsOfGroup(G) do
     a:=One(d);
     for j in [1..Length(stabs)] do
-      a:=a*Image(Embedding(d,j),Image(outs[j],i));
+      a:=a*Image(Embedding(d,j),PreImagesRepresentative(outs[j],i));
     od;
     Add(p,a);
   od;
