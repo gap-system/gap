@@ -155,4 +155,37 @@ gap> MTX.IsIrreducible(randM);
 true
 
 #
+# Tests for individual Smash meataxe functions
+#
+
+#
+gap> m:=RegularModule(SymmetricGroup(3), GF(2));
+[ [ (1,2,3), (1,2) ], 
+  rec( IsOverFiniteField := true, dimension := 6, field := GF(2), 
+      generators := [ <an immutable 6x6 matrix over GF2>, 
+          <an immutable 6x6 matrix over GF2> ], isMTXModule := true ) ]
+gap> res:=SMTX.BasesCSSmallDimUp(m[2]);
+[ [  ], [ <a GF2 vector of length 6> ], 
+  [ <a GF2 vector of length 6>, <a GF2 vector of length 6> ], 
+  [ <a GF2 vector of length 6>, <a GF2 vector of length 6>, 
+      <a GF2 vector of length 6>, <a GF2 vector of length 6> ], 
+  [ <a GF2 vector of length 6>, <a GF2 vector of length 6>, 
+      <a GF2 vector of length 6>, <a GF2 vector of length 6>, 
+      <a GF2 vector of length 6>, <a GF2 vector of length 6> ] ]
+gap> Display(Concatenation(res));
+ 1 1 1 1 1 1
+ 1 . . 1 1 .
+ . 1 1 . . 1
+ 1 . . . 1 1
+ . 1 . . 1 .
+ . . 1 . 1 1
+ . . . 1 . 1
+ 1 . . . . .
+ . 1 . . . .
+ . . 1 . . .
+ . . . 1 . .
+ . . . . 1 .
+ . . . . . 1
+
+#
 gap> STOP_TEST("meataxe.tst", 10000);
