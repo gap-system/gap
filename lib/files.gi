@@ -142,7 +142,7 @@ end );
 BindGlobal("MakeExternalFilename",
   function(name)
     local path, prefix;
-    if ARCH_IS_WINDOWS() then
+    if ARCH_IS_WINDOWS() and name <> fail then
         prefix := First( [ "/proc/cygdrive/", "/cygdrive/" ], s -> StartsWith( name, s ) );
         if prefix <> fail then
             path := Concatenation("C:",name{[Length(prefix)+2..Length(name)]});
