@@ -1808,15 +1808,6 @@ true
 gap> (Z(65536)^2)^LogFFE(Z(65536)^16386,Z(65536)^2) = Z(65536)^16386;
 true
 
-# Reported by TB on 2009/11/09, added by AK on 2011/01/20
-# Log2Int(2^60) bug (a 64bit/GMP issue)
-gap> Log2Int( 2^60 );
-60
-
-# Reported by Chris Jefferson on 20151008 in github issue #282
-gap> Log2Int( -2^60 );
-60
-
 # Reported by WDeMeo on 2011/02/19, added by JS on 2011/03/09
 # IntermediateSubgroups(G,normal) included non-maximal inclusions
 gap> g:=CyclicGroup(2^6);; IntermediateSubgroups( g, TrivialSubgroup(g) ).inclusions;
