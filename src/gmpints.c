@@ -250,12 +250,6 @@ static inline Obj NEW_INTNEG( Obj gmp )
 **  small int or resizes the bag if possible.
 **  
 */
-Obj FuncGMP_NORMALIZE( Obj self, Obj gmp )
-{
-  if ( !IS_LARGEINT(gmp) ) return Fail;
-  return GMP_NORMALIZE( gmp );
-}
-
 Obj GMP_NORMALIZE ( Obj gmp )
 {
   TypGMPSize size;
@@ -273,18 +267,12 @@ Obj GMP_NORMALIZE ( Obj gmp )
   return gmp;
 }
 
-Obj FuncGMP_REDUCE( Obj self, Obj gmp )
-{
-  if ( !IS_LARGEINT(gmp) ) return Fail;
-  return GMP_REDUCE( gmp );
-}
-
 Obj GMP_REDUCE( Obj gmp )
 {
   if IS_INTOBJ( gmp ) {
     return gmp;
   }
-  if ( SIZE_INT(gmp) == 1){
+  if ( SIZE_INT(gmp) == 1) {
     if ( ( VAL_LIMB0(gmp) < (TypLimb)((1L<<NR_SMALL_INT_BITS)) ) ||
          ( IS_INTNEG(gmp) && 
            ( VAL_LIMB0(gmp) == (TypLimb)(1L<<NR_SMALL_INT_BITS) ) ) ) {
@@ -2531,12 +2519,6 @@ static StructGVarFunc GVarFuncs [] = {
   { "POW_OBJ_INT", 2, "obj, gmp",
     FuncPOW_OBJ_INT, "src/gmpints.c:POW_OBJ_INT" },
   
-  { "GMP_REDUCE", 1, "obj",
-    FuncGMP_REDUCE, "src/gmpints.c:GMP_REDUCE" },
-
-  { "GMP_NORMALIZE", 1, "obj",
-    FuncGMP_NORMALIZE, "src/gmpints.c:GMP_NORMALIZE" },
-
   { "HexStringInt", 1, "gmp",
     FuncHexStringInt, "src/gmpints.c:HexStringInt" },
   
