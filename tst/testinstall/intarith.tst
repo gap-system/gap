@@ -452,6 +452,24 @@ gap> dataInv + data;
 gap> List(data, AbsInt);
 [ 100000000000000000001, 100000000000000000000, 10000, 1, 0, 1, 10000, 
   100000000000000000000, 100000000000000000001 ]
+gap> AbsInt(-2^28) = 2^28;  # corner case on 32bit systems
+true
+gap> AbsInt(-2^60) = 2^60;  # corner case on 64bit systems
+true
+gap> AbsInt(fail);
+Error, AbsRat: argument must be a rational or integer (not a boolean or fail)
+gap> ABS_INT(fail);
+Error, AbsInt: argument must be an integer (not a boolean or fail)
+
+#
+# SignInt
+#
+gap> List(data, SignInt);
+[ -1, -1, -1, -1, 0, 1, 1, 1, 1 ]
+gap> SignInt(fail);
+Error, SignRat: argument must be a rational or integer (not a boolean or fail)
+gap> SIGN_INT(fail);
+Error, SignInt: argument must be an integer (not a boolean or fail)
 
 #
 # HexStringInt and IntHexString
