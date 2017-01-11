@@ -84,6 +84,11 @@ extern "C" {
 #define IS_INTNEG(obj)          (TNUM_OBJ(obj) == T_INTNEG)
 #define IS_LARGEINT(obj)        (IS_INTPOS(obj) || IS_INTNEG(obj))
 
+#define IS_NEGATIVE(obj)        (IS_INTOBJ(obj) ? ((Int)obj < 0) : IS_INTNEG(obj))
+#define IS_ODD(obj)             (IS_INTOBJ(obj) ? ((Int)obj & 4) : (VAL_LIMB0(obj) & 1))
+#define IS_EVEN(obj)            (!IS_ODD(obj))
+
+
 /* for fallbacks to library */
 Obj String;
 
@@ -1558,44 +1563,40 @@ Obj PowInt ( Obj gmpL, Obj gmpR )
 {
   Int                 i;
   Obj                 pow;
-  
-  /* power with a large exponent                                         */
-  if ( ! IS_INTOBJ(gmpR) ) {
-    if ( gmpL == INTOBJ_INT(0) )
-      pow = INTOBJ_INT(0);
-    else if ( gmpL == INTOBJ_INT(1) )
-      pow = INTOBJ_INT(1);
-    else if ( gmpL == INTOBJ_INT(-1) && ADDR_INT(gmpR)[0] % 2 == 0 )
-      pow = INTOBJ_INT(1);
-    else if ( gmpL == INTOBJ_INT(-1) && ADDR_INT(gmpR)[0] % 2 != 0 )
-      pow = INTOBJ_INT(-1);
-    else {
-      gmpR = ErrorReturnObj(
-                            "Integer operands: <exponent> is too large",
-                            0L, 0L,
-                            "you can replace the integer <exponent> via 'return <exponent>;'" );
-      return POW( gmpL, gmpR );
-    }
+
+  if ( gmpR == INTOBJ_INT(0) ) {
+    pow = INTOBJ_INT(1);
   }
-  
-  /* power with a negative exponent                                      */
-  else if ( INT_INTOBJ(gmpR) < 0 ) {
-    if ( gmpL == INTOBJ_INT(0) ) {
+  else if ( gmpL == INTOBJ_INT(0) ) {
+    if ( IS_NEGATIVE( gmpR ) ) {
       gmpL = ErrorReturnObj(
                             "Integer operands: <base> must not be zero",
                             0L, 0L,
                             "you can replace the integer <base> via 'return <base>;'" );
       return POW( gmpL, gmpR );
     }
-    else if ( gmpL == INTOBJ_INT(1) )
-      pow = INTOBJ_INT(1);
-    else if ( gmpL == INTOBJ_INT(-1) && INT_INTOBJ(gmpR) % 2 == 0 )
-      pow = INTOBJ_INT(1);
-    else if ( gmpL == INTOBJ_INT(-1) && INT_INTOBJ(gmpR) % 2 != 0 )
-      pow = INTOBJ_INT(-1);
-    else
-      pow = QUO( INTOBJ_INT(1),
-                 PowInt( gmpL, INTOBJ_INT( -INT_INTOBJ(gmpR)) ) );
+    pow = INTOBJ_INT(0);
+  }
+  else if ( gmpL == INTOBJ_INT(1) ) {
+    pow = INTOBJ_INT(1);
+  }
+  else if ( gmpL == INTOBJ_INT(-1) ) {
+    pow = IS_EVEN(gmpR) ? INTOBJ_INT(1) : INTOBJ_INT(-1);
+  }
+
+  /* power with a large exponent */
+  else if ( ! IS_INTOBJ(gmpR) ) {
+    gmpR = ErrorReturnObj(
+                          "Integer operands: <exponent> is too large",
+                          0L, 0L,
+                          "you can replace the integer <exponent> via 'return <exponent>;'" );
+    return POW( gmpL, gmpR );
+  }
+  
+  /* power with a negative exponent */
+  else if ( INT_INTOBJ(gmpR) < 0 ) {
+    pow = QUO( INTOBJ_INT(1),
+               PowInt( gmpL, INTOBJ_INT( -INT_INTOBJ(gmpR)) ) );
   }
   
   /* findme - can we use the gmp function mpz_n_pow_ui? */
@@ -1612,7 +1613,7 @@ Obj PowInt ( Obj gmpL, Obj gmpR )
     }
   }
   
-  /* return the power                                                    */
+  /* return the power */
   return pow;
 }
 
