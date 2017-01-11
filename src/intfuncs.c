@@ -459,6 +459,23 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
   Int n;
   Int offs;
 
+  if ( IS_INTOBJ(obj) )
+    return obj;
+
+  if ( IS_FFE(obj) ) {
+    /* We must be careful here, as different FFEs can represent equal
+       values (e.g. 0*Z(2^2) and 0*Z(2) compare as equal). Thus, we cannot
+       simply use the bit pattern of obj to compute a hash, as a well-defined
+       hash function must satisfy the implication
+          obj1 = obj2 => HASH(obj1) = HASH(obj2)
+       There are different ways to do this for FFEs, with different trade-offs.
+       Instead of making an arbitrary choice here, let's just refuse to
+       compute a hash here, and require the caller to provide a custom hash
+       function tailored to their needs.
+     */
+    ErrorMayQuit("HASHKEY_BAG: <obj> must not be an FFE", 0, 0);
+  }
+
   /* check the arguments                                                 */
   while ( TNUM_OBJ(opSeed) != T_INT ) {
       opSeed = ErrorReturnObj(

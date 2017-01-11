@@ -3138,11 +3138,17 @@ gap> Length(oe.vectors); Length(oe.solutions);
 159
 0
 
-# 2016/12/20 (MH); also issue #676
+# 2016/12/20 (MH); see also issue #676
 gap> Z(6,3);
 Error, Z: <p> must be a prime
 gap> Z(4,5);
 Error, Z: <p> must be a prime
+
+# 2017-01-09 (MH); see also issue #817
+gap> HashKeyBag(4,1,1,-1); # should not crash anymore
+4
+gap> HashKeyBag(Z(4),1,1,-1); # should not crash anymore
+Error, HASHKEY_BAG: <obj> must not be an FFE
 
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 831990000);
