@@ -5059,6 +5059,9 @@ InstallMethod( KnowsHowToDecompose,
 ##
 InstallGlobalFunction(HasAbelianFactorGroup,function(G,N)
 local gen;
+  if HasIsAbelian(G) and IsAbelian(G) then
+    return true;
+  fi;
   Assert(2,IsNormal(G,N) and IsSubgroup(G,N));
   gen:=Filtered(GeneratorsOfGroup(G),i->not i in N);
   return ForAll([1..Length(gen)],
@@ -5070,11 +5073,29 @@ end);
 #M  HasSolvableFactorGroup(<G>,<N>)   test whether G/N is solvable
 ##
 InstallGlobalFunction(HasSolvableFactorGroup,function(G,N)
-local s,l;
+local gen, D, s, l;
+
+  if HasIsSolvableGroup(G) and IsSolvableGroup(G) then
+    return true;
+  fi;
   Assert(2,IsNormal(G,N) and IsSubgroup(G,N));
-  s := DerivedSeriesOfGroup(G);
-  l := Length(s);
-  return IsSubgroup(N,s[l]);
+  if HasDerivedSeriesOfGroup(G) then
+    s := DerivedSeriesOfGroup(G);
+    l := Length(s);
+    return IsSubgroup(N,s[l]);
+  fi;
+  D := G;
+  repeat
+    gen:=Filtered(GeneratorsOfGroup(D),i->not i in N);
+    if ForAll([1..Length(gen)],
+                i->ForAll([1..i-1],j->Comm(gen[i],gen[j]) in N)) then
+      return true;
+    fi;
+    D := DerivedSubgroup(D);
+  until IsPerfectGroup(D);
+  # this may be dangerous if N does not contain the identity of G
+  SetIsSolvableGroup(G, false);
+  return false;
 end);
 
 #############################################################################
@@ -5083,10 +5104,16 @@ end);
 ##
 InstallGlobalFunction(HasElementaryAbelianFactorGroup,function(G,N)
 local gen,p;
+  if HasIsElementaryAbelian(G) and IsElementaryAbelian(G) then
+    return true;
+  fi;
   if not HasAbelianFactorGroup(G,N) then
     return false;
   fi;
   gen:=Filtered(GeneratorsOfGroup(G),i->not i in N);
+  if gen = [] then
+    return true;
+  fi;
   p:=First([2..Order(gen[1])],i->gen[1]^i in N);
   return IsPrime(p) and ForAll(gen{[2..Length(gen)]},i->i^p in N);
 end);
