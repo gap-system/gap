@@ -238,7 +238,8 @@ static inline Obj NEW_INT( Obj gmp )
 **
 *F  NEW_INTPOS( <gmp> )
 **
-**
+**  Take an T_INTPOS or T_INTNEG and create a new T_INTPOS with identical
+**  content. Useful to duplicate integers, or take the absolute value.
 */
 static inline Obj NEW_INTPOS( Obj gmp )
 {
