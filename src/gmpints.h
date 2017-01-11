@@ -138,6 +138,7 @@ extern  Obj             SumInt (
                                 Obj                 opL,
                                 Obj                 opR );
 
+
 /****************************************************************************
 **
 *F  SumOrDiffInt( <gmpL>, <gmpR>, <sign> )  . . . . . . . sum of two integers
@@ -163,6 +164,21 @@ extern  Obj             SumOrDiffInt (
 extern  Obj             DiffInt (
                                  Obj                 opL,
                                  Obj                 opR );
+
+
+/****************************************************************************
+**
+*F  AbsInt(<op>) . . . . . . . . . . . . . . .  absolute value of an integer
+*/
+extern Obj AbsInt( Obj op );
+
+
+/****************************************************************************
+**
+*F  SignInt(<op>) . . . . . . . . . . . . . . . . . . . . sign of an integer
+*/
+extern Obj SignInt( Obj op );
+
 
 /****************************************************************************
 **
