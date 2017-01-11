@@ -173,6 +173,8 @@ gap> List(data{[5..9]}, x -> 0^x);
 [ 1, 0, 0, 0, 0 ]
 gap> 0^-1;
 Error, Integer operands: <base> must not be zero
+gap> 0^-12345678901234567890;
+Error, Integer operands: <base> must not be zero
 gap> List(data, x -> 1^x);
 [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
 gap> List(data, x -> (-1)^x);
