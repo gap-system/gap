@@ -231,23 +231,6 @@ static inline Obj NEW_INTPOS( Obj gmp )
 
 /****************************************************************************
 **
-*F  NEW_INTNEG( <gmp> )
-**
-**
-**
-static inline Obj NEW_INTNEG( Obj gmp )
-{
-  Obj new;
-
-  new = NewBag( T_INTNEG, SIZE_OBJ(gmp) );
-  memcpy( ADDR_INT(new), ADDR_INT(gmp), SIZE_OBJ(gmp) );
-
-  return new;
-}
-*/
-
-/****************************************************************************
-**
 *F  GMP_NORMALIZE( <gmp> ) . . . . . . .  remove leading zeros from a GMP bag
 **
 **  'GMP_NORMALIZE' removes any leading zeros from a <GMP> and returns a
@@ -1525,8 +1508,6 @@ Obj ProdIntObj ( Obj n, Obj op )
   return res;
 }
 
-Obj ProdIntObjFunc;
-
 Obj FuncPROD_INT_OBJ ( Obj self, Obj opL, Obj opR )
 {
   return ProdIntObj( opL, opR );
@@ -1688,8 +1669,6 @@ Obj             PowObjInt ( Obj op, Obj n )
   /* return the result                                                   */
   return res;
 }
-
-Obj PowObjIntFunc;
 
 Obj FuncPOW_OBJ_INT ( Obj self, Obj opL, Obj opR )
 {
@@ -2358,9 +2337,6 @@ Obj FuncGCD_INT ( Obj self, Obj opL, Obj opR )
 
 
 
-
-
-
 /****************************************************************************
 **
 ** * * * * * * * "Mersenne twister" random numbers  * * * * * * * * * * * * *
@@ -2385,9 +2361,6 @@ Obj FuncGCD_INT ( Obj self, Obj opL, Obj opR )
 **  integer digit lengths and different ranges of small integers).
 **  
 */
-/* for comparison in case result is small int */
-Obj SMALLEST_INTPOS = NULL;
-
 Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 {
   Obj res;
@@ -2618,7 +2591,6 @@ static Int InitKernel ( StructInitInfo * module )
   ImportGVarFromLibrary( "TYPE_INT_SMALL_NEG",  &TYPE_INT_SMALL_NEG );
   ImportGVarFromLibrary( "TYPE_INT_LARGE_POS", &TYPE_INT_LARGE_POS );
   ImportGVarFromLibrary( "TYPE_INT_LARGE_NEG", &TYPE_INT_LARGE_NEG );
-  ImportGVarFromLibrary( "SMALLEST_INTPOS", &SMALLEST_INTPOS );
 
   ImportFuncFromLibrary( "String", &String );
   ImportFuncFromLibrary( "One", &OneAttr);
@@ -2642,18 +2614,9 @@ static Int InitKernel ( StructInitInfo * module )
 */
 static Int InitLibrary ( StructInitInfo *    module )
 {
-  UInt gvar; 
-
   /* init filters and functions                                            */
   InitGVarFiltsFromTable( GVarFilts );
   InitGVarFuncsFromTable( GVarFuncs );
-  
-  SMALLEST_INTPOS = NewBag( T_INTPOS, sizeof(TypLimb) );
-  SET_VAL_LIMB0(SMALLEST_INTPOS, (1L<<NR_SMALL_INT_BITS));
-  gvar = GVarName("SMALLEST_INTPOS");
-  MakeReadWriteGVar( gvar );
-  AssGVar( gvar, SMALLEST_INTPOS );
-  MakeReadOnlyGVar(gvar);
   
   /* return success                                                        */
   return 0;
