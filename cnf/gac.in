@@ -156,8 +156,6 @@ OBJECTS="\
     @ITANIUMOBJ@
 "
 
-EXTOBJS=
-
 
 #############################################################################
 ##
@@ -514,9 +512,6 @@ if [ $comp_howfar = "link" ]; then
 
         for object in $OBJECTS;  do
             objects="${gap_binary}/${object} ${objects}"
-        done
-        for object in $EXTOBJS;  do
-            objects="${gap_dir}/${object} ${objects}"
         done
 
         c_link ${output} "${objects}"
