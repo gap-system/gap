@@ -817,50 +817,22 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 **  'EqInt' returns 1  if  the two integer   arguments <intL> and  <intR> are
 **  equal and 0 otherwise.
 */
-
-  /* findme - For comparisons, do we first normalize and, if possible,
-     reduce? Or (for one small, one gmp int) make the small int into a
-     1-limb gmp to compare to the gmp. Or should we assume that gmp ints
-     cannot be 'small'? */
-
 Int EqInt ( Obj gmpL, Obj gmpR )
 {
-  Obj opL;
-  Obj opR;
+  /* compare two small integers */
+  if ( ARE_INTOBJS( gmpL, gmpR ) )
+    return gmpL == gmpR;
 
-  /* compare two small integers                                          */
-  if ( ARE_INTOBJS( gmpL, gmpR ) ) {
-    if ( INT_INTOBJ(gmpL) == INT_INTOBJ(gmpR) )  return 1L;
-    else                                       return 0L;
-  }
+  /* a small int cannot equal a large int */
+  if ( IS_INTOBJ(gmpL) != IS_INTOBJ(gmpR) )
+    return 0;
 
-  /* small ints fit into one limb of a GMP                                 */
-  if (IS_INTOBJ(gmpL)) {
-    if ( ( INT_INTOBJ(gmpL) <  0 && IS_INTPOS(gmpR) ) ||
-         ( 0 <= INT_INTOBJ(gmpL) && IS_INTNEG(gmpR) ) ||
-         ( SIZE_INT(gmpR) > (TypGMPSize)1 ) ) return 0L;
-    opL = GMP_INTOBJ( gmpL );
-  }
-  else {
-    opL = gmpL;
-  }
-
-  if (IS_INTOBJ(gmpR)) {
-    if ( ( INT_INTOBJ(gmpR) <  0 && IS_INTPOS(gmpL) ) ||
-         ( 0 <= INT_INTOBJ(gmpR) && IS_INTNEG(gmpL) ) ||
-         ( SIZE_INT(gmpL) > (TypGMPSize)1 ) ) return 0L;
-    opR = GMP_INTOBJ( gmpR );
-  }
-  else {
-    opR = gmpR;
-  }
-
-  /* compare the sign and size                                             */
-  if ( TNUM_OBJ(opL) != TNUM_OBJ(opR)
-       || SIZE_INT(opL) != SIZE_INT(opR) )
+  /* compare the sign and size */
+  if ( TNUM_OBJ(gmpL) != TNUM_OBJ(gmpR)
+       || SIZE_INT(gmpL) != SIZE_INT(gmpR) )
     return 0L;
 
-  if ( mpn_cmp( ADDR_INT(opL), ADDR_INT(opR), SIZE_INT(opL) ) == 0 ) 
+  if ( mpn_cmp( ADDR_INT(gmpL), ADDR_INT(gmpR), SIZE_INT(gmpL) ) == 0 ) 
     return 1L;
   else
     return 0L;
