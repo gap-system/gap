@@ -1718,7 +1718,7 @@ Obj ModInt ( Obj opL, Obj opR )
     if (      0 <= i && 0 <= k )  i =       (  i %  k );
     else if ( 0 <= i && k <  0 )  i =       (  i % -k );
     else if ( i < 0  && 0 <= k )  i = ( k - ( -i %  k )) % k;
-    else if ( i < 0  && k <  0 )  i = (-k - ( -i % -k )) % k;
+    else if ( i < 0  && k <  0 )  i = (-k - ( -i % -k )) % -k;
     mod = INTOBJ_INT( i );
     
   }
