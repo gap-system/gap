@@ -76,8 +76,6 @@ extern "C" {
 #define LoadLimb LoadUInt4
 #endif
 
-#define INTBASE            (1L << (GMP_LIMB_BITS/2))
-
 
 /* macros to save typing later :)                                          */
 #define VAL_LIMB0(obj)         ( *(TypLimb *)ADDR_OBJ(obj)                  )
@@ -1798,9 +1796,9 @@ Obj ModInt ( Obj opL, Obj opR )
     /* get the integer value, make positive                                */
     i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
     
-    /* maybe it's trivial                                                  */
-    if ( INTBASE % i == 0 ) {
-      c = ADDR_INT(opL)[0] % i;
+    /* check whether right operand is a small power of 2                   */
+    if ( i <= (1L<<NR_SMALL_INT_BITS) && !(i & (i-1)) ) {
+      c = VAL_LIMB0(opL) & (i-1);
     }
     
     /* otherwise use the gmp function to divide                            */
@@ -2088,20 +2086,22 @@ Obj RemInt ( Obj opL, Obj opR )
   /* compute the remainder of a large integer by a small integer           */
   else if ( IS_INTOBJ(opR) ) {
     
-    /* maybe it's trivial                                                   */
-    if ( INTBASE % INT_INTOBJ(AbsInt(opR)) == 0 ) {
-      c = ADDR_INT(opL)[0] % INT_INTOBJ(AbsInt(opR));
+    /* get the integer value, make positive                                */
+    i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
+
+    /* check whether right operand is a small power of 2                   */
+    if ( i <= (1L<<NR_SMALL_INT_BITS) && !(i & (i-1)) ) {
+      c = VAL_LIMB0(opL) & (i-1);
     }
     
-    /* otherwise run through the left operand and divide digitwise         */
+    /* otherwise use the gmp function to divide                            */
     else {
-      opR = FuncGMP_INTOBJ( (Obj)0, opR );
-      c = mpn_mod_1( ADDR_INT(opL), SIZE_INT(opL), *ADDR_INT(opR) );
+      c = mpn_mod_1( ADDR_INT(opL), SIZE_INT(opL), i );
     }
     
     /* now c is the result, it has the same sign as the left operand       */
     if ( TNUM_OBJ(opL) == T_INTPOS )
-      rem = INTOBJ_INT(  c );
+      rem = INTOBJ_INT( c );
     else
       rem = INTOBJ_INT( -(Int)c );
     
