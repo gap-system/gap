@@ -336,7 +336,7 @@ extern  Obj             GF_NEXT_ITER;
 static inline  Obj C_MAKE_INTEGER_BAG( UInt size, UInt type)  {
   /* Round size up to nearest multiple of INTEGER_ALLOCATION_SIZE */
   return NewBag(type,INTEGER_ALLOCATION_SIZE*
-		((size + INTEGER_ALLOCATION_SIZE-1)/INTEGER_ALLOCATION_SIZE));
+                ((size + INTEGER_ALLOCATION_SIZE-1)/INTEGER_ALLOCATION_SIZE));
 }
 
 
@@ -355,7 +355,7 @@ static inline void C_SET_LIMB2(Obj bag, UInt limbnumber, UInt2 value)  {
     p = ((UInt4 *)ADDR_OBJ(bag)) + limbnumber / 2;
     *p = (*p & 0xFFFF0000UL) | (UInt4)value;
   }
-#else
+#elif INTEGER_UNIT_SIZE == 8
   UInt8 *p;
     p  = ((UInt8 *)ADDR_OBJ(bag)) + limbnumber/4;
     switch(limbnumber % 4) {
@@ -372,7 +372,9 @@ static inline void C_SET_LIMB2(Obj bag, UInt limbnumber, UInt2 value)  {
       *p = (*p & 0x0000FFFFFFFFFFFFUL) | ((UInt8)value << 48);
       break;
     }
-#endif  
+#else
+    #error unsupported INTEGER_UNIT_SIZE
+#endif
 }
 
 static inline void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)  {
@@ -388,9 +390,11 @@ static inline void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)  {
     p = ((UInt8 *)ADDR_OBJ(bag)) + limbnumber / 2;
     *p = (*p & 0xFFFFFFFF00000000UL) | (UInt8)value;
   }
-#else
+#elif INTEGER_UNIT_SIZE == 8
   ((UInt2 *)ADDR_OBJ(bag))[2*limbnumber] = (UInt2)(value & 0xFFFFUL);
   ((UInt2 *)ADDR_OBJ(bag))[2*limbnumber+1] = (UInt2)(value >>16);
+#else
+   #error unsupported INTEGER_UNIT_SIZE
 #endif  
 }
 
@@ -402,11 +406,13 @@ static inline void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value)  {
 #elif INTEGER_UNIT_SIZE == 4
   ((UInt4 *)ADDR_OBJ(bag))[2*limbnumber] = (UInt4)(value & 0xFFFFFFFFUL);
   ((UInt4 *)ADDR_OBJ(bag))[2*limbnumber+1] = (UInt4)(value >>32);
-#else
+#elif INTEGER_UNIT_SIZE == 8
   ((UInt2 *)ADDR_OBJ(bag))[4*limbnumber] = (UInt2)(value & 0xFFFFULL);
   ((UInt2 *)ADDR_OBJ(bag))[4*limbnumber+1] = (UInt2)((value & 0xFFFF0000ULL) >>16);
   ((UInt2 *)ADDR_OBJ(bag))[4*limbnumber+2] = (UInt2)((value & 0xFFFF00000000ULL) >>32);
   ((UInt2 *)ADDR_OBJ(bag))[4*limbnumber+3] = (UInt2)(value >>48);
+#else
+   #error unsupported INTEGER_UNIT_SIZE
 #endif
 }
 
