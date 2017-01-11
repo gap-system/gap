@@ -1457,14 +1457,14 @@ Obj ProdIntObj ( Obj n, Obj op )
   TypLimb             l;              /* loop variable                     */
 
   /* if the integer is zero, return the neutral element of the operand     */
-  if      ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  0 ) {
+  if ( n == INTOBJ_INT(0) ) {
     res = ZERO( op );
   }
   
   /* if the integer is one, return the object if immutable -
      if mutable, add the object to its ZeroSameMutability to
      ensure correct mutability propagation                                 */
-  else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  1 ) {
+  else if ( n == INTOBJ_INT(1) ) {
     if (IS_MUTABLE_OBJ(op))
       res = SUM(ZERO(op),op);
     else
@@ -1472,13 +1472,12 @@ Obj ProdIntObj ( Obj n, Obj op )
   }
   
   /* if the integer is minus one, return the inverse of the operand        */
-  else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) == -1 ) {
+  else if ( n == INTOBJ_INT(-1) ) {
     res = AINV( op );
   }
   
   /* if the integer is negative, invert the operand and the integer        */
-  else if ( ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) <  -1 )
-            || IS_INTNEG(n) ) {
+  else if ( IS_NEGATIVE(n) ) {
     res = AINV( op );
     if ( res == Fail ) {
       return ErrorReturnObj(
