@@ -166,7 +166,7 @@ void SaveInt( Obj gmp )
 {
   TypLimb *ptr;
   UInt i;
-  ptr = (TypLimb *)ADDR_INT(gmp);
+  ptr = ADDR_INT(gmp);
   for (i = 0; i < SIZE_INT(gmp); i++)
     SaveLimb(*ptr++);
   return;
@@ -183,7 +183,7 @@ void LoadInt( Obj gmp )
 {
   TypLimb *ptr;
   UInt i;
-  ptr = (TypLimb *)ADDR_INT(gmp);
+  ptr = ADDR_INT(gmp);
   for (i = 0; i < SIZE_INT(gmp); i++)
     *ptr++ = LoadLimb();
   return;
@@ -256,7 +256,7 @@ Obj GMP_NORMALIZE ( Obj gmp )
     return gmp;
   }
   for ( size = SIZE_INT(gmp); size != (TypGMPSize)1; size-- ) {
-    if ( ADDR_INT(gmp)[(size - 1)] != (TypLimb)0 ) {
+    if ( ADDR_INT(gmp)[(size - 1)] != 0 ) {
       break;
     }
   }
@@ -272,9 +272,9 @@ Obj GMP_REDUCE( Obj gmp )
     return gmp;
   }
   if ( SIZE_INT(gmp) == 1) {
-    if ( ( VAL_LIMB0(gmp) < (TypLimb)((1L<<NR_SMALL_INT_BITS)) ) ||
+    if ( ( VAL_LIMB0(gmp) < ((1L<<NR_SMALL_INT_BITS)) ) ||
          ( IS_INTNEG(gmp) && 
-           ( VAL_LIMB0(gmp) == (TypLimb)(1L<<NR_SMALL_INT_BITS) ) ) ) {
+           ( VAL_LIMB0(gmp) == (1L<<NR_SMALL_INT_BITS) ) ) ) {
       if ( IS_INTNEG(gmp) ) {
         return INTOBJ_INT( -(Int)VAL_LIMB0(gmp) );
       }
@@ -416,7 +416,7 @@ void PrintInt ( Obj op )
       signlength = 0;
     }
     gmp_snprintf((char *)(buf+signlength),20000-signlength,
-                 "%Nd", (TypLimb *)ADDR_INT(op),
+                 "%Nd", ADDR_INT(op),
                  (TypGMPSize)SIZE_INT(op));
 
     /* print the buffer, %> means insert '\' before a linebreak            */
@@ -779,11 +779,11 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
     Char buf[20000];
 
     if IS_INTNEG(integer) {
-    len = gmp_snprintf( buf, sizeof(buf)-1, "-%Ni", (TypLimb *)ADDR_INT(integer),
+    len = gmp_snprintf( buf, sizeof(buf)-1, "-%Ni", ADDR_INT(integer),
           (TypGMPSize)SIZE_INT(integer) );
     }
     else {
-    len = gmp_snprintf( buf, sizeof(buf)-1,  "%Ni", (TypLimb *)ADDR_INT(integer),
+    len = gmp_snprintf( buf, sizeof(buf)-1,  "%Ni", ADDR_INT(integer),
           (TypGMPSize)SIZE_INT(integer) );
     }
 
@@ -1167,11 +1167,11 @@ be called directly */
       carry = mpn_add_1( ADDR_INT(res),
                          ADDR_INT(gmpL),SIZE_INT(gmpL),
                          VAL_LIMB0(gmpR) );
-      if ( carry == (TypLimb)0 ) {
+      if ( carry == 0 ) {
         ResizeBag( res, SIZE_OBJ(gmpL) );
       }
       else {
-        ( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = (TypLimb)1; /* = carry ? */
+        ( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = 1; /* = carry ? */
       }
       /* findme - debugging 231107
       res = GMP_NORMALIZE( res );
@@ -1204,11 +1204,11 @@ be called directly */
                             ADDR_INT(gmpL), SIZE_INT(gmpL),
                             ADDR_INT(gmpR), SIZE_INT(gmpR) );
       }
-      if ( carry == (TypLimb)0 ){
+      if ( carry == 0 ){
         ResizeBag( res, SIZE_OBJ(gmpL) );
       }
       else{
-        ( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = (TypLimb)1;
+        ( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = 1;
       }
       /* findme - don't need this after carry ? */
       /* res = GMP_NORMALIZE( res );
@@ -1259,7 +1259,7 @@ Obj AInvInt ( Obj gmp )
     if ( IS_INTPOS(gmp) ) {
       /* special case                                                        */
       if ( ( SIZE_INT(gmp) == 1 ) 
-           && ( VAL_LIMB0(gmp) == (TypLimb) (1L<<NR_SMALL_INT_BITS) ) ) {
+           && ( VAL_LIMB0(gmp) == (1L<<NR_SMALL_INT_BITS) ) ) {
         return INTOBJ_INT( -(Int) (1L<<NR_SMALL_INT_BITS) );
       }
       else {
@@ -1352,8 +1352,8 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
     if ( k < 0 )  k = -k;
     
     /* multiply                                                            */
-    tmp1 = (TypLimb)i;
-    tmp2 = (TypLimb)k;
+    tmp1 = i;
+    tmp2 = k;
     mpn_mul_n( ADDR_INT( prd ), &tmp1, &tmp2, 1 );
   }
   
@@ -1377,7 +1377,7 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
     /* eg: for 32 bit systems, the large integer 1<<28 times -1 is the small
        integer -(1<<28)                                                    */
     if ( ( k == -1 ) && (SIZE_INT(gmpL)==1) 
-         && ( VAL_LIMB0(gmpL) == (TypLimb)(1L<<NR_SMALL_INT_BITS) ) )
+         && ( VAL_LIMB0(gmpL) == (1L<<NR_SMALL_INT_BITS) ) )
       return INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS));
     
     /* multiplication by -1 is easy, just switch the sign and copy         */
@@ -1406,7 +1406,7 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
     /* multiply                                                            */
     carry = mpn_mul_1( ADDR_INT(prd), ADDR_INT(gmpL),
                SIZE_INT(gmpL), (TypLimb)k );
-    if ( carry == (TypLimb)0 ) {
+    if ( carry == 0 ) {
       ResizeBag( prd, SIZE_OBJ(gmpL) );
     }
     else {
@@ -1506,7 +1506,7 @@ Obj ProdIntObj ( Obj n, Obj op )
     res = 0;
     for ( i = SIZE_INT(n); 0 < i; i-- ) {
       k = 8*sizeof(TypLimb);
-      l = ((TypLimb*) ADDR_INT(n))[i-1];
+      l = ADDR_INT(n)[i-1];
       while ( 0 < k ) {
         res = (res == 0 ? res : SUM( res, res ));
         k--;
@@ -1688,7 +1688,7 @@ Obj             PowObjInt ( Obj op, Obj n )
     res = 0;
     for ( i = SIZE_INT(n); 0 < i; i-- ) {
       k = 8*sizeof(TypLimb);
-      l = ((TypLimb*) ADDR_INT(n))[i-1];
+      l = ADDR_INT(n)[i-1];
       while ( 0 < k ) {
         res = (res == 0 ? res : PROD( res, res ));
         k--;
