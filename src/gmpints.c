@@ -540,9 +540,8 @@ Obj FuncHexStringInt( Obj self, Obj integer )
   }
 
   else 
-    ErrorReturnObj("HexStringInt: argument must be a int, (not a %s)",
-                   (Int)TNAM_OBJ(integer), 0L,
-                   "");
+    ErrorMayQuit("HexStringInt: argument must be a int, (not a %s)",
+                 (Int)TNAM_OBJ(integer), 0L);
   /* please picky cc                                                       */
   return (Obj) 0L; 
 
@@ -558,9 +557,8 @@ Obj FuncIntHexString( Obj self,  Obj str )
   UChar c;
   
   if (! IsStringConv(str))
-    ErrorReturnObj("IntHexString: argument must be string (not a %s)",
-                   (Int)TNAM_OBJ(str), 0L,
-                   "");
+    ErrorMayQuit("IntHexString: argument must be string (not a %s)",
+                 (Int)TNAM_OBJ(str), 0L);
 
   len = GET_LEN_STRING(str);
   if (len == 0) {
@@ -592,8 +590,8 @@ Obj FuncIntHexString( Obj self,  Obj str )
       else 
         a -= 48;
       if (a > 15)
-        ErrorReturnObj("IntHexString: non-valid character in hex-string",
-                       0L, 0L, "");
+        ErrorMayQuit("IntHexString: non-valid character in hex-string",
+                     0L, 0L);
       n = (n << 4) + a;
     }
     res = INTOBJ_INT(sign * n);
@@ -622,11 +620,11 @@ Obj FuncIntHexString( Obj self,  Obj str )
       else if (isupper((unsigned int)c))
         p[j] = c - 'A' + 10;
       else
-        ErrorReturnObj("IntHexString: non-valid character in hex-string",
-                       0L, 0L, "");
+        ErrorMayQuit("IntHexString: non-valid character in hex-string",
+                       0L, 0L);
       if (p[j] >= 16)
-        ErrorReturnObj("IntHexString: non-valid character in hex-string",
-                       0L, 0L, "");
+        ErrorMayQuit("IntHexString: non-valid character in hex-string",
+                     0L, 0L);
     }
 
     mpn_set_str(ADDR_INT(res),p,len-i,16);
@@ -716,9 +714,8 @@ Obj FuncLog2Int( Obj self, Obj integer)
 #endif
   }
   else {
-    ErrorReturnObj("Log2Int: argument must be a int, (not a %s)",
-           (Int)TNAM_OBJ(integer), 0L,
-           "");
+    ErrorMayQuit("Log2Int: argument must be a int, (not a %s)",
+                 (Int)TNAM_OBJ(integer), 0L);
     /* please picky cc                                                     */
     return (Obj) 0L;
   }
@@ -1005,10 +1002,8 @@ SUM or DIFF _INTOBJS and document (at least in code) that this should not
 be called directly */
 
   if ( sign != 1 && sign != -1 ) {
-    ErrorReturnObj(
-                   "SumOrDiffInt: <sign> must be +1 or -1. \nDo not call this function directly.",
-                   0L, 0L,
-                   "" );
+    ErrorMayQuit("SumOrDiffInt: <sign> must be +1 or -1. \nDo not call this function directly.",
+                 0L, 0L);
   }
 
     /* adding two small integers                                           */
