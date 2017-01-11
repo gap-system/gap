@@ -638,21 +638,55 @@ Obj FuncIntHexString( Obj self,  Obj str )
 /****************************************************************************
 **  
 **  Implementation of Log2Int for C integers.
+**
+**  When available, we try to use GCC builtins. Otherwise, fall back to code
+**  based on https://graphics.stanford.edu/~seander/bithacks.html#IntegerLogLookup.
+**  On a test machine with x86 64bit, the builtins are about 4 times faster
+**  than the generic code.
+**
 */
+
+static Int CLog2UInt(UInt a)
+{
+#if SIZEOF_VOID_P == SIZEOF_INT && HAVE___BUILTIN_CLZ
+  return GMP_LIMB_BITS - 1 - __builtin_clz(a);
+#elif SIZEOF_VOID_P == SIZEOF_LONG && HAVE___BUILTIN_CLZL
+  return GMP_LIMB_BITS - 1 - __builtin_clzl(a);
+#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && HAVE___BUILTIN_CLZLL
+  return GMP_LIMB_BITS - 1 - __builtin_clzll(a);
+#else
+    static const char LogTable256[256] = {
+       -1, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
+    };
+
+    Int res = 0;
+    UInt b;
+    b = a >> 32; if (b) { res+=32; a=b; }
+    b = a >> 16; if (b) { res+=16; a=b; }
+    b = a >>  8; if (b) { res+= 8; a=b; }
+    return res + LogTable256[a];
+#endif
+}
 
 Int CLog2Int(Int a)
 {
-  Int res, mask;
   if (a < 0) a = -a;
-  if (a < 1) return -1;
-  if (a < 65536) {
-    for(mask = 2, res = 0; ;mask *= 2, res += 1) {
-      if(a < mask) return res;
-    }
-  }
-  for(mask = 65536, res = 15; ;mask *= 2, res += 1) {
-    if(a < mask) return res;
-  }
+  return CLog2UInt(a);
 }
 
 /****************************************************************************
@@ -663,29 +697,22 @@ Int CLog2Int(Int a)
 */
 Obj FuncLog2Int( Obj self, Obj integer)
 {
-  Int d;
-  Int a, len;
-  TypLimb dmask;
-  
-  /* case of small ints                                                    */
-  if (IS_INTOBJ(integer)) {
+  if ( IS_INTOBJ(integer) ) {
     return INTOBJ_INT(CLog2Int(INT_INTOBJ(integer)));
   }
 
-  /* case of long ints                                                     */
   if ( IS_LARGEINT(integer) ) {
-    for (len = SIZE_INT(integer); ADDR_INT(integer)[len-1] == 0; len--);
-    /* Instead of computing 
-          res = len * GMP_LIMB_BITS - d;
-       we keep len and d separate, because on 32 bit systems res may
-       not fit into an Int (and not into an immediate integer).            */
-    d = 1;
-    a = (TypLimb)(ADDR_INT(integer)[len-1]); 
-    for(dmask = (TypLimb)1 << (GMP_LIMB_BITS - 1);
-        (dmask & a) == 0 && dmask != (TypLimb)0;
-        dmask = dmask >> 1, d++);
-    return DiffInt(ProdInt(INTOBJ_INT(len), INTOBJ_INT(GMP_LIMB_BITS)), 
-                   INTOBJ_INT(d));
+    UInt len = SIZE_INT(integer) - 1;
+    UInt a = CLog2UInt( ADDR_INT(integer)[len] );
+
+#ifdef SYS_IS_64_BIT
+    return INTOBJ_INT(len * GMP_LIMB_BITS + a);
+#else
+    /* The final result is len * GMP_LIMB_BITS - d, which may not
+       fit into an immediate integer (at least on a 32bit system) */
+    return SumInt(ProdInt(INTOBJ_INT(len), INTOBJ_INT(GMP_LIMB_BITS)),
+                   INTOBJ_INT(a));
+#endif
   }
   else {
     ErrorReturnObj("Log2Int: argument must be a int, (not a %s)",

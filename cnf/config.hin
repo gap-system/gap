@@ -376,6 +376,15 @@
 /* Define to 1 if you have the `_setjmp' function. */
 #undef HAVE__SETJMP
 
+/* Define to 1 if the system has the `__builtin_clz' built-in function */
+#undef HAVE___BUILTIN_CLZ
+
+/* Define to 1 if the system has the `__builtin_clzl' built-in function */
+#undef HAVE___BUILTIN_CLZL
+
+/* Define to 1 if the system has the `__builtin_clzll' built-in function */
+#undef HAVE___BUILTIN_CLZLL
+
 /* Define to 1 if the system has the `__builtin_smulll_overflow' built-in
    function */
 #undef HAVE___BUILTIN_SMULLL_OVERFLOW
