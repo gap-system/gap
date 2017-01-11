@@ -482,56 +482,56 @@ BindGlobal( "ShowKernelInformation", function()
   local sysdate, fun, linelen, indent, btop, vert, bbot, print_info,
         libs;
 
-    linelen:= SizeScreen()[1] - 2;
-    print_info:= function( prefix, values, suffix )
-      local PL, comma, N;
+  linelen:= SizeScreen()[1] - 2;
+  print_info:= function( prefix, values, suffix )
+    local PL, comma, N;
 
-      Print( prefix );
-      PL:= Length(prefix)+1;
-      comma:= "";
-      for N in values do
-        Print( comma );
-        PL:= PL + Length( comma );
-        if PL + Length( N ) > linelen then
-          Print( "\n", indent);
-          PL:= Length(indent)+1;
-        fi;
-        Print( N, "\c" );
-        PL:= PL + Length( N );
-        comma:= ", ";
-      od;
-      if PL + Length( suffix ) + 1 > linelen then
+    Print( prefix );
+    PL:= Length(prefix)+1;
+    comma:= "";
+    for N in values do
+      Print( comma );
+      PL:= PL + Length( comma );
+      if PL + Length( N ) > linelen then
         Print( "\n", indent);
+        PL:= Length(indent)+1;
       fi;
-      Print( suffix );
-    end;
+      Print( N, "\c" );
+      PL:= PL + Length( N );
+      comma:= ", ";
+    od;
+    if PL + Length( suffix ) + 1 > linelen then
+      Print( "\n", indent);
+    fi;
+    Print( suffix );
+  end;
 
-    sysdate:= GAPInfo.BuildDateTime;
+  sysdate:= GAPInfo.BuildDateTime;
 
-      indent := "             ";
-      if GAPInfo.TermEncoding = "UTF-8" then
-        btop := "┌───────┐\c"; vert := "│"; bbot := "└───────┘\c";
-      else
-        btop := "*********"; vert := "*"; bbot := btop;
-      fi;
-      Print( " ",btop,"   GAP ", GAPInfo.BuildVersion,
-             " of ", sysdate, "\n",
-             " ",vert,"  GAP  ",vert,"   http://www.gap-system.org\n",
-             " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
-      # For each library, print the name.
-      libs:= [];
-      if "gmpints" in LoadedModules() then
-        Add( libs, "gmp" );
-      fi;
-      if IsBound( GAPInfo.UseReadline ) then
-        Add( libs, "readline" );
-      fi;
-      if libs <> [] then
-        print_info( " Libs used:  ", libs, "\n" );
-      fi;
-      if GAPInfo.CommandLineOptions.L <> "" then
-        Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );
-      fi;
+  indent := "             ";
+  if GAPInfo.TermEncoding = "UTF-8" then
+    btop := "┌───────┐\c"; vert := "│"; bbot := "└───────┘\c";
+  else
+    btop := "*********"; vert := "*"; bbot := btop;
+  fi;
+  Print( " ",btop,"   GAP ", GAPInfo.BuildVersion,
+         " of ", sysdate, "\n",
+         " ",vert,"  GAP  ",vert,"   http://www.gap-system.org\n",
+         " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
+  # For each library, print the name.
+  libs:= [];
+  if "gmpints" in LoadedModules() then
+    Add( libs, "gmp" );
+  fi;
+  if IsBound( GAPInfo.UseReadline ) then
+    Add( libs, "readline" );
+  fi;
+  if libs <> [] then
+    print_info( " Libs used:  ", libs, "\n" );
+  fi;
+  if GAPInfo.CommandLineOptions.L <> "" then
+    Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );
+  fi;
 end );
 
 # delay printing the banner, if -L option was passed (LB)
@@ -839,68 +839,68 @@ BindGlobal( "ShowPackageInformation", function()
   local linelen, indent, btop, vert, bbot, print_info,
         libs, cmpdist, ld, f;
 
-    linelen:= SizeScreen()[1] - 2;
-    print_info:= function( prefix, values, suffix )
-      local PL, comma, N;
+  linelen:= SizeScreen()[1] - 2;
+  print_info:= function( prefix, values, suffix )
+    local PL, comma, N;
 
-      Print( prefix );
-      PL:= Length(prefix)+1;
-      comma:= "";
-      for N in values do
-        Print( comma );
-        PL:= PL + Length( comma );
-        if PL + Length( N ) > linelen then
-          Print( "\n", indent);
-          PL:= Length(indent)+1;
-        fi;
-        Print( N, "\c" );
-        PL:= PL + Length( N );
-        comma:= ", ";
-      od;
-      if PL + Length( suffix ) + 1 > linelen then
+    Print( prefix );
+    PL:= Length(prefix)+1;
+    comma:= "";
+    for N in values do
+      Print( comma );
+      PL:= PL + Length( comma );
+      if PL + Length( N ) > linelen then
         Print( "\n", indent);
+        PL:= Length(indent)+1;
       fi;
-      Print( suffix );
-    end;
+      Print( N, "\c" );
+      PL:= PL + Length( N );
+      comma:= ", ";
+    od;
+    if PL + Length( suffix ) + 1 > linelen then
+      Print( "\n", indent);
+    fi;
+    Print( suffix );
+  end;
 
-      indent := "             ";
+  indent := "             ";
 
-      # For each loaded component, print name and version number.
-      # We use an abbreviation for the distributed combination of
-      # idX and smallX components.
-      if GAPInfo.LoadedComponents <> rec() then
-        cmpdist := rec(id10:="0.1",id2:="3.0",id3:="2.1",id4:="1.0",id5:="1.0",
-                   id6:="1.0",id9:="1.0",small:="2.1",small10:="0.2",
-                   small11:="0.1",small2:="2.0",small3:="2.0",small4:="1.0",
-                   small5:="1.0",small6:="1.0",small7:="1.0",small8:="1.0",
-                   small9:="1.0");
-        ld := ShallowCopy(GAPInfo.LoadedComponents);
-        if ForAll(RecNames(cmpdist), f-> IsBound(ld.(f))
-                                          and ld.(f) = cmpdist.(f)) then
-          for f in RecNames(cmpdist) do
-            Unbind(ld.(f));
-          od;
-          ld.("small*") := "1.0";
-          ld.("id*") := "1.0";
-        fi;
-        print_info( " Components: ",
-                    List( RecNames( ld ), name -> Concatenation( name, " ",
-                                      ld.( name ) ) ),
-                    "\n");
-      fi;
+  # For each loaded component, print name and version number.
+  # We use an abbreviation for the distributed combination of
+  # idX and smallX components.
+  if GAPInfo.LoadedComponents <> rec() then
+    cmpdist := rec(id10:="0.1",id2:="3.0",id3:="2.1",id4:="1.0",id5:="1.0",
+               id6:="1.0",id9:="1.0",small:="2.1",small10:="0.2",
+               small11:="0.1",small2:="2.0",small3:="2.0",small4:="1.0",
+               small5:="1.0",small6:="1.0",small7:="1.0",small8:="1.0",
+               small9:="1.0");
+    ld := ShallowCopy(GAPInfo.LoadedComponents);
+    if ForAll(RecNames(cmpdist), f-> IsBound(ld.(f))
+                                      and ld.(f) = cmpdist.(f)) then
+      for f in RecNames(cmpdist) do
+        Unbind(ld.(f));
+      od;
+      ld.("small*") := "1.0";
+      ld.("id*") := "1.0";
+    fi;
+    print_info( " Components: ",
+                List( RecNames( ld ), name -> Concatenation( name, " ",
+                                  ld.( name ) ) ),
+                "\n");
+  fi;
 
-      # For each loaded package, print name and version number.
-      if GAPInfo.PackagesLoaded <> rec() then
-        print_info( " Packages:   ",
-                    List( SortedList( RecNames( GAPInfo.PackagesLoaded ) ),
-                          name -> Concatenation(
-                                      GAPInfo.PackagesLoaded.( name )[3], " ",
-                                      GAPInfo.PackagesLoaded.( name )[2] ) ),
-                    "\n" );
-      fi;
+  # For each loaded package, print name and version number.
+  if GAPInfo.PackagesLoaded <> rec() then
+    print_info( " Packages:   ",
+                List( SortedList( RecNames( GAPInfo.PackagesLoaded ) ),
+                      name -> Concatenation(
+                                  GAPInfo.PackagesLoaded.( name )[3], " ",
+                                  GAPInfo.PackagesLoaded.( name )[2] ) ),
+                "\n" );
+  fi;
 
-      Print( " Try '??help' for help. See also '?copyright', '?cite' and '?authors'",
-             "\n" );
+  Print( " Try '??help' for help. See also '?copyright', '?cite' and '?authors'",
+         "\n" );
 end );
 #T show also root paths?
 
