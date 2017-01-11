@@ -9,8 +9,27 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
-**  This file implements the  functions  handling  GMP integers.
+**  This file implements the functions handling GMP integers.
 **
+**  GAP stores integers in three formats:
+**  1. Integers between -2^NR_SMALL_INT_BITS and 2^NR_SMALL_INT_BITS-1
+**     are stored as As "immediate" or "small" integers, aka as "INTOBJ"
+**     objects. These have the pseudo-tnum T_INT.
+**     TODO: document details, or point to a place where these are documented.
+**  2. Integers n >= 2^NR_SMALL_INT_BITS are stored as T_INTPOS objects.
+**     The content of such an object corresponds to a GMP sequence of "limbs"
+**     corresponding to n.
+**  3. Integers n < 2^NR_SMALL_INT_BITS are stored as T_INTNEG objects.
+**     The content of such an object corresponds to a GMP sequence of "limbs"
+**     corresponding to -n.
+**
+**  Note that we require that all "large" integers are normalized (that is,
+**  they contain no redundant leading zero limbs) and reduced (that is,
+**  they do not fit into a small integer). Internally, it is possible that
+**  temporarily a large integers is not normalized or not reduced, but all
+**  functions below must make sure that they eventually return normalized
+**  and reduced values. The function GMP_NORMALIZE and GMP_REDUCE can be
+**  used to ensure this.
 */
 #include        "system.h"              /* Ints, UInts                     */
 
