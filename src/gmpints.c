@@ -95,6 +95,9 @@ extern "C" {
 #define LoadLimb LoadUInt4
 #endif
 
+/* macro for swapping two variables of a given type. Poor man's C++ macro. */
+#define SWAP(T, a, b)          do { T SWAP_TMP = a; a = b; b = SWAP_TMP; } while (0)
+
 
 /* macros to save typing later :)  */
 #define VAL_LIMB0(obj)          (*ADDR_INT(obj))
@@ -990,7 +993,7 @@ be called directly */
       if ( IS_INTOBJ(gmpR) ) {
         return INTOBJ_INT( INT_INTOBJ(gmpL) + sign*INT_INTOBJ(gmpR) );
       }
-      res = gmpL; gmpL = gmpR; gmpR = res;
+      SWAP(Obj, gmpL, gmpR);
       swapped = 1;
     }
     else {
@@ -1005,7 +1008,7 @@ be called directly */
   /* two large ints                                                        */
   else if ( SIZE_INT( gmpL ) < SIZE_INT( gmpR ) ) {
     /* swap gmpL and gmpR                                                  */
-    res = gmpL; gmpL = gmpR; gmpR = res;
+    SWAP(Obj, gmpL, gmpR);
     swapped = 1;
   }
 
@@ -1133,7 +1136,7 @@ be called directly */
     else {
       /* put the smaller one (in limbs) to the right                       */
       if ( SIZE_INT(gmpL) < SIZE_INT(gmpR) ) { 
-        res = gmpR; gmpR = gmpL; gmpL = res;
+        SWAP(Obj, gmpL, gmpR);
       }
 
       /* allocate result bag                                               */
@@ -1417,7 +1420,7 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
     
     /* make the right operand the smaller one, for the mpn function        */
     if ( SIZE_INT(gmpL) < SIZE_INT(gmpR) ) {
-      prd = gmpR;  gmpR = gmpL;  gmpL = prd;
+      SWAP(Obj, gmpL, gmpR);
     }
     
     /* allocate a bag for the result                                       */
@@ -2185,7 +2188,7 @@ Obj GcdInt ( Obj opL, Obj opR )
     
     /* make the right operand the small one                                */
     if ( IS_INTOBJ(opL) ) {
-      gcd = opL;  opL = opR;  opR = gcd;
+      SWAP(Obj, opL, opR);
     }
     
     /* maybe it's trivial                                                  */
