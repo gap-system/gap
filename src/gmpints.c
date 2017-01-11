@@ -685,6 +685,7 @@ Obj FuncIntHexString( Obj self,  Obj str )
 
     mpn_set_str(ADDR_INT(res),p,len-i,16);
     res = GMP_NORMALIZE(res);
+    res = GMP_REDUCE(res);
     return res;
   }
 }

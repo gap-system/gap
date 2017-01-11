@@ -495,6 +495,8 @@ gap> IntHexString("56BC75E2D63100000@");
 Error, IntHexString: non-valid character in hex-string
 gap> IntHexString(0);
 Error, IntHexString: argument must be string (not a integer)
+gap> IntHexString("-1000000000000000");
+-1152921504606846976
 
 #
 # Log2Int
