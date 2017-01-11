@@ -508,20 +508,6 @@ BindGlobal( "ShowKernelInformation", function()
 
     sysdate:= GAPInfo.BuildDateTime;
 
-    if IsBound(GAPInfo.shortbanner) then
-        Print("This is GAP ", GAPInfo.Version, " of ", sysdate,
-        " (", GAPInfo.Architecture);
-        if "gmpints" in LoadedModules() then
-            Print("+gmp");
-        fi;
-        if IsBound( GAPInfo.UseReadline ) then
-            Print("+readline");
-        fi;
-        Print(")\n");
-        if GAPInfo.CommandLineOptions.L <> "" then
-            Print( "Restoring workspace ", GAPInfo.CommandLineOptions.L, "\n");
-        fi;
-    else
       indent := "             ";
       if GAPInfo.TermEncoding = "UTF-8" then
         btop := "┌───────┐\c"; vert := "│"; bbot := "└───────┘\c";
@@ -546,7 +532,6 @@ BindGlobal( "ShowKernelInformation", function()
       if GAPInfo.CommandLineOptions.L <> "" then
         Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );
       fi;
-    fi;
 end );
 
 # delay printing the banner, if -L option was passed (LB)
@@ -878,18 +863,6 @@ BindGlobal( "ShowPackageInformation", function()
       Print( suffix );
     end;
 
-
-    if IsBound(GAPInfo.shortbanner) then
-        indent := "  ";
-        if GAPInfo.PackagesLoaded <> rec() then
-            print_info( "Packages ",
-                  List( RecNames( GAPInfo.PackagesLoaded ),
-                        name -> Concatenation(
-                                    GAPInfo.PackagesLoaded.( name )[3], " ",
-                                    GAPInfo.PackagesLoaded.( name )[2] ) ),
-                  ".\n" );
-        fi;
-    else
       indent := "             ";
 
       # For each loaded component, print name and version number.
@@ -928,7 +901,6 @@ BindGlobal( "ShowPackageInformation", function()
 
       Print( " Try '??help' for help. See also '?copyright', '?cite' and '?authors'",
              "\n" );
-    fi;
 end );
 #T show also root paths?
 
