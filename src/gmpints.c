@@ -1748,17 +1748,17 @@ Obj ModInt ( Obj opL, Obj opR )
   Obj                  mod;             /* handle of the remainder bag     */
   Obj                  quo;             /* handle of the quotient bag      */
   
+  /* pathological case first                                             */
+  if ( opR == INTOBJ_INT(0) ) {
+    opR = ErrorReturnObj(
+                         "Integer operations: <divisor> must be nonzero",
+                         0L, 0L,
+                         "you can replace the integer <divisor> via 'return <divisor>;'" );
+    return MOD( opL, opR );
+  }
+
   /* compute the remainder of two small integers                           */
   if ( ARE_INTOBJS( opL, opR ) ) {
-    
-    /* pathological case first                                             */
-    if ( opR == INTOBJ_INT(0) ) {
-      opR = ErrorReturnObj(
-                           "Integer operations: <divisor> must be nonzero",
-                           0L, 0L,
-                           "you can replace the integer <divisor> via 'return <divisor>;'" );
-      return MOD( opL, opR );
-    }
     
     /* get the integer values                                              */
     i = INT_INTOBJ(opL);
@@ -1794,15 +1794,6 @@ Obj ModInt ( Obj opL, Obj opR )
   
   /* compute the remainder of a large integer by a small integer           */
   else if ( IS_INTOBJ(opR) ) {
-
-    /* pathological case first                                             */
-    if ( opR == INTOBJ_INT(0) ) {
-      opR = ErrorReturnObj(
-                           "Integer operations: <divisor> must be nonzero",
-                           0L, 0L,
-                           "you can replace the integer <divisor> via 'return <divisor>;'" );
-      return MOD( opL, opR );
-    }
     
     /* get the integer value, make positive                                */
     i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
@@ -1900,17 +1891,17 @@ Obj QuoInt ( Obj opL, Obj opR )
   Obj                 quo;            /* handle of the result bag          */
   Obj                 rem;            /* handle of the remainder bag       */
   
+  /* pathological case first                                             */
+  if ( opR == INTOBJ_INT(0) ) {
+    opR = ErrorReturnObj(
+                         "Integer operations: <divisor> must be nonzero",
+                         0L, 0L,
+                         "you can replace the integer <divisor> via 'return <divisor>;'" );
+    return QUO( opL, opR );
+  }
+
   /* divide two small integers                                             */
   if ( ARE_INTOBJS( opL, opR ) ) {
-    
-    /* pathological case first                                             */
-    if ( opR == INTOBJ_INT(0) ) {
-      opR = ErrorReturnObj(
-                           "Integer operations: <divisor> must be nonzero",
-                           0L, 0L,
-                           "you can replace the integer <divisor> via 'return <divisor>;'" );
-      return QUO( opL, opR );
-    }
     
     /* the small int -(1<<28) divided by -1 is the large int (1<<28)       */
     if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS)) 
@@ -1950,15 +1941,6 @@ Obj QuoInt ( Obj opL, Obj opR )
   
   /* divide a large integer by a small integer                             */
   else if ( IS_INTOBJ(opR) ) {
-    
-    /* pathological case first                                             */
-    if ( opR == INTOBJ_INT(0) ) {
-      opR = ErrorReturnObj(
-                           "Integer operations: <divisor> must be nonzero",
-                           0L, 0L,
-                           "you can replace the integer <divisor> via 'return <divisor>;'" );
-      return QUO( opL, opR );
-    }
     
     /* allocate a bag for the result and set up the pointers               */
     if ( (TNUM_OBJ(opL)==T_INTPOS && 0 < INT_INTOBJ(opR))
@@ -2064,17 +2046,17 @@ Obj RemInt ( Obj opL, Obj opR )
   Obj                 rem;            /* handle of the remainder bag       */
   Obj                 quo;            /* handle of the quotient bag        */
 
+  /* pathological case first                                             */
+  if ( opR == INTOBJ_INT(0) ) {
+    opR = ErrorReturnObj(
+                         "Integer operations: <divisor> must be nonzero",
+                         0L, 0L,
+                         "you can replace the integer <divisor> via 'return <divisor>;'" );
+    return QUO( opL, opR );
+  }
+
   /* compute the remainder of two small integers                           */
   if ( ARE_INTOBJS( opL, opR ) ) {
-    
-    /* pathological case first                                             */
-    if ( opR == INTOBJ_INT(0) ) {
-      opR = ErrorReturnObj(
-                           "Integer operations: <divisor> must be nonzero",
-                           0L, 0L,
-                           "you can replace the integer <divisor> via 'return <divisor>;'" );
-      return QUO( opL, opR );
-    }
     
     /* get the integer values                                              */
     i = INT_INTOBJ(opL);
@@ -2105,15 +2087,6 @@ Obj RemInt ( Obj opL, Obj opR )
   
   /* compute the remainder of a large integer by a small integer           */
   else if ( IS_INTOBJ(opR) ) {
-    
-    /* pathological case first                                             */
-    if ( opR == INTOBJ_INT(0) ) {
-      opR = ErrorReturnObj(
-                           "Integer operations: <divisor> must be nonzero",
-                           0L, 0L,
-                           "you can replace the integer <divisor> via 'return <divisor>;'" );
-      return QUO( opL, opR );
-    }
     
     /* maybe it's trivial                                                   */
     if ( INTBASE % INT_INTOBJ(AbsInt(opR)) == 0 ) {
