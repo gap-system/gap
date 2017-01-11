@@ -573,12 +573,12 @@ Obj FuncIntHexString( Obj self,  Obj str )
     p = CHARS_STRING(str);
     for (; i<len; i++) {
       a = p[i];
-      if (a>96) 
-        a -= 87;
-      else if (a>64) 
-        a -= 55;
+      if (a>='a') 
+        a -= 'a' - 10;
+      else if (a>='A') 
+        a -= 'A' - 10;
       else 
-        a -= 48;
+        a -= '0';
       if (a > 15)
         ErrorMayQuit("IntHexString: non-valid character in hex-string",
                      0L, 0L);
