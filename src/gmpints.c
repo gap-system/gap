@@ -1231,27 +1231,73 @@ Obj AInvInt ( Obj gmp )
 
 }
 
-Obj AbsInt( Obj gmp )
+/****************************************************************************
+**
+*F  AbsInt(<op>) . . . . . . . . . . . . . . . . absolute value of an integer
+*/
+Obj AbsInt( Obj op )
 {
   Obj a;
-  if (IS_INTOBJ(gmp)) {
-    if (((Int)gmp) > 0) 
-      return gmp;
-    else if (gmp == INTOBJ_INT(-(1L << NR_SMALL_INT_BITS)))
-      return AInvInt(gmp);
-    else
-      return (Obj)(2-(Int)gmp);
+  if ( IS_INTOBJ(op) ) {
+    if ( ((Int)op) > 0 ) /* non-negative? */
+      return op;
+    else if ( op == INTOBJ_INT(-(1L << NR_SMALL_INT_BITS)) ) {
+      a = NewBag( T_INTPOS, sizeof(TypLimb) );
+      SET_VAL_LIMB0( a, (1L << NR_SMALL_INT_BITS) );
+      return a;
+    } else
+      return (Obj)( 2 - (Int)op );
   }
-  if (TNUM_OBJ(gmp) == T_INTPOS)
-    return gmp;
-  a = NewBag(T_INTPOS, SIZE_OBJ(gmp));
-  memcpy( ADDR_INT(a), ADDR_INT(gmp), SIZE_OBJ(gmp) );
-  return a;
+  if ( IS_INTPOS(op) ) {
+    return op;
+  } else if ( IS_INTNEG(op) ) {
+    return NEW_INTPOS(op);
+  }
+  return Fail;
 }
 
-Obj FuncABS_INT(Obj self, Obj gmp)
+Obj FuncABS_INT(Obj self, Obj op)
 {
-  return AbsInt(gmp);
+  Obj res;
+  res = AbsInt( op );
+  if ( res == Fail ) {
+    ErrorMayQuit( "AbsInt: argument must be an integer (not a %s)",
+                  (Int)TNAM_OBJ(op), 0L );
+  }
+  return res;
+}
+
+/****************************************************************************
+**
+*F  SignInt(<op>) . . . . . . . . . . . . . . . . . . . .  sign of an integer
+*/
+Obj SignInt( Obj op )
+{
+  if ( IS_INTOBJ(op) ) {
+    if ( op == INTOBJ_INT(0) )
+      return INTOBJ_INT(0);
+    else if ( ((Int)op) > (Int)INTOBJ_INT(0) )
+      return INTOBJ_INT(1);
+    else
+      return INTOBJ_INT(-1);
+  }
+  if ( IS_INTPOS(op) ) {
+    return INTOBJ_INT(1);
+  } else if ( IS_INTNEG(op) ) {
+    return INTOBJ_INT(-1);
+  }
+  return Fail;
+}
+
+Obj FuncSIGN_INT(Obj self, Obj op)
+{
+  Obj res;
+  res = SignInt( op );
+  if ( res == Fail ) {
+    ErrorMayQuit( "SignInt: argument must be an integer (not a %s)",
+                  (Int)TNAM_OBJ(op), 0L );
+  }
+  return res;
 }
 
 
@@ -2428,6 +2474,9 @@ static StructGVarFunc GVarFuncs [] = {
 
   { "ABS_INT", 1, "x",
     FuncABS_INT, "src/gmpints.c:ABS_INT" },
+
+  { "SIGN_INT", 1, "x",
+    FuncSIGN_INT, "src/gmpints.c:SIGN_INT" },
 
   { "REM_INT", 2, "gmp1, gmp2",
     FuncREM_INT, "src/gmpints.c:REM_INT" },
