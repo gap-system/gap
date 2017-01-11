@@ -8,11 +8,6 @@
 
 set -ex
 
-if [[ x"$ABI" == "x32" ]]
-then
-  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
-fi
-
 if [[ $TEST_SUITE = 'makemanuals' && $TRAVIS_OS_NAME = 'linux' ]]
 then
     make manuals
@@ -29,16 +24,16 @@ else
         exit 1
     fi
 
-    if [[ x"$COVERAGE" == "xno" ]]
+    if [[ x"$ABI" == "x32" ]]
     then
         sh bin/gap.sh tst/${TEST_SUITE}.g
     else
         cd pkg/io*
-        ./configure $CONFIGFLAGS
+        ./configure
         make
         cd ../..
         cd pkg/profiling*
-        ./configure $CONFIGFLAGS
+        ./configure
         make
         cd ../..
 
