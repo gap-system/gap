@@ -289,10 +289,10 @@ Obj GMP_REDUCE( Obj gmp )
 
 /****************************************************************************
 **
-*F  FuncGMP_INTOBJ(<gmp>) . . . . . . . . . . . . . . . . . . . .  conversion
+*F  GMP_INTOBJ(<gmp>) . . . . . . . . . . . . . . . . . . . .  convert intobj to gmp
 **
 */
-Obj FuncGMP_INTOBJ( Obj self, Obj i )
+Obj GMP_INTOBJ( Obj i )
 {
   Obj gmp;
   Int   j;
@@ -832,7 +832,7 @@ Int EqInt ( Obj gmpL, Obj gmpR )
     if ( ( INT_INTOBJ(gmpL) <  0 && IS_INTPOS(gmpR) ) ||
          ( 0 <= INT_INTOBJ(gmpL) && IS_INTNEG(gmpR) ) ||
          ( SIZE_INT(gmpR) > (TypGMPSize)1 ) ) return 0L;
-    opL = FuncGMP_INTOBJ( (Obj)0, gmpL );
+    opL = GMP_INTOBJ( gmpL );
   }
   else {
     opL = gmpL;
@@ -842,7 +842,7 @@ Int EqInt ( Obj gmpL, Obj gmpR )
     if ( ( INT_INTOBJ(gmpR) <  0 && IS_INTPOS(gmpL) ) ||
          ( 0 <= INT_INTOBJ(gmpR) && IS_INTNEG(gmpL) ) ||
          ( SIZE_INT(gmpL) > (TypGMPSize)1 ) ) return 0L;
-    opR = FuncGMP_INTOBJ( (Obj)0, gmpR );
+    opR = GMP_INTOBJ( gmpR );
   }
   else {
     opR = gmpR;
@@ -881,7 +881,7 @@ Int LtInt ( Obj gmpL, Obj gmpR )
       if ( IS_INTPOS(gmpR) ) return 1L;
       else return 0L;
     }
-    else opL = FuncGMP_INTOBJ( (Obj)0, gmpL );
+    else opL = GMP_INTOBJ( gmpL );
   }
   else {
     opL = gmpL;
@@ -892,7 +892,7 @@ Int LtInt ( Obj gmpL, Obj gmpR )
       if ( IS_INTNEG(gmpL) )  return 1L;
       else return 0L;
     }
-    else opR = FuncGMP_INTOBJ( (Obj)0, gmpR );
+    else opR = GMP_INTOBJ( gmpR );
   }
   else {
     opR = gmpR;
@@ -1083,7 +1083,7 @@ be called directly */
       else {
         res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
       }
-      gmpR = FuncGMP_INTOBJ( (Obj)0, gmpR );
+      gmpR = GMP_INTOBJ( gmpR );
       carry = mpn_sub_1( ADDR_INT(res), 
                          ADDR_INT(gmpL), SIZE_INT(gmpL),
                          VAL_LIMB0(gmpR) );
@@ -1163,7 +1163,7 @@ be called directly */
       else {
         res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) + sizeof(TypLimb) );
       }
-      gmpR = FuncGMP_INTOBJ( (Obj)0, gmpR );
+      gmpR = GMP_INTOBJ( gmpR );
       carry = mpn_add_1( ADDR_INT(res),
                          ADDR_INT(gmpL),SIZE_INT(gmpL),
                          VAL_LIMB0(gmpR) );
@@ -1934,7 +1934,7 @@ Obj QuoInt ( Obj opL, Obj opR )
     else
       quo = NewBag( T_INTNEG, SIZE_OBJ(opL) );
     
-    opR = FuncGMP_INTOBJ( (Obj)0, opR );
+    opR = GMP_INTOBJ( opR );
 
     /* use gmp function for dividing by a 1-limb number                    */
     mpn_divrem_1( ADDR_INT(quo), 0,
@@ -2227,7 +2227,7 @@ Obj GcdInt ( Obj opL, Obj opR )
     }
     
     /* compute the gcd                                                     */
-    opR = FuncGMP_INTOBJ( (Obj)0, opR );
+    opR = GMP_INTOBJ( opR );
     i = mpn_gcd_1( ADDR_INT(opL), SIZE_INT(opL), *ADDR_INT(opR) );
     gcd = GMPorINTOBJ_INT( (Int)i );
     return gcd;
