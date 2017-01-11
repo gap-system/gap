@@ -77,13 +77,12 @@ extern "C" {
 #endif
 
 
-/* macros to save typing later :)                                          */
-#define VAL_LIMB0(obj)         ( *(TypLimb *)ADDR_OBJ(obj)                  )
-#define SET_VAL_LIMB0(obj,val) ( *(TypLimb *)ADDR_OBJ(obj) = val            )
-#define IS_INTPOS(obj)         (  TNUM_OBJ(obj) == T_INTPOS                 )
-#define IS_INTNEG(obj)         (  TNUM_OBJ(obj) == T_INTNEG                 )
-#define IS_LARGEINT(obj)       (  ( TNUM_OBJ(obj) == T_INTPOS ) || \
-                                  ( TNUM_OBJ(obj) == T_INTNEG )             )
+/* macros to save typing later :)  */
+#define VAL_LIMB0(obj)          (*ADDR_INT(obj))
+#define SET_VAL_LIMB0(obj,val)  do { *ADDR_INT(obj) = val; } while(0)
+#define IS_INTPOS(obj)          (TNUM_OBJ(obj) == T_INTPOS)
+#define IS_INTNEG(obj)          (TNUM_OBJ(obj) == T_INTNEG)
+#define IS_LARGEINT(obj)        (IS_INTPOS(obj) || IS_INTNEG(obj))
 
 /* for fallbacks to library */
 Obj String;
@@ -1087,7 +1086,7 @@ be called directly */
       gmpR = FuncGMP_INTOBJ( (Obj)0, gmpR );
       carry = mpn_sub_1( ADDR_INT(res), 
                          ADDR_INT(gmpL), SIZE_INT(gmpL),
-                        *ADDR_INT(gmpR) );
+                         VAL_LIMB0(gmpR) );
     }
     /* this test correct since size(gmpL) >= size(gmpR)                    */
     else if ( SIZE_INT(gmpL) != SIZE_INT(gmpR) ) {
@@ -1167,7 +1166,7 @@ be called directly */
       gmpR = FuncGMP_INTOBJ( (Obj)0, gmpR );
       carry = mpn_add_1( ADDR_INT(res),
                          ADDR_INT(gmpL),SIZE_INT(gmpL),
-                        *ADDR_INT(gmpR) );
+                         VAL_LIMB0(gmpR) );
       if ( carry == (TypLimb)0 ) {
         ResizeBag( res, SIZE_OBJ(gmpL) );
       }
@@ -1389,7 +1388,7 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
       else {
         prd = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
       }
-      memcpy( ADDR_OBJ(prd), ADDR_OBJ(gmpL), SIZE_OBJ(gmpL) );
+      memcpy( ADDR_INT(prd), ADDR_INT(gmpL), SIZE_OBJ(gmpL) );
       return prd;
     }
     
@@ -1940,7 +1939,7 @@ Obj QuoInt ( Obj opL, Obj opR )
     /* use gmp function for dividing by a 1-limb number                    */
     mpn_divrem_1( ADDR_INT(quo), 0,
                   ADDR_INT(opL), SIZE_INT(opL),
-                  *ADDR_INT(opR) );
+                  VAL_LIMB0(opR) );
   }
   
   /* divide a large integer by a large integer                             */
