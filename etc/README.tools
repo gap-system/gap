@@ -24,31 +24,10 @@ in this archive).
                manual (calls MakeIndex).
 
         etc/
-           classifyfiles.py
-               Python script which we use in the package update mechanism
-               to classify files into text and binary and to exclude some
-               files or directories from distribution. It may be used to
-               check how files in your package will be classified. Also it
-               is possible to use it in your own package wrapping scripts.
-               Usage instructions are at the beginning of classifyfiles.py.
-           patternstextbinary.txt
-               file describing patterns for text and binary files, used
-               by the classifyfiles.py script.
-           patternscolor.txt
-               file describing file exclusion/inclusion patterns, used
-               by the classifyfiles.py script.
-           buildman.pe
-               Perl script that builds a .tex file from a .msk file and 
-               a config file (see gapmacrodoc.pdf for usage instructions).
            convert.pl
                Perl script that builds an HTML manual from TeX files that
                follow the gapmacro.tex conventions (see gapmacrodoc.pdf 
                and comments in the script itself for usage instructions).
-           packpack
-               shell script that creates archives in several formats (.zip,
-               .tar.gz, .tar.bz2) of a package (i.e. it ``packs up a
-               package''). Usage instructions are at the beginning of
-               packpack.
            README.tools
                this file!
               
