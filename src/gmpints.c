@@ -1030,21 +1030,8 @@ be called directly */
   else if ( IS_INTOBJ( gmpL ) || IS_INTOBJ( gmpR ) ) {
     onesmall = 1;
     if ( IS_INTOBJ( gmpL ) ) {
-      /* findme - do we need to normalize here? */
-      gmpR = GMP_NORMALIZE( gmpR );
-      gmpR = GMP_REDUCE( gmpR );
-      if ( IS_INTOBJ(gmpR) ) {
-        return INTOBJ_INT( INT_INTOBJ(gmpL) + sign*INT_INTOBJ(gmpR) );
-      }
       SWAP(Obj, gmpL, gmpR);
       swapped = 1;
-    }
-    else {
-      gmpL = GMP_NORMALIZE( gmpL );
-      gmpL = GMP_REDUCE( gmpL );
-      if ( IS_INTOBJ(gmpL) ) {
-        return INTOBJ_INT( INT_INTOBJ(gmpL) + sign*INT_INTOBJ(gmpR) );
-      }
     }
   }
 
@@ -1143,17 +1130,6 @@ be called directly */
              ( swapped == 1 && IS_INTPOS(gmpL) ) ) ) ) {
       resneg = 1;
     }
-         /*        ( ( onesmall        && IS_INTNEG(gmpL) ) ||
-             ( IS_INTNEG(gmpL) && IS_INTNEG(gmpR) ) ||
-             ( SIZE_INT(gmpL) > SIZE_INT(gmpR) && IS_INTNEG(gmpL) ) ) ) ||
-    if ( resneg == 0 && sign == 1 && SIZE_INT(gmpL) == SIZE_INT(gmpR) ) {
-      compare = mpn_cmp( ADDR_INT(gmpL), ADDR_INT(gmpR), SIZE_INT(gmpL) );
-      if ( ( compare >= 0 && IS_INTNEG(gmpL) ) ||
-           ( compare  < 0 && IS_INTNEG(gmpR) ) ) {
-        resneg = 1;
-      }
-    }
-         */
     if ( onesmall ) {
       if ( resneg == 0 ) {
         res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) + sizeof(TypLimb) );
@@ -1171,9 +1147,6 @@ be called directly */
       else {
         ( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = 1; /* = carry ? */
       }
-      /* findme - debugging 231107
-      res = GMP_NORMALIZE( res );
-      res = GMP_REDUCE( res ); */
     }
 
     else {
@@ -1208,9 +1181,6 @@ be called directly */
       else{
         ( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = 1;
       }
-      /* findme - don't need this after carry ? */
-      /* res = GMP_NORMALIZE( res );
-         res = GMP_REDUCE( res ); */
     }
 
     return res;
