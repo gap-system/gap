@@ -1278,34 +1278,23 @@ end);
 ##
 #F  AbsInt( <n> ) . . . . . . . . . . . . . . .  absolute value of an integer
 ##
-InstallGlobalFunction( AbsInt, function( n )
-    if 0 <= n  then return  n;
-    else            return -n;
-    fi;
-end );
+#InstallGlobalFunction( AbsInt, ABS_INT );
+InstallGlobalFunction( AbsInt, ABS_RAT ); # support rationals for backwards compatibility
+
 
 #############################################################################
 ##
 #F  AbsoluteValue( <n> )
 ##
-# uses the particular form of AbsInt
-InstallMethod(AbsoluteValue,"rationals",true,[IsRat],0,AbsInt);
-
+InstallMethod( AbsoluteValue, "rationals", [IsRat], ABS_RAT );
 
 
 #############################################################################
 ##
 #F  SignInt( <n> )  . . . . . . . . . . . . . . . . . . .  sign of an integer
 ##
-InstallGlobalFunction( SignInt, function( n )
-    if   0 =  n  then
-        return 0;
-    elif 0 <= n  then
-        return 1;
-    else
-        return -1;
-    fi;
-end );
+#InstallGlobalFunction( SignInt, SIGN_INT );
+InstallGlobalFunction( SignInt, SIGN_RAT ); # support rationals for backwards compatibility
 
 
 #############################################################################
