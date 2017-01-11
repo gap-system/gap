@@ -479,8 +479,8 @@ end );
 
 
 BindGlobal( "ShowKernelInformation", function()
-  local sysdate, fun, linelen, indent, btop, vert, bbot, print_info,
-        libs;
+  local sysdate, linelen, indent, btop, vert, bbot, print_info,
+        libs, str;
 
   linelen:= SizeScreen()[1] - 2;
   print_info:= function( prefix, values, suffix )
@@ -521,7 +521,13 @@ BindGlobal( "ShowKernelInformation", function()
   # For each library, print the name.
   libs:= [];
   if "gmpints" in LoadedModules() then
-    Add( libs, "gmp" );
+    if IsBound( GAPInfo.KernelInfo.GMP_VERSION ) then
+      str := "gmp ";
+      Append(str, GAPInfo.KernelInfo.GMP_VERSION);
+    else
+      str := "gmp";
+    fi;
+    Add( libs, str );
   fi;
   if IsBound( GAPInfo.UseReadline ) then
     Add( libs, "readline" );
