@@ -619,7 +619,7 @@ InstallGlobalFunction( LLLReducedBasis, function( arg )
       # Let $q = `Round( mue[k][l] )'$ (is never zero), \ldots
 #T Round ?
       q:= Int( mue[k][l] );
-      if AbsInt( mue[k][l] - q ) * 2 > 1 then
+      if AbsoluteValue( mue[k][l] - q ) * 2 > 1 then
         q:= q + SignInt( mue[k][l] );
       fi;
 
@@ -977,7 +977,7 @@ InstallGlobalFunction( LLLReducedGramMat, function( arg )
 
       # Let $q = `Round( mue[k][l] )'$ (is never zero), \ldots
       q:= Int( mue[k][l] );
-      if AbsInt( mue[k][l] - q ) * 2 > 1 then
+      if AbsoluteValue( mue[k][l] - q ) * 2 > 1 then
         q:= q + SignInt( mue[k][l] );
       fi;
 
