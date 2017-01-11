@@ -881,48 +881,17 @@ Int LtInt ( Obj gmpL, Obj gmpR )
 
 /****************************************************************************
 **
-*F  SumInt( <gmpL>, <gmpR> ) . . . . . . . . . . . .  sum of two GMP integers
-**
-*/
-Obj SumInt ( Obj gmpL, Obj gmpR )
-{
-  Obj sum;
-
-  sum = SumOrDiffInt( gmpL, gmpR, +1 );
-
-  return sum;
-
-}
-
-
-/****************************************************************************
-**
-*F  DiffInt( <gmpL>, <gmpR> ) . . . . . . . .  difference of two GMP integers
-**
-*/
-Obj DiffInt ( Obj gmpL, Obj gmpR )
-{
-  Obj dif;
-  
-  dif = SumOrDiffInt( gmpL, gmpR, -1 );
-  
-  return dif;
-}
-
-
-/****************************************************************************
-**
-*F  SumOrDiffInt( <gmpL>, <gmpR> ) . . . . .  sum or diff of two Int integers
+*F  SumOrDiffInt( <gmpL>, <gmpR>, <sign> ) . . .  sum or diff of two integers
 **
 **  'SumOrDiffInt' returns the sum or difference of the two GMP int arguments
-**  <gmpL> and  <gmpR>. 'SumOrDiffInt'  handles  operands  of  type  'T_INT',
-**  'T_INTPOS' and 'T_INTNEG'.
+**  <gmpL> and <gmpR>, depending on whether sign is +1 or -1. It handles
+**  operands of type 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
 **
 **  'SumOrDiffInt'  is a little  bit  tricky since  there are  many different
-**  cases to handle, each operand can be positive or negative, small or large
+**  cases to handle: each operand can be positive or negative, small or large
 **  integer.
 */
-Obj SumOrDiffInt ( Obj gmpL, Obj gmpR, Int sign )
+static Obj SumOrDiffInt ( Obj gmpL, Obj gmpR, Int sign )
 {
   Obj       res; /* handle of result bag                                   */
   Int  twosmall; /* sum of two smalls                                      */
@@ -1173,6 +1142,37 @@ be called directly */
     return res;
   }
 
+}
+
+
+/****************************************************************************
+**
+*F  SumInt( <gmpL>, <gmpR> ) . . . . . . . . . . . .  sum of two GMP integers
+**
+*/
+Obj SumInt ( Obj gmpL, Obj gmpR )
+{
+  Obj sum;
+
+  sum = SumOrDiffInt( gmpL, gmpR, +1 );
+
+  return sum;
+
+}
+
+
+/****************************************************************************
+**
+*F  DiffInt( <gmpL>, <gmpR> ) . . . . . . . .  difference of two GMP integers
+**
+*/
+Obj DiffInt ( Obj gmpL, Obj gmpR )
+{
+  Obj dif;
+  
+  dif = SumOrDiffInt( gmpL, gmpR, -1 );
+  
+  return dif;
 }
 
 

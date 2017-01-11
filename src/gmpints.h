@@ -141,20 +141,6 @@ extern  Obj             SumInt (
 
 /****************************************************************************
 **
-*F  SumOrDiffInt( <gmpL>, <gmpR>, <sign> )  . . . . . . . sum of two integers
-**
-**  'SumOrDiffInt' returns the sum or difference of the two GMP arguments
-**  <gmpL> and <gmpR>, depending whether sign is +1 or -1.
-**
-*/
-extern  Obj             SumOrDiffInt (
-                                Obj                 opL,
-                                Obj                 opR,
-                                Int                 sign );
-
-
-/****************************************************************************
-**
 *F  DiffInt( <gmpL>, <gmpR> ) . . . . difference of two GMP integers
 **
 **  'DiffInt' returns the difference of the two integer arguments <gmpL>
