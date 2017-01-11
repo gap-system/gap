@@ -516,11 +516,6 @@ Int HASHKEY_BAG_NC (Obj obj, UInt4 seed, Int skip, int maxread){
   #endif
 }
 
-Obj FuncJenkinsHash(Obj self, Obj op, Obj size)
-{
-  return FuncHASHKEY_BAG(self, op, INTOBJ_INT(0L), INTOBJ_INT(0L), size);
-}
-
 Obj IntStringInternal( Obj string )
 {
         Obj                 val;            /* value = <upp> * <pow> + <low>   */
@@ -614,9 +609,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "HASHKEY_BAG", 4, "obj, int,int,int",
       FuncHASHKEY_BAG, "src/integer.c:HASHKEY_BAG" },
-
-    { "JENKINS_HASH", 2, "obj, len",
-      FuncJenkinsHash, "src/integer.c:JENKINS_HASH" },
 
     { "SIZE_OBJ", 1, "obj",
       FuncSIZE_OBJ, "src/integer.c:SIZE_OBJ" },
