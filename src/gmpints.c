@@ -90,7 +90,9 @@ extern "C" {
 
 
 /* for fallbacks to library */
-Obj String;
+static Obj String;
+static Obj OneAttr;
+static Obj IsIntFilt;
 
 
 /****************************************************************************
@@ -143,8 +145,6 @@ Obj TypeIntLargeNeg ( Obj val )
 **  'IsInt'  returns 'true'  if the  value  <val>  is an small integer or a
 **  large int, and 'false' otherwise.
 */
-Obj IsIntFilt;
-
 Obj FuncIS_INT ( Obj self, Obj val )
 {
   if (    TNUM_OBJ(val) == T_INT 
@@ -1537,8 +1537,6 @@ Obj FuncPROD_INT_OBJ ( Obj self, Obj opL, Obj opR )
 **
 *F  OneInt(<gmp>) . . . . . . . . . . . . . . . . . . . . . one of an integer
 */
-static Obj OneAttr;
-
 Obj OneInt ( Obj op )
 {
   return INTOBJ_INT( 1 );
