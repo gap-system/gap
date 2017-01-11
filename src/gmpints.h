@@ -67,24 +67,20 @@ typedef mp_size_t   TypGMPSize;
 #endif
 
 
-#define ADDR_INT(obj)          (  (TypLimb *)ADDR_OBJ(obj)                  )
-#define SIZE_INT(obj)          (  (TypGMPSize)SIZE_OBJ(obj)/sizeof(TypLimb) )
+#define ADDR_INT(obj)          ((TypLimb *)ADDR_OBJ(obj))
+#define SIZE_INT(obj)          ((TypGMPSize)SIZE_OBJ(obj)/sizeof(TypLimb))
 /* SIZE_INT gives a result in limbs                                        */
 
 
 /**************************************************************************
-** The following two functions convert Int, UInt or Int8 respectively into
+**
+** The following functions convert Int, UInt or Int8 respectively into
 ** a GAP integer, either an immediate, small integer if possible or 
 ** otherwise a new GAP bag with TNUM T_INTPOS or T_INTNEG.
-**
-*F ObjInt_Int(Int i)
-*F ObjInt_UInt(UInt i)
-**
-****************************************************************************/
-
-Obj ObjInt_Int(Int i);
-Obj ObjInt_UInt(UInt i);
-Obj ObjInt_Int8(Int8 i);
+*/
+extern Obj ObjInt_Int(Int i);
+extern Obj ObjInt_UInt(UInt i);
+extern Obj ObjInt_Int8(Int8 i);
 
 /****************************************************************************
 **
