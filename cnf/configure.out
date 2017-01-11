@@ -4522,6 +4522,102 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 fi;
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for __builtin_clz" >&5
+$as_echo_n "checking for __builtin_clz... " >&6; }
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+__builtin_clz(0);
+
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  have___builtin_clz=yes
+else
+  have___builtin_clz=no
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have___builtin_clz" >&5
+$as_echo "$have___builtin_clz" >&6; }
+    if test yes = $have___builtin_clz; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE___BUILTIN_CLZ 1
+_ACEOF
+
+fi;
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for __builtin_clzl" >&5
+$as_echo_n "checking for __builtin_clzl... " >&6; }
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+__builtin_clzl(0);
+
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  have___builtin_clzl=yes
+else
+  have___builtin_clzl=no
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have___builtin_clzl" >&5
+$as_echo "$have___builtin_clzl" >&6; }
+    if test yes = $have___builtin_clzl; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE___BUILTIN_CLZL 1
+_ACEOF
+
+fi;
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for __builtin_clzll" >&5
+$as_echo_n "checking for __builtin_clzll... " >&6; }
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+__builtin_clzll(0);
+
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  have___builtin_clzll=yes
+else
+  have___builtin_clzll=no
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have___builtin_clzll" >&5
+$as_echo "$have___builtin_clzll" >&6; }
+    if test yes = $have___builtin_clzll; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE___BUILTIN_CLZLL 1
+_ACEOF
+
+fi;
 
 
 #
