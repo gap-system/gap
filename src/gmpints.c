@@ -98,6 +98,25 @@ extern "C" {
 /* macro for swapping two variables of a given type. Poor man's C++ macro. */
 #define SWAP(T, a, b)          do { T SWAP_TMP = a; a = b; b = SWAP_TMP; } while (0)
 
+/* debugging */
+#ifndef DEBUG_GMP
+#define DEBUG_GMP 0
+#endif
+
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901)
+#  define CURRENT_FUNCTION	__func__
+#elif defined(_MSC_VER)
+#  define CURRENT_FUNCTION __FUNCTION__
+#else
+#  define CURRENT_FUNCTION "<unknown>"
+#endif
+
+#if DEBUG_GMP
+#define CHECK_INT(op)  IS_NORMALIZED_AND_REDUCED(op, CURRENT_FUNCTION, __LINE__)
+#else
+#define CHECK_INT(op)  do { } while(0);
+#endif
+
 
 /* macros to save typing later :)  */
 #define VAL_LIMB0(obj)          (*ADDR_INT(obj))
@@ -284,7 +303,7 @@ Obj GMP_REDUCE( Obj gmp )
   }
   if ( SIZE_INT(gmp) == 1) {
     if ( ( VAL_LIMB0(gmp) < ((1L<<NR_SMALL_INT_BITS)) ) ||
-         ( IS_INTNEG(gmp) && 
+         ( IS_INTNEG(gmp) &&
            ( VAL_LIMB0(gmp) == (1L<<NR_SMALL_INT_BITS) ) ) ) {
       if ( IS_INTNEG(gmp) ) {
         return INTOBJ_INT( -(Int)VAL_LIMB0(gmp) );
@@ -297,6 +316,46 @@ Obj GMP_REDUCE( Obj gmp )
   return gmp;
 }
 
+/****************************************************************************
+**
+**  This is a helper function for the CHECK_INT macro, which checks that
+**  the given integer object <op> is normalized and reduced.
+**
+*/
+int IS_NORMALIZED_AND_REDUCED( Obj op, const char *func, int line )
+{
+  TypGMPSize size;
+  if ( IS_INTOBJ( op ) ) {
+    return 1;
+  }
+  if ( !IS_LARGEINT( op ) ) {
+    /* ignore non-integers */
+    return 0;
+  }
+  for ( size = SIZE_INT(op); size != (TypGMPSize)1; size-- ) {
+    if ( ADDR_INT(op)[(size - 1)] != 0 ) {
+      break;
+    }
+  }
+  if ( size < SIZE_INT(op) ) {
+    Pr("WARNING: non-normalized gmp value (%s:%d)\n",(Int)func,line);
+  }
+  if ( SIZE_INT(op) == 1) {
+    if ( ( VAL_LIMB0(op) < ((1L<<NR_SMALL_INT_BITS)) ) ||
+         ( IS_INTNEG(op) &&
+           ( VAL_LIMB0(op) == (1L<<NR_SMALL_INT_BITS) ) ) ) {
+      if ( IS_INTNEG(op) ) {
+        Pr("WARNING: non-reduced negative gmp value (%s:%d)\n",(Int)func,line);
+        return 0;
+      }
+      else {
+        Pr("WARNING: non-reduced positive gmp value (%s:%d)\n",(Int)func,line);
+        return 0;
+      }
+    }
+  }
+  return 1;
+}
 
 /****************************************************************************
 **
@@ -419,6 +478,8 @@ void PrintInt ( Obj op )
   
   /* print a large integer                                                 */
   else if ( SIZE_INT(op) < 1000 ) {
+    CHECK_INT(op);
+
     /* use gmp func to print int to buffer                                 */
     if (!IS_INTPOS(op)) {
       buf[0] ='-';
@@ -463,8 +524,10 @@ Obj FuncHexStringInt( Obj self, Obj integer )
   UInt nf;
   /* TypLimb d, f; */
   UInt1 *p, a, *s;
-  Obj res;
+  Obj res = 0;
   
+  CHECK_INT(integer);
+
   /* immediate integers */
   if (IS_INTOBJ(integer)) {
     n = INT_INTOBJ(integer);
@@ -498,7 +561,6 @@ Obj FuncHexStringInt( Obj self, Obj integer )
     }
     /* final null character                                                */
     p[j] = 0;
-    return res;
   }
 
   else if ( IS_LARGEINT(integer) ) {
@@ -532,15 +594,13 @@ Obj FuncHexStringInt( Obj self, Obj integer )
            alloc_size--; */
     SET_LEN_STRING(res, str_size-j + (IS_INTNEG(integer)));
     /*  assert ( strlen( CSTR_STRING(res) ) == GET_LEN_STRING(res) ); */
-    return res;
   }
-
-  else 
+  else {
     ErrorMayQuit("HexStringInt: argument must be an integer (not a %s)",
                  (Int)TNAM_OBJ(integer), 0L);
-  /* please picky cc                                                       */
-  return (Obj) 0L; 
+  }
 
+  return res;
 }
 
 
@@ -700,6 +760,8 @@ Obj FuncLog2Int( Obj self, Obj integer)
     UInt len = SIZE_INT(integer) - 1;
     UInt a = CLog2UInt( ADDR_INT(integer)[len] );
 
+    CHECK_INT(integer);
+
 #ifdef SYS_IS_64_BIT
     return INTOBJ_INT(len * GMP_LIMB_BITS + a);
 #else
@@ -734,7 +796,8 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
   Char  c;
   Int neg;
 
-  
+  CHECK_INT(integer);
+
   /* handle a small integer                                                */
   if ( IS_INTOBJ(integer) ) {
     x = INT_INTOBJ(integer);
@@ -823,6 +886,9 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 */
 Int EqInt ( Obj gmpL, Obj gmpR )
 {
+  CHECK_INT(gmpL);
+  CHECK_INT(gmpR);
+
   /* compare two small integers */
   if ( ARE_INTOBJS( gmpL, gmpR ) )
     return gmpL == gmpR;
@@ -850,6 +916,9 @@ Int EqInt ( Obj gmpL, Obj gmpR )
 Int LtInt ( Obj gmpL, Obj gmpR )
 {
   Int res;
+
+  CHECK_INT(gmpL);
+  CHECK_INT(gmpR);
 
   /* compare two small integers */
   if ( ARE_INTOBJS( gmpL, gmpR ) )
@@ -900,6 +969,9 @@ static Obj SumOrDiffInt ( Obj gmpL, Obj gmpR, Int sign )
   Int   swapped; /* set to 1 if args were swapped, 0 otherwise             */
   Int    resneg; /* set to 1 if result will be negative                    */
   TypLimb carry; /* hold any carry or borrow                               */
+
+  CHECK_INT(gmpL);
+  CHECK_INT(gmpR);
 
   twosmall = 0;
   onesmall = 0;
@@ -1157,6 +1229,7 @@ Obj SumInt ( Obj gmpL, Obj gmpR )
 
   sum = SumOrDiffInt( gmpL, gmpR, +1 );
 
+  CHECK_INT(sum);
   return sum;
 
 }
@@ -1173,6 +1246,7 @@ Obj DiffInt ( Obj gmpL, Obj gmpR )
   
   dif = SumOrDiffInt( gmpL, gmpR, -1 );
   
+  CHECK_INT(dif);
   return dif;
 }
 
@@ -1194,6 +1268,8 @@ Obj ZeroInt ( Obj  op )
 Obj AInvInt ( Obj gmp )
 {
   Obj inv;
+
+  CHECK_INT(gmp);
 
   /* handle small integer                                                */
   if ( IS_INTOBJ( gmp ) ) {
@@ -1231,6 +1307,7 @@ Obj AInvInt ( Obj gmp )
   }
   
   /* return the inverse                                                    */
+  CHECK_INT(inv);
   return inv;
 
 }
@@ -1252,6 +1329,7 @@ Obj AbsInt( Obj op )
     } else
       return (Obj)( 2 - (Int)op );
   }
+  CHECK_INT(op);
   if ( IS_INTPOS(op) ) {
     return op;
   } else if ( IS_INTNEG(op) ) {
@@ -1268,6 +1346,7 @@ Obj FuncABS_INT(Obj self, Obj op)
     ErrorMayQuit( "AbsInt: argument must be an integer (not a %s)",
                   (Int)TNAM_OBJ(op), 0L );
   }
+  CHECK_INT(res);
   return res;
 }
 
@@ -1285,6 +1364,7 @@ Obj SignInt( Obj op )
     else
       return INTOBJ_INT(-1);
   }
+  CHECK_INT(op);
   if ( IS_INTPOS(op) ) {
     return INTOBJ_INT(1);
   } else if ( IS_INTNEG(op) ) {
@@ -1301,6 +1381,7 @@ Obj FuncSIGN_INT(Obj self, Obj op)
     ErrorMayQuit( "SignInt: argument must be an integer (not a %s)",
                   (Int)TNAM_OBJ(op), 0L );
   }
+  CHECK_INT(res);
   return res;
 }
 
@@ -1330,12 +1411,16 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
   TypLimb           carry;            /* most significant limb             */
   TypLimb      tmp1, tmp2;
   
+  CHECK_INT(gmpL);
+  CHECK_INT(gmpR);
+
   /* multiplying two small integers                                        */
   if ( ARE_INTOBJS( gmpL, gmpR ) ) {
     
     /* multiply two small integers with a small product                    */
     /* multiply and divide back to check that no overflow occured          */
     if ( PROD_INTOBJS( prd, gmpL, gmpR ) ) {
+      CHECK_INT(prd);
       return prd;
     }
     
@@ -1391,6 +1476,7 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
         prd = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
       }
       memcpy( ADDR_INT(prd), ADDR_INT(gmpL), SIZE_OBJ(gmpL) );
+      CHECK_INT(prd);
       return prd;
     }
     
@@ -1452,6 +1538,8 @@ Obj ProdIntObj ( Obj n, Obj op )
   Obj                 res = 0;        /* result                            */
   UInt                i, k;           /* loop variables                    */
   TypLimb             l;              /* loop variable                     */
+
+  CHECK_INT(n);
 
   /* if the integer is zero, return the neutral element of the operand     */
   if ( n == INTOBJ_INT(0) ) {
@@ -1556,6 +1644,9 @@ Obj PowInt ( Obj gmpL, Obj gmpR )
   Int                 i;
   Obj                 pow;
 
+  CHECK_INT(gmpL);
+  CHECK_INT(gmpR);
+
   if ( gmpR == INTOBJ_INT(0) ) {
     pow = INTOBJ_INT(1);
   }
@@ -1606,6 +1697,7 @@ Obj PowInt ( Obj gmpL, Obj gmpR )
   }
   
   /* return the power */
+  CHECK_INT(pow);
   return pow;
 }
 
@@ -1620,6 +1712,8 @@ Obj             PowObjInt ( Obj op, Obj n )
   UInt                i, k;           /* loop variables                  */
   TypLimb             l;              /* loop variable                   */
   
+  CHECK_INT(n);
+
   /* if the integer is zero, return the neutral element of the operand   */
   if ( n == INTOBJ_INT(0) ) {
     return ONE_MUT( op );
@@ -1711,7 +1805,10 @@ Obj ModInt ( Obj opL, Obj opR )
   UInt                   c;             /* product of two digits           */
   Obj                  mod;             /* handle of the remainder bag     */
   Obj                  quo;             /* handle of the quotient bag      */
-  
+
+  CHECK_INT(opL);
+  CHECK_INT(opR);
+
   /* pathological case first                                             */
   if ( opR == INTOBJ_INT(0) ) {
     opR = ErrorReturnObj(
@@ -1795,8 +1892,9 @@ Obj ModInt ( Obj opL, Obj opR )
         mod = SumOrDiffInt( opL, opR,  1 );
       else
         mod = SumOrDiffInt( opL, opR, -1 );
-      if ( IS_INTNEG(mod) ) return NEW_INTPOS(mod);
-      else return mod;
+      if ( IS_INTNEG(mod) ) mod = NEW_INTPOS(mod);
+      CHECK_INT(mod);
+      return mod;
     }
     
     mod = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(TypLimb) );
@@ -1828,6 +1926,7 @@ Obj ModInt ( Obj opL, Obj opR )
 #if DEBUG_GMP
   assert( !IS_NEGATIVE(mod) );
 #endif
+  CHECK_INT(mod);
   return mod;
 }
 
@@ -1852,7 +1951,10 @@ Obj QuoInt ( Obj opL, Obj opR )
   Int                 k;              /* loop count, value for small int   */
   Obj                 quo;            /* handle of the result bag          */
   Obj                 rem;            /* handle of the remainder bag       */
-  
+
+  CHECK_INT(opL);
+  CHECK_INT(opR);
+
   /* pathological case first                                             */
   if ( opR == INTOBJ_INT(0) ) {
     opR = ErrorReturnObj(
@@ -2008,6 +2110,9 @@ Obj RemInt ( Obj opL, Obj opR )
   Obj                 rem;            /* handle of the remainder bag       */
   Obj                 quo;            /* handle of the quotient bag        */
 
+  CHECK_INT(opL);
+  CHECK_INT(opR);
+
   /* pathological case first                                             */
   if ( opR == INTOBJ_INT(0) ) {
     opR = ErrorReturnObj(
@@ -2095,6 +2200,7 @@ Obj RemInt ( Obj opL, Obj opR )
   }
   
   /* return the result                                                     */
+  CHECK_INT(rem);
   return rem;
 }
 
@@ -2162,6 +2268,9 @@ Obj GcdInt ( Obj opL, Obj opR )
   UInt                prest;          /* and remaining zero bits */
   UInt                overflow;       /* possible overflow from most 
                                          significant word */
+
+  CHECK_INT(opL);
+  CHECK_INT(opR);
 
   /* compute the gcd of two small integers                                 */
   if ( ARE_INTOBJS( opL, opR ) ) {
