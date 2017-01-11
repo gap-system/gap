@@ -42,6 +42,8 @@
 
 #include        "code.h"                /* coder                           */
 
+#include        "bool.h"                /* For fail                        */
+
 #include        "saveload.h"            /* saving and loading              */
 #include        "read.h"                /* to access stack of for loop globals */
 #include        "gvars.h"
@@ -120,14 +122,23 @@ static inline void PopLoopNesting( void ) {
 static inline void setup_gapname(TypInputFile* i)
 {
   UInt len;
+  Obj pos;
   if(!i->gapname) {
     C_NEW_STRING_DYN(i->gapname, i->name);
-    len = LEN_PLIST( FilenameCache );
-    GROW_PLIST(      FilenameCache, len+1 );
-    SET_LEN_PLIST(   FilenameCache, len+1 );
-    SET_ELM_PLIST(   FilenameCache, len+1, i->gapname );
-    CHANGED_BAG(     FilenameCache );
-    i->gapnameid = len+1;
+    pos = POS_LIST( FilenameCache, i->gapname, INTOBJ_INT(1) );
+    if(pos == Fail) {
+        len = LEN_PLIST( FilenameCache );
+        GROW_PLIST(      FilenameCache, len+1 );
+        SET_LEN_PLIST(   FilenameCache, len+1 );
+        SET_ELM_PLIST(   FilenameCache, len+1, i->gapname );
+        CHANGED_BAG(     FilenameCache );
+        i->gapnameid = len + 1;
+    }
+    else {
+        i->gapnameid = INT_INTOBJ(pos);
+        // Use string from FilenameCache as we know it will not get GCed
+        i->gapname = ELM_LIST( FilenameCache, i->gapnameid );
+    }
   }
 }
 
