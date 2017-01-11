@@ -54,6 +54,7 @@ matrix:
         apt_packages:
           - libgmp-dev:i386
           - gcc-multilib
+          - g++-multilib
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
