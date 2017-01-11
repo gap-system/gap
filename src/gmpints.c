@@ -685,6 +685,7 @@ static Int CLog2UInt(UInt a)
 
 Int CLog2Int(Int a)
 {
+  if (a == 0) return -1;
   if (a < 0) a = -a;
   return CLog2UInt(a);
 }
