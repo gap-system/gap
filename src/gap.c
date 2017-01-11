@@ -3077,6 +3077,12 @@ Obj FuncKERNEL_INFO(Obj self) {
   else
     AssPRec(res, r, False);
 
+  /* export GMP version  */
+  C_NEW_STRING_DYN( str, gmp_version );
+  RetypeBag( str, IMMUTABLE_TNUM(TNUM_OBJ(str)) );
+  r = RNamName("GMP_VERSION");
+  AssPRec(res, r, str);
+
   return res;
   
 }
