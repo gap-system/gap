@@ -815,11 +815,11 @@ void            Emit (
             else if ( *p == 'c' ) {
                 cvar = va_arg( ap, CVar );
                 if ( IS_INTG_CVAR(cvar) ) {
-		  Int x = INTG_CVAR(cvar);
-		  if (x >= -(1L <<28) && x < (1L << 28))
-                    Pr( "INTOBJ_INT(%d)", x, 0L );
-		  else
-		    Pr( "C_MAKE_MED_INT(%d)", x, 0L );
+                    Int x = INTG_CVAR(cvar);
+                    if (x >= -(1L <<28) && x < (1L << 28))
+                        Pr( "INTOBJ_INT(%d)", x, 0L );
+                    else
+                        Pr( "C_MAKE_MED_INT(%d)", x, 0L );
                 }
                 else if ( IS_TEMP_CVAR(cvar) ) {
                     Pr( "t_%d", TEMP_CVAR(cvar), 0L );
@@ -2409,28 +2409,28 @@ CVar CompIntExpr (
     else {
         val = CVAR_TEMP( NewTemp( "val" ) );
         siz = SIZE_EXPR(expr) - sizeof(UInt);
-	typ = *(UInt *)ADDR_EXPR(expr);
-	Emit( "%c = C_MAKE_INTEGER_BAG(%d, %d);\n",val, siz, typ);
+        typ = *(UInt *)ADDR_EXPR(expr);
+        Emit( "%c = C_MAKE_INTEGER_BAG(%d, %d);\n",val, siz, typ);
         if ( typ == T_INTPOS ) {
             SetInfoCVar(val, W_INT_POS);
         }
         else {
             SetInfoCVar(val, W_INT);
-	}
+        }
 
         for ( i = 0; i < siz/INTEGER_UNIT_SIZE; i++ ) {
 #if INTEGER_UNIT_SIZE == 2
-	    Emit( "C_SET_LIMB2( %c, %d, %d);\n",val, i, ((UInt2 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
+            Emit( "C_SET_LIMB2( %c, %d, %d);\n",val, i, ((UInt2 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
+#elif INTEGER_UNIT_SIZE == 4
+            Emit( "C_SET_LIMB4( %c, %d, %dL);\n",val, i, ((UInt4 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
+#elif INTEGER_UNIT_SIZE == 8
+            Emit( "C_SET_LIMB8( %c, %d, %dLL);\n",val, i, ((UInt8*)((UInt *)ADDR_EXPR(expr) + 1))[i]);
 #else
-#if INTEGER_UNIT_SIZE == 4
-	    Emit( "C_SET_LIMB4( %c, %d, %dL);\n",val, i, ((UInt4 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
-#else
-	    Emit( "C_SET_LIMB8( %c, %d, %dLL);\n",val, i, ((UInt8*)((UInt *)ADDR_EXPR(expr) + 1))[i]);
-#endif
+            #error unsupported INTEGER_UNIT_SIZE
 #endif
         }
-	if (siz <= 8)
-	  Emit("%c = C_NORMALIZE_64BIT(%c);\n", val,val);
+        if (siz <= 8)
+            Emit("%c = C_NORMALIZE_64BIT(%c);\n", val,val);
         return val;
     }
 }
