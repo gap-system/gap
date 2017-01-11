@@ -845,61 +845,34 @@ Int EqInt ( Obj gmpL, Obj gmpR )
 */
 Int LtInt ( Obj gmpL, Obj gmpR )
 {
-  Obj opL;
-  Obj opR;
+  Int res;
 
-  /* compare two small integers                                          */
-  if ( ARE_INTOBJS( gmpL, gmpR ) ) {
-    if ( INT_INTOBJ(gmpL) <  INT_INTOBJ(gmpR) ) return 1L;
-    else return 0L;
-  }
+  /* compare two small integers */
+  if ( ARE_INTOBJS( gmpL, gmpR ) )
+    return (Int)gmpL < (Int)gmpR;
 
-  /* compare a small and a large integer                                   */
-  if ( IS_INTOBJ(gmpL) ) {
-    if ( SIZE_INT(gmpR) > (TypGMPSize)1 ) {
-      if ( IS_INTPOS(gmpR) ) return 1L;
-      else return 0L;
-    }
-    else opL = GMP_INTOBJ( gmpL );
-  }
-  else {
-    opL = gmpL;
-  }
+  /* a small int is always less than a positive large int */
+  if ( IS_INTOBJ(gmpL) != IS_INTOBJ(gmpR) )
+    return ( IS_INTOBJ(gmpL) && IS_INTPOS(gmpR) )
+        || ( IS_INTNEG(gmpL) && IS_INTOBJ(gmpR) );
 
-  if ( IS_INTOBJ(gmpR) ) {
-    if ( SIZE_INT(gmpL) > (TypGMPSize)1 ) {
-      if ( IS_INTNEG(gmpL) )  return 1L;
-      else return 0L;
-    }
-    else opR = GMP_INTOBJ( gmpR );
-  }
-  else {
-    opR = gmpR;
-  }
+  /* compare two large integers */
+  if ( TNUM_OBJ(gmpL) != TNUM_OBJ(gmpR) ) /* different signs? */
+    return IS_INTNEG(gmpL);
 
-  /* compare two large integers                                            */
-  if ( IS_INTNEG(opL) && IS_INTPOS(opR) )
-    return 1L;
-  else if (   IS_INTPOS(opL) && IS_INTNEG(opR) )
-    return 0L;
-  else if ( ( IS_INTPOS(opR) && SIZE_INT(opL) < SIZE_INT(opR) ) ||
-            ( IS_INTNEG(opR) && SIZE_INT(opL) > SIZE_INT(opR) ) )
-    return 1L;
-  else if ( ( IS_INTPOS(opL) && SIZE_INT(opL) > SIZE_INT(opR) ) ||
-            ( IS_INTNEG(opL) && SIZE_INT(opL) < SIZE_INT(opR) ) )
-    return 0L;
-  else if ( IS_INTPOS(opL) ) {
-    if ( mpn_cmp( ADDR_INT(opL), ADDR_INT(opR), SIZE_INT(opL) ) < 0 ) 
-      return 1L;
-    else
-      return 0L;
-  }
-  else {
-    if ( mpn_cmp( ADDR_INT(opL), ADDR_INT(opR), SIZE_INT(opL) ) > 0 ) 
-      return 1L;
-    else
-      return 0L;
-  }
+  /* signs are equal; compare sizes and absolute values */
+  if ( SIZE_INT(gmpL) < SIZE_INT(gmpR) )
+    res = 1;
+  else if ( SIZE_INT(gmpL) > SIZE_INT(gmpR) )
+    res = 0;
+  else
+    res = mpn_cmp( ADDR_INT(gmpL), ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0;
+
+  /* if both arguments are negative, flip the result */
+  if ( IS_INTNEG(gmpL) )
+    res = !res;
+
+  return res;
 }
 
 
