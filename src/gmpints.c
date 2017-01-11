@@ -273,7 +273,7 @@ Obj GMP_NORMALIZE ( Obj gmp )
 
 Obj GMP_REDUCE( Obj gmp )
 {
-  if IS_INTOBJ( gmp ) {
+  if (IS_INTOBJ( gmp )) {
     return gmp;
   }
   if ( SIZE_INT(gmp) == 1) {
@@ -783,7 +783,7 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
     /* change when 128 bit comes along!                                      */
     Char buf[20000];
 
-    if IS_INTNEG(integer) {
+    if ( IS_INTNEG(integer) ) {
     len = gmp_snprintf( buf, sizeof(buf)-1, "-%Ni", ADDR_INT(integer),
           (TypGMPSize)SIZE_INT(integer) );
     }
@@ -833,7 +833,7 @@ Int EqInt ( Obj gmpL, Obj gmpR )
   }
 
   /* small ints fit into one limb of a GMP                                 */
-  if IS_INTOBJ(gmpL) {
+  if (IS_INTOBJ(gmpL)) {
     if ( ( INT_INTOBJ(gmpL) <  0 && IS_INTPOS(gmpR) ) ||
          ( 0 <= INT_INTOBJ(gmpL) && IS_INTNEG(gmpR) ) ||
          ( SIZE_INT(gmpR) > (TypGMPSize)1 ) ) return 0L;
@@ -843,7 +843,7 @@ Int EqInt ( Obj gmpL, Obj gmpR )
     opL = gmpL;
   }
 
-  if IS_INTOBJ(gmpR) {
+  if (IS_INTOBJ(gmpR)) {
     if ( ( INT_INTOBJ(gmpR) <  0 && IS_INTPOS(gmpL) ) ||
          ( 0 <= INT_INTOBJ(gmpR) && IS_INTNEG(gmpL) ) ||
          ( SIZE_INT(gmpL) > (TypGMPSize)1 ) ) return 0L;
@@ -1804,7 +1804,7 @@ Obj ModInt ( Obj opL, Obj opR )
         mod = SumOrDiffInt( opL, opR,  1 );
       else
         mod = SumOrDiffInt( opL, opR, -1 );
-      if IS_INTNEG(mod) return NEW_INTPOS(mod);
+      if ( IS_INTNEG(mod) ) return NEW_INTPOS(mod);
       else return mod;
     }
     
@@ -1834,7 +1834,7 @@ Obj ModInt ( Obj opL, Obj opR )
   }
   
   /* return the result                                                     */
-  if IS_INTNEG(mod)
+  if ( IS_INTNEG(mod) )
     return NEW_INTPOS(mod);
   else if ( IS_INTOBJ(mod) && 0 > INT_INTOBJ(mod) )
     return INTOBJ_INT(-INT_INTOBJ(mod));
@@ -2224,7 +2224,7 @@ Obj GcdInt ( Obj opL, Obj opR )
   /* compute the gcd of two large integers                                 */
   else {
     if ( EqInt(opL,opR) ) {
-      if IS_INTNEG(opL) {
+      if ( IS_INTNEG(opL) ) {
         return NEW_INTPOS(opL);
       }
       else {
