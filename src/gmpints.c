@@ -1628,34 +1628,22 @@ Obj             PowObjInt ( Obj op, Obj n )
   TypLimb             l;              /* loop variable                   */
   
   /* if the integer is zero, return the neutral element of the operand   */
-  if      ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  0 ) {
+  if ( n == INTOBJ_INT(0) ) {
     return ONE_MUT( op );
   }
   
   /* if the integer is one, return a copy of the operand                 */
-  else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  1 ) {
+  else if ( n == INTOBJ_INT(1) ) {
     res = CopyObj( op, 1 );
   }
   
   /* if the integer is minus one, return the inverse of the operand      */
-  else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) == -1 ) {
+  else if ( n == INTOBJ_INT(-1) ) {
     res = INV_MUT( op );
   }
   
   /* if the integer is negative, invert the operand and the integer      */
-  else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) <   0 ) {
-    res = INV_MUT( op );
-    if ( res == Fail ) {
-      return ErrorReturnObj(
-                            "Operations: <obj> must have an inverse",
-                            0L, 0L,
-                            "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
-    }
-    res = POW( res, AINV( n ) );
-  }
-  
-  /* if the integer is negative, invert the operand and the integer      */
-  else if ( TNUM_OBJ(n) == T_INTNEG ) {
+  else if ( IS_NEGATIVE(n) ) {
     res = INV_MUT( op );
     if ( res == Fail ) {
       return ErrorReturnObj(
@@ -1692,7 +1680,7 @@ Obj             PowObjInt ( Obj op, Obj n )
       while ( 0 < k ) {
         res = (res == 0 ? res : PROD( res, res ));
         k--;
-        if ( (l>>k) & 1 ) {
+        if ( (l >> k) & 1 ) {
           res = (res == 0 ? op : PROD( res, op ));
         }
       }
