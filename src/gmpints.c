@@ -540,7 +540,7 @@ Obj FuncHexStringInt( Obj self, Obj integer )
   }
 
   else 
-    ErrorMayQuit("HexStringInt: argument must be a int, (not a %s)",
+    ErrorMayQuit("HexStringInt: argument must be an integer (not a %s)",
                  (Int)TNAM_OBJ(integer), 0L);
   /* please picky cc                                                       */
   return (Obj) 0L; 
@@ -714,7 +714,7 @@ Obj FuncLog2Int( Obj self, Obj integer)
 #endif
   }
   else {
-    ErrorMayQuit("Log2Int: argument must be a int, (not a %s)",
+    ErrorMayQuit("Log2Int: argument must be an integer (not a %s)",
                  (Int)TNAM_OBJ(integer), 0L);
     /* please picky cc                                                     */
     return (Obj) 0L;
@@ -1937,7 +1937,6 @@ Obj QuoInt ( Obj opL, Obj opR )
   else if ( IS_INTOBJ(opL) ) {
     
     /* the small int -(1<<28) divided by the large int (1<<28) is -1       */
-    
     if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS))
          && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 1
          && VAL_LIMB0(opR) == 1L<<NR_SMALL_INT_BITS )
@@ -2028,7 +2027,7 @@ Obj FuncQUO_INT ( Obj self, Obj opL, Obj opR )
           && TNUM_OBJ(opL) != T_INTPOS
           && TNUM_OBJ(opL) != T_INTNEG ) {
     opL = ErrorReturnObj(
-                         "QuoInt: <left> must be a int (not a %s)",
+                         "QuoInt: <left> must be an integer (not a %s)",
                          (Int)TNAM_OBJ(opL), 0L,
                          "you can replace <left> via 'return <left>;'" );
   }
@@ -2036,7 +2035,7 @@ Obj FuncQUO_INT ( Obj self, Obj opL, Obj opR )
           && TNUM_OBJ(opR) != T_INTPOS
           && TNUM_OBJ(opR) != T_INTNEG ) {
     opR = ErrorReturnObj(
-                         "QuoInt: <right> must be a int (not a %s)",
+                         "QuoInt: <right> must be an integer (not a %s)",
                          (Int)TNAM_OBJ(opR), 0L,
                          "you can replace <right> via 'return <right>;'" );
   }
@@ -2451,19 +2450,19 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
   UInt4 *pt;
   while (! IsStringConv(mtstr)) {
      mtstr = ErrorReturnObj(
-         "<mtstr> must be a string, not a %s)",
+         "<mtstr> must be a string (not a %s)",
          (Int)TNAM_OBJ(mtstr), 0L,
          "you can replace <mtstr> via 'return <mtstr>;'" );
   }
   while ((! IsStringConv(mtstr)) || GET_LEN_STRING(mtstr) < 2500) {
      mtstr = ErrorReturnObj(
-         "<mtstr> must be a string with at least 2500 characters, ",
+         "<mtstr> must be a string with at least 2500 characters",
          0L, 0L,
          "you can replace <mtstr> via 'return <mtstr>;'" );
   }
   while ((! IS_INTOBJ(nrbits)) || INT_INTOBJ(nrbits) < 0) {
      nrbits = ErrorReturnObj(
-         "<nrbits> must be a small non-negative integer, not a %s)",
+         "<nrbits> must be a small non-negative integer (not a %s)",
          (Int)TNAM_OBJ(nrbits), 0L,
          "you can replace <mtstr> via 'return <mtstr>;'" );
   }
