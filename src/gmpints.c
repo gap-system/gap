@@ -1825,12 +1825,10 @@ Obj ModInt ( Obj opL, Obj opR )
   }
   
   /* return the result                                                     */
-  if ( IS_INTNEG(mod) )
-    return NEW_INTPOS(mod);
-  else if ( IS_INTOBJ(mod) && 0 > INT_INTOBJ(mod) )
-    return INTOBJ_INT(-INT_INTOBJ(mod));
-  else
-    return mod;
+#if DEBUG_GMP
+  assert( !IS_NEGATIVE(mod) );
+#endif
+  return mod;
 }
 
 
