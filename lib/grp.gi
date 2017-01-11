@@ -5070,8 +5070,11 @@ end);
 #M  HasSolvableFactorGroup(<G>,<N>)   test whether G/N is solvable
 ##
 InstallGlobalFunction(HasSolvableFactorGroup,function(G,N)
+local s,l;
   Assert(2,IsNormal(G,N) and IsSubgroup(G,N));
-  return ForAny(DerivedSeriesOfGroup(G),x->IsSubset(N,x));
+  s := DerivedSeriesOfGroup(G);
+  l := Length(s);
+  return IsSubgroup(N,s[l]);
 end);
 
 #############################################################################
