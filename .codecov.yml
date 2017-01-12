@@ -13,9 +13,6 @@ coverage:
       default:
         if_no_uploads: error
 
-    changes: true
-
-
 comment:
   layout: "header, diff, changes, tree"
   behavior: default
