@@ -343,6 +343,10 @@ void InstallPrintExprFunc(Int pos, void(*expr)(Expr)) {
 static inline UInt getFilenameId(Stat stat)
 {
   UInt id = FILENAMEID_STAT(stat);
+  if(id == 0)
+  {
+    return 0;
+  }
   if(LEN_PLIST(OutputtedFilenameList) < id || ELM_PLIST(OutputtedFilenameList,id) != True)
   {
     if(LEN_PLIST(OutputtedFilenameList) < id) {
@@ -396,6 +400,14 @@ static inline void outputStat(Stat stat, int exec, int visited)
   }
 
   nameid = getFilenameId(stat);
+
+  // Statement not attached to a file
+  if(nameid == 0)
+  {
+    HashUnlock(&profileState);
+    return;
+  }
+
   line = LINE_STAT(stat);
   if(profileState.lastOutputted.line != line ||
      profileState.lastOutputted.fileID != nameid ||

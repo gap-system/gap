@@ -233,14 +233,16 @@ Stat fillFilenameLine(Int fileid, Int line, Int size, Int type)
 **  'NewStat'   allocates a new   statement memory block  of  type <type> and
 **  <size> bytes.  'NewStat' returns the identifier of the new statement.
 **
-**  NewStat( <type>, <size>, <line> ) allows the line number of the statement
-**  to also be specified (else the current line when NewStat is called is
-**  used).
+**  NewStatWithProf( <type>, <size>, <line>, <file> ) allows the line number
+**  and fileid of the statement to also be specified, else the current line
+**  and file when NewStat was called is used. line=0, file=0 is used
+**  to denote a statement which should not be tracked.
 */
-Stat NewStatWithLine (
+static Stat NewStatWithProf (
     UInt                type,
     UInt                size,
-    UInt                line)
+    UInt                line,
+    UInt                file)
 {
     Stat                stat;           /* result                          */
 
@@ -259,10 +261,9 @@ Stat NewStatWithLine (
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
         TLS(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
-    setup_gapname(TLS(Input));
     
     /* enter type and size                                                 */
-    ADDR_STAT(stat)[-1] = fillFilenameLine(TLS(Input)->gapnameid, line, size, type);
+    ADDR_STAT(stat)[-1] = fillFilenameLine(file, line, size, type);
     RegisterStatWithProfiling(stat);
     /* return the new statement                                            */
     return stat;
@@ -272,8 +273,11 @@ Stat NewStat (
     UInt                type,
     UInt                size)
 {
-    return NewStatWithLine(type, size, TLS(Input)->number);
+    setup_gapname(TLS(Input));
+
+    return NewStatWithProf(type, size, TLS(Input)->number, TLS(Input)->gapnameid);
 }
+
 
 
 /****************************************************************************
@@ -846,7 +850,7 @@ void CodeFuncExprEnd (
         if ( TNUM_STAT(stat1) != T_RETURN_VOID
           && TNUM_STAT(stat1) != T_RETURN_OBJ )
         {
-            CodeReturnVoid();
+            CodeReturnVoidWhichIsNotProfiled();
             nr++;
         }
     }
@@ -1459,6 +1463,10 @@ void CodeReturnObj ( void )
 **
 **  'CodeReturnVoid' is the action  to  code a return-void-statement.   It is
 **  called when the reader encounters a 'return;'.
+**
+**  'CodeReturnVoidWhichIsNotProfiled' creates a return which will not
+**  be tracked by profiling. This is used for the implicit return put
+**  at the end of functions.
 */
 void CodeReturnVoid ( void )
 {
@@ -1466,6 +1474,18 @@ void CodeReturnVoid ( void )
 
     /* allocate the return-statement                                       */
     stat = NewStat( T_RETURN_VOID, 0 * sizeof(Expr) );
+
+    /* push the return-statement                                           */
+    PushStat( stat );
+}
+
+void CodeReturnVoidWhichIsNotProfiled ( void )
+{
+    Stat                stat;           /* return-statement, result        */
+
+    /* allocate the return-statement, without profile information          */
+
+    stat = NewStatWithProf( T_RETURN_VOID, 0 * sizeof(Expr), 0, 0 );
 
     /* push the return-statement                                           */
     PushStat( stat );
