@@ -527,18 +527,41 @@ local hom,embs,s,k,agens,ad,i,j,perm,dia,ggens,e,tgens,d,m,reco,emba,outs,id;
   return m;
 end);
 
-BindGlobal("MaxesAlmostSimple",function(G)
-local id,m,epi;
-  # Are just finding out that a group is symmetric or alternating?
-  # if so, try tu use method that uses data library
-  if not (HasIsNaturalSymmetricGroup(G) or HasIsNaturalAlternatingGroup(G))
-    and (IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G)) then
-    Info(InfoLattice,1,"MaxesAlmostSimple: Use S_n/A_n");
-    m:=MaximalSubgroupsSymmAlt(G,false);
-    if m<>fail then
-      return m;
+InstallGlobalFunction(MaxesAlmostSimple,function(G)
+local id,m,epi,cnt,h;
+
+  # is a permutation degree too big?
+  if IsPermGroup(G) then
+    if NrMovedPoints(G)>
+        SufficientlySmallDegreeSimpleGroupOrder(Size(PerfectResiduum(G))) then
+      h:=G;
+      for cnt in [1..5] do
+	epi:=SmallerDegreePermutationRepresentation(h);
+	if NrMovedPoints(Range(epi))<NrMovedPoints(h) then
+	  m:=MaxesAlmostSimple(Image(epi,G));
+	  m:=List(m,x->PreImage(epi,x));
+	  return m;
+	fi;
+	# new group to avoid storing the map
+	h:=Group(GeneratorsOfGroup(G));
+	SetSize(h,Size(G));
+      od;
+    fi;
+
+
+    # Are just finding out that a group is symmetric or alternating?
+    # if so, try to use method that uses data library
+    if not (HasIsNaturalSymmetricGroup(G) or HasIsNaturalAlternatingGroup(G))
+      and (IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G)) then
+      Info(InfoLattice,1,"MaxesAlmostSimple: Use S_n/A_n");
+      m:=MaximalSubgroupsSymmAlt(G,false);
+      if m<>fail then
+	return m;
+      fi;
     fi;
   fi;
+
+  # is the degree bad?
 
   # does the table of marks have it?
   m:=TomDataMaxesAlmostSimple(G);
