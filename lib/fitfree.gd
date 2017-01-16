@@ -81,6 +81,9 @@ InstallTrueMethod(CanComputeFittingFree, IsPcGroup);
 ##  creation of duplicate objects by user code later on.
 ##  The record may hold other components that are germane to the recognition
 ##  setup. These components may not be modified by user code.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareAttribute("FittingFreeLiftSetup",IsGroup);
 InstallTrueMethod(CanComputeFittingFree,HasFittingFreeLiftSetup);
 
@@ -114,6 +117,9 @@ InstallTrueMethod(CanComputeFittingFree,HasFittingFreeLiftSetup);
 ##
 ##  The record may hold other components that are germane to the recognition
 ##  setup. These components may not be modified by user code.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareGlobalFunction("FittingFreeSubgroupSetup");
 
 # This attribute is used for groups treated by constructive recognition and
@@ -138,6 +144,9 @@ DeclareAttribute("RecogDecompinfoHomomorphism",IsMapping,"mutable");
 ##  <A>ipcgs</A> is an induced Pcgs for <M>U\cap Rad(G)</M>, with respect to
 ##  the Pcgs stored in <A>ffs</A>. <A>imgs</A> are images of <A>gens</A>
 ##  under <A>ffs<C>.factorhom</C></A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareGlobalFunction("SubgroupByFittingFreeData");
 
 # Utility function: function(pcgs,gens,ignoredepths)
@@ -171,6 +180,9 @@ DeclareGlobalFunction("TFEvalRFHom");
 ##  compatible with radical, socle factor and pker.
 ##  If <A>wholesocle</A> is given and set to true the socles are not split
 ##  up according to isomorphism types, but are kept whole.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareGlobalFunction("FittingFreeElementarySeries");
 
 #############################################################################
@@ -185,6 +197,9 @@ DeclareGlobalFunction("FittingFreeElementarySeries");
 ##  for a finite fitting-free group <A>G</A>, this function retuns a list of
 ##  the direct factors of the socle of <A>G</A>. If <A>G</A> is not
 ##  fitting-free then <K>fail</K> is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareAttribute("DirectFactorsFittingFreeSocle",IsGroup);
 
 #############################################################################
@@ -197,6 +212,9 @@ DeclareAttribute("DirectFactorsFittingFreeSocle",IsGroup);
 ##
 ##  <Description>
 ##  A chief series for <A>G</A> that fits with the FittingFreeLiftSetup.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareAttribute("ChiefSeriesTF",IsGroup);
 
 #############################################################################
