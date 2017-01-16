@@ -63,3 +63,6 @@
 
 /tags
 /src/TAGS
+
+# Tests
+/tst/testmanuals/*.tst

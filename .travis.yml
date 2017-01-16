@@ -22,6 +22,13 @@ matrix:
         apt_packages:
           - libgmp-dev
 
+    - os: linux
+      env: TEST_SUITE=testmanuals
+      compiler: gcc
+      addons:
+        apt_packages:
+          - libgmp-dev
+
     # OS X builds: since those are slow and limited on Travis,
     # we only run testinstall for now
     - os: osx
