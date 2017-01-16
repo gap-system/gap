@@ -1055,14 +1055,22 @@ end);
 # B: Background color
 # option `rows' colors alternating rows
 InstallGlobalFunction(LaTeXTable,function(file,l)
-local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt;
+local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt,renum;
 
   alt:=ValueOption("rows")<>fail;
   color:=fail;
   # row 1 indicates which columns are relevant and their formatting
-  cold:=l[1];
+  cold:=ShallowCopy(l[1]);
   f:=RecFields(cold);
+  renum:=[];
   for i in ShallowCopy(f) do
+
+    a:=Filtered(cold.(i),x->x in CHARS_DIGITS);
+    if LENGTH(a)>0 then
+      cold.(i):=Filtered(cold.(i),x->not x in CHARS_DIGITS);
+      Add(renum,Int(a));
+    fi;
+
     if cold.(i)="B" then 
       # color indicator
       color:=i;
@@ -1072,6 +1080,15 @@ local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt;
       cold.(i):=UppercaseString(cold.(i));
     fi;
   od;
+
+  # resort columns if numbers are given
+  if Length(renum)=Length(f) then
+    a:=ShallowCopy(renum);
+    a:=Sortex(a);
+    f:=Permuted(f,a);
+  fi;
+
+
   PrintTo(file);
   # header
   format:="";
