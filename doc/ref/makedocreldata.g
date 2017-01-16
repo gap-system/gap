@@ -59,6 +59,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/field.gd",
     "../../lib/files.gd",
     "../../lib/filter.g",
+    "../../lib/fitfree.gd",
     "../../lib/fldabnum.gd",
     "../../lib/float.gd",
     "../../lib/fpmon.gd",
