@@ -109,6 +109,8 @@ BIND_GLOBAL( "GAPInfo", rec(
            help := [ "Run ProfileLineByLine(<filename>) on GAP start"] ),
       rec( long := "cover", default := "", arg := "<file>",
            help := [ "Run CoverageLineByLine(<filename>) on GAP start"] ),
+      rec( long := "ignoreconfig", default := false,
+           help := [ "disable/enable reading user configuration files"] ),
           ],
     ) );
 

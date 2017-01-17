@@ -660,7 +660,9 @@ DeclareUserPreference( rec(
   ) );
 
 CallAndInstallPostRestore( function()
-    READ_GAP_ROOT( "gap.ini" );
+    if not GAPInfo.CommandLineOptions.ignoreconfig then
+      READ_GAP_ROOT( "gap.ini" );
+    fi;
 end );
 
 
@@ -808,6 +810,9 @@ end );
 ##  then read the first `gaprc' file from the GAP root directories.
 ##
 CallAndInstallPostRestore( function()
+    if GAPInfo.CommandLineOptions.ignoreconfig then
+      return;
+    fi;
     if READ_GAP_ROOT( "gaprc" ) then
       GAPInfo.HasReadGAPRC:= true;
     elif not IsExistingFile(GAPInfo.UserGapRoot) then
