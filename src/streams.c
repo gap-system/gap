@@ -697,8 +697,8 @@ Obj FuncPrint (
     Obj                 self,
     Obj                 args )
 {
-    volatile Obj        arg;
-    volatile UInt       i;
+    Obj        arg;
+    UInt       i;
     syJmp_buf           readJmpError;
 
     /* print all the arguments, take care of strings and functions         */
@@ -734,9 +734,9 @@ Obj FuncPrint (
 static Obj PRINT_OR_APPEND_TO(Obj args, int append)
 {
     const char          *funcname = append ? "AppendTo" : "PrintTo";
-    volatile Obj        arg;
-    volatile Obj        filename;
-    volatile UInt       i;
+    Obj        arg;
+    Obj        filename;
+    UInt       i;
     syJmp_buf           readJmpError;
 
     /* first entry is the filename                                         */
@@ -800,9 +800,9 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
 static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
 {
     const char          *funcname = append ? "AppendTo" : "PrintTo";
-    volatile Obj        arg;
-    volatile Obj        stream;
-    volatile UInt       i;
+    Obj        arg;
+    Obj        stream;
+    UInt       i;
     syJmp_buf           readJmpError;
 
     /* first entry is the stream                                           */

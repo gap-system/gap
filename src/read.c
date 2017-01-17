@@ -203,7 +203,7 @@ extern Obj ExprGVars;
 */
 void ReadFuncCallOption( TypSymbolSet follow )
 {
-  volatile UInt       rnam;           /* record component name           */
+  UInt       rnam;           /* record component name           */
   if ( TLS(Symbol) == S_IDENT ) {
     rnam = RNamName( TLS(Value) );
     Match( S_IDENT, "identifier", S_COMMA | follow );
@@ -233,7 +233,7 @@ void ReadFuncCallOption( TypSymbolSet follow )
 
 void ReadFuncCallOptions( TypSymbolSet follow )
 {
-  volatile UInt nr;
+  UInt nr;
   if ( ! READ_ERROR() ) { IntrFuncCallOptionsBegin( ); }
   ReadFuncCallOption( follow);
   nr = 1;
@@ -392,17 +392,17 @@ void ReadCallVarAss (
     TypSymbolSet        follow,
     Char                mode )
 {
-    volatile Char       type = ' ';     /* type of variable                */
-    volatile Obj        nams;           /* list of names of local vars.    */
-    volatile Obj        lvars;          /* environment                     */
-    volatile UInt       nest  = 0;      /* nesting level of a higher var.  */
-    volatile Obj        lvars0;          /* environment                     */
-    volatile UInt       nest0  = 0;      /* nesting level of a higher var.  */
-    volatile UInt       indx  = 0;      /* index of a local variable       */
-    volatile UInt       var   = 0;      /* variable                        */
-    volatile UInt       level = 0;      /* number of '{}' selectors        */
-    volatile UInt       rnam  = 0;      /* record component name           */
-    volatile UInt       narg  = 0;      /* number of arguments             */
+    Char       type = ' ';     /* type of variable                */
+    Obj        nams;           /* list of names of local vars.    */
+    Obj        lvars;          /* environment                     */
+    UInt       nest  = 0;      /* nesting level of a higher var.  */
+    Obj        lvars0;          /* environment                     */
+    UInt       nest0  = 0;      /* nesting level of a higher var.  */
+    UInt       indx  = 0;      /* index of a local variable       */
+    UInt       var   = 0;      /* variable                        */
+    UInt       level = 0;      /* number of '{}' selectors        */
+    UInt       rnam  = 0;      /* record component name           */
+    UInt       narg  = 0;      /* number of arguments             */
     Char                varname[MAX_VALUE_LEN]; /* copy of variable name   */
 
     /* all variables must begin with an identifier                         */
@@ -804,8 +804,8 @@ void            ReadIsBound (
 void ReadPerm (
     TypSymbolSet        follow )
 {
-    volatile UInt       nrc;            /* number of cycles                */
-    volatile UInt       nrx;            /* number of expressions in cycle  */
+    UInt       nrc;            /* number of cycles                */
+    UInt       nrx;            /* number of expressions in cycle  */
 
     /* read the first cycle (first expression has already been read)       */
     nrx = 1;
@@ -1106,9 +1106,9 @@ void ReadString(
 void ReadListExpr (
     TypSymbolSet        follow )
 {
-    volatile UInt       pos;            /* actual position of element      */
-    volatile UInt       nr;             /* number of elements              */
-    volatile UInt       range;          /* is the list expression a range  */
+    UInt       pos;            /* actual position of element      */
+    UInt       nr;             /* number of elements              */
+    UInt       range;          /* is the list expression a range  */
 
     /* '['                                                                 */
     Match( S_LBRACK, "[", follow );
@@ -1186,8 +1186,8 @@ void ReadListExpr (
 void ReadRecExpr (
     TypSymbolSet        follow )
 {
-    volatile UInt       rnam;           /* record component name           */
-    volatile UInt       nr;             /* number of components            */
+    UInt       rnam;           /* record component name           */
+    UInt       nr;             /* number of components            */
 
     /* 'rec('                                                              */
     Match( S_REC, "rec", follow );
@@ -1259,20 +1259,20 @@ void ReadFuncExpr (
     TypSymbolSet        follow,
     Char mode)
 {
-    volatile Obj        nams;           /* list of local variables names   */
-    volatile Obj        name;           /* one local variable name         */
-    volatile Int        narg;           /* number of arguments             */
-    volatile UInt       isvarg = 0;     /* does function have varargs?     */
-    volatile UInt       nloc;           /* number of locals                */
-    volatile UInt       nr;             /* number of statements            */
-    volatile UInt       i;              /* loop variable                   */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
-    volatile Int        startLine;      /* line number of function keyword */
-    volatile int        is_block = 0;   /* is this a do ... od block?      */
-    volatile int        is_atomic = 0;  /* is this an atomic function?      */
-    volatile int        lockmode;       /* type of lock for current argument */
-    volatile Bag        locks = 0;      /* locks of the function */
+    Obj        nams;           /* list of local variables names   */
+    Obj        name;           /* one local variable name         */
+    Int        narg;           /* number of arguments             */
+    UInt       isvarg = 0;     /* does function have varargs?     */
+    UInt       nloc;           /* number of locals                */
+    UInt       nr;             /* number of statements            */
+    UInt       i;              /* loop variable                   */
+    UInt       nrError;        /* copy of <TLS(NrError)>          */
+    Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
+    Int        startLine;      /* line number of function keyword */
+    int        is_block = 0;   /* is this a do ... od block?      */
+    int        is_atomic = 0;  /* is this an atomic function?      */
+    int        lockmode;       /* type of lock for current argument */
+    Bag        locks = 0;      /* locks of the function */
 
     /* begin the function               */
     startLine = TLS(Input)->number;
@@ -1479,10 +1479,10 @@ void ReadFuncExpr (
 void ReadFuncExpr1 (
     TypSymbolSet        follow )
 {
-    volatile Obj        nams;           /* list of local variables names   */
-    volatile Obj        name;           /* one local variable name         */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
+    Obj        nams;           /* list of local variables names   */
+    Obj        name;           /* one local variable name         */
+    UInt       nrError;        /* copy of <TLS(NrError)>          */
+    Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
 
     /* make and push the new local variables list                          */
     nams = NEW_PLIST( T_PLIST, 1 );
@@ -1537,9 +1537,9 @@ void ReadFuncExpr1 (
 void ReadFuncExpr0 (
     TypSymbolSet        follow )
 {
-    volatile Obj        nams;           /* list of local variables names   */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
+    Obj        nams;           /* list of local variables names   */
+    UInt       nrError;        /* copy of <TLS(NrError)>          */
+    Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
 
     /* make and push the new local variables list                          */
     nams = NEW_PLIST( T_PLIST, 0 );
@@ -1779,8 +1779,8 @@ void ReadFactor (
     TypSymbolSet        follow,
     Char                mode )
 {
-    volatile Int        sign1;
-    volatile Int        sign2;
+    Int        sign1;
+    Int        sign2;
 
     /* { '+'|'-' }  leading sign                                           */
     sign1 = 0;
@@ -1839,7 +1839,7 @@ void ReadTerm (
     TypSymbolSet        follow,
     Char                mode )
 {
-    volatile UInt       symbol;
+    UInt       symbol;
 
     /* <Factor>                                                            */
     ReadFactor( follow, mode );
@@ -1903,8 +1903,8 @@ void ReadRel (
     TypSymbolSet        follow,
     Char                mode )
 {
-    volatile UInt       symbol;
-    volatile UInt       isNot;
+    UInt       symbol;
+    UInt       isNot;
 
     /* { 'not' }                                                           */
     isNot = 0;
@@ -2071,7 +2071,7 @@ void ReadEmpty (
 void ReadInfo (
     TypSymbolSet        follow )
 {
-    volatile UInt       narg;     /* numer of arguments to print (or not)  */
+    UInt       narg;     /* numer of arguments to print (or not)  */
 
     if ( ! READ_ERROR() ) { IntrInfoBegin(); }
     Match( S_INFO, "Info", follow );
@@ -2140,8 +2140,8 @@ void ReadAssert (
 void ReadIf (
     TypSymbolSet        follow )
 {
-    volatile UInt       nrb;            /* number of branches              */
-    volatile UInt       nrs;            /* number of statements in a body  */
+    UInt       nrb;            /* number of branches              */
+    UInt       nrs;            /* number of statements in a body  */
 
     /* 'if' <Expr>  'then' <Statments>                                     */
     nrb = 0;
@@ -2198,9 +2198,9 @@ void ReadIf (
 void ReadFor (
     TypSymbolSet        follow )
 {
-    volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>               */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
+    UInt       nrs;            /* number of statements in body    */
+    UInt       nrError;        /* copy of <TLS(NrError)>               */
+    Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
 
     /* remember the current variables in case of an error                  */
     currLVars = TLS(CurrLVars);
@@ -2258,9 +2258,9 @@ void ReadFor (
 void ReadWhile (
     TypSymbolSet        follow )
 {
-    volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
+    UInt       nrs;            /* number of statements in body    */
+    UInt       nrError;        /* copy of <TLS(NrError)>          */
+    Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
 
     /* remember the current variables in case of an error                  */
     currLVars = TLS(CurrLVars);
@@ -2311,10 +2311,10 @@ void ReadWhile (
 void ReadAtomic (
     TypSymbolSet        follow )
 {
-    volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nexprs;         /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>        */
+    UInt       nrs;            /* number of statements in body    */
+    UInt       nexprs;         /* number of statements in body    */
+    UInt       nrError;        /* copy of <TLS(NrError)>          */
+    Bag        currLVars;      /* copy of <TLS(CurrLVars)>        */
 
     /* remember the current variables in case of an error                  */
     currLVars = TLS(CurrLVars);
@@ -2378,9 +2378,9 @@ void ReadAtomic (
 void ReadRepeat (
     TypSymbolSet        follow )
 {
-    volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>        */
+    UInt       nrs;            /* number of statements in body    */
+    UInt       nrError;        /* copy of <TLS(NrError)>          */
+    Bag        currLVars;      /* copy of <TLS(CurrLVars)>        */
 
     /* remember the current variables in case of an error                  */
     currLVars = TLS(CurrLVars);
@@ -2786,18 +2786,18 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
 */
 UInt ReadEvalFile ( void )
 {
-    volatile ExecStatus type;
-    volatile Obj        stackNams;
-    volatile UInt       countNams;
-    volatile UInt       readTop;
-    volatile UInt       readTilde;
-    volatile UInt       currLHSGVar;
+    ExecStatus type;
+    Obj        stackNams;
+    UInt       countNams;
+    UInt       readTop;
+    UInt       readTilde;
+    UInt       currLHSGVar;
     syJmp_buf           readJmpError;
-    volatile UInt       nr;
-    volatile Obj        name;
-    volatile Obj        nams;
-    volatile Int        nloc;
-    volatile Int        i;
+    UInt       nr;
+    Obj        name;
+    Obj        nams;
+    Int        nloc;
+    Int        i;
 
     /* get the first symbol from the input                                 */
     Match( TLS(Symbol), "", 0UL );
