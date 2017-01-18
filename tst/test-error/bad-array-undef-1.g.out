@@ -1,4 +1,4 @@
-Error, Variable: 'm' must have an assigned value in
+Error, Variable: 'm' must have an assigned value in
   return l[m]; at bad-array-undef-1.g:4 called from 
 <function "f">( <arguments> )
  called from read-eval loop at bad-array-undef-1.g:6
