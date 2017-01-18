@@ -135,7 +135,6 @@ BindGlobal( "AbelianGroup", function ( arg )
     fi;
     return AbelianGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return AbelianGroupCons( arg[1], arg[2] );
     fi;
@@ -257,9 +256,11 @@ BindGlobal( "CyclicGroup", function ( arg )
     fi;
     return CyclicGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return CyclicGroupCons( arg[1], arg[2] );
+    elif Length(arg) = 3  then
+      # some filters require extra arguments, e.g. IsMatrixGroup + field
+      return CyclicGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: CyclicGroup( [<filter>, ]<size> )" );
@@ -311,7 +312,6 @@ BindGlobal( "DihedralGroup", function ( arg )
   if Length(arg) = 1  then
     return DihedralGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return DihedralGroupCons( arg[1], arg[2] );
     fi;
@@ -368,9 +368,11 @@ BindGlobal( "QuaternionGroup", function ( arg )
   if Length(arg) = 1  then
     return QuaternionGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return QuaternionGroupCons( arg[1], arg[2] );
+    elif Length(arg) = 3  then
+      # some filters require extra arguments, e.g. IsMatrixGroup + field
+      return QuaternionGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: QuaternionGroup( [<filter>, ]<size> )" );
@@ -422,7 +424,6 @@ BindGlobal( "ElementaryAbelianGroup", function ( arg )
   if Length(arg) = 1  then
     return ElementaryAbelianGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return ElementaryAbelianGroupCons( arg[1], arg[2] );
     fi;
@@ -474,7 +475,6 @@ BindGlobal( "FreeAbelianGroup", function ( arg )
   if Length(arg) = 1  then
     return FreeAbelianGroupCons( IsFpGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return FreeAbelianGroupCons( arg[1], arg[2] );
     fi;
@@ -539,7 +539,6 @@ BindGlobal( "ExtraspecialGroup", function ( arg )
   if Length(arg) = 2  then
     return ExtraspecialGroupCons( IsPcGroup, arg[1], arg[2] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 3  then
       return ExtraspecialGroupCons( arg[1], arg[2], arg[3] );
     fi;
@@ -592,7 +591,6 @@ BindGlobal( "MathieuGroup", function( arg )
   if Length( arg ) = 1 then
     return MathieuGroupCons( IsPermGroup, arg[1] );
   elif IsOperation( arg[1] ) then
-
     if Length( arg ) = 2 then
       return MathieuGroupCons( arg[1], arg[2] );
     fi;

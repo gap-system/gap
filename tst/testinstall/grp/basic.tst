@@ -74,6 +74,11 @@ gap> CyclicGroup(IsPermGroup,4);
 Group([ (1,2,3,4) ])
 gap> CyclicGroup(IsFpGroup,4);
 <fp group of size 4 on the generators [ a ]>
+gap> G:=CyclicGroup(IsMatrixGroup, GF(2), 12);
+<matrix group of size 12 with 1 generators>
+gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
+GF(2)
+12
 
 #
 gap> CyclicGroup(2,3);
@@ -112,6 +117,11 @@ gap> QuaternionGroup(IsPermGroup,8);
 Group([ (1,5,3,7)(2,8,4,6), (1,2,3,4)(5,6,7,8) ])
 gap> QuaternionGroup(IsFpGroup,8);
 <fp group of size 8 on the generators [ r, s ]>
+gap> G:=QuaternionGroup(IsMatrixGroup, GF(3), 8);
+<matrix group of size 8 with 2 generators>
+gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
+GF(3)
+4
 
 #
 gap> QuaternionGroup(2,3);
