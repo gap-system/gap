@@ -1276,7 +1276,7 @@ Obj FuncExecutingStatementLocation(Obj self, Obj context)
   Obj retlist;
   retlist = Fail;
   if (context == TLS(BottomLVars))
-    return (Obj) 0;
+    return Fail;
   SWITCH_TO_OLD_LVARS(context);
   call = BRK_CALL_TO();
   if (
