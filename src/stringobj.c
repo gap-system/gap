@@ -1329,7 +1329,7 @@ void PlainString (
 
     /* find the length and allocate a temporary copy                       */
     lenList = GET_LEN_STRING( list );
-    tmp = NEW_PLIST( T_PLIST, lenList );
+    tmp = NEW_PLIST( IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE, lenList );
     SET_LEN_PLIST( tmp, lenList );
 
     /* copy the characters                                                 */
