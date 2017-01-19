@@ -670,7 +670,8 @@ BindKeysToGAPHandler("\022");
 ##  HistoryMaxLines is less than infinity).
 ##  
 BindGlobal("SaveCommandLineHistory", function(arg)
-  local fnam, append, hist, out, i;
+  local  fnam, append, hist, out;
+
   if Length(arg) > 0 then
     fnam := arg[1];
   else
@@ -691,9 +692,8 @@ BindGlobal("SaveCommandLineHistory", function(arg)
     return fail;
   fi;
   SetPrintFormattingStatus(out, false);
-  for i in [1..Length(hist)] do
-    AppendTo(out, hist[i], "\n");
-  od;
+  WriteAll(out,JoinStringsWithSeparator(hist,"\n"));
+  WriteAll(out,"\n");
   CloseStream(out);
   return Length(hist);
 end);
