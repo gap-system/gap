@@ -1,50 +1,52 @@
 language: c
+
+env:
+  global:
+    - CFLAGS="-fprofile-arcs -ftest-coverage"
+    - LDFLAGS="-fprofile-arcs"
+
 matrix:
   include:
     - os: linux
-      env: TEST_SUITE=testinstall CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
+      env: TEST_SUITE=testinstall
       compiler: gcc
       addons:
         apt_packages:
           - libgmp-dev
-      after_success:
-          - bash <(curl -s https://codecov.io/bash)
+
     - os: linux
-      env: TEST_SUITE=testtravis CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
+      env: TEST_SUITE=testtravis
       compiler: gcc
       addons:
         apt_packages:
           - libgmp-dev
-      after_success:
-          - bash <(curl -s https://codecov.io/bash)
+
     - os: osx
-      env: TEST_SUITE=testtravis CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
+      env: TEST_SUITE=testtravis
       compiler: clang
       addons:
         apt_packages:
-         - libgmp-dev
-      after_success:
-          - bash <(curl -s https://codecov.io/bash)
+          - libgmp-dev
+
     - os: linux
-      env: TEST_SUITE=testbugfix  CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs"
+      env: TEST_SUITE=testbugfix
       compiler: gcc
       addons:
         apt_packages:
-         - libgmp-dev
-      after_success:
-          - bash <(curl -s https://codecov.io/bash)
+          - libgmp-dev
+
     - os: linux
       env: TEST_SUITE=makemanuals
       compiler: gcc
       addons:
         apt_packages:
-         - libgmp-dev
-         - texlive-latex-base
-         - texlive-latex-recommended
-         - texlive-latex-extra
-         - texlive-extra-utils
-         - texlive-fonts-recommended
-         - texlive-fonts-extra
+          - libgmp-dev
+          - texlive-latex-base
+          - texlive-latex-recommended
+          - texlive-latex-extra
+          - texlive-extra-utils
+          - texlive-fonts-recommended
+          - texlive-fonts-extra
     - os: linux
       env: TEST_SUITE=testtravis ABI=32
       compiler: gcc
@@ -52,8 +54,9 @@ matrix:
         apt_packages:
           - libgmp-dev:i386
           - gcc-multilib
-      after_success:
-          - bash <(curl -s https://codecov.io/bash)
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 script:
   - ./configure --with-gmp=system

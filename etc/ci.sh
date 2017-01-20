@@ -48,7 +48,7 @@ else
             OutputJsonCoverage("coverage", "coverage.json");
             QUIT_GAP(0);
 GAPInput
-        cd bin/x86* ; gcov -o . ../../src/*
-        cd ../..
     fi
+    cd bin/x86* ; gcov -o . ../../src/*
+    cd ../..
 fi;
