@@ -120,7 +120,7 @@ static inline void PopLoopNesting( void ) {
   STATE(LoopNesting) = STATE(LoopStack)[--STATE(LoopStackCount)];
 }
 
-static inline void setup_gapname(TypInputFile* i)
+static inline void SetupGapname(TypInputFile* i)
 {
   UInt len;
   Obj pos;
@@ -274,8 +274,7 @@ Stat NewStat (
     UInt                type,
     UInt                size)
 {
-    setup_gapname(STATE(Input));
-
+    SetupGapname(STATE(Input));
     return NewStatWithProf(type, size, STATE(Input)->number, STATE(Input)->gapnameid);
 }
 
@@ -801,7 +800,7 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    setup_gapname(STATE(Input));
+    SetupGapname(STATE(Input));
     SET_FILENAME_BODY(body, STATE(Input)->gapname);
     SET_STARTLINE_BODY(body, INTOBJ_INT(startLine));
     /*    Pr("Coding begin at %s:%d ",(Int)(STATE(Input)->name),STATE(Input)->number);
