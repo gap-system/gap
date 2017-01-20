@@ -656,7 +656,6 @@ Obj FuncACTIVATE_PROFILING (
     Obj                 self,
     Obj                 filename, /* filename to write to */
     Obj                 coverage,
-    Obj                 justStat,
     Obj                 wallTime,
     Obj                 resolution)
 {
@@ -683,10 +682,6 @@ Obj FuncACTIVATE_PROFILING (
 
     if(coverage != True && coverage != False) {
       ErrorMayQuit("<coverage> must be a boolean",0,0);
-    }
-
-    if(justStat != True && justStat != False) {
-      ErrorMayQuit("<justStat> must be a boolean",0,0);
     }
 
     if(wallTime != True && wallTime != False) {
@@ -740,10 +735,8 @@ Obj FuncACTIVATE_PROFILING (
 
     for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
       ExecStatFuncs[i] = ProfileStatPassthrough;
-      if(justStat == False) {
-          EvalExprFuncs[i] = ProfileEvalExprPassthrough;
-          EvalBoolFuncs[i] = ProfileEvalBoolPassthrough;
-      }
+      EvalExprFuncs[i] = ProfileEvalExprPassthrough;
+      EvalBoolFuncs[i] = ProfileEvalBoolPassthrough;
     }
 
     profileState_Active = 1;
@@ -965,7 +958,7 @@ void RegisterStatWithProfiling(Stat stat)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "ACTIVATE_PROFILING", 5, "string,boolean,boolean,boolean,integer",
+    { "ACTIVATE_PROFILING", 4, "string,boolean,boolean,integer",
       FuncACTIVATE_PROFILING, "src/profile.c:ACTIVATE_PROFILING" },
     { "DEACTIVATE_PROFILING", 0, "",
       FuncDEACTIVATE_PROFILING, "src/profile.c:DEACTIVATE_PROFILING" },
