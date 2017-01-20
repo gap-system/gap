@@ -31,12 +31,6 @@
 ##      <Ref Func="CoverageLineByLine"/>. Using this ignores all other
 ##      options.</Item>
 ##
-##  <Mark>justStat</Mark>
-##      <Item> Boolean (defaults to false). Switches profiling to only consider
-##             entire statements, rather than parts of statements. This has
-##             lower overhead and produces smaller output files,
-##             but produces a courser profile.</Item>
-##
 ##  <Mark>wallTime</Mark>
 ##      <Item> Boolean (defaults to true). Sets if time should be measured
 ##             using wall-clock time (true) or CPU time (false).
@@ -63,7 +57,6 @@ BIND_GLOBAL("ProfileLineByLine",function(arg)
     fi;
 
     optRec := rec(coverage := false,
-                  justStat := false,
                   wallTime := true, 
                   resolution := 0);
     if Length(arg) = 2 then
@@ -83,7 +76,7 @@ BIND_GLOBAL("ProfileLineByLine",function(arg)
        arg[1]{[Length(arg[1])-2..Length(arg[1])]} <> ".gz" then
       Info(InfoWarning, 1, "Profile filenames must end in .gz to enable compression");
     fi;
-    return ACTIVATE_PROFILING(arg[1], optRec.coverage, optRec.justStat,
+    return ACTIVATE_PROFILING(arg[1], optRec.coverage,
                                       optRec.wallTime, optRec.resolution);
 end);
 
