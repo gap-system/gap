@@ -929,7 +929,7 @@ UInt OpenOutput (
 **
 *F  OpenOutputStream( <stream> )  . . . . . . open a stream as current output
 **
-**  The same as 'OpenOutput' but for streams.
+**  The same as 'OpenOutput' (and also 'OpenAppend') but for streams.
 */
 
 Obj PrintFormattingStatus;
@@ -1047,19 +1047,6 @@ UInt OpenAppend (
 
     /* indicate success                                                    */
     return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenAppendStream( <stream> )  . . . . . . open a stream as current output
-**
-**  The same as 'OpenAppend' but for streams.
-*/
-UInt OpenAppendStream (
-    Obj                 stream )
-{
-    return OpenOutputStream(stream);
 }
 
 
