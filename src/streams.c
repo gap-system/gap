@@ -809,8 +809,7 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
     stream = ELM_LIST(args,1);
 
     /* try to open the file for output                                     */
-    i = append ? OpenAppendStream(stream)
-               : OpenOutputStream(stream);
+    i = OpenOutputStream(stream);
     if ( ! i ) {
         ErrorQuit( "%s: cannot open stream for output", (Int)funcname, 0L );
         return 0;
@@ -875,6 +874,9 @@ Obj FuncPRINT_TO_STREAM (
     Obj                 self,
     Obj                 args )
 {
+    /* Note that FuncPRINT_TO_STREAM and FuncAPPEND_TO_STREAM do exactly the
+       same, they only differ in the function name they print as part
+       of their error messages. */
     return PRINT_OR_APPEND_TO_STREAM(args, 0);
 }
 
@@ -899,6 +901,9 @@ Obj FuncAPPEND_TO_STREAM (
     Obj                 self,
     Obj                 args )
 {
+    /* Note that FuncPRINT_TO_STREAM and FuncAPPEND_TO_STREAM do exactly the
+       same, they only differ in the function name they print as part
+       of their error messages. */
     return PRINT_OR_APPEND_TO_STREAM(args, 1);
 }
 
@@ -925,18 +930,14 @@ Obj FuncSET_OUTPUT (
           }
         }
     } else {  /* an open stream */
-        if ( append != False ) {
-          if ( ! OpenAppendStream( file ) ) {
+        if ( ! OpenOutputStream( file ) ) {
+          if ( append != False ) {
              ErrorQuit( "SET_OUTPUT: cannot open stream for appending", 0L, 0L );
           } else {
-             return 0;
+             ErrorQuit( "SET_OUTPUT: cannot open stream for output", 0L, 0L );
           }
         } else {
-          if ( ! OpenOutputStream( file ) ) {
-             ErrorQuit( "SET_OUTPUT: cannot open stream for output", 0L, 0L );
-          } else {
-            return 0;
-          }
+          return 0;
         }
     }
     return 0;

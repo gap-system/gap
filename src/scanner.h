@@ -743,7 +743,7 @@ extern UInt OpenOutput (
 **
 *F  OpenOutputStream( <stream> )  . . . . . . open a stream as current output
 **
-**  The same as 'OpenOutput' but for streams.
+**  The same as 'OpenOutput' (and also 'OpenAppend') but for streams.
 */
 extern UInt OpenOutputStream (
     Obj                 stream );
@@ -782,16 +782,6 @@ extern UInt CloseOutput ( void );
 */
 extern UInt OpenAppend (
     const Char *        filename );
-
-
-/****************************************************************************
-**
-*F  OpenAppendStream( <stream> )  . . . . . . open a stream as current output
-**
-**  The same as 'OpenAppend' but for streams.
-*/
-extern UInt OpenAppendStream (
-    Obj                 stream );
 
 
 /****************************************************************************
