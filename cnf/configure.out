@@ -630,11 +630,25 @@ gapbin
 gp_configure_options
 ITANIUMOBJ
 C_DYNLIBS
+NM
+ac_ct_CXX
+CXXFLAGS
+CXX
+EGREP
+GREP
+CPP
 GMP_CFLAGS
 GMP_LIBS
 CDYNLINKING
 CDYNLINKER
 CDYNOPTIONS
+OBJEXT
+EXEEXT
+ac_ct_CC
+CPPFLAGS
+LDFLAGS
+CFLAGS
+CC
 GAPARCH
 host_os
 host_vendor
@@ -644,20 +658,6 @@ build_os
 build_vendor
 build_cpu
 build
-NM
-ac_ct_CXX
-CXXFLAGS
-CXX
-EGREP
-GREP
-CPP
-OBJEXT
-EXEEXT
-ac_ct_CC
-CPPFLAGS
-LDFLAGS
-CFLAGS
-CC
 target_alias
 host_alias
 build_alias
@@ -2582,6 +2582,84 @@ ac_config_headers="$ac_config_headers config.h:../../cnf/config.hin"
 
 
 
+# Make sure we can run config.sub.
+$SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
+  as_fn_error $? "cannot run $SHELL $ac_aux_dir/config.sub" "$LINENO" 5
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking build system type" >&5
+$as_echo_n "checking build system type... " >&6; }
+if ${ac_cv_build+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_build_alias=$build_alias
+test "x$ac_build_alias" = x &&
+  ac_build_alias=`$SHELL "$ac_aux_dir/config.guess"`
+test "x$ac_build_alias" = x &&
+  as_fn_error $? "cannot guess build type; you must specify one" "$LINENO" 5
+ac_cv_build=`$SHELL "$ac_aux_dir/config.sub" $ac_build_alias` ||
+  as_fn_error $? "$SHELL $ac_aux_dir/config.sub $ac_build_alias failed" "$LINENO" 5
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_build" >&5
+$as_echo "$ac_cv_build" >&6; }
+case $ac_cv_build in
+*-*-*) ;;
+*) as_fn_error $? "invalid value of canonical build" "$LINENO" 5;;
+esac
+build=$ac_cv_build
+ac_save_IFS=$IFS; IFS='-'
+set x $ac_cv_build
+shift
+build_cpu=$1
+build_vendor=$2
+shift; shift
+# Remember, the first character of IFS is used to create $*,
+# except with old shells:
+build_os=$*
+IFS=$ac_save_IFS
+case $build_os in *\ *) build_os=`echo "$build_os" | sed 's/ /-/g'`;; esac
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking host system type" >&5
+$as_echo_n "checking host system type... " >&6; }
+if ${ac_cv_host+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "x$host_alias" = x; then
+  ac_cv_host=$ac_cv_build
+else
+  ac_cv_host=`$SHELL "$ac_aux_dir/config.sub" $host_alias` ||
+    as_fn_error $? "$SHELL $ac_aux_dir/config.sub $host_alias failed" "$LINENO" 5
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_host" >&5
+$as_echo "$ac_cv_host" >&6; }
+case $ac_cv_host in
+*-*-*) ;;
+*) as_fn_error $? "invalid value of canonical host" "$LINENO" 5;;
+esac
+host=$ac_cv_host
+ac_save_IFS=$IFS; IFS='-'
+set x $ac_cv_host
+shift
+host_cpu=$1
+host_vendor=$2
+shift; shift
+# Remember, the first character of IFS is used to create $*,
+# except with old shells:
+host_os=$*
+IFS=$ac_save_IFS
+case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SYS_ARCH "$GAPARCH"
+_ACEOF
+
+
+
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -3371,6 +3449,846 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking unaligned access" >&5
+$as_echo_n "checking unaligned access... " >&6; }
+if ${gp_cv_c_long_align+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+case "$host" in
+   alpha* )
+        gp_cv_c_long_align=8;;
+   mips-* | sparc-* )
+        gp_cv_c_long_align=$ac_cv_sizeof_void_p;;
+   i586-* | i686-* )
+        gp_cv_c_long_align=2;;
+   x86_64-* )
+        gp_cv_c_long_align=2;;
+        * )
+
+case "$host" in
+   *OSF* | *osf* )
+    uac p sigbus;;
+esac
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ if test "$cross_compiling" = yes; then :
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "cannot run test program while cross compiling
+See \`config.log' for more details" "$LINENO" 5; }
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+char buf[32];main(){long i= *(long*)(buf+1);buf[1]=(char)i;return 0;}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gp_cv_c_long_align=1
+else
+
+  if test "$cross_compiling" = yes; then :
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "cannot run test program while cross compiling
+See \`config.log' for more details" "$LINENO" 5; }
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+char buf[32];main(){long i= *(long*)(buf+2);buf[1]=(char)i;return 0;}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gp_cv_c_long_align=2
+else
+
+   if test "$cross_compiling" = yes; then :
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "cannot run test program while cross compiling
+See \`config.log' for more details" "$LINENO" 5; }
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+char buf[32];main(){long i= *(long*)(buf+4);buf[1]=(char)i;return 0;}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gp_cv_c_long_align=4
+else
+
+    if test "$cross_compiling" = yes; then :
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "cannot run test program while cross compiling
+See \`config.log' for more details" "$LINENO" 5; }
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+char buf[32];main(){long i= *(long*)(buf+8);buf[1]=(char)i;return 0;}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gp_cv_c_long_align=8
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ rm -f core core.* *.core
+esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_c_long_align" >&5
+$as_echo "$gp_cv_c_long_align" >&6; }
+
+cat >>confdefs.h <<_ACEOF
+#define C_LONG_ALIGN $gp_cv_c_long_align
+_ACEOF
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking C compiler default flags" >&5
+$as_echo_n "checking C compiler default flags... " >&6; }
+if ${gp_cv_cflags+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+   case "$host-$CC" in
+    *-gcc* )
+        gp_cv_cflags="-Wall -g -O2 ${ABI_CFLAGS}";;
+    *-clang* )
+        gp_cv_cflags="-Wall -g -O3 ${ABI_CFLAGS} -Wno-unused-value";;
+    i686-*-egcs )
+        gp_cv_cflags="-Wall -g -O2 -mcpu=i686 ${ABI_CFLAGS}";;
+    i586-*-egcs )
+        gp_cv_cflags="-Wall -g -O2 -mcpu=i586 ${ABI_CFLAGS}";;
+    i486-*-egcs )
+        gp_cv_cflags="-Wall -g -O2 -mcpu=i486 ${ABI_CFLAGS}";;
+    i386-*-egcs )
+        gp_cv_cflags="-Wall -g -O2 -mcpu=i386 ${ABI_CFLAGS}";;
+    *-icc* )
+        gp_cv_cflags="-Wall -g -O2 ${ABI_CFLAGS}";;
+    alphaev6-*-osf4*-cc )
+        gp_cv_cflags="-g3 -arch ev6 -O1 ";;
+    alphaev56-*-osf4*-cc )
+        gp_cv_cflags="-g3 -arch ev56 -O1";;
+    alphaev5-*-osf4*-cc )
+        gp_cv_cflags="-g3 -arch ev5 -O1";;
+    alpha*-*-osf4*-cc )
+        gp_cv_cflags="-g3 -O1";;
+    *aix*cc )
+        gp_cv_cflags="-g -O3";;
+    *-solaris*-cc )
+        gp_cv_cflags="-fast -erroff=E_STATEMENT_NOT_REACHED";;
+    *-irix*-cc )
+        gp_cv_cflags="-O3 -woff 1110,1167,1174,1552";;
+    * )
+        gp_cv_cflags="-O";;
+   esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_cflags" >&5
+$as_echo "$gp_cv_cflags" >&6; }
+CFLAGS="$gp_cv_cflags $CFLAGS"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking Linker default flags" >&5
+$as_echo_n "checking Linker default flags... " >&6; }
+if ${gp_cv_ldflags+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+   case "$host-$CC" in
+    *-darwin[6-9].* | *-darwin10.* )
+        gp_cv_ldflags="-g ${ABI_CFLAGS}";;
+    *-darwin* )
+        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
+    *-gcc* | *-egcs )
+        gp_cv_ldflags="-g ${ABI_CFLAGS}";;
+    *-clang* )
+        gp_cv_ldflags="-g -rdynamic ${ABI_CFLAGS}";;
+    *-icc* )
+        gp_cv_ldflags="-g -rdynamic -static-libgcc -static-intel ${ABI_CFLAGS}";;
+    alpha*-*-osf4*-cc )
+        gp_cv_ldflags="-g3 ";;
+    *-solaris*-cc )
+        gp_cv_ldflags="";;
+    *aix*cc )
+        gp_cv_ldflags="-g";;
+    *-irix*-cc )
+        gp_cv_ldflags="-O3";;
+    * )
+        gp_cv_ldflags="";;
+   esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_ldflags" >&5
+$as_echo "$gp_cv_ldflags" >&6; }
+LDFLAGS="$LDFLAGS $gp_cv_ldflags"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking dynamic module compile options" >&5
+$as_echo_n "checking dynamic module compile options... " >&6; }
+if ${gp_cv_prog_cc_cdynoptions+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+   case "$host-$CC" in
+    *cygwin* )
+        gp_cv_prog_cc_cdynoptions="${ABI_CFLAGS}";;
+    *-apple-darwin* )
+        gp_cv_prog_cc_cdynoptions="-fPIC -Wall ${ABI_CFLAGS}";;
+    *-hpux-gcc )
+        gp_cv_prog_cc_cdynoptions="-fpic -Wall ${ABI_CFLAGS}";;
+    *-gcc* | *-egcs )
+        gp_cv_prog_cc_cdynoptions="-fPIC -Wall -O2 ${ABI_CFLAGS}";;
+    *-clang* )
+        gp_cv_prog_cc_cdynoptions="-fPIC -Wall ${ABI_CFLAGS} -Wno-unused-value";;
+    *-icc* )
+        gp_cv_prog_cc_cdynoptions="-fpic -Wall -O2 ${ABI_CFLAGS}";;
+    *-next-nextstep-cc )
+        gp_cv_prog_cc_cdynoptions=" -Wall -O2 -arch $hostcpu";;
+    *-osf*-cc )
+        gp_cv_prog_cc_cdynoptions=" -shared -x -O2";;
+    *-irix* )
+        gp_cv_prog_cc_cdynoptions=" -O3 -woff 1110,1167,1174,1552";;
+
+    * )            gp_cv_prog_cc_cdynoptions="-fPIC -O2 ${ABI_CFLAGS}";;
+   esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_prog_cc_cdynoptions" >&5
+$as_echo "$gp_cv_prog_cc_cdynoptions" >&6; }
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking dynamic linker" >&5
+$as_echo_n "checking dynamic linker... " >&6; }
+if ${gp_cv_prog_cc_cdynlinker+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+   case "$host-$CC" in
+    *-gcc* | *-clang* | *-egcs | *-icc* )
+        gp_cv_prog_cc_cdynlinker="${CC}";;
+    *-irix* )
+        gp_cv_prog_cc_cdynlinker="ld";;
+
+    * )            gp_cv_prog_cc_cdynlinker="${CC}";;
+   esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_prog_cc_cdynlinker" >&5
+$as_echo "$gp_cv_prog_cc_cdynlinker" >&6; }
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking dynamic module link flags" >&5
+$as_echo_n "checking dynamic module link flags... " >&6; }
+if ${gp_cv_prog_cc_cdynlinking+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+   case "$host-$CC" in
+    *-apple-darwin* )
+        gp_cv_prog_cc_cdynlinking='-g -bundle -bundle_loader ${gap_bin}/gap'" ${ABI_CFLAGS}";;
+    *cygwin* )
+        gp_cv_prog_cc_cdynlinking='-shared ${gap_bin}/gap.dll';;
+    *-gcc )
+        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
+    *-clang )
+        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
+    *-icc )
+        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
+    *-egcs )
+        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
+    *hpux* )
+        gp_cv_prog_cc_cdynlinking="-b +e Init__Dynamic";;
+    alpha*osf4*-cc )
+        gp_cv_prog_cc_cdynlinking="-shared -g3";;
+    alpha*osf*cc )
+        gp_cv_prog_cc_cdynlinking="-shared";;
+    *osf*cc )
+        gp_cv_prog_cc_cdynlinking="-shared -r";;
+    *-irix* )
+       gp_cv_prog_cc_cdynlinking="-shared -O3";;
+    *-nextstep*cc )
+        gp_cv_prog_cc_cdynlinking="-arch $hostcpu -Xlinker -r -Xlinker -x -nostdlib";;
+    *solaris* )
+        gp_cv_prog_cc_cdynlinking="-G -Bdynamic";;
+    *sunos* )
+        gp_cv_prog_cc_cdynlinking="-assert pure-text -Bdynamic -x";;
+
+    * )           gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
+   esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_prog_cc_cdynlinking" >&5
+$as_echo "$gp_cv_prog_cc_cdynlinking" >&6; }
+
+
+CDYNOPTIONS=$gp_cv_prog_cc_cdynoptions
+CDYNLINKER=$gp_cv_prog_cc_cdynlinker
+CDYNLINKING=$gp_cv_prog_cc_cdynlinking
+
+
+
+
+
+
+
+
+
+
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}gcc", so it can be a program name with args.
+set dummy ${ac_tool_prefix}gcc; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_CC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$CC"; then
+  ac_cv_prog_CC="$CC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CC="${ac_tool_prefix}gcc"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+CC=$ac_cv_prog_CC
+if test -n "$CC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CC" >&5
+$as_echo "$CC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_prog_CC"; then
+  ac_ct_CC=$CC
+  # Extract the first word of "gcc", so it can be a program name with args.
+set dummy gcc; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ac_ct_CC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_CC"; then
+  ac_cv_prog_ac_ct_CC="$ac_ct_CC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_CC="gcc"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_CC=$ac_cv_prog_ac_ct_CC
+if test -n "$ac_ct_CC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_CC" >&5
+$as_echo "$ac_ct_CC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_ct_CC" = x; then
+    CC=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    CC=$ac_ct_CC
+  fi
+else
+  CC="$ac_cv_prog_CC"
+fi
+
+if test -z "$CC"; then
+          if test -n "$ac_tool_prefix"; then
+    # Extract the first word of "${ac_tool_prefix}cc", so it can be a program name with args.
+set dummy ${ac_tool_prefix}cc; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_CC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$CC"; then
+  ac_cv_prog_CC="$CC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CC="${ac_tool_prefix}cc"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+CC=$ac_cv_prog_CC
+if test -n "$CC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CC" >&5
+$as_echo "$CC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+fi
+if test -z "$CC"; then
+  # Extract the first word of "cc", so it can be a program name with args.
+set dummy cc; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_CC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$CC"; then
+  ac_cv_prog_CC="$CC" # Let the user override the test.
+else
+  ac_prog_rejected=no
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    if test "$as_dir/$ac_word$ac_exec_ext" = "/usr/ucb/cc"; then
+       ac_prog_rejected=yes
+       continue
+     fi
+    ac_cv_prog_CC="cc"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+if test $ac_prog_rejected = yes; then
+  # We found a bogon in the path, so make sure we never use it.
+  set dummy $ac_cv_prog_CC
+  shift
+  if test $# != 0; then
+    # We chose a different compiler from the bogus one.
+    # However, it has the same basename, so the bogon will be chosen
+    # first if we set CC to just the basename; use the full file name.
+    shift
+    ac_cv_prog_CC="$as_dir/$ac_word${1+' '}$@"
+  fi
+fi
+fi
+fi
+CC=$ac_cv_prog_CC
+if test -n "$CC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CC" >&5
+$as_echo "$CC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$CC"; then
+  if test -n "$ac_tool_prefix"; then
+  for ac_prog in cl.exe
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_CC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$CC"; then
+  ac_cv_prog_CC="$CC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CC="$ac_tool_prefix$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+CC=$ac_cv_prog_CC
+if test -n "$CC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CC" >&5
+$as_echo "$CC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+    test -n "$CC" && break
+  done
+fi
+if test -z "$CC"; then
+  ac_ct_CC=$CC
+  for ac_prog in cl.exe
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ac_ct_CC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_CC"; then
+  ac_cv_prog_ac_ct_CC="$ac_ct_CC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_CC="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_CC=$ac_cv_prog_ac_ct_CC
+if test -n "$ac_ct_CC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_CC" >&5
+$as_echo "$ac_ct_CC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$ac_ct_CC" && break
+done
+
+  if test "x$ac_ct_CC" = x; then
+    CC=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    CC=$ac_ct_CC
+  fi
+fi
+
+fi
+
+
+test -z "$CC" && { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "no acceptable C compiler found in \$PATH
+See \`config.log' for more details" "$LINENO" 5; }
+
+# Provide some information about the compiler.
+$as_echo "$as_me:${as_lineno-$LINENO}: checking for C compiler version" >&5
+set X $ac_compile
+ac_compiler=$2
+for ac_option in --version -v -V -qversion; do
+  { { ac_try="$ac_compiler $ac_option >&5"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_compiler $ac_option >&5") 2>conftest.err
+  ac_status=$?
+  if test -s conftest.err; then
+    sed '10a\
+... rest of stderr output deleted ...
+         10q' conftest.err >conftest.er1
+    cat conftest.er1 >&5
+  fi
+  rm -f conftest.er1 conftest.err
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether we are using the GNU C compiler" >&5
+$as_echo_n "checking whether we are using the GNU C compiler... " >&6; }
+if ${ac_cv_c_compiler_gnu+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+#ifndef __GNUC__
+       choke me
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_compiler_gnu=yes
+else
+  ac_compiler_gnu=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ac_cv_c_compiler_gnu=$ac_compiler_gnu
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_compiler_gnu" >&5
+$as_echo "$ac_cv_c_compiler_gnu" >&6; }
+if test $ac_compiler_gnu = yes; then
+  GCC=yes
+else
+  GCC=
+fi
+ac_test_CFLAGS=${CFLAGS+set}
+ac_save_CFLAGS=$CFLAGS
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CC accepts -g" >&5
+$as_echo_n "checking whether $CC accepts -g... " >&6; }
+if ${ac_cv_prog_cc_g+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_save_c_werror_flag=$ac_c_werror_flag
+   ac_c_werror_flag=yes
+   ac_cv_prog_cc_g=no
+   CFLAGS="-g"
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_prog_cc_g=yes
+else
+  CFLAGS=""
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+
+else
+  ac_c_werror_flag=$ac_save_c_werror_flag
+	 CFLAGS="-g"
+	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_prog_cc_g=yes
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+   ac_c_werror_flag=$ac_save_c_werror_flag
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_cc_g" >&5
+$as_echo "$ac_cv_prog_cc_g" >&6; }
+if test "$ac_test_CFLAGS" = set; then
+  CFLAGS=$ac_save_CFLAGS
+elif test $ac_cv_prog_cc_g = yes; then
+  if test "$GCC" = yes; then
+    CFLAGS="-g -O2"
+  else
+    CFLAGS="-g"
+  fi
+else
+  if test "$GCC" = yes; then
+    CFLAGS="-O2"
+  else
+    CFLAGS=
+  fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $CC option to accept ISO C89" >&5
+$as_echo_n "checking for $CC option to accept ISO C89... " >&6; }
+if ${ac_cv_prog_cc_c89+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_prog_cc_c89=no
+ac_save_CC=$CC
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdarg.h>
+#include <stdio.h>
+struct stat;
+/* Most of the following tests are stolen from RCS 5.7's src/conf.sh.  */
+struct buf { int x; };
+FILE * (*rcsopen) (struct buf *, struct stat *, int);
+static char *e (p, i)
+     char **p;
+     int i;
+{
+  return p[i];
+}
+static char *f (char * (*g) (char **, int), char **p, ...)
+{
+  char *s;
+  va_list v;
+  va_start (v,p);
+  s = g (p, va_arg (v,int));
+  va_end (v);
+  return s;
+}
+
+/* OSF 4.0 Compaq cc is some sort of almost-ANSI by default.  It has
+   function prototypes and stuff, but not '\xHH' hex character constants.
+   These don't provoke an error unfortunately, instead are silently treated
+   as 'x'.  The following induces an error, until -std is added to get
+   proper ANSI mode.  Curiously '\x00'!='x' always comes out true, for an
+   array size at least.  It's necessary to write '\x00'==0 to get something
+   that's true only with -std.  */
+int osf4_cc_array ['\x00' == 0 ? 1 : -1];
+
+/* IBM C 6 for AIX is almost-ANSI by default, but it replaces macro parameters
+   inside strings and character constants.  */
+#define FOO(x) 'x'
+int xlc6_cc_array[FOO(a) == 'x' ? 1 : -1];
+
+int test (int i, double x);
+struct s1 {int (*f) (int a);};
+struct s2 {int (*f) (double a);};
+int pairnames (int, char **, FILE *(*)(struct buf *, struct stat *, int), int, int);
+int argc;
+char **argv;
+int
+main ()
+{
+return f (e, argv, 0) != argv[0]  ||  f (e, argv, 1) != argv[1];
+  ;
+  return 0;
+}
+_ACEOF
+for ac_arg in '' -qlanglvl=extc89 -qlanglvl=ansi -std \
+	-Ae "-Aa -D_HPUX_SOURCE" "-Xc -D__EXTENSIONS__"
+do
+  CC="$ac_save_CC $ac_arg"
+  if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_prog_cc_c89=$ac_arg
+fi
+rm -f core conftest.err conftest.$ac_objext
+  test "x$ac_cv_prog_cc_c89" != "xno" && break
+done
+rm -f conftest.$ac_ext
+CC=$ac_save_CC
+
+fi
+# AC_CACHE_VAL
+case "x$ac_cv_prog_cc_c89" in
+  x)
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: none needed" >&5
+$as_echo "none needed" >&6; } ;;
+  xno)
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: unsupported" >&5
+$as_echo "unsupported" >&6; } ;;
+  *)
+    CC="$CC $ac_cv_prog_cc_c89"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_cc_c89" >&5
+$as_echo "$ac_cv_prog_cc_c89" >&6; } ;;
+esac
+if test "x$ac_cv_prog_cc_c89" != xno; then :
+
+fi
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
 $as_echo_n "checking for an ANSI C-conforming const... " >&6; }
@@ -4824,386 +5742,6 @@ if test "$gp_cv_c_underscore_symbols" = yes;  then
 $as_echo "#define C_UNDERSCORE_SYMBOLS 1" >>confdefs.h
 
 fi
-
-
-
-
-# Make sure we can run config.sub.
-$SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
-  as_fn_error $? "cannot run $SHELL $ac_aux_dir/config.sub" "$LINENO" 5
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking build system type" >&5
-$as_echo_n "checking build system type... " >&6; }
-if ${ac_cv_build+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_build_alias=$build_alias
-test "x$ac_build_alias" = x &&
-  ac_build_alias=`$SHELL "$ac_aux_dir/config.guess"`
-test "x$ac_build_alias" = x &&
-  as_fn_error $? "cannot guess build type; you must specify one" "$LINENO" 5
-ac_cv_build=`$SHELL "$ac_aux_dir/config.sub" $ac_build_alias` ||
-  as_fn_error $? "$SHELL $ac_aux_dir/config.sub $ac_build_alias failed" "$LINENO" 5
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_build" >&5
-$as_echo "$ac_cv_build" >&6; }
-case $ac_cv_build in
-*-*-*) ;;
-*) as_fn_error $? "invalid value of canonical build" "$LINENO" 5;;
-esac
-build=$ac_cv_build
-ac_save_IFS=$IFS; IFS='-'
-set x $ac_cv_build
-shift
-build_cpu=$1
-build_vendor=$2
-shift; shift
-# Remember, the first character of IFS is used to create $*,
-# except with old shells:
-build_os=$*
-IFS=$ac_save_IFS
-case $build_os in *\ *) build_os=`echo "$build_os" | sed 's/ /-/g'`;; esac
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking host system type" >&5
-$as_echo_n "checking host system type... " >&6; }
-if ${ac_cv_host+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test "x$host_alias" = x; then
-  ac_cv_host=$ac_cv_build
-else
-  ac_cv_host=`$SHELL "$ac_aux_dir/config.sub" $host_alias` ||
-    as_fn_error $? "$SHELL $ac_aux_dir/config.sub $host_alias failed" "$LINENO" 5
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_host" >&5
-$as_echo "$ac_cv_host" >&6; }
-case $ac_cv_host in
-*-*-*) ;;
-*) as_fn_error $? "invalid value of canonical host" "$LINENO" 5;;
-esac
-host=$ac_cv_host
-ac_save_IFS=$IFS; IFS='-'
-set x $ac_cv_host
-shift
-host_cpu=$1
-host_vendor=$2
-shift; shift
-# Remember, the first character of IFS is used to create $*,
-# except with old shells:
-host_os=$*
-IFS=$ac_save_IFS
-case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
-
-
-
-cat >>confdefs.h <<_ACEOF
-#define SYS_ARCH "$GAPARCH"
-_ACEOF
-
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking unaligned access" >&5
-$as_echo_n "checking unaligned access... " >&6; }
-if ${gp_cv_c_long_align+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-
-case "$host" in
-   alpha* )
-        gp_cv_c_long_align=8;;
-   mips-* | sparc-* )
-        gp_cv_c_long_align=$ac_cv_sizeof_void_p;;
-   i586-* | i686-* )
-        gp_cv_c_long_align=2;;
-   x86_64-* )
-        gp_cv_c_long_align=2;;
-        * )
-
-case "$host" in
-   *OSF* | *osf* )
-    uac p sigbus;;
-esac
- ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
- if test "$cross_compiling" = yes; then :
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "cannot run test program while cross compiling
-See \`config.log' for more details" "$LINENO" 5; }
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-char buf[32];main(){long i= *(long*)(buf+1);buf[1]=(char)i;return 0;}
-_ACEOF
-if ac_fn_c_try_run "$LINENO"; then :
-  gp_cv_c_long_align=1
-else
-
-  if test "$cross_compiling" = yes; then :
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "cannot run test program while cross compiling
-See \`config.log' for more details" "$LINENO" 5; }
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-char buf[32];main(){long i= *(long*)(buf+2);buf[1]=(char)i;return 0;}
-_ACEOF
-if ac_fn_c_try_run "$LINENO"; then :
-  gp_cv_c_long_align=2
-else
-
-   if test "$cross_compiling" = yes; then :
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "cannot run test program while cross compiling
-See \`config.log' for more details" "$LINENO" 5; }
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-char buf[32];main(){long i= *(long*)(buf+4);buf[1]=(char)i;return 0;}
-_ACEOF
-if ac_fn_c_try_run "$LINENO"; then :
-  gp_cv_c_long_align=4
-else
-
-    if test "$cross_compiling" = yes; then :
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "cannot run test program while cross compiling
-See \`config.log' for more details" "$LINENO" 5; }
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-char buf[32];main(){long i= *(long*)(buf+8);buf[1]=(char)i;return 0;}
-_ACEOF
-if ac_fn_c_try_run "$LINENO"; then :
-  gp_cv_c_long_align=8
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
-
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
-
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
-
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
- ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
- rm -f core core.* *.core
-esac
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_c_long_align" >&5
-$as_echo "$gp_cv_c_long_align" >&6; }
-
-cat >>confdefs.h <<_ACEOF
-#define C_LONG_ALIGN $gp_cv_c_long_align
-_ACEOF
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking C compiler default flags" >&5
-$as_echo_n "checking C compiler default flags... " >&6; }
-if ${gp_cv_cflags+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-   case "$host-$CC" in
-    *-gcc* )
-        gp_cv_cflags="-Wall -g -O2 ${ABI_CFLAGS}";;
-    *-clang* )
-        gp_cv_cflags="-Wall -g -O3 ${ABI_CFLAGS} -Wno-unused-value";;
-    i686-*-egcs )
-        gp_cv_cflags="-Wall -g -O2 -mcpu=i686 ${ABI_CFLAGS}";;
-    i586-*-egcs )
-        gp_cv_cflags="-Wall -g -O2 -mcpu=i586 ${ABI_CFLAGS}";;
-    i486-*-egcs )
-        gp_cv_cflags="-Wall -g -O2 -mcpu=i486 ${ABI_CFLAGS}";;
-    i386-*-egcs )
-        gp_cv_cflags="-Wall -g -O2 -mcpu=i386 ${ABI_CFLAGS}";;
-    *-icc* )
-        gp_cv_cflags="-Wall -g -O2 ${ABI_CFLAGS}";;
-    alphaev6-*-osf4*-cc )
-        gp_cv_cflags="-g3 -arch ev6 -O1 ";;
-    alphaev56-*-osf4*-cc )
-        gp_cv_cflags="-g3 -arch ev56 -O1";;
-    alphaev5-*-osf4*-cc )
-        gp_cv_cflags="-g3 -arch ev5 -O1";;
-    alpha*-*-osf4*-cc )
-        gp_cv_cflags="-g3 -O1";;
-    *aix*cc )
-        gp_cv_cflags="-g -O3";;
-    *-solaris*-cc )
-        gp_cv_cflags="-fast -erroff=E_STATEMENT_NOT_REACHED";;
-    *-irix*-cc )
-        gp_cv_cflags="-O3 -woff 1110,1167,1174,1552";;
-    * )
-        gp_cv_cflags="-O";;
-   esac
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_cflags" >&5
-$as_echo "$gp_cv_cflags" >&6; }
-CFLAGS="$gp_cv_cflags $CFLAGS"
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking Linker default flags" >&5
-$as_echo_n "checking Linker default flags... " >&6; }
-if ${gp_cv_ldflags+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-   case "$host-$CC" in
-    *-darwin[6-9].* | *-darwin10.* )
-        gp_cv_ldflags="-g ${ABI_CFLAGS}";;
-    *-darwin* )
-        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
-    *-gcc* | *-egcs )
-        gp_cv_ldflags="-g ${ABI_CFLAGS}";;
-    *-clang* )
-        gp_cv_ldflags="-g -rdynamic ${ABI_CFLAGS}";;
-    *-icc* )
-        gp_cv_ldflags="-g -rdynamic -static-libgcc -static-intel ${ABI_CFLAGS}";;
-    alpha*-*-osf4*-cc )
-        gp_cv_ldflags="-g3 ";;
-    *-solaris*-cc )
-        gp_cv_ldflags="";;
-    *aix*cc )
-        gp_cv_ldflags="-g";;
-    *-irix*-cc )
-        gp_cv_ldflags="-O3";;
-    * )
-        gp_cv_ldflags="";;
-   esac
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_ldflags" >&5
-$as_echo "$gp_cv_ldflags" >&6; }
-LDFLAGS="$LDFLAGS $gp_cv_ldflags"
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking dynamic module compile options" >&5
-$as_echo_n "checking dynamic module compile options... " >&6; }
-if ${gp_cv_prog_cc_cdynoptions+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-   case "$host-$CC" in
-    *cygwin* )
-        gp_cv_prog_cc_cdynoptions="${ABI_CFLAGS}";;
-    *-apple-darwin*gcc* )
-        gp_cv_prog_cc_cdynoptions="-fPIC -Wall ${ABI_CFLAGS}";;
-    *-hpux-gcc )
-        gp_cv_prog_cc_cdynoptions="-fpic -Wall ${ABI_CFLAGS}";;
-    *-gcc* | *-egcs )
-        gp_cv_prog_cc_cdynoptions="-fPIC -Wall -O2 ${ABI_CFLAGS}";;
-    *-clang* )
-        gp_cv_prog_cc_cdynoptions="-fPIC -Wall ${ABI_CFLAGS} -Wno-unused-value";;
-    *-icc* )
-        gp_cv_prog_cc_cdynoptions="-fpic -Wall -O2 ${ABI_CFLAGS}";;
-    *-next-nextstep-cc )
-        gp_cv_prog_cc_cdynoptions=" -Wall -O2 -arch $hostcpu";;
-    *-osf*-cc )
-        gp_cv_prog_cc_cdynoptions=" -shared -x -O2";;
-    *-irix* )
-        gp_cv_prog_cc_cdynoptions=" -O3 -woff 1110,1167,1174,1552";;
-
-    * )            gp_cv_prog_cc_cdynoptions="-fPIC -O2 ${ABI_CFLAGS}";;
-   esac
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_prog_cc_cdynoptions" >&5
-$as_echo "$gp_cv_prog_cc_cdynoptions" >&6; }
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking dynamic linker" >&5
-$as_echo_n "checking dynamic linker... " >&6; }
-if ${gp_cv_prog_cc_cdynlinker+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-   case "$host-$CC" in
-    *-gcc* | *-clang* | *-egcs | *-icc* )
-        gp_cv_prog_cc_cdynlinker="${CC}";;
-    *-irix* )
-        gp_cv_prog_cc_cdynlinker="ld";;
-
-    * )            gp_cv_prog_cc_cdynlinker="${CC}";;
-   esac
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_prog_cc_cdynlinker" >&5
-$as_echo "$gp_cv_prog_cc_cdynlinker" >&6; }
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking dynamic module link flags" >&5
-$as_echo_n "checking dynamic module link flags... " >&6; }
-if ${gp_cv_prog_cc_cdynlinking+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-   case "$host-$CC" in
-    *-apple-darwin*gcc* )
-        gp_cv_prog_cc_cdynlinking='-g -bundle -bundle_loader ${gap_bin}/gap -lc -lm'" ${ABI_CFLAGS}";;
-    *cygwin* )
-        gp_cv_prog_cc_cdynlinking='-shared ${gap_bin}/gap.dll';;
-    *-gcc )
-        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
-    *-apple-darwin*clang )
-        gp_cv_prog_cc_cdynlinking='-bundle -g -bundle_loader ${gap_bin}/gap'" ${ABI_CFLAGS}";;
-    *-clang )
-        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
-    *-icc )
-        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
-    *-egcs )
-        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
-    *hpux* )
-        gp_cv_prog_cc_cdynlinking="-b +e Init__Dynamic";;
-    alpha*osf4*-cc )
-        gp_cv_prog_cc_cdynlinking="-shared -g3";;
-    alpha*osf*cc )
-        gp_cv_prog_cc_cdynlinking="-shared";;
-    *osf*cc )
-        gp_cv_prog_cc_cdynlinking="-shared -r";;
-    *-irix* )
-       gp_cv_prog_cc_cdynlinking="-shared -O3";;
-    *-nextstep*cc )
-        gp_cv_prog_cc_cdynlinking="-arch $hostcpu -Xlinker -r -Xlinker -x -nostdlib";;
-    *solaris* )
-        gp_cv_prog_cc_cdynlinking="-G -Bdynamic";;
-    *sunos* )
-        gp_cv_prog_cc_cdynlinking="-assert pure-text -Bdynamic -x";;
-
-    * )           gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
-   esac
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gp_cv_prog_cc_cdynlinking" >&5
-$as_echo "$gp_cv_prog_cc_cdynlinking" >&6; }
-
-
-CDYNOPTIONS=$gp_cv_prog_cc_cdynoptions
-CDYNLINKER=$gp_cv_prog_cc_cdynlinker
-CDYNLINKING=$gp_cv_prog_cc_cdynlinking
-
-
-
-
-
-
 
 
 
@@ -6953,24 +7491,21 @@ gp_configure_options=$ac_configure_args
 
 
 
-
-
-
-
-
-
-
 gapbin=`pwd`
 
 
 
-ABI=$ABI
-ABI_CFLAGS=$ABI_CFLAGS
 
 
-GMP_LIBS=$GMP_LIBS
 
-GMP_CFLAGS=$GMP_CFLAGS
+
+
+
+
+
+
+
+
 
 
 # Check whether --with-gmp was given.

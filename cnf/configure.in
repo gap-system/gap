@@ -21,6 +21,22 @@ AC_CONFIG_HEADER(config.h:config.hin)
 
 dnl #########################################################################
 dnl ##
+dnl ## find a canonical name for the system
+dnl ##
+
+AC_CANONICAL_HOST
+AC_DEFINE_UNQUOTED( SYS_ARCH, "$GAPARCH", [define the name of the architucture] )
+AC_SUBST(GAPARCH)
+
+dnl This has to be left until after we know the system type
+GP_C_LONG_ALIGN
+GP_CFLAGS
+GP_LDFLAGS
+GP_PROG_CC_DYNFLAGS
+
+
+dnl #########################################################################
+dnl ##
 dnl ## check for compiler features
 dnl ##
 
@@ -83,21 +99,6 @@ AC_CHECK_SIZEOF([long])
 AC_CHECK_SIZEOF([long long])
 GP_C_UNDERSCORE_SYMBOLS
 
-
-dnl #########################################################################
-dnl ##
-dnl ## find a canonical name for the system
-dnl ##
-
-AC_CANONICAL_HOST
-AC_DEFINE_UNQUOTED( SYS_ARCH, "$GAPARCH", [define the name of the architucture] )
-AC_SUBST(GAPARCH)
-
-dnl This has to be left until after we know the system type
-GP_C_LONG_ALIGN
-GP_CFLAGS
-GP_LDFLAGS
-GP_PROG_CC_DYNFLAGS
 
 
 dnl #########################################################################
@@ -410,6 +411,8 @@ dnl ##
 dnl ## generate a makefile
 dnl ##
 
+gapbin=`pwd`
+
 AC_SUBST(CC)
 AC_SUBST(CXX)
 AC_SUBST(CFLAGS)
@@ -417,17 +420,12 @@ AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 
 AC_SUBST(gapbin)
-gapbin=`pwd`
 
 AC_SUBST(ABI)
 AC_SUBST(ABI_CFLAGS)
-ABI=$ABI
-ABI_CFLAGS=$ABI_CFLAGS
 
 AC_SUBST(GMP_LIBS)
-GMP_LIBS=$GMP_LIBS
 AC_SUBST(GMP_CFLAGS)
-GMP_CFLAGS=$GMP_CFLAGS
 
 AC_ARG_WITH(gmp,[dummy],[],[])
 AC_ARG_WITH(abi,[dummy],[],[])
