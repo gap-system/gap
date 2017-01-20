@@ -8,4 +8,4 @@
 # 3) Rewrite the root of gap with the string GAPROOT,
 #    so the output is usable on other machines
 GAPROOT=$(cd ../..; pwd)
-echo 'Read("'$2'");\n' | $1 -r -A -q -b 2>&1 | sed "s:${GAPROOT//:/\\:}:GAPROOT:g"
+echo 'Read("'$2'");\n' | $1 -r -A -q -b -x 200 2>&1 | sed "s:${GAPROOT//:/\\:}:GAPROOT:g"
