@@ -454,12 +454,12 @@ InstallOtherMethod(
 ##
 #M  Random( <list> )  . . . . . . . . . . . . . . . .  for a dense small list
 ##
-InstallOtherMethod( Random,
+InstallMethod( Random,
     "for a dense small list",
     [ IsList and IsDenseList and IsSmallList ],
     RandomList );
 
-InstallOtherMethod( Random,
+InstallMethod( Random,
     "for a dense (small) list",
     [ IsList and IsDenseList ],
     function( list )

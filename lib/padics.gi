@@ -480,17 +480,17 @@ end );
 ##  may get two pure p-adic  numbers that have no  "digit"  in common, so  by
 ##  adding them, one of the two vanishes.
 ##
-InstallOtherMethod( Random,
+InstallOtherMethodWithRandomSource( Random, "for a random source and a pure p-adic family",
     true,
-    [ IsPurePadicNumberFamily ],
+    [ IsRandomSource, IsPurePadicNumberFamily ],
     0,
 
-function ( fam )
+function ( rg, fam )
     local c;
 
     c := [];
-    c[1] := Random( -fam!.precision, fam!.precision );
-    c[2] := Random( 0, fam!.modulus-1 );
+    c[1] := Random( rg, -fam!.precision, fam!.precision );
+    c[2] := Random( rg, 0, fam!.modulus-1 );
     while c[2] mod fam!.prime = 0  do
         c[1] := c[1] + 1;
         c[2] := c[2] / fam!.prime;
@@ -903,19 +903,19 @@ end );
 ##  Again this is just something that returns an extended p-adic number.  The
 ##  p-part is not totally covered (just ranges from -precision to precision).
 ##
-InstallOtherMethod( Random,
+InstallOtherMethodWithRandomSource( Random, "for a random source and p-adic extension family",
     true,
-    [ IsPadicExtensionNumberFamily ],
+    [ IsRandomSource, IsPadicExtensionNumberFamily ],
     0,
 
-function ( fam )
+function ( rg, fam )
     local   c,  l;
 
     c := [];
-    c[1] := Random( -fam!.precision, fam!.precision );
+    c[1] := Random( rg, -fam!.precision, fam!.precision );
     c[2] := [];
     for l  in [ 1 .. fam!.n ] do
-        c[2][l] := Random( 0, fam!.modulus-1 );
+        c[2][l] := Random( rg, 0, fam!.modulus-1 );
     od;
     while ForAll( c[2], x-> x mod fam!.prime = 0 ) do
         c[1] := c[1] + 1;
