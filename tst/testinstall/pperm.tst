@@ -2045,10 +2045,8 @@ gap> DegreeOfPartialPerm(f)>DegreeOfPartialPerm(g);
 true
 gap> CodegreeOfPartialPerm(f)<=DegreeOfPartialPerm(g);
 true
-gap> f^g;
-[2,8][5,6,3](7)
-gap> g^-1*f*g;
-[2,8][5,6,3](7)
+gap> f^g = g^-1*f*g;
+true
 
 # PowPPerm24, Case 4 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)> deg(g)
 gap> f:=RandomPartialPerm(30);; DomainOfPartialPerm(f);;
