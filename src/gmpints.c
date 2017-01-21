@@ -216,7 +216,7 @@ Obj FuncIS_INT ( Obj self, Obj val )
 */
 void SaveInt( Obj gmp )
 {
-  TypLimb *ptr;
+  mp_limb_t *ptr;
   UInt i;
   ptr = ADDR_INT(gmp);
   for (i = 0; i < SIZE_INT(gmp); i++)
@@ -233,7 +233,7 @@ void SaveInt( Obj gmp )
 */
 void LoadInt( Obj gmp )
 {
-  TypLimb *ptr;
+  mp_limb_t *ptr;
   UInt i;
   ptr = ADDR_INT(gmp);
   for (i = 0; i < SIZE_INT(gmp); i++)
@@ -292,7 +292,7 @@ static void NEW_FAKEMPZ( fake_mpz_t fake, UInt size )
     fake->obj = 0;
   }
   else {
-    fake->obj = NewBag( T_INTPOS, size * sizeof(TypLimb) );
+    fake->obj = NewBag( T_INTPOS, size * sizeof(mp_limb_t) );
   }
 }
 
@@ -397,17 +397,17 @@ static inline void UPDATE_FAKEMPZ( fake_mpz_t fake )
 */
 Obj GMP_NORMALIZE ( Obj gmp )
 {
-  TypGMPSize size;
+  mp_size_t size;
   if (IS_INTOBJ( gmp )) {
     return gmp;
   }
-  for ( size = SIZE_INT(gmp); size != (TypGMPSize)1; size-- ) {
+  for ( size = SIZE_INT(gmp); size != (mp_size_t)1; size-- ) {
     if ( ADDR_INT(gmp)[(size - 1)] != 0 ) {
       break;
     }
   }
   if ( size < SIZE_INT(gmp) ) {
-    ResizeBag( gmp, size*sizeof(TypLimb) );
+    ResizeBag( gmp, size*sizeof(mp_limb_t) );
   }
   return gmp;
 }
@@ -440,7 +440,7 @@ Obj GMP_REDUCE( Obj gmp )
 */
 int IS_NORMALIZED_AND_REDUCED( Obj op, const char *func, int line )
 {
-  TypGMPSize size;
+  mp_size_t size;
   if ( IS_INTOBJ( op ) ) {
     return 1;
   }
@@ -448,7 +448,7 @@ int IS_NORMALIZED_AND_REDUCED( Obj op, const char *func, int line )
     /* ignore non-integers */
     return 0;
   }
-  for ( size = SIZE_INT(op); size != (TypGMPSize)1; size-- ) {
+  for ( size = SIZE_INT(op); size != (mp_size_t)1; size-- ) {
     if ( ADDR_INT(op)[(size - 1)] != 0 ) {
       break;
     }
@@ -490,11 +490,11 @@ Obj ObjInt_Int( Int i )
     return INTOBJ_INT(i);
   }
   else if (i < 0 ) {
-    gmp = NewBag( T_INTNEG, sizeof(TypLimb) );
+    gmp = NewBag( T_INTNEG, sizeof(mp_limb_t) );
     i = -i;
   }
   else {
-    gmp = NewBag( T_INTPOS, sizeof(TypLimb) );
+    gmp = NewBag( T_INTPOS, sizeof(mp_limb_t) );
   }
   SET_VAL_LIMB0( gmp, i );
   return gmp;
@@ -509,7 +509,7 @@ Obj ObjInt_UInt( UInt i )
     return INTOBJ_INT(i);
   }
   else {
-    gmp = NewBag( T_INTPOS, sizeof(TypLimb) );
+    gmp = NewBag( T_INTPOS, sizeof(mp_limb_t) );
     SET_VAL_LIMB0( gmp, i );
     return gmp;
   }
@@ -525,7 +525,7 @@ Obj ObjInt_UIntInv( UInt i )
     return INTOBJ_INT(-i);
   }
   else {
-    gmp = NewBag( T_INTNEG, sizeof(TypLimb) );
+    gmp = NewBag( T_INTNEG, sizeof(mp_limb_t) );
     SET_VAL_LIMB0( gmp, i );
     return gmp;
   }
@@ -542,16 +542,16 @@ Obj ObjInt_Int8( Int8 i )
   }
 
   /* we need two limbs to store this integer */
-  assert( sizeof(TypLimb) == 4 );
+  assert( sizeof(mp_limb_t) == 4 );
   Obj gmp;
   if (i >= 0) {
-     gmp = NewBag( T_INTPOS, 2 * sizeof(TypLimb) );
+     gmp = NewBag( T_INTPOS, 2 * sizeof(mp_limb_t) );
   } else {
-     gmp = NewBag( T_INTNEG, 2 * sizeof(TypLimb) );
+     gmp = NewBag( T_INTNEG, 2 * sizeof(mp_limb_t) );
      i = -i;
   }
 
-  TypLimb *ptr = ADDR_INT(gmp);
+  mp_limb_t *ptr = ADDR_INT(gmp);
   ptr[0] = (UInt4)i;
   ptr[1] = ((UInt8)i) >> 32;
   return gmp;
@@ -675,11 +675,11 @@ Obj FuncHexStringInt( Obj self, Obj gmp )
 ** This helper function for IntHexString reads <len> bytes in the string
 ** <p> and parses them as a hexadecimal. The resulting integer is returned.
 ** This function does not check for overflow, so make sure that len*4 does
-** not exceed the number of bits in TypLimb.
+** not exceed the number of bits in mp_limb_t.
 **/
-static TypLimb hexstr2int( const UInt1 *p, UInt len )
+static mp_limb_t hexstr2int( const UInt1 *p, UInt len )
 {
-  TypLimb n = 0;
+  mp_limb_t n = 0;
   UInt1 a;
   while (len--) {
     a = *p++;
@@ -701,9 +701,9 @@ Obj FuncIntHexString( Obj self,  Obj str )
 {
   Obj res;
   Int  i, len, sign, nd;
-  TypLimb n;
+  mp_limb_t n;
   UInt1 *p;
-  TypLimb *limbs;
+  mp_limb_t *limbs;
 
   if (! IsStringConv(str))
     ErrorMayQuit("IntHexString: argument must be string (not a %s)",
@@ -739,7 +739,7 @@ Obj FuncIntHexString( Obj self,  Obj str )
        bytes, thus 2*INTEGER_UNIT_SIZE hex digits fit into one limb. We use this
        to compute the number of limbs minus 1: */
     nd = (len - 1) / (2*INTEGER_UNIT_SIZE);
-    res = NewBag( (sign == 1) ? T_INTPOS : T_INTNEG, (nd + 1) * sizeof(TypLimb) );
+    res = NewBag( (sign == 1) ? T_INTPOS : T_INTNEG, (nd + 1) * sizeof(mp_limb_t) );
 
     /* update pointer, in case a garbage collection happened */
     p = CHARS_STRING(str) + i;
@@ -1066,7 +1066,7 @@ Obj AInvInt ( Obj gmp )
     
     /* special case (ugh)                                              */
     if ( gmp == INTOBJ_INT( -(1L<<NR_SMALL_INT_BITS) ) ) {
-      inv = NewBag( T_INTPOS, sizeof(TypLimb) );
+      inv = NewBag( T_INTPOS, sizeof(mp_limb_t) );
       SET_VAL_LIMB0( inv, 1L<<NR_SMALL_INT_BITS );
     }
     
@@ -1113,7 +1113,7 @@ Obj AbsInt( Obj op )
     if ( ((Int)op) > 0 ) /* non-negative? */
       return op;
     else if ( op == INTOBJ_INT(-(1L << NR_SMALL_INT_BITS)) ) {
-      a = NewBag( T_INTPOS, sizeof(TypLimb) );
+      a = NewBag( T_INTPOS, sizeof(mp_limb_t) );
       SET_VAL_LIMB0( a, (1L << NR_SMALL_INT_BITS) );
       return a;
     } else
@@ -1248,7 +1248,7 @@ Obj ProdIntObj ( Obj n, Obj op )
 {
   Obj                 res = 0;        /* result                            */
   UInt                i, k;           /* loop variables                    */
-  TypLimb             l;              /* loop variable                     */
+  mp_limb_t             l;              /* loop variable                     */
 
   CHECK_INT(n);
 
@@ -1305,7 +1305,7 @@ Obj ProdIntObj ( Obj n, Obj op )
   else if ( TNUM_OBJ(n) == T_INTPOS ) {
     res = 0;
     for ( i = SIZE_INT(n); 0 < i; i-- ) {
-      k = 8*sizeof(TypLimb);
+      k = 8*sizeof(mp_limb_t);
       l = ADDR_INT(n)[i-1];
       while ( 0 < k ) {
         res = (res == 0 ? res : SUM( res, res ));
@@ -1421,7 +1421,7 @@ Obj             PowObjInt ( Obj op, Obj n )
 {
   Obj                 res = 0;        /* result                          */
   UInt                i, k;           /* loop variables                  */
-  TypLimb             l;              /* loop variable                   */
+  mp_limb_t             l;              /* loop variable                   */
   
   CHECK_INT(n);
 
@@ -1473,7 +1473,7 @@ Obj             PowObjInt ( Obj op, Obj n )
   else if ( TNUM_OBJ(n) == T_INTPOS ) {
     res = 0;
     for ( i = SIZE_INT(n); 0 < i; i-- ) {
-      k = 8*sizeof(TypLimb);
+      k = 8*sizeof(mp_limb_t);
       l = ADDR_INT(n)[i-1];
       while ( 0 < k ) {
         res = (res == 0 ? res : PROD( res, res ));
@@ -1552,7 +1552,7 @@ Obj ModInt ( Obj opL, Obj opR )
     if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS) )
          && ( TNUM_OBJ(opR) == T_INTPOS )
          && ( SIZE_INT(opR) == 1 )
-         && ( VAL_LIMB0(opR) == (TypLimb)(1L<<NR_SMALL_INT_BITS) ) )
+         && ( VAL_LIMB0(opR) == (mp_limb_t)(1L<<NR_SMALL_INT_BITS) ) )
       mod = INTOBJ_INT(0);
     
     /* in all other cases the remainder is equal the left operand          */
@@ -1577,7 +1577,7 @@ Obj ModInt ( Obj opL, Obj opR )
     
     /* otherwise use the gmp function to divide                            */
     else {
-      c = mpn_mod_1( ADDR_INT(opL), SIZE_INT(opL), (TypLimb)i );
+      c = mpn_mod_1( ADDR_INT(opL), SIZE_INT(opL), (mp_limb_t)i );
     }
     
     /* now c is the result, it has the same sign as the left operand       */
@@ -1608,10 +1608,10 @@ Obj ModInt ( Obj opL, Obj opR )
       return mod;
     }
     
-    mod = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(TypLimb) );
+    mod = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(mp_limb_t) );
 
     quo = NewBag( T_INTPOS,
-                   (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
+                   (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
 
     /* and let gmp do the work                                             */
     mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(mod), 0,
@@ -1681,7 +1681,7 @@ Obj QuoInt ( Obj opL, Obj opR )
     /* the small int -(1<<28) divided by -1 is the large int (1<<28)       */
     if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS)) 
          && opR == INTOBJ_INT(-1) ) {
-      quo = NewBag( T_INTPOS, sizeof(TypLimb) );
+      quo = NewBag( T_INTPOS, sizeof(mp_limb_t) );
       SET_VAL_LIMB0( quo, 1L<<NR_SMALL_INT_BITS );
       return quo;
     }
@@ -1741,15 +1741,15 @@ Obj QuoInt ( Obj opL, Obj opR )
       return INTOBJ_INT(0);
     
     /* create a new bag for the remainder                                  */
-    rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(TypLimb) );
+    rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(mp_limb_t) );
 
     /* allocate a bag for the quotient                                     */
     if ( TNUM_OBJ(opL) == TNUM_OBJ(opR) )
       quo = NewBag( T_INTPOS, 
-                    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
+                    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
     else
       quo = NewBag( T_INTNEG,
-                    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
+                    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
 
     mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(rem), 0,
                  ADDR_INT(opL), SIZE_INT(opL),
@@ -1895,10 +1895,10 @@ Obj RemInt ( Obj opL, Obj opR )
     if ( SIZE_INT(opL) < SIZE_INT(opR) )
       return opL;
     
-    rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(TypLimb) );
+    rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(mp_limb_t) );
     
     quo = NewBag( T_INTPOS,
-                  (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
+                  (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
     
     /* and let gmp do the work                                             */
     mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(rem), 0,
@@ -2110,8 +2110,8 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
      /* qoff = number of 32 bit words we need */
      qoff = q + (r==0 ? 0:1);
      /* len = number of limbs we need (limbs currently are either 32 or 64 bit wide) */
-     len = (qoff*4 +  sizeof(TypLimb) - 1) / sizeof(TypLimb);
-     res = NewBag( T_INTPOS, len*sizeof(TypLimb) );
+     len = (qoff*4 +  sizeof(mp_limb_t) - 1) / sizeof(mp_limb_t);
+     res = NewBag( T_INTPOS, len*sizeof(mp_limb_t) );
      pt = (UInt4*) ADDR_INT(res);
      mt = (UInt4*) CHARS_STRING(mtstr);
      for (i = 0; i < qoff; i++, pt++) {

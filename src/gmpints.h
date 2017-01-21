@@ -24,17 +24,6 @@
 extern "C" {
 #endif
 
-/****************************************************************************
-**
-*T  TypLimb . . . . . . . . . . . . . . . . . . . . . . .  type of a GMP Limb
-**
-**  
-**  
-*/
-typedef mp_limb_t      TypLimb;
-typedef mp_size_t   TypGMPSize;
-
-
 // TODO: Instead of hardcoding the values below, use
 //   GMP_LIMB_BITS etc. directly.
 //
@@ -67,8 +56,8 @@ typedef mp_size_t   TypGMPSize;
 #endif
 
 
-#define ADDR_INT(obj)          ((TypLimb *)ADDR_OBJ(obj))
-#define SIZE_INT(obj)          ((TypGMPSize)SIZE_OBJ(obj)/sizeof(TypLimb))
+#define ADDR_INT(obj)          ((mp_limb_t *)ADDR_OBJ(obj))
+#define SIZE_INT(obj)          ((mp_size_t)SIZE_OBJ(obj)/sizeof(mp_limb_t))
 /* SIZE_INT gives a result in limbs                                        */
 
 
