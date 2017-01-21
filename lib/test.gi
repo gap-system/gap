@@ -544,20 +544,16 @@ end);
 ##
 
 InstallGlobalFunction( "TestDirectory", function(arg)
-  local basedirs, nopts, opts, files, newfiles, filetimes, 
-        f, c, i, recurseFiles, StringEnd,
+  local basedirs, nopts, opts, files, newfiles, filetimes,
+        f, c, i, recurseFiles,
         startTime, time, testResult, testTotal,
-        totalTime, STOP_TEST_CPY;  
+        totalTime, STOP_TEST_CPY;
 
   testTotal := true;
   totalTime := 0;
   
   STOP_TEST_CPY := STOP_TEST;
   STOP_TEST := function(arg) end;
-  
-  StringEnd := function(str, postfix)
-    return Length(str) >= Length(postfix) and str{[Length(str)-Length(postfix)+1..Length(str)]} = postfix;
-  end;
   
   if IsString(arg[1]) or IsDirectory(arg[1]) then
     basedirs := [arg[1]];
@@ -604,7 +600,9 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       Add(testrecs, rec(name := t, shortName := shortName));
     od;
     Append(files, testrecs);
-    recursedirs := Filtered(dircontents, x -> IsDirectoryPath(x) and not(StringEnd(x,"/.")) and not(StringEnd(x,"/..")));
+    recursedirs := Filtered(dircontents, x -> IsDirectoryPath(x)
+                                              and not EndsWith(x,"/.")
+                                              and not EndsWith(x,"/.."));
     for d in recursedirs do
       recurseFiles(d, basedir);
     od;
@@ -623,10 +621,10 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     fi;
   od;
 
+  SortBy(files, f -> f.name);
+
   if opts.showProgress then
-    Print( "Architecture: ", GAPInfo.Architecture, "\n\n",
-           "test file         time(msec)\n",
-           "----------------------------\n" );
+    Print( "Architecture: ", GAPInfo.Architecture, "\n\n" );
   fi;
   
   for i in [1..Length(files)] do
@@ -654,17 +652,15 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     totalTime := totalTime + time;
     
     if opts.showProgress then
-      Print( String( files[i].shortName, -20 ),
-             String( time, 15 ) );
-      Print("\n");
+      Print( String( time, 8 ), " msec for ", files[i].shortName, "\n" );
     fi;
   od;       
   
   STOP_TEST := STOP_TEST_CPY;
   
-  Print("----------------------------\n");
+  Print("-----------------------------------\n");
   Print( "total",
-         String( totalTime, 15 ), "\n\n" );
+         String( totalTime, 8 ), " msec\n\n" );
 
   if not opts.suppressStatusMessage then
     if testTotal then
