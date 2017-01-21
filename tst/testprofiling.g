@@ -1,24 +1,10 @@
 #############################################################################
 ##
-#W  teststandard.g                   GAP library                      Frank Celler
-##
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
-##  This file runs all tests from 'tst/testinstall' and 'tst/teststandard'
-##  directories of the GAP distribution.
-##
-##  <#GAPDoc Label="[1]{teststandard.g}">
-##  If you want to run a more advanced check (this is not required and 
-##  make take up to an hour), you can read <File>teststandard.g</File>
-##  which is an extended test script performing all tests from the 
-##  <File>tst</File> directory.
-##  <P/>
-##  <Log><![CDATA[
-##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "teststandard.g" ) );
-##  ]]></Log>
-##  <P/>
-##  <#/GAPDoc>
+##  This file runs all tests from the 'tst/testprofiling' directory of the
+##  GAP distribution. This contains tests for the profiling functionality
+##  GAP provides. They are kept separate from the regular tests, as those are
+##  also run with the profiler enabled -- but testing the profiling code
+##  while the profiler runs does not work.
 ##
 
 Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g -K 2g'.\n\n" );
