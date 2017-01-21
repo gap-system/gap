@@ -244,24 +244,6 @@ void LoadInt( Obj gmp )
 
 /****************************************************************************
 **
-*F  NEW_INTPOS( <gmp> )
-**
-**  Take an T_INTPOS or T_INTNEG and create a new T_INTPOS with identical
-**  content. Useful to duplicate integers, or take the absolute value.
-*/
-static inline Obj NEW_INTPOS( Obj gmp )
-{
-  Obj new;
-
-  new = NewBag( T_INTPOS, SIZE_OBJ(gmp) );
-  memcpy( ADDR_INT(new), ADDR_INT(gmp), SIZE_OBJ(gmp) );
-
-  return new;
-}
-
-
-/****************************************************************************
-**
 **  In order to use the high-level GMP mpz_* functions conveniently while
 **  retaining a low overhead, we introduce fake_mpz_t, which can be thought
 **  of as a "subclass" of mpz_t, extending it by temporary storage for
@@ -1123,7 +1105,9 @@ Obj AbsInt( Obj op )
   if ( IS_INTPOS(op) ) {
     return op;
   } else if ( IS_INTNEG(op) ) {
-    return NEW_INTPOS(op);
+    a = NewBag( T_INTPOS, SIZE_OBJ(op) );
+    memcpy( ADDR_INT(a), ADDR_INT(op), SIZE_OBJ(op) );
+    return a;
   }
   return Fail;
 }
