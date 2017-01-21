@@ -129,12 +129,22 @@ static Obj ObjInt_UIntInv( UInt i );
 #define IS_INTNEG(obj)          (TNUM_OBJ(obj) == T_INTNEG)
 #define IS_LARGEINT(obj)        (IS_INTPOS(obj) || IS_INTNEG(obj))
 
+#define IS_INT(obj)             (IS_INTOBJ(obj) || IS_LARGEINT(obj))
+
 #define IS_NEGATIVE(obj)        (IS_INTOBJ(obj) ? ((Int)obj < 0) : IS_INTNEG(obj))
+#define IS_POSITIVE(obj)        (IS_INTOBJ(obj) ? ((Int)obj > 1) : IS_INTPOS(obj))
 #define IS_ODD(obj)             (IS_INTOBJ(obj) ? ((Int)obj & 4) : (VAL_LIMB0(obj) & 1))
 #define IS_EVEN(obj)            (!IS_ODD(obj))
 
 #define SIZE_INT_OR_INTOBJ(obj) (IS_INTOBJ(obj) ? 1 : SIZE_INT(obj))
 
+#define REQUIRE_INT_ARG(funcname, argname, op) \
+    if ( !IS_INT(op) ) { \
+      op = ErrorReturnObj( \
+              funcname ": <" argname "> must be an integer (not a %s)", \
+              (Int)TNAM_OBJ(op), 0L, \
+              "you can replace <" argname "> via 'return <" argname ">;'" ); \
+    }
 
 /* for fallbacks to library */
 static Obj String;
@@ -194,9 +204,7 @@ Obj TypeIntLargeNeg ( Obj val )
 */
 Obj FuncIS_INT ( Obj self, Obj val )
 {
-  if (    TNUM_OBJ(val) == T_INT 
-       || TNUM_OBJ(val) == T_INTPOS
-       || TNUM_OBJ(val) == T_INTNEG ) {
+  if ( IS_INT(val) ) {
     return True;
   }
   else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
@@ -594,7 +602,7 @@ Obj StringIntBase( Obj gmp, int base )
   Obj res;
   fake_mpz_t v;
 
-  if ( !IS_INTOBJ(gmp) && !IS_LARGEINT(gmp) ) {
+  if ( !IS_INT(gmp) ) {
     return Fail;
   }
 
@@ -643,7 +651,7 @@ Obj StringIntBase( Obj gmp, int base )
 */
 Obj FuncHexStringInt( Obj self, Obj gmp )
 {
-  if ( !IS_INTOBJ(gmp) && !IS_LARGEINT(gmp) ) {
+  if ( !IS_INT(gmp) ) {
     ErrorMayQuit( "HexStringInt: argument must be an integer (not a %s)",
                   (Int)TNAM_OBJ(gmp), 0L );
   }
@@ -852,7 +860,7 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 {
   CHECK_INT(integer);
 
-  if ( !IS_INTOBJ(integer) && !IS_LARGEINT(integer) ) {
+  if ( !IS_INT(integer) ) {
     ErrorMayQuit( "STRING_INT: argument must be an integer (not a %s)",
                   (Int)TNAM_OBJ(integer), 0L );
   }
@@ -1271,7 +1279,7 @@ Obj ProdIntObj ( Obj n, Obj op )
   /* if the integer is small, compute the product by repeated doubling     */
   /* the loop invariant is <result> = <k>*<res> + <l>*<op>, <l> < <k>      */
   /* <res> = 0 means that <res> is the neutral element                     */
-  else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) >   1 ) {
+  else if ( IS_INTOBJ(n) && INT_INTOBJ(n) >   1 ) {
     res = 0;
     k = 1L << (NR_SMALL_INT_BITS+1);
     l = INT_INTOBJ(n);
@@ -1286,7 +1294,7 @@ Obj ProdIntObj ( Obj n, Obj op )
   }
   
   /* if the integer is large, compute the product by repeated doubling     */
-  else if ( TNUM_OBJ(n) == T_INTPOS ) {
+  else if ( IS_INTPOS(n) ) {
     res = 0;
     for ( i = SIZE_INT(n); 0 < i; i-- ) {
       k = 8*sizeof(mp_limb_t);
@@ -1439,7 +1447,7 @@ Obj             PowObjInt ( Obj op, Obj n )
   /* if the integer is small, compute the power by repeated squaring     */
   /* the loop invariant is <result> = <res>^<k> * <op>^<l>, <l> < <k>    */
   /* <res> = 0 means that <res> is the neutral element                   */
-  else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) >   0 ) {
+  else if ( IS_INTOBJ(n) && INT_INTOBJ(n) >   0 ) {
     res = 0;
     k = 1L << (NR_SMALL_INT_BITS+1);
     l = INT_INTOBJ(n);
@@ -1454,7 +1462,7 @@ Obj             PowObjInt ( Obj op, Obj n )
   }
   
   /* if the integer is large, compute the power by repeated squaring     */
-  else if ( TNUM_OBJ(n) == T_INTPOS ) {
+  else if ( IS_INTPOS(n) ) {
     res = 0;
     for ( i = SIZE_INT(n); 0 < i; i-- ) {
       k = 8*sizeof(mp_limb_t);
@@ -1534,7 +1542,7 @@ Obj ModInt ( Obj opL, Obj opR )
     
     /* the small int -(1<<28) mod the large int (1<<28) is 0               */
     if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS) )
-         && ( TNUM_OBJ(opR) == T_INTPOS )
+         && ( IS_INTPOS(opR) )
          && ( SIZE_INT(opR) == 1 )
          && ( VAL_LIMB0(opR) == (mp_limb_t)(1L<<NR_SMALL_INT_BITS) ) )
       mod = INTOBJ_INT(0);
@@ -1542,7 +1550,7 @@ Obj ModInt ( Obj opL, Obj opR )
     /* in all other cases the remainder is equal the left operand          */
     else if ( 0 <= INT_INTOBJ(opL) )
       mod = opL;
-    else if ( TNUM_OBJ(opR) == T_INTPOS )
+    else if ( IS_INTPOS(opR) )
       mod = SumOrDiffInt( opL, opR,  1 );
     else
       mod = SumOrDiffInt( opL, opR, -1 );
@@ -1565,7 +1573,7 @@ Obj ModInt ( Obj opL, Obj opR )
     }
     
     /* now c is the result, it has the same sign as the left operand       */
-    if ( TNUM_OBJ(opL) == T_INTPOS )
+    if ( IS_INTPOS(opL) )
       mod = INTOBJ_INT( c );
     else if ( c == 0 )
       mod = INTOBJ_INT( c );
@@ -1581,9 +1589,9 @@ Obj ModInt ( Obj opL, Obj opR )
 
     /* trivial case first                                                  */
     if ( SIZE_INT(opL) < SIZE_INT(opR) ) {
-      if ( TNUM_OBJ(opL) == T_INTPOS )
+      if ( IS_INTPOS(opL) )
         return opL;
-      else if ( TNUM_OBJ(opR) == T_INTPOS )
+      else if ( IS_INTPOS(opR) )
         mod = SumOrDiffInt( opL, opR,  1 );
       else
         mod = SumOrDiffInt( opL, opR, -1 );
@@ -1609,9 +1617,8 @@ Obj ModInt ( Obj opL, Obj opR )
     mod = GMP_REDUCE( mod );
     
     /* make the representative positive                                    */
-    if ( (TNUM_OBJ(mod) == T_INT && INT_INTOBJ(mod) < 0)
-         || TNUM_OBJ(mod) == T_INTNEG ) {
-      if ( TNUM_OBJ(opR) == T_INTPOS )
+    if ( IS_NEGATIVE(mod) ) {
+      if ( IS_INTPOS(opR) )
         mod = SumOrDiffInt( mod, opR,  1 );
       else
         mod = SumOrDiffInt( mod, opR, -1 );
@@ -1690,7 +1697,7 @@ Obj QuoInt ( Obj opL, Obj opR )
     
     /* the small int -(1<<28) divided by the large int (1<<28) is -1       */
     if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS))
-         && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 1
+         && IS_INTPOS(opR) && SIZE_INT(opR) == 1
          && VAL_LIMB0(opR) == 1L<<NR_SMALL_INT_BITS )
       quo = INTOBJ_INT(-1);
     
@@ -1766,25 +1773,8 @@ Obj QuoInt ( Obj opL, Obj opR )
 */
 Obj FuncQUO_INT ( Obj self, Obj opL, Obj opR )
 {
-  /* check the arguments                                                   */
-  while ( TNUM_OBJ(opL) != T_INT
-          && TNUM_OBJ(opL) != T_INTPOS
-          && TNUM_OBJ(opL) != T_INTNEG ) {
-    opL = ErrorReturnObj(
-                         "QuoInt: <left> must be an integer (not a %s)",
-                         (Int)TNAM_OBJ(opL), 0L,
-                         "you can replace <left> via 'return <left>;'" );
-  }
-  while ( TNUM_OBJ(opR) != T_INT
-          && TNUM_OBJ(opR) != T_INTPOS
-          && TNUM_OBJ(opR) != T_INTNEG ) {
-    opR = ErrorReturnObj(
-                         "QuoInt: <right> must be an integer (not a %s)",
-                         (Int)TNAM_OBJ(opR), 0L,
-                         "you can replace <right> via 'return <right>;'" );
-  }
-  
-  /* return the quotient                                                   */
+  REQUIRE_INT_ARG( "QuoInt", "left", opL );
+  REQUIRE_INT_ARG( "QuoInt", "right", opR );
   return QuoInt( opL, opR );
 }
 
@@ -1841,7 +1831,7 @@ Obj RemInt ( Obj opL, Obj opR )
     
     /* the small int -(1<<28) rem the large int (1<<28) is 0               */
     if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS))
-         && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 1
+         && IS_INTPOS(opR) && SIZE_INT(opR) == 1
          && VAL_LIMB0(opR) == 1L<<NR_SMALL_INT_BITS )
       rem = INTOBJ_INT(0);
     
@@ -1867,7 +1857,7 @@ Obj RemInt ( Obj opL, Obj opR )
     }
     
     /* now c is the result, it has the same sign as the left operand       */
-    if ( TNUM_OBJ(opL) == T_INTPOS )
+    if ( IS_INTPOS(opL) )
       rem = INTOBJ_INT( c );
     else
       rem = INTOBJ_INT( -(Int)c );
@@ -1919,25 +1909,8 @@ Obj RemInt ( Obj opL, Obj opR )
 */
 Obj FuncREM_INT ( Obj self, Obj opL, Obj opR )
 {
-  /* check the arguments                                                   */
-  while ( TNUM_OBJ(opL) != T_INT
-          && TNUM_OBJ(opL) != T_INTPOS
-          && TNUM_OBJ(opL) != T_INTNEG ) {
-    opL = ErrorReturnObj(
-                         "RemInt: <left> must be an integer (not a %s)",
-                         (Int)TNAM_OBJ(opL), 0L,
-                         "you can replace <left> via 'return <left>;'" );
-  }
-  while ( TNUM_OBJ(opR) != T_INT
-          && TNUM_OBJ(opR) != T_INTPOS
-          && TNUM_OBJ(opR) != T_INTNEG ) {
-    opR = ErrorReturnObj(
-                         "RemInt: <right> must be an integer (not a %s)",
-                         (Int)TNAM_OBJ(opR), 0L,
-                         "you can replace <right> via 'return <right>;'" );
-  }
-
-  /* return the remainder                                                  */
+  REQUIRE_INT_ARG( "RemInt", "left", opL );
+  REQUIRE_INT_ARG( "RemInt", "right", opR );
   return RemInt( opL, opR );
 }
 
@@ -1997,28 +1970,10 @@ Obj GcdInt ( Obj opL, Obj opR )
 */
 Obj FuncGCD_INT ( Obj self, Obj opL, Obj opR )
 {
-  /* check the arguments                                                   */
-  while ( TNUM_OBJ(opL) != T_INT
-          && TNUM_OBJ(opL) != T_INTPOS
-          && TNUM_OBJ(opL) != T_INTNEG ) {
-    opL = ErrorReturnObj(
-                         "GcdInt: <left> must be an integer (not a %s)",
-                         (Int)TNAM_OBJ(opL), 0L,
-                         "you can replace <left> via 'return <left>;'" );
-  }
-  while ( TNUM_OBJ(opR) != T_INT
-          && TNUM_OBJ(opR) != T_INTPOS
-          && TNUM_OBJ(opR) != T_INTNEG ) {
-    opR = ErrorReturnObj(
-                         "GcdInt: <right> must be an integer (not a %s)",
-                         (Int)TNAM_OBJ(opR), 0L,
-                         "you can replace <right> via 'return <right>;'" );
-  }
-  
-  /* return the gcd                                                        */
+  REQUIRE_INT_ARG( "GcdInt", "left", opL );
+  REQUIRE_INT_ARG( "GcdInt", "right", opR );
   return GcdInt( opL, opR );
 }
-
 
 
 /****************************************************************************
