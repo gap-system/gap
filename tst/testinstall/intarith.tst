@@ -1245,6 +1245,23 @@ gap> for m in [1..100] do
 > od;
 
 #
+# test PVALUATION_INT
+#
+gap> checkPValuationInt:=function(n,p)
+>   local k, m;
+>   if n = 0 then return true; fi;
+>   k:=PVALUATION_INT(n,p);
+>   m:=n/p^k;
+>   return IsInt(m) and (m mod p) <> 0;
+> end;;
+gap> ForAll([-10000 .. 10000], n-> ForAll([2,3,5,7,251], p -> checkPValuationInt(n,p)));
+true
+gap> PVALUATION_INT(10,0);
+Error, PValuationInt: <p> must be nonzero
+gap> PVALUATION_INT(0,0);
+Error, PValuationInt: <p> must be nonzero
+
+#
 gap> STOP_TEST( "intarith.tst", 290000);
 
 #############################################################################

@@ -1983,6 +1983,7 @@ Obj JacobiInt ( Obj opL, Obj opR )
   return INTOBJ_INT( result );
 }
 
+
 /****************************************************************************
 **
 */
@@ -1992,6 +1993,51 @@ Obj FuncJACOBI_INT ( Obj self, Obj opL, Obj opR )
   REQUIRE_INT_ARG( "JacobiInt", "right", opR );
   return JacobiInt( opL, opR );
 }
+
+
+/****************************************************************************
+**
+*/
+Obj PValuationInt ( Obj n, Obj p )
+{
+  fake_mpz_t mpzN, mpzP;
+  mpz_t mpzResult;
+  int k;
+
+  CHECK_INT(n);
+  CHECK_INT(p);
+
+  if ( p == INTOBJ_INT(0) )
+    ErrorMayQuit( "PValuationInt: <p> must be nonzero", 0L, 0L  );
+
+  /* For certain values of p, mpz_remove replaces its "dest" argument
+     and tries to deallocate the original mpz_t in it. This means
+     we cannot use a fake_mpz_t for it. However, we are not really
+     interested in it anyway. */
+  mpz_init( mpzResult );
+  FAKEMPZ_GMPorINTOBJ( mpzN, n );
+  FAKEMPZ_GMPorINTOBJ( mpzP, p );
+
+  k = mpz_remove( mpzResult, MPZ_FAKEMPZ(mpzN), MPZ_FAKEMPZ(mpzP) );
+  CHECK_FAKEMPZ(mpzN);
+  CHECK_FAKEMPZ(mpzP);
+
+  /* throw away mpzResult -- it equals m / p^k */
+  mpz_clear( mpzResult );
+
+  return INTOBJ_INT( k );
+}
+
+/****************************************************************************
+**
+*/
+Obj FuncPVALUATION_INT ( Obj self, Obj opL, Obj opR )
+{
+  REQUIRE_INT_ARG( "PValuationInt", "left", opL );
+  REQUIRE_INT_ARG( "PValuationInt", "right", opR );
+  return PValuationInt( opL, opR );
+}
+
 
 /****************************************************************************
 **
@@ -2236,6 +2282,9 @@ static StructGVarFunc GVarFuncs [] = {
   
   { "JACOBI_INT", 2, "gmp1, gmp2",
     FuncJACOBI_INT, "src/gmpints.c:JACOBI_INT" },
+
+  { "PVALUATION_INT", 2, "n, p",
+    FuncPVALUATION_INT, "src/gmpints.c:PVALUATION_INT" },
 
   { "POWERMODINT", 3, "base, exp, mod",
     FuncPOWERMODINT, "src/gmpints.c:POWERMODINT" },

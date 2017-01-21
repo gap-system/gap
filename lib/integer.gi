@@ -1772,24 +1772,13 @@ InstallMethod( StandardAssociateUnit,
 InstallOtherMethod( Valuation,
     "for two integers",
     IsIdenticalObj,
-    [ IsInt,
-      IsInt ],
+    [ IsInt, IsInt ],
     0,
-
 function( n, m )
-    local val;
-
     if n = 0  then
-        val := infinity;
-    else
-        val := 0;
-        while n mod m = 0  do
-            val := val + 1;
-            n   := n / m;
-        od;
+        return infinity;
     fi;
-    return val;
-
+    return PVALUATION_INT( n, m );
 end );
 
 

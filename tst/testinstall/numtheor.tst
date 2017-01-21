@@ -3,6 +3,10 @@ gap> START_TEST("numtheor.tst");
 #
 gap> PValuation(0,2);
 infinity
+gap> PValuation(0,3);
+infinity
+
+#
 gap> PValuation(100,2);
 2
 gap> PValuation(100,3);

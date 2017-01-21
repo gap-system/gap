@@ -1347,24 +1347,16 @@ end );
 
 
 InstallGlobalFunction(PValuation,function(n,p)
-local a,v;
-  if not IsPrimeInt(p) or not IsRat(n) then
+local v;
+  if not IsInt(p) or not IsRat(n) or p = 0 then
     Error("wrong parameters");
   fi;
-  if IsZero(n) then 
+  if n = 0 then
     return infinity;
-  elif not IsInt(n) then
-    return PValuation(NumeratorRat(n),p)-PValuation(DenominatorRat(n),p);
-  elif n<0 then n:=-n;
+  elif IsInt(n) then
+    return PVALUATION_INT(n,p);
   fi;
-  a:=1;
-  v:=0;
-  while n mod p=0 do
-    a:=a*p;
-    v:=v+1;
-    n:=n/p;
-  od;
-  return v;
+  return PVALUATION_INT(NumeratorRat(n),p) - PVALUATION_INT(DenominatorRat(n),p);
 end);
 
 #T ##########################################################################
