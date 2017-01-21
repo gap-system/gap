@@ -1603,7 +1603,9 @@ Obj ModInt ( Obj opL, Obj opR )
         mod = SumOrDiffInt( opL, opR,  1 );
       else
         mod = SumOrDiffInt( opL, opR, -1 );
-      if ( IS_INTNEG(mod) ) mod = NEW_INTPOS(mod);
+#if DEBUG_GMP
+      assert( !IS_NEGATIVE(mod) );
+#endif
       CHECK_INT(mod);
       return mod;
     }
