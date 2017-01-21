@@ -628,6 +628,53 @@ void PrintInt ( Obj op )
 
 /****************************************************************************
 **
+*F  StringIntBase( <gmp>, <base> )
+**
+** Convert the integer <gmp> to a string relative to the given base <base>.
+** Here, base may range from 2 to 36.
+*/
+Obj StringIntBase( Obj gmp, int base )
+{
+  int len;
+  Obj res;
+  fake_mpz_t v;
+
+  if ( !IS_INTOBJ(gmp) && !IS_LARGEINT(gmp) ) {
+    return Fail;
+  }
+
+  if ( base < 2 || 36 < base ) {
+    return Fail;
+  }
+
+  /* 0 is special */
+  if ( gmp == INTOBJ_INT(0) ) {
+    res = NEW_STRING(1);
+    CHARS_STRING(res)[0] = '0';
+    return res;
+  }
+
+  /* convert integer to fake_mpz_t */
+  FAKEMPZ_GMPorINTOBJ( v, gmp );
+
+  /* allocate the result string */
+  len = mpz_sizeinbase( MPZ_FAKEMPZ(v), base ) + 2;
+  res = NEW_STRING( len );
+
+  /* ask GMP to perform the actual conversion */
+  mpz_get_str( CSTR_STRING( res ), -base, MPZ_FAKEMPZ(v) );
+
+  /* we may have to shrink the string */
+  int real_len = strlen( CSTR_STRING(res) );
+  if ( real_len != GET_LEN_STRING(res) ) {
+    SET_LEN_STRING(res, real_len);
+  }
+
+  return res;
+}
+
+/****************************************************************************
+**
 *F  FuncHexStringInt( <self>, <gmp> ) . . . . . . . .  hex string for gmp int
 *F  FuncIntHexString( <self>, <string> ) . . . . . .  gmp int from hex string
 **  
@@ -639,90 +686,14 @@ void PrintInt ( Obj op )
 **  letters a..f are also allowed in <string> instead of A..F.
 **  
 */
-Obj FuncHexStringInt( Obj self, Obj integer )
+Obj FuncHexStringInt( Obj self, Obj gmp )
 {
-  size_t alloc_size, str_size;
-  Int i, j, n; /* len */
-  UInt nf;
-  /* TypLimb d, f; */
-  UInt1 *p, a, *s;
-  Obj res = 0;
-  
-  CHECK_INT(integer);
-
-  /* immediate integers */
-  if (IS_INTOBJ(integer)) {
-    n = INT_INTOBJ(integer);
-    /* 0 is special */
-    if (n == 0) {
-      res = NEW_STRING(1);
-      CHARS_STRING(res)[0] = '0';
-      return res;
-    }
-    
-    /* else we create a string big enough for any immediate integer        */
-    res = NEW_STRING(2 * INTEGER_UNIT_SIZE + 1);
-    p = CHARS_STRING(res);
-    /* handle sign */
-    if (n<0) {
-      p[0] = '-';
-      n = -n;
-      p++;
-    }
-    else 
-      SET_LEN_STRING(res, GET_LEN_STRING(res)-1);
-    /* collect digits, skipping leading zeros                              */
-    j = 0;
-    nf = ((UInt)15) << (4*(2*INTEGER_UNIT_SIZE-1));
-    for (i = 2*INTEGER_UNIT_SIZE; i; i-- ) {
-      a = ((UInt)n & nf) >> (4*(i-1));
-      if (j==0 && a==0) SET_LEN_STRING(res, GET_LEN_STRING(res)-1);
-      else if (a<10) p[j++] = a + '0';
-      else p[j++] = a - 10 + 'A';
-      nf = nf >> 4;
-    }
-    /* final null character                                                */
-    p[j] = 0;
+  if ( !IS_INTOBJ(gmp) && !IS_LARGEINT(gmp) ) {
+    ErrorMayQuit( "HexStringInt: argument must be an integer (not a %s)",
+                  (Int)TNAM_OBJ(gmp), 0L );
   }
 
-  else if ( IS_LARGEINT(integer) ) {
-    alloc_size = SIZE_INT(integer)*sizeof(TypLimb)*2+1;
-    alloc_size += IS_INTNEG(integer);
-
-    res = NEW_STRING( alloc_size );
-    s = CHARS_STRING( res );
-
-    if ( IS_INTNEG(integer) )
-      *s++ = '-';
-
-    str_size = mpn_get_str( s, 16, ADDR_INT(integer), SIZE_INT(integer) );
-    assert ( str_size <= alloc_size - ( IS_INTNEG(integer) ) );
-
-    for (j = 0; j < str_size-1; j++)
-      if (s[j] != 0)
-        break;
-    
-
-    for ( i = 0; i < str_size-j; i++ )
-      s[i] = "0123456789ABCDEF"[s[i+j]];
-
-    assert ( str_size - j == 1 || *s != '0' );
-
-    /* findme  - this fails: */
-    /*    assert ( strlen( CSTR_STRING(res) ) == alloc_size ); */
-    /* adjust length in case of trailing \0 characters */
-    /* [Is there a way to get it right from the beginning? FL] */
-    /*     while (s[alloc_size-1] == '\0') 
-           alloc_size--; */
-    SET_LEN_STRING(res, str_size-j + (IS_INTNEG(integer)));
-    /*  assert ( strlen( CSTR_STRING(res) ) == GET_LEN_STRING(res) ); */
-  }
-  else {
-    ErrorMayQuit("HexStringInt: argument must be an integer (not a %s)",
-                 (Int)TNAM_OBJ(integer), 0L);
-  }
-
-  return res;
+  return StringIntBase( gmp, 16 );
 }
 
 
@@ -912,92 +883,16 @@ Obj FuncLog2Int( Obj self, Obj integer)
 */
 Obj FuncSTRING_INT( Obj self, Obj integer )
 {
-  Int   x;
-  Obj str;
-  Int len;
-  Int   i;
-  Char  c;
-  Int neg;
-
   CHECK_INT(integer);
 
-  /* handle a small integer                                                */
-  if ( IS_INTOBJ(integer) ) {
-    x = INT_INTOBJ(integer);
-    str = NEW_STRING( (NR_SMALL_INT_BITS+5)/3 );
-    RetypeBag(str, T_STRING+IMMUTABLE);
-    len = 0;
-    /* Case of zero                                                        */
-    if (x == 0)
-      {
-        CHARS_STRING(str)[0] = '0';
-        CHARS_STRING(str)[1] = '\0';
-        ResizeBag(str, SIZEBAG_STRINGLEN(1));
-        SET_LEN_STRING(str, 1);
-        
-        return str;
-      }
-    /* Negative numbers                                                    */
-    if (x < 0)
-      {
-        CHARS_STRING(str)[len++] = '-';
-        x = -x;
-        neg = 1;
-      }
-    else
-      neg = 0;
-
-    /* Now the main case                                                   */
-    while (x != 0)
-      {
-        CHARS_STRING(str)[len++] = '0'+ x % 10;
-        x /= 10;
-      }
-    CHARS_STRING(str)[len] = '\0';
-    
-    /* finally, reverse the digits in place                                */
-    for (i = neg; i < (neg+len)/2; i++)
-      {
-        c = CHARS_STRING(str)[neg+len-1-i];
-        CHARS_STRING(str)[neg+len-1-i] = CHARS_STRING(str)[i];
-        CHARS_STRING(str)[i] = c;
-      }
-    
-    ResizeBag(str, SIZEBAG_STRINGLEN(len));
-    SET_LEN_STRING(str, len);
-    return str;
+  if ( !IS_INTOBJ(integer) && !IS_LARGEINT(integer) ) {
+    ErrorMayQuit( "STRING_INT: argument must be an integer (not a %s)",
+                  (Int)TNAM_OBJ(integer), 0L );
   }
 
-  /* handle a large integer                                                */
-  else if ( SIZE_INT(integer) < 1000 ) {
-
-    /* findme - enough space for a 1000 limb gmp int on a 64 bit machine     */
-    /* change when 128 bit comes along!                                      */
-    Char buf[20000];
-
-    if ( IS_INTNEG(integer) ) {
-    len = gmp_snprintf( buf, sizeof(buf)-1, "-%Ni", ADDR_INT(integer),
-          (TypGMPSize)SIZE_INT(integer) );
-    }
-    else {
-    len = gmp_snprintf( buf, sizeof(buf)-1,  "%Ni", ADDR_INT(integer),
-          (TypGMPSize)SIZE_INT(integer) );
-    }
-
-    assert(len < sizeof(buf));
-    C_NEW_STRING( str, (TypGMPSize)len, buf );
-
-    return str;
-
-  }
-
-  else {
-
-      /* Very large integer, fall back on the GAP function                 */
-      return CALL_1ARGS( String, integer);
-  }
+  return StringIntBase( integer, 10 );
 }
-  
+
 
 /****************************************************************************
 **
