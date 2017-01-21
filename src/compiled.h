@@ -334,9 +334,9 @@ extern  Obj             GF_NEXT_ITER;
    due to limb size or other aspects of the representation */
 
 static inline  Obj C_MAKE_INTEGER_BAG( UInt size, UInt type)  {
-  /* Round size up to nearest multiple of INTEGER_ALLOCATION_SIZE */
-  return NewBag(type,INTEGER_ALLOCATION_SIZE*
-                ((size + INTEGER_ALLOCATION_SIZE-1)/INTEGER_ALLOCATION_SIZE));
+  /* Round size up to nearest multiple of INTEGER_UNIT_SIZE */
+  return NewBag(type,INTEGER_UNIT_SIZE*
+                ((size + INTEGER_UNIT_SIZE-1)/INTEGER_UNIT_SIZE));
 }
 
 

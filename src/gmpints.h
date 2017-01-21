@@ -35,11 +35,9 @@ extern "C" {
 
 #ifdef SYS_IS_64_BIT
 #define INTEGER_UNIT_SIZE 8
-#define INTEGER_ALLOCATION_SIZE 8
 #define NR_SMALL_INT_BITS  (64 - 4)
 #else
 #define INTEGER_UNIT_SIZE 4
-#define INTEGER_ALLOCATION_SIZE 4
 #define NR_SMALL_INT_BITS  (32 - 4)
 #endif
 
