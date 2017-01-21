@@ -39,10 +39,6 @@
 ##      and once with all packages loaded. The results are logged to the
 ##      subdirectory `dev/log/'.
 ##
-##  The "teststandardrenormalize" target:
-##    - starts GAP, reads all files `tst/*.tst', and replaces the scaling
-##      factors  in the `STOP_TEST' statements
-##
 ##  The "testpackages" target:
 ##    - runs the tests provided by the available packages
 ##
@@ -258,9 +254,6 @@ teststandard: compile
 	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
-
-teststandardrenormalize: compile
-	( echo 'TestDirectory("tst", rec(renormaliseStones := true));' | $(TESTGAP) )
 
 testpackages: compile
 	mkdir -p dev/log
@@ -495,7 +488,7 @@ bootstrap-pkg-full:
 
 .PHONY: clean clean_$(CLEANME) clean_gap clean_gap_$(CLEANME) clean_gmp clean_gmp_$(CLEANME) distclean
 .PHONY: compile config default extern manuals packages rebuild removewin setconfig static strip
-.PHONY: testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard teststandardrenormalize
+.PHONY: testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard
 .PHONY: cygwin removewin winbinp
 .PHONY: bootstrap-pkg-minimal bootstrap-pkg-full
 .PHONY: check

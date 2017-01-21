@@ -1897,9 +1897,6 @@ look worse than others)
 +1AK,JJM Installation instructions still refers to zoo archives, explains how 
    to get GAP for Mac OS and does not reflect recent changes in the build
    process (gmp and readline options) - this should be cleaned up.
-+1AK Related issue: update number of GAP4stones in testinstall.g and testall.g
-   (a preliminary update has been already made by AK after GAP 4.5.2, do
-   another one before the final release)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 76: GAP Packages
 % File: ./gappkg.xml (line 11)

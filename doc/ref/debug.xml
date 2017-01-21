@@ -790,12 +790,12 @@ found in the <F>tst</F> directory of the &GAP; distribution.
 <#Include Label="[1]{testinstall.g}">
 
 <Log><![CDATA[
-test file         GAP4stones     time(msec)
+test file         time(msec)
 -------------------------------------------
 testing: ................/gap4r5/tst/zlattice.tst
-zlattice.tst               0              0
+zlattice.tst               0
 testing: ................/gap4r5/tst/gaussian.tst
-gaussian.tst               0             10
+gaussian.tst              10
 [ further lines deleted ]
 ]]></Log>
 
