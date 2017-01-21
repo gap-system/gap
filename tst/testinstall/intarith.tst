@@ -1,9 +1,7 @@
 #############################################################################
 ##
-#W  intarith.tst                  GAP library                 	Markus Pfeiffer 
+#W  intarith.tst                  GAP library
 ##
-##
-#Y  Copyright (C)  2015,  University of St Andrews, Scotland.
 ##
 gap> START_TEST("intarith.tst");
 gap> 1 + 1;
