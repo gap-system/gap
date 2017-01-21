@@ -503,13 +503,13 @@ Obj GMP_INTOBJ( Obj i )
   
 /****************************************************************************
 **
-*F  GMPorINTOBJ_INT( <cint> ) . . . . . . . .  convert c int to gmp or intobj
+*F  ObjInt_Int( <cint> ) . . . . . . . . . . . convert c int to gmp or intobj
 **
-**  'GMPorINTOBJ_INT' takes the C integer <cint> and returns the equivalent
+**  'ObjInt_Int' takes the C integer <cint> and returns the equivalent
 **  GMP obj or int obj, according to the value of <cint>.
 **
 */
-Obj GMPorINTOBJ_INT( Int i )
+Obj ObjInt_Int( Int i )
 {
   Obj gmp;
 
@@ -525,11 +525,6 @@ Obj GMPorINTOBJ_INT( Int i )
   }
   SET_VAL_LIMB0( gmp, i );
   return gmp;
-}
-
-Obj ObjInt_Int( Int i )
-{
-  return GMPorINTOBJ_INT( i );
 }
 
 Obj ObjInt_UInt( UInt i )
