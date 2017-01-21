@@ -1793,11 +1793,7 @@ Obj RemInt ( Obj opL, Obj opR )
 
   /* pathological case first                                             */
   if ( opR == INTOBJ_INT(0) ) {
-    opR = ErrorReturnObj(
-                         "Integer operations: <divisor> must be nonzero",
-                         0L, 0L,
-                         "you can replace the integer <divisor> via 'return <divisor>;'" );
-    return QUO( opL, opR );
+    ErrorMayQuit( "Integer operations: <divisor> must be nonzero", 0L, 0L  );
   }
 
   /* compute the remainder of two small integers                           */
