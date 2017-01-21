@@ -1763,7 +1763,6 @@ void CodeLongIntExpr (
     }
 
     /* otherwise stuff the value into the values list                      */
-    /* Need to fix this up for GMP integers */
     else {
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
         ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);

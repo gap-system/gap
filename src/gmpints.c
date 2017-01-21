@@ -95,6 +95,10 @@ extern "C" {
 #define LoadLimb LoadUInt4
 #endif
 
+
+static Obj ObjInt_UIntInv( UInt i );
+
+
 /* macro for swapping two variables of a given type. Poor man's C++ macro. */
 #define SWAP(T, a, b)          do { T SWAP_TMP = a; a = b; b = SWAP_TMP; } while (0)
 
@@ -128,6 +132,8 @@ extern "C" {
 #define IS_NEGATIVE(obj)        (IS_INTOBJ(obj) ? ((Int)obj < 0) : IS_INTNEG(obj))
 #define IS_ODD(obj)             (IS_INTOBJ(obj) ? ((Int)obj & 4) : (VAL_LIMB0(obj) & 1))
 #define IS_EVEN(obj)            (!IS_ODD(obj))
+
+#define SIZE_INT_OR_INTOBJ(obj) (IS_INTOBJ(obj) ? 1 : SIZE_INT(obj))
 
 
 /* for fallbacks to library */
@@ -238,23 +244,6 @@ void LoadInt( Obj gmp )
 
 /****************************************************************************
 **
-*F  NEW_INT( <gmp> )
-**
-**
-*/
-static inline Obj NEW_INT( Obj gmp )
-{
-  Obj new;
-
-  new = NewBag( TNUM_OBJ(gmp), SIZE_OBJ(gmp) );
-  memcpy( ADDR_INT(new), ADDR_INT(gmp), SIZE_OBJ(gmp) );
-
-  return new;
-}
-
-
-/****************************************************************************
-**
 *F  NEW_INTPOS( <gmp> )
 **
 **  Take an T_INTPOS or T_INTNEG and create a new T_INTPOS with identical
@@ -269,6 +258,133 @@ static inline Obj NEW_INTPOS( Obj gmp )
 
   return new;
 }
+
+
+/****************************************************************************
+**
+**  In order to use the high-level GMP mpz_* functions conveniently while
+**  retaining a low overhead, we introduce fake_mpz_t, which can be thought
+**  of as a "subclass" of mpz_t, extending it by temporary storage for
+**  single limb of data, as well as a reference to a corresponding GAP
+**  object.
+**
+**  For an example on how to correctly use this, see GcdInt.
+*/
+typedef struct {
+  mpz_t v;
+  mp_limb_t tmp;
+  Obj obj;
+} fake_mpz_t[1];
+
+
+/****************************************************************************
+**
+*F  NEW_FAKEMPZ( <fake>, <size> )
+**
+**  Setup a fake mpz_t object for capturing the output of a GMP mpz_* function,
+**  with space for up to <size> limbs allocated.
+*/
+static void NEW_FAKEMPZ( fake_mpz_t fake, UInt size )
+{
+  fake->v->_mp_alloc = size;
+  fake->v->_mp_size = 0;
+  if (size == 1) {
+    fake->obj = 0;
+  }
+  else {
+    fake->obj = NewBag( T_INTPOS, size * sizeof(TypLimb) );
+  }
+}
+
+
+/****************************************************************************
+**
+*F  FAKEMPZ_GMPorINTOBJ( <fake>, <op> )
+**
+**  Initialize <fake> to reference the content of <op>. For this, <op>
+**  must be an integer, either small or large, but this is *not* checked.
+**  The calling code is responsible for any verification.
+*/
+static void FAKEMPZ_GMPorINTOBJ( fake_mpz_t fake, Obj op )
+{
+  if (IS_INTOBJ(op)) {
+    fake->obj = 0;
+    fake->v->_mp_alloc = 1;
+    const Int i = INT_INTOBJ(op);
+    if ( i >= 0 ) {
+      fake->tmp = i;
+      fake->v->_mp_size = i ? 1 : 0;
+    }
+    else {
+      fake->tmp = -i;
+      fake->v->_mp_size = -1;
+    }
+  }
+  else {
+    fake->obj = op;
+    fake->v->_mp_alloc = SIZE_INT(op);
+    fake->v->_mp_size = IS_INTPOS(op) ? SIZE_INT(op) : -SIZE_INT(op);
+  }
+}
+
+
+/****************************************************************************
+**
+*F  GMPorINTOBJ_FAKEMPZ( <fake> )
+**
+**  This function converts a fake mpz_t into a GAP integer object.
+*/
+static Obj GMPorINTOBJ_FAKEMPZ( fake_mpz_t fake )
+{
+  Obj obj = fake->obj;
+  if ( fake->v->_mp_size == 0 ) {
+    return INTOBJ_INT(0);
+  }
+  else if ( obj != 0 ) {
+    if ( fake->v->_mp_size < 0 ) {
+      /* Warning: changing the bag type is only correct if the object was
+         not yet visible to the outside world. Thus, it is safe to use
+         with an fake_mpz_t initialized with NEW_FAKEMPZ, but not with
+         one that was setup by FAKEMPZ_GMPorINTOBJ. */
+      RetypeBag( obj, T_INTNEG );
+    }
+    obj = GMP_NORMALIZE( obj );
+    obj = GMP_REDUCE( obj );
+  }
+  else {
+    if ( fake->v->_mp_size == 1 )
+      obj = ObjInt_UInt( fake->tmp );
+    else
+      obj = ObjInt_UIntInv( fake->tmp );
+  }
+  return obj;
+}
+
+
+/****************************************************************************
+**
+**  MPZ_FAKEMPZ( <fake> )
+**
+**  This converts a fake_mpz_t into an mpz_t. As a side effect, it updates
+**  fake->v->_mp_d. This allows us to use SWAP on fake_mpz_t objects, and
+**  also protects against garbage collection moving around data.
+*/
+#define MPZ_FAKEMPZ(fake)   (UPDATE_FAKEMPZ(fake), fake->v)
+
+/* UPDATE_FAKEMPZ is a helper function for the MPZ_FAKEMPZ macro */
+static inline void UPDATE_FAKEMPZ( fake_mpz_t fake )
+{
+  fake->v->_mp_d = fake->obj ? ADDR_INT(fake->obj) : &fake->tmp;
+}
+
+/* some extra debugging tools for FAKMPZ objects */
+#if DEBUG_GMP
+#define CHECK_FAKEMPZ(fake) \
+    assert( ((fake)->v->_mp_d == ((fake)->obj ? ADDR_INT((fake)->obj) : &(fake)->tmp )) \
+        &&  (fake->v->_mp_alloc == ((fake)->obj ? SIZE_INT((fake)->obj) : 1 )) )
+#else
+#define CHECK_FAKEMPZ(fake)  do { } while(0);
+#endif
 
 
 /****************************************************************************
@@ -430,6 +546,23 @@ Obj ObjInt_UInt( UInt i )
     return gmp;
   }
 }
+
+// initialize to -i
+Obj ObjInt_UIntInv( UInt i )
+{
+  Obj gmp;
+  UInt bound = 1UL << NR_SMALL_INT_BITS;
+
+  if (i <= bound) {
+    return INTOBJ_INT(-i);
+  }
+  else {
+    gmp = NewBag( T_INTNEG, sizeof(TypLimb) );
+    SET_VAL_LIMB0( gmp, i );
+    return gmp;
+  }
+}
+
 
 Obj ObjInt_Int8( Int8 i )
 {
@@ -964,228 +1097,43 @@ Int LtInt ( Obj gmpL, Obj gmpR )
 */
 static Obj SumOrDiffInt ( Obj gmpL, Obj gmpR, Int sign )
 {
-  Obj       res; /* handle of result bag                                   */
-  Int  twosmall; /* sum of two smalls                                      */
-  Int  onesmall; /* set to 1 if one of args is a small int, 0 otherwise    */
-  Int   swapped; /* set to 1 if args were swapped, 0 otherwise             */
-  Int    resneg; /* set to 1 if result will be negative                    */
-  TypLimb carry; /* hold any carry or borrow                               */
+  UInt sizeL, sizeR;
+  fake_mpz_t mpzL, mpzR, mpzResult;
+  Obj result;
 
   CHECK_INT(gmpL);
   CHECK_INT(gmpR);
 
-  twosmall = 0;
-  onesmall = 0;
-  swapped  = 0;
-  resneg   = 0;
-
-  /* findme - later change to put the non-overflow versions of these small
-int adds/subs into the caller funcs SumInt, DiffInt. Then remove check of
-SUM or DIFF _INTOBJS and document (at least in code) that this should not
-be called directly */
-
-  if ( sign != 1 && sign != -1 ) {
-    ErrorMayQuit("SumOrDiffInt: <sign> must be +1 or -1. \nDo not call this function directly.",
-                 0L, 0L);
+  /* handle trivial cases first */
+  if ( gmpR == INTOBJ_INT(0) )
+    return gmpL;
+  if ( gmpL == INTOBJ_INT(0) ) {
+    if (sign == 1)
+      return gmpR;
+    else
+      return AInvInt(gmpR);
   }
 
-    /* adding two small integers                                           */
-  if ( ARE_INTOBJS( gmpL, gmpR ) ) {
+  sizeL = SIZE_INT_OR_INTOBJ(gmpL);
+  sizeR = SIZE_INT_OR_INTOBJ(gmpR);
 
-    /* add or subtract two small integers with a small sum                 */
-    if (sign == 1) {
-      if ( SUM_INTOBJS( res, gmpL, gmpR ) ) {
-        return res;
-      }
-      else {
-        twosmall = INT_INTOBJ(gmpL) + INT_INTOBJ(gmpR);
-      }
-    }
-    else if (sign == -1) {
-      if ( DIFF_INTOBJS( res, gmpL, gmpR ) ) {
-        return res;
-      }
-      else {
-        twosmall = INT_INTOBJ(gmpL) - INT_INTOBJ(gmpR);
-      }
-    }
+  NEW_FAKEMPZ( mpzResult, sizeL > sizeR ? sizeL+1 : sizeR+1 );
+  FAKEMPZ_GMPorINTOBJ( mpzL, gmpL );
+  FAKEMPZ_GMPorINTOBJ( mpzR, gmpR );
 
-    /* if two small integers have a large sum or difference form the gmp int*/
-    if ( 0 < twosmall ) {
-      res = NewBag( T_INTPOS, sizeof(TypLimb) );
-      SET_VAL_LIMB0( res, (TypLimb)twosmall );
-    }
-    else {
-      res = NewBag( T_INTNEG, sizeof(TypLimb) );
-      SET_VAL_LIMB0( res, (TypLimb)(-twosmall) );
-    }
+  /* add or subtract */
+  if (sign == 1)
+    mpz_add( MPZ_FAKEMPZ(mpzResult), MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR) );
+  else
+    mpz_sub( MPZ_FAKEMPZ(mpzResult), MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR) );
 
-    return res;
-  }
-
-  /* findme - we repeat some of this work in the 'add' part later on.
-     Can we recycle some code? */
-
-  /* the case of one small integer and one large                           */
-  else if ( IS_INTOBJ( gmpL ) || IS_INTOBJ( gmpR ) ) {
-    onesmall = 1;
-    if ( IS_INTOBJ( gmpL ) ) {
-      SWAP(Obj, gmpL, gmpR);
-      swapped = 1;
-    }
-  }
-
-  /* two large ints                                                        */
-  else if ( SIZE_INT( gmpL ) < SIZE_INT( gmpR ) ) {
-    /* swap gmpL and gmpR                                                  */
-    SWAP(Obj, gmpL, gmpR);
-    swapped = 1;
-  }
-
-  if      ( ( ( sign == +1 ) &&
-              ( (  ( onesmall ) &&
-                  ( (IS_INTNEG(gmpL) && 0 <= INT_INTOBJ(gmpR)) ||
-                    (IS_INTPOS(gmpL) && 0 >  INT_INTOBJ(gmpR)) )  ) ||
-                ( !( onesmall ) &&
-                  ( (IS_INTPOS(gmpL) &&       IS_INTNEG(gmpR)) ||
-                    (IS_INTNEG(gmpL) &&       IS_INTPOS(gmpR)) )  ) ) ) ||
-            ( ( sign == -1 ) &&
-              ( (  ( onesmall ) &&
-                  ( (IS_INTNEG(gmpL) && 0 >  INT_INTOBJ(gmpR)) ||
-                    (IS_INTPOS(gmpL) && 0 <= INT_INTOBJ(gmpR)) ) ) ||
-                ( !( onesmall ) &&
-                  ( (IS_INTPOS(gmpL) &&       IS_INTPOS(gmpR)) ||
-                    (IS_INTNEG(gmpL) &&       IS_INTNEG(gmpR)) )  ) ) ) ) {
-
-    /* the args have different sign (or same sign and this is a subtraction)
-       - compare to see which to subtract                                  */
-    if ( onesmall ) {
-      if ( ( ( ( swapped == 1 && sign == +1 ) || swapped == 0 )
-             && IS_INTNEG(gmpL) ) || 
-           ( swapped == 1 && sign == -1 && IS_INTPOS(gmpL) ) ) {
-        res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
-      }
-      else {
-        res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
-      }
-      gmpR = GMP_INTOBJ( gmpR );
-      carry = mpn_sub_1( ADDR_INT(res), 
-                         ADDR_INT(gmpL), SIZE_INT(gmpL),
-                         VAL_LIMB0(gmpR) );
-    }
-    /* this test correct since size(gmpL) >= size(gmpR)                    */
-    else if ( SIZE_INT(gmpL) != SIZE_INT(gmpR) ) {
-      if ( ( ( ( swapped == 1 && sign == +1 ) || swapped == 0 )
-             && IS_INTNEG(gmpL) ) || 
-           ( swapped == 1 && sign == -1 && IS_INTPOS(gmpL) ) ) {
-        res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
-      }
-      else {
-        res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
-      }
-      carry = mpn_sub( ADDR_INT(res),
-                       ADDR_INT(gmpL), SIZE_INT(gmpL),
-                       ADDR_INT(gmpR), SIZE_INT(gmpR) );
-    }
-    /* ok, so they're the same size in limbs - which is the bigger number? */
-    else if ( mpn_cmp( ADDR_INT(gmpL),
-                       ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0 ) {
-      if ( IS_INTPOS(gmpL) ) {
-        res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
-      }
-      else {
-        res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
-      }
-      carry = mpn_sub_n( ADDR_INT(res),
-                         ADDR_INT(gmpR),
-                         ADDR_INT(gmpL), SIZE_INT(gmpR) );
-    }
-
-    else {
-      if ( IS_INTNEG(gmpL) ) {
-        res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
-      }
-      else {
-        res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
-      }
-      carry = mpn_sub_n( ADDR_INT(res),
-                         ADDR_INT(gmpL),
-                         ADDR_INT(gmpR), SIZE_INT(gmpL) );
-    }
-
-    res = GMP_NORMALIZE( res );
-    res = GMP_REDUCE( res );
-    return res;
-  }
-
-  else {
-    /* The args have the same sign (or opp sign and this is a subtraction) 
-       - so add them. At this stage, we are dealing with a large and a 
-       small, or two large integers                                        */
-
-    /* Will the result be negative?                                        */
-    if ( ( sign ==  1 && IS_INTNEG(gmpL) ) ||
-         ( sign == -1 &&
-           ( ( swapped == 0 && IS_INTNEG(gmpL) ) ||
-             ( swapped == 1 && IS_INTPOS(gmpL) ) ) ) ) {
-      resneg = 1;
-    }
-    if ( onesmall ) {
-      if ( resneg == 0 ) {
-        res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) + sizeof(TypLimb) );
-      }
-      else {
-        res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) + sizeof(TypLimb) );
-      }
-      gmpR = GMP_INTOBJ( gmpR );
-      carry = mpn_add_1( ADDR_INT(res),
-                         ADDR_INT(gmpL),SIZE_INT(gmpL),
-                         VAL_LIMB0(gmpR) );
-      if ( carry == 0 ) {
-        ResizeBag( res, SIZE_OBJ(gmpL) );
-      }
-      else {
-        ( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = 1; /* = carry ? */
-      }
-    }
-
-    else {
-      /* put the smaller one (in limbs) to the right                       */
-      if ( SIZE_INT(gmpL) < SIZE_INT(gmpR) ) { 
-        SWAP(Obj, gmpL, gmpR);
-      }
-
-      /* allocate result bag                                               */
-      if ( resneg == 0 ) {
-        res = NewBag( T_INTPOS, ( SIZE_OBJ(gmpL) + sizeof(TypLimb) ) );
-      }
-      else {
-        res = NewBag( T_INTNEG, ( SIZE_OBJ(gmpL) + sizeof(TypLimb) ) );
-      }
-      
-      /* mpn_lshift is faster still than mpn_add_n for adding a TypLimb
-         number to itself                                                  */
-      if ( gmpL == gmpR ) {
-        carry = mpn_lshift( ADDR_INT(res),
-                            ADDR_INT(gmpL), SIZE_INT(gmpL),
-                            1 );
-      }
-      else {
-        carry =    mpn_add( ADDR_INT(res),
-                            ADDR_INT(gmpL), SIZE_INT(gmpL),
-                            ADDR_INT(gmpR), SIZE_INT(gmpR) );
-      }
-      if ( carry == 0 ){
-        ResizeBag( res, SIZE_OBJ(gmpL) );
-      }
-      else{
-        ( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = 1;
-      }
-    }
-
-    return res;
-  }
-
+  /* convert result to GAP object and return it */
+  CHECK_FAKEMPZ(mpzResult);
+  CHECK_FAKEMPZ(mpzL);
+  CHECK_FAKEMPZ(mpzR);
+  result = GMPorINTOBJ_FAKEMPZ( mpzResult );
+  CHECK_INT(result);
+  return result;
 }
 
 
@@ -1198,7 +1146,8 @@ Obj SumInt ( Obj gmpL, Obj gmpR )
 {
   Obj sum;
 
-  sum = SumOrDiffInt( gmpL, gmpR, +1 );
+  if ( !ARE_INTOBJS(gmpL, gmpR) || !SUM_INTOBJS( sum, gmpL, gmpR) )
+    sum = SumOrDiffInt( gmpL, gmpR, +1 );
 
   CHECK_INT(sum);
   return sum;
@@ -1215,7 +1164,8 @@ Obj DiffInt ( Obj gmpL, Obj gmpR )
 {
   Obj dif;
   
-  dif = SumOrDiffInt( gmpL, gmpR, -1 );
+  if ( !ARE_INTOBJS(gmpL, gmpR) || !DIFF_INTOBJS( dif, gmpL, gmpR) )
+    dif = SumOrDiffInt( gmpL, gmpR, -1 );
   
   CHECK_INT(dif);
   return dif;
@@ -1370,18 +1320,13 @@ Obj FuncSIGN_INT(Obj self, Obj op)
 **  This case is usually already handled in 'EvalProd' for a better efficiency.
 **
 **  Is called from the 'EvalProd' binop so both operands are already evaluated.
-**
-**  The only difficulty about this function is the fact that is has to handle
-**  3 different situations, depending on how many arguments  are  small ints.
 */
 Obj ProdInt ( Obj gmpL, Obj gmpR )
 {
   Obj                 prd;            /* handle of the result bag          */
-  Int                   i;            /* hold small int value              */
-  Int                   k;            /* hold small int value              */
-  TypLimb           carry;            /* most significant limb             */
-  TypLimb      tmp1, tmp2;
-  
+  UInt sizeL, sizeR;
+  fake_mpz_t mpzL, mpzR, mpzResult;
+
   CHECK_INT(gmpL);
   CHECK_INT(gmpR);
 
@@ -1394,108 +1339,34 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
       CHECK_INT(prd);
       return prd;
     }
-    
-    /* get the integer values                                              */
-    i = INT_INTOBJ(gmpL);
-    k = INT_INTOBJ(gmpR);
-    
-    /* allocate the product bag                                            */
-    if ( (0 < i && 0 < k) || (i < 0 && k < 0) )
-      prd = NewBag( T_INTPOS, 2*sizeof(TypLimb) );
-    else
-      prd = NewBag( T_INTNEG, 2*sizeof(TypLimb) );
-    
-    /* make both operands positive                                         */
-    if ( i < 0 )  i = -i;
-    if ( k < 0 )  k = -k;
-    
-    /* multiply                                                            */
-    tmp1 = i;
-    tmp2 = k;
-    mpn_mul_n( ADDR_INT( prd ), &tmp1, &tmp2, 1 );
   }
-  
-  /* multiply a small and a large integer                                  */
-  else if ( IS_INTOBJ(gmpL) || IS_INTOBJ(gmpR) ) {
 
-    /* make the right operand the small one                                */
-    if ( IS_INTOBJ(gmpL) ) {
-      k = INT_INTOBJ(gmpL);  gmpL = gmpR;
-    }
-    else {
-      k = INT_INTOBJ(gmpR);
-    }
+  /* handle trivial cases first */
+  if ( gmpL == INTOBJ_INT(0) || gmpR == INTOBJ_INT(1) )
+    return gmpL;
+  if ( gmpR == INTOBJ_INT(0) || gmpL == INTOBJ_INT(1) )
+    return gmpR;
+  if ( gmpR == INTOBJ_INT(-1) )
+    return AInvInt( gmpL );
+  if ( gmpL == INTOBJ_INT(-1) )
+    return AInvInt( gmpR );
+
+  sizeL = SIZE_INT_OR_INTOBJ(gmpL);
+  sizeR = SIZE_INT_OR_INTOBJ(gmpR);
     
-    /* handle trivial cases first                                          */
-    if ( k == 0 )
-      return INTOBJ_INT(0);
-    if ( k == 1 )
-      return gmpL;
-    
-    /* eg: for 32 bit systems, the large integer 1<<28 times -1 is the small
-       integer -(1<<28)                                                    */
-    if ( ( k == -1 ) && (SIZE_INT(gmpL)==1) 
-         && ( VAL_LIMB0(gmpL) == (1L<<NR_SMALL_INT_BITS) ) )
-      return INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS));
-    
-    /* multiplication by -1 is easy, just switch the sign and copy         */
-    if ( k == -1 ) {
-      if ( TNUM_OBJ(gmpL) == T_INTPOS ) {
-        prd = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
-      }
-      else {
-        prd = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
-      }
-      memcpy( ADDR_INT(prd), ADDR_INT(gmpL), SIZE_OBJ(gmpL) );
-      CHECK_INT(prd);
-      return prd;
-    }
-    
-    /* allocate a bag for the result                                       */
-    if ( (0 < k && TNUM_OBJ(gmpL) == T_INTPOS)
-         || (k < 0 && TNUM_OBJ(gmpL) == T_INTNEG) ) {
-      prd = NewBag( T_INTPOS, (SIZE_INT(gmpL)+1)*sizeof(TypLimb) );
-    }
-    else {
-      prd = NewBag( T_INTNEG, (SIZE_INT(gmpL)+1)*sizeof(TypLimb) );
-    }
-    
-    if ( k < 0 )  k = -k;
-    
-    /* multiply                                                            */
-    carry = mpn_mul_1( ADDR_INT(prd), ADDR_INT(gmpL),
-               SIZE_INT(gmpL), (TypLimb)k );
-    if ( carry == 0 ) {
-      ResizeBag( prd, SIZE_OBJ(gmpL) );
-    }
-    else {
-      ( ADDR_INT(prd) )[ SIZE_INT(gmpL) ] = carry;
-    }
-  }
+  NEW_FAKEMPZ( mpzResult, sizeL + sizeR );
+  FAKEMPZ_GMPorINTOBJ( mpzL, gmpL );
+  FAKEMPZ_GMPorINTOBJ( mpzR, gmpR );
+
+  /* multiply */
+  mpz_mul( MPZ_FAKEMPZ(mpzResult), MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR) );
   
-  /* multiply two large integers                                           */
-  else {
-    
-    /* make the right operand the smaller one, for the mpn function        */
-    if ( SIZE_INT(gmpL) < SIZE_INT(gmpR) ) {
-      SWAP(Obj, gmpL, gmpR);
-    }
-    
-    /* allocate a bag for the result                                       */
-    if ( TNUM_OBJ(gmpL) == TNUM_OBJ(gmpR) )
-      prd = NewBag( T_INTPOS, SIZE_OBJ(gmpL)+SIZE_OBJ(gmpR) );
-    else
-      prd = NewBag( T_INTNEG, SIZE_OBJ(gmpL)+SIZE_OBJ(gmpR) );
-    
-    /* multiply                                                            */
-    mpn_mul( ADDR_INT(prd),
-             ADDR_INT(gmpL), SIZE_INT(gmpL),
-             ADDR_INT(gmpR), SIZE_INT(gmpR) );
-  }
-  
-  /* normalize and return the product                                      */
-  prd = GMP_NORMALIZE( prd );
-  prd = GMP_REDUCE( prd );
+  /* convert result to GAP object and return it */
+  CHECK_FAKEMPZ(mpzResult);
+  CHECK_FAKEMPZ(mpzL);
+  CHECK_FAKEMPZ(mpzR);
+  prd = GMPorINTOBJ_FAKEMPZ( mpzResult );
+  CHECK_INT(prd);
   return prd;
 }
 
@@ -2225,170 +2096,35 @@ Obj FuncREM_INT ( Obj self, Obj opL, Obj opR )
 */
 Obj GcdInt ( Obj opL, Obj opR )
 {
-  Int                 i;              /* loop count, value for small int   */
-  Int                 k;              /* loop count, value for small int   */
-  UInt                c;              /* product of two digits             */
-  Obj                 gmpL;           /* copy of the first arg             */
-  Obj                 gmpR;           /* copy of the second arg            */
-  Obj                 gcd;            /* handle of the result              */
-  TypLimb             gcdsize;        /* number of limbs mpn_gcd returns   */
-  Int                 p,q;            /* number of zero limbs per arg      */
-  Int                 r,s;            /* number of zero bits per arg       */
-  TypLimb             bmask;          /* bit mask                          */
-  UInt                plimbs;         /* zero limbs to shift by */
-  UInt                prest;          /* and remaining zero bits */
-  UInt                overflow;       /* possible overflow from most 
-                                         significant word */
+  UInt sizeL, sizeR;
+  fake_mpz_t mpzL, mpzR, mpzResult;
+  Obj result;
 
   CHECK_INT(opL);
   CHECK_INT(opR);
 
-  /* compute the gcd of two small integers                                 */
-  if ( ARE_INTOBJS( opL, opR ) ) {
-    
-    /* get the integer values, make them positive                          */
-    i = INT_INTOBJ(opL);  if ( i < 0 )  i = -i;
-    k = INT_INTOBJ(opR);  if ( k < 0 )  k = -k;
-    
-    /* compute the gcd using Euclids algorithm                             */
-    while ( k != 0 ) {
-      c = k;
-      k = i % k;
-      i = c;
-    }
-    
-    /* now i is the result                                                 */
-    gcd = GMPorINTOBJ_INT( (Int)i );
-    return gcd;    
-  }
-  
-  /* compute the gcd of a small and a large integer                        */
-  else if ( IS_INTOBJ(opL) || IS_INTOBJ(opR) ) {
-    
-    /* make the right operand the small one                                */
-    if ( IS_INTOBJ(opL) ) {
-      SWAP(Obj, opL, opR);
-    }
-    
-    /* maybe it's trivial                                                  */
-    if ( opR == INTOBJ_INT(0) ) {
-      if( TNUM_OBJ( opL ) == T_INTNEG ) {
-        /* If opL is negative, change the sign.  We do this by
-           copying opL into a bag of type T_INTPOS.  Note that
-           opL is a large negative number, so it cannot be the
-           the negative of 1 << NR_SMALL_INT_BITS.                     */
-        gcd = NEW_INTPOS( opL );
-        return gcd;
-      }
-      else return opL;
-    }
-    
-    /* compute the gcd                                                     */
-    opR = GMP_INTOBJ( opR );
-    i = mpn_gcd_1( ADDR_INT(opL), SIZE_INT(opL), *ADDR_INT(opR) );
-    gcd = GMPorINTOBJ_INT( (Int)i );
-    return gcd;
-  }
-  
-  /* compute the gcd of two large integers                                 */
-  else {
-    if ( EqInt(opL,opR) ) {
-      if ( IS_INTNEG(opL) ) {
-        return NEW_INTPOS(opL);
-      }
-      else {
-        return opL;
-      }
-    }
-    gmpL = NEW_INT(opL); gmpR = NEW_INT(opR);
+  if (opL == INTOBJ_INT(0)) return AbsInt(opR);
+  if (opR == INTOBJ_INT(0)) return AbsInt(opL);
 
-    /* find highest power of 2 dividing gmpL and divide out by this */
-    for ( p = 0 ; ADDR_INT(gmpL)[p] == (TypLimb)0; p++ ) {
-      for ( i = 0 ; i < mp_bits_per_limb ; i++ ) {
-      }
-    }
-    for ( bmask = (TypLimb)1, r = 0 ;
-          ( (bmask & ADDR_INT(gmpL)[p]) == 0 ) && bmask != (TypLimb)0 ;
-          bmask = bmask << 1, r++ ) {
-    }
-    p = p*mp_bits_per_limb+r;
-    for ( i = 0 ; i < p ; i++ ){
-      mpn_rshift( ADDR_INT(gmpL), ADDR_INT(gmpL),
-                  SIZE_INT(gmpL), (UInt)1 );
-    }
-    gmpL = GMP_NORMALIZE(gmpL);
+  sizeL = SIZE_INT_OR_INTOBJ(opL);
+  sizeR = SIZE_INT_OR_INTOBJ(opR);
 
-    /* find highest power of 2 dividing gmpR and divide out by this */
-    for ( q = 0 ; ADDR_INT(gmpR)[q] == (TypLimb)0; q++ ) {
-      for ( i = 0 ; i < mp_bits_per_limb ; i++ ) {
-      }
-    }
-    for ( bmask = (TypLimb)1, s = 0 ;
-          ( (bmask & ADDR_INT(gmpR)[q]) == 0 ) && bmask != (TypLimb)0 ;
-          bmask=bmask << 1,  s++ ) {
-    }
-    q = q*mp_bits_per_limb+s;
-    for (i=0;i<q;i++){
-      mpn_rshift( ADDR_INT(gmpR), ADDR_INT(gmpR),
-                  SIZE_INT(gmpR), (UInt)1 );
-    }
-    gmpR = GMP_NORMALIZE(gmpR);
+  NEW_FAKEMPZ( mpzResult, sizeL < sizeR ? sizeL : sizeR );
+  FAKEMPZ_GMPorINTOBJ( mpzL, opL );
+  FAKEMPZ_GMPorINTOBJ( mpzR, opR );
 
-    /* put smaller object to right */
-    if ( SIZE_INT(gmpL) < SIZE_INT(gmpR) ||
-         ( SIZE_INT(gmpL) == SIZE_INT(gmpR) &&
-           mpn_cmp( ADDR_INT(gmpL), ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0 ) ) {
-      gcd = gmpR; gmpR = gmpL; gmpL = gcd;
-    }
-    
-    /* get gcd of odd numbers gmpL, gmpR - put it in a bag as big as one
-       of the original args, which will be big enough for the gcd */
-    gcd = NewBag( T_INTPOS, SIZE_OBJ(opR) );
-    
-    /* choose smaller of p,q and make it p 
-       we are going to multiply back in by 2 to that power */
-    if ( p > q ) p = q;
-    plimbs = p/mp_bits_per_limb;
-    prest = p - plimbs*mp_bits_per_limb;
-    
-    /* We deal with most of the power of two by placing some
-       0 limbs below the least significant limb of the GCD */
-    for (i = 0; i < plimbs; i++)
-      ADDR_INT(gcd)[i] = 0;
+  /* compute the gcd */
+  mpz_gcd( MPZ_FAKEMPZ(mpzResult), MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR) );
 
-    /* Now we do the GCD -- gcdsize tells us the number of 
-       limbs used for the result */
-
-    gcdsize = mpn_gcd( plimbs + ADDR_INT(gcd), 
-             ADDR_INT(gmpL), SIZE_INT(gmpL),
-             ADDR_INT(gmpR), SIZE_INT(gmpR) );
-    
-    /* Now we do the rest of the power of two */
-    if (prest != 0)
-      {
-        overflow = mpn_lshift( plimbs + ADDR_INT(gcd), plimbs + ADDR_INT(gcd),
-                  gcdsize, (UInt)prest );
-        
-        /* which might extend the GCD to one more limb */
-        if (overflow != 0)
-          {
-            ADDR_INT(gcd)[gcdsize + plimbs] = overflow;
-            gcdsize++;
-          }
-      }
-
-    /* if the bag is too big, reduce it (stuff in extra space may not be 0) */
-    if ( gcdsize+plimbs != SIZE_INT(opR) ) {
-      ResizeBag( gcd, (gcdsize+plimbs)*sizeof(TypLimb) );
-    }
-
-  }
-  gcd = GMP_NORMALIZE(gcd);
-  gcd = GMP_REDUCE(gcd);
-  
-  /* return the result                                                     */
-  return gcd;
+  /* convert result to GAP object and return it */
+  CHECK_FAKEMPZ(mpzResult);
+  CHECK_FAKEMPZ(mpzL);
+  CHECK_FAKEMPZ(mpzR);
+  result = GMPorINTOBJ_FAKEMPZ( mpzResult );
+  CHECK_INT(result);
+  return result;
 }
+
 
 /****************************************************************************
 **

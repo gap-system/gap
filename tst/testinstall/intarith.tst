@@ -421,6 +421,15 @@ gap> List(dataNonZero, x -> GcdInt(smlPos, x));
 gap> List(dataNonZero, x -> GcdInt(bigPos, x));
 [ 1, 100000000000000000000, 10000, 1, 1, 10000, 100000000000000000000, 1 ]
 
+#
+gap> g:=3^10*257;; a:=g*991;; b:=g*1601;;
+gap> GcdInt(2^20*a, 2^30*b) = 2^20*g;
+true
+gap> GcdInt(2^80*a, 2^40*b) = 2^40*g;
+true
+gap> GcdInt(2^80*a, 2^90*b) = 2^80*g;
+true
+
 # check symmetry
 gap> ForAll(data, x -> ForAll(data, y -> GcdInt(x,y) = GcdInt(y,x)));
 true
