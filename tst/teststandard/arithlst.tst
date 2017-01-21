@@ -30,7 +30,7 @@ gap> TestOfListArithmetic( GF(25), stddims );
 
 # over a big finite (prime) field
 gap> p:= NextPrimeInt( MAXSIZE_GF_INTERNAL );;
-gap> TestOfListArithmetic( GF( p ), stddims );
+gap> TestOfListArithmetic( GF( p ), [ 4, 5, 6, 8 ] );
 
 # over the rationals
 gap> TestOfListArithmetic( Rationals, [ 4 ] );
@@ -51,7 +51,7 @@ gap> TestOfListArithmetic( GF(5)^[2,3], [ 4, 5, 6 ] );
 
 # over a matrix space/algebra over a big finite (prime) field
 gap> p:= NextPrimeInt( MAXSIZE_GF_INTERNAL );;
-gap> TestOfListArithmetic( GF( p )^[2,3], [ 4, 5, 6 ] );
+gap> TestOfListArithmetic( GF( p )^[2,3], [ 4 ] );
 
 # over a matrix space/algebra over the rationals
 gap> TestOfListArithmetic( Rationals^[2,3], [ 4, 5, 6 ] );
