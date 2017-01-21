@@ -487,7 +487,7 @@ gap> dataHex := List(data, HexStringInt);
 [ "-56BC75E2D63100001", "-56BC75E2D63100000", "-2710", "-1", "0", "1", 
   "2710", "56BC75E2D63100000", "56BC75E2D63100001" ]
 gap> HexStringInt("abc");
-Error, HexStringInt: argument must be an integer (not a list (string))
+Error, HexStringInt: <op> must be an integer (not a list (string))
 gap> List(dataHex, IntHexString) = data;
 true
 gap> dataHex;  # HexStringInt used to destroy its argument

@@ -604,6 +604,8 @@ Obj StringIntBase( Obj gmp, int base )
     return Fail;
   }
 
+  CHECK_INT(gmp);
+
   if ( base < 2 || 36 < base ) {
     return Fail;
   }
@@ -649,11 +651,7 @@ Obj StringIntBase( Obj gmp, int base )
 */
 Obj FuncHexStringInt( Obj self, Obj gmp )
 {
-  if ( !IS_INT(gmp) ) {
-    ErrorMayQuit( "HexStringInt: argument must be an integer (not a %s)",
-                  (Int)TNAM_OBJ(gmp), 0L );
-  }
-
+  REQUIRE_INT_ARG( "HexStringInt", "op", gmp );
   return StringIntBase( gmp, 16 );
 }
 
@@ -856,13 +854,7 @@ Obj FuncLog2Int( Obj self, Obj integer)
 */
 Obj FuncSTRING_INT( Obj self, Obj integer )
 {
-  CHECK_INT(integer);
-
-  if ( !IS_INT(integer) ) {
-    ErrorMayQuit( "STRING_INT: argument must be an integer (not a %s)",
-                  (Int)TNAM_OBJ(integer), 0L );
-  }
-
+  REQUIRE_INT_ARG( "STRING_INT", "op", integer );
   return StringIntBase( integer, 10 );
 }
 
