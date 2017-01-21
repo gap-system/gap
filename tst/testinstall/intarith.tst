@@ -490,6 +490,9 @@ gap> HexStringInt("abc");
 Error, HexStringInt: argument must be an integer (not a list (string))
 gap> List(dataHex, IntHexString) = data;
 true
+gap> dataHex;  # HexStringInt used to destroy its argument
+[ "-56BC75E2D63100001", "-56BC75E2D63100000", "-2710", "-1", "0", "1", 
+  "2710", "56BC75E2D63100000", "56BC75E2D63100001" ]
 gap> IntHexString("");
 0
 gap> IntHexString("a");
@@ -497,11 +500,11 @@ gap> IntHexString("a");
 gap> IntHexString("A");
 10
 gap> IntHexString("x");
-Error, IntHexString: non-valid character in hex-string
+Error, IntHexString: invalid character in hex-string
 gap> IntHexString("56BC75E2D63100000x");
-Error, IntHexString: non-valid character in hex-string
+Error, IntHexString: invalid character in hex-string
 gap> IntHexString("56BC75E2D63100000@");
-Error, IntHexString: non-valid character in hex-string
+Error, IntHexString: invalid character in hex-string
 gap> IntHexString(0);
 Error, IntHexString: argument must be string (not a integer)
 gap> IntHexString("-1000000000000000");

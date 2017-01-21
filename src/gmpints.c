@@ -657,7 +657,7 @@ Obj StringIntBase( Obj gmp, int base )
 **  
 **  The  function `FuncIntHexString'  does  the converse,  but here  the
 **  letters a..f are also allowed in <string> instead of A..F.
-**  
+**
 */
 Obj FuncHexStringInt( Obj self, Obj gmp )
 {
@@ -670,14 +670,41 @@ Obj FuncHexStringInt( Obj self, Obj gmp )
 }
 
 
+/****************************************************************************
+**
+** This helper function for IntHexString reads <len> bytes in the string
+** <p> and parses them as a hexadecimal. The resulting integer is returned.
+** This function does not check for overflow, so make sure that len*4 does
+** not exceed the number of bits in TypLimb.
+**/
+static TypLimb hexstr2int( const UInt1 *p, UInt len )
+{
+  TypLimb n = 0;
+  UInt1 a;
+  while (len--) {
+    a = *p++;
+    if (a >= 'a')
+      a -= 'a' - 10;
+    else if ( a>= 'A')
+      a -= 'A' - 10;
+    else
+      a -= '0';
+    if (a > 15)
+      ErrorMayQuit("IntHexString: invalid character in hex-string", 0L, 0L);
+    n = (n << 4) + a;
+  }
+  return n;
+}
+
+
 Obj FuncIntHexString( Obj self,  Obj str )
 {
   Obj res;
-  Int  i, j, len, sign, nd;
-  UInt n;
-  UInt1 *p, a;
-  UChar c;
-  
+  Int  i, len, sign, nd;
+  TypLimb n;
+  UInt1 *p;
+  TypLimb *limbs;
+
   if (! IsStringConv(str))
     ErrorMayQuit("IntHexString: argument must be string (not a %s)",
                  (Int)TNAM_OBJ(str), 0L);
@@ -687,7 +714,8 @@ Obj FuncIntHexString( Obj self,  Obj str )
     res = INTOBJ_INT(0);
     return res;
   }
-  if (*(CHARS_STRING(str)) == '-') {
+  p = CHARS_STRING(str);
+  if (*p == '-') {
     sign = -1;
     i = 1;
   }
@@ -696,60 +724,44 @@ Obj FuncIntHexString( Obj self,  Obj str )
     i = 0;
   }
 
-  while ((CHARS_STRING(str))[i] == '0' && i < len)
+  while (p[i] == '0' && i < len)
     i++;
-    
+  len -= i;
 
-  if ((len-i)*4 <= NR_SMALL_INT_BITS) {
-    n = 0;
-    p = CHARS_STRING(str);
-    for (; i<len; i++) {
-      a = p[i];
-      if (a>='a') 
-        a -= 'a' - 10;
-      else if (a>='A') 
-        a -= 'A' - 10;
-      else 
-        a -= '0';
-      if (a > 15)
-        ErrorMayQuit("IntHexString: non-valid character in hex-string",
-                     0L, 0L);
-      n = (n << 4) + a;
-    }
+  if (len*4 <= NR_SMALL_INT_BITS) {
+    n = hexstr2int( p + i, len );
     res = INTOBJ_INT(sign * n);
     return res;
   }
 
   else {
-    nd = (len-i)/INTEGER_UNIT_SIZE;
-    if (nd * INTEGER_UNIT_SIZE < (len-i)) nd++;
-    /*   nd += ((3*nd) % 4); */
-    if (sign == 1)
-      res = NewBag( T_INTPOS, nd*sizeof(TypLimb) );
-    else
-      res = NewBag( T_INTNEG, nd*sizeof(TypLimb) );
+    /* Each hex digit corresponds to to 4 bits, and each GMP limb has INTEGER_UNIT_SIZE
+       bytes, thus 2*INTEGER_UNIT_SIZE hex digits fit into one limb. We use this
+       to compute the number of limbs minus 1: */
+    nd = (len - 1) / (2*INTEGER_UNIT_SIZE);
+    res = NewBag( (sign == 1) ? T_INTPOS : T_INTNEG, (nd + 1) * sizeof(TypLimb) );
 
-    p = CHARS_STRING(str)+i;
+    /* update pointer, in case a garbage collection happened */
+    p = CHARS_STRING(str) + i;
+    limbs = ADDR_INT(res);
 
-    /* findme */
-    /* the following destroys the supplied string - document this          */
-    for (j=0;j<len-i;j++){
-      c=p[j];
-      if (IsDigit(c))
-        p[j] = c - '0';
-      else if (islower((unsigned int)c))
-        p[j] = c - 'a' + 10;
-      else if (isupper((unsigned int)c))
-        p[j] = c - 'A' + 10;
-      else
-        ErrorMayQuit("IntHexString: non-valid character in hex-string",
-                       0L, 0L);
-      if (p[j] >= 16)
-        ErrorMayQuit("IntHexString: non-valid character in hex-string",
-                     0L, 0L);
+    /* if len is not divisible by 2*INTEGER_UNIT_SIZE, then take care of the extra bytes */
+    UInt diff = len - nd * (2*INTEGER_UNIT_SIZE);
+    if ( diff ) {
+        n = hexstr2int( p, diff );
+        p += diff;
+        len -= diff;
+        limbs[nd--] = n;
     }
 
-    mpn_set_str(ADDR_INT(res),p,len-i,16);
+    /*  */
+    while ( len ) {
+        n = hexstr2int( p, 2*INTEGER_UNIT_SIZE );
+        p += 2*INTEGER_UNIT_SIZE;
+        len -= 2*INTEGER_UNIT_SIZE;
+        limbs[nd--] = n;
+    }
+
     res = GMP_NORMALIZE(res);
     res = GMP_REDUCE(res);
     return res;
