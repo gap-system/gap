@@ -473,33 +473,6 @@ int IS_NORMALIZED_AND_REDUCED( Obj op, const char *func, int line )
   return 1;
 }
 
-/****************************************************************************
-**
-*F  GMP_INTOBJ(<gmp>) . . . . . . . . . . . . . . . . . . . .  convert intobj to gmp
-**
-*/
-Obj GMP_INTOBJ( Obj i )
-{
-  Obj gmp;
-  Int   j;
-
-  if ( !IS_INTOBJ(i) ) {
-    return Fail;
-  }
-  else {
-    j = INT_INTOBJ( i );
-    if ( j < 0 ) {
-      gmp = NewBag( T_INTNEG, sizeof(TypLimb) );
-      j = -j;
-    }
-    else {
-      gmp = NewBag( T_INTPOS, sizeof(TypLimb) );
-    }
-  }
-  memcpy( ADDR_INT(gmp), &j, sizeof(Int) );
-  return gmp;
-}
-
   
 /****************************************************************************
 **
@@ -1732,19 +1705,20 @@ Obj QuoInt ( Obj opL, Obj opR )
   /* divide a large integer by a small integer                             */
   else if ( IS_INTOBJ(opR) ) {
     
+    k = INT_INTOBJ(opR);
+
     /* allocate a bag for the result and set up the pointers               */
-    if ( (TNUM_OBJ(opL)==T_INTPOS && 0 < INT_INTOBJ(opR))
-         || (TNUM_OBJ(opL)==T_INTNEG && INT_INTOBJ(opR) < 0) )
+    if ( IS_INTNEG(opL) == ( k < 0 ) )
       quo = NewBag( T_INTPOS, SIZE_OBJ(opL) );
     else
       quo = NewBag( T_INTNEG, SIZE_OBJ(opL) );
     
-    opR = GMP_INTOBJ( opR );
+    if ( k < 0 ) k = -k;
 
     /* use gmp function for dividing by a 1-limb number                    */
     mpn_divrem_1( ADDR_INT(quo), 0,
                   ADDR_INT(opL), SIZE_INT(opL),
-                  VAL_LIMB0(opR) );
+                  k );
   }
   
   /* divide a large integer by a large integer                             */
