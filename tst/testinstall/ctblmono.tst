@@ -6,8 +6,6 @@
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("ctblmono.tst");
 gap> S4:= SymmetricGroup( 4 );;  SetName( S4, "S4");
 gap> Sl23:= SL( 2, 3 );;

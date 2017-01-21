@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("modfree.tst");
 gap> u:= LeftModuleByGenerators( GF(3), [ [ Z(3), 0*Z(3) ] ] );
 <vector space over GF(3), with 1 generators>

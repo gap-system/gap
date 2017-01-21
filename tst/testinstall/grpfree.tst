@@ -5,8 +5,6 @@
 ##
 #Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("grpfree.tst");
 gap> g:= FreeGroup( "a", "b" );
 <free group on the generators [ a, b ]>

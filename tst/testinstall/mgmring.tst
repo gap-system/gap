@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("mgmring.tst");
 gap> r:= GF(3);;
 gap> m:= Group( (1,2,3), (1,2) );;

@@ -5,8 +5,6 @@
 ##
 #Y  Copyright 1999,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("xgap.tst");
 gap> f := FreeGroup(2); 
 <free group on the generators [ f1, f2 ]>
