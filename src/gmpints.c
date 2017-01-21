@@ -596,9 +596,6 @@ Obj ObjInt_Int8( Int8 i )
 */
 void PrintInt ( Obj op )
 {
-  Char buf[20000];
-  UInt signlength;
-  Obj str;
   /* print a small integer                                                 */
   if ( IS_INTOBJ(op) ) {
     Pr( "%>%d%<", INT_INTOBJ(op), 0L );
@@ -609,21 +606,18 @@ void PrintInt ( Obj op )
     CHECK_INT(op);
 
     /* use gmp func to print int to buffer                                 */
-    if (!IS_INTPOS(op)) {
-      buf[0] ='-';
-      signlength = 1;
-    } else {
-      signlength = 0;
-    }
-    gmp_snprintf((char *)(buf+signlength),20000-signlength,
-                 "%Nd", ADDR_INT(op),
-                 (TypGMPSize)SIZE_INT(op));
+    Char buf[20000];
+    mpz_t v;
+    v->_mp_alloc = SIZE_INT(op);
+    v->_mp_size = IS_INTPOS(op) ? v->_mp_alloc : -v->_mp_alloc;
+    v->_mp_d = ADDR_INT(op);
+    mpz_get_str(buf, 10, v);
 
     /* print the buffer, %> means insert '\' before a linebreak            */
     Pr("%>%s%<",(Int)buf, 0);
   }
   else {
-    str = CALL_1ARGS( String, op );
+    Obj str = CALL_1ARGS( String, op );
     Pr("%>%s%<",(Int)(CHARS_STRING(str)), 0);
     /* for a long time Print of large ints did not follow the general idea
      * that Print should produce something that can be read back into GAP:
