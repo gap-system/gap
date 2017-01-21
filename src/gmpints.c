@@ -140,10 +140,8 @@ static Obj ObjInt_UIntInv( UInt i );
 
 #define REQUIRE_INT_ARG(funcname, argname, op) \
     if ( !IS_INT(op) ) { \
-      op = ErrorReturnObj( \
-              funcname ": <" argname "> must be an integer (not a %s)", \
-              (Int)TNAM_OBJ(op), 0L, \
-              "you can replace <" argname "> via 'return <" argname ">;'" ); \
+      ErrorMayQuit( funcname ": <" argname "> must be an integer (not a %s)", \
+                         (Int)TNAM_OBJ(op), 0L ); \
     }
 
 /* for fallbacks to library */
