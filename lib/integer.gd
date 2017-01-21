@@ -799,7 +799,7 @@ DeclareGlobalFunction( "NextPrimeInt" );
 ##
 ##  <Description>
 ##  returns <M><A>r</A>^{<A>e</A>} \pmod{<A>m</A>}</M> for integers <A>r</A>,
-##  <A>e</A> and <A>m</A> (<M><A>e</A> \geq 0</M>).
+##  <A>e</A> and <A>m</A>.
 ##  <P/>
 ##  Note that <Ref Func="PowerModInt"/> can reduce intermediate results and
 ##  thus will generally be faster than using

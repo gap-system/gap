@@ -1154,6 +1154,95 @@ gap> Print(2^(64*1050), "\n");
 948688599817481827330434634041214374947601458440559056883819756862448124537321\
 8157000453169824579899621376
 
+#
+# test InversModInt / INVMODINT
+#
+gap> for m in [1..100] do
+>   for b in [1..100] do
+>     i := INVMODINT(b,m);
+>     g := GcdInt(b,m);
+>     Assert(0, (g<>1 and i = fail) or (g=1 and i in [0..m-1] and (i*b-1) mod m = 0));
+>   od;
+> od;
+
+#
+gap> INVMODINT(1,0);
+Error, InverseModInt: <mod> must be nonzero
+gap> INVMODINT(2,10);
+fail
+gap> INVMODINT(2,10);
+fail
+gap> INVMODINT(2,1);
+0
+gap> INVMODINT(2,-1);
+0
+
+#
+# test PowerModInt
+#
+gap> for m in [1..100] do
+>   for b in [-30..30] do
+>     for e in [0..10] do
+>       Assert(0, PowerModInt(b,e,m)=(b^e mod m));
+>     od;
+>   od;
+> od;
+
+#
+gap> PowerModInt(1,1,0);
+Error, PowerModInt: <mod> must be nonzero
+gap> PowerModInt(0,-1,5);
+Error, PowerModInt: negative <exp> but <base> is not invertible modulo <mod>
+gap> PowerModInt(2,-1,5);
+3
+gap> PowerModInt(2,-1,10);
+Error, PowerModInt: negative <exp> but <base> is not invertible modulo <mod>
+
+# compare C and GAP implementation
+gap> POWERMODINT_GAP := function ( r, e, m )
+>     local   pow, f;
+> 
+>     # handle special cases
+>     if m = 1  then
+>         return 0;
+>     elif e = 0 then
+>         return 1;
+>     fi;
+> 
+>     # reduce `r' initially
+>     r := r mod m;
+> 
+>     # if `e' is negative then invert `r' modulo `m' with Euclids algorithm
+>     if e < 0  then
+>         r := 1/r mod m;
+>         e := -e;
+>     fi;
+> 
+>     # now use the repeated squaring method (right-to-left)
+>     pow := 1;
+>     f := 2 ^ (LogInt( e, 2 ) + 1);
+>     while 1 < f  do
+>         pow := (pow * pow) mod m;
+>         f := QuoInt( f, 2 );
+>         if f <= e  then
+>             pow := (pow * r) mod m;
+>             e := e - f;
+>         fi;
+>     od;
+> 
+>     # return the power
+>     return pow;
+> end;;
+gap> for m in [1..100] do
+>   for b in [-30..30] do
+>     for e in [0..30] do
+>       Assert(0, POWERMODINT_GAP(b,e,m)=PowerModInt(b,e,m));
+>       if GcdInt(m,b) = 1 then
+>         Assert(0, POWERMODINT_GAP(b,-e,m)=PowerModInt(b,-e,m));
+>       fi;
+>     od;
+>   od;
+> od;
 
 #
 gap> STOP_TEST( "intarith.tst", 290000);

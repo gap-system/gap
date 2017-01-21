@@ -1995,6 +1995,104 @@ Obj FuncJACOBI_INT ( Obj self, Obj opL, Obj opR )
 
 /****************************************************************************
 **
+*/
+Obj InverseModInt ( Obj base, Obj mod )
+{
+  fake_mpz_t base_mpz, mod_mpz, result_mpz;
+  int success;
+
+  CHECK_INT(base);
+  CHECK_INT(mod);
+
+  if ( mod == INTOBJ_INT(0) )
+    ErrorMayQuit( "InverseModInt: <mod> must be nonzero", 0L, 0L  );
+  if ( mod == INTOBJ_INT(1) || mod == INTOBJ_INT(-1) )
+    return INTOBJ_INT(0);
+  if ( base == INTOBJ_INT(0) )
+    return Fail;
+
+  NEW_FAKEMPZ( result_mpz, SIZE_INT_OR_INTOBJ(mod) + 1 );
+  FAKEMPZ_GMPorINTOBJ( base_mpz, base );
+  FAKEMPZ_GMPorINTOBJ( mod_mpz, mod );
+
+  success = mpz_invert( MPZ_FAKEMPZ(result_mpz),
+                        MPZ_FAKEMPZ(base_mpz),
+                        MPZ_FAKEMPZ(mod_mpz) );
+
+  if (!success)
+    return Fail;
+
+  CHECK_FAKEMPZ(result_mpz);
+  CHECK_FAKEMPZ(base_mpz);
+  CHECK_FAKEMPZ(mod_mpz);
+
+  return GMPorINTOBJ_FAKEMPZ( result_mpz );
+}
+
+/****************************************************************************
+**
+*/
+Obj FuncINVMODINT ( Obj self, Obj base, Obj mod )
+{
+  REQUIRE_INT_ARG( "InverseModInt", "base", base );
+  REQUIRE_INT_ARG( "InverseModInt", "mod", mod );
+  return InverseModInt( base, mod );
+}
+
+
+/****************************************************************************
+**
+*/
+Obj PowerModInt ( Obj base, Obj exp, Obj mod )
+{
+  fake_mpz_t base_mpz, exp_mpz, mod_mpz, result_mpz;
+
+  CHECK_INT(base);
+  CHECK_INT(exp);
+  CHECK_INT(mod);
+
+  if ( mod == INTOBJ_INT(0) )
+    ErrorMayQuit( "PowerModInt: <mod> must be nonzero", 0L, 0L  );
+  if ( mod == INTOBJ_INT(1) || mod == INTOBJ_INT(-1) )
+    return INTOBJ_INT(0);
+
+  if ( IS_NEGATIVE(exp) ) {
+    base = InverseModInt( base, mod );
+    if (base == Fail)
+      ErrorMayQuit( "PowerModInt: negative <exp> but <base> is not invertible modulo <mod>", 0L, 0L  );
+    exp = AInvInt(exp);
+  }
+
+  NEW_FAKEMPZ( result_mpz, SIZE_INT_OR_INTOBJ(mod) );
+  FAKEMPZ_GMPorINTOBJ( base_mpz, base );
+  FAKEMPZ_GMPorINTOBJ( exp_mpz, exp );
+  FAKEMPZ_GMPorINTOBJ( mod_mpz, mod );
+
+  mpz_powm( MPZ_FAKEMPZ(result_mpz), MPZ_FAKEMPZ(base_mpz),
+            MPZ_FAKEMPZ(exp_mpz), MPZ_FAKEMPZ(mod_mpz) );
+
+  CHECK_FAKEMPZ(result_mpz);
+  CHECK_FAKEMPZ(base_mpz);
+  CHECK_FAKEMPZ(exp_mpz);
+  CHECK_FAKEMPZ(mod_mpz);
+
+  return GMPorINTOBJ_FAKEMPZ( result_mpz );
+}
+
+/****************************************************************************
+**
+*/
+Obj FuncPOWERMODINT ( Obj self, Obj base, Obj exp, Obj mod )
+{
+  REQUIRE_INT_ARG( "PowerModInt", "base", base );
+  REQUIRE_INT_ARG( "PowerModInt", "exp", exp );
+  REQUIRE_INT_ARG( "PowerModInt", "mod", mod );
+  return PowerModInt( base, exp, mod );
+}
+
+
+/****************************************************************************
+**
 ** * * * * * * * "Mersenne twister" random numbers  * * * * * * * * * * * * *
 **
 **  Part of this code for fast generation of 32 bit pseudo random numbers with 
@@ -2138,7 +2236,13 @@ static StructGVarFunc GVarFuncs [] = {
   
   { "JACOBI_INT", 2, "gmp1, gmp2",
     FuncJACOBI_INT, "src/gmpints.c:JACOBI_INT" },
-  
+
+  { "POWERMODINT", 3, "base, exp, mod",
+    FuncPOWERMODINT, "src/gmpints.c:POWERMODINT" },
+
+  { "INVMODINT", 2, "base, mod",
+    FuncINVMODINT, "src/gmpints.c:INVMODINT" },
+
   { "HexStringInt", 1, "gmp",
     FuncHexStringInt, "src/gmpints.c:HexStringInt" },
   

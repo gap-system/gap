@@ -1161,40 +1161,7 @@ end);
 ##
 #F  PowerModInt(<r>,<e>,<m>)  . . . . . . power of one integer modulo another
 ##
-InstallGlobalFunction(PowerModInt,function ( r, e, m )
-    local   pow, f;
-
-    # handle special cases
-    if m = 1  then
-        return 0;
-    elif e = 0 then
-        return 1;
-    fi;
-
-    # reduce `r' initially
-    r := r mod m;
-
-    # if `e' is negative then invert `r' modulo `m' with Euclids algorithm
-    if e < 0  then
-        r := 1/r mod m;
-        e := -e;
-    fi;
-
-    # now use the repeated squaring method (right-to-left)
-    pow := 1;
-    f := 2 ^ (LogInt( e, 2 ) + 1);
-    while 1 < f  do
-        pow := (pow * pow) mod m;
-        f := QuoInt( f, 2 );
-        if f <= e  then
-            pow := (pow * r) mod m;
-            e := e - f;
-        fi;
-    od;
-
-    # return the power
-    return pow;
-end);
+InstallGlobalFunction(PowerModInt, POWERMODINT);
 
 
 #############################################################################
