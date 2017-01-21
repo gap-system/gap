@@ -1964,6 +1964,37 @@ Obj FuncGCD_INT ( Obj self, Obj opL, Obj opR )
 
 /****************************************************************************
 **
+*/
+Obj JacobiInt ( Obj opL, Obj opR )
+{
+  fake_mpz_t mpzL, mpzR;
+  int result;
+
+  CHECK_INT(opL);
+  CHECK_INT(opR);
+
+  FAKEMPZ_GMPorINTOBJ( mpzL, opL );
+  FAKEMPZ_GMPorINTOBJ( mpzR, opR );
+
+  result = mpz_kronecker( MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR) );
+  CHECK_FAKEMPZ(mpzL);
+  CHECK_FAKEMPZ(mpzR);
+
+  return INTOBJ_INT( result );
+}
+
+/****************************************************************************
+**
+*/
+Obj FuncJACOBI_INT ( Obj self, Obj opL, Obj opR )
+{
+  REQUIRE_INT_ARG( "JacobiInt", "left", opL );
+  REQUIRE_INT_ARG( "JacobiInt", "right", opR );
+  return JacobiInt( opL, opR );
+}
+
+/****************************************************************************
+**
 ** * * * * * * * "Mersenne twister" random numbers  * * * * * * * * * * * * *
 **
 **  Part of this code for fast generation of 32 bit pseudo random numbers with 
@@ -2104,6 +2135,9 @@ static StructGVarFunc GVarFuncs [] = {
   
   { "POW_OBJ_INT", 2, "obj, gmp",
     FuncPOW_OBJ_INT, "src/gmpints.c:POW_OBJ_INT" },
+  
+  { "JACOBI_INT", 2, "gmp1, gmp2",
+    FuncJACOBI_INT, "src/gmpints.c:JACOBI_INT" },
   
   { "HexStringInt", 1, "gmp",
     FuncHexStringInt, "src/gmpints.c:HexStringInt" },
