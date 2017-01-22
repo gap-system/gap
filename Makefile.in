@@ -493,9 +493,13 @@ bootstrap-pkg-full:
         tar xzf ../$(PKG_FULL) ; \
     fi;
 
+# update ctags if requests
+tags:
+	ctags -R src lib grp
+
 .PHONY: clean clean_$(CLEANME) clean_gap clean_gap_$(CLEANME) clean_gmp clean_gmp_$(CLEANME) distclean
 .PHONY: compile config default extern manuals packages rebuild removewin setconfig static strip
 .PHONY: testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard teststandardrenormalize
 .PHONY: cygwin removewin winbinp
 .PHONY: bootstrap-pkg-minimal bootstrap-pkg-full
-.PHONY: check
+.PHONY: check tags
