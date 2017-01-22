@@ -1,0 +1,20 @@
+# See http://EditorConfig.org
+
+# This is the top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file.
+# But do not trim trailing whitespaces -- while we
+# want that eventually, it just causes pain right now,
+# if it pollutes commits.
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 4
+charset = utf-8
+
+# In Makefile one must use tab indentation
+[Makefile*]
+indent_style = tab
