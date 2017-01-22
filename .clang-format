@@ -1,0 +1,25 @@
+#
+# Configure clang-format to a style that resembles a good subset
+# of the GAP kernel.
+#
+# For information on the settings in this file, please consult
+# <http://clang.llvm.org/docs/ClangFormatStyleOptions.html>
+# See also <https://clangformat.com/>
+
+AlignConsecutiveDeclarations: true
+AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: true
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BinPackArguments: true
+BinPackParameters: false
+BreakBeforeBraces: Stroustrup
+ColumnLimit: 78
+Cpp11BracedListStyle: false
+IndentCaseLabels: false
+IndentWidth: 4
+MaxEmptyLinesToKeep: 2
+PointerBindsToType: Middle
+SpacesBeforeTrailingComments: 4
+UseTab: Never
