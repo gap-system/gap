@@ -61,5 +61,5 @@
 *.rej
 *.orig
 
-
+/tags
 /src/TAGS
