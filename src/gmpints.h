@@ -24,17 +24,6 @@
 extern "C" {
 #endif
 
-/****************************************************************************
-**
-*T  TypLimb . . . . . . . . . . . . . . . . . . . . . . .  type of a GMP Limb
-**
-**  
-**  
-*/
-typedef mp_limb_t      TypLimb;
-typedef mp_size_t   TypGMPSize;
-
-
 // TODO: Instead of hardcoding the values below, use
 //   GMP_LIMB_BITS etc. directly.
 //
@@ -46,11 +35,9 @@ typedef mp_size_t   TypGMPSize;
 
 #ifdef SYS_IS_64_BIT
 #define INTEGER_UNIT_SIZE 8
-#define INTEGER_ALLOCATION_SIZE 8
 #define NR_SMALL_INT_BITS  (64 - 4)
 #else
 #define INTEGER_UNIT_SIZE 4
-#define INTEGER_ALLOCATION_SIZE 4
 #define NR_SMALL_INT_BITS  (32 - 4)
 #endif
 
@@ -67,8 +54,8 @@ typedef mp_size_t   TypGMPSize;
 #endif
 
 
-#define ADDR_INT(obj)          ((TypLimb *)ADDR_OBJ(obj))
-#define SIZE_INT(obj)          ((TypGMPSize)SIZE_OBJ(obj)/sizeof(TypLimb))
+#define ADDR_INT(obj)          ((mp_limb_t *)ADDR_OBJ(obj))
+#define SIZE_INT(obj)          ((mp_size_t)SIZE_OBJ(obj)/sizeof(mp_limb_t))
 /* SIZE_INT gives a result in limbs                                        */
 
 
@@ -84,11 +71,13 @@ extern Obj ObjInt_Int8(Int8 i);
 
 /****************************************************************************
 **
+** Reduce and normalize the given large integer object if necessary.
+**
+** TODO: This is an internal implementation detail and ideally should not
+** be exported; unfortunately, FuncNUMBER_VECGF2 currently needs this.
 */
-extern  Obj             GMP_REDUCE ( 
-                               Obj                 gmp );
-extern  Obj             GMP_NORMALIZE ( 
-                               Obj                 gmp );
+extern Obj GMP_REDUCE( Obj gmp );
+extern Obj GMP_NORMALIZE( Obj gmp );
 
 
 /****************************************************************************
@@ -98,8 +87,7 @@ extern  Obj             GMP_NORMALIZE (
 **  'PrintInt'  prints  the integer  <int>   in the  usual  decimal notation.
 **  'PrintInt' handles objects of type 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
 */
-extern  void            PrintInt (
-            Obj                 op );
+extern void PrintInt( Obj op );
 
 
 /****************************************************************************
@@ -109,9 +97,7 @@ extern  void            PrintInt (
 **  'EqInt' returns 1  if  the two GMP integer arguments <gmpL> and  
 **  <gmpR> are equal and 0 otherwise.
 */
-extern  Int             EqInt ( 
-                               Obj                 opL,
-                               Obj                 opR );
+extern Int EqInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
@@ -121,9 +107,7 @@ extern  Int             EqInt (
 **  'LtInt' returns 1 if the integer <gmpL> is strictly less than the 
 **  integer <gmpR> and 0 otherwise.
 */
-extern  Int             LtInt (
-                               Obj                 opL,
-                               Obj                 opR );
+extern Int LtInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
@@ -134,9 +118,7 @@ extern  Int             LtInt (
 **  <gmpR>.
 **
 */
-extern  Obj             SumInt (
-                                Obj                 opL,
-                                Obj                 opR );
+extern Obj SumInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
@@ -147,21 +129,19 @@ extern  Obj             SumInt (
 **  and <gmpR>.
 **
 */
-extern  Obj             DiffInt (
-                                 Obj                 opL,
-                                 Obj                 opR );
+extern Obj DiffInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
-*F  AbsInt(<op>) . . . . . . . . . . . . . . .  absolute value of an integer
+*F  AbsInt( <op> ) . . . . . . . . . . . . . . . absolute value of an integer
 */
 extern Obj AbsInt( Obj op );
 
 
 /****************************************************************************
 **
-*F  SignInt(<op>) . . . . . . . . . . . . . . . . . . . . sign of an integer
+*F  SignInt( <op> ) . . . . . . . . . . . . . . . . . . .  sign of an integer
 */
 extern Obj SignInt( Obj op );
 
@@ -174,35 +154,29 @@ extern Obj SignInt( Obj op );
 **  and <gmpR>.
 **
 */
-extern  Obj             ProdInt (
-                                 Obj                 opL,
-                                 Obj                 opR );
+extern Obj ProdInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
-*F  ModInt( <gmpL>, <gmpR> ) representant of res cl of a GMP integer
+*F  ModInt( <gmpL>, <gmpR> ) representative of res cl of a GMP integer
 **
-**  'ModInt' returns the smallest positive representant of the residue
+**  'ModInt' returns the smallest positive representative of the residue
 **  class of the  integer  <gmpL>  modulo  the  integer  <gmpR>.
 **
 */
-extern  Obj             ModInt (
-                                Obj                 opL,
-                                Obj                 opR );
+extern Obj ModInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
 *F  PowInt( <gmpL>, <gmpR> )  . . . . . . . . power of a GMP integer
 **
-**  'PowInt' returns the <gmpR>-th (a GMP int) power of the GMP integer
+**  'PowInt' returns the <gmpR>-th(a GMP int) power of the GMP integer
 **  <gmpL>.
 **
 */
-extern  Obj             PowInt (
-                                Obj                 opL,
-                                Obj                 opR );
+extern Obj PowInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
@@ -213,9 +187,7 @@ extern  Obj             PowInt (
 **  <gmpR>.
 **
 */
-extern  Obj             QuoInt (
-                                Obj                 opL,
-                                Obj                 opR );
+extern Obj QuoInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
@@ -226,9 +198,7 @@ extern  Obj             QuoInt (
 **  <gmpL> and <gmpR>.
 **
 */
-extern  Obj             RemInt (
-                                Obj                 opL,
-                                Obj                 opR );
+extern Obj RemInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
@@ -237,15 +207,24 @@ extern  Obj             RemInt (
 **
 **  'GcdInt' returns the gcd of the two integers <gmpL> and <gmpR>.
 */
-extern  Obj             GcdInt (
-                                Obj                 opL,
-                                Obj                 opR );
+extern Obj GcdInt( Obj opL, Obj opR );
 
 
-extern Int CLog2Int(Int intnum);
-extern Obj FuncLog2Int( Obj self, Obj intnum);
+/****************************************************************************
+**
+*F  AInvInt( <op> ) . . . . . . . . . . . . .  additive inverse of an integer
+**
+*/
+extern Obj AInvInt( Obj op );
 
-extern Obj AInvInt ( Obj gmp );
+
+/****************************************************************************
+**
+** Compute log2 of the absolute value of an Int, i.e. the index of the highest
+** set bit. For input 0, return -1.
+*/
+extern Int CLog2Int( Int intnum );
+
 
 /****************************************************************************
 **
@@ -257,7 +236,7 @@ extern Obj AInvInt ( Obj gmp );
 **
 *F  InitInfoInt() . . . . . . . . . . . . . . . .  table of init functions
 */
-StructInitInfo * InitInfoInt ( void );
+StructInitInfo * InitInfoInt( void );
 
 #endif // GAP_GMPINTS_H
 

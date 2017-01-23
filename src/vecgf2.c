@@ -3215,7 +3215,7 @@ Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
   UInt off,off2;		/* 0 based */
   Obj zahl;  /* the long number */
   UInt *num;
-  TypLimb *vp;
+  mp_limb_t *vp;
   len = LEN_GF2VEC(vec);
   num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
   off = (len -1) % BIPEB + 1; /* number of significant bits in last word */
@@ -3244,7 +3244,7 @@ Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
     /* garbage collection might lose pointer */
     num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
 
-    vp = (TypLimb *)ADDR_OBJ(zahl); /* the place we write to */
+    vp = (mp_limb_t *)ADDR_OBJ(zahl); /* the place we write to */
     i=1;
 
     if (off!=BIPEB) {

@@ -1,9 +1,7 @@
 #############################################################################
 ##
-#W  intarith.tst                  GAP library                 	Markus Pfeiffer 
+#W  intarith.tst                  GAP library
 ##
-##
-#Y  Copyright (C)  2015,  University of St Andrews, Scotland.
 ##
 gap> START_TEST("intarith.tst");
 gap> 1 + 1;
@@ -421,6 +419,15 @@ gap> List(dataNonZero, x -> GcdInt(smlPos, x));
 gap> List(dataNonZero, x -> GcdInt(bigPos, x));
 [ 1, 100000000000000000000, 10000, 1, 1, 10000, 100000000000000000000, 1 ]
 
+#
+gap> g:=3^10*257;; a:=g*991;; b:=g*1601;;
+gap> GcdInt(2^20*a, 2^30*b) = 2^20*g;
+true
+gap> GcdInt(2^80*a, 2^40*b) = 2^40*g;
+true
+gap> GcdInt(2^80*a, 2^90*b) = 2^80*g;
+true
+
 # check symmetry
 gap> ForAll(data, x -> ForAll(data, y -> GcdInt(x,y) = GcdInt(y,x)));
 true
@@ -478,9 +485,12 @@ gap> dataHex := List(data, HexStringInt);
 [ "-56BC75E2D63100001", "-56BC75E2D63100000", "-2710", "-1", "0", "1", 
   "2710", "56BC75E2D63100000", "56BC75E2D63100001" ]
 gap> HexStringInt("abc");
-Error, HexStringInt: argument must be an integer (not a list (string))
+Error, HexStringInt: <op> must be an integer (not a list (string))
 gap> List(dataHex, IntHexString) = data;
 true
+gap> dataHex;  # HexStringInt used to destroy its argument
+[ "-56BC75E2D63100001", "-56BC75E2D63100000", "-2710", "-1", "0", "1", 
+  "2710", "56BC75E2D63100000", "56BC75E2D63100001" ]
 gap> IntHexString("");
 0
 gap> IntHexString("a");
@@ -488,11 +498,11 @@ gap> IntHexString("a");
 gap> IntHexString("A");
 10
 gap> IntHexString("x");
-Error, IntHexString: non-valid character in hex-string
+Error, IntHexString: invalid character in hex-string
 gap> IntHexString("56BC75E2D63100000x");
-Error, IntHexString: non-valid character in hex-string
+Error, IntHexString: invalid character in hex-string
 gap> IntHexString("56BC75E2D63100000@");
-Error, IntHexString: non-valid character in hex-string
+Error, IntHexString: invalid character in hex-string
 gap> IntHexString(0);
 Error, IntHexString: argument must be string (not a integer)
 gap> IntHexString("-1000000000000000");
@@ -1141,6 +1151,113 @@ gap> Print(2^(64*1050), "\n");
 583810120404367137178474413738789924437502024257213179224852828556007559500126\
 948688599817481827330434634041214374947601458440559056883819756862448124537321\
 8157000453169824579899621376
+
+#
+# test InversModInt / INVMODINT
+#
+gap> for m in [1..100] do
+>   for b in [1..100] do
+>     i := INVMODINT(b,m);
+>     g := GcdInt(b,m);
+>     Assert(0, (g<>1 and i = fail) or (g=1 and i in [0..m-1] and (i*b-1) mod m = 0));
+>   od;
+> od;
+
+#
+gap> INVMODINT(1,0);
+Error, InverseModInt: <mod> must be nonzero
+gap> INVMODINT(2,10);
+fail
+gap> INVMODINT(2,10);
+fail
+gap> INVMODINT(2,1);
+0
+gap> INVMODINT(2,-1);
+0
+
+#
+# test PowerModInt
+#
+gap> for m in [1..100] do
+>   for b in [-30..30] do
+>     for e in [0..10] do
+>       Assert(0, PowerModInt(b,e,m)=(b^e mod m));
+>     od;
+>   od;
+> od;
+
+#
+gap> PowerModInt(1,1,0);
+Error, PowerModInt: <mod> must be nonzero
+gap> PowerModInt(0,-1,5);
+Error, PowerModInt: negative <exp> but <base> is not invertible modulo <mod>
+gap> PowerModInt(2,-1,5);
+3
+gap> PowerModInt(2,-1,10);
+Error, PowerModInt: negative <exp> but <base> is not invertible modulo <mod>
+
+# compare C and GAP implementation
+gap> POWERMODINT_GAP := function ( r, e, m )
+>     local   pow, f;
+> 
+>     # handle special cases
+>     if m = 1  then
+>         return 0;
+>     elif e = 0 then
+>         return 1;
+>     fi;
+> 
+>     # reduce `r' initially
+>     r := r mod m;
+> 
+>     # if `e' is negative then invert `r' modulo `m' with Euclids algorithm
+>     if e < 0  then
+>         r := 1/r mod m;
+>         e := -e;
+>     fi;
+> 
+>     # now use the repeated squaring method (right-to-left)
+>     pow := 1;
+>     f := 2 ^ (LogInt( e, 2 ) + 1);
+>     while 1 < f  do
+>         pow := (pow * pow) mod m;
+>         f := QuoInt( f, 2 );
+>         if f <= e  then
+>             pow := (pow * r) mod m;
+>             e := e - f;
+>         fi;
+>     od;
+> 
+>     # return the power
+>     return pow;
+> end;;
+gap> for m in [1..100] do
+>   for b in [-30..30] do
+>     for e in [0..30] do
+>       Assert(0, POWERMODINT_GAP(b,e,m)=PowerModInt(b,e,m));
+>       if GcdInt(m,b) = 1 then
+>         Assert(0, POWERMODINT_GAP(b,-e,m)=PowerModInt(b,-e,m));
+>       fi;
+>     od;
+>   od;
+> od;
+
+#
+# test PVALUATION_INT
+#
+gap> checkPValuationInt:=function(n,p)
+>   local k, m;
+>   if n = 0 then return true; fi;
+>   k:=PVALUATION_INT(n,p);
+>   m:=n/p^k;
+>   return IsInt(m) and (m mod p) <> 0;
+> end;;
+gap> ForAll([-10000 .. 10000], n-> ForAll([2,3,5,7,251], p -> checkPValuationInt(n,p)));
+true
+gap> PVALUATION_INT(10,0);
+Error, PValuationInt: <p> must be nonzero
+gap> PVALUATION_INT(0,0);
+Error, PValuationInt: <p> must be nonzero
 
 #
 gap> STOP_TEST( "intarith.tst", 290000);

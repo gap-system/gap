@@ -333,45 +333,7 @@ end );
 #F  Jacobi( <n>, <m> ) . . . . . . . . . . . . . . . . . . . .  Jacobi symbol
 ##
 ##
-InstallGlobalFunction( Jacobi, function ( n, m )
-    local  jac, t;
-
-    # check the argument
-    if m <= 0  then Error("<m> must be positive");  fi;
-
-    # compute the Jacobi symbol similar to Euclid's algorithm
-    jac := 1;
-    while m <> 1  do
-
-        # if the gcd of $n$ and $m$ is $>1$ Jacobi returns $0$
-        if n = 0 or (n mod 2 = 0 and m mod 2 = 0)  then
-            jac := 0;  m := 1;
-
-        # $J(n,2*m) = J(n,m) * J(n,2) = J(n,m) * (-1)^{(n^2-1)/8}$
-        elif m mod 2 = 0  then
-            if n mod 8 = 3  or  n mod 8 = 5  then jac := -jac;  fi;
-            m := m / 2;
-
-        # $J(2*n,m) = J(n,m) * J(2,m) = J(n,m) * (-1)^{(m^2-1)/8}$
-        elif n mod 2 = 0  then
-            if m mod 8 = 3  or  m mod 8 = 5  then jac := -jac;  fi;
-            n := n / 2;
-
-        # $J(-n,m) = J(n,m) * J(-1,m) = J(n,m) * (-1)^{(m-1)/2}$
-        elif n < 0  then
-            if m mod 4 = 3  then jac := -jac;  fi;
-            n := -n;
-
-        # $J(n,m) = J(m,n) * (-1)^{(n-1)*(m-1)/4}$ (quadratic reciprocity)
-        else
-            if n mod 4 = 3  and m mod 4 = 3  then jac := -jac;  fi;
-            t := n;  n := m mod n;  m := t;
-
-        fi;
-    od;
-
-    return jac;
-end );
+InstallGlobalFunction( Jacobi, JACOBI_INT );
 
 
 #############################################################################
@@ -1385,24 +1347,16 @@ end );
 
 
 InstallGlobalFunction(PValuation,function(n,p)
-local a,v;
-  if not IsPrimeInt(p) or not IsRat(n) then
+local v;
+  if not IsInt(p) or not IsRat(n) or p = 0 then
     Error("wrong parameters");
   fi;
-  if IsZero(n) then 
+  if n = 0 then
     return infinity;
-  elif not IsInt(n) then
-    return PValuation(NumeratorRat(n),p)-PValuation(DenominatorRat(n),p);
-  elif n<0 then n:=-n;
+  elif IsInt(n) then
+    return PVALUATION_INT(n,p);
   fi;
-  a:=1;
-  v:=0;
-  while n mod p=0 do
-    a:=a*p;
-    v:=v+1;
-    n:=n/p;
-  od;
-  return v;
+  return PVALUATION_INT(NumeratorRat(n),p) - PVALUATION_INT(DenominatorRat(n),p);
 end);
 
 #T ##########################################################################
