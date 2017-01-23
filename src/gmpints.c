@@ -1,8 +1,8 @@
 /****************************************************************************
 **
 *W  gmpints.c                   GAP source                     John McDermott
-**                                                           
-**                                                           
+**
+**
 **
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
@@ -11,25 +11,59 @@
 **
 **  This file implements the functions handling GMP integers.
 **
-**  GAP stores integers in three formats:
-**  1. Integers between -2^NR_SMALL_INT_BITS and 2^NR_SMALL_INT_BITS-1
-**     are stored as As "immediate" or "small" integers, aka as "INTOBJ"
-**     objects. These have the pseudo-tnum T_INT.
-**     TODO: document details, or point to a place where these are documented.
-**  2. Integers n >= 2^NR_SMALL_INT_BITS are stored as T_INTPOS objects.
-**     The content of such an object corresponds to a GMP sequence of "limbs"
-**     corresponding to n.
-**  3. Integers n < 2^NR_SMALL_INT_BITS are stored as T_INTNEG objects.
-**     The content of such an object corresponds to a GMP sequence of "limbs"
-**     corresponding to -n.
+**  There are three integer types in GAP: 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
+**  Each integer has a unique representation, e.g., an integer that can be
+**  represented as 'T_INT' is never represented as 'T_INTPOS' or 'T_INTNEG'.
 **
-**  Note that we require that all "large" integers are normalized (that is,
-**  they contain no redundant leading zero limbs) and reduced (that is,
-**  they do not fit into a small integer). Internally, it is possible that
-**  temporarily a large integers is not normalized or not reduced, but all
-**  functions below must make sure that they eventually return normalized
-**  and reduced values. The function GMP_NORMALIZE and GMP_REDUCE can be
-**  used to ensure this.
+**  In the following, let 'N' be the number of bits in an mp_limb_t (so 32 or
+**  64, depending on the system). 'T_INT' is the type of those integers small
+**  enough to fit into N-3 bits. Therefore the value range of this small
+**  integers is $-2^{N-4}...2^{N-4}-1$. Only these small integers can be used as
+**  index expression into sequences.
+**
+**  Small integers are represented by an immediate integer handle, containing
+**  the value instead of pointing to it, which has the following form:
+**
+**      +-------+-------+-------+-------+- - - -+-------+-------+-------+
+**      | guard | sign  | bit   | bit   |       | bit   | tag   | tag   |
+**      | bit   | bit   | N-5   | N-6   |       | 0     |  = 0  |  = 1  |
+**      +-------+-------+-------+-------+- - - -+-------+-------+-------+
+**
+**  Immediate integers handles carry the tag 'T_INT', i.e. the last bit is 1.
+**  This distinguishes immediate integers from other handles which point to
+**  structures aligned on even boundaries and therefore have last bit zero. (The
+**  second bit is reserved as tag to allow extensions of this scheme.) Using
+**  immediates as pointers and dereferencing them gives address errors.
+**
+**  To aid overflow check the most significant two bits must always be equal,
+**  that is to say that the sign bit of immediate integers has a guard bit.
+**
+**  The macros 'INTOBJ_INT' and 'INT_INTOBJ' should be used to convert between a
+**  small integer value and its representation as immediate integer handle.
+**
+**  'T_INTPOS' and 'T_INTNEG' are the types of positive (respectively, negative)
+**  integer values that can not be represented by immediate integers.
+**
+**  This large integers values are represented as low-level GMP integer objects,
+**  that is, in base 2^N. That means that the bag of a large integer has the
+**  following form:
+**
+**      +-------+-------+-------+-------+- - - -+-------+-------+-------+
+**      | digit | digit | digit | digit |       | digit | digit | digit |
+**      | 0     | 1     | 2     | 3     |       | <n>-2 | <n>-1 | <n>   |
+**      +-------+-------+-------+-------+- - - -+-------+-------+-------+
+**
+**  The value of this is: $d0 + d1 2^N + d2 (2^N)^2 + ... + d_n (2^N)^n$,
+**  respectively the negative of this if the type of this object is 'T_INTNEG'.
+**
+**  Each digit is of course stored as a N bit wide unsigned integer.
+**
+**  Note that we require that all large integers be normalized (that is, they
+**  must not contain leading zero limbs) and reduced (they do not fit into a
+**  small integer). Internally, it is possible that a large integer temporarily
+**  is not normalized or not reduced, but all kernel functions must make sure
+**  that they eventually return normalized and reduced values. The function
+**  GMP_NORMALIZE and GMP_REDUCE can be used to ensure this.
 */
 #include        "system.h"              /* Ints, UInts                     */
 
