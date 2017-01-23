@@ -566,8 +566,13 @@ void PrintInt ( Obj op )
   else if ( SIZE_INT(op) < 1000 ) {
     CHECK_INT(op);
 
-    /* use gmp func to print int to buffer                                 */
-    Char buf[20000];
+    /* Use GMP to print the integer to a buffer. We are looking at an
+       integer with less than 1000 limbs, hence in decimal notation, it
+       will take up at most LogInt( 2^(1000 * GMP_LIMB_BITS), 10)
+       digits. Since 1000*Log(2)/Log(10) = 301.03, we get the following
+       estimate for the buffer size (the overestimate is big enough to
+       include space for a sign and a null terminator). */
+    Char buf[302 * GMP_LIMB_BITS];
     mpz_t v;
     v->_mp_alloc = SIZE_INT(op);
     v->_mp_size = IS_INTPOS(op) ? v->_mp_alloc : -v->_mp_alloc;
