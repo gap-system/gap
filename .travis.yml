@@ -64,3 +64,7 @@ script:
   - make -j4
   - make bootstrap-pkg-full
   - bash etc/ci.sh
+
+notifications:
+  slack:
+    secure: Nvt9q2kZ/n7HyFeEYt7rvXMBLIR3AqSbQ54UeoU2UFrF+y0vJONChfa0csneyXPApH+objSUgS8ZW3g4gRiKtnO1jzQq9XDe895HtadY4vxYrduRLiwqI4o0k9KFVBPX7uIUXT22qIaAYBFC93m36zQKIAVDFzYuPoQfTWY3Yww=
