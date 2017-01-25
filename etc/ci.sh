@@ -38,6 +38,7 @@ else
         make
         cd ../..
         cd pkg/profiling*
+        patch -p1 < ../../etc/profiling.patch
         ./configure $CONFIGFLAGS
         make
         cd ../..
