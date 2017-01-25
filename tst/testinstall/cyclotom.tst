@@ -10,8 +10,6 @@
 ##  (This holds also for minor changes such as the removal of whitespace or
 ##  the correction of typos.)
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("cyclotom.tst");
 
 # Check basic arithmetic operations.

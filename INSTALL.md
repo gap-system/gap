@@ -322,23 +322,23 @@ should give the following lines:
 
 If you want to run a quick test of your GAP installation (though this is
 not required), you can read in a test script that exercises some GAP's
-capabilities. The test requires about 1 GB of memory and runs about one
-minute on an Intel Core 2 Duo / 2.53 GHz machine. You will get a large
+capabilities. The test requires about 1 GB of memory and should run in
+under a minute on an up-to-date desktop computer. You will get a large
 number of lines with output about the progress of the tests, for example:
 
     gap> Read( Filename( DirectoriesLibrary( "tst" ), "testinstall.g" ) );
 
-    test file         GAP4stones     time(msec)
+    test file         time(msec)
     -------------------------------------------
     testing: ..../gap4rX/tst/testinstall/flush.tst
-    flush.tst                  0             57
+    flush.tst                 57
     testing: ..../gap4rX/tst/testinstall/varargs.tst
-    varargs.tst                0             51
+    varargs.tst               51
     [ further lines deleted ]
     testing: ..../gap4rX/tst/testinstall/grppcnrm.tst
-    grppcnrm.tst            9668          14071
+    grppcnrm.tst           14071
     -------------------------------------------
-    total                   8317          44347
+    total                  44347
 
     #I  No errors detected while testing
 

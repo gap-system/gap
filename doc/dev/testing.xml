@@ -393,12 +393,7 @@ The following additional issues are related to testing
 when a new version of &GAP; is to be released.
 <List>
   <Item>
-    Use renormaliseStones option of TestDirectory to 
-    run the standard tests and renormalize the scaling factors in the
-    <C>STOP_TEST</C> statements of the files in the <C>tst</C> directory.
-  </Item>
-  <Item>
-    After these updates, repeat all tests.
+    Run all tests.
   </Item>
 </List>
 </Section>

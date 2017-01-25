@@ -7,8 +7,6 @@
 ##
 ##  (The test file 'vspcrow.tst' should contain the same tests.)
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("vspcmat.tst");
 
 #############################################################################

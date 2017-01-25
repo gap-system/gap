@@ -16,7 +16,7 @@ gap> HasIsAbelian(FrattiniSubgroup(G));
 true
 gap> GeneratorsOfGroup(FrattiniSubgroup(G));
 [ (x^-195*y^196)^6, (x^-1*y)^630, (x^-1*y)^840 ]
-gap> G := DirectProduct(DihedralGroup(IsFpGroup,8), SmallGroup(27,4));;
+gap> G := DirectProduct(DihedralGroup(IsPcGroup,8), SmallGroup(27,4));;
 gap> IsNilpotentGroup(G);
 true
 gap> F := FrattiniSubgroup(G);;

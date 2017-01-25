@@ -4,8 +4,6 @@
 ##
 ##  This file tests record names, in particular very long ones.
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("recordname.tst");
 gap> r := rec(x := 2, y := 3);
 rec( x := 2, y := 3 )

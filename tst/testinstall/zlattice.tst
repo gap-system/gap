@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("zlattice.tst");
 
 # trivial cases of `LLLReducedBasis'
