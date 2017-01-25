@@ -41,13 +41,13 @@ If you publish a mathematical result that was partly obtained using
 &GAP;, please cite &GAP;, just as you would cite another paper that you
 used (see below for sample citation). Also we would appreciate if you
 could inform us about such a paper, which we will add to the &GAP;
-<URL Text="bibliography">http://www.gap-system.org/Doc/Bib/bib.html</URL>.
+<URL Text="bibliography">https://www.gap-system.org/Doc/Bib/bib.html</URL>.
 <P/>
 Specifically, please refer to
 <P/>
 <Listing>
 [GAP] The GAP Group, GAP - Groups, Algorithms, and Programming,
-      Version &VERSIONNUMBER;; &RELEASEYEAR; (http://www.gap-system.org)
+      Version &VERSIONNUMBER;; &RELEASEYEAR; (https://www.gap-system.org)
 </Listing>
 <P/>
 You are permitted to modify and redistribute &GAP;, but you are not

@@ -12,7 +12,7 @@ Maintaining www.gap-system.org
 <Heading>Maintaining the &GAP; website</Heading>
 
 This chapter describes how the information accessible on 
-<URL Text="www.gap-system.org">http://www.gap-system.org/</URL> is stored 
+<URL Text="www.gap-system.org">https://www.gap-system.org/</URL> is stored 
 and collected, and how it is transformed into web pages.
 
 <Section Label="WPOverview">
@@ -227,7 +227,7 @@ Elements must be properly nested like brackets, that is things like
 <Item>
 Attributes always must have an assigned value and the value must be
 enclosed by either double or single quotes; for example
-<C>&lt;a href="http://www.gap-system.org"&gt;GAP site&lt;/a&gt;</C>.
+<C>&lt;a href="https://www.gap-system.org"&gt;GAP site&lt;/a&gt;</C>.
 </Item>
 <Item> Write empty elements like <C>&lt;br /&gt;</C>, the space before the
 <C>/</C> is not necessary according to the specification but it helps

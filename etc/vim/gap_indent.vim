@@ -1,5 +1,5 @@
 " GAP indent file
-" Language:	GAP  (http://www.gap-system.org)
+" Language:	GAP  (https://www.gap-system.org)
 " Maintainer:	Frank Lübeck (Frank.Luebeck@Math.RWTH-Aachen.De)
 " Comments: 
 " --  started from Matlab indent file in vim 6.0

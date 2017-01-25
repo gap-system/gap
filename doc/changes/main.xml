@@ -25,7 +25,7 @@
   <Version>Release &VERSIONNUMBER;, &RELEASEDAY;</Version>
   <Author>The GAP Group
     <Email>support@gap-system.org</Email>
-    <Homepage>http://www.gap-system.org</Homepage>
+    <Homepage>https://www.gap-system.org</Homepage>
   </Author>
 
   <Copyright>

@@ -583,7 +583,7 @@ PACKAGE_TARNAME='gap'
 PACKAGE_VERSION='4.dev'
 PACKAGE_STRING='GAP 4.dev'
 PACKAGE_BUGREPORT='support@gap-system.org'
-PACKAGE_URL='http://www.gap-system.org/'
+PACKAGE_URL='https://www.gap-system.org/'
 
 ac_unique_file="gap.c"
 # Factoring default headers for most tests.
@@ -1356,7 +1356,7 @@ Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
 
 Report bugs to <support@gap-system.org>.
-GAP home page: <http://www.gap-system.org/>.
+GAP home page: <https://www.gap-system.org/>.
 _ACEOF
 ac_status=$?
 fi
@@ -8098,7 +8098,7 @@ Configuration headers:
 $config_headers
 
 Report bugs to <support@gap-system.org>.
-GAP home page: <http://www.gap-system.org/>."
+GAP home page: <https://www.gap-system.org/>."
 
 _ACEOF
 cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
