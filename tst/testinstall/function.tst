@@ -98,4 +98,82 @@ gap> (function() return 2; end)();
 gap> (function() return function() end; end)()();
 gap> (function() return function() return 3; end; end)()();
 3
+gap> x -> x;
+function( x ) ... end
+gap> (x->x)("abc");
+"abc"
+gap> (x -> 2*x)(4);
+8
+gap> Print(x->x, "\n");
+function ( x )
+    return x;
+end
+gap> ->1;
+function(  ) ... end
+gap> (->1)();
+1
+gap> {}->1;
+function(  ) ... end
+gap> ({}->1)();
+1
+gap> Print(->1, "\n");
+function (  )
+    return 1;
+end
+gap> Print({}->1, "\n");
+function (  )
+    return 1;
+end
+gap> x -> y -> x+y;
+function( x ) ... end
+gap> Print(x -> y -> x+y, "\n");
+function ( x )
+    return function ( y )
+          return x + y;
+      end;
+end
+gap> f := x -> y -> x+y;
+function( x ) ... end
+gap> f(1)(2);
+3
+gap> Print({x} -> x, "\n");
+function ( x )
+    return x;
+end
+gap> Print({x,y} -> x + y, "\n");
+function ( x, y )
+    return x + y;
+end
+gap> f := ({x,y} -> x + y);
+function( x, y ) ... end
+gap> f(2,3);
+5
+gap> f := ({x,y..} -> [x,y]);
+Syntax error: Three dots required for variadic argument list in stream:1
+f := ({x,y..} -> [x,y]);
+           ^
+gap> f := ({x,y...} -> [x,y]);
+function( x, y... ) ... end
+gap> f(2,3);
+[ 2, [ 3 ] ]
+gap> function(a,a) end;
+Syntax error: Name used for two arguments in stream:1
+function(a,a) end;
+           ^
+gap> function(a,b,a) end;
+Syntax error: Name used for two arguments in stream:1
+function(a,b,a) end;
+             ^
+gap> function(a,b) local c,c; end;
+Syntax error: Name used for two locals in stream:1
+function(a,b) local c,c; end;
+                      ^
+gap> function(a,b) local c,b,c; end;
+Syntax error: Name used for argument and local in stream:1
+function(a,b) local c,b,c; end;
+                      ^
+gap> function(a,b) local b,c,b,c; end;
+Syntax error: Name used for argument and local in stream:1
+function(a,b) local b,c,b,c; end;
+                    ^
 gap> STOP_TEST("function.tst", 1);
