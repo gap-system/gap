@@ -629,7 +629,8 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     suppressStatusMessage := false,
     exitGAP := false,
     stonesLimit := infinity,
-    renormaliseStones := false
+    renormaliseStones := false,
+    width := 72
   );
   
   for c in RecFields(nopts) do
