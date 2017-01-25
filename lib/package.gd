@@ -839,7 +839,8 @@ DeclareGlobalFunction( "LoadPackage" );
 ##  <P/>
 ##  See <Ref Func="SetPackagePath"/> for a way to force the loading of a
 ##  prescribed package version.
-##  See also <Ref Func="ExtendRootDirectories"/> for a method of adding
+##  See also <Ref Func="ExtendRootDirectories"/> and
+##  <Ref Func="ExtendPackageDirectories"/> for methods of adding
 ##  directories containing packages <E>after</E> &GAP; has been started.
 ##  </Subsection>
 ##  <#/GAPDoc>
@@ -926,6 +927,29 @@ DeclareGlobalFunction( "SetPackagePath" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ExtendRootDirectories" );
+
+
+#############################################################################
+##
+#F  ExtendPackageDirectories( <paths> )
+##
+##  <#GAPDoc Label="ExtendPackageDirectories">
+##  <ManSection>
+##  <Func Name="ExtendPackageDirectories" Arg='paths'/>
+##
+##  <Description>
+##  Let <A>paths</A> be a list of strings that denote paths to intended
+##  &GAP; package directories (see <Ref Sect="GAP Package Directories"/>).
+##  The function <Ref Func="ExtendPackageDirectories"/> adds these paths to
+##  the global list <C>GAPInfo.PackagePaths</C> and calls the initialization of
+##  available &GAP; packages,
+##  such that later calls to <Ref Func="LoadPackage"/> will find the &GAP;
+##  packages that are contained in the directories given by <A>paths</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "ExtendPackageDirectories" );
 
 #############################################################################
 ##
