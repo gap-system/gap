@@ -1210,15 +1210,7 @@ Bag NewBag (
 
     /* set the masterpointer                                               */
     PTR_BAG(bag) = dst;
-#if 0
-    {
-      extern void * stderr;
-      UInt i;
-      for (i = 0; i < WORDS_BAG(size); i++)
-        if (*dst++)
-          fprintf(stderr, "dirty bag being returned\n");
-    }
-#endif
+
     /* return the identifier of the new bag                                */
     return bag;
 }
