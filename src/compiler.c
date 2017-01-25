@@ -573,15 +573,9 @@ UInt            GetLevlHVar (
     /* walk up                                                             */
     levl = 0;
     info = INFO_FEXP( CURR_FUNC );
-#if 0
-    if ( NHVAR_INFO(info) != 0 ) 
-#endif
-      levl++;
+    levl++;
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         info = NEXT_INFO( info );
-#if 0
-        if ( NHVAR_INFO(info) != 0 ) 
-#endif
           levl++;
     }
 
