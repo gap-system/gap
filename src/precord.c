@@ -660,37 +660,6 @@ void SortPRecRNam (
     }
 }
 
-#if 0
-void SortPRec ( Obj rec )
-{
-    UInt                rnam;           /* name of component               */
-    Obj                 val;            /* value of component              */
-    UInt                h;              /* gap width in shellsort          */
-    UInt                i,  k;          /* loop variables                  */
-
-    /* sort the right record with a shellsort                              */
-    h = 1;  while ( 9*h + 4 < LEN_PREC(rec) )  h = 3*h + 1;
-    while ( 0 < h ) {
-        for ( i = h+1; i <= LEN_PREC(rec); i++ ) {
-            rnam = GET_RNAM_PREC( rec, i );
-            val  = GET_ELM_PREC(  rec, i );
-            k = i;
-            while ( h < k
-                 && strcmp( NAME_RNAM(rnam),
-                              NAME_RNAM( GET_RNAM_PREC(rec,k-h) ) ) < 0 ) {
-                SET_RNAM_PREC( rec, k, GET_RNAM_PREC( rec, k-h ) );
-                SET_ELM_PREC(  rec, k, GET_ELM_PREC(  rec, k-h ) );
-                k -= h;
-            }
-            SET_RNAM_PREC( rec, k, rnam );
-            SET_ELM_PREC(  rec, k, val  );
-        }
-        h = h / 3;
-    }
-
-}
-#endif
-
 /****************************************************************************
 **
 
