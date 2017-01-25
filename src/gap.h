@@ -249,19 +249,6 @@ typedef UInt ExecStatus;
 // TL: extern UInt UserHasQUIT;
 extern UInt SystemErrorCode;
 
-#if 0
-/****************************************************************************
-**
-*F  FuncError( <self>, <args> ) . . . . . . . . . . . . . . . signal an error
-**
-*/
-extern Obj FuncError (
-    Obj                 self,
-    Obj                 args );
-
-#endif
-
-
 /****************************************************************************
 **
 

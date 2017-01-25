@@ -909,7 +909,6 @@ Obj FuncWindowCmd (
     SET_ELM_PLIST( list, 1, tmp );
     SET_LEN_PLIST( list, i-1 );
     return CALL_XARGS(Error,list);
-    /*     return FuncError( 0, list );*/
   }
   else {
     for ( m = 1;  m <= i-2;  m++ )
