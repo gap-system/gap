@@ -75,7 +75,7 @@
 #include	"hpc/tls.h"
 
 
-#if 0
+#if defined(DEBUG_RATIONALS)
 #define CHECK_RAT(rat) if (TNUM_OBJ(rat) == T_RAT && \
                            GcdInt(NUM_RAT(rat),DEN_RAT(rat)) != INTOBJ_INT(1)) \
                              ErrorQuit("bad rational",0L,0L)
