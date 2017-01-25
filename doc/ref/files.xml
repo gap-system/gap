@@ -101,6 +101,16 @@ for more information how to do this.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="GAP Package Directories">
+<Heading>GAP Package Directories</Heading>
+<Index Key="GAPInfo.PackagePaths"><C>GAPInfo.PackagePaths</C></Index>
+
+TODO
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Directories">
 <Heading>Directories</Heading>
 
