@@ -2941,7 +2941,7 @@ void            CompRecExpr2 (
 
 /****************************************************************************
 **
-*F  CompRefLVar( <expr> ) . . . . . . .  T_REFLVAR/T_REF_LVAR...T_REF_LVAR_16
+*F  CompRefLVar( <expr> ) . . . . . . .  T_REFLVAR
 */
 CVar CompRefLVar (
     Expr                expr )
@@ -4255,17 +4255,6 @@ void CompFor (
         }
         else if ( IS_REFLVAR( ADDR_STAT(stat)[0] ) ) {
             var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
-            vart = 'm';
-        }
-        else if ( T_REF_LVAR <= TNUM_EXPR( ADDR_STAT(stat)[0] )
-               && TNUM_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16
-               && ! CompGetUseHVar( ADDR_EXPR( ADDR_STAT(stat)[0] )[0] ) ) {
-            var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
-            vart = 'l';
-        }
-        else if ( T_REF_LVAR <= TNUM_EXPR( ADDR_STAT(stat)[0] )
-               && TNUM_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
-            var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
             vart = 'm';
         }
         else if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
@@ -6063,23 +6052,6 @@ static Int InitKernel (
     CompExprFuncs[ T_REC_TILD_EXPR   ] = CompRecTildeExpr;
 
     CompExprFuncs[ T_REFLVAR         ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR        ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_01     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_02     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_03     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_04     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_05     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_06     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_07     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_08     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_09     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_10     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_11     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_12     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_13     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_14     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_15     ] = CompRefLVar;
-    CompExprFuncs[ T_REF_LVAR_16     ] = CompRefLVar;
     CompExprFuncs[ T_ISB_LVAR        ] = CompIsbLVar;
     CompExprFuncs[ T_REF_HVAR        ] = CompRefHVar;
     CompExprFuncs[ T_ISB_HVAR        ] = CompIsbHVar;

@@ -445,11 +445,6 @@ UInt            ExecFor (
         var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
         vart = 'l';
     }
-    else if ( T_REF_LVAR <= TNUM_EXPR( ADDR_STAT(stat)[0] )
-           && TNUM_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
-        var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
-        vart = 'l';
-    }
     else if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
         var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'h';
@@ -562,11 +557,6 @@ UInt            ExecFor2 (
     /* get the variable (initialize them first to please 'lint')           */
     if ( IS_REFLVAR( ADDR_STAT(stat)[0] ) ) {
         var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
-        vart = 'l';
-    }
-    else if ( T_REF_LVAR <= TNUM_EXPR( ADDR_STAT(stat)[0] )
-           && TNUM_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
-        var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'l';
     }
     else if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
@@ -693,11 +683,6 @@ UInt            ExecFor3 (
     /* get the variable (initialize them first to please 'lint')           */
     if ( IS_REFLVAR( ADDR_STAT(stat)[0] ) ) {
         var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
-        vart = 'l';
-    }
-    else if ( T_REF_LVAR <= TNUM_EXPR( ADDR_STAT(stat)[0] )
-           && TNUM_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
-        var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'l';
     }
     else if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
