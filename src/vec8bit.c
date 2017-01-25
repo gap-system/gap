@@ -1543,16 +1543,6 @@ void  AddVec8BitVec8BitMultInner( Obj sum,
     /*  so we have some work. get the tables */
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(sum));
 
-    /* check everything */
-#if 0
-    assert(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vl));
-    assert(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vr));
-    assert(LEN_VEC8BIT(sum) >= stop);
-    assert(LEN_VEC8BIT(vl) >= stop);
-    assert(LEN_VEC8BIT(vr) >= stop);
-    assert(SIZE_FF(FLD_FFE(mult)) == FIELD_VEC8BIT(vl));
-#endif
-
     p = P_FIELDINFO_8BIT(info);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
 
