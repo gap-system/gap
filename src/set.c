@@ -474,13 +474,6 @@ Obj FuncADD_SET (
       Obj *ptr;
       ptr = PTR_BAG(set);
       memmove((void *)(ptr + pos+1),(void*)(ptr+pos),(size_t)(sizeof(Obj)*(len+1-pos)));
-#if 0
-      for ( i = len+1; pos < i; i-- ) {
-	*ptr = *(ptr-1);
-	ptr--;   */
-	/* SET_ELM_PLIST( set, i, ELM_PLIST(set,i-1) ); */
-      }
-#endif
     }
     SET_ELM_PLIST( set, pos, obj );
     CHANGED_BAG( set );
