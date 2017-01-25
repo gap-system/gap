@@ -9,7 +9,7 @@ These manuals are written in GAPDoc format, provided by the
 Their source is contained in the directories `doc/tut`, `doc/ref` and `doc/changes` 
 respectively. Some documentation is also stored in the library files to be kept 
 close to the code it describes. It is included in the manual using the mechanism 
-documented [here](http://www.gap-system.org/Manuals/pkg/GAPDoc-1.5.1/doc/chap4.html).
+documented [here](https://www.gap-system.org/Manuals/pkg/GAPDoc-1.5.1/doc/chap4.html).
 
 The official GAP distribution includes all documentation, so there is no need to 
 build it after GAP installation. However, if you need to build the development 

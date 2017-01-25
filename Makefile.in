@@ -73,7 +73,7 @@ GAPARGS=
 TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 1g -A -q -x 80 -r $(GAPARGS)
 TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 1g -q -x 80 -r $(GAPARGS)
 
-PKG_BOOTSTRAP_URL="http://www.gap-system.org/pub/gap/gap4pkgs/"
+PKG_BOOTSTRAP_URL="https://www.gap-system.org/pub/gap/gap4pkgs/"
 PKG_MINIMAL="bootstrap-pkg-minimal.tar.gz"
 PKG_FULL="bootstrap-pkg-full.tar.gz"
 

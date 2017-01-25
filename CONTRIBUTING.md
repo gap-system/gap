@@ -7,7 +7,7 @@ possible.
 ## Packages versus contributions to the "core" system
 
 One way of contributing to GAP is to write a GAP package (see
-<http://www.gap-system.org/Packages/packages.html>) and send it to us to
+<https://www.gap-system.org/Packages/packages.html>) and send it to us to
 consider for redistribution with GAP.  This is appropriate if your
 contribution adds a body of functionality for some area of mathematics (or
 some coherent batch of system functionality). A package is also appropriate
@@ -52,7 +52,7 @@ to create a GitHub account, see below for an alternative.
   * see for example the [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials/)
     for an excellent introduction to Git.
 * Make sure you have a [GitHub account](https://github.com/signup/free).
-* Make sure you are familiar with [GAP](http://www.gap-system.org/).
+* Make sure you are familiar with [GAP](https://www.gap-system.org/).
 * Fork our [main development repository](https://github.com/gap-system/gap) on github
 * Clone your fork to a chosen directory on your local machine using HTTPS:
 
@@ -143,9 +143,9 @@ on how to do this.
 
 ## Additional Resources
 
-* [GAP Tutorial](http://gap-system.org/Manuals/doc/tut/chap0.html)
-* [GAP Manual](http://gap-system.org/Manuals/doc/ref/chap0.html)
-* [GAP Homepage](http://www.gap-system.org/)
+* [GAP Tutorial](https://www.gap-system.org/Manuals/doc/tut/chap0.html)
+* [GAP Manual](https://www.gap-system.org/Manuals/doc/ref/chap0.html)
+* [GAP Homepage](https://www.gap-system.org/)
 * [GAP on GitHub: Quickstart](https://github.com/gap-system/gap-git-cheat-sheet/raw/master/gap-git-cheat-sheet.pdf)
 * [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials/)
 * [Using Pull Requests](https://help.github.com/articles/using-pull-requests)

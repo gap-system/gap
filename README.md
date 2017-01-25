@@ -4,8 +4,8 @@ GAP is a system for computational discrete algebra, with particular emphasis on
 Computational Group Theory. GAP provides a programming language, a library of
 thousands of functions implementing algebraic algorithms written in the GAP
 language as well as large data libraries of algebraic objects. See also the
-[overview](http://gap-system.org/Overview/overview.html) and the description of
-the [mathematical capabilities](http://gap-system.org/Overview/Capabilities/capabilities.html).
+[overview](https://www.gap-system.org/Overview/overview.html) and the description of
+the [mathematical capabilities](https://www.gap-system.org/Overview/Capabilities/capabilities.html).
 
 GAP is used in research and teaching for studying groups and their representations,
 rings, vector spaces, algebras, combinatorial structures, and more.
@@ -18,9 +18,9 @@ for Excellence in Software Engineering applied to Computer Algebra.
 # How to obtain GAP?
 
 The latest stable release of the GAP system together with all currently redistributed
-[GAP packages](http://www.gap-system.org/Packages/packages.html) can be obtained from our
-[downloads page](http://www.gap-system.org/Releases/index.html).
-For installation instructions see [here](http://www.gap-system.org/Download/install.html).
+[GAP packages](https://www.gap-system.org/Packages/packages.html) can be obtained from our
+[downloads page](https://www.gap-system.org/Releases/index.html).
+For installation instructions see [here](https://www.gap-system.org/Download/install.html).
 
 You can compile the current development version of GAP from this repository
 by the following two commands
@@ -64,15 +64,15 @@ please read the [guidelines](CONTRIBUTING.md).
 
 To keep up to date on GAP news (discussion of problems, release announcements,
 bug fixes), you can subscribe to the
-[GAP forum](http://www.gap-system.org/Contacts/Forum/forum.html) and
+[GAP forum](https://www.gap-system.org/Contacts/Forum/forum.html) and
 [GAP development](https://mail.gap-system.org/mailman/listinfo/gap) mailing lists,
 notifications on github, and follow us on [Twitter](https://twitter.com/gap_system).
 
 If you have any questions about working with GAP, you can ask them on
-[GAP forum](http://www.gap-system.org/Contacts/Forum/forum.html) (requires subscription)
-or [GAP Support](http://www.gap-system.org/Contacts/People/supportgroup.html) mailing lists.
+[GAP forum](https://www.gap-system.org/Contacts/Forum/forum.html) (requires subscription)
+or [GAP Support](https://www.gap-system.org/Contacts/People/supportgroup.html) mailing lists.
 
 Please tell us about your use of GAP in research or teaching. We maintain a
-[bibliography of publications citing GAP](http://www.gap-system.org/Doc/Bib/bib.html).
-Please [help us](http://gap-system.org/Contacts/publicationfeedback.html)
+[bibliography of publications citing GAP](https://www.gap-system.org/Doc/Bib/bib.html).
+Please [help us](https://www.gap-system.org/Contacts/publicationfeedback.html)
 keeping it up to date.

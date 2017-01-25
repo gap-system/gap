@@ -1911,7 +1911,7 @@
   <year>2006</year>
   <key>GAP</key>
   <keywords>groups; *; gap; manual</keywords>
-  <url><URL>http://www.gap-system.org</URL></url>
+  <url><URL>https://www.gap-system.org</URL></url>
 </manual></entry>
 
 <entry id="GAP4"><manual>
@@ -1919,7 +1919,7 @@
                       4.4</C></title>
   <organization>The GAP&nbsp;Group</organization>
   <year>2004</year>
-  <note><URL>http://www.gap-system.org</URL></note>
+  <note><URL>https://www.gap-system.org</URL></note>
   <key>GAP</key>
   <keywords>groups; *; gap; manual</keywords>
 </manual></entry>

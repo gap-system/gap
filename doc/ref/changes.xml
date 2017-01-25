@@ -60,7 +60,7 @@ our policy of maintaining upward compatibility whenever sensibly possible.
     For large scale Groebner Basis computations there also is an interface
     to the Singular system available in the
     <URL>
-    <Link>http://www.gap-system.org/Packages/singular.html</Link>
+    <Link>https://www.gap-system.org/Packages/singular.html</Link>
     <LinkText><Package>Singular</Package></LinkText>
     </URL>
     package. (M. Costantini and W. de Graaf)
@@ -73,7 +73,7 @@ our policy of maintaining upward compatibility whenever sensibly possible.
     For more functionality to compute with algebraic number fields there
     is an interface to the Kant system available in the 
     <URL>
-    <Link>http://www.gap-system.org/Packages/alnuth.html</Link>
+    <Link>https://www.gap-system.org/Packages/alnuth.html</Link>
     <LinkText><Package>Alnuth</Package></LinkText>
     </URL>
     package. (B. Assmann and B. Eick)
@@ -124,7 +124,7 @@ The following new Packages have been accepted.
 <List>
 <Item>
     <URL>
-    <Link>http://www.gap-system.org/Packages/alnuth.html</Link>
+    <Link>https://www.gap-system.org/Packages/alnuth.html</Link>
     <LinkText>
     <Package>Alnuth</Package>: Algebraic Number Theory and an interface to the Kant system.
     </LinkText>
@@ -133,7 +133,7 @@ The following new Packages have been accepted.
 </Item>
 <Item>
     <URL>
-    <Link>http://www.gap-system.org/Packages/laguna.html</Link>
+    <Link>https://www.gap-system.org/Packages/laguna.html</Link>
     <LinkText>
     <Package>LAGUNA</Package>: Computing with Lie Algebras and Units of Group Algebras.
     </LinkText>
@@ -142,7 +142,7 @@ The following new Packages have been accepted.
 </Item>
 <Item>
     <URL>
-    <Link>http://www.gap-system.org/Packages/nq.html</Link>
+    <Link>https://www.gap-system.org/Packages/nq.html</Link>
     <LinkText>
     <Package>NQ</Package>: The ANU Nilpotent Quotient Algorithm.
     </LinkText>
@@ -151,7 +151,7 @@ The following new Packages have been accepted.
 </Item>
 <Item>
     <URL>
-    <Link>http://www.gap-system.org/Packages/kbmag.html</Link>
+    <Link>https://www.gap-system.org/Packages/kbmag.html</Link>
     <LinkText>
     <Package>KBMAG</Package>: Knuth-Bendix for Monoids and Groups.
     </LinkText>
@@ -160,7 +160,7 @@ The following new Packages have been accepted.
 </Item>
 <Item>
     <URL>
-    <Link>http://www.gap-system.org/Packages/polycyclic.html</Link>
+    <Link>https://www.gap-system.org/Packages/polycyclic.html</Link>
     <LinkText>
     <Package>Polycyclic</Package>: Computation with polycyclic groups.
     </LinkText>
@@ -169,7 +169,7 @@ The following new Packages have been accepted.
 </Item>
 <Item>
     <URL>
-    <Link>http://www.gap-system.org/Packages/quagroup.html</Link>
+    <Link>https://www.gap-system.org/Packages/quagroup.html</Link>
     <LinkText>
     <Package>QuaGroup</Package>: Computing with Quantized Enveloping Algebras.
     </LinkText>
@@ -370,7 +370,7 @@ library, and a new, much more flexible, &GAP; package interface.
 <P/>
 Details of these changes can be found in the document
 <Q>Migrating to GAP 4</Q> available at the &GAP; website, 
-see <URL>http://www.gap-system.org/Gap3/migratedoc.pdf</URL>.
+see <URL>https://www.gap-system.org/Gap3/migratedoc.pdf</URL>.
 <P/>
 It is perhaps worth mentioning a few points here. 
 <P/>
@@ -449,7 +449,7 @@ Very few features of &GAP;&nbsp;3 are not yet available in  &GAP;&nbsp;4.
    The library of crystallographic groups which was present in
    &GAP;&nbsp;3 is now part of a &GAP;&nbsp;4 package 
    <URL>
-   <Link>http://www.gap-system.org/Packages/crystcat.html</Link>
+   <Link>https://www.gap-system.org/Packages/crystcat.html</Link>
    <LinkText>
    <Package>CrystCat</Package>
    </LinkText>

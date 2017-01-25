@@ -30,7 +30,7 @@ mostly by offering precompiled binaries are:
 
 Note, however, that these are updated independently and may not yet provide
 the latest GAP release. Further details are available on the GAP website
-here: <http://www.gap-system.org/Download/alternatives.html>.
+here: <https://www.gap-system.org/Download/alternatives.html>.
 
 
 1 Installation Overview
@@ -50,7 +50,7 @@ To get maximum benefit from GAP and from various packages, we recommend
 that in addition a C++ compiler is available, and it may be useful
 to install a number of other free software libraries (and their associated
 development tools) although they are not required for basic operation. See
-<http://www.gap-system.org/Download/tools.html> for more details.
+<https://www.gap-system.org/Download/tools.html> for more details.
 
 The installation consists of five easy steps:
 
@@ -77,7 +77,7 @@ common problems with the installation.
 =====================
 
 You can get archives for the GAP distribution from the GAP website
-<http://www.gap-system.org>. You need to download one of the archives
+<https://www.gap-system.org>. You need to download one of the archives
 named in the format
 
 	gap4rXpY_<timestamp>.<archive_type>
@@ -462,7 +462,7 @@ the help system which provides useful search features.
 
 This section lists a few common problems when installing or running GAP and
 their remedies. Also see the FAQ list on the GAP web pages at
-<http://www.gap-system.org/Faq/faq.html>.
+<https://www.gap-system.org/Faq/faq.html>.
 
 ### GAP starts with a warning `hmm, I cannot find lib/init.g`
 
@@ -543,7 +543,7 @@ can type POW(a,b) for a^b.)
 
 You might want to try different shells, starting each of the three .bat
 files in the `bin` directory: `gap.bat`. `gaprxvt.bat` and `gapcmd.bat`.
-Also, <http://www.gap-system.org/Faq/faq.html#4> might give a remedy.
+Also, <https://www.gap-system.org/Faq/faq.html#4> might give a remedy.
 
 ### GAP does not work in the remote desktop
 

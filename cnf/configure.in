@@ -3,7 +3,7 @@ dnl ##
 dnl ## check for a unique program in the source directory
 dnl ##
 
-AC_INIT([GAP], [4.dev], [support@gap-system.org], [gap], [http://www.gap-system.org/])
+AC_INIT([GAP], [4.dev], [support@gap-system.org], [gap], [https://www.gap-system.org/])
 AC_CONFIG_SRCDIR([gap.c])
 AC_CONFIG_AUX_DIR(../../cnf)
 
