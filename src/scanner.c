@@ -323,10 +323,6 @@ UInt OpenInput (
     if ( TLS(Input)+1 == TLS(InputFiles)+(sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])) )
         return 0;
 
-    /* in test mode keep reading from test input file for break loop input */
-    if ( TLS(TestInput) != 0 && ! strcmp( filename, "*errin*" ) )
-        return 1;
-
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
     if ( file == -1 )
@@ -432,10 +428,6 @@ UInt CloseInput ( void )
     if ( TLS(Input) == TLS(InputFiles) )
         return 0;
 
-    /* refuse to close the test input file                                 */
-    if ( TLS(Input) == TLS(TestInput) )
-        return 0;
-
     /* close the input file                                                */
     if ( ! TLS(Input)->isstream ) {
         SyFclose( TLS(Input)->file );
@@ -466,95 +458,6 @@ void FlushRestOfInputLine( void )
   /* TLS(Input)->number = 1; */
   TLS(Symbol) = S_ILLEGAL;
 }
-
-
-
-/****************************************************************************
-**
-*F  OpenTest( <filename> )  . . . . . . . .  open an input file for test mode
-**
-*/
-UInt OpenTest (
-    const Char *        filename )
-{
-    /* do not allow to nest test files                                     */
-    if ( TLS(TestInput) != 0 )
-        return 0;
-
-    /* try to open the file as input file                                  */
-    if ( ! OpenInput( filename ) )
-        return 0;
-
-    /* remember this is a test input                                       */
-    TLS(TestInput)   = TLS(Input);
-    TLS(TestOutput)  = TLS(Output);
-    TLS(TestLine)[0] = '\0';
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenTestStream( <stream> )  . . . . .  open an input stream for test mode
-**
-*/
-UInt OpenTestStream (
-    Obj                 stream )
-{
-    /* do not allow to nest test files                                     */
-    if ( TLS(TestInput) != 0 )
-        return 0;
-
-    /* try to open the file as input file                                  */
-    if ( ! OpenInputStream( stream ) )
-        return 0;
-
-    /* remember this is a test input                                       */
-    TLS(TestInput)   = TLS(Input);
-    TLS(TestOutput)  = TLS(Output);
-    TLS(TestLine)[0] = '\0';
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseTest() . . . . . . . . . . . . . . . . . . close the test input file
-**
-*/
-UInt CloseTest ( void )
-{
-    /* refuse to a non test file                                           */
-    if ( TLS(TestInput) != TLS(Input) )
-        return 0;
-
-    /* close the input file                                                */
-    if ( ! TLS(Input)->isstream ) {
-        SyFclose( TLS(Input)->file );
-    }
-
-    /* don't keep GAP objects alive unnecessarily */
-    TLS(Input)->gapname = 0;
-    TLS(Input)->sline = 0;
-
-    /* revert to last file                                                 */
-    TLS(Input)--;
-    TLS(In)     = TLS(Input)->ptr;
-    TLS(Symbol) = TLS(Input)->symbol;
-
-    /* we are no longer in test mode                                       */
-    TLS(TestInput)   = 0;
-    TLS(TestOutput)  = 0;
-    TLS(TestLine)[0] = '\0';
-
-    /* indicate success                                                    */
-    return 1;
-}
-
 
 /****************************************************************************
 **
@@ -896,10 +799,6 @@ UInt OpenOutput (
     if ( TLS(Output)+1==TLS(OutputFiles)+(sizeof(TLS(OutputFiles))/sizeof(TLS(OutputFiles)[0])) )
         return 0;
 
-    /* in test mode keep printing to test output file for breakloop output */
-    if ( TLS(TestInput) != 0 && ! strcmp( filename, "*errout*" ) )
-        return 1;
-
     /* try to open the file                                                */
     file = SyFopen( filename, "w" );
     if ( file == -1 )
@@ -982,9 +881,6 @@ UInt CloseOutput ( void )
     /* silently refuse to close the test output file this is probably
          an attempt to close *errout* which is silently not opened, so
          lets silently not close it  */
-    if ( TLS(Output) == TLS(TestOutput) )
-        return 1;
-    /* and similarly */
     if ( TLS(IgnoreStdoutErrout) == TLS(Output) )
         return 1;
 
@@ -1023,10 +919,6 @@ UInt OpenAppend (
     /* fail if we can not handle another open output file                  */
     if ( TLS(Output)+1==TLS(OutputFiles)+(sizeof(TLS(OutputFiles))/sizeof(TLS(OutputFiles)[0])) )
         return 0;
-
-    /* in test mode keep printing to test output file for breakloop output */
-    if ( TLS(TestInput) != 0 && ! strcmp( filename, "*errout*" ) )
-        return 1;
 
     /* try to open the file                                                */
     file = SyFopen( filename, "a" );
@@ -1190,94 +1082,37 @@ Char GetLine ( void )
     TLS(In) = TLS(Input)->line;  TLS(In)[0] = '\0';
     TLS(NrErrLine) = 0;
 
-    /* read a line from an ordinary input file                             */
-    if ( TLS(TestInput) != TLS(Input) ) {
-
-        /* try to read a line                                              */
-        if ( ! GetLine2( TLS(Input), TLS(Input)->line, sizeof(TLS(Input)->line) ) ) {
-            TLS(In)[0] = '\377';  TLS(In)[1] = '\0';
-        }
+    /* try to read a line                                              */
+    if ( ! GetLine2( TLS(Input), TLS(Input)->line, sizeof(TLS(Input)->line) ) ) {
+        TLS(In)[0] = '\377';  TLS(In)[1] = '\0';
+    }
 
 
-        /* convert '?' at the beginning into 'HELP'
-           (if not inside reading long string which may have line
-           or chunk from GetLine starting with '?')                        */
+    /* convert '?' at the beginning into 'HELP'
+        (if not inside reading long string which may have line
+        or chunk from GetLine starting with '?')                        */
 
-        if ( TLS(In)[0] == '?' && TLS(HELPSubsOn) == 1) {
-            strlcpy( buf, TLS(In)+1, sizeof(buf) );
-            strcpy( TLS(In), "HELP(\"" );
-            for ( p = TLS(In)+6,  q = buf;  *q;  q++ ) {
-                if ( *q != '"' && *q != '\n' ) {
-                    *p++ = *q;
-                }
-                else if ( *q == '"' ) {
-                    *p++ = '\\';
-                    *p++ = *q;
-                }
+    if ( TLS(In)[0] == '?' && TLS(HELPSubsOn) == 1) {
+        strlcpy( buf, TLS(In)+1, sizeof(buf) );
+        strcpy( TLS(In), "HELP(\"" );
+        for ( p = TLS(In)+6,  q = buf;  *q;  q++ ) {
+            if ( *q != '"' && *q != '\n' ) {
+                *p++ = *q;
             }
-            *p = '\0';
-            /* FIXME: We should do bounds checking, but don't know what 'In' points to */
-            strcat( TLS(In), "\");\n" );
+            else if ( *q == '"' ) {
+                *p++ = '\\';
+                *p++ = *q;
+            }
         }
+        *p = '\0';
+        /* FIXME: We should do bounds checking, but don't know what 'In' points to */
+        strcat( TLS(In), "\");\n" );
+    }
 
-        /* if necessary echo the line to the logfile                      */
-        if( TLS(InputLog) != 0 && TLS(Input)->echo == 1)
-            if ( !(TLS(In)[0] == '\377' && TLS(In)[1] == '\0') )
+    /* if necessary echo the line to the logfile                      */
+    if( TLS(InputLog) != 0 && TLS(Input)->echo == 1)
+        if ( !(TLS(In)[0] == '\377' && TLS(In)[1] == '\0') )
             PutLine2( TLS(InputLog), TLS(In), strlen(TLS(In)) );
-
-                /*      if ( ! TLS(Input)->isstream ) {
-          if ( TLS(InputLog) != 0 && ! TLS(Input)->isstream ) {
-            if ( TLS(Input)->file == 0 || TLS(Input)->file == 2 ) {
-              PutLine2( TLS(InputLog), TLS(In) );
-            }
-            }
-            } */
-
-    }
-
-    /* read a line for test input file                                     */
-    else {
-
-        /* continue until we got an input line                             */
-        while ( TLS(In)[0] == '\0' ) {
-
-            /* there may be one line waiting                               */
-            if ( TLS(TestLine)[0] != '\0' ) {
-                strncat( TLS(In), TLS(TestLine), sizeof(TLS(Input)->line) );
-                TLS(TestLine)[0] = '\0';
-            }
-
-            /* otherwise try to read a line                                */
-            else {
-                if ( ! GetLine2(TLS(Input), TLS(Input)->line, sizeof(TLS(Input)->line)) ) {
-                    TLS(In)[0] = '\377';  TLS(In)[1] = '\0';
-                }
-            }
-
-            /* if the line starts with a prompt its an input line          */
-            if      ( TLS(In)[0] == 'g' && TLS(In)[1] == 'a' && TLS(In)[2] == 'p'
-                   && TLS(In)[3] == '>' && TLS(In)[4] == ' ' ) {
-                TLS(In) = TLS(In) + 5;
-            }
-            else if ( TLS(In)[0] == '>' && TLS(In)[1] == ' ' ) {
-                TLS(In) = TLS(In) + 2;
-            }
-
-            /* if the line is not empty or a comment, print it             */
-            else if ( TLS(In)[0] != '\n' && TLS(In)[0] != '#' && TLS(In)[0] != '\377' ) {
-                /* Commented out by AK
-                char obuf[8];
-                snprintf(obuf, sizeof(obuf), "-%5i:\n- ", (int)TLS(TestInput)->number++);
-                PutLine2( TLS(TestOutput), obuf, 7 );
-                */
-                PutLine2( TLS(TestOutput), "- ", 2 );
-                PutLine2( TLS(TestOutput), TLS(In), strlen(TLS(In)) );
-                TLS(In)[0] = '\0';
-            }
-
-        }
-
-    }
 
     /* return the current character                                        */
     return *TLS(In);
@@ -2374,56 +2209,7 @@ void PutLine2(
  */
 void PutLineTo ( KOutputStream stream, UInt len )
 {
-  Char *          p;
-  UInt lt,ls;     /* These are supposed to hold string lengths */
-
-  /* if in test mode and the next input line matches print nothing       */
-  if ( TLS(TestInput) != 0 && TLS(TestOutput) == stream ) {
-    if ( TLS(TestLine)[0] == '\0' ) {
-      if ( ! GetLine2( TLS(TestInput), TLS(TestLine), sizeof(TLS(TestLine)) ) ) {
-        TLS(TestLine)[0] = '\0';
-      }
-      TLS(TestInput)->number++;
-    }
-
-    /* Note that TLS(TestLine) is ended by a \n, but stream->line need not! */
-
-    lt = strlen(TLS(TestLine));   /* this counts including the newline! */
-    p = TLS(TestLine) + (lt-2);
-    /* this now points to the last char before \n in the line! */
-    while ( TLS(TestLine) <= p && ( *p == ' ' || *p == '\t' ) ) {
-      p[1] = '\0';  p[0] = '\n';  p--; lt--;
-    }
-    /* lt is still the correct string length including \n */
-    ls = strlen(stream->line);
-    p = stream->line + (ls-1);
-    /* this now points to the last char of the string, could be a \n */
-    if (*p == '\n') {
-      p--;   /* now we point before that newline character */
-      while ( stream->line <= p && ( *p == ' ' || *p == '\t' ) ) {
-        p[1] = '\0';  p[0] = '\n';  p--; ls--;
-      }
-    }
-    /* ls is still the correct string length including a possible \n */
-    if ( ! strncmp( TLS(TestLine), stream->line, ls ) ) {
-      if (ls < lt)
-        memmove(TLS(TestLine),TLS(TestLine) + ls,lt-ls+1);
-      else
-        TLS(TestLine)[0] = '\0';
-    }
-    else {
-      char obuf[80];
-      /* snprintf(obuf, sizeof(obuf), "+ 5%i bad example:\n+ ", (int)TLS(TestInput)->number); */
-      snprintf(obuf, sizeof(obuf), "Line %i : \n+ ", (int)TLS(TestInput)->number);
-      PutLine2( stream, obuf, strlen(obuf) );
-      PutLine2( stream, TLS(Output)->line, strlen(TLS(Output)->line) );
-    }
-  }
-
-  /* otherwise output this line                                          */
-  else {
-    PutLine2( stream, stream->line, len );
-  }
+  PutLine2( stream, stream->line, len );
 
   /* if neccessary echo it to the logfile                                */
   if ( TLS(OutputLog) != 0 && ! stream->isstream ) {
@@ -3146,7 +2932,6 @@ static Int InitKernel (
     (void)OpenOutput( "*stdout*" );
 
     TLS(InputLog)  = 0;  TLS(OutputLog)  = 0;
-    TLS(TestInput) = 0;  TLS(TestOutput) = 0;
 
     /* initialize cookies for streams                                      */
     /* also initialize the cookies for the GAP strings which hold the
