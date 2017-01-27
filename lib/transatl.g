@@ -170,7 +170,7 @@ BindGlobal("CheckSynonyms", function(arg)
     Print("Checking pair ", p, "\n");
     for n in allnames do
       n2 := ReplacedString(n, p[1], p[2]);
-      if not IsIdenticalObj(n) <> IsIdenticalObj(n2) then
+      if not IsIdenticalObj(n, n2) then
         doc := List([n,n2], IsDocumentedWord);
         if not n2 in allnames then
           if doc = [false, false] then
