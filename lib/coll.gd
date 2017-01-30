@@ -3249,13 +3249,6 @@ DeclareFilter( "CanComputeSize" );
 
 InstallTrueMethod( CanComputeSize, HasSize );
 
-
-DeclareOperation( "Randomizer", [IsCollection] );
-DeclareOperation( "CheapRandomizer", [IsCollection] );
-
-DeclareAttribute( "RandomizerAttr", IsCollection );
-DeclareAttribute( "CheapRandomizerAttr", IsCollection );
-
 # to allow for recusive calls
 DeclareGlobalFunction("JoinRanges");
 
