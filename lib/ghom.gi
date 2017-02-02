@@ -1402,7 +1402,9 @@ BindGlobal( "IsomorphismAbelianGroupViaIndependentGenerators", function ( filter
 
   if IsTrivial( G ) then
     K := TrivialGroup( filter );
-    return GroupHomomorphismByImagesNC( G, K, [], [] );
+    nice := GroupHomomorphismByImagesNC( G, K, [], [] );
+    SetIsBijective( nice, true );
+    return nice;
   fi;
 
   gens := IndependentGeneratorsOfAbelianGroup( G );
