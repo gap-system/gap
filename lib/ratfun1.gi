@@ -18,7 +18,7 @@
 # Functions to create objects 
 
 LAUR_POL_BY_EXTREP:=function(rfam,coeff,val,inum)
-local f,typ,lc;
+local f,typ,lc,q;
 
 # trap code for unreduced coeffs.
 # if Length(coeffs[1])>0 
@@ -43,15 +43,28 @@ local f,typ,lc;
   fi;
   
   # slightly better to do this after the Length has been determined 
-  if IS_PLIST_REP(coeff) then
-    if IsFFECollection(coeff) then
-      ConvertToVectorRep(coeff);
-      if IS_DATOBJ(coeff) then
-	coeff := ShallowCopy(coeff);
-	MakeReadOnly(coeff);
+  if IS_PLIST_REP(coeff) and IsFFECollection(coeff) then
+      q := COMMON_FIELD_VECFFE(coeff);
+      if q = fail then
+          q := SMALLEST_FIELD_VECFFE(coeff);          
       fi;
-    fi;
+      if q <> fail and q <= 256 then
+          coeff := `CopyToVectorRep(coeff,q);
+      fi;
+      Assert(1, coeff <> fail);
+      
   fi;
+  
+  
+  # if IS_PLIST_REP(coeff) then
+  #   if IsFFECollection(coeff) then
+  #     ConvertToVectorRep(coeff);
+  #     if IS_DATOBJ(coeff) then
+  #       coeff := ShallowCopy(coeff);
+  #       MakeReadOnly(coeff);
+  #     fi;
+  #   fi;
+  # fi;
 
   
   # objectify. We have to be *fast*. Thus we don't even call

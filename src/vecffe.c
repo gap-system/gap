@@ -1070,32 +1070,38 @@ Obj FuncIS_VECFFE( Obj self, Obj vec)
     return IsVecFFE(vec) ? True : False;
 }
 
-Obj FuncCOMMON_FIELD_VECFFE( Obj self, Obj vec)
-{
+
+UInt CommonFieldVecFFE(Obj vec) {
     Obj elm;
     if (!IsVecFFE(vec))
-        return Fail;
+        return 0;
     elm = ELM_PLIST(vec, 1);
-    return INTOBJ_INT(SIZE_FF(FLD_FFE(elm)));
+    return SIZE_FF(FLD_FFE(elm));
 }
 
-Obj FuncSMALLEST_FIELD_VECFFE( Obj self, Obj vec)
+
+Obj FuncCOMMON_FIELD_VECFFE( Obj self, Obj vec)
 {
+  UInt common = CommonFieldVecFFE(vec);
+  return common ? INTOBJ_INT(common) : Fail;
+}
+
+UInt SmallestFieldVecFFE(Obj vec) {
     Obj elm;
     UInt deg, deg1, deg2, i, len, p, q;
     UInt isVecFFE = IsVecFFE(vec);
     len  = LEN_PLIST(vec);
     if (len == 0)
-        return Fail;
+        return 0;
     elm = ELM_PLIST(vec, 1);
     if (!isVecFFE && !IS_FFE(elm))
-        return Fail;
+        return 0;
     deg = DegreeFFE(elm);
     p = CharFFE(elm);
     for (i = 2; i <= len; i++) {
         elm = ELM_PLIST(vec, i);
         if (!isVecFFE && (!IS_FFE(elm) || CharFFE(elm) != p))
-            return Fail;
+            return 0;
         deg2 =  DegreeFFE(elm);
         deg1 = deg;
         while (deg % deg2 != 0)
@@ -1104,7 +1110,19 @@ Obj FuncSMALLEST_FIELD_VECFFE( Obj self, Obj vec)
     q = p;
     for (i = 2; i <= deg; i++)
         q *= p;
-    return INTOBJ_INT(q);
+    return q;
+}
+
+UInt ChooseFieldVecFFE(Obj vec) {
+  UInt common = CommonFieldVecFFE(vec);
+  return common ? common : SmallestFieldVecFFE(vec);
+}
+  
+
+Obj FuncSMALLEST_FIELD_VECFFE( Obj self, Obj vec)
+{
+  UInt smallest = SmallestFieldVecFFE(vec);
+  return smallest ? INTOBJ_INT(smallest) : Fail;
 }
 
 /****************************************************************************

@@ -31,7 +31,7 @@
 ##  
 
 BindGlobal("IsCoeffsModConwayPolRep", 
-        NewRepresentation( "IsCoeffsModConwayPolRep", IsPositionalObjectRep,3));
+        NewRepresentation( "IsCoeffsModConwayPolRep", IsAtomicPositionalObjectRep,3));
 
 #############################################################################
 ##
@@ -58,7 +58,8 @@ BindGlobal("FFECONWAY", rec());
 ## 'fam!.ConwayFldEltReducers[d]' contains a function which will take a mutable 
 ##                               vector of FFEs in compressed format (if appropriate)
 ##                               reduce it modulo the Conway polynomial and fix its 
-##                               length to be exactly 'd'
+##                               length to be exactly 'd'. Returns the adjusted vector, which
+##                               may sometimes be a copy of the original
 ## 'fam!.ZCache[d]'            contains 'Z(p,d)' once it has been computed.
 ##
 
@@ -87,8 +88,12 @@ FFECONWAY.SetUpConwayStuff := function(p,d)
     #
     if p = 2 then
         reducer := function(v)
+            if not IsGF2VectorRep(v) then
+                v := CopyToVectorRep(v,2);
+            fi;
             REDUCE_COEFFS_GF2VEC(v,Length(v),cp,d+1);
             RESIZE_GF2VEC(v,d);
+            return v;
         end;
     elif p <= 256 then
         #
@@ -96,8 +101,12 @@ FFECONWAY.SetUpConwayStuff := function(p,d)
         #
         cps := MAKE_SHIFTED_COEFFS_VEC8BIT(cp,d+1);
         reducer := function(v)
+            if not Is8BitVectorRep(v) then
+                v := CopyToVectorRep(v,p);
+            fi;
             REDUCE_COEFFS_VEC8BIT(v,Length(v),cps);
             RESIZE_VEC8BIT(v,d);
+            return v;
         end;
     else
         #
@@ -112,12 +121,13 @@ FFECONWAY.SetUpConwayStuff := function(p,d)
                     Unbind(v[i]);
                 od;
             fi;
+            return v;
         end;
     fi;
 
     atomic readwrite fam!.ConwayPolCoeffs do    
       if not IsBound(fam!.ConwayPolCoeffs[d]) then
-        fam!.ConwayPolCoeffs[d] := MakeReadOnly(cp);
+        fam!.ConwayPolCoeffs[d] := MakeImmutable(cp);
         fam!.ConwayFldEltReducers[d] := reducer;
       fi;  
     od;
@@ -147,11 +157,12 @@ FFECONWAY.ZNC := function(p,d)
     if p<=256 then
         v := CopyToVectorRep(v,p);
     fi;
+    MakeImmutable(v);    
     # put 'false' in the third component because we know it is irreducible
     zpd := Objectify(fam!.ConwayFldEltDefaultType, [v,d,false] );
     
     if not IsBound(fam!.ZCache[d]) then
-        fam!.ZCache[d] := MakeReadOnly(zpd);
+        fam!.ZCache[d] := MakeImmutable(zpd);
     fi;
     return fam!.ZCache[d];
     
@@ -386,13 +397,13 @@ FFECONWAY.FiniteFieldEmbeddingRecord := function(p, d1,d2)
             x := CopyToVectorRep(x,p);
         fi;  
         z1 := PowerModCoeffs(x,n,c);
-        fam!.ConwayFldEltReducers[d2](z1);
+        z1 := fam!.ConwayFldEltReducers[d2](z1);
         m := [ZeroMutable(z1),z1];
         m[1][1] := Z(p)^0;
         z := z1;
         for i in [2..d1-1] do
             z := ProductCoeffs(z,z1);
-            fam!.ConwayFldEltReducers[d2](z);
+            z := fam!.ConwayFldEltReducers[d2](z);
             Add(m,z);
         od;
         ConvertToMatrixRep(m,p);
@@ -407,7 +418,7 @@ FFECONWAY.FiniteFieldEmbeddingRecord := function(p, d1,d2)
             fi;
         od;
         Assert(2,d1 = 1 or res.relations = []);
-        MakeReadOnly(r);
+        MakeImmutable(r);
         fam!.embeddingRecords[d2][d1] := r;
     fi;
     return fam!.embeddingRecords[d2][d1];
@@ -433,7 +444,7 @@ FFECONWAY.WriteOverLargerField := function(x,d2)
         if d1 = d2 then
             return x;
         fi;
-        v := Coefficients(CanonicalBasis(AsField(GF(p,1),GF(p,d1))),x);
+        v := Coefficients(CanonicalBasis(AsField(GF(p,1),GF(p,d1))),x);        
     else
         d1 := x![2];
         if d1 = d2 then
@@ -450,7 +461,7 @@ FFECONWAY.WriteOverLargerField := function(x,d2)
     else
         y := fail;
     fi;
-    return Objectify(fam!.ConwayFldEltDefaultType, [v*f!.mat,d2,y]);
+    return Objectify(fam!.ConwayFldEltDefaultType, [`(v*f!.mat),d2,y]);
 end;
 
 #############################################################################
@@ -519,7 +530,7 @@ FFECONWAY.TryToWriteInSmallerField := function(x,d1)
         oversmalld :=  Sum([1..smalld], i-> z^(i-1)*v2[i]);
         
     else
-        oversmalld :=  Objectify(fam!.ConwayFldEltDefaultType,[v2,d1,fail]);
+        oversmalld :=  Objectify(fam!.ConwayFldEltDefaultType,[`v2,d1,fail]);
     fi;
     if smalld < d1 then
         return FFECONWAY.WriteOverLargerField(oversmalld, d1);
@@ -706,7 +717,7 @@ FFECONWAY.SumConwayOtherFFEs := function(x1,x2)
     fam := FamilyObj(x1);
     cc := FFECONWAY.CoeffsOverCommonField(x1,x2);
     v := cc[1]+cc[2];
-       return Objectify(fam!.ConwayFldEltDefaultType, [v,cc[3],fail]);
+       return Objectify(fam!.ConwayFldEltDefaultType, [`v,cc[3],fail]);
 end;
 
 #############################################################################
@@ -732,7 +743,7 @@ InstallMethod(\+,
     fi;
     fam := FamilyObj(x1);
     return Objectify(fam!.ConwayFldEltDefaultType, 
-                   [v,d,fail]);
+                   [`v,d,fail]);
 end);
 
 InstallMethod(\+,
@@ -777,7 +788,7 @@ FFECONWAY.DiffConwayOtherFFEs := function(x1,x2)
     fam := FamilyObj(x1);
     cc := FFECONWAY.CoeffsOverCommonField(x1,x2);
     v := cc[1]-cc[2];
-       return Objectify(fam!.ConwayFldEltDefaultType, [v,cc[3],fail]);
+       return Objectify(fam!.ConwayFldEltDefaultType, [`v,cc[3],fail]);
 end;
 
 #############################################################################
@@ -803,7 +814,7 @@ InstallMethod(\-,
     fi;
     fam := FamilyObj(x1);
     return Objectify(fam!.ConwayFldEltDefaultType, 
-                   [v,d,fail]);
+                   [`v,d,fail]);
 end);
 
 InstallMethod(\-,
@@ -840,8 +851,8 @@ FFECONWAY.ProdConwayOtherFFEs := function(x1,x2)
     fam := FamilyObj(x1);
     cc := FFECONWAY.CoeffsOverCommonField(x1,x2);
     v := ProductCoeffs(cc[1],cc[2]);
-    fam!.ConwayFldEltReducers[cc[3]](v);
-    return Objectify(fam!.ConwayFldEltDefaultType, [v,cc[3], fail]);
+    v := fam!.ConwayFldEltReducers[cc[3]](v);
+    return Objectify(fam!.ConwayFldEltDefaultType, [`v,cc[3], fail]);
 end;
 
 #############################################################################
@@ -863,9 +874,9 @@ InstallMethod(\*,
         d := cc[3];
     fi;
     fam := FamilyObj(x1);
-    fam!.ConwayFldEltReducers[d](v);
+    v := fam!.ConwayFldEltReducers[d](v);
     return Objectify(fam!.ConwayFldEltDefaultType, 
-                   [v,d,fail]);
+                   [`v,d,fail]);
     end
 
 );
@@ -910,7 +921,7 @@ InstallMethod(AdditiveInverseOp,
     else
         y := -x![3];
     fi;
-    return Objectify(fam!.ConwayFldEltDefaultType, [AdditiveInverseMutable(x![1]),x![2],y]);
+    return Objectify(fam!.ConwayFldEltDefaultType, [AdditiveInverse(x![1]),x![2],y]);
 end);
 
 #############################################################################
@@ -953,18 +964,18 @@ InstallMethod(InverseOp,
     MultRowVector(r,Inverse(a[1]));
     if AssertionLevel() >= 2 then
         t := ProductCoeffs(x![1],r);
-        fam!.ConwayFldEltReducers[d](t);
+        t := fam!.ConwayFldEltReducers[d](t);
         if not IsOne(t[1]) or ForAny([2..Length(t)], i->not IsZero(t[i])) then
             Error("Inverse has failed");
         fi;
     fi;
-    fam!.ConwayFldEltReducers[d](r);
+    r := fam!.ConwayFldEltReducers[d](r);
     if IsBool(x![3]) then
         y := x![3];
     else
         y := Inverse(x![3]);
     fi;
-    return MakeReadOnly( Objectify(fam!.ConwayFldEltDefaultType,[r,d,y]) );
+    return MakeReadOnly( Objectify(fam!.ConwayFldEltDefaultType,[`r,d,y]) );
 end);
 
 InstallMethod(QUO_FFE_LARGE,
@@ -1021,7 +1032,7 @@ FFECONWAY.Zero := function(x)
     fi;
     d := x![2];
     if not IsBound(fam!.ZeroConwayFFEs[d]) then
-        fam!.ZeroConwayFFEs[d] := MakeReadOnly(Objectify(fam!.ConwayFldEltDefaultType,[ZeroMutable(x![1]),d, 
+        fam!.ZeroConwayFFEs[d] := MakeReadOnly(Objectify(fam!.ConwayFldEltDefaultType,[Zero(x![1]),d, 
                                           0*Z(fam!.Characteristic)]));
     fi;
     return fam!.ZeroConwayFFEs[d];
@@ -1053,7 +1064,7 @@ FFECONWAY.One := function(x)
     if not IsBound(fam!.OneConwayFFEs[d]) then
         v := ZeroMutable(x![1]);
         v[1] := Z(fam!.Characteristic)^0;
-        fam!.OneConwayFFEs[d] := MakeReadOnly(Objectify(fam!.ConwayFldEltDefaultType,[v,d, 
+        fam!.OneConwayFFEs[d] := MakeReadOnly(Objectify(fam!.ConwayFldEltDefaultType,[`v,d, 
                                          Z(fam!.Characteristic)^0]));
     fi;
     return fam!.OneConwayFFEs[d];
@@ -1495,14 +1506,16 @@ InstallMethod(Coefficients,
         IsCollsElms,
         [IsCanonicalBasis and IsBasisFiniteFieldRep, IsFFE and IsCoeffsModConwayPolRep],
         function(cb,x)
+    local  y;
     if not IsPrimeField(LeftActingDomain(UnderlyingLeftModule(cb))) then
         TryNextMethod();
     fi;
     if DegreeOverPrimeField(UnderlyingLeftModule(cb)) <> x![2] then
         TryNextMethod();
     fi;
-    PadCoeffs(x![1],x![2]);
-    return Immutable(x![1]);
+    y := ShallowCopy(x![1]);
+    PadCoeffs(y,x![2]);
+    return Immutable(y);
 end);
 
 #############################################################################
@@ -1525,7 +1538,7 @@ InstallMethod(Enumerator,
     e := Enumerator(RowSpace(GF(p,1),d));
     return EnumeratorByFunctions(f, rec(
                    ElementNumber := function(en,n)
-        return Objectify(fam!.ConwayFldEltDefaultType, [ e[n], d, fail]);
+        return Objectify(fam!.ConwayFldEltDefaultType, [ `e[n], d, fail]);
         end,
                    NumberElement := function(en,x)
         x := FFECONWAY.WriteOverLargerField(x,d);
@@ -1576,7 +1589,7 @@ InstallMethod(Random,
     p := Characteristic(f);
     v := Random(RowSpace(GF(p,1),d));
     fam := FFEFamily(Characteristic(f));
-    return Objectify(fam!.ConwayFldEltDefaultType, [v,d,fail]);
+    return Objectify(fam!.ConwayFldEltDefaultType, [`v,d,fail]);
 end);
 
 #############################################################################
@@ -1603,7 +1616,7 @@ InstallMethod(MinimalPolynomial,
     m := [o,y];
     for i in [2..d] do
         y := ProductCoeffs(y,x);
-        fam!.ConwayFldEltReducers[dd](y);
+        y := fam!.ConwayFldEltReducers[dd](y);
         Add(m,y);
     od;
     ConvertToMatrixRep(m,p);

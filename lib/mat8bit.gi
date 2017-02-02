@@ -436,6 +436,69 @@ end);
 
 #############################################################################
 ##
+#M  CopyToMatrixRepNC( <list>, <fieldsize )
+#M  CopyToMatrixRep( <list>[, <fieldsize> | <field>])
+##
+
+
+InstallGlobalFunction(CopyToMatrixRep,
+        function( m,q )
+    local  newm;
+
+    
+    
+    
+    if not IsInt(q) then
+        if IsField(q) then
+            if Characteristic(q) = 0 then
+                return fail;
+            fi;
+            q := Size(q);
+        else
+	    return fail ; # not a field -- exit
+        fi;
+    fi;
+    
+    if Length(m) = 0 then
+        return [];
+    fi;
+    
+    #
+    # If we are already compressed, then our rows are certainly
+    #  locked, so we will not be able to change representation
+    #
+    
+    newm := List(m, v->CopyToVectorRep(v,q));
+    
+    ConvertToMatrixRepNC(newm,q);
+    
+    return newm;
+    
+end);    
+
+
+InstallGlobalFunction(CopyToMatrixRepNC, function(m , q )    
+    local  newm;
+    
+    
+    if Length(m) = 0 then
+        return [];
+    fi;
+    
+    #
+    # If we are already compressed, then our rows are certainly
+    #  locked, so we will not be able to change representation
+    #
+    
+    newm := List(m, v->CopyToVectorRepNC(v,q));
+    
+    ConvertToMatrixRepNC(newm,q);
+    
+    return newm;
+end);
+
+#############################################################################
+##
 #M <vec> * <mat>
 ##
 
@@ -703,6 +766,7 @@ InstallMethod( OneSameMutability, "8 bit matrix", true,
         w[i] := one;
         Add(o,w);
     od;
+    ConvertToMatrixRepNC(o, Q_VEC8BIT(v));
     if not IsMutable(m![2]) then
         for i in [1..m![1]] do
             MakeImmutable(o[i]);
@@ -711,7 +775,7 @@ InstallMethod( OneSameMutability, "8 bit matrix", true,
     if not IsMutable(m) then
         MakeImmutable(o);
     fi;
-    ConvertToMatrixRepNC(o, Q_VEC8BIT(v));
+
     return o;
 end);
 
@@ -1048,6 +1112,7 @@ InstallMethod(PostMakeImmutable, [Is8BitMatrixRep],
     for i in [2..m![1]] do
         MakeImmutable(m![i]);
     od;
+    MakeReadOnly(m);
 end);
 
 
