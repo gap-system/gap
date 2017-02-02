@@ -13,4 +13,8 @@ gap> phi := IsomorphismPermGroup(G);
 [  ] -> [  ]
 gap> HasIsBijective(phi);
 true
+gap> inv := InverseGeneralMapping(phi);
+[  ] -> [  ]
+gap> HasIsMapping(inv);
+true
 gap> STOP_TEST( "triviso.tst", 10000);
