@@ -819,7 +819,7 @@ Obj SyntaxTreeIsbList(Expr expr)
     pos = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
 
     AssPRec(result, RNamName("list"), list);
-    ASsPRec(result, RNamName("pos"), pos);
+    AssPRec(result, RNamName("pos"), pos);
 
     return result;
 }
@@ -1042,7 +1042,6 @@ Obj SyntaxTreeProccall(Stat stat)
         func = SyntaxTreeRefGVarFopy( FUNC_CALL(stat) );
     } else {
         func = SyntaxTreeExpr( FUNC_CALL(stat) );
-        SyntaxTreeCheckFunc( func );
     }
     AssPRec(result, RNamName("function"), func);
 
@@ -1201,13 +1200,13 @@ Obj SyntaxTreeWhile(Stat stat )
 Obj SyntaxTreeRepeat(Stat stat)
 {
     Obj result;
-    Obj condition;
+    Obj cond;
     Obj body;
     UInt i, nr;
 
     result = NewSyntaxTreeNode("repeat", 4);
 
-    condition = SyntaxTreeBoolExpr( ADDR_STAT(stat)[0] );
+    cond = SyntaxTreeBoolExpr( ADDR_STAT(stat)[0] );
     AssPRec(result, RNamName("condition"), cond);
 
     nr = SIZE_STAT(stat)/sizeof(Stat);
@@ -1248,7 +1247,9 @@ Obj SyntaxTreeReturnObj(Stat stat)
 
 Obj SyntaxTreeReturnVoid(Stat stat)
 {
-    return NewSyntaxTreeNode("return", 2);
+    Obj result;
+    result = NewSyntaxTreeNode("return", 1);
+    return result;
 }
 
 Obj SyntaxTreeAssLVar(Stat stat)
@@ -1363,678 +1364,374 @@ Obj SyntaxTreeAssList(Stat stat)
 
 Obj SyntaxTreeAsssList (Stat stat)
 {
-    CVar                list;           /* list                            */
-    CVar                poss;           /* positions                       */
-    CVar                rhss;           /* right hand sides                */
+    Obj result;
+    Obj list;
+    Obj poss;
+    Obj rhss;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("AsssList", 3);
 
-    /* compile the list expression                                         */
     list = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* compile and check the position expression                           */
     poss = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
-
-    /* compile the right hand side                                         */
     rhss = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
 
-    /* emit the code                                                       */
-    Emit( "AsssListCheck( %c, %c, %c );\n", list, poss, rhss );
+    AssPRec(result, RNamName("list"), list);
+    AssPRec(result, RNamName("poss"), poss);
+    AssPRec(result, RNamName("rhss"), rhss);
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rhss ) )  FreeTemp( TEMP_CVAR( rhss ) );
-    if ( IS_TEMP_CVAR( poss ) )  FreeTemp( TEMP_CVAR( poss ) );
-    if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeAssListLev( <stat> )  . . . . . . . . . . . . . . . .  T_ASS_LIST_LEV
-*/
-void SyntaxTreeAssListLev (
-    Stat                stat )
+Obj SyntaxTreeAssListLev(Stat stat)
 {
-    CVar                lists;          /* lists                           */
-    CVar                pos;            /* position                        */
-    CVar                rhss;           /* right hand sides                */
-    Int                 level;          /* level                           */
+    Obj result;
+    Obj lists;
+    Obj pos;
+    Obj rhss;
+    Int level;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("AssListLev", 3);
 
-    /* compile the list expressions                                        */
     lists = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* compile and check the position expression                           */
     pos = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
-    SyntaxTreeCheckIntSmallPos( pos );
-
-    /* compile the right hand sides                                        */
     rhss = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
-
-    /* get the level                                                       */
     level = (Int)(ADDR_STAT(stat)[3]);
 
-    /* emit the code                                                       */
-    Emit( "AssListLevel( %c, %c, %c, %d );\n", lists, pos, rhss, level );
+    AssPRec(result, RNamName("lists"), lists);
+    AssPRec(result, RNamName("pos"), pos);
+    AssPRec(result, RNamName("rhss"), rhss);
+    AssPRec(result, RNamName("level"), INTOBJ_INT(level));
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rhss  ) )  FreeTemp( TEMP_CVAR( rhss  ) );
-    if ( IS_TEMP_CVAR( pos   ) )  FreeTemp( TEMP_CVAR( pos   ) );
-    if ( IS_TEMP_CVAR( lists ) )  FreeTemp( TEMP_CVAR( lists ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeAsssListLev( <stat> ) . . . . . . . . . . . . . . . . T_ASSS_LIST_LEV
-*/
-void SyntaxTreeAsssListLev (
-    Stat                stat )
+Obj SyntaxTreeAsssListLev(Stat stat)
 {
-    CVar                lists;          /* list                            */
-    CVar                poss;           /* positions                       */
-    CVar                rhss;           /* right hand sides                */
-    Int                 level;          /* level                           */
+    Obj result;
+    Obj lists;
+    Obj poss;
+    Obj rhss;
+    Int level;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("AsssListLev", 3);
 
-    /* compile the list expressions                                        */
     lists = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* compile and check the position expression                           */
     poss = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
-
-    /* compile the right hand side                                         */
     rhss = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
-
-    /* get the level                                                       */
     level = (Int)(ADDR_STAT(stat)[3]);
 
-    /* emit the code                                                       */
-    Emit( "AsssListLevelCheck( %c, %c, %c, %d );\n",
-          lists, poss, rhss, level );
+    AssPRec(result, RNamName("lists"), lists);
+    AssPRec(result, RNamName("poss"), poss);
+    AssPRec(result, RNamName("rhss"), rhss);
+    AssPRec(result, RNamName("level"), INTOBJ_INT(level));
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rhss  ) )  FreeTemp( TEMP_CVAR( rhss ) );
-    if ( IS_TEMP_CVAR( poss  ) )  FreeTemp( TEMP_CVAR( poss ) );
-    if ( IS_TEMP_CVAR( lists ) )  FreeTemp( TEMP_CVAR( lists ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeUnbList( <stat> ) . . . . . . . . . . . . . . . . . . . .  T_UNB_LIST
-*/
-void SyntaxTreeUnbList (
-    Stat                stat )
+Obj SyntaxTreeUnbList(Stat stat)
 {
-    CVar                list;           /* list, left operand              */
-    CVar                pos;            /* position, left operand          */
+    Obj result;
+    Obj list;
+    Obj pos;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("UnbList", 3);
 
-    /* compile the list expression                                         */
     list = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* compile and check the position expression                           */
     pos = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
-    SyntaxTreeCheckIntPos( pos );
 
-    /* emit the code                                                       */
-    Emit( "C_UNB_LIST( %c, %c );\n", list, pos );
+    AssPRec(result, RNamName("list"), list);
+    AssPRec(result, RNamName("pos"), pos);
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
-    if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeAssRecName( <stat> )  . . . . . . . . . . . . . . . .  T_ASS_REC_NAME
-*/
-void SyntaxTreeAssRecName (
-    Stat                stat )
+Obj SyntaxTreeAssRecName(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
-    CVar                rhs;            /* rhs, right operand              */
+    Obj result;
+    Obj record;
+    Obj rnam;
+    Obj rhs;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("AssRecName", 4);
 
-    /* compile the record expression                                       */
     record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* get the name (stored immediately in the statement)                  */
+    /* TODO: Record Access */
     rnam = (UInt)(ADDR_STAT(stat)[1]);
-    SyntaxTreeSetUseRNam( rnam, COMP_USE_RNAM_ID );
-
-    /* compile the right hand side                                         */
     rhs = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
 
-    /* emit the code for the assignment                                    */
-    Emit( "ASS_REC( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
+    AssPRec(result, RNamName("record"), record);
+    AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
+    AssPRec(result, RNamName("rhs"), rhs);
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rhs    ) )  FreeTemp( TEMP_CVAR( rhs    ) );
-    if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeAssRecExpr( <stat> )  . . . . . . . . . . . . . . . .  T_ASS_REC_EXPR
-*/
-void SyntaxTreeAssRecExpr (
-    Stat                stat )
+Obj SyntaxTreeAssRecExpr(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    CVar                rnam;           /* name, left operand              */
-    CVar                rhs;            /* rhs, right operand              */
+    Obj result;
+    Obj record;
+    Obj rnam;
+    Obj rhs;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("AssRecExpr", 4);
 
-    /* compile the record expression                                       */
     record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
+    rnam = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
+    rhs = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
 
-    /* get the name (stored immediately in the statement)                  */
+    AssPRec(result, RNamName("record"), record);
+    AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
+    AssPRec(result, RNamName("rhs"), rhs);
+
+    return result;
+}
+
+Obj SyntaxTreeUnbRecName(Stat stat)
+{
+    Obj result;
+    Obj record;
+    Obj rnam;
+
+    result = NewSyntaxTreeNode("UnbRecName", 4);
+
+    record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
+    rnam = (UInt)(ADDR_STAT(stat)[1]);
+
+    AssPRec(result, RNamName("record"), record);
+    AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
+
+    return result;
+}
+
+Obj SyntaxTreeUnbRecExpr(Stat stat)
+{
+    Obj result;
+    Obj record;
+    Obj rnam;
+
+    result = NewSyntaxTreeNode("UnbRecExpr", 4);
+
+    record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
     rnam = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
 
-    /* compile the right hand side                                         */
-    rhs = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
+    AssPRec(result, RNamName("record"), record);
+    AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
 
-    /* emit the code for the assignment                                    */
-    Emit( "ASS_REC( %c, RNamObj(%c), %c );\n", record, rnam, rhs );
-
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rhs    ) )  FreeTemp( TEMP_CVAR( rhs    ) );
-    if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
-    if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeUnbRecName( <stat> )  . . . . . . . . . . . . . . . .  T_UNB_REC_NAME
-*/
-void SyntaxTreeUnbRecName (
-    Stat                stat )
+Obj SyntaxTreeAssPosObj(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
+    Obj result;
+    Obj list;
+    Obj pos;
+    Obj rhs;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("AssPosObj", 4);
 
-    /* compile the record expression                                       */
-    record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(ADDR_STAT(stat)[1]);
-    SyntaxTreeSetUseRNam( rnam, COMP_USE_RNAM_ID );
-
-    /* emit the code for the assignment                                    */
-    Emit( "UNB_REC( %c, R_%n );\n", record, NAME_RNAM(rnam) );
-
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
-}
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeUnbRecExpr( <stat> )  . . . . . . . . . . . . . . . .  T_UNB_REC_EXPR
-*/
-void            SyntaxTreeUnbRecExpr (
-    Stat                stat )
-{
-    CVar                record;         /* record, left operand            */
-    CVar                rnam;           /* name, left operand              */
-
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
-
-    /* compile the record expression                                       */
-    record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* get the name (stored immediately in the statement)                  */
-    rnam = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
-
-    /* emit the code for the assignment                                    */
-    Emit( "UNB_REC( %c, RNamObj(%c) );\n", record, rnam );
-
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
-    if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
-}
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeAssPosObj( <stat> ) . . . . . . . . . . . . . . . . . .  T_ASS_POSOBJ
-*/
-void SyntaxTreeAssPosObj (
-    Stat                stat )
-{
-    CVar                list;           /* list                            */
-    CVar                pos;            /* position                        */
-    CVar                rhs;            /* right hand side                 */
-
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
-
-    /* compile the list expression                                         */
     list = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* compile and check the position expression                           */
     pos = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
-    SyntaxTreeCheckIntSmallPos( pos );
-
-    /* compile the right hand side                                         */
     rhs = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
 
-    /* emit the code                                                       */
-    if ( HasInfoCVar( rhs, W_INT_SMALL ) ) {
-        Emit( "C_ASS_POSOBJ_INTOBJ( %c, %i, %c )\n", list, pos, rhs );
-    }
-    else {
-        Emit( "C_ASS_POSOBJ( %c, %i, %c )\n", list, pos, rhs );
-    }
+    AssPRec(result, RNamName("list"), list);
+    AssPRec(result, RNamName("pos"), pos);
+    AssPRec(result, RNamName("rhs"), rhs);
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rhs  ) )  FreeTemp( TEMP_CVAR( rhs  ) );
-    if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
-    if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
+    return result;
 }
 
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeAsssPosObj( <stat> )  . . . . . . . . . . . . . . . . . T_ASSS_POSOBJ
-*/
-void SyntaxTreeAsssPosObj (
-    Stat                stat )
+Obj SyntaxTreeAsssPosObj(Stat stat)
 {
-    CVar                list;           /* list                            */
-    CVar                poss;           /* positions                       */
-    CVar                rhss;           /* right hand sides                */
+    Obj result;
+    Obj list;
+    Obj poss;
+    Obj rhss;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("AsssPosObj", 4);
 
-    /* compile the list expression                                         */
     list = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* compile and check the position expression                           */
     poss = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
-
-    /* compile the right hand side                                         */
     rhss = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
 
-    /* emit the code                                                       */
-    Emit( "AsssPosObjCheck( %c, %c, %c );\n", list, poss, rhss );
+    AssPRec(result, RNamName("list"), list);
+    AssPRec(result, RNamName("poss"), poss);
+    AssPRec(result, RNamName("rhss"), rhss);
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rhss ) )  FreeTemp( TEMP_CVAR( rhss ) );
-    if ( IS_TEMP_CVAR( poss ) )  FreeTemp( TEMP_CVAR( poss ) );
-    if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeAssPosObjLev( <stat> )  . . . . . . . . . . . . . .  T_ASS_POSOBJ_LEV
-*/
-void SyntaxTreeAssPosObjLev (
-    Stat                stat )
+Obj SyntaxTreeAssPosObjLev(Stat stat)
 {
-    Emit( "CANNOT COMPILE STATEMENT OF TNUM %d;\n", TNUM_STAT(stat) );
+    /* TODO: Compile this */
+    return Fail;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeAsssPosObjLev( <stat> ) . . . . . . . . . . . . . . T_ASSS_POSOBJ_LEV
-*/
-void SyntaxTreeAsssPosObjLev (
-    Stat                stat )
+Obj SyntaxTreeAsssPosObjLev(Stat stat)
 {
-    Emit( "CANNOT COMPILE STATEMENT OF TNUM %d;\n", TNUM_STAT(stat) );
+    return Fail;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeUnbPosObj( <stat> ) . . . . . . . . . . . . . . . . . .  T_UNB_POSOBJ
-*/
-void SyntaxTreeUnbPosObj (
-    Stat                stat )
+Obj SyntaxTreeUnbPosObj(Stat stat)
 {
-    CVar                list;           /* list, left operand              */
-    CVar                pos;            /* position, left operand          */
+    Obj result;
+    Obj list;
+    Obj pos;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
-
-    /* compile the list expression                                         */
+    result = NewSyntaxTreeNode("UnbPosObj", 4);
     list = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* compile and check the position expression                           */
     pos = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
-    SyntaxTreeCheckIntSmallPos( pos );
 
-    /* emit the code                                                       */
-    Emit( "if ( TNUM_OBJ(%c) == T_POSOBJ ) {\n", list );
-    Emit( "if ( %i <= SIZE_OBJ(%c)/sizeof(Obj)-1 ) {\n", pos, list );
-    Emit( "SET_ELM_PLIST( %c, %i, 0 );\n", list, pos );
-    Emit( "}\n}\n" );
-    Emit( "else {\n" );
-    Emit( "UNB_LIST( %c, %i );\n", list, pos );
-    Emit( "}\n" );
+    AssPRec(result, RNamName("list"), list);
+    AssPRec(result, RNamName("pos"), pos);
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
-    if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeAssComObjName( <stat> ) . . . . . . . . . . . . . . T_ASS_COMOBJ_NAME
-*/
-void SyntaxTreeAssComObjName (
-    Stat                stat )
+Obj SyntaxTreeAssComObjName(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
-    CVar                rhs;            /* rhs, right operand              */
+    Obj result;
+    Obj record;
+    UInt rnam;
+    Obj rhs;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("AssComObjName", 4);
 
-    /* compile the record expression                                       */
     record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* get the name (stored immediately in the statement)                  */
     rnam = (UInt)(ADDR_STAT(stat)[1]);
-    SyntaxTreeSetUseRNam( rnam, COMP_USE_RNAM_ID );
-
-    /* compile the right hand side                                         */
     rhs = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
 
-    /* emit the code for the assignment                                    */
-    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
-    Emit( "AssPRec( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
-    Emit( "#ifdef HPCGAP\n" );
-    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
-    Emit( "AssARecord( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
-    Emit( "#endif\n" );
-    Emit( "}\nelse {\n" );
-    Emit( "ASS_REC( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
-    Emit( "}\n" );
+    AssPRec(result, RNamName("record"), record);
+    AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
+    AssPRec(result, RNamName("rhs"), rhs);
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rhs    ) )  FreeTemp( TEMP_CVAR( rhs    ) );
-    if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeAssComObjExpr( <stat> ) . . . . . . . . . . . . . . T_ASS_COMOBJ_EXPR
-*/
-void SyntaxTreeAssComObjExpr (
-    Stat                stat )
+Obj SyntaxTreeAssComObjExpr(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    CVar                rnam;           /* name, left operand              */
-    CVar                rhs;            /* rhs, right operand              */
+    Obj result;
+    Obj record;
+    Obj rnam;
+    Obj rhs;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("AssComObjExpr", 4);
 
-    /* compile the record expression                                       */
     record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* get the name (stored immediately in the statement)                  */
     rnam = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
-
-    /* compile the right hand side                                         */
     rhs = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
 
-    /* emit the code for the assignment                                    */
-    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
-    Emit( "AssPRec( %c, RNamObj(%c), %c );\n", record, rnam, rhs );
-    Emit( "#ifdef HPCGAP\n" );
-    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
-    Emit( "AssARecord( %c, RNamObj(%c), %c );\n", record, rnam, rhs );
-    Emit( "#endif\n" );
-    Emit( "}\nelse {\n" );
-    Emit( "ASS_REC( %c, RNamObj(%c), %c );\n", record, rnam, rhs );
-    Emit( "}\n" );
+    AssPRec(result, RNamName("record"), record);
+    AssPRec(result, RNamName("rnam"), rnam);
+    AssPRec(result, RNamName("rhs"), rhs);
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rhs    ) )  FreeTemp( TEMP_CVAR( rhs    ) );
-    if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
-    if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeUnbComObjName( <stat> ) . . . . . . . . . . . . . . T_UNB_COMOBJ_NAME
-*/
-void SyntaxTreeUnbComObjName (
-    Stat                stat )
+Obj SyntaxTreeUnbComObjName(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
+    Obj result;
+    Obj record;
+    UInt rnam;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("UnbComObjName", 4);
 
-    /* compile the record expression                                       */
     record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* get the name (stored immediately in the statement)                  */
     rnam = (UInt)(ADDR_STAT(stat)[1]);
-    SyntaxTreeSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
-    /* emit the code for the assignment                                    */
-    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
-    Emit( "UnbPRec( %c, R_%n );\n", record, NAME_RNAM(rnam) );
-    Emit( "#ifdef HPCGAP\n" );
-    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
-    Emit( "UnbARecord( %c, R_%n );\n", record, NAME_RNAM(rnam) );
-    Emit( "#endif\n" );
-    Emit( "}\nelse {\n" );
-    Emit( "UNB_REC( %c, R_%n );\n", record, NAME_RNAM(rnam) );
-    Emit( "}\n" );
+    AssPRec(result, RNamName("record"), record);
+    AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeUnbComObjExpr( <stat> ) . . . . . . . . . . . . . . T_UNB_COMOBJ_EXPR
-*/
-void SyntaxTreeUnbComObjExpr (
-    Stat                stat )
+Obj SyntaxTreeUnbComObjExpr(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
+    Obj result;
+    Obj record;
+    Obj rnam;
 
-    /* print a comment                                                     */
-    if ( SyntaxTreePass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
+    result = NewSyntaxTreeNode("UnbComObjExpr", 4);
 
-    /* compile the record expression                                       */
     record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-
-    /* get the name (stored immediately in the statement)                  */
     rnam = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
-    SyntaxTreeSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
-    /* emit the code for the assignment                                    */
-    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
-    Emit( "UnbPRec( %c, RNamObj(%c) );\n", record, rnam );
-    Emit( "#ifdef HPCGAP\n" );
-    Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
-    Emit( "UnbARecord( %c, RNamObj(%c) );\n", record, rnam );
-    Emit( "#endif\n" );
-    Emit( "}\nelse {\n" );
-    Emit( "UNB_REC( %c, RNamObj(%c) );\n", record, rnam );
-    Emit( "}\n" );
+    AssPRec(result, RNamName("record"), record);
+    AssPRec(result, RNamName("rnam"), rnam);
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
-    if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
+    return result;
 }
 
-/****************************************************************************
-**
-*F  SyntaxTreeEmpty( <stat> )  . . . . . . . . . . . . . . . . . . . . . . . T_EMPY
-*/
-void SyntaxTreeEmpty (
-    Stat                stat )
+Obj SyntaxTreeEmpty(Stat stat)
 {
-  Emit("\n/* ; */\n");
-  Emit(";");
+    return 0;
 }
-  
-/****************************************************************************
-**
-*F  SyntaxTreeInfo( <stat> )  . . . . . . . . . . . . . . . . . . . . . . .  T_INFO
-*/
-void SyntaxTreeInfo (
-    Stat                stat )
-{
-    CVar                tmp;
-    CVar                sel;
-    CVar                lev;
-    CVar                lst;
-    Int                 narg;
-    Int                 i;
 
-    Emit( "\n/* Info( ... ); */\n" );
+Obj SyntaxTreeInfo(Stat stat)
+{
+    Obj result;
+    Obj sel;
+    Obj lev;
+    Obj lst;
+    Obj tmp;
+    UInt narg, i;
+
+    result = NewSyntaxTreeNode("Info", 4);
+
     sel = SyntaxTreeExpr( ARGI_INFO( stat, 1 ) );
     lev = SyntaxTreeExpr( ARGI_INFO( stat, 2 ) );
-    lst = CVAR_TEMP( NewTemp( "lst" ) );
-    tmp = CVAR_TEMP( NewTemp( "tmp" ) );
-    Emit( "%c = CALL_2ARGS( InfoDecision, %c, %c );\n", tmp, sel, lev );
-    Emit( "if ( %c == True ) {\n", tmp );
-    if ( IS_TEMP_CVAR( tmp ) )  FreeTemp( TEMP_CVAR( tmp ) );
+
+    AssPRec(result, RNamName("sel"), sel);
+    AssPRec(result, RNamName("lev"), lev);
+
     narg = NARG_SIZE_INFO(SIZE_STAT(stat))-2;
-    Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", lst, narg );
-    Emit( "SET_LEN_PLIST( %c, %d );\n", lst, narg );
-    for ( i = 1;  i <= narg;  i++ ) {
+    lst = NEW_PLIST(T_PLIST, narg);
+    SET_LEN_PLIST(lst, narg);
+
+    for(i=1; i<=narg; i++) {
         tmp = SyntaxTreeExpr( ARGI_INFO( stat, i+2 ) );
-        Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lst, i, tmp );
-        Emit( "CHANGED_BAG(%c);\n", lst );
-        if ( IS_TEMP_CVAR( tmp ) )  FreeTemp( TEMP_CVAR( tmp ) );
+        SET_ELM_PLIST(lst, i, tmp);
+        CHANGED_BAG(lst);
     }
-    Emit( "CALL_1ARGS( InfoDoPrint, %c );\n", lst );
-    Emit( "}\n" );
+    AssPRec(result, RNamName("args"), lst);
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( lst ) )  FreeTemp( TEMP_CVAR( lst ) );
-    if ( IS_TEMP_CVAR( lev ) )  FreeTemp( TEMP_CVAR( lev ) );
-    if ( IS_TEMP_CVAR( sel ) )  FreeTemp( TEMP_CVAR( sel ) );
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeAssert2( <stat> ) . . . . . . . . . . . . . . . . . .  T_ASSERT_2ARGS
-*/
-void SyntaxTreeAssert2 (
-    Stat                stat )
+Obj SyntaxTreeAssert2(Stat stat)
 {
-    CVar                lev;            /* the level                       */
-    CVar                cnd;            /* the condition                   */
+    Obj result;
+    Obj lev;
+    Obj cond;
 
-    Emit( "\n/* Assert( ... ); */\n" );
+    result = NewSyntaxTreeNode("Assert", 4);
+
     lev = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-    Emit( "if ( ! LT(CurrentAssertionLevel, %c) ) {\n", lev );
-    cnd = SyntaxTreeBoolExpr( ADDR_STAT(stat)[1] );
-    Emit( "if ( ! %c ) {\n", cnd );
-    Emit( "ErrorReturnVoid(\"Assertion failure\",0L,0L,\"you may 'return;'\"" );
-    Emit( ");\n");
-    Emit( "}\n" );
-    Emit( "}\n" );
+    cond = SyntaxTreeBoolExpr( ADDR_STAT(stat)[1] );
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( cnd ) )  FreeTemp( TEMP_CVAR( cnd ) );
-    if ( IS_TEMP_CVAR( lev ) )  FreeTemp( TEMP_CVAR( lev ) );
+    AssPRec(result, RNamName("level"), lev);
+    AssPRec(result, RNamName("condition"), cond);
+
+    return result;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeAssert3( <stat> ) . . . . . . . . . . . . . . . . . .  T_ASSERT_3ARGS
-*/
-void SyntaxTreeAssert3 (
-    Stat                stat )
+Obj SyntaxTreeAssert3(Stat stat)
 {
-    CVar                lev;            /* the level                       */
-    CVar                cnd;            /* the condition                   */
-    CVar                msg;            /* the message                     */
+    Obj result;
+    Obj lev;
+    Obj cond;
+    Obj msg;
 
-    Emit( "\n/* Assert( ... ); */\n" );
+    result = NewSyntaxTreeNode("Assert", 4);
+
     lev = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-    Emit( "if ( ! LT(CurrentAssertionLevel, %c) ) {\n", lev );
-    cnd = SyntaxTreeBoolExpr( ADDR_STAT(stat)[1] );
-    Emit( "if ( ! %c ) {\n", cnd );
+    cond = SyntaxTreeBoolExpr( ADDR_STAT(stat)[1] );
     msg = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
-    Emit( "if ( %c != (Obj)(UInt)0 )", msg );
-    Emit( "{\n if ( IS_STRING_REP ( %c ) )\n", msg);
-    Emit( "   PrintString1( %c);\n else\n   PrintObj(%c);\n}\n", msg, msg );
-    Emit( "}\n" );
-    Emit( "}\n" );
 
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( msg ) )  FreeTemp( TEMP_CVAR( msg ) );
-    if ( IS_TEMP_CVAR( cnd ) )  FreeTemp( TEMP_CVAR( cnd ) );
-    if ( IS_TEMP_CVAR( lev ) )  FreeTemp( TEMP_CVAR( lev ) );
+    AssPRec(result, RNamName("level"), lev);
+    AssPRec(result, RNamName("condition"), cond);
+    AssPRec(result, RNamName("message"), msg);
+
+    return result;
 }
 
 static Obj SyntaxTreeFunc( Obj func )
@@ -2107,23 +1804,25 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* announce the global variables                                       */
+    /*
     InitGlobalBag( &SyntaxTreeGVar,  "src/compiler.c:SyntaxTreeInfoGVar"  );
     InitGlobalBag( &SyntaxTreeRNam,  "src/compiler.c:SyntaxTreeInfoRNam"  );
     InitGlobalBag( &SyntaxTreeFunctions, "src/compiler.c:SyntaxTreeFunctions" );
+    */
 
     /* enter the expression compilers into the table                       */
     for ( i = 0; i < 256; i++ ) {
         SyntaxTreeExprFuncs[ i ] = SyntaxTreeUnknownExpr;
     }
 
-    SyntaxTreeExprFuncs[ T_FUNCCALL_0ARGS  ] = SyntaxTreeFunccall0to6Args;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_1ARGS  ] = SyntaxTreeFunccall0to6Args;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_2ARGS  ] = SyntaxTreeFunccall0to6Args;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_3ARGS  ] = SyntaxTreeFunccall0to6Args;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_4ARGS  ] = SyntaxTreeFunccall0to6Args;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_5ARGS  ] = SyntaxTreeFunccall0to6Args;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_6ARGS  ] = SyntaxTreeFunccall0to6Args;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_XARGS  ] = SyntaxTreeFunccallXArgs;
+    SyntaxTreeExprFuncs[ T_FUNCCALL_0ARGS  ] = SyntaxTreeFunccall;
+    SyntaxTreeExprFuncs[ T_FUNCCALL_1ARGS  ] = SyntaxTreeFunccall;
+    SyntaxTreeExprFuncs[ T_FUNCCALL_2ARGS  ] = SyntaxTreeFunccall;
+    SyntaxTreeExprFuncs[ T_FUNCCALL_3ARGS  ] = SyntaxTreeFunccall;
+    SyntaxTreeExprFuncs[ T_FUNCCALL_4ARGS  ] = SyntaxTreeFunccall;
+    SyntaxTreeExprFuncs[ T_FUNCCALL_5ARGS  ] = SyntaxTreeFunccall;
+    SyntaxTreeExprFuncs[ T_FUNCCALL_6ARGS  ] = SyntaxTreeFunccall;
+    SyntaxTreeExprFuncs[ T_FUNCCALL_XARGS  ] = SyntaxTreeFunccall;
     SyntaxTreeExprFuncs[ T_FUNC_EXPR       ] = SyntaxTreeFuncExpr;
 
     SyntaxTreeExprFuncs[ T_OR              ] = SyntaxTreeOr;
@@ -2194,30 +1893,30 @@ static Int InitKernel (
         SyntaxTreeBoolExprFuncs[ i ] = SyntaxTreeUnknownBool;
     }
 
-    SyntaxTreeBoolExprFuncs[ T_OR              ] = SyntaxTreeOrBool;
-    SyntaxTreeBoolExprFuncs[ T_AND             ] = SyntaxTreeAndBool;
-    SyntaxTreeBoolExprFuncs[ T_NOT             ] = SyntaxTreeNotBool;
-    SyntaxTreeBoolExprFuncs[ T_EQ              ] = SyntaxTreeEqBool;
-    SyntaxTreeBoolExprFuncs[ T_NE              ] = SyntaxTreeNeBool;
-    SyntaxTreeBoolExprFuncs[ T_LT              ] = SyntaxTreeLtBool;
-    SyntaxTreeBoolExprFuncs[ T_GE              ] = SyntaxTreeGeBool;
-    SyntaxTreeBoolExprFuncs[ T_GT              ] = SyntaxTreeGtBool;
-    SyntaxTreeBoolExprFuncs[ T_LE              ] = SyntaxTreeLeBool;
-    SyntaxTreeBoolExprFuncs[ T_IN              ] = SyntaxTreeInBool;
+    SyntaxTreeBoolExprFuncs[ T_OR              ] = SyntaxTreeOr;
+    SyntaxTreeBoolExprFuncs[ T_AND             ] = SyntaxTreeAnd;
+    SyntaxTreeBoolExprFuncs[ T_NOT             ] = SyntaxTreeNot;
+    SyntaxTreeBoolExprFuncs[ T_EQ              ] = SyntaxTreeEq;
+    SyntaxTreeBoolExprFuncs[ T_NE              ] = SyntaxTreeNe;
+    SyntaxTreeBoolExprFuncs[ T_LT              ] = SyntaxTreeLt;
+    SyntaxTreeBoolExprFuncs[ T_GE              ] = SyntaxTreeGe;
+    SyntaxTreeBoolExprFuncs[ T_GT              ] = SyntaxTreeGt;
+    SyntaxTreeBoolExprFuncs[ T_LE              ] = SyntaxTreeLe;
+    SyntaxTreeBoolExprFuncs[ T_IN              ] = SyntaxTreeIn;
 
     /* enter the statement compilers into the table                        */
     for ( i = 0; i < 256; i++ ) {
         SyntaxTreeStatFuncs[ i ] = SyntaxTreeUnknownStat;
     }
 
-    SyntaxTreeStatFuncs[ T_PROCCALL_0ARGS  ] = SyntaxTreeProccall0to6Args;
-    SyntaxTreeStatFuncs[ T_PROCCALL_1ARGS  ] = SyntaxTreeProccall0to6Args;
-    SyntaxTreeStatFuncs[ T_PROCCALL_2ARGS  ] = SyntaxTreeProccall0to6Args;
-    SyntaxTreeStatFuncs[ T_PROCCALL_3ARGS  ] = SyntaxTreeProccall0to6Args;
-    SyntaxTreeStatFuncs[ T_PROCCALL_4ARGS  ] = SyntaxTreeProccall0to6Args;
-    SyntaxTreeStatFuncs[ T_PROCCALL_5ARGS  ] = SyntaxTreeProccall0to6Args;
-    SyntaxTreeStatFuncs[ T_PROCCALL_6ARGS  ] = SyntaxTreeProccall0to6Args;
-    SyntaxTreeStatFuncs[ T_PROCCALL_XARGS  ] = SyntaxTreeProccallXArgs;
+    SyntaxTreeStatFuncs[ T_PROCCALL_0ARGS  ] = SyntaxTreeProccall;
+    SyntaxTreeStatFuncs[ T_PROCCALL_1ARGS  ] = SyntaxTreeProccall;
+    SyntaxTreeStatFuncs[ T_PROCCALL_2ARGS  ] = SyntaxTreeProccall;
+    SyntaxTreeStatFuncs[ T_PROCCALL_3ARGS  ] = SyntaxTreeProccall;
+    SyntaxTreeStatFuncs[ T_PROCCALL_4ARGS  ] = SyntaxTreeProccall;
+    SyntaxTreeStatFuncs[ T_PROCCALL_5ARGS  ] = SyntaxTreeProccall;
+    SyntaxTreeStatFuncs[ T_PROCCALL_6ARGS  ] = SyntaxTreeProccall;
+    SyntaxTreeStatFuncs[ T_PROCCALL_XARGS  ] = SyntaxTreeProccall;
 
     SyntaxTreeStatFuncs[ T_SEQ_STAT        ] = SyntaxTreeSeqStat;
     SyntaxTreeStatFuncs[ T_SEQ_STAT2       ] = SyntaxTreeSeqStat;
