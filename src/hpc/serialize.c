@@ -1035,9 +1035,11 @@ Obj FuncSERIALIZE_NATIVE_STRING(Obj self, Obj obj) {
 
 Obj FuncDESERIALIZE_NATIVE_STRING(Obj self, Obj string) {
   Obj result;
-  SerializationState state;
+  volatile SerializationState state;
+  volatile syJmp_buf readJmpError;
+
   SaveSerializationState(&state);
-  syJmp_buf readJmpError;
+
   if (!IS_STRING(string))
     ErrorQuit("DESERIALIZE_NATIVE_STRING: argument must be a string", 0L, 0L);
   memcpy(readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf));
