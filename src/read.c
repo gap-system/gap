@@ -1904,7 +1904,9 @@ void ReadFactor (
         ReadAtom( follow, 'r' );
 
         /* interpret the unary minus                                       */
-        if ( sign2 == -1 && ! READ_ERROR() ) { IntrAInv(); }
+        if ( sign2 == -1 ) {
+            if ( ! READ_ERROR() ) { IntrAInv(); }
+        }
 
         /* interpret the power                                             */
         if ( ! READ_ERROR() ) { IntrPow(); }
@@ -1915,7 +1917,9 @@ void ReadFactor (
     }
 
     /* interpret the unary minus                                           */
-    if ( sign1 == -1 && ! READ_ERROR() ) { IntrAInv(); }
+    if ( sign1 == -1 ) {
+        if ( ! READ_ERROR() ) { IntrAInv(); }
+    }
 }
 
 
