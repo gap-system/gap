@@ -178,11 +178,8 @@ void ViewObjHandler ( Obj obj )
       PrintObj( obj );
     }
     Pr( "\n", 0L, 0L );
-    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
   }
-  else {
-    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
-  }
+  memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
 }
 
 
