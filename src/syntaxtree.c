@@ -21,11 +21,11 @@
 #include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "calls.h"               /* generic call mechanism          */
-/*N 1996/06/16 mschoene func expressions should be different from funcs    */
 
 #include        "lists.h"               /* generic lists                   */
 
 #include        "records.h"             /* generic records                 */
+#include "permutat.h"
 #include        "precord.h"             /* plain records                   */
 
 #include        "plist.h"               /* plain lists                     */
@@ -44,704 +44,13 @@
 #include        "vars.h"                /* variables                       */
 
 
-/****************************************************************************
-**
-
-*F * * * * * * * * * * * * * compilation flags  * * * * * * * * * * * * * * *
-*/
-
-#if 0
-/****************************************************************************
-**
-
-
-*V  SyntaxTreeFastIntArith  . . option to emit code that handles small ints. faster
-*/
-Int SyntaxTreeFastIntArith;
-
-
-/****************************************************************************
-**
-*V  SyntaxTreeFastPlainLists  . option to emit code that handles plain lists faster
-*/
-Int SyntaxTreeFastPlainLists ;
-
-
-/****************************************************************************
-**
-*V  SyntaxTreeFastListFuncs . . option to emit code that inlines calls to functions
-*/
-Int SyntaxTreeFastListFuncs;
-
-
-/****************************************************************************
-**
-*V  SyntaxTreeCheckTypes  . . . . option to emit code that assumes all types are ok.
-*/
-Int SyntaxTreeCheckTypes ;
-
-
-/****************************************************************************
-**
-*V  SyntaxTreeCheckListElements .  option to emit code that assumes list elms exist
-*/
-Int SyntaxTreeCheckListElements;
-
-/****************************************************************************
-**
-*V  SyntaxTreeOptNames . .  names for all the compiler options passed by gac
-**
-*/
-
-struct SyntaxTreeOptStruc { const Char *extname;
-  Int *variable;
-  Int val;};
-
-struct SyntaxTreeOptStruc CompOptNames[] = {
-  { "FAST_INT_ARITH", &SyntaxTreeFastIntArith, 1 },
-  { "FAST_PLAIN_LISTS", &SyntaxTreeFastPlainLists, 1 },
-  { "FAST_LIST_FUNCS", &SyntaxTreeFastListFuncs, 1 },
-  { "NO_CHECK_TYPES", &SyntaxTreeCheckTypes, 0 },
-  { "NO_CHECK_LIST_ELMS", &SyntaxTreeCheckListElements, 0 }};
-
-#define N_SyntaxTreeOpts  (sizeof(CompOptNames)/sizeof(struct CompOptStruc))
-
-
-/****************************************************************************
-**
-*F  SetSyntaxTreeileOpts( <string> ) . . parse the compiler options from <string>
-**                                 and set the appropriate variables
-**                                 unrecognised options are ignored for now
-*/
 #include <ctype.h>
 
-
-/****************************************************************************
-**
-*T  CVar  . . . . . . . . . . . . . . . . . . . . . . .  type for C variables
-**
-**  A C variable represents the result of compiling an expression.  There are
-**  three cases (distinguished by the least significant two bits).
-**
-**  If the  expression is an  immediate integer  expression, the  C  variable
-**  contains the value of the immediate integer expression.
-**
-**  If the  expression is an immediate reference  to a  local variable, the C
-**  variable contains the index of the local variable.
-**
-**  Otherwise the expression  compiler emits code  that puts the value of the
-**  expression into a  temporary variable,  and  the C variable contains  the
-**  index of that temporary variable.
-*/
-typedef UInt           CVar;
-
-#define IS_INTG_CVAR(c) ((((UInt)(c)) & 0x03) == 0x01)
-#define INTG_CVAR(c)    (((Int)(c)) >> 2)
-#define CVAR_INTG(i)    ((((UInt)(i)) << 2) + 0x01)
-
-#define IS_TEMP_CVAR(c) ((((UInt)(c)) & 0x03) == 0x02)
-#define TEMP_CVAR(c)    (((UInt)(c)) >> 2)
-#define CVAR_TEMP(l)    ((((UInt)(l)) << 2) + 0x02)
-
-#define IS_LVAR_CVAR(c) ((((UInt)(c)) & 0x03) == 0x03)
-#define LVAR_CVAR(c)    (((UInt)(c)) >> 2)
-#define CVAR_LVAR(l)    ((((UInt)(l)) << 2) + 0x03)
-
-
-/****************************************************************************
-**
-*F  SetInfoCVar( <cvar>, <type> ) . . . . . . .  set the type of a C variable
-*F  GetInfoCVar( <cvar> ) . . . . . . . . . . .  get the type of a C variable
-*F  HasInfoCVar( <cvar>, <type> ) . . . . . . . test the type of a C variable
-**
-*F  NewInfoCVars()  . . . . . . . . . allocate a new info bag for C variables
-*F  CopyInfoCVars( <dst>, <src> ) . .  copy between info bags for C variables
-*F  MergeInfoCVars( <dst>, <src> )  . . . merge two info bags for C variables
-*F  IsEqInfoCVars( <dst>, <src> ) . . . compare two info bags for C variables
-**
-**  With each function we  associate a C  variables information bag.  In this
-**  bag we store  the number of the  function, the number of local variables,
-**  the  number of local  variables that  are used  as higher variables,  the
-**  number  of temporaries  used,  the number of  loop  variables needed, the
-**  current  number  of used temporaries.
-**
-**  Furthermore for  each local variable and  temporary we store what we know
-**  about this local variable or temporary, i.e., whether the variable has an
-**  assigned value, whether that value is an integer, a boolean, etc.
-**
-**  'SetInfoCVar' sets the    information   for  the  C variable      <cvar>.
-**  'GetInfoCVar' gets   the   information  for   the  C    variable  <cvar>.
-**  'HasInfoCVar' returns true if the C variable <cvar> has the type <type>.
-**
-**  'NewInfoCVars'  creates    a    new    C  variables     information  bag.
-**  'CopyInfoCVars' copies the C  variables information from <src> to  <dst>.
-**  'MergeInfoCVars' merges the C variables information  from <src> to <dst>,
-**  i.e., if there are two paths to a  certain place in  the source and <dst>
-**  is the information gathered  along one path  and <src> is the information
-**  gathered along the other path, then  'MergeInfoCVars' stores in <dst> the
-**  information for   that   point  (independent   of  the  path  travelled).
-**  'IsEqInfoCVars' returns   true  if <src>    and <dst> contain   the  same
-**  information.
-**
-**  Note that  the numeric  values for the  types  are defined such  that  if
-**  <type1> implies <type2>, then <type1> is a bitwise superset of <type2>.
-*/
-typedef UInt4           LVar;
-
-#define INFO_FEXP(fexp)         PROF_FUNC(fexp)
-#define NEXT_INFO(info)         PTR_BAG(info)[0]
-#define NR_INFO(info)           (*((Int*)(PTR_BAG(info)+1)))
-#define NLVAR_INFO(info)        (*((Int*)(PTR_BAG(info)+2)))
-#define NHVAR_INFO(info)        (*((Int*)(PTR_BAG(info)+3)))
-#define NTEMP_INFO(info)        (*((Int*)(PTR_BAG(info)+4)))
-#define NLOOP_INFO(info)        (*((Int*)(PTR_BAG(info)+5)))
-#define CTEMP_INFO(info)        (*((Int*)(PTR_BAG(info)+6)))
-#define TNUM_LVAR_INFO(info,i)  (*((Int*)(PTR_BAG(info)+7+(i))))
-
-#define TNUM_TEMP_INFO(info,i)  \
-    (*((Int*)(PTR_BAG(info)+7+NLVAR_INFO(info)+(i))))
-
-#define SIZE_INFO(nlvar,ntemp)  (sizeof(Int) * (8 + (nlvar) + (ntemp)))
-
-#define W_UNUSED                0       /* TEMP is currently unused        */
-#define W_HIGHER                (1L<<0) /* LVAR is used as higher variable */
-#define W_UNKNOWN               ((1L<<1) | W_HIGHER)
-#define W_UNBOUND               ((1L<<2) | W_UNKNOWN)
-#define W_BOUND                 ((1L<<3) | W_UNKNOWN)
-#define W_INT                   ((1L<<4) | W_BOUND)
-#define W_INT_SMALL             ((1L<<5) | W_INT)
-#define W_INT_POS               ((1L<<6) | W_INT)
-#define W_BOOL                  ((1L<<7) | W_BOUND)
-#define W_FUNC                  ((1L<<8) | W_BOUND)
-#define W_LIST                  ((1L<<9) | W_BOUND)
-
-#define W_INT_SMALL_POS         (W_INT_SMALL | W_INT_POS)
-
-void            SetInfoCVar (
-    CVar                cvar,
-    UInt                type )
-{
-    Bag                 info;           /* its info bag                    */
-
-    /* get the information bag                                             */
-    info = INFO_FEXP( CURR_FUNC );
-
-    /* set the type of a temporary                                         */
-    if ( IS_TEMP_CVAR(cvar) ) {
-        TNUM_TEMP_INFO( info, TEMP_CVAR(cvar) ) = type;
-    }
-
-    /* set the type of a lvar (but do not change if its a higher variable) */
-    else if ( IS_LVAR_CVAR(cvar)
-           && TNUM_LVAR_INFO( info, LVAR_CVAR(cvar) ) != W_HIGHER ) {
-        TNUM_LVAR_INFO( info, LVAR_CVAR(cvar) ) = type;
-    }
-}
-
-Int             GetInfoCVar (
-    CVar                cvar )
-{
-    Bag                 info;           /* its info bag                    */
-
-    /* get the information bag                                             */
-    info = INFO_FEXP( CURR_FUNC );
-
-    /* get the type of an integer                                          */
-    if ( IS_INTG_CVAR(cvar) ) {
-        return ((0 < INTG_CVAR(cvar)) ? W_INT_SMALL_POS : W_INT_SMALL);
-    }
-
-    /* get the type of a temporary                                         */
-    else if ( IS_TEMP_CVAR(cvar) ) {
-        return TNUM_TEMP_INFO( info, TEMP_CVAR(cvar) );
-    }
-
-    /* get the type of a lvar                                              */
-    else if ( IS_LVAR_CVAR(cvar) ) {
-        return TNUM_LVAR_INFO( info, LVAR_CVAR(cvar) );
-    }
-
-    /* hmm, avoid warning by compiler                                      */
-    else {
-        return 0;
-    }
-}
-
-Int             HasInfoCVar (
-    CVar                cvar,
-    Int                 type )
-{
-    return ((GetInfoCVar( cvar ) & type) == type);
-}
-
-
-Bag             NewInfoCVars ( void )
-{
-    Bag                 old;
-    Bag                 new;
-    old = INFO_FEXP( CURR_FUNC );
-    new = NewBag( TNUM_BAG(old), SIZE_BAG(old) );
-    return new;
-}
-
-void            CopyInfoCVars (
-    Bag                 dst,
-    Bag                 src )
-{
-    Int                 i;
-    if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
-    if ( SIZE_BAG(src) < SIZE_BAG(dst) )  ResizeBag( src, SIZE_BAG(dst) );
-    NR_INFO(dst)    = NR_INFO(src);
-    NLVAR_INFO(dst) = NLVAR_INFO(src);
-    NHVAR_INFO(dst) = NHVAR_INFO(src);
-    NTEMP_INFO(dst) = NTEMP_INFO(src);
-    NLOOP_INFO(dst) = NLOOP_INFO(src);
-    CTEMP_INFO(dst) = CTEMP_INFO(src);
-    for ( i = 1; i <= NLVAR_INFO(src); i++ ) {
-        TNUM_LVAR_INFO(dst,i) = TNUM_LVAR_INFO(src,i);
-    }
-    for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
-        TNUM_TEMP_INFO(dst,i) = TNUM_TEMP_INFO(src,i);
-    }
-}
-
-void            MergeInfoCVars (
-    Bag                 dst,
-    Bag                 src )
-{
-    Int                 i;
-    if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
-    if ( SIZE_BAG(src) < SIZE_BAG(dst) )  ResizeBag( src, SIZE_BAG(dst) );
-    if ( NTEMP_INFO(dst)<NTEMP_INFO(src) )  NTEMP_INFO(dst)=NTEMP_INFO(src);
-    for ( i = 1; i <= NLVAR_INFO(src); i++ ) {
-        TNUM_LVAR_INFO(dst,i) &= TNUM_LVAR_INFO(src,i);
-    }
-    for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
-        TNUM_TEMP_INFO(dst,i) &= TNUM_TEMP_INFO(src,i);
-    }
-}
-
-Int             IsEqInfoCVars (
-    Bag                 dst,
-    Bag                 src )
-{
-    Int                 i;
-    if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
-    if ( SIZE_BAG(src) < SIZE_BAG(dst) )  ResizeBag( src, SIZE_BAG(dst) );
-    for ( i = 1; i <= NLVAR_INFO(src); i++ ) {
-        if ( TNUM_LVAR_INFO(dst,i) != TNUM_LVAR_INFO(src,i) ) {
-            return 0;
-        }
-    }
-    for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
-        if ( TNUM_TEMP_INFO(dst,i) != TNUM_TEMP_INFO(src,i) ) {
-            return 0;
-        }
-    }
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  NewTemp( <name> ) . . . . . . . . . . . . . . .  allocate a new temporary
-*F  FreeTemp( <temp> )  . . . . . . . . . . . . . . . . . .  free a temporary
-**
-**  'NewTemp' allocates  a  new  temporary   variable (<name>  is   currently
-**  ignored).
-**
-**  'FreeTemp' frees the temporary <temp>.
-**
-**  Currently  allocations and deallocations   of  temporaries are done  in a
-**  strict nested (laff -- last allocated, first freed) order.  This means we
-**  do not have to search for unused temporaries.
-*/
-typedef UInt4           Temp;
-
-Temp            NewTemp (
-    const Char *        name )
-{
-    Temp                temp;           /* new temporary, result           */
-    Bag                 info;           /* information bag                 */
-
-    /* get the information bag                                             */
-    info = INFO_FEXP( CURR_FUNC );
-
-    /* take the next available temporary                                   */
-    CTEMP_INFO( info )++;
-    temp = CTEMP_INFO( info );
-
-    /* maybe make room for more temporaries                                */
-    if ( NTEMP_INFO( info ) < temp ) {
-        if ( SIZE_BAG(info) < SIZE_INFO( NLVAR_INFO(info), temp ) ) {
-            ResizeBag( info, SIZE_INFO( NLVAR_INFO(info), temp+7 ) );
-        }
-        NTEMP_INFO( info ) = temp;
-    }
-    TNUM_TEMP_INFO( info, temp ) = W_UNKNOWN;
-
-    /* return the temporary                                                */
-    return temp;
-}
-
-void            FreeTemp (
-    Temp                temp )
-{
-    Bag                 info;           /* information bag                 */
-
-    /* get the information bag                                             */
-    info = INFO_FEXP( CURR_FUNC );
-
-    /* check that deallocations happens in the correct order               */
-    if ( temp != CTEMP_INFO( info ) && SyntaxTreePass == 2 ) {
-        Pr("PROBLEM: freeing t_%d, should be t_%d\n",(Int)temp,CTEMP_INFO(info));
-    }
-
-    /* free the temporary                                                  */
-    TNUM_TEMP_INFO( info, temp ) = W_UNUSED;
-    CTEMP_INFO( info )--;
-}
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeSetUseHVar( <hvar> )  . . . . . . . . register use of higher variable
-*F  SyntaxTreeGetUseHVar( <hvar> )  . . . . . . . . get use mode of higher variable
-*F  GetLevlHVar( <hvar> ) . . . . . . . . . . .  get level of higher variable
-*F  GetIndxHVar( <hvar> ) . . . . . . . . . . .  get index of higher variable
-**
-**  'SyntaxTreeSetUseHVar'  register (during pass 1)   that the variable <hvar>  is
-**  used  as   higher  variable, i.e.,  is  referenced   from inside  a local
-**  function.  Such variables  must be allocated  in  a stack frame  bag (and
-**  cannot be mapped to C variables).
-**
-**  'SyntaxTreeGetUseHVar' returns nonzero if the variable <hvar> is used as higher
-**  variable.
-**
-**  'GetLevlHVar' returns the level of the  higher variable <hvar>, i.e., the
-**  number of  frames  that must be  walked upwards   for the  one containing
-**  <hvar>.  This may be properly  smaller than 'LEVEL_HVAR(<hvar>)', because
-**  only those compiled functions that have local variables  that are used as
-**  higher variables allocate a stack frame.
-**
-**  'GetIndxHVar' returns the index of the higher  variable <hvar>, i.e., the
-**  position of <hvar> in the stack frame.  This may be properly smaller than
-**  'INDEX_HVAR(<hvar>)', because only those  local variable that are used as
-**  higher variables are allocated in a stack frame.
-*/
-typedef UInt4           HVar;
-
-void            SyntaxTreeSetUseHVar (
-    HVar                hvar )
-{
-    Bag                 info;           /* its info bag                    */
-    Int                 i;              /* loop variable                   */
-
-    /* only mark in pass 1                                                 */
-    if ( SyntaxTreePass != 1 )  return;
-
-    /* walk up                                                             */
-    info = INFO_FEXP( CURR_FUNC );
-    for ( i = 1; i <= (hvar >> 16); i++ ) {
-        info = NEXT_INFO( info );
-    }
-
-    /* set mark                                                            */
-    if ( TNUM_LVAR_INFO( info, (hvar & 0xFFFF) ) != W_HIGHER ) {
-        TNUM_LVAR_INFO( info, (hvar & 0xFFFF) ) = W_HIGHER;
-        NHVAR_INFO(info) = NHVAR_INFO(info) + 1;
-    }
-
-}
-
-Int             SyntaxTreeGetUseHVar (
-    HVar                hvar )
-{
-    Bag                 info;           /* its info bag                    */
-    Int                 i;              /* loop variable                   */
-
-    /* walk up                                                             */
-    info = INFO_FEXP( CURR_FUNC );
-    for ( i = 1; i <= (hvar >> 16); i++ ) {
-        info = NEXT_INFO( info );
-    }
-
-    /* get mark                                                            */
-    return (TNUM_LVAR_INFO( info, (hvar & 0xFFFF) ) == W_HIGHER);
-}
-
-UInt            GetLevlHVar (
-    HVar                hvar )
-{
-    UInt                levl;           /* level of higher variable        */
-    Bag                 info;           /* its info bag                    */
-    Int                 i;              /* loop variable                   */
-
-    /* walk up                                                             */
-    levl = 0;
-    info = INFO_FEXP( CURR_FUNC );
-#if 0
-    if ( NHVAR_INFO(info) != 0 ) 
-#endif
-      levl++;
-    for ( i = 1; i <= (hvar >> 16); i++ ) {
-        info = NEXT_INFO( info );
-#if 0
-        if ( NHVAR_INFO(info) != 0 ) 
-#endif
-          levl++;
-    }
-
-    /* return level (the number steps to go up)                            */
-    return levl - 1;
-}
-
-UInt            GetIndxHVar (
-    HVar                hvar )
-{
-    UInt                indx;           /* index of higher variable        */
-    Bag                 info;           /* its info bag                    */
-    Int                 i;              /* loop variable                   */
-
-    /* walk up                                                             */
-    info = INFO_FEXP( CURR_FUNC );
-    for ( i = 1; i <= (hvar >> 16); i++ ) {
-        info = NEXT_INFO( info );
-    }
-
-    /* walk right                                                          */
-    indx = 0;
-    for ( i = 1; i <= (hvar & 0xFFFF); i++ ) {
-        if ( TNUM_LVAR_INFO( info, i ) == W_HIGHER )  indx++;
-    }
-
-    /* return the index                                                    */
-    return indx;
-}
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeSetUseGVar( <gvar>, <mode> )  . . . . register use of global variable
-*F  SyntaxTreeGetUseGVar( <gvar> )  . . . . . . . . get use mode of global variable
-**
-**  'SyntaxTreeSetUseGVar' registers (during pass 1) the use of the global variable
-**  with identifier <gvar>.
-**
-**  'SyntaxTreeGetUseGVar'  returns the bitwise OR  of all the <mode> arguments for
-**  the global variable with identifier <gvar>.
-**
-**  Currently the interpretation of the <mode> argument is as follows
-**
-**  If '<mode> &  COMP_USE_GVAR_ID' is nonzero, then  the produced code shall
-**  define  and initialize 'G_<name>'    with  the identifier of  the  global
-**  variable (which may  be different from  <gvar>  by the time the  compiled
-**  code is actually run).
-**
-**  If '<mode> & COMP_USE_GVAR_COPY' is nonzero, then the produced code shall
-**  define  and initialize 'GC_<name>' as a  copy of  the global variable
-**  (see 'InitCopyGVar' in 'gvars.h').
-**
-**  If '<mode> & COMP_USE_GVAR_FOPY' is nonzero, then the produced code shall
-**  define and  initialize  'GF_<name>' as   a  function copy  of the  global
-**  variable (see 'InitFopyGVar' in 'gvars.h').
-*/
-typedef UInt    GVar;
-
-#define COMP_USE_GVAR_ID        (1L << 0)
-#define COMP_USE_GVAR_COPY      (1L << 1)
-#define COMP_USE_GVAR_FOPY      (1L << 2)
-
-Bag             SyntaxTreeInfoGVar;
-
-void            SyntaxTreeSetUseGVar (
-    GVar                gvar,
-    UInt                mode )
-{
-    /* only mark in pass 1                                                 */
-    if ( SyntaxTreePass != 1 )  return;
-
-    /* resize if neccessary                                                */
-    if ( SIZE_OBJ(SyntaxTreeInfoGVar)/sizeof(UInt) <= gvar ) {
-        ResizeBag( SyntaxTreeInfoGVar, sizeof(UInt)*(gvar+1) );
-    }
-
-    /* or with <mode>                                                      */
-    ((UInt*)PTR_BAG(SyntaxTreeInfoGVar))[gvar] |= mode;
-}
-
-UInt            SyntaxTreeGetUseGVar (
-    GVar                gvar )
-{
-    return ((UInt*)PTR_BAG(SyntaxTreeInfoGVar))[gvar];
-}
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeSetUseRNam( <rnam>, <mode> )  . . . . . . register use of record name
-*F  SyntaxTreeGetUseRNam( <rnam> )  . . . . . . . . . . get use mode of record name
-**
-**  'SyntaxTreeSetUseRNam' registers  (during pass  1) the use   of the record name
-**  with identifier <rnam>.  'SyntaxTreeGetUseRNam'  returns the bitwise OR  of all
-**  the <mode> arguments for the global variable with identifier <rnam>.
-**
-**  Currently the interpretation of the <mode> argument is as follows
-**
-**  If '<mode> & COMP_USE_RNAM_ID'  is nonzero, then  the produced code shall
-**  define and initialize  'R_<name>' with the  identifier of the record name
-**  (which may be  different from <rnam> when the  time the  compiled code is
-**  actually run).
-*/
-typedef UInt    RNam;
-
-#define COMP_USE_RNAM_ID        (1L << 0)
-
-Bag             SyntaxTreeInfoRNam;
-
-void            SyntaxTreeSetUseRNam (
-    RNam                rnam,
-    UInt                mode )
-{
-    /* only mark in pass 1                                                 */
-    if ( SyntaxTreePass != 1 )  return;
-
-    /* resize if neccessary                                                */
-    if ( SIZE_OBJ(SyntaxTreeInfoRNam)/sizeof(UInt) <= rnam ) {
-        ResizeBag( SyntaxTreeInfoRNam, sizeof(UInt)*(rnam+1) );
-    }
-
-    /* or with <mode>                                                      */
-    ((UInt*)PTR_BAG(SyntaxTreeInfoRNam))[rnam] |= mode;
-}
-
-UInt            SyntaxTreeGetUseRNam (
-    RNam                rnam )
-{
-    return ((UInt*)PTR_BAG(SyntaxTreeInfoRNam))[rnam];
-}
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeCheckBound( <obj>, <name> ) emit code to check that <obj> has a value
-*/
-void SyntaxTreeCheckBound (
-    CVar                obj,
-    Char *              name )
-{
-    if ( ! HasInfoCVar( obj, W_BOUND ) ) {
-        if ( SyntaxTreeCheckTypes ) {
-            Emit( "CHECK_BOUND( %c, \"%s\" )\n", obj, name );
-        }
-        SetInfoCVar( obj, W_BOUND );
-    }
-}
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeCheckFuncResult( <obj> )  . emit code to check that <obj> has a value
-*/
-void SyntaxTreeCheckFuncResult (
-    CVar                obj )
-{
-    if ( ! HasInfoCVar( obj, W_BOUND ) ) {
-        if ( SyntaxTreeCheckTypes ) {
-            Emit( "CHECK_FUNC_RESULT( %c )\n", obj );
-        }
-        SetInfoCVar( obj, W_BOUND );
-    }
-}
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeCheckIntSmall( <obj> )   emit code to check that <obj> is a small int
-*/
-void SyntaxTreeCheckIntSmall (
-    CVar                obj )
-{
-    if ( ! HasInfoCVar( obj, W_INT_SMALL ) ) {
-        if ( SyntaxTreeCheckTypes ) {
-            Emit( "CHECK_INT_SMALL( %c )\n", obj );
-        }
-        SetInfoCVar( obj, W_INT_SMALL );
-    }
-}
-
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeCheckIntSmallPos( <obj> ) emit code to check that <obj> is a position
-*/
-void SyntaxTreeCheckIntSmallPos (
-    CVar                obj )
-{
-    if ( ! HasInfoCVar( obj, W_INT_SMALL_POS ) ) {
-        if ( SyntaxTreeCheckTypes ) {
-            Emit( "CHECK_INT_SMALL_POS( %c )\n", obj );
-        }
-        SetInfoCVar( obj, W_INT_SMALL_POS );
-    }
-}
-
-/****************************************************************************
-**
-*F  SyntaxTreeCheckIntPos( <obj> ) emit code to check that <obj> is a position
-*/
-void SyntaxTreeCheckIntPos (
-    CVar                obj )
-{
-    if ( ! HasInfoCVar( obj, W_INT_POS ) ) {
-        if ( SyntaxTreeCheckTypes ) {
-            Emit( "CHECK_INT_POS( %c )\n", obj );
-        }
-        SetInfoCVar( obj, W_INT_POS );
-    }
-}
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeCheckBool( <obj> )  . . .  emit code to check that <obj> is a boolean
-*/
-void SyntaxTreeCheckBool (
-    CVar                obj )
-{
-    if ( ! HasInfoCVar( obj, W_BOOL ) ) {
-        if ( SyntaxTreeCheckTypes ) {
-            Emit( "CHECK_BOOL( %c )\n", obj );
-        }
-        SetInfoCVar( obj, W_BOOL );
-    }
-}
-
-
-
-/****************************************************************************
-**
-*F  SyntaxTreeCheckFunc( <obj> )  . . . emit code to check that <obj> is a function
-*/
-void SyntaxTreeCheckFunc (
-    CVar                obj )
-{
-    if ( ! HasInfoCVar( obj, W_FUNC ) ) {
-        if ( SyntaxTreeCheckTypes ) {
-            Emit( "CHECK_FUNC( %c )\n", obj );
-        }
-        SetInfoCVar( obj, W_FUNC );
-    }
-}
-
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * * * *  compile expressions * * * * * * * * * * * * * * *
-*/
-
+typedef UInt4 LVar;
+typedef UInt4 HVar;
+typedef UInt GVar;
+
+/* TODO: Lose the parameter? */
 static inline Obj NewSyntaxTreeNode(const char *type, Int size)
 {
     Obj result;
@@ -749,42 +58,24 @@ static inline Obj NewSyntaxTreeNode(const char *type, Int size)
 
     C_NEW_STRING_CONST(typestr, type);
     result = NEW_PREC(size);
-    AssPrec(RNamName("type"), typestr);
+    AssPRec(result, RNamName("type"), typestr);
     return result;
 }
 
 
-/****************************************************************************
-**
-
-*F  SyntaxTreeExpr( <expr> )  . . . . . . . . . . . . . . . . compile an expression
-**
-**  'SyntaxTreeExpr' compiles the expression <expr> and returns the C variable that
-**  will contain the result.
-*/
 Obj (* SyntaxTreeExprFuncs[256]) ( Expr expr );
 
-
-Obj SyntaxTreeExpr(Expr expr)
+static inline Obj SyntaxTreeExpr(Expr expr)
 {
     return (* SyntaxTreeExprFuncs[ TNUM_EXPR(expr) ])( expr );
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeUnknownExpr( <expr> ) . . . . . . . . . . . .  log unknown expression
-*/
 Obj SyntaxTreeUnknownExpr(Expr expr)
 {
     return Fail;
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeBoolExpr( <expr> )  . . . . . . . compile bool expr and return C bool
-*/
+/* TODO: Find out why BoolExpr is special */
 Obj (* SyntaxTreeBoolExprFuncs[256]) ( Expr expr );
 
 Obj SyntaxTreeBoolExpr(Expr expr)
@@ -792,10 +83,6 @@ Obj SyntaxTreeBoolExpr(Expr expr)
     return (* SyntaxTreeBoolExprFuncs[ TNUM_EXPR(expr) ])( expr );
 }
 
-/****************************************************************************
-**
-*F  SyntaxTreeUnknownBool( <expr> ) . . . . . . . . . .  use 'CompExpr' and convert
-*/
 Obj SyntaxTreeUnknownBool(Expr expr)
 {
     /* compile the expression and check that the value is boolean          */
@@ -803,56 +90,39 @@ Obj SyntaxTreeUnknownBool(Expr expr)
     return SyntaxTreeExpr( expr );
 }
 
-/****************************************************************************
-**
-*F  SyntaxTreeFunccall0to6Args( <expr> )  . . . T_FUNCCALL_0ARGS...T_FUNCCALL_6ARGS
-*/
-extern CVar SyntaxTreeRefGVarFopy (Expr expr);
-
-/****************************************************************************
-**
-*F  SyntaxTreeFunccallXArgs( <expr> ) . . . . . . . . . . . . . .  T_FUNCCALL_XARGS
-*/
-CVar SyntaxTreeFunccall(Expr expr)
+extern Obj SyntaxTreeRefGVarFopy (Expr expr);
+Obj SyntaxTreeFunccall(Expr expr)
 {
     Obj result;
-    Obj funcl
-
-    CVar                argl;           /* argument list                   */
-    CVar                argi;           /* <i>-th argument                 */
-    UInt                narg;           /* number of arguments             */
-    UInt                i;              /* loop variable                   */
+    Obj func;
+    Obj args, argi;
+    UInt narg, i;
 
     result = NewSyntaxTreeNode("funccall", 5);
+    /* TODO: If this is a gvar ref, put name? */
+    func = SyntaxTreeExpr( FUNC_CALL(expr) );
 
-    /* compile the reference to the function                               */
+    /*
     if ( TNUM_EXPR( FUNC_CALL(expr) ) == T_REF_GVAR ) {
-        func = SyntaxTreeRefGVarFopy( FUNC_CALL(expr) );
-    }
-    else {
-        func = SyntaxTreeExpr( FUNC_CALL(expr) );
-        //    SyntaxTreeCheckFunc( func );
-    }
-    AssPrec(result, RNamName("function"), func);
+    } */
+    AssPRec(result, RNamName("function"), func);
 
     /* compile the argument expressions                                    */
     narg = NARG_SIZE_CALL(SIZE_EXPR(expr));
-    args = NEW_PLIST( T_LIST, narg);
+    args = NEW_PLIST(T_PLIST, narg);
     SET_LEN_PLIST(args, narg);
 
     for ( i = 1; i <= narg; i++ ) {
         argi = SyntaxTreeExpr( ARGI_CALL( expr, i ) );
         SET_ELM_PLIST(args, i, argi);
+        CHANGED_BAG(args);
     }
     AssPRec(result, RNamName("args"), args);
     return result;
 }
 
-/****************************************************************************
-**
-*F  SyntaxTreeFunccallXArgs( <expr> ) . . . . . . . . . . . . . .  T_FUNCCALL_OPTS
-*/
-CVar SyntaxTreeFunccallOpts(Expr expr)
+/* TODO: FuncCall options */
+Obj SyntaxTreeFunccallOpts(Expr expr)
 {
     return Fail;
     /*
@@ -870,22 +140,14 @@ CVar SyntaxTreeFunccallOpts(Expr expr)
   Emit("CALL_0ARGS( GF_PopOptions );\n");
   return result; */
 }
-     
 
-/****************************************************************************
-**
-*F  SyntaxTreeFuncExpr( <expr> )  . . . . . . . . . . . . . . . . . . . T_FUNC_EXPR
-*/
-CVar SyntaxTreeFuncExpr(Expr expr)
+/* TODO: again? */
+Obj SyntaxTreeFuncExpr(Expr expr)
 {
     Obj result;
-
-    CVar                func;           /* function, result                */
-    CVar                tmp;            /* dummy body                      */
-
-    Obj                 fexs;           /* function expressions list       */
-    Obj                 fexp;           /* function expression             */
-    Int                 nr;             /* number of the function          */
+    Obj fexs;
+    Obj fexp;
+    Int nr;
 
     result = NewSyntaxTreeNode("funcexpr", 1);
 
@@ -929,11 +191,8 @@ CVar SyntaxTreeFuncExpr(Expr expr)
     #endif
 }
 
-
-/****************************************************************************
-**
-*F  SyntaxTreeOr( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  T_OR
-*/
+/* TODO: This is all the same, replace by SyntaxTreeBinaryOp(Expr,op) and
+ * SyntaxTreeUnary(Expr, op) */
 Obj SyntaxTreeOr(Expr expr)
 {
     Obj result;
@@ -952,8 +211,8 @@ Obj SyntaxTreeAnd(Expr expr)
 
     result = NewSyntaxTreeNode("and",3);
 
-    AssPRec(result, "left", SyntaxTreeExpr(ADDR_EXPR(expr)[0]));
-    AssPRec(result, "right", SyntaxTreeExpr(ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("left"), SyntaxTreeExpr(ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr(ADDR_EXPR(expr)[0]));
 
     return result;
 }
@@ -963,7 +222,7 @@ Obj SyntaxTreeNot(Expr expr)
     Obj result;
 
     result = NewSyntaxTreeNode("not", 2);
-    AssPRec(result, "op", SynaxTreeBoolExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("op"), SyntaxTreeBoolExpr( ADDR_EXPR(expr)[0]));
 
     return result;
 }
@@ -989,7 +248,7 @@ Obj SyntaxTreeNe(Expr expr)
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"),SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
-    return val;
+    return result;
 }
 
 Obj SyntaxTreeLt(Expr expr)
@@ -1010,8 +269,8 @@ Obj SyntaxTreeGe(Expr expr)
 
     result = NewSyntaxTreeNode("ge", 3);
 
-    AssPRec(result, "left", SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, "right", SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -1022,8 +281,8 @@ Obj SyntaxTreeGt(Expr expr)
 
     result = NewSyntaxTreeNode("gt", 3);
 
-    AssPRec(result, "left", SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, "right", SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -1034,8 +293,8 @@ Obj SyntaxTreeLe(Expr expr)
 
     result = NewSyntaxTreeNode("le", 3);
 
-    AssPRec(result, "left", SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, "right", SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -1046,8 +305,8 @@ Obj SyntaxTreeIn(Expr expr)
 
     result = NewSyntaxTreeNode("in", 3);
 
-    AssPRec(result, "left", SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, "right", SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -1058,8 +317,8 @@ Obj SyntaxTreeSum(Expr expr)
 
     result = NewSyntaxTreeNode("sum", 3);
 
-    AssPRec(result, "left", SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, "right", SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -1069,7 +328,7 @@ Obj SyntaxTreeAInv(Expr expr)
     Obj result;
 
     result = NewSyntaxTreeNode("ainv", 2);
-    AssPRec(result, "op", SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("op"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -1079,8 +338,8 @@ Obj SyntaxTreeDiff(Expr expr)
     Obj result;
 
     result = NewSyntaxTreeNode("diff", 3);
-    AssPRec(result, "left", SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, "right", SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -1091,8 +350,8 @@ Obj SyntaxTreeProd(Expr expr)
 
     result = NewSyntaxTreeNode("prod", 3);
 
-    AssPRec(result, "left", SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, "right", SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -1103,7 +362,7 @@ Obj SyntaxTreeInv(Expr expr)
 
     result = NewSyntaxTreeNode("inv", 3);
 
-    AssPRec(result, "op", SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("op"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
 
     return result;
 }
@@ -1114,8 +373,8 @@ Obj SyntaxTreeQuo(Expr expr)
 
     result = NewSyntaxTreeNode("quot", 3);
 
-    AssPRec(result, "left", SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, "right", SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -1126,8 +385,8 @@ Obj SyntaxTreeMod(Expr expr)
 
     result = NewSyntaxTreeNode("mod", 3);
 
-    AssPRec(result, "left", SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, "right", SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -1138,8 +397,8 @@ Obj SyntaxTreePow(Expr expr)
 
     result = NewSyntaxTreeNode("mod", 3);
 
-    AssPRec(result, "left", SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, "right", SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -1177,16 +436,22 @@ Obj SyntaxTreePermExpr (Expr expr)
 {
     Obj result;
     Obj perm;
+    Obj cyc;
+    Obj val;
+    UInt cycle, csize, n;
+    UInt i, j;
 
     result = NewSyntaxTreeNode("permexpr", 2);
 
+    perm = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( perm, 0 );
+
     /* check for the identity                                              */
     if ( SIZE_EXPR(expr) == 0 ) {
-        AssPRec(result, RNamName("perm"), IdentityPerm);
+        AssPRec(result, RNamName("permutation"), perm);
     } else {
         /* loop over the cycles                                                */
         n = SIZE_EXPR(expr)/sizeof(Expr);
-        perm = NEW_PLIST( T_PLIST, n );
         SET_LEN_PLIST( perm, n );
 
         for ( i = 1;  i <= n;  i++ ) {
@@ -1204,10 +469,10 @@ Obj SyntaxTreePermExpr (Expr expr)
                 CHANGED_BAG(cyc);
             }
         }
-        AssPRec(result, "perm", Array2Perm(perm));
+        /* TODO: Array2Perm does not do what I want */
+        AssPRec(result, RNamName("permutation"), Array2Perm(perm));
     }
-
-    return perm;
+    return result;
 }
 
 /* TODO: FInd out why record and list subexpressions are handled
@@ -1289,7 +554,7 @@ Obj SyntaxTreeRangeExpr(Expr expr)
     AssPRec(result, RNamName("second"), second);
     AssPRec(result, RNamName("last"), last);
 
-    return range;
+    return result;
 }
 
 Obj SyntaxTreeStringExpr(Expr expr)
@@ -1310,9 +575,9 @@ Obj SyntaxTreeStringExpr(Expr expr)
 Obj SyntaxTreeRecExpr(Expr expr)
 {
     Obj result, rec;
-    Obj key, val, tmp;
+    Obj key, val;
     Expr tmp;
-    Int len;
+    Int i, len;
 
     result = NewSyntaxTreeNode("recexpr", 2);
 
@@ -1371,7 +636,7 @@ Obj SyntaxTreeRecTildeExpr(Expr expr)
 Obj SyntaxTreeRefLVar(Expr expr)
 {
     Obj result;
-    LVar                lvar;           /* local variable                  */
+    LVar lvar;
 
     result = NewSyntaxTreeNode("lvar", 2);
 
@@ -1424,9 +689,8 @@ Obj SyntaxTreeIsbHVar(Expr expr)
 
     result = NewSyntaxTreeNode("isbhvar", 2);
     hvar = (HVar)(ADDR_EXPR(expr)[0]);
-    AssPRec(result, RNamObj("variable"), INTOBJ_INT(hvar));
-    SetInfoCVar( isb, W_BOOL );
-
+    AssPRec(result, RNamName("variable"), INTOBJ_INT(hvar));
+    
     return result;
 }
 
@@ -1471,6 +735,7 @@ Obj SyntaxTreeElmList(Expr expr)
     Obj result;
     Obj list;
     Obj elm;
+    Obj pos;
 
     result = NewSyntaxTreeNode("elmlist", 3);
 
@@ -1496,7 +761,7 @@ Obj SyntaxTreeElmsList(Expr expr)
     poss = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
 
     AssPRec(result, RNamName("list"), list);
-    AssPrec(result, RNamName("poss"), poss);
+    AssPRec(result, RNamName("poss"), poss);
 
     return result;
 }
@@ -1690,7 +955,7 @@ Obj SyntaxTreeElmComObjName(Expr expr)
     record = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
     rnam = SyntaxTreeExpr(ADDR_EXPR(expr)[1]);
 
-    AssPRec(result, RNamName("record", record));
+    AssPRec(result, RNamName("record"), record);
     AssPRec(result, RNamName("rnam"), rnam);
 
     return result;
@@ -1788,7 +1053,7 @@ Obj SyntaxTreeProccall(Stat stat)
     for ( i = 1; i <= narg; i++ ) {
         SET_ELM_PLIST(args, i, SyntaxTreeExpr( ARGI_CALL(stat,i) ) );
     }
-    AssPRec(result, args);
+    AssPRec(result, RNamName("args"), args);
     return result;
 }
 
@@ -1821,7 +1086,7 @@ Obj SyntaxTreeSeqStat(Stat stat)
 
     /* get the number of statements                                        */
     nr = SIZE_STAT( stat ) / sizeof(Stat);
-    list = NEW_PLIST(T_LIST, nr);
+    list = NEW_PLIST(T_PLIST, nr);
     SET_LEN_PLIST(list, nr);
 
     /* compile the statements                                              */
@@ -1841,9 +1106,10 @@ Obj SyntaxTreeIf(Stat stat)
     Obj cond;
     Obj then;
     Obj elif;
+    Obj brelse;
     Obj branches;
 
-    Int nr;
+    Int i, nr;
 
     result = NewSyntaxTreeNode("if", 3);
 
@@ -1855,7 +1121,7 @@ Obj SyntaxTreeIf(Stat stat)
     AssPRec(result, RNamName("condition"), cond);
     AssPRec(result, RNamName("then"), then);
 
-    branches = NEW_PLIST(T_LIST, nr);
+    branches = NEW_PLIST(T_PLIST, nr);
     SET_LEN_PLIST(branches, nr);
     AssPRec(result, RNamName("branches"), branches);
 
@@ -1877,7 +1143,7 @@ Obj SyntaxTreeIf(Stat stat)
     /* handle 'else' branch                                                */
     if ( i == nr ) {
         brelse = SyntaxTreeStat( ADDR_STAT( stat )[2*(i-1)+1] );
-        AssPRec(result, RNamName("else"), brelse)
+        AssPRec(result, RNamName("else"), brelse);
     }
 
     return result;
@@ -1890,13 +1156,13 @@ void SyntaxTreeFor(Stat stat)
     Obj body;
     UInt i, nr;
 
-    result = NewSyntaxTreeNode(result, 4);
+    result = NewSyntaxTreeNode("for", 4);
 
-    AssPRec(result, "variable", SyntaxTreeExpr(ADDR_STAT(stat)[0]));
-    AssPRec(result, "collection", SyntaxTreeExpr(ADDR_STAT(stat)[1]));
+    AssPRec(result, RNamName("variable"), SyntaxTreeExpr(ADDR_STAT(stat)[0]));
+    AssPRec(result, RNamName("collection"), SyntaxTreeExpr(ADDR_STAT(stat)[1]));
 
     nr = SIZE_STAT(stat)/sizeof(Stat);
-    body = NEW_PLIST(T_LIST, nr);
+    body = NEW_PLIST(T_PLIST, nr);
     SET_LEN_PLIST(body, nr);
     AssPRec(result, RNamName("body"), body);
 
@@ -1916,10 +1182,11 @@ Obj SyntaxTreeWhile(Stat stat )
 
     result = NewSyntaxTreeNode("while", 3);
 
-    cond = SyntaxTreeBoolExpr( ADDR_STAT(stat)[0] );
-    nr = SIZE_STAT(stat)/sizeof(Stat);
+    condition = SyntaxTreeBoolExpr( ADDR_STAT(stat)[0] );
+    AssPRec(result, RNamName("condition"), condition);
 
-    body = NEW_PLIST(T_LIST, nr);
+    nr = SIZE_STAT(stat)/sizeof(Stat);
+    body = NEW_PLIST(T_PLIST, nr);
     SET_LEN_PLIST(body, nr);
     AssPRec(result, RNamName("body"), body);
 
@@ -1940,7 +1207,7 @@ Obj SyntaxTreeRepeat(Stat stat)
 
     result = NewSyntaxTreeNode("repeat", 4);
 
-    cond = SyntaxTreeBoolExpr( ADDR_STAT(stat)[0] );
+    condition = SyntaxTreeBoolExpr( ADDR_STAT(stat)[0] );
     AssPRec(result, RNamName("condition"), cond);
 
     nr = SIZE_STAT(stat)/sizeof(Stat);
@@ -2066,7 +1333,7 @@ Obj SyntaxTreeUnbGVar(Stat stat)
     Obj result;
     Obj gvar;
 
-    result = NewSyntaxTreeNode("UnbGVar");
+    result = NewSyntaxTreeNode("UnbGVar", 2);
 
     gvar = (GVar)(ADDR_STAT(stat)[0]);
     AssPRec(result, RNamName("gvar"), gvar);
@@ -2770,8 +2037,6 @@ void SyntaxTreeAssert3 (
     if ( IS_TEMP_CVAR( lev ) )  FreeTemp( TEMP_CVAR( lev ) );
 }
 
-#endif
-
 static Obj SyntaxTreeFunc( Obj func )
 {
     Obj result;
@@ -2815,7 +2080,7 @@ static Obj SyntaxTreeFunc( Obj func )
     stats = SyntaxTreeStat( FIRST_STAT_CURR_FUNC );
     SWITCH_TO_OLD_LVARS( oldFrame );
 
-    AssPrec(result, RNamName("stats"), stats);
+    AssPRec(result, RNamName("stats"), stats);
 
     return result;
 }
@@ -3031,8 +2296,7 @@ static Int InitKernel (
     SyntaxTreeStatFuncs[ T_EMPTY           ] = SyntaxTreeEmpty;
 
     SyntaxTreeStatFuncs[ T_PROCCALL_OPTS   ] = SyntaxTreeProccallOpts;
-    /* return success                                                      */
-#endif
+
     return 0;
 }
 
