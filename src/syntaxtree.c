@@ -123,21 +123,14 @@ Obj SyntaxTreeFunccall(Expr expr)
 /* TODO: FuncCall options */
 Obj SyntaxTreeFunccallOpts(Expr expr)
 {
-    return Fail;
-    /*
-  CVar opts = SyntaxTreeExpr(ADDR_STAT(expr)[0]);
-  GVar pushOptions;
-  GVar popOptions;
-  CVar result;
-  pushOptions = GVarName("PushOptions");
-  popOptions = GVarName("PopOptions");
-  SyntaxTreeSetUseGVar(pushOptions, COMP_USE_GVAR_FOPY);
-  SyntaxTreeSetUseGVar(popOptions, COMP_USE_GVAR_FOPY);
-  Emit("CALL_1ARGS( GF_PushOptions, %c );\n", opts);
-  if (IS_TEMP_CVAR( opts) ) FreeTemp( TEMP_CVAR( opts ));
-  result = SyntaxTreeExpr(ADDR_STAT(expr)[1]);
-  Emit("CALL_0ARGS( GF_PopOptions );\n");
-  return result; */
+    Obj result;
+    Obj opts;
+
+    result = NewSyntaxTreeNode("FunccallOpts", 2);
+    opts = SyntaxTreeExpr(ADDR_STAT(expr)[0]);
+    AssPRec(result, RNamName("opts"), opts);
+
+    return result;
 }
 
 /* TODO: again? */
@@ -690,11 +683,11 @@ Obj SyntaxTreeIsbHVar(Expr expr)
     result = NewSyntaxTreeNode("isbhvar", 2);
     hvar = (HVar)(ADDR_EXPR(expr)[0]);
     AssPRec(result, RNamName("variable"), INTOBJ_INT(hvar));
-    
+
     return result;
 }
 
-Obj SyntaxTreeRefGVar(Expr expr) 
+Obj SyntaxTreeRefGVar(Expr expr)
 {
     Obj result;
     GVar gvar;
@@ -1896,7 +1889,7 @@ static Int InitKernel (
     SyntaxTreeExprFuncs[ T_ISB_COMOBJ_EXPR ] = SyntaxTreeIsbComObjExpr;
 
     SyntaxTreeExprFuncs[ T_FUNCCALL_OPTS   ] = SyntaxTreeFunccallOpts;
-    
+
     /* enter the boolean expression compilers into the table               */
     for ( i = 0; i < 256; i++ ) {
         SyntaxTreeBoolExprFuncs[ i ] = SyntaxTreeUnknownBool;
@@ -2049,6 +2042,3 @@ StructInitInfo * InitInfoSyntaxTree ( void )
 **
 *E  compiler.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-
