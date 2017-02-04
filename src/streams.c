@@ -781,10 +781,10 @@ Obj FuncPrint (
             memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
-            if ( ! READ_ERROR() ) {
+            TRY_READ {
                 PrintObj( arg );
             }
-            else {
+            CATCH_READ_ERROR {
                 memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
@@ -839,10 +839,10 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
             memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
-            if ( ! READ_ERROR() ) {
+            TRY_READ {
                 PrintObj( arg );
             }
-            else {
+            CATCH_READ_ERROR {
                 CloseOutput();
                 memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
@@ -885,7 +885,7 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
 
         /* if an error occurs stop printing                                */
         memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
-        if ( ! READ_ERROR() ) {
+        TRY_READ {
             if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
             }
@@ -901,7 +901,7 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
                 PrintObj( arg );
             }
         }
-        else {
+        CATCH_READ_ERROR {
             CloseOutput();
             memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
             ReadEvalError();
