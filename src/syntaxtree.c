@@ -25,7 +25,7 @@
 #include        "lists.h"               /* generic lists                   */
 
 #include        "records.h"             /* generic records                 */
-#include "permutat.h"
+#include        "permutat.h"
 #include        "precord.h"             /* plain records                   */
 
 #include        "plist.h"               /* plain lists                     */
@@ -56,12 +56,11 @@ static inline Obj NewSyntaxTreeNode(const char *type, Int size)
     Obj result;
     Obj typestr;
 
-    C_NEW_STRING_CONST(typestr, type);
+    C_NEW_STRING_DYN(typestr, type);
     result = NEW_PREC(size);
     AssPRec(result, RNamName("type"), typestr);
     return result;
 }
-
 
 Obj (* SyntaxTreeExprFuncs[256]) ( Expr expr );
 
@@ -499,7 +498,7 @@ Obj SyntaxTreeListExpr (Expr expr)
         }
     }
 
-    AssPRec(result, "list", list);
+    AssPRec(result, RNamName("list"), list);
 
     return result;
 }
@@ -643,7 +642,8 @@ Obj SyntaxTreeRefLVar(Expr expr)
     if ( IS_REFLVAR(expr) ) {
         lvar = LVAR_REFLVAR(expr);
     } else {
-        lvar = (LVar)(ADDR_EXPR(expr)[0]);
+        lvar = -1;
+//        lvar = (LVar)(ADDR_EXPR(expr)[0]);
     }
 
     /* TODO: Local variable references */
@@ -1148,7 +1148,7 @@ Obj SyntaxTreeIf(Stat stat)
     return result;
 }
 
-void SyntaxTreeFor(Stat stat)
+Obj SyntaxTreeFor(Stat stat)
 {
     Obj result;
     Obj variable;
@@ -1264,7 +1264,7 @@ Obj SyntaxTreeAssLVar(Stat stat)
     lvar = (LVar)(ADDR_STAT(stat)[0]);
     rhs = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
 
-    AssPRec(result, RNamName("lvar"), lvar);
+    AssPRec(result, RNamName("lvar"), INTOBJ_INT(lvar));
     AssPRec(result, RNamName("rhs"), rhs);
 
     return result;
@@ -1740,37 +1740,46 @@ static Obj SyntaxTreeFunc( Obj func )
     Obj str;
     Obj name;
     Obj stats;
+    Obj lnams;
 
     Bag                 info;           /* info bag for this function      */
-    Int                 narg;           /* number of arguments             */
-    Int                 nloc;           /* number of locals                */
+    Int narg;
+    Int nloc;
     Obj                 fexs;           /* function expression list        */
-    Bag                 oldFrame;       /* old frame                       */
-    Int                 i;              /* loop variable                   */
-    Int                 prevarargs;     /* we have varargs with a prefix   */
+    Bag oldFrame;
+    Int i;
 
-    result = NEW_PREC(5);
+    result = NewSyntaxTreeNode("function", 5);
 
-    /* TODO: Deal with variadic functions */
-    /*
-    prevarargs = 0;
-    if(narg < -1) prevarargs = 1;
-    if (narg < 0) {
-      narg = -narg;
-    }
-    */
-
-    C_NEW_STRING_CONST(str, "function");
-    AssPRec(result, RNamName("type"), str);
-
-    /* functions don't have names, do they? */
+    /* TODO: Deal with variadic functions: they have negative narg */
+    /* functions don't (normally) have names */
     //  AssPRec(result, RNamName("name"), NAME_FUNC(func));
 
     narg = NARG_FUNC(func);
     AssPRec(result, RNamName("narg"), INTOBJ_INT(narg));
+    /* Variadic function, last argument is list */
+    if(narg < 0)
+        narg = -narg;
 
     nloc = NLOC_FUNC(func);
     AssPRec(result, RNamName("nloc"), INTOBJ_INT(nloc));
+
+    /* TODO: Do we need to copy the names? */
+    /*       Split Local/Argument?  */
+    lnams = NEW_PLIST(T_PLIST, narg + nloc);
+    SET_LEN_PLIST(lnams, narg + nloc);
+    AssPRec(result, RNamName("local_names"), lnams);
+
+    for(i=1; i<= narg + nloc; i++) {
+        if(NAMI_FUNC(func, i) != 0) {
+            C_NEW_STRING_DYN(str, NAMI_FUNC(func, i));
+        } else {
+            /* TODO: Probably put the number in */
+            C_NEW_STRING_CONST(str, "localvar");
+        }
+        SET_ELM_PLIST(lnams, i, str);
+        CHANGED_BAG(lnams);
+    }
 
     /* switch to this function (so that 'ADDR_STAT' and 'ADDR_EXPR' work)  */
     SWITCH_TO_NEW_LVARS( func, narg, nloc, oldFrame );
