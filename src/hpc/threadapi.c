@@ -864,9 +864,10 @@ Obj FuncDISABLE_GUARDS(Obj self, Obj flag) {
 }
 
 Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
-  Region *oldRegion = TLS(currentRegion);
-  Region *region = GetRegionOf(obj);
-  syJmp_buf readJmpError;
+  volatile Region *oldRegion = TLS(currentRegion);
+  volatile Region *region = GetRegionOf(obj);
+  volatile syJmp_buf readJmpError;
+
   if (TNUM_OBJ(func) != T_FUNCTION)
     ArgumentError("WITH_TARGET_REGION: Second argument must be a function");
   if (!region || !CheckExclusiveWriteAccess(obj))

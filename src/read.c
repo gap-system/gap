@@ -2759,14 +2759,14 @@ void RecreateStackNams( Obj context )
 
 ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
 {
-    ExecStatus          type;
-    Obj                 stackNams;
-    UInt                countNams;
-    UInt                readTop;
-    UInt                readTilde;
-    UInt                currLHSGVar;
-    Obj                 errorLVars;
-    Obj                 errorLVars0;
+    volatile ExecStatus          type;
+    volatile Obj                 stackNams;
+    volatile UInt                countNams;
+    volatile UInt                readTop;
+    volatile UInt                readTilde;
+    volatile UInt                currLHSGVar;
+    volatile Obj                 errorLVars;
+    volatile Obj                 errorLVars0;
     syJmp_buf           readJmpError;
 
     /* get the first symbol from the input                                 */

@@ -1340,17 +1340,18 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
 
 Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
 {
-    syJmp_buf readJmpError;
-    Obj res;
-    Obj currLVars;
-    Obj result;
-    Obj tilde;
-    Int recursionDepth;
-    Stat currStat;
+    volatile syJmp_buf readJmpError;
+    volatile Obj res;
+    volatile Obj currLVars;
+    volatile Obj tilde;
+    volatile Int recursionDepth;
+    volatile Stat currStat;
+
     if (!IS_FUNC(func))
       ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <func> must be a function",0,0);
     if (!IS_LIST(args))
       ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <args> must be a list",0,0);
+
     memcpy((void *)&readJmpError, (void *)&TLS(ReadJmpError), sizeof(syJmp_buf));
     currLVars = TLS(CurrLVars);
     currStat = TLS(CurrStat);
@@ -1370,7 +1371,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       TLS(RecursionDepth) = recursionDepth;
       AssGVarUnsafe(Tilde, tilde);
     } else {
-      result = CallFuncList(func, args);
+      Obj result = CallFuncList(func, args);
       SET_ELM_PLIST(res,1,True);
       if (result) {
         SET_LEN_PLIST(res,2);
@@ -1416,15 +1417,16 @@ Obj FuncTIMEOUTS_SUPPORTED(Obj self) {
 Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Obj args )
 {
   Obj res;
-  Obj currLVars;
+  volatile Obj currLVars;
   Obj result;
-  Int recursionDepth;
-  Stat currStat;
+  volatile Int recursionDepth;
+  volatile Stat currStat;
   UInt newJumpBuf = 1;
-  UInt mayNeedToRestore = 0;
-  Int iseconds, imicroseconds;
-  Int curr_seconds= 0, curr_microseconds=0, curr_nanoseconds=0;
+  volatile UInt mayNeedToRestore = 0;
+  volatile Int iseconds, imicroseconds;
+  volatile Int curr_seconds= 0, curr_microseconds=0, curr_nanoseconds=0;
   Int restore_seconds = 0, restore_microseconds = 0;
+
   if (!SyHaveAlarms)
     ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
   if (!IS_INTOBJ(seconds) || 0 > INT_INTOBJ(seconds))
