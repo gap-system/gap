@@ -170,7 +170,7 @@ void ViewObjHandler ( Obj obj )
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
   memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
-  if ( ! READ_ERROR() ) {
+  TRY_READ {
     if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
       ViewObj(obj);
     }
@@ -3648,8 +3648,9 @@ void InitializeGap (
            calls the post restore functions and then runs a GAP session */
         if (POST_RESTORE != (Obj) 0 &&
             IS_FUNC(POST_RESTORE))
-          if (!READ_ERROR())
+          TRY_READ {
             CALL_0ARGS(POST_RESTORE);
+          }
     }
 
 
@@ -3701,7 +3702,7 @@ void InitializeGap (
        past here when we're about to exit. 
                                            */
     if ( SySystemInitFile[0] ) {
-      if (!READ_ERROR()) {
+      TRY_READ {
         if ( READ_GAP_ROOT(SySystemInitFile) == 0 ) {
           /*             if ( ! SyQuiet ) { */
                 Pr( "gap: hmm, I cannot find '%s' maybe",
@@ -3711,7 +3712,7 @@ void InitializeGap (
                     " script instead.", 0L, 0L );
             }
       }
-      else
+      CATCH_READ_ERROR
         {
           Pr("Caught error at top-most level, probably quit from library loading",0L,0L);
           SyExit(1);

@@ -16,40 +16,54 @@
 
 /****************************************************************************
 **
-
-*F  READ_ERROR()  . . . . . . . . . . . . . . . . . . . reader found an error
+*F  TRY_READ / CATCH_READ_ERROR
 **
-**  'READ_ERROR' returns a non-zero value if the reader found an error, or if
-**  the interpretation of  an expression  or  statement lead to an  error (in
-**  which case 'ReadEvalError' jumps back to 'READ_ERROR' via 'longjmp').
+**  To deal with errors found by the reader, we implement a kind of exception
+**  handling using setjmp, with the help of two macros.
+**
+**  To use these constructs, write code like this:
+**    TRY_READ {
+**       ... code which might trigger reader error ...
+**    }
+**  or
+**    TRY_READ {
+**       ... code which might trigger reader error ...
+**    }
+**    CATCH_READ_ERROR {
+**       ... error handler ...
+**    }
+**
+**  Then, if the reader encounters an error, or if the interpretation of an
+**  expression or statement leads to an error, then 'ReadEvalError' is
+**  invoked which in turn calls 'longjmp' to return to right after the block
+**  following TRY_READ.
+**
+**  Not that while you can in principle nest TRY_READ constructs, to do this
+**  correctly, you must backup ReadJmpError before TRY_READ, and restore it
+**  in a matching CATCH_READ_ERROR block.
 */
 /* TL: extern syJmp_buf ReadJmpError; */
 
-#ifndef DEBUG_READ_ERROR
+#define TRY_READ \
+    if (!TLS(NrError)) { \
+        if (sySetjmp(TLS(ReadJmpError))) { \
+            TLS(NrError)++; \
+        }\
+    }\
+    if (!TLS(NrError))
 
-#define READ_ERROR()    (TLS(NrError) || (TLS(NrError)+=sySetjmp(TLS(ReadJmpError))))
-
-#else
-
-#define READ_ERROR()                                                     \
-    ( TLS(NrError) ||                                                         \
-      ( ( TLS(NrError) += setjmp(TLS(ReadJmpError)) ) ?                            \
-        Pr( "READ_ERROR( %s, %d )\n", (Int)__FILE__, __LINE__ ),0 : 0 ), \
-      TLS(NrError) )
-
-#endif
+#define CATCH_READ_ERROR \
+    else
 
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * read and evaluate symbols  * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  ReadEvalResult  . . . . . . . . result of reading one command immediately
 */
 /* TL: extern Obj ReadEvalResult; */
@@ -132,13 +146,11 @@ Obj Call1ArgsInNewReader(Obj f,Obj a);
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoRead()  . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoRead ( void );
@@ -148,6 +160,5 @@ StructInitInfo * InitInfoRead ( void );
 
 /****************************************************************************
 **
-
 *E  read.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
