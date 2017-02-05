@@ -137,10 +137,9 @@ Obj SyntaxTreeFunccallOpts(Expr expr)
 Obj SyntaxTreeFuncExpr(Expr expr)
 {
     Obj result;
-    Obj fexs;
+    /* Obj fexs;
     Obj fexp;
-    Int nr;
-
+    */
     result = NewSyntaxTreeNode("funcexpr", 1);
 
     /*
@@ -694,7 +693,7 @@ Obj SyntaxTreeRefGVar(Expr expr)
 
     result = NewSyntaxTreeNode("refgvar", 2);
     gvar = (GVar)(ADDR_EXPR(expr)[0]);
-    AssPRec(result, RNamName("name"), NameGVar(gvar));
+    AssPRec(result, RNamName("name"), NameGVarObj(gvar));
 
     return result;
 }
@@ -706,7 +705,7 @@ Obj SyntaxTreeRefGVarFopy(Expr expr)
 
     result = NewSyntaxTreeNode("refgvarfopy", 2);
     gvar = (GVar)(ADDR_EXPR(expr)[0]);
-    AssPRec(result, RNamName("name"), NameGVar(gvar));
+    AssPRec(result, RNamName("name"), NameGVarObj(gvar));
 
     return result;
 }
@@ -718,7 +717,7 @@ Obj SyntaxTreeIsbGVar(Expr expr)
 
     result = NewSyntaxTreeNode("isbgvar", 2);
     gvar = (GVar)(ADDR_EXPR(expr)[0]);
-    AssPRec(result, RNamName("name"), NameGVar(gvar));
+    AssPRec(result, RNamName("name"), NameGVarObj(gvar));
 
     return result;
 }
@@ -727,7 +726,6 @@ Obj SyntaxTreeElmList(Expr expr)
 {
     Obj result;
     Obj list;
-    Obj elm;
     Obj pos;
 
     result = NewSyntaxTreeNode("elmlist", 3);
@@ -744,7 +742,6 @@ Obj SyntaxTreeElmList(Expr expr)
 Obj SyntaxTreeElmsList(Expr expr)
 {
     Obj result;
-    Obj elms;
     Obj list;
     Obj poss;
 
@@ -1144,7 +1141,6 @@ Obj SyntaxTreeIf(Stat stat)
 Obj SyntaxTreeFor(Stat stat)
 {
     Obj result;
-    Obj variable;
     Obj body;
     UInt i, nr;
 
@@ -1245,6 +1241,7 @@ Obj SyntaxTreeReturnVoid(Stat stat)
     return result;
 }
 
+/* TODO: make sure this works correctly */
 Obj SyntaxTreeAssLVar(Stat stat)
 {
     Obj result;
@@ -1253,11 +1250,10 @@ Obj SyntaxTreeAssLVar(Stat stat)
 
     result = NewSyntaxTreeNode("AssLVar", 2);
 
-    /* TODO: make sure this works correctly */
-    lvar = (LVar)(ADDR_STAT(stat)[0]);
-    rhs = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
+    lvar = INTOBJ_INT(ADDR_STAT(stat)[0]);
+    rhs = SyntaxTreeExpr(ADDR_STAT(stat)[1]);
 
-    AssPRec(result, RNamName("lvar"), INTOBJ_INT(lvar));
+    AssPRec(result, RNamName("lvar"), lvar);
     AssPRec(result, RNamName("rhs"), rhs);
 
     return result;
@@ -1269,7 +1265,8 @@ Obj SyntaxTreeUnbLVar(Stat stat)
     Obj lvar;
 
     result = NewSyntaxTreeNode("UnbindLVar", 2);
-    lvar = (LVar)(ADDR_STAT(stat)[0]);
+
+    lvar = INTOBJ_INT(ADDR_STAT(stat)[0]);
     AssPRec(result, RNamName("lvar"), lvar);
 
     return result;
@@ -1283,8 +1280,8 @@ Obj SyntaxTreeAssHVar(Stat stat)
 
     result = NewSyntaxTreeNode("AssHVar", 2);
 
-    hvar = (HVar)(ADDR_STAT(stat)[0]);
-    rhs = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
+    hvar = INTOBJ_INT(ADDR_STAT(stat)[0]);
+    rhs = SyntaxTreeExpr(ADDR_STAT(stat)[1]);
 
     AssPRec(result, RNamName("hvar"), hvar);
     AssPRec(result, RNamName("rhs"), rhs);
@@ -1299,7 +1296,7 @@ Obj SyntaxTreeUnbHVar(Stat stat)
 
     result = NewSyntaxTreeNode("UnbindHVar", 2);
 
-    hvar = (HVar)(ADDR_STAT(stat)[0]);
+    hvar = INTOBJ_INT(ADDR_STAT(stat)[0]);
     AssPRec(result, RNamName("hvar"), hvar);
 
     return result;
@@ -1313,7 +1310,7 @@ Obj SyntaxTreeAssGVar(Stat stat)
 
     result = NewSyntaxTreeNode("AssGVar", 2);
 
-    gvar = (GVar)(ADDR_STAT(stat)[0]);
+    gvar = NameGVarObj(ADDR_STAT(stat)[0]);
     rhs = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
 
     AssPRec(result, RNamName("gvar"), gvar);
@@ -1329,7 +1326,7 @@ Obj SyntaxTreeUnbGVar(Stat stat)
 
     result = NewSyntaxTreeNode("UnbGVar", 2);
 
-    gvar = (GVar)(ADDR_STAT(stat)[0]);
+    gvar = NameGVarObj(ADDR_STAT(stat)[0]);
     AssPRec(result, RNamName("gvar"), gvar);
 
     return result;
@@ -1449,7 +1446,7 @@ Obj SyntaxTreeAssRecName(Stat stat)
 
     record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
     /* TODO: Record Access */
-    rnam = (UInt)(ADDR_STAT(stat)[1]);
+    rnam = INTOBJ_INT(ADDR_STAT(stat)[1]);
     rhs = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
 
     AssPRec(result, RNamName("record"), record);
@@ -1488,7 +1485,7 @@ Obj SyntaxTreeUnbRecName(Stat stat)
     result = NewSyntaxTreeNode("UnbRecName", 4);
 
     record = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-    rnam = (UInt)(ADDR_STAT(stat)[1]);
+    rnam = INTOBJ_INT(ADDR_STAT(stat)[1]);
 
     AssPRec(result, RNamName("record"), record);
     AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
@@ -1731,25 +1728,23 @@ static Obj SyntaxTreeFunc( Obj func )
 {
     Obj result;
     Obj str;
-    Obj name;
     Obj stats;
     Obj lnams;
 
-    Bag                 info;           /* info bag for this function      */
+    Bag oldFrame;
     Int narg;
     Int nloc;
-    Obj                 fexs;           /* function expression list        */
-    Bag oldFrame;
     Int i;
 
     result = NewSyntaxTreeNode("function", 5);
 
-    /* TODO: Deal with variadic functions: they have negative narg */
-    /* functions don't (normally) have names */
-    //  AssPRec(result, RNamName("name"), NAME_FUNC(func));
+    if (NAME_FUNC(func)) {
+        AssPRec(result, RNamName("name"), NAME_FUNC(func));
+    }
 
     narg = NARG_FUNC(func);
     AssPRec(result, RNamName("narg"), INTOBJ_INT(narg));
+    /* TODO: Deal with variadic functions: they have negative narg */
     /* Variadic function, last argument is list */
     if(narg < 0)
         narg = -narg;
