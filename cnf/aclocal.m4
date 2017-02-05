@@ -213,13 +213,7 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynlinking='-g -bundle -bundle_loader ${gap_bin}/gap'" ${ABI_CFLAGS}";;
     *cygwin* )
         gp_cv_prog_cc_cdynlinking='-shared ${gap_bin}/gap.dll';;
-    *-gcc )
-        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
-    *-clang )
-        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
-    *-icc )
-        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
-    *-egcs )
+    *-gcc | *-clang | *-icc | *-egcs )
         gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
     *hpux* )
         gp_cv_prog_cc_cdynlinking="-b +e Init__Dynamic";;
