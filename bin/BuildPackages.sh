@@ -8,25 +8,47 @@ mkdir -p "$LOGDIR"
 LOGFILE=buildpackages
 FAILPKGFILE=fail
 
+COLOR=1
+
 # print notices in green
 notice() {
+  if [[ "$COLOR" = "1" ]]
+  then
     printf "\033[32m%s\033[0m\n" "$@"
+  else
+    printf "%s\n" "$@"
+  fi
 }
 
 # print warnings in yellow
 warning() {
+  if [[ "$COLOR" = "1" ]]
+  then
     printf "\033[33mWARNING: %s\033[0m\n" "$@"
+  else
+    printf "%s\n" "$@"
+  fi
 }
 
 # print error in red and exit
 error() {
+  if [[ "$COLOR" = "1" ]]
+  then
     printf "\033[31mERROR: %s\033[0m\n" "$@"
-    exit 1
+  else
+    printf "%s\n" "$@"
+  fi
+  exit 1
 }
 
 # print stderr error in red but do not exit
 std_error() {
+  if [[ "$COLOR" = "1" ]]
+  then
     printf "\033[31mERROR: %s\033[0m\n" "$@"
+  else
+    printf "%s\n" "$@"
+  fi
 }
 
 build_packages() {
@@ -36,12 +58,16 @@ build_packages() {
 # subdirectory of your GAP installation.
 
 # You can also run it from other locations, but then you need to tell the
-# script where your GAP root directory is, by passing it as first argument
+# script where your GAP root directory is, by passing it as _first_ argument
 # to the script with '--with-gaproot='. By default, the script assumes that
 # the parent of the current working directory is the GAP root directory.
 
-# If arguments are added, then they are considered packages. In that case
-# only these packages will be built, and all others are ignored.
+# By default the script colors its output, even in the log files. One can
+# turn it off by adding the argument --no-color _after_ --with-gaproot= (if
+# added) but _before_ all further arguments.
+
+# If further arguments are added, then they are considered packages. In that
+# case only these packages will be built, and all others are ignored.
 
 # You need at least 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
 # Some packages also need a C++ compiler.
@@ -52,13 +78,6 @@ build_packages() {
 # Even if it doesn't work completely automatically for you, you may get
 # an idea what to do for a complete installation of GAP.
 
-
-# Is someone trying to run us from inside the 'bin' directory?
-if [[ -f gapicon.bmp ]]
-then
-  error "This script must be run from inside the pkg directory" \
-        "Type: cd ../pkg; ../bin/BuildPackages.sh"
-fi
 
 # CURDIR
 CURDIR="$(pwd)"
@@ -86,6 +105,28 @@ then
   GAPDIR="$(pwd)"
   popd
 fi
+
+# check if coloring should be turned off
+if [[ "$#" -ge 1 ]]
+then
+  case "$1" in
+    --no-color|--no-colors|--no-colour|--no-colours|\
+    --nocolor|--nocolors|--nocolour|--nocolours)
+      COLOR=0
+      shift
+    ;;
+  esac
+fi
+
+# after colors are turned on or off we continue the script
+
+# Is someone trying to run us from inside the 'bin' directory?
+if [[ -f gapicon.bmp ]]
+then
+  error "This script must be run from inside the pkg directory" \
+        "Type: cd ../pkg; ../bin/BuildPackages.sh"
+fi
+
 notice "Using GAP location: $GAPDIR"
 
 # We need to test if $GAPDIR is right
@@ -102,6 +143,7 @@ then
   ABI32=YES
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi
+
 
 # packages to build
 if [[ "$#" -ge 1 ]]
