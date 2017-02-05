@@ -53,7 +53,7 @@ AC_DEFUN(GP_C_LONG_ALIGN,
 case "$host" in
    alpha* )
         gp_cv_c_long_align=8;;
-   mips-* | sparc-* )
+   mips* | sparc* )
         gp_cv_c_long_align=$ac_cv_sizeof_void_p;;
    i586-* | i686-* )
         gp_cv_c_long_align=2;;
