@@ -57,20 +57,30 @@
 ##  option is appended at the end of the link command after the .o
 ##  files to link.
 ##
+##  other options:
+##   -k|--gap-compiler
+##   -i|--gap-include
+##   -l|--gap-binary
+##
+
+# path of the directory in which GAP was compiled
 gap_bin=@gapbin@
 
-if [ "X${gap_bin}" = "X$0" ];  then
-    gap_dir="../../";
-    gap_compiler="./gap";
-    gap_binary="./";
-else
-    gap_dir="${gap_bin}/../..";
-    gap_compiler="${gap_bin}/gap";
-    gap_binary="${gap_bin}";
-fi
+# path of the directory the GAP sources contained in
+gap_dir="${gap_bin}/../..";
+
+# path to the GAP executable
+gap_compiler="${gap_bin}/gap";
+
+# path of the directory containing the *.o files; the OBJECTS variables
+# is evaluated relative to this
+gap_binary="${gap_bin}";
+
+# options to pass to the GAP executable when it is invokes as compiler
 gap_options=""
+
+# unused
 gap_include="${gap_dir}/src"
-stat_identifier="USER";
 
 # These three should be filled in by the standard autoconf procedures 
 c_compiler="@CC@"
@@ -82,7 +92,7 @@ c_libs="@LIBS@ @GMP_LIBS@"
 # These will need special care
 c_dyn_options="@CPPFLAGS@ @CDYNOPTIONS@ @GMP_CFLAGS@"
 c_dyn_linker="@CDYNLINKER@"
-c_dyn_linking="@CDYNLINKING@"
+c_dyn_link_options="@CDYNLINKING@"
 c_dynlibs="@C_DYNLIBS@"
 c_addlibs=""
 
@@ -184,8 +194,8 @@ c_compile () {
 #F  c_link_dyn <output> <input>
 ##
 c_link_dyn () {
-    echo ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_addlibs}
-    ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_addlibs} || exit 1
+    echo ${c_dyn_linker} ${c_dyn_link_options} -o $1 $2 ${c_addlibs}
+    ${c_dyn_linker} ${c_dyn_link_options} -o $1 $2 ${c_addlibs} || exit 1
 }
 
 
@@ -383,7 +393,7 @@ while [ $# -gt 0 ]; do
 
     -p)                   shift; c_options="${c_options} $1" c_dyn_options="${c_dyn_options} $1";;
 
-    -P)                   shift; c_link_options="${c_link_options} $1" c_dyn_linking="${c_dyn_linking} $1";;
+    -P)                   shift; c_link_options="${c_link_options} $1" c_dyn_link_options="${c_dyn_link_options} $1";;
 
     -L|--addlibs)         shift; c_addlibs="${c_addlibs} $1";;
 
