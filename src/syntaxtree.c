@@ -42,7 +42,7 @@
 #include        "hpc/tls.h"             /* thread-local storage            */
 
 #include        "vars.h"                /* variables                       */
-
+#include        "compiled.h"
 
 #include <ctype.h>
 
@@ -71,7 +71,11 @@ static inline Obj SyntaxTreeExpr(Expr expr)
 
 Obj SyntaxTreeUnknownExpr(Expr expr)
 {
-    return Fail;
+    Obj result;
+
+    result = NewSyntaxTreeNode("UnknownExpr",2);
+    AssPRec(result, RNamName("tnum"), INTOBJ_INT(TNUM_EXPR(expr)));
+    return result;
 }
 
 /* TODO: Find out why BoolExpr is special */
@@ -133,53 +137,26 @@ Obj SyntaxTreeFunccallOpts(Expr expr)
     return result;
 }
 
+static Obj SyntaxTreeFunc(Obj func);
+
+
 /* TODO: again? */
 Obj SyntaxTreeFuncExpr(Expr expr)
 {
     Obj result;
-    /* Obj fexs;
+    Obj fexs;
     Obj fexp;
-    */
-    result = NewSyntaxTreeNode("funcexpr", 1);
+    Obj func;
 
-    /*
-    AssPRec(result, RNamName("narg"), );
-    AssPRec(result, RNamName("body"), );
-    */
+    result = NewSyntaxTreeNode("FuncExpr", 1);
+
+    fexs = FEXS_FUNC(CURR_FUNC);
+    fexp = ELM_PLIST(fexs, ((Int *)ADDR_EXPR(expr))[0]);
+    func = SyntaxTreeFunc(fexp);
+
+    AssPRec(result, RNamName("func"), func);
+
     return result;
-
-    #if 0
-    /* get the number of the function                                      */
-    fexs = FEXS_FUNC( CURR_FUNC );
-    fexp = ELM_PLIST( fexs, ((Int*)ADDR_EXPR(expr))[0] );
-    nr   = NR_INFO( INFO_FEXP( fexp ) );
-
-    /* allocate a new temporary for the function                           */
-    func = CVAR_TEMP( NewTemp( "func" ) );
-
-    /* make the function (all the pieces are in global variables)          */
-    Emit( "%c = NewFunction( NameFunc[%d], NargFunc[%d], NamsFunc[%d]",
-          func, nr, nr, nr );
-    Emit( ", HdlrFunc%d );\n", nr );
-
-    /* this should probably be done by 'NewFunction'                       */
-    Emit( "ENVI_FUNC( %c ) = TLS(CurrLVars);\n", func );
-    tmp = CVAR_TEMP( NewTemp( "body" ) );
-    Emit( "%c = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );\n", tmp );
-    Emit( "SET_STARTLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_STARTLINE_BODY(BODY_FUNC(fexp))));
-    Emit( "SET_ENDLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_ENDLINE_BODY(BODY_FUNC(fexp))));
-    Emit( "SET_FILENAME_BODY(%c, FileName);\n",tmp);
-    Emit( "BODY_FUNC(%c) = %c;\n", func, tmp );
-    FreeTemp( TEMP_CVAR( tmp ) );
-
-    Emit( "CHANGED_BAG( TLS(CurrLVars) );\n" );
-
-    /* we know that the result is a function                               */
-    SetInfoCVar( func, W_FUNC );
-
-    /* return the number of the C variable that will hold the function     */
-    return func;
-    #endif
 }
 
 /* TODO: This is all the same, replace by SyntaxTreeBinaryOp(Expr,op) and
@@ -319,7 +296,7 @@ Obj SyntaxTreeAInv(Expr expr)
     Obj result;
 
     result = NewSyntaxTreeNode("ainv", 2);
-    AssPRec(result, RNamName("op"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
+    AssPRec(result, RNamName("op"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
 
     return result;
 }
@@ -394,14 +371,42 @@ Obj SyntaxTreePow(Expr expr)
     return result;
 }
 
-/* TODO: Probably do not need this for syntax tree */
-/* But we have type information available (i.e. this is an integer
-   expression!)
-   need to find out where it comes from?
-*/
 Obj SyntaxTreeIntExpr(Expr expr)
 {
-    return Fail;
+    Obj result;
+    Obj value;
+    Int siz;
+    UInt typ;
+    Int i;
+
+    result = NewSyntaxTreeNode("IntExpr", 1);
+
+    if(IS_INTEXPR(expr)) {
+        value = OBJ_INTEXPR(expr);
+    } else {
+        fprintf(stderr, "full monty obj\n");
+        siz = SIZE_EXPR(expr) - sizeof(UInt);
+        typ = *(UInt *)ADDR_EXPR(expr);
+        value = C_MAKE_INTEGER_BAG(siz, typ);
+        for ( i = 0; i < siz/INTEGER_UNIT_SIZE; i++ ) {
+#if INTEGER_UNIT_SIZE == 2
+            C_SET_LIMB2(value, i, ((UInt2 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
+#elif INTEGER_UNIT_SIZE == 4
+            C_SET_LIMB4(value, i, ((UInt4 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
+#elif INTEGER_UNIT_SIZE == 8
+            C_SET_LIMB8(value, i, ((UInt8 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
+#else
+            #error unsupported INTEGER_UNIT_SIZE
+#endif
+        }
+        if (siz <= 8) {
+            value = C_NORMALIZE_64BIT(value);
+        }
+    }
+    
+    AssPRec(result, RNamName("value"), value);
+
+    return result;
 }
 
 Obj SyntaxTreeTrueExpr(Expr expr)
@@ -498,7 +503,11 @@ Obj SyntaxTreeListExpr (Expr expr)
 /* TODO: Deal With tilde */
 Obj SyntaxTreeListTildeExpr(Expr expr)
 {
-    return Fail;
+    Obj result;
+
+    result = NewSyntaxTreeNode("TildeExpr",1);
+
+    return result;
 #if 0
     CVar                list;           /* list value, result              */
     CVar                tilde;          /* old value of tilde              */
@@ -529,7 +538,7 @@ Obj SyntaxTreeRangeExpr(Expr expr)
 {
     Obj result, first, second, last;
 
-    result = NewSyntaxTreeNode("rangeexpr", 4);
+    result = NewSyntaxTreeNode("RangeExpr", 4);
 
     if ( SIZE_EXPR(expr) == 2 * sizeof(Expr) ) {
         first  = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
@@ -552,7 +561,7 @@ Obj SyntaxTreeStringExpr(Expr expr)
 {
     Obj result, string;
 
-    result = NewSyntaxTreeNode("stringexpr",2);
+    result = NewSyntaxTreeNode("StringExpr",2);
 
     C_NEW_STRING( string, SIZE_EXPR(expr)-1-sizeof(UInt),
                   sizeof(UInt) + (Char*)ADDR_EXPR(expr) );
@@ -597,7 +606,11 @@ Obj SyntaxTreeRecExpr(Expr expr)
 /* TODO: Deal with tilde */
 Obj SyntaxTreeRecTildeExpr(Expr expr)
 {
-    return Fail;
+    Obj result;
+
+    result = NewSyntaxTreeNode("TildeExpr", 1);
+
+    return result;
 #if 0
     CVar                rec;            /* record value, result            */
     CVar                tilde;          /* old value of tilde              */
@@ -1048,20 +1061,15 @@ Obj SyntaxTreeProccall(Stat stat)
 
 Obj SyntaxTreeProccallOpts(Stat stat)
 {
-    return Fail;
-#if 0
-  CVar opts = SyntaxTreeExpr(ADDR_STAT(stat)[0]);
-  GVar pushOptions;
-  GVar popOptions;
-  pushOptions = GVarName("PushOptions");
-  popOptions = GVarName("PopOptions");
-  SyntaxTreeSetUseGVar(pushOptions, COMP_USE_GVAR_FOPY);
-  SyntaxTreeSetUseGVar(popOptions, COMP_USE_GVAR_FOPY);
-  Emit("CALL_1ARGS( GF_PushOptions, %c );\n", opts);
-  if (IS_TEMP_CVAR( opts) ) FreeTemp( TEMP_CVAR( opts ));
-  SyntaxTreeStat(ADDR_STAT(stat)[1]);
-  Emit("CALL_0ARGS( GF_PopOptions );\n");
-#endif
+    Obj result;
+    Obj opts;
+
+    result = NewSyntaxTreeNode("ProccallOpts", 5);
+    opts = SyntaxTreeExpr(ADDR_STAT(stat))[0];
+
+    AssPRec(result, RNamName("opts"), opts);
+
+    return result;
 }
 
 Obj SyntaxTreeSeqStat(Stat stat)
