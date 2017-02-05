@@ -1,0 +1,64 @@
+commit 4af4859a01b2ebae8dc85372cd92afa48784b7fe
+Author: Max Horn <max@quendi.de>
+Date:   2017-01-06 00:26:01 +0100
+
+    fix compilation on 32bit systems
+
+diff --git a/src/gap_cpp_headers/gap_cpp_mapping.hpp b/src/gap_cpp_headers/gap_cpp_mapping.hpp
+index 23a0677..dcd5f87 100644
+--- a/src/gap_cpp_headers/gap_cpp_mapping.hpp
++++ b/src/gap_cpp_headers/gap_cpp_mapping.hpp
+@@ -89,20 +89,6 @@ struct GAP_getter<bool>
+ };
+ 
+ 
+-template<>
+-struct GAP_getter<int>
+-{
+-    bool isa(Obj recval) const
+-    { return IS_INTOBJ(recval); }
+-
+-    int operator()(Obj recval) const
+-    {
+-        if(!isa(recval))
+-            throw GAPException("Invalid attempt to read int");
+-        return INT_INTOBJ(recval);
+-    }
+-};
+-
+ template<>
+ struct GAP_getter<Int>
+ {
+@@ -316,13 +302,6 @@ template<typename T>
+ struct GAP_maker
+ { };
+ 
+-template<>
+-struct GAP_maker<int>
+-{
+-    Obj operator()(int i)
+-    { return INTOBJ_INT(i); }
+-};
+-
+ template<>
+ struct GAP_maker<Int>
+ {
+diff --git a/src/profiling.cc b/src/profiling.cc
+index 1090f15..fc84467 100644
+--- a/src/profiling.cc
++++ b/src/profiling.cc
+@@ -46,11 +46,11 @@ struct FullFunction
+ {
+   std::string name;
+   std::string filename;
+-  int line;
+-  int endline;
++  Int line;
++  Int endline;
+ 
+   FullFunction() {}
+-  FullFunction(const std::string& _name, const std::string _file, int _line, int _endline)
++  FullFunction(const std::string& _name, const std::string _file, Int _line, Int _endline)
+     : name(_name), filename(_file), line(_line), endline(_endline)
+   { }
+ 
