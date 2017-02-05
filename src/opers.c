@@ -450,20 +450,18 @@ Obj FuncIS_EQUAL_FLAGS (
 }
 
 
-
-
-
-Int IsSubsetFlagsCalls;
-Int IsSubsetFlagsCalls1;
-Int IsSubsetFlagsCalls2;
+#ifdef COUNT_OPERS
+static Int IsSubsetFlagsCalls;
+static Int IsSubsetFlagsCalls1;
+static Int IsSubsetFlagsCalls2;
+#endif
 
 /****************************************************************************
 **
-*F  UncheckedIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) subset test with 
+*F  UncheckedIS_SUBSET_FLAGS( <flags1>, <flags2> ) subset test with
 *F                                                         no safety check
 */
-Obj UncheckedIS_SUBSET_FLAGS (
-    Obj                 self,
+static Obj UncheckedIS_SUBSET_FLAGS (
     Obj                 flags1,
     Obj                 flags2 )
 {
@@ -564,7 +562,7 @@ Obj FuncIS_SUBSET_FLAGS (
             "you can replace <flags2> via 'return <flags2>;'" );
     }
     
-    return UncheckedIS_SUBSET_FLAGS(self, flags1, flags2);
+    return UncheckedIS_SUBSET_FLAGS(flags1, flags2);
 }
 
 /****************************************************************************
@@ -635,9 +633,11 @@ Obj FuncSUB_FLAGS (
 */
 #define AND_FLAGS_HASH_SIZE             50
 
-Int AndFlagsCacheHit;
-Int AndFlagsCacheMiss;
-Int AndFlagsCacheLost;
+#ifdef COUNT_OPERS
+static Int AndFlagsCacheHit;
+static Int AndFlagsCacheMiss;
+static Int AndFlagsCacheLost;
+#endif
 
 Obj FuncAND_FLAGS (
     Obj                 self,
@@ -858,8 +858,8 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
       changed = 0;
       for(i = hidden_imps_length; i >= 1; --i)
       {
-        if( UncheckedIS_SUBSET_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
-           UncheckedIS_SUBSET_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
+        if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
+           UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1));
           changed = 1;
@@ -1694,10 +1694,11 @@ Obj NextVMethodXArgs;
 **
 **  DoOperation0Args( <oper> )
 */
-Int OperationHit;
-Int OperationMiss;
-Int OperationNext;
-
+#ifdef COUNT_OPERS
+static Int OperationHit;
+static Int OperationMiss;
+static Int OperationNext;
+#endif
 
 /* This avoids a function call in the case of external objects with a
    stored type */
@@ -5740,9 +5741,13 @@ Obj FuncOPERS_CACHE_INFO (
     Obj                        self )
 {
     Obj                 list;
+#ifndef COUNT_OPERS
+    Int                 i;
+#endif
 
     list = NEW_PLIST( IMMUTABLE_TNUM(T_PLIST), 9 );
     SET_LEN_PLIST( list, 9 );
+#ifdef COUNT_OPERS
     SET_ELM_PLIST( list, 1, INTOBJ_INT(AndFlagsCacheHit)    );
     SET_ELM_PLIST( list, 2, INTOBJ_INT(AndFlagsCacheMiss)   );
     SET_ELM_PLIST( list, 3, INTOBJ_INT(AndFlagsCacheLost)   );
@@ -5752,7 +5757,10 @@ Obj FuncOPERS_CACHE_INFO (
     SET_ELM_PLIST( list, 7, INTOBJ_INT(IsSubsetFlagsCalls1) );
     SET_ELM_PLIST( list, 8, INTOBJ_INT(IsSubsetFlagsCalls2) );
     SET_ELM_PLIST( list, 9, INTOBJ_INT(OperationNext)       );
-
+#else
+    for (i = 1; i <= 9; i++)
+        SET_ELM_PLIST( list, i, INTOBJ_INT(0) );
+#endif
     return list;
 }
 
@@ -5765,6 +5773,7 @@ Obj FuncOPERS_CACHE_INFO (
 Obj FuncCLEAR_CACHE_INFO (
     Obj                        self )
 {
+#ifdef COUNT_OPERS
     AndFlagsCacheHit = 0;
     AndFlagsCacheMiss = 0;
     AndFlagsCacheLost = 0;
@@ -5774,6 +5783,7 @@ Obj FuncCLEAR_CACHE_INFO (
     IsSubsetFlagsCalls1 = 0;
     IsSubsetFlagsCalls2 = 0;
     OperationNext = 0;
+#endif
 
     return 0;
 }
