@@ -118,7 +118,7 @@ fi
 # Many package require GNU make. So use gmake if available,
 # for improved compatibility with *BSD systems where "make"
 # is BSD make, not GNU make.
-if ! [[ "x$(which gmake)" = "x" ]]
+if hash gmake 2> /dev/null
 then
   MAKE=gmake
 else
