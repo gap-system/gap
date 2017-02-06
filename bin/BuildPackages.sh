@@ -1,5 +1,30 @@
 #!/usr/bin/env bash
 
+# This script attempts to build all GAP packages contained in the current
+# directory. Normally, you should run this script from the 'pkg'
+# subdirectory of your GAP installation.
+
+# You can also run it from other locations, but then you need to tell the
+# script where your GAP root directory is, by passing it as _first_ argument
+# to the script with '--with-gaproot='. By default, the script assumes that
+# the parent of the current working directory is the GAP root directory.
+
+# By default the script colors its output, even in the log files. One can
+# turn it off by adding the argument --no-color _after_ --with-gaproot= (if
+# added) but _before_ all further arguments.
+
+# If further arguments are added, then they are considered packages. In that
+# case only these packages will be built, and all others are ignored.
+
+# You need at least 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
+# Some packages also need a C++ compiler.
+
+# Contact support@gap-system.org for questions and complaints.
+
+# Note, that this isn't and is not intended to be a sophisticated script.
+# Even if it doesn't work completely automatically for you, you may get
+# an idea what to do for a complete installation of GAP.
+
 set -e
 
 # Is someone trying to run us from inside the 'bin' directory?
@@ -128,34 +153,6 @@ std_error() {
 
 ### The main function to be run, its output is going to be logged.
 build_packages() {
-
-# This script attempts to build all GAP packages contained in the current
-# directory. Normally, you should run this script from the 'pkg'
-# subdirectory of your GAP installation.
-
-# You can also run it from other locations, but then you need to tell the
-# script where your GAP root directory is, by passing it as _first_ argument
-# to the script with '--with-gaproot='. By default, the script assumes that
-# the parent of the current working directory is the GAP root directory.
-
-# By default the script colors its output, even in the log files. One can
-# turn it off by adding the argument --no-color _after_ --with-gaproot= (if
-# added) but _before_ all further arguments.
-
-# If further arguments are added, then they are considered packages. In that
-# case only these packages will be built, and all others are ignored.
-
-# You need at least 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
-# Some packages also need a C++ compiler.
-
-# Contact support@gap-system.org for questions and complaints.
-
-# Note, that this isn't and is not intended to be a sophisticated script.
-# Even if it doesn't work completely automatically for you, you may get
-# an idea what to do for a complete installation of GAP.
-
-
-# after colors are turned on or off we continue the script
 
 notice "Using GAP location: $GAPDIR"
 echo ""
@@ -384,7 +381,7 @@ echo "" >> "$LOGDIR/$FAILPKGFILE.log"
 echo ""
 notice "Output logged into ./$LOGDIR/$LOGFILE.log"
 notice "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
-# end of build_all_packages
+# end of build_packages
 }
 
 
