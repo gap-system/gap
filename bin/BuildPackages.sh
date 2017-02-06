@@ -108,6 +108,16 @@ then
 fi
 }
 
+# set build flags for 32 bit
+set_build_flags_for_32_bit(){
+if [[ "$(grep -c 'ABI_CFLAGS=-m32' $GAPDIR/Makefile)" -ge 1 ]]
+then
+  notice "Building with 32-bit ABI"
+  ABI32=YES
+  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
+fi
+}
+
 # packages to build
 set_packages(){
 if [[ "${PACKAGES[0]}" = "" ]]
@@ -168,14 +178,7 @@ notice "Using GAP location: $GAPDIR"
 echo ""
 
 set_packages
-
-if [[ "$(grep -c 'ABI_CFLAGS=-m32' $GAPDIR/Makefile)" -ge 1 ]]
-then
-  notice "Building with 32-bit ABI"
-  ABI32=YES
-  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
-fi
-
+set_build_flags_for_32_bit
 
 # Many package require GNU make. So use gmake if available,
 # for improved compatibility with *BSD systems where "make"
