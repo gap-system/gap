@@ -5,13 +5,24 @@
 # subdirectory of your GAP installation.
 
 # You can also run it from other locations, but then you need to tell the
-# script where your GAP root directory is, by passing it as _first_ argument
+# script where your GAP root directory is, by passing it as an argument
 # to the script with '--with-gaproot='. By default, the script assumes that
 # the parent of the current working directory is the GAP root directory.
 
 # By default the script colors its output, even in the log files. One can
-# turn it off by adding the argument --no-color _after_ --with-gaproot= (if
-# added) but _before_ all further arguments.
+# turn it off by adding the argument '--no-color'.
+
+# By default the logs are created into the './log' directory. This directory
+# can be changed by the argument '--with-logdir='.
+
+# By default the name of the main log file is 'buildpackages'. This filename
+# can be changed by the argument '--with-logfile='. Three files are created:
+# - one with .out extension containing the stdout output,
+# - one with .err extension containing the stderr output,
+# - one with .log extension containing the stdout and stderr together.
+
+# By default the packages failed to build are collected into the file named
+# 'fail'. This filename can be changed by the argument '--with-failpkgfile='.
 
 # If further arguments are added, then they are considered packages. In that
 # case only these packages will be built, and all others are ignored.
@@ -73,6 +84,39 @@ do
     --with-gaproot)
       shift
       GAPDIR="$1"
+      shift
+    ;;
+
+    --with-logdir=*)
+      LOGDIR=$(sed 's|--with-logdir=||' <<< "$1")
+      shift
+    ;;
+
+    --with-logdir)
+      shift
+      LOGDIR="$1"
+      shift
+    ;;
+
+    --with-logfile=*)
+      LOGFILE=$(sed 's|--with-logfile=||' <<< "$1")
+      shift
+    ;;
+
+    --with-logfile)
+      shift
+      LOGFILE="$1"
+      shift
+    ;;
+
+    --with-failpkgfile=*)
+      FAILPKGFILE=$(sed 's|--with-failpkgfile=||' <<< "$1")
+      shift
+    ;;
+
+    --with-failpkgfile)
+      shift
+      FAILPKGFILE="$1"
       shift
     ;;
 
