@@ -66,8 +66,7 @@ mentioned below may not be available on your installation.
 for example in using a classification to determine that groups must be
 isomorphic, based on agreement of properties; or to determine maximal
 subgroups or subgroup maximality. This will be indicated by an info message
-of level 2 in the info class
-<Ref Func="InfoPerformance"/>.
+of level 2 in the info class <C>InfoPerformance</C>.
 
 If the calculation is to be independent of such data library use, for
 example if it is used to verify the data library, functions can be called

@@ -1064,10 +1064,10 @@ gap> AsPartialPerm(f, [ 1, 2, 3 ] );
 <!-- *************************************************************** -->
   
   <ManSection>
-    <Oper Name="AsPartialPerm" Arg="f, set" Label="for a transformation and a
-      set of positive integer"/> 
-    <Meth Name="AsPartialPerm" Arg="f, n" Label="for a transformation and a
-      positive integer"/> 
+    <Oper Name="AsPartialPerm" Arg="f, set" 
+      Label="for a transformation and a set of positive integer"/> 
+    <Meth Name="AsPartialPerm" Arg="f, n" 
+      Label="for a transformation and a positive integer"/> 
   <Returns>A partial permutation or <K>fail</K>.</Returns>
   <Description>
     A transformation <A>f</A> defines a partial permutation when it is

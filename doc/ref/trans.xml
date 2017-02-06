@@ -438,8 +438,8 @@ Transformation( [ 4, 4, 4, 4, 4, 4 ] )
   represented as a transformation.  
   <P/>
 
-  The operations <Ref Oper="AsPermutation"/> and <Ref
-    Oper="AsPartialPerm" Label="for a transformation"/> can be used to
+  The operations <Ref Oper="AsPermutation"/> and <Ref Oper="AsPartialPerm" 
+  Label="for a transformation and a positive integer"/> can be used to
   convert transformations into permutations or partial permutations,
   where appropriate.  In this section we describe functions for
   converting other types of objects into transformations.
