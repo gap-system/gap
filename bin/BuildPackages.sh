@@ -98,6 +98,16 @@ do
 done
 }
 
+# We need to test if $GAPDIR is right
+test_GAPDIR(){
+if ! [[ -f "$GAPDIR/sysinfo.gap" ]]
+then
+  error "$GAPDIR is not the root of a gap installation (no sysinfo.gap)" \
+        "Please provide the absolute path of your GAP root directory as" \
+        "first argument with '--with-gaproot=' to this script."
+fi
+}
+
 # packages to build
 set_packages(){
 if [[ "${PACKAGES[0]}" = "" ]]
@@ -158,14 +168,6 @@ notice "Using GAP location: $GAPDIR"
 echo ""
 
 set_packages
-
-# We need to test if $GAPDIR is right
-if ! [[ -f "$GAPDIR/sysinfo.gap" ]]
-then
-  error "$GAPDIR is not the root of a gap installation (no sysinfo.gap)" \
-        "Please provide the absolute path of your GAP root directory as" \
-        "first argument with '--with-gaproot=' to this script."
-fi
 
 if [[ "$(grep -c 'ABI_CFLAGS=-m32' $GAPDIR/Makefile)" -ge 1 ]]
 then
@@ -389,6 +391,7 @@ notice "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
 set_default_parameters
 run_from_bin
 collect_arguments "$@"
+test_GAPDIR
 
 # Create LOGDIR
 mkdir -p "$LOGDIR"
