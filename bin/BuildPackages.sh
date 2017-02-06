@@ -173,16 +173,6 @@ fi
 )
 }
 
-build_cohomolo() {
-(
-./configure "$GAPDIR"
-cd standalone/progs.d
-cp makefile.orig makefile
-cd ../..
-"$MAKE"
-)
-}
-
 build_fail() {
   echo ""
   warning "Failed to build $PKG"
@@ -224,7 +214,7 @@ build_one_package() {
     # All but the last lines should end by '&&', otherwise (for some reason)
     # some packages that fail to build will not get reported in the logs.
     anupq*)
-      ./configure "CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR" && \
+      ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR && \
       "$MAKE" CFLAGS=-m32 LOPTS=-m32
     ;;
 
@@ -234,10 +224,6 @@ build_one_package() {
 
     carat*)
       build_carat
-    ;;
-
-    cohomolo*)
-      build_cohomolo
     ;;
 
     fplsa*)
@@ -256,7 +242,7 @@ build_one_package() {
     ;;
 
     pargap*)
-      ./configure "$GAPDIR" && \
+      ./configure --with-gap="$GAPDIR" && \
       "$MAKE" && \
       cp bin/pargap.sh "$GAPDIR/bin" && \
       rm -f ALLPKG
