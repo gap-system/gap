@@ -11,13 +11,29 @@ then
 fi
 }
 
-LOGDIR=log
-mkdir -p "$LOGDIR"
+# set default parameters
+set_default_parameters() {
 
-LOGFILE=buildpackages
-FAILPKGFILE=fail
+# CURDIR
+CURDIR="$(pwd)"
 
+# default GAPDIR
+pushd .. >/dev/null
+GAPDIR="$(pwd)"
+popd >/dev/null
+
+# default COLOR
 COLOR=1
+
+# default LOGDIR
+LOGDIR=log
+
+# default LOGFILE
+LOGFILE=buildpackages
+
+# default FAILPKGFILE
+FAILPKGFILE=fail
+}
 
 # print notices in green
 notice() {
@@ -89,9 +105,6 @@ build_packages() {
 # an idea what to do for a complete installation of GAP.
 
 
-# CURDIR
-CURDIR="$(pwd)"
-
 # GAPDIR
 GAPDIR=""
 if [[ "$#" -ge 1 ]]
@@ -108,12 +121,6 @@ then
       cd "$CURDIR"
     ;;
   esac
-fi
-if [[ -z "$GAPDIR" ]]
-then
-  pushd ..
-  GAPDIR="$(pwd)"
-  popd
 fi
 
 # check if coloring should be turned off
@@ -371,7 +378,11 @@ notice "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
 
 
 ### The main body of the script.
+set_default_parameters
 run_from_bin
+
+# Create LOGDIR
+mkdir -p "$LOGDIR"
 
 # Log error to .err, output to .out, everything to .log
 ( build_packages "$@" \
