@@ -82,7 +82,7 @@ while [[ "$#" -ge 1 ]]
 do
   case "$1" in
     --with-gaproot=*)
-      GAPDIR=$(sed 's|--with-gaproot=||' <<< "$1")
+      GAPDIR=${$1#--with-gaproot=}
       shift
     ;;
 
@@ -93,7 +93,7 @@ do
     ;;
 
     --with-logdir=*)
-      LOGDIR=$(sed 's|--with-logdir=||' <<< "$1")
+      LOGDIR=${$1#--with-logdir=}
       shift
     ;;
 
@@ -104,7 +104,7 @@ do
     ;;
 
     --with-logfile=*)
-      LOGFILE=$(sed 's|--with-logfile=||' <<< "$1")
+      LOGFILE=${$1#--with-logfile=}
       shift
     ;;
 
@@ -115,7 +115,7 @@ do
     ;;
 
     --with-failpkgfile=*)
-      FAILPKGFILE=$(sed 's|--with-failpkgfile=||' <<< "$1")
+      FAILPKGFILE=${$1#--with-failpkgfile=}
       shift
     ;;
 
