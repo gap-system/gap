@@ -90,25 +90,20 @@ any more. The book can be re-installed using <Ref Func="HELP_ADD_BOOK" />. <P/>
 <Section Label="The manual.six File">
 <Heading>The manual.six File</Heading>
 
-If a <F>manual.six</F> file for a help book is not in the format of the
-<F>gapmacro.tex</F> macros, explained in the document 
-<Q>The gapmacro.tex Manual Format</Q> (see the file 
-<F>gap4r5/doc/gapmacrodoc.pdf</F> from the tools archive 
-<C>etc/tools.tar.gz</C> which should be unpacked using the script 
-<F>etc/install-tools.sh</F>), the first non-empty line of 
-<F>manual.six</F> must be of the form
+The first non-empty line of <F>manual.six</F> should be of the form
 <P/>
 <C>#SIXFORMAT</C> <A>myownformat</A>
 <P/>
-where <A>myownformat</A> is an identifying string for this format.
-The reading of
-the  (remainder  of  the)  file  is   then   delegated   to   the   function
-<C>HELP_BOOK_HANDLER.<A>myownformat</A>.ReadSix</C> which must exist.
-Thus  there  are
-no further regulations for the format of the <F>manual.six</F> file,  other  that
-what you yourself impose. If such a line is missing then it is assumed  that
-the <F>manual.six</F> file complies with the <F>gapmacro.tex</F> documentation  format
-which is the <C>default</C> format.
+where <A>myownformat</A> is an identifying string for this format. The reading
+of the (remainder of the) file is then delegated to the function
+<C>HELP_BOOK_HANDLER.<A>myownformat</A>.ReadSix</C> which must exist. Thus there
+are no further regulations for the format of the <F>manual.six</F> file, other
+that what you yourself impose.
+<P/>
+If such a line is missing then it is assumed that the <F>manual.six</F> file
+complies with the <F>gapmacro.tex</F> documentation format which is the
+<C>default</C> format, and reading the file is delegated to
+<C>HELP_BOOK_HANDLER.default.ReadSix</C>.
 <P/>
 Section <Ref Sect="The Help Book Handler"/> explains how the return value of
 <C>HELP_BOOK_HANDLER.<A>myownformat</A>.ReadSix</C> should look like and which further
