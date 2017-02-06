@@ -59,9 +59,9 @@ GAPDIR="$(cd .. && pwd)"
 # default COLOR
 if [[ -t 1 ]]
 then
-  COLOR=1
+  COLOR=YES
 else
-  COLOR=0
+  COLOR=NO
 fi
 
 # default LOGDIR
@@ -125,7 +125,7 @@ do
 
     --no-color|--no-colors|--no-colour|--no-colours|\
     --nocolor|--nocolors|--nocolour|--nocolours)
-      COLOR=0
+      COLOR=NO
       shift
     ;;
 
@@ -192,7 +192,7 @@ fi
 
 # print notices in green
 notice() {
-  if [[ "$COLOR" = "1" ]]
+  if [[ "$COLOR" = "YES" ]]
   then
     printf "\033[32m%s\033[0m\n" "$@"
   else
@@ -202,7 +202,7 @@ notice() {
 
 # print warnings in yellow
 warning() {
-  if [[ "$COLOR" = "1" ]]
+  if [[ "$COLOR" = "YES" ]]
   then
     printf "\033[33mWARNING: %s\033[0m\n" "$@"
   else
@@ -212,7 +212,7 @@ warning() {
 
 # print error in red and exit
 error() {
-  if [[ "$COLOR" = "1" ]]
+  if [[ "$COLOR" = "YES" ]]
   then
     printf "\033[31mERROR: %s\033[0m\n" "$@"
   else
@@ -223,7 +223,7 @@ error() {
 
 # print stderr error in red but do not exit
 std_error() {
-  if [[ "$COLOR" = "1" ]]
+  if [[ "$COLOR" = "YES" ]]
   then
     printf "\033[31mERROR: %s\033[0m\n" "$@"
   else
