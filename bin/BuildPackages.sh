@@ -184,23 +184,6 @@ std_error() {
   fi
 }
 
-### The main function to be run, its output is going to be logged.
-build_packages() {
-
-notice "Using GAP location: $GAPDIR"
-echo ""
-
-set_packages
-set_build_flags_for_32_bit
-set_make
-
-notice \
-"Attempting to build GAP packages." \
-"Note that many GAP packages require extra programs to be installed," \
-"and some are quite difficult to build. Please read the documentation for" \
-"packages which fail to build correctly, and only worry about packages" \
-"you require!" \
-"Logging into ./$LOGDIR/$LOGFILE.log"
 
 build_carat() {
 (
@@ -279,6 +262,7 @@ run_configure_and_make() {
   fi
 }
 
+
 build_one_package() {
   # requires one argument which is the package directory
   PKG="$1"
@@ -347,6 +331,25 @@ build_one_package() {
   esac
   ) || build_fail
 }
+
+
+### The main function to be run, its output is going to be logged.
+build_packages() {
+
+notice "Using GAP location: $GAPDIR"
+echo ""
+
+set_packages
+set_build_flags_for_32_bit
+set_make
+
+notice \
+"Attempting to build GAP packages." \
+"Note that many GAP packages require extra programs to be installed," \
+"and some are quite difficult to build. Please read the documentation for" \
+"packages which fail to build correctly, and only worry about packages" \
+"you require!" \
+"Logging into ./$LOGDIR/$LOGFILE.log"
 
 date >> "$LOGDIR/$FAILPKGFILE.log"
 for PKG in "${PACKAGES[@]}"
