@@ -133,6 +133,11 @@ notice \
 "you require!" \
 "Logging into ./$LOGDIR/$LOGFILE.log"
 
+echo_run() {
+  echo "$@"
+  eval "$@"
+}
+
 build_carat() {
 (
 # TODO: FIX Carat
@@ -190,9 +195,9 @@ run_configure_and_make() {
   then
     if grep Autoconf ./configure > /dev/null
     then
-      ./configure --with-gaproot="$GAPDIR" $CONFIGFLAGS
+      echo_run ./configure --with-gaproot="$GAPDIR" $CONFIGFLAGS
     else
-      ./configure "$GAPDIR"
+      echo_run ./configure "$GAPDIR"
     fi
     "$MAKE"
   else
@@ -214,7 +219,7 @@ build_one_package() {
     # All but the last lines should end by '&&', otherwise (for some reason)
     # some packages that fail to build will not get reported in the logs.
     anupq*)
-      ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR && \
+      echo_run ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR && \
       "$MAKE" CFLAGS=-m32 LOPTS=-m32
     ;;
 
@@ -227,12 +232,12 @@ build_one_package() {
     ;;
 
     fplsa*)
-      ./configure "$GAPDIR" && \
+      echo_run ./configure "$GAPDIR" && \
       "$MAKE" CC="gcc -O2 "
     ;;
 
     kbmag*)
-      ./configure "$GAPDIR" && \
+      echo_run ./configure "$GAPDIR" && \
       "$MAKE" COPTS="-O2 -g"
     ;;
 
@@ -242,14 +247,14 @@ build_one_package() {
     ;;
 
     pargap*)
-      ./configure --with-gap="$GAPDIR" && \
+      echo_run ./configure --with-gap="$GAPDIR" && \
       "$MAKE" && \
       cp bin/pargap.sh "$GAPDIR/bin" && \
       rm -f ALLPKG
     ;;
 
     xgap*)
-      ./configure --with-gaproot="$GAPDIR" && \
+      echo_run ./configure --with-gaproot="$GAPDIR" && \
       "$MAKE" && \
       rm -f "$GAPDIR/bin/xgap.sh" && \
       cp bin/xgap.sh "$GAPDIR/bin"
