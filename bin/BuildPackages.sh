@@ -1,36 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-
-LOGDIR=log
-mkdir -p "$LOGDIR"
-
-LOGFILE=buildpackages
-FAILPKGFILE=fail
-
-# print notices in green
-notice() {
-    printf "\033[32m%s\033[0m\n" "$@"
-}
-
-# print warnings in yellow
-warning() {
-    printf "\033[33mWARNING: %s\033[0m\n" "$@"
-}
-
-# print error in red and exit
-error() {
-    printf "\033[31mERROR: %s\033[0m\n" "$@"
-    exit 1
-}
-
-# print stderr error in red but do not exit
-std_error() {
-    printf "\033[31mERROR: %s\033[0m\n" "$@"
-}
-
-build_packages() {
-
 # This script attempts to build all GAP packages contained in the current
 # directory. Normally, you should run this script from the 'pkg'
 # subdirectory of your GAP installation.
@@ -52,6 +21,7 @@ build_packages() {
 # Even if it doesn't work completely automatically for you, you may get
 # an idea what to do for a complete installation of GAP.
 
+set -e
 
 # Is someone trying to run us from inside the 'bin' directory?
 if [[ -f gapicon.bmp ]]
@@ -70,6 +40,7 @@ while [[ "$#" -ge 1 ]]; do
   case "$option" in
     --with-gaproot)   GAPDIR="$1"; shift ;;
     --with-gaproot=*) GAPDIR=${option#--with-gaproot=}; shift ;;
+    --no-color)       COLORS=no ;;
     *)                PACKAGES="$PACKAGES $option" ;;
   esac
 done
@@ -79,12 +50,27 @@ if [[ -z "$PACKAGES" ]]
 then
   PACKAGES="$(find . -maxdepth 2 -type f -name PackageInfo.g  | xargs -n 1 dirname)"
 fi
+
+# user  messages
+if [[ "x$COLORS" = xyes ]]
 then
+  # print notices in green, warnings in yellow, errors in read
+  notice()    { printf "\033[32m%s\033[0m\n" "$@" ; }
+  warning()   { printf "\033[33mWARNING: %s\033[0m\n" "$@" ; }
+  error()     { printf "\033[31mERROR: %s\033[0m\n" "$@" ; exit 1 ; }
+  std_error() { printf "\033[31m%s\033[0m\n" "$@" ; }
+else
+  notice()    { printf "%s\n" "$@" ; }
+  warning()   { printf "WARNING: %s\n" "$@" ; }
+  error()     { printf "ERROR: %s\n" "$@" ; exit 1 ; }
+  std_error() { printf "%s\n" "$@" ; }
 fi
-notice "Using GAP location: $GAPDIR"
+
+
+notice "Using GAP root $GAPDIR"
 
 # We need to test if $GAPDIR is right
-if ! [[ -f "$GAPDIR/sysinfo.gap" ]]
+if [[ ! -f "$GAPDIR/sysinfo.gap" ]]
 then
   error "$GAPDIR is not the root of a gap installation (no sysinfo.gap)" \
         "Please provide the absolute path of your GAP root directory as" \
@@ -97,6 +83,10 @@ then
   ABI32=YES
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi
+
+
+LOGDIR=log
+mkdir -p "$LOGDIR"
 
 
 # Many package require GNU make. So use gmake if available,
@@ -114,8 +104,7 @@ notice \
 "Note that many GAP packages require extra programs to be installed," \
 "and some are quite difficult to build. Please read the documentation for" \
 "packages which fail to build correctly, and only worry about packages" \
-"you require!" \
-"Logging into ./$LOGDIR/$LOGFILE.log"
+"you require!"
 
 echo_run() {
   echo "$@"
@@ -165,7 +154,7 @@ fi
 build_fail() {
   echo ""
   warning "Failed to build $PKG"
-  echo "$PKG" >> "$LOGDIR/$FAILPKGFILE.log"
+  echo "$PKG" >> "$LOGDIR/fail.log"
 }
 
 run_configure_and_make() {
@@ -254,7 +243,7 @@ build_one_package() {
   ) || build_fail
 }
 
-date >> "$LOGDIR/$FAILPKGFILE.log"
+date >> "$LOGDIR/fail.log"
 for PKG in ${PACKAGES}
 do
   # cut off the ending slash (if exists)
@@ -292,27 +281,6 @@ do
   fi
 done
 
-echo "" >> "$LOGDIR/$FAILPKGFILE.log"
+echo "" >> "$LOGDIR/fail.log"
 echo ""
-notice "Output logged into ./$LOGDIR/$LOGFILE.log"
-notice "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
-# end of build_all_packages
-}
-
-# Log error to .err, output to .out, everything to .log
-( build_packages "$@" \
- > >(tee "$LOGDIR/$LOGFILE.out") \
-2> >(while read line
-     do \
-       std_error "$line"
-     done \
-     > >(tee "$LOGDIR/$LOGFILE.err" >&2) \
-    ) \
-)> >( tee "$LOGDIR/$LOGFILE.log" ) 2>&1
-
-# remove superfluous buildpackages log files if there was no error message
-if [[ ! -s "$LOGDIR/$LOGFILE.err" ]]
-then
-  rm -f "$LOGDIR/$LOGFILE.err"
-  rm -f "$LOGDIR/$LOGFILE.out"
-fi
+notice "Packages failed to build are in ./$LOGDIR/fail.log"
