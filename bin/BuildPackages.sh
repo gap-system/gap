@@ -2,6 +2,15 @@
 
 set -e
 
+# Is someone trying to run us from inside the 'bin' directory?
+run_from_bin(){
+if [[ -f gapicon.bmp ]]
+then
+  error "This script must be run from inside the pkg directory" \
+        "Type: cd ../pkg; ../bin/BuildPackages.sh"
+fi
+}
+
 LOGDIR=log
 mkdir -p "$LOGDIR"
 
@@ -51,6 +60,7 @@ std_error() {
   fi
 }
 
+### The main function to be run, its output is going to be logged.
 build_packages() {
 
 # This script attempts to build all GAP packages contained in the current
@@ -119,13 +129,6 @@ then
 fi
 
 # after colors are turned on or off we continue the script
-
-# Is someone trying to run us from inside the 'bin' directory?
-if [[ -f gapicon.bmp ]]
-then
-  error "This script must be run from inside the pkg directory" \
-        "Type: cd ../pkg; ../bin/BuildPackages.sh"
-fi
 
 notice "Using GAP location: $GAPDIR"
 
@@ -365,6 +368,10 @@ notice "Output logged into ./$LOGDIR/$LOGFILE.log"
 notice "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
 # end of build_all_packages
 }
+
+
+### The main body of the script.
+run_from_bin
 
 # Log error to .err, output to .out, everything to .log
 ( build_packages "$@" \
