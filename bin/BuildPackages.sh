@@ -282,6 +282,9 @@ do
       rm -f "$LOGDIR/$PKG.out"
       rm -f "$LOGDIR/$PKG.log"
     fi
+  else
+    echo
+    warning "$PKG does not seem to be a package directory, skipping"
   fi
 done
 
