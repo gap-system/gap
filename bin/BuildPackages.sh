@@ -45,6 +45,7 @@ while [[ "$#" -ge 1 ]]; do
     --with-gaproot)   GAPDIR="$1"; shift ;;
     --with-gaproot=*) GAPDIR=${option#--with-gaproot=}; shift ;;
     --no-color)       COLORS=no ;;
+    -*)               echo "ERROR: unsupported argument $option" ; exit 1;;
     *)                PACKAGES="$PACKAGES $option" ;;
   esac
 done
