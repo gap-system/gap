@@ -60,31 +60,26 @@ then
         "Type: cd ../pkg; ../bin/BuildPackages.sh"
 fi
 
-# CURDIR
 CURDIR="$(pwd)"
+GAPDIR="$(cd .. && pwd)"
+COLORS=yes
+PACKAGES=
 
-# GAPDIR
-GAPDIR=""
-if [[ "$#" -ge 1 ]]
-then
-  case "$1" in
-    --with-gaproot=*)
-      GAPDIR=$(sed 's|--with-gaproot=||' <<< "$1")
-      shift
-    ;;
-
-    *)
-      cd ..
-      GAPDIR="$(pwd)"
-      cd "$CURDIR"
-    ;;
+while [[ "$#" -ge 1 ]]; do
+  option="$1" ; shift
+  case "$option" in
+    --with-gaproot)   GAPDIR="$1"; shift ;;
+    --with-gaproot=*) GAPDIR=${option#--with-gaproot=}; shift ;;
+    *)                PACKAGES="$PACKAGES $option" ;;
   esac
-fi
-if [[ -z "$GAPDIR" ]]
+done
+
+# packages to build
+if [[ -z "$PACKAGES" ]]
 then
-  pushd ..
-  GAPDIR="$(pwd)"
-  popd
+  PACKAGES="$(find . -maxdepth 2 -type f -name PackageInfo.g  | xargs -n 1 dirname)"
+fi
+then
 fi
 notice "Using GAP location: $GAPDIR"
 
@@ -103,17 +98,6 @@ then
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi
 
-# packages to build
-if [[ "$#" -ge 1 ]]
-then
-  # last arguments are packages to build
-  PACKAGES=("$@")
-else
-  # if there are no arguments, then build all packages
-  shopt -s nullglob
-  PACKAGES=(*)
-  shopt -u nullglob
-fi
 
 # Many package require GNU make. So use gmake if available,
 # for improved compatibility with *BSD systems where "make"
@@ -271,7 +255,7 @@ build_one_package() {
 }
 
 date >> "$LOGDIR/$FAILPKGFILE.log"
-for PKG in "${PACKAGES[@]}"
+for PKG in ${PACKAGES}
 do
   # cut off the ending slash (if exists)
   PKG="${PKG%/}"
