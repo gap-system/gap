@@ -35,6 +35,56 @@ LOGFILE=buildpackages
 FAILPKGFILE=fail
 }
 
+# collect arguments
+collect_arguments(){
+while [[ "$#" -ge 1 ]]
+do
+  case "$1" in
+    --with-gaproot=*)
+      GAPDIR=$(sed 's|--with-gaproot=||' <<< "$1")
+      shift
+    ;;
+
+    --with-gaproot)
+      shift
+      GAPDIR="$1"
+      shift
+    ;;
+
+    --no-color|--no-colors|--no-colour|--no-colours|\
+    --nocolor|--nocolors|--nocolour|--nocolours)
+      COLOR=0
+      shift
+    ;;
+
+    -*)
+      # Colors may not be defined at this point,
+      # then the default is to use coloring.
+      warning "Discarding unrecognized argument $1"
+      shift
+    ;;
+
+    *)
+      # Any other argument is considered to be a package directory to build.
+      PACKAGES+=("$1")
+      shift
+    ;;
+  esac
+done
+}
+
+# packages to build
+set_packages(){
+if [[ "${PACKAGES[0]}" = "" ]]
+then
+  # If there were no extra arguments, therefore PACKAGES[0] is not defined,
+  # then build all packages.
+  shopt -s nullglob
+  PACKAGES=(*)
+  shopt -u nullglob
+fi
+}
+
 # print notices in green
 notice() {
   if [[ "$COLOR" = "1" ]]
@@ -105,39 +155,12 @@ build_packages() {
 # an idea what to do for a complete installation of GAP.
 
 
-# GAPDIR
-GAPDIR=""
-if [[ "$#" -ge 1 ]]
-then
-  case "$1" in
-    --with-gaproot=*)
-      GAPDIR=$(sed 's|--with-gaproot=||' <<< "$1")
-      shift
-    ;;
-
-    *)
-      cd ..
-      GAPDIR="$(pwd)"
-      cd "$CURDIR"
-    ;;
-  esac
-fi
-
-# check if coloring should be turned off
-if [[ "$#" -ge 1 ]]
-then
-  case "$1" in
-    --no-color|--no-colors|--no-colour|--no-colours|\
-    --nocolor|--nocolors|--nocolour|--nocolours)
-      COLOR=0
-      shift
-    ;;
-  esac
-fi
-
 # after colors are turned on or off we continue the script
 
 notice "Using GAP location: $GAPDIR"
+echo ""
+
+set_packages
 
 # We need to test if $GAPDIR is right
 if ! [[ -f "$GAPDIR/sysinfo.gap" ]]
@@ -154,18 +177,6 @@ then
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi
 
-
-# packages to build
-if [[ "$#" -ge 1 ]]
-then
-  # last arguments are packages to build
-  PACKAGES=("$@")
-else
-  # if there are no arguments, then build all packages
-  shopt -s nullglob
-  PACKAGES=(*)
-  shopt -u nullglob
-fi
 
 # Many package require GNU make. So use gmake if available,
 # for improved compatibility with *BSD systems where "make"
@@ -380,12 +391,13 @@ notice "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
 ### The main body of the script.
 set_default_parameters
 run_from_bin
+collect_arguments "$@"
 
 # Create LOGDIR
 mkdir -p "$LOGDIR"
 
 # Log error to .err, output to .out, everything to .log
-( build_packages "$@" \
+( build_packages \
  > >(tee "$LOGDIR/$LOGFILE.out") \
 2> >(while read line
      do \
