@@ -112,7 +112,7 @@ notice \
 "you require!"
 
 echo_run() {
-  echo "$@"
+  notice "Running $(printf "'%s' " "$@")"
   eval "$@"
 }
 
@@ -177,7 +177,7 @@ run_configure_and_make() {
     else
       echo_run ./configure "$GAPDIR"
     fi
-    "$MAKE"
+    echo_run "$MAKE"
   else
     notice "No building required for $PKG"
   fi
@@ -198,7 +198,7 @@ build_one_package() {
     # some packages that fail to build will not get reported in the logs.
     anupq*)
       echo_run ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR && \
-      "$MAKE" CFLAGS=-m32 LOPTS=-m32
+      echo_run "$MAKE" CFLAGS=-m32 LOPTS=-m32
     ;;
 
     atlasrep*)
@@ -211,12 +211,12 @@ build_one_package() {
 
     fplsa*)
       echo_run ./configure "$GAPDIR" && \
-      "$MAKE" CC="gcc -O2 "
+      echo_run "$MAKE" CC="gcc -O2 "
     ;;
 
     kbmag*)
       echo_run ./configure "$GAPDIR" && \
-      "$MAKE" COPTS="-O2 -g"
+      echo_run "$MAKE" COPTS="-O2 -g"
     ;;
 
     NormalizInterface*)
@@ -226,14 +226,14 @@ build_one_package() {
 
     pargap*)
       echo_run ./configure --with-gap="$GAPDIR" && \
-      "$MAKE" && \
+      echo_run "$MAKE" && \
       cp bin/pargap.sh "$GAPDIR/bin" && \
       rm -f ALLPKG
     ;;
 
     xgap*)
       echo_run ./configure --with-gaproot="$GAPDIR" && \
-      "$MAKE" && \
+      echo_run "$MAKE" && \
       rm -f "$GAPDIR/bin/xgap.sh" && \
       cp bin/xgap.sh "$GAPDIR/bin"
     ;;
