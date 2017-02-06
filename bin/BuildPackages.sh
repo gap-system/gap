@@ -59,7 +59,12 @@ GAPDIR="$(pwd)"
 popd >/dev/null
 
 # default COLOR
-COLOR=1
+if [[ -t 1 ]]
+then
+  COLOR=1
+else
+  COLOR=0
+fi
 
 # default LOGDIR
 LOGDIR=log
