@@ -54,9 +54,7 @@ set_default_parameters() {
 CURDIR="$(pwd)"
 
 # default GAPDIR
-pushd .. >/dev/null
-GAPDIR="$(pwd)"
-popd >/dev/null
+GAPDIR="$(cd .. && pwd)"
 
 # default COLOR
 if [[ -t 1 ]]
