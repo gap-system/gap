@@ -35,6 +35,10 @@ GAPDIR="$(cd .. && pwd)"
 COLORS=yes
 PACKAGES=
 
+# If output does not go into a terminal (but rather into a log file),
+# turn of colors.
+[[ -t 1 ]] || COLORS=no
+
 while [[ "$#" -ge 1 ]]; do
   option="$1" ; shift
   case "$option" in
