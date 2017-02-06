@@ -130,6 +130,19 @@ then
 fi
 }
 
+# Many package require GNU make. So use gmake if available,
+# for improved compatibility with *BSD systems where "make"
+# is BSD make, not GNU make.
+set_make(){
+if ! [[ "x$(which gmake)" = "x" ]]
+then
+  MAKE=gmake
+else
+  MAKE=make
+fi
+}
+
+
 # print notices in green
 notice() {
   if [[ "$COLOR" = "1" ]]
@@ -179,16 +192,7 @@ echo ""
 
 set_packages
 set_build_flags_for_32_bit
-
-# Many package require GNU make. So use gmake if available,
-# for improved compatibility with *BSD systems where "make"
-# is BSD make, not GNU make.
-if ! [[ "x$(which gmake)" = "x" ]]
-then
-  MAKE=gmake
-else
-  MAKE=make
-fi
+set_make
 
 notice \
 "Attempting to build GAP packages." \
