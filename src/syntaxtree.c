@@ -403,7 +403,7 @@ Obj SyntaxTreeIntExpr(Expr expr)
             value = C_NORMALIZE_64BIT(value);
         }
     }
-    
+
     AssPRec(result, RNamName("value"), value);
 
     return result;
@@ -423,9 +423,15 @@ Obj SyntaxTreeFalseExpr(Expr expr)
 
 Obj SyntaxTreeCharExpr(Expr expr)
 {
+    Obj result;
+    Obj value;
+
     /* TODO: How do I make a character literal? */
-    /* Emit( "%c = ObjsChar[%d];\n", val, (Int)(((UChar*)ADDR_EXPR(expr))[0])); */
-    return Fail;
+    result = NewSyntaxTreeNode("CharExpr",1);
+    value = INTOBJ_INT(ADDR_EXPR(expr)[0]);
+    AssPRec(result, RNamName("result"), value);
+
+    return result;
 }
 
 Obj SyntaxTreePermExpr (Expr expr)
