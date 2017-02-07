@@ -384,7 +384,6 @@ Obj SyntaxTreeIntExpr(Expr expr)
     if(IS_INTEXPR(expr)) {
         value = OBJ_INTEXPR(expr);
     } else {
-        fprintf(stderr, "full monty obj\n");
         siz = SIZE_EXPR(expr) - sizeof(UInt);
         typ = *(UInt *)ADDR_EXPR(expr);
         value = C_MAKE_INTEGER_BAG(siz, typ);
@@ -437,42 +436,36 @@ Obj SyntaxTreeCharExpr(Expr expr)
 Obj SyntaxTreePermExpr (Expr expr)
 {
     Obj result;
-    Obj perm;
-    Obj cyc;
+    Obj cycles;
+    Obj cycle;
     Obj val;
-    UInt cycle, csize, n;
-    UInt i, j;
+    Expr cycleexpr;
+    Int csize, n;
+    Int i, j;
 
-    result = NewSyntaxTreeNode("permexpr", 2);
+    result = NewSyntaxTreeNode("PermExpr", 2);
 
-    perm = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( perm, 0 );
+    /* determine number of cycles */
+    n = SIZE_EXPR(expr)/sizeof(Expr);
+    cycles = NEW_PLIST( T_PLIST, n );
+    AssPRec(result, RNamName("cycles"), cycles);
+    SET_LEN_PLIST(cycles, n);
 
-    /* check for the identity                                              */
-    if ( SIZE_EXPR(expr) == 0 ) {
-        AssPRec(result, RNamName("permutation"), perm);
-    } else {
-        /* loop over the cycles                                                */
-        n = SIZE_EXPR(expr)/sizeof(Expr);
-        SET_LEN_PLIST( perm, n );
+    /* enter cycles */
+    for(i=1;i <= n;i++) {
+        cycleexpr = ADDR_EXPR(expr)[i-1];
+        csize = SIZE_EXPR(cycleexpr)/sizeof(Expr);
+        cycle = NEW_PLIST(T_PLIST, csize);
+        SET_LEN_PLIST(cycle, csize);
+        SET_ELM_PLIST(cycles, i, cycle);
+        CHANGED_BAG(cycles);
 
-        for ( i = 1;  i <= n;  i++ ) {
-            cycle = ADDR_EXPR(expr)[i-1];
-            csize = SIZE_EXPR(cycle)/sizeof(Expr);
-            cyc = NEW_PLIST( T_PLIST, csize );
-            SET_LEN_PLIST( cyc, csize );
-            SET_ELM_PLIST( perm, i, cyc );
-            CHANGED_BAG( perm );
-
-            /* loop over the entries of the cycle                              */
-            for ( j = 1;  j <= csize;  j++ ) {
-                val = SyntaxTreeExpr( ADDR_EXPR(cycle)[j-1] );
-                SET_ELM_PLIST( cyc, j, val );
-                CHANGED_BAG(cyc);
-            }
+        /* entries of the cycle */
+        for (j=1; j<=csize; j++) {
+            val = SyntaxTreeExpr(ADDR_EXPR(cycleexpr)[j-1]);
+            SET_ELM_PLIST(cycle, j, val);
+            CHANGED_BAG(cycle);
         }
-        /* TODO: Array2Perm does not do what I want */
-        AssPRec(result, RNamName("permutation"), Array2Perm(perm));
     }
     return result;
 }
