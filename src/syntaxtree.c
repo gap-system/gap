@@ -94,6 +94,7 @@ Obj SyntaxTreeUnknownBool(Expr expr)
 }
 
 extern Obj SyntaxTreeRefGVarFopy (Expr expr);
+
 Obj SyntaxTreeFunccall(Expr expr)
 {
     Obj result;
@@ -101,7 +102,7 @@ Obj SyntaxTreeFunccall(Expr expr)
     Obj args, argi;
     UInt narg, i;
 
-    result = NewSyntaxTreeNode("funccall", 5);
+    result = NewSyntaxTreeNode("Funccall", 5);
     /* TODO: If this is a gvar ref, put name? */
     func = SyntaxTreeExpr( FUNC_CALL(expr) );
 
@@ -165,7 +166,7 @@ Obj SyntaxTreeOr(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("or", 3);
+    result = NewSyntaxTreeNode("Or", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeBoolExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeBoolExpr( ADDR_EXPR(expr)[1]));
@@ -177,7 +178,7 @@ Obj SyntaxTreeAnd(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("and",3);
+    result = NewSyntaxTreeNode("And",3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr(ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeExpr(ADDR_EXPR(expr)[0]));
@@ -189,7 +190,7 @@ Obj SyntaxTreeNot(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("not", 2);
+    result = NewSyntaxTreeNode("Not", 2);
     AssPRec(result, RNamName("op"), SyntaxTreeBoolExpr( ADDR_EXPR(expr)[0]));
 
     return result;
@@ -199,7 +200,7 @@ Obj SyntaxTreeEq(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("eq", 3);
+    result = NewSyntaxTreeNode("Eq", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"),SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
@@ -211,7 +212,7 @@ Obj SyntaxTreeNe(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("neq", 3);
+    result = NewSyntaxTreeNode("Ne", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"),SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
@@ -223,7 +224,7 @@ Obj SyntaxTreeLt(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("lt", 3);
+    result = NewSyntaxTreeNode("Lt", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0] ) );
     AssPRec(result, RNamName("right"),  SyntaxTreeExpr( ADDR_EXPR(expr)[1] ) );
@@ -235,7 +236,7 @@ Obj SyntaxTreeGe(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("ge", 3);
+    result = NewSyntaxTreeNode("Ge", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
@@ -247,7 +248,7 @@ Obj SyntaxTreeGt(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("gt", 3);
+    result = NewSyntaxTreeNode("Gt", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
@@ -259,7 +260,7 @@ Obj SyntaxTreeLe(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("le", 3);
+    result = NewSyntaxTreeNode("Le", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
@@ -271,7 +272,7 @@ Obj SyntaxTreeIn(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("in", 3);
+    result = NewSyntaxTreeNode("In", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
@@ -283,7 +284,7 @@ Obj SyntaxTreeSum(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("sum", 3);
+    result = NewSyntaxTreeNode("Sum", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
@@ -295,7 +296,7 @@ Obj SyntaxTreeAInv(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("ainv", 2);
+    result = NewSyntaxTreeNode("AInv", 2);
     AssPRec(result, RNamName("op"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
 
     return result;
@@ -305,7 +306,7 @@ Obj SyntaxTreeDiff(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("diff", 3);
+    result = NewSyntaxTreeNode("Diff", 3);
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
@@ -316,7 +317,7 @@ Obj SyntaxTreeProd(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("prod", 3);
+    result = NewSyntaxTreeNode("Prod", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
@@ -328,7 +329,7 @@ Obj SyntaxTreeInv(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("inv", 3);
+    result = NewSyntaxTreeNode("Inv", 3);
 
     AssPRec(result, RNamName("op"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
 
@@ -339,7 +340,7 @@ Obj SyntaxTreeQuo(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("quot", 3);
+    result = NewSyntaxTreeNode("Quot", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
@@ -351,7 +352,7 @@ Obj SyntaxTreeMod(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("mod", 3);
+    result = NewSyntaxTreeNode("Mod", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
@@ -363,7 +364,7 @@ Obj SyntaxTreePow(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("mod", 3);
+    result = NewSyntaxTreeNode("Pow", 3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
     AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
@@ -410,14 +411,20 @@ Obj SyntaxTreeIntExpr(Expr expr)
 
 Obj SyntaxTreeTrueExpr(Expr expr)
 {
-    /* TODO: Maybe make a tree node? */
-    return True;
+    Obj result;
+
+    result = NewSyntaxTreeNode("TrueExpr", 1);
+
+    return result;
 }
 
 Obj SyntaxTreeFalseExpr(Expr expr)
 {
-    /* TODO: Maybe make a tree node? */
-    return False;
+    Obj result;
+
+    result = NewSyntaxTreeNode("FalseExpr", 1);
+
+    return result;
 }
 
 Obj SyntaxTreeCharExpr(Expr expr)
@@ -479,7 +486,7 @@ Obj SyntaxTreeListExpr (Expr expr)
     Int len;
     Int i;
 
-    result = NewSyntaxTreeNode("listexpr", 2);
+    result = NewSyntaxTreeNode("ListExpr", 2);
     len = SIZE_EXPR( expr ) / sizeof(Expr);
 
     list = NEW_PLIST(T_PLIST, len);
@@ -507,30 +514,6 @@ Obj SyntaxTreeListTildeExpr(Expr expr)
     result = NewSyntaxTreeNode("TildeExpr",1);
 
     return result;
-#if 0
-    CVar                list;           /* list value, result              */
-    CVar                tilde;          /* old value of tilde              */
-
-    /* remember the old value of '~'                                       */
-    tilde = CVAR_TEMP( NewTemp( "tilde" ) );
-    Emit( "%c = VAL_GVAR( Tilde );\n", tilde );
-
-    /* create the list value                                               */
-    list = SyntaxTreeListExpr1( expr );
-
-    /* assign the list to '~'                                              */
-    Emit( "AssGVarUnsafe( Tilde, %c );\n", list );
-
-    /* evaluate the subexpressions into the list value                     */
-    SyntaxTreeListExpr2( list, expr );
-
-    /* restore old value of '~'                                            */
-    Emit( "AssGVarUnsafe( Tilde, %c );\n", tilde );
-    if ( IS_TEMP_CVAR( tilde ) )  FreeTemp( TEMP_CVAR( tilde ) );
-
-    /* return the list value                                               */
-    return list;
-#endif
 }
 
 Obj SyntaxTreeRangeExpr(Expr expr)
@@ -541,21 +524,24 @@ Obj SyntaxTreeRangeExpr(Expr expr)
 
     if ( SIZE_EXPR(expr) == 2 * sizeof(Expr) ) {
         first  = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-        second = 0;
         last   = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
+
+        AssPRec(result, RNamName("first"), first);
+        AssPRec(result, RNamName("last"), last);
     } else {
         first  = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
         second = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
         last   = SyntaxTreeExpr( ADDR_EXPR(expr)[2] );
-    }
 
-    AssPRec(result, RNamName("first"), first);
-    AssPRec(result, RNamName("second"), second);
-    AssPRec(result, RNamName("last"), last);
+        AssPRec(result, RNamName("first"), first);
+        AssPRec(result, RNamName("second"), second);
+        AssPRec(result, RNamName("last"), last);
+    }
 
     return result;
 }
 
+/* TODO: Can we still identify whether a string was triple quoted? */
 Obj SyntaxTreeStringExpr(Expr expr)
 {
     Obj result, string;
@@ -578,7 +564,7 @@ Obj SyntaxTreeRecExpr(Expr expr)
     Expr tmp;
     Int i, len;
 
-    result = NewSyntaxTreeNode("recexpr", 2);
+    result = NewSyntaxTreeNode("RecExpr", 2);
 
     len = SIZE_EXPR(expr) / (2*sizeof(Expr));
     rec = NEW_PREC(len);
@@ -1035,7 +1021,7 @@ Obj SyntaxTreeProccall(Stat stat)
     UInt narg;
     UInt i;
 
-    result = NewSyntaxTreeNode("proccall", 2);
+    result = NewSyntaxTreeNode("Proccall", 2);
 
     /* TODO: What to do about this? */
     /* compile the reference to the function                               */
