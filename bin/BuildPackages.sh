@@ -43,7 +43,7 @@ while [[ "$#" -ge 1 ]]; do
   option="$1" ; shift
   case "$option" in
     --with-gaproot)   GAPROOT="$1"; shift ;;
-    --with-gaproot=*) GAPROOT=${option#--with-gaproot=}; shift ;;
+    --with-gaproot=*) GAPROOT=${option#--with-gaproot=}; ;;
     --no-color)       COLORS=no ;;
     -*)               echo "ERROR: unsupported argument $option" ; exit 1;;
     *)                PACKAGES="$PACKAGES $option" ;;
