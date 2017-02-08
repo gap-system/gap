@@ -5,7 +5,7 @@
 # subdirectory of your GAP installation.
 
 # You can also run it from other locations, but then you need to tell the
-# script where your GAP root directory is, by passing it as first argument
+# script where your GAP root directory is, by passing it as an argument
 # to the script with '--with-gaproot='. By default, the script assumes that
 # the parent of the current working directory is the GAP root directory.
 
@@ -36,7 +36,7 @@ COLORS=yes
 PACKAGES=()
 
 # If output does not go into a terminal (but rather into a log file),
-# turn of colors.
+# turn off colors.
 [[ -t 1 ]] || COLORS=no
 
 while [[ "$#" -ge 1 ]]; do
@@ -57,9 +57,10 @@ then
   # spaces in filenames. This code will still break if there are newlines
   # in the name.
   IFS=$'\n' PACKAGES=($(find . -maxdepth 2 -type f -name PackageInfo.g))
+  PACKAGES=("${PACKAGES[@]%/PackageInfo.g}")
 fi
 
-# user  messages
+# Some helper functions for printing user messages
 if [[ "x$COLORS" = xyes ]]
 then
   # print notices in green, warnings in yellow, errors in read
@@ -77,7 +78,7 @@ fi
 
 notice "Using GAP root $GAPROOT"
 
-# test if $GAPROOT is valid
+# Check whether $GAPROOT is valid
 if [[ ! -f "$GAPROOT/sysinfo.gap" ]]
 then
   error "$GAPROOT is not the root of a gap installation (no sysinfo.gap)" \
@@ -114,7 +115,10 @@ notice \
 "packages which fail to build correctly, and only worry about packages" \
 "you require!"
 
+# print the given command plus arguments, single quoted, then run it
 echo_run() {
+  # when printf is given a format string with only one format specification,
+  # it applies that format string to each argument in sequence
   notice "Running $(printf "'%s' " "$@")"
   eval "$@"
 }
@@ -294,4 +298,4 @@ done
 
 echo "" >> "$LOGDIR/fail.log"
 echo ""
-notice "Packages failed to build are in ./$LOGDIR/fail.log"
+notice "Packages which failed to build are in ./$LOGDIR/fail.log"
