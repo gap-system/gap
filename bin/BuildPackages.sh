@@ -31,7 +31,7 @@ then
 fi
 
 CURDIR="$(pwd)"
-GAPDIR="$(cd .. && pwd)"
+GAPROOT="$(cd .. && pwd)"
 COLORS=yes
 PACKAGES=
 
@@ -42,8 +42,8 @@ PACKAGES=
 while [[ "$#" -ge 1 ]]; do
   option="$1" ; shift
   case "$option" in
-    --with-gaproot)   GAPDIR="$1"; shift ;;
-    --with-gaproot=*) GAPDIR=${option#--with-gaproot=}; shift ;;
+    --with-gaproot)   GAPROOT="$1"; shift ;;
+    --with-gaproot=*) GAPROOT=${option#--with-gaproot=}; shift ;;
     --no-color)       COLORS=no ;;
     -*)               echo "ERROR: unsupported argument $option" ; exit 1;;
     *)                PACKAGES="$PACKAGES $option" ;;
@@ -72,17 +72,17 @@ else
 fi
 
 
-notice "Using GAP root $GAPDIR"
+notice "Using GAP root $GAPROOT"
 
-# We need to test if $GAPDIR is right
-if [[ ! -f "$GAPDIR/sysinfo.gap" ]]
+# test if $GAPROOT is valid
+if [[ ! -f "$GAPROOT/sysinfo.gap" ]]
 then
-  error "$GAPDIR is not the root of a gap installation (no sysinfo.gap)" \
+  error "$GAPROOT is not the root of a gap installation (no sysinfo.gap)" \
         "Please provide the absolute path of your GAP root directory as" \
         "first argument with '--with-gaproot=' to this script."
 fi
 
-if [[ "$(grep -c 'ABI_CFLAGS=-m32' $GAPDIR/Makefile)" -ge 1 ]]
+if [[ "$(grep -c 'ABI_CFLAGS=-m32' $GAPROOT/Makefile)" -ge 1 ]]
 then
   notice "Building with 32-bit ABI"
   ABI32=YES
@@ -137,8 +137,8 @@ make TOPDIR="$(pwd)"
 chmod -R a+rX .
 cd bin
 # This sets GAParch as it should be.
-# Alternatively, one could check $GAPDIR/bin for all directories instead.
-source "$GAPDIR/sysinfo.gap"
+# Alternatively, one could check $GAPROOT/bin for all directories instead.
+source "$GAPROOT/sysinfo.gap"
 # If the symbolic link does not exist then create it.
 if [[ ! -L "$GAParch" ]]
 then
@@ -173,9 +173,9 @@ run_configure_and_make() {
   then
     if grep Autoconf ./configure > /dev/null
     then
-      echo_run ./configure --with-gaproot="$GAPDIR" $CONFIGFLAGS
+      echo_run ./configure --with-gaproot="$GAPROOT" $CONFIGFLAGS
     else
-      echo_run ./configure "$GAPDIR"
+      echo_run ./configure "$GAPROOT"
     fi
     echo_run "$MAKE"
   else
@@ -197,7 +197,7 @@ build_one_package() {
     # All but the last lines should end by '&&', otherwise (for some reason)
     # some packages that fail to build will not get reported in the logs.
     anupq*)
-      echo_run ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPDIR && \
+      echo_run ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPROOT && \
       echo_run "$MAKE" CFLAGS=-m32 LOPTS=-m32
     ;;
 
@@ -210,32 +210,32 @@ build_one_package() {
     ;;
 
     fplsa*)
-      echo_run ./configure "$GAPDIR" && \
+      echo_run ./configure "$GAPROOT" && \
       echo_run "$MAKE" CC="gcc -O2 "
     ;;
 
     kbmag*)
-      echo_run ./configure "$GAPDIR" && \
+      echo_run ./configure "$GAPROOT" && \
       echo_run "$MAKE" COPTS="-O2 -g"
     ;;
 
     NormalizInterface*)
-      ./build-normaliz.sh "$GAPDIR" && \
+      ./build-normaliz.sh "$GAPROOT" && \
       run_configure_and_make
     ;;
 
     pargap*)
-      echo_run ./configure --with-gap="$GAPDIR" && \
+      echo_run ./configure --with-gap="$GAPROOT" && \
       echo_run "$MAKE" && \
-      cp bin/pargap.sh "$GAPDIR/bin" && \
+      cp bin/pargap.sh "$GAPROOT/bin" && \
       rm -f ALLPKG
     ;;
 
     xgap*)
-      echo_run ./configure --with-gaproot="$GAPDIR" && \
+      echo_run ./configure --with-gaproot="$GAPROOT" && \
       echo_run "$MAKE" && \
-      rm -f "$GAPDIR/bin/xgap.sh" && \
-      cp bin/xgap.sh "$GAPDIR/bin"
+      rm -f "$GAPROOT/bin/xgap.sh" && \
+      cp bin/xgap.sh "$GAPROOT/bin"
     ;;
 
     simpcomp*)
