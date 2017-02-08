@@ -33,7 +33,7 @@ fi
 CURDIR="$(pwd)"
 GAPROOT="$(cd .. && pwd)"
 COLORS=yes
-PACKAGES=
+PACKAGES=()
 
 # If output does not go into a terminal (but rather into a log file),
 # turn of colors.
@@ -46,14 +46,17 @@ while [[ "$#" -ge 1 ]]; do
     --with-gaproot=*) GAPROOT=${option#--with-gaproot=}; ;;
     --no-color)       COLORS=no ;;
     -*)               echo "ERROR: unsupported argument $option" ; exit 1;;
-    *)                PACKAGES="$PACKAGES $option" ;;
+    *)                PACKAGES+=("$option") ;;
   esac
 done
 
-# packages to build
-if [[ -z "$PACKAGES" ]]
+# If user specified no packages to build, build all packages in subdirectories.
+if [[ ${#PACKAGES[@]} == 0 ]]
 then
-  PACKAGES="$(find . -maxdepth 2 -type f -name PackageInfo.g  | xargs -n 1 dirname)"
+  # Put package directory names into a bash array to avoid issues with
+  # spaces in filenames. This code will still break if there are newlines
+  # in the name.
+  IFS=$'\n' PACKAGES=($(find . -maxdepth 2 -type f -name PackageInfo.g))
 fi
 
 # user  messages
@@ -249,7 +252,7 @@ build_one_package() {
 }
 
 date >> "$LOGDIR/fail.log"
-for PKG in ${PACKAGES}
+for PKG in "${PACKAGES[@]}"
 do
   # cut off the ending slash (if exists)
   PKG="${PKG%/}"
