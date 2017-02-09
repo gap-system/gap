@@ -181,7 +181,7 @@ Obj SyntaxTreeAnd(Expr expr)
     result = NewSyntaxTreeNode("And",3);
 
     AssPRec(result, RNamName("left"), SyntaxTreeExpr(ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr(ADDR_EXPR(expr)[0]));
+    AssPRec(result, RNamName("right"), SyntaxTreeExpr(ADDR_EXPR(expr)[1]));
 
     return result;
 }
