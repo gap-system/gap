@@ -1118,47 +1118,33 @@ Obj SyntaxTreeIf(Stat stat)
 
     Obj cond;
     Obj then;
-    Obj elif;
-    Obj brelse;
+    Obj pair;
     Obj branches;
 
     Int i, nr;
 
     result = NewSyntaxTreeNode("If", 3);
 
-    nr = SIZE_STAT( stat ) / (2*sizeof(Stat));
+    nr = SIZE_STAT(stat) / (2*sizeof(Stat));
+    branches = NEW_PLIST(T_PLIST, nr);
+    SET_LEN_PLIST(branches, nr);
+
+    AssPRec(result, RNamName("branches"), branches);
 
     cond = SyntaxTreeBoolExpr( ADDR_STAT( stat )[0] );
     then = SyntaxTreeStat( ADDR_STAT( stat )[1] );
 
-    AssPRec(result, RNamName("condition"), cond);
-    AssPRec(result, RNamName("then"), then);
+    for(i=0;i<nr;i++) {
+        cond = SyntaxTreeBoolExpr( ADDR_STAT( stat )[2*i] );
+        then = SyntaxTreeStat( ADDR_STAT( stat )[2*i+1] );
 
-    branches = NEW_PLIST(T_PLIST, nr-1);
-    SET_LEN_PLIST(branches, nr-1);
-    AssPRec(result, RNamName("branches"), branches);
+        pair = NEW_PREC(2);
+        AssPRec(pair, RNamName("condition"), cond);
+        AssPRec(pair, RNamName("then"), then);
 
-    for ( i = 2; i <= nr; i++ ) {
-
-        elif = NewSyntaxTreeNode("elif", 3);
-
-        if ( i == nr && TNUM_EXPR(ADDR_STAT(stat)[2*(i-1)]) == T_TRUE_EXPR )
-            break;
-
-        cond = SyntaxTreeBoolExpr( ADDR_STAT( stat )[2*(i-1)] );
-        then = SyntaxTreeStat( ADDR_STAT( stat )[2*(i-1)+1] );
-        AssPRec(elif, RNamName("condition"), cond);
-        AssPRec(elif, RNamName("then"), then);
-        SET_ELM_PLIST(branches, i - 1, elif);
+        SET_ELM_PLIST(branches, i + 1, pair);
         CHANGED_BAG(branches);
     }
-
-    /* handle 'else' branch                                                */
-    if ( i == nr ) {
-        brelse = SyntaxTreeStat( ADDR_STAT( stat )[2*(i-1)+1] );
-        AssPRec(result, RNamName("else"), brelse);
-    }
-
     return result;
 }
 
