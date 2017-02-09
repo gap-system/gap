@@ -898,7 +898,7 @@ Obj SyntaxTreeElmsPosObj(Expr expr)
     poss = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
 
     AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("poss"), pos);
+    AssPRec(result, RNamName("poss"), poss);
 
     return result;
 }
@@ -1197,11 +1197,11 @@ Obj SyntaxTreeWhile(Stat stat )
     AssPRec(result, RNamName("condition"), condition);
 
     nr = SIZE_STAT(stat)/sizeof(Stat);
-    body = NEW_PLIST(T_PLIST, nr);
-    SET_LEN_PLIST(body, nr);
+    body = NEW_PLIST(T_PLIST, nr - 1);
+    SET_LEN_PLIST(body, nr - 1);
     AssPRec(result, RNamName("body"), body);
 
-    for ( i = 1; i <= nr; i++ ) {
+    for ( i = 1; i < nr; i++ ) {
         SET_ELM_PLIST(body, i, SyntaxTreeStat( ADDR_STAT(stat)[i]));
         CHANGED_BAG(body);
     }
@@ -1787,7 +1787,8 @@ static Obj SyntaxTreeFunc( Obj func )
     Obj result;
     Obj str;
     Obj stats;
-    Obj lnams;
+    Obj argnams;
+    Obj locnams;
 
     Bag oldFrame;
     Int narg;
@@ -1801,30 +1802,44 @@ static Obj SyntaxTreeFunc( Obj func )
     }
 
     narg = NARG_FUNC(func);
-    AssPRec(result, RNamName("narg"), INTOBJ_INT(narg));
-    /* TODO: Deal with variadic functions: they have negative narg */
-    /* Variadic function, last argument is list */
-    if(narg < 0)
+    if(narg < 0) {
+        AssPRec(result, RNamName("variadic"), True);
         narg = -narg;
+    } else {
+        AssPRec(result, RNamName("variadic"), False);
+    }
+    AssPRec(result, RNamName("narg"), INTOBJ_INT(narg));
 
-    nloc = NLOC_FUNC(func);
-    AssPRec(result, RNamName("nloc"), INTOBJ_INT(nloc));
-
-    /* TODO: Do we need to copy the names? */
-    /*       Split Local/Argument?  */
-    lnams = NEW_PLIST(T_PLIST, narg + nloc);
-    SET_LEN_PLIST(lnams, narg + nloc);
-    AssPRec(result, RNamName("local_names"), lnams);
-
-    for(i=1; i<= narg + nloc; i++) {
+    /* names of arguments */
+    argnams = NEW_PLIST(T_PLIST, narg);
+    SET_LEN_PLIST(argnams, narg);
+    AssPRec(result, RNamName("argnams"), argnams);
+    for(i=1; i<= narg; i++) {
         if(NAMI_FUNC(func, i) != 0) {
             C_NEW_STRING_DYN(str, NAMI_FUNC(func, i));
         } else {
             /* TODO: Probably put the number in */
             C_NEW_STRING_CONST(str, "localvar");
         }
-        SET_ELM_PLIST(lnams, i, str);
-        CHANGED_BAG(lnams);
+        SET_ELM_PLIST(argnams, i, str);
+        CHANGED_BAG(argnams);
+    }
+
+    /* names of local variables */
+    nloc = NLOC_FUNC(func);
+    AssPRec(result, RNamName("nloc"), INTOBJ_INT(nloc));
+    locnams = NEW_PLIST(T_PLIST, nloc);
+    SET_LEN_PLIST(locnams, nloc);
+    AssPRec(result, RNamName("locnams"), locnams);
+    for(i=1;i<=nloc; i++) {
+        if(NAMI_FUNC(func, narg + i) != 0) {
+            C_NEW_STRING_DYN(str, NAMI_FUNC(func, narg + i));
+        } else {
+            /* TODO: Probably put the number in */
+            C_NEW_STRING_CONST(str, "localvar");
+        }
+        SET_ELM_PLIST(locnams, i, str);
+        CHANGED_BAG(locnams);
     }
 
     /* switch to this function (so that 'ADDR_STAT' and 'ADDR_EXPR' work)  */
