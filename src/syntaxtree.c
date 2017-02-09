@@ -511,7 +511,7 @@ Obj SyntaxTreeListTildeExpr(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("TildeExpr",1);
+    result = SyntaxTreeListExpr(expr);
 
     return result;
 }
@@ -605,7 +605,7 @@ Obj SyntaxTreeRecTildeExpr(Expr expr)
 {
     Obj result;
 
-    result = NewSyntaxTreeNode("TildeExpr", 1);
+    result = SyntaxTreeRecExpr(expr);
 
     return result;
 }
@@ -886,22 +886,63 @@ Obj SyntaxTreeElmPosObj(Expr expr)
     return result;
 }
 
-/* TODO: figure out while this is not present in the compiler */
 Obj SyntaxTreeElmsPosObj(Expr expr)
 {
-    return Fail;
+    Obj result;
+    Obj list;
+    Obj poss;
+
+    result = NewSyntaxTreeNode("ElmsPosObj", 2);
+
+    list = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
+    poss = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
+
+    AssPRec(result, RNamName("list"), list);
+    AssPRec(result, RNamName("poss"), pos);
+
+    return result;
 }
 
-/* TODO: figure out while this is not present in the compiler */
 Obj SyntaxTreeElmPosObjLev(Expr expr)
 {
-    return Fail;
+    Obj result;
+
+    Obj lists;
+    Obj pos;
+    Obj level;
+
+    result = NewSyntaxTreeNode("ElmPosObjLev", 3);
+
+    lists = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
+    pos = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
+    level = INTOBJ_INT((Int)(ADDR_EXPR(expr)[2]));
+
+    AssPRec(result, RNamName("lists"), lists);
+    AssPRec(result, RNamName("pos"), pos);
+    AssPRec(result, RNamName("level"), level);
+
+    return result;
 }
 
-/* TODO: figure out while this is not present in the compiler */
 Obj SyntaxTreeElmsPosObjLev(Expr expr)
 {
-    return Fail;
+    Obj result;
+    Obj lists;
+    Obj poss;
+    Obj level;
+
+    result = NewSyntaxTreeNode("PosObjLev", 3);
+
+    lists = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
+    poss = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
+    level = INTOBJ_INT((Int)(ADDR_EXPR(expr)[2]));
+
+    AssPRec(result, RNamName("lists"), lists);
+    AssPRec(result, RNamName("poss"), poss);
+    AssPRec(result, RNamName("level"), level);
+
+    return result;
+;
 }
 
 Obj SyntaxTreeIsbPosObj(Expr expr)
@@ -1534,13 +1575,48 @@ Obj SyntaxTreeAsssPosObj(Stat stat)
 
 Obj SyntaxTreeAssPosObjLev(Stat stat)
 {
-    /* TODO: Compile this */
-    return Fail;
+    Obj result;
+    Obj lists;
+    Obj pos;
+    Obj rhss;
+    Int level;
+
+    result = NewSyntaxTreeNode("AssPosObjLev", 3);
+
+    lists = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
+    pos = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
+    rhss = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
+    level = (Int)(ADDR_STAT(stat)[3]);
+
+    AssPRec(result, RNamName("lists"), lists);
+    AssPRec(result, RNamName("pos"), pos);
+    AssPRec(result, RNamName("rhss"), rhss);
+    AssPRec(result, RNamName("level"), INTOBJ_INT(level));
+
+    return result;
 }
 
 Obj SyntaxTreeAsssPosObjLev(Stat stat)
 {
-    return Fail;
+    Obj result;
+    Obj lists;
+    Obj poss;
+    Obj rhss;
+    Int level;
+
+    result = NewSyntaxTreeNode("AsssPosObjLev", 3);
+
+    lists = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
+    poss = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
+    rhss = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
+    level = (Int)(ADDR_STAT(stat)[3]);
+
+    AssPRec(result, RNamName("lists"), lists);
+    AssPRec(result, RNamName("poss"), poss);
+    AssPRec(result, RNamName("rhss"), rhss);
+    AssPRec(result, RNamName("level"), INTOBJ_INT(level));
+
+    return result;
 }
 
 Obj SyntaxTreeUnbPosObj(Stat stat)
