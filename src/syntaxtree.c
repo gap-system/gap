@@ -1134,8 +1134,8 @@ Obj SyntaxTreeIf(Stat stat)
     AssPRec(result, RNamName("condition"), cond);
     AssPRec(result, RNamName("then"), then);
 
-    branches = NEW_PLIST(T_PLIST, nr);
-    SET_LEN_PLIST(branches, nr);
+    branches = NEW_PLIST(T_PLIST, nr-1);
+    SET_LEN_PLIST(branches, nr-1);
     AssPRec(result, RNamName("branches"), branches);
 
     for ( i = 2; i <= nr; i++ ) {
@@ -1149,7 +1149,7 @@ Obj SyntaxTreeIf(Stat stat)
         then = SyntaxTreeStat( ADDR_STAT( stat )[2*(i-1)+1] );
         AssPRec(elif, RNamName("condition"), cond);
         AssPRec(elif, RNamName("then"), then);
-        SET_ELM_PLIST(branches, i, elif);
+        SET_ELM_PLIST(branches, i - 1, elif);
         CHANGED_BAG(branches);
     }
 
@@ -1712,7 +1712,11 @@ Obj SyntaxTreeUnbComObjExpr(Stat stat)
 
 Obj SyntaxTreeEmpty(Stat stat)
 {
-    return 0;
+    Obj result;
+
+    result = NewSyntaxTreeNode("Empty",1);
+
+    return result;
 }
 
 Obj SyntaxTreeInfo(Stat stat)
