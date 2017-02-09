@@ -225,6 +225,9 @@ extern Obj AInvInt( Obj op );
 */
 extern Int CLog2Int( Int intnum );
 
+/* The following function should be internal, but the float package uses it.
+So we keep it here for now. */
+extern Obj FuncLog2Int( Obj self, Obj integer );
 
 /****************************************************************************
 **
