@@ -1201,8 +1201,8 @@ Obj SyntaxTreeWhile(Stat stat )
     SET_LEN_PLIST(body, nr);
     AssPRec(result, RNamName("body"), body);
 
-    for ( i = 1; i < SIZE_STAT(stat)/sizeof(Stat); i++ ) {
-        SET_ELM_PLIST(body, i, SyntaxTreeStat( ADDR_STAT(stat)[i] ));
+    for ( i = 1; i <= nr; i++ ) {
+        SET_ELM_PLIST(body, i, SyntaxTreeStat( ADDR_STAT(stat)[i]));
         CHANGED_BAG(body);
     }
 
