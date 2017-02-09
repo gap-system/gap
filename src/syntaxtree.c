@@ -559,8 +559,9 @@ Obj SyntaxTreeStringExpr(Expr expr)
 
 Obj SyntaxTreeRecExpr(Expr expr)
 {
-    Obj result, rec;
-    Obj key, val;
+    Obj result;
+    Obj key;
+    Obj val;
     Obj list;
     Obj subrec;
     Expr tmp;
@@ -1080,7 +1081,7 @@ Obj SyntaxTreeProccallOpts(Stat stat)
     Obj opts;
 
     result = NewSyntaxTreeNode("ProccallOpts", 5);
-    opts = SyntaxTreeExpr(ADDR_STAT(stat))[0];
+    opts = SyntaxTreeExpr(ADDR_STAT(stat)[0]);
 
     AssPRec(result, RNamName("opts"), opts);
 
