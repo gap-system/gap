@@ -3371,7 +3371,11 @@ InstallOtherMethod( \*,
           if depthDiff < -1 or depthDiff > 1 then
               return PROD_LISTS_SPECIAL(left, right, depth1, depth2 );
           else
-              return PROD_LIST_LIST_DEFAULT( left, right, depthDiff );
+              if IsEmpty( left ) then
+                  return [];
+              else
+                  return PROD_LIST_LIST_DEFAULT( left, right, depthDiff );
+              fi;
           fi;
       else
         # <vec> * <scl>
