@@ -40,14 +40,8 @@
 extern Double LoadDouble( void);
 extern void SaveDouble( Double d);
 
-#ifdef HAVE_STDIO_H
 #include <stdio.h>
-#endif
-
-#ifdef HAVE_MATH_H
 #include <math.h>
-#endif
-
 #include <stdlib.h>
 
 #define SIZE_MACFLOAT   sizeof(Double)

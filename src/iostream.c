@@ -61,17 +61,15 @@
 #include  <sys/time.h>
 #endif
 
-#if HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 
 #if HAVE_ERRNO_H
-#include <errno.h>
+# include       <errno.h>
+#else
+extern int errno;
 #endif
 
-#if HAVE_SIGNAL_H
 #include <signal.h>
-#endif
 
 #if HAVE_FCNTL_H
 #include <fcntl.h>
