@@ -113,6 +113,8 @@
 
 #if HAVE_STDINT_H
 #include <stdint.h>
+#endif
+
 typedef char              Char;
 
 typedef int8_t   Int1;
@@ -132,38 +134,6 @@ typedef UInt8    UInt;
 #else
 typedef Int4     Int;
 typedef UInt4    UInt;
-#endif
-
-/* 64 bit machines                                                         */
-#elif defined( SYS_IS_64_BIT )
-typedef char                    Char;
-typedef signed char             Int1;
-typedef short int               Int2;
-typedef int                     Int4;
-typedef long int                Int8;
-typedef long int                Int;
-typedef unsigned char           UChar;
-typedef unsigned char           UInt1;
-typedef unsigned short int      UInt2;
-typedef unsigned int            UInt4;
-typedef unsigned long int       UInt8;
-typedef unsigned long int       UInt;
-
-/* 32 bit machines                                                         */
-#else
-typedef char                    Char;
-typedef signed char             Int1;
-typedef short int               Int2;
-typedef long int                Int4;
-typedef long int                Int;
-typedef long long int           Int8;
-typedef unsigned char           UChar;
-typedef unsigned char           UInt1;
-typedef unsigned short int      UInt2;
-typedef unsigned long int       UInt4;
-typedef unsigned long int       UInt;
-typedef unsigned long long int  UInt8;
-
 #endif
 
 
