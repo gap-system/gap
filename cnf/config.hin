@@ -328,9 +328,6 @@
 /* Define to 1 if you have the `ttyname' function. */
 #undef HAVE_TTYNAME
 
-/* define as 1 if you have "union wait" */
-#undef HAVE_UNION_WAIT
-
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
@@ -351,9 +348,6 @@
 
 /* Define to 1 if you have the `vm_allocate' function. */
 #undef HAVE_VM_ALLOCATE
-
-/* Define to 1 if you have the `wait4' function. */
-#undef HAVE_WAIT4
 
 /* Define to 1 if you have the `waitpid' function. */
 #undef HAVE_WAITPID
