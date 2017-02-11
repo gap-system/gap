@@ -52,16 +52,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-#ifdef HAVE_SYS_STAT_H
+#include <sys/types.h>
 #include <sys/stat.h>
-#endif
-
-#if HAVE_SYS_TIME_H
-#include  <sys/time.h>
-#endif
-
+#include <sys/time.h>
 #include <unistd.h>
+
+#include <signal.h>
+#include <fcntl.h>
+
 
 #if HAVE_ERRNO_H
 # include       <errno.h>
@@ -69,18 +67,8 @@
 extern int errno;
 #endif
 
-#include <signal.h>
-
-#if HAVE_FCNTL_H
-#include <fcntl.h>
-#endif
-
 #if HAVE_TERMIOS_H
 #include <termios.h>
-#endif
-
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
 #endif
 
 #if HAVE_SYS_WAIT_H
@@ -95,10 +83,6 @@ extern int errno;
 #else
 #define assert( a ) do if (!(a)) {fprintf(stderr,"Assertion failed at line %d file %s\n",__LINE__,__FILE__); abort();} while (0)
 #endif
-#endif
-
-#if HAVE_SYS_STAT_H
-#include <sys/stat.h>
 #endif
 
 #if HAVE_UTIL_H

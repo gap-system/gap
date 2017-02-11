@@ -22,11 +22,7 @@
 #include        <sys/types.h>
 #include        <dirent.h>              /* for reading a directory         */
 #include        <sys/stat.h>
-#if HAVE_SYS_TIME_H
 #include        <sys/time.h>
-#endif
-
-
 
 #include        "sysfiles.h"            /* file input/output               */
 
