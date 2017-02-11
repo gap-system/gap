@@ -486,9 +486,7 @@ UInt SyStopTime;
 */
 #if HAVE_GETRUSAGE && !SYS_IS_CYGWIN32
 
-#if HAVE_SYS_TIME_H
-# include       <sys/time.h>            /* definition of 'struct timeval'  */
-#endif
+#include        <sys/time.h>            /* definition of 'struct timeval'  */
 #if HAVE_SYS_RESOURCE_H
 # include       <sys/resource.h>        /* definition of 'struct rusage'   */
 #endif
