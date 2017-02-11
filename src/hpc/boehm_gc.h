@@ -28,8 +28,6 @@
 #include <gc/gc_inline.h>
 #include <gc/gc_typed.h>
 #include <gc/gc_mark.h>
-#else
-#include <stdlib.h>
 #endif
 
 
