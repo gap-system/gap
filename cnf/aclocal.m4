@@ -90,22 +90,6 @@ AC_DEFINE_UNQUOTED( C_LONG_ALIGN, $gp_cv_c_long_align, [define as least offset w
 
 dnl #########################################################################
 dnl ##
-dnl ## check for old style union wait more carefully
-dnl ##
-
-AC_DEFUN(GP_C_UNION_WAIT,
-[AC_CACHE_CHECK(union wait, gp_cv_c_union_wait,
- [
-  AC_TRY_COMPILE( [#include <sys/wait.h> ], 
-                  [int a; int status; waitpid( (pid_t)-1, & status, 0);
-                             a = WIFSIGNALED(status); a = WEXITSTATUS(status);],
-                  gp_cv_c_union_wait=0,
-                  gp_cv_c_union_wait=1 )],
-  AC_DEFINE( HAVE_UNION_WAIT, $gp_cv_c_union_wait, [define as 1 if you have "union wait"] )
-)])
-
-dnl #########################################################################
-dnl ##
 dnl ## choose CFLAGS more carefully
 dnl ##
 dnl ##  For alpha/cc (or some flavours of this at least) -O3 is faster

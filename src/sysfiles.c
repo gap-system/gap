@@ -3055,19 +3055,15 @@ void SySetErrorNo ( void )
 */
 #if HAVE_FORK || HAVE_VFORK
 
-#if HAVE_UNION_WAIT
+#include <sys/types.h>
+#if HAVE_SYS_WAIT_H
 # include <sys/wait.h>
-#else
-# include <sys/types.h>
-# if HAVE_SYS_WAIT_H
-#  include <sys/wait.h>
-# endif
-# ifndef WEXITSTATUS
-#  define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
-# endif
-# ifndef WIFEXITED
-#  define WIFEXITED(stat_val) (((stat_val) & 255) == 0)
-# endif
+#endif
+#ifndef WEXITSTATUS
+# define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
+#endif
+#ifndef WIFEXITED
+# define WIFEXITED(stat_val) (((stat_val) & 255) == 0)
 #endif
 
 extern char ** environ;
@@ -3166,19 +3162,11 @@ UInt SyExecuteProcess (
 {
     pid_t                   pid;                    /* process id          */
     pid_t                   wait_pid;
-#if HAVE_UNION_WAIT
-    union wait              status;                 /* non POSIX           */
-#else
     int                     status;                 /* do not use `Int'    */
-#endif
     Int                     tin;                    /* temp in             */
     Int                     tout;                   /* temp out            */
     sig_handler_t           *func;
     sig_handler_t           *func2;
-
-#if !HAVE_WAITPID
-    struct rusage           usage;
-#endif
 
 
     /* turn off the SIGCHLD handling, so that we can be sure to collect this child
@@ -3207,11 +3195,7 @@ UInt SyExecuteProcess (
         func = signal( SIGINT, SIG_IGN );
 
         /* wait for some action                                            */
-#if HAVE_WAITPID
         wait_pid = waitpid( pid, &status, 0 );
-#else
-        wait_pid = wait4( pid, &status, 0, &usage );
-#endif
         if ( wait_pid == -1 ) {
             signal( SIGINT, func );
             (*func2)(SIGCHLD);
