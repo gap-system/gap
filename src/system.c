@@ -1584,10 +1584,15 @@ Int8 SyNanosecondsSinceEpochResolution()
 /****************************************************************************
 **
 *f  SySetGapRootPath( <string> )
+**
+** This function assumes that the system uses '/' as path separator.
+** Currently, we support nothing else. For Windows (or rather: Cygwin), we
+** rely on a small hack which converts the path separator '\' used there
+** on '/' on the fly. Put differently: Systems that use completely different
+**  path separators, or none at all, are currently not supported.
 */
-#if HAVE_SLASH_SEPARATOR 
 
-void SySetGapRootPath( const Char * string )
+static void SySetGapRootPath( const Char * string )
 {
     const Char *          p;
     Char *          q;
@@ -1668,8 +1673,6 @@ void SySetGapRootPath( const Char * string )
     }
     return; 
 }
-
-#endif
 
 
 /****************************************************************************
