@@ -134,9 +134,6 @@
 /* Define to 1 if you have the `madvise' function. */
 #undef HAVE_MADVISE
 
-/* Define to 1 if you have the <math.h> header file. */
-#undef HAVE_MATH_H
-
 /* Define to 1 if you have the `memcpy' function. */
 #undef HAVE_MEMCPY
 
@@ -238,9 +235,6 @@
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
-
-/* Define to 1 if you have the <stdio.h> header file. */
-#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H

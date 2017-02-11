@@ -108,8 +108,8 @@ dnl ##
 
 AC_HEADER_STDC
 
-AC_CHECK_HEADERS( assert.h errno.h math.h stdio.h stdlib.h string.h )
-AC_CHECK_HEADERS( termios.h termio.h sgtty.h signal.h unistd.h sys/stat.h )
+AC_CHECK_HEADERS( assert.h errno.h )
+AC_CHECK_HEADERS( termios.h termio.h sgtty.h signal.h sys/stat.h )
 AC_CHECK_TYPE( sig_atomic_t, [], [ AC_DEFINE([HAVE_SIG_ATOMIC_T],[],[Check for sig_atomic_t]) ],[#include <signal.h>])
 AC_CHECK_HEADERS( fcntl.h sys/ioctl.h time.h sys/time.h sys/types.h sys/sysmacros.h sys/resource.h )
 
