@@ -28,6 +28,21 @@ AC_CANONICAL_HOST
 AC_DEFINE_UNQUOTED( SYS_ARCH, "$GAPARCH", [define the name of the architucture] )
 AC_SUBST(GAPARCH)
 
+
+dnl
+dnl Set the language
+dnl
+AC_PROG_CC
+AC_LANG([C])
+
+
+dnl
+dnl Check whether to use _GNU_SOURCE etc. (needed for e.g. exp10).
+dnl Must come before anything else using AC_COMPILE_IFELSE
+dnl
+AC_USE_SYSTEM_EXTENSIONS
+
+
 dnl This has to be left until after we know the system type
 GP_C_LONG_ALIGN
 GP_CFLAGS
@@ -40,7 +55,6 @@ dnl ##
 dnl ## check for compiler features
 dnl ##
 
-AC_PROG_CC
 AC_C_CONST
 AC_C_INLINE
 AC_C_BIGENDIAN
