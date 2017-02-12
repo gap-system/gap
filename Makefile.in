@@ -468,23 +468,25 @@ cygwin: compile
 
 bootstrap-pkg-minimal:
 	@if test -e pkg; then \
-        echo "The pkg directory already exists. Please move or remove it to proceed."; \
+        echo "The pkg directory already exists. Please move or remove it to proceed." && \
+        exit 1 ; \
     else \
-        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) ; \
-        mkdir pkg ; \
-        cd pkg ; \
+        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) && \
+        mkdir pkg && \
+        cd pkg && \
         tar xzf ../$(PKG_MINIMAL) ; \
-    fi;
+    fi
 
 bootstrap-pkg-full:
 	@if test -e pkg; then \
-        echo "The pkg directory already exists. Please move or remove it to proceed" ; \
+        echo "The pkg directory already exists. Please move or remove it to proceed." && \
+        exit 1 ; \
     else \
-        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_FULL) ; \
-        mkdir pkg ; \
-        cd pkg ; \
+        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_FULL) && \
+        mkdir pkg && \
+        cd pkg && \
         tar xzf ../$(PKG_FULL) ; \
-    fi;
+    fi
 
 # update ctags if requests
 tags:
