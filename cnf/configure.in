@@ -120,8 +120,6 @@ dnl ##
 dnl ## check for the existence of various header files
 dnl ##
 
-AC_HEADER_STDC
-
 AC_CHECK_HEADERS( assert.h errno.h )
 AC_CHECK_HEADERS( termios.h termio.h sgtty.h signal.h sys/stat.h )
 AC_CHECK_TYPE( sig_atomic_t, [], [ AC_DEFINE([HAVE_SIG_ATOMIC_T],[],[Check for sig_atomic_t]) ],[#include <signal.h>])
