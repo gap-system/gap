@@ -6,6 +6,7 @@ environment:
     - CYG_ARCH: x86
       CYG_ROOT: C:\cygwin
       TEST_SUITE: testinstall
+      ABI: 32
     - CYG_ARCH: x86_64
       CYG_ROOT: C:\cygwin64
       TEST_SUITE: testinstall
