@@ -5,8 +5,10 @@ gap> op5 := Semigroup(s,c);;
 gap> dcl := GreensDClasses(op5);;
 gap> ForAny(Cartesian(dcl,dcl), x->IsGreensLessThanOrEqual(x[1],x[2]));
 true
+
 ## Testing that GroupHClassOfGreensDClass is implemented
 gap> h := GroupHClassOfGreensDClass(dcl[4]);;
+
 ## Testing AssociatedReesMatrixSemigroupOfDClass.
 ##         IsZeroSimpleSemigroup, IsomorphismReesMatrixSemigroup,
 ##         and MatrixOfReesZeroMatrixSemigroup
