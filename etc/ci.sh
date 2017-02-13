@@ -94,5 +94,9 @@ GAPInput
 GAPInput
         fi
 esac;
-cd bin/x86* ; gcov -o . ../../src/*
+
+# Run gcov
+. sysinfo.gap
+cd bin/${GAParch}
+gcov -o . ../../src/*
 cd ../..
