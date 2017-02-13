@@ -28,3 +28,7 @@ build_script:
 
 test_script:
   - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./etc/ci.sh"
+
+on_success:
+  - curl -s https://codecov.io/bash > codecov.sh
+  - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./codecov.sh"
