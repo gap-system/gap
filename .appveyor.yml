@@ -2,14 +2,15 @@
 clone_depth: 5                  # clone entire repository history if not defined
 
 environment:
+  CFLAGS: "-fprofile-arcs -ftest-coverage"
+  LDFLAGS: "-fprofile-arcs"
+  TEST_SUITE: testinstall
   matrix:
     - CYG_ARCH: x86
       CYG_ROOT: C:\cygwin
-      TEST_SUITE: testinstall
       ABI: 32
     - CYG_ARCH: x86_64
       CYG_ROOT: C:\cygwin64
-      TEST_SUITE: testinstall
 
 cache:
   - bootstrap-pkg-full.tar.gz
