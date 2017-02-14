@@ -4,11 +4,6 @@ Error, Variable: 'aqq' must have a value
 Syntax error: ; expected in stream:1
 aqq~ := 1;
    ^
-gap> ~a := 1;
-Error, Variable: '~' must have a value
-Syntax error: ; expected in stream:1
-~a := 1;
- ^
 gap> ~ := 1;
 Error, '~' cannot be assigned
 gap> l := [2, ~];
@@ -51,6 +46,4 @@ Syntax error: ~ is not a valid name for an argument in stream:1
  ^
 gap> ({} -> ~);
 function(  ) ... end
-gap> ({} -> ~)();
-Error, Variable: '~' must have an assigned value
 gap> STOP_TEST( "tilde.tst", 1);
