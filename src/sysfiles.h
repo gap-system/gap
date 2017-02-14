@@ -380,32 +380,6 @@ extern Int SyGetch (
 
 /****************************************************************************
 **
-*F  SyGetc( <fid> ).  . . . . . . . . . . . . . . . . . get a char from <fid>
-**
-**  'SyGetc' reads a character from <fid>, without any translation or
-**   interference
-*/
-
-extern Int SyGetc
-(
-    Int                 fid );
-
-/****************************************************************************
-**
-*F  SyPutc( <fid>, <char> ).. . . . . . . . . . . . . . . put a char to <fid>
-**
-**  'SyPutc' writes a character to <fid>, without any translation or
-**   interference
-*/
-
-extern Int SyPutc
-(
-    Int                 fid,
-    Char                c );
-
-
-/****************************************************************************
-**
 
 *F * * * * * * * * * * * * system error messages  * * * * * * * * * * * * * *
 */
