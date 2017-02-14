@@ -1,47 +1,31 @@
 #!/usr/bin/env bash
 
-set -e
-
-LOGDIR=log
-mkdir -p "$LOGDIR"
-
-LOGFILE=buildpackages
-FAILPKGFILE=fail
-
-# print notices in green
-notice() {
-    printf "\033[32m%s\033[0m\n" "$@"
-}
-
-# print warnings in yellow
-warning() {
-    printf "\033[33mWARNING: %s\033[0m\n" "$@"
-}
-
-# print error in red and exit
-error() {
-    printf "\033[31mERROR: %s\033[0m\n" "$@"
-    exit 1
-}
-
-# print stderr error in red but do not exit
-std_error() {
-    printf "\033[31mERROR: %s\033[0m\n" "$@"
-}
-
-build_packages() {
-
 # This script attempts to build all GAP packages contained in the current
 # directory. Normally, you should run this script from the 'pkg'
 # subdirectory of your GAP installation.
 
 # You can also run it from other locations, but then you need to tell the
-# script where your GAP root directory is, by passing it as first argument
+# script where your GAP root directory is, by passing it as an argument
 # to the script with '--with-gaproot='. By default, the script assumes that
 # the parent of the current working directory is the GAP root directory.
 
-# If arguments are added, then they are considered packages. In that case
-# only these packages will be built, and all others are ignored.
+# By default the script colors its output, even in the log files. One can
+# turn it off by adding the argument '--no-color'.
+
+# By default the logs are created into the './log' directory. This directory
+# can be changed by the argument '--with-logdir='.
+
+# By default the name of the main log file is 'buildpackages'. This filename
+# can be changed by the argument '--with-logfile='. Three files are created:
+# - one with .out extension containing the stdout output,
+# - one with .err extension containing the stderr output,
+# - one with .log extension containing the stdout and stderr together.
+
+# By default the packages failed to build are collected into the file named
+# 'fail'. This filename can be changed by the argument '--with-failpkgfile='.
+
+# If further arguments are added, then they are considered packages. In that
+# case only these packages will be built, and all others are ignored.
 
 # You need at least 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
 # Some packages also need a C++ compiler.
@@ -52,86 +36,201 @@ build_packages() {
 # Even if it doesn't work completely automatically for you, you may get
 # an idea what to do for a complete installation of GAP.
 
+set -e
 
 # Is someone trying to run us from inside the 'bin' directory?
+run_from_bin(){
 if [[ -f gapicon.bmp ]]
 then
   error "This script must be run from inside the pkg directory" \
         "Type: cd ../pkg; ../bin/BuildPackages.sh"
 fi
+}
+
+# set default parameters
+set_default_parameters() {
 
 # CURDIR
 CURDIR="$(pwd)"
 
-# GAPDIR
-GAPDIR=""
-if [[ "$#" -ge 1 ]]
+# default GAPDIR
+GAPDIR="$(cd .. && pwd)"
+
+# default COLOR
+if [[ -t 1 ]]
 then
+  COLOR=YES
+else
+  COLOR=NO
+fi
+
+# default LOGDIR
+LOGDIR=log
+
+# default LOGFILE
+LOGFILE=buildpackages
+
+# default FAILPKGFILE
+FAILPKGFILE=fail
+}
+
+# collect arguments
+collect_arguments(){
+while [[ "$#" -ge 1 ]]
+do
   case "$1" in
     --with-gaproot=*)
-      GAPDIR=$(sed 's|--with-gaproot=||' <<< "$1")
+      GAPDIR=${$1#--with-gaproot=}
+      shift
+    ;;
+
+    --with-gaproot)
+      shift
+      GAPDIR="$1"
+      shift
+    ;;
+
+    --with-logdir=*)
+      LOGDIR=${$1#--with-logdir=}
+      shift
+    ;;
+
+    --with-logdir)
+      shift
+      LOGDIR="$1"
+      shift
+    ;;
+
+    --with-logfile=*)
+      LOGFILE=${$1#--with-logfile=}
+      shift
+    ;;
+
+    --with-logfile)
+      shift
+      LOGFILE="$1"
+      shift
+    ;;
+
+    --with-failpkgfile=*)
+      FAILPKGFILE=${$1#--with-failpkgfile=}
+      shift
+    ;;
+
+    --with-failpkgfile)
+      shift
+      FAILPKGFILE="$1"
+      shift
+    ;;
+
+    --no-color|--no-colors|--no-colour|--no-colours|\
+    --nocolor|--nocolors|--nocolour|--nocolours)
+      COLOR=NO
+      shift
+    ;;
+
+    -*)
+      # Colors may not be defined at this point,
+      # then the default is to use coloring.
+      warning "Discarding unrecognized argument $1"
       shift
     ;;
 
     *)
-      cd ..
-      GAPDIR="$(pwd)"
-      cd "$CURDIR"
+      # Any other argument is considered to be a package directory to build.
+      PACKAGES+=("$1")
+      shift
     ;;
   esac
-fi
-if [[ -z "$GAPDIR" ]]
-then
-  pushd ..
-  GAPDIR="$(pwd)"
-  popd
-fi
-notice "Using GAP location: $GAPDIR"
+done
+}
 
 # We need to test if $GAPDIR is right
+test_GAPDIR(){
 if ! [[ -f "$GAPDIR/sysinfo.gap" ]]
 then
   error "$GAPDIR is not the root of a gap installation (no sysinfo.gap)" \
         "Please provide the absolute path of your GAP root directory as" \
         "first argument with '--with-gaproot=' to this script."
 fi
+}
 
+# set build flags for 32 bit
+set_build_flags_for_32_bit(){
 if [[ "$(grep -c 'ABI_CFLAGS=-m32' $GAPDIR/Makefile)" -ge 1 ]]
 then
   notice "Building with 32-bit ABI"
   ABI32=YES
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi
+}
 
 # packages to build
-if [[ "$#" -ge 1 ]]
+set_packages(){
+if [[ "${PACKAGES[0]}" = "" ]]
 then
-  # last arguments are packages to build
-  PACKAGES=("$@")
-else
-  # if there are no arguments, then build all packages
+  # If there were no extra arguments, therefore PACKAGES[0] is not defined,
+  # then build all packages.
   shopt -s nullglob
   PACKAGES=(*)
   shopt -u nullglob
 fi
+}
 
 # Many package require GNU make. So use gmake if available,
 # for improved compatibility with *BSD systems where "make"
 # is BSD make, not GNU make.
+set_make(){
 if ! [[ "x$(which gmake)" = "x" ]]
 then
   MAKE=gmake
 else
   MAKE=make
 fi
+}
 
-notice \
-"Attempting to build GAP packages." \
-"Note that many GAP packages require extra programs to be installed," \
-"and some are quite difficult to build. Please read the documentation for" \
-"packages which fail to build correctly, and only worry about packages" \
-"you require!" \
-"Logging into ./$LOGDIR/$LOGFILE.log"
+
+# print notices in green
+notice() {
+  if [[ "$COLOR" = "YES" ]]
+  then
+    printf "\033[32m%s\033[0m\n" "$@"
+  else
+    printf "%s\n" "$@"
+  fi
+}
+
+# print warnings in yellow
+warning() {
+  if [[ "$COLOR" = "YES" ]]
+  then
+    printf "\033[33mWARNING: %s\033[0m\n" "$@"
+  else
+    printf "%s\n" "$@"
+  fi
+}
+
+# print error in red and exit
+error() {
+  if [[ "$COLOR" = "YES" ]]
+  then
+    printf "\033[31mERROR: %s\033[0m\n" "$@"
+  else
+    printf "%s\n" "$@"
+  fi
+  exit 1
+}
+
+# print stderr error in red but do not exit
+std_error() {
+  if [[ "$COLOR" = "YES" ]]
+  then
+    printf "\033[31mERROR: %s\033[0m\n" "$@"
+  else
+    printf "%s\n" "$@"
+  fi
+}
+
 
 build_carat() {
 (
@@ -210,6 +309,7 @@ run_configure_and_make() {
   fi
 }
 
+
 build_one_package() {
   # requires one argument which is the package directory
   PKG="$1"
@@ -279,6 +379,25 @@ build_one_package() {
   ) || build_fail
 }
 
+
+### The main function to be run, its output is going to be logged.
+build_packages() {
+
+notice "Using GAP location: $GAPDIR"
+echo ""
+
+set_packages
+set_build_flags_for_32_bit
+set_make
+
+notice \
+"Attempting to build GAP packages." \
+"Note that many GAP packages require extra programs to be installed," \
+"and some are quite difficult to build. Please read the documentation for" \
+"packages which fail to build correctly, and only worry about packages" \
+"you require!" \
+"Logging into ./$LOGDIR/$LOGFILE.log"
+
 date >> "$LOGDIR/$FAILPKGFILE.log"
 for PKG in "${PACKAGES[@]}"
 do
@@ -321,11 +440,21 @@ echo "" >> "$LOGDIR/$FAILPKGFILE.log"
 echo ""
 notice "Output logged into ./$LOGDIR/$LOGFILE.log"
 notice "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
-# end of build_all_packages
+# end of build_packages
 }
 
+
+### The main body of the script.
+set_default_parameters
+run_from_bin
+collect_arguments "$@"
+test_GAPDIR
+
+# Create LOGDIR
+mkdir -p "$LOGDIR"
+
 # Log error to .err, output to .out, everything to .log
-( build_packages "$@" \
+( build_packages \
  > >(tee "$LOGDIR/$LOGFILE.out") \
 2> >(while read line
      do \
