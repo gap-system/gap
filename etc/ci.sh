@@ -84,7 +84,7 @@ GAPInput
             sh bin/gap.sh --cover coverage tst/${TEST_SUITE}.g
 
             # generate coverage report
-            sh bin/gap.sh -q <<GAPInput
+            sh bin/gap.sh -a 500M -q <<GAPInput
                 if LoadPackage("profiling") <> true then
                     Print("ERROR: could not load profiling package");
                     FORCE_QUIT_GAP(1);
