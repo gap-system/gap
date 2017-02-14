@@ -1361,7 +1361,9 @@ local ord,b,ind,num,c,corners,i,j,a,rem,bound,mon,n,monb,dim,sc,k,l,char,hom;
     if j<>fail then
       Add(l,GeneratorsOfLeftOperatorRing(a)[j]);
     else
-      Add(l,Zero(a));
+      rem:=PolynomialReducedRemainder(i,b,ord);
+      rem:=Coefficients(monb,rem);
+      Add(l,GeneratorsOfLeftOperatorRing(a)*rem);
     fi;
   od;
 
