@@ -335,11 +335,10 @@ extern UInt SystemErrorCode;
 
 /****************************************************************************
 **
-
-*F  FillInVersion( <module>, <rev_c>, <rev_h> ) . . .  fill in version number
+*F  FillInVersion -- obsolete function, only kept for backwards compatibility
+**  with packages using it.
 */
-extern void FillInVersion (
-    StructInitInfo *            module );
+static inline void FillInVersion ( StructInitInfo * module ) {}
 
 
 /****************************************************************************
