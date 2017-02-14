@@ -2216,18 +2216,6 @@ Obj FuncSWAP_MPTR (
 
 /****************************************************************************
 **
-*F  RequireModule( <calling>, <required>, <version> ) . . . .  require module
-*/
-void RequireModule (
-    StructInitInfo *            module,
-    const Char *                required,
-    UInt                        version )
-{
-}
-
-
-/****************************************************************************
-**
 *F  InitBagNamesFromTable( <table> )  . . . . . . . . .  initialise bag names
 */
 void InitBagNamesFromTable (

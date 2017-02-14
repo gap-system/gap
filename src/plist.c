@@ -4444,9 +4444,6 @@ static Int InitKernel (
 {
     UInt                t1, t2;         /* loop variables                  */
 
-    /* check dependencies                                                  */
-    RequireModule( module, "lists", 403600000UL );
-
     /* GASMAN marking functions and GASMAN names                           */
     InitBagNamesFromTable( BagNames );
 
