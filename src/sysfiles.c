@@ -2922,24 +2922,6 @@ Char *SyFgetsSemiBlock (
   return syFgets( line, length, fid, 0);
 }
 
-Obj FuncEchoLine(Obj self, Obj line, Obj len, Obj off, Obj pos, Obj gfid) {
-  Int i, clen, coff, cpos, fid;
-  Char *ptr;
-  clen = INT_INTOBJ(len);
-  coff = INT_INTOBJ(off);
-  ptr = CSTR_STRING(line);
-  cpos = INT_INTOBJ(pos);
-  fid = INT_INTOBJ(gfid);
-  for (i=0; i < coff; syEchoch('\b', fid), i++);
-  for (i=0; i < clen; i++) {
-    syEchoch(ptr[i], fid);
-  }
-  for (; cpos<0; syEchoch('\b', fid), cpos++);
-  for (; cpos>0; syEchoch('\6', fid), cpos--);
-  return (Obj)0;
-}
-
-
 
 /****************************************************************************
 **
@@ -3784,9 +3766,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CrcString", 1, "string",
       FuncCrcString, "src/sysfiles.c:FuncCrcString" },
-
-    { "EchoLine", 5, "line, len, off, pos, fid",
-      FuncEchoLine, "src/sysfiles.c:FuncEchoLine" },
 
 #if HAVE_LIBREADLINE
     { "BINDKEYSTOGAPHANDLER", 1, "keyseq",
