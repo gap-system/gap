@@ -177,9 +177,10 @@ code.o: ../../Makefile @srcdir@/code.c @srcdir@/system.h config.h @srcdir@/globa
  @srcdir@/code.h @srcdir@/scanner.h @srcdir@/gasman.h @srcdir@/hpc/atomic.h \
  @srcdir@/objects.h @srcdir@/gap.h @srcdir@/calls.h @srcdir@/records.h \
  @srcdir@/integer.h @srcdir@/gmpints.h @srcdir@/precord.h @srcdir@/lists.h \
- @srcdir@/plist.h @srcdir@/stringobj.h @srcdir@/funcs.h @srcdir@/saveload.h \
- @srcdir@/read.h @srcdir@/gvars.h @srcdir@/hpc/thread.h @srcdir@/hpc/tls.h \
- @srcdir@/hpc/aobjects.h @srcdir@/vars.h @srcdir@/profile.h @srcdir@/exprs.h
+ @srcdir@/plist.h @srcdir@/stringobj.h @srcdir@/funcs.h @srcdir@/bool.h \
+ @srcdir@/saveload.h @srcdir@/read.h @srcdir@/gvars.h @srcdir@/hpc/thread.h \
+ @srcdir@/hpc/tls.h @srcdir@/hpc/aobjects.h @srcdir@/vars.h @srcdir@/profile.h \
+ @srcdir@/exprs.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o code.o -c @srcdir@/code.c
 
 compiler.o: ../../Makefile @srcdir@/compiler.c @srcdir@/system.h config.h \
