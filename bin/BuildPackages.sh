@@ -8,26 +8,45 @@ mkdir -p "$LOGDIR"
 LOGFILE=buildpackages
 FAILPKGFILE=fail
 
-# print notices in green
-notice() {
-    printf "\033[32m%s\033[0m\n" "$@"
-}
+if [ -t 1 ]; then
+  # print notices in green
+  notice() {
+      printf "\033[32m%s\033[0m\n" "$@"
+  }
 
-# print warnings in yellow
-warning() {
-    printf "\033[33mWARNING: %s\033[0m\n" "$@"
-}
+  # print warnings in yellow
+  warning() {
+      printf "\033[33mWARNING: %s\033[0m\n" "$@"
+  }
 
-# print error in red and exit
-error() {
-    printf "\033[31mERROR: %s\033[0m\n" "$@"
-    exit 1
-}
+  # print error in red and exit
+  error() {
+      printf "\033[31mERROR: %s\033[0m\n" "$@"
+      exit 1
+  }
 
-# print stderr error in red but do not exit
-std_error() {
-    printf "\033[31mERROR: %s\033[0m\n" "$@"
-}
+  # print stderr error in red but do not exit
+  std_error() {
+      printf "\033[31mERROR: %s\033[0m\n" "$@"
+  }
+else
+  notice() {
+      printf "$@"
+  }
+
+  warning() {
+      printf "$@"
+  }
+
+  error() {
+      printf "$@"
+      exit 1
+  }
+
+  std_error() {
+      printf "$@"
+  }
+fi
 
 build_packages() {
 
