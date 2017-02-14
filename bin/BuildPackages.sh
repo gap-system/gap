@@ -29,6 +29,13 @@ std_error() {
     printf "\033[31mERROR: %s\033[0m\n" "$@"
 }
 
+nocolor(){
+    sed -e 's|\x1b\[31mERROR: ||g' \
+        -e 's|\x1b\[32m||g' \
+        -e 's|\x1b\[33mWARNING: ||g' \
+        -e 's|\x1b\[0m||g'
+}
+
 build_packages() {
 
 # This script attempts to build all GAP packages contained in the current
@@ -291,14 +298,16 @@ do
   if [[ -e "$CURDIR/$PKG/PackageInfo.g" ]]
   then
     (build_one_package "$PKG" \
-     > >(tee "$LOGDIR/$PKG.out") \
+     > >(tee >( nocolor > "$LOGDIR/$PKG.out" ) ) \
     2> >(while read line
          do \
            std_error "$line"
          done \
-         > >(tee "$LOGDIR/$PKG.err" >&2) \
+         > >(tee >( nocolor > "$LOGDIR/$PKG.err" ) >&2 ) \
          ) \
-    )> >(tee "$LOGDIR/$PKG.log" ) 2>&1
+    )> >(tee >( nocolor > "$LOGDIR/$PKG.log" ) ) 2>&1
+
+sleep 1
 
     # remove superfluous log files if there was no error message
     if [[ ! -s "$LOGDIR/$PKG.err" ]]
@@ -326,14 +335,16 @@ notice "Packages failed to build are in ./$LOGDIR/$FAILPKGFILE.log"
 
 # Log error to .err, output to .out, everything to .log
 ( build_packages "$@" \
- > >(tee "$LOGDIR/$LOGFILE.out") \
+ > >(tee >( nocolor > "$LOGDIR/$LOGFILE.out" ) ) \
 2> >(while read line
      do \
        std_error "$line"
      done \
-     > >(tee "$LOGDIR/$LOGFILE.err" >&2) \
+     > >(tee >( nocolor > "$LOGDIR/$LOGFILE.err" ) >&2 ) \
     ) \
-)> >( tee "$LOGDIR/$LOGFILE.log" ) 2>&1
+)> >( tee >( nocolor > "$LOGDIR/$LOGFILE.log" ) ) 2>&1
+
+sleep 1
 
 # remove superfluous buildpackages log files if there was no error message
 if [[ ! -s "$LOGDIR/$LOGFILE.err" ]]
