@@ -69,6 +69,12 @@ GAPInput
 GAPInput
     done
 
+    # while we are at it, also test the workspace code
+    bin/gap.sh -q --cover $COVDIR/workspace.coverage <<GAPInput
+        SaveWorkspace("test.wsp");
+        QUIT_GAP(0);
+GAPInput
+
     ;;
 *)
     if [[ ! -f  tst/${TEST_SUITE}.g ]]
