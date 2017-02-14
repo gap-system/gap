@@ -2488,9 +2488,6 @@ static Int InitKernel (
     Int                 i, j;
     const Char *        cookie_base = "src/stringobj.c:Char";
 
-    /* check dependencies                                                  */
-    RequireModule( module, "lists", 403600000UL );
-
     /* GASMAN marking functions and GASMAN names                           */
     InitBagNamesFromTable( BagNames );
 

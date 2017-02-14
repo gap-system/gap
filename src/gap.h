@@ -356,16 +356,6 @@ static inline void FillInVersion ( StructInitInfo * module ) {}
 
 /****************************************************************************
 **
-*F  RequireModule( <calling>, <required>, <version> ) . . . .  require module
-*/
-extern void RequireModule (
-    StructInitInfo *            module,
-    const Char *                required,
-    UInt                        version );
-
-
-/****************************************************************************
-**
 *F  InitBagNamesFromTable( <table> )  . . . . . . . . .  initialise bag names
 */
 extern void InitBagNamesFromTable (
