@@ -21,9 +21,9 @@ install:
 # scripts that run after cloning repository
 build_script:
   - SET "PATH=%CYG_ROOT%\bin;%PATH%"
-  - sed -i -e "s/wget/wget -nv/g" Makefile.in
   - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --with-gmp=system"
   - bash -lc "make -C $APPVEYOR_BUILD_FOLDER cygwin"
+  - sed -i -e "s/wget/wget -nv/g" Makefile
   - bash -lc "make -C $APPVEYOR_BUILD_FOLDER bootstrap-pkg-full"
 
 test_script:
