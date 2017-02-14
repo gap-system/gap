@@ -243,8 +243,6 @@ ReadLib( "tom.gd" );
 # prototyping utilities
 ReadLib("proto.gd");
 
-ReadLib("other.gd");
-
 ReadLib("gasman.gd");
 
 ReadLib("memusage.gd");

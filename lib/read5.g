@@ -251,8 +251,6 @@ ReadLib( "proto.gi");
 
 ReadLib( "orders.gi");
 
-ReadLib( "other.gi");
-
 ReadLib( "gasman.gi");
 
 ReadLib("memusage.gi");

@@ -298,8 +298,6 @@ the corresponding modules and their maintainers, as given in dev/MODULES
  options.gi
  orders.gd    Finitely presented monoids and semigroups  James Mitchell
  orders.gi    Finitely presented monoids and semigroups  James Mitchell
- other.gd
- other.gi
  overload.g
  package.g
  padics.gd
