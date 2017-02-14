@@ -200,7 +200,7 @@ run_configure_and_make() {
   then
     if grep Autoconf ./configure > /dev/null
     then
-      ./configure "$CONFIGFLAGS" --with-gaproot="$GAPDIR"
+      ./configure $CONFIGFLAGS --with-gaproot="$GAPDIR"
     else
       ./configure "$GAPDIR"
     fi
