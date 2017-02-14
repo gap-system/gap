@@ -1764,44 +1764,6 @@ Int SyGetch (
 
 /****************************************************************************
 **
-*F  SyGetc( <fid> ).  . . . . . . . . . . . . . . . . . get a char from <fid>
-**
-**  'SyGetc' reads a character from <fid>, without any translation or
-**   interference
-*/
-
-Int SyGetc
-(
-    Int                 fid )
-{
-    unsigned char ch;
-    int ret = read(syBuf[fid].fp, &ch, 1);
-    if (ret < 1)
-      return EOF;
-    else
-      return (Int)ch;
-}
-
-/****************************************************************************
-**
-*F  SyPutc( <fid>, <char> ).. . . . . . . . . . . . . . . put a char to <fid>
-**
-**  'SyPutc' writes a character to <fid>, without any translation or
-**   interference
-*/
-
-extern Int SyPutc
-(
-    Int                 fid,
-    Char                c )
-{
-    writeandcheck(syBuf[fid].fp,&c,1);
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  SyFgets( <line>, <length>, <fid> )  . . . . .  get a line from file <fid>
 **
 **  'SyFgets' is called to read a line from the file  with  identifier <fid>.

@@ -1707,54 +1707,6 @@ Obj FuncREAD_BYTE_FILE (
 **  
 **  This uses fgets and works only if there are no zero characters in <fid>.
 */
-
-/*  this would be a proper function but it reads single chars and is slower
-
-Now SyFputs uses read byte-by-byte, so probably OK
-
-Obj FuncREAD_LINE_FILE (
-    Obj             self,
-    Obj             fid )
-{
-    Int             fidc, len, i;
-    Obj             str;
-    UInt1           *p;
-    Int              c;
-
-    while ( ! IS_INTOBJ(fid) ) {
-        fid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(fid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
-    
-    str = NEW_STRING(10);
-    len = 10;
-    i = 0;
-    fidc = INT_INTOBJ(fid);
-    p = CHARS_STRING(str); 
-    while (1) {
-      c = SyGetc(fidc);
-      if (i == len) {
-        len = GrowString(str, len+1);
-        p = CHARS_STRING(str);
-      }
-      if (c == '\n') {
-        p[i++] = (UInt1)c;
-        break;
-      }
-      else if (c == EOF) 
-        break;
-      else {
-        p[i++] = (UInt1)c;
-      }
-    }
-    ResizeBag( str, SIZEBAG_STRINGLEN(i) );
-    SET_LEN_STRING(str, i);
-      
-    return i == 0 ? Fail : str;
-}
-*/
 Obj FuncREAD_LINE_FILE (
     Obj             self,
     Obj             fid )
