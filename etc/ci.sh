@@ -75,6 +75,13 @@ GAPInput
         QUIT_GAP(0);
 GAPInput
 
+    # run gap compiler to verify the src/c_*.c files are up-todate,
+    # and also get coverage on the compiler
+    etc/docomp
+
+    # detect if there are any diffs
+    git diff --exit-code
+
     ;;
 *)
     if [[ ! -f  tst/${TEST_SUITE}.g ]]
