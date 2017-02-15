@@ -3118,7 +3118,10 @@ end;
 # Options: limit, quiet (return fail if run out of space)
 # cyclic (if given and 1 generator do special case of cyclic rewriting)
 InstallGlobalFunction(NEWTC_CosetEnumerator,function(arg)
-local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
+local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,timerFunc;
+  
+  timerFunc := GET_TIMER_FROM_ReproducibleBehaviour();
+
   freegens:=arg[1];
   freerels:=arg[2];
   subgens:=arg[3];
@@ -3137,22 +3140,22 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
   elif trace<>false then
     trace:=arg[5];
   fi;
-  start:=Runtime();
+  start:=timerFunc();
   if aug and trace=false then
     e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,aug,trace);
     if e=fail then return fail;fi;
   else
     e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,false,trace);
     if e=fail then return fail;fi;
-    bastime:=Runtime()-start;
+    bastime:=timerFunc()-start;
     bl:=e.defcount;
     bw:=[];
     ldc:=infinity;
     up:=0;
-    start:=Runtime();
+    start:=timerFunc();
     first:=true;
     while trace<>false and e.type="c" and (up<=2 or
-      2*(Runtime()-start)<=bastime) do
+      2*(timerFunc()-start)<=bastime) do
       #up<=2 do
       ldc:=e.defcount;
       if first=true then
@@ -3173,7 +3176,7 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first;
       # 2% improvement threshold
       if 102/100*e.defcount<=ldc then
 	up:=0;
-	start:=Runtime();
+	start:=timerFunc();
       else
 	up:=up+1;
       fi;
