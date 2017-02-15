@@ -3838,7 +3838,10 @@ end);
 InstallGlobalFunction(IsomorphismPermGroupOrFailFpGroup, 
 function(arg)
 local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
-  t1, bad, trial, b, bs, r, nl, o, u, rp, eo, rpo, e, e2, sc, j, z;
+  t1, bad, trial, b, bs, r, nl, o, u, rp, eo, rpo, e, e2, sc, j, z,
+  timerFunc;
+
+  timerFunc := GET_TIMER_FROM_ReproducibleBehaviour();
 
   mappow:=function(n,g,e)
     while e>0 do
@@ -3948,7 +3951,7 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
     max:=sz*10;
   fi;
 
-  t1:=Runtime();
+  t1:=timerFunc();
   bad:=[];
   i:=1; 
   while Size(H)<sz and i<=Length(comb) do 
@@ -3989,13 +3992,13 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
 
   # regular case?
   if Size(H)=NrMovedPoints(H) then
-    t1:=Runtime()-t1;
+    t1:=timerFunc()-t1;
     # try to find a cyclic subgroup that gives a faithful rep.
     b:=fail;
     bs:=1;
     t1:=t1*4;
     repeat
-      t1:=t1+Runtime();
+      t1:=t1+timerFunc();
       r:=Random(H);
       nl:=[];
       o:=Order(r);
@@ -4033,7 +4036,7 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
 	  fi;
 	fi;
       od;
-      t1:=t1-Runtime();
+      t1:=t1-timerFunc();
     until t1<0;
     if b<>fail then
       b:=Orbit(H,Set(OrbitPerms([b],1)),OnSets);
