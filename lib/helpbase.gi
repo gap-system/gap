@@ -90,7 +90,7 @@ end);
 ##  - Modification of these rules (or using the patterns where one of
 ##    spelling variants is the trailing substring of another) may require
 ##    changing algorithms used in `FindMultiSpelledHelpEntries' and
-##    `SuggestedSpellings'.
+##    `HELP_SEARCH_ALTERNATIVES'.
 
 BindGlobal( "TRANSATL", 
             [ [ "atalogue", "atalog" ],
@@ -106,16 +106,16 @@ BindGlobal( "TRANSATL",
 
 #############################################################################
 ##
-##  SuggestedSpellings
+##  HELP_SEARCH_ALTERNATIVES
 ## 
 ##  This function is used by HELP_GET_MATCHES to check if the search topic
-##  might have different spellings, lookign for patterns from `TRANSATL'.
+##  might have different spellings, looking for patterns from `TRANSATL'.
 ##  
 ##  It returns a list of suggested spellings of a string, for example:
 ##
-##  gap> SuggestedSpellings("TriangulizeMat");
+##  gap> HELP_SEARCH_ALTERNATIVES("TriangulizeMat");
 ##  [ "TrianguliseMat", "TriangulizeMat" ]
-##  gap> SuggestedSpellings("CentralizerSolvableGroup");
+##  gap> HELP_SEARCH_ALTERNATIVES("CentralizerSolvableGroup");
 ##  [ "CentraliserSolubleGroup", "CentraliserSolvableGroup", 
 ##    "CentralizerSolubleGroup", "CentralizerSolvableGroup" ]
 ##
@@ -132,9 +132,13 @@ BindGlobal( "TRANSATL",
 ##  about a dozen of entries which contains two occurrences of some patterns, 
 ##  and none with three or more of them.
 ##
-BindGlobal( "SuggestedSpellings", function( topic )
+##  In addition, it ensures that the search for system setters and testers
+##  such as e.g. ?SetIsMapping and ?HasIsMapping will return corresponding
+##  attributes and properties. e.g. IsMapping.
+##
+BindGlobal( "HELP_SEARCH_ALTERNATIVES", function( topic )
 local positions, patterns, pattern, where, what, variant, pos,
-      newwhere, newwhat, i, chop, begin, topics;
+      newwhere, newwhat, i, chop, begin, topics, shorttopic, r;
 
 positions:=[];
 patterns:=[];
@@ -186,36 +190,58 @@ for pattern in TRANSATL do
   fi;
 od;
 
-if Length(positions) = 0 then # no matches - return immeditely
-  return [ topic ];
-fi;  
+if Length(positions) > 0 then # matches found
+  # sort data about matches accordingly to their positions in `topic'.
+  SortParallel( positions, patterns );
 
-# sort data about matches accordingly to their positions in `topic'.
-SortParallel( positions, patterns );
+  # Now chop the string 'topic' into a list of lists, each of them either
+  # a list of all variants from the respective spelling pattern or just
+  # a one-element list with the "glueing" string between two patterns or
+  # a pattern and the beginning or end of the string.
 
-# Now chop the string 'topic' into a list of lists, each of them either
-# a list of all variants from the respective spelling pattern or just
-# a one-element list with the "glueing" string between two pattersn or
-# a pattern and the beginning or end of the string. 
+  chop:=[];
+  begin:=1;
+  for i in [1..Length(positions)] do
+    Add( chop, [ topic{[begin..patterns[i].start-1 ]} ] );
+    Add( chop, patterns[i].pattern );
+    begin := Minimum( patterns[i].finish+1, Length(topic) );
+  od;
 
-chop:=[];
-begin:=1;
-for i in [1..Length(positions)] do
-  Add( chop, [ topic{[begin..patterns[i].start-1 ]} ] );
-  Add( chop, patterns[i].pattern );
-  begin := Minimum( patterns[i].finish+1, Length(topic) );
-od;
+  if begin < Length( topic ) then
+    Add( chop, [ topic{[begin..Length(topic)]} ] );
+  fi;
 
-if begin < Length( topic ) then
-  Add( chop, [ topic{[begin..Length(topic)]} ] );
+  # Take the cartesian product of 'chop' and form spelling suggestions
+  # as concatenations of its elements.
+
+  topics := List( Cartesian(chop), Concatenation );
+
+else # no matches
+
+  topics := [ topic ];
+
 fi;
 
-# Take the cartesian product of 'chop' and form spelling suggestions 
-# as concatenations of its elements. 
+r := [];
 
-topics := List( Cartesian(chop), Concatenation );
-Sort( topics );
-return( topics );
+# This ensures that e.g. `?HasIsMapping` will show `IsMapping` even if only the
+# latter is documented. It is guaranteed that the help system will send search
+# terms in lowercase. The requirement of the search term to have the length at
+# least 5 and do not have a space after "has" or "set" is essential: it prevents
+# "set stabiliser", "hash", "sets", "SetX" etc. to be handled in the same way.
+for topic in topics do
+  if Length(topic) > 4 and topic{[1..3]} in [ "has" , "set" ] and topic[4]<>' ' then
+    shorttopic := topic{[4..Length(topic)]};
+    Append( r, [ shorttopic,
+                 Concatenation( "has", shorttopic),
+                 Concatenation( "set", shorttopic) ] );
+  else
+    Add(r, topic );
+  fi;
+od;
+
+Sort( r );
+return( r );
 
 end);
 
@@ -227,7 +253,7 @@ end);
 ##
 ##  This utility may be used in checks of the help system by GAP developers.
 ##
-##  `HELP_GET_MATCHES' uses `SuggestedSpellings' to look for other possible
+##  `HELP_GET_MATCHES' uses `HELP_SEARCH_ALTERNATIVES' to look for other possible
 ##  spellings, e.g. Normaliser/Normalizer, Center/Centre, Solvable/Soluble, 
 ##  Analyse/Analyze, Factorisation/Factorization etc. 
 ##
@@ -919,7 +945,7 @@ InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
   if topic = "size" then # "size" is a notable exception (lowercase is guaranteed)
     topics:=[ topic ];
   else
-    topics:=SuggestedSpellings( topic );
+    topics:=HELP_SEARCH_ALTERNATIVES( topic );
   fi;
 
   # <exact> and <match> contain the topics matching
