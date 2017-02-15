@@ -658,6 +658,34 @@ DeclareUserPreference( rec(
   default:= 3,
   check:= val -> IsInt( val ) and 0 <= val,
   ) );
+DeclareUserPreference( rec(
+  name:= "ReproducableBehaviour",
+  description:= [
+    "This preference disables code in GAP which changes behaviour based on time \
+spent, and therefore can produce different results depending on how much time is \
+taken by other programs running on the same computer. This option may lead to \
+slower or lower-quality results.\
+\n\
+Note that many algorithms in GAP use the global random number generator, which is \
+NOT affected by this option. This only tries to ensure the same version of GAP, \
+with the same package versions loaded, on the same machine, running the same code, \
+in a fresh GAP session, will produce the same results."
+    ],
+  default:= false,
+  values:= [ true, false ],
+  multi:= false,
+  ) );
+
+# This is a fake runtime, for use with ReproducableBehaviour
+# It just increases by 1 every time it is called.
+FAKE_RUNTIME := (function()
+                   local tick;
+                   tick := 0;
+                   return function()
+                        tick := tick + 1;
+                        return tick;
+                   end;
+                 end)();
 
 DeclareUserPreference( rec(
   name := "Autocompleter",
