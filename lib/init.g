@@ -671,7 +671,7 @@ NOT affected by this option. This only tries to ensure the same version of GAP, 
 with the same package versions loaded, on the same machine, running the same code, \
 in a fresh GAP session, will produce the same results."
     ],
-  default:= false,
+  default:= true,
   values:= [ true, false ],
   multi:= false,
   ) );
