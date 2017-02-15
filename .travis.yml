@@ -1,3 +1,6 @@
+# We want Ubuntu 14.04 "Trust" instead of 12.04 "Precise" to get newer
+# and less buggy gcov
+dist: trusty
 language: c
 
 env:
