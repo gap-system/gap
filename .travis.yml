@@ -55,6 +55,7 @@ matrix:
     # 32bit linux builds with GCC
     - os: linux
       env: TEST_SUITE=testinstall ABI=32
+      dist: precise # trusty is missing 32bit gmp, see https://github.com/travis-ci/apt-package-whitelist/pull/4018
       compiler: gcc
       addons:
         apt_packages:
@@ -64,6 +65,7 @@ matrix:
 
     - os: linux
       env: TEST_SUITE=testtravis ABI=32
+      dist: precise # trusty is missing 32bit gmp, see https://github.com/travis-ci/apt-package-whitelist/pull/4018
       compiler: gcc
       addons:
         apt_packages:
