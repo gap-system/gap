@@ -614,7 +614,9 @@ void PrintInt ( Obj op )
   }
   else {
     Obj str = CALL_1ARGS( String, op );
-    Pr("%>%s%<",(Int)(CHARS_STRING(str)), 0);
+    Pr("%>", 0, 0);
+    PrintString1(str);
+    Pr("%<", 0, 0);
     /* for a long time Print of large ints did not follow the general idea
      * that Print should produce something that can be read back into GAP:
        Pr("<<an integer too large to be printed>>",0L,0L); */
