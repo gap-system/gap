@@ -8,94 +8,107 @@
 
 set -ex
 
-case $TEST_SUITE in
-    makemanuals)
-        make manuals
-        cat doc/*/make_manuals.out
-        if [ `cat doc/*/make_manuals.out | grep -c "manual.lab written"` != '3' ]
-        then
-            echo "Build failed"
-            exit 1
-        fi
-        ;;
-    testmanuals)
-        cd pkg/io*
-        ./configure
-        make
-        cd ../..
-        cd pkg/profiling*
-        ./configure
-        make
-        cd ../..
+if [[ "${TEST_SUITE}" == makemanuals ]]
+then
+    make manuals
+    cat doc/*/make_manuals.out
+    if [[ $(cat doc/*/make_manuals.out | grep -c "manual.lab written") != '3' ]]
+    then
+        echo "Build failed"
+        exit 1
+    fi
+    exit 0
+fi
 
-        sh bin/gap.sh -q tst/extractmanuals.g
-        COVDIR=`mktemp -d`
+if [[ x"$ABI" == "x32" ]]
+then
+  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
+fi
 
-        sh bin/gap.sh -q <<GAPInput
-            Read("tst/testmanuals.g");
-            SaveWorkspace("testmanuals.wsp");
-            QUIT_GAP(0);
-GAPInput
-       
-        for ch in tst/testmanuals/*.tst
-        do
-            COVNAME="coverage.`basename $ch .tst`"
-            sh bin/gap.sh -q -L testmanuals.wsp --cover $COVDIR/$COVNAME <<GAPInput
-            TestManualChapter("$ch");
-            QUIT_GAP(0);
-GAPInput
-        done
+# We need to compile the profiling package in order to generate coverage
+# reports; and also the IO package, as the profiling package depends on it.
+pushd pkg
 
-        sh bin/gap.sh -q <<GAPInput
-        if LoadPackage("profiling") <> true then
-            Print("ERROR: could not load profiling package");
-            FORCE_QUIT_GAP(1);
-        fi;
+cd io*
+./configure $CONFIGFLAGS
+make
+cd ..
 
-        for f in DirectoryContents("$COVDIR") do
-            if not (f in [".", ".."]) then
-                OutputJsonCoverage( Filename(Directory("$COVDIR"), f)
-                                  , Concatenation(f, ".json"));
-            fi;
-        od;
+# HACK: profiling 1.1.0 (shipped with GAP 4.8.6) is broken on 32 bit
+# systems, so we simply grab the latest profiling version
+rm -rf profiling*
+git clone https://github.com/gap-packages/profiling
+cd profiling
+./autogen.sh
+./configure $CONFIGFLAGS
+make
+
+# return to base directory
+popd
+
+# create dir for coverage results
+COVDIR=coverage
+mkdir -p $COVDIR
+
+
+case ${TEST_SUITE} in
+testmanuals)
+    bin/gap.sh -q tst/extractmanuals.g
+
+    bin/gap.sh -q <<GAPInput
+        Read("tst/testmanuals.g");
+        SaveWorkspace("testmanuals.wsp");
         QUIT_GAP(0);
 GAPInput
-        ;;
-    *)
-        if [ ! -f  tst/${TEST_SUITE}.g ]
-        then
-            echo "Could not read test suite tst/${TEST_SUITE}.g"
-            exit 1
-        fi
 
-        if [[ x"$ABI" == "x32" ]]
-        then
-            sh bin/gap.sh tst/${TEST_SUITE}.g
-        else
-            cd pkg/io*
-            ./configure
-            make
-            cd ../..
-            cd pkg/profiling*
-            ./configure
-            make
-            cd ../..
-
-            sh bin/gap.sh --cover coverage tst/${TEST_SUITE}.g
-
-            # generate coverage report
-            sh bin/gap.sh -a 500M -q <<GAPInput
-                if LoadPackage("profiling") <> true then
-                    Print("ERROR: could not load profiling package");
-                    FORCE_QUIT_GAP(1);
-                fi;
-                OutputJsonCoverage("coverage", "coverage.json");
-                QUIT_GAP(0);
+    for ch in tst/testmanuals/*.tst
+    do
+        bin/gap.sh -q -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput
+        TestManualChapter("$ch");
+        QUIT_GAP(0);
 GAPInput
-        fi
+    done
+
+    # while we are at it, also test the workspace code
+    bin/gap.sh -q --cover $COVDIR/workspace.coverage <<GAPInput
+        SaveWorkspace("test.wsp");
+        QUIT_GAP(0);
+GAPInput
+
+    # run gap compiler to verify the src/c_*.c files are up-todate,
+    # and also get coverage on the compiler
+    etc/docomp
+
+    # detect if there are any diffs
+    git diff --exit-code
+
+    ;;
+*)
+    if [[ ! -f  tst/${TEST_SUITE}.g ]]
+    then
+        echo "Could not read test suite tst/${TEST_SUITE}.g"
+        exit 1
+    fi
+
+    bin/gap.sh --cover $COVDIR/${TEST_SUITE}.coverage tst/${TEST_SUITE}.g
 esac;
 
-# Run gcov
+# generate library coverage reports
+bin/gap.sh -a 500M -q <<GAPInput
+if LoadPackage("profiling") <> true then
+    Print("ERROR: could not load profiling package");
+    FORCE_QUIT_GAP(1);
+fi;
+d := Directory("$COVDIR");;
+for f in DirectoryContents(d) do
+    if f in [".", ".."] then continue; fi;
+    Print("Converting ", f, " to JSON\n");
+    OutputJsonCoverage(Filename(d, f), Concatenation(f, ".json"));
+od;
+QUIT_GAP(0);
+GAPInput
+
+# generate kernel coverage reports by running gcov
 . sysinfo.gap
 cd bin/${GAParch}
 gcov -o . ../../src/*
