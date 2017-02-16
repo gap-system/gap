@@ -343,7 +343,8 @@ v, val, o, i, comb, best,actbase;
 	      return Image(img[2],ConjugatorOfConjugatorIsomorphism(auto));
 	    fi;
 	    return RepresentativeAction(img[1],r,
-	             List(GeneratorsOfGroup(g),i->Image(img[2],Image(auto,i))));
+	             List(GeneratorsOfGroup(g),i->Image(img[2],Image(auto,i))),
+		     OnTuples);
 	  end,
 	  function(perm)
 	    if perm in ran then

@@ -186,6 +186,9 @@ gap> Size(Normalizer(SymmetricGroup(12),PrimitiveGroup(12,2)));
 gap> Size(Normalizer(SymmetricGroup(12),
 > PrimitiveGroup(12,2):NoPrecomputedData));
 95040
+gap> s:=SymmetricGroup(56);;
+gap> List([1..7],x->Size(Normalizer(s,PrimitiveGroup(56,x))));
+[ 80640, 80640, 80640, 80640, 80640, 40320, 40320 ]
 gap> STOP_TEST( "grpperm.tst", 1814420000);
 
 #############################################################################

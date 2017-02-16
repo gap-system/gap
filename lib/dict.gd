@@ -515,17 +515,19 @@ BindGlobal("DefaultSparseHashWithIKRepType",
 
 #############################################################################
 ##
-#F  SparseHashTable([<intkeyfun>])
+#F  SparseHashTable([<intkeyfun>[,<startlength>])
 ##
 ##  <#GAPDoc Label="SparseHashTable">
 ##  <ManSection>
-##  <Func Name="SparseHashTable" Arg='[intkeyfun]'/>
+##  <Func Name="SparseHashTable" Arg='[intkeyfun[,startlength]]'/>
 ##
 ##  <Description>
 ##  Construct an empty sparse hash table.  This is the only correct way to
 ##  construct such a table.
 ##  If the argument <A>intkeyfun</A> is given, this function will be used to
 ##  obtain numbers for the keys passed to it.
+##  If also <A>startlength</A> is given, the hash table will be initalized
+##  at that size.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -666,7 +666,7 @@ local clT,	# classes T
 		  if ppos=fail then
 		    p:=First(select,
 			   i->Size(clTR[i][3])<=maxdiff and img in clTR[i][3]);
-		    #if p=fail then Error("nanu"); fi;
+		    if p=fail then return fail; fi;
                   else
 		    p:=ppos;
 		  fi;
@@ -1299,6 +1299,17 @@ local cs,	# chief series of G
 
 	    clF:=ConjugacyClassesSubwreath(F,FM,n,S1,
 		  Action(FM,components[1]),T1,components,emb,proj);
+            if clF=fail then
+	      # weird error happened -- redo
+	      j:=Random(SymmetricGroup(MovedPoints(G)));
+	      FM:=List(GeneratorsOfGroup(G),x->x^j);
+	      F:=Group(FM);
+	      SetSize(F,Size(G));
+	      FM:=GroupHomomorphismByImagesNC(G,F,GeneratorsOfGroup(G),FM);
+	      clF:=ConjugacyClassesFittingFreeGroup(F);
+	      clF:=List(clF,x->[PreImagesRepresentative(FM,x[1]),PreImage(FM,x[2])]);
+	      return clF;
+	    fi;
 	  #fi;
 	else
 	  FM:=Image(Fhom,M);

@@ -2854,24 +2854,39 @@ local dom,n,t,map;
 end);
 
 BindGlobal("TomExtensionNames",function(r)
-local n,pool,ext,sz,lsz,t,f,i;
+local n,pool,ext,sz,lsz,t,f,i,ns;
   if IsBound(r.tomExtensions) then
-    return t.tomExtensions;
+    return r.tomExtensions;
   fi;
   n:=r.tomName;
+  ns:=[n];
   pool:=[n];
   ext:=[];
   sz:=fail;
   for i in pool do
     t:=TableOfMarks(i);
     if t<>fail then
+      # does the TOM use a different simple group name?
+      if i=n and Identifier(t)<>i then
+	r.tomName:=Identifier(t);
+      fi;
+      f:=Position(Identifier(t),'.');
+      if f=fail then
+	f:=Identifier(t);
+      else
+	f:=Identifier(t){[1..f-1]};
+      fi;
+      if not f in ns then
+	Add(ns,f);
+      fi;
+
       lsz:=Maximum(OrdersTom(t));
       if sz=fail then sz:=lsz;fi;
       if lsz>sz then
 	Add(ext,[lsz/sz,i{[Length(n)+2..Length(i)]}]);
       fi;
       for f in FusionsTom(t) do
-	if f[1]{[1..Minimum(Length(f[1]),Length(n))]}=n and not f[1] in pool then
+	if f[1]{[1..Minimum(Length(f[1]),Length(n))]} in ns and not f[1] in pool then
 	  Add(pool,f[1]);
 	fi;
       od;
@@ -2897,6 +2912,7 @@ local T,t,hom,inf,nam,i,aut;
   fi;
   Info(InfoPerformance,2,"Using Table of Marks Library");
 
+  TomExtensionNames(inf); # possibly change nam
   nam:=inf.tomName;
 
   # simple group

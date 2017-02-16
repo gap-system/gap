@@ -1189,6 +1189,7 @@ DeclareAttribute("MaximalSubgroupClassReps",IsGroup);
 
 # utility function in maximal subgroups code
 DeclareGlobalFunction("DoMaxesTF");
+DeclareGlobalFunction("MaxesAlmostSimple");
 
 #############################################################################
 ##

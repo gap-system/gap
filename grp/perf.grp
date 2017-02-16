@@ -64,7 +64,9 @@ end );
 ##
 InstallGlobalFunction( NumberPerfectGroups, function ( size )
 
-    if IsOddInt(size) then return 0;fi;
+    if size=1 then
+      return 1;
+    elif IsOddInt(size) then return 0;fi;
     PerfGrpLoad(0);
 
     # get the number and return it.
@@ -89,10 +91,12 @@ end );
 InstallGlobalFunction( NumberPerfectLibraryGroups, function ( size )
 local sizenum;
 
-    if IsOddInt(size) then return 0;fi;
+    if size=1 then
+      return 1;
+    elif IsOddInt(size) then return 0;fi;
     # get the number and return it.
     sizenum := PerfGrpLoad( size );
-    if sizenum = fail or size in PERFRec.notAvailable or size = 1 then
+    if sizenum = fail or size in PERFRec.notAvailable then
         return 0;
     else
         return PERFRec.number[sizenum];
@@ -451,8 +455,6 @@ local func,sz,p;
     Error("Perfect groups of size ",sz[1]," not known");
   elif sz[1] in PERFRec.notAvailable then
     Error("Perfect groups of size ",sz[1]," not available");
-  elif sz[1]=1 then
-    Error("The trivial group is not considered to be part of this library");
   fi;
   p:=PerfGrpLoad(sz[1]);
   if p=fail or sz[2]>PERFRec.number[p] then
