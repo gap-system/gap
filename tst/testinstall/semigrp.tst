@@ -424,6 +424,55 @@ gap> Size(S);
 gap> S;
 <inverse transformation monoid of size 18, degree 9 with 5 generators>
 
+#T# Test TrueMethod: IsBand => IsIdempotentGenerated
+gap> S := Monoid(Transformation([1, 1]), Transformation([2, 2]));
+<transformation monoid of degree 2 with 2 generators>
+gap> HasIsIdempotentGenerated(S);
+false
+gap> ForAll(S, IsIdempotent);
+true
+gap> HasIsBand(S) or HasIsIdempotentGenerated(S);
+false
+gap> SetIsBand(S, true);
+gap> HasIsBand(S) and IsBand(S);
+true
+gap> HasIsIdempotentGenerated(S) and IsIdempotentGenerated(S);
+true
+gap> Semigroup(Idempotents(S)) = S;
+true
+
+#T# Test TrueMethod: IsCommutative and IsBand => IsSemilattice
+gap> S := Monoid([PartialPerm([1]), PartialPerm([0, 2]), PartialPerm([])]);;
+gap> HasIsSemilattice(S);
+false
+gap> IsCommutative(S);
+true
+gap> ForAll(S, IsIdempotent);
+true
+gap> HasIsBand(S) or HasIsSemilattice(S);
+false
+gap> SetIsBand(S, true);
+gap> HasIsBand(S) and IsBand(S);
+true
+gap> HasIsSemilattice(S) and IsSemilattice(S);
+true
+
+#T# Test TrueMethod: IsCommutative and IsSemilattice => IsIdempotentGenerated
+gap> S := Monoid([PartialPerm([1]), PartialPerm([0, 2]), PartialPerm([])]);;
+gap> HasIsIdempotentGenerated(S);
+false
+gap> ForAll(S, IsIdempotent) and IsCommutative(S);
+true
+gap> HasIsSemilattice(S) or HasIsIdempotentGenerated(S);
+false
+gap> SetIsSemilattice(S, true);
+gap> HasIsSemilattice(S) and IsSemilattice(S);
+true
+gap> HasIsIdempotentGenerated(S) and IsIdempotentGenerated(S);
+true
+gap> Semigroup(Idempotents(S)) = S;
+true
+
 #
 gap> STOP_TEST( "semigrp.tst", 1090000);
 
