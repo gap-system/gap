@@ -36,6 +36,8 @@
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
+#include        "funcs.h"
+
 #include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
 #include        "opers.h"               /* generic operations              */
@@ -774,21 +776,26 @@ Obj FuncEQ_PREC (
     SortPRecRNam(left,0);
     SortPRecRNam(right,0);
 
+    CheckRecursionBefore();
+
     /* compare componentwise                                               */
     for ( i = 1; i <= LEN_PREC(right); i++ ) {
 
         /* compare the names                                               */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
+            TLS(RecursionDepth)--;
             return False;
         }
 
         /* compare the values                                              */
         if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
+            TLS(RecursionDepth)--;
             return False;
         }
     }
 
     /* the records are equal                                               */
+    TLS(RecursionDepth)--;
     return True;
 }
 
@@ -807,6 +814,7 @@ Obj FuncLT_PREC (
     Obj                 right )
 {
     UInt                i;              /* loop variable                   */
+    Int                 res;            /* result of comparison            */
 
     /* quick first checks                                                  */
     if ( ! IS_PREC_REP(left) || ! IS_PREC_REP(right) ) {
@@ -818,35 +826,38 @@ Obj FuncLT_PREC (
     SortPRecRNam(left,0);
     SortPRecRNam(right,0);
 
+    CheckRecursionBefore();
+    res = 0;
+
     /* compare componentwise                                               */
     for ( i = 1; i <= LEN_PREC(right); i++ ) {
 
         /* if the left is a proper prefix of the right one                 */
-        if ( LEN_PREC(left) < i )  return True;
+        if ( LEN_PREC(left) < i ) {
+            res = 1;
+            break;
+        }
 
         /* compare the names                                               */
         /* The sense of this comparison is determined by the rule that
            unbound entries compare less than bound ones                    */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-            if ( strcmp( NAME_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
-                   NAME_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) ) > 0 ) {
-                return True;
-            }
-            else {
-                return False;
-            }
+            res = ( strcmp( NAME_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
+                   NAME_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) ) > 0 );
+            break;
         }
 
         /* compare the values                                              */
         if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
-            return LT( GET_ELM_PREC(left,i), GET_ELM_PREC(right,i) ) ?
-                   True : False;
+            res = LT( GET_ELM_PREC(left,i), GET_ELM_PREC(right,i) );
+            break;
         }
 
     }
 
     /* the records are equal or the right is a prefix of the left          */
-    return False;
+    TLS(RecursionDepth)--;
+    return res ? True : False;
 }
 
 

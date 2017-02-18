@@ -766,9 +766,9 @@ Obj             EvalFunccallXargs (
 */
 
 /* TL: Int RecursionDepth; */
-static UInt RecursionTrapInterval;
+UInt RecursionTrapInterval;
 
-static void RecursionDepthTrap( void )
+void RecursionDepthTrap( void )
 {
     Int recursionDepth;
     /* in interactive work the RecursionDepth could become slightly negative
@@ -785,15 +785,6 @@ static void RecursionDepthTrap( void )
     }
 }
      
-static inline void CheckRecursionBefore( void )
-{
-    TLS(RecursionDepth)++;                                           
-    if ( RecursionTrapInterval &&                                
-         0 == (TLS(RecursionDepth) % RecursionTrapInterval) )
-      RecursionDepthTrap();
-}
-
-
 Obj STEVES_TRACING;
 
 #define CHECK_RECURSION_BEFORE \

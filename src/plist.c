@@ -43,6 +43,8 @@
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
+#include        "funcs.h"
+
 #include        "gvars.h"               /* global variables                */
 
 #include        "calls.h"               /* generic call mechanism          */
@@ -1012,22 +1014,20 @@ Int             EqPlist (
         return 0L;
     }
 
+    CheckRecursionBefore();
+
     /* loop over the elements and compare them                             */
     for ( i = 1; i <= lenL; i++ ) {
         elmL = ELM_PLIST( left, i );
         elmR = ELM_PLIST( right, i );
-        if ( elmL == 0 && elmR != 0 ) {
-            return 0L;
-        }
-        else if ( elmR == 0 && elmL != 0 ) {
-            return 0L;
-        }
-        else if ( ! EQ( elmL, elmR ) ) {
+        if ( ( (elmL == 0 ) != (elmR == 0) ) || ! EQ( elmL, elmR ) ) {
+            TLS(RecursionDepth)--;
             return 0L;
         }
     }
 
     /* no differences found, the lists are equal                           */
+    TLS(RecursionDepth)--;
     return 1L;
 }
 
@@ -1050,28 +1050,36 @@ Int             LtPlist (
     Obj                 elmL;           /* element of the left operand     */
     Obj                 elmR;           /* element of the right operand    */
     Int                 i;              /* loop variable                   */
+    Int                 res;            /* result of comparison            */
 
     /* get the lengths of the lists and compare them                       */
     lenL = LEN_PLIST( left );
     lenR = LEN_PLIST( right );
+    res = (lenL < lenR);
+
+    CheckRecursionBefore();
 
     /* loop over the elements and compare them                             */
     for ( i = 1; i <= lenL && i <= lenR; i++ ) {
         elmL = ELM_PLIST( left, i );
         elmR = ELM_PLIST( right, i );
         if ( elmL == 0 && elmR != 0 ) {
-            return 1L;
+            res = 1L;
+            break;
         }
         else if ( elmR == 0 && elmL != 0 ) {
-            return 0L;
+            res = 0L;
+            break;
         }
         else if ( ! EQ( elmL, elmR ) ) {
-            return LT( elmL, elmR );
+            res = LT( elmL, elmR );
+            break;
         }
     }
 
     /* reached the end of at least one list                                */
-    return (lenL < lenR);
+    TLS(RecursionDepth)--;
+    return res;
 }
 
 
