@@ -294,9 +294,6 @@ extern void InstallInvMutObject ( Int );
                          (!ARE_INTOBJS(opL,opR) && \
                           (*EqFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR)))
 
-#define EQ2(opL,opR)    ((opL) == (opR) || \
-                          (*EqFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-
 extern Obj EqOper;
 
 
@@ -325,9 +322,6 @@ extern void InstallEqObject ( Int );
 #define LT(opL,opR)     ((opL) == (opR) ? 0 : \
                          (ARE_INTOBJS(opL,opR) ? (Int)(opL) < (Int)(opR) : \
                           (*LtFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR)))
-
-#define LT2(opL,opR)    ((opL) == (opR) ? 0 : \
-                          (*LtFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj LtOper;
 
