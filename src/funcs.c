@@ -778,8 +778,8 @@ static void RecursionDepthTrap( void )
     if (TLS(RecursionDepth) > 0) {
         recursionDepth = TLS(RecursionDepth);
         TLS(RecursionDepth) = 0;
-        ErrorReturnVoid( "recursion depth trap (%d)\n",         
-                         (Int)recursionDepth, 0L,               
+        ErrorReturnVoid( "recursion depth trap (%d)",
+                         (Int)recursionDepth, 0L,
                          "you may 'return;'" );
         TLS(RecursionDepth) = recursionDepth;
     }
