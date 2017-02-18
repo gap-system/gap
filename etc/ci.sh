@@ -100,11 +100,15 @@ if LoadPackage("profiling") <> true then
     FORCE_QUIT_GAP(1);
 fi;
 d := Directory("$COVDIR");;
+covs := [];;
 for f in DirectoryContents(d) do
     if f in [".", ".."] then continue; fi;
-    Print("Converting ", f, " to JSON\n");
-    OutputJsonCoverage(Filename(d, f), Concatenation(f, ".json"));
+    Add(covs, Filename(d, f));
 od;
+Print("Merging coverage results\n");
+r := MergeLineByLineProfiles(covs);;
+Print("Outputting JSON\n");
+OutputJsonCoverage(r, "gap-coverage.json");;
 QUIT_GAP(0);
 GAPInput
 
