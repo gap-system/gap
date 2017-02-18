@@ -660,7 +660,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   
   Print("-----------------------------------\n");
   Print( "total",
-         String( totalTime, 8 ), " msec\n\n" );
+         String( totalTime, 10 ), " msec\n\n" );
 
   if not opts.suppressStatusMessage then
     if testTotal then
