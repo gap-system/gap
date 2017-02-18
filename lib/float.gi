@@ -30,6 +30,7 @@ MAX_FLOAT_LITERAL_CACHE_SIZE := 0; # cache all float literals by default.
 
 FLOAT_DEFAULT_REP := fail;
 FLOAT_STRING := fail;
+FLOAT_PSEUDOFIELD := fail;
 FLOAT := fail; # holds the constants
 BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", rec());
 
@@ -64,6 +65,9 @@ InstallGlobalFunction(SetFloats, function(arg)
         fi;
         if IsBound(r.creator) then
             FLOAT_STRING := r.creator;
+        fi;
+        if IsBound(r.field) then
+            FLOAT_PSEUDOFIELD := r.field;
         fi;
     fi;
     
