@@ -160,28 +160,81 @@ Obj SyntaxTreeFuncExpr(Expr expr)
     return result;
 }
 
-/* TODO: This is all the same, replace by SyntaxTreeBinaryOp(Expr,op) and
- * SyntaxTreeUnary(Expr, op) */
-Obj SyntaxTreeOr(Expr expr)
+typedef struct {
+    UInt tnum;
+    const Char *name;
+    UInt arity;
+    const Char *argnames[6];
+} ExprT;
+
+static const ExprT AllExpressions[] = {
+    { T_OR, "T_OR", 2, { "left", "right" } },
+    { T_AND, "T_AND", 2, {"left", "right"} },
+    { T_NOT, "T_NOT", 1, {"left", "right"} },
+    { T_EQ, "T_EQ", 2, {"left", "right"} },
+    { T_NE, "T_NE", 2, {"left", "right"} },
+    { T_LT, "T_LT", 2, {"left", "right"} },
+    { T_GE, "T_GE", 2, {"left", "right"} },
+    { T_GT, "T_GT", 2, {"left", "right"} },
+    { T_LE, "T_LE", 2, {"left", "right"} },
+    { T_IN, "T_IN", 2, {"left", "right"} },
+    { T_SUM, "T_SUM", 2, {"left", "right"} },
+    { T_AINV, "T_AINV", 1, {"left", "right"} },
+    { T_DIFF, "T_DIFF", 2, {"left", "right"} },
+    { T_PROD, "T_PROD", 2, {"left", "right"} },
+    { T_INV, "T_INV", 1, {"left", "right"} },
+    { T_QUO, "T_QUO", 2, {"left", "right"} },
+    { T_MOD, "T_MOD", 2, {"left", "right"} },
+    { T_POW, "T_POW", 2, {"left", "right"} },
+
+    { T_ISB_LVAR, "T_ISB_LVAR", 1, { "var" } },
+    { T_REF_HVAR, "T_REF_HVAR", 1, { "var" } },
+    { T_ISB_HVAR, "T_ISB_HVAR", 1, { "var" } },
+    { T_REF_GVAR, "T_REF_GVAR", 1, { "var" } },
+    { T_ISB_GVAR, "T_ISB_GVAR", 1, { "var" } },
+    { T_ELM_LIST, "T_ELM_LIST", 2, { "list", "pos" } },
+    { T_ELMS_LIST, "T_ELMS_LIST", 2, { "list", "poss" } },
+    { T_ELM_LIST_LEV, "T_ELM_LIST_LEV", 3, { "lists", "pos", "level" } },
+    { T_ELMS_LIST_LEV, "T_ELMS_LIST_LEV", 3, { "lists", "poss", "level" } },
+    { T_ISB_LIST, "T_ISB_LIST", 2, { "list", "pos" } },
+    { T_ELM_REC_NAME, "T_ELM_REC_NAME", 2, { "record", "name" } },
+    { T_ELM_REC_EXPR, "T_ELM_REC_EXPR", 2, { "record", "expression" } },
+    { T_ISB_REC_NAME, "T_ISB_REC_NAME", 2, { "record", "name" } },
+    { T_ISB_REC_EXPR, "T_ISB_REC_EXPR", 2, { "record", "expression" } },
+    { T_ELM_POSOBJ, "T_ELM_POSOBJ", 2, { "posobj", "pos" } },
+    { T_ELMS_POSOBJ, "T_ELMS_POSOBJ", 2, { "posobj", "pos" } },
+    { T_ELM_POSOBJ_LEV, "T_ELM_POSOBJ_LEV", 3, { "posobj", "pos", "level" } },
+    { T_ELMS_POSOBJ_LEV, "T_ELMS_POSOBJ_LEV", 3, { "posobj", "poss", "level" } },
+    { T_ISB_POSOBJ, "T_ISB_POSOBJ", 2, { "posobj", "pos" } },
+    { T_ELM_COMOBJ_NAME, "T_ELM_COMOBJ_NAME", 2, { "comobj", "name" } },
+    { T_ELM_COMOBJ_EXPR, "T_ELM_COMOBJ_EXPR", 2, { "comobj", "expression" } },
+    { T_ISB_COMOBJ_NAME, "T_ISB_COMOBJ_NAME", 2, { "comobj", "name" } },
+    { T_ISB_COMOBJ_EXPR, "T_ISB_COMOBJ_EXPR", 2, { "comobj", "expression" } },
+
+};
+
+static inline const ExprT GetExprInfo(Expr expr)
 {
-    Obj result;
-
-    result = NewSyntaxTreeNode("Or");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeBoolExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeBoolExpr( ADDR_EXPR(expr)[1]));
-
-    return result;
+    for(int i=0;i<sizeof(AllExpressions)/sizeof(ExprT);i++) {
+        if(AllExpressions[i].tnum == TNUM_EXPR(expr)) {
+            return AllExpressions[i];
+        }
+    }
+    return AllExpressions[0];
 }
 
-Obj SyntaxTreeAnd(Expr expr)
+Obj SyntaxTreeSimpleExpr(Expr expr)
 {
     Obj result;
+    ExprT info;
 
-    result = NewSyntaxTreeNode("And");;
+    info = GetExprInfo(expr);
 
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr(ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr(ADDR_EXPR(expr)[1]));
+    result = NewSyntaxTreeNode(info.name);
+
+    for(int i=0;i<info.arity;i++) {
+        AssPRec(result, RNamName(info.argnames[i]), SyntaxTreeExpr(ADDR_EXPR(expr)[i]));
+    }
 
     return result;
 }
@@ -196,131 +249,12 @@ Obj SyntaxTreeNot(Expr expr)
     return result;
 }
 
-Obj SyntaxTreeEq(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Eq");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"),SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
-
-    return result;
-}
-
-Obj SyntaxTreeNe(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Ne");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"),SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
-
-    return result;
-}
-
-Obj SyntaxTreeLt(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Lt");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0] ) );
-    AssPRec(result, RNamName("right"),  SyntaxTreeExpr( ADDR_EXPR(expr)[1] ) );
-
-    return result;
-}
-
-Obj SyntaxTreeGe(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Ge");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
-
-    return result;
-}
-
-Obj SyntaxTreeGt(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Gt");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
-
-    return result;
-}
-
-Obj SyntaxTreeLe(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Le");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
-
-    return result;
-}
-
-Obj SyntaxTreeIn(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("In");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
-
-    return result;
-}
-
-Obj SyntaxTreeSum(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Sum");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
-
-    return result;
-}
-
 Obj SyntaxTreeAInv(Expr expr)
 {
     Obj result;
 
     result = NewSyntaxTreeNode("AInv");;
     AssPRec(result, RNamName("op"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-
-    return result;
-}
-
-Obj SyntaxTreeDiff(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Diff");;
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
-
-    return result;
-}
-
-Obj SyntaxTreeProd(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Prod");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -332,42 +266,6 @@ Obj SyntaxTreeInv(Expr expr)
     result = NewSyntaxTreeNode("Inv");;
 
     AssPRec(result, RNamName("op"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-
-    return result;
-}
-
-Obj SyntaxTreeQuo(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Quot");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
-
-    return result;
-}
-
-Obj SyntaxTreeMod(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Mod");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
-
-    return result;
-}
-
-Obj SyntaxTreePow(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Pow");;
-
-    AssPRec(result, RNamName("left"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-    AssPRec(result, RNamName("right"), SyntaxTreeExpr( ADDR_EXPR(expr)[1]));
 
     return result;
 }
@@ -705,328 +603,6 @@ Obj SyntaxTreeIsbGVar(Expr expr)
     result = NewSyntaxTreeNode("IsBGVar");;
     gvar = (GVar)(ADDR_EXPR(expr)[0]);
     AssPRec(result, RNamName("name"), NameGVarObj(gvar));
-
-    return result;
-}
-
-Obj SyntaxTreeElmList(Expr expr)
-{
-    Obj result;
-    Obj list;
-    Obj pos;
-
-    result = NewSyntaxTreeNode("ElmList");;
-
-    list = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    pos = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("pos"), pos);
-
-    return result;
-}
-
-Obj SyntaxTreeElmsList(Expr expr)
-{
-    Obj result;
-    Obj list;
-    Obj poss;
-
-    result = NewSyntaxTreeNode("ElmsList");;
-
-    list = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    poss = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("poss"), poss);
-
-    return result;
-}
-
-/* TODO: What is ElmListLev? */
-Obj SyntaxTreeElmListLev(Expr expr)
-{
-    Obj result;
-
-    Obj lists;
-    Obj pos;
-    Obj level;
-
-    result = NewSyntaxTreeNode("ElmListLev");;
-
-    lists = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    pos = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-    level = INTOBJ_INT((Int)(ADDR_EXPR(expr)[2]));
-
-    AssPRec(result, RNamName("lists"), lists);
-    AssPRec(result, RNamName("pos"), pos);
-    AssPRec(result, RNamName("level"), level);
-
-    return result;
-}
-
-Obj SyntaxTreeElmsListLev(Expr expr)
-{
-    Obj result;
-    Obj lists;
-    Obj poss;
-    Obj level;
-
-    result = NewSyntaxTreeNode("ElmsListLev");;
-
-    lists = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    poss = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-    level = INTOBJ_INT((Int)(ADDR_EXPR(expr)[2]));
-
-    AssPRec(result, RNamName("lists"), lists);
-    AssPRec(result, RNamName("poss"), poss);
-    AssPRec(result, RNamName("level"), level);
-
-    return result;
-}
-
-Obj SyntaxTreeIsbList(Expr expr)
-{
-    Obj result;
-    Obj list;
-    Obj pos;
-
-    result = NewSyntaxTreeNode("IsBList");;
-
-    list = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    pos = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("pos"), pos);
-
-    return result;
-}
-
-Obj SyntaxTreeElmRecName(Expr expr)
-{
-    Obj result;
-    Obj record;
-    Obj rnam;
-
-    result = NewSyntaxTreeNode("ElmRecName");;
-
-    record = SyntaxTreeExpr(ADDR_EXPR(expr)[0]);
-    rnam = SyntaxTreeExpr(ADDR_EXPR(expr)[1]);
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), rnam);
-
-    return result;
-}
-
-Obj SyntaxTreeElmRecExpr(Expr expr)
-{
-    Obj result;
-    Obj record;
-    Obj rnam;
-
-    result = NewSyntaxTreeNode("ElmRecExpr");;
-
-    record = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    rnam = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), rnam);
-
-    return result;
-}
-
-Obj SyntaxTreeIsbRecName(Expr expr)
-{
-    Obj result;
-    Obj record;
-    Obj rnam;
-
-    result = NewSyntaxTreeNode("IsBRecName");;
-
-    record = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    rnam = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), rnam);
-
-    return result;
-}
-
-Obj SyntaxTreeIsbRecExpr(Expr expr)
-{
-    Obj result;
-    Obj record;
-    Obj rnam;
-
-    result = NewSyntaxTreeNode("IsBRecExpr");;
-
-    record = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    rnam = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), rnam);
-
-    return result;
-}
-
-Obj SyntaxTreeElmPosObj(Expr expr)
-{
-    Obj result;
-    Obj list;
-    Obj pos;
-
-    result = NewSyntaxTreeNode("ElmPosObj");;
-
-    list = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    pos = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("pos"), pos);
-
-    return result;
-}
-
-Obj SyntaxTreeElmsPosObj(Expr expr)
-{
-    Obj result;
-    Obj list;
-    Obj poss;
-
-    result = NewSyntaxTreeNode("ElmsPosObj");;
-
-    list = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    poss = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("poss"), poss);
-
-    return result;
-}
-
-Obj SyntaxTreeElmPosObjLev(Expr expr)
-{
-    Obj result;
-
-    Obj lists;
-    Obj pos;
-    Obj level;
-
-    result = NewSyntaxTreeNode("ElmPosObjLev");;
-
-    lists = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    pos = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-    level = INTOBJ_INT((Int)(ADDR_EXPR(expr)[2]));
-
-    AssPRec(result, RNamName("lists"), lists);
-    AssPRec(result, RNamName("pos"), pos);
-    AssPRec(result, RNamName("level"), level);
-
-    return result;
-}
-
-Obj SyntaxTreeElmsPosObjLev(Expr expr)
-{
-    Obj result;
-    Obj lists;
-    Obj poss;
-    Obj level;
-
-    result = NewSyntaxTreeNode("PosObjLev");;
-
-    lists = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    poss = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-    level = INTOBJ_INT((Int)(ADDR_EXPR(expr)[2]));
-
-    AssPRec(result, RNamName("lists"), lists);
-    AssPRec(result, RNamName("poss"), poss);
-    AssPRec(result, RNamName("level"), level);
-
-    return result;
-;
-}
-
-Obj SyntaxTreeIsbPosObj(Expr expr)
-{
-    Obj result;
-    Obj list;
-    Obj pos;
-
-    result = NewSyntaxTreeNode("IsBPosObj");;
-
-    list = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    pos = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("pos"), pos);
-
-    return result;
-}
-
-Obj SyntaxTreeElmComObjName(Expr expr)
-{
-    Obj result;
-    Obj record;
-    Obj rnam;
-
-    result = NewSyntaxTreeNode("ElmComObjName");;
-
-    record = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    rnam = SyntaxTreeExpr(ADDR_EXPR(expr)[1]);
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), rnam);
-
-    return result;
-}
-
-Obj SyntaxTreeElmComObjExpr(Expr expr)
-{
-    Obj result;
-    Obj record;
-    Obj rnam;
-
-    result = NewSyntaxTreeNode("ElmComObjExpr");;
-
-    record = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    rnam = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), rnam);
-
-    return result;
-}
-
-Obj SyntaxTreeIsbComObjName(Expr expr)
-{
-    Obj result;
-    Obj record;
-    Obj rnam;
-
-    result = NewSyntaxTreeNode("IsBComObjName");;
-
-    record = SyntaxTreeExpr(ADDR_EXPR(expr)[0]);
-    rnam = SyntaxTreeExpr(ADDR_EXPR(expr)[1]);
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), rnam);
-
-    return result;
-}
-
-Obj SyntaxTreeIsbComObjExpr(Expr expr)
-{
-    Obj result;
-    Obj record;
-    Obj rnam;
-
-    result = NewSyntaxTreeNode("IsBComObjExpr");;
-
-    record = SyntaxTreeExpr( ADDR_EXPR(expr)[0] );
-    rnam = SyntaxTreeExpr( ADDR_EXPR(expr)[1] );
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), rnam);
 
     return result;
 }
@@ -1886,25 +1462,25 @@ static Int InitKernel (
     SyntaxTreeExprFuncs[ T_FUNCCALL_XARGS  ] = SyntaxTreeFunccall;
     SyntaxTreeExprFuncs[ T_FUNC_EXPR       ] = SyntaxTreeFuncExpr;
 
-    SyntaxTreeExprFuncs[ T_OR              ] = SyntaxTreeOr;
-    SyntaxTreeExprFuncs[ T_AND             ] = SyntaxTreeAnd;
-    SyntaxTreeExprFuncs[ T_NOT             ] = SyntaxTreeNot;
-    SyntaxTreeExprFuncs[ T_EQ              ] = SyntaxTreeEq;
-    SyntaxTreeExprFuncs[ T_NE              ] = SyntaxTreeNe;
-    SyntaxTreeExprFuncs[ T_LT              ] = SyntaxTreeLt;
-    SyntaxTreeExprFuncs[ T_GE              ] = SyntaxTreeGe;
-    SyntaxTreeExprFuncs[ T_GT              ] = SyntaxTreeGt;
-    SyntaxTreeExprFuncs[ T_LE              ] = SyntaxTreeLe;
-    SyntaxTreeExprFuncs[ T_IN              ] = SyntaxTreeIn;
+    SyntaxTreeExprFuncs[ T_OR              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_AND             ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_NOT             ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_EQ              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_NE              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_LT              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_GE              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_GT              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_LE              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_IN              ] = SyntaxTreeSimpleExpr;
 
-    SyntaxTreeExprFuncs[ T_SUM             ] = SyntaxTreeSum;
-    SyntaxTreeExprFuncs[ T_AINV            ] = SyntaxTreeAInv;
-    SyntaxTreeExprFuncs[ T_DIFF            ] = SyntaxTreeDiff;
-    SyntaxTreeExprFuncs[ T_PROD            ] = SyntaxTreeProd;
-    SyntaxTreeExprFuncs[ T_INV             ] = SyntaxTreeInv;
-    SyntaxTreeExprFuncs[ T_QUO             ] = SyntaxTreeQuo;
-    SyntaxTreeExprFuncs[ T_MOD             ] = SyntaxTreeMod;
-    SyntaxTreeExprFuncs[ T_POW             ] = SyntaxTreePow;
+    SyntaxTreeExprFuncs[ T_SUM             ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_AINV            ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_DIFF            ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_PROD            ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_INV             ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_QUO             ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_MOD             ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_POW             ] = SyntaxTreeSimpleExpr;
 
     SyntaxTreeExprFuncs[ T_INTEXPR         ] = SyntaxTreeIntExpr;
     SyntaxTreeExprFuncs[ T_INT_EXPR        ] = SyntaxTreeIntExpr;
@@ -1927,25 +1503,25 @@ static Int InitKernel (
     SyntaxTreeExprFuncs[ T_REF_GVAR        ] = SyntaxTreeRefGVar;
     SyntaxTreeExprFuncs[ T_ISB_GVAR        ] = SyntaxTreeIsbGVar;
 
-    SyntaxTreeExprFuncs[ T_ELM_LIST        ] = SyntaxTreeElmList;
-    SyntaxTreeExprFuncs[ T_ELMS_LIST       ] = SyntaxTreeElmsList;
-    SyntaxTreeExprFuncs[ T_ELM_LIST_LEV    ] = SyntaxTreeElmListLev;
-    SyntaxTreeExprFuncs[ T_ELMS_LIST_LEV   ] = SyntaxTreeElmsListLev;
-    SyntaxTreeExprFuncs[ T_ISB_LIST        ] = SyntaxTreeIsbList;
-    SyntaxTreeExprFuncs[ T_ELM_REC_NAME    ] = SyntaxTreeElmRecName;
-    SyntaxTreeExprFuncs[ T_ELM_REC_EXPR    ] = SyntaxTreeElmRecExpr;
-    SyntaxTreeExprFuncs[ T_ISB_REC_NAME    ] = SyntaxTreeIsbRecName;
-    SyntaxTreeExprFuncs[ T_ISB_REC_EXPR    ] = SyntaxTreeIsbRecExpr;
+    SyntaxTreeExprFuncs[ T_ELM_LIST        ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ELMS_LIST       ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ELM_LIST_LEV    ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ELMS_LIST_LEV   ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ISB_LIST        ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ELM_REC_NAME    ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ELM_REC_EXPR    ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ISB_REC_NAME    ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ISB_REC_EXPR    ] = SyntaxTreeSimpleExpr;
 
-    SyntaxTreeExprFuncs[ T_ELM_POSOBJ      ] = SyntaxTreeElmPosObj;
-    SyntaxTreeExprFuncs[ T_ELMS_POSOBJ     ] = SyntaxTreeElmsPosObj;
-    SyntaxTreeExprFuncs[ T_ELM_POSOBJ_LEV  ] = SyntaxTreeElmPosObjLev;
-    SyntaxTreeExprFuncs[ T_ELMS_POSOBJ_LEV ] = SyntaxTreeElmsPosObjLev;
-    SyntaxTreeExprFuncs[ T_ISB_POSOBJ      ] = SyntaxTreeIsbPosObj;
-    SyntaxTreeExprFuncs[ T_ELM_COMOBJ_NAME ] = SyntaxTreeElmComObjName;
-    SyntaxTreeExprFuncs[ T_ELM_COMOBJ_EXPR ] = SyntaxTreeElmComObjExpr;
-    SyntaxTreeExprFuncs[ T_ISB_COMOBJ_NAME ] = SyntaxTreeIsbComObjName;
-    SyntaxTreeExprFuncs[ T_ISB_COMOBJ_EXPR ] = SyntaxTreeIsbComObjExpr;
+    SyntaxTreeExprFuncs[ T_ELM_POSOBJ      ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ELMS_POSOBJ     ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ELM_POSOBJ_LEV  ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ELMS_POSOBJ_LEV ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ISB_POSOBJ      ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ELM_COMOBJ_NAME ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ELM_COMOBJ_EXPR ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ISB_COMOBJ_NAME ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeExprFuncs[ T_ISB_COMOBJ_EXPR ] = SyntaxTreeSimpleExpr;
 
     SyntaxTreeExprFuncs[ T_FUNCCALL_OPTS   ] = SyntaxTreeFunccallOpts;
 
@@ -1954,16 +1530,16 @@ static Int InitKernel (
         SyntaxTreeBoolExprFuncs[ i ] = SyntaxTreeUnknownBool;
     }
 
-    SyntaxTreeBoolExprFuncs[ T_OR              ] = SyntaxTreeOr;
-    SyntaxTreeBoolExprFuncs[ T_AND             ] = SyntaxTreeAnd;
-    SyntaxTreeBoolExprFuncs[ T_NOT             ] = SyntaxTreeNot;
-    SyntaxTreeBoolExprFuncs[ T_EQ              ] = SyntaxTreeEq;
-    SyntaxTreeBoolExprFuncs[ T_NE              ] = SyntaxTreeNe;
-    SyntaxTreeBoolExprFuncs[ T_LT              ] = SyntaxTreeLt;
-    SyntaxTreeBoolExprFuncs[ T_GE              ] = SyntaxTreeGe;
-    SyntaxTreeBoolExprFuncs[ T_GT              ] = SyntaxTreeGt;
-    SyntaxTreeBoolExprFuncs[ T_LE              ] = SyntaxTreeLe;
-    SyntaxTreeBoolExprFuncs[ T_IN              ] = SyntaxTreeIn;
+    SyntaxTreeBoolExprFuncs[ T_OR              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeBoolExprFuncs[ T_AND             ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeBoolExprFuncs[ T_NOT             ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeBoolExprFuncs[ T_EQ              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeBoolExprFuncs[ T_NE              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeBoolExprFuncs[ T_LT              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeBoolExprFuncs[ T_GE              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeBoolExprFuncs[ T_GT              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeBoolExprFuncs[ T_LE              ] = SyntaxTreeSimpleExpr;
+    SyntaxTreeBoolExprFuncs[ T_IN              ] = SyntaxTreeSimpleExpr;
 
     /* enter the statement compilers into the table                        */
     for ( i = 0; i < 256; i++ ) {
