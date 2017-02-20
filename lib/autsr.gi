@@ -644,7 +644,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	  NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
 	else
 	  ind:=IsomorphismPcGroup(r);
-	  rada:=AutomorphismGroup(Image(ind,r):someCharacteristics:=fail,actbase:=fail);
+	  rada:=AutomorphismGroup(Image(ind,r):someCharacteristics:=fail,autactbase:=fail);
 	  # we only consider those homomorphism that stabilize the series we use
 	  for k in List(ser,x->Image(ind,x)) do
 	    if ForAny(GeneratorsOfGroup(rada),x->Image(x,k)<>k) then

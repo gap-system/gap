@@ -1501,7 +1501,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 
 	if Length(GeneratorsOfGroup(A))>0 and not HasNiceMonomorphism(A) then
 	  if Source(A.1)<>H then
-	    Error("shit");
+	    Error("wrong source");
 	  fi;
 	  if actbase<>fail then
 	    e:=List(actbase,x->quotimg(H,pcgsH,x));
