@@ -50,6 +50,18 @@ typedef UInt4 LVar;
 typedef UInt4 HVar;
 typedef UInt GVar;
 
+typedef Obj (*CompileExpr)(Expr expr);
+
+typedef struct {
+  UInt tnum;
+  CompileExpr compiler;
+  const Char *name;
+  UInt arity;
+  const Char *argnames[6];
+} ExprT;
+
+static const ExprT AllExpressions[];
+
 static inline Obj NewSyntaxTreeNode(const char *type)
 {
     Obj result;
@@ -62,11 +74,19 @@ static inline Obj NewSyntaxTreeNode(const char *type)
     return result;
 }
 
-Obj (* SyntaxTreeExprFuncs[256]) ( Expr expr );
+static Obj SyntaxTreeDefaultExpr(Expr expr)
+{
+    Obj result;
+
+    /* TODO: Check that TNUM in range */
+
+    result = NewSyntaxTreeNode(AllExpressions[TNUM_EXPR(expr)].name);
+    return result;
+}
 
 static inline Obj SyntaxTreeExpr(Expr expr)
 {
-    return (* SyntaxTreeExprFuncs[ TNUM_EXPR(expr) ])( expr );
+    return AllExpressions[TNUM_EXPR(expr)].compiler(expr);
 }
 
 Obj SyntaxTreeUnknownExpr(Expr expr)
@@ -78,19 +98,11 @@ Obj SyntaxTreeUnknownExpr(Expr expr)
     return result;
 }
 
-/* TODO: Find out why BoolExpr is special */
-Obj (* SyntaxTreeBoolExprFuncs[256]) ( Expr expr );
-
-Obj SyntaxTreeBoolExpr(Expr expr)
-{
-    return (* SyntaxTreeBoolExprFuncs[ TNUM_EXPR(expr) ])( expr );
-}
-
 Obj SyntaxTreeUnknownBool(Expr expr)
 {
     /* compile the expression and check that the value is boolean          */
     /* TODO: Check boolean? */
-    return SyntaxTreeExpr( expr );
+    return SyntaxTreeExpr(expr);
 }
 
 extern Obj SyntaxTreeRefGVarFopy (Expr expr);
@@ -140,7 +152,6 @@ Obj SyntaxTreeFunccallOpts(Expr expr)
 
 static Obj SyntaxTreeFunc(Obj func);
 
-
 /* TODO: again? */
 Obj SyntaxTreeFuncExpr(Expr expr)
 {
@@ -156,116 +167,6 @@ Obj SyntaxTreeFuncExpr(Expr expr)
     func = SyntaxTreeFunc(fexp);
 
     AssPRec(result, RNamName("func"), func);
-
-    return result;
-}
-
-typedef struct {
-    UInt tnum;
-    const Char *name;
-    UInt arity;
-    const Char *argnames[6];
-} ExprT;
-
-static const ExprT AllExpressions[] = {
-    { T_OR, "T_OR", 2, { "left", "right" } },
-    { T_AND, "T_AND", 2, {"left", "right"} },
-    { T_NOT, "T_NOT", 1, {"left", "right"} },
-    { T_EQ, "T_EQ", 2, {"left", "right"} },
-    { T_NE, "T_NE", 2, {"left", "right"} },
-    { T_LT, "T_LT", 2, {"left", "right"} },
-    { T_GE, "T_GE", 2, {"left", "right"} },
-    { T_GT, "T_GT", 2, {"left", "right"} },
-    { T_LE, "T_LE", 2, {"left", "right"} },
-    { T_IN, "T_IN", 2, {"left", "right"} },
-    { T_SUM, "T_SUM", 2, {"left", "right"} },
-    { T_AINV, "T_AINV", 1, {"left", "right"} },
-    { T_DIFF, "T_DIFF", 2, {"left", "right"} },
-    { T_PROD, "T_PROD", 2, {"left", "right"} },
-    { T_INV, "T_INV", 1, {"left", "right"} },
-    { T_QUO, "T_QUO", 2, {"left", "right"} },
-    { T_MOD, "T_MOD", 2, {"left", "right"} },
-    { T_POW, "T_POW", 2, {"left", "right"} },
-
-    { T_ISB_LVAR, "T_ISB_LVAR", 1, { "var" } },
-    { T_REF_HVAR, "T_REF_HVAR", 1, { "var" } },
-    { T_ISB_HVAR, "T_ISB_HVAR", 1, { "var" } },
-    { T_REF_GVAR, "T_REF_GVAR", 1, { "var" } },
-    { T_ISB_GVAR, "T_ISB_GVAR", 1, { "var" } },
-    { T_ELM_LIST, "T_ELM_LIST", 2, { "list", "pos" } },
-    { T_ELMS_LIST, "T_ELMS_LIST", 2, { "list", "poss" } },
-    { T_ELM_LIST_LEV, "T_ELM_LIST_LEV", 3, { "lists", "pos", "level" } },
-    { T_ELMS_LIST_LEV, "T_ELMS_LIST_LEV", 3, { "lists", "poss", "level" } },
-    { T_ISB_LIST, "T_ISB_LIST", 2, { "list", "pos" } },
-    { T_ELM_REC_NAME, "T_ELM_REC_NAME", 2, { "record", "name" } },
-    { T_ELM_REC_EXPR, "T_ELM_REC_EXPR", 2, { "record", "expression" } },
-    { T_ISB_REC_NAME, "T_ISB_REC_NAME", 2, { "record", "name" } },
-    { T_ISB_REC_EXPR, "T_ISB_REC_EXPR", 2, { "record", "expression" } },
-    { T_ELM_POSOBJ, "T_ELM_POSOBJ", 2, { "posobj", "pos" } },
-    { T_ELMS_POSOBJ, "T_ELMS_POSOBJ", 2, { "posobj", "pos" } },
-    { T_ELM_POSOBJ_LEV, "T_ELM_POSOBJ_LEV", 3, { "posobj", "pos", "level" } },
-    { T_ELMS_POSOBJ_LEV, "T_ELMS_POSOBJ_LEV", 3, { "posobj", "poss", "level" } },
-    { T_ISB_POSOBJ, "T_ISB_POSOBJ", 2, { "posobj", "pos" } },
-    { T_ELM_COMOBJ_NAME, "T_ELM_COMOBJ_NAME", 2, { "comobj", "name" } },
-    { T_ELM_COMOBJ_EXPR, "T_ELM_COMOBJ_EXPR", 2, { "comobj", "expression" } },
-    { T_ISB_COMOBJ_NAME, "T_ISB_COMOBJ_NAME", 2, { "comobj", "name" } },
-    { T_ISB_COMOBJ_EXPR, "T_ISB_COMOBJ_EXPR", 2, { "comobj", "expression" } },
-
-};
-
-static inline const ExprT GetExprInfo(Expr expr)
-{
-    for(int i=0;i<sizeof(AllExpressions)/sizeof(ExprT);i++) {
-        if(AllExpressions[i].tnum == TNUM_EXPR(expr)) {
-            return AllExpressions[i];
-        }
-    }
-    return AllExpressions[0];
-}
-
-Obj SyntaxTreeSimpleExpr(Expr expr)
-{
-    Obj result;
-    ExprT info;
-
-    info = GetExprInfo(expr);
-
-    result = NewSyntaxTreeNode(info.name);
-
-    for(int i=0;i<info.arity;i++) {
-        AssPRec(result, RNamName(info.argnames[i]), SyntaxTreeExpr(ADDR_EXPR(expr)[i]));
-    }
-
-    return result;
-}
-
-Obj SyntaxTreeNot(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Not");;
-    AssPRec(result, RNamName("op"), SyntaxTreeBoolExpr( ADDR_EXPR(expr)[0]));
-
-    return result;
-}
-
-Obj SyntaxTreeAInv(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("AInv");;
-    AssPRec(result, RNamName("op"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
-
-    return result;
-}
-
-Obj SyntaxTreeInv(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("Inv");;
-
-    AssPRec(result, RNamName("op"), SyntaxTreeExpr( ADDR_EXPR(expr)[0]));
 
     return result;
 }
@@ -307,24 +208,6 @@ Obj SyntaxTreeIntExpr(Expr expr)
     return result;
 }
 
-Obj SyntaxTreeTrueExpr(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("TrueExpr");;
-
-    return result;
-}
-
-Obj SyntaxTreeFalseExpr(Expr expr)
-{
-    Obj result;
-
-    result = NewSyntaxTreeNode("FalseExpr");;
-
-    return result;
-}
-
 Obj SyntaxTreeCharExpr(Expr expr)
 {
     Obj result;
@@ -338,7 +221,7 @@ Obj SyntaxTreeCharExpr(Expr expr)
     return result;
 }
 
-Obj SyntaxTreePermExpr (Expr expr)
+Obj SyntaxTreePermExpr(Expr expr)
 {
     Obj result;
     Obj cycles;
@@ -375,7 +258,7 @@ Obj SyntaxTreePermExpr (Expr expr)
     return result;
 }
 
-/* TODO: FInd out why record and list subexpressions are handled
+/* TODO: Find out why record and list subexpressions are handled
    special */
 Obj SyntaxTreeListExpr (Expr expr)
 {
@@ -439,7 +322,6 @@ Obj SyntaxTreeRangeExpr(Expr expr)
     return result;
 }
 
-/* TODO: Can we still identify whether a string was triple quoted? */
 Obj SyntaxTreeStringExpr(Expr expr)
 {
     Obj result, string;
@@ -607,18 +489,6 @@ Obj SyntaxTreeIsbGVar(Expr expr)
     return result;
 }
 
-Obj (* SyntaxTreeStatFuncs[256])(Stat stat);
-
-Obj SyntaxTreeStat( Stat stat )
-{
-    return (* SyntaxTreeStatFuncs[ TNUM_STAT(stat) ])( stat );
-}
-
-Obj SyntaxTreeUnknownStat(Stat stat)
-{
-    return NewSyntaxTreeNode("UnknownStat");;
-}
-
 /* TODO: Options? */
 Obj SyntaxTreeProccall(Stat stat)
 {
@@ -707,11 +577,11 @@ Obj SyntaxTreeIf(Stat stat)
 
     AssPRec(result, RNamName("branches"), branches);
 
-    cond = SyntaxTreeBoolExpr( ADDR_STAT( stat )[0] );
+    cond = SyntaxTreeExpr( ADDR_STAT( stat )[0] );
     then = SyntaxTreeStat( ADDR_STAT( stat )[1] );
 
     for(i=0;i<nr;i++) {
-        cond = SyntaxTreeBoolExpr( ADDR_STAT( stat )[2*i] );
+        cond = SyntaxTreeExpr( ADDR_STAT( stat )[2*i] );
         then = SyntaxTreeStat( ADDR_STAT( stat )[2*i+1] );
 
         pair = NEW_PREC(2);
@@ -756,7 +626,7 @@ Obj SyntaxTreeWhile(Stat stat )
 
     result = NewSyntaxTreeNode("While");;
 
-    condition = SyntaxTreeBoolExpr( ADDR_STAT(stat)[0] );
+    condition = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
     AssPRec(result, RNamName("condition"), condition);
 
     nr = SIZE_STAT(stat)/sizeof(Stat);
@@ -781,7 +651,7 @@ Obj SyntaxTreeRepeat(Stat stat)
 
     result = NewSyntaxTreeNode("Repeat");;
 
-    cond = SyntaxTreeBoolExpr( ADDR_STAT(stat)[0] );
+    cond = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
     AssPRec(result, RNamName("condition"), cond);
 
     nr = SIZE_STAT(stat)/sizeof(Stat);
@@ -1321,7 +1191,7 @@ Obj SyntaxTreeAssert2(Stat stat)
     result = NewSyntaxTreeNode("Assert");;
 
     lev = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-    cond = SyntaxTreeBoolExpr( ADDR_STAT(stat)[1] );
+    cond = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
 
     AssPRec(result, RNamName("level"), lev);
     AssPRec(result, RNamName("condition"), cond);
@@ -1339,7 +1209,7 @@ Obj SyntaxTreeAssert3(Stat stat)
     result = NewSyntaxTreeNode("Assert");;
 
     lev = SyntaxTreeExpr( ADDR_STAT(stat)[0] );
-    cond = SyntaxTreeBoolExpr( ADDR_STAT(stat)[1] );
+    cond = SyntaxTreeExpr( ADDR_STAT(stat)[1] );
     msg = SyntaxTreeExpr( ADDR_STAT(stat)[2] );
 
     AssPRec(result, RNamName("level"), lev);
@@ -1419,6 +1289,112 @@ static Obj SyntaxTreeFunc( Obj func )
     return result;
 }
 
+#define EXPR_COMPILER(tnum, compiler, arity, names) \
+    { tnum, compiler, "tnum", arity, names }
+#define EXPR_COMPILER_DEFAULT(tnum) \
+    EXPR_COMPILER(tnum, SyntaxTreeDefaultExpr, 0, { })
+
+static const ExprT AllExpressions[] = {
+    EXPR_COMPILER(T_FUNCCALL_0ARGS, SyntaxTreeFunccall, 0, { }),
+//    { T_FUNCCALL_0ARGS, SyntaxTreeFunccall, "T_FUNCCALL_0ARGS", 0, { } },
+    { T_FUNCCALL_1ARGS, SyntaxTreeFunccall, "T_FUNCCALL_1ARGS", 0, { } },
+    { T_FUNCCALL_2ARGS, SyntaxTreeFunccall, "T_FUNCCALL_2ARGS", 0, { } },
+    { T_FUNCCALL_3ARGS, SyntaxTreeFunccall, "T_FUNCCALL_3ARGS", 0, { } },
+    { T_FUNCCALL_4ARGS, SyntaxTreeFunccall, "T_FUNCCALL_4ARGS", 0, { } },
+    { T_FUNCCALL_5ARGS, SyntaxTreeFunccall, "T_FUNCCALL_5ARGS", 0, { } },
+    { T_FUNCCALL_6ARGS, SyntaxTreeFunccall, "T_FUNCCALL_6ARGS", 0, { } },
+    { T_FUNCCALL_XARGS, SyntaxTreeFunccall, "T_FUNCCALL_XARGS", 0, { } },
+    { T_FUNC_EXPR, SyntaxTreeFuncExpr, "T_FUNC_EXPR", 0, { } },
+
+    { T_OR, SyntaxTreeDefaultExpr, "T_OR", 2, { "left", "right" } },
+    { T_AND, SyntaxTreeDefaultExpr, "T_AND", 2, {"left", "right"} },
+    { T_NOT, SyntaxTreeDefaultExpr, "T_NOT", 1, {"op"} },
+    { T_EQ, SyntaxTreeDefaultExpr, "T_EQ", 2, {"left", "right"} },
+    { T_NE, SyntaxTreeDefaultExpr, "T_NE", 2, {"left", "right"} },
+    { T_LT, SyntaxTreeDefaultExpr, "T_LT", 2, {"left", "right"} },
+    { T_GE, SyntaxTreeDefaultExpr, "T_GE", 2, {"left", "right"} },
+    { T_GT, SyntaxTreeDefaultExpr, "T_GT", 2, {"left", "right"} },
+    { T_LE, SyntaxTreeDefaultExpr, "T_LE", 2, {"left", "right"} },
+    { T_IN, SyntaxTreeDefaultExpr, "T_IN", 2, {"left", "right"} },
+    { T_SUM, SyntaxTreeDefaultExpr, "T_SUM", 2, {"left", "right"} },
+    { T_AINV, SyntaxTreeDefaultExpr, "T_AINV", 1, {"left", "right"} },
+    { T_DIFF, SyntaxTreeDefaultExpr, "T_DIFF", 2, {"left", "right"} },
+    { T_PROD, SyntaxTreeDefaultExpr, "T_PROD", 2, {"left", "right"} },
+    { T_INV, SyntaxTreeDefaultExpr, "T_INV", 1, {"left", "right"} },
+    { T_QUO, SyntaxTreeDefaultExpr, "T_QUO", 2, {"left", "right"} },
+    { T_MOD, SyntaxTreeDefaultExpr, "T_MOD", 2, {"left", "right"} },
+    { T_POW, SyntaxTreeDefaultExpr, "T_POW", 2, {"left", "right"} },
+
+    { T_INTEXPR, SyntaxTreeDefaultExpr, "T_INTEXPR", 0, { } },
+    { T_INT_EXPR, SyntaxTreeDefaultExpr, "T_INT_EXPR", 0, { } },
+    { T_TRUE_EXPR, SyntaxTreeDefaultExpr, "T_TRUE_EXPR", 0, { } },
+    { T_FALSE_EXPR, SyntaxTreeDefaultExpr, "T_FALSE_EXPR", 0, { } },
+    { T_CHAR_EXPR, SyntaxTreeDefaultExpr, "T_CHAR_EXPR", 0, { } },
+    { T_PERM_EXPR, SyntaxTreeDefaultExpr, "T_PERM_EXPR", 0, { } },
+    { T_PERM_CYCLE, SyntaxTreeDefaultExpr, "T_PERM_CYCLE", 0, { } },
+    { T_LIST_EXPR, SyntaxTreeDefaultExpr, "T_LIST_EXPR", 0, { } },
+    { T_LIST_TILD_EXPR, SyntaxTreeDefaultExpr, "T_LIST_TILD_EXPR", 0, { } },
+    { T_RANGE_EXPR, SyntaxTreeDefaultExpr, "T_RANGE_EXPR", 0, { } },
+    { T_STRING_EXPR, SyntaxTreeDefaultExpr, "T_STRING_EXPR", 0, { } },
+    { T_REC_EXPR, SyntaxTreeDefaultExpr, "T_REC_EXPR", 0, { } },
+    { T_REC_TILD_EXPR, SyntaxTreeDefaultExpr, "T_REC_TILD_EXPR", 0, { } },
+
+    { T_REFLVAR, SyntaxTreeDefaultExpr, "T_REFLVAR", 0, { } },
+
+    DEF_EXPR_DEFAULT(41),
+    DEF_EXPR_DEFAULT(42),
+    DEF_EXPR_DEFAULT(43),
+    DEF_EXPR_DEFAULT(44),
+    DEF_EXPR_DEFAULT(45),
+    DEF_EXPR_DEFAULT(46),
+    DEF_EXPR_DEFAULT(47),
+    DEF_EXPR_DEFAULT(48),
+    DEF_EXPR_DEFAULT(49),
+    DEF_EXPR_DEFAULT(50),
+    DEF_EXPR_DEFAULT(51),
+    DEF_EXPR_DEFAULT(52),
+    DEF_EXPR_DEFAULT(53),
+    DEF_EXPR_DEFAULT(54),
+    DEF_EXPR_DEFAULT(55),
+    DEF_EXPR_DEFAULT(56),
+    DEF_EXPR_DEFAULT(57),
+
+    { T_ISB_LVAR, SyntaxTreeDefaultExpr, "T_ISB_LVAR", 1, { "var" } },
+    { T_REF_HVAR, SyntaxTreeDefaultExpr, "T_REF_HVAR", 1, { "var" } },
+    { T_ISB_HVAR, SyntaxTreeDefaultExpr, "T_ISB_HVAR", 1, { "var" } },
+    { T_REF_GVAR, SyntaxTreeDefaultExpr, "T_REF_GVAR", 1, { "var" } },
+    { T_ISB_GVAR, SyntaxTreeDefaultExpr, "T_ISB_GVAR", 1, { "var" } },
+    { T_ELM_LIST, SyntaxTreeDefaultExpr, "T_ELM_LIST", 2, { "list", "pos" } },
+    { T_ELMS_LIST, SyntaxTreeDefaultExpr, "T_ELMS_LIST", 2, { "list", "poss" } },
+    { T_ELM_LIST_LEV, SyntaxTreeDefaultExpr, "T_ELM_LIST_LEV", 3, { "lists", "pos", "level" } },
+    { T_ELMS_LIST_LEV, SyntaxTreeDefaultExpr, "T_ELMS_LIST_LEV", 3, { "lists", "poss", "level" } },
+    { T_ISB_LIST, SyntaxTreeDefaultExpr, "T_ISB_LIST", 2, { "list", "pos" } },
+    { T_ELM_REC_NAME, SyntaxTreeDefaultExpr, "T_ELM_REC_NAME", 2, { "record", "name" } },
+    { T_ELM_REC_EXPR, SyntaxTreeDefaultExpr, "T_ELM_REC_EXPR", 2, { "record", "expression" } },
+    { T_ISB_REC_NAME, SyntaxTreeDefaultExpr, "T_ISB_REC_NAME", 2, { "record", "name" } },
+    { T_ISB_REC_EXPR, SyntaxTreeDefaultExpr, "T_ISB_REC_EXPR", 2, { "record", "expression" } },
+    { T_ELM_POSOBJ, SyntaxTreeDefaultExpr, "T_ELM_POSOBJ", 2, { "posobj", "pos" } },
+    { T_ELMS_POSOBJ, SyntaxTreeDefaultExpr, "T_ELMS_POSOBJ", 2, { "posobj", "pos" } },
+    { T_ELM_POSOBJ_LEV, SyntaxTreeDefaultExpr, "T_ELM_POSOBJ_LEV", 3, { "posobj", "pos", "level" } },
+    { T_ELMS_POSOBJ_LEV, SyntaxTreeDefaultExpr, "T_ELMS_POSOBJ_LEV", 3, { "posobj", "poss", "level" } },
+    { T_ISB_POSOBJ, SyntaxTreeDefaultExpr, "T_ISB_POSOBJ", 2, { "posobj", "pos" } },
+    { T_ELM_COMOBJ_NAME, SyntaxTreeDefaultExpr, "T_ELM_COMOBJ_NAME", 2, { "comobj", "name" } },
+    { T_ELM_COMOBJ_EXPR, SyntaxTreeDefaultExpr, "T_ELM_COMOBJ_EXPR", 2, { "comobj", "expression" } },
+    { T_ISB_COMOBJ_NAME, SyntaxTreeDefaultExpr, "T_ISB_COMOBJ_NAME", 2, { "comobj", "name" } },
+    { T_ISB_COMOBJ_EXPR, SyntaxTreeDefaultExpr, "T_ISB_COMOBJ_EXPR", 2, { "comobj", "expression" } },
+
+    { T_FUNCCALL_OPTS, SyntaxTreeDefaultExpr, "T_FUNCCALL_OPTS", 0, { } },
+    { T_FLOAT_EXPR_EAGER, SyntaxTreeDefaultExpr, "T_FLOAT_EXPR_EAGER", 0, { } },
+    { T_FLOAT_EXPR_LAZY, SyntaxTreeDefaultExpr, "T_FLOAT_EXPR_LAZY", 0, { } },
+
+    { T_ELM2_LIST, SyntaxTreeDefaultExpr, "T_ELM", 0, { } },
+    { T_ELMX_LIST, SyntaxTreeDefaultExpr, "T_ELMX_LIST", 0, { } },
+    { T_ASS2_LIST, SyntaxTreeDefaultExpr, "T_ASS", 0, { } },
+    { T_ASSX_LIST, SyntaxTreeDefaultExpr, "T_ASSX_LIST", 0, { } },
+
+    { 0, 0, 0, 0, 0}
+};
+
 Obj FuncSYNTAX_TREE ( Obj self, Obj func )
 {
     return SyntaxTreeFunc(func);
@@ -1432,218 +1408,26 @@ static StructGVarFunc GVarFuncs [] = {
 
 };
 
-static Int InitKernel (
-    StructInitInfo *    module )
+static Int InitKernel( StructInitInfo *module )
 {
-    Int                 i;              /* loop variable                   */
-
-    /* init filters and functions                                          */
+    /* init filters and functions */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* announce the global variables                                       */
-    /*
-    InitGlobalBag( &SyntaxTreeGVar,  "src/compiler.c:SyntaxTreeInfoGVar"  );
-    InitGlobalBag( &SyntaxTreeRNam,  "src/compiler.c:SyntaxTreeInfoRNam"  );
-    InitGlobalBag( &SyntaxTreeFunctions, "src/compiler.c:SyntaxTreeFunctions" );
-    */
-
-    /* enter the expression compilers into the table                       */
-    for ( i = 0; i < 256; i++ ) {
-        SyntaxTreeExprFuncs[ i ] = SyntaxTreeUnknownExpr;
+    /* check TNUMS table */
+    for (int i = 0; i < 88; i++ ) {
+        if(!(AllExpressions[i].tnum == i)) {
+            fprintf(stderr, "Warning, tnum desync\n");
+        }
     }
-
-    SyntaxTreeExprFuncs[ T_FUNCCALL_0ARGS  ] = SyntaxTreeFunccall;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_1ARGS  ] = SyntaxTreeFunccall;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_2ARGS  ] = SyntaxTreeFunccall;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_3ARGS  ] = SyntaxTreeFunccall;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_4ARGS  ] = SyntaxTreeFunccall;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_5ARGS  ] = SyntaxTreeFunccall;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_6ARGS  ] = SyntaxTreeFunccall;
-    SyntaxTreeExprFuncs[ T_FUNCCALL_XARGS  ] = SyntaxTreeFunccall;
-    SyntaxTreeExprFuncs[ T_FUNC_EXPR       ] = SyntaxTreeFuncExpr;
-
-    SyntaxTreeExprFuncs[ T_OR              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_AND             ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_NOT             ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_EQ              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_NE              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_LT              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_GE              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_GT              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_LE              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_IN              ] = SyntaxTreeSimpleExpr;
-
-    SyntaxTreeExprFuncs[ T_SUM             ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_AINV            ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_DIFF            ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_PROD            ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_INV             ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_QUO             ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_MOD             ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_POW             ] = SyntaxTreeSimpleExpr;
-
-    SyntaxTreeExprFuncs[ T_INTEXPR         ] = SyntaxTreeIntExpr;
-    SyntaxTreeExprFuncs[ T_INT_EXPR        ] = SyntaxTreeIntExpr;
-    SyntaxTreeExprFuncs[ T_TRUE_EXPR       ] = SyntaxTreeTrueExpr;
-    SyntaxTreeExprFuncs[ T_FALSE_EXPR      ] = SyntaxTreeFalseExpr;
-    SyntaxTreeExprFuncs[ T_CHAR_EXPR       ] = SyntaxTreeCharExpr;
-    SyntaxTreeExprFuncs[ T_PERM_EXPR       ] = SyntaxTreePermExpr;
-    SyntaxTreeExprFuncs[ T_PERM_CYCLE      ] = SyntaxTreeUnknownExpr;
-    SyntaxTreeExprFuncs[ T_LIST_EXPR       ] = SyntaxTreeListExpr;
-    SyntaxTreeExprFuncs[ T_LIST_TILD_EXPR  ] = SyntaxTreeListTildeExpr;
-    SyntaxTreeExprFuncs[ T_RANGE_EXPR      ] = SyntaxTreeRangeExpr;
-    SyntaxTreeExprFuncs[ T_STRING_EXPR     ] = SyntaxTreeStringExpr;
-    SyntaxTreeExprFuncs[ T_REC_EXPR        ] = SyntaxTreeRecExpr;
-    SyntaxTreeExprFuncs[ T_REC_TILD_EXPR   ] = SyntaxTreeRecTildeExpr;
-
-    SyntaxTreeExprFuncs[ T_REFLVAR         ] = SyntaxTreeRefLVar;
-    SyntaxTreeExprFuncs[ T_ISB_LVAR        ] = SyntaxTreeIsbLVar;
-    SyntaxTreeExprFuncs[ T_REF_HVAR        ] = SyntaxTreeRefHVar;
-    SyntaxTreeExprFuncs[ T_ISB_HVAR        ] = SyntaxTreeIsbHVar;
-    SyntaxTreeExprFuncs[ T_REF_GVAR        ] = SyntaxTreeRefGVar;
-    SyntaxTreeExprFuncs[ T_ISB_GVAR        ] = SyntaxTreeIsbGVar;
-
-    SyntaxTreeExprFuncs[ T_ELM_LIST        ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ELMS_LIST       ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ELM_LIST_LEV    ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ELMS_LIST_LEV   ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ISB_LIST        ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ELM_REC_NAME    ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ELM_REC_EXPR    ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ISB_REC_NAME    ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ISB_REC_EXPR    ] = SyntaxTreeSimpleExpr;
-
-    SyntaxTreeExprFuncs[ T_ELM_POSOBJ      ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ELMS_POSOBJ     ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ELM_POSOBJ_LEV  ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ELMS_POSOBJ_LEV ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ISB_POSOBJ      ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ELM_COMOBJ_NAME ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ELM_COMOBJ_EXPR ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ISB_COMOBJ_NAME ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeExprFuncs[ T_ISB_COMOBJ_EXPR ] = SyntaxTreeSimpleExpr;
-
-    SyntaxTreeExprFuncs[ T_FUNCCALL_OPTS   ] = SyntaxTreeFunccallOpts;
-
-    /* enter the boolean expression compilers into the table               */
-    for ( i = 0; i < 256; i++ ) {
-        SyntaxTreeBoolExprFuncs[ i ] = SyntaxTreeUnknownBool;
-    }
-
-    SyntaxTreeBoolExprFuncs[ T_OR              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeBoolExprFuncs[ T_AND             ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeBoolExprFuncs[ T_NOT             ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeBoolExprFuncs[ T_EQ              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeBoolExprFuncs[ T_NE              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeBoolExprFuncs[ T_LT              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeBoolExprFuncs[ T_GE              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeBoolExprFuncs[ T_GT              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeBoolExprFuncs[ T_LE              ] = SyntaxTreeSimpleExpr;
-    SyntaxTreeBoolExprFuncs[ T_IN              ] = SyntaxTreeSimpleExpr;
-
-    /* enter the statement compilers into the table                        */
-    for ( i = 0; i < 256; i++ ) {
-        SyntaxTreeStatFuncs[ i ] = SyntaxTreeUnknownStat;
-    }
-
-    SyntaxTreeStatFuncs[ T_PROCCALL_0ARGS  ] = SyntaxTreeProccall;
-    SyntaxTreeStatFuncs[ T_PROCCALL_1ARGS  ] = SyntaxTreeProccall;
-    SyntaxTreeStatFuncs[ T_PROCCALL_2ARGS  ] = SyntaxTreeProccall;
-    SyntaxTreeStatFuncs[ T_PROCCALL_3ARGS  ] = SyntaxTreeProccall;
-    SyntaxTreeStatFuncs[ T_PROCCALL_4ARGS  ] = SyntaxTreeProccall;
-    SyntaxTreeStatFuncs[ T_PROCCALL_5ARGS  ] = SyntaxTreeProccall;
-    SyntaxTreeStatFuncs[ T_PROCCALL_6ARGS  ] = SyntaxTreeProccall;
-    SyntaxTreeStatFuncs[ T_PROCCALL_XARGS  ] = SyntaxTreeProccall;
-
-    SyntaxTreeStatFuncs[ T_SEQ_STAT        ] = SyntaxTreeSeqStat;
-    SyntaxTreeStatFuncs[ T_SEQ_STAT2       ] = SyntaxTreeSeqStat;
-    SyntaxTreeStatFuncs[ T_SEQ_STAT3       ] = SyntaxTreeSeqStat;
-    SyntaxTreeStatFuncs[ T_SEQ_STAT4       ] = SyntaxTreeSeqStat;
-    SyntaxTreeStatFuncs[ T_SEQ_STAT5       ] = SyntaxTreeSeqStat;
-    SyntaxTreeStatFuncs[ T_SEQ_STAT6       ] = SyntaxTreeSeqStat;
-    SyntaxTreeStatFuncs[ T_SEQ_STAT7       ] = SyntaxTreeSeqStat;
-    SyntaxTreeStatFuncs[ T_IF              ] = SyntaxTreeIf;
-    SyntaxTreeStatFuncs[ T_IF_ELSE         ] = SyntaxTreeIf;
-    SyntaxTreeStatFuncs[ T_IF_ELIF         ] = SyntaxTreeIf;
-    SyntaxTreeStatFuncs[ T_IF_ELIF_ELSE    ] = SyntaxTreeIf;
-    SyntaxTreeStatFuncs[ T_FOR             ] = SyntaxTreeFor;
-    SyntaxTreeStatFuncs[ T_FOR2            ] = SyntaxTreeFor;
-    SyntaxTreeStatFuncs[ T_FOR3            ] = SyntaxTreeFor;
-    SyntaxTreeStatFuncs[ T_FOR_RANGE       ] = SyntaxTreeFor;
-    SyntaxTreeStatFuncs[ T_FOR_RANGE2      ] = SyntaxTreeFor;
-    SyntaxTreeStatFuncs[ T_FOR_RANGE3      ] = SyntaxTreeFor;
-    SyntaxTreeStatFuncs[ T_WHILE           ] = SyntaxTreeWhile;
-    SyntaxTreeStatFuncs[ T_WHILE2          ] = SyntaxTreeWhile;
-    SyntaxTreeStatFuncs[ T_WHILE3          ] = SyntaxTreeWhile;
-    SyntaxTreeStatFuncs[ T_REPEAT          ] = SyntaxTreeRepeat;
-    SyntaxTreeStatFuncs[ T_REPEAT2         ] = SyntaxTreeRepeat;
-    SyntaxTreeStatFuncs[ T_REPEAT3         ] = SyntaxTreeRepeat;
-    SyntaxTreeStatFuncs[ T_BREAK           ] = SyntaxTreeBreak;
-    SyntaxTreeStatFuncs[ T_CONTINUE        ] = SyntaxTreeContinue;
-    SyntaxTreeStatFuncs[ T_RETURN_OBJ      ] = SyntaxTreeReturnObj;
-    SyntaxTreeStatFuncs[ T_RETURN_VOID     ] = SyntaxTreeReturnVoid;
-
-    SyntaxTreeStatFuncs[ T_ASS_LVAR        ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_01     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_02     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_03     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_04     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_05     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_06     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_07     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_08     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_09     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_10     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_11     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_12     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_13     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_14     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_15     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_ASS_LVAR_16     ] = SyntaxTreeAssLVar;
-    SyntaxTreeStatFuncs[ T_UNB_LVAR        ] = SyntaxTreeUnbLVar;
-    SyntaxTreeStatFuncs[ T_ASS_HVAR        ] = SyntaxTreeAssHVar;
-    SyntaxTreeStatFuncs[ T_UNB_HVAR        ] = SyntaxTreeUnbHVar;
-    SyntaxTreeStatFuncs[ T_ASS_GVAR        ] = SyntaxTreeAssGVar;
-    SyntaxTreeStatFuncs[ T_UNB_GVAR        ] = SyntaxTreeUnbGVar;
-
-    SyntaxTreeStatFuncs[ T_ASS_LIST        ] = SyntaxTreeAssList;
-    SyntaxTreeStatFuncs[ T_ASSS_LIST       ] = SyntaxTreeAsssList;
-    SyntaxTreeStatFuncs[ T_ASS_LIST_LEV    ] = SyntaxTreeAssListLev;
-    SyntaxTreeStatFuncs[ T_ASSS_LIST_LEV   ] = SyntaxTreeAsssListLev;
-    SyntaxTreeStatFuncs[ T_UNB_LIST        ] = SyntaxTreeUnbList;
-    SyntaxTreeStatFuncs[ T_ASS_REC_NAME    ] = SyntaxTreeAssRecName;
-    SyntaxTreeStatFuncs[ T_ASS_REC_EXPR    ] = SyntaxTreeAssRecExpr;
-    SyntaxTreeStatFuncs[ T_UNB_REC_NAME    ] = SyntaxTreeUnbRecName;
-    SyntaxTreeStatFuncs[ T_UNB_REC_EXPR    ] = SyntaxTreeUnbRecExpr;
-
-    SyntaxTreeStatFuncs[ T_ASS_POSOBJ      ] = SyntaxTreeAssPosObj;
-    SyntaxTreeStatFuncs[ T_ASSS_POSOBJ     ] = SyntaxTreeAsssPosObj;
-    SyntaxTreeStatFuncs[ T_ASS_POSOBJ_LEV  ] = SyntaxTreeAssPosObjLev;
-    SyntaxTreeStatFuncs[ T_ASSS_POSOBJ_LEV ] = SyntaxTreeAsssPosObjLev;
-    SyntaxTreeStatFuncs[ T_UNB_POSOBJ      ] = SyntaxTreeUnbPosObj;
-    SyntaxTreeStatFuncs[ T_ASS_COMOBJ_NAME ] = SyntaxTreeAssComObjName;
-    SyntaxTreeStatFuncs[ T_ASS_COMOBJ_EXPR ] = SyntaxTreeAssComObjExpr;
-    SyntaxTreeStatFuncs[ T_UNB_COMOBJ_NAME ] = SyntaxTreeUnbComObjName;
-    SyntaxTreeStatFuncs[ T_UNB_COMOBJ_EXPR ] = SyntaxTreeUnbComObjExpr;
-
-    SyntaxTreeStatFuncs[ T_INFO            ] = SyntaxTreeInfo;
-    SyntaxTreeStatFuncs[ T_ASSERT_2ARGS    ] = SyntaxTreeAssert2;
-    SyntaxTreeStatFuncs[ T_ASSERT_3ARGS    ] = SyntaxTreeAssert3;
-    SyntaxTreeStatFuncs[ T_EMPTY           ] = SyntaxTreeEmpty;
-
-    SyntaxTreeStatFuncs[ T_PROCCALL_OPTS   ] = SyntaxTreeProccallOpts;
-
     return 0;
 }
 
-static Int PostRestore (
-    StructInitInfo *    module )
+static Int PostRestore( StructInitInfo *module )
 {
     return 0;
 }
 
-static Int InitLibrary (
-    StructInitInfo *    module )
+static Int InitLibrary( StructInitInfo *module )
 {
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
@@ -1672,8 +1456,4 @@ StructInitInfo * InitInfoSyntaxTree ( void )
     return &module;
 }
 
-
-/****************************************************************************
-**
-*E  compiler.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/
+/*E syntaxtree.c */
