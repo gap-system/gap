@@ -136,8 +136,7 @@ gap> Read("../../GAPProgs/Example.g");
 ]]></Log>
 <P/>
 You can either give the full absolute path name of the source file or
-its relative path name from the &GAP; root directory (the directory
-containing <F>bin/</F>, <F>doc/</F>, <F>lib/</F>, etc.).
+its relative path name from the current directory.
 
 </Section>
 
