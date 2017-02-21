@@ -434,8 +434,8 @@ SetOne( PermutationsFamily, () );
 ##  i.e., if <A>list</A> is not dense,
 ##  or if <A>list</A> contains a positive integer twice,
 ##  or if <A>list</A> contains an
-##  integer not in the range <C>[ 1 .. Length( <A>list</A> ) ]</C>.
-##  If <A>list</A> contains non-integer entries an error is raised.
+##  integer not in the range <C>[ 1 .. Length( <A>list</A> ) ]</C>,
+##  of if <A>list</A> contains non-integer entries, etc.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
