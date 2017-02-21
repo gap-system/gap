@@ -925,6 +925,8 @@ Segmentation fault
 <Section Label="Global Memory Information">
 <Heading>Global Memory Information</Heading>
 
+<Index Key="GASMAN"><C>GASMAN</C></Index>
+
 The &GAP; environment provides automatic memory management, so that
 the programmer does not need to concern themselves with allocating
 space for objects, or recovering space when objects are no longer
