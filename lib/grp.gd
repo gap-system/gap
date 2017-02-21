@@ -3223,7 +3223,7 @@ KeyDependentOperation( "PRump", IsGroup, IsPosInt, "prime" );
 ##  <Oper Name="PCore" Arg='G, p'/>
 ##
 ##  <Description>
-##  <Index Key="Op(G)" Subkey="see PCore"><C>PCore</C></Index>
+##  <Index Key="Op(G)" Subkey="see PCore"><M>O_p(G)</M></Index>
 ##  The <E><A>p</A>-core</E> of <A>G</A> is the largest normal
 ##  <A>p</A>-subgroup of <A>G</A>.
 ##  It is the core of a Sylow <A>p</A> subgroup of <A>G</A>,
